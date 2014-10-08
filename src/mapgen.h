@@ -47,9 +47,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define OREFLAG_NODEISNT  0x04 // not yet implemented
 
 /////////////////// Decoration flags
-#define DECO_PLACE_CENTER_X 1
-#define DECO_PLACE_CENTER_Y 2
-#define DECO_PLACE_CENTER_Z 4
+#define DECO_PLACE_CENTER_X     1
+#define DECO_PLACE_CENTER_Y     2
+#define DECO_PLACE_CENTER_Z     4
+#define DECO_SCHEM_CIDS_UPDATED 8
 
 #define ORE_RANGE_ACTUAL 1
 #define ORE_RANGE_MIRROR 2
@@ -164,10 +165,8 @@ struct MapgenFactory {
 
 class Ore {
 public:
-	std::string ore_name;
-	std::vector<std::string> wherein_names;
-	content_t ore;
-	std::vector<content_t> wherein;  // the node to be replaced
+	content_t c_ore;                  // the node to place
+	std::vector<content_t> c_wherein; // the nodes to be placed in
 	u32 clust_scarcity; // ore cluster has a 1-in-clust_scarcity chance of appearing at a node
 	s16 clust_num_ores; // how many ore nodes are in a chunk
 	s16 clust_size;     // how large (in nodes) a chunk of ore is
@@ -180,14 +179,13 @@ public:
 	Noise *noise;
 
 	Ore() {
-		ore     = CONTENT_IGNORE;
+		c_ore   = CONTENT_IGNORE;
 		np      = NULL;
 		noise   = NULL;
 	}
 
 	virtual ~Ore();
 
-	void resolveNodeNames(INodeDefManager *ndef);
 	void placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
 						u32 blockseed, v3s16 nmin, v3s16 nmax) = 0;
@@ -234,8 +232,7 @@ public:
 	INodeDefManager *ndef;
 
 	int mapseed;
-	std::string place_on_name;
-	content_t c_place_on;
+	std::vector<content_t> c_place_on;
 	s16 sidelen;
 	float fill_ratio;
 	NoiseParams *np;
@@ -247,7 +244,6 @@ public:
 	Decoration();
 	virtual ~Decoration();
 
-	virtual void resolveNodeNames(INodeDefManager *ndef);
 	void placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	void placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 
@@ -258,20 +254,14 @@ public:
 
 class DecoSimple : public Decoration {
 public:
-	std::string deco_name;
-	std::string spawnby_name;
-	content_t c_deco;
-	content_t c_spawnby;
+	std::vector<content_t> c_decos;
+	std::vector<content_t> c_spawnby;
 	s16 deco_height;
 	s16 deco_height_max;
 	s16 nspawnby;
 
-	std::vector<std::string> decolist_names;
-	std::vector<content_t> c_decolist;
-
 	~DecoSimple() {}
 
-	void resolveNodeNames(INodeDefManager *ndef);
 	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
 	virtual int getHeight();
 	virtual std::string getName();
@@ -288,9 +278,7 @@ class DecoSchematic : public Decoration {
 public:
 	std::string filename;
 
-	std::vector<std::string> *node_names;
 	std::vector<content_t> c_nodes;
-	std::map<std::string, std::string> replacements;
 
 	u32 flags;
 	Rotation rotation;
@@ -301,7 +289,7 @@ public:
 	DecoSchematic();
 	~DecoSchematic();
 
-	void resolveNodeNames(INodeDefManager *ndef);
+	void updateContentIds();
 	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
 	virtual int getHeight();
 	virtual std::string getName();
@@ -309,7 +297,8 @@ public:
 	void blitToVManip(v3s16 p, ManualMapVoxelManipulator *vm,
 					Rotation rot, bool force_placement);
 
-	bool loadSchematicFile();
+	bool loadSchematicFile(NodeResolver *resolver,
+		std::map<std::string, std::string> &replace_names);
 	void saveSchematicFile(INodeDefManager *ndef);
 
 	bool getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2);

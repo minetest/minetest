@@ -45,11 +45,13 @@ public:
 	std::string name;
 	u32 flags;
 	
+/*
 	std::string nname_top;
 	std::string nname_filler;
 	std::string nname_water;
 	std::string nname_dust;
 	std::string nname_dust_water;
+*/
 
 	content_t c_top;
 	content_t c_filler;
@@ -81,7 +83,7 @@ public:
 	NoiseParams *np_heat;
 	NoiseParams *np_humidity;
 
-	BiomeDefManager();
+	BiomeDefManager(NodeResolver *resolver);
 	~BiomeDefManager();
 	
 	Biome *createBiome(BiomeTerrainType btt);

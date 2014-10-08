@@ -96,28 +96,6 @@ Ore::~Ore() {
 }
 
 
-void Ore::resolveNodeNames(INodeDefManager *ndef) {
-	if (ore == CONTENT_IGNORE) {
-		ore = ndef->getId(ore_name);
-		if (ore == CONTENT_IGNORE) {
-			errorstream << "Ore::resolveNodeNames: ore node '"
-				<< ore_name << "' not defined";
-			ore = CONTENT_AIR;
-			wherein.push_back(CONTENT_AIR);
-			return;
-		}
-	}
-
-	for (size_t i=0; i != wherein_names.size(); i++) {
-		std::string name = wherein_names[i];
-		content_t c = ndef->getId(name);
-		if (c != CONTENT_IGNORE) {
-			wherein.push_back(c);
-		}
-	}
-}
-
-
 void Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 	int in_range = 0;
 
@@ -147,7 +125,7 @@ void Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax) {
 void OreScatter::generate(ManualMapVoxelManipulator *vm, int seed,
 						  u32 blockseed, v3s16 nmin, v3s16 nmax) {
 	PseudoRandom pr(blockseed);
-	MapNode n_ore(ore, 0, ore_param2);
+	MapNode n_ore(c_ore, 0, ore_param2);
 
 	int volume = (nmax.X - nmin.X + 1) *
 				 (nmax.Y - nmin.Y + 1) *
@@ -171,8 +149,8 @@ void OreScatter::generate(ManualMapVoxelManipulator *vm, int seed,
 				continue;
 
 			u32 i = vm->m_area.index(x0 + x1, y0 + y1, z0 + z1);
-			for (size_t ii = 0; ii < wherein.size(); ii++)
-				if (vm->m_data[i].getContent() == wherein[ii])
+			for (size_t ii = 0; ii < c_wherein.size(); ii++)
+				if (vm->m_data[i].getContent() == c_wherein[ii])
 					vm->m_data[i] = n_ore;
 		}
 	}
@@ -182,7 +160,7 @@ void OreScatter::generate(ManualMapVoxelManipulator *vm, int seed,
 void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
 						u32 blockseed, v3s16 nmin, v3s16 nmax) {
 	PseudoRandom pr(blockseed + 4234);
-	MapNode n_ore(ore, 0, ore_param2);
+	MapNode n_ore(c_ore, 0, ore_param2);
 
 	int max_height = clust_size;
 	int y_start = pr.range(nmin.Y, nmax.Y - max_height);
@@ -210,9 +188,12 @@ void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
 			if (!vm->m_area.contains(i))
 				continue;
 
-			for (size_t ii = 0; ii < wherein.size(); ii++)
-				if (vm->m_data[i].getContent() == wherein[ii])
+			for (size_t ii = 0; ii < c_wherein.size(); ii++) {
+				if (vm->m_data[i].getContent() == c_wherein[ii]) {
 					vm->m_data[i] = n_ore;
+					break;
+				}
+			}
 		}
 	}
 }
@@ -245,14 +226,6 @@ Decoration::Decoration() {
 
 Decoration::~Decoration() {
 	delete np;
-}
-
-
-void Decoration::resolveNodeNames(INodeDefManager *ndef) {
-	this->ndef = ndef;
-
-	if (c_place_on == CONTENT_IGNORE)
-		c_place_on = ndef->getId(place_on_name);
 }
 
 
@@ -388,48 +361,17 @@ void Decoration::placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 ///////////////////////////////////////////////////////////////////////////////
 
 
-void DecoSimple::resolveNodeNames(INodeDefManager *ndef) {
-	Decoration::resolveNodeNames(ndef);
-
-	if (c_deco == CONTENT_IGNORE && !decolist_names.size()) {
-		c_deco = ndef->getId(deco_name);
-		if (c_deco == CONTENT_IGNORE) {
-			errorstream << "DecoSimple::resolveNodeNames: decoration node '"
-				<< deco_name << "' not defined" << std::endl;
-			c_deco = CONTENT_AIR;
-		}
-	}
-	if (c_spawnby == CONTENT_IGNORE) {
-		c_spawnby = ndef->getId(spawnby_name);
-		if (c_spawnby == CONTENT_IGNORE) {
-			errorstream << "DecoSimple::resolveNodeNames: spawnby node '"
-				<< spawnby_name << "' not defined" << std::endl;
-			nspawnby = -1;
-			c_spawnby = CONTENT_AIR;
-		}
-	}
-
-	if (c_decolist.size())
-		return;
-
-	for (size_t i = 0; i != decolist_names.size(); i++) {
-		content_t c = ndef->getId(decolist_names[i]);
-		if (c == CONTENT_IGNORE) {
-			errorstream << "DecoSimple::resolveNodeNames: decolist node '"
-				<< decolist_names[i] << "' not defined" << std::endl;
-			c = CONTENT_AIR;
-		}
-		c_decolist.push_back(c);
-	}
-}
-
-
 void DecoSimple::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p) {
 	ManualMapVoxelManipulator *vm = mg->vm;
 
 	u32 vi = vm->m_area.index(p);
-	if (vm->m_data[vi].getContent() != c_place_on &&
-		c_place_on != CONTENT_IGNORE)
+	content_t c = vm->m_data[vi].getContent();
+	size_t idx;
+	for (idx = 0; idx != c_place_on.size(); idx++) {
+		if (c == c_place_on[idx])
+			break;
+	}
+	if ((idx != 0) && (idx == c_place_on.size()))
 		return;
 
 	if (nspawnby != -1) {
@@ -447,17 +389,25 @@ void DecoSimple::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p) {
 
 		for (int i = 0; i != 8; i++) {
 			u32 index = vm->m_area.index(p + dirs[i]);
-			if (vm->m_area.contains(index) &&
-				vm->m_data[index].getContent() == c_spawnby)
-				nneighs++;
+			if (!vm->m_area.contains(index))
+				continue;
+
+			content_t c = vm->m_data[index].getContent();
+			for (size_t j = 0; j != c_spawnby.size(); j++) {
+				if (c == c_spawnby[j]) {
+					nneighs++;
+					break;
+				}
+			}
 		}
 
 		if (nneighs < nspawnby)
 			return;
 	}
 
-	size_t ndecos = c_decolist.size();
-	content_t c_place = ndecos ? c_decolist[pr->range(0, ndecos - 1)] : c_deco;
+	if (c_decos.size() == 0)
+		return;
+	content_t c_place = c_decos[pr->range(0, c_decos.size() - 1)];
 
 	s16 height = (deco_height_max > 0) ?
 		pr->range(deco_height, deco_height_max) : deco_height;
@@ -483,7 +433,7 @@ int DecoSimple::getHeight() {
 
 
 std::string DecoSimple::getName() {
-	return deco_name;
+	return "";
 }
 
 
@@ -491,7 +441,6 @@ std::string DecoSimple::getName() {
 
 
 DecoSchematic::DecoSchematic() {
-	node_names  = NULL;
 	schematic   = NULL;
 	slice_probs = NULL;
 	flags       = 0;
@@ -500,47 +449,19 @@ DecoSchematic::DecoSchematic() {
 
 
 DecoSchematic::~DecoSchematic() {
-	delete node_names;
 	delete []schematic;
 	delete []slice_probs;
 }
 
 
-void DecoSchematic::resolveNodeNames(INodeDefManager *ndef) {
-	Decoration::resolveNodeNames(ndef);
-
-	if (filename.empty())
+void DecoSchematic::updateContentIds() {
+	if (flags & DECO_SCHEM_CIDS_UPDATED)
 		return;
 
-	if (!node_names) {
-		errorstream << "DecoSchematic::resolveNodeNames: node name list was "
-			"not created" << std::endl;
-		return;
-	}
-
-	for (size_t i = 0; i != node_names->size(); i++) {
-		std::string name = node_names->at(i);
-
-		std::map<std::string, std::string>::iterator it;
-		it = replacements.find(name);
-		if (it != replacements.end())
-			name = it->second;
-
-		content_t c = ndef->getId(name);
-		if (c == CONTENT_IGNORE) {
-			errorstream << "DecoSchematic::resolveNodeNames: node '"
-				<< name << "' not defined" << std::endl;
-			c = CONTENT_AIR;
-		}
-
-		c_nodes.push_back(c);
-	}
+	flags |= DECO_SCHEM_CIDS_UPDATED;
 
 	for (int i = 0; i != size.X * size.Y * size.Z; i++)
 		schematic[i].setContent(c_nodes[schematic[i].getContent()]);
-
-	delete node_names;
-	node_names = NULL;
 }
 
 
@@ -555,8 +476,13 @@ void DecoSchematic::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p) {
 		p.Z -= (size.Z + 1) / 2;
 
 	u32 vi = vm->m_area.index(p);
-	if (vm->m_data[vi].getContent() != c_place_on &&
-		c_place_on != CONTENT_IGNORE)
+	content_t c = vm->m_data[vi].getContent();
+	size_t idx;
+	for (idx = 0; idx != c_place_on.size(); idx++) {
+		if (c == c_place_on[idx])
+			break;
+	}
+	if ((idx != 0) && (idx == c_place_on.size()))
 		return;
 
 	Rotation rot = (rotation == ROTATE_RAND) ?
@@ -581,6 +507,8 @@ void DecoSchematic::blitToVManip(v3s16 p, ManualMapVoxelManipulator *vm,
 	int xstride = 1;
 	int ystride = size.X;
 	int zstride = size.X * size.Y;
+
+	updateContentIds();
 
 	s16 sx = size.X;
 	s16 sy = size.Y;
@@ -694,7 +622,9 @@ void DecoSchematic::placeStructure(Map *map, v3s16 p, bool force_placement) {
 }
 
 
-bool DecoSchematic::loadSchematicFile() {
+bool DecoSchematic::loadSchematicFile(NodeResolver *resolver,
+	std::map<std::string, std::string> &replace_names)
+{
 	content_t cignore = CONTENT_IGNORE;
 	bool have_cignore = false;
 
@@ -730,7 +660,6 @@ bool DecoSchematic::loadSchematicFile() {
 
 	u16 nidmapcount = readU16(is);
 
-	node_names = new std::vector<std::string>;
 	for (int i = 0; i != nidmapcount; i++) {
 		std::string name = deSerializeString(is);
 		if (name == "ignore") {
@@ -738,7 +667,14 @@ bool DecoSchematic::loadSchematicFile() {
 			cignore = i;
 			have_cignore = true;
 		}
-		node_names->push_back(name);
+
+		std::map<std::string, std::string>::iterator it;
+
+		it = replace_names.find(name);
+		if (it != replace_names.end())
+			name = it->second;
+
+		resolver->addNodeList(name.c_str(), &c_nodes);
 	}
 
 	delete []schematic;

@@ -338,6 +338,9 @@ Server::Server(
 	// Apply item aliases in the node definition manager
 	m_nodedef->updateAliases(m_itemdef);
 
+	// Perform pending node name resolutions
+	m_nodedef->getResolver()->resolveNodes();
+
 	// Load the mapgen params from global settings now after any
 	// initial overrides have been set by the mods
 	m_emerge->loadMapgenParams();

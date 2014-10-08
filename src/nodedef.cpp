@@ -402,6 +402,7 @@ public:
 	virtual void updateTextures(IGameDef *gamedef);
 	void serialize(std::ostream &os, u16 protocol_version);
 	void deSerialize(std::istream &is);
+	virtual NodeResolver *getResolver();
 
 private:
 	void addNameIdMapping(content_t i, std::string name);
@@ -430,10 +431,14 @@ private:
 
 	// Next possibly free id
 	content_t m_next_id;
+
+	// NodeResolver to queue pending node resolutions
+	NodeResolver m_resolver;
 };
 
 
-CNodeDefManager::CNodeDefManager()
+CNodeDefManager::CNodeDefManager() :
+	m_resolver(this)
 {
 	clear();
 }
@@ -1017,6 +1022,12 @@ void CNodeDefManager::addNameIdMapping(content_t i, std::string name)
 }
 
 
+NodeResolver *CNodeDefManager::getResolver()
+{
+	return &m_resolver;
+}
+
+
 IWritableNodeDefManager *createNodeDefManager()
 {
 	return new CNodeDefManager();
@@ -1241,4 +1252,158 @@ void ContentFeatures::deSerializeOld(std::istream &is, int version)
 	} else {
 		throw SerializationError("unsupported ContentFeatures version");
 	}
+}
+
+/*
+	NodeResolver
+*/
+
+NodeResolver::NodeResolver(INodeDefManager *ndef)
+{
+	m_ndef = ndef;
+	m_is_node_registration_complete = false;
+}
+
+
+NodeResolver::~NodeResolver()
+{
+	while (!m_pending_contents.empty()) {
+		NodeResolveInfo *nri = m_pending_contents.front();
+		m_pending_contents.pop_front();
+		delete nri;
+	}
+}
+
+
+int NodeResolver::addNode(std::string n_wanted, std::string n_alt,
+		content_t c_fallback, content_t *content)
+{
+	if (m_is_node_registration_complete) {
+		if (m_ndef->getId(n_wanted, *content))
+			return NR_STATUS_SUCCESS;
+
+		if (n_alt == "")
+			return NR_STATUS_FAILURE;
+
+		return m_ndef->getId(n_alt, *content) ?
+			NR_STATUS_SUCCESS : NR_STATUS_FAILURE;
+	} else {
+		NodeResolveInfo *nfi = new NodeResolveInfo;
+		nfi->n_wanted   = n_wanted;
+		nfi->n_alt      = n_alt;
+		nfi->c_fallback = c_fallback;
+		nfi->output     = content;
+
+		m_pending_contents.push_back(nfi);
+
+		return NR_STATUS_PENDING;
+	}
+}
+
+
+int NodeResolver::addNodeList(const char *nodename,
+		std::vector<content_t> *content_vec)
+{
+	if (m_is_node_registration_complete) {
+		std::set<content_t> idset;
+		std::set<content_t>::iterator it;
+
+		m_ndef->getIds(nodename, idset);
+		for (it = idset.begin(); it != idset.end(); ++it)
+			content_vec->push_back(*it);
+
+		return idset.size() ? NR_STATUS_SUCCESS : NR_STATUS_FAILURE;
+	} else {
+		m_pending_content_vecs.push_back(
+			std::make_pair(std::string(nodename), content_vec));
+		return NR_STATUS_PENDING;
+	}
+}
+
+
+bool NodeResolver::cancelNode(content_t *content)
+{
+	bool found = false;
+
+	std::list<NodeResolveInfo *>::iterator it = m_pending_contents.begin();
+	while (it != m_pending_contents.end()) {
+		NodeResolveInfo *nfi = *it;
+		if (nfi->output == content) {
+			it = m_pending_contents.erase(it);
+			delete nfi;
+			found = true;
+		}
+	}
+
+	return found;
+}
+
+
+int NodeResolver::cancelNodeList(std::vector<content_t> *content_vec)
+{
+	int num_canceled = 0;
+
+	std::list<std::pair<std::string, std::vector<content_t> *> >::iterator it;
+	it = m_pending_content_vecs.begin();
+	while (it != m_pending_content_vecs.end()) {
+		if (it->second == content_vec) {
+			it = m_pending_content_vecs.erase(it);
+			num_canceled++;
+		}
+	}
+
+	return num_canceled;
+}
+
+
+int NodeResolver::resolveNodes()
+{
+	int num_failed = 0;
+
+	//// Resolve pending single node name -> content ID mappings
+	while (!m_pending_contents.empty()) {
+		NodeResolveInfo *nri = m_pending_contents.front();		
+		m_pending_contents.pop_front();
+
+		bool success = true;
+		if (!m_ndef->getId(nri->n_wanted, *nri->output)) {
+			success = (nri->n_alt != "") ?
+				m_ndef->getId(nri->n_alt, *nri->output) : false;
+		}
+
+		if (!success) {
+			*nri->output = nri->c_fallback;
+			num_failed++;
+			errorstream << "NodeResolver::resolveNodes():  Failed to "
+				"resolve '" << nri->n_wanted;
+			if (nri->n_alt != "")
+				errorstream << "' and '" << nri->n_alt;
+			errorstream << "' to a content ID" << std::endl;
+		}
+
+		delete nri;
+	}
+
+	//// Resolve pending node names and add to content_t vector
+	while (!m_pending_content_vecs.empty()) {
+		std::pair<std::string, std::vector<content_t> *> item =
+			m_pending_content_vecs.front();
+		m_pending_content_vecs.pop_front();
+
+		std::string &name = item.first;
+		std::vector<content_t> *output = item.second;
+		
+		std::set<content_t> idset;
+		std::set<content_t>::iterator it;
+
+		m_ndef->getIds(name, idset);
+		for (it = idset.begin(); it != idset.end(); ++it)
+			output->push_back(*it);
+	}
+
+	//// Mark node registration as complete so future resolve
+	//// requests are satisfied immediately
+	m_is_node_registration_complete = true;
+
+	return num_failed;
 }
