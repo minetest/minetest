@@ -2946,11 +2946,14 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 	}
 
-	if((event.EventType==EET_MOUSE_INPUT_EVENT &&
-			event.MouseInput.Event != EMIE_MOUSE_MOVED) ||
-			(event.MouseInput.Event == EMIE_MOUSE_MOVED &&
-			event.MouseInput.isRightPressed() && getItemAtPos(m_pointer).i != getItemAtPos(m_old_pointer).i)){
-		// Mouse event other than movement or crossing the border of inventory field while holding rmb
+	/* Mouse event other than movement, or crossing the border of inventory
+	  field while holding right mouse button
+	 */
+	if (event.EventType == EET_MOUSE_INPUT_EVENT &&
+			(event.MouseInput.Event != EMIE_MOUSE_MOVED ||
+			 (event.MouseInput.Event == EMIE_MOUSE_MOVED &&
+			  event.MouseInput.isRightPressed() &&
+			  getItemAtPos(m_pointer).i != getItemAtPos(m_old_pointer).i))) {
 
 		// Get selected item and hovered/clicked item (s)
 
