@@ -124,6 +124,7 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_tooltip_element(NULL),
 	m_hovered_time(0),
 	m_old_tooltip_id(-1),
+	m_rmouse_auto_place(false),
 	m_allowclose(true),
 	m_lock(false),
 	m_form_src(fsrc),
@@ -3153,6 +3154,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						m_selected_amount = s_count;
 
 					m_selected_dragging = true;
+					m_rmouse_auto_place = false;
 				}
 			}
 			else { // m_selected_item != NULL
@@ -3205,6 +3207,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			}
 
 			m_selected_dragging = false;
+			// Keep count of how many times right mouse button has been
+			// clicked. One click is drag without dropping. Click + release
+			// + click changes to drop one item when moved mode
+			if(button == 1 && m_selected_item != NULL)
+				m_rmouse_auto_place = !m_rmouse_auto_place;
 		}
 		else if(updown == -1) {
 			// Mouse has been moved and rmb is down and mouse pointer just
@@ -3213,7 +3220,18 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			if(m_selected_item != NULL && s.isValid()){
 				// Move 1 item
 				// TODO: middle mouse to move 10 items might be handy
-				move_amount = 1;
+				if (m_rmouse_auto_place) {
+					// Only move an item if the destination slot is empty
+					// or contains the same item type as what is going to be
+					// moved
+					InventoryList *list_from = inv_selected->getList(m_selected_item->listname);
+					InventoryList *list_to = inv_s->getList(s.listname);
+					assert(list_from && list_to);
+					ItemStack stack_from = list_from->getItem(m_selected_item->i);
+					ItemStack stack_to = list_to->getItem(s.i);
+					if (stack_to.empty() || stack_to.name == stack_from.name)
+						move_amount = 1;
+				}
 			}
 		}
 
