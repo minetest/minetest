@@ -46,6 +46,8 @@ class ClientMediaDownloader;
 struct MapDrawControl;
 class MtEventManager;
 struct PointedThing;
+class Database;
+class Server;
 
 struct QueuedMeshUpdate
 {
@@ -555,6 +557,10 @@ private:
 
 	// own state
 	LocalClientState m_state;
+
+	// Used for saving server map to disk client-side
+	Database *localdb;
+	Server *localserver;
 };
 
 #endif // !CLIENT_HEADER

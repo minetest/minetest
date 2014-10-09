@@ -52,6 +52,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "version.h"
 #include "drawscene.h"
+#include "subgame.h"
+#include "server.h"
+#include "database.h"
+#include "database-sqlite3.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -275,12 +279,43 @@ Client::Client(
 
 		m_env.addPlayer(player);
 	}
+
+	if (g_settings->getBool("enable_local_map_saving")) {
+		const std::string world_path = porting::path_user + DIR_DELIM + "worlds"
+				+ DIR_DELIM + "server_" + g_settings->get("address")
+				+ "_" + g_settings->get("remote_port");
+
+		SubgameSpec gamespec;
+		if (!getWorldExists(world_path)) {
+			gamespec = findSubgame(g_settings->get("default_game"));
+			if (!gamespec.isValid())
+				gamespec = findSubgame("minimal");
+		} else {
+			std::string world_gameid = getWorldGameId(world_path, false);
+			gamespec = findWorldSubgame(world_path);
+		}
+		if (!gamespec.isValid()) {
+			errorstream << "Couldn't find subgame for local map saving." << std::endl;
+			return;
+		}
+
+		localserver = new Server(world_path, gamespec, false, false);
+		localdb = new Database_SQLite3(&(ServerMap&)localserver->getMap(), world_path);
+		localdb->beginSave();
+		actionstream << "Local map saving started, map will be saved at '" << world_path << "'" << std::endl;
+	} else {
+		localdb = NULL;
+	}
 }
 
 void Client::Stop()
 {
 	//request all client managed threads to stop
 	m_mesh_update_thread.Stop();
+	if (localdb != NULL) {
+		actionstream << "Local map saving ended" << std::endl;
+		localdb->endSave();
+	}
 }
 
 bool Client::isShutdown()
@@ -1154,6 +1189,10 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			block->deSerialize(istr, ser_version, false);
 			block->deSerializeNetworkSpecific(istr);
 			sector->insertBlock(block);
+		}
+
+		if (localdb != NULL) {
+			((ServerMap&) localserver->getMap()).saveBlock(block, localdb);
 		}
 
 		/*
