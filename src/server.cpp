@@ -1417,11 +1417,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					L"Your client's version is not supported.\n"
 					L"Server version is ")
 					+ narrow_to_wide(minetest_version_simple) + L",\n"
-					+ L"server's PROTOCOL_VERSION is "
+					+ L"server's protocol version is "
 					+ narrow_to_wide(itos(SERVER_PROTOCOL_VERSION_MIN))
 					+ L"..."
 					+ narrow_to_wide(itos(SERVER_PROTOCOL_VERSION_MAX))
-					+ L", client's PROTOCOL_VERSION is "
+					+ L", client's protocol version is "
 					+ narrow_to_wide(itos(min_net_proto_version))
 					+ L"..."
 					+ narrow_to_wide(itos(max_net_proto_version))
@@ -1429,19 +1429,20 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 		}
 
-		if(g_settings->getBool("strict_protocol_version_checking"))
+		if (g_settings->getBool("strict_protocol_version_checking"))
 		{
-			if(net_proto_version != LATEST_PROTOCOL_VERSION)
+			if (net_proto_version < LATEST_PROTOCOL_VERSION - 1 ||
+					net_proto_version > LATEST_PROTOCOL_VERSION + 1)
 			{
 				actionstream<<"Server: A mismatched (strict) client tried to "
 						<<"connect from "<<addr_s<<std::endl;
 				DenyAccess(peer_id, std::wstring(
 						L"Your client's version is not supported.\n"
-						L"Server version is ")
-						+ narrow_to_wide(minetest_version_simple) + L",\n"
-						+ L"server's PROTOCOL_VERSION (strict) is "
+						L"Server's version is ")
+						+ narrow_to_wide(minetest_version_simple) + L".\n"
+						+ L"Protocol version (strict) "
 						+ narrow_to_wide(itos(LATEST_PROTOCOL_VERSION))
-						+ L", client's PROTOCOL_VERSION is "
+						+ L" is required. Your protocol version is "
 						+ narrow_to_wide(itos(min_net_proto_version))
 						+ L"..."
 						+ narrow_to_wide(itos(max_net_proto_version))
