@@ -53,6 +53,7 @@ local function singleplayer_refresh_gamebar()
 		
 		local image = nil
 		local text = nil
+		local tooltip = core.formspec_escape(gamemgr.games[i].name)
 		
 		if gamemgr.games[i].menuicon_path ~= nil and
 			gamemgr.games[i].menuicon_path ~= "" then
@@ -69,7 +70,7 @@ local function singleplayer_refresh_gamebar()
 				text = text .. "\n" .. part3
 			end
 		end
-		btnbar:add_button(btn_name, text, image)
+		btnbar:add_button(btn_name, text, image, tooltip)
 	end
 end
 
