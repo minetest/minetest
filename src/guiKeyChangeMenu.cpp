@@ -53,6 +53,11 @@ enum
 	GUI_ID_KEY_SNEAK_BUTTON,
 	GUI_ID_KEY_DROP_BUTTON,
 	GUI_ID_KEY_INVENTORY_BUTTON,
+	GUI_ID_KEY_HOTBAR_PREV_BUTTON,
+	GUI_ID_KEY_HOTBAR_NEXT_BUTTON,
+	GUI_ID_KEY_MUTE_BUTTON,
+	GUI_ID_KEY_DEC_VOLUME_BUTTON,
+	GUI_ID_KEY_INC_VOLUME_BUTTON,
 	GUI_ID_KEY_DUMP_BUTTON,
 	GUI_ID_KEY_RANGE_BUTTON,
 	// other
@@ -395,6 +400,11 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_SNEAK_BUTTON,     wgettext("Sneak"),         "keymap_sneak");
 	this->add_key(GUI_ID_KEY_DROP_BUTTON,      wgettext("Drop"),          "keymap_drop");
 	this->add_key(GUI_ID_KEY_INVENTORY_BUTTON, wgettext("Inventory"),     "keymap_inventory");
+	this->add_key(GUI_ID_KEY_HOTBAR_PREV_BUTTON,wgettext("Prev. item"),   "keymap_hotbar_previous");
+	this->add_key(GUI_ID_KEY_HOTBAR_NEXT_BUTTON,wgettext("Next item"),    "keymap_hotbar_next");
+	this->add_key(GUI_ID_KEY_MUTE_BUTTON,      wgettext("Mute"),          "keymap_mute");
+	this->add_key(GUI_ID_KEY_DEC_VOLUME_BUTTON,wgettext("Dec. volume"),   "keymap_decrease_volume");
+	this->add_key(GUI_ID_KEY_INC_VOLUME_BUTTON,wgettext("Inc. volume"),   "keymap_increase_volume");
 	this->add_key(GUI_ID_KEY_CHAT_BUTTON,      wgettext("Chat"),          "keymap_chat");
 	this->add_key(GUI_ID_KEY_CMD_BUTTON,       wgettext("Command"),       "keymap_cmd");
 	this->add_key(GUI_ID_KEY_CONSOLE_BUTTON,   wgettext("Console"),       "keymap_console");

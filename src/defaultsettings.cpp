@@ -48,7 +48,12 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
 	settings->setDefault("keymap_fastmove", "KEY_KEY_J");
 	settings->setDefault("keymap_noclip", "KEY_KEY_H");
+	settings->setDefault("keymap_hotbar_next", "KEY_KEY_N");
+	settings->setDefault("keymap_hotbar_previous", "KEY_KEY_B");
 	settings->setDefault("keymap_screenshot", "KEY_F12");
+	settings->setDefault("keymap_mute", "KEY_KEY_M");
+	settings->setDefault("keymap_increase_volume", "KEY_PERIOD");
+	settings->setDefault("keymap_decrease_volume", "KEY_COMMA");
 	settings->setDefault("keymap_toggle_hud", "KEY_F1");
 	settings->setDefault("keymap_toggle_chat", "KEY_F2");
 	settings->setDefault("keymap_toggle_force_fog_off", "KEY_F3");

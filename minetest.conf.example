@@ -48,6 +48,11 @@
 #keymap_rangeselect = KEY_KEY_R
 #keymap_freemove = KEY_KEY_K
 #keymap_fastmove = KEY_KEY_J
+#keymap_hotbar_next = KEY_KEY_N
+#keymap_hotbar_previous = KEY_KEY_B
+#keymap_mute = KEY_KEY_M
+#keymap_increase_volume = KEY_PERIOD
+#keymap_decrease_volume = KEY_COMMA
 #keymap_screenshot = KEY_F12
 # If true, keymap_special1 instead of keymap_sneak is used for climbing down and descending
 #aux1_descends = false
