@@ -23,7 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 #include <string>
 #include <iostream>
+#include <list>
 #include "exceptions.h"
+#include "inventory.h"
 
 class Map;
 class IGameDef;
@@ -37,15 +39,12 @@ struct RollbackNode
 	int param2;
 	std::string meta;
 
-	bool operator==(const RollbackNode &other)
+	bool operator == (const RollbackNode &other)
 	{
 		return (name == other.name && param1 == other.param1 &&
 				param2 == other.param2 && meta == other.meta);
 	}
-	bool operator!=(const RollbackNode &other)
-	{
-		return !(*this == other);
-	}
+	bool operator != (const RollbackNode &other) { return !(*this == other); }
 
 	RollbackNode():
 		param1(0),
@@ -54,6 +53,7 @@ struct RollbackNode
 
 	RollbackNode(Map *map, v3s16 p, IGameDef *gamedef);
 };
+
 
 struct RollbackAction
 {
@@ -75,7 +75,7 @@ struct RollbackAction
 	std::string inventory_list;
 	u32 inventory_index;
 	bool inventory_add;
-	std::string inventory_stack;
+	ItemStack inventory_stack;
 
 	RollbackAction():
 		type(TYPE_NOTHING),
@@ -94,7 +94,7 @@ struct RollbackAction
 
 	void setModifyInventoryStack(const std::string &inventory_location_,
 			const std::string &inventory_list_, int index_,
-			bool add_, const std::string &inventory_stack_)
+			bool add_, const ItemStack &inventory_stack_)
 	{
 		type = TYPE_MODIFY_INVENTORY_STACK;
 		inventory_location = inventory_location_;
@@ -106,7 +106,6 @@ struct RollbackAction
 	
 	// String should not contain newlines or nulls
 	std::string toString() const;
-	void fromStream(std::istream &is) throw(SerializationError);
 	
 	// Eg. flowing water level changes are not important
 	bool isImportant(IGameDef *gamedef) const;
@@ -116,41 +115,53 @@ struct RollbackAction
 	bool applyRevert(Map *map, InventoryManager *imgr, IGameDef *gamedef) const;
 };
 
-class IRollbackReportSink
+
+class IRollbackManager
 {
 public:
-	virtual ~IRollbackReportSink(){}
 	virtual void reportAction(const RollbackAction &action) = 0;
 	virtual std::string getActor() = 0;
 	virtual bool isActorGuess() = 0;
 	virtual void setActor(const std::string &actor, bool is_guess) = 0;
 	virtual std::string getSuspect(v3s16 p, float nearness_shortcut,
-			float min_nearness) = 0;
+	                               float min_nearness) = 0;
+
+	virtual ~IRollbackManager() {};
+	virtual void flush() = 0;
+	// Get all actors that did something to position p, but not further than
+	// <seconds> in history
+	virtual std::list<RollbackAction> getNodeActors(v3s16 pos, int range,
+	                time_t seconds, int limit) = 0;
+	// Get actions to revert <seconds> of history made by <actor>
+	virtual std::list<RollbackAction> getRevertActions(const std::string &actor,
+	                time_t seconds) = 0;
 };
+
 
 class RollbackScopeActor
 {
 public:
-	RollbackScopeActor(IRollbackReportSink *sink, const std::string &actor,
-			bool is_guess=false):
-		m_sink(sink)
+	RollbackScopeActor(IRollbackManager * rollback_,
+			const std::string & actor, bool is_guess = false) :
+		rollback(rollback_)
 	{
-		if(m_sink){
-			m_actor_was = m_sink->getActor();
-			m_actor_was_guess = m_sink->isActorGuess();
-			m_sink->setActor(actor, is_guess);
+		if (rollback) {
+			old_actor = rollback->getActor();
+			old_actor_guess = rollback->isActorGuess();
+			rollback->setActor(actor, is_guess);
 		}
 	}
 	~RollbackScopeActor()
 	{
-		if(m_sink){
-			m_sink->setActor(m_actor_was, m_actor_was_guess);
+		if (rollback) {
+			rollback->setActor(old_actor, old_actor_guess);
 		}
 	}
+
 private:
-	IRollbackReportSink *m_sink;
-	std::string m_actor_was;
-	bool m_actor_was_guess;
+	IRollbackManager * rollback;
+	std::string old_actor;
+	bool old_actor_guess;
 };
 
 #endif
