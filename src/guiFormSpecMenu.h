@@ -42,6 +42,7 @@ typedef enum {
 	f_CheckBox,
 	f_DropDown,
 	f_ScrollBar,
+	f_Proxy,
 	f_Unknown
 } FormspecFieldType;
 
@@ -349,6 +350,7 @@ private:
 	GUIFormSpecMenu **m_ext_ptr;
 	gui::IGUIFont    *m_font;
 	unsigned int      m_formspec_version;
+	bool              m_dirty;
 
 	typedef struct {
 		v2s32 size;
@@ -388,7 +390,9 @@ private:
 	void parseDropDown(parserData* data,std::string element);
 	void parsePwdField(parserData* data,std::string element);
 	void parseField(parserData* data,std::string element,std::string type);
+	
 	void parseSimpleField(parserData* data,std::vector<std::string> &parts);
+	void parseProxy(parserData* data,std::string element);
 	void parseTextArea(parserData* data,std::vector<std::string>& parts,
 			std::string type);
 	void parseLabel(parserData* data,std::string element);
@@ -421,6 +425,7 @@ private:
 
 	std::wstring getLabelByID(s32 id);
 	std::wstring getNameByID(s32 id);
+	FormspecFieldType getTypeByID(s32 id);
 #ifdef __ANDROID__
 	v2s32 m_down_pos;
 	std::wstring m_JavaDialogFieldName;

@@ -91,7 +91,9 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_text_dst(tdst),
 	m_ext_ptr(ext_ptr),
 	m_font(dev->getGUIEnvironment()->getSkin()->getFont()),
-	m_formspec_version(0)
+	m_formspec_version(0),
+	m_dirty(false)
+	
 #ifdef __ANDROID__
 	,m_JavaDialogFieldName(L"")
 #endif
@@ -1231,6 +1233,83 @@ void GUIFormSpecMenu::parseField(parserData* data,std::string element,
 	errorstream<< "Invalid field element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
+
+void GUIFormSpecMenu::parseProxy(parserData* data,std::string element)
+{
+	std::vector<std::string> parts = split(element,';');
+	std::vector<std::string> v_pos = split(parts[0],',');
+	std::vector<std::string> v_geom = split(parts[1],',');
+	std::string name = parts[2];
+	std::string image_name = parts[3];
+	std::string active_image_name = parts[4];
+
+	MY_CHECKPOS("field",0);
+	MY_CHECKGEOM("field",1);
+
+	v2s32 pos;
+	pos.X = stof(v_pos[0]) * (float) spacing.X;
+	pos.Y = stof(v_pos[1]) * (float) spacing.Y;
+
+	v2s32 geom;
+
+	geom.X = (stof(v_geom[0]) * (float)spacing.X)-(spacing.X-imgsize.X);
+	geom.Y = (stof(v_geom[1]) * (float)imgsize.Y) - (spacing.Y-imgsize.Y);
+//	pos.Y += m_btn_height;
+	
+	core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y+(m_btn_height/2));
+	//core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X, pos.Y);
+
+	if(data->bp_set != 2)
+		errorstream<<"WARNING: invalid use of positioned proxy without a size[] element"<<std::endl;
+
+	active_image_name = unescape_string(active_image_name);
+	image_name = unescape_string(image_name);
+
+	FieldSpec spec(
+		narrow_to_wide(name.c_str()),
+		narrow_to_wide(image_name.c_str()),
+		narrow_to_wide(active_image_name.c_str()),
+		258+m_fields.size()
+	);
+
+	gui::IGUIEditBox * _e;
+	spec.send = true;
+	_e = Environment->addEditBox(L"-", rect, true, this, spec.fid);
+
+	irr::SEvent evt;
+	evt.EventType            = EET_KEY_INPUT_EVENT;
+	evt.KeyInput.Key         = KEY_END;
+	evt.KeyInput.Char        = 0;
+	evt.KeyInput.Control     = 0;
+	evt.KeyInput.Shift       = 0;
+	evt.KeyInput.PressedDown = true;
+	_e->OnEvent(evt);
+
+	_e->setDrawBackground(false);
+	_e->setDrawBorder(true);
+	// make invisible through color
+	video::SColor color = video::SColor(0,0,0,0);
+	_e->setOverrideColor(color);
+	_e->enableOverrideColor(true);
+	
+	pos = AbsoluteRect.UpperLeftCorner;
+	pos.X += stof(v_pos[0]) * (float) spacing.X;
+	pos.Y += stof(v_pos[1]) * (float) spacing.Y;
+	geom.X = stof(v_geom[0]) * (float)imgsize.X;
+	geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
+
+	// paint a little picture
+	if(spec.fname == data->focused_fieldname) {
+		m_images.push_back(ImageDrawSpec(active_image_name, pos,geom));
+		Environment->setFocus(_e);
+	} else {
+		m_images.push_back(ImageDrawSpec(image_name, pos,geom));
+	}
+	
+	spec.ftype = f_Proxy;
+	m_fields.push_back(spec);
+	
+}
 void GUIFormSpecMenu::parseLabel(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
@@ -1778,6 +1857,11 @@ void GUIFormSpecMenu::parseElement(parserData* data, std::string element)
 		return;
 	}
 
+	if (type == "proxy") {
+		parseProxy(data,description);
+		return;
+	}
+
 	if (type == "label") {
 		parseLabel(data,description);
 		return;
@@ -2190,13 +2274,19 @@ void GUIFormSpecMenu::drawSelectedItem()
 
 void GUIFormSpecMenu::drawMenu()
 {
-	if(m_form_src){
+	bool regenerate = false;
+	if(m_form_src) {
 		std::string newform = m_form_src->getForm();
 		if(newform != m_formspec_string){
 			m_formspec_string = newform;
-			regenerateGui(m_screensize_old);
+			regenerate = true;
 		}
+		}
+	if(m_dirty) {
+		regenerate = true;
+		m_dirty = false;
 	}
+	if(regenerate) regenerateGui(m_screensize_old);
 
 	updateSelectedItem();
 
@@ -2653,6 +2743,30 @@ static bool isChild(gui::IGUIElement * tocheck, gui::IGUIElement * parent)
 
 bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 {
+	if(event.EventType==EET_KEY_INPUT_EVENT && (event.KeyInput.PressedDown)) {
+		KeyPress kp(event.KeyInput);
+		gui::IGUIElement *focused = Environment->getFocus();
+		if(focused && isMyChild(focused)) {
+			if(getTypeByID(focused->getID()) == f_Proxy) {
+				//((gui::IGUIEditBox*)focused)->setDrawBackground(true);
+				std::ostringstream os;
+				os << event.KeyInput.Key << ":" << (event.KeyInput.Control?1:0) << ":" << (event.KeyInput.Shift?1:0);
+				focused->setText(irr::core::stringw(os.str().c_str()).c_str());
+				acceptInput(quit_mode_no);
+				regenerateGui(m_screensize_old);
+				return true;
+			}
+		}
+	} /*else {
+		gui::IGUIElement *focused = Environment->getFocus();
+		if(focused && isMyChild(focused)) {
+			if(getTypeByID(focused->getID()) == f_Proxy) {
+				((gui::IGUIEditBox*)focused)->setDrawBackground(false);
+			}
+		}
+		
+	}*/
+	
 	// Fix Esc/Return key being eaten by checkboxen and tables
 	if(event.EventType==EET_KEY_INPUT_EVENT) {
 		KeyPress kp(event.KeyInput);
@@ -2668,6 +2782,7 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 			}
 		}
 	}
+	
 	// Mouse wheel events: send to hovered element instead of focused
 	if(event.EventType==EET_MOUSE_INPUT_EVENT
 			&& event.MouseInput.Event == EMIE_MOUSE_WHEEL) {
@@ -3252,6 +3367,15 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				return true;
 			}
 		}
+		
+		if(event.GUIEvent.EventType==gui::EGET_ELEMENT_FOCUSED
+				&& isVisible()) {
+			if(event.GUIEvent.Caller->getID() != event.GUIEvent.Element->getID()) {
+				// regenerate on focus change to update decorations
+				m_dirty = true;
+			}
+		}
+		
 		if((event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED) ||
 				(event.GUIEvent.EventType == gui::EGET_CHECKBOX_CHANGED) ||
 				(event.GUIEvent.EventType == gui::EGET_COMBO_BOX_CHANGED) ||
@@ -3391,4 +3515,20 @@ std::wstring GUIFormSpecMenu::getLabelByID(s32 id)
 		}
 	}
 	return L"";
+}
+
+/**
+ * get ftype of element by element id
+ * @param id of element
+ * @return FormSpecFieldType or f_Unknown
+ */
+FormspecFieldType GUIFormSpecMenu::getTypeByID(s32 id)
+{
+	for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
+				iter != m_fields.end(); iter++) {
+		if (iter->fid == id) {
+			return iter->ftype;
+		}
+	}
+	return f_Unknown;
 }
