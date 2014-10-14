@@ -1284,8 +1284,11 @@ void GUIFormSpecMenu::parseProxy(parserData* data,std::string element)
 	evt.KeyInput.Shift       = 0;
 	evt.KeyInput.PressedDown = true;
 	_e->OnEvent(evt);
-
-	_e->setDrawBackground(false);
+	#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
+		// hm, no real solution for old irrlicht...
+	#else
+		_e->setDrawBackground(false);
+	#endif
 	_e->setDrawBorder(true);
 	// make invisible through color
 	video::SColor color = video::SColor(0,0,0,0);
