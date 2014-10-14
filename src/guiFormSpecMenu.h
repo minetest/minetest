@@ -363,6 +363,8 @@ private:
 		GUITable::TableColumns table_columns;
 		// used to restore table selection/scroll/treeview state
 		std::map<std::wstring,GUITable::DynamicData> table_dyndata;
+		// used to restore editbox content 
+		std::map<std::wstring,std::wstring> editbox_dyndata;
 	} parserData;
 
 	typedef struct {

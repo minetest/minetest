@@ -1076,11 +1076,13 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 	label = unescape_string(label);
 
 	std::wstring wlabel = narrow_to_wide(label.c_str());
-
+	std::wstring wtext = narrow_to_wide(default_val.c_str());
+	if(!data->editbox_dyndata[narrow_to_wide(name.c_str())].empty()) 
+		wtext = data->editbox_dyndata[narrow_to_wide(name.c_str())];
 	FieldSpec spec(
 		narrow_to_wide(name.c_str()),
 		wlabel,
-		narrow_to_wide(default_val.c_str()),
+		wtext,
 		258+m_fields.size()
 	);
 
@@ -1165,11 +1167,14 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 	label = unescape_string(label);
 
 	std::wstring wlabel = narrow_to_wide(label.c_str());
-
+	std::wstring wtext = narrow_to_wide(default_val.c_str());
+	
+	if(!data->editbox_dyndata[narrow_to_wide(name.c_str())].empty()) 
+		wtext = data->editbox_dyndata[narrow_to_wide(name.c_str())];
 	FieldSpec spec(
 		narrow_to_wide(name.c_str()),
 		wlabel,
-		narrow_to_wide(default_val.c_str()),
+		wtext,
 		258+m_fields.size()
 	);
 
@@ -1218,18 +1223,17 @@ void GUIFormSpecMenu::parseField(parserData* data,std::string element,
 		std::string type)
 {
 	std::vector<std::string> parts = split(element,';');
-
 	if (parts.size() == 3 || parts.size() == 4) {
 		parseSimpleField(data,parts);
 		return;
 	}
-
 	if ((parts.size() == 5) ||
 		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
 		parseTextArea(data,parts,type);
 		return;
 	}
+	
 	errorstream<< "Invalid field element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
@@ -1937,6 +1941,12 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		std::wstring tablename = m_tables[i].first.fname;
 		GUITable *table = m_tables[i].second;
 		mydata.table_dyndata[tablename] = table->getDynamicData();
+	}
+	
+	//preserve editboxes
+	for (u32 i=0; i<m_fields.size(); i++) {
+		if(getElementFromId(m_fields[i].fid)->getTypeName() != std::string("editBox")) continue;
+		mydata.editbox_dyndata[m_fields[i].fname] = getElementFromId(m_fields[i].fid)->getText();
 	}
 
 	//preserve focus
