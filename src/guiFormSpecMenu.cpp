@@ -1238,7 +1238,7 @@ void GUIFormSpecMenu::parseField(parserData* data,std::string element,
 }
 
 
-void GUIFormSpecMenu::parseProxy(parserData* data,std::string element)
+void GUIFormSpecMenu::parseKeyEventBox(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
 	std::vector<std::string> v_pos = split(parts[0],',');
@@ -1264,7 +1264,7 @@ void GUIFormSpecMenu::parseProxy(parserData* data,std::string element)
 	//core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X, pos.Y);
 
 	if(data->bp_set != 2)
-		errorstream<<"WARNING: invalid use of positioned proxy without a size[] element"<<std::endl;
+		errorstream<<"WARNING: invalid use of positioned keyeventbox without a size[] element"<<std::endl;
 
 	active_image_name = unescape_string(active_image_name);
 	image_name = unescape_string(image_name);
@@ -1313,7 +1313,7 @@ void GUIFormSpecMenu::parseProxy(parserData* data,std::string element)
 		m_images.push_back(ImageDrawSpec(image_name, pos,geom));
 	}
 	
-	spec.ftype = f_Proxy;
+	spec.ftype = f_KeyEventBox;
 	m_fields.push_back(spec);
 	
 }
@@ -1864,8 +1864,8 @@ void GUIFormSpecMenu::parseElement(parserData* data, std::string element)
 		return;
 	}
 
-	if (type == "proxy") {
-		parseProxy(data,description);
+	if (type == "keyeventbox") {
+		parseKeyEventBox(data,description);
 		return;
 	}
 
@@ -2760,25 +2760,15 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		KeyPress kp(event.KeyInput);
 		gui::IGUIElement *focused = Environment->getFocus();
 		if(focused && isMyChild(focused)) {
-			if(getTypeByID(focused->getID()) == f_Proxy) {
-				//((gui::IGUIEditBox*)focused)->setDrawBackground(true);
+			if(getTypeByID(focused->getID()) == f_KeyEventBox) {
 				std::ostringstream os;
 				os << event.KeyInput.Key << ":" << (event.KeyInput.Control?1:0) << ":" << (event.KeyInput.Shift?1:0);
 				focused->setText(irr::core::stringw(os.str().c_str()).c_str());
 				acceptInput(quit_mode_no);
-				regenerateGui(m_screensize_old);
 				return true;
 			}
 		}
-	} /*else {
-		gui::IGUIElement *focused = Environment->getFocus();
-		if(focused && isMyChild(focused)) {
-			if(getTypeByID(focused->getID()) == f_Proxy) {
-				((gui::IGUIEditBox*)focused)->setDrawBackground(false);
-			}
-		}
-		
-	}*/
+	}
 	
 	// Fix Esc/Return key being eaten by checkboxen and tables
 	if(event.EventType==EET_KEY_INPUT_EVENT) {

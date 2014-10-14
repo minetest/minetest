@@ -42,7 +42,7 @@ typedef enum {
 	f_CheckBox,
 	f_DropDown,
 	f_ScrollBar,
-	f_Proxy,
+	f_KeyEventBox,
 	f_Unknown
 } FormspecFieldType;
 
@@ -394,7 +394,7 @@ private:
 	void parseField(parserData* data,std::string element,std::string type);
 	
 	void parseSimpleField(parserData* data,std::vector<std::string> &parts);
-	void parseProxy(parserData* data,std::string element);
+	void parseKeyEventBox(parserData* data,std::string element);
 	void parseTextArea(parserData* data,std::vector<std::string>& parts,
 			std::string type);
 	void parseLabel(parserData* data,std::string element);
