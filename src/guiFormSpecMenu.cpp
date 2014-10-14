@@ -2756,6 +2756,7 @@ static bool isChild(gui::IGUIElement * tocheck, gui::IGUIElement * parent)
 
 bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 {
+	
 	if(event.EventType==EET_KEY_INPUT_EVENT && (event.KeyInput.PressedDown)) {
 		KeyPress kp(event.KeyInput);
 		gui::IGUIElement *focused = Environment->getFocus();
@@ -3346,7 +3347,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		m_old_pointer = m_pointer;
 	}
 	if(event.EventType==EET_GUI_EVENT) {
-
+		
+		
 		if(event.GUIEvent.EventType==gui::EGET_TAB_CHANGED
 				&& isVisible()) {
 			// find the element that was clicked
@@ -3371,11 +3373,12 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			}
 		}
 		
-		if(event.GUIEvent.EventType==gui::EGET_ELEMENT_FOCUSED
-				&& isVisible()) {
-			if(event.GUIEvent.Caller->getID() != event.GUIEvent.Element->getID()) {
+		if(event.GUIEvent.EventType==gui::EGET_ELEMENT_FOCUSED && isVisible()) {
+			if(event.GUIEvent.Caller->getID() != event.GUIEvent.Element->getID() 
+			&& event.GUIEvent.Caller->getTypeName() == std::string("editBox")) {
 				// regenerate on focus change to update decorations
 				m_dirty = true;
+				
 			}
 		}
 		
