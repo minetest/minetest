@@ -63,7 +63,7 @@ local function save_auth_file()
 		assert(type(stuff) == "table")
 		assert(type(stuff.password) == "string")
 		assert(type(stuff.privileges) == "table")
-		assert(type(stuff.lastlogin) == "string")
+		assert(type(stuff.lastlogin) == "number")
 	end
 	local file, errmsg = io.open(core.auth_file_path, 'w+b')
 	if not file then
@@ -112,6 +112,7 @@ core.builtin_auth_handler = {
 		return {
 			password = core.auth_table[name].password,
 			privileges = privileges,
+			last_login = core.auth_table[name].lastlogin,
 		}
 	end,
 	create_auth = function(name, password)
@@ -150,6 +151,16 @@ core.builtin_auth_handler = {
 		read_auth_file()
 		return true
 	end,
+	set_login_time = function(name, logintime)
+		assert(type(name) == "string")
+		assert(type(logintime) == "number")
+		if not core.auth_table[name] then
+			core.builtin_auth_handler.create_auth(name, core.get_password_hash(name, core.setting_get("default_password")))
+			core.auth_table[name].privileges = core.string_to_privs(core.setting_get("default_privs"))
+		end
+		core.auth_table[name].lastlogin = logintime
+		save_auth_file()
+	end,
 }
 
 function core.register_authentication_handler(handler)
@@ -176,6 +187,12 @@ end
 function core.set_player_privs(name, privs)
 	if core.get_auth_handler().set_privileges then
 		core.get_auth_handler().set_privileges(name, privs)
+	end
+end
+
+function core.set_last_login(name, logintime)
+	if core.get_auth_handler().set_login_time then
+		core.get_auth_handler().set_login_time(name, logintime)
 	end
 end
 

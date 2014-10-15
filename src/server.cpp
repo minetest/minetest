@@ -1600,6 +1600,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					L"name. If your client closed unexpectedly, try again in "
 					L"a minute.");
 		}
+		
+		time_t time;
+		time = time(NULL);
+		
+		
+		m_script->set_login_time(playername, (int) time);
 
 		m_clients.setPlayerName(peer_id,playername);
 
