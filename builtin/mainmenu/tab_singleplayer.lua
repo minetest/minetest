@@ -35,6 +35,7 @@ local function singleplayer_refresh_gamebar()
 			for j=1,#gamemgr.games,1 do
 				if ("game_btnbar_" .. gamemgr.games[j].id == key) then
 					mm_texture.update("singleplayer", gamemgr.games[j])
+					core.set_topleft_text(gamemgr.games[j].name)
 					core.setting_set("menu_last_game",gamemgr.games[j].id)
 					menudata.worldlist:set_filtercriteria(gamemgr.games[j].id)
 					return true
