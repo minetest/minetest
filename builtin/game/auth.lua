@@ -122,6 +122,7 @@ core.builtin_auth_handler = {
 		core.auth_table[name] = {
 			password = password,
 			privileges = core.string_to_privs(core.setting_get("default_privs")),
+			lastlogin = 0,
 		}
 		save_auth_file()
 	end,
