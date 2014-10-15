@@ -1715,6 +1715,18 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				makeCuboid(&collector, box, tiles, 6, c, txc);
 			}
 		break;}
+		case NDT_MESH:
+		{
+			v3f pos = intToFloat(p, BS);
+			video::SColor c = MapBlock_LightColor(255, getInteriorLight(n, 1, nodedef), f.light_source);
+			u8 facedir = n.getFaceDir(nodedef);
+			for(u16 j = 0; j < f.mesh_ptr[facedir]->getMeshBufferCount(); j++) {
+				scene::IMeshBuffer *buf = f.mesh_ptr[facedir]->getMeshBuffer(j);
+				collector.append(getNodeTileN(n, p, j, data),
+					(video::S3DVertex *)buf->getVertices(), buf->getVertexCount(),
+					buf->getIndices(), buf->getIndexCount(), pos, c);
+			}
+		break;}
 		}
 	}
 }

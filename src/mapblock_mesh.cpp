@@ -1428,3 +1428,54 @@ void MeshCollector::append(const TileSpec &tile,
 		p->vertices.push_back(vertices[i]);
 	}
 }
+
+/*
+	MeshCollector - for meshnodes and converted drawtypes.
+*/
+
+void MeshCollector::append(const TileSpec &tile,
+		const video::S3DVertex *vertices, u32 numVertices,
+		const u16 *indices, u32 numIndices,
+		v3f pos, video::SColor c)
+{
+	if(numIndices > 65535)
+	{
+		dstream<<"FIXME: MeshCollector::append() called with numIndices="<<numIndices<<" (limit 65535)"<<std::endl;
+		return;
+	}
+
+	PreMeshBuffer *p = NULL;
+	for(u32 i=0; i<prebuffers.size(); i++)
+	{
+		PreMeshBuffer &pp = prebuffers[i];
+		if(pp.tile != tile)
+			continue;
+		if(pp.indices.size() + numIndices > 65535)
+			continue;
+
+		p = &pp;
+		break;
+	}
+
+	if(p == NULL)
+	{
+		PreMeshBuffer pp;
+		pp.tile = tile;
+		prebuffers.push_back(pp);
+		p = &prebuffers[prebuffers.size()-1];
+	}
+
+	u32 vertex_count = p->vertices.size();
+	for(u32 i=0; i<numIndices; i++)
+	{
+		u32 j = indices[i] + vertex_count;
+		p->indices.push_back(j);
+	}
+	for(u32 i=0; i<numVertices; i++)
+	{
+		video::S3DVertex vert = vertices[i];
+		vert.Pos += pos;
+		vert.Color = c;		
+		p->vertices.push_back(vert);
+	}
+}

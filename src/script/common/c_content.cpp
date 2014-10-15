@@ -281,6 +281,9 @@ ContentFeatures read_content_features(lua_State *L, int index)
 			ScriptApiNode::es_DrawType,NDT_NORMAL);
 	getfloatfield(L, index, "visual_scale", f.visual_scale);
 
+	/* Meshnode model filename */
+	getstringfield(L, index, "mesh", f.mesh);
+
 	// tiles = {}
 	lua_getfield(L, index, "tiles");
 	// If nil, try the deprecated name "tile_images" instead

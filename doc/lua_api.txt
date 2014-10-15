@@ -103,6 +103,7 @@ mods
 |   |-- screenshot.png
 |   |-- description.txt
 |   |-- init.lua
+|   |-- models
 |   |-- textures
 |   |   |-- modname_stuff.png
 |   |   `-- modname_something_else.png
@@ -136,6 +137,9 @@ init.lua:
 
   minetest.setting_get(name) and minetest.setting_getbool(name) can be used
   to read custom or existing settings at load time, if necessary.
+
+models:
+	Models for entities or meshnodes.
 
 textures, sounds, media:
   Media files (textures, sounds, whatever) that will be transferred to the
@@ -430,6 +434,7 @@ Look for examples in games/minimal or games/minetest_game.
 - fencelike
 - raillike
 - nodebox -- See below. EXPERIMENTAL
+- mesh -- use models for nodes
 
 *_optional drawtypes need less rendering time if deactivated (always client side)
 
@@ -469,6 +474,12 @@ A box of a regular node would look like:
 
 type = "leveled" is same as "fixed", but y2 will be automatically set to level from param2
 
+Meshes
+-----------
+If drawtype "mesh" is used tiles should hold model materials textures.
+Only static meshes are implemented.
+For supported model formats see Irrlicht engine documentation.
+    
 Ore types
 ---------------
 These tell in what manner the ore is generated.
@@ -2405,7 +2416,7 @@ Node definition (register_node)
 
     drawtype = "normal", -- See "Node drawtypes"
     visual_scale = 1.0,
-    ^ Supported for drawtypes "plantlike", "signlike", "torchlike".
+    ^ Supported for drawtypes "plantlike", "signlike", "torchlike", "mesh".
     ^ For plantlike, the image will start at the bottom of the node; for the
     ^ other drawtypes, the image will be centered on the node.
     ^ Note that positioning for "torchlike" may still change.
@@ -2439,6 +2450,7 @@ Node definition (register_node)
     light_source = 0, -- Amount of light emitted by node
     damage_per_second = 0, -- If player is inside node, this damage is caused
     node_box = {type="regular"}, -- See "Node boxes"
+    mesh = "model",
     selection_box = {type="regular"}, -- See "Node boxes"
     ^ If drawtype "nodebox" is used and selection_box is nil, then node_box is used
     legacy_facedir_simple = false, -- Support maps made in and before January 2012
