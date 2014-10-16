@@ -41,7 +41,7 @@ local function read_auth_file()
 	end
 	for line in file:lines() do
 		if line ~= "" then
-			local name, password, privilegestring, lastlogin = string.match(line, "([^:]*):([^:]*):([^:]*):([^:]*)")
+			local name, password, privilegestring, lastlogin = string.match(line, "([^:]*):([^:]*):([^:]*):([0-9/]* [0-9:]* [AP]M)")
 			if not name or not password or not privilegestring or not lastlogin then
 				error("Invalid line in auth.txt: "..dump(line))
 			end
@@ -112,7 +112,7 @@ core.builtin_auth_handler = {
 		return {
 			password = core.auth_table[name].password,
 			privileges = privileges,
-			last_login = core.auth_table[name].lastlogin,
+			lastlogin = core.auth_table[name].lastlogin,
 		}
 	end,
 	create_auth = function(name, password)
@@ -122,7 +122,7 @@ core.builtin_auth_handler = {
 		core.auth_table[name] = {
 			password = password,
 			privileges = core.string_to_privs(core.setting_get("default_privs")),
-			lastlogin = 0,
+			lastlogin = "0",
 		}
 		save_auth_file()
 	end,

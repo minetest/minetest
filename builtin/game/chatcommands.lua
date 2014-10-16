@@ -731,8 +731,8 @@ core.register_chatcommand('logintime', {
 		if param == "" then
 			param = name
 		end
-		local pauth = core.get_auth_handler().getAuth(param)
-		local logtime = pauth[lastlogin]
+		local pauth = core.get_auth_handler().get_auth(param)
+		local logtime = pauth["lastlogin"]
 		core.log("action", "Player " .. name .. "requested last login, " .. logtime)
 		core.chat_send_player(name, "Last login time was " .. logtime)
 	end,
