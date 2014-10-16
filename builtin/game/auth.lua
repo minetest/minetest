@@ -63,7 +63,7 @@ local function save_auth_file()
 		assert(type(stuff) == "table")
 		assert(type(stuff.password) == "string")
 		assert(type(stuff.privileges) == "table")
-		assert(type(stuff.lastlogin) == "number")
+		assert(type(stuff.lastlogin) == "string")
 	end
 	local file, errmsg = io.open(core.auth_file_path, 'w+b')
 	if not file then
@@ -154,7 +154,7 @@ core.builtin_auth_handler = {
 	end,
 	set_login_time = function(name, logintime)
 		assert(type(name) == "string")
-		assert(type(logintime) == "number")
+		assert(type(logintime) == "string")
 		if not core.auth_table[name] then
 			core.builtin_auth_handler.create_auth(name, core.get_password_hash(name, core.setting_get("default_password")))
 			core.auth_table[name].privileges = core.string_to_privs(core.setting_get("default_privs"))

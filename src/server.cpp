@@ -1604,8 +1604,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		time_t logtim;
 		logtim = time(NULL);
 		
-		
-		m_script->set_login_time(playername, (int) logtim);
+		char buf[80];
+		struct tm *ft = gmtime(&(*t));
+		strftime(buf, sizeof(buf), "%D %r", ts);
+		std::string bts(buf);
+		m_script->set_login_time(playername, buf);
 
 		m_clients.setPlayerName(peer_id,playername);
 

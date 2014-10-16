@@ -723,3 +723,18 @@ core.register_chatcommand("msg", {
 	end,
 })
 
+core.register_chatcommand('logintime', {
+	params = "<name>",
+	description = "Get the last login time of a player",
+	privs = {interact=true},
+	func = function(name, param)
+		if param == "" then
+			param = name
+		end
+		local pauth = core.get_auth_handler().getAuth(param)
+		local logtime = pauth[lastlogin]
+		core.log("action", "Player " .. name .. "requested last login, " .. logtime)
+		core.chat_send_player(name, "Last login time was " .. logtime)
+	end,
+})
+
