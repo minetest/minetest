@@ -144,6 +144,8 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.setting_getbool("opaque_water")) .. "]"..
 		"checkbox[1,2.5;cb_connected_glass;".. fgettext("Connected Glass") .. ";"
 				.. dump(core.setting_getbool("connected_glass"))	.. "]"..
+		"checkbox[1,3.0;cb_clouds;".. fgettext("Enable Clouds") .. ";"
+				.. dump(core.setting_getbool("enable_clouds"))	.. "]"..
 		"dropdown[1,3.25;3;dd_video_driver;"
 			.. video_driver_string .. ";" .. current_video_driver_idx .. "]" ..
 		"tooltip[dd_video_driver;" ..
@@ -261,6 +263,10 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 	if fields["cb_connected_glass"] then
 		core.setting_set("connected_glass", fields["cb_connected_glass"])
+		return true
+	end
+	if fields["cb_clouds"] then
+		core.setting_set("enable_clouds", fields["cb_clouds"])
 		return true
 	end
 	if fields["cb_particles"] then
