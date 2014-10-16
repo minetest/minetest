@@ -42,6 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mg_biome.h"
 #include "mg_decoration.h"
 #include "mg_ore.h"
+#include "mapgen_v5.h"
 #include "mapgen_v6.h"
 #include "mapgen_v7.h"
 #include "mapgen_singlenode.h"
@@ -82,6 +83,7 @@ public:
 
 EmergeManager::EmergeManager(IGameDef *gamedef) {
 	//register built-in mapgens
+	registerMapgen("v5",         new MapgenFactoryV5());
 	registerMapgen("v6",         new MapgenFactoryV6());
 	registerMapgen("v7",         new MapgenFactoryV7());
 	registerMapgen("singlenode", new MapgenFactorySinglenode());
