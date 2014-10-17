@@ -52,7 +52,12 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_toggle_hud", "KEY_F1");
 	settings->setDefault("keymap_toggle_chat", "KEY_F2");
 	settings->setDefault("keymap_toggle_force_fog_off", "KEY_F3");
-	settings->setDefault("keymap_toggle_update_camera", "KEY_F4");
+	settings->setDefault("keymap_toggle_update_camera",
+#if DEBUG
+			"KEY_F4");
+#else
+			"none");
+#endif
 	settings->setDefault("keymap_toggle_debug", "KEY_F5");
 	settings->setDefault("keymap_toggle_profiler", "KEY_F6");
 	settings->setDefault("keymap_camera_mode", "KEY_F7");
