@@ -41,7 +41,7 @@ local function read_auth_file()
 	end
 	for line in file:lines() do
 		if line ~= "" then
-			local name, password, privilegestring, lastlogin = string.match(line, "([^:]*):([^:]*):([^:]*):([0-9/]* [0-9:]* [AP]M)")
+			local name, password, privilegestring, lastlogin = string.match(line, "([^:]*):([^:]*):([^:]*):([^:]*)")
 			if not name or not password or not privilegestring or not lastlogin then
 				error("Invalid line in auth.txt: "..dump(line))
 			end
@@ -63,7 +63,7 @@ local function save_auth_file()
 		assert(type(stuff) == "table")
 		assert(type(stuff.password) == "string")
 		assert(type(stuff.privileges) == "table")
-		assert(type(stuff.lastlogin) == "string")
+		assert(type(stuff.lastlogin) == "number")
 	end
 	local file, errmsg = io.open(core.auth_file_path, 'w+b')
 	if not file then
@@ -122,7 +122,7 @@ core.builtin_auth_handler = {
 		core.auth_table[name] = {
 			password = password,
 			privileges = core.string_to_privs(core.setting_get("default_privs")),
-			lastlogin = "0",
+			lastlogin = 0,
 		}
 		save_auth_file()
 	end,
@@ -154,7 +154,7 @@ core.builtin_auth_handler = {
 	end,
 	set_login_time = function(name, logintime)
 		assert(type(name) == "string")
-		assert(type(logintime) == "string")
+		assert(type(logintime) == "number")
 		if not core.auth_table[name] then
 			core.builtin_auth_handler.create_auth(name, core.get_password_hash(name, core.setting_get("default_password")))
 			core.auth_table[name].privileges = core.string_to_privs(core.setting_get("default_privs"))
