@@ -188,10 +188,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 	// Create selection mesh
 	v3s16 p = data->m_highlighted_pos_relative;
-	if (data->m_show_hud & 
-			(p.X >= 0) & (p.X < MAP_BLOCKSIZE) &
-			(p.Y >= 0) & (p.Y < MAP_BLOCKSIZE) &
-			(p.Z >= 0) & (p.Z < MAP_BLOCKSIZE)) {
+	if (data->m_show_hud &&
+			(p.X >= 0) && (p.X < MAP_BLOCKSIZE) &&
+			(p.Y >= 0) && (p.Y < MAP_BLOCKSIZE) &&
+			(p.Z >= 0) && (p.Z < MAP_BLOCKSIZE)) {
 
 		MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
 		if(n.getContent() != CONTENT_AIR) {
@@ -215,7 +215,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					l = l1;
 			}
 			video::SColor c = MapBlock_LightColor(255, l, 0);
-			data->m_highlight_mesh_color = c;	
+			data->m_highlight_mesh_color = c;
+			data->m_highlight_mesh_color_ok = true;
 			std::vector<aabb3f> boxes = n.getSelectionBoxes(nodedef);
 			TileSpec h_tile;			
 			h_tile.material_flags |= MATERIAL_FLAG_HIGHLIGHTED;
@@ -232,7 +233,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				makeCuboid(&collector, box, &h_tile, 1, c, NULL);
 			}
 		}
-	}
+	} else
+		data->m_highlight_mesh_color_ok = false;
 
 	for(s16 z = 0; z < MAP_BLOCKSIZE; z++)
 	for(s16 y = 0; y < MAP_BLOCKSIZE; y++)

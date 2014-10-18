@@ -330,7 +330,7 @@ static void finalColorBlend(video::SColor& result,
 
 	// Emphase blue a bit in darker places
 	// Each entry of this array represents a range of 8 blue levels
-	static u8 emphase_blue_when_dark[32] = {
+	static const u8 emphase_blue_when_dark[32] = {
 		1, 4, 6, 6, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	};
@@ -338,7 +338,7 @@ static void finalColorBlend(video::SColor& result,
 	b = irr::core::clamp (b, 0, 255);
 
 	// Artificial light is yellow-ish
-	static u8 emphase_yellow_when_artificial[16] = {
+	static const u8 emphase_yellow_when_artificial[16] = {
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 10, 15, 15, 15
 	};
 	rg += emphase_yellow_when_artificial[night/16];
@@ -1086,7 +1086,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 	mapblock_mesh_generate_special(data, collector);
 
-	m_highlight_mesh_color = data->m_highlight_mesh_color; 
+	m_highlight_mesh_color    = data->m_highlight_mesh_color;
+	m_highlight_mesh_color_ok = data->m_highlight_mesh_color_ok;
 
 	/*
 		Convert MeshCollector to SMesh
@@ -1348,7 +1349,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 	}
 
 	// Node highlighting
-	if (m_enable_highlighting) {
+	if (m_enable_highlighting && m_highlight_mesh_color_ok) {
 		u8 day = m_highlight_mesh_color.getRed();
 		u8 night = m_highlight_mesh_color.getGreen();	
 		video::SColor hc;
