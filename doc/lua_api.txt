@@ -408,8 +408,16 @@ param2 is reserved for the engine when any of these are used:
     0 = y+    1 = z+    2 = z-    3 = x+    4 = x-    5 = y-
     facedir's two less significant bits are rotation around the axis
   paramtype2 == "leveled"
-  ^ The drawn node level is read from param2, like flowingliquid
-
+  collision_box = {
+	type = "fixed",
+	fixed = {
+			{-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
+			},
+  },
+  ^ defines list of collision boxes for the node. If empty, collision boxes
+	will be the same as nodeboxes, in case of any other nodes will be full cube
+	as in the example above.
+ 			
 Nodes can also contain extra data. See "Node Metadata".
 
 Node drawtypes
