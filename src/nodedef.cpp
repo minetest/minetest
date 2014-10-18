@@ -233,6 +233,7 @@ void ContentFeatures::reset()
 	damage_per_second = 0;
 	node_box = NodeBox();
 	selection_box = NodeBox();
+	collision_box = NodeBox();
 	waving = 0;
 	legacy_facedir_simple = false;
 	legacy_wallmounted = false;
@@ -303,6 +304,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 	// Stuff below should be moved to correct place in a version that otherwise changes
 	// the protocol version
 	os<<serializeString(mesh);
+	collision_box.serialize(os, protocol_version);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -372,6 +374,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 		// Stuff below should be moved to correct place in a version that
 		// otherwise changes the protocol version
 	mesh = deSerializeString(is);
+	collision_box.deSerialize(is);
 	}catch(SerializationError &e) {};
 }
 

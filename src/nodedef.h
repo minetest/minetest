@@ -244,6 +244,7 @@ struct ContentFeatures
 	u32 damage_per_second;
 	NodeBox node_box;
 	NodeBox selection_box;
+	NodeBox collision_box;
 	// Used for waving leaves/plants
 	u8 waving;
 	// Compatibility with old maps

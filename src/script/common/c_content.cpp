@@ -432,6 +432,11 @@ ContentFeatures read_content_features(lua_State *L, int index)
 		f.selection_box = read_nodebox(L, -1);
  	lua_pop(L, 1);
 
+	lua_getfield(L, index, "collision_box");
+	if(lua_istable(L, -1))
+		f.collision_box = read_nodebox(L, -1);
+	lua_pop(L, 1);
+
 	f.waving = getintfield_default(L, index,
 			"waving", f.waving);
 
