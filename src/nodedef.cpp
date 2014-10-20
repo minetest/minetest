@@ -171,6 +171,12 @@ ContentFeatures::ContentFeatures()
 
 ContentFeatures::~ContentFeatures()
 {
+#ifndef SERVER
+	for (u32 i = 0; i < 24; i++) {
+		if (mesh_ptr[i])
+			mesh_ptr[i]->drop();
+	}
+#endif
 }
 
 void ContentFeatures::reset()
