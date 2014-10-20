@@ -1,0 +1,982 @@
+# Indonesian translation for minetest-c55 package.
+# Copyright (C) 2014 srifqi
+# This file is distributed under the same license as the PACKAGE package.
+# Muhammad Rifqi Priyo Susanto <muhammadrifqipriyosusanto@gmail.com>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: minetest\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-23 17:37+0100\n"
+"PO-Revision-Date: 2014-06-30 11:17+0700\n"
+"Last-Translator: Muhammad Rifqi Priyo Susanto <muhammadrifqipriyosusanto@gmail.com>\n"
+"Language-Team: Bahasa Indonesia <>\n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: builtin/gamemgr.lua:23
+msgid "Game Name"
+msgstr "Nama Permainan"
+
+#: builtin/gamemgr.lua:25 builtin/mainmenu.lua:310
+msgid "Create"
+msgstr "Buat"
+
+#: builtin/gamemgr.lua:26 builtin/mainmenu.lua:311 builtin/modmgr.lua:331
+#: builtin/modmgr.lua:448 src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
+msgid "Cancel"
+msgstr "Batalkan"
+
+#: builtin/gamemgr.lua:118
+msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+msgstr "Gamemgr: Tidak dapat menyalin mod \"$1\" ke permainan \"$2\""
+
+#: builtin/gamemgr.lua:216
+msgid "GAMES"
+msgstr "PERMAINAN"
+
+#: builtin/gamemgr.lua:217 builtin/mainmenu.lua:1076
+msgid "Games"
+msgstr "Permainan"
+
+#: builtin/gamemgr.lua:234
+msgid "Mods:"
+msgstr "Mods:"
+
+#: builtin/gamemgr.lua:235
+msgid "edit game"
+msgstr "sunting permainan"
+
+#: builtin/gamemgr.lua:238
+msgid "new game"
+msgstr "permainan baru"
+
+#: builtin/gamemgr.lua:248
+msgid "EDIT GAME"
+msgstr "SUNTING PERMAINAN"
+
+#: builtin/gamemgr.lua:269
+msgid "Remove selected mod"
+msgstr "Cabut mod terpilih"
+
+#: builtin/gamemgr.lua:272
+msgid "<<-- Add mod"
+msgstr "<<-- Tambah mod"
+
+#: builtin/mainmenu.lua:158
+msgid "Ok"
+msgstr "Oke"
+
+#: builtin/mainmenu.lua:297
+msgid "World name"
+msgstr "Nama Dunia"
+
+#: builtin/mainmenu.lua:300
+msgid "Seed"
+msgstr "Benih"
+
+#: builtin/mainmenu.lua:303
+msgid "Mapgen"
+msgstr "Generator peta"
+
+#: builtin/mainmenu.lua:306
+msgid "Game"
+msgstr "Permainan"
+
+#: builtin/mainmenu.lua:319
+msgid "Delete World \"$1\"?"
+msgstr "Hapus Dunia \"$1\""
+
+#: builtin/mainmenu.lua:320 builtin/modmgr.lua:877
+msgid "Yes"
+msgstr "Ya"
+
+#: builtin/mainmenu.lua:321
+msgid "No"
+msgstr "Tidak"
+
+#: builtin/mainmenu.lua:364
+msgid "A world named \"$1\" already exists"
+msgstr "Sebuah dunia bernama \"$1\" telah ada"
+
+#: builtin/mainmenu.lua:381
+msgid "No worldname given or no game selected"
+msgstr "Tidak disebutkan nama dunia atau tidak ada permainan yang dipilih"
+
+#: builtin/mainmenu.lua:650
+msgid "To enable shaders the OpenGL driver needs to be used."
+msgstr "Untuk mengaktifkan shaders dibutuhkan OpenGL driver"
+
+#: builtin/mainmenu.lua:818
+msgid "CLIENT"
+msgstr "KLIEN"
+
+#: builtin/mainmenu.lua:819
+msgid "Favorites:"
+msgstr "Favorit:"
+
+#: builtin/mainmenu.lua:820
+msgid "Address/Port"
+msgstr "Alamat/Port"
+
+#: builtin/mainmenu.lua:821
+msgid "Name/Password"
+msgstr "Nama/Kata sandi"
+
+#: builtin/mainmenu.lua:824
+msgid "Public Serverlist"
+msgstr "Daftar Server Publik"
+
+#: builtin/mainmenu.lua:829 builtin/mainmenu.lua:874 builtin/mainmenu.lua:937
+#: src/keycode.cpp:229
+msgid "Delete"
+msgstr "Hapus"
+
+#: builtin/mainmenu.lua:833
+msgid "Connect"
+msgstr "Hubungkan"
+
+#: builtin/mainmenu.lua:875 builtin/mainmenu.lua:938
+msgid "New"
+msgstr "Baru"
+
+#: builtin/mainmenu.lua:876 builtin/mainmenu.lua:939
+msgid "Configure"
+msgstr "Konfigurasi"
+
+#: builtin/mainmenu.lua:877
+msgid "Start Game"
+msgstr "Mulai Permainan"
+
+#: builtin/mainmenu.lua:878 builtin/mainmenu.lua:941
+msgid "Select World:"
+msgstr "Pilih Dunia:"
+
+#: builtin/mainmenu.lua:879
+msgid "START SERVER"
+msgstr "MULAI SERVER"
+
+#: builtin/mainmenu.lua:880 builtin/mainmenu.lua:943
+msgid "Creative Mode"
+msgstr "Mode Kreatif"
+
+#: builtin/mainmenu.lua:882 builtin/mainmenu.lua:945
+msgid "Enable Damage"
+msgstr "Aktifkan Kerusakan"
+
+#: builtin/mainmenu.lua:884
+msgid "Public"
+msgstr "Publik"
+
+#: builtin/mainmenu.lua:886
+msgid "Name"
+msgstr "Nama"
+
+#: builtin/mainmenu.lua:888
+msgid "Password"
+msgstr "Kata Sandi"
+
+#: builtin/mainmenu.lua:889
+msgid "Server Port"
+msgstr "Port Server"
+
+#: builtin/mainmenu.lua:899
+msgid "SETTINGS"
+msgstr "PENGATURAN"
+
+#: builtin/mainmenu.lua:900
+msgid "Fancy trees"
+msgstr "Pohon yang mewah"
+
+#: builtin/mainmenu.lua:902
+msgid "Smooth Lighting"
+msgstr "Pencahayaan Halus"
+
+#: builtin/mainmenu.lua:904
+msgid "3D Clouds"
+msgstr "Awan 3D"
+
+#: builtin/mainmenu.lua:906
+msgid "Opaque Water"
+msgstr "Air Buram"
+
+#: builtin/mainmenu.lua:909
+msgid "Mip-Mapping"
+msgstr "Mip-Mapping"
+
+#: builtin/mainmenu.lua:911
+msgid "Anisotropic Filtering"
+msgstr "Anisotropic Filtering"
+
+#: builtin/mainmenu.lua:913
+msgid "Bi-Linear Filtering"
+msgstr "Bi-Linear Filtering"
+
+#: builtin/mainmenu.lua:915
+msgid "Tri-Linear Filtering"
+msgstr "Tri-Linear Filtering"
+
+#: builtin/mainmenu.lua:918
+msgid "Shaders"
+msgstr "Shaders"
+
+#: builtin/mainmenu.lua:920
+msgid "Preload item visuals"
+msgstr "Pramuat konten visual"
+
+#: builtin/mainmenu.lua:922
+msgid "Enable Particles"
+msgstr "Aktifkan Partikel"
+
+#: builtin/mainmenu.lua:924
+msgid "Finite Liquid"
+msgstr "Benda Cair Terbatas"
+
+#: builtin/mainmenu.lua:927
+msgid "Change keys"
+msgstr "Ubah tombol"
+
+#: builtin/mainmenu.lua:940 src/keycode.cpp:248
+msgid "Play"
+msgstr "Mulai"
+
+#: builtin/mainmenu.lua:942
+msgid "SINGLE PLAYER"
+msgstr "SATU PEMAIN"
+
+#: builtin/mainmenu.lua:955
+msgid "Select texture pack:"
+msgstr "Pilih pak tekstur:"
+
+#: builtin/mainmenu.lua:956
+msgid "TEXTURE PACKS"
+msgstr "PAK TEKSTUR"
+
+#: builtin/mainmenu.lua:976
+msgid "No information available"
+msgstr "Tidak ada informasi tersedia"
+
+#: builtin/mainmenu.lua:1005
+msgid "Core Developers"
+msgstr "Pengembang Inti"
+
+#: builtin/mainmenu.lua:1020
+msgid "Active Contributors"
+msgstr "Kontributor Aktif"
+
+#: builtin/mainmenu.lua:1028
+msgid "Previous Contributors"
+msgstr "Kontributor Sebelumnya"
+
+#: builtin/mainmenu.lua:1069
+msgid "Singleplayer"
+msgstr "Satu pemain"
+
+#: builtin/mainmenu.lua:1070
+msgid "Client"
+msgstr "Klien"
+
+#: builtin/mainmenu.lua:1071
+msgid "Server"
+msgstr "Server"
+
+#: builtin/mainmenu.lua:1072
+msgid "Settings"
+msgstr "Pengaturan"
+
+#: builtin/mainmenu.lua:1073
+msgid "Texture Packs"
+msgstr "Paket Tekstur"
+
+#: builtin/mainmenu.lua:1080
+msgid "Mods"
+msgstr "Mod"
+
+#: builtin/mainmenu.lua:1082
+msgid "Credits"
+msgstr "Daftar Penghargaan"
+
+#: builtin/modmgr.lua:236
+msgid "MODS"
+msgstr "MOD"
+
+#: builtin/modmgr.lua:237
+msgid "Installed Mods:"
+msgstr "Mod Terpasang:"
+
+#: builtin/modmgr.lua:243
+msgid "Add mod:"
+msgstr "Tambah mod:"
+
+#: builtin/modmgr.lua:244
+msgid "Local install"
+msgstr "Pemasangan lokal"
+
+#: builtin/modmgr.lua:245
+msgid "Online mod repository"
+msgstr "Gudang mod daring"
+
+#: builtin/modmgr.lua:284
+msgid "No mod description available"
+msgstr "Tidak ada deskripsi mod tersedia"
+
+#: builtin/modmgr.lua:288
+msgid "Mod information:"
+msgstr "Informasi mod:"
+
+#: builtin/modmgr.lua:299
+msgid "Rename"
+msgstr "Ganti Nama"
+
+#: builtin/modmgr.lua:301
+msgid "Uninstall selected modpack"
+msgstr "Copot pemasangan paket mod terpilih"
+
+#: builtin/modmgr.lua:312
+msgid "Uninstall selected mod"
+msgstr "Copot pemasangan mod terpilih"
+
+#: builtin/modmgr.lua:324
+msgid "Rename Modpack:"
+msgstr "Ubah Nama Paket Mod:"
+
+#: builtin/modmgr.lua:329 src/keycode.cpp:227
+msgid "Accept"
+msgstr "Terima"
+
+#: builtin/modmgr.lua:423
+msgid "World:"
+msgstr "Dunia:"
+
+#: builtin/modmgr.lua:427 builtin/modmgr.lua:429
+msgid "Hide Game"
+msgstr "Sembunyikan Permainan"
+
+#: builtin/modmgr.lua:433 builtin/modmgr.lua:435
+msgid "Hide mp content"
+msgstr "Sembunyikan konten paket mod"
+
+#: builtin/modmgr.lua:442
+msgid "Mod:"
+msgstr "Mod:"
+
+#: builtin/modmgr.lua:444
+msgid "Depends:"
+msgstr "Bergantung pada:"
+
+#: builtin/modmgr.lua:447 src/guiKeyChangeMenu.cpp:187
+msgid "Save"
+msgstr "Simpan"
+
+#: builtin/modmgr.lua:464
+msgid "Enable MP"
+msgstr "Aktifkan Paket Mod"
+
+#: builtin/modmgr.lua:466
+msgid "Disable MP"
+msgstr "Non-aktifkan Paket Mod"
+
+#: builtin/modmgr.lua:470 builtin/modmgr.lua:472
+msgid "enabled"
+msgstr "diaktifan"
+
+#: builtin/modmgr.lua:478
+msgid "Enable all"
+msgstr "Aktifkan semua"
+
+#: builtin/modmgr.lua:577
+msgid "Select Mod File:"
+msgstr "Pilih Berkas Mod:"
+
+#: builtin/modmgr.lua:616
+msgid "Install Mod: file: \"$1\""
+msgstr "Pasang Mod: berkas: \"$1\""
+
+#: builtin/modmgr.lua:617
+msgid ""
+"\n"
+"Install Mod: unsupported filetype \"$1\""
+msgstr ""
+"\n"
+"Pemasangan Mod: tipe berkas tidak didukung \"$1\""
+
+#: builtin/modmgr.lua:638
+msgid "Failed to install $1 to $2"
+msgstr "Gagal memasang $1 ke $2"
+
+#: builtin/modmgr.lua:641
+msgid "Install Mod: unable to find suitable foldername for modpack $1"
+msgstr "Pemasangan Mod: tidak dapat mencari nama folder yang sesuai untuk paket mod $1"
+
+#: builtin/modmgr.lua:661
+msgid "Install Mod: unable to find real modname for: $1"
+msgstr "Pemasangan Mod: tidak dapat mencari nama asli mod dari: $1"
+
+#: builtin/modmgr.lua:855
+msgid "Modmgr: failed to delete \"$1\""
+msgstr "Modmgr: gagal untuk menghapus \"$1\""
+
+#: builtin/modmgr.lua:859
+msgid "Modmgr: invalid modpath \"$1\""
+msgstr "Modmgr: jalur mod tidak sah \"$1\""
+
+#: builtin/modmgr.lua:876
+msgid "Are you sure you want to delete \"$1\"?"
+msgstr "Kamu yakin untuk menghapus \"$1\""
+
+#: builtin/modmgr.lua:878
+msgid "No of course not!"
+msgstr "Tentu tidak!"
+
+#: builtin/modstore.lua:183
+msgid "Page $1 of $2"
+msgstr "Halaman $1 dari $2"
+
+#: builtin/modstore.lua:243
+msgid "Rating"
+msgstr "Peringkat"
+
+#: builtin/modstore.lua:251
+msgid "re-Install"
+msgstr "Pasang ulang"
+
+#: builtin/modstore.lua:253
+msgid "Install"
+msgstr "Pasang"
+
+#: src/client.cpp:2917
+msgid "Item textures..."
+msgstr "Konten tekstur..."
+
+#: src/game.cpp:940
+msgid "Loading..."
+msgstr "Memuat..."
+
+#: src/game.cpp:1000
+msgid "Creating server...."
+msgstr "Membuat server...."
+
+#: src/game.cpp:1016
+msgid "Creating client..."
+msgstr "Membuat klien..."
+
+#: src/game.cpp:1025
+msgid "Resolving address..."
+msgstr "Menyelesaikan alamat..."
+
+#: src/game.cpp:1122
+msgid "Connecting to server..."
+msgstr "Menghubungkan ke server..."
+
+#: src/game.cpp:1219
+msgid "Item definitions..."
+msgstr "Definisi konten..."
+
+#: src/game.cpp:1226
+msgid "Node definitions..."
+msgstr "Definisi node..."
+
+#: src/game.cpp:1233
+msgid "Media..."
+msgstr "Media..."
+
+#: src/game.cpp:3409
+msgid "Shutting down stuff..."
+msgstr "Mematikan..."
+
+#: src/game.cpp:3439
+msgid ""
+"\n"
+"Check debug.txt for details."
+msgstr ""
+"\n"
+"Cek debug.txt untuk detail."
+
+#: src/guiDeathScreen.cpp:96
+msgid "You died."
+msgstr "Kamu telah meninggal."
+
+#: src/guiDeathScreen.cpp:104
+msgid "Respawn"
+msgstr "Bangkit"
+
+#: src/guiFormSpecMenu.cpp:1656 src/guiMessageMenu.cpp:107
+#: src/guiTextInputMenu.cpp:139
+msgid "Proceed"
+msgstr "Lanjut"
+
+#: src/guiKeyChangeMenu.cpp:121
+msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
+msgstr "Kontrol. (Jika menu ini membingungkan, hapus hal-hal dari minetest.conf)"
+
+#: src/guiKeyChangeMenu.cpp:161
+msgid "\"Use\" = climb down"
+msgstr "\"Use\" = turun"
+
+#: src/guiKeyChangeMenu.cpp:176
+msgid "Double tap \"jump\" to toggle fly"
+msgstr "Ketuk dua kali \"lompat\" untuk berubah terbang"
+
+#: src/guiKeyChangeMenu.cpp:288
+msgid "Key already in use"
+msgstr "Tombol telah terpakai"
+
+#: src/guiKeyChangeMenu.cpp:363
+msgid "press key"
+msgstr "tekan tombol"
+
+#: src/guiKeyChangeMenu.cpp:389
+msgid "Forward"
+msgstr "Maju"
+
+#: src/guiKeyChangeMenu.cpp:390
+msgid "Backward"
+msgstr "Mundur"
+
+#: src/guiKeyChangeMenu.cpp:391 src/keycode.cpp:228
+msgid "Left"
+msgstr "Kiri"
+
+#: src/guiKeyChangeMenu.cpp:392 src/keycode.cpp:228
+msgid "Right"
+msgstr "Kanan"
+
+#: src/guiKeyChangeMenu.cpp:393
+msgid "Use"
+msgstr "Pakai"
+
+#: src/guiKeyChangeMenu.cpp:394
+msgid "Jump"
+msgstr "Lompat"
+
+#: src/guiKeyChangeMenu.cpp:395
+msgid "Sneak"
+msgstr "Menyelinap"
+
+#: src/guiKeyChangeMenu.cpp:396
+msgid "Drop"
+msgstr "Menjatuhkan"
+
+#: src/guiKeyChangeMenu.cpp:397
+msgid "Inventory"
+msgstr "Inventaris"
+
+#: src/guiKeyChangeMenu.cpp:398
+msgid "Chat"
+msgstr "Obrolan"
+
+#: src/guiKeyChangeMenu.cpp:399
+msgid "Command"
+msgstr "Perintah"
+
+#: src/guiKeyChangeMenu.cpp:400
+msgid "Console"
+msgstr "Konsol"
+
+#: src/guiKeyChangeMenu.cpp:401
+msgid "Toggle fly"
+msgstr "Berubah terbang"
+
+#: src/guiKeyChangeMenu.cpp:402
+msgid "Toggle fast"
+msgstr "Berubah cepat"
+
+#: src/guiKeyChangeMenu.cpp:403
+msgid "Toggle noclip"
+msgstr "Berubah tembus blok"
+
+#: src/guiKeyChangeMenu.cpp:404
+msgid "Range select"
+msgstr "Pilih jarak"
+
+#: src/guiKeyChangeMenu.cpp:405
+msgid "Print stacks"
+msgstr "Cetak tumpukan"
+
+#: src/guiPasswordChange.cpp:106
+msgid "Old Password"
+msgstr "Kata Sandi Lama"
+
+#: src/guiPasswordChange.cpp:122
+msgid "New Password"
+msgstr "Kata Sandi Baru"
+
+#: src/guiPasswordChange.cpp:137
+msgid "Confirm Password"
+msgstr "Konfirmasi Kata Kunci"
+
+#: src/guiPasswordChange.cpp:153
+msgid "Change"
+msgstr "Ubah"
+
+#: src/guiPasswordChange.cpp:162
+msgid "Passwords do not match!"
+msgstr "Kata sandi tidak cocok!"
+
+#: src/guiPauseMenu.cpp:122
+msgid "Continue"
+msgstr "Lanjut"
+
+#: src/guiPauseMenu.cpp:133
+msgid "Change Password"
+msgstr "Ubah Kata Sandi"
+
+#: src/guiPauseMenu.cpp:143
+msgid "Sound Volume"
+msgstr "Volume Suara"
+
+#: src/guiPauseMenu.cpp:152
+msgid "Exit to Menu"
+msgstr "Keluar ke Menu Utama"
+
+#: src/guiPauseMenu.cpp:161
+msgid "Exit to OS"
+msgstr "Akhiri Permainan"
+
+#: src/guiPauseMenu.cpp:170
+msgid ""
+"Default Controls:\n"
+"- WASD: move\n"
+"- Space: jump/climb\n"
+"- Shift: sneak/go down\n"
+"- Q: drop item\n"
+"- I: inventory\n"
+"- Mouse: turn/look\n"
+"- Mouse left: dig/punch\n"
+"- Mouse right: place/use\n"
+"- Mouse wheel: select item\n"
+"- T: chat\n"
+msgstr ""
+"Kontrol Bawaan:\n"
+"- WASD: bergerak\n"
+"- Space: lompat/panjat\n"
+"- Shift: menyelinap/turun\n"
+"- Q: jatuhkan item\n"
+"- I: inventaris\n"
+"- Mouse: belok/lihat\n"
+"- Mouse left: gali/pukul\n"
+"- Mouse right: taruh/pakai\n"
+"- Mouse wheel: pilih item\n"
+"- T: obrolan\n"
+
+#: src/guiVolumeChange.cpp:107
+msgid "Sound Volume: "
+msgstr "Volume Suara: "
+
+#: src/guiVolumeChange.cpp:121
+msgid "Exit"
+msgstr "Keluar"
+
+#: src/keycode.cpp:223
+msgid "Left Button"
+msgstr "Tombol Kiri"
+
+#: src/keycode.cpp:223
+msgid "Middle Button"
+msgstr "Tombol Tengah"
+
+#: src/keycode.cpp:223
+msgid "Right Button"
+msgstr "Tombol Kanan"
+
+#: src/keycode.cpp:223
+msgid "X Button 1"
+msgstr "Tombol X 1"
+
+#: src/keycode.cpp:224
+msgid "Back"
+msgstr "Kembali"
+
+#: src/keycode.cpp:224
+msgid "Clear"
+msgstr "Kosong"
+
+#: src/keycode.cpp:224
+msgid "Return"
+msgstr "Kembali"
+
+#: src/keycode.cpp:224
+msgid "Tab"
+msgstr "Tab"
+
+#: src/keycode.cpp:224
+msgid "X Button 2"
+msgstr "Tombol X 2"
+
+#: src/keycode.cpp:225
+msgid "Capital"
+msgstr "Kapital"
+
+#: src/keycode.cpp:225
+msgid "Control"
+msgstr "Ctrl"
+
+#: src/keycode.cpp:225
+msgid "Kana"
+msgstr "Kana"
+
+#: src/keycode.cpp:225
+msgid "Menu"
+msgstr "Menu"
+
+#: src/keycode.cpp:225
+msgid "Pause"
+msgstr "Jeda"
+
+#: src/keycode.cpp:225
+msgid "Shift"
+msgstr "Shift"
+
+#: src/keycode.cpp:226
+msgid "Convert"
+msgstr "Ubah"
+
+#: src/keycode.cpp:226
+msgid "Escape"
+msgstr "Escape"
+
+#: src/keycode.cpp:226
+msgid "Final"
+msgstr "Terakhir"
+
+#: src/keycode.cpp:226
+msgid "Junja"
+msgstr "Junja"
+
+#: src/keycode.cpp:226
+msgid "Kanji"
+msgstr "Kanji"
+
+#: src/keycode.cpp:226
+msgid "Nonconvert"
+msgstr "Tanpa pengubahan"
+
+#: src/keycode.cpp:227
+msgid "End"
+msgstr "End"
+
+#: src/keycode.cpp:227
+msgid "Home"
+msgstr "Home"
+
+#: src/keycode.cpp:227
+msgid "Mode Change"
+msgstr "Ubah Mode"
+
+#: src/keycode.cpp:227
+msgid "Next"
+msgstr "Selanjutnya"
+
+#: src/keycode.cpp:227
+msgid "Prior"
+msgstr "Sebelumnya"
+
+#: src/keycode.cpp:227
+msgid "Space"
+msgstr "Spasi"
+
+#: src/keycode.cpp:228
+msgid "Down"
+msgstr "Bawah"
+
+#: src/keycode.cpp:228
+msgid "Execute"
+msgstr "Menjalankan"
+
+#: src/keycode.cpp:228
+msgid "Print"
+msgstr "Cetak"
+
+#: src/keycode.cpp:228
+msgid "Select"
+msgstr "Pilih"
+
+#: src/keycode.cpp:228
+msgid "Up"
+msgstr "Atas"
+
+#: src/keycode.cpp:229
+msgid "Help"
+msgstr "Bantuan"
+
+#: src/keycode.cpp:229
+msgid "Insert"
+msgstr "Insert"
+
+#: src/keycode.cpp:229
+msgid "Snapshot"
+msgstr "Potret"
+
+#: src/keycode.cpp:232
+msgid "Left Windows"
+msgstr "Jendela Kiri"
+
+#: src/keycode.cpp:233
+msgid "Apps"
+msgstr "Aplikasi"
+
+#: src/keycode.cpp:233
+msgid "Numpad 0"
+msgstr "Numpad 0"
+
+#: src/keycode.cpp:233
+msgid "Numpad 1"
+msgstr "Numpad 1"
+
+#: src/keycode.cpp:233
+msgid "Right Windows"
+msgstr "Jendela Kanan"
+
+#: src/keycode.cpp:233
+msgid "Sleep"
+msgstr "Tidur"
+
+#: src/keycode.cpp:234
+msgid "Numpad 2"
+msgstr "Numpad 2"
+
+#: src/keycode.cpp:234
+msgid "Numpad 3"
+msgstr "Numpad 3"
+
+#: src/keycode.cpp:234
+msgid "Numpad 4"
+msgstr "Numpad 4"
+
+#: src/keycode.cpp:234
+msgid "Numpad 5"
+msgstr "Numpad 5"
+
+#: src/keycode.cpp:234
+msgid "Numpad 6"
+msgstr "Numpad 6"
+
+#: src/keycode.cpp:234
+msgid "Numpad 7"
+msgstr "Numpad 7"
+
+#: src/keycode.cpp:235
+msgid "Numpad *"
+msgstr "Numpad *"
+
+#: src/keycode.cpp:235
+msgid "Numpad +"
+msgstr "Numpad +"
+
+#: src/keycode.cpp:235
+msgid "Numpad -"
+msgstr "Numpad -"
+
+#: src/keycode.cpp:235
+msgid "Numpad /"
+msgstr "Numpad /"
+
+#: src/keycode.cpp:235
+msgid "Numpad 8"
+msgstr "Numpad 8"
+
+#: src/keycode.cpp:235
+msgid "Numpad 9"
+msgstr "Numpad 9"
+
+#: src/keycode.cpp:239
+msgid "Num Lock"
+msgstr "Num Lock"
+
+#: src/keycode.cpp:239
+msgid "Scroll Lock"
+msgstr "Scroll Lock"
+
+#: src/keycode.cpp:240
+msgid "Left Shift"
+msgstr "Shift Kanan"
+
+#: src/keycode.cpp:240
+msgid "Right Shift"
+msgstr "Shift Kiri"
+
+#: src/keycode.cpp:241
+msgid "Left Control"
+msgstr "Ctrl Kanan"
+
+#: src/keycode.cpp:241
+msgid "Left Menu"
+msgstr "Menu Kiri"
+
+#: src/keycode.cpp:241
+msgid "Right Control"
+msgstr "Ctrl Kiri"
+
+#: src/keycode.cpp:241
+msgid "Right Menu"
+msgstr "Menu Kanan"
+
+#: src/keycode.cpp:243
+msgid "Comma"
+msgstr "Koma"
+
+#: src/keycode.cpp:243
+msgid "Minus"
+msgstr "Negatif"
+
+#: src/keycode.cpp:243
+msgid "Period"
+msgstr "Titik"
+
+#: src/keycode.cpp:243
+msgid "Plus"
+msgstr "Tambah"
+
+#: src/keycode.cpp:247
+msgid "Attn"
+msgstr "Attn"
+
+#: src/keycode.cpp:247
+msgid "CrSel"
+msgstr "CrSel"
+
+#: src/keycode.cpp:248
+msgid "Erase OEF"
+msgstr "Hapus OEF"
+
+#: src/keycode.cpp:248
+msgid "ExSel"
+msgstr "ExSel"
+
+#: src/keycode.cpp:248
+msgid "OEM Clear"
+msgstr "Hapus OEM"
+
+#: src/keycode.cpp:248
+msgid "PA1"
+msgstr "PA1"
+
+#: src/keycode.cpp:248
+msgid "Zoom"
+msgstr "Zoom"
+
+#: src/main.cpp:1472
+msgid "needs_fallback_font"
+msgstr "no"
+
+#: src/main.cpp:1547
+msgid "Main Menu"
+msgstr "Menu Utama"
+
+#: src/main.cpp:1723
+msgid "No world selected and no address provided. Nothing to do."
+msgstr "Tidak ada dunia yang dipilih dan tidak diberikan alamat. Tidak ada yang dilakukan"
+
+#: src/main.cpp:1731
+msgid "Could not find or load game \""
+msgstr "Tidak dapat mencari atau memuat permainan \""
+
+#: src/main.cpp:1745
+msgid "Invalid gamespec."
+msgstr "Spesifikasi permainan tidak sah."
+
+#: src/main.cpp:1790
+msgid "Connection error (timed out?)"
+msgstr "koneksi bermasalah (kehabisan waktu?)"
