@@ -144,8 +144,6 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.setting_getbool("opaque_water")) .. "]"..
 		"checkbox[1,2.5;cb_connected_glass;".. fgettext("Connected Glass") .. ";"
 				.. dump(core.setting_getbool("connected_glass"))	.. "]"..
-		"checkbox[4.5,2.0;cb_clouds;".. fgettext("Enable Clouds") .. ";"
-				.. dump(core.setting_getbool("enable_clouds"))	.. "]"..
 		"dropdown[1,3.25;3;dd_video_driver;"
 			.. video_driver_string .. ";" .. current_video_driver_idx .. "]" ..
 		"tooltip[dd_video_driver;" ..
@@ -159,6 +157,8 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.setting_getbool("bilinear_filter")) .. "]"..
 		"checkbox[4.5,1.5;cb_trilinear;".. fgettext("Tri-Linear Filtering") .. ";"
 				.. dump(core.setting_getbool("trilinear_filter")) .. "]"..
+		"checkbox[4.5,2.0;cb_clouds;".. fgettext("Enable Clouds") .. ";"
+				.. dump(core.setting_getbool("enable_clouds"))	.. "]"..
 		"box[7.75,0;4,4;#999999]" ..
 		"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
 				.. dump(core.setting_getbool("enable_shaders")) .. "]"
