@@ -857,12 +857,12 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef)
 
 		//Cache 6dfacedir rotated clones of meshes
 		if (f->mesh_ptr[0] && (f->param_type_2 == CPT2_FACEDIR)) {
-				for (u16 j = 1; j < 24; j++) {
-					f->mesh_ptr[j] = cloneMesh(f->mesh_ptr[0]);
-					rotateMeshBy6dFacedir(f->mesh_ptr[j], j);
-					recalculateBoundingBox(f->mesh_ptr[j]);
-				}
+			for (u16 j = 1; j < 24; j++) {
+				f->mesh_ptr[j] = cloneMesh(f->mesh_ptr[0]);
+				rotateMeshBy6dFacedir(f->mesh_ptr[j], j);
+				recalculateBoundingBox(f->mesh_ptr[j]);
 			}
+		}
 	}
 #endif
 }
