@@ -405,7 +405,7 @@ bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize, v3s16 
 
 		MapNode n = getMap().getNodeNoEx(pos);
 
-		if(n.param0 != CONTENT_AIR) {
+		if(n.param0 != CONTENT_AIR && m_gamedef->ndef()->get(n).sunlight_propagates == false) {
 			if (p) {
 				*p = pos;
 			}
