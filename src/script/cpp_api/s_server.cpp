@@ -125,23 +125,6 @@ bool ScriptApiServer::setPassword(const std::string &playername,
 	return lua_toboolean(L, -1);
 }
 
-bool ScriptApiServer::set_login_time(const std::string &playername,
-		int logintime)
-{
-	SCRIPTAPI_PRECHECKHEADER
-	
-	getAuthHandler();
-	lua_getfield(L, -1, "set_login_time");
-	lua_remove(L, -2);
-	if(lua_type(L, -1) != LUA_TFUNCTION)
-		throw LuaError("Authentication handler missing set_login_time");
-	lua_pushstring(L, playername.c_str());
-	lua_pushnumber(L, logintime);
-	if(lua_pcall(L, 2, 1, m_errorhandler))
-		scriptError();
-	return lua_toboolean(L, -1);
-}
-
 bool ScriptApiServer::on_chat_message(const std::string &name,
 		const std::string &message)
 {

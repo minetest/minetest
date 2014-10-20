@@ -50,6 +50,7 @@ local player_list = {}
 
 core.register_on_joinplayer(function(player)
 	player_list[player:get_player_name()] = player
+	core.set_last_login(player:get_player_name(), os.time())
 end)
 
 core.register_on_leaveplayer(function(player)

@@ -42,8 +42,6 @@ public:
 			const std::string &password);
 	bool setPassword(const std::string &playername,
 			const std::string &password);
-	bool set_login_time(const std::string &playername,
-			int logintime);
 private:
 	void getAuthHandler();
 	void readPrivileges(int index, std::set<std::string> &result);
