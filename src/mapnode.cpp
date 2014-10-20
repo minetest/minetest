@@ -354,6 +354,15 @@ std::vector<aabb3f> MapNode::getNodeBoxes(INodeDefManager *nodemgr) const
 	return transformNodeBox(*this, f.node_box, nodemgr);
 }
 
+std::vector<aabb3f> MapNode::getCollisionBoxes(INodeDefManager *nodemgr) const
+{
+	const ContentFeatures &f = nodemgr->get(*this);
+	if (f.collision_box.fixed.empty())
+		return transformNodeBox(*this, f.node_box, nodemgr);
+	else
+		return transformNodeBox(*this, f.collision_box, nodemgr);
+}
+
 std::vector<aabb3f> MapNode::getSelectionBoxes(INodeDefManager *nodemgr) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);

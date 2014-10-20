@@ -1036,7 +1036,8 @@ static void show_pause_menu(GUIFormSpecMenu** cur_formspec,
 			"- T: chat\n"
 			));
 #endif
-	float ypos = singleplayermode ? 1.0 : 0.5;
+
+	float ypos = singleplayermode ? 0.5 : 0.1;
 	std::ostringstream os;
 
 	os << FORMSPEC_VERSION_STRING  << SIZE_TAG

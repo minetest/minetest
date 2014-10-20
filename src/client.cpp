@@ -250,6 +250,7 @@ Client::Client(
 	m_inventory_updated(false),
 	m_inventory_from_server(NULL),
 	m_inventory_from_server_age(0.0),
+	m_show_hud(true),
 	m_animation_time(0),
 	m_crack_level(-1),
 	m_crack_pos(0,0,0),
@@ -2678,7 +2679,7 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 
 	// Update node textures and assign shaders to each tile
 	infostream<<"- Updating node textures"<<std::endl;
-	m_nodedef->updateTextures(m_tsrc, m_shsrc);
+	m_nodedef->updateTextures(this);
 
 	// Preload item textures and meshes if configured to
 	if(g_settings->getBool("preload_item_visuals"))

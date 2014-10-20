@@ -48,6 +48,8 @@ MeshMakeData::MeshMakeData(IGameDef *gamedef):
 	m_crack_pos_relative(-1337, -1337, -1337),
 	m_highlighted_pos_relative(-1337, -1337, -1337),
 	m_smooth_lighting(false),
+	m_show_hud(false),
+	m_highlight_mesh_color(255, 255, 255, 255),
 	m_gamedef(gamedef)
 {}
 
@@ -330,7 +332,7 @@ static void finalColorBlend(video::SColor& result,
 
 	// Emphase blue a bit in darker places
 	// Each entry of this array represents a range of 8 blue levels
-	static u8 emphase_blue_when_dark[32] = {
+	static const u8 emphase_blue_when_dark[32] = {
 		1, 4, 6, 6, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	};
@@ -338,7 +340,7 @@ static void finalColorBlend(video::SColor& result,
 	b = irr::core::clamp (b, 0, 255);
 
 	// Artificial light is yellow-ish
-	static u8 emphase_yellow_when_artificial[16] = {
+	static const u8 emphase_yellow_when_artificial[16] = {
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 10, 15, 15, 15
 	};
 	rg += emphase_yellow_when_artificial[night/16];
@@ -1086,7 +1088,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 	mapblock_mesh_generate_special(data, collector);
 
-	m_highlight_mesh_color = data->m_highlight_mesh_color; 
+	m_highlight_mesh_color = data->m_highlight_mesh_color;
 
 	/*
 		Convert MeshCollector to SMesh
@@ -1426,5 +1428,56 @@ void MeshCollector::append(const TileSpec &tile,
 	for(u32 i=0; i<numVertices; i++)
 	{
 		p->vertices.push_back(vertices[i]);
+	}
+}
+
+/*
+	MeshCollector - for meshnodes and converted drawtypes.
+*/
+
+void MeshCollector::append(const TileSpec &tile,
+		const video::S3DVertex *vertices, u32 numVertices,
+		const u16 *indices, u32 numIndices,
+		v3f pos, video::SColor c)
+{
+	if(numIndices > 65535)
+	{
+		dstream<<"FIXME: MeshCollector::append() called with numIndices="<<numIndices<<" (limit 65535)"<<std::endl;
+		return;
+	}
+
+	PreMeshBuffer *p = NULL;
+	for(u32 i=0; i<prebuffers.size(); i++)
+	{
+		PreMeshBuffer &pp = prebuffers[i];
+		if(pp.tile != tile)
+			continue;
+		if(pp.indices.size() + numIndices > 65535)
+			continue;
+
+		p = &pp;
+		break;
+	}
+
+	if(p == NULL)
+	{
+		PreMeshBuffer pp;
+		pp.tile = tile;
+		prebuffers.push_back(pp);
+		p = &prebuffers[prebuffers.size()-1];
+	}
+
+	u32 vertex_count = p->vertices.size();
+	for(u32 i=0; i<numIndices; i++)
+	{
+		u32 j = indices[i] + vertex_count;
+		p->indices.push_back(j);
+	}
+	for(u32 i=0; i<numVertices; i++)
+	{
+		video::S3DVertex vert = vertices[i];
+		vert.Pos += pos;
+		vert.Color = c;		
+		p->vertices.push_back(vert);
 	}
 }
