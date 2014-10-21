@@ -309,55 +309,55 @@ msgstr "Instalirani Modovi:"
 
 #: builtin/modmgr.lua:243
 msgid "Add mod:"
-msgstr ""
+msgstr "Dodaj mod:"
 
 #: builtin/modmgr.lua:244
 msgid "Local install"
-msgstr ""
+msgstr "Lokalna instalacija"
 
 #: builtin/modmgr.lua:245
 msgid "Online mod repository"
-msgstr ""
+msgstr "Onlajn skladište modova"
 
 #: builtin/modmgr.lua:284
 msgid "No mod description available"
-msgstr ""
+msgstr "Opis moda nije dostupan"
 
 #: builtin/modmgr.lua:288
 msgid "Mod information:"
-msgstr ""
+msgstr "Informacije o modu:"
 
 #: builtin/modmgr.lua:299
 msgid "Rename"
-msgstr ""
+msgstr "Preimenuj"
 
 #: builtin/modmgr.lua:301
 msgid "Uninstall selected modpack"
-msgstr ""
+msgstr "Uninstaliraj izabrano pakovanje modova"
 
 #: builtin/modmgr.lua:312
 msgid "Uninstall selected mod"
-msgstr ""
+msgstr "Uninstaliraj izabrani mod"
 
 #: builtin/modmgr.lua:324
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "Preimenuj pakovanje modova"
 
 #: builtin/modmgr.lua:329 src/keycode.cpp:227
 msgid "Accept"
-msgstr ""
+msgstr "Prihvati"
 
 #: builtin/modmgr.lua:423
 msgid "World:"
-msgstr ""
+msgstr "Svet:"
 
 #: builtin/modmgr.lua:427 builtin/modmgr.lua:429
 msgid "Hide Game"
-msgstr ""
+msgstr "Sakri igru"
 
 #: builtin/modmgr.lua:433 builtin/modmgr.lua:435
 msgid "Hide mp content"
-msgstr ""
+msgstr "Sakri sadržaj pakovanja modova"
 
 #: builtin/modmgr.lua:442
 msgid "Mod:"
@@ -365,57 +365,57 @@ msgstr ""
 
 #: builtin/modmgr.lua:444
 msgid "Depends:"
-msgstr ""
+msgstr "Zavisi:"
 
 #: builtin/modmgr.lua:447 src/guiKeyChangeMenu.cpp:187
 msgid "Save"
-msgstr ""
+msgstr "Sačuvaj"
 
 #: builtin/modmgr.lua:464
 msgid "Enable MP"
-msgstr ""
+msgstr "Uključi pakovanje modova"
 
 #: builtin/modmgr.lua:466
 msgid "Disable MP"
-msgstr ""
+msgstr "Isključi pakovanje modova"
 
 #: builtin/modmgr.lua:470 builtin/modmgr.lua:472
 msgid "enabled"
-msgstr ""
+msgstr "uključeno"
 
 #: builtin/modmgr.lua:478
 msgid "Enable all"
-msgstr ""
+msgstr "Uključi sve"
 
 #: builtin/modmgr.lua:577
 msgid "Select Mod File:"
-msgstr ""
+msgstr "Izaberi Fajl moda:"
 
 #: builtin/modmgr.lua:616
 msgid "Install Mod: file: \"$1\""
-msgstr ""
+msgstr "Instaliraj Mod: fajl: \"$1\""
 
 #: builtin/modmgr.lua:617
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\""
-msgstr ""
+msgstr "Instaliraj mod: nepodržan tip fajla \"$\""
 
 #: builtin/modmgr.lua:638
 msgid "Failed to install $1 to $2"
-msgstr ""
+msgstr "Nisam uspeo da instaliram &1 u &2"
 
 #: builtin/modmgr.lua:641
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
-msgstr ""
+msgstr "Instaliraj mod: ne mogu da nađem odgovarajuće ime fascikle za pakovanje modova $1"
 
 #: builtin/modmgr.lua:661
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr ""
+msgstr "Instaliraj Mod: ne mogu da nađem pravo ime moda za: $1"
 
 #: builtin/modmgr.lua:855
 msgid "Modmgr: failed to delete \"$1\""
-msgstr ""
+msgstr "Modmgr: nisam uspeo da obrišem \"$1\""
 
 #: builtin/modmgr.lua:859
 msgid "Modmgr: invalid modpath \"$1\""
