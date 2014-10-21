@@ -658,7 +658,15 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 TileSpec getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data)
 {
 	INodeDefManager *ndef = data->m_gamedef->ndef();
-	TileSpec spec = ndef->get(mn).tiles[tileindex];
+	TileSpec spec;
+	if (mn.param2 & 0x80)
+	{
+		if (ndef->get(mn).special_tiles[tileindex].texture)
+			spec = ndef->get(mn).special_tiles[tileindex];
+		else
+			spec = ndef->get(mn).special_tiles[0];
+	} else 
+		spec = ndef->get(mn).tiles[tileindex];
 	// Apply temporary crack
 	if (p == data->m_crack_pos_relative)
 		spec.material_flags |= MATERIAL_FLAG_CRACK;
