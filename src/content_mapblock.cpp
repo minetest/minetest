@@ -1153,40 +1153,40 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		{
 			TileSpec tile = getNodeTileN(n, p, 0, data);
 			tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
-			
+
 			u16 l = getInteriorLight(n, 1, nodedef);
 			video::SColor c = MapBlock_LightColor(255, l, f.light_source);
-
-			float s = BS/2*f.visual_scale;
-
-			for(u32 j=0; j<2; j++)
+			
+			float s = BS / 2;
+			for(u32 j = 0; j < 2; j++)
 			{
 				video::S3DVertex vertices[4] =
 				{
-					video::S3DVertex(-s,-BS/2,      0, 0,0,0, c, 0,1),
-					video::S3DVertex( s,-BS/2,      0, 0,0,0, c, 1,1),
-					video::S3DVertex( s,-BS/2 + s*2,0, 0,0,0, c, 1,0),
-					video::S3DVertex(-s,-BS/2 + s*2,0, 0,0,0, c, 0,0),
+					video::S3DVertex(-s,-s, 0, 0,0,0, c, 0,1),
+					video::S3DVertex( s,-s, 0, 0,0,0, c, 1,1),
+					video::S3DVertex( s, s, 0, 0,0,0, c, 1,0),
+					video::S3DVertex(-s, s, 0, 0,0,0, c, 0,0),
 				};
 
 				if(j == 0)
 				{
-					for(u16 i=0; i<4; i++)
+					for(u16 i = 0; i < 4; i++)
 						vertices[i].Pos.rotateXZBy(46 + n.param2 * 2);
 				}
 				else if(j == 1)
 				{
-					for(u16 i=0; i<4; i++)
+					for(u16 i = 0; i < 4; i++)
 						vertices[i].Pos.rotateXZBy(-44 + n.param2 * 2);
 				}
 
-				for(u16 i=0; i<4; i++)
+				for(u16 i = 0; i < 4; i++)
 				{
 					vertices[i].Pos *= f.visual_scale;
+					vertices[i].Pos.Y -= s * (1 - f.visual_scale);
 					vertices[i].Pos += intToFloat(p, BS);
 				}
 
-				u16 indices[] = {0,1,2,2,3,0};
+				u16 indices[] = {0, 1, 2, 2, 3, 0};
 				// Add to mesh collector
 				collector.append(tile, vertices, 4, indices, 6);
 			}
