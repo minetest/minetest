@@ -975,7 +975,7 @@ msgstr "ﾜｰﾙﾄﾞが選択できていないか、ｱﾄﾞﾚｽが入力
 
 #: src/main.cpp:1731
 msgid "Could not find or load game \""
-msgstr "\""のゲームの読み込みか検索に失敗"
+msgstr "読み込みか検索に失敗:\""
 
 #: src/main.cpp:1745
 msgid "Invalid gamespec."
