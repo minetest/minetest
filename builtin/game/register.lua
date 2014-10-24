@@ -10,6 +10,15 @@ core.register_item_raw = nil
 local register_alias_raw = core.register_alias_raw
 core.register_alias_raw = nil
 
+local register_ore_raw = core.register_ore
+core.register_ore = nil
+
+local register_decoration_raw = core.register_decoration
+core.register_decoration = nil
+
+local register_biome_raw = core.register_biome
+core.register_biome = nil
+
 --
 -- Item / entity / ABM registration functions
 --
@@ -369,6 +378,29 @@ function core.run_callbacks(callbacks, mode, ...)
 		end
 	end
 	return ret
+end
+
+--
+-- Mapgen registrations functions
+--
+
+core.registered_ores = {}
+core.registered_decorations = {}
+core.registered_biomes = {}
+
+function core.register_ore(def)
+	table.insert(core.registered_ores, def)
+	register_ore_raw(def)
+end
+
+function core.register_decoration(def)
+	table.insert(core.registered_decorations, def)
+	register_decoration_raw(def)
+end
+
+function core.register_biome(def)
+	table.insert(core.registered_biomes, def)
+	register_biome_raw(def)
 end
 
 --
