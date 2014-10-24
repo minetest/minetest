@@ -190,7 +190,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 			m_texture_source,
 			m_formspecgui,
 			m_buttonhandler,
-			NULL, NULL);
+			NULL);
 
 	m_menu->allowClose(false);
 	m_menu->lockSize(true,v2u32(800,600));
@@ -220,8 +220,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	}
 
 	m_menu->quitMenu();
-	m_menu->remove();
-	delete m_menu;
+	m_menu->drop();
 	m_menu = NULL;
 }
 
