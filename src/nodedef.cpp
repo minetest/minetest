@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER
 #include "tile.h"
 #include "mesh.h"
+#include <IMeshManipulator.h>
 #endif
 #include "log.h"
 #include "settings.h"
@@ -233,6 +234,7 @@ void ContentFeatures::reset()
 	damage_per_second = 0;
 	node_box = NodeBox();
 	selection_box = NodeBox();
+	collision_box = NodeBox();
 	waving = 0;
 	legacy_facedir_simple = false;
 	legacy_wallmounted = false;
@@ -303,6 +305,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 	// Stuff below should be moved to correct place in a version that otherwise changes
 	// the protocol version
 	os<<serializeString(mesh);
+	collision_box.serialize(os, protocol_version);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -372,6 +375,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 		// Stuff below should be moved to correct place in a version that
 		// otherwise changes the protocol version
 	mesh = deSerializeString(is);
+	collision_box.deSerialize(is);
 	}catch(SerializationError &e) {};
 }
 
@@ -437,6 +441,15 @@ CNodeDefManager::CNodeDefManager()
 
 CNodeDefManager::~CNodeDefManager()
 {
+#ifndef SERVER
+	for (u32 i = 0; i < m_content_features.size(); i++) {
+		ContentFeatures *f = &m_content_features[i];
+		for (u32 j = 0; j < 24; j++) {
+			if (f->mesh_ptr[j])
+				f->mesh_ptr[j]->drop();
+		}
+	}
+#endif
 }
 
 
@@ -686,6 +699,8 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef)
 	
 	ITextureSource *tsrc = gamedef->tsrc();
 	IShaderSource *shdsrc = gamedef->getShaderSource();
+	scene::ISceneManager* smgr = gamedef->getSceneManager();
+	scene::IMeshManipulator* meshmanip = smgr->getMeshManipulator();
 
 	bool new_style_water           = g_settings->getBool("new_style_water");
 	bool new_style_leaves          = g_settings->getBool("new_style_leaves");
@@ -831,29 +846,35 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef)
 		// Read the mesh and apply scale
 		if ((f->drawtype == NDT_MESH) && (f->mesh != "")) {
 			f->mesh_ptr[0] = gamedef->getMesh(f->mesh);
-			scaleMesh(f->mesh_ptr[0], v3f(f->visual_scale,f->visual_scale,f->visual_scale));
-			recalculateBoundingBox(f->mesh_ptr[0]);
+			if (f->mesh_ptr[0]){
+				v3f scale = v3f(1.0, 1.0, 1.0) * BS * f->visual_scale;
+				scaleMesh(f->mesh_ptr[0], scale);
+				recalculateBoundingBox(f->mesh_ptr[0]);
+			}
 		}
 
 		//Convert regular nodebox nodes to meshnodes
 		//Change the drawtype and apply scale
-		if ((f->drawtype == NDT_NODEBOX) && 
-				((f->node_box.type == NODEBOX_REGULAR) || (f->node_box.type == NODEBOX_FIXED)) &&
+		else if ((f->drawtype == NDT_NODEBOX) && 
+				((f->node_box.type == NODEBOX_REGULAR) ||
+				(f->node_box.type == NODEBOX_FIXED)) &&
 				(!f->node_box.fixed.empty())) {
 			f->drawtype = NDT_MESH;
 			f->mesh_ptr[0] = convertNodeboxNodeToMesh(f);
-			scaleMesh(f->mesh_ptr[0], v3f(f->visual_scale,f->visual_scale,f->visual_scale));
+			v3f scale = v3f(1.0, 1.0, 1.0) * f->visual_scale;
+			scaleMesh(f->mesh_ptr[0], scale);
 			recalculateBoundingBox(f->mesh_ptr[0]);
 		}
 
 		//Cache 6dfacedir rotated clones of meshes
 		if (f->mesh_ptr[0] && (f->param_type_2 == CPT2_FACEDIR)) {
-				for (u16 j = 1; j < 24; j++) {
-					f->mesh_ptr[j] = cloneMesh(f->mesh_ptr[0]);
-					rotateMeshBy6dFacedir(f->mesh_ptr[j], j);
-					recalculateBoundingBox(f->mesh_ptr[j]);
-				}
+			for (u16 j = 1; j < 24; j++) {
+				f->mesh_ptr[j] = cloneMesh(f->mesh_ptr[0]);
+				rotateMeshBy6dFacedir(f->mesh_ptr[j], j);
+				recalculateBoundingBox(f->mesh_ptr[j]);
+				meshmanip->recalculateNormals(f->mesh_ptr[j], false, false);
 			}
+		}
 	}
 #endif
 }

@@ -259,7 +259,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				continue;
 			int n_bouncy_value = itemgroup_get(f.groups, "bouncy");
 
-			std::vector<aabb3f> nodeboxes = n.getNodeBoxes(gamedef->ndef());
+			std::vector<aabb3f> nodeboxes = n.getCollisionBoxes(gamedef->ndef());
 			for(std::vector<aabb3f>::iterator
 					i = nodeboxes.begin();
 					i != nodeboxes.end(); i++)

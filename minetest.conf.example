@@ -283,8 +283,6 @@
 #creative_mode = false
 # Enable players getting damage and dying
 #enable_damage = false
-# Despawn all non-peaceful mobs
-#only_peaceful_mobs = false
 # A chosen map seed for a new map, leave empty for random
 #fixed_map_seed =
 # Gives some stuff to players at the beginning
