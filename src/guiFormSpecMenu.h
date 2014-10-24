@@ -210,7 +210,6 @@ public:
 			ISimpleTextureSource *tsrc,
 			IFormSource* fs_src,
 			TextDest* txt_dst,
-			GUIFormSpecMenu** ext_ptr,
 			Client* client
 			);
 
@@ -346,7 +345,6 @@ protected:
 private:
 	IFormSource      *m_form_src;
 	TextDest         *m_text_dst;
-	GUIFormSpecMenu **m_ext_ptr;
 	gui::IGUIFont    *m_font;
 	unsigned int      m_formspec_version;
 

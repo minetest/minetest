@@ -944,9 +944,16 @@ static inline void create_formspec_menu(GUIFormSpecMenu** cur_formspec,
 
 	if (*cur_formspec == 0) {
 		*cur_formspec = new GUIFormSpecMenu(device, guiroot, -1, &g_menumgr,
-				invmgr, gamedef, tsrc, fs_src, txt_dest, cur_formspec, client);
+				invmgr, gamedef, tsrc, fs_src, txt_dest, client);
 		(*cur_formspec)->doPause = false;
-		(*cur_formspec)->drop();
+
+		/*
+			Caution: do not call (*cur_formspec)->drop() here --
+			the reference might outlive the menu, so we will
+			periodically check if *cur_formspec is the only
+			remaining reference (i.e. the menu was removed)
+			and delete it in that case.
+		*/
 	}
 	else {
 		(*cur_formspec)->setFormSource(fs_src);
@@ -3417,10 +3424,16 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		}
 
 		/*
-			make sure menu is on top
+			1. Delete formspec menu reference if menu was removed
+			2. Else, make sure formspec menu is on top
 		*/
-		if ((!noMenuActive()) && (current_formspec)) {
+		if (current_formspec) {
+			if (current_formspec->getReferenceCount() == 1) {
+				current_formspec->drop();
+				current_formspec = NULL;
+			} else if (!noMenuActive()) {
 				guiroot->bringToFront(current_formspec);
+			}
 		}
 
 		/*
@@ -3509,6 +3522,11 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		g_menumgr.m_stack.front()->setVisible(false);
 		g_menumgr.deletingMenu(g_menumgr.m_stack.front());
 	}
+	if (current_formspec) {
+		current_formspec->drop();
+		current_formspec = NULL;
+	}
+
 	/*
 		Draw a "shutting down" screen, which will be shown while the map
 		generator and other stuff quits
