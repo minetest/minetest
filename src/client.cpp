@@ -1566,16 +1566,14 @@ void Client::typeChatMessage(const std::wstring &message)
 	sendChatMessage(message);
 
 	// Show locally
-	if (message[0] == L'/')
-	{
+	if (message[0] == L'/') {
 		m_chat_queue.push((std::wstring)L"issued command: " + message);
-	}
-	else
-	{
+	} else {
 		LocalPlayer *player = m_env.getLocalPlayer();
 		assert(player != NULL);
 		std::wstring name = narrow_to_wide(player->getName());
-		m_chat_queue.push((std::wstring)L"<" + name + L"> " + message);
+		m_chat_queue.push((std::wstring)L"<" + name + L"> " +
+			(message[0] == L'\\' ? message.substr(1) : message));
 	}
 }
 

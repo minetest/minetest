@@ -1085,13 +1085,12 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 			line += L"-!- Empty command";
 		else
 			line += L"-!- Invalid command: " + str_split(message, L' ')[0];
-	}
-	else {
+	} else {
 		if (checkPriv(player->getName(), "shout")) {
 			line += L"<";
 			line += name;
 			line += L"> ";
-			line += message;
+			line += (message[0] == L'\\' ? message.substr(1) : message);
 		} else {
 			line += L"-!- You don't have permission to shout.";
 			send_to_sender_only = true;
