@@ -125,6 +125,7 @@ private:
 
 	bool m_enable_shaders;
 	bool m_enable_highlighting;
+	bool m_enable_crack_animations;
 
 	video::SColor m_highlight_mesh_color;
 	

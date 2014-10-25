@@ -166,6 +166,8 @@
 #hud_hotbar_max_width = 1.0
 # Enable highlighting for nodes (disables selectionboxes)
 #enable_node_highlighting = false
+# Enable digging animations
+#enable_crack_animations = true
 # Texture filtering settings
 #mip_map = false
 #anisotropic_filter = false

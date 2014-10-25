@@ -1719,8 +1719,9 @@ static void draw_crack(video::IImage *crack, video::IImage *dst,
 	if(frame_count < 1)
 		frame_count = 1;
 	// Limit progression
-	if(progression > crack_count-1)
-		progression = crack_count-1;
+	progression = core::round32((progression / 16.0) * crack_count);
+	if(progression >= crack_count)
+		progression = crack_count - 1;
 	// Dimension of a single crack stage
 	core::dimension2d<u32> dim_crack_cropped(
 		dim_crack.Width,

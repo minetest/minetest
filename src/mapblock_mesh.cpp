@@ -1021,6 +1021,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 {
 	m_enable_shaders = g_settings->getBool("enable_shaders");
 	m_enable_highlighting = g_settings->getBool("enable_node_highlighting");
+	m_enable_crack_animations = g_settings->getBool("enable_crack_animations");
 
 	// 4-21ms for MAP_BLOCKSIZE=16  (NOTE: probably outdated)
 	// 24-155ms for MAP_BLOCKSIZE=32  (NOTE: probably outdated)
@@ -1102,7 +1103,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 		// Generate animation data
 		// - Cracks
-		if(p.tile.material_flags & MATERIAL_FLAG_CRACK)
+		if(m_enable_crack_animations && p.tile.material_flags & MATERIAL_FLAG_CRACK)
 		{
 			// Find the texture name plus ^[crack:N:
 			std::ostringstream os(std::ios::binary);
@@ -1259,7 +1260,6 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 	}
 
 	m_animation_force_timer = myrand_range(5, 100);
-
 	// Cracks
 	if(crack != m_last_crack)
 	{
@@ -1350,7 +1350,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 	}
 
 	// Node highlighting
-	if (m_enable_highlighting) {
+	if (m_enable_highlighting & (crack < 16)) {
 		u8 day = m_highlight_mesh_color.getRed();
 		u8 night = m_highlight_mesh_color.getGreen();	
 		video::SColor hc;
@@ -1358,9 +1358,12 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 		float sin_r = 0.07 * sin(1.5 * time);
 		float sin_g = 0.07 * sin(1.5 * time + irr::core::PI * 0.5);
 		float sin_b = 0.07 * sin(1.5 * time + irr::core::PI);
-		hc.setRed(core::clamp(core::round32(hc.getRed() * (0.8 + sin_r)), 0, 255));
-		hc.setGreen(core::clamp(core::round32(hc.getGreen() * (0.8 + sin_g)), 0, 255));
-		hc.setBlue(core::clamp(core::round32(hc.getBlue() * (0.8 + sin_b)), 0, 255));
+		float base = 0.8;
+		if (crack != -1)
+			base -= crack * 0.05;
+		hc.setRed(core::clamp(core::round32(hc.getRed() * (base + sin_r)), 0, 255));
+		hc.setGreen(core::clamp(core::round32(hc.getGreen() * (base + sin_g)), 0, 255));
+		hc.setBlue(core::clamp(core::round32(hc.getBlue() * (base + sin_b)), 0, 255));
 
 		for(std::list<u32>::iterator
 			i = m_highlighted_materials.begin();
