@@ -255,7 +255,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	{
 		f32 oldy = old_player_position.Y;
 		f32 newy = player_position.Y;
-		f32 t = exp(-23*frametime);
+		f32 t = exp(-10*frametime);
 		player_position.Y = oldy * t + newy * (1-t);
 	}
 
