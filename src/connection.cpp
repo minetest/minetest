@@ -2322,7 +2322,12 @@ bool ConnectionReceiveThread::checkIncomingBuffers(Channel *channel,
 SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 		SharedBuffer<u8> packetdata, u16 peer_id, u8 channelnum, bool reliable)
 {
-	PeerHelper peer = m_connection->getPeer(peer_id);
+	PeerHelper peer = m_connection->getPeerNoEx(peer_id);
+
+	if (!peer) {
+		errorstream << "Peer not found (possible timeout)" << std::endl;
+		throw ProcessedSilentlyException("Peer not found (possible timeout)");
+	}
 
 	if(packetdata.getSize() < 1)
 		throw InvalidIncomingDataException("packetdata.getSize() < 1");
