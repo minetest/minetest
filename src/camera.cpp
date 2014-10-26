@@ -380,7 +380,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 
 		// Calculate new position
 		bool abort = false;
-		for (int i = BS; i <= BS*2; i++)
+		for (int i = BS; i <= BS*2.75; i++)
 		{
 			my_cp.X = m_camera_position.X + m_camera_direction.X*-i;
 			my_cp.Z = m_camera_position.Z + m_camera_direction.Z*-i;
