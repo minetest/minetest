@@ -102,13 +102,10 @@ public:
 	float *buf;
 	float *result;
 
-	Noise(NoiseParams *np, int seed, int sx, int sy);
-	Noise(NoiseParams *np, int seed, int sx, int sy, int sz);
-	virtual ~Noise();
+	Noise(NoiseParams *np, int seed, int sx, int sy, int sz=1);
+	~Noise();
 
-	virtual void init(NoiseParams *np, int seed, int sx, int sy, int sz);
-	void setSize(int sx, int sy);
-	void setSize(int sx, int sy, int sz);
+	void setSize(int sx, int sy, int sz=1);
 	void setSpreadFactor(v3f spread);
 	void setOctaves(int octaves);
 	void resizeNoiseBuf(bool is3d);
@@ -120,10 +117,10 @@ public:
 	void gradientMap3D(
 		float x, float y, float z,
 		float step_x, float step_y, float step_z,
-		int seed);
+		int seed, bool eased=false);
 	float *perlinMap2D(float x, float y);
 	float *perlinMap2DModulated(float x, float y, float *persist_map);
-	float *perlinMap3D(float x, float y, float z);
+	float *perlinMap3D(float x, float y, float z, bool eased=false);
 	void transformNoiseMap();
 };
 
