@@ -61,14 +61,14 @@ struct GameFindPath
 };
 
 Strfnd getSubgamePathEnv() {
-  std::string sp;
-  char *subgame_path = getenv("MINETEST_SUBGAME_PATH");
+	std::string sp;
+	char *subgame_path = getenv("MINETEST_SUBGAME_PATH");
 
-  if(subgame_path) {
-    sp = std::string(subgame_path);
-  }
+	if(subgame_path) {
+		sp = std::string(subgame_path);
+	}
 
-  return Strfnd(sp);
+	return Strfnd(sp);
 }
 
 SubgameSpec findSubgame(const std::string &id)
@@ -79,15 +79,15 @@ SubgameSpec findSubgame(const std::string &id)
 	std::string user = porting::path_user;
 	std::vector<GameFindPath> find_paths;
 
-        Strfnd search_paths = getSubgamePathEnv();
+	Strfnd search_paths = getSubgamePathEnv();
 
-        while(!search_paths.atend()) {
-                std::string path = search_paths.next(":");
-                find_paths.push_back(GameFindPath(
-                                       path + DIR_DELIM + id, false));
-                find_paths.push_back(GameFindPath(
-                                       path + DIR_DELIM + id + "_game", false));
-        }
+	while(!search_paths.atend()) {
+		std::string path = search_paths.next(":");
+		find_paths.push_back(GameFindPath(
+				path + DIR_DELIM + id, false));
+		find_paths.push_back(GameFindPath(
+				path + DIR_DELIM + id + "_game", false));
+	}
 
 	find_paths.push_back(GameFindPath(
 			user + DIR_DELIM + "games" + DIR_DELIM + id + "_game", true));
@@ -153,11 +153,11 @@ std::set<std::string> getAvailableGameIds()
 	gamespaths.insert(porting::path_share + DIR_DELIM + "games");
 	gamespaths.insert(porting::path_user + DIR_DELIM + "games");
 
-        Strfnd search_paths = getSubgamePathEnv();
+	Strfnd search_paths = getSubgamePathEnv();
 
-        while(!search_paths.atend()) {
-                gamespaths.insert(search_paths.next(":"));
-        }
+	while(!search_paths.atend()) {
+		gamespaths.insert(search_paths.next(":"));
+	}
 
 	for(std::set<std::string>::const_iterator i = gamespaths.begin();
 			i != gamespaths.end(); i++){
@@ -277,5 +277,3 @@ bool initializeWorld(const std::string &path, const std::string &gameid)
 	}
 	return true;
 }
-
-
