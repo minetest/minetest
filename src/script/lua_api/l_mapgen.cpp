@@ -142,7 +142,8 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 			// emerged max pos
 			push_v3s16(L, vm->m_area.MaxEdge);
 
-			return 3; }
+			return 3;
+		}
 		case MGOBJ_HEIGHTMAP: {
 			if (!mg->heightmap)
 				return 0;
@@ -153,7 +154,8 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 				lua_rawseti(L, -2, i + 1);
 			}
 
-			return 1; }
+			return 1;
+		}
 		case MGOBJ_BIOMEMAP: {
 			if (!mg->biomemap)
 				return 0;
@@ -164,7 +166,8 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 				lua_rawseti(L, -2, i + 1);
 			}
 
-			return 1; }
+			return 1;
+		}
 		case MGOBJ_HEATMAP: { // Mapgen V7 specific objects
 		case MGOBJ_HUMIDMAP:
 			if (strcmp(emerge->params.mg_name.c_str(), "v7"))
@@ -183,7 +186,8 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 				lua_rawseti(L, -2, i + 1);
 			}
 
-			return 1; }
+			return 1;
+		}
 		case MGOBJ_GENNOTIFY: {
 			lua_newtable(L);
 			for (int i = 0; flagdesc_gennotify[i].name; i++) {
@@ -204,7 +208,8 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 				posvec->clear();
 			}
 
-			return 1; }
+			return 1;
+		}
 	}
 
 	return 0;
@@ -302,15 +307,26 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 
 	NodeResolver *resolver = getServer(L)->getNodeDefManager()->getResolver();
 	BiomeDefManager *bmgr  = getServer(L)->getEmergeManager()->biomedef;
-	if (!bmgr) {
-		verbosestream << "register_biome: BiomeDefManager not active" << std::endl;
-		return 0;
-	}
 
 	enum BiomeTerrainType terrain = (BiomeTerrainType)getenumfield(L, index,
 				"terrain_type", es_BiomeTerrainType, BIOME_TERRAIN_NORMAL);
 	Biome *b = bmgr->createBiome(terrain);
 
+	b->name           = getstringfield_default(L, index, "name", "<no name>");
+	b->depth_top      = getintfield_default(L, index, "depth_top",    1);
+	b->depth_filler   = getintfield_default(L, index, "depth_filler", 3);
+	b->height_min     = getintfield_default(L, index, "height_min",   0);
+	b->height_max     = getintfield_default(L, index, "height_max",   0);
+	b->heat_point     = getfloatfield_default(L, index, "heat_point",     0.);
+	b->humidity_point = getfloatfield_default(L, index, "humidity_point", 0.);
+	b->flags          = 0; //reserved
+
+	if (!bmgr->addBiome(b)) {
+		delete b;
+		return 0;
+	}
+
+	// Pend node resolutions only if insertion succeeded
 	resolver->addNode(getstringfield_default(L, index, "node_top", ""),
 		 "mapgen_dirt_with_grass", CONTENT_AIR, &b->c_top);
 	resolver->addNode(getstringfield_default(L, index, "node_filler", ""),
@@ -322,17 +338,7 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 	resolver->addNode(getstringfield_default(L, index, "node_dust_water", ""),
 		"mapgen_water_source", CONTENT_IGNORE, &b->c_dust_water);
 
-	b->name           = getstringfield_default(L, index, "name", "<no name>");
-	b->depth_top      = getintfield_default(L, index, "depth_top",    1);
-	b->depth_filler   = getintfield_default(L, index, "depth_filler", 3);
-	b->height_min     = getintfield_default(L, index, "height_min",   0);
-	b->height_max     = getintfield_default(L, index, "height_max",   0);
-	b->heat_point     = getfloatfield_default(L, index, "heat_point",     0.);
-	b->humidity_point = getfloatfield_default(L, index, "humidity_point", 0.);
-	b->flags          = 0; //reserved
-
 	verbosestream << "register_biome: " << b->name << std::endl;
-	bmgr->addBiome(b);
 
 	return 0;
 }
@@ -496,9 +502,6 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 		return 0;
 	}
 
-	resolver->addNode(getstringfield_default(L, index, "ore", ""),
-		"", CONTENT_AIR, &ore->c_ore);
-
 	ore->ore_param2     = (u8)getintfield_default(L, index, "ore_param2", 0);
 	ore->clust_scarcity = getintfield_default(L, index, "clust_scarcity", 1);
 	ore->clust_num_ores = getintfield_default(L, index, "clust_num_ores", 1);
@@ -506,19 +509,8 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	ore->height_min     = getintfield_default(L, index, "height_min", 0);
 	ore->height_max     = getintfield_default(L, index, "height_max", 0);
 	ore->nthresh        = getfloatfield_default(L, index, "noise_threshhold", 0.);
+	ore->noise          = NULL;
 	ore->flags          = 0;
-	getflagsfield(L, index, "flags", flagdesc_ore, &ore->flags, NULL);
-
-	std::vector<const char *> wherein_names;
-	getstringlistfield(L, index, "wherein", wherein_names);
-	for (size_t i = 0; i != wherein_names.size(); i++)
-		resolver->addNodeList(wherein_names[i], &ore->c_wherein);
-
-	lua_getfield(L, index, "noise_params");
-	ore->np = read_noiseparams(L, -1);
-	lua_pop(L, 1);
-
-	ore->noise = NULL;
 
 	if (ore->clust_scarcity <= 0 || ore->clust_num_ores <= 0) {
 		errorstream << "register_ore: clust_scarcity and clust_num_ores"
@@ -526,6 +518,20 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 		delete ore;
 		return 0;
 	}
+
+	getflagsfield(L, index, "flags", flagdesc_ore, &ore->flags, NULL);
+
+	lua_getfield(L, index, "noise_params");
+	ore->np = read_noiseparams(L, -1);
+	lua_pop(L, 1);
+
+	std::vector<const char *> wherein_names;
+	getstringlistfield(L, index, "wherein", wherein_names);
+	for (size_t i = 0; i != wherein_names.size(); i++)
+		resolver->addNodeList(wherein_names[i], &ore->c_wherein);
+
+	resolver->addNode(getstringfield_default(L, index, "ore", ""),
+		"", CONTENT_AIR, &ore->c_ore);
 
 	emerge->ores.push_back(ore);
 
@@ -594,7 +600,6 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 
 	return 1;
 }
-
 
 // place_schematic(p, schematic, rotation, replacement)
 int ModApiMapgen::l_place_schematic(lua_State *L)
