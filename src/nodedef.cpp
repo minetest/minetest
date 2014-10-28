@@ -1282,11 +1282,12 @@ int NodeResolver::addNode(std::string n_wanted, std::string n_alt,
 		if (m_ndef->getId(n_wanted, *content))
 			return NR_STATUS_SUCCESS;
 
-		if (n_alt == "")
+		if (n_alt == "" || !m_ndef->getId(n_alt, *content)) {
+			*content = c_fallback;
 			return NR_STATUS_FAILURE;
+		}
 
-		return m_ndef->getId(n_alt, *content) ?
-			NR_STATUS_SUCCESS : NR_STATUS_FAILURE;
+		return NR_STATUS_SUCCESS;
 	} else {
 		NodeResolveInfo *nfi = new NodeResolveInfo;
 		nfi->n_wanted   = n_wanted;
@@ -1378,7 +1379,7 @@ int NodeResolver::resolveNodes()
 				"resolve '" << nri->n_wanted;
 			if (nri->n_alt != "")
 				errorstream << "' and '" << nri->n_alt;
-			errorstream << "' to a content ID" << std::endl;
+			errorstream << "'" << std::endl;
 		}
 
 		delete nri;
@@ -1399,6 +1400,12 @@ int NodeResolver::resolveNodes()
 		m_ndef->getIds(name, idset);
 		for (it = idset.begin(); it != idset.end(); ++it)
 			output->push_back(*it);
+
+		if (idset.size() == 0) {
+			num_failed++;
+			errorstream << "NodeResolver::resolveNodes():  Failed to "
+				"resolve '" << name << "'" << std::endl;
+		}
 	}
 
 	//// Mark node registration as complete so future resolve

@@ -293,20 +293,106 @@ struct NodeResolveInfo {
 #define NR_STATUS_PENDING 1
 #define NR_STATUS_SUCCESS 2
 
+/**
+	NodeResolver
+
+	NodeResolver attempts to resolve node names to content ID integers. If the
+	node registration phase has not yet finished at the time the resolution
+	request is placed, the request is marked as pending and added to an internal
+	queue.  The name resolution request is later satisfied by writing directly
+	to the output location when the node registration phase has been completed.
+
+	This is primarily intended to be used for objects registered during script
+	initialization (i.e. while nodes are being registered) that reference
+	particular nodes.
+*/
 class NodeResolver {
 public:
 	NodeResolver(INodeDefManager *ndef);
 	~NodeResolver();
 
+	/**
+		Add a request to resolve the node n_wanted and set *content to the
+		result, or alternatively, n_alt if n_wanted is not found.  If n_alt
+		cannot be found either, or has not been specified, *content is set
+		to c_fallback.
+
+		If node registration is complete, the request is finished immediately
+		and NR_STATUS_SUCCESS is returned (or NR_STATUS_FAILURE if no node can
+		be found).  Otherwise, NR_STATUS_PENDING is returned and the resolution
+		request is queued.
+
+		N.B.  If the memory in which content is located has been deallocated
+		before the pending request had been satisfied, cancelNode() must be
+		called.
+
+		@param n_wanted Name of node that is wanted.
+		@param n_alt Name of node in case n_wanted could not be found.  Blank
+			if no alternative node is desired.
+		@param c_fallback Content ID that content is set to in case of node
+			resolution failure (should be CONTENT_AIR, CONTENT_IGNORE, etc.)
+		@param content Pointer to content_t that receives the result of the
+			node name resolution.
+		@return Status of node resolution request.
+	*/
 	int addNode(std::string n_wanted, std::string n_alt,
 		content_t c_fallback, content_t *content);
+
+	/**
+		Add a request to resolve the node(s) specified by nodename.
+
+		If node registration is complete, the request is finished immediately
+		and NR_STATUS_SUCCESS is returned if at least one node is resolved; if
+		zero were resolved, NR_STATUS_FAILURE.  Otherwise, NR_STATUS_PENDING is
+		returned and the resolution request is queued.
+
+		N.B.  If the memory in which content_vec is located has been deallocated
+		before the pending request had been satisfied, cancelNodeList() must be
+		called.
+
+		@param nodename Name of node (or node group) to be resolved. 
+		@param content_vec Pointer to content_t vector onto which the results
+			are added.
+
+		@return Status of node resolution request.
+	*/
 	int addNodeList(const char *nodename, std::vector<content_t> *content_vec);
 
+	/**
+		Removes all pending requests from the resolution queue to be satisfied
+		to content.
+
+		@param content Location of the content ID for the request being
+			cancelled.
+		@return Number of pending requests cancelled.
+	*/
 	bool cancelNode(content_t *content);
+
+	/**
+		Removes all pending requests from the resolution queue to be satisfied
+		to content_vec.
+
+		@param content_vec Location of the content ID vector for requests being
+			cancelled.
+		@return Number of pending requests cancelled.
+	*/
 	int cancelNodeList(std::vector<content_t> *content_vec);
 
+	/**
+		Carries out all pending node resolution requests.  Call this when the
+		node registration phase has completed.
+
+		Internally marks node registration as complete.
+
+		@return Number of failed pending requests.
+	*/
 	int resolveNodes();
 
+	/**
+		Returns the status of the node registration phase.
+
+		@return Boolean of whether the registration phase is complete.
+	*/
 	bool isNodeRegFinished() { return m_is_node_registration_complete; }
 
 private:
