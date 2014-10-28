@@ -136,3 +136,9 @@ function core.record_protection_violation(pos, name)
 	end
 end
 
+minetest.register_on_shutdown(function()
+	for _, player in pairs(minetest.get_connected_players()) do
+		minetest.kick_player(player:get_player_name(), "Server shutting down.")
+	end
+end)
+
