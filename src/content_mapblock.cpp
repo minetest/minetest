@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "nodedef.h"
 #include "tile.h"
+#include "mesh.h"
+#include <IMeshManipulator.h>
 #include "gamedef.h"
 #include "log.h"
 
@@ -171,6 +173,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 {
 	INodeDefManager *nodedef = data->m_gamedef->ndef();
 	ITextureSource *tsrc = data->m_gamedef->tsrc();
+	scene::ISceneManager* smgr = data->m_gamedef->getSceneManager();
+	scene::IMeshManipulator* meshmanip = smgr->getMeshManipulator();
 
 	// 0ms
 	//TimeTaker timer("mapblock_mesh_generate_special()");
@@ -178,6 +182,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 	/*
 		Some settings
 	*/
+	bool enable_mesh_cache	= g_settings->getBool("enable_mesh_cache");
 	bool new_style_water = g_settings->getBool("new_style_water");
 
 	float node_liquid_level = 1.0;
@@ -1719,14 +1724,41 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		{
 			v3f pos = intToFloat(p, BS);
 			video::SColor c = MapBlock_LightColor(255, getInteriorLight(n, 1, nodedef), f.light_source);
-			u8 facedir = n.getFaceDir(nodedef);
+
+			u8 facedir = 0;
+			if (f.param_type_2 == CPT2_FACEDIR) {
+				facedir = n.getFaceDir(nodedef);
+			} else if (f.param_type_2 == CPT2_WALLMOUNTED) {
+				//convert wallmounted to 6dfacedir.
+				//when cache enabled, it is already converted
+				facedir = n.getWallMounted(nodedef);				
+				if (!enable_mesh_cache) {
+					static const u8 wm_to_6d[6] = 	{20, 0, 16, 12, 8, 4};
+					facedir = wm_to_6d[facedir];
+				}
+			}
+
 			if (f.mesh_ptr[facedir]) {
-				for(u16 j = 0; j < f.mesh_ptr[facedir]->getMeshBufferCount(); j++) {
+				// use cached meshes
+				for(u16 j = 0; j < f.mesh_ptr[0]->getMeshBufferCount(); j++) {
 					scene::IMeshBuffer *buf = f.mesh_ptr[facedir]->getMeshBuffer(j);
 					collector.append(getNodeTileN(n, p, j, data),
 						(video::S3DVertex *)buf->getVertices(), buf->getVertexCount(),
 						buf->getIndices(), buf->getIndexCount(), pos, c);
 				}
+			} else if (f.mesh_ptr[0]) {
+				// no cache, clone and rotate mesh
+				scene::IMesh* mesh = cloneMesh(f.mesh_ptr[0]);
+				rotateMeshBy6dFacedir(mesh, facedir);
+				recalculateBoundingBox(mesh);
+				meshmanip->recalculateNormals(mesh, true, false);
+				for(u16 j = 0; j < mesh->getMeshBufferCount(); j++) {
+					scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+					collector.append(getNodeTileN(n, p, j, data),
+						(video::S3DVertex *)buf->getVertices(), buf->getVertexCount(),
+						buf->getIndices(), buf->getIndexCount(), pos, c);
+				}
+				mesh->drop();
 			}
 		break;}
 		}

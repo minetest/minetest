@@ -201,6 +201,8 @@
 #enable_waving_leaves = false
 # Set to true enables waving plants. Requires shaders enabled.
 #enable_waving_plants = false
+# Enables caching of facedir rotated meshes
+#enable_mesh_cache = true
 # The time in seconds it takes between repeated
 # right clicks when holding the right mouse button
 #repeat_rightclick_time = 0.25
