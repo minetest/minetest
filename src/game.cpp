@@ -1497,6 +1497,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 					message << " ( " << cur << cur_unit << " )";
 				}
 				progress = 50+client.mediaReceiveProgress()*50+0.5;
+				message << " " << progress << "%";
 				draw_load_screen(narrow_to_wide(message.str().c_str()), device,
 						guienv, font, dtime, progress);
 			}
