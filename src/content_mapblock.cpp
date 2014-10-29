@@ -55,8 +55,7 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box,
  
  
  
-	if(txc == NULL)
-	{
+	if (txc == NULL) {
 		static const f32 txc_default[24] = {
 			0,0,1,1,
 			0,0,1,1,
@@ -102,10 +101,8 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box,
 		video::S3DVertex(min.X,min.Y,min.Z, 0,0,-1, c, txc[20],txc[23]),
 	};
 
-	for(int i = 0; i < 6; i++)
-				{
-				switch (tiles[MYMIN(i, tilecount-1)].rotation)
-				{
+	for (int i = 0; i < 6; i++) {
+				switch (tiles[MYMIN(i, tilecount-1)].rotation) {
 				case 0:
 					break;
 				case 1: //R90
@@ -121,36 +118,36 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box,
 						vertices[i*4+x].TCoords.rotateBy(270,irr::core::vector2df(0, 0));
 					break;
 				case 4: //FXR90
-					for (int x = 0; x < 4; x++){
+					for (int x = 0; x < 4; x++) {
 						vertices[i*4+x].TCoords.X = 1.0 - vertices[i*4+x].TCoords.X;
 						vertices[i*4+x].TCoords.rotateBy(90,irr::core::vector2df(0, 0));
 					}
 					break;
 				case 5: //FXR270
-					for (int x = 0; x < 4; x++){
+					for (int x = 0; x < 4; x++) {
 						vertices[i*4+x].TCoords.X = 1.0 - vertices[i*4+x].TCoords.X;
 						vertices[i*4+x].TCoords.rotateBy(270,irr::core::vector2df(0, 0));
 					}
 					break;
 				case 6: //FYR90
-					for (int x = 0; x < 4; x++){
+					for (int x = 0; x < 4; x++) {
 						vertices[i*4+x].TCoords.Y = 1.0 - vertices[i*4+x].TCoords.Y;
 						vertices[i*4+x].TCoords.rotateBy(90,irr::core::vector2df(0, 0));
 					}
 					break;
 				case 7: //FYR270
-					for (int x = 0; x < 4; x++){
+					for (int x = 0; x < 4; x++) {
 						vertices[i*4+x].TCoords.Y = 1.0 - vertices[i*4+x].TCoords.Y;
 						vertices[i*4+x].TCoords.rotateBy(270,irr::core::vector2df(0, 0));
 					}
 					break;
 				case 8: //FX
-					for (int x = 0; x < 4; x++){
+					for (int x = 0; x < 4; x++) {
 						vertices[i*4+x].TCoords.X = 1.0 - vertices[i*4+x].TCoords.X;
 					}
 					break;
 				case 9: //FY
-					for (int x = 0; x < 4; x++){
+					for (int x = 0; x < 4; x++) {
 						vertices[i*4+x].TCoords.Y = 1.0 - vertices[i*4+x].TCoords.Y;
 					}
 					break;
@@ -160,8 +157,7 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box,
 			}
 	u16 indices[] = {0,1,2,2,3,0};
 	// Add to mesh collector
-	for(s32 j=0; j<24; j+=4)
-	{
+	for (s32 j=0; j<24; j+=4) {
 		int tileindex = MYMIN(j/4, tilecount-1);
 		collector->append(tiles[tileindex],
 				vertices+j, 4, indices, 6);
@@ -199,7 +195,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			(p.Z >= 0) && (p.Z < MAP_BLOCKSIZE)) {
 
 		MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
-		if(n.getContent() != CONTENT_AIR) {
+		if (n.getContent() != CONTENT_AIR) {
 			// Get selection mesh light level
 			static const v3s16 dirs[7] = {
 					v3s16( 0, 0, 0),
@@ -227,10 +223,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			h_tile.texture = tsrc->getTexture("halo.png",&h_tile.texture_id);
 			v3f pos = intToFloat(p, BS);
 			f32 d = 0.05 * BS;
-			for(std::vector<aabb3f>::iterator
+			for (std::vector<aabb3f>::iterator
 					i = boxes.begin();
-					i != boxes.end(); i++)
-			{
+					i != boxes.end(); i++) {
 				aabb3f box = *i;
 				box.MinEdge += v3f(-d, -d, -d) + pos;
 				box.MaxEdge += v3f(d, d, d) + pos;
@@ -239,20 +234,19 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		}
 	}
 
-	for(s16 z = 0; z < MAP_BLOCKSIZE; z++)
-	for(s16 y = 0; y < MAP_BLOCKSIZE; y++)
-	for(s16 x = 0; x < MAP_BLOCKSIZE; x++)
-	{
+	for (s16 z = 0; z < MAP_BLOCKSIZE; z++)
+	for (s16 y = 0; y < MAP_BLOCKSIZE; y++)
+	for (s16 x = 0; x < MAP_BLOCKSIZE; x++) {
 		v3s16 p(x,y,z);
 
 		MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
 		const ContentFeatures &f = nodedef->get(n);
 
 		// Only solidness=0 stuff is drawn here
-		if(f.solidness != 0)
+		if (f.solidness != 0)
 			continue;
 
-		switch(f.drawtype){
+		switch (f.drawtype) {
 		default:
 			infostream<<"Got "<<f.drawtype<<std::endl;
 			assert(0);
@@ -271,7 +265,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
 			content_t c_flowing = nodedef->getId(f.liquid_alternative_flowing);
 			content_t c_source = nodedef->getId(f.liquid_alternative_source);
-			if(ntop.getContent() == c_flowing || ntop.getContent() == c_source)
+			if (ntop.getContent() == c_flowing || ntop.getContent() == c_source)
 				top_is_same_liquid = true;
 
 			u16 l = getInteriorLight(n, 0, nodedef);
@@ -286,8 +280,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				v3s16(0,0,1),
 				v3s16(0,0,-1),
 			};
-			for(u32 i=0; i<4; i++)
-			{
+			for (u32 i=0; i<4; i++) {
 				v3s16 dir = side_dirs[i];
 
 				MapNode neighbor = data->m_vmanip.getNodeNoEx(blockpos_nodes + p + dir);
@@ -296,19 +289,19 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				MapNode n_top = data->m_vmanip.getNodeNoEx(blockpos_nodes + p + dir+ v3s16(0,1,0));
 				content_t n_top_c = n_top.getContent();
 
-				if(neighbor_content == CONTENT_IGNORE)
+				if (neighbor_content == CONTENT_IGNORE)
 					continue;
 
 				/*
 					If our topside is liquid and neighbor's topside
 					is liquid, don't draw side face
 				*/
-				if(top_is_same_liquid && (n_top_c == c_flowing ||
+				if (top_is_same_liquid && (n_top_c == c_flowing ||
 						n_top_c == c_source || n_top_c == CONTENT_IGNORE))
 					continue;
 
 				// Don't draw face if neighbor is blocking the view
-				if(n_feat.solidness == 2)
+				if (n_feat.solidness == 2)
 					continue;
 
 				bool neighbor_is_same_liquid = (neighbor_content == c_source
@@ -316,13 +309,13 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				// Don't draw any faces if neighbor same is liquid and top is
 				// same liquid
-				if(neighbor_is_same_liquid && !top_is_same_liquid)
+				if (neighbor_is_same_liquid && !top_is_same_liquid)
 					continue;
 
 				// Use backface culled material if neighbor doesn't have a
 				// solidness of 0
 				const TileSpec *current_tile = &tile_liquid;
-				if(n_feat.solidness != 0 || n_feat.visual_solidness != 0)
+				if (n_feat.solidness != 0 || n_feat.visual_solidness != 0)
 					current_tile = &tile_liquid_bfculled;
 
 				video::S3DVertex vertices[4] =
@@ -337,24 +330,21 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					If our topside is liquid, set upper border of face
 					at upper border of node
 				*/
-				if(top_is_same_liquid)
-				{
+				if (top_is_same_liquid) {
 					vertices[2].Pos.Y = 0.5*BS;
 					vertices[3].Pos.Y = 0.5*BS;
 				}
 				/*
 					Otherwise upper position of face is liquid level
 				*/
-				else
-				{
+				else {
 					vertices[2].Pos.Y = (node_liquid_level-0.5)*BS;
 					vertices[3].Pos.Y = (node_liquid_level-0.5)*BS;
 				}
 				/*
 					If neighbor is liquid, lower border of face is liquid level
 				*/
-				if(neighbor_is_same_liquid)
-				{
+				if (neighbor_is_same_liquid) {
 					vertices[0].Pos.Y = (node_liquid_level-0.5)*BS;
 					vertices[1].Pos.Y = (node_liquid_level-0.5)*BS;
 				}
@@ -362,26 +352,24 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					If neighbor is not liquid, lower border of face is
 					lower border of node
 				*/
-				else
-				{
+				else {
 					vertices[0].Pos.Y = -0.5*BS;
 					vertices[1].Pos.Y = -0.5*BS;
 				}
 
-				for(s32 j=0; j<4; j++)
-				{
-					if(dir == v3s16(0,0,1))
+				for (s32 j=0; j<4; j++) {
+					if (dir == v3s16(0,0,1))
 						vertices[j].Pos.rotateXZBy(0);
-					if(dir == v3s16(0,0,-1))
+					if (dir == v3s16(0,0,-1))
 						vertices[j].Pos.rotateXZBy(180);
-					if(dir == v3s16(-1,0,0))
+					if (dir == v3s16(-1,0,0))
 						vertices[j].Pos.rotateXZBy(90);
-					if(dir == v3s16(1,0,-0))
+					if (dir == v3s16(1,0,-0))
 						vertices[j].Pos.rotateXZBy(-90);
 
 					// Do this to not cause glitches when two liquids are
 					// side-by-side
-					/*if(neighbor_is_same_liquid == false){
+					/*if(neighbor_is_same_liquid == false) {
 						vertices[j].Pos.X *= 0.98;
 						vertices[j].Pos.Z *= 0.98;
 					}*/
@@ -397,7 +385,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			/*
 				Generate top
 			 */
-			if(top_is_same_liquid)
+			if (top_is_same_liquid)
 				continue;
 			
 			video::S3DVertex vertices[4] =
@@ -409,8 +397,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			};
 
 			v3f offset(p.X*BS, p.Y*BS + (-0.5+node_liquid_level)*BS, p.Z*BS);
-			for(s32 i=0; i<4; i++)
-			{
+			for (s32 i=0; i<4; i++) {
 				vertices[i].Pos += offset;
 			}
 
@@ -430,14 +417,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
 			content_t c_flowing = nodedef->getId(f.liquid_alternative_flowing);
 			content_t c_source = nodedef->getId(f.liquid_alternative_source);
-			if(ntop.getContent() == c_flowing || ntop.getContent() == c_source)
+			if (ntop.getContent() == c_flowing || ntop.getContent() == c_source)
 				top_is_same_liquid = true;
 			
 			u16 l = 0;
 			// If this liquid emits light and doesn't contain light, draw
 			// it at what it emits, for an increased effect
 			u8 light_source = nodedef->get(n).light_source;
-			if(light_source != 0){
+			if (light_source != 0) {
 				l = decode_light(light_source);
 				l = l | (l<<8);
 			}
@@ -468,21 +455,19 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				v3s16(1,0,-1),
 				v3s16(-1,0,1),
 			};
-			for(u32 i=0; i<9; i++)
-			{
+			for (u32 i=0; i<9; i++) {
 				content_t content = CONTENT_AIR;
 				float level = -0.5 * BS;
 				u8 flags = 0;
 				// Check neighbor
 				v3s16 p2 = p + neighbor_dirs[i];
 				MapNode n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
-				if(n2.getContent() != CONTENT_IGNORE)
-				{
+				if (n2.getContent() != CONTENT_IGNORE) {
 					content = n2.getContent();
 
-					if(n2.getContent() == c_source)
+					if (n2.getContent() == c_source)
 						level = (-0.5+node_liquid_level) * BS;
-					else if(n2.getContent() == c_flowing){
+					else if(n2.getContent() == c_flowing) {
 						u8 liquid_level = (n2.param2&LIQUID_LEVEL_MASK);
 						if (liquid_level <= LIQUID_LEVEL_MAX+1-range)
 							liquid_level = 0;
@@ -496,7 +481,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					//       doesn't exist
 					p2.Y += 1;
 					n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
-					if(n2.getContent() == c_source ||
+					if (n2.getContent() == c_source ||
 							n2.getContent() == c_flowing)
 						flags |= neighborflag_top_is_same_liquid;
 				}
@@ -515,43 +500,36 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				v3s16(1,0,1),
 				v3s16(0,0,1),
 			};
-			for(u32 i=0; i<4; i++)
-			{
+			for (u32 i=0; i<4; i++) {
 				v3s16 cornerdir = halfdirs[i];
 				float cornerlevel = 0;
 				u32 valid_count = 0;
 				u32 air_count = 0;
-				for(u32 j=0; j<4; j++)
-				{
+				for (u32 j=0; j<4; j++) {
 					v3s16 neighbordir = cornerdir - halfdirs[j];
 					content_t content = neighbor_contents[neighbordir];
 					// If top is liquid, draw starting from top of node
-					if(neighbor_flags[neighbordir] &
-							neighborflag_top_is_same_liquid)
-					{
+					if (neighbor_flags[neighbordir] &
+							neighborflag_top_is_same_liquid) {
 						cornerlevel = 0.5*BS;
 						valid_count = 1;
 						break;
 					}
 					// Source is always the same height
-					else if(content == c_source)
-					{
+					else if(content == c_source) {
 						cornerlevel = (-0.5+node_liquid_level)*BS;
 						valid_count = 1;
 						break;
 					}
 					// Flowing liquid has level information
-					else if(content == c_flowing)
-					{
+					else if(content == c_flowing) {
 						cornerlevel += neighbor_levels[neighbordir];
 						valid_count++;
-					}
-					else if(content == CONTENT_AIR)
-					{
+					} else if(content == CONTENT_AIR) {
 						air_count++;
 					}
 				}
-				if(air_count >= 2)
+				if (air_count >= 2)
 					cornerlevel = -0.5*BS+0.2;
 				else if(valid_count > 0)
 					cornerlevel /= valid_count;
@@ -574,15 +552,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				{2, 3},
 				{0, 1},
 			};
-			for(u32 i=0; i<4; i++)
-			{
+			for (u32 i=0; i<4; i++) {
 				v3s16 dir = side_dirs[i];
 
 				/*
 					If our topside is liquid and neighbor's topside
 					is liquid, don't draw side face
 				*/
-				if(top_is_same_liquid &&
+				if (top_is_same_liquid &&
 						neighbor_flags[dir] & neighborflag_top_is_same_liquid)
 					continue;
 
@@ -590,7 +567,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				const ContentFeatures &n_feat = nodedef->get(neighbor_content);
 				
 				// Don't draw face if neighbor is blocking the view
-				if(n_feat.solidness == 2)
+				if (n_feat.solidness == 2)
 					continue;
 				
 				bool neighbor_is_same_liquid = (neighbor_content == c_source
@@ -598,14 +575,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				
 				// Don't draw any faces if neighbor same is liquid and top is
 				// same liquid
-				if(neighbor_is_same_liquid == true
+				if (neighbor_is_same_liquid == true
 						&& top_is_same_liquid == false)
 					continue;
 
 				// Use backface culled material if neighbor doesn't have a
 				// solidness of 0
 				const TileSpec *current_tile = &tile_liquid;
-				if(n_feat.solidness != 0 || n_feat.visual_solidness != 0)
+				if (n_feat.solidness != 0 || n_feat.visual_solidness != 0)
 					current_tile = &tile_liquid_bfculled;
 				
 				video::S3DVertex vertices[4] =
@@ -620,16 +597,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					If our topside is liquid, set upper border of face
 					at upper border of node
 				*/
-				if(top_is_same_liquid)
-				{
+				if (top_is_same_liquid) {
 					vertices[2].Pos.Y = 0.5*BS;
 					vertices[3].Pos.Y = 0.5*BS;
 				}
 				/*
 					Otherwise upper position of face is corner levels
 				*/
-				else
-				{
+				else {
 					vertices[2].Pos.Y = corner_levels[side_corners[i][0]];
 					vertices[3].Pos.Y = corner_levels[side_corners[i][1]];
 				}
@@ -638,8 +613,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					If neighbor is liquid, lower border of face is corner
 					liquid levels
 				*/
-				if(neighbor_is_same_liquid)
-				{
+				if (neighbor_is_same_liquid) {
 					vertices[0].Pos.Y = corner_levels[side_corners[i][1]];
 					vertices[1].Pos.Y = corner_levels[side_corners[i][0]];
 				}
@@ -647,26 +621,24 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					If neighbor is not liquid, lower border of face is
 					lower border of node
 				*/
-				else
-				{
+				else {
 					vertices[0].Pos.Y = -0.5*BS;
 					vertices[1].Pos.Y = -0.5*BS;
 				}
 				
-				for(s32 j=0; j<4; j++)
-				{
-					if(dir == v3s16(0,0,1))
+				for (s32 j=0; j<4; j++) {
+					if (dir == v3s16(0,0,1))
 						vertices[j].Pos.rotateXZBy(0);
-					if(dir == v3s16(0,0,-1))
+					if (dir == v3s16(0,0,-1))
 						vertices[j].Pos.rotateXZBy(180);
-					if(dir == v3s16(-1,0,0))
+					if (dir == v3s16(-1,0,0))
 						vertices[j].Pos.rotateXZBy(90);
-					if(dir == v3s16(1,0,-0))
+					if (dir == v3s16(1,0,-0))
 						vertices[j].Pos.rotateXZBy(-90);
 						
 					// Do this to not cause glitches when two liquids are
 					// side-by-side
-					/*if(neighbor_is_same_liquid == false){
+					/*if(neighbor_is_same_liquid == false) {
 						vertices[j].Pos.X *= 0.98;
 						vertices[j].Pos.Z *= 0.98;
 					}*/
@@ -683,8 +655,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				Generate top side, if appropriate
 			*/
 			
-			if(top_is_same_liquid == false)
-			{
+			if (top_is_same_liquid == false) {
 				video::S3DVertex vertices[4] =
 				{
 					video::S3DVertex(-BS/2,0,BS/2, 0,0,0, c, 0,1),
@@ -698,8 +669,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				// calculate corner levels in exact reverse order.
 				s32 corner_resolve[4] = {3,2,1,0};
 
-				for(s32 i=0; i<4; i++)
-				{
+				for (s32 i=0; i<4; i++) {
 					//vertices[i].Pos.Y += liquid_level;
 					//vertices[i].Pos.Y += neighbor_levels[v3s16(0,0,0)];
 					s32 j = corner_resolve[i];
@@ -729,8 +699,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				tcoord_translate.X -= floor(tcoord_translate.X);
 				tcoord_translate.Y -= floor(tcoord_translate.Y);
 
-				for(s32 i=0; i<4; i++)
-				{
+				for (s32 i=0; i<4; i++) {
 					vertices[i].TCoords.rotateBy(
 							tcoord_angle,
 							tcoord_center);
@@ -753,13 +722,12 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			u16 l = getInteriorLight(n, 1, nodedef);
 			video::SColor c = MapBlock_LightColor(255, l, f.light_source);
 
-			for(u32 j=0; j<6; j++)
-			{
+			for (u32 j=0; j<6; j++) {
 				// Check this neighbor
 				v3s16 n2p = blockpos_nodes + p + g_6dirs[j];
 				MapNode n2 = data->m_vmanip.getNodeNoEx(n2p);
 				// Don't make face if neighbor is of same type
-				if(n2.getContent() == n.getContent())
+				if (n2.getContent() == n.getContent())
 					continue;
 
 				// The face at Z+
@@ -771,26 +739,26 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				};
 				
 				// Rotations in the g_6dirs format
-				if(j == 0) // Z+
-					for(u16 i=0; i<4; i++)
+				if (j == 0) // Z+
+					for (u16 i=0; i<4; i++)
 						vertices[i].Pos.rotateXZBy(0);
 				else if(j == 1) // Y+
-					for(u16 i=0; i<4; i++)
+					for (u16 i=0; i<4; i++)
 						vertices[i].Pos.rotateYZBy(-90);
 				else if(j == 2) // X+
-					for(u16 i=0; i<4; i++)
+					for (u16 i=0; i<4; i++)
 						vertices[i].Pos.rotateXZBy(-90);
 				else if(j == 3) // Z-
-					for(u16 i=0; i<4; i++)
+					for (u16 i=0; i<4; i++)
 						vertices[i].Pos.rotateXZBy(180);
 				else if(j == 4) // Y-
-					for(u16 i=0; i<4; i++)
+					for (u16 i=0; i<4; i++)
 						vertices[i].Pos.rotateYZBy(90);
 				else if(j == 5) // X-
-					for(u16 i=0; i<4; i++)
+					for (u16 i=0; i<4; i++)
 						vertices[i].Pos.rotateXZBy(90);
 
-				for(u16 i=0; i<4; i++){
+				for (u16 i=0; i<4; i++) {
 					vertices[i].Pos += intToFloat(p, BS);
 				}
 
@@ -895,7 +863,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				if (n2c == current || n2c == CONTENT_IGNORE)
 					nb[4] = 1;	
 			} else if (H_merge && !V_merge) {
-				for(i = 0; i < 8; i++) {
+				for (i = 0; i < 8; i++) {
 					n2p = blockpos_nodes + p + g_26dirs[nb_H_dirs[i]];
 					n2 = data->m_vmanip.getNodeNoEx(n2p);
 					n2c = n2.getContent();
@@ -903,7 +871,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						nb[nb_H_dirs[i]] = 1;		
 				}
 			} else if (H_merge && V_merge) {
-				for(i = 0; i < 18; i++)	{
+				for (i = 0; i < 18; i++)	{
 					n2p = blockpos_nodes + p + g_26dirs[i];
 					n2 = data->m_vmanip.getNodeNoEx(n2p);
 					n2c = n2.getContent();
@@ -918,7 +886,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				visible_faces[0] = 1;
 				visible_faces[1] = 1;
 			} else {
-				for(i = 0; i < 2; i++) {
+				for (i = 0; i < 2; i++) {
 					n2p = blockpos_nodes + p + dirs[i];
 					n2 = data->m_vmanip.getNodeNoEx(n2p);
 					n2c = n2.getContent();
@@ -933,7 +901,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				visible_faces[4] = 1;
 				visible_faces[5] = 1;
 			} else {
-				for(i = 2; i < 6; i++) {
+				for (i = 2; i < 6; i++) {
 					n2p = blockpos_nodes + p + dirs[i];
 					n2 = data->m_vmanip.getNodeNoEx(n2p);
 					n2c = n2.getContent();
@@ -951,8 +919,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			f32 tx1, ty1, tz1, tx2, ty2, tz2;
 			aabb3f box;
 
-			for(i = 0; i < 12; i++)
-			{
+			for (i = 0; i < 12; i++) {
 				int edge_invisible;
 				if (nb[nb_triplet[i*3+2]])
 					edge_invisible = nb[nb_triplet[i*3]] & nb[nb_triplet[i*3+1]];
@@ -980,8 +947,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				makeCuboid(&collector, box, &tiles[0], 1, c, txc1);
 			}
 
-			for(i = 0; i < 6; i++)
-			{
+			for (i = 0; i < 6; i++) {
 				if (!visible_faces[i])
 					continue;
 				box = glass_faces[i];
@@ -1060,12 +1026,12 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			v3s16 dir = n.getWallMountedDir(nodedef);
 			
 			u8 tileindex = 0;
-			if(dir == v3s16(0,-1,0)){
+			if (dir == v3s16(0,-1,0)) {
 				tileindex = 0; // floor
-			} else if(dir == v3s16(0,1,0)){
+			} else if(dir == v3s16(0,1,0)) {
 				tileindex = 1; // ceiling
 			// For backwards compatibility
-			} else if(dir == v3s16(0,0,0)){
+			} else if(dir == v3s16(0,0,0)) {
 				tileindex = 0; // floor
 			} else {
 				tileindex = 2; // side
@@ -1088,19 +1054,18 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				video::S3DVertex(-s, s,0, 0,0,0, c, 0,0),
 			};
 
-			for(s32 i=0; i<4; i++)
-			{
-				if(dir == v3s16(1,0,0))
+			for (s32 i=0; i<4; i++) {
+				if (dir == v3s16(1,0,0))
 					vertices[i].Pos.rotateXZBy(0);
-				if(dir == v3s16(-1,0,0))
+				if (dir == v3s16(-1,0,0))
 					vertices[i].Pos.rotateXZBy(180);
-				if(dir == v3s16(0,0,1))
+				if (dir == v3s16(0,0,1))
 					vertices[i].Pos.rotateXZBy(90);
-				if(dir == v3s16(0,0,-1))
+				if (dir == v3s16(0,0,-1))
 					vertices[i].Pos.rotateXZBy(-90);
-				if(dir == v3s16(0,-1,0))
+				if (dir == v3s16(0,-1,0))
 					vertices[i].Pos.rotateXZBy(45);
-				if(dir == v3s16(0,1,0))
+				if (dir == v3s16(0,1,0))
 					vertices[i].Pos.rotateXZBy(-45);
 
 				vertices[i].Pos += intToFloat(p, BS);
@@ -1132,19 +1097,18 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			v3s16 dir = n.getWallMountedDir(nodedef);
 
-			for(s32 i=0; i<4; i++)
-			{
-				if(dir == v3s16(1,0,0))
+			for (s32 i=0; i<4; i++) {
+				if (dir == v3s16(1,0,0))
 					vertices[i].Pos.rotateXZBy(0);
-				if(dir == v3s16(-1,0,0))
+				if (dir == v3s16(-1,0,0))
 					vertices[i].Pos.rotateXZBy(180);
-				if(dir == v3s16(0,0,1))
+				if (dir == v3s16(0,0,1))
 					vertices[i].Pos.rotateXZBy(90);
-				if(dir == v3s16(0,0,-1))
+				if (dir == v3s16(0,0,-1))
 					vertices[i].Pos.rotateXZBy(-90);
-				if(dir == v3s16(0,-1,0))
+				if (dir == v3s16(0,-1,0))
 					vertices[i].Pos.rotateXYBy(-90);
-				if(dir == v3s16(0,1,0))
+				if (dir == v3s16(0,1,0))
 					vertices[i].Pos.rotateXYBy(90);
 
 				vertices[i].Pos += intToFloat(p, BS);
@@ -1163,8 +1127,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			video::SColor c = MapBlock_LightColor(255, l, f.light_source);
 			
 			float s = BS / 2;
-			for(u32 j = 0; j < 2; j++)
-			{
+			for (u32 j = 0; j < 2; j++) {
 				video::S3DVertex vertices[4] =
 				{
 					video::S3DVertex(-s,-s, 0, 0,0,0, c, 0,1),
@@ -1173,19 +1136,15 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					video::S3DVertex(-s, s, 0, 0,0,0, c, 0,0),
 				};
 
-				if(j == 0)
-				{
-					for(u16 i = 0; i < 4; i++)
+				if (j == 0) {
+					for (u16 i = 0; i < 4; i++)
 						vertices[i].Pos.rotateXZBy(46 + n.param2 * 2);
-				}
-				else if(j == 1)
-				{
-					for(u16 i = 0; i < 4; i++)
+				} else if(j == 1) {
+					for (u16 i = 0; i < 4; i++)
 						vertices[i].Pos.rotateXZBy(-44 + n.param2 * 2);
 				}
 
-				for(u16 i = 0; i < 4; i++)
-				{
+				for (u16 i = 0; i < 4; i++) {
 					vertices[i].Pos *= f.visual_scale;
 					vertices[i].Pos.Y -= s * (1 - f.visual_scale);
 					vertices[i].Pos += intToFloat(p, BS);
@@ -1227,21 +1186,19 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			bool drawBottomFacesOnly = false; // Currently unused
 
 			// Check for adjacent nodes
-			for(int i = 0; i < 6; i++)
-			{
+			for (int i = 0; i < 6; i++) {
 				n2p = blockpos_nodes + p + dirs[i];
 				n2 = data->m_vmanip.getNodeNoEx(n2p);
 				n2c = n2.getContent();
 				if (n2c != CONTENT_IGNORE && n2c != CONTENT_AIR && n2c != current) {
 					doDraw[i] = 1;
-					if(drawAllFaces)
+					if (drawAllFaces)
 						drawAllFaces = false;
 
 				}
 			}
 
-			for(int j = 0; j < 6; j++)
-			{
+			for (int j = 0; j < 6; j++) {
 				int vOffset = 0; // Vertical offset of faces after rotation
 				int hOffset = 4; // Horizontal offset of faces to reach the edge
 
@@ -1254,36 +1211,29 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				};
 
 				// Calculate which faces should be drawn, (top or sides)
-				if(j == 0 && (drawAllFaces || (doDraw[3] == 1 || doDraw[1] == 1)))
-				{
-					for(int i = 0; i < 4; i++) {
+				if (j == 0 && (drawAllFaces || (doDraw[3] == 1 || doDraw[1] == 1))) {
+					for (int i = 0; i < 4; i++) {
 						vertices[i].Pos.rotateXZBy(90 + n.param2 * 2);
 						vertices[i].Pos.rotateXYBy(-10);
 						vertices[i].Pos.Y -= vOffset;
 						vertices[i].Pos.X -= hOffset;
 					}
-				}
-				else if(j == 1 && (drawAllFaces || (doDraw[5] == 1 || doDraw[1] == 1)))
-				{
-					for(int i = 0; i < 4; i++) {
+				} else if(j == 1 && (drawAllFaces || (doDraw[5] == 1 || doDraw[1] == 1))) {
+					for (int i = 0; i < 4; i++) {
 						vertices[i].Pos.rotateXZBy(180 + n.param2 * 2);
 						vertices[i].Pos.rotateYZBy(10);
 						vertices[i].Pos.Y -= vOffset;
 						vertices[i].Pos.Z -= hOffset;
 					}
-				}
-				else if(j == 2 && (drawAllFaces || (doDraw[2] == 1 || doDraw[1] == 1)))
-				{
-					for(int i = 0; i < 4; i++) {
+				} else if(j == 2 && (drawAllFaces || (doDraw[2] == 1 || doDraw[1] == 1))) {
+					for (int i = 0; i < 4; i++) {
 						vertices[i].Pos.rotateXZBy(270 + n.param2 * 2);
 						vertices[i].Pos.rotateXYBy(10);
 						vertices[i].Pos.Y -= vOffset;
 						vertices[i].Pos.X += hOffset;
 					}
-				}
-				else if(j == 3 && (drawAllFaces || (doDraw[4] == 1 || doDraw[1] == 1)))
-				{
-					for(int i = 0; i < 4; i++) {
+				} else if(j == 3 && (drawAllFaces || (doDraw[4] == 1 || doDraw[1] == 1))) {
+					for (int i = 0; i < 4; i++) {
 						vertices[i].Pos.rotateYZBy(-10);
 						vertices[i].Pos.Y -= vOffset;
 						vertices[i].Pos.Z += hOffset;
@@ -1291,64 +1241,52 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				}
 
 				// Center cross-flames
-				else if(j == 4 && (drawAllFaces || doDraw[1] == 1))
-				{
-					for(int i=0; i<4; i++) {
+				else if(j == 4 && (drawAllFaces || doDraw[1] == 1)) {
+					for (int i=0; i<4; i++) {
 						vertices[i].Pos.rotateXZBy(45 + n.param2 * 2);
 						vertices[i].Pos.Y -= vOffset;
 					}
-				}
-				else if(j == 5 && (drawAllFaces || doDraw[1] == 1))
-				{
-					for(int i=0; i<4; i++) {
+				} else if(j == 5 && (drawAllFaces || doDraw[1] == 1)) {
+					for (int i=0; i<4; i++) {
 						vertices[i].Pos.rotateXZBy(-45 + n.param2 * 2);
 						vertices[i].Pos.Y -= vOffset;
 					}
 				}
 
 				// Render flames on bottom
-				else if(j == 0 && (drawBottomFacesOnly || (doDraw[0] == 1 && doDraw[1] == 0)))
-				{
-					for(int i = 0; i < 4; i++) {
+				else if(j == 0 && (drawBottomFacesOnly || (doDraw[0] == 1 && doDraw[1] == 0))) {
+					for (int i = 0; i < 4; i++) {
 						vertices[i].Pos.rotateYZBy(70);
 						vertices[i].Pos.rotateXZBy(90 + n.param2 * 2);
 						vertices[i].Pos.Y += 4.84;
 						vertices[i].Pos.X -= hOffset+0.7;
 					}
-				}
-				else if(j == 1 && (drawBottomFacesOnly || (doDraw[0] == 1 && doDraw[1] == 0)))
-				{
-					for(int i = 0; i < 4; i++) {
+				} else if(j == 1 && (drawBottomFacesOnly || (doDraw[0] == 1 && doDraw[1] == 0))) {
+					for (int i = 0; i < 4; i++) {
 						vertices[i].Pos.rotateYZBy(70);
 						vertices[i].Pos.rotateXZBy(180 + n.param2 * 2);
 						vertices[i].Pos.Y += 4.84;
 						vertices[i].Pos.Z -= hOffset+0.7;
 					}
-				}
-				else if(j == 2 && (drawBottomFacesOnly || (doDraw[0] == 1 && doDraw[1] == 0)))
-				{
-					for(int i = 0; i < 4; i++) {
+				} else if(j == 2 && (drawBottomFacesOnly || (doDraw[0] == 1 && doDraw[1] == 0))) {
+					for (int i = 0; i < 4; i++) {
 						vertices[i].Pos.rotateYZBy(70);
 						vertices[i].Pos.rotateXZBy(270 + n.param2 * 2);
 						vertices[i].Pos.Y += 4.84;
 						vertices[i].Pos.X += hOffset+0.7;
 					}
-				}
-				else if(j == 3 && (drawBottomFacesOnly || (doDraw[0] == 1 && doDraw[1] == 0)))
-				{
-					for(int i = 0; i < 4; i++) {
+				} else if(j == 3 && (drawBottomFacesOnly || (doDraw[0] == 1 && doDraw[1] == 0))) {
+					for (int i = 0; i < 4; i++) {
 						vertices[i].Pos.rotateYZBy(70);
 						vertices[i].Pos.Y += 4.84;
 						vertices[i].Pos.Z += hOffset+0.7;
 					}
-				}
-				else {
+				} else {
 					// Skip faces that aren't adjacent to a node
 					continue;
 				}
 
-				for(int i=0; i<4; i++)
-				{
+				for (int i=0; i<4; i++) {
 					vertices[i].Pos *= f.visual_scale;
 					vertices[i].Pos += intToFloat(p, BS);
 				}
@@ -1395,8 +1333,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			p2.X++;
 			MapNode n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
 			const ContentFeatures *f2 = &nodedef->get(n2);
-			if(f2->drawtype == NDT_FENCELIKE)
-			{
+			if (f2->drawtype == NDT_FENCELIKE) {
 				aabb3f bar(-bar_len+BS/2,-bar_rad+BS/4,-bar_rad,
 						bar_len+BS/2,bar_rad+BS/4,bar_rad);
 				bar.MinEdge += pos;
@@ -1421,8 +1358,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			p2.Z++;
 			n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
 			f2 = &nodedef->get(n2);
-			if(f2->drawtype == NDT_FENCELIKE)
-			{
+			if (f2->drawtype == NDT_FENCELIKE) {
 				aabb3f bar(-bar_rad,-bar_rad+BS/4,-bar_len+BS/2,
 						bar_rad,bar_rad+BS/4,bar_len+BS/2);
 				bar.MinEdge += pos;
@@ -1555,13 +1491,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			u8 tileindex = 0;
 
 			// check for sloped rail
-			if (is_rail_x_plus_y[0] || is_rail_x_plus_y[1] || is_rail_z_plus_y[0] || is_rail_z_plus_y[1])
-			{
+			if (is_rail_x_plus_y[0] || is_rail_x_plus_y[1] || is_rail_z_plus_y[0] || is_rail_z_plus_y[1]) {
 				adjacencies = 5; //5 means sloped
 				is_straight = true; // sloped is always straight
-			}
-			else
-			{
+			} else {
 				// is really straight, rails on both sides
 				is_straight = (is_rail_x_all[0] && is_rail_x_all[1]) || (is_rail_z_all[0] && is_rail_z_all[1]);
 				adjacencies = is_rail_x_all[0] + is_rail_x_all[1] + is_rail_z_all[0] + is_rail_z_all[1];
@@ -1569,19 +1502,18 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			switch (adjacencies) {
 			case 1:
-				if(is_rail_x_all[0] || is_rail_x_all[1])
+				if (is_rail_x_all[0] || is_rail_x_all[1])
 					angle = 90;
 				break;
 			case 2:
-				if(!is_straight)
+				if (!is_straight)
 					tileindex = 1; // curved
-				if(is_rail_x_all[0] && is_rail_x_all[1])
+				if (is_rail_x_all[0] && is_rail_x_all[1])
 					angle = 90;
-				if(is_rail_z_all[0] && is_rail_z_all[1]){
+				if (is_rail_z_all[0] && is_rail_z_all[1]) {
 					if (is_rail_z_plus_y[0])
 						angle = 180;
-				}
-				else if(is_rail_x_all[0] && is_rail_z_all[0])
+				} else if(is_rail_x_all[0] && is_rail_z_all[0])
 					angle = 270;
 				else if(is_rail_x_all[0] && is_rail_z_all[1])
 					angle = 180;
@@ -1591,22 +1523,22 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			case 3:
 				// here is where the potential to 'switch' a junction is, but not implemented at present
 				tileindex = 2; // t-junction
-				if(!is_rail_x_all[1])
+				if (!is_rail_x_all[1])
 					angle=180;
-				if(!is_rail_z_all[0])
+				if (!is_rail_z_all[0])
 					angle=90;
-				if(!is_rail_z_all[1])
+				if (!is_rail_z_all[1])
 					angle=270;
 				break;
 			case 4:
 				tileindex = 3; // crossing
 				break;
 			case 5: //sloped
-				if(is_rail_z_plus_y[0])
+				if (is_rail_z_plus_y[0])
 					angle = 180;
-				if(is_rail_x_plus_y[0])
+				if (is_rail_x_plus_y[0])
 					angle = 90;
-				if(is_rail_x_plus_y[1])
+				if (is_rail_x_plus_y[1])
 					angle = -90;
 				break;
 			default:
@@ -1634,9 +1566,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					video::S3DVertex(-BS/2,g*BS/2+d,BS/2, 0,0,0, c, 0,0),
 			};
 
-			for(s32 i=0; i<4; i++)
-			{
-				if(angle != 0)
+			for (s32 i=0; i<4; i++) {
+				if (angle != 0)
 					vertices[i].Pos.rotateXZBy(angle);
 				vertices[i].Pos += intToFloat(p, BS);
 			}
@@ -1662,12 +1593,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			v3f pos = intToFloat(p, BS);
 
 			std::vector<aabb3f> boxes = n.getNodeBoxes(nodedef);
-			for(std::vector<aabb3f>::iterator
+			for (std::vector<aabb3f>::iterator
 					i = boxes.begin();
-					i != boxes.end(); i++)
-			{
-			for(int j = 0; j < 6; j++)
-				{
+					i != boxes.end(); i++) {
+			for (int j = 0; j < 6; j++) {
 				// Handles facedir rotation for textures
 				tiles[j] = getNodeTile(n, p, tile_dirs[j], data);
 				}
@@ -1676,20 +1605,17 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				box.MaxEdge += pos;
 				
 				f32 temp;
-				if (box.MinEdge.X > box.MaxEdge.X)
-				{
+				if (box.MinEdge.X > box.MaxEdge.X) {
 					temp=box.MinEdge.X;
 					box.MinEdge.X=box.MaxEdge.X;
 					box.MaxEdge.X=temp;
 				}
-				if (box.MinEdge.Y > box.MaxEdge.Y)
-				{
+				if (box.MinEdge.Y > box.MaxEdge.Y) {
 					temp=box.MinEdge.Y;
 					box.MinEdge.Y=box.MaxEdge.Y;
 					box.MaxEdge.Y=temp;
 				}
-				if (box.MinEdge.Z > box.MaxEdge.Z)
-				{
+				if (box.MinEdge.Z > box.MaxEdge.Z) {
 					temp=box.MinEdge.Z;
 					box.MinEdge.Z=box.MaxEdge.Z;
 					box.MaxEdge.Z=temp;
@@ -1740,7 +1666,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			if (f.mesh_ptr[facedir]) {
 				// use cached meshes
-				for(u16 j = 0; j < f.mesh_ptr[0]->getMeshBufferCount(); j++) {
+				for (u16 j = 0; j < f.mesh_ptr[0]->getMeshBufferCount(); j++) {
 					scene::IMeshBuffer *buf = f.mesh_ptr[facedir]->getMeshBuffer(j);
 					collector.append(getNodeTileN(n, p, j, data),
 						(video::S3DVertex *)buf->getVertices(), buf->getVertexCount(),
@@ -1752,7 +1678,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				rotateMeshBy6dFacedir(mesh, facedir);
 				recalculateBoundingBox(mesh);
 				meshmanip->recalculateNormals(mesh, true, false);
-				for(u16 j = 0; j < mesh->getMeshBufferCount(); j++) {
+				for (u16 j = 0; j < mesh->getMeshBufferCount(); j++) {
 					scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 					collector.append(getNodeTileN(n, p, j, data),
 						(video::S3DVertex *)buf->getVertices(), buf->getVertexCount(),
