@@ -382,7 +382,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 
 		// Calculate new position
 		bool abort = false;
-		for (int i = BS; i <= BS*2; i++)
+		for (int i = BS; i <= BS*2.25; i++)
 		{
 			my_cp.X = m_camera_position.X + m_camera_direction.X*-i;
 			my_cp.Z = m_camera_position.Z + m_camera_direction.Z*-i;
@@ -403,9 +403,13 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 			}
 		}
 
-		// If node blocks camera position don't move y to heigh
-		if (abort && my_cp.Y > player_position.Y+BS*2)
-			my_cp.Y = player_position.Y+BS*2;
+		// If node blocks camera position don't move
+		if (abort) {
+			if (my_cp.Y > player_position.Y+BS*2)
+				my_cp.Y = player_position.Y+BS*2;
+			if (my_cp.X > player_position.X+BS*2)
+				my_cp.X = player_position.X+BS*2;
+		}
 	}
 
 	// Update offset if too far away from the center of the map
