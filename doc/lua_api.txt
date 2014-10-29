@@ -1265,6 +1265,12 @@ ColorString
 #RRGGBBAA
 ^ defines a color in hexadecimal format and alpha channel
 
+Named colors are also supported and are equivalent to "CSS Color Module Level 4"
+(http://dev.w3.org/csswg/css-color/#named-colors). To specify the value of the
+alpha channel, append #AA to the end of the color name (e.g. colorname#08). For
+named colors the hexadecimal string representing the alpha value must (always)
+be two hexadecimal digits.
+
 Vector helpers
 ---------------
 vector.new([x[, y, z]]) -> vector
