@@ -125,9 +125,10 @@ inline std::vector<std::string> str_split(const std::string &str, char delimiter
 
 inline std::string lowercase(const std::string &s)
 {
-	std::string s2;
+	std::string s2 = s;
 	for(size_t i = 0; i < s.size(); i++)
-		s2[i] = tolower(s.at(i));
+		if (isupper(s2.at(i)))
+			s2[i] = tolower(s2.at(i));
 	return s2;
 }
 
