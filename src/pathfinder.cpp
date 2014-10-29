@@ -50,7 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define VERBOSE_TARGET   std::cout
 #define ERROR_TARGET     std::cout
 #else
-#define DEBUG_OUT(a)     while(0)
+#define DEBUG_OUT(a)     while (0)
 #define INFO_TARGET      infostream << "pathfinder: "
 #define VERBOSE_TARGET   verbosestream << "pathfinder: "
 #define ERROR_TARGET     errorstream << "pathfinder: "
@@ -128,8 +128,7 @@ path_gridnode::path_gridnode(const path_gridnode& b)
 	surfaces(b.surfaces),
 	pos(b.pos),
 	is_element(b.is_element),
-	type(b.type)
-	{
+	type(b.type) {
 
 	directions[DIR_XP] = b.directions[DIR_XP];
 	directions[DIR_XM] = b.directions[DIR_XM];
@@ -345,8 +344,7 @@ std::vector<v3s16> pathfinder::get_Path(ServerEnvironment* env,
 				"s " << ms << "ms " << us << "us " << ns << "ns " << std::endl;
 #endif
 		return optimized_path;
-	}
-	else {
+	} else {
 #ifdef PATHFINDER_DEBUG
 		print_pathlen();
 #endif
@@ -516,8 +514,7 @@ path_cost pathfinder::calc_cost(v3s16 pos,v3s16 dir) {
 			retval.direction = 0;
 			DEBUG_OUT("Pathfinder: "<< PPOS(pos)
 					<< " cost same height found" << std::endl);
-		}
-		else {
+		} else {
 			v3s16 testpos = pos2 - v3s16(0,-1,0);
 			MapNode node_at_pos = m_env->getMap().getNodeNoEx(testpos);
 
@@ -538,20 +535,17 @@ path_cost pathfinder::calc_cost(v3s16 pos,v3s16 dir) {
 					//difference of y-pos +1 (target node is ABOVE solid node)
 					retval.direction = ((testpos.Y - pos2.Y) +1);
 					DEBUG_OUT("Pathfinder cost below height found" << std::endl);
-				}
-				else {
+				} else {
 					INFO_TARGET << "Pathfinder:"
 							" distance to surface below to big: "
 							<< (testpos.Y - pos2.Y) << " max: " << m_maxdrop
 							<< std::endl;
 				}
-			}
-			else {
+			} else {
 				DEBUG_OUT("Pathfinder: no surface below found" << std::endl);
 			}
 		}
-	}
-	else {
+	} else {
 		v3s16 testpos = pos2;
 		MapNode node_at_pos = m_env->getMap().getNodeNoEx(testpos);
 
@@ -571,14 +565,12 @@ path_cost pathfinder::calc_cost(v3s16 pos,v3s16 dir) {
 				retval.value = 2;
 				retval.direction = (testpos.Y - pos2.Y);
 				DEBUG_OUT("Pathfinder cost above found" << std::endl);
-			}
-			else {
+			} else {
 				DEBUG_OUT("Pathfinder: distance to surface above to big: "
 						<< (testpos.Y - pos2.Y) << " max: " << m_maxjump
 						<< std::endl);
 			}
-		}
-		else {
+		} else {
 			DEBUG_OUT("Pathfinder: no surface above found" << std::endl);
 		}
 	}
@@ -697,14 +689,12 @@ bool pathfinder::update_all_costs(	v3s16 ipos,
 											new_cost,level)) {
 						retval = true;
 						}
-					}
-				else {
+					} else {
 					DEBUG_OUT(LVL "Pathfinder:"
 							" already found shorter path to: "
 							<< PPOS(ipos2) << std::endl);
 				}
-			}
-			else {
+			} else {
 				DEBUG_OUT(LVL "Pathfinder:"
 						" not moving to invalid direction: "
 						<< PPOS(directions[i]) << std::endl);
@@ -761,14 +751,13 @@ v3s16 pathfinder::get_dir_heuristic(std::vector<v3s16>& directions,path_gridnode
 		for (std::vector<v3s16>::iterator iter = directions.begin();
 					iter != directions.end();
 					iter ++) {
-			if(*iter == retdir) {
+			if (*iter == retdir) {
 				DEBUG_OUT("Pathfinder: removing return direction" << std::endl);
 				directions.erase(iter);
 				break;
 			}
 		}
-	}
-	else {
+	} else {
 		DEBUG_OUT("Pathfinder: didn't find any valid direction clearing"
 					<< std::endl);
 		directions.clear();
@@ -859,20 +848,17 @@ bool pathfinder::update_cost_heuristic(	v3s16 ipos,
 											new_cost,level)) {
 						retval = true;
 						}
-					}
-				else {
+					} else {
 					DEBUG_OUT(LVL "Pathfinder:"
 							" already found shorter path to: "
 							<< PPOS(ipos2) << std::endl);
 				}
-			}
-			else {
+			} else {
 				DEBUG_OUT(LVL "Pathfinder:"
 						" not moving to invalid direction: "
 						<< PPOS(direction) << std::endl);
 			}
-		}
-		else {
+		} else {
 			DEBUG_OUT(LVL "Pathfinder:"
 							" skipping srcdir: "
 							<< PPOS(direction) << std::endl);

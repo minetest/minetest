@@ -517,16 +517,14 @@ bool SQL_registerRow(ActionRow row)
 	std::cout << "actor:     " << row.actor << std::endl;
 	std::cout << "time:      " << row.timestamp << std::endl;
 	std::cout << "type:      " << row.type << std::endl;
-	if (row.type == RollbackAction::TYPE_MODIFY_INVENTORY_STACK)
-	{
+	if (row.type == RollbackAction::TYPE_MODIFY_INVENTORY_STACK) {
 		std::cout << "Location:   " << row.location << std::endl;
 		std::cout << "List:       " << row.list << std::endl;
 		std::cout << "Index:      " << row.index << std::endl;
 		std::cout << "Add:        " << row.add << std::endl;
 		std::cout << "Stack:      " << row.stack << std::endl;
 	}
-	if (row.type == RollbackAction::TYPE_SET_NODE)
-	{
+	if (row.type == RollbackAction::TYPE_SET_NODE) {
 		std::cout << "x:         " << row.x << std::endl;
 		std::cout << "y:         " << row.y << std::endl;
 		std::cout << "z:         " << row.z << std::endl;
@@ -612,22 +610,19 @@ std::list<ActionRow> actionRowsFromSelect(sqlite3_stmt* stmt)
 		std::cout << "Actor: " << row.actor << "\n";
 		std::cout << "Timestamp: " << row.timestamp << "\n";
 
-		if (row.type == RollbackAction::TYPE_MODIFY_INVENTORY_STACK)
-		{
+		if (row.type == RollbackAction::TYPE_MODIFY_INVENTORY_STACK) {
 			std::cout << "list: " << row.list << "\n";
 			std::cout << "index: " << row.index << "\n";
 			std::cout << "add: " << row.add << "\n";
 			std::cout << "stackNode: " << row.stack.node << "\n";
 			std::cout << "stackQuantity: " << row.stack.quantity << "\n";
-			if (row.nodeMeta)
-			{
+			if (row.nodeMeta) {
 				std::cout << "X: " << row.x << "\n";
 				std::cout << "Y: " << row.y << "\n";
 				std::cout << "Z: " << row.z << "\n";
 			}
 			std::cout << "Location: " << row.location << "\n";
-		}
-			else
+		} else
 		{
 			std::cout << "X: " << row.x << "\n";
 			std::cout << "Y: " << row.y << "\n";
@@ -866,16 +861,14 @@ void TXT_migrate(std::string filepath)
 			std::cout << "time:      " << row.timestamp << std::endl;
 			std::cout << "actor:     " << row.actor << std::endl;
 			std::cout << "type:      " << row.type << std::endl;
-			if (row.type == RollbackAction::TYPE_MODIFY_INVENTORY_STACK)
-			{
+			if (row.type == RollbackAction::TYPE_MODIFY_INVENTORY_STACK) {
 				std::cout << "Location:   " << row.location << std::endl;
 				std::cout << "List:       " << row.list << std::endl;
 				std::cout << "Index:      " << row.index << std::endl;
 				std::cout << "Add:        " << row.add << std::endl;
 				std::cout << "Stack:      " << row.stack << std::endl;
 			}
-			if (row.type == RollbackAction::TYPE_SET_NODE)
-			{
+			if (row.type == RollbackAction::TYPE_SET_NODE) {
 				std::cout << "x:         " << row.x << std::endl;
 				std::cout << "y:         " << row.y << std::endl;
 				std::cout << "z:         " << row.z << std::endl;
@@ -1115,7 +1108,7 @@ public:
 		FINALIZE_STATEMENT(dbs_knownNode_select)
 		FINALIZE_STATEMENT(dbs_knownNode_insert)
 
-		if(dbh)
+		if (dbh)
 			rc = sqlite3_close(dbh);
 
 		dbh = NULL;

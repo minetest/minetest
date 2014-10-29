@@ -60,19 +60,15 @@ void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 	else
 		writeU8(os, type);
 
-	if(type == NODEBOX_FIXED || type == NODEBOX_LEVELED)
-	{
+	if (type == NODEBOX_FIXED || type == NODEBOX_LEVELED) {
 		writeU16(os, fixed.size());
-		for(std::vector<aabb3f>::const_iterator
+		for (std::vector<aabb3f>::const_iterator
 				i = fixed.begin();
-				i != fixed.end(); i++)
-		{
+				i != fixed.end(); i++) {
 			writeV3F1000(os, i->MinEdge);
 			writeV3F1000(os, i->MaxEdge);
 		}
-	}
-	else if(type == NODEBOX_WALLMOUNTED)
-	{
+	} else if (type == NODEBOX_WALLMOUNTED) {
 		writeV3F1000(os, wall_top.MinEdge);
 		writeV3F1000(os, wall_top.MaxEdge);
 		writeV3F1000(os, wall_bottom.MinEdge);
@@ -85,26 +81,22 @@ void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 void NodeBox::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if(version < 1 || version > 2)
+	if (version < 1 || version > 2)
 		throw SerializationError("unsupported NodeBox version");
 
 	reset();
 
 	type = (enum NodeBoxType)readU8(is);
 
-	if(type == NODEBOX_FIXED || type == NODEBOX_LEVELED)
-	{
+	if (type == NODEBOX_FIXED || type == NODEBOX_LEVELED) {
 		u16 fixed_count = readU16(is);
-		while(fixed_count--)
-		{
+		while (fixed_count--) {
 			aabb3f box;
 			box.MinEdge = readV3F1000(is);
 			box.MaxEdge = readV3F1000(is);
 			fixed.push_back(box);
 		}
-	}
-	else if(type == NODEBOX_WALLMOUNTED)
-	{
+	} else if (type == NODEBOX_WALLMOUNTED) {
 		wall_top.MinEdge = readV3F1000(is);
 		wall_top.MaxEdge = readV3F1000(is);
 		wall_bottom.MinEdge = readV3F1000(is);
@@ -120,7 +112,7 @@ void NodeBox::deSerialize(std::istream &is)
 
 void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 {
-	if(protocol_version >= 17)
+	if (protocol_version >= 17)
 		writeU8(os, 1);
 	else
 		writeU8(os, 0);
@@ -129,7 +121,7 @@ void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 	writeU16(os, animation.aspect_w);
 	writeU16(os, animation.aspect_h);
 	writeF1000(os, animation.length);
-	if(protocol_version >= 17)
+	if (protocol_version >= 17)
 		writeU8(os, backface_culling);
 }
 
@@ -141,7 +133,7 @@ void TileDef::deSerialize(std::istream &is)
 	animation.aspect_w = readU16(is);
 	animation.aspect_h = readU16(is);
 	animation.length = readF1000(is);
-	if(version >= 1)
+	if (version >= 1)
 		backface_culling = readU8(is);
 }
 
@@ -200,13 +192,13 @@ void ContentFeatures::reset()
 	drawtype = NDT_NORMAL;
 	mesh = "";
 #ifndef SERVER
-	for(u32 i = 0; i < 24; i++)
+	for (u32 i = 0; i < 24; i++)
 		mesh_ptr[i] = NULL;
 #endif
 	visual_scale = 1.0;
-	for(u32 i = 0; i < 6; i++)
+	for (u32 i = 0; i < 6; i++)
 		tiledef[i] = TileDef();
-	for(u16 j = 0; j < CF_SPECIAL_COUNT; j++)
+	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++)
 		tiledef_special[j] = TileDef();
 	alpha = 255;
 	post_effect_color = video::SColor(0, 0, 0, 0);
@@ -245,7 +237,7 @@ void ContentFeatures::reset()
 
 void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 {
-	if(protocol_version < 24){
+	if (protocol_version < 24) {
 		serializeOld(os, protocol_version);
 		return;
 	}
@@ -253,18 +245,18 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 	writeU8(os, 7); // version
 	os<<serializeString(name);
 	writeU16(os, groups.size());
-	for(ItemGroupList::const_iterator
-			i = groups.begin(); i != groups.end(); i++){
+	for (ItemGroupList::const_iterator
+			i = groups.begin(); i != groups.end(); i++) {
 		os<<serializeString(i->first);
 		writeS16(os, i->second);
 	}
 	writeU8(os, drawtype);
 	writeF1000(os, visual_scale);
 	writeU8(os, 6);
-	for(u32 i = 0; i < 6; i++)
+	for (u32 i = 0; i < 6; i++)
 		tiledef[i].serialize(os, protocol_version);
 	writeU8(os, CF_SPECIAL_COUNT);
-	for(u32 i = 0; i < CF_SPECIAL_COUNT; i++){
+	for (u32 i = 0; i < CF_SPECIAL_COUNT; i++) {
 		tiledef_special[i].serialize(os, protocol_version);
 	}
 	writeU8(os, alpha);
@@ -311,7 +303,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 void ContentFeatures::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if(version != 7){
+	if (version != 7) {
 		deSerializeOld(is, version);
 		return;
 	}
@@ -319,20 +311,20 @@ void ContentFeatures::deSerialize(std::istream &is)
 	name = deSerializeString(is);
 	groups.clear();
 	u32 groups_size = readU16(is);
-	for(u32 i = 0; i < groups_size; i++){
+	for (u32 i = 0; i < groups_size; i++) {
 		std::string name = deSerializeString(is);
 		int value = readS16(is);
 		groups[name] = value;
 	}
 	drawtype = (enum NodeDrawType)readU8(is);
 	visual_scale = readF1000(is);
-	if(readU8(is) != 6)
+	if (readU8(is) != 6)
 		throw SerializationError("unsupported tile count");
-	for(u32 i = 0; i < 6; i++)
+	for (u32 i = 0; i < 6; i++)
 		tiledef[i].deSerialize(is);
-	if(readU8(is) != CF_SPECIAL_COUNT)
+	if (readU8(is) != CF_SPECIAL_COUNT)
 		throw SerializationError("unsupported CF_SPECIAL_COUNT");
-	for(u32 i = 0; i < CF_SPECIAL_COUNT; i++)
+	for (u32 i = 0; i < CF_SPECIAL_COUNT; i++)
 		tiledef_special[i].deSerialize(is);
 	alpha = readU8(is);
 	post_effect_color.setAlpha(readU8(is));
@@ -371,7 +363,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	waving = readU8(is);
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.
-	try{
+	try {
 		// Stuff below should be moved to correct place in a version that
 		// otherwise changes the protocol version
 	mesh = deSerializeString(is);
@@ -549,7 +541,7 @@ bool CNodeDefManager::getId(const std::string &name, content_t &result) const
 {
 	std::map<std::string, content_t>::const_iterator
 		i = m_name_id_mapping_with_aliases.find(name);
-	if(i == m_name_id_mapping_with_aliases.end())
+	if (i == m_name_id_mapping_with_aliases.end())
 		return false;
 	result = i->second;
 	return true;
@@ -570,7 +562,7 @@ void CNodeDefManager::getIds(const std::string &name,
 	//TimeTaker t("getIds", NULL, PRECISION_MICRO);
 	if (name.substr(0,6) != "group:") {
 		content_t id = CONTENT_IGNORE;
-		if(getId(name, id))
+		if (getId(name, id))
 			result.insert(id);
 		return;
 	}
@@ -748,7 +740,7 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef)
 			assert(f->liquid_type == LIQUID_SOURCE);
 			if (opaque_water)
 				f->alpha = 255;
-			if (new_style_water){
+			if (new_style_water) {
 				f->solidness = 0;
 			} else {
 				f->solidness = 1;
@@ -852,7 +844,7 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef)
 			// Meshnode drawtype
 			// Read the mesh and apply scale
 			f->mesh_ptr[0] = gamedef->getMesh(f->mesh);
-			if (f->mesh_ptr[0]){
+			if (f->mesh_ptr[0]) {
 				v3f scale = v3f(1.0, 1.0, 1.0) * BS * f->visual_scale;
 				scaleMesh(f->mesh_ptr[0], scale);
 				recalculateBoundingBox(f->mesh_ptr[0]);
@@ -1047,8 +1039,7 @@ IWritableNodeDefManager *createNodeDefManager()
 //// Serialization of old ContentFeatures formats
 void ContentFeatures::serializeOld(std::ostream &os, u16 protocol_version)
 {
-	if (protocol_version == 13)
-	{
+	if (protocol_version == 13) {
 		writeU8(os, 5); // version
 		os<<serializeString(name);
 		writeU16(os, groups.size());
@@ -1095,8 +1086,7 @@ void ContentFeatures::serializeOld(std::ostream &os, u16 protocol_version)
 		serializeSimpleSoundSpec(sound_footstep, os);
 		serializeSimpleSoundSpec(sound_dig, os);
 		serializeSimpleSoundSpec(sound_dug, os);
-	}
-	else if (protocol_version > 13 && protocol_version < 24) {
+	} else if (protocol_version > 13 && protocol_version < 24) {
 		writeU8(os, 6); // version
 		os<<serializeString(name);
 		writeU16(os, groups.size());
@@ -1161,7 +1151,7 @@ void ContentFeatures::deSerializeOld(std::istream &is, int version)
 		name = deSerializeString(is);
 		groups.clear();
 		u32 groups_size = readU16(is);
-		for(u32 i=0; i<groups_size; i++){
+		for (u32 i=0; i<groups_size; i++) {
 			std::string name = deSerializeString(is);
 			int value = readS16(is);
 			groups[name] = value;

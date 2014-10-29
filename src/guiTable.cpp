@@ -162,15 +162,13 @@ void GUITable::setTextList(const std::vector<std::string> &content,
 		if (s[0] == '#' && s[1] == '#') {
 			// double # to escape
 			cell->content_index = allocString(s.substr(2));
-		}
-		else if (s[0] == '#' && s.size() >= 7 &&
+		} else if (s[0] == '#' && s.size() >= 7 &&
 				parseColorString(
 					s.substr(0,7), cell->color, false)) {
 			// single # for color
 			cell->color_defined = true;
 			cell->content_index = allocString(s.substr(7));
-		}
-		else {
+		} else {
 			// no #, just text
 			cell->content_index = allocString(s);
 		}
@@ -328,8 +326,7 @@ void GUITable::setTable(const TableOptions &options,
 				active_image_indices.insert(std::make_pair(
 							stoi(name),
 							content_index));
-			}
-			else {
+			} else {
 				errorstream<<"Invalid table column option: \""<<name<<"\""
 					<<" (value=\""<<value<<"\")"<<std::endl;
 			}
@@ -376,8 +373,7 @@ void GUITable::setTable(const TableOptions &options,
 				rows[i].cells.push_back(newcell);
 				rows[i].x = newcell.xmax;
 			}
-		}
-		else if (columntype == COLUMN_TYPE_IMAGE) {
+		} else if (columntype == COLUMN_TYPE_IMAGE) {
 			// Find right edge of column
 			s32 xmax = 0;
 			for (s32 i = 0; i < rowcount; ++i) {
@@ -412,15 +408,13 @@ void GUITable::setTable(const TableOptions &options,
 				rows[i].x = newcell.xmax;
 			}
 			active_image_indices.clear();
-		}
-		else if (columntype == COLUMN_TYPE_COLOR) {
+		} else if (columntype == COLUMN_TYPE_COLOR) {
 			for (s32 i = 0; i < rowcount; ++i) {
 				video::SColor cellcolor(255, 255, 255, 255);
 				if (parseColorString(content[i * colcount + j], cellcolor, true))
 					rows[i].colors.push_back(std::make_pair(cellcolor, j+span));
 			}
-		}
-		else if (columntype == COLUMN_TYPE_INDENT ||
+		} else if (columntype == COLUMN_TYPE_INDENT ||
 				columntype == COLUMN_TYPE_TREE) {
 			// For column type "tree", reserve additional space for +/-
 			// Also enable special processing for treeview-type tables
@@ -534,8 +528,7 @@ std::string GUITable::checkEvent()
 	if (m_sel_doubleclick) {
 		os<<"DCL:";
 		m_sel_doubleclick = false;
-	}
-	else {
+	} else {
 		os<<"CHG:";
 	}
 	os<<sel;
@@ -706,8 +699,7 @@ void GUITable::drawCell(const Cell *cell, video::SColor color,
 						text_rect, color,
 						false, true, &client_clip);
 		}
-	}
-	else if (cell->content_type == COLUMN_TYPE_IMAGE) {
+	} else if (cell->content_type == COLUMN_TYPE_IMAGE) {
 
 		if (cell->content_index < 0)
 			return;
@@ -784,8 +776,7 @@ bool GUITable::OnEvent(const SEvent &event)
 				sendTableEvent(0, false);
 
 			return true;
-		}
-		else if (event.KeyInput.PressedDown && (
+		} else if (event.KeyInput.PressedDown && (
 				event.KeyInput.Key == KEY_LEFT ||
 				event.KeyInput.Key == KEY_RIGHT)) {
 			// Open/close subtree via keyboard
@@ -794,18 +785,15 @@ bool GUITable::OnEvent(const SEvent &event)
 				toggleVisibleTree(m_selected, dir, true);
 			}
 			return true;
-		}
-		else if (!event.KeyInput.PressedDown && (
+		} else if (!event.KeyInput.PressedDown && (
 				event.KeyInput.Key == KEY_RETURN ||
 				event.KeyInput.Key == KEY_SPACE)) {
 			sendTableEvent(0, true);
 			return true;
-		}
-		else if (event.KeyInput.Key == KEY_ESCAPE ||
+		} else if (event.KeyInput.Key == KEY_ESCAPE ||
 				event.KeyInput.Key == KEY_SPACE) {
 			// pass to parent
-		}
-		else if (event.KeyInput.PressedDown && event.KeyInput.Char) {
+		} else if (event.KeyInput.PressedDown && event.KeyInput.Char) {
 			// change selection based on text as it is typed
 			s32 now = getTimeMs();
 			if (now - m_keynav_time >= 500)
@@ -885,8 +873,7 @@ bool GUITable::OnEvent(const SEvent &event)
 				if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
 					toggleVisibleTree(row_i, 0, false);
 				}
-			}
-			else {
+			} else {
 				// Normal selection
 				s32 old_selected = m_selected;
 				m_selected = row_i;
@@ -924,8 +911,7 @@ s32 GUITable::allocString(const std::string &text)
 		m_strings.push_back(core::stringw(wtext.c_str()));
 		m_alloc_strings.insert(std::make_pair(text, id));
 		return id;
-	}
-	else {
+	} else {
 		return it->second;
 	}
 }
@@ -938,8 +924,7 @@ s32 GUITable::allocImage(const std::string &imagename)
 		m_images.push_back(m_tsrc->getTexture(imagename));
 		m_alloc_images.insert(std::make_pair(imagename, id));
 		return id;
-	}
-	else {
+	} else {
 		return it->second;
 	}
 }
@@ -992,8 +977,7 @@ s32 GUITable::getRowAt(s32 y, bool &really_hovering) const
 	if (i >= 0 && i < rowcount) {
 		really_hovering = true;
 		return i;
-	}
-	else if (i < 0)
+	} else if (i < 0)
 		return 0;
 	else
 		return rowcount - 1;
@@ -1105,12 +1089,10 @@ void GUITable::setOpenedTrees(const std::set<s32> &opened_trees)
 			// Visible row
 			row->visible_index = m_visible_rows.size();
 			m_visible_rows.push_back(i);
-		}
-		else if (parents.back() == closed_parents.back()) {
+		} else if (parents.back() == closed_parents.back()) {
 			// Invisible row, direct parent is closed
 			row->visible_index = -2;
-		}
-		else {
+		} else {
 			// Invisible row, direct parent is open, some ancestor is closed
 			row->visible_index = -1;
 		}
@@ -1192,8 +1174,7 @@ void GUITable::toggleVisibleTree(s32 row_i, int dir, bool move_selection)
 			const Row *maybe_child = getRow(sel + 1);
 			if (maybe_child && maybe_child->indent > row->indent)
 				sel++;
-		}
-		else if (!was_open && !do_open) {
+		} else if (!was_open && !do_open) {
 			// Move selection to parent
 			assert(getRow(sel) != NULL);
 			while (sel > 0 && getRow(sel - 1)->indent >= row->indent)
@@ -1217,16 +1198,13 @@ void GUITable::alignContent(Cell *cell, s32 xmax, s32 content_width, s32 align)
 	if (align == 0) {
 		cell->xpos = cell->xmin;
 		cell->xmax = xmax;
-	}
-	else if (align == 1) {
+	} else if (align == 1) {
 		cell->xpos = (cell->xmin + xmax - content_width) / 2;
 		cell->xmax = xmax;
-	}
-	else if (align == 2) {
+	} else if (align == 2) {
 		cell->xpos = xmax - content_width;
 		cell->xmax = xmax;
-	}
-	else {
+	} else {
 		// inline alignment: the cells of the column don't have an aligned
 		// right border, the right border of each cell depends on the content
 		cell->xpos = cell->xmin;
