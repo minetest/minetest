@@ -189,7 +189,7 @@ void Clouds::render()
 	}
 
 #define GETINDEX(x, z, radius) (((z)+(radius))*(radius)*2 + (x)+(radius))
-#define CONTAINS(x, z, radius) \
+#define INAREA(x, z, radius) \
 	((x) >= -(radius) && (x) < (radius) && (z) >= -(radius) && (z) < (radius))
 
 	for(s16 zi0=-cloud_radius_i; zi0<cloud_radius_i; zi0++)
@@ -247,7 +247,7 @@ void Clouds::render()
 				v[3].Pos.set( rx, ry,-rz);
 				break;
 			case 1: // back
-				if(CONTAINS(xi, zi-1, cloud_radius_i)){
+				if(INAREA(xi, zi-1, cloud_radius_i)){
 					u32 j = GETINDEX(xi, zi-1, cloud_radius_i);
 					if(grid[j])
 						continue;
@@ -262,7 +262,7 @@ void Clouds::render()
 				v[3].Pos.set(-rx,-ry,-rz);
 				break;
 			case 2: //right
-				if(CONTAINS(xi+1, zi, cloud_radius_i)){
+				if(INAREA(xi+1, zi, cloud_radius_i)){
 					u32 j = GETINDEX(xi+1, zi, cloud_radius_i);
 					if(grid[j])
 						continue;
@@ -277,7 +277,7 @@ void Clouds::render()
 				v[3].Pos.set( rx,-ry,-rz);
 				break;
 			case 3: // front
-				if(CONTAINS(xi, zi+1, cloud_radius_i)){
+				if(INAREA(xi, zi+1, cloud_radius_i)){
 					u32 j = GETINDEX(xi, zi+1, cloud_radius_i);
 					if(grid[j])
 						continue;
@@ -292,7 +292,7 @@ void Clouds::render()
 				v[3].Pos.set( rx,-ry, rz);
 				break;
 			case 4: // left
-				if(CONTAINS(xi-1, zi, cloud_radius_i)){
+				if(INAREA(xi-1, zi, cloud_radius_i)){
 					u32 j = GETINDEX(xi-1, zi, cloud_radius_i);
 					if(grid[j])
 						continue;

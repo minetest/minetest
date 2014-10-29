@@ -149,9 +149,10 @@ void OreScatter::generate(ManualMapVoxelManipulator *vm, int seed,
 				continue;
 
 			u32 i = vm->m_area.index(x0 + x1, y0 + y1, z0 + z1);
-			for (size_t ii = 0; ii < c_wherein.size(); ii++)
-				if (vm->m_data[i].getContent() == c_wherein[ii])
-					vm->m_data[i] = n_ore;
+			if (!CONTAINS(c_wherein, vm->m_data[i].getContent()))
+				continue;
+
+			vm->m_data[i] = n_ore;
 		}
 	}
 }
@@ -187,13 +188,10 @@ void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
 			u32 i = vm->m_area.index(x, y, z);
 			if (!vm->m_area.contains(i))
 				continue;
+			if (!CONTAINS(c_wherein, vm->m_data[i].getContent()))
+				continue;
 
-			for (size_t ii = 0; ii < c_wherein.size(); ii++) {
-				if (vm->m_data[i].getContent() == c_wherein[ii]) {
-					vm->m_data[i] = n_ore;
-					break;
-				}
-			}
+			vm->m_data[i] = n_ore;
 		}
 	}
 }
@@ -360,53 +358,56 @@ void Decoration::placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 
 ///////////////////////////////////////////////////////////////////////////////
 
+bool DecoSimple::canPlaceDecoration(ManualMapVoxelManipulator *vm, v3s16 p) {
+	// Don't bother if there aren't any decorations to place
+	if (c_decos.size() == 0)
+		return false;
+
+	u32 vi = vm->m_area.index(p);
+
+	// Check if the decoration can be placed on this node
+	if (!CONTAINS(c_place_on, vm->m_data[vi].getContent()))
+		return false;
+
+	// Don't continue if there are no spawnby constraints
+	if (nspawnby == -1)
+		return true;
+
+	int nneighs = 0;
+	v3s16 dirs[8] = {
+		v3s16( 0, 0,  1),
+		v3s16( 0, 0, -1),
+		v3s16( 1, 0,  0),
+		v3s16(-1, 0,  0),
+		v3s16( 1, 0,  1),
+		v3s16(-1, 0,  1),
+		v3s16(-1, 0, -1),
+		v3s16( 1, 0, -1)
+	};
+
+	// Check a Moore neighborhood if there are enough spawnby nodes
+	for (size_t i = 0; i != ARRLEN(dirs); i++) {
+		u32 index = vm->m_area.index(p + dirs[i]);
+		if (!vm->m_area.contains(index))
+			continue;
+
+		if (CONTAINS(c_spawnby, vm->m_data[index].getContent()))
+			nneighs++;
+	}
+
+	if (nneighs < nspawnby)
+		return false;
+
+	return true;
+}
+
 
 void DecoSimple::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p) {
 	ManualMapVoxelManipulator *vm = mg->vm;
 
-	u32 vi = vm->m_area.index(p);
-	content_t c = vm->m_data[vi].getContent();
-	size_t idx;
-	for (idx = 0; idx != c_place_on.size(); idx++) {
-		if (c == c_place_on[idx])
-			break;
-	}
-	if ((idx != 0) && (idx == c_place_on.size()))
+	if (!canPlaceDecoration(vm, p))
 		return;
 
-	if (nspawnby != -1) {
-		int nneighs = 0;
-		v3s16 dirs[8] = { // a Moore neighborhood
-			v3s16( 0, 0,  1),
-			v3s16( 0, 0, -1),
-			v3s16( 1, 0,  0),
-			v3s16(-1, 0,  0),
-			v3s16( 1, 0,  1),
-			v3s16(-1, 0,  1),
-			v3s16(-1, 0, -1),
-			v3s16( 1, 0, -1)
-		};
-
-		for (int i = 0; i != 8; i++) {
-			u32 index = vm->m_area.index(p + dirs[i]);
-			if (!vm->m_area.contains(index))
-				continue;
-
-			content_t c = vm->m_data[index].getContent();
-			for (size_t j = 0; j != c_spawnby.size(); j++) {
-				if (c == c_spawnby[j]) {
-					nneighs++;
-					break;
-				}
-			}
-		}
-
-		if (nneighs < nspawnby)
-			return;
-	}
-
-	if (c_decos.size() == 0)
-		return;
 	content_t c_place = c_decos[pr->range(0, c_decos.size() - 1)];
 
 	s16 height = (deco_height_max > 0) ?
@@ -415,6 +416,7 @@ void DecoSimple::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p) {
 	height = MYMIN(height, max_y - p.Y);
 
 	v3s16 em = vm->m_area.getExtent();
+	u32 vi = vm->m_area.index(p);
 	for (int i = 0; i < height; i++) {
 		vm->m_area.add_y(em, vi, 1);
 
@@ -477,12 +479,7 @@ void DecoSchematic::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p) {
 
 	u32 vi = vm->m_area.index(p);
 	content_t c = vm->m_data[vi].getContent();
-	size_t idx;
-	for (idx = 0; idx != c_place_on.size(); idx++) {
-		if (c == c_place_on[idx])
-			break;
-	}
-	if ((idx != 0) && (idx == c_place_on.size()))
+	if (!CONTAINS(c_place_on, c))
 		return;
 
 	Rotation rot = (rotation == ROTATE_RAND) ?

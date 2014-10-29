@@ -207,7 +207,7 @@ Ore *createOre(OreType type);
 
 
 enum DecorationType {
-	DECO_SIMPLE = 1,
+	DECO_SIMPLE,
 	DECO_SCHEMATIC,
 	DECO_LSYSTEM
 };
@@ -262,6 +262,7 @@ public:
 
 	~DecoSimple() {}
 
+	bool canPlaceDecoration(ManualMapVoxelManipulator *vm, v3s16 p);
 	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
 	virtual int getHeight();
 	virtual std::string getName();

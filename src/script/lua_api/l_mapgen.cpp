@@ -354,12 +354,7 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	NodeResolver *resolver = getServer(L)->getNodeDefManager()->getResolver();
 
 	enum DecorationType decotype = (DecorationType)getenumfield(L, index,
-				"deco_type", es_DecorationType, 0);
-	if (decotype == 0) {
-		errorstream << "register_decoration: unrecognized "
-			"decoration placement type";
-		return 0;
-	}
+				"deco_type", es_DecorationType, -1);
 
 	Decoration *deco = createDecoration(decotype);
 	if (!deco) {
@@ -398,90 +393,100 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	}
 
 	//// Handle decoration type-specific parameters
+	bool success = false;
 	switch (decotype) {
-		case DECO_SIMPLE: {
-			DecoSimple *dsimple = (DecoSimple *)deco;
-
-			dsimple->deco_height     = getintfield_default(L, index, "height", 1);
-			dsimple->deco_height_max = getintfield_default(L, index, "height_max", 0);
-			dsimple->nspawnby        = getintfield_default(L, index, "num_spawn_by", -1);
-
-			if (dsimple->deco_height <= 0) {
-				errorstream << "register_decoration: simple decoration height"
-					" must be greater than 0" << std::endl;
-				delete dsimple;
-				return 0;
-			}
-
-			std::vector<const char *> deco_names;
-			getstringlistfield(L, index, "decoration", deco_names);
-			if (deco_names.size() == 0) {
-				errorstream << "register_decoration: no decoration nodes "
-					"defined" << std::endl;
-				delete dsimple;
-				return 0;
-			}
-
-			std::vector<const char *> spawnby_names;
-			getstringlistfield(L, index, "spawn_by", spawnby_names);
-			if (dsimple->nspawnby != -1 && spawnby_names.size() == 0) {
-				errorstream << "register_decoration: no spawn_by nodes defined,"
-					" but num_spawn_by specified" << std::endl;
-				delete dsimple;
-				return 0;
-			}
-
-			for (size_t i = 0; i != deco_names.size(); i++)
-				resolver->addNodeList(deco_names[i], &dsimple->c_decos);
-			for (size_t i = 0; i != spawnby_names.size(); i++)
-				resolver->addNodeList(spawnby_names[i], &dsimple->c_spawnby);
-
+		case DECO_SIMPLE:
+			success = regDecoSimple(L, resolver, (DecoSimple *)deco);
 			break;
-		}
-		case DECO_SCHEMATIC: {
-			DecoSchematic *dschem = (DecoSchematic *)deco;
-
-			dschem->flags = 0;
-			getflagsfield(L, index, "flags", flagdesc_deco_schematic,
-				&dschem->flags, NULL);
-
-			dschem->rotation = (Rotation)getenumfield(L, index,
-				"rotation", es_Rotation, ROTATE_0);
-
-			std::map<std::string, std::string> replace_names;
-			lua_getfield(L, index, "replacements");
-			if (lua_istable(L, -1))
-				read_schematic_replacements(L, replace_names, lua_gettop(L));
-			lua_pop(L, 1);
-
-			lua_getfield(L, index, "schematic");
-			if (!read_schematic(L, -1, dschem, getServer(L))) {
-				delete dschem;
-				return 0;
-			}
-			lua_pop(L, -1);
-
-			if (!dschem->filename.empty() &&
-				!dschem->loadSchematicFile(resolver, replace_names)) {
-				errorstream << "register_decoration: failed to load schematic"
-					" file '" << dschem->filename << "'" << std::endl;
-				delete dschem;
-				return 0;
-			}
-
+		case DECO_SCHEMATIC:
+			success = regDecoSchematic(L, resolver, (DecoSchematic *)deco);
 			break;
-		}
-		case DECO_LSYSTEM: {
-			//DecoLSystem *decolsystem = (DecoLSystem *)deco;
+		case DECO_LSYSTEM:
 			break;
-		}
+	}
+
+	if (!success) {
+		delete deco;
+		return 0;
 	}
 
 	emerge->decorations.push_back(deco);
 
 	verbosestream << "register_decoration: decoration '" << deco->getName()
 		<< "' registered" << std::endl;
+
 	return 0;
+}
+
+bool ModApiMapgen::regDecoSimple(lua_State *L,
+		NodeResolver *resolver, DecoSimple *deco)
+{
+	int index = 1;
+
+	deco->deco_height     = getintfield_default(L, index, "height", 1);
+	deco->deco_height_max = getintfield_default(L, index, "height_max", 0);
+	deco->nspawnby        = getintfield_default(L, index, "num_spawn_by", -1);
+
+	if (deco->deco_height <= 0) {
+		errorstream << "register_decoration: simple decoration height"
+			" must be greater than 0" << std::endl;
+		return false;
+	}
+
+	std::vector<const char *> deco_names;
+	getstringlistfield(L, index, "decoration", deco_names);
+	if (deco_names.size() == 0) {
+		errorstream << "register_decoration: no decoration nodes "
+			"defined" << std::endl;
+		return false;
+	}
+
+	std::vector<const char *> spawnby_names;
+	getstringlistfield(L, index, "spawn_by", spawnby_names);
+	if (deco->nspawnby != -1 && spawnby_names.size() == 0) {
+		errorstream << "register_decoration: no spawn_by nodes defined,"
+			" but num_spawn_by specified" << std::endl;
+		return false;
+	}
+
+	for (size_t i = 0; i != deco_names.size(); i++)
+		resolver->addNodeList(deco_names[i], &deco->c_decos);
+	for (size_t i = 0; i != spawnby_names.size(); i++)
+		resolver->addNodeList(spawnby_names[i], &deco->c_spawnby);
+
+	return true;
+}
+
+bool ModApiMapgen::regDecoSchematic(lua_State *L,
+		NodeResolver *resolver, DecoSchematic *deco)
+{
+	int index = 1;
+
+	deco->flags = 0;
+	getflagsfield(L, index, "flags", flagdesc_deco_schematic, &deco->flags, NULL);
+
+	deco->rotation = (Rotation)getenumfield(L, index, "rotation",
+		es_Rotation, ROTATE_0);
+
+	std::map<std::string, std::string> replace_names;
+	lua_getfield(L, index, "replacements");
+	if (lua_istable(L, -1))
+		read_schematic_replacements(L, replace_names, lua_gettop(L));
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "schematic");
+	if (!read_schematic(L, -1, deco, getServer(L)))
+		return false;
+	lua_pop(L, -1);
+
+	if (!deco->filename.empty() &&
+		!deco->loadSchematicFile(resolver, replace_names)) {
+		errorstream << "register_decoration: failed to load schematic"
+			" file '" << deco->filename << "'" << std::endl;
+		return false;
+	}
+
+	return true;
 }
 
 // register_ore({lots of stuff})

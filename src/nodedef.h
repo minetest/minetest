@@ -350,7 +350,7 @@ public:
 		before the pending request had been satisfied, cancelNodeList() must be
 		called.
 
-		@param nodename Name of node (or node group) to be resolved. 
+		@param nodename Name of node (or node group) to be resolved.
 		@param content_vec Pointer to content_t vector onto which the results
 			are added.
 
