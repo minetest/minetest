@@ -970,14 +970,14 @@ int ObjectRef::l_hud_change(lua_State *L)
 	if (player == NULL)
 		return 0;
 
-	u32 id = !lua_isnil(L, 2) ? lua_tonumber(L, 2) : -1;
+	u32 id = lua_isnumber(L, 2) ? lua_tonumber(L, 2) : -1;
 
 	HudElement *e = player->getHud(id);
 	if (!e)
 		return 0;
 
 	HudElementStat stat = HUD_STAT_NUMBER;
-	if (!lua_isnil(L, 3)) {
+	if (lua_isstring(L, 3)) {
 		int statint;
 		std::string statstr = lua_tostring(L, 3);
 		stat = string_to_enum(es_HudElementStat, statint, statstr) ?
@@ -991,7 +991,7 @@ int ObjectRef::l_hud_change(lua_State *L)
 			value = &e->pos;
 			break;
 		case HUD_STAT_NAME:
-			e->name = lua_tostring(L, 4);
+			e->name = luaL_checkstring(L, 4);
 			value = &e->name;
 			break;
 		case HUD_STAT_SCALE:
@@ -999,19 +999,19 @@ int ObjectRef::l_hud_change(lua_State *L)
 			value = &e->scale;
 			break;
 		case HUD_STAT_TEXT:
-			e->text = lua_tostring(L, 4);
+			e->text = luaL_checkstring(L, 4);
 			value = &e->text;
 			break;
 		case HUD_STAT_NUMBER:
-			e->number = lua_tonumber(L, 4);
+			e->number = luaL_checknumber(L, 4);
 			value = &e->number;
 			break;
 		case HUD_STAT_ITEM:
-			e->item = lua_tonumber(L, 4);
+			e->item = luaL_checknumber(L, 4);
 			value = &e->item;
 			break;
 		case HUD_STAT_DIR:
-			e->dir = lua_tonumber(L, 4);
+			e->dir = luaL_checknumber(L, 4);
 			value = &e->dir;
 			break;
 		case HUD_STAT_ALIGN:
