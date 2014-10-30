@@ -475,9 +475,11 @@ bool ModApiMapgen::regDecoSchematic(lua_State *L,
 	lua_pop(L, 1);
 
 	lua_getfield(L, index, "schematic");
-	if (!read_schematic(L, -1, deco, getServer(L)))
+	if (!read_schematic(L, -1, deco, getServer(L))) {
+		lua_pop(L, 1);
 		return false;
-	lua_pop(L, -1);
+	}
+	lua_pop(L, 1);
 
 	if (!deco->filename.empty() &&
 		!deco->loadSchematicFile(resolver, replace_names)) {
