@@ -3,17 +3,18 @@
 # This file is distributed under the same license as the PACKAGE package.
 # Muhammad Rifqi Priyo Susanto <muhammadrifqipriyosusanto@gmail.com>, 2014.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-23 17:37+0100\n"
-"PO-Revision-Date: 2014-06-30 11:17+0700\n"
+"PO-Revision-Date: 2014-10-30 19:27+0700\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto <muhammadrifqipriyosusanto@gmail.com>\n"
 "Language-Team: Bahasa Indonesia <>\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: builtin/gamemgr.lua:23
@@ -27,11 +28,11 @@ msgstr "Buat"
 #: builtin/gamemgr.lua:26 builtin/mainmenu.lua:311 builtin/modmgr.lua:331
 #: builtin/modmgr.lua:448 src/guiKeyChangeMenu.cpp:195 src/keycode.cpp:223
 msgid "Cancel"
-msgstr "Batalkan"
+msgstr "Batal"
 
 #: builtin/gamemgr.lua:118
 msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-msgstr "Gamemgr: Tidak dapat menyalin mod \"$1\" ke permainan \"$2\""
+msgstr "Manajer Permainan: Tidak dapat menyalin mod \"$1\" ke permainan \"$2\""
 
 #: builtin/gamemgr.lua:216
 msgid "GAMES"
@@ -43,7 +44,7 @@ msgstr "Permainan"
 
 #: builtin/gamemgr.lua:234
 msgid "Mods:"
-msgstr "Mods:"
+msgstr "Mod:"
 
 #: builtin/gamemgr.lua:235
 msgid "edit game"
@@ -71,11 +72,11 @@ msgstr "Oke"
 
 #: builtin/mainmenu.lua:297
 msgid "World name"
-msgstr "Nama Dunia"
+msgstr "Nama dunia"
 
 #: builtin/mainmenu.lua:300
 msgid "Seed"
-msgstr "Benih"
+msgstr "Seed"
 
 #: builtin/mainmenu.lua:303
 msgid "Mapgen"
@@ -87,7 +88,7 @@ msgstr "Permainan"
 
 #: builtin/mainmenu.lua:319
 msgid "Delete World \"$1\"?"
-msgstr "Hapus Dunia \"$1\""
+msgstr "Hapus Dunia \"$1\"?"
 
 #: builtin/mainmenu.lua:320 builtin/modmgr.lua:877
 msgid "Yes"
@@ -99,15 +100,15 @@ msgstr "Tidak"
 
 #: builtin/mainmenu.lua:364
 msgid "A world named \"$1\" already exists"
-msgstr "Sebuah dunia bernama \"$1\" telah ada"
+msgstr "Dunia bernama \"$1\" telah ada"
 
 #: builtin/mainmenu.lua:381
 msgid "No worldname given or no game selected"
-msgstr "Tidak disebutkan nama dunia atau tidak ada permainan yang dipilih"
+msgstr "Tidak ada nama atau permainan yang dipilih"
 
 #: builtin/mainmenu.lua:650
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr "Untuk mengaktifkan shaders dibutuhkan OpenGL driver"
+msgstr "Untuk mengaktifkan shaders OpenGL driver harus digunakan."
 
 #: builtin/mainmenu.lua:818
 msgid "CLIENT"
@@ -136,7 +137,7 @@ msgstr "Hapus"
 
 #: builtin/mainmenu.lua:833
 msgid "Connect"
-msgstr "Hubungkan"
+msgstr "Sambung"
 
 #: builtin/mainmenu.lua:875 builtin/mainmenu.lua:938
 msgid "New"
@@ -188,7 +189,7 @@ msgstr "PENGATURAN"
 
 #: builtin/mainmenu.lua:900
 msgid "Fancy trees"
-msgstr "Pohon yang mewah"
+msgstr "Pohon mewah"
 
 #: builtin/mainmenu.lua:902
 msgid "Smooth Lighting"
@@ -224,7 +225,7 @@ msgstr "Shaders"
 
 #: builtin/mainmenu.lua:920
 msgid "Preload item visuals"
-msgstr "Pramuat konten visual"
+msgstr "Pramuat gambaran barang"
 
 #: builtin/mainmenu.lua:922
 msgid "Enable Particles"
@@ -232,7 +233,7 @@ msgstr "Aktifkan Partikel"
 
 #: builtin/mainmenu.lua:924
 msgid "Finite Liquid"
-msgstr "Benda Cair Terbatas"
+msgstr "Cairan Terbatas"
 
 #: builtin/mainmenu.lua:927
 msgid "Change keys"
@@ -240,19 +241,19 @@ msgstr "Ubah tombol"
 
 #: builtin/mainmenu.lua:940 src/keycode.cpp:248
 msgid "Play"
-msgstr "Mulai"
+msgstr "Mainkan"
 
 #: builtin/mainmenu.lua:942
 msgid "SINGLE PLAYER"
-msgstr "SATU PEMAIN"
+msgstr "PEMAIN TUNGGAL"
 
 #: builtin/mainmenu.lua:955
 msgid "Select texture pack:"
-msgstr "Pilih pak tekstur:"
+msgstr "Pilih paket tekstur:"
 
 #: builtin/mainmenu.lua:956
 msgid "TEXTURE PACKS"
-msgstr "PAK TEKSTUR"
+msgstr "PAKET TEKSTUR"
 
 #: builtin/mainmenu.lua:976
 msgid "No information available"
@@ -272,7 +273,7 @@ msgstr "Kontributor Sebelumnya"
 
 #: builtin/mainmenu.lua:1069
 msgid "Singleplayer"
-msgstr "Satu pemain"
+msgstr "Pemain Tunggal"
 
 #: builtin/mainmenu.lua:1070
 msgid "Client"
@@ -296,7 +297,7 @@ msgstr "Mod"
 
 #: builtin/mainmenu.lua:1082
 msgid "Credits"
-msgstr "Daftar Penghargaan"
+msgstr "Penghargaan"
 
 #: builtin/modmgr.lua:236
 msgid "MODS"
@@ -340,7 +341,7 @@ msgstr "Copot pemasangan mod terpilih"
 
 #: builtin/modmgr.lua:324
 msgid "Rename Modpack:"
-msgstr "Ubah Nama Paket Mod:"
+msgstr "Ganti Nama Paket Mod"
 
 #: builtin/modmgr.lua:329 src/keycode.cpp:227
 msgid "Accept"
@@ -352,11 +353,11 @@ msgstr "Dunia:"
 
 #: builtin/modmgr.lua:427 builtin/modmgr.lua:429
 msgid "Hide Game"
-msgstr "Sembunyikan Permainan"
+msgstr "Sembunyikan\npermainan"
 
 #: builtin/modmgr.lua:433 builtin/modmgr.lua:435
 msgid "Hide mp content"
-msgstr "Sembunyikan konten paket mod"
+msgstr "Sembunyikan\nkonten pm"
 
 #: builtin/modmgr.lua:442
 msgid "Mod:"
@@ -372,15 +373,15 @@ msgstr "Simpan"
 
 #: builtin/modmgr.lua:464
 msgid "Enable MP"
-msgstr "Aktifkan Paket Mod"
+msgstr "Aktifkan PM"
 
 #: builtin/modmgr.lua:466
 msgid "Disable MP"
-msgstr "Non-aktifkan Paket Mod"
+msgstr "Nonaktifkan PM"
 
 #: builtin/modmgr.lua:470 builtin/modmgr.lua:472
 msgid "enabled"
-msgstr "diaktifan"
+msgstr "diaktifkan"
 
 #: builtin/modmgr.lua:478
 msgid "Enable all"
@@ -404,7 +405,7 @@ msgstr ""
 
 #: builtin/modmgr.lua:638
 msgid "Failed to install $1 to $2"
-msgstr "Gagal memasang $1 ke $2"
+msgstr "Gagal untuk memasang $1 ke $2"
 
 #: builtin/modmgr.lua:641
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
@@ -412,19 +413,19 @@ msgstr "Pemasangan Mod: tidak dapat mencari nama folder yang sesuai untuk paket 
 
 #: builtin/modmgr.lua:661
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr "Pemasangan Mod: tidak dapat mencari nama asli mod dari: $1"
+msgstr "Pemasangan Mod: tidak dapat mencari nama yang sebenarnya dari: $1"
 
 #: builtin/modmgr.lua:855
 msgid "Modmgr: failed to delete \"$1\""
-msgstr "Modmgr: gagal untuk menghapus \"$1\""
+msgstr "Manajer mod: gagal untuk menghapus \"$1\""
 
 #: builtin/modmgr.lua:859
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr "Modmgr: jalur mod tidak sah \"$1\""
+msgstr "Manajer mod: jalur mod tidak sah"
 
 #: builtin/modmgr.lua:876
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr "Kamu yakin untuk menghapus \"$1\""
+msgstr "Kamu yakin ingin menghapus \"$1\"?"
 
 #: builtin/modmgr.lua:878
 msgid "No of course not!"
@@ -448,7 +449,7 @@ msgstr "Pasang"
 
 #: src/client.cpp:2917
 msgid "Item textures..."
-msgstr "Konten tekstur..."
+msgstr "Tekstur barang..."
 
 #: src/game.cpp:940
 msgid "Loading..."
@@ -468,11 +469,11 @@ msgstr "Menyelesaikan alamat..."
 
 #: src/game.cpp:1122
 msgid "Connecting to server..."
-msgstr "Menghubungkan ke server..."
+msgstr "Menyambung ke server..."
 
 #: src/game.cpp:1219
 msgid "Item definitions..."
-msgstr "Definisi konten..."
+msgstr "Definisi barang..."
 
 #: src/game.cpp:1226
 msgid "Node definitions..."
@@ -496,7 +497,7 @@ msgstr ""
 
 #: src/guiDeathScreen.cpp:96
 msgid "You died."
-msgstr "Kamu telah meninggal."
+msgstr "Kamu mati."
 
 #: src/guiDeathScreen.cpp:104
 msgid "Respawn"
@@ -509,15 +510,15 @@ msgstr "Lanjut"
 
 #: src/guiKeyChangeMenu.cpp:121
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr "Kontrol. (Jika menu ini membingungkan, hapus hal-hal dari minetest.conf)"
+msgstr "Kontrol. (Jika menu ini kacau, hapus pengaturan kontrol dari minetest.conf)"
 
 #: src/guiKeyChangeMenu.cpp:161
 msgid "\"Use\" = climb down"
-msgstr "\"Use\" = turun"
+msgstr "\"Pakai\" = turun"
 
 #: src/guiKeyChangeMenu.cpp:176
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Ketuk dua kali \"lompat\" untuk berubah terbang"
+msgstr "Tekan ganda \"lompat\" untuk beralih terbang"
 
 #: src/guiKeyChangeMenu.cpp:288
 msgid "Key already in use"
@@ -557,7 +558,7 @@ msgstr "Menyelinap"
 
 #: src/guiKeyChangeMenu.cpp:396
 msgid "Drop"
-msgstr "Menjatuhkan"
+msgstr "Jatuhkan"
 
 #: src/guiKeyChangeMenu.cpp:397
 msgid "Inventory"
@@ -577,19 +578,19 @@ msgstr "Konsol"
 
 #: src/guiKeyChangeMenu.cpp:401
 msgid "Toggle fly"
-msgstr "Berubah terbang"
+msgstr "Terbang"
 
 #: src/guiKeyChangeMenu.cpp:402
 msgid "Toggle fast"
-msgstr "Berubah cepat"
+msgstr "Gerak cepat"
 
 #: src/guiKeyChangeMenu.cpp:403
 msgid "Toggle noclip"
-msgstr "Berubah tembus blok"
+msgstr "Tembus blok"
 
 #: src/guiKeyChangeMenu.cpp:404
 msgid "Range select"
-msgstr "Pilih jarak"
+msgstr "Jarak pandang"
 
 #: src/guiKeyChangeMenu.cpp:405
 msgid "Print stacks"
@@ -605,7 +606,7 @@ msgstr "Kata Sandi Baru"
 
 #: src/guiPasswordChange.cpp:137
 msgid "Confirm Password"
-msgstr "Konfirmasi Kata Kunci"
+msgstr "Konfirmasi Kata Sandi"
 
 #: src/guiPasswordChange.cpp:153
 msgid "Change"
@@ -629,11 +630,11 @@ msgstr "Volume Suara"
 
 #: src/guiPauseMenu.cpp:152
 msgid "Exit to Menu"
-msgstr "Keluar ke Menu Utama"
+msgstr "Menu Utama"
 
 #: src/guiPauseMenu.cpp:161
 msgid "Exit to OS"
-msgstr "Akhiri Permainan"
+msgstr "Akhiri Program"
 
 #: src/guiPauseMenu.cpp:170
 msgid ""
@@ -650,15 +651,15 @@ msgid ""
 "- T: chat\n"
 msgstr ""
 "Kontrol Bawaan:\n"
-"- WASD: bergerak\n"
+"- WASD: gerak\n"
 "- Space: lompat/panjat\n"
 "- Shift: menyelinap/turun\n"
-"- Q: jatuhkan item\n"
+"- Q: jatuhkan barang\n"
 "- I: inventaris\n"
-"- Mouse: belok/lihat\n"
+"- Mouse: tengok/lihat\n"
 "- Mouse left: gali/pukul\n"
 "- Mouse right: taruh/pakai\n"
-"- Mouse wheel: pilih item\n"
+"- Mouse wheel: pilih barang\n"
 "- T: obrolan\n"
 
 #: src/guiVolumeChange.cpp:107
@@ -671,15 +672,15 @@ msgstr "Keluar"
 
 #: src/keycode.cpp:223
 msgid "Left Button"
-msgstr "Tombol Kiri"
+msgstr "Klik Kiri"
 
 #: src/keycode.cpp:223
 msgid "Middle Button"
-msgstr "Tombol Tengah"
+msgstr "Klik Tengah"
 
 #: src/keycode.cpp:223
 msgid "Right Button"
-msgstr "Tombol Kanan"
+msgstr "Klik Kanan"
 
 #: src/keycode.cpp:223
 msgid "X Button 1"
@@ -687,15 +688,17 @@ msgstr "Tombol X 1"
 
 #: src/keycode.cpp:224
 msgid "Back"
-msgstr "Kembali"
+## Windows keyboard
+msgstr "Backspace"
 
 #: src/keycode.cpp:224
 msgid "Clear"
-msgstr "Kosong"
+msgstr "Bersihkan"
 
 #: src/keycode.cpp:224
 msgid "Return"
-msgstr "Kembali"
+## Windows keyboard
+msgstr "Enter"
 
 #: src/keycode.cpp:224
 msgid "Tab"
@@ -707,10 +710,12 @@ msgstr "Tombol X 2"
 
 #: src/keycode.cpp:225
 msgid "Capital"
-msgstr "Kapital"
+## Windows keyboard
+msgstr "Caps Lock"
 
 #: src/keycode.cpp:225
 msgid "Control"
+## Windows keyboard
 msgstr "Ctrl"
 
 #: src/keycode.cpp:225
@@ -719,11 +724,12 @@ msgstr "Kana"
 
 #: src/keycode.cpp:225
 msgid "Menu"
-msgstr "Menu"
+## Windows keyboard
+msgstr "Alt"
 
 #: src/keycode.cpp:225
 msgid "Pause"
-msgstr "Jeda"
+msgstr "Pause"
 
 #: src/keycode.cpp:225
 msgid "Shift"
@@ -731,15 +737,16 @@ msgstr "Shift"
 
 #: src/keycode.cpp:226
 msgid "Convert"
-msgstr "Ubah"
+msgstr "Convert"
 
 #: src/keycode.cpp:226
 msgid "Escape"
-msgstr "Escape"
+## Windows keyboard
+msgstr "Esc"
 
 #: src/keycode.cpp:226
 msgid "Final"
-msgstr "Terakhir"
+msgstr "Final"
 
 #: src/keycode.cpp:226
 msgid "Junja"
@@ -751,7 +758,7 @@ msgstr "Kanji"
 
 #: src/keycode.cpp:226
 msgid "Nonconvert"
-msgstr "Tanpa pengubahan"
+msgstr "Nonconvert"
 
 #: src/keycode.cpp:227
 msgid "End"
@@ -763,15 +770,17 @@ msgstr "Home"
 
 #: src/keycode.cpp:227
 msgid "Mode Change"
-msgstr "Ubah Mode"
+msgstr "Mode Change"
 
 #: src/keycode.cpp:227
 msgid "Next"
-msgstr "Selanjutnya"
+## Windows keyboard
+msgstr "Page Up"
 
 #: src/keycode.cpp:227
 msgid "Prior"
-msgstr "Sebelumnya"
+## Windows keyboard
+msgstr "Page Down"
 
 #: src/keycode.cpp:227
 msgid "Space"
@@ -779,19 +788,19 @@ msgstr "Spasi"
 
 #: src/keycode.cpp:228
 msgid "Down"
-msgstr "Bawah"
+msgstr "Turun"
 
 #: src/keycode.cpp:228
 msgid "Execute"
-msgstr "Menjalankan"
+msgstr "Execute"
 
 #: src/keycode.cpp:228
 msgid "Print"
-msgstr "Cetak"
+msgstr "Print"
 
 #: src/keycode.cpp:228
 msgid "Select"
-msgstr "Pilih"
+msgstr "Select"
 
 #: src/keycode.cpp:228
 msgid "Up"
@@ -799,7 +808,7 @@ msgstr "Atas"
 
 #: src/keycode.cpp:229
 msgid "Help"
-msgstr "Bantuan"
+msgstr "Help"
 
 #: src/keycode.cpp:229
 msgid "Insert"
@@ -807,15 +816,17 @@ msgstr "Insert"
 
 #: src/keycode.cpp:229
 msgid "Snapshot"
-msgstr "Potret"
+msgstr "Snapshot"
 
 #: src/keycode.cpp:232
 msgid "Left Windows"
-msgstr "Jendela Kiri"
+## Windows keyboard
+msgstr "Start Kiri"
 
 #: src/keycode.cpp:233
 msgid "Apps"
-msgstr "Aplikasi"
+## Windows keyboard
+msgstr "Tombol Menu"
 
 #: src/keycode.cpp:233
 msgid "Numpad 0"
@@ -827,11 +838,12 @@ msgstr "Numpad 1"
 
 #: src/keycode.cpp:233
 msgid "Right Windows"
-msgstr "Jendela Kanan"
+## Windows keyboard
+msgstr "Start Kanan"
 
 #: src/keycode.cpp:233
 msgid "Sleep"
-msgstr "Tidur"
+msgstr "Sleep"
 
 #: src/keycode.cpp:234
 msgid "Numpad 2"
@@ -891,27 +903,29 @@ msgstr "Scroll Lock"
 
 #: src/keycode.cpp:240
 msgid "Left Shift"
-msgstr "Shift Kanan"
+msgstr "Shift Kiri"
 
 #: src/keycode.cpp:240
 msgid "Right Shift"
-msgstr "Shift Kiri"
+msgstr "Shift Kanan"
 
 #: src/keycode.cpp:241
 msgid "Left Control"
-msgstr "Ctrl Kanan"
-
-#: src/keycode.cpp:241
-msgid "Left Menu"
-msgstr "Menu Kiri"
-
-#: src/keycode.cpp:241
-msgid "Right Control"
+## Windows keyboard
 msgstr "Ctrl Kiri"
 
 #: src/keycode.cpp:241
+msgid "Left Menu"
+msgstr "Left Menu"
+
+#: src/keycode.cpp:241
+msgid "Right Control"
+## Windows keyboard
+msgstr "Ctrl Kanan"
+
+#: src/keycode.cpp:241
 msgid "Right Menu"
-msgstr "Menu Kanan"
+msgstr "Right Menu"
 
 #: src/keycode.cpp:243
 msgid "Comma"
@@ -919,7 +933,7 @@ msgstr "Koma"
 
 #: src/keycode.cpp:243
 msgid "Minus"
-msgstr "Negatif"
+msgstr "Kurang"
 
 #: src/keycode.cpp:243
 msgid "Period"
@@ -939,7 +953,7 @@ msgstr "CrSel"
 
 #: src/keycode.cpp:248
 msgid "Erase OEF"
-msgstr "Hapus OEF"
+msgstr "Erase OEF"
 
 #: src/keycode.cpp:248
 msgid "ExSel"
@@ -947,7 +961,7 @@ msgstr "ExSel"
 
 #: src/keycode.cpp:248
 msgid "OEM Clear"
-msgstr "Hapus OEM"
+msgstr "OEM Clear"
 
 #: src/keycode.cpp:248
 msgid "PA1"
@@ -959,7 +973,7 @@ msgstr "Zoom"
 
 #: src/main.cpp:1472
 msgid "needs_fallback_font"
-msgstr "no"
+msgstr "needs_fallback_font"
 
 #: src/main.cpp:1547
 msgid "Main Menu"
@@ -967,7 +981,7 @@ msgstr "Menu Utama"
 
 #: src/main.cpp:1723
 msgid "No world selected and no address provided. Nothing to do."
-msgstr "Tidak ada dunia yang dipilih dan tidak diberikan alamat. Tidak ada yang dilakukan"
+msgstr "Tidak ada dunia yang dipilih dan tidak ada alamat yang diberikan."
 
 #: src/main.cpp:1731
 msgid "Could not find or load game \""
@@ -979,4 +993,4 @@ msgstr "Spesifikasi permainan tidak sah."
 
 #: src/main.cpp:1790
 msgid "Connection error (timed out?)"
-msgstr "koneksi bermasalah (kehabisan waktu?)"
+msgstr "Koneksi rusak (terlalu lama?)"
