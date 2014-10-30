@@ -60,8 +60,8 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge) {
 
 	this->csize   = v3s16(1, 1, 1) * params->chunksize * MAP_BLOCKSIZE;
 
-	// amount of elements to skip for the next index
-	// for noise/height/biome maps (not vmanip)
+	//// amount of elements to skip for the next index
+	//// for noise/height/biome maps (not vmanip)
 	this->ystride = csize.X;
 	this->zstride = csize.X * csize.Y;
 
@@ -71,7 +71,7 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge) {
 
 	MapgenV7Params *sp = (MapgenV7Params *)params->sparams;
 
-	// Terrain noise
+	//// Terrain noise
 	noise_terrain_base    = new Noise(&sp->np_terrain_base,    seed, csize.X, csize.Z);
 	noise_terrain_alt     = new Noise(&sp->np_terrain_alt,     seed, csize.X, csize.Z);
 	noise_terrain_persist = new Noise(&sp->np_terrain_persist, seed, csize.X, csize.Z);
@@ -80,13 +80,26 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge) {
 	noise_mount_height    = new Noise(&sp->np_mount_height,    seed, csize.X, csize.Z);
 	noise_ridge_uwater    = new Noise(&sp->np_ridge_uwater,    seed, csize.X, csize.Z);
 
-	// 3d terrain noise
+	//// 3d terrain noise
 	noise_mountain = new Noise(&sp->np_mountain, seed, csize.X, csize.Y, csize.Z);
 	noise_ridge    = new Noise(&sp->np_ridge,    seed, csize.X, csize.Y, csize.Z);
 
-	// Biome noise
+	//// Biome noise
 	noise_heat     = new Noise(bmgr->np_heat,     seed, csize.X, csize.Z);
-	noise_humidity = new Noise(bmgr->np_humidity, seed, csize.X, csize.Z);	
+	noise_humidity = new Noise(bmgr->np_humidity, seed, csize.X, csize.Z);
+
+	//// Resolve nodes to be used
+	INodeDefManager *ndef = emerge->ndef;
+
+	c_stone           = ndef->getId("mapgen_stone");
+	c_dirt            = ndef->getId("mapgen_dirt");
+	c_dirt_with_grass = ndef->getId("mapgen_dirt_with_grass");
+	c_sand            = ndef->getId("mapgen_sand");
+	c_water_source    = ndef->getId("mapgen_water_source");
+	c_lava_source     = ndef->getId("mapgen_lava_source");
+	c_ice             = ndef->getId("default:ice");
+	if (c_ice == CONTENT_IGNORE)
+		c_ice = CONTENT_AIR;
 }
 
 
@@ -207,16 +220,6 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
 
 	blockseed = emerge->getBlockSeed(full_node_min);  //////use getBlockSeed2()!
-	
-	c_stone           = ndef->getId("mapgen_stone");
-	c_dirt            = ndef->getId("mapgen_dirt");
-	c_dirt_with_grass = ndef->getId("mapgen_dirt_with_grass");
-	c_sand            = ndef->getId("mapgen_sand");
-	c_water_source    = ndef->getId("mapgen_water_source");
-	c_lava_source     = ndef->getId("mapgen_lava_source");
-	c_ice             = ndef->getId("default:ice");
-	if (c_ice == CONTENT_IGNORE)
-		c_ice = CONTENT_AIR;
 	
 	// Make some noise
 	calculateNoise();
