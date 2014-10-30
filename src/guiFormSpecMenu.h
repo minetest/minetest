@@ -324,7 +324,7 @@ protected:
 	gui::IGUIStaticText *m_tooltip_element;
 
 	u32 m_tooltip_show_delay;
-	s32 m_hoovered_time;
+	s32 m_hovered_time;
 	s32 m_old_tooltip_id;
 	std::string m_old_tooltip;
 

@@ -83,6 +83,7 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_selected_amount(0),
 	m_selected_dragging(false),
 	m_tooltip_element(NULL),
+	m_hovered_time(0),
 	m_old_tooltip_id(-1),
 	m_allowclose(true),
 	m_lock(false),
@@ -2346,18 +2347,20 @@ void GUIFormSpecMenu::drawMenu()
 
 	if (hovered != NULL) {
 		s32 id = hovered->getID();
-		u32 delta;
+
+		u32 delta = 0;
 		if (id == -1) {
 			m_old_tooltip_id = id;
 			m_old_tooltip = "";
-			delta = 0;
-		} else if (id != m_old_tooltip_id) {
-			m_hoovered_time = getTimeMs();
-			m_old_tooltip_id = id;
-			delta = 0;
-		} else if (id == m_old_tooltip_id) {
-			delta = porting::getDeltaMs(m_hoovered_time, getTimeMs());
+		} else {
+			if (id == m_old_tooltip_id) {
+				delta = porting::getDeltaMs(m_hovered_time, getTimeMs());
+			} else {
+				m_hovered_time = getTimeMs();
+				m_old_tooltip_id = id;
+			}
 		}
+
 		if (id != -1 && delta >= m_tooltip_show_delay) {
 			for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
 					iter != m_fields.end(); iter++) {
