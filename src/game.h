@@ -35,11 +35,14 @@ class KeyList : protected std::list<KeyPress>
 	{
 		const_iterator f(begin());
 		const_iterator e(end());
-		while (f!=e) {
+
+		while (f != e) {
 			if (*f == key)
 				return f;
+
 			++f;
 		}
+
 		return e;
 	}
 
@@ -47,16 +50,22 @@ class KeyList : protected std::list<KeyPress>
 	{
 		iterator f(begin());
 		iterator e(end());
-		while (f!=e) {
+
+		while (f != e) {
 			if (*f == key)
 				return f;
+
 			++f;
 		}
+
 		return e;
 	}
 
 public:
-	void clear() { super::clear(); }
+	void clear()
+	{
+		super::clear();
+	}
 
 	void set(const KeyPress &key)
 	{
@@ -67,6 +76,7 @@ public:
 	void unset(const KeyPress &key)
 	{
 		iterator p(find(key));
+
 		if (p != end())
 			erase(p);
 	}
@@ -74,6 +84,7 @@ public:
 	void toggle(const KeyPress &key)
 	{
 		iterator p(this->find(key));
+
 		if (p != end())
 			erase(p);
 		else
@@ -98,7 +109,7 @@ public:
 
 	virtual bool isKeyDown(const KeyPress &keyCode) = 0;
 	virtual bool wasKeyDown(const KeyPress &keyCode) = 0;
-	
+
 	virtual v2s32 getMousePos() = 0;
 	virtual void setMousePos(s32 x, s32 y) = 0;
 
@@ -114,33 +125,31 @@ public:
 	virtual bool getRightReleased() = 0;
 	virtual void resetLeftReleased() = 0;
 	virtual void resetRightReleased() = 0;
-	
+
 	virtual s32 getMouseWheel() = 0;
 
-	virtual void step(float dtime) {};
+	virtual void step(float dtime) {}
 
-	virtual void clear() {};
+	virtual void clear() {}
 };
 
 class ChatBackend;  /* to avoid having to include chat.h */
 struct SubgameSpec;
 
-void the_game(
-	bool &kill,
-	bool random_input,
-	InputHandler *input,
-	IrrlichtDevice *device,
-	gui::IGUIFont* font,
-	std::string map_dir,
-	std::string playername,
-	std::string password,
-	std::string address, // If "", local server is used
-	u16 port,
-	std::wstring &error_message,
-	ChatBackend &chat_backend,
-	const SubgameSpec &gamespec, // Used for local game
-	bool simple_singleplayer_mode
-);
+void the_game(bool *kill,
+		bool random_input,
+		InputHandler *input,
+		IrrlichtDevice *device,
+		gui::IGUIFont *font,
+		const std::string &map_dir,
+		const std::string &playername,
+		const std::string &password,
+		const std::string &address, // If "", local server is used
+		u16 port,
+		std::wstring &error_message,
+		ChatBackend &chat_backend,
+		const SubgameSpec &gamespec, // Used for local game
+		bool simple_singleplayer_mode);
 
 #endif
 

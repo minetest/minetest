@@ -1861,7 +1861,7 @@ int main(int argc, char *argv[])
 	g_touchscreengui = receiver->m_touchscreengui;
 #endif
 			the_game(
-				kill,
+				&kill,
 				random_input,
 				input,
 				device,
