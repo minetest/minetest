@@ -43,12 +43,8 @@ local function read_auth_file()
 		if line ~= "" then
 			local fields = line:split(':')
 			local name, password, privilegestring, last_login = unpack(fields)
-			if type(last_login) == 'string' then
-				last_login = tonumber(last_login)
-			else
-				last_login = 0
-			end
-			if not ( name and password and privilegestring ) then
+			last_login = tonumber(last_login) or 0
+			if not (name and password and privilegestring) then
 				error("Invalid line in auth.txt: "..dump(line))
 			end
 			local privileges = core.string_to_privs(privilegestring)
