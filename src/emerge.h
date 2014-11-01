@@ -38,8 +38,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	infostream << "EmergeThread: " x << std::endl; }
 
 class EmergeThread;
-//class Mapgen;
-//struct MapgenFactory;
 class Biome;
 class BiomeDefManager;
 class Decoration;

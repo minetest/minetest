@@ -31,7 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h"
 #include "serverobject.h"
 #include "porting.h"
-#include "mapgen.h"
+#include "mg_schematic.h"
+#include "noise.h"
 #include "json/json.h"
 
 struct EnumString es_TileAnimationType[] =

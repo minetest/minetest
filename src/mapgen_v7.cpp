@@ -34,7 +34,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "dungeongen.h"
 #include "cavegen.h"
 #include "treegen.h"
-#include "biome.h"
+#include "mg_biome.h"
+#include "mg_ore.h"
+#include "mg_decoration.h"
 #include "mapgen_v7.h"
 
 

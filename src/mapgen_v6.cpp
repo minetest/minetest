@@ -35,6 +35,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "dungeongen.h"
 #include "cavegen.h"
 #include "treegen.h"
+#include "mg_ore.h"
+#include "mg_decoration.h"
 #include "mapgen_v6.h"
 
 FlagDesc flagdesc_mapgen_v6[] = {

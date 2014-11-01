@@ -102,7 +102,6 @@ LOCAL_C_INCLUDES :=                               \
 LOCAL_SRC_FILES :=                                \
 		jni/src/ban.cpp                           \
 		jni/src/base64.cpp                        \
-		jni/src/biome.cpp                         \
 		jni/src/camera.cpp                        \
 		jni/src/cavegen.cpp                       \
 		jni/src/chat.cpp                          \
@@ -165,6 +164,10 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/mapnode.cpp                       \
 		jni/src/mapsector.cpp                     \
 		jni/src/mesh.cpp                          \
+		jni/src/mg_biome.cpp                      \
+		jni/src/mg_decoration.cpp                 \
+		jni/src/mg_ore.cpp                        \
+		jni/src/mg_schematic.cpp                  \
 		jni/src/mods.cpp                          \
 		jni/src/nameidmapping.cpp                 \
 		jni/src/nodedef.cpp                       \

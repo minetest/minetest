@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "biome.h"
+#include "mg_biome.h"
 #include "nodedef.h"
 #include "map.h" //for ManualMapVoxelManipulator
 #include "log.h"

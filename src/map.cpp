@@ -37,7 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "emerge.h"
 #include "mapgen_v6.h"
-#include "biome.h"
+#include "mg_biome.h"
 #include "config.h"
 #include "server.h"
 #include "database.h"

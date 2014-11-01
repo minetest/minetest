@@ -39,7 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "log.h"
 #include "nodedef.h"
-#include "biome.h"
+#include "mg_biome.h"
 #include "mapgen_v6.h"
 #include "mapgen_v7.h"
 #include "mapgen_singlenode.h"
