@@ -19,6 +19,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "socket.h"
 
+#include <stdio.h>
+#include <iostream>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <sstream>
+#include <iomanip>
+#include "util/string.h"
+#include "util/numeric.h"
+#include "constants.h"
+#include "debug.h"
+#include "settings.h"
+#include "log.h"
+#include "main.h" // for g_settings
+
 #ifdef _WIN32
 	#ifndef WIN32_LEAN_AND_MEAN
 		#define WIN32_LEAN_AND_MEAN
@@ -45,20 +60,6 @@ typedef int socklen_t;
 	#include <arpa/inet.h>
 typedef int socket_t;
 #endif
-
-#include "constants.h"
-#include "debug.h"
-#include "settings.h"
-#include "main.h" // for g_settings
-#include <stdio.h>
-#include <iostream>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <sstream>
-#include <iomanip>
-#include "util/string.h"
-#include "util/numeric.h"
 
 // Set to true to enable verbose debug output
 bool socket_enable_debug_output = false;

@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Server build: servermain.cpp
 */
 enum TimePrecision {
-	PRECISION_SECONDS,
+	PRECISION_SECONDS = 0,
 	PRECISION_MILLI,
 	PRECISION_MICRO,
 	PRECISION_NANO

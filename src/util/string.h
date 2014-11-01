@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef UTIL_STRING_HEADER
 #define UTIL_STRING_HEADER
 
-#include "../irrlichttypes.h"
+#include "irrlichttypes_bloated.h"
 #include <stdlib.h>
 #include <string>
 #include <cstring>
@@ -113,16 +113,22 @@ inline std::vector<std::wstring> str_split(const std::wstring &str, wchar_t deli
 	return parts;
 }
 
+inline std::vector<std::string> str_split(const std::string &str, char delimiter) {
+
+	std::vector<std::string> parts;
+	std::stringstream sstr(str);
+	std::string part;
+	while(std::getline(sstr, part, delimiter))
+		parts.push_back(part);
+	return parts;
+}
+
 inline std::string lowercase(const std::string &s)
 {
-	std::string s2;
-	for(size_t i=0; i<s.size(); i++)
-	{
-		char c = s[i];
-		if(c >= 'A' && c <= 'Z')
-			c -= 'A' - 'a';
-		s2 += c;
-	}
+	std::string s2 = s;
+	for(size_t i = 0; i < s.size(); i++)
+		if (isupper(s2.at(i)))
+			s2[i] = tolower(s2.at(i));
 	return s2;
 }
 
@@ -334,11 +340,12 @@ inline bool is_number(const std::string& tocheck)
 std::string translatePassword(std::string playername, std::wstring password);
 std::string urlencode(std::string str);
 std::string urldecode(std::string str);
-u32 readFlagString(std::string str, FlagDesc *flagdesc, u32 *flagmask);
-std::string writeFlagString(u32 flags, FlagDesc *flagdesc, u32 flagmask);
+u32 readFlagString(std::string str, const FlagDesc *flagdesc, u32 *flagmask);
+std::string writeFlagString(u32 flags, const FlagDesc *flagdesc, u32 flagmask);
 size_t mystrlcpy(char *dst, const char *src, size_t size);
 char *mystrtok_r(char *s, const char *sep, char **lasts);
 u64 read_seed(const char *str);
+bool parseColorString(const std::string &value, video::SColor &color, bool quiet);
 
 #endif
 

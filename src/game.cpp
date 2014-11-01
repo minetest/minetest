@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "guiPasswordChange.h"
 #include "guiVolumeChange.h"
+#include "guiKeyChangeMenu.h"
 #include "guiFormSpecMenu.h"
 #include "tool.h"
 #include "guiChatConsole.h"
@@ -148,6 +149,11 @@ struct LocalFormspecHandler : public TextDest
 		if (m_formname == "MT_PAUSE_MENU") {
 			if (fields.find("btn_sound") != fields.end()) {
 				g_gamecallback->changeVolume();
+				return;
+			}
+
+			if (fields.find("btn_key_config") != fields.end()) {
+				g_gamecallback->keyConfig();
 				return;
 			}
 
@@ -407,14 +413,16 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 				mindistance = distance;
 
 				hilightboxes.clear();
-				for(std::vector<aabb3f>::const_iterator
-						i2 = boxes.begin();
-						i2 != boxes.end(); i2++)
-				{
-					aabb3f box = *i2;
-					box.MinEdge += npf + v3f(-d,-d,-d) - intToFloat(camera_offset, BS);
-					box.MaxEdge += npf + v3f(d,d,d) - intToFloat(camera_offset, BS);
-					hilightboxes.push_back(box);
+				if (!g_settings->getBool("enable_node_highlighting")) {
+					for(std::vector<aabb3f>::const_iterator
+							i2 = boxes.begin();
+							i2 != boxes.end(); i2++)
+					{
+						aabb3f box = *i2;
+						box.MinEdge += npf + v3f(-d,-d,-d) - intToFloat(camera_offset, BS);
+						box.MaxEdge += npf + v3f(d,d,d) - intToFloat(camera_offset, BS);
+						hilightboxes.push_back(box);
+					}
 				}
 			}
 		}
@@ -931,14 +939,21 @@ bool nodePlacementPrediction(Client &client,
 static inline void create_formspec_menu(GUIFormSpecMenu** cur_formspec,
 		InventoryManager *invmgr, IGameDef *gamedef,
 		IWritableTextureSource* tsrc, IrrlichtDevice * device,
-		IFormSource* fs_src, TextDest* txt_dest
+		IFormSource* fs_src, TextDest* txt_dest, Client* client
 		) {
 
 	if (*cur_formspec == 0) {
 		*cur_formspec = new GUIFormSpecMenu(device, guiroot, -1, &g_menumgr,
-				invmgr, gamedef, tsrc, fs_src, txt_dest, cur_formspec );
+				invmgr, gamedef, tsrc, fs_src, txt_dest, client);
 		(*cur_formspec)->doPause = false;
-		(*cur_formspec)->drop();
+
+		/*
+			Caution: do not call (*cur_formspec)->drop() here --
+			the reference might outlive the menu, so we will
+			periodically check if *cur_formspec is the only
+			remaining reference (i.e. the menu was removed)
+			and delete it in that case.
+		*/
 	}
 	else {
 		(*cur_formspec)->setFormSource(fs_src);
@@ -970,7 +985,7 @@ static void show_chat_menu(GUIFormSpecMenu** cur_formspec,
 	FormspecFormSource* fs_src = new FormspecFormSource(formspec);
 	LocalFormspecHandler* txt_dst = new LocalFormspecHandler("MT_CHAT_MENU", client);
 
-	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device, fs_src, txt_dst);
+	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device, fs_src, txt_dst, NULL);
 }
 
 static void show_deathscreen(GUIFormSpecMenu** cur_formspec,
@@ -991,7 +1006,7 @@ static void show_deathscreen(GUIFormSpecMenu** cur_formspec,
 	FormspecFormSource* fs_src = new FormspecFormSource(formspec);
 	LocalFormspecHandler* txt_dst = new LocalFormspecHandler("MT_DEATH_SCREEN", client);
 
-	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device,  fs_src, txt_dst);
+	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device,  fs_src, txt_dst, NULL);
 }
 
 /******************************************************************************/
@@ -1028,7 +1043,8 @@ static void show_pause_menu(GUIFormSpecMenu** cur_formspec,
 			"- T: chat\n"
 			));
 #endif
-	float ypos = singleplayermode ? 1.0 : 0.5;
+
+	float ypos = singleplayermode ? 0.5 : 0.1;
 	std::ostringstream os;
 
 	os << FORMSPEC_VERSION_STRING  << SIZE_TAG
@@ -1042,6 +1058,8 @@ static void show_pause_menu(GUIFormSpecMenu** cur_formspec,
 
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
 					<< wide_to_narrow(wstrgettext("Sound Volume")) << "]";
+	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_key_config;"
+					<< wide_to_narrow(wstrgettext("Change Keys"))  << "]";
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_menu;"
 					<< wide_to_narrow(wstrgettext("Exit to Menu")) << "]";
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"
@@ -1058,7 +1076,7 @@ static void show_pause_menu(GUIFormSpecMenu** cur_formspec,
 	FormspecFormSource* fs_src = new FormspecFormSource(os.str());
 	LocalFormspecHandler* txt_dst = new LocalFormspecHandler("MT_PAUSE_MENU");
 
-	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device,  fs_src, txt_dst);
+	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device,  fs_src, txt_dst, NULL);
 
 	(*cur_formspec)->doPause = true;
 }
@@ -1100,8 +1118,16 @@ static void updateChat(Client& client, f32 dtime, bool show_debug,
 	if (show_debug)
 		chat_y += line_height;
 
-	core::rect<s32> rect(10, chat_y, font->getDimension(recent_chat.c_str()).Width +10,
-			chat_y + (recent_chat_count * line_height));
+	// first pass to calculate height of text to be set
+	s32 width = std::min(font->getDimension(recent_chat.c_str()).Width + 10,
+			porting::getWindowSize().X - 20);
+	core::rect<s32> rect(10, chat_y, width, chat_y + porting::getWindowSize().Y);
+	guitext_chat->setRelativePosition(rect);
+
+	//now use real height of text and adjust rect according to this size	
+	rect = core::rect<s32>(10, chat_y, width,
+			chat_y + guitext_chat->getTextHeight());
+
 
 	guitext_chat->setRelativePosition(rect);
 	// Don't show chat if disabled or empty or profiler is enabled
@@ -1867,6 +1893,14 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			g_gamecallback->changevolume_requested = false;
 		}
 
+		if(g_gamecallback->keyconfig_requested)
+		{
+			(new GUIKeyChangeMenu(guienv, guiroot, -1,
+				&g_menumgr))->drop();
+			g_gamecallback->keyconfig_requested = false;
+		}
+
+
 		/* Process TextureSource's queue */
 		tsrc->processQueue();
 
@@ -1964,7 +1998,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 			PlayerInventoryFormSource* fs_src = new PlayerInventoryFormSource(&client);
 			TextDest* txt_dst = new TextDestPlayerInventory(&client);
 
-			create_formspec_menu(&current_formspec, &client, gamedef, tsrc, device, fs_src, txt_dst);
+			create_formspec_menu(&current_formspec, &client, gamedef, tsrc, device, fs_src, txt_dst, &client);
 
 			InventoryLocation inventoryloc;
 			inventoryloc.setCurrentPlayer();
@@ -2068,31 +2102,18 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_screenshot")))
 		{
-			irr::video::IImage* const image = driver->createScreenShot();
-			if (image) {
-				irr::c8 filename[256];
-				snprintf(filename, 256, "%s" DIR_DELIM "screenshot_%u.png",
-						 g_settings->get("screenshot_path").c_str(),
-						 device->getTimer()->getRealTime());
-				if (driver->writeImageToFile(image, filename)) {
-					std::wstringstream sstr;
-					sstr<<"Saved screenshot to '"<<filename<<"'";
-					infostream<<"Saved screenshot to '"<<filename<<"'"<<std::endl;
-					statustext = sstr.str();
-					statustext_time = 0;
-				} else{
-					infostream<<"Failed to save screenshot '"<<filename<<"'"<<std::endl;
-				}
-				image->drop();
-			}
+			client.makeScreenshot(device);
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_toggle_hud")))
 		{
 			show_hud = !show_hud;
-			if(show_hud)
+			if(show_hud) {
 				statustext = L"HUD shown";
-			else
+				client.setHighlighted(client.getHighlighted(), true);
+			} else {
 				statustext = L"HUD hidden";
+				client.setHighlighted(client.getHighlighted(), false);
+			}
 			statustext_time = 0;
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_toggle_chat")))
@@ -2471,7 +2492,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 							new TextDestPlayerInventory(&client,*(event.show_formspec.formname));
 
 					create_formspec_menu(&current_formspec, &client, gamedef,
-							tsrc, device, fs_src, txt_dst);
+							tsrc, device, fs_src, txt_dst, &client);
 
 					delete(event.show_formspec.formspec);
 					delete(event.show_formspec.formname);
@@ -2789,7 +2810,13 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		if(pointed != pointed_old)
 		{
 			infostream<<"Pointing at "<<pointed.dump()<<std::endl;
-			//dstream<<"Pointing at "<<pointed.dump()<<std::endl;
+			if (g_settings->getBool("enable_node_highlighting")) {
+				if (pointed.type == POINTEDTHING_NODE) {
+					client.setHighlighted(pointed.node_undersurface, show_hud);
+				} else {
+					client.setHighlighted(pointed.node_undersurface, false);
+				}
+			}
 		}
 
 		/*
@@ -3020,7 +3047,7 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 					TextDest* txt_dst = new TextDestNodeMetadata(nodepos, &client);
 
 					create_formspec_menu(&current_formspec, &client, gamedef,
-							tsrc, device, fs_src, txt_dst);
+							tsrc, device, fs_src, txt_dst, &client);
 
 					current_formspec->setFormSpec(meta->getString("formspec"), inventoryloc);
 				}
@@ -3397,10 +3424,16 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		}
 
 		/*
-			make sure menu is on top
+			1. Delete formspec menu reference if menu was removed
+			2. Else, make sure formspec menu is on top
 		*/
-		if ((!noMenuActive()) && (current_formspec)) {
+		if (current_formspec) {
+			if (current_formspec->getReferenceCount() == 1) {
+				current_formspec->drop();
+				current_formspec = NULL;
+			} else if (!noMenuActive()) {
 				guiroot->bringToFront(current_formspec);
+			}
 		}
 
 		/*
@@ -3489,6 +3522,11 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		g_menumgr.m_stack.front()->setVisible(false);
 		g_menumgr.deletingMenu(g_menumgr.m_stack.front());
 	}
+	if (current_formspec) {
+		current_formspec->drop();
+		current_formspec = NULL;
+	}
+
 	/*
 		Draw a "shutting down" screen, which will be shown while the map
 		generator and other stuff quits

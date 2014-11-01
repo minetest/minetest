@@ -81,6 +81,12 @@ private:
 	// get_scriptdir()
 	static int l_get_builtin_path(lua_State *L);
 
+	// compress(data, method, ...)
+	static int l_compress(lua_State *L);
+
+	// decompress(data, method, ...)
+	static int l_decompress(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 

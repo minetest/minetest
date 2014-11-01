@@ -338,6 +338,9 @@ Server::Server(
 	// Apply item aliases in the node definition manager
 	m_nodedef->updateAliases(m_itemdef);
 
+	// Perform pending node name resolutions
+	m_nodedef->getResolver()->resolveNodes();
+
 	// Load the mapgen params from global settings now after any
 	// initial overrides have been set by the mods
 	m_emerge->loadMapgenParams();
@@ -1169,10 +1172,15 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 	std::string playername = "";
 	PlayerSAO *playersao = NULL;
 	m_clients.Lock();
-	RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id, CS_InitDone);
-	if (client != NULL) {
-		playername = client->getName();
-		playersao = emergePlayer(playername.c_str(), peer_id);
+	try {
+		RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id, CS_InitDone);
+		if (client != NULL) {
+			playername = client->getName();
+			playersao = emergePlayer(playername.c_str(), peer_id);
+		}
+	} catch (std::exception &e) {
+		m_clients.Unlock();
+		throw;
 	}
 	m_clients.Unlock();
 
@@ -3869,7 +3877,7 @@ void Server::SendBlocks(float dtime)
 			RemoteClient *client = m_clients.lockedGetClientNoEx(*i, CS_Active);
 
 			if (client == NULL)
-				return;
+				continue;
 
 			total_sending += client->SendingCount();
 			client->GetNextBlocks(m_env,m_emerge, dtime, queue);
@@ -4885,6 +4893,11 @@ IShaderSource* Server::getShaderSource()
 {
 	return NULL;
 }
+scene::ISceneManager* Server::getSceneManager()
+{
+	return NULL;
+}
+
 u16 Server::allocateUnknownNodeId(const std::string &name)
 {
 	return m_nodedef->allocateDummy(name);
@@ -5033,15 +5046,17 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 	// Create player if it doesn't exist
 	if (!player) {
 		newplayer = true;
-		player = new RemotePlayer(this);
-		player->updateName(name);
-		/* Set player position */
+		player = new RemotePlayer(this, name);
+		// Set player position
 		infostream<<"Server: Finding spawn place for player \""
 				<<name<<"\""<<std::endl;
 		v3f pos = findSpawnPos(m_env->getServerMap());
 		player->setPosition(pos);
 
-		/* Add player to environment */
+		// Make sure the player is saved
+		player->setModified(true);
+
+		// Add player to environment
 		m_env->addPlayer(player);
 	}
 

@@ -34,8 +34,9 @@ struct MapgenSinglenodeParams : public MapgenSpecificParams {
 class MapgenSinglenode : public Mapgen {
 public:
 	u32 flags;
+	content_t c_node;
 
-	MapgenSinglenode(int mapgenid, MapgenParams *params);
+	MapgenSinglenode(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	~MapgenSinglenode();
 	
 	void makeChunk(BlockMakeData *data);
@@ -44,7 +45,7 @@ public:
 
 struct MapgenFactorySinglenode : public MapgenFactory {
 	Mapgen *createMapgen(int mgid, MapgenParams *params, EmergeManager *emerge) {
-		return new MapgenSinglenode(mgid, params);
+		return new MapgenSinglenode(mgid, params, emerge);
 	};
 	
 	MapgenSpecificParams *createMapgenParams() {

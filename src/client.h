@@ -395,6 +395,9 @@ public:
 	int getCrackLevel();
 	void setCrack(int level, v3s16 pos);
 
+	void setHighlighted(v3s16 pos, bool show_hud);
+	v3s16 getHighlighted(){ return m_highlighted_pos; }
+
 	u16 getHP();
 	u16 getBreath();
 
@@ -444,6 +447,7 @@ public:
 	virtual ICraftDefManager* getCraftDefManager();
 	virtual ITextureSource* getTextureSource();
 	virtual IShaderSource* getShaderSource();
+	virtual scene::ISceneManager* getSceneManager();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	virtual ISoundManager* getSoundManager();
 	virtual MtEventManager* getEventManager();
@@ -460,6 +464,8 @@ public:
 	void received_media();
 
 	LocalClientState getState() { return m_state; }
+
+	void makeScreenshot(IrrlichtDevice *device);
 
 private:
 
@@ -500,10 +506,12 @@ private:
 	float m_inventory_from_server_age;
 	std::set<v3s16> m_active_blocks;
 	PacketCounter m_packetcounter;
+	bool m_show_hud;
 	// Block mesh animation parameters
 	float m_animation_time;
 	int m_crack_level;
 	v3s16 m_crack_pos;
+	v3s16 m_highlighted_pos;
 	// 0 <= m_daynight_i < DAYNIGHT_CACHE_COUNT
 	//s32 m_daynight_i;
 	//u32 m_daynight_ratio;

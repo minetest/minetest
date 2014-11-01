@@ -35,14 +35,17 @@ struct EnumString ScriptApiNode::es_DrawType[] =
 		{NDT_FLOWINGLIQUID, "flowingliquid"},
 		{NDT_GLASSLIKE, "glasslike"},
 		{NDT_GLASSLIKE_FRAMED, "glasslike_framed"},
+		{NDT_GLASSLIKE_FRAMED_OPTIONAL, "glasslike_framed_optional"},
 		{NDT_ALLFACES, "allfaces"},
 		{NDT_ALLFACES_OPTIONAL, "allfaces_optional"},
 		{NDT_TORCHLIKE, "torchlike"},
 		{NDT_SIGNLIKE, "signlike"},
 		{NDT_PLANTLIKE, "plantlike"},
+		{NDT_FIRELIKE, "firelike"},
 		{NDT_FENCELIKE, "fencelike"},
 		{NDT_RAILLIKE, "raillike"},
 		{NDT_NODEBOX, "nodebox"},
+		{NDT_MESH, "mesh"},
 		{0, NULL},
 	};
 
@@ -101,7 +104,7 @@ bool ScriptApiNode::node_on_punch(v3s16 p, MapNode node,
 	// Call function
 	push_v3s16(L, p);
 	pushnode(L, node, ndef);
-	objectrefGetOrCreate(puncher);
+	objectrefGetOrCreate(L, puncher);
 	pushPointedThing(pointed);
 	if (lua_pcall(L, 4, 0, m_errorhandler))
 		scriptError();
@@ -122,7 +125,7 @@ bool ScriptApiNode::node_on_dig(v3s16 p, MapNode node,
 	// Call function
 	push_v3s16(L, p);
 	pushnode(L, node, ndef);
-	objectrefGetOrCreate(digger);
+	objectrefGetOrCreate(L, digger);
 	if (lua_pcall(L, 3, 0, m_errorhandler))
 		scriptError();
 	return true;
@@ -225,7 +228,7 @@ void ScriptApiNode::node_on_receive_fields(v3s16 p,
 		lua_pushlstring(L, value.c_str(), value.size());
 		lua_settable(L, -3);
 	}
-	objectrefGetOrCreate(sender);        // player
+	objectrefGetOrCreate(L, sender);        // player
 	if (lua_pcall(L, 4, 0, m_errorhandler))
 		scriptError();
 }

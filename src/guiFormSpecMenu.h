@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class IGameDef;
 class InventoryManager;
 class ISimpleTextureSource;
+class Client;
 
 typedef enum {
 	f_Button,
@@ -209,7 +210,7 @@ public:
 			ISimpleTextureSource *tsrc,
 			IFormSource* fs_src,
 			TextDest* txt_dst,
-			GUIFormSpecMenu** ext_ptr
+			Client* client
 			);
 
 	~GUIFormSpecMenu();
@@ -272,9 +273,6 @@ public:
 
 	GUITable* getTable(std::wstring tablename);
 
-	static bool parseColor(const std::string &value,
-			video::SColor &color, bool quiet);
-
 #ifdef __ANDROID__
 	bool getAndroidUIInput();
 #endif
@@ -294,9 +292,11 @@ protected:
 	InventoryManager *m_invmgr;
 	IGameDef *m_gamedef;
 	ISimpleTextureSource *m_tsrc;
+	Client *m_client;
 
 	std::string m_formspec_string;
 	InventoryLocation m_current_inventory_location;
+
 
 	std::vector<ListDrawSpec> m_inventorylists;
 	std::vector<ImageDrawSpec> m_backgrounds;
@@ -320,10 +320,11 @@ protected:
 	InventoryLocation m_selected_content_guess_inventory;
 
 	v2s32 m_pointer;
+	v2s32 m_old_pointer;  // Mouse position after previous mouse event
 	gui::IGUIStaticText *m_tooltip_element;
 
 	u32 m_tooltip_show_delay;
-	s32 m_hoovered_time;
+	s32 m_hovered_time;
 	s32 m_old_tooltip_id;
 	std::string m_old_tooltip;
 
@@ -344,7 +345,6 @@ protected:
 private:
 	IFormSource      *m_form_src;
 	TextDest         *m_text_dst;
-	GUIFormSpecMenu **m_ext_ptr;
 	gui::IGUIFont    *m_font;
 	unsigned int      m_formspec_version;
 

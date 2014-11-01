@@ -333,74 +333,75 @@ add_subdirectory(script)
 add_subdirectory(util)
 
 set(common_SRCS
-	version.cpp
-	rollback_interface.cpp
-	rollback.cpp
-	genericobject.cpp
-	voxelalgorithms.cpp
-	sound.cpp
-	quicktune.cpp
-	subgame.cpp
-	inventorymanager.cpp
-	mods.cpp
-	content_abm.cpp
-	craftdef.cpp
-	nameidmapping.cpp
-	itemdef.cpp
-	nodedef.cpp
-	object_properties.cpp
-	log.cpp
-	content_sao.cpp
-	emerge.cpp
-	mapgen.cpp
-	mapgen_v6.cpp
-	mapgen_v7.cpp
-	mapgen_singlenode.cpp
-	treegen.cpp
-	dungeongen.cpp
+	ban.cpp
+	base64.cpp
+	biome.cpp
 	cavegen.cpp
-	content_nodemeta.cpp
-	content_mapnode.cpp
-	collision.cpp
-	nodemetadata.cpp
-	nodetimer.cpp
-	serverobject.cpp
-	noise.cpp
-	porting.cpp
-	tool.cpp
-	defaultsettings.cpp
-	mapnode.cpp
-	voxel.cpp
-	inventory.cpp
-	debug.cpp
-	serialization.cpp
-	light.cpp
-	filesys.cpp
-	connection.cpp
-	environment.cpp
-	server.cpp
 	clientiface.cpp
-	socket.cpp
-	mapblock.cpp
-	mapsector.cpp
-	map.cpp
-	database.cpp
+	collision.cpp
+	connection.cpp
+	content_abm.cpp
+	content_mapnode.cpp
+	content_nodemeta.cpp
+	content_sao.cpp
+	convert_json.cpp
+	craftdef.cpp
 	database-dummy.cpp
 	database-leveldb.cpp
-	database-sqlite3.cpp
 	database-redis.cpp
-	player.cpp
-	test.cpp
-	sha1.cpp
-	base64.cpp
-	ban.cpp
-	biome.cpp
-	staticobject.cpp
-	serverlist.cpp
-	pathfinder.cpp
-	convert_json.cpp
+	database-sqlite3.cpp
+	database.cpp
+	debug.cpp
+	defaultsettings.cpp
+	dungeongen.cpp
+	emerge.cpp
+	environment.cpp
+	filesys.cpp
+	genericobject.cpp
 	gettext.cpp
 	httpfetch.cpp
+	inventory.cpp
+	inventorymanager.cpp
+	itemdef.cpp
+	light.cpp
+	log.cpp
+	map.cpp
+	mapblock.cpp
+	mapgen.cpp
+	mapgen_singlenode.cpp
+	mapgen_v6.cpp
+	mapgen_v7.cpp
+	mapnode.cpp
+	mapsector.cpp
+	mods.cpp
+	nameidmapping.cpp
+	nodedef.cpp
+	nodemetadata.cpp
+	nodetimer.cpp
+	noise.cpp
+	object_properties.cpp
+	pathfinder.cpp
+	player.cpp
+	porting.cpp
+	quicktune.cpp
+	rollback.cpp
+	rollback_interface.cpp
+	serialization.cpp
+	server.cpp
+	serverlist.cpp
+	serverobject.cpp
+	settings.cpp
+	sha1.cpp
+	socket.cpp
+	sound.cpp
+	staticobject.cpp
+	subgame.cpp
+	test.cpp
+	tool.cpp
+	treegen.cpp
+	version.cpp
+	voxel.cpp
+	voxelalgorithms.cpp
 	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}
 	${UTIL_SRCS}
@@ -429,38 +430,38 @@ endif()
 set(minetest_SRCS
 	${common_SRCS}
 	${sound_SRCS}
-	localplayer.cpp
-	sky.cpp
+	camera.cpp
+	chat.cpp
+	client.cpp
 	clientmap.cpp
+	clientmedia.cpp
+	clientobject.cpp
+	clouds.cpp
+	content_cao.cpp
 	content_cso.cpp
 	content_mapblock.cpp
-	content_cao.cpp
-	mesh.cpp
-	mapblock_mesh.cpp
-	keycode.cpp
-	camera.cpp
-	clouds.cpp
-	particles.cpp
-	clientobject.cpp
-	chat.cpp
-	hud.cpp
-	guiKeyChangeMenu.cpp
-	guiFormSpecMenu.cpp
-	guiTable.cpp
-	guiPasswordChange.cpp
-	guiVolumeChange.cpp
-	guiChatConsole.cpp
-	client.cpp
-	clientmedia.cpp
-	filecache.cpp
-	tile.cpp
-	shader.cpp
-	game.cpp
-	main.cpp
-	guiEngine.cpp
-	guiFileSelectMenu.cpp
 	convert_json.cpp
 	drawscene.cpp
+	filecache.cpp
+	game.cpp
+	guiChatConsole.cpp
+	guiEngine.cpp
+	guiFileSelectMenu.cpp
+	guiFormSpecMenu.cpp
+	guiKeyChangeMenu.cpp
+	guiPasswordChange.cpp
+	guiTable.cpp
+	guiVolumeChange.cpp
+	hud.cpp
+	keycode.cpp
+	localplayer.cpp
+	main.cpp
+	mapblock_mesh.cpp
+	mesh.cpp
+	particles.cpp
+	shader.cpp
+	sky.cpp
+	tile.cpp
 	${minetest_SCRIPT_SRCS}
 )
 list(SORT minetest_SRCS)

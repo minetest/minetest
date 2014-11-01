@@ -408,3 +408,219 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 		}
 	}
 }
+
+void rotateMeshBy6dFacedir(scene::IMesh *mesh, int facedir)
+{		
+	int axisdir = facedir>>2;
+	facedir &= 0x03;
+
+	u16 mc = mesh->getMeshBufferCount();
+	for(u16 j = 0; j < mc; j++)
+	{
+		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
+		u16 vc = buf->getVertexCount();
+		for(u16 i=0; i<vc; i++)
+		{
+			switch (axisdir)
+			{
+			case 0:
+				if(facedir == 1)
+					vertices[i].Pos.rotateXZBy(-90);
+				else if(facedir == 2)
+					vertices[i].Pos.rotateXZBy(180);
+				else if(facedir == 3)
+					vertices[i].Pos.rotateXZBy(90);
+				break;
+			case 1: // z+
+				vertices[i].Pos.rotateYZBy(90);
+				if(facedir == 1)
+					vertices[i].Pos.rotateXYBy(90);
+				else if(facedir == 2)
+					vertices[i].Pos.rotateXYBy(180);
+				else if(facedir == 3)
+					vertices[i].Pos.rotateXYBy(-90);
+				break;
+			case 2: //z-
+				vertices[i].Pos.rotateYZBy(-90);
+				if(facedir == 1)
+					vertices[i].Pos.rotateXYBy(-90);
+				else if(facedir == 2)
+					vertices[i].Pos.rotateXYBy(180);
+				else if(facedir == 3)
+					vertices[i].Pos.rotateXYBy(90);
+				break;
+			case 3:  //x+
+				vertices[i].Pos.rotateXYBy(-90);
+				if(facedir == 1)
+					vertices[i].Pos.rotateYZBy(90);
+				else if(facedir == 2)
+					vertices[i].Pos.rotateYZBy(180);
+				else if(facedir == 3)
+					vertices[i].Pos.rotateYZBy(-90);
+				break;
+			case 4:  //x-
+				vertices[i].Pos.rotateXYBy(90);
+				if(facedir == 1)
+					vertices[i].Pos.rotateYZBy(-90);
+				else if(facedir == 2)
+					vertices[i].Pos.rotateYZBy(180);
+				else if(facedir == 3)
+					vertices[i].Pos.rotateYZBy(90);
+				break;
+			case 5:
+				vertices[i].Pos.rotateXYBy(-180);
+				if(facedir == 1)
+					vertices[i].Pos.rotateXZBy(90);
+				else if(facedir == 2)
+					vertices[i].Pos.rotateXZBy(180);
+				else if(facedir == 3)
+					vertices[i].Pos.rotateXZBy(-90);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+}
+
+void recalculateBoundingBox(scene::IMesh *src_mesh)
+{
+	core::aabbox3d<f32> bbox;
+	bbox.reset(0,0,0);
+	for(u16 j = 0; j < src_mesh->getMeshBufferCount(); j++)
+	{
+		scene::IMeshBuffer *buf = src_mesh->getMeshBuffer(j);
+		buf->recalculateBoundingBox();
+		if(j == 0)
+			bbox = buf->getBoundingBox();
+		else
+			bbox.addInternalBox(buf->getBoundingBox());
+	}
+	src_mesh->setBoundingBox(bbox);
+}
+
+scene::IMesh* cloneMesh(scene::IMesh *src_mesh)
+{
+	scene::SMesh* dst_mesh = new scene::SMesh();
+	for(u16 j = 0; j < src_mesh->getMeshBufferCount(); j++)
+	{
+		scene::IMeshBuffer *buf = src_mesh->getMeshBuffer(j);
+		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
+		u16 *indices = (u16*)buf->getIndices();
+		scene::SMeshBuffer *temp_buf = new scene::SMeshBuffer();
+		temp_buf->append(vertices, buf->getVertexCount(),
+			indices, buf->getIndexCount());
+		dst_mesh->addMeshBuffer(temp_buf);
+		temp_buf->drop();
+	}
+	return dst_mesh;					
+}
+
+scene::IMesh* convertNodeboxNodeToMesh(ContentFeatures *f)
+{
+	scene::SMesh* dst_mesh = new scene::SMesh();
+	for (u16 j = 0; j < 6; j++)
+	{
+		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+		dst_mesh->addMeshBuffer(buf);
+		buf->drop();
+	}
+	
+	video::SColor c(255,255,255,255);	
+
+	std::vector<aabb3f> boxes = f->node_box.fixed;
+		
+	for(std::vector<aabb3f>::iterator
+			i = boxes.begin();
+			i != boxes.end(); i++)
+	{
+		aabb3f box = *i;
+
+		f32 temp;
+		if (box.MinEdge.X > box.MaxEdge.X)
+			{
+				temp=box.MinEdge.X;
+				box.MinEdge.X=box.MaxEdge.X;
+				box.MaxEdge.X=temp;
+			}
+		if (box.MinEdge.Y > box.MaxEdge.Y)
+			{
+				temp=box.MinEdge.Y;
+				box.MinEdge.Y=box.MaxEdge.Y;
+				box.MaxEdge.Y=temp;
+			}
+		if (box.MinEdge.Z > box.MaxEdge.Z)
+			{
+				temp=box.MinEdge.Z;
+				box.MinEdge.Z=box.MaxEdge.Z;
+				box.MaxEdge.Z=temp;
+			}
+		// Compute texture coords
+		f32 tx1 = (box.MinEdge.X/BS)+0.5;
+		f32 ty1 = (box.MinEdge.Y/BS)+0.5;
+		f32 tz1 = (box.MinEdge.Z/BS)+0.5;
+		f32 tx2 = (box.MaxEdge.X/BS)+0.5;
+		f32 ty2 = (box.MaxEdge.Y/BS)+0.5;
+		f32 tz2 = (box.MaxEdge.Z/BS)+0.5;
+		f32 txc[24] = {
+			// up
+			tx1, 1-tz2, tx2, 1-tz1,
+			// down
+			tx1, tz1, tx2, tz2,
+			// right
+			tz1, 1-ty2, tz2, 1-ty1,
+			// left
+			1-tz2, 1-ty2, 1-tz1, 1-ty1,
+			// back
+			1-tx2, 1-ty2, 1-tx1, 1-ty1,
+			// front
+			tx1, 1-ty2, tx2, 1-ty1,
+		};
+		v3f min = box.MinEdge;
+		v3f max = box.MaxEdge;
+
+		video::S3DVertex vertices[24] =
+		{
+			// up
+			video::S3DVertex(min.X,max.Y,max.Z, 0,1,0, c, txc[0],txc[1]),
+			video::S3DVertex(max.X,max.Y,max.Z, 0,1,0, c, txc[2],txc[1]),
+			video::S3DVertex(max.X,max.Y,min.Z, 0,1,0, c, txc[2],txc[3]),
+			video::S3DVertex(min.X,max.Y,min.Z, 0,1,0, c, txc[0],txc[3]),
+			// down
+			video::S3DVertex(min.X,min.Y,min.Z, 0,-1,0, c, txc[4],txc[5]),
+			video::S3DVertex(max.X,min.Y,min.Z, 0,-1,0, c, txc[6],txc[5]),
+			video::S3DVertex(max.X,min.Y,max.Z, 0,-1,0, c, txc[6],txc[7]),
+			video::S3DVertex(min.X,min.Y,max.Z, 0,-1,0, c, txc[4],txc[7]),
+			// right
+			video::S3DVertex(max.X,max.Y,min.Z, 1,0,0, c, txc[ 8],txc[9]),
+			video::S3DVertex(max.X,max.Y,max.Z, 1,0,0, c, txc[10],txc[9]),
+			video::S3DVertex(max.X,min.Y,max.Z, 1,0,0, c, txc[10],txc[11]),
+			video::S3DVertex(max.X,min.Y,min.Z, 1,0,0, c, txc[ 8],txc[11]),
+			// left
+			video::S3DVertex(min.X,max.Y,max.Z, -1,0,0, c, txc[12],txc[13]),
+			video::S3DVertex(min.X,max.Y,min.Z, -1,0,0, c, txc[14],txc[13]),
+			video::S3DVertex(min.X,min.Y,min.Z, -1,0,0, c, txc[14],txc[15]),
+			video::S3DVertex(min.X,min.Y,max.Z, -1,0,0, c, txc[12],txc[15]),
+			// back
+			video::S3DVertex(max.X,max.Y,max.Z, 0,0,1, c, txc[16],txc[17]),
+			video::S3DVertex(min.X,max.Y,max.Z, 0,0,1, c, txc[18],txc[17]),
+			video::S3DVertex(min.X,min.Y,max.Z, 0,0,1, c, txc[18],txc[19]),
+			video::S3DVertex(max.X,min.Y,max.Z, 0,0,1, c, txc[16],txc[19]),
+			// front
+			video::S3DVertex(min.X,max.Y,min.Z, 0,0,-1, c, txc[20],txc[21]),
+			video::S3DVertex(max.X,max.Y,min.Z, 0,0,-1, c, txc[22],txc[21]),
+			video::S3DVertex(max.X,min.Y,min.Z, 0,0,-1, c, txc[22],txc[23]),
+			video::S3DVertex(min.X,min.Y,min.Z, 0,0,-1, c, txc[20],txc[23]),
+		};
+
+		u16 indices[] = {0,1,2,2,3,0};
+
+		for(u16 j = 0; j < 24; j += 4)
+		{
+			scene::IMeshBuffer *buf = dst_mesh->getMeshBuffer(j / 4);
+			buf->append(vertices + j, 4, indices, 6);
+		}
+	}
+	return dst_mesh;					
+}

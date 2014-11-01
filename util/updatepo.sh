@@ -48,7 +48,11 @@ cd ..
 # directory at the top level. You a recent enough xgettext that supports
 # --package-name
 potfile=po/minetest.pot
-xgettext --package-name=minetest -kN_ -kwgettext -kfgettext -F -n -o $potfile src/*.cpp src/*.h builtin/*.lua
+xgettext --package-name=minetest \
+		-kN_ -kwgettext -kfgettext \
+		-F -n -o $potfile \
+		`find src/ -name '*.cpp' -o -name '*.h'` \
+		`find builtin/ -name '*.lua'`
 
 # Now iterate on all languages and create the po file if missing, or update it
 # if it exists already

@@ -217,8 +217,7 @@ struct MapNode
 	void rotateAlongYAxis(INodeDefManager *nodemgr, Rotation rot);
 
 	/*
-		Gets list of node boxes (used for rendering (NDT_NODEBOX)
-		and collision)
+		Gets list of node boxes (used for rendering (NDT_NODEBOX))
 	*/
 	std::vector<aabb3f> getNodeBoxes(INodeDefManager *nodemgr) const;
 
@@ -226,6 +225,11 @@ struct MapNode
 		Gets list of selection boxes
 	*/
 	std::vector<aabb3f> getSelectionBoxes(INodeDefManager *nodemgr) const;
+
+	/*
+		Gets list of collision boxes
+	*/
+	std::vector<aabb3f> getCollisionBoxes(INodeDefManager *nodemgr) const;
 
 	/* Liquid helpers */
 	u8 getMaxLevel(INodeDefManager *nodemgr) const;

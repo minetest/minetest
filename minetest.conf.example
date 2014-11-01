@@ -51,7 +51,7 @@
 #keymap_screenshot = KEY_F12
 # If true, keymap_special1 instead of keymap_sneak is used for climbing down and descending
 #aux1_descends = false
-# Doubletaping the jump key toogles fly mode
+# Double-tapping the jump key toggles fly mode
 #doubletap_jump = false
 # If false aux1 is used to fly fast
 #always_fly_fast = true
@@ -101,6 +101,8 @@
 #liquid_update = 1.0
 # Enable nice leaves; disable for speed
 #new_style_leaves = true
+# Connects glass if supported by node
+#connected_glass = false
 # Enable smooth lighting with simple ambient occlusion;
 # disable for speed or for different looks.
 #smooth_lighting = true
@@ -157,16 +159,20 @@
 #sound_volume = 0.7
 # Whether node texture animations should be desynchronized per MapBlock
 #desynchronize_mapblock_texture_animation = true
+# (useful if you've there's something to be displayed right or left of hotbar)
+# Width of the selectionbox's lines (Between 1 and 5)
+#selectionbox_width = 2
 # maximum percentage of current window to be used for hotbar
-# (usefull if you've there's something to be displayed right or left of hotbar)
 #hud_hotbar_max_width = 1.0
+# Enable highlighting for nodes (disables selectionboxes)
+#enable_node_highlighting = false
 # Texture filtering settings
 #mip_map = false
 #anisotropic_filter = false
 #bilinear_filter = false
 #trilinear_filter = false
 # Set to true to pre-generate all item visuals
-#preload_item_visuals = true
+#preload_item_visuals = false
 # Set to true to enable shaders. Disable them if video_driver = direct3d9/8.
 #enable_shaders = true
 # Set to true to enable textures bumpmapping. Requires shaders enabled.
@@ -195,6 +201,8 @@
 #enable_waving_leaves = false
 # Set to true enables waving plants. Requires shaders enabled.
 #enable_waving_plants = false
+# Enables caching of facedir rotated meshes
+#enable_mesh_cache = true
 # The time in seconds it takes between repeated
 # right clicks when holding the right mouse button
 #repeat_rightclick_time = 0.25
@@ -277,8 +285,6 @@
 #creative_mode = false
 # Enable players getting damage and dying
 #enable_damage = false
-# Despawn all non-peaceful mobs
-#only_peaceful_mobs = false
 # A chosen map seed for a new map, leave empty for random
 #fixed_map_seed =
 # Gives some stuff to players at the beginning

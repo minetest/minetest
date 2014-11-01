@@ -30,7 +30,8 @@ NoiseParams nparams_biome_def_heat(50, 50, v3f(500.0, 500.0, 500.0), 5349, 3, 0.
 NoiseParams nparams_biome_def_humidity(50, 50, v3f(500.0, 500.0, 500.0), 842, 3, 0.55);
 
 
-BiomeDefManager::BiomeDefManager() {
+BiomeDefManager::BiomeDefManager(NodeResolver *resolver)
+{
 	biome_registration_finished = false;
 	np_heat     = &nparams_biome_def_heat;
 	np_humidity = &nparams_biome_def_humidity;
@@ -38,35 +39,28 @@ BiomeDefManager::BiomeDefManager() {
 	// Create default biome to be used in case none exist
 	Biome *b = new Biome;
 	
-	b->id    = 0;
-	b->name  = "Default";
-	b->flags = 0;
-	
-	b->depth_top    = 0;
-	b->depth_filler = 0;
-
-	b->nname_top        = "air";
-	b->nname_filler     = "air";
-	b->nname_water      = "mapgen_water_source";
-	b->nname_dust       = "air";
-	b->nname_dust_water = "mapgen_water_source";
-
-	b->c_top        = CONTENT_IGNORE;
-	b->c_filler     = CONTENT_IGNORE;
-	b->c_water      = CONTENT_IGNORE;
-	b->c_dust       = CONTENT_IGNORE;
-	b->c_dust_water = CONTENT_IGNORE;
-
+	b->id             = 0;
+	b->name           = "Default";
+	b->flags          = 0;
+	b->depth_top      = 0;
+	b->depth_filler   = 0;
 	b->height_min     = -MAP_GENERATION_LIMIT;
 	b->height_max     = MAP_GENERATION_LIMIT;
 	b->heat_point     = 0.0;
 	b->humidity_point = 0.0;
 
+	resolver->addNode("air",                 "", CONTENT_AIR, &b->c_top);
+	resolver->addNode("air",                 "", CONTENT_AIR, &b->c_filler);
+	resolver->addNode("mapgen_water_source", "", CONTENT_AIR, &b->c_water);
+	resolver->addNode("air",                 "", CONTENT_AIR, &b->c_dust);
+	resolver->addNode("mapgen_water_source", "", CONTENT_AIR, &b->c_dust_water);
+
 	biomes.push_back(b);
 }
 
 
-BiomeDefManager::~BiomeDefManager() {
+BiomeDefManager::~BiomeDefManager()
+{
 	//if (biomecache)
 	//	delete[] biomecache;
 	
@@ -75,7 +69,8 @@ BiomeDefManager::~BiomeDefManager() {
 }
 
 
-Biome *BiomeDefManager::createBiome(BiomeTerrainType btt) {
+Biome *BiomeDefManager::createBiome(BiomeTerrainType btt)
+{
 	/*switch (btt) {
 		case BIOME_TERRAIN_NORMAL:
 			return new Biome;
@@ -94,7 +89,8 @@ Biome *BiomeDefManager::createBiome(BiomeTerrainType btt) {
 
 
 // just a PoC, obviously needs optimization later on (precalculate this)
-void BiomeDefManager::calcBiomes(BiomeNoiseInput *input, u8 *biomeid_map) {
+void BiomeDefManager::calcBiomes(BiomeNoiseInput *input, u8 *biomeid_map)
+{
 	int i = 0;
 	for (int y = 0; y != input->mapsize.Y; y++) {
 		for (int x = 0; x != input->mapsize.X; x++, i++) {
@@ -106,73 +102,31 @@ void BiomeDefManager::calcBiomes(BiomeNoiseInput *input, u8 *biomeid_map) {
 }
 
 
-void BiomeDefManager::resolveNodeNames(INodeDefManager *ndef) {
-	Biome *b;
-	
-	biome_registration_finished = true;
-	
-	for (size_t i = 0; i < biomes.size(); i++) {
-		b = biomes[i];
-
-		b->c_top = ndef->getId(b->nname_top);
-		if (b->c_top == CONTENT_IGNORE) {
-			errorstream << "BiomeDefManager::resolveNodeNames: node '"
-				<< b->nname_top << "' not defined" << std::endl;
-			b->c_top     = CONTENT_AIR;
-			b->depth_top = 0;
-		}
-	
-		b->c_filler = ndef->getId(b->nname_filler);
-		if (b->c_filler == CONTENT_IGNORE) {
-			errorstream << "BiomeDefManager::resolveNodeNames: node '"
-				<< b->nname_filler << "' not defined" << std::endl;
-			b->c_filler     = CONTENT_AIR;
-			b->depth_filler = 0;
-		}
-		
-		b->c_water = ndef->getId(b->nname_water);
-		if (b->c_water == CONTENT_IGNORE) {
-			errorstream << "BiomeDefManager::resolveNodeNames: node '"
-				<< b->nname_water << "' not defined" << std::endl;
-			b->c_water = CONTENT_AIR;
-		}
-		
-		b->c_dust = ndef->getId(b->nname_dust);
-		if (b->c_dust == CONTENT_IGNORE) {
-			errorstream << "BiomeDefManager::resolveNodeNames: node '"
-				<< b->nname_dust << "' not defined" << std::endl;
-		}
-		
-		b->c_dust_water = ndef->getId(b->nname_dust_water);
-		if (b->c_dust_water == CONTENT_IGNORE) {
-			errorstream << "BiomeDefManager::resolveNodeNames: node '"
-				<< b->nname_dust_water << "' not defined" << std::endl;
-		}
-	}
-}
-
-
-void BiomeDefManager::addBiome(Biome *b) {
+bool BiomeDefManager::addBiome(Biome *b)
+{
 	if (biome_registration_finished) {
-		errorstream << "BIomeDefManager: biome registration already finished, dropping " << b->name <<std::endl;
-		delete b;
-		return;
+		errorstream << "BiomeDefManager: biome registration already "
+			"finished, dropping " << b->name << std::endl;
+		return false;
 	}
 	
 	size_t nbiomes = biomes.size();
 	if (nbiomes >= 0xFF) {
-		errorstream << "BiomeDefManager: too many biomes, dropping " << b->name << std::endl;
-		delete b;
-		return;
+		errorstream << "BiomeDefManager: too many biomes, dropping "
+			<< b->name << std::endl;
+		return false;
 	}
 
 	b->id = (u8)nbiomes;
 	biomes.push_back(b);
 	verbosestream << "BiomeDefManager: added biome " << b->name << std::endl;
+
+	return true;
 }
 
 
-Biome *BiomeDefManager::getBiome(float heat, float humidity, s16 y) {
+Biome *BiomeDefManager::getBiome(float heat, float humidity, s16 y)
+{
 	Biome *b, *biome_closest = NULL;
 	float dist_min = FLT_MAX;
 
@@ -195,7 +149,8 @@ Biome *BiomeDefManager::getBiome(float heat, float humidity, s16 y) {
 }
 
 
-u8 BiomeDefManager::getBiomeIdByName(const char *name) {
+u8 BiomeDefManager::getBiomeIdByName(const char *name)
+{
 	for (size_t i = 0; i != biomes.size(); i++) {
 		if (!strcasecmp(name, biomes[i]->name.c_str()))
 			return i;

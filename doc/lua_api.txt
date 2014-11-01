@@ -103,6 +103,7 @@ mods
 |   |-- screenshot.png
 |   |-- description.txt
 |   |-- init.lua
+|   |-- models
 |   |-- textures
 |   |   |-- modname_stuff.png
 |   |   `-- modname_something_else.png
@@ -136,6 +137,9 @@ init.lua:
 
   minetest.setting_get(name) and minetest.setting_getbool(name) can be used
   to read custom or existing settings at load time, if necessary.
+
+models:
+	Models for entities or meshnodes.
 
 textures, sounds, media:
   Media files (textures, sounds, whatever) that will be transferred to the
@@ -261,6 +265,10 @@ Advanced texture modifiers:
   [mask:<file>
     Apply a mask to the base image.
     The mask is applied using binary AND.
+
+  [colorize:<color>
+    Colorize the textures with given color
+    <color> as ColorString
 
 Sounds
 -------
@@ -400,14 +408,21 @@ param2 is reserved for the engine when any of these are used:
     0 = y+    1 = z+    2 = z-    3 = x+    4 = x-    5 = y-
     facedir's two less significant bits are rotation around the axis
   paramtype2 == "leveled"
-  ^ The drawn node level is read from param2, like flowingliquid
-
+  collision_box = {
+	type = "fixed",
+	fixed = {
+			{-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
+			},
+  },
+  ^ defines list of collision boxes for the node. If empty, collision boxes
+	will be the same as nodeboxes, in case of any other nodes will be full cube
+	as in the example above.
+ 			
 Nodes can also contain extra data. See "Node Metadata".
 
 Node drawtypes
 ---------------
-There are a bunch of different looking node types. These are mostly just
-copied from Minetest 0.3; more may be made in the future.
+There are a bunch of different looking node types.
 
 Look for examples in games/minimal or games/minetest_game.
 
@@ -417,14 +432,19 @@ Look for examples in games/minimal or games/minetest_game.
 - flowingliquid
 - glasslike
 - glasslike_framed
+- glasslike_framed_optional
 - allfaces
 - allfaces_optional
 - torchlike
 - signlike
 - plantlike
+- firelike
 - fencelike
 - raillike
 - nodebox -- See below. EXPERIMENTAL
+- mesh -- use models for nodes
+
+*_optional drawtypes need less rendering time if deactivated (always client side)
 
 Node boxes
 -----------
@@ -462,6 +482,12 @@ A box of a regular node would look like:
 
 type = "leveled" is same as "fixed", but y2 will be automatically set to level from param2
 
+Meshes
+-----------
+If drawtype "mesh" is used tiles should hold model materials textures.
+Only static meshes are implemented.
+For supported model formats see Irrlicht engine documentation.
+    
 Ore types
 ---------------
 These tell in what manner the ore is generated.
@@ -982,16 +1008,16 @@ list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]
 ^ Show an inventory list
 
 listcolors[<slot_bg_normal>;<slot_bg_hover>]
-^ Sets background color of slots in HEX-Color format
+^ Sets background color of slots as ColorString
 ^ Sets background color of slots on mouse hovering
 
 listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>]
-^ Sets background color of slots in HEX-Color format
+^ Sets background color of slots as ColorString
 ^ Sets background color of slots on mouse hovering
 ^ Sets color of slots border
 
 listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>;<tooltip_bgcolor>;<tooltip_fontcolor>]
-^ Sets background color of slots in HEX-Color format
+^ Sets background color of slots as ColorString
 ^ Sets background color of slots on mouse hovering
 ^ Sets color of slots border
 ^ Sets default background color of tooltips
@@ -999,8 +1025,8 @@ listcolors[<slot_bg_normal>;<slot_bg_hover>;<slot_border>;<tooltip_bgcolor>;<too
 
 tooltip[<gui_element_name>;<tooltip_text>;<bgcolor>,<fontcolor>]
 ^ Adds tooltip for an element
-^ <bgcolor> tooltip background color in HEX-Color format (optional)
-^ <fontcolor> tooltip font color in HEX-Color format (optional)
+^ <bgcolor> tooltip background color as ColorString (optional)
+^ <fontcolor> tooltip font color as ColorString (optional)
 
 
 image[<X>,<Y>;<W>,<H>;<texture name>]
@@ -1012,7 +1038,7 @@ item_image[<X>,<Y>;<W>,<H>;<item name>]
 ^ Position and size units are inventory slots
 
 bgcolor[<color>;<fullscreen>]
-^ Sets background color of formspec in HEX-Color format
+^ Sets background color of formspec as ColorString
 ^ If true the background color is drawn fullscreen (does not effect the size of the formspec)
 
 background[<X>,<Y>;<W>,<H>;<texture name>]
@@ -1133,7 +1159,7 @@ box[<X>,<Y>;<W>,<H>;<color>]
 ^ simple colored semitransparent box
 ^ x and y position the box relative to the top left of the menu
 ^ w and h are the size of box
-^ color in HEX-Color format
+^ color as ColorString
 
 dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]
 ^ show a dropdown field
@@ -1179,15 +1205,15 @@ table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]
 tableoptions[<opt 1>;<opt 2>;...]
 ^ sets options for table[]:
 ^ color=#RRGGBB
-^^ default text color (HEX-Color), defaults to #FFFFFF
+^^ default text color (ColorString), defaults to #FFFFFF
 ^ background=#RRGGBB
-^^ table background color (HEX-Color), defaults to #000000
+^^ table background color (ColorString), defaults to #000000
 ^ border=<true/false>
 ^^ should the table be drawn with a border? (default true)
 ^ highlight=#RRGGBB
-^^ highlight background color (HEX-Color), defaults to #466432
+^^ highlight background color (ColorString), defaults to #466432
 ^ highlight_text=#RRGGBB
-^^ highlight text color (HEX-Color), defaults to #FFFFFF
+^^ highlight text color (ColorString), defaults to #FFFFFF
 ^ opendepth=<value>
 ^^ all subtrees up to depth < value are open (default value = 0)
 ^^ only useful when there is a column of type "tree"
@@ -1197,7 +1223,7 @@ tablecolumns[<type 1>,<opt 1a>,<opt 1b>,...;<type 2>,<opt 2a>,<opt 2b>;...]
 ^ types: text, image, color, indent, tree
 ^^ text:   show cell contents as text
 ^^ image:  cell contents are an image index, use column options to define images
-^^ color:  cell contents are a HEX-Color and define color of following cell
+^^ color:  cell contents are a ColorString and define color of following cell
 ^^ indent: cell contents are a number and define indentation of following cell
 ^^ tree:   same as indent, but user can open and close subtrees (treeview-like)
 ^ column options:
@@ -1228,8 +1254,8 @@ Inventory location:
 - "nodemeta:<X>,<Y>,<Z>": Any node metadata
 - "detached:<name>": A detached inventory
 
-HEX-Color
----------
+ColorString
+-----------
 #RGB
 ^ defines a color in hexadecimal format
 #RGBA
@@ -1238,6 +1264,12 @@ HEX-Color
 ^ defines a color in hexadecimal format
 #RRGGBBAA
 ^ defines a color in hexadecimal format and alpha channel
+
+Named colors are also supported and are equivalent to "CSS Color Module Level 4"
+(http://dev.w3.org/csswg/css-color/#named-colors). To specify the value of the
+alpha channel, append #AA to the end of the color name (e.g. colorname#08). For
+named colors the hexadecimal string representing the alpha value must (always)
+be two hexadecimal digits.
 
 Vector helpers
 ---------------
@@ -1719,7 +1751,7 @@ minetest.place_schematic(pos, schematic, rotation, replacements, force_placement
 ^ Place the schematic specified by schematic (see: Schematic specifier) at pos.
 ^ Rotation can be "0", "90", "180", "270", or "random".
 ^ If the rotation parameter is omitted, the schematic is not rotated.
-^ replacements = {{"oldname", "convert_to"}, ...}
+^ replacements = {["old_name"] = "convert_to", ...}
 ^ force_placement is a boolean indicating whether nodes other than air and
 ^ ignore are replaced by the schematic
 
@@ -1763,6 +1795,18 @@ minetest.deserialize(string) -> table
 ^ Example: deserialize('return { ["foo"] = "bar" }') -> {foo='bar'}
 ^ Example: deserialize('print("foo")') -> nil (function call fails)
   ^ error:[string "print("foo")"]:1: attempt to call global 'print' (a nil value)
+minetest.compress(data, method, ...) -> compressed_data
+^ Compress a string of data.
+^ `method` is a string identifying the compression method to be used.
+^ Supported compression methods:
+^     Deflate (zlib): "deflate"
+^ `...` indicates method-specific arguments.  Currently defined arguments are:
+^     Deflate: `level` - Compression level, 0-9 or nil.
+minetest.decompress(compressed_data, method, ...) -> data
+^ Decompress a string of data (using ZLib).
+^ See documentation on minetest.compress() for supported compression methods.
+^ currently supported.
+^ `...` indicates method-specific arguments.  Currently, no methods use this.
 minetest.is_protected(pos, name) -> bool
 ^ This function should be overridden by protection mods and should be used to
   check if a player can interact at a position.
@@ -2386,7 +2430,7 @@ Node definition (register_node)
 
     drawtype = "normal", -- See "Node drawtypes"
     visual_scale = 1.0,
-    ^ Supported for drawtypes "plantlike", "signlike", "torchlike".
+    ^ Supported for drawtypes "plantlike", "signlike", "torchlike", "mesh".
     ^ For plantlike, the image will start at the bottom of the node; for the
     ^ other drawtypes, the image will be centered on the node.
     ^ Note that positioning for "torchlike" may still change.
@@ -2408,7 +2452,6 @@ Node definition (register_node)
     diggable = true, -- If false, can never be dug
     climbable = false, -- If true, can be climbed on (ladder)
     buildable_to = false, -- If true, placed nodes can replace this node
-    drop = "", -- alternatively drop = { max_items = ..., items = { ... } }
     liquidtype = "none", -- "none"/"source"/"flowing"
     liquid_alternative_flowing = "", -- Flowing version of source liquid
     liquid_alternative_source = "", -- Source version of flowing liquid
@@ -2421,6 +2464,7 @@ Node definition (register_node)
     light_source = 0, -- Amount of light emitted by node
     damage_per_second = 0, -- If player is inside node, this damage is caused
     node_box = {type="regular"}, -- See "Node boxes"
+    mesh = "model",
     selection_box = {type="regular"}, -- See "Node boxes"
     ^ If drawtype "nodebox" is used and selection_box is nil, then node_box is used
     legacy_facedir_simple = false, -- Support maps made in and before January 2012
@@ -2430,6 +2474,17 @@ Node definition (register_node)
         dig = <SimpleSoundSpec>, -- "__group" = group-based sound (default)
         dug = <SimpleSoundSpec>,
         place = <SimpleSoundSpec>,
+    },
+    drop = "",  -- Name of dropped node when dug. Default is the node itself.
+    -- Alternatively:
+    drop = {
+        max_items = 1,  -- Maximum number of items to drop.
+        items = { -- Choose max_items randomly from this list.
+            {
+                items = {"foo:bar", "baz:frob"},  -- Choose one item randomly from this list.
+                rarity = 1,  -- Probability of getting is 1 / rarity.
+            },
+        },
     },
 
     on_construct = func(pos),
@@ -2634,7 +2689,7 @@ Decoration definition (register_decoration)
         },
     },
     ^ See 'Schematic specifier' for details.
-    replacements = {{"oldname", "convert_to"}, ...},
+    replacements = {["oldname"] = "convert_to", ...},
     flags = "place_center_x, place_center_z",
     ^ Flags for schematic decorations.  See 'Schematic attributes'.
     rotation = "90" -- rotate schematic 90 degrees on placement

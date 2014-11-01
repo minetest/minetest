@@ -281,6 +281,9 @@ ContentFeatures read_content_features(lua_State *L, int index)
 			ScriptApiNode::es_DrawType,NDT_NORMAL);
 	getfloatfield(L, index, "visual_scale", f.visual_scale);
 
+	/* Meshnode model filename */
+	getstringfield(L, index, "mesh", f.mesh);
+
 	// tiles = {}
 	lua_getfield(L, index, "tiles");
 	// If nil, try the deprecated name "tile_images" instead
@@ -428,6 +431,11 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	if(lua_istable(L, -1))
 		f.selection_box = read_nodebox(L, -1);
  	lua_pop(L, 1);
+
+	lua_getfield(L, index, "collision_box");
+	if(lua_istable(L, -1))
+		f.collision_box = read_nodebox(L, -1);
+	lua_pop(L, 1);
 
 	f.waving = getintfield_default(L, index,
 			"waving", f.waving);

@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 
 #include "clientiface.h"
+#include "util/numeric.h"
+#include "util/mathconstants.h"
 #include "player.h"
 #include "settings.h"
 #include "mapblock.h"
@@ -28,11 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "emerge.h"
 #include "serverobject.h"              // TODO this is used for cleanup of only
-
-#include "util/numeric.h"
-#include "util/mathconstants.h"
-
 #include "main.h"                      // for g_settings
+#include "log.h"
 
 const char *ClientInterface::statenames[] = {
 	"Invalid",

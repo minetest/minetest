@@ -30,15 +30,18 @@ typedef enum {
 	EYECOUNT = 2
 } paralax_sign;
 
+
 void draw_selectionbox(video::IVideoDriver* driver, Hud& hud,
 		std::vector<aabb3f>& hilightboxes, bool show_hud)
 {
+	static const s16 selectionbox_width = rangelim(g_settings->getS16("selectionbox_width"), 1, 5);
+
 	if (!show_hud)
 		return;
 
 	video::SMaterial oldmaterial = driver->getMaterial2D();
 	video::SMaterial m;
-	m.Thickness = 3;
+	m.Thickness = selectionbox_width;
 	m.Lighting = false;
 	driver->setMaterial(m);
 	hud.drawSelectionBoxes(hilightboxes);
@@ -129,14 +132,15 @@ void draw_anaglyph_3d_mode(Camera& camera, bool show_hud, Hud& hud,
 }
 
 void init_texture(video::IVideoDriver* driver, const v2u32& screensize,
-		video::ITexture** texture)
+		video::ITexture** texture, const char* name)
 {
 	if (*texture != NULL)
 	{
 		driver->removeTexture(*texture);
 	}
 	*texture = driver->addRenderTargetTexture(
-			core::dimension2d<u32>(screensize.X, screensize.Y));
+			core::dimension2d<u32>(screensize.X, screensize.Y), name,
+			irr::video::ECF_A8R8G8B8);
 }
 
 video::ITexture* draw_image(const v2u32& screensize,
@@ -153,13 +157,16 @@ video::ITexture* draw_image(const v2u32& screensize,
 	video::ITexture* image = NULL;
 
 	if (screensize != last_screensize) {
-		init_texture(driver, screensize, &images[1]);
-		image = images[1];
-		init_texture(driver, screensize, &images[0]);
-		image = images[0];
+		init_texture(driver, screensize, &images[1], "mt_drawimage_img1");
+		init_texture(driver, screensize, &images[0], "mt_drawimage_img2");
 		last_screensize = screensize;
 	}
 
+	if (psign == RIGHT)
+		image = images[1];
+	else
+		image = images[0];
+	
 	driver->setRenderTarget(image, true, true,
 			irr::video::SColor(255,
 					skycolor.getRed(), skycolor.getGreen(), skycolor.getBlue()));
@@ -202,7 +209,7 @@ video::ITexture*  draw_hud(video::IVideoDriver* driver, const v2u32& screensize,
 		video::SColor skycolor, gui::IGUIEnvironment* guienv, Camera& camera )
 {
 	static video::ITexture* image = NULL;
-	init_texture(driver, screensize, &image);
+	init_texture(driver, screensize, &image, "mt_drawimage_hud");
 	driver->setRenderTarget(image, true, true,
 			irr::video::SColor(255,0,0,0));
 

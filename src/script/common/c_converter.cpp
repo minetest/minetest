@@ -227,6 +227,25 @@ std::vector<aabb3f> read_aabb3f_vector(lua_State *L, int index, f32 scale)
 	return boxes;
 }
 
+bool read_stringlist(lua_State *L, int index, std::vector<const char *> &result)
+{
+	if (index < 0)
+		index = lua_gettop(L) + 1 + index;
+
+	if (lua_istable(L, index)) {
+		lua_pushnil(L);
+		while (lua_next(L, index)) {
+			result.push_back(lua_tostring(L, -1));
+			lua_pop(L, 1);
+		}
+	} else if (lua_isstring(L, index)) {
+		result.push_back(lua_tostring(L, index));
+	} else {
+		return false;
+	}
+	return true;
+}
+
 /*
 	Table field getters
 */
@@ -283,6 +302,17 @@ bool getboolfield(lua_State *L, int table,
 		result = lua_toboolean(L, -1);
 		got = true;
 	}
+	lua_pop(L, 1);
+	return got;
+}
+
+bool getstringlistfield(lua_State *L, int table, const char *fieldname,
+		std::vector<const char *> &result)
+{
+	lua_getfield(L, table, fieldname);
+
+	bool got = read_stringlist(L, -1, result);
+
 	lua_pop(L, 1);
 	return got;
 }

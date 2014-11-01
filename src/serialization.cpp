@@ -53,7 +53,7 @@ void zerr(int ret)
     }
 }
 
-void compressZlib(SharedBuffer<u8> data, std::ostream &os)
+void compressZlib(SharedBuffer<u8> data, std::ostream &os, int level)
 {
 	z_stream z;
 	const s32 bufsize = 16384;
@@ -65,7 +65,7 @@ void compressZlib(SharedBuffer<u8> data, std::ostream &os)
 	z.zfree = Z_NULL;
 	z.opaque = Z_NULL;
 
-	ret = deflateInit(&z, -1);
+	ret = deflateInit(&z, level);
 	if(ret != Z_OK)
 		throw SerializationError("compressZlib: deflateInit failed");
 	
@@ -94,13 +94,12 @@ void compressZlib(SharedBuffer<u8> data, std::ostream &os)
 	}
 
 	deflateEnd(&z);
-
 }
 
-void compressZlib(const std::string &data, std::ostream &os)
+void compressZlib(const std::string &data, std::ostream &os, int level)
 {
 	SharedBuffer<u8> databuf((u8*)data.c_str(), data.size());
-	compressZlib(databuf, os);
+	compressZlib(databuf, os, level);
 }
 
 void decompressZlib(std::istream &is, std::ostream &os)

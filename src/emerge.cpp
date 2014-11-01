@@ -85,7 +85,7 @@ EmergeManager::EmergeManager(IGameDef *gamedef) {
 	registerMapgen("singlenode", new MapgenFactorySinglenode());
 
 	this->ndef     = gamedef->getNodeDefManager();
-	this->biomedef = new BiomeDefManager();
+	this->biomedef = new BiomeDefManager(gamedef->getNodeDefManager()->getResolver());
 	this->gennotify = 0;
 
 	// Note that accesses to this variable are not synchronized.
@@ -97,7 +97,7 @@ EmergeManager::EmergeManager(IGameDef *gamedef) {
 
 	// if unspecified, leave a proc for the main thread and one for
 	// some other misc thread
-	int nthreads = 0;
+	s16 nthreads = 0;
 	if (!g_settings->getS16NoEx("num_emerge_threads", nthreads))
 		nthreads = porting::getNumberOfProcessors() - 2;
 	if (nthreads < 1)
@@ -117,8 +117,8 @@ EmergeManager::EmergeManager(IGameDef *gamedef) {
 	if (qlimit_generate < 1)
 		qlimit_generate = 1;
 
-	for (int i = 0; i != nthreads; i++)
-		emergethread.push_back(new EmergeThread((Server *)gamedef, i));
+	for (s16 i = 0; i < nthreads; i++)
+		emergethread.push_back(new EmergeThread((Server *) gamedef, i));
 
 	infostream << "EmergeManager: using " << nthreads << " threads" << std::endl;
 }
@@ -145,9 +145,9 @@ EmergeManager::~EmergeManager() {
 		delete decorations[i];
 	decorations.clear();
 
-	for (std::map<std::string, MapgenFactory *>::iterator iter = mglist.begin();
-			iter != mglist.end(); iter ++) {
-		delete iter->second;
+	for (std::map<std::string, MapgenFactory *>::iterator it = mglist.begin();
+			it != mglist.end(); ++it) {
+		delete it->second;
 	}
 	mglist.clear();
 
@@ -175,16 +175,6 @@ void EmergeManager::loadMapgenParams() {
 void EmergeManager::initMapgens() {
 	if (mapgen.size())
 		return;
-
-	// Resolve names of nodes for things that were registered
-	// (at this point, the registration period is over)
-	biomedef->resolveNodeNames(ndef);
-
-	for (size_t i = 0; i != ores.size(); i++)
-		ores[i]->resolveNodeNames(ndef);
-
-	for (size_t i = 0; i != decorations.size(); i++)
-		decorations[i]->resolveNodeNames(ndef);
 
 	if (!params.sparams) {
 		params.sparams = createMapgenParams(params.mg_name);

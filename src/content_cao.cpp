@@ -17,14 +17,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <ICameraSceneNode.h>
+#include <ITextSceneNode.h>
+#include <IBillboardSceneNode.h>
+#include <IMeshManipulator.h>
+#include <IAnimatedMeshSceneNode.h>
+#include <IBoneSceneNode.h>
 #include "content_cao.h"
+#include "util/numeric.h" // For IntervalLimiter
+#include "util/serialize.h"
+#include "util/mathconstants.h"
 #include "tile.h"
 #include "environment.h"
 #include "collision.h"
 #include "settings.h"
-#include <ICameraSceneNode.h>
-#include <ITextSceneNode.h>
-#include <IBillboardSceneNode.h>
 #include "serialization.h" // For decompressZlib
 #include "gamedef.h"
 #include "clientobject.h"
@@ -36,15 +42,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sound.h"
 #include "nodedef.h"
 #include "localplayer.h"
-#include "util/numeric.h" // For IntervalLimiter
-#include "util/serialize.h"
-#include "util/mathconstants.h"
 #include "map.h"
 #include "main.h" // g_settings
 #include "camera.h" // CameraModes
-#include <IMeshManipulator.h>
-#include <IAnimatedMeshSceneNode.h>
-#include <IBoneSceneNode.h>
+#include "log.h"
 
 class Settings;
 struct ToolCapabilities;

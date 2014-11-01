@@ -326,46 +326,48 @@ core.register_chatcommand("teleport", {
 			return true, "Teleporting to " .. target_name
 					.. " at "..core.pos_to_string(p)
 		end
-		
-		if core.check_player_privs(name, {bring=true}) then
-			local teleportee = nil
-			local p = {}
-			local teleportee_name = nil
-			teleportee_name, p.x, p.y, p.z = param:match(
-					"^([^ ]+) +([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
-			p.x, p.y, p.z = tonumber(p.x), tonumber(p.y), tonumber(p.z)
-			if teleportee_name then
-				teleportee = core.get_player_by_name(teleportee_name)
-			end
-			if teleportee and p.x and p.y and p.z then
-				teleportee:setpos(p)
-				return true, "Teleporting " .. teleportee_name
-						.. " to " .. core.pos_to_string(p)
-			end
-			
-			local teleportee = nil
-			local p = nil
-			local teleportee_name = nil
-			local target_name = nil
-			teleportee_name, target_name = string.match(param, "^([^ ]+) +([^ ]+)$")
-			if teleportee_name then
-				teleportee = core.get_player_by_name(teleportee_name)
-			end
-			if target_name then
-				local target = core.get_player_by_name(target_name)
-				if target then
-					p = target:getpos()
-				end
-			end
-			if teleportee and p then
-				p = find_free_position_near(p)
-				teleportee:setpos(p)
-				return true, "Teleporting " .. teleportee_name
-						.. " to " .. target_name
-						.. " at " .. core.pos_to_string(p)
-			end
+
+		if not core.check_player_privs(name, {bring=true}) then
+			return false, "You don't have permission to teleport other players (missing bring privilege)"
 		end
 
+		local teleportee = nil
+		local p = {}
+		local teleportee_name = nil
+		teleportee_name, p.x, p.y, p.z = param:match(
+				"^([^ ]+) +([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
+		p.x, p.y, p.z = tonumber(p.x), tonumber(p.y), tonumber(p.z)
+		if teleportee_name then
+			teleportee = core.get_player_by_name(teleportee_name)
+		end
+		if teleportee and p.x and p.y and p.z then
+			teleportee:setpos(p)
+			return true, "Teleporting " .. teleportee_name
+					.. " to " .. core.pos_to_string(p)
+		end
+		
+		local teleportee = nil
+		local p = nil
+		local teleportee_name = nil
+		local target_name = nil
+		teleportee_name, target_name = string.match(param, "^([^ ]+) +([^ ]+)$")
+		if teleportee_name then
+			teleportee = core.get_player_by_name(teleportee_name)
+		end
+		if target_name then
+			local target = core.get_player_by_name(target_name)
+			if target then
+				p = target:getpos()
+			end
+		end
+		if teleportee and p then
+			p = find_free_position_near(p)
+			teleportee:setpos(p)
+			return true, "Teleporting " .. teleportee_name
+					.. " to " .. target_name
+					.. " at " .. core.pos_to_string(p)
+		end
+		
 		return false, 'Invalid parameters ("' .. param
 				.. '") or player not found (see /help teleport)'
 	end,

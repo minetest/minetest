@@ -69,7 +69,7 @@ msgstr "<<-- Ajouter un mod"
 
 #: builtin/mainmenu.lua:158
 msgid "Ok"
-msgstr "Ok"
+msgstr "OK"
 
 #: builtin/mainmenu.lua:297
 msgid "World name"
@@ -81,7 +81,7 @@ msgstr "Graine"
 
 #: builtin/mainmenu.lua:303
 msgid "Mapgen"
-msgstr "Génération de carte"
+msgstr "Générateur de carte"
 
 #: builtin/mainmenu.lua:306
 msgid "Game"
@@ -125,7 +125,7 @@ msgstr "Adresse / Port"
 
 #: builtin/mainmenu.lua:821
 msgid "Name/Password"
-msgstr "Nom / MdP"
+msgstr "Nom / Mot de passe"
 
 #: builtin/mainmenu.lua:824
 msgid "Public Serverlist"
@@ -166,7 +166,7 @@ msgstr "Mode créatif"
 
 #: builtin/mainmenu.lua:882 builtin/mainmenu.lua:945
 msgid "Enable Damage"
-msgstr "Activer les dégats"
+msgstr "Activer les dégâts"
 
 #: builtin/mainmenu.lua:884
 msgid "Public"
@@ -190,7 +190,7 @@ msgstr "PARAMÈTRES"
 
 #: builtin/mainmenu.lua:900
 msgid "Fancy trees"
-msgstr "Feuilles transparentes"
+msgstr "Arbres détaillés"
 
 #: builtin/mainmenu.lua:902
 msgid "Smooth Lighting"
@@ -210,7 +210,7 @@ msgstr "Mip-mapping"
 
 #: builtin/mainmenu.lua:911
 msgid "Anisotropic Filtering"
-msgstr "Filtrage anisotropique"
+msgstr "Filtrage anisotrope"
 
 #: builtin/mainmenu.lua:913
 msgid "Bi-Linear Filtering"
@@ -226,7 +226,7 @@ msgstr "Shaders"
 
 #: builtin/mainmenu.lua:920
 msgid "Preload item visuals"
-msgstr "Précharger les visuels d'objets"
+msgstr "Précharger les objets"
 
 #: builtin/mainmenu.lua:922
 msgid "Enable Particles"

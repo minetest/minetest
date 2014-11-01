@@ -38,8 +38,16 @@ void MapgenSinglenodeParams::writeParams(Settings *settings) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-MapgenSinglenode::MapgenSinglenode(int mapgenid, MapgenParams *params) {
+MapgenSinglenode::MapgenSinglenode(int mapgenid,
+		MapgenParams *params, EmergeManager *emerge)
+{
 	flags = params->flags;
+
+	INodeDefManager *ndef = emerge->ndef;
+
+	c_node = ndef->getId("mapgen_singlenode");
+	if (c_node == CONTENT_IGNORE)
+		c_node = CONTENT_AIR;
 }
 
 
@@ -68,10 +76,6 @@ void MapgenSinglenode::makeChunk(BlockMakeData *data) {
 	// Area of central chunk
 	v3s16 node_min = blockpos_min*MAP_BLOCKSIZE;
 	v3s16 node_max = (blockpos_max+v3s16(1,1,1))*MAP_BLOCKSIZE-v3s16(1,1,1);
-
-	content_t c_node = ndef->getId("mapgen_singlenode");
-	if (c_node == CONTENT_IGNORE)
-		c_node = CONTENT_AIR;
 	
 	MapNode n_node(c_node);
 	
