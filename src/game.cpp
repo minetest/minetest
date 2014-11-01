@@ -3882,7 +3882,7 @@ inline void MinetestApp::limitFps(FpsControl *params, f32 *dtime)
 
 	u32 last_time = params->last_time;
 
-	if (time > last_time)	// Make sure last_time hasn't overflowed
+	if (time > last_time) // Make sure time hasn't overflowed
 		params->busy_time = time - last_time;
 	else
 		params->busy_time = 0;
@@ -3894,9 +3894,25 @@ inline void MinetestApp::limitFps(FpsControl *params, f32 *dtime)
 	if (params->busy_time < frametime_min) {
 		params->sleep_time = frametime_min - params->busy_time;
 		device->sleep(params->sleep_time);
+		time += params->sleep_time;
 	} else {
 		params->sleep_time = 0;
 	}
+
+	if (time > last_time) // Checking for overflow
+		*dtime = (time - last_time) / 1000.0;
+	else
+		*dtime = 0.03; // Choose 30fps as fallback in overflow case
+
+	params->last_time = time;
+
+#if 0
+
+	/* This is the old method for calculating new_time and dtime, and seems
+	 * like overkill considering timings are messed up by expected variation
+	 * in execution speed in other places anyway. (This has nothing to do with
+	 * WINE... the new method above calculates dtime based on sleep_time)
+	 */
 
 	// Necessary for device->getTimer()->getTime()
 	device->run();
@@ -3905,9 +3921,10 @@ inline void MinetestApp::limitFps(FpsControl *params, f32 *dtime)
 	if (time > last_time)	// Make sure last_time hasn't overflowed
 		*dtime = (time - last_time) / 1000.0;
 	else
-		*dtime = 0;
+		*dtime = 0.033;
 
 	params->last_time = time;
+#endif
 }
 
 
