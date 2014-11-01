@@ -74,7 +74,7 @@
 #viewing_range_nodes_max = 160
 #viewing_range_nodes_min = 35
 # Initial window size
-#screenW = 800
+#screenW = 1024
 #screenH = 600
 #fullscreen = false
 #fullscreen_bpp = 24
