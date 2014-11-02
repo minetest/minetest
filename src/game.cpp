@@ -2402,7 +2402,7 @@ void MinetestApp::processItemSelection(u16 *new_playeritem)
 		                 player->hud_hotbar_itemcount - 1);
 
 	if (wheel < 0)
-		*new_playeritem = *new_playeritem < max_item ? *new_playeritem + 1 : max_item;
+		*new_playeritem = *new_playeritem < max_item ? *new_playeritem + 1 : 0;
 	else if (wheel > 0)
 		*new_playeritem = *new_playeritem > 0 ? *new_playeritem - 1 : max_item;
 	// else wheel == 0
