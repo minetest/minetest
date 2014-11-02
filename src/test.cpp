@@ -166,7 +166,7 @@ struct TestUtilities: public TestBase
 		UASSERT(is_yes("0") == false);
 		UASSERT(is_yes("1") == true);
 		UASSERT(is_yes("2") == true);
-		const char *ends[] = {"abc", "c", "bc", NULL};
+		const char *ends[] = {"abc", "c", "bc", "", NULL};
 		UASSERT(removeStringEnd("abc", ends) == "");
 		UASSERT(removeStringEnd("bc", ends) == "b");
 		UASSERT(removeStringEnd("12c", ends) == "12");
@@ -175,6 +175,30 @@ struct TestUtilities: public TestBase
 				== "%22Aardvarks%20lurk%2C%20OK%3F%22");
 		UASSERT(urldecode("%22Aardvarks%20lurk%2C%20OK%3F%22")
 				== "\"Aardvarks lurk, OK?\"");
+		UASSERT(padStringRight("hello", 8) == "hello   ");
+		UASSERT(str_equal(narrow_to_wide("abc"), narrow_to_wide("abc")));
+		UASSERT(str_equal(narrow_to_wide("ABC"), narrow_to_wide("abc"), true));
+		UASSERT(trim("  a") == "a");
+		UASSERT(trim("   a  ") == "a");
+		UASSERT(trim("a   ") == "a");
+		UASSERT(trim("") == "");
+		UASSERT(mystoi("123", 0, 1000) == 123);
+		UASSERT(mystoi("123", 0, 10) == 10);
+		std::string test_str;
+		test_str = "Hello there";
+		str_replace(test_str, "there", "world");
+		UASSERT(test_str == "Hello world");
+		test_str = "ThisAisAaAtest";
+		str_replace_char(test_str, 'A', ' ');
+		UASSERT(test_str == "This is a test");
+		UASSERT(string_allowed("hello", "abcdefghijklmno") == true);
+		UASSERT(string_allowed("123", "abcdefghijklmno") == false);
+		UASSERT(string_allowed_blacklist("hello", "123") == true);
+		UASSERT(string_allowed_blacklist("hello123", "123") == false);
+		UASSERT(wrap_rows("12345678",4) == "1234\n5678");
+		UASSERT(is_number("123") == true);
+		UASSERT(is_number("") == false);
+		UASSERT(is_number("123a") == false);
 	}
 };
 
