@@ -40,6 +40,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "nodedef.h"
 #include "mg_biome.h"
+#include "mg_decoration.h"
+#include "mg_ore.h"
 #include "mapgen_v6.h"
 #include "mapgen_v7.h"
 #include "mapgen_singlenode.h"
