@@ -85,16 +85,16 @@ public:
 	Address();
 	Address(u32 address, u16 port);
 	Address(u8 a, u8 b, u8 c, u8 d, u16 port);
-	Address(const IPv6AddressBytes * ipv6_bytes, u16 port);
-	bool operator==(Address &address);
-	bool operator!=(Address &address);
+	Address(const IPv6AddressBytes *ipv6_bytes, u16 port);
+	bool operator==(const Address &address);
+	bool operator!=(const Address &address);
 	// Resolve() may throw ResolveError (address is unchanged in this case)
 	void Resolve(const char *name);
 	struct sockaddr_in getAddress() const;
 	unsigned short getPort() const;
 	void setAddress(u32 address);
 	void setAddress(u8 a, u8 b, u8 c, u8 d);
-	void setAddress(const IPv6AddressBytes * ipv6_bytes);
+	void setAddress(const IPv6AddressBytes *ipv6_bytes);
 	struct sockaddr_in6 getAddress6() const;
 	int getFamily() const;
 	bool isIPv6() const;
@@ -115,9 +115,13 @@ private:
 class UDPSocket
 {
 public:
+	UDPSocket() { }
 	UDPSocket(bool ipv6);
 	~UDPSocket();
 	void Bind(Address addr);
+
+	bool init(bool ipv6, bool noExceptions = false);
+
 	//void Close();
 	//bool IsOpen();
 	void Send(const Address & destination, const void * data, int size);

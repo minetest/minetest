@@ -1513,35 +1513,46 @@ struct TestSocket: public TestBase
 
 		// IPv6 socket test
 		{
-			UDPSocket socket6(true);
-			socket6.Bind(address6);
+			UDPSocket socket6;
 
-			const char sendbuffer[] = "hello world!";
-			IPv6AddressBytes bytes;
-			bytes.bytes[15] = 1;
-			
-			try {
-				socket6.Send(Address(&bytes, port), sendbuffer, sizeof(sendbuffer));
+			if (!socket6.init(true, true)) {
+				/* Note: Failing to create an IPv6 socket is not technically an
+				   error because the OS may not support IPv6 or it may
+				   have been disabled. IPv6 is not /required/ by
+				   minetest and therefore this should not cause the unit
+				   test to fail
+				*/
+				dstream << "WARNING: IPv6 socket creation failed (unit test)"
+				        << std::endl;
+			} else {
+				const char sendbuffer[] = "hello world!";
+				IPv6AddressBytes bytes;
+				bytes.bytes[15] = 1;
 
-				sleep_ms(50);
+				socket6.Bind(address6);
 
-				char rcvbuffer[256];
-				memset(rcvbuffer, 0, sizeof(rcvbuffer));
-				Address sender;
-				for(;;)
-				{
-					int bytes_read = socket6.Receive(sender, rcvbuffer, sizeof(rcvbuffer));
-					if(bytes_read < 0)
-						break;
+				try {
+					socket6.Send(Address(&bytes, port), sendbuffer, sizeof(sendbuffer));
+
+					sleep_ms(50);
+
+					char rcvbuffer[256] = { 0 };
+					Address sender;
+
+					for(;;) {
+						if (socket6.Receive(sender, rcvbuffer, sizeof(rcvbuffer )) < 0)
+							break;
+					}
+					//FIXME: This fails on some systems
+					UASSERT(strncmp(sendbuffer, rcvbuffer, sizeof(sendbuffer)) == 0);
+					UASSERT(memcmp(sender.getAddress6().sin6_addr.s6_addr,
+							Address(&bytes, 0).getAddress6().sin6_addr.s6_addr, 16) == 0);
 				}
-				//FIXME: This fails on some systems
-				UASSERT(strncmp(sendbuffer, rcvbuffer, sizeof(sendbuffer))==0);
-				UASSERT(memcmp(sender.getAddress6().sin6_addr.s6_addr, Address(&bytes, 0).getAddress6().sin6_addr.s6_addr, 16) == 0);
+				catch (SendFailedException e) {
+					errorstream << "IPv6 support enabled but not available!"
+					            << std::endl;
+				}
 			}
-			catch (SendFailedException e) {
-				errorstream << "IPv6 support enabled but not available!" << std::endl;
- 			}
-			
 		}
 
 		// IPv4 socket test
@@ -1550,22 +1561,20 @@ struct TestSocket: public TestBase
 			socket.Bind(address);
 
 			const char sendbuffer[] = "hello world!";
-			socket.Send(Address(127,0,0,1,port), sendbuffer, sizeof(sendbuffer));
+			socket.Send(Address(127, 0, 0 ,1, port), sendbuffer, sizeof(sendbuffer));
 
 			sleep_ms(50);
 
-			char rcvbuffer[256];
-			memset(rcvbuffer, 0, sizeof(rcvbuffer));
+			char rcvbuffer[256] = { 0 };
 			Address sender;
-			for(;;)
-			{
-				int bytes_read = socket.Receive(sender, rcvbuffer, sizeof(rcvbuffer));
-				if(bytes_read < 0)
+			for(;;) {
+				if (socket.Receive(sender, rcvbuffer, sizeof(rcvbuffer)) < 0)
 					break;
 			}
 			//FIXME: This fails on some systems
-			UASSERT(strncmp(sendbuffer, rcvbuffer, sizeof(sendbuffer))==0);
-			UASSERT(sender.getAddress().sin_addr.s_addr == Address(127,0,0,1, 0).getAddress().sin_addr.s_addr);
+			UASSERT(strncmp(sendbuffer, rcvbuffer, sizeof(sendbuffer)) == 0);
+			UASSERT(sender.getAddress().sin_addr.s_addr ==
+					Address(127, 0, 0, 1, 0).getAddress().sin_addr.s_addr);
 		}
 	}
 };
@@ -1585,7 +1594,7 @@ struct TestConnection: public TestBase
 		SharedBuffer<u8> data1(1);
 		data1[0] = 100;
 		Address a(127,0,0,1, 10);
-		u16 seqnum = 34352;
+		const u16 seqnum = 34352;
 
 		con::BufferedPacket p1 = con::makePacket(a, data1,
 				proto_id, peer_id, channel);
@@ -1978,23 +1987,21 @@ struct TestConnection: public TestBase
 	}
 };
 
-#define TEST(X)\
-{\
+#define TEST(X) do {\
 	X x;\
 	infostream<<"Running " #X <<std::endl;\
 	x.Run();\
 	tests_run++;\
 	tests_failed += x.test_failed ? 1 : 0;\
-}
+} while (0)
 
-#define TESTPARAMS(X, ...)\
-{\
+#define TESTPARAMS(X, ...) do {\
 	X x;\
 	infostream<<"Running " #X <<std::endl;\
 	x.Run(__VA_ARGS__);\
 	tests_run++;\
 	tests_failed += x.test_failed ? 1 : 0;\
-}
+} while (0)
 
 void run_tests()
 {
