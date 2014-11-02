@@ -45,6 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "main.h" // g_settings
 #include "camera.h" // CameraModes
+#include "wieldmesh.h"
 #include "log.h"
 
 class Settings;
@@ -551,6 +552,7 @@ GenericCAO::GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
 		m_selection_box(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.),
 		m_meshnode(NULL),
 		m_animated_meshnode(NULL),
+		m_wield_meshnode(NULL),
 		m_spritenode(NULL),
 		m_textnode(NULL),
 		m_position(v3f(0,10*BS,0)),
@@ -683,38 +685,47 @@ core::aabbox3d<f32>* GenericCAO::getSelectionBox()
 
 v3f GenericCAO::getPosition()
 {
-	if(getParent() != NULL)
-	{
-		if(m_meshnode)
-			return m_meshnode->getAbsolutePosition();
-		if(m_animated_meshnode)
-			return m_animated_meshnode->getAbsolutePosition();
-		if(m_spritenode)
-			return m_spritenode->getAbsolutePosition();
-		return m_position;
+	if (getParent() != NULL) {
+		scene::ISceneNode *node = getSceneNode();
+		if (node)
+			return node->getAbsolutePosition();
+		else
+			return m_position;
 	}
 	return pos_translator.vect_show;
 }
 
+scene::ISceneNode* GenericCAO::getSceneNode()
+{
+	if (m_meshnode)
+		return m_meshnode;
+	if (m_animated_meshnode)
+		return m_animated_meshnode;
+	if (m_wield_meshnode)
+		return m_wield_meshnode;
+	if (m_spritenode)
+		return m_spritenode;
+	return NULL;
+}
+
 scene::IMeshSceneNode* GenericCAO::getMeshSceneNode()
 {
-	if(m_meshnode)
-		return m_meshnode;
-	return NULL;
+	return m_meshnode;
 }
 
 scene::IAnimatedMeshSceneNode* GenericCAO::getAnimatedMeshSceneNode()
 {
-	if(m_animated_meshnode)
-		return m_animated_meshnode;
-	return NULL;
+	return m_animated_meshnode;
+}
+
+WieldMeshSceneNode* GenericCAO::getWieldMeshSceneNode()
+{
+	return m_wield_meshnode;
 }
 
 scene::IBillboardSceneNode* GenericCAO::getSpriteSceneNode()
 {
-	if(m_spritenode)
-		return m_spritenode;
-	return NULL;
+	return m_spritenode;
 }
 
 void GenericCAO::setAttachments()
@@ -769,6 +780,12 @@ void GenericCAO::removeFromScene(bool permanent)
 		m_animated_meshnode->drop();
 		m_animated_meshnode = NULL;
 	}
+	if(m_wield_meshnode)
+	{
+		m_wield_meshnode->remove();
+		m_wield_meshnode->drop();
+		m_wield_meshnode = NULL;
+	}
 	if(m_spritenode)
 	{
 		m_spritenode->remove();
@@ -789,7 +806,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 	m_smgr = smgr;
 	m_irr = irr;
 
-	if(m_meshnode != NULL || m_animated_meshnode != NULL || m_spritenode != NULL)
+	if (getSceneNode() != NULL)
 		return;
 
 	m_visuals_expired = false;
@@ -918,28 +935,23 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 			errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;
 	}
 	else if(m_prop.visual == "wielditem") {
-		infostream<<"GenericCAO::addToScene(): node"<<std::endl;
+		infostream<<"GenericCAO::addToScene(): wielditem"<<std::endl;
 		infostream<<"textures: "<<m_prop.textures.size()<<std::endl;
 		if(m_prop.textures.size() >= 1){
 			infostream<<"textures[0]: "<<m_prop.textures[0]<<std::endl;
 			IItemDefManager *idef = m_gamedef->idef();
 			ItemStack item(m_prop.textures[0], 1, 0, "", idef);
-			scene::IMesh *item_mesh = idef->getWieldMesh(item.getDefinition(idef).name, m_gamedef);
 
-			// Copy mesh to be able to set unique vertex colors
-			scene::IMeshManipulator *manip =
-					irr->getVideoDriver()->getMeshManipulator();
-			scene::IMesh *mesh = manip->createMeshUniquePrimitives(item_mesh);
-
-			m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
-			m_meshnode->grab();
-			mesh->drop();
+			m_wield_meshnode = new WieldMeshSceneNode(
+					smgr->getRootSceneNode(), smgr, -1);
+			m_wield_meshnode->setItem(item, m_gamedef);
+			m_wield_meshnode->grab();
 			
-			m_meshnode->setScale(v3f(m_prop.visual_size.X/2,
+			m_wield_meshnode->setScale(v3f(m_prop.visual_size.X/2,
 					m_prop.visual_size.Y/2,
 					m_prop.visual_size.X/2));
 			u8 li = m_last_light;
-			setMeshColor(m_meshnode->getMesh(), video::SColor(255,li,li,li));
+			m_wield_meshnode->setColor(video::SColor(255,li,li,li));
 		}
 	} else {
 		infostream<<"GenericCAO::addToScene(): \""<<m_prop.visual
@@ -947,14 +959,8 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 	}
 	updateTextures("");
 
-	scene::ISceneNode *node = NULL;
-	if(m_spritenode)
-		node = m_spritenode;
-	else if(m_animated_meshnode)
-		node = m_animated_meshnode;
-	else if(m_meshnode)
-		node = m_meshnode;
-	if(node && m_is_player && !m_is_local_player){
+	scene::ISceneNode *node = getSceneNode();
+	if (node && m_is_player && !m_is_local_player) {
 		// Add a text node for showing the name
 		gui::IGUIEnvironment* gui = irr->getGUIEnvironment();
 		std::wstring wname = narrow_to_wide(m_name);
@@ -981,6 +987,8 @@ void GenericCAO::updateLight(u8 light_at_pos)
 			setMeshColor(m_meshnode->getMesh(), color);
 		if(m_animated_meshnode)
 			setMeshColor(m_animated_meshnode->getMesh(), color);
+		if(m_wield_meshnode)
+			m_wield_meshnode->setColor(color);
 		if(m_spritenode)
 			m_spritenode->setColor(color);
 	}
@@ -993,27 +1001,19 @@ v3s16 GenericCAO::getLightPosition()
 
 void GenericCAO::updateNodePos()
 {
-	if(getParent() != NULL)
+	if (getParent() != NULL)
 		return;
 
-	v3s16 camera_offset = m_env->getCameraOffset();
-	if(m_meshnode)
-	{
-		m_meshnode->setPosition(pos_translator.vect_show-intToFloat(camera_offset, BS));
-		v3f rot = m_meshnode->getRotation();
-		rot.Y = -m_yaw;
-		m_meshnode->setRotation(rot);
-	}
-	if(m_animated_meshnode)
-	{
-		m_animated_meshnode->setPosition(pos_translator.vect_show-intToFloat(camera_offset, BS));
-		v3f rot = m_animated_meshnode->getRotation();
-		rot.Y = -m_yaw;
-		m_animated_meshnode->setRotation(rot);
-	}
-	if(m_spritenode)
-	{
-		m_spritenode->setPosition(pos_translator.vect_show-intToFloat(camera_offset, BS));
+	scene::ISceneNode *node = getSceneNode();
+
+	if (node) {
+		v3s16 camera_offset = m_env->getCameraOffset();
+		node->setPosition(pos_translator.vect_show - intToFloat(camera_offset, BS));
+		if (node != m_spritenode) { // rotate if not a sprite
+			v3f rot = node->getRotation();
+			rot.Y = -m_yaw;
+			node->setRotation(rot);
+		}
 	}
 }
 	
@@ -1107,20 +1107,10 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 				continue;
 			}
 			ClientActiveObject *obj = m_env->getActiveObject(*ci);
-			if(obj)
-			{
-				scene::IMeshSceneNode *m_child_meshnode
-						= obj->getMeshSceneNode();
-				scene::IAnimatedMeshSceneNode *m_child_animated_meshnode
-						= obj->getAnimatedMeshSceneNode();
-				scene::IBillboardSceneNode *m_child_spritenode
-						= obj->getSpriteSceneNode();
-				if(m_child_meshnode)
-					m_child_meshnode->setParent(m_smgr->getRootSceneNode());
-				if(m_child_animated_meshnode)
-					m_child_animated_meshnode->setParent(m_smgr->getRootSceneNode());
-				if(m_child_spritenode)
-					m_child_spritenode->setParent(m_smgr->getRootSceneNode());
+			if (obj) {
+				scene::ISceneNode *child_node = obj->getSceneNode();
+				if (child_node)
+					child_node->setParent(m_smgr->getRootSceneNode());
 			}
 			++ci;
 		}
@@ -1132,22 +1122,17 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		for(std::vector<u16>::iterator ci = m_children.begin();
 						ci != m_children.end(); ci++)
 		{
-				// Get the object of the child
-				ClientActiveObject *obj = m_env->getActiveObject(*ci);
-				if(obj)
-					obj->setAttachments();
+			// Get the object of the child
+			ClientActiveObject *obj = m_env->getActiveObject(*ci);
+			if (obj)
+				obj->setAttachments();
 		}
 	}
 
 	// Make sure m_is_visible is always applied
-	if(m_meshnode)
-		m_meshnode->setVisible(m_is_visible);
-	if(m_animated_meshnode)
-		m_animated_meshnode->setVisible(m_is_visible);
-	if(m_spritenode)
-		m_spritenode->setVisible(m_is_visible);
-	if(m_textnode)
-		m_textnode->setVisible(m_is_visible);
+	scene::ISceneNode *node = getSceneNode();
+	if (node)
+		node->setVisible(m_is_visible);
 
 	if(getParent() != NULL) // Attachments should be glued to their parent by Irrlicht
 	{
@@ -1516,154 +1501,38 @@ void GenericCAO::updateAttachments()
 
 	if(getParent() == NULL || m_attached_to_local) // Detach or don't attach
 	{
-		if(m_meshnode)
-		{
-			v3f old_position = m_meshnode->getAbsolutePosition();
-			v3f old_rotation = m_meshnode->getRotation();
-			m_meshnode->setParent(m_smgr->getRootSceneNode());
-			m_meshnode->setPosition(old_position);
-			m_meshnode->setRotation(old_rotation);
-			m_meshnode->updateAbsolutePosition();
+		scene::ISceneNode *node = getSceneNode();
+		if (node) {
+			v3f old_position = node->getAbsolutePosition();
+			v3f old_rotation = node->getRotation();
+			node->setParent(m_smgr->getRootSceneNode());
+			node->setPosition(old_position);
+			node->setRotation(old_rotation);
+			node->updateAbsolutePosition();
 		}
-		if(m_animated_meshnode)
-		{
-			v3f old_position = m_animated_meshnode->getAbsolutePosition();
-			v3f old_rotation = m_animated_meshnode->getRotation();
-			m_animated_meshnode->setParent(m_smgr->getRootSceneNode());
-			m_animated_meshnode->setPosition(old_position);
-			m_animated_meshnode->setRotation(old_rotation);
-			m_animated_meshnode->updateAbsolutePosition();
-		}
-		if(m_spritenode)
-		{
-			v3f old_position = m_spritenode->getAbsolutePosition();
-			v3f old_rotation = m_spritenode->getRotation();
-			m_spritenode->setParent(m_smgr->getRootSceneNode());
-			m_spritenode->setPosition(old_position);
-			m_spritenode->setRotation(old_rotation);
-			m_spritenode->updateAbsolutePosition();
-		}
-		if(m_is_local_player)
-		{
+		if (m_is_local_player) {
 			LocalPlayer *player = m_env->getLocalPlayer();
 			player->isAttached = false;
 		}
 	}
 	else // Attach
 	{
-		scene::IMeshSceneNode *parent_mesh = NULL;
-		if(getParent()->getMeshSceneNode())
-			parent_mesh = getParent()->getMeshSceneNode();
-		scene::IAnimatedMeshSceneNode *parent_animated_mesh = NULL;
-		if(getParent()->getAnimatedMeshSceneNode())
-			parent_animated_mesh = getParent()->getAnimatedMeshSceneNode();
-		scene::IBillboardSceneNode *parent_sprite = NULL;
-		if(getParent()->getSpriteSceneNode())
-			parent_sprite = getParent()->getSpriteSceneNode();
+		scene::ISceneNode *my_node = getSceneNode();
 
-		scene::IBoneSceneNode *parent_bone = NULL;
-		if(parent_animated_mesh && m_attachment_bone != "")
-		{
-			parent_bone =
-					parent_animated_mesh->getJointNode(m_attachment_bone.c_str());
+		scene::ISceneNode *parent_node = getParent()->getSceneNode();
+		scene::IAnimatedMeshSceneNode *parent_animated_mesh_node =
+				getParent()->getAnimatedMeshSceneNode();
+		if (parent_animated_mesh_node && m_attachment_bone != "") {
+			parent_node = parent_animated_mesh_node->getJointNode(m_attachment_bone.c_str());
 		}
-		// The spaghetti code below makes sure attaching works if either the
-		// parent or child is a spritenode, meshnode, or animatedmeshnode
-		// TODO: Perhaps use polymorphism here to save code duplication
-		if(m_meshnode)
-		{
-			if(parent_bone)
-			{
-				m_meshnode->setParent(parent_bone);
-				m_meshnode->setPosition(m_attachment_position);
-				m_meshnode->setRotation(m_attachment_rotation);
-				m_meshnode->updateAbsolutePosition();
-			}
-			else
-			{
-				if(parent_mesh)
-				{
-					m_meshnode->setParent(parent_mesh);
-					m_meshnode->setPosition(m_attachment_position);
-					m_meshnode->setRotation(m_attachment_rotation);
-					m_meshnode->updateAbsolutePosition();
-				}
-				else if(parent_animated_mesh) {
-					m_meshnode->setParent(parent_animated_mesh);
-					m_meshnode->setPosition(m_attachment_position);
-					m_meshnode->setRotation(m_attachment_rotation);
-					m_meshnode->updateAbsolutePosition();
-				}
-				else if(parent_sprite) {
-					m_meshnode->setParent(parent_sprite);
-					m_meshnode->setPosition(m_attachment_position);
-					m_meshnode->setRotation(m_attachment_rotation);
-					m_meshnode->updateAbsolutePosition();
-				}
-			}
+
+		if (my_node && parent_node) {
+			my_node->setParent(parent_node);
+			my_node->setPosition(m_attachment_position);
+			my_node->setRotation(m_attachment_rotation);
+			my_node->updateAbsolutePosition();
 		}
-		if(m_animated_meshnode)
-		{
-			if(parent_bone)
-			{
-				m_animated_meshnode->setParent(parent_bone);
-				m_animated_meshnode->setPosition(m_attachment_position);
-				m_animated_meshnode->setRotation(m_attachment_rotation);
-				m_animated_meshnode->updateAbsolutePosition();
-			}
-			else
-			{
-				if(parent_mesh)
-				{
-					m_animated_meshnode->setParent(parent_mesh);
-					m_animated_meshnode->setPosition(m_attachment_position);
-					m_animated_meshnode->setRotation(m_attachment_rotation);
-					m_animated_meshnode->updateAbsolutePosition();
-				} else if(parent_animated_mesh) {
-					m_animated_meshnode->setParent(parent_animated_mesh);
-					m_animated_meshnode->setPosition(m_attachment_position);
-					m_animated_meshnode->setRotation(m_attachment_rotation);
-					m_animated_meshnode->updateAbsolutePosition();
-				} else if(parent_sprite) {
-					m_animated_meshnode->setParent(parent_sprite);
-					m_animated_meshnode->setPosition(m_attachment_position);
-					m_animated_meshnode->setRotation(m_attachment_rotation);
-					m_animated_meshnode->updateAbsolutePosition();
-				}
-			}
-		}
-		if(m_spritenode)
-		{
-			if(parent_bone)
-			{
-				m_spritenode->setParent(parent_bone);
-				m_spritenode->setPosition(m_attachment_position);
-				m_spritenode->setRotation(m_attachment_rotation);
-				m_spritenode->updateAbsolutePosition();
-			} else {
-				if(parent_mesh)
-				{
-					m_spritenode->setParent(parent_mesh);
-					m_spritenode->setPosition(m_attachment_position);
-					m_spritenode->setRotation(m_attachment_rotation);
-					m_spritenode->updateAbsolutePosition();
-				}
-				else if(parent_animated_mesh) {
-					m_spritenode->setParent(parent_animated_mesh);
-					m_spritenode->setPosition(m_attachment_position);
-					m_spritenode->setRotation(m_attachment_rotation);
-					m_spritenode->updateAbsolutePosition();
-				}
-				else if(parent_sprite) {
-					m_spritenode->setParent(parent_sprite);
-					m_spritenode->setPosition(m_attachment_position);
-					m_spritenode->setRotation(m_attachment_rotation);
-					m_spritenode->updateAbsolutePosition();
-				}
-			}
-		}
-		if(m_is_local_player)
-		{
+		if (m_is_local_player) {
 			LocalPlayer *player = m_env->getLocalPlayer();
 			player->isAttached = true;
 		}

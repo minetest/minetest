@@ -3656,7 +3656,7 @@ void Game::updateFrame(std::vector<aabb3f> &highlight_boxes,
 
 		if (mlist && (client->getPlayerItem() < mlist->getSize())) {
 			ItemStack item = mlist->getItem(client->getPlayerItem());
-			camera->wield(item, client->getPlayerItem());
+			camera->wield(item);
 		}
 		runData->update_wielded_item_trigger = false;
 	}

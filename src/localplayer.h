@@ -71,6 +71,8 @@ public:
 	std::string hotbar_image;
 	std::string hotbar_selected_image;
 
+	video::SColor light_color;
+
 	GenericCAO* getCAO() const {
 		return m_cao;
 	}

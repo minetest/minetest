@@ -466,6 +466,7 @@ set(minetest_SRCS
 	shader.cpp
 	sky.cpp
 	tile.cpp
+	wieldmesh.cpp
 	${minetest_SCRIPT_SRCS}
 )
 list(SORT minetest_SRCS)
