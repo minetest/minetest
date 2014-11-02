@@ -48,6 +48,7 @@ LocalPlayer::LocalPlayer(IGameDef *gamedef, const char *name):
 	last_animation(NO_ANIM),
 	hotbar_image(""),
 	hotbar_selected_image(""),
+	light_color(255,255,255,255),
 	m_sneak_node(32767,32767,32767),
 	m_sneak_node_exists(false),
 	m_old_node_below(32767,32767,32767),

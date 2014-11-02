@@ -70,6 +70,7 @@ private:
 	core::aabbox3d<f32> m_selection_box;
 	scene::IMeshSceneNode *m_meshnode;
 	scene::IAnimatedMeshSceneNode *m_animated_meshnode;
+	WieldMeshSceneNode *m_wield_meshnode;
 	scene::IBillboardSceneNode *m_spritenode;
 	scene::ITextSceneNode* m_textnode;
 	v3f m_position;
@@ -131,9 +132,13 @@ public:
 
 	v3f getPosition();
 
+	scene::ISceneNode *getSceneNode();
+
 	scene::IMeshSceneNode *getMeshSceneNode();
 
 	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode();
+
+	WieldMeshSceneNode *getWieldMeshSceneNode();
 
 	scene::IBillboardSceneNode *getSpriteSceneNode();
 

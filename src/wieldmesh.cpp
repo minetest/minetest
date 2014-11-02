@@ -1,0 +1,352 @@
+/*
+Minetest
+Copyright (C) 2010-2014 celeron55, Perttu Ahola <celeron55@gmail.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
+
+#include "wieldmesh.h"
+#include "inventory.h"
+#include "gamedef.h"
+#include "itemdef.h"
+#include "nodedef.h"
+#include "mesh.h"
+#include "tile.h"
+#include "log.h"
+#include "util/numeric.h"
+#include <map>
+#include <IMeshManipulator.h>
+
+#define WIELD_SCALE_FACTOR 30.0
+#define WIELD_SCALE_FACTOR_EXTRUDED 40.0
+
+#define MIN_EXTRUSION_MESH_RESOLUTION 32   // not 16: causes too many "holes"
+#define MAX_EXTRUSION_MESH_RESOLUTION 512
+
+static scene::IMesh* createExtrusionMesh(int resolution, v3f scale)
+{
+	const f32 r = 0.5;
+
+	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+	video::SColor c(255,255,255,255);
+
+	// Front and back
+	{
+		video::S3DVertex vertices[8] = {
+			// z-
+			video::S3DVertex(-r,+r,-r, 0,0,-1, c, 0,0),
+			video::S3DVertex(+r,+r,-r, 0,0,-1, c, 1,0),
+			video::S3DVertex(+r,-r,-r, 0,0,-1, c, 1,1),
+			video::S3DVertex(-r,-r,-r, 0,0,-1, c, 0,1),
+			// z+
+			video::S3DVertex(-r,+r,+r, 0,0,+1, c, 0,0),
+			video::S3DVertex(-r,-r,+r, 0,0,+1, c, 0,1),
+			video::S3DVertex(+r,-r,+r, 0,0,+1, c, 1,1),
+			video::S3DVertex(+r,+r,+r, 0,0,+1, c, 1,0),
+		};
+		u16 indices[12] = {0,1,2,2,3,0,4,5,6,6,7,4};
+		buf->append(vertices, 8, indices, 12);
+	}
+
+	const f32 pixelsize = 1 / (f32) resolution;
+
+	for (int i = 0; i < resolution; ++i) {
+		f32 pixelpos = i * pixelsize - 0.5;
+		f32 x0 = pixelpos;
+		f32 x1 = pixelpos + pixelsize;
+		f32 y0 = -pixelpos - pixelsize;
+		f32 y1 = -pixelpos;
+		f32 tex0 = (i + 0.1) * pixelsize;
+		f32 tex1 = (i + 0.9) * pixelsize;
+		video::S3DVertex vertices[16] = {
+			// x-
+			video::S3DVertex(x0,-r,-r, -1,0,0, c, tex0,1),
+			video::S3DVertex(x0,-r,+r, -1,0,0, c, tex1,1),
+			video::S3DVertex(x0,+r,+r, -1,0,0, c, tex1,0),
+			video::S3DVertex(x0,+r,-r, -1,0,0, c, tex0,0),
+			// x+
+			video::S3DVertex(x1,-r,-r, +1,0,0, c, tex0,1),
+			video::S3DVertex(x1,+r,-r, +1,0,0, c, tex0,0),
+			video::S3DVertex(x1,+r,+r, +1,0,0, c, tex1,0),
+			video::S3DVertex(x1,-r,+r, +1,0,0, c, tex1,1),
+			// y-
+			video::S3DVertex(-r,y0,-r, 0,-1,0, c, 0,tex0),
+			video::S3DVertex(+r,y0,-r, 0,-1,0, c, 1,tex0),
+			video::S3DVertex(+r,y0,+r, 0,-1,0, c, 1,tex1),
+			video::S3DVertex(-r,y0,+r, 0,-1,0, c, 0,tex1),
+			// y+
+			video::S3DVertex(-r,y1,-r, 0,+1,0, c, 0,tex0),
+			video::S3DVertex(-r,y1,+r, 0,+1,0, c, 0,tex1),
+			video::S3DVertex(+r,y1,+r, 0,+1,0, c, 1,tex1),
+			video::S3DVertex(+r,y1,-r, 0,+1,0, c, 1,tex0),
+		};
+		u16 indices[24] = {0,1,2,2,3,0,4,5,6,6,7,4,
+		                   8,9,10,10,11,8,12,13,14,14,15,12};
+		buf->append(vertices, 16, indices, 24);
+	}
+
+	// Define default material
+	video::SMaterial *material = &buf->getMaterial();
+	material->MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+	material->BackfaceCulling = true;
+	material->setFlag(video::EMF_LIGHTING, false);
+	material->setFlag(video::EMF_BILINEAR_FILTER, false);
+	material->setFlag(video::EMF_TRILINEAR_FILTER, false);
+	// anisotropic filtering removes "thin black line" artifacts
+	material->setFlag(video::EMF_ANISOTROPIC_FILTER, true);
+	material->setFlag(video::EMF_TEXTURE_WRAP, false);
+
+	// Create mesh object
+	scene::SMesh *mesh = new scene::SMesh();
+	mesh->addMeshBuffer(buf);
+	buf->drop();
+	scaleMesh(mesh, scale);  // also recalculates bounding box
+	return mesh;
+}
+
+/*
+	Caches extrusion meshes so that only one of them per resolution
+	is needed. Also caches one cube (for convenience).
+
+	E.g. there is a single extrusion mesh that is used for all
+	16x16 px images, another for all 256x256 px images, and so on.
+
+	WARNING: Not thread safe. This should not be a problem since
+	rendering related classes (such as WieldMeshSceneNode) will be
+	used from the rendering thread only.
+*/
+class ExtrusionMeshCache: public IReferenceCounted
+{
+public:
+	// Constructor
+	ExtrusionMeshCache()
+	{
+		v3f scale(1.0, 1.0, 0.1);
+		for (int resolution = MIN_EXTRUSION_MESH_RESOLUTION;
+				resolution <= MAX_EXTRUSION_MESH_RESOLUTION;
+				resolution *= 2) {
+			m_extrusion_meshes[resolution] =
+				createExtrusionMesh(resolution, scale);
+		}
+		m_cube = createCubeMesh(v3f(1.0, 1.0, 1.0));
+	}
+	// Destructor
+	virtual ~ExtrusionMeshCache()
+	{
+		for (std::map<int, scene::IMesh*>::iterator
+				it = m_extrusion_meshes.begin();
+				it != m_extrusion_meshes.end(); ++it) {
+			it->second->drop();
+		}
+		m_cube->drop();
+	}
+	// Get closest extrusion mesh for given image dimensions
+	scene::IMesh* get(core::dimension2d<u32> dim)
+	{
+		dstream<<"getting extrusion mesh for dimensions: "<<dim.Width<<","<<dim.Height<<std::endl;
+		int maxdim = MYMAX(dim.Width, dim.Height);
+
+		std::map<int, scene::IMesh*>::iterator
+			it = m_extrusion_meshes.lower_bound(maxdim);
+
+		if (it == m_extrusion_meshes.end()) {
+			// no viable resolution found; use largest one
+			it = m_extrusion_meshes.find(MAX_EXTRUSION_MESH_RESOLUTION);
+			assert(it != m_extrusion_meshes.end());
+		}
+
+		dstream<<"chose resolution: "<<it->first<<std::endl;
+		return it->second;
+	}
+	scene::IMesh* getCube()
+	{
+		return m_cube;
+	}
+
+private:
+	std::map<int, scene::IMesh*> m_extrusion_meshes;
+	scene::IMesh *m_cube;
+};
+
+ExtrusionMeshCache *g_extrusion_mesh_cache = NULL;
+
+
+WieldMeshSceneNode::WieldMeshSceneNode(
+		scene::ISceneNode *parent,
+		scene::ISceneManager *mgr,
+		s32 id,
+		bool lighting
+):
+	scene::ISceneNode(parent, mgr, id),
+	m_meshnode(NULL),
+	m_lighting(lighting),
+	m_bounding_box(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+{
+	// If this is the first wield mesh scene node, create a cache
+	// for extrusion meshes (and a cube mesh), otherwise reuse it
+	if (g_extrusion_mesh_cache == NULL)
+		g_extrusion_mesh_cache = new ExtrusionMeshCache();
+	else
+		g_extrusion_mesh_cache->grab();
+
+	// Disable bounding box culling for this scene node
+	// since we won't calculate the bounding box.
+	setAutomaticCulling(scene::EAC_OFF);
+
+	// Create the child scene node
+	scene::IMesh *dummymesh = g_extrusion_mesh_cache->getCube();
+	m_meshnode = SceneManager->addMeshSceneNode(dummymesh, this, -1);
+	m_meshnode->setReadOnlyMaterials(false);
+	m_meshnode->setVisible(false);
+}
+
+WieldMeshSceneNode::~WieldMeshSceneNode()
+{
+	assert(g_extrusion_mesh_cache);
+	if (g_extrusion_mesh_cache->drop())
+		g_extrusion_mesh_cache = NULL;
+}
+
+void WieldMeshSceneNode::setCube(const TileSpec tiles[6],
+			v3f wield_scale, ITextureSource *tsrc)
+{
+	changeToMesh(g_extrusion_mesh_cache->getCube());
+	m_meshnode->setScale(wield_scale * WIELD_SCALE_FACTOR);
+
+	// Customize materials
+	for (u32 i = 0; i < m_meshnode->getMaterialCount(); ++i) {
+		assert(i < 6);
+		video::SMaterial &material = m_meshnode->getMaterial(i);
+		material.setTexture(0, tiles[i].texture);
+		tiles[i].applyMaterialOptions(material);
+	}
+}
+
+void WieldMeshSceneNode::setExtruded(const std::string &imagename,
+		v3f wield_scale, ITextureSource *tsrc)
+{
+	video::ITexture *texture = tsrc->getTexture(imagename);
+	if (!texture) {
+		changeToMesh(NULL);
+		return;
+	}
+
+	changeToMesh(g_extrusion_mesh_cache->get(texture->getSize()));
+	m_meshnode->setScale(wield_scale * WIELD_SCALE_FACTOR_EXTRUDED);
+
+	// Customize material
+	assert(m_meshnode->getMaterialCount() == 1);
+	video::SMaterial &material = m_meshnode->getMaterial(0);
+	material.setTexture(0, texture);
+}
+
+void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
+{
+	ITextureSource *tsrc = gamedef->getTextureSource();
+	IItemDefManager *idef = gamedef->getItemDefManager();
+
+	const ItemDefinition &def = item.getDefinition(idef);
+
+	// If wield_image is defined, it overrides everything else
+	if (def.wield_image != "") {
+		setExtruded(def.wield_image, def.wield_scale, tsrc);
+		return;
+	}
+
+	// Handle nodes
+	// See also CItemDefManager::createClientCached()
+	if (def.type == ITEM_NODE) {
+		INodeDefManager *ndef = gamedef->getNodeDefManager();
+		const ContentFeatures &f = ndef->get(def.name);
+		if (f.mesh_ptr[0]) {
+			// e.g. mesh nodes and nodeboxes
+			changeToMesh(f.mesh_ptr[0]);
+			// mesh_ptr[0] is pre-scaled by BS * f->visual_scale
+			m_meshnode->setScale(
+					def.wield_scale * WIELD_SCALE_FACTOR
+					/ (BS * f.visual_scale));
+			// Customize materials
+			for (u32 i = 0; i < m_meshnode->getMaterialCount(); ++i) {
+				assert(i < 6);
+				video::SMaterial &material = m_meshnode->getMaterial(i);
+				material.setTexture(0, f.tiles[i].texture);
+				f.tiles[i].applyMaterialOptions(material);
+			}
+			return;
+		} else if (f.drawtype == NDT_NORMAL || f.drawtype == NDT_ALLFACES) {
+			setCube(f.tiles, def.wield_scale, tsrc);
+			return;
+		} else if (f.drawtype == NDT_AIRLIKE) {
+			changeToMesh(NULL);
+			return;
+		}
+
+		// If none of the above standard cases worked, use the wield mesh from ClientCached
+		scene::IMesh *mesh = idef->getWieldMesh(item.name, gamedef);
+		if (mesh) {
+			changeToMesh(mesh);
+			m_meshnode->setScale(def.wield_scale * WIELD_SCALE_FACTOR);
+			return;
+		}
+	}
+
+	// default to inventory_image
+	if (def.inventory_image != "") {
+		setExtruded(def.inventory_image, def.wield_scale, tsrc);
+		return;
+	}
+
+	// no wield mesh found
+	changeToMesh(NULL);
+}
+
+void WieldMeshSceneNode::setColor(video::SColor color)
+{
+	assert(!m_lighting);
+	setMeshColor(m_meshnode->getMesh(), color);
+}
+
+void WieldMeshSceneNode::render()
+{
+	// note: if this method is changed to actually do something,
+	// you probably should implement OnRegisterSceneNode as well
+}
+
+void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
+{
+	bool visible = (mesh != NULL);
+
+	if (mesh == NULL)
+		mesh = g_extrusion_mesh_cache->getCube();
+
+	if (m_lighting) {
+		m_meshnode->setMesh(mesh);
+	} else {
+		/*
+			Lighting is disabled, this means the caller can (and probably will)
+			call setColor later. We therefore need to clone the mesh so that
+			setColor will only modify this scene node's mesh, not others'.
+		*/
+		scene::IMeshManipulator *meshmanip = SceneManager->getMeshManipulator();
+		scene::IMesh *new_mesh = meshmanip->createMeshCopy(mesh);
+		m_meshnode->setMesh(new_mesh);
+		new_mesh->drop();  // m_meshnode grabbed it
+	}
+
+	m_meshnode->setMaterialFlag(video::EMF_LIGHTING, m_lighting);
+	// need to normalize normals when lighting is enabled (because of setScale())
+	m_meshnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, m_lighting);
+	m_meshnode->setVisible(visible);
+}
