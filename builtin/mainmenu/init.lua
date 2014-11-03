@@ -62,6 +62,8 @@ end
 --------------------------------------------------------------------------------
 local function init_globals()
 	--init gamedata
+	music_handle = nil
+	music_id = nil
 	gamedata.worldindex = 0
 
 	menudata.worldlist = filterlist.create(
@@ -112,8 +114,8 @@ local function init_globals()
 	modstore.init({x=12,y=8},4,3)
 
 	ui.update()
-
-	core.sound_play("main_menu", true)
+	music_handle = core.sound_play("main_menu", true)
+	music_id = -1
 end
 
 init_globals()

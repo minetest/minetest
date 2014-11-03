@@ -111,16 +111,15 @@ void MenuMusicFetcher::fetchSounds(const std::string &name,
 	if(m_fetched.count(name))
 		return;
 	m_fetched.insert(name);
-	std::string base;
-	base = porting::path_share + DIR_DELIM + "sounds";
-	dst_paths.insert(base + DIR_DELIM + name + ".ogg");
-	int i;
-	for(i=0; i<10; i++)
-		dst_paths.insert(base + DIR_DELIM + name + "."+itos(i)+".ogg");
-	base = porting::path_user + DIR_DELIM + "sounds";
-	dst_paths.insert(base + DIR_DELIM + name + ".ogg");
-	for(i=0; i<10; i++)
-		dst_paths.insert(base + DIR_DELIM + name + "."+itos(i)+".ogg");
+	if (fs::PathExists(name))
+		dst_paths.insert(name);
+	else {
+		std::string base;
+		base = porting::path_share + DIR_DELIM + "sounds";
+		dst_paths.insert(base + DIR_DELIM + name + ".ogg");
+		base = porting::path_user + DIR_DELIM + "sounds";
+		dst_paths.insert(base + DIR_DELIM + name + ".ogg");
+	}
 }
 
 /******************************************************************************/

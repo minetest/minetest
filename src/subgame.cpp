@@ -28,6 +28,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 #include "util/string.h"
 
+std::string getFilePath(std::string path)
+{
+	if(fs::PathExists(path))
+		return path;
+	return "";
+}
+
 bool getGameMinetestConfig(const std::string &game_path, Settings &conf)
 {
 	std::string conf_path = game_path + DIR_DELIM + "minetest.conf";
@@ -121,11 +128,13 @@ SubgameSpec findSubgame(const std::string &id)
 	if(game_name == "")
 		game_name = id;
 	std::string menuicon_path;
+	std::string menumusic_path;
 #ifndef SERVER
 	menuicon_path = getImagePath(game_path + DIR_DELIM + "menu" + DIR_DELIM + "icon.png");
+	menumusic_path = getFilePath(game_path + DIR_DELIM + "menu" + DIR_DELIM + "main_menu.ogg");
 #endif
 	return SubgameSpec(id, game_path, gamemod_path, mods_paths, game_name,
-			menuicon_path);
+			menuicon_path, menumusic_path);
 }
 
 SubgameSpec findWorldSubgame(const std::string &world_path)

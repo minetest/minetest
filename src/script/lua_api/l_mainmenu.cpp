@@ -289,6 +289,10 @@ int ModApiMainMenu::l_get_games(lua_State *L)
 		lua_pushstring(L,games[i].menuicon_path.c_str());
 		lua_settable(L, top_lvl2);
 
+		lua_pushstring(L,"menumusic_path");
+		lua_pushstring(L,games[i].menumusic_path.c_str());
+		lua_settable(L, top_lvl2);
+
 		lua_pushstring(L,"addon_mods_paths");
 		lua_newtable(L);
 		int table2 = lua_gettop(L);
