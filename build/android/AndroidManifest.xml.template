@@ -15,7 +15,7 @@
 		android:label="Minetest"
 		android:launchMode="singleTask"
 		android:configChanges="orientation|keyboardHidden"
-		android:screenOrientation="landscape"
+		android:screenOrientation="sensorLandscape"
 		android:clearTaskOnLaunch="true">
 		<intent-filter>
 			<action android:name="android.intent.action.MAIN" />

@@ -212,11 +212,11 @@ inline std::string trim(const std::string &s)
 {
 	size_t front = 0;
 
-	while (isspace(s[front]))
+	while (std::isspace(s[front]))
 		++front;
 
 	size_t back = s.size();
-	while (back > front && isspace(s[back-1]))
+	while (back > front && std::isspace(s[back-1]))
 		--back;
 
 	return s.substr(front, back - front);
@@ -481,7 +481,7 @@ inline std::string unescape_string(std::string &s)
 inline bool is_number(const std::string &tocheck)
 {
 	for (size_t i = 0; i < tocheck.size(); i++)
-	    if (!isdigit(tocheck[i]))
+	    if (!std::isdigit(tocheck[i]))
 	        return false;
 
 	return !tocheck.empty();
