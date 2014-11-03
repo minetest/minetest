@@ -2061,7 +2061,7 @@ bool Game::initGui(std::wstring *error_message)
 #ifdef HAVE_TOUCHSCREENGUI
 
 	if (g_touchscreengui)
-		g_touchscreengui->init(tsrc, porting::getDisplayDensity());
+		g_touchscreengui->init(texture_src, porting::getDisplayDensity());
 
 #endif
 
@@ -2852,8 +2852,8 @@ void Game::updateCameraDirection(CameraOrientation *cam,
 #ifdef HAVE_TOUCHSCREENGUI
 
 		if (g_touchscreengui) {
-			camera_yaw   = g_touchscreengui->getYaw();
-			camera_pitch = g_touchscreengui->getPitch();
+			cam->camera_yaw   = g_touchscreengui->getYaw();
+			cam->camera_pitch = g_touchscreengui->getPitch();
 		} else {
 #endif
 			s32 dx = input->getMousePos().X - (driver->getScreenSize().Width / 2);
