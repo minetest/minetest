@@ -41,12 +41,14 @@ local function read_auth_file()
 	end
 	for line in file:lines() do
 		if line ~= "" then
-			local name, password, privilegestring = string.match(line, "([^:]*):([^:]*):([^:]*)")
-			if not name or not password or not privilegestring then
+			local fields = line:split(':')
+			local name, password, privilegestring, last_login = unpack(fields)
+			last_login = tonumber(last_login) or 0
+			if not (name and password and privilegestring) then
 				error("Invalid line in auth.txt: "..dump(line))
 			end
 			local privileges = core.string_to_privs(privilegestring)
-			newtable[name] = {password=password, privileges=privileges}
+			newtable[name] = {password=password, privileges=privileges, last_login=last_login}
 		end
 	end
 	io.close(file)
@@ -63,6 +65,7 @@ local function save_auth_file()
 		assert(type(stuff) == "table")
 		assert(type(stuff.password) == "string")
 		assert(type(stuff.privileges) == "table")
+		assert(type(stuff.last_login) == "number")
 	end
 	local file, errmsg = io.open(core.auth_file_path, 'w+b')
 	if not file then
@@ -70,7 +73,7 @@ local function save_auth_file()
 	end
 	for name, stuff in pairs(core.auth_table) do
 		local privstring = core.privs_to_string(stuff.privileges)
-		file:write(name..":"..stuff.password..":"..privstring..'\n')
+		file:write(name..":"..stuff.password..":"..privstring..":"..stuff.last_login..'\n')
 	end
 	io.close(file)
 end
@@ -111,6 +114,8 @@ core.builtin_auth_handler = {
 		return {
 			password = core.auth_table[name].password,
 			privileges = privileges,
+			-- Is set to 0 if unknown
+			last_login = core.auth_table[name].last_login,
 		}
 	end,
 	create_auth = function(name, password)
@@ -120,6 +125,7 @@ core.builtin_auth_handler = {
 		core.auth_table[name] = {
 			password = password,
 			privileges = core.string_to_privs(core.setting_get("default_privs")),
+			last_login = os.time(),
 		}
 		save_auth_file()
 	end,
@@ -139,7 +145,9 @@ core.builtin_auth_handler = {
 		assert(type(name) == "string")
 		assert(type(privileges) == "table")
 		if not core.auth_table[name] then
-			core.builtin_auth_handler.create_auth(name, core.get_password_hash(name, core.setting_get("default_password")))
+			core.builtin_auth_handler.create_auth(name,
+				core.get_password_hash(name,
+					core.setting_get("default_password")))
 		end
 		core.auth_table[name].privileges = privileges
 		core.notify_authentication_modified(name)
@@ -148,6 +156,11 @@ core.builtin_auth_handler = {
 	reload = function()
 		read_auth_file()
 		return true
+	end,
+	record_login = function(name)
+		assert(type(name) == "string")
+		assert(core.auth_table[name]).last_login = os.time()
+		save_auth_file()
 	end,
 }
 
@@ -160,29 +173,27 @@ function core.register_authentication_handler(handler)
 end
 
 function core.get_auth_handler()
-	if core.registered_auth_handler then
-		return core.registered_auth_handler
-	end
-	return core.builtin_auth_handler
+	return core.registered_auth_handler or core.builtin_auth_handler
 end
 
-function core.set_player_password(name, password)
-	if core.get_auth_handler().set_password then
-		core.get_auth_handler().set_password(name, password)
-	end
-end
-
-function core.set_player_privs(name, privs)
-	if core.get_auth_handler().set_privileges then
-		core.get_auth_handler().set_privileges(name, privs)
+local function auth_pass(name)
+	return function(...)
+		local auth_handler = core.get_auth_handler()
+		if auth_handler[name] then
+			return auth_handler[name](...)
+		end
+		return false
 	end
 end
 
-function core.auth_reload()
-	if core.get_auth_handler().reload then
-		return core.get_auth_handler().reload()
-	end
-	return false
-end
+core.set_player_password = auth_pass("set_password")
+core.set_player_privs    = auth_pass("set_privileges")
+core.auth_reload         = auth_pass("reload")
 
+
+local record_login = auth_pass("record_login")
+
+core.register_on_joinplayer(function(player)
+	record_login(player:get_player_name())
+end)
 
