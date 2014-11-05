@@ -29,6 +29,11 @@ private:
 	u32 m_selected_i;
 	std::string m_message;
 public:
+	bool hasMessage()
+	{
+		return m_message != "";
+	}
+
 	std::string getMessage()
 	{
 		std::string s = m_message;
