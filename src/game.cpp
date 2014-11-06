@@ -1212,6 +1212,7 @@ struct GameRunData {
 	bool ldown_for_dig;
 	bool left_punch;
 	bool update_wielded_item_trigger;
+	bool reset_jump_timer;
 	float nodig_delay_timer;
 	float dig_time;
 	float dig_time_complete;
@@ -1332,6 +1333,7 @@ protected:
 	void processKeyboardInput(VolatileRunFlags *flags,
 			float *statustext_time,
 			float *jump_timer,
+			bool *reset_jump_timer,
 			u32 *profiler_current_page,
 			u32 profiler_max_page);
 	void processItemSelection(u16 *new_playeritem);
@@ -1568,9 +1570,7 @@ void Game::run()
 
 	flags.show_chat = true;
 	flags.show_hud = true;
-
-	/* FIXME: This should be updated every iteration, or not stored locally
-	          now that key settings can be changed in-game */
+	flags.show_debug = g_settings->getBool("show_debug");
 	flags.invert_mouse = g_settings->getBool("invert_mouse");
 
 	/* Clear the profiler */
@@ -1584,6 +1584,8 @@ void Game::run()
 			&flags.force_fog_off,
 			&runData.fog_range,
 			client));
+
+	std::vector<aabb3f> highlight_boxes;
 
 	while (device->run() && !(*kill || g_gamecallback->shutdown_requested)) {
 
@@ -1601,8 +1603,6 @@ void Game::run()
 			break;
 
 		processQueues();
-
-		std::vector<aabb3f> highlight_boxes;
 
 		infotext = L"";
 		hud->resizeHotbar();
@@ -2307,6 +2307,7 @@ void Game::processUserInput(VolatileRunFlags *flags,
 			flags,
 			&interact_args->statustext_time,
 			&interact_args->jump_timer,
+			&interact_args->reset_jump_timer,
 			&interact_args->profiler_current_page,
 			interact_args->profiler_max_page);
 
@@ -2317,6 +2318,7 @@ void Game::processUserInput(VolatileRunFlags *flags,
 void Game::processKeyboardInput(VolatileRunFlags *flags,
 		float *statustext_time,
 		float *jump_timer,
+		bool *reset_jump_timer,
 		u32 *profiler_current_page,
 		u32 profiler_max_page)
 {
@@ -2339,6 +2341,7 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 		toggleFreeMove(statustext_time);
 	} else if (input->wasKeyDown(getKeySetting("keymap_jump"))) {
 		toggleFreeMoveAlt(statustext_time, jump_timer);
+		*reset_jump_timer = true;
 	} else if (input->wasKeyDown(getKeySetting("keymap_fastmove"))) {
 		toggleFast(statustext_time);
 	} else if (input->wasKeyDown(getKeySetting("keymap_noclip"))) {
@@ -2389,6 +2392,11 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 		dstream << "-----------------------------------------"
 		        << std::endl;
 		debug_stacks_print();
+	}
+
+	if (!input->isKeyDown(getKeySetting("keymap_jump")) && *reset_jump_timer) {
+		*reset_jump_timer = false;
+		*jump_timer = 0.0;
 	}
 }
 
@@ -2485,10 +2493,8 @@ void Game::toggleFreeMove(float *statustext_time)
 
 void Game::toggleFreeMoveAlt(float *statustext_time, float *jump_timer)
 {
-	if (g_settings->getBool("doubletap_jump") && *jump_timer < 0.2f) {
+	if (g_settings->getBool("doubletap_jump") && *jump_timer < 0.2f)
 		toggleFreeMove(statustext_time);
-		*jump_timer = 0;
-	}
 }
 
 
@@ -3759,6 +3765,7 @@ void Game::updateGui(float *statustext_time, const RunStats& stats,
 		drawtime_avg = drawtime_avg * 0.95 + stats.drawtime * 0.05;
 
 		u16 fps = 1.0 / stats.dtime_jitter.avg;
+		//s32 fps = driver->getFPS();
 
 		std::ostringstream os(std::ios_base::binary);
 		os << std::fixed
@@ -3871,18 +3878,16 @@ inline void Game::updateProfilerGraphs(ProfilerGraph *graph)
  ****************************************************************************/
 
 /* On some computers framerate doesn't seem to be automatically limited
- *
- * *Must* be called after device->run() so that device->getTimer()->getTime();
- * is correct
  */
 inline void Game::limitFps(FpsControl *fps_timings, f32 *dtime)
 {
 	// not using getRealTime is necessary for wine
+	device->getTimer()->tick(); // Maker sure device time is up-to-date
 	u32 time = device->getTimer()->getTime();
 
 	u32 last_time = fps_timings->last_time;
 
-	if (time > last_time) // Make sure time hasn't overflowed
+	if (time > last_time)  // Make sure time hasn't overflowed
 		fps_timings->busy_time = time - last_time;
 	else
 		fps_timings->busy_time = 0;
@@ -3894,37 +3899,25 @@ inline void Game::limitFps(FpsControl *fps_timings, f32 *dtime)
 	if (fps_timings->busy_time < frametime_min) {
 		fps_timings->sleep_time = frametime_min - fps_timings->busy_time;
 		device->sleep(fps_timings->sleep_time);
-		time += fps_timings->sleep_time;
 	} else {
 		fps_timings->sleep_time = 0;
 	}
 
-	if (time > last_time) // Checking for overflow
-		*dtime = (time - last_time) / 1000.0;
-	else
-		*dtime = 0.03; // Choose 30fps as fallback in overflow case
-
-	fps_timings->last_time = time;
-
-#if 0
-
-	/* This is the old method for calculating new_time and dtime, and seems
-	 * like overkill considering timings are messed up by expected variation
-	 * in execution speed in other places anyway. (This has nothing to do with
-	 * WINE... the new method above calculates dtime based on sleep_time)
+	/* Get the new value of the device timer. Note that device->sleep() may
+	 * not sleep for the entire requested time as sleep may be interrupted and
+	 * therefore it is arguably more accurate to get the new time from the
+	 * device rather than calculating it by adding sleep_time to time.
 	 */
 
-	// Necessary for device->getTimer()->getTime()
-	device->run();
+	device->getTimer()->tick(); // Update device timer
 	time = device->getTimer()->getTime();
 
-	if (time > last_time)	// Make sure last_time hasn't overflowed
+	if (time > last_time)  // Make sure last_time hasn't overflowed
 		*dtime = (time - last_time) / 1000.0;
 	else
-		*dtime = 0.033;
+		*dtime = 0;
 
-	params->last_time = time;
-#endif
+	fps_timings->last_time = time;
 }
 
 
