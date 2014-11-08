@@ -32,6 +32,25 @@ assert(core.privs_to_string({a=true,b=true}) == "a,b")
 core.auth_file_path = core.get_worldpath().."/auth.txt"
 core.auth_table = {}
 
+local function split(str, pat)
+	local t = {}
+	local fpat = "(.-)" .. pat
+	local last_end = 1
+	local s, e, cap = str:find(fpat, 1)
+	while s do
+		if s~= 1 or cap ~= "" then
+			table.insert(t, cap)
+		end
+		last_end = e + 1
+		s, e, cap = str:find(fpat, last_end)
+	end
+	if last_end <= #str then
+		cap = str:sub(last_end)
+		table.insert(t, cap)
+	end
+	return t
+end
+
 local function read_auth_file()
 	local newtable = {}
 	local file, errmsg = io.open(core.auth_file_path, 'rb')
@@ -41,12 +60,17 @@ local function read_auth_file()
 	end
 	for line in file:lines() do
 		if line ~= "" then
-			local name, password, privilegestring = string.match(line, "([^:]*):([^:]*):([^:]*)")
+			--local name, password, privilegestring, last_login = string.match(line, "([^:]*):([^:]*):([^:]*):([^:]*)")
+			local t = split(line, ":")
+			local name, password, privilegestring, last_login = unpack(t)
+			if not last_login then
+				last_login = os.time()
+			end
 			if not name or not password or not privilegestring then
 				error("Invalid line in auth.txt: "..dump(line))
 			end
 			local privileges = core.string_to_privs(privilegestring)
-			newtable[name] = {password=password, privileges=privileges}
+			newtable[name] = {password=password, privileges=privileges, last_login=last_login}
 		end
 	end
 	io.close(file)
@@ -63,6 +87,7 @@ local function save_auth_file()
 		assert(type(stuff) == "table")
 		assert(type(stuff.password) == "string")
 		assert(type(stuff.privileges) == "table")
+		assert(type(stuff.last_login) == "number")
 	end
 	local file, errmsg = io.open(core.auth_file_path, 'w+b')
 	if not file then
@@ -70,7 +95,7 @@ local function save_auth_file()
 	end
 	for name, stuff in pairs(core.auth_table) do
 		local privstring = core.privs_to_string(stuff.privileges)
-		file:write(name..":"..stuff.password..":"..privstring..'\n')
+		file:write(name..":"..stuff.password..":"..privstring..":"..stuff.last_login..'\n')
 	end
 	io.close(file)
 end
@@ -111,6 +136,7 @@ core.builtin_auth_handler = {
 		return {
 			password = core.auth_table[name].password,
 			privileges = privileges,
+			last_login = core.auth_table[name].last_login,
 		}
 	end,
 	create_auth = function(name, password)
@@ -120,6 +146,7 @@ core.builtin_auth_handler = {
 		core.auth_table[name] = {
 			password = password,
 			privileges = core.string_to_privs(core.setting_get("default_privs")),
+			last_login = os.time(),
 		}
 		save_auth_file()
 	end,
@@ -149,6 +176,16 @@ core.builtin_auth_handler = {
 		read_auth_file()
 		return true
 	end,
+	set_login_time = function(name, logintime)
+		assert(type(name) == "string")
+		assert(type(logintime) == "number")
+		if not core.auth_table[name] then
+			core.builtin_auth_handler.create_auth(name, core.get_password_hash(name, core.setting_get("default_password")))
+			core.auth_table[name].privileges = core.string_to_privs(core.setting_get("default_privs"))
+		end
+		core.auth_table[name].last_login = logintime
+		save_auth_file()
+	end,
 }
 
 function core.register_authentication_handler(handler)
@@ -175,6 +212,12 @@ end
 function core.set_player_privs(name, privs)
 	if core.get_auth_handler().set_privileges then
 		core.get_auth_handler().set_privileges(name, privs)
+	end
+end
+
+function core.set_last_login(name, logintime)
+	if core.get_auth_handler().set_login_time then
+		core.get_auth_handler().set_login_time(name, logintime)
 	end
 end
 
