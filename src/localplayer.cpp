@@ -44,7 +44,7 @@ LocalPlayer::LocalPlayer(IGameDef *gamedef, const char *name):
 	last_yaw(0),
 	last_keyPressed(0),
 	eye_offset_first(v3f(0,0,0)),
-	eye_offset_third(v3f(0,0,0)),
+	eye_offset_third(v3f(3.75,2.5,0)),
 	last_animation(NO_ANIM),
 	hotbar_image(""),
 	hotbar_selected_image(""),
