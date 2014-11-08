@@ -145,7 +145,7 @@ function dump(o, indent, nested, level)
 	nested[o] = nil
 	if indent ~= "" then
 		local indent_str = "\n"..string.rep(indent, level)
-		local end_indent_str = "\n"..string.rep("\t", level - 1)
+		local end_indent_str = "\n"..string.rep(indent, level - 1)
 		return string.format("{%s%s%s}",
 				indent_str,
 				table.concat(t, ","..indent_str),
