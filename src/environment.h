@@ -259,6 +259,7 @@ public:
 		inside a radius around a position
 	*/
 	void getAddedActiveObjects(v3s16 pos, s16 radius,
+			s16 player_radius,
 			std::set<u16> &current_objects,
 			std::set<u16> &added_objects);
 
@@ -267,6 +268,7 @@ public:
 		inside a radius around a position
 	*/
 	void getRemovedActiveObjects(v3s16 pos, s16 radius,
+			s16 player_radius,
 			std::set<u16> &current_objects,
 			std::set<u16> &removed_objects);
 	
