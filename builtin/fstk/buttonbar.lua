@@ -57,10 +57,10 @@ local function buttonbar_formspec(self)
 		end
 			
 		formspec = formspec ..
-			string.format("image_button[%f,%f;%f,%f;%s;%s;%s;true;%s]",
+			string.format("image_button[%f,%f;%f,%f;%s;%s;%s;true;%s]tooltip[%s;%s]",
 					btn_pos.x, btn_pos.y, self.btn_size, self.btn_size,
 					self.buttons[i].image, btn_name, self.buttons[i].caption,
-					borders)
+					borders, btn_name, self.buttons[i].tooltip)
 		else
 			--print("end of displayable buttons: orientation: " .. self.orientation)
 			--print( "button_end: " .. (btn_pos.y + self.btn_size - (self.btn_size * 0.05)))
@@ -140,11 +140,12 @@ local buttonbar_metatable = {
 
 	delete = function(self) ui.delete(self) end,
 	
-	add_button = function(self, name, caption, image)
+	add_button = function(self, name, caption, image, tooltip)
 			if caption == nil then caption = "" end
 			if image == nil then image = "" end
+			if tooltip == nil then tooltip = "" end
 			
-			table.insert(self.buttons,{ name=name, caption=caption, image=image})
+			table.insert(self.buttons,{ name=name, caption=caption, image=image, tooltip=tooltip})
 			if self.orientation == "horizontal" then
 				if ( (self.btn_size * #self.buttons) + (self.btn_size * 0.05 *2)
 					> self.size.x ) then
