@@ -1038,11 +1038,6 @@ bool PlayerSAO::isStaticAllowed() const
 	return false;
 }
 
-bool PlayerSAO::unlimitedTransferDistance() const
-{
-	return g_settings->getBool("unlimited_player_transfer_distance");
-}
-
 std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 {
 	std::ostringstream os(std::ios::binary);

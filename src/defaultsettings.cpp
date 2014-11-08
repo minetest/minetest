@@ -202,7 +202,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("give_initial_stuff", "false");
 	settings->setDefault("default_password", "");
 	settings->setDefault("default_privs", "interact, shout");
-	settings->setDefault("unlimited_player_transfer_distance", "true");
+	settings->setDefault("player_transfer_distance", "0");
 	settings->setDefault("enable_pvp", "true");
 	settings->setDefault("disallow_empty_password", "false");
 	settings->setDefault("disable_anticheat", "false");

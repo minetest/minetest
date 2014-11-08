@@ -295,7 +295,10 @@
 # See /privs in game for a full list on your server and mod configuration.
 #default_privs = interact, shout
 # Whether players are shown to clients without any range limit
+# deprecated, use the setting player_transfer_distance instead
 #unlimited_player_transfer_distance = true
+# Defines the maximal player transfer distance in blocks (0 = unlimited)
+#player_transfer_distance = 0
 # Whether to enable players killing each other
 #enable_pvp = true
 # If this is set, players will always (re)spawn at the given position
