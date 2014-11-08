@@ -95,6 +95,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_wieldmgr->addCameraSceneNode();
 	m_wieldnode = new WieldMeshSceneNode(m_wieldmgr->getRootSceneNode(), m_wieldmgr, -1, true);
 	m_wieldnode->setItem(ItemStack(), m_gamedef);
+	m_wieldnode->drop(); // m_wieldmgr grabbed it
 	m_wieldlightnode = m_wieldmgr->addLightSceneNode(NULL, v3f(0.0, 50.0, 0.0));
 }
 

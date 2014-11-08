@@ -35,12 +35,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MIN_EXTRUSION_MESH_RESOLUTION 32   // not 16: causes too many "holes"
 #define MAX_EXTRUSION_MESH_RESOLUTION 512
 
-static scene::IMesh* createExtrusionMesh(int resolution, v3f scale)
+static scene::IMesh* createExtrusionMesh(int resolution_x, int resolution_y)
 {
 	const f32 r = 0.5;
 
 	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
 	video::SColor c(255,255,255,255);
+	v3f scale(1.0, 1.0, 0.1);
 
 	// Front and back
 	{
@@ -60,17 +61,16 @@ static scene::IMesh* createExtrusionMesh(int resolution, v3f scale)
 		buf->append(vertices, 8, indices, 12);
 	}
 
-	const f32 pixelsize = 1 / (f32) resolution;
+	f32 pixelsize_x = 1 / (f32) resolution_x;
+	f32 pixelsize_y = 1 / (f32) resolution_y;
 
-	for (int i = 0; i < resolution; ++i) {
-		f32 pixelpos = i * pixelsize - 0.5;
-		f32 x0 = pixelpos;
-		f32 x1 = pixelpos + pixelsize;
-		f32 y0 = -pixelpos - pixelsize;
-		f32 y1 = -pixelpos;
-		f32 tex0 = (i + 0.1) * pixelsize;
-		f32 tex1 = (i + 0.9) * pixelsize;
-		video::S3DVertex vertices[16] = {
+	for (int i = 0; i < resolution_x; ++i) {
+		f32 pixelpos_x = i * pixelsize_x - 0.5;
+		f32 x0 = pixelpos_x;
+		f32 x1 = pixelpos_x + pixelsize_x;
+		f32 tex0 = (i + 0.1) * pixelsize_x;
+		f32 tex1 = (i + 0.9) * pixelsize_x;
+		video::S3DVertex vertices[8] = {
 			// x-
 			video::S3DVertex(x0,-r,-r, -1,0,0, c, tex0,1),
 			video::S3DVertex(x0,-r,+r, -1,0,0, c, tex1,1),
@@ -81,6 +81,17 @@ static scene::IMesh* createExtrusionMesh(int resolution, v3f scale)
 			video::S3DVertex(x1,+r,-r, +1,0,0, c, tex0,0),
 			video::S3DVertex(x1,+r,+r, +1,0,0, c, tex1,0),
 			video::S3DVertex(x1,-r,+r, +1,0,0, c, tex1,1),
+		};
+		u16 indices[12] = {0,1,2,2,3,0,4,5,6,6,7,4};
+		buf->append(vertices, 8, indices, 12);
+	}
+	for (int i = 0; i < resolution_y; ++i) {
+		f32 pixelpos_y = i * pixelsize_y - 0.5;
+		f32 y0 = -pixelpos_y - pixelsize_y;
+		f32 y1 = -pixelpos_y;
+		f32 tex0 = (i + 0.1) * pixelsize_y;
+		f32 tex1 = (i + 0.9) * pixelsize_y;
+		video::S3DVertex vertices[8] = {
 			// y-
 			video::S3DVertex(-r,y0,-r, 0,-1,0, c, 0,tex0),
 			video::S3DVertex(+r,y0,-r, 0,-1,0, c, 1,tex0),
@@ -92,9 +103,8 @@ static scene::IMesh* createExtrusionMesh(int resolution, v3f scale)
 			video::S3DVertex(+r,y1,+r, 0,+1,0, c, 1,tex1),
 			video::S3DVertex(+r,y1,-r, 0,+1,0, c, 1,tex0),
 		};
-		u16 indices[24] = {0,1,2,2,3,0,4,5,6,6,7,4,
-		                   8,9,10,10,11,8,12,13,14,14,15,12};
-		buf->append(vertices, 16, indices, 24);
+		u16 indices[12] = {0,1,2,2,3,0,4,5,6,6,7,4};
+		buf->append(vertices, 8, indices, 12);
 	}
 
 	// Define default material
@@ -133,12 +143,11 @@ public:
 	// Constructor
 	ExtrusionMeshCache()
 	{
-		v3f scale(1.0, 1.0, 0.1);
 		for (int resolution = MIN_EXTRUSION_MESH_RESOLUTION;
 				resolution <= MAX_EXTRUSION_MESH_RESOLUTION;
 				resolution *= 2) {
 			m_extrusion_meshes[resolution] =
-				createExtrusionMesh(resolution, scale);
+				createExtrusionMesh(resolution, resolution);
 		}
 		m_cube = createCubeMesh(v3f(1.0, 1.0, 1.0));
 	}
@@ -153,9 +162,14 @@ public:
 		m_cube->drop();
 	}
 	// Get closest extrusion mesh for given image dimensions
-	scene::IMesh* get(core::dimension2d<u32> dim)
+	// Caller must drop the returned pointer
+	scene::IMesh* create(core::dimension2d<u32> dim)
 	{
-		dstream<<"getting extrusion mesh for dimensions: "<<dim.Width<<","<<dim.Height<<std::endl;
+		// handle non-power of two textures inefficiently without cache
+		if (!is_power_of_two(dim.Width) || !is_power_of_two(dim.Height)) {
+			return createExtrusionMesh(dim.Width, dim.Height);
+		}
+
 		int maxdim = MYMAX(dim.Width, dim.Height);
 
 		std::map<int, scene::IMesh*>::iterator
@@ -167,11 +181,15 @@ public:
 			assert(it != m_extrusion_meshes.end());
 		}
 
-		dstream<<"chose resolution: "<<it->first<<std::endl;
-		return it->second;
+		scene::IMesh *mesh = it->second;
+		mesh->grab();
+		return mesh;
 	}
-	scene::IMesh* getCube()
+	// Returns a 1x1x1 cube mesh with one meshbuffer (material) per face
+	// Caller must drop the returned pointer
+	scene::IMesh* createCube()
 	{
+		m_cube->grab();
 		return m_cube;
 	}
 
@@ -206,10 +224,11 @@ WieldMeshSceneNode::WieldMeshSceneNode(
 	setAutomaticCulling(scene::EAC_OFF);
 
 	// Create the child scene node
-	scene::IMesh *dummymesh = g_extrusion_mesh_cache->getCube();
+	scene::IMesh *dummymesh = g_extrusion_mesh_cache->createCube();
 	m_meshnode = SceneManager->addMeshSceneNode(dummymesh, this, -1);
 	m_meshnode->setReadOnlyMaterials(false);
 	m_meshnode->setVisible(false);
+	dummymesh->drop(); // m_meshnode grabbed it
 }
 
 WieldMeshSceneNode::~WieldMeshSceneNode()
@@ -222,7 +241,10 @@ WieldMeshSceneNode::~WieldMeshSceneNode()
 void WieldMeshSceneNode::setCube(const TileSpec tiles[6],
 			v3f wield_scale, ITextureSource *tsrc)
 {
-	changeToMesh(g_extrusion_mesh_cache->getCube());
+	scene::IMesh *cubemesh = g_extrusion_mesh_cache->createCube();
+	changeToMesh(cubemesh);
+	cubemesh->drop();
+
 	m_meshnode->setScale(wield_scale * WIELD_SCALE_FACTOR);
 
 	// Customize materials
@@ -243,7 +265,10 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		return;
 	}
 
-	changeToMesh(g_extrusion_mesh_cache->get(texture->getSize()));
+	scene::IMesh *mesh = g_extrusion_mesh_cache->create(texture->getSize());
+	changeToMesh(mesh);
+	mesh->drop();
+
 	m_meshnode->setScale(wield_scale * WIELD_SCALE_FACTOR_EXTRUDED);
 
 	// Customize material
@@ -326,10 +351,12 @@ void WieldMeshSceneNode::render()
 
 void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 {
-	bool visible = (mesh != NULL);
-
-	if (mesh == NULL)
-		mesh = g_extrusion_mesh_cache->getCube();
+	if (mesh == NULL) {
+		scene::IMesh *dummymesh = g_extrusion_mesh_cache->createCube();
+		m_meshnode->setVisible(false);
+		m_meshnode->setMesh(dummymesh);
+		dummymesh->drop();  // m_meshnode grabbed it
+	}
 
 	if (m_lighting) {
 		m_meshnode->setMesh(mesh);
@@ -348,5 +375,6 @@ void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 	m_meshnode->setMaterialFlag(video::EMF_LIGHTING, m_lighting);
 	// need to normalize normals when lighting is enabled (because of setScale())
 	m_meshnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, m_lighting);
-	m_meshnode->setVisible(visible);
+	m_meshnode->setVisible(true);
+
 }

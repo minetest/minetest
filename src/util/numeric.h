@@ -361,5 +361,10 @@ inline float cycle_shift(float value, float by = 0, float max = 1)
     return value + by;
 }
 
+inline bool is_power_of_two(u32 n)
+{
+	return n != 0 && (n & (n-1)) == 0;
+}
+
 #endif
 
