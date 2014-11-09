@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER
 #include "clientmap.h"
 #include "localplayer.h"
+#include "mapblock_mesh.h"
 #include "event.h"
 #endif
 #include "daynightratio.h"
@@ -2330,21 +2331,28 @@ void ClientEnvironment::step(float dtime)
 			player->move(dtime, this, 100*BS);
 
 		}
-		
-		// Update lighting on all players on client
-		float light = 1.0;
-		try{
-			// Get node at head
-			v3s16 p = player->getLightPosition();
-			MapNode n = m_map->getNode(p);
-			light = n.getLightBlendF1((float)getDayNightRatio()/1000, m_gamedef->ndef());
-		}
-		catch(InvalidPositionException &e){
-			light = blend_light_f1((float)getDayNightRatio()/1000, LIGHT_SUN, 0);
-		}
-		player->light = light;
 	}
-	
+
+	// Update lighting on local player (used for wield item)
+	u32 day_night_ratio = getDayNightRatio();
+	{
+		// Get node at head
+
+		// On InvalidPositionException, use this as default
+		// (day: LIGHT_SUN, night: 0)
+		MapNode node_at_lplayer(CONTENT_AIR, 0x0f, 0);
+
+		try {
+			v3s16 p = lplayer->getLightPosition();
+			node_at_lplayer = m_map->getNode(p);
+		} catch (InvalidPositionException &e) {}
+
+		u16 light = getInteriorLight(node_at_lplayer, 0, m_gamedef->ndef());
+		u8 day = light & 0xff;
+		u8 night = (light >> 8) & 0xff;
+		finalColorBlend(lplayer->light_color, day, night, day_night_ratio);
+	}
+
 	/*
 		Step active objects and update lighting of them
 	*/
@@ -2367,10 +2375,10 @@ void ClientEnvironment::step(float dtime)
 				// Get node at head
 				v3s16 p = obj->getLightPosition();
 				MapNode n = m_map->getNode(p);
-				light = n.getLightBlend(getDayNightRatio(), m_gamedef->ndef());
+				light = n.getLightBlend(day_night_ratio, m_gamedef->ndef());
 			}
 			catch(InvalidPositionException &e){
-				light = blend_light(getDayNightRatio(), LIGHT_SUN, 0);
+				light = blend_light(day_night_ratio, LIGHT_SUN, 0);
 			}
 			obj->updateLight(light);
 		}

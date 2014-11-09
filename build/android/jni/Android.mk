@@ -209,8 +209,9 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/util/string.cpp                   \
 		jni/src/util/timetaker.cpp                \
 		jni/src/touchscreengui.cpp                \
- 		jni/src/database-leveldb.cpp              \
- 		jni/src/settings.cpp
+		jni/src/database-leveldb.cpp              \
+		jni/src/settings.cpp                      \
+		jni/src/wieldmesh.cpp
 
 # lua api
 LOCAL_SRC_FILES +=                                \

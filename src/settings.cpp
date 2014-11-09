@@ -667,8 +667,9 @@ void Settings::getUpdatedConfigObject(std::istream &is,
 		bool &changed)
 {
 	std::string name, value;
+
 	if (!parseConfigObject(is, name, value)) {
-		dst.push_back(value + '\n');
+		dst.push_back(value + (is.eof() ? "" : "\n"));
 		return;
 	}
 
@@ -679,7 +680,7 @@ void Settings::getUpdatedConfigObject(std::istream &is,
 			changed = true;
 		}
 
-		dst.push_back(name + " = " + new_value + '\n');
+		dst.push_back(name + " = " + new_value + (is.eof() ? "" : "\n"));
 		updated.insert(name);
 	} else { // File contains a setting which is not in m_settings
 		changed = true;

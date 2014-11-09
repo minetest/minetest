@@ -407,7 +407,7 @@
 # Mapgen stuff
 #
 
-# Name of map generator to be used.  Currently supported: v6, v7, singlenode
+# Name of map generator to be used.  Currently supported: v5, v6, v7, singlenode
 #mg_name = v6
 # Water level of map.
 #water_level = 1
@@ -424,6 +424,16 @@
 #mgv6_freq_beach = 0.15
 # Perlin noise attributes for different map generation parameters
 # Offset, scale, spread factor, seed offset, number of octaves, persistence
+
+#mgv5_np_filler_depth = 0, 1, (150, 150, 150), 261, 4, 0.7
+#mgv5_np_factor = 0, 1, (250, 250, 250), 920381, 3, 0.45
+#mgv5_np_height = 0, 10, (250, 250, 250), 84174, 4, 0.5
+#mgv5_np_cave1 = 0, 7.5, (50, 50, 50), 52534, 4, 0.5
+#mgv5_np_cave2 = 0, 7.5, (50, 50, 50), 10325, 4, 0.5
+#mgv5_np_ground = 0, 40, (80, 80, 80), 983240, 4, 0.55
+#mgv5_np_crumble = 0, 1, (20, 20, 20), 34413, 3, 1.3
+#mgv5_np_wetness = 0, 1, (40, 40, 40), 32474, 4, 1.1
+
 #mgv6_np_terrain_base = -4, 20, (250, 250, 250), 82341, 5, 0.6
 #mgv6_np_terrain_higher = 20, 16, (500, 500, 500), 85039, 5, 0.6
 #mgv6_np_steepness = 0.85, 0.5, (125, 125, 125), -932, 5, 0.7
