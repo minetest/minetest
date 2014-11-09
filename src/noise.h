@@ -152,6 +152,8 @@ inline float easeCurve(float t) {
 	return t * t * t * (t * (6.f * t - 15.f) + 10.f);
 }
 
+float contour(float v);
+
 #define NoisePerlin2D(np, x, y, s) \
 		((np)->offset + (np)->scale * noise2d_perlin( \
 		(float)(x) / (np)->spread.X, \

@@ -306,7 +306,6 @@ float noise3d_perlin_abs(float x, float y, float z, int seed,
 }
 
 
-// -1->0, 0->1, 1->0
 float contour(float v)
 {
 	v = fabs(v);
@@ -653,3 +652,4 @@ void Noise::transformNoiseMap()
 		i++;
 	}
 }
+

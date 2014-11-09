@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class LocalPlayer;
 struct MapDrawControl;
 class IGameDef;
+class WieldMeshSceneNode;
 
 enum CameraMode {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
 
@@ -127,7 +128,7 @@ public:
 	void setDigging(s32 button);
 
 	// Replace the wielded item mesh
-	void wield(const ItemStack &item, u16 playeritem);
+	void wield(const ItemStack &item);
 
 	// Draw the wielded tool.
 	// This has to happen *after* the main scene is drawn.
@@ -157,8 +158,8 @@ private:
 	scene::ICameraSceneNode* m_cameranode;
 
 	scene::ISceneManager* m_wieldmgr;
-	scene::IMeshSceneNode* m_wieldnode;
-	u8 m_wieldlight;
+	WieldMeshSceneNode* m_wieldnode;
+	scene::ILightSceneNode* m_wieldlightnode;
 
 	// draw control
 	MapDrawControl& m_draw_control;
@@ -203,14 +204,9 @@ private:
 	// If 1, right-click digging animation
 	s32 m_digging_button;
 
-	//dummymesh for camera
-	irr::scene::IAnimatedMesh* m_dummymesh;
-
 	// Animation when changing wielded item
 	f32 m_wield_change_timer;
-	scene::IMesh *m_wield_mesh_next;
-	u16 m_previous_playeritem;
-	std::string m_previous_itemname;
+	ItemStack m_wield_item_next;
 
 	CameraMode m_camera_mode;
 };

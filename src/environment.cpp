@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER
 #include "clientmap.h"
 #include "localplayer.h"
+#include "mapblock_mesh.h"
 #include "event.h"
 #endif
 #include "daynightratio.h"
@@ -1345,11 +1346,17 @@ bool ServerEnvironment::addActiveObjectAsStatic(ServerActiveObject *obj)
 	inside a radius around a position
 */
 void ServerEnvironment::getAddedActiveObjects(v3s16 pos, s16 radius,
+		s16 player_radius,
 		std::set<u16> &current_objects,
 		std::set<u16> &added_objects)
 {
 	v3f pos_f = intToFloat(pos, BS);
 	f32 radius_f = radius * BS;
+	f32 player_radius_f = player_radius * BS;
+
+	if (player_radius_f < 0)
+		player_radius_f = 0;
+
 	/*
 		Go through the object list,
 		- discard m_removed objects,
@@ -1369,12 +1376,15 @@ void ServerEnvironment::getAddedActiveObjects(v3s16 pos, s16 radius,
 		// Discard if removed or deactivating
 		if(object->m_removed || object->m_pending_deactivation)
 			continue;
-		if(object->unlimitedTransferDistance() == false){
+
+		f32 distance_f = object->getBasePosition().getDistanceFrom(pos_f);
+		if (object->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			// Discard if too far
-			f32 distance_f = object->getBasePosition().getDistanceFrom(pos_f);
-			if(distance_f > radius_f)
+			if (distance_f > player_radius_f && player_radius_f != 0)
 				continue;
-		}
+		} else if (distance_f > radius_f)
+			continue;
+
 		// Discard if already on current_objects
 		std::set<u16>::iterator n;
 		n = current_objects.find(id);
@@ -1390,11 +1400,17 @@ void ServerEnvironment::getAddedActiveObjects(v3s16 pos, s16 radius,
 	inside a radius around a position
 */
 void ServerEnvironment::getRemovedActiveObjects(v3s16 pos, s16 radius,
+		s16 player_radius,
 		std::set<u16> &current_objects,
 		std::set<u16> &removed_objects)
 {
 	v3f pos_f = intToFloat(pos, BS);
 	f32 radius_f = radius * BS;
+	f32 player_radius_f = player_radius * BS;
+
+	if (player_radius_f < 0)
+		player_radius_f = 0;
+
 	/*
 		Go through current_objects; object is removed if:
 		- object is not found in m_active_objects (this is actually an
@@ -1423,19 +1439,15 @@ void ServerEnvironment::getRemovedActiveObjects(v3s16 pos, s16 radius,
 			continue;
 		}
 		
-		// If transfer distance is unlimited, don't remove
-		if(object->unlimitedTransferDistance())
-			continue;
-
 		f32 distance_f = object->getBasePosition().getDistanceFrom(pos_f);
-
-		if(distance_f >= radius_f)
-		{
-			removed_objects.insert(id);
+		if (object->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+			if (distance_f <= player_radius_f || player_radius_f == 0)
+				continue;
+		} else if (distance_f <= radius_f)
 			continue;
-		}
-		
-		// Not removed
+
+		// Object is no longer visible
+		removed_objects.insert(id);
 	}
 }
 
@@ -2319,21 +2331,28 @@ void ClientEnvironment::step(float dtime)
 			player->move(dtime, this, 100*BS);
 
 		}
-		
-		// Update lighting on all players on client
-		float light = 1.0;
-		try{
-			// Get node at head
-			v3s16 p = player->getLightPosition();
-			MapNode n = m_map->getNode(p);
-			light = n.getLightBlendF1((float)getDayNightRatio()/1000, m_gamedef->ndef());
-		}
-		catch(InvalidPositionException &e){
-			light = blend_light_f1((float)getDayNightRatio()/1000, LIGHT_SUN, 0);
-		}
-		player->light = light;
 	}
-	
+
+	// Update lighting on local player (used for wield item)
+	u32 day_night_ratio = getDayNightRatio();
+	{
+		// Get node at head
+
+		// On InvalidPositionException, use this as default
+		// (day: LIGHT_SUN, night: 0)
+		MapNode node_at_lplayer(CONTENT_AIR, 0x0f, 0);
+
+		try {
+			v3s16 p = lplayer->getLightPosition();
+			node_at_lplayer = m_map->getNode(p);
+		} catch (InvalidPositionException &e) {}
+
+		u16 light = getInteriorLight(node_at_lplayer, 0, m_gamedef->ndef());
+		u8 day = light & 0xff;
+		u8 night = (light >> 8) & 0xff;
+		finalColorBlend(lplayer->light_color, day, night, day_night_ratio);
+	}
+
 	/*
 		Step active objects and update lighting of them
 	*/
@@ -2356,10 +2375,10 @@ void ClientEnvironment::step(float dtime)
 				// Get node at head
 				v3s16 p = obj->getLightPosition();
 				MapNode n = m_map->getNode(p);
-				light = n.getLightBlend(getDayNightRatio(), m_gamedef->ndef());
+				light = n.getLightBlend(day_night_ratio, m_gamedef->ndef());
 			}
 			catch(InvalidPositionException &e){
-				light = blend_light(getDayNightRatio(), LIGHT_SUN, 0);
+				light = blend_light(day_night_ratio, LIGHT_SUN, 0);
 			}
 			obj->updateLight(light);
 		}
