@@ -194,6 +194,7 @@ void sendAnnounce(const std::string &action,
 		const u32 game_time,
 		const float lag,
 		const std::string &gameid,
+		const std::string &mg_name,
 		const std::vector<ModSpec> &mods)
 {
 	Json::Value server;
@@ -227,7 +228,7 @@ void sendAnnounce(const std::string &action,
 	if (action == "start") {
 		server["dedicated"]         = g_settings->getBool("server_dedicated");
 		server["rollback"]          = g_settings->getBool("enable_rollback_recording");
-		server["mapgen"]            = g_settings->get("mg_name");
+		server["mapgen"]            = mg_name;
 		server["privs"]             = g_settings->get("default_privs");
 		server["can_see_far_names"] = g_settings->getS16("player_transfer_distance") <= 0;
 		server["mods"]              = Json::Value(Json::arrayValue);
