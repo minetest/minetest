@@ -94,6 +94,7 @@ public:
 	~MapgenV5();
 	
 	virtual void makeChunk(BlockMakeData *data);
+	int getGroundLevelAtPoint(v2s16 p);
 	void calculateNoise();
 	void generateBaseTerrain();
 	void generateBlobs();

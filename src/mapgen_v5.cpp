@@ -192,15 +192,48 @@ void MapgenV5Params::writeParams(Settings *settings) {
 }
 
 
+int MapgenV5::getGroundLevelAtPoint(v2s16 p) {
+	//TimeTaker t("getGroundLevelAtPoint", NULL, PRECISION_MICRO);
+
+	float f = 0.55 + NoisePerlin2D(noise_factor->np, p.X, p.Y, seed);
+	if(f < 0.01)
+		f = 0.01;
+	else if(f >= 1.0)
+		f *= 1.6;
+	float h = water_level + NoisePerlin2D(noise_height->np, p.X, p.Y, seed);
+
+	s16 search_top = water_level + 15;
+	s16 search_base = water_level;
+	// Use these 2 lines instead for a slower search returning highest ground level
+	//s16 search_top = h + f * noise_ground->np->octaves * noise_ground->np->scale;
+	//s16 search_base = h - f * noise_ground->np->octaves * noise_ground->np->scale;
+
+	s16 level = -31000;
+	for (s16 y = search_top; y >= search_base; y--) {
+		float n_ground = NoisePerlin3DEased(noise_ground->np, p.X, y, p.Y, seed);
+		if(n_ground * f > y - h) {
+			if(y >= search_top - 7)
+				break;
+			else
+				level = y;
+				break;
+		}
+	}
+
+	//printf("getGroundLevelAtPoint: %dus\n", t.stop());
+	return level;
+}
+
+
 void MapgenV5::makeChunk(BlockMakeData *data) {
 	assert(data->vmanip);
 	assert(data->nodedef);
 	assert(data->blockpos_requested.X >= data->blockpos_min.X &&
-		   data->blockpos_requested.Y >= data->blockpos_min.Y &&
-		   data->blockpos_requested.Z >= data->blockpos_min.Z);
+		data->blockpos_requested.Y >= data->blockpos_min.Y &&
+		data->blockpos_requested.Z >= data->blockpos_min.Z);
 	assert(data->blockpos_requested.X <= data->blockpos_max.X &&
-		   data->blockpos_requested.Y <= data->blockpos_max.Y &&
-		   data->blockpos_requested.Z <= data->blockpos_max.Z);
+		data->blockpos_requested.Y <= data->blockpos_max.Y &&
+		data->blockpos_requested.Z <= data->blockpos_max.Z);
 			
 	generating = true;
 	vm   = data->vmanip;	
