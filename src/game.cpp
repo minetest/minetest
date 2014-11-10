@@ -1181,9 +1181,119 @@ static void updateChat(Client &client, f32 dtime, bool show_debug,
 }
 
 
+/****************************************************************************
+ Fast key cache for main game loop
+ ****************************************************************************/
+
+/* This is faster than using getKeySetting with the tradeoff that functions
+ * using it must make sure that it's initialised before using it and there is
+ * no error handling (for example bounds checking). This is really intended for
+ * use only in the main running loop of the client (the_game()) where the faster
+ * (up to 10x faster) key lookup is an asset. Other parts of the codebase
+ * (e.g. formspecs) should continue using getKeySetting().
+ */
+struct KeyCache {
+
+	KeyCache() { populate(); }
+
+	enum {
+		// Player movement
+		KEYMAP_ID_FORWARD,
+		KEYMAP_ID_BACKWARD,
+		KEYMAP_ID_LEFT,
+		KEYMAP_ID_RIGHT,
+		KEYMAP_ID_JUMP,
+		KEYMAP_ID_SPECIAL1,
+		KEYMAP_ID_SNEAK,
+
+		// Other
+		KEYMAP_ID_DROP,
+		KEYMAP_ID_INVENTORY,
+		KEYMAP_ID_CHAT,
+		KEYMAP_ID_CMD,
+		KEYMAP_ID_CONSOLE,
+		KEYMAP_ID_FREEMOVE,
+		KEYMAP_ID_FASTMOVE,
+		KEYMAP_ID_NOCLIP,
+		KEYMAP_ID_SCREENSHOT,
+		KEYMAP_ID_TOGGLE_HUD,
+		KEYMAP_ID_TOGGLE_CHAT,
+		KEYMAP_ID_TOGGLE_FORCE_FOG_OFF,
+		KEYMAP_ID_TOGGLE_UPDATE_CAMERA,
+		KEYMAP_ID_TOGGLE_DEBUG,
+		KEYMAP_ID_TOGGLE_PROFILER,
+		KEYMAP_ID_CAMERA_MODE,
+		KEYMAP_ID_INCREASE_VIEWING_RANGE,
+		KEYMAP_ID_DECREASE_VIEWING_RANGE,
+		KEYMAP_ID_RANGESELECT,
+
+		KEYMAP_ID_QUICKTUNE_NEXT,
+		KEYMAP_ID_QUICKTUNE_PREV,
+		KEYMAP_ID_QUICKTUNE_INC,
+		KEYMAP_ID_QUICKTUNE_DEC,
+
+		KEYMAP_ID_DEBUG_STACKS,
+
+		// Fake keycode for array size and internal checks
+		KEYMAP_INTERNAL_ENUM_COUNT
+
+
+	};
+
+	void populate();
+
+	KeyPress key[KEYMAP_INTERNAL_ENUM_COUNT];
+};
+
+void KeyCache::populate()
+{
+	key[KEYMAP_ID_FORWARD]      = getKeySetting("keymap_forward");
+	key[KEYMAP_ID_BACKWARD]     = getKeySetting("keymap_backward");
+	key[KEYMAP_ID_LEFT]         = getKeySetting("keymap_left");
+	key[KEYMAP_ID_RIGHT]        = getKeySetting("keymap_right");
+	key[KEYMAP_ID_JUMP]         = getKeySetting("keymap_jump");
+	key[KEYMAP_ID_SPECIAL1]     = getKeySetting("keymap_special1");
+	key[KEYMAP_ID_SNEAK]        = getKeySetting("keymap_sneak");
+
+	key[KEYMAP_ID_DROP]         = getKeySetting("keymap_drop");
+	key[KEYMAP_ID_INVENTORY]    = getKeySetting("keymap_inventory");
+	key[KEYMAP_ID_CHAT]         = getKeySetting("keymap_chat");
+	key[KEYMAP_ID_CMD]          = getKeySetting("keymap_cmd");
+	key[KEYMAP_ID_CONSOLE]      = getKeySetting("keymap_console");
+	key[KEYMAP_ID_FREEMOVE]     = getKeySetting("keymap_freemove");
+	key[KEYMAP_ID_FASTMOVE]     = getKeySetting("keymap_fastmove");
+	key[KEYMAP_ID_NOCLIP]       = getKeySetting("keymap_noclip");
+	key[KEYMAP_ID_SCREENSHOT]   = getKeySetting("keymap_screenshot");
+	key[KEYMAP_ID_TOGGLE_HUD]   = getKeySetting("keymap_toggle_hud");
+	key[KEYMAP_ID_TOGGLE_CHAT]  = getKeySetting("keymap_toggle_chat");
+	key[KEYMAP_ID_TOGGLE_FORCE_FOG_OFF]
+			= getKeySetting("keymap_toggle_force_fog_off");
+	key[KEYMAP_ID_TOGGLE_UPDATE_CAMERA]
+			= getKeySetting("keymap_toggle_update_camera");
+	key[KEYMAP_ID_TOGGLE_DEBUG]
+			= getKeySetting("keymap_toggle_debug");
+	key[KEYMAP_ID_TOGGLE_PROFILER]
+			= getKeySetting("keymap_toggle_profiler");
+	key[KEYMAP_ID_CAMERA_MODE]
+			= getKeySetting("keymap_camera_mode");
+	key[KEYMAP_ID_INCREASE_VIEWING_RANGE]
+			= getKeySetting("keymap_increase_viewing_range_min");
+	key[KEYMAP_ID_DECREASE_VIEWING_RANGE]
+			= getKeySetting("keymap_decrease_viewing_range_min");
+	key[KEYMAP_ID_RANGESELECT]
+			= getKeySetting("keymap_rangeselect");
+
+	key[KEYMAP_ID_QUICKTUNE_NEXT] = getKeySetting("keymap_quicktune_next");
+	key[KEYMAP_ID_QUICKTUNE_PREV] = getKeySetting("keymap_quicktune_prev");
+	key[KEYMAP_ID_QUICKTUNE_INC]  = getKeySetting("keymap_quicktune_inc");
+	key[KEYMAP_ID_QUICKTUNE_DEC]  = getKeySetting("keymap_quicktune_dec");
+
+	key[KEYMAP_ID_DEBUG_STACKS]   = getKeySetting("keymap_print_debug_stacks");
+}
+
 
 /****************************************************************************
- THE GAME
+
  ****************************************************************************/
 
 const float object_hit_delay = 0.2;
@@ -1263,6 +1373,10 @@ struct VolatileRunFlags {
 	bool camera_offset_changed;
 };
 
+
+/****************************************************************************
+ THE GAME
+ ****************************************************************************/
 
 /* This is not intended to be a public class. If a public class becomes
  * desirable then it may be better to create another 'wrapper' class that
@@ -1458,6 +1572,8 @@ private:
 
 	std::wstring infotext;
 	std::wstring statustext;
+
+	KeyCache keycache;
 };
 
 Game::Game() :
@@ -2186,6 +2302,11 @@ inline bool Game::handleCallbacks()
 		g_gamecallback->keyconfig_requested = false;
 	}
 
+	if (g_gamecallback->keyconfig_changed) {
+		keycache.populate(); // update the cache with new settings
+		g_gamecallback->keyconfig_changed = false;
+	}
+
 	return true;
 }
 
@@ -2322,70 +2443,63 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 		u32 *profiler_current_page,
 		u32 profiler_max_page)
 {
-	if (input->wasKeyDown(getKeySetting("keymap_drop"))) {
+
+	//TimeTaker tt("process kybd input", NULL, PRECISION_NANO);
+
+	if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_DROP])) {
 		dropSelectedItem();
-	} else if (input->wasKeyDown(getKeySetting("keymap_inventory"))) {
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_INVENTORY])) {
 		openInventory();
 	} else if (input->wasKeyDown(EscapeKey) || input->wasKeyDown(CancelKey)) {
 		show_pause_menu(&current_formspec, client, gamedef, texture_src, device,
 				simple_singleplayer_mode);
-	} else if (input->wasKeyDown(getKeySetting("keymap_chat"))) {
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_CHAT])) {
 		show_chat_menu(&current_formspec, client, gamedef, texture_src, device,
 				client, "");
-	} else if (input->wasKeyDown(getKeySetting("keymap_cmd"))) {
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_CMD])) {
 		show_chat_menu(&current_formspec, client, gamedef, texture_src, device,
 				client, "/");
-	} else if (input->wasKeyDown(getKeySetting("keymap_console"))) {
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_CONSOLE])) {
 		openConsole();
-	} else if (input->wasKeyDown(getKeySetting("keymap_freemove"))) {
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_FREEMOVE])) {
 		toggleFreeMove(statustext_time);
-	} else if (input->wasKeyDown(getKeySetting("keymap_jump"))) {
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_JUMP])) {
 		toggleFreeMoveAlt(statustext_time, jump_timer);
 		*reset_jump_timer = true;
-	} else if (input->wasKeyDown(getKeySetting("keymap_fastmove"))) {
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_FASTMOVE])) {
 		toggleFast(statustext_time);
-	} else if (input->wasKeyDown(getKeySetting("keymap_noclip"))) {
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_NOCLIP])) {
 		toggleNoClip(statustext_time);
-	} else if (input->wasKeyDown(getKeySetting("keymap_screenshot"))) {
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_SCREENSHOT])) {
 		client->makeScreenshot(device);
-	} else if (input->wasKeyDown(getKeySetting("keymap_toggle_hud"))) {
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_HUD])) {
 		toggleHud(statustext_time, &flags->show_hud);
-	} else if (input->wasKeyDown(getKeySetting("keymap_toggle_chat"))) {
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_CHAT])) {
 		toggleChat(statustext_time, &flags->show_chat);
-	} else if (input->wasKeyDown(getKeySetting("keymap_toggle_force_fog_off"))) {
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_FORCE_FOG_OFF])) {
 		toggleFog(statustext_time, &flags->force_fog_off);
-	} else if (input->wasKeyDown(getKeySetting("keymap_toggle_update_camera"))) {
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_UPDATE_CAMERA])) {
 		toggleUpdateCamera(statustext_time, &flags->disable_camera_update);
-	} else if (input->wasKeyDown(getKeySetting("keymap_toggle_debug"))) {
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_DEBUG])) {
 		toggleDebug(statustext_time, &flags->show_debug, &flags->show_profiler_graph);
-	} else if (input->wasKeyDown(getKeySetting("keymap_toggle_profiler"))) {
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_PROFILER])) {
 		toggleProfiler(statustext_time, profiler_current_page, profiler_max_page);
-	} else if (input->wasKeyDown(getKeySetting("keymap_increase_viewing_range_min"))) {
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_INCREASE_VIEWING_RANGE])) {
 		increaseViewRange(statustext_time);
-	} else if (input->wasKeyDown(getKeySetting("keymap_decrease_viewing_range_min"))) {
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_DECREASE_VIEWING_RANGE])) {
 		decreaseViewRange(statustext_time);
-	} else if (input->wasKeyDown(getKeySetting("keymap_rangeselect"))) {
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_RANGESELECT])) {
 		toggleFullViewRange(statustext_time);
-	}
-
-	// Handle QuicktuneShortcutter
-	if (input->wasKeyDown(getKeySetting("keymap_quicktune_next")))
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_NEXT]))
 		quicktune->next();
-	else if (input->wasKeyDown(getKeySetting("keymap_quicktune_prev")))
+	else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_PREV]))
 		quicktune->prev();
-	else if (input->wasKeyDown(getKeySetting("keymap_quicktune_inc")))
+	else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_INC]))
 		quicktune->inc();
-	else if (input->wasKeyDown(getKeySetting("keymap_quicktune_dec")))
+	else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_DEC]))
 		quicktune->dec();
-
-	std::string msg = quicktune->getMessage();
-	if (msg != "") {
-		statustext = narrow_to_wide(msg);
-		*statustext_time = 0;
-	}
-
-	// Print debug stacks
-	if (input->wasKeyDown(getKeySetting("keymap_print_debug_stacks"))) {
+	else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_DEBUG_STACKS])) {
+		// Print debug stacks
 		dstream << "-----------------------------------------"
 		        << std::endl;
 		dstream << DTIME << "Printing debug stacks:" << std::endl;
@@ -2397,6 +2511,14 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 	if (!input->isKeyDown(getKeySetting("keymap_jump")) && *reset_jump_timer) {
 		*reset_jump_timer = false;
 		*jump_timer = 0.0;
+	}
+
+	//tt.stop();
+
+	if (quicktune->hasMessage()) {
+		std::string msg = quicktune->getMessage();
+		statustext = narrow_to_wide(msg);
+		*statustext_time = 0;
 	}
 }
 
@@ -2730,14 +2852,16 @@ void Game::updateCameraDirection(CameraOrientation *cam,
 
 void Game::updatePlayerControl(const CameraOrientation &cam)
 {
+	//TimeTaker tt("update player control", NULL, PRECISION_NANO);
+
 	PlayerControl control(
-		input->isKeyDown(getKeySetting("keymap_forward")),
-		input->isKeyDown(getKeySetting("keymap_backward")),
-		input->isKeyDown(getKeySetting("keymap_left")),
-		input->isKeyDown(getKeySetting("keymap_right")),
-		input->isKeyDown(getKeySetting("keymap_jump")),
-		input->isKeyDown(getKeySetting("keymap_special1")),
-		input->isKeyDown(getKeySetting("keymap_sneak")),
+		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_FORWARD]),
+		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_BACKWARD]),
+		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_LEFT]),
+		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_RIGHT]),
+		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_JUMP]),
+		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SPECIAL1]),
+		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SNEAK]),
 		input->getLeftState(),
 		input->getRightState(),
 		cam.camera_pitch,
@@ -2746,17 +2870,18 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	client->setPlayerControl(control);
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	player->keyPressed =
-			( (u32)(input->isKeyDown(getKeySetting("keymap_forward"))  & 0x1) << 0) |
-			( (u32)(input->isKeyDown(getKeySetting("keymap_backward")) & 0x1) << 1) |
-			( (u32)(input->isKeyDown(getKeySetting("keymap_left"))     & 0x1) << 2) |
-			( (u32)(input->isKeyDown(getKeySetting("keymap_right"))    & 0x1) << 3) |
-			( (u32)(input->isKeyDown(getKeySetting("keymap_jump"))     & 0x1) << 4) |
-			( (u32)(input->isKeyDown(getKeySetting("keymap_special1")) & 0x1) << 5) |
-			( (u32)(input->isKeyDown(getKeySetting("keymap_sneak"))    & 0x1) << 6) |
-			( (u32)(input->getLeftState()                              & 0x1) << 7) |
-			( (u32)(input->getRightState()                             & 0x1) << 8
+		( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_FORWARD])  & 0x1) << 0) |
+		( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_BACKWARD]) & 0x1) << 1) |
+		( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_LEFT])     & 0x1) << 2) |
+		( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_RIGHT])    & 0x1) << 3) |
+		( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_JUMP])     & 0x1) << 4) |
+		( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SPECIAL1]) & 0x1) << 5) |
+		( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SNEAK])    & 0x1) << 6) |
+		( (u32)(input->getLeftState()                                        & 0x1) << 7) |
+		( (u32)(input->getRightState()                                       & 0x1) << 8
 	);
 
+	//tt.stop();
 }
 
 
@@ -3042,7 +3167,7 @@ void Game::updateCamera(VolatileRunFlags *flags, u32 busy_time,
 
 	v3s16 old_camera_offset = camera->getOffset();
 
-	if (input->wasKeyDown(getKeySetting("keymap_camera_mode"))) {
+	if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_CAMERA_MODE])) {
 		camera->toggleCameraMode();
 		GenericCAO *playercao = player->getCAO();
 
