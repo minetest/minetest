@@ -631,23 +631,21 @@ core.register_chatcommand("time", {
 })
 
 core.register_chatcommand("day", {
-	description = "set time of day to 10000",
+	description = "set time of day to midday (12000)",
 	privs = {settime=true},
 	func = function(name, param)
-		local newtime = 10000
-		core.set_timeofday((newtime % 24000) / 24000)
-		core.log("action", name .. " sets time " .. newtime)
+		core.set_timeofday(0.5)
+		core.log("action", name .. " sets time " .. 12000)
 		return true, "Time of day changed."
 	end,
 })
 
 core.register_chatcommand("night", {
-	description = "set time of day to 0",
+	description = "set time of day to night (0)",
 	privs = {settime=true},
 	func = function(name, param)
-		local newtime = 0
-		core.set_timeofday((newtime % 24000) / 24000)
-		core.log("action", name .. " sets time " .. newtime)
+		core.set_timeofday(0)
+		core.log("action", name .. " sets time " .. 0)
 		return true, "Time of day changed."
 	end,
 })
