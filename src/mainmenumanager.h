@@ -35,6 +35,8 @@ public:
 	virtual void disconnect() = 0;
 	virtual void changePassword() = 0;
 	virtual void changeVolume() = 0;
+
+	virtual void signalKeyConfigChange() = 0;
 };
 
 extern gui::IGUIEnvironment* guienv;
@@ -127,6 +129,7 @@ public:
 		changevolume_requested(false),
 		keyconfig_requested(false),
 		shutdown_requested(false),
+		keyconfig_changed(false),
 		device(a_device)
 	{
 	}
@@ -159,12 +162,20 @@ public:
 		keyconfig_requested = true;
 	}
 
+	virtual void signalKeyConfigChange()
+	{
+		keyconfig_changed = true;
+	}
+
 	
 	bool disconnect_requested;
 	bool changepassword_requested;
 	bool changevolume_requested;
 	bool keyconfig_requested;
 	bool shutdown_requested;
+
+	bool keyconfig_changed;
+
 	IrrlichtDevice *device;
 };
 
