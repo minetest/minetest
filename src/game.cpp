@@ -1438,6 +1438,8 @@ protected:
 	bool checkConnection();
 	bool handleCallbacks();
 	void processQueues();
+	void updateProfilers(const GameRunData &run_data, const RunStats &stats,
+			const FpsControl &draw_times, f32 dtime);
 	void addProfilerGraphs(const RunStats &stats, const FpsControl &draw_times,
 			f32 dtime);
 	void updateStats(RunStats *stats, const FpsControl &draw_times, f32 dtime);
@@ -1574,6 +1576,8 @@ private:
 	std::wstring statustext;
 
 	KeyCache keycache;
+
+	IntervalLimiter profiler_interval;
 };
 
 Game::Game() :
@@ -1722,7 +1726,8 @@ void Game::run()
 
 		infotext = L"";
 		hud->resizeHotbar();
-		addProfilerGraphs(stats, draw_times, dtime);
+
+		updateProfilers(runData, stats, draw_times, dtime);
 		processUserInput(&flags, &runData, dtime);
 		// Update camera before player movement to avoid camera lag of one frame
 		updateCameraDirection(&cam_view, &flags);
@@ -2316,6 +2321,34 @@ void Game::processQueues()
 	texture_src->processQueue();
 	itemdef_manager->processQueue(gamedef);
 	shader_src->processQueue();
+}
+
+
+void Game::updateProfilers(const GameRunData &run_data, const RunStats &stats,
+		const FpsControl &draw_times, f32 dtime)
+{
+	float profiler_print_interval =
+			g_settings->getFloat("profiler_print_interval");
+	bool print_to_log = true;
+
+	if (profiler_print_interval == 0) {
+		print_to_log = false;
+		profiler_print_interval = 5;
+	}
+
+	if (profiler_interval.step(dtime, profiler_print_interval)) {
+		if (print_to_log) {
+			infostream << "Profiler:" << std::endl;
+			g_profiler->print(infostream);
+		}
+
+		update_profiler_gui(guitext_profiler, font, text_height,
+				run_data.profiler_current_page, run_data.profiler_max_page);
+
+		g_profiler->clear();
+	}
+
+	addProfilerGraphs(stats, draw_times, dtime);
 }
 
 
