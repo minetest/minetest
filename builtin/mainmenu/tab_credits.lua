@@ -23,6 +23,8 @@ tab_credits = {
 	cbf_formspec = function (tabview, name, tabdata)
 			local logofile = defaulttexturedir .. "logo.png"
 			return	"vertlabel[0,-0.25;CREDITS]" ..
+                                "image[-0.3,-0.31;" .. core.formspec_escape(defaulttexturedir .. "bg.png") .. "]"..
+                        "image[-0.3,-0.96;" .. core.formspec_escape(defaulttexturedir .. "bg_tab_credits.png") .. "]"..
 				"label[0.5,3;Minetest " .. core.get_version() .. "]" ..
 				"label[0.5,3.3;http://minetest.net]" ..
 				"image[0.5,1;" .. core.formspec_escape(logofile) .. "]" ..

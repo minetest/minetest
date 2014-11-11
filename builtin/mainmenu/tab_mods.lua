@@ -34,6 +34,8 @@ local function get_formspec(tabview, name, tabdata)
 		";" .. tabdata.selected_mod .. "]"
 
 	retval = retval ..
+                 "image[-0.3,-0.31;" .. core.formspec_escape(defaulttexturedir .. "bg.png") .. "]"..
+                        "image[-0.3,-0.96;" .. core.formspec_escape(defaulttexturedir .. "bg_tab_mods.png") .. "]"..
 		"label[0.8,4.2;" .. fgettext("Add mod:") .. "]" ..
 --		TODO Disabled due to upcoming release 0.4.8 and irrlicht messing up localization
 --		"button[0.75,4.85;1.8,0.5;btn_mod_mgr_install_local;".. fgettext("Local install") .. "]" ..
