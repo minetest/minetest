@@ -42,7 +42,7 @@ local function rename_modpack_buttonhandler(this, fields)
 		local targetpath = core.get_modpath() .. DIR_DELIM .. fields["te_modpack_name"]
 		core.copy_dir(oldpath,targetpath,false)
 		modmgr.refresh_globals()
-		modmgr.selected_mod = modmgr.global_mods:get_current_index(
+		modmgr.selected_mod = modmgr.global_mods:get_filtered_index(
 			modmgr.global_mods:raw_index_by_uid(fields["te_modpack_name"]))
 			
 		this:delete()

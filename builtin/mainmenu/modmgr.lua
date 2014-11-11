@@ -508,7 +508,7 @@ end
 
 --------------------------------------------------------------------------------
 function modmgr.refresh_globals()
-	modmgr.global_mods = filterlist.create(
+	modmgr.global_mods = core.filterlist_create(
 					modmgr.preparemodlist, --refresh
 					modmgr.comparemod, --compare
 					function(element,uid) --uid match

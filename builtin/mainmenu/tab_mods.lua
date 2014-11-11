@@ -41,7 +41,7 @@ local function get_formspec(tabview, name, tabdata)
 
 	local selected_mod = nil
 
-	if filterlist.size(modmgr.global_mods) >= tabdata.selected_mod then
+	if modmgr.global_mods:size() >= tabdata.selected_mod then
 		selected_mod = modmgr.global_mods:get_list()[tabdata.selected_mod]
 	end
 

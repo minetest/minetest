@@ -77,9 +77,8 @@ end
 local function get_formspec(tabview, name, tabdata)
 	local retval = ""
 	
-	local index = filterlist.get_current_index(menudata.worldlist,
-				tonumber(core.setting_get("mainmenu_last_selected_world"))
-				)
+	local index = menudata.worldlist:get_filtered_index(
+				tonumber(core.setting_get("mainmenu_last_selected_world")))
 
 	retval = retval ..
 			"button[4,4.15;2.6,0.5;world_delete;".. fgettext("Delete") .. "]" ..

@@ -207,6 +207,66 @@ string:trim()
 core.is_yes(arg) (possible in async calls)
 ^ returns whether arg can be interpreted as yes
 
+OPTIONAL (requires common/filterlist.lua to be loaded)
+core.filterlist_create(raw_fct, compare_fct, uid_match_fct,
+		filter_fct, raw_fct_param)
+^ create a filterlist
+^ raw_fct: function(param) to fetch raw elements (MANDATORY)
+^ compare_fct: function(element1, element2) has to tell if element1 and element2 are same (MANDATORY)
+^ uid_match_fct: function(element, uid) tells if uid matches for element1 (OPTIONAL)
+^ filter_fct: function(element, criteria) tells if element matches the passed criteria (OPTIONAL)
+^ raw_fct_param: parameter to be passed to raw_fct as param whenever it's called (OPTIONAL)
+
+filterlist:refresh()
+^ reread raw data and apply filters and sorting
+
+filterlist:process()
+^ apply filters and sorting
+
+filterlist:size()
+^ size of filtered list
+
+filterlist:add_sort_mechanism(name, sort_fct)
+^ add a new sort_mechanism
+^ name: name to identify the new sorting mechanism
+^ sort_fct: function(filterlist) function to do the sorting work
+
+filterlist:set_sortmode(name)
+^ enable a sort mode which has been added before
+^ name: name of sort mode to use
+
+filterlist:set_filtercriteria(criteria)
+^ update the filter criteria to be used on refreshing
+^ criteria: criteria to be used
+
+filterlist:get_filtercriteria()
+^ read current filtercriteria
+
+filterlist:get_list()
+^ get filtered (and possibly sorted) list
+
+filterlist:get_raw_list()
+^ get list without filter and sorting
+
+filterlist:get_raw_element(raw_index)
+^ get element from raw list
+^ raw_index: index within raw list
+
+filterlist:get_raw_index(index)
+^ get raw index from index within filtered list
+^ index: index of an element within filtered list
+
+filterlist:get_filtered_index(raw_index)
+^ get filtered index from a raw_index
+^ raw_index: index within raw list
+
+filterlist:uid_exists_raw(uid) (Only available if uid_match_fct was specified)
+^ is there an element matching uid in raw list
+
+filterlist:raw_index_by_uid(uid) (Only available if uid_match_fct was specified)
+^ get element matching uid in raw list
+^ uid: unique identifier of element
+
 Async:
 core.handle_async(async_job,parameters,finished)
 ^ execute a function asynchronously
