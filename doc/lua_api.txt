@@ -2056,7 +2056,7 @@ methods:
     returns the items that were actually removed (as an ItemStack) - note that
     any item metadata is ignored, so attempting to remove a specific unique
     item this way will likely remove the wrong one - to do that use set_stack
-    with an empty ItemStack to do that
+    with an empty ItemStack
 - get_location() -> location compatible to minetest.get_inventory(location)
                  -> {type="undefined"} in case location is not known
 
