@@ -1000,6 +1000,7 @@ bool read_noiseparams_nc(lua_State *L, int index, NoiseParams *np)
 	np->persist = getfloatfield_default(L, index, "persist", 0.0);
 	np->seed    = getintfield_default(L,   index, "seed",    0);
 	np->octaves = getintfield_default(L,   index, "octaves", 0);
+	np->eased   = getboolfield_default(L,  index, "eased",   false);
 
 	lua_getfield(L, index, "spread");
 	np->spread  = read_v3f(L, -1);
