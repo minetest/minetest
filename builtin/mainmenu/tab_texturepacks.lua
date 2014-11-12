@@ -46,7 +46,6 @@ local function get_formspec(tabview, name, tabdata)
 	
 	local retval = 
                         "image[-0.3,-0.31;" .. core.formspec_escape(defaulttexturedir .. "bg.png") .. "]"..
-                        "image[-0.3,-0.96;" .. core.formspec_escape(defaulttexturedir .. "bg_tab_textures.png") .. "]"..
                         "label[4,-0.25;".. fgettext("Select texture pack:") .. "]"..
 			"vertlabel[0,-0.25;".. fgettext("TEXTURE PACKS") .. "]" ..
 			"textlist[4,0.25;7.5,5.0;TPs;"

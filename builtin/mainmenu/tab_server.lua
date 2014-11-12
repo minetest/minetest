@@ -23,8 +23,7 @@ local function get_formspec(tabview, name, tabdata)
 				)
 
 	local retval =
-                 "image[-0.3,-0.31;" .. core.formspec_escape(defaulttexturedir .. "bg.png") .. "]"..
-                        "image[-0.3,-0.96;" .. core.formspec_escape(defaulttexturedir .. "bg_tab_server.png") .. "]"..
+                "image[-0.3,-0.31;" .. core.formspec_escape(defaulttexturedir .. "bg.png") .. "]"..
 		"button[4,4.15;2.6,0.5;world_delete;".. fgettext("Delete") .. "]" ..
 		"button[6.5,4.15;2.8,0.5;world_create;".. fgettext("New") .. "]" ..
 		"button[9.2,4.15;2.55,0.5;world_configure;".. fgettext("Configure") .. "]" ..
