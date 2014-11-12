@@ -2796,3 +2796,16 @@ ParticleSpawner definition (add_particlespawner)
     playername = "singleplayer"
     ^ Playername is optional, if specified spawns particle only on the player's client
 }
+
+NoiseParams definition (PerlinNoiseMap)
+{
+    offset = 0,
+    scale = 0,
+    spread = 0,
+    seed = 0,
+    octaves = 0,
+    ^ A higher value will result in more details, this means more operations
+    persist = 0,
+    eased = false
+    ^ Whether it should create curves in 3D perlin maps
+}
