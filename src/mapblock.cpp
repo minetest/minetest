@@ -97,54 +97,19 @@ bool MapBlock::isValidPositionParent(v3s16 p)
 	}
 }
 
-MapNode MapBlock::getNodeParent(v3s16 p)
+MapNode MapBlock::getNodeParent(v3s16 p, bool *is_valid_position)
 {
-	if(isValidPosition(p) == false)
-	{
-		return m_parent->getNode(getPosRelative() + p);
-	}
-	else
-	{
-		if(data == NULL)
-			throw InvalidPositionException();
-		return data[p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X];
-	}
-}
+	if (isValidPosition(p) == false)
+		return m_parent->getNodeNoEx(getPosRelative() + p, is_valid_position);
 
-void MapBlock::setNodeParent(v3s16 p, MapNode & n)
-{
-	if(isValidPosition(p) == false)
-	{
-		m_parent->setNode(getPosRelative() + p, n);
+	if (data == NULL) {
+		if (is_valid_position)
+			*is_valid_position = false;
+		return MapNode(CONTENT_IGNORE);
 	}
-	else
-	{
-		if(data == NULL)
-			throw InvalidPositionException();
-		data[p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X] = n;
-	}
-}
-
-MapNode MapBlock::getNodeParentNoEx(v3s16 p)
-{
-	if(isValidPosition(p) == false)
-	{
-		try{
-			return m_parent->getNode(getPosRelative() + p);
-		}
-		catch(InvalidPositionException &e)
-		{
-			return MapNode(CONTENT_IGNORE);
-		}
-	}
-	else
-	{
-		if(data == NULL)
-		{
-			return MapNode(CONTENT_IGNORE);
-		}
-		return data[p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X];
-	}
+	if (is_valid_position)
+		*is_valid_position = true;
+	return data[p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X];
 }
 
 /*
@@ -183,9 +148,14 @@ bool MapBlock::propagateSunlight(std::set<v3s16> & light_sources,
 #if 1
 			bool no_sunlight = false;
 			bool no_top_block = false;
+
 			// Check if node above block has sunlight
-			try{
-				MapNode n = getNodeParent(v3s16(x, MAP_BLOCKSIZE, z));
+
+			bool is_valid_position;
+			MapNode n = getNodeParent(v3s16(x, MAP_BLOCKSIZE, z),
+				&is_valid_position);
+			if (is_valid_position)
+			{
 				if(n.getContent() == CONTENT_IGNORE)
 				{
 					// Trust heuristics
@@ -196,7 +166,7 @@ bool MapBlock::propagateSunlight(std::set<v3s16> & light_sources,
 					no_sunlight = true;
 				}
 			}
-			catch(InvalidPositionException &e)
+			else
 			{
 				no_top_block = true;
 				
@@ -208,7 +178,7 @@ bool MapBlock::propagateSunlight(std::set<v3s16> & light_sources,
 				}
 				else
 				{
-					MapNode n = getNode(v3s16(x, MAP_BLOCKSIZE-1, z));
+					MapNode n = getNodeNoEx(v3s16(x, MAP_BLOCKSIZE-1, z));
 					if(m_gamedef->ndef()->get(n).sunlight_propagates == false)
 					{
 						no_sunlight = true;
@@ -308,27 +278,27 @@ bool MapBlock::propagateSunlight(std::set<v3s16> & light_sources,
 				
 				Ignore non-transparent nodes as they always have no light
 			*/
-			try
-			{
+
 			if(block_below_is_valid)
 			{
-				MapNode n = getNodeParent(v3s16(x, -1, z));
-				if(nodemgr->get(n).light_propagates)
-				{
-					if(n.getLight(LIGHTBANK_DAY, nodemgr) == LIGHT_SUN
-							&& sunlight_should_go_down == false)
-						block_below_is_valid = false;
-					else if(n.getLight(LIGHTBANK_DAY, nodemgr) != LIGHT_SUN
-							&& sunlight_should_go_down == true)
-						block_below_is_valid = false;
+				MapNode n = getNodeParent(v3s16(x, -1, z), &is_valid_position);
+				if (is_valid_position) {
+					if(nodemgr->get(n).light_propagates)
+					{
+						if(n.getLight(LIGHTBANK_DAY, nodemgr) == LIGHT_SUN
+								&& sunlight_should_go_down == false)
+							block_below_is_valid = false;
+						else if(n.getLight(LIGHTBANK_DAY, nodemgr) != LIGHT_SUN
+								&& sunlight_should_go_down == true)
+							block_below_is_valid = false;
+					}
 				}
-			}//if
-			}//try
-			catch(InvalidPositionException &e)
-			{
-				/*std::cout<<"InvalidBlockException for bottom block node"
-						<<std::endl;*/
-				// Just no block below, no need to panic.
+				else
+				{
+					/*std::cout<<"InvalidBlockException for bottom block node"
+							<<std::endl;*/
+					// Just no block below, no need to panic.
+				}
 			}
 		}
 	}
@@ -1070,7 +1040,7 @@ std::string analyze_block(MapBlock *block)
 		for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
 		{
 			v3s16 p(x0,y0,z0);
-			MapNode n = block->getNode(p);
+			MapNode n = block->getNodeNoEx(p);
 			content_t c = n.getContent();
 			if(c == CONTENT_IGNORE)
 				some_ignore = true;

@@ -2342,10 +2342,8 @@ void ClientEnvironment::step(float dtime)
 		// (day: LIGHT_SUN, night: 0)
 		MapNode node_at_lplayer(CONTENT_AIR, 0x0f, 0);
 
-		try {
-			v3s16 p = lplayer->getLightPosition();
-			node_at_lplayer = m_map->getNode(p);
-		} catch (InvalidPositionException &e) {}
+		v3s16 p = lplayer->getLightPosition();
+		node_at_lplayer = m_map->getNodeNoEx(p);
 
 		u16 light = getInteriorLight(node_at_lplayer, 0, m_gamedef->ndef());
 		u8 day = light & 0xff;
@@ -2371,15 +2369,16 @@ void ClientEnvironment::step(float dtime)
 		{
 			// Update lighting
 			u8 light = 0;
-			try{
-				// Get node at head
-				v3s16 p = obj->getLightPosition();
-				MapNode n = m_map->getNode(p);
+			bool pos_ok;
+
+			// Get node at head
+			v3s16 p = obj->getLightPosition();
+			MapNode n = m_map->getNodeNoEx(p, &pos_ok);
+			if (pos_ok)
 				light = n.getLightBlend(day_night_ratio, m_gamedef->ndef());
-			}
-			catch(InvalidPositionException &e){
+			else
 				light = blend_light(day_night_ratio, LIGHT_SUN, 0);
-			}
+
 			obj->updateLight(light);
 		}
 	}
@@ -2470,15 +2469,16 @@ u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 	object->addToScene(m_smgr, m_texturesource, m_irr);
 	{ // Update lighting immediately
 		u8 light = 0;
-		try{
-			// Get node at head
-			v3s16 p = object->getLightPosition();
-			MapNode n = m_map->getNode(p);
+		bool pos_ok;
+
+		// Get node at head
+		v3s16 p = object->getLightPosition();
+		MapNode n = m_map->getNodeNoEx(p, &pos_ok);
+		if (pos_ok)
 			light = n.getLightBlend(getDayNightRatio(), m_gamedef->ndef());
-		}
-		catch(InvalidPositionException &e){
+		else
 			light = blend_light(getDayNightRatio(), LIGHT_SUN, 0);
-		}
+
 		object->updateLight(light);
 	}
 	return object->getId();

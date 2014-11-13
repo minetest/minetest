@@ -2424,17 +2424,18 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					somebody is cheating, by checking the timing.
 				*/
 				MapNode n(CONTENT_IGNORE);
-				try
-				{
-					n = m_env->getMap().getNode(p_under);
-				}
-				catch(InvalidPositionException &e)
-				{
+				bool pos_ok;
+				n = m_env->getMap().getNodeNoEx(p_under, &pos_ok);
+				if (pos_ok)
+					n = m_env->getMap().getNodeNoEx(p_under, &pos_ok);
+
+				if (!pos_ok) {
 					infostream<<"Server: Not punching: Node not found."
 							<<" Adding block to emerge queue."
 							<<std::endl;
 					m_emerge->enqueueBlockEmerge(peer_id, getNodeBlockPos(p_above), false);
 				}
+
 				if(n.getContent() != CONTENT_IGNORE)
 					m_script->node_on_punch(p_under, n, playersao, pointed);
 				// Cheat prevention
@@ -2479,16 +2480,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			// Only digging of nodes
 			if(pointed.type == POINTEDTHING_NODE)
 			{
-				MapNode n(CONTENT_IGNORE);
-				try
-				{
-					n = m_env->getMap().getNode(p_under);
-				}
-				catch(InvalidPositionException &e)
-				{
-					infostream<<"Server: Not finishing digging: Node not found."
-							<<" Adding block to emerge queue."
-							<<std::endl;
+				bool pos_ok;
+				MapNode n = m_env->getMap().getNodeNoEx(p_under, &pos_ok);
+				if (!pos_ok) {
+					infostream << "Server: Not finishing digging: Node not found."
+					           << " Adding block to emerge queue."
+					           << std::endl;
 					m_emerge->enqueueBlockEmerge(peer_id, getNodeBlockPos(p_above), false);
 				}
 

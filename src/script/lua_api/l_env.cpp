@@ -159,16 +159,15 @@ int ModApiEnvMod::l_get_node_or_nil(lua_State *L)
 	// pos
 	v3s16 pos = read_v3s16(L, 1);
 	// Do it
-	try{
-		MapNode n = env->getMap().getNode(pos);
+	bool pos_ok;
+	MapNode n = env->getMap().getNodeNoEx(pos, &pos_ok);
+	if (pos_ok) {
 		// Return node
 		pushnode(L, n, env->getGameDef()->ndef());
-		return 1;
-	} catch(InvalidPositionException &e)
-	{
+	} else {
 		lua_pushnil(L);
-		return 1;
 	}
+	return 1;
 }
 
 // get_node_light(pos, timeofday)
@@ -185,16 +184,16 @@ int ModApiEnvMod::l_get_node_light(lua_State *L)
 		time_of_day = 24000.0 * lua_tonumber(L, 2);
 	time_of_day %= 24000;
 	u32 dnr = time_to_daynight_ratio(time_of_day, true);
-	try{
-		MapNode n = env->getMap().getNode(pos);
+
+	bool is_position_ok;
+	MapNode n = env->getMap().getNodeNoEx(pos, &is_position_ok);
+	if (is_position_ok) {
 		INodeDefManager *ndef = env->getGameDef()->ndef();
 		lua_pushinteger(L, n.getLightBlend(dnr, ndef));
-		return 1;
-	} catch(InvalidPositionException &e)
-	{
+	} else {
 		lua_pushnil(L);
-		return 1;
 	}
+	return 1;
 }
 
 // place_node(pos, node)

@@ -251,9 +251,13 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	for(s16 z = min_z; z <= max_z; z++)
 	{
 		v3s16 p(x,y,z);
-		try{
+
+		bool is_position_valid;
+		MapNode n = map->getNodeNoEx(p, &is_position_valid);
+
+		if (is_position_valid) {
 			// Object collides into walkable nodes
-			MapNode n = map->getNode(p);
+
 			const ContentFeatures &f = gamedef->getNodeDefManager()->get(n);
 			if(f.walkable == false)
 				continue;
@@ -275,8 +279,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				is_object.push_back(false);
 			}
 		}
-		catch(InvalidPositionException &e)
-		{
+		else {
 			// Collide with unloaded nodes
 			aabb3f box = getNodeBox(p, BS);
 			cboxes.push_back(box);
