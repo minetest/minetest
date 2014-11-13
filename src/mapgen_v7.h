@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MGV7_MOUNTAINS   0x01
 #define MGV7_RIDGES      0x02
 
+class BiomeManager;
 
 extern FlagDesc flagdesc_mapgen_v7[];
 
@@ -52,7 +53,7 @@ struct MapgenV7Params : public MapgenSpecificParams {
 class MapgenV7 : public Mapgen {
 public:
 	EmergeManager *emerge;
-	BiomeDefManager *bmgr;
+	BiomeManager *bmgr;
 
 	int ystride;
 	int zstride;

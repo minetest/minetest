@@ -40,8 +40,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "nodedef.h"
 #include "mg_biome.h"
-#include "mg_decoration.h"
 #include "mg_ore.h"
+#include "mg_decoration.h"
+#include "mg_schematic.h"
 #include "mapgen_v5.h"
 #include "mapgen_v6.h"
 #include "mapgen_v7.h"
@@ -88,8 +89,11 @@ EmergeManager::EmergeManager(IGameDef *gamedef) {
 	registerMapgen("v7",         new MapgenFactoryV7());
 	registerMapgen("singlenode", new MapgenFactorySinglenode());
 
-	this->ndef     = gamedef->getNodeDefManager();
-	this->biomedef = new BiomeDefManager(gamedef->getNodeDefManager()->getResolver());
+	this->ndef      = gamedef->getNodeDefManager();
+	this->biomemgr  = new BiomeManager(gamedef);
+	this->oremgr    = new OreManager(gamedef);
+	this->decomgr   = new DecorationManager(gamedef);
+	this->schemmgr  = new SchematicManager(gamedef);
 	this->gennotify = 0;
 
 	// Note that accesses to this variable are not synchronized.
@@ -141,21 +145,15 @@ EmergeManager::~EmergeManager() {
 	emergethread.clear();
 	mapgen.clear();
 
-	for (unsigned int i = 0; i < ores.size(); i++)
-		delete ores[i];
-	ores.clear();
-
-	for (unsigned int i = 0; i < decorations.size(); i++)
-		delete decorations[i];
-	decorations.clear();
-
-	for (std::map<std::string, MapgenFactory *>::iterator it = mglist.begin();
-			it != mglist.end(); ++it) {
+	std::map<std::string, MapgenFactory *>::iterator it;
+	for (it = mglist.begin(); it != mglist.end(); ++it)
 		delete it->second;
-	}
 	mglist.clear();
 
-	delete biomedef;
+	delete biomemgr;
+	delete oremgr;
+	delete decomgr;
+	delete schemmgr;
 
 	if (params.sparams) {
 		delete params.sparams;

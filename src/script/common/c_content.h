@@ -59,7 +59,7 @@ struct DigParams;
 struct HitParams;
 struct EnumString;
 struct NoiseParams;
-class DecoSchematic;
+class Schematic;
 
 
 ContentFeatures    read_content_features         (lua_State *L, int index);
@@ -151,10 +151,14 @@ NoiseParams*       read_noiseparams          (lua_State *L, int index);
 
 bool               read_noiseparams_nc       (lua_State *L, int index,
                                               NoiseParams *np);
-
+bool               get_schematic             (lua_State *L, int index,
+                                              Schematic *schem,
+                                              INodeDefManager *ndef,
+                             std::map<std::string, std::string> &replace_names);
 bool               read_schematic            (lua_State *L, int index,
-                                              DecoSchematic *dschem,
-                                              Server *server);
+                                              Schematic *dschem,
+                                              INodeDefManager *ndef,
+                             std::map<std::string, std::string> &replace_names);
 
 void               luaentity_get             (lua_State *L,u16 id);
 

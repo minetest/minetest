@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MG_ORE_HEADER
 
 #include "util/string.h"
-#include "mapnode.h"
+#include "mapgen.h"
 
 class NoiseParams;
 class Noise;
@@ -29,10 +29,13 @@ class Mapgen;
 class ManualMapVoxelManipulator;
 
 /////////////////// Ore generation flags
+
 // Use absolute value of height to determine ore placement
 #define OREFLAG_ABSHEIGHT 0x01
+
 // Use 3d noise to get density of ore placement, instead of just the position
 #define OREFLAG_DENSITY   0x02 // not yet implemented
+
 // For claylike ore types, place ore if the number of surrounding
 // nodes isn't the specified node
 #define OREFLAG_NODEISNT  0x04 // not yet implemented
@@ -40,7 +43,6 @@ class ManualMapVoxelManipulator;
 #define ORE_RANGE_ACTUAL 1
 #define ORE_RANGE_MIRROR 2
 
-extern FlagDesc flagdesc_ore[];
 
 enum OreType {
 	ORE_SCATTER,
@@ -48,7 +50,9 @@ enum OreType {
 	ORE_CLAYLIKE
 };
 
-class Ore {
+extern FlagDesc flagdesc_ore[];
+
+class Ore : public GenElement {
 public:
 	content_t c_ore;                  // the node to place
 	std::vector<content_t> c_wherein; // the nodes to be placed in
@@ -63,32 +67,50 @@ public:
 	NoiseParams *np;    // noise for distribution of clusters (NULL for uniform scattering)
 	Noise *noise;
 
-	Ore() {
-		c_ore   = CONTENT_IGNORE;
-		np      = NULL;
-		noise   = NULL;
-	}
-
+	Ore();
 	virtual ~Ore();
 
-	void placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+	size_t placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
 						u32 blockseed, v3s16 nmin, v3s16 nmax) = 0;
+	virtual std::string getName();
 };
 
 class OreScatter : public Ore {
-	~OreScatter() {}
+	virtual ~OreScatter() {}
 	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
 						u32 blockseed, v3s16 nmin, v3s16 nmax);
 };
 
 class OreSheet : public Ore {
-	~OreSheet() {}
+	virtual ~OreSheet() {}
 	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
 						u32 blockseed, v3s16 nmin, v3s16 nmax);
 };
 
-Ore *createOre(OreType type);
+class OreManager : public GenElementManager {
+public:
+	static const char *ELEMENT_TITLE;
+	static const size_t ELEMENT_LIMIT = 0x10000;
 
+	OreManager(IGameDef *gamedef) {}
+	~OreManager() {}
+
+	Ore *create(int type)
+	{
+		switch (type) {
+		case ORE_SCATTER:
+			return new OreScatter;
+		case ORE_SHEET:
+			return new OreSheet;
+		//case ORE_CLAYLIKE: //TODO: implement this!
+		//	return new OreClaylike;
+		default:
+			return NULL;
+		}
+	}
+
+	size_t placeAllOres(Mapgen *mg, u32 seed, v3s16 nmin, v3s16 nmax);
+};
 
 #endif

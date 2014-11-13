@@ -53,7 +53,7 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge) {
 	this->generating  = false;
 	this->id     = mapgenid;
 	this->emerge = emerge;
-	this->bmgr   = emerge->biomedef;
+	this->bmgr   = emerge->biomemgr;
 
 	this->seed        = (int)params->seed;
 	this->water_level = params->water_level;
@@ -250,16 +250,12 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 		dgen.generate(blockseed, full_node_min, full_node_max);
 	}
 
-	for (size_t i = 0; i != emerge->decorations.size(); i++) {
-		Decoration *deco = emerge->decorations[i];
-		deco->placeDeco(this, blockseed + i, node_min, node_max);
-	}
+	// Generate the registered decorations
+	emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
 
-	for (size_t i = 0; i != emerge->ores.size(); i++) {
-		Ore *ore = emerge->ores[i];
-		ore->placeOre(this, blockseed + i, node_min, node_max);
-	}
-	
+	// Generate the registered ores
+	emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+
 	// Sprinkle some dust on top after everything else was generated
 	dustTopNodes();
 	
@@ -538,11 +534,11 @@ void MapgenV7::generateBiomes() {
 	
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
-		Biome *biome  = bmgr->biomes[biomemap[index]];
+		Biome *biome  = (Biome *)bmgr->get(biomemap[index]);
 		s16 dfiller   = biome->depth_filler + noise_filler_depth->result[index];
 		s16 y0_top    = biome->depth_top;
 		s16 y0_filler = biome->depth_filler + biome->depth_top + dfiller;
-		
+
 		s16 nplaced = 0;
 		u32 i = vm->m_area.index(x, node_max.Y, z);	
 
@@ -607,7 +603,7 @@ void MapgenV7::dustTopNodes() {
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
-		Biome *biome = bmgr->biomes[biomemap[index]];
+		Biome *biome = (Biome *)bmgr->get(biomemap[index]);
 	
 		if (biome->c_dust == CONTENT_IGNORE)
 			continue;

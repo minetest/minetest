@@ -21,18 +21,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MG_DECORATION_HEADER
 
 #include <set>
-#include "mapnode.h"
+#include "mapgen.h"
 
 class NoiseParams;
 class Mapgen;
 class ManualMapVoxelManipulator;
 class PseudoRandom;
+class Schematic;
 
 enum DecorationType {
 	DECO_SIMPLE,
 	DECO_SCHEMATIC,
 	DECO_LSYSTEM
 };
+
+#define DECO_PLACE_CENTER_X 0x01
+#define DECO_PLACE_CENTER_Y 0x02
+#define DECO_PLACE_CENTER_Z 0x04
+
+extern FlagDesc flagdesc_deco_schematic[];
+
 
 #if 0
 struct CutoffData {
@@ -49,7 +57,7 @@ struct CutoffData {
 };
 #endif
 
-class Decoration {
+class Decoration : public GenElement {
 public:
 	INodeDefManager *ndef;
 
@@ -66,12 +74,11 @@ public:
 	Decoration();
 	virtual ~Decoration();
 
-	void placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
-	void placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+	size_t placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+	size_t placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 
 	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p) = 0;
 	virtual int getHeight() = 0;
-	virtual std::string getName() = 0;
 };
 
 class DecoSimple : public Decoration {
@@ -87,8 +94,21 @@ public:
 	bool canPlaceDecoration(ManualMapVoxelManipulator *vm, v3s16 p);
 	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
 	virtual int getHeight();
-	virtual std::string getName();
 };
+
+class DecoSchematic : public Decoration {
+public:
+	u32 flags;
+	Rotation rotation;
+	Schematic *schematic;
+	std::string filename;
+
+	~DecoSchematic() {}
+
+	void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
+	virtual int getHeight();
+};
+
 
 /*
 class DecoLSystem : public Decoration {
@@ -97,6 +117,29 @@ public:
 };
 */
 
-Decoration *createDecoration(DecorationType type);
+class DecorationManager : public GenElementManager {
+public:
+	static const char *ELEMENT_TITLE;
+	static const size_t ELEMENT_LIMIT = 0x10000;
+
+	DecorationManager(IGameDef *gamedef) {}
+	~DecorationManager() {}
+
+	Decoration *create(int type)
+	{
+		switch (type) {
+		case DECO_SIMPLE:
+			return new DecoSimple;
+		case DECO_SCHEMATIC:
+			return new DecoSchematic;
+		//case DECO_LSYSTEM:
+		//	return new DecoLSystem;
+		default:
+			return NULL;
+		}
+	}
+
+	size_t placeAllDecos(Mapgen *mg, u32 seed, v3s16 nmin, v3s16 nmax);
+};
 
 #endif

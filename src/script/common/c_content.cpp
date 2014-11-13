@@ -1009,86 +1009,98 @@ bool read_noiseparams_nc(lua_State *L, int index, NoiseParams *np)
 }
 
 /******************************************************************************/
-bool read_schematic(lua_State *L, int index, DecoSchematic *dschem, Server *server) {
+
+bool get_schematic(lua_State *L, int index, Schematic *schem,
+	INodeDefManager *ndef, std::map<std::string, std::string> &replace_names)
+{
 	if (index < 0)
 		index = lua_gettop(L) + 1 + index;
 
-	INodeDefManager *ndef = server->getNodeDefManager();
-
 	if (lua_istable(L, index)) {
-		lua_getfield(L, index, "size");
-		v3s16 size = read_v3s16(L, -1);
-		lua_pop(L, 1);
-		
-		int numnodes = size.X * size.Y * size.Z;
-		MapNode *schemdata = new MapNode[numnodes];
-		int i = 0;
-		
-		// Get schematic data
-		lua_getfield(L, index, "data");
-		luaL_checktype(L, -1, LUA_TTABLE);
-		
-		lua_pushnil(L);
-		while (lua_next(L, -2)) {
-			if (i < numnodes) {
-				// same as readnode, except param1 default is MTSCHEM_PROB_CONST
-				lua_getfield(L, -1, "name");
-				const char *name = luaL_checkstring(L, -1);
-				lua_pop(L, 1);
-				
-				u8 param1;
-				lua_getfield(L, -1, "param1");
-				param1 = !lua_isnil(L, -1) ? lua_tonumber(L, -1) : MTSCHEM_PROB_ALWAYS;
-				lua_pop(L, 1);
-	
-				u8 param2;
-				lua_getfield(L, -1, "param2");
-				param2 = !lua_isnil(L, -1) ? lua_tonumber(L, -1) : 0;
-				lua_pop(L, 1);
-				
-				schemdata[i] = MapNode(ndef, name, param1, param2);
-			}
-			
-			i++;
-			lua_pop(L, 1);
-		}
-		
-		if (i != numnodes) {
-			errorstream << "read_schematic: incorrect number of "
-				"nodes provided in raw schematic data (got " << i <<
-				", expected " << numnodes << ")." << std::endl;
-			return false;
-		}
-
-		u8 *sliceprobs = new u8[size.Y];
-		for (i = 0; i != size.Y; i++)
-			sliceprobs[i] = MTSCHEM_PROB_ALWAYS;
-
-		// Get Y-slice probability values (if present)
-		lua_getfield(L, index, "yslice_prob");
-		if (lua_istable(L, -1)) {
-			lua_pushnil(L);
-			while (lua_next(L, -2)) {
-				if (getintfield(L, -1, "ypos", i) && i >= 0 && i < size.Y) {
-					sliceprobs[i] = getintfield_default(L, -1,
-						"prob", MTSCHEM_PROB_ALWAYS);
-				}
-				lua_pop(L, 1);
-			}
-		}
-
-		dschem->size        = size;
-		dschem->schematic   = schemdata;
-		dschem->slice_probs = sliceprobs;
-
+		return read_schematic(L, index, schem, ndef, replace_names);
 	} else if (lua_isstring(L, index)) {
-		dschem->filename = std::string(lua_tostring(L, index));
+		NodeResolver *resolver = ndef->getResolver();
+		const char *filename = lua_tostring(L, index);
+		return schem->loadSchematicFromFile(filename, resolver, replace_names);
 	} else {
-		errorstream << "read_schematic: missing schematic "
-			"filename or raw schematic data" << std::endl;
 		return false;
 	}
+}
+
+bool read_schematic(lua_State *L, int index, Schematic *schem,
+	INodeDefManager *ndef, std::map<std::string, std::string> &replace_names)
+{
+	//// Get schematic size
+	lua_getfield(L, index, "size");
+	v3s16 size = read_v3s16(L, -1);
+	lua_pop(L, 1);
+
+	//// Get schematic data
+	lua_getfield(L, index, "data");
+	luaL_checktype(L, -1, LUA_TTABLE);
 	
+	int numnodes = size.X * size.Y * size.Z;
+	MapNode *schemdata = new MapNode[numnodes];
+	int i = 0;
+
+	lua_pushnil(L);
+	while (lua_next(L, -2)) {
+		if (i < numnodes) {
+			// same as readnode, except param1 default is MTSCHEM_PROB_CONST
+			lua_getfield(L, -1, "name");
+			std::string name = luaL_checkstring(L, -1);
+			lua_pop(L, 1);
+
+			u8 param1;
+			lua_getfield(L, -1, "param1");
+			param1 = !lua_isnil(L, -1) ? lua_tonumber(L, -1) : MTSCHEM_PROB_ALWAYS;
+			lua_pop(L, 1);
+
+			u8 param2;
+			lua_getfield(L, -1, "param2");
+			param2 = !lua_isnil(L, -1) ? lua_tonumber(L, -1) : 0;
+			lua_pop(L, 1);
+
+			std::map<std::string, std::string>::iterator it;
+			it = replace_names.find(name);
+			if (it != replace_names.end())
+				name = it->second;
+
+			schemdata[i] = MapNode(ndef, name, param1, param2);
+		}
+		
+		i++;
+		lua_pop(L, 1);
+	}
+
+	if (i != numnodes) {
+		errorstream << "read_schematic: incorrect number of "
+			"nodes provided in raw schematic data (got " << i <<
+			", expected " << numnodes << ")." << std::endl;
+		return false;
+	}
+
+	//// Get Y-slice probability values (if present)
+	u8 *slice_probs = new u8[size.Y];
+	for (i = 0; i != size.Y; i++)
+		slice_probs[i] = MTSCHEM_PROB_ALWAYS;
+
+	lua_getfield(L, index, "yslice_prob");
+	if (lua_istable(L, -1)) {
+		lua_pushnil(L);
+		while (lua_next(L, -2)) {
+			if (getintfield(L, -1, "ypos", i) && i >= 0 && i < size.Y) {
+				slice_probs[i] = getintfield_default(L, -1,
+					"prob", MTSCHEM_PROB_ALWAYS);
+			}
+			lua_pop(L, 1);
+		}
+	}
+
+	schem->flags       = 0;
+	schem->size        = size;
+	schem->schemdata   = schemdata;
+	schem->slice_probs = slice_probs;
 	return true;
 }
 

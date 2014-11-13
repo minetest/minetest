@@ -19,10 +19,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mg_ore.h"
 #include "mapgen.h"
+#include "noise.h"
 #include "util/numeric.h"
 #include "map.h"
 #include "log.h"
 
+const char *OreManager::ELEMENT_TITLE = "ore";
 
 FlagDesc flagdesc_ore[] = {
 	{"absheight",            OREFLAG_ABSHEIGHT},
@@ -31,23 +33,35 @@ FlagDesc flagdesc_ore[] = {
 	{NULL,                   0}
 };
 
+
 ///////////////////////////////////////////////////////////////////////////////
 
 
-Ore *createOre(OreType type)
+size_t OreManager::placeAllOres(Mapgen *mg, u32 seed, v3s16 nmin, v3s16 nmax)
 {
-	switch (type) {
-	case ORE_SCATTER:
-		return new OreScatter;
-	case ORE_SHEET:
-		return new OreSheet;
-	//case ORE_CLAYLIKE: //TODO: implement this!
-	//	return new OreClaylike;
-	default:
-		return NULL;
+	size_t nplaced = 0;
+
+	for (size_t i = 0; i != m_elements.size(); i++) {
+		Ore *ore = (Ore *)m_elements[i];
+		if (!ore)
+			continue;
+
+		nplaced += ore->placeOre(mg, seed, nmin, nmax);
+		seed++;
 	}
+
+	return nplaced;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+
+Ore::Ore()
+{
+	c_ore   = CONTENT_IGNORE;
+	np      = NULL;
+	noise   = NULL;
+}
 
 Ore::~Ore()
 {
@@ -56,7 +70,13 @@ Ore::~Ore()
 }
 
 
-void Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
+std::string Ore::getName()
+{
+	return name;
+}
+
+
+size_t Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 {
 	int in_range = 0;
 
@@ -64,7 +84,7 @@ void Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 	if (flags & OREFLAG_ABSHEIGHT)
 		in_range |= (nmin.Y >= -height_max && nmax.Y <= -height_min) << 1;
 	if (!in_range)
-		return;
+		return 0;
 
 	int ymin, ymax;
 	if (in_range & ORE_RANGE_MIRROR) {
@@ -75,11 +95,13 @@ void Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 		ymax = MYMIN(nmax.Y, height_max);
 	}
 	if (clust_size >= ymax - ymin + 1)
-		return;
+		return 0;
 
 	nmin.Y = ymin;
 	nmax.Y = ymax;
 	generate(mg->vm, mg->seed, blockseed, nmin, nmax);
+
+	return 0;
 }
 
 

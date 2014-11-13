@@ -537,16 +537,10 @@ void MapgenV6::makeChunk(BlockMakeData *data) {
 		placeTreesAndJungleGrass();
 	
 	// Generate the registered decorations
-	for (unsigned int i = 0; i != emerge->decorations.size(); i++) {
-		Decoration *deco = emerge->decorations[i];
-		deco->placeDeco(this, blockseed + i, node_min, node_max);
-	}
+	emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
 
 	// Generate the registered ores
-	for (unsigned int i = 0; i != emerge->ores.size(); i++) {
-		Ore *ore = emerge->ores[i];
-		ore->placeOre(this, blockseed + i, node_min, node_max);
-	}
+	emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Calculate lighting
 	if (flags & MG_LIGHT)

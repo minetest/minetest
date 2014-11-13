@@ -20,12 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MG_BIOME_HEADER
 #define MG_BIOME_HEADER
 
-#include <string>
-#include "nodedef.h"
-#include "gamedef.h"
-#include "mapnode.h"
-#include "noise.h"
 #include "mapgen.h"
+#include "noise.h"
+
+//#include <string>
+//#include "nodedef.h"
+//#include "gamedef.h"
+//#include "mapnode.h"
 
 enum BiomeTerrainType
 {
@@ -39,10 +40,16 @@ enum BiomeTerrainType
 extern NoiseParams nparams_biome_def_heat;
 extern NoiseParams nparams_biome_def_humidity;
 
-class Biome {
+
+struct BiomeNoiseInput {
+	v2s16 mapsize;
+	float *heat_map;
+	float *humidity_map;
+	s16 *height_map;
+};
+
+class Biome : public GenElement {
 public:
-	u8 id;
-	std::string name;
 	u32 flags;
 
 	content_t c_top;
@@ -60,33 +67,24 @@ public:
 	float humidity_point;
 };
 
-struct BiomeNoiseInput {
-	v2s16 mapsize;
-	float *heat_map;
-	float *humidity_map;
-	s16 *height_map;
-};
-
-class BiomeDefManager {
+class BiomeManager : public GenElementManager {
 public:
-	std::vector<Biome *> biomes;
+	static const char *ELEMENT_TITLE;
+	static const size_t ELEMENT_LIMIT = 0x100;
 
-	bool biome_registration_finished;
 	NoiseParams *np_heat;
 	NoiseParams *np_humidity;
 
-	BiomeDefManager(NodeResolver *resolver);
-	~BiomeDefManager();
+	BiomeManager(IGameDef *gamedef);
+	~BiomeManager();
 
-	Biome *createBiome(BiomeTerrainType btt);
-	void  calcBiomes(BiomeNoiseInput *input, u8 *biomeid_map);
+	Biome *create(int btt)
+	{
+		return new Biome;
+	}
+
+	void calcBiomes(BiomeNoiseInput *input, u8 *biomeid_map);
 	Biome *getBiome(float heat, float humidity, s16 y);
-
-	bool addBiome(Biome *b);
-	u8 getBiomeIdByName(const char *name);
-
-	s16 calcBlockHeat(v3s16 p, u64 seed, float timeofday, float totaltime);
-	s16 calcBlockHumidity(v3s16 p, u64 seed, float timeofday, float totaltime);
 };
 
 #endif

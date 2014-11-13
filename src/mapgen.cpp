@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "log.h"
 
+const char *GenElementManager::ELEMENT_TITLE = "element";
 
 FlagDesc flagdesc_mapgen[] = {
 	{"trees",    MG_TREES},
@@ -57,14 +58,8 @@ FlagDesc flagdesc_gennotify[] = {
 	{NULL,               0}
 };
 
-///////////////////////////////////////////////////////////////////////////////
-
-
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
-
 
 
 Mapgen::Mapgen() {
@@ -283,10 +278,85 @@ void Mapgen::calcLightingOld(v3s16 nmin, v3s16 nmax) {
 		std::map<v3s16, u8> unlight_from;
 
 		voxalgo::clearLightAndCollectSources(*vm, a, bank, ndef,
-											 light_sources, unlight_from);
+			light_sources, unlight_from);
 		voxalgo::propagateSunlight(*vm, a, sunlight, light_sources, ndef);
 
 		vm->unspreadLight(bank, unlight_from, light_sources, ndef);
 		vm->spreadLight(bank, light_sources, ndef);
 	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+
+GenElementManager::~GenElementManager()
+{
+	for (size_t i = 0; i != m_elements.size(); i++)
+		delete m_elements[i];
+}
+
+
+u32 GenElementManager::add(GenElement *elem)
+{
+	size_t nelem = m_elements.size();
+
+	for (size_t i = 0; i != nelem; i++) {
+		if (m_elements[i] == NULL) {
+			elem->id = i;
+			m_elements[i] = elem;
+			return i;
+		}
+	}
+
+	if (nelem >= this->ELEMENT_LIMIT)
+		return -1;
+
+	elem->id = nelem;
+	m_elements.push_back(elem);
+
+	verbosestream << "GenElementManager: added " << this->ELEMENT_TITLE
+		<< " element '" << elem->name << "'" << std::endl;
+
+	return nelem;
+}
+
+
+GenElement *GenElementManager::get(u32 id)
+{
+	return (id < m_elements.size()) ? m_elements[id] : NULL;
+}
+
+
+GenElement *GenElementManager::getByName(const char *name)
+{
+	for (size_t i = 0; i != m_elements.size(); i++) {
+		GenElement *elem = m_elements[i];
+		if (elem && !strcmp(elem->name.c_str(), name))
+			return elem;
+	}
+
+	return NULL;
+}
+
+GenElement *GenElementManager::getByName(std::string &name)
+{
+	return getByName(name.c_str());
+}
+
+
+GenElement *GenElementManager::update(u32 id, GenElement *elem)
+{
+	if (id >= m_elements.size())
+		return false;
+
+	GenElement *old_elem = m_elements[id];
+	m_elements[id] = elem;
+	return old_elem;
+}
+
+
+GenElement *GenElementManager::remove(u32 id)
+{
+	return update(id, NULL);
 }

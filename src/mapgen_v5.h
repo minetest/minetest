@@ -50,7 +50,7 @@ struct MapgenV5Params : public MapgenSpecificParams {
 class MapgenV5 : public Mapgen {
 public:
 	EmergeManager *emerge;
-	BiomeDefManager *bmgr;
+	BiomeManager *bmgr;
 
 	int ystride;
 	int zstride;

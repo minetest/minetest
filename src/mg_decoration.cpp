@@ -20,26 +20,42 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mg_decoration.h"
 #include "mg_schematic.h"
 #include "mapgen.h"
+#include "noise.h"
 #include "map.h"
 #include "log.h"
 #include "util/numeric.h"
 
+const char *DecorationManager::ELEMENT_TITLE = "decoration";
+
+FlagDesc flagdesc_deco_schematic[] = {
+	{"place_center_x", DECO_PLACE_CENTER_X},
+	{"place_center_y", DECO_PLACE_CENTER_Y},
+	{"place_center_z", DECO_PLACE_CENTER_Z},
+	{NULL,             0}
+};
+
+
 ///////////////////////////////////////////////////////////////////////////////
 
 
-Decoration *createDecoration(DecorationType type)
+size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 seed, v3s16 nmin, v3s16 nmax)
 {
-	switch (type) {
-	case DECO_SIMPLE:
-		return new DecoSimple;
-	case DECO_SCHEMATIC:
-		return new DecoSchematic;
-	//case DECO_LSYSTEM:
-	//	return new DecoLSystem;
-	default:
-		return NULL;
+	size_t nplaced = 0;
+
+	for (size_t i = 0; i != m_elements.size(); i++) {
+		Decoration *deco = (Decoration *)m_elements[i];
+		if (!deco)
+			continue;
+
+		nplaced += deco->placeDeco(mg, seed, nmin, nmax);
+		seed++;
 	}
+
+	return nplaced;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
 
 
 Decoration::Decoration()
@@ -57,7 +73,7 @@ Decoration::~Decoration()
 }
 
 
-void Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
+size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 {
 	PseudoRandom ps(blockseed + 53);
 	int carea_size = nmax.X - nmin.X + 1;
@@ -131,6 +147,8 @@ void Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 			generate(mg, &ps, max_y, v3s16(x, y, z));
 		}
 	}
+
+	return 0;
 }
 
 
@@ -189,6 +207,7 @@ void Decoration::placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 
 
 ///////////////////////////////////////////////////////////////////////////////
+
 
 bool DecoSimple::canPlaceDecoration(ManualMapVoxelManipulator *vm, v3s16 p)
 {
@@ -269,7 +288,33 @@ int DecoSimple::getHeight()
 }
 
 
-std::string DecoSimple::getName()
+///////////////////////////////////////////////////////////////////////////////
+
+
+void DecoSchematic::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p)
 {
-	return "";
+	ManualMapVoxelManipulator *vm = mg->vm;
+
+	if (flags & DECO_PLACE_CENTER_X)
+		p.X -= (schematic->size.X + 1) / 2;
+	if (flags & DECO_PLACE_CENTER_Y)
+		p.Y -= (schematic->size.Y + 1) / 2;
+	if (flags & DECO_PLACE_CENTER_Z)
+		p.Z -= (schematic->size.Z + 1) / 2;
+
+	u32 vi = vm->m_area.index(p);
+	content_t c = vm->m_data[vi].getContent();
+	if (!CONTAINS(c_place_on, c))
+		return;
+
+	Rotation rot = (rotation == ROTATE_RAND) ?
+		(Rotation)pr->range(ROTATE_0, ROTATE_270) : rotation;
+
+	schematic->blitToVManip(p, vm, rot, false, mg->ndef);
+}
+
+
+int DecoSchematic::getHeight()
+{
+	return schematic->size.Y;
 }

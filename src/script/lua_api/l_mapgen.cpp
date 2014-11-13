@@ -25,13 +25,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "server.h"
 #include "environment.h"
-#include "mg_biome.h"
 #include "emerge.h"
 #include "mg_biome.h"
 #include "mg_ore.h"
 #include "mg_decoration.h"
 #include "mg_schematic.h"
 #include "mapgen_v7.h"
+#include "settings.h"
 #include "main.h"
 #include "log.h"
 
@@ -85,7 +85,7 @@ struct EnumString ModApiMapgen::es_Rotation[] =
 
 
 static void read_schematic_replacements(lua_State *L,
-	std::map<std::string, std::string> replace_names, int index)
+	std::map<std::string, std::string> &replace_names, int index)
 {
 	lua_pushnil(L);
 	while (lua_next(L, index)) {
@@ -310,13 +310,13 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 	luaL_checktype(L, index, LUA_TTABLE);
 
 	NodeResolver *resolver = getServer(L)->getNodeDefManager()->getResolver();
-	BiomeDefManager *bmgr  = getServer(L)->getEmergeManager()->biomedef;
+	BiomeManager *bmgr     = getServer(L)->getEmergeManager()->biomemgr;
 
 	enum BiomeTerrainType terrain = (BiomeTerrainType)getenumfield(L, index,
 				"terrain_type", es_BiomeTerrainType, BIOME_TERRAIN_NORMAL);
-	Biome *b = bmgr->createBiome(terrain);
+	Biome *b = bmgr->create(terrain);
 
-	b->name           = getstringfield_default(L, index, "name", "<no name>");
+	b->name           = getstringfield_default(L, index, "name", "");
 	b->depth_top      = getintfield_default(L, index, "depth_top",    1);
 	b->depth_filler   = getintfield_default(L, index, "depth_filler", 3);
 	b->height_min     = getintfield_default(L, index, "height_min",   0);
@@ -325,7 +325,8 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 	b->humidity_point = getfloatfield_default(L, index, "humidity_point", 0.);
 	b->flags          = 0; //reserved
 
-	if (!bmgr->addBiome(b)) {
+	u32 id = bmgr->add(b);
+	if (id == (u32)-1) {
 		delete b;
 		return 0;
 	}
@@ -344,7 +345,8 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 
 	verbosestream << "register_biome: " << b->name << std::endl;
 
-	return 0;
+	lua_pushinteger(L, id);
+	return 1;
 }
 
 // register_decoration({lots of stuff})
@@ -353,20 +355,22 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	int index = 1;
 	luaL_checktype(L, index, LUA_TTABLE);
 
-	EmergeManager *emerge = getServer(L)->getEmergeManager();
-	BiomeDefManager *bdef = emerge->biomedef;
-	NodeResolver *resolver = getServer(L)->getNodeDefManager()->getResolver();
+	INodeDefManager *ndef      = getServer(L)->getNodeDefManager();
+	NodeResolver *resolver     = getServer(L)->getNodeDefManager()->getResolver();
+	DecorationManager *decomgr = getServer(L)->getEmergeManager()->decomgr;
+	BiomeManager *biomemgr     = getServer(L)->getEmergeManager()->biomemgr;
 
 	enum DecorationType decotype = (DecorationType)getenumfield(L, index,
 				"deco_type", es_DecorationType, -1);
 
-	Decoration *deco = createDecoration(decotype);
+	Decoration *deco = decomgr->create(decotype);
 	if (!deco) {
 		errorstream << "register_decoration: decoration placement type "
 			<< decotype << " not implemented";
 		return 0;
 	}
 	
+	deco->name       = getstringfield_default(L, index, "name", "");
 	deco->fill_ratio = getfloatfield_default(L, index, "fill_ratio", 0.02);
 	deco->sidelen    = getintfield_default(L, index, "sidelen", 8);
 	if (deco->sidelen <= 0) {
@@ -391,9 +395,11 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	std::vector<const char *> biome_list;
 	getstringlistfield(L, index, "biomes", biome_list);
 	for (size_t i = 0; i != biome_list.size(); i++) {
-		u8 biomeid = bdef->getBiomeIdByName(biome_list[i]);
-		if (biomeid)
-			deco->biomes.insert(biomeid);
+		Biome *b = (Biome *)biomemgr->getByName(biome_list[i]);
+		if (!b)
+			continue;
+
+		deco->biomes.insert(b->id);
 	}
 
 	//// Handle decoration type-specific parameters
@@ -403,7 +409,7 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 			success = regDecoSimple(L, resolver, (DecoSimple *)deco);
 			break;
 		case DECO_SCHEMATIC:
-			success = regDecoSchematic(L, resolver, (DecoSchematic *)deco);
+			success = regDecoSchematic(L, ndef, (DecoSchematic *)deco);
 			break;
 		case DECO_LSYSTEM:
 			break;
@@ -414,12 +420,14 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 		return 0;
 	}
 
-	emerge->decorations.push_back(deco);
+	u32 id = decomgr->add(deco);
+	if (id == (u32)-1) {
+		delete deco;
+		return 0;
+	}
 
-	verbosestream << "register_decoration: decoration '" << deco->getName()
-		<< "' registered" << std::endl;
-
-	return 0;
+	lua_pushinteger(L, id);
+	return 1;
 }
 
 bool ModApiMapgen::regDecoSimple(lua_State *L,
@@ -461,8 +469,8 @@ bool ModApiMapgen::regDecoSimple(lua_State *L,
 	return true;
 }
 
-bool ModApiMapgen::regDecoSchematic(lua_State *L,
-		NodeResolver *resolver, DecoSchematic *deco)
+bool ModApiMapgen::regDecoSchematic(lua_State *L, INodeDefManager *ndef,
+	DecoSchematic *deco)
 {
 	int index = 1;
 
@@ -478,19 +486,16 @@ bool ModApiMapgen::regDecoSchematic(lua_State *L,
 		read_schematic_replacements(L, replace_names, lua_gettop(L));
 	lua_pop(L, 1);
 
+	Schematic *schem = new Schematic;
 	lua_getfield(L, index, "schematic");
-	if (!read_schematic(L, -1, deco, getServer(L))) {
+	if (!get_schematic(L, -1, schem, ndef, replace_names)) {
 		lua_pop(L, 1);
+		delete schem;
 		return false;
 	}
 	lua_pop(L, 1);
 
-	if (!deco->filename.empty() &&
-		!deco->loadSchematicFile(resolver, replace_names)) {
-		errorstream << "register_decoration: failed to load schematic"
-			" file '" << deco->filename << "'" << std::endl;
-		return false;
-	}
+	deco->schematic = schem;
 
 	return true;
 }
@@ -501,25 +506,25 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	int index = 1;
 	luaL_checktype(L, index, LUA_TTABLE);
 
-	EmergeManager *emerge  = getServer(L)->getEmergeManager();
 	NodeResolver *resolver = getServer(L)->getNodeDefManager()->getResolver();
+	OreManager *oremgr     = getServer(L)->getEmergeManager()->oremgr;
 
 	enum OreType oretype = (OreType)getenumfield(L, index,
 				"ore_type", es_OreType, ORE_SCATTER);
-	Ore *ore = createOre(oretype);
+	Ore *ore = oremgr->create(oretype);
 	if (!ore) {
-		errorstream << "register_ore: ore_type "
-			<< oretype << " not implemented";
+		errorstream << "register_ore: ore_type " << oretype << " not implemented";
 		return 0;
 	}
 
+	ore->name           = getstringfield_default(L, index, "name", "");
 	ore->ore_param2     = (u8)getintfield_default(L, index, "ore_param2", 0);
 	ore->clust_scarcity = getintfield_default(L, index, "clust_scarcity", 1);
 	ore->clust_num_ores = getintfield_default(L, index, "clust_num_ores", 1);
 	ore->clust_size     = getintfield_default(L, index, "clust_size", 0);
 	ore->height_min     = getintfield_default(L, index, "height_min", 0);
 	ore->height_max     = getintfield_default(L, index, "height_max", 0);
-	ore->nthresh        = getfloatfield_default(L, index, "noise_threshhold", 0.);
+	ore->nthresh        = getfloatfield_default(L, index, "noise_threshhold", 0);
 	ore->noise          = NULL;
 	ore->flags          = 0;
 
@@ -536,6 +541,12 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	ore->np = read_noiseparams(L, -1);
 	lua_pop(L, 1);
 
+	u32 id = oremgr->add(ore);
+	if (id == (u32)-1) {
+		delete ore;
+		return 0;
+	}
+
 	std::vector<const char *> wherein_names;
 	getstringlistfield(L, index, "wherein", wherein_names);
 	for (size_t i = 0; i != wherein_names.size(); i++)
@@ -544,17 +555,14 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	resolver->addNode(getstringfield_default(L, index, "ore", ""),
 		"", CONTENT_AIR, &ore->c_ore);
 
-	emerge->ores.push_back(ore);
-
-	//verbosestream << "register_ore: ore '" << ore->ore_name
-	//	<< "' registered" << std::endl;
-	return 0;
+	lua_pushinteger(L, id);
+	return 1;
 }
 
 // create_schematic(p1, p2, probability_list, filename)
 int ModApiMapgen::l_create_schematic(lua_State *L)
 {
-	DecoSchematic dschem;
+	Schematic schem;
 
 	Map *map = &(getEnv(L)->getMap());
 	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
@@ -594,20 +602,19 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 		}
 	}
 
-	const char *s = lua_tostring(L, 4);
-	dschem.filename = std::string(s ? s : "");
+	const char *filename = luaL_checkstring(L, 4);
 
-	if (!dschem.getSchematicFromMap(map, p1, p2)) {
+	if (!schem.getSchematicFromMap(map, p1, p2)) {
 		errorstream << "create_schematic: failed to get schematic "
 			"from map" << std::endl;
 		return 0;
 	}
 
-	dschem.applyProbabilities(p1, &prob_list, &slice_prob_list);
+	schem.applyProbabilities(p1, &prob_list, &slice_prob_list);
 
-	dschem.saveSchematicFile(ndef);
+	schem.saveSchematicToFile(filename, ndef);
 	actionstream << "create_schematic: saved schematic file '"
-		<< dschem.filename << "'." << std::endl;
+		<< filename << "'." << std::endl;
 
 	return 1;
 }
@@ -615,38 +622,36 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 // place_schematic(p, schematic, rotation, replacement)
 int ModApiMapgen::l_place_schematic(lua_State *L)
 {
-	DecoSchematic dschem;
+	Schematic schem;
 
 	Map *map = &(getEnv(L)->getMap());
-	NodeResolver *resolver = getServer(L)->getNodeDefManager()->getResolver();
+	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
 
+	//// Read position
 	v3s16 p = read_v3s16(L, 1);
-	if (!read_schematic(L, 2, &dschem, getServer(L)))
-		return 0;
 
+	//// Read rotation
 	int rot = ROTATE_0;
 	if (lua_isstring(L, 3))
 		string_to_enum(es_Rotation, rot, std::string(lua_tostring(L, 3)));
 
-	dschem.rotation = (Rotation)rot;
-
-	std::map<std::string, std::string> replace_names;
-	if (lua_istable(L, 4))
-		read_schematic_replacements(L, replace_names, 4);
-
+	//// Read force placement
 	bool force_placement = true;
 	if (lua_isboolean(L, 5))
 		force_placement = lua_toboolean(L, 5);
 
-	if (!dschem.filename.empty()) {
-		if (!dschem.loadSchematicFile(resolver, replace_names)) {
-			errorstream << "place_schematic: failed to load schematic file '"
-				<< dschem.filename << "'" << std::endl;
-			return 0;
-		}
+	//// Read node replacements
+	std::map<std::string, std::string> replace_names;
+	if (lua_istable(L, 4))
+		read_schematic_replacements(L, replace_names, 4);
+
+	//// Read schematic
+	if (!get_schematic(L, 2, &schem, ndef, replace_names)) {
+		errorstream << "place_schematic: failed to get schematic" << std::endl;
+		return 0;
 	}
 
-	dschem.placeStructure(map, p, force_placement);
+	schem.placeStructure(map, p, 0, (Rotation)rot, force_placement, ndef);
 
 	return 1;
 }

@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPGENV6_HEADER
 
 #include "mapgen.h"
+#include "noise.h"
 
 #define AVERAGE_MUD_AMOUNT 4
 
