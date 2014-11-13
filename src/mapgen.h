@@ -136,7 +136,7 @@ struct MapgenFactory {
 
 class GenElement {
 public:
-	uint32_t id;
+	u32 id;
 	std::string name;
 };
 
