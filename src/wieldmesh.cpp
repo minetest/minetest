@@ -17,12 +17,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "main.h"
+#include "settings.h"
 #include "wieldmesh.h"
 #include "inventory.h"
 #include "gamedef.h"
 #include "itemdef.h"
 #include "nodedef.h"
 #include "mesh.h"
+#include "mapblock_mesh.h"
 #include "tile.h"
 #include "log.h"
 #include "util/numeric.h"
@@ -106,17 +109,6 @@ static scene::IMesh* createExtrusionMesh(int resolution_x, int resolution_y)
 		u16 indices[12] = {0,1,2,2,3,0,4,5,6,6,7,4};
 		buf->append(vertices, 8, indices, 12);
 	}
-
-	// Define default material
-	video::SMaterial *material = &buf->getMaterial();
-	material->MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-	material->BackfaceCulling = true;
-	material->setFlag(video::EMF_LIGHTING, false);
-	material->setFlag(video::EMF_BILINEAR_FILTER, false);
-	material->setFlag(video::EMF_TRILINEAR_FILTER, false);
-	// anisotropic filtering removes "thin black line" artifacts
-	material->setFlag(video::EMF_ANISOTROPIC_FILTER, true);
-	material->setFlag(video::EMF_TEXTURE_WRAP, false);
 
 	// Create mesh object
 	scene::SMesh *mesh = new scene::SMesh();
@@ -209,9 +201,14 @@ WieldMeshSceneNode::WieldMeshSceneNode(
 ):
 	scene::ISceneNode(parent, mgr, id),
 	m_meshnode(NULL),
+	m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF),
 	m_lighting(lighting),
 	m_bounding_box(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 {
+	m_enable_shaders = g_settings->getBool("enable_shaders");
+	m_bilinear_filter = g_settings->getBool("bilinear_filter");
+	m_trilinear_filter = g_settings->getBool("trilinear_filter");
+
 	// If this is the first wield mesh scene node, create a cache
 	// for extrusion meshes (and a cube mesh), otherwise reuse it
 	if (g_extrusion_mesh_cache == NULL)
@@ -251,7 +248,12 @@ void WieldMeshSceneNode::setCube(const TileSpec tiles[6],
 	for (u32 i = 0; i < m_meshnode->getMaterialCount(); ++i) {
 		assert(i < 6);
 		video::SMaterial &material = m_meshnode->getMaterial(i);
-		material.setTexture(0, tiles[i].texture);
+		if (tiles[i].animation_frame_count == 1) {
+			material.setTexture(0, tiles[i].texture);
+		} else {
+			FrameSpec animation_frame = tiles[i].frames.find(0)->second;
+			material.setTexture(0, animation_frame.texture);
+		}
 		tiles[i].applyMaterialOptions(material);
 	}
 }
@@ -264,37 +266,55 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		changeToMesh(NULL);
 		return;
 	}
-
-	scene::IMesh *mesh = g_extrusion_mesh_cache->create(texture->getSize());
+	core::dimension2d<u32> dim = texture->getSize();
+	scene::IMesh *mesh = g_extrusion_mesh_cache->create(dim);
 	changeToMesh(mesh);
 	mesh->drop();
 
 	m_meshnode->setScale(wield_scale * WIELD_SCALE_FACTOR_EXTRUDED);
 
 	// Customize material
-	assert(m_meshnode->getMaterialCount() == 1);
 	video::SMaterial &material = m_meshnode->getMaterial(0);
 	material.setTexture(0, texture);
+	material.MaterialType = m_material_type;
+	material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+	// Enable filtering only for high resolution texures
+	if (dim.Width > 32) {
+		material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
+		material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
+	} else {
+		material.setFlag(video::EMF_BILINEAR_FILTER, false);
+		material.setFlag(video::EMF_TRILINEAR_FILTER, false);
+	}
+	// anisotropic filtering removes "thin black line" artifacts
+	material.setFlag(video::EMF_ANISOTROPIC_FILTER, true);
+	if (m_enable_shaders) 
+		material.setTexture(2, tsrc->getTexture("disable_img.png"));
 }
 
 void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 {
 	ITextureSource *tsrc = gamedef->getTextureSource();
 	IItemDefManager *idef = gamedef->getItemDefManager();
-
+	IShaderSource *shdrsrc = gamedef->getShaderSource();
+	INodeDefManager *ndef = gamedef->getNodeDefManager();
 	const ItemDefinition &def = item.getDefinition(idef);
+	const ContentFeatures &f = ndef->get(def.name);
+	content_t id = ndef->getId(def.name);
+
+	if (m_enable_shaders) {
+		u32 shader_id = shdrsrc->getShader("nodes_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
+		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
+	}
 
 	// If wield_image is defined, it overrides everything else
 	if (def.wield_image != "") {
 		setExtruded(def.wield_image, def.wield_scale, tsrc);
 		return;
 	}
-
 	// Handle nodes
 	// See also CItemDefManager::createClientCached()
-	if (def.type == ITEM_NODE) {
-		INodeDefManager *ndef = gamedef->getNodeDefManager();
-		const ContentFeatures &f = ndef->get(def.name);
+	else if (def.type == ITEM_NODE) {
 		if (f.mesh_ptr[0]) {
 			// e.g. mesh nodes and nodeboxes
 			changeToMesh(f.mesh_ptr[0]);
@@ -302,33 +322,54 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 			m_meshnode->setScale(
 					def.wield_scale * WIELD_SCALE_FACTOR
 					/ (BS * f.visual_scale));
-			// Customize materials
-			for (u32 i = 0; i < m_meshnode->getMaterialCount(); ++i) {
-				assert(i < 6);
-				video::SMaterial &material = m_meshnode->getMaterial(i);
-				material.setTexture(0, f.tiles[i].texture);
-				f.tiles[i].applyMaterialOptions(material);
-			}
-			return;
-		} else if (f.drawtype == NDT_NORMAL || f.drawtype == NDT_ALLFACES) {
-			setCube(f.tiles, def.wield_scale, tsrc);
-			return;
 		} else if (f.drawtype == NDT_AIRLIKE) {
 			changeToMesh(NULL);
-			return;
+		} else if (f.drawtype == NDT_PLANTLIKE) {
+			setExtruded(tsrc->getTextureName(f.tiles[0].texture_id), def.wield_scale, tsrc);
+		} else if (f.drawtype == NDT_NORMAL || f.drawtype == NDT_ALLFACES) {
+			setCube(f.tiles, def.wield_scale, tsrc);
+		} else {
+			MeshMakeData mesh_make_data(gamedef);
+			MapNode mesh_make_node(id, 255, 0);
+			mesh_make_data.fillSingleNode(&mesh_make_node);
+			MapBlockMesh mapblock_mesh(&mesh_make_data, v3s16(0, 0, 0));
+			changeToMesh(mapblock_mesh.getMesh());
+			translateMesh(m_meshnode->getMesh(), v3f(-BS, -BS, -BS));
+			m_meshnode->setScale(
+					def.wield_scale * WIELD_SCALE_FACTOR
+					/ (BS * f.visual_scale));	
 		}
-
-		// If none of the above standard cases worked, use the wield mesh from ClientCached
-		scene::IMesh *mesh = idef->getWieldMesh(item.name, gamedef);
-		if (mesh) {
-			changeToMesh(mesh);
-			m_meshnode->setScale(def.wield_scale * WIELD_SCALE_FACTOR);
-			return;
+		for (u32 i = 0; i < m_meshnode->getMaterialCount(); ++i) {
+			assert(i < 6);
+			video::SMaterial &material = m_meshnode->getMaterial(i);
+			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
+			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
+			bool animated = (f.tiles[i].animation_frame_count > 1);
+			if (animated) {
+				FrameSpec animation_frame = f.tiles[i].frames.find(0)->second;
+				material.setTexture(0, animation_frame.texture);
+			} else {
+				material.setTexture(0, f.tiles[i].texture);
+			}
+			material.MaterialType = m_material_type;
+			if (m_enable_shaders) {
+				if (f.tiles[i].normal_texture) {
+					if (animated) {
+						FrameSpec animation_frame = f.tiles[i].frames.find(0)->second;
+						material.setTexture(1, animation_frame.normal_texture);
+					} else {
+						material.setTexture(1, f.tiles[i].normal_texture);
+					}
+					material.setTexture(2, tsrc->getTexture("enable_img.png"));
+				} else {
+					material.setTexture(2, tsrc->getTexture("disable_img.png"));
+				}
+			}
 		}
+		return;
 	}
-
-	// default to inventory_image
-	if (def.inventory_image != "") {
+	else if (def.inventory_image != "") {
 		setExtruded(def.inventory_image, def.wield_scale, tsrc);
 		return;
 	}
@@ -376,5 +417,4 @@ void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 	// need to normalize normals when lighting is enabled (because of setScale())
 	m_meshnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, m_lighting);
 	m_meshnode->setVisible(true);
-
 }

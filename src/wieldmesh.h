@@ -58,9 +58,14 @@ private:
 
 	// Child scene node with the current wield mesh
 	scene::IMeshSceneNode *m_meshnode;
+	video::E_MATERIAL_TYPE m_material_type;
 
 	// True if EMF_LIGHTING should be enabled.
 	bool m_lighting;
+
+	bool m_enable_shaders;
+	bool m_bilinear_filter;
+	bool m_trilinear_filter;
 
 	// Bounding box culling is disabled for this type of scene node,
 	// so this variable is just required so we can implement
