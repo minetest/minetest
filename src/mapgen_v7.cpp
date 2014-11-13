@@ -72,6 +72,7 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge) {
 	this->ridge_heightmap = new s16[csize.X * csize.Z];
 
 	MapgenV7Params *sp = (MapgenV7Params *)params->sparams;
+	this->spflags = sp->spflags;
 
 	//// Terrain noise
 	noise_terrain_base    = new Noise(&sp->np_terrain_base,    seed, csize.X, csize.Z);

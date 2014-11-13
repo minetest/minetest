@@ -412,11 +412,11 @@ void MapgenV5::generateBiomes() {
 		
 		for (s16 y = node_max.Y; y >= node_min.Y; y--) {
 			content_t c = vm->m_data[i].getContent();
-			if ((c == c_stone || c == c_dirt_with_grass
-					|| c == c_dirt
-					|| c == c_sand
-					|| c == c_lava_source
-					|| c == c_gravel) && have_air) {
+			bool is_replaceable_content =
+				c == c_stone || c == c_dirt_with_grass || c == c_dirt ||
+				c == c_sand  || c == c_lava_source     || c == c_gravel;
+
+			if (is_replaceable_content && have_air) {
 				content_t c_below = vm->m_data[i - em.X].getContent();
 				
 				if (c_below != CONTENT_AIR) {
