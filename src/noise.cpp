@@ -215,7 +215,7 @@ float noise2d_gradient(float x, float y, int seed)
 }
 
 
-float noise3d_gradient(float x, float y, float z, int seed)
+float noise3d_gradient(float x, float y, float z, int seed, bool eased)
 {
 	// Calculate the integer coordinates
 	int x0 = myfloor(x);
@@ -235,10 +235,17 @@ float noise3d_gradient(float x, float y, float z, int seed)
 	float v011 = noise3d(x0,     y0 + 1, z0 + 1, seed);
 	float v111 = noise3d(x0 + 1, y0 + 1, z0 + 1, seed);
 	// Interpolate
-	return triLinearInterpolationNoEase(
-		v000, v100, v010, v110,
-		v001, v101, v011, v111,
-		xl, yl, zl);
+	if (eased) {
+		return triLinearInterpolation(
+			v000, v100, v010, v110,
+			v001, v101, v011, v111,
+			xl, yl, zl);
+	} else {
+		return triLinearInterpolationNoEase(
+			v000, v100, v010, v110,
+			v001, v101, v011, v111,
+			xl, yl, zl);
+	}
 }
 
 
@@ -275,14 +282,14 @@ float noise2d_perlin_abs(float x, float y, int seed,
 
 
 float noise3d_perlin(float x, float y, float z, int seed,
-		int octaves, float persistence)
+		int octaves, float persistence, bool eased)
 {
 	float a = 0;
 	float f = 1.0;
 	float g = 1.0;
 	for (int i = 0; i < octaves; i++)
 	{
-		a += g * noise3d_gradient(x * f, y * f, z * f, seed + i);
+		a += g * noise3d_gradient(x * f, y * f, z * f, seed + i, eased);
 		f *= 2.0;
 		g *= persistence;
 	}
@@ -291,14 +298,14 @@ float noise3d_perlin(float x, float y, float z, int seed,
 
 
 float noise3d_perlin_abs(float x, float y, float z, int seed,
-		int octaves, float persistence)
+		int octaves, float persistence, bool eased)
 {
 	float a = 0;
 	float f = 1.0;
 	float g = 1.0;
 	for (int i = 0; i < octaves; i++)
 	{
-		a += g * fabs(noise3d_gradient(x * f, y * f, z * f, seed + i));
+		a += g * fabs(noise3d_gradient(x * f, y * f, z * f, seed + i, eased));
 		f *= 2.0;
 		g *= persistence;
 	}

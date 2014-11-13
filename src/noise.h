@@ -134,7 +134,7 @@ float noise2d(int x, int y, int seed);
 float noise3d(int x, int y, int z, int seed);
 
 float noise2d_gradient(float x, float y, int seed);
-float noise3d_gradient(float x, float y, float z, int seed);
+float noise3d_gradient(float x, float y, float z, int seed, bool eased=false);
 
 float noise2d_perlin(float x, float y, int seed,
 		int octaves, float persistence);
@@ -143,10 +143,10 @@ float noise2d_perlin_abs(float x, float y, int seed,
 		int octaves, float persistence);
 
 float noise3d_perlin(float x, float y, float z, int seed,
-		int octaves, float persistence);
+		int octaves, float persistence, bool eased=false);
 
 float noise3d_perlin_abs(float x, float y, float z, int seed,
-		int octaves, float persistence);
+		int octaves, float persistence, bool eased=false);
 
 inline float easeCurve(float t) {
 	return t * t * t * (t * (6.f * t - 15.f) + 10.f);
@@ -181,6 +181,11 @@ float contour(float v);
 #define NoisePerlin3D(np, x, y, z, s) ((np)->offset + (np)->scale * \
 		noise3d_perlin((float)(x) / (np)->spread.X, (float)(y) / (np)->spread.Y, \
 		(float)(z) / (np)->spread.Z, (s) + (np)->seed, (np)->octaves, (np)->persist))
+
+#define NoisePerlin3DEased(np, x, y, z, s) ((np)->offset + (np)->scale * \
+		noise3d_perlin((float)(x) / (np)->spread.X, (float)(y) / (np)->spread.Y, \
+		(float)(z) / (np)->spread.Z, (s) + (np)->seed, (np)->octaves, \
+		(np)->persist), true)
 
 #endif
 
