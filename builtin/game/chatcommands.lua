@@ -630,6 +630,26 @@ core.register_chatcommand("time", {
 	end,
 })
 
+core.register_chatcommand("day", {
+	description = "set time of day to midday (12000)",
+	privs = {settime=true},
+	func = function(name, param)
+		core.set_timeofday(0.5)
+		core.log("action", name .. " sets time " .. 12000)
+		return true, "Time of day changed."
+	end,
+})
+
+core.register_chatcommand("night", {
+	description = "set time of day to night (0)",
+	privs = {settime=true},
+	func = function(name, param)
+		core.set_timeofday(0)
+		core.log("action", name .. " sets time " .. 0)
+		return true, "Time of day changed."
+	end,
+})
+
 core.register_chatcommand("shutdown", {
 	description = "shutdown server",
 	privs = {server=true},
