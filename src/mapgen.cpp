@@ -348,7 +348,7 @@ GenElement *GenElementManager::getByName(std::string &name)
 GenElement *GenElementManager::update(u32 id, GenElement *elem)
 {
 	if (id >= m_elements.size())
-		return false;
+		return NULL;
 
 	GenElement *old_elem = m_elements[id];
 	m_elements[id] = elem;

@@ -38,11 +38,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct EnumString ModApiMapgen::es_BiomeTerrainType[] =
 {
-	{BIOME_TERRAIN_NORMAL, "normal"},
-	{BIOME_TERRAIN_LIQUID, "liquid"},
-	{BIOME_TERRAIN_NETHER, "nether"},
-	{BIOME_TERRAIN_AETHER, "aether"},
-	{BIOME_TERRAIN_FLAT,   "flat"},
+	{BIOME_TYPE_NORMAL, "normal"},
+	{BIOME_TYPE_LIQUID, "liquid"},
+	{BIOME_TYPE_NETHER, "nether"},
+	{BIOME_TYPE_AETHER, "aether"},
+	{BIOME_TYPE_FLAT,   "flat"},
 	{0, NULL},
 };
 
@@ -312,9 +312,9 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 	NodeResolver *resolver = getServer(L)->getNodeDefManager()->getResolver();
 	BiomeManager *bmgr     = getServer(L)->getEmergeManager()->biomemgr;
 
-	enum BiomeTerrainType terrain = (BiomeTerrainType)getenumfield(L, index,
-				"terrain_type", es_BiomeTerrainType, BIOME_TERRAIN_NORMAL);
-	Biome *b = bmgr->create(terrain);
+	enum BiomeType biometype = (BiomeType)getenumfield(L, index, "type",
+		es_BiomeTerrainType, BIOME_TYPE_NORMAL);
+	Biome *b = bmgr->create(biometype);
 
 	b->name           = getstringfield_default(L, index, "name", "");
 	b->depth_top      = getintfield_default(L, index, "depth_top",    1);

@@ -73,7 +73,6 @@ public:
 	size_t placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
 						u32 blockseed, v3s16 nmin, v3s16 nmax) = 0;
-	virtual std::string getName();
 };
 
 class OreScatter : public Ore {

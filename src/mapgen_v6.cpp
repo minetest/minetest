@@ -312,7 +312,7 @@ bool MapgenV6::getHaveBeach(v2s16 p) {
 }
 
 
-BiomeType MapgenV6::getBiome(v2s16 p) {
+BiomeV6Type MapgenV6::getBiome(v2s16 p) {
 	int index = (p.Y - node_min.Z) * ystride + (p.X - node_min.X);
 	return getBiome(index, p);
 }
@@ -387,7 +387,7 @@ bool MapgenV6::getHaveBeach(int index)
 }
 
 
-BiomeType MapgenV6::getBiome(int index, v2s16 p)
+BiomeV6Type MapgenV6::getBiome(int index, v2s16 p)
 {
 	// Just do something very simple as for now
 	/*double d = noise2d_perlin(
@@ -608,7 +608,7 @@ int MapgenV6::generateGround() {
 		if (surface_y > stone_surface_max_y)
 			stone_surface_max_y = surface_y;
 
-		BiomeType bt = getBiome(index, v2s16(x, z));
+		BiomeV6Type bt = getBiome(index, v2s16(x, z));
 		
 		// Fill ground with stone
 		v3s16 em = vm->m_area.getExtent();
@@ -652,7 +652,7 @@ void MapgenV6::addMud() {
 		if (surface_y == vm->m_area.MinEdge.Y - 1)
 			continue;
 		
-		BiomeType bt = getBiome(index, v2s16(x, z));
+		BiomeV6Type bt = getBiome(index, v2s16(x, z));
 		addnode = (bt == BT_DESERT) ? n_desert_sand : n_dirt;
 
 		if (bt == BT_DESERT && surface_y + mud_add_amount <= water_level + 1) {

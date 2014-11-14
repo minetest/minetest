@@ -76,14 +76,15 @@ BiomeManager::~BiomeManager()
 
 
 // just a PoC, obviously needs optimization later on (precalculate this)
-void BiomeManager::calcBiomes(BiomeNoiseInput *input, u8 *biomeid_map)
+void BiomeManager::calcBiomes(s16 sx, s16 sy, float *heat_map,
+	float *humidity_map, s16 *height_map, u8 *biomeid_map)
 {
 	int i = 0;
-	for (int y = 0; y != input->mapsize.Y; y++) {
-		for (int x = 0; x != input->mapsize.X; x++, i++) {
-			float heat     = (input->heat_map[i] + 1) * 50;
-			float humidity = (input->humidity_map[i] + 1) * 50;
-			biomeid_map[i] = getBiome(heat, humidity, input->height_map[i])->id;
+	for (int y = 0; y != sy; y++) {
+		for (int x = 0; x != sx; x++, i++) {
+			float heat     = (heat_map[i] + 1) * 50;
+			float humidity = (humidity_map[i] + 1) * 50;
+			biomeid_map[i] = getBiome(heat, humidity, height_map[i])->id;
 		}
 	}
 }
@@ -96,10 +97,8 @@ Biome *BiomeManager::getBiome(float heat, float humidity, s16 y)
 
 	for (size_t i = 1; i < m_elements.size(); i++) {
 		b = (Biome *)m_elements[i];
-		if (!b || y > b->height_max || y < b->height_min) {
-			printf("not good - %p %d %d %d\n", b, y, b->height_max, b->height_min);
+		if (!b || y > b->height_max || y < b->height_min)
 			continue;
-		}
 
 		float d_heat     = heat     - b->heat_point;
 		float d_humidity = humidity - b->humidity_point;

@@ -233,12 +233,8 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 	updateHeightmap(node_min, node_max);
 	
 	// Calculate biomes
-	BiomeNoiseInput binput;
-	binput.mapsize      = v2s16(csize.X, csize.Z);
-	binput.heat_map     = noise_heat->result;
-	binput.humidity_map = noise_humidity->result;
-	binput.height_map   = heightmap;
-	bmgr->calcBiomes(&binput, biomemap);
+	bmgr->calcBiomes(csize.X, csize.Z, noise_heat->result,
+		noise_humidity->result, heightmap, biomemap);
 	
 	// Actually place the biome-specific nodes and what not
 	generateBiomes();

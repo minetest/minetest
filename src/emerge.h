@@ -42,7 +42,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class EmergeThread;
 class INodeDefManager;
 class Settings;
-//class ManualMapVoxelManipulator;
 
 class BiomeManager;
 class OreManager;

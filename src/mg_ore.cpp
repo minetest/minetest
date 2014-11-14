@@ -70,12 +70,6 @@ Ore::~Ore()
 }
 
 
-std::string Ore::getName()
-{
-	return name;
-}
-
-
 size_t Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 {
 	int in_range = 0;
