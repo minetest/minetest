@@ -168,18 +168,19 @@ void Particle::step(float dtime)
 void Particle::updateLight()
 {
 	u8 light = 0;
-	try{
-		v3s16 p = v3s16(
-			floor(m_pos.X+0.5),
-			floor(m_pos.Y+0.5),
-			floor(m_pos.Z+0.5)
-		);
-		MapNode n = m_env->getClientMap().getNode(p);
+	bool pos_ok;
+
+	v3s16 p = v3s16(
+		floor(m_pos.X+0.5),
+		floor(m_pos.Y+0.5),
+		floor(m_pos.Z+0.5)
+	);
+	MapNode n = m_env->getClientMap().getNodeNoEx(p, &pos_ok);
+	if (pos_ok)
 		light = n.getLightBlend(m_env->getDayNightRatio(), m_gamedef->ndef());
-	}
-	catch(InvalidPositionException &e){
+	else
 		light = blend_light(m_env->getDayNightRatio(), LIGHT_SUN, 0);
-	}
+
 	m_light = decode_light(light);
 }
 

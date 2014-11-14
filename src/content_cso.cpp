@@ -60,13 +60,12 @@ public:
 		m_spritenode->setVisible(true);
 		m_spritenode->setSize(size);
 		/* Update brightness */
-		u8 light = 64;
-		try{
-			MapNode n = env->getMap().getNode(floatToInt(pos, BS));
-			light = decode_light(n.getLightBlend(env->getDayNightRatio(),
-					env->getGameDef()->ndef()));
-		}
-		catch(InvalidPositionException &e){}
+		u8 light;
+		bool pos_ok;
+		MapNode n = env->getMap().getNodeNoEx(floatToInt(pos, BS), &pos_ok);
+		light = pos_ok ? decode_light(n.getLightBlend(env->getDayNightRatio(),
+							env->getGameDef()->ndef()))
+		               : 64;
 		video::SColor color(255,light,light,light);
 		m_spritenode->setColor(color);
 	}
