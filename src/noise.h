@@ -187,7 +187,7 @@ float contour(float v);
 #define NoisePerlin3DEased(np, x, y, z, s) ((np)->offset + (np)->scale * \
 		noise3d_perlin((float)(x) / (np)->spread.X, (float)(y) / (np)->spread.Y, \
 		(float)(z) / (np)->spread.Z, (s) + (np)->seed, (np)->octaves, \
-		(np)->persist), true)
+		(np)->persist, true))
 
 #endif
 
