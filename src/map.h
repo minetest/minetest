@@ -481,8 +481,8 @@ public:
 	// Returns true if sector now resides in memory
 	//bool deFlushSector(v2s16 p2d);
 
-	bool saveBlock(MapBlock *block, Database *db);
 	bool saveBlock(MapBlock *block);
+	static bool saveBlock(MapBlock *block, Database *db);
 	// This will generate a sector with getSector if not found.
 	void loadBlock(std::string sectordir, std::string blockfile, MapSector *sector, bool save_after_load=false);
 	MapBlock* loadBlock(v3s16 p);

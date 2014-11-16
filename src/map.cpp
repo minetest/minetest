@@ -53,22 +53,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
-/*
-	SQLite format specification:
-	- Initially only replaces sectors/ and sectors2/
-
-	If map.sqlite does not exist in the save dir
-	or the block was not found in the database
-	the map will try to load from sectors folder.
-	In either case, map.sqlite will be created
-	and all future saves will save there.
-
-	Structure of map.sqlite:
-	Tables:
-		blocks
-			(PK) INT pos
-			BLOB data
-*/
 
 /*
 	Map
@@ -2031,25 +2015,26 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 	bool succeeded = conf.readConfigFile(conf_path.c_str());
 	if (!succeeded || !conf.exists("backend")) {
 		// fall back to sqlite3
-		dbase = new Database_SQLite3(this, savedir);
 		conf.set("backend", "sqlite3");
-	} else {
-		std::string backend = conf.get("backend");
-		if (backend == "dummy")
-			dbase = new Database_Dummy(this);
-		else if (backend == "sqlite3")
-			dbase = new Database_SQLite3(this, savedir);
-		#if USE_LEVELDB
-		else if (backend == "leveldb")
-			dbase = new Database_LevelDB(this, savedir);
-		#endif
-		#if USE_REDIS
-		else if (backend == "redis")
-			dbase = new Database_Redis(this, savedir);
-		#endif
-		else
-			throw BaseException("Unknown map backend");
 	}
+	std::string backend = conf.get("backend");
+	if (backend == "dummy")
+		dbase = new Database_Dummy();
+	else if (backend == "sqlite3")
+		dbase = new Database_SQLite3(savedir);
+	#if USE_LEVELDB
+	else if (backend == "leveldb")
+		dbase = new Database_LevelDB(savedir);
+	#endif
+	#if USE_REDIS
+	else if (backend == "redis")
+		dbase = new Database_Redis(conf);
+	#endif
+	else
+		throw BaseException("Unknown map backend");
+
+	if (!conf.updateConfigFile(conf_path.c_str()))
+		errorstream << "ServerMap::ServerMap(): Failed to update world.mt!" << std::endl;
 
 	m_savedir = savedir;
 	m_map_saving_enabled = false;
@@ -2828,7 +2813,8 @@ plan_b:
 }
 
 bool ServerMap::loadFromFolders() {
-	if(!dbase->Initialized() && !fs::PathExists(m_savedir + DIR_DELIM + "map.sqlite")) // ?
+	if(!dbase->initialized() &&
+			!fs::PathExists(m_savedir + DIR_DELIM + "map.sqlite"))
 		return true;
 	return false;
 }
@@ -2850,14 +2836,14 @@ std::string ServerMap::getSectorDir(v2s16 pos, int layout)
 	{
 		case 1:
 			snprintf(cc, 9, "%.4x%.4x",
-				(unsigned int)pos.X&0xffff,
-				(unsigned int)pos.Y&0xffff);
+				(unsigned int) pos.X & 0xffff,
+				(unsigned int) pos.Y & 0xffff);
 
 			return m_savedir + DIR_DELIM + "sectors" + DIR_DELIM + cc;
 		case 2:
-			snprintf(cc, 9, "%.3x" DIR_DELIM "%.3x",
-				(unsigned int)pos.X&0xfff,
-				(unsigned int)pos.Y&0xfff);
+			snprintf(cc, 9, (std::string("%.3x") + DIR_DELIM + "%.3x").c_str(),
+				(unsigned int) pos.X & 0xfff,
+				(unsigned int) pos.Y & 0xfff);
 
 			return m_savedir + DIR_DELIM + "sectors2" + DIR_DELIM + cc;
 		default:
@@ -2881,10 +2867,10 @@ v2s16 ServerMap::getSectorPos(std::string dirname)
 	{
 		// New layout
 		fs::RemoveLastPathComponent(dirname, &component, 2);
-		r = sscanf(component.c_str(), "%3x" DIR_DELIM "%3x", &x, &y);
+		r = sscanf(component.c_str(), (std::string("%3x") + DIR_DELIM + "%3x").c_str(), &x, &y);
 		// Sign-extend the 12 bit values up to 16 bits...
-		if(x&0x800) x|=0xF000;
-		if(y&0x800) y|=0xF000;
+		if(x & 0x800) x |= 0xF000;
+		if(y & 0x800) y |= 0xF000;
 	}
 	else
 	{
@@ -3299,7 +3285,7 @@ bool ServerMap::saveBlock(MapBlock *block, Database *db)
 
 	std::string data = o.str();
 	bool ret = db->saveBlock(p3d, data);
-	if(ret) {
+	if (ret) {
 		// We just wrote it to the disk so clear modified flag
 		block->resetModified();
 	}
@@ -3311,7 +3297,7 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile,
 {
 	DSTACK(__FUNCTION_NAME);
 
-	std::string fullpath = sectordir+DIR_DELIM+blockfile;
+	std::string fullpath = sectordir + DIR_DELIM + blockfile;
 	try {
 
 		std::ifstream is(fullpath.c_str(), std::ios_base::binary);
@@ -3513,7 +3499,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 	*/
 
 	std::string blockfilename = getBlockFilename(blockpos);
-	if(fs::PathExists(sectordir+DIR_DELIM+blockfilename) == false)
+	if(fs::PathExists(sectordir + DIR_DELIM + blockfilename) == false)
 		return NULL;
 
 	/*

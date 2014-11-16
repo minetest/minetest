@@ -47,10 +47,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "version.h"
 #include "drawscene.h"
-#include "subgame.h"
-#include "server.h"
-#include "database.h"
 #include "database-sqlite3.h"
+#include "serialization.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -266,16 +264,13 @@ Client::Client(
 	m_time_of_day_update_timer(0),
 	m_recommended_send_interval(0.1),
 	m_removed_sounds_check_timer(0),
-	m_state(LC_Created)
+	m_state(LC_Created),
+	m_localdb(NULL)
 {
-	/*
-		Add local player
-	*/
-	{
-		Player *player = new LocalPlayer(this, playername);
+	// Add local player
+	m_env.addPlayer(new LocalPlayer(this, playername));
 
-		m_env.addPlayer(player);
-	}
+	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
 
 	m_cache_smooth_lighting = g_settings->getBool("smooth_lighting");
 	m_cache_enable_shaders  = g_settings->getBool("enable_shaders");
@@ -285,10 +280,10 @@ void Client::Stop()
 {
 	//request all client managed threads to stop
 	m_mesh_update_thread.Stop();
-	if (localdb != NULL) {
-		actionstream << "Local map saving ended" << std::endl;
-		localdb->endSave();
-		delete localserver;
+	// Save local server map
+	if (m_localdb) {
+		infostream << "Local map saving ended." << std::endl;
+		m_localdb->endSave();
 	}
 }
 
@@ -679,6 +674,13 @@ void Client::step(float dtime)
 			Send(pkt);
 		}
 	}
+
+	// Write server map
+	if (m_localdb && m_localdb_save_interval.step(dtime,
+			m_cache_save_interval)) {
+		m_localdb->endSave();
+		m_localdb->beginSave();
+	}
 }
 
 bool Client::loadMedia(const std::string &data, const std::string &filename)
@@ -813,34 +815,19 @@ void Client::initLocalMapSaving(const Address &address,
 		const std::string &hostname,
 		bool is_local_server)
 {
-	localdb = NULL;
-
-	if (!g_settings->getBool("enable_local_map_saving") || is_local_server)
+	if (!g_settings->getBool("enable_local_map_saving") || is_local_server) {
 		return;
+	}
 
 	const std::string world_path = porting::path_user
 		+ DIR_DELIM + "worlds"
 		+ DIR_DELIM + "server_"
 		+ hostname + "_" + to_string(address.getPort());
 
-	SubgameSpec gamespec;
+	fs::CreateAllDirs(world_path);
 
-	if (!getWorldExists(world_path)) {
-		gamespec = findSubgame(g_settings->get("default_game"));
-		if (!gamespec.isValid())
-			gamespec = findSubgame("minimal");
-	} else {
-		gamespec = findWorldSubgame(world_path);
-	}
-
-	if (!gamespec.isValid()) {
-		errorstream << "Couldn't find subgame for local map saving." << std::endl;
-		return;
-	}
-
-	localserver = new Server(world_path, gamespec, false, false);
-	localdb = new Database_SQLite3(&(ServerMap&)localserver->getMap(), world_path);
-	localdb->beginSave();
+	m_localdb = new Database_SQLite3(world_path);
+	m_localdb->beginSave();
 	actionstream << "Local map saving started, map will be saved at '" << world_path << "'" << std::endl;
 }
 
@@ -1663,7 +1650,8 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 		if (image) {
 			raw_image->copyTo(image);
 			irr::c8 filename[256];
-			snprintf(filename, sizeof(filename), "%s" DIR_DELIM "screenshot_%u.png",
+			snprintf(filename, sizeof(filename),
+				(std::string("%s") + DIR_DELIM + "screenshot_%u.png").c_str(),
 				 g_settings->get("screenshot_path").c_str(),
 				 device->getTimer()->getRealTime());
 			std::ostringstream sstr;

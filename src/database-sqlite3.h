@@ -27,35 +27,43 @@ extern "C" {
 	#include "sqlite3.h"
 }
 
-class ServerMap;
-
 class Database_SQLite3 : public Database
 {
 public:
-	Database_SQLite3(ServerMap *map, std::string savedir);
+	Database_SQLite3(const std::string &savedir);
+
 	virtual void beginSave();
 	virtual void endSave();
 
-	virtual bool saveBlock(v3s16 blockpos, std::string &data);
-	virtual std::string loadBlock(v3s16 blockpos);
-	virtual bool deleteBlock(v3s16 blockpos);
+	virtual bool saveBlock(const v3s16 &pos, const std::string &data);
+	virtual std::string loadBlock(const v3s16 &pos);
+	virtual bool deleteBlock(const v3s16 &pos);
 	virtual void listAllLoadableBlocks(std::vector<v3s16> &dst);
-	virtual int Initialized(void);
+	virtual bool initialized() const { return m_initialized; }
 	~Database_SQLite3();
-private:
-	ServerMap *srvmap;
-	std::string m_savedir;
-	sqlite3 *m_database;
-	sqlite3_stmt *m_database_read;
-	sqlite3_stmt *m_database_write;
-	sqlite3_stmt *m_database_delete;
-	sqlite3_stmt *m_database_list;
 
+private:
+	// Open the database
+	void openDatabase();
 	// Create the database structure
 	void createDatabase();
-	// Verify we can read/write to the database
+	// Open and initialize the database if needed
 	void verifyDatabase();
-	void createDirs(std::string path);
+
+	void bindPos(sqlite3_stmt *stmt, const v3s16 &pos, int index=1);
+
+	bool m_initialized;
+
+	std::string m_savedir;
+
+	sqlite3 *m_database;
+	sqlite3_stmt *m_stmt_read;
+	sqlite3_stmt *m_stmt_write;
+	sqlite3_stmt *m_stmt_list;
+	sqlite3_stmt *m_stmt_delete;
+	sqlite3_stmt *m_stmt_begin;
+	sqlite3_stmt *m_stmt_end;
 };
 
 #endif
+

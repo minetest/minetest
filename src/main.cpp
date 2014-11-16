@@ -914,52 +914,46 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 static bool migrate_database(const GameParams &game_params, const Settings &cmd_args,
 		Server *server)
 {
+	std::string migrate_to = cmd_args.get("migrate");
 	Settings world_mt;
-	bool success = world_mt.readConfigFile((game_params.world_path
-			+ DIR_DELIM + "world.mt").c_str());
+	std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
+	bool success = world_mt.readConfigFile(world_mt_path.c_str());
 	if (!success) {
 		errorstream << "Cannot read world.mt" << std::endl;
-		return false;
+		return 1;
 	}
-
 	if (!world_mt.exists("backend")) {
-		errorstream << "Please specify your current backend in world.mt file:"
-		            << std::endl << "	backend = {sqlite3|leveldb|redis|dummy}"
-		            << std::endl;
-		return false;
+		errorstream << "Please specify your current backend in world.mt:"
+			<< std::endl;
+		errorstream << "	backend = {sqlite3|leveldb|redis|dummy}"
+			<< std::endl;
+		return 1;
 	}
-
 	std::string backend = world_mt.get("backend");
 	Database *new_db;
-	std::string migrate_to = cmd_args.get("migrate");
-
 	if (backend == migrate_to) {
-		errorstream << "Cannot migrate: new backend is same as the old one"
-		            << std::endl;
-		return false;
+		errorstream << "Cannot migrate: new backend is same"
+			<<" as the old one" << std::endl;
+		return 1;
 	}
-
 	if (migrate_to == "sqlite3")
-		new_db = new Database_SQLite3(&(ServerMap&)server->getMap(),
-				game_params.world_path);
-#if USE_LEVELDB
+		new_db = new Database_SQLite3(game_params.world_path);
+	#if USE_LEVELDB
 	else if (migrate_to == "leveldb")
-		new_db = new Database_LevelDB(&(ServerMap&)server->getMap(),
-				game_params.world_path);
-#endif
-#if USE_REDIS
+		new_db = new Database_LevelDB(game_params.world_path);
+	#endif
+	#if USE_REDIS
 	else if (migrate_to == "redis")
-		new_db = new Database_Redis(&(ServerMap&)server->getMap(),
-				game_params.world_path);
-#endif
+		new_db = new Database_Redis(world_mt);
+	#endif
 	else {
-		errorstream << "Migration to " << migrate_to << " is not supported"
-		            << std::endl;
-		return false;
+		errorstream << "Migration to " << migrate_to
+			<< " is not supported" << std::endl;
+		return 1;
 	}
 
 	std::vector<v3s16> blocks;
-	ServerMap &old_map = ((ServerMap&)server->getMap());
+	ServerMap &old_map = (ServerMap &) server->getMap();
 	old_map.listAllLoadableBlocks(blocks);
 	int count = 0;
 	new_db->beginSave();
@@ -975,16 +969,15 @@ static bool migrate_database(const GameParams &game_params, const Settings &cmd_
 		}
 		++count;
 		if (count % 500 == 0)
-		   actionstream << "Migrated " << count << " blocks "
-			   << (100.0 * count / blocks.size()) << "% completed" << std::endl;
+			actionstream << "Migrated " << count << " blocks "
+				<< (100.0 * count / blocks.size()) << "% completed" << std::endl;
 	}
 	new_db->endSave();
 	delete new_db;
 
 	actionstream << "Successfully migrated " << count << " blocks" << std::endl;
 	world_mt.set("backend", migrate_to);
-	if (!world_mt.updateConfigFile(
-				(game_params.world_path+ DIR_DELIM + "world.mt").c_str()))
+	if (!world_mt.updateConfigFile(world_mt_path.c_str()))
 		errorstream << "Failed to update world.mt!" << std::endl;
 	else
 		actionstream << "world.mt updated" << std::endl;
