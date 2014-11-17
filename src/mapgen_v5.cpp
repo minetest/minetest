@@ -477,7 +477,8 @@ void MapgenV5::dustTopNodes() {
 				continue;
 				
 			vm->m_data[vi] = MapNode(biome->c_dust_water);
-		} else if (!ndef->get(c).buildable_to && c != CONTENT_IGNORE) {
+		} else if (!ndef->get(c).buildable_to && c != CONTENT_IGNORE
+				&& c != biome->c_dust) {
 			if (y == node_max.Y + 1)
 				continue;
 				
