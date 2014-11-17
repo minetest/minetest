@@ -66,6 +66,7 @@ private:
 	bool m_enable_shaders;
 	bool m_bilinear_filter;
 	bool m_trilinear_filter;
+	bool m_anisotropic_filter;
 
 	// Bounding box culling is disabled for this type of scene node,
 	// so this variable is just required so we can implement
