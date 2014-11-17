@@ -36,6 +36,8 @@
 	#define USE_REDIS 0
 #endif
 
+#define HAVE_ENDIAN_H 0
+
 #ifdef USE_CMAKE_CONFIG_H
 	#include "cmake_config.h"
 	#undef PROJECT_NAME
@@ -72,6 +74,8 @@
 	#define PRODUCT_VERSION_STRING CMAKE_PRODUCT_VERSION_STRING
 	#undef VERSION_EXTRA_STRING
 	#define VERSION_EXTRA_STRING CMAKE_VERSION_EXTRA_STRING
+	#undef HAVE_ENDIAN_H
+	#define HAVE_ENDIAN_H CMAKE_HAVE_ENDIAN_H
 #endif
 
 #ifdef __ANDROID__
