@@ -1505,6 +1505,7 @@ minetest.place_node(pos, node)
 ^ Place node with the same effects that a player would cause
 minetest.dig_node(pos)
 ^ Dig node with the same effects that a player would cause
+  Returns true if successful, false on failure (e.g. protected location)
 minetest.punch_node(pos)
 ^ Punch node with the same effects that a player would cause
 
