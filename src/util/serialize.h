@@ -21,8 +21,62 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define UTIL_SERIALIZE_HEADER
 
 #include "../irrlichttypes_bloated.h"
+#include "config.h"
+#if HAVE_ENDIAN_H
+#include <endian.h>
+#include <string.h> // for memcpy
+#endif
 #include <iostream>
 #include <string>
+
+#define FIXEDPOINT_FACTOR 1000.0f
+#define FIXEDPOINT_INVFACTOR (1.0f/FIXEDPOINT_FACTOR)
+
+#if HAVE_ENDIAN_H
+// use machine native byte swapping routines
+// Note: memcpy below is optimized out by modern compilers
+
+inline void writeU64(u8* data, u64 i)
+{
+	u64 val = htobe64(i);
+	memcpy(data, &val, 8);
+}
+
+inline void writeU32(u8* data, u32 i)
+{
+	u32 val = htobe32(i);
+	memcpy(data, &val, 4);
+}
+
+inline void writeU16(u8* data, u16 i)
+{
+	u16 val = htobe16(i);
+	memcpy(data, &val, 2);
+}
+
+inline u64 readU64(const u8* data)
+{
+	u64 val;
+	memcpy(&val, data, 8);
+	return be64toh(val);
+}
+
+inline u32 readU32(const u8* data)
+{
+	u32 val;
+	memcpy(&val, data, 4);
+	return be32toh(val);
+}
+
+inline u16 readU16(const u8* data)
+{
+	u16 val;
+	memcpy(&val, data, 2);
+	return be16toh(val);
+}
+
+#else
+// generic byte-swapping implementation
 
 inline void writeU64(u8 *data, u64 i)
 {
@@ -50,11 +104,6 @@ inline void writeU16(u8 *data, u16 i)
 	data[1] = ((i>> 0)&0xff);
 }
 
-inline void writeU8(u8 *data, u8 i)
-{
-	data[0] = ((i>> 0)&0xff);
-}
-
 inline u64 readU64(const u8 *data)
 {
 	return ((u64)data[0]<<56) | ((u64)data[1]<<48)
@@ -71,6 +120,13 @@ inline u32 readU32(const u8 *data)
 inline u16 readU16(const u8 *data)
 {
 	return (data[0]<<8) | (data[1]<<0);
+}
+
+#endif
+
+inline void writeU8(u8 *data, u8 i)
+{
+	data[0] = ((i>> 0)&0xff);
 }
 
 inline u8 readU8(const u8 *data)
@@ -100,10 +156,10 @@ inline s8 readS8(const u8 *data){
 }
 
 inline void writeF1000(u8 *data, f32 i){
-	writeS32(data, i*1000);
+	writeS32(data, i*FIXEDPOINT_FACTOR);
 }
 inline f32 readF1000(const u8 *data){
-	return (f32)readS32(data)/1000.;
+	return (f32)readS32(data)*FIXEDPOINT_INVFACTOR;
 }
 
 inline void writeV3S32(u8 *data, v3s32 p)
@@ -195,20 +251,12 @@ inline v3s16 readV3S16(const u8 *data)
 
 inline void writeARGB8(u8 *data, video::SColor p)
 {
-	writeU8(&data[0], p.getAlpha());
-	writeU8(&data[1], p.getRed());
-	writeU8(&data[2], p.getGreen());
-	writeU8(&data[3], p.getBlue());
+	writeU32(data, p.color);
 }
 
 inline video::SColor readARGB8(const u8 *data)
 {
-	video::SColor p(
-		readU8(&data[0]),
-		readU8(&data[1]),
-		readU8(&data[2]),
-		readU8(&data[3])
-	);
+	video::SColor p(readU32(data));
 	return p;
 }
 
@@ -218,7 +266,7 @@ inline video::SColor readARGB8(const u8 *data)
 
 inline void writeU8(std::ostream &os, u8 p)
 {
-	char buf[1] = {0};
+	char buf[1];
 	writeU8((u8*)buf, p);
 	os.write(buf, 1);
 }
@@ -231,7 +279,7 @@ inline u8 readU8(std::istream &is)
 
 inline void writeU16(std::ostream &os, u16 p)
 {
-	char buf[2] = {0};
+	char buf[2];
 	writeU16((u8*)buf, p);
 	os.write(buf, 2);
 }
@@ -244,7 +292,7 @@ inline u16 readU16(std::istream &is)
 
 inline void writeU32(std::ostream &os, u32 p)
 {
-	char buf[4] = {0};
+	char buf[4];
 	writeU32((u8*)buf, p);
 	os.write(buf, 4);
 }
@@ -257,46 +305,34 @@ inline u32 readU32(std::istream &is)
 
 inline void writeS32(std::ostream &os, s32 p)
 {
-	char buf[4] = {0};
-	writeS32((u8*)buf, p);
-	os.write(buf, 4);
+	writeU32(os, (u32) p);
 }
 inline s32 readS32(std::istream &is)
 {
-	char buf[4] = {0};
-	is.read(buf, 4);
-	return readS32((u8*)buf);
+	return (s32)readU32(is);
 }
 
 inline void writeS16(std::ostream &os, s16 p)
 {
-	char buf[2] = {0};
-	writeS16((u8*)buf, p);
-	os.write(buf, 2);
+	writeU16(os, (u16) p);
 }
 inline s16 readS16(std::istream &is)
 {
-	char buf[2] = {0};
-	is.read(buf, 2);
-	return readS16((u8*)buf);
+	return (s16)readU16(is);
 }
 
 inline void writeS8(std::ostream &os, s8 p)
 {
-	char buf[1] = {0};
-	writeS8((u8*)buf, p);
-	os.write(buf, 1);
+	writeU8(os, (u8) p);
 }
 inline s8 readS8(std::istream &is)
 {
-	char buf[1] = {0};
-	is.read(buf, 1);
-	return readS8((u8*)buf);
+	return (s8)readU8(is);
 }
 
 inline void writeF1000(std::ostream &os, f32 p)
 {
-	char buf[4] = {0};
+	char buf[4];
 	writeF1000((u8*)buf, p);
 	os.write(buf, 4);
 }
@@ -322,7 +358,7 @@ inline v3f readV3F1000(std::istream &is)
 
 inline void writeV2F1000(std::ostream &os, v2f p)
 {
-	char buf[8] = {0};
+	char buf[8];
 	writeV2F1000((u8*)buf, p);
 	os.write(buf, 8);
 }
@@ -335,7 +371,7 @@ inline v2f readV2F1000(std::istream &is)
 
 inline void writeV2S16(std::ostream &os, v2s16 p)
 {
-	char buf[4] = {0};
+	char buf[4];
 	writeV2S16((u8*)buf, p);
 	os.write(buf, 4);
 }
@@ -348,7 +384,7 @@ inline v2s16 readV2S16(std::istream &is)
 
 inline void writeV2S32(std::ostream &os, v2s32 p)
 {
-	char buf[8] = {0};
+	char buf[8];
 	writeV2S32((u8*)buf, p);
 	os.write(buf, 8);
 }
@@ -361,7 +397,7 @@ inline v2s32 readV2S32(std::istream &is)
 
 inline void writeV3S16(std::ostream &os, v3s16 p)
 {
-	char buf[6] = {0};
+	char buf[6];
 	writeV3S16((u8*)buf, p);
 	os.write(buf, 6);
 }
@@ -374,7 +410,7 @@ inline v3s16 readV3S16(std::istream &is)
 
 inline void writeARGB8(std::ostream &os, video::SColor p)
 {
-	char buf[4] = {0};
+	char buf[4];
 	writeARGB8((u8*)buf, p);
 	os.write(buf, 4);
 }

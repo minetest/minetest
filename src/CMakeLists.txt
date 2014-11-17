@@ -2,6 +2,7 @@ project(minetest)
 cmake_minimum_required( VERSION 2.6 )
 
 INCLUDE(CheckCSourceRuns)
+INCLUDE(CheckIncludeFiles)
 
 # Set some random things default to not being visible in the GUI
 mark_as_advanced(EXECUTABLE_OUTPUT_PATH LIBRARY_OUTPUT_PATH)
@@ -312,6 +313,8 @@ if(ENABLE_REDIS)
 		message(STATUS "redis not found!")
 	endif(REDIS_LIBRARY AND REDIS_INCLUDE_DIR)
 endif(ENABLE_REDIS)
+
+CHECK_INCLUDE_FILES(endian.h HAVE_ENDIAN_H)
 
 configure_file(
 	"${PROJECT_SOURCE_DIR}/cmake_config.h.in"
