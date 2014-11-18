@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "connection.h"
 #include "serialization.h"
 #include "log.h"
-#include "porting.h"
+#include "gettime.h"
 #include "network/networkpacket.h"
 #include "util/serialize.h"
 #include "util/numeric.h"
@@ -982,7 +982,7 @@ void Peer::RTTStatistics(float rtt, std::string profiler_id,
 bool Peer::isTimedOut(float timeout)
 {
 	MutexAutoLock lock(m_exclusive_access_mutex);
-	u32 current_time = porting::getTimeMs();
+	u32 current_time = getTimeMs();
 
 	float dtime = CALC_DTIME(m_last_timeout_check,current_time);
 	m_last_timeout_check = current_time;
@@ -1277,7 +1277,7 @@ void * ConnectionSendThread::run()
 	LOG(dout_con<<m_connection->getDesc()
 			<<"ConnectionSend thread started"<<std::endl);
 
-	u32 curtime = porting::getTimeMs();
+	u32 curtime = getTimeMs();
 	u32 lasttime = curtime;
 
 	PROFILE(std::stringstream ThreadIdentifier);
@@ -1298,7 +1298,7 @@ void * ConnectionSendThread::run()
 		while(m_send_sleep_semaphore.wait(0)) {}
 
 		lasttime = curtime;
-		curtime = porting::getTimeMs();
+		curtime = getTimeMs();
 		float dtime = CALC_DTIME(lasttime,curtime);
 
 		/* first do all the reliable stuff */
@@ -1521,7 +1521,7 @@ void ConnectionSendThread::rawSend(const BufferedPacket &packet)
 void ConnectionSendThread::sendAsPacketReliable(BufferedPacket& p, Channel* channel)
 {
 	try{
-		p.absolute_send_time = porting::getTimeMs();
+		p.absolute_send_time = getTimeMs();
 		// Buffer the packet
 		channel->outgoing_reliables_sent.insert(p,
 			(channel->readOutgoingSequenceNumber() - MAX_RELIABLE_WINDOW_SIZE)
@@ -2047,7 +2047,7 @@ void * ConnectionReceiveThread::run()
 	PROFILE(ThreadIdentifier << "ConnectionReceive: [" << m_connection->getDesc() << "]");
 
 #ifdef DEBUG_CONNECTION_KBPS
-	u32 curtime = porting::getTimeMs();
+	u32 curtime = getTimeMs();
 	u32 lasttime = curtime;
 	float debug_print_timer = 0.0;
 #endif
@@ -2058,7 +2058,7 @@ void * ConnectionReceiveThread::run()
 
 #ifdef DEBUG_CONNECTION_KBPS
 		lasttime = curtime;
-		curtime = porting::getTimeMs();
+		curtime = getTimeMs();
 		float dtime = CALC_DTIME(lasttime,curtime);
 #endif
 
@@ -2391,7 +2391,7 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 				// only calculate rtt from straight sent packets
 				if (p.resend_count == 0) {
 					// Get round trip time
-					unsigned int current_time = porting::getTimeMs();
+					unsigned int current_time = getTimeMs();
 
 					// a overflow is quite unlikely but as it'd result in major
 					// rtt miscalculation we handle it here

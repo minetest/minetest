@@ -921,12 +921,12 @@ void Client::initLocalMapSaving(const Address &address,
 void Client::ReceiveAll()
 {
 	DSTACK(FUNCTION_NAME);
-	u32 start_ms = porting::getTimeMs();
+	u32 start_ms = getTimeMs();
 	for(;;)
 	{
 		// Limit time even if there would be huge amounts of data to
 		// process
-		if(porting::getTimeMs() > start_ms + 100)
+		if(getTimeMs() > start_ms + 100)
 			break;
 
 		try {

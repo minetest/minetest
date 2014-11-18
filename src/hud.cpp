@@ -24,6 +24,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "log.h"
 #include "client.h"
+#include "gamedef.h"
+#include "gettime.h"
+#include "itemdef.h"
 #include "inventory.h"
 #include "client/tile.h"
 #include "localplayer.h"
@@ -655,7 +658,7 @@ void drawItemStack(video::IVideoDriver *driver,
 				ti.mesh = mesh;
 				ti.time = getTimeMs();
 			} else {
-				delta = porting::getDeltaMs(ti.time, getTimeMs()) % 100000;
+				delta = getDeltaMs(ti.time, getTimeMs()) % 100000;
 			}
 		}
 		core::rect<s32> oldViewPort = driver->getViewPort();
