@@ -14,7 +14,7 @@ msgstr ""
 "Language-Team: Bahasa Indonesia <>\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: builtin/gamemgr.lua:23
@@ -688,7 +688,6 @@ msgstr "Tombol X 1"
 
 #: src/keycode.cpp:224
 msgid "Back"
-## Windows keyboard
 msgstr "Backspace"
 
 #: src/keycode.cpp:224
@@ -697,7 +696,6 @@ msgstr "Bersihkan"
 
 #: src/keycode.cpp:224
 msgid "Return"
-## Windows keyboard
 msgstr "Enter"
 
 #: src/keycode.cpp:224
@@ -710,12 +708,10 @@ msgstr "Tombol X 2"
 
 #: src/keycode.cpp:225
 msgid "Capital"
-## Windows keyboard
 msgstr "Caps Lock"
 
 #: src/keycode.cpp:225
 msgid "Control"
-## Windows keyboard
 msgstr "Ctrl"
 
 #: src/keycode.cpp:225
@@ -724,7 +720,6 @@ msgstr "Kana"
 
 #: src/keycode.cpp:225
 msgid "Menu"
-## Windows keyboard
 msgstr "Alt"
 
 #: src/keycode.cpp:225
@@ -741,7 +736,6 @@ msgstr "Convert"
 
 #: src/keycode.cpp:226
 msgid "Escape"
-## Windows keyboard
 msgstr "Esc"
 
 #: src/keycode.cpp:226
@@ -774,12 +768,10 @@ msgstr "Mode Change"
 
 #: src/keycode.cpp:227
 msgid "Next"
-## Windows keyboard
 msgstr "Page Up"
 
 #: src/keycode.cpp:227
 msgid "Prior"
-## Windows keyboard
 msgstr "Page Down"
 
 #: src/keycode.cpp:227
@@ -820,12 +812,10 @@ msgstr "Snapshot"
 
 #: src/keycode.cpp:232
 msgid "Left Windows"
-## Windows keyboard
 msgstr "Start Kiri"
 
 #: src/keycode.cpp:233
 msgid "Apps"
-## Windows keyboard
 msgstr "Tombol Menu"
 
 #: src/keycode.cpp:233
@@ -838,7 +828,6 @@ msgstr "Numpad 1"
 
 #: src/keycode.cpp:233
 msgid "Right Windows"
-## Windows keyboard
 msgstr "Start Kanan"
 
 #: src/keycode.cpp:233
@@ -911,7 +900,6 @@ msgstr "Shift Kanan"
 
 #: src/keycode.cpp:241
 msgid "Left Control"
-## Windows keyboard
 msgstr "Ctrl Kiri"
 
 #: src/keycode.cpp:241
@@ -920,7 +908,6 @@ msgstr "Left Menu"
 
 #: src/keycode.cpp:241
 msgid "Right Control"
-## Windows keyboard
 msgstr "Ctrl Kanan"
 
 #: src/keycode.cpp:241
