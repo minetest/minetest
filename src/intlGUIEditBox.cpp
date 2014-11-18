@@ -39,7 +39,7 @@
 #include "IVideoDriver.h"
 //#include "rect.h"
 //#include "irrlicht/os.cpp"
-#include "porting.h"
+#include "gettime.h"
 //#include "Keycodes.h"
 #include "log.h"
 
@@ -485,7 +485,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 				newMarkEnd = 0;
 			}
 			CursorPos = p;
-			BlinkStartTime = porting::getTimeMs();
+			BlinkStartTime = getTimeMs();
 		}
 		break;
 	case KEY_HOME:
@@ -510,7 +510,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 				newMarkEnd = 0;
 			}
 			CursorPos = p;
-			BlinkStartTime = porting::getTimeMs();
+			BlinkStartTime = getTimeMs();
 		}
 		break;
 	case KEY_RETURN:
@@ -543,7 +543,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 		}
 
 		if (CursorPos > 0) CursorPos--;
-		BlinkStartTime = porting::getTimeMs();
+		BlinkStartTime = getTimeMs();
 		break;
 
 	case KEY_RIGHT:
@@ -564,7 +564,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 		}
 
 		if (Text.size() > (u32)CursorPos) CursorPos++;
-		BlinkStartTime = porting::getTimeMs();
+		BlinkStartTime = getTimeMs();
 		break;
 	case KEY_UP:
 		if (MultiLine || (WordWrap && BrokenText.size() > 1) )
@@ -663,7 +663,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 
 			if (CursorPos < 0)
 				CursorPos = 0;
-			BlinkStartTime = porting::getTimeMs();
+			BlinkStartTime = getTimeMs();
 			newMarkBegin = 0;
 			newMarkEnd = 0;
 			textChanged = true;
@@ -700,7 +700,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 			if (CursorPos > (s32)Text.size())
 				CursorPos = (s32)Text.size();
 
-			BlinkStartTime = porting::getTimeMs();
+			BlinkStartTime = getTimeMs();
 			newMarkBegin = 0;
 			newMarkEnd = 0;
 			textChanged = true;
@@ -936,7 +936,7 @@ void intlGUIEditBox::draw()
 		charcursorpos = font->getDimension(s.c_str()).Width +
 			font->getKerningWidth(L"_", CursorPos-startPos > 0 ? &((*txtLine)[CursorPos-startPos-1]) : 0);
 
-		if (focus && (porting::getTimeMs() - BlinkStartTime) % 700 < 350)
+		if (focus && (getTimeMs() - BlinkStartTime) % 700 < 350)
 		{
 			setTextRect(cursorLine);
 			CurrentTextRect.UpperLeftCorner.X += charcursorpos;
@@ -1050,7 +1050,7 @@ bool intlGUIEditBox::processMouse(const SEvent& event)
 	case EMIE_LMOUSE_PRESSED_DOWN:
 		if (!Environment->hasFocus(this))
 		{
-			BlinkStartTime = porting::getTimeMs();
+			BlinkStartTime = getTimeMs();
 			MouseMarking = true;
 			CursorPos = getCursorPos(event.MouseInput.X, event.MouseInput.Y);
 			setTextMarkers(CursorPos, CursorPos );
@@ -1369,7 +1369,7 @@ void intlGUIEditBox::inputChar(wchar_t c)
 				++CursorPos;
 			}
 
-			BlinkStartTime = porting::getTimeMs();
+			BlinkStartTime = getTimeMs();
 			setTextMarkers(0, 0);
 		}
 	}
