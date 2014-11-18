@@ -258,8 +258,8 @@ void MapgenV5::makeChunk(BlockMakeData *data) {
 	
 	// Calculate lighting
 	if (flags & MG_LIGHT)
-		calcLighting(node_min - v3s16(0, 3, 0) - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
-			node_max + v3s16(0, 1, 0) + v3s16(1, 0, 1) * MAP_BLOCKSIZE);
+		calcLighting(node_min - v3s16(0, 2, 0) - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
+			node_max + v3s16(0, 2, 0) + v3s16(1, 0, 1) * MAP_BLOCKSIZE);
 	
 	this->generating = false;
 }
@@ -268,7 +268,7 @@ void MapgenV5::makeChunk(BlockMakeData *data) {
 void MapgenV5::calculateNoise() {
 	//TimeTaker t("calculateNoise", NULL, PRECISION_MICRO);
 	int x = node_min.X;
-	int y = node_min.Y - 3;
+	int y = node_min.Y - 2;
 	int z = node_min.Z;
 	
 	noise_filler_depth->perlinMap2D(x, z);
@@ -319,7 +319,7 @@ void MapgenV5::generateBaseTerrain() {
 	u32 index2d = 0;
 
 	for(s16 z=node_min.Z; z<=node_max.Z; z++) {
-		for(s16 y=node_min.Y - 3; y<=node_max.Y + 1; y++) {
+		for(s16 y=node_min.Y - 2; y<=node_max.Y + 2; y++) {
 			u32 i = vm->m_area.index(node_min.X, y, z);
 			for(s16 x=node_min.X; x<=node_max.X; x++, i++, index++, index2d++) {
 				if(vm->m_data[i].getContent() != CONTENT_IGNORE)
@@ -356,7 +356,7 @@ void MapgenV5::generateBlobs() {
 	u32 index = 0;
 
 	for(s16 z=node_min.Z; z<=node_max.Z; z++) {
-		for(s16 y=node_min.Y - 3; y<=node_max.Y + 1; y++) {
+		for(s16 y=node_min.Y - 2; y<=node_max.Y + 2; y++) {
 			u32 i = vm->m_area.index(node_min.X, y, z);
 			for(s16 x=node_min.X; x<=node_max.X; x++, i++, index++) {
 				content_t c = vm->m_data[i].getContent();
@@ -406,7 +406,7 @@ void MapgenV5::generateBiomes() {
 		content_t c_above = vm->m_data[i + em.X].getContent();
 		bool have_air = c_above == CONTENT_AIR;
 		
-		for (s16 y = node_max.Y + 1; y >= node_min.Y - 3; y--) {
+		for (s16 y = node_max.Y + 1; y >= node_min.Y - 2; y--) {
 			content_t c = vm->m_data[i].getContent();
 			bool is_replaceable_content =
 				c == c_stone || c == c_dirt_with_grass || c == c_dirt ||
@@ -462,9 +462,9 @@ void MapgenV5::dustTopNodes() {
 		if (biome->c_dust == CONTENT_IGNORE)
 			continue;
 
-		s16 y = node_max.Y + 1;
+		s16 y = node_max.Y + 2;
 		u32 vi = vm->m_area.index(x, y, z);
-		for (; y >= node_min.Y - 3; y--) {
+		for (; y >= node_min.Y - 1; y--) {
 			if (vm->m_data[vi].getContent() != CONTENT_AIR)
 				break;
 
@@ -473,13 +473,13 @@ void MapgenV5::dustTopNodes() {
 			
 		content_t c = vm->m_data[vi].getContent();
 		if (c == biome->c_water && biome->c_dust_water != CONTENT_IGNORE) {
-			if (y < node_min.Y - 3)
+			if (y < node_min.Y - 1)
 				continue;
 				
 			vm->m_data[vi] = MapNode(biome->c_dust_water);
 		} else if (!ndef->get(c).buildable_to && c != CONTENT_IGNORE
 				&& c != biome->c_dust) {
-			if (y == node_max.Y + 1)
+			if (y == node_max.Y + 2)
 				continue;
 				
 			vm->m_area.add_y(em, vi, 1);
