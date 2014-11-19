@@ -29,42 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class IGameDef;
 
-
-class ItemStackRow : public ItemStack {
-public:
-	ItemStackRow & operator = (const ItemStack & other) {
-		*static_cast<ItemStack *>(this) = other;
-		return *this;
-	}
-
-	int id;
-};
-
-struct ActionRow {
-	int          id;
-	int          actor;
-	time_t       timestamp;
-	int          type;
-	std::string  location, list;
-	int          index, add;
-	ItemStackRow stack;
-	int          nodeMeta;
-	int          x, y, z;
-	int          oldNode;
-	int          oldParam1, oldParam2;
-	std::string  oldMeta;
-	int          newNode;
-	int          newParam1, newParam2;
-	std::string  newMeta;
-	int          guessed;
-};
-
-
-struct Entity {
-	int         id;
-	std::string name;
-};
-
+class ActionRow;
+class Entity;
 
 class RollbackManager: public IRollbackManager
 {

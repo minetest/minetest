@@ -43,6 +43,43 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define SQLOK(f) SQLRES(f, SQLITE_OK)
 
 
+class ItemStackRow : public ItemStack {
+public:
+	ItemStackRow & operator = (const ItemStack & other) {
+		*static_cast<ItemStack *>(this) = other;
+		return *this;
+	}
+
+	int id;
+};
+
+struct ActionRow {
+	int          id;
+	int          actor;
+	time_t       timestamp;
+	int          type;
+	std::string  location, list;
+	int          index, add;
+	ItemStackRow stack;
+	int          nodeMeta;
+	int          x, y, z;
+	int          oldNode;
+	int          oldParam1, oldParam2;
+	std::string  oldMeta;
+	int          newNode;
+	int          newParam1, newParam2;
+	std::string  newMeta;
+	int          guessed;
+};
+
+
+struct Entity {
+	int         id;
+	std::string name;
+};
+
+
+
 RollbackManager::RollbackManager(const std::string & world_path,
 		IGameDef * gamedef_) :
 	gamedef(gamedef_),

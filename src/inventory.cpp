@@ -183,7 +183,8 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 		legacy_nimap.getName(material, name);
 		if(name == "")
 			name = "unknown_block";
-		if (itemdef) name = itemdef->getAlias(name);
+		if (itemdef)
+			name = itemdef->getAlias(name);
 		count = materialcount;
 	}
 	else if(name == "MaterialItem2")
@@ -202,7 +203,8 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 		legacy_nimap.getName(material, name);
 		if(name == "")
 			name = "unknown_block";
-		if (itemdef) name = itemdef->getAlias(name);
+		if (itemdef)
+			name = itemdef->getAlias(name);
 		count = materialcount;
 	}
 	else if(name == "node" || name == "NodeItem" || name == "MaterialItem3"
@@ -223,7 +225,8 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 			name = fnd.next(" ");
 		}
 		fnd.skip_over(" ");
-		if (itemdef) name = itemdef->getAlias(name);
+		if (itemdef)
+			name = itemdef->getAlias(name);
 		count = stoi(trim(fnd.next("")));
 		if(count == 0)
 			count = 1;
@@ -252,7 +255,8 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 		count = 1;
 		// Then read wear
 		fnd.skip_over(" ");
-		if (itemdef) name = itemdef->getAlias(name);
+		if (itemdef)
+			name = itemdef->getAlias(name);
 		wear = stoi(trim(fnd.next("")));
 	}
 	else
@@ -262,7 +266,8 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 			// The real thing
 
 			// Apply item aliases
-			if (itemdef) name = itemdef->getAlias(name);
+			if (itemdef)
+				name = itemdef->getAlias(name);
 
 			// Read the count
 			std::string count_str;
@@ -304,6 +309,13 @@ void ItemStack::deSerialize(const std::string &str, IItemDefManager *itemdef)
 {
 	std::istringstream is(str, std::ios::binary);
 	deSerialize(is, itemdef);
+}
+
+std::string ItemStack::getItemString() const
+{
+	std::ostringstream os(std::ios::binary);
+	serialize(os);
+	return os.str();
 }
 
 
