@@ -2,6 +2,9 @@
 
 core.detached_inventories = {}
 
+local create_detached_inventory_raw = core.create_detached_inventory_raw
+core.create_detached_inventory_raw = nil
+
 function core.create_detached_inventory(name, callbacks)
 	local stuff = {}
 	stuff.name = name
@@ -14,6 +17,6 @@ function core.create_detached_inventory(name, callbacks)
 		stuff.on_take = callbacks.on_take
 	end
 	core.detached_inventories[name] = stuff
-	return core.create_detached_inventory_raw(name)
+	return create_detached_inventory_raw(name)
 end
 

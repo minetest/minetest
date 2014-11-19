@@ -268,16 +268,17 @@ core.register_chatcommand("auth_reload", {
 	end,
 })
 
+local find_pos_tries = {
+	{x= 0, z= 0},
+	{x= 1, z= 0},
+	{x=-1, z= 0},
+	{x= 0, z= 1},
+	{x= 0, z=-1},
+}
 -- Returns (pos, true) if found, otherwise (pos, false)
 local function find_free_position_near(pos)
-	local tries = {
-		{x=1,y=0,z=0},
-		{x=-1,y=0,z=0},
-		{x=0,y=0,z=1},
-		{x=0,y=0,z=-1},
-	}
-	for _, d in ipairs(tries) do
-		local p = {x = pos.x+d.x, y = pos.y+d.y, z = pos.z+d.z}
+	for _, d in ipairs(find_pos_tries) do
+		local p = {x = pos.x+d.x, y = pos.y, z = pos.z+d.z}
 		local n = core.get_node_or_nil(p)
 		if n and n.name then
 			local def = core.registered_nodes[n.name]

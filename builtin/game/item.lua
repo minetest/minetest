@@ -96,25 +96,28 @@ function core.dir_to_facedir(dir, is6d)
 	end
 end
 
+-- Mapping from a facedir to a vector direction.
+local facedir_to_dir_table = {
+	{x=0, y=0, z=1},
+	{x=1, y=0, z=0},
+	{x=0, y=0, z=-1},
+	{x=-1, y=0, z=0},
+	{x=0, y=-1, z=0},
+	{x=0, y=1, z=0}
+}
+
+-- Mapping from a facedir to an index in the table above.
+local facedir_to_index_table = {
+	[0]=1, 2, 3, 4, 
+	5, 2, 6, 4,
+	6, 2, 5, 4,
+	1, 5, 3, 6,
+	1, 6, 3, 5,
+	1, 4, 3, 2,
+}
+
 function core.facedir_to_dir(facedir)
-	--a table of possible dirs
-	return ({{x=0, y=0, z=1},
-					{x=1, y=0, z=0},
-					{x=0, y=0, z=-1},
-					{x=-1, y=0, z=0},
-					{x=0, y=-1, z=0},
-					{x=0, y=1, z=0}})
-
-					--indexed into by a table of correlating facedirs
-					[({[0]=1, 2, 3, 4, 
-						5, 2, 6, 4,
-						6, 2, 5, 4,
-						1, 5, 3, 6,
-						1, 6, 3, 5,
-						1, 4, 3, 2})
-
-						--indexed into by the facedir in question
-						[facedir]]
+	return facedir_to_dir_table[facedir_to_index_table[facedir]]
 end
 
 function core.dir_to_wallmounted(dir)
