@@ -879,7 +879,7 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef)
 				meshmanip->recalculateNormals(f->mesh_ptr[j], true, false);
 			}
 		} else if (enable_mesh_cache && f->mesh_ptr[0] && (f->param_type_2 == CPT2_WALLMOUNTED)) {
-			static const u8 wm_to_6d[6] = 	{20, 0, 16, 12, 8, 4}; 
+			static const u8 wm_to_6d[6] = {20, 0, 16+1, 12+3, 8, 4+2};
 			for (u16 j = 1; j < 6; j++) {
 				f->mesh_ptr[j] = cloneMesh(f->mesh_ptr[0]);
 				rotateMeshBy6dFacedir(f->mesh_ptr[j], wm_to_6d[j]);

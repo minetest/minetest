@@ -1731,9 +1731,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			} else if (f.param_type_2 == CPT2_WALLMOUNTED) {
 				//convert wallmounted to 6dfacedir.
 				//when cache enabled, it is already converted
-				facedir = n.getWallMounted(nodedef);				
+				facedir = n.getWallMounted(nodedef);
 				if (!enable_mesh_cache) {
-					static const u8 wm_to_6d[6] = 	{20, 0, 16, 12, 8, 4};
+					static const u8 wm_to_6d[6] = {20, 0, 16+1, 12+3, 8, 4+2};
 					facedir = wm_to_6d[facedir];
 				}
 			}
