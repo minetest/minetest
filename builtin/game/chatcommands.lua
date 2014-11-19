@@ -14,23 +14,19 @@ function core.register_chatcommand(cmd, def)
 end
 
 if core.setting_getbool("mod_profiling") then
-	local tracefct = profiling_print_log
+	core.register_chatcommand("save_mod_profile", {
+		params = "",
+		description = "save mod profiling data to logfile " ..
+				"(depends on default loglevel)",
+		func = profiling_print_log,
+		privs = { server=true }
+	})
 	profiling_print_log = nil
-	core.register_chatcommand("save_mod_profile",
-			{
-				params      = "",
-				description = "save mod profiling data to logfile " ..
-						"(depends on default loglevel)",
-				func        = tracefct,
-				privs       = { server=true }
-			})
 end
 
 core.register_on_chat_message(function(name, message)
-	local cmd, param = string.match(message, "^/([^ ]+) *(.*)")
-	if not param then
-		param = ""
-	end
+	local cmd, param = message:match("^/(%S+)%s*(.*)")
+	param = param or ""
 	local cmd_def = core.chatcommands[cmd]
 	if not cmd_def then
 		return false
@@ -61,21 +57,22 @@ core.register_chatcommand("me", {
 	end,
 })
 
+local function format_help_line(cmd, def)
+	local msg = "/"..cmd
+	if def.params and def.params ~= "" then
+		msg = msg .. " " .. def.params
+	end
+	if def.description and def.description ~= "" then
+		msg = msg .. ": " .. def.description
+	end
+	return msg
+end
+
 core.register_chatcommand("help", {
 	privs = {},
 	params = "[all/privs/<cmd>]",
 	description = "Get help for commands or list privileges",
 	func = function(name, param)
-		local function format_help_line(cmd, def)
-			local msg = "/"..cmd
-			if def.params and def.params ~= "" then
-				msg = msg .. " " .. def.params
-			end
-			if def.description and def.description ~= "" then
-				msg = msg .. ": " .. def.description
-			end
-			return msg
-		end
 		if param == "" then
 			local msg = ""
 			local cmds = {}
@@ -96,14 +93,14 @@ core.register_chatcommand("help", {
 				end
 			end
 			table.sort(cmds)
-			return true, "Available commands:\n"..table.concat(cmds, "\n")
+			return true, "Available commands:\n"..table.concat(cmds, ", ")
 		elseif param == "privs" then
 			local privs = {}
 			for priv, def in pairs(core.registered_privileges) do
 				table.insert(privs, priv .. ": " .. def.description)
 			end
 			table.sort(privs)
-			return true, "Available privileges:\n"..table.concat(privs, "\n")
+			return true, "Available privileges:\n"..table.concat(privs, ", ")
 		else
 			local cmd = param
 			local def = core.chatcommands[cmd]
@@ -120,10 +117,10 @@ core.register_chatcommand("privs", {
 	params = "<name>",
 	description = "print out privileges of player",
 	func = function(name, param)
+		param = param:trim()
 		param = (param ~= "" and param or name)
 		return true, "Privileges of " .. param .. ": "
-			.. core.privs_to_string(
-				core.get_player_privs(param), ' ')
+				.. core.privs_to_string(core.get_player_privs(param), ' ')
 	end,
 })
 core.register_chatcommand("grant", {
@@ -134,7 +131,7 @@ core.register_chatcommand("grant", {
 				not core.check_player_privs(name, {basic_privs=true}) then
 			return false, "Your privileges are insufficient."
 		end
-		local grantname, grantprivstr = string.match(param, "([^ ]+) (.+)")
+		local grantname, grantprivstr = param:match("^(%S+)%s+(.+)")
 		if not grantname or not grantprivstr then
 			return false, "Invalid parameters (see /help grant)"
 		elseif not core.auth_table[grantname] then
@@ -180,7 +177,7 @@ core.register_chatcommand("revoke", {
 				not core.check_player_privs(name, {basic_privs=true}) then
 			return false, "Your privileges are insufficient."
 		end
-		local revoke_name, revoke_priv_str = string.match(param, "([^ ]+) (.+)")
+		local revoke_name, revoke_priv_str = param:match("^(%S+)%s+(.+)")
 		if not revoke_name or not revoke_priv_str then
 			return false, "Invalid parameters (see /help revoke)"
 		elseif not core.auth_table[revoke_name] then
@@ -211,8 +208,7 @@ core.register_chatcommand("revoke", {
 					.. core.privs_to_string(revoke_privs, ' '))
 		end
 		return true, "Privileges of " .. revoke_name .. ": "
-			.. core.privs_to_string(
-				core.get_player_privs(revoke_name), ' ')
+				.. core.privs_to_string(core.get_player_privs(revoke_name), ' ')
 	end,
 })
 
@@ -221,13 +217,12 @@ core.register_chatcommand("setpassword", {
 	description = "set given password",
 	privs = {password=true},
 	func = function(name, param)
-		local toname, raw_password = string.match(param, "^([^ ]+) +(.+)$")
+		local toname, raw_password = param:match("^(%S+)%s+(.+)$")
 		if not toname then
-			toname = param:match("^([^ ]+) *$")
-			raw_password = nil
-		end
-		if not toname then
-			return false, "Name field required"
+			toname = param:trim()
+			if toname == "" then
+				return false, "Name field required"
+			end
 		end
 		local actstr = "?"
 		if not raw_password then
@@ -235,8 +230,7 @@ core.register_chatcommand("setpassword", {
 			actstr = "cleared"
 		else
 			core.set_player_password(toname,
-					core.get_password_hash(toname,
-							raw_password))
+					core.get_password_hash(toname, raw_password))
 			actstr = "set"
 		end
 		if toname ~= name then
@@ -252,9 +246,12 @@ core.register_chatcommand("clearpassword", {
 	description = "set empty password",
 	privs = {password=true},
 	func = function(name, param)
-		toname = param
+		local toname = param:trim()
 		if toname == "" then
 			return false, "Name field required"
+		end
+		if not core.auth_table[toname] then
+			return false, "Unknown player \"" .. toname .. "\""
 		end
 		core.set_player_password(toname, '')
 		return true, "Password of player \"" .. toname .. "\" cleared"
@@ -271,105 +268,105 @@ core.register_chatcommand("auth_reload", {
 	end,
 })
 
+local find_pos_tries = {
+	{x= 0, z= 0},
+	{x= 1, z= 0},
+	{x=-1, z= 0},
+	{x= 0, z= 1},
+	{x= 0, z=-1},
+}
+-- Returns (pos, true) if found, otherwise (pos, false)
+local function find_free_position_near(pos)
+	for _, d in ipairs(find_pos_tries) do
+		local p = {x = pos.x+d.x, y = pos.y, z = pos.z+d.z}
+		local n = core.get_node_or_nil(p)
+		if n and n.name then
+			local def = core.registered_nodes[n.name]
+			if def and not def.walkable then
+				return p, true
+			end
+		end
+	end
+	return pos, false
+end
+
 core.register_chatcommand("teleport", {
 	params = "<X>,<Y>,<Z> | <to_name> | <name> <X>,<Y>,<Z> | <name> <to_name>",
 	description = "teleport to given position",
 	privs = {teleport=true},
 	func = function(name, param)
-		-- Returns (pos, true) if found, otherwise (pos, false)
-		local function find_free_position_near(pos)
-			local tries = {
-				{x=1,y=0,z=0},
-				{x=-1,y=0,z=0},
-				{x=0,y=0,z=1},
-				{x=0,y=0,z=-1},
-			}
-			for _, d in ipairs(tries) do
-				local p = {x = pos.x+d.x, y = pos.y+d.y, z = pos.z+d.z}
-				local n = core.get_node_or_nil(p)
-				if n and n.name then
-					local def = core.registered_nodes[n.name]
-					if def and not def.walkable then
-						return p, true
-					end
+		param = param:trim()
+		local source_name, target_name, px, py, pz
+		local msg_no_bring = "You don't have permission to teleport"
+				.." other players (missing bring privilege)"
+
+		-- Teleport <name> <pos>
+		source_name, px, py, pz = param:match(
+				"^(%S+)%s+([%d.-]+)[,%s]+([%d.-]+)[,%s]+([%d.-]+)$")
+		if source_name then
+			if not core.check_player_privs(name, {bring=true}) then
+				return false, msg_no_bring
+			end
+			px, py, pz = tonumber(px), tonumber(py), tonumber(pz)
+			if px and py and pz then
+				local source = core.get_player_by_name(source_name)
+				if not source then
+					return false, "Unknown player \"" .. source_name .. "\"."
 				end
+				local p = {x=px, y=py, z=pz}
+				source:setpos(p)
+				return true, "Teleporting " .. source_name
+						" to " .. core.pos_to_string(p)
 			end
-			return pos, false
 		end
 
-		local teleportee = nil
-		local p = {}
-		p.x, p.y, p.z = string.match(param, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
-		p.x = tonumber(p.x)
-		p.y = tonumber(p.y)
-		p.z = tonumber(p.z)
-		teleportee = core.get_player_by_name(name)
-		if teleportee and p.x and p.y and p.z then
-			teleportee:setpos(p)
-			return true, "Teleporting to "..core.pos_to_string(p)
-		end
-		
-		local teleportee = nil
-		local p = nil
-		local target_name = nil
-		target_name = param:match("^([^ ]+)$")
-		teleportee = core.get_player_by_name(name)
-		if target_name then
+		-- Teleport <name> <name>
+		source_name, target_name = param:match("^(%S+)%s+(%S+)$")
+		if source_name then
+			if not core.check_player_privs(name, {bring=true}) then
+				return false, msg_no_bring
+			end
+			local source = core.get_player_by_name(source_name)
 			local target = core.get_player_by_name(target_name)
-			if target then
-				p = target:getpos()
+			if not source then
+				return false, "Unknown player \"" .. source_name .. "\"."
+			elseif not target then
+				return false, "Unknown player \"" .. target_name .. "\"."
 			end
-		end
-		if teleportee and p then
-			p = find_free_position_near(p)
-			teleportee:setpos(p)
-			return true, "Teleporting to " .. target_name
-					.. " at "..core.pos_to_string(p)
-		end
-
-		if not core.check_player_privs(name, {bring=true}) then
-			return false, "You don't have permission to teleport other players (missing bring privilege)"
-		end
-
-		local teleportee = nil
-		local p = {}
-		local teleportee_name = nil
-		teleportee_name, p.x, p.y, p.z = param:match(
-				"^([^ ]+) +([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
-		p.x, p.y, p.z = tonumber(p.x), tonumber(p.y), tonumber(p.z)
-		if teleportee_name then
-			teleportee = core.get_player_by_name(teleportee_name)
-		end
-		if teleportee and p.x and p.y and p.z then
-			teleportee:setpos(p)
-			return true, "Teleporting " .. teleportee_name
-					.. " to " .. core.pos_to_string(p)
-		end
-		
-		local teleportee = nil
-		local p = nil
-		local teleportee_name = nil
-		local target_name = nil
-		teleportee_name, target_name = string.match(param, "^([^ ]+) +([^ ]+)$")
-		if teleportee_name then
-			teleportee = core.get_player_by_name(teleportee_name)
-		end
-		if target_name then
-			local target = core.get_player_by_name(target_name)
-			if target then
-				p = target:getpos()
-			end
-		end
-		if teleportee and p then
-			p = find_free_position_near(p)
-			teleportee:setpos(p)
-			return true, "Teleporting " .. teleportee_name
+			local p = target:getpos()
+			source:setpos(p)
+			return true, "Teleporting " .. source_name
 					.. " to " .. target_name
 					.. " at " .. core.pos_to_string(p)
 		end
-		
-		return false, 'Invalid parameters ("' .. param
-				.. '") or player not found (see /help teleport)'
+
+		-- Teleport <pos>
+		px, py, pz = param:match("^([%d.-]+)[,%s]+([%d.-]+)[,%s]+([%d.-]+)$")
+		if px then
+			px, py, pz = tonumber(px), tonumber(py), tonumber(pz)
+			if px and py and pz then
+				local source = core.get_player_by_name(name)
+				local p = {x=px, y=py, z=pz}
+				source:setpos(p)
+				return true, "Teleporting to " .. core.pos_to_string(p)
+			end
+		end
+
+		-- Teleport <name>
+		target_name = param:trim()
+		if target_name ~= "" then
+			local source = core.get_player_by_name(name)
+			local target = core.get_player_by_name(target_name)
+			if not target then
+				return false, "Unknown player \"" .. target_name .. "\"."
+			end
+			local p = target:getpos()
+			source:setpos(p)
+			return true, "Teleporting to " .. target_name
+					.. " at " .. core.pos_to_string(p)
+		end
+
+		return false, "Invalid parameters (see /help teleport)"
 	end,
 })
 
@@ -378,12 +375,13 @@ core.register_chatcommand("set", {
 	description = "set or read server configuration setting",
 	privs = {server=true},
 	func = function(name, param)
-		local arg, setname, setvalue = string.match(param, "(-[n]) ([^ ]+) (.+)")
-		if arg and arg == "-n" and setname and setvalue then
+		local setname, setvalue
+		setname, setvalue = param:match("^%-n%s+(%S+)%s+(.+)$")
+		if setname and setvalue then
 			core.setting_set(setname, setvalue)
 			return true, setname .. " = " .. setvalue
 		end
-		local setname, setvalue = string.match(param, "([^ ]+) (.+)")
+		setname, setvalue = param:match("^([^-]?%S+)%s+(.+)$")
 		if setname and setvalue then
 			if not core.setting_get(setname) then
 				return false, "Failed. Use '/set -n <name> <value>' to create a new setting."
@@ -391,7 +389,7 @@ core.register_chatcommand("set", {
 			core.setting_set(setname, setvalue)
 			return true, setname .. " = " .. setvalue
 		end
-		local setname = string.match(param, "([^ ]+)")
+		local setname = param:match("^([^ ]+)$")
 		if setname then
 			local setvalue = core.setting_get(setname)
 			if not setvalue then
@@ -426,6 +424,7 @@ local function handle_give_command(cmd, giver, receiver, stackstring)
 		return false, receiver .. " is not a known player"
 	end
 	local leftover = receiverref:get_inventory():add_item("main", itemstack)
+	local partiality
 	if leftover:is_empty() then
 		partiality = ""
 	elseif leftover:get_count() == itemstack:get_count() then
@@ -435,7 +434,7 @@ local function handle_give_command(cmd, giver, receiver, stackstring)
 	end
 	-- The actual item stack string may be different from what the "giver"
 	-- entered (e.g. big numbers are always interpreted as 2^16-1).
-	stackstring = itemstack:to_string()
+	local stackstring = itemstack:to_string()
 	if giver == receiver then
 		return true, ("%q %sadded to inventory.")
 				:format(stackstring, partiality)
@@ -452,7 +451,7 @@ core.register_chatcommand("give", {
 	description = "give item to player",
 	privs = {give=true},
 	func = function(name, param)
-		local toname, itemstring = string.match(param, "^([^ ]+) +(.+)$")
+		local toname, itemstring = param:match("^(%S+)%s+(.+)$")
 		if not toname or not itemstring then
 			return false, "Name and ItemString required"
 		end
@@ -465,8 +464,8 @@ core.register_chatcommand("giveme", {
 	description = "give item to yourself",
 	privs = {give=true},
 	func = function(name, param)
-		local itemstring = string.match(param, "(.+)$")
-		if not itemstring then
+		local itemstring = param:trim()
+		if itemstring == "" then
 			return false, "ItemString required"
 		end
 		return handle_give_command("/giveme", name, name, itemstring)
@@ -478,8 +477,8 @@ core.register_chatcommand("spawnentity", {
 	description = "Spawn entity at your position",
 	privs = {give=true, interact=true},
 	func = function(name, param)
-		local entityname = string.match(param, "(.+)$")
-		if not entityname then
+		local entityname = param:trim()
+		if entityname == "" then
 			return false, "EntityName required"
 		end
 		core.log("action", ("/spawnentity invoked, entityname=%q")
@@ -532,7 +531,7 @@ core.register_chatcommand("rollback_check", {
 	privs = {rollback=true},
 	func = function(name, param)
 		local range, seconds, limit =
-			param:match("(%d+) *(%d*) *(%d*)")
+			param:match("^(%d+)%s*(%d*)%s*(%d*)%s*$")
 		range = tonumber(range) or 0
 		seconds = tonumber(seconds) or 86400
 		limit = tonumber(limit) or 5
@@ -575,10 +574,10 @@ core.register_chatcommand("rollback", {
 	description = "revert actions of a player; default for <seconds> is 60",
 	privs = {rollback=true},
 	func = function(name, param)
-		local target_name, seconds = string.match(param, ":([^ ]+) *(%d*)")
+		local target_name, seconds = param:match("^:(%S+)%s*(%d*)$")
 		if not target_name then
 			local player_name = nil
-			player_name, seconds = string.match(param, "([^ ]+) *(%d*)")
+			player_name, seconds = param:match("^(%S+)%s*(%d*)$")
 			if not player_name then
 				return false, "Invalid parameters. See /help rollback"
 						.. " and /help rollback_check."
@@ -617,6 +616,7 @@ core.register_chatcommand("time", {
 	description = "set time of day",
 	privs = {settime=true},
 	func = function(name, param)
+		param = param:trim()
 		if param == "" then
 			return false, "Missing time."
 		end
@@ -633,7 +633,7 @@ core.register_chatcommand("time", {
 core.register_chatcommand("shutdown", {
 	description = "shutdown server",
 	privs = {server=true},
-	func = function(name, param)
+	func = function(name)
 		core.log("action", name .. " shuts down server")
 		core.request_shutdown()
 		core.chat_send_all("*** Server shutting down (operator request).")
@@ -645,6 +645,7 @@ core.register_chatcommand("ban", {
 	description = "Ban IP of player",
 	privs = {ban=true},
 	func = function(name, param)
+		param = param:trim()
 		if param == "" then
 			return true, "Ban list: " .. core.get_ban_list()
 		end
@@ -665,6 +666,7 @@ core.register_chatcommand("unban", {
 	description = "remove IP ban",
 	privs = {ban=true},
 	func = function(name, param)
+		param = param:trim()
 		if not core.unban_player_or_ip(param) then
 			return false, "Failed to unban player/IP."
 		end
@@ -678,7 +680,8 @@ core.register_chatcommand("kick", {
 	description = "kick a player",
 	privs = {kick=true},
 	func = function(name, param)
-		local tokick, reason = param:match("([^ ]+) (.+)")
+		param = param:trim()
+		local tokick, reason = param:match("^(%S+)%s+(.+)$")
 		tokick = tokick or param
 		if not core.kick_player(tokick, reason) then
 			return false, "Failed to kick player " .. tokick
@@ -691,7 +694,7 @@ core.register_chatcommand("kick", {
 core.register_chatcommand("clearobjects", {
 	description = "clear all objects in world",
 	privs = {server=true},
-	func = function(name, param)
+	func = function(name)
 		core.log("action", name .. " clears all objects.")
 		core.chat_send_all("Clearing all objects.  This may take long."
 				.. "  You may experience a timeout.  (by "
@@ -707,7 +710,7 @@ core.register_chatcommand("msg", {
 	description = "Send a private message",
 	privs = {shout=true},
 	func = function(name, param)
-		local sendto, message = param:match("^(%S+)%s(.+)$")
+		local sendto, message = param:match("^(%S+)%s+(.+)")
 		if not sendto then
 			return false, "Invalid usage, see /help msg."
 		end
@@ -727,6 +730,7 @@ core.register_chatcommand("last-login", {
 	params = "[name]",
 	description = "Get the last login time of a player",
 	func = function(name, param)
+		param = param:trim()
 		if param == "" then
 			param = name
 		end

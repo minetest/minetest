@@ -112,7 +112,7 @@ core.register_entity(":__builtin:falling_node", {
 })
 
 function spawn_falling_node(p, node)
-	obj = core.add_entity(p, "__builtin:falling_node")
+	local obj = core.add_entity(p, "__builtin:falling_node")
 	obj:get_luaentity():set_node(node)
 end
 
@@ -163,10 +163,10 @@ end
 --
 
 function nodeupdate_single(p, delay)
-	n = core.get_node(p)
+	local n = core.get_node(p)
 	if core.get_item_group(n.name, "falling_node") ~= 0 then
-		p_bottom = {x=p.x, y=p.y-1, z=p.z}
-		n_bottom = core.get_node(p_bottom)
+		local p_bottom = {x=p.x, y=p.y-1, z=p.z}
+		local n_bottom = core.get_node(p_bottom)
 		-- Note: walkable is in the node definition, not in item groups
 		if core.registered_nodes[n_bottom.name] and
 				(core.get_item_group(n.name, "float") == 0 or
@@ -194,16 +194,15 @@ function nodeupdate_single(p, delay)
 	end
 end
 
+local floor = math.floor
 function nodeupdate(p, delay)
 	-- Round p to prevent falling entities to get stuck
-	p.x = math.floor(p.x+0.5)
-	p.y = math.floor(p.y+0.5)
-	p.z = math.floor(p.z+0.5)
+	local px, py, pz = floor(p.x+0.5), floor(p.y+0.5), floor(p.z+0.5)
 
 	for x = -1,1 do
 	for y = -1,1 do
 	for z = -1,1 do
-		nodeupdate_single({x=p.x+x, y=p.y+y, z=p.z+z}, delay or not (x==0 and y==0 and z==0))
+		nodeupdate_single({x=px+x, y=py+y, z=pz+z}, delay or not (x==0 and y==0 and z==0))
 	end
 	end
 	end

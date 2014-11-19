@@ -12,8 +12,8 @@ core.features = {
 
 function core.has_feature(arg)
 	if type(arg) == "table" then
-		missing_features = {}
-		result = true
+		local missing_features = {}
+		local result = true
 		for ft, _ in pairs(arg) do
 			if not core.features[ftr] then
 				missing_features[ftr] = true
