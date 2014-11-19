@@ -56,7 +56,7 @@ core.register_entity(":__builtin:item", {
 			item_texture = core.registered_items[itemname].inventory_image
 			item_type = core.registered_items[itemname].type
 		end
-		prop = {
+		local prop = {
 			is_visible = true,
 			visual = "wielditem",
 			textures = {itemname},
