@@ -50,12 +50,6 @@ core.register_entity(":__builtin:item", {
 		if itemtable then
 			itemname = stack:to_table().name
 		end
-		local item_texture = nil
-		local item_type = ""
-		if core.registered_items[itemname] then
-			item_texture = core.registered_items[itemname].inventory_image
-			item_type = core.registered_items[itemname].type
-		end
 		prop = {
 			is_visible = true,
 			visual = "wielditem",

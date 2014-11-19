@@ -4,20 +4,22 @@
 -- Misc. API functions
 --
 
-core.timers_to_add = {}
-core.timers = {}
+local timers_to_add
+local timers = {}
 core.register_globalstep(function(dtime)
-	for _, timer in ipairs(core.timers_to_add) do
-		table.insert(core.timers, timer)
+	if timers_to_add then
+		for _, timer in ipairs(timers_to_add) do
+			table.insert(timers, timer)
+		end
+		timers_to_add = nil
 	end
-	core.timers_to_add = {}
 	local index = 1
-	while index <= #core.timers do
-		local timer = core.timers[index]
+	while index <= #timers do
+		local timer = timers[index]
 		timer.time = timer.time - dtime
 		if timer.time <= 0 then
 			timer.func(unpack(timer.args or {}))
-			table.remove(core.timers,index)
+			table.remove(timers, index)
 		else
 			index = index + 1
 		end
@@ -27,7 +29,8 @@ end)
 function core.after(time, func, ...)
 	assert(tonumber(time) and type(func) == "function",
 			"Invalid core.after invocation")
-	table.insert(core.timers_to_add, {time=time, func=func, args={...}})
+	timers_to_add = timers_to_add or { }
+	table.insert(timers_to_add, {time=time, func=func, args={...}})
 end
 
 function core.check_player_privs(name, privs)

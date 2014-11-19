@@ -144,19 +144,18 @@ end
 
 --------------------------------------------------------------------------------
 local function build_callback(log_id, fct)
-	return function( toregister )
+	return function(toregister)
 		local modname = core.get_current_modname()
 		
 		fct(function(...)
 			local starttime = core.get_us_time()
 			-- note maximum 10 return values are supported unless someone finds
 			-- a way to store a variable lenght return value list
-			local r0, r1, r2, r3, r4, r5, r6, r7, r8, r9 = toregister(...)
+			local t = { toregister(...) }
 			local delta = core.get_us_time() - starttime
 			mod_statistics.log_time(log_id, modname, delta)
-			return r0, r1, r2, r3, r4, r5, r6, r7, r8, r9
-			end
-		)
+			return unpack(t)
+		end)
 	end
 end
 
@@ -250,78 +249,33 @@ local function initialize_profiling()
 	
 	-- first register our own globalstep handler
 	core.register_globalstep(mod_statistics.update_statistics)
+
+	local function profile_wrap(prefix, modname, old_cb)
+		if old_cb ~= nil then
+			return function(...)
+				local starttime = core.get_us_time()
+				old_cb(...)
+				local delta = core.get_us_time() -starttime
+				mod_statistics.log_time(prefix, modname, delta)
+			end
+		end
+	end
 	
 	local rp_register_entity = core.register_entity
 	core.register_entity = function(name, prototype)
 		local modname = core.get_current_modname()
-		local new_on_activate = nil
-		local new_on_step = nil
-		local new_on_punch = nil
-		local new_rightclick = nil
-		local new_get_staticdata = nil
-		
-		if prototype.on_activate ~= nil then
-			local cbid = name .. "#oa"
-			mod_statistics.entity_callbacks[cbid] = prototype.on_activate
-			new_on_activate = function(self, staticdata, dtime_s)
-				local starttime = core.get_us_time()
-				mod_statistics.entity_callbacks[cbid](self, staticdata, dtime_s)
-				local delta = core.get_us_time() -starttime
-				mod_statistics.log_time(cbid, modname, delta)
-			end
-		end
-		
-		if prototype.on_step ~= nil then
-			local cbid = name .. "#os"
-			mod_statistics.entity_callbacks[cbid] = prototype.on_step
-			new_on_step = function(self, dtime)
-				local starttime = core.get_us_time()
-				mod_statistics.entity_callbacks[cbid](self, dtime)
-				local delta = core.get_us_time() -starttime
-				mod_statistics.log_time(cbid, modname, delta)
-			end
-		end
-	
-		if prototype.on_punch ~= nil then
-			local cbid = name .. "#op"
-			mod_statistics.entity_callbacks[cbid] = prototype.on_punch
-			new_on_punch = function(self, hitter)
-				local starttime = core.get_us_time()
-				mod_statistics.entity_callbacks[cbid](self, hitter)
-				local delta = core.get_us_time() -starttime
-				mod_statistics.log_time(cbid, modname, delta)
-			end
-		end
-		
-		if prototype.rightclick ~= nil then
-			local cbid = name .. "#rc"
-			mod_statistics.entity_callbacks[cbid] = prototype.rightclick
-			new_rightclick = function(self, clicker)
-				local starttime = core.get_us_time()
-				mod_statistics.entity_callbacks[cbid](self, clicker)
-				local delta = core.get_us_time() -starttime
-				mod_statistics.log_time(cbid, modname, delta)
-			end
-		end
-		
-		if prototype.get_staticdata ~= nil then
-			local cbid = name .. "#gs"
-			mod_statistics.entity_callbacks[cbid] = prototype.get_staticdata
-			new_get_staticdata = function(self)
-				local starttime = core.get_us_time()
-				local retval = mod_statistics.entity_callbacks[cbid](self)
-				local delta = core.get_us_time() -starttime
-				mod_statistics.log_time(cbid, modname, delta)
-				return retval
-			end
-		end
-	
-		prototype.on_activate = new_on_activate
-		prototype.on_step = new_on_step
-		prototype.on_punch = new_on_punch
-		prototype.rightclick = new_rightclick
-		prototype.get_staticdata = new_get_staticdata
-		
+
+		prototype.on_activate = profile_wrap(name.."#oa",
+				modname, prototype.on_activate)
+		prototype.on_step = profile_wrap(name.."#os",
+				modname, prototype.on_step)
+		prototype.on_punch = profile_wrap(name.."#op",
+				modname, prototype.on_punch)
+		prototype.on_rightclick = profile_wrap(name.."#rc",
+				modname, prototype.on_rightclick)
+		prototype.get_staticdata = profile_wrap(name.."#gs",
+				modname, prototype.get_staticdata)
+
 		rp_register_entity(name,prototype)
 	end
 	
@@ -331,23 +285,17 @@ local function initialize_profiling()
 	end
 	
 	local rp_register_abm = core.register_abm
-	core.register_abm = function(spec)
+	function core.register_abm(spec)
 	
 		local modname = core.get_current_modname()
-	
-		local replacement_spec = {
+
+		rp_register_abm({
 			nodenames = spec.nodenames,
 			neighbors = spec.neighbors,
 			interval  = spec.interval,
 			chance    = spec.chance,
-			action = function(pos, node, active_object_count, active_object_count_wider)
-				local starttime = core.get_us_time()
-				spec.action(pos, node, active_object_count, active_object_count_wider)
-				local delta = core.get_us_time() - starttime
-				mod_statistics.log_time("abm", modname, delta)
-			end
-		}
-		rp_register_abm(replacement_spec)
+			action    = profile_wrap("abm", modname, spec.action)
+		})
 	end
 	
 	core.log("action", "Mod profiling initialized")
