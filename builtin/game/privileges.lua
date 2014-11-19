@@ -7,21 +7,18 @@
 core.registered_privileges = {}
 
 function core.register_privilege(name, param)
-	local function fill_defaults(def)
-		if def.give_to_singleplayer == nil then
-			def.give_to_singleplayer = true
-		end
-		if def.description == nil then
-			def.description = "(no description)"
-		end
-	end
 	local def = {}
 	if type(param) == "table" then
 		def = param
 	else
 		def = {description = param}
 	end
-	fill_defaults(def)
+	if def.give_to_singleplayer == nil then
+		def.give_to_singleplayer = true
+	end
+	if def.description == nil then
+		def.description = "(no description)"
+	end
 	core.registered_privileges[name] = def
 end
 

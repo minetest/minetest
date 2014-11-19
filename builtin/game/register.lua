@@ -61,7 +61,7 @@ local function check_modname_prefix(name)
 				"\"modname:\" or \":\" prefix required")
 		end
 		local subname = name:sub(#expected_prefix+1)
-		if subname:find("[^abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_]") then
+		if subname:find("[^a-zA-Z0-9_]") then
 			error("Name " .. name .. " does not follow naming conventions: " ..
 				"contains unallowed characters")
 		end
@@ -102,13 +102,15 @@ function core.register_item(name, itemdef)
 	-- Apply defaults and add to registered_* table
 	if itemdef.type == "node" then
 		-- Use the nodebox as selection box if it's not set manually
-		if itemdef.drawtype == "nodebox" and not itemdef.selection_box then
-			itemdef.selection_box = itemdef.node_box
-		elseif itemdef.drawtype == "fencelike" and not itemdef.selection_box then
-			itemdef.selection_box = {
-				type = "fixed",
-				fixed = {-1/8, -1/2, -1/8, 1/8, 1/2, 1/8},
-			}
+		if not itemdef.selection_box then
+			if itemdef.drawtype == "nodebox" then
+				itemdef.selection_box = itemdef.node_box
+			elseif itemdef.drawtype == "fencelike" then
+				itemdef.selection_box = {
+					type = "fixed",
+					fixed = {-1/8, -1/2, -1/8, 1/8, 1/2, 1/8},
+				}
+			end
 		end
 		setmetatable(itemdef, {__index = core.nodedef_default})
 		core.registered_nodes[itemdef.name] = itemdef
@@ -129,24 +131,6 @@ function core.register_item(name, itemdef)
 		itemdef.paramtype2 = "flowingliquid"
 	end
 
-	-- BEGIN Legacy stuff
-	if itemdef.cookresult_itemstring ~= nil and itemdef.cookresult_itemstring ~= "" then
-		core.register_craft({
-			type="cooking",
-			output=itemdef.cookresult_itemstring,
-			recipe=itemdef.name,
-			cooktime=itemdef.furnace_cooktime
-		})
-	end
-	if itemdef.furnace_burntime ~= nil and itemdef.furnace_burntime >= 0 then
-		core.register_craft({
-			type="fuel",
-			recipe=itemdef.name,
-			burntime=itemdef.furnace_burntime
-		})
-	end
-	-- END Legacy stuff
-
 	-- Disable all further modifications
 	getmetatable(itemdef).__newindex = {}
 
@@ -163,52 +147,12 @@ end
 
 function core.register_craftitem(name, craftitemdef)
 	craftitemdef.type = "craft"
-
-	-- BEGIN Legacy stuff
-	if craftitemdef.inventory_image == nil and craftitemdef.image ~= nil then
-		craftitemdef.inventory_image = craftitemdef.image
-	end
-	-- END Legacy stuff
-
 	core.register_item(name, craftitemdef)
 end
 
 function core.register_tool(name, tooldef)
 	tooldef.type = "tool"
 	tooldef.stack_max = 1
-
-	-- BEGIN Legacy stuff
-	if tooldef.inventory_image == nil and tooldef.image ~= nil then
-		tooldef.inventory_image = tooldef.image
-	end
-	if tooldef.tool_capabilities == nil and
-	   (tooldef.full_punch_interval ~= nil or
-	    tooldef.basetime ~= nil or
-	    tooldef.dt_weight ~= nil or
-	    tooldef.dt_crackiness ~= nil or
-	    tooldef.dt_crumbliness ~= nil or
-	    tooldef.dt_cuttability ~= nil or
-	    tooldef.basedurability ~= nil or
-	    tooldef.dd_weight ~= nil or
-	    tooldef.dd_crackiness ~= nil or
-	    tooldef.dd_crumbliness ~= nil or
-	    tooldef.dd_cuttability ~= nil) then
-		tooldef.tool_capabilities = {
-			full_punch_interval = tooldef.full_punch_interval,
-			basetime = tooldef.basetime,
-			dt_weight = tooldef.dt_weight,
-			dt_crackiness = tooldef.dt_crackiness,
-			dt_crumbliness = tooldef.dt_crumbliness,
-			dt_cuttability = tooldef.dt_cuttability,
-			basedurability = tooldef.basedurability,
-			dd_weight = tooldef.dd_weight,
-			dd_crackiness = tooldef.dd_crackiness,
-			dd_crumbliness = tooldef.dd_crumbliness,
-			dd_cuttability = tooldef.dd_cuttability,
-		}
-	end
-	-- END Legacy stuff
-
 	core.register_item(name, tooldef)
 end
 
@@ -255,12 +199,6 @@ for name in pairs(forbidden_item_names) do
 	register_alias_raw(name, "")
 end
 
-
--- Deprecated:
--- Aliases for core.register_alias (how ironic...)
---core.alias_node = core.register_alias
---core.alias_tool = core.register_alias
---core.alias_craftitem = core.register_alias
 
 --
 -- Built-in node definitions. Also defined in C.

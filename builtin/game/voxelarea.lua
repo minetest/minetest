@@ -1,14 +1,11 @@
-VoxelArea = {
-	MinEdge = {x=1, y=1, z=1},
-	MaxEdge = {x=0, y=0, z=0},
-	ystride = 0,
-	zstride = 0,
-}
+VoxelArea = { }
+VoxelArea.__index = VoxelArea
 
 function VoxelArea:new(o)
 	o = o or {}
 	setmetatable(o, self)
-	self.__index = self
+	o.MinEdge = o.MinEdge or {x=1, y=1, z=1}
+	o.MaxEdge = o.MaxEdge or {x=0, y=0, z=0}
 
 	local e = o:getExtent()
 	o.ystride = e.x
