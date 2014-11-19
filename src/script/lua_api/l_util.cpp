@@ -100,7 +100,7 @@ int ModApiUtil::l_log(lua_State *L)
 		lua_pushliteral(L, "Bad setting name, only [A-Za-z0-9_-.] allowed.");\
 		lua_error(L);\
 	}\
-	if (name.compare(0, 7, "secure_", 7) == 0) {\
+	if (name.compare(0, 7, "secure.") == 0) {\
 		lua_pushliteral(L, "Attempt to set secure setting.");\
 		lua_error(L);\
 	}
@@ -364,7 +364,7 @@ int ModApiUtil::l_request_insecure_environment(lua_State * L)
 		return 1;
 	}
 	const char * mod_name = lua_tostring(L, -1);
-	std::string trusted_mods = g_settings->get("secure_trusted_mods");
+	std::string trusted_mods = g_settings->get("secure.trusted_mods");
 	std::vector<std::string> mod_list = str_split(trusted_mods, ',');
 	if (std::find(mod_list.begin(), mod_list.end(), mod_name) == mod_list.end()) {
 		lua_pushnil(L);

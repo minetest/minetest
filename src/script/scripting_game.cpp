@@ -53,7 +53,7 @@ GameScripting::GameScripting(Server* server)
 
 	SCRIPTAPI_PRECHECKHEADER
 
-	if (g_settings->getBool("secure_mod_api")) {
+	if (g_settings->getBool("secure.enable_security")) {
 		initializeSecurity();
 	}
 

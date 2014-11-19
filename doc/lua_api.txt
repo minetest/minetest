@@ -1779,7 +1779,7 @@ Call these functions only at load time!
 * `minetest.setting_set(name, value)`
   Note that only characters in the set [a-zA-Z0-9_-.] are allowed in setting
   names, and setting values can't contain the sequence "\n\"\"\"".  Settings
-  starting with "secure_" also can't be set.
+  starting with "secure." also can't be set.
 * `minetest.setting_get(name)`: returns string or `nil`
 * `minetest.setting_setbool(name, value)`
   See documentation on setting_set for restrictions.
@@ -2218,7 +2218,7 @@ These functions return the leftover itemstack.
 
 * `minetest.request_insecure_environment()`:
   Returns an environment containing insecure functions if the calling mod has
-  been listed as trusted in the secure_trusted_mods setting, otherwise returns
+  been listed as trusted in the secure.trusted_mods setting, otherwise returns
   `nil`.  Only works at init time.
   DO NOT ALLOW ANY OTHER MODS TO ACCESS THE RETURNED ENVIRONMENT, STORE IT IN
   A LOCAL VARIABLE!
