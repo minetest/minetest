@@ -111,15 +111,6 @@ inline bool isInArea(v3s16 p, v3s16 d)
 	);
 }
 
-inline s16 rangelim(s16 i, s16 max)
-{
-	if(i < 0)
-		return 0;
-	if(i > max)
-		return max;
-	return i;
-}
-
 #define rangelim(d, min, max) ((d) < (min) ? (min) : ((d)>(max)?(max):(d)))
 #define myfloor(x) ((x) > 0.0 ? (int)(x) : (int)(x) - 1)
 
