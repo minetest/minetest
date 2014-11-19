@@ -280,7 +280,9 @@ Client::Client(
 	}
 
 	if (g_settings->getBool("enable_local_map_saving")) {
-		const std::string world_path = "./server_" + g_settings->get("address") + "_" + g_settings->get("remote_port");
+		const std::string world_path = porting::path_user + DIR_DELIM + "worlds"
+				+ DIR_DELIM + "server_" + g_settings->get("address")
+				+ "_" + g_settings->get("remote_port");
 
 		SubgameSpec gamespec;
 		if (!getWorldExists(world_path)) {
