@@ -160,7 +160,7 @@ local function formspec(tabview, name, tabdata)
 		"box[7.75,0;4,4;#999999]" ..
 		"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
 				.. dump(core.setting_getbool("enable_shaders")) .. "]"
-	if not ANDROID then
+	if PLATFORM ~= "Android" then
 		tab_string = tab_string ..
 		"button[8,4.75;3.75,0.5;btn_change_keys;".. fgettext("Change keys") .. "]"
 	else
@@ -176,7 +176,7 @@ local function formspec(tabview, name, tabdata)
 			fgettext("Scaling factor applied to menu elements: ") ..
 			dump(core.setting_get("gui_scaling")) .. "]"
 
-	if ANDROID then
+	if PLATFORM == "Android" then
 		tab_string = tab_string ..
 		"box[4.25,2.75;3.25,2.15;#999999]" ..
 		"checkbox[4.5,2.75;cb_touchscreen_target;".. fgettext("Touch free target") .. ";"

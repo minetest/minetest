@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "log.h"
 #include "mods.h"
+#include "porting.h"
 #include "util/string.h"
 
 
@@ -97,6 +98,9 @@ ScriptApiBase::ScriptApiBase()
 
 	lua_pushstring(m_luastack, DIR_DELIM);
 	lua_setglobal(m_luastack, "DIR_DELIM");
+
+	lua_pushstring(m_luastack, porting::getPlatformName());
+	lua_setglobal(m_luastack, "PLATFORM");
 
 	m_server = NULL;
 	m_environment = NULL;
