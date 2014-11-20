@@ -2,6 +2,9 @@
 
 local function check_static_spawnpoint()
 	local static_spawnpoint = core.setting_get("static_spawnpoint")
+	if not static_spawnpoint then
+		return
+	end
 	local pos = static_spawnpoint and core.string_to_pos(static_spawnpoint)
 	if not pos then
 		core.log('error', "The static_spawnpoint setting is invalid: \""

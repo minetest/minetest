@@ -484,9 +484,7 @@ end
 -- Item definition defaults
 --
 
-core.nodedef_default = {
-	-- Item properties
-	type="node",
+core.itemdef_default = {
 	-- name intentionally not defined here
 	description = "",
 	groups = {},
@@ -496,20 +494,22 @@ core.nodedef_default = {
 	stack_max = 99,
 	usable = false,
 	liquids_pointable = false,
-	tool_capabilities = nil,
-	node_placement_prediction = nil,
+}
+
+local function inherit_itemdef(def)
+	return setmetatable(def, {__index=core.itemdef_default})
+end
+
+core.nodedef_default = inherit_itemdef({
+	-- Item properties
+	type="node",
 
 	-- Interaction callbacks
 	on_place = redef_wrapper(core, 'item_place'), -- core.item_place
 	on_drop = redef_wrapper(core, 'item_drop'), -- core.item_drop
-	on_use = nil,
-	can_dig = nil,
 
 	on_punch = redef_wrapper(core, 'node_punch'), -- core.node_punch
-	on_rightclick = nil,
 	on_dig = redef_wrapper(core, 'node_dig'), -- core.node_dig
-
-	on_receive_fields = nil,
 	
 	on_metadata_inventory_move = core.node_metadata_inventory_move_allow_all,
 	on_metadata_inventory_offer = core.node_metadata_inventory_offer_allow_all,
@@ -546,58 +546,29 @@ core.nodedef_default = {
 	selection_box = {type="regular"},
 	legacy_facedir_simple = false,
 	legacy_wallmounted = false,
-}
+})
 
-core.craftitemdef_default = {
+core.craftitemdef_default = inherit_itemdef({
 	type="craft",
-	-- name intentionally not defined here
-	description = "",
-	groups = {},
-	inventory_image = "",
-	wield_image = "",
-	wield_scale = {x=1,y=1,z=1},
-	stack_max = 99,
-	liquids_pointable = false,
-	tool_capabilities = nil,
 
 	-- Interaction callbacks
 	on_place = redef_wrapper(core, 'item_place'), -- core.item_place
 	on_drop = redef_wrapper(core, 'item_drop'), -- core.item_drop
-	on_use = nil,
-}
+})
 
-core.tooldef_default = {
+core.tooldef_default = inherit_itemdef({
 	type="tool",
-	-- name intentionally not defined here
-	description = "",
-	groups = {},
-	inventory_image = "",
-	wield_image = "",
-	wield_scale = {x=1,y=1,z=1},
 	stack_max = 1,
-	liquids_pointable = false,
-	tool_capabilities = nil,
 
 	-- Interaction callbacks
 	on_place = redef_wrapper(core, 'item_place'), -- core.item_place
 	on_drop = redef_wrapper(core, 'item_drop'), -- core.item_drop
-	on_use = nil,
-}
+})
 
-core.noneitemdef_default = {  -- This is used for the hand and unknown items
+-- This is used for the hand and unknown items
+core.noneitemdef_default = inherit_itemdef({
 	type="none",
-	-- name intentionally not defined here
-	description = "",
-	groups = {},
-	inventory_image = "",
-	wield_image = "",
-	wield_scale = {x=1,y=1,z=1},
-	stack_max = 99,
-	liquids_pointable = false,
-	tool_capabilities = nil,
 
 	-- Interaction callbacks
 	on_place = redef_wrapper(core, 'item_place'),
-	on_drop = nil,
-	on_use = nil,
-}
+})

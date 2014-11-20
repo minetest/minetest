@@ -88,6 +88,12 @@ function core.register_entity(name, prototype)
 	core.registered_entities[name] = prototype
 end
 
+local function inherit_itemdef(table, base)
+	setmetatable(table, {__index=function(self, k)
+		return base[k]
+	end})
+end
+
 function core.register_item(name, itemdef)
 	-- Check name
 	if name == nil then
@@ -112,16 +118,16 @@ function core.register_item(name, itemdef)
 				}
 			end
 		end
-		setmetatable(itemdef, {__index = core.nodedef_default})
+		inherit_itemdef(itemdef, core.nodedef_default)
 		core.registered_nodes[itemdef.name] = itemdef
 	elseif itemdef.type == "craft" then
-		setmetatable(itemdef, {__index = core.craftitemdef_default})
+		inherit_itemdef(itemdef, core.craftitemdef_default)
 		core.registered_craftitems[itemdef.name] = itemdef
 	elseif itemdef.type == "tool" then
-		setmetatable(itemdef, {__index = core.tooldef_default})
+		inherit_itemdef(itemdef, core.tooldef_default)
 		core.registered_tools[itemdef.name] = itemdef
 	elseif itemdef.type == "none" then
-		setmetatable(itemdef, {__index = core.noneitemdef_default})
+		inherit_itemdef(itemdef, core.noneitemdef_default)
 	else
 		error("Unable to register item: Type is invalid: " .. dump(itemdef))
 	end
