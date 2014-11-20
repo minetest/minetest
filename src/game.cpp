@@ -1502,8 +1502,9 @@ protected:
 	void updateFrame(std::vector<aabb3f> &highlight_boxes, ProfilerGraph *graph,
 			RunStats *stats, GameRunData *runData,
 			f32 dtime, const VolatileRunFlags &flags, const CameraOrientation &cam);
-	void updateGui(float *statustext_time, const RunStats &stats, f32 dtime,
-			const VolatileRunFlags &flags, const CameraOrientation &cam);
+	void updateGui(float *statustext_time, const RunStats &stats,
+			const GameRunData& runData, f32 dtime, const VolatileRunFlags &flags,
+			const CameraOrientation &cam);
 	void updateProfilerGraphs(ProfilerGraph *graph);
 
 	// Misc
@@ -3836,7 +3837,7 @@ void Game::updateFrame(std::vector<aabb3f> &highlight_boxes,
 		runData->update_draw_list_last_cam_dir = camera_direction;
 	}
 
-	updateGui(&runData->statustext_time, *stats, dtime, flags, cam);
+	updateGui(&runData->statustext_time, *stats, *runData, dtime, flags, cam);
 
 	/*
 	   make sure menu is on top
@@ -3913,8 +3914,9 @@ void Game::updateFrame(std::vector<aabb3f> &highlight_boxes,
 }
 
 
-void Game::updateGui(float *statustext_time, const RunStats& stats,
-		f32 dtime, const VolatileRunFlags &flags, const CameraOrientation &cam)
+void Game::updateGui(float *statustext_time, const RunStats &stats,
+		const GameRunData& runData, f32 dtime, const VolatileRunFlags &flags,
+		const CameraOrientation &cam)
 {
 	v2u32 screensize = driver->getScreenSize();
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
@@ -3969,6 +3971,19 @@ void Game::updateGui(float *statustext_time, const RunStats& stats,
 		   << ") (yaw=" << (wrapDegrees_0_360(cam.camera_yaw))
 		   << ") (seed = " << ((u64)client->getMapSeed())
 		   << ")";
+
+		if (runData.pointed_old.type == POINTEDTHING_NODE) {
+			ClientMap &map = client->getEnv().getClientMap();
+			const INodeDefManager *nodedef = client->getNodeDefManager();
+			MapNode n = map.getNodeNoEx(runData.pointed_old.node_undersurface);
+			if (n.getContent() != CONTENT_IGNORE && nodedef->get(n).name != "unknown") {
+				const ContentFeatures &features = nodedef->get(n);
+				os << " (pointing_at = " << nodedef->get(n).name
+				   << " - " << features.tiledef[0].name.c_str()
+				   << ")";
+			}
+		}
+
 		guitext2->setText(narrow_to_wide(os.str()).c_str());
 		guitext2->setVisible(true);
 
