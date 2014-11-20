@@ -39,26 +39,21 @@ core.register_entity(":__builtin:item", {
 		local stack = ItemStack(itemstring)
 		local count = stack:get_count()
 		local max_count = stack:get_stack_max()
+		local itemname = stack:get_name()
 		if count > max_count then
 			count = max_count
-			self.itemstring = stack:get_name().." "..max_count
+			self.itemstring = itemname.." "..max_count
 		end
 		local s = 0.15 + 0.15 * (count / max_count)
 		local c = 0.8 * s
-		local itemtable = stack:to_table()
-		local itemname = nil
-		if itemtable then
-			itemname = stack:to_table().name
-		end
-		prop = {
+		self.object:set_properties({
 			is_visible = true,
 			visual = "wielditem",
 			textures = {itemname},
 			visual_size = {x = s, y = s},
 			collisionbox = {-c, -c, -c, c, c, c},
 			automatic_rotate = math.pi * 0.2,
-		}
-		self.object:set_properties(prop)
+		})
 	end,
 
 	get_staticdata = function(self)
