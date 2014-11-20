@@ -17,10 +17,10 @@
 
 --------------------------------------------------------------------------------
 local function filter_texture_pack_list(list)
-	retval = {"None"}
-	for _,i in ipairs(list) do
-		if i~="base" then
-			table.insert(retval, i)
+	local retval = {"None"}
+	for _, item in ipairs(list) do
+		if item ~= "base" then
+			table.insert(retval, item)
 		end
 	end
 	return retval

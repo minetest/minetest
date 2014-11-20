@@ -54,7 +54,7 @@
 # Double-tapping the jump key toggles fly mode
 #doubletap_jump = false
 # If false aux1 is used to fly fast
-#always_fly_fast = true
+#always_fly_fast = false
 # Some (temporary) keys for debugging
 #keymap_print_debug_stacks = KEY_KEY_P
 #keymap_quicktune_prev = KEY_HOME
@@ -70,9 +70,10 @@
 #fps_max = 60
 # Maximum FPS when game is paused
 #pause_fps_max = 20
-# The allowed adjustment range for the automatic rendering range adjustment
-#viewing_range_nodes_max = 160
-#viewing_range_nodes_min = 35
+# The allowed adjustment range for the automatic rendering range adjustment.
+# You can change this option on gameplay too. Press "-" to reduce and "+" to increase the minimum viewing range.
+#viewing_range_nodes_max = 120
+#viewing_range_nodes_min = 30
 # Initial window size
 #screenW = 800
 #screenH = 600
@@ -88,7 +89,7 @@
 # Enable random user input, for testing
 #random_input = false
 # Timeout for client to remove unused map data from memory
-#client_unload_unused_data_timeout = 600
+#client_unload_unused_data_timeout = 300
 # Whether to fog out the end of the visible area
 #enable_fog = true
 # Whether to show the client debug info (has the same effect as hitting F5)
@@ -130,7 +131,7 @@
 # Amount of view bobbing (0 = no view bobbing, 1.0 = normal, 2.0 = double)
 #view_bobbing_amount = 1.0
 # Amount of fall bobbing (0 = no fall bobbing, 1.0 = normal, 2.0 = double)
-#fall_bobbing_amount = 0.0
+#fall_bobbing_amount = 0.6
 # 3d support,
 # right now:
 #     "none"       = no 3d output,
@@ -215,7 +216,7 @@
 
 # Default timeout for cURL, in milliseconds
 # Only has an effect if compiled with cURL
-#curl_timeout = 5000
+#curl_timeout = 4000
 # Limits number of parallel HTTP requests. Affects:
 # - Media fetch if server uses remote_media setting
 # - Serverlist download and server announcement

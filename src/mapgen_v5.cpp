@@ -63,7 +63,7 @@ MapgenV5::MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge_) {
 	// amount of elements to skip for the next index
 	// for noise/height/biome maps (not vmanip)
 	this->ystride = csize.X;
-	this->zstride = csize.X * csize.Y;
+	this->zstride = csize.X * (csize.Y + 2);
 
 	this->biomemap  = new u8[csize.X * csize.Z];
 	this->heightmap = new s16[csize.X * csize.Z];
@@ -78,11 +78,11 @@ MapgenV5::MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge_) {
 	noise_height       = new Noise(&sp->np_height,       seed, csize.X, csize.Z);
 
 	// 3D terrain noise
-	noise_cave1        = new Noise(&sp->np_cave1,   seed, csize.X, csize.Y, csize.Z);
-	noise_cave2        = new Noise(&sp->np_cave2,   seed, csize.X, csize.Y, csize.Z);
-	noise_ground       = new Noise(&sp->np_ground,  seed, csize.X, csize.Y, csize.Z);
-	noise_crumble      = new Noise(&sp->np_crumble, seed, csize.X, csize.Y, csize.Z);
-	noise_wetness      = new Noise(&sp->np_wetness, seed, csize.X, csize.Y, csize.Z);
+	noise_cave1        = new Noise(&sp->np_cave1,   seed, csize.X, csize.Y + 2, csize.Z);
+	noise_cave2        = new Noise(&sp->np_cave2,   seed, csize.X, csize.Y + 2, csize.Z);
+	noise_ground       = new Noise(&sp->np_ground,  seed, csize.X, csize.Y + 2, csize.Z);
+	noise_crumble      = new Noise(&sp->np_crumble, seed, csize.X, csize.Y + 2, csize.Z);
+	noise_wetness      = new Noise(&sp->np_wetness, seed, csize.X, csize.Y + 2, csize.Z);
 
 	// Biome noise
 	noise_heat         = new Noise(bmgr->np_heat,     seed, csize.X, csize.Z);
@@ -192,15 +192,48 @@ void MapgenV5Params::writeParams(Settings *settings) {
 }
 
 
+int MapgenV5::getGroundLevelAtPoint(v2s16 p) {
+	//TimeTaker t("getGroundLevelAtPoint", NULL, PRECISION_MICRO);
+
+	float f = 0.55 + NoisePerlin2D(noise_factor->np, p.X, p.Y, seed);
+	if(f < 0.01)
+		f = 0.01;
+	else if(f >= 1.0)
+		f *= 1.6;
+	float h = water_level + NoisePerlin2D(noise_height->np, p.X, p.Y, seed);
+
+	s16 search_top = water_level + 15;
+	s16 search_base = water_level;
+	// Use these 2 lines instead for a slower search returning highest ground level
+	//s16 search_top = h + f * noise_ground->np->octaves * noise_ground->np->scale;
+	//s16 search_base = h - f * noise_ground->np->octaves * noise_ground->np->scale;
+
+	s16 level = -31000;
+	for (s16 y = search_top; y >= search_base; y--) {
+		float n_ground = NoisePerlin3DEased(noise_ground->np, p.X, y, p.Y, seed);
+		if(n_ground * f > y - h) {
+			if(y >= search_top - 7)
+				break;
+			else
+				level = y;
+				break;
+		}
+	}
+
+	//printf("getGroundLevelAtPoint: %dus\n", t.stop());
+	return level;
+}
+
+
 void MapgenV5::makeChunk(BlockMakeData *data) {
 	assert(data->vmanip);
 	assert(data->nodedef);
 	assert(data->blockpos_requested.X >= data->blockpos_min.X &&
-		   data->blockpos_requested.Y >= data->blockpos_min.Y &&
-		   data->blockpos_requested.Z >= data->blockpos_min.Z);
+		data->blockpos_requested.Y >= data->blockpos_min.Y &&
+		data->blockpos_requested.Z >= data->blockpos_min.Z);
 	assert(data->blockpos_requested.X <= data->blockpos_max.X &&
-		   data->blockpos_requested.Y <= data->blockpos_max.Y &&
-		   data->blockpos_requested.Z <= data->blockpos_max.Z);
+		data->blockpos_requested.Y <= data->blockpos_max.Y &&
+		data->blockpos_requested.Z <= data->blockpos_max.Z);
 			
 	generating = true;
 	vm   = data->vmanip;	
@@ -258,8 +291,8 @@ void MapgenV5::makeChunk(BlockMakeData *data) {
 	
 	// Calculate lighting
 	if (flags & MG_LIGHT)
-		calcLighting(node_min - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
-					 node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE);
+		calcLighting(node_min - v3s16(0, 1, 0) - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
+			node_max + v3s16(0, 1, 0) + v3s16(1, 0, 1) * MAP_BLOCKSIZE);
 	
 	this->generating = false;
 }
@@ -268,7 +301,7 @@ void MapgenV5::makeChunk(BlockMakeData *data) {
 void MapgenV5::calculateNoise() {
 	//TimeTaker t("calculateNoise", NULL, PRECISION_MICRO);
 	int x = node_min.X;
-	int y = node_min.Y;
+	int y = node_min.Y - 1;
 	int z = node_min.Z;
 	
 	noise_filler_depth->perlinMap2D(x, z);
@@ -319,7 +352,7 @@ void MapgenV5::generateBaseTerrain() {
 	u32 index2d = 0;
 
 	for(s16 z=node_min.Z; z<=node_max.Z; z++) {
-		for(s16 y=node_min.Y; y<=node_max.Y; y++) {
+		for(s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
 			u32 i = vm->m_area.index(node_min.X, y, z);
 			for(s16 x=node_min.X; x<=node_max.X; x++, i++, index++, index2d++) {
 				if(vm->m_data[i].getContent() != CONTENT_IGNORE)
@@ -333,6 +366,7 @@ void MapgenV5::generateBaseTerrain() {
 				float h = water_level + noise_height->result[index2d];
 				float d1 = contour(noise_cave1->result[index]);
 				float d2 = contour(noise_cave2->result[index]);
+
 				if(noise_ground->result[index] * f < y - h) {
 					if(y <= water_level)
 						vm->m_data[i] = MapNode(c_water_source);
@@ -356,7 +390,7 @@ void MapgenV5::generateBlobs() {
 	u32 index = 0;
 
 	for(s16 z=node_min.Z; z<=node_max.Z; z++) {
-		for(s16 y=node_min.Y; y<=node_max.Y; y++) {
+		for(s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
 			u32 i = vm->m_area.index(node_min.X, y, z);
 			for(s16 x=node_min.X; x<=node_max.X; x++, i++, index++) {
 				content_t c = vm->m_data[i].getContent();
@@ -398,7 +432,7 @@ void MapgenV5::generateBiomes() {
 		Biome *biome  = (Biome *)bmgr->get(biomemap[index]);
 		s16 dfiller   = biome->depth_filler + noise_filler_depth->result[index];
 		s16 y0_top    = biome->depth_top;
-		s16 y0_filler = biome->depth_filler + biome->depth_top + dfiller;
+		s16 y0_filler = biome->depth_top + dfiller;
 		
 		s16 nplaced = 0;
 		u32 i = vm->m_area.index(x, node_max.Y, z);	
@@ -462,7 +496,7 @@ void MapgenV5::dustTopNodes() {
 		if (biome->c_dust == CONTENT_IGNORE)
 			continue;
 
-		s16 y = node_max.Y;
+		s16 y = node_max.Y + 1;
 		u32 vi = vm->m_area.index(x, y, z);
 		for (; y >= node_min.Y; y--) {
 			if (vm->m_data[vi].getContent() != CONTENT_AIR)
@@ -473,12 +507,13 @@ void MapgenV5::dustTopNodes() {
 			
 		content_t c = vm->m_data[vi].getContent();
 		if (c == biome->c_water && biome->c_dust_water != CONTENT_IGNORE) {
-			if (y < node_min.Y)
+			if (y < node_min.Y - 1)
 				continue;
 				
 			vm->m_data[vi] = MapNode(biome->c_dust_water);
-		} else if (!ndef->get(c).buildable_to && c != CONTENT_IGNORE) {
-			if (y == node_max.Y)
+		} else if (!ndef->get(c).buildable_to && c != CONTENT_IGNORE
+				&& c != biome->c_dust) {
+			if (y == node_max.Y + 1)
 				continue;
 				
 			vm->m_area.add_y(em, vi, 1);

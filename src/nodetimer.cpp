@@ -96,12 +96,12 @@ void NodeTimerList::deSerialize(std::istream &is, u8 map_format_version)
 	{
 		u16 p16 = readU16(is);
 
-		v3s16 p(0,0,0);
-		p.Z += p16 / MAP_BLOCKSIZE / MAP_BLOCKSIZE;
-		p16 -= p.Z * MAP_BLOCKSIZE * MAP_BLOCKSIZE;
-		p.Y += p16 / MAP_BLOCKSIZE;
-		p16 -= p.Y * MAP_BLOCKSIZE;
-		p.X += p16;
+		v3s16 p;
+		p.Z = p16 / MAP_BLOCKSIZE / MAP_BLOCKSIZE;
+		p16 &= MAP_BLOCKSIZE * MAP_BLOCKSIZE - 1;
+		p.Y = p16 / MAP_BLOCKSIZE;
+		p16 &= MAP_BLOCKSIZE - 1;
+		p.X = p16;
 
 		NodeTimer t;
 		t.deSerialize(is);

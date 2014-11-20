@@ -142,7 +142,7 @@ void VoxelManipulator::print(std::ostream &o, INodeDefManager *ndef,
 	}
 }
 
-void VoxelManipulator::addArea(VoxelArea area)
+void VoxelManipulator::addArea(const VoxelArea &area)
 {
 	// Cancel if requested area has zero volume
 	if(area.getExtent() == v3s16(0,0,0))
@@ -310,7 +310,8 @@ void VoxelManipulator::unspreadLight(enum LightBank bank, v3s16 p, u8 oldlight,
 		v3s16(-1,0,0), // left
 	};
 
-	addArea(VoxelArea(p - v3s16(1,1,1), p + v3s16(1,1,1)));
+	VoxelArea voxel_area(p - v3s16(1,1,1), p + v3s16(1,1,1));
+	addArea(voxel_area);
 
 	// Loop through 6 neighbors
 	for(u16 i=0; i<6; i++)
@@ -515,7 +516,8 @@ void VoxelManipulator::spreadLight(enum LightBank bank, v3s16 p,
 		v3s16(-1,0,0), // left
 	};
 
-	addArea(VoxelArea(p - v3s16(1,1,1), p + v3s16(1,1,1)));
+	VoxelArea voxel_area(p - v3s16(1,1,1), p + v3s16(1,1,1));
+	addArea(voxel_area);
 
 	u32 i = m_area.index(p);
 
@@ -619,7 +621,8 @@ void VoxelManipulator::spreadLight(enum LightBank bank,
 	{
 		v3s16 pos = *j;
 
-		addArea(VoxelArea(pos - v3s16(1,1,1), pos + v3s16(1,1,1)));
+		VoxelArea voxel_area(pos - v3s16(1,1,1), pos + v3s16(1,1,1));
+		addArea(voxel_area);
 
 		u32 i = m_area.index(pos);
 
