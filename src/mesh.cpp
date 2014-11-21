@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mesh.h"
 #include "debug.h"
 #include "log.h"
+#include "irrMap.h"
 #include <iostream>
 #include <IAnimatedMesh.h>
 #include <SAnimatedMesh.h>
@@ -193,6 +194,51 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 			else
 				vertices[i].Color = colorZ;
 
+		}
+	}
+}
+
+void rotateMeshXYby (scene::IMesh *mesh, f64 degrees) 
+{	
+	u16 mc = mesh->getMeshBufferCount();
+	for(u16 j = 0; j < mc; j++)
+	{
+		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
+		u16 vc = buf->getVertexCount();
+		for(u16 i = 0; i < vc; i++)
+		{
+			vertices[i].Pos.rotateXYBy(degrees);
+		}
+	}
+}
+
+void rotateMeshXZby (scene::IMesh *mesh, f64 degrees) 
+{	
+	u16 mc = mesh->getMeshBufferCount();
+	for(u16 j = 0; j < mc; j++)
+	{
+		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
+		u16 vc = buf->getVertexCount();
+		for(u16 i = 0; i < vc; i++)
+		{
+			vertices[i].Pos.rotateXZBy(degrees);
+		}
+	}
+}
+
+void rotateMeshYZby (scene::IMesh *mesh, f64 degrees) 
+{	
+	u16 mc = mesh->getMeshBufferCount();
+	for(u16 j = 0; j < mc; j++)
+	{
+		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
+		u16 vc = buf->getVertexCount();
+		for(u16 i = 0; i < vc; i++)
+		{
+			vertices[i].Pos.rotateYZBy(degrees);
 		}
 	}
 }
@@ -413,4 +459,598 @@ scene::IMesh* convertNodeboxNodeToMesh(ContentFeatures *f)
 		}
 	}
 	return dst_mesh;					
+}
+
+struct vcache
+{
+	core::array<u32> tris;
+	float score;
+	s16 cachepos;
+	u16 NumActiveTris;
+};
+
+struct tcache
+{
+	u16 ind[3];
+	float score;
+	bool drawn;
+};
+
+const u16 cachesize = 32;
+
+float FindVertexScore(vcache *v)
+{
+	const float CacheDecayPower = 1.5f;
+	const float LastTriScore = 0.75f;
+	const float ValenceBoostScale = 2.0f;
+	const float ValenceBoostPower = 0.5f;
+	const float MaxSizeVertexCache = 32.0f;
+
+	if (v->NumActiveTris == 0)
+	{
+		// No tri needs this vertex!
+		return -1.0f;
+	}
+
+	float Score = 0.0f;
+	int CachePosition = v->cachepos;
+	if (CachePosition < 0)
+	{
+		// Vertex is not in FIFO cache - no score.
+	}
+	else
+	{
+		if (CachePosition < 3)
+		{
+			// This vertex was used in the last triangle,
+			// so it has a fixed score.
+			Score = LastTriScore;
+		}
+		else
+		{
+			// Points for being high in the cache.
+			const float Scaler = 1.0f / (MaxSizeVertexCache - 3);
+			Score = 1.0f - (CachePosition - 3) * Scaler;
+			Score = powf(Score, CacheDecayPower);
+		}
+	}
+
+	// Bonus points for having a low number of tris still to
+	// use the vert, so we get rid of lone verts quickly.
+	float ValenceBoost = powf(v->NumActiveTris,
+				-ValenceBoostPower);
+	Score += ValenceBoostScale * ValenceBoost;
+
+	return Score;
+}
+
+/*
+	A specialized LRU cache for the Forsyth algorithm.
+*/
+
+class f_lru
+{
+
+public:
+	f_lru(vcache *v, tcache *t): vc(v), tc(t)
+	{
+		for (u16 i = 0; i < cachesize; i++)
+		{
+			cache[i] = -1;
+		}
+	}
+
+	// Adds this vertex index and returns the highest-scoring triangle index
+	u32 add(u16 vert, bool updatetris = false)
+	{
+		bool found = false;
+
+		// Mark existing pos as empty
+		for (u16 i = 0; i < cachesize; i++)
+		{
+			if (cache[i] == vert)
+			{
+				// Move everything down
+				for (u16 j = i; j; j--)
+				{
+					cache[j] = cache[j - 1];
+				}
+
+				found = true;
+				break;
+			}
+		}
+
+		if (!found)
+		{
+			if (cache[cachesize-1] != -1)
+				vc[cache[cachesize-1]].cachepos = -1;
+
+			// Move everything down
+			for (u16 i = cachesize - 1; i; i--)
+			{
+				cache[i] = cache[i - 1];
+			}
+		}
+
+		cache[0] = vert;
+
+		u32 highest = 0;
+		float hiscore = 0;
+
+		if (updatetris)
+		{
+			// Update cache positions
+			for (u16 i = 0; i < cachesize; i++)
+			{
+				if (cache[i] == -1)
+					break;
+
+				vc[cache[i]].cachepos = i;
+				vc[cache[i]].score = FindVertexScore(&vc[cache[i]]);
+			}
+
+			// Update triangle scores
+			for (u16 i = 0; i < cachesize; i++)
+			{
+				if (cache[i] == -1)
+					break;
+
+				const u16 trisize = vc[cache[i]].tris.size();
+				for (u16 t = 0; t < trisize; t++)
+				{
+					tcache *tri = &tc[vc[cache[i]].tris[t]];
+
+					tri->score =
+						vc[tri->ind[0]].score +
+						vc[tri->ind[1]].score +
+						vc[tri->ind[2]].score;
+
+					if (tri->score > hiscore)
+					{
+						hiscore = tri->score;
+						highest = vc[cache[i]].tris[t];
+					}
+				}
+			}
+		}
+
+		return highest;
+	}
+
+private:
+	s32 cache[cachesize];
+	vcache *vc;
+	tcache *tc;
+};
+
+/**
+Vertex cache optimization according to the Forsyth paper:
+http://home.comcast.net/~tom_forsyth/papers/fast_vert_cache_opt.html
+
+The function is thread-safe (read: you can optimize several meshes in different threads)
+
+\param mesh Source mesh for the operation.  */
+scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh)
+{
+	if (!mesh)
+		return 0;
+
+	scene::SMesh *newmesh = new scene::SMesh();
+	newmesh->BoundingBox = mesh->getBoundingBox();
+
+	const u32 mbcount = mesh->getMeshBufferCount();
+
+	for (u32 b = 0; b < mbcount; ++b)
+	{
+		const scene::IMeshBuffer *mb = mesh->getMeshBuffer(b);
+
+		if (mb->getIndexType() != video::EIT_16BIT)
+		{
+			//os::Printer::log("Cannot optimize a mesh with 32bit indices", ELL_ERROR);
+			newmesh->drop();
+			return 0;
+		}
+
+		const u32 icount = mb->getIndexCount();
+		const u32 tcount = icount / 3;
+		const u32 vcount = mb->getVertexCount();
+		const u16 *ind = mb->getIndices();
+
+		vcache *vc = new vcache[vcount];
+		tcache *tc = new tcache[tcount];
+
+		f_lru lru(vc, tc);
+
+		// init
+		for (u16 i = 0; i < vcount; i++)
+		{
+			vc[i].score = 0;
+			vc[i].cachepos = -1;
+			vc[i].NumActiveTris = 0;
+		}
+
+		// First pass: count how many times a vert is used
+		for (u32 i = 0; i < icount; i += 3)
+		{
+			vc[ind[i]].NumActiveTris++;
+			vc[ind[i + 1]].NumActiveTris++;
+			vc[ind[i + 2]].NumActiveTris++;
+
+			const u32 tri_ind = i/3;
+			tc[tri_ind].ind[0] = ind[i];
+			tc[tri_ind].ind[1] = ind[i + 1];
+			tc[tri_ind].ind[2] = ind[i + 2];
+		}
+
+		// Second pass: list of each triangle
+		for (u32 i = 0; i < tcount; i++)
+		{
+			vc[tc[i].ind[0]].tris.push_back(i);
+			vc[tc[i].ind[1]].tris.push_back(i);
+			vc[tc[i].ind[2]].tris.push_back(i);
+
+			tc[i].drawn = false;
+		}
+
+		// Give initial scores
+		for (u16 i = 0; i < vcount; i++)
+		{
+			vc[i].score = FindVertexScore(&vc[i]);
+		}
+		for (u32 i = 0; i < tcount; i++)
+		{
+			tc[i].score =
+					vc[tc[i].ind[0]].score +
+					vc[tc[i].ind[1]].score +
+					vc[tc[i].ind[2]].score;
+		}
+
+		switch(mb->getVertexType())
+		{
+			case video::EVT_STANDARD:
+			{
+				video::S3DVertex *v = (video::S3DVertex *) mb->getVertices();
+
+				scene::SMeshBuffer *buf = new scene::SMeshBuffer();
+				buf->Material = mb->getMaterial();
+
+				buf->Vertices.reallocate(vcount);
+				buf->Indices.reallocate(icount);
+
+				core::map<const video::S3DVertex, const u16> sind; // search index for fast operation
+				typedef core::map<const video::S3DVertex, const u16>::Node snode;
+
+				// Main algorithm
+				u32 highest = 0;
+				u32 drawcalls = 0;
+				for (;;)
+				{
+					if (tc[highest].drawn)
+					{
+						bool found = false;
+						float hiscore = 0;
+						for (u32 t = 0; t < tcount; t++)
+						{
+							if (!tc[t].drawn)
+							{
+								if (tc[t].score > hiscore)
+								{
+									highest = t;
+									hiscore = tc[t].score;
+									found = true;
+								}
+							}
+						}
+						if (!found)
+							break;
+					}
+
+					// Output the best triangle
+					u16 newind = buf->Vertices.size();
+
+					snode *s = sind.find(v[tc[highest].ind[0]]);
+
+					if (!s)
+					{
+						buf->Vertices.push_back(v[tc[highest].ind[0]]);
+						buf->Indices.push_back(newind);
+						sind.insert(v[tc[highest].ind[0]], newind);
+						newind++;
+					}
+					else
+					{
+						buf->Indices.push_back(s->getValue());
+					}
+
+					s = sind.find(v[tc[highest].ind[1]]);
+
+					if (!s)
+					{
+						buf->Vertices.push_back(v[tc[highest].ind[1]]);
+						buf->Indices.push_back(newind);
+						sind.insert(v[tc[highest].ind[1]], newind);
+						newind++;
+					}
+					else
+					{
+						buf->Indices.push_back(s->getValue());
+					}
+
+					s = sind.find(v[tc[highest].ind[2]]);
+
+					if (!s)
+					{
+						buf->Vertices.push_back(v[tc[highest].ind[2]]);
+						buf->Indices.push_back(newind);
+						sind.insert(v[tc[highest].ind[2]], newind);
+					}
+					else
+					{
+						buf->Indices.push_back(s->getValue());
+					}
+
+					vc[tc[highest].ind[0]].NumActiveTris--;
+					vc[tc[highest].ind[1]].NumActiveTris--;
+					vc[tc[highest].ind[2]].NumActiveTris--;
+
+					tc[highest].drawn = true;
+
+					for (u16 j = 0; j < 3; j++)
+					{
+						vcache *vert = &vc[tc[highest].ind[j]];
+						for (u16 t = 0; t < vert->tris.size(); t++)
+						{
+							if (highest == vert->tris[t])
+							{
+								vert->tris.erase(t);
+								break;
+							}
+						}
+					}
+
+					lru.add(tc[highest].ind[0]);
+					lru.add(tc[highest].ind[1]);
+					highest = lru.add(tc[highest].ind[2], true);
+					drawcalls++;
+				}
+
+				buf->setBoundingBox(mb->getBoundingBox());
+				newmesh->addMeshBuffer(buf);
+				buf->drop();
+			}
+			break;
+			case video::EVT_2TCOORDS:
+			{
+				video::S3DVertex2TCoords *v = (video::S3DVertex2TCoords *) mb->getVertices();
+
+				scene::SMeshBufferLightMap *buf = new scene::SMeshBufferLightMap();
+				buf->Material = mb->getMaterial();
+
+				buf->Vertices.reallocate(vcount);
+				buf->Indices.reallocate(icount);
+
+				core::map<const video::S3DVertex2TCoords, const u16> sind; // search index for fast operation
+				typedef core::map<const video::S3DVertex2TCoords, const u16>::Node snode;
+
+				// Main algorithm
+				u32 highest = 0;
+				u32 drawcalls = 0;
+				for (;;)
+				{
+					if (tc[highest].drawn)
+					{
+						bool found = false;
+						float hiscore = 0;
+						for (u32 t = 0; t < tcount; t++)
+						{
+							if (!tc[t].drawn)
+							{
+								if (tc[t].score > hiscore)
+								{
+									highest = t;
+									hiscore = tc[t].score;
+									found = true;
+								}
+							}
+						}
+						if (!found)
+							break;
+					}
+
+					// Output the best triangle
+					u16 newind = buf->Vertices.size();
+
+					snode *s = sind.find(v[tc[highest].ind[0]]);
+
+					if (!s)
+					{
+						buf->Vertices.push_back(v[tc[highest].ind[0]]);
+						buf->Indices.push_back(newind);
+						sind.insert(v[tc[highest].ind[0]], newind);
+						newind++;
+					}
+					else
+					{
+						buf->Indices.push_back(s->getValue());
+					}
+
+					s = sind.find(v[tc[highest].ind[1]]);
+
+					if (!s)
+					{
+						buf->Vertices.push_back(v[tc[highest].ind[1]]);
+						buf->Indices.push_back(newind);
+						sind.insert(v[tc[highest].ind[1]], newind);
+						newind++;
+					}
+					else
+					{
+						buf->Indices.push_back(s->getValue());
+					}
+
+					s = sind.find(v[tc[highest].ind[2]]);
+
+					if (!s)
+					{
+						buf->Vertices.push_back(v[tc[highest].ind[2]]);
+						buf->Indices.push_back(newind);
+						sind.insert(v[tc[highest].ind[2]], newind);
+					}
+					else
+					{
+						buf->Indices.push_back(s->getValue());
+					}
+
+					vc[tc[highest].ind[0]].NumActiveTris--;
+					vc[tc[highest].ind[1]].NumActiveTris--;
+					vc[tc[highest].ind[2]].NumActiveTris--;
+
+					tc[highest].drawn = true;
+
+					for (u16 j = 0; j < 3; j++)
+					{
+						vcache *vert = &vc[tc[highest].ind[j]];
+						for (u16 t = 0; t < vert->tris.size(); t++)
+						{
+							if (highest == vert->tris[t])
+							{
+								vert->tris.erase(t);
+								break;
+							}
+						}
+					}
+
+					lru.add(tc[highest].ind[0]);
+					lru.add(tc[highest].ind[1]);
+					highest = lru.add(tc[highest].ind[2]);
+					drawcalls++;
+				}
+
+				buf->setBoundingBox(mb->getBoundingBox());
+				newmesh->addMeshBuffer(buf);
+				buf->drop();
+
+			}
+			break;
+			case video::EVT_TANGENTS:
+			{
+				video::S3DVertexTangents *v = (video::S3DVertexTangents *) mb->getVertices();
+
+				scene::SMeshBufferTangents *buf = new scene::SMeshBufferTangents();
+				buf->Material = mb->getMaterial();
+
+				buf->Vertices.reallocate(vcount);
+				buf->Indices.reallocate(icount);
+
+				core::map<const video::S3DVertexTangents, const u16> sind; // search index for fast operation
+				typedef core::map<const video::S3DVertexTangents, const u16>::Node snode;
+
+				// Main algorithm
+				u32 highest = 0;
+				u32 drawcalls = 0;
+				for (;;)
+				{
+					if (tc[highest].drawn)
+					{
+						bool found = false;
+						float hiscore = 0;
+						for (u32 t = 0; t < tcount; t++)
+						{
+							if (!tc[t].drawn)
+							{
+								if (tc[t].score > hiscore)
+								{
+									highest = t;
+									hiscore = tc[t].score;
+									found = true;
+								}
+							}
+						}
+						if (!found)
+							break;
+					}
+
+					// Output the best triangle
+					u16 newind = buf->Vertices.size();
+
+					snode *s = sind.find(v[tc[highest].ind[0]]);
+
+					if (!s)
+					{
+						buf->Vertices.push_back(v[tc[highest].ind[0]]);
+						buf->Indices.push_back(newind);
+						sind.insert(v[tc[highest].ind[0]], newind);
+						newind++;
+					}
+					else
+					{
+						buf->Indices.push_back(s->getValue());
+					}
+
+					s = sind.find(v[tc[highest].ind[1]]);
+
+					if (!s)
+					{
+						buf->Vertices.push_back(v[tc[highest].ind[1]]);
+						buf->Indices.push_back(newind);
+						sind.insert(v[tc[highest].ind[1]], newind);
+						newind++;
+					}
+					else
+					{
+						buf->Indices.push_back(s->getValue());
+					}
+
+					s = sind.find(v[tc[highest].ind[2]]);
+
+					if (!s)
+					{
+						buf->Vertices.push_back(v[tc[highest].ind[2]]);
+						buf->Indices.push_back(newind);
+						sind.insert(v[tc[highest].ind[2]], newind);
+					}
+					else
+					{
+						buf->Indices.push_back(s->getValue());
+					}
+
+					vc[tc[highest].ind[0]].NumActiveTris--;
+					vc[tc[highest].ind[1]].NumActiveTris--;
+					vc[tc[highest].ind[2]].NumActiveTris--;
+
+					tc[highest].drawn = true;
+
+					for (u16 j = 0; j < 3; j++)
+					{
+						vcache *vert = &vc[tc[highest].ind[j]];
+						for (u16 t = 0; t < vert->tris.size(); t++)
+						{
+							if (highest == vert->tris[t])
+							{
+								vert->tris.erase(t);
+								break;
+							}
+						}
+					}
+
+					lru.add(tc[highest].ind[0]);
+					lru.add(tc[highest].ind[1]);
+					highest = lru.add(tc[highest].ind[2]);
+					drawcalls++;
+				}
+
+				buf->setBoundingBox(mb->getBoundingBox());
+				newmesh->addMeshBuffer(buf);
+				buf->drop();
+			}
+			break;
+		}
+
+		delete [] vc;
+		delete [] tc;
+
+	} // for each meshbuffer
+
+	return newmesh;
 }
