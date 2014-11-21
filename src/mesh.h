@@ -65,6 +65,13 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 void rotateMeshBy6dFacedir(scene::IMesh *mesh, int facedir);
 
 /*
+	Rotate the mesh around the axis and given angle in degrees.
+*/
+void rotateMeshXYby (scene::IMesh *mesh, f64 degrees);
+void rotateMeshXZby (scene::IMesh *mesh, f64 degrees);
+void rotateMeshYZby (scene::IMesh *mesh, f64 degrees); 
+ 
+/*
 	Clone the mesh.
 */
 scene::IMesh* cloneMesh(scene::IMesh *src_mesh);
@@ -78,5 +85,12 @@ scene::IMesh* convertNodeboxNodeToMesh(ContentFeatures *f);
 	Update bounding box for a mesh.
 */
 void recalculateBoundingBox(scene::IMesh *src_mesh);
+
+/*
+	Vertex cache optimization according to the Forsyth paper:
+	http://home.comcast.net/~tom_forsyth/papers/fast_vert_cache_opt.html
+	Ported from irrlicht 1.8
+*/
+scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh);
 
 #endif
