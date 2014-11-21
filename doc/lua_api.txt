@@ -1863,6 +1863,9 @@ minetest.forceload_free_block(pos)
 
 Please note that forceloaded areas are saved when the server restarts.
 
+minetest.global_exists(name)
+^ Checks if a global variable has been set.
+
 Global objects:
 minetest.env - EnvRef of the server environment and world.
 ^ Any function in the minetest namespace can be called using the syntax
