@@ -2289,6 +2289,9 @@ These functions return the leftover itemstack.
 
 Please note that forceloaded areas are saved when the server restarts.
 
+minetest.global_exists(name)
+^ Checks if a global variable has been set, without triggering a warning.
+
 ### Global objects
 * `minetest.env`: `EnvRef` of the server environment and world.
     * Any function in the minetest namespace can be called using the syntax
@@ -2479,7 +2482,7 @@ This is basically a reference to a C++ `ServerActiveObject`
             {x=189, y=198}, -- <  dig animation key frames
             {x=200, y=219}, -- <  walk+dig animation key frames
             frame_speed=30): -- <  animation frame speed
-            
+
 * `set_eye_offset({x=0,y=0,z=0},{x=0,y=0,z=0})`: defines offset value for camera per player
     * in first person view
     * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
