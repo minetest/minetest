@@ -62,7 +62,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("3d_paralax_strength", "0.025");
 	settings->setDefault("aux1_descends", "false");
 	settings->setDefault("doubletap_jump", "false");
-	settings->setDefault("always_fly_fast", "true");
+	settings->setDefault("always_fly_fast", "false");
 	settings->setDefault("directional_colored_fog", "true");
 	settings->setDefault("tooltip_show_delay", "400");
 
@@ -84,8 +84,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fps_max", "60");
 	settings->setDefault("pause_fps_max", "20");
 	// A bit more than the server will send around the player, to make fog blend well
-	settings->setDefault("viewing_range_nodes_max", "240");
-	settings->setDefault("viewing_range_nodes_min", "35");
+	settings->setDefault("viewing_range_nodes_max", "200");
+	settings->setDefault("viewing_range_nodes_min", "30");
 	settings->setDefault("screenW", "800");
 	settings->setDefault("screenH", "600");
 	settings->setDefault("fullscreen", "false");
@@ -94,7 +94,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("vsync", "false");
 	settings->setDefault("address", "");
 	settings->setDefault("random_input", "false");
-	settings->setDefault("client_unload_unused_data_timeout", "600");
+	settings->setDefault("client_unload_unused_data_timeout", "300");
 	settings->setDefault("enable_fog", "true");
 	settings->setDefault("fov", "72");
 	settings->setDefault("view_bobbing", "true");
@@ -113,7 +113,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_clouds", "true");
 	settings->setDefault("screenshot_path", ".");
 	settings->setDefault("view_bobbing_amount", "1.0");
-	settings->setDefault("fall_bobbing_amount", "0.0");
+	settings->setDefault("fall_bobbing_amount", "0.6");
 	settings->setDefault("enable_3d_clouds", "true");
 	settings->setDefault("cloud_height", "120");
 	settings->setDefault("menu_clouds", "true");
@@ -156,7 +156,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_particles", "true");
 	settings->setDefault("enable_mesh_cache", "true");
 
-	settings->setDefault("curl_timeout", "5000");
+	settings->setDefault("curl_timeout", "4000");
 	settings->setDefault("curl_parallel_limit", "8");
 	settings->setDefault("curl_file_download_timeout", "300000");
 	settings->setDefault("curl_verify_cert", "true");
