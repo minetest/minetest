@@ -1276,9 +1276,9 @@ void GUIFormSpecMenu::parseKeyEventBox(parserData* data,std::string element)
 		258+m_fields.size()
 	);
 
-	gui::IGUIEditBox * _e;
+	gui::IGUIEditBox * env;
 	spec.send = true;
-	_e = Environment->addEditBox(L"-", rect, true, this, spec.fid);
+	env = Environment->addEditBox(L"-", rect, true, this, spec.fid);
 
 	irr::SEvent evt;
 	evt.EventType            = EET_KEY_INPUT_EVENT;
@@ -1287,17 +1287,17 @@ void GUIFormSpecMenu::parseKeyEventBox(parserData* data,std::string element)
 	evt.KeyInput.Control     = 0;
 	evt.KeyInput.Shift       = 0;
 	evt.KeyInput.PressedDown = true;
-	_e->OnEvent(evt);
+	env->OnEvent(evt);
 	#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
 		// hm, no real solution for old irrlicht...
 	#else
 		_e->setDrawBackground(false);
 	#endif
-	_e->setDrawBorder(true);
+	env->setDrawBorder(true);
 	// make invisible through color
 	video::SColor color = video::SColor(0,0,0,0);
-	_e->setOverrideColor(color);
-	_e->enableOverrideColor(true);
+	env->setOverrideColor(color);
+	env->enableOverrideColor(true);
 	
 	pos = AbsoluteRect.UpperLeftCorner;
 	pos.X += stof(v_pos[0]) * (float) spacing.X;
@@ -1308,7 +1308,7 @@ void GUIFormSpecMenu::parseKeyEventBox(parserData* data,std::string element)
 	// paint a little picture
 	if(spec.fname == data->focused_fieldname) {
 		m_images.push_back(ImageDrawSpec(active_image_name, pos,geom));
-		Environment->setFocus(_e);
+		Environment->setFocus(env);
 	} else {
 		m_images.push_back(ImageDrawSpec(image_name, pos,geom));
 	}
