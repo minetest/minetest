@@ -315,6 +315,9 @@ if(ENABLE_REDIS)
 endif(ENABLE_REDIS)
 
 CHECK_INCLUDE_FILES(endian.h HAVE_ENDIAN_H)
+if(NOT HAVE_ENDIAN_H)
+  set(HAVE_ENDIAN_H 0)
+endif(NOT HAVE_ENDIAN_H)
 
 configure_file(
 	"${PROJECT_SOURCE_DIR}/cmake_config.h.in"
