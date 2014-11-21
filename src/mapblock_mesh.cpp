@@ -65,8 +65,9 @@ void MeshMakeData::fill(MapBlock *block)
 
 	// Allocate this block + neighbors
 	m_vmanip.clear();
-	m_vmanip.addArea(VoxelArea(blockpos_nodes-v3s16(1,1,1)*MAP_BLOCKSIZE,
-			blockpos_nodes+v3s16(1,1,1)*MAP_BLOCKSIZE*2-v3s16(1,1,1)));
+	VoxelArea voxel_area(blockpos_nodes - v3s16(1,1,1) * MAP_BLOCKSIZE,
+			blockpos_nodes + v3s16(1,1,1) * MAP_BLOCKSIZE*2-v3s16(1,1,1));
+	m_vmanip.addArea(voxel_area);
 
 	{
 		//TimeTaker timer("copy central block data");

@@ -389,8 +389,8 @@ public:
 	virtual ~CNodeDefManager();
 	void clear();
 	virtual IWritableNodeDefManager *clone();
-	virtual const ContentFeatures& get(content_t c) const;
-	virtual const ContentFeatures& get(const MapNode &n) const;
+	inline virtual const ContentFeatures& get(content_t c) const;
+	inline virtual const ContentFeatures& get(const MapNode &n) const;
 	virtual bool getId(const std::string &name, content_t &result) const;
 	virtual content_t getId(const std::string &name) const;
 	virtual void getIds(const std::string &name, std::set<content_t> &result) const;
@@ -530,16 +530,14 @@ IWritableNodeDefManager *CNodeDefManager::clone()
 }
 
 
-const ContentFeatures& CNodeDefManager::get(content_t c) const
+inline const ContentFeatures& CNodeDefManager::get(content_t c) const
 {
-	if (c < m_content_features.size())
-		return m_content_features[c];
-	else
-		return m_content_features[CONTENT_UNKNOWN];
+	return c < m_content_features.size()
+			? m_content_features[c] : m_content_features[CONTENT_UNKNOWN];
 }
 
 
-const ContentFeatures& CNodeDefManager::get(const MapNode &n) const
+inline const ContentFeatures& CNodeDefManager::get(const MapNode &n) const
 {
 	return get(n.getContent());
 }
