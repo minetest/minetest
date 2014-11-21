@@ -1291,7 +1291,7 @@ void GUIFormSpecMenu::parseKeyEventBox(parserData* data,std::string element)
 	#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
 		// hm, no real solution for old irrlicht...
 	#else
-		_e->setDrawBackground(false);
+		env->setDrawBackground(false);
 	#endif
 	env->setDrawBorder(true);
 	// make invisible through color
