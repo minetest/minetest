@@ -63,6 +63,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_camera_mode", "KEY_F7");
 	settings->setDefault("keymap_increase_viewing_range_min", "+");
 	settings->setDefault("keymap_decrease_viewing_range_min", "-");
+	settings->setDefault("enable_build_where_you_stand", "false" );
 	settings->setDefault("3d_mode", "none");
 	settings->setDefault("3d_paralax_strength", "0.025");
 	settings->setDefault("aux1_descends", "false");
