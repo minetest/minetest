@@ -1514,7 +1514,7 @@ static bool migrate_database(const GameParams &game_params, const Settings &cmd_
 #if USE_REDIS
 	else if (migrate_to == "redis")
 		new_db = new Database_Redis(&(ServerMap&)server->getMap(),
-				game_params.requested_world_path);
+				game_params.world_path);
 #endif
 	else {
 		errorstream << "Migration to " << migrate_to << " is not supported"
