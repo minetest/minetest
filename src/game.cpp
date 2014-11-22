@@ -967,6 +967,7 @@ bool nodePlacementPrediction(Client &client,
 			// Dont place node when player would be inside new node
 			// NOTE: This is to be eventually implemented by a mod as client-side Lua
 			if (!nodedef->get(n).walkable ||
+					g_settings->getBool("enable_build_where_you_stand") ||
 					(client.checkPrivilege("noclip") && g_settings->getBool("noclip")) ||
 					(nodedef->get(n).walkable &&
 					 neighbourpos != player->getStandingNodePos() + v3s16(0, 1, 0) &&

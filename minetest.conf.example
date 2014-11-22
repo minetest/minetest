@@ -62,6 +62,9 @@
 #keymap_quicktune_dec = KEY_NEXT
 #keymap_quicktune_inc = KEY_PRIOR
 
+#if set to true, you can place blocks at the position (feet + eye level) where you stand; this is helpful when working with nodeboxes
+#enable_build_where_you_stand = false
+
 # Minimum FPS
 # The amount of rendered stuff is dynamically set according to this
 #wanted_fps = 30
