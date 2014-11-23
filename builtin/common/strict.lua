@@ -11,16 +11,21 @@ end
 
 local meta = {}
 local declared = {}
-local alreadywarned = {}
+-- Key is source file, line, and variable name; seperated by NULs
+local warned = {}
 
 function meta:__newindex(name, value)
 	local info = debug.getinfo(2, "Sl")
 	local desc = ("%s:%d"):format(info.short_src, info.currentline)
 	if not declared[name] then
-		if info.what ~= "main" and info.what ~= "C" then
-			warn(("Assignment to undeclared global %q inside"
-					.." a function at %s.")
+		local warn_key = ("%s\0%d\0%s"):format(info.source,
+				info.currentline, name)
+		if not warned[warn_key] and info.what ~= "main" and
+				info.what ~= "C" then
+			minetest.log("error", ("Assignment to undeclared "..
+					"global %q inside a function at %s.")
 				:format(name, desc))
+			warned[warn_key] = true
 		end
 		declared[name] = true
 	end
@@ -36,10 +41,11 @@ end
 
 function meta:__index(name)
 	local info = debug.getinfo(2, "Sl")
-	if not declared[name] and info.what ~= "C" and not alreadywarned[name] then
+	local warn_key = ("%s\0%d\0%s"):format(info.source, info.currentline, name)
+	if not declared[name] and not warned[warn_key] and info.what ~= "C" then
 		warn(("Undeclared global variable %q accessed at %s:%s")
 				:format(name, info.short_src, info.currentline))
-		alreadywarned[name] = true
+		warned[warn_key] = true
 	end
 	return rawget(self, name)
 end
