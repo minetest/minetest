@@ -11,7 +11,7 @@ end
 
 local meta = {}
 local declared = {}
-
+local alreadywarned = {}
 
 function meta:__newindex(name, value)
 	local info = debug.getinfo(2, "Sl")
@@ -36,9 +36,10 @@ end
 
 function meta:__index(name)
 	local info = debug.getinfo(2, "Sl")
-	if not declared[name] and info.what ~= "C" then
+	if not declared[name] and info.what ~= "C" and not alreadywarned[name] then
 		warn(("Undeclared global variable %q accessed at %s:%s")
 				:format(name, info.short_src, info.currentline))
+		alreadywarned[name] = true
 	end
 	return rawget(self, name)
 end
