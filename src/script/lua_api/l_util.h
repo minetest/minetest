@@ -21,7 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define L_UTIL_H_
 
 #include "lua_api/l_base.h"
+#include "config.h"
 
+struct HTTPFetchRequest;
+struct HTTPFetchResult;
 class AsyncEngine;
 
 class ModApiUtil : public ModApiBase {
@@ -86,6 +89,21 @@ private:
 
 	// decompress(data, method, ...)
 	static int l_decompress(lua_State *L);
+
+#if USE_CURL
+	// Helpers for HTTP fetch functions
+	static void read_http_fetch_request(lua_State *L, HTTPFetchRequest &req);
+	static void push_http_fetch_result(lua_State *L, HTTPFetchResult &res);
+
+	// http_fetch_async({url=, timeout=, post_data=})
+	static int l_http_fetch_async(lua_State *L);
+
+	// http_fetch_async_get(handle)
+	static int l_http_fetch_async_get(lua_State *L);
+
+	// http_fetch_sync({url=, timeout=, post_data=})
+	static int l_http_fetch_sync(lua_State *L);
+#endif
 
 public:
 	static void Initialize(lua_State *L, int top);

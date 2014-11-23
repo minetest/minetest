@@ -2118,6 +2118,20 @@ These functions return the leftover itemstack.
     * `force_placement` is a boolean indicating whether nodes other than `air` and
       `ignore` are replaced by the schematic
 
+### HTTP Requests:
+* `minetest.http_fetch(HTTPRequest req, callback)`
+    * Performs given request asynchronously and calls callback upon completion
+    * callback: `function(HTTPRequestResult res)`
+* `minetest.http_fetch_async(HTTPRequest req)`: returns handle
+    * Performs given request asynchronously and returns handle for `minetest.http_fetch_async_get`
+* `minetest.http_fetch_async_get(handle)`: returns HTTPRequestResult
+    * Return response data for given asynchronous HTTP request
+* `minetest.http_fetch_sync(HTTPRequest req)`: returns HTTPRequestResult
+    * Blocking. Returns HTTP response data for given request directly.
+
+If possible, do NOT use sychronous HTTP requests, they block the server thread.
+These functions only exist if minetest was built with cURL support.
+
 ### Misc.
 * `minetest.get_connected_players()`: returns list of `ObjectRefs`
 * `minetest.hash_node_position({x=,y=,z=})`: returns an 48-bit integer
@@ -3266,4 +3280,24 @@ Definition tables
     --  ^ Uses texture (string)
         playername = "singleplayer"
     --  ^ Playername is optional, if specified spawns particle only on the player's client
+    }
+
+### `HTTPRequest` definition (`http_fetch`, `http_fetch_async`, `http_fetch_sync`)
+    {
+        url = "http://example.org",
+        timeout = 10,
+     -- ^ Timeout for connection in seconds
+        post_data = "Post request data"
+     -- ^ If supplied, a POST request is performed. Otherwise, performs GET request.
+    }
+
+### `HTTPRequestResult` definition (`http_fetch` callback, `http_fetch_async_get`)
+    {
+        succeeded = true,
+     -- ^ If true, the request was succesful
+        timeout = false,
+     -- ^ If true, the request timed out
+        code = 200,
+     -- ^ HTTP status code
+        data = "response"
     }
