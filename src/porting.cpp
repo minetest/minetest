@@ -553,16 +553,7 @@ v2u32 getWindowSize() {
 #ifndef __ANDROID__
 
 float getDisplayDensity() {
-	float gui_scaling = g_settings->getFloat("gui_scaling");
-	// using Y here feels like a bug, this needs to be discussed later!
-	if (getWindowSize().Y <= 800) {
-		return (2.0/3.0) * gui_scaling;
-	}
-	if (getWindowSize().Y <= 1280) {
-		return 1.0 * gui_scaling;
-	}
-
-	return (4.0/3.0) * gui_scaling;
+	return g_settings->getFloat("screen_dpi")/96.0;
 }
 
 v2u32 getDisplaySize() {

@@ -89,7 +89,6 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_lock(false),
 	m_form_src(fsrc),
 	m_text_dst(tdst),
-	m_font(dev->getGUIEnvironment()->getSkin()->getFont()),
 	m_formspec_version(0)
 #ifdef __ANDROID__
 	,m_JavaDialogFieldName(L"")
@@ -107,9 +106,6 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_doubleclickdetect[1].pos = v2s32(0, 0);
 
 	m_tooltip_show_delay = (u32)g_settings->getS32("tooltip_show_delay");
-
-	m_btn_height = g_settings->getS32("font_size") +2;
-	assert(m_btn_height > 0);
 }
 
 GUIFormSpecMenu::~GUIFormSpecMenu()
@@ -437,9 +433,14 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 
 		std::wstring wlabel = narrow_to_wide(label.c_str());
 
+		gui::IGUIFont *font = NULL;
+		gui::IGUISkin* skin = Environment->getSkin();
+		if (skin)
+			font = skin->getFont();
+
 		core::rect<s32> rect = core::rect<s32>(
 				pos.X, pos.Y + ((imgsize.Y/2) - m_btn_height),
-				pos.X + m_font->getDimension(wlabel.c_str()).Width + 25, // text size + size of checkbox
+				pos.X + font->getDimension(wlabel.c_str()).Width + 25, // text size + size of checkbox
 				pos.Y + ((imgsize.Y/2) + m_btn_height));
 
 		FieldSpec spec(
@@ -1248,9 +1249,14 @@ void GUIFormSpecMenu::parseLabel(parserData* data,std::string element)
 
 		std::wstring wlabel = narrow_to_wide(text.c_str());
 
+		gui::IGUIFont *font = NULL;
+				gui::IGUISkin* skin = Environment->getSkin();
+				if (skin)
+					font = skin->getFont();
+
 		core::rect<s32> rect = core::rect<s32>(
 				pos.X, pos.Y+((imgsize.Y/2) - m_btn_height),
-				pos.X + m_font->getDimension(wlabel.c_str()).Width,
+				pos.X + font->getDimension(wlabel.c_str()).Width,
 				pos.Y+((imgsize.Y/2) + m_btn_height));
 
 		FieldSpec spec(
@@ -1282,12 +1288,18 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element)
 		pos.X += stof(v_pos[0]) * (float)spacing.X;
 		pos.Y += stof(v_pos[1]) * (float)spacing.Y;
 
+		gui::IGUIFont *font = NULL;
+				gui::IGUISkin* skin = Environment->getSkin();
+				if (skin)
+					font = skin->getFont();
+
 		core::rect<s32> rect = core::rect<s32>(
 				pos.X, pos.Y+((imgsize.Y/2)- m_btn_height),
 				pos.X+15, pos.Y +
-					(m_font->getKerningHeight() +
-					m_font->getDimension(text.c_str()).Height)
-					* (text.length()+1));
+					(font->getKerningHeight() +
+					font->getDimension(text.c_str()).Height)
+					* (text.length()+1)
+					+((imgsize.Y/2)- m_btn_height));
 		//actually text.length() would be correct but adding +1 avoids to break all mods
 
 		if(data->bp_set != 2)
@@ -1837,6 +1849,14 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		return;
 	}
 
+	gui::IGUIFont *font = NULL;
+			gui::IGUISkin* skin = Environment->getSkin();
+			if (skin)
+				font = skin->getFont();
+
+	m_btn_height = font->getDimension(L"Some unimportant test String").Height;
+	assert(m_btn_height > 0);
+
 	parserData mydata;
 
 	//preserve tables
@@ -2048,7 +2068,6 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 {
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 
-	// Get font
 	gui::IGUIFont *font = NULL;
 	gui::IGUISkin* skin = Environment->getSkin();
 	if (skin)
@@ -2194,9 +2213,6 @@ void GUIFormSpecMenu::drawMenu()
 
 	updateSelectedItem();
 
-	gui::IGUISkin* skin = Environment->getSkin();
-	if (!skin)
-		return;
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 
 	v2u32 screenSize = driver->getScreenSize();

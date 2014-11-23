@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h"  // for g_settings
 #include "porting.h"
 #include "tile.h"
-#include "IGUIFont.h"
+#include "fontengine.h"
 #include <string>
 
 #include "gettext.h"
@@ -92,23 +92,11 @@ GUIChatConsole::GUIChatConsole(
 		m_background_color.setBlue(255);
 	}
 
-	// load the font
-	// FIXME should a custom texture_path be searched too?
-	std::string font_name = g_settings->get("mono_font_path");
-	#if USE_FREETYPE
-	m_use_freetype = g_settings->getBool("freetype");
-	if (m_use_freetype) {
-		u16 font_size = g_settings->getU16("mono_font_size");
-		m_font = gui::CGUITTFont::createTTFont(env, font_name.c_str(), font_size);
-	} else {
-		m_font = env->getFont(font_name.c_str());
-	}
-	#else
-	m_font = env->getFont(font_name.c_str());
-	#endif
+	m_font = glb_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_Mono);
+
 	if (m_font == NULL)
 	{
-		dstream << "Unable to load font: " << font_name << std::endl;
+		errorstream << "GUIChatConsole: Unable to load mono font ";
 	}
 	else
 	{
@@ -124,12 +112,7 @@ GUIChatConsole::GUIChatConsole(
 }
 
 GUIChatConsole::~GUIChatConsole()
-{
-#if USE_FREETYPE
-	if (m_use_freetype)
-		m_font->drop();
-#endif
-}
+{}
 
 void GUIChatConsole::openConsole(f32 height)
 {

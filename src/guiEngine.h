@@ -188,6 +188,9 @@ private:
 	/** handler to limit frame rate within main menu */
 	void limitFrameRate();
 
+	/** update size of topleftext element */
+	void updateTopLeftTextSize();
+
 	/** device to draw at */
 	irr::IrrlichtDevice*     m_device;
 	/** parent gui element */

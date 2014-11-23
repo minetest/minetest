@@ -2726,7 +2726,7 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 	{
 		verbosestream<<"Updating item textures and meshes"<<std::endl;
 		wchar_t* text = wgettext("Item textures...");
-		draw_load_screen(text, device, guienv, font, 0, 0);
+		draw_load_screen(text, device, guienv, 0, 0);
 		std::set<std::string> names = m_itemdef->getAll();
 		size_t size = names.size();
 		size_t count = 0;
@@ -2739,7 +2739,7 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 			count++;
 			percent = count*100/size;
 			if (count%50 == 0) // only update every 50 item
-				draw_load_screen(text, device, guienv, font, 0, percent);
+				draw_load_screen(text, device, guienv, 0, percent);
 		}
 		delete[] text;
 	}
@@ -2775,7 +2775,7 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 	irr::video::IVideoDriver *driver = device->getVideoDriver();
 	irr::video::IImage* const raw_image = driver->createScreenShot();
 	if (raw_image) {
-		irr::video::IImage* const image = driver->createImage(video::ECF_R8G8B8, 
+		irr::video::IImage* const image = driver->createImage(video::ECF_R8G8B8,
 			raw_image->getDimension());
 
 		if (image) {

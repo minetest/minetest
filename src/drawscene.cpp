@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clouds.h"
 #include "clientmap.h"
 #include "util/timetaker.h"
+#include "fontengine.h"
 
 typedef enum {
 	LEFT = -1,
@@ -500,21 +501,18 @@ void draw_scene(video::IVideoDriver* driver, scene::ISceneManager* smgr,
 	Text will be removed when the screen is drawn the next time.
 	Additionally, a progressbar can be drawn when percent is set between 0 and 100.
 */
-/*gui::IGUIStaticText **/
 void draw_load_screen(const std::wstring &text, IrrlichtDevice* device,
-		gui::IGUIEnvironment* guienv, gui::IGUIFont* font, float dtime,
-		int percent, bool clouds )
+		gui::IGUIEnvironment* guienv, float dtime, int percent, bool clouds )
 {
-	video::IVideoDriver* driver = device->getVideoDriver();
-	v2u32 screensize = driver->getScreenSize();
-	const wchar_t *loadingtext = text.c_str();
-	core::vector2d<u32> textsize_u = font->getDimension(loadingtext);
-	core::vector2d<s32> textsize(textsize_u.X,textsize_u.Y);
-	core::vector2d<s32> center(screensize.X/2, screensize.Y/2);
-	core::rect<s32> textrect(center - textsize/2, center + textsize/2);
+	video::IVideoDriver* driver    = device->getVideoDriver();
+	v2u32 screensize               = porting::getWindowSize();
+
+	v2s32 textsize(glb_fontengine->getTextWidth(text), glb_fontengine->getLineHeight());
+	v2s32 center(screensize.X / 2, screensize.Y / 2);
+	core::rect<s32> textrect(center - textsize / 2, center + textsize / 2);
 
 	gui::IGUIStaticText *guitext = guienv->addStaticText(
-			loadingtext, textrect, false, false);
+			text.c_str(), textrect, false, false);
 	guitext->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 
 	bool cloud_menu_background = clouds && g_settings->getBool("menu_clouds");
@@ -522,25 +520,33 @@ void draw_load_screen(const std::wstring &text, IrrlichtDevice* device,
 	{
 		g_menuclouds->step(dtime*3);
 		g_menuclouds->render();
-		driver->beginScene(true, true, video::SColor(255,140,186,250));
+		driver->beginScene(true, true, video::SColor(255, 140, 186, 250));
 		g_menucloudsmgr->drawAll();
 	}
 	else
-		driver->beginScene(true, true, video::SColor(255,0,0,0));
+		driver->beginScene(true, true, video::SColor(255, 0, 0, 0));
 
-	if (percent >= 0 && percent <= 100) // draw progress bar
+	// draw progress bar
+	if ((percent >= 0) && (percent <= 100))
 	{
-		core::vector2d<s32> barsize(256,32);
-		core::rect<s32> barrect(center-barsize/2, center+barsize/2);
-		driver->draw2DRectangle(video::SColor(255,255,255,255),barrect, NULL); // border
-		driver->draw2DRectangle(video::SColor(255,64,64,64), core::rect<s32> (
-				barrect.UpperLeftCorner+1,
+		v2s32 barsize(
+				// 342 is (approximately) 256/0.75 to keep bar on same size as
+				// before with default settings
+				342 * porting::getDisplayDensity() *
+				g_settings->getFloat("gui_scaling"),
+				glb_fontengine->getTextHeight() * 2);
+
+		core::rect<s32> barrect(center - barsize / 2, center + barsize / 2);
+		driver->draw2DRectangle(video::SColor(255, 255, 255, 255),barrect, NULL); // border
+		driver->draw2DRectangle(video::SColor(255, 64, 64, 64), core::rect<s32> (
+				barrect.UpperLeftCorner + 1,
 				barrect.LowerRightCorner-1), NULL); // black inside the bar
-		driver->draw2DRectangle(video::SColor(255,128,128,128), core::rect<s32> (
-				barrect.UpperLeftCorner+1,
+		driver->draw2DRectangle(video::SColor(255, 128, 128, 128), core::rect<s32> (
+				barrect.UpperLeftCorner + 1,
 				core::vector2d<s32>(
-					barrect.LowerRightCorner.X-(barsize.X-1)+percent*(barsize.X-2)/100,
-					barrect.LowerRightCorner.Y-1)), NULL); // the actual progress
+						barrect.LowerRightCorner.X -
+						(barsize.X - 1) + percent * (barsize.X - 2) / 100,
+						barrect.LowerRightCorner.Y - 1)), NULL); // the actual progress
 	}
 	guienv->drawAll();
 	driver->endScene();

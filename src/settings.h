@@ -45,6 +45,9 @@ struct ValueSpec
 	const char *help;
 };
 
+/** function type to register a changed callback */
+typedef void (*setting_changed_callback)(const std::string);
+
 
 class Settings
 {
@@ -139,7 +142,7 @@ public:
 	void clear();
 	void updateValue(const Settings &other, const std::string &name);
 	void update(const Settings &other);
-
+	void registerChangedCallback(std::string name, setting_changed_callback cbf);
 
 private:
 	/***********************
@@ -166,9 +169,11 @@ private:
 	void updateNoLock(const Settings &other);
 	void clearNoLock();
 
+	void doCallbacks(std::string name);
 
 	std::map<std::string, std::string> m_settings;
 	std::map<std::string, std::string> m_defaults;
+	std::map<std::string, std::vector<setting_changed_callback> > m_callbacks;
 	// All methods that access m_settings/m_defaults directly should lock this.
 	mutable JMutex m_mutex;
 };

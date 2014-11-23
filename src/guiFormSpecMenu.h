@@ -345,7 +345,6 @@ protected:
 private:
 	IFormSource      *m_form_src;
 	TextDest         *m_text_dst;
-	gui::IGUIFont    *m_font;
 	unsigned int      m_formspec_version;
 
 	typedef struct {
