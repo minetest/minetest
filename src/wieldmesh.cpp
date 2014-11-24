@@ -353,7 +353,11 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 				material.setTexture(0, f.tiles[i].texture);
 			}
 			if (m_enable_shaders) {
-				material.MaterialType = shdrsrc->getShaderInfo(f.tiles[i].shader_id).material;
+				u8 material_type = f.tiles[i].material_type;
+				if (material_type != TILE_MATERIAL_ALPHA)
+					material_type = TILE_MATERIAL_BASIC;
+				u32 shader_id = shdrsrc->getShader("nodes_shader", material_type, f.drawtype);
+				material.MaterialType = shdrsrc->getShaderInfo(shader_id).material;
 				f.tiles[i].applyMaterialOptionsWithShaders(material);
 				if (f.tiles[i].normal_texture) {
 					if (animated) {
