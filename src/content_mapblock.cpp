@@ -184,6 +184,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 	*/
 	bool enable_mesh_cache	= g_settings->getBool("enable_mesh_cache");
 	bool new_style_water = g_settings->getBool("new_style_water");
+	bool extruded_meshes = g_settings->getBool("extruded_meshes");
+	
 
 	float node_liquid_level = 1.0;
 	if (new_style_water)
@@ -1057,58 +1059,74 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			break;
 		case NDT_TORCHLIKE:
 		{
-			v3s16 dir = n.getWallMountedDir(nodedef);
-			
-			u8 tileindex = 0;
-			if(dir == v3s16(0,-1,0)){
-				tileindex = 0; // floor
-			} else if(dir == v3s16(0,1,0)){
-				tileindex = 1; // ceiling
-			// For backwards compatibility
-			} else if(dir == v3s16(0,0,0)){
-				tileindex = 0; // floor
+			if (extruded_meshes) {
+				TileSpec tile = getNodeTileN(n, p, 0, data);
+				tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
+
+				u16 l = getInteriorLight(n, 1, nodedef);
+				video::SColor c = MapBlock_LightColor(255, l, f.light_source);
+				v3f pos = intToFloat(p, BS);
+
+				int index = n.getWallMounted(nodedef);
+				if (f.mesh_ptr[index]) {
+					scene::IMeshBuffer *buf = f.mesh_ptr[index]->getMeshBuffer(0);
+					collector.append(tile,
+						(video::S3DVertex *)buf->getVertices(), buf->getVertexCount(),
+						buf->getIndices(), buf->getIndexCount(), pos, c);
+				}
 			} else {
-				tileindex = 2; // side
+				v3s16 dir = n.getWallMountedDir(nodedef);
+				u8 tileindex = 0;
+				if(dir == v3s16(0,-1,0)){
+					tileindex = 0; // floor
+				} else if(dir == v3s16(0,1,0)){
+					tileindex = 1; // ceiling
+				// For backwards compatibility
+				} else if(dir == v3s16(0,0,0)){
+					tileindex = 0; // floor
+				} else {
+					tileindex = 2; // side
+				}
+
+				TileSpec tile = getNodeTileN(n, p, tileindex, data);
+				tile.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
+				tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
+
+				u16 l = getInteriorLight(n, 1, nodedef);
+				video::SColor c = MapBlock_LightColor(255, l, f.light_source);
+
+				float s = BS/2*f.visual_scale;
+				// Wall at X+ of node
+				video::S3DVertex vertices[4] =
+				{
+					video::S3DVertex(-s,-s,0, 0,0,0, c, 0,1),
+					video::S3DVertex( s,-s,0, 0,0,0, c, 1,1),
+					video::S3DVertex( s, s,0, 0,0,0, c, 1,0),
+					video::S3DVertex(-s, s,0, 0,0,0, c, 0,0),
+				};
+
+				for(s32 i=0; i<4; i++)
+				{
+					if(dir == v3s16(1,0,0))
+						vertices[i].Pos.rotateXZBy(0);
+					if(dir == v3s16(-1,0,0))
+						vertices[i].Pos.rotateXZBy(180);
+					if(dir == v3s16(0,0,1))
+						vertices[i].Pos.rotateXZBy(90);
+					if(dir == v3s16(0,0,-1))
+						vertices[i].Pos.rotateXZBy(-90);
+					if(dir == v3s16(0,-1,0))
+						vertices[i].Pos.rotateXZBy(45);
+					if(dir == v3s16(0,1,0))
+						vertices[i].Pos.rotateXZBy(-45);
+
+					vertices[i].Pos += intToFloat(p, BS);
+				}
+
+				u16 indices[] = {0,1,2,2,3,0};
+				// Add to mesh collector
+				collector.append(tile, vertices, 4, indices, 6);
 			}
-
-			TileSpec tile = getNodeTileN(n, p, tileindex, data);
-			tile.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
-			tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
-
-			u16 l = getInteriorLight(n, 1, nodedef);
-			video::SColor c = MapBlock_LightColor(255, l, f.light_source);
-
-			float s = BS/2*f.visual_scale;
-			// Wall at X+ of node
-			video::S3DVertex vertices[4] =
-			{
-				video::S3DVertex(-s,-s,0, 0,0,0, c, 0,1),
-				video::S3DVertex( s,-s,0, 0,0,0, c, 1,1),
-				video::S3DVertex( s, s,0, 0,0,0, c, 1,0),
-				video::S3DVertex(-s, s,0, 0,0,0, c, 0,0),
-			};
-
-			for(s32 i=0; i<4; i++)
-			{
-				if(dir == v3s16(1,0,0))
-					vertices[i].Pos.rotateXZBy(0);
-				if(dir == v3s16(-1,0,0))
-					vertices[i].Pos.rotateXZBy(180);
-				if(dir == v3s16(0,0,1))
-					vertices[i].Pos.rotateXZBy(90);
-				if(dir == v3s16(0,0,-1))
-					vertices[i].Pos.rotateXZBy(-90);
-				if(dir == v3s16(0,-1,0))
-					vertices[i].Pos.rotateXZBy(45);
-				if(dir == v3s16(0,1,0))
-					vertices[i].Pos.rotateXZBy(-45);
-
-				vertices[i].Pos += intToFloat(p, BS);
-			}
-
-			u16 indices[] = {0,1,2,2,3,0};
-			// Add to mesh collector
-			collector.append(tile, vertices, 4, indices, 6);
 		break;}
 		case NDT_SIGNLIKE:
 		{
@@ -1158,42 +1176,54 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		{
 			TileSpec tile = getNodeTileN(n, p, 0, data);
 			tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
-
 			u16 l = getInteriorLight(n, 1, nodedef);
 			video::SColor c = MapBlock_LightColor(255, l, f.light_source);
-			
-			float s = BS / 2;
-			for(u32 j = 0; j < 2; j++)
-			{
-				video::S3DVertex vertices[4] =
-				{
-					video::S3DVertex(-s,-s, 0, 0,0,0, c, 0,1),
-					video::S3DVertex( s,-s, 0, 0,0,0, c, 1,1),
-					video::S3DVertex( s, s, 0, 0,0,0, c, 1,0),
-					video::S3DVertex(-s, s, 0, 0,0,0, c, 0,0),
-				};
+			v3f pos = intToFloat(p, BS);
 
-				if(j == 0)
+			if (extruded_meshes) {
+				for (int i = 0; i < 2; i++) 
 				{
+					if (f.mesh_ptr[i]) {
+						scene::IMeshBuffer *buf = f.mesh_ptr[i]->getMeshBuffer(0);
+						collector.append(tile,
+							(video::S3DVertex *)buf->getVertices(), buf->getVertexCount(),
+							buf->getIndices(), buf->getIndexCount(), pos, c);
+					}
+				}
+			} else {
+				float s = BS / 2;
+				for(u32 j = 0; j < 2; j++)
+				{
+					video::S3DVertex vertices[4] =
+					{
+						video::S3DVertex(-s,-s, 0, 0,0,0, c, 0,1),
+						video::S3DVertex( s,-s, 0, 0,0,0, c, 1,1),
+						video::S3DVertex( s, s, 0, 0,0,0, c, 1,0),
+						video::S3DVertex(-s, s, 0, 0,0,0, c, 0,0),
+					};
+
+					if(j == 0)
+					{
+						for(u16 i = 0; i < 4; i++)
+							vertices[i].Pos.rotateXZBy(46 + n.param2 * 2);
+					}
+					else if(j == 1)
+					{
+						for(u16 i = 0; i < 4; i++)
+							vertices[i].Pos.rotateXZBy(-44 + n.param2 * 2);
+					}
+
 					for(u16 i = 0; i < 4; i++)
-						vertices[i].Pos.rotateXZBy(46 + n.param2 * 2);
-				}
-				else if(j == 1)
-				{
-					for(u16 i = 0; i < 4; i++)
-						vertices[i].Pos.rotateXZBy(-44 + n.param2 * 2);
-				}
+					{
+						vertices[i].Pos *= f.visual_scale;
+						vertices[i].Pos.Y -= s * (1 - f.visual_scale);
+						vertices[i].Pos += pos;
+					}
 
-				for(u16 i = 0; i < 4; i++)
-				{
-					vertices[i].Pos *= f.visual_scale;
-					vertices[i].Pos.Y -= s * (1 - f.visual_scale);
-					vertices[i].Pos += intToFloat(p, BS);
+					u16 indices[] = {0, 1, 2, 2, 3, 0};
+					// Add to mesh collector
+					collector.append(tile, vertices, 4, indices, 6);
 				}
-
-				u16 indices[] = {0, 1, 2, 2, 3, 0};
-				// Add to mesh collector
-				collector.append(tile, vertices, 4, indices, 6);
 			}
 		break;}
 		case NDT_FIRELIKE:
