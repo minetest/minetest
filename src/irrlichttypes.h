@@ -20,6 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef IRRLICHTTYPES_HEADER
 #define IRRLICHTTYPES_HEADER
 
+#ifndef _MSC_VER // see https://sourceforge.net/p/irrlicht/bugs/433/
+#include <stdint.h>
+#endif
+
 #include <irrTypes.h>
 
 using namespace irr;
@@ -32,7 +36,6 @@ using namespace irr;
 	typedef unsigned long long u64;
 #else
 	// Posix
-	#include <stdint.h>
 	typedef int64_t s64;
 	typedef uint64_t u64;
 #endif
