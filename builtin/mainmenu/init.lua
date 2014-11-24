@@ -97,7 +97,7 @@ local function init_globals()
 
 		local found_singleplayerworld = false
 
-		for world in pairs(world_list) do
+		for i,world in pairs(world_list) do
 			if world.name == "singleplayerworld" then
 				found_singleplayerworld = true
 				gamedata.worldindex = i
@@ -110,10 +110,10 @@ local function init_globals()
 
 			local world_list = core.get_worlds()
 
-			for world in pairs(world_list) do
+			for i,world in pairs(world_list) do
 				if world.name == "singleplayerworld" then
 					gamedata.worldindex = i
-					return
+					break
 				end
 			end
 		end
