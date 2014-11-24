@@ -219,6 +219,7 @@ Client::Client(
 		IrrlichtDevice *device,
 		const char *playername,
 		std::string password,
+		bool is_simple_singleplayer_game,
 		MapDrawControl &control,
 		IWritableTextureSource *tsrc,
 		IWritableShaderSource *shsrc,
@@ -280,7 +281,8 @@ Client::Client(
 		m_env.addPlayer(player);
 	}
 
-	if (g_settings->getBool("enable_local_map_saving")) {
+	if (g_settings->getBool("enable_local_map_saving")
+			&& !is_simple_singleplayer_game) {
 		const std::string world_path = porting::path_user + DIR_DELIM + "worlds"
 				+ DIR_DELIM + "server_" + g_settings->get("address")
 				+ "_" + g_settings->get("remote_port");

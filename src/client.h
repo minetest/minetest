@@ -305,6 +305,7 @@ public:
 			IrrlichtDevice *device,
 			const char *playername,
 			std::string password,
+			bool is_simple_singleplayer_game,
 			MapDrawControl &control,
 			IWritableTextureSource *tsrc,
 			IWritableShaderSource *shsrc,
