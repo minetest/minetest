@@ -1071,6 +1071,8 @@ static bool create_userdata_path()
 	porting::setExternalStorageDir(porting::jnienv);
 	if (!fs::PathExists(porting::path_user)) {
 		success = fs::CreateDir(porting::path_user);
+	} else {
+		success = true;
 	}
 	porting::copyAssets();
 #else
