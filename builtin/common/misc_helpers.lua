@@ -340,8 +340,8 @@ end
 --------------------------------------------------------------------------------
 
 if INIT == "game" then
-	local dirs1 = {9, 18, 7, 12}
-	local dirs2 = {20, 23, 22, 21}
+	local dirs1 = {8, 17, 6, 15}
+	local dirs2 = {22, 21, 20, 23}
 
 	function core.rotate_and_place(itemstack, placer, pointed_thing,
 				infinitestacks, orient_flags)
