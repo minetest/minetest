@@ -64,6 +64,7 @@ private:
 	bool m_lighting;
 
 	bool m_enable_shaders;
+	bool m_anisotropic_filter;
 	bool m_bilinear_filter;
 	bool m_trilinear_filter;
 

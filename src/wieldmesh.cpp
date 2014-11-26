@@ -206,6 +206,7 @@ WieldMeshSceneNode::WieldMeshSceneNode(
 	m_bounding_box(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 {
 	m_enable_shaders = g_settings->getBool("enable_shaders");
+	m_anisotropic_filter = g_settings->getBool("anisotropic_filter");
 	m_bilinear_filter = g_settings->getBool("bilinear_filter");
 	m_trilinear_filter = g_settings->getBool("trilinear_filter");
 
@@ -280,14 +281,16 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 	// Enable filtering only for high resolution texures
 	if (dim.Width > 32) {
+		material.setFlag(video::EMF_ANISOTROPIC_FILTER, m_anisotropic_filter);
 		material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
 		material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
 	} else {
+		material.setFlag(video::EMF_ANISOTROPIC_FILTER, false);
 		material.setFlag(video::EMF_BILINEAR_FILTER, false);
 		material.setFlag(video::EMF_TRILINEAR_FILTER, false);
 	}
-	// anisotropic filtering removes "thin black line" artifacts
-	material.setFlag(video::EMF_ANISOTROPIC_FILTER, true);
+	// mipmaps cause "thin black line" artifacts
+	material.setFlag(video::EMF_USE_MIP_MAPS, false);
 	if (m_enable_shaders) 
 		material.setTexture(2, tsrc->getTexture("disable_img.png"));
 }
