@@ -279,16 +279,15 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	material.setTexture(0, texture);
 	material.MaterialType = m_material_type;
 	material.setFlag(video::EMF_BACK_FACE_CULLING, true);
-	// Enable filtering only for high resolution texures
+	// Enable bi/trilinear filtering only for high resolution textures
 	if (dim.Width > 32) {
-		material.setFlag(video::EMF_ANISOTROPIC_FILTER, m_anisotropic_filter);
 		material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
 		material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
 	} else {
-		material.setFlag(video::EMF_ANISOTROPIC_FILTER, false);
 		material.setFlag(video::EMF_BILINEAR_FILTER, false);
 		material.setFlag(video::EMF_TRILINEAR_FILTER, false);
 	}
+	material.setFlag(video::EMF_ANISOTROPIC_FILTER, m_anisotropic_filter);
 	// mipmaps cause "thin black line" artifacts
 #if (IRRLICHT_VERSION_MAJOR >= 1 && IRRLICHT_VERSION_MINOR >= 8) || IRRLICHT_VERSION_MAJOR >= 2
 	material.setFlag(video::EMF_USE_MIP_MAPS, false);
