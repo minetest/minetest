@@ -30,7 +30,7 @@ core.register_entity(":__builtin:falling_node", {
 			item_texture = core.registered_items[itemname].inventory_image
 			item_type = core.registered_items[itemname].type
 		end
-		prop = {
+		local prop = {
 			is_visible = true,
 			textures = {node.name},
 		}
@@ -112,7 +112,7 @@ core.register_entity(":__builtin:falling_node", {
 })
 
 function spawn_falling_node(p, node)
-	obj = core.add_entity(p, "__builtin:falling_node")
+	local obj = core.add_entity(p, "__builtin:falling_node")
 	obj:get_luaentity():set_node(node)
 end
 
@@ -163,10 +163,10 @@ end
 --
 
 function nodeupdate_single(p, delay)
-	n = core.get_node(p)
+	local n = core.get_node(p)
 	if core.get_item_group(n.name, "falling_node") ~= 0 then
-		p_bottom = {x=p.x, y=p.y-1, z=p.z}
-		n_bottom = core.get_node(p_bottom)
+		local p_bottom = {x=p.x, y=p.y-1, z=p.z}
+		local n_bottom = core.get_node(p_bottom)
 		-- Note: walkable is in the node definition, not in item groups
 		if core.registered_nodes[n_bottom.name] and
 				(core.get_item_group(n.name, "float") == 0 or

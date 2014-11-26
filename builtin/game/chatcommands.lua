@@ -252,7 +252,7 @@ core.register_chatcommand("clearpassword", {
 	description = "set empty password",
 	privs = {password=true},
 	func = function(name, param)
-		toname = param
+		local toname = param
 		if toname == "" then
 			return false, "Name field required"
 		end
@@ -426,6 +426,7 @@ local function handle_give_command(cmd, giver, receiver, stackstring)
 		return false, receiver .. " is not a known player"
 	end
 	local leftover = receiverref:get_inventory():add_item("main", itemstack)
+	local partiality
 	if leftover:is_empty() then
 		partiality = ""
 	elseif leftover:get_count() == itemstack:get_count() then
