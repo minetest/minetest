@@ -174,7 +174,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	std::wstring t = narrow_to_wide(std::string("Minetest ") +
 			minetest_version_hash);
 
-	core::rect<s32> rect(0, 0, glb_fontengine->getTextWidth(t), glb_fontengine->getTextHeight());
+	core::rect<s32> rect(0, 0, g_fontengine->getTextWidth(t), g_fontengine->getTextHeight());
 	rect += v2s32(4, 0);
 
 	m_irr_toplefttext =
@@ -260,14 +260,14 @@ void GUIEngine::run()
 
 	cloudInit();
 
-	unsigned int text_height = glb_fontengine->getTextHeight();
+	unsigned int text_height = g_fontengine->getTextHeight();
 
 	while(m_device->run() && (!m_startgame) && (!m_kill))
 	{
 		//check if we need to update the "upper left corner"-text
-		if (text_height != glb_fontengine->getTextHeight()) {
+		if (text_height != g_fontengine->getTextHeight()) {
 			updateTopLeftTextSize();
-			text_height = glb_fontengine->getTextHeight();
+			text_height = g_fontengine->getTextHeight();
 		}
 
 		driver->beginScene(true, true, video::SColor(255,140,186,250));
@@ -590,7 +590,7 @@ void GUIEngine::updateTopLeftTextSize()
 {
 	std::wstring text = m_irr_toplefttext->getText();
 
-	core::rect<s32> rect(0, 0, glb_fontengine->getTextWidth(text), glb_fontengine->getTextHeight());
+	core::rect<s32> rect(0, 0, g_fontengine->getTextWidth(text), g_fontengine->getTextHeight());
 		rect += v2s32(4, 0);
 
 	m_irr_toplefttext->remove();

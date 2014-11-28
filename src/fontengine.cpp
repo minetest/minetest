@@ -33,11 +33,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAX_FONT_SIZE_OFFSET 10
 
 /** reference to access font engine, has to be initialized by main */
-FontEngine* glb_fontengine = NULL;
+FontEngine* g_fontengine = NULL;
 
 /** callback to be used on change of font size setting */
 static void font_setting_changed(const std::string) {
-	glb_fontengine->readSettings();
+	g_fontengine->readSettings();
 }
 
 /******************************************************************************/
@@ -349,7 +349,6 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 				font_shadow_alpha);
 
 		if (font != NULL) {
-			font->grab();
 			m_font_cache[mode][basesize] = font;
 		}
 		else {
@@ -457,7 +456,6 @@ void FontEngine::initSimpleFont(unsigned int basesize, FontMode mode)
 	}
 
 	if (font != NULL) {
-		font->grab();
 		m_font_cache[mode][basesize] = font;
 	}
 }

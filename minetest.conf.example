@@ -216,7 +216,7 @@
 #tooltip_show_delay = 400
 # Delay showing tooltips, in miliseconds
 #screen_dpi = 72
-# adjust dpi configuration to your screen (PC/MAC only) e.g. for 4k screens
+# adjust dpi configuration to your screen (Desktop only) e.g. for 4k screens
 
 # Default timeout for cURL, in milliseconds
 # Only has an effect if compiled with cURL

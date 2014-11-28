@@ -135,6 +135,6 @@ private:
 };
 
 /** interface to access main font engine*/
-extern FontEngine* glb_fontengine;
+extern FontEngine* g_fontengine;
 
 #endif

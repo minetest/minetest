@@ -92,7 +92,7 @@ GUIChatConsole::GUIChatConsole(
 		m_background_color.setBlue(255);
 	}
 
-	m_font = glb_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_Mono);
+	m_font = g_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_Mono);
 
 	if (m_font == NULL)
 	{
