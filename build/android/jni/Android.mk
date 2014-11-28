@@ -253,7 +253,7 @@ LOCAL_SRC_FILES +=                                \
 		
 #freetype2 support
 LOCAL_SRC_FILES +=                                \
-		jni/src/cguittfont/xCGUITTFont.cpp
+		jni/src/cguittfont/CGUITTFont.cpp
 
 # lua
 LOCAL_SRC_FILES +=                                \

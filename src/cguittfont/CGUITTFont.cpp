@@ -29,6 +29,8 @@
 */
 
 #include <irrlicht.h>
+#include <stddef.h>
+#include "irrUString.h"
 #include "CGUITTFont.h"
 
 namespace irr
