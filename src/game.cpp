@@ -1159,7 +1159,7 @@ static void updateChat(Client &client, f32 dtime, bool show_debug,
 	// Display all messages in a static text element
 	unsigned int recent_chat_count = chat_backend.getRecentBuffer().getLineCount();
 	std::wstring recent_chat       = chat_backend.getRecentChat();
-	unsigned int line_height       = glb_fontengine->getLineHeight();
+	unsigned int line_height       = g_fontengine->getLineHeight();
 
 	guitext_chat->setText(recent_chat.c_str());
 
@@ -1170,7 +1170,7 @@ static void updateChat(Client &client, f32 dtime, bool show_debug,
 		chat_y += line_height;
 
 	// first pass to calculate height of text to be set
-	s32 width = std::min(glb_fontengine->getTextWidth(recent_chat) + 10,
+	s32 width = std::min(g_fontengine->getTextWidth(recent_chat) + 10,
 			     porting::getWindowSize().X - 20);
 	core::rect<s32> rect(10, chat_y, width, chat_y + porting::getWindowSize().Y);
 	guitext_chat->setRelativePosition(rect);
@@ -1923,7 +1923,7 @@ bool Game::createClient(const std::string &playername,
 	}
 
 	// Update cached textures, meshes and materials
-	client->afterContentReceived(device, glb_fontengine->getFont());
+	client->afterContentReceived(device, g_fontengine->getFont());
 
 	/* Camera
 	 */
@@ -1981,8 +1981,7 @@ bool Game::createClient(const std::string &playername,
 	player->hurt_tilt_timer = 0;
 	player->hurt_tilt_strength = 0;
 
-	hud = new Hud(driver, smgr, guienv, glb_fontengine->getFont(),
-			glb_fontengine->getTextHeight(), gamedef, player, local_inventory);
+	hud = new Hud(driver, smgr, guienv, gamedef, player, local_inventory);
 
 	if (!hud) {
 		*error_message = L"Memory error: could not create HUD";
@@ -2011,7 +2010,7 @@ bool Game::initGui(std::wstring *error_message)
 	// Object infos are shown in this
 	guitext_info = guienv->addStaticText(
 			L"",
-			core::rect<s32>(0, 0, 400, glb_fontengine->getTextHeight() * 5 + 5) + v2s32(100, 200),
+			core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 5 + 5) + v2s32(100, 200),
 			false, true, guiroot);
 
 	// Status text (displays info when showing and hiding GUI stuff, etc.)
@@ -2342,7 +2341,7 @@ void Game::updateProfilers(const GameRunData &run_data, const RunStats &stats,
 			g_profiler->print(infostream);
 		}
 
-		update_profiler_gui(guitext_profiler, glb_fontengine,
+		update_profiler_gui(guitext_profiler, g_fontengine,
 				run_data.profiler_current_page, run_data.profiler_max_page);
 
 		g_profiler->clear();
@@ -2753,7 +2752,7 @@ void Game::toggleProfiler(float *statustext_time, u32 *profiler_current_page,
 	*profiler_current_page = (*profiler_current_page + 1) % (profiler_max_page + 1);
 
 	// FIXME: This updates the profiler with incomplete values
-	update_profiler_gui(guitext_profiler, glb_fontengine, *profiler_current_page,
+	update_profiler_gui(guitext_profiler, g_fontengine, *profiler_current_page,
 			profiler_max_page);
 
 	if (*profiler_current_page != 0) {
@@ -3872,7 +3871,7 @@ void Game::updateFrame(std::vector<aabb3f> &highlight_boxes,
 		Profiler graph
 	*/
 	if (flags.show_profiler_graph)
-		graph->draw(10, screensize.Y - 10, driver, glb_fontengine->getFont());
+		graph->draw(10, screensize.Y - 10, driver, g_fontengine->getFont());
 
 	/*
 		Damage flash
@@ -3955,7 +3954,7 @@ void Game::updateGui(float *statustext_time, const RunStats& stats,
 	if (guitext->isVisible()) {
 		core::rect<s32> rect(
 				5,              5,
-				screensize.X,   5 + glb_fontengine->getTextHeight()
+				screensize.X,   5 + g_fontengine->getTextHeight()
 		);
 		guitext->setRelativePosition(rect);
 	}
@@ -3973,8 +3972,8 @@ void Game::updateGui(float *statustext_time, const RunStats& stats,
 		guitext2->setVisible(true);
 
 		core::rect<s32> rect(
-				5,             5 + glb_fontengine->getTextHeight(),
-				screensize.X,  5 + glb_fontengine->getTextHeight() * 2
+				5,             5 + g_fontengine->getTextHeight(),
+				screensize.X,  5 + g_fontengine->getTextHeight() * 2
 		);
 		guitext2->setRelativePosition(rect);
 	} else {

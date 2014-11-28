@@ -91,11 +91,11 @@ static gui::IGUIFont *select_font_by_line_height(double target_line_height)
 	unsigned int hireq = ceil(target_line_height
 				/ porting::getDisplayDensity()
 				/ g_settings->getFloat("gui_scaling"));
-	unsigned int lohgt = font_line_height(glb_fontengine->getFont(loreq));
-	unsigned int hihgt = font_line_height(glb_fontengine->getFont(hireq));
+	unsigned int lohgt = font_line_height(g_fontengine->getFont(loreq));
+	unsigned int hihgt = font_line_height(g_fontengine->getFont(hireq));
 	while(hireq - loreq > 1 && lohgt != hihgt) {
 		unsigned int nureq = (loreq + hireq) >> 1;
-		unsigned int nuhgt = font_line_height(glb_fontengine->getFont(nureq));
+		unsigned int nuhgt = font_line_height(g_fontengine->getFont(nureq));
 		if(nuhgt < target_line_height) {
 			loreq = nureq;
 			lohgt = nuhgt;
@@ -104,7 +104,7 @@ static gui::IGUIFont *select_font_by_line_height(double target_line_height)
 			hihgt = nuhgt;
 		}
 	}
-	return glb_fontengine->getFont(target_line_height - lohgt < hihgt - target_line_height ? loreq : hireq);
+	return g_fontengine->getFont(target_line_height - lohgt < hihgt - target_line_height ? loreq : hireq);
 }
 
 GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
@@ -1992,7 +1992,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		// Non-size[] form must consist only of text fields and
 		// implicit "Proceed" button.  Use default font, and
 		// temporary form size which will be recalculated below.
-		m_font = glb_fontengine->getFont();
+		m_font = g_fontengine->getFont();
 		m_btn_height = font_line_height(m_font) * 0.875;
 		DesiredRect = core::rect<s32>(
 			mydata.screensize.X/2 - 580/2,

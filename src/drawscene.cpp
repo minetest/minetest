@@ -507,7 +507,7 @@ void draw_load_screen(const std::wstring &text, IrrlichtDevice* device,
 	video::IVideoDriver* driver    = device->getVideoDriver();
 	v2u32 screensize               = porting::getWindowSize();
 
-	v2s32 textsize(glb_fontengine->getTextWidth(text), glb_fontengine->getLineHeight());
+	v2s32 textsize(g_fontengine->getTextWidth(text), g_fontengine->getLineHeight());
 	v2s32 center(screensize.X / 2, screensize.Y / 2);
 	core::rect<s32> textrect(center - textsize / 2, center + textsize / 2);
 
@@ -534,7 +534,7 @@ void draw_load_screen(const std::wstring &text, IrrlichtDevice* device,
 				// before with default settings
 				342 * porting::getDisplayDensity() *
 				g_settings->getFloat("gui_scaling"),
-				glb_fontengine->getTextHeight() * 2);
+				g_fontengine->getTextHeight() * 2);
 
 		core::rect<s32> barrect(center - barsize / 2, center + barsize / 2);
 		driver->draw2DRectangle(video::SColor(255, 255, 255, 255),barrect, NULL); // border

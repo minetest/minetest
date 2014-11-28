@@ -1569,8 +1569,8 @@ ClientLauncher::~ClientLauncher()
 	if (input)
 		delete input;
 
-	if (glb_fontengine)
-		delete glb_fontengine;
+	if (g_fontengine)
+		delete g_fontengine;
 
 	if (device)
 		device->drop();
@@ -1630,8 +1630,8 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 	skin->setColor(gui::EGDC_HIGH_LIGHT, video::SColor(255, 70, 100, 50));
 	skin->setColor(gui::EGDC_HIGH_LIGHT_TEXT, video::SColor(255, 255, 255, 255));
 
-	glb_fontengine = new FontEngine(g_settings, guienv);
-	assert(glb_fontengine != NULL);
+	g_fontengine = new FontEngine(g_settings, guienv);
+	assert(g_fontengine != NULL);
 
 #if (IRRLICHT_VERSION_MAJOR >= 1 && IRRLICHT_VERSION_MINOR >= 8) || IRRLICHT_VERSION_MAJOR >= 2
 	// Irrlicht 1.8 input colours
