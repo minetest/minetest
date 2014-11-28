@@ -1818,8 +1818,17 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 
 void ClientLauncher::init_args(GameParams &game_params, const Settings &cmd_args)
 {
+
+	skip_main_menu = cmd_args.getFlag("go");
+
+	// FIXME: This is confusing (but correct)
+
+	/* If world_path is set then override it unless skipping the main menu using
+	 * the --go command line param. Else, give preference to the address
+	 * supplied on the command line
+	 */
 	address = g_settings->get("address");
-	if (game_params.world_path != "")
+	if (game_params.world_path != "" && !skip_main_menu)
 		address = "";
 	else if (cmd_args.exists("address"))
 		address = cmd_args.get("address");
@@ -1827,8 +1836,6 @@ void ClientLauncher::init_args(GameParams &game_params, const Settings &cmd_args
 	playername = g_settings->get("name");
 	if (cmd_args.exists("name"))
 		playername = cmd_args.get("name");
-
-	skip_main_menu = cmd_args.getFlag("go");
 
 	list_video_modes = cmd_args.getFlag("videomodes");
 
