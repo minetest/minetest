@@ -418,7 +418,7 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 
 						hilightboxes.clear();
 
-						if (!g_settings->getBool("enable_node_highlighting")) {
+						if (!g_settings->getFastBool_node_highlighting()) {
 							for (std::vector<aabb3f>::const_iterator
 									i2 = boxes.begin();
 									i2 != boxes.end(); i2++) {
@@ -829,7 +829,7 @@ public:
 		// Fog distance
 		float fog_distance = 10000 * BS;
 
-		if (g_settings->getBool("enable_fog") && !*m_force_fog_off)
+		if (g_settings->getFastBool_enable_fog() && !*m_force_fog_off)
 			fog_distance = *m_fog_range;
 
 		services->setPixelShaderConstant("fogDistance", &fog_distance, 1);
@@ -967,8 +967,8 @@ bool nodePlacementPrediction(Client &client,
 			// Dont place node when player would be inside new node
 			// NOTE: This is to be eventually implemented by a mod as client-side Lua
 			if (!nodedef->get(n).walkable ||
-					g_settings->getBool("enable_build_where_you_stand") ||
-					(client.checkPrivilege("noclip") && g_settings->getBool("noclip")) ||
+					g_settings->getFastBool_build_where_you_stand() ||
+					(client.checkPrivilege("noclip") && g_settings->getFastBool_noclip()) ||
 					(nodedef->get(n).walkable &&
 					 neighbourpos != player->getStandingNodePos() + v3s16(0, 1, 0) &&
 					 neighbourpos != player->getStandingNodePos() + v3s16(0, 2, 0))) {
@@ -2465,7 +2465,7 @@ void Game::processUserInput(VolatileRunFlags *flags,
 #endif
 
 	// Increase timer for double tap of "keymap_jump"
-	if (g_settings->getBool("doubletap_jump") && interact_args->jump_timer <= 0.2)
+	if (g_settings->getFastBool_doubletap_jump() && interact_args->jump_timer <= 0.2)
 		interact_args->jump_timer += dtime;
 
 	processKeyboardInput(
@@ -3343,7 +3343,7 @@ void Game::processPlayerInteraction(std::vector<aabb3f> &highlight_boxes,
 	if (pointed != runData->pointed_old) {
 		infostream << "Pointing at " << pointed.dump() << std::endl;
 
-		if (g_settings->getBool("enable_node_highlighting")) {
+		if (g_settings->getFastBool_node_highlighting()) {
 			if (pointed.type == POINTEDTHING_NODE) {
 				client->setHighlighted(pointed.node_undersurface, show_hud);
 			} else {
@@ -3710,7 +3710,7 @@ void Game::updateFrame(std::vector<aabb3f> &highlight_boxes,
 	float direct_brightness;
 	bool sunlight_seen;
 
-	if (g_settings->getBool("free_move")) {
+	if (g_settings->getFastBool_free_move()) {
 		direct_brightness = time_brightness;
 		sunlight_seen = true;
 	} else {
@@ -3775,7 +3775,7 @@ void Game::updateFrame(std::vector<aabb3f> &highlight_boxes,
 		Fog
 	*/
 
-	if (g_settings->getBool("enable_fog") && !flags.force_fog_off) {
+	if (g_settings->getFastBool_enable_fog() && !flags.force_fog_off) {
 		driver->setFog(
 				sky->getBgColor(),
 				video::EFT_FOG_LINEAR,
