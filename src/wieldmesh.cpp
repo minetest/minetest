@@ -130,7 +130,7 @@ static scene::IMesh *createExtrusionMesh(int resolution_x, int resolution_y)
 	rendering related classes (such as WieldMeshSceneNode) will be
 	used from the rendering thread only.
 */
-class ExtrusionMeshCache: public IReferenceCounted
+class ExtrusionMeshCache: public irr::IReferenceCounted
 {
 public:
 	// Constructor

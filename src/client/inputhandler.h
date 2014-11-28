@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 
-class MyEventReceiver : public IEventReceiver
+class MyEventReceiver : public irr::IEventReceiver
 {
 public:
 	// This is the one method that we have to implement
@@ -69,20 +69,13 @@ public:
 				middle_active = event.MouseInput.isMiddlePressed();
 				right_active = event.MouseInput.isRightPressed();
 
-				if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
-					leftclicked = true;
-				}
-				if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN) {
-					rightclicked = true;
-				}
-				if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
-					leftreleased = true;
-				}
-				if (event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP) {
-					rightreleased = true;
-				}
-				if (event.MouseInput.Event == EMIE_MOUSE_WHEEL) {
-					mouse_wheel += event.MouseInput.Wheel;
+				switch (event.MouseInput.Event) {
+				case irr::EMIE_LMOUSE_PRESSED_DOWN: leftclicked = true; break;
+				case irr::EMIE_RMOUSE_PRESSED_DOWN: rightclicked = true; break;
+				case irr::EMIE_LMOUSE_LEFT_UP: leftreleased = true; break;
+				case irr::EMIE_RMOUSE_LEFT_UP: rightreleased = true; break;
+				case irr::EMIE_MOUSE_WHEEL: mouse_wheel += event.MouseInput.Wheel; break;
+				default: break;
 				}
 			}
 		} else if (event.EventType == irr::EET_LOG_TEXT_EVENT) {

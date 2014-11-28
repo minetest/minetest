@@ -144,14 +144,14 @@ void GUIVolumeChange::drawMenu()
 
 bool GUIVolumeChange::OnEvent(const SEvent& event)
 {
-	if(event.EventType==EET_KEY_INPUT_EVENT)
+	if(event.EventType==irr::EET_KEY_INPUT_EVENT)
 	{
-		if(event.KeyInput.Key==KEY_ESCAPE && event.KeyInput.PressedDown)
+		if(event.KeyInput.Key==irr::KEY_ESCAPE && event.KeyInput.PressedDown)
 		{
 			quitMenu();
 			return true;
 		}
-		if(event.KeyInput.Key==KEY_RETURN && event.KeyInput.PressedDown)
+		if(event.KeyInput.Key==irr::KEY_RETURN && event.KeyInput.PressedDown)
 		{
 			quitMenu();
 			return true;

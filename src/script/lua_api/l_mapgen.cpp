@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "settings.h"
 #include "log.h"
+#include "int_types.h"
 
 struct EnumString ModApiMapgen::es_BiomeTerrainType[] =
 {
@@ -610,7 +611,7 @@ int ModApiMapgen::l_get_mapgen_params(lua_State *L)
 	lua_pushinteger(L, params->chunksize);
 	lua_setfield(L, -2, "chunksize");
 
-	std::string flagstr = writeFlagString(params->flags, flagdesc_mapgen, U32_MAX);
+	std::string flagstr = writeFlagString(params->flags, flagdesc_mapgen, UINT32_MAX);
 	lua_pushstring(L, flagstr.c_str());
 	lua_setfield(L, -2, "flags");
 

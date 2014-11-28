@@ -309,7 +309,7 @@ public:
 
 	void initialize(const std::string &data);
 
-	core::aabbox3d<f32>* getSelectionBox()
+	aabb3f* getSelectionBox()
 		{return &m_selection_box;}
 	v3f getPosition()
 		{return m_position;}
@@ -319,7 +319,7 @@ public:
 
 	bool getCollisionBox(aabb3f *toset) { return false; }
 private:
-	core::aabbox3d<f32> m_selection_box;
+	aabb3f m_selection_box;
 	scene::IMeshSceneNode *m_node;
 	v3f m_position;
 	std::string m_itemstring;
@@ -675,7 +675,7 @@ GenericCAO::~GenericCAO()
 	removeFromScene(true);
 }
 
-core::aabbox3d<f32>* GenericCAO::getSelectionBox()
+aabb3f* GenericCAO::getSelectionBox()
 {
 	if(!m_prop.is_visible || !m_is_visible || m_is_local_player || getParent() != NULL)
 		return NULL;
@@ -1186,7 +1186,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 		if(m_prop.physical)
 		{
-			core::aabbox3d<f32> box = m_prop.collisionbox;
+			aabb3f box = m_prop.collisionbox;
 			box.MinEdge *= BS;
 			box.MaxEdge *= BS;
 			collisionMoveResult moveresult;

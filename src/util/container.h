@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef UTIL_CONTAINER_HEADER
 #define UTIL_CONTAINER_HEADER
 
-#include "../irrlichttypes.h"
+#include "../int_types.h"
 #include "../exceptions.h"
 #include "../threading/mutex.h"
 #include "../threading/mutex_auto_lock.h"

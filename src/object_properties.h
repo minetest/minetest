@@ -33,7 +33,7 @@ struct ObjectProperties
 	bool physical;
 	bool collideWithObjects;
 	float weight;
-	core::aabbox3d<f32> collisionbox;
+	aabb3f collisionbox;
 	std::string visual;
 	std::string mesh;
 	v2f visual_size;

@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "debug.h"
 #include "itemdef.h"
-#include "irrlichttypes.h"
+#include "int_types.h"
 #include <istream>
 #include <ostream>
 #include <string>

@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef UTIL_POINTER_HEADER
 #define UTIL_POINTER_HEADER
 
-#include "../irrlichttypes.h"
+#include "../int_types.h"
 #include "../debug.h" // For assert()
 #include <cstring>
 

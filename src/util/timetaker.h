@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef UTIL_TIMETAKER_HEADER
 #define UTIL_TIMETAKER_HEADER
 
-#include "../irrlichttypes.h"
+#include "../int_types.h"
 #include "../gettime.h"
 
 /*

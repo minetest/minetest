@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef TILE_HEADER
 #define TILE_HEADER
 
+#include "int_types.h"
 #include "irrlichttypes.h"
 #include "irr_v2d.h"
 #include "irr_v3d.h"

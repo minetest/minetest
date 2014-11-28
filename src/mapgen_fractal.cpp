@@ -190,7 +190,7 @@ void MapgenFractalParams::readParams(const Settings *settings)
 
 void MapgenFractalParams::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgfractal_spflags", spflags, flagdesc_mapgen_fractal, U32_MAX);
+	settings->setFlagStr("mgfractal_spflags", spflags, flagdesc_mapgen_fractal, UINT32_MAX);
 
 	settings->setU16("mgfractal_m_iterations", m_iterations);
 	settings->setV3F("mgfractal_m_scale", m_scale);
@@ -475,7 +475,7 @@ MgStoneType MapgenFractal::generateBiomes(float *heat_map, float *humidity_map)
 
 		// If there is air or water above enable top/filler placement, otherwise force
 		// nplaced to stone level by setting a number exceeding any possible filler depth.
-		u16 nplaced = (air_above || water_above) ? 0 : U16_MAX;
+		u16 nplaced = (air_above || water_above) ? 0 : UINT16_MAX;
 
 
 		for (s16 y = node_max.Y; y >= node_min.Y; y--) {
@@ -512,7 +512,7 @@ MgStoneType MapgenFractal::generateBiomes(float *heat_map, float *humidity_map)
 				// This is done by aborting the cycle of top/filler placement
 				// immediately by forcing nplaced to stone level.
 				if (c_below == CONTENT_AIR || c_below == c_water_source)
-					nplaced = U16_MAX;
+					nplaced = UINT16_MAX;
 
 				if (nplaced < depth_top) {
 					vm->m_data[vi] = MapNode(biome->c_top);
@@ -537,7 +537,7 @@ MgStoneType MapgenFractal::generateBiomes(float *heat_map, float *humidity_map)
 				air_above = true;
 				water_above = false;
 			} else {  // Possible various nodes overgenerated from neighbouring mapchunks
-				nplaced = U16_MAX;  // Disable top/filler placement
+				nplaced = UINT16_MAX;  // Disable top/filler placement
 				air_above = false;
 				water_above = false;
 			}

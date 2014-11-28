@@ -35,7 +35,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Very slow button repeat frequency (in seconds)
 #define SLOW_BUTTON_REPEAT	(1.0f)
 
-using namespace irr::core;
 
 extern Settings *g_settings;
 

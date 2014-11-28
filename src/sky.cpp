@@ -94,7 +94,7 @@ void Sky::OnRegisterSceneNode()
 	scene::ISceneNode::OnRegisterSceneNode();
 }
 
-const core::aabbox3d<f32>& Sky::getBoundingBox() const
+const aabb3f& Sky::getBoundingBox() const
 {
 	return Box;
 }

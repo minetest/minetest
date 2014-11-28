@@ -771,9 +771,9 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 	if(geometry_program != "")
 		geometry_program = shaders_header + geometry_program;
 	// Call addHighLevelShaderMaterial() or addShaderMaterial()
-	const c8* vertex_program_ptr = 0;
-	const c8* pixel_program_ptr = 0;
-	const c8* geometry_program_ptr = 0;
+	const char* vertex_program_ptr = 0;
+	const char* pixel_program_ptr = 0;
+	const char* geometry_program_ptr = 0;
 	if(vertex_program != "")
 		vertex_program_ptr = vertex_program.c_str();
 	if(pixel_program != "")

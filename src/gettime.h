@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef GETTIME_HEADER
 #define GETTIME_HEADER
 
-#include "irrlichttypes.h"
+#include "int_types.h"
 
 /*
 	Get a millisecond counter value.

@@ -589,7 +589,7 @@ void Server::AsyncRunStep(bool initial_step)
 		ScopeProfiler sp(g_profiler, "Server: map timer and unload");
 		m_env->getMap().timerUpdate(map_timer_and_unload_dtime,
 			g_settings->getFloat("server_unload_unused_data_timeout"),
-			U32_MAX);
+			UINT32_MAX);
 	}
 
 	/*

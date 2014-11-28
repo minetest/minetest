@@ -73,9 +73,9 @@ void rotateMeshBy6dFacedir(scene::IMesh *mesh, int facedir);
 /*
 	Rotate the mesh around the axis and given angle in degrees.
 */
-void rotateMeshXYby (scene::IMesh *mesh, f64 degrees);
-void rotateMeshXZby (scene::IMesh *mesh, f64 degrees);
-void rotateMeshYZby (scene::IMesh *mesh, f64 degrees); 
+void rotateMeshXYby (scene::IMesh *mesh, irr::f64 degrees);
+void rotateMeshXZby (scene::IMesh *mesh, irr::f64 degrees);
+void rotateMeshYZby (scene::IMesh *mesh, irr::f64 degrees); 
  
 /*
 	Clone the mesh.

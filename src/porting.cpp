@@ -584,7 +584,7 @@ v2u32 getWindowSize()
 
 std::vector<core::vector3d<u32> > getSupportedVideoModes()
 {
-	IrrlichtDevice *nulldevice = createDevice(video::EDT_NULL);
+	IrrlichtDevice *nulldevice = irr::createDevice(video::EDT_NULL);
 	sanity_check(nulldevice != NULL);
 
 	std::vector<core::vector3d<u32> > mlist;
@@ -691,10 +691,10 @@ float getDisplayDensity()
 
 v2u32 getDisplaySize()
 {
-	IrrlichtDevice *nulldevice = createDevice(video::EDT_NULL);
+	IrrlichtDevice *nulldevice = irr::createDevice(video::EDT_NULL);
 
 	core::dimension2d<u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
-	nulldevice -> drop();
+	nulldevice->drop();
 
 	return deskres;
 }

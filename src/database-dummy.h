@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <string>
 #include "database.h"
-#include "irrlichttypes.h"
+#include "int_types.h"
 
 class Database_Dummy : public Database
 {

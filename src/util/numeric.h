@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define UTIL_NUMERIC_HEADER
 
 #include "../basicmacros.h"
-#include "../irrlichttypes.h"
+#include "../int_types.h"
 #include "../irr_v2d.h"
 #include "../irr_v3d.h"
 #include "../irr_aabb3d.h"
@@ -310,9 +310,9 @@ inline v3f intToFloat(v3s16 p, f32 d)
 }
 
 // Random helper. Usually d=BS
-inline core::aabbox3d<f32> getNodeBox(v3s16 p, float d)
+inline aabb3f getNodeBox(v3s16 p, float d)
 {
-	return core::aabbox3d<f32>(
+	return aabb3f(
 		(float)p.X * d - 0.5*d,
 		(float)p.Y * d - 0.5*d,
 		(float)p.Z * d - 0.5*d,

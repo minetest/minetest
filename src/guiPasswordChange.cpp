@@ -210,51 +210,34 @@ bool GUIPasswordChange::acceptInput()
 
 bool GUIPasswordChange::OnEvent(const SEvent& event)
 {
-	if(event.EventType==EET_KEY_INPUT_EVENT)
-	{
-		if(event.KeyInput.Key==KEY_ESCAPE && event.KeyInput.PressedDown)
-		{
+	if (event.EventType == irr::EET_KEY_INPUT_EVENT &&
+			event.KeyInput.PressedDown) {
+		if (event.KeyInput.Key == irr::KEY_ESCAPE) {
 			quitMenu();
 			return true;
-		}
-		if(event.KeyInput.Key==KEY_RETURN && event.KeyInput.PressedDown)
-		{
-			if(acceptInput())
+		} else if (event.KeyInput.Key == irr::KEY_RETURN) {
+			if (acceptInput())
 				quitMenu();
 			return true;
 		}
-	}
-	if(event.EventType==EET_GUI_EVENT)
-	{
-		if(event.GUIEvent.EventType==gui::EGET_ELEMENT_FOCUS_LOST
-				&& isVisible())
-		{
-			if(!canTakeFocus(event.GUIEvent.Element))
-			{
-				dstream<<"GUIPasswordChange: Not allowing focus change."
-						<<std::endl;
-				// Returning true disables focus change
-				return true;
-			}
-		}
-		if(event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED)
-		{
-			switch(event.GUIEvent.Caller->getID())
-			{
-			case ID_change:
-				if(acceptInput())
-					quitMenu();
-				return true;
-			}
-		}
-		if(event.GUIEvent.EventType==gui::EGET_EDITBOX_ENTER)
-		{
-			switch(event.GUIEvent.Caller->getID())
-			{
+	} else if (event.EventType == irr::EET_GUI_EVENT) {
+		if (event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUS_LOST &&
+				isVisible() && !canTakeFocus(event.GUIEvent.Element)) {
+			infostream << "GUIPasswordChange: Not allowing focus change."
+					<< std::endl;
+			// Returning true disables focus change
+			return true;
+		} else if (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED &&
+				event.GUIEvent.Caller->getID() == ID_change) {
+			if (acceptInput())
+				quitMenu();
+			return true;
+		} else if (event.GUIEvent.EventType == gui::EGET_EDITBOX_ENTER) {
+			switch (event.GUIEvent.Caller->getID()) {
 			case ID_oldPassword:
 			case ID_newPassword1:
 			case ID_newPassword2:
-				if(acceptInput())
+				if (acceptInput())
 					quitMenu();
 				return true;
 			}

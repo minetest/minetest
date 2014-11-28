@@ -139,7 +139,7 @@ public:
 	void setDynamicData(const DynamicData &dyndata);
 
 	/* Returns "GUITable" */
-	virtual const c8* getTypeName() const;
+	virtual const irr::c8* getTypeName() const;
 
 	/* Must be called when position or size changes */
 	virtual void updateAbsolutePosition();

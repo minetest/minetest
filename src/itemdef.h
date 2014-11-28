@@ -105,10 +105,10 @@ public:
 	virtual bool isKnown(const std::string &name) const=0;
 #ifndef SERVER
 	// Get item inventory texture
-	virtual video::ITexture* getInventoryTexture(const std::string &name,
+	virtual irr::video::ITexture* getInventoryTexture(const std::string &name,
 			IGameDef *gamedef) const=0;
 	// Get item wield mesh
-	virtual scene::IMesh* getWieldMesh(const std::string &name,
+	virtual irr::scene::IMesh* getWieldMesh(const std::string &name,
 		IGameDef *gamedef) const=0;
 #endif
 
@@ -131,10 +131,10 @@ public:
 	virtual bool isKnown(const std::string &name) const=0;
 #ifndef SERVER
 	// Get item inventory texture
-	virtual video::ITexture* getInventoryTexture(const std::string &name,
+	virtual irr::video::ITexture* getInventoryTexture(const std::string &name,
 			IGameDef *gamedef) const=0;
 	// Get item wield mesh
-	virtual scene::IMesh* getWieldMesh(const std::string &name,
+	virtual irr::scene::IMesh* getWieldMesh(const std::string &name,
 		IGameDef *gamedef) const=0;
 #endif
 

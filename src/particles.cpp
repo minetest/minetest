@@ -88,7 +88,7 @@ Particle::Particle(
 	m_vertical = vertical;
 
 	// Irrlicht stuff
-	m_collisionbox = core::aabbox3d<f32>
+	m_collisionbox = aabb3f
 			(-size/2,-size/2,-size/2,size/2,size/2,size/2);
 	this->setAutomaticCulling(scene::EAC_OFF);
 
@@ -128,7 +128,7 @@ void Particle::step(float dtime)
 	m_time += dtime;
 	if (m_collisiondetection)
 	{
-		core::aabbox3d<f32> box = m_collisionbox;
+		aabb3f box = m_collisionbox;
 		v3f p_pos = m_pos*BS;
 		v3f p_velocity = m_velocity*BS;
 		v3f p_acceleration = m_acceleration*BS;

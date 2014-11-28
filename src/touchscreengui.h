@@ -29,9 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "game.h"
 #include "client/tile.h"
 
-using namespace irr;
-using namespace irr::core;
-using namespace irr::gui;
 
 typedef enum {
 	forward_id = 0,
@@ -83,7 +80,7 @@ public:
 private:
 	IrrlichtDevice*         m_device;
 	IGUIEnvironment*        m_guienv;
-	IEventReceiver*         m_receiver;
+	irr::IEventReceiver*    m_receiver;
 	ISimpleTextureSource*   m_texturesource;
 	v2u32                   m_screensize;
 	std::map<int,rect<s32> > m_hud_rects;

@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MAPSECTOR_HEADER
 #define MAPSECTOR_HEADER
 
-#include "irrlichttypes.h"
+#include "int_types.h"
 #include "irr_v2d.h"
 #include "mapblock.h"
 #include <ostream>

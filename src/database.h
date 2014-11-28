@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <string>
 #include "irr_v3d.h"
-#include "irrlichttypes.h"
+#include "int_types.h"
 
 #ifndef PP
 	#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"

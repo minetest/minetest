@@ -530,7 +530,7 @@ bool ClientLauncher::create_engine_device()
 			"defaulting to opengl" << std::endl;
 	}
 
-	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
+	irr::SIrrlichtCreationParameters params;
 	params.DriverType    = driverType;
 	params.WindowSize    = core::dimension2d<u32>(screenW, screenH);
 	params.Bits          = bits;
@@ -546,7 +546,7 @@ bool ClientLauncher::create_engine_device()
 			"media" + DIR_DELIM + "Shaders" + DIR_DELIM).c_str();
 #endif
 
-	device = createDeviceEx(params);
+	device = irr::createDeviceEx(params);
 
 	if (device) {
 		porting::initIrrlicht(device);
@@ -662,7 +662,7 @@ bool ClientLauncher::print_video_modes()
 	u16 fsaa = g_settings->getU16("fsaa");
 	MyEventReceiver* receiver = new MyEventReceiver();
 
-	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
+	irr::SIrrlichtCreationParameters params;
 	params.DriverType    = video::EDT_NULL;
 	params.WindowSize    = core::dimension2d<u32>(640, 480);
 	params.Bits          = 24;
@@ -673,7 +673,7 @@ bool ClientLauncher::print_video_modes()
 	params.EventReceiver = receiver;
 	params.HighPrecisionFPU = g_settings->getBool("high_precision_fpu");
 
-	nulldevice = createDeviceEx(params);
+	nulldevice = irr::createDeviceEx(params);
 
 	if (nulldevice == NULL) {
 		delete receiver;
