@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-23 17:37+0100\n"
-"PO-Revision-Date: 2014-09-30 1:00+0200\n"
-"Last-Translator: Rui Takeda\n"
+"PO-Revision-Date: 2014-10-29 21:01+0900\n"
+"Last-Translator: Rui Takeda <mrrst0914@gmail.com>\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 1.7-dev\n"
+"X-Generator: Poedit 1.6.10\n"
 
 #: builtin/gamemgr.lua:23
 msgid "Game Name"
@@ -33,7 +33,7 @@ msgstr "キャンセル"
 
 #: builtin/gamemgr.lua:118
 msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-msgstr "Gamemgr:\"$1\"のModを\"$2\"にｺﾋﾟｰできません"
+msgstr "Gamemgr: \"$1\"のModを \"$2\" にｺﾋﾟｰできません"
 
 #: builtin/gamemgr.lua:216
 msgid "GAMES"
@@ -45,7 +45,7 @@ msgstr "ゲーム"
 
 #: builtin/gamemgr.lua:234
 msgid "Mods:"
-msgstr "Mod"
+msgstr "Mod:"
 
 #: builtin/gamemgr.lua:235
 msgid "edit game"
@@ -150,7 +150,7 @@ msgstr "設定"
 
 #: builtin/mainmenu.lua:877
 msgid "Start Game"
-msgstr "プレイ"
+msgstr "ゲームスタート"
 
 #: builtin/mainmenu.lua:878 builtin/mainmenu.lua:941
 msgid "Select World:"
@@ -189,7 +189,7 @@ msgid "SETTINGS"
 msgstr "SETTINGS"
 
 #: builtin/mainmenu.lua:900
-msgid "Fancy trees"
+msgid "Fancy Trees"
 msgstr "きれいな木"
 
 #: builtin/mainmenu.lua:902
@@ -242,7 +242,7 @@ msgstr "キー割当て変更"
 
 #: builtin/mainmenu.lua:940 src/keycode.cpp:248
 msgid "Play"
-msgstr "プレイ"
+msgstr "ゲームスタート"
 
 #: builtin/mainmenu.lua:942
 msgid "SINGLE PLAYER"
@@ -274,23 +274,23 @@ msgstr "以前の貢献者"
 
 #: builtin/mainmenu.lua:1069
 msgid "Singleplayer"
-msgstr "ｼﾝｸﾞﾙﾌﾟﾚｲﾔｰ"
+msgstr "シングルプレイ"
 
 #: builtin/mainmenu.lua:1070
 msgid "Client"
-msgstr "ｸﾗｲｱﾝﾄ"
+msgstr "クライアント"
 
 #: builtin/mainmenu.lua:1071
 msgid "Server"
-msgstr "ｻｰﾊﾞｰ"
+msgstr "マルチプレイ"
 
 #: builtin/mainmenu.lua:1072
 msgid "Settings"
 msgstr "設定"
 
 #: builtin/mainmenu.lua:1073
-msgid "Texture Packs"
-msgstr "ﾃｸｽﾁｬﾊﾟｯｸ"
+msgid "Texturepacks"
+msgstr "テクスチャパック"
 
 #: builtin/mainmenu.lua:1080
 msgid "Mods"
@@ -298,11 +298,11 @@ msgstr "Mod"
 
 #: builtin/mainmenu.lua:1082
 msgid "Credits"
-msgstr "ｸﾚｼﾞｯﾄ"
+msgstr "クレジット"
 
 #: builtin/modmgr.lua:236
 msgid "MODS"
-msgstr "MODS"
+msgstr "MOD"
 
 #: builtin/modmgr.lua:237
 msgid "Installed Mods:"
@@ -354,15 +354,15 @@ msgstr "ワールド:"
 
 #: builtin/modmgr.lua:427 builtin/modmgr.lua:429
 msgid "Hide Game"
-msgstr "内部Modを非表示"
+msgstr "内部Mod"
 
 #: builtin/modmgr.lua:433 builtin/modmgr.lua:435
 msgid "Hide mp content"
-msgstr "Modパックを簡略表示"
+msgstr "Modパックの簡略化"
 
 #: builtin/modmgr.lua:442
 msgid "Mod:"
-msgstr "Mod:"
+msgstr "Mod名:"
 
 #: builtin/modmgr.lua:444
 msgid "Depends:"
@@ -448,15 +448,14 @@ msgstr "再インストール"
 msgid "Install"
 msgstr "インストール"
 
-#client
-
+# client
 #: src/client.cpp:2917
 msgid "Item textures..."
 msgstr "ｱｲﾃﾑのﾃｸｽﾁｬ設定中..."
 
 #: src/game.cpp:940
 msgid "Loading..."
-msgstr "読み込み中..."
+msgstr "ﾛｰﾄﾞ中..."
 
 #: src/game.cpp:1000
 msgid "Creating server...."
@@ -482,9 +481,10 @@ msgstr "ｱｲﾃﾑ定義中..."
 msgid "Node definitions..."
 msgstr "ﾉｰﾄﾞ定義中..."
 
+# 翻訳不可
 #: src/game.cpp:1233
 msgid "Media..."
-msgstr "読み込み中..."
+msgstr "..."
 
 #: src/game.cpp:3409
 msgid "Shutting down stuff..."
@@ -517,11 +517,11 @@ msgstr "キーバインド"
 
 #: src/guiKeyChangeMenu.cpp:161
 msgid "\"Use\" = climb down"
-msgstr "｢\"Use\"｣で降りる"
+msgstr "「使う」キーで降りる"
 
 #: src/guiKeyChangeMenu.cpp:176
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "｢\"jump\"｣の二回押しで飛行"
+msgstr "ジャンプの二回押しで飛行"
 
 #: src/guiKeyChangeMenu.cpp:288
 msgid "Key already in use"
@@ -633,7 +633,7 @@ msgstr "音量"
 
 #: src/guiPauseMenu.cpp:152
 msgid "Exit to Menu"
-msgstr "ﾀｲﾄﾙへ戻る"
+msgstr "タイトル"
 
 #: src/guiPauseMenu.cpp:161
 msgid "Exit to OS"
@@ -653,7 +653,7 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
-"Default Controls:\n"
+"基本操作:\n"
 "WASD:移動\n"
 "ｽﾍﾟｰｽ:ｼﾞｬﾝﾌﾟ/登る\n"
 "ｼﾌﾄ:忍び歩き/降りる\n"
@@ -687,7 +687,7 @@ msgstr "右ボタン"
 
 #: src/keycode.cpp:223
 msgid "X Button 1"
-msgstr ""
+msgstr "Xボタン1"
 
 #: src/keycode.cpp:224
 msgid "Back"
@@ -707,7 +707,7 @@ msgstr "Tab"
 
 #: src/keycode.cpp:224
 msgid "X Button 2"
-msgstr ""
+msgstr "Xボタン2"
 
 #: src/keycode.cpp:225
 msgid "Capital"
@@ -743,11 +743,11 @@ msgstr "Esc"
 
 #: src/keycode.cpp:226
 msgid "Final"
-msgstr ""
+msgstr "Finalキー"
 
 #: src/keycode.cpp:226
 msgid "Junja"
-msgstr ""
+msgstr "Junjaキー"
 
 #: src/keycode.cpp:226
 msgid "Kanji"
@@ -963,7 +963,7 @@ msgstr "ズーム"
 
 #: src/main.cpp:1472
 msgid "needs_fallback_font"
-msgstr "fallback_fontが必要"
+msgstr "yes"
 
 #: src/main.cpp:1547
 msgid "Main Menu"
@@ -971,11 +971,13 @@ msgstr "メインメニュー"
 
 #: src/main.cpp:1723
 msgid "No world selected and no address provided. Nothing to do."
-msgstr "ﾜｰﾙﾄﾞが選択できていないか、ｱﾄﾞﾚｽが入力されていません。そのため実行されません。"
+msgstr ""
+"ﾜｰﾙﾄﾞが選択できていないか、ｱﾄﾞﾚｽが入力されていません。そのため実行されませ"
+"ん。"
 
 #: src/main.cpp:1731
 msgid "Could not find or load game \""
-msgstr "読み込みか検索に失敗:\""
+msgstr "読み込みか検索に失敗: \""
 
 #: src/main.cpp:1745
 msgid "Invalid gamespec."
@@ -984,3 +986,34 @@ msgstr "無効なgamespecです"
 #: src/main.cpp:1790
 msgid "Connection error (timed out?)"
 msgstr "接続エラー(タイムアウト)"
+
+# 以下追加
+msgid "Bumpmapping"
+msgstr "ﾊﾞﾝﾌﾟﾏｯﾋﾟﾝｸﾞ"
+
+msgid "Generate Normalmaps"
+msgstr "法線ﾏｯﾋﾟﾝｸﾞ"
+
+msgid "Parallax Occlusion"
+msgstr "視差ｵｸﾙｰｼﾞｮﾝﾏｯﾋﾟﾝｸﾞ"
+
+msgid "Waving Water"
+msgstr "揺れる水"
+
+msgid "Waving Leaves"
+msgstr "揺れる葉"
+
+msgid "Waving Plants"
+msgstr "揺れる草花"
+
+msgid "GUI scale factor"
+msgstr "メニューの大きさ"
+
+msgid "Unsorted"
+msgstr "未分類"
+
+msgid "Search"
+msgstr "検索"
+
+msgid "Close store"
+msgstr "閉じる"
