@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 Settings & Settings::operator += (const Settings &other)
 {
 	update(other);
+	process_callbacks();
 
 	return *this;
 }
@@ -50,6 +51,8 @@ Settings & Settings::operator = (const Settings &other)
 
 	clearNoLock();
 	updateNoLock(other);
+
+	process_callbacks();
 
 	return *this;
 }
@@ -90,6 +93,8 @@ bool Settings::readConfigFile(const char *filename)
 			m_settings[name] = value;
 		}
 	}
+
+	process_callbacks();
 
 	return true;
 }
@@ -220,6 +225,8 @@ bool Settings::parseCommandLine(int argc, char *argv[],
 
 		set(name, value);
 	}
+
+	process_callbacks();
 
 	return true;
 }
@@ -494,6 +501,7 @@ void Settings::set(const std::string &name, std::string value)
 	JMutexAutoLock lock(m_mutex);
 
 	m_settings[name] = value;
+	process_callbacks();
 }
 
 
@@ -502,6 +510,7 @@ void Settings::set(const std::string &name, const char *value)
 	JMutexAutoLock lock(m_mutex);
 
 	m_settings[name] = value;
+	process_callbacks();
 }
 
 
@@ -510,6 +519,8 @@ void Settings::setDefault(const std::string &name, std::string value)
 	JMutexAutoLock lock(m_mutex);
 
 	m_defaults[name] = value;
+	process_callbacks();
+
 }
 
 
@@ -700,4 +711,3 @@ void Settings::clearNoLock()
 	m_settings.clear();
 	m_defaults.clear();
 }
-

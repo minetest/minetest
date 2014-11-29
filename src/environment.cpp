@@ -44,6 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "util/serialize.h"
 #include "jthread/jmutexautolock.h"
+#include "coresettings.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -206,7 +207,7 @@ u32 Environment::getDayNightRatio()
 {
 	if(m_enable_day_night_ratio_override)
 		return m_day_night_ratio_override;
-	bool smooth = g_settings->getBool("enable_shaders");
+	bool smooth = g_core_settings->enable_shaders;
 	return time_to_daynight_ratio(m_time_of_day_f*24000, smooth);
 }
 
@@ -2078,7 +2079,7 @@ void ClientEnvironment::step(float dtime)
 
 	// Get some settings
 	bool fly_allowed = m_gamedef->checkLocalPrivilege("fly");
-	bool free_move = fly_allowed && g_settings->getBool("free_move");
+	bool free_move = fly_allowed && g_core_settings->free_move;
 
 	// Get local player
 	LocalPlayer *lplayer = getLocalPlayer();

@@ -47,6 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "camera.h" // CameraModes
 #include "wieldmesh.h"
 #include "log.h"
+#include "coresettings.h"
 
 class Settings;
 struct ToolCapabilities;
@@ -1044,11 +1045,11 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			bool allow_update = false;
 
 			// increase speed if using fast or flying fast
-			if((g_settings->getBool("fast_move") &&
+			if((g_core_settings->free_move &&
 					m_gamedef->checkLocalPrivilege("fast")) &&
 					(controls.aux1 ||
 					(!player->touching_ground &&
-					g_settings->getBool("free_move") &&
+					g_core_settings->free_move &&
 					m_gamedef->checkLocalPrivilege("fly"))))
 					new_speed *= 1.5;
 			// slowdown speed if sneeking

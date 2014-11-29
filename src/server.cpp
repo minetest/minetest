@@ -64,6 +64,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/thread.h"
 #include "defaultsettings.h"
+#include "main.h"	// for g_core_settings
+#include "coresettings.h"
 
 class ClientNotFoundException : public BaseException
 {
@@ -487,6 +489,10 @@ void Server::step(float dtime)
 	if(async_err != ""){
 		throw ServerError(async_err);
 	}
+
+	if (g_core_settings->needsUpdate())
+		g_core_settings->update();
+
 }
 
 void Server::AsyncRunStep(bool initial_step)
