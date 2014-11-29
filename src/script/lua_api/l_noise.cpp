@@ -171,7 +171,7 @@ int LuaPerlinNoiseMap::l_get2dMap_flat(lua_State *L)
 	n->perlinMap2D(p.X, p.Y);
 
 	int maplen = n->sx * n->sy;
-	
+
 	lua_newtable(L);
 	for (int i = 0; i != maplen; i++) {
 		float noiseval = n->np->offset + n->np->scale * n->result[i];
@@ -220,7 +220,7 @@ int LuaPerlinNoiseMap::l_get3dMap_flat(lua_State *L)
 
 
 	int maplen = n->sx * n->sy * n->sz;
-	
+
 	lua_newtable(L);
 	for (int i = 0; i != maplen; i++) {
 		float noiseval = n->np->offset + n->np->scale * n->result[i];
@@ -231,7 +231,11 @@ int LuaPerlinNoiseMap::l_get3dMap_flat(lua_State *L)
 }
 
 LuaPerlinNoiseMap::LuaPerlinNoiseMap(NoiseParams *np, int seed, v3s16 size) {
-	noise = new Noise(np, seed, size.X, size.Y, size.Z);
+	try {
+		noise = new Noise(np, seed, size.X, size.Y, size.Z);
+	} catch (InvalidNoiseParamsException &e) {
+		throw LuaError(e.what());
+	}
 }
 
 LuaPerlinNoiseMap::~LuaPerlinNoiseMap()

@@ -29,6 +29,7 @@
 #include <string.h> // memset
 #include "debug.h"
 #include "util/numeric.h"
+#include "exceptions.h"
 
 #define NOISE_MAGIC_X    1619
 #define NOISE_MAGIC_Y    31337
@@ -336,8 +337,12 @@ Noise::Noise(NoiseParams *np, int seed, int sx, int sy, int sz)
 	this->noisebuf = NULL;
 	resizeNoiseBuf(sz > 1);
 
-	this->buf    = new float[sx * sy * sz];
-	this->result = new float[sx * sy * sz];
+	try {
+		this->buf    = new float[sx * sy * sz];
+		this->result = new float[sx * sy * sz];
+	} catch (std::bad_alloc &e) {
+		throw InvalidNoiseParamsException();
+	}
 }
 
 
@@ -360,8 +365,12 @@ void Noise::setSize(int sx, int sy, int sz)
 
 	delete[] buf;
 	delete[] result;
-	this->buf    = new float[sx * sy * sz];
-	this->result = new float[sx * sy * sz];
+	try {
+		this->buf    = new float[sx * sy * sz];
+		this->result = new float[sx * sy * sz];
+	} catch (std::bad_alloc &e) {
+		throw InvalidNoiseParamsException();
+	}
 }
 
 
@@ -399,7 +408,11 @@ void Noise::resizeNoiseBuf(bool is3d)
 
 	if (noisebuf)
 		delete[] noisebuf;
-	noisebuf = new float[nlx * nly * nlz];
+	try {
+		noisebuf = new float[nlx * nly * nlz];
+	} catch (std::bad_alloc &e) {
+		throw InvalidNoiseParamsException();
+	}
 }
 
 
@@ -615,7 +628,7 @@ float *Noise::perlinMap2DModulated(float x, float y, float *persist_map)
 
 		f *= 2.0;
 	}
-	
+
 	delete[] g;
 	return result;
 }
