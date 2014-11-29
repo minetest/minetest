@@ -88,6 +88,7 @@ bool Settings::readConfigFile(const char *filename)
 	while (is.good()) {
 		if (parseConfigObject(is, name, value)) {
 			m_settings[name] = value;
+			setFastBool(name, value);
 		}
 	}
 
@@ -219,6 +220,7 @@ bool Settings::parseCommandLine(int argc, char *argv[],
 		}
 
 		set(name, value);
+		setFastBool(name, value);
 	}
 
 	return true;
@@ -494,6 +496,7 @@ void Settings::set(const std::string &name, std::string value)
 	JMutexAutoLock lock(m_mutex);
 
 	m_settings[name] = value;
+	setFastBool(name, value);
 }
 
 
@@ -502,6 +505,7 @@ void Settings::set(const std::string &name, const char *value)
 	JMutexAutoLock lock(m_mutex);
 
 	m_settings[name] = value;
+	setFastBool(name, value);
 }
 
 
@@ -510,12 +514,14 @@ void Settings::setDefault(const std::string &name, std::string value)
 	JMutexAutoLock lock(m_mutex);
 
 	m_defaults[name] = value;
+	setFastBool(name, value);
 }
 
 
 void Settings::setBool(const std::string &name, bool value)
 {
-	set(name, value ? "true" : "false");
+	set(name, bool_to_cstr(value));
+	setFastBool(name, bool_to_cstr(value));
 }
 
 
@@ -603,6 +609,7 @@ void Settings::updateValue(const Settings &other, const std::string &name)
 	try {
 		std::string val = other.get(name);
 		m_settings[name] = val;
+		setFastBool(name, val);
 	} catch (SettingNotFoundException &e) {
 	}
 }
@@ -692,6 +699,14 @@ void Settings::updateNoLock(const Settings &other)
 {
 	m_settings.insert(other.m_settings.begin(), other.m_settings.end());
 	m_defaults.insert(other.m_defaults.begin(), other.m_defaults.end());
+
+	m_enable_shaders        = other.m_enable_shaders;
+	m_enable_fog            = other.m_enable_fog;
+	m_doubletap_jump        = other.m_doubletap_jump;
+	m_node_highlighting     = other.m_node_highlighting;
+	m_free_move             = other.m_free_move;
+	m_noclip                = other.m_noclip;
+	m_build_where_you_stand = other.m_build_where_you_stand;
 }
 
 
@@ -699,5 +714,26 @@ void Settings::clearNoLock()
 {
 	m_settings.clear();
 	m_defaults.clear();
+}
+
+void Settings::setFastBool(const std::string &name, const std::string &value)
+{
+	bool b = is_yes(value);
+
+	if (name == "enable_shaders")
+		m_enable_shaders = b;
+	else if (name == "enable_fog")
+		m_enable_fog = b;
+	else if (name == "doubletap_jump")
+		m_doubletap_jump = b;
+	else if (name == "enable_node_highlighting")
+		m_node_highlighting = b;
+	else if (name == "free_move")
+		m_free_move = b;
+	else if (name == "noclip")
+		m_noclip = b;
+	else if (name == "enable_build_where_you_stand")
+		m_build_where_you_stand = b;
+	//else do nothing (it's not an error or warning)
 }
 

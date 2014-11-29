@@ -141,6 +141,28 @@ public:
 	void update(const Settings &other);
 
 
+	bool getFastBool_enable_shaders() const {
+		return m_enable_shaders;
+	}
+	bool getFastBool_enable_fog() const {
+		return m_enable_fog;
+	}
+	bool getFastBool_doubletap_jump() const {
+		return m_doubletap_jump;
+	}
+	bool getFastBool_node_highlighting() const {
+		return m_node_highlighting;
+	}
+	bool getFastBool_free_move() const {
+		return m_free_move;
+	}
+	bool getFastBool_noclip() const {
+		return m_noclip;
+	}
+	bool getFastBool_build_where_you_stand() const {
+		return m_build_where_you_stand;
+	}
+
 private:
 	/***********************
 	 * Reading and writing *
@@ -171,6 +193,16 @@ private:
 	std::map<std::string, std::string> m_defaults;
 	// All methods that access m_settings/m_defaults directly should lock this.
 	mutable JMutex m_mutex;
+
+	void setFastBool(const std::string &name, const std::string &value);
+
+	bool m_enable_shaders;
+	bool m_enable_fog;
+	bool m_doubletap_jump;
+	bool m_node_highlighting;
+	bool m_free_move;
+	bool m_noclip;
+	bool m_build_where_you_stand;
 };
 
 #endif
