@@ -228,6 +228,7 @@ void set_default_settings(Settings *settings)
 	// This causes frametime jitter on client side, or does it?
 	settings->setDefault("max_simultaneous_block_sends_per_client", "10");
 	settings->setDefault("max_simultaneous_block_sends_server_total", "40");
+	settings->setDefault("block_update_send_interval", "0.2");
 	settings->setDefault("max_block_send_distance", "9");
 	settings->setDefault("max_block_generate_distance", "7");
 	settings->setDefault("max_clearobjects_extra_loaded_blocks", "4096");

@@ -336,6 +336,8 @@
 #max_simultaneous_block_sends_per_client = 10
 # how many blocks are flying in the wire simultaneously per server
 #max_simultaneous_block_sends_server_total = 40
+# Interval in which block updates are sent to the client
+#block_update_send_interval = 0.2
 # From how far blocks are sent to clients (value * 16 nodes)
 #max_block_send_distance = 10
 # From how far blocks are generated for clients (value * 16 nodes)
