@@ -21,9 +21,9 @@ core.register_entity(":__builtin:item", {
 		hp_max = 1,
 		physical = true,
 		collide_with_objects = false,
-		collisionbox = {-0.24, -0.24, -0.24, 0.24, 0.24, 0.24},
+		collisionbox = {-0.3, -0.3, -0.3, 0.3, 0.3, 0.3},
 		visual = "wielditem",
-		visual_size = {x = 0.3, y = 0.3},
+		visual_size = {x = 0.4, y = 0.4},
 		textures = {""},
 		spritediv = {x = 1, y = 1},
 		initial_sprite_basepos = {x = 0, y = 0},
@@ -43,8 +43,8 @@ core.register_entity(":__builtin:item", {
 			count = max_count
 			self.itemstring = stack:get_name().." "..max_count
 		end
-		local s = 0.15 + 0.15 * (count / max_count)
-		local c = 0.8 * s
+		local s = 0.2 + 0.1 * (count / max_count)
+		local c = s
 		local itemtable = stack:to_table()
 		local itemname = nil
 		if itemtable then
@@ -62,7 +62,7 @@ core.register_entity(":__builtin:item", {
 			textures = {itemname},
 			visual_size = {x = s, y = s},
 			collisionbox = {-c, -c, -c, c, c, c},
-			automatic_rotate = math.pi * 0.2,
+			automatic_rotate = math.pi * 0.5,
 		}
 		self.object:set_properties(prop)
 	end,
@@ -104,7 +104,7 @@ core.register_entity(":__builtin:item", {
 			return
 		end
 		local p = self.object:getpos()
-		p.y = p.y - 0.3
+		p.y = p.y - 0.5
 		local nn = core.get_node(p).name
 		-- If node is not registered or node is walkably solid and resting on nodebox
 		local v = self.object:getvelocity()
@@ -133,8 +133,8 @@ core.register_entity(":__builtin:item", {
 							local name = stack:get_name()
 							if not overflow then
 								obj.itemstring = name.." "..count
-								s = 0.15 + 0.15 * (count / max_count)
-								c = 0.8 * s
+								s = 0.2 + 0.1 * (count / max_count)
+								c = s
 								object:set_properties({
 									visual_size = {x = s, y = s},
 									collisionbox = {-c, -c, -c, c, c, c}
@@ -142,15 +142,15 @@ core.register_entity(":__builtin:item", {
 								self.object:remove()
 								return
 							else
-								s = 0.3
-								c = 0.24
+								s = 0.4
+								c = 0.3
 								object:set_properties({
 									visual_size = {x = s, y = s},
 									collisionbox = {-c, -c, -c, c, c, c}
 								})
 								obj.itemstring = name.." "..max_count
-								s = 0.15 + 0.15 * (count / max_count)
-								c = 0.8 * s
+								s = 0.2 + 0.1 * (count / max_count)
+								c = s
 								self.object:set_properties({
 									visual_size = {x = s, y = s},
 									collisionbox = {-c, -c, -c, c, c, c}
