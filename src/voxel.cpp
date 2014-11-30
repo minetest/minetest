@@ -224,13 +224,48 @@ void VoxelManipulator::addArea(const VoxelArea &area)
 void VoxelManipulator::copyFrom(MapNode *src, const VoxelArea& src_area,
 		v3s16 from_pos, v3s16 to_pos, v3s16 size)
 {
-	for(s16 z=0; z<size.Z; z++)
-	for(s16 y=0; y<size.Y; y++)
-	{
-		s32 i_src = src_area.index(from_pos.X, from_pos.Y+y, from_pos.Z+z);
-		s32 i_local = m_area.index(to_pos.X, to_pos.Y+y, to_pos.Z+z);
-		memcpy(&m_data[i_local], &src[i_src], size.X*sizeof(MapNode));
-		memset(&m_flags[i_local], 0, size.X);
+	/* The reason for this optimised code is that we're a member function
+	 * and the data type/layout of m_data is know to us: it's stored as
+	 * [z*h*w + y*h + x]. Therefore we can take the calls to m_area index
+	 * (which performs the preceding mapping/indexing of m_data) out of the
+	 * inner loop and calculate the next index as we're iterating to gain
+	 * performance.
+	 *
+	 * src_step and dest_step is the amount required to be added to our index
+	 * every time y increments. Because the destination area may be larger
+	 * than the source area we need one additional variable (otherwise we could
+	 * just continue adding dest_step as is done for the source data): dest_mod.
+	 * dest_mod is the difference in size between a "row" in the source data
+	 * and a "row" in the destination data (I am using the term row loosely
+	 * and for illustrative purposes). E.g.
+	 *
+	 * src       <-------------------->|'''''' dest mod ''''''''
+	 * dest      <--------------------------------------------->
+	 *
+	 * dest_mod (it's essentially a modulus) is added to the destination index
+	 * after every full iteration of the y span.
+	 *
+	 * This method falls under the category "linear array and incrementing
+	 * index".
+	 */
+
+	s32 src_step = src_area.getExtent().X;
+	s32 dest_step = m_area.getExtent().X;
+	s32 dest_mod = m_area.index(to_pos.X, to_pos.Y, to_pos.Z + 1)
+			- m_area.index(to_pos.X, to_pos.Y, to_pos.Z)
+			- dest_step * size.Y;
+
+	s32 i_src = src_area.index(from_pos.X, from_pos.Y, from_pos.Z);
+	s32 i_local = m_area.index(to_pos.X, to_pos.Y, to_pos.Z);
+
+	for (s16 z = 0; z < size.Z; z++) {
+		for (s16 y = 0; y < size.Y; y++) {
+			memcpy(&m_data[i_local], &src[i_src], size.X * sizeof(*m_data));
+			memset(&m_flags[i_local], 0, size.X);
+			i_src += src_step;
+			i_local += dest_step;
+		}
+		i_local += dest_mod;
 	}
 }
 
