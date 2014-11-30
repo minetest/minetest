@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mg_ore.h"
 #include "mg_decoration.h"
 #include "mg_schematic.h"
+#include "mapgen_v5.h"
 #include "mapgen_v7.h"
 #include "settings.h"
 #include "main.h"
@@ -336,6 +337,8 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 		 "mapgen_dirt_with_grass", CONTENT_AIR, &b->c_top);
 	resolver->addNode(getstringfield_default(L, index, "node_filler", ""),
 		"mapgen_dirt", CONTENT_AIR, &b->c_filler);
+	resolver->addNode(getstringfield_default(L, index, "node_stone", ""),
+		"mapgen_stone", CONTENT_AIR, &b->c_stone);
 	resolver->addNode(getstringfield_default(L, index, "node_water", ""),
 		"mapgen_water_source", CONTENT_AIR, &b->c_water);
 	resolver->addNode(getstringfield_default(L, index, "node_dust", ""),
