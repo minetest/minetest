@@ -147,10 +147,9 @@ private:
 	 ***********************/
 
 	bool parseConfigObject(std::istream &is,
-			std::string &name, std::string &value);
-	bool parseConfigObject(std::istream &is,
 			std::string &name, std::string &value,
-			const std::string &end, bool &end_found);
+			const std::string &end = "",
+			bool *end_found = NULL) const;
 	/*
 	 * Reads a configuration object from stream (usually a single line)
 	 * and adds it to dst.
@@ -160,12 +159,12 @@ private:
 	void getUpdatedConfigObject(std::istream &is,
 			std::list<std::string> &dst,
 			std::set<std::string> &updated,
-			bool &changed);
+			bool &changed) const;
 
+	std::string escape(const std::string &str) const;
 
 	void updateNoLock(const Settings &other);
 	void clearNoLock();
-
 
 	std::map<std::string, std::string> m_settings;
 	std::map<std::string, std::string> m_defaults;

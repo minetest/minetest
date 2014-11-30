@@ -430,11 +430,23 @@ struct TestSettings: public TestBase
 			"leetleet_neg = -13371337\n"
 			"floaty_thing = 1.1\n"
 			"stringy_thing = asd /( ¤%&(/\" BLÖÄRP\n"
-			"coord = (1, 2, 4.5)");
+			"coord = (1, 2, 4.5)\n"
+			"multi_line = a\\\n b\n"
+			"\\sspaces\\ttabs\\rcarriage\\treturns\\r\\t = \\s\\t\\rfoo\\s\\t\\r\n"
+			"equals\\=in\\=name = bar\n"
+			"# Comment\n"
+			"  # Comment with leading spaces\n"
+			"no#inline#comments = #\n"
+			"no_trailing_newline = x");
 		s.parseConfigLines(is);
 		UASSERT(s.getS32("leet") == 1337);
 		UASSERT(s.getS16("leetleet") == 32767);
 		UASSERT(s.getS16("leetleet_neg") == -32768);
+		UASSERT(s.get("multi_line") == "a b");
+		UASSERT(s.get(" spaces\ttabs\rcarriage\treturns\r\t") == " \t\rfoo \t\r");
+		UASSERT(s.get("equals=in=name") == "bar");
+		UASSERT(s.get("no#inline#comments") == "#");
+		UASSERT(s.get("no_trailing_newline") == "x");
 		// Not sure if 1.1 is an exact value as a float, but doesn't matter
 		UASSERT(fabs(s.getFloat("floaty_thing") - 1.1) < 0.001);
 		UASSERT(s.get("stringy_thing") == "asd /( ¤%&(/\" BLÖÄRP");
