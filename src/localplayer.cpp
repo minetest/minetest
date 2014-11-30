@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "nodedef.h"
 #include "settings.h"
+#include "coresettings.h"
 #include "environment.h"
 #include "map.h"
 #include "util/numeric.h"
@@ -87,8 +88,9 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	// Skip collision detection if noclip mode is used
 	bool fly_allowed = m_gamedef->checkLocalPrivilege("fly");
 	bool noclip = m_gamedef->checkLocalPrivilege("noclip") &&
-		g_settings->getBool("noclip");
-	bool free_move = noclip && fly_allowed && g_settings->getBool("free_move");
+			g_core_settings->noclip;
+	bool free_move = noclip && fly_allowed && g_core_settings->free_move;
+
 	if(free_move)
 	{
         position += m_speed * dtime;
@@ -184,7 +186,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		fall off from it
 	*/
 	if(control.sneak && m_sneak_node_exists &&
-			!(fly_allowed && g_settings->getBool("free_move")) && !in_liquid &&
+			!(fly_allowed && g_core_settings->free_move) && !in_liquid &&
 			physics_override_sneak)
 	{
 		f32 maxd = 0.5*BS + sneak_max;
@@ -320,7 +322,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	*/
 	bool bouncy_jump = false;
 	// Dont report if flying
-	if(collision_info && !(g_settings->getBool("free_move") && fly_allowed))
+	if(collision_info && !(g_core_settings->free_move && fly_allowed))
 	{
 		for(size_t i=0; i<result.collisions.size(); i++){
 			const CollisionInfo &info = result.collisions[i];
@@ -402,20 +404,20 @@ void LocalPlayer::applyControl(float dtime)
 	bool fly_allowed = m_gamedef->checkLocalPrivilege("fly");
 	bool fast_allowed = m_gamedef->checkLocalPrivilege("fast");
 
-	bool free_move = fly_allowed && g_settings->getBool("free_move");
-	bool fast_move = fast_allowed && g_settings->getBool("fast_move");
+	bool free_move = fly_allowed && g_core_settings->free_move;
+	bool fast_move = fast_allowed && g_core_settings->fast_move;
 	// When aux1_descends is enabled the fast key is used to go down, so fast isn't possible
-	bool fast_climb = fast_move && control.aux1 && !g_settings->getBool("aux1_descends");
-	bool continuous_forward = g_settings->getBool("continuous_forward");
+	bool fast_climb = fast_move && control.aux1 && !g_core_settings->aux1_descends;
+	bool continuous_forward = g_core_settings->continuous_forward;
 
 	// Whether superspeed mode is used or not
 	bool superspeed = false;
 	
-	if(g_settings->getBool("always_fly_fast") && free_move && fast_move)
+	if(g_core_settings->always_fly_fast && free_move && fast_move)
 		superspeed = true;
 
 	// Old descend control
-	if(g_settings->getBool("aux1_descends"))
+	if(g_core_settings->aux1_descends)
 	{
 		// If free movement and fast movement, always move fast
 		if(free_move && fast_move)
@@ -469,7 +471,7 @@ void LocalPlayer::applyControl(float dtime)
 			if(free_move)
 			{
 				// In free movement mode, sneak descends
-				if(fast_move && (control.aux1 || g_settings->getBool("always_fly_fast")))
+				if(fast_move && (control.aux1 || g_core_settings->always_fly_fast))
 					speedV.Y = -movement_speed_fast;
 				else
 					speedV.Y = -movement_speed_walk;
@@ -518,7 +520,7 @@ void LocalPlayer::applyControl(float dtime)
 	{
 		if(free_move)
 		{
-			if(g_settings->getBool("aux1_descends") || g_settings->getBool("always_fly_fast"))
+			if(g_core_settings->aux1_descends || g_core_settings->always_fly_fast)
 			{
 				if(fast_move)
 					speedV.Y = movement_speed_fast;

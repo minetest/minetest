@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock_mesh.h"
 #include "mapblock.h"
 #include "settings.h"
+#include "coresettings.h"
 #include "profiler.h"
 #include "gettext.h"
 #include "log.h"
@@ -2608,7 +2609,7 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server, bool urgent)
 		data->fill(b);
 		data->setCrack(m_crack_level, m_crack_pos);
 		data->setHighlighted(m_highlighted_pos, m_show_hud);
-		data->setSmoothLighting(g_settings->getBool("smooth_lighting"));
+		data->setSmoothLighting(g_core_settings->smooth_lighting);
 	}
 
 	// Add task to queue

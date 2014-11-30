@@ -350,6 +350,7 @@ set(common_SRCS
 	content_nodemeta.cpp
 	content_sao.cpp
 	convert_json.cpp
+	coresettings.cpp
 	craftdef.cpp
 	database-dummy.cpp
 	database-leveldb.cpp

@@ -63,6 +63,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "keycode.h"
 #include "tile.h"
 #include "chat.h"
+#include "coresettings.h"
 #include "defaultsettings.h"
 #include "gettext.h"
 #include "settings.h"
@@ -157,7 +158,7 @@ static void list_game_ids();
 static void list_worlds();
 static void setup_log_params(const Settings &cmd_args);
 static bool create_userdata_path();
-static bool init_common(int *log_level, const Settings &cmd_args, int argc, char *argv[]);
+static bool init_common(int *log_level, const Settings &cmd_args);
 static void startup_message();
 static bool read_config_file(const Settings &cmd_args);
 static void init_debug_streams(int *log_level, const Settings &cmd_args);
@@ -831,7 +832,7 @@ int main(int argc, char *argv[])
 	}
 
 	GameParams game_params;
-	if (!init_common(&game_params.log_level, cmd_args, argc, argv))
+	if (!init_common(&game_params.log_level, cmd_args))
 		return 1;
 
 #ifndef __ANDROID__
@@ -859,6 +860,8 @@ int main(int argc, char *argv[])
 	//Run dedicated server if asked to or no other option
 	g_settings->set("server_dedicated",
 			game_params.is_dedicated_server ? "true" : "false");
+
+	CoreSettings::InitCoreSettings();
 
 	if (game_params.is_dedicated_server)
 		return run_dedicated_server(game_params, cmd_args) ? 0 : 1;
@@ -1086,7 +1089,7 @@ static bool create_userdata_path()
 	return success;
 }
 
-static bool init_common(int *log_level, const Settings &cmd_args, int argc, char *argv[])
+static bool init_common(int *log_level, const Settings &cmd_args)
 {
 	startup_message();
 	set_default_settings(g_settings);

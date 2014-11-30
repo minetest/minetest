@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/container.h"
 #include "util/thread.h"
 #include "settings.h"
+#include "coresettings.h"
 #include <iterator>
 #include <ICameraSceneNode.h>
 #include <IGPUProgrammingServices.h>
@@ -572,9 +573,8 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 			shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		break;
 	}
-	
-	bool enable_shaders = g_settings->getBool("enable_shaders");
-	if(!enable_shaders)
+
+	if(!g_core_settings->enable_shaders)
 		return shaderinfo;
 
 	video::IVideoDriver* driver = device->getVideoDriver();
@@ -596,7 +596,7 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 	std::string geometry_program;
 	bool is_highlevel;
 	load_shaders(name, sourcecache, driver->getDriverType(),
-			enable_shaders, vertex_program, pixel_program,
+			g_core_settings->enable_shaders, vertex_program, pixel_program,
 			geometry_program, is_highlevel);
 	// Check hardware/driver support
 	if(vertex_program != "" &&

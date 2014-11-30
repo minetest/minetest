@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Settings
 class Settings;
 extern Settings *g_settings;
+
 extern std::string g_settings_path;
 
 // Global profiler

@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "profiler.h"
 #include "settings.h"
+#include "coresettings.h"
 #include "camera.h" // CameraModes
 #include "util/mathconstants.h"
 #include <algorithm>
@@ -293,7 +294,7 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 			// No occlusion culling when free_move is on and camera is
 			// inside ground
 			bool occlusion_culling_enabled = true;
-			if(g_settings->getBool("free_move")){
+			if(g_core_settings->free_move){
 				MapNode n = getNodeNoEx(cam_pos_nodes);
 				if(n.getContent() == CONTENT_IGNORE ||
 						nodemgr->get(n).solidness == 2)
@@ -433,9 +434,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		m_last_drawn_sectors.clear();
 	}
 
-	bool use_trilinear_filter = g_settings->getBool("trilinear_filter");
-	bool use_bilinear_filter = g_settings->getBool("bilinear_filter");
-	bool use_anisotropic_filter = g_settings->getBool("anisotropic_filter");
+	bool use_trilinear_filter = g_core_settings->trilinear_filter;
+	bool use_bilinear_filter = g_core_settings->bilinear_filter;
+	bool use_anisotropic_filter = g_core_settings->anisotropic_filter;
 
 	/*
 		Get time for measuring timeout.
@@ -881,7 +882,7 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 	// - Do not if player is in third person mode
 	const ContentFeatures& features = nodemgr->get(n);
 	video::SColor post_effect_color = features.post_effect_color;
-	if(features.solidness == 2 && !(g_settings->getBool("noclip") &&
+	if(features.solidness == 2 && !(g_core_settings->noclip &&
 			m_gamedef->checkLocalPrivilege("noclip")) &&
 			cam_mode == CAMERA_MODE_FIRST)
 	{

@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <list>
 #include <set>
+#include "callbackmanager.h"
 
 enum ValueType
 {
@@ -46,7 +47,7 @@ struct ValueSpec
 };
 
 
-class Settings
+class Settings : public CallbackManager
 {
 public:
 	Settings() {}
@@ -174,4 +175,3 @@ private:
 };
 
 #endif
-

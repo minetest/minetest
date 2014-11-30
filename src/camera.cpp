@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include <cmath>
 #include "settings.h"
+#include "coresettings.h"
 #include "wieldmesh.h"
 #include "noise.h" // easeCurve
 #include "gamedef.h"
@@ -283,7 +284,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 		// Amplify according to the intensity of the impact
 		fall_bobbing *= (1 - rangelim(50 / player->camera_impact, 0, 1)) * 5;
 
-		fall_bobbing *= g_settings->getFloat("fall_bobbing_amount");
+		fall_bobbing *= g_core_settings->fall_bobbing_amount;
 	}
 
 	// Calculate players eye offset for different camera modes
@@ -322,7 +323,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 		//rel_cam_target += 0.03 * bobvec;
 		//rel_cam_up.rotateXYBy(0.02 * bobdir * bobtmp * M_PI);
 		float f = 1.0;
-		f *= g_settings->getFloat("view_bobbing_amount");
+		f *= g_core_settings->view_bobbing_amount;
 		rel_cam_pos += bobvec * f;
 		//rel_cam_target += 0.995 * bobvec * f;
 		rel_cam_target += bobvec * f;
@@ -410,7 +411,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 		m_camera_position = my_cp;
 
 	// Get FOV setting
-	f32 fov_degrees = g_settings->getFloat("fov");
+	f32 fov_degrees = g_core_settings->fov;
 	fov_degrees = MYMAX(fov_degrees, 10.0);
 	fov_degrees = MYMIN(fov_degrees, 170.0);
 
@@ -482,8 +483,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	v3f speed = player->getSpeed();
 	if ((hypot(speed.X, speed.Z) > BS) &&
 		(player->touching_ground) &&
-		(g_settings->getBool("view_bobbing") == true) &&
-		(g_settings->getBool("free_move") == false ||
+		(g_core_settings->view_bobbing == true) &&
+		(g_core_settings->free_move == false ||
 				!m_gamedef->checkLocalPrivilege("fly")))
 	{
 		// Start animation
@@ -522,10 +523,10 @@ void Camera::updateViewingRange(f32 frametime_in, f32 busytime_in)
 			<<std::endl;*/
 
 	// Get current viewing range and FPS settings
-	f32 viewing_range_min = g_settings->getS16("viewing_range_nodes_min");
+	f32 viewing_range_min = g_core_settings->viewing_range_nodes_min;
 	viewing_range_min = MYMAX(15.0, viewing_range_min);
 
-	f32 viewing_range_max = g_settings->getS16("viewing_range_nodes_max");
+	f32 viewing_range_max = g_core_settings->viewing_range_nodes_max;
 	viewing_range_max = MYMAX(viewing_range_min, viewing_range_max);
 	
 	// Immediately apply hard limits
@@ -542,7 +543,7 @@ void Camera::updateViewingRange(f32 frametime_in, f32 busytime_in)
 	else
 		m_cameranode->setFarValue(viewing_range_max * BS * 10);
 
-	f32 wanted_fps = g_settings->getFloat("wanted_fps");
+	f32 wanted_fps = g_core_settings->wanted_fps;
 	wanted_fps = MYMAX(wanted_fps, 1.0);
 	f32 wanted_frametime = 1.0 / wanted_fps;
 
