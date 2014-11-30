@@ -52,10 +52,29 @@ local function get_formspec(tabview, name, tabdata)
 
 	retval = retval ..
 		";]"
-		
+
 	--favourites
+	local function image_column(tooltip, flagname)
+		return "image," ..
+			"tooltip=" .. core.formspec_escape(tooltip) .. "," ..
+			"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
+			"1=" .. core.formspec_escape(defaulttexturedir .. "server_flags_" .. flagname .. ".png")
+	end
+	if render_details then
+		retval = retval .. "tablecolumns[" ..
+			"color,span=3;" ..
+			"text,align=right;" ..                -- clients
+			"text,align=center,padding=0.25;" ..  -- "/"
+			"text,align=right,padding=0.25;" ..   -- clients_max
+			image_column("Creative mode", "creative") .. ";" ..
+			image_column("Damage enabled", "damage") .. ",padding=0.25;" ..
+			image_column("PvP enabled", "pvp") .. ",padding=0.25;" ..
+			"text]"                               -- name
+	else
+		retval = retval .. "tablecolumns[text]"
+	end
 	retval = retval ..
-		"textlist[1,0.35;7.5,3.35;favourites;"
+		"table[1,0.35;7.5,3.35;favourites;"
 
 	if #menudata.favorites > 0 then
 		retval = retval .. render_favorite(menudata.favorites[1],render_details)
@@ -83,11 +102,11 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	end
 
 	if fields["favourites"] ~= nil then
-		local event = core.explode_textlist_event(fields["favourites"])
+		local event = core.explode_table_event(fields["favourites"])
 		if event.type == "DCL" then
-			if event.index <= #menudata.favorites then
-				gamedata.address    = menudata.favorites[event.index].address
-				gamedata.port       = menudata.favorites[event.index].port
+			if event.row <= #menudata.favorites then
+				gamedata.address    = menudata.favorites[event.row].address
+				gamedata.port       = menudata.favorites[event.row].port
 				gamedata.playername = fields["te_name"]
 				if fields["te_pwd"] ~= nil then
 					gamedata.password		= fields["te_pwd"]
@@ -95,8 +114,8 @@ local function main_button_handler(tabview, fields, name, tabdata)
 				gamedata.selected_world = 0
 
 				if menudata.favorites ~= nil then
-					gamedata.servername        = menudata.favorites[event.index].name
-					gamedata.serverdescription = menudata.favorites[event.index].description
+					gamedata.servername        = menudata.favorites[event.row].name
+					gamedata.serverdescription = menudata.favorites[event.row].description
 				end
 
 				if gamedata.address ~= nil and
@@ -110,9 +129,9 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		end
 
 		if event.type == "CHG" then
-			if event.index <= #menudata.favorites then
-				local address = menudata.favorites[event.index].address
-				local port    = menudata.favorites[event.index].port
+			if event.row <= #menudata.favorites then
+				local address = menudata.favorites[event.row].address
+				local port    = menudata.favorites[event.row].port
 
 				if address ~= nil and
 					port ~= nil then
@@ -120,7 +139,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 					core.setting_set("remote_port",port)
 				end
 
-				tabdata.fav_selected = event.index
+				tabdata.fav_selected = event.row
 			end
 			
 			return true
@@ -130,7 +149,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	if fields["key_up"] ~= nil or
 		fields["key_down"] ~= nil then
 
-		local fav_idx = core.get_textlist_index("favourites")
+		local fav_idx = core.get_table_index("favourites")
 
 		if fav_idx ~= nil then
 			if fields["key_up"] ~= nil and fav_idx > 1 then
@@ -174,7 +193,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	end
 
 	if fields["btn_delete_favorite"] ~= nil then
-		local current_favourite = core.get_textlist_index("favourites")
+		local current_favourite = core.get_table_index("favourites")
 		if current_favourite == nil then return end
 		core.delete_favorite(current_favourite)
 		menudata.favorites   = core.get_favorites()
@@ -194,7 +213,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		gamedata.address        = fields["te_address"]
 		gamedata.port           = fields["te_port"]
 
-		local fav_idx = core.get_textlist_index("favourites")
+		local fav_idx = core.get_table_index("favourites")
 
 		if fav_idx ~= nil and fav_idx <= #menudata.favorites and
 			menudata.favorites[fav_idx].address == fields["te_address"] and
