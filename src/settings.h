@@ -28,14 +28,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <set>
 
-enum ValueType
-{
+class Settings;
+
+/** function type to register a changed callback */
+typedef void (*setting_changed_callback)(const std::string);
+
+enum ValueType {
 	VALUETYPE_STRING,
 	VALUETYPE_FLAG // Doesn't take any arguments
 };
 
-struct ValueSpec
-{
+enum SettingsParseEvent {
+	SPE_NONE,
+	SPE_INVALID,
+	SPE_COMMENT,
+	SPE_KVPAIR,
+	SPE_END,
+	SPE_GROUP,
+	SPE_MULTILINE,
+};
+
+struct ValueSpec {
 	ValueSpec(ValueType a_type, const char *a_help=NULL)
 	{
 		type = a_type;
@@ -46,13 +59,39 @@ struct ValueSpec
 };
 
 /** function type to register a changed callback */
-typedef void (*setting_changed_callback)(const std::string);
+
+struct SettingsEntry {
+	SettingsEntry()
+	{
+		group = NULL;
+	}
+
+	SettingsEntry(const std::string &value_)
+	{
+		value = value_;
+		group = NULL;
+	}
+
+	SettingsEntry(Settings *group_)
+	{
+		group = group_;
+	}
+
+	SettingsEntry(const std::string &value_, Settings *group_)
+	{
+		value = value_;
+		group = group_;
+	}
+
+	std::string value;
+	Settings *group;
+};
 
 
-class Settings
-{
+class Settings {
 public:
 	Settings() {}
+	~Settings();
 
 	Settings & operator += (const Settings &other);
 	Settings & operator = (const Settings &other);
@@ -70,13 +109,23 @@ public:
 	bool parseCommandLine(int argc, char *argv[],
 			std::map<std::string, ValueSpec> &allowed_options);
 	bool parseConfigLines(std::istream &is, const std::string &end = "");
-	void writeLines(std::ostream &os) const;
+	void writeLines(std::ostream &os, u32 tab_depth=0) const;
 
+	SettingsParseEvent parseConfigObject(const std::string &line,
+		const std::string &end, std::string &name, std::string &value);
+	bool updateConfigObject(std::istream &is, std::ostream &os,
+		const std::string &end, u32 tab_depth=0);
+
+	static std::string getMultiline(std::istream &is);
+	static void printValue(std::ostream &os, const std::string &name,
+		const SettingsEntry &entry, bool is_value_multiline, u32 tab_depth=0);
 
 	/***********
 	 * Getters *
 	 ***********/
 
+	const SettingsEntry &getEntry(const std::string &name) const;
+	Settings *getGroup(const std::string &name) const;
 	std::string get(const std::string &name) const;
 	bool getBool(const std::string &name) const;
 	u16 getU16(const std::string &name) const;
@@ -102,6 +151,8 @@ public:
 	 * Getters that don't throw exceptions *
 	 ***************************************/
 
+	bool getEntryNoEx(const std::string &name, SettingsEntry &val) const;
+	bool getGroupNoEx(const std::string &name, Settings *&val) const;
 	bool getNoEx(const std::string &name, std::string &val) const;
 	bool getFlag(const std::string &name) const;
 	bool getU16NoEx(const std::string &name, u16 &val) const;
@@ -121,9 +172,12 @@ public:
 	 * Setters *
 	 ***********/
 
-	void set(const std::string &name, std::string value);
-	void set(const std::string &name, const char *value);
-	void setDefault(const std::string &name, std::string value);
+	// N.B. Groups not allocated with new must be set to NULL in the settings
+	// tree before object destruction.
+	void set(const std::string &name, const std::string &value);
+	void setGroup(const std::string &name, Settings *group);
+	void setDefault(const std::string &name, const std::string &value);
+	void setGroupDefault(const std::string &name, Settings *group);
 	void setBool(const std::string &name, bool value);
 	void setS16(const std::string &name, s16 value);
 	void setS32(const std::string &name, s32 value);
@@ -145,34 +199,14 @@ public:
 	void registerChangedCallback(std::string name, setting_changed_callback cbf);
 
 private:
-	/***********************
-	 * Reading and writing *
-	 ***********************/
-
-	bool parseConfigObject(std::istream &is,
-			std::string &name, std::string &value);
-	bool parseConfigObject(std::istream &is,
-			std::string &name, std::string &value,
-			const std::string &end, bool &end_found);
-	/*
-	 * Reads a configuration object from stream (usually a single line)
-	 * and adds it to dst.
-	 * Preserves comments and empty lines.
-	 * Setting names that were added to dst are also added to updated.
-	 */
-	void getUpdatedConfigObject(std::istream &is,
-			std::list<std::string> &dst,
-			std::set<std::string> &updated,
-			bool &changed);
-
 
 	void updateNoLock(const Settings &other);
 	void clearNoLock();
 
 	void doCallbacks(std::string name);
 
-	std::map<std::string, std::string> m_settings;
-	std::map<std::string, std::string> m_defaults;
+	std::map<std::string, SettingsEntry> m_settings;
+	std::map<std::string, SettingsEntry> m_defaults;
 	std::map<std::string, std::vector<setting_changed_callback> > m_callbacks;
 	// All methods that access m_settings/m_defaults directly should lock this.
 	mutable JMutex m_mutex;
