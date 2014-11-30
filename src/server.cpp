@@ -491,8 +491,7 @@ void Server::step(float dtime)
 	}
 
 	if (g_core_settings->needsUpdate())
-		g_core_settings->update();
-
+		CoreSettings::UpdateCoreSettings();
 }
 
 void Server::AsyncRunStep(bool initial_step)

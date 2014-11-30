@@ -2944,7 +2944,7 @@ inline void Game::step(f32 *dtime)
 		} else {
 			// This is done by server->step if there is one
 			if (g_core_settings->needsUpdate())
-				g_core_settings->update();
+				CoreSettings::UpdateCoreSettings();
 		}
 
 		//TimeTaker timer("client.step(dtime)");

@@ -27,15 +27,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class CoreSettings : public CallbackHandler
 {
 public:
-	CoreSettings();
-	~CoreSettings();
+	CoreSettings() { }
 
-	void init();
+	static void InitCoreSettings();
+	static void UpdateCoreSettings();
 
-	void update();
-
-	bool needsUpdate();
-	void setNeedsUpdate(bool v = true);
+	bool needsUpdate() const;
 
 	bool enable_shaders;
 	bool enable_fog;
@@ -63,11 +60,17 @@ public:
 	s16 viewing_range_nodes_max;
 
 private:
-	bool is_initialised;
+	void init();
+	void update();
+	void setNeedsUpdate(bool v = true);
+	static void onSettingsChanged();	// Callback function
+
 	bool needs_update;
 
 	mutable JMutex m_mutex;
 };
 
+
+extern const CoreSettings *g_core_settings;
 
 #endif

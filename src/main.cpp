@@ -103,19 +103,6 @@ static Settings main_settings;
 Settings *g_settings = &main_settings;
 std::string g_settings_path;
 
-static CoreSettings core_settings;
-CoreSettings *g_core_settings = &core_settings;
-
-/* Callback function for core_settings. We don't know what triggered
- * this callback so it is kept as simple as possible. I.e. actual reloading
- * of the core settings is deferred to a point in the code where side effects
- * are more deterministic.
- */
-static void onSettingsChanged()
-{
-	core_settings.setNeedsUpdate(true);
-}
-
 // Global profiler
 Profiler main_profiler;
 Profiler *g_profiler = &main_profiler;
@@ -874,8 +861,7 @@ int main(int argc, char *argv[])
 	g_settings->set("server_dedicated",
 			game_params.is_dedicated_server ? "true" : "false");
 
-	core_settings.init();
-	core_settings.register_callback(g_settings, onSettingsChanged);
+	CoreSettings::InitCoreSettings();
 
 	if (game_params.is_dedicated_server)
 		return run_dedicated_server(game_params, cmd_args) ? 0 : 1;

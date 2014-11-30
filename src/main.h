@@ -26,9 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Settings;
 extern Settings *g_settings;
 
-class CoreSettings;
-extern CoreSettings *g_core_settings;
-
 extern std::string g_settings_path;
 
 // Global profiler
