@@ -121,6 +121,7 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/content_nodemeta.cpp              \
 		jni/src/content_sao.cpp                   \
 		jni/src/convert_json.cpp                  \
+		jii/src/coresettings.cpp                  \
 		jni/src/craftdef.cpp                      \
 		jni/src/database-dummy.cpp                \
 		jni/src/database-sqlite3.cpp              \
