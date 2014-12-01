@@ -63,6 +63,16 @@ Settings & Settings::operator = (const Settings &other)
 }
 
 
+std::string Settings::sanitizeString(const std::string &value)
+{
+	std::string str = value;
+	for (const char *s = "\t\n\v\f\r\b =\""; *s; s++)
+		str.erase(std::remove(str.begin(), str.end(), *s), str.end());
+
+	return str;
+}
+
+
 std::string Settings::getMultiline(std::istream &is)
 {
 	std::string value;

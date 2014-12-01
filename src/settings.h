@@ -117,6 +117,7 @@ public:
 		const std::string &end, u32 tab_depth=0);
 
 	static std::string getMultiline(std::istream &is);
+	static std::string sanitizeString(const std::string &value);
 	static void printValue(std::ostream &os, const std::string &name,
 		const SettingsEntry &entry, bool is_value_multiline, u32 tab_depth=0);
 
