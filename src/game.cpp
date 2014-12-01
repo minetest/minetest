@@ -2697,7 +2697,8 @@ void Game::toggleHud(float *statustext_time, bool *flag)
 	*flag = !*flag;
 	*statustext_time = 0;
 	statustext = msg[*flag];
-	client->setHighlighted(client->getHighlighted(), *flag);
+	if (g_settings->getBool("enable_node_highlighting"))
+		client->setHighlighted(client->getHighlighted(), *flag);
 }
 
 
