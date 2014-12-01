@@ -635,9 +635,12 @@ bool Settings::getFlagStrNoEx(const std::string &name, u32 &val,
 
 void Settings::set(const std::string &name, const std::string &value)
 {
+	{
 	JMutexAutoLock lock(m_mutex);
 
 	m_settings[name].value = value;
+	}
+	doCallbacks(name);
 }
 
 
