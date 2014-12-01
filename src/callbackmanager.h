@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CALLBACKMANAGER_HEADER
 
 #include <vector>
+#include <algorithm>
 
 class CallbackHandler;
 class CallbackManager;
@@ -36,16 +37,27 @@ struct CallbackRegistration
 		this->function = function;
 	}
 
+	/**< The CallbackManager that \p function is registered with. Note that
+	 *   a single callback function can be registered with more than one
+	 *   callback manager (but not more that once with an individual manager)
+	 */
 	CallbackManager *manager;
+
+
+	/**< The function to be registered with \p manager. A function may only
+	 *   be registered with an individual CallbackManager (attempting to
+	 *   register the same function more than once will fail) however it may
+	 *   be registered with one or more other CallbackManagers.
+	 */
 	CallbackFunction function;
 };
 
 
 /*--------------------------------------------------------------------------*/
 /**
- * Essentially this class maintains a list of callback functions that get
- * called when process_callbacks() is called; the callback functions are not
- * called automatically so that where in the code they are processed can be
+ * This class maintains a list of callback functions that get called when
+ * process_callbacks() is called; the callback functions are not called
+ * automatically so that where in the code they are processed can be
  * controlled. This class would normally be subclassed but this is not
  * essential. Used in conjunction with class CallbackHandler these pair of
  * classes can enable registration and removal of callbacks when the handler
@@ -78,12 +90,8 @@ public:
 	 */
 	bool is_registered(CallbackFunction function)
 	{
-		for (std::vector<CallbackFunction>::iterator it = m_callbacks.begin();
-			 it != m_callbacks.end(); ++it) {
-			if (*it == function)
-				return true;
-		}
-		return false;
+		return std::find(m_callbacks.begin(), m_callbacks.end(), function)
+				!= m_callbacks.end();
 	}
 
 	/**
@@ -107,14 +115,11 @@ protected:
 	 */
 	bool remove(CallbackFunction function)
 	{
-		for (std::vector<CallbackFunction>::iterator it = m_callbacks.begin();
-			 it != m_callbacks.end(); ++it) {
-			if (*it == function) {
-				m_callbacks.erase(it);
-				return true;
-			}
-		}
-		return false;
+		std::vector<CallbackFunction>::iterator it = std::find(
+				m_callbacks.begin(), m_callbacks.end(), function);
+		if (it != m_callbacks.end())
+			m_callbacks.erase(it);
+		return it != m_callbacks.end;
 	}
 
 private:
