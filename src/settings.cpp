@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "filesys.h"
 #include <cctype>
+#include <algorithm>
 
 
 Settings::~Settings()
