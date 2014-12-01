@@ -133,6 +133,7 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/environment.cpp                   \
 		jni/src/filecache.cpp                     \
 		jni/src/filesys.cpp                       \
+		jni/src/fontengine.cpp                    \
 		jni/src/game.cpp                          \
 		jni/src/genericobject.cpp                 \
 		jni/src/gettext.cpp                       \
