@@ -456,7 +456,6 @@ void FontEngine::initSimpleFont(unsigned int basesize, FontMode mode)
 	}
 
 	if (font != NULL) {
-		font->grab();
 		m_font_cache[mode][basesize] = font;
 	}
 }
