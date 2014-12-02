@@ -2234,10 +2234,23 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 				m_tooltip_element->setVisible(true);
 				this->bringToFront(m_tooltip_element);
 				m_tooltip_element->setText(narrow_to_wide(tooltip_text).c_str());
-				s32 tooltip_x = m_pointer.X + m_btn_height;
-				s32 tooltip_y = m_pointer.Y + m_btn_height;
 				s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
 				s32 tooltip_height = m_tooltip_element->getTextHeight() * tt_rows.size() + 5;
+				v2u32 screenSize = driver->getScreenSize();
+				int tooltip_offset_x = m_btn_height;
+				int tooltip_offset_y = m_btn_height;
+#ifdef __ANDROID__
+				tooltip_offset_x *= 3;
+				tooltip_offset_y  = 0;
+				if (m_pointer.X > (s32)screenSize.X / 2)
+					tooltip_offset_x = (tooltip_offset_x + tooltip_width) * -1;
+#endif
+				s32 tooltip_x = m_pointer.X + tooltip_offset_x;
+				s32 tooltip_y = m_pointer.Y + tooltip_offset_y;
+				if (tooltip_x + tooltip_width > (s32)screenSize.X)
+					tooltip_x = (s32)screenSize.X - tooltip_width  - m_btn_height;
+				if (tooltip_y + tooltip_height > (s32)screenSize.Y)
+					tooltip_y = (s32)screenSize.Y - tooltip_height - m_btn_height;
 				m_tooltip_element->setRelativePosition(core::rect<s32>(
 						core::position2d<s32>(tooltip_x, tooltip_y),
 						core::dimension2d<s32>(tooltip_width, tooltip_height)));
@@ -2453,13 +2466,23 @@ void GUIFormSpecMenu::drawMenu()
 					if (m_old_tooltip != m_tooltips[iter->fname].tooltip) {
 						m_old_tooltip = m_tooltips[iter->fname].tooltip;
 						m_tooltip_element->setText(narrow_to_wide(m_tooltips[iter->fname].tooltip).c_str());
-						s32 tooltip_x = m_pointer.X + m_btn_height;
-						s32 tooltip_y = m_pointer.Y + m_btn_height;
-						s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
-						if (tooltip_x + tooltip_width > (s32)screenSize.X)
-							tooltip_x = (s32)screenSize.X - tooltip_width - m_btn_height;
 						std::vector<std::string> tt_rows = str_split(m_tooltips[iter->fname].tooltip, '\n');
+						s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
 						s32 tooltip_height = m_tooltip_element->getTextHeight() * tt_rows.size() + 5;
+						int tooltip_offset_x = m_btn_height;
+						int tooltip_offset_y = m_btn_height;
+#ifdef __ANDROID__
+						tooltip_offset_x *= 3;
+						tooltip_offset_y  = 0;
+						if (m_pointer.X > (s32)screenSize.X / 2)
+							tooltip_offset_x = (tooltip_offset_x + tooltip_width) * -1;
+#endif
+						s32 tooltip_x = m_pointer.X + tooltip_offset_x;
+						s32 tooltip_y = m_pointer.Y + tooltip_offset_y;
+						if (tooltip_x + tooltip_width > (s32)screenSize.X)
+							tooltip_x = (s32)screenSize.X - tooltip_width  - m_btn_height;
+						if (tooltip_y + tooltip_height > (s32)screenSize.Y)
+							tooltip_y = (s32)screenSize.Y - tooltip_height - m_btn_height;
 						m_tooltip_element->setRelativePosition(core::rect<s32>(
 						core::position2d<s32>(tooltip_x, tooltip_y),
 						core::dimension2d<s32>(tooltip_width, tooltip_height)));
