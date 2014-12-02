@@ -443,7 +443,21 @@
 #mgv5_np_wetness = 0, 1, (40, 40, 40), 32474, 4, 1.1
 
 #mgv6_spflags = biomeblend, jungles, mudflow
+
+#
+# Noise parameters can be specified as a set of positional values:
 #mgv6_np_terrain_base = -4, 20, (250, 250, 250), 82341, 5, 0.6
+#
+# Or the new group format can be used instead:
+#mgv6_np_terrain_base = {
+#   offset      = -4
+#   scale       = 20
+#   spread      = (250, 250, 250)
+#   seed        = 82341
+#   octaves     = 5
+#   persistence = 0.6
+#}
+
 #mgv6_np_terrain_higher = 20, 16, (500, 500, 500), 85039, 5, 0.6
 #mgv6_np_steepness = 0.85, 0.5, (125, 125, 125), -932, 5, 0.7
 #mgv6_np_height_select = 0.5, 1, (250, 250, 250), 4213, 5, 0.69

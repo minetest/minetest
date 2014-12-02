@@ -512,7 +512,7 @@ struct TestSettings: public TestBase
 		// Test settings groups
 		Settings *group = s.getGroup("asdf");
 		UASSERT(group != NULL);
-		UASSERT(s.getGroup("zoop") == NULL);
+		UASSERT(s.getGroupNoEx("zoop", group) == false);
 		UASSERT(group->getS16("a") == 5);
 		UASSERT(fabs(group->getFloat("b") - 2.5) < 0.001);
 

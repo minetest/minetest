@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/serialize.h"
 #include "filesys.h"
+#include "noise.h"
 #include <cctype>
 #include <algorithm>
 
@@ -358,7 +359,10 @@ const SettingsEntry &Settings::getEntry(const std::string &name) const
 
 Settings *Settings::getGroup(const std::string &name) const
 {
-	return getEntry(name).group;
+	Settings *group = getEntry(name).group;
+	if (group == NULL)
+		throw SettingNotFoundException("Setting [" + name + "] is not a group.");
+	return group;
 }
 
 
@@ -456,6 +460,55 @@ bool Settings::getStruct(const std::string &name, const std::string &format,
 
 	if (!deSerializeStringToStruct(valstr, format, out, olen))
 		return false;
+
+	return true;
+}
+
+
+bool Settings::getNoiseParams(const std::string &name, NoiseParams &np) const
+{
+	return getNoiseParamsFromGroup(name, np) || getNoiseParamsFromValue(name, np);
+}
+
+
+bool Settings::getNoiseParamsFromValue(const std::string &name,
+	NoiseParams &np) const
+{
+	std::string value;
+
+	if (!getNoEx(name, value))
+		return false;
+
+	Strfnd f(value);
+
+	np.offset   = stof(f.next(","));
+	np.scale    = stof(f.next(","));
+	f.next("(");
+	np.spread.X = stof(f.next(","));
+	np.spread.Y = stof(f.next(","));
+	np.spread.Z = stof(f.next(")"));
+	np.seed     = stoi(f.next(","));
+	np.octaves  = stoi(f.next(","));
+	np.persist  = stof(f.next(""));
+
+	return true;
+}
+
+
+bool Settings::getNoiseParamsFromGroup(const std::string &name,
+	NoiseParams &np) const
+{
+	Settings *group = NULL;
+
+	if (!getGroupNoEx(name, group))
+		return false;
+
+	group->getFloatNoEx("offset",      np.offset);
+	group->getFloatNoEx("scale",       np.scale);
+	group->getV3FNoEx("spread",        np.spread);
+	group->getS32NoEx("seed",          np.seed);
+	group->getU16NoEx("octaves",       np.octaves);
+	group->getFloatNoEx("persistence", np.persist);
 
 	return true;
 }
@@ -682,6 +735,12 @@ void Settings::setS16(const std::string &name, s16 value)
 }
 
 
+void Settings::setU16(const std::string &name, u16 value)
+{
+	set(name, itos(value));
+}
+
+
 void Settings::setS32(const std::string &name, s32 value)
 {
 	set(name, itos(value));
@@ -734,6 +793,21 @@ bool Settings::setStruct(const std::string &name, const std::string &format,
 
 	set(name, structstr);
 	return true;
+}
+
+
+void Settings::setNoiseParams(const std::string &name, const NoiseParams &np)
+{
+	Settings *group = new Settings;
+
+	group->setFloat("offset",      np.offset);
+	group->setFloat("scale",       np.scale);
+	group->setV3F("spread",        np.spread);
+	group->setS32("seed",          np.seed);
+	group->setU16("octaves",       np.octaves);
+	group->setFloat("persistence", np.persist);
+
+	setGroup(name, group);
 }
 
 

@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <set>
 
 class Settings;
+struct NoiseParams;
 
 /** function type to register a changed callback */
 typedef void (*setting_changed_callback)(const std::string);
@@ -142,6 +143,9 @@ public:
 	// the behavior is undefined.
 	bool getStruct(const std::string &name, const std::string &format,
 			void *out, size_t olen) const;
+	bool getNoiseParams(const std::string &name, NoiseParams &np) const;
+	bool getNoiseParamsFromValue(const std::string &name, NoiseParams &np) const;
+	bool getNoiseParamsFromGroup(const std::string &name, NoiseParams &np) const;
 
 	// return all keys used
 	std::vector<std::string> getNames() const;
@@ -181,6 +185,7 @@ public:
 	void setGroupDefault(const std::string &name, Settings *group);
 	void setBool(const std::string &name, bool value);
 	void setS16(const std::string &name, s16 value);
+	void setU16(const std::string &name, u16 value);
 	void setS32(const std::string &name, s32 value);
 	void setU64(const std::string &name, u64 value);
 	void setFloat(const std::string &name, float value);
@@ -188,6 +193,7 @@ public:
 	void setV3F(const std::string &name, v3f value);
 	void setFlagStr(const std::string &name, u32 flags,
 		const FlagDesc *flagdesc, u32 flagmask);
+	void setNoiseParams(const std::string &name, const NoiseParams &np);
 	// N.B. if setStruct() is used to write a non-POD aggregate type,
 	// the behavior is undefined.
 	bool setStruct(const std::string &name, const std::string &format, void *value);
