@@ -487,6 +487,7 @@ bool Settings::getNoiseParamsFromValue(const std::string &name,
 	np.spread.X = stof(f.next(","));
 	np.spread.Y = stof(f.next(","));
 	np.spread.Z = stof(f.next(")"));
+	f.next(",");
 	np.seed     = stoi(f.next(","));
 	np.octaves  = stoi(f.next(","));
 	np.persist  = stof(f.next(""));
