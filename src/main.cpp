@@ -178,6 +178,7 @@ static bool migrate_database(const GameParams &game_params, const Settings &cmd_
 		Server *server);
 
 #ifndef SERVER
+static bool get_desktop_size(u16 &width, u16 &height);
 static bool print_video_modes();
 static void speed_tests();
 #endif
@@ -2009,10 +2010,47 @@ bool ClientLauncher::create_engine_device(int log_level)
 #endif
 	};
 
+	u16 screenW;
+	u16 screenH;
+
 	// Resolution selection
 	bool fullscreen = g_settings->getBool("fullscreen");
-	u16 screenW = g_settings->getU16("screenW");
-	u16 screenH = g_settings->getU16("screenH");
+
+	if (fullscreen) {
+		u16 desktop_w, desktop_h;
+		bool use_desktop_size = g_settings->getBool("use_desktop_size");
+		if (use_desktop_size && get_desktop_size(desktop_w, desktop_h)) {
+			screenW = desktop_w;
+			screenH = desktop_h;
+		} else {
+			if (!use_desktop_size) {
+				errorstream << "WARNING: Could not get screen size; Using defaults."
+				            << std::endl;
+		    }
+			screenW = g_settings->getU16("fullscreen_W");
+			screenH = g_settings->getU16("fullscreen_H");
+		}
+	} else {
+		u16 desktop_w, desktop_h;
+		bool use_widescreen_windowed = g_settings->getBool("use_widescreen_windowed");
+		if (get_desktop_size(desktop_w, desktop_h)) {
+			float aspect_ratio = (float)desktop_w / desktop_h;
+			if (use_widescreen_windowed && aspect_ratio > 1.5) {
+				screenW = g_settings->getU16("screenW_wide");
+				screenH = g_settings->getU16("screenH_wide");
+			} else {
+				screenW = g_settings->getU16("screenW");
+				screenH = g_settings->getU16("screenH");
+			}
+		} else {
+			if (!use_widescreen_windowed) {
+				errorstream << "WARNING: Could not get screen size; Using narrow defaults."
+				            << std::endl;
+			}
+			screenW = g_settings->getU16("screenW");
+			screenH = g_settings->getU16("screenH");
+		}
+	}
 
 	// bpp, fsaa, vsync
 	bool vsync = g_settings->getBool("vsync");
@@ -2067,31 +2105,26 @@ bool ClientLauncher::create_engine_device(int log_level)
 
 // Misc functions
 
-static bool print_video_modes()
+static IrrlichtDevice *get_nulldevice()
 {
 	IrrlichtDevice *nulldevice;
 
-	bool vsync = g_settings->getBool("vsync");
-	u16 fsaa = g_settings->getU16("fsaa");
-	MyEventReceiver* receiver = new MyEventReceiver();
-
 	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
 	params.DriverType    = video::EDT_NULL;
-	params.WindowSize    = core::dimension2d<u32>(640, 480);
-	params.Bits          = 24;
-	params.AntiAlias     = fsaa;
-	params.Fullscreen    = false;
-	params.Stencilbuffer = false;
-	params.Vsync         = vsync;
-	params.EventReceiver = receiver;
-	params.HighPrecisionFPU = g_settings->getBool("high_precision_fpu");
 
 	nulldevice = createDeviceEx(params);
 
-	if (nulldevice == NULL) {
-		delete receiver;
-		return false;
-	}
+	return nulldevice;
+}
+
+static bool print_video_modes()
+{
+
+	IrrlichtDevice *nulldevice = get_nulldevice();
+
+	if (!nulldevice)
+		return NULL;
+
 
 	dstream << _("Available video modes (WxHxD):") << std::endl;
 
@@ -2117,7 +2150,27 @@ static bool print_video_modes()
 	}
 
 	nulldevice->drop();
-	delete receiver;
+
+	return videomode_list != NULL;
+}
+
+static bool get_desktop_size(u16 &width, u16 &height)
+{
+	IrrlichtDevice *nulldevice = get_nulldevice();
+
+	if (!nulldevice)
+		return NULL;
+
+	video::IVideoModeList *videomode_list = nulldevice->getVideoModeList();
+
+	if (videomode_list != NULL) {
+		core::dimension2d<u32> desktop_res;
+		desktop_res = videomode_list->getDesktopResolution();
+		width = desktop_res.Width;
+		height = desktop_res.Height;
+	}
+
+	nulldevice->drop();
 
 	return videomode_list != NULL;
 }
