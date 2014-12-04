@@ -238,7 +238,7 @@ void Hud::drawItems(v2s32 upperleftpos, s32 itemcount, s32 offset,
 
 
 void Hud::drawLuaElements(v3s16 camera_offset) {
-	uint32_t text_height     = g_fontengine->getTextHeight();
+	u32 text_height = g_fontengine->getTextHeight();
 	irr::gui::IGUIFont* font = g_fontengine->getFont();
 	for (size_t i = 0; i != player->maxHudId(); i++) {
 		HudElement *e = player->getHud(i);
