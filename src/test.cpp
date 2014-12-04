@@ -428,9 +428,9 @@ struct TestPath: public TestBase
 	"      # this is just a comment\n"        \
 	"this is an invalid line\n"               \
 	"asdf = {\n"                              \
-	"	a = 5\n"                              \
-	"	b = 2.5\n"                            \
-	"	c = \"\"\"\n"                         \
+	"	a   = 5\n"                            \
+	"	bb  = 2.5\n"                          \
+	"	ccc = \"\"\"\n"                       \
 	"testy\n"                                 \
 	"   testa   \n"                           \
 	"\"\"\"\n"                                \
@@ -440,6 +440,7 @@ struct TestPath: public TestBase
 	"some multiline text\n"                   \
 	"     with leading whitespace!\n"         \
 	"\"\"\"\n"                                \
+	"np_terrain = 5, 40, (250, 250, 250), 12345, 5, 0.7\n" \
 	"zoop = true"
 
 #define TEST_CONFIG_TEXT_AFTER                \
@@ -451,25 +452,33 @@ struct TestPath: public TestBase
 	"coord = (1, 2, 4.5)\n"                   \
 	"      # this is just a comment\n"        \
 	"this is an invalid line\n"               \
+	"asdf = sdfghj\n"                         \
 	"asdf = {\n"                              \
-	"	a = 5\n"                              \
-	"	b = 2.5\n"                            \
-	"	c = \"\"\"\n"                         \
+	"	a   = 5\n"                            \
+	"	bb  = 2.5\n"                          \
+	"	ccc = \"\"\"\n"                       \
 	"testy\n"                                 \
 	"   testa   \n"                           \
 	"\"\"\"\n"                                \
 	"\n"                                      \
 	"}\n"                                     \
-	"blarg = \"\"\"\n"                        \
+	"blarg = \"\"\" \n"                       \
 	"some multiline text\n"                   \
 	"     with leading whitespace!\n"         \
 	"\"\"\"\n"                                \
+	"np_terrain = {\n"                        \
+	"	octaves = 6\n"                        \
+	"	offset = 3.5\n"                       \
+	"	persistence = 0.7\n"                  \
+	"	scale = 40\n"                         \
+	"	seed = 12345\n"                       \
+	"	spread = (250,250,250)\n"             \
+	"}\n"                                     \
 	"zoop = true\n"                           \
 	"coord2 = (1,2,3.3)\n"                    \
 	"floaty_thing_2 = 1.2\n"                  \
-	"groupy_thing = \n"                       \
 	"groupy_thing = {\n"                      \
-	"	animals = \n"                         \
+	"	animals = cute\n"                     \
 	"	animals = {\n"                        \
 	"		cat = meow\n"                     \
 	"		dog = woof\n"                     \
@@ -477,7 +486,6 @@ struct TestPath: public TestBase
 	"	num_apples = 4\n"                     \
 	"	num_oranges = 53\n"                   \
 	"}\n"
-
 
 struct TestSettings: public TestBase
 {
@@ -514,7 +522,9 @@ struct TestSettings: public TestBase
 		UASSERT(group != NULL);
 		UASSERT(s.getGroupNoEx("zoop", group) == false);
 		UASSERT(group->getS16("a") == 5);
-		UASSERT(fabs(group->getFloat("b") - 2.5) < 0.001);
+		UASSERT(fabs(group->getFloat("bb") - 2.5) < 0.001);
+
+		s.set("asdf", "sdfghj");
 
 		Settings *group3 = new Settings;
 		group3->set("cat", "meow");
@@ -524,13 +534,32 @@ struct TestSettings: public TestBase
 		group2->setS16("num_apples", 4);
 		group2->setS16("num_oranges", 53);
 		group2->setGroup("animals", group3);
+		group2->set("animals", "cute");
 		s.setGroup("groupy_thing", group2);
 
 		// Test multiline settings
-		UASSERT(group->get("c") == "testy\n   testa   ");
+		UASSERT(group->get("ccc") == "testy\n   testa   ");
+		s.setGroup("asdf", NULL);
+
 		UASSERT(s.get("blarg") ==
 			"some multiline text\n"
 			"     with leading whitespace!");
+
+		// Test NoiseParams
+		NoiseParams np;
+		UASSERT(s.getNoiseParams("np_terrain", np) == true);
+		UASSERT(fabs(np.offset - 5) < 0.001);
+		UASSERT(fabs(np.scale - 40) < 0.001);
+		UASSERT(fabs(np.spread.X - 250) < 0.001);
+		UASSERT(fabs(np.spread.Y - 250) < 0.001);
+		UASSERT(fabs(np.spread.Z - 250) < 0.001);
+		UASSERT(np.seed == 12345);
+		UASSERT(np.octaves == 5);
+		UASSERT(fabs(np.persist == 0.7) < 0.001);
+
+		np.offset  = 3.5;
+		np.octaves = 6;
+		s.setNoiseParams("np_terrain", np);
 
 		// Test writing
 		std::ostringstream os(std::ios_base::binary);

@@ -114,13 +114,20 @@ public:
 
 	SettingsParseEvent parseConfigObject(const std::string &line,
 		const std::string &end, std::string &name, std::string &value);
+	void getNamesPresent(std::istream &is, const std::string &end,
+		std::set<std::string> &present_values,
+		std::set<std::string> &present_groups);
 	bool updateConfigObject(std::istream &is, std::ostream &os,
 		const std::string &end, u32 tab_depth=0);
 
-	static std::string getMultiline(std::istream &is);
+	static std::string getMultiline(std::istream &is, size_t *num_lines=NULL);
 	static std::string sanitizeString(const std::string &value);
+	static bool printEntry(std::ostream &os, const std::string &name,
+		const SettingsEntry &entry, u32 tab_depth=0);
 	static void printValue(std::ostream &os, const std::string &name,
-		const SettingsEntry &entry, bool is_value_multiline, u32 tab_depth=0);
+		const std::string &value, u32 tab_depth=0);
+	static void printGroup(std::ostream &os, const std::string &name,
+		const Settings *group, u32 tab_depth=0);
 
 	/***********
 	 * Getters *

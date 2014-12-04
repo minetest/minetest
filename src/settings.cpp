@@ -75,12 +75,14 @@ std::string Settings::sanitizeString(const std::string &value)
 }
 
 
-std::string Settings::getMultiline(std::istream &is)
+std::string Settings::getMultiline(std::istream &is, size_t *num_lines)
 {
+	size_t lines = 1;
 	std::string value;
 	std::string line;
 
 	while (is.good()) {
+		lines++;
 		std::getline(is, line);
 		if (line == "\"\"\"")
 			break;
@@ -91,6 +93,9 @@ std::string Settings::getMultiline(std::istream &is)
 	size_t len = value.size();
 	if (len)
 		value.erase(len - 1);
+
+	if (num_lines)
+		*num_lines = lines;
 
 	return value;
 }
@@ -150,38 +155,104 @@ void Settings::writeLines(std::ostream &os, u32 tab_depth) const
 
 	for (std::map<std::string, SettingsEntry>::const_iterator
 			it = m_settings.begin();
-			it != m_settings.end(); ++it) {
-		bool is_multiline = it->second.value.find('\n') != std::string::npos;
-		printValue(os, it->first, it->second, is_multiline, tab_depth);
-	}
+			it != m_settings.end(); ++it)
+		printEntry(os, it->first, it->second, tab_depth);
 }
 
 
+bool Settings::printEntry(std::ostream &os, const std::string &name,
+	const SettingsEntry &entry, u32 tab_depth)
+{
+	bool printed = false;
+
+	if (!entry.group || entry.value != "") {
+		printValue(os, name, entry.value, tab_depth);
+		printed = true;
+	}
+
+	if (entry.group) {
+		printGroup(os, name, entry.group, tab_depth);
+		printed = true;
+	}
+
+	return printed;
+}
+
+
+
 void Settings::printValue(std::ostream &os, const std::string &name,
-	const SettingsEntry &entry, bool is_value_multiline, u32 tab_depth)
+	const std::string &value, u32 tab_depth)
 {
 	for (u32 i = 0; i != tab_depth; i++)
 		os << "\t";
 	os << name << " = ";
 
-	if (is_value_multiline)
-		os << "\"\"\"\n" << entry.value << "\n\"\"\"\n";
+	if (value.find('\n') != std::string::npos)
+		os << "\"\"\"\n" << value << "\n\"\"\"\n";
 	else
-		os << entry.value << "\n";
+		os << value << "\n";
+}
 
-	Settings *group = entry.group;
-	if (group) {
-		for (u32 i = 0; i != tab_depth; i++)
-			os << "\t";
 
-		os << name << " = {\n";
-		group->writeLines(os, tab_depth + 1);
+void Settings::printGroup(std::ostream &os, const std::string &name,
+	const Settings *group, u32 tab_depth)
+{
+	// Recursively write group contents
+	for (u32 i = 0; i != tab_depth; i++)
+		os << "\t";
 
-		for (u32 i = 0; i != tab_depth; i++)
-			os << "\t";
+	os << name << " = {\n";
+	group->writeLines(os, tab_depth + 1);
 
-		os << "}\n";
+	for (u32 i = 0; i != tab_depth; i++)
+		os << "\t";
+
+	os << "}\n";
+}
+
+
+void Settings::getNamesPresent(std::istream &is, const std::string &end,
+	std::set<std::string> &present_values, std::set<std::string> &present_groups)
+{
+	std::string name, value, line;
+	bool end_found = false;
+	int depth = 0;
+	size_t old_pos = is.tellg();
+
+	while (is.good() && !end_found) {
+		std::getline(is, line);
+		SettingsParseEvent event = parseConfigObject(line,
+			depth ? "}" : end, name, value);
+
+		switch (event) {
+		case SPE_END:
+			if (depth == 0)
+				end_found = true;
+			else
+				depth--;
+			break;
+		case SPE_MULTILINE:
+			while (is.good() && line != "\"\"\"")
+				std::getline(is, line);
+			/* FALLTHROUGH */
+		case SPE_KVPAIR:
+			if (depth == 0)
+				present_values.insert(name);
+			break;
+		case SPE_GROUP:
+			if (depth == 0)
+				present_groups.insert(name);
+			depth++;
+			break;
+		case SPE_NONE:
+		case SPE_COMMENT:
+		case SPE_INVALID:
+			break;
+		}
 	}
+
+	is.clear();
+	is.seekg(old_pos);
 }
 
 
@@ -189,10 +260,12 @@ bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 	const std::string &end, u32 tab_depth)
 {
 	std::map<std::string, SettingsEntry>::const_iterator it;
-	std::set<std::string> settings_in_config;
+	std::set<std::string> present_values, present_groups;
+	std::string line, name, value;
 	bool was_modified = false;
 	bool end_found = false;
-	std::string line, name, value;
+
+	getNamesPresent(is, end, present_values, present_groups);
 
 	// Add any settings that exist in the config file with the current value
 	// in the object if existing
@@ -202,25 +275,30 @@ bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 
 		switch (event) {
 		case SPE_END:
+			os << line << (is.eof() ? "" : "\n");
 			end_found = true;
 			break;
-		case SPE_KVPAIR:
 		case SPE_MULTILINE:
+			value = getMultiline(is);
+			/* FALLTHROUGH */
+		case SPE_KVPAIR:
 			it = m_settings.find(name);
-			if (it != m_settings.end()) {
+			if (it != m_settings.end() && value != it->second.value) {
+				if (!it->second.group || it->second.value != "")
+					printValue(os, name, it->second.value, tab_depth);
+				was_modified = true;
+			} else {
+				os << line << "\n";
 				if (event == SPE_MULTILINE)
-					value = getMultiline(is);
-
-				if (value != it->second.value) {
-					value = it->second.value;
-					was_modified = true;
-				}
+					os << value << "\n\"\"\"\n";
 			}
 
-			settings_in_config.insert(name);
-
-			printValue(os, name, SettingsEntry(value),
-				event == SPE_MULTILINE, tab_depth);
+			// If this value name has a group not in the file, print it
+			if (it != m_settings.end() && it->second.group &&
+					present_groups.find(name) == present_groups.end()) {
+				printGroup(os, name, it->second.group, tab_depth);
+				was_modified = true;
+			}
 
 			break;
 		case SPE_GROUP: {
@@ -229,20 +307,22 @@ bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 			if (it != m_settings.end())
 				group = it->second.group;
 
-			settings_in_config.insert(name);
+			// If this group name has a non-blank value not in the file, print it
+			if (it != m_settings.end() && it->second.value != "" &&
+					present_values.find(name) == present_values.end()) {
+				printValue(os, name, it->second.value, tab_depth);
+				was_modified = true;
+			}
 
-			os << name << " = {\n";
+			os << line << "\n";
 
 			if (group) {
 				was_modified |= group->updateConfigObject(is, os, "}", tab_depth + 1);
 			} else {
+				// If a group exists in the file but not memory, don't touch it
 				Settings dummy_settings;
 				dummy_settings.updateConfigObject(is, os, "}", tab_depth + 1);
 			}
-
-			for (u32 i = 0; i != tab_depth; i++)
-				os << "\t";
-			os << "}\n";
 			break;
 		}
 		default:
@@ -253,13 +333,11 @@ bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 
 	// Add any settings in the object that don't exist in the config file yet
 	for (it = m_settings.begin(); it != m_settings.end(); ++it) {
-		if (settings_in_config.find(it->first) != settings_in_config.end())
+		if (present_values.find(it->first) != present_values.end() ||
+			present_groups.find(it->first) != present_groups.end())
 			continue;
 
-		was_modified = true;
-
-		bool is_multiline = it->second.value.find('\n') != std::string::npos;
-		printValue(os, it->first, it->second, is_multiline, tab_depth);
+		was_modified |= printEntry(os, it->first, it->second, tab_depth);
 	}
 
 	return was_modified;
@@ -690,9 +768,9 @@ bool Settings::getFlagStrNoEx(const std::string &name, u32 &val,
 void Settings::set(const std::string &name, const std::string &value)
 {
 	{
-	JMutexAutoLock lock(m_mutex);
+		JMutexAutoLock lock(m_mutex);
 
-	m_settings[name].value = value;
+		m_settings[name].value = value;
 	}
 	doCallbacks(name);
 }
@@ -700,10 +778,14 @@ void Settings::set(const std::string &name, const std::string &value)
 
 void Settings::setGroup(const std::string &name, Settings *group)
 {
-	JMutexAutoLock lock(m_mutex);
+	Settings *old_group = NULL;
+	{
+		JMutexAutoLock lock(m_mutex);
 
-	delete m_settings[name].group;
-	m_settings[name].group = group;
+		old_group = m_settings[name].group;
+		m_settings[name].group = group;
+	}
+	delete old_group;
 }
 
 
@@ -717,10 +799,14 @@ void Settings::setDefault(const std::string &name, const std::string &value)
 
 void Settings::setGroupDefault(const std::string &name, Settings *group)
 {
-	JMutexAutoLock lock(m_mutex);
+	Settings *old_group = NULL;
+	{
+		JMutexAutoLock lock(m_mutex);
 
-	delete m_defaults[name].group;
-	m_defaults[name].group = group;
+		old_group = m_defaults[name].group;
+		m_defaults[name].group = group;
+	}
+	delete old_group;
 }
 
 
@@ -808,7 +894,15 @@ void Settings::setNoiseParams(const std::string &name, const NoiseParams &np)
 	group->setU16("octaves",       np.octaves);
 	group->setFloat("persistence", np.persist);
 
-	setGroup(name, group);
+	Settings *old_group;
+	{
+		JMutexAutoLock lock(m_mutex);
+
+		old_group = m_settings[name].group;
+		m_settings[name].group = group;
+		m_settings[name].value = "";
+	}
+	delete old_group;
 }
 
 
