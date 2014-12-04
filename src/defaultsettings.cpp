@@ -92,9 +92,18 @@ void set_default_settings(Settings *settings)
 	// A bit more than the server will send around the player, to make fog blend well
 	settings->setDefault("viewing_range_nodes_max", "240");
 	settings->setDefault("viewing_range_nodes_min", "35");
+
+	settings->setDefault("use_widescreen_windowed", "false");
 	settings->setDefault("screenW", "800");
 	settings->setDefault("screenH", "600");
+	settings->setDefault("screenW_wide", "1024");
+	settings->setDefault("screenH_wide", "600");
+
 	settings->setDefault("fullscreen", "false");
+	settings->setDefault("use_desktop_size", "true");
+	settings->setDefault("fullscreen_W", "1024");
+	settings->setDefault("fullscreen_H", "600");
+
 	settings->setDefault("fullscreen_bpp", "24");
 	settings->setDefault("fsaa", "0");
 	settings->setDefault("vsync", "false");
@@ -102,7 +111,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("random_input", "false");
 	settings->setDefault("client_unload_unused_data_timeout", "600");
 	settings->setDefault("enable_fog", "true");
-	settings->setDefault("fov", "72");
+
 	settings->setDefault("view_bobbing", "true");
 	settings->setDefault("new_style_water", "false");
 	settings->setDefault("new_style_leaves", "true");

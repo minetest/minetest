@@ -76,10 +76,26 @@
 # The allowed adjustment range for the automatic rendering range adjustment
 #viewing_range_nodes_max = 160
 #viewing_range_nodes_min = 35
-# Initial window size
+#
+# Sizes for windowed mode. These are ignored for fullscreen
+#
+# If true then default window sizes will be widescreen format
+# #use_widescreen_windowed = false
+# Initial window size if use_widescreen_windowed s false
+#  or if the desktop's aspect ratio could not be determined
 #screenW = 800
 #screenH = 600
+# Initial window size if use_widescreen_windowed is true
+#screenW_wide = 1024
+#screenH_wide = 600
+#
 #fullscreen = false
+# If set to false then fullscreen_W and fullscreen_H are used
+#use_desktop_size = true
+# Fullscreen resolution if use_desktop_size is false, or if the desktop size
+#   could not be determined
+#fullscreen_w 1024
+#fullscreen_h 600
 #fullscreen_bpp = 24
 # Experimental option, might cause visible spaces between blocks
 # when set to higher number than 0
