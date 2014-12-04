@@ -76,6 +76,21 @@ static unsigned int font_line_height(gui::IGUIFont *font)
 
 static gui::IGUIFont *select_font_by_line_height(double target_line_height)
 {
+	return g_fontengine->getFont();
+
+/* I have no idea what this is trying to achieve, but scaling the font according
+ * to the size of a formspec/dialog does not seem to be a standard (G)UI
+ * design and AFAIK no existing nor proposed GUI does this. Besides that it:
+ * a) breaks most (current) formspec layouts
+ * b) font sizes change depending on the size of the formspec/dialog (see above)
+ *    meaning that there is no UI consistency
+ * c) the chosen fonts are, in general, probably too large
+ *
+ * Disabling for now.
+ *
+ * FIXME
+ */
+#if 0
 	// We don't get to directly select a font according to its
 	// baseline-to-baseline height.  Rather, we select by em size.
 	// The ratio between these varies between fonts.  The font
@@ -105,6 +120,7 @@ static gui::IGUIFont *select_font_by_line_height(double target_line_height)
 		}
 	}
 	return g_fontengine->getFont(target_line_height - lohgt < hihgt - target_line_height ? loreq : hireq);
+#endif
 }
 
 GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
