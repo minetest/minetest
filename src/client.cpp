@@ -2792,7 +2792,7 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 				sstr << "Failed to save screenshot '" << filename << "'";
 			}
 			m_chat_queue.push_back(narrow_to_wide(sstr.str()));
-			infostream << sstr << std::endl;
+			infostream << sstr.str() << std::endl;
 			image->drop();
 		}
 		raw_image->drop();
