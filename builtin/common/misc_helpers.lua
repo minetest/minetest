@@ -213,6 +213,17 @@ function math.hypot(x, y)
 end
 
 --------------------------------------------------------------------------------
+function math.sign(x, tolerance)
+	tolerance = tolerance or 0
+	if x > tolerance then
+		return 1
+	elseif x < -tolerance then
+		return -1
+	end
+	return 0
+end
+
+--------------------------------------------------------------------------------
 function get_last_folder(text,count)
 	local parts = text:split(DIR_DELIM)
 

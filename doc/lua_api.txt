@@ -1280,6 +1280,7 @@ vector.distance(p1, p2) -> number
 vector.length(v) -> number
 vector.normalize(v) -> vector
 vector.round(v) -> vector
+vector.apply(v, func) -> vector
 vector.equals(v1, v2) -> bool
 For the following functions x can be either a vector or a number.
 vector.add(v, x) -> vector
@@ -1296,6 +1297,9 @@ dump(obj, dumped={})
 math.hypot(x, y)
 ^ Get the hypotenuse of a triangle with legs x and y.
   Useful for distance calculation.
+math.sign(x, tolerance)
+^ Get the sign of a number
+  Optional: Also returns 0 when the absolute value is within the tolerance (default 0)
 string:split(separator)
 ^ e.g. string:split("a,b", ",") == {"a","b"}
 string:trim()
