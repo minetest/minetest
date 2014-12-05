@@ -555,7 +555,7 @@ struct TestSettings: public TestBase
 		UASSERT(fabs(np.spread.Z - 250) < 0.001);
 		UASSERT(np.seed == 12345);
 		UASSERT(np.octaves == 5);
-		UASSERT(fabs(np.persist == 0.7) < 0.001);
+		UASSERT(fabs(np.persist - 0.7) < 0.001);
 
 		np.offset  = 3.5;
 		np.octaves = 6;
