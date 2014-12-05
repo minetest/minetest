@@ -66,13 +66,19 @@ cd $libdir
 
 # Get minetest
 cd $builddir
-[ -d minetest ] && (cd minetest && git pull) || (git clone https://github.com/minetest/minetest)
+if [ -d $EXISTING_MINETEST_DIR ]; then
+	ln -s $EXISTING_MINETEST_DIR minetest
+else
+	[ -d minetest ] && (cd minetest && git pull) || (git clone https://github.com/minetest/minetest)
+fi
 cd minetest
 git_hash=`git show | head -c14 | tail -c7`
 
 # Get minetest_game
 cd games
-[ -d minetest_game ] && (cd minetest_game && git pull) || (git clone https://github.com/minetest/minetest_game)
+if [ "x$NO_MINETEST_GAME" = "x" ]; then
+	[ -d minetest_game ] && (cd minetest_game && git pull) || (git clone https://github.com/minetest/minetest_game)
+fi
 cd ../..
 
 # Build the thing
