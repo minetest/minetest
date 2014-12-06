@@ -73,7 +73,7 @@ license you like.
 
 
 
-#include "json.h"
+#include <json/json.h>
 
 
 // //////////////////////////////////////////////////////////////////////
@@ -202,7 +202,7 @@ uintToString( LargestUInt value,
 #include <cstdio>
 #include <cassert>
 #include <cstring>
-#include <stdexcept>
+#include <istream>
 
 #if defined(_MSC_VER)  &&  _MSC_VER >= 1400 // VC++ 8.0
 #pragma warning( disable : 4996 )   // disable warning about strdup being deprecated.
@@ -216,6 +216,8 @@ namespace Json {
 Features::Features()
    : allowComments_( true )
    , strictRoot_( false )
+   , allowDroppedNullPlaceholders_ ( false )
+   , allowNumericKeys_ ( false )
 {
 }
 
@@ -233,6 +235,8 @@ Features::strictMode()
    Features features;
    features.allowComments_ = false;
    features.strictRoot_ = true;
+   features.allowDroppedNullPlaceholders_ = false;
+   features.allowNumericKeys_ = false;
    return features;
 }
 
@@ -379,6 +383,17 @@ Reader::readValue()
 
    if ( collectComments_  &&  !commentsBefore_.empty() )
    {
+      // Remove newline characters at the end of the comments
+      size_t lastNonNewline = commentsBefore_.find_last_not_of("\r\n");
+      if (lastNonNewline != std::string::npos)
+      {
+         commentsBefore_.erase(lastNonNewline+1);
+      }
+      else
+      {
+         commentsBefore_.clear();
+      }
+
       currentValue().setComment( commentsBefore_, commentBefore );
       commentsBefore_ = "";
    }
@@ -388,9 +403,11 @@ Reader::readValue()
    {
    case tokenObjectBegin:
       successful = readObject( token );
+      currentValue().setOffsetLimit(current_ - begin_);
       break;
    case tokenArrayBegin:
       successful = readArray( token );
+      currentValue().setOffsetLimit(current_ - begin_);
       break;
    case tokenNumber:
       successful = decodeNumber( token );
@@ -400,14 +417,34 @@ Reader::readValue()
       break;
    case tokenTrue:
       currentValue() = true;
+      currentValue().setOffsetStart(token.start_ - begin_);
+      currentValue().setOffsetLimit(token.end_ - begin_);
       break;
    case tokenFalse:
       currentValue() = false;
+      currentValue().setOffsetStart(token.start_ - begin_);
+      currentValue().setOffsetLimit(token.end_ - begin_);
       break;
    case tokenNull:
       currentValue() = Value();
+      currentValue().setOffsetStart(token.start_ - begin_);
+      currentValue().setOffsetLimit(token.end_ - begin_);
       break;
+   case tokenArraySeparator:
+      if ( features_.allowDroppedNullPlaceholders_ )
+      {
+         // "Un-read" the current token and mark the current value as a null
+         // token.
+         current_--;
+         currentValue() = Value();
+         currentValue().setOffsetStart(current_ - begin_ - 1);
+         currentValue().setOffsetLimit(current_ - begin_);
+         break;
+      }
+      // Else, fall through...
    default:
+      currentValue().setOffsetStart(token.start_ - begin_);
+      currentValue().setOffsetLimit(token.end_ - begin_);
       return addError( "Syntax error: value, object or array expected.", token );
    }
 
@@ -656,11 +693,12 @@ Reader::readString()
 
 
 bool 
-Reader::readObject( Token &/*tokenStart*/ )
+Reader::readObject( Token &tokenStart )
 {
    Token tokenName;
    std::string name;
    currentValue() = Value( objectValue );
+   currentValue().setOffsetStart(tokenStart.start_ - begin_);
    while ( readToken( tokenName ) )
    {
       bool initialTokenOk = true;
@@ -670,12 +708,24 @@ Reader::readObject( Token &/*tokenStart*/ )
          break;
       if ( tokenName.type_ == tokenObjectEnd  &&  name.empty() )  // empty object
          return true;
-      if ( tokenName.type_ != tokenString )
-         break;
-      
       name = "";
-      if ( !decodeString( tokenName, name ) )
-         return recoverFromError( tokenObjectEnd );
+      if ( tokenName.type_ == tokenString )
+      {
+         if ( !decodeString( tokenName, name ) )
+            return recoverFromError( tokenObjectEnd );
+      }
+      else if ( tokenName.type_ == tokenNumber &&
+                features_.allowNumericKeys_ )
+      {
+         Value numberName;
+         if ( !decodeNumber( tokenName, numberName ) )
+            return recoverFromError( tokenObjectEnd );
+         name = numberName.asString();
+      }
+      else
+      {
+         break;
+      }
 
       Token colon;
       if ( !readToken( colon ) ||  colon.type_ != tokenMemberSeparator )
@@ -715,9 +765,10 @@ Reader::readObject( Token &/*tokenStart*/ )
 
 
 bool 
-Reader::readArray( Token &/*tokenStart*/ )
+Reader::readArray( Token &tokenStart )
 {
    currentValue() = Value( arrayValue );
+   currentValue().setOffsetStart(tokenStart.start_ - begin_);
    skipSpaces();
    if ( *current_ == ']' ) // empty array
    {
@@ -760,6 +811,19 @@ Reader::readArray( Token &/*tokenStart*/ )
 bool 
 Reader::decodeNumber( Token &token )
 {
+  Value decoded;
+  if ( !decodeNumber( token, decoded ) )
+     return false;
+  currentValue() = decoded;
+  currentValue().setOffsetStart(token.start_ - begin_);
+  currentValue().setOffsetLimit(token.end_ - begin_);
+  return true;
+}
+
+
+bool
+Reader::decodeNumber( Token &token, Value &decoded )
+{
    bool isDouble = false;
    for ( Location inspect = token.start_; inspect != token.end_; ++inspect )
    {
@@ -768,7 +832,7 @@ Reader::decodeNumber( Token &token )
                  ||  ( *inspect == '-'  &&  inspect != token.start_ );
    }
    if ( isDouble )
-      return decodeDouble( token );
+      return decodeDouble( token, decoded );
    // Attempts to parse the number as an integer. If the number is
    // larger than the maximum supported value of an integer then
    // we decode the number as a double.
@@ -796,23 +860,36 @@ Reader::decodeNumber( Token &token )
              current != token.end_ ||
              digit > maxIntegerValue % 10)
          {
-            return decodeDouble( token );
+            return decodeDouble( token, decoded );
          }
       }
       value = value * 10 + digit;
    }
    if ( isNegative )
-      currentValue() = -Value::LargestInt( value );
+      decoded = -Value::LargestInt( value );
    else if ( value <= Value::LargestUInt(Value::maxInt) )
-      currentValue() = Value::LargestInt( value );
+      decoded = Value::LargestInt( value );
    else
-      currentValue() = value;
+      decoded = value;
    return true;
 }
 
 
 bool 
 Reader::decodeDouble( Token &token )
+{
+  Value decoded;
+  if ( !decodeDouble( token, decoded ) )
+     return false;
+  currentValue() = decoded;
+  currentValue().setOffsetStart(token.start_ - begin_);
+  currentValue().setOffsetLimit(token.end_ - begin_);
+  return true;
+}
+
+
+bool
+Reader::decodeDouble( Token &token, Value &decoded )
 {
    double value = 0;
    const int bufferSize = 32;
@@ -846,7 +923,7 @@ Reader::decodeDouble( Token &token )
 
    if ( count != 1 )
       return addError( "'" + std::string( token.start_, token.end_ ) + "' is not a number.", token );
-   currentValue() = value;
+   decoded = value;
    return true;
 }
 
@@ -858,6 +935,8 @@ Reader::decodeString( Token &token )
    if ( !decodeString( token, decoded ) )
       return false;
    currentValue() = decoded;
+   currentValue().setOffsetStart(token.start_ - begin_);
+   currentValue().setOffsetLimit(token.end_ - begin_);
    return true;
 }
 
@@ -1057,7 +1136,11 @@ Reader::getLocationLineAndColumn( Location location ) const
    int line, column;
    getLocationLineAndColumn( location, line, column );
    char buffer[18+16+16+1];
-   sprintf( buffer, "Line %d, Column %d", line, column );
+#if defined(_MSC_VER) && defined(__STDC_SECURE_LIB__)
+   sprintf_s(buffer, sizeof(buffer), "Line %d, Column %d", line, column);
+#else
+   snprintf(buffer, sizeof(buffer), "Line %d, Column %d", line, column);
+#endif
    return buffer;
 }
 
@@ -1088,6 +1171,25 @@ Reader::getFormattedErrorMessages() const
 }
 
 
+std::vector<Reader::StructuredError>
+Reader::getStructuredErrors() const
+{
+   std::vector<Reader::StructuredError> allErrors;
+   for ( Errors::const_iterator itError = errors_.begin();
+         itError != errors_.end();
+         ++itError )
+   {
+      const ErrorInfo &error = *itError;
+      Reader::StructuredError structured;
+      structured.offset_start = error.token_.start_ - begin_;
+      structured.offset_limit = error.token_.end_ - begin_;
+      structured.message = error.message_;
+      allErrors.push_back(structured);
+   }
+   return allErrors;
+}
+
+
 std::istream& operator>>( std::istream &sin, Value &root )
 {
     Json::Reader reader;
@@ -1105,6 +1207,7 @@ std::istream& operator>>( std::istream &sin, Value &root )
 
 
 } // namespace Json
+// vim: et ts=3 sts=3 sw=3 tw=0
 
 // //////////////////////////////////////////////////////////////////////
 // End of content of file: src/lib_json/json_reader.cpp
@@ -1246,6 +1349,7 @@ private:
 # endif // ifndef JSONCPP_DOC_INCLUDE_IMPLEMENTATION
 
 #endif // JSONCPP_BATCHALLOCATOR_H_INCLUDED
+// vim: et ts=3 sts=3 sw=3 tw=0
 
 // //////////////////////////////////////////////////////////////////////
 // End of content of file: src/lib_json/json_batchallocator.h
@@ -1411,6 +1515,7 @@ ValueIteratorBase::copy( const SelfType &other )
 {
 #ifndef JSON_VALUE_USE_INTERNAL_MAP
    current_ = other.current_;
+   isNull_ = other.isNull_;
 #else
    if ( isArray_ )
       iterator_.array_ = other.iterator_.array_;
@@ -1559,6 +1664,7 @@ ValueIterator::operator =( const SelfType &other )
 }
 
 } // namespace Json
+// vim: et ts=3 sts=3 sw=3 tw=0
 
 // //////////////////////////////////////////////////////////////////////
 // End of content of file: src/lib_json/json_valueiterator.inl
@@ -1589,7 +1695,6 @@ ValueIterator::operator =( const SelfType &other )
 #include <math.h>
 #include <sstream>
 #include <utility>
-#include <stdexcept>
 #include <cstring>
 #include <cassert>
 #ifdef JSON_USE_CPPTL
@@ -1666,7 +1771,7 @@ duplicateStringValue( const char *value,
       length = Value::maxInt - 1;
 
    char *newString = static_cast<char *>( malloc( length + 1 ) );
-   JSON_ASSERT_MESSAGE( newString != 0, "Failed to allocate string value buffer" );
+   JSON_ASSERT_MESSAGE( newString != 0, "in Json::Value::duplicateStringValue(): Failed to allocate string value buffer" );
    memcpy( newString, value, length );
    newString[length] = 0;
    return newString;
@@ -1730,7 +1835,7 @@ Value::CommentInfo::setComment( const char *text )
    if ( comment_ )
       releaseStringValue( comment_ );
    JSON_ASSERT( text != 0 );
-   JSON_ASSERT_MESSAGE( text[0]=='\0' || text[0]=='/', "Comments must start with /");
+   JSON_ASSERT_MESSAGE( text[0]=='\0' || text[0]=='/', "in Json::Value::setComment(): Comments must start with /");
    // It seems that /**/ style comments are acceptable as well.
    comment_ = duplicateStringValue( text );
 }
@@ -1849,6 +1954,8 @@ Value::Value( ValueType type )
    , itemIsUsed_( 0 )
 #endif
    , comments_( 0 )
+   , start_( 0 )
+   , limit_( 0 )
 {
    switch ( type )
    {
@@ -1893,6 +2000,8 @@ Value::Value( UInt value )
    , itemIsUsed_( 0 )
 #endif
    , comments_( 0 )
+   , start_( 0 )
+   , limit_( 0 )
 {
    value_.uint_ = value;
 }
@@ -1904,6 +2013,8 @@ Value::Value( Int value )
    , itemIsUsed_( 0 )
 #endif
    , comments_( 0 )
+   , start_( 0 )
+   , limit_( 0 )
 {
    value_.int_ = value;
 }
@@ -1917,6 +2028,8 @@ Value::Value( Int64 value )
    , itemIsUsed_( 0 )
 #endif
    , comments_( 0 )
+   , start_( 0 )
+   , limit_( 0 )
 {
    value_.int_ = value;
 }
@@ -1929,6 +2042,8 @@ Value::Value( UInt64 value )
    , itemIsUsed_( 0 )
 #endif
    , comments_( 0 )
+   , start_( 0 )
+   , limit_( 0 )
 {
    value_.uint_ = value;
 }
@@ -1941,6 +2056,8 @@ Value::Value( double value )
    , itemIsUsed_( 0 )
 #endif
    , comments_( 0 )
+   , start_( 0 )
+   , limit_( 0 )
 {
    value_.real_ = value;
 }
@@ -1952,6 +2069,8 @@ Value::Value( const char *value )
    , itemIsUsed_( 0 )
 #endif
    , comments_( 0 )
+   , start_( 0 )
+   , limit_( 0 )
 {
    value_.string_ = duplicateStringValue( value );
 }
@@ -1965,6 +2084,8 @@ Value::Value( const char *beginValue,
    , itemIsUsed_( 0 )
 #endif
    , comments_( 0 )
+   , start_( 0 )
+   , limit_( 0 )
 {
    value_.string_ = duplicateStringValue( beginValue, 
                                           (unsigned int)(endValue - beginValue) );
@@ -1978,6 +2099,8 @@ Value::Value( const std::string &value )
    , itemIsUsed_( 0 )
 #endif
    , comments_( 0 )
+   , start_( 0 )
+   , limit_( 0 )
 {
    value_.string_ = duplicateStringValue( value.c_str(), 
                                           (unsigned int)value.length() );
@@ -1991,6 +2114,8 @@ Value::Value( const StaticString &value )
    , itemIsUsed_( 0 )
 #endif
    , comments_( 0 )
+   , start_( 0 )
+   , limit_( 0 )
 {
    value_.string_ = const_cast<char *>( value.c_str() );
 }
@@ -2004,6 +2129,8 @@ Value::Value( const CppTL::ConstString &value )
    , itemIsUsed_( 0 )
 #endif
    , comments_( 0 )
+   , start_( 0 )
+   , limit_( 0 )
 {
    value_.string_ = duplicateStringValue( value, value.length() );
 }
@@ -2016,6 +2143,8 @@ Value::Value( bool value )
    , itemIsUsed_( 0 )
 #endif
    , comments_( 0 )
+   , start_( 0 )
+   , limit_( 0 )
 {
    value_.bool_ = value;
 }
@@ -2028,6 +2157,8 @@ Value::Value( const Value &other )
    , itemIsUsed_( 0 )
 #endif
    , comments_( 0 )
+   , start_( other.start_ )
+   , limit_( other.limit_ )
 {
    switch ( type_ )
    {
@@ -2045,7 +2176,10 @@ Value::Value( const Value &other )
          allocated_ = true;
       }
       else
+      {
          value_.string_ = 0;
+         allocated_ = false;
+      }
       break;
 #ifndef JSON_VALUE_USE_INTERNAL_MAP
    case arrayValue:
@@ -2129,6 +2263,8 @@ Value::swap( Value &other )
    int temp2 = allocated_;
    allocated_ = other.allocated_;
    other.allocated_ = temp2;
+   std::swap( start_, other.start_ );
+   std::swap( limit_, other.limit_ );
 }
 
 ValueType 
@@ -2264,7 +2400,7 @@ Value::operator !=( const Value &other ) const
 const char *
 Value::asCString() const
 {
-   JSON_ASSERT( type_ == stringValue );
+   JSON_ASSERT_MESSAGE( type_ == stringValue, "in Json::Value::asCString(): requires stringValue" );
    return value_.string_;
 }
 
@@ -2598,8 +2734,9 @@ Value::operator!() const
 void 
 Value::clear()
 {
-   JSON_ASSERT( type_ == nullValue  ||  type_ == arrayValue  || type_ == objectValue );
-
+   JSON_ASSERT_MESSAGE( type_ == nullValue  ||  type_ == arrayValue  || type_ == objectValue, "in Json::Value::clear(): requires complex value" );
+   start_ = 0;
+   limit_ = 0;
    switch ( type_ )
    {
 #ifndef JSON_VALUE_USE_INTERNAL_MAP
@@ -2623,7 +2760,7 @@ Value::clear()
 void 
 Value::resize( ArrayIndex newSize )
 {
-   JSON_ASSERT( type_ == nullValue  ||  type_ == arrayValue );
+   JSON_ASSERT_MESSAGE( type_ == nullValue  ||  type_ == arrayValue, "in Json::Value::resize(): requires arrayValue" );
    if ( type_ == nullValue )
       *this = Value( arrayValue );
 #ifndef JSON_VALUE_USE_INTERNAL_MAP
@@ -2649,7 +2786,7 @@ Value::resize( ArrayIndex newSize )
 Value &
 Value::operator[]( ArrayIndex index )
 {
-   JSON_ASSERT( type_ == nullValue  ||  type_ == arrayValue );
+   JSON_ASSERT_MESSAGE( type_ == nullValue  ||  type_ == arrayValue, "in Json::Value::operator[](ArrayIndex): requires arrayValue" );
    if ( type_ == nullValue )
       *this = Value( arrayValue );
 #ifndef JSON_VALUE_USE_INTERNAL_MAP
@@ -2670,7 +2807,7 @@ Value::operator[]( ArrayIndex index )
 Value &
 Value::operator[]( int index )
 {
-   JSON_ASSERT( index >= 0 );
+   JSON_ASSERT_MESSAGE( index >= 0, "in Json::Value::operator[](int index): index cannot be negative" );
    return (*this)[ ArrayIndex(index) ];
 }
 
@@ -2678,7 +2815,7 @@ Value::operator[]( int index )
 const Value &
 Value::operator[]( ArrayIndex index ) const
 {
-   JSON_ASSERT( type_ == nullValue  ||  type_ == arrayValue );
+   JSON_ASSERT_MESSAGE( type_ == nullValue  ||  type_ == arrayValue, "in Json::Value::operator[](ArrayIndex)const: requires arrayValue" );
    if ( type_ == nullValue )
       return null;
 #ifndef JSON_VALUE_USE_INTERNAL_MAP
@@ -2697,7 +2834,7 @@ Value::operator[]( ArrayIndex index ) const
 const Value &
 Value::operator[]( int index ) const
 {
-   JSON_ASSERT( index >= 0 );
+   JSON_ASSERT_MESSAGE( index >= 0, "in Json::Value::operator[](int index) const: index cannot be negative" );
    return (*this)[ ArrayIndex(index) ];
 }
 
@@ -2713,7 +2850,7 @@ Value &
 Value::resolveReference( const char *key, 
                          bool isStatic )
 {
-   JSON_ASSERT( type_ == nullValue  ||  type_ == objectValue );
+   JSON_ASSERT_MESSAGE( type_ == nullValue  ||  type_ == objectValue, "in Json::Value::resolveReference(): requires objectValue" );
    if ( type_ == nullValue )
       *this = Value( objectValue );
 #ifndef JSON_VALUE_USE_INTERNAL_MAP
@@ -2753,7 +2890,7 @@ Value::isValidIndex( ArrayIndex index ) const
 const Value &
 Value::operator[]( const char *key ) const
 {
-   JSON_ASSERT( type_ == nullValue  ||  type_ == objectValue );
+   JSON_ASSERT_MESSAGE( type_ == nullValue  ||  type_ == objectValue, "in Json::Value::operator[](char const*)const: requires objectValue" );
    if ( type_ == nullValue )
       return null;
 #ifndef JSON_VALUE_USE_INTERNAL_MAP
@@ -2831,7 +2968,7 @@ Value::get( const std::string &key,
 Value
 Value::removeMember( const char* key )
 {
-   JSON_ASSERT( type_ == nullValue  ||  type_ == objectValue );
+   JSON_ASSERT_MESSAGE( type_ == nullValue  ||  type_ == objectValue, "in Json::Value::removeMember(): requires objectValue" );
    if ( type_ == nullValue )
       return null;
 #ifndef JSON_VALUE_USE_INTERNAL_MAP
@@ -2895,7 +3032,7 @@ Value::isMember( const CppTL::ConstString &key ) const
 Value::Members 
 Value::getMemberNames() const
 {
-   JSON_ASSERT( type_ == nullValue  ||  type_ == objectValue );
+   JSON_ASSERT_MESSAGE( type_ == nullValue  ||  type_ == objectValue, "in Json::Value::getMemberNames(), value must be objectValue" );
    if ( type_ == nullValue )
        return Value::Members();
    Members members;
@@ -3125,6 +3262,34 @@ Value::getComment( CommentPlacement placement ) const
    if ( hasComment(placement) )
       return comments_[placement].comment_;
    return "";
+}
+
+
+void
+Value::setOffsetStart( size_t start )
+{
+   start_ = start;
+}
+
+
+void
+Value::setOffsetLimit( size_t limit )
+{
+   limit_ = limit;
+}
+
+
+size_t
+Value::getOffsetStart() const
+{
+   return start_;
+}
+
+
+size_t
+Value::getOffsetLimit() const
+{
+   return limit_;
 }
 
 
@@ -3377,7 +3542,7 @@ Path::makePath( const std::string &path,
 
 
 void 
-Path::addPathInArg( const std::string &path, 
+Path::addPathInArg( const std::string &/*path*/, 
                     const InArgs &in, 
                     InArgs::const_iterator &itInArg, 
                     PathArgument::Kind kind )
@@ -3398,8 +3563,8 @@ Path::addPathInArg( const std::string &path,
 
 
 void 
-Path::invalidPath( const std::string &path, 
-                   int location )
+Path::invalidPath( const std::string &/*path*/, 
+                   int /*location*/ )
 {
    // Error: invalid path.
 }
@@ -3493,6 +3658,7 @@ Path::make( Value &root ) const
 
 
 } // namespace Json
+// vim: et ts=3 sts=3 sw=3 tw=0
 
 // //////////////////////////////////////////////////////////////////////
 // End of content of file: src/lib_json/json_value.cpp
@@ -3582,40 +3748,19 @@ std::string valueToString( UInt value )
 
 std::string valueToString( double value )
 {
+   // Allocate a buffer that is more than large enough to store the 16 digits of
+   // precision requested below.
    char buffer[32];
+
+   // Print into the buffer. We need not request the alternative representation
+   // that always has a decimal point because JSON doesn't distingish the
+   // concepts of reals and integers.
 #if defined(_MSC_VER) && defined(__STDC_SECURE_LIB__) // Use secure version with visual studio 2005 to avoid warning. 
-   sprintf_s(buffer, sizeof(buffer), "%#.16g", value); 
-#else	
-   sprintf(buffer, "%#.16g", value); 
+   sprintf_s(buffer, sizeof(buffer), "%.16g", value); 
+#else
+   snprintf(buffer, sizeof(buffer), "%.16g", value);
 #endif
-   char* ch = buffer + strlen(buffer) - 1;
-   if (*ch != '0') return buffer; // nothing to truncate, so save time
-   while(ch > buffer && *ch == '0'){
-     --ch;
-   }
-   char* last_nonzero = ch;
-   while(ch >= buffer){
-     switch(*ch){
-     case '0':
-     case '1':
-     case '2':
-     case '3':
-     case '4':
-     case '5':
-     case '6':
-     case '7':
-     case '8':
-     case '9':
-       --ch;
-       continue;
-     case '.':
-       // Truncate zeroes to save bytes in output, but keep one.
-       *(last_nonzero+2) = '\0';
-       return buffer;
-     default:
-       return buffer;
-     }
-   }
+
    return buffer;
 }
 
@@ -4013,7 +4158,20 @@ StyledWriter::writeCommentBeforeValue( const Value &root )
 {
    if ( !root.hasComment( commentBefore ) )
       return;
-   document_ += normalizeEOL( root.getComment( commentBefore ) );
+
+   document_ += "\n";
+   writeIndent();
+   std::string normalizedComment = normalizeEOL( root.getComment( commentBefore ) );
+   std::string::const_iterator iter = normalizedComment.begin();
+   while ( iter != normalizedComment.end() )
+   {
+      document_ += *iter;
+      if ( *iter == '\n' && *(iter+1) == '/' )
+         writeIndent();
+      ++iter;
+   }
+
+   // Comments are stripped of newlines, so add one here
    document_ += "\n";
 }
 
@@ -4356,6 +4514,7 @@ std::ostream& operator<<( std::ostream &sout, const Value &root )
 
 
 } // namespace Json
+// vim: et ts=3 sts=3 sw=3 tw=0
 
 // //////////////////////////////////////////////////////////////////////
 // End of content of file: src/lib_json/json_writer.cpp

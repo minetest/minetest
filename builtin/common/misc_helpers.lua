@@ -532,15 +532,15 @@ if INIT == "mainmenu" then
 		local arg = {n=select('#', ...), ...}
 		if arg.n >= 1 then
 			-- Insert positional parameters ($1, $2, ...)
-			result = ''
-			pos = 1
+			local result = ''
+			local pos = 1
 			while pos <= text:len() do
-				newpos = text:find('[$]', pos)
+				local newpos = text:find('[$]', pos)
 				if newpos == nil then
 					result = result .. text:sub(pos)
 					pos = text:len() + 1
 				else
-					paramindex = tonumber(text:sub(newpos+1, newpos+1))
+					local paramindex = tonumber(text:sub(newpos+1, newpos+1))
 					result = result .. text:sub(pos, newpos-1) .. tostring(arg[paramindex])
 					pos = newpos + 2
 				end
