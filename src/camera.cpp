@@ -488,7 +488,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	{
 		// Start animation
 		m_view_bobbing_state = 1;
-		m_view_bobbing_speed = MYMIN(speed.getLength(), 40);
+		m_view_bobbing_speed = MYMIN(speed.getLength(), 100);
 	}
 	else if (m_view_bobbing_state == 1)
 	{
