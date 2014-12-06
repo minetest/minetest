@@ -1533,10 +1533,11 @@ minetest.get_perlin(seeddiff, octaves, persistence, scale)
 ^ Return world-specific perlin noise (int(worldseed)+seeddiff)
 minetest.get_voxel_manip()
 ^ Return voxel manipulator object
-minetest.set_gen_notify(flags)
+minetest.set_gen_notify(flags, {deco_ids})
 ^ Set the types of on-generate notifications that should be collected
-^ flags is a comma-delimited combination of:
-^ dungeon, temple, cave_begin, cave_end, large_cave_begin, large_cave_end
+^ flags is a flag field with the available flags:
+^   dungeon, temple, cave_begin, cave_end, large_cave_begin, large_cave_end, decoration
+^ The second parameter is a list of IDS of decorations which notification is requested for
 minetest.get_mapgen_object(objectname)
 ^ Return requested mapgen object if available (see Mapgen objects)
 minetest.set_mapgen_params(MapgenParams)
@@ -2220,7 +2221,9 @@ current mapgen.
     Returns a table mapping requested generation notification types to arrays of positions at which the
 corresponding generated structures are located at within the current chunk.  To set the capture of positions
 of interest to be recorded on generate, use minetest.set_gen_notify().
-Possible fields of the table returned are:  dungeon, temple, cave_begin, cave_end, large_cave_begin, large_cave_end
+Possible fields of the table returned are:
+	dungeon, temple, cave_begin, cave_end, large_cave_begin, large_cave_end, decoration
+Decorations have a key in the format of "decoration#id", where id is the numeric unique decoration ID.
 
 Registered entities
 --------------------

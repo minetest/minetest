@@ -39,7 +39,8 @@ void MapgenSinglenodeParams::writeParams(Settings *settings) {
 ///////////////////////////////////////////////////////////////////////////////
 
 MapgenSinglenode::MapgenSinglenode(int mapgenid,
-		MapgenParams *params, EmergeManager *emerge)
+	MapgenParams *params, EmergeManager *emerge)
+	: Mapgen(mapgenid, params, emerge)
 {
 	flags = params->flags;
 
@@ -67,18 +68,18 @@ void MapgenSinglenode::makeChunk(BlockMakeData *data) {
 		   data->blockpos_requested.Z <= data->blockpos_max.Z);
 
 	this->generating = true;
-	this->vm   = data->vmanip;	
+	this->vm   = data->vmanip;
 	this->ndef = data->nodedef;
-			
+
 	v3s16 blockpos_min = data->blockpos_min;
 	v3s16 blockpos_max = data->blockpos_max;
 
 	// Area of central chunk
 	v3s16 node_min = blockpos_min*MAP_BLOCKSIZE;
 	v3s16 node_max = (blockpos_max+v3s16(1,1,1))*MAP_BLOCKSIZE-v3s16(1,1,1);
-	
+
 	MapNode n_node(c_node);
-	
+
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 y = node_min.Y; y <= node_max.Y; y++) {
 		u32 i = vm->m_area.index(node_min.X, y, z);
@@ -96,7 +97,7 @@ void MapgenSinglenode::makeChunk(BlockMakeData *data) {
 	if (flags & MG_LIGHT)
 		calcLighting(node_min - v3s16(1, 0, 1) * MAP_BLOCKSIZE,
 					 node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE);
-	
+
 	this->generating = false;
 }
 

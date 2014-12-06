@@ -89,7 +89,8 @@ public:
 	u16 qlimit_diskonly;
 	u16 qlimit_generate;
 
-	u32 gennotify;
+	u32 gen_notify_on;
+	std::set<u32> gen_notify_on_deco_ids;
 
 	//// Block emerge queue data structures
 	JMutex queuemutex;

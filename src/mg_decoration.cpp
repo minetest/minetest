@@ -144,7 +144,9 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 				}
 			}
 
-			generate(mg, &ps, max_y, v3s16(x, y, z));
+			v3s16 pos(x, y, z);
+			if (generate(mg, &ps, max_y, pos))
+				mg->gennotify.addEvent(GENNOTIFY_DECORATION, pos, id);
 		}
 	}
 
@@ -254,12 +256,12 @@ bool DecoSimple::canPlaceDecoration(ManualMapVoxelManipulator *vm, v3s16 p)
 }
 
 
-void DecoSimple::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p)
+size_t DecoSimple::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p)
 {
 	ManualMapVoxelManipulator *vm = mg->vm;
 
 	if (!canPlaceDecoration(vm, p))
-		return;
+		return 0;
 
 	content_t c_place = c_decos[pr->range(0, c_decos.size() - 1)];
 
@@ -279,6 +281,8 @@ void DecoSimple::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p)
 
 		vm->m_data[vi] = MapNode(c_place);
 	}
+
+	return 1;
 }
 
 
@@ -291,7 +295,7 @@ int DecoSimple::getHeight()
 ///////////////////////////////////////////////////////////////////////////////
 
 
-void DecoSchematic::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p)
+size_t DecoSchematic::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p)
 {
 	ManualMapVoxelManipulator *vm = mg->vm;
 
@@ -305,12 +309,14 @@ void DecoSchematic::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p)
 	u32 vi = vm->m_area.index(p);
 	content_t c = vm->m_data[vi].getContent();
 	if (!CONTAINS(c_place_on, c))
-		return;
+		return 0;
 
 	Rotation rot = (rotation == ROTATE_RAND) ?
 		(Rotation)pr->range(ROTATE_0, ROTATE_270) : rotation;
 
 	schematic->blitToVManip(p, vm, rot, false, mg->ndef);
+
+	return 1;
 }
 
 

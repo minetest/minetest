@@ -77,7 +77,7 @@ public:
 	size_t placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	size_t placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 
-	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p) = 0;
+	virtual size_t generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p) = 0;
 	virtual int getHeight() = 0;
 };
 
@@ -92,7 +92,7 @@ public:
 	~DecoSimple() {}
 
 	bool canPlaceDecoration(ManualMapVoxelManipulator *vm, v3s16 p);
-	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
+	virtual size_t generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
 	virtual int getHeight();
 };
 
@@ -105,7 +105,7 @@ public:
 
 	~DecoSchematic() {}
 
-	void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
+	virtual size_t generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
 	virtual int getHeight();
 };
 

@@ -194,23 +194,21 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 			return 1;
 		}
 		case MGOBJ_GENNOTIFY: {
+			std::map<std::string, std::vector<v3s16> >event_map;
+			std::map<std::string, std::vector<v3s16> >::iterator it;
+
+			mg->gennotify.getEvents(event_map);
+
 			lua_newtable(L);
-			for (int i = 0; flagdesc_gennotify[i].name; i++) {
-				if (!(emerge->gennotify & flagdesc_gennotify[i].flag))
-					continue;
-
-				std::vector<v3s16> *posvec = mg->gen_notifications[i];
-				if (!posvec)
-					return 0;
-
+			for (it = event_map.begin(); it != event_map.end(); ++it) {
 				lua_newtable(L);
-				for (unsigned int j = 0; j != posvec->size(); j++) {
-					push_v3s16(L, (*posvec)[j]);
+
+				for (size_t j = 0; j != it->second.size(); j++) {
+					push_v3s16(L, it->second[j]);
 					lua_rawseti(L, -2, j + 1);
 				}
-				lua_setfield(L, -2, flagdesc_gennotify[i].name);
 
-				posvec->clear();
+				lua_setfield(L, -2, it->first.c_str());
 			}
 
 			return 1;
@@ -291,14 +289,24 @@ int ModApiMapgen::l_set_noiseparam_defaults(lua_State *L)
 	return 0;
 }
 
-// set_gen_notify(string)
+// set_gen_notify(flags, {deco_id_table})
 int ModApiMapgen::l_set_gen_notify(lua_State *L)
 {
 	u32 flags = 0, flagmask = 0;
+	EmergeManager *emerge = getServer(L)->getEmergeManager();
 
 	if (read_flags(L, 1, flagdesc_gennotify, &flags, &flagmask)) {
-		EmergeManager *emerge = getServer(L)->getEmergeManager();
-		emerge->gennotify = flags;
+		emerge->gen_notify_on &= ~flagmask;
+		emerge->gen_notify_on |= flags;
+	}
+
+	if (lua_istable(L, 2)) {
+		lua_pushnil(L);
+		while (lua_next(L, 2)) {
+			if (lua_isnumber(L, -1))
+				emerge->gen_notify_on_deco_ids.insert(lua_tonumber(L, -1));
+			lua_pop(L, 1);
+		}
 	}
 
 	return 0;
@@ -372,7 +380,7 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 			<< decotype << " not implemented";
 		return 0;
 	}
-	
+
 	deco->name       = getstringfield_default(L, index, "name", "");
 	deco->fill_ratio = getfloatfield_default(L, index, "fill_ratio", 0.02);
 	deco->sidelen    = getintfield_default(L, index, "sidelen", 8);

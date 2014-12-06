@@ -95,7 +95,7 @@ size_t Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 	nmax.Y = ymax;
 	generate(mg->vm, mg->seed, blockseed, nmin, nmax);
 
-	return 0;
+	return 1;
 }
 
 

@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "content_sao.h"
 #include "nodedef.h"
+#include "emerge.h"
 #include "content_mapnode.h" // For content_mapnode_get_new_name
 #include "voxelalgorithms.h"
 #include "profiler.h"
@@ -55,36 +56,53 @@ FlagDesc flagdesc_gennotify[] = {
 	{"cave_end",         1 << GENNOTIFY_CAVE_END},
 	{"large_cave_begin", 1 << GENNOTIFY_LARGECAVE_BEGIN},
 	{"large_cave_end",   1 << GENNOTIFY_LARGECAVE_END},
+	{"decoration",       1 << GENNOTIFY_DECORATION},
 	{NULL,               0}
 };
 
 
 ///////////////////////////////////////////////////////////////////////////////
 
+Mapgen::Mapgen()
+{
+	generating    = false;
+	id            = -1;
+	seed          = 0;
+	water_level   = 0;
+	flags         = 0;
 
-Mapgen::Mapgen() {
-	seed        = 0;
-	water_level = 0;
-	generating  = false;
-	id          = -1;
 	vm          = NULL;
 	ndef        = NULL;
 	heightmap   = NULL;
 	biomemap    = NULL;
-
-	for (unsigned int i = 0; i != NUM_GEN_NOTIFY; i++)
-		gen_notifications[i] = new std::vector<v3s16>;
 }
 
 
-Mapgen::~Mapgen() {
-	for (unsigned int i = 0; i != NUM_GEN_NOTIFY; i++)
-		delete gen_notifications[i];
+Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge) :
+	gennotify(emerge->gen_notify_on, &emerge->gen_notify_on_deco_ids)
+{
+	generating    = false;
+	id            = mapgenid;
+	seed          = (int)params->seed;
+	water_level   = params->water_level;
+	flags         = params->flags;
+	csize         = v3s16(1, 1, 1) * (params->chunksize * MAP_BLOCKSIZE);
+
+	vm        = NULL;
+	ndef      = NULL;
+	heightmap = NULL;
+	biomemap  = NULL;
+}
+
+
+Mapgen::~Mapgen()
+{
 }
 
 
 // Returns Y one under area minimum if not found
-s16 Mapgen::findGroundLevelFull(v2s16 p2d) {
+s16 Mapgen::findGroundLevelFull(v2s16 p2d)
+{
 	v3s16 em = vm->m_area.getExtent();
 	s16 y_nodes_max = vm->m_area.MaxEdge.Y;
 	s16 y_nodes_min = vm->m_area.MinEdge.Y;
@@ -102,7 +120,8 @@ s16 Mapgen::findGroundLevelFull(v2s16 p2d) {
 }
 
 
-s16 Mapgen::findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax) {
+s16 Mapgen::findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax)
+{
 	v3s16 em = vm->m_area.getExtent();
 	u32 i = vm->m_area.index(p2d.X, ymax, p2d.Y);
 	s16 y;
@@ -118,7 +137,8 @@ s16 Mapgen::findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax) {
 }
 
 
-void Mapgen::updateHeightmap(v3s16 nmin, v3s16 nmax) {
+void Mapgen::updateHeightmap(v3s16 nmin, v3s16 nmax)
+{
 	if (!heightmap)
 		return;
 
@@ -141,7 +161,8 @@ void Mapgen::updateHeightmap(v3s16 nmin, v3s16 nmax) {
 }
 
 
-void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax) {
+void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax)
+{
 	bool isliquid, wasliquid;
 	v3s16 em  = vm->m_area.getExtent();
 
@@ -165,7 +186,8 @@ void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nm
 }
 
 
-void Mapgen::setLighting(v3s16 nmin, v3s16 nmax, u8 light) {
+void Mapgen::setLighting(v3s16 nmin, v3s16 nmax, u8 light)
+{
 	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update", SPT_AVG);
 	VoxelArea a(nmin, nmax);
 
@@ -179,7 +201,8 @@ void Mapgen::setLighting(v3s16 nmin, v3s16 nmax, u8 light) {
 }
 
 
-void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light) {
+void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light)
+{
 	if (light <= 1 || !a.contains(p))
 		return;
 
@@ -202,7 +225,8 @@ void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light) {
 }
 
 
-void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax) {
+void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax)
+{
 	VoxelArea a(nmin, nmax);
 	bool block_is_underground = (water_level >= nmax.Y);
 
@@ -264,7 +288,8 @@ void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax) {
 }
 
 
-void Mapgen::calcLightingOld(v3s16 nmin, v3s16 nmax) {
+void Mapgen::calcLightingOld(v3s16 nmin, v3s16 nmax)
+{
 	enum LightBank banks[2] = {LIGHTBANK_DAY, LIGHTBANK_NIGHT};
 	VoxelArea a(nmin, nmax);
 	bool block_is_underground = (water_level > nmax.Y);
@@ -284,6 +309,72 @@ void Mapgen::calcLightingOld(v3s16 nmin, v3s16 nmax) {
 		vm->unspreadLight(bank, unlight_from, light_sources, ndef);
 		vm->spreadLight(bank, light_sources, ndef);
 	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+GenerateNotifier::GenerateNotifier()
+{
+}
+
+
+GenerateNotifier::GenerateNotifier(u32 notify_on,
+	std::set<u32> *notify_on_deco_ids)
+{
+	m_notify_on = notify_on;
+	m_notify_on_deco_ids = notify_on_deco_ids;
+}
+
+
+void GenerateNotifier::setNotifyOn(u32 notify_on)
+{
+	m_notify_on = notify_on;
+}
+
+
+void GenerateNotifier::setNotifyOnDecoIds(std::set<u32> *notify_on_deco_ids)
+{
+	m_notify_on_deco_ids = notify_on_deco_ids;
+}
+
+
+bool GenerateNotifier::addEvent(GenNotifyType type, v3s16 pos, u32 id)
+{
+	if (!(m_notify_on & (1 << type)))
+		return false;
+
+	if (type == GENNOTIFY_DECORATION &&
+		m_notify_on_deco_ids->find(id) == m_notify_on_deco_ids->end())
+		return false;
+
+	GenNotifyEvent gne;
+	gne.type = type;
+	gne.pos  = pos;
+	gne.id   = id;
+	m_notify_events.push_back(gne);
+
+	return true;
+}
+
+
+void GenerateNotifier::getEvents(
+	std::map<std::string, std::vector<v3s16> > &event_map,
+	bool peek_events)
+{
+	std::list<GenNotifyEvent>::iterator it;
+
+	for (it = m_notify_events.begin(); it != m_notify_events.end(); ++it) {
+		GenNotifyEvent &gn = *it;
+		std::string name = (gn.type == GENNOTIFY_DECORATION) ?
+			"decoration#"+ itos(gn.id) :
+			flagdesc_gennotify[gn.type].name;
+
+		event_map[name].push_back(gn.pos);
+	}
+
+	if (!peek_events)
+		m_notify_events.clear();
 }
 
 

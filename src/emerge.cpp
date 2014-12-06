@@ -94,7 +94,7 @@ EmergeManager::EmergeManager(IGameDef *gamedef) {
 	this->oremgr    = new OreManager(gamedef);
 	this->decomgr   = new DecorationManager(gamedef);
 	this->schemmgr  = new SchematicManager(gamedef);
-	this->gennotify = 0;
+	this->gen_notify_on = 0;
 
 	// Note that accesses to this variable are not synchronized.
 	// This is because the *only* thread ever starting or stopping

@@ -46,7 +46,7 @@ DungeonGen::DungeonGen(Mapgen *mapgen, DungeonParams *dparams) {
 #ifdef DGEN_USE_TORCHES
 	c_torch  = ndef->getId("default:torch");
 #endif
-	
+
 	if (dparams) {
 		memcpy(&dp, dparams, sizeof(dp));
 	} else {
@@ -95,7 +95,7 @@ void DungeonGen::generate(u32 bseed, v3s16 nmin, v3s16 nmax) {
 			}
 		}
 	}
-	
+
 	// Add it
 	makeDungeon(v3s16(1,1,1) * MAP_BLOCKSIZE);
 
@@ -115,7 +115,7 @@ void DungeonGen::generate(u32 bseed, v3s16 nmin, v3s16 nmax) {
 			}
 		}
 	}
-	
+
 	//printf("== gen dungeons: %dms\n", t.stop());
 }
 
@@ -144,7 +144,7 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 			random.range(0,areasize.X-roomsize.X-1-start_padding.X),
 			random.range(0,areasize.Y-roomsize.Y-1-start_padding.Y),
 			random.range(0,areasize.Z-roomsize.Z-1-start_padding.Z));
-			
+
 		/*
 			Check that we're not putting the room to an unknown place,
 			otherwise it might end up floating in the air
@@ -181,10 +181,7 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 		makeRoom(roomsize, roomplace);
 
 		v3s16 room_center = roomplace + v3s16(roomsize.X / 2, 1, roomsize.Z / 2);
-		if (mg->gennotify & (1 << dp.notifytype)) {
-			std::vector <v3s16> *nvec = mg->gen_notifications[dp.notifytype];
-			nvec->push_back(room_center);
-		}
+		mg->gennotify.addEvent(dp.notifytype, room_center);
 
 #ifdef DGEN_USE_TORCHES
 		// Place torch at room center (for testing)
@@ -212,7 +209,7 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 		// Create walker and find a place for a door
 		v3s16 doorplace;
 		v3s16 doordir;
-		
+
 		m_pos = walker_start_place;
 		if (!findPlaceForDoor(doorplace, doordir))
 			return;
@@ -253,7 +250,7 @@ void DungeonGen::makeRoom(v3s16 roomsize, v3s16 roomplace)
 {
 	MapNode n_cobble(dp.c_cobble);
 	MapNode n_air(CONTENT_AIR);
-	
+
 	// Make +-X walls
 	for (s16 z = 0; z < roomsize.Z; z++)
 	for (s16 y = 0; y < roomsize.Y; y++)
@@ -393,10 +390,10 @@ void DungeonGen::makeCorridor(v3s16 doorplace,
 	u32 partlength = random.range(1, 13);
 	u32 partcount = 0;
 	s16 make_stairs = 0;
-	
+
 	if (random.next() % 2 == 0 && partlength >= 3)
 		make_stairs = random.next() % 2 ? 1 : -1;
-	
+
 	for (u32 i = 0; i < length; i++) {
 		v3s16 p = p0 + dir;
 		if (partcount != 0)
@@ -409,7 +406,7 @@ void DungeonGen::makeCorridor(v3s16 doorplace,
 						VMANIP_FLAG_DUNGEON_UNTOUCHABLE, MapNode(dp.c_cobble), 0);
 				makeHole(p);
 				makeHole(p - dir);
-				
+
 				// TODO: fix stairs code so it works 100% (quite difficult)
 
 				// exclude stairs from the bottom step
@@ -419,11 +416,11 @@ void DungeonGen::makeCorridor(v3s16 doorplace,
 					((make_stairs == -1) && i != length - 1))) {
 					// rotate face 180 deg if making stairs backwards
 					int facedir = dir_to_facedir(dir * make_stairs);
-					
+
 					u32 vi = vm->m_area.index(p.X - dir.X, p.Y - 1, p.Z - dir.Z);
 					if (vm->m_data[vi].getContent() == dp.c_cobble)
 						vm->m_data[vi] = MapNode(dp.c_stair, 0, facedir);
-					
+
 					vi = vm->m_area.index(p.X, p.Y, p.Z);
 					if (vm->m_data[vi].getContent() == dp.c_cobble)
 						vm->m_data[vi] = MapNode(dp.c_stair, 0, facedir);
