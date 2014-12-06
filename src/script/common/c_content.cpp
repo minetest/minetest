@@ -267,7 +267,7 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	lua_getfield(L, index, "on_rightclick");
 	f.rightclickable = lua_isfunction(L, -1);
 	lua_pop(L, 1);
-	
+
 	/* Name */
 	getstringfield(L, index, "name", f.name);
 
@@ -1039,7 +1039,7 @@ bool read_schematic(lua_State *L, int index, Schematic *schem,
 	//// Get schematic data
 	lua_getfield(L, index, "data");
 	luaL_checktype(L, -1, LUA_TTABLE);
-	
+
 	int numnodes = size.X * size.Y * size.Z;
 	MapNode *schemdata = new MapNode[numnodes];
 	int i = 0;
@@ -1069,7 +1069,7 @@ bool read_schematic(lua_State *L, int index, Schematic *schem,
 
 			schemdata[i] = MapNode(ndef, name, param1, param2);
 		}
-		
+
 		i++;
 		lua_pop(L, 1);
 	}
@@ -1098,7 +1098,10 @@ bool read_schematic(lua_State *L, int index, Schematic *schem,
 		}
 	}
 
-	schem->flags       = 0;
+	// Here, we read the nodes directly from the INodeDefManager - there is no
+	// need for pending node resolutions so we'll mark this schematic as updated
+	schem->flags       = SCHEM_CIDS_UPDATED;
+
 	schem->size        = size;
 	schem->schemdata   = schemdata;
 	schem->slice_probs = slice_probs;
