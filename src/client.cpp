@@ -309,6 +309,8 @@ Client::Client(
 	} else {
 		localdb = NULL;
 	}
+
+	m_cache_smooth_lighting = g_settings->getBool("smooth_lighting");
 }
 
 void Client::Stop()
@@ -2609,7 +2611,7 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server, bool urgent)
 		data->fill(b);
 		data->setCrack(m_crack_level, m_crack_pos);
 		data->setHighlighted(m_highlighted_pos, m_show_highlighted);
-		data->setSmoothLighting(g_settings->getBool("smooth_lighting"));
+		data->setSmoothLighting(m_cache_smooth_lighting);
 	}
 
 	// Add task to queue
