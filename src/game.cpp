@@ -1581,6 +1581,23 @@ private:
 	KeyCache keycache;
 
 	IntervalLimiter profiler_interval;
+
+	/* TODO: Add a callback function so these can be updated when a setting
+	 *       changes.  At this point in time it doesn't matter (e.g. /set
+	 *       is documented to change server settings only)
+	 *
+	 * TODO: Local caching of settings is not optimal and should at some stage
+	 *       be updated to use a global settings object for getting thse values
+	 *       (as opposed to the this local caching). This can be addressed in
+	 *       a later release.
+	 */
+	bool m_cache_doubletap_jump;
+	bool m_cache_enable_node_highlighting;
+	bool m_cache_enable_clouds;
+	bool m_cache_enable_particles;
+	bool m_cache_enable_fog;
+	f32  m_cache_mouse_sensitivity;
+	f32  m_repeat_right_click_time;
 };
 
 Game::Game() :
@@ -1605,7 +1622,13 @@ Game::Game() :
 	local_inventory(NULL),
 	hud(NULL)
 {
-
+	m_cache_doubletap_jump            = g_settings->getBool("doubletap_jump");
+	m_cache_enable_node_highlighting  = g_settings->getBool("enable_node_highlighting");
+	m_cache_enable_clouds             = g_settings->getBool("enable_clouds");
+	m_cache_enable_particles          = g_settings->getBool("enable_particles");
+	m_cache_enable_fog                = g_settings->getBool("enable_fog");
+	m_cache_mouse_sensitivity         = g_settings->getFloat("mouse_sensitivity");
+	m_repeat_right_click_time         = g_settings->getFloat("repeat_rightclick_time");
 }
 
 
@@ -1934,7 +1957,7 @@ bool Game::createClient(const std::string &playername,
 
 	/* Clouds
 	 */
-	if (g_settings->getBool("enable_clouds")) {
+	if (m_cache_enable_clouds) {
 		clouds = new Clouds(smgr->getRootSceneNode(), smgr, -1, time(0));
 		if (!clouds) {
 			*error_message = L"Memory allocation error";
@@ -2454,7 +2477,7 @@ void Game::processUserInput(VolatileRunFlags *flags,
 #endif
 
 	// Increase timer for double tap of "keymap_jump"
-	if (g_settings->getBool("doubletap_jump") && interact_args->jump_timer <= 0.2)
+	if (m_cache_doubletap_jump && interact_args->jump_timer <= 0.2)
 		interact_args->jump_timer += dtime;
 
 	processKeyboardInput(
@@ -2648,7 +2671,7 @@ void Game::toggleFreeMove(float *statustext_time)
 
 void Game::toggleFreeMoveAlt(float *statustext_time, float *jump_timer)
 {
-	if (g_settings->getBool("doubletap_jump") && *jump_timer < 0.2f)
+	if (m_cache_doubletap_jump && *jump_timer < 0.2f)
 		toggleFreeMove(statustext_time);
 }
 
@@ -2859,7 +2882,7 @@ void Game::updateCameraDirection(CameraOrientation *cam,
 
 			//infostream<<"window active, pos difference "<<dx<<","<<dy<<std::endl;
 
-			float d = g_settings->getFloat("mouse_sensitivity");
+			float d = m_cache_mouse_sensitivity;
 			d = rangelim(d, 0.01, 100.0);
 			cam->camera_yaw -= dx * d;
 			cam->camera_pitch += dy * d;
@@ -3333,7 +3356,7 @@ void Game::processPlayerInteraction(std::vector<aabb3f> &highlight_boxes,
 	if (pointed != runData->pointed_old) {
 		infostream << "Pointing at " << pointed.dump() << std::endl;
 
-		if (g_settings->getBool("enable_node_highlighting")) {
+		if (m_cache_enable_node_highlighting) {
 			if (pointed.type == POINTEDTHING_NODE) {
 				client->setHighlighted(pointed.node_undersurface, show_hud);
 			} else {
@@ -3446,8 +3469,7 @@ void Game::handlePointingAtNode(GameRunData *runData,
 	}
 
 	if ((input->getRightClicked() ||
-			runData->repeat_rightclick_timer >=
-			g_settings->getFloat("repeat_rightclick_time")) &&
+			runData->repeat_rightclick_timer >= m_repeat_right_click_time) &&
 			client->checkPrivilege("interact")) {
 		runData->repeat_rightclick_timer = 0;
 		infostream << "Ground right-clicked" << std::endl;
@@ -3582,7 +3604,7 @@ void Game::handleDigging(GameRunData *runData,
 	} else {
 		runData->dig_time_complete = params.time;
 
-		if (g_settings->getBool("enable_particles")) {
+		if (m_cache_enable_particles) {
 			const ContentFeatures &features =
 					client->getNodeDefManager()->get(n);
 			addPunchingParticles(gamedef, smgr, player,
@@ -3629,7 +3651,7 @@ void Game::handleDigging(GameRunData *runData,
 		if (is_valid_position)
 			client->removeNode(nodepos);
 
-		if (g_settings->getBool("enable_particles")) {
+		if (m_cache_enable_particles) {
 			const ContentFeatures &features =
 				client->getNodeDefManager()->get(wasnode);
 			addDiggingParticles
@@ -3765,7 +3787,7 @@ void Game::updateFrame(std::vector<aabb3f> &highlight_boxes,
 		Fog
 	*/
 
-	if (g_settings->getBool("enable_fog") && !flags.force_fog_off) {
+	if (m_cache_enable_fog && !flags.force_fog_off) {
 		driver->setFog(
 				sky->getBgColor(),
 				video::EFT_FOG_LINEAR,

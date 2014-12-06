@@ -562,6 +562,9 @@ private:
 	// Used for saving server map to disk client-side
 	Database *localdb;
 	Server *localserver;
+
+	// TODO: Add callback to update this when g_settings changes
+	bool m_cache_smooth_lighting;
 };
 
 #endif // !CLIENT_HEADER
