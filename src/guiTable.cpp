@@ -862,6 +862,14 @@ bool GUITable::OnEvent(const SEvent &event)
 		// Update tooltip
 		setToolTipText(cell ? m_strings[cell->tooltip_index].c_str() : L"");
 
+		// Fix for #1567/#1806:
+		// IGUIScrollBar passes double click events to its parent,
+		// which we don't want. Detect this case and discard the event
+		if (event.MouseInput.Event != EMIE_MOUSE_MOVED &&
+				m_scrollbar->isVisible() &&
+				m_scrollbar->isPointInside(p))
+			return true;
+
 		if (event.MouseInput.isLeftPressed() &&
 				(isPointInside(p) ||
 				 event.MouseInput.Event == EMIE_MOUSE_MOVED)) {
