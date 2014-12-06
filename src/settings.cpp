@@ -350,8 +350,11 @@ bool Settings::updateConfigFile(const char *filename)
 
 	std::ifstream is(filename);
 	std::ostringstream os(std::ios_base::binary);
-
-	if (!updateConfigObject(is, os, ""))
+	
+	bool was_modified = updateConfigObject(is, os, "");
+	is.close();
+	
+	if (!was_modified)
 		return true;
 
 	if (!fs::safeWriteToFile(filename, os.str())) {
