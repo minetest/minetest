@@ -181,9 +181,9 @@ public:
 	virtual GenElement *get(u32 id);
 	virtual GenElement *update(u32 id, GenElement *elem);
 	virtual GenElement *remove(u32 id);
+	virtual void clear();
 
-	virtual GenElement *getByName(const char *name);
-	virtual GenElement *getByName(std::string &name);
+	virtual GenElement *getByName(const std::string &name);
 
 protected:
 	std::vector<GenElement *> m_elements;

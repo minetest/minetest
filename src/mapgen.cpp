@@ -419,20 +419,15 @@ GenElement *GenElementManager::get(u32 id)
 }
 
 
-GenElement *GenElementManager::getByName(const char *name)
+GenElement *GenElementManager::getByName(const std::string &name)
 {
 	for (size_t i = 0; i != m_elements.size(); i++) {
 		GenElement *elem = m_elements[i];
-		if (elem && !strcmp(elem->name.c_str(), name))
+		if (elem && name == elem->name)
 			return elem;
 	}
 
 	return NULL;
-}
-
-GenElement *GenElementManager::getByName(std::string &name)
-{
-	return getByName(name.c_str());
 }
 
 
@@ -450,4 +445,10 @@ GenElement *GenElementManager::update(u32 id, GenElement *elem)
 GenElement *GenElementManager::remove(u32 id)
 {
 	return update(id, NULL);
+}
+
+
+void GenElementManager::clear()
+{
+	m_elements.clear();
 }
