@@ -1162,12 +1162,16 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 					applyFacesShading (vc, 0.836660);
 				}
 			}
-			// - Classic lighting
-			// Set initial real color and store for later updates
-			u8 day = vc.getRed();
-			u8 night = vc.getGreen();
-			finalColorBlend(vc, day, night, 1000);
-			m_daynight_diffs[i][j] = std::make_pair(day, night);
+			if(!m_enable_shaders)
+			{
+				// - Classic lighting (shaders handle this by themselves)
+				// Set initial real color and store for later updates
+				u8 day = vc.getRed();
+				u8 night = vc.getGreen();
+				finalColorBlend(vc, day, night, 1000);
+				if(day != night)
+					m_daynight_diffs[i][j] = std::make_pair(day, night);
+			}
 		}
 
 		// Create material
@@ -1331,7 +1335,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 	}
 
 	// Day-night transition
-	if(daynight_ratio != m_last_daynight_ratio)
+	if(!m_enable_shaders && (daynight_ratio != m_last_daynight_ratio))
 	{
 		for(std::map<u32, std::map<u32, std::pair<u8, u8> > >::iterator
 				i = m_daynight_diffs.begin();
