@@ -2792,8 +2792,12 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 				sstr << "Failed to save screenshot '" << filename << "'";
 			}
 			m_chat_queue.push_back(narrow_to_wide(sstr.str()));
-			infostream << sstr.str() << std::endl;
-			image->drop();
+            #if defined(__APPLE__) && defined(__MACH__)
+            infostream << sstr.str() << std::endl;
+            #else
+            infostream << sstr << std::endl;
+            #endif
+            image->drop();
 		}
 		raw_image->drop();
 	}

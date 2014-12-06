@@ -833,8 +833,11 @@ void Settings::setS32(const std::string &name, s32 value)
 	set(name, itos(value));
 }
 
-
+#if defined(__APPLE__) && defined(__MACH__)
+void Settings::setU64(const std::string &name, uint64_t value)
+#else
 void Settings::setU64(const std::string &name, u64 value)
+#endif
 {
 	std::ostringstream os;
 	os << value;
