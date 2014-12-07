@@ -130,32 +130,31 @@ local function formspec(tabview, name, tabdata)
 	
 	
 	local tab_string =
-		"vertlabel[0,-0.25;" .. fgettext("SETTINGS") .. "]" ..
-		"box[0.75,0;3.25,4;#999999]" ..
-		"checkbox[1,0;cb_smooth_lighting;".. fgettext("Smooth Lighting")
+		"box[0,0;3.5,4;#999999]" ..
+		"checkbox[0.25,0;cb_smooth_lighting;".. fgettext("Smooth Lighting")
 				.. ";".. dump(core.setting_getbool("smooth_lighting")) .. "]"..
-		"checkbox[1,0.5;cb_particles;".. fgettext("Enable Particles") .. ";"
+		"checkbox[0.25,0.5;cb_particles;".. fgettext("Enable Particles") .. ";"
 				.. dump(core.setting_getbool("enable_particles"))	.. "]"..
-		"checkbox[1,1;cb_3d_clouds;".. fgettext("3D Clouds") .. ";"
+		"checkbox[0.25,1;cb_3d_clouds;".. fgettext("3D Clouds") .. ";"
 				.. dump(core.setting_getbool("enable_3d_clouds")) .. "]"..
-		"checkbox[1,1.5;cb_fancy_trees;".. fgettext("Fancy Trees") .. ";"
+		"checkbox[0.25,1.5;cb_fancy_trees;".. fgettext("Fancy Trees") .. ";"
 				.. dump(core.setting_getbool("new_style_leaves")) .. "]"..
-		"checkbox[1,2.0;cb_opaque_water;".. fgettext("Opaque Water") .. ";"
+		"checkbox[0.25,2.0;cb_opaque_water;".. fgettext("Opaque Water") .. ";"
 				.. dump(core.setting_getbool("opaque_water")) .. "]"..
-		"checkbox[1,2.5;cb_connected_glass;".. fgettext("Connected Glass") .. ";"
+		"checkbox[0.25,2.5;cb_connected_glass;".. fgettext("Connected Glass") .. ";"
 				.. dump(core.setting_getbool("connected_glass"))	.. "]"..
-		"dropdown[1,3.25;3;dd_video_driver;"
+		"dropdown[0.25,3.25;3.25;dd_video_driver;"
 			.. video_driver_string .. ";" .. current_video_driver_idx .. "]" ..
 		"tooltip[dd_video_driver;" ..
 			fgettext("Restart minetest for driver change to take effect") .. "]" ..
-		"box[4.25,0;3.25,2.5;#999999]" ..
-		"checkbox[4.5,0;cb_mipmapping;".. fgettext("Mip-Mapping") .. ";"
+		"box[3.75,0;3.75,2.5;#999999]" ..
+		"checkbox[4,0;cb_mipmapping;".. fgettext("Mip-Mapping") .. ";"
 				.. dump(core.setting_getbool("mip_map")) .. "]"..
-		"checkbox[4.5,0.5;cb_anisotrophic;".. fgettext("Anisotropic Filtering") .. ";"
+		"checkbox[4,0.5;cb_anisotrophic;".. fgettext("Anisotropic Filtering") .. ";"
 				.. dump(core.setting_getbool("anisotropic_filter")) .. "]"..
-		"checkbox[4.5,1.0;cb_bilinear;".. fgettext("Bi-Linear Filtering") .. ";"
+		"checkbox[4,1.0;cb_bilinear;".. fgettext("Bi-Linear Filtering") .. ";"
 				.. dump(core.setting_getbool("bilinear_filter")) .. "]"..
-		"checkbox[4.5,1.5;cb_trilinear;".. fgettext("Tri-Linear Filtering") .. ";"
+		"checkbox[4,1.5;cb_trilinear;".. fgettext("Tri-Linear Filtering") .. ";"
 				.. dump(core.setting_getbool("trilinear_filter")) .. "]"..
 		"box[7.75,0;4,4;#999999]" ..
 		"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
@@ -168,9 +167,9 @@ local function formspec(tabview, name, tabdata)
 		"button[8,4.75;3.75,0.5;btn_reset_singleplayer;".. fgettext("Reset singleplayer world") .. "]"
 	end
 	tab_string = tab_string ..
-		"box[0.75,4.25;3.25,1.25;#999999]" ..
-		"label[1,4.25;" .. fgettext("GUI scale factor") .. "]" ..
-		"scrollbar[1,4.75;2.75,0.4;sb_gui_scaling;horizontal;" ..
+		"box[0,4.25;3.5,1.25;#999999]" ..
+		"label[0.25,4.25;" .. fgettext("GUI scale factor") .. "]" ..
+		"scrollbar[0.25,4.75;3,0.4;sb_gui_scaling;horizontal;" ..
 		 gui_scale_to_scrollbar() .. "]" ..
 		"tooltip[sb_gui_scaling;" ..
 			fgettext("Scaling factor applied to menu elements: ") ..
