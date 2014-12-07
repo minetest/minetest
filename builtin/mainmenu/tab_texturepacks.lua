@@ -31,11 +31,13 @@ local function render_texture_pack_list(list)
 	local retval = ""
 
 	for i, v in ipairs(list) do
-		if retval ~= "" then
-			retval = retval ..","
-		end
+		if v:sub(1,1) ~= "." then
+			if retval ~= "" then
+				retval = retval ..","
+			end
 
-		retval = retval .. core.formspec_escape(v)
+			retval = retval .. core.formspec_escape(v)
+		end
 	end
 
 	return retval
