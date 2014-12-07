@@ -439,7 +439,7 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 /* Profiler display */
 
 void update_profiler_gui(gui::IGUIStaticText *guitext_profiler, FontEngine *fe,
-		u32 show_profiler, u32 show_profiler_max)
+		u32 show_profiler, u32 show_profiler_max, s32 screen_height)
 {
 	if (show_profiler == 0) {
 		guitext_profiler->setVisible(false);
@@ -456,9 +456,20 @@ void update_profiler_gui(gui::IGUIStaticText *guitext_profiler, FontEngine *fe,
 		if (w < 400)
 			w = 400;
 
-		core::rect<s32> rect(6, 4 + (fe->getTextHeight() + 5) * 2, 12 + w,
-				     8 + (fe->getTextHeight() + 5) * 2 +
-				     fe->getTextHeight());
+		unsigned text_height = fe->getTextHeight();
+
+		core::position2di upper_left, lower_right;
+
+		upper_left.X  = 6;
+		upper_left.Y  = (text_height + 5) * 2;
+		lower_right.X = 12 + w;
+		lower_right.Y = upper_left.Y + (text_height + 1) * MAX_PROFILER_TEXT_ROWS;
+
+		if (lower_right.Y > screen_height * 2 / 3)
+			lower_right.Y = screen_height * 2 / 3;
+
+		core::rect<s32> rect(upper_left, lower_right);
+
 		guitext_profiler->setRelativePosition(rect);
 		guitext_profiler->setVisible(true);
 	}
@@ -2366,7 +2377,8 @@ void Game::updateProfilers(const GameRunData &run_data, const RunStats &stats,
 		}
 
 		update_profiler_gui(guitext_profiler, g_fontengine,
-				run_data.profiler_current_page, run_data.profiler_max_page);
+				run_data.profiler_current_page, run_data.profiler_max_page,
+				driver->getScreenSize().Height);
 
 		g_profiler->clear();
 	}
@@ -2778,7 +2790,7 @@ void Game::toggleProfiler(float *statustext_time, u32 *profiler_current_page,
 
 	// FIXME: This updates the profiler with incomplete values
 	update_profiler_gui(guitext_profiler, g_fontengine, *profiler_current_page,
-			profiler_max_page);
+			profiler_max_page, driver->getScreenSize().Height);
 
 	if (*profiler_current_page != 0) {
 		std::wstringstream sstr;
