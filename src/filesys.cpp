@@ -52,19 +52,17 @@ std::vector<DirListNode> GetDirListing(std::string pathstring)
 
 	DirSpec = (LPTSTR) malloc (BUFSIZE);
 
-	if( DirSpec == NULL )
-	{
-	  errorstream<<"GetDirListing: Insufficient memory available"<<std::endl;
-	  retval = 1;
-	  goto Cleanup;
+	if(DirSpec == NULL) {
+		errorstream<<"GetDirListing: Insufficient memory available"<<std::endl;
+		retval = 1;
+		goto Cleanup;
 	}
 
 	// Check that the input is not larger than allowed.
-	if (pathstring.size() > (BUFSIZE - 2))
-	{
-	  errorstream<<"GetDirListing: Input directory is too large."<<std::endl;
-	  retval = 3;
-	  goto Cleanup;
+	if (pathstring.size() > (BUFSIZE - 2)) {
+		errorstream<<"GetDirListing: Input directory is too large."<<std::endl;
+		retval = 3;
+		goto Cleanup;
 	}
 
 	//_tprintf (TEXT("Target directory is %s.\n"), pathstring.c_str());
@@ -74,13 +72,10 @@ std::vector<DirListNode> GetDirListing(std::string pathstring)
 	// Find the first file in the directory.
 	hFind = FindFirstFile(DirSpec, &FindFileData);
 
-	if (hFind == INVALID_HANDLE_VALUE)
-	{
+	if (hFind == INVALID_HANDLE_VALUE) {
 		retval = (-1);
 		goto Cleanup;
-	}
-	else
-	{
+	} else {
 		// NOTE:
 		// Be very sure to not include '..' in the results, it will
 		// result in an epic failure when deleting stuff.
@@ -92,8 +87,7 @@ std::vector<DirListNode> GetDirListing(std::string pathstring)
 			listing.push_back(node);
 
 		// List all the other files in the directory.
-		while (FindNextFile(hFind, &FindFileData) != 0)
-		{
+		while (FindNextFile(hFind, &FindFileData) != 0) {
 			DirListNode node;
 			node.name = FindFileData.cFileName;
 			node.dir = FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY;
@@ -103,15 +97,14 @@ std::vector<DirListNode> GetDirListing(std::string pathstring)
 
 		dwError = GetLastError();
 		FindClose(hFind);
-		if (dwError != ERROR_NO_MORE_FILES)
-		{
+		if (dwError != ERROR_NO_MORE_FILES) {
 			errorstream<<"GetDirListing: FindNextFile error. Error is "
 					<<dwError<<std::endl;
 			retval = (-1);
 			goto Cleanup;
 		}
 	}
-	retval  = 0;
+	retval = 0;
 
 Cleanup:
 	free(DirSpec);
@@ -242,53 +235,51 @@ std::vector<DirListNode> GetDirListing(std::string pathstring)
 {
 	std::vector<DirListNode> listing;
 
-    DIR *dp;
-    struct dirent *dirp;
-    if((dp  = opendir(pathstring.c_str())) == NULL) {
+	DIR *dp;
+	struct dirent *dirp;
+	if((dp = opendir(pathstring.c_str())) == NULL) {
 		//infostream<<"Error("<<errno<<") opening "<<pathstring<<std::endl;
-        return listing;
-    }
+		return listing;
+	}
 
-    while ((dirp = readdir(dp)) != NULL) {
+	while ((dirp = readdir(dp)) != NULL) {
 		// NOTE:
 		// Be very sure to not include '..' in the results, it will
 		// result in an epic failure when deleting stuff.
-		if(dirp->d_name[0]!='.'){
-			DirListNode node;
-			node.name = dirp->d_name;
-			if(node.name == "." || node.name == "..")
-				continue;
+		if(dirp->d_name == "." || dirp->d_name == "..")
+			continue;
 
-			int isdir = -1; // -1 means unknown
+		DirListNode node;
+		node.name = dirp->d_name;
 
-			/*
-				POSIX doesn't define d_type member of struct dirent and
-				certain filesystems on glibc/Linux will only return
-				DT_UNKNOWN for the d_type member.
+		int isdir = -1; // -1 means unknown
 
-				Also we don't know whether symlinks are directories or not.
-			*/
+		/*
+			POSIX doesn't define d_type member of struct dirent and
+			certain filesystems on glibc/Linux will only return
+			DT_UNKNOWN for the d_type member.
+
+			Also we don't know whether symlinks are directories or not.
+		*/
 #ifdef _DIRENT_HAVE_D_TYPE
-			if(dirp->d_type != DT_UNKNOWN && dirp->d_type != DT_LNK)
-				isdir = (dirp->d_type == DT_DIR);
+		if(dirp->d_type != DT_UNKNOWN && dirp->d_type != DT_LNK)
+			isdir = (dirp->d_type == DT_DIR);
 #endif /* _DIRENT_HAVE_D_TYPE */
 
-			/*
-				Was d_type DT_UNKNOWN, DT_LNK or nonexistent?
-				If so, try stat().
-			*/
-			if(isdir == -1)
-			{
-				struct stat statbuf;
-				if (stat((pathstring + "/" + node.name).c_str(), &statbuf))
-					continue;
-				isdir = ((statbuf.st_mode & S_IFDIR) == S_IFDIR);
-			}
-			node.dir = isdir;
-			listing.push_back(node);
+		/*
+			Was d_type DT_UNKNOWN, DT_LNK or nonexistent?
+			If so, try stat().
+		*/
+		if(isdir == -1) {
+			struct stat statbuf;
+			if (stat((pathstring + "/" + node.name).c_str(), &statbuf))
+				continue;
+			isdir = ((statbuf.st_mode & S_IFDIR) == S_IFDIR);
 		}
-    }
-    closedir(dp);
+		node.dir = isdir;
+		listing.push_back(node);
+	}
+	closedir(dp);
 
 	return listing;
 }

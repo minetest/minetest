@@ -17,30 +17,32 @@
 
 --------------------------------------------------------------------------------
 function get_mods(path,retval,modpack)
+	local mods = core.get_dirlist(path, true)
+	
+	for i=1, #mods, 1 do
+		if mods[i]:sub(1,1) ~= "." then
+			local toadd = {}
+			local modpackfile = nil
 
-	local mods = core.get_dirlist(path,true)
-	for i=1,#mods,1 do
-		local toadd = {}
-		local modpackfile = nil
+			toadd.name = mods[i]
+			toadd.path = path .. DIR_DELIM .. mods[i] .. DIR_DELIM
+			if modpack ~= nil and
+				modpack ~= "" then
+				toadd.modpack = modpack
+			else
+				local filename = path .. DIR_DELIM .. mods[i] .. DIR_DELIM .. "modpack.txt"
+				local error = nil
+				modpackfile,error = io.open(filename,"r")
+			end
 
-		toadd.name = mods[i]
-		toadd.path = path .. DIR_DELIM .. mods[i] .. DIR_DELIM
-		if modpack ~= nil and
-			modpack ~= "" then
-			toadd.modpack = modpack
-		else
-			local filename = path .. DIR_DELIM .. mods[i] .. DIR_DELIM .. "modpack.txt"
-			local error = nil
-			modpackfile,error = io.open(filename,"r")
-		end
-
-		if modpackfile ~= nil then
-			modpackfile:close()
-			toadd.is_modpack = true
-			table.insert(retval,toadd)
-			get_mods(path .. DIR_DELIM .. mods[i],retval,mods[i])
-		else
-			table.insert(retval,toadd)
+			if modpackfile ~= nil then
+				modpackfile:close()
+				toadd.is_modpack = true
+				table.insert(retval,toadd)
+				get_mods(path .. DIR_DELIM .. mods[i],retval,mods[i])
+			else
+				table.insert(retval,toadd)
+			end
 		end
 	end
 end
