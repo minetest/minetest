@@ -30,6 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h" // paging()
 #include "debug.h" // assert()
 
+#define MAX_PROFILER_TEXT_ROWS 20
+
 /*
 	Time profiler
 */
