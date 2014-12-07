@@ -4468,7 +4468,7 @@ std::wstring Server::getStatusString()
 			name = narrow_to_wide(player->getName());
 		// Add name to information string
 		if(!first)
-			os<<L",";
+			os<<L", ";
 		else
 			first = false;
 		os<<name;
