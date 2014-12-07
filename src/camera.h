@@ -212,8 +212,6 @@ private:
 
 	f32 m_cache_fall_bobbing_amount;
 	f32 m_cache_view_bobbing_amount;
-	f32 m_cache_viewing_range_min;
-	f32 m_cache_viewing_range_max;
 	f32 m_cache_wanted_fps;
 	f32 m_cache_fov;
 	bool m_cache_view_bobbing;
