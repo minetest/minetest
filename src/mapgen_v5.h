@@ -89,7 +89,7 @@ public:
 	content_t c_stair_cobble;
 	content_t c_stair_sandstone;
 
-	MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge_);
+	MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	~MapgenV5();
 
 	virtual void makeChunk(BlockMakeData *data);

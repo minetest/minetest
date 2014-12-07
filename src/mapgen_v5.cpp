@@ -47,10 +47,10 @@ FlagDesc flagdesc_mapgen_v5[] = {
 };
 
 
-MapgenV5::MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge_)
+MapgenV5::MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	: Mapgen(mapgenid, params, emerge)
 {
-	this->emerge = emerge_;
+	this->emerge = emerge;
 	this->bmgr   = emerge->biomemgr;
 
 	// amount of elements to skip for the next index
