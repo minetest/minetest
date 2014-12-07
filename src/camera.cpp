@@ -496,7 +496,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	// start (or continue) the view bobbing animation.
 	v3f speed = player->getSpeed();
 	if ((hypot(speed.X, speed.Z) > BS) &&
-		(player->touching_ground) &&
+		(player->touching_ground || player->in_liquid || player->is_climbing) &&
 		(m_cache_view_bobbing == true) &&
 		(g_settings->getBool("free_move") == false ||
 				!m_gamedef->checkLocalPrivilege("fly")))
