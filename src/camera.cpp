@@ -109,8 +109,6 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	 */
 	m_cache_fall_bobbing_amount = g_settings->getFloat("fall_bobbing_amount");
 	m_cache_view_bobbing_amount = g_settings->getFloat("view_bobbing_amount");
-	m_cache_viewing_range_min   = g_settings->getFloat("viewing_range_nodes_min");
-	m_cache_viewing_range_max   = g_settings->getFloat("viewing_range_nodes_max");
 	m_cache_wanted_fps          = g_settings->getFloat("wanted_fps");
 	m_cache_fov                 = g_settings->getFloat("fov");
 	m_cache_view_bobbing        = g_settings->getBool("view_bobbing");
@@ -539,10 +537,10 @@ void Camera::updateViewingRange(f32 frametime_in, f32 busytime_in)
 			<<std::endl;*/
 
 	// Get current viewing range and FPS settings
-	f32 viewing_range_min = m_cache_viewing_range_min;
+	f32 viewing_range_min = g_settings->getFloat("viewing_range_nodes_min");
 	viewing_range_min = MYMAX(15.0, viewing_range_min);
 
-	f32 viewing_range_max = m_cache_viewing_range_max;
+	f32 viewing_range_max = g_settings->getFloat("viewing_range_nodes_max");
 	viewing_range_max = MYMAX(viewing_range_min, viewing_range_max);
 	
 	// Immediately apply hard limits
