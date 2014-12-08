@@ -57,7 +57,8 @@ void Schematic::updateContentIds()
 
 	flags |= SCHEM_CIDS_UPDATED;
 
-	for (size_t i = 0; i != size.X * size.Y * size.Z; i++)
+	size_t bufsize = size.X * size.Y * size.Z;
+	for (size_t i = 0; i != bufsize; i++)
 		schemdata[i].setContent(c_nodes[schemdata[i].getContent()]);
 }
 
