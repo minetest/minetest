@@ -36,20 +36,20 @@ local function get_formspec(tabview, name, tabdata)
 		"checkbox[0.5,1.15;cb_server_announce;".. fgettext("Public") .. ";" ..
 		dump(core.setting_getbool("server_announce")) .. "]"..
 		"field[0.8,3.2;3.5,0.5;te_playername;".. fgettext("Name") .. ";" ..
-		core.setting_get("name") .. "]" ..
+		core.formspec_escape(core.setting_get("name")) .. "]" ..
 		"pwdfield[0.8,4.2;3.5,0.5;te_passwd;".. fgettext("Password") .. "]"
 		
 	local bind_addr = core.setting_get("bind_address")
 	if bind_addr ~= nil and bind_addr ~= "" then
 		retval = retval ..
 			"field[0.8,5.2;2.25,0.5;te_serveraddr;".. fgettext("Bind Address") .. ";" ..
-			core.setting_get("bind_address") .."]" ..
+			core.formspec_escape(core.setting_get("bind_address")) .."]" ..
 			"field[3.05,5.2;1.25,0.5;te_serverport;".. fgettext("Port") .. ";" ..
-			core.setting_get("port") .."]"
+			core.formspec_escape(core.setting_get("port")) .."]"
 	else
 		retval = retval ..
 			"field[0.8,5.2;3.5,0.5;te_serverport;".. fgettext("Server Port") .. ";" ..
-			core.setting_get("port") .."]"
+			core.formspec_escape(core.setting_get("port")) .."]"
 	end
 	
 	retval = retval ..
