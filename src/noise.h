@@ -127,8 +127,9 @@ public:
 	int sx;
 	int sy;
 	int sz;
-	float *noisebuf;
-	float *buf;
+	float *noise_buf;
+	float *gradient_buf;
+	float *persist_buf;
 	float *result;
 
 	Noise(NoiseParams *np, int seed, int sx, int sy, int sz=1);
@@ -137,7 +138,6 @@ public:
 	void setSize(int sx, int sy, int sz=1);
 	void setSpreadFactor(v3f spread);
 	void setOctaves(int octaves);
-	void resizeNoiseBuf(bool is3d);
 
 	void gradientMap2D(
 		float x, float y,
@@ -151,8 +151,13 @@ public:
 	float *perlinMap2D(float x, float y, float *persistence_map=NULL);
 	float *perlinMap3D(float x, float y, float z, float *persistence_map=NULL);
 
-	void updateResults(float g, float *gmap, float *persistence_map, size_t bufsize);
 	void transformNoiseMap();
+
+private:
+	void allocBuffers();
+	void resizeNoiseBuf(bool is3d);
+	void updateResults(float g, float *gmap, float *persistence_map, size_t bufsize);
+
 };
 
 // Return value: -1 ... 1
@@ -174,7 +179,8 @@ float noise3d_perlin(float x, float y, float z, int seed,
 float noise3d_perlin_abs(float x, float y, float z, int seed,
 		int octaves, float persistence, bool eased=false);
 
-inline float easeCurve(float t) {
+inline float easeCurve(float t)
+{
 	return t * t * t * (t * (6.f * t - 15.f) + 10.f);
 }
 
