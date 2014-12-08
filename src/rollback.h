@@ -29,8 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class IGameDef;
 
-class ActionRow;
-class Entity;
+struct ActionRow;
+struct Entity;
 
 class RollbackManager: public IRollbackManager
 {

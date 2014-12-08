@@ -49,7 +49,7 @@ class Inventory;
 class Player;
 class PlayerSAO;
 class IRollbackManager;
-class RollbackAction;
+struct RollbackAction;
 class EmergeManager;
 class GameScripting;
 class ServerEnvironment;

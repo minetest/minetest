@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "mapgen.h"
 
-class NoiseParams;
+struct NoiseParams;
 class Noise;
 class Mapgen;
 class ManualMapVoxelManipulator;

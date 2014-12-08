@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include <string>
 
-class ItemStack;
+struct ItemStack;
 class IGameDef;
 class ITextureSource;
 struct TileSpec;

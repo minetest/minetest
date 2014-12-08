@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <set>
 #include "mapgen.h"
 
-class NoiseParams;
+struct NoiseParams;
 class Mapgen;
 class ManualMapVoxelManipulator;
 class PseudoRandom;
