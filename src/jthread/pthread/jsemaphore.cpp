@@ -115,6 +115,13 @@ bool JSemaphore::Wait(unsigned int time_ms) {
 	errno = 0;
 #ifdef __MACH__
 	int sem_wait_retval = semaphore_timedwait(m_semaphore, waittime);
+	if (sem_wait_retval == KERN_OPERATION_TIMED_OUT) {
+		errno = ETIMEDOUT;
+	} else if (sem_wait_retval == KERN_ABORTED) {
+		errno = EINTR;
+	} else if (sem_wait_retval != 0) {
+		errno = EINVAL;
+	}
 #else
 	int sem_wait_retval = sem_timedwait(&m_semaphore, &waittime);
 #endif
