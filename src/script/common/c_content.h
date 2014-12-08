@@ -147,9 +147,9 @@ bool               string_to_enum            (const EnumString *spec,
                                               int &result,
                                               const std::string &str);
 
-NoiseParams*       read_noiseparams          (lua_State *L, int index);
+NoiseParams*       get_noiseparams           (lua_State *L, int index);
 
-bool               read_noiseparams_nc       (lua_State *L, int index,
+bool               read_noiseparams          (lua_State *L, int index,
                                               NoiseParams *np);
 bool               get_schematic             (lua_State *L, int index,
                                               Schematic *schem,

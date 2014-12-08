@@ -467,6 +467,8 @@ struct TestPath: public TestBase
 	"     with leading whitespace!\n"         \
 	"\"\"\"\n"                                \
 	"np_terrain = {\n"                        \
+	"	flags = defaults\n"                   \
+	"	lacunarity = 2\n"                     \
 	"	octaves = 6\n"                        \
 	"	offset = 3.5\n"                       \
 	"	persistence = 0.7\n"                  \

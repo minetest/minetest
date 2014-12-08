@@ -130,14 +130,14 @@ MapgenV5::~MapgenV5() {
 MapgenV5Params::MapgenV5Params() {
 	spflags = MGV5_BLOBS;
 
-	np_filler_depth = NoiseParams(0, 1,  v3f(150, 150, 150), 261,    4, 0.7);
-	np_factor       = NoiseParams(0, 1,  v3f(250, 250, 250), 920381, 3, 0.45);
-	np_height       = NoiseParams(0, 10, v3f(250, 250, 250), 84174,  4, 0.5);
-	np_cave1        = NoiseParams(0, 6,  v3f(50,  50,  50),  52534,  4, 0.5);
-	np_cave2        = NoiseParams(0, 6,  v3f(50,  50,  50),  10325,  4, 0.5);
-	np_ground       = NoiseParams(0, 40, v3f(80,  80,  80),  983240, 4, 0.55);
-	np_crumble      = NoiseParams(0, 1,  v3f(20,  20,  20),  34413,  3, 1.3);
-	np_wetness      = NoiseParams(0, 1,  v3f(40,  40,  40),  32474,  4, 1.1);
+	np_filler_depth = NoiseParams(0, 1,  v3f(150, 150, 150), 261,    4, 0.7, 2.0);
+	np_factor       = NoiseParams(0, 1,  v3f(250, 250, 250), 920381, 3, 0.45, 2.0);
+	np_height       = NoiseParams(0, 10, v3f(250, 250, 250), 84174,  4, 0.5, 2.0);
+	np_cave1        = NoiseParams(0, 6,  v3f(50,  50,  50),  52534,  4, 0.5, 2.0, NOISE_FLAG_EASED);
+	np_cave2        = NoiseParams(0, 6,  v3f(50,  50,  50),  10325,  4, 0.5, 2.0, NOISE_FLAG_EASED);
+	np_ground       = NoiseParams(0, 40, v3f(80,  80,  80),  983240, 4, 0.55, 2.0, NOISE_FLAG_EASED);
+	np_crumble      = NoiseParams(0, 1,  v3f(20,  20,  20),  34413,  3, 1.3, 2.0, NOISE_FLAG_EASED);
+	np_wetness      = NoiseParams(0, 1,  v3f(40,  40,  40),  32474,  4, 1.1, 2.0);
 }
 
 
@@ -301,16 +301,16 @@ void MapgenV5::calculateNoise() {
 	noise_height->perlinMap2D(x, z);
 	noise_height->transformNoiseMap();
 
-	noise_cave1->perlinMap3D(x, y, z, true);
+	noise_cave1->perlinMap3D(x, y, z);
 	noise_cave1->transformNoiseMap();
-	noise_cave2->perlinMap3D(x, y, z, true);
+	noise_cave2->perlinMap3D(x, y, z);
 	noise_cave2->transformNoiseMap();
-	noise_ground->perlinMap3D(x, y, z, true);
+	noise_ground->perlinMap3D(x, y, z);
 	noise_ground->transformNoiseMap();
 
 	if (spflags & MGV5_BLOBS) {
-		noise_crumble->perlinMap3D(x, y, z, true);
-		noise_wetness->perlinMap3D(x, y, z, false);
+		noise_crumble->perlinMap3D(x, y, z);
+		noise_wetness->perlinMap3D(x, y, z);
 	}
 
 	noise_heat->perlinMap2D(x, z);

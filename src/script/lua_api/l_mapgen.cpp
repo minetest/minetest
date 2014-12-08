@@ -274,7 +274,10 @@ int ModApiMapgen::l_set_noiseparam_defaults(lua_State *L)
 
 	lua_pushnil(L);
 	while (lua_next(L, 1)) {
-		if (read_noiseparams_nc(L, -1, &np)) {
+		if (read_noiseparams(L, -1, &np)) {
+			/// TODO(hmmmm): Update this for newer noiseparam formats
+			/// Right now this is safe because serializeStructToString() won't
+			/// touch memory outside of what the format string specifies
 			if (!serializeStructToString(&val, NOISEPARAMS_FMT_STR, &np))
 				continue;
 			if (!lua_isstring(L, -2))
@@ -406,7 +409,7 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 
 	//// Get NoiseParams to define how decoration is placed
 	lua_getfield(L, index, "noise_params");
-	deco->np = read_noiseparams(L, -1);
+	deco->np = get_noiseparams(L, -1);
 	lua_pop(L, 1);
 
 	//// Get biomes associated with this decoration (if any)
@@ -556,7 +559,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	getflagsfield(L, index, "flags", flagdesc_ore, &ore->flags, NULL);
 
 	lua_getfield(L, index, "noise_params");
-	ore->np = read_noiseparams(L, -1);
+	ore->np = get_noiseparams(L, -1);
 	lua_pop(L, 1);
 
 	u32 id = oremgr->add(ore);

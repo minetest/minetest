@@ -350,10 +350,10 @@ bool Settings::updateConfigFile(const char *filename)
 
 	std::ifstream is(filename);
 	std::ostringstream os(std::ios_base::binary);
-	
+
 	bool was_modified = updateConfigObject(is, os, "");
 	is.close();
-	
+
 	if (!was_modified)
 		return true;
 
@@ -591,6 +591,11 @@ bool Settings::getNoiseParamsFromGroup(const std::string &name,
 	group->getS32NoEx("seed",          np.seed);
 	group->getU16NoEx("octaves",       np.octaves);
 	group->getFloatNoEx("persistence", np.persist);
+	group->getFloatNoEx("lacunarity",  np.lacunarity);
+
+	np.flags = 0;
+	if (!group->getFlagStrNoEx("flags", np.flags, flagdesc_noiseparams))
+		np.flags = NOISE_FLAG_DEFAULTS;
 
 	return true;
 }
@@ -896,6 +901,8 @@ void Settings::setNoiseParams(const std::string &name, const NoiseParams &np)
 	group->setS32("seed",          np.seed);
 	group->setU16("octaves",       np.octaves);
 	group->setFloat("persistence", np.persist);
+	group->setFloat("lacunarity",  np.lacunarity);
+	group->setFlagStr("flags",     np.flags, flagdesc_noiseparams, np.flags);
 
 	Settings *old_group;
 	{
