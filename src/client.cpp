@@ -2348,10 +2348,8 @@ void Client::removeNode(v3s16 p)
 			i = modified_blocks.begin();
 			i != modified_blocks.end(); ++i)
 	{
-		addUpdateMeshTask(i->first, false, false);
+		addUpdateMeshTaskWithEdge(i->first, false, true);
 	}
-	// add urgent task to update the modified node
-	addUpdateMeshTaskForNode(p, false, true);
 }
 
 void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
@@ -2372,7 +2370,7 @@ void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
 			i = modified_blocks.begin();
 			i != modified_blocks.end(); ++i)
 	{
-		addUpdateMeshTask(i->first, false, false);
+		addUpdateMeshTaskWithEdge(i->first, false, true);
 	}
 }
 	
@@ -2621,9 +2619,7 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server, bool urgent)
 void Client::addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server, bool urgent)
 {
 	try{
-		v3s16 p = blockpos + v3s16(0,0,0);
-		//MapBlock *b = m_env.getMap().getBlockNoCreate(p);
-		addUpdateMeshTask(p, ack_to_server, urgent);
+		addUpdateMeshTask(blockpos, ack_to_server, urgent);
 	}
 	catch(InvalidPositionException &e){}
 
@@ -2651,8 +2647,7 @@ void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool ur
 	v3s16 blockpos_relative = blockpos * MAP_BLOCKSIZE;
 
 	try{
-		v3s16 p = blockpos + v3s16(0,0,0);
-		addUpdateMeshTask(p, ack_to_server, urgent);
+		addUpdateMeshTask(blockpos, ack_to_server, urgent);
 	}
 	catch(InvalidPositionException &e){}
 
