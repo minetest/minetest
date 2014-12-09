@@ -209,6 +209,18 @@ struct TestUtilities: public TestBase
 			UASSERT(is_power_of_two((1 << exponent) + 1) == false);
 		}
 		UASSERT(is_power_of_two((u32)-1) == false);
+
+		UASSERT(f32_almost_equal(0.0f, 0.0f) == true);
+		UASSERT(f32_almost_equal(0.0f, .0000000000000001f) == true);
+		UASSERT(f32_almost_equal(0.000001f, 0.000002f) == false);
+		UASSERT(f32_almost_equal(0.0f, -0.0f) == true);
+		UASSERT(f32_almost_equal(-.0001f, .0001f) == false);
+		UASSERT(f32_almost_equal(-.00001f, .00001f) == false);
+		UASSERT(f32_almost_equal(0.15 + 0.15, 0.3) == true);
+		UASSERT(f32_almost_equal(900000000000000.25f + 1025.0/4096,
+		                         900000000000000.0f + 5.0f * 20 / 200 * 4.1 / 4.1) == true);
+		UASSERT(f32_almost_equal(0.25f, 0.251f) == false);
+		UASSERT(f32_almost_equal(2.01f * 3.1f / 2.2, 2.01 / (1.0 / (3.1f / 2.2))) == true);
 	}
 };
 
