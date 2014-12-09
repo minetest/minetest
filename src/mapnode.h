@@ -108,6 +108,9 @@ enum Rotation {
 #define LEVELED_MASK 0x3F
 #define LEVELED_MAX LEVELED_MASK
 
+
+struct ContentFeatures;
+
 /*
 	This is the stuff what the whole world consists of.
 */
@@ -188,6 +191,24 @@ struct MapNode
 	
 	void setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr);
 	u8 getLight(enum LightBank bank, INodeDefManager *nodemgr) const;
+
+	/**
+	 * This function differs from getLight(enum LightBank bank, INodeDefManager *nodemgr)
+	 * in that the ContentFeatures of the node in question are not retrieved by
+	 * the function itself.  Thus, if you have already called nodemgr->get() to
+	 * get the ContentFeatures you pass it to this function instead of the
+	 * function getting ContentFeatures itself.  Since INodeDefManager::get()
+	 * is relatively expensive this can lead to significant performance
+	 * improvements in some situations.  Call this function if (and only if)
+	 * you have already retrieved the ContentFeatures by calling
+	 * INodeDefManager::get() for the node you're working with and the
+	 * pre-conditions listed are true.
+	 *
+	 * @pre f != NULL
+	 * @pre f->param_type == CPT_LIGHT
+	 */
+	u8 getLightNoChecks(LightBank bank, const ContentFeatures *f);
+
 	bool getLightBanks(u8 &lightday, u8 &lightnight, INodeDefManager *nodemgr) const;
 	
 	// 0 <= daylight_factor <= 1000

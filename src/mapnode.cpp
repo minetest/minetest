@@ -88,6 +88,12 @@ u8 MapNode::getLight(enum LightBank bank, INodeDefManager *nodemgr) const
 	return MYMAX(f.light_source, light);
 }
 
+u8 MapNode::getLightNoChecks(enum LightBank bank, const ContentFeatures *f)
+{
+	return MYMAX(f->light_source,
+	             bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f);
+}
+
 bool MapNode::getLightBanks(u8 &lightday, u8 &lightnight, INodeDefManager *nodemgr) const
 {
 	// Select the brightest of [light source, propagated light]
