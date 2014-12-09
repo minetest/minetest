@@ -259,8 +259,8 @@ static u16 getSmoothLightCombined(v3s16 p, MeshMakeData *data)
 			light_source_max = f.light_source;
 		// Check f.solidness because fast-style leaves look better this way
 		if (f.param_type == CPT_LIGHT && f.solidness != 2) {
-			light_day += decode_light(n.getLight(LIGHTBANK_DAY, ndef));
-			light_night += decode_light(n.getLight(LIGHTBANK_NIGHT, ndef));
+			light_day += decode_light(n.getLightNoChecks(LIGHTBANK_DAY, &f));
+			light_night += decode_light(n.getLightNoChecks(LIGHTBANK_NIGHT, &f));
 			light_count++;
 		} else {
 			ambient_occlusion++;
