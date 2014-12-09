@@ -400,15 +400,15 @@ void Noise::resizeNoiseBuf(bool is3d)
 	float ofactor;
 
 	//maximum possible spread value factor
-	ofactor = (float)(1 << (np->octaves - 1));
+	ofactor = pow(np->lacunarity, np->octaves - 1);
 
 	//noise lattice point count
 	//(int)(sz * spread * ofactor) is # of lattice points crossed due to length
 	// + 2 for the two initial endpoints
 	// + 1 for potentially crossing a boundary due to offset
-	nlx = (int)(sx * ofactor / np->spread.X) + 3;
-	nly = (int)(sy * ofactor / np->spread.Y) + 3;
-	nlz = is3d ? (int)(sz * ofactor / np->spread.Z) + 3 : 1;
+	nlx = (int)ceil(sx * ofactor / np->spread.X) + 3;
+	nly = (int)ceil(sy * ofactor / np->spread.Y) + 3;
+	nlz = is3d ? (int)ceil(sz * ofactor / np->spread.Z) + 3 : 1;
 
 	delete[] noise_buf;
 	try {
