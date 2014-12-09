@@ -77,8 +77,8 @@ MapgenV5::MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	noise_wetness      = new Noise(&sp->np_wetness, seed, csize.X, csize.Y + 2, csize.Z);
 
 	// Biome noise
-	noise_heat         = new Noise(bmgr->np_heat,     seed, csize.X, csize.Z);
-	noise_humidity     = new Noise(bmgr->np_humidity, seed, csize.X, csize.Z);
+	noise_heat         = new Noise(&params->np_biome_heat,     seed, csize.X, csize.Z);
+	noise_humidity     = new Noise(&params->np_biome_humidity, seed, csize.X, csize.Z);
 
 	//// Resolve nodes to be used
 	INodeDefManager *ndef = emerge->ndef;

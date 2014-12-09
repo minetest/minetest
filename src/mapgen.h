@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MAPGEN_HEADER
 #define MAPGEN_HEADER
 
+#include "noise.h"
 #include "nodedef.h"
 #include "mapnode.h"
 #include "util/string.h"
@@ -107,6 +108,9 @@ struct MapgenParams {
 	s16 water_level;
 	u32 flags;
 
+	NoiseParams np_biome_heat;
+	NoiseParams np_biome_humidity;
+
 	MapgenSpecificParams *sparams;
 
 	MapgenParams()
@@ -117,6 +121,8 @@ struct MapgenParams {
 		chunksize   = 5;
 		flags       = MG_TREES | MG_CAVES | MG_LIGHT;
 		sparams     = NULL;
+		np_biome_heat     = NoiseParams(50, 50, v3f(500.0, 500.0, 500.0), 5349, 3, 0.70, 2.0);
+		np_biome_humidity = NoiseParams(50, 50, v3f(500.0, 500.0, 500.0), 842, 3, 0.55, 2.0);
 	}
 };
 

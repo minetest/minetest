@@ -81,8 +81,8 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	noise_ridge    = new Noise(&sp->np_ridge,    seed, csize.X, csize.Y, csize.Z);
 
 	//// Biome noise
-	noise_heat     = new Noise(bmgr->np_heat,     seed, csize.X, csize.Z);
-	noise_humidity = new Noise(bmgr->np_humidity, seed, csize.X, csize.Z);
+	noise_heat     = new Noise(&params->np_biome_heat,     seed, csize.X, csize.Z);
+	noise_humidity = new Noise(&params->np_biome_humidity, seed, csize.X, csize.Z);
 
 	//// Resolve nodes to be used
 	INodeDefManager *ndef = emerge->ndef;
@@ -305,8 +305,8 @@ void MapgenV7::calculateNoise() {
 
 
 Biome *MapgenV7::getBiomeAtPoint(v3s16 p) {
-	float heat      = NoisePerlin2D(bmgr->np_heat, p.X, p.Z, seed);
-	float humidity  = NoisePerlin2D(bmgr->np_humidity, p.X, p.Z, seed);
+	float heat      = NoisePerlin2D(noise_heat->np, p.X, p.Z, seed);
+	float humidity  = NoisePerlin2D(noise_humidity->np, p.X, p.Z, seed);
 	s16 groundlevel = baseTerrainLevelAtPoint(p.X, p.Z);
 
 	return bmgr->getBiome(heat, humidity, groundlevel);
