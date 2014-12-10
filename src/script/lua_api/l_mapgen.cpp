@@ -262,32 +262,19 @@ int ModApiMapgen::l_set_mapgen_params(lua_State *L)
 	return 0;
 }
 
-// set_noiseparam_defaults({np1={noise params}, ...})
-// set default values for noise parameters if not present in global settings
-int ModApiMapgen::l_set_noiseparam_defaults(lua_State *L)
+// set_noiseparams(name, noiseparams, set_default)
+// set global config values for noise parameters
+int ModApiMapgen::l_set_noiseparams(lua_State *L)
 {
-	NoiseParams np;
-	std::string val, name;
+	const char *name = luaL_checkstring(L, 1);
 
-	if (!lua_istable(L, 1))
+	NoiseParams np;
+	if (!read_noiseparams(L, 2, &np))
 		return 0;
 
-	lua_pushnil(L);
-	while (lua_next(L, 1)) {
-		if (read_noiseparams(L, -1, &np)) {
-			/// TODO(hmmmm): Update this for newer noiseparam formats
-			/// Right now this is safe because serializeStructToString() won't
-			/// touch memory outside of what the format string specifies
-			if (!serializeStructToString(&val, NOISEPARAMS_FMT_STR, &np))
-				continue;
-			if (!lua_isstring(L, -2))
-				continue;
+	bool set_default = lua_isboolean(L, 3) ? lua_toboolean(L, 3) : true;
 
-			name = lua_tostring(L, -2);
-			g_settings->setDefault(name, val);
-		}
-		lua_pop(L, 1);
-	}
+	g_settings->setNoiseParams(name, np, set_default);
 
 	return 0;
 }
@@ -682,7 +669,7 @@ void ModApiMapgen::Initialize(lua_State *L, int top)
 	API_FCT(get_mapgen_object);
 
 	API_FCT(set_mapgen_params);
-	API_FCT(set_noiseparam_defaults);
+	API_FCT(set_noiseparams);
 	API_FCT(set_gen_notify);
 
 	API_FCT(register_biome);

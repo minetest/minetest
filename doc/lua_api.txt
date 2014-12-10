@@ -1547,10 +1547,10 @@ minetest.set_mapgen_params(MapgenParams)
 ^ Leave field unset to leave that parameter unchanged
 ^ flags contains a comma-delimited string of flags to set, or if the prefix "no" is attached, clears instead.
 ^ flags is in the same format and has the same options as 'mg_flags' in minetest.conf
-minetest.set_noiseparam_defaults({np1=NoiseParams, np2= NoiseParams, ...})
-^ Sets the default value of a noiseparam setting
-^ Takes a table as an argument that maps one or more setting names to NoiseParams structures
-^ Possible setting names consist of any NoiseParams setting exposed through the global settings
+minetest.set_noiseparams(name, noiseparams, set_default)
+^ Sets the noiseparams setting of 'name' to the noiseparams table specified in 'noiseparams'.
+^ 'set_default', is an optional boolean (default of true) that specifies whether the setting
+^ should be applied to the default config or current active config
 minetest.clear_objects()
 ^ clear all objects in the environments
 minetest.line_of_sight(pos1, pos2, stepsize) -> true/false, pos
