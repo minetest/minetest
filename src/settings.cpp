@@ -473,7 +473,11 @@ bool Settings::getNoiseParamsFromValue(const std::string &name,
 	f.next(",");
 	np.seed     = stoi(f.next(","));
 	np.octaves  = stoi(f.next(","));
-	np.persist  = stof(f.next(""));
+	np.persist  = stof(f.next(","));
+
+	std::string optional_params = f.next("");
+	if (optional_params != "")
+		np.lacunarity = stof(optional_params);
 
 	return true;
 }

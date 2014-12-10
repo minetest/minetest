@@ -440,7 +440,7 @@ struct TestPath: public TestBase
 	"some multiline text\n"                   \
 	"     with leading whitespace!\n"         \
 	"\"\"\"\n"                                \
-	"np_terrain = 5, 40, (250, 250, 250), 12345, 5, 0.7\n" \
+	"np_terrain = 5, 40, (250, 250, 250), 12341, 5, 0.7, 2.4\n" \
 	"zoop = true"
 
 #define TEST_CONFIG_TEXT_AFTER                \
@@ -467,12 +467,12 @@ struct TestPath: public TestBase
 	"\"\"\"\n"                                \
 	"np_terrain = {\n"                        \
 	"	flags = defaults\n"                   \
-	"	lacunarity = 2\n"                     \
+	"	lacunarity = 2.4\n"                   \
 	"	octaves = 6\n"                        \
 	"	offset = 3.5\n"                       \
 	"	persistence = 0.7\n"                  \
 	"	scale = 40\n"                         \
-	"	seed = 12345\n"                       \
+	"	seed = 12341\n"                       \
 	"	spread = (250,250,250)\n"             \
 	"}\n"                                     \
 	"zoop = true\n"                           \
@@ -552,7 +552,7 @@ struct TestSettings: public TestBase
 		UASSERT(fabs(np.spread.X - 250) < 0.001);
 		UASSERT(fabs(np.spread.Y - 250) < 0.001);
 		UASSERT(fabs(np.spread.Z - 250) < 0.001);
-		UASSERT(np.seed == 12345);
+		UASSERT(np.seed == 12341);
 		UASSERT(np.octaves == 5);
 		UASSERT(fabs(np.persist - 0.7) < 0.001);
 
