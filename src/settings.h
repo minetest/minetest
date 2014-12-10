@@ -55,6 +55,7 @@ struct ValueSpec {
 		type = a_type;
 		help = a_help;
 	}
+
 	ValueType type;
 	const char *help;
 };
@@ -112,7 +113,6 @@ public:
 		const std::string &end, u32 tab_depth=0);
 
 	static std::string getMultiline(std::istream &is, size_t *num_lines=NULL);
-	static std::string sanitizeString(const std::string &value);
 	static void printEntry(std::ostream &os, const std::string &name,
 		const SettingsEntry &entry, u32 tab_depth=0);
 

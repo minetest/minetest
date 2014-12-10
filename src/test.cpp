@@ -531,7 +531,9 @@ struct TestSettings: public TestBase
 		group2->setS16("num_oranges", 53);
 		group2->setGroup("animals", group3);
 		group2->set("animals", "cute"); //destroys group 3
-		s.setGroup("groupy_thing", group2);
+
+		// the bad chars in here should be stripped
+		s.setGroup("groupy  \"_\"  thing", group2);
 
 		// Test multiline settings
 		UASSERT(group->get("ccc") == "testy\n   testa   ");

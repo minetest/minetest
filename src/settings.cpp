@@ -63,16 +63,6 @@ Settings & Settings::operator = (const Settings &other)
 }
 
 
-std::string Settings::sanitizeString(const std::string &value)
-{
-	std::string str = value;
-	for (const char *s = "\t\n\v\f\r\b =\""; *s; s++)
-		str.erase(std::remove(str.begin(), str.end(), *s), str.end());
-
-	return str;
-}
-
-
 std::string Settings::getMultiline(std::istream &is, size_t *num_lines)
 {
 	size_t lines = 1;
@@ -689,10 +679,16 @@ void Settings::setEntry(const std::string &name, const void *data,
 {
 	Settings *old_group = NULL;
 
+	// Strip any potentially dangerous characters from the name (note the value
+	// has no such restrictions)
+	std::string n(name);
+	for (const char *s = "\t\n\v\f\r\b =\""; *s; s++)
+		n.erase(std::remove(n.begin(), n.end(), *s), n.end());
+
 	{
 		JMutexAutoLock lock(m_mutex);
 
-		SettingsEntry &entry = set_default ? m_defaults[name] : m_settings[name];
+		SettingsEntry &entry = set_default ? m_defaults[n] : m_settings[n];
 		old_group = entry.group;
 
 		entry.value    = set_group ? "" : *(const std::string *)data;
