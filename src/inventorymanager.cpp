@@ -222,6 +222,9 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	int src_can_take_count = 0xffff;
 	int dst_can_put_count = 0xffff;
 	
+	std::string to_name = list_to->getItem(to_i).name;
+	std::string from_name = list_from->getItem(from_i).name;;
+
 	/* Query detached inventories */
 
 	// Move occurs in the same detached inventory
@@ -240,6 +243,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		if(to_inv.type == InventoryLocation::DETACHED)
 		{
 			ItemStack src_item = list_from->getItem(from_i);
+			to_name = src_item.name;
 			src_item.count = try_take_count;
 			dst_can_put_count = PLAYER_TO_SA(player)->detached_inventory_AllowPut(
 					to_inv.name, to_list, to_i, src_item, player);
@@ -248,6 +252,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		if(from_inv.type == InventoryLocation::DETACHED)
 		{
 			ItemStack src_item = list_from->getItem(from_i);
+			from_name = src_item.name;
 			src_item.count = try_take_count;
 			src_can_take_count = PLAYER_TO_SA(player)->detached_inventory_AllowTake(
 					from_inv.name, from_list, from_i, src_item, player);
@@ -256,61 +261,83 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 	/* Query node metadata inventories */
 
+	bool allow_put = true;
+	bool same_inventory = from_inv.p == to_inv.p;
+
 	// Both endpoints are nodemeta
 	// Move occurs in the same nodemeta inventory
-	if(from_inv.type == InventoryLocation::NODEMETA &&
+	if (from_inv.type == InventoryLocation::NODEMETA &&
 			to_inv.type == InventoryLocation::NODEMETA &&
-			from_inv.p == to_inv.p)
-	{
+			same_inventory) {
 		src_can_take_count = PLAYER_TO_SA(player)->nodemeta_inventory_AllowMove(
 				from_inv.p, from_list, from_i,
 				to_list, to_i, try_take_count, player);
 		dst_can_put_count = src_can_take_count;
-	}
-	else
-	{
+	} else {
 		// Destination is nodemeta
-		if(to_inv.type == InventoryLocation::NODEMETA)
-		{
+		if(to_inv.type == InventoryLocation::NODEMETA) {
 			ItemStack src_item = list_from->getItem(from_i);
+			to_name = src_item.name;
 			src_item.count = try_take_count;
 			dst_can_put_count = PLAYER_TO_SA(player)->nodemeta_inventory_AllowPut(
 					to_inv.p, to_list, to_i, src_item, player);
 		}
 		// Source is nodemeta
-		if(from_inv.type == InventoryLocation::NODEMETA)
-		{
+		if(from_inv.type == InventoryLocation::NODEMETA) {
 			ItemStack src_item = list_from->getItem(from_i);
+			from_name = src_item.name;
 			src_item.count = try_take_count;
 			src_can_take_count = PLAYER_TO_SA(player)->nodemeta_inventory_AllowTake(
 					from_inv.p, from_list, from_i, src_item, player);
 		}
+		// Check if inter-inventory item exchanges can occur
+		if (!to_name.empty() && to_name != from_name) {
+			ItemStack src_item = list_from->getItem(from_i);
+			if (PLAYER_TO_SA(player)->nodemeta_inventory_AllowPut(
+						to_inv.p, to_list, to_i, src_item, player) == 0)
+				allow_put = false;
+		}
+	}
+
+	/* The source inventory won't allow the swapped item to be stored
+	 * back into it: don't allow the stacks to be exchanged.
+	 */
+	if (!allow_put && !same_inventory) {
+		infostream << "IMoveAction::apply(): disallowing put of item:"
+				<< " from inv=\"" << from_inv.dump() << "\""
+				<< " list=\"" << from_list << "\""
+				<< " i=" << from_i
+				<< " to inv=\""<<to_inv.dump() << "\""
+				<< " list=\"" << to_list << "\""
+				<< " i=" << to_i
+				<< std::endl;
+		return;
 	}
 
 	int old_count = count;
 	
 	/* Modify count according to collected data */
 	count = try_take_count;
-	if(src_can_take_count != -1 && count > src_can_take_count)
+	if (src_can_take_count != -1 && count > src_can_take_count)
 		count = src_can_take_count;
-	if(dst_can_put_count != -1 && count > dst_can_put_count)
+	if (dst_can_put_count != -1 && count > dst_can_put_count)
 		count = dst_can_put_count;
 	/* Limit according to source item count */
-	if(count > list_from->getItem(from_i).count)
+	if (count > list_from->getItem(from_i).count)
 		count = list_from->getItem(from_i).count;
-	
+
 	/* If no items will be moved, don't go further */
-	if(count == 0)
+	if (count == 0)
 	{
-		infostream<<"IMoveAction::apply(): move was completely disallowed:"
-				<<" count="<<old_count
-				<<" from inv=\""<<from_inv.dump()<<"\""
-				<<" list=\""<<from_list<<"\""
-				<<" i="<<from_i
-				<<" to inv=\""<<to_inv.dump()<<"\""
-				<<" list=\""<<to_list<<"\""
-				<<" i="<<to_i
-				<<std::endl;
+		infostream << "IMoveAction::apply(): move was completely disallowed:"
+				<< " count=" << old_count
+				<< " from inv=\"" << from_inv.dump()<<"\""
+				<< " list=\"" << from_list << "\""
+				<< " i=" << from_i
+				<< " to inv=\""<<to_inv.dump() << "\""
+				<< " list=\"" << to_list << "\""
+				<< " i=" << to_i
+				<< std::endl;
 		return;
 	}
 
