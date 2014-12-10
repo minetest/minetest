@@ -38,8 +38,9 @@ enum DecorationType {
 #define DECO_PLACE_CENTER_X 0x01
 #define DECO_PLACE_CENTER_Y 0x02
 #define DECO_PLACE_CENTER_Z 0x04
+#define DECO_USE_NOISE      0x08
 
-extern FlagDesc flagdesc_deco_schematic[];
+extern FlagDesc flagdesc_deco[];
 
 
 #if 0
@@ -61,11 +62,12 @@ class Decoration : public GenElement {
 public:
 	INodeDefManager *ndef;
 
+	u32 flags;
 	int mapseed;
 	std::vector<content_t> c_place_on;
 	s16 sidelen;
 	float fill_ratio;
-	NoiseParams *np;
+	NoiseParams np;
 
 	std::set<u8> biomes;
 	//std::list<CutoffData> cutoffs;
@@ -98,7 +100,6 @@ public:
 
 class DecoSchematic : public Decoration {
 public:
-	u32 flags;
 	Rotation rotation;
 	Schematic *schematic;
 	std::string filename;

@@ -57,6 +57,13 @@ size_t OreManager::placeAllOres(Mapgen *mg, u32 seed, v3s16 nmin, v3s16 nmax)
 ///////////////////////////////////////////////////////////////////////////////
 
 
+Ore::Ore()
+{
+	flags = 0;
+	noise = NULL;
+}
+
+
 size_t Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 {
 	int in_range = 0;

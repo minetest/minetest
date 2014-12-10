@@ -975,18 +975,6 @@ void luaentity_get(lua_State *L, u16 id)
 }
 
 /******************************************************************************/
-NoiseParams *get_noiseparams(lua_State *L, int index)
-{
-	NoiseParams *np = new NoiseParams;
-
-	if (!read_noiseparams(L, index, np)) {
-		delete np;
-		np = NULL;
-	}
-
-	return np;
-}
-
 bool read_noiseparams(lua_State *L, int index, NoiseParams *np)
 {
 	if (index < 0)

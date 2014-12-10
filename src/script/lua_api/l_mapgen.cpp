@@ -394,9 +394,12 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	for (size_t i = 0; i != place_on_names.size(); i++)
 		resolver->addNodeList(place_on_names[i], &deco->c_place_on);
 
+	getflagsfield(L, index, "flags", flagdesc_deco, &deco->flags, NULL);
+
 	//// Get NoiseParams to define how decoration is placed
 	lua_getfield(L, index, "noise_params");
-	deco->np = get_noiseparams(L, -1);
+	if (read_noiseparams(L, -1, &deco->np))
+		deco->flags |= DECO_USE_NOISE;
 	lua_pop(L, 1);
 
 	//// Get biomes associated with this decoration (if any)
@@ -481,9 +484,6 @@ bool ModApiMapgen::regDecoSchematic(lua_State *L, INodeDefManager *ndef,
 	DecoSchematic *deco)
 {
 	int index = 1;
-
-	deco->flags = 0;
-	getflagsfield(L, index, "flags", flagdesc_deco_schematic, &deco->flags, NULL);
 
 	deco->rotation = (Rotation)getenumfield(L, index, "rotation",
 		es_Rotation, ROTATE_0);

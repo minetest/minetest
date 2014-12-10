@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 const char *DecorationManager::ELEMENT_TITLE = "decoration";
 
-FlagDesc flagdesc_deco_schematic[] = {
+FlagDesc flagdesc_deco[] = {
 	{"place_center_x", DECO_PLACE_CENTER_X},
 	{"place_center_y", DECO_PLACE_CENTER_Y},
 	{"place_center_z", DECO_PLACE_CENTER_Z},
@@ -61,15 +61,14 @@ size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 seed, v3s16 nmin, v3s16 
 Decoration::Decoration()
 {
 	mapseed    = 0;
-	np         = NULL;
 	fill_ratio = 0;
 	sidelen    = 1;
+	flags      = 0;
 }
 
 
 Decoration::~Decoration()
 {
-	delete np;
 }
 
 
@@ -104,8 +103,8 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 		);
 
 		// Amount of decorations
-		float nval = np ?
-			NoisePerlin2D(np, p2d_center.X, p2d_center.Y, mapseed) :
+		float nval = (flags & DECO_USE_NOISE) ?
+			NoisePerlin2D(&np, p2d_center.X, p2d_center.Y, mapseed) :
 			fill_ratio;
 		u32 deco_count = area * MYMAX(nval, 0.f);
 
