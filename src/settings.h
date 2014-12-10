@@ -59,35 +59,30 @@ struct ValueSpec {
 	const char *help;
 };
 
-/** function type to register a changed callback */
-
 struct SettingsEntry {
 	SettingsEntry()
 	{
-		group = NULL;
+		group    = NULL;
+		is_group = false;
 	}
 
 	SettingsEntry(const std::string &value_)
 	{
-		value = value_;
-		group = NULL;
+		value    = value_;
+		group    = NULL;
+		is_group = false;
 	}
 
 	SettingsEntry(Settings *group_)
 	{
-		group = group_;
-	}
-
-	SettingsEntry(const std::string &value_, Settings *group_)
-	{
-		value = value_;
-		group = group_;
+		group    = group_;
+		is_group = true;
 	}
 
 	std::string value;
 	Settings *group;
+	bool is_group;
 };
-
 
 class Settings {
 public:
@@ -96,7 +91,6 @@ public:
 
 	Settings & operator += (const Settings &other);
 	Settings & operator = (const Settings &other);
-
 
 	/***********************
 	 * Reading and writing *
@@ -114,20 +108,13 @@ public:
 
 	SettingsParseEvent parseConfigObject(const std::string &line,
 		const std::string &end, std::string &name, std::string &value);
-	void getNamesPresent(std::istream &is, const std::string &end,
-		std::set<std::string> &present_values,
-		std::set<std::string> &present_groups);
 	bool updateConfigObject(std::istream &is, std::ostream &os,
 		const std::string &end, u32 tab_depth=0);
 
 	static std::string getMultiline(std::istream &is, size_t *num_lines=NULL);
 	static std::string sanitizeString(const std::string &value);
-	static bool printEntry(std::ostream &os, const std::string &name,
+	static void printEntry(std::ostream &os, const std::string &name,
 		const SettingsEntry &entry, u32 tab_depth=0);
-	static void printValue(std::ostream &os, const std::string &name,
-		const std::string &value, u32 tab_depth=0);
-	static void printGroup(std::ostream &os, const std::string &name,
-		const Settings *group, u32 tab_depth=0);
 
 	/***********
 	 * Getters *
@@ -186,9 +173,11 @@ public:
 
 	// N.B. Groups not allocated with new must be set to NULL in the settings
 	// tree before object destruction.
+	void setEntry(const std::string &name, const void *entry,
+		bool set_group, bool set_default);
 	void set(const std::string &name, const std::string &value);
-	void setGroup(const std::string &name, Settings *group);
 	void setDefault(const std::string &name, const std::string &value);
+	void setGroup(const std::string &name, Settings *group);
 	void setGroupDefault(const std::string &name, Settings *group);
 	void setBool(const std::string &name, bool value);
 	void setS16(const std::string &name, s16 value);
@@ -200,7 +189,8 @@ public:
 	void setV3F(const std::string &name, v3f value);
 	void setFlagStr(const std::string &name, u32 flags,
 		const FlagDesc *flagdesc, u32 flagmask);
-	void setNoiseParams(const std::string &name, const NoiseParams &np);
+	void setNoiseParams(const std::string &name, const NoiseParams &np,
+		bool set_default=false);
 	// N.B. if setStruct() is used to write a non-POD aggregate type,
 	// the behavior is undefined.
 	bool setStruct(const std::string &name, const std::string &format, void *value);

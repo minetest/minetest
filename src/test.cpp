@@ -452,7 +452,6 @@ struct TestPath: public TestBase
 	"coord = (1, 2, 4.5)\n"                   \
 	"      # this is just a comment\n"        \
 	"this is an invalid line\n"               \
-	"asdf = sdfghj\n"                         \
 	"asdf = {\n"                              \
 	"	a   = 5\n"                            \
 	"	bb  = 2.5\n"                          \
@@ -481,10 +480,6 @@ struct TestPath: public TestBase
 	"floaty_thing_2 = 1.2\n"                  \
 	"groupy_thing = {\n"                      \
 	"	animals = cute\n"                     \
-	"	animals = {\n"                        \
-	"		cat = meow\n"                     \
-	"		dog = woof\n"                     \
-	"	}\n"                                  \
 	"	num_apples = 4\n"                     \
 	"	num_oranges = 53\n"                   \
 	"}\n"
@@ -493,6 +488,7 @@ struct TestSettings: public TestBase
 {
 	void Run()
 	{
+		try {
 		Settings s;
 
 		// Test reading of settings
@@ -526,8 +522,6 @@ struct TestSettings: public TestBase
 		UASSERT(group->getS16("a") == 5);
 		UASSERT(fabs(group->getFloat("bb") - 2.5) < 0.001);
 
-		s.set("asdf", "sdfghj");
-
 		Settings *group3 = new Settings;
 		group3->set("cat", "meow");
 		group3->set("dog", "woof");
@@ -536,18 +530,19 @@ struct TestSettings: public TestBase
 		group2->setS16("num_apples", 4);
 		group2->setS16("num_oranges", 53);
 		group2->setGroup("animals", group3);
-		group2->set("animals", "cute");
+		group2->set("animals", "cute"); //destroys group 3
 		s.setGroup("groupy_thing", group2);
 
 		// Test multiline settings
 		UASSERT(group->get("ccc") == "testy\n   testa   ");
-		s.setGroup("asdf", NULL);
 
 		UASSERT(s.get("blarg") ==
 			"some multiline text\n"
 			"     with leading whitespace!");
 
 		// Test NoiseParams
+		UASSERT(s.getEntry("np_terrain").is_group == false);
+
 		NoiseParams np;
 		UASSERT(s.getNoiseParams("np_terrain", np) == true);
 		UASSERT(fabs(np.offset - 5) < 0.001);
@@ -563,6 +558,8 @@ struct TestSettings: public TestBase
 		np.octaves = 6;
 		s.setNoiseParams("np_terrain", np);
 
+		UASSERT(s.getEntry("np_terrain").is_group == true);
+
 		// Test writing
 		std::ostringstream os(std::ios_base::binary);
 		is.clear();
@@ -572,6 +569,9 @@ struct TestSettings: public TestBase
 		//printf(">>>> expected config:\n%s\n", TEST_CONFIG_TEXT_AFTER);
 		//printf(">>>> actual config:\n%s\n", os.str().c_str());
 		UASSERT(os.str() == TEST_CONFIG_TEXT_AFTER);
+		} catch (SettingNotFoundException &e) {
+			UASSERT(!"Setting not found!");
+		}
 	}
 };
 
