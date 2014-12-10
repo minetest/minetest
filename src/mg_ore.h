@@ -40,6 +40,8 @@ class ManualMapVoxelManipulator;
 // nodes isn't the specified node
 #define OREFLAG_NODEISNT  0x04 // not yet implemented
 
+#define OREFLAG_USE_NOISE 0x08
+
 #define ORE_RANGE_ACTUAL 1
 #define ORE_RANGE_MIRROR 2
 
@@ -54,6 +56,8 @@ extern FlagDesc flagdesc_ore[];
 
 class Ore : public GenElement {
 public:
+	static const bool NEEDS_NOISE = false;
+
 	content_t c_ore;                  // the node to place
 	std::vector<content_t> c_wherein; // the nodes to be placed in
 	u32 clust_scarcity; // ore cluster has a 1-in-clust_scarcity chance of appearing at a node
@@ -64,11 +68,8 @@ public:
 	u8 ore_param2;		// to set node-specific attributes
 	u32 flags;          // attributes for this ore
 	float nthresh;      // threshhold for noise at which an ore is placed
-	NoiseParams *np;    // noise for distribution of clusters (NULL for uniform scattering)
+	NoiseParams np;     // noise for distribution of clusters (NULL for uniform scattering)
 	Noise *noise;
-
-	Ore();
-	virtual ~Ore();
 
 	size_t placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
@@ -76,13 +77,17 @@ public:
 };
 
 class OreScatter : public Ore {
-	virtual ~OreScatter() {}
+public:
+	static const bool NEEDS_NOISE = false;
+
 	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
 						u32 blockseed, v3s16 nmin, v3s16 nmax);
 };
 
 class OreSheet : public Ore {
-	virtual ~OreSheet() {}
+public:
+	static const bool NEEDS_NOISE = true;
+
 	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
 						u32 blockseed, v3s16 nmin, v3s16 nmax);
 };

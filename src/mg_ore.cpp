@@ -56,19 +56,6 @@ size_t OreManager::placeAllOres(Mapgen *mg, u32 seed, v3s16 nmin, v3s16 nmax)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Ore::Ore()
-{
-	c_ore   = CONTENT_IGNORE;
-	np      = NULL;
-	noise   = NULL;
-}
-
-Ore::~Ore()
-{
-	delete np;
-	delete noise;
-}
-
 
 size_t Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 {
@@ -117,7 +104,8 @@ void OreScatter::generate(ManualMapVoxelManipulator *vm, int seed,
 		int y0 = pr.range(nmin.Y, nmax.Y - csize + 1);
 		int z0 = pr.range(nmin.Z, nmax.Z - csize + 1);
 
-		if (np && (NoisePerlin3D(np, x0, y0, z0, seed) < nthresh))
+		if ((flags & OREFLAG_USE_NOISE) &&
+			(NoisePerlin3D(&np, x0, y0, z0, seed) < nthresh))
 			continue;
 
 		for (int z1 = 0; z1 != csize; z1++)
@@ -148,7 +136,7 @@ void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
 	if (!noise) {
 		int sx = nmax.X - nmin.X + 1;
 		int sz = nmax.Z - nmin.Z + 1;
-		noise = new Noise(np, 0, sx, sz);
+		noise = new Noise(&np, seed, sx, sz);
 	}
 	noise->seed = seed + y_start;
 	noise->perlinMap2D(nmin.X, nmin.Z);
@@ -161,7 +149,7 @@ void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
 			continue;
 
 		int height = max_height * (1. / pr.range(1, 3));
-		int y0 = y_start + np->scale * noiseval; //pr.range(1, 3) - 1;
+		int y0 = y_start + np.scale * noiseval; //pr.range(1, 3) - 1;
 		int y1 = y0 + height;
 		for (int y = y0; y != y1; y++) {
 			u32 i = vm->m_area.index(x, y, z);

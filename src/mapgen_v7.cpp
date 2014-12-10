@@ -173,7 +173,7 @@ int MapgenV7::getGroundLevelAtPoint(v2s16 p) {
 
 	// Ridge/river terrain calculation
 	float width = 0.3;
-	float uwatern = NoisePerlin2DNoTxfm(noise_ridge_uwater->np, p.X, p.Y, seed) * 2;
+	float uwatern = NoisePerlin2DNoTxfm(&noise_ridge_uwater->np, p.X, p.Y, seed) * 2;
 	// actually computing the depth of the ridge is much more expensive;
 	// if inside a river, simply guess
 	if (uwatern >= -width && uwatern <= width)
@@ -305,8 +305,8 @@ void MapgenV7::calculateNoise() {
 
 
 Biome *MapgenV7::getBiomeAtPoint(v3s16 p) {
-	float heat      = NoisePerlin2D(noise_heat->np, p.X, p.Z, seed);
-	float humidity  = NoisePerlin2D(noise_humidity->np, p.X, p.Z, seed);
+	float heat      = NoisePerlin2D(&noise_heat->np, p.X, p.Z, seed);
+	float humidity  = NoisePerlin2D(&noise_humidity->np, p.X, p.Z, seed);
 	s16 groundlevel = baseTerrainLevelAtPoint(p.X, p.Z);
 
 	return bmgr->getBiome(heat, humidity, groundlevel);
@@ -314,17 +314,17 @@ Biome *MapgenV7::getBiomeAtPoint(v3s16 p) {
 
 //needs to be updated
 float MapgenV7::baseTerrainLevelAtPoint(int x, int z) {
-	float hselect = NoisePerlin2D(noise_height_select->np, x, z, seed);
+	float hselect = NoisePerlin2D(&noise_height_select->np, x, z, seed);
 	hselect = rangelim(hselect, 0.0, 1.0);
 
-	float persist = NoisePerlin2D(noise_terrain_persist->np, x, z, seed);
+	float persist = NoisePerlin2D(&noise_terrain_persist->np, x, z, seed);
 	persist = rangelim(persist, 0.4, 0.9);
 
-	noise_terrain_base->np->persist = persist;
-	float height_base = NoisePerlin2D(noise_terrain_base->np, x, z, seed);
+	noise_terrain_base->np.persist = persist;
+	float height_base = NoisePerlin2D(&noise_terrain_base->np, x, z, seed);
 
-	noise_terrain_alt->np->persist = persist;
-	float height_alt = NoisePerlin2D(noise_terrain_alt->np, x, z, seed);
+	noise_terrain_alt->np.persist = persist;
+	float height_alt = NoisePerlin2D(&noise_terrain_alt->np, x, z, seed);
 
 	if (height_alt > height_base)
 		return height_alt;
@@ -346,9 +346,9 @@ float MapgenV7::baseTerrainLevelFromMap(int index) {
 
 
 bool MapgenV7::getMountainTerrainAtPoint(int x, int y, int z) {
-	float mnt_h_n = NoisePerlin2D(noise_mount_height->np, x, z, seed);
+	float mnt_h_n = NoisePerlin2D(&noise_mount_height->np, x, z, seed);
 	float height_modifier = -((float)y / rangelim(mnt_h_n, 80.0, 150.0));
-	float mnt_n = NoisePerlin3D(noise_mountain->np, x, y, z, seed);
+	float mnt_n = NoisePerlin3D(&noise_mountain->np, x, y, z, seed);
 
 	return mnt_n + height_modifier >= 0.6;
 }
@@ -373,10 +373,10 @@ void MapgenV7::carveRivers() {
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
 		float terrain_mod  = noise_terrain_mod->result[index];
 		NoiseParams *np = noise_terrain_river->np;
-		np->persist = noise_terrain_persist->result[index];
+		np.persist = noise_terrain_persist->result[index];
 		float terrain_river = NoisePerlin2DNoTxfm(np, x, z, seed);
 		float height = terrain_river * (1 - abs(terrain_mod)) *
-						noise_terrain_river->np->scale;
+						noise_terrain_river->np.scale;
 		height = log(height * height); //log(h^3) is pretty interesting for terrain
 
 		s16 y = heightmap[index];

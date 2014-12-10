@@ -122,7 +122,7 @@ struct NoiseParams {
 
 class Noise {
 public:
-	NoiseParams *np;
+	NoiseParams np;
 	int seed;
 	int sx;
 	int sy;

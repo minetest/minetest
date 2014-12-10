@@ -187,12 +187,12 @@ void MapgenV5Params::writeParams(Settings *settings) {
 int MapgenV5::getGroundLevelAtPoint(v2s16 p) {
 	//TimeTaker t("getGroundLevelAtPoint", NULL, PRECISION_MICRO);
 
-	float f = 0.55 + NoisePerlin2D(noise_factor->np, p.X, p.Y, seed);
+	float f = 0.55 + NoisePerlin2D(&noise_factor->np, p.X, p.Y, seed);
 	if(f < 0.01)
 		f = 0.01;
 	else if(f >= 1.0)
 		f *= 1.6;
-	float h = water_level + NoisePerlin2D(noise_height->np, p.X, p.Y, seed);
+	float h = water_level + NoisePerlin2D(&noise_height->np, p.X, p.Y, seed);
 
 	s16 search_top = water_level + 15;
 	s16 search_base = water_level;
@@ -202,7 +202,7 @@ int MapgenV5::getGroundLevelAtPoint(v2s16 p) {
 
 	s16 level = -31000;
 	for (s16 y = search_top; y >= search_base; y--) {
-		float n_ground = NoisePerlin3DEased(noise_ground->np, p.X, y, p.Y, seed);
+		float n_ground = NoisePerlin3DEased(&noise_ground->np, p.X, y, p.Y, seed);
 		if(n_ground * f > y - h) {
 			if(y >= search_top - 7)
 				break;

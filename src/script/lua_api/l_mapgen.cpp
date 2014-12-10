@@ -546,7 +546,14 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	getflagsfield(L, index, "flags", flagdesc_ore, &ore->flags, NULL);
 
 	lua_getfield(L, index, "noise_params");
-	ore->np = get_noiseparams(L, -1);
+	if (read_noiseparams(L, -1, &ore->np)) {
+		ore->flags |= OREFLAG_USE_NOISE;
+	} else if (ore->NEEDS_NOISE) {
+		errorstream << "register_ore: specified ore type requires valid "
+			"noise parameters" << std::endl;
+		delete ore;
+		return 0;
+	}
 	lua_pop(L, 1);
 
 	u32 id = oremgr->add(ore);
