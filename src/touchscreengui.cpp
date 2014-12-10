@@ -40,10 +40,17 @@ const char** touchgui_button_imagenames = (const char*[]) {
 	"down_arrow.png",
 	"left_arrow.png",
 	"right_arrow.png",
+	"inventory_btn.png",
+	"drop_btn.png",
 	"jump_btn.png",
 	"down.png",
-	"inventory_btn.png",
-	"chat_btn.png"
+	"fly_btn.png",
+	"noclip_btn.png",
+	"fast_btn.png",
+	"debug_btn.png",
+	"chat_btn.png",
+	"camera_btn.png",
+	"rangeview_btn.png"
 };
 
 static irr::EKEY_CODE id2keycode(touch_gui_button_id id)
@@ -62,17 +69,38 @@ static irr::EKEY_CODE id2keycode(touch_gui_button_id id)
 		case backward_id:
 			key = "backward";
 			break;
+		case inventory_id:
+			key = "inventory";
+			break;
+		case drop_id:
+			key = "drop";
+			break;
 		case jump_id:
 			key = "jump";
 			break;
-		case inventory_id:
-			key = "inventory";
+		case crunch_id:
+			key = "sneak";
+			break;
+		case fly_id:
+			key = "freemove";
+			break;
+		case noclip_id:
+			key = "noclip";
+			break;
+		case fast_id:
+			key = "fastmove";
+			break;
+		case debug_id:
+			key = "toggle_debug";
 			break;
 		case chat_id:
 			key = "chat";
 			break;
-		case crunch_id:
-			key = "sneak";
+		case camera_id:
+			key = "camera_mode";
+			break;
+		case range_id:
+			key = "rangeselect";
 			break;
 	}
 	assert(key != "");
@@ -186,6 +214,11 @@ void TouchScreenGUI::init(ISimpleTextureSource* tsrc, float density)
 			rect<s32>(0, m_screensize.Y - (button_size/2),
 					(button_size/2), m_screensize.Y), L"inv", true);
 
+	/* init drop button */
+	initButton(drop_id,
+			rect<s32>(2.5*button_size, m_screensize.Y - (button_size/2),
+					3*button_size, m_screensize.Y), L"drop", true);
+
 	/* init jump button */
 	initButton(jump_id,
 			rect<s32>(m_screensize.X-(1.75*button_size),
@@ -202,11 +235,48 @@ void TouchScreenGUI::init(ISimpleTextureSource* tsrc, float density)
 					m_screensize.Y),
 			L"H",false);
 
+	/* init fly button */
+	initButton(fly_id,
+			rect<s32>(m_screensize.X - (0.75*button_size),
+					m_screensize.Y - (2.25*button_size),
+					m_screensize.X, m_screensize.Y - (button_size*1.5)),
+			L"fly", true);
+
+	/* init noclip button */
+	initButton(noclip_id,
+			rect<s32>(m_screensize.X - (0.75*button_size), 2.25*button_size,
+					m_screensize.X, 3*button_size),
+			L"clip", true);
+
+	/* init fast button */
+	initButton(fast_id,
+			rect<s32>(m_screensize.X - (0.75*button_size), 1.5*button_size,
+					m_screensize.X, 2.25*button_size),
+			L"fast", true);
+
+	/* init debug button */
+	initButton(debug_id,
+			rect<s32>(m_screensize.X - (0.75*button_size), 0.75*button_size,
+					m_screensize.X, 1.5*button_size),
+			L"dbg", true);
+
 	/* init chat button */
 	initButton(chat_id,
-			rect<s32>(m_screensize.X-(1.5*button_size), 0,
-					m_screensize.X, button_size),
+			rect<s32>(m_screensize.X - (0.75*button_size), 0,
+					m_screensize.X, 0.75*button_size),
 			L"Chat", true);
+
+	/* init camera button */
+	initButton(camera_id,
+			rect<s32>(m_screensize.X - (1.5*button_size), 0,
+					m_screensize.X - (0.75*button_size), 0.75*button_size),
+			L"cam", true);
+
+	/* init rangeselect button */
+	initButton(range_id,
+			rect<s32>(m_screensize.X - (2.25*button_size), 0,
+					m_screensize.X - (1.5*button_size), 0.75*button_size),
+			L"far", true);
 }
 
 touch_gui_button_id TouchScreenGUI::getButtonID(s32 x, s32 y)

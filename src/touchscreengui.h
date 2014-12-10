@@ -38,10 +38,17 @@ typedef enum {
 	backward_id,
 	left_id,
 	right_id,
+	inventory_id,
+	drop_id,
 	jump_id,
 	crunch_id,
-	inventory_id,
+	fly_id,
+	noclip_id,
+	fast_id,
+	debug_id,
 	chat_id,
+	camera_id,
+	range_id,
 	after_last_element_id
 } touch_gui_button_id;
 
