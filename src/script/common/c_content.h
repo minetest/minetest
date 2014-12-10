@@ -149,14 +149,6 @@ bool               string_to_enum            (const EnumString *spec,
 
 bool               read_noiseparams          (lua_State *L, int index,
                                               NoiseParams *np);
-bool               get_schematic             (lua_State *L, int index,
-                                              Schematic *schem,
-                                              INodeDefManager *ndef,
-                             std::map<std::string, std::string> &replace_names);
-bool               read_schematic            (lua_State *L, int index,
-                                              Schematic *dschem,
-                                              INodeDefManager *ndef,
-                             std::map<std::string, std::string> &replace_names);
 
 void               luaentity_get             (lua_State *L,u16 id);
 

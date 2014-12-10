@@ -76,6 +76,4 @@ public:
 	static void Initialize(lua_State *L, int top);
 };
 
-
-
 #endif /* L_MAPGEN_H_ */
