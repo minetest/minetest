@@ -246,13 +246,13 @@ float MapgenV6::baseTerrainLevelFromNoise(v2s16 p) {
 	if (flags & MG_FLAT)
 		return water_level;
 
-	float terrain_base   = NoisePerlin2DPosOffset(&noise_terrain_base->np,
+	float terrain_base   = NoisePerlin2D_PO(&noise_terrain_base->np,
 							p.X, 0.5, p.Y, 0.5, seed);
-	float terrain_higher = NoisePerlin2DPosOffset(&noise_terrain_higher->np,
+	float terrain_higher = NoisePerlin2D_PO(&noise_terrain_higher->np,
 							p.X, 0.5, p.Y, 0.5, seed);
-	float steepness      = NoisePerlin2DPosOffset(&noise_steepness->np,
+	float steepness      = NoisePerlin2D_PO(&noise_steepness->np,
 							p.X, 0.5, p.Y, 0.5, seed);
-	float height_select  = NoisePerlin2DNoTxfmPosOffset(&noise_height_select->np,
+	float height_select  = NoisePerlin2D_PO(&noise_height_select->np,
 							p.X, 0.5, p.Y, 0.5, seed);
 
 	return baseTerrainLevel(terrain_base, terrain_higher,
@@ -547,36 +547,16 @@ void MapgenV6::calculateNoise() {
 	int x = node_min.X;
 	int z = node_min.Z;
 
-	// Need to adjust for the original implementation's +.5 offset...
 	if (!(flags & MG_FLAT)) {
-		noise_terrain_base->perlinMap2D(
-			x + 0.5 * noise_terrain_base->np.spread.X,
-			z + 0.5 * noise_terrain_base->np.spread.Z);
-
-		noise_terrain_higher->perlinMap2D(
-			x + 0.5 * noise_terrain_higher->np.spread.X,
-			z + 0.5 * noise_terrain_higher->np.spread.Z);
-
-		noise_steepness->perlinMap2D(
-			x + 0.5 * noise_steepness->np.spread.X,
-			z + 0.5 * noise_steepness->np.spread.Z);
-
-		noise_height_select->perlinMap2D(
-			x + 0.5 * noise_height_select->np.spread.X,
-			z + 0.5 * noise_height_select->np.spread.Z);
-
-		noise_mud->perlinMap2D(
-			x + 0.5 * noise_mud->np.spread.X,
-			z + 0.5 * noise_mud->np.spread.Z);
+		noise_terrain_base->perlinMap2D_PO(x, 0.5, z, 0.5);
+		noise_terrain_higher->perlinMap2D_PO(x, 0.5, z, 0.5);
+		noise_steepness->perlinMap2D_PO(x, 0.5, z, 0.5);
+		noise_height_select->perlinMap2D_PO(x, 0.5, z, 0.5);
+		noise_mud->perlinMap2D_PO(x, 0.5, z, 0.5);
 	}
 
-	noise_beach->perlinMap2D(
-		x + 0.2 * noise_beach->np.spread.X,
-		z + 0.7 * noise_beach->np.spread.Z);
-
-	noise_biome->perlinMap2D(
-		x + 0.6 * noise_biome->np.spread.X,
-		z + 0.2 * noise_biome->np.spread.Z);
+	noise_beach->perlinMap2D_PO(x, 0.2, z, 0.7);
+	noise_biome->perlinMap2D_PO(x, 0.6, z, 0.2);
 }
 
 

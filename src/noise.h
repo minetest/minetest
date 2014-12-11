@@ -151,12 +151,53 @@ public:
 	float *perlinMap2D(float x, float y, float *persistence_map=NULL);
 	float *perlinMap3D(float x, float y, float z, float *persistence_map=NULL);
 
+	inline float *perlinMap2D_PO(float x, float xoff, float y, float yoff,
+		float *persistence_map=NULL)
+	{
+		return perlinMap2D(
+			x + xoff * np.spread.X,
+			y + yoff * np.spread.Y,
+			persistence_map);
+	}
+
+	inline float *perlinMap3D_PO(float x, float xoff, float y, float yoff,
+		float z, float zoff, float *persistence_map=NULL)
+	{
+		return perlinMap3D(
+			x + xoff * np.spread.X,
+			y + yoff * np.spread.Y,
+			z + zoff * np.spread.Z,
+			persistence_map);
+	}
+
 private:
 	void allocBuffers();
 	void resizeNoiseBuf(bool is3d);
 	void updateResults(float g, float *gmap, float *persistence_map, size_t bufsize);
 
 };
+
+float NoisePerlin2D(NoiseParams *np, float x, float y, int seed);
+float NoisePerlin3D(NoiseParams *np, float x, float y, float z, int seed);
+
+inline float NoisePerlin2D_PO(NoiseParams *np, float x, float xoff,
+	float y, float yoff, int seed)
+{
+	return NoisePerlin2D(np,
+		x + xoff * np->spread.X,
+		y + yoff * np->spread.Y,
+		seed);
+}
+
+inline float NoisePerlin3D_PO(NoiseParams *np, float x, float xoff,
+	float y, float yoff, float z, float zoff, int seed)
+{
+	return NoisePerlin3D(np,
+		x + xoff * np->spread.X,
+		y + yoff * np->spread.Y,
+		z + zoff * np->spread.Z,
+		seed);
+}
 
 // Return value: -1 ... 1
 float noise2d(int x, int y, int seed);
@@ -183,39 +224,6 @@ inline float easeCurve(float t)
 }
 
 float contour(float v);
-
-#define NoisePerlin2D(np, x, y, s) \
-		((np)->offset + (np)->scale * noise2d_perlin( \
-		(float)(x) / (np)->spread.X, \
-		(float)(y) / (np)->spread.Y, \
-		(s) + (np)->seed, (np)->octaves, (np)->persist))
-
-#define NoisePerlin2DNoTxfm(np, x, y, s) \
-		(noise2d_perlin( \
-		(float)(x) / (np)->spread.X, \
-		(float)(y) / (np)->spread.Y, \
-		(s) + (np)->seed, (np)->octaves, (np)->persist))
-
-#define NoisePerlin2DPosOffset(np, x, xoff, y, yoff, s) \
-		((np)->offset + (np)->scale * noise2d_perlin( \
-		(float)(xoff) + (float)(x) / (np)->spread.X, \
-		(float)(yoff) + (float)(y) / (np)->spread.Y, \
-		(s) + (np)->seed, (np)->octaves, (np)->persist))
-
-#define NoisePerlin2DNoTxfmPosOffset(np, x, xoff, y, yoff, s) \
-		(noise2d_perlin( \
-		(float)(xoff) + (float)(x) / (np)->spread.X, \
-		(float)(yoff) + (float)(y) / (np)->spread.Y, \
-		(s) + (np)->seed, (np)->octaves, (np)->persist))
-
-#define NoisePerlin3D(np, x, y, z, s) ((np)->offset + (np)->scale * \
-		noise3d_perlin((float)(x) / (np)->spread.X, (float)(y) / (np)->spread.Y, \
-		(float)(z) / (np)->spread.Z, (s) + (np)->seed, (np)->octaves, (np)->persist))
-
-#define NoisePerlin3DEased(np, x, y, z, s) ((np)->offset + (np)->scale * \
-		noise3d_perlin((float)(x) / (np)->spread.X, (float)(y) / (np)->spread.Y, \
-		(float)(z) / (np)->spread.Z, (s) + (np)->seed, (np)->octaves, \
-		(np)->persist, true))
 
 #endif
 

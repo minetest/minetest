@@ -202,7 +202,7 @@ int MapgenV5::getGroundLevelAtPoint(v2s16 p) {
 
 	s16 level = -31000;
 	for (s16 y = search_top; y >= search_base; y--) {
-		float n_ground = NoisePerlin3DEased(&noise_ground->np, p.X, y, p.Y, seed);
+		float n_ground = NoisePerlin3D(&noise_ground->np, p.X, y, p.Y, seed);
 		if(n_ground * f > y - h) {
 			if(y >= search_top - 7)
 				break;

@@ -173,7 +173,7 @@ int MapgenV7::getGroundLevelAtPoint(v2s16 p) {
 
 	// Ridge/river terrain calculation
 	float width = 0.3;
-	float uwatern = NoisePerlin2DNoTxfm(&noise_ridge_uwater->np, p.X, p.Y, seed) * 2;
+	float uwatern = NoisePerlin2D(&noise_ridge_uwater->np, p.X, p.Y, seed) * 2;
 	// actually computing the depth of the ridge is much more expensive;
 	// if inside a river, simply guess
 	if (uwatern >= -width && uwatern <= width)

@@ -314,7 +314,60 @@ float contour(float v)
 }
 
 
-///////////////////////// [ New perlin stuff ] ////////////////////////////
+///////////////////////// [ New noise ] ////////////////////////////
+
+
+float NoisePerlin2D(NoiseParams *np, float x, float y, int seed)
+{
+	float a = 0;
+	float f = 1.0;
+	float g = 1.0;
+
+	x /= np->spread.X;
+	y /= np->spread.Y;
+	seed += np->seed;
+
+	for (size_t i = 0; i < np->octaves; i++) {
+		float noiseval = noise2d_gradient(x * f, y * f, seed + i,
+			np->flags & (NOISE_FLAG_DEFAULTS | NOISE_FLAG_EASED));
+
+		if (np->flags & NOISE_FLAG_ABSVALUE)
+			noiseval = fabs(noiseval);
+
+		a += g * noiseval;
+		f *= np->lacunarity;
+		g *= np->persist;
+	}
+
+	return np->offset + a * np->scale;
+}
+
+
+float NoisePerlin3D(NoiseParams *np, float x, float y, float z, int seed)
+{
+	float a = 0;
+	float f = 1.0;
+	float g = 1.0;
+
+	x /= np->spread.X;
+	y /= np->spread.Y;
+	z /= np->spread.Z;
+	seed += np->seed;
+
+	for (size_t i = 0; i < np->octaves; i++) {
+		float noiseval = noise3d_gradient(x * f, y * f, z * f, seed + i,
+			np->flags & NOISE_FLAG_EASED);
+
+		if (np->flags & NOISE_FLAG_ABSVALUE)
+			noiseval = fabs(noiseval);
+
+		a += g * noiseval;
+		f *= np->lacunarity;
+		g *= np->persist;
+	}
+
+	return np->offset + a * np->scale;
+}
 
 
 Noise::Noise(NoiseParams *np_, int seed, int sx, int sy, int sz)
