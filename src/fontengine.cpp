@@ -45,14 +45,13 @@ FontEngine::FontEngine(Settings* main_settings, gui::IGUIEnvironment* env) :
 	m_settings(main_settings),
 	m_env(env),
 	m_font_cache(),
-	m_default_size(),
 	m_currentMode(FM_Standard),
 	m_lastMode(),
 	m_lastSize(0),
 	m_lastFont(NULL)
 {
 
-	for ( unsigned int i = 0; i < FM_MaxMode; i++) {
+	for (unsigned int i = 0; i < FM_MaxMode; i++) {
 		m_default_size[i] = (FontMode) FONT_SIZE_UNSPECIFIED;
 	}
 
