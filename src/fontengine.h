@@ -86,7 +86,6 @@ private:
 		m_settings(NULL),
 		m_env(NULL),
 		m_font_cache(),
-		m_default_size(),
 		m_currentMode(FM_Standard),
 		m_lastMode(),
 		m_lastSize(0),
