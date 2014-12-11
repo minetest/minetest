@@ -183,7 +183,11 @@ public:
 	void setS16(const std::string &name, s16 value);
 	void setU16(const std::string &name, u16 value);
 	void setS32(const std::string &name, s32 value);
-	void setU64(const std::string &name, u64 value);
+    #if defined(__APPLE__) && defined(__MACH__)
+    void setU64(const std::string &name, uint64_t value);
+    #else
+    void setU64(const std::string &name, u64 value);
+    #endif
 	void setFloat(const std::string &name, float value);
 	void setV2F(const std::string &name, v2f value);
 	void setV3F(const std::string &name, v3f value);
