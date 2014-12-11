@@ -611,6 +611,11 @@ float *Noise::perlinMap2D(float x, float y, float *persistence_map)
 		g *= np.persist;
 	}
 
+	if (fabs(np.offset - 0.f) > 0.00001 || fabs(np.scale - 1.f) > 0.00001) {
+		for (size_t i = 0; i != bufsize; i++)
+			result[i] = result[i] * np.scale + np.offset;
+	}
+
 	return result;
 }
 
@@ -644,6 +649,11 @@ float *Noise::perlinMap3D(float x, float y, float z, float *persistence_map)
 		g *= np.persist;
 	}
 
+	if (fabs(np.offset - 0.f) > 0.00001 || fabs(np.scale - 1.f) > 0.00001) {
+		for (size_t i = 0; i != bufsize; i++)
+			result[i] = result[i] * np.scale + np.offset;
+	}
+
 	return result;
 }
 
@@ -675,16 +685,3 @@ void Noise::updateResults(float g, float *gmap,
 		}
 	}
 }
-
-
-void Noise::transformNoiseMap()
-{
-	// Because sx, sy, and sz are object members whose values may conceivably be
-	// modified in other threads. gcc (at least) will consider the buffer size
-	// computation as invalidated between loop comparisons, resulting in a ~2x
-	// slowdown even with -O2.  To prevent this, store the value in a local.
-	size_t bufsize = sx * sy * sz;
-	for (size_t i = 0; i != bufsize; i++)
-		result[i] = result[i] * np.scale + np.offset;
-}
-

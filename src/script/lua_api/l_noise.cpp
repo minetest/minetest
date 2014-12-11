@@ -149,7 +149,7 @@ int LuaPerlinNoiseMap::gc_object(lua_State *L)
 int LuaPerlinNoiseMap::l_get2dMap(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	int i = 0;
+	size_t i = 0;
 
 	LuaPerlinNoiseMap *o = checkobject(L, 1);
 	v2f p = read_v2f(L, 2);
@@ -161,8 +161,7 @@ int LuaPerlinNoiseMap::l_get2dMap(lua_State *L)
 	for (int y = 0; y != n->sy; y++) {
 		lua_newtable(L);
 		for (int x = 0; x != n->sx; x++) {
-			float noiseval = n->np.offset + n->np.scale * n->result[i++];
-			lua_pushnumber(L, noiseval);
+			lua_pushnumber(L, n->result[i++]);
 			lua_rawseti(L, -2, x + 1);
 		}
 		lua_rawseti(L, -2, y + 1);
@@ -181,12 +180,11 @@ int LuaPerlinNoiseMap::l_get2dMap_flat(lua_State *L)
 	Noise *n = o->noise;
 	n->perlinMap2D(p.X, p.Y);
 
-	int maplen = n->sx * n->sy;
+	size_t maplen = n->sx * n->sy;
 
 	lua_newtable(L);
-	for (int i = 0; i != maplen; i++) {
-		float noiseval = n->np.offset + n->np.scale * n->result[i];
-		lua_pushnumber(L, noiseval);
+	for (size_t i = 0; i != maplen; i++) {
+		lua_pushnumber(L, n->result[i]);
 		lua_rawseti(L, -2, i + 1);
 	}
 	return 1;
@@ -196,7 +194,7 @@ int LuaPerlinNoiseMap::l_get2dMap_flat(lua_State *L)
 int LuaPerlinNoiseMap::l_get3dMap(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	int i = 0;
+	size_t i = 0;
 
 	LuaPerlinNoiseMap *o = checkobject(L, 1);
 	v3f p = read_v3f(L, 2);
@@ -210,7 +208,7 @@ int LuaPerlinNoiseMap::l_get3dMap(lua_State *L)
 		for (int y = 0; y != n->sy; y++) {
 			lua_newtable(L);
 			for (int x = 0; x != n->sx; x++) {
-				lua_pushnumber(L, n->np.offset + n->np.scale * n->result[i++]);
+				lua_pushnumber(L, n->result[i++]);
 				lua_rawseti(L, -2, x + 1);
 			}
 			lua_rawseti(L, -2, y + 1);
@@ -231,13 +229,11 @@ int LuaPerlinNoiseMap::l_get3dMap_flat(lua_State *L)
 	Noise *n = o->noise;
 	n->perlinMap3D(p.X, p.Y, p.Z);
 
-
-	int maplen = n->sx * n->sy * n->sz;
+	size_t maplen = n->sx * n->sy * n->sz;
 
 	lua_newtable(L);
-	for (int i = 0; i != maplen; i++) {
-		float noiseval = n->np.offset + n->np.scale * n->result[i];
-		lua_pushnumber(L, noiseval);
+	for (size_t i = 0; i != maplen; i++) {
+		lua_pushnumber(L, n->result[i]);
 		lua_rawseti(L, -2, i + 1);
 	}
 	return 1;

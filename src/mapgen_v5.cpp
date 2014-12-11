@@ -299,14 +299,10 @@ void MapgenV5::calculateNoise() {
 	noise_filler_depth->perlinMap2D(x, z);
 	noise_factor->perlinMap2D(x, z);
 	noise_height->perlinMap2D(x, z);
-	noise_height->transformNoiseMap();
 
 	noise_cave1->perlinMap3D(x, y, z);
-	noise_cave1->transformNoiseMap();
 	noise_cave2->perlinMap3D(x, y, z);
-	noise_cave2->transformNoiseMap();
 	noise_ground->perlinMap3D(x, y, z);
-	noise_ground->transformNoiseMap();
 
 	if (spflags & MGV5_BLOBS) {
 		noise_crumble->perlinMap3D(x, y, z);

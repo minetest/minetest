@@ -151,8 +151,6 @@ public:
 	float *perlinMap2D(float x, float y, float *persistence_map=NULL);
 	float *perlinMap3D(float x, float y, float z, float *persistence_map=NULL);
 
-	void transformNoiseMap();
-
 private:
 	void allocBuffers();
 	void resizeNoiseBuf(bool is3d);

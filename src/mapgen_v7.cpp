@@ -270,26 +270,18 @@ void MapgenV7::calculateNoise() {
 	int z = node_min.Z;
 
 	noise_height_select->perlinMap2D(x, z);
-	noise_height_select->transformNoiseMap();
-
 	noise_terrain_persist->perlinMap2D(x, z);
-	noise_terrain_persist->transformNoiseMap();
 	float *persistmap = noise_terrain_persist->result;
 	for (int i = 0; i != csize.X * csize.Z; i++)
 		persistmap[i] = rangelim(persistmap[i], 0.4, 0.9);
 
 	noise_terrain_base->perlinMap2D(x, z, persistmap);
-	noise_terrain_base->transformNoiseMap();
-
 	noise_terrain_alt->perlinMap2D(x, z, persistmap);
-	noise_terrain_alt->transformNoiseMap();
-
 	noise_filler_depth->perlinMap2D(x, z);
 
 	if (spflags & MGV7_MOUNTAINS) {
 		noise_mountain->perlinMap3D(x, y, z);
 		noise_mount_height->perlinMap2D(x, z);
-		noise_mount_height->transformNoiseMap();
 	}
 
 	if (spflags & MGV7_RIDGES) {
