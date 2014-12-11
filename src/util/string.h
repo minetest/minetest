@@ -54,14 +54,13 @@ bool parseColorString(const std::string &value, video::SColor &color, bool quiet
  *			that the string is len characters in length. If s is <= len then the
  *			returned string will be identical to s.
  */
-static inline std::string padStringRight(std::string s, size_t len)
+inline std::string padStringRight(std::string s, size_t len)
 {
 	if (len > s.size())
 		s.insert(s.end(), len - s.size(), ' ');
 
 	return s;
 }
-
 
 /**
  * Returns a version of the string s with the first occurrence of a string
@@ -74,15 +73,16 @@ static inline std::string padStringRight(std::string s, size_t len)
  *
  * @return If no end could be removed then "" is returned
  */
-static inline std::string removeStringEnd(const std::string &s, const char *ends[])
+inline std::string removeStringEnd(const std::string &s,
+		const char *ends[])
 {
 	const char **p = ends;
 
 	for (; *p && (*p)[0] != '\0'; p++) {
 		std::string end = *p;
-		if(s.size() < end.size())
+		if (s.size() < end.size())
 			continue;
-		if(s.substr(s.size()-end.size(), end.size()) == end)
+		if (s.compare(s.size() - end.size(), end.size(), end) == 0)
 			return s.substr(0, s.size() - end.size());
 	}
 
@@ -91,29 +91,30 @@ static inline std::string removeStringEnd(const std::string &s, const char *ends
 
 
 /**
- * Check two wide strings for equivalence. If case_insensitive is true
- * then the case of the strings are ignored (default is false).
+ * Check two strings for equivalence. If case_insensitive is true
+ * then the case of the strings is ignored (default is false).
  *
  * @param s1
  * @param s2
  * @param case_insensitive
  * @return true if the strings match
  */
-inline bool str_equal(const std::wstring &s1, const std::wstring &s2,
+template <typename T>
+inline bool str_equal(const std::basic_string<T> &s1,
+		const std::basic_string<T> &s2,
 		bool case_insensitive = false)
 {
-	if (case_insensitive) {
-		if (s1.size() != s2.size())
+	if (!case_insensitive)
+		return s1 == s2;
+
+	if (s1.size() != s2.size())
+		return false;
+
+	for (size_t i = 0; i < s1.size(); ++i)
+		if(tolower(s1[i]) != tolower(s2[i]))
 			return false;
 
-		for (size_t i = 0; i < s1.size(); ++i)
-			if(tolower(s1[i]) != tolower(s2[i]))
-				return false;
-
-		return true;
-	}
-
-	return s1 == s2;
+	return true;
 }
 
 
@@ -127,58 +128,38 @@ inline bool str_equal(const std::wstring &s1, const std::wstring &s2,
  * @param case_insensitive
  * @return	true if the str begins with prefix
  */
-inline bool str_starts_with(const std::wstring &str, const std::wstring &prefix,
+template <typename T>
+inline bool str_starts_with(const std::basic_string<T> &str,
+		const std::basic_string<T> &prefix,
 		bool case_insensitive = false)
 {
 	if (str.size() < prefix.size())
 		return false;
 
-	if (case_insensitive) {
-		for (size_t i = 0; i < prefix.size(); ++i)
-			if (tolower(str[i]) != tolower(prefix[i]))
-				return false;
-	} else {
-		for (size_t i = 0; i < prefix.size(); ++i)
-			if (str[i] != prefix[i])
-				return false;
-	}
+	if (!case_insensitive)
+		return str.compare(0, prefix.size(), prefix) == 0;
 
+	for (size_t i = 0; i < prefix.size(); ++i)
+		if (tolower(str[i]) != tolower(prefix[i]))
+			return false;
 	return true;
 }
 
 
 /**
- * Splits a string of wide characters into its component parts separated by
- * the character delimiter.
- *
- * @return a std::vector<std::wstring> of the component parts
- */
-inline std::vector<std::wstring> str_split(const std::wstring &str,
-		wchar_t delimiter)
-{
-	std::vector<std::wstring> parts;
-	std::wstringstream sstr(str);
-	std::wstring part;
-
-	while (std::getline(sstr, part, delimiter))
-		parts.push_back(part);
-
-	return parts;
-}
-
-
-/**
  * Splits a string into its component parts separated by the character
- *			delimiter.
+ * delimiter.
  *
- * @return a std::vector<std::string> of the component parts
+ * @return an std::vector<std::basic_string<T> > of the component parts
  */
-
-inline std::vector<std::string> str_split(const std::string &str, char delimiter) {
-
-	std::vector<std::string> parts;
-	std::stringstream sstr(str);
-	std::string part;
+template <typename T>
+inline std::vector<std::basic_string<T> > str_split(
+		const std::basic_string<T> &str,
+		T delimiter)
+{
+	std::vector<std::basic_string<T> > parts;
+	std::basic_stringstream<T> sstr(str);
+	std::basic_string<T> part;
 
 	while (std::getline(sstr, part, delimiter))
 		parts.push_back(part);
@@ -216,7 +197,7 @@ inline std::string trim(const std::string &s)
 		++front;
 
 	size_t back = s.size();
-	while (back > front && std::isspace(s[back-1]))
+	while (back > front && std::isspace(s[back - 1]))
 		--back;
 
 	return s.substr(front, back - front);
@@ -226,7 +207,7 @@ inline std::string trim(const std::string &s)
 /**
  * Returns true if s should be regarded as (bool) true. Leading and trailing
  *			whitespace are ignored; case is ignored. Values that will return
- *			true are "y", "n", "true" and any number that != 0.
+ *			true are "y", "yes", "true" and any number that != 0.
  * @param s
  */
 inline bool is_yes(const std::string &s)
@@ -295,7 +276,7 @@ inline s32 mystoi(const std::string &s)
  */
 inline s32 mystoi(const std::wstring &s)
 {
-	return atoi(wide_to_narrow(s).c_str());
+	return mystoi(wide_to_narrow(s));
 }
 
 
@@ -306,12 +287,6 @@ inline s32 mystoi(const std::wstring &s)
  */
 inline float mystof(const std::string &s)
 {
-	// This crap causes a segfault in certain cases on MinGW
-	/*float f;
-	std::istringstream ss(s);
-	ss>>f;
-	return f;*/
-	// This works in that case
 	return atof(s.c_str());
 }
 
@@ -320,70 +295,51 @@ inline float mystof(const std::string &s)
 #define stoi mystoi
 #define stof mystof
 
+// TODO: Replace with C++11 std::to_string.
 
-/**
- * Returns a string representing the decimal value of the 32-bit value i
- */
-inline std::string itos(s32 i)
+/// Returns a string representing the value v
+template <typename T>
+inline std::string to_string(T v)
 {
 	std::ostringstream o;
-	o << i;
+	o << v;
 	return o.str();
 }
 
-
-/**
- * Returns a string representing the decimal value of i of the 64-bit value i
- */
-inline std::string i64tos(s64 i) {
-	std::ostringstream o;
-	o << i;
-	return o.str();
-}
+/// Returns a string representing the decimal value of the 32-bit value i
+inline std::string itos(s32 i) { return to_string(i); }
+/// Returns a string representing the decimal value of the 64-bit value i
+inline std::string i64tos(s64 i) { return to_string(i); }
+/// Returns a string representing the decimal value of the float value f
+inline std::string ftos(float f) { return to_string(f); }
 
 
 /**
- * Returns a string representing the real number (decimal) float value i
- */
-inline std::string ftos(float f)
-{
-	std::ostringstream o;
-	o << f;
-	return o.str();
-}
-
-
-/**
- * Replace all occurrences of pattern in str with replacement
+ * Replace all occurrences of `pattern` in `str` with `replacement`
  *
  * @param str String to replace pattern with replacement within
  * @param pattern The pattern to replace
  * @param replacement What to replace the pattern with
  */
-inline void str_replace(std::string &str, std::string const &pattern,
-		std::string const &replacement)
+inline void str_replace(std::string &str, const std::string &pattern,
+		const std::string &replacement)
 {
 	std::string::size_type start = str.find(pattern, 0);
 	while (start != str.npos) {
 		str.replace(start, pattern.size(), replacement);
-		start = str.find(pattern, start+replacement.size());
+		start = str.find(pattern, start + replacement.size());
 	}
 }
 
 
 /**
- * Replace all occurrances of the character from in str with to.
+ * Replace all occurrances of the character `from` in `str` with `to`.
  *
  * @param str The string to (potentially) modify
  * @param from The character in str to replace
  * @param to The replacement character
  */
-inline void str_replace_char(std::string &str, char from, char to)
-{
-	for (size_t i = 0; i < str.size(); i++)
-		if (str[i] == from)
-			str[i] = to;
-}
+void str_replace(std::string &str, char from, char to);
 
 
 /**
@@ -398,11 +354,7 @@ inline void str_replace_char(std::string &str, char from, char to)
  */
 inline bool string_allowed(const std::string &s, const std::string &allowed_chars)
 {
-	for (size_t i = 0; i < s.size(); i++)
-		if (allowed_chars.find(s[i]) == std::string::npos)
-			return false;
-
-	return true;
+	return s.find_first_not_of(allowed_chars) == s.npos;
 }
 
 
@@ -419,32 +371,29 @@ inline bool string_allowed(const std::string &s, const std::string &allowed_char
 inline bool string_allowed_blacklist(const std::string &s,
 		const std::string &blacklisted_chars)
 {
-	for (size_t i = 0; i < s.size(); i++)
-		if (blacklisted_chars.find(s[i]) != std::string::npos)
-			return false;
-
-	return true;
+	return s.find_first_of(blacklisted_chars) == s.npos;
 }
 
 
 /**
  * Create a string based on 'from' where a newline is forcefully inserted every
- * 'rowlen' characters.
+ * 'row_len' characters.
  *
  * @note This function does not honour word wraps and blindy inserts a newline
- *			every rowlen characters whether it breaks a word or not. It is
+ *			every row_len characters whether it breaks a word or not. It is
  *			intended to be used, for example, showing paths in the GUI
  *
  * @param from The string to be wrapped into rows.
- * @param rowlen The row length (in characters).
+ * @param row_len The row length (in characters).
  * @return A new string with the wrapping applied.
  */
-inline std::string wrap_rows(const std::string &from, u32 rowlen)
+inline std::string wrap_rows(const std::string &from,
+		unsigned row_len)
 {
 	std::string to;
 
 	for (size_t i = 0; i < from.size(); i++) {
-		if(i != 0 && i % rowlen == 0)
+		if (i != 0 && i % row_len == 0)
 			to += '\n';
 		to += from[i];
 	}
@@ -457,9 +406,10 @@ inline std::string wrap_rows(const std::string &from, u32 rowlen)
  * Removes all \\ from a string that had been escaped (FormSpec strings)
  *
  */
-inline std::string unescape_string(std::string &s)
+template <typename T>
+inline std::basic_string<T> unescape_string(std::basic_string<T> &s)
 {
-	std::string res;
+	std::basic_string<T> res;
 	
 	for (size_t i = 0; i < s.length(); i++) {
 		if (s[i] == '\\')
@@ -472,19 +422,19 @@ inline std::string unescape_string(std::string &s)
 
 
 /**
- * Checks that all characters in tocheck are a decimal digits
+ * Checks that all characters in to_check are a decimal digits
  *
- * @param tocheck
- * @return true if tockcheck is not empty and all characters in tocheck are
+ * @param to_check
+ * @return true if to_check is not empty and all characters in tocheck are
  *			decimal digits, otherwise false
  */
-inline bool is_number(const std::string &tocheck)
+inline bool is_number(const std::string &to_check)
 {
-	for (size_t i = 0; i < tocheck.size(); i++)
-	    if (!std::isdigit(tocheck[i]))
-	        return false;
+	for (size_t i = 0; i < to_check.size(); i++)
+		if (!std::isdigit(to_check[i]))
+			return false;
 
-	return !tocheck.empty();
+	return !to_check.empty();
 }
 
 
@@ -497,6 +447,5 @@ inline const char *bool_to_cstr(bool v)
 {
 	return v ? "true" : "false";
 }
-
 
 #endif

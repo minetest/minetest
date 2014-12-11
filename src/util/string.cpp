@@ -22,14 +22,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "numeric.h"
 #include "log.h"
 
-#include <sstream>
-#include <iomanip>
-#include <map>
-
 #include "../sha1.h"
 #include "../base64.h"
 #include "../hex.h"
 #include "../porting.h"
+
+#include <algorithm>
+#include <sstream>
+#include <iomanip>
+#include <map>
 
 static bool parseHexColorString(const std::string &value, video::SColor &color);
 static bool parseNamedColorString(const std::string &value, video::SColor &color);
@@ -577,3 +578,9 @@ static bool parseNamedColorString(const std::string &value, video::SColor &color
 
 	return true;
 }
+
+void str_replace(std::string &str, char from, char to)
+{
+	std::replace(str.begin(), str.end(), from, to);
+}
+
