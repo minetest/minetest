@@ -40,6 +40,8 @@ class IShaderSource;
 class IGameDef;
 
 typedef std::list<std::pair<content_t, int> > GroupItems;
+typedef std::list<std::pair<std::string, std::vector<content_t> *> >
+	ContentVectorResolveList;
 
 enum ContentParamType
 {
@@ -164,7 +166,7 @@ struct ContentFeatures
 	*/
 #ifndef SERVER
 	// 0     1     2     3     4     5
-	// up    down  right left  back  front 
+	// up    down  right left  back  front
 	TileSpec tiles[6];
 	// Special tiles
 	// - Currently used for flowing liquids
@@ -191,7 +193,7 @@ struct ContentFeatures
 	std::string mesh;
 #ifndef SERVER
 	scene::IMesh *mesh_ptr[24];
-#endif	
+#endif
 	float visual_scale; // Misc. scale parameter
 	TileDef tiledef[6];
 	TileDef tiledef_special[CF_SPECIAL_COUNT]; // eg. flowing liquid
@@ -261,7 +263,7 @@ struct ContentFeatures
 	/*
 		Methods
 	*/
-	
+
 	ContentFeatures();
 	~ContentFeatures();
 	void reset();
@@ -399,7 +401,7 @@ private:
 	INodeDefManager *m_ndef;
 	bool m_is_node_registration_complete;
 	std::list<NodeResolveInfo *> m_pending_contents;
-	std::list<std::pair<std::string, std::vector<content_t> *> > m_pending_content_vecs;
+	ContentVectorResolveList m_pending_content_vecs;
 };
 
 class INodeDefManager
@@ -416,7 +418,7 @@ public:
 	virtual void getIds(const std::string &name, std::set<content_t> &result)
 			const=0;
 	virtual const ContentFeatures& get(const std::string &name) const=0;
-	
+
 	virtual void serialize(std::ostream &os, u16 protocol_version)=0;
 
 	virtual NodeResolver *getResolver()=0;
