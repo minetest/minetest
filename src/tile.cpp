@@ -1380,7 +1380,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				return false;
 			}
 
-			str_replace_char(part_of_name, '&', '^');
+			str_replace(part_of_name, '&', '^');
 			Strfnd sf(part_of_name);
 			sf.next("{");
 			std::string imagename_top = sf.next("{");

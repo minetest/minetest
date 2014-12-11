@@ -189,7 +189,7 @@ struct TestUtilities: public TestBase
 		str_replace(test_str, "there", "world");
 		UASSERT(test_str == "Hello world");
 		test_str = "ThisAisAaAtest";
-		str_replace_char(test_str, 'A', ' ');
+		str_replace(test_str, 'A', ' ');
 		UASSERT(test_str == "This is a test");
 		UASSERT(string_allowed("hello", "abcdefghijklmno") == true);
 		UASSERT(string_allowed("123", "abcdefghijklmno") == false);
