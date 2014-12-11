@@ -186,8 +186,10 @@ function asyncOnlineFavourites()
 		end,
 		nil,
 		function(result)
-			menudata.favorites = result
-			core.event_handler("Refresh")
+			if core.setting_getbool("public_serverlist") then
+				menudata.favorites = result
+				core.event_handler("Refresh")
+			end
 		end
 		)
 end
