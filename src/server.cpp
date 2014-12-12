@@ -664,7 +664,7 @@ void Server::AsyncRunStep(bool initial_step)
 		/*
 			Set the modified blocks unsent for all the clients
 		*/
-		if(modified_blocks.size() > 0)
+		if(!modified_blocks.empty())
 		{
 			SetBlocksNotSent(modified_blocks);
 		}
@@ -745,7 +745,7 @@ void Server::AsyncRunStep(bool initial_step)
 					client->m_known_objects, added_objects);
 
 			// Ignore if nothing happened
-			if(removed_objects.size() == 0 && added_objects.size() == 0)
+			if(removed_objects.empty() && added_objects.empty())
 			{
 				//infostream<<"active objects: none changed"<<std::endl;
 				continue;
@@ -1051,7 +1051,7 @@ void Server::AsyncRunStep(bool initial_step)
 			/*
 				Set blocks not sent to far players
 			*/
-			if(far_players.size() > 0)
+			if(!far_players.empty())
 			{
 				// Convert list format to that wanted by SetBlocksNotSent
 				std::map<v3s16, MapBlock*> modified_blocks2;
@@ -2675,7 +2675,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				continue;
 			ServerPlayingSound &psound = i->second;
 			psound.clients.erase(peer_id);
-			if(psound.clients.size() == 0)
+			if(psound.clients.empty())
 				m_playing_sounds.erase(i++);
 		}
 	}
@@ -3628,7 +3628,7 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 			dst_clients.push_back(*i);
 		}
 	}
-	if(dst_clients.size() == 0)
+	if(dst_clients.empty())
 		return -1;
 
 	// Create the sound
@@ -4322,7 +4322,7 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 		{
 			ServerPlayingSound &psound = i->second;
 			psound.clients.erase(peer_id);
-			if(psound.clients.size() == 0)
+			if(psound.clients.empty())
 				m_playing_sounds.erase(i++);
 			else
 				i++;

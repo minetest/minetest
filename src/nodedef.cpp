@@ -1414,7 +1414,7 @@ int NodeResolver::resolveNodes()
 		for (it = idset.begin(); it != idset.end(); ++it)
 			output->push_back(*it);
 
-		if (idset.size() == 0) {
+		if (idset.empty()) {
 			num_failed++;
 			errorstream << "NodeResolver::resolveNodes():  Failed to "
 				"resolve '" << name << "'" << std::endl;

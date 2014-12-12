@@ -1468,7 +1468,7 @@ void GenericCAO::updateAnimation()
 
 void GenericCAO::updateBonePosition()
 {
-	if(!m_bone_position.size() || m_animated_meshnode == NULL)
+	if(m_bone_position.empty() || m_animated_meshnode == NULL)
 		return;
 
 	m_animated_meshnode->setJointMode(irr::scene::EJUOR_CONTROL); // To write positions to the mesh on render
