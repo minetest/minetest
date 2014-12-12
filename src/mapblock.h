@@ -424,7 +424,7 @@ public:
 	{
 		m_usage_timer += dtime;
 	}
-	u32 getUsageTimer()
+	float getUsageTimer()
 	{
 		return m_usage_timer;
 	}
