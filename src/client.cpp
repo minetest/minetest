@@ -2782,14 +2782,14 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 			snprintf(filename, sizeof(filename), "%s" DIR_DELIM "screenshot_%u.png",
 				 g_settings->get("screenshot_path").c_str(),
 				 device->getTimer()->getRealTime());
-			std::stringstream sstr;
+			std::ostringstream sstr;
 			if (driver->writeImageToFile(image, filename)) {
 				sstr << "Saved screenshot to '" << filename << "'";
 			} else {
 				sstr << "Failed to save screenshot '" << filename << "'";
 			}
 			m_chat_queue.push_back(narrow_to_wide(sstr.str()));
-			infostream << sstr << std::endl;
+			infostream << sstr.str() << std::endl;
 			image->drop();
 		}
 		raw_image->drop();
