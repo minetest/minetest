@@ -4050,10 +4050,13 @@ void Game::updateGui(float *statustext_time, const RunStats &stats,
 	guitext_status->setVisible(!statustext.empty());
 
 	if (!statustext.empty()) {
-		s32 status_y = screensize.Y - 130;
+		s32 status_width  = guitext_status->getTextWidth();
+		s32 status_height = guitext_status->getTextHeight();
+		s32 status_y = screensize.Y - 150;
+		s32 status_x = (screensize.X - status_width) / 2;
 		core::rect<s32> rect(
-				10, status_y - guitext_status->getTextHeight(),
-				10 + guitext_status->getTextWidth(), status_y
+				status_x , status_y - status_height,
+				status_x + status_width, status_y
 		);
 		guitext_status->setRelativePosition(rect);
 
