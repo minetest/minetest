@@ -30,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class LuaPerlinNoise : public ModApiBase {
 private:
 	NoiseParams np;
-
 	static const char className[];
 	static const luaL_reg methods[];
 
@@ -59,8 +58,9 @@ public:
 	LuaPerlinNoiseMap
 */
 class LuaPerlinNoiseMap : public ModApiBase {
-	NoiseParams m_noise_params;
+	NoiseParams np;
 	Noise *noise;
+	bool m_is3d;
 	static const char className[];
 	static const luaL_reg methods[];
 

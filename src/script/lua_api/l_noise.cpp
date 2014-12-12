@@ -60,17 +60,6 @@ LuaPerlinNoise::LuaPerlinNoise(NoiseParams *params) :
 }
 
 
-/*
-LuaPerlinNoise::LuaPerlinNoise(int a_seed, int a_octaves,
-	float a_persistence, float a_scale)
-{
-	np.seed    = a_seed;
-	np.octaves = a_octaves;
-	np.persist = a_persistence;
-	np.spread  = v3f(a_scale, a_scale, a_scale);
-}
-*/
-
 LuaPerlinNoise::~LuaPerlinNoise()
 {
 }
@@ -215,6 +204,9 @@ int LuaPerlinNoiseMap::l_get3dMap(lua_State *L)
 	LuaPerlinNoiseMap *o = checkobject(L, 1);
 	v3f p = read_v3f(L, 2);
 
+	if (!o->m_is3d)
+		return 0;
+
 	Noise *n = o->noise;
 	n->perlinMap3D(p.X, p.Y, p.Z);
 
@@ -242,6 +234,9 @@ int LuaPerlinNoiseMap::l_get3dMap_flat(lua_State *L)
 	LuaPerlinNoiseMap *o = checkobject(L, 1);
 	v3f p = read_v3f(L, 2);
 
+	if (!o->m_is3d)
+		return 0;
+
 	Noise *n = o->noise;
 	n->perlinMap3D(p.X, p.Y, p.Z);
 
@@ -256,11 +251,12 @@ int LuaPerlinNoiseMap::l_get3dMap_flat(lua_State *L)
 }
 
 
-LuaPerlinNoiseMap::LuaPerlinNoiseMap(NoiseParams *np, int seed, v3s16 size)
+LuaPerlinNoiseMap::LuaPerlinNoiseMap(NoiseParams *params, int seed, v3s16 size)
 {
-	memcpy(&m_noise_params, np, sizeof(m_noise_params));
+	m_is3d = size.Z <= 1;
+	np = *params;
 	try {
-		noise = new Noise(&m_noise_params, seed, size.X, size.Y, size.Z);
+		noise = new Noise(&np, seed, size.X, size.Y, size.Z);
 	} catch (InvalidNoiseParamsException &e) {
 		throw LuaError(e.what());
 	}
