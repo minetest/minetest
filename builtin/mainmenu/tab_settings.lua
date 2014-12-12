@@ -128,49 +128,21 @@ local function formspec(tabview, name, tabdata)
 		end
 	end
 	
-	local language_string = ""
-	local language_idx = 0
-	local language_count = 0
+	local language_string = "en" -- add english first because its default
+	local language_idx = 1
 	local language_selected = core.setting_get("language") or "en"
-	
-	local letters = "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z"
-	local letters = letters:split(",")
 	
 	local locale_path = core.get_builtin_path() .. DIR_DELIM
 		.. ".." .. DIR_DELIM -- go back to 'minetest' folder
 		.. "locale" .. DIR_DELIM -- then enter 'locale' folder
 	
-	for i=1, #letters, 1 do
-	for o=1, #letters, 1 do
-		
-		-- default language that does not have translation
-		if letters[i] .. letters[o] == "en" then
-			if language_count ~= 0 then
-				language_string = language_string .. ","
-			end
-			language_string = language_string .. "en"
-			language_count = language_count +1
+	local locale_list = core.get_dirlist(locale_path, true)
+	
+	for i=1, #locale_list, 1 do
+		language_string = language_string .. "," .. locale_list[i]
+		if locale_list[i] == language_selected then
+			language_idx = i +1 -- handle english
 		end
-		
-		-- if translation exist
-		if file_exists(
-			locale_path .. letters[i] .. letters[o] .. DIR_DELIM
-			.. "LC_MESSAGES"
-			.. DIR_DELIM .. "minetest.mo"
-		) then
-			if language_count ~= 0 then
-				language_string = language_string .. ","
-			end
-			language_string = language_string .. letters[i] .. letters[o]
-			language_count = language_count +1
-		end
-		
-		-- set selected
-		if language_selected == letters[i] .. letters[o] then
-			language_idx = language_count
-		end
-		
-	end
 	end
 	
 	
