@@ -31,6 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "settings.h"
 #include "main.h"  //required for g_settings, g_settings_path
+#include "config.h" // For VERSION_*
+#include "version.h" // For minetest_version_*
 
 // debug(...)
 // Writes a line to dstream
@@ -278,10 +280,12 @@ int ModApiUtil::l_is_yes(lua_State *L)
 	return 1;
 }
 
+// get_builtin_path()
 int ModApiUtil::l_get_builtin_path(lua_State *L)
 {
-	std::string path = porting::path_share + DIR_DELIM + "builtin";
+	std::string path = porting::path_share + DIR_DELIM "builtin";
 	lua_pushstring(L, path.c_str());
+
 	return 1;
 }
 
@@ -320,6 +324,27 @@ int ModApiUtil::l_decompress(lua_State *L)
 	return 1;
 }
 
+// get_version()
+int ModApiUtil::l_get_version(lua_State *L)
+{
+	lua_createtable(L, 0, 3);
+	int table = lua_gettop(L);
+
+	lua_pushstring(L, PROJECT_NAME);
+	lua_setfield(L, table, "project");
+
+	lua_pushstring(L, minetest_version_simple);
+	lua_setfield(L, table, "string");
+
+	lua_pushstring(L, minetest_version_hash);
+	lua_setfield(L, table, "hash");
+
+	lua_pushstring(L, VERSION_EXTRA_STRING);
+	lua_setfield(L, table, "extra");
+
+	return 1;
+}
+
 void ModApiUtil::Initialize(lua_State *L, int top)
 {
 	API_FCT(debug);
@@ -345,6 +370,8 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 
 	API_FCT(compress);
 	API_FCT(decompress);
+
+	API_FCT(get_version);
 }
 
 void ModApiUtil::InitializeAsync(AsyncEngine& engine)
@@ -367,5 +394,7 @@ void ModApiUtil::InitializeAsync(AsyncEngine& engine)
 
 	ASYNC_API_FCT(compress);
 	ASYNC_API_FCT(decompress);
+
+	ASYNC_API_FCT(get_version);
 }
 
