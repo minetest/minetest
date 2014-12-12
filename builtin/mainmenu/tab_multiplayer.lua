@@ -21,6 +21,7 @@ local function get_formspec(tabview, name, tabdata)
 	
 	local retval =
 		"vertlabel[0,-0.25;".. fgettext("CLIENT") .. "]" ..
+                "image[-0.3,-0.31;" .. core.formspec_escape(defaulttexturedir .. "bg.png") .. "]"..
 		"label[1,-0.25;".. fgettext("Favorites:") .. "]"..
 		"label[1,4.25;".. fgettext("Address/Port") .. "]"..
 		"label[9,2.75;".. fgettext("Name/Password") .. "]" ..

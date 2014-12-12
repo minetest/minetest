@@ -130,6 +130,7 @@ local function formspec(tabview, name, tabdata)
 	
 	
 	local tab_string =
+                "image[-0.3,-0.31;" .. core.formspec_escape(defaulttexturedir .. "bg.png") .. "]"..
 		"vertlabel[0,-0.25;" .. fgettext("SETTINGS") .. "]" ..
 		"box[0.75,0;3.25,4;#999999]" ..
 		"checkbox[1,0;cb_smooth_lighting;".. fgettext("Smooth Lighting")
