@@ -29,6 +29,7 @@ debug.txt
 ## Doxygen files
 doc/Doxyfile
 doc/html/
+doc/doxygen_*
 
 ## Build files
 CMakeFiles/*
