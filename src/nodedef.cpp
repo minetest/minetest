@@ -1285,8 +1285,8 @@ NodeResolver::~NodeResolver()
 }
 
 
-int NodeResolver::addNode(std::string n_wanted, std::string n_alt,
-		content_t c_fallback, content_t *content)
+int NodeResolver::addNode(const std::string &n_wanted, const std::string &n_alt,
+	content_t c_fallback, content_t *content)
 {
 	if (m_is_node_registration_complete) {
 		if (m_ndef->getId(n_wanted, *content))
@@ -1312,8 +1312,8 @@ int NodeResolver::addNode(std::string n_wanted, std::string n_alt,
 }
 
 
-int NodeResolver::addNodeList(const char *nodename,
-		std::vector<content_t> *content_vec)
+int NodeResolver::addNodeList(const std::string &nodename,
+	std::vector<content_t> *content_vec)
 {
 	if (m_is_node_registration_complete) {
 		std::set<content_t> idset;
@@ -1326,7 +1326,7 @@ int NodeResolver::addNodeList(const char *nodename,
 		return idset.size() ? NR_STATUS_SUCCESS : NR_STATUS_FAILURE;
 	} else {
 		m_pending_content_vecs.push_back(
-			std::make_pair(std::string(nodename), content_vec));
+			std::make_pair(nodename, content_vec));
 		return NR_STATUS_PENDING;
 	}
 }

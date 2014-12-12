@@ -337,7 +337,7 @@ public:
 			node name resolution.
 		@return Status of node resolution request.
 	*/
-	int addNode(std::string n_wanted, std::string n_alt,
+	int addNode(const std::string &n_wanted, const std::string &n_alt,
 		content_t c_fallback, content_t *content);
 
 	/**
@@ -358,11 +358,12 @@ public:
 
 		@return Status of node resolution request.
 	*/
-	int addNodeList(const char *nodename, std::vector<content_t> *content_vec);
+	int addNodeList(const std::string &nodename,
+		std::vector<content_t> *content_vec);
 
 	/**
-		Removes all pending requests from the resolution queue to be satisfied
-		to content.
+		Removes all pending requests from the resolution queue with the output
+		address of 'content'.
 
 		@param content Location of the content ID for the request being
 			cancelled.
@@ -371,8 +372,8 @@ public:
 	bool cancelNode(content_t *content);
 
 	/**
-		Removes all pending requests from the resolution queue to be satisfied
-		to content_vec.
+		Removes all pending requests from the resolution queue with the output
+		address of 'content_vec'.
 
 		@param content_vec Location of the content ID vector for requests being
 			cancelled.
