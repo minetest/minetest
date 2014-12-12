@@ -52,8 +52,8 @@ FlagDesc flagdesc_mapgen_v7[] = {
 MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	: Mapgen(mapgenid, params, emerge)
 {
-	this->emerge = emerge;
-	this->bmgr   = emerge->biomemgr;
+	this->m_emerge = emerge;
+	this->bmgr     = emerge->biomemgr;
 
 	//// amount of elements to skip for the next index
 	//// for noise/height/biome maps (not vmanip)
@@ -215,7 +215,7 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 	full_node_min = (blockpos_min - 1) * MAP_BLOCKSIZE;
 	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
 
-	blockseed = emerge->getBlockSeed(full_node_min);  //////use getBlockSeed2()!
+	blockseed = m_emerge->getBlockSeed(full_node_min);  //////use getBlockSeed2()!
 
 	// Make some noise
 	calculateNoise();
@@ -241,10 +241,10 @@ void MapgenV7::makeChunk(BlockMakeData *data) {
 	}
 
 	// Generate the registered decorations
-	emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
+	m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
 
 	// Generate the registered ores
-	emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Sprinkle some dust on top after everything else was generated
 	dustTopNodes();

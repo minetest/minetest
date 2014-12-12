@@ -52,7 +52,7 @@ FlagDesc flagdesc_mapgen_v6[] = {
 MapgenV6::MapgenV6(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	: Mapgen(mapgenid, params, emerge)
 {
-	this->emerge  = emerge;
+	this->m_emerge = emerge;
 	this->ystride = csize.X; //////fix this
 
 	MapgenV6Params *sp = (MapgenV6Params *)params->sparams;
@@ -529,10 +529,10 @@ void MapgenV6::makeChunk(BlockMakeData *data) {
 		placeTreesAndJungleGrass();
 
 	// Generate the registered decorations
-	emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
+	m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
 
 	// Generate the registered ores
-	emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Calculate lighting
 	if (flags & MG_LIGHT)
