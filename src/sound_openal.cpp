@@ -434,7 +434,7 @@ public:
 				}
 			}
 		}
-		if(del_list.size() != 0)
+		if(!del_list.empty())
 			verbosestream<<"OpenALSoundManager::maintain(): deleting "
 					<<del_list.size()<<" playing sounds"<<std::endl;
 		for(std::set<int>::iterator i = del_list.begin();

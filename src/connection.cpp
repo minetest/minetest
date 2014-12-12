@@ -1316,7 +1316,7 @@ bool ConnectionSendThread::packetsQueued()
 {
 	std::list<u16> peerIds = m_connection->getPeerIDs();
 
-	if ((this->m_outgoing_queue.size() > 0) && (peerIds.size() > 0))
+	if (!m_outgoing_queue.empty() && !peerIds.empty())
 		return true;
 
 	for(std::list<u16>::iterator j = peerIds.begin();

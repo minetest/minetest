@@ -1669,7 +1669,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 	if(block==NULL)
 		return;
 	// Ignore if no stored objects (to not set changed flag)
-	if(block->m_static_objects.m_stored.size() == 0)
+	if(block->m_static_objects.m_stored.empty())
 		return;
 	verbosestream<<"ServerEnvironment::activateObjects(): "
 			<<"activating objects of block "<<PP(block->getPos())

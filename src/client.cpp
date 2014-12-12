@@ -577,7 +577,7 @@ void Client::step(float dtime)
 		{
 			if(sendlist.size() == 255 || i == deleted_blocks.end())
 			{
-				if(sendlist.size() == 0)
+				if(sendlist.empty())
 					break;
 				/*
 					[0] u16 command
@@ -813,7 +813,7 @@ void Client::step(float dtime)
 			}
 		}
 		// Sync to server
-		if(removed_server_ids.size() != 0)
+		if(!removed_server_ids.empty())
 		{
 			std::ostringstream os(std::ios_base::binary);
 			writeU16(os, TOSERVER_REMOVED_SOUNDS);

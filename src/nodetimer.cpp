@@ -47,7 +47,7 @@ void NodeTimerList::serialize(std::ostream &os, u8 map_format_version) const
 {
 	if(map_format_version == 24){
 		// Version 0 is a placeholder for "nothing to see here; go away."
-		if(m_data.size() == 0){
+		if(m_data.empty()){
 			writeU8(os, 0); // version
 			return;
 		}

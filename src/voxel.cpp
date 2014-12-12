@@ -420,7 +420,7 @@ void VoxelManipulator::unspreadLight(enum LightBank bank,
 		std::map<v3s16, u8> & from_nodes,
 		std::set<v3s16> & light_sources, INodeDefManager *nodemgr)
 {
-	if(from_nodes.size() == 0)
+	if(from_nodes.empty())
 		return;
 
 	for(std::map<v3s16, u8>::iterator j = from_nodes.begin();
@@ -646,7 +646,7 @@ void VoxelManipulator::spreadLight(enum LightBank bank,
 		v3s16(-1,0,0), // left
 	};
 
-	if(from_nodes.size() == 0)
+	if(from_nodes.empty())
 		return;
 
 	std::set<v3s16> lighted_nodes;
@@ -719,7 +719,7 @@ void VoxelManipulator::spreadLight(enum LightBank bank,
 			<<" for "<<from_nodes.size()<<" nodes"
 			<<std::endl;*/
 
-	if(lighted_nodes.size() > 0)
+	if(!lighted_nodes.empty())
 		spreadLight(bank, lighted_nodes, nodemgr);
 }
 #endif
