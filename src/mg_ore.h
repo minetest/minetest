@@ -99,7 +99,7 @@ public:
 	static const char *ELEMENT_TITLE;
 	static const size_t ELEMENT_LIMIT = 0x10000;
 
-	OreManager(IGameDef *gamedef) {}
+	OreManager(IGameDef *gamedef);
 	~OreManager() {}
 
 	Ore *create(int type)
@@ -115,6 +115,8 @@ public:
 			return NULL;
 		}
 	}
+
+	void clear();
 
 	size_t placeAllOres(Mapgen *mg, u32 seed, v3s16 nmin, v3s16 nmax);
 };

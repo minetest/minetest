@@ -178,7 +178,7 @@ public:
 	static const char *ELEMENT_TITLE;
 	static const size_t ELEMENT_LIMIT = -1;
 
-	GenElementManager() {}
+	GenElementManager(IGameDef *gamedef);
 	virtual ~GenElementManager();
 
 	virtual GenElement *create(int type) = 0;
@@ -192,6 +192,7 @@ public:
 	virtual GenElement *getByName(const std::string &name);
 
 protected:
+	NodeResolver *m_resolver;
 	std::vector<GenElement *> m_elements;
 };
 

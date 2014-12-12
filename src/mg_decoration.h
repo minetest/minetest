@@ -81,6 +81,7 @@ public:
 
 	virtual size_t generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p) = 0;
 	virtual int getHeight() = 0;
+	virtual void dropResolverEntries(NodeResolver *resolver) {}
 };
 
 class DecoSimple : public Decoration {
@@ -96,6 +97,7 @@ public:
 	bool canPlaceDecoration(ManualMapVoxelManipulator *vm, v3s16 p);
 	virtual size_t generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
 	virtual int getHeight();
+	virtual void dropResolverEntries(NodeResolver *resolver);
 };
 
 class DecoSchematic : public Decoration {
@@ -123,7 +125,7 @@ public:
 	static const char *ELEMENT_TITLE;
 	static const size_t ELEMENT_LIMIT = 0x10000;
 
-	DecorationManager(IGameDef *gamedef) {}
+	DecorationManager(IGameDef *gamedef);
 	~DecorationManager() {}
 
 	Decoration *create(int type)
@@ -139,6 +141,8 @@ public:
 			return NULL;
 		}
 	}
+
+	void clear();
 
 	size_t placeAllDecos(Mapgen *mg, u32 seed, v3s16 nmin, v3s16 nmax);
 };

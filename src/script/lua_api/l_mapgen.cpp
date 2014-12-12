@@ -464,6 +464,20 @@ int ModApiMapgen::l_clear_registered_biomes(lua_State *L)
 	return 0;
 }
 
+int ModApiMapgen::l_clear_registered_decorations(lua_State *L)
+{
+	DecorationManager *dmgr = getServer(L)->getEmergeManager()->decomgr;
+	dmgr->clear();
+	return 0;
+}
+
+int ModApiMapgen::l_clear_registered_ores(lua_State *L)
+{
+	OreManager *omgr = getServer(L)->getEmergeManager()->oremgr;
+	omgr->clear();
+	return 0;
+}
+
 // register_decoration({lots of stuff})
 int ModApiMapgen::l_register_decoration(lua_State *L)
 {
@@ -789,7 +803,10 @@ void ModApiMapgen::Initialize(lua_State *L, int top)
 	API_FCT(register_biome);
 	API_FCT(register_decoration);
 	API_FCT(register_ore);
+
 	API_FCT(clear_registered_biomes);
+	API_FCT(clear_registered_decorations);
+	API_FCT(clear_registered_ores);
 
 	API_FCT(create_schematic);
 	API_FCT(place_schematic);

@@ -37,6 +37,12 @@ FlagDesc flagdesc_ore[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 
+OreManager::OreManager(IGameDef *gamedef) :
+	GenElementManager(gamedef)
+{
+}
+
+
 size_t OreManager::placeAllOres(Mapgen *mg, u32 seed, v3s16 nmin, v3s16 nmax)
 {
 	size_t nplaced = 0;
@@ -51,6 +57,20 @@ size_t OreManager::placeAllOres(Mapgen *mg, u32 seed, v3s16 nmin, v3s16 nmax)
 	}
 
 	return nplaced;
+}
+
+
+void OreManager::clear()
+{
+	for (size_t i = 0; i < m_elements.size(); i++) {
+		Ore *ore = (Ore *)m_elements[i];
+		if (!ore)
+			continue;
+
+		m_resolver->cancelNodeList(&ore->c_wherein);
+		m_resolver->cancelNode(&ore->c_ore);
+	}
+	m_elements.clear();
 }
 
 
@@ -169,4 +189,3 @@ void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
 		}
 	}
 }
-

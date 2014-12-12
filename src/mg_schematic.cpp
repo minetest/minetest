@@ -30,6 +30,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 const char *SchematicManager::ELEMENT_TITLE = "schematic";
 
+///////////////////////////////////////////////////////////////////////////////
+
+
+SchematicManager::SchematicManager(IGameDef *gamedef) :
+	GenElementManager(gamedef)
+{
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 

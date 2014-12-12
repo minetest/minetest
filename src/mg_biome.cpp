@@ -32,10 +32,9 @@ const char *BiomeManager::ELEMENT_TITLE = "biome";
 
 ///////////////////////////////////////////////////////////////////////////////
 
-BiomeManager::BiomeManager(IGameDef *gamedef)
+BiomeManager::BiomeManager(IGameDef *gamedef) :
+	GenElementManager(gamedef)
 {
-	m_resolver  = gamedef->getNodeDefManager()->getResolver();
-
 	// Create default biome to be used in case none exist
 	Biome *b = new Biome;
 

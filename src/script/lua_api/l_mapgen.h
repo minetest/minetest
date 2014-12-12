@@ -55,6 +55,12 @@ private:
 	// clear_registered_biomes()
 	static int l_clear_registered_biomes(lua_State *L);
 
+	// clear_registered_decorations()
+	static int l_clear_registered_decorations(lua_State *L);
+
+	// clear_registered_ores
+	static int l_clear_registered_ores(lua_State *L);
+
 	// create_schematic(p1, p2, probability_list, filename)
 	static int l_create_schematic(lua_State *L);
 

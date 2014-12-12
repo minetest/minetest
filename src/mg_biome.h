@@ -71,9 +71,6 @@ public:
 	void calcBiomes(s16 sx, s16 sy, float *heat_map, float *humidity_map,
 		s16 *height_map, u8 *biomeid_map);
 	Biome *getBiome(float heat, float humidity, s16 y);
-
-private:
-	NodeResolver *m_resolver;
 };
 
 #endif

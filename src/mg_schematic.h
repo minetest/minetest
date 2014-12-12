@@ -76,7 +76,7 @@ public:
 	static const char *ELEMENT_TITLE;
 	static const size_t ELEMENT_LIMIT = 0x10000;
 
-	SchematicManager(IGameDef *gamedef) {}
+	SchematicManager(IGameDef *gamedef);
 	~SchematicManager() {}
 
 	Schematic *create(int type)

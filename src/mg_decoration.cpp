@@ -38,6 +38,12 @@ FlagDesc flagdesc_deco[] = {
 ///////////////////////////////////////////////////////////////////////////////
 
 
+DecorationManager::DecorationManager(IGameDef *gamedef) :
+	GenElementManager(gamedef)
+{
+}
+
+
 size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 seed, v3s16 nmin, v3s16 nmax)
 {
 	size_t nplaced = 0;
@@ -52,6 +58,19 @@ size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 seed, v3s16 nmin, v3s16 
 	}
 
 	return nplaced;
+}
+
+
+void DecorationManager::clear()
+{
+	for (size_t i = 0; i < m_elements.size(); i++) {
+		Decoration *deco = (Decoration *)m_elements[i];
+		if (!deco)
+			continue;
+
+		deco->dropResolverEntries(m_resolver);
+	}
+	m_elements.clear();
 }
 
 
@@ -288,6 +307,13 @@ size_t DecoSimple::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p)
 int DecoSimple::getHeight()
 {
 	return (deco_height_max > 0) ? deco_height_max : deco_height;
+}
+
+
+void DecoSimple::dropResolverEntries(NodeResolver *resolver)
+{
+	resolver->cancelNodeList(&c_decos);
+	resolver->cancelNodeList(&c_spawnby);
 }
 
 

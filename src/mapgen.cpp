@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen.h"
 #include "voxel.h"
 #include "noise.h"
+#include "gamedef.h"
 #include "mg_biome.h"
 #include "mapblock.h"
 #include "mapnode.h"
@@ -379,6 +380,12 @@ void GenerateNotifier::getEvents(
 
 
 ///////////////////////////////////////////////////////////////////////////////
+
+
+GenElementManager::GenElementManager(IGameDef *gamedef)
+{
+	m_resolver = gamedef->getNodeDefManager()->getResolver();
+}
 
 
 GenElementManager::~GenElementManager()
