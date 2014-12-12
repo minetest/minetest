@@ -2177,6 +2177,8 @@ void run_tests()
 	IWritableNodeDefManager *ndef = createNodeDefManager();
 	define_some_nodes(idef, ndef);
 
+	log_set_lev_silence(LMT_ERROR, true);
+
 	infostream<<"run_tests() started"<<std::endl;
 	TEST(TestUtilities);
 	TEST(TestPath);
@@ -2197,6 +2199,8 @@ void run_tests()
 		TEST(TestConnection);
 		dout_con<<"=== END RUNNING UNIT TESTS FOR CONNECTION ==="<<std::endl;
 	}
+
+	log_set_lev_silence(LMT_ERROR, false);
 
 	delete idef;
 	delete ndef;

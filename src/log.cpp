@@ -60,6 +60,21 @@ void log_remove_output(ILogOutput *out)
 	}
 }
 
+void log_set_lev_silence(enum LogMessageLevel lev, bool silence)
+{
+	log_threadnamemutex.Lock();
+
+	for (std::list<ILogOutput *>::iterator
+			it = log_outputs[lev].begin();
+			it != log_outputs[lev].end();
+			++it) {
+		ILogOutput *out = *it;
+		out->silence = silence;
+	}
+
+	log_threadnamemutex.Unlock();
+}
+
 void log_register_thread(const std::string &name)
 {
 	threadid_t id = get_current_thread_id();
@@ -107,6 +122,9 @@ void log_printline(enum LogMessageLevel lev, const std::string &text)
 	for(std::list<ILogOutput*>::iterator i = log_outputs[lev].begin();
 			i != log_outputs[lev].end(); i++){
 		ILogOutput *out = *i;
+		if (out->silence)
+			continue;
+
 		out->printLog(os.str());
 		out->printLog(os.str(), lev);
 		out->printLog(lev, text);

@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /*
 	Use this for logging everything.
-	
+
 	If you need to explicitly print something, use dstream or cout or cerr.
 */
 
@@ -39,18 +39,25 @@ enum LogMessageLevel {
 class ILogOutput
 {
 public:
+	ILogOutput() :
+		silence(false)
+	{}
+
 	/* line: Full line with timestamp, level and thread */
 	virtual void printLog(const std::string &line){};
 	/* line: Full line with timestamp, level and thread */
 	virtual void printLog(const std::string &line, enum LogMessageLevel lev){};
 	/* line: Only actual printed text */
 	virtual void printLog(enum LogMessageLevel lev, const std::string &line){};
+
+	bool silence;
 };
 
 void log_add_output(ILogOutput *out, enum LogMessageLevel lev);
 void log_add_output_maxlev(ILogOutput *out, enum LogMessageLevel lev);
 void log_add_output_all_levs(ILogOutput *out);
 void log_remove_output(ILogOutput *out);
+void log_set_lev_silence(enum LogMessageLevel lev, bool silence);
 
 void log_register_thread(const std::string &name);
 void log_deregister_thread();
