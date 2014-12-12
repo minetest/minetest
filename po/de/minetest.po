@@ -94,19 +94,19 @@ msgstr "Erstellen"
 
 #: builtin/mainmenu/dlg_create_world.lua:68
 msgid "You have no subgames installed."
-msgstr ""
+msgstr "Keine Spiele installiert."
 
 #: builtin/mainmenu/dlg_create_world.lua:69
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "Spiele können von minetest.net heruntergeladen werden"
 
 #: builtin/mainmenu/dlg_create_world.lua:72
 msgid "Warning: The minimal development test is meant for developers."
-msgstr ""
+msgstr "Warnung: Die minimale Testversion ist für Entwickler gedacht."
 
 #: builtin/mainmenu/dlg_create_world.lua:73
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr ""
+msgstr "Andere Spiele (wie minetest_game) können von minetest.net heruntergeladen werden"
 
 #: builtin/mainmenu/dlg_create_world.lua:97
 msgid "A world named \"$1\" already exists"
@@ -159,13 +159,12 @@ msgid "Install Mod: file: \"$1\""
 msgstr "Mod installieren: Datei: \"$1\""
 
 #: builtin/mainmenu/modmgr.lua:343
-#, fuzzy
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"Mod installieren: Nicht unterstützter Dateityp \"$1\""
+"Mod installieren: Nicht unterstützter Dateityp \"$1\" oder fehlerhaftes Archiv"
 
 #: builtin/mainmenu/modmgr.lua:363
 msgid "Failed to install $1 to $2"
@@ -181,33 +180,31 @@ msgstr "Mod installieren: Kann echten Namen für $1 nicht finden"
 
 #: builtin/mainmenu/store.lua:88
 msgid "Unsorted"
-msgstr ""
+msgstr "Unsortiert"
 
 #: builtin/mainmenu/store.lua:99 builtin/mainmenu/store.lua:584
 msgid "Search"
-msgstr ""
+msgstr "Suchen"
 
 #: builtin/mainmenu/store.lua:125
-#, fuzzy
 msgid "Downloading"
-msgstr "Runterladen"
+msgstr "Lade herunter"
 
 #: builtin/mainmenu/store.lua:127
 msgid "please wait..."
-msgstr ""
+msgstr "Bitte warten..."
 
 #: builtin/mainmenu/store.lua:159
 msgid "Successfully installed:"
-msgstr ""
+msgstr "Erfolgreich installiert:"
 
 #: builtin/mainmenu/store.lua:163
-#, fuzzy
 msgid "Shortname:"
-msgstr "Weltname"
+msgstr "Kurzname:"
 
 #: builtin/mainmenu/store.lua:167 src/guiFormSpecMenu.cpp:2865
 msgid "ok"
-msgstr ""
+msgstr "ok"
 
 #: builtin/mainmenu/store.lua:476
 msgid "Rating"
@@ -223,7 +220,7 @@ msgstr "Installieren"
 
 #: builtin/mainmenu/store.lua:522
 msgid "Close store"
-msgstr ""
+msgstr "Schließen"
 
 #: builtin/mainmenu/store.lua:530
 msgid "Page $1 of $2"
@@ -373,7 +370,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_server.lua:47
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: builtin/mainmenu/tab_server.lua:51
 msgid "Server Port"
@@ -385,11 +382,11 @@ msgstr "Server"
 
 #: builtin/mainmenu/tab_settings.lua:23
 msgid "Are you sure to reset your singleplayer world?"
-msgstr ""
+msgstr "Sind Sie sicher, dass Sie die Einzelspielerwelt löschen wollen?"
 
 #: builtin/mainmenu/tab_settings.lua:27
 msgid "No!!!"
-msgstr ""
+msgstr "Nein!!!"
 
 #: builtin/mainmenu/tab_settings.lua:133
 msgid "SETTINGS"
@@ -408,7 +405,6 @@ msgid "3D Clouds"
 msgstr "3D Wolken"
 
 #: builtin/mainmenu/tab_settings.lua:141
-#, fuzzy
 msgid "Fancy Trees"
 msgstr "Schöne Bäume"
 
@@ -417,13 +413,12 @@ msgid "Opaque Water"
 msgstr "Undurchs. Wasser"
 
 #: builtin/mainmenu/tab_settings.lua:145
-#, fuzzy
 msgid "Connected Glass"
-msgstr "Verbinden"
+msgstr "Verbundenes Glas"
 
 #: builtin/mainmenu/tab_settings.lua:150
 msgid "Restart minetest for driver change to take effect"
-msgstr ""
+msgstr "Neustart nach Ändern des Treibers erforderlich"
 
 #: builtin/mainmenu/tab_settings.lua:152
 msgid "Mip-Mapping"
@@ -450,17 +445,16 @@ msgid "Change keys"
 msgstr "Tasten ändern"
 
 #: builtin/mainmenu/tab_settings.lua:168
-#, fuzzy
 msgid "Reset singleplayer world"
-msgstr "Einzelspieler"
+msgstr "Einzelspielerwelt zurücksetzen"
 
 #: builtin/mainmenu/tab_settings.lua:172
 msgid "GUI scale factor"
-msgstr ""
+msgstr "GUI-Skalierfaktor"
 
 #: builtin/mainmenu/tab_settings.lua:176
 msgid "Scaling factor applied to menu elements: "
-msgstr ""
+msgstr "Skalierfaktor:"
 
 #: builtin/mainmenu/tab_settings.lua:182
 msgid "Touch free target"
@@ -471,29 +465,28 @@ msgid "Touchthreshold (px)"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:195 builtin/mainmenu/tab_settings.lua:209
-#, fuzzy
 msgid "Bumpmapping"
-msgstr "Mip-Mapping"
+msgstr "Bumpmapping"
 
 #: builtin/mainmenu/tab_settings.lua:197 builtin/mainmenu/tab_settings.lua:210
 msgid "Generate Normalmaps"
-msgstr ""
+msgstr "Generiere Normalmaps"
 
 #: builtin/mainmenu/tab_settings.lua:199 builtin/mainmenu/tab_settings.lua:211
 msgid "Parallax Occlusion"
-msgstr ""
+msgstr "Parallax Occlusion"
 
 #: builtin/mainmenu/tab_settings.lua:201 builtin/mainmenu/tab_settings.lua:212
 msgid "Waving Water"
-msgstr ""
+msgstr "Wasserwellen"
 
 #: builtin/mainmenu/tab_settings.lua:203 builtin/mainmenu/tab_settings.lua:213
 msgid "Waving Leaves"
-msgstr ""
+msgstr "Wehende Blätter"
 
 #: builtin/mainmenu/tab_settings.lua:205 builtin/mainmenu/tab_settings.lua:214
 msgid "Waving Plants"
-msgstr ""
+msgstr "Wogende Pflanzen"
 
 #: builtin/mainmenu/tab_settings.lua:256
 msgid "To enable shaders the OpenGL driver needs to be used."
@@ -505,20 +498,17 @@ msgstr "Einstellungen"
 
 #: builtin/mainmenu/tab_simple_main.lua:67
 msgid "Fly mode"
-msgstr ""
+msgstr "Flugmodus"
 
 #: builtin/mainmenu/tab_simple_main.lua:71
-#, fuzzy
 msgid "Start Singleplayer"
-msgstr "Einzelspieler"
+msgstr "Starte Einzelspieler"
 
 #: builtin/mainmenu/tab_simple_main.lua:72
-#, fuzzy
 msgid "Config mods"
-msgstr "Konfigurieren"
+msgstr "Mods konfigurieren"
 
 #: builtin/mainmenu/tab_simple_main.lua:191
-#, fuzzy
 msgid "Main"
 msgstr "Hauptmenü"
 
@@ -547,7 +537,6 @@ msgid "No information available"
 msgstr "Keine Informationen vorhanden"
 
 #: builtin/mainmenu/tab_texturepacks.lua:115
-#, fuzzy
 msgid "Texturepacks"
 msgstr "Texturen Pakete"
 
@@ -577,11 +566,11 @@ msgstr "Medien..."
 
 #: src/game.cpp:2267
 msgid " KB/s"
-msgstr ""
+msgstr " KB/s"
 
 #: src/game.cpp:2271
 msgid " MB/s"
-msgstr ""
+msgstr " MB/s"
 
 #: src/game.cpp:4220
 msgid ""
@@ -597,7 +586,7 @@ msgstr "Fortsetzen"
 
 #: src/guiFormSpecMenu.cpp:2845
 msgid "Enter "
-msgstr ""
+msgstr "Enter "
 
 #: src/guiKeyChangeMenu.cpp:125
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -1009,7 +998,7 @@ msgstr "Hauptmenü"
 
 #: src/main.cpp:1713
 msgid "Player name too long."
-msgstr ""
+msgstr "Spielername zu lang."
 
 #: src/main.cpp:1751
 msgid "Connection error (timed out?)"
@@ -1021,7 +1010,7 @@ msgstr "Keine Welt ausgewählt und keine Adresse angegeben. Nichts zu tun."
 
 #: src/main.cpp:1920
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "Angegebener Weltpfad existiert nicht: "
 
 #: src/main.cpp:1929
 msgid "Could not find or load game \""
