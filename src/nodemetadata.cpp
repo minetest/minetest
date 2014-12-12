@@ -83,7 +83,7 @@ void NodeMetadataList::serialize(std::ostream &os) const
 		Version 0 is a placeholder for "nothing to see here; go away."
 	*/
 
-	if(m_data.size() == 0){
+	if(m_data.empty()){
 		writeU8(os, 0); // version
 		return;
 	}
