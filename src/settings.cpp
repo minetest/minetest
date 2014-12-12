@@ -254,7 +254,6 @@ bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 				printEntry(os, name, it->second, tab_depth);
 				was_modified = true;
 			} else {
-				assert(it->second.group == NULL);
 				os << line << "\n";
 				if (event == SPE_MULTILINE)
 					os << value << "\n\"\"\"\n";
