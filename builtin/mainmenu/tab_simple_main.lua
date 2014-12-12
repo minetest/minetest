@@ -25,12 +25,12 @@ local function get_formspec(tabview, name, tabdata)
 	local retval =
 		"label[9.5,0;".. fgettext("Name / Password") .. "]" ..
 		"field[0.25,3.35;5.5,0.5;te_address;;" ..
-			core.formspec_escape(core.setting_get("address")) .."]" ..
+			core.formspec_escape(core.settings:get("address")) .."]" ..
 		"field[5.75,3.35;2.25,0.5;te_port;;" ..
-			core.formspec_escape(core.setting_get("remote_port")) .."]" ..
+			core.formspec_escape(core.settings:get("remote_port")) .."]" ..
 		"button[10,2.6;2,1.5;btn_mp_connect;".. fgettext("Connect") .. "]" ..
 		"field[9.8,1;2.6,0.5;te_name;;" ..
-			core.formspec_escape(core.setting_get("name")) .."]" ..
+			core.formspec_escape(core.settings:get("name")) .."]" ..
 		"pwdfield[9.8,2;2.6,0.5;te_pwd;]"
 
 
@@ -89,9 +89,9 @@ local function get_formspec(tabview, name, tabdata)
 	-- checkboxes
 	retval = retval ..
 		"checkbox[8.0,3.9;cb_creative;".. fgettext("Creative Mode") .. ";" ..
-			dump(core.setting_getbool("creative_mode")) .. "]"..
+			dump(core.settings:get_bool("creative_mode")) .. "]"..
 		"checkbox[8.0,4.4;cb_damage;".. fgettext("Enable Damage") .. ";" ..
-			dump(core.setting_getbool("enable_damage")) .. "]"
+			dump(core.settings:get_bool("enable_damage")) .. "]"
 	-- buttons
 	retval = retval ..
 		"button[0,3.7;8,1.5;btn_start_singleplayer;" .. fgettext("Start Singleplayer") .. "]" ..
@@ -128,8 +128,8 @@ local function main_button_handler(tabview, fields, name, tabdata)
 				end
 
 				if address and port then
-					core.setting_set("address", address)
-					core.setting_set("remote_port", port)
+					core.settings:set("address", address)
+					core.settings:set("remote_port", port)
 				end
 				tabdata.fav_selected = event.row
 			end
@@ -145,18 +145,18 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		asyncOnlineFavourites()
 		tabdata.fav_selected = nil
 
-		core.setting_set("address", "")
-		core.setting_set("remote_port", "30000")
+		core.settings:set("address", "")
+		core.settings:set("remote_port", "30000")
 		return true
 	end
 
 	if fields.cb_creative then
-		core.setting_set("creative_mode", fields.cb_creative)
+		core.settings:set("creative_mode", fields.cb_creative)
 		return true
 	end
 
 	if fields.cb_damage then
-		core.setting_set("enable_damage", fields.cb_damage)
+		core.settings:set("enable_damage", fields.cb_damage)
 		return true
 	end
 
@@ -186,12 +186,8 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 		gamedata.selected_world = 0
 
-		core.setting_set("address", fields.te_address)
-		core.setting_set("remote_port", fields.te_port)
-
-		core.start()
-		return true
-	end
+		core.settings:set("address", fields.te_address)
+		core.settings:set("remote_port", fields.te_port)
 
 	if fields.btn_config_sp_world then
 		local configdialog = create_configure_world_dlg(1)

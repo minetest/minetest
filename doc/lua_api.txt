@@ -172,8 +172,8 @@ The main Lua script. Running this script should register everything it
 wants to register. Subsequent execution depends on minetest calling the
 registered callbacks.
 
-`minetest.setting_get(name)` and `minetest.setting_getbool(name)` can be used
-to read custom or existing settings at load time, if necessary.
+`minetest.settings` can be used to read custom or existing settings at load
+time, if necessary. (See `Settings`)
 
 ### `models`
 Models for entities or meshnodes.
@@ -2177,16 +2177,10 @@ Call these functions only at load time!
     * See `minetest.builtin_auth_handler` in `builtin.lua` for reference
 
 ### Setting-related
-* `minetest.setting_set(name, value)`
-    * Setting names can't contain whitespace or any of `="{}#`.
-    * Setting values can't contain the sequence `\n"""`.
-    * Setting names starting with "secure." can't be set.
-* `minetest.setting_get(name)`: returns string or `nil`
-* `minetest.setting_setbool(name, value)`
-    * See documentation on `setting_set` for restrictions.
-* `minetest.setting_getbool(name)`: returns boolean or `nil`
-* `minetest.setting_get_pos(name)`: returns position or nil
-* `minetest.setting_save()`, returns `nil`, save all settings to config file
+* `minetest.settings`: Settings object containing all of the settings from the
+  main config file (`minetest.conf`).
+* `minetest.setting_get_pos(name)`: Loads a setting from the main settings and
+  parses it as a position (in the format `(1,2,3)`). Returns a position or nil.
 
 ### Authentication
 * `minetest.notify_authentication_modified(name)`
@@ -3536,10 +3530,15 @@ It can be created via `Settings(filename)`.
 * `get(key)`: returns a value
 * `get_bool(key)`: returns a boolean
 * `set(key, value)`
+    * Setting names can't contain whitespace or any of `="{}#`.
+    * Setting values can't contain the sequence `\n"""`.
+    * Setting names starting with "secure." can't be set on the main settings object (`minetest.settings`).
+* `set_bool(key, value)`
+    * See documentation for set() above.
 * `remove(key)`: returns a boolean (`true` for success)
 * `get_names()`: returns `{key1,...}`
 * `write()`: returns a boolean (`true` for success)
-    * write changes to file
+    * Writes changes to file.
 * `to_table()`: returns `{[key1]=value1,...}`
 
 Mapgen objects

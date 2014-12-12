@@ -14,7 +14,7 @@ end
 -- If item_entity_ttl is not set, enity will have default life time
 -- Setting it to -1 disables the feature
 
-local time_to_live = tonumber(core.setting_get("item_entity_ttl"))
+local time_to_live = tonumber(core.settings:get("item_entity_ttl"))
 if not time_to_live then
 	time_to_live = 900
 end

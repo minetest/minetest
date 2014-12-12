@@ -142,6 +142,7 @@ private:
 	static int l_do_async_callback(lua_State *L);
 
 public:
+
 	/**
 	 * initialize this API module
 	 * @param L lua stack to initialize
@@ -149,7 +150,7 @@ public:
 	 */
 	static void Initialize(lua_State *L, int top);
 
-	static void InitializeAsync(AsyncEngine& engine);
+	static void InitializeAsync(lua_State *L, int top);
 
 };
 

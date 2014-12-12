@@ -76,14 +76,9 @@ AsyncEngine::~AsyncEngine()
 }
 
 /******************************************************************************/
-bool AsyncEngine::registerFunction(const char* name, lua_CFunction func)
+void AsyncEngine::registerStateInitializer(StateInitializer func)
 {
-	if (initDone) {
-		return false;
-	}
-
-	functionList[name] = func;
-	return true;
+	stateInitializers.push_back(func);
 }
 
 /******************************************************************************/
@@ -204,11 +199,9 @@ void AsyncEngine::pushFinishedJobs(lua_State* L) {
 /******************************************************************************/
 void AsyncEngine::prepareEnvironment(lua_State* L, int top)
 {
-	for (UNORDERED_MAP<std::string, lua_CFunction>::iterator it = functionList.begin();
-			it != functionList.end(); ++it) {
-		lua_pushstring(L, it->first.c_str());
-		lua_pushcfunction(L, it->second);
-		lua_settable(L, top);
+	for (std::vector<StateInitializer>::iterator it = stateInitializers.begin();
+			it != stateInitializers.end(); it++) {
+		(*it)(L, top);
 	}
 }
 

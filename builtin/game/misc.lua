@@ -121,7 +121,7 @@ function core.get_node_group(name, group)
 end
 
 function core.setting_get_pos(name)
-	local value = core.setting_get(name)
+	local value = core.settings:get(name)
 	if not value then
 		return nil
 	end

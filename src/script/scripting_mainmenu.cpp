@@ -59,21 +59,26 @@ MainMenuScripting::MainMenuScripting(GUIEngine* guiengine)
 /******************************************************************************/
 void MainMenuScripting::initializeModApi(lua_State *L, int top)
 {
+	registerLuaClasses(L, top);
+
 	// Initialize mod API modules
 	ModApiMainMenu::Initialize(L, top);
 	ModApiUtil::Initialize(L, top);
 	ModApiSound::Initialize(L, top);
 
-	// Register reference classes (userdata)
-	LuaSettings::Register(L);
-
-	// Register functions to async environment
-	ModApiMainMenu::InitializeAsync(asyncEngine);
-	ModApiUtil::InitializeAsync(asyncEngine);
+	asyncEngine.registerStateInitializer(registerLuaClasses);
+	asyncEngine.registerStateInitializer(ModApiMainMenu::InitializeAsync);
+	asyncEngine.registerStateInitializer(ModApiUtil::InitializeAsync);
 
 	// Initialize async environment
 	//TODO possibly make number of async threads configurable
 	asyncEngine.initialize(MAINMENU_NUM_ASYNC_THREADS);
+}
+
+/******************************************************************************/
+void MainMenuScripting::registerLuaClasses(lua_State *L, int top)
+{
+	LuaSettings::Register(L);
 }
 
 /******************************************************************************/

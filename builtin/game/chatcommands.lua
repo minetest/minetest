@@ -39,7 +39,7 @@ core.register_on_chat_message(function(name, message)
 	return true  -- Handled chat message
 end)
 
-if core.setting_getbool("profiler.load") then
+if core.settings:get_bool("profiler.load") then
 	-- Run after register_chatcommand and its register_on_chat_message
 	-- Before any chattcommands that should be profiled
 	profiler.init_chatcommand()
@@ -82,7 +82,7 @@ core.register_chatcommand("me", {
 core.register_chatcommand("admin", {
 	description = "Show the name of the server owner",
 	func = function(name)
-		local admin = minetest.setting_get("name")
+		local admin = minetest.settings:get("name")
 		if admin then
 			return true, "The administrator of this server is "..admin.."."
 		else
@@ -119,7 +119,7 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 	local privs = core.get_player_privs(grantname)
 	local privs_unknown = ""
 	local basic_privs =
-		core.string_to_privs(core.setting_get("basic_privs") or "interact,shout")
+		core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
 	for priv, _ in pairs(grantprivs) do
 		if not basic_privs[priv] and not caller_privs.privs then
 			return false, "Your privileges are insufficient."
@@ -185,7 +185,7 @@ core.register_chatcommand("revoke", {
 		local revoke_privs = core.string_to_privs(revoke_priv_str)
 		local privs = core.get_player_privs(revoke_name)
 		local basic_privs =
-			core.string_to_privs(core.setting_get("basic_privs") or "interact,shout")
+			core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
 		for priv, _ in pairs(revoke_privs) do
 			if not basic_privs[priv] and
 					not core.check_player_privs(name, {privs=true}) then
@@ -419,20 +419,20 @@ core.register_chatcommand("set", {
 	func = function(name, param)
 		local arg, setname, setvalue = string.match(param, "(-[n]) ([^ ]+) (.+)")
 		if arg and arg == "-n" and setname and setvalue then
-			core.setting_set(setname, setvalue)
+			core.settings:set(setname, setvalue)
 			return true, setname .. " = " .. setvalue
 		end
 		local setname, setvalue = string.match(param, "([^ ]+) (.+)")
 		if setname and setvalue then
-			if not core.setting_get(setname) then
+			if not core.settings:get(setname) then
 				return false, "Failed. Use '/set -n <name> <value>' to create a new setting."
 			end
-			core.setting_set(setname, setvalue)
+			core.settings:set(setname, setvalue)
 			return true, setname .. " = " .. setvalue
 		end
 		local setname = string.match(param, "([^ ]+)")
 		if setname then
-			local setvalue = core.setting_get(setname)
+			local setvalue = core.settings:get(setname)
 			if not setvalue then
 				setvalue = "<not set>"
 			end
@@ -667,7 +667,7 @@ core.register_chatcommand("rollback_check", {
 			.. " seconds = 86400 = 24h, limit = 5",
 	privs = {rollback=true},
 	func = function(name, param)
-		if not core.setting_getbool("enable_rollback_recording") then
+		if not core.settings:get_bool("enable_rollback_recording") then
 			return false, "Rollback functions are disabled."
 		end
 		local range, seconds, limit =
@@ -718,7 +718,7 @@ core.register_chatcommand("rollback", {
 	description = "Revert actions of a player. Default for <seconds> is 60",
 	privs = {rollback=true},
 	func = function(name, param)
-		if not core.setting_getbool("enable_rollback_recording") then
+		if not core.settings:get_bool("enable_rollback_recording") then
 			return false, "Rollback functions are disabled."
 		end
 		local target_name, seconds = string.match(param, ":([^ ]+) *(%d*)")

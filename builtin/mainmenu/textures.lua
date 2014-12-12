@@ -24,7 +24,7 @@ function mm_texture.init()
 						DIR_DELIM .. "pack" .. DIR_DELIM
 	mm_texture.basetexturedir = mm_texture.defaulttexturedir
 	
-	mm_texture.texturepack = core.setting_get("texture_path")
+	mm_texture.texturepack = core.settings:get("texture_path")
 	
 	mm_texture.gameid = nil
 end
@@ -61,7 +61,7 @@ function mm_texture.reset()
 	mm_texture.set_generic("header")
 	
 	if not have_bg then
-		if core.setting_getbool("menu_clouds") then
+		if core.settings:get_bool("menu_clouds") then
 			core.set_clouds(true)
 		else
 			mm_texture.set_dirt_bg()
@@ -88,7 +88,7 @@ function mm_texture.update_game(gamedetails)
 	
 	if not have_bg then
 		
-		if core.setting_getbool("menu_clouds") then
+		if core.settings:get_bool("menu_clouds") then
 			core.set_clouds(true)
 		else
 			mm_texture.set_dirt_bg()

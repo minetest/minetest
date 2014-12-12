@@ -483,7 +483,7 @@ function core.node_dig(pos, node, digger)
 		wielded = wdef.after_use(wielded, digger, node, dp) or wielded
 	else
 		-- Wear out tool
-		if not core.setting_getbool("creative_mode") then
+		if not core.settings:get_bool("creative_mode") then
 			wielded:add_wear(dp.wear)
 			if wielded:get_count() == 0 and wdef.sound and wdef.sound.breaks then
 				core.sound_play(wdef.sound.breaks, {pos = pos, gain = 0.5})

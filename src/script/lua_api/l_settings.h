@@ -42,6 +42,9 @@ private:
 	// set(self, key, value)
 	static int l_set(lua_State *L);
 
+	// set_bool(self, key, value)
+	static int l_set_bool(lua_State* L);
+
 	// remove(self, key) -> success
 	static int l_remove(lua_State *L);
 
@@ -54,16 +57,20 @@ private:
 	// to_table(self) -> {[key1]=value1,...}
 	static int l_to_table(lua_State *L);
 
-	bool m_write_allowed;
 	Settings *m_settings;
 	std::string m_filename;
+	bool m_is_own_settings;
+	bool m_write_allowed;
 
 public:
-	LuaSettings(const char *filename, bool write_allowed);
+	LuaSettings(Settings *settings, const std::string &filename);
+	LuaSettings(const std::string &filename, bool write_allowed);
 	~LuaSettings();
 
+	static void create(lua_State *L, Settings *settings, const std::string &filename);
+
 	// LuaSettings(filename)
-	// Creates an LuaSettings and leaves it on top of stack
+	// Creates a LuaSettings and leaves it on top of the stack
 	static int create_object(lua_State *L);
 
 	static LuaSettings *checkobject(lua_State *L, int narg);

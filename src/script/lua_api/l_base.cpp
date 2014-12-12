@@ -74,17 +74,13 @@ std::string ModApiBase::getCurrentModPath(lua_State *L)
 }
 
 
-bool ModApiBase::registerFunction(
-	lua_State *L,
-	const char *name,
-	lua_CFunction fct,
-	int top)
+bool ModApiBase::registerFunction(lua_State *L, const char *name,
+		lua_CFunction func, int top)
 {
-	//TODO check presence first!
+	// TODO: Check presence first!
 
-	lua_pushstring(L,name);
-	lua_pushcfunction(L,fct);
-	lua_settable(L, top);
+	lua_pushcfunction(L, func);
+	lua_setfield(L, top, name);
 
 	return true;
 }

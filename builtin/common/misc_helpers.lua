@@ -463,7 +463,7 @@ if INIT == "game" then
 
 	core.rotate_node = function(itemstack, placer, pointed_thing)
 		core.rotate_and_place(itemstack, placer, pointed_thing,
-				core.setting_getbool("creative_mode"),
+				core.settings:get_bool("creative_mode"),
 				{invert_wall = placer:get_player_control().sneak})
 		return itemstack
 	end
@@ -642,8 +642,8 @@ end
 
 local ESCAPE_CHAR = string.char(0x1b)
 
--- Client-sided mods don't have access to getbool
-if core.setting_getbool and core.setting_getbool("disable_escape_sequences") then
+-- Client-side mods don't have access to settings
+if core.settings and core.settings:get_bool("disable_escape_sequences") then
 
 	function core.get_color_escape_sequence(color)
 		return ""

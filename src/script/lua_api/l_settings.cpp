@@ -23,6 +23,47 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "log.h"
 
+
+#define SET_SECURITY_CHECK(L, name) \
+	if (o->m_settings == g_settings && ScriptApiSecurity::isSecure(L) && \
+			name.compare(0, 7, "secure.") == 0) { \
+		throw LuaError("Attempt to set secure setting."); \
+	}
+
+LuaSettings::LuaSettings(Settings *settings, const std::string &filename) :
+	m_settings(settings),
+	m_filename(filename),
+	m_is_own_settings(false),
+	m_write_allowed(true)
+{
+}
+
+LuaSettings::LuaSettings(const std::string &filename, bool write_allowed) :
+	m_filename(filename),
+	m_is_own_settings(true),
+	m_write_allowed(write_allowed)
+{
+	m_settings = new Settings();
+	m_settings->readConfigFile(filename.c_str());
+}
+
+LuaSettings::~LuaSettings()
+{
+	if (m_is_own_settings)
+		delete m_settings;
+}
+
+
+void LuaSettings::create(lua_State *L, Settings *settings,
+		const std::string &filename)
+{
+	LuaSettings *o = new LuaSettings(settings, filename);
+	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+	luaL_getmetatable(L, className);
+	lua_setmetatable(L, -2);
+}
+
+
 // garbage collector
 int LuaSettings::gc_object(lua_State* L)
 {
@@ -30,6 +71,7 @@ int LuaSettings::gc_object(lua_State* L)
 	delete o;
 	return 0;
 }
+
 
 // get(self, key) -> value
 int LuaSettings::l_get(lua_State* L)
@@ -74,10 +116,28 @@ int LuaSettings::l_set(lua_State* L)
 	std::string key = std::string(luaL_checkstring(L, 2));
 	const char* value = luaL_checkstring(L, 3);
 
+	SET_SECURITY_CHECK(L, key);
+
 	if (!o->m_settings->set(key, value))
 		throw LuaError("Invalid sequence found in setting parameters");
 
 	return 0;
+}
+
+// set_bool(self, key, value)
+int LuaSettings::l_set_bool(lua_State* L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaSettings* o = checkobject(L, 1);
+
+	std::string key = std::string(luaL_checkstring(L, 2));
+	bool value = lua_toboolean(L, 3);
+
+	SET_SECURITY_CHECK(L, key);
+
+	o->m_settings->setBool(key, value);
+
+	return 1;
 }
 
 // remove(self, key) -> success
@@ -87,6 +147,8 @@ int LuaSettings::l_remove(lua_State* L)
 	LuaSettings* o = checkobject(L, 1);
 
 	std::string key = std::string(luaL_checkstring(L, 2));
+
+	SET_SECURITY_CHECK(L, key);
 
 	bool success = o->m_settings->remove(key);
 	lua_pushboolean(L, success);
@@ -147,19 +209,6 @@ int LuaSettings::l_to_table(lua_State* L)
 	return 1;
 }
 
-LuaSettings::LuaSettings(const char* filename, bool write_allowed)
-{
-	m_write_allowed = write_allowed;
-	m_filename = std::string(filename);
-
-	m_settings = new Settings();
-	m_settings->readConfigFile(m_filename.c_str());
-}
-
-LuaSettings::~LuaSettings()
-{
-	delete m_settings;
-}
 
 void LuaSettings::Register(lua_State* L)
 {
@@ -190,7 +239,7 @@ void LuaSettings::Register(lua_State* L)
 }
 
 // LuaSettings(filename)
-// Creates an LuaSettings and leaves it on top of stack
+// Creates a LuaSettings and leaves it on top of the stack
 int LuaSettings::create_object(lua_State* L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -209,8 +258,9 @@ LuaSettings* LuaSettings::checkobject(lua_State* L, int narg)
 	NO_MAP_LOCK_REQUIRED;
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);
-	if(!ud) luaL_typerror(L, narg, className);
-	return *(LuaSettings**)ud;  // unbox pointer
+	if (!ud)
+		luaL_typerror(L, narg, className);
+	return *(LuaSettings**) ud;  // unbox pointer
 }
 
 const char LuaSettings::className[] = "Settings";
@@ -218,6 +268,7 @@ const luaL_Reg LuaSettings::methods[] = {
 	luamethod(LuaSettings, get),
 	luamethod(LuaSettings, get_bool),
 	luamethod(LuaSettings, set),
+	luamethod(LuaSettings, set_bool),
 	luamethod(LuaSettings, remove),
 	luamethod(LuaSettings, get_names),
 	luamethod(LuaSettings, write),

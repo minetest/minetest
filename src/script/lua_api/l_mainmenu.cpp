@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IFileArchive.h>
 #include <IFileSystem.h>
 
+
 /******************************************************************************/
 std::string ModApiMainMenu::getTextData(lua_State *L, std::string name)
 {
@@ -1141,23 +1142,24 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 }
 
 /******************************************************************************/
-void ModApiMainMenu::InitializeAsync(AsyncEngine& engine)
+void ModApiMainMenu::InitializeAsync(lua_State *L, int top)
 {
 
-	ASYNC_API_FCT(get_worlds);
-	ASYNC_API_FCT(get_games);
-	ASYNC_API_FCT(get_favorites);
-	ASYNC_API_FCT(get_mapgen_names);
-	ASYNC_API_FCT(get_modpath);
-	ASYNC_API_FCT(get_gamepath);
-	ASYNC_API_FCT(get_texturepath);
-	ASYNC_API_FCT(get_texturepath_share);
-	ASYNC_API_FCT(create_dir);
-	ASYNC_API_FCT(delete_dir);
-	ASYNC_API_FCT(copy_dir);
-	//ASYNC_API_FCT(extract_zip); //TODO remove dependency to GuiEngine
-	ASYNC_API_FCT(download_file);
-	ASYNC_API_FCT(get_modstore_details);
-	ASYNC_API_FCT(get_modstore_list);
-	//ASYNC_API_FCT(gettext); (gettext lib isn't threadsafe)
+	API_FCT(get_worlds);
+	API_FCT(get_games);
+	API_FCT(get_favorites);
+	API_FCT(get_mapgen_names);
+	API_FCT(get_modpath);
+	API_FCT(get_gamepath);
+	API_FCT(get_texturepath);
+	API_FCT(get_texturepath_share);
+	API_FCT(create_dir);
+	API_FCT(delete_dir);
+	API_FCT(copy_dir);
+	//API_FCT(extract_zip); //TODO remove dependency to GuiEngine
+	API_FCT(download_file);
+	API_FCT(get_modstore_details);
+	API_FCT(get_modstore_list);
+	//API_FCT(gettext); (gettext lib isn't threadsafe)
 }
+

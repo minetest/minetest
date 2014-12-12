@@ -44,6 +44,7 @@ public:
 			const std::string &serialized_params);
 private:
 	void initializeModApi(lua_State *L, int top);
+	static void registerLuaClasses(lua_State *L, int top);
 
 	AsyncEngine asyncEngine;
 	DISABLE_CLASS_COPY(MainMenuScripting);

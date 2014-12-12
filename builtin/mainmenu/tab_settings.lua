@@ -70,39 +70,39 @@ local dd_options = {
 
 local getSettingIndex = {
 	Leaves = function()
-		local style = core.setting_get("leaves_style")
+		local style = core.settings:get("leaves_style")
 		for idx, name in pairs(dd_options.leaves[2]) do
 			if style == name then return idx end
 		end
 		return 1
 	end,
 	NodeHighlighting = function()
-		local style = core.setting_get("node_highlighting")
+		local style = core.settings:get("node_highlighting")
 		for idx, name in pairs(dd_options.node_highlighting[2]) do
 			if style == name then return idx end
 		end
 		return 1
 	end,
 	Filter = function()
-		if core.setting_get(dd_options.filters[2][3]) == "true" then
+		if core.settings:get(dd_options.filters[2][3]) == "true" then
 			return 3
-		elseif core.setting_get(dd_options.filters[2][3]) == "false" and
-				core.setting_get(dd_options.filters[2][2]) == "true" then
+		elseif core.settings:get(dd_options.filters[2][3]) == "false" and
+				core.settings:get(dd_options.filters[2][2]) == "true" then
 			return 2
 		end
 		return 1
 	end,
 	Mipmap = function()
-		if core.setting_get(dd_options.mipmap[2][3]) == "true" then
+		if core.settings:get(dd_options.mipmap[2][3]) == "true" then
 			return 3
-		elseif core.setting_get(dd_options.mipmap[2][3]) == "false" and
-				core.setting_get(dd_options.mipmap[2][2]) == "true" then
+		elseif core.settings:get(dd_options.mipmap[2][3]) == "false" and
+				core.settings:get(dd_options.mipmap[2][2]) == "true" then
 			return 2
 		end
 		return 1
 	end,
 	Antialiasing = function()
-		local antialiasing_setting = core.setting_get("fsaa")
+		local antialiasing_setting = core.settings:get("fsaa")
 		for i = 1, #dd_options.antialiasing[2] do
 			if antialiasing_setting == dd_options.antialiasing[2][i] then
 				return i
@@ -177,15 +177,15 @@ local function formspec(tabview, name, tabdata)
 	local tab_string =
 		"box[0,0;3.5,4.5;#999999]" ..
 		"checkbox[0.25,0;cb_smooth_lighting;" .. fgettext("Smooth Lighting") .. ";"
-				.. dump(core.setting_getbool("smooth_lighting")) .. "]" ..
+				.. dump(core.settings:get_bool("smooth_lighting")) .. "]" ..
 		"checkbox[0.25,0.5;cb_particles;" .. fgettext("Particles") .. ";"
-				.. dump(core.setting_getbool("enable_particles")) .. "]" ..
+				.. dump(core.settings:get_bool("enable_particles")) .. "]" ..
 		"checkbox[0.25,1;cb_3d_clouds;" .. fgettext("3D Clouds") .. ";"
-				.. dump(core.setting_getbool("enable_3d_clouds")) .. "]" ..
+				.. dump(core.settings:get_bool("enable_3d_clouds")) .. "]" ..
 		"checkbox[0.25,1.5;cb_opaque_water;" .. fgettext("Opaque Water") .. ";"
-				.. dump(core.setting_getbool("opaque_water")) .. "]" ..
+				.. dump(core.settings:get_bool("opaque_water")) .. "]" ..
 		"checkbox[0.25,2.0;cb_connected_glass;" .. fgettext("Connected Glass") .. ";"
-				.. dump(core.setting_getbool("connected_glass")) .. "]" ..
+				.. dump(core.settings:get_bool("connected_glass")) .. "]" ..
 		"dropdown[0.25,2.8;3.3;dd_node_highlighting;" .. dd_options.node_highlighting[1] .. ";"
 				.. getSettingIndex.NodeHighlighting() .. "]" ..
 		"dropdown[0.25,3.6;3.3;dd_leaves_style;" .. dd_options.leaves[1] .. ";"
@@ -201,10 +201,10 @@ local function formspec(tabview, name, tabdata)
 				.. getSettingIndex.Antialiasing() .. "]" ..
 		"label[3.85,3.45;" .. fgettext("Screen:") .. "]" ..
 		"checkbox[3.85,3.6;cb_autosave_screensize;" .. fgettext("Autosave screen size") .. ";"
-				.. dump(core.setting_getbool("autosave_screensize")) .. "]" ..
+				.. dump(core.settings:get_bool("autosave_screensize")) .. "]" ..
 		"box[7.75,0;4,4.4;#999999]" ..
 		"checkbox[8,0;cb_shaders;" .. fgettext("Shaders") .. ";"
-				.. dump(core.setting_getbool("enable_shaders")) .. "]"
+				.. dump(core.settings:get_bool("enable_shaders")) .. "]"
 
 	if PLATFORM == "Android" then
 		tab_string = tab_string ..
@@ -221,29 +221,29 @@ local function formspec(tabview, name, tabdata)
 		.. fgettext("Advanced Settings") .. "]"
 
 
-	if core.setting_get("touchscreen_threshold") ~= nil then
+	if core.settings:get("touchscreen_threshold") ~= nil then
 		tab_string = tab_string ..
 			"label[4.3,4.1;" .. fgettext("Touchthreshold (px)") .. "]" ..
 			"dropdown[3.85,4.55;3.85;dd_touchthreshold;0,10,20,30,40,50;" ..
-			((tonumber(core.setting_get("touchscreen_threshold")) / 10) + 1) .. "]"
+			((tonumber(core.settings:get("touchscreen_threshold")) / 10) + 1) .. "]"
 	end
 
-	if core.setting_getbool("enable_shaders") then
+	if core.settings:get_bool("enable_shaders") then
 		tab_string = tab_string ..
 			"checkbox[8,0.5;cb_bumpmapping;" .. fgettext("Bump Mapping") .. ";"
-					.. dump(core.setting_getbool("enable_bumpmapping")) .. "]" ..
+					.. dump(core.settings:get_bool("enable_bumpmapping")) .. "]" ..
 			"checkbox[8,1;cb_tonemapping;" .. fgettext("Tone Mapping") .. ";"
-					.. dump(core.setting_getbool("tone_mapping")) .. "]" ..
+					.. dump(core.settings:get_bool("tone_mapping")) .. "]" ..
 			"checkbox[8,1.5;cb_generate_normalmaps;" .. fgettext("Normal Mapping") .. ";"
-					.. dump(core.setting_getbool("generate_normalmaps")) .. "]" ..
+					.. dump(core.settings:get_bool("generate_normalmaps")) .. "]" ..
 			"checkbox[8,2;cb_parallax;" .. fgettext("Parallax Occlusion") .. ";"
-					.. dump(core.setting_getbool("enable_parallax_occlusion")) .. "]" ..
+					.. dump(core.settings:get_bool("enable_parallax_occlusion")) .. "]" ..
 			"checkbox[8,2.5;cb_waving_water;" .. fgettext("Waving Water") .. ";"
-					.. dump(core.setting_getbool("enable_waving_water")) .. "]" ..
+					.. dump(core.settings:get_bool("enable_waving_water")) .. "]" ..
 			"checkbox[8,3;cb_waving_leaves;" .. fgettext("Waving Leaves") .. ";"
-					.. dump(core.setting_getbool("enable_waving_leaves")) .. "]" ..
+					.. dump(core.settings:get_bool("enable_waving_leaves")) .. "]" ..
 			"checkbox[8,3.5;cb_waving_plants;" .. fgettext("Waving Plants") .. ";"
-					.. dump(core.setting_getbool("enable_waving_plants")) .. "]"
+					.. dump(core.settings:get_bool("enable_waving_plants")) .. "]"
 	else
 		tab_string = tab_string ..
 			"tablecolumns[color;text]" ..
@@ -274,64 +274,64 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		return true
 	end
 	if fields["cb_smooth_lighting"] then
-		core.setting_set("smooth_lighting", fields["cb_smooth_lighting"])
+		core.settings:set("smooth_lighting", fields["cb_smooth_lighting"])
 		return true
 	end
 	if fields["cb_particles"] then
-		core.setting_set("enable_particles", fields["cb_particles"])
+		core.settings:set("enable_particles", fields["cb_particles"])
 		return true
 	end
 	if fields["cb_3d_clouds"] then
-		core.setting_set("enable_3d_clouds", fields["cb_3d_clouds"])
+		core.settings:set("enable_3d_clouds", fields["cb_3d_clouds"])
 		return true
 	end
 	if fields["cb_opaque_water"] then
-		core.setting_set("opaque_water", fields["cb_opaque_water"])
+		core.settings:set("opaque_water", fields["cb_opaque_water"])
 		return true
 	end
 	if fields["cb_connected_glass"] then
-		core.setting_set("connected_glass", fields["cb_connected_glass"])
+		core.settings:set("connected_glass", fields["cb_connected_glass"])
 		return true
 	end
 	if fields["cb_autosave_screensize"] then
-		core.setting_set("autosave_screensize", fields["cb_autosave_screensize"])
+		core.settings:set("autosave_screensize", fields["cb_autosave_screensize"])
 		return true
 	end
 	if fields["cb_shaders"] then
-		if (core.setting_get("video_driver") == "direct3d8" or
-				core.setting_get("video_driver") == "direct3d9") then
-			core.setting_set("enable_shaders", "false")
+		if (core.settings:get("video_driver") == "direct3d8" or
+				core.settings:get("video_driver") == "direct3d9") then
+			core.settings:set("enable_shaders", "false")
 			gamedata.errormessage = fgettext("To enable shaders the OpenGL driver needs to be used.")
 		else
-			core.setting_set("enable_shaders", fields["cb_shaders"])
+			core.settings:set("enable_shaders", fields["cb_shaders"])
 		end
 		return true
 	end
 	if fields["cb_bumpmapping"] then
-		core.setting_set("enable_bumpmapping", fields["cb_bumpmapping"])
+		core.settings:set("enable_bumpmapping", fields["cb_bumpmapping"])
 		return true
 	end
 	if fields["cb_tonemapping"] then
-		core.setting_set("tone_mapping", fields["cb_tonemapping"])
+		core.settings:set("tone_mapping", fields["cb_tonemapping"])
 		return true
 	end
 	if fields["cb_generate_normalmaps"] then
-		core.setting_set("generate_normalmaps", fields["cb_generate_normalmaps"])
+		core.settings:set("generate_normalmaps", fields["cb_generate_normalmaps"])
 		return true
 	end
 	if fields["cb_parallax"] then
-		core.setting_set("enable_parallax_occlusion", fields["cb_parallax"])
+		core.settings:set("enable_parallax_occlusion", fields["cb_parallax"])
 		return true
 	end
 	if fields["cb_waving_water"] then
-		core.setting_set("enable_waving_water", fields["cb_waving_water"])
+		core.settings:set("enable_waving_water", fields["cb_waving_water"])
 		return true
 	end
 	if fields["cb_waving_leaves"] then
-		core.setting_set("enable_waving_leaves", fields["cb_waving_leaves"])
+		core.settings:set("enable_waving_leaves", fields["cb_waving_leaves"])
 	end
 	if fields["cb_waving_plants"] then
-		core.setting_set("enable_waving_plants", fields["cb_waving_plants"])
+		core.settings:set("enable_waving_plants", fields["cb_waving_plants"])
 		return true
 	end
 	if fields["btn_change_keys"] then
@@ -339,7 +339,7 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		return true
 	end
 	if fields["cb_touchscreen_target"] then
-		core.setting_set("touchtarget", fields["cb_touchscreen_target"])
+		core.settings:set("touchtarget", fields["cb_touchscreen_target"])
 		return true
 	end
 	if fields["btn_reset_singleplayer"] then
@@ -352,49 +352,49 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 
 	for i = 1, #labels.leaves do
 		if fields["dd_leaves_style"] == labels.leaves[i] then
-			core.setting_set("leaves_style", dd_options.leaves[2][i])
+			core.settings:set("leaves_style", dd_options.leaves[2][i])
 			ddhandled = true
 		end
 	end
 	for i = 1, #labels.node_highlighting do
 		if fields["dd_node_highlighting"] == labels.node_highlighting[i] then
-			core.setting_set("node_highlighting", dd_options.node_highlighting[2][i])
+			core.settings:set("node_highlighting", dd_options.node_highlighting[2][i])
 			ddhandled = true
 		end
 	end
 	if fields["dd_filters"] == labels.filters[1] then
-		core.setting_set("bilinear_filter", "false")
-		core.setting_set("trilinear_filter", "false")
+		core.settings:set("bilinear_filter", "false")
+		core.settings:set("trilinear_filter", "false")
 		ddhandled = true
 	elseif fields["dd_filters"] == labels.filters[2] then
-		core.setting_set("bilinear_filter", "true")
-		core.setting_set("trilinear_filter", "false")
+		core.settings:set("bilinear_filter", "true")
+		core.settings:set("trilinear_filter", "false")
 		ddhandled = true
 	elseif fields["dd_filters"] == labels.filters[3] then
-		core.setting_set("bilinear_filter", "false")
-		core.setting_set("trilinear_filter", "true")
+		core.settings:set("bilinear_filter", "false")
+		core.settings:set("trilinear_filter", "true")
 		ddhandled = true
 	end
 	if fields["dd_mipmap"] == labels.mipmap[1] then
-		core.setting_set("mip_map", "false")
-		core.setting_set("anisotropic_filter", "false")
+		core.settings:set("mip_map", "false")
+		core.settings:set("anisotropic_filter", "false")
 		ddhandled = true
 	elseif fields["dd_mipmap"] == labels.mipmap[2] then
-		core.setting_set("mip_map", "true")
-		core.setting_set("anisotropic_filter", "false")
+		core.settings:set("mip_map", "true")
+		core.settings:set("anisotropic_filter", "false")
 		ddhandled = true
 	elseif fields["dd_mipmap"] == labels.mipmap[3] then
-		core.setting_set("mip_map", "true")
-		core.setting_set("anisotropic_filter", "true")
+		core.settings:set("mip_map", "true")
+		core.settings:set("anisotropic_filter", "true")
 		ddhandled = true
 	end
 	if fields["dd_antialiasing"] then
-		core.setting_set("fsaa",
+		core.settings:set("fsaa",
 			antialiasing_fname_to_name(fields["dd_antialiasing"]))
 		ddhandled = true
 	end
 	if fields["dd_touchthreshold"] then
-		core.setting_set("touchscreen_threshold", fields["dd_touchthreshold"])
+		core.settings:set("touchscreen_threshold", fields["dd_touchthreshold"])
 		ddhandled = true
 	end
 

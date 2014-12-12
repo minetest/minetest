@@ -19,7 +19,7 @@
 local function get_formspec(tabview, name, tabdata)
 	
 	local index = menudata.worldlist:get_current_index(
-				tonumber(core.setting_get("mainmenu_last_selected_world"))
+				tonumber(core.settings:get("mainmenu_last_selected_world"))
 				)
 
 	local retval =
@@ -29,29 +29,29 @@ local function get_formspec(tabview, name, tabdata)
 		"button[8.5,5;3.25,0.5;start_server;" .. fgettext("Start Game") .. "]" ..
 		"label[4,-0.25;" .. fgettext("Select World:") .. "]" ..
 		"checkbox[0.25,0.25;cb_creative_mode;" .. fgettext("Creative Mode") .. ";" ..
-		dump(core.setting_getbool("creative_mode")) .. "]" ..
+		dump(core.settings:get_bool("creative_mode")) .. "]" ..
 		"checkbox[0.25,0.7;cb_enable_damage;" .. fgettext("Enable Damage") .. ";" ..
-		dump(core.setting_getbool("enable_damage")) .. "]" ..
+		dump(core.settings:get_bool("enable_damage")) .. "]" ..
 		"checkbox[0.25,1.15;cb_server_announce;" .. fgettext("Public") .. ";" ..
-		dump(core.setting_getbool("server_announce")) .. "]" ..
+		dump(core.settings:get_bool("server_announce")) .. "]" ..
 		"label[0.25,2.2;" .. fgettext("Name/Password") .. "]" ..
 		"field[0.55,3.2;3.5,0.5;te_playername;;" ..
-		core.formspec_escape(core.setting_get("name")) .. "]" ..
+		core.formspec_escape(core.settings:get("name")) .. "]" ..
 		"pwdfield[0.55,4;3.5,0.5;te_passwd;]"
 
-	local bind_addr = core.setting_get("bind_address")
+	local bind_addr = core.settings:get("bind_address")
 	if bind_addr ~= nil and bind_addr ~= "" then
 		retval = retval ..
 			"field[0.55,5.2;2.25,0.5;te_serveraddr;" .. fgettext("Bind Address") .. ";" ..
-			core.formspec_escape(core.setting_get("bind_address")) .. "]" ..
+			core.formspec_escape(core.settings:get("bind_address")) .. "]" ..
 			"field[2.8,5.2;1.25,0.5;te_serverport;" .. fgettext("Port") .. ";" ..
-			core.formspec_escape(core.setting_get("port")) .. "]"
+			core.formspec_escape(core.settings:get("port")) .. "]"
 	else
 		retval = retval ..
 			"field[0.55,5.2;3.5,0.5;te_serverport;" .. fgettext("Server Port") .. ";" ..
-			core.formspec_escape(core.setting_get("port")) .. "]"
+			core.formspec_escape(core.settings:get("port")) .. "]"
 	end
-	
+
 	retval = retval ..
 		"textlist[4,0.25;7.5,3.7;srv_worlds;" ..
 		menu_render_worldlist() ..
@@ -75,7 +75,7 @@ local function main_button_handler(this, fields, name, tabdata)
 			world_doubleclick = true
 		end
 		if event.type == "CHG" then
-			core.setting_set("mainmenu_last_selected_world",
+			core.settings:set("mainmenu_last_selected_world",
 				menudata.worldlist:get_raw_index(core.get_textlist_index("srv_worlds")))
 			return true
 		end
@@ -86,7 +86,7 @@ local function main_button_handler(this, fields, name, tabdata)
 	end
 
 	if fields["cb_creative_mode"] then
-		core.setting_set("creative_mode", fields["cb_creative_mode"])
+		core.settings:set("creative_mode", fields["cb_creative_mode"])
 		local selected = core.get_textlist_index("srv_worlds")
 		menu_worldmt(selected, "creative_mode", fields["cb_creative_mode"])
 
@@ -94,7 +94,7 @@ local function main_button_handler(this, fields, name, tabdata)
 	end
 
 	if fields["cb_enable_damage"] then
-		core.setting_set("enable_damage", fields["cb_enable_damage"])
+		core.settings:set("enable_damage", fields["cb_enable_damage"])
 		local selected = core.get_textlist_index("srv_worlds")
 		menu_worldmt(selected, "enable_damage", fields["cb_enable_damage"])
 
@@ -102,7 +102,7 @@ local function main_button_handler(this, fields, name, tabdata)
 	end
 
 	if fields["cb_server_announce"] then
-		core.setting_set("server_announce", fields["cb_server_announce"])
+		core.settings:set("server_announce", fields["cb_server_announce"])
 		local selected = core.get_textlist_index("srv_worlds")
 		menu_worldmt(selected, "server_announce", fields["cb_server_announce"])
 
@@ -120,16 +120,16 @@ local function main_button_handler(this, fields, name, tabdata)
 			gamedata.port           = fields["te_serverport"]
 			gamedata.address        = ""
 
-			core.setting_set("port",gamedata.port)
+			core.settings:set("port",gamedata.port)
 			if fields["te_serveraddr"] ~= nil then
-				core.setting_set("bind_address",fields["te_serveraddr"])
+				core.settings:set("bind_address",fields["te_serveraddr"])
 			end
 
 			--update last game
 			local world = menudata.worldlist:get_raw_element(gamedata.selected_world)
 			if world then
 				local game, index = gamemgr.find_by_gameid(world.gameid)
-				core.setting_set("menu_last_game", game.id)
+				core.settings:set("menu_last_game", game.id)
 			end
 			
 			core.start()

@@ -62,17 +62,17 @@ ClientScripting::ClientScripting(Client *client):
 
 void ClientScripting::InitializeModApi(lua_State *L, int top)
 {
-	ModApiUtil::InitializeClient(L, top);
-	ModApiClient::Initialize(L, top);
-	ModApiStorage::Initialize(L, top);
-	ModApiEnvMod::InitializeClient(L, top);
-
 	LuaItemStack::Register(L);
 	StorageRef::Register(L);
 	LuaMinimap::Register(L);
 	NodeMetaRef::RegisterClient(L);
 	LuaLocalPlayer::Register(L);
 	LuaCamera::Register(L);
+
+	ModApiUtil::InitializeClient(L, top);
+	ModApiClient::Initialize(L, top);
+	ModApiStorage::Initialize(L, top);
+	ModApiEnvMod::InitializeClient(L, top);
 }
 
 void ClientScripting::on_client_ready(LocalPlayer *localplayer)
