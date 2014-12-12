@@ -73,9 +73,10 @@ int LuaSettings::l_set(lua_State* L)
 	std::string key = std::string(luaL_checkstring(L, 2));
 	const char* value = luaL_checkstring(L, 3);
 
-	o->m_settings->set(key, value);
+	if (!o->m_settings->set(key, value))
+		throw LuaError("Invalid sequence found in setting parameters");
 
-	return 1;
+	return 0;
 }
 
 // remove(self, key) -> success

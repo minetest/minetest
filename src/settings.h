@@ -112,6 +112,8 @@ public:
 	bool updateConfigObject(std::istream &is, std::ostream &os,
 		const std::string &end, u32 tab_depth=0);
 
+	static bool checkNameValid(const std::string &name);
+	static bool checkValueValid(const std::string &value);
 	static std::string sanitizeName(const std::string &name);
 	static std::string sanitizeValue(const std::string &value);
 	static std::string getMultiline(std::istream &is, size_t *num_lines=NULL);
@@ -175,23 +177,23 @@ public:
 
 	// N.B. Groups not allocated with new must be set to NULL in the settings
 	// tree before object destruction.
-	void setEntry(const std::string &name, const void *entry,
+	bool setEntry(const std::string &name, const void *entry,
 		bool set_group, bool set_default);
-	void set(const std::string &name, const std::string &value);
-	void setDefault(const std::string &name, const std::string &value);
-	void setGroup(const std::string &name, Settings *group);
-	void setGroupDefault(const std::string &name, Settings *group);
-	void setBool(const std::string &name, bool value);
-	void setS16(const std::string &name, s16 value);
-	void setU16(const std::string &name, u16 value);
-	void setS32(const std::string &name, s32 value);
-	void setU64(const std::string &name, u64 value);
-	void setFloat(const std::string &name, float value);
-	void setV2F(const std::string &name, v2f value);
-	void setV3F(const std::string &name, v3f value);
-	void setFlagStr(const std::string &name, u32 flags,
+	bool set(const std::string &name, const std::string &value);
+	bool setDefault(const std::string &name, const std::string &value);
+	bool setGroup(const std::string &name, Settings *group);
+	bool setGroupDefault(const std::string &name, Settings *group);
+	bool setBool(const std::string &name, bool value);
+	bool setS16(const std::string &name, s16 value);
+	bool setU16(const std::string &name, u16 value);
+	bool setS32(const std::string &name, s32 value);
+	bool setU64(const std::string &name, u64 value);
+	bool setFloat(const std::string &name, float value);
+	bool setV2F(const std::string &name, v2f value);
+	bool setV3F(const std::string &name, v3f value);
+	bool setFlagStr(const std::string &name, u32 flags,
 		const FlagDesc *flagdesc, u32 flagmask);
-	void setNoiseParams(const std::string &name, const NoiseParams &np,
+	bool setNoiseParams(const std::string &name, const NoiseParams &np,
 		bool set_default=false);
 	// N.B. if setStruct() is used to write a non-POD aggregate type,
 	// the behavior is undefined.
