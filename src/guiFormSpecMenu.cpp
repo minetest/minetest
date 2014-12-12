@@ -2772,7 +2772,8 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		gui::IGUIElement *hovered =
 			Environment->getRootGUIElement()->getElementFromPoint(
 				core::position2d<s32>(x, y));
-		if (hovered->getType() == gui::EGUIET_TAB_CONTROL) {
+		if (hovered && isMyChild(hovered) &&
+				hovered->getType() == gui::EGUIET_TAB_CONTROL) {
 			gui::IGUISkin* skin = Environment->getSkin();
 			assert(skin != NULL);
 			gui::IGUIFont *old_font = skin->getFont();
