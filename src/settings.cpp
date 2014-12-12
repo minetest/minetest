@@ -63,6 +63,32 @@ Settings & Settings::operator = (const Settings &other)
 }
 
 
+std::string Settings::sanitizeName(const std::string &name)
+{
+	std::string n(name);
+
+	for (const char *s = "\t\n\v\f\r\b =\"{}#"; *s; s++)
+		n.erase(std::remove(n.begin(), n.end(), *s), n.end());
+
+	return n;
+}
+
+
+std::string Settings::sanitizeValue(const std::string &value)
+{
+	std::string v(value);
+	size_t p = 0;
+
+	if (v.substr(0, 3) == "\"\"\"")
+		v.erase(0, 3);
+
+	while ((p = v.find("\n\"\"\"")) != std::string::npos)
+		v.erase(p, 4);
+
+	return v;
+}
+
+
 std::string Settings::getMultiline(std::istream &is, size_t *num_lines)
 {
 	size_t lines = 1;
@@ -683,11 +709,7 @@ void Settings::setEntry(const std::string &name, const void *data,
 {
 	Settings *old_group = NULL;
 
-	// Strip any potentially dangerous characters from the name (note the value
-	// has no such restrictions)
-	std::string n(name);
-	for (const char *s = "\t\n\v\f\r\b =\""; *s; s++)
-		n.erase(std::remove(n.begin(), n.end(), *s), n.end());
+	std::string n = sanitizeName(name);
 
 	{
 		JMutexAutoLock lock(m_mutex);
@@ -695,7 +717,7 @@ void Settings::setEntry(const std::string &name, const void *data,
 		SettingsEntry &entry = set_default ? m_defaults[n] : m_settings[n];
 		old_group = entry.group;
 
-		entry.value    = set_group ? "" : *(const std::string *)data;
+		entry.value    = set_group ? "" : sanitizeValue(*(const std::string *)data);
 		entry.group    = set_group ? *(Settings **)data : NULL;
 		entry.is_group = set_group;
 	}

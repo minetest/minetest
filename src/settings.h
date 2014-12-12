@@ -112,6 +112,8 @@ public:
 	bool updateConfigObject(std::istream &is, std::ostream &os,
 		const std::string &end, u32 tab_depth=0);
 
+	static std::string sanitizeName(const std::string &name);
+	static std::string sanitizeValue(const std::string &value);
 	static std::string getMultiline(std::istream &is, size_t *num_lines=NULL);
 	static void printEntry(std::ostream &os, const std::string &name,
 		const SettingsEntry &entry, u32 tab_depth=0);
