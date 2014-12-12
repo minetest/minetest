@@ -36,8 +36,8 @@ int LuaPerlinNoise::l_get2d(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaPerlinNoise *o = checkobject(L, 1);
-	v2f pos2d = read_v2f(L,2);
-	lua_Number val = noise2d_perlin(pos2d.X/o->scale, pos2d.Y/o->scale, o->seed, o->octaves, o->persistence);
+	v2f p = read_v2f(L, 2);
+	lua_Number val = NoisePerlin2D(&o->np, p.X, p.Y, 0);
 	lua_pushnumber(L, val);
 	return 1;
 }
@@ -47,22 +47,29 @@ int LuaPerlinNoise::l_get3d(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaPerlinNoise *o = checkobject(L, 1);
-	v3f pos3d = read_v3f(L,2);
-	lua_Number val = noise3d_perlin(pos3d.X/o->scale, pos3d.Y/o->scale, pos3d.Z/o->scale, o->seed, o->octaves, o->persistence);
+	v3f p = read_v3f(L, 2);
+	lua_Number val = NoisePerlin3D(&o->np, p.X, p.Y, p.Z, 0);
 	lua_pushnumber(L, val);
 	return 1;
 }
 
 
-LuaPerlinNoise::LuaPerlinNoise(int a_seed, int a_octaves, float a_persistence,
-		float a_scale):
-	seed(a_seed),
-	octaves(a_octaves),
-	persistence(a_persistence),
-	scale(a_scale)
+LuaPerlinNoise::LuaPerlinNoise(NoiseParams *params) :
+	np(*params)
 {
 }
 
+
+/*
+LuaPerlinNoise::LuaPerlinNoise(int a_seed, int a_octaves,
+	float a_persistence, float a_scale)
+{
+	np.seed    = a_seed;
+	np.octaves = a_octaves;
+	np.persist = a_persistence;
+	np.spread  = v3f(a_scale, a_scale, a_scale);
+}
+*/
 
 LuaPerlinNoise::~LuaPerlinNoise()
 {
@@ -74,11 +81,20 @@ LuaPerlinNoise::~LuaPerlinNoise()
 int LuaPerlinNoise::create_object(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	int seed = luaL_checkint(L, 1);
-	int octaves = luaL_checkint(L, 2);
-	float persistence = luaL_checknumber(L, 3);
-	float scale = luaL_checknumber(L, 4);
-	LuaPerlinNoise *o = new LuaPerlinNoise(seed, octaves, persistence, scale);
+
+	NoiseParams params;
+
+	if (lua_istable(L, 1)) {
+		read_noiseparams(L, 1, &params);
+	} else {
+		params.seed    = luaL_checkint(L, 1);
+		params.octaves = luaL_checkint(L, 2);
+		params.persist = luaL_checknumber(L, 3);
+		params.spread  = v3f(1, 1, 1) * luaL_checknumber(L, 4);
+	}
+
+	LuaPerlinNoise *o = new LuaPerlinNoise(&params);
+
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);

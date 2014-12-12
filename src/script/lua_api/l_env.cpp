@@ -590,12 +590,20 @@ int ModApiEnvMod::l_get_perlin(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	int seeddiff = luaL_checkint(L, 1);
-	int octaves = luaL_checkint(L, 2);
-	float persistence = luaL_checknumber(L, 3);
-	float scale = luaL_checknumber(L, 4);
+	NoiseParams params;
 
-	LuaPerlinNoise *n = new LuaPerlinNoise(seeddiff + int(env->getServerMap().getSeed()), octaves, persistence, scale);
+	if (lua_istable(L, 1)) {
+		read_noiseparams(L, 1, &params);
+	} else {
+		params.seed    = luaL_checkint(L, 1);
+		params.octaves = luaL_checkint(L, 2);
+		params.persist = luaL_checknumber(L, 3);
+		params.spread  = v3f(1, 1, 1) * luaL_checknumber(L, 4);
+	}
+
+	params.seed += (int)env->getServerMap().getSeed();
+
+	LuaPerlinNoise *n = new LuaPerlinNoise(&params);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = n;
 	luaL_getmetatable(L, "PerlinNoise");
 	lua_setmetatable(L, -2);

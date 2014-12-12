@@ -29,10 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 class LuaPerlinNoise : public ModApiBase {
 private:
-	int seed;
-	int octaves;
-	float persistence;
-	float scale;
+	NoiseParams np;
+
 	static const char className[];
 	static const luaL_reg methods[];
 
@@ -45,9 +43,7 @@ private:
 	static int l_get3d(lua_State *L);
 
 public:
-	LuaPerlinNoise(int a_seed, int a_octaves, float a_persistence,
-			float a_scale);
-
+	LuaPerlinNoise(NoiseParams *params);
 	~LuaPerlinNoise();
 
 	// LuaPerlinNoise(seed, octaves, persistence, scale)
