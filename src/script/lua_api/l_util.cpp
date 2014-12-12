@@ -94,12 +94,7 @@ int ModApiUtil::l_log(lua_State *L)
 	return 0;
 }
 
-#define SETTING_ALLOWED_CHARS "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-."
-#define CHECK_SETTING() \
-	if (!string_allowed(name, SETTING_ALLOWED_CHARS)) {\
-		lua_pushliteral(L, "Bad setting name, only [A-Za-z0-9_-.] allowed.");\
-		lua_error(L);\
-	}\
+#define CHECK_SECURE_SETTING(L, name) \
 	if (name.compare(0, 7, "secure.") == 0) {\
 		lua_pushliteral(L, "Attempt to set secure setting.");\
 		lua_error(L);\
@@ -111,11 +106,7 @@ int ModApiUtil::l_setting_set(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	std::string name = luaL_checkstring(L, 1);
 	std::string value = luaL_checkstring(L, 2);
-	if (value.find_first_of("\r\n") != std::string::npos) {
-		lua_pushliteral(L, "Bad setting value, newlines not allowed.");
-		lua_error(L);
-	}
-	CHECK_SETTING();
+	CHECK_SECURE_SETTING(L, name);
 	g_settings->set(name, value);
 	return 0;
 }
@@ -140,7 +131,7 @@ int ModApiUtil::l_setting_setbool(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	std::string name = luaL_checkstring(L, 1);
 	bool value = lua_toboolean(L, 2);
-	CHECK_SETTING();
+	CHECK_SECURE_SETTING(L, name);
 	g_settings->setBool(name, value);
 	return 0;
 }
