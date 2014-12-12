@@ -491,12 +491,16 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	// Render distance feedback loop
 	updateViewingRange(frametime, busytime);
 
-	// If the player seems to be walking on solid ground,
+	// If the player is walking, swimming, or climbing,
 	// view bobbing is enabled and free_move is off,
 	// start (or continue) the view bobbing animation.
 	v3f speed = player->getSpeed();
-	if ((hypot(speed.X, speed.Z) > BS) &&
-		(player->touching_ground) &&
+	bool movement_XZ = hypot(speed.X, speed.Z) > BS;
+	bool movement_Y = abs(speed.Y) > BS;
+	if (((movement_XZ && player->touching_ground) ||
+		((movement_XZ || movement_Y) && player->in_liquid) ||
+		(movement_Y && player->is_climbing)) &&
+
 		(m_cache_view_bobbing == true) &&
 		(g_settings->getBool("free_move") == false ||
 				!m_gamedef->checkLocalPrivilege("fly")))
