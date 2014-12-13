@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-13 15:24+0100\n"
-"PO-Revision-Date: 2014-01-02 22:09+0200\n"
-"Last-Translator: Diego Martínez <lkaezadl3@gmail.com>\n"
+"PO-Revision-Date: 2014-12-13 18:22+0200\n"
+"Last-Translator: Diego Martínez <lkaezadl3@yahoo.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -78,11 +78,11 @@ msgstr "Nombre del mundo"
 
 #: builtin/mainmenu/dlg_create_world.lua:53
 msgid "Seed"
-msgstr ""
+msgstr "Semilla"
 
 #: builtin/mainmenu/dlg_create_world.lua:56
 msgid "Mapgen"
-msgstr "Mapgen"
+msgstr "Generador de Mapas"
 
 #: builtin/mainmenu/dlg_create_world.lua:59
 msgid "Game"
@@ -94,19 +94,21 @@ msgstr "Crear"
 
 #: builtin/mainmenu/dlg_create_world.lua:68
 msgid "You have no subgames installed."
-msgstr ""
+msgstr "No tienes sub-juegos instalados."
 
 #: builtin/mainmenu/dlg_create_world.lua:69
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "Descarga algunos desde minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua:72
 msgid "Warning: The minimal development test is meant for developers."
 msgstr ""
+"Advertencia: El juego \"Minimal development test\" está diseñado "
+"para desarrolladores."
 
 #: builtin/mainmenu/dlg_create_world.lua:73
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr ""
+msgstr "Descarga un sub-juego, como minetest_game, desde minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua:97
 msgid "A world named \"$1\" already exists"
@@ -165,7 +167,7 @@ msgid ""
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"Instalar mod: Tipo de archivo sin soporte \"$1\""
+"Instalar mod: Tipo de archivo sin soporte \"$1\" o corrupto"
 
 #: builtin/mainmenu/modmgr.lua:363
 msgid "Failed to install $1 to $2"
@@ -183,11 +185,11 @@ msgstr "Instalar mod: imposible encontrar el nombre real del mod para: $1"
 
 #: builtin/mainmenu/store.lua:88
 msgid "Unsorted"
-msgstr ""
+msgstr "Sin ordenar"
 
 #: builtin/mainmenu/store.lua:99 builtin/mainmenu/store.lua:584
 msgid "Search"
-msgstr ""
+msgstr "Buscar"
 
 #: builtin/mainmenu/store.lua:125
 #, fuzzy
@@ -196,11 +198,11 @@ msgstr "Descargar"
 
 #: builtin/mainmenu/store.lua:127
 msgid "please wait..."
-msgstr ""
+msgstr "por favor espere..."
 
 #: builtin/mainmenu/store.lua:159
 msgid "Successfully installed:"
-msgstr ""
+msgstr "Instalado exitosamente:"
 
 #: builtin/mainmenu/store.lua:163
 #, fuzzy
@@ -209,7 +211,7 @@ msgstr "Nombre del mundo"
 
 #: builtin/mainmenu/store.lua:167 src/guiFormSpecMenu.cpp:2866
 msgid "ok"
-msgstr ""
+msgstr "aceptar"
 
 #: builtin/mainmenu/store.lua:476
 msgid "Rating"
@@ -225,7 +227,7 @@ msgstr "Instalar"
 
 #: builtin/mainmenu/store.lua:522
 msgid "Close store"
-msgstr ""
+msgstr "Cerrar tienda"
 
 #: builtin/mainmenu/store.lua:530
 msgid "Page $1 of $2"
@@ -344,11 +346,11 @@ msgstr "Público"
 
 #: builtin/mainmenu/tab_server.lua:45
 msgid "Bind Address"
-msgstr ""
+msgstr "Asociar Dirección"
 
 #: builtin/mainmenu/tab_server.lua:47
 msgid "Port"
-msgstr ""
+msgstr "Puerto"
 
 #: builtin/mainmenu/tab_server.lua:51
 msgid "Server Port"
@@ -360,11 +362,11 @@ msgstr "Servidor"
 
 #: builtin/mainmenu/tab_settings.lua:23
 msgid "Are you sure to reset your singleplayer world?"
-msgstr ""
+msgstr "¿Estás seguro de querer reiniciar el mundo de un solo jugador?"
 
 #: builtin/mainmenu/tab_settings.lua:27
 msgid "No!!!"
-msgstr ""
+msgstr "¡¡¡No!!!"
 
 #: builtin/mainmenu/tab_settings.lua:134
 msgid "Smooth Lighting"
@@ -378,8 +380,7 @@ msgstr "Habilitar partículas"
 msgid "3D Clouds"
 msgstr "Nubes 3D"
 
-#: builtin/mainmenu/tab_settings.lua:140
-#, fuzzy
+#: builtin/mainmenu/tab_settings.lua:141
 msgid "Fancy Trees"
 msgstr "Árboles detallados"
 
@@ -387,14 +388,13 @@ msgstr "Árboles detallados"
 msgid "Opaque Water"
 msgstr "Agua Opaca"
 
-#: builtin/mainmenu/tab_settings.lua:144
-#, fuzzy
+#: builtin/mainmenu/tab_settings.lua:145
 msgid "Connected Glass"
-msgstr "Conectar"
+msgstr "Vidrios Conectados"
 
 #: builtin/mainmenu/tab_settings.lua:149
 msgid "Restart minetest for driver change to take effect"
-msgstr ""
+msgstr "Reinicia Minetest para que el cambio de controlador tenga efecto"
 
 #: builtin/mainmenu/tab_settings.lua:151
 msgid "Mip-Mapping"
@@ -427,44 +427,45 @@ msgstr "Un jugador"
 
 #: builtin/mainmenu/tab_settings.lua:171
 msgid "GUI scale factor"
-msgstr ""
+msgstr "Factor de escala de la IGU"
 
 #: builtin/mainmenu/tab_settings.lua:175
 msgid "Scaling factor applied to menu elements: "
-msgstr ""
+msgstr "Factor de escala aplicado a los elementos del menú: "
 
-#: builtin/mainmenu/tab_settings.lua:181
+#: builtin/mainmenu/tab_settings.lua:182
+#, fuzzy
 msgid "Touch free target"
-msgstr ""
+msgstr "Tocar para interactuar"
 
 #: builtin/mainmenu/tab_settings.lua:187
 msgid "Touchthreshold (px)"
-msgstr ""
+msgstr "Umbral táctil (px)"
 
 #: builtin/mainmenu/tab_settings.lua:194 builtin/mainmenu/tab_settings.lua:208
 #, fuzzy
 msgid "Bumpmapping"
-msgstr "Mip-Mapping"
+msgstr "Mapeado de relieve"
 
 #: builtin/mainmenu/tab_settings.lua:196 builtin/mainmenu/tab_settings.lua:209
 msgid "Generate Normalmaps"
-msgstr ""
+msgstr "Generar mapas de normales"
 
 #: builtin/mainmenu/tab_settings.lua:198 builtin/mainmenu/tab_settings.lua:210
 msgid "Parallax Occlusion"
-msgstr ""
+msgstr "Oclusión de paralaje"
 
 #: builtin/mainmenu/tab_settings.lua:200 builtin/mainmenu/tab_settings.lua:211
 msgid "Waving Water"
-msgstr ""
+msgstr "Oleaje en el agua"
 
 #: builtin/mainmenu/tab_settings.lua:202 builtin/mainmenu/tab_settings.lua:212
 msgid "Waving Leaves"
-msgstr ""
+msgstr "Movimiento de hojas"
 
 #: builtin/mainmenu/tab_settings.lua:204 builtin/mainmenu/tab_settings.lua:213
 msgid "Waving Plants"
-msgstr ""
+msgstr "Movimiento de plantas"
 
 #: builtin/mainmenu/tab_settings.lua:255
 msgid "To enable shaders the OpenGL driver needs to be used."
@@ -476,22 +477,19 @@ msgstr "Configuración"
 
 #: builtin/mainmenu/tab_simple_main.lua:67
 msgid "Fly mode"
-msgstr ""
+msgstr "Modo vuelo"
 
 #: builtin/mainmenu/tab_simple_main.lua:71
-#, fuzzy
 msgid "Start Singleplayer"
-msgstr "Un jugador"
+msgstr "Comenzar un jugador"
 
 #: builtin/mainmenu/tab_simple_main.lua:72
-#, fuzzy
 msgid "Config mods"
-msgstr "Configurar"
+msgstr "Configurar mods"
 
 #: builtin/mainmenu/tab_simple_main.lua:191
-#, fuzzy
 msgid "Main"
-msgstr "Menú Principal"
+msgstr "Principal"
 
 #: builtin/mainmenu/tab_singleplayer.lua:88 src/keycode.cpp:249
 msgid "Play"
@@ -560,7 +558,7 @@ msgstr "Continuar"
 
 #: src/guiFormSpecMenu.cpp:2846
 msgid "Enter "
-msgstr ""
+msgstr "Ingresar "
 
 #: src/guiKeyChangeMenu.cpp:125
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -573,8 +571,9 @@ msgid "\"Use\" = climb down"
 msgstr "\"Usar\" = Descender"
 
 #: src/guiKeyChangeMenu.cpp:180
+#, fuzzy
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Pulsa dos veces \"saltar\" para volar"
+msgstr "Saltar dos veces para volar"
 
 #: src/guiKeyChangeMenu.cpp:296
 msgid "Key already in use"
@@ -638,7 +637,7 @@ msgstr "Activar Volar"
 
 #: src/guiKeyChangeMenu.cpp:410
 msgid "Toggle fast"
-msgstr "Activar Modo Rápido"
+msgstr "Activar Rápido"
 
 #: src/guiKeyChangeMenu.cpp:411
 msgid "Toggle noclip"
@@ -974,7 +973,7 @@ msgstr "Menú Principal"
 
 #: src/main.cpp:1719
 msgid "Player name too long."
-msgstr ""
+msgstr "Nombre de jugador demasiado largo."
 
 #: src/main.cpp:1757
 msgid "Connection error (timed out?)"
@@ -987,7 +986,7 @@ msgstr ""
 
 #: src/main.cpp:1926
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "La ruta del mundo especificada no existe: "
 
 #: src/main.cpp:1935
 msgid "Could not find or load game \""
@@ -997,58 +996,79 @@ msgstr "No se puede encontrar o cargar el juego \""
 msgid "Invalid gamespec."
 msgstr "Juego especificado no válido."
 
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr ""
-#~ "Click izquierdo: Mover todos los objetos. Click derecho: Mover un objeto."
+msgid ""
+"Default Controls:\n"
+"- WASD: move\n"
+"- Space: jump/climb\n"
+"- Shift: sneak/go down\n"
+"- Q: drop item\n"
+"- I: inventory\n"
+"- Mouse: turn/look\n"
+"- Mouse left: dig/punch\n"
+"- Mouse right: place/use\n"
+"- Mouse wheel: select item\n"
+"- T: chat\n"
+msgstr ""
+"Controles Pred.:\n"
+"- WASD: moverse\n"
+"- Espacio: saltar/subir\n"
+"- Mayús.: puntillas/bajar\n"
+"- Q: soltar objeto\n"
+"- I: inventario\n"
+"- Ratón: girar/mirar\n"
+"- Ratón izq.: cavar/golpear\n"
+"- Ratón der.: colocar/usar\n"
+"- Rueda ratón: elegir objeto\n"
+"- T: conversar\n"
 
-#~ msgid "is required by:"
-#~ msgstr "es requerido por:"
+msgid "is required by:"
+msgstr "es requerido por:"
 
-#~ msgid "Configuration saved.  "
-#~ msgstr "Configuración guardada.  "
+msgid "Configuration saved.  "
+msgstr "Configuración guardada.  "
 
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "ADVERTENCIA: La configuración no corresponde.  "
+msgid "Warning: Configuration not consistent.  "
+msgstr "Advertencia: La configuración no corresponde.  "
 
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr ""
-#~ "No se puede crear el mundo: El nombre contiene caracteres no válidos"
+msgid "Cannot create world: Name contains invalid characters"
+msgstr ""
+"No se puede crear el mundo: El nombre contiene caracteres no válidos"
 
-#~ msgid "Multiplayer"
-#~ msgstr "Multijugador"
+msgid "Multiplayer"
+msgstr "Multijugador"
 
-#~ msgid "Advanced"
-#~ msgstr "Avanzado"
+msgid "Advanced"
+msgstr "Avanzado"
 
-#~ msgid "Show Public"
-#~ msgstr "Servidores Públicos"
+msgid "Show Public"
+msgstr "Servidores Públicos"
 
-#~ msgid "Show Favorites"
-#~ msgstr "Mostrar Favoritos"
+msgid "Show Favorites"
+msgstr "Mostrar Favoritos"
 
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Dejar la dirección en blanco para iniciar un servidor local."
+msgid "Leave address blank to start a local server."
+msgstr "Dejar la dirección en blanco para iniciar un servidor local."
 
 #~ msgid "Create world"
 #~ msgstr "Crear Mundo"
 
-#~ msgid "Address required."
-#~ msgstr "Requiere una dirección."
+msgid "Address required."
+msgstr "Requiere una dirección."
 
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "No se puede eliminar el mundo: ninguno ha sido seleccionado"
+msgid "Cannot delete world: Nothing selected"
+msgstr "No se puede eliminar el mundo: ninguno ha sido seleccionado"
 
-#~ msgid "Files to be deleted"
-#~ msgstr "Archivos que se eliminarán"
+msgid "Files to be deleted"
+msgstr "Archivos que se eliminarán"
 
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "No se puede crear el mundo: No se encontraron juegos"
+msgid "Cannot create world: No games found"
+msgstr "No se puede crear el mundo: No se encontraron juegos"
 
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "No se puede configurar el mundo: Ninguno seleccionado"
+msgid "Cannot configure world: Nothing selected"
+msgstr "No se puede configurar el mundo: Ninguno seleccionado"
 
-#~ msgid "Failed to delete all world files"
-#~ msgstr "No se pudo eliminar todos los archivos del mundo"
+msgid "Failed to delete all world files"
+msgstr "No se pudo eliminar todos los archivos del mundo"
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -1075,146 +1095,85 @@ msgstr "Juego especificado no válido."
 #~ "- ESC: Este Menu\n"
 #~ "- T: Conversar\n"
 
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
-#~ msgstr ""
-#~ "ADVERTENCIA: Algunos mods configurados faltan.\n"
-#~ "Su ajuste se quitará al guardar la configuración.  "
+msgid ""
+"Warning: Some configured mods are missing.\n"
+"Their setting will be removed when you save the configuration.  "
+msgstr ""
+"ADVERTENCIA: Algunos mods configurados faltan.\n"
+"Su ajuste se quitará al guardar la configuración.  "
 
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
-#~ msgstr ""
-#~ "ADVERTENCIA: Algunos mods no están aún configurados.\n"
-#~ "Se habilitarán de forma predeterminada al guardar la configuración.  "
+msgid ""
+"Warning: Some mods are not configured yet.\n"
+"They will be enabled by default when you save the configuration.  "
+msgstr ""
+"ADVERTENCIA: Algunos mods no están aún configurados.\n"
+"Se habilitarán de forma predeterminada al guardar la configuración.  "
 
-#~ msgid ""
-#~ "Default Controls:\n"
-#~ "- WASD: move\n"
-#~ "- Space: jump/climb\n"
-#~ "- Shift: sneak/go down\n"
-#~ "- Q: drop item\n"
-#~ "- I: inventory\n"
-#~ "- Mouse: turn/look\n"
-#~ "- Mouse left: dig/punch\n"
-#~ "- Mouse right: place/use\n"
-#~ "- Mouse wheel: select item\n"
-#~ "- T: chat\n"
-#~ msgstr ""
-#~ "Controles Pred.:\n"
-#~ "- WASD: moverse\n"
-#~ "- Espacio: saltar/subir\n"
-#~ "- Mayús.: puntillas/bajar\n"
-#~ "- Q: soltar objeto\n"
-#~ "- I: inventario\n"
-#~ "- Ratón: girar/mirar\n"
-#~ "- Ratón izq.: cavar/golpear\n"
-#~ "- Ratón der.: colocar/usar\n"
-#~ "- Rueda ratón: elegir objeto\n"
-#~ "- T: conversar\n"
+msgid "Exit to OS"
+msgstr "Salir al S.O."
 
-#~ msgid "Exit to OS"
-#~ msgstr "Salir al S.O."
+msgid "Exit to Menu"
+msgstr "Salir al menú"
 
-#~ msgid "Exit to Menu"
-#~ msgstr "Salir al menú"
+msgid "Sound Volume"
+msgstr "Volumen del Sonido"
 
-#~ msgid "Sound Volume"
-#~ msgstr "Volumen del Sonido"
+msgid "Change Password"
+msgstr "Modificar contraseña"
 
-#~ msgid "Change Password"
-#~ msgstr "Modificar contraseña"
+msgid "Continue"
+msgstr "Continuar"
 
-#~ msgid "Continue"
-#~ msgstr "Continuar"
+msgid "You died."
+msgstr "Has muerto."
 
-#~ msgid "You died."
-#~ msgstr "Has muerto."
+msgid "Shutting down stuff..."
+msgstr "Apagando cosas..."
 
-#~ msgid "Shutting down stuff..."
-#~ msgstr "Apagando cosas..."
+msgid "Connecting to server..."
+msgstr "Conectando al servidor..."
 
-#~ msgid "Connecting to server..."
-#~ msgstr "Conectando al servidor..."
+msgid "Resolving address..."
+msgstr "Resolviendo dirección..."
 
-#~ msgid "Resolving address..."
-#~ msgstr "Resolviendo dirección..."
+msgid "Creating client..."
+msgstr "Creando cliente..."
 
-#~ msgid "Creating client..."
-#~ msgstr "Creando cliente..."
+msgid "Creating server...."
+msgstr "Creando servidor..."
 
-#~ msgid "Creating server...."
-#~ msgstr "Creando servidor..."
+msgid "Loading..."
+msgstr "Cargando..."
 
-#~ msgid "Loading..."
-#~ msgstr "Cargando..."
+msgid "Local install"
+msgstr "Instalación local"
 
-#~ msgid "Local install"
-#~ msgstr "Instalación local"
+msgid "Preload item visuals"
+msgstr "Precarga elementos visuales"
 
-#~ msgid "Add mod:"
-#~ msgstr "Añadir mod:"
+msgid "Password"
+msgstr "Contraseña"
 
-#~ msgid "MODS"
-#~ msgstr "MODS"
+msgid "Name"
+msgstr "Nombre"
 
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "PAQUETES DE TEXTURAS"
+msgid "Favorites:"
+msgstr "Favoritos:"
 
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "UN JUGADOR"
+msgid "<<-- Add mod"
+msgstr "Añadir modificación"
 
-#~ msgid "Finite Liquid"
-#~ msgstr "Líquidos Finitos"
+msgid "Remove selected mod"
+msgstr "Eliminar mod seleccionado"
 
-#~ msgid "Preload item visuals"
-#~ msgstr "Precarga elementos visuales"
+msgid "Mods:"
+msgstr "Modificaciones:"
 
-#~ msgid "SETTINGS"
-#~ msgstr "CONFIGURACION"
+msgid "Games"
+msgstr "Juegos"
 
-#~ msgid "Password"
-#~ msgstr "Contraseña"
+msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+msgstr "Gamemgr: Imposible copiar el mod \"$1\" al juego \"$2\""
 
-#~ msgid "Name"
-#~ msgstr "Nombre"
-
-#~ msgid "START SERVER"
-#~ msgstr "INICIAR SERVIDOR"
-
-#~ msgid "Favorites:"
-#~ msgstr "Favoritos:"
-
-#~ msgid "CLIENT"
-#~ msgstr "CLIENTE"
-
-#~ msgid "<<-- Add mod"
-#~ msgstr "Añadir modificación"
-
-#~ msgid "Remove selected mod"
-#~ msgstr "Eliminar mod seleccionado"
-
-#~ msgid "EDIT GAME"
-#~ msgstr "EDITAR JUEGO"
-
-#~ msgid "new game"
-#~ msgstr "juego nuevo"
-
-#~ msgid "edit game"
-#~ msgstr "editar juego"
-
-#~ msgid "Mods:"
-#~ msgstr "Modificaciónes:"
-
-#~ msgid "Games"
-#~ msgstr "Juegos"
-
-#~ msgid "GAMES"
-#~ msgstr "JUEGOS"
-
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "Gamemgr: Imposible copiar el mod \"$1\" al juego \"$2\""
-
-#~ msgid "Game Name"
-#~ msgstr "Nombre del Juego"
+msgid "Game Name"
+msgstr "Nombre del Juego"
