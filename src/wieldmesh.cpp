@@ -356,8 +356,13 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 			} else {
 				material.setTexture(0, f.tiles[i].texture);
 			}
-			material.MaterialType = m_material_type;
 			if (m_enable_shaders) {
+				u8 material_type = f.tiles[i].material_type;
+				if (material_type != TILE_MATERIAL_ALPHA)
+					material_type = TILE_MATERIAL_BASIC;
+				u32 shader_id = shdrsrc->getShader("nodes_shader", material_type, f.drawtype);
+				material.MaterialType = shdrsrc->getShaderInfo(shader_id).material;
+				f.tiles[i].applyMaterialOptionsWithShaders(material);
 				if (f.tiles[i].normal_texture) {
 					if (animated) {
 						FrameSpec animation_frame = f.tiles[i].frames.find(0)->second;
@@ -369,6 +374,8 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 				} else {
 					material.setTexture(2, tsrc->getTexture("disable_img.png"));
 				}
+			} else {
+				f.tiles[i].applyMaterialOptions(material);
 			}
 		}
 		return;
