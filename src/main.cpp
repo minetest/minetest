@@ -1937,6 +1937,10 @@ bool ClientLauncher::launch_game(std::wstring *error_message,
 			errorstream << wide_to_narrow(*error_message) << std::endl;
 			return false;
 		}
+
+		if (porting::signal_handler_killstatus())
+			return true;
+
 		if (game_params.game_spec.isValid() &&
 				game_params.game_spec.id != worldspec.gameid) {
 			errorstream << "WARNING: Overriding gamespec from \""
