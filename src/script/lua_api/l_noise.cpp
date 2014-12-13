@@ -253,7 +253,7 @@ int LuaPerlinNoiseMap::l_get3dMap_flat(lua_State *L)
 
 LuaPerlinNoiseMap::LuaPerlinNoiseMap(NoiseParams *params, int seed, v3s16 size)
 {
-	m_is3d = size.Z <= 1;
+	m_is3d = size.Z > 1;
 	np = *params;
 	try {
 		noise = new Noise(&np, seed, size.X, size.Y, size.Z);
