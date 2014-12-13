@@ -121,23 +121,6 @@ public:
 	IWritableItemDefManager(){}
 	virtual ~IWritableItemDefManager(){}
 
-	// Get item definition
-	virtual const ItemDefinition& get(const std::string &name) const=0;
-	// Get alias definition
-	virtual std::string getAlias(const std::string &name) const=0;
-	// Get set of all defined item names and aliases
-	virtual std::set<std::string> getAll() const=0;
-	// Check if item is known
-	virtual bool isKnown(const std::string &name) const=0;
-#ifndef SERVER
-	// Get item inventory texture
-	virtual video::ITexture* getInventoryTexture(const std::string &name,
-			IGameDef *gamedef) const=0;
-	// Get item wield mesh
-	virtual scene::IMesh* getWieldMesh(const std::string &name,
-		IGameDef *gamedef) const=0;
-#endif
-
 	// Remove all registered item and node definitions and aliases
 	// Then re-add the builtin item definitions
 	virtual void clear()=0;
