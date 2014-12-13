@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-12 17:19-0500\n"
+"POT-Creation-Date: 2014-12-13 15:24+0100\n"
 "PO-Revision-Date: 2013-02-17 00:41+0200\n"
 "Last-Translator: Rune Biskopstö Christensen <lakersforce@gmail.com>\n"
 "Language-Team: \n"
@@ -211,7 +211,7 @@ msgstr ""
 msgid "Shortname:"
 msgstr "Verdens navn"
 
-#: builtin/mainmenu/store.lua:167 src/guiFormSpecMenu.cpp:2865
+#: builtin/mainmenu/store.lua:167 src/guiFormSpecMenu.cpp:2866
 msgid "ok"
 msgstr ""
 
@@ -239,97 +239,80 @@ msgstr ""
 msgid "Credits"
 msgstr "Skabt af"
 
-#: builtin/mainmenu/tab_credits.lua:30
+#: builtin/mainmenu/tab_credits.lua:29
 msgid "Core Developers"
 msgstr ""
 
-#: builtin/mainmenu/tab_credits.lua:44
+#: builtin/mainmenu/tab_credits.lua:43
 msgid "Active Contributors"
 msgstr ""
 
-#: builtin/mainmenu/tab_credits.lua:49
+#: builtin/mainmenu/tab_credits.lua:48
 msgid "Previous Contributors"
 msgstr ""
 
 #: builtin/mainmenu/tab_mods.lua:30
-msgid "MODS"
-msgstr ""
-
-#: builtin/mainmenu/tab_mods.lua:31
 msgid "Installed Mods:"
 msgstr ""
 
-#: builtin/mainmenu/tab_mods.lua:37
-msgid "Add mod:"
-msgstr ""
-
-#: builtin/mainmenu/tab_mods.lua:40
+#: builtin/mainmenu/tab_mods.lua:39
 msgid "Online mod repository"
 msgstr ""
 
-#: builtin/mainmenu/tab_mods.lua:79
+#: builtin/mainmenu/tab_mods.lua:78
 msgid "No mod description available"
 msgstr ""
 
-#: builtin/mainmenu/tab_mods.lua:83
+#: builtin/mainmenu/tab_mods.lua:82
 msgid "Mod information:"
 msgstr ""
 
-#: builtin/mainmenu/tab_mods.lua:94
+#: builtin/mainmenu/tab_mods.lua:93
 msgid "Rename"
 msgstr ""
 
-#: builtin/mainmenu/tab_mods.lua:96
+#: builtin/mainmenu/tab_mods.lua:95
 msgid "Uninstall selected modpack"
 msgstr ""
 
-#: builtin/mainmenu/tab_mods.lua:107
+#: builtin/mainmenu/tab_mods.lua:106
 msgid "Uninstall selected mod"
 msgstr ""
 
-#: builtin/mainmenu/tab_mods.lua:122
+#: builtin/mainmenu/tab_mods.lua:121
 #, fuzzy
 msgid "Select Mod File:"
 msgstr "Vælg verden:"
 
-#: builtin/mainmenu/tab_mods.lua:166
+#: builtin/mainmenu/tab_mods.lua:165
 msgid "Mods"
 msgstr ""
 
 #: builtin/mainmenu/tab_multiplayer.lua:23
-msgid "CLIENT"
-msgstr ""
-
-#: builtin/mainmenu/tab_multiplayer.lua:24
-#, fuzzy
-msgid "Favorites:"
-msgstr "Vis favoritter"
-
-#: builtin/mainmenu/tab_multiplayer.lua:25
 msgid "Address/Port"
 msgstr "Adresse/port"
 
-#: builtin/mainmenu/tab_multiplayer.lua:26
+#: builtin/mainmenu/tab_multiplayer.lua:24 builtin/mainmenu/tab_server.lua:37
 #: builtin/mainmenu/tab_simple_main.lua:25
 msgid "Name/Password"
 msgstr "Navn/kodeord"
 
-#: builtin/mainmenu/tab_multiplayer.lua:31
+#: builtin/mainmenu/tab_multiplayer.lua:29
 #: builtin/mainmenu/tab_simple_main.lua:30
 msgid "Public Serverlist"
 msgstr ""
 
-#: builtin/mainmenu/tab_multiplayer.lua:36 builtin/mainmenu/tab_server.lua:26
+#: builtin/mainmenu/tab_multiplayer.lua:34 builtin/mainmenu/tab_server.lua:26
 #: builtin/mainmenu/tab_singleplayer.lua:85 src/keycode.cpp:230
 msgid "Delete"
 msgstr "Slet"
 
-#: builtin/mainmenu/tab_multiplayer.lua:40
+#: builtin/mainmenu/tab_multiplayer.lua:38
 #: builtin/mainmenu/tab_simple_main.lua:34
 msgid "Connect"
 msgstr "Forbind"
 
-#: builtin/mainmenu/tab_multiplayer.lua:235
+#: builtin/mainmenu/tab_multiplayer.lua:252
 msgid "Client"
 msgstr ""
 
@@ -350,33 +333,20 @@ msgstr "Start spil / Forbind"
 msgid "Select World:"
 msgstr "Vælg verden:"
 
-#: builtin/mainmenu/tab_server.lua:31
-msgid "START SERVER"
-msgstr ""
-
-#: builtin/mainmenu/tab_server.lua:32 builtin/mainmenu/tab_simple_main.lua:63
-#: builtin/mainmenu/tab_singleplayer.lua:91
+#: builtin/mainmenu/tab_server.lua:31 builtin/mainmenu/tab_simple_main.lua:63
+#: builtin/mainmenu/tab_singleplayer.lua:90
 msgid "Creative Mode"
 msgstr "Kreativ tilstand"
 
-#: builtin/mainmenu/tab_server.lua:34 builtin/mainmenu/tab_simple_main.lua:65
-#: builtin/mainmenu/tab_singleplayer.lua:93
+#: builtin/mainmenu/tab_server.lua:33 builtin/mainmenu/tab_simple_main.lua:65
+#: builtin/mainmenu/tab_singleplayer.lua:92
 msgid "Enable Damage"
 msgstr "Aktivér skade"
 
-#: builtin/mainmenu/tab_server.lua:36
+#: builtin/mainmenu/tab_server.lua:35
 #, fuzzy
 msgid "Public"
 msgstr "Vis offentlig"
-
-#: builtin/mainmenu/tab_server.lua:38
-msgid "Name"
-msgstr ""
-
-#: builtin/mainmenu/tab_server.lua:40
-#, fuzzy
-msgid "Password"
-msgstr "Gammelt kodeord"
 
 #: builtin/mainmenu/tab_server.lua:45
 msgid "Bind Address"
@@ -402,116 +372,112 @@ msgstr ""
 msgid "No!!!"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:133
-msgid "SETTINGS"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua:135
+#: builtin/mainmenu/tab_settings.lua:134
 msgid "Smooth Lighting"
 msgstr "Glat belysning"
 
-#: builtin/mainmenu/tab_settings.lua:137
+#: builtin/mainmenu/tab_settings.lua:136
 msgid "Enable Particles"
 msgstr "Aktivér partikler"
 
-#: builtin/mainmenu/tab_settings.lua:139
+#: builtin/mainmenu/tab_settings.lua:138
 msgid "3D Clouds"
 msgstr "3D skyer"
 
-#: builtin/mainmenu/tab_settings.lua:141
+#: builtin/mainmenu/tab_settings.lua:140
 #, fuzzy
 msgid "Fancy Trees"
 msgstr "\"Smarte\" træer"
 
-#: builtin/mainmenu/tab_settings.lua:143
+#: builtin/mainmenu/tab_settings.lua:142
 #, fuzzy
 msgid "Opaque Water"
 msgstr "Opakt (uigennemsigtigt) vand"
 
-#: builtin/mainmenu/tab_settings.lua:145
+#: builtin/mainmenu/tab_settings.lua:144
 #, fuzzy
 msgid "Connected Glass"
 msgstr "Forbind"
 
-#: builtin/mainmenu/tab_settings.lua:150
+#: builtin/mainmenu/tab_settings.lua:149
 msgid "Restart minetest for driver change to take effect"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:152
+#: builtin/mainmenu/tab_settings.lua:151
 msgid "Mip-Mapping"
 msgstr "Mip-mapping"
 
-#: builtin/mainmenu/tab_settings.lua:154
+#: builtin/mainmenu/tab_settings.lua:153
 msgid "Anisotropic Filtering"
 msgstr "Anisotropisk filtréring"
 
-#: builtin/mainmenu/tab_settings.lua:156
+#: builtin/mainmenu/tab_settings.lua:155
 msgid "Bi-Linear Filtering"
 msgstr "Bi-lineær filtréring"
 
-#: builtin/mainmenu/tab_settings.lua:158
+#: builtin/mainmenu/tab_settings.lua:157
 msgid "Tri-Linear Filtering"
 msgstr "Tri-lineær filtréring"
 
-#: builtin/mainmenu/tab_settings.lua:161
+#: builtin/mainmenu/tab_settings.lua:160
 msgid "Shaders"
 msgstr "Shadere"
 
-#: builtin/mainmenu/tab_settings.lua:165
+#: builtin/mainmenu/tab_settings.lua:164
 msgid "Change keys"
 msgstr "Skift bindinger"
 
-#: builtin/mainmenu/tab_settings.lua:168
+#: builtin/mainmenu/tab_settings.lua:167
 #, fuzzy
 msgid "Reset singleplayer world"
 msgstr "Enligspiller"
 
-#: builtin/mainmenu/tab_settings.lua:172
+#: builtin/mainmenu/tab_settings.lua:171
 msgid "GUI scale factor"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:176
+#: builtin/mainmenu/tab_settings.lua:175
 msgid "Scaling factor applied to menu elements: "
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:182
+#: builtin/mainmenu/tab_settings.lua:181
 msgid "Touch free target"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:188
+#: builtin/mainmenu/tab_settings.lua:187
 msgid "Touchthreshold (px)"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:195 builtin/mainmenu/tab_settings.lua:209
+#: builtin/mainmenu/tab_settings.lua:194 builtin/mainmenu/tab_settings.lua:208
 #, fuzzy
 msgid "Bumpmapping"
 msgstr "Mip-mapping"
 
-#: builtin/mainmenu/tab_settings.lua:197 builtin/mainmenu/tab_settings.lua:210
+#: builtin/mainmenu/tab_settings.lua:196 builtin/mainmenu/tab_settings.lua:209
 msgid "Generate Normalmaps"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:199 builtin/mainmenu/tab_settings.lua:211
+#: builtin/mainmenu/tab_settings.lua:198 builtin/mainmenu/tab_settings.lua:210
 msgid "Parallax Occlusion"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:201 builtin/mainmenu/tab_settings.lua:212
+#: builtin/mainmenu/tab_settings.lua:200 builtin/mainmenu/tab_settings.lua:211
 msgid "Waving Water"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:203 builtin/mainmenu/tab_settings.lua:213
+#: builtin/mainmenu/tab_settings.lua:202 builtin/mainmenu/tab_settings.lua:212
 msgid "Waving Leaves"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:205 builtin/mainmenu/tab_settings.lua:214
+#: builtin/mainmenu/tab_settings.lua:204 builtin/mainmenu/tab_settings.lua:213
 msgid "Waving Plants"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:256
+#: builtin/mainmenu/tab_settings.lua:255
 msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:331
+#: builtin/mainmenu/tab_settings.lua:330
 msgid "Settings"
 msgstr "Indstillinger"
 
@@ -538,11 +504,7 @@ msgstr "Hovedmenu"
 msgid "Play"
 msgstr "Afspil"
 
-#: builtin/mainmenu/tab_singleplayer.lua:90
-msgid "SINGLE PLAYER"
-msgstr ""
-
-#: builtin/mainmenu/tab_singleplayer.lua:225
+#: builtin/mainmenu/tab_singleplayer.lua:224
 msgid "Singleplayer"
 msgstr "Enligspiller"
 
@@ -550,15 +512,11 @@ msgstr "Enligspiller"
 msgid "Select texture pack:"
 msgstr ""
 
-#: builtin/mainmenu/tab_texturepacks.lua:50
-msgid "TEXTURE PACKS"
-msgstr ""
-
-#: builtin/mainmenu/tab_texturepacks.lua:70
+#: builtin/mainmenu/tab_texturepacks.lua:69
 msgid "No information available"
 msgstr ""
 
-#: builtin/mainmenu/tab_texturepacks.lua:115
+#: builtin/mainmenu/tab_texturepacks.lua:114
 msgid "Texturepacks"
 msgstr ""
 
@@ -606,7 +564,7 @@ msgstr ""
 msgid "Proceed"
 msgstr "Fortsæt"
 
-#: src/guiFormSpecMenu.cpp:2845
+#: src/guiFormSpecMenu.cpp:2846
 msgid "Enter "
 msgstr ""
 
@@ -1021,31 +979,31 @@ msgstr "PA1"
 msgid "Zoom"
 msgstr "Zoom"
 
-#: src/main.cpp:1675
+#: src/main.cpp:1681
 msgid "Main Menu"
 msgstr "Hovedmenu"
 
-#: src/main.cpp:1713
+#: src/main.cpp:1719
 msgid "Player name too long."
 msgstr ""
 
-#: src/main.cpp:1751
+#: src/main.cpp:1757
 msgid "Connection error (timed out?)"
 msgstr "Forbindelses fejl (udløbelse af tidsfrist?)"
 
-#: src/main.cpp:1913
+#: src/main.cpp:1919
 msgid "No world selected and no address provided. Nothing to do."
 msgstr "Ingen verden valgt og ingen adresse angivet. Ingen opgave at lave."
 
-#: src/main.cpp:1920
+#: src/main.cpp:1926
 msgid "Provided world path doesn't exist: "
 msgstr ""
 
-#: src/main.cpp:1929
+#: src/main.cpp:1935
 msgid "Could not find or load game \""
 msgstr "Kunne ikke finde eller indlæse spil \""
 
-#: src/main.cpp:1943
+#: src/main.cpp:1953
 msgid "Invalid gamespec."
 msgstr "Ugyldig spilspecifikationer."
 
@@ -1159,6 +1117,14 @@ msgstr "Ugyldig spilspecifikationer."
 
 #~ msgid "Preload item visuals"
 #~ msgstr "For-indlæs elementernes grafik"
+
+#, fuzzy
+#~ msgid "Password"
+#~ msgstr "Gammelt kodeord"
+
+#, fuzzy
+#~ msgid "Favorites:"
+#~ msgstr "Vis favoritter"
 
 #, fuzzy
 #~ msgid "Games"

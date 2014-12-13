@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-12 17:19-0500\n"
+"POT-Creation-Date: 2014-12-13 15:24+0100\n"
 "PO-Revision-Date: 2014-10-30 19:27+0700\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
@@ -210,7 +210,7 @@ msgstr ""
 msgid "Shortname:"
 msgstr "Nama dunia"
 
-#: builtin/mainmenu/store.lua:167 src/guiFormSpecMenu.cpp:2865
+#: builtin/mainmenu/store.lua:167 src/guiFormSpecMenu.cpp:2866
 msgid "ok"
 msgstr ""
 
@@ -238,95 +238,79 @@ msgstr "Halaman $1 dari $2"
 msgid "Credits"
 msgstr "Penghargaan"
 
-#: builtin/mainmenu/tab_credits.lua:30
+#: builtin/mainmenu/tab_credits.lua:29
 msgid "Core Developers"
 msgstr "Pengembang Inti"
 
-#: builtin/mainmenu/tab_credits.lua:44
+#: builtin/mainmenu/tab_credits.lua:43
 msgid "Active Contributors"
 msgstr "Kontributor Aktif"
 
-#: builtin/mainmenu/tab_credits.lua:49
+#: builtin/mainmenu/tab_credits.lua:48
 msgid "Previous Contributors"
 msgstr "Kontributor Sebelumnya"
 
 #: builtin/mainmenu/tab_mods.lua:30
-msgid "MODS"
-msgstr "MOD"
-
-#: builtin/mainmenu/tab_mods.lua:31
 msgid "Installed Mods:"
 msgstr "Mod Terpasang:"
 
-#: builtin/mainmenu/tab_mods.lua:37
-msgid "Add mod:"
-msgstr "Tambah mod:"
-
-#: builtin/mainmenu/tab_mods.lua:40
+#: builtin/mainmenu/tab_mods.lua:39
 msgid "Online mod repository"
 msgstr "Gudang mod daring"
 
-#: builtin/mainmenu/tab_mods.lua:79
+#: builtin/mainmenu/tab_mods.lua:78
 msgid "No mod description available"
 msgstr "Tidak ada deskripsi mod tersedia"
 
-#: builtin/mainmenu/tab_mods.lua:83
+#: builtin/mainmenu/tab_mods.lua:82
 msgid "Mod information:"
 msgstr "Informasi mod:"
 
-#: builtin/mainmenu/tab_mods.lua:94
+#: builtin/mainmenu/tab_mods.lua:93
 msgid "Rename"
 msgstr "Ganti Nama"
 
-#: builtin/mainmenu/tab_mods.lua:96
+#: builtin/mainmenu/tab_mods.lua:95
 msgid "Uninstall selected modpack"
 msgstr "Copot pemasangan paket mod terpilih"
 
-#: builtin/mainmenu/tab_mods.lua:107
+#: builtin/mainmenu/tab_mods.lua:106
 msgid "Uninstall selected mod"
 msgstr "Copot pemasangan mod terpilih"
 
-#: builtin/mainmenu/tab_mods.lua:122
+#: builtin/mainmenu/tab_mods.lua:121
 msgid "Select Mod File:"
 msgstr "Pilih Berkas Mod:"
 
-#: builtin/mainmenu/tab_mods.lua:166
+#: builtin/mainmenu/tab_mods.lua:165
 msgid "Mods"
 msgstr "Mod"
 
 #: builtin/mainmenu/tab_multiplayer.lua:23
-msgid "CLIENT"
-msgstr "KLIEN"
-
-#: builtin/mainmenu/tab_multiplayer.lua:24
-msgid "Favorites:"
-msgstr "Favorit:"
-
-#: builtin/mainmenu/tab_multiplayer.lua:25
 msgid "Address/Port"
 msgstr "Alamat/Port"
 
-#: builtin/mainmenu/tab_multiplayer.lua:26
+#: builtin/mainmenu/tab_multiplayer.lua:24 builtin/mainmenu/tab_server.lua:37
 #: builtin/mainmenu/tab_simple_main.lua:25
 msgid "Name/Password"
 msgstr "Nama/Kata sandi"
 
-#: builtin/mainmenu/tab_multiplayer.lua:31
+#: builtin/mainmenu/tab_multiplayer.lua:29
 #: builtin/mainmenu/tab_simple_main.lua:30
 msgid "Public Serverlist"
 msgstr "Daftar Server Publik"
 
-#: builtin/mainmenu/tab_multiplayer.lua:36 builtin/mainmenu/tab_server.lua:26
+#: builtin/mainmenu/tab_multiplayer.lua:34 builtin/mainmenu/tab_server.lua:26
 #: builtin/mainmenu/tab_singleplayer.lua:85 src/keycode.cpp:230
 msgid "Delete"
 msgstr "Hapus"
 
-#: builtin/mainmenu/tab_multiplayer.lua:40
+#: builtin/mainmenu/tab_multiplayer.lua:38
 #: builtin/mainmenu/tab_simple_main.lua:34
 msgid "Connect"
 msgstr "Sambung"
 
-#: builtin/mainmenu/tab_multiplayer.lua:235
+#: builtin/mainmenu/tab_multiplayer.lua:252
 msgid "Client"
 msgstr "Klien"
 
@@ -346,31 +330,19 @@ msgstr "Mulai Permainan"
 msgid "Select World:"
 msgstr "Pilih Dunia:"
 
-#: builtin/mainmenu/tab_server.lua:31
-msgid "START SERVER"
-msgstr "MULAI SERVER"
-
-#: builtin/mainmenu/tab_server.lua:32 builtin/mainmenu/tab_simple_main.lua:63
-#: builtin/mainmenu/tab_singleplayer.lua:91
+#: builtin/mainmenu/tab_server.lua:31 builtin/mainmenu/tab_simple_main.lua:63
+#: builtin/mainmenu/tab_singleplayer.lua:90
 msgid "Creative Mode"
 msgstr "Mode Kreatif"
 
-#: builtin/mainmenu/tab_server.lua:34 builtin/mainmenu/tab_simple_main.lua:65
-#: builtin/mainmenu/tab_singleplayer.lua:93
+#: builtin/mainmenu/tab_server.lua:33 builtin/mainmenu/tab_simple_main.lua:65
+#: builtin/mainmenu/tab_singleplayer.lua:92
 msgid "Enable Damage"
 msgstr "Aktifkan Kerusakan"
 
-#: builtin/mainmenu/tab_server.lua:36
+#: builtin/mainmenu/tab_server.lua:35
 msgid "Public"
 msgstr "Publik"
-
-#: builtin/mainmenu/tab_server.lua:38
-msgid "Name"
-msgstr "Nama"
-
-#: builtin/mainmenu/tab_server.lua:40
-msgid "Password"
-msgstr "Kata Sandi"
 
 #: builtin/mainmenu/tab_server.lua:45
 msgid "Bind Address"
@@ -396,115 +368,111 @@ msgstr ""
 msgid "No!!!"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:133
-msgid "SETTINGS"
-msgstr "PENGATURAN"
-
-#: builtin/mainmenu/tab_settings.lua:135
+#: builtin/mainmenu/tab_settings.lua:134
 msgid "Smooth Lighting"
 msgstr "Pencahayaan Halus"
 
-#: builtin/mainmenu/tab_settings.lua:137
+#: builtin/mainmenu/tab_settings.lua:136
 msgid "Enable Particles"
 msgstr "Aktifkan Partikel"
 
-#: builtin/mainmenu/tab_settings.lua:139
+#: builtin/mainmenu/tab_settings.lua:138
 msgid "3D Clouds"
 msgstr "Awan 3D"
 
-#: builtin/mainmenu/tab_settings.lua:141
+#: builtin/mainmenu/tab_settings.lua:140
 #, fuzzy
 msgid "Fancy Trees"
 msgstr "Pohon mewah"
 
-#: builtin/mainmenu/tab_settings.lua:143
+#: builtin/mainmenu/tab_settings.lua:142
 msgid "Opaque Water"
 msgstr "Air Buram"
 
-#: builtin/mainmenu/tab_settings.lua:145
+#: builtin/mainmenu/tab_settings.lua:144
 #, fuzzy
 msgid "Connected Glass"
 msgstr "Sambung"
 
-#: builtin/mainmenu/tab_settings.lua:150
+#: builtin/mainmenu/tab_settings.lua:149
 msgid "Restart minetest for driver change to take effect"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:152
+#: builtin/mainmenu/tab_settings.lua:151
 msgid "Mip-Mapping"
 msgstr "Mip-Mapping"
 
-#: builtin/mainmenu/tab_settings.lua:154
+#: builtin/mainmenu/tab_settings.lua:153
 msgid "Anisotropic Filtering"
 msgstr "Anisotropic Filtering"
 
-#: builtin/mainmenu/tab_settings.lua:156
+#: builtin/mainmenu/tab_settings.lua:155
 msgid "Bi-Linear Filtering"
 msgstr "Bi-Linear Filtering"
 
-#: builtin/mainmenu/tab_settings.lua:158
+#: builtin/mainmenu/tab_settings.lua:157
 msgid "Tri-Linear Filtering"
 msgstr "Tri-Linear Filtering"
 
-#: builtin/mainmenu/tab_settings.lua:161
+#: builtin/mainmenu/tab_settings.lua:160
 msgid "Shaders"
 msgstr "Shaders"
 
-#: builtin/mainmenu/tab_settings.lua:165
+#: builtin/mainmenu/tab_settings.lua:164
 msgid "Change keys"
 msgstr "Ubah tombol"
 
-#: builtin/mainmenu/tab_settings.lua:168
+#: builtin/mainmenu/tab_settings.lua:167
 #, fuzzy
 msgid "Reset singleplayer world"
 msgstr "Pemain Tunggal"
 
-#: builtin/mainmenu/tab_settings.lua:172
+#: builtin/mainmenu/tab_settings.lua:171
 msgid "GUI scale factor"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:176
+#: builtin/mainmenu/tab_settings.lua:175
 msgid "Scaling factor applied to menu elements: "
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:182
+#: builtin/mainmenu/tab_settings.lua:181
 msgid "Touch free target"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:188
+#: builtin/mainmenu/tab_settings.lua:187
 msgid "Touchthreshold (px)"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:195 builtin/mainmenu/tab_settings.lua:209
+#: builtin/mainmenu/tab_settings.lua:194 builtin/mainmenu/tab_settings.lua:208
 #, fuzzy
 msgid "Bumpmapping"
 msgstr "Mip-Mapping"
 
-#: builtin/mainmenu/tab_settings.lua:197 builtin/mainmenu/tab_settings.lua:210
+#: builtin/mainmenu/tab_settings.lua:196 builtin/mainmenu/tab_settings.lua:209
 msgid "Generate Normalmaps"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:199 builtin/mainmenu/tab_settings.lua:211
+#: builtin/mainmenu/tab_settings.lua:198 builtin/mainmenu/tab_settings.lua:210
 msgid "Parallax Occlusion"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:201 builtin/mainmenu/tab_settings.lua:212
+#: builtin/mainmenu/tab_settings.lua:200 builtin/mainmenu/tab_settings.lua:211
 msgid "Waving Water"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:203 builtin/mainmenu/tab_settings.lua:213
+#: builtin/mainmenu/tab_settings.lua:202 builtin/mainmenu/tab_settings.lua:212
 msgid "Waving Leaves"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:205 builtin/mainmenu/tab_settings.lua:214
+#: builtin/mainmenu/tab_settings.lua:204 builtin/mainmenu/tab_settings.lua:213
 msgid "Waving Plants"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:256
+#: builtin/mainmenu/tab_settings.lua:255
 msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr "Untuk mengaktifkan shaders OpenGL driver harus digunakan."
 
-#: builtin/mainmenu/tab_settings.lua:331
+#: builtin/mainmenu/tab_settings.lua:330
 msgid "Settings"
 msgstr "Pengaturan"
 
@@ -531,11 +499,7 @@ msgstr "Menu Utama"
 msgid "Play"
 msgstr "Mainkan"
 
-#: builtin/mainmenu/tab_singleplayer.lua:90
-msgid "SINGLE PLAYER"
-msgstr "PEMAIN TUNGGAL"
-
-#: builtin/mainmenu/tab_singleplayer.lua:225
+#: builtin/mainmenu/tab_singleplayer.lua:224
 msgid "Singleplayer"
 msgstr "Pemain Tunggal"
 
@@ -543,15 +507,11 @@ msgstr "Pemain Tunggal"
 msgid "Select texture pack:"
 msgstr "Pilih paket tekstur:"
 
-#: builtin/mainmenu/tab_texturepacks.lua:50
-msgid "TEXTURE PACKS"
-msgstr "PAKET TEKSTUR"
-
-#: builtin/mainmenu/tab_texturepacks.lua:70
+#: builtin/mainmenu/tab_texturepacks.lua:69
 msgid "No information available"
 msgstr "Tidak ada informasi tersedia"
 
-#: builtin/mainmenu/tab_texturepacks.lua:115
+#: builtin/mainmenu/tab_texturepacks.lua:114
 #, fuzzy
 msgid "Texturepacks"
 msgstr "Paket Tekstur"
@@ -600,7 +560,7 @@ msgstr ""
 msgid "Proceed"
 msgstr "Lanjut"
 
-#: src/guiFormSpecMenu.cpp:2845
+#: src/guiFormSpecMenu.cpp:2846
 msgid "Enter "
 msgstr ""
 
@@ -1009,31 +969,31 @@ msgstr "PA1"
 msgid "Zoom"
 msgstr "Zoom"
 
-#: src/main.cpp:1675
+#: src/main.cpp:1681
 msgid "Main Menu"
 msgstr "Menu Utama"
 
-#: src/main.cpp:1713
+#: src/main.cpp:1719
 msgid "Player name too long."
 msgstr ""
 
-#: src/main.cpp:1751
+#: src/main.cpp:1757
 msgid "Connection error (timed out?)"
 msgstr "Koneksi rusak (terlalu lama?)"
 
-#: src/main.cpp:1913
+#: src/main.cpp:1919
 msgid "No world selected and no address provided. Nothing to do."
 msgstr "Tidak ada dunia yang dipilih dan tidak ada alamat yang diberikan."
 
-#: src/main.cpp:1920
+#: src/main.cpp:1926
 msgid "Provided world path doesn't exist: "
 msgstr ""
 
-#: src/main.cpp:1929
+#: src/main.cpp:1935
 msgid "Could not find or load game \""
 msgstr "Tidak dapat mencari atau memuat permainan \""
 
-#: src/main.cpp:1943
+#: src/main.cpp:1953
 msgid "Invalid gamespec."
 msgstr "Spesifikasi permainan tidak sah."
 
@@ -1101,11 +1061,41 @@ msgstr "Spesifikasi permainan tidak sah."
 #~ msgid "Local install"
 #~ msgstr "Pemasangan lokal"
 
+#~ msgid "Add mod:"
+#~ msgstr "Tambah mod:"
+
+#~ msgid "MODS"
+#~ msgstr "MOD"
+
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "PAKET TEKSTUR"
+
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "PEMAIN TUNGGAL"
+
 #~ msgid "Finite Liquid"
 #~ msgstr "Cairan Terbatas"
 
 #~ msgid "Preload item visuals"
 #~ msgstr "Pramuat gambaran barang"
+
+#~ msgid "SETTINGS"
+#~ msgstr "PENGATURAN"
+
+#~ msgid "Password"
+#~ msgstr "Kata Sandi"
+
+#~ msgid "Name"
+#~ msgstr "Nama"
+
+#~ msgid "START SERVER"
+#~ msgstr "MULAI SERVER"
+
+#~ msgid "Favorites:"
+#~ msgstr "Favorit:"
+
+#~ msgid "CLIENT"
+#~ msgstr "KLIEN"
 
 #~ msgid "<<-- Add mod"
 #~ msgstr "<<-- Tambah mod"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-12 17:19-0500\n"
+"POT-Creation-Date: 2014-12-13 15:24+0100\n"
 "PO-Revision-Date: 2013-12-29 14:29+0200\n"
 "Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
 "Language-Team: Deutsch <>\n"
@@ -202,7 +202,7 @@ msgstr "Erfolgreich installiert:"
 msgid "Shortname:"
 msgstr "Kurzname:"
 
-#: builtin/mainmenu/store.lua:167 src/guiFormSpecMenu.cpp:2865
+#: builtin/mainmenu/store.lua:167 src/guiFormSpecMenu.cpp:2866
 msgid "ok"
 msgstr "ok"
 
@@ -230,95 +230,79 @@ msgstr "Seite $1 von $2"
 msgid "Credits"
 msgstr "Credits"
 
-#: builtin/mainmenu/tab_credits.lua:30
+#: builtin/mainmenu/tab_credits.lua:29
 msgid "Core Developers"
 msgstr "Core Entwickler"
 
-#: builtin/mainmenu/tab_credits.lua:44
+#: builtin/mainmenu/tab_credits.lua:43
 msgid "Active Contributors"
 msgstr "Aktive Mitwirkende"
 
-#: builtin/mainmenu/tab_credits.lua:49
+#: builtin/mainmenu/tab_credits.lua:48
 msgid "Previous Contributors"
 msgstr "Frühere Mitwirkende"
 
 #: builtin/mainmenu/tab_mods.lua:30
-msgid "MODS"
-msgstr "MODS"
-
-#: builtin/mainmenu/tab_mods.lua:31
 msgid "Installed Mods:"
 msgstr "Installierte Mods:"
 
-#: builtin/mainmenu/tab_mods.lua:37
-msgid "Add mod:"
-msgstr "Modifikation hinzufügen:"
-
-#: builtin/mainmenu/tab_mods.lua:40
+#: builtin/mainmenu/tab_mods.lua:39
 msgid "Online mod repository"
 msgstr "Online Mod Speicher"
 
-#: builtin/mainmenu/tab_mods.lua:79
+#: builtin/mainmenu/tab_mods.lua:78
 msgid "No mod description available"
 msgstr "Keine Mod Beschreibung verfügbar"
 
-#: builtin/mainmenu/tab_mods.lua:83
+#: builtin/mainmenu/tab_mods.lua:82
 msgid "Mod information:"
 msgstr "Mod Information:"
 
-#: builtin/mainmenu/tab_mods.lua:94
+#: builtin/mainmenu/tab_mods.lua:93
 msgid "Rename"
 msgstr "Umbenennen"
 
-#: builtin/mainmenu/tab_mods.lua:96
+#: builtin/mainmenu/tab_mods.lua:95
 msgid "Uninstall selected modpack"
 msgstr "Ausgewähltes Modpack deinstallieren"
 
-#: builtin/mainmenu/tab_mods.lua:107
+#: builtin/mainmenu/tab_mods.lua:106
 msgid "Uninstall selected mod"
 msgstr "Ausgewählte Mod deinstallieren"
 
-#: builtin/mainmenu/tab_mods.lua:122
+#: builtin/mainmenu/tab_mods.lua:121
 msgid "Select Mod File:"
 msgstr "Mod Datei auswählen:"
 
-#: builtin/mainmenu/tab_mods.lua:166
+#: builtin/mainmenu/tab_mods.lua:165
 msgid "Mods"
 msgstr "Mods"
 
 #: builtin/mainmenu/tab_multiplayer.lua:23
-msgid "CLIENT"
-msgstr "CLIENT"
-
-#: builtin/mainmenu/tab_multiplayer.lua:24
-msgid "Favorites:"
-msgstr "Favoriten:"
-
-#: builtin/mainmenu/tab_multiplayer.lua:25
 msgid "Address/Port"
 msgstr "Adresse / Port"
 
-#: builtin/mainmenu/tab_multiplayer.lua:26
+#: builtin/mainmenu/tab_multiplayer.lua:24 builtin/mainmenu/tab_server.lua:37
 #: builtin/mainmenu/tab_simple_main.lua:25
 msgid "Name/Password"
 msgstr "Name/Passwort"
 
-#: builtin/mainmenu/tab_multiplayer.lua:31
+#: builtin/mainmenu/tab_multiplayer.lua:29
 #: builtin/mainmenu/tab_simple_main.lua:30
 msgid "Public Serverlist"
 msgstr "Öffentliche Serverliste"
 
-#: builtin/mainmenu/tab_multiplayer.lua:36 builtin/mainmenu/tab_server.lua:26
+#: builtin/mainmenu/tab_multiplayer.lua:34 builtin/mainmenu/tab_server.lua:26
 #: builtin/mainmenu/tab_singleplayer.lua:85 src/keycode.cpp:230
 msgid "Delete"
 msgstr "Entfernen"
 
-#: builtin/mainmenu/tab_multiplayer.lua:40
+#: builtin/mainmenu/tab_multiplayer.lua:38
 #: builtin/mainmenu/tab_simple_main.lua:34
 msgid "Connect"
 msgstr "Verbinden"
 
-#: builtin/mainmenu/tab_multiplayer.lua:235
+#: builtin/mainmenu/tab_multiplayer.lua:252
 msgid "Client"
 msgstr "Client"
 
@@ -338,31 +322,19 @@ msgstr "Spiel starten"
 msgid "Select World:"
 msgstr "Welt wählen:"
 
-#: builtin/mainmenu/tab_server.lua:31
-msgid "START SERVER"
-msgstr "SERVER STARTEN"
-
-#: builtin/mainmenu/tab_server.lua:32 builtin/mainmenu/tab_simple_main.lua:63
-#: builtin/mainmenu/tab_singleplayer.lua:91
+#: builtin/mainmenu/tab_server.lua:31 builtin/mainmenu/tab_simple_main.lua:63
+#: builtin/mainmenu/tab_singleplayer.lua:90
 msgid "Creative Mode"
 msgstr "Kreativitätsmodus"
 
-#: builtin/mainmenu/tab_server.lua:34 builtin/mainmenu/tab_simple_main.lua:65
-#: builtin/mainmenu/tab_singleplayer.lua:93
+#: builtin/mainmenu/tab_server.lua:33 builtin/mainmenu/tab_simple_main.lua:65
+#: builtin/mainmenu/tab_singleplayer.lua:92
 msgid "Enable Damage"
 msgstr "Schaden einschalten"
 
-#: builtin/mainmenu/tab_server.lua:36
+#: builtin/mainmenu/tab_server.lua:35
 msgid "Public"
 msgstr "Öffentlich"
-
-#: builtin/mainmenu/tab_server.lua:38
-msgid "Name"
-msgstr "Name"
-
-#: builtin/mainmenu/tab_server.lua:40
-msgid "Password"
-msgstr "Passwort"
 
 #: builtin/mainmenu/tab_server.lua:45
 msgid "Bind Address"
@@ -388,111 +360,107 @@ msgstr "Sind Sie sicher, dass Sie die Einzelspielerwelt löschen wollen?"
 msgid "No!!!"
 msgstr "Nein!!!"
 
-#: builtin/mainmenu/tab_settings.lua:133
-msgid "SETTINGS"
-msgstr "EINSTELLUNGEN"
-
-#: builtin/mainmenu/tab_settings.lua:135
+#: builtin/mainmenu/tab_settings.lua:134
 msgid "Smooth Lighting"
 msgstr "Besseres Licht"
 
-#: builtin/mainmenu/tab_settings.lua:137
+#: builtin/mainmenu/tab_settings.lua:136
 msgid "Enable Particles"
 msgstr "Aktiviere Partikel"
 
-#: builtin/mainmenu/tab_settings.lua:139
+#: builtin/mainmenu/tab_settings.lua:138
 msgid "3D Clouds"
 msgstr "3D Wolken"
 
-#: builtin/mainmenu/tab_settings.lua:141
+#: builtin/mainmenu/tab_settings.lua:140
 msgid "Fancy Trees"
 msgstr "Schöne Bäume"
 
-#: builtin/mainmenu/tab_settings.lua:143
+#: builtin/mainmenu/tab_settings.lua:142
 msgid "Opaque Water"
 msgstr "Undurchs. Wasser"
 
-#: builtin/mainmenu/tab_settings.lua:145
+#: builtin/mainmenu/tab_settings.lua:144
 msgid "Connected Glass"
 msgstr "Verbundenes Glas"
 
-#: builtin/mainmenu/tab_settings.lua:150
+#: builtin/mainmenu/tab_settings.lua:149
 msgid "Restart minetest for driver change to take effect"
 msgstr "Neustart nach Ändern des Treibers erforderlich"
 
-#: builtin/mainmenu/tab_settings.lua:152
+#: builtin/mainmenu/tab_settings.lua:151
 msgid "Mip-Mapping"
 msgstr "Mip-Mapping"
 
-#: builtin/mainmenu/tab_settings.lua:154
+#: builtin/mainmenu/tab_settings.lua:153
 msgid "Anisotropic Filtering"
 msgstr "Anisotroper Filter"
 
-#: builtin/mainmenu/tab_settings.lua:156
+#: builtin/mainmenu/tab_settings.lua:155
 msgid "Bi-Linear Filtering"
 msgstr "Bi-Linearer Filter"
 
-#: builtin/mainmenu/tab_settings.lua:158
+#: builtin/mainmenu/tab_settings.lua:157
 msgid "Tri-Linear Filtering"
 msgstr "Tri-Linearer Filter"
 
-#: builtin/mainmenu/tab_settings.lua:161
+#: builtin/mainmenu/tab_settings.lua:160
 msgid "Shaders"
 msgstr "Shader"
 
-#: builtin/mainmenu/tab_settings.lua:165
+#: builtin/mainmenu/tab_settings.lua:164
 msgid "Change keys"
 msgstr "Tasten ändern"
 
-#: builtin/mainmenu/tab_settings.lua:168
+#: builtin/mainmenu/tab_settings.lua:167
 msgid "Reset singleplayer world"
 msgstr "Einzelspielerwelt zurücksetzen"
 
-#: builtin/mainmenu/tab_settings.lua:172
+#: builtin/mainmenu/tab_settings.lua:171
 msgid "GUI scale factor"
 msgstr "GUI-Skalierfaktor"
 
-#: builtin/mainmenu/tab_settings.lua:176
+#: builtin/mainmenu/tab_settings.lua:175
 msgid "Scaling factor applied to menu elements: "
 msgstr "Skalierfaktor:"
 
-#: builtin/mainmenu/tab_settings.lua:182
+#: builtin/mainmenu/tab_settings.lua:181
 msgid "Touch free target"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:188
+#: builtin/mainmenu/tab_settings.lua:187
 msgid "Touchthreshold (px)"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:195 builtin/mainmenu/tab_settings.lua:209
+#: builtin/mainmenu/tab_settings.lua:194 builtin/mainmenu/tab_settings.lua:208
 msgid "Bumpmapping"
 msgstr "Bumpmapping"
 
-#: builtin/mainmenu/tab_settings.lua:197 builtin/mainmenu/tab_settings.lua:210
+#: builtin/mainmenu/tab_settings.lua:196 builtin/mainmenu/tab_settings.lua:209
 msgid "Generate Normalmaps"
 msgstr "Generiere Normalmaps"
 
-#: builtin/mainmenu/tab_settings.lua:199 builtin/mainmenu/tab_settings.lua:211
+#: builtin/mainmenu/tab_settings.lua:198 builtin/mainmenu/tab_settings.lua:210
 msgid "Parallax Occlusion"
 msgstr "Parallax Occlusion"
 
-#: builtin/mainmenu/tab_settings.lua:201 builtin/mainmenu/tab_settings.lua:212
+#: builtin/mainmenu/tab_settings.lua:200 builtin/mainmenu/tab_settings.lua:211
 msgid "Waving Water"
 msgstr "Wasserwellen"
 
-#: builtin/mainmenu/tab_settings.lua:203 builtin/mainmenu/tab_settings.lua:213
+#: builtin/mainmenu/tab_settings.lua:202 builtin/mainmenu/tab_settings.lua:212
 msgid "Waving Leaves"
 msgstr "Wehende Blätter"
 
-#: builtin/mainmenu/tab_settings.lua:205 builtin/mainmenu/tab_settings.lua:214
+#: builtin/mainmenu/tab_settings.lua:204 builtin/mainmenu/tab_settings.lua:213
 msgid "Waving Plants"
 msgstr "Wogende Pflanzen"
 
-#: builtin/mainmenu/tab_settings.lua:256
+#: builtin/mainmenu/tab_settings.lua:255
 msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr "Um Shader zu benutzen muss der OpenGL Treiber benutzt werden."
 
-#: builtin/mainmenu/tab_settings.lua:331
+#: builtin/mainmenu/tab_settings.lua:330
 msgid "Settings"
 msgstr "Einstellungen"
 
@@ -516,11 +484,7 @@ msgstr "Hauptmenü"
 msgid "Play"
 msgstr "Spielen"
 
-#: builtin/mainmenu/tab_singleplayer.lua:90
-msgid "SINGLE PLAYER"
-msgstr "EINZELSPIELER"
-
-#: builtin/mainmenu/tab_singleplayer.lua:225
+#: builtin/mainmenu/tab_singleplayer.lua:224
 msgid "Singleplayer"
 msgstr "Einzelspieler"
 
@@ -528,15 +492,11 @@ msgstr "Einzelspieler"
 msgid "Select texture pack:"
 msgstr "Texturen Paket auswählen:"
 
-#: builtin/mainmenu/tab_texturepacks.lua:50
-msgid "TEXTURE PACKS"
-msgstr "TEXTUREN PAKETE"
-
-#: builtin/mainmenu/tab_texturepacks.lua:70
+#: builtin/mainmenu/tab_texturepacks.lua:69
 msgid "No information available"
 msgstr "Keine Informationen vorhanden"
 
-#: builtin/mainmenu/tab_texturepacks.lua:115
+#: builtin/mainmenu/tab_texturepacks.lua:114
 msgid "Texturepacks"
 msgstr "Texturen Pakete"
 
@@ -584,7 +544,7 @@ msgstr ""
 msgid "Proceed"
 msgstr "Fortsetzen"
 
-#: src/guiFormSpecMenu.cpp:2845
+#: src/guiFormSpecMenu.cpp:2846
 msgid "Enter "
 msgstr "Enter "
 
@@ -992,31 +952,31 @@ msgstr "PA1"
 msgid "Zoom"
 msgstr "Zoom"
 
-#: src/main.cpp:1675
+#: src/main.cpp:1681
 msgid "Main Menu"
 msgstr "Hauptmenü"
 
-#: src/main.cpp:1713
+#: src/main.cpp:1719
 msgid "Player name too long."
 msgstr "Spielername zu lang."
 
-#: src/main.cpp:1751
+#: src/main.cpp:1757
 msgid "Connection error (timed out?)"
 msgstr "Verbindungsfehler (Zeitüberschreitung?)"
 
-#: src/main.cpp:1913
+#: src/main.cpp:1919
 msgid "No world selected and no address provided. Nothing to do."
 msgstr "Keine Welt ausgewählt und keine Adresse angegeben. Nichts zu tun."
 
-#: src/main.cpp:1920
+#: src/main.cpp:1926
 msgid "Provided world path doesn't exist: "
 msgstr "Angegebener Weltpfad existiert nicht: "
 
-#: src/main.cpp:1929
+#: src/main.cpp:1935
 msgid "Could not find or load game \""
 msgstr "Kann Spiel nicht finden/laden \""
 
-#: src/main.cpp:1943
+#: src/main.cpp:1953
 msgid "Invalid gamespec."
 msgstr "Invalide Spielspezif."
 
@@ -1180,11 +1140,41 @@ msgstr "Invalide Spielspezif."
 #~ msgid "Local install"
 #~ msgstr "Lokale Install."
 
+#~ msgid "Add mod:"
+#~ msgstr "Modifikation hinzufügen:"
+
+#~ msgid "MODS"
+#~ msgstr "MODS"
+
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "TEXTUREN PAKETE"
+
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "EINZELSPIELER"
+
 #~ msgid "Finite Liquid"
 #~ msgstr "Endliches Wasser"
 
 #~ msgid "Preload item visuals"
 #~ msgstr "Lade Inventarbilder vor"
+
+#~ msgid "SETTINGS"
+#~ msgstr "EINSTELLUNGEN"
+
+#~ msgid "Password"
+#~ msgstr "Passwort"
+
+#~ msgid "Name"
+#~ msgstr "Name"
+
+#~ msgid "START SERVER"
+#~ msgstr "SERVER STARTEN"
+
+#~ msgid "Favorites:"
+#~ msgstr "Favoriten:"
+
+#~ msgid "CLIENT"
+#~ msgstr "CLIENT"
 
 #~ msgid "<<-- Add mod"
 #~ msgstr "<<-- Mod hinzufügen"
