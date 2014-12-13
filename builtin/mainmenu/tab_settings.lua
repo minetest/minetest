@@ -128,6 +128,23 @@ local function formspec(tabview, name, tabdata)
 		end
 	end
 	
+	local language_string = "en" -- add english first because its default
+	local language_idx = 1
+	local language_selected = core.setting_get("language") or "en"
+	
+	local locale_path = core.get_builtin_path() .. DIR_DELIM
+		.. ".." .. DIR_DELIM -- go back to 'minetest' folder
+		.. "locale" .. DIR_DELIM -- then enter 'locale' folder
+	
+	local locale_list = core.get_dirlist(locale_path, true)
+	
+	for i=1, #locale_list, 1 do
+		language_string = language_string .. "," .. locale_list[i]
+		if locale_list[i] == language_selected then
+			language_idx = i +1 -- handle english
+		end
+	end
+	
 	
 	local tab_string =
 		"box[0,0;3.5,4;#999999]" ..
@@ -156,6 +173,12 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.setting_getbool("bilinear_filter")) .. "]"..
 		"checkbox[4,1.5;cb_trilinear;".. fgettext("Tri-Linear Filtering") .. ";"
 				.. dump(core.setting_getbool("trilinear_filter")) .. "]"..
+		"box[4.25,3.2;3.25,0.8;#999999]" ..
+		"label[4.5,3.35;" .. fgettext("Language") .. "]" ..
+		"dropdown[6.5,3.25;1;dd_language;"
+			.. language_string .. ";" .. language_idx .. "]" ..
+		"tooltip[dd_language;" ..
+			fgettext("Restart minetest for language change to take effect") .. "]" ..
 		"box[7.75,0;4,4;#999999]" ..
 		"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
 				.. dump(core.setting_getbool("enable_shaders")) .. "]"
@@ -314,6 +337,10 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	local ddhandled = false
 	if fields["dd_touchthreshold"] then
 		core.setting_set("touchscreen_threshold",fields["dd_touchthreshold"])
+		ddhandled = true
+	end
+	if fields["dd_language"] then
+		core.setting_set("language",fields["dd_language"])
 		ddhandled = true
 	end
 	if fields["dd_video_driver"] then
