@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-12 17:19-0500\n"
-"PO-Revision-Date: 2014-01-02 22:09+0200\n"
-"Last-Translator: Diego Martínez <lkaezadl3@gmail.com>\n"
+"PO-Revision-Date: 2014-12-12 14:45+0100\n"
+"Last-Translator: Fco. Javier Félix <ffelix@inode64.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -34,7 +34,7 @@ msgstr "Ocultar Juego"
 #: builtin/mainmenu/dlg_config_world.lua:36
 #: builtin/mainmenu/dlg_config_world.lua:38
 msgid "Hide mp content"
-msgstr "Esconder contenido mp"
+msgstr "Esconder contenido MP"
 
 #: builtin/mainmenu/dlg_config_world.lua:46
 msgid "Mod:"
@@ -57,11 +57,11 @@ msgstr "Cancelar"
 
 #: builtin/mainmenu/dlg_config_world.lua:68
 msgid "Enable MP"
-msgstr "Activar paquete"
+msgstr "Activar MP"
 
 #: builtin/mainmenu/dlg_config_world.lua:70
 msgid "Disable MP"
-msgstr "Desactivar paquete"
+msgstr "Desactivar MP"
 
 #: builtin/mainmenu/dlg_config_world.lua:74
 #: builtin/mainmenu/dlg_config_world.lua:76
@@ -78,7 +78,7 @@ msgstr "Nombre del mundo"
 
 #: builtin/mainmenu/dlg_create_world.lua:53
 msgid "Seed"
-msgstr ""
+msgstr "Semilla"
 
 #: builtin/mainmenu/dlg_create_world.lua:56
 msgid "Mapgen"
@@ -94,19 +94,19 @@ msgstr "Crear"
 
 #: builtin/mainmenu/dlg_create_world.lua:68
 msgid "You have no subgames installed."
-msgstr ""
+msgstr "No tienes subjuegos instalados"
 
 #: builtin/mainmenu/dlg_create_world.lua:69
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "Descarga uno desde minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua:72
 msgid "Warning: The minimal development test is meant for developers."
-msgstr ""
+msgstr "Advertencia: La desarrollo mínimo es para desarrolladores"
 
 #: builtin/mainmenu/dlg_create_world.lua:73
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr ""
+msgstr "Descarga un subjuego, como minitest_game, desde minitest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua:97
 msgid "A world named \"$1\" already exists"
@@ -136,7 +136,7 @@ msgstr "Modmgr: Error al borrar \"$1\""
 
 #: builtin/mainmenu/dlg_delete_mod.lua:45
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr "Modmgr: Dirección de mod \"$1\" inválida"
+msgstr "Modmgr: Ruta de mod \"$1\" inválida"
 
 #: builtin/mainmenu/dlg_delete_world.lua:24
 msgid "Delete World \"$1\"?"
@@ -148,7 +148,7 @@ msgstr "No"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua:26
 msgid "Rename Modpack:"
-msgstr "Renombrar paquete de mod:"
+msgstr "Renombrar paquete:"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua:31 src/keycode.cpp:228
 msgid "Accept"
@@ -165,7 +165,7 @@ msgid ""
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"Instalar mod: Tipo de archivo sin soporte \"$1\""
+"Instalar Mod: Tipo de archivo sin soporte \"$1\""
 
 #: builtin/mainmenu/modmgr.lua:363
 msgid "Failed to install $1 to $2"
@@ -174,8 +174,7 @@ msgstr "Fallo al instalar $1 en $2"
 #: builtin/mainmenu/modmgr.lua:366
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
 msgstr ""
-"Instalar mod: Imposible encontrar un nombre de archivo adecuado para el "
-"Paquete de mod $1"
+"Instalar mod: Imposible encontrar un nombre de archivo adecuado para el paquete $1"
 
 #: builtin/mainmenu/modmgr.lua:386
 msgid "Install Mod: unable to find real modname for: $1"
@@ -183,11 +182,11 @@ msgstr "Instalar mod: imposible encontrar el nombre real del mod para: $1"
 
 #: builtin/mainmenu/store.lua:88
 msgid "Unsorted"
-msgstr ""
+msgstr "Desordenado"
 
 #: builtin/mainmenu/store.lua:99 builtin/mainmenu/store.lua:584
 msgid "Search"
-msgstr ""
+msgstr "Buscar"
 
 #: builtin/mainmenu/store.lua:125
 #, fuzzy
@@ -196,11 +195,11 @@ msgstr "Descargar"
 
 #: builtin/mainmenu/store.lua:127
 msgid "please wait..."
-msgstr ""
+msgstr "por favor espera..."
 
 #: builtin/mainmenu/store.lua:159
 msgid "Successfully installed:"
-msgstr ""
+msgstr "Instalado correctamente:"
 
 #: builtin/mainmenu/store.lua:163
 #, fuzzy
@@ -209,7 +208,7 @@ msgstr "Nombre del mundo"
 
 #: builtin/mainmenu/store.lua:167 src/guiFormSpecMenu.cpp:2865
 msgid "ok"
-msgstr ""
+msgstr "ok"
 
 #: builtin/mainmenu/store.lua:476
 msgid "Rating"
@@ -225,7 +224,7 @@ msgstr "Instalar"
 
 #: builtin/mainmenu/store.lua:522
 msgid "Close store"
-msgstr ""
+msgstr "Cerrar tienda"
 
 #: builtin/mainmenu/store.lua:530
 msgid "Page $1 of $2"
@@ -269,7 +268,7 @@ msgstr "No hay descripción del mod disponible"
 
 #: builtin/mainmenu/tab_mods.lua:83
 msgid "Mod information:"
-msgstr "Informacion de mod:"
+msgstr "Información del mod:"
 
 #: builtin/mainmenu/tab_mods.lua:94
 msgid "Rename"
@@ -372,11 +371,11 @@ msgstr "Contraseña"
 
 #: builtin/mainmenu/tab_server.lua:45
 msgid "Bind Address"
-msgstr ""
+msgstr "Dirección escucha"
 
 #: builtin/mainmenu/tab_server.lua:47
 msgid "Port"
-msgstr ""
+msgstr "Puerto"
 
 #: builtin/mainmenu/tab_server.lua:51
 msgid "Server Port"
@@ -388,11 +387,11 @@ msgstr "Servidor"
 
 #: builtin/mainmenu/tab_settings.lua:23
 msgid "Are you sure to reset your singleplayer world?"
-msgstr ""
+msgstr "¿Estas seguro de reiniciar tu jugador en el mundo?"
 
 #: builtin/mainmenu/tab_settings.lua:27
 msgid "No!!!"
-msgstr ""
+msgstr "NO!!!"
 
 #: builtin/mainmenu/tab_settings.lua:133
 msgid "SETTINGS"
@@ -400,7 +399,7 @@ msgstr "CONFIGURACION"
 
 #: builtin/mainmenu/tab_settings.lua:135
 msgid "Smooth Lighting"
-msgstr "Iluminación Suave"
+msgstr "Iluminación suave"
 
 #: builtin/mainmenu/tab_settings.lua:137
 msgid "Enable Particles"
@@ -426,11 +425,11 @@ msgstr "Conectar"
 
 #: builtin/mainmenu/tab_settings.lua:150
 msgid "Restart minetest for driver change to take effect"
-msgstr ""
+msgstr "Reiniciar minetest para que el controlador tenga efecto"
 
 #: builtin/mainmenu/tab_settings.lua:152
 msgid "Mip-Mapping"
-msgstr "Mip-Mapping"
+msgstr "Mapas MIP"
 
 #: builtin/mainmenu/tab_settings.lua:154
 msgid "Anisotropic Filtering"
@@ -446,7 +445,7 @@ msgstr "Filtrado Tri-Lineal"
 
 #: builtin/mainmenu/tab_settings.lua:161
 msgid "Shaders"
-msgstr "Sombreadores"
+msgstr "Sombras"
 
 #: builtin/mainmenu/tab_settings.lua:165
 msgid "Change keys"
@@ -459,11 +458,11 @@ msgstr "Un jugador"
 
 #: builtin/mainmenu/tab_settings.lua:172
 msgid "GUI scale factor"
-msgstr ""
+msgstr "Factor de escala"
 
 #: builtin/mainmenu/tab_settings.lua:176
 msgid "Scaling factor applied to menu elements: "
-msgstr ""
+msgstr "Factor de escala aplicado a elementos de menú: "
 
 #: builtin/mainmenu/tab_settings.lua:182
 msgid "Touch free target"
@@ -476,27 +475,27 @@ msgstr ""
 #: builtin/mainmenu/tab_settings.lua:195 builtin/mainmenu/tab_settings.lua:209
 #, fuzzy
 msgid "Bumpmapping"
-msgstr "Mip-Mapping"
+msgstr "Mapeado topológico (Bumpmapping)"
 
 #: builtin/mainmenu/tab_settings.lua:197 builtin/mainmenu/tab_settings.lua:210
 msgid "Generate Normalmaps"
-msgstr ""
+msgstr "Generar Mapeado normal"
 
 #: builtin/mainmenu/tab_settings.lua:199 builtin/mainmenu/tab_settings.lua:211
 msgid "Parallax Occlusion"
-msgstr ""
+msgstr "Oclusión Parallax"
 
 #: builtin/mainmenu/tab_settings.lua:201 builtin/mainmenu/tab_settings.lua:212
 msgid "Waving Water"
-msgstr ""
+msgstr "Movimiento de agua"
 
 #: builtin/mainmenu/tab_settings.lua:203 builtin/mainmenu/tab_settings.lua:213
 msgid "Waving Leaves"
-msgstr ""
+msgstr "Movimiento de hojas"
 
 #: builtin/mainmenu/tab_settings.lua:205 builtin/mainmenu/tab_settings.lua:214
 msgid "Waving Plants"
-msgstr ""
+msgstr "Movimiento de plantas"
 
 #: builtin/mainmenu/tab_settings.lua:256
 msgid "To enable shaders the OpenGL driver needs to be used."
@@ -508,7 +507,7 @@ msgstr "Configuración"
 
 #: builtin/mainmenu/tab_simple_main.lua:67
 msgid "Fly mode"
-msgstr ""
+msgstr "Modo vuelo"
 
 #: builtin/mainmenu/tab_simple_main.lua:71
 #, fuzzy
@@ -547,7 +546,7 @@ msgstr "PAQUETES DE TEXTURAS"
 
 #: builtin/mainmenu/tab_texturepacks.lua:70
 msgid "No information available"
-msgstr "Sin informacion disponible"
+msgstr "Sin información disponible"
 
 #: builtin/mainmenu/tab_texturepacks.lua:115
 #, fuzzy
@@ -600,12 +599,12 @@ msgstr "Continuar"
 
 #: src/guiFormSpecMenu.cpp:2845
 msgid "Enter "
-msgstr ""
+msgstr "Intro "
 
 #: src/guiKeyChangeMenu.cpp:125
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
-"Combinaciones de teclas.(Si este menú da error, cambiar configuración en "
+"Combinaciones de teclas. (Si este menú da error, cambiar la configuración en "
 "minetest.conf)"
 
 #: src/guiKeyChangeMenu.cpp:165
@@ -662,7 +661,7 @@ msgstr "Inventario"
 
 #: src/guiKeyChangeMenu.cpp:406
 msgid "Chat"
-msgstr "Chat"
+msgstr "Chalar"
 
 #: src/guiKeyChangeMenu.cpp:407
 msgid "Command"
@@ -714,7 +713,7 @@ msgstr "¡Las contraseñas no coinciden!"
 
 #: src/guiVolumeChange.cpp:106
 msgid "Sound Volume: "
-msgstr "Volúmen del Sonido: "
+msgstr "Volumen del Sonido: "
 
 #: src/guiVolumeChange.cpp:120
 msgid "Exit"
@@ -722,23 +721,23 @@ msgstr "Salir"
 
 #: src/keycode.cpp:224
 msgid "Left Button"
-msgstr "Click Izquierdo"
+msgstr "Botón Izquierdo"
 
 #: src/keycode.cpp:224
 msgid "Middle Button"
-msgstr "Click Centro"
+msgstr "Botón Centro"
 
 #: src/keycode.cpp:224
 msgid "Right Button"
-msgstr "Click Derecho"
+msgstr "Botón Derecho"
 
 #: src/keycode.cpp:224
 msgid "X Button 1"
-msgstr "X Button 1"
+msgstr "X Botón 1"
 
 #: src/keycode.cpp:225
 msgid "Back"
-msgstr "Atras"
+msgstr "Atrás"
 
 #: src/keycode.cpp:225
 msgid "Clear"
@@ -754,11 +753,11 @@ msgstr "Tabulador"
 
 #: src/keycode.cpp:225
 msgid "X Button 2"
-msgstr "X Button 2"
+msgstr "X Botón 2"
 
 #: src/keycode.cpp:226
 msgid "Capital"
-msgstr "Bloq mayús"
+msgstr "Bloqueo mayúsculas"
 
 #: src/keycode.cpp:226
 msgid "Control"
@@ -858,7 +857,7 @@ msgstr "Introducir"
 
 #: src/keycode.cpp:230
 msgid "Snapshot"
-msgstr "Captura de pantalla"
+msgstr "Capturar pantalla"
 
 #: src/keycode.cpp:233
 msgid "Left Windows"
@@ -934,23 +933,23 @@ msgstr "Teclado Numérico 9"
 
 #: src/keycode.cpp:240
 msgid "Num Lock"
-msgstr "Bloq Núm"
+msgstr "Bloqueo Númerico"
 
 #: src/keycode.cpp:240
 msgid "Scroll Lock"
-msgstr "Bloq Despl"
+msgstr "Bloqueo Desplazamiento"
 
 #: src/keycode.cpp:241
 msgid "Left Shift"
-msgstr "Shift Izqda"
+msgstr "Shift Izquierdo"
 
 #: src/keycode.cpp:241
 msgid "Right Shift"
-msgstr "Shift Dcha"
+msgstr "Shift Derecho"
 
 #: src/keycode.cpp:242
 msgid "Left Control"
-msgstr "Control Izqdo"
+msgstr "Control Izquierdo"
 
 #: src/keycode.cpp:242
 msgid "Left Menu"
@@ -958,7 +957,7 @@ msgstr "Menú Izquierdo"
 
 #: src/keycode.cpp:242
 msgid "Right Control"
-msgstr "Control Dcho"
+msgstr "Control Derecho"
 
 #: src/keycode.cpp:242
 msgid "Right Menu"
@@ -1006,7 +1005,7 @@ msgstr "PA1"
 
 #: src/keycode.cpp:249
 msgid "Zoom"
-msgstr "Zoom"
+msgstr "Ampliar"
 
 #: src/main.cpp:1675
 msgid "Main Menu"
@@ -1014,7 +1013,7 @@ msgstr "Menú Principal"
 
 #: src/main.cpp:1713
 msgid "Player name too long."
-msgstr ""
+msgstr "Nombre del jugador muy largo."
 
 #: src/main.cpp:1751
 msgid "Connection error (timed out?)"
@@ -1027,7 +1026,7 @@ msgstr ""
 
 #: src/main.cpp:1920
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "La ruta del mundo no existe"
 
 #: src/main.cpp:1929
 msgid "Could not find or load game \""
@@ -1039,7 +1038,7 @@ msgstr "Juego especificado no válido."
 
 #~ msgid "Left click: Move all items, Right click: Move single item"
 #~ msgstr ""
-#~ "Click izquierdo: Mover todos los objetos. Click derecho: Mover un objeto."
+#~ "Botón izquierdo: Mover todos los objetos. Botón derecho: Mover un objeto."
 
 #~ msgid "is required by:"
 #~ msgstr "es requerido por:"
@@ -1142,14 +1141,14 @@ msgstr "Juego especificado no válido."
 #~ "- Mouse wheel: select item\n"
 #~ "- T: chat\n"
 #~ msgstr ""
-#~ "Controles Pred.:\n"
+#~ "Controles Predeterminados:\n"
 #~ "- WASD: moverse\n"
 #~ "- Espacio: saltar/subir\n"
-#~ "- Mayús.: puntillas/bajar\n"
+#~ "- Mayúsculas: puntillas/bajar\n"
 #~ "- Q: soltar objeto\n"
 #~ "- I: inventario\n"
 #~ "- Ratón: girar/mirar\n"
-#~ "- Ratón izq.: cavar/golpear\n"
+#~ "- Ratón izquierda: cavar/golpear\n"
 #~ "- Ratón der.: colocar/usar\n"
 #~ "- Rueda ratón: elegir objeto\n"
 #~ "- T: conversar\n"
@@ -1215,7 +1214,7 @@ msgstr "Juego especificado no válido."
 #~ msgstr "editar juego"
 
 #~ msgid "Mods:"
-#~ msgstr "Modificaciónes:"
+#~ msgstr "Mods:"
 
 #~ msgid "Games"
 #~ msgstr "Juegos"
