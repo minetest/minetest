@@ -130,6 +130,7 @@ local function formspec(tabview, name, tabdata)
 	
 	local language_string = "en" -- add english first because its default
 	local language_idx = 1
+	local language_count = 1
 	local language_selected = core.setting_get("language") or "en"
 	
 	local locale_path = core.get_builtin_path() .. DIR_DELIM
@@ -139,9 +140,17 @@ local function formspec(tabview, name, tabdata)
 	local locale_list = core.get_dirlist(locale_path, true)
 	
 	for i=1, #locale_list, 1 do
-		language_string = language_string .. "," .. locale_list[i]
-		if locale_list[i] == language_selected then
-			language_idx = i +1 -- handle english
+		-- check if translation file exists
+		if file_exists(
+			locale_path .. locale_list[i] .. DIR_DELIM
+			.. "LC_MESSAGES"
+			.. DIR_DELIM .. "minetest.mo"
+		) then
+			language_string = language_string .. "," .. locale_list[i]
+			language_count = language_count +1
+			if locale_list[i] == language_selected then
+				language_idx = language_count -- handle english
+			end
 		end
 	end
 	
@@ -165,7 +174,7 @@ local function formspec(tabview, name, tabdata)
 			.. video_driver_string .. ";" .. current_video_driver_idx .. "]" ..
 		"tooltip[dd_video_driver;" ..
 			fgettext("Restart minetest for driver change to take effect") .. "]" ..
-		"box[4.25,0;3.25,2.5;#999999]" ..
+		"box[4.25,0;3.25,3.25;#999999]" ..
 		"checkbox[4.5,0;cb_mipmapping;".. fgettext("Mip-Mapping") .. ";"
 				.. dump(core.setting_getbool("mip_map")) .. "]"..
 		"checkbox[4.5,0.5;cb_anisotrophic;".. fgettext("Anisotropic Filtering") .. ";"
@@ -174,9 +183,8 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.setting_getbool("bilinear_filter")) .. "]"..
 		"checkbox[4.5,1.5;cb_trilinear;".. fgettext("Tri-Linear Filtering") .. ";"
 				.. dump(core.setting_getbool("trilinear_filter")) .. "]"..
-		"box[4.25,3.2;3.25,0.8;#999999]" ..
-		"label[4.5,3.35;" .. fgettext("Language") .. "]" ..
-		"dropdown[6.5,3.25;1;dd_language;"
+		"label[4.5,2.5;" .. fgettext("Language") .. "]" ..
+		"dropdown[6,2.4;1.5;dd_language;"
 			.. language_string .. ";" .. language_idx .. "]" ..
 		"tooltip[dd_language;" ..
 			fgettext("Restart minetest for language change to take effect") .. "]" ..
@@ -201,15 +209,15 @@ local function formspec(tabview, name, tabdata)
 
 	if PLATFORM == "Android" then
 		tab_string = tab_string ..
-		"box[4.25,2.75;3.25,2.15;#999999]" ..
-		"checkbox[4.5,2.75;cb_touchscreen_target;".. fgettext("Touch free target") .. ";"
+		"box[4.25,3.25;3.25,2.15;#999999]" ..
+		"checkbox[4.5,3.2;cb_touchscreen_target;".. fgettext("Touch free target") .. ";"
 				.. dump(core.setting_getbool("touchtarget")) .. "]"
 	end
 
 	if core.setting_get("touchscreen_threshold") ~= nil then
 		tab_string = tab_string ..
-				"label[4.5,3.5;" .. fgettext("Touchthreshold (px)") .. "]" ..
-				"dropdown[4.5,4;3;dd_touchthreshold;0,10,20,30,40,50;" ..
+				"label[4.5,3.95;" .. fgettext("Touchthreshold (px)") .. "]" ..
+				"dropdown[4.5,4.45;3;dd_touchthreshold;0,10,20,30,40,50;" ..
 				((tonumber(core.setting_get("touchscreen_threshold"))/10)+1) .. "]"
 	end
 
