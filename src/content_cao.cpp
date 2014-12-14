@@ -582,8 +582,11 @@ GenericCAO::GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
 		m_last_light(255),
 		m_is_visible(false)
 {
-	if(gamedef == NULL)
+	if(gamedef == NULL) {
 		ClientActiveObject::registerType(getType(), create);
+	} else {
+		m_gamedef = gamedef;
+	}
 }
 
 bool GenericCAO::getCollisionBox(aabb3f *toset)
@@ -806,6 +809,15 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 	m_smgr = smgr;
 	m_irr = irr;
 
+	m_enable_shaders = g_settings->getBool("enable_shaders");
+	if (m_enable_shaders) {
+		IShaderSource *shdrsrc = m_gamedef->getShaderSource();
+		u32 shader_id = shdrsrc->getShader("nodes_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
+		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
+	} else {
+		m_material_type = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+	}
+
 	if (getSceneNode() != NULL)
 		return;
 
@@ -908,8 +920,11 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 
 		m_meshnode->setMaterialFlag(video::EMF_LIGHTING, false);
 		m_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-		m_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+		m_meshnode->setMaterialType(m_material_type);
 		m_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+		if (m_enable_shaders) {
+			m_meshnode->setMaterialTexture(2, tsrc->getTexture("disable_img.png"));
+		}
 	}
 	else if(m_prop.visual == "mesh") {
 		infostream<<"GenericCAO::addToScene(): mesh"<<std::endl;
@@ -928,8 +943,11 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 
 			m_animated_meshnode->setMaterialFlag(video::EMF_LIGHTING, false);
 			m_animated_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-			m_animated_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+			m_animated_meshnode->setMaterialType(m_material_type);
 			m_animated_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+			if (m_enable_shaders) {
+				m_animated_meshnode->setMaterialTexture(2, tsrc->getTexture("disable_img.png"));
+			}
 		}
 		else
 			errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;
