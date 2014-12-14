@@ -209,7 +209,7 @@ struct MapNode
 	u8 getLightNoChecks(LightBank bank, const ContentFeatures *f);
 
 	bool getLightBanks(u8 &lightday, u8 &lightnight, INodeDefManager *nodemgr) const;
-	
+
 	// 0 <= daylight_factor <= 1000
 	// 0 <= return value <= LIGHT_SUN
 	u8 getLightBlend(u32 daylight_factor, INodeDefManager *nodemgr) const
@@ -218,16 +218,6 @@ struct MapNode
 		u8 lightnight = 0;
 		getLightBanks(lightday, lightnight, nodemgr);
 		return blend_light(daylight_factor, lightday, lightnight);
-	}
-
-	// 0.0 <= daylight_factor <= 1.0
-	// 0 <= return value <= LIGHT_SUN
-	u8 getLightBlendF1(float daylight_factor, INodeDefManager *nodemgr) const
-	{
-		u8 lightday = 0;
-		u8 lightnight = 0;
-		getLightBanks(lightday, lightnight, nodemgr);
-		return blend_light_f1(daylight_factor, lightday, lightnight);
 	}
 
 	u8 getFaceDir(INodeDefManager *nodemgr) const;
