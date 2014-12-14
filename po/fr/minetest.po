@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-13 15:24+0100\n"
-"PO-Revision-Date: 2013-11-23 18:03+0200\n"
-"Last-Translator: we prefer instagib metl3 <calinou9999spam@gmail.com>\n"
+"PO-Revision-Date: 2014-12-14 17:34+0100\n"
+"Last-Translator: Calinou <calinou@opmbx.org>\n"
 "Language-Team: Français <>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -94,7 +94,7 @@ msgstr "Créer"
 
 #: builtin/mainmenu/dlg_create_world.lua:68
 msgid "You have no subgames installed."
-msgstr ""
+msgstr "Vous n'avez pas de sous-jeux installés."
 
 #: builtin/mainmenu/dlg_create_world.lua:69
 msgid "Download one from minetest.net"
@@ -102,11 +102,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua:72
 msgid "Warning: The minimal development test is meant for developers."
-msgstr ""
+msgstr "Avertissement : le jeu minimal est fait pour les développeurs."
 
 #: builtin/mainmenu/dlg_create_world.lua:73
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr ""
+msgstr "Téléchargez un sosu-jeu, comme minetest_game, depuis minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua:97
 msgid "A world named \"$1\" already exists"
@@ -159,13 +159,12 @@ msgid "Install Mod: file: \"$1\""
 msgstr "Installer un mod : fichier : \"$1\""
 
 #: builtin/mainmenu/modmgr.lua:343
-#, fuzzy
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"Installer un mod : type de fichier non supporté \"$1\""
+"Installer un mod : type de fichier non supporté \"$1\" ou archive cassée"
 
 #: builtin/mainmenu/modmgr.lua:363
 msgid "Failed to install $1 to $2"
@@ -183,33 +182,31 @@ msgstr "Installer un mod : impossible de trouver le vrai nom du mod pour : $1"
 
 #: builtin/mainmenu/store.lua:88
 msgid "Unsorted"
-msgstr ""
+msgstr "Non trié"
 
 #: builtin/mainmenu/store.lua:99 builtin/mainmenu/store.lua:584
 msgid "Search"
-msgstr ""
+msgstr "Rechercher"
 
 #: builtin/mainmenu/store.lua:125
-#, fuzzy
 msgid "Downloading"
-msgstr "Télécharger"
+msgstr "Télécharement"
 
 #: builtin/mainmenu/store.lua:127
 msgid "please wait..."
-msgstr ""
+msgstr "veuillez patienter..."
 
 #: builtin/mainmenu/store.lua:159
 msgid "Successfully installed:"
-msgstr ""
+msgstr "Installé avec succès :"
 
 #: builtin/mainmenu/store.lua:163
-#, fuzzy
 msgid "Shortname:"
-msgstr "Nom du monde"
+msgstr "Nom court :"
 
 #: builtin/mainmenu/store.lua:167 src/guiFormSpecMenu.cpp:2866
 msgid "ok"
-msgstr ""
+msgstr "ok"
 
 #: builtin/mainmenu/store.lua:476
 msgid "Rating"
@@ -217,7 +214,7 @@ msgstr "Note"
 
 #: builtin/mainmenu/store.lua:501
 msgid "re-Install"
-msgstr "ré-Installer"
+msgstr "Réinstaller"
 
 #: builtin/mainmenu/store.lua:503
 msgid "Install"
@@ -225,7 +222,7 @@ msgstr "Installer"
 
 #: builtin/mainmenu/store.lua:522
 msgid "Close store"
-msgstr ""
+msgstr "Fermer le store"
 
 #: builtin/mainmenu/store.lua:530
 msgid "Page $1 of $2"
@@ -343,15 +340,15 @@ msgstr "Public"
 
 #: builtin/mainmenu/tab_server.lua:45
 msgid "Bind Address"
-msgstr ""
+msgstr "Adresse à assigner"
 
 #: builtin/mainmenu/tab_server.lua:47
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: builtin/mainmenu/tab_server.lua:51
 msgid "Server Port"
-msgstr "Port"
+msgstr "Port du serveur"
 
 #: builtin/mainmenu/tab_server.lua:174
 msgid "Server"
@@ -359,11 +356,11 @@ msgstr "Serveur"
 
 #: builtin/mainmenu/tab_settings.lua:23
 msgid "Are you sure to reset your singleplayer world?"
-msgstr ""
+msgstr "Êtes-vous sûr de remettre à zéro votre monde solo ?"
 
 #: builtin/mainmenu/tab_settings.lua:27
 msgid "No!!!"
-msgstr ""
+msgstr "Non !"
 
 #: builtin/mainmenu/tab_settings.lua:134
 msgid "Smooth Lighting"
@@ -378,7 +375,7 @@ msgid "3D Clouds"
 msgstr "Nuages 3D"
 
 #: builtin/mainmenu/tab_settings.lua:140
-#, fuzzy
+
 msgid "Fancy Trees"
 msgstr "Arbres détaillés"
 
@@ -387,13 +384,13 @@ msgid "Opaque Water"
 msgstr "Eau opaque"
 
 #: builtin/mainmenu/tab_settings.lua:144
-#, fuzzy
+
 msgid "Connected Glass"
-msgstr "Rejoindre"
+msgstr "Verre connecté"
 
 #: builtin/mainmenu/tab_settings.lua:149
 msgid "Restart minetest for driver change to take effect"
-msgstr ""
+msgstr "Redémarrez Minetest pour que le changement de pilote prenne effet"
 
 #: builtin/mainmenu/tab_settings.lua:151
 msgid "Mip-Mapping"
@@ -422,15 +419,15 @@ msgstr "Changer les touches"
 #: builtin/mainmenu/tab_settings.lua:167
 #, fuzzy
 msgid "Reset singleplayer world"
-msgstr "Solo"
+msgstr "Remettre le monde solo à zéro"
 
 #: builtin/mainmenu/tab_settings.lua:171
 msgid "GUI scale factor"
-msgstr ""
+msgstr "Échelle des menus"
 
 #: builtin/mainmenu/tab_settings.lua:175
 msgid "Scaling factor applied to menu elements: "
-msgstr ""
+msgstr "Échelle appliquée aux menus :"
 
 #: builtin/mainmenu/tab_settings.lua:181
 msgid "Touch free target"
@@ -441,33 +438,32 @@ msgid "Touchthreshold (px)"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:194 builtin/mainmenu/tab_settings.lua:208
-#, fuzzy
 msgid "Bumpmapping"
-msgstr "Mip-mapping"
+msgstr "Bump mapping"
 
 #: builtin/mainmenu/tab_settings.lua:196 builtin/mainmenu/tab_settings.lua:209
 msgid "Generate Normalmaps"
-msgstr ""
+msgstr "Générer des normal maps"
 
 #: builtin/mainmenu/tab_settings.lua:198 builtin/mainmenu/tab_settings.lua:210
 msgid "Parallax Occlusion"
-msgstr ""
+msgstr "Occlusion parallaxe"
 
 #: builtin/mainmenu/tab_settings.lua:200 builtin/mainmenu/tab_settings.lua:211
 msgid "Waving Water"
-msgstr ""
+msgstr "Liquides animés"
 
 #: builtin/mainmenu/tab_settings.lua:202 builtin/mainmenu/tab_settings.lua:212
 msgid "Waving Leaves"
-msgstr ""
+msgstr "Feuilles animées"
 
 #: builtin/mainmenu/tab_settings.lua:204 builtin/mainmenu/tab_settings.lua:213
 msgid "Waving Plants"
-msgstr ""
+msgstr "Plantes animées"
 
 #: builtin/mainmenu/tab_settings.lua:255
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr "Pour activer les Shaders le pilote OpenGL doit être utilisé."
+msgstr "Pour activer les shaders, le pilote OpenGL doit être utilisé."
 
 #: builtin/mainmenu/tab_settings.lua:330
 msgid "Settings"
@@ -475,20 +471,18 @@ msgstr "Réglages"
 
 #: builtin/mainmenu/tab_simple_main.lua:67
 msgid "Fly mode"
-msgstr ""
+msgstr "Voler"
 
 #: builtin/mainmenu/tab_simple_main.lua:71
-#, fuzzy
 msgid "Start Singleplayer"
-msgstr "Solo"
+msgstr "Démarrer la partie solo"
 
 #: builtin/mainmenu/tab_simple_main.lua:72
-#, fuzzy
+
 msgid "Config mods"
-msgstr "Configurer"
+msgstr "Configurer les mods"
 
 #: builtin/mainmenu/tab_simple_main.lua:191
-#, fuzzy
 msgid "Main"
 msgstr "Menu principal"
 
@@ -509,7 +503,6 @@ msgid "No information available"
 msgstr "Pas d'information disponible"
 
 #: builtin/mainmenu/tab_texturepacks.lua:114
-#, fuzzy
 msgid "Texturepacks"
 msgstr "Packs de textures"
 
@@ -539,11 +532,11 @@ msgstr "Média..."
 
 #: src/game.cpp:2267
 msgid " KB/s"
-msgstr ""
+msgstr " Ko/s"
 
 #: src/game.cpp:2271
 msgid " MB/s"
-msgstr ""
+msgstr " Mo/s"
 
 #: src/game.cpp:4220
 msgid ""
@@ -555,11 +548,11 @@ msgstr ""
 
 #: src/guiFormSpecMenu.cpp:2055
 msgid "Proceed"
-msgstr "OK"
+msgstr "Procéder"
 
 #: src/guiFormSpecMenu.cpp:2846
 msgid "Enter "
-msgstr ""
+msgstr "Entrer "
 
 #: src/guiKeyChangeMenu.cpp:125
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -971,7 +964,7 @@ msgstr "Menu principal"
 
 #: src/main.cpp:1719
 msgid "Player name too long."
-msgstr ""
+msgstr "Nom du joueur trop long."
 
 #: src/main.cpp:1757
 msgid "Connection error (timed out?)"
@@ -983,11 +976,11 @@ msgstr "Pas de monde sélectionné et pas d'adresse fournie. Rien à faire."
 
 #: src/main.cpp:1926
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "Le chemin du monde spécifié n'existe pas :"
 
 #: src/main.cpp:1935
 msgid "Could not find or load game \""
-msgstr "N'a pas pu trouver ou charger le jeu \""
+msgstr "Le jeu \" n'a pas pu être trouvé"
 
 #: src/main.cpp:1953
 msgid "Invalid gamespec."
@@ -1072,7 +1065,7 @@ msgstr "gamespec invalide."
 #~ "- T : discuter\n"
 
 #~ msgid "Delete map"
-#~ msgstr "Supprimer carte"
+#~ msgstr "Supprimer la carte"
 
 #~ msgid ""
 #~ "Warning: Some configured mods are missing.\n"
@@ -1195,7 +1188,7 @@ msgstr "gamespec invalide."
 #~ msgstr "Supprimer le mod sélectionné"
 
 #~ msgid "EDIT GAME"
-#~ msgstr "ÉDITER LE JEU"
+#~ msgstr "MODIFIER LE JEU"
 
 #~ msgid "new game"
 #~ msgstr "nouveau jeu"
