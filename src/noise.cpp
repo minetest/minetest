@@ -382,12 +382,6 @@ Noise::Noise(NoiseParams *np_, int seed, int sx, int sy, int sz)
 	this->gradient_buf = NULL;
 	this->result       = NULL;
 
-	if (np.flags & NOISE_FLAG_DEFAULTS) {
-		// By default, only 2d noise is eased.
-		if (sz <= 1)
-			np.flags |= NOISE_FLAG_EASED;
-	}
-
 	allocBuffers();
 }
 
@@ -493,7 +487,8 @@ void Noise::gradientMap2D(
 	int index, i, j, x0, y0, noisex, noisey;
 	int nlx, nly;
 
-	Interp2dFxn interpolate = (np.flags & NOISE_FLAG_EASED) ?
+	bool eased = np.flags & (NOISE_FLAG_DEFAULTS | NOISE_FLAG_EASED);
+	Interp2dFxn interpolate = eased ?
 		biLinearInterpolation : biLinearInterpolationNoEase;
 
 	x0 = floor(x);
