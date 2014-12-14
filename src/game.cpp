@@ -1747,6 +1747,8 @@ void Game::run()
 
 	std::vector<aabb3f> highlight_boxes;
 
+	set_light_table(g_settings->getFloat("display_gamma"));
+
 	while (device->run() && !(*kill || g_gamecallback->shutdown_requested)) {
 
 		/* Must be called immediately after a device->run() call because it

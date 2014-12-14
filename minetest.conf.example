@@ -114,7 +114,11 @@
 #    Enable smooth lighting with simple ambient occlusion.
 #    Disable for speed or for different looks.
 #smooth_lighting = true
-#    Path to texture directory. All textures are first searched from here.
+#    Adjust the gamma encoding for the light tables. Valid values are in the range
+#    1.1 to 3.0 (inclusive); lower numbers are brighter.  This setting is for the
+#    client only and is ignored by the server
+#display_gamma = 1.8
+# Path to texture directory. All textures are first searched from here.
 #texture_path =
 #    Video back-end.
 #    Possible values: null, software, burningsvideo, direct3d8, direct3d9, opengl.
