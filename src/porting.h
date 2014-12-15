@@ -411,6 +411,9 @@ inline const char * getPlatformName()
 	;
 }
 
+void setXorgClassHint(const video::SExposedVideoData &video_data,
+	const std::string &name);
+
 } // namespace porting
 
 #ifdef __ANDROID__

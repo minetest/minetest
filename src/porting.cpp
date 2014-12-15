@@ -36,6 +36,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <sys/utsname.h>
 #endif
 
+#if !defined(_WIN32) && !defined(__APPLE__) && \
+	!defined(__ANDROID__) && !defined(SERVER)
+	#define XORG_USED
+#endif
+
+#ifdef XORG_USED
+	#include <X11/Xlib.h>
+	#include <X11/Xutil.h>
+#endif
+
 #include "config.h"
 #include "debug.h"
 #include "filesys.h"
@@ -543,6 +553,20 @@ static irr::IrrlichtDevice* device;
 
 void initIrrlicht(irr::IrrlichtDevice * _device) {
 	device = _device;
+}
+
+void setXorgClassHint(const video::SExposedVideoData &video_data,
+	const std::string &name)
+{
+#ifdef XORG_USED
+	XClassHint *classhint = XAllocClassHint();
+	classhint->res_name  = (char *)name.c_str();
+	classhint->res_class = (char *)name.c_str();
+
+	XSetClassHint((Display *)video_data.OpenGLLinux.X11Display,
+		video_data.OpenGLLinux.X11Window, classhint);
+	XFree(classhint);
+#endif
 }
 
 #ifndef SERVER

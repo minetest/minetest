@@ -1582,6 +1582,7 @@ ClientLauncher::~ClientLauncher()
 		device->drop();
 }
 
+
 bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 {
 	init_args(game_params, cmd_args);
@@ -1602,10 +1603,13 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 		return true;
 	}
 
-	if (device->getVideoDriver() == NULL) {
+	video::IVideoDriver *video_driver = device->getVideoDriver();
+	if (video_driver == NULL) {
 		errorstream << "Could not initialize video driver." << std::endl;
 		return false;
 	}
+
+	porting::setXorgClassHint(video_driver->getExposedVideoData(), "Minetest");
 
 	/*
 		This changes the minimum allowed number of vertices in a VBO.
