@@ -2,7 +2,6 @@
 # Copyright (C) 2011 celeron
 # This file is distributed under the same license as the minetest-c55 package.
 # Constantin Wenger <constantin.wenger@googlemail.com>, 2011.
-# Wuzzy <almikes@aol.com>, 2014.
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.0\n"
@@ -298,7 +297,7 @@ msgstr "Öffentliche Serverliste"
 #: builtin/mainmenu/tab_multiplayer.lua:34 builtin/mainmenu/tab_server.lua:26
 #: builtin/mainmenu/tab_singleplayer.lua:85 src/keycode.cpp:230
 msgid "Delete"
-msgstr "Entfernenn"
+msgstr "Entfernen"
 
 #: builtin/mainmenu/tab_multiplayer.lua:38
 #: builtin/mainmenu/tab_simple_main.lua:34
@@ -397,7 +396,7 @@ msgstr "Mip-Mapping"
 
 #: builtin/mainmenu/tab_settings.lua:153
 msgid "Anisotropic Filtering"
-msgstr "Anisotropischer Filter"
+msgstr "Anisotroper Filter"
 
 #: builtin/mainmenu/tab_settings.lua:155
 msgid "Bi-Linear Filtering"
@@ -437,7 +436,7 @@ msgstr "Berührungsempfindlichkeit (px)"
 
 #: builtin/mainmenu/tab_settings.lua:194 builtin/mainmenu/tab_settings.lua:208
 msgid "Bumpmapping"
-msgstr "Bump-Mapping"
+msgstr "Bumpmapping"
 
 #: builtin/mainmenu/tab_settings.lua:196 builtin/mainmenu/tab_settings.lua:209
 msgid "Generate Normalmaps"
@@ -559,11 +558,11 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:165
 msgid "\"Use\" = climb down"
-msgstr "»Benutzen« = runterklettern"
+msgstr "Benutzen = runterklettern"
 
 #: src/guiKeyChangeMenu.cpp:180
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Doppelt »Springen« zum Fliegen"
+msgstr "2×Sprungtaste zum Fliegen"
 
 #: src/guiKeyChangeMenu.cpp:296
 msgid "Key already in use"
@@ -623,15 +622,15 @@ msgstr "Konsole"
 
 #: src/guiKeyChangeMenu.cpp:409
 msgid "Toggle fly"
-msgstr "Fliegen umsch."
+msgstr "Flugmodus"
 
 #: src/guiKeyChangeMenu.cpp:410
 msgid "Toggle fast"
-msgstr "Schnell umsch."
+msgstr "Schnellmodus"
 
 #: src/guiKeyChangeMenu.cpp:411
 msgid "Toggle noclip"
-msgstr "Noclip umsch."
+msgstr "Geistermodus"
 
 #: src/guiKeyChangeMenu.cpp:412
 msgid "Range select"
