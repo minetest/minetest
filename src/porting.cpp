@@ -528,7 +528,7 @@ void initializePaths()
 	{
 		dstream<<"Bundle resource path: "<<path<<std::endl;
 		//chdir(path);
-		path_share = std::string(path) + DIR_DELIM + "share";
+		path_share = std::string(path) + DIR_DELIM + STATIC_SHAREDIR;
 	}
 	else
 	{
