@@ -2400,7 +2400,7 @@ It can be created via `PseudoRandom(seed)`.
 #### Methods
 * `next()`: return next integer random number [`0`...`32767`]
 * `next(min, max)`: return next integer random number [`min`...`max`]
-    * `((max - min) == 32767) or ((max-min) <= 65535))` must be true
+    * `((max - min) == 32767) or ((max-min) <= 6553))` must be true
       due to the simple implementation making bad distribution otherwise.
 
 ### `PerlinNoise`
