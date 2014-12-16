@@ -35,7 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define WIELD_SCALE_FACTOR 30.0
 #define WIELD_SCALE_FACTOR_EXTRUDED 40.0
 
-#define MIN_EXTRUSION_MESH_RESOLUTION 32   // not 16: causes too many "holes"
+#define MIN_EXTRUSION_MESH_RESOLUTION 16   // not 16: causes too many "holes"
 #define MAX_EXTRUSION_MESH_RESOLUTION 512
 
 static scene::IMesh* createExtrusionMesh(int resolution_x, int resolution_y)
@@ -234,6 +234,11 @@ WieldMeshSceneNode::~WieldMeshSceneNode()
 	assert(g_extrusion_mesh_cache);
 	if (g_extrusion_mesh_cache->drop())
 		g_extrusion_mesh_cache = NULL;
+}
+
+scene::IMesh* WieldMeshSceneNode::getMesh()
+{
+	return m_meshnode->getMesh();
 }
 
 void WieldMeshSceneNode::setCube(const TileSpec tiles[6],

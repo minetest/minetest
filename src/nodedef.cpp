@@ -20,10 +20,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 
 #include "main.h" // For g_settings
-#include "itemdef.h"
+#include "inventory.h"
 #ifndef SERVER
 #include "tile.h"
 #include "mesh.h"
+#include "wieldmesh.h"
 #include <IMeshManipulator.h>
 #endif
 #include "log.h"
@@ -713,6 +714,7 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef)
 	bool enable_bumpmapping        = g_settings->getBool("enable_bumpmapping");
 	bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
 	bool enable_mesh_cache         = g_settings->getBool("enable_mesh_cache");
+	bool extruded_meshes           = g_settings->getBool("extruded_meshes");
 
 	bool use_normal_texture = enable_shaders &&
 		(enable_bumpmapping || enable_parallax_occlusion);
@@ -728,6 +730,7 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef)
 				tiledef[j].name = "unknown_node.png";
 		}
 
+		bool cacheable_mesh = false;
 		bool is_liquid = false;
 		bool is_water_surface = false;
 
@@ -803,14 +806,15 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef)
 			f->solidness = 0;
 			break;
 		case NDT_MESH:
+		case NDT_NODEBOX:
 			f->solidness = 0;
 			f->backface_culling = false;
+			cacheable_mesh = true;
 			break;
 		case NDT_TORCHLIKE:
 		case NDT_SIGNLIKE:
 		case NDT_FENCELIKE:
 		case NDT_RAILLIKE:
-		case NDT_NODEBOX:
 			f->solidness = 0;
 			break;
 		}
@@ -846,7 +850,43 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef)
 				f->tiledef_special[j].backface_culling, f->alpha, material_type);
 		}
 
-		if ((f->drawtype == NDT_MESH) && (f->mesh != "")) {
+		if (extruded_meshes && f->drawtype == NDT_PLANTLIKE) {
+			v3f scale = v3f(1.0, 1.0, 0.5) * BS * f->visual_scale;
+			ItemStack item(f->name, 1, 0, "", gamedef->idef());
+			WieldMeshSceneNode* meshnode = new WieldMeshSceneNode(
+			smgr->getRootSceneNode(), smgr, -1);
+			meshnode->setItem(item, gamedef);
+			f->mesh_ptr[0] = cloneMesh(meshnode->getMesh());
+			scaleMesh(f->mesh_ptr[0], scale);
+			f->mesh_ptr[1] = cloneMesh(f->mesh_ptr[0]);				
+			rotateMeshXZby(f->mesh_ptr[0], 45);
+			rotateMeshXZby(f->mesh_ptr[1], -45);
+			meshmanip->recalculateNormals(f->mesh_ptr[0], true, false);
+			meshmanip->recalculateNormals(f->mesh_ptr[1], true, false);
+		} else if (extruded_meshes && f->drawtype == NDT_TORCHLIKE) {
+			v3f scale = v3f(1.0, 1.0, 1.0) * BS * f->visual_scale;
+			ItemStack item(f->name, 1, 0, "", gamedef->idef());
+			WieldMeshSceneNode* meshnode = new WieldMeshSceneNode(
+				smgr->getRootSceneNode(), smgr, -1);
+			meshnode->setItem(item, gamedef);
+			f->mesh_ptr[0] = cloneMesh(meshnode->getMesh());
+			scaleMesh(f->mesh_ptr[0], scale);
+			for (int i = 1; i < 6; i++) {
+				f->mesh_ptr[i] = cloneMesh(f->mesh_ptr[0]);
+			}
+			rotateMeshYZby(f->mesh_ptr[0], 180);
+			rotateMeshYZby(f->mesh_ptr[2], 30);
+			translateMesh(f->mesh_ptr[2],v3f (0.0, 0.0, -3.0));
+			for (int i = 3; i < 6; i++) {
+				f->mesh_ptr[i] = cloneMesh(f->mesh_ptr[2]);
+			}
+			rotateMeshXZby(f->mesh_ptr[2], 90);
+			rotateMeshXZby(f->mesh_ptr[3], -90);
+			rotateMeshXZby(f->mesh_ptr[4], 180);
+			for (int i = 0; i < 6; i++) {
+				meshmanip->recalculateNormals(f->mesh_ptr[i], true, false);
+			}
+		} else if ((f->drawtype == NDT_MESH) && (f->mesh != "")) {
 			// Meshnode drawtype
 			// Read the mesh and apply scale
 			f->mesh_ptr[0] = gamedef->getMesh(f->mesh);
@@ -871,14 +911,16 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef)
 		}
 
 		//Cache 6dfacedir and wallmounted rotated clones of meshes
-		if (enable_mesh_cache && f->mesh_ptr[0] && (f->param_type_2 == CPT2_FACEDIR)) {
+		if (enable_mesh_cache && cacheable_mesh && f->mesh_ptr[0] &&
+				(f->param_type_2 == CPT2_FACEDIR)) {
 			for (u16 j = 1; j < 24; j++) {
 				f->mesh_ptr[j] = cloneMesh(f->mesh_ptr[0]);
 				rotateMeshBy6dFacedir(f->mesh_ptr[j], j);
 				recalculateBoundingBox(f->mesh_ptr[j]);
 				meshmanip->recalculateNormals(f->mesh_ptr[j], true, false);
 			}
-		} else if (enable_mesh_cache && f->mesh_ptr[0] && (f->param_type_2 == CPT2_WALLMOUNTED)) {
+		} else if (enable_mesh_cache && cacheable_mesh && f->mesh_ptr[0] &&
+				(f->param_type_2 == CPT2_WALLMOUNTED)) {
 			static const u8 wm_to_6d[6] = {20, 0, 16+1, 12+3, 8, 4+2};
 			for (u16 j = 1; j < 6; j++) {
 				f->mesh_ptr[j] = cloneMesh(f->mesh_ptr[0]);

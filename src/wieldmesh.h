@@ -38,6 +38,7 @@ public:
 			s32 id = -1, bool lighting = false);
 	virtual ~WieldMeshSceneNode();
 
+	scene::IMesh* getMesh();
 	void setCube(const TileSpec tiles[6],
 			v3f wield_scale, ITextureSource *tsrc);
 	void setExtruded(const std::string &imagename,

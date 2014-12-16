@@ -144,6 +144,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("bilinear_filter", "false");
 	settings->setDefault("trilinear_filter", "false");
 	settings->setDefault("preload_item_visuals", "false");
+	settings->setDefault("extruded_meshes","false");
 	settings->setDefault("enable_bumpmapping", "false");
 	settings->setDefault("enable_parallax_occlusion", "false");
 	settings->setDefault("generate_normalmaps", "false");
