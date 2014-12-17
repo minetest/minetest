@@ -1162,7 +1162,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			u16 l = getInteriorLight(n, 1, nodedef);
 			video::SColor c = MapBlock_LightColor(255, l, f.light_source);
 			
-			float s = BS / 2;
+			float s = MYMAX(BS / 2 * f.visual_scale, BS / 2);
+
 			for(u32 j = 0; j < 2; j++)
 			{
 				video::S3DVertex vertices[4] =
