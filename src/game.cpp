@@ -788,7 +788,7 @@ public:
 			return;
 
 		m_fetched.insert(name);
-		std::string base = porting::path_share + DIR_DELIM + "testsounds";
+		std::string base = porting::path_share + DIR_DELIM + "sounds";
 		dst_paths.insert(base + DIR_DELIM + name + ".ogg");
 		dst_paths.insert(base + DIR_DELIM + name + ".0.ogg");
 		dst_paths.insert(base + DIR_DELIM + name + ".1.ogg");
