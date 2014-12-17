@@ -72,14 +72,8 @@ BiomeManager::~BiomeManager()
 void BiomeManager::calcBiomes(s16 sx, s16 sy, float *heat_map,
 	float *humidity_map, s16 *height_map, u8 *biomeid_map)
 {
-	int i = 0;
-	for (int y = 0; y != sy; y++) {
-		for (int x = 0; x != sx; x++, i++) {
-			float heat     = (heat_map[i] + 1) * 50;
-			float humidity = (humidity_map[i] + 1) * 50;
-			biomeid_map[i] = getBiome(heat, humidity, height_map[i])->id;
-		}
-	}
+	for (size_t i = 0; i != sx * sy; i++)
+		biomeid_map[i] = getBiome(heat_map[i], humidity_map[i], height_map[i])->id;
 }
 
 
