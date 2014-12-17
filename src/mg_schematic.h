@@ -42,7 +42,7 @@ class NodeResolver;
 #define MTSCHEM_PROB_ALWAYS 0xFF
 
 
-class Schematic : public GenElement {
+class Schematic : public GenElement, public NodeResolver {
 public:
 	std::vector<content_t> c_nodes;
 
@@ -52,14 +52,16 @@ public:
 	u8 *slice_probs;
 
 	Schematic();
-	~Schematic();
+	virtual ~Schematic();
+
+	virtual void resolveNodeNames(NodeResolveInfo *nri);
 
 	void updateContentIds();
 
 	void blitToVManip(v3s16 p, ManualMapVoxelManipulator *vm,
 		Rotation rot, bool force_placement, INodeDefManager *ndef);
 
-	bool loadSchematicFromFile(const char *filename, NodeResolver *resolver,
+	bool loadSchematicFromFile(const char *filename, INodeDefManager *ndef,
 		std::map<std::string, std::string> &replace_names);
 	void saveSchematicToFile(const char *filename, INodeDefManager *ndef);
 	bool getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2);
@@ -86,7 +88,7 @@ public:
 };
 
 void build_nnlist_and_update_ids(MapNode *nodes, u32 nodecount,
-					std::vector<content_t> *usednodes);
+	std::vector<content_t> *usednodes);
 
 
 #endif

@@ -33,7 +33,7 @@ enum BiomeType
 	BIOME_TYPE_FLAT
 };
 
-class Biome : public GenElement {
+class Biome : public GenElement, public NodeResolver {
 public:
 	u32 flags;
 
@@ -51,6 +51,8 @@ public:
 	s16 height_max;
 	float heat_point;
 	float humidity_point;
+
+	virtual void resolveNodeNames(NodeResolveInfo *nri);
 };
 
 class BiomeManager : public GenElementManager {

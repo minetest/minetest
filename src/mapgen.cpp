@@ -384,7 +384,7 @@ void GenerateNotifier::getEvents(
 
 GenElementManager::GenElementManager(IGameDef *gamedef)
 {
-	m_resolver = gamedef->getNodeDefManager()->getResolver();
+	m_ndef = gamedef->getNodeDefManager();
 }
 
 

@@ -54,7 +54,7 @@ enum OreType {
 
 extern FlagDesc flagdesc_ore[];
 
-class Ore : public GenElement {
+class Ore : public GenElement, public NodeResolver {
 public:
 	static const bool NEEDS_NOISE = false;
 
@@ -72,6 +72,9 @@ public:
 	Noise *noise;
 
 	Ore();
+	virtual ~Ore();
+
+	virtual void resolveNodeNames(NodeResolveInfo *nri);
 
 	size_t placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	virtual void generate(ManualMapVoxelManipulator *vm, int seed,

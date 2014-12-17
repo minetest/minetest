@@ -58,6 +58,12 @@ Schematic::~Schematic()
 }
 
 
+void Schematic::resolveNodeNames(NodeResolveInfo *nri)
+{
+	m_ndef->getIdsFromResolveInfo(nri, c_nodes);
+}
+
+
 void Schematic::updateContentIds()
 {
 	if (flags & SCHEM_CIDS_UPDATED)
@@ -195,8 +201,7 @@ void Schematic::placeStructure(Map *map, v3s16 p, u32 flags,
 
 
 bool Schematic::loadSchematicFromFile(const char *filename,
-	NodeResolver *resolver,
-	std::map<std::string, std::string> &replace_names)
+	INodeDefManager *ndef, std::map<std::string, std::string> &replace_names)
 {
 	content_t cignore = CONTENT_IGNORE;
 	bool have_cignore = false;
@@ -224,10 +229,9 @@ bool Schematic::loadSchematicFromFile(const char *filename,
 	for (int y = 0; y != size.Y; y++)
 		slice_probs[y] = (version >= 3) ? readU8(is) : MTSCHEM_PROB_ALWAYS;
 
-	int nodecount = size.X * size.Y * size.Z;
+	NodeResolveInfo *nri = new NodeResolveInfo(this);
 
 	u16 nidmapcount = readU16(is);
-
 	for (int i = 0; i != nidmapcount; i++) {
 		std::string name = deSerializeString(is);
 		if (name == "ignore") {
@@ -241,16 +245,22 @@ bool Schematic::loadSchematicFromFile(const char *filename,
 		if (it != replace_names.end())
 			name = it->second;
 
-		resolver->addNodeList(name.c_str(), &c_nodes);
+		nri->nodenames.push_back(name);
 	}
+
+	nri->nodename_sizes.push_back(nidmapcount);
+	ndef->pendNodeResolve(nri);
+
+	size_t nodecount = size.X * size.Y * size.Z;
 
 	delete []schemdata;
 	schemdata = new MapNode[nodecount];
+
 	MapNode::deSerializeBulk(is, SER_FMT_VER_HIGHEST_READ, schemdata,
-				nodecount, 2, 2, true);
+		nodecount, 2, 2, true);
 
 	if (version == 1) { // fix up the probability values
-		for (int i = 0; i != nodecount; i++) {
+		for (size_t i = 0; i != nodecount; i++) {
 			if (schemdata[i].param1 == 0)
 				schemdata[i].param1 = MTSCHEM_PROB_ALWAYS;
 			if (have_cignore && schemdata[i].getContent() == cignore)

@@ -337,7 +337,7 @@ Server::Server(
 	m_nodedef->updateAliases(m_itemdef);
 
 	// Perform pending node name resolutions
-	m_nodedef->getResolver()->resolveNodes();
+	m_nodedef->runNodeResolverCallbacks();
 
 	// Load the mapgen params from global settings now after any
 	// initial overrides have been set by the mods
@@ -2650,7 +2650,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			}
 
 		} // action == 4
-		
+
 
 		/*
 			Catch invalid actions
@@ -4570,7 +4570,7 @@ bool Server::showFormspec(const char *playername, const std::string &formspec, c
 u32 Server::hudAdd(Player *player, HudElement *form) {
 	if (!player)
 		return -1;
-	
+
 	u32 id = player->addHud(form);
 
 	SendHUDAdd(player->peer_id, id, form);
@@ -4586,7 +4586,7 @@ bool Server::hudRemove(Player *player, u32 id) {
 
 	if (!todel)
 		return false;
-	
+
 	delete todel;
 
 	SendHUDRemove(player->peer_id, id);
@@ -4607,9 +4607,9 @@ bool Server::hudSetFlags(Player *player, u32 flags, u32 mask) {
 
 	SendHUDSetFlags(player->peer_id, flags, mask);
 	player->hud_flags = flags;
-	
+
 	PlayerSAO* playersao = player->getPlayerSAO();
-	
+
 	if (playersao == NULL)
 		return false;
 

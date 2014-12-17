@@ -64,11 +64,7 @@ void OreManager::clear()
 {
 	for (size_t i = 0; i < m_elements.size(); i++) {
 		Ore *ore = (Ore *)m_elements[i];
-		if (!ore)
-			continue;
-
-		m_resolver->cancelNodeList(&ore->c_wherein);
-		m_resolver->cancelNode(&ore->c_ore);
+		delete ore;
 	}
 	m_elements.clear();
 }
@@ -81,6 +77,19 @@ Ore::Ore()
 {
 	flags = 0;
 	noise = NULL;
+}
+
+
+Ore::~Ore()
+{
+	delete noise;
+}
+
+
+void Ore::resolveNodeNames(NodeResolveInfo *nri)
+{
+	m_ndef->getIdFromResolveInfo(nri, "", CONTENT_AIR, c_ore);
+	m_ndef->getIdsFromResolveInfo(nri, c_wherein);
 }
 
 
@@ -111,6 +120,9 @@ size_t Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 
 	return 1;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
 
 
 void OreScatter::generate(ManualMapVoxelManipulator *vm, int seed,
@@ -149,6 +161,9 @@ void OreScatter::generate(ManualMapVoxelManipulator *vm, int seed,
 		}
 	}
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
 
 
 void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,

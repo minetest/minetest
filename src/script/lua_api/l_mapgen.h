@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_base.h"
 
 class INodeDefManager;
-class NodeResolver;
+class NodeResolveInfo;
 class DecoSimple;
 class DecoSchematic;
 
@@ -68,7 +68,7 @@ private:
 	static int l_place_schematic(lua_State *L);
 
 	static bool regDecoSimple(lua_State *L,
-			NodeResolver *resolver, DecoSimple *deco);
+			NodeResolveInfo *nri, DecoSimple *deco);
 	static bool regDecoSchematic(lua_State *L,
 			INodeDefManager *ndef, DecoSchematic *deco);
 

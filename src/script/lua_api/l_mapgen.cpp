@@ -183,9 +183,8 @@ bool get_schematic(lua_State *L, int index, Schematic *schem,
 	if (lua_istable(L, index)) {
 		return read_schematic(L, index, schem, ndef, replace_names);
 	} else if (lua_isstring(L, index)) {
-		NodeResolver *resolver = ndef->getResolver();
 		const char *filename = lua_tostring(L, index);
-		return schem->loadSchematicFromFile(filename, resolver, replace_names);
+		return schem->loadSchematicFromFile(filename, ndef, replace_names);
 	} else {
 		return false;
 	}
@@ -415,8 +414,8 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 	int index = 1;
 	luaL_checktype(L, index, LUA_TTABLE);
 
-	NodeResolver *resolver = getServer(L)->getNodeDefManager()->getResolver();
-	BiomeManager *bmgr     = getServer(L)->getEmergeManager()->biomemgr;
+	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
+	BiomeManager *bmgr    = getServer(L)->getEmergeManager()->biomemgr;
 
 	enum BiomeType biometype = (BiomeType)getenumfield(L, index, "type",
 		es_BiomeTerrainType, BIOME_TYPE_NORMAL);
@@ -437,19 +436,15 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 		return 0;
 	}
 
-	// Pend node resolutions only if insertion succeeded
-	resolver->addNode(getstringfield_default(L, index, "node_top", ""),
-		 "mapgen_dirt_with_grass", CONTENT_AIR, &b->c_top);
-	resolver->addNode(getstringfield_default(L, index, "node_filler", ""),
-		"mapgen_dirt", CONTENT_AIR, &b->c_filler);
-	resolver->addNode(getstringfield_default(L, index, "node_stone", ""),
-		"mapgen_stone", CONTENT_AIR, &b->c_stone);
-	resolver->addNode(getstringfield_default(L, index, "node_water", ""),
-		"mapgen_water_source", CONTENT_AIR, &b->c_water);
-	resolver->addNode(getstringfield_default(L, index, "node_dust", ""),
-		"air", CONTENT_IGNORE, &b->c_dust);
-	resolver->addNode(getstringfield_default(L, index, "node_dust_water", ""),
-		"mapgen_water_source", CONTENT_IGNORE, &b->c_dust_water);
+	NodeResolveInfo *nri = new NodeResolveInfo(b);
+	std::list<std::string> &nnames = nri->nodenames;
+	nnames.push_back(getstringfield_default(L, index, "node_top",        ""));
+	nnames.push_back(getstringfield_default(L, index, "node_filler",     ""));
+	nnames.push_back(getstringfield_default(L, index, "node_stone",      ""));
+	nnames.push_back(getstringfield_default(L, index, "node_water",      ""));
+	nnames.push_back(getstringfield_default(L, index, "node_dust",       ""));
+	nnames.push_back(getstringfield_default(L, index, "node_dust_water", ""));
+	ndef->pendNodeResolve(nri);
 
 	verbosestream << "register_biome: " << b->name << std::endl;
 
@@ -485,7 +480,6 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	luaL_checktype(L, index, LUA_TTABLE);
 
 	INodeDefManager *ndef      = getServer(L)->getNodeDefManager();
-	NodeResolver *resolver     = getServer(L)->getNodeDefManager()->getResolver();
 	DecorationManager *decomgr = getServer(L)->getEmergeManager()->decomgr;
 	BiomeManager *biomemgr     = getServer(L)->getEmergeManager()->biomemgr;
 
@@ -509,11 +503,14 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 		return 0;
 	}
 
+	NodeResolveInfo *nri = new NodeResolveInfo(deco);
+
 	//// Get node name(s) to place decoration on
 	std::vector<const char *> place_on_names;
 	getstringlistfield(L, index, "place_on", place_on_names);
+	nri->nodename_sizes.push_back(place_on_names.size());
 	for (size_t i = 0; i != place_on_names.size(); i++)
-		resolver->addNodeList(place_on_names[i], &deco->c_place_on);
+		nri->nodenames.push_back(place_on_names[i]);
 
 	getflagsfield(L, index, "flags", flagdesc_deco, &deco->flags, NULL);
 
@@ -538,7 +535,7 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	bool success = false;
 	switch (decotype) {
 		case DECO_SIMPLE:
-			success = regDecoSimple(L, resolver, (DecoSimple *)deco);
+			success = regDecoSimple(L, nri, (DecoSimple *)deco);
 			break;
 		case DECO_SCHEMATIC:
 			success = regDecoSchematic(L, ndef, (DecoSchematic *)deco);
@@ -546,6 +543,8 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 		case DECO_LSYSTEM:
 			break;
 	}
+
+	ndef->pendNodeResolve(nri);
 
 	if (!success) {
 		delete deco;
@@ -558,12 +557,14 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 		return 0;
 	}
 
+	verbosestream << "register_decoration: " << deco->name << std::endl;
+
 	lua_pushinteger(L, id);
 	return 1;
 }
 
 bool ModApiMapgen::regDecoSimple(lua_State *L,
-		NodeResolver *resolver, DecoSimple *deco)
+		NodeResolveInfo *nri, DecoSimple *deco)
 {
 	int index = 1;
 
@@ -584,6 +585,9 @@ bool ModApiMapgen::regDecoSimple(lua_State *L,
 			"defined" << std::endl;
 		return false;
 	}
+	nri->nodename_sizes.push_back(deco_names.size());
+	for (size_t i = 0; i != deco_names.size(); i++)
+		nri->nodenames.push_back(deco_names[i]);
 
 	std::vector<const char *> spawnby_names;
 	getstringlistfield(L, index, "spawn_by", spawnby_names);
@@ -592,11 +596,9 @@ bool ModApiMapgen::regDecoSimple(lua_State *L,
 			" but num_spawn_by specified" << std::endl;
 		return false;
 	}
-
-	for (size_t i = 0; i != deco_names.size(); i++)
-		resolver->addNodeList(deco_names[i], &deco->c_decos);
+	nri->nodename_sizes.push_back(spawnby_names.size());
 	for (size_t i = 0; i != spawnby_names.size(); i++)
-		resolver->addNodeList(spawnby_names[i], &deco->c_spawnby);
+		nri->nodenames.push_back(spawnby_names[i]);
 
 	return true;
 }
@@ -615,6 +617,7 @@ bool ModApiMapgen::regDecoSchematic(lua_State *L, INodeDefManager *ndef,
 		read_schematic_replacements(L, replace_names, lua_gettop(L));
 	lua_pop(L, 1);
 
+	// TODO(hmmmm): get a ref from registered schematics
 	Schematic *schem = new Schematic;
 	lua_getfield(L, index, "schematic");
 	if (!get_schematic(L, -1, schem, ndef, replace_names)) {
@@ -635,8 +638,8 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	int index = 1;
 	luaL_checktype(L, index, LUA_TTABLE);
 
-	NodeResolver *resolver = getServer(L)->getNodeDefManager()->getResolver();
-	OreManager *oremgr     = getServer(L)->getEmergeManager()->oremgr;
+	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
+	OreManager *oremgr    = getServer(L)->getEmergeManager()->oremgr;
 
 	enum OreType oretype = (OreType)getenumfield(L, index,
 				"ore_type", es_OreType, ORE_SCATTER);
@@ -683,13 +686,18 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 		return 0;
 	}
 
+	NodeResolveInfo *nri = new NodeResolveInfo(ore);
+	nri->nodenames.push_back(getstringfield_default(L, index, "ore", ""));
+
 	std::vector<const char *> wherein_names;
 	getstringlistfield(L, index, "wherein", wherein_names);
+	nri->nodename_sizes.push_back(wherein_names.size());
 	for (size_t i = 0; i != wherein_names.size(); i++)
-		resolver->addNodeList(wherein_names[i], &ore->c_wherein);
+		nri->nodenames.push_back(wherein_names[i]);
 
-	resolver->addNode(getstringfield_default(L, index, "ore", ""),
-		"", CONTENT_AIR, &ore->c_ore);
+	ndef->pendNodeResolve(nri);
+
+	verbosestream << "register_ore: " << ore->name << std::endl;
 
 	lua_pushinteger(L, id);
 	return 1;

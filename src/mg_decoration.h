@@ -58,7 +58,7 @@ struct CutoffData {
 };
 #endif
 
-class Decoration : public GenElement {
+class Decoration : public GenElement, public NodeResolver {
 public:
 	INodeDefManager *ndef;
 
@@ -76,12 +76,13 @@ public:
 	Decoration();
 	virtual ~Decoration();
 
+	virtual void resolveNodeNames(NodeResolveInfo *nri);
+
 	size_t placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	size_t placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 
 	virtual size_t generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p) = 0;
 	virtual int getHeight() = 0;
-	virtual void dropResolverEntries(NodeResolver *resolver) {}
 };
 
 class DecoSimple : public Decoration {
@@ -92,12 +93,11 @@ public:
 	s16 deco_height_max;
 	s16 nspawnby;
 
-	~DecoSimple() {}
+	virtual void resolveNodeNames(NodeResolveInfo *nri);
 
 	bool canPlaceDecoration(ManualMapVoxelManipulator *vm, v3s16 p);
 	virtual size_t generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
 	virtual int getHeight();
-	virtual void dropResolverEntries(NodeResolver *resolver);
 };
 
 class DecoSchematic : public Decoration {
@@ -105,8 +105,6 @@ public:
 	Rotation rotation;
 	Schematic *schematic;
 	std::string filename;
-
-	~DecoSchematic() {}
 
 	virtual size_t generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
 	virtual int getHeight();

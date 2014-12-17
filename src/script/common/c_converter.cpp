@@ -235,7 +235,8 @@ bool read_stringlist(lua_State *L, int index, std::vector<const char *> &result)
 	if (lua_istable(L, index)) {
 		lua_pushnil(L);
 		while (lua_next(L, index)) {
-			result.push_back(lua_tostring(L, -1));
+			if (lua_isstring(L, -1))
+				result.push_back(lua_tostring(L, -1));
 			lua_pop(L, 1);
 		}
 	} else if (lua_isstring(L, index)) {
