@@ -524,10 +524,24 @@ Noise Parameters, or commonly called NoiseParams, define the properties of perli
        some other flags.
     - eased
        Maps noise gradient values onto a quintic S-curve before performing interpolation.
-       This results in smooth, rolling noise.  Disable this for sharp-looking noise.
+       This results in smooth, rolling noise.  Disable this ("noeased") for sharp-looking noise.
        If no flags are specified (or defaults is), 2D noise is eased and 3D noise is not eased.
     - absvalue
        Accumulates the absolute value of each noise gradient result.
+
+Noise parameters format example for 2D or 3D perlin noise or perlin noise maps:
+    np_terrain = {
+        offset = 0,
+        scale = 1,
+        spread = {x=500, y=500, z=500},
+        seed = 571347,
+        octaves = 5,
+        persist = 0.63,
+        lacunarity = 2.0,
+        flags = "defaults, absvalue"
+    }
+  ^ A single noise parameter table can be used to get 2D or 3D noise,
+    when getting 2D noise spread.z is ignored.
 
 
 Ore types
@@ -2165,6 +2179,10 @@ methods:
 PerlinNoiseMap: A fast, bulk perlin noise generator
 - Can be created via PerlinNoiseMap(noiseparams, size)
 - Also minetest.get_perlin_map(noiseparams, size)
+- Format of 'size' for 3D perlin maps: {x=dimx, y=dimy, z=dimz}
+- Format of 'size' for 2D perlin maps: {x=dimx, y=dimy}
+  ^ where dimx, dimy, dimz are the array dimensions
+  ^ for 3D perlin maps the z component of 'size' must be larger than 1 otherwise 'nil' is returned
 methods:
 - get2dMap(pos) -> <size.x>X<size.y> 2d array of 2d noise values starting at pos={x=,y=}
 - get3dMap(pos) -> <size.x>X<size.y>X<size.z> 3d array of 3d noise values starting at pos={x=,y=,z=}
@@ -2859,15 +2877,3 @@ ParticleSpawner definition (add_particlespawner)
     ^ Playername is optional, if specified spawns particle only on the player's client
 }
 
-NoiseParams definition (PerlinNoiseMap)
-{
-    offset = 0,
-    scale = 0,
-    spread = 0,
-    seed = 0,
-    octaves = 0,
-    ^ A higher value will result in more details, this means more operations
-    persist = 0,
-    eased = false
-    ^ Whether it should create curves in 3D perlin maps
-}
