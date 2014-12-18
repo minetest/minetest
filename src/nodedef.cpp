@@ -934,7 +934,10 @@ void CNodeDefManager::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 		tile->material_flags &= ~MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
 	} else {
 		std::ostringstream os(std::ios::binary);
+		tile->frames.resize(frame_count);
+
 		for (int i = 0; i < frame_count; i++) {
+
 			FrameSpec frame;
 
 			os.str("");

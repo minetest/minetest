@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IrrlichtDevice.h>
 #include "threads.h"
 #include <string>
-#include <map>
+#include <vector>
 
 class IGameDef;
 
@@ -272,7 +272,7 @@ struct TileSpec
 	// Animation parameters
 	u8 animation_frame_count;
 	u16 animation_frame_length_ms;
-	std::map<u32, FrameSpec> frames;
+	std::vector<FrameSpec> frames;
 
 	u8 rotation;
 };

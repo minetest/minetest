@@ -252,7 +252,7 @@ void WieldMeshSceneNode::setCube(const TileSpec tiles[6],
 		if (tiles[i].animation_frame_count == 1) {
 			material.setTexture(0, tiles[i].texture);
 		} else {
-			FrameSpec animation_frame = tiles[i].frames.find(0)->second;
+			FrameSpec animation_frame = tiles[i].frames[0];
 			material.setTexture(0, animation_frame.texture);
 		}
 		tiles[i].applyMaterialOptions(material);
@@ -351,7 +351,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
 			bool animated = (f.tiles[i].animation_frame_count > 1);
 			if (animated) {
-				FrameSpec animation_frame = f.tiles[i].frames.find(0)->second;
+				FrameSpec animation_frame = f.tiles[i].frames[0];
 				material.setTexture(0, animation_frame.texture);
 			} else {
 				material.setTexture(0, f.tiles[i].texture);
@@ -360,7 +360,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 			if (m_enable_shaders) {
 				if (f.tiles[i].normal_texture) {
 					if (animated) {
-						FrameSpec animation_frame = f.tiles[i].frames.find(0)->second;
+						FrameSpec animation_frame = f.tiles[i].frames[0];
 						material.setTexture(1, animation_frame.normal_texture);
 					} else {
 						material.setTexture(1, f.tiles[i].normal_texture);
