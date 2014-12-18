@@ -1188,8 +1188,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				for (int i = 0; i < 4; i++)
 				{
 					vertices[i].Pos *= f.visual_scale;
-					if (f.visual_scale < 1)
-						vertices[i].Pos.Y -= BS/2 * (1 - f.visual_scale);
+					vertices[i].Pos.Y += BS/2 * (f.visual_scale - 1);
 					vertices[i].Pos += intToFloat(p, BS);
 				}
 
