@@ -1136,7 +1136,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 				m_animation_frame_offsets[i] = 0;
 			}
 			// Replace tile texture with the first animation frame
-			FrameSpec animation_frame = p.tile.frames.find(0)->second;
+			FrameSpec animation_frame = p.tile.frames[0];
 			p.tile.texture = animation_frame.texture;
 		}
 
@@ -1322,7 +1322,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 		scene::IMeshBuffer *buf = m_mesh->getMeshBuffer(i->first);
 		ITextureSource *tsrc = m_gamedef->getTextureSource();
 
-		FrameSpec animation_frame = tile.frames.find(frame)->second;
+		FrameSpec animation_frame = tile.frames[frame];
 		buf->getMaterial().setTexture(0, animation_frame.texture);
 		if (m_enable_shaders) {
 			if (animation_frame.normal_texture) {
