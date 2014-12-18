@@ -25,4 +25,5 @@ dofile(gamepath.."features.lua")
 dofile(gamepath.."voxelarea.lua")
 dofile(gamepath.."forceloading.lua")
 dofile(gamepath.."statbars.lua")
+dofile(gamepath.."builtin_biome.lua")
 
