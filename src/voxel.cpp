@@ -145,7 +145,7 @@ void VoxelManipulator::print(std::ostream &o, INodeDefManager *ndef,
 void VoxelManipulator::addArea(const VoxelArea &area)
 {
 	// Cancel if requested area has zero volume
-	if(area.getExtent() == v3s16(0,0,0))
+	if(area.hasEmptyExtent())
 		return;
 
 	// Cancel if m_area already contains the requested area
@@ -157,7 +157,7 @@ void VoxelManipulator::addArea(const VoxelArea &area)
 	// Calculate new area
 	VoxelArea new_area;
 	// New area is the requested area if m_area has zero volume
-	if(m_area.getExtent() == v3s16(0,0,0))
+	if (area.hasEmptyExtent())
 	{
 		new_area = area;
 	}
@@ -167,6 +167,7 @@ void VoxelManipulator::addArea(const VoxelArea &area)
 		new_area = m_area;
 		new_area.addArea(area);
 	}
+	new_area.addArea(area);
 
 	s32 new_size = new_area.getVolume();
 
