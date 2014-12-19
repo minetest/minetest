@@ -155,32 +155,32 @@ function dump(o, indent, nested, level)
 end
 
 --------------------------------------------------------------------------------
-function string.split(str, delim, include_empty, max_splits)
+-- Localize functions to avoid table lookups (better performance).
+local table_insert = table.insert
+local str_sub, str_find = string.sub, string.find
+function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
 	delim = delim or ","
-	max_splits = max_splits or 0
-	local fields = {}
-	local num_splits = 0
-	local last_pos = 0
-	for part, pos in str:gmatch("(.-)[" .. delim .. "]()") do
-		last_pos = pos
-		if include_empty or part ~= "" then
-			num_splits = num_splits + 1
-			fields[num_splits] = part
-			if max_splits > 0 and num_splits + 1 >= max_splits then
-				break
-			end
+	max_splits = max_splits or -1
+	local items = {}
+	local pos, len, seplen = 1, #str, #delim
+	local plain = not sep_is_pattern
+	max_splits = max_splits + 1
+	repeat
+		local np, npe = str_find(str, delim, pos, plain)
+		np, npe = (np or (len+1)), (npe or (len+1))
+		if (not np) or (max_splits == 1) then
+			np = len + 1
+			npe = np
 		end
-	end
-	-- Handle the last field
-	if max_splits <= 0 or num_splits <= max_splits then
-		local last_part = str:sub(last_pos)
-		if include_empty or last_part ~= "" then
-			fields[num_splits + 1] = last_part
+		local s = str_sub(str, pos, np - 1)
+		if include_empty or (s ~= "") then
+			max_splits = max_splits - 1
+			table_insert(items, s)
 		end
-	end
-	return fields
+		pos = npe + 1
+	until (max_splits == 0) or (pos > len)
+	return items
 end
-
 
 --------------------------------------------------------------------------------
 function file_exists(filename)
