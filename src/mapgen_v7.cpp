@@ -122,13 +122,13 @@ MapgenV7::~MapgenV7() {
 MapgenV7Params::MapgenV7Params() {
 	spflags = MGV7_MOUNTAINS | MGV7_RIDGES;
 
-	np_terrain_base    = NoiseParams(4,    70,  v3f(300, 300, 300), 82341, 6, 0.7, 2.0);
-	np_terrain_alt     = NoiseParams(4,    25,  v3f(600, 600, 600), 5934,  5, 0.6, 2.0);
-	np_terrain_persist = NoiseParams(0.6,  0.1, v3f(500, 500, 500), 539,   3, 0.6, 2.0);
+	np_terrain_base    = NoiseParams(4,    70,  v3f(300, 300, 300), 82341, 6, 0.7,  2.0);
+	np_terrain_alt     = NoiseParams(4,    25,  v3f(600, 600, 600), 5934,  5, 0.6,  2.0);
+	np_terrain_persist = NoiseParams(0.6,  0.1, v3f(500, 500, 500), 539,   3, 0.6,  2.0);
 	np_height_select   = NoiseParams(-0.5, 1,   v3f(250, 250, 250), 4213,  5, 0.69, 2.0);
-	np_filler_depth    = NoiseParams(0,    1.2, v3f(150, 150, 150), 261,   4, 0.7, 2.0);
-	np_mount_height    = NoiseParams(100,  30,  v3f(500, 500, 500), 72449, 4, 0.6, 2.0);
-	np_ridge_uwater    = NoiseParams(0,    1,   v3f(500, 500, 500), 85039, 4, 0.6, 2.0);
+	np_filler_depth    = NoiseParams(0,    1.2, v3f(150, 150, 150), 261,   4, 0.7,  2.0);
+	np_mount_height    = NoiseParams(100,  30,  v3f(500, 500, 500), 72449, 4, 0.6,  2.0);
+	np_ridge_uwater    = NoiseParams(0,    1,   v3f(500, 500, 500), 85039, 4, 0.6,  2.0);
 	np_mountain        = NoiseParams(0,    1,   v3f(250, 350, 250), 5333,  5, 0.68, 2.0);
 	np_ridge           = NoiseParams(0,    1,   v3f(100, 100, 100), 6467,  4, 0.75, 2.0);
 }
@@ -545,10 +545,12 @@ void MapgenV7::generateBiomes() {
 
 				if (c_below != CONTENT_AIR) {
 					if (nplaced < y0_top) {
-						if(y < water_level)
-							vm->m_data[i] = MapNode(biome->c_filler);
-						else
-							vm->m_data[i] = MapNode(biome->c_top);
+						// A hack to prevent dirt_with_grass from being
+						// placed below water.  TODO: fix later
+						content_t c_place = ((y < water_level) &&
+							(biome->c_top == c_dirt_with_grass)) ?
+							 c_dirt : biome->c_top;
+						vm->m_data[i] = MapNode(c_place);
 						nplaced++;
 					} else if (nplaced < y0_filler && nplaced >= y0_top) {
 						vm->m_data[i] = MapNode(biome->c_filler);

@@ -130,14 +130,14 @@ MapgenV5::~MapgenV5() {
 MapgenV5Params::MapgenV5Params() {
 	spflags = MGV5_BLOBS;
 
-	np_filler_depth = NoiseParams(0, 1,  v3f(150, 150, 150), 261,    4, 0.7, 2.0);
+	np_filler_depth = NoiseParams(0, 1,  v3f(150, 150, 150), 261,    4, 0.7,  2.0);
 	np_factor       = NoiseParams(0, 1,  v3f(250, 250, 250), 920381, 3, 0.45, 2.0);
-	np_height       = NoiseParams(0, 10, v3f(250, 250, 250), 84174,  4, 0.5, 2.0);
-	np_cave1        = NoiseParams(0, 6,  v3f(50,  50,  50),  52534,  4, 0.5, 2.0, NOISE_FLAG_EASED);
-	np_cave2        = NoiseParams(0, 6,  v3f(50,  50,  50),  10325,  4, 0.5, 2.0, NOISE_FLAG_EASED);
+	np_height       = NoiseParams(0, 10, v3f(250, 250, 250), 84174,  4, 0.5,  2.0);
+	np_cave1        = NoiseParams(0, 6,  v3f(50,  50,  50),  52534,  4, 0.5,  2.0, NOISE_FLAG_EASED);
+	np_cave2        = NoiseParams(0, 6,  v3f(50,  50,  50),  10325,  4, 0.5,  2.0, NOISE_FLAG_EASED);
 	np_ground       = NoiseParams(0, 40, v3f(80,  80,  80),  983240, 4, 0.55, 2.0, NOISE_FLAG_EASED);
-	np_crumble      = NoiseParams(0, 1,  v3f(20,  20,  20),  34413,  3, 1.3, 2.0, NOISE_FLAG_EASED);
-	np_wetness      = NoiseParams(0, 1,  v3f(40,  40,  40),  32474,  4, 1.1, 2.0);
+	np_crumble      = NoiseParams(0, 1,  v3f(20,  20,  20),  34413,  3, 1.3,  2.0, NOISE_FLAG_EASED);
+	np_wetness      = NoiseParams(0, 1,  v3f(40,  40,  40),  32474,  4, 1.1,  2.0);
 }
 
 
@@ -439,10 +439,12 @@ void MapgenV5::generateBiomes() {
 
 				if (c_below != CONTENT_AIR) {
 					if (nplaced < y0_top) {
-						if(y < water_level)
-							vm->m_data[i] = MapNode(biome->c_filler);
-						else
-							vm->m_data[i] = MapNode(biome->c_top);
+						// A hack to prevent dirt_with_grass from being
+						// placed below water.  TODO: fix later
+						content_t c_place = ((y < water_level) &&
+							(biome->c_top == c_dirt_with_grass)) ?
+							 c_dirt : biome->c_top;
+						vm->m_data[i] = MapNode(c_place);
 						nplaced++;
 					} else if (nplaced < y0_filler && nplaced >= y0_top) {
 						vm->m_data[i] = MapNode(biome->c_filler);
