@@ -1492,6 +1492,8 @@ protected:
 	void toggleFullViewRange(float *statustext_time);
 
 	void updateCameraDirection(CameraOrientation *cam, VolatileRunFlags *flags);
+	void updateCameraOrientation(CameraOrientation *cam,
+			const VolatileRunFlags &flags);
 	void updatePlayerControl(const CameraOrientation &cam);
 	void step(f32 *dtime);
 	void processClientEvents(CameraOrientation *cam, float *damage_flash);
@@ -1640,6 +1642,8 @@ Game::Game() :
 	m_cache_enable_fog                = g_settings->getBool("enable_fog");
 	m_cache_mouse_sensitivity         = g_settings->getFloat("mouse_sensitivity");
 	m_repeat_right_click_time         = g_settings->getFloat("repeat_rightclick_time");
+
+	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001, 100.0);
 }
 
 
@@ -1727,6 +1731,7 @@ void Game::run()
 	flags.show_hud = true;
 	flags.show_debug = g_settings->getBool("show_debug");
 	flags.invert_mouse = g_settings->getBool("invert_mouse");
+	flags.first_loop_after_window_activation = true;
 
 	/* Clear the profiler */
 	Profiler::GraphValues dummyvalues;
@@ -2849,11 +2854,24 @@ void Game::toggleFullViewRange(float *statustext_time)
 void Game::updateCameraDirection(CameraOrientation *cam,
 		VolatileRunFlags *flags)
 {
-	// float turn_amount = 0;	// Deprecated?
+	if ((device->isWindowActive() && noMenuActive()) || random_input) {
 
-	if (!(device->isWindowActive() && noMenuActive()) || random_input) {
+#ifndef __ANDROID__
+		if (!random_input) {
+			// Mac OSX gets upset if this is set every frame
+			if (device->getCursorControl()->isVisible())
+				device->getCursorControl()->setVisible(false);
+		}
+#endif
 
-	// FIXME: Clean this up
+		if (flags->first_loop_after_window_activation)
+			flags->first_loop_after_window_activation = false;
+		else
+			updateCameraOrientation(cam, *flags);
+
+		input->setMousePos((driver->getScreenSize().Width / 2),
+				(driver->getScreenSize().Height / 2));
+	} else {
 
 #ifndef ANDROID
 		// Mac OSX gets upset if this is set every frame
@@ -2861,63 +2879,38 @@ void Game::updateCameraDirection(CameraOrientation *cam,
 			device->getCursorControl()->setVisible(true);
 #endif
 
-		//infostream<<"window inactive"<<std::endl;
-		flags->first_loop_after_window_activation = true;
-		return;
-	}
+		if (!flags->first_loop_after_window_activation)
+			flags->first_loop_after_window_activation = true;
 
-#ifndef __ANDROID__
-	if (!random_input) {
-		// Mac OSX gets upset if this is set every frame
-		if (device->getCursorControl()->isVisible())
-			device->getCursorControl()->setVisible(false);
 	}
-#endif
+}
 
-	if (flags->first_loop_after_window_activation) {
-		//infostream<<"window active, first loop"<<std::endl;
-		flags->first_loop_after_window_activation = false;
+
+void Game::updateCameraOrientation(CameraOrientation *cam,
+		const VolatileRunFlags &flags)
+{
+#ifdef HAVE_TOUCHSCREENGUI
+	if (g_touchscreengui) {
+		cam->camera_yaw   = g_touchscreengui->getYaw();
+		cam->camera_pitch = g_touchscreengui->getPitch();
 	} else {
+#endif
+		s32 dx = input->getMousePos().X - (driver->getScreenSize().Width / 2);
+		s32 dy = input->getMousePos().Y - (driver->getScreenSize().Height / 2);
+
+		if (flags.invert_mouse
+				|| camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT) {
+			dy = -dy;
+		}
+
+		cam->camera_yaw   -= dx * m_cache_mouse_sensitivity;
+		cam->camera_pitch += dy * m_cache_mouse_sensitivity;
 
 #ifdef HAVE_TOUCHSCREENGUI
-
-		if (g_touchscreengui) {
-			cam->camera_yaw   = g_touchscreengui->getYaw();
-			cam->camera_pitch = g_touchscreengui->getPitch();
-		} else {
-#endif
-			s32 dx = input->getMousePos().X - (driver->getScreenSize().Width / 2);
-			s32 dy = input->getMousePos().Y - (driver->getScreenSize().Height / 2);
-
-			if (flags->invert_mouse
-					|| (camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT)) {
-				dy = -dy;
-			}
-
-			//infostream<<"window active, pos difference "<<dx<<","<<dy<<std::endl;
-
-			float d = m_cache_mouse_sensitivity;
-			d = rangelim(d, 0.01, 100.0);
-			cam->camera_yaw -= dx * d;
-			cam->camera_pitch += dy * d;
-			// turn_amount = v2f(dx, dy).getLength() * d; // deprecated?
-
-#ifdef HAVE_TOUCHSCREENGUI
-			}
-#endif
-
-		if (cam->camera_pitch < -89.5)
-			cam->camera_pitch = -89.5;
-		else if (cam->camera_pitch > 89.5)
-			cam->camera_pitch = 89.5;
 	}
+#endif
 
-	input->setMousePos(driver->getScreenSize().Width / 2,
-			driver->getScreenSize().Height / 2);
-
-	// Deprecated? Not used anywhere else
-	// recent_turn_speed = recent_turn_speed * 0.9 + turn_amount * 0.1;
-	// std::cerr<<"recent_turn_speed = "<<recent_turn_speed<<std::endl;
+	cam->camera_pitch = rangelim(cam->camera_pitch, -89.5, 89.5);
 }
 
 
