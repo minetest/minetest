@@ -273,8 +273,8 @@ struct TestPath: public TestBase
 				expected fs::PathStartsWith results
 				0 = returns false
 				1 = returns true
-				2 = returns false on windows, false elsewhere
-				3 = returns true on windows, true elsewhere
+				2 = returns false on windows, true elsewhere
+				3 = returns true on windows, false elsewhere
 				4 = returns true if and only if
 				    FILESYS_CASE_INSENSITIVE is true
 			*/
