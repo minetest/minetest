@@ -417,72 +417,139 @@
 # Mapgen stuff
 #
 
-# Name of map generator to be used.  Currently supported: v5, v6, v7, singlenode
+#    Name of map generator to be used.  Currently supported: v5, v6, v7, singlenode.
 #mg_name = v6
-# Water level of map.
+#    Water surface level of map.
 #water_level = 1
-# Size of chunks to be generated.
+#    Size of chunks to be generated.
 #chunksize = 5
-# Map generation attributes.  Currently supported: trees, caves, flat, dungeons, light
-# Flags that are not specified in the flag string are not modified from the default.
-# To explicitly turn off a flag, prepend "no" to the beginning, e.g. nolight.
+#    Global map generation attributes.  Currently supported: trees, caves, flat, dungeons, light.
+#    Flags that are not specified in the flag string are not modified from the default.
+#    To explicitly turn off a flag, prepend "no" to the beginning, e.g. nolight.
 #mg_flags = trees, caves
-# Map generation attributes specific to Mapgen V6.  Currently supported: biomeblend, jungles, mudflow
-#mgv6_spflags = biomeblend
-# How large deserts and beaches are
+#    Map generation attributes specific to Mapgen V6.  Currently supported: biomeblend, jungles, mudflow.
+#mgv6_spflags = biomeblend, jungles, mudflow
+#    Controls size of deserts and beaches in Mapgen V6.
 #mgv6_freq_desert = 0.45
 #mgv6_freq_beach = 0.15
-# Perlin noise attributes for different map generation parameters
-# Offset, scale, spread factor, seed offset, number of octaves, persistence
+
+#    Perlin noise attributes for different map generation parameters.
+#    Noise parameters can be specified as a set of positional values:
+#    Offset, scale, (spread factors), seed offset, number of octaves, persistence, lacunarity.
+#mgv6_np_terrain_base = -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0
+
+#    Or the new group format can be used instead:
+#mgv6_np_terrain_base = {
+#    offset      = -4
+#    scale       = 20
+#    spread      = (250, 250, 250)
+#    seed        = 82341
+#    octaves     = 5
+#    persistence = 0.6
+#    lacunarity  = 2.0
+#    flags       = "defaults"
+#}
+#    Only the group format supports noise flags which are needed for eased noise.
+#    Mgv5 uses eased noise for np_cave1, no_cave2, np_ground and np_crumble, so these are shown in
+#    group format, all other noise parameters are shown in positional format to save space.
 
 #mgv5_spflags = blobs
-#mgv5_np_filler_depth = 0, 1, (150, 150, 150), 261, 4, 0.7
-#mgv5_np_factor = 0, 1, (250, 250, 250), 920381, 3, 0.45
-#mgv5_np_height = 0, 10, (250, 250, 250), 84174, 4, 0.5
-#mgv5_np_cave1 = 0, 6, (50, 50, 50), 52534, 4, 0.5
-#mgv5_np_cave2 = 0, 6, (50, 50, 50), 10325, 4, 0.5
-#mgv5_np_ground = 0, 40, (80, 80, 80), 983240, 4, 0.55
-#mgv5_np_crumble = 0, 1, (20, 20, 20), 34413, 3, 1.3
-#mgv5_np_wetness = 0, 1, (40, 40, 40), 32474, 4, 1.1
+#mgv5_np_filler_depth = 0, 1, (150, 150, 150), 261, 4, 0.7, 2.0
+#mgv5_np_factor = 0, 1, (250, 250, 250), 920381, 3, 0.45, 2.0
+#mgv5_np_height = 0, 10, (250, 250, 250), 84174, 4, 0.5, 2.0
+#mgv5_np_cave1 = {
+#    offset      = 0
+#    scale       = 6
+#    spread      = (50, 50, 50)
+#    seed        = 52534
+#    octaves     = 4
+#    persistence = 0.5
+#    lacunarity  = 2.0
+#    flags       = "eased"
+#}
+#mgv5_np_cave2 = {
+#    offset      = 0
+#    scale       = 6
+#    spread      = (50, 50, 50)
+#    seed        = 10325
+#    octaves     = 4
+#    persistence = 0.5
+#    lacunarity  = 2.0
+#    flags       = "eased"
+#}
+#mgv5_np_ground = {
+#    offset      = 0
+#    scale       = 40
+#    spread      = (80, 80, 80)
+#    seed        = 983240
+#    octaves     = 4
+#    persistence = 0.55
+#    lacunarity  = 2.0
+#    flags       = "eased"
+#}
+#mgv5_np_crumble = {
+#    offset      = 0
+#    scale       = 1
+#    spread      = (20, 20, 20)
+#    seed        = 34413
+#    octaves     = 3
+#    persistence = 1.3
+#    lacunarity  = 2.0
+#    flags       = "eased"
+#}
+#mgv5_np_wetness = 0, 1, (40, 40, 40), 32474, 4, 1.1, 2.0
 
 #mgv6_spflags = biomeblend, jungles, mudflow
-
-#
-# Noise parameters can be specified as a set of positional values:
-#mgv6_np_terrain_base = -4, 20, (250, 250, 250), 82341, 5, 0.6
-#
-# Or the new group format can be used instead:
-#mgv6_np_terrain_base = {
-#   offset      = -4
-#   scale       = 20
-#   spread      = (250, 250, 250)
-#   seed        = 82341
-#   octaves     = 5
-#   persistence = 0.6
-#}
-
-#mgv6_np_terrain_higher = 20, 16, (500, 500, 500), 85039, 5, 0.6
-#mgv6_np_steepness = 0.85, 0.5, (125, 125, 125), -932, 5, 0.7
-#mgv6_np_height_select = 0.5, 1, (250, 250, 250), 4213, 5, 0.69
-#mgv6_np_mud = 4, 2, (200, 200, 200), 91013, 3, 0.55
-#mgv6_np_beach = 0, 1, (250, 250, 250), 59420, 3, 0.50
-#mgv6_np_biome = 0, 1, (250, 250, 250), 9130, 3, 0.50
-#mgv6_np_cave = 6, 6, (250, 250, 250), 34329, 3, 0.50
-#mgv6_np_humidity = 0.5, 0.5, (500, 500, 500), 72384, 4, 0.66
-#mgv6_np_trees = 0, 1, (125, 125, 125), 2, 4, 0.66
-#mgv6_np_apple_trees = 0, 1, (100, 100, 100), 342902, 3, 0.45
+#mgv6_np_terrain_base = -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0
+#mgv6_np_terrain_higher = 20, 16, (500, 500, 500), 85039, 5, 0.6, 2.0
+#mgv6_np_steepness = 0.85, 0.5, (125, 125, 125), -932, 5, 0.7, 2.0
+#mgv6_np_height_select = 0.5, 1, (250, 250, 250), 4213, 5, 0.69, 2.0
+#mgv6_np_mud = 4, 2, (200, 200, 200), 91013, 3, 0.55, 2.0
+#mgv6_np_beach = 0, 1, (250, 250, 250), 59420, 3, 0.50, 2.0
+#mgv6_np_biome = 0, 1, (250, 250, 250), 9130, 3, 0.50, 2.0
+#mgv6_np_cave = 6, 6, (250, 250, 250), 34329, 3, 0.50, 2.0
+#mgv6_np_humidity = 0.5, 0.5, (500, 500, 500), 72384, 4, 0.66, 2.0
+#mgv6_np_trees = 0, 1, (125, 125, 125), 2, 4, 0.66, 2.0
+#mgv6_np_apple_trees = 0, 1, (100, 100, 100), 342902, 3, 0.45, 2.0
 
 #mgv7_spflags = mountains, ridges
-#mgv7_np_terrain = 10, 12, (350, 350, 350), 82341, 5, 0.6
-#mgv7_np_bgroup = 0.5, 0.3125, (350, 350, 350), 5923, 2, 0.6
-#mgv7_np_heat = 25, 50, (500, 500, 500), 35293, 1, 0
-#mgv7_np_humidity = 50, 31.25, (750, 750, 750), 12094, 2, 0.6
+#mgv7_np_terrain_base = 4, 70, (300, 300, 300), 82341, 6, 0.7, 2.0
+#mgv7_np_terrain_alt = 4, 25, (600, 600, 600), 5934, 5, 0.6, 2.0
+#mgv7_np_terrain_persist = 0.6, 0.1, (500, 500, 500), 539, 3, 0.6, 2.0
+#mgv7_np_height_select = -0.5, 1, (250, 250, 250), 4213, 5, 0.69, 2.0
+#mgv7_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 4, 0.7, 2.0
+#mgv7_np_mount_height = 100, 30, (500, 500, 500), 72449, 4, 0.6, 2.0
+#mgv7_np_ridge_uwater = 0, 1, (500, 500, 500), 85039, 4, 0.6, 2.0
+#mgv7_np_mountain = 0, 1, (250, 350, 250), 5333, 5, 0.68, 2.0
+#mgv7_np_ridge = 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
 
-# Enable/disable IPv6
+# Biome API temperature and humidity.
+#mg_biome_np_heat = {
+#    offset      = 50
+#    scale       = 50
+#    spread      = (500.0, 500.0, 500.0)
+#    seed        = 5349
+#    octaves     = 3
+#    persistence = 0.5
+#    lacunarity  = 2.0
+#    flags       = "defaults"
+#}
+#mg_biome_np_humidity = {
+#    offset      = 50
+#    scale       = 50
+#    spread      = (500.0, 500.0, 500.0)
+#    seed        = 842
+#    octaves     = 3
+#    persistence = 0.5
+#    lacunarity  = 2.0
+#    flags       = "defaults"
+#}
+
+#    Enable/disable IPv6.
 #enable_ipv6 = true
-# Enable/disable running an IPv6 server.  An IPv6 server may be restricted
-# to IPv6 clients, depending on system configuration.
-# Ignored if bind_address is set.
+#    Enable/disable running an IPv6 server.  An IPv6 server may be restricted
+#    to IPv6 clients, depending on system configuration.
+#    Ignored if bind_address is set.
 #ipv6_server = false
 
 #main_menu_script =
@@ -492,9 +559,9 @@
 #modstore_listmods_url = https://forum.minetest.net/mmdb/mods/
 #modstore_details_url  = https://forum.minetest.net/mmdb/mod/*/
 
-# Makes DirectX work with LuaJIT. Disable if it causes troubles.
+#    Makes DirectX work with LuaJIT. Disable if it causes troubles.
 #high_precision_fpu = true
 
-# Override language. When no value is provided (default) system language is used.
-# Check "locale" directory for the list of available translations.
+#    Override language. When no value is provided (default) system language is used.
+#    Check "locale" directory for the list of available translations.
 #language =
