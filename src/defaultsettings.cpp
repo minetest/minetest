@@ -276,8 +276,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("movement_gravity", "9.81");
 
 	//liquid stuff
-	settings->setDefault("liquid_loop_max", "10000");
-	settings->setDefault("liquid_queue_purge_time", "30");
+	settings->setDefault("liquid_loop_max", "100000");
+	settings->setDefault("liquid_queue_purge_time", "0");
 	settings->setDefault("liquid_update", "1.0");
 
 	//mapgen stuff
