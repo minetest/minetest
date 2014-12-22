@@ -99,10 +99,11 @@
 # Enable a bit lower water surface; disable for speed (not quite optimized)
 #new_style_water = false
 # Max liquids processed per step
-#liquid_loop_max = 10000
+#liquid_loop_max = 100000
 # The time (in seconds) that the liquids queue may grow beyond processing
-# capacity until an attempt is made to decrease its size by dumping old queue items
-#liquid_queue_purge_time = 30
+# capacity until an attempt is made to decrease its size by dumping old queue
+# items.  A value of 0 disables the functionality.
+#liquid_queue_purge_time = 0
 # Update liquids every .. recommend for finite: 0.2
 #liquid_update = 1.0
 # Enable nice leaves; disable for speed

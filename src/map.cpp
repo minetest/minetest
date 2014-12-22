@@ -1624,8 +1624,6 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 	u32 loopcount = 0;
 	u32 initial_size = m_transforming_liquid.size();
 
-	u32 curr_time = getTime(PRECISION_MILLI);
-
 	/*if(initial_size != 0)
 		infostream<<"transformLiquids(): initial_size="<<initial_size<<std::endl;*/
 
@@ -1638,11 +1636,11 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 	u32 liquid_loop_max = g_settings->getS32("liquid_loop_max");
 	u32 loop_max = liquid_loop_max;
 
-//	std::cout << "transformLiquids(): loopmax initial="
-//	           << loop_max * m_transforming_liquid_loop_count_multiplier;
+#if 0
 
-	// If liquid_loop_max is not keeping up with the queue size increase
-	// loop_max up to a maximum of liquid_loop_max * dedicated_server_step.
+	/* If liquid_loop_max is not keeping up with the queue size increase
+	 * loop_max up to a maximum of liquid_loop_max * dedicated_server_step.
+	 */
 	if (m_transforming_liquid.size() > loop_max * 2) {
 		// "Burst" mode
 		float server_step = g_settings->getFloat("dedicated_server_step");
@@ -1653,9 +1651,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 	}
 
 	loop_max *= m_transforming_liquid_loop_count_multiplier;
-
-//	std::cout << " queue sz=" << m_transforming_liquid.size()
-//	           << " loop_max=" << loop_max;
+#endif
 
 	while(m_transforming_liquid.size() != 0)
 	{
@@ -1913,9 +1909,17 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 	updateLighting(lighting_modified_blocks, modified_blocks);
 
 
-	/*
-	 * Queue size limiting
+	/* ----------------------------------------------------------------------
+	 * Manage the queue so that it does not grow indefinately
 	 */
+	u16 time_until_purge = g_settings->getU16("liquid_queue_purge_time");
+
+	if (time_until_purge == 0)
+		return; // Feature disabled
+
+	time_until_purge *= 1000;	// seconds -> milliseconds
+
+	u32 curr_time = getTime(PRECISION_MILLI);
 	u32 prev_unprocessed = m_unprocessed_count;
 	m_unprocessed_count = m_transforming_liquid.size();
 
@@ -1927,13 +1931,6 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 			m_inc_trending_up_start_time = curr_time;
 		m_queue_size_timer_started = true;
 	}
-
-	u16 time_until_purge = g_settings->getU16("liquid_queue_purge_time");
-	time_until_purge *= 1000;	// seconds -> milliseconds
-
-//	std::cout << " growing for: "
-//	           << (m_queue_size_timer_started ? curr_time - m_inc_trend_up_start_time : 0)
-//	           << "ms" << std::endl;
 
 	// Account for curr_time overflowing
 	if (m_queue_size_timer_started && m_inc_trending_up_start_time > curr_time)
