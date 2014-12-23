@@ -524,27 +524,9 @@
 #mgv7_np_mountain = 0, 1, (250, 350, 250), 5333, 5, 0.68, 2.0
 #mgv7_np_ridge = 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
 
-# Biome API temperature and humidity.
-#mg_biome_np_heat = {
-#    offset      = 50
-#    scale       = 50
-#    spread      = (500.0, 500.0, 500.0)
-#    seed        = 5349
-#    octaves     = 3
-#    persistence = 0.5
-#    lacunarity  = 2.0
-#    flags       = "defaults"
-#}
-#mg_biome_np_humidity = {
-#    offset      = 50
-#    scale       = 50
-#    spread      = (500.0, 500.0, 500.0)
-#    seed        = 842
-#    octaves     = 3
-#    persistence = 0.5
-#    lacunarity  = 2.0
-#    flags       = "defaults"
-#}
+#    Noise parameters for biome API temperature and humidity.
+#mg_biome_np_heat = 50, 50, (500, 500, 500), 5349, 3, 0.5, 2.0
+#mg_biome_np_humidity = 50, 50, (500, 500, 500), 842, 3, 0.5, 2.0
 
 #    Enable/disable IPv6.
 #enable_ipv6 = true
