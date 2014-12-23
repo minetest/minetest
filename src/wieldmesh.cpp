@@ -292,8 +292,12 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 #if (IRRLICHT_VERSION_MAJOR >= 1 && IRRLICHT_VERSION_MINOR >= 8) || IRRLICHT_VERSION_MAJOR >= 2
 	material.setFlag(video::EMF_USE_MIP_MAPS, false);
 #endif
-	if (m_enable_shaders) 
+
+#if 0
+//// TODO(RealBadAngel): Reactivate when shader is added for wield items
+	if (m_enable_shaders)
 		material.setTexture(2, tsrc->getTexture("disable_img.png"));
+#endif
 }
 
 void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
@@ -306,10 +310,13 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 	const ContentFeatures &f = ndef->get(def.name);
 	content_t id = ndef->getId(def.name);
 
+#if 0
+//// TODO(RealBadAngel): Reactivate when shader is added for wield items
 	if (m_enable_shaders) {
 		u32 shader_id = shdrsrc->getShader("nodes_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
 		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
 	}
+#endif
 
 	// If wield_image is defined, it overrides everything else
 	if (def.wield_image != "") {
@@ -341,7 +348,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 			translateMesh(m_meshnode->getMesh(), v3f(-BS, -BS, -BS));
 			m_meshnode->setScale(
 					def.wield_scale * WIELD_SCALE_FACTOR
-					/ (BS * f.visual_scale));	
+					/ (BS * f.visual_scale));
 		}
 		for (u32 i = 0; i < m_meshnode->getMaterialCount(); ++i) {
 			assert(i < 6);
@@ -357,6 +364,8 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 				material.setTexture(0, f.tiles[i].texture);
 			}
 			material.MaterialType = m_material_type;
+#if 0
+//// TODO(RealBadAngel): Reactivate when shader is added for wield items
 			if (m_enable_shaders) {
 				if (f.tiles[i].normal_texture) {
 					if (animated) {
@@ -370,6 +379,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 					material.setTexture(2, tsrc->getTexture("disable_img.png"));
 				}
 			}
+#endif
 		}
 		return;
 	}
