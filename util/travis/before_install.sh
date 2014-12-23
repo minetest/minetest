@@ -15,12 +15,12 @@ if [ $WINDOWS = "no" ]; then
 else
 	sudo apt-get install p7zip-full
 	if [ $WINDOWS = "32" ]; then
-		wget http://meow.minetest.net/mingw_w64_i686_ubuntu12.04_4.9.1.7z -O mingw.7z
+		wget http://sfan5.pf-control.de/mingw_w64_i686_ubuntu12.04_4.9.1.7z -O mingw.7z
 		sed -e "s|%PREFIX%|i686-w64-mingw32|" \
 			-e "s|%ROOTPATH%|/usr/i686-w64-mingw32|" \
 			< util/travis/toolchain_mingw.cmake.in > util/buildbot/toolchain_mingw.cmake
 	elif [ $WINDOWS = "64" ]; then
-		wget http://meow.minetest.net/mingw_w64_x86_64_ubuntu12.04_4.9.1.7z -O mingw.7z
+		wget http://sfan5.pf-control.de/mingw_w64_x86_64_ubuntu12.04_4.9.1.7z -O mingw.7z
 		sed -e "s|%PREFIX%|x86_64-w64-mingw32|" \
 			-e "s|%ROOTPATH%|/usr/x86_64-w64-mingw32|" \
 			< util/travis/toolchain_mingw.cmake.in > util/buildbot/toolchain_mingw64.cmake
