@@ -424,10 +424,13 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	if (m_camera_mode == CAMERA_MODE_THIRD_FRONT)
 		m_camera_position = my_cp;
 
-	// Get FOV setting
-	f32 fov_degrees = m_cache_fov;
-	fov_degrees = MYMAX(fov_degrees, 10.0);
-	fov_degrees = MYMIN(fov_degrees, 170.0);
+	// Get FOV
+	if (player->zoom) {
+		m_wieldnode->setVisible(false);
+	} else {
+		m_wieldnode->setVisible(true);
+	}
+	f32 fov_degrees = MYMAX(MYMIN(m_draw_control.fov, 170.0), 10.0);
 
 	// FOV and aspect ratio
 	m_aspect = (f32) porting::getWindowSize().X / (f32) porting::getWindowSize().Y;
