@@ -451,8 +451,8 @@
 #    flags       = "defaults"
 #}
 #    Only the group format supports noise flags which are needed for eased noise.
-#    Mgv5 uses eased noise for np_cave1, no_cave2, np_ground and np_crumble, so these are shown in
-#    group format, all other noise parameters are shown in positional format to save space.
+#    Mgv5 uses eased noise for np_cave1, np_cave2, np_ground and np_crumble, so these are shown in
+#    group format, other noise parameters are shown in positional format to save space.
 
 #mgv5_spflags = blobs
 #mgv5_np_filler_depth = 0, 1, (150, 150, 150), 261, 4, 0.7, 2.0
