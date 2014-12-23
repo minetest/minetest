@@ -304,7 +304,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 {
 	ITextureSource *tsrc = gamedef->getTextureSource();
 	IItemDefManager *idef = gamedef->getItemDefManager();
-	IShaderSource *shdrsrc = gamedef->getShaderSource();
+	//IShaderSource *shdrsrc = gamedef->getShaderSource();
 	INodeDefManager *ndef = gamedef->getNodeDefManager();
 	const ItemDefinition &def = item.getDefinition(idef);
 	const ContentFeatures &f = ndef->get(def.name);
