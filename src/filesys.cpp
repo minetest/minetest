@@ -377,7 +377,9 @@ void GetRecursiveSubPaths(std::string path, std::vector<std::string> &dst)
 		const DirListNode &n = content[i];
 		std::string fullpath = path + DIR_DELIM + n.name;
 		dst.push_back(fullpath);
-		GetRecursiveSubPaths(fullpath, dst);
+		if (n.dir) {
+			GetRecursiveSubPaths(fullpath, dst);
+		}
 	}
 }
 
