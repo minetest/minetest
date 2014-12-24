@@ -22,17 +22,17 @@
 # Client and server
 #
 
-# Name of player; on a server this is the main admin
+#    Name of player; on a server this is the main admin
 #name =
 
 #
 # Client stuff
 #
 
-# Port to connect to (UDP)
+#    Port to connect to (UDP)
 #remote_port =
-# Key mappings
-# See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    Key mappings
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #keymap_forward = KEY_KEY_W
 #keymap_backward = KEY_KEY_S
 #keymap_left = KEY_KEY_A
@@ -40,7 +40,7 @@
 #keymap_jump = KEY_SPACE
 #keymap_sneak = KEY_LSHIFT
 #keymap_inventory = KEY_KEY_I
-# Go down ladder / go down in fly mode / go fast in fast mode
+#    Go down ladder / go down in fly mode / go fast in fast mode
 #keymap_special1 = KEY_KEY_E
 #keymap_chat = KEY_KEY_T
 #keymap_cmd = /
@@ -49,212 +49,213 @@
 #keymap_freemove = KEY_KEY_K
 #keymap_fastmove = KEY_KEY_J
 #keymap_screenshot = KEY_F12
-# If true, keymap_special1 instead of keymap_sneak is used for climbing down and descending
+#    If true, keymap_special1 instead of keymap_sneak is used for climbing down and descending
 #aux1_descends = false
-# Double-tapping the jump key toggles fly mode
+#    Double-tapping the jump key toggles fly mode
 #doubletap_jump = false
-# If false aux1 is used to fly fast
+#    If false aux1 is used to fly fast
 #always_fly_fast = true
-# Some (temporary) keys for debugging
+#    Some (temporary) keys for debugging
 #keymap_print_debug_stacks = KEY_KEY_P
 #keymap_quicktune_prev = KEY_HOME
 #keymap_quicktune_next = KEY_END
 #keymap_quicktune_dec = KEY_NEXT
 #keymap_quicktune_inc = KEY_PRIOR
 
-# If set to true, you can place blocks at the position (feet + eye level) where you stand; this is helpful when working with nodeboxes
+#    If set to true, you can place blocks at the position (feet + eye level) where you stand
+#    this is helpful when working with nodeboxes
 #enable_build_where_you_stand = false
 
-# Minimum FPS
-# The amount of rendered stuff is dynamically set according to this
+#    Minimum FPS
+#    The amount of rendered stuff is dynamically set according to this
 #wanted_fps = 30
-# If FPS would go higher than this, limit it by sleeping
-# (to not waste CPU power for no benefit)
+#    If FPS would go higher than this, limit it by sleeping
+#    to not waste CPU power for no benefit
 #fps_max = 60
-# Maximum FPS when game is paused
+#    Maximum FPS when game is paused
 #pause_fps_max = 20
-# The allowed adjustment range for the automatic rendering range adjustment
+#    The allowed adjustment range for the automatic rendering range adjustment
 #viewing_range_nodes_max = 160
 #viewing_range_nodes_min = 35
-# Initial window size
+#    Initial window size
 #screenW = 800
 #screenH = 600
 #fullscreen = false
 #fullscreen_bpp = 24
-# Experimental option, might cause visible spaces between blocks
-# when set to higher number than 0
+#    Experimental option, might cause visible spaces between blocks
+#    when set to higher number than 0
 #fsaa = 0
 #vsync = false
 #fov = 72
-# Address to connect to (#blank = start local server)
+#    Address to connect to (#blank = start local server)
 #address =
-# Enable random user input, for testing
+#    Enable random user input, for testing
 #random_input = false
-# Timeout for client to remove unused map data from memory
+#    Timeout for client to remove unused map data from memory
 #client_unload_unused_data_timeout = 600
-# Whether to fog out the end of the visible area
+#    Whether to fog out the end of the visible area
 #enable_fog = true
-# Whether to show the client debug info (has the same effect as hitting F5)
+#    Whether to show the client debug info (has the same effect as hitting F5)
 #show_debug = false
-# Enable a bit lower water surface; disable for speed (not quite optimized)
+#    Enable a bit lower water surface; disable for speed (not quite optimized)
 #new_style_water = false
-# Max liquids processed per step
+#    Max liquids processed per step
 #liquid_loop_max = 100000
-# The time (in seconds) that the liquids queue may grow beyond processing
-# capacity until an attempt is made to decrease its size by dumping old queue
-# items.  A value of 0 disables the functionality.
+#    The time (in seconds) that the liquids queue may grow beyond processing
+#    capacity until an attempt is made to decrease its size by dumping old queue
+#    items.  A value of 0 disables the functionality.
 #liquid_queue_purge_time = 0
-# Update liquids every .. recommend for finite: 0.2
+#    Update liquids every .. recommend for finite: 0.2
 #liquid_update = 1.0
-# Enable nice leaves; disable for speed
+#    Enable nice leaves; disable for speed
 #new_style_leaves = true
-# Connects glass if supported by node
+#    Connects glass if supported by node
 #connected_glass = false
-# Enable smooth lighting with simple ambient occlusion;
-# disable for speed or for different looks.
+#    Enable smooth lighting with simple ambient occlusion
+#    disable for speed or for different looks.
 #smooth_lighting = true
-# Path to texture directory. All textures are first searched from here.
+#    Path to texture directory. All textures are first searched from here.
 #texture_path =
-# Video back-end.
-# Possible values: null, software, burningsvideo, direct3d8, direct3d9, opengl
+#    Video back-end.
+#    Possible values: null, software, burningsvideo, direct3d8, direct3d9, opengl
 #video_driver = opengl
-# Unobstructed movement without physics, downwards key is keymap_special1
+#    Unobstructed movement without physics, downwards key is keymap_special1
 #free_move = false
-# Continuous forward movement (for testing)
+#    Continuous forward movement (for testing)
 #continuous_forward = false
-# Fast movement (keymap_special1)
+#    Fast movement (keymap_special1)
 #fast_move = false
-# Invert mouse
+#    Invert mouse
 #invert_mouse = false
-# Enable/disable clouds
+#    Enable/disable clouds
 #enable_clouds = true
 #cloud_height = 120
 #enable_3d_clouds = true
-# Use a cloud animation for the main menu background
+#    Use a cloud animation for the main menu background
 #menu_clouds = true
-# Path for screenshots
+#    Path for screenshots
 #screenshot_path = .
-# Amount of view bobbing (0 = no view bobbing, 1.0 = normal, 2.0 = double)
+#    Amount of view bobbing (0 = no view bobbing, 1.0 = normal, 2.0 = double)
 #view_bobbing_amount = 1.0
-# Amount of fall bobbing (0 = no fall bobbing, 1.0 = normal, 2.0 = double)
+#    Amount of fall bobbing (0 = no fall bobbing, 1.0 = normal, 2.0 = double)
 #fall_bobbing_amount = 0.0
-# 3d support,
-# right now:
-#     "none"       = no 3d output,
-#     "anaglyph"   = cyan/magenta color 3d,
-#     "interlaced" = odd/even line based polarisation screen support,
-#     "topbottom"  = split screen top boton,
-#     "sidebyside" = split screen side by side
+#    3d support
+#    currently:
+#        "none"       = no 3d output,
+#        "anaglyph"   = cyan/magenta color 3d,
+#        "interlaced" = odd/even line based polarisation screen support,
+#        "topbottom"  = split screen top boton,
+#        "sidebyside" = split screen side by side
 #3d_mode = none
 #3d_paralax_strength = 0.025
-# In-game chat console background color (R,G,B)
+#    In-game chat console background color (R,G,B)
 #console_color = (0,0,0)
-# In-game chat console background alpha (opaqueness, between 0 and 255)
+#    In-game chat console background alpha (opaqueness, between 0 and 255)
 #console_alpha = 200
-# Selection box border color (R,G,B)
+#    Selection box border color (R,G,B)
 #selectionbox_color = (0,0,0)
-# Crosshair color (R,G,B)
+#    Crosshair color (R,G,B)
 #crosshair_color = (255,255,255)
-# Cross alpha (opaqueness, between 0 and 255)
+#    Cross alpha (opaqueness, between 0 and 255)
 #crosshair_alpha = 255
-# scale gui by a user specified value
+#    Scale gui by a user specified value
 #gui_scaling = 1.0
-# Sensitivity multiplier
+#    Sensitivity multiplier
 #mouse_sensitivity = 0.2
-# Sound settings
+#    Sound settings
 #enable_sound = true
 #sound_volume = 0.7
-# Whether node texture animations should be desynchronized per MapBlock
+#    Whether node texture animations should be desynchronized per MapBlock
 #desynchronize_mapblock_texture_animation = true
-# (useful if you've there's something to be displayed right or left of hotbar)
-# Width of the selectionbox's lines (Between 1 and 5)
+#    Width of the selectionbox's lines (Between 1 and 5)
 #selectionbox_width = 2
-# maximum percentage of current window to be used for hotbar
+#    Maximum proportion of current window to be used for hotbar
+#    useful if there's something to be displayed right or left of hotbar
 #hud_hotbar_max_width = 1.0
-# Save the map received by the client on disk
+#    Save the map received by the client on disk
 #enable_local_map_saving = false
-# Enable highlighting for nodes (disables selectionboxes)
+#    Enable highlighting for nodes (disables selectionboxes)
 #enable_node_highlighting = false
-# Texture filtering settings
+#    Texture filtering settings
 #mip_map = false
 #anisotropic_filter = false
 #bilinear_filter = false
 #trilinear_filter = false
-# Set to true to pre-generate all item visuals
+#    Set to true to pre-generate all item visuals
 #preload_item_visuals = false
-# Set to true to enable shaders. Disable them if video_driver = direct3d9/8.
+#    Set to true to enable shaders. Disable them if video_driver = direct3d9/8.
 #enable_shaders = true
-# Set to true to enable textures bumpmapping. Requires shaders enabled.
+#    Set to true to enable textures bumpmapping. Requires shaders enabled.
 #enable_bumpmapping = false
-# Set to true enables parallax occlusion mapping. Requires shaders enabled.
+#    Set to true enables parallax occlusion mapping. Requires shaders enabled.
 #generate_normalmaps = false
-# Set to true enables on the fly normalmap generation (Emboss effect).
-# Requires bumpmapping enabled.
+#    Set to true enables on the fly normalmap generation (Emboss effect).
+#    Requires bumpmapping enabled.
 #normalmaps_strength = 0.6
-# Strength of generated normalmaps
+#    Strength of generated normalmaps
 #normalmaps_smooth = 1
-# Defines sampling step of texture (0 - 2)
-# Higher the value normal maps will be smoother
+#    Defines sampling step of texture (0 - 2)
+#    a higher value results in smoother normal maps
 #enable_parallax_occlusion = false
-# Scale of parallax occlusion effect
+#    Scale of parallax occlusion effect
 #parallax_occlusion_scale = 0.08
-# Bias of parallax occlusion effect, usually scale/2
+#    Bias of parallax occlusion effect, usually scale/2
 #parallax_occlusion_bias = 0.04
-# Set to true enables waving water. Requires shaders enabled.
+#    Set to true enables waving water. Requires shaders enabled.
 #enable_waving_water = false
-# Parameters for waving water:
+#    Parameters for waving water:
 #water_wave_height = 1.0
 #water_wave_length = 20.0
 #water_wave_speed = 5.0
-# Set to true enables waving leaves. Requires shaders enabled.
+#    Set to true enables waving leaves. Requires shaders enabled.
 #enable_waving_leaves = false
-# Set to true enables waving plants. Requires shaders enabled.
+#    Set to true enables waving plants. Requires shaders enabled.
 #enable_waving_plants = false
-# Enables caching of facedir rotated meshes
+#    Enables caching of facedir rotated meshes
 #enable_mesh_cache = true
-# The time in seconds it takes between repeated
-# right clicks when holding the right mouse button
+#    The time in seconds it takes between repeated
+#    right clicks when holding the right mouse button
 #repeat_rightclick_time = 0.25
-# Make fog and sky colors depend on daytime (dawn/sunset) and view direction
+#    Make fog and sky colors depend on daytime (dawn/sunset) and view direction
 #directional_colored_fog = true
+#    Delay showing tooltips, in miliseconds
 #tooltip_show_delay = 400
-# Delay showing tooltips, in miliseconds
+#    Adjust dpi configuration to your screen (Desktop only) e.g. for 4k screens
 #screen_dpi = 72
-# adjust dpi configuration to your screen (Desktop only) e.g. for 4k screens
 
-# Default timeout for cURL, in milliseconds
-# Only has an effect if compiled with cURL
+#    Default timeout for cURL, in milliseconds
+#    Only has an effect if compiled with cURL
 #curl_timeout = 5000
-# Limits number of parallel HTTP requests. Affects:
-# - Media fetch if server uses remote_media setting
-# - Serverlist download and server announcement
-# - Downloads performed by main menu (e.g. mod manager)
-# Only has an effect if compiled with cURL
+#    Limits number of parallel HTTP requests. Affects:
+#        Media fetch if server uses remote_media setting
+#        Serverlist download and server announcement
+#        Downloads performed by main menu (e.g. mod manager)
+#    Only has an effect if compiled with cURL
 #curl_parallel_limit = 8
-# maximum time in ms a file download (e.g. a mod download) may take
+#    Maximum time in ms a file download (e.g. a mod download) may take
 #curl_file_download_timeout = 300000
 
-# enable usage of remote media server (if provided by server)
+#    Enable usage of remote media server (if provided by server)
 #enable_remote_media_server = true
 
-# Url to the server list displayed in the Multiplayer Tab
+#    Url to the server list displayed in the Multiplayer Tab
 #serverlist_url = servers.minetest.net
-# File in client/serverlist/ that contains your favorite servers displayed in the Multiplayer Tab
+#    File in client/serverlist/ that contains your favorite servers displayed in the Multiplayer Tab
 #serverlist_file = favoriteservers.txt
 
-# Whether freetype fonts are used, requires freetype support to be compiled in
+#    Whether freetype fonts are used, requires freetype support to be compiled in
 #freetype = true
-# Path to TrueTypeFont or bitmap
+#    Path to TrueTypeFont or bitmap
 #font_path = fonts/liberationsans.ttf
 #font_size = 13
-# Font shadow offset, if 0 then shadow will not be drawn.
+#    Font shadow offset, if 0 then shadow will not be drawn.
 #font_shadow = 1
-# Font shadow alpha (opaqueness, between 0 and 255)
+#    Font shadow alpha (opaqueness, between 0 and 255)
 #font_shadow_alpha = 128
 #mono_font_path = fonts/liberationmono.ttf
 #mono_font_size = 13
 
-# This font will be used for certain languages
+#    This font will be used for certain languages
 #fallback_font_path = fonts/DroidSansFallbackFull.ttf
 #fallback_font_size = 13
 #fallback_font_shadow = 1
@@ -263,137 +264,140 @@
 #
 # Server stuff
 #
-# Network port to listen (UDP)
+
+#    Network port to listen (UDP)
 #port = 30000
-# Bind address
+#    Bind address
 #bind_address =
-# Name of server
+#    Name of server
 #server_name = Minetest server
-# Description of server
+#    Description of server
 #server_description = mine here
-# Domain name of server
+#    Domain name of server
 #server_address = game.minetest.net
-# Homepage of server
+#    Homepage of server
 #server_url = http://minetest.net
-# Automaticaly report to masterserver
+#    Automaticaly report to masterserver
 #server_announce = 0
-# Announce to this masterserver. if you want to announce your ipv6 address - use  serverlist_url = v6.servers.minetest.net
+#    Announce to this masterserver.
+#    If you want to announce your ipv6 address - use  serverlist_url = v6.servers.minetest.net
 #serverlist_url = servers.minetest.net
-# Default game (default when creating a new world)
+#    Default game (default when creating a new world)
 #default_game = minetest
-# World directory (everything in the world is stored here)
+#    World directory (everything in the world is stored here)
 #map-dir = /custom/world
-# Message of the Day
+#    Message of the Day
 #motd = Welcome to this awesome Minetest server!
-# Maximum number of players connected simultaneously
+#    Maximum number of players connected simultaneously
 #max_users = 15
-# Set to true to disallow old clients from connecting
+#    Set to true to disallow old clients from connecting
 #strict_protocol_version_checking = false
-# Time in seconds for item entity to live. Default value: 900s
-# Setting it to -1 disables the feature
+#    Time in seconds for item entity to live. Default value: 900s
+#    Setting it to -1 disables the feature
 #item_entity_ttl = 900
-# Set to true to enable creative mode (unlimited inventory)
+#    Set to true to enable creative mode (unlimited inventory)
 #creative_mode = false
-# Enable players getting damage and dying
+#    Enable players getting damage and dying
 #enable_damage = false
-# A chosen map seed for a new map, leave empty for random
+#    A chosen map seed for a new map, leave empty for random
 #fixed_map_seed =
-# Gives some stuff to players at the beginning
+#    Gives some stuff to players at the beginning
 #give_initial_stuff = false
-# New users need to input this password
+#    New users need to input this password
 #default_password =
-# Available privileges: interact, shout, teleport, settime, privs, ...
-# See /privs in game for a full list on your server and mod configuration.
+#    Available privileges: interact, shout, teleport, settime, privs, ...
+#    See /privs in game for a full list on your server and mod configuration.
 #default_privs = interact, shout
-# Whether players are shown to clients without any range limit
-# deprecated, use the setting player_transfer_distance instead
+#    Whether players are shown to clients without any range limit
+#    Deprecated, use the setting player_transfer_distance instead
 #unlimited_player_transfer_distance = true
-# Defines the maximal player transfer distance in blocks (0 = unlimited)
+#    Defines the maximal player transfer distance in blocks (0 = unlimited)
 #player_transfer_distance = 0
-# Whether to enable players killing each other
+#    Whether to enable players killing each other
 #enable_pvp = true
-# If this is set, players will always (re)spawn at the given position
+#    If this is set, players will always (re)spawn at the given position
 #static_spawnpoint = 0, 10, 0
-# If true, new players cannot join with an empty password
+#    If true, new players cannot join with an empty password
 #disallow_empty_password = false
-# If true, disable cheat prevention in multiplayer
+#    If true, disable cheat prevention in multiplayer
 #disable_anticheat = false
-# If true, actions are recorded for rollback
+#    If true, actions are recorded for rollback
 #enable_rollback_recording = false
-# handling for deprecated lua api calls
-#    "legacy" = (try to) mimic old behaviour (default for release)
-#    "log"    = mimic and log backtrace of deprecated call (default for debug)
-#    "error"  = abort on usage of deprecated call (suggested for mod developers)
+#    handling for deprecated lua api calls
+#        "legacy" = (try to) mimic old behaviour (default for release)
+#        "log"    = mimic and log backtrace of deprecated call (default for debug)
+#        "error"  = abort on usage of deprecated call (suggested for mod developers)
 #deprecated_lua_api_handling = legacy
 
-# Mod profiler
+#    Mod profiler
 #mod_profiling = false
-# Detailed mod profile data
+#    Detailed mod profile data
 #detailed_profiling = false
 
-# Profiler data print interval. #0 = disable.
+#    Profiler data print interval. #0 = disable.
 #profiler_print_interval = 0
 #enable_mapgen_debug_info = false
-# from how far client knows about objects
+#    From how far client knows about objects
 #active_object_send_range_blocks = 3
-# how large area of blocks are subject to the active block stuff (active = objects are loaded and ABMs run)
+#    How large area of blocks are subject to the active block stuff (active = objects are loaded and ABMs run)
 #active_block_range = 2
-# how many blocks are flying in the wire simultaneously per client
+#    How many blocks are flying in the wire simultaneously per client
 #max_simultaneous_block_sends_per_client = 10
-# how many blocks are flying in the wire simultaneously per server
+#    How many blocks are flying in the wire simultaneously per server
 #max_simultaneous_block_sends_server_total = 40
-# From how far blocks are sent to clients (value * 16 nodes)
+#    From how far blocks are sent to clients (value * 16 nodes)
 #max_block_send_distance = 10
-# From how far blocks are generated for clients (value * 16 nodes)
+#    From how far blocks are generated for clients (value * 16 nodes)
 #max_block_generate_distance = 6
-# Number of extra blocks that can be loaded by /clearobjects at once
-# This is a trade-off between sqlite transaction overhead and
-# memory consumption (4096=100MB, as a rule of thumb)
+#    Number of extra blocks that can be loaded by /clearobjects at once
+#    This is a trade-off between sqlite transaction overhead and
+#    memory consumption (4096=100MB, as a rule of thumb)
 #max_clearobjects_extra_loaded_blocks = 4096
-# Maximum number of forceloaded blocks
+#    Maximum number of forceloaded blocks
 #max_forceloaded_blocks = 16
-# Interval of sending time of day to clients
+#    Interval of sending time of day to clients
 #time_send_interval = 5
-# Length of day/night cycle. 72=20min, 360=4min, 1=24hour, 0=day/night/whatever stays unchanged
+#    Length of day/night cycle. 72=20min, 360=4min, 1=24hour, 0=day/night/whatever stays unchanged
 #time_speed = 72
-# Length of year in days for seasons change. With default time_speed 365 days = 5 real days for year. 30 days = 10 real hours
+#    Length of year in days for seasons change. With default time_speed 365 days = 5 real days for year.
+#    30 days = 10 real hours
 #year_days = 30
 #server_unload_unused_data_timeout = 29
-# Maximum number of statically stored objects in a block
+#    Maximum number of statically stored objects in a block
 #max_objects_per_block = 49
-# Interval of saving important changes in the world
+#    Interval of saving important changes in the world
 #server_map_save_interval = 5.3
-# http://www.sqlite.org/pragma.html#pragma_synchronous only numeric values: 0 1 2
+#    http://www.sqlite.org/pragma.html#pragma_synchronous only numeric values: 0 1 2
 #sqlite_synchronous = 2
-# To reduce lag, block transfers are slowed down when a player is building something.
-# This determines how long they are slowed down after placing or removing a node.
+#    To reduce lag, block transfers are slowed down when a player is building something.
+#    This determines how long they are slowed down after placing or removing a node.
 #full_block_send_enable_min_time_from_building = 2.0
-# Length of a server tick and the interval at which objects are generally updated over network
+#    Length of a server tick and the interval at which objects are generally updated over network
 #dedicated_server_step = 0.1
-# Can be set to true to disable shutting down on invalid world data
+#    Can be set to true to disable shutting down on invalid world data
 #ignore_world_load_errors = false
-# Specifies URL from which client fetches media instead of using UDP
-# $filename should be accessible from $remote_media$filename via cURL
-# (obviously, remote_media should end with a slash)
-# Files that are not present would be fetched the usual way
+#    Specifies URL from which client fetches media instead of using UDP
+#    $filename should be accessible from $remote_media$filename via cURL
+#    (obviously, remote_media should end with a slash)
+#    Files that are not present would be fetched the usual way
 #remote_media =
-# Level of logging to be written to debug.txt.
-# 0 = none, 1 = errors and debug, 2 = action, 3 = info, 4 = verbose
+#    Level of logging to be written to debug.txt.
+#    0 = none, 1 = errors and debug, 2 = action, 3 = info, 4 = verbose
 #debug_log_level = 2
-# Maximum number of blocks that can be queued for loading.
+#    Maximum number of blocks that can be queued for loading.
 #emergequeue_limit_total = 256
-# Maximum number of blocks to be queued that are to be loaded from file.
-# Set to blank for an appropriate amount to be chosen automatically.
+#    Maximum number of blocks to be queued that are to be loaded from file.
+#    Set to blank for an appropriate amount to be chosen automatically.
 #emergequeue_limit_diskonly = 32
-# Maximum number of blocks to be queued that are to be generated.
-# Set to blank for an appropriate amount to be chosen automatically.
+#    Maximum number of blocks to be queued that are to be generated.
+#    Set to blank for an appropriate amount to be chosen automatically.
 #emergequeue_limit_generate = 32
-# Number of emerge threads to use.  Make this field blank, or increase this number, to use multiple threads.
-# On multiprocessor systems, this will improve mapgen speed greatly, at the cost of slightly buggy caves.
+#    Number of emerge threads to use.  Make this field blank, or increase this number, to use multiple threads.
+#    On multiprocessor systems, this will improve mapgen speed greatly, at the cost of slightly buggy caves.
 #num_emerge_threads = 1
-# maximum number of packets sent per send step, if you have a slow connection
-# try reducing it, but don't reduce it to a number below double of targeted
-# client number
+#    Maximum number of packets sent per send step, if you have a slow connection
+#    try reducing it, but don't reduce it to a number below double of targeted
+#    client number
 #max_packets_per_iteration = 1024
 
 #
