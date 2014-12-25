@@ -24,7 +24,7 @@ ROOT = $(shell pwd)
 # Android Version code
 # Increase for each build!
 ################################################################################
-ANDROID_VERSION_CODE = 4
+ANDROID_VERSION_CODE = 5
 
 ################################################################################
 # toolchain config for arm old processors
