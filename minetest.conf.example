@@ -1,37 +1,37 @@
-# This file is read by default from:
-# ../minetest.conf
-# ../../minetest.conf
-# Any other path can be chosen by passing the path as a parameter
-# to the program, eg. "minetest.exe --config ../minetest.conf.example"
-#
-# By default, all the settings are commented and not functional.
-# Uncomment settings by removing the preceding #.
-#
-# Further documentation:
-# http://wiki.minetest.net/
-#
-# NOTE: This file might not be up-to-date, refer to the
-#       defaultsettings.cpp file for an up-to-date list:
-# https://github.com/minetest/minetest/blob/master/src/defaultsettings.cpp
-#
-# A vim command to convert most of defaultsettings.cpp to conf file format:
-# :'<,'>s/\tsettings->setDefault("\([^"]*\)", "\([^"]*\)");.*/#\1 = \2/g
-# Note: Some of the settings are implemented in Lua
+#    This file is read by default from:
+#    ../minetest.conf
+#    ../../minetest.conf
+#    Any other path can be chosen by passing the path as a parameter
+#    to the program, eg. "minetest.exe --config ../minetest.conf.example".
+
+#    By default, all the settings are commented and not functional.
+#    Uncomment settings by removing the preceding #.
+
+#    Further documentation:
+#    http://wiki.minetest.net/
+
+#    NOTE: This file might not be up-to-date, refer to the
+#    defaultsettings.cpp file for an up-to-date list:
+#    https://github.com/minetest/minetest/blob/master/src/defaultsettings.cpp
+
+#    A vim command to convert most of defaultsettings.cpp to conf file format:
+#    :'<,'>s/\tsettings->setDefault("\([^"]*\)", "\([^"]*\)");.*/#\1 = \2/g
+#    Note: Some of the settings are implemented in Lua.
 
 #
-# Client and server
+#    Client and server
 #
 
-#    Name of player; on a server this is the main admin
+#    Name of player, on a server this is the main admin
 #name =
 
 #
-# Client stuff
+#    Client stuff
 #
 
 #    Port to connect to (UDP)
 #remote_port =
-#    Key mappings
+#    Key mappings.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #keymap_forward = KEY_KEY_W
 #keymap_backward = KEY_KEY_S
@@ -62,15 +62,14 @@
 #keymap_quicktune_dec = KEY_NEXT
 #keymap_quicktune_inc = KEY_PRIOR
 
-#    If set to true, you can place blocks at the position (feet + eye level) where you stand
-#    this is helpful when working with nodeboxes
+#    If set to true, you can place blocks at the position (feet + eye level) where you stand.
+#    This is helpful when working with nodeboxes.
 #enable_build_where_you_stand = false
-
-#    Minimum FPS
-#    The amount of rendered stuff is dynamically set according to this
+#    Minimum FPS.
+#    The amount of rendered stuff is dynamically set according to this.
 #wanted_fps = 30
 #    If FPS would go higher than this, limit it by sleeping
-#    to not waste CPU power for no benefit
+#    to not waste CPU power for no benefit.
 #fps_max = 60
 #    Maximum FPS when game is paused
 #pause_fps_max = 20
@@ -83,9 +82,10 @@
 #fullscreen = false
 #fullscreen_bpp = 24
 #    Experimental option, might cause visible spaces between blocks
-#    when set to higher number than 0
+#    when set to higher number than 0.
 #fsaa = 0
 #vsync = false
+#    Field of view in degrees
 #fov = 72
 #    Address to connect to (#blank = start local server)
 #address =
@@ -105,19 +105,19 @@
 #    capacity until an attempt is made to decrease its size by dumping old queue
 #    items.  A value of 0 disables the functionality.
 #liquid_queue_purge_time = 0
-#    Update liquids every .. recommend for finite: 0.2
+#    Liquid update interval in seconds
 #liquid_update = 1.0
-#    Enable nice leaves; disable for speed
+#    Enable transparent leaf textures, disable for speed
 #new_style_leaves = true
 #    Connects glass if supported by node
 #connected_glass = false
-#    Enable smooth lighting with simple ambient occlusion
-#    disable for speed or for different looks.
+#    Enable smooth lighting with simple ambient occlusion.
+#    Disable for speed or for different looks.
 #smooth_lighting = true
 #    Path to texture directory. All textures are first searched from here.
 #texture_path =
 #    Video back-end.
-#    Possible values: null, software, burningsvideo, direct3d8, direct3d9, opengl
+#    Possible values: null, software, burningsvideo, direct3d8, direct3d9, opengl.
 #video_driver = opengl
 #    Unobstructed movement without physics, downwards key is keymap_special1
 #free_move = false
@@ -134,20 +134,20 @@
 #    Use a cloud animation for the main menu background
 #menu_clouds = true
 #    Path for screenshots
-#screenshot_path = .
+#screenshot_path =
 #    Amount of view bobbing (0 = no view bobbing, 1.0 = normal, 2.0 = double)
 #view_bobbing_amount = 1.0
 #    Amount of fall bobbing (0 = no fall bobbing, 1.0 = normal, 2.0 = double)
 #fall_bobbing_amount = 0.0
-#    3d support
-#    currently:
-#        "none"       = no 3d output,
-#        "anaglyph"   = cyan/magenta color 3d,
-#        "interlaced" = odd/even line based polarisation screen support,
-#        "topbottom"  = split screen top boton,
-#        "sidebyside" = split screen side by side
+#    3d support.
+#    Currently:
+#        "none"       = no 3d output.
+#        "anaglyph"   = cyan/magenta color 3d.
+#        "interlaced" = odd/even line based polarisation screen support.
+#        "topbottom"  = split screen top/bottom.
+#        "sidebyside" = split screen side by side.
 #3d_mode = none
-#3d_paralax_strength = 0.025
+#3d_parallax_strength = 0.025
 #    In-game chat console background color (R,G,B)
 #console_color = (0,0,0)
 #    In-game chat console background alpha (opaqueness, between 0 and 255)
@@ -165,16 +165,16 @@
 #    Sound settings
 #enable_sound = true
 #sound_volume = 0.7
-#    Whether node texture animations should be desynchronized per MapBlock
+#    Whether node texture animations should be desynchronized per mapblock
 #desynchronize_mapblock_texture_animation = true
 #    Width of the selectionbox's lines (Between 1 and 5)
 #selectionbox_width = 2
-#    Maximum proportion of current window to be used for hotbar
-#    useful if there's something to be displayed right or left of hotbar
+#    Maximum proportion of current window to be used for hotbar.
+#    Useful if there's something to be displayed right or left of hotbar.
 #hud_hotbar_max_width = 1.0
 #    Save the map received by the client on disk
 #enable_local_map_saving = false
-#    Enable highlighting for nodes (disables selectionboxes)
+#    Enable selection highlighting for nodes (disables selectionbox)
 #enable_node_highlighting = false
 #    Texture filtering settings
 #mip_map = false
@@ -194,8 +194,8 @@
 #normalmaps_strength = 0.6
 #    Strength of generated normalmaps
 #normalmaps_smooth = 1
-#    Defines sampling step of texture (0 - 2)
-#    a higher value results in smoother normal maps
+#    Defines sampling step of texture (0 - 2).
+#    A higher value results in smoother normal maps.
 #enable_parallax_occlusion = false
 #    Scale of parallax occlusion effect
 #parallax_occlusion_scale = 0.08
@@ -214,55 +214,61 @@
 #    Enables caching of facedir rotated meshes
 #enable_mesh_cache = true
 #    The time in seconds it takes between repeated
-#    right clicks when holding the right mouse button
+#    right clicks when holding the right mouse button.
 #repeat_rightclick_time = 0.25
 #    Make fog and sky colors depend on daytime (dawn/sunset) and view direction
 #directional_colored_fog = true
-#    Delay showing tooltips, in miliseconds
+#    Delay showing tooltips, stated in milliseconds
 #tooltip_show_delay = 400
 #    Adjust dpi configuration to your screen (Desktop only) e.g. for 4k screens
 #screen_dpi = 72
-
-#    Default timeout for cURL, in milliseconds
-#    Only has an effect if compiled with cURL
+#    Default timeout for cURL, stated in milliseconds.
+#    Only has an effect if compiled with cURL.
 #curl_timeout = 5000
 #    Limits number of parallel HTTP requests. Affects:
-#        Media fetch if server uses remote_media setting
-#        Serverlist download and server announcement
-#        Downloads performed by main menu (e.g. mod manager)
-#    Only has an effect if compiled with cURL
+#        Media fetch if server uses remote_media setting.
+#        Serverlist download and server announcement.
+#        Downloads performed by main menu (e.g. mod manager).
+#    Only has an effect if compiled with cURL.
 #curl_parallel_limit = 8
 #    Maximum time in ms a file download (e.g. a mod download) may take
 #curl_file_download_timeout = 300000
-
 #    Enable usage of remote media server (if provided by server)
 #enable_remote_media_server = true
-
 #    Url to the server list displayed in the Multiplayer Tab
 #serverlist_url = servers.minetest.net
 #    File in client/serverlist/ that contains your favorite servers displayed in the Multiplayer Tab
 #serverlist_file = favoriteservers.txt
-
 #    Whether freetype fonts are used, requires freetype support to be compiled in
 #freetype = true
 #    Path to TrueTypeFont or bitmap
 #font_path = fonts/liberationsans.ttf
 #font_size = 13
-#    Font shadow offset, if 0 then shadow will not be drawn.
+#    Font shadow offset, if 0 then shadow will not be drawn
 #font_shadow = 1
 #    Font shadow alpha (opaqueness, between 0 and 255)
 #font_shadow_alpha = 128
 #mono_font_path = fonts/liberationmono.ttf
 #mono_font_size = 13
-
 #    This font will be used for certain languages
 #fallback_font_path = fonts/DroidSansFallbackFull.ttf
 #fallback_font_size = 13
 #fallback_font_shadow = 1
 #fallback_font_shadow_alpha = 128
+#    Override language. When no value is provided (default) system language is used.
+#    Check "locale" directory for the list of available translations.
+#language =
+#main_menu_script =
+#main_menu_game_mgr = 0
+#main_menu_mod_mgr = 1
+#modstore_download_url = https://forum.minetest.net/media/
+#modstore_listmods_url = https://forum.minetest.net/mmdb/mods/
+#modstore_details_url  = https://forum.minetest.net/mmdb/mod/*/
+#    Makes DirectX work with LuaJIT. Disable if it causes troubles.
+#high_precision_fpu = true
 
 #
-# Server stuff
+#    Server stuff
 #
 
 #    Network port to listen (UDP)
@@ -280,7 +286,7 @@
 #    Automaticaly report to masterserver
 #server_announce = 0
 #    Announce to this masterserver.
-#    If you want to announce your ipv6 address - use  serverlist_url = v6.servers.minetest.net
+#    If you want to announce your ipv6 address - use  serverlist_url = v6.servers.minetest.net.
 #serverlist_url = servers.minetest.net
 #    Default game (default when creating a new world)
 #default_game = minetest
@@ -292,8 +298,8 @@
 #max_users = 15
 #    Set to true to disallow old clients from connecting
 #strict_protocol_version_checking = false
-#    Time in seconds for item entity to live. Default value: 900s
-#    Setting it to -1 disables the feature
+#    Time in seconds for item entity to live. Default value: 900s.
+#    Setting it to -1 disables the feature.
 #item_entity_ttl = 900
 #    Set to true to enable creative mode (unlimited inventory)
 #creative_mode = false
@@ -308,8 +314,8 @@
 #    Available privileges: interact, shout, teleport, settime, privs, ...
 #    See /privs in game for a full list on your server and mod configuration.
 #default_privs = interact, shout
-#    Whether players are shown to clients without any range limit
-#    Deprecated, use the setting player_transfer_distance instead
+#    Whether players are shown to clients without any range limit.
+#    Deprecated, use the setting player_transfer_distance instead.
 #unlimited_player_transfer_distance = true
 #    Defines the maximal player transfer distance in blocks (0 = unlimited)
 #player_transfer_distance = 0
@@ -323,49 +329,49 @@
 #disable_anticheat = false
 #    If true, actions are recorded for rollback
 #enable_rollback_recording = false
-#    handling for deprecated lua api calls
-#        "legacy" = (try to) mimic old behaviour (default for release)
-#        "log"    = mimic and log backtrace of deprecated call (default for debug)
-#        "error"  = abort on usage of deprecated call (suggested for mod developers)
+#    Handling for deprecated lua api calls:
+#        "legacy" = (try to) mimic old behaviour (default for release).
+#        "log"    = mimic and log backtrace of deprecated call (default for debug).
+#        "error"  = abort on usage of deprecated call (suggested for mod developers).
 #deprecated_lua_api_handling = legacy
-
 #    Mod profiler
 #mod_profiling = false
 #    Detailed mod profile data
 #detailed_profiling = false
-
 #    Profiler data print interval. #0 = disable.
 #profiler_print_interval = 0
 #enable_mapgen_debug_info = false
 #    From how far client knows about objects
 #active_object_send_range_blocks = 3
-#    How large area of blocks are subject to the active block stuff (active = objects are loaded and ABMs run)
+#    How large area of blocks are subject to the active block stuff.
+#    Active = objects are loaded and ABMs run.
 #active_block_range = 2
 #    How many blocks are flying in the wire simultaneously per client
 #max_simultaneous_block_sends_per_client = 10
 #    How many blocks are flying in the wire simultaneously per server
 #max_simultaneous_block_sends_server_total = 40
-#    From how far blocks are sent to clients (value * 16 nodes)
+#    From how far blocks are sent to clients, stated in mapblocks (16 nodes)
 #max_block_send_distance = 10
-#    From how far blocks are generated for clients (value * 16 nodes)
+#    From how far blocks are generated for clients, stated in mapblocks (16 nodes)
 #max_block_generate_distance = 6
-#    Number of extra blocks that can be loaded by /clearobjects at once
+#    Number of extra blocks that can be loaded by /clearobjects at once.
 #    This is a trade-off between sqlite transaction overhead and
-#    memory consumption (4096=100MB, as a rule of thumb)
+#    memory consumption (4096=100MB, as a rule of thumb).
 #max_clearobjects_extra_loaded_blocks = 4096
 #    Maximum number of forceloaded blocks
 #max_forceloaded_blocks = 16
 #    Interval of sending time of day to clients
 #time_send_interval = 5
-#    Length of day/night cycle. 72=20min, 360=4min, 1=24hour, 0=day/night/whatever stays unchanged
+#    Controls length of day/night cycle.
+#    72=20min, 360=4min, 1=24hour, 0=day/night/whatever stays unchanged.
 #time_speed = 72
-#    Length of year in days for seasons change. With default time_speed 365 days = 5 real days for year.
-#    30 days = 10 real hours
+#    Length of year in days for seasons change.
+#    With default time_speed 365 days = 5 real days for year, 30 days = 10 real hours.
 #year_days = 30
 #server_unload_unused_data_timeout = 29
 #    Maximum number of statically stored objects in a block
 #max_objects_per_block = 49
-#    Interval of saving important changes in the world
+#    Interval of saving important changes in the world, stated in seconds
 #server_map_save_interval = 5.3
 #    http://www.sqlite.org/pragma.html#pragma_synchronous only numeric values: 0 1 2
 #sqlite_synchronous = 2
@@ -376,15 +382,15 @@
 #dedicated_server_step = 0.1
 #    Can be set to true to disable shutting down on invalid world data
 #ignore_world_load_errors = false
-#    Specifies URL from which client fetches media instead of using UDP
+#    Specifies URL from which client fetches media instead of using UDP.
 #    $filename should be accessible from $remote_media$filename via cURL
-#    (obviously, remote_media should end with a slash)
-#    Files that are not present would be fetched the usual way
+#    (obviously, remote_media should end with a slash).
+#    Files that are not present would be fetched the usual way.
 #remote_media =
-#    Level of logging to be written to debug.txt.
-#    0 = none, 1 = errors and debug, 2 = action, 3 = info, 4 = verbose
+#    Level of logging to be written to debug.txt:
+#    0 = none, 1 = errors and debug, 2 = action, 3 = info, 4 = verbose.
 #debug_log_level = 2
-#    Maximum number of blocks that can be queued for loading.
+#    Maximum number of blocks that can be queued for loading
 #emergequeue_limit_total = 256
 #    Maximum number of blocks to be queued that are to be loaded from file.
 #    Set to blank for an appropriate amount to be chosen automatically.
@@ -392,16 +398,23 @@
 #    Maximum number of blocks to be queued that are to be generated.
 #    Set to blank for an appropriate amount to be chosen automatically.
 #emergequeue_limit_generate = 32
-#    Number of emerge threads to use.  Make this field blank, or increase this number, to use multiple threads.
-#    On multiprocessor systems, this will improve mapgen speed greatly, at the cost of slightly buggy caves.
+#    Number of emerge threads to use. Make this field blank, or increase this number
+#    to use multiple threads. On multiprocessor systems, this will improve mapgen speed greatly
+#    at the cost of slightly buggy caves.
 #num_emerge_threads = 1
 #    Maximum number of packets sent per send step, if you have a slow connection
 #    try reducing it, but don't reduce it to a number below double of targeted
-#    client number
+#    client number.
 #max_packets_per_iteration = 1024
+#    Enable/disable IPv6
+#enable_ipv6 = true
+#    Enable/disable running an IPv6 server.  An IPv6 server may be restricted
+#    to IPv6 clients, depending on system configuration.
+#    Ignored if bind_address is set.
+#ipv6_server = false
 
 #
-# Physics stuff
+#    Physics stuff
 #
 
 #movement_acceleration_default = 3
@@ -419,22 +432,23 @@
 #movement_gravity = 9.81
 
 #
-# Mapgen stuff
+#    Mapgen stuff
 #
 
 #    Name of map generator to be used.  Currently supported: v5, v6, v7, singlenode.
 #mg_name = v6
-#    Water surface level of map.
+#    Water surface level of map
 #water_level = 1
-#    Size of chunks to be generated.
+#    Size of chunks to be generated, stated in mapblocks (16 nodes)
 #chunksize = 5
 #    Global map generation attributes.  Currently supported: trees, caves, flat, dungeons, light.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    To explicitly turn off a flag, prepend "no" to the beginning, e.g. nolight.
 #mg_flags = trees, caves
-#    Map generation attributes specific to Mapgen V6.  Currently supported: biomeblend, jungles, mudflow.
+#    Map generation attributes specific to Mapgen V6.
+#    Currently supported: biomeblend, jungles, mudflow.
 #mgv6_spflags = biomeblend, jungles, mudflow
-#    Controls size of deserts and beaches in Mapgen V6.
+#    Controls size of deserts and beaches in Mapgen V6
 #mgv6_freq_desert = 0.45
 #mgv6_freq_beach = 0.15
 
@@ -442,7 +456,6 @@
 #    Noise parameters can be specified as a set of positional values:
 #    Offset, scale, (spread factors), seed offset, number of octaves, persistence, lacunarity.
 #mgv6_np_terrain_base = -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0
-
 #    Or the new group format can be used instead:
 #mgv6_np_terrain_base = {
 #    offset      = -4
@@ -528,27 +541,7 @@
 #mgv7_np_mountain = 0, 1, (250, 350, 250), 5333, 5, 0.68, 2.0
 #mgv7_np_ridge = 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
 
-#    Noise parameters for biome API temperature and humidity.
+#    Noise parameters for biome API temperature and humidity
 #mg_biome_np_heat = 50, 50, (500, 500, 500), 5349, 3, 0.5, 2.0
 #mg_biome_np_humidity = 50, 50, (500, 500, 500), 842, 3, 0.5, 2.0
 
-#    Enable/disable IPv6.
-#enable_ipv6 = true
-#    Enable/disable running an IPv6 server.  An IPv6 server may be restricted
-#    to IPv6 clients, depending on system configuration.
-#    Ignored if bind_address is set.
-#ipv6_server = false
-
-#main_menu_script =
-#main_menu_game_mgr = 0
-#main_menu_mod_mgr = 1
-#modstore_download_url = https://forum.minetest.net/media/
-#modstore_listmods_url = https://forum.minetest.net/mmdb/mods/
-#modstore_details_url  = https://forum.minetest.net/mmdb/mod/*/
-
-#    Makes DirectX work with LuaJIT. Disable if it causes troubles.
-#high_precision_fpu = true
-
-#    Override language. When no value is provided (default) system language is used.
-#    Check "locale" directory for the list of available translations.
-#language =
