@@ -3999,12 +3999,30 @@ void Game::updateGui(float *statustext_time, const RunStats &stats,
 	}
 
 	if (flags.show_debug) {
+
+		int yaw = wrapDegrees_0_360(cam.camera_yaw);
+		const char* player_direction;
+
+		if (yaw >= 45 && yaw < 135) {
+			player_direction = "West(-X)";
+		}
+		else if (yaw >= 135 && yaw < 225) {
+			player_direction = "South(-Z)";
+		}
+		else if (yaw >= 225 && yaw < 315) {
+			player_direction = "East(+X)";
+		}
+		else {
+			player_direction = "North(+Z)";
+		}
+
 		std::ostringstream os(std::ios_base::binary);
 		os << std::setprecision(1) << std::fixed
 		   << "(" << (player_position.X / BS)
 		   << ", " << (player_position.Y / BS)
 		   << ", " << (player_position.Z / BS)
-		   << ") (yaw=" << (wrapDegrees_0_360(cam.camera_yaw))
+		   << ") (facedir=" <<player_direction 
+		   << ", yaw=" << yaw
 		   << ") (seed = " << ((u64)client->getMapSeed())
 		   << ")";
 
