@@ -4004,16 +4004,16 @@ void Game::updateGui(float *statustext_time, const RunStats &stats,
 		const char* player_direction;
 
 		if (yaw >= 45 and yaw < 135) {
-			player_direction = "West";
+			player_direction = "West(-X)";
 		}
 		else if (yaw >= 135 and yaw < 225) {
-			player_direction = "South";
+			player_direction = "South(-Z)";
 		}
 		else if (yaw >= 225 and yaw < 315) {
-			player_direction = "East";
+			player_direction = "East(+X)";
 		}
 		else {
-			player_direction = "North";
+			player_direction = "North(+Z)";
 		}
 
 		std::ostringstream os(std::ios_base::binary);
