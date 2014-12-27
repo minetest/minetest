@@ -118,6 +118,7 @@ local function handle_buttons(this, fields)
 	if fields["world_config_modlist"] ~= nil then
 		local event = core.explode_textlist_event(fields["world_config_modlist"])
 		this.data.selected_mod = event.index
+		core.setting_set("world_config_selected_mod", event.index)
 
 		if event.type == "DCL" then
 			enable_mod(this)
@@ -151,21 +152,29 @@ local function handle_buttons(this, fields)
 		if current == nil then
 			current = {}
 		end
-
-		if core.is_yes(fields["cb_hide_gamemods"]) then
-			current.hide_game = true
-			this.data.hide_gamemods = true
-		else
-			current.hide_game = false
-			this.data.hide_gamemods = false
+		
+		if fields["cb_hide_gamemods"] ~= nil then
+			if core.is_yes(fields["cb_hide_gamemods"]) then
+				current.hide_game = true
+				this.data.hide_gamemods = true
+				core.setting_set("world_config_hide_gamemods", "true")
+			else
+				current.hide_game = false
+				this.data.hide_gamemods = false
+				core.setting_set("world_config_hide_gamemods", "false")
+			end
 		end
 		
-		if core.is_yes(fields["cb_hide_mpcontent"]) then
-			current.hide_modpackcontents = true
-			this.data.hide_modpackcontents = true
-		else
-			current.hide_modpackcontents = false
-			this.data.hide_modpackcontents = false
+		if fields["cb_hide_mpcontent"] ~= nil then
+			if core.is_yes(fields["cb_hide_mpcontent"]) then
+				current.hide_modpackcontents = true
+				this.data.hide_modpackcontents = true
+				core.setting_set("world_config_hide_modpackcontents", "true")
+			else
+				current.hide_modpackcontents = false
+				this.data.hide_modpackcontents = false
+				core.setting_set("world_config_hide_modpackcontents", "false")
+			end
 		end
 
 		this.data.list:set_filtercriteria(current)
@@ -237,10 +246,24 @@ function create_configure_world_dlg(worldidx)
 					handle_buttons,
 					nil)
 
-	--TODO read from settings
-	dlg.data.hide_gamemods = false
-	dlg.data.hide_modpackcontents = false
-	dlg.data.selected_mod = 0
+	if core.setting_get("world_config_hide_gamemods") == nil or core.setting_get("world_config_hide_gamemods") == "false" then
+		dlg.data.hide_gamemods = false
+	else
+		dlg.data.hide_gamemods = true
+	end	
+
+	
+	if core.setting_get("world_config_hide_modpackcontents") == nil or core.setting_get("world_config_hide_modpackcontents") == "false" then
+		dlg.data.hide_modpackcontents = false
+	else
+		dlg.data.hide_modpackcontents = true
+	end	
+
+	if core.setting_get("world_config_selected_mod") == nil or tonumber(core.setting_get("world_config_selected_mod")) == nil then
+		dlg.data.selected_mod = 0
+	else
+		dlg.data.selected_mod = core.setting_get("world_config_selected_mod")
+	end
 
 	dlg.data.worldspec = core.get_worlds()[worldidx]
 	if dlg.data.worldspec == nil then dlg:delete() return nil end
@@ -276,8 +299,13 @@ function create_configure_world_dlg(worldidx)
 				end, --filter
 				{ worldpath= dlg.data.worldspec.path,
 				  gameid = dlg.data.worldspec.gameid }
-			)
-			
+			)	
+
+
+	if tonumber(dlg.data.selected_mod) > dlg.data.list:size() then
+		dlg.data.selected_mod = 0
+	end	
+
 	dlg.data.list:set_filtercriteria(
 		{
 			hide_game=dlg.data.hide_gamemods,
