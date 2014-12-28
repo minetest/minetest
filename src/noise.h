@@ -30,6 +30,8 @@
 #include "irr_v3d.h"
 #include "util/string.h"
 
+#define PSEUDORANDOM_MAX 32767
+
 extern FlagDesc flagdesc_noiseparams[];
 
 class PseudoRandom
@@ -45,15 +47,15 @@ public:
 	{
 		m_next = seed;
 	}
-	// Returns 0...32767
+	// Returns 0...PSEUDORANDOM_MAX
 	int next()
 	{
 		m_next = m_next * 1103515245 + 12345;
-		return((unsigned)(m_next/65536) % 32768);
+		return((unsigned)(m_next/65536) % (PSEUDORANDOM_MAX + 1));
 	}
 	int range(int min, int max)
 	{
-		if(max-min > 32768/10)
+		if (max-min > (PSEUDORANDOM_MAX + 1) / 10)
 		{
 			//dstream<<"WARNING: PseudoRandom::range: max > 32767"<<std::endl;
 			assert(0);
