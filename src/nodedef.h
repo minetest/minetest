@@ -285,6 +285,26 @@ struct ContentFeatures
 class NodeResolver;
 class INodeDefManager;
 
+struct NodeListInfo {
+	NodeListInfo(u32 len)
+	{
+		length       = len;
+		all_required = false;
+		c_fallback   = CONTENT_IGNORE;
+	}
+
+	NodeListInfo(u32 len, content_t fallback)
+	{
+		length       = len;
+		all_required = true;
+		c_fallback   = fallback;
+	}
+
+	u32 length;
+	bool all_required;
+	content_t c_fallback;
+};
+
 struct NodeResolveInfo {
 	NodeResolveInfo(NodeResolver *nr)
 	{
@@ -292,7 +312,7 @@ struct NodeResolveInfo {
 	}
 
 	std::list<std::string> nodenames;
-	std::list<size_t> nodename_sizes;
+	std::list<NodeListInfo> nodelistinfo;
 	NodeResolver *resolver;
 };
 

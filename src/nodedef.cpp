@@ -1308,8 +1308,7 @@ bool CNodeDefManager::getIdFromResolveInfo(NodeResolveInfo *nri,
 {
 	if (nri->nodenames.empty()) {
 		result = c_fallback;
-		errorstream << "CNodeDefManager::getIdFromResolveInfo: empty "
-			"nodenames list" << std::endl;
+		errorstream << "Resolver empty nodename list" << std::endl;
 		return false;
 	}
 
@@ -1324,8 +1323,8 @@ bool CNodeDefManager::getIdFromResolveInfo(NodeResolveInfo *nri,
 	}
 
 	if (!success) {
-		errorstream << "CNodeDefManager::getIdFromResolveInfo: Failed to "
-			"resolve node name '" << name << "'." << std::endl;
+		errorstream << "Resolver: Failed to resolve node name '" << name
+			<< "'." << std::endl;
 		c = c_fallback;
 	}
 
@@ -1337,31 +1336,35 @@ bool CNodeDefManager::getIdFromResolveInfo(NodeResolveInfo *nri,
 bool CNodeDefManager::getIdsFromResolveInfo(NodeResolveInfo *nri,
 	std::vector<content_t> &result)
 {
-	if (nri->nodename_sizes.empty()) {
-		errorstream << "CNodeDefManager::getIdsFromResolveInfo: empty "
-			"nodename_sizes list" << std::endl;
+	bool success = true;
+
+	if (nri->nodelistinfo.empty()) {
+		errorstream << "Resolver: Empty nodelistinfo list" << std::endl;
 		return false;
 	}
 
-	size_t nitems = nri->nodename_sizes.front();
-	nri->nodename_sizes.pop_front();
+	NodeListInfo listinfo = nri->nodelistinfo.front();
+	nri->nodelistinfo.pop_front();
 
-	while (nitems--) {
+	while (listinfo.length--) {
 		if (nri->nodenames.empty()) {
-			errorstream << "" << std::endl;
+			errorstream << "Resolver: Empty nodename list" << std::endl;
 			return false;
 		}
 
 		content_t c;
-		if (getId(nri->nodenames.front(), c)) {
-			result.push_back(c);
-		} else {
-			errorstream << "CNodeDefManager::getIdsFromResolveInfo: empty "
-				"nodenames list" << std::endl;
-		}
-
+		std::string name = nri->nodenames.front();
 		nri->nodenames.pop_front();
+
+		if (getId(name, c)) {
+			result.push_back(c);
+		} else if (listinfo.all_required) {
+			errorstream << "Resolver: Failed to resolve node name '" << name
+				<< "'." << std::endl;
+			result.push_back(listinfo.c_fallback);
+			success = false;
+		}
 	}
 
-	return true;
+	return success;
 }

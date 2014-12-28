@@ -248,7 +248,7 @@ bool Schematic::loadSchematicFromFile(const char *filename,
 		nri->nodenames.push_back(name);
 	}
 
-	nri->nodename_sizes.push_back(nidmapcount);
+	nri->nodelistinfo.push_back(NodeListInfo(nidmapcount, CONTENT_AIR));
 	ndef->pendNodeResolve(nri);
 
 	size_t nodecount = size.X * size.Y * size.Z;

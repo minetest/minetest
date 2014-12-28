@@ -508,7 +508,7 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	//// Get node name(s) to place decoration on
 	std::vector<const char *> place_on_names;
 	getstringlistfield(L, index, "place_on", place_on_names);
-	nri->nodename_sizes.push_back(place_on_names.size());
+	nri->nodelistinfo.push_back(NodeListInfo(place_on_names.size()));
 	for (size_t i = 0; i != place_on_names.size(); i++)
 		nri->nodenames.push_back(place_on_names[i]);
 
@@ -585,7 +585,7 @@ bool ModApiMapgen::regDecoSimple(lua_State *L,
 			"defined" << std::endl;
 		return false;
 	}
-	nri->nodename_sizes.push_back(deco_names.size());
+	nri->nodelistinfo.push_back(NodeListInfo(deco_names.size()));
 	for (size_t i = 0; i != deco_names.size(); i++)
 		nri->nodenames.push_back(deco_names[i]);
 
@@ -596,7 +596,7 @@ bool ModApiMapgen::regDecoSimple(lua_State *L,
 			" but num_spawn_by specified" << std::endl;
 		return false;
 	}
-	nri->nodename_sizes.push_back(spawnby_names.size());
+	nri->nodelistinfo.push_back(NodeListInfo(spawnby_names.size()));
 	for (size_t i = 0; i != spawnby_names.size(); i++)
 		nri->nodenames.push_back(spawnby_names[i]);
 
@@ -691,7 +691,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 
 	std::vector<const char *> wherein_names;
 	getstringlistfield(L, index, "wherein", wherein_names);
-	nri->nodename_sizes.push_back(wherein_names.size());
+	nri->nodelistinfo.push_back(NodeListInfo(wherein_names.size()));
 	for (size_t i = 0; i != wherein_names.size(); i++)
 		nri->nodenames.push_back(wherein_names[i]);
 
