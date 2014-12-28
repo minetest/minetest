@@ -46,21 +46,15 @@ VoxelManipulator::VoxelManipulator():
 VoxelManipulator::~VoxelManipulator()
 {
 	clear();
-	if(m_data)
-		delete[] m_data;
-	if(m_flags)
-		delete[] m_flags;
 }
 
 void VoxelManipulator::clear()
 {
 	// Reset area to volume=0
 	m_area = VoxelArea();
-	if(m_data)
-		delete[] m_data;
+	delete[] m_data;
 	m_data = NULL;
-	if(m_flags)
-		delete[] m_flags;
+	delete[] m_flags;
 	m_flags = NULL;
 }
 
@@ -215,10 +209,8 @@ void VoxelManipulator::addArea(const VoxelArea &area)
 	m_data = new_data;
 	m_flags = new_flags;
 
-	if(old_data)
-		delete[] old_data;
-	if(old_flags)
-		delete[] old_flags;
+	delete[] old_data;
+	delete[] old_flags;
 
 	//dstream<<"addArea done"<<std::endl;
 }
