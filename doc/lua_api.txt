@@ -562,9 +562,9 @@ All default ores are of the uniformly-distributed scatter type.
     The height of the blob is randomly scattered, with a maximum height of clust_size.
     clust_scarcity and clust_num_ores are ignored.
     This is essentially an improved version of the so-called "stratus" ore seen in some unofficial mods.
- - claylike - NOT YET IMPLEMENTED
-    Places ore if there are no more than clust_scarcity number of specified nodes within a Von Neumann
-    neighborhood of clust_size radius.
+ - blob
+    Creates a roundish blob of ore according to 3d perlin noise described by noise_params. The maximum
+    size of the blob is clust_size, and clust_scarcity has the same meaning as with scatter type.
 
 
 Ore attributes

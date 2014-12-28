@@ -68,9 +68,9 @@ struct EnumString ModApiMapgen::es_MapgenObject[] =
 
 struct EnumString ModApiMapgen::es_OreType[] =
 {
-	{ORE_SCATTER,  "scatter"},
-	{ORE_SHEET,    "sheet"},
-	{ORE_CLAYLIKE, "claylike"},
+	{ORE_TYPE_SCATTER,  "scatter"},
+	{ORE_TYPE_SHEET,    "sheet"},
+	{ORE_TYPE_BLOB,     "blob"},
 	{0, NULL},
 };
 
@@ -642,7 +642,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	OreManager *oremgr    = getServer(L)->getEmergeManager()->oremgr;
 
 	enum OreType oretype = (OreType)getenumfield(L, index,
-				"ore_type", es_OreType, ORE_SCATTER);
+				"ore_type", es_OreType, ORE_TYPE_SCATTER);
 	Ore *ore = oremgr->create(oretype);
 	if (!ore) {
 		errorstream << "register_ore: ore_type " << oretype << " not implemented";

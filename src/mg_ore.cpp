@@ -178,12 +178,12 @@ void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
 	if (!noise) {
 		int sx = nmax.X - nmin.X + 1;
 		int sz = nmax.Z - nmin.Z + 1;
-		noise = new Noise(&np, seed, sx, sz);
+		noise = new Noise(&np, 0, sx, sz);
 	}
 	noise->seed = seed + y_start;
 	noise->perlinMap2D(nmin.X, nmin.Z);
 
-	int index = 0;
+	size_t index = 0;
 	for (int z = nmin.Z; z <= nmax.Z; z++)
 	for (int x = nmin.X; x <= nmax.X; x++) {
 		float noiseval = noise->result[index++];
@@ -198,6 +198,63 @@ void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
 			if (!vm->m_area.contains(i))
 				continue;
 			if (!CONTAINS(c_wherein, vm->m_data[i].getContent()))
+				continue;
+
+			vm->m_data[i] = n_ore;
+		}
+	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+void OreBlob::generate(ManualMapVoxelManipulator *vm, int seed, u32 blockseed,
+	v3s16 nmin, v3s16 nmax)
+{
+	PseudoRandom pr(blockseed + 2404);
+	MapNode n_ore(c_ore, 0, ore_param2);
+
+	int volume = (nmax.X - nmin.X + 1) *
+				 (nmax.Y - nmin.Y + 1) *
+				 (nmax.Z - nmin.Z + 1);
+	int csize     = clust_size;
+	int nblobs = volume / clust_scarcity;
+
+	if (!noise)
+		noise = new Noise(&np, seed, csize, csize, csize);
+
+	for (int i = 0; i != nblobs; i++) {
+		int x0 = pr.range(nmin.X, nmax.X - csize + 1);
+		int y0 = pr.range(nmin.Y, nmax.Y - csize + 1);
+		int z0 = pr.range(nmin.Z, nmax.Z - csize + 1);
+
+		bool noise_generated = false;
+		noise->seed = blockseed + i;
+
+		size_t index = 0;
+		for (int z1 = 0; z1 != csize; z1++)
+		for (int y1 = 0; y1 != csize; y1++)
+		for (int x1 = 0; x1 != csize; x1++, index++) {
+			u32 i = vm->m_area.index(x0 + x1, y0 + y1, z0 + z1);
+			if (!CONTAINS(c_wherein, vm->m_data[i].getContent()))
+				continue;
+
+			// Lazily generate noise only if there's a chance of ore being placed
+			// This simple optimization makes calls 6x faster on average
+			if (!noise_generated) {
+				noise_generated = true;
+				noise->perlinMap3D(x0, y0, z0);
+			}
+
+			float noiseval = noise->result[index];
+
+			float xdist = x1 - csize / 2;
+			float ydist = y1 - csize / 2;
+			float zdist = z1 - csize / 2;
+
+			noiseval -= (sqrt(xdist * xdist + ydist * ydist + zdist * zdist) / csize);
+
+			if (noiseval < nthresh)
 				continue;
 
 			vm->m_data[i] = n_ore;

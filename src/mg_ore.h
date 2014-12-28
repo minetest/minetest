@@ -47,9 +47,9 @@ class ManualMapVoxelManipulator;
 
 
 enum OreType {
-	ORE_SCATTER,
-	ORE_SHEET,
-	ORE_CLAYLIKE
+	ORE_TYPE_SCATTER,
+	ORE_TYPE_SHEET,
+	ORE_TYPE_BLOB,
 };
 
 extern FlagDesc flagdesc_ore[];
@@ -78,7 +78,7 @@ public:
 
 	size_t placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
-						u32 blockseed, v3s16 nmin, v3s16 nmax) = 0;
+		u32 blockseed, v3s16 nmin, v3s16 nmax) = 0;
 };
 
 class OreScatter : public Ore {
@@ -86,7 +86,7 @@ public:
 	static const bool NEEDS_NOISE = false;
 
 	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
-						u32 blockseed, v3s16 nmin, v3s16 nmax);
+		u32 blockseed, v3s16 nmin, v3s16 nmax);
 };
 
 class OreSheet : public Ore {
@@ -94,7 +94,15 @@ public:
 	static const bool NEEDS_NOISE = true;
 
 	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
-						u32 blockseed, v3s16 nmin, v3s16 nmax);
+		u32 blockseed, v3s16 nmin, v3s16 nmax);
+};
+
+class OreBlob : public Ore {
+public:
+	static const bool NEEDS_NOISE = true;
+
+	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
+		u32 blockseed, v3s16 nmin, v3s16 nmax);
 };
 
 class OreManager : public GenElementManager {
@@ -108,12 +116,12 @@ public:
 	Ore *create(int type)
 	{
 		switch (type) {
-		case ORE_SCATTER:
+		case ORE_TYPE_SCATTER:
 			return new OreScatter;
-		case ORE_SHEET:
+		case ORE_TYPE_SHEET:
 			return new OreSheet;
-		//case ORE_CLAYLIKE: //TODO: implement this!
-		//	return new OreClaylike;
+		case ORE_TYPE_BLOB:
+			return new OreBlob;
 		default:
 			return NULL;
 		}
