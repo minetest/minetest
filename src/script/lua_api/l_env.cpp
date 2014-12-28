@@ -638,6 +638,13 @@ int ModApiEnvMod::l_get_voxel_manip(lua_State *L)
 	Map *map = &(env->getMap());
 	LuaVoxelManip *o = new LuaVoxelManip(map);
 
+	if (lua_istable(L, 1) && lua_istable(L, 2)) {
+		v3s16 p1 = getNodeBlockPos(read_v3s16(L, 1));
+		v3s16 p2 = getNodeBlockPos(read_v3s16(L, 2));
+		sortBoxVerticies(p1, p2);
+		o->vm->initializeBlank(p1, p2);
+	}
+
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, "VoxelManip");
 	lua_setmetatable(L, -2);

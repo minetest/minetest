@@ -3597,8 +3597,31 @@ ManualMapVoxelManipulator::~ManualMapVoxelManipulator()
 {
 }
 
+void ManualMapVoxelManipulator::initializeBlank(v3s16 blockpos_min,
+	v3s16 blockpos_max)
+{
+	// Units of these are MapBlocks
+	v3s16 pmin = blockpos_min;
+	v3s16 pmax = blockpos_max;
+
+	VoxelArea block_area_nodes(pmin * MAP_BLOCKSIZE,
+		(pmax + 1) * MAP_BLOCKSIZE - v3s16(1,1,1));
+
+	addArea(block_area_nodes);
+	u32 extent = m_area.getVolume();
+	for (u32 i = 0; i != extent; i++)
+		m_data[i] = MapNode(CONTENT_IGNORE);
+
+	for (s32 z = pmin.Z; z <= pmax.Z; z++)
+	for (s32 y = pmin.Y; y <= pmax.Y; y++)
+	for (s32 x = pmin.X; x <= pmax.X; x++)
+		m_loaded_blocks[v3s16(x, y, z)] = 0;
+
+	m_is_dirty = false;
+}
+
 void ManualMapVoxelManipulator::initialEmerge(v3s16 blockpos_min,
-						v3s16 blockpos_max, bool load_if_inexistent)
+	v3s16 blockpos_max, bool load_if_inexistent)
 {
 	TimeTaker timer1("initialEmerge", &emerge_time);
 

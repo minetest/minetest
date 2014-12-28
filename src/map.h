@@ -550,12 +550,14 @@ public:
 	void setMap(Map *map)
 	{m_map = map;}
 
+	void initializeBlank(v3s16 pmin, v3s16 pmax);
+
 	void initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
-			bool load_if_inexistent = true);
+		bool load_if_inexistent = true);
 
 	// This is much faster with big chunks of generated data
 	void blitBackAll(std::map<v3s16, MapBlock*> * modified_blocks,
-			bool overwrite_generated = true);
+		bool overwrite_generated = true);
 
 	bool m_is_dirty;
 
