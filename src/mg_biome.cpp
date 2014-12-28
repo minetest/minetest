@@ -38,23 +38,28 @@ BiomeManager::BiomeManager(IGameDef *gamedef) :
 	// Create default biome to be used in case none exist
 	Biome *b = new Biome;
 
-	b->id             = 0;
-	b->name           = "Default";
-	b->flags          = 0;
-	b->depth_top      = 0;
-	b->depth_filler   = 0;
-	b->height_min     = -MAP_GENERATION_LIMIT;
-	b->height_max     = MAP_GENERATION_LIMIT;
-	b->heat_point     = 0.0;
-	b->humidity_point = 0.0;
+	b->id              = 0;
+	b->name            = "Default";
+	b->flags           = 0;
+	b->depth_top       = 0;
+	b->depth_filler    = 0;
+	b->height_shore    = 0;
+	b->depth_water_top = 0;
+	b->height_min      = -MAP_GENERATION_LIMIT;
+	b->height_max      = MAP_GENERATION_LIMIT;
+	b->heat_point      = 0.0;
+	b->humidity_point  = 0.0;
 
 	NodeResolveInfo *nri = new NodeResolveInfo(b);
 	nri->nodenames.push_back("air");
 	nri->nodenames.push_back("air");
+	nri->nodenames.push_back("air");
+	nri->nodenames.push_back("air");
+	nri->nodenames.push_back("air");
 	nri->nodenames.push_back("mapgen_stone");
 	nri->nodenames.push_back("mapgen_water_source");
-	nri->nodenames.push_back("air");
 	nri->nodenames.push_back("mapgen_water_source");
+	nri->nodenames.push_back("air");
 	m_ndef->pendNodeResolve(nri);
 
 	add(b);
@@ -121,9 +126,12 @@ void Biome::resolveNodeNames(NodeResolveInfo *nri)
 {
 	m_ndef->getIdFromResolveInfo(nri, "mapgen_dirt_with_grass", CONTENT_AIR,    c_top);
 	m_ndef->getIdFromResolveInfo(nri, "mapgen_dirt",            CONTENT_AIR,    c_filler);
+	m_ndef->getIdFromResolveInfo(nri, "mapgen_sand",            CONTENT_AIR,    c_shore_top);
+	m_ndef->getIdFromResolveInfo(nri, "mapgen_sand",            CONTENT_AIR,    c_shore_filler);
+	m_ndef->getIdFromResolveInfo(nri, "mapgen_sand",            CONTENT_AIR,    c_underwater);
 	m_ndef->getIdFromResolveInfo(nri, "mapgen_stone",           CONTENT_AIR,    c_stone);
+	m_ndef->getIdFromResolveInfo(nri, "mapgen_water_source",    CONTENT_AIR,    c_water_top);
 	m_ndef->getIdFromResolveInfo(nri, "mapgen_water_source",    CONTENT_AIR,    c_water);
 	m_ndef->getIdFromResolveInfo(nri, "air",                    CONTENT_IGNORE, c_dust);
-	m_ndef->getIdFromResolveInfo(nri, "mapgen_water_source",    CONTENT_IGNORE, c_dust_water);
 }
 

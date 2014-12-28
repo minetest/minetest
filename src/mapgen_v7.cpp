@@ -516,10 +516,12 @@ void MapgenV7::generateBiomes() {
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
-		Biome *biome  = (Biome *)bmgr->get(biomemap[index]);
-		s16 dfiller   = biome->depth_filler + noise_filler_depth->result[index];
-		s16 y0_top    = biome->depth_top;
-		s16 y0_filler = biome->depth_top + dfiller;
+		Biome *biome        = (Biome *)bmgr->get(biomemap[index]);
+		s16 dfiller         = biome->depth_filler + noise_filler_depth->result[index];
+		s16 y0_top          = biome->depth_top;
+		s16 y0_filler       = biome->depth_top + dfiller;
+		s16 shore_max       = water_level + biome->height_shore;
+		s16 depth_water_top = biome->depth_water_top;
 
 		s16 nplaced = 0;
 		u32 i = vm->m_area.index(x, node_max.Y, z);
@@ -545,15 +547,20 @@ void MapgenV7::generateBiomes() {
 
 				if (c_below != CONTENT_AIR) {
 					if (nplaced < y0_top) {
-						// A hack to prevent dirt_with_grass from being
-						// placed below water.  TODO: fix later
-						content_t c_place = ((y < water_level) &&
-							(biome->c_top == c_dirt_with_grass)) ?
-							 c_dirt : biome->c_top;
-						vm->m_data[i] = MapNode(c_place);
+						if(y < water_level)
+							vm->m_data[i] = MapNode(biome->c_underwater);
+						else if(y <= shore_max)
+							vm->m_data[i] = MapNode(biome->c_shore_top);
+						else
+							vm->m_data[i] = MapNode(biome->c_top);
 						nplaced++;
 					} else if (nplaced < y0_filler && nplaced >= y0_top) {
-						vm->m_data[i] = MapNode(biome->c_filler);
+						if(y < water_level)
+							vm->m_data[i] = MapNode(biome->c_underwater);
+						else if(y <= shore_max)
+							vm->m_data[i] = MapNode(biome->c_shore_filler);
+						else
+							vm->m_data[i] = MapNode(biome->c_filler);
 						nplaced++;
 					} else if (c == c_stone) {
 						have_air = false;
@@ -575,7 +582,10 @@ void MapgenV7::generateBiomes() {
 			} else if (c == c_water_source) {
 				have_air = true;
 				nplaced = 0;
-				vm->m_data[i] = MapNode(biome->c_water);
+				if(y > water_level - depth_water_top)
+					vm->m_data[i] = MapNode(biome->c_water_top);
+				else
+					vm->m_data[i] = MapNode(biome->c_water);
 			} else if (c == CONTENT_AIR) {
 				have_air = true;
 				nplaced = 0;
@@ -611,12 +621,7 @@ void MapgenV7::dustTopNodes() {
 		}
 
 		content_t c = vm->m_data[vi].getContent();
-		if (c == biome->c_water && biome->c_dust_water != CONTENT_IGNORE) {
-			if (y < node_min.Y)
-				continue;
-
-			vm->m_data[vi] = MapNode(biome->c_dust_water);
-		} else if (!ndef->get(c).buildable_to && c != CONTENT_IGNORE) {
+		if (!ndef->get(c).buildable_to && c != CONTENT_IGNORE) {
 			if (y == node_max.Y)
 				continue;
 
