@@ -342,6 +342,9 @@ minetest.register_tool(name, item definition)
 minetest.register_craftitem(name, item definition)
  -> minetest.registered_items[name]
 
+minetest.register_ore(ore definition)
+ -> minetest.registered_ores
+
 Note that in some cases you will stumble upon things that are not contained
 in these tables (e.g. when a mod has been removed). Always check for
 existence before trying to access the fields.
