@@ -1859,6 +1859,10 @@ bool ClientLauncher::launch_game(std::wstring *error_message,
 	if (!skip_main_menu) {
 		main_menu(&menudata);
 
+		// Skip further loading if there was an exit signal.
+		if (*porting::signal_handler_killstatus())
+			return false;
+
 		address = menudata.address;
 		int newport = stoi(menudata.port);
 		if (newport != 0)
