@@ -1989,6 +1989,7 @@ ObjectRef: Moving things in the game are generally these
 (basically reference to a C++ ServerActiveObject)
 methods:
 - remove(): remove object (after returning from Lua)
+  Note: doesn't work on players, use minetest.kick_player instead
 - getpos() -> {x=num, y=num, z=num}
 - setpos(pos); pos={x=num, y=num, z=num}
 - moveto(pos, continuous=false): interpolated move
