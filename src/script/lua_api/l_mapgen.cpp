@@ -422,14 +422,16 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 		es_BiomeTerrainType, BIOME_TYPE_NORMAL);
 	Biome *b = bmgr->create(biometype);
 
-	b->name           = getstringfield_default(L, index, "name", "");
-	b->depth_top      = getintfield_default(L, index, "depth_top",    1);
-	b->depth_filler   = getintfield_default(L, index, "depth_filler", 3);
-	b->height_min     = getintfield_default(L, index, "height_min",   0);
-	b->height_max     = getintfield_default(L, index, "height_max",   0);
-	b->heat_point     = getfloatfield_default(L, index, "heat_point",     0.);
-	b->humidity_point = getfloatfield_default(L, index, "humidity_point", 0.);
-	b->flags          = 0; //reserved
+	b->name            = getstringfield_default(L, index, "name", "");
+	b->depth_top       = getintfield_default(L, index, "depth_top",    1);
+	b->depth_filler    = getintfield_default(L, index, "depth_filler", 3);
+	b->height_shore    = getintfield_default(L, index, "height_shore", 3);
+	b->depth_water_top = getintfield_default(L, index, "depth_water_top", 0);
+	b->height_min      = getintfield_default(L, index, "height_min",   0);
+	b->height_max      = getintfield_default(L, index, "height_max",   0);
+	b->heat_point      = getfloatfield_default(L, index, "heat_point",     0.);
+	b->humidity_point  = getfloatfield_default(L, index, "humidity_point", 0.);
+	b->flags           = 0; //reserved
 
 	u32 id = bmgr->add(b);
 	if (id == (u32)-1) {
@@ -439,12 +441,15 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 
 	NodeResolveInfo *nri = new NodeResolveInfo(b);
 	std::list<std::string> &nnames = nri->nodenames;
-	nnames.push_back(getstringfield_default(L, index, "node_top",        ""));
-	nnames.push_back(getstringfield_default(L, index, "node_filler",     ""));
-	nnames.push_back(getstringfield_default(L, index, "node_stone",      ""));
-	nnames.push_back(getstringfield_default(L, index, "node_water",      ""));
-	nnames.push_back(getstringfield_default(L, index, "node_dust",       ""));
-	nnames.push_back(getstringfield_default(L, index, "node_dust_water", ""));
+	nnames.push_back(getstringfield_default(L, index, "node_top",          ""));
+	nnames.push_back(getstringfield_default(L, index, "node_filler",       ""));
+	nnames.push_back(getstringfield_default(L, index, "node_shore_top",    ""));
+	nnames.push_back(getstringfield_default(L, index, "node_shore_filler", ""));
+	nnames.push_back(getstringfield_default(L, index, "node_underwater",   ""));
+	nnames.push_back(getstringfield_default(L, index, "node_stone",        ""));
+	nnames.push_back(getstringfield_default(L, index, "node_water_top",    ""));
+	nnames.push_back(getstringfield_default(L, index, "node_water",        ""));
+	nnames.push_back(getstringfield_default(L, index, "node_dust",         ""));
 	ndef->pendNodeResolve(nri);
 
 	verbosestream << "register_biome: " << b->name << std::endl;
