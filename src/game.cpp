@@ -4003,13 +4003,13 @@ void Game::updateGui(float *statustext_time, const RunStats &stats,
 		int yaw = wrapDegrees_0_360(cam.camera_yaw);
 		const char* player_direction;
 
-		if (yaw >= 45 and yaw < 135) {
+		if (yaw >= 45 && yaw < 135) {
 			player_direction = "West(-X)";
 		}
-		else if (yaw >= 135 and yaw < 225) {
+		else if (yaw >= 135 && yaw < 225) {
 			player_direction = "South(-Z)";
 		}
-		else if (yaw >= 225 and yaw < 315) {
+		else if (yaw >= 225 && yaw < 315) {
 			player_direction = "East(+X)";
 		}
 		else {
