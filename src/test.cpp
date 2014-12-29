@@ -59,7 +59,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define UTEST(x, fmt, ...)\
 {\
 	if(!(x)){\
-		LOGLINEF(LMT_ERROR, "Test (%s) failed: " fmt, #x, ##__VA_ARGS__);\
+		dstream << "Test (" #x ") failed: " fmt << std::endl; \
 		test_failed = true;\
 	}\
 }
