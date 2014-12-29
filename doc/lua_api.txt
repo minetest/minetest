@@ -2152,13 +2152,16 @@ ItemStack: A stack of items.
 methods:
 - is_empty(): return true if stack is empty
 - get_name(): returns item name (e.g. "default:stone")
-- set_name(itemname)
+- set_name(itemname): returns true/false (success)
+  ^ clears item on failure
 - get_count(): returns number of items on the stack
-- set_count(count)
+- set_count(count): returns true/false (success)
+  ^ clears item on failure
 - get_wear(): returns tool wear (0-65535), 0 for non-tools
-- set_wear(wear)
+- set_wear(wear): returns true/false (success)
+  ^ clears item on failure
 - get_metadata(): returns metadata (a string attached to an item stack)
-- set_metadata(metadata)
+- set_metadata(metadata): returns true
 - clear(): removes all items from the stack, making it empty
 - replace(item): replace the contents of this stack (item can also
     be an itemstring or table)

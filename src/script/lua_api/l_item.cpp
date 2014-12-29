@@ -63,11 +63,15 @@ int LuaItemStack::l_set_name(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkobject(L, 1);
 	ItemStack &item = o->m_stack;
+
+	bool status = true;
 	item.name = luaL_checkstring(L, 2);
-
-	if (item.name == "" || item.empty())
+	if (item.name == "" || item.empty()) {
 		item.clear();
+		status = false;
+	}
 
+	lua_pushboolean(L, status);
 	return 1;
 }
 
@@ -87,11 +91,18 @@ int LuaItemStack::l_set_count(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkobject(L, 1);
 	ItemStack &item = o->m_stack;
-	item.count = luaL_checkinteger(L, 2);
 
-	if (item.name == "" || item.empty())
+	bool status;
+	lua_Integer count = luaL_checkinteger(L, 2);
+	if (count <= 65535) {
+		item.count = count;
+		status = true;
+	} else {
 		item.clear();
+		status = false;
+	}
 
+	lua_pushboolean(L, status);
 	return 1;
 }
 
@@ -111,11 +122,18 @@ int LuaItemStack::l_set_wear(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkobject(L, 1);
 	ItemStack &item = o->m_stack;
-	item.wear = luaL_checkinteger(L, 2);
 
-	if (item.wear > 65535)
+	bool status;
+	lua_Integer wear = luaL_checkinteger(L, 2);
+	if (wear <= 65535) {
+		item.wear = wear;
+		status = true;
+	} else {
 		item.clear();
+		status = false;
+	}
 
+	lua_pushboolean(L, status);
 	return 1;
 }
 
@@ -138,11 +156,9 @@ int LuaItemStack::l_set_metadata(lua_State *L)
 
 	size_t len = 0;
 	const char *ptr = luaL_checklstring(L, 2, &len);
-	if (ptr)
-		item.metadata.assign(ptr, len);
-	else
-		item.metadata = "";
+	item.metadata.assign(ptr, len);
 
+	lua_pushboolean(L, true);
 	return 1;
 }
 
@@ -533,7 +549,7 @@ int ModApiItemMod::l_get_content_id(lua_State *L)
 
 	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
 	content_t c = ndef->getId(name);
-	
+
 	lua_pushinteger(L, c);
 	return 1; /* number of results */
 }
@@ -546,7 +562,7 @@ int ModApiItemMod::l_get_name_from_content_id(lua_State *L)
 
 	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
 	const char *name = ndef->get(c).name.c_str();
-	
+
 	lua_pushstring(L, name);
 	return 1; /* number of results */
 }
