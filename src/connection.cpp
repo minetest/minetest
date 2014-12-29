@@ -2334,6 +2334,11 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 
 	u8 type = readU8(&(packetdata[0]));
 
+	if (MAX_UDP_PEERS <= 65535 && peer_id >= MAX_UDP_PEERS) {
+		errorstream << "Something is wrong with peer_id" << std::endl;
+		assert(0);
+	}
+
 	if(type == TYPE_CONTROL)
 	{
 		if(packetdata.getSize() < 2)
@@ -2341,8 +2346,7 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 
 		u8 controltype = readU8(&(packetdata[1]));
 
-		if( (controltype == CONTROLTYPE_ACK)
-				&& (peer_id <= MAX_UDP_PEERS))
+		if(controltype == CONTROLTYPE_ACK)
 		{
 			assert(channel != 0);
 			if(packetdata.getSize() < 4)
@@ -2399,8 +2403,7 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 			}
 			throw ProcessedSilentlyException("Got an ACK");
 		}
-		else if((controltype == CONTROLTYPE_SET_PEER_ID)
-				&& (peer_id <= MAX_UDP_PEERS))
+		else if(controltype == CONTROLTYPE_SET_PEER_ID)
 		{
 			// Got a packet to set our peer id
 			if(packetdata.getSize() < 4)
@@ -2432,8 +2435,7 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 
 			throw ProcessedSilentlyException("Got a SET_PEER_ID");
 		}
-		else if((controltype == CONTROLTYPE_PING)
-				&& (peer_id <= MAX_UDP_PEERS))
+		else if(controltype == CONTROLTYPE_PING)
 		{
 			// Just ignore it, the incoming data already reset
 			// the timeout counter
@@ -2455,8 +2457,7 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 
 			throw ProcessedSilentlyException("Got a DISCO");
 		}
-		else if((controltype == CONTROLTYPE_ENABLE_BIG_SEND_WINDOW)
-				&& (peer_id <= MAX_UDP_PEERS))
+		else if(controltype == CONTROLTYPE_ENABLE_BIG_SEND_WINDOW)
 		{
 			dynamic_cast<UDPPeer*>(&peer)->setNonLegacyPeer();
 			throw ProcessedSilentlyException("Got non legacy control");
@@ -2514,7 +2515,7 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 			//TODO throw some error
 		}
 	}
-	else if((peer_id <= MAX_UDP_PEERS) && (type == TYPE_RELIABLE))
+	else if(type == TYPE_RELIABLE)
 	{
 		assert(channel != 0);
 		// Recursive reliable packets not allowed

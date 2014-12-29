@@ -1859,7 +1859,7 @@ void imageTransform(u32 transform, video::IImage *src, video::IImage *dst)
 	core::dimension2d<u32> dstdim = dst->getDimension();
 
 	assert(dstdim == imageTransformDimension(transform, srcdim));
-	assert(transform >= 0 && transform <= 7);
+	assert(transform <= 7);
 
 	/*
 		Compute the transformation from source coordinates (sx,sy)
