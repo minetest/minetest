@@ -337,12 +337,6 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 
 		std::string font_path = g_settings->get(font_config_prefix + "font_path");
 
-		if (font_path.substr(font_path.length() -4) != ".ttf") {
-			errorstream << "FontEngine: \"" << font_path
-					<< "\" doesn't seem to be a ttf File." << std::endl;
-			return;
-		}
-
 		irr::gui::IGUIFont* font = gui::CGUITTFont::createTTFont(m_env,
 				font_path.c_str(), size, true, true, font_shadow,
 				font_shadow_alpha);
@@ -378,7 +372,7 @@ void FontEngine::initSimpleFont(unsigned int basesize, FontMode mode)
 		return;
 	}
 
-	if ((ending == ".xml") || ( ending == ".png")) {
+	if ((ending == ".xml") || (ending == ".png")) {
 		basename = font_path.substr(0,font_path.length()-4);
 	}
 
