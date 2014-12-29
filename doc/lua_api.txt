@@ -1378,9 +1378,11 @@ math.hypot(x, y)
 math.sign(x, tolerance)
 ^ Get the sign of a number
   Optional: Also returns 0 when the absolute value is within the tolerance (default 0)
-string:split(separator)
-^ e.g. string:split("a,b", ",") == {"a","b"}
-string:trim()
+string.split(str, separator=",", include_empty=false, max_splits=-1, sep_is_pattern=false)
+^ If max_splits is negative, do not limit splits.
+^ sep_is_pattern specifies if separator is a plain string or a pattern (regex).
+^ e.g. string.split("a,b", ",") == {"a","b"}
+string.trim(str)
 ^ e.g. string.trim("\n \t\tfoo bar\t ") == "foo bar"
 minetest.pos_to_string({x=X,y=Y,z=Z}) -> "(X,Y,Z)"
 ^ Convert position to a printable string
