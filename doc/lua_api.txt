@@ -1613,7 +1613,7 @@ minetest.get_perlin(seeddiff, octaves, persistence, scale)
 minetest.get_voxel_manip()
 ^ Return voxel manipulator object
 minetest.get_voxel_manip(p1, p2)
-^ Return voxel manipulator object with blank data preallocated
+^ Return voxel manipulator object with map pre-loaded
 minetest.set_gen_notify(flags, {deco_ids})
 ^ Set the types of on-generate notifications that should be collected
 ^ flags is a flag field with the available flags:
@@ -2215,7 +2215,7 @@ methods:
 VoxelManip: An interface to the MapVoxelManipulator for Lua
 - Can be created via VoxelManip()
 - Also minetest.get_voxel_manip()
-- Specify a pmin, pmax in either to allocate a blank chunk of data prefilled with cignore
+- Specify a pmin, pmax to create a VoxelManip with map already loaded
 methods:
 - read_from_map(p1, p2):  Reads a chunk of map from the map containing the region formed by p1 and p2.
   ^ returns actual emerged pmin, actual emerged pmax

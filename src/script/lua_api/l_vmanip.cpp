@@ -367,6 +367,17 @@ LuaVoxelManip::LuaVoxelManip(Map *map)
 	this->is_mapgen_vm = false;
 }
 
+LuaVoxelManip::LuaVoxelManip(Map *map, v3s16 p1, v3s16 p2)
+{
+	this->vm = new ManualMapVoxelManipulator(map);
+	this->is_mapgen_vm = false;
+
+	v3s16 bp1 = getNodeBlockPos(p1);
+	v3s16 bp2 = getNodeBlockPos(p2);
+	sortBoxVerticies(bp1, bp2);
+	vm->initialEmerge(bp1, bp2);
+}
+
 LuaVoxelManip::~LuaVoxelManip()
 {
 	if (!is_mapgen_vm)
@@ -384,14 +395,9 @@ int LuaVoxelManip::create_object(lua_State *L)
 		return 0;
 
 	Map *map = &(env->getMap());
-	LuaVoxelManip *o = new LuaVoxelManip(map);
-
-	if (lua_istable(L, 1) && lua_istable(L, 2)) {
-		v3s16 p1 = getNodeBlockPos(read_v3s16(L, 1));
-		v3s16 p2 = getNodeBlockPos(read_v3s16(L, 2));
-		sortBoxVerticies(p1, p2);
-		o->vm->initializeBlank(p1, p2);
-	}
+	LuaVoxelManip *o = (lua_istable(L, 1) && lua_istable(L, 2)) ?
+		new LuaVoxelManip(map, read_v3s16(L, 1), read_v3s16(L, 2)) :
+		new LuaVoxelManip(map);
 
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
