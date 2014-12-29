@@ -295,6 +295,10 @@ Server::Server(
 	// Lock environment
 	JMutexAutoLock envlock(m_env_mutex);
 
+	// Create the Map and load parameters
+	ServerMap *servermap = new ServerMap(path_world, this, m_emerge);
+	m_emerge->loadMapgenParams();
+
 	// Initialize scripting
 	infostream<<"Server: Initializing Lua"<<std::endl;
 
@@ -302,10 +306,8 @@ Server::Server(
 
 	std::string scriptpath = getBuiltinLuaPath() + DIR_DELIM "init.lua";
 
-	if (!m_script->loadScript(scriptpath)) {
+	if (!m_script->loadScript(scriptpath))
 		throw ModError("Failed to load and run " + scriptpath);
-	}
-
 
 	// Print 'em
 	infostream<<"Server: Loading mods: ";
@@ -339,18 +341,10 @@ Server::Server(
 	// Perform pending node name resolutions
 	m_nodedef->runNodeResolverCallbacks();
 
-	// Load the mapgen params from global settings now after any
-	// initial overrides have been set by the mods
-	m_emerge->loadMapgenParams();
-
 	// Initialize Environment
-	ServerMap *servermap = new ServerMap(path_world, this, m_emerge);
 	m_env = new ServerEnvironment(servermap, m_script, this, m_path_world);
 
 	m_clients.setEnv(m_env);
-
-	// Run some callbacks after the MG params have been set up but before activation
-	m_script->environment_OnMapgenInit(&m_emerge->params);
 
 	// Initialize mapgens
 	m_emerge->initMapgens();

@@ -390,7 +390,6 @@ end
 core.registered_on_chat_messages, core.register_on_chat_message = make_registration()
 core.registered_globalsteps, core.register_globalstep = make_registration()
 core.registered_playerevents, core.register_playerevent = make_registration()
-core.registered_on_mapgen_inits, core.register_on_mapgen_init = make_registration()
 core.registered_on_shutdown, core.register_on_shutdown = make_registration()
 core.registered_on_punchnodes, core.register_on_punchnode = make_registration()
 core.registered_on_placenodes, core.register_on_placenode = make_registration()
@@ -408,4 +407,10 @@ core.registered_on_crafts, core.register_on_craft = make_registration()
 core.registered_craft_predicts, core.register_craft_predict = make_registration()
 core.registered_on_protection_violation, core.register_on_protection_violation = make_registration()
 core.registered_on_item_eats, core.register_on_item_eat = make_registration()
+
+--
+-- Compatibility for on_mapgen_init()
+--
+
+core.register_on_mapgen_init = function(func) func(core.get_mapgen_params()) end
 

@@ -34,8 +34,6 @@ public:
 	void environment_Step(float dtime);
 	// After generating a piece of map
 	void environment_OnGenerated(v3s16 minp, v3s16 maxp,u32 blockseed);
-	// After initializing mapgens
-	void environment_OnMapgenInit(MapgenParams *mgparams);
 
 	//called on player event
 	void player_event(ServerActiveObject* player, std::string type);

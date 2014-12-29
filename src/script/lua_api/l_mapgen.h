@@ -33,6 +33,10 @@ private:
 	// returns the requested object used during map generation
 	static int l_get_mapgen_object(lua_State *L);
 
+	// get_mapgen_params()
+	// returns the currently active map generation parameter set
+	static int l_get_mapgen_params(lua_State *L);
+
 	// set_mapgen_params(params)
 	// set mapgen parameters
 	static int l_set_mapgen_params(lua_State *L);

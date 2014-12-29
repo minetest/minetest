@@ -325,6 +325,31 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 	return 0;
 }
 
+int ModApiMapgen::l_get_mapgen_params(lua_State *L)
+{
+	MapgenParams *params = &getServer(L)->getEmergeManager()->params;
+
+	lua_newtable(L);
+
+	lua_pushstring(L, params->mg_name.c_str());
+	lua_setfield(L, -2, "mgname");
+
+	lua_pushinteger(L, params->seed);
+	lua_setfield(L, -2, "seed");
+
+	lua_pushinteger(L, params->water_level);
+	lua_setfield(L, -2, "water_level");
+
+	lua_pushinteger(L, params->chunksize);
+	lua_setfield(L, -2, "chunksize");
+
+	std::string flagstr = writeFlagString(params->flags, flagdesc_mapgen, (u32)-1);
+	lua_pushstring(L, flagstr.c_str());
+	lua_setfield(L, -2, "flags");
+
+	return 1;
+}
+
 // set_mapgen_params(params)
 // set mapgen parameters
 int ModApiMapgen::l_set_mapgen_params(lua_State *L)
@@ -332,38 +357,34 @@ int ModApiMapgen::l_set_mapgen_params(lua_State *L)
 	if (!lua_istable(L, 1))
 		return 0;
 
-	EmergeManager *emerge = getServer(L)->getEmergeManager();
-	assert(emerge);
-
-	std::string flagstr;
+	MapgenParams *params = &getServer(L)->getEmergeManager()->params;
 	u32 flags = 0, flagmask = 0;
 
 	lua_getfield(L, 1, "mgname");
 	if (lua_isstring(L, -1)) {
-		emerge->params.mg_name = std::string(lua_tostring(L, -1));
-		delete emerge->params.sparams;
-		emerge->params.sparams = NULL;
+		params->mg_name = lua_tostring(L, -1);
+		delete params->sparams;
+		params->sparams = NULL;
 	}
 
 	lua_getfield(L, 1, "seed");
 	if (lua_isnumber(L, -1))
-		emerge->params.seed = lua_tointeger(L, -1);
+		params->seed = lua_tointeger(L, -1);
 
 	lua_getfield(L, 1, "water_level");
 	if (lua_isnumber(L, -1))
-		emerge->params.water_level = lua_tointeger(L, -1);
+		params->water_level = lua_tointeger(L, -1);
 
 	lua_getfield(L, 1, "flagmask");
 	if (lua_isstring(L, -1)) {
-		flagstr = lua_tostring(L, -1);
-		emerge->params.flags &= ~readFlagString(flagstr, flagdesc_mapgen, NULL);
+		params->flags &= ~readFlagString(lua_tostring(L, -1), flagdesc_mapgen, NULL);
 		errorstream << "set_mapgen_params(): flagmask field is deprecated, "
 			"see lua_api.txt" << std::endl;
 	}
 
 	if (getflagsfield(L, 1, "flags", flagdesc_mapgen, &flags, &flagmask)) {
-		emerge->params.flags &= ~flagmask;
-		emerge->params.flags |= flags;
+		params->flags &= ~flagmask;
+		params->flags |= flags;
 	}
 
 	return 0;
@@ -818,6 +839,7 @@ void ModApiMapgen::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_mapgen_object);
 
+	API_FCT(get_mapgen_params);
 	API_FCT(set_mapgen_params);
 	API_FCT(set_noiseparams);
 	API_FCT(set_gen_notify);

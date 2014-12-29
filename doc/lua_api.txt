@@ -1504,8 +1504,9 @@ minetest.register_on_player_receive_fields(func(player, formname, fields))
 ^ Newest functions are called first
 ^ If function returns true, remaining functions are not called
 minetest.register_on_mapgen_init(func(MapgenParams))
-^ Called just before the map generator is initialized but before the environment is initialized
-^ MapgenParams consists of a table with the fields mgname, seed, water_level, and flags
+^ Deprecated; maintained for compatibility
+^ This immediately calls func(minetest.get_mapgen_params())
+^ MapgenParams consists of a table with the fields mgname, chunksize, seed, water_level, and flags
 minetest.register_on_craft(func(itemstack, player, old_craft_grid, craft_inv))
 ^ Called when player crafts something
 ^ itemstack is the output
@@ -1621,6 +1622,10 @@ minetest.set_gen_notify(flags, {deco_ids})
 ^ The second parameter is a list of IDS of decorations which notification is requested for
 minetest.get_mapgen_object(objectname)
 ^ Return requested mapgen object if available (see Mapgen objects)
+minetest.get_mapgen_params()
+^ Returns mapgen params
+^ A table consisting of mgname, seed, chunksize, water_level, and flags
+^ Can be called at any time
 minetest.set_mapgen_params(MapgenParams)
 ^ Set map generation parameters
 ^ Function cannot be called after the registration period; only initialization and on_mapgen_init
