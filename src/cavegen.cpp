@@ -122,7 +122,7 @@ void CaveV6::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height) {
 	// Add generation notify end event
 	abs_pos = v3s16(of.X + orp.X, of.Y + orp.Y, of.Z + orp.Z);
 	notifytype = large_cave ?
-		GENNOTIFY_LARGECAVE_BEGIN : GENNOTIFY_CAVE_BEGIN;
+		GENNOTIFY_LARGECAVE_END : GENNOTIFY_CAVE_END;
 	mg->gennotify.addEvent(notifytype, abs_pos);
 }
 
