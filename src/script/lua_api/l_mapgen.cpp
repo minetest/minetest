@@ -68,9 +68,10 @@ struct EnumString ModApiMapgen::es_MapgenObject[] =
 
 struct EnumString ModApiMapgen::es_OreType[] =
 {
-	{ORE_TYPE_SCATTER,  "scatter"},
-	{ORE_TYPE_SHEET,    "sheet"},
-	{ORE_TYPE_BLOB,     "blob"},
+	{ORE_TYPE_SCATTER, "scatter"},
+	{ORE_TYPE_SHEET,   "sheet"},
+	{ORE_TYPE_BLOB,    "blob"},
+	{ORE_TYPE_VEIN,    "vein"},
 	{0, NULL},
 };
 
@@ -679,6 +680,12 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 		return 0;
 	}
 	lua_pop(L, 1);
+
+	if (oretype == ORE_TYPE_VEIN) {
+		OreVein *orevein = (OreVein *)ore;
+		orevein->random_factor = getfloatfield_default(L, index,
+			"random_factor", 1.f);
+	}
 
 	u32 id = oremgr->add(ore);
 	if (id == (u32)-1) {

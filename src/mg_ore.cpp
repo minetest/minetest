@@ -27,10 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 const char *OreManager::ELEMENT_TITLE = "ore";
 
 FlagDesc flagdesc_ore[] = {
-	{"absheight",            OREFLAG_ABSHEIGHT},
-	{"scatter_noisedensity", OREFLAG_DENSITY},
-	{"claylike_nodeisnt",    OREFLAG_NODEISNT},
-	{NULL,                   0}
+	{"absheight", OREFLAG_ABSHEIGHT},
+	{NULL,        0}
 };
 
 
@@ -217,7 +215,7 @@ void OreBlob::generate(ManualMapVoxelManipulator *vm, int seed, u32 blockseed,
 	int volume = (nmax.X - nmin.X + 1) *
 				 (nmax.Y - nmin.Y + 1) *
 				 (nmax.Z - nmin.Z + 1);
-	int csize     = clust_size;
+	int csize  = clust_size;
 	int nblobs = volume / clust_scarcity;
 
 	if (!noise)
@@ -259,5 +257,57 @@ void OreBlob::generate(ManualMapVoxelManipulator *vm, int seed, u32 blockseed,
 
 			vm->m_data[i] = n_ore;
 		}
+	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+OreVein::~OreVein()
+{
+	delete noise2;
+}
+
+
+void OreVein::generate(ManualMapVoxelManipulator *vm, int seed, u32 blockseed,
+	v3s16 nmin, v3s16 nmax)
+{
+	PseudoRandom pr(blockseed + 520);
+	MapNode n_ore(c_ore, 0, ore_param2);
+
+	if (!noise) {
+		int sx = nmax.X - nmin.X + 1;
+		int sy = nmax.Y - nmin.Y + 1;
+		int sz = nmax.Z - nmin.Z + 1;
+		noise  = new Noise(&np, seed, sx, sy, sz);
+		noise2 = new Noise(&np, seed + 436, sx, sy, sz);
+	}
+	bool noise_generated = false;
+
+	size_t index = 0;
+	for (int z = nmin.Z; z <= nmax.Z; z++)
+	for (int y = nmin.Y; y <= nmax.Y; y++)
+	for (int x = nmin.X; x <= nmax.X; x++, index++) {
+		u32 i = vm->m_area.index(x, y, z);
+		if (!vm->m_area.contains(i))
+			continue;
+		if (!CONTAINS(c_wherein, vm->m_data[i].getContent()))
+			continue;
+
+		// Same lazy generation optimization as in OreBlob
+		if (!noise_generated) {
+			noise_generated = true;
+			noise->perlinMap3D(nmin.X, nmin.Y, nmin.Z);
+			noise2->perlinMap3D(nmin.X, nmin.Y, nmin.Z);
+		}
+
+		// randval ranges from -1..1
+		float randval   = (float)pr.next() / (PSEUDORANDOM_MAX / 2) - 1.f;
+		float noiseval  = contour(noise->result[index]);
+		float noiseval2 = contour(noise2->result[index]);
+		if (noiseval * noiseval2 + randval * random_factor < nthresh)
+			continue;
+
+		vm->m_data[i] = n_ore;
 	}
 }

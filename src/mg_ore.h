@@ -32,14 +32,6 @@ class ManualMapVoxelManipulator;
 
 // Use absolute value of height to determine ore placement
 #define OREFLAG_ABSHEIGHT 0x01
-
-// Use 3d noise to get density of ore placement, instead of just the position
-#define OREFLAG_DENSITY   0x02 // not yet implemented
-
-// For claylike ore types, place ore if the number of surrounding
-// nodes isn't the specified node
-#define OREFLAG_NODEISNT  0x04 // not yet implemented
-
 #define OREFLAG_USE_NOISE 0x08
 
 #define ORE_RANGE_ACTUAL 1
@@ -50,6 +42,7 @@ enum OreType {
 	ORE_TYPE_SCATTER,
 	ORE_TYPE_SHEET,
 	ORE_TYPE_BLOB,
+	ORE_TYPE_VEIN,
 };
 
 extern FlagDesc flagdesc_ore[];
@@ -105,6 +98,19 @@ public:
 		u32 blockseed, v3s16 nmin, v3s16 nmax);
 };
 
+class OreVein : public Ore {
+public:
+	static const bool NEEDS_NOISE = true;
+
+	float random_factor;
+	Noise *noise2;
+
+	virtual ~OreVein();
+
+	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
+		u32 blockseed, v3s16 nmin, v3s16 nmax);
+};
+
 class OreManager : public GenElementManager {
 public:
 	static const char *ELEMENT_TITLE;
@@ -122,6 +128,8 @@ public:
 			return new OreSheet;
 		case ORE_TYPE_BLOB:
 			return new OreBlob;
+		case ORE_TYPE_VEIN:
+			return new OreVein;
 		default:
 			return NULL;
 		}
