@@ -2758,6 +2758,10 @@ Decoration definition (register_decoration)
     biomes = {"Oceanside", "Hills", "Plains"},
     ^ List of biomes in which this decoration occurs.  Occurs in all biomes if this is omitted,
     ^ and ignored if the Mapgen being used does not support biomes.
+    height_min = -31000
+    height_max = 31000
+    ^ Minimum and maximum y positions these decorations can be generated at.  This parameter refers to the
+    ^ y position of the decoration base, so the actual maximum height would be (height_max + size.Y).
 
     ----- Simple-type parameters
     decoration = "default:grass",

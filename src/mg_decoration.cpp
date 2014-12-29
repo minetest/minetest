@@ -140,7 +140,8 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 					mg->heightmap[mapindex] :
 					mg->findGroundLevel(v2s16(x, z), nmin.Y, nmax.Y);
 
-			if (y < nmin.Y || y > nmax.Y)
+			if (y < nmin.Y     || y > nmax.Y ||
+				y < height_min || y > height_max)
 				continue;
 
 			int height = getHeight();

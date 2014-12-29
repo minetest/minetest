@@ -423,14 +423,14 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 	Biome *b = bmgr->create(biometype);
 
 	b->name            = getstringfield_default(L, index, "name", "");
-	b->depth_top       = getintfield_default(L, index, "depth_top",    1);
-	b->depth_filler    = getintfield_default(L, index, "depth_filler", 3);
-	b->height_shore    = getintfield_default(L, index, "height_shore", 3);
-	b->depth_water_top = getintfield_default(L, index, "depth_water_top", 0);
-	b->height_min      = getintfield_default(L, index, "height_min",   0);
-	b->height_max      = getintfield_default(L, index, "height_max",   0);
-	b->heat_point      = getfloatfield_default(L, index, "heat_point",     0.);
-	b->humidity_point  = getfloatfield_default(L, index, "humidity_point", 0.);
+	b->depth_top       = getintfield_default(L, index, "depth_top",          1);
+	b->depth_filler    = getintfield_default(L, index, "depth_filler",       3);
+	b->height_shore    = getintfield_default(L, index, "height_shore",       3);
+	b->depth_water_top = getintfield_default(L, index, "depth_water_top",    0);
+	b->height_min      = getintfield_default(L, index, "height_min",    -31000);
+	b->height_max      = getintfield_default(L, index, "height_max",     31000);
+	b->heat_point      = getfloatfield_default(L, index, "heat_point",     0.f);
+	b->humidity_point  = getfloatfield_default(L, index, "humidity_point", 0.f);
 	b->flags           = 0; //reserved
 
 	u32 id = bmgr->add(b);
@@ -501,6 +501,8 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 
 	deco->name       = getstringfield_default(L, index, "name", "");
 	deco->fill_ratio = getfloatfield_default(L, index, "fill_ratio", 0.02);
+	deco->height_min = getintfield_default(L, index, "height_min", 31000);
+	deco->height_max = getintfield_default(L, index, "height_max", -31000);
 	deco->sidelen    = getintfield_default(L, index, "sidelen", 8);
 	if (deco->sidelen <= 0) {
 		errorstream << "register_decoration: sidelen must be "
@@ -660,8 +662,8 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	ore->clust_scarcity = getintfield_default(L, index, "clust_scarcity", 1);
 	ore->clust_num_ores = getintfield_default(L, index, "clust_num_ores", 1);
 	ore->clust_size     = getintfield_default(L, index, "clust_size", 0);
-	ore->height_min     = getintfield_default(L, index, "height_min", 0);
-	ore->height_max     = getintfield_default(L, index, "height_max", 0);
+	ore->height_min     = getintfield_default(L, index, "height_min", -31000);
+	ore->height_max     = getintfield_default(L, index, "height_max", 31000);
 	ore->nthresh        = getfloatfield_default(L, index, "noise_threshhold", 0);
 	ore->noise          = NULL;
 	ore->flags          = 0;
