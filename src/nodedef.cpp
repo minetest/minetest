@@ -1356,13 +1356,21 @@ bool CNodeDefManager::getIdsFromResolveInfo(NodeResolveInfo *nri,
 		std::string name = nri->nodenames.front();
 		nri->nodenames.pop_front();
 
-		if (getId(name, c)) {
-			result.push_back(c);
-		} else if (listinfo.all_required) {
-			errorstream << "Resolver: Failed to resolve node name '" << name
-				<< "'." << std::endl;
-			result.push_back(listinfo.c_fallback);
-			success = false;
+		if (name.substr(0,6) != "group:") {
+			if (getId(name, c)) {
+				result.push_back(c);
+			} else if (listinfo.all_required) {
+				errorstream << "Resolver: Failed to resolve node name '" << name
+					<< "'." << std::endl;
+				result.push_back(listinfo.c_fallback);
+				success = false;
+			}
+		} else {
+			std::set<content_t> cids;
+			std::set<content_t>::iterator it;
+			getIds(name, cids);
+			for (it = cids.begin(); it != cids.end(); ++it)
+				result.push_back(*it);
 		}
 	}
 
