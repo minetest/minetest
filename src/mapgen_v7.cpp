@@ -350,7 +350,7 @@ float MapgenV7::baseTerrainLevelFromMap(int index)
 bool MapgenV7::getMountainTerrainAtPoint(int x, int y, int z)
 {
 	float mnt_h_n = NoisePerlin2D(&noise_mount_height->np, x, z, seed);
-	float height_modifier = -((float)y / rangelim(mnt_h_n, 80.0, 150.0));
+	float height_modifier = -((float)y / mnt_h_n);
 	float mnt_n = NoisePerlin3D(&noise_mountain->np, x, y, z, seed);
 
 	return mnt_n + height_modifier >= 0.6;
@@ -360,7 +360,7 @@ bool MapgenV7::getMountainTerrainAtPoint(int x, int y, int z)
 bool MapgenV7::getMountainTerrainFromMap(int idx_xyz, int idx_xz, int y)
 {
 	float mounthn = noise_mount_height->result[idx_xz];
-	float height_modifier = -((float)y / rangelim(mounthn, 80.0, 150.0));
+	float height_modifier = -((float)y / mounthn);
 	return (noise_mountain->result[idx_xyz] + height_modifier >= 0.6);
 }
 
