@@ -114,7 +114,7 @@ public:
 	int getGroundLevelAtPoint(v2s16 p);
 
 	float baseTerrainLevel(float terrain_base, float terrain_higher,
-						   float steepness, float height_select);
+		float steepness, float height_select);
 	virtual float baseTerrainLevelFromNoise(v2s16 p);
 	virtual float baseTerrainLevelFromMap(v2s16 p);
 	virtual float baseTerrainLevelFromMap(int index);
@@ -147,11 +147,13 @@ public:
 };
 
 struct MapgenFactoryV6 : public MapgenFactory {
-	Mapgen *createMapgen(int mgid, MapgenParams *params, EmergeManager *emerge) {
+	Mapgen *createMapgen(int mgid, MapgenParams *params, EmergeManager *emerge)
+	{
 		return new MapgenV6(mgid, params, emerge);
 	};
 
-	MapgenSpecificParams *createMapgenParams() {
+	MapgenSpecificParams *createMapgenParams()
+	{
 		return new MapgenV6Params();
 	};
 };

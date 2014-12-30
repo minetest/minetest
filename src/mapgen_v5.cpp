@@ -109,7 +109,8 @@ MapgenV5::MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 }
 
 
-MapgenV5::~MapgenV5() {
+MapgenV5::~MapgenV5()
+{
 	delete noise_filler_depth;
 	delete noise_factor;
 	delete noise_height;
@@ -127,7 +128,8 @@ MapgenV5::~MapgenV5() {
 }
 
 
-MapgenV5Params::MapgenV5Params() {
+MapgenV5Params::MapgenV5Params()
+{
 	spflags = MGV5_BLOBS;
 
 	np_filler_depth = NoiseParams(0, 1,  v3f(150, 150, 150), 261,    4, 0.7,  2.0);
@@ -156,7 +158,8 @@ MapgenV5Params::MapgenV5Params() {
 //#define CAVE_NOISE_THRESHOLD (1.5/CAVE_NOISE_SCALE) < original and current code
 
 
-void MapgenV5Params::readParams(Settings *settings) {
+void MapgenV5Params::readParams(Settings *settings)
+{
 	settings->getFlagStrNoEx("mgv5_spflags", spflags, flagdesc_mapgen_v5);
 
 	settings->getNoiseParams("mgv5_np_filler_depth", np_filler_depth);
@@ -170,7 +173,8 @@ void MapgenV5Params::readParams(Settings *settings) {
 }
 
 
-void MapgenV5Params::writeParams(Settings *settings) {
+void MapgenV5Params::writeParams(Settings *settings)
+{
 	settings->setFlagStr("mgv5_spflags", spflags, flagdesc_mapgen_v5, (u32)-1);
 
 	settings->setNoiseParams("mgv5_np_filler_depth", np_filler_depth);
@@ -184,7 +188,8 @@ void MapgenV5Params::writeParams(Settings *settings) {
 }
 
 
-int MapgenV5::getGroundLevelAtPoint(v2s16 p) {
+int MapgenV5::getGroundLevelAtPoint(v2s16 p)
+{
 	//TimeTaker t("getGroundLevelAtPoint", NULL, PRECISION_MICRO);
 
 	float f = 0.55 + NoisePerlin2D(&noise_factor->np, p.X, p.Y, seed);
@@ -217,7 +222,8 @@ int MapgenV5::getGroundLevelAtPoint(v2s16 p) {
 }
 
 
-void MapgenV5::makeChunk(BlockMakeData *data) {
+void MapgenV5::makeChunk(BlockMakeData *data)
+{
 	assert(data->vmanip);
 	assert(data->nodedef);
 	assert(data->blockpos_requested.X >= data->blockpos_min.X &&
@@ -290,7 +296,8 @@ void MapgenV5::makeChunk(BlockMakeData *data) {
 }
 
 
-void MapgenV5::calculateNoise() {
+void MapgenV5::calculateNoise()
+{
 	//TimeTaker t("calculateNoise", NULL, PRECISION_MICRO);
 	int x = node_min.X;
 	int y = node_min.Y - 1;
@@ -335,7 +342,8 @@ void MapgenV5::calculateNoise() {
 
 
 // Make base ground level
-void MapgenV5::generateBaseTerrain() {
+void MapgenV5::generateBaseTerrain()
+{
 	u32 index = 0;
 	u32 index2d = 0;
 
@@ -374,7 +382,8 @@ void MapgenV5::generateBaseTerrain() {
 
 
 // Add mud and sand and others underground (in place of stone)
-void MapgenV5::generateBlobs() {
+void MapgenV5::generateBlobs()
+{
 	u32 index = 0;
 
 	for(s16 z=node_min.Z; z<=node_max.Z; z++) {
@@ -404,7 +413,8 @@ void MapgenV5::generateBlobs() {
 }
 
 
-void MapgenV5::generateBiomes() {
+void MapgenV5::generateBiomes()
+{
 	if (node_max.Y < water_level)
 		return;
 
@@ -491,7 +501,8 @@ void MapgenV5::generateBiomes() {
 }
 
 
-void MapgenV5::dustTopNodes() {
+void MapgenV5::dustTopNodes()
+{
 	v3s16 em = vm->m_area.getExtent();
 	u32 index = 0;
 

@@ -140,7 +140,7 @@ EmergeManager::EmergeManager(IGameDef *gamedef)
 
 EmergeManager::~EmergeManager()
 {
-	for (unsigned int i = 0; i != emergethread.size(); i++) {
+	for (u32 i = 0; i != emergethread.size(); i++) {
 		if (threads_active) {
 			emergethread[i]->Stop();
 			emergethread[i]->qevent.signal();
@@ -193,7 +193,7 @@ void EmergeManager::initMapgens()
 	}
 
 	// Create the mapgens
-	for (size_t i = 0; i != emergethread.size(); i++) {
+	for (u32 i = 0; i != emergethread.size(); i++) {
 		Mapgen *mg = createMapgen(params.mg_name, i, &params);
 		assert(mg);
 		mapgen.push_back(mg);
@@ -203,7 +203,7 @@ void EmergeManager::initMapgens()
 
 Mapgen *EmergeManager::getCurrentMapgen()
 {
-	for (unsigned int i = 0; i != emergethread.size(); i++) {
+	for (u32 i = 0; i != emergethread.size(); i++) {
 		if (emergethread[i]->IsSameThread())
 			return emergethread[i]->mapgen;
 	}
@@ -217,7 +217,7 @@ void EmergeManager::startThreads()
 	if (threads_active)
 		return;
 
-	for (unsigned int i = 0; i != emergethread.size(); i++)
+	for (u32 i = 0; i != emergethread.size(); i++)
 		emergethread[i]->Start();
 
 	threads_active = true;
@@ -230,13 +230,13 @@ void EmergeManager::stopThreads()
 		return;
 
 	// Request thread stop in parallel
-	for (unsigned int i = 0; i != emergethread.size(); i++) {
+	for (u32 i = 0; i != emergethread.size(); i++) {
 		emergethread[i]->Stop();
 		emergethread[i]->qevent.signal();
 	}
 
 	// Then do the waiting for each
-	for (unsigned int i = 0; i != emergethread.size(); i++)
+	for (u32 i = 0; i != emergethread.size(); i++)
 		emergethread[i]->Wait();
 
 	threads_active = false;
@@ -282,7 +282,7 @@ bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate
 
 		// insert into the EmergeThread queue with the least items
 		int lowestitems = emergethread[0]->blockqueue.size();
-		for (unsigned int i = 1; i != emergethread.size(); i++) {
+		for (u32 i = 1; i != emergethread.size(); i++) {
 			int nitems = emergethread[i]->blockqueue.size();
 			if (nitems < lowestitems) {
 				idx = i;
