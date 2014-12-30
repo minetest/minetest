@@ -522,8 +522,8 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 
 	deco->name       = getstringfield_default(L, index, "name", "");
 	deco->fill_ratio = getfloatfield_default(L, index, "fill_ratio", 0.02);
-	deco->height_min = getintfield_default(L, index, "height_min", 31000);
-	deco->height_max = getintfield_default(L, index, "height_max", -31000);
+	deco->height_min = getintfield_default(L, index, "height_min", -31000);
+	deco->height_max = getintfield_default(L, index, "height_max", 31000);
 	deco->sidelen    = getintfield_default(L, index, "sidelen", 8);
 	if (deco->sidelen <= 0) {
 		errorstream << "register_decoration: sidelen must be "
