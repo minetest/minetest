@@ -212,6 +212,19 @@ function core.register_tool(name, tooldef)
 	core.register_item(name, tooldef)
 end
 
+core.time_change_functions = core.time_change_functions or {}
+function core.register_on_time_change(func)
+	table.insert(core.time_change_functions, func)
+end
+
+local change_time = core.set_timeofday
+function core.set_timeofday(time)
+	for _,func in pairs(core.time_change_functions) do
+		func(time)
+	end
+	change_time(time)
+end
+
 function core.register_alias(name, convert_to)
 	if forbidden_item_names[name] then
 		error("Unable to register alias: Name is forbidden: " .. name)
