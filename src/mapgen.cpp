@@ -101,6 +101,21 @@ Mapgen::~Mapgen()
 }
 
 
+u32 Mapgen::getBlockSeed(v3s16 p, int seed)
+{
+	return (u32)seed   +
+		p.Z * 38134234 +
+		p.Y * 42123    +
+		p.X * 23;
+}
+
+
+u32 Mapgen::getBlockSeed2(v3s16 p, int seed)
+{
+	return noise3d(p.X, p.Y, p.Z, seed);
+}
+
+
 // Returns Y one under area minimum if not found
 s16 Mapgen::findGroundLevelFull(v2s16 p2d)
 {

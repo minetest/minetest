@@ -118,7 +118,6 @@ public:
 	Biome *getBiomeAtPoint(v3s16 p);
 	int getGroundLevelAtPoint(v2s16 p);
 	bool isBlockUnderground(v3s16 blockpos);
-	u32 getBlockSeed(v3s16 p);
 };
 
 #endif

@@ -325,15 +325,6 @@ bool EmergeManager::isBlockUnderground(v3s16 blockpos)
 }
 
 
-u32 EmergeManager::getBlockSeed(v3s16 p)
-{
-	return (u32)(params.seed & 0xFFFFFFFF) +
-		p.Z * 38134234 +
-		p.Y * 42123 +
-		p.X * 23;
-}
-
-
 void EmergeManager::getMapgenNames(std::list<const char *> &mgnames)
 {
 	for (u32 i = 0; i != ARRLEN(reg_mapgens); i++)
@@ -547,7 +538,7 @@ void *EmergeThread::Thread()
 						VoxelArea(minp, maxp));
 					try {  // takes about 90ms with -O1 on an e3-1230v2
 						m_server->getScriptIface()->environment_OnGenerated(
-								minp, maxp, emerge->getBlockSeed(minp));
+								minp, maxp, mapgen->blockseed);
 					} catch(LuaError &e) {
 						m_server->setAsyncFatalError(e.what());
 					}

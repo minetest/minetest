@@ -78,6 +78,8 @@ void MapgenSinglenode::makeChunk(BlockMakeData *data) {
 	v3s16 node_min = blockpos_min*MAP_BLOCKSIZE;
 	v3s16 node_max = (blockpos_max+v3s16(1,1,1))*MAP_BLOCKSIZE-v3s16(1,1,1);
 
+	blockseed = getBlockSeed2(node_min, data->seed);
+
 	MapNode n_node(c_node);
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)

@@ -240,7 +240,7 @@ void MapgenV5::makeChunk(BlockMakeData *data) {
 	full_node_max = (blockpos_max + 2) * MAP_BLOCKSIZE - v3s16(1, 1, 1);
 
 	// Create a block-specific seed
-	blockseed = m_emerge->getBlockSeed(full_node_min);  //////use getBlockSeed2()!
+	blockseed = getBlockSeed2(full_node_min, seed);
 
 	// Make some noise
 	calculateNoise();

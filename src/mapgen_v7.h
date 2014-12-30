@@ -59,7 +59,6 @@ public:
 	int zstride;
 	u32 spflags;
 
-	u32 blockseed;
 	v3s16 node_min;
 	v3s16 node_max;
 	v3s16 full_node_min;
