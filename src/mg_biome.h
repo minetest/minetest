@@ -52,8 +52,8 @@ public:
 	s16 height_shore;
 	s16 depth_water_top;
 
-	s16 height_min;
-	s16 height_max;
+	s16 y_min;
+	s16 y_max;
 	float heat_point;
 	float humidity_point;
 

@@ -45,8 +45,8 @@ BiomeManager::BiomeManager(IGameDef *gamedef) :
 	b->depth_filler    = 0;
 	b->height_shore    = 0;
 	b->depth_water_top = 0;
-	b->height_min      = -MAP_GENERATION_LIMIT;
-	b->height_max      = MAP_GENERATION_LIMIT;
+	b->y_min           = -MAP_GENERATION_LIMIT;
+	b->y_max           = MAP_GENERATION_LIMIT;
 	b->heat_point      = 0.0;
 	b->humidity_point  = 0.0;
 
@@ -91,7 +91,7 @@ Biome *BiomeManager::getBiome(float heat, float humidity, s16 y)
 
 	for (size_t i = 1; i < m_elements.size(); i++) {
 		b = (Biome *)m_elements[i];
-		if (!b || y > b->height_max || y < b->height_min)
+		if (!b || y > b->y_max || y < b->y_min)
 			continue;
 
 		float d_heat     = heat     - b->heat_point;

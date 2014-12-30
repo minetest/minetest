@@ -66,8 +66,8 @@ public:
 	int mapseed;
 	std::vector<content_t> c_place_on;
 	s16 sidelen;
-	s16 height_min;
-	s16 height_max;
+	s16 y_min;
+	s16 y_max;
 	float fill_ratio;
 	NoiseParams np;
 

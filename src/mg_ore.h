@@ -56,8 +56,8 @@ public:
 	u32 clust_scarcity; // ore cluster has a 1-in-clust_scarcity chance of appearing at a node
 	s16 clust_num_ores; // how many ore nodes are in a chunk
 	s16 clust_size;     // how large (in nodes) a chunk of ore is
-	s16 height_min;
-	s16 height_max;
+	s16 y_min;
+	s16 y_max;
 	u8 ore_param2;		// to set node-specific attributes
 	u32 flags;          // attributes for this ore
 	float nthresh;      // threshhold for noise at which an ore is placed

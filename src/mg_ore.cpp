@@ -95,25 +95,25 @@ size_t Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 {
 	int in_range = 0;
 
-	in_range |= (nmin.Y <= height_max && nmax.Y >= height_min);
+	in_range |= (nmin.Y <= y_max && nmax.Y >= y_min);
 	if (flags & OREFLAG_ABSHEIGHT)
-		in_range |= (nmin.Y >= -height_max && nmax.Y <= -height_min) << 1;
+		in_range |= (nmin.Y >= -y_max && nmax.Y <= -y_min) << 1;
 	if (!in_range)
 		return 0;
 
-	int ymin, ymax;
+	int actual_ymin, actual_ymax;
 	if (in_range & ORE_RANGE_MIRROR) {
-		ymin = MYMAX(nmin.Y, -height_max);
-		ymax = MYMIN(nmax.Y, -height_min);
+		actual_ymin = MYMAX(nmin.Y, -y_max);
+		actual_ymax = MYMIN(nmax.Y, -y_min);
 	} else {
-		ymin = MYMAX(nmin.Y, height_min);
-		ymax = MYMIN(nmax.Y, height_max);
+		actual_ymin = MYMAX(nmin.Y, y_min);
+		actual_ymax = MYMIN(nmax.Y, y_max);
 	}
-	if (clust_size >= ymax - ymin + 1)
+	if (clust_size >= actual_ymax - actual_ymin + 1)
 		return 0;
 
-	nmin.Y = ymin;
-	nmax.Y = ymax;
+	nmin.Y = actual_ymin;
+	nmax.Y = actual_ymax;
 	generate(mg->vm, mg->seed, blockseed, nmin, nmax);
 
 	return 1;
