@@ -143,6 +143,8 @@ core.get_game(index)
 	addon_mods_paths = {[1] = <path>,},
 }
 core.get_games() -> table of all games in upper format (possible in async calls)
+core.get_mapgen_names() -> table of all map generator algorithms registered in
+                           the core (possible in async calls)
 
 Favorites:
 core.get_favorites(location) -> list of favorites (possible in async calls)

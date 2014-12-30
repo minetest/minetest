@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "convert_json.h"
 #include "serverlist.h"
+#include "emerge.h"
 #include "sound.h"
 #include "settings.h"
 #include "main.h" // for g_settings
@@ -689,6 +690,25 @@ int ModApiMainMenu::l_set_topleft_text(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_get_mapgen_names(lua_State *L)
+{
+	lua_newtable(L);
+
+	std::list<const char *> names;
+	EmergeManager::getMapgenNames(names);
+
+	int i = 1;
+	for (std::list<const char *>::const_iterator
+			it = names.begin(); it != names.end(); ++it) {
+		lua_pushstring(L, *it);
+		lua_rawseti(L, -2, i++);
+	}
+
+	return 1;
+}
+
+
+/******************************************************************************/
 int ModApiMainMenu::l_get_modpath(lua_State *L)
 {
 	std::string modpath
@@ -1107,6 +1127,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(delete_favorite);
 	API_FCT(set_background);
 	API_FCT(set_topleft_text);
+	API_FCT(get_mapgen_names);
 	API_FCT(get_modpath);
 	API_FCT(get_gamepath);
 	API_FCT(get_texturepath);
@@ -1137,6 +1158,7 @@ void ModApiMainMenu::InitializeAsync(AsyncEngine& engine)
 	ASYNC_API_FCT(get_worlds);
 	ASYNC_API_FCT(get_games);
 	ASYNC_API_FCT(get_favorites);
+	ASYNC_API_FCT(get_mapgen_names);
 	ASYNC_API_FCT(get_modpath);
 	ASYNC_API_FCT(get_gamepath);
 	ASYNC_API_FCT(get_texturepath);

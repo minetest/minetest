@@ -73,6 +73,8 @@ private:
 
 	static int l_get_games(lua_State *L);
 
+	static int l_get_mapgen_names(lua_State *L);
+
 	static int l_get_favorites(lua_State *L);
 
 	static int l_delete_favorite(lua_State *L);
@@ -112,7 +114,7 @@ private:
 	static int l_get_modpath(lua_State *L);
 
 	static int l_get_gamepath(lua_State *L);
-	
+
 	static int l_get_texturepath(lua_State *L);
 
 	static int l_get_texturepath_share(lua_State *L);
