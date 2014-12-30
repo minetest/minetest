@@ -295,9 +295,11 @@ Server::Server(
 	// Lock environment
 	JMutexAutoLock envlock(m_env_mutex);
 
-	// Create the Map and load parameters
-	ServerMap *servermap = new ServerMap(path_world, this, m_emerge);
+	// Load mapgen params from Settings
 	m_emerge->loadMapgenParams();
+
+	// Create the Map (loads map_meta.txt, overriding configured mapgen params)
+	ServerMap *servermap = new ServerMap(path_world, this, m_emerge);
 
 	// Initialize scripting
 	infostream<<"Server: Initializing Lua"<<std::endl;
