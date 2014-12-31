@@ -500,7 +500,7 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 	}
 
 	// Add dungeons
-	if (flags & MG_DUNGEONS) {
+	if ((flags & MG_DUNGEONS) && (stone_surface_max_y >= node_min.Y)) {
 		DungeonParams dp;
 
 		dp.np_rarity  = nparams_dungeon_rarity;
