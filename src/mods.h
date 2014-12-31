@@ -56,6 +56,7 @@ struct ModSpec
 	//if normal mod:
 	std::set<std::string> depends;
 	std::set<std::string> optdepends;
+	std::set<std::string> preloads;
 	std::set<std::string> unsatisfied_depends;
 
 	bool part_of_modpack;

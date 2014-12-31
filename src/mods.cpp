@@ -50,6 +50,7 @@ void parseModContents(ModSpec &spec)
 
 	spec.depends.clear();
 	spec.optdepends.clear();
+	spec.preloads.clear();
 	spec.is_modpack = false;
 	spec.modpack_content.clear();
 
@@ -64,17 +65,25 @@ void parseModContents(ModSpec &spec)
 		// tracked separately for each mod in the modpack
 	}
 	else{ // not a modpack, parse the dependencies
-		std::ifstream is((spec.path+DIR_DELIM+"depends.txt").c_str());
-		while(is.good()){
+		std::ifstream depends_is((spec.path+DIR_DELIM+"depends.txt").c_str());
+		while(depends_is.good()){
 			std::string dep;
 			std::set<char> symbols;
-			if(parseDependsLine(is, dep, symbols)){
+			if(parseDependsLine(depends_is, dep, symbols)){
 				if(symbols.count('?') != 0){
 					spec.optdepends.insert(dep);
 				}
 				else{
 					spec.depends.insert(dep);
 				}
+			}
+		}
+		std::ifstream preloads_is((spec.path+DIR_DELIM+"preloads.txt").c_str());
+		while(preloads_is.good()){
+			std::string pre;
+			std::set<char> symbols;
+			if(parseDependsLine(preloads_is, pre, symbols)){
+				spec.preloads.insert(pre);
 			}
 		}
 	}
@@ -280,10 +289,10 @@ void ModConfiguration::addMods(std::vector<ModSpec> new_mods)
 void ModConfiguration::resolveDependencies()
 {
 	// Step 1: Compile a list of the mod names we're working with
-	std::set<std::string> modnames;
+	std::map<std::string, ModSpec> mods;
 	for(std::vector<ModSpec>::iterator it = m_unsatisfied_mods.begin();
 		it != m_unsatisfied_mods.end(); ++it){
-		modnames.insert((*it).name);
+		mods.insert(std::make_pair((*it).name, *it));
 	}
 
 	// Step 2: get dependencies (including optional dependencies)
@@ -298,9 +307,27 @@ void ModConfiguration::resolveDependencies()
 		for(std::set<std::string>::iterator it_optdep = mod.optdepends.begin();
 				it_optdep != mod.optdepends.end(); ++it_optdep){
 			std::string optdep = *it_optdep;
-			if(modnames.count(optdep) != 0)
+			if(mods.count(optdep) != 0)
 				mod.unsatisfied_depends.insert(optdep);
 		}
+	}
+	
+	// handle preloads - we have to do this now because before,
+	// mods[preload] maybe didn't exist
+	for(std::vector<ModSpec>::iterator it = m_unsatisfied_mods.begin();
+			it != m_unsatisfied_mods.end(); ++it){
+		ModSpec mod = *it;
+		for(std::set<std::string>::iterator it_preload = mod.preloads.begin();
+				it_preload != mod.preloads.end(); ++it_preload){
+			std::string preload = *it_preload;
+			if(mods.count(preload) != 0)
+				mods[preload].unsatisfied_depends.insert(mod.name);
+		}
+	}
+	
+	for(std::vector<ModSpec>::iterator it = m_unsatisfied_mods.begin();
+			it != m_unsatisfied_mods.end(); ++it){
+		ModSpec mod = *it;
 		// if a mod has no depends it is initially satisfied
 		if(mod.unsatisfied_depends.empty())
 			satisfied.push_back(mod);
