@@ -241,7 +241,7 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 	if (flags & MG_CAVES)
 		generateCaves(stone_surface_max_y);
 
-	if (flags & MG_DUNGEONS) {
+	if ((flags & MG_DUNGEONS) && (stone_surface_max_y >= node_min.Y)) {
 		DungeonGen dgen(this, NULL);
 		dgen.generate(blockseed, full_node_min, full_node_max);
 	}
@@ -405,7 +405,7 @@ int MapgenV7::generateTerrain()
 	int ymax = generateBaseTerrain();
 
 	if (spflags & MGV7_MOUNTAINS)
-		generateMountainTerrain();
+		ymax = generateMountainTerrain(ymax);
 
 	if (spflags & MGV7_RIDGES)
 		generateRidgeTerrain();
@@ -453,10 +453,10 @@ int MapgenV7::generateBaseTerrain()
 }
 
 
-void MapgenV7::generateMountainTerrain()
+int MapgenV7::generateMountainTerrain(int ymax)
 {
 	if (node_max.Y <= water_level)
-		return;
+		return ymax;
 
 	MapNode n_stone(c_stone);
 	u32 j = 0;
@@ -466,14 +466,21 @@ void MapgenV7::generateMountainTerrain()
 		u32 vi = vm->m_area.index(node_min.X, y, z);
 		for (s16 x = node_min.X; x <= node_max.X; x++) {
 			int index = (z - node_min.Z) * csize.X + (x - node_min.X);
+			content_t c = vm->m_data[vi].getContent();
 
-			if (getMountainTerrainFromMap(j, index, y))
+			if (getMountainTerrainFromMap(j, index, y)
+					&& (c == CONTENT_AIR || c == c_water_source)) {
 				vm->m_data[vi] = n_stone;
+				if (y > ymax)
+					ymax = y;
+			}
 
 			vi++;
 			j++;
 		}
 	}
+
+	return ymax;
 }
 
 

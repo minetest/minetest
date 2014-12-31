@@ -70,10 +70,7 @@ DungeonGen::DungeonGen(Mapgen *mapgen, DungeonParams *dparams) {
 
 void DungeonGen::generate(u32 bseed, v3s16 nmin, v3s16 nmax) {
 	//TimeTaker t("gen dungeons");
-	int approx_groundlevel = 10 + mg->water_level;
-
-	if ((nmin.Y + nmax.Y) / 2 >= approx_groundlevel ||
-		NoisePerlin3D(&dp.np_rarity, nmin.X, nmin.Y, nmin.Z, mg->seed) < 0.2)
+	if (NoisePerlin3D(&dp.np_rarity, nmin.X, nmin.Y, nmin.Z, mg->seed) < 0.2)
 		return;
 
 	this->blockseed = bseed;

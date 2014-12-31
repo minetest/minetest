@@ -107,7 +107,7 @@ public:
 
 	virtual int generateTerrain();
 	int generateBaseTerrain();
-	void generateMountainTerrain();
+	int generateMountainTerrain(int ymax);
 	void generateRidgeTerrain();
 
 	void generateBiomes();
