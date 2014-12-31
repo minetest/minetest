@@ -1365,6 +1365,12 @@ vector.add(v, x) -> vector
 vector.subtract(v, x) -> vector
 vector.multiply(v, x) -> vector
 vector.divide(v, x) -> vector
+vector.resulting({a, b, ..., n}) -> vector
+^ Returns a resulting vector based on the vectors given in the list
+^ Expects a list of vectors, e.g. { {x = 1, y = 2, z = 3}, {x = 4, y = 5, z = 6} }
+vector.average({a, b, ..., n})
+^ Returns a vector based on the average of all single values
+^ Expects a list of vectors, e.g. { {x = 1, y = 2, z = 3}, {x = 4, y = 5, z = 6} }
 
 Helper functions
 -----------------
