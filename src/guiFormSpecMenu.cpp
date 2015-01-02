@@ -1951,7 +1951,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			// wide, including border) just fit into the
 			// default window (800 pixels wide) at 96 DPI
 			// and default scaling (1.00).
-			use_imgsize = 0.53 * screen_dpi * gui_scaling;
+			use_imgsize = 0.5555 * screen_dpi * gui_scaling;
 		} else {
 			// In variable-size mode, we prefer to make the
 			// inventory image size 1/15 of screen height,
@@ -1991,6 +1991,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		spacing = v2s32(use_imgsize*5.0/4, use_imgsize*15.0/13);
 		padding = v2s32(use_imgsize*3.0/8, use_imgsize*3.0/8);
 		double target_font_height = use_imgsize*15.0/13 * 0.4;
+		target_font_height *= g_settings->getFloat("font_size")/TTF_DEFAULT_FONT_SIZE;
 		m_btn_height = use_imgsize*15.0/13 * 0.35;
 
 		m_font = select_font_by_line_height(target_font_height);
