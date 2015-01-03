@@ -41,12 +41,12 @@ include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := ssl
-LOCAL_SRC_FILES := deps/openssl-android/libs/$(TARGET_LIBDIR)/libssl.so
+LOCAL_SRC_FILES := deps/openssl/libssl.so
 include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := crypto
-LOCAL_SRC_FILES := deps/openssl-android/libs/$(TARGET_LIBDIR)/libcrypto.so
+LOCAL_SRC_FILES := deps/openssl/libcrypto.so
 include $(PREBUILT_SHARED_LIBRARY)
 
 
