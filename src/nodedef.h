@@ -402,9 +402,9 @@ public:
 		m_ndef = NULL;
 	}
 
-	~NodeResolver()
+	virtual ~NodeResolver()
 	{
-		if (!m_lookup_done)
+		if (!m_lookup_done && m_ndef)
 			m_ndef->cancelNodeResolve(this);
 	}
 
