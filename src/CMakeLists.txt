@@ -6,8 +6,6 @@ INCLUDE(CheckIncludeFiles)
 
 # Set some random things default to not being visible in the GUI
 mark_as_advanced(EXECUTABLE_OUTPUT_PATH LIBRARY_OUTPUT_PATH)
-mark_as_advanced(SQLITE3_INCLUDE_DIR SQLITE3_LIBRARY)
-mark_as_advanced(JSON_INCLUDE_DIR JSON_LIBRARY)
 
 option(ENABLE_CURL "Enable cURL support for fetching media" 1)
 
@@ -174,7 +172,7 @@ else()
 	set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
 endif()
 
-find_package(Sqlite3 REQUIRED)
+find_package(SQLite3 REQUIRED)
 find_package(Json REQUIRED)
 
 option(ENABLE_GLES "Enable OpenGL ES support" 0)
@@ -771,11 +769,6 @@ if (USE_GETTEXT)
 endif(USE_GETTEXT)
 
 # Subdirectories
-
-if (SQLITE3_FOUND)
-else (SQLITE3_FOUND)
-	add_subdirectory(sqlite)
-endif (SQLITE3_FOUND)
 
 if (BUILD_CLIENT AND USE_FREETYPE)
 	add_subdirectory(cguittfont)

@@ -2,12 +2,6 @@
 
 set(IRRLICHT_SOURCE_DIR "" CACHE PATH "Path to irrlicht source directory (optional)")
 
-if( UNIX )
-	# Unix
-else( UNIX )
-	# Windows
-endif( UNIX )
-
 # Find include directory
 
 if(NOT IRRLICHT_SOURCE_DIR STREQUAL "")
@@ -82,7 +76,7 @@ endif(WIN32)
 # handle the QUIETLY and REQUIRED arguments and set IRRLICHT_FOUND to TRUE if
 # all listed variables are TRUE
 INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(IRRLICHT DEFAULT_MSG IRRLICHT_LIBRARY IRRLICHT_INCLUDE_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(Irrlicht DEFAULT_MSG IRRLICHT_LIBRARY IRRLICHT_INCLUDE_DIR)
 
 IF(IRRLICHT_FOUND)
   SET(IRRLICHT_LIBRARIES ${IRRLICHT_LIBRARY})
