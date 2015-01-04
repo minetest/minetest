@@ -309,21 +309,24 @@ $(OPENSSL_LIB): $(OPENSSL_TIMESTAMP)
 	echo "changed timestamp for openssl detected building...";                 \
 	cd ${OPENSSL_DIR};                                                         \
 	ln -s ${OPENSSL_DIR} ../openssl;                                           \
-	export TOOLCHAIN=/tmp/ndk-${TARGET_HOST};                                  \
+	export TOOLCHAIN=/tmp/ndk-${TARGET_HOST}-openssl;                          \
 	${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh                    \
 	--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                         \
 	--install-dir=$${TOOLCHAIN} --system=linux-x86_64;                         \
 	export PATH="$${TOOLCHAIN}/bin:$${PATH}";                                  \
-	CC=${CROSS_PREFIX}gcc ./Configure -shared android-${TARGET_ARCH};          \
-	CC=${CROSS_PREFIX}gcc ANDROID_DEV=/tmp/ndk-${TARGET_HOST} make all;                              \
+	CC=${CROSS_PREFIX}gcc ./Configure android-${TARGET_ARCH} no-idea no-seed -no-sha0 -DL_ENDIAN;\
+	CC=${CROSS_PREFIX}gcc ANDROID_DEV=/tmp/ndk-${TARGET_HOST} make build_libs; \
 	touch ${OPENSSL_TIMESTAMP};                                                \
 	touch ${OPENSSL_TIMESTAMP_INT};                                            \
+	$(RM) -rf $${TOOLCHAIN};                                                   \
 	else                                                                       \
 		echo "nothing to be done for openssl";                        \
 	fi
 
 clean_openssl :
-	$(RM) -rf ${OPENSSL_DIR}
+	$(RM) -rf ${OPENSSL_DIR};                                                  \
+	$(RM) -rf $(ROOT)/deps/${OPENSSL_BASEDIR}.tar.gz;                          \
+	$(RM) -rf $(ROOT)/deps/openssl
 
 $(LEVELDB_TIMESTAMP) : leveldb_download
 	@LAST_MODIF=$$(find ${LEVELDB_DIR} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
@@ -354,7 +357,7 @@ $(LEVELDB_LIB): $(LEVELDB_TIMESTAMP)
 	echo "changed timestamp for leveldb detected building...";                 \
 	cd deps/leveldb;                                                           \
 	export CROSS_PREFIX=${CROSS_PREFIX};                                       \
-	export TOOLCHAIN=/tmp/ndk-${TARGET_HOST};                                  \
+	export TOOLCHAIN=/tmp/ndk-${TARGET_HOST}-leveldb;                          \
 	${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh                    \
 	--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                         \
 	--install-dir=$${TOOLCHAIN} --system=linux-x86_64;                         \
@@ -368,6 +371,7 @@ $(LEVELDB_LIB): $(LEVELDB_TIMESTAMP)
 	$(MAKE) -j${PARALLEL} -s || exit 1;                                        \
 	touch ${LEVELDB_TIMESTAMP};                                                \
 	touch ${LEVELDB_TIMESTAMP_INT};                                            \
+	$(RM) -rf $${TOOLCHAIN};                                                   \
 	else                                                                       \
 		echo "nothing to be done for leveldb";                                 \
 	fi
@@ -511,7 +515,7 @@ $(CURL_LIB): $(CURL_TIMESTAMP) $(OPENSSL_LIB)
 	echo "changed timestamp for curl detected building...";                    \
 	cd deps/curl-${CURL_VERSION};                                              \
 	export CROSS_PREFIX=${CROSS_PREFIX};                                       \
-	export TOOLCHAIN=/tmp/ndk-${TARGET_HOST};                                  \
+	export TOOLCHAIN=/tmp/ndk-${TARGET_HOST}-curl;                             \
 	${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh                    \
 	--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                         \
 	--install-dir=$${TOOLCHAIN} --system=linux-x86_64;                         \
@@ -520,14 +524,14 @@ $(CURL_LIB): $(CURL_TIMESTAMP) $(OPENSSL_LIB)
 	export CXX=${CROSS_PREFIX}g++;                                             \
 	export TARGET_OS=OS_ANDROID_CROSSCOMPILE;                                  \
 	export CPPFLAGS="$${CPPFLAGS} -I${OPENSSL_DIR}/include                     \
-	-L${OPENSSL_DIR}/libs/${TARGET_ABI}/ ${TARGET_CFLAGS_ADDON}";              \
+	-L${OPENSSL_DIR} ${TARGET_CFLAGS_ADDON}";                                  \
 	export CFLAGS="$${CFLAGS} ${TARGET_CFLAGS_ADDON}";                         \
-	export LDFLAGS="$${LDFLAGS} -L${OPENSSL_DIR}/libs/${TARGET_ABI}/           \
-	${TARGET_LDFLAGS_ADDON}";                                                  \
+	export LDFLAGS="$${LDFLAGS} -L${OPENSSL_DIR} ${TARGET_LDFLAGS_ADDON}";     \
 	./configure --host=${TARGET_HOST} --disable-shared --enable-static --with-ssl;  \
 	$(MAKE) -j${PARALLEL} -s || exit 1;                                        \
 	touch ${CURL_TIMESTAMP};                                                   \
 	touch ${CURL_TIMESTAMP_INT};                                               \
+	$(RM) -rf $${TOOLCHAIN};                                                   \
 	else                                                                       \
 		echo "nothing to be done for curl";                                    \
 	fi
