@@ -178,7 +178,7 @@ function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
 			table_insert(items, s)
 		end
 		pos = npe + 1
-	until (max_splits == 0) or (pos > len)
+	until (max_splits == 0) or (pos > (len + 1))
 	return items
 end
 
