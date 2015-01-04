@@ -155,7 +155,7 @@ void MapNode::rotateAlongYAxis(INodeDefManager *nodemgr, Rotation rot) {
 		u8 wmountface = (param2 & 7);
 		if (wmountface <= 1)
 			return;
-			
+
 		Rotation oldrot = wallmounted_to_rot[wmountface - 2];
 		param2 &= ~7;
 		param2 |= rot_to_wallmounted[(oldrot - rot) & 3];
@@ -439,28 +439,11 @@ u8 MapNode::addLevel(INodeDefManager *nodemgr, s8 add)
 	return setLevel(nodemgr, level);
 }
 
-void MapNode::freezeMelt(INodeDefManager *ndef) {
-	u8 level_was_max = this->getMaxLevel(ndef);
-	u8 level_was = this->getLevel(ndef);
-	this->setContent(ndef->getId(ndef->get(*this).freezemelt));
-	u8 level_now_max = this->getMaxLevel(ndef);
-	if (level_was_max && level_was_max != level_now_max) {
-		u8 want = (float)level_now_max / level_was_max * level_was;
-		if (!want)
-			want = 1;
-		if (want != level_was)
-			this->setLevel(ndef, want);
-		//errorstream<<"was="<<(int)level_was<<"/"<<(int)level_was_max<<" nowm="<<(int)want<<"/"<<(int)level_now_max<< " => "<<(int)this->getLevel(ndef)<< std::endl;
-	}
-	if (this->getMaxLevel(ndef) && !this->getLevel(ndef))
-		this->addLevel(ndef);
-}
-
 u32 MapNode::serializedLength(u8 version)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
-		
+
 	if(version == 0)
 		return 1;
 	else if(version <= 9)
@@ -474,13 +457,13 @@ void MapNode::serialize(u8 *dest, u8 version)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
-	
+
 	// Can't do this anymore; we have 16-bit dynamically allocated node IDs
 	// in memory; conversion just won't work in this direction.
 	if(version < 24)
 		throw SerializationError("MapNode::serialize: serialization to "
 				"version < 24 not possible");
-		
+
 	writeU16(dest+0, param0);
 	writeU8(dest+2, param1);
 	writeU8(dest+3, param2);
@@ -489,7 +472,7 @@ void MapNode::deSerialize(u8 *source, u8 version)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
-		
+
 	if(version <= 21)
 	{
 		deSerialize_pre22(source, version);
@@ -651,7 +634,7 @@ void MapNode::deSerialize_pre22(u8 *source, u8 version)
 			param2 &= 0x0f;
 		}
 	}
-	
+
 	// Convert special values from old version to new
 	if(version <= 19)
 	{

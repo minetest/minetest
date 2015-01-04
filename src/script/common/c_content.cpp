@@ -414,7 +414,6 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	f.leveled = getintfield_default(L, index, "leveled", f.leveled);
 
 	getboolfield(L, index, "liquid_renewable", f.liquid_renewable);
-	getstringfield(L, index, "freezemelt", f.freezemelt);
 	f.drowning = getintfield_default(L, index,
 			"drowning", f.drowning);
 	// Amount of light the node emits

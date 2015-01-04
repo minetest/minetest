@@ -62,11 +62,11 @@ typedef u16 content_t;
 
 /*
 	Ignored node.
-	
+
 	Unloaded chunks are considered to consist of this. Several other
 	methods return this when an error occurs. Also, during
 	map generation this means the node has not been set yet.
-	
+
 	Doesn't create faces with anything and is considered being
 	out-of-map in the game map.
 */
@@ -132,7 +132,7 @@ struct MapNode
 		- Uhh... well, most blocks have light or nothing in here.
 	*/
 	u8 param1;
-	
+
 	/*
 		The second parameter. Initialized to 0.
 		E.g. direction for torches and flowing water.
@@ -161,7 +161,7 @@ struct MapNode
 				&& param1 == other.param1
 				&& param2 == other.param2);
 	}
-	
+
 	// To be used everywhere
 	content_t getContent() const
 	{
@@ -187,7 +187,7 @@ struct MapNode
 	{
 		param2 = p;
 	}
-	
+
 	void setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr);
 	u8 getLight(enum LightBank bank, INodeDefManager *nodemgr) const;
 
@@ -223,7 +223,7 @@ struct MapNode
 	u8 getFaceDir(INodeDefManager *nodemgr) const;
 	u8 getWallMounted(INodeDefManager *nodemgr) const;
 	v3s16 getWallMountedDir(INodeDefManager *nodemgr) const;
-	
+
 	void rotateAlongYAxis(INodeDefManager *nodemgr, Rotation rot);
 
 	/*
@@ -241,12 +241,13 @@ struct MapNode
 	*/
 	std::vector<aabb3f> getCollisionBoxes(INodeDefManager *nodemgr) const;
 
-	/* Liquid helpers */
+	/*
+		Liquid helpers
+	*/
 	u8 getMaxLevel(INodeDefManager *nodemgr) const;
 	u8 getLevel(INodeDefManager *nodemgr) const;
 	u8 setLevel(INodeDefManager *nodemgr, s8 level = 1);
 	u8 addLevel(INodeDefManager *nodemgr, s8 add = 1);
-	void freezeMelt(INodeDefManager *nodemgr);
 
 	/*
 		Serialization functions
@@ -255,7 +256,7 @@ struct MapNode
 	static u32 serializedLength(u8 version);
 	void serialize(u8 *dest, u8 version);
 	void deSerialize(u8 *source, u8 version);
-	
+
 	// Serializes or deserializes a list of nodes in bulk format (first the
 	// content of all nodes, then the param1 of all nodes, then the param2
 	// of all nodes).
