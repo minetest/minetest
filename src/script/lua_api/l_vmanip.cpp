@@ -168,10 +168,8 @@ int LuaVoxelManip::l_calc_lighting(lua_State *L)
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
 	ManualMapVoxelManipulator *vm = o->vm;
 
-	v3s16 p1 = lua_istable(L, 2) ? read_v3s16(L, 2) :
-		vm->m_area.MinEdge + v3s16(0, 1, 0) * MAP_BLOCKSIZE;
-	v3s16 p2 = lua_istable(L, 3) ? read_v3s16(L, 3) :
-		vm->m_area.MaxEdge - v3s16(0, 1, 0) * MAP_BLOCKSIZE;
+	v3s16 p1 = lua_istable(L, 2) ? read_v3s16(L, 2) : vm->m_area.MinEdge;
+	v3s16 p2 = lua_istable(L, 3) ? read_v3s16(L, 3) : vm->m_area.MaxEdge;
 	sortBoxVerticies(p1, p2);
 
 	Mapgen mg;
@@ -179,7 +177,11 @@ int LuaVoxelManip::l_calc_lighting(lua_State *L)
 	mg.ndef        = ndef;
 	mg.water_level = emerge->params.water_level;
 
-	mg.calcLighting(p1, p2);
+	// Mapgen::calcLighting assumes the coordinates of
+	// the central chunk; correct for this
+	mg.calcLighting(
+		p1 + v3s16(1, 1, 1) * MAP_BLOCKSIZE,
+		p2 - v3s16(1, 1, 1) * MAP_BLOCKSIZE);
 
 	return 0;
 }
@@ -201,10 +203,8 @@ int LuaVoxelManip::l_set_lighting(lua_State *L)
 
 	ManualMapVoxelManipulator *vm = o->vm;
 
-	v3s16 p1 = lua_istable(L, 3) ? read_v3s16(L, 3) :
-		vm->m_area.MinEdge + v3s16(0, 1, 0) * MAP_BLOCKSIZE;
-	v3s16 p2 = lua_istable(L, 4) ? read_v3s16(L, 4) :
-		vm->m_area.MaxEdge - v3s16(0, 1, 0) * MAP_BLOCKSIZE;
+	v3s16 p1 = lua_istable(L, 3) ? read_v3s16(L, 3) : vm->m_area.MinEdge;
+	v3s16 p2 = lua_istable(L, 4) ? read_v3s16(L, 4) : vm->m_area.MaxEdge;
 	sortBoxVerticies(p1, p2);
 
 	Mapgen mg;

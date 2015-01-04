@@ -243,14 +243,28 @@ void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light)
 
 void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax)
 {
-	VoxelArea a(nmin, nmax);
-	bool block_is_underground = (water_level >= nmax.Y);
-
 	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update", SPT_AVG);
 	//TimeTaker t("updateLighting");
 
-	// first, send vertical rays of sunshine downward
+	propagateSunlight(
+		nmin - v3s16(1, 1, 1) * MAP_BLOCKSIZE,
+		nmax + v3s16(1, 0, 1) * MAP_BLOCKSIZE);
+
+	spreadLight(
+		nmin - v3s16(1, 1, 1) * MAP_BLOCKSIZE,
+		nmax + v3s16(1, 1, 1) * MAP_BLOCKSIZE);
+
+	//printf("updateLighting: %dms\n", t.stop());
+}
+
+
+void Mapgen::propagateSunlight(v3s16 nmin, v3s16 nmax)
+{
+	//TimeTaker t("propagateSunlight");
+	VoxelArea a(nmin, nmax);
+	bool block_is_underground = (water_level >= nmax.Y);
 	v3s16 em = vm->m_area.getExtent();
+
 	for (int z = a.MinEdge.Z; z <= a.MaxEdge.Z; z++) {
 		for (int x = a.MinEdge.X; x <= a.MaxEdge.X; x++) {
 			// see if we can get a light value from the overtop
@@ -272,8 +286,17 @@ void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax)
 			}
 		}
 	}
+	//printf("propagateSunlight: %dms\n", t.stop());
+}
 
-	// now spread the sunlight and light up any sources
+
+
+void Mapgen::spreadLight(v3s16 nmin, v3s16 nmax)
+{
+	//TimeTaker t("spreadLight");
+	VoxelArea a(nmin, nmax);
+	v3s16 em = vm->m_area.getExtent();
+
 	for (int z = a.MinEdge.Z; z <= a.MaxEdge.Z; z++) {
 		for (int y = a.MinEdge.Y; y <= a.MaxEdge.Y; y++) {
 			u32 i = vm->m_area.index(a.MinEdge.X, y, z);
@@ -289,19 +312,20 @@ void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax)
 
 				u8 light = n.param1 & 0x0F;
 				if (light) {
-					lightSpread(a, v3s16(x,     y,     z + 1), light - 1);
-					lightSpread(a, v3s16(x,     y + 1, z    ), light - 1);
-					lightSpread(a, v3s16(x + 1, y,     z    ), light - 1);
-					lightSpread(a, v3s16(x,     y,     z - 1), light - 1);
-					lightSpread(a, v3s16(x,     y - 1, z    ), light - 1);
-					lightSpread(a, v3s16(x - 1, y,     z    ), light - 1);
+					lightSpread(a, v3s16(x,     y,     z + 1), light);
+					lightSpread(a, v3s16(x,     y + 1, z    ), light);
+					lightSpread(a, v3s16(x + 1, y,     z    ), light);
+					lightSpread(a, v3s16(x,     y,     z - 1), light);
+					lightSpread(a, v3s16(x,     y - 1, z    ), light);
+					lightSpread(a, v3s16(x - 1, y,     z    ), light);
 				}
 			}
 		}
 	}
 
-	//printf("updateLighting: %dms\n", t.stop());
+	//printf("spreadLight: %dms\n", t.stop());
 }
+
 
 
 void Mapgen::calcLightingOld(v3s16 nmin, v3s16 nmax)
