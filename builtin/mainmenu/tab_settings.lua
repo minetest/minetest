@@ -156,6 +156,8 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.setting_getbool("bilinear_filter")) .. "]"..
 		"checkbox[4,1.5;cb_trilinear;".. fgettext("Tri-Linear Filtering") .. ";"
 				.. dump(core.setting_getbool("trilinear_filter")) .. "]"..
+		"checkbox[4.5,2.0;cb_clouds;".. fgettext("Enable Clouds") .. ";"
+				.. dump(core.setting_getbool("enable_clouds"))	.. "]"..
 		"box[7.75,0;4,4;#999999]" ..
 		"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
 				.. dump(core.setting_getbool("enable_shaders")) .. "]"
@@ -260,6 +262,10 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 	if fields["cb_connected_glass"] then
 		core.setting_set("connected_glass", fields["cb_connected_glass"])
+		return true
+	end
+	if fields["cb_clouds"] then
+		core.setting_set("enable_clouds", fields["cb_clouds"])
 		return true
 	end
 	if fields["cb_particles"] then
