@@ -79,7 +79,7 @@ QueuedMeshUpdate::~QueuedMeshUpdate()
 /*
 	MeshUpdateQueue
 */
-	
+
 MeshUpdateQueue::MeshUpdateQueue()
 {
 }
@@ -130,7 +130,7 @@ void MeshUpdateQueue::addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_se
 			return;
 		}
 	}
-	
+
 	/*
 		Add the block
 	*/
@@ -173,7 +173,7 @@ void * MeshUpdateThread::Thread()
 	log_register_thread("MeshUpdateThread");
 
 	DSTACK(__FUNCTION_NAME);
-	
+
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
 	porting::setThreadName("MeshUpdateThread");
@@ -381,7 +381,7 @@ void Client::step(float dtime)
 		m_ignore_damage_timer -= dtime;
 	else
 		m_ignore_damage_timer = 0.0;
-	
+
 	m_animation_time += dtime;
 	if(m_animation_time > 60.0)
 		m_animation_time -= 60.0;
@@ -399,7 +399,7 @@ void Client::step(float dtime)
 		if(counter <= 0.0)
 		{
 			counter = 20.0;
-			
+
 			infostream << "Client packetcounter (" << m_packetcounter_timer
 					<< "):"<<std::endl;
 			m_packetcounter.print(infostream);
@@ -415,7 +415,7 @@ void Client::step(float dtime)
 			NOTE: This jams the game for a while because deleting sectors
 			      clear caches
 		*/
-		
+
 		float &counter = m_delete_unused_sectors_timer;
 		counter -= dtime;
 		if(counter <= 0.0)
@@ -430,12 +430,12 @@ void Client::step(float dtime)
 
 			float delete_unused_sectors_timeout =
 				g_settings->getFloat("client_delete_unused_sectors_timeout");
-	
+
 			// Delete sector blocks
 			/*u32 num = m_env.getMap().unloadUnusedData
 					(delete_unused_sectors_timeout,
 					true, &deleted_blocks);*/
-			
+
 			// Delete whole sectors
 			m_env.getMap().unloadUnusedData
 					(delete_unused_sectors_timeout,
@@ -447,14 +447,14 @@ void Client::step(float dtime)
 						<<" unused sectors"<<std::endl;*/
 				/*infostream<<"Client: Deleted "<<num
 						<<" unused sectors"<<std::endl;*/
-				
+
 				/*
 					Send info to server
 				*/
 
 				// Env is locked so con can be locked.
 				//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
-				
+
 				core::list<v3s16>::Iterator i = deleted_blocks.begin();
 				core::list<v3s16> sendlist;
 				for(;;)
@@ -512,7 +512,7 @@ void Client::step(float dtime)
 			counter = 2.0;
 
 			//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
-			
+
 			Player *myplayer = m_env.getLocalPlayer();
 			assert(myplayer != NULL);
 			// Send TOSERVER_INIT
@@ -534,7 +534,7 @@ void Client::step(float dtime)
 
 			memset((char*)&data[23], 0, PASSWORD_SIZE);
 			snprintf((char*)&data[23], PASSWORD_SIZE, "%s", m_password.c_str());
-			
+
 			writeU16(&data[51], CLIENT_PROTOCOL_VERSION_MIN);
 			writeU16(&data[53], CLIENT_PROTOCOL_VERSION_MAX);
 
@@ -549,7 +549,7 @@ void Client::step(float dtime)
 	/*
 		Do stuff if connected
 	*/
-	
+
 	/*
 		Run Map's timers and unload unused data
 	*/
@@ -561,11 +561,11 @@ void Client::step(float dtime)
 		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
 				g_settings->getFloat("client_unload_unused_data_timeout"),
 				&deleted_blocks);
-				
+
 		/*if(deleted_blocks.size() > 0)
 			infostream<<"Client: Unloaded "<<deleted_blocks.size()
 					<<" unused blocks"<<std::endl;*/
-			
+
 		/*
 			Send info to server
 			NOTE: This loop is intentionally iterated the way it is.
@@ -622,7 +622,7 @@ void Client::step(float dtime)
 
 		// Step environment
 		m_env.step(dtime);
-		
+
 		/*
 			Get events
 		*/
@@ -638,7 +638,7 @@ void Client::step(float dtime)
 				if(m_ignore_damage_timer <= 0)
 				{
 					u8 damage = event.player_damage.amount;
-					
+
 					if(event.player_damage.send_to_server)
 						sendDamage(damage);
 
@@ -788,7 +788,7 @@ void Client::step(float dtime)
 			m_sound->updateSoundPosition(client_id, pos);
 		}
 	}
-	
+
 	/*
 		Handle removed remotely initiated sounds
 	*/
@@ -835,7 +835,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 {
 	// Silly irrlicht's const-incorrectness
 	Buffer<char> data_rw(data.c_str(), data.size());
-	
+
 	std::string name;
 
 	const char *image_ext[] = {
@@ -973,7 +973,7 @@ void Client::ReceiveAll()
 		// process
 		if(porting::getTimeMs() > start_ms + 100)
 			break;
-		
+
 		try{
 			Receive();
 			g_profiler->graphAdd("client_received_packets", 1);
@@ -1018,7 +1018,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 	//infostream<<"Client: received command="<<command<<std::endl;
 	m_packetcounter.add((u16)command);
-	
+
 	/*
 		If this check is removed, be sure to change the queue
 		system to know the ids
@@ -1049,7 +1049,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 					<<"unsupported ser_fmt_ver"<<std::endl;
 			return;
 		}
-		
+
 		m_server_ser_ver = deployed;
 
 		// Get player position
@@ -1058,12 +1058,12 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			playerpos_s16 = readV3S16(&data[2+1]);
 		v3f playerpos_f = intToFloat(playerpos_s16, BS) - v3f(0, BS/2, 0);
 
-			
+
 		// Set player position
 		Player *player = m_env.getLocalPlayer();
 		assert(player != NULL);
 		player->setPosition(playerpos_f);
-		
+
 		if(datasize >= 2+1+6+8)
 		{
 			// Get map seed
@@ -1078,7 +1078,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			infostream<<"Client: received recommended send interval "
 					<<m_recommended_send_interval<<std::endl;
 		}
-		
+
 		// Reply to server
 		u32 replysize = 2;
 		SharedBuffer<u8> reply(replysize);
@@ -1114,7 +1114,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 				" Skipping incoming command="<<command<<std::endl;
 		return;
 	}
-	
+
 	/*
 	  Handle runtime commands
 	*/
@@ -1145,13 +1145,13 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 		MapNode n;
 		n.deSerialize(&data[8], ser_version);
-		
+
 		bool remove_metadata = true;
 		u32 index = 8 + MapNode::serializedLength(ser_version);
 		if ((datasize >= index+1) && data[index]){
 			remove_metadata = false;
 		}
-		
+
 		addNode(p, n, remove_metadata);
 	}
 	else if(command == TOCLIENT_BLOCKDATA)
@@ -1159,23 +1159,23 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		// Ignore too small packet
 		if(datasize < 8)
 			return;
-			
+
 		v3s16 p;
 		p.X = readS16(&data[2]);
 		p.Y = readS16(&data[4]);
 		p.Z = readS16(&data[6]);
-		
+
 		std::string datastring((char*)&data[8], datasize-8);
 		std::istringstream istr(datastring, std::ios_base::binary);
-		
+
 		MapSector *sector;
 		MapBlock *block;
-		
+
 		v2s16 p2d(p.X, p.Z);
 		sector = m_env.getMap().emergeSector(p2d);
-		
+
 		assert(sector->getPos() == p2d);
-		
+
 		block = sector->getBlockNoCreateNoEx(p.Y);
 		if(block)
 		{
@@ -1226,7 +1226,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	{
 		if(datasize < 4)
 			return;
-		
+
 		u16 time_of_day  = readU16(&data[2]);
 		time_of_day      = time_of_day % 24000;
 		float time_speed = 0;
@@ -1256,7 +1256,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 						<<" time_diff="<<time_diff<<std::endl;
 			}
 		}
-		
+
 		// Update environment
 		m_env.setTimeOfDay(time_of_day);
 		m_env.setTimeOfDaySpeed(time_speed);
@@ -1277,18 +1277,18 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		u8 buf[6];
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
-		
+
 		// Read stuff
 		is.read((char*) buf, 2);
 		u16 len = readU16(buf);
-		
+
 		std::wstring message;
 		for(unsigned int i=0; i<len; i++)
 		{
 			is.read((char*)buf, 2);
 			message += (wchar_t)readU16(buf);
 		}
-		
+
 		m_chat_queue.push_back(message);
 	}
 	else if(command == TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD)
@@ -1457,10 +1457,10 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	{
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
-		
+
 		bool set_camera_point_target = readU8(is);
 		v3f camera_point_target = readV3F1000(is);
-		
+
 		ClientEvent event;
 		event.type                                = CE_DEATHSCREEN;
 		event.deathscreen.set_camera_point_target = set_camera_point_target;
@@ -1475,7 +1475,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		std::istringstream is(datastring, std::ios_base::binary);
 
 		int num_files = readU16(is);
-		
+
 		infostream<<"Client: Received media announcement: packet size: "
 				<<datasize<<std::endl;
 
@@ -1674,7 +1674,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	{
 		std::string datastring((char*)&data[2], datasize-2);
 		std::istringstream is(datastring, std::ios_base::binary);
-		
+
 		m_privileges.clear();
 		infostream<<"Client: Privileges updated: ";
 		u16 num_privileges = readU16(is);
@@ -1699,7 +1699,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		std::istringstream is(datastring, std::ios_base::binary);
 
 		std::string name = deSerializeString(is);
-		
+
 		infostream<<"Client: Detached inventory update: \""<<name<<"\""<<std::endl;
 
 		Inventory *inv = NULL;
@@ -1877,13 +1877,13 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		v3f v3fdata;
 		u32 intdata = 0;
 		v2s32 v2s32data;
-		
+
 		std::string datastring((char *)&data[2], datasize - 2);
 		std::istringstream is(datastring, std::ios_base::binary);
 
 		u32 id  = readU32(is);
 		u8 stat = (HudElementStat)readU8(is);
-		
+
 		if (stat == HUD_STAT_POS || stat == HUD_STAT_SCALE ||
 			stat == HUD_STAT_ALIGN || stat == HUD_STAT_OFFSET)
 			v2fdata = readV2F1000(is);
@@ -1895,7 +1895,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			v2s32data = readV2S32(is);
 		else
 			intdata = readU32(is);
-		
+
 		ClientEvent event;
 		event.type              = CE_HUDCHANGE;
 		event.hudchange.id      = id;
@@ -1914,7 +1914,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 		u32 flags = readU32(is);
 		u32 mask  = readU32(is);
-		
+
 		player->hud_flags &= ~mask;
 		player->hud_flags |= flags;
 	}
@@ -2073,7 +2073,7 @@ void Client::sendNodemetaFields(v3s16 p, const std::string &formname,
 	// Send as reliable
 	Send(0, data, true);
 }
-	
+
 void Client::sendInventoryFields(const std::string &formname,
 		const std::map<std::string, std::string> &fields)
 {
@@ -2103,13 +2103,13 @@ void Client::sendInventoryAction(InventoryAction *a)
 {
 	std::ostringstream os(std::ios_base::binary);
 	u8 buf[12];
-	
+
 	// Write command
 	writeU16(buf, TOSERVER_INVENTORY_ACTION);
 	os.write((char*)buf, 2);
 
 	a->serialize(os);
-	
+
 	// Make data buffer
 	std::string s = os.str();
 	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
@@ -2121,11 +2121,11 @@ void Client::sendChatMessage(const std::wstring &message)
 {
 	std::ostringstream os(std::ios_base::binary);
 	u8 buf[12];
-	
+
 	// Write command
 	writeU16(buf, TOSERVER_CHAT_MESSAGE);
 	os.write((char*)buf, 2);
-	
+
 	// Write length
 	size_t messagesize = message.size();
 	if (messagesize > 0xFFFF) {
@@ -2133,7 +2133,7 @@ void Client::sendChatMessage(const std::wstring &message)
 	}
 	writeU16(buf, (u16) messagesize);
 	os.write((char*)buf, 2);
-	
+
 	// Write string
 	for(unsigned int i=0; i<message.size(); i++)
 	{
@@ -2141,7 +2141,7 @@ void Client::sendChatMessage(const std::wstring &message)
 		writeU16(buf, w);
 		os.write((char*)buf, 2);
 	}
-	
+
 	// Make data buffer
 	std::string s = os.str();
 	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
@@ -2275,13 +2275,13 @@ void Client::sendPlayerPos()
 		//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
 		our_peer_id = m_con.GetPeerID();
 	}
-	
+
 	// Set peer id if not set already
 	if(myplayer->peer_id == PEER_ID_INEXISTENT)
 		myplayer->peer_id = our_peer_id;
 	// Check that an existing peer_id is the same as the connection's
 	assert(myplayer->peer_id == our_peer_id);
-	
+
 	v3f pf         = myplayer->getPosition();
 	v3f sf         = myplayer->getSpeed();
 	s32 pitch      = myplayer->getPitch() * 100;
@@ -2343,7 +2343,7 @@ void Client::removeNode(v3s16 p)
 	catch(InvalidPositionException &e)
 	{
 	}
-	
+
 	for(std::map<v3s16, MapBlock * >::iterator
 			i = modified_blocks.begin();
 			i != modified_blocks.end(); ++i)
@@ -2365,7 +2365,7 @@ void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
 	}
 	catch(InvalidPositionException &e)
 	{}
-	
+
 	for(std::map<v3s16, MapBlock * >::iterator
 			i = modified_blocks.begin();
 			i != modified_blocks.end(); ++i)
@@ -2373,7 +2373,7 @@ void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
 		addUpdateMeshTaskWithEdge(i->first, false, true);
 	}
 }
-	
+
 void Client::setPlayerControl(PlayerControl &control)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
@@ -2472,7 +2472,7 @@ ClientActiveObject * Client::getSelectedActiveObject(
 	std::vector<DistanceSortedActiveObject> objects;
 
 	m_env.getActiveObjects(from_pos_f_on_map, max_d, objects);
-	
+
 	// Sort them.
 	// After this, the closest object is the first in the array.
 	std::sort(objects.begin(), objects.end());
@@ -2480,7 +2480,7 @@ ClientActiveObject * Client::getSelectedActiveObject(
 	for(unsigned int i=0; i<objects.size(); i++)
 	{
 		ClientActiveObject *obj = objects[i].obj;
-		
+
 		core::aabbox3d<f32> *selection_box = obj->getSelectionBox();
 		if(selection_box == NULL)
 			continue;
@@ -2702,7 +2702,7 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 	assert(m_itemdef_received);
 	assert(m_nodedef_received);
 	assert(mediaReceived());
-	
+
 	wchar_t* text = wgettext("Loading textures...");
 
 	// Rebuild inherited images and recreate textures
@@ -2723,6 +2723,8 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 	text = wgettext("Initializing nodes...");
 	draw_load_screen(text, device, guienv, 0, 80);
 	m_nodedef->updateAliases(m_itemdef);
+	m_nodedef->setNodeRegistrationStatus(true);
+	m_nodedef->runNodeResolverCallbacks();
 	delete[] text;
 
 	// Update node textures and assign shaders to each tile
@@ -2755,7 +2757,7 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 	// Start mesh update thread after setting up content definitions
 	infostream<<"- Starting mesh update thread"<<std::endl;
 	m_mesh_update_thread.Start();
-	
+
 	m_state = LC_Ready;
 	sendReady();
 	text = wgettext("Done!");

@@ -340,6 +340,8 @@ Server::Server(
 	// Apply item aliases in the node definition manager
 	m_nodedef->updateAliases(m_itemdef);
 
+	m_nodedef->setNodeRegistrationStatus(true);
+
 	// Perform pending node name resolutions
 	m_nodedef->runNodeResolverCallbacks();
 
