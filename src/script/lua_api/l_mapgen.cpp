@@ -375,12 +375,11 @@ int ModApiMapgen::l_set_mapgen_params(lua_State *L)
 	if (lua_isnumber(L, -1))
 		params->water_level = lua_tointeger(L, -1);
 
+	warn_if_field_exists(L, 1, "flagmask",
+		"Deprecated: flags field now includes unset flags.");
 	lua_getfield(L, 1, "flagmask");
-	if (lua_isstring(L, -1)) {
+	if (lua_isstring(L, -1))
 		params->flags &= ~readFlagString(lua_tostring(L, -1), flagdesc_mapgen, NULL);
-		errorstream << "set_mapgen_params(): flagmask field is deprecated, "
-			"see lua_api.txt" << std::endl;
-	}
 
 	if (getflagsfield(L, 1, "flags", flagdesc_mapgen, &flags, &flagmask)) {
 		params->flags &= ~flagmask;
@@ -687,8 +686,11 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	ore->noise          = NULL;
 	ore->flags          = 0;
 
-	// height_min and height_max are aliases for y_min and y_max, respectively,
-	// for backwards compatibility
+	warn_if_field_exists(L, index, "height_min",
+		"Deprecated: new name is \"y_min\".");
+	warn_if_field_exists(L, index, "height_max",
+		"Deprecated: new name is \"y_max\".");
+
 	int ymin, ymax;
 	if (!getintfield(L, index, "y_min", ymin) &&
 		!getintfield(L, index, "height_min", ymin))

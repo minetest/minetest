@@ -710,7 +710,7 @@ See section "Flag Specifier Format".
 Currently supported flags: `absheight`
 
 ### `absheight`
-Also produce this same ore between the height range of `-height_max` and `-height_min`.
+Also produce this same ore between the height range of `-y_max` and `-y_min`.
 
 Useful for having ore in sky realms without having to duplicate ore entries.
 
@@ -3032,8 +3032,8 @@ Definition tables
         clust_size = 3,
     --  ^ Size of the bounding box of the cluster
     --  ^ In this example, there is a 3x3x3 cluster where 8 out of the 27 nodes are coal ore
-        height_min = -31000,
-        height_max = 64,
+        y_min = -31000,
+        y_max = 64,
         flags = "",
     --  ^ Attributes for this ore generation
         noise_threshhold = 0.5,
@@ -3065,8 +3065,8 @@ Definition tables
         biomes = {"Oceanside", "Hills", "Plains"},
     --  ^ List of biomes in which this decoration occurs.  Occurs in all biomes if this is omitted,
     --  ^ and ignored if the Mapgen being used does not support biomes.
-        height_min = -31000
-        height_max = 31000
+        y_min = -31000
+        y_max = 31000
     -- ^ Minimum and maximum `y` positions these decorations can be generated at.
     -- ^ This parameter refers to the `y` position of the decoration base, so
     --   the actual maximum height would be `height_max + size.Y`.
