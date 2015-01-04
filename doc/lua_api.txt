@@ -2859,7 +2859,6 @@ Definition tables
         liquid_alternative_source = "", -- Source version of flowing liquid
         liquid_viscosity = 0, -- Higher viscosity = slower flow (max. 7)
         liquid_renewable = true, -- Can new liquid source be created by placing two or more sources nearby?
-        freezemelt = "", -- water for snow/ice, ice/snow for water
         leveled = 0, -- Block contain level in param2. value - default level, used for snow. Don't forget use "leveled" type nodebox
         liquid_range = 8, -- number of flowing nodes around source (max. 8)
         drowning = 0, -- Player will take this amount of damage if no bubbles are left
