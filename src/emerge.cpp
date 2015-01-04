@@ -580,6 +580,23 @@ void *EmergeThread::Thread()
 		m_server->setAsyncFatalError(err.str());
 	}
 
+	{
+		JMutexAutoLock queuelock(emerge->queuemutex);
+		while (!blockqueue.empty())
+		{
+			v3s16 p = blockqueue.front();
+			blockqueue.pop();
+
+			std::map<v3s16, BlockEmergeData *>::iterator iter;
+			iter = emerge->blocks_enqueued.find(p);
+			if (iter == emerge->blocks_enqueued.end())
+				continue; //uh oh, queue and map out of sync!!
+
+			BlockEmergeData *bedata = iter->second;
+			delete bedata;
+		}
+	}
+
 	END_DEBUG_EXCEPTION_HANDLER(errorstream)
 	log_deregister_thread();
 	return NULL;
