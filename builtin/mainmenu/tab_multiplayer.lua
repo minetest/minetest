@@ -52,12 +52,6 @@ local function get_formspec(tabview, name, tabdata)
 		";]"
 
 	--favourites
-	local function image_column(tooltip, flagname)
-		return "image," ..
-			"tooltip=" .. core.formspec_escape(tooltip) .. "," ..
-			"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
-			"1=" .. core.formspec_escape(defaulttexturedir .. "server_flags_" .. flagname .. ".png")
-	end
 	if render_details then
 		retval = retval .. "tablecolumns[" ..
 			"color,span=3;" ..

@@ -35,10 +35,22 @@ local function get_formspec(tabview, name, tabdata)
 		"field[8.75,1.5;3.5,0.5;te_name;;" ..
 		core.formspec_escape(core.setting_get("name")) .."]" ..
 		"pwdfield[8.75,2.3;3.5,0.5;te_pwd;]"
-
-	--favourites
+		
+	if render_details then
+		retval = retval .. "tablecolumns[" ..
+			"color,span=3;" ..
+			"text,align=right;" ..                -- clients
+			"text,align=center,padding=0.25;" ..  -- "/"
+			"text,align=right,padding=0.25;" ..   -- clients_max
+			image_column("Creative mode", "creative") .. ",padding=1;" ..
+			image_column("Damage enabled", "damage") .. ",padding=0.25;" ..
+			image_column("PvP enabled", "pvp") .. ",padding=0.25;" ..
+			"text,padding=1]"                               -- name
+	else
+		retval = retval .. "tablecolumns[text]"
+	end
 	retval = retval ..
-		"textlist[-0.05,0.0;7.55,2.75;favourites;"
+		"table[-0.05,0;7.55,2.75;favourites;"
 
 	if #menudata.favorites > 0 then
 		retval = retval .. render_favorite(menudata.favorites[1],render_details)

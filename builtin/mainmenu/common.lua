@@ -35,6 +35,14 @@ local function render_client_count(n)
 end
 
 --------------------------------------------------------------------------------
+function image_column(tooltip, flagname)
+	return "image," ..
+		"tooltip=" .. core.formspec_escape(tooltip) .. "," ..
+		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
+		"1=" .. core.formspec_escape(defaulttexturedir .. "server_flags_" .. flagname .. ".png")
+end
+
+--------------------------------------------------------------------------------
 function render_favorite(spec,render_details)
 	local text = ""
 
