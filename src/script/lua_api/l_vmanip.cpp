@@ -171,6 +171,8 @@ int LuaVoxelManip::l_calc_lighting(lua_State *L)
 	v3s16 p1 = lua_istable(L, 2) ? read_v3s16(L, 2) : vm->m_area.MinEdge;
 	v3s16 p2 = lua_istable(L, 3) ? read_v3s16(L, 3) : vm->m_area.MaxEdge;
 	sortBoxVerticies(p1, p2);
+	if (!vm->m_area.contains(VoxelArea(p1, p2)))
+		throw LuaError("Specified voxel area out of VoxelManipulator bounds");
 
 	Mapgen mg;
 	mg.vm          = vm;
@@ -206,6 +208,8 @@ int LuaVoxelManip::l_set_lighting(lua_State *L)
 	v3s16 p1 = lua_istable(L, 3) ? read_v3s16(L, 3) : vm->m_area.MinEdge;
 	v3s16 p2 = lua_istable(L, 4) ? read_v3s16(L, 4) : vm->m_area.MaxEdge;
 	sortBoxVerticies(p1, p2);
+	if (!vm->m_area.contains(VoxelArea(p1, p2)))
+		throw LuaError("Specified voxel area out of VoxelManipulator bounds");
 
 	Mapgen mg;
 	mg.vm = vm;
