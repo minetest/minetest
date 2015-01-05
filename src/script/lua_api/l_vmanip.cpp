@@ -214,7 +214,10 @@ int LuaVoxelManip::l_set_lighting(lua_State *L)
 	Mapgen mg;
 	mg.vm = vm;
 
-	mg.setLighting(p1, p2, light);
+	mg.setLighting(
+		p1 + v3s16(0, 1, 0) * MAP_BLOCKSIZE,
+		p2 - v3s16(0, 1, 0) * MAP_BLOCKSIZE,
+		light);
 
 	return 0;
 }
