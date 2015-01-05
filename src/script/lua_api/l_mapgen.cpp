@@ -240,7 +240,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 
 	switch (mgobj) {
 		case MGOBJ_VMANIP: {
-			ManualMapVoxelManipulator *vm = mg->vm;
+			MMVManip *vm = mg->vm;
 
 			// VoxelManip object
 			LuaVoxelManip *o = new LuaVoxelManip(vm, true);

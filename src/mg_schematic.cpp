@@ -77,8 +77,8 @@ void Schematic::updateContentIds()
 }
 
 
-void Schematic::blitToVManip(v3s16 p, ManualMapVoxelManipulator *vm,
-	Rotation rot, bool force_placement, INodeDefManager *ndef)
+void Schematic::blitToVManip(v3s16 p, MMVManip *vm, Rotation rot,
+	bool force_placement, INodeDefManager *ndef)
 {
 	int xstride = 1;
 	int ystride = size.X;
@@ -156,11 +156,11 @@ void Schematic::blitToVManip(v3s16 p, ManualMapVoxelManipulator *vm,
 }
 
 
-void Schematic::placeStructure(Map *map, v3s16 p, u32 flags,
-	Rotation rot, bool force_placement, INodeDefManager *ndef)
+void Schematic::placeStructure(Map *map, v3s16 p, u32 flags, Rotation rot,
+	bool force_placement, INodeDefManager *ndef)
 {
 	assert(schemdata != NULL);
-	ManualMapVoxelManipulator *vm = new ManualMapVoxelManipulator(map);
+	MMVManip *vm = new MMVManip(map);
 
 	if (rot == ROTATE_RAND)
 		rot = (Rotation)myrand_range(ROTATE_0, ROTATE_270);
@@ -200,8 +200,8 @@ void Schematic::placeStructure(Map *map, v3s16 p, u32 flags,
 }
 
 
-bool Schematic::loadSchematicFromFile(const char *filename,
-	INodeDefManager *ndef, std::map<std::string, std::string> &replace_names)
+bool Schematic::loadSchematicFromFile(const char *filename, INodeDefManager *ndef,
+	std::map<std::string, std::string> &replace_names)
 {
 	content_t cignore = CONTENT_IGNORE;
 	bool have_cignore = false;
@@ -357,7 +357,7 @@ void build_nnlist_and_update_ids(MapNode *nodes, u32 nodecount,
 
 bool Schematic::getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2)
 {
-	ManualMapVoxelManipulator *vm = new ManualMapVoxelManipulator(map);
+	MMVManip *vm = new MMVManip(map);
 
 	v3s16 bp1 = getNodeBlockPos(p1);
 	v3s16 bp2 = getNodeBlockPos(p2);

@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <matrix4.h>
 #include "noise.h"
 
-class ManualMapVoxelManipulator;
+class MMVManip;
 class INodeDefManager;
 class ServerEnvironment;
 
@@ -59,29 +59,29 @@ namespace treegen {
 	};
 
 	// Add default tree
-	void make_tree(ManualMapVoxelManipulator &vmanip, v3s16 p0,
+	void make_tree(MMVManip &vmanip, v3s16 p0,
 		bool is_apple_tree, INodeDefManager *ndef, int seed);
 	// Add jungle tree
 	void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
 		INodeDefManager *ndef, int seed);
 
 	// Add L-Systems tree (used by engine)
-	treegen::error make_ltree(ManualMapVoxelManipulator &vmanip, v3s16 p0, INodeDefManager *ndef,
+	treegen::error make_ltree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef,
 		TreeDef tree_definition);
 	// Spawn L-systems tree from LUA
 	treegen::error spawn_ltree (ServerEnvironment *env, v3s16 p0, INodeDefManager *ndef,
 		TreeDef tree_definition);
 
 	// L-System tree gen helper functions
-	void tree_node_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
+	void tree_node_placement(MMVManip &vmanip, v3f p0,
 		MapNode node);
-	void tree_trunk_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
+	void tree_trunk_placement(MMVManip &vmanip, v3f p0,
 		TreeDef &tree_definition);
-	void tree_leaves_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
+	void tree_leaves_placement(MMVManip &vmanip, v3f p0,
 		PseudoRandom ps, TreeDef &tree_definition);
-	void tree_single_leaves_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
+	void tree_single_leaves_placement(MMVManip &vmanip, v3f p0,
 		PseudoRandom ps, TreeDef &tree_definition);
-	void tree_fruit_placement(ManualMapVoxelManipulator &vmanip, v3f p0,
+	void tree_fruit_placement(MMVManip &vmanip, v3f p0,
 		TreeDef &tree_definition);
 	irr::core::matrix4 setRotationAxisRadians(irr::core::matrix4 M, double angle, v3f axis);
 

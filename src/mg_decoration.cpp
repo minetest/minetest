@@ -242,7 +242,7 @@ void DecoSimple::resolveNodeNames(NodeResolveInfo *nri)
 }
 
 
-bool DecoSimple::canPlaceDecoration(ManualMapVoxelManipulator *vm, v3s16 p)
+bool DecoSimple::canPlaceDecoration(MMVManip *vm, v3s16 p)
 {
 	// Don't bother if there aren't any decorations to place
 	if (c_decos.size() == 0)
@@ -287,8 +287,7 @@ bool DecoSimple::canPlaceDecoration(ManualMapVoxelManipulator *vm, v3s16 p)
 }
 
 
-size_t DecoSimple::generate(ManualMapVoxelManipulator *vm, PseudoRandom *pr,
-	s16 max_y, v3s16 p)
+size_t DecoSimple::generate(MMVManip *vm, PseudoRandom *pr, s16 max_y, v3s16 p)
 {
 	if (!canPlaceDecoration(vm, p))
 		return 0;
@@ -325,8 +324,7 @@ int DecoSimple::getHeight()
 ///////////////////////////////////////////////////////////////////////////////
 
 
-size_t DecoSchematic::generate(ManualMapVoxelManipulator *vm, PseudoRandom *pr,
-	s16 max_y, v3s16 p)
+size_t DecoSchematic::generate(MMVManip *vm, PseudoRandom *pr, s16 max_y, v3s16 p)
 {
 	if (flags & DECO_PLACE_CENTER_X)
 		p.X -= (schematic->size.X + 1) / 2;

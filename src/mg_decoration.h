@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct NoiseParams;
 class Mapgen;
-class ManualMapVoxelManipulator;
+class MMVManip;
 class PseudoRandom;
 class Schematic;
 
@@ -83,8 +83,7 @@ public:
 	size_t placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	//size_t placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 
-	virtual size_t generate(ManualMapVoxelManipulator *vm, PseudoRandom *pr,
-		s16 max_y, v3s16 p) = 0;
+	virtual size_t generate(MMVManip *vm, PseudoRandom *pr, s16 max_y, v3s16 p) = 0;
 	virtual int getHeight() = 0;
 };
 
@@ -98,9 +97,8 @@ public:
 
 	virtual void resolveNodeNames(NodeResolveInfo *nri);
 
-	bool canPlaceDecoration(ManualMapVoxelManipulator *vm, v3s16 p);
-	virtual size_t generate(ManualMapVoxelManipulator *vm, PseudoRandom *pr,
-		s16 max_y, v3s16 p);
+	bool canPlaceDecoration(MMVManip *vm, v3s16 p);
+	virtual size_t generate(MMVManip *vm, PseudoRandom *pr, s16 max_y, v3s16 p);
 	virtual int getHeight();
 };
 
@@ -110,8 +108,7 @@ public:
 	Schematic *schematic;
 	std::string filename;
 
-	virtual size_t generate(ManualMapVoxelManipulator *vm, PseudoRandom *pr,
-		s16 max_y, v3s16 p);
+	virtual size_t generate(MMVManip *vm, PseudoRandom *pr, s16 max_y, v3s16 p);
 	virtual int getHeight();
 };
 

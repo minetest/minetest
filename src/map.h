@@ -535,11 +535,11 @@ private:
 #define VMANIP_BLOCK_DATA_INEXIST     1
 #define VMANIP_BLOCK_CONTAINS_CIGNORE 2
 
-class ManualMapVoxelManipulator : public VoxelManipulator
+class MMVManip : public VoxelManipulator
 {
 public:
-	ManualMapVoxelManipulator(Map *map);
-	virtual ~ManualMapVoxelManipulator();
+	MMVManip(Map *map);
+	virtual ~MMVManip();
 
 	virtual void clear()
 	{

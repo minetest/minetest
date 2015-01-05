@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct NoiseParams;
 class Noise;
 class Mapgen;
-class ManualMapVoxelManipulator;
+class MMVManip;
 
 /////////////////// Ore generation flags
 
@@ -70,32 +70,32 @@ public:
 	virtual void resolveNodeNames(NodeResolveInfo *nri);
 
 	size_t placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
-	virtual void generate(ManualMapVoxelManipulator *vm, int mapseed,
-		u32 blockseed, v3s16 nmin, v3s16 nmax) = 0;
+	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
+		v3s16 nmin, v3s16 nmax) = 0;
 };
 
 class OreScatter : public Ore {
 public:
 	static const bool NEEDS_NOISE = false;
 
-	virtual void generate(ManualMapVoxelManipulator *vm, int mapseed,
-		u32 blockseed, v3s16 nmin, v3s16 nmax);
+	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
+		v3s16 nmin, v3s16 nmax);
 };
 
 class OreSheet : public Ore {
 public:
 	static const bool NEEDS_NOISE = true;
 
-	virtual void generate(ManualMapVoxelManipulator *vm, int mapseed,
-		u32 blockseed, v3s16 nmin, v3s16 nmax);
+	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
+		v3s16 nmin, v3s16 nmax);
 };
 
 class OreBlob : public Ore {
 public:
 	static const bool NEEDS_NOISE = true;
 
-	virtual void generate(ManualMapVoxelManipulator *vm, int mapseed,
-		u32 blockseed, v3s16 nmin, v3s16 nmax);
+	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
+		v3s16 nmin, v3s16 nmax);
 };
 
 class OreVein : public Ore {
@@ -107,8 +107,8 @@ public:
 
 	virtual ~OreVein();
 
-	virtual void generate(ManualMapVoxelManipulator *vm, int mapseed,
-		u32 blockseed, v3s16 nmin, v3s16 nmax);
+	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
+		v3s16 nmin, v3s16 nmax);
 };
 
 class OreManager : public GenElementManager {

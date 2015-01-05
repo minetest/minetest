@@ -123,8 +123,8 @@ size_t Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 ///////////////////////////////////////////////////////////////////////////////
 
 
-void OreScatter::generate(ManualMapVoxelManipulator *vm, int mapseed,
-	u32 blockseed, v3s16 nmin, v3s16 nmax)
+void OreScatter::generate(MMVManip *vm, int mapseed, u32 blockseed,
+	v3s16 nmin, v3s16 nmax)
 {
 	PseudoRandom pr(blockseed);
 	MapNode n_ore(c_ore, 0, ore_param2);
@@ -164,8 +164,8 @@ void OreScatter::generate(ManualMapVoxelManipulator *vm, int mapseed,
 ///////////////////////////////////////////////////////////////////////////////
 
 
-void OreSheet::generate(ManualMapVoxelManipulator *vm, int mapseed,
-	u32 blockseed, v3s16 nmin, v3s16 nmax)
+void OreSheet::generate(MMVManip *vm, int mapseed, u32 blockseed,
+	v3s16 nmin, v3s16 nmax)
 {
 	PseudoRandom pr(blockseed + 4234);
 	MapNode n_ore(c_ore, 0, ore_param2);
@@ -206,8 +206,8 @@ void OreSheet::generate(ManualMapVoxelManipulator *vm, int mapseed,
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void OreBlob::generate(ManualMapVoxelManipulator *vm, int mapseed,
-	u32 blockseed, v3s16 nmin, v3s16 nmax)
+void OreBlob::generate(MMVManip *vm, int mapseed, u32 blockseed,
+	v3s16 nmin, v3s16 nmax)
 {
 	PseudoRandom pr(blockseed + 2404);
 	MapNode n_ore(c_ore, 0, ore_param2);
@@ -269,8 +269,8 @@ OreVein::~OreVein()
 }
 
 
-void OreVein::generate(ManualMapVoxelManipulator *vm, int mapseed,
-	u32 blockseed, v3s16 nmin, v3s16 nmax)
+void OreVein::generate(MMVManip *vm, int mapseed, u32 blockseed,
+	v3s16 nmin, v3s16 nmax)
 {
 	PseudoRandom pr(blockseed + 520);
 	MapNode n_ore(c_ore, 0, ore_param2);

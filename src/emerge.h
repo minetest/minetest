@@ -44,7 +44,7 @@ class DecorationManager;
 class SchematicManager;
 
 struct BlockMakeData {
-	ManualMapVoxelManipulator *vmanip;
+	MMVManip *vmanip;
 	u64 seed;
 	v3s16 blockpos_min;
 	v3s16 blockpos_max;

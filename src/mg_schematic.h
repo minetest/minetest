@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class Map;
 class Mapgen;
-class ManualMapVoxelManipulator;
+class MMVManip;
 class PseudoRandom;
 class NodeResolver;
 
@@ -58,7 +58,7 @@ public:
 
 	void updateContentIds();
 
-	void blitToVManip(v3s16 p, ManualMapVoxelManipulator *vm,
+	void blitToVManip(v3s16 p, MMVManip *vm,
 		Rotation rot, bool force_placement, INodeDefManager *ndef);
 
 	bool loadSchematicFromFile(const char *filename, INodeDefManager *ndef,

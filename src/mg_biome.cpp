@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mg_biome.h"
 #include "gamedef.h"
 #include "nodedef.h"
-#include "map.h" //for ManualMapVoxelManipulator
+#include "map.h" //for MMVManip
 #include "log.h"
 #include "util/numeric.h"
 #include "main.h"
