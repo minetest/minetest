@@ -1800,8 +1800,6 @@ void Game::shutdown()
 	if (sky)
 		sky->drop();
 
-	clear_particles();
-
 	/* cleanup menus */
 	while (g_menumgr.menuCount() > 0) {
 		g_menumgr.m_stack.front()->setVisible(false);
@@ -3016,44 +3014,11 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 
 			delete(event.show_formspec.formspec);
 			delete(event.show_formspec.formname);
-		} else if (event.type == CE_SPAWN_PARTICLE) {
-			video::ITexture *texture =
-				gamedef->tsrc()->getTexture(*(event.spawn_particle.texture));
-
-			new Particle(gamedef, smgr, player, client->getEnv(),
-					*event.spawn_particle.pos,
-					*event.spawn_particle.vel,
-					*event.spawn_particle.acc,
-					event.spawn_particle.expirationtime,
-					event.spawn_particle.size,
-					event.spawn_particle.collisiondetection,
-					event.spawn_particle.vertical,
-					texture,
-					v2f(0.0, 0.0),
-					v2f(1.0, 1.0));
-		} else if (event.type == CE_ADD_PARTICLESPAWNER) {
-			video::ITexture *texture =
-				gamedef->tsrc()->getTexture(*(event.add_particlespawner.texture));
-
-			new ParticleSpawner(gamedef, smgr, player,
-					event.add_particlespawner.amount,
-					event.add_particlespawner.spawntime,
-					*event.add_particlespawner.minpos,
-					*event.add_particlespawner.maxpos,
-					*event.add_particlespawner.minvel,
-					*event.add_particlespawner.maxvel,
-					*event.add_particlespawner.minacc,
-					*event.add_particlespawner.maxacc,
-					event.add_particlespawner.minexptime,
-					event.add_particlespawner.maxexptime,
-					event.add_particlespawner.minsize,
-					event.add_particlespawner.maxsize,
-					event.add_particlespawner.collisiondetection,
-					event.add_particlespawner.vertical,
-					texture,
-					event.add_particlespawner.id);
-		} else if (event.type == CE_DELETE_PARTICLESPAWNER) {
-			delete_particlespawner(event.delete_particlespawner.id);
+		} else if ((event.type == CE_SPAWN_PARTICLE) ||
+				(event.type == CE_ADD_PARTICLESPAWNER) ||
+				(event.type == CE_DELETE_PARTICLESPAWNER)) {
+			client->getParticleManager()->handleParticleEvent(&event, gamedef,
+					smgr, player);
 		} else if (event.type == CE_HUDADD) {
 			u32 id = event.hudadd.id;
 
@@ -3615,8 +3580,8 @@ void Game::handleDigging(GameRunData *runData,
 		if (m_cache_enable_particles) {
 			const ContentFeatures &features =
 					client->getNodeDefManager()->get(n);
-			addPunchingParticles(gamedef, smgr, player,
-					client->getEnv(), nodepos, features.tiles);
+			client->getParticleManager()->addPunchingParticles(gamedef, smgr,
+					player, nodepos, features.tiles);
 		}
 	}
 
@@ -3662,9 +3627,8 @@ void Game::handleDigging(GameRunData *runData,
 		if (m_cache_enable_particles) {
 			const ContentFeatures &features =
 				client->getNodeDefManager()->get(wasnode);
-			addDiggingParticles
-			(gamedef, smgr, player, client->getEnv(),
-			 nodepos, features.tiles);
+			client->getParticleManager()->addDiggingParticles(gamedef, smgr,
+					player, nodepos, features.tiles);
 		}
 
 		runData->dig_time = 0;
@@ -3787,9 +3751,7 @@ void Game::updateFrame(std::vector<aabb3f> &highlight_boxes,
 	/*
 		Update particles
 	*/
-
-	allparticles_step(dtime);
-	allparticlespawners_step(dtime, client->getEnv());
+	client->getParticleManager()->step(dtime);
 
 	/*
 		Fog
