@@ -226,13 +226,6 @@ function core.register_alias(name, convert_to)
 	end
 end
 
-local register_biome_raw = core.register_biome
-core.registered_biomes = {}
-function core.register_biome(biome)
-	core.registered_biomes[biome.name] = biome
-	register_biome_raw(biome)
-end
-
 function core.on_craft(itemstack, player, old_craft_list, craft_inv)
 	for _, func in ipairs(core.registered_on_crafts) do
 		itemstack = func(itemstack, player, old_craft_list, craft_inv) or itemstack
@@ -375,6 +368,13 @@ end
 -- Callback registration
 --
 
+local register_biome_raw = core.register_biome
+core.registered_biomes = {}
+function core.register_biome(biome)
+	core.registered_biomes[biome.name] = biome
+	register_biome_raw(biome)
+end
+
 local function make_registration()
 	local t = {}
 	local registerfunc = function(func) table.insert(t, func) end
@@ -386,6 +386,21 @@ local function make_registration_reverse()
 	local registerfunc = function(func) table.insert(t, 1, func) end
 	return t, registerfunc
 end
+
+local function make_registration_wrap(name)
+	local list = {}
+	local full_name = "register_"..name
+	local orig_func = core[full_name]
+	core[full_name] = function(def)
+		table.insert(list, def)
+		orig_func(def)
+	end
+	return list
+end
+
+
+core.registered_ores = make_registration_wrap("ore")
+core.registered_decorations = make_registration_wrap("decoration")
 
 core.registered_on_chat_messages, core.register_on_chat_message = make_registration()
 core.registered_globalsteps, core.register_globalstep = make_registration()

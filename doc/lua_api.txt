@@ -416,6 +416,12 @@ the global `minetest.registered_*` tables.
 * `minetest.register_craftitem(name, item definition)`
     * added to `minetest.registered_items[name]`
 
+* `minetest.register_ore(ore definition)`
+    * added to `minetest.registered_ores`
+
+* `minetest.register_decoration(decoration definition)`
+    * added to `minetest.registered_decorations`
+
 Note that in some cases you will stumble upon things that are not contained
 in these tables (e.g. when a mod has been removed). Always check for
 existence before trying to access the fields.
@@ -2193,19 +2199,23 @@ Please note that forceloaded areas are saved when the server restarts.
 
 ### Global tables
 * `minetest.registered_items`
-    * List of registered items, indexed by name
+    * Map of registered items, indexed by name
 * `minetest.registered_nodes`
-    * List of registered node definitions, indexed by name
+    * Map of registered node definitions, indexed by name
 * `minetest.registered_craftitems`
-    * List of registered craft item definitions, indexed by name
+    * Map of registered craft item definitions, indexed by name
 * `minetest.registered_tools`
-    * List of registered tool definitions, indexed by name
+    * Map of registered tool definitions, indexed by name
 * `minetest.registered_entities`
-    * List of registered entity prototypes, indexed by name
+    * Map of registered entity prototypes, indexed by name
 * `minetest.object_refs`
-    * List of object references, indexed by active object id
+    * Map of object references, indexed by active object id
 * `minetest.luaentities`
-    * List of Lua entities, indexed by active object id
+    * Map of Lua entities, indexed by active object id
+* `minetest.registered_ores`
+    * List of registered ore definitions.
+* `minetest.registered_decorations`
+    * List of registered decoration definitions.
 
 Class reference
 ---------------
