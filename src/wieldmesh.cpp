@@ -411,20 +411,20 @@ void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 		m_meshnode->setVisible(false);
 		m_meshnode->setMesh(dummymesh);
 		dummymesh->drop();  // m_meshnode grabbed it
-	}
-
-	if (m_lighting) {
-		m_meshnode->setMesh(mesh);
 	} else {
-		/*
-			Lighting is disabled, this means the caller can (and probably will)
-			call setColor later. We therefore need to clone the mesh so that
-			setColor will only modify this scene node's mesh, not others'.
-		*/
-		scene::IMeshManipulator *meshmanip = SceneManager->getMeshManipulator();
-		scene::IMesh *new_mesh = meshmanip->createMeshCopy(mesh);
-		m_meshnode->setMesh(new_mesh);
-		new_mesh->drop();  // m_meshnode grabbed it
+		if (m_lighting) {
+			m_meshnode->setMesh(mesh);
+		} else {
+			/*
+				Lighting is disabled, this means the caller can (and probably will)
+				call setColor later. We therefore need to clone the mesh so that
+				setColor will only modify this scene node's mesh, not others'.
+			*/
+			scene::IMeshManipulator *meshmanip = SceneManager->getMeshManipulator();
+			scene::IMesh *new_mesh = meshmanip->createMeshCopy(mesh);
+			m_meshnode->setMesh(new_mesh);
+			new_mesh->drop();  // m_meshnode grabbed it
+		}
 	}
 
 	m_meshnode->setMaterialFlag(video::EMF_LIGHTING, m_lighting);
