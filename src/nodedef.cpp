@@ -478,6 +478,14 @@ void CNodeDefManager::clear()
 	m_group_to_items.clear();
 	m_next_id = 0;
 
+	m_node_registration_complete = false;
+	for (std::list<NodeResolveInfo *>::iterator
+			it = m_pending_node_lookups.begin();
+			it != m_pending_node_lookups.end();
+			++it)
+		delete *it;
+	m_pending_node_lookups.clear();
+
 	u32 initial_length = 0;
 	initial_length = MYMAX(initial_length, CONTENT_UNKNOWN + 1);
 	initial_length = MYMAX(initial_length, CONTENT_AIR + 1);
