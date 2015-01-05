@@ -130,7 +130,7 @@ local function formspec(tabview, name, tabdata)
 	
 	
 	local tab_string =
-		"box[0,0;3.5,4;#999999]" ..
+		"box[0,0;3.5,3.9;#999999]" ..
 		"checkbox[0.25,0;cb_smooth_lighting;".. fgettext("Smooth Lighting")
 				.. ";".. dump(core.setting_getbool("smooth_lighting")) .. "]"..
 		"checkbox[0.25,0.5;cb_particles;".. fgettext("Enable Particles") .. ";"
@@ -143,11 +143,9 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.setting_getbool("opaque_water")) .. "]"..
 		"checkbox[0.25,2.5;cb_connected_glass;".. fgettext("Connected Glass") .. ";"
 				.. dump(core.setting_getbool("connected_glass"))	.. "]"..
-		"dropdown[0.25,3.25;3.25;dd_video_driver;"
-			.. video_driver_string .. ";" .. current_video_driver_idx .. "]" ..
-		"tooltip[dd_video_driver;" ..
-			fgettext("Restart minetest for driver change to take effect") .. "]" ..
-		"box[3.75,0;3.75,2.5;#999999]" ..
+		"checkbox[0.25,3.0;cb_node_highlighting;".. fgettext("Node Highlighting") .. ";"
+				.. dump(core.setting_getbool("enable_node_highlighting")) .. "]"..
+		"box[3.75,0;3.75,3.35;#999999]" ..
 		"checkbox[4,0;cb_mipmapping;".. fgettext("Mip-Mapping") .. ";"
 				.. dump(core.setting_getbool("mip_map")) .. "]"..
 		"checkbox[4,0.5;cb_anisotrophic;".. fgettext("Anisotropic Filtering") .. ";"
@@ -156,6 +154,10 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.setting_getbool("bilinear_filter")) .. "]"..
 		"checkbox[4,1.5;cb_trilinear;".. fgettext("Tri-Linear Filtering") .. ";"
 				.. dump(core.setting_getbool("trilinear_filter")) .. "]"..
+		"dropdown[4.2,2.4;3;dd_video_driver;"
+			    .. video_driver_string .. ";" .. current_video_driver_idx .. "]" ..
+		"tooltip[dd_video_driver;" ..
+			fgettext("Restart minetest for driver change to take effect") .. "]" ..
 		"box[7.75,0;4,4;#999999]" ..
 		"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
 				.. dump(core.setting_getbool("enable_shaders")) .. "]"
@@ -167,7 +169,7 @@ local function formspec(tabview, name, tabdata)
 		"button[8,4.75;3.75,0.5;btn_reset_singleplayer;".. fgettext("Reset singleplayer world") .. "]"
 	end
 	tab_string = tab_string ..
-		"box[0,4.25;3.5,1.25;#999999]" ..
+		"box[0,4.25;3.5,1.1;#999999]" ..
 		"label[0.25,4.25;" .. fgettext("GUI scale factor") .. "]" ..
 		"scrollbar[0.25,4.75;3,0.4;sb_gui_scaling;horizontal;" ..
 		 gui_scale_to_scrollbar() .. "]" ..
@@ -260,6 +262,10 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 	if fields["cb_connected_glass"] then
 		core.setting_set("connected_glass", fields["cb_connected_glass"])
+		return true
+	end
+	if fields["cb_node_highlighting"] then
+		core.setting_set("enable_node_highlighting", fields["cb_node_highlighting"])
 		return true
 	end
 	if fields["cb_particles"] then

@@ -20,26 +20,29 @@ local function get_formspec(tabview, name, tabdata)
 	local render_details = core.is_yes(core.setting_getbool("public_serverlist"))
 	
 	local retval =
-		"label[0,4.25;" .. fgettext("Address/Port") .. "]" ..
-		"label[9,2.75;" .. fgettext("Name/Password") .. "]" ..
-		"field[0.25,5.25;5.5,0.5;te_address;;" ..
+		"label[8,0;" .. fgettext("Address / Port") .. "]" ..
+		"label[8,1.35;" .. fgettext("Name / Password") .. "]" ..
+		"field[8.25,1;3.15,0.5;te_address;;" ..
 		core.formspec_escape(core.setting_get("address")) .. "]" ..
-		"field[5.75,5.25;2.25,0.5;te_port;;" ..
+		"field[11.25,1;1.15,0.5;te_port;;" ..
 		core.formspec_escape(core.setting_get("remote_port")) .. "]" ..
-		"checkbox[0,3.6;cb_public_serverlist;" .. fgettext("Public Serverlist") .. ";" ..
-		dump(core.setting_getbool("public_serverlist")) .. "]"
+		"checkbox[0,4.85;cb_public_serverlist;" .. fgettext("Public Serverlist") .. ";" ..
+		dump(core.setting_getbool("public_serverlist")) .. "]" ..
+		"checkbox[2.85,4.85;cb_map_saving;" .. fgettext("Local Map Saving") .. ";" ..
+		dump(core.setting_getbool("enable_local_map_saving")) .. "]"
 
 	if not core.setting_getbool("public_serverlist") then
 		retval = retval ..
-		"button[6.45,3.95;2.25,0.5;btn_delete_favorite;" .. fgettext("Delete") .. "]"
+		"button[8,4.9;2,0.5;btn_delete_favorite;" .. fgettext("Delete") .. "]"
 	end
 
 	retval = retval ..
-		"button[9,4.95;2.5,0.5;btn_mp_connect;" .. fgettext("Connect") .. "]" ..
-		"field[9.3,3.75;2.5,0.5;te_name;;" ..
+		"button[10,4.9;2,0.5;btn_mp_connect;" .. fgettext("Connect") .. "]" ..
+		"field[8.25,2.35;2.65,0.5;te_name;;" ..
 		core.formspec_escape(core.setting_get("name")) .. "]" ..
-		"pwdfield[9.3,4.5;2.5,0.5;te_pwd;]" ..
-		"textarea[9.3,0;2.5,3.1;;"
+		"pwdfield[10.75,2.35;1.65,0.5;te_pwd;]" ..
+		"box[7.95,2.75;4,1.8;#999999]" ..
+		"textarea[8.35,2.75;4,3.1;;"
 		
 	if tabdata.fav_selected ~= nil and
 		menudata.favorites[tabdata.fav_selected] ~= nil and
@@ -66,7 +69,7 @@ local function get_formspec(tabview, name, tabdata)
 		retval = retval .. "tablecolumns[text]"
 	end
 	retval = retval ..
-		"table[0,0;8.5,3.7;favourites;"
+		"table[0,0;7.75,4.9;favourites;"
 
 	if #menudata.favorites > 0 then
 		retval = retval .. render_favorite(menudata.favorites[1],render_details)
@@ -91,6 +94,11 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	if fields["te_name"] ~= nil then
 		gamedata.playername = fields["te_name"]
 		core.setting_set("name", fields["te_name"])
+	end
+	
+	if fields["cb_map_saving"] then
+	core.setting_set("enable_local_map_saving", fields["cb_map_saving"])
+		return true
 	end
 
 	if fields["favourites"] ~= nil then
