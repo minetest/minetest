@@ -202,7 +202,7 @@ void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nm
 }
 
 
-void Mapgen::setLighting(v3s16 nmin, v3s16 nmax, u8 light)
+void Mapgen::setLighting(u8 light, v3s16 nmin, v3s16 nmax)
 {
 	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update", SPT_AVG);
 	VoxelArea a(nmin, nmax);
@@ -239,6 +239,19 @@ void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light)
 	lightSpread(a, p - v3s16(0, 1, 0), light);
 	lightSpread(a, p - v3s16(1, 0, 0), light);
 }
+
+
+void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax, v3s16 full_nmin, v3s16 full_nmax)
+{
+	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update", SPT_AVG);
+	//TimeTaker t("updateLighting");
+
+	propagateSunlight(nmin, nmax);
+	spreadLight(full_nmin, full_nmax);
+
+	//printf("updateLighting: %dms\n", t.stop());
+}
+
 
 
 void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax)
