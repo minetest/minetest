@@ -44,7 +44,8 @@ DecorationManager::DecorationManager(IGameDef *gamedef) :
 }
 
 
-size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 seed, v3s16 nmin, v3s16 nmax)
+size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed,
+	v3s16 nmin, v3s16 nmax)
 {
 	size_t nplaced = 0;
 
@@ -53,8 +54,8 @@ size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 seed, v3s16 nmin, v3s16 
 		if (!deco)
 			continue;
 
-		nplaced += deco->placeDeco(mg, seed, nmin, nmax);
-		seed++;
+		nplaced += deco->placeDeco(mg, blockseed, nmin, nmax);
+		blockseed++;
 	}
 
 	return nplaced;
@@ -167,7 +168,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 			}
 
 			v3s16 pos(x, y, z);
-			if (generate(mg, &ps, max_y, pos))
+			if (generate(mg->vm, &ps, max_y, pos))
 				mg->gennotify.addEvent(GENNOTIFY_DECORATION, pos, id);
 		}
 	}
@@ -286,10 +287,9 @@ bool DecoSimple::canPlaceDecoration(ManualMapVoxelManipulator *vm, v3s16 p)
 }
 
 
-size_t DecoSimple::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p)
+size_t DecoSimple::generate(ManualMapVoxelManipulator *vm, PseudoRandom *pr,
+	s16 max_y, v3s16 p)
 {
-	ManualMapVoxelManipulator *vm = mg->vm;
-
 	if (!canPlaceDecoration(vm, p))
 		return 0;
 
@@ -325,16 +325,18 @@ int DecoSimple::getHeight()
 ///////////////////////////////////////////////////////////////////////////////
 
 
-size_t DecoSchematic::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p)
+size_t DecoSchematic::generate(ManualMapVoxelManipulator *vm, PseudoRandom *pr,
+	s16 max_y, v3s16 p)
 {
-	ManualMapVoxelManipulator *vm = mg->vm;
-
 	if (flags & DECO_PLACE_CENTER_X)
 		p.X -= (schematic->size.X + 1) / 2;
 	if (flags & DECO_PLACE_CENTER_Y)
 		p.Y -= (schematic->size.Y + 1) / 2;
 	if (flags & DECO_PLACE_CENTER_Z)
 		p.Z -= (schematic->size.Z + 1) / 2;
+
+	if (!vm->m_area.contains(p))
+		return 0;
 
 	u32 vi = vm->m_area.index(p);
 	content_t c = vm->m_data[vi].getContent();
@@ -344,7 +346,7 @@ size_t DecoSchematic::generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p)
 	Rotation rot = (rotation == ROTATE_RAND) ?
 		(Rotation)pr->range(ROTATE_0, ROTATE_270) : rotation;
 
-	schematic->blitToVManip(p, vm, rot, false, mg->ndef);
+	schematic->blitToVManip(p, vm, rot, false, m_ndef);
 
 	return 1;
 }

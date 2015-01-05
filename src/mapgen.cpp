@@ -356,6 +356,7 @@ void Mapgen::calcLightingOld(v3s16 nmin, v3s16 nmax)
 
 GenerateNotifier::GenerateNotifier()
 {
+	m_notify_on = 0;
 }
 
 

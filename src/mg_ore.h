@@ -70,7 +70,7 @@ public:
 	virtual void resolveNodeNames(NodeResolveInfo *nri);
 
 	size_t placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
-	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
+	virtual void generate(ManualMapVoxelManipulator *vm, int mapseed,
 		u32 blockseed, v3s16 nmin, v3s16 nmax) = 0;
 };
 
@@ -78,7 +78,7 @@ class OreScatter : public Ore {
 public:
 	static const bool NEEDS_NOISE = false;
 
-	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
+	virtual void generate(ManualMapVoxelManipulator *vm, int mapseed,
 		u32 blockseed, v3s16 nmin, v3s16 nmax);
 };
 
@@ -86,7 +86,7 @@ class OreSheet : public Ore {
 public:
 	static const bool NEEDS_NOISE = true;
 
-	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
+	virtual void generate(ManualMapVoxelManipulator *vm, int mapseed,
 		u32 blockseed, v3s16 nmin, v3s16 nmax);
 };
 
@@ -94,7 +94,7 @@ class OreBlob : public Ore {
 public:
 	static const bool NEEDS_NOISE = true;
 
-	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
+	virtual void generate(ManualMapVoxelManipulator *vm, int mapseed,
 		u32 blockseed, v3s16 nmin, v3s16 nmax);
 };
 
@@ -107,7 +107,7 @@ public:
 
 	virtual ~OreVein();
 
-	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
+	virtual void generate(ManualMapVoxelManipulator *vm, int mapseed,
 		u32 blockseed, v3s16 nmin, v3s16 nmax);
 };
 
@@ -137,7 +137,7 @@ public:
 
 	void clear();
 
-	size_t placeAllOres(Mapgen *mg, u32 seed, v3s16 nmin, v3s16 nmax);
+	size_t placeAllOres(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 };
 
 #endif

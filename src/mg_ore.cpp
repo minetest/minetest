@@ -41,7 +41,7 @@ OreManager::OreManager(IGameDef *gamedef) :
 }
 
 
-size_t OreManager::placeAllOres(Mapgen *mg, u32 seed, v3s16 nmin, v3s16 nmax)
+size_t OreManager::placeAllOres(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 {
 	size_t nplaced = 0;
 
@@ -50,8 +50,8 @@ size_t OreManager::placeAllOres(Mapgen *mg, u32 seed, v3s16 nmin, v3s16 nmax)
 		if (!ore)
 			continue;
 
-		nplaced += ore->placeOre(mg, seed, nmin, nmax);
-		seed++;
+		nplaced += ore->placeOre(mg, blockseed, nmin, nmax);
+		blockseed++;
 	}
 
 	return nplaced;
@@ -123,7 +123,7 @@ size_t Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 ///////////////////////////////////////////////////////////////////////////////
 
 
-void OreScatter::generate(ManualMapVoxelManipulator *vm, int seed,
+void OreScatter::generate(ManualMapVoxelManipulator *vm, int mapseed,
 	u32 blockseed, v3s16 nmin, v3s16 nmax)
 {
 	PseudoRandom pr(blockseed);
@@ -142,7 +142,7 @@ void OreScatter::generate(ManualMapVoxelManipulator *vm, int seed,
 		int z0 = pr.range(nmin.Z, nmax.Z - csize + 1);
 
 		if ((flags & OREFLAG_USE_NOISE) &&
-			(NoisePerlin3D(&np, x0, y0, z0, seed) < nthresh))
+			(NoisePerlin3D(&np, x0, y0, z0, mapseed) < nthresh))
 			continue;
 
 		for (int z1 = 0; z1 != csize; z1++)
@@ -164,7 +164,7 @@ void OreScatter::generate(ManualMapVoxelManipulator *vm, int seed,
 ///////////////////////////////////////////////////////////////////////////////
 
 
-void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
+void OreSheet::generate(ManualMapVoxelManipulator *vm, int mapseed,
 	u32 blockseed, v3s16 nmin, v3s16 nmax)
 {
 	PseudoRandom pr(blockseed + 4234);
@@ -178,7 +178,7 @@ void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
 		int sz = nmax.Z - nmin.Z + 1;
 		noise = new Noise(&np, 0, sx, sz);
 	}
-	noise->seed = seed + y_start;
+	noise->seed = mapseed + y_start;
 	noise->perlinMap2D(nmin.X, nmin.Z);
 
 	size_t index = 0;
@@ -206,8 +206,8 @@ void OreSheet::generate(ManualMapVoxelManipulator *vm, int seed,
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void OreBlob::generate(ManualMapVoxelManipulator *vm, int seed, u32 blockseed,
-	v3s16 nmin, v3s16 nmax)
+void OreBlob::generate(ManualMapVoxelManipulator *vm, int mapseed,
+	u32 blockseed, v3s16 nmin, v3s16 nmax)
 {
 	PseudoRandom pr(blockseed + 2404);
 	MapNode n_ore(c_ore, 0, ore_param2);
@@ -219,7 +219,7 @@ void OreBlob::generate(ManualMapVoxelManipulator *vm, int seed, u32 blockseed,
 	int nblobs = volume / clust_scarcity;
 
 	if (!noise)
-		noise = new Noise(&np, seed, csize, csize, csize);
+		noise = new Noise(&np, mapseed, csize, csize, csize);
 
 	for (int i = 0; i != nblobs; i++) {
 		int x0 = pr.range(nmin.X, nmax.X - csize + 1);
@@ -269,8 +269,8 @@ OreVein::~OreVein()
 }
 
 
-void OreVein::generate(ManualMapVoxelManipulator *vm, int seed, u32 blockseed,
-	v3s16 nmin, v3s16 nmax)
+void OreVein::generate(ManualMapVoxelManipulator *vm, int mapseed,
+	u32 blockseed, v3s16 nmin, v3s16 nmax)
 {
 	PseudoRandom pr(blockseed + 520);
 	MapNode n_ore(c_ore, 0, ore_param2);
@@ -279,8 +279,8 @@ void OreVein::generate(ManualMapVoxelManipulator *vm, int seed, u32 blockseed,
 		int sx = nmax.X - nmin.X + 1;
 		int sy = nmax.Y - nmin.Y + 1;
 		int sz = nmax.Z - nmin.Z + 1;
-		noise  = new Noise(&np, seed, sx, sy, sz);
-		noise2 = new Noise(&np, seed + 436, sx, sy, sz);
+		noise  = new Noise(&np, mapseed, sx, sy, sz);
+		noise2 = new Noise(&np, mapseed + 436, sx, sy, sz);
 	}
 	bool noise_generated = false;
 
