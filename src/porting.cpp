@@ -575,6 +575,7 @@ v2u32 getWindowSize()
 	return device->getVideoDriver()->getScreenSize();
 }
 
+#ifndef __ANDROID__
 #ifdef XORG_USED
 float getDisplayDensity()
 {
@@ -609,7 +610,6 @@ float getDisplayDensity()
 }
 #endif
 
-#ifndef __ANDROID__
 v2u32 getDisplaySize()
 {
 	IrrlichtDevice *nulldevice = createDevice(video::EDT_NULL);
