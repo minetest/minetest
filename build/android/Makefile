@@ -20,6 +20,8 @@ PATHCFGFILE = path.cfg
 
 ROOT = $(shell pwd)
 
+GAMES_TO_COPY = minetest_game
+
 ################################################################################
 # Android Version code
 # Increase for each build!
@@ -631,15 +633,23 @@ assets : $(ASSETS_TIMESTAMP)
 	cp -r ${ROOT}/../../client ${ROOT}/assets/Minetest;                        \
 	cp -r ${ROOT}/../../doc ${ROOT}/assets/Minetest;                           \
 	cp -r ${ROOT}/../../fonts ${ROOT}/assets/Minetest;                         \
-	cp -r ${ROOT}/../../games ${ROOT}/assets/Minetest;                         \
+	mkdir ${ROOT}/assets/Minetest/games;                                       \
+	for game in ${GAMES_TO_COPY};                                              \
+	do                                                                         \
+	    cp -r ${ROOT}/../../games/$$game ${ROOT}/assets/Minetest/games/;       \
+	done;                                                                      \
 	cp -r ${ROOT}/../../mods ${ROOT}/assets/Minetest;                          \
 	cp -r ${ROOT}/../../po ${ROOT}/assets/Minetest;                            \
 	cp -r ${ROOT}/../../textures ${ROOT}/assets/Minetest;                      \
 	mkdir -p ${ROOT}/assets/Minetest/media;                                    \
 	cp -r ${IRRLICHT_DIR}/media/Shaders ${ROOT}/assets/Minetest/media;         \
-	cd ${ROOT}/assets;                                                         \
+	cd ${ROOT}/assets ||  exit 1;                                              \
 	find . -name "timestamp" -exec rm {} \; ;                                  \
 	find . -name "*.blend" -exec rm {} \; ;                                    \
+	find . -name "*~" -exec rm {} \; ;                                         \
+	find . -type d -path "*.git" -exec rm -rf {} \; ;                          \
+	find . -type d -path "*.svn" -exec rm -rf {} \; ;                          \
+	find . -type f -path "*.gitignore" -exec rm -rf {} \; ;                    \
 	ls -R | grep ":$$" | sed -e 's/:$$//' -e 's/\.//' -e 's/^\///' > "index.txt"; \
 	find Minetest >"filelist.txt";                                             \
 	cp ${ROOT}/${ASSETS_TIMESTAMP} ${ROOT}/${ASSETS_TIMESTAMP}.old;            \

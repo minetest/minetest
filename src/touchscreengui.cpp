@@ -683,6 +683,10 @@ void TouchScreenGUI::step(float dtime)
 		if (btn->ids.size() > 0) {
 			btn->repeatcounter += dtime;
 
+			/* in case we're moving around digging does not happen */
+			if (m_move_id != -1)
+				m_move_has_really_moved = true;
+
 			if (btn->repeatcounter < 0.2) continue;
 
 			btn->repeatcounter              = 0;

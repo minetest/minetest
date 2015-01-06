@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Vector;
 import java.util.Iterator;
+import java.lang.Object;
 
 import android.app.Activity;
 import android.content.res.AssetFileDescriptor;
@@ -20,6 +21,9 @@ import android.util.Log;
 import android.view.Display;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.graphics.Rect;
+import android.graphics.Paint;
+import android.text.TextPaint;
 
 public class MinetestAssetCopy extends Activity
 {
@@ -244,14 +248,62 @@ public class MinetestAssetCopy extends Activity
 		 */
 		protected void onProgressUpdate(Integer... progress)
 		{
+			
 			if (m_copy_started)
 			{
+				boolean shortened = false;
+				String todisplay = m_tocopy.get(progress[0]);
 				m_ProgressBar.setProgress(progress[0]);
-				m_Filename.setText(m_tocopy.get(progress[0]));
+				
+				// make sure our text doesn't exceed our layout width
+				Rect bounds = new Rect();
+				Paint textPaint = m_Filename.getPaint();
+				textPaint.getTextBounds(todisplay, 0, todisplay.length(), bounds);
+				
+				while (bounds.width() > getResources().getDisplayMetrics().widthPixels * 0.7) {
+					Log.e("MinetestAssetCopy", todisplay + ": " +
+							bounds.width() + " > " + (getResources().getDisplayMetrics().widthPixels * 0.7));
+					if (todisplay.length() < 2) {
+						break;
+					}
+					todisplay = todisplay.substring(1);
+					textPaint.getTextBounds(todisplay, 0, todisplay.length(), bounds);
+					shortened = true;
+				}
+				
+				if (! shortened) {
+					m_Filename.setText(todisplay);
+				}
+				else {
+					m_Filename.setText(".." + todisplay);
+				}
 			}
 			else
 			{
-				m_Filename.setText("scanning " + m_Foldername + " ...");
+				boolean shortened = false;
+				String todisplay = m_Foldername;
+				String full_text = "scanning " + todisplay + " ...";
+				// make sure our text doesn't exceed our layout width
+				Rect bounds = new Rect();
+				Paint textPaint = m_Filename.getPaint();
+				textPaint.getTextBounds(full_text, 0, full_text.length(), bounds);
+				
+				while (bounds.width() > getResources().getDisplayMetrics().widthPixels * 0.7) {
+					if (todisplay.length() < 2) {
+						break;
+					}
+					todisplay = todisplay.substring(1);
+					full_text = "scanning " + todisplay + " ...";
+					textPaint.getTextBounds(full_text, 0, full_text.length(), bounds);
+					shortened = true;
+				}
+				
+				if (! shortened) {
+					m_Filename.setText(full_text);
+				}
+				else {
+					m_Filename.setText("scanning .." + todisplay + " ...");
+				}
 			}
 		}
 		
