@@ -103,18 +103,32 @@ Compiling on GNU/Linux:
 -----------------------
 
 Install dependencies. Here's an example for Debian/Ubuntu:
-$ apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev
+$ apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libjsoncpp-dev
 
-Download source, extract (this is the URL to the latest of source repository, which might not work at all times):
-$ wget https://github.com/minetest/minetest/tarball/master -O master.tar.gz
-$ tar xf master.tar.gz
-$ cd minetest-minetest-286edd4 (or similar)
+You can install git for easily keeping your copy up to date.
+If you dont want git, read below on how to get the source without git.
+This is an example for installing git on Debian/Ubuntu:
+$ apt-get install git-core
 
-Download minetest_game (otherwise only the "Minimal development test" game is available)
+Download source (this is the URL to the latest of source repository, which might not work at all times) using git:
+$ git clone --depth 1 https://github.com/minetest/minetest.git
+$ cd minetest
+
+Download minetest_game (otherwise only the "Minimal development test" game is available) using git:
 $ cd games/
-$ wget https://github.com/minetest/minetest_game/tarball/master -O minetest_game.tar.gz
-$ tar xf minetest_game.tar.gz
-$ mv minetest-minetest_game-* minetest_game
+$ git clone --depth 1 https://github.com/minetest/minetest_game.git
+$ cd ..
+
+Download source, without using git:
+$ wget https://github.com/minetest/minetest/archive/master.tar.gz
+$ tar xf master.tar.gz
+$ cd minetest-master
+
+Download minetest_game, without using git:
+$ cd games/
+$ wget https://github.com/minetest/minetest_game/archive/master.tar.gz
+$ tar xf master.tar.gz
+$ mv minetest_game-master minetest_game
 $ cd ..
 
 Build a version that runs directly from the source directory:
