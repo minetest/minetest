@@ -122,9 +122,7 @@ end
 function modstore.showdownloading(title)
 	local new_dlg = dialog_create("store_downloading",
 		function(data)
-			return "size[6,2]label[0.25,0.75;" .. fgettext("Downloading") ..
-				" " .. data.title .. " " ..
-				fgettext("please wait...") .. "]"
+			return "size[6,2]label[0.25,0.75;" .. fgettext("Downloading $1, please wait...", data.title) .. "]"
 		end,
 		function(this,fields)
 			if fields["btn_hidden_close_download"] ~= nil then
@@ -180,7 +178,7 @@ function modstore.successfulldialog()
 		nil,
 		modstore.tv_store)
 
-	new_dlg.data.title = title
+	new_dlg.data.title = modstore.lastmodtitle
 	new_dlg:show()
 end
 
@@ -229,11 +227,7 @@ function modstore.handle_buttons(parent, fields, name, data)
 				if modstore.modlist_unsorted.data[i].id == modid then
 					local moddetails = modstore.modlist_unsorted.data[i].details
 
-					if modstore.lastmodtitle ~= "" then
-						modstore.lastmodtitle = modstore.lastmodtitle .. ", "
-					end
-
-					modstore.lastmodtitle = modstore.lastmodtitle .. moddetails.title
+					modstore.lastmodtitle = moddetails.title
 
 					if not core.handle_async(
 						function(param)
