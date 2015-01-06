@@ -71,7 +71,7 @@ cd $libdir
 
 # Get minetest
 cd $builddir
-if [ -d $EXISTING_MINETEST_DIR ]; then
+if [ ! "x$EXISTING_MINETEST_DIR" = "x" ]; then
 	ln -s $EXISTING_MINETEST_DIR minetest
 else
 	[ -d minetest ] && (cd minetest && git pull) || (git clone https://github.com/minetest/minetest)
