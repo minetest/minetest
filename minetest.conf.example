@@ -224,7 +224,7 @@
 #directional_colored_fog = true
 #    Delay showing tooltips, stated in milliseconds
 #tooltip_show_delay = 400
-#    Adjust dpi configuration to your screen (Desktop only) e.g. for 4k screens
+#    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens
 #screen_dpi = 72
 #    Default timeout for cURL, stated in milliseconds.
 #    Only has an effect if compiled with cURL.

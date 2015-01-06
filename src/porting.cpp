@@ -570,17 +570,48 @@ void setXorgClassHint(const video::SExposedVideoData &video_data,
 }
 
 #ifndef SERVER
-v2u32 getWindowSize() {
+v2u32 getWindowSize()
+{
 	return device->getVideoDriver()->getScreenSize();
 }
 
-#ifndef __ANDROID__
+#ifdef XORG_USED
+float getDisplayDensity()
+{
+	const char* current_display = getenv("DISPLAY");
 
-float getDisplayDensity() {
+	if (current_display != NULL) {
+			Display * x11display = XOpenDisplay(current_display);
+
+			if (x11display != NULL) {
+				/* try x direct */
+				float dpi_height =
+						floor(DisplayHeight(x11display, 0) /
+								(DisplayHeightMM(x11display, 0) * 0.039370) + 0.5);
+				float dpi_width =
+						floor(DisplayWidth(x11display, 0) /
+								(DisplayWidthMM(x11display, 0) * 0.039370) +0.5);
+
+				XCloseDisplay(x11display);
+
+				return (std::max(dpi_height,dpi_width) / 96.0);
+			}
+		}
+
+	/* return manually specified dpi */
 	return g_settings->getFloat("screen_dpi")/96.0;
 }
 
-v2u32 getDisplaySize() {
+#else
+float getDisplayDensity()
+{
+	return g_settings->getFloat("screen_dpi")/96.0;
+}
+#endif
+
+#ifndef __ANDROID__
+v2u32 getDisplaySize()
+{
 	IrrlichtDevice *nulldevice = createDevice(video::EDT_NULL);
 
 	core::dimension2d<u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
