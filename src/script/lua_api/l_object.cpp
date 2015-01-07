@@ -442,7 +442,7 @@ int ObjectRef::l_set_eye_offset(lua_State *L)
 	// Do it
 	v3f offset_first = v3f(0, 0, 0);
 	v3f offset_third = v3f(0, 0, 0);
-	
+
 	if(!lua_isnil(L, 2))
 		offset_first = read_v3f(L, 2);
 	if(!lua_isnil(L, 3))
@@ -914,7 +914,11 @@ int ObjectRef::l_hud_add(lua_State *L)
 	elem->text   = getstringfield_default(L, 2, "text", "");
 	elem->number = getintfield_default(L, 2, "number", 0);
 	elem->item   = getintfield_default(L, 2, "item", 0);
-	elem->dir    = getintfield_default(L, 2, "dir", 0);
+	elem->dir    = getintfield_default(L, 2, "direction", 0);
+
+	// Deprecated, only for compatibility's sake
+	if (elem->dir == 0)
+		elem->dir = getintfield_default(L, 2, "dir", 0);
 
 	lua_getfield(L, 2, "alignment");
 	elem->align = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
@@ -1076,6 +1080,10 @@ int ObjectRef::l_hud_get(lua_State *L)
 	lua_setfield(L, -2, "item");
 
 	lua_pushnumber(L, e->dir);
+	lua_setfield(L, -2, "direction");
+
+	// Deprecated, only for compatibility's sake
+	lua_pushnumber(L, e->dir);
 	lua_setfield(L, -2, "dir");
 
 	push_v3f(L, e->world_pos);
@@ -1095,7 +1103,7 @@ int ObjectRef::l_hud_set_flags(lua_State *L)
 	u32 flags = 0;
 	u32 mask  = 0;
 	bool flag;
-	
+
 	const EnumString *esp = es_HudBuiltinElement;
 	for (int i = 0; esp[i].str; i++) {
 		if (getboolfield(L, 2, esp[i].str, flag)) {
