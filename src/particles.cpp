@@ -221,7 +221,7 @@ ParticleSpawner::ParticleSpawner(IGameDef* gamedef, scene::ISceneManager *smgr, 
 	v3f minpos, v3f maxpos, v3f minvel, v3f maxvel, v3f minacc, v3f maxacc,
 	float minexptime, float maxexptime, float minsize, float maxsize,
 	bool collisiondetection, bool vertical, video::ITexture *texture, u32 id,
-	ParticleManager* p_manager) :
+	ParticleManager *p_manager) :
 	m_particlemanager(p_manager)
 {
 	m_gamedef = gamedef;
@@ -354,15 +354,15 @@ void ParticleManager::step(float dtime)
 
 void ParticleManager::stepSpawners (float dtime)
 {
-	JMutexAutoLock lock(m_spawnerlistlock);
+	JMutexAutoLock lock(m_spawner_list_lock);
 	for(std::map<u32, ParticleSpawner*>::iterator i = 
-			m_particlespawners.begin();
-			i != m_particlespawners.end();)
+			m_particle_spawners.begin();
+			i != m_particle_spawners.end();)
 	{
 		if (i->second->get_expired())
 		{
 			delete i->second;
-			m_particlespawners.erase(i++);
+			m_particle_spawners.erase(i++);
 		}
 		else
 		{
@@ -374,7 +374,7 @@ void ParticleManager::stepSpawners (float dtime)
 
 void ParticleManager::stepParticles (float dtime)
 {
-	JMutexAutoLock lock(m_particlelistlock);
+	JMutexAutoLock lock(m_particle_list_lock);
 	for(std::vector<Particle*>::iterator i = m_particles.begin();
 			i != m_particles.end();)
 	{
@@ -394,14 +394,14 @@ void ParticleManager::stepParticles (float dtime)
 
 void ParticleManager::clearAll ()
 {
-	JMutexAutoLock lock(m_spawnerlistlock);
-	JMutexAutoLock lock2(m_particlelistlock);
+	JMutexAutoLock lock(m_spawner_list_lock);
+	JMutexAutoLock lock2(m_particle_list_lock);
 	for(std::map<u32, ParticleSpawner*>::iterator i =
-			m_particlespawners.begin();
-			i != m_particlespawners.end();)
+			m_particle_spawners.begin();
+			i != m_particle_spawners.end();)
 	{
 		delete i->second;
-		m_particlespawners.erase(i++);
+		m_particle_spawners.erase(i++);
 	}
 
 	for(std::vector<Particle*>::iterator i =
@@ -418,12 +418,12 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 		scene::ISceneManager* smgr, LocalPlayer *player)
 {
 	if (event->type == CE_DELETE_PARTICLESPAWNER) {
-		JMutexAutoLock lock(m_spawnerlistlock);
-		if (m_particlespawners.find(event->delete_particlespawner.id) !=
-				m_particlespawners.end())
+		JMutexAutoLock lock(m_spawner_list_lock);
+		if (m_particle_spawners.find(event->delete_particlespawner.id) !=
+				m_particle_spawners.end())
 		{
-			delete m_particlespawners.find(event->delete_particlespawner.id)->second;
-			m_particlespawners.erase(event->delete_particlespawner.id);
+			delete m_particle_spawners.find(event->delete_particlespawner.id)->second;
+			m_particle_spawners.erase(event->delete_particlespawner.id);
 		}
 		// no allocated memory in delete event
 		return;
@@ -432,12 +432,12 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 	if (event->type == CE_ADD_PARTICLESPAWNER) {
 
 		{
-			JMutexAutoLock lock(m_spawnerlistlock);
-			if (m_particlespawners.find(event->delete_particlespawner.id) !=
-							m_particlespawners.end())
+			JMutexAutoLock lock(m_spawner_list_lock);
+			if (m_particle_spawners.find(event->delete_particlespawner.id) !=
+							m_particle_spawners.end())
 			{
-				delete m_particlespawners.find(event->delete_particlespawner.id)->second;
-				m_particlespawners.erase(event->delete_particlespawner.id);
+				delete m_particle_spawners.find(event->delete_particlespawner.id)->second;
+				m_particle_spawners.erase(event->delete_particlespawner.id);
 			}
 		}
 		video::ITexture *texture =
@@ -472,8 +472,8 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 		delete event->add_particlespawner.maxacc;
 
 		{
-			JMutexAutoLock lock(m_spawnerlistlock);
-			m_particlespawners.insert(
+			JMutexAutoLock lock(m_spawner_list_lock);
+			m_particle_spawners.insert(
 					std::pair<u32, ParticleSpawner*>(
 							event->delete_particlespawner.id,
 							toadd));
@@ -527,7 +527,7 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, scene::ISceneManager* s
 		LocalPlayer *player, v3s16 pos, const TileSpec tiles[])
 {
 	// Texture
-	u8 texid = myrand_range(0,5);
+	u8 texid = myrand_range(0, 5);
 	video::ITexture *texture = tiles[texid].texture;
 
 	// Only use first frame of animated texture
@@ -535,23 +535,23 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, scene::ISceneManager* s
 	if(tiles[texid].material_flags & MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES)
 		ymax /= tiles[texid].animation_frame_count;
 
-	float size = rand()%64/512.;
-	float visual_size = BS*size;
-	v2f texsize(size*2, ymax*size*2);
+	float size = rand() % 64 / 512.;
+	float visual_size = BS * size;
+	v2f texsize(size * 2, ymax * size * 2);
 	v2f texpos;
-	texpos.X = ((rand()%64)/64.-texsize.X);
-	texpos.Y = ymax*((rand()%64)/64.-texsize.Y);
+	texpos.X = ((rand() % 64) / 64. - texsize.X);
+	texpos.Y = ymax * ((rand() % 64) / 64. - texsize.Y);
 
 	// Physics
-	v3f velocity(	(rand()%100/50.-1)/1.5,
-			rand()%100/35.,
-			(rand()%100/50.-1)/1.5);
+	v3f velocity((rand() % 100 / 50. - 1) / 1.5,
+			rand() % 100 / 35.,
+			(rand() % 100 / 50. - 1) / 1.5);
 
 	v3f acceleration(0,-9,0);
 	v3f particlepos = v3f(
-		(f32)pos.X+rand()%100/200.-0.25,
-		(f32)pos.Y+rand()%100/200.-0.25,
-		(f32)pos.Z+rand()%100/200.-0.25
+		(f32) pos.X + rand() %100 /200. - 0.25,
+		(f32) pos.Y + rand() %100 /200. - 0.25,
+		(f32) pos.Z + rand() %100 /200. - 0.25
 	);
 
 	Particle* toadd = new Particle(
@@ -562,7 +562,7 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, scene::ISceneManager* s
 		particlepos,
 		velocity,
 		acceleration,
-		rand()%100/100., // expiration time
+		rand() % 100 / 100., // expiration time
 		visual_size,
 		true,
 		false,
@@ -575,6 +575,6 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, scene::ISceneManager* s
 
 void ParticleManager::addParticle(Particle* toadd)
 {
-	JMutexAutoLock lock(m_particlelistlock);
+	JMutexAutoLock lock(m_particle_list_lock);
 	m_particles.push_back(toadd);
 }

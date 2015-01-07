@@ -501,7 +501,7 @@ private:
 
 	MeshUpdateThread m_mesh_update_thread;
 	ClientEnvironment m_env;
-	ParticleManager m_particlemanager;
+	ParticleManager m_particle_manager;
 	con::Connection m_con;
 	IrrlichtDevice *m_device;
 	// Server serialization version

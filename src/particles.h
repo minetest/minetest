@@ -187,11 +187,11 @@ private:
 	void clearAll ();
 
 	std::vector<Particle*> m_particles;
-	std::map<u32, ParticleSpawner*> m_particlespawners;
+	std::map<u32, ParticleSpawner*> m_particle_spawners;
 
 	ClientEnvironment* m_env;
-	JMutex m_particlelistlock;
-	JMutex m_spawnerlistlock;
+	JMutex m_particle_list_lock;
+	JMutex m_spawner_list_lock;
 };
 
 #endif
