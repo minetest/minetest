@@ -98,6 +98,7 @@ LOCAL_C_INCLUDES :=                               \
 		deps/openal-soft/jni/OpenAL/include       \
 		deps/libvorbis-libogg-android/jni/include \
 		deps/leveldb/include                      \
+		deps/sqlite/
 
 LOCAL_SRC_FILES :=                                \
 		jni/src/ban.cpp                           \
@@ -290,7 +291,7 @@ LOCAL_SRC_FILES +=                                \
 		jni/src/lua/src/print.c
 
 # sqlite
-LOCAL_SRC_FILES += jni/src/sqlite/sqlite3.c
+LOCAL_SRC_FILES += deps/sqlite/sqlite3.c
 
 # jthread
 LOCAL_SRC_FILES +=                                \

@@ -130,6 +130,9 @@ FREETYPE_TIMESTAMP = $(FREETYPE_DIR)timestamp
 FREETYPE_TIMESTAMP_INT = $(ROOT)/deps/freetype_timestamp
 FREETYPE_URL_GIT = https://github.com/cdave1/freetype2-android
 
+SQLITE3_FOLDER = sqlite-amalgamation-3080704
+SQLITE3_URL = http://www.sqlite.org/2014/$(SQLITE3_FOLDER).zip
+
 -include $(PATHCFGFILE)
 
 #use interim target variable to switch leveldb on or off
@@ -140,7 +143,7 @@ endif
 .PHONY : debug release reconfig delconfig \
 	leveldb_download clean_leveldb leveldb\
 	irrlicht_download clean_irrlicht irrlicht \
-	clean_assets assets \
+	clean_assets assets sqlite3_download \
 	freetype_download clean_freetype freetype \
 	apk clean_apk \
 	clean_all clean prep_srcdir \
@@ -553,6 +556,18 @@ curl_binary:
 		rm curl-7.34.0-rtmp-ssh2-ssl-zlib-static-bin-android.tar.gz;           \
 	fi
 
+sqlite3_download: deps/${SQLITE3_FOLDER}/sqlite3.c
+
+deps/${SQLITE3_FOLDER}/sqlite3.c :
+	cd deps;                                                                    \
+	wget ${SQLITE3_URL};                                                        \
+	unzip ${SQLITE3_FOLDER}.zip;                                                \
+	ln -s ${SQLITE3_FOLDER} sqlite
+	
+clean_sqlite3:
+	cd deps && $(RM) -rf ${SQLITE3_FOLDER} && $(RM) -f ${SQLITE3_FOLDER}.zip && \
+	$(RM) -f sqlite
+
 $(ASSETS_TIMESTAMP) : $(IRRLICHT_LIB)
 	@mkdir -p ${ROOT}/deps;                                                     \
 	LAST_MODIF=$$(find ${ROOT}/../../builtin -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
@@ -661,7 +676,8 @@ clean_assets :
 	@$(RM) -r assets
 	
 apk: $(PATHCFGFILE) assets $(IRRLICHT_LIB) $(CURL_LIB) $(LEVELDB_TARGET)       \
-	$(OPENAL_LIB) $(OGG_LIB) prep_srcdir $(ROOT)/jni/src/android_version.h
+	$(OPENAL_LIB) $(OGG_LIB) prep_srcdir $(ROOT)/jni/src/android_version.h     \
+	sqlite3_download
 	@export NDEBUG=$$NDEBUG; $(MAKE) -j${PARALLEL} manifest;                   \
 	export PATH=$$PATH:${SDKFOLDER}/platform-tools:${ANDROID_NDK};             \
 	export ANDROID_HOME=${SDKFOLDER};                                          \
