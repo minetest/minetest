@@ -76,6 +76,9 @@ static unsigned int font_line_height(gui::IGUIFont *font)
 
 static gui::IGUIFont *select_font_by_line_height(double target_line_height)
 {
+#ifndef __ANDROID__
+	return g_fontengine->getFont();
+#else
 	// We don't get to directly select a font according to its
 	// baseline-to-baseline height.  Rather, we select by em size.
 	// The ratio between these varies between fonts.  The font
@@ -105,6 +108,7 @@ static gui::IGUIFont *select_font_by_line_height(double target_line_height)
 		}
 	}
 	return g_fontengine->getFont(target_line_height - lohgt < hihgt - target_line_height ? loreq : hireq);
+#endif
 }
 
 GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
