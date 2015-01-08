@@ -19,6 +19,7 @@ vorbis_version=1.3.4
 curl_version=7.38.0
 gettext_version=0.18.2
 freetype_version=2.5.3
+sqlite3_version=3.8.7.4
 luajit_version=2.0.3
 leveldb_version=1.15
 zlib_version=1.2.8
@@ -42,7 +43,9 @@ cd $builddir
 [ -e $packagedir/gettext-$gettext_version.zip ] || wget http://sfan5.pf-control.de/gettext-$gettext_version-win64.zip \
 	-c -O $packagedir/gettext-$gettext_version.zip
 [ -e $packagedir/freetype-$freetype_version.zip ] || wget http://sfan5.pf-control.de/libfreetype-$freetype_version-win64.zip \
-    -c -O $packagedir/freetype-$freetype_version.zip
+	-c -O $packagedir/freetype-$freetype_version.zip
+[ -e $packagedir/sqlite3-$sqlite3_version.zip ] || wget http://sfan5.pf-control.de/sqlite3-$sqlite3_version-win64.zip \
+	-c -O $packagedir/sqlite3-$sqlite3_version.zip
 [ -e $packagedir/luajit-$luajit_version.zip ] || wget http://sfan5.pf-control.de/luajit-$luajit_version-static-win64.zip \
 	-c -O $packagedir/luajit-$luajit_version.zip
 [ -e $packagedir/libleveldb-$leveldb_version.zip ] || wget http://sfan5.pf-control.de/libleveldb-$leveldb_version-win64.zip \
@@ -60,6 +63,7 @@ cd $libdir
 [ -d libcurl ] || unzip -o $packagedir/libcurl-$curl_version.zip -d libcurl
 [ -d gettext ] || unzip -o $packagedir/gettext-$gettext_version.zip -d gettext
 [ -d freetype ] || unzip -o $packagedir/freetype-$freetype_version.zip -d freetype
+[ -d sqlite3 ] || unzip -o $packagedir/sqlite3-$sqlite3_version.zip -d sqlite3
 [ -d openal_stripped ] || unzip -o $packagedir/openal_stripped.zip
 [ -d luajit ] || unzip -o $packagedir/luajit-$luajit_version.zip -d luajit
 [ -d leveldb ] || unzip -o $packagedir/libleveldb-$leveldb_version.zip -d leveldb
@@ -131,6 +135,10 @@ cmake .. \
 	-DFREETYPE_INCLUDE_DIR_ft2build=$libdir/freetype/include/freetype2 \
 	-DFREETYPE_LIBRARY=$libdir/freetype/lib/libfreetype.dll.a \
 	-DFREETYPE_DLL=$libdir/freetype/bin/libfreetype-6.dll \
+	\
+	-DSQLITE3_INCLUDE_DIR=$libdir/sqlite3/include \
+	-DSQLITE3_LIBRARY=$libdir/sqlite3/lib/libsqlite3.dll.a \
+	-DSQLITE3_DLL=$libdir/sqlite3/bin/libsqlite3-0.dll \
 	\
 	-DLEVELDB_INCLUDE_DIR=$libdir/leveldb/include \
 	-DLEVELDB_LIBRARY=$libdir/leveldb/lib/libleveldb.dll.a \
