@@ -131,7 +131,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_node_highlighting", "false");
 	settings->setDefault("crosshair_color", "(255,255,255)");
 	settings->setDefault("crosshair_alpha", "255");
-	settings->setDefault("gui_scaling", "1.0");
+	settings->setDefault("gui_scaling", "0.75");
 	settings->setDefault("mouse_sensitivity", "0.2");
 	settings->setDefault("enable_sound", "true");
 	settings->setDefault("sound_volume", "0.8");
