@@ -156,7 +156,7 @@ void TouchScreenGUI::initButton(touch_gui_button_id id, rect<s32> button_rect,
 }
 
 static int getMaxControlPadSize(float density) {
-	return 200 * density * g_settings->getFloat("gui_scaling");
+	return 200 * density * g_settings->getFloat("hud_scaling");
 }
 
 void TouchScreenGUI::init(ISimpleTextureSource* tsrc, float density)
