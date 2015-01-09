@@ -385,7 +385,7 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if (((parts.size() >= 3) || (parts.size() <= 4)) ||
+	if (((parts.size() >= 3) && (parts.size() <= 4)) ||
 		((parts.size() > 4) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
 		std::vector<std::string> v_pos = split(parts[0],',');
