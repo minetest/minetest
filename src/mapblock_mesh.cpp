@@ -693,8 +693,7 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
 
 	// Get rotation for things like chests
 	u8 facedir = mn.getFaceDir(ndef);
-	if (facedir > 23)
-		facedir = 0;
+
 	static const u16 dir_to_tile[24 * 16] =
 	{
 		// 0     +X    +Y    +Z           -Z    -Y    -X   ->   value=tile,rotation
