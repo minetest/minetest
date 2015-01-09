@@ -74,39 +74,6 @@ static unsigned int font_line_height(gui::IGUIFont *font)
 	return font->getDimension(L"Ay").Height + font->getKerningHeight();
 }
 
-static gui::IGUIFont *select_font_by_line_height(double target_line_height)
-{
-	// We don't get to directly select a font according to its
-	// baseline-to-baseline height.  Rather, we select by em size.
-	// The ratio between these varies between fonts.  The font
-	// engine also takes its size parameter not specified in pixels,
-	// as we want, but scaled by display density and gui_scaling,
-	// so invert that scaling here.  Use a binary search among
-	// requested sizes to find the right font.  Our starting bounds
-	// are an em height of 1 (being careful not to request size 0,
-	// which crashes the freetype system) and an em height of the
-	// target baseline-to-baseline height.
-	unsigned int loreq = ceil(1 / porting::getDisplayDensity()
-				/ g_settings->getFloat("gui_scaling"));
-	unsigned int hireq = ceil(target_line_height
-				/ porting::getDisplayDensity()
-				/ g_settings->getFloat("gui_scaling"));
-	unsigned int lohgt = font_line_height(g_fontengine->getFont(loreq));
-	unsigned int hihgt = font_line_height(g_fontengine->getFont(hireq));
-	while(hireq - loreq > 1 && lohgt != hihgt) {
-		unsigned int nureq = (loreq + hireq) >> 1;
-		unsigned int nuhgt = font_line_height(g_fontengine->getFont(nureq));
-		if(nuhgt < target_line_height) {
-			loreq = nureq;
-			lohgt = nuhgt;
-		} else {
-			hireq = nureq;
-			hihgt = nuhgt;
-		}
-	}
-	return g_fontengine->getFont(target_line_height - lohgt < hihgt - target_line_height ? loreq : hireq);
-}
-
 GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 		gui::IGUIElement* parent, s32 id, IMenuManager *menumgr,
 		InventoryManager *invmgr, IGameDef *gamedef,
@@ -950,7 +917,7 @@ void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element)
 
 		if (label.length() >= 1)
 		{
-			int font_height = font_line_height(m_font);
+			int font_height = g_fontengine->getTextHeight();
 			rect.UpperLeftCorner.Y -= font_height;
 			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
 			Environment->addStaticText(spec.flabel.c_str(), rect, false, true, this, 0);
@@ -1033,7 +1000,7 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 
 		if (label.length() >= 1)
 		{
-			int font_height = font_line_height(m_font);
+			int font_height = g_fontengine->getTextHeight();
 			rect.UpperLeftCorner.Y -= font_height;
 			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
 			Environment->addStaticText(spec.flabel.c_str(), rect, false, true, this, 0);
@@ -1130,7 +1097,7 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 
 		if (label.length() >= 1)
 		{
-			int font_height = font_line_height(m_font);
+			int font_height = g_fontengine->getTextHeight();
 			rect.UpperLeftCorner.Y -= font_height;
 			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
 			Environment->addStaticText(spec.flabel.c_str(), rect, false, true, this, 0);
@@ -1177,8 +1144,6 @@ void GUIFormSpecMenu::parseLabel(parserData* data,std::string element)
 		if(!data->explicit_size)
 			errorstream<<"WARNING: invalid use of label without a size[] element"<<std::endl;
 
-		int font_height = font_line_height(m_font);
-
 		text = unescape_string(text);
 		std::vector<std::string> lines = split(text, '\n');
 
@@ -1195,9 +1160,9 @@ void GUIFormSpecMenu::parseLabel(parserData* data,std::string element)
 			s32 posy = pos.Y + ((float)i) * spacing.Y * 2.0 / 5.0;
 			std::wstring wlabel = narrow_to_wide(lines[i].c_str());
 			core::rect<s32> rect = core::rect<s32>(
-				pos.X, posy - font_height,
+				pos.X, posy - m_btn_height,
 				pos.X + m_font->getDimension(wlabel.c_str()).Width,
-				posy + font_height);
+				posy + m_btn_height);
 			FieldSpec spec(
 				L"",
 				wlabel,
@@ -1974,11 +1939,9 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		imgsize = v2s32(use_imgsize, use_imgsize);
 		spacing = v2s32(use_imgsize*5.0/4, use_imgsize*15.0/13);
 		padding = v2s32(use_imgsize*3.0/8, use_imgsize*3.0/8);
-		double target_font_height = use_imgsize*15.0/13 * 0.4;
-		target_font_height *= g_settings->getFloat("font_size")/TTF_DEFAULT_FONT_SIZE;
 		m_btn_height = use_imgsize*15.0/13 * 0.35;
 
-		m_font = select_font_by_line_height(target_font_height);
+		m_font = g_fontengine->getFont();
 
 		mydata.size = v2s32(
 			padding.X*2+spacing.X*(mydata.invsize.X-1.0)+imgsize.X,
