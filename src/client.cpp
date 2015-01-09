@@ -248,6 +248,7 @@ Client::Client(
 		device->getSceneManager(),
 		tsrc, this, device
 	),
+	m_particle_manager(&m_env),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this),
 	m_device(device),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
@@ -2852,6 +2853,11 @@ ISoundManager* Client::getSoundManager()
 MtEventManager* Client::getEventManager()
 {
 	return m_event;
+}
+
+ParticleManager* Client::getParticleManager()
+{
+	return &m_particle_manager;
 }
 
 scene::IAnimatedMesh* Client::getMesh(const std::string &filename)

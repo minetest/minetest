@@ -454,6 +454,7 @@ public:
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	virtual ISoundManager* getSoundManager();
 	virtual MtEventManager* getEventManager();
+	virtual ParticleManager* getParticleManager();
 	virtual bool checkLocalPrivilege(const std::string &priv)
 	{ return checkPrivilege(priv); }
 	virtual scene::IAnimatedMesh* getMesh(const std::string &filename);
@@ -497,8 +498,10 @@ private:
 	ISoundManager *m_sound;
 	MtEventManager *m_event;
 
+
 	MeshUpdateThread m_mesh_update_thread;
 	ClientEnvironment m_env;
+	ParticleManager m_particle_manager;
 	con::Connection m_con;
 	IrrlichtDevice *m_device;
 	// Server serialization version
