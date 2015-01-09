@@ -83,7 +83,34 @@ FontEngine::FontEngine(Settings* main_settings, gui::IGUIEnvironment* env) :
 		m_settings->setDefault("font_size", fontsize.str());
 		m_settings->setDefault("mono_font_size", fontsize.str());
 	}
+
+	std::string font_name = g_settings->get("mono_font_path_legacy");
+	std::string font_path = g_settings->get("font_path_legacy");
+
+	if (g_settings->getBool("freetype")) {
+
+		m_font_legacy_mono = gui::CGUITTFont::createTTFont(env,
+				font_name.c_str(), g_settings->getU16("mono_font_size"));
+
+		std::string fallback;
+		if (is_yes(gettext("needs_fallback_font")))
+			fallback = "fallback_";
+		u16 font_size = g_settings->getU16(fallback + "font_size");
+		font_path = g_settings->get(fallback + "font_path");
+		u32 font_shadow = g_settings->getU16(fallback + "font_shadow");
+		u32 font_shadow_alpha = g_settings->getU16(fallback + "font_shadow_alpha");
+		m_font_legacy = gui::CGUITTFont::createTTFont(env, font_path.c_str(),
+				font_size, true, true, font_shadow, font_shadow_alpha);
+	}
+	else
+#else
+	{
+		font = guienv->getFont(font_path.c_str());
+		m_font_legacy_mono = env->getFont(font_name.c_str());
+	}
 #endif
+
+		m_font_legacy = NULL;
 
 	m_default_size[FM_Simple]       = m_settings->getU16("font_size");
 	m_default_size[FM_SimpleMono]   = m_settings->getU16("mono_font_size");
@@ -133,6 +160,16 @@ void FontEngine::cleanCache()
 /******************************************************************************/
 irr::gui::IGUIFont* FontEngine::getFont(unsigned int font_size, FontMode mode)
 {
+	if (m_legacy_mode_enabled) {
+		if (mode == FM_Mono) {
+			return m_font_legacy_mono;
+		}
+		else {
+			return m_font_legacy;
+		}
+	}
+
+
 	if (mode == FM_Unspecified) {
 		mode = m_currentMode;
 	}

@@ -78,7 +78,7 @@ function modstore.init(size, unsortedmods, searchmods)
 
 	modstore.current_list = nil
 
-	modstore.tv_store = tabview_create("modstore",size,{x=0,y=0})
+	modstore.tv_store = tabview_create("modstore",size,{x=-0.3,y=-0.99})
 
 	modstore.tv_store:set_global_event_handler(modstore.handle_events)
 

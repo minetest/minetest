@@ -120,7 +120,7 @@ local function init_globals()
 	end
 
 	-- Create main tabview
-	local tv_main = tabview_create("maintab",{x=12,y=5.2},{x=0,y=0})
+	local tv_main = tabview_create("maintab",{x=12,y=5.2},{x=-0.3,y=-0.99})
 	if PLATFORM ~= "Android" then
 		tv_main:set_autosave_tab(true)
 	end
@@ -139,9 +139,10 @@ local function init_globals()
 	tv_main:add(tab_credits)
 
 	tv_main:set_global_event_handler(main_event_handler)
-	tv_main:set_fixed_size(false)
 
-	if not (PLATFORM == "Android") then
+	if PLATFORM == "Android" then
+		tv_main:set_fixed_size(false)
+	else
 		tv_main:set_tab(core.setting_get("maintab_LAST"))
 	end
 	ui.set_default("maintab")

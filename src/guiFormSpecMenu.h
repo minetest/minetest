@@ -153,7 +153,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 		{
 		}
 		FieldSpec(const std::wstring &name, const std::wstring &label,
-				const std::wstring &fdeflt, int id) :
+		          const std::wstring &fdeflt, int id) :
 			fname(name),
 			flabel(label),
 			fdefault(fdeflt),
@@ -273,10 +273,6 @@ public:
 
 	GUITable* getTable(std::wstring tablename);
 
-#ifdef __ANDROID__
-	bool getAndroidUIInput();
-#endif
-
 protected:
 	v2s32 getBasePos() const
 	{
@@ -347,14 +343,15 @@ protected:
 private:
 	IFormSource      *m_form_src;
 	TextDest         *m_text_dst;
+	gui::IGUIFont    *m_font;
 	unsigned int      m_formspec_version;
 
 	typedef struct {
-		bool explicit_size;
-		v2f invsize;
 		v2s32 size;
+		s32 helptext_h;
 		core::rect<s32> rect;
 		v2s32 basepos;
+		int bp_set;
 		v2u32 screensize;
 		std::wstring focused_fieldname;
 		GUITable::TableOptions table_options;
@@ -401,7 +398,6 @@ private:
 	void parseListColors(parserData* data,std::string element);
 	void parseTooltip(parserData* data,std::string element);
 	bool parseVersionDirect(std::string data);
-	bool parseSizeDirect(parserData* data, std::string element);
 	void parseScrollBar(parserData* data, std::string element);
 
 	/**
@@ -417,17 +413,6 @@ private:
 		s32 time;
 	};
 	clickpos m_doubleclickdetect[2];
-
-	int m_btn_height;
-	gui::IGUIFont *m_font;
-
-	std::wstring getLabelByID(s32 id);
-	std::wstring getNameByID(s32 id);
-#ifdef __ANDROID__
-	v2s32 m_down_pos;
-	std::wstring m_JavaDialogFieldName;
-#endif
-
 };
 
 class FormspecFormSource: public IFormSource

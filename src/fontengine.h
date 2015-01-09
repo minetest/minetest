@@ -80,6 +80,14 @@ public:
 	/** update internal parameters from settings */
 	void readSettings();
 
+	/** check if legacy mode is enabled */
+	inline bool getLegacyModeEnabled()
+	{ return m_legacy_mode_enabled; }
+
+	/** set current state of legacy mode */
+	inline bool setLegacyModeEnabled(bool toset)
+	{ m_legacy_mode_enabled = toset; return m_legacy_mode_enabled; }
+
 private:
 	/** disable copy constructor */
 	FontEngine() :
@@ -89,7 +97,10 @@ private:
 		m_currentMode(FM_Standard),
 		m_lastMode(),
 		m_lastSize(0),
-		m_lastFont(NULL)
+		m_lastFont(NULL),
+		m_font_legacy(NULL),
+		m_font_legacy_mono(NULL),
+		m_legacy_mode_enabled(true)
 	{};
 
 	/** update content of font cache in case of a setting change made it invalid */
@@ -130,6 +141,15 @@ private:
 
 	/** last font returned */
 	irr::gui::IGUIFont* m_lastFont;
+
+	/** default legacy font */
+	irr::gui::IGUIFont* m_font_legacy;
+
+	/** mono legacy font */
+	irr::gui::IGUIFont* m_font_legacy_mono;
+
+	/** flag used to check for legacy mode */
+	bool m_legacy_mode_enabled;
 
 };
 

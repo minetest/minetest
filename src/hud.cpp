@@ -51,7 +51,7 @@ Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 	m_screensize       = v2u32(0, 0);
 	m_displaycenter    = v2s32(0, 0);
 	m_hotbar_imagesize = floor(HOTBAR_IMAGE_SIZE * porting::getDisplayDensity() + 0.5);
-	m_hotbar_imagesize *= g_settings->getFloat("hud_scaling");
+	m_hotbar_imagesize *= g_settings->getFloat("gui_scaling");
 	m_padding = m_hotbar_imagesize / 12;
 
 	const video::SColor hbar_color(255, 255, 255, 255);
@@ -341,15 +341,15 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
 	if (size == v2s32()) {
 		dstd = srcd;
 	} else {
-		dstd.Height = size.Y * g_settings->getFloat("hud_scaling") *
+		dstd.Height = size.Y * g_settings->getFloat("gui_scaling") *
 				porting::getDisplayDensity();
-		dstd.Width  = size.X * g_settings->getFloat("hud_scaling") *
-				porting::getDisplayDensity();
-
-		offset.X *= g_settings->getFloat("hud_scaling") *
+		dstd.Width  = size.X * g_settings->getFloat("gui_scaling") *
 				porting::getDisplayDensity();
 
-		offset.Y *= g_settings->getFloat("hud_scaling") *
+		offset.X *= g_settings->getFloat("gui_scaling") *
+				porting::getDisplayDensity();
+
+		offset.Y *= g_settings->getFloat("gui_scaling") *
 				porting::getDisplayDensity();
 	}
 
@@ -479,7 +479,7 @@ void Hud::drawSelectionBoxes(std::vector<aabb3f> &hilightboxes) {
 void Hud::resizeHotbar() {
 	if (m_screensize != porting::getWindowSize()) {
 		m_hotbar_imagesize = floor(HOTBAR_IMAGE_SIZE * porting::getDisplayDensity() + 0.5);
-		m_hotbar_imagesize *= g_settings->getFloat("hud_scaling");
+		m_hotbar_imagesize *= g_settings->getFloat("gui_scaling");
 		m_padding = m_hotbar_imagesize / 12;
 		m_screensize = porting::getWindowSize();
 		m_displaycenter = v2s32(m_screensize.X/2,m_screensize.Y/2);

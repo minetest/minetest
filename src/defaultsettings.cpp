@@ -131,8 +131,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_node_highlighting", "false");
 	settings->setDefault("crosshair_color", "(255,255,255)");
 	settings->setDefault("crosshair_alpha", "255");
-	settings->setDefault("gui_scaling", "0.75");
-	settings->setDefault("hud_scaling", "1.0");
+	settings->setDefault("gui_scaling", "1.0");
 	settings->setDefault("mouse_sensitivity", "0.2");
 	settings->setDefault("enable_sound", "true");
 	settings->setDefault("sound_volume", "0.8");
@@ -186,6 +185,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("font_shadow_alpha", "128");
 	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "liberationmono.ttf"));
 	settings->setDefault("fallback_font_path", porting::getDataPath("fonts" DIR_DELIM "DroidSansFallbackFull.ttf"));
+	settings->setDefault("font_path_legacy", porting::getDataPath("fonts" DIR_DELIM "fontlucida_legacy"));
+	settings->setDefault("mono_font_path_legacy", porting::getDataPath("fonts" DIR_DELIM "fontdejavusansmono_legacy"));
+
 
 	settings->setDefault("fallback_font_shadow", "1");
 	settings->setDefault("fallback_font_shadow_alpha", "128");
@@ -200,7 +202,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("freetype", "false");
 	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "lucida_sans"));
 	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "mono_dejavu_sans"));
-
+	settings->setDefault("font_path_legacy", porting::getDataPath("fonts" DIR_DELIM "fontlucida_legacy"));
+	settings->setDefault("mono_font_path_legacy", porting::getDataPath("fonts" DIR_DELIM "fontdejavusansmono_legacy"));
 	std::stringstream fontsize;
 	fontsize << DEFAULT_FONT_SIZE;
 
@@ -327,10 +330,10 @@ void set_default_settings(Settings *settings)
 	float x_inches = ((double) porting::getDisplaySize().X /
 			(160 * porting::getDisplayDensity()));
 	if (x_inches  < 3.5) {
-		settings->setDefault("hud_scaling", "0.6");
+		settings->setDefault("gui_scaling", "0.6");
 	}
 	else if (x_inches < 4.5) {
-		settings->setDefault("hud_scaling", "0.7");
+		settings->setDefault("gui_scaling", "0.7");
 	}
 	settings->setDefault("curl_verify_cert","false");
 #else
