@@ -3159,7 +3159,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			}
 		
 		
-		// std::cout << "updown (" << updown <<") button (" << button << ")" << std::endl;
+		std::cout << "updown (" << updown <<") button (" << button << ")" << event.MouseInput.Shift << std::endl;
 		
 		// Set this number to a positive value to generate a move action
 		// from m_selected_item to s.
@@ -3186,17 +3186,26 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			}
 			else if(m_selected_item == NULL) {
 				if(s_count != 0) {
-					// Non-empty stack has been clicked: select it
-					m_selected_item = new ItemSpec(s);
-
-					if(button == 1)  // right
-						m_selected_amount = (s_count + 1) / 2;
-					else if(button == 2)  // middle
-						m_selected_amount = MYMIN(s_count, 10);
-					else  // left
+					if (event.MouseInput.Shift) {
+						// Shift-LMB throw away; TODO: change to fast-move stack
+						m_selected_item = new ItemSpec(s);
 						m_selected_amount = s_count;
-
-					m_selected_dragging = true;
+						drop_amount = m_selected_amount;
+						inv_selected = m_invmgr->getInventory(m_selected_item->inventoryloc);
+						std::cout<<"throw"<<std::endl;
+					} else {
+						// Non-empty stack has been clicked: select it
+						m_selected_item = new ItemSpec(s);
+						
+						if(button == 1)  // right
+							m_selected_amount = (s_count + 1) / 2;
+						else if(button == 2)  // middle
+							m_selected_amount = MYMIN(s_count, 10);
+						else  // left
+							m_selected_amount = s_count;
+						
+						m_selected_dragging = true;
+					}
 				}
 			}
 			else { // m_selected_item != NULL
