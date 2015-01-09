@@ -119,7 +119,7 @@ u8 MapNode::getFaceDir(INodeDefManager *nodemgr) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	if(f.param_type_2 == CPT2_FACEDIR)
-		return getParam2() & 0x1F;
+		return (getParam2() & 0x1F) % 24;
 	return 0;
 }
 
