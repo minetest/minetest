@@ -102,7 +102,7 @@ Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 	if (mode == "box") {
 		m_use_selection_mesh = false;
 		m_selection_material.Thickness =
-			rangelim(g_settings->getS16("selectionbox_width"), 1, 5);	
+			rangelim(g_settings->getS16("selectionbox_width"), 1, 5);
 	} else if (mode == "halo") {
 		m_use_selection_mesh = true;
 		m_selection_material.setTexture(0, tsrc->getTextureForMesh("halo.png"));
@@ -196,24 +196,25 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
 	}
 
 //NOTE: selectitem = 0 -> no selected; selectitem 1-based
-void Hud::drawItems(v2s32 upperleftpos, s32 itemcount, s32 offset,
-		InventoryList *mainlist, u16 selectitem, u16 direction)
+void Hud::drawItems(v2s32 upperleftpos, s32 itemcount, s32 inv_offset,
+		InventoryList *mainlist, u16 selectitem, u16 direction, const v2s32 &offset)
 {
 #ifdef HAVE_TOUCHSCREENGUI
-	if ( (g_touchscreengui) && (offset == 0))
+	if (g_touchscreengui && inv_offset == 0)
 		g_touchscreengui->resetHud();
 #endif
 
 	s32 height  = m_hotbar_imagesize + m_padding * 2;
-	s32 width   = (itemcount - offset) * (m_hotbar_imagesize + m_padding * 2);
+	s32 width   = (itemcount - inv_offset) * (m_hotbar_imagesize + m_padding * 2);
 
 	if (direction == HUD_DIR_TOP_BOTTOM || direction == HUD_DIR_BOTTOM_TOP) {
 		width  = m_hotbar_imagesize + m_padding * 2;
-		height = (itemcount - offset) * (m_hotbar_imagesize + m_padding * 2);
+		height = (itemcount - inv_offset) * (m_hotbar_imagesize + m_padding * 2);
 	}
 
 	// Position of upper left corner of bar
-	v2s32 pos = upperleftpos;
+	v2s32 pos = upperleftpos + offset;
+	pos *= g_settings->getFloat("hud_scaling") * porting::getDisplayDensity();
 
 	if (hotbar_image != player->hotbar_image) {
 		hotbar_image = player->hotbar_image;
@@ -243,26 +244,25 @@ void Hud::drawItems(v2s32 upperleftpos, s32 itemcount, s32 offset,
 			NULL, hbar_colors, true);
 	}
 
-	for (s32 i = offset; i < itemcount && (size_t)i < mainlist->getSize(); i++)
-	{
+	for (s32 i = inv_offset; i < itemcount && (size_t)i < mainlist->getSize(); i++) {
 		v2s32 steppos;
 		s32 fullimglen = m_hotbar_imagesize + m_padding * 2;
 
 		core::rect<s32> imgrect(0, 0, m_hotbar_imagesize, m_hotbar_imagesize);
 
 		switch (direction) {
-			case HUD_DIR_RIGHT_LEFT:
-				steppos = v2s32(-(m_padding + (i - offset) * fullimglen), m_padding);
-				break;
-			case HUD_DIR_TOP_BOTTOM:
-				steppos = v2s32(m_padding, m_padding + (i - offset) * fullimglen);
-				break;
-			case HUD_DIR_BOTTOM_TOP:
-				steppos = v2s32(m_padding, -(m_padding + (i - offset) * fullimglen));
-				break;
-			default:
-				steppos = v2s32(m_padding + (i - offset) * fullimglen, m_padding);
-				break;
+		case HUD_DIR_RIGHT_LEFT:
+			steppos = v2s32(-(m_padding + (i - inv_offset) * fullimglen), m_padding);
+			break;
+		case HUD_DIR_TOP_BOTTOM:
+			steppos = v2s32(m_padding, m_padding + (i - inv_offset) * fullimglen);
+			break;
+		case HUD_DIR_BOTTOM_TOP:
+			steppos = v2s32(m_padding, -(m_padding + (i - inv_offset) * fullimglen));
+			break;
+		default:
+			steppos = v2s32(m_padding + (i - inv_offset) * fullimglen, m_padding);
+			break;
 		}
 
 		drawItem(mainlist->getItem(i), (imgrect + pos + steppos), (i +1) == selectitem );
@@ -275,7 +275,8 @@ void Hud::drawItems(v2s32 upperleftpos, s32 itemcount, s32 offset,
 }
 
 
-void Hud::drawLuaElements(const v3s16 &camera_offset) {
+void Hud::drawLuaElements(const v3s16 &camera_offset)
+{
 	u32 text_height = g_fontengine->getTextHeight();
 	irr::gui::IGUIFont* font = g_fontengine->getFont();
 	for (size_t i = 0; i != player->maxHudId(); i++) {
@@ -326,7 +327,8 @@ void Hud::drawLuaElements(const v3s16 &camera_offset) {
 				break; }
 			case HUD_ELEM_INVENTORY: {
 				InventoryList *inv = inventory->getList(e->text);
-				drawItems(pos, e->number, 0, inv, e->item, e->dir);
+				v2s32 offs(e->offset.X, e->offset.Y);
+				drawItems(pos, e->number, 0, inv, e->item, e->dir, offs);
 				break; }
 			case HUD_ELEM_WAYPOINT: {
 				v3f p_pos = player->getPosition() / BS;
@@ -508,9 +510,9 @@ void Hud::setSelectionPos(const v3f &pos, const v3s16 &camera_offset)
 	m_selection_pos = pos;
 	m_selection_pos_with_offset = pos - intToFloat(camera_offset, BS);
 }
-	
+
 void Hud::drawSelectionMesh()
-{	
+{
 	if (!m_use_selection_mesh) {
 		// Draw 3D selection boxes
 		video::SMaterial oldmaterial = driver->getMaterial2D();
@@ -521,9 +523,9 @@ void Hud::drawSelectionMesh()
 			aabb3f box = aabb3f(
 				i->MinEdge + m_selection_pos_with_offset,
 				i->MaxEdge + m_selection_pos_with_offset);
-			
+
 			u32 r = (selectionbox_argb.getRed() *
-					m_selection_mesh_color.getRed() / 255);		
+					m_selection_mesh_color.getRed() / 255);
 			u32 g = (selectionbox_argb.getGreen() *
 					m_selection_mesh_color.getGreen() / 255);
 			u32 b = (selectionbox_argb.getBlue() *
