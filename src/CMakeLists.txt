@@ -295,7 +295,7 @@ endif(ENABLE_LEVELDB)
 
 set(USE_REDIS 0)
 
-OPTION(ENABLE_REDIS "Enable redis backend" 1)
+OPTION(ENABLE_REDIS "Enable redis backend" 0)
 
 if(ENABLE_REDIS)
 	find_library(REDIS_LIBRARY hiredis)
