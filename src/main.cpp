@@ -1871,7 +1871,6 @@ bool ClientLauncher::launch_game(std::wstring *error_message,
 		simple_singleplayer_mode = menudata.simple_singleplayer_mode;
 
 		std::vector<WorldSpec> worldspecs = getAvailableWorlds();
-		worldspecs = getAvailableWorlds();
 
 		if (menudata.selected_world >= 0
 				&& menudata.selected_world < (int)worldspecs.size()) {

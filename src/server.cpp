@@ -1508,7 +1508,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 						<<"tried to connect from "<<addr_s<<" "
 						<<"but it was disallowed for the following reason: "
 						<<reason<<std::endl;
-				DenyAccess(peer_id, narrow_to_wide(reason.c_str()));
+				DenyAccess(peer_id, narrow_to_wide(reason));
 				return;
 			}
 		}
