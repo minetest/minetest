@@ -121,6 +121,9 @@ public:
 #define IACTION_DROP 1
 #define IACTION_CRAFT 2
 
+// default maximum number of items that can be moved between inventories
+#define DEFAULT_MAX_MOVE_INVENTORY_ITEMS 65535
+
 struct InventoryAction
 {
 	static InventoryAction * deSerialize(std::istream &is);
@@ -143,6 +146,9 @@ struct IMoveAction : public InventoryAction
 	InventoryLocation to_inv;
 	std::string to_list;
 	s16 to_i;
+	// take_predict and put_predict are calculated and used on the client only
+	int take_predict;
+	int put_predict;
 	
 	IMoveAction()
 	{
@@ -182,6 +188,8 @@ struct IDropAction : public InventoryAction
 	InventoryLocation from_inv;
 	std::string from_list;
 	s16 from_i;
+	// take_predict is calculated and used on the client only
+	int take_predict;
 	
 	IDropAction()
 	{
