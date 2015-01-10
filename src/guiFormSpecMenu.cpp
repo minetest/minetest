@@ -1897,6 +1897,20 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 	}
 
+	/* try to get required interpreter version */
+	for (unsigned int j = i; j< elements.size(); j++) {
+		int interpreter_version = -1;
+
+		if (isInterpreterVersion(elements[j], interpreter_version)) {
+
+			if ((interpreter_version >= 2000) && (interpreter_version < 3000)) {
+				//TODO implement new formspec interpreter
+			}
+
+			return;
+		}
+	}
+
 	for (; i< elements.size(); i++) {
 		parseElement(&mydata, elements[i]);
 	}
@@ -3134,4 +3148,22 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 	}
 
 	return Parent ? Parent->OnEvent(event) : false;
+}
+
+bool GUIFormSpecMenu::isInterpreterVersion(std::string element, int &version)
+{
+	std::vector<std::string> parts = split(element,'[');
+
+	if (parts.size() < 2) {
+		return false;
+	}
+
+	std::string type = trim(parts[0]);
+
+
+	if (type == "InterpreterVersion") {
+		version = stoi(trim(parts[1]));
+		return true;
+	}
+	return false;
 }

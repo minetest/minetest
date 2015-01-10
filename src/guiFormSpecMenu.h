@@ -400,6 +400,9 @@ private:
 	bool parseVersionDirect(std::string data);
 	void parseScrollBar(parserData* data, std::string element);
 
+
+	bool isInterpreterVersion(std::string element, int &version);
+
 	/**
 	 * check if event is part of a double click
 	 * @param event event to evaluate
