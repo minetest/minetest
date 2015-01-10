@@ -247,7 +247,7 @@ void* AsyncWorkerThread::Thread()
 
 	// Register thread for error logging
 	char number[21];
-	snprintf(number, sizeof(number), "%d", threadnum);
+	snprintf(number, sizeof(number), "%u", threadnum);
 	log_register_thread(std::string("AsyncWorkerThread_") + number);
 
 	porting::setThreadName((std::string("AsyncWorkTh_") + number).c_str());

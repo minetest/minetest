@@ -213,7 +213,7 @@ public:
 
 		// Try to use local texture instead if asked to
 		if(prefer_local){
-			std::string path = getTexturePath(name.c_str());
+			std::string path = getTexturePath(name);
 			if(path != ""){
 				video::IImage *img2 = driver->createImageFromFile(path.c_str());
 				if(img2){
@@ -245,7 +245,7 @@ public:
 			return n->second;
 		}
 		video::IVideoDriver* driver = device->getVideoDriver();
-		std::string path = getTexturePath(name.c_str());
+		std::string path = getTexturePath(name);
 		if(path == ""){
 			infostream<<"SourceImageCache::getOrLoad(): No path found for \""
 					<<name<<"\""<<std::endl;

@@ -130,7 +130,7 @@ void assert_fail(const char *assertion, const char *file,
 		unsigned int line, const char *function)
 {
 	DEBUGPRINT("\nIn thread %lx:\n"
-			"%s:%d: %s: Assertion '%s' failed.\n",
+			"%s:%u: %s: Assertion '%s' failed.\n",
 			(unsigned long)get_current_thread_id(),
 			file, line, function, assertion);
 	

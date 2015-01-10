@@ -374,7 +374,7 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 		if (selected == "true")
 			fselected = true;
 
-		std::wstring wlabel = narrow_to_wide(label.c_str());
+		std::wstring wlabel = narrow_to_wide(label);
 
 		core::rect<s32> rect = core::rect<s32>(
 				pos.X, pos.Y + ((imgsize.Y/2) - m_btn_height),
@@ -382,7 +382,7 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 				pos.Y + ((imgsize.Y/2) + m_btn_height));
 
 		FieldSpec spec(
-				narrow_to_wide(name.c_str()),
+				narrow_to_wide(name),
 				wlabel, //Needed for displaying text on MSVC
 				wlabel,
 				258+m_fields.size()
@@ -434,7 +434,7 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, std::string element)
 				core::rect<s32>(pos.X, pos.Y, pos.X + dim.X, pos.Y + dim.Y);
 
 		FieldSpec spec(
-				narrow_to_wide(name.c_str()),
+				narrow_to_wide(name),
 				L"",
 				L"",
 				258+m_fields.size()
@@ -572,10 +572,10 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
 
 		label = unescape_string(label);
 
-		std::wstring wlabel = narrow_to_wide(label.c_str());
+		std::wstring wlabel = narrow_to_wide(label);
 
 		FieldSpec spec(
-			narrow_to_wide(name.c_str()),
+			narrow_to_wide(name),
 			wlabel,
 			L"",
 			258+m_fields.size()
@@ -697,7 +697,7 @@ void GUIFormSpecMenu::parseTable(parserData* data,std::string element)
 
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
-		std::wstring fname_w = narrow_to_wide(name.c_str());
+		std::wstring fname_w = narrow_to_wide(name);
 
 		FieldSpec spec(
 			fname_w,
@@ -771,7 +771,7 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element)
 
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
-		std::wstring fname_w = narrow_to_wide(name.c_str());
+		std::wstring fname_w = narrow_to_wide(name);
 
 		FieldSpec spec(
 			fname_w,
@@ -836,7 +836,7 @@ void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element)
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y,
 				pos.X + width, pos.Y + (m_btn_height * 2));
 
-		std::wstring fname_w = narrow_to_wide(name.c_str());
+		std::wstring fname_w = narrow_to_wide(name);
 
 		FieldSpec spec(
 			fname_w,
@@ -899,10 +899,10 @@ void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element)
 
 		label = unescape_string(label);
 
-		std::wstring wlabel = narrow_to_wide(label.c_str());
+		std::wstring wlabel = narrow_to_wide(label);
 
 		FieldSpec spec(
-			narrow_to_wide(name.c_str()),
+			narrow_to_wide(name),
 			wlabel,
 			L"",
 			258+m_fields.size()
@@ -965,12 +965,12 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 	default_val = unescape_string(default_val);
 	label = unescape_string(label);
 
-	std::wstring wlabel = narrow_to_wide(label.c_str());
+	std::wstring wlabel = narrow_to_wide(label);
 
 	FieldSpec spec(
-		narrow_to_wide(name.c_str()),
+		narrow_to_wide(name),
 		wlabel,
-		narrow_to_wide(default_val.c_str()),
+		narrow_to_wide(default_val),
 		258+m_fields.size()
 	);
 
@@ -1055,12 +1055,12 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 	default_val = unescape_string(default_val);
 	label = unescape_string(label);
 
-	std::wstring wlabel = narrow_to_wide(label.c_str());
+	std::wstring wlabel = narrow_to_wide(label);
 
 	FieldSpec spec(
-		narrow_to_wide(name.c_str()),
+		narrow_to_wide(name),
 		wlabel,
-		narrow_to_wide(default_val.c_str()),
+		narrow_to_wide(default_val),
 		258+m_fields.size()
 	);
 
@@ -1158,7 +1158,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data,std::string element)
 			// in the integer cases: 0.4 is not exactly
 			// representable in binary floating point.
 			s32 posy = pos.Y + ((float)i) * spacing.Y * 2.0 / 5.0;
-			std::wstring wlabel = narrow_to_wide(lines[i].c_str());
+			std::wstring wlabel = narrow_to_wide(lines[i]);
 			core::rect<s32> rect = core::rect<s32>(
 				pos.X, posy - m_btn_height,
 				pos.X + m_font->getDimension(wlabel.c_str()).Width,
@@ -1279,12 +1279,12 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 		pressed_image_name = unescape_string(pressed_image_name);
 		label = unescape_string(label);
 
-		std::wstring wlabel = narrow_to_wide(label.c_str());
+		std::wstring wlabel = narrow_to_wide(label);
 
 		FieldSpec spec(
-			narrow_to_wide(name.c_str()),
+			narrow_to_wide(name),
 			wlabel,
-			narrow_to_wide(image_name.c_str()),
+			narrow_to_wide(image_name),
 			258+m_fields.size()
 		);
 		spec.ftype = f_Button;
@@ -1344,7 +1344,7 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element)
 		}
 
 		FieldSpec spec(
-			narrow_to_wide(name.c_str()),
+			narrow_to_wide(name),
 			L"",
 			L"",
 			258+m_fields.size()
@@ -1431,16 +1431,16 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 		item.deSerialize(item_name, idef);
 		video::ITexture *texture = idef->getInventoryTexture(item.getDefinition(idef).name, m_gamedef);
 
-		m_tooltips[narrow_to_wide(name.c_str())] =
+		m_tooltips[narrow_to_wide(name)] =
 			TooltipSpec (item.getDefinition(idef).description,
 						m_default_tooltip_bgcolor,
 						m_default_tooltip_color);
 
 		label = unescape_string(label);
 		FieldSpec spec(
-			narrow_to_wide(name.c_str()),
-			narrow_to_wide(label.c_str()),
-			narrow_to_wide(item_name.c_str()),
+			narrow_to_wide(name),
+			narrow_to_wide(label),
+			narrow_to_wide(item_name),
 			258+m_fields.size()
 		);
 
@@ -1550,13 +1550,13 @@ void GUIFormSpecMenu::parseTooltip(parserData* data, std::string element)
 	std::vector<std::string> parts = split(element,';');
 	if (parts.size() == 2) {
 		std::string name = parts[0];
-		m_tooltips[narrow_to_wide(name.c_str())] = TooltipSpec (parts[1], m_default_tooltip_bgcolor, m_default_tooltip_color);
+		m_tooltips[narrow_to_wide(name)] = TooltipSpec (parts[1], m_default_tooltip_bgcolor, m_default_tooltip_color);
 		return;
 	} else if (parts.size() == 4) {
 		std::string name = parts[0];
 		video::SColor tmp_color1, tmp_color2;
 		if ( parseColorString(parts[2], tmp_color1, false) && parseColorString(parts[3], tmp_color2, false) ) {
-			m_tooltips[narrow_to_wide(name.c_str())] = TooltipSpec (parts[1], tmp_color1, tmp_color2);
+			m_tooltips[narrow_to_wide(name)] = TooltipSpec (parts[1], tmp_color1, tmp_color2);
 			return;
 		}
 	}
