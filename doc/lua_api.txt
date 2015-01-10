@@ -473,8 +473,10 @@ node definition:
 `param1` is reserved for the engine when `paramtype != "none"`:
 
     paramtype = "light"
-    ^ The value stores light with and without sun in it's
-      upper and lower 4 bits.
+    ^ The value stores light with and without sun in its upper and lower 4 bits
+      respectively. Allows light to propagate from or through the node with
+      light value falling by 1 per node. This is essential for a light source
+      node to spread its light.
 
 `param2` is reserved for the engine when any of these are used:
 
@@ -1332,7 +1334,8 @@ examples.
 * Position and size units are inventory slots
 * Example for formspec 8x4 in 16x resolution:
   image shall be sized 8 times 16px  times  4 times 16px
-* If `true` the background is clipped to formspec size (`x` and `y` are used as offset values, `w` and `h` are ignored)
+* If `true` the background is clipped to formspec size
+  (`x` and `y` are used as offset values, `w` and `h` are ignored)
 
 #### `pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>]`
 * Textual password style field; will be sent to server when a button is clicked
@@ -1851,7 +1854,8 @@ and `minetest.auth_reload` call the authetification handler.
     * Function cannot be called after the registration period; only initialization and `on_mapgen_init`
     * Takes a table as an argument with the fields `mgname`, `seed`, `water_level`, and `flags`.
         * Leave field unset to leave that parameter unchanged
-        * `flags` contains a comma-delimited string of flags to set, or if the prefix `"no"` is attached, clears instead.
+        * `flags` contains a comma-delimited string of flags to set,
+          or if the prefix `"no"` is attached, clears instead.
         * `flags` is in the same format and has the same options as `mg_flags` in `minetest.conf`
 * `minetest.set_noiseparams(name, noiseparams, set_default)`
     * Sets the noiseparams setting of `name` to the noiseparams table specified in `noiseparams`.
@@ -1940,7 +1944,8 @@ and `minetest.auth_reload` call the authetification handler.
     * Get position of a `pointed_thing` (that you can get from somewhere)
 * `minetest.dir_to_facedir(dir, is6d)`
     * Convert a vector to a facedir value, used in `param2` for `paramtype2="facedir"`;
-    * passing something non-`nil`/`false` for the optional second parameter causes it to take the y component into account
+    * passing something non-`nil`/`false` for the optional second parameter causes it to
+      take the y component into account
 * `minetest.facedir_to_dir(facedir)`
     * Convert a facedir back into a vector aimed directly out the "back" of a node
 * `minetest.dir_to_wallmounted(dir)`
@@ -1989,7 +1994,8 @@ and `minetest.auth_reload` call the authetification handler.
       ground)
 
 ### Rollback
-* `minetest.rollback_get_node_actions(pos, range, seconds, limit)`: returns `{{actor, pos, time, oldnode, newnode}, ...}`
+* `minetest.rollback_get_node_actions(pos, range, seconds, limit)`:
+  returns `{{actor, pos, time, oldnode, newnode}, ...}`
     * Find who has done something to a node, or near a node
     * `actor`: `"player:<name>"`, also `"liquid"`.
 * `minetest.rollback_revert_actions_by(actor, seconds)`: returns `boolean, log_messages`
@@ -2076,8 +2082,8 @@ These functions return the leftover itemstack.
             * If there are two or more entries with the same pos value, the last entry is used.
             * If `pos` is not inside the box formed by `p1` and `p2`, it is ignored.
             * If `probability_list` equals `nil`, no probabilities are applied.
-            * Slice probability works in the same manner, except takes a field called `ypos` instead which indicates
-              the y position of the slice with a probability applied.
+            * Slice probability works in the same manner, except takes a field called `ypos` instead which
+              indicates the y position of the slice with a probability applied.
             * If slice probability list equals `nil`, no slice probabilities are applied.
     * Saves schematic in the Minetest Schematic format to filename.
 
@@ -2369,7 +2375,8 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `override_day_night_ratio(ratio or nil)`
     * `0`...`1`: Overrides day-night ratio, controlling sunlight to a specific amount
     * `nil`: Disables override, defaulting to sunlight based on day-night cycle
-* `set_local_animation({x=0, y=79}, {x=168, y=187}, {x=189, y=198}, {x=200, y=219}, frame_speed=30)`: set animation for player model in third person view
+* `set_local_animation({x=0, y=79}, {x=168, y=187}, {x=189, y=198}, {x=200, y=219}, frame_speed=30)`:
+  set animation for player model in third person view
     * stand/idle animation key frames
     * walk animation key frames
     * dig animation key frames
@@ -2484,7 +2491,8 @@ for 2D noise, and it must be must be larger than 1 for 3D noise (otherwise
   with values starting at `pos={x=,y=}`
 * `get3dMap(pos)`: returns a `<size.x>` times `<size.y>` times `<size.z>` 3D array
   of 3D noise with values starting at `pos={x=,y=,z=}`
-* `get2dMap_flat(pos)`: returns a flat `<size.x * size.y>` element array of 2D noise with values starting at `pos={x=,y=}`
+* `get2dMap_flat(pos)`: returns a flat `<size.x * size.y>` element array of 2D noise
+  with values starting at `pos={x=,y=}`
 * `get3dMap_flat(pos)`: Same as `get2dMap_flat`, but 3D noise
 
 ### `VoxelManip`
@@ -2859,7 +2867,9 @@ Definition tables
         alpha = 255,
         use_texture_alpha = false, -- Use texture's alpha channel
         post_effect_color = {a=0, r=0, g=0, b=0}, -- If player is inside node
-        paramtype = "none", -- See "Nodes"
+        paramtype = "none", -- See "Nodes" --[[
+        ^ paramtype = "light" allows light to propagate from or through the node with light value
+        ^ falling by 1 per node. This line is essential for a light source node to spread its light. ]]
         paramtype2 = "none", -- See "Nodes"
         is_ground_content = true, -- If false, the cave generator will not carve through this
         sunlight_propagates = false, -- If true, sunlight will go infinitely through this
@@ -2873,15 +2883,17 @@ Definition tables
         liquid_alternative_source = "", -- Source version of flowing liquid
         liquid_viscosity = 0, -- Higher viscosity = slower flow (max. 7)
         liquid_renewable = true, -- Can new liquid source be created by placing two or more sources nearby?
-        leveled = 0, -- Block contain level in param2. value - default level, used for snow. Don't forget use "leveled" type nodebox
+        leveled = 0, --[[
+        ^ Block contains level in param2. Value is default level, used for snow.
+        ^ Don't forget to use "leveled" type nodebox. ]]
         liquid_range = 8, -- number of flowing nodes around source (max. 8)
         drowning = 0, -- Player will take this amount of damage if no bubbles are left
         light_source = 0, -- Amount of light emitted by node
         damage_per_second = 0, -- If player is inside node, this damage is caused
         node_box = {type="regular"}, -- See "Node boxes"
         mesh = "model",
-        selection_box = {type="regular"}, -- See "Node boxes"
-        ^ If drawtype "nodebox" is used and selection_box is nil, then node_box is used
+        selection_box = {type="regular"}, -- See "Node boxes" --[[
+        ^ If drawtype "nodebox" is used and selection_box is nil, then node_box is used. ]]
         legacy_facedir_simple = false, -- Support maps made in and before January 2012
         legacy_wallmounted = false, -- Support maps made in and before January 2012
         sounds = {
