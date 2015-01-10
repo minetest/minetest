@@ -457,6 +457,8 @@ set(minetest_SRCS
 	guiEngine.cpp
 	guiFileSelectMenu.cpp
 	guiFormSpecMenu.cpp
+	guiFormSpecMenu_v1.cpp
+	guiFormSpecMenu_v2.cpp
 	guiKeyChangeMenu.cpp
 	guiPasswordChange.cpp
 	guiTable.cpp

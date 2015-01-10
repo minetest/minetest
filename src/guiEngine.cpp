@@ -185,7 +185,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	m_formspecgui = new FormspecFormSource("");
 
 	/* Create menu */
-	m_menu = new GUIFormSpecMenu(m_device,
+	m_menu = new guiFormSpecMenuGeneric(m_device,
 			m_parent,
 			-1,
 			m_menumanager,
@@ -224,7 +224,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	}
 
 	m_menu->quitMenu();
-	m_menu->drop();
+	delete m_menu;
 	m_menu = NULL;
 }
 

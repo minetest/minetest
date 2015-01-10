@@ -999,16 +999,16 @@ bool nodePlacementPrediction(Client &client,
 	return false;
 }
 
-static inline void create_formspec_menu(GUIFormSpecMenu **cur_formspec,
+static inline void create_formspec_menu(guiFormSpecMenuGeneric **cur_formspec,
 		InventoryManager *invmgr, IGameDef *gamedef,
 		IWritableTextureSource *tsrc, IrrlichtDevice *device,
 		IFormSource *fs_src, TextDest *txt_dest, Client *client)
 {
 
 	if (*cur_formspec == 0) {
-		*cur_formspec = new GUIFormSpecMenu(device, guiroot, -1, &g_menumgr,
+		*cur_formspec = new guiFormSpecMenuGeneric(device, guiroot, -1, &g_menumgr,
 						    invmgr, gamedef, tsrc, fs_src, txt_dest, client);
-		(*cur_formspec)->doPause = false;
+		(*cur_formspec)->setDoPause(false);
 
 		/*
 			Caution: do not call (*cur_formspec)->drop() here --
@@ -1030,7 +1030,7 @@ static inline void create_formspec_menu(GUIFormSpecMenu **cur_formspec,
 #define SIZE_TAG "size[11,5.5,true]"
 #endif
 
-static void show_chat_menu(GUIFormSpecMenu **cur_formspec,
+static void show_chat_menu(guiFormSpecMenuGeneric **cur_formspec,
 		InventoryManager *invmgr, IGameDef *gamedef,
 		IWritableTextureSource *tsrc, IrrlichtDevice *device,
 		Client *client, std::string text)
@@ -1051,7 +1051,7 @@ static void show_chat_menu(GUIFormSpecMenu **cur_formspec,
 	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device, fs_src, txt_dst, NULL);
 }
 
-static void show_deathscreen(GUIFormSpecMenu **cur_formspec,
+static void show_deathscreen(guiFormSpecMenuGeneric **cur_formspec,
 		InventoryManager *invmgr, IGameDef *gamedef,
 		IWritableTextureSource *tsrc, IrrlichtDevice *device, Client *client)
 {
@@ -1073,7 +1073,7 @@ static void show_deathscreen(GUIFormSpecMenu **cur_formspec,
 }
 
 /******************************************************************************/
-static void show_pause_menu(GUIFormSpecMenu **cur_formspec,
+static void show_pause_menu(guiFormSpecMenuGeneric **cur_formspec,
 		InventoryManager *invmgr, IGameDef *gamedef,
 		IWritableTextureSource *tsrc, IrrlichtDevice *device,
 		bool singleplayermode)
@@ -1141,7 +1141,7 @@ static void show_pause_menu(GUIFormSpecMenu **cur_formspec,
 
 	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device,  fs_src, txt_dst, NULL);
 
-	(*cur_formspec)->doPause = true;
+	(*cur_formspec)->setDoPause(true);
 }
 
 /******************************************************************************/
@@ -1545,7 +1545,7 @@ private:
 
 	ChatBackend *chat_backend;
 
-	GUIFormSpecMenu *current_formspec;
+	guiFormSpecMenuGeneric *current_formspec;
 
 	EventManager *eventmgr;
 	QuicktuneShortcutter *quicktune;
@@ -3841,7 +3841,7 @@ void Game::updateFrame(std::vector<aabb3f> &highlight_boxes,
 			current_formspec->drop();
 			current_formspec = NULL;
 		} else if (!noMenuActive()) {
-			guiroot->bringToFront(current_formspec);
+			guiroot->bringToFront(current_formspec->getGUIElement());
 		}
 	}
 

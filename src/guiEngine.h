@@ -211,7 +211,7 @@ private:
 	/** formspec input receiver */
 	TextDestGuiEngine*       m_buttonhandler;
 	/** the formspec menu */
-	GUIFormSpecMenu*         m_menu;
+	guiFormSpecMenuGeneric*  m_menu;
 
 	/** reference to kill variable managed by SIGINT handler */
 	bool&                    m_kill;
