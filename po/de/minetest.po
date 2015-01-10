@@ -232,7 +232,7 @@ msgstr "Credits"
 
 #: builtin/mainmenu/tab_credits.lua:29
 msgid "Core Developers"
-msgstr "Core Entwickler"
+msgstr "Kernentwickler"
 
 #: builtin/mainmenu/tab_credits.lua:43
 msgid "Active Contributors"
@@ -248,11 +248,11 @@ msgstr "Installierte Mods:"
 
 #: builtin/mainmenu/tab_mods.lua:39
 msgid "Online mod repository"
-msgstr "Online Mod Speicher"
+msgstr "Online-Mod-Speicher"
 
 #: builtin/mainmenu/tab_mods.lua:78
 msgid "No mod description available"
-msgstr "Keine Mod Beschreibung verfügbar"
+msgstr "Keine Modbeschreibung verfügbar"
 
 #: builtin/mainmenu/tab_mods.lua:82
 msgid "Mod information:"
@@ -346,7 +346,7 @@ msgstr "Port"
 
 #: builtin/mainmenu/tab_server.lua:51
 msgid "Server Port"
-msgstr "Server Port"
+msgstr "Serverport"
 
 #: builtin/mainmenu/tab_server.lua:174
 msgid "Server"
@@ -490,7 +490,7 @@ msgstr "Einzelspieler"
 
 #: builtin/mainmenu/tab_texturepacks.lua:49
 msgid "Select texture pack:"
-msgstr "Texturen Paket auswählen:"
+msgstr "Texturpaket auswählen:"
 
 #: builtin/mainmenu/tab_texturepacks.lua:69
 msgid "No information available"
@@ -498,7 +498,7 @@ msgstr "Keine Informationen vorhanden"
 
 #: builtin/mainmenu/tab_texturepacks.lua:114
 msgid "Texturepacks"
-msgstr "Texturen Pakete"
+msgstr "Texturpakete"
 
 #: src/client.cpp:2726
 msgid "Item textures..."
@@ -514,11 +514,11 @@ msgstr "Wiederbeleben"
 
 #: src/game.cpp:2250
 msgid "Item definitions..."
-msgstr "Item Definitionen..."
+msgstr "Item-Definitionen..."
 
 #: src/game.cpp:2255
 msgid "Node definitions..."
-msgstr "Node Definitionen..."
+msgstr "Node-Definitionen..."
 
 #: src/game.cpp:2262
 msgid "Media..."
@@ -658,7 +658,7 @@ msgstr "Passwörter passen nicht zusammen!"
 
 #: src/guiVolumeChange.cpp:106
 msgid "Sound Volume: "
-msgstr "Sound Lautstärke: "
+msgstr "Soundlautstärke: "
 
 #: src/guiVolumeChange.cpp:120
 msgid "Exit"
