@@ -268,6 +268,10 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 	// Actually place the biome-specific nodes
 	generateBiomes();
 
+	// Generate caves
+	if ((flags & MG_CAVES) && (stone_surface_max_y >= node_min.Y))
+		generateCaves();
+
 	// Generate dungeons and desert temples
 	if ((flags & MG_DUNGEONS) && (stone_surface_max_y >= node_min.Y)) {
 		DungeonGen dgen(this, NULL);
@@ -309,8 +313,11 @@ void MapgenV5::calculateNoise()
 	noise_factor->perlinMap2D(x, z);
 	noise_height->perlinMap2D(x, z);
 
-	noise_cave1->perlinMap3D(x, y, z);
-	noise_cave2->perlinMap3D(x, y, z);
+	if (flags & MG_CAVES) {
+		noise_cave1->perlinMap3D(x, y, z);
+		noise_cave2->perlinMap3D(x, y, z);
+	}
+
 	noise_ground->perlinMap3D(x, y, z);
 
 	if (spflags & MGV5_BLOBS) {
@@ -363,16 +370,12 @@ int MapgenV5::generateBaseTerrain()
 				else if(f >= 1.0)
 					f *= 1.6;
 				float h = water_level + noise_height->result[index2d];
-				float d1 = contour(noise_cave1->result[index]);
-				float d2 = contour(noise_cave2->result[index]);
 
 				if(noise_ground->result[index] * f < y - h) {
 					if(y <= water_level)
 						vm->m_data[i] = MapNode(c_water_source);
 					else
 						vm->m_data[i] = MapNode(CONTENT_AIR);
-				} else if(d1*d2 > 0.2) {
-					vm->m_data[i] = MapNode(CONTENT_AIR);
 				} else {
 					vm->m_data[i] = MapNode(c_stone);
 					if (y > stone_surface_max_y)
@@ -503,6 +506,28 @@ void MapgenV5::generateBiomes()
 			}
 
 			vm->m_area.add_y(em, i, -1);
+		}
+	}
+}
+
+
+void MapgenV5::generateCaves()
+{
+	u32 index = 0;
+
+	for(s16 z=node_min.Z; z<=node_max.Z; z++) {
+		for(s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
+			u32 i = vm->m_area.index(node_min.X, y, z);
+			for(s16 x=node_min.X; x<=node_max.X; x++, i++, index++) {
+				content_t c = vm->m_data[i].getContent();
+				if(c == CONTENT_AIR || c == c_water_source)
+					continue;
+
+				float d1 = contour(noise_cave1->result[index]);
+				float d2 = contour(noise_cave2->result[index]);
+				if(d1*d2 > 0.2)
+					vm->m_data[i] = MapNode(CONTENT_AIR);
+			}
 		}
 	}
 }
