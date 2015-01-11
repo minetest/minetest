@@ -79,6 +79,8 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	//// 3d terrain noise
 	noise_mountain = new Noise(&sp->np_mountain, seed, csize.X, csize.Y, csize.Z);
 	noise_ridge    = new Noise(&sp->np_ridge,    seed, csize.X, csize.Y, csize.Z);
+	noise_cave1    = new Noise(&sp->np_cave1,    seed, csize.X, csize.Y, csize.Z);
+	noise_cave2    = new Noise(&sp->np_cave2,    seed, csize.X, csize.Y, csize.Z);
 
 	//// Biome noise
 	noise_heat     = new Noise(&params->np_biome_heat,     seed, csize.X, csize.Z);
@@ -110,6 +112,8 @@ MapgenV7::~MapgenV7()
 	delete noise_ridge_uwater;
 	delete noise_mountain;
 	delete noise_ridge;
+	delete noise_cave1;
+	delete noise_cave2;
 
 	delete noise_heat;
 	delete noise_humidity;
@@ -133,6 +137,8 @@ MapgenV7Params::MapgenV7Params()
 	np_ridge_uwater    = NoiseParams(0,    1,   v3f(500, 500, 500), 85039, 4, 0.6,  2.0);
 	np_mountain        = NoiseParams(0,    1,   v3f(250, 350, 250), 5333,  5, 0.68, 2.0);
 	np_ridge           = NoiseParams(0,    1,   v3f(100, 100, 100), 6467,  4, 0.75, 2.0);
+	np_cave1           = NoiseParams(0,    12,  v3f(100, 100, 100), 52534, 4, 0.5,  2.0);
+	np_cave2           = NoiseParams(0,    12,  v3f(100, 100, 100), 10325, 4, 0.5,  2.0);
 }
 
 
@@ -149,6 +155,8 @@ void MapgenV7Params::readParams(Settings *settings)
 	settings->getNoiseParams("mgv7_np_ridge_uwater",    np_ridge_uwater);
 	settings->getNoiseParams("mgv7_np_mountain",        np_mountain);
 	settings->getNoiseParams("mgv7_np_ridge",           np_ridge);
+	settings->getNoiseParams("mgv7_np_cave1",           np_cave1);
+	settings->getNoiseParams("mgv7_np_cave2",           np_cave2);
 }
 
 
@@ -165,6 +173,8 @@ void MapgenV7Params::writeParams(Settings *settings)
 	settings->setNoiseParams("mgv7_np_ridge_uwater",    np_ridge_uwater);
 	settings->setNoiseParams("mgv7_np_mountain",        np_mountain);
 	settings->setNoiseParams("mgv7_np_ridge",           np_ridge);
+	settings->setNoiseParams("mgv7_np_cave1",           np_cave1);
+	settings->setNoiseParams("mgv7_np_cave2",           np_cave2);
 }
 
 
@@ -293,6 +303,11 @@ void MapgenV7::calculateNoise()
 	if (spflags & MGV7_RIDGES) {
 		noise_ridge->perlinMap3D(x, y, z);
 		noise_ridge_uwater->perlinMap2D(x, z);
+	}
+
+	if (flags & MG_CAVES) {
+		noise_cave1->perlinMap3D(x, y, z);
+		noise_cave2->perlinMap3D(x, y, z);
 	}
 
 	noise_heat->perlinMap2D(x, z);
@@ -752,27 +767,39 @@ void MapgenV7::addTopNodes()
 #endif
 
 
-NoiseParams nparams_v7_def_cave(6, 6.0, v3f(250.0, 250.0, 250.0), 34329, 3, 0.50, 2.0);
-
 void MapgenV7::generateCaves(int max_stone_y)
 {
-	PseudoRandom ps(blockseed + 21343);
+	if (max_stone_y >= node_min.Y) {
+		u32 index   = 0;
+		u32 index2d = 0;
 
-	int volume_nodes = (node_max.X - node_min.X + 1) *
-					   (node_max.Y - node_min.Y + 1) *
-					   (node_max.Z - node_min.Z + 1);
-	float cave_amount = NoisePerlin2D(&nparams_v7_def_cave,
-								node_min.X, node_min.Y, seed);
+		for (s16 z = node_min.Z; z <= node_max.Z; z++) {
+			for (s16 y = node_min.Y; y <= node_max.Y; y++) {
+				u32 i = vm->m_area.index(node_min.X, y, z);
+				for (s16 x = node_min.X; x <= node_max.X;
+						x++, i++, index++, index2d++) {
+					Biome *biome = (Biome *)bmgr->get(biomemap[index2d]);
+					content_t c = vm->m_data[i].getContent();
+					if (c == CONTENT_AIR || (y <= water_level &&
+						c != biome->c_stone && c != c_stone))
+						continue;
 
-	u32 caves_count = MYMAX(0.0, cave_amount) * volume_nodes / 250000;
-	for (u32 i = 0; i < caves_count; i++) {
-		CaveV7 cave(this, &ps, false);
-		cave.makeCave(node_min, node_max, max_stone_y);
+					float d1 = contour(noise_cave1->result[index]);
+					float d2 = contour(noise_cave2->result[index]);
+					if (d1 * d2 > 0.3)
+						vm->m_data[i] = MapNode(CONTENT_AIR);
+				}
+				index2d -= ystride;
+			}
+			index2d += ystride;
+		}
 	}
 
-	u32 bruises_count = (ps.range(1, 8) == 1) ? ps.range(0, ps.range(0, 2)) : 1;
+	PseudoRandom ps(blockseed + 21343);
+	u32 bruises_count = (ps.range(1, 6) == 1) ? ps.range(1, 2) : 0;
 	for (u32 i = 0; i < bruises_count; i++) {
 		CaveV7 cave(this, &ps, true);
 		cave.makeCave(node_min, node_max, max_stone_y);
 	}
 }
+
