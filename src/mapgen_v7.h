@@ -42,6 +42,8 @@ struct MapgenV7Params : public MapgenSpecificParams {
 	NoiseParams np_ridge_uwater;
 	NoiseParams np_mountain;
 	NoiseParams np_ridge;
+	NoiseParams np_cave1;
+	NoiseParams np_cave2;
 
 	MapgenV7Params();
 	~MapgenV7Params() {}
@@ -75,6 +77,8 @@ public:
 	Noise *noise_ridge_uwater;
 	Noise *noise_mountain;
 	Noise *noise_ridge;
+	Noise *noise_cave1;
+	Noise *noise_cave2;
 
 	Noise *noise_heat;
 	Noise *noise_humidity;
