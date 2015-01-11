@@ -205,8 +205,13 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		}
 	}
 
+	// this shouldn't be hardcoded but transmitted from server
 	float player_stepheight = touching_ground ? (BS*0.6) : (BS*0.2);
 
+#ifdef __ANDROID__
+	player_stepheight += 0.5;
+#endif
+	
 	v3f accel_f = v3f(0,0,0);
 
 	collisionMoveResult result = collisionMoveSimple(env, m_gamedef,

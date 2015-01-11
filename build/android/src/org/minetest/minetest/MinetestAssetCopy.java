@@ -261,8 +261,6 @@ public class MinetestAssetCopy extends Activity
 				textPaint.getTextBounds(todisplay, 0, todisplay.length(), bounds);
 				
 				while (bounds.width() > getResources().getDisplayMetrics().widthPixels * 0.7) {
-					Log.e("MinetestAssetCopy", todisplay + ": " +
-							bounds.width() + " > " + (getResources().getDisplayMetrics().widthPixels * 0.7));
 					if (todisplay.length() < 2) {
 						break;
 					}
