@@ -233,7 +233,7 @@ float MapgenV6::baseTerrainLevel(float terrain_base, float terrain_higher,
 	// Steepness factor of cliffs
 	float b = steepness;
 	b = rangelim(b, 0.0, 1000.0);
-	b = 5 * b * b * b * b * b * b * b;
+	b = 5 * pow(b, 7);
 	b = rangelim(b, 0.5, 1000.0);
 
 	// Values 1.5...100 give quite horrible looking slopes
@@ -877,8 +877,8 @@ void MapgenV6::placeTreesAndJungleGrass()
 	for (s16 x0 = 0; x0 < div; x0++) {
 		// Center position of part of division
 		v2s16 p2d_center(
-			node_min.X + sidelen / 2 + sidelen * x0,
-			node_min.Z + sidelen / 2 + sidelen * z0
+			node_min.X + sidelen * (0.5 + x0),
+			node_min.Z + sidelen * (0.5 + z0)
 		);
 		// Minimum edge of part of division
 		v2s16 p2d_min(

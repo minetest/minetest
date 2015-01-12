@@ -692,7 +692,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 			// Read unused zero
 			readU8(is);
 		}
-		if(version == 24){
+		else if(version == 24){
 			TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
 					<<": Node timers (ver==24)"<<std::endl);
 			m_node_timers.deSerialize(is, version);
