@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventorymanager.h"
 #include "modalMenu.h"
 #include "guiTable.h"
-#include "clientserver.h"
+#include "network/networkprotocol.h"
 
 class IGameDef;
 class InventoryManager;

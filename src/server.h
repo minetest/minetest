@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/thread.h"
 #include "environment.h"
 #include "clientiface.h"
+#include "network/toserverpacket.h"
 #include <string>
 #include <list>
 #include <map>
@@ -187,6 +188,35 @@ public:
 	void AsyncRunStep(bool initial_step=false);
 	void Receive();
 	PlayerSAO* StageTwoClientInit(u16 peer_id);
+
+	/*
+	 * Command Handlers
+	 */
+
+	void handleCommand(ToServerPacket* pkt);
+
+	void handleCommand_Null(ToServerPacket* pkt) {};
+	void handleCommand_Deprecated(ToServerPacket* pkt);
+	void handleCommand_Init(ToServerPacket* pkt);
+	void handleCommand_Init2(ToServerPacket* pkt);
+	void handleCommand_RequestMedia(ToServerPacket* pkt);
+	void handleCommand_ReceivedMedia(ToServerPacket* pkt);
+	void handleCommand_ClientReady(ToServerPacket* pkt);
+	void handleCommand_GotBlocks(ToServerPacket* pkt);
+	void handleCommand_PlayerPos(ToServerPacket* pkt);
+	void handleCommand_DeletedBlocks(ToServerPacket* pkt);
+	void handleCommand_InventoryAction(ToServerPacket* pkt);
+	void handleCommand_ChatMessage(ToServerPacket* pkt);
+	void handleCommand_Damage(ToServerPacket* pkt);
+	void handleCommand_Breath(ToServerPacket* pkt);
+	void handleCommand_Password(ToServerPacket* pkt);
+	void handleCommand_PlayerItem(ToServerPacket* pkt);
+	void handleCommand_Respawn(ToServerPacket* pkt);
+	void handleCommand_Interact(ToServerPacket* pkt);
+	void handleCommand_RemovedSounds(ToServerPacket* pkt);
+	void handleCommand_NodeMetaFields(ToServerPacket* pkt);
+	void handleCommand_InventoryFields(ToServerPacket* pkt);
+
 	void ProcessData(u8 *data, u32 datasize, u16 peer_id);
 
 	// Environment must be locked when called
@@ -309,7 +339,7 @@ public:
 	bool showFormspec(const char *name, const std::string &formspec, const std::string &formname);
 	Map & getMap() { return m_env->getMap(); }
 	ServerEnvironment & getEnv() { return *m_env; }
-	
+
 	u32 hudAdd(Player *player, HudElement *element);
 	bool hudRemove(Player *player, u32 id);
 	bool hudChange(Player *player, u32 id, HudElementStat stat, void *value);
@@ -320,13 +350,13 @@ public:
 
 	inline Address getPeerAddress(u16 peer_id)
 			{ return m_con.GetPeerAddress(peer_id); }
-			
+
 	bool setLocalPlayerAnimations(Player *player, v2s32 animation_frames[4], f32 frame_speed);
 	bool setPlayerEyeOffset(Player *player, v3f first, v3f third);
 
 	bool setSky(Player *player, const video::SColor &bgcolor,
 			const std::string &type, const std::vector<std::string> &params);
-	
+
 	bool overrideDayNightRatio(Player *player, bool do_override,
 			float brightness);
 
@@ -379,7 +409,7 @@ private:
 	void SendSetSky(u16 peer_id, const video::SColor &bgcolor,
 			const std::string &type, const std::vector<std::string> &params);
 	void SendOverrideDayNightRatio(u16 peer_id, bool do_override, float ratio);
-	
+
 	/*
 		Send a node removal/addition event to all clients except ignore_id.
 		Additionally, if far_players!=NULL, players further away than
