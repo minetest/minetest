@@ -41,16 +41,24 @@ void main(void)
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES
 	vec4 pos = gl_Vertex;
 	vec4 pos2 = mWorld * gl_Vertex;
-	pos.x += (smoothTriangleWave(animationTimer*10.0 + pos2.x * 0.01 + pos2.z * 0.01) * 2.0 - 1.0) * 0.4;
-	pos.y += (smoothTriangleWave(animationTimer*15.0 + pos2.x * -0.01 + pos2.z * -0.01) * 2.0 - 1.0) * 0.2;
-	pos.z += (smoothTriangleWave(animationTimer*10.0 + pos2.x * -0.01 + pos2.z * -0.01) * 2.0 - 1.0) * 0.4;
+	/*
+	 * Mathematic optimization: pos2.x * A + pos2.z * A (2 multiplications + 1 addition)
+	 * replaced with: (pos2.x + pos2.z) * A (1 addition + 1 multiplication)
+	 */
+	pos.x += (smoothTriangleWave(animationTimer*10.0 + (pos2.x + pos2.z) * 0.01 * 2.0 - 1.0) * 0.4;
+	pos.y += (smoothTriangleWave(animationTimer*15.0 + (pos2.x + pos2.z) * -0.01) * 2.0 - 1.0) * 0.2;
+	pos.z += (smoothTriangleWave(animationTimer*10.0 + (pos2.x + pos2.z) * -0.01) * 2.0 - 1.0) * 0.4;
 	gl_Position = mWorldViewProj * pos;
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS
 	vec4 pos = gl_Vertex;
 	vec4 pos2 = mWorld * gl_Vertex;
 	if (gl_TexCoord[0].y < 0.05) {
-		pos.x += (smoothTriangleWave(animationTimer * 20.0 + pos2.x * 0.1 + pos2.z * 0.1) * 2.0 - 1.0) * 0.8;
-		pos.y -= (smoothTriangleWave(animationTimer * 10.0 + pos2.x * -0.5 + pos2.z * -0.5) * 2.0 - 1.0) * 0.4;	
+		/*
+		 * Mathematic optimization: pos2.x * A + pos2.z * A (2 multiplications + 1 addition)
+		 * replaced with: (pos2.x + pos2.z) * A (1 addition + 1 multiplication)
+		 */
+		pos.x += (smoothTriangleWave(animationTimer * 20.0 + (pos2.x + pos2.z) * 0.1) * 2.0 - 1.0) * 0.8;
+		pos.y -= (smoothTriangleWave(animationTimer * 10.0 + (pos2.x + pos2.z) * -0.5) * 2.0 - 1.0) * 0.4;	
 	}
 	gl_Position = mWorldViewProj * pos;
 #else
@@ -88,7 +96,7 @@ void main(void)
 		tangent  = normalize(gl_NormalMatrix * vec3(-1.0,  0.0,  0.0));
 		binormal = normalize(gl_NormalMatrix * vec3( 0.0, -1.0,  0.0));
 	}
-	mat3 tbnMatrix = mat3(	tangent.x, binormal.x, normal.x,
+	mat3 tbnMatrix = mat3(tangent.x, binormal.x, normal.x,
 							tangent.y, binormal.y, normal.y,
 							tangent.z, binormal.z, normal.z);
 
