@@ -1001,6 +1001,205 @@ void Client::Receive()
 	ProcessData(*data, datasize, sender_peer_id);
 }
 
+struct ToClientCommandHandler
+{
+    char const* name;
+    void (Client::*handler)(u8 *data, u32 datasize, u16 sender_peer_id);
+};
+
+ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] = 
+{
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_INIT", &Client::handleCommand_Init }, // 0x10
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_AddNode }, // 0x21
+	{ "TOCLIENT_NULL", &Client::handleCommand_RemoveNode }, // 0x22
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_ACCESS_DENIED", &Client::handleCommand_AccessDenied }, // 0x35
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null }, 
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+};
+
+void Client::handleCommand_Init(u8 *data, u32 datasize, u16 sender_peer_id)
+{
+	if(datasize < 3)
+		return;
+
+	u8 deployed = data[2];
+
+	infostream<<"Client: TOCLIENT_INIT received with "
+			"deployed="<<((int)deployed&0xff)<<std::endl;
+
+	if(!ser_ver_supported(deployed))
+	{
+		infostream<<"Client: TOCLIENT_INIT: Server sent "
+				<<"unsupported ser_fmt_ver"<<std::endl;
+		return;
+	}
+
+	m_server_ser_ver = deployed;
+
+	// Get player position
+	v3s16 playerpos_s16(0, BS*2+BS*20, 0);
+	if(datasize >= 2+1+6)
+		playerpos_s16 = readV3S16(&data[2+1]);
+	v3f playerpos_f = intToFloat(playerpos_s16, BS) - v3f(0, BS/2, 0);
+
+
+	// Set player position
+	Player *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+	player->setPosition(playerpos_f);
+
+	if(datasize >= 2+1+6+8)
+	{
+		// Get map seed
+		m_map_seed = readU64(&data[2+1+6]);
+		infostream<<"Client: received map seed: "<<m_map_seed<<std::endl;
+	}
+
+	if(datasize >= 2+1+6+8+4)
+	{
+		// Get map seed
+		m_recommended_send_interval = readF1000(&data[2+1+6+8]);
+		infostream<<"Client: received recommended send interval "
+				<<m_recommended_send_interval<<std::endl;
+	}
+
+	// Reply to server
+	u32 replysize = 2;
+	SharedBuffer<u8> reply(replysize);
+	writeU16(&reply[0], TOSERVER_INIT2);
+	// Send as reliable
+	m_con.Send(PEER_ID_SERVER, 1, reply, true);
+
+	m_state = LC_Init;
+}
+
+void Client::handleCommand_AccessDenied(u8 *data, u32 datasize, u16 sender_peer_id)
+{
+	// The server didn't like our password. Note, this needs
+	// to be processed even if the serialisation format has
+	// not been agreed yet, the same as TOCLIENT_INIT.
+	m_access_denied = true;
+	m_access_denied_reason = L"Unknown";
+	if(datasize >= 4)
+	{
+		std::string datastring((char*)&data[2], datasize-2);
+		std::istringstream is(datastring, std::ios_base::binary);
+		m_access_denied_reason = deSerializeWideString(is);
+	}
+}
+
+void Client::handleCommand_RemoveNode(u8 *data, u32 datasize, u16 sender_peer_id)
+{
+	if(datasize < 8)
+		return;
+	
+	v3s16 p;
+	p.X = readS16(&data[2]);
+	p.Y = readS16(&data[4]);
+	p.Z = readS16(&data[6]);
+	removeNode(p);
+}
+
+void Client::handleCommand_AddNode(u8 *data, u32 datasize, u16 sender_peer_id)
+{
+	u8 ser_version = m_server_ser_ver;
+	
+	if(datasize < 8 + MapNode::serializedLength(ser_version))
+		return;
+
+	v3s16 p;
+	p.X = readS16(&data[2]);
+	p.Y = readS16(&data[4]);
+	p.Z = readS16(&data[6]);
+
+	MapNode n;
+	n.deSerialize(&data[8], ser_version);
+
+	bool remove_metadata = true;
+	u32 index = 8 + MapNode::serializedLength(ser_version);
+	if ((datasize >= index+1) && data[index]){
+		remove_metadata = false;
+	}
+
+	addNode(p, n, remove_metadata);
+}
 /*
 	sender_peer_id given to this shall be quaranteed to be a valid peer
 */
@@ -1034,77 +1233,10 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 
 	u8 ser_version = m_server_ser_ver;
 
-	if(command == TOCLIENT_INIT)
+	if(command == TOCLIENT_INIT || command == TOCLIENT_ACCESS_DENIED)
 	{
-		if(datasize < 3)
-			return;
-
-		u8 deployed = data[2];
-
-		infostream<<"Client: TOCLIENT_INIT received with "
-				"deployed="<<((int)deployed&0xff)<<std::endl;
-
-		if(!ser_ver_supported(deployed))
-		{
-			infostream<<"Client: TOCLIENT_INIT: Server sent "
-					<<"unsupported ser_fmt_ver"<<std::endl;
-			return;
-		}
-
-		m_server_ser_ver = deployed;
-
-		// Get player position
-		v3s16 playerpos_s16(0, BS*2+BS*20, 0);
-		if(datasize >= 2+1+6)
-			playerpos_s16 = readV3S16(&data[2+1]);
-		v3f playerpos_f = intToFloat(playerpos_s16, BS) - v3f(0, BS/2, 0);
-
-
-		// Set player position
-		Player *player = m_env.getLocalPlayer();
-		assert(player != NULL);
-		player->setPosition(playerpos_f);
-
-		if(datasize >= 2+1+6+8)
-		{
-			// Get map seed
-			m_map_seed = readU64(&data[2+1+6]);
-			infostream<<"Client: received map seed: "<<m_map_seed<<std::endl;
-		}
-
-		if(datasize >= 2+1+6+8+4)
-		{
-			// Get map seed
-			m_recommended_send_interval = readF1000(&data[2+1+6+8]);
-			infostream<<"Client: received recommended send interval "
-					<<m_recommended_send_interval<<std::endl;
-		}
-
-		// Reply to server
-		u32 replysize = 2;
-		SharedBuffer<u8> reply(replysize);
-		writeU16(&reply[0], TOSERVER_INIT2);
-		// Send as reliable
-		m_con.Send(PEER_ID_SERVER, 1, reply, true);
-
-		m_state = LC_Init;
-
-		return;
-	}
-
-	if(command == TOCLIENT_ACCESS_DENIED)
-	{
-		// The server didn't like our password. Note, this needs
-		// to be processed even if the serialisation format has
-		// not been agreed yet, the same as TOCLIENT_INIT.
-		m_access_denied = true;
-		m_access_denied_reason = L"Unknown";
-		if(datasize >= 4)
-		{
-			std::string datastring((char*)&data[2], datasize-2);
-			std::istringstream is(datastring, std::ios_base::binary);
-			m_access_denied_reason = deSerializeWideString(is);
-		}
+		ToClientCommandHandler& opHandle = toClientCommandTable[command];
+		(this->*opHandle.handler)(data, datasize, sender_peer_id);
 		return;
 	}
 
@@ -1123,39 +1255,15 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	// almost everyone needs a player reference
 	Player *player = m_env.getLocalPlayer();
 	assert(player != NULL);
-
-	if(command == TOCLIENT_REMOVENODE)
-	{
-		if(datasize < 8)
-			return;
-		v3s16 p;
-		p.X = readS16(&data[2]);
-		p.Y = readS16(&data[4]);
-		p.Z = readS16(&data[6]);
-		removeNode(p);
+	
+	// Handle present here because or m_server_ser_ver (temp i think)
+	if (command == TOCLIENT_REMOVENODE || command == TOCLIENT_ADDNODE) {
+		ToClientCommandHandler& opHandle = toClientCommandTable[command];
+		(this->*opHandle.handler)(data, datasize, sender_peer_id);
+		return;
 	}
-	else if(command == TOCLIENT_ADDNODE)
-	{
-		if(datasize < 8 + MapNode::serializedLength(ser_version))
-			return;
 
-		v3s16 p;
-		p.X = readS16(&data[2]);
-		p.Y = readS16(&data[4]);
-		p.Z = readS16(&data[6]);
-
-		MapNode n;
-		n.deSerialize(&data[8], ser_version);
-
-		bool remove_metadata = true;
-		u32 index = 8 + MapNode::serializedLength(ser_version);
-		if ((datasize >= index+1) && data[index]){
-			remove_metadata = false;
-		}
-
-		addNode(p, n, remove_metadata);
-	}
-	else if(command == TOCLIENT_BLOCKDATA)
+	if(command == TOCLIENT_BLOCKDATA)
 	{
 		// Ignore too small packet
 		if(datasize < 8)
@@ -2888,4 +2996,3 @@ scene::IAnimatedMesh* Client::getMesh(const std::string &filename)
 	smgr->getMeshCache()->removeMesh(mesh);
 	return mesh;
 }
-
