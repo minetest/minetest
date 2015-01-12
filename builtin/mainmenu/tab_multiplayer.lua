@@ -22,9 +22,9 @@ local function get_formspec(tabview, name, tabdata)
 	local retval =
 		"label[7.9,-0.15;" .. fgettext("Address / Port") .. "]" ..
 		"label[7.9,1.05;" .. fgettext("Name / Password") .. "]" ..
-		"field[8.1,0.75;3.35,0.5;te_address;;" ..
+		"field[8,0.75;3.4,0.5;te_address;;" ..
 		core.formspec_escape(core.setting_get("address")) .. "]" ..
-		"field[11.3,0.75;1.15,0.5;te_port;;" ..
+		"field[11.25,0.75;1.3,0.5;te_port;;" ..
 		core.formspec_escape(core.setting_get("remote_port")) .. "]" ..
 		"checkbox[0,4.85;cb_public_serverlist;" .. fgettext("Public Serverlist") .. ";" ..
 		dump(core.setting_getbool("public_serverlist")) .. "]"
@@ -36,9 +36,9 @@ local function get_formspec(tabview, name, tabdata)
 
 	retval = retval ..
 		"button[10,4.9;2,0.5;btn_mp_connect;" .. fgettext("Connect") .. "]" ..
-		"field[8.1,1.95;2.89,0.5;te_name;;" ..
+		"field[8,1.95;2.95,0.5;te_name;;" ..
 		core.formspec_escape(core.setting_get("name")) .. "]" ..
-		"pwdfield[10.85,1.95;1.6,0.5;te_pwd;]" ..
+		"pwdfield[10.78,1.95;1.77,0.5;te_pwd;]" ..
 		"box[7.8,2.35;4.16,2.28;#999999]" ..
 		"textarea[8.15,2.4;4.25,2.6;;"
 		
