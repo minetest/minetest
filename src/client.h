@@ -339,7 +339,18 @@ public:
 	*/
 	void step(float dtime);
 
+	/*
+	 * Command Handler
+	 */
+	
+	void handleCommand_Null(u8 *data, u32 datasize, u16 sender_peer_id) {}
+	void handleCommand_Init(u8 *data, u32 datasize, u16 sender_peer_id);
+	void handleCommand_AccessDenied(u8 *data, u32 datasize, u16 sender_peer_id);
+	void handleCommand_RemoveNode(u8 *data, u32 datasize, u16 sender_peer_id);
+	void handleCommand_AddNode(u8 *data, u32 datasize, u16 sender_peer_id);
+	
 	void ProcessData(u8 *data, u32 datasize, u16 sender_peer_id);
+	
 	// Returns true if something was received
 	bool AsyncProcessPacket();
 	bool AsyncProcessData();

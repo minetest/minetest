@@ -556,6 +556,8 @@ enum ToClientCommand
 		v3f1000 first
 		v3f1000 third
 	*/
+	
+	TOCLIENT_NUM_MSG_TYPES = 0x53,
 };
 
 enum ToServerCommand
