@@ -44,10 +44,12 @@ void main(void)
 	/*
 	 * Mathematic optimization: pos2.x * A + pos2.z * A (2 multiplications + 1 addition)
 	 * replaced with: (pos2.x + pos2.z) * A (1 addition + 1 multiplication)
+	 * And bufferize calcul to a float
 	 */
-	pos.x += (smoothTriangleWave(animationTimer*10.0 + (pos2.x + pos2.z) * 0.01 * 2.0 - 1.0) * 0.4;
-	pos.y += (smoothTriangleWave(animationTimer*15.0 + (pos2.x + pos2.z) * -0.01) * 2.0 - 1.0) * 0.2;
-	pos.z += (smoothTriangleWave(animationTimer*10.0 + (pos2.x + pos2.z) * -0.01) * 2.0 - 1.0) * 0.4;
+	float pos2XpZ = pos2.x + pos2.z;
+	pos.x += (smoothTriangleWave(animationTimer*10.0 + pos2XpZ * 0.01 * 2.0 - 1.0) * 0.4;
+	pos.y += (smoothTriangleWave(animationTimer*15.0 + pos2XpZ * -0.01) * 2.0 - 1.0) * 0.2;
+	pos.z += (smoothTriangleWave(animationTimer*10.0 + pos2XpZ * -0.01) * 2.0 - 1.0) * 0.4;
 	gl_Position = mWorldViewProj * pos;
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS
 	vec4 pos = gl_Vertex;
@@ -56,9 +58,11 @@ void main(void)
 		/*
 		 * Mathematic optimization: pos2.x * A + pos2.z * A (2 multiplications + 1 addition)
 		 * replaced with: (pos2.x + pos2.z) * A (1 addition + 1 multiplication)
+		 * And bufferize calcul to a float
 		 */
-		pos.x += (smoothTriangleWave(animationTimer * 20.0 + (pos2.x + pos2.z) * 0.1) * 2.0 - 1.0) * 0.8;
-		pos.y -= (smoothTriangleWave(animationTimer * 10.0 + (pos2.x + pos2.z) * -0.5) * 2.0 - 1.0) * 0.4;	
+		float pos2XpZ = pos2.x + pos2.z;
+		pos.x += (smoothTriangleWave(animationTimer * 20.0 + pos2XpZ * 0.1) * 2.0 - 1.0) * 0.8;
+		pos.y -= (smoothTriangleWave(animationTimer * 10.0 + pos2XpZ * -0.5) * 2.0 - 1.0) * 0.4;	
 	}
 	gl_Position = mWorldViewProj * pos;
 #else
