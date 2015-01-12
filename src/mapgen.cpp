@@ -112,7 +112,9 @@ u32 Mapgen::getBlockSeed(v3s16 p, int seed)
 
 u32 Mapgen::getBlockSeed2(v3s16 p, int seed)
 {
-	return noise3d(p.X, p.Y, p.Z, seed);
+	u32 n = 1619 * p.X + 31337 * p.Y + 52591 * p.Z + 1013 * seed;
+	n = (n >> 13) ^ n;
+	return (n * (n * n * 60493 + 19990303) + 1376312589);
 }
 
 
