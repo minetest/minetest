@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "localplayer.h"
 #include "hud.h"
 #include "particles.h"
+#include "network/toclientpacket.h"
 
 struct MeshMakeData;
 class MapBlockMesh;
@@ -341,7 +342,57 @@ public:
 	*/
 	void step(float dtime);
 
+	/*
+	 * Command Handlers
+	 */
+
+	void handleCommand(ToClientPacket* pkt);
+
+	void handleCommand_Null(ToClientPacket* pkt) {};
+	void handleCommand_Deprecated(ToClientPacket* pkt);
+	void handleCommand_Init(ToClientPacket* pkt);
+	void handleCommand_AccessDenied(ToClientPacket* pkt);
+	void handleCommand_RemoveNode(ToClientPacket* pkt);
+	void handleCommand_AddNode(ToClientPacket* pkt);
+	void handleCommand_BlockData(ToClientPacket* pkt);
+	void handleCommand_Inventory(ToClientPacket* pkt);
+	void handleCommand_TimeOfDay(ToClientPacket* pkt);
+	void handleCommand_ChatMessage(ToClientPacket* pkt);
+	void handleCommand_ActiveObjectRemoveAdd(ToClientPacket* pkt);
+	void handleCommand_ActiveObjectMessages(ToClientPacket* pkt);
+	void handleCommand_Movement(ToClientPacket* pkt);
+	void handleCommand_HP(ToClientPacket* pkt);
+	void handleCommand_Breath(ToClientPacket* pkt);
+	void handleCommand_MovePlayer(ToClientPacket* pkt);
+	void handleCommand_PlayerItem(ToClientPacket* pkt);
+	void handleCommand_DeathScreen(ToClientPacket* pkt);
+	void handleCommand_AnnounceMedia(ToClientPacket* pkt);
+	void handleCommand_Media(ToClientPacket* pkt);
+	void handleCommand_ToolDef(ToClientPacket* pkt);
+	void handleCommand_NodeDef(ToClientPacket* pkt);
+	void handleCommand_CraftItemDef(ToClientPacket* pkt);
+	void handleCommand_ItemDef(ToClientPacket* pkt);
+	void handleCommand_PlaySound(ToClientPacket* pkt);
+	void handleCommand_StopSound(ToClientPacket* pkt);
+	void handleCommand_Privileges(ToClientPacket* pkt);
+	void handleCommand_InventoryFormSpec(ToClientPacket* pkt);
+	void handleCommand_DetachedInventory(ToClientPacket* pkt);
+	void handleCommand_ShowFormSpec(ToClientPacket* pkt);
+	void handleCommand_SpawnParticle(ToClientPacket* pkt);
+	void handleCommand_AddParticleSpawner(ToClientPacket* pkt);
+	void handleCommand_DeleteParticleSpawner(ToClientPacket* pkt);
+	void handleCommand_HudAdd(ToClientPacket* pkt);
+	void handleCommand_HudRemove(ToClientPacket* pkt);
+	void handleCommand_HudChange(ToClientPacket* pkt);
+	void handleCommand_HudSetFlags(ToClientPacket* pkt);
+	void handleCommand_HudSetParam(ToClientPacket* pkt);
+	void handleCommand_HudSetSky(ToClientPacket* pkt);
+	void handleCommand_OverrideDayNightRatio(ToClientPacket* pkt);
+	void handleCommand_LocalPlayerAnimations(ToClientPacket* pkt);
+	void handleCommand_EyeOffset(ToClientPacket* pkt);
+
 	void ProcessData(u8 *data, u32 datasize, u16 sender_peer_id);
+
 	// Returns true if something was received
 	bool AsyncProcessPacket();
 	bool AsyncProcessData();
@@ -577,4 +628,3 @@ private:
 };
 
 #endif // !CLIENT_HEADER
-
