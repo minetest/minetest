@@ -1042,8 +1042,8 @@ ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
 	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
 	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
-	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
-	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
+	{ "TOCLIENT_NULL", &Client::handleCommand_AddNode }, // 0x21
+	{ "TOCLIENT_NULL", &Client::handleCommand_RemoveNode }, // 0x22
 	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
 	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
 	{ "TOCLIENT_NULL", &Client::handleCommand_Null },
