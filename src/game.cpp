@@ -2089,7 +2089,7 @@ bool Game::initGui(std::wstring *error_message)
 #ifdef HAVE_TOUCHSCREENGUI
 
 	if (g_touchscreengui)
-		g_touchscreengui->init(texture_src, porting::getDisplayDensity());
+		g_touchscreengui->init(texture_src);
 
 #endif
 

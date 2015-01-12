@@ -42,18 +42,21 @@ typedef enum {
 	drop_id,
 	jump_id,
 	crunch_id,
+	chat_id,
+	after_last_element_id,
+	starter_id,
 	fly_id,
 	noclip_id,
 	fast_id,
 	debug_id,
-	chat_id,
 	camera_id,
 	range_id,
-	after_last_element_id
 } touch_gui_button_id;
 
 #define MIN_DIG_TIME_MS 500
 #define MAX_TOUCH_COUNT 64
+
+#define SETTINGS_BAR_Y_OFFSET 7
 
 extern const char** touchgui_button_imagenames;
 
@@ -65,7 +68,7 @@ public:
 
 	void translateEvent(const SEvent &event);
 
-	void init(ISimpleTextureSource* tsrc,float density);
+	void init(ISimpleTextureSource* tsrc);
 
 	double getYaw() { return m_camera_yaw; }
 	double getPitch() { return m_camera_pitch; }
@@ -111,7 +114,14 @@ private:
 		bool             immediate_release;
 	};
 
+	void addSettingsBarButton(touch_gui_button_id id, const wchar_t* caption,
+			const char* btn_image);
+
 	button_info m_buttons[after_last_element_id];
+
+
+	button_info m_settings_bar_starter;
+	std::vector<button_info*> m_settings_bar_buttons;
 
 	/* gui button detection */
 	touch_gui_button_id getButtonID(s32 x, s32 y);
@@ -147,8 +157,17 @@ private:
 	/* handle released hud buttons */
 	bool isReleaseHUDButton(int eventID);
 
+	/* detect settings bar button events */
+	bool isSettingsBarButton(const SEvent &event);
+
+	/* handle released hud buttons */
+	bool isReleaseSettingsBarButton(int eventID);
+
 	/* handle double taps */
 	bool doubleTapDetection();
+
+	/* get size of regular gui control button */
+	int getGuiButtonSize();
 
 	/* doubleclick detection variables */
 	struct key_event {
@@ -162,6 +181,12 @@ private:
 
 	/* array for doubletap detection */
 	key_event m_key_events[2];
+
+	/* show settings bar */
+	bool m_settings_bar_active;
+
+	/* settings bar timeout */
+	float m_settings_bar_timeout;
 };
 extern TouchScreenGUI *g_touchscreengui;
 #endif

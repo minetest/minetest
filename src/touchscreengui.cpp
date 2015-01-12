@@ -44,13 +44,7 @@ const char** touchgui_button_imagenames = (const char*[]) {
 	"drop_btn.png",
 	"jump_btn.png",
 	"down.png",
-	"fly_btn.png",
-	"noclip_btn.png",
-	"fast_btn.png",
-	"debug_btn.png",
 	"chat_btn.png",
-	"camera_btn.png",
-	"rangeview_btn.png"
 };
 
 static irr::EKEY_CODE id2keycode(touch_gui_button_id id)
@@ -116,7 +110,8 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, IEventReceiver* receiver)
 	m_camera_pitch(0.0),
 	m_visible(false),
 	m_move_id(-1),
-	m_receiver(receiver)
+	m_receiver(receiver),
+	m_settings_bar_active(false)
 {
 	for (unsigned int i=0; i < after_last_element_id; i++) {
 		m_buttons[i].guibutton     =  0;
@@ -159,14 +154,19 @@ static int getMaxControlPadSize(float density) {
 	return 200 * density * g_settings->getFloat("hud_scaling");
 }
 
-void TouchScreenGUI::init(ISimpleTextureSource* tsrc, float density)
+int TouchScreenGUI::getGuiButtonSize()
+{
+	u32 control_pad_size =
+			MYMIN((2 * m_screensize.Y) / 3, getMaxControlPadSize(porting::getDisplayDensity()));
+
+	return control_pad_size / 3;
+}
+
+void TouchScreenGUI::init(ISimpleTextureSource* tsrc)
 {
 	assert(tsrc != 0);
 
-	u32 control_pad_size =
-			MYMIN((2 * m_screensize.Y) / 3,getMaxControlPadSize(density));
-
-	u32 button_size      = control_pad_size / 3;
+	u32 button_size      = getGuiButtonSize();
 	m_visible            = true;
 	m_texturesource      = tsrc;
 	m_control_pad_rect   = rect<s32>(0, m_screensize.Y - 3 * button_size,
@@ -235,48 +235,36 @@ void TouchScreenGUI::init(ISimpleTextureSource* tsrc, float density)
 					m_screensize.Y),
 			L"H",false);
 
-	/* init fly button */
-	initButton(fly_id,
-			rect<s32>(m_screensize.X - (0.75*button_size),
-					m_screensize.Y - (2.25*button_size),
-					m_screensize.X, m_screensize.Y - (button_size*1.5)),
-			L"fly", true);
-
-	/* init noclip button */
-	initButton(noclip_id,
-			rect<s32>(m_screensize.X - (0.75*button_size), 2.25*button_size,
-					m_screensize.X, 3*button_size),
-			L"clip", true);
-
-	/* init fast button */
-	initButton(fast_id,
-			rect<s32>(m_screensize.X - (0.75*button_size), 1.5*button_size,
-					m_screensize.X, 2.25*button_size),
-			L"fast", true);
-
-	/* init debug button */
-	initButton(debug_id,
-			rect<s32>(m_screensize.X - (0.75*button_size), 0.75*button_size,
-					m_screensize.X, 1.5*button_size),
-			L"dbg", true);
-
 	/* init chat button */
 	initButton(chat_id,
 			rect<s32>(m_screensize.X - (0.75*button_size), 0,
 					m_screensize.X, 0.75*button_size),
 			L"Chat", true);
 
-	/* init camera button */
-	initButton(camera_id,
-			rect<s32>(m_screensize.X - (1.5*button_size), 0,
-					m_screensize.X - (0.75*button_size), 0.75*button_size),
-			L"cam", true);
+	/* init settings bar */
+	int button_id = starter_id;
+	irr::core::rect<int> current_button = rect<s32>(
+			m_screensize.X - (button_size * 0.5) ,
+			m_screensize.Y - button_size * (SETTINGS_BAR_Y_OFFSET + 0.75),
+			m_screensize.X,
+			m_screensize.Y - button_size * (SETTINGS_BAR_Y_OFFSET -0.25)
+			);
 
-	/* init rangeselect button */
-	initButton(range_id,
-			rect<s32>(m_screensize.X - (2.25*button_size), 0,
-					m_screensize.X - (1.5*button_size), 0.75*button_size),
-			L"far", true);
+	m_settings_bar_starter.guibutton         = m_guienv->addButton(current_button, 0, button_id , L"settings", 0);
+	m_settings_bar_starter.guibutton->grab();
+	m_settings_bar_starter.repeatcounter     = -1;
+	m_settings_bar_starter.keycode           = KEY_OEM_8; // use invalid keycode as it's not relevant
+	m_settings_bar_starter.immediate_release = true;
+	m_settings_bar_starter.ids.clear();
+
+	loadButtonTexture(&m_settings_bar_starter, "settings_bar.png");
+
+	addSettingsBarButton( fly_id,    L"fly",       "fly_btn.png");
+	addSettingsBarButton( noclip_id, L"noclip",    "noclip_btn.png");
+	addSettingsBarButton( fast_id,   L"fast",      "fast_btn.png");
+	addSettingsBarButton( debug_id,  L"debug",     "debug_btn.png");
+	addSettingsBarButton( camera_id, L"camera",    "camera_btn.png");
+	addSettingsBarButton( range_id,  L"rangeview", "rangeview_btn.png");
 }
 
 touch_gui_button_id TouchScreenGUI::getButtonID(s32 x, s32 y)
@@ -439,6 +427,10 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 		{
 			/* already handled in isHUDButton() */
 		}
+		else if (isSettingsBarButton(event))
+		{
+			/* already handled in isSettingsBarButton() */
+		}
 		/* handle non button events */
 		else {
 			/* if we don't already have a moving point make this the moving one */
@@ -464,6 +456,9 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 		}
 		/* handle hud button events */
 		else if (isReleaseHUDButton(event.TouchInput.ID)) {
+			/* nothing to do here */
+		}
+		else if (isReleaseSettingsBarButton(event.TouchInput.ID)) {
 			/* nothing to do here */
 		}
 		/* handle the point used for moving view */
@@ -730,6 +725,25 @@ void TouchScreenGUI::step(float dtime)
 			m_move_sent_as_mouse_event         = true;
 		}
 	}
+
+	if (m_settings_bar_active) {
+		m_settings_bar_timeout += dtime;
+
+		if (m_settings_bar_timeout > 3) { // TODO add setting for this value
+			m_settings_bar_starter.guibutton->setVisible(true);
+			m_settings_bar_starter.guibutton->setEnabled(true);
+			m_settings_bar_active = false;
+
+			std::vector<button_info*>::iterator iter = m_settings_bar_buttons.begin();
+
+			while ( iter != m_settings_bar_buttons.end())
+			{
+				(*iter)->guibutton->setVisible(false);
+				(*iter)->guibutton->setEnabled(false);
+				iter++;
+			}
+		}
+	}
 }
 
 void TouchScreenGUI::resetHud()
@@ -761,4 +775,138 @@ void TouchScreenGUI::Hide()
 void TouchScreenGUI::Show()
 {
 	Toggle(true);
+}
+
+void TouchScreenGUI::addSettingsBarButton(touch_gui_button_id button_id, const wchar_t* caption,
+		const char* btn_image)
+{
+	int button_size = getGuiButtonSize();
+
+	int button_x_offset = (m_settings_bar_buttons.size() * (button_size * 1.25));
+
+	irr::core::rect<int> current_button = rect<s32>(
+			m_screensize.X - button_size - button_x_offset,
+			m_screensize.Y - button_size * (SETTINGS_BAR_Y_OFFSET + 0.75),
+			m_screensize.X - button_x_offset,
+			m_screensize.Y - button_size * (SETTINGS_BAR_Y_OFFSET - 0.25)
+			);
+
+	button_info* btn       = new button_info();
+	btn->guibutton         = m_guienv->addButton(current_button, 0, button_id , caption, 0);
+	btn->guibutton->grab();
+	btn->guibutton->setVisible(false);
+	btn->repeatcounter     = -1;
+	btn->keycode           = id2keycode(button_id);
+	btn->immediate_release = true;
+	btn->ids.clear();
+
+	loadButtonTexture(btn,btn_image);
+
+	m_settings_bar_buttons.push_back(btn);
+}
+
+bool TouchScreenGUI::isSettingsBarButton(const SEvent &event)
+{
+	IGUIElement* rootguielement = m_guienv->getRootGUIElement();
+
+	if (rootguielement == NULL) {
+		return false;
+	}
+
+	gui::IGUIElement *element =
+			rootguielement->getElementFromPoint(core::position2d<s32>(
+					event.TouchInput.X,event.TouchInput.Y));
+
+	if (element == NULL) {
+		return false;
+	}
+
+
+	if (m_settings_bar_active) {
+		/* check for all buttons in vector */
+
+		std::vector<button_info*>::iterator iter = m_settings_bar_buttons.begin();
+
+		while ( iter != m_settings_bar_buttons.end())
+		{
+			if ( (*iter)->guibutton == element) {
+
+				SEvent* translated = new SEvent();
+				memset(translated,0,sizeof(SEvent));
+				translated->EventType            = irr::EET_KEY_INPUT_EVENT;
+				translated->KeyInput.Key         = (*iter)->keycode;
+				translated->KeyInput.Control     = false;
+				translated->KeyInput.Shift       = false;
+				translated->KeyInput.Char        = 0;
+
+				/* add this event */
+				translated->KeyInput.PressedDown = true;
+				m_receiver->OnEvent(*translated);
+
+				/* remove this event */
+				translated->KeyInput.PressedDown = false;
+				m_receiver->OnEvent(*translated);
+
+				delete translated;
+
+				(*iter)->ids.push_back(event.TouchInput.ID);
+
+				m_settings_bar_timeout = 0;
+
+				return true;
+			}
+			iter++;
+		}
+	}
+	else {
+		/* check for starter button only */
+		if (element == m_settings_bar_starter.guibutton) {
+			m_settings_bar_starter.ids.push_back(event.TouchInput.ID);
+			m_settings_bar_starter.guibutton->setVisible(false);
+			m_settings_bar_starter.guibutton->setEnabled(false);
+			m_settings_bar_active = true;
+			m_settings_bar_timeout = 0;
+
+			std::vector<button_info*>::iterator iter = m_settings_bar_buttons.begin();
+
+			while ( iter != m_settings_bar_buttons.end())
+			{
+				(*iter)->guibutton->setVisible(true);
+				(*iter)->guibutton->setEnabled(true);
+				iter++;
+			}
+
+			return true;
+		}
+	}
+	return false;
+}
+
+bool TouchScreenGUI::isReleaseSettingsBarButton(int eventID)
+{
+	std::vector<int>::iterator id =
+			std::find(m_settings_bar_starter.ids.begin(),
+					m_settings_bar_starter.ids.end(), eventID);
+
+	if (id != m_settings_bar_starter.ids.end()) {
+		m_settings_bar_starter.ids.erase(id);
+		return true;
+	}
+
+	std::vector<button_info*>::iterator iter = m_settings_bar_buttons.begin();
+
+	while ( iter != m_settings_bar_buttons.end())
+	{
+		std::vector<int>::iterator id =
+						std::find((*iter)->ids.begin(),(*iter)->ids.end(), eventID);
+
+		if (id != (*iter)->ids.end()) {
+			(*iter)->ids.erase(id);
+			// TODO handle settings button release
+			return true;
+		}
+		iter ++;
+	}
+
+	return false;
 }
