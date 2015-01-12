@@ -54,7 +54,7 @@ void main(void)
 	 */
 	float pos2XpZ = pos2.x + pos2.z;
 	
-	pos.x += (smoothTriangleWave(animationTimer*10.0 + pos2XpZ * 0.01 * 2.0 - 1.0) * 0.4;
+	pos.x += (smoothTriangleWave(animationTimer*10.0 + pos2XpZ * 0.01) * 2.0 - 1.0) * 0.4;
 	pos.y += (smoothTriangleWave(animationTimer*15.0 + pos2XpZ * -0.01) * 2.0 - 1.0) * 0.2;
 	pos.z += (smoothTriangleWave(animationTimer*10.0 + pos2XpZ * -0.01) * 2.0 - 1.0) * 0.4;
 	gl_Position = mWorldViewProj * pos;
