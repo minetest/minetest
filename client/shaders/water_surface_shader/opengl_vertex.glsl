@@ -41,7 +41,7 @@ void main(void)
 	float posYbuf = pos.z / WATER_WAVE_LENGTH + animationTimer * WATER_WAVE_SPEED * WATER_WAVE_LENGTH
 	
 	pos.y -= 2.0;
-	pos.y -= sin(posYbuf) * WATER_WAVE_HEIGHT + sin(posYbuf / 7.0) * WATER_WAVE_HEIGHT;
+	pos.y -= (sin(posYbuf) + sin(posYbuf / 7.0)) * WATER_WAVE_HEIGHT;
 	gl_Position = mWorldViewProj * pos;
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES
 	vec4 pos = gl_Vertex;
