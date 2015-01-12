@@ -429,6 +429,9 @@ set(common_SRCS
 	version.cpp
 	voxel.cpp
 	voxelalgorithms.cpp
+	network/networkpacket.cpp
+	network/serveropcodes.cpp
+	network/toserverpacket.cpp
 	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}
 	${UTIL_SRCS}
@@ -491,6 +494,8 @@ set(minetest_SRCS
 	sky.cpp
 	tile.cpp
 	wieldmesh.cpp
+	network/clientopcodes.cpp
+	network/toclientpacket.cpp
 	${minetest_SCRIPT_SRCS}
 )
 list(SORT minetest_SRCS)

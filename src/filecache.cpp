@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "filecache.h"
 
-#include "clientserver.h"
+#include "network/networkprotocol.h"
 #include "log.h"
 #include "filesys.h"
 #include <string>
