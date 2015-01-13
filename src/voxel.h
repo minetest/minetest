@@ -82,7 +82,7 @@ public:
 
 	void addArea(const VoxelArea &a)
 	{
-		if(getExtent() == v3s16(0,0,0))
+		if (hasEmptyExtent())
 		{
 			*this = a;
 			return;
@@ -96,7 +96,7 @@ public:
 	}
 	void addPoint(const v3s16 &p)
 	{
-		if(getExtent() == v3s16(0,0,0))
+		if(hasEmptyExtent())
 		{
 			MinEdge = p;
 			MaxEdge = p;
@@ -137,6 +137,15 @@ public:
 	{
 		return MaxEdge - MinEdge + v3s16(1,1,1);
 	}
+
+	/* Because MaxEdge and MinEdge are included in the voxel area an empty extent
+	 * is not represented by (0, 0, 0), but instead (-1, -1, -1)
+	 */
+	bool hasEmptyExtent() const
+	{
+		return MaxEdge - MinEdge == v3s16(-1, -1, -1);
+	}
+
 	s32 getVolume() const
 	{
 		v3s16 e = getExtent();
@@ -146,7 +155,7 @@ public:
 	{
 		// No area contains an empty area
 		// NOTE: Algorithms depend on this, so do not change.
-		if(a.getExtent() == v3s16(0,0,0))
+		if(a.hasEmptyExtent())
 			return false;
 
 		return(
