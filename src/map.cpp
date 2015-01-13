@@ -43,6 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database.h"
 #include "database-dummy.h"
 #include "database-sqlite3.h"
+#include <deque>
 #if USE_LEVELDB
 #include "database-leveldb.h"
 #endif
@@ -1628,7 +1629,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 		infostream<<"transformLiquids(): initial_size="<<initial_size<<std::endl;*/
 
 	// list of nodes that due to viscosity have not reached their max level height
-	UniqueQueue<v3s16> must_reflow;
+	std::deque<v3s16> must_reflow;
 
 	// List of MapBlocks that will require a lighting update (due to lava)
 	std::map<v3s16, MapBlock*> lighting_modified_blocks;
@@ -1909,11 +1910,9 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 		}
 	}
 	//infostream<<"Map::transformLiquids(): loopcount="<<loopcount<<std::endl;
-	while (must_reflow.size() > 0)
-	{
-		m_transforming_liquid.push_back(must_reflow.front());
-		must_reflow.pop_front();
-	}
+
+	for (std::deque<v3s16>::iterator iter = must_reflow.begin(); iter != must_reflow.end(); ++iter)
+		m_transforming_liquid.push_back(*iter);
 	updateLighting(lighting_modified_blocks, modified_blocks);
 
 
