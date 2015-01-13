@@ -1663,7 +1663,8 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 		/*
 			Get a queued transforming liquid node
 		*/
-		v3s16 p0 = m_transforming_liquid.pop_front();
+		v3s16 p0 = m_transforming_liquid.front();
+		m_transforming_liquid.pop_front();
 
 		MapNode n0 = getNodeNoEx(p0);
 
@@ -1909,7 +1910,10 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 	}
 	//infostream<<"Map::transformLiquids(): loopcount="<<loopcount<<std::endl;
 	while (must_reflow.size() > 0)
-		m_transforming_liquid.push_back(must_reflow.pop_front());
+	{
+		m_transforming_liquid.push_back(must_reflow.front());
+		must_reflow.pop_front();
+	}
 	updateLighting(lighting_modified_blocks, modified_blocks);
 
 
@@ -2380,8 +2384,8 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 	*/
 	while(data->transforming_liquid.size() > 0)
 	{
-		v3s16 p = data->transforming_liquid.pop_front();
-		m_transforming_liquid.push_back(p);
+		m_transforming_liquid.push_back(data->transforming_liquid.front());
+		data->transforming_liquid.pop_front();
 	}
 
 	/*
