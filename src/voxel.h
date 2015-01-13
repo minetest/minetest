@@ -138,7 +138,7 @@ public:
 		return MaxEdge - MinEdge + v3s16(1,1,1);
 	}
 
-	/* Because MaxEdge and MinEdge are included in the voxel area, and empty extent
+	/* Because MaxEdge and MinEdge are included in the voxel area, an empty extent
 	   is not represented by (0,0,0), but instead (-1, -1, -1) */
 	bool hasEmptyExtent() const
 	{
