@@ -95,9 +95,9 @@ public:
 	int getGroundLevelAtPoint(v2s16 p);
 	void calculateNoise();
 	int generateBaseTerrain();
-	void generateBlobs();
 	void generateBiomes();
 	void generateCaves();
+	void generateBlobs();
 	void dustTopNodes();
 };
 
