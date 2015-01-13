@@ -85,6 +85,26 @@ inline v3s16 getContainerPos(v3s16 p, v3s16 d)
 	);
 }
 
+inline void getContainerPosWithOffset(s16 p, s16 d, s16 &container, s16 &offset)
+{
+	container = (p >= 0 ? p : p - d + 1) / d;
+	offset = p & (d - 1);
+}
+
+inline void getContainerPosWithOffset(const v2s16 &p, s16 d, v2s16 &container, v2s16 &offset)
+{
+	getContainerPosWithOffset(p.X, d, container.X, offset.X);
+	getContainerPosWithOffset(p.Y, d, container.Y, offset.Y);
+}
+
+inline void getContainerPosWithOffset(const v3s16 &p, s16 d, v3s16 &container, v3s16 &offset)
+{
+	getContainerPosWithOffset(p.X, d, container.X, offset.X);
+	getContainerPosWithOffset(p.Y, d, container.Y, offset.Y);
+	getContainerPosWithOffset(p.Z, d, container.Z, offset.Z);
+}
+
+
 inline bool isInArea(v3s16 p, s16 d)
 {
 	return (

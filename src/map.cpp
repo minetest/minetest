@@ -43,6 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database.h"
 #include "database-dummy.h"
 #include "database-sqlite3.h"
+#include <deque>
 #if USE_LEVELDB
 #include "database-leveldb.h"
 #endif
@@ -334,7 +335,8 @@ void Map::unspreadLight(enum LightBank bank,
 			v3s16 n2pos = pos + dirs[i];
 
 			// Get the block where the node is located
-			v3s16 blockpos = getNodeBlockPos(n2pos);
+			v3s16 blockpos, relpos;
+			getNodeBlockPosWithOffset(n2pos, blockpos, relpos);
 
 			// Only fetch a new block if the block position has changed
 			try {
@@ -350,8 +352,6 @@ void Map::unspreadLight(enum LightBank bank,
 				continue;
 			}
 
-			// Calculate relative position in block
-			v3s16 relpos = n2pos - blockpos * MAP_BLOCKSIZE;
 			// Get node straight from the block
 			bool is_valid_position;
 			MapNode n2 = block->getNode(relpos, &is_valid_position);
@@ -418,9 +418,9 @@ void Map::unspreadLight(enum LightBank bank,
 	}
 
 	/*infostream<<"unspreadLight(): Changed block "
-			<<blockchangecount<<" times"
-			<<" for "<<from_nodes.size()<<" nodes"
-			<<std::endl;*/
+	<<blockchangecount<<" times"
+	<<" for "<<from_nodes.size()<<" nodes"
+	<<std::endl;*/
 
 	if(!unlighted_nodes.empty())
 		unspreadLight(bank, unlighted_nodes, light_sources, modified_blocks);
@@ -471,14 +471,16 @@ void Map::spreadLight(enum LightBank bank,
 	*/
 	v3s16 blockpos_last;
 	MapBlock *block = NULL;
-	// Cache this a bit, too
+		// Cache this a bit, too
 	bool block_checked_in_modified = false;
 
 	for(std::set<v3s16>::iterator j = from_nodes.begin();
 		j != from_nodes.end(); ++j)
 	{
 		v3s16 pos = *j;
-		v3s16 blockpos = getNodeBlockPos(pos);
+		v3s16 blockpos, relpos;
+
+		getNodeBlockPosWithOffset(pos, blockpos, relpos);
 
 		// Only fetch a new block if the block position has changed
 		try {
@@ -497,9 +499,6 @@ void Map::spreadLight(enum LightBank bank,
 		if(block->isDummy())
 			continue;
 
-		// Calculate relative position in block
-		v3s16 relpos = pos - blockpos_last * MAP_BLOCKSIZE;
-
 		// Get node straight from the block
 		bool is_valid_position;
 		MapNode n = block->getNode(relpos, &is_valid_position);
@@ -513,7 +512,8 @@ void Map::spreadLight(enum LightBank bank,
 			v3s16 n2pos = pos + dirs[i];
 
 			// Get the block where the node is located
-			v3s16 blockpos = getNodeBlockPos(n2pos);
+			v3s16 blockpos, relpos;
+			getNodeBlockPosWithOffset(n2pos, blockpos, relpos);
 
 			// Only fetch a new block if the block position has changed
 			try {
@@ -529,8 +529,6 @@ void Map::spreadLight(enum LightBank bank,
 				continue;
 			}
 
-			// Calculate relative position in block
-			v3s16 relpos = n2pos - blockpos * MAP_BLOCKSIZE;
 			// Get node straight from the block
 			MapNode n2 = block->getNode(relpos, &is_valid_position);
 			if (!is_valid_position)
@@ -700,7 +698,7 @@ void Map::updateLighting(enum LightBank bank,
 	//bool debug=true;
 	//u32 count_was = modified_blocks.size();
 
-	std::map<v3s16, MapBlock*> blocks_to_update;
+	//std::map<v3s16, MapBlock*> blocks_to_update;
 
 	std::set<v3s16> light_sources;
 
@@ -725,7 +723,7 @@ void Map::updateLighting(enum LightBank bank,
 			v3s16 pos = block->getPos();
 			v3s16 posnodes = block->getPosRelative();
 			modified_blocks[pos] = block;
-			blocks_to_update[pos] = block;
+			//blocks_to_update[pos] = block;
 
 			/*
 				Clear all light from block
@@ -1637,7 +1635,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 		infostream<<"transformLiquids(): initial_size="<<initial_size<<std::endl;*/
 
 	// list of nodes that due to viscosity have not reached their max level height
-	UniqueQueue<v3s16> must_reflow;
+	std::deque<v3s16> must_reflow;
 
 	// List of MapBlocks that will require a lighting update (due to lava)
 	std::map<v3s16, MapBlock*> lighting_modified_blocks;
@@ -1918,11 +1916,10 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 		}
 	}
 	//infostream<<"Map::transformLiquids(): loopcount="<<loopcount<<std::endl;
-	while (must_reflow.size() > 0)
-	{
-		m_transforming_liquid.push_back(must_reflow.front());
-		must_reflow.pop_front();
-	}
+
+	for (std::deque<v3s16>::iterator iter = must_reflow.begin(); iter != must_reflow.end(); ++iter)
+		m_transforming_liquid.push_back(*iter);
+
 	updateLighting(lighting_modified_blocks, modified_blocks);
 
 
