@@ -368,13 +368,6 @@ end
 -- Callback registration
 --
 
-local register_biome_raw = core.register_biome
-core.registered_biomes = {}
-function core.register_biome(biome)
-	core.registered_biomes[biome.name] = biome
-	register_biome_raw(biome)
-end
-
 local function make_registration()
 	local t = {}
 	local registerfunc = function(func) table.insert(t, func) end
@@ -387,20 +380,34 @@ local function make_registration_reverse()
 	return t, registerfunc
 end
 
-local function make_registration_wrap(name)
+local function make_registration_wrap(reg_fn_name, clear_fn_name)
 	local list = {}
-	local full_name = "register_"..name
-	local orig_func = core[full_name]
-	core[full_name] = function(def)
-		table.insert(list, def)
-		orig_func(def)
+
+	local orig_reg_fn = core[reg_fn_name]
+	core[reg_fn_name] = function(def)
+		local retval = orig_reg_fn(def)
+		if retval ~= nil then
+			if def.name ~= nil then
+				list[def.name] = def
+			else
+				list[retval] = def
+			end
+		end
+		return retval
 	end
+
+	local orig_clear_fn = core[clear_fn_name]
+	core[clear_fn_name] = function()
+		list = {}
+		return orig_clear_fn()
+	end
+
 	return list
 end
 
-
-core.registered_ores = make_registration_wrap("ore")
-core.registered_decorations = make_registration_wrap("decoration")
+core.registered_biomes      = make_registration_wrap("register_biome",      "clear_registered_biomes")
+core.registered_ores        = make_registration_wrap("register_ore",        "clear_registered_ores")
+core.registered_decorations = make_registration_wrap("register_decoration", "clear_registered_decorations")
 
 core.registered_on_chat_messages, core.register_on_chat_message = make_registration()
 core.registered_globalsteps, core.register_globalstep = make_registration()

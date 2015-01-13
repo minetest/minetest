@@ -417,10 +417,20 @@ the global `minetest.registered_*` tables.
     * added to `minetest.registered_items[name]`
 
 * `minetest.register_ore(ore definition)`
-    * added to `minetest.registered_ores`
+    * returns an integer uniquely identifying the registered ore
+    * added to `minetest.registered_ores` with the key of `ore.name`
+    * if `ore.name` is nil, the key is the returned ID
 
 * `minetest.register_decoration(decoration definition)`
-    * added to `minetest.registered_decorations`
+    * returns an integer uniquely identifying the registered decoration
+    * added to `minetest.registered_decorations` with the key of `decoration.name`
+    * if `decoration.name` is nil, the key is the returned ID
+
+* `minetest.clear_registered_ores()`
+   * clears all ores currently registered
+
+* `minetest.clear_registered_decorations()`
+   * clears all decorations currently registered
 
 Note that in some cases you will stumble upon things that are not contained
 in these tables (e.g. when a mod has been removed). Always check for
@@ -1678,6 +1688,9 @@ Call these functions only at load time!
     * Overrides fields of an item registered with register_node/tool/craftitem.
     * Note: Item must already be defined, (opt)depend on the mod defining it.
     * Example: `minetest.override_item("default:mese", {light_source=LIGHT_MAX})`
+
+* `minetest.clear_registered_ores()`
+* `minetest.clear_registered_decorations()`
 
 ### Global callback registration functions
 Call these functions only at load time!
