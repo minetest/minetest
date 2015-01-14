@@ -701,7 +701,7 @@ void Map::updateLighting(enum LightBank bank,
 	//bool debug=true;
 	//u32 count_was = modified_blocks.size();
 
-	std::map<v3s16, MapBlock*> blocks_to_update;
+	//std::map<v3s16, MapBlock*> blocks_to_update;
 
 	std::set<v3s16> light_sources;
 
@@ -726,7 +726,7 @@ void Map::updateLighting(enum LightBank bank,
 			v3s16 pos = block->getPos();
 			v3s16 posnodes = block->getPosRelative();
 			modified_blocks[pos] = block;
-			blocks_to_update[pos] = block;
+			//blocks_to_update[pos] = block;
 
 			/*
 				Clear all light from block
