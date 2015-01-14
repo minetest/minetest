@@ -159,6 +159,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("water_wave_speed", "5.0");
 	settings->setDefault("enable_waving_leaves", "false");
 	settings->setDefault("enable_waving_plants", "false");
+	settings->setDefault("ambient_occlusion_gamma", "2.2");
 	settings->setDefault("enable_shaders", "true");
 	settings->setDefault("repeat_rightclick_time", "0.25");
 	settings->setDefault("enable_particles", "true");
@@ -346,4 +347,3 @@ void override_default_settings(Settings *settings, Settings *from)
 		settings->setDefault(name, from->get(name));
 	}
 }
-

@@ -288,9 +288,15 @@ static u16 getSmoothLightCombined(v3s16 p, MeshMakeData *data)
 
 	if (ambient_occlusion > 4)
 	{
-		//table of precalculated gamma space multiply factors
-		//light^2.2 * factor (0.75, 0.5, 0.25, 0.0), so table holds factor ^ (1 / 2.2)
-		static const float light_amount[4] = { 0.877424315, 0.729740053, 0.532520545, 0.0 };
+		static const float ao_gamma = rangelim(
+			g_settings->getFloat("ambient_occlusion_gamma"), 0.25, 4.0);
+
+		// Table of gamma space multiply factors.
+		static const float light_amount[3] = {
+			powf(0.75, 1.0 / ao_gamma),
+			powf(0.5,  1.0 / ao_gamma),
+			powf(0.25, 1.0 / ao_gamma)
+		};
 
 		//calculate table index for gamma space multiplier
 		ambient_occlusion -= 5;

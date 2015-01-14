@@ -216,6 +216,11 @@
 #    Set to true enables waving plants. Requires shaders enabled.
 #enable_waving_plants = false
 #    Enables caching of facedir rotated meshes
+#ambient_occlusion_gamma = 2.2
+#    The strength (darkness) of node ambient-occlusion shading.
+#    Lower is darker, Higher is lighter. The valid range of values for this
+#    setting is 0.25 to 4.0 inclusive. If the value is out of range it will be
+#    set to the nearest valid value.
 #enable_mesh_cache = true
 #    The time in seconds it takes between repeated
 #    right clicks when holding the right mouse button.
@@ -548,4 +553,3 @@
 #    Noise parameters for biome API temperature and humidity
 #mg_biome_np_heat = 50, 50, (500, 500, 500), 5349, 3, 0.5, 2.0
 #mg_biome_np_humidity = 50, 50, (500, 500, 500), 842, 3, 0.5, 2.0
-
