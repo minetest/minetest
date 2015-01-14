@@ -20,8 +20,8 @@ local function get_formspec(tabview, name, tabdata)
 	local render_details = core.is_yes(core.setting_getbool("public_serverlist"))
 	
 	local retval =
-		"label[7.9,-0.15;" .. fgettext("Address / Port") .. "]" ..
-		"label[7.9,1.05;" .. fgettext("Name / Password") .. "]" ..
+		"label[7.75,-0.15;" .. fgettext("Address / Port :") .. "]" ..
+		"label[7.75,1.05;" .. fgettext("Name / Password :") .. "]" ..
 		"field[8,0.75;3.4,0.5;te_address;;" ..
 		core.formspec_escape(core.setting_get("address")) .. "]" ..
 		"field[11.25,0.75;1.3,0.5;te_port;;" ..

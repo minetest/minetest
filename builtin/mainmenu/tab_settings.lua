@@ -128,6 +128,36 @@ local function formspec(tabview, name, tabdata)
 		end
 	end
 
+local filters = {
+    {"No Filter,Bilinear Filter,Trilinear Filter"}, 
+    {"", "bilinear_filter", "trilinear_filter"},
+}
+
+local mipmap = {
+    {"No Mipmap,Mipmap,Mipmap + Aniso. Filter"},
+    {"", "mip_map", "anisotropic_filter"},
+}
+
+local function getFilterSettingIndex()
+     if (core.setting_get(filters[2][3]) == "true") then
+        return 3
+     end
+     if (core.setting_get(filters[2][3]) == "false" and core.setting_get(filters[2][2]) == "true") then
+        return 2
+     end
+     return 1
+end	
+
+local function getMipmapSettingIndex()
+     if (core.setting_get(mipmap[2][3]) == "true") then
+        return 3
+     end
+     if (core.setting_get(mipmap[2][3]) == "false" and core.setting_get(mipmap[2][2]) == "true") then
+        return 2
+     end
+     return 1
+end
+
 	local tab_string =
 		"box[0,0;3.5,3.9;#999999]" ..
 		"checkbox[0.25,0;cb_smooth_lighting;".. fgettext("Smooth Lighting")
@@ -144,60 +174,18 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.setting_getbool("connected_glass"))	.. "]"..
 		"checkbox[0.25,3.0;cb_node_highlighting;".. fgettext("Node Highlighting") .. ";"
 				.. dump(core.setting_getbool("enable_node_highlighting")) .. "]"..
-		"box[3.75,0;3.75,2.9;#999999]" ..
-		"dropdown[3.86,2;3.75;dd_video_driver;"
+		"box[3.75,0;3.75,3.45;#999999]" ..
+		"label[3.85,0.1;".. fgettext("Texturing:") .. "]"..
+		"dropdown[3.85,0.55;3.85;dd_filters;" .. filters[1][1] .. ";" .. getFilterSettingIndex() .. "]" ..		
+	    "dropdown[3.85,1.35;3.85;dd_mipmap;" .. mipmap[1][1] .. ";" .. getMipmapSettingIndex() .. "]" ..
+	    "label[3.85,2.15;".. fgettext("Rendering:") .. "]"..
+	    "dropdown[3.85,2.6;3.85;dd_video_driver;"
 			    .. video_driver_string .. ";" .. current_video_driver_idx .. "]" ..
 		"tooltip[dd_video_driver;" ..
 			fgettext("Restart minetest for driver change to take effect") .. "]" ..
 		"box[7.75,0;4,4;#999999]" ..
 		"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
 				.. dump(core.setting_getbool("enable_shaders")) .. "]"
-						
-local filters = {
-    {"No Filter", ""},
-    {"Bilinear Filter", "bilinear_filter"},
-    {"Trilinear Filter", "trilinear_filter"},
-}
-
-local function getFilterSettingIndex()
-     for i in ipairs(filters) do
-         if i > 1 then
-             if core.setting_getbool(filters[i][2]) then
-                 return i
-             end
-         end
-     end
-     return 1
-end
-
-for i in ipairs(filters) do
-  tab_string = tab_string ..		
-	    "dropdown[3.86,0.2;3.75;dd_filters;" .. filters[1][1] .. "," .. filters[2][1] .. "," .. filters[3][1]
-	      .. ";" .. getFilterSettingIndex() .. "]"
-end
-
-local mipmap = {
-    {"No Mipmap", ""},
-    {"Mipmap", "mip_map"},
-    {"Mipmap + Aniso. Filter", "anisotropic_filter"},
-}
-
-local function getMipmapSettingIndex()
-     for i in ipairs(mipmap) do
-         if i > 1 then
-             if core.setting_getbool(mipmap[i][2]) then
-                 return i
-             end
-         end
-     end
-     return 1
-end
-
-for i in ipairs(mipmap) do
-  tab_string = tab_string ..		
-	    "dropdown[3.86,1.12;3.75;dd_mipmap;" .. mipmap[1][1] .. "," .. mipmap[2][1] .. "," .. mipmap[3][1]
-	      .. ";" .. getMipmapSettingIndex() .. "]"
-end
 	 		
 	if PLATFORM ~= "Android" then
 		tab_string = tab_string ..
@@ -217,15 +205,15 @@ end
 
 	if PLATFORM == "Android" then
 		tab_string = tab_string ..
-		"box[3.75,3;3.75,2;#999999]" ..
-		"checkbox[3.9,2.95;cb_touchscreen_target;".. fgettext("Touch free target") .. ";"
+		"box[3.75,3.55;3.75,1.8;#999999]" ..
+		"checkbox[3.9,3.45;cb_touchscreen_target;".. fgettext("Touch free target") .. ";"
 				.. dump(core.setting_getbool("touchtarget")) .. "]"
 	end
 
 	if core.setting_get("touchscreen_threshold") ~= nil then
 		tab_string = tab_string ..
-				"label[4.3,3.7;" .. fgettext("Touchthreshold (px)") .. "]" ..
-				"dropdown[3.86,4.2;3.75;dd_touchthreshold;0,10,20,30,40,50;" ..
+				"label[4.3,4.1;" .. fgettext("Touchthreshold (px)") .. "]" ..
+				"dropdown[3.85,4.55;3.85;dd_touchthreshold;0,10,20,30,40,50;" ..
 				((tonumber(core.setting_get("touchscreen_threshold"))/10)+1) .. "]"
 	end
 
@@ -340,18 +328,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 
 	--Note dropdowns have to be handled LAST!
 	local ddhandled = false
-	
-	local filters = {
-    {"No Filter", ""},
-    {"Bilinear Filter", "bilinear_filter"},
-    {"Trilinear Filter", "trilinear_filter"},
-    }
-    
-    local mipmap = {
-    {"No Mipmap", ""},
-    {"Mipmap", "mip_map"},
-    {"Mipmap + Aniso. Filter", "anisotropic_filter"},
-    }
 
 	if fields["dd_touchthreshold"] then
 		core.setting_set("touchscreen_threshold",fields["dd_touchthreshold"])
@@ -362,31 +338,29 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.setting_set("video_driver",string.lower(video_driver))
 		ddhandled = true
 	end
-	
-    if fields["dd_filters"] == filters[1][1] then
-      core.setting_set(filters[2][2], "false")
-      core.setting_set(filters[3][2], "false")
+	if fields["dd_filters"] == "No Filter" then
+      core.setting_set("bilinear_filter", "false")
+      core.setting_set("trilinear_filter", "false")
     end
-    if fields["dd_filters"] == filters[2][1] then
-      core.setting_set(filters[2][2], "true")
-      core.setting_set(filters[3][2], "false")
+    if fields["dd_filters"] == "Bilinear Filter" then
+      core.setting_set("bilinear_filter", "true")
+      core.setting_set("trilinear_filter", "false")
     end
-    if fields["dd_filters"] == filters[3][1] then
-      core.setting_set(filters[2][2], "false")
-      core.setting_set(filters[3][2], "true")
+    if fields["dd_filters"] == "Trilinear Filter" then
+      core.setting_set("bilinear_filter", "false")
+      core.setting_set("trilinear_filter", "true")
     end
-    
-    if fields["dd_mipmap"] == mipmap[1][1] then
-      core.setting_set(mipmap[2][2], "false")
-      core.setting_set(mipmap[3][2], "false")
+    if fields["dd_mipmap"] == "No Mipmap" then
+      core.setting_set("mip_map", "false")
+      core.setting_set("anisotropic_filter", "false")
     end
-    if fields["dd_mipmap"] == mipmap[2][1] then
-      core.setting_set(mipmap[2][2], "true")
-      core.setting_set(mipmap[3][2], "false")
+    if fields["dd_mipmap"] == "Mipmap" then
+      core.setting_set("mip_map", "true")
+      core.setting_set("anisotropic_filter", "false")
     end
-    if fields["dd_mipmap"] == mipmap[3][1] then
-      core.setting_set(mipmap[2][2], "true")
-      core.setting_set(mipmap[3][2], "true")
+    if fields["dd_mipmap"] == "Mipmap + Aniso. Filter" then
+      core.setting_set("mip_map", "true")
+      core.setting_set("anisotropic_filter", "true")
     end
 
 	return ddhandled
