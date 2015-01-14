@@ -20,26 +20,27 @@ local function get_formspec(tabview, name, tabdata)
 	local render_details = core.is_yes(core.setting_getbool("public_serverlist"))
 	
 	local retval =
-		"label[0,4.25;" .. fgettext("Address/Port") .. "]" ..
-		"label[9,2.75;" .. fgettext("Name/Password") .. "]" ..
-		"field[0.25,5.25;5.5,0.5;te_address;;" ..
+		"label[7.75,-0.15;" .. fgettext("Address / Port :") .. "]" ..
+		"label[7.75,1.05;" .. fgettext("Name / Password :") .. "]" ..
+		"field[8,0.75;3.4,0.5;te_address;;" ..
 		core.formspec_escape(core.setting_get("address")) .. "]" ..
-		"field[5.75,5.25;2.25,0.5;te_port;;" ..
+		"field[11.25,0.75;1.3,0.5;te_port;;" ..
 		core.formspec_escape(core.setting_get("remote_port")) .. "]" ..
-		"checkbox[0,3.6;cb_public_serverlist;" .. fgettext("Public Serverlist") .. ";" ..
+		"checkbox[0,4.85;cb_public_serverlist;" .. fgettext("Public Serverlist") .. ";" ..
 		dump(core.setting_getbool("public_serverlist")) .. "]"
 
 	if not core.setting_getbool("public_serverlist") then
 		retval = retval ..
-		"button[6.45,3.95;2.25,0.5;btn_delete_favorite;" .. fgettext("Delete") .. "]"
+		"button[8,4.9;2,0.5;btn_delete_favorite;" .. fgettext("Delete") .. "]"
 	end
 
 	retval = retval ..
-		"button[9,4.95;2.5,0.5;btn_mp_connect;" .. fgettext("Connect") .. "]" ..
-		"field[9.3,3.75;2.5,0.5;te_name;;" ..
+		"button[10,4.9;2,0.5;btn_mp_connect;" .. fgettext("Connect") .. "]" ..
+		"field[8,1.95;2.95,0.5;te_name;;" ..
 		core.formspec_escape(core.setting_get("name")) .. "]" ..
-		"pwdfield[9.3,4.5;2.5,0.5;te_pwd;]" ..
-		"textarea[9.3,0;2.5,3.1;;"
+		"pwdfield[10.78,1.95;1.77,0.5;te_pwd;]" ..
+		"box[7.8,2.35;4.16,2.28;#999999]" ..
+		"textarea[8.15,2.4;4.25,2.6;;"
 		
 	if tabdata.fav_selected ~= nil and
 		menudata.favorites[tabdata.fav_selected] ~= nil and
@@ -66,7 +67,7 @@ local function get_formspec(tabview, name, tabdata)
 		retval = retval .. "tablecolumns[text]"
 	end
 	retval = retval ..
-		"table[0,0;8.5,3.7;favourites;"
+		"table[-0.1,-0.1;7.75,5;favourites;"
 
 	if #menudata.favorites > 0 then
 		retval = retval .. render_favorite(menudata.favorites[1],render_details)
