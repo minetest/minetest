@@ -176,13 +176,15 @@ end
 				.. dump(core.setting_getbool("enable_node_highlighting")) .. "]"..
 		"box[3.75,0;3.75,3.45;#999999]" ..
 		"label[3.85,0.1;".. fgettext("Texturing:") .. "]"..
-		"dropdown[3.85,0.55;3.85;dd_filters;" .. filters[1][1] .. ";" .. getFilterSettingIndex() .. "]" ..		
-		"dropdown[3.85,1.35;3.85;dd_mipmap;" .. mipmap[1][1] .. ";" .. getMipmapSettingIndex() .. "]" ..
+		"dropdown[3.85,0.55;3.85;dd_filters;" .. filters[1][1] .. ";"
+				.. getFilterSettingIndex() .. "]" ..
+		"dropdown[3.85,1.35;3.85;dd_mipmap;" .. mipmap[1][1] .. ";"
+				.. getMipmapSettingIndex() .. "]" ..
 		"label[3.85,2.15;".. fgettext("Rendering:") .. "]"..
 		"dropdown[3.85,2.6;3.85;dd_video_driver;"
-			    .. video_driver_string .. ";" .. current_video_driver_idx .. "]" ..
+				.. video_driver_string .. ";" .. current_video_driver_idx .. "]" ..
 		"tooltip[dd_video_driver;" ..
-			fgettext("Restart minetest for driver change to take effect") .. "]" ..
+				fgettext("Restart minetest for driver change to take effect") .. "]" ..
 		"box[7.75,0;4,4;#999999]" ..
 		"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
 				.. dump(core.setting_getbool("enable_shaders")) .. "]"
@@ -339,29 +341,29 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		ddhandled = true
 	end
 	if fields["dd_filters"] == "No Filter" then
-      core.setting_set("bilinear_filter", "false")
-      core.setting_set("trilinear_filter", "false")
-    end
-    if fields["dd_filters"] == "Bilinear Filter" then
-      core.setting_set("bilinear_filter", "true")
-      core.setting_set("trilinear_filter", "false")
-    end
-    if fields["dd_filters"] == "Trilinear Filter" then
-      core.setting_set("bilinear_filter", "false")
-      core.setting_set("trilinear_filter", "true")
-    end
-    if fields["dd_mipmap"] == "No Mipmap" then
-      core.setting_set("mip_map", "false")
-      core.setting_set("anisotropic_filter", "false")
-    end
-    if fields["dd_mipmap"] == "Mipmap" then
-      core.setting_set("mip_map", "true")
-      core.setting_set("anisotropic_filter", "false")
-    end
-    if fields["dd_mipmap"] == "Mipmap + Aniso. Filter" then
-      core.setting_set("mip_map", "true")
-      core.setting_set("anisotropic_filter", "true")
-    end
+		core.setting_set("bilinear_filter", "false")
+		core.setting_set("trilinear_filter", "false")
+	end
+	if fields["dd_filters"] == "Bilinear Filter" then
+		core.setting_set("bilinear_filter", "true")
+		core.setting_set("trilinear_filter", "false")
+	end
+	if fields["dd_filters"] == "Trilinear Filter" then
+		core.setting_set("bilinear_filter", "false")
+		core.setting_set("trilinear_filter", "true")
+	end
+	if fields["dd_mipmap"] == "No Mipmap" then
+		core.setting_set("mip_map", "false")
+		core.setting_set("anisotropic_filter", "false")
+	end
+	if fields["dd_mipmap"] == "Mipmap" then
+		core.setting_set("mip_map", "true")
+		core.setting_set("anisotropic_filter", "false")
+	end
+	if fields["dd_mipmap"] == "Mipmap + Aniso. Filter" then
+		core.setting_set("mip_map", "true")
+		core.setting_set("anisotropic_filter", "true")
+	end
 
 	return ddhandled
 end
