@@ -177,9 +177,9 @@ end
 		"box[3.75,0;3.75,3.45;#999999]" ..
 		"label[3.85,0.1;".. fgettext("Texturing:") .. "]"..
 		"dropdown[3.85,0.55;3.85;dd_filters;" .. filters[1][1] .. ";" .. getFilterSettingIndex() .. "]" ..		
-	    "dropdown[3.85,1.35;3.85;dd_mipmap;" .. mipmap[1][1] .. ";" .. getMipmapSettingIndex() .. "]" ..
-	    "label[3.85,2.15;".. fgettext("Rendering:") .. "]"..
-	    "dropdown[3.85,2.6;3.85;dd_video_driver;"
+		"dropdown[3.85,1.35;3.85;dd_mipmap;" .. mipmap[1][1] .. ";" .. getMipmapSettingIndex() .. "]" ..
+		"label[3.85,2.15;".. fgettext("Rendering:") .. "]"..
+		"dropdown[3.85,2.6;3.85;dd_video_driver;"
 			    .. video_driver_string .. ";" .. current_video_driver_idx .. "]" ..
 		"tooltip[dd_video_driver;" ..
 			fgettext("Restart minetest for driver change to take effect") .. "]" ..
