@@ -39,8 +39,8 @@ local function get_formspec(tabview, name, tabdata)
 		"field[8,1.95;2.95,0.5;te_name;;" ..
 		core.formspec_escape(core.setting_get("name")) .. "]" ..
 		"pwdfield[10.78,1.95;1.77,0.5;te_pwd;]" ..
-		"box[7.8,2.35;4.16,2.28;#999999]" ..
-		"textarea[8.15,2.4;4.25,2.6;;"
+		"box[7.73,2.35;4.3,2.28;#999999]" ..
+		"textarea[8.1,2.4;4.26,2.6;;"
 		
 	if tabdata.fav_selected ~= nil and
 		menudata.favorites[tabdata.fav_selected] ~= nil and
@@ -67,7 +67,7 @@ local function get_formspec(tabview, name, tabdata)
 		retval = retval .. "tablecolumns[text]"
 	end
 	retval = retval ..
-		"table[-0.1,-0.1;7.75,5;favourites;"
+		"table[-0.15,-0.1;7.75,5;favourites;"
 
 	if #menudata.favorites > 0 then
 		retval = retval .. render_favorite(menudata.favorites[1],render_details)
