@@ -343,26 +343,32 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	if fields["dd_filters"] == "No Filter" then
 		core.setting_set("bilinear_filter", "false")
 		core.setting_set("trilinear_filter", "false")
+		ddhandled = true
 	end
 	if fields["dd_filters"] == "Bilinear Filter" then
 		core.setting_set("bilinear_filter", "true")
 		core.setting_set("trilinear_filter", "false")
+		ddhandled = true
 	end
 	if fields["dd_filters"] == "Trilinear Filter" then
 		core.setting_set("bilinear_filter", "false")
 		core.setting_set("trilinear_filter", "true")
+		ddhandled = true
 	end
 	if fields["dd_mipmap"] == "No Mipmap" then
 		core.setting_set("mip_map", "false")
 		core.setting_set("anisotropic_filter", "false")
+		ddhandled = true
 	end
 	if fields["dd_mipmap"] == "Mipmap" then
 		core.setting_set("mip_map", "true")
 		core.setting_set("anisotropic_filter", "false")
+		ddhandled = true
 	end
 	if fields["dd_mipmap"] == "Mipmap + Aniso. Filter" then
 		core.setting_set("mip_map", "true")
 		core.setting_set("anisotropic_filter", "true")
+		ddhandled = true
 	end
 
 	return ddhandled
