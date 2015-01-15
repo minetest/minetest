@@ -140,7 +140,7 @@ function core.serialize(x)
 			end
 			return "{"..table.concat(vals, ", ").."}"
 		else
-			error("Can't serialize data of type "..t)
+			error("Can't serialize data of type "..tp)
 		end
 	end
 
