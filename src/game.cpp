@@ -1227,6 +1227,7 @@ struct KeyCache {
 		KEYMAP_ID_CHAT,
 		KEYMAP_ID_CMD,
 		KEYMAP_ID_CONSOLE,
+		KEYMAP_ID_AUTOJUMP,
 		KEYMAP_ID_FREEMOVE,
 		KEYMAP_ID_FASTMOVE,
 		KEYMAP_ID_NOCLIP,
@@ -1275,6 +1276,7 @@ void KeyCache::populate()
 	key[KEYMAP_ID_CHAT]         = getKeySetting("keymap_chat");
 	key[KEYMAP_ID_CMD]          = getKeySetting("keymap_cmd");
 	key[KEYMAP_ID_CONSOLE]      = getKeySetting("keymap_console");
+	key[KEYMAP_ID_AUTOJUMP]     = getKeySetting("keymap_autojump");
 	key[KEYMAP_ID_FREEMOVE]     = getKeySetting("keymap_freemove");
 	key[KEYMAP_ID_FASTMOVE]     = getKeySetting("keymap_fastmove");
 	key[KEYMAP_ID_NOCLIP]       = getKeySetting("keymap_noclip");
@@ -1470,6 +1472,7 @@ protected:
 	void dropSelectedItem();
 	void openInventory();
 	void openConsole();
+	void toggleAutoJump(float *statustext_time);
 	void toggleFreeMove(float *statustext_time);
 	void toggleFreeMoveAlt(float *statustext_time, float *jump_timer);
 	void toggleFast(float *statustext_time);
@@ -2533,6 +2536,8 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 				client, "/");
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_CONSOLE])) {
 		openConsole();
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_AUTOJUMP])) {
+		toggleAutoJump(statustext_time);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_FREEMOVE])) {
 		toggleFreeMove(statustext_time);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_JUMP])) {
@@ -2668,6 +2673,18 @@ void Game::openConsole()
 		gui_chat_console->openConsole(0.6);
 		guienv->setFocus(gui_chat_console);
 	}
+}
+
+
+void Game::toggleAutoJump(float *statustext_time)
+{
+	static const wchar_t *msg[] = { L"autojump disabled", L"autojump enabled" };
+
+	bool autojump = !g_settings->getBool("autojump");
+	g_settings->set("autojump", bool_to_cstr(autojump));
+
+	*statustext_time = 0;
+	statustext = msg[autojump];
 }
 
 

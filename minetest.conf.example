@@ -46,6 +46,7 @@
 #keymap_cmd = /
 #keyman_console = KEY_F10
 #keymap_rangeselect = KEY_KEY_R
+#keymap_autojump = KEY_KEY_L
 #keymap_freemove = KEY_KEY_K
 #keymap_fastmove = KEY_KEY_J
 #keymap_screenshot = KEY_F12
@@ -55,6 +56,7 @@
 #doubletap_jump = false
 #    If false aux1 is used to fly fast
 #always_fly_fast = true
+#autojump = false
 #    Some (temporary) keys for debugging
 #keymap_print_debug_stacks = KEY_KEY_P
 #keymap_quicktune_prev = KEY_HOME
