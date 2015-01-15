@@ -419,24 +419,18 @@ core.register_chatcommand("deleteblocks", {
 			p1 = player:getpos()
 			p2 = p1
 		else
-			p1.x, p1.y, p1.z, p2.x, p2.y, p2.z = string.match(param,
-				"^%(([%d.-]+), *([%d.-]+), *([%d.-]+)%) *%(([%d.-]+), *([%d.-]+), *([%d.-]+)%)$")
-			p1.x = tonumber(p1.x)
-			p1.y = tonumber(p1.y)
-			p1.z = tonumber(p1.z)
-			p2.x = tonumber(p2.x)
-			p2.y = tonumber(p2.y)
-			p2.z = tonumber(p2.z)
+			local pos1, pos2 = unpack(param:split(") ("))
+			p1 = core.string_to_pos(pos1 .. ")")
+			p2 = core.string_to_pos("(" .. pos2)
 
-			if p1.x == nil or p1.y == nil or p1.z == nil or
-				p2.x == nil or p2.y == nil or p2.z == nil then
+			if p1 == nil or p2 == nil then
 				return false, "Incorrect area format. Expected: (x1,y1,z1) (x2,y2,z2)"
 			end
 		end
 
 		if core.delete_area(p1, p2) then
 			return true, "Successfully cleared area ranging from " ..
-				core.pos_to_string(p1) .. " to " .. core.pos_to_string(p2)
+				core.pos_to_string(p1, 1) .. " to " .. core.pos_to_string(p2, 1)
 		else
 			return false, "Failed to clear one or more blocks in area"
 		end

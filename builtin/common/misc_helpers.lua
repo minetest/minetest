@@ -498,9 +498,46 @@ function core.explode_scrollbar_event(evt)
 end
 
 --------------------------------------------------------------------------------
-function core.pos_to_string(pos)
-	return "(" .. pos.x .. "," .. pos.y .. "," .. pos.z .. ")"
+function core.pos_to_string(pos, decimal_places)
+	local x = pos.x
+	local y = pos.y
+	local z = pos.z
+	if decimal_places ~= nil then
+		x = string.format("%." .. decimal_places .. "f", x)
+		y = string.format("%." .. decimal_places .. "f", y)
+		z = string.format("%." .. decimal_places .. "f", z)
+	end
+	return "(" .. x .. "," .. y .. "," .. z .. ")"
 end
+
+--------------------------------------------------------------------------------
+function core.string_to_pos(value)
+	if value == nil then
+		return nil
+	end
+
+	local p = {}
+	p.x, p.y, p.z = string.match(value, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
+	if p.x and p.y and p.z then
+		p.x = tonumber(p.x)
+		p.y = tonumber(p.y)
+		p.z = tonumber(p.z)
+		return p
+	end
+	local p = {}
+	p.x, p.y, p.z = string.match(value, "^%( *([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+) *%)$")
+	if p.x and p.y and p.z then
+		p.x = tonumber(p.x)
+		p.y = tonumber(p.y)
+		p.z = tonumber(p.z)
+		return p
+	end
+	return nil
+end
+
+assert(core.string_to_pos("10.0, 5, -2").x == 10)
+assert(core.string_to_pos("( 10.0, 5, -2)").z == -2)
+assert(core.string_to_pos("asd, 5, -2)") == nil)
 
 --------------------------------------------------------------------------------
 function table.copy(t, seen)

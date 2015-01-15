@@ -93,30 +93,6 @@ function core.get_node_group(name, group)
 	return core.get_item_group(name, group)
 end
 
-function core.string_to_pos(value)
-	local p = {}
-	p.x, p.y, p.z = string.match(value, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
-	if p.x and p.y and p.z then
-		p.x = tonumber(p.x)
-		p.y = tonumber(p.y)
-		p.z = tonumber(p.z)
-		return p
-	end
-	local p = {}
-	p.x, p.y, p.z = string.match(value, "^%( *([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+) *%)$")
-	if p.x and p.y and p.z then
-		p.x = tonumber(p.x)
-		p.y = tonumber(p.y)
-		p.z = tonumber(p.z)
-		return p
-	end
-	return nil
-end
-
-assert(core.string_to_pos("10.0, 5, -2").x == 10)
-assert(core.string_to_pos("( 10.0, 5, -2)").z == -2)
-assert(core.string_to_pos("asd, 5, -2)") == nil)
-
 function core.setting_get_pos(name)
 	local value = core.setting_get(name)
 	if not value then
