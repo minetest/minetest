@@ -676,7 +676,7 @@ void push_tool_capabilities(lua_State *L,
 		// Create groupcaps table
 		lua_newtable(L);
 		// For each groupcap
-		for(std::map<std::string, ToolGroupCap>::const_iterator
+		for (std::map<std::string, ToolGroupCap>::const_iterator
 				i = toolcap.groupcaps.begin(); i != toolcap.groupcaps.end(); i++){
 			// Create groupcap table
 			lua_newtable(L);
@@ -684,7 +684,7 @@ void push_tool_capabilities(lua_State *L,
 			const ToolGroupCap &groupcap = i->second;
 			// Create subtable "times"
 			lua_newtable(L);
-			for(std::map<int, float>::const_iterator
+			for (std::map<int, float>::const_iterator
 					i = groupcap.times.begin(); i != groupcap.times.end(); i++){
 				int rating = i->first;
 				float time = i->second;
@@ -705,7 +705,7 @@ void push_tool_capabilities(lua_State *L,
 		//Create damage_groups table
 		lua_newtable(L);
 		// For each damage group
-		for(std::map<std::string, s16>::const_iterator
+		for (std::map<std::string, s16>::const_iterator
 				i = toolcap.damageGroups.begin(); i != toolcap.damageGroups.end(); i++){
 			// Create damage group table
 			lua_pushinteger(L, i->second);
@@ -723,7 +723,7 @@ void push_inventory_list(lua_State *L, Inventory *inv, const char *name)
 		return;
 	}
 	std::vector<ItemStack> items;
-	for(u32 i=0; i<invlist->getSize(); i++)
+	for (u32 i=0; i<invlist->getSize(); i++)
 		items.push_back(invlist->getItem(i));
 	push_items(L, items);
 }
@@ -744,7 +744,7 @@ void read_inventory_list(lua_State *L, int tableindex,
 	int listsize = (forcesize != -1) ? forcesize : items.size();
 	InventoryList *invlist = inv->addList(name, listsize);
 	int index = 0;
-	for(std::vector<ItemStack>::const_iterator
+	for (std::vector<ItemStack>::const_iterator
 			i = items.begin(); i != items.end(); i++){
 		if(forcesize != -1 && index == forcesize)
 			break;

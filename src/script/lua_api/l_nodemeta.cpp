@@ -198,7 +198,7 @@ int NodeMetaRef::l_to_table(lua_State *L)
 	lua_newtable(L);
 	{
 		std::map<std::string, std::string> fields = meta->getStrings();
-		for(std::map<std::string, std::string>::const_iterator
+		for (std::map<std::string, std::string>::const_iterator
 				i = fields.begin(); i != fields.end(); i++){
 			const std::string &name = i->first;
 			const std::string &value = i->second;
@@ -213,7 +213,7 @@ int NodeMetaRef::l_to_table(lua_State *L)
 	Inventory *inv = meta->getInventory();
 	if(inv){
 		std::vector<const InventoryList*> lists = inv->getLists();
-		for(std::vector<const InventoryList*>::const_iterator
+		for (std::vector<const InventoryList*>::const_iterator
 				i = lists.begin(); i != lists.end(); i++){
 			push_inventory_list(L, inv, (*i)->getName().c_str());
 			lua_setfield(L, -2, (*i)->getName().c_str());

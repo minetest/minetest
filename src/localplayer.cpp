@@ -267,8 +267,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 				min_distance_f = d_horiz_f;
 		}*/
 		v3s16 new_sneak_node = m_sneak_node;
-		for(s16 x=-1; x<=1; x++)
-		for(s16 z=-1; z<=1; z++)
+		for (s16 x=-1; x<=1; x++)
+		for (s16 z=-1; z<=1; z++)
 		{
 			v3s16 p = pos_i_bottom + v3s16(x,0,z);
 			v3f pf = intToFloat(p, BS);
@@ -327,7 +327,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	// Dont report if flying
 	if(collision_info && !(g_settings->getBool("free_move") && fly_allowed))
 	{
-		for(size_t i=0; i<result.collisions.size(); i++){
+		for (size_t i=0; i<result.collisions.size(); i++){
 			const CollisionInfo &info = result.collisions[i];
 			collision_info->push_back(info);
 			if(info.new_speed.Y - info.old_speed.Y > 0.1*BS &&

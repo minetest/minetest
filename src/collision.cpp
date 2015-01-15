@@ -175,7 +175,7 @@ bool wouldCollideWithCeiling(
 
 	assert(y_increase >= 0);
 
-	for(std::vector<aabb3f>::const_iterator
+	for (std::vector<aabb3f>::const_iterator
 			i = staticboxes.begin();
 			i != staticboxes.end(); i++)
 	{
@@ -246,9 +246,9 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	s16 max_y = MYMAX(oldpos_i.Y, newpos_i.Y) + (box_0.MaxEdge.Y / BS) + 1;
 	s16 max_z = MYMAX(oldpos_i.Z, newpos_i.Z) + (box_0.MaxEdge.Z / BS) + 1;
 
-	for(s16 x = min_x; x <= max_x; x++)
-	for(s16 y = min_y; y <= max_y; y++)
-	for(s16 z = min_z; z <= max_z; z++)
+	for (s16 x = min_x; x <= max_x; x++)
+	for (s16 y = min_y; y <= max_y; y++)
+	for (s16 z = min_z; z <= max_z; z++)
 	{
 		v3s16 p(x,y,z);
 
@@ -264,7 +264,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			int n_bouncy_value = itemgroup_get(f.groups, "bouncy");
 
 			std::vector<aabb3f> nodeboxes = n.getCollisionBoxes(gamedef->ndef());
-			for(std::vector<aabb3f>::iterator
+			for (std::vector<aabb3f>::iterator
 					i = nodeboxes.begin();
 					i != nodeboxes.end(); i++)
 			{
@@ -402,7 +402,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		/*
 			Go through every nodebox, find nearest collision
 		*/
-		for(u32 boxindex = 0; boxindex < cboxes.size(); boxindex++)
+		for (u32 boxindex = 0; boxindex < cboxes.size(); boxindex++)
 		{
 			// Ignore if already stepped up this nodebox.
 			if(is_step_up[boxindex])
@@ -530,7 +530,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	aabb3f box = box_0;
 	box.MinEdge += pos_f;
 	box.MaxEdge += pos_f;
-	for(u32 boxindex = 0; boxindex < cboxes.size(); boxindex++)
+	for (u32 boxindex = 0; boxindex < cboxes.size(); boxindex++)
 	{
 		const aabb3f& cbox = cboxes[boxindex];
 

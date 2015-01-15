@@ -42,7 +42,7 @@ void MapSector::deleteBlocks()
 	m_block_cache = NULL;
 
 	// Delete all
-	for(std::map<s16, MapBlock*>::iterator i = m_blocks.begin();
+	for (std::map<s16, MapBlock*>::iterator i = m_blocks.begin();
 		i != m_blocks.end(); ++i)
 	{
 		delete i->second;
@@ -135,7 +135,7 @@ void MapSector::deleteBlock(MapBlock *block)
 
 void MapSector::getBlocks(std::list<MapBlock*> &dest)
 {
-	for(std::map<s16, MapBlock*>::iterator bi = m_blocks.begin();
+	for (std::map<s16, MapBlock*>::iterator bi = m_blocks.begin();
 		bi != m_blocks.end(); ++bi)
 	{
 		dest.push_back(bi->second);

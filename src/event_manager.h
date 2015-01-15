@@ -52,7 +52,7 @@ public:
 		std::map<std::string, Dest>::iterator i = m_dest.find(e->getType());
 		if(i != m_dest.end()){
 			std::list<FuncSpec> &funcs = i->second.funcs;
-			for(std::list<FuncSpec>::iterator i = funcs.begin();
+			for (std::list<FuncSpec>::iterator i = funcs.begin();
 					i != funcs.end(); i++){
 				(*(i->f))(e, i->d);
 			}
@@ -87,7 +87,7 @@ public:
 				}
 			}
 		} else{
-			for(std::map<std::string, Dest>::iterator
+			for (std::map<std::string, Dest>::iterator
 					i = m_dest.begin(); i != m_dest.end(); i++){
 				std::list<FuncSpec> &funcs = i->second.funcs;
 				std::list<FuncSpec>::iterator j = funcs.begin();

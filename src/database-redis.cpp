@@ -131,7 +131,7 @@ void Database_Redis::listAllLoadableBlocks(std::list<v3s16> &dst)
 		throw FileNotGoodException(std::string("redis command 'HKEYS %s' failed: ") + ctx->errstr);
 	if(reply->type != REDIS_REPLY_ARRAY)
 		throw FileNotGoodException("Failed to get keys from database");
-	for(size_t i = 0; i < reply->elements; i++)
+	for (size_t i = 0; i < reply->elements; i++)
 	{
 		assert(reply->element[i]->type == REDIS_REPLY_STRING);
 		dst.push_back(getIntegerAsBlock(stoi64(reply->element[i]->str)));

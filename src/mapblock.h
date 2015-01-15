@@ -123,7 +123,7 @@ public:
 			delete[] data;
 		u32 l = MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE;
 		data = new MapNode[l];
-		for(u32 i=0; i<l; i++){
+		for (u32 i=0; i<l; i++){
 			//data[i] = MapNode();
 			data[i] = MapNode(CONTENT_IGNORE);
 		}
@@ -343,9 +343,9 @@ public:
 
 	void drawbox(s16 x0, s16 y0, s16 z0, s16 w, s16 h, s16 d, MapNode node)
 	{
-		for(u16 z=0; z<d; z++)
-			for(u16 y=0; y<h; y++)
-				for(u16 x=0; x<w; x++)
+		for (u16 z=0; z<d; z++)
+			for (u16 y=0; y<h; y++)
+				for (u16 x=0; x<w; x++)
 					setNode(x0+x, y0+y, z0+z, node);
 	}
 

@@ -156,7 +156,7 @@ std::list<SharedBuffer<u8> > makeSplitPacket(
 	}
 	while(end != data.getSize() - 1);
 
-	for(std::list<SharedBuffer<u8> >::iterator i = chunks.begin();
+	for (std::list<SharedBuffer<u8> >::iterator i = chunks.begin();
 		i != chunks.end(); ++i)
 	{
 		// Write chunk_count
@@ -213,7 +213,7 @@ void ReliablePacketBuffer::print()
 	JMutexAutoLock listlock(m_list_mutex);
 	LOG(dout_con<<"Dump of ReliablePacketBuffer:" << std::endl);
 	unsigned int index = 0;
-	for(std::list<BufferedPacket>::iterator i = m_list.begin();
+	for (std::list<BufferedPacket>::iterator i = m_list.begin();
 		i != m_list.end();
 		++i)
 	{
@@ -241,7 +241,7 @@ bool ReliablePacketBuffer::containsPacket(u16 seqnum)
 RPBSearchResult ReliablePacketBuffer::findPacket(u16 seqnum)
 {
 	std::list<BufferedPacket>::iterator i = m_list.begin();
-	for(; i != m_list.end(); ++i)
+	for (; i != m_list.end(); ++i)
 	{
 		u16 s = readU16(&(i->data[BASE_HEADER_SIZE+1]));
 		/*dout_con<<"findPacket(): finding seqnum="<<seqnum
@@ -401,7 +401,7 @@ void ReliablePacketBuffer::insert(BufferedPacket &p,u16 next_expected)
 void ReliablePacketBuffer::incrementTimeouts(float dtime)
 {
 	JMutexAutoLock listlock(m_list_mutex);
-	for(std::list<BufferedPacket>::iterator i = m_list.begin();
+	for (std::list<BufferedPacket>::iterator i = m_list.begin();
 		i != m_list.end(); ++i)
 	{
 		i->time += dtime;
@@ -414,7 +414,7 @@ std::list<BufferedPacket> ReliablePacketBuffer::getTimedOuts(float timeout,
 {
 	JMutexAutoLock listlock(m_list_mutex);
 	std::list<BufferedPacket> timed_outs;
-	for(std::list<BufferedPacket>::iterator i = m_list.begin();
+	for (std::list<BufferedPacket>::iterator i = m_list.begin();
 		i != m_list.end(); ++i)
 	{
 		if(i->time >= timeout) {
@@ -436,7 +436,7 @@ std::list<BufferedPacket> ReliablePacketBuffer::getTimedOuts(float timeout,
 IncomingSplitBuffer::~IncomingSplitBuffer()
 {
 	JMutexAutoLock listlock(m_map_mutex);
-	for(std::map<u16, IncomingSplitPacket*>::iterator i = m_buf.begin();
+	for (std::map<u16, IncomingSplitPacket*>::iterator i = m_buf.begin();
 		i != m_buf.end(); ++i)
 	{
 		delete i->second;
@@ -498,7 +498,7 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacket &p, bool reliable)
 
 	// Calculate total size
 	u32 totalsize = 0;
-	for(std::map<u16, SharedBuffer<u8> >::iterator i = sp->chunks.begin();
+	for (std::map<u16, SharedBuffer<u8> >::iterator i = sp->chunks.begin();
 		i != sp->chunks.end(); ++i)
 	{
 		totalsize += i->second.getSize();
@@ -508,7 +508,7 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacket &p, bool reliable)
 
 	// Copy chunks to data buffer
 	u32 start = 0;
-	for(u32 chunk_i=0; chunk_i<sp->chunk_count;
+	for (u32 chunk_i=0; chunk_i<sp->chunk_count;
 			chunk_i++)
 	{
 		SharedBuffer<u8> buf = sp->chunks[chunk_i];
@@ -528,7 +528,7 @@ void IncomingSplitBuffer::removeUnreliableTimedOuts(float dtime, float timeout)
 	std::list<u16> remove_queue;
 	{
 		JMutexAutoLock listlock(m_map_mutex);
-		for(std::map<u16, IncomingSplitPacket*>::iterator i = m_buf.begin();
+		for (std::map<u16, IncomingSplitPacket*>::iterator i = m_buf.begin();
 			i != m_buf.end(); ++i)
 		{
 			IncomingSplitPacket *p = i->second;
@@ -540,7 +540,7 @@ void IncomingSplitBuffer::removeUnreliableTimedOuts(float dtime, float timeout)
 				remove_queue.push_back(i->first);
 		}
 	}
-	for(std::list<u16>::iterator j = remove_queue.begin();
+	for (std::list<u16>::iterator j = remove_queue.begin();
 		j != remove_queue.end(); ++j)
 	{
 		JMutexAutoLock listlock(m_map_mutex);
@@ -1013,7 +1013,7 @@ bool UDPPeer::getAddress(MTProtocols type,Address& toset)
 void UDPPeer::setNonLegacyPeer()
 {
 	m_legacy_peer = false;
-	for(unsigned int i=0; i< CHANNEL_COUNT; i++)
+	for (unsigned int i=0; i< CHANNEL_COUNT; i++)
 	{
 		channels->setWindowSize(g_settings->getU16("max_packets_per_iteration"));
 	}
@@ -1108,7 +1108,7 @@ bool UDPPeer::processReliableSendCommand(
 	Queue<BufferedPacket> toadd;
 	volatile u16 initial_sequence_number = 0;
 
-	for(std::list<SharedBuffer<u8> >::iterator i = originals.begin();
+	for (std::list<SharedBuffer<u8> >::iterator i = originals.begin();
 		i != originals.end(); ++i)
 	{
 		u16 seqnum = channels[c.channelnum].getOutgoingSequenceNumber(have_sequence_number);
@@ -1319,7 +1319,7 @@ bool ConnectionSendThread::packetsQueued()
 	if (!m_outgoing_queue.empty() && !peerIds.empty())
 		return true;
 
-	for(std::list<u16>::iterator j = peerIds.begin();
+	for (std::list<u16>::iterator j = peerIds.begin();
 			j != peerIds.end(); ++j)
 	{
 		PeerHelper peer = m_connection->getPeerNoEx(*j);
@@ -1330,7 +1330,7 @@ bool ConnectionSendThread::packetsQueued()
 		if (dynamic_cast<UDPPeer*>(&peer) == 0)
 			continue;
 
-		for(u16 i=0; i<CHANNEL_COUNT; i++)
+		for (u16 i=0; i<CHANNEL_COUNT; i++)
 		{
 			Channel *channel = &(dynamic_cast<UDPPeer*>(&peer))->channels[i];
 
@@ -1350,7 +1350,7 @@ void ConnectionSendThread::runTimeouts(float dtime)
 	std::list<u16> timeouted_peers;
 	std::list<u16> peerIds = m_connection->getPeerIDs();
 
-	for(std::list<u16>::iterator j = peerIds.begin();
+	for (std::list<u16>::iterator j = peerIds.begin();
 		j != peerIds.end(); ++j)
 	{
 		PeerHelper peer = m_connection->getPeerNoEx(*j);
@@ -1385,7 +1385,7 @@ void ConnectionSendThread::runTimeouts(float dtime)
 		}
 
 		float resend_timeout = dynamic_cast<UDPPeer*>(&peer)->getResendTimeout();
-		for(u16 i=0; i<CHANNEL_COUNT; i++)
+		for (u16 i=0; i<CHANNEL_COUNT; i++)
 		{
 			std::list<BufferedPacket> timed_outs;
 			Channel *channel = &(dynamic_cast<UDPPeer*>(&peer))->channels[i];
@@ -1414,7 +1414,7 @@ void ConnectionSendThread::runTimeouts(float dtime)
 
 			m_iteration_packets_avaialble -= timed_outs.size();
 
-			for(std::list<BufferedPacket>::iterator k = timed_outs.begin();
+			for (std::list<BufferedPacket>::iterator k = timed_outs.begin();
 				k != timed_outs.end(); ++k)
 			{
 				u16 peer_id = readPeerId(*(k->data));
@@ -1460,7 +1460,7 @@ void ConnectionSendThread::runTimeouts(float dtime)
 	}
 
 	// Remove timed out peers
-	for(std::list<u16>::iterator i = timeouted_peers.begin();
+	for (std::list<u16>::iterator i = timeouted_peers.begin();
 		i != timeouted_peers.end(); ++i)
 	{
 		LOG(derr_con<<m_connection->getDesc()
@@ -1804,7 +1804,7 @@ void ConnectionSendThread::send(u16 peer_id, u8 channelnum,
 
 	peer->setNextSplitSequenceNumber(channelnum,split_sequence_number);
 
-	for(std::list<SharedBuffer<u8> >::iterator i = originals.begin();
+	for (std::list<SharedBuffer<u8> >::iterator i = originals.begin();
 		i != originals.end(); ++i)
 	{
 		SharedBuffer<u8> original = *i;
@@ -1856,7 +1856,7 @@ void ConnectionSendThread::sendPackets(float dtime)
 	std::list<u16> pendingDisconnect;
 	std::map<u16,bool> pending_unreliable;
 
-	for(std::list<u16>::iterator
+	for (std::list<u16>::iterator
 			j = peerIds.begin();
 			j != peerIds.end(); ++j)
 	{
@@ -1941,7 +1941,7 @@ void ConnectionSendThread::sendPackets(float dtime)
 
 	unsigned int initial_queuesize = m_outgoing_queue.size();
 	/* send non reliable packets*/
-	for(unsigned int i=0;i < initial_queuesize;i++) {
+	for (unsigned int i=0;i < initial_queuesize;i++) {
 		OutgoingPacket packet = m_outgoing_queue.pop_front();
 
 		assert(!packet.reliable &&
@@ -1977,7 +1977,7 @@ void ConnectionSendThread::sendPackets(float dtime)
 		}
 	}
 
-	for(std::list<u16>::iterator
+	for (std::list<u16>::iterator
 				k = pendingDisconnect.begin();
 				k != pendingDisconnect.end(); ++k)
 	{
@@ -2053,7 +2053,7 @@ void * ConnectionReceiveThread::Thread()
 				float avg_rate = 0.0;
 				float avg_loss = 0.0;
 
-				for(u16 j=0; j<CHANNEL_COUNT; j++)
+				for (u16 j=0; j<CHANNEL_COUNT; j++)
 				{
 					peer_current +=peer->channels[j].getCurrentDownloadRateKB();
 					peer_loss += peer->channels[j].getCurrentLossRateKB();
@@ -2067,7 +2067,7 @@ void * ConnectionReceiveThread::Thread()
 				output << "\tcurrent (sum): " << peer_current << "kb/s "<< peer_loss << "kb/s" << std::endl;
 				output << "\taverage (sum): " << avg_rate << "kb/s "<< avg_loss << "kb/s" << std::endl;
 				output << std::setfill(' ');
-				for(u16 j=0; j<CHANNEL_COUNT; j++)
+				for (u16 j=0; j<CHANNEL_COUNT; j++)
 				{
 					output << "\tcha " << j << ":"
 						<< " CUR: " << std::setw(6) << peer->channels[j].getCurrentDownloadRateKB() <<"kb/s"
@@ -2260,7 +2260,7 @@ bool ConnectionReceiveThread::getFromBuffers(u16 &peer_id, SharedBuffer<u8> &dst
 {
 	std::list<u16> peerids = m_connection->getPeerIDs();
 
-	for(std::list<u16>::iterator j = peerids.begin();
+	for (std::list<u16>::iterator j = peerids.begin();
 		j != peerids.end(); ++j)
 	{
 		PeerHelper peer = m_connection->getPeerNoEx(*j);
@@ -2270,7 +2270,7 @@ bool ConnectionReceiveThread::getFromBuffers(u16 &peer_id, SharedBuffer<u8> &dst
 		if(dynamic_cast<UDPPeer*>(&peer) == 0)
 			continue;
 
-		for(u16 i=0; i<CHANNEL_COUNT; i++)
+		for (u16 i=0; i<CHANNEL_COUNT; i++)
 		{
 			Channel *channel = &(dynamic_cast<UDPPeer*>(&peer))->channels[i];
 
@@ -2719,7 +2719,7 @@ Connection::~Connection()
 	m_receiveThread.Wait();
 
 	// Delete peers
-	for(std::map<u16, Peer*>::iterator
+	for (std::map<u16, Peer*>::iterator
 			j = m_peers.begin();
 			j != m_peers.end(); ++j)
 	{
@@ -2770,7 +2770,7 @@ u16 Connection::lookupPeer(Address& sender)
 	JMutexAutoLock peerlock(m_peers_mutex);
 	std::map<u16, Peer*>::iterator j;
 	j = m_peers.begin();
-	for(; j != m_peers.end(); ++j)
+	for (; j != m_peers.end(); ++j)
 	{
 		Peer *peer = j->second;
 		if(peer->isActive())
@@ -2791,7 +2791,7 @@ u16 Connection::lookupPeer(Address& sender)
 std::list<Peer*> Connection::getPeers()
 {
 	std::list<Peer*> list;
-	for(std::map<u16, Peer*>::iterator j = m_peers.begin();
+	for (std::map<u16, Peer*>::iterator j = m_peers.begin();
 		j != m_peers.end(); ++j)
 	{
 		Peer *peer = j->second;
@@ -2898,7 +2898,7 @@ void Connection::Disconnect()
 
 u32 Connection::Receive(u16 &peer_id, SharedBuffer<u8> &data)
 {
-	for(;;){
+	for (;;){
 		ConnectionEvent e = waitEvent(m_bc_receive_timeout);
 		if(e.type != CONNEVENT_NONE)
 			LOG(dout_con<<getDesc()<<": Receive: got event: "
@@ -3016,7 +3016,7 @@ u16 Connection::createPeer(Address& sender, MTProtocols protocol, int fd)
 	{
 	JMutexAutoLock lock(m_peers_mutex);
 		bool out_of_ids = false;
-		for(;;)
+		for (;;)
 		{
 			// Check if exists
 			if(m_peers.find(peer_id_new) == m_peers.end())
@@ -3129,7 +3129,7 @@ std::list<u16> Connection::getPeerIDs()
 	std::list<u16> retval;
 
 	JMutexAutoLock lock(m_peers_mutex);
-	for(std::map<u16, Peer*>::iterator j = m_peers.begin();
+	for (std::map<u16, Peer*>::iterator j = m_peers.begin();
 		j != m_peers.end(); ++j)
 	{
 		retval.push_back(j->first);

@@ -53,7 +53,7 @@ static bool content_nodemeta_deserialize_legacy_body(
 		readU8(is);  // m_enforce_owner
 
 		int num_vars = readU32(is);
-		for(int i=0; i<num_vars; i++){
+		for (int i=0; i<num_vars; i++){
 			std::string name = deSerializeString(is);
 			std::string var = deSerializeLongString(is);
 			meta->setString(name, var);
@@ -161,7 +161,7 @@ void content_nodemeta_deserialize_legacy(std::istream &is,
 
 	u16 count = readU16(is);
 
-	for(u16 i=0; i<count; i++)
+	for (u16 i=0; i<count; i++)
 	{
 		u16 p16 = readU16(is);
 

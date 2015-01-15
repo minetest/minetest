@@ -101,12 +101,12 @@ void scaleMesh(scene::IMesh *mesh, v3f scale)
 	bbox.reset(0,0,0);
 
 	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j=0; j<mc; j++)
+	for (u16 j=0; j<mc; j++)
 	{
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
 		u16 vc = buf->getVertexCount();
-		for(u16 i=0; i<vc; i++)
+		for (u16 i=0; i<vc; i++)
 		{
 			vertices[i].Pos *= scale;
 		}
@@ -130,12 +130,12 @@ void translateMesh(scene::IMesh *mesh, v3f vec)
 	bbox.reset(0,0,0);
 
 	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j=0; j<mc; j++)
+	for (u16 j=0; j<mc; j++)
 	{
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
 		u16 vc = buf->getVertexCount();
-		for(u16 i=0; i<vc; i++)
+		for (u16 i=0; i<vc; i++)
 		{
 			vertices[i].Pos += vec;
 		}
@@ -156,12 +156,12 @@ void setMeshColor(scene::IMesh *mesh, const video::SColor &color)
 		return;
 	
 	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j=0; j<mc; j++)
+	for (u16 j=0; j<mc; j++)
 	{
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
 		u16 vc = buf->getVertexCount();
-		for(u16 i=0; i<vc; i++)
+		for (u16 i=0; i<vc; i++)
 		{
 			vertices[i].Color = color;
 		}
@@ -177,12 +177,12 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 		return;
 	
 	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j=0; j<mc; j++)
+	for (u16 j=0; j<mc; j++)
 	{
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
 		u16 vc = buf->getVertexCount();
-		for(u16 i=0; i<vc; i++)
+		for (u16 i=0; i<vc; i++)
 		{
 			f32 x = fabs(vertices[i].Normal.X);
 			f32 y = fabs(vertices[i].Normal.Y);
@@ -201,12 +201,12 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 void rotateMeshXYby (scene::IMesh *mesh, f64 degrees) 
 {	
 	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j = 0; j < mc; j++)
+	for (u16 j = 0; j < mc; j++)
 	{
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
 		u16 vc = buf->getVertexCount();
-		for(u16 i = 0; i < vc; i++)
+		for (u16 i = 0; i < vc; i++)
 		{
 			vertices[i].Pos.rotateXYBy(degrees);
 		}
@@ -216,12 +216,12 @@ void rotateMeshXYby (scene::IMesh *mesh, f64 degrees)
 void rotateMeshXZby (scene::IMesh *mesh, f64 degrees) 
 {	
 	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j = 0; j < mc; j++)
+	for (u16 j = 0; j < mc; j++)
 	{
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
 		u16 vc = buf->getVertexCount();
-		for(u16 i = 0; i < vc; i++)
+		for (u16 i = 0; i < vc; i++)
 		{
 			vertices[i].Pos.rotateXZBy(degrees);
 		}
@@ -231,12 +231,12 @@ void rotateMeshXZby (scene::IMesh *mesh, f64 degrees)
 void rotateMeshYZby (scene::IMesh *mesh, f64 degrees) 
 {	
 	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j = 0; j < mc; j++)
+	for (u16 j = 0; j < mc; j++)
 	{
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
 		u16 vc = buf->getVertexCount();
-		for(u16 i = 0; i < vc; i++)
+		for (u16 i = 0; i < vc; i++)
 		{
 			vertices[i].Pos.rotateYZBy(degrees);
 		}
@@ -249,12 +249,12 @@ void rotateMeshBy6dFacedir(scene::IMesh *mesh, int facedir)
 	facedir &= 0x03;
 
 	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j = 0; j < mc; j++)
+	for (u16 j = 0; j < mc; j++)
 	{
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
 		u16 vc = buf->getVertexCount();
-		for(u16 i=0; i<vc; i++)
+		for (u16 i=0; i<vc; i++)
 		{
 			switch (axisdir)
 			{
@@ -322,7 +322,7 @@ void recalculateBoundingBox(scene::IMesh *src_mesh)
 {
 	core::aabbox3d<f32> bbox;
 	bbox.reset(0,0,0);
-	for(u16 j = 0; j < src_mesh->getMeshBufferCount(); j++)
+	for (u16 j = 0; j < src_mesh->getMeshBufferCount(); j++)
 	{
 		scene::IMeshBuffer *buf = src_mesh->getMeshBuffer(j);
 		buf->recalculateBoundingBox();
@@ -337,7 +337,7 @@ void recalculateBoundingBox(scene::IMesh *src_mesh)
 scene::IMesh* cloneMesh(scene::IMesh *src_mesh)
 {
 	scene::SMesh* dst_mesh = new scene::SMesh();
-	for(u16 j = 0; j < src_mesh->getMeshBufferCount(); j++)
+	for (u16 j = 0; j < src_mesh->getMeshBufferCount(); j++)
 	{
 		scene::IMeshBuffer *buf = src_mesh->getMeshBuffer(j);
 		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
@@ -367,7 +367,7 @@ scene::IMesh* convertNodeboxNodeToMesh(ContentFeatures *f)
 
 	std::vector<aabb3f> boxes = f->node_box.fixed;
 		
-	for(std::vector<aabb3f>::iterator
+	for (std::vector<aabb3f>::iterator
 			i = boxes.begin();
 			i != boxes.end(); i++)
 	{
@@ -452,7 +452,7 @@ scene::IMesh* convertNodeboxNodeToMesh(ContentFeatures *f)
 
 		u16 indices[] = {0,1,2,2,3,0};
 
-		for(u16 j = 0; j < 24; j += 4)
+		for (u16 j = 0; j < 24; j += 4)
 		{
 			scene::IMeshBuffer *buf = dst_mesh->getMeshBuffer(j / 4);
 			buf->append(vertices + j, 4, indices, 6);

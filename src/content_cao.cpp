@@ -642,7 +642,7 @@ void GenericCAO::initialize(const std::string &data)
 		return;
 	}
 
-	for(int i=0; i<num_messages; i++)
+	for (int i=0; i<num_messages; i++)
 	{
 		std::string message = deSerializeLongString(is);
 		processMessage(message);
@@ -751,7 +751,7 @@ void GenericCAO::removeFromScene(bool permanent)
 	// Should be true when removing the object permanently and false when refreshing (eg: updating visuals)
 	if((m_env != NULL) && (permanent)) 
 	{
-		for(std::vector<u16>::iterator ci = m_children.begin();
+		for (std::vector<u16>::iterator ci = m_children.begin();
 						ci != m_children.end(); ci++)
 		{
 			if (m_env->m_attachements[*ci] == getId()) {
@@ -1099,7 +1099,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 		// Attachments, part 1: All attached objects must be unparented first,
 		// or Irrlicht causes a segmentation fault
-		for(std::vector<u16>::iterator ci = m_children.begin();
+		for (std::vector<u16>::iterator ci = m_children.begin();
 				ci != m_children.end();)
 		{
 			if (m_env->m_attachements[*ci] != getId()) {
@@ -1119,7 +1119,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		addToScene(m_smgr, m_gamedef->tsrc(), m_irr);
 
 		// Attachments, part 2: Now that the parent has been refreshed, put its attachments back
-		for(std::vector<u16>::iterator ci = m_children.begin();
+		for (std::vector<u16>::iterator ci = m_children.begin();
 						ci != m_children.end(); ci++)
 		{
 			// Get the object of the child
@@ -1472,7 +1472,7 @@ void GenericCAO::updateBonePosition()
 		return;
 
 	m_animated_meshnode->setJointMode(irr::scene::EJUOR_CONTROL); // To write positions to the mesh on render
-	for(std::map<std::string,
+	for (std::map<std::string,
 			core::vector2d<v3f> >::const_iterator ii = m_bone_position.begin();
 			ii != m_bone_position.end(); ++ii)
 	{
@@ -1711,7 +1711,7 @@ void GenericCAO::processMessage(const std::string &data)
 	else if(cmd == GENERIC_CMD_UPDATE_ARMOR_GROUPS) {
 		m_armor_groups.clear();
 		int armor_groups_size = readU16(is);
-		for(int i=0; i<armor_groups_size; i++)
+		for (int i=0; i<armor_groups_size; i++)
 		{
 			std::string name = deSerializeString(is);
 			int rating = readS16(is);
@@ -1762,7 +1762,7 @@ std::string GenericCAO::debugInfoText()
 	std::ostringstream os(std::ios::binary);
 	os<<"GenericCAO hp="<<m_hp<<"\n";
 	os<<"armor={";
-	for(ItemGroupList::const_iterator i = m_armor_groups.begin();
+	for (ItemGroupList::const_iterator i = m_armor_groups.begin();
 			i != m_armor_groups.end(); i++)
 	{
 		os<<i->first<<"="<<i->second<<", ";

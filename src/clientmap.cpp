@@ -150,7 +150,7 @@ static bool isOccluded(Map *map, v3s16 p0, v3s16 p1, float step, float stepfac,
 	uf.normalize();
 	v3f p0f = v3f(p0.X, p0.Y, p0.Z) * BS;
 	u32 count = 0;
-	for(float s=start_off; s<d0+end_off; s+=step){
+	for (float s=start_off; s<d0+end_off; s+=step){
 		v3f pf = p0f + uf * s;
 		v3s16 p = floatToInt(pf, BS);
 		MapNode n = map->getNodeNoEx(p);
@@ -177,7 +177,7 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 
-	for(std::map<v3s16, MapBlock*>::iterator
+	for (std::map<v3s16, MapBlock*>::iterator
 			i = m_drawlist.begin();
 			i != m_drawlist.end(); ++i)
 	{
@@ -231,7 +231,7 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 	// Distance to farthest drawn block
 	float farthest_drawn = 0;
 
-	for(std::map<v2s16, MapSector*>::iterator
+	for (std::map<v2s16, MapSector*>::iterator
 			si = m_sectors.begin();
 			si != m_sectors.end(); ++si)
 	{
@@ -257,7 +257,7 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 		u32 sector_blocks_drawn = 0;
 
 		std::list< MapBlock * >::iterator i;
-		for(i=sectorblocks.begin(); i!=sectorblocks.end(); i++)
+		for (i=sectorblocks.begin(); i!=sectorblocks.end(); i++)
 		{
 			MapBlock *block = *i;
 
@@ -405,7 +405,7 @@ struct MeshBufListList
 
 	void add(scene::IMeshBuffer *buf)
 	{
-		for(std::list<MeshBufList>::iterator i = lists.begin();
+		for (std::list<MeshBufList>::iterator i = lists.begin();
 				i != lists.end(); ++i){
 			MeshBufList &l = *i;
 			video::SMaterial &m = buf->getMaterial();
@@ -513,7 +513,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	MeshBufListList drawbufs;
 
-	for(std::map<v3s16, MapBlock*>::iterator
+	for (std::map<v3s16, MapBlock*>::iterator
 			i = m_drawlist.begin();
 			i != m_drawlist.end(); ++i)
 	{
@@ -572,7 +572,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			assert(mesh);
 
 			u32 c = mesh->getMeshBufferCount();
-			for(u32 i=0; i<c; i++)
+			for (u32 i=0; i<c; i++)
 			{
 				scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
 
@@ -598,7 +598,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	std::list<MeshBufList> &lists = drawbufs.lists;
 
 	int timecheck_counter = 0;
-	for(std::list<MeshBufList>::iterator i = lists.begin();
+	for (std::list<MeshBufList>::iterator i = lists.begin();
 			i != lists.end(); ++i)
 	{
 		{
@@ -621,7 +621,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 		driver->setMaterial(list.m);
 
-		for(std::list<scene::IMeshBuffer*>::iterator j = list.bufs.begin();
+		for (std::list<scene::IMeshBuffer*>::iterator j = list.bufs.begin();
 				j != list.bufs.end(); ++j)
 		{
 			scene::IMeshBuffer *buf = *j;
@@ -644,7 +644,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 			u32 c = mesh->getMeshBufferCount();
 			bool stuff_actually_drawn = false;
-			for(u32 i=0; i<c; i++)
+			for (u32 i=0; i<c; i++)
 			{
 				scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
 				const video::SMaterial& material = buf->getMaterial();
@@ -730,7 +730,7 @@ static bool getVisibleBrightness(Map *map, v3f p0, v3f dir, float step,
 			sunlight_min_d = 0;
 		}
 	}
-	for(int i=0; distance < end_distance; i++){
+	for (int i=0; distance < end_distance; i++){
 		pf += dir * step;
 		distance += step;
 		step *= step_multiplier;
@@ -780,7 +780,7 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 		-1000,
 	};
 	if(z_directions[0].X < -99){
-		for(u32 i=0; i<sizeof(z_directions)/sizeof(*z_directions); i++){
+		for (u32 i=0; i<sizeof(z_directions)/sizeof(*z_directions); i++){
 			z_directions[i] = v3f(
 				0.01 * myrand_range(-100, 100),
 				1.0,
@@ -796,7 +796,7 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 	if(sunlight_min_d > 35*BS)
 		sunlight_min_d = 35*BS;
 	std::vector<int> values;
-	for(u32 i=0; i<sizeof(z_directions)/sizeof(*z_directions); i++){
+	for (u32 i=0; i<sizeof(z_directions)/sizeof(*z_directions); i++){
 		v3f z_dir = z_directions[i];
 		z_dir.normalize();
 		core::CMatrix4<f32> a;
@@ -832,11 +832,11 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 		num_values_to_use -= num_values_to_use/3;
 	u32 first_value_i = (values.size() - num_values_to_use) / 2;
 	if(debugprint){
-		for(u32 i=0; i < first_value_i; i++)
+		for (u32 i=0; i < first_value_i; i++)
 			std::cerr<<values[i]<<" ";
 		std::cerr<<"[";
 	}
-	for(u32 i=first_value_i; i < first_value_i+num_values_to_use; i++){
+	for (u32 i=first_value_i; i < first_value_i+num_values_to_use; i++){
 		if(debugprint)
 			std::cerr<<values[i]<<" ";
 		brightness_sum += values[i];
@@ -844,7 +844,7 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 	}
 	if(debugprint){
 		std::cerr<<"]";
-		for(u32 i=first_value_i+num_values_to_use; i < values.size(); i++)
+		for (u32 i=first_value_i+num_values_to_use; i < values.size(); i++)
 			std::cerr<<values[i]<<" ";
 	}
 	int ret = 0;

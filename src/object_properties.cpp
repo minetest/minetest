@@ -60,12 +60,12 @@ std::string ObjectProperties::dump()
 	os<<", mesh="<<mesh;
 	os<<", visual_size="<<PP2(visual_size);
 	os<<", textures=[";
-	for(u32 i=0; i<textures.size(); i++){
+	for (u32 i=0; i<textures.size(); i++){
 		os<<"\""<<textures[i]<<"\" ";
 	}
 	os<<"]";
 	os<<", colors=[";
-	for(u32 i=0; i<colors.size(); i++){
+	for (u32 i=0; i<colors.size(); i++){
 		os<<"\""<<colors[i].getAlpha()<<","<<colors[i].getRed()<<","<<colors[i].getGreen()<<","<<colors[i].getBlue()<<"\" ";
 	}
 	os<<"]";
@@ -88,7 +88,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 	os<<serializeString(visual);
 	writeV2F1000(os, visual_size);
 	writeU16(os, textures.size());
-	for(u32 i=0; i<textures.size(); i++){
+	for (u32 i=0; i<textures.size(); i++){
 		os<<serializeString(textures[i]);
 	}
 	writeV2S16(os, spritediv);
@@ -99,7 +99,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 	// Added in protocol version 14
 	os<<serializeString(mesh);
 	writeU16(os, colors.size());
-	for(u32 i=0; i<colors.size(); i++){
+	for (u32 i=0; i<colors.size(); i++){
 		writeARGB8(os, colors[i]);
 	}
 	writeU8(os, collideWithObjects);
@@ -125,7 +125,7 @@ void ObjectProperties::deSerialize(std::istream &is)
 			visual_size = readV2F1000(is);
 			textures.clear();
 			u32 texture_count = readU16(is);
-			for(u32 i=0; i<texture_count; i++){
+			for (u32 i=0; i<texture_count; i++){
 				textures.push_back(deSerializeString(is));
 			}
 			spritediv = readV2S16(is);
@@ -135,7 +135,7 @@ void ObjectProperties::deSerialize(std::istream &is)
 			automatic_rotate = readF1000(is);
 			mesh = deSerializeString(is);
 			u32 color_count = readU16(is);
-			for(u32 i=0; i<color_count; i++){
+			for (u32 i=0; i<color_count; i++){
 				colors.push_back(readARGB8(is));
 			}
 			collideWithObjects = readU8(is);

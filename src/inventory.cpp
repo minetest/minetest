@@ -35,7 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 static content_t content_translate_from_19_to_internal(content_t c_from)
 {
-	for(u32 i=0; i<sizeof(trans_table_19)/sizeof(trans_table_19[0]); i++)
+	for (u32 i=0; i<sizeof(trans_table_19)/sizeof(trans_table_19[0]); i++)
 	{
 		if(trans_table_19[i][1] == c_from)
 		{
@@ -49,7 +49,7 @@ static content_t content_translate_from_19_to_internal(content_t c_from)
 // Else returns the string unmodified.
 static std::string serializeJsonStringIfNeeded(const std::string &s)
 {
-	for(size_t i = 0; i < s.size(); ++i)
+	for (size_t i = 0; i < s.size(); ++i)
 	{
 		if(s[i] <= 0x1f || s[i] >= 0x7f || s[i] == ' ' || s[i] == '\"')
 			return serializeJsonString(s);
@@ -64,7 +64,7 @@ static std::string deSerializeJsonStringIfNeeded(std::istream &is)
 	bool expect_initial_quote = true;
 	bool is_json = false;
 	bool was_backslash = false;
-	for(;;)
+	for (;;)
 	{
 		char c = is.get();
 		if(is.eof())
@@ -450,7 +450,7 @@ void InventoryList::clearItems()
 {
 	m_items.clear();
 
-	for(u32 i=0; i<m_size; i++)
+	for (u32 i=0; i<m_size; i++)
 	{
 		m_items.push_back(ItemStack());
 	}
@@ -481,7 +481,7 @@ void InventoryList::serialize(std::ostream &os) const
 	
 	os<<"Width "<<m_width<<"\n";
 
-	for(u32 i=0; i<m_items.size(); i++)
+	for (u32 i=0; i<m_items.size(); i++)
 	{
 		const ItemStack &item = m_items[i];
 		if(item.empty())
@@ -507,7 +507,7 @@ void InventoryList::deSerialize(std::istream &is)
 	u32 item_i = 0;
 	m_width = 0;
 
-	for(;;)
+	for (;;)
 	{
 		std::string line;
 		std::getline(is, line, '\n');
@@ -575,7 +575,7 @@ bool InventoryList::operator == (const InventoryList &other) const
 		return false;
 	if(m_name != other.m_name)
 		return false;
-	for(u32 i=0; i<m_items.size(); i++)
+	for (u32 i=0; i<m_items.size(); i++)
 	{
 		ItemStack s1 = m_items[i];
 		ItemStack s2 = other.m_items[i];
@@ -605,7 +605,7 @@ u32 InventoryList::getWidth() const
 u32 InventoryList::getUsedSlots() const
 {
 	u32 num = 0;
-	for(u32 i=0; i<m_items.size(); i++)
+	for (u32 i=0; i<m_items.size(); i++)
 	{
 		if(!m_items[i].empty())
 			num++;
@@ -657,7 +657,7 @@ ItemStack InventoryList::addItem(const ItemStack &newitem_)
 	/*
 		First try to find if it could be added to some existing items
 	*/
-	for(u32 i=0; i<m_items.size(); i++)
+	for (u32 i=0; i<m_items.size(); i++)
 	{
 		// Ignore empty slots
 		if(m_items[i].empty())
@@ -671,7 +671,7 @@ ItemStack InventoryList::addItem(const ItemStack &newitem_)
 	/*
 		Then try to add it to empty slots
 	*/
-	for(u32 i=0; i<m_items.size(); i++)
+	for (u32 i=0; i<m_items.size(); i++)
 	{
 		// Ignore unempty slots
 		if(!m_items[i].empty())
@@ -714,7 +714,7 @@ bool InventoryList::roomForItem(const ItemStack &item_) const
 {
 	ItemStack item = item_;
 	ItemStack leftover;
-	for(u32 i=0; i<m_items.size(); i++)
+	for (u32 i=0; i<m_items.size(); i++)
 	{
 		if(itemFits(i, item, &leftover))
 			return true;
@@ -728,7 +728,7 @@ bool InventoryList::containsItem(const ItemStack &item) const
 	u32 count = item.count;
 	if(count == 0)
 		return true;
-	for(std::vector<ItemStack>::const_reverse_iterator
+	for (std::vector<ItemStack>::const_reverse_iterator
 			i = m_items.rbegin();
 			i != m_items.rend(); i++)
 	{
@@ -748,7 +748,7 @@ bool InventoryList::containsItem(const ItemStack &item) const
 ItemStack InventoryList::removeItem(const ItemStack &item)
 {
 	ItemStack removed;
-	for(std::vector<ItemStack>::reverse_iterator
+	for (std::vector<ItemStack>::reverse_iterator
 			i = m_items.rbegin();
 			i != m_items.rend(); i++)
 	{
@@ -837,7 +837,7 @@ Inventory::~Inventory()
 void Inventory::clear()
 {
 	m_dirty = true;
-	for(u32 i=0; i<m_lists.size(); i++)
+	for (u32 i=0; i<m_lists.size(); i++)
 	{
 		delete m_lists[i];
 	}
@@ -847,10 +847,10 @@ void Inventory::clear()
 void Inventory::clearContents()
 {
 	m_dirty = true;
-	for(u32 i=0; i<m_lists.size(); i++)
+	for (u32 i=0; i<m_lists.size(); i++)
 	{
 		InventoryList *list = m_lists[i];
-		for(u32 j=0; j<list->getSize(); j++)
+		for (u32 j=0; j<list->getSize(); j++)
 		{
 			list->deleteItem(j);
 		}
@@ -877,7 +877,7 @@ Inventory & Inventory::operator = (const Inventory &other)
 		m_dirty = true;
 		clear();
 		m_itemdef = other.m_itemdef;
-		for(u32 i=0; i<other.m_lists.size(); i++)
+		for (u32 i=0; i<other.m_lists.size(); i++)
 		{
 			m_lists.push_back(new InventoryList(*other.m_lists[i]));
 		}
@@ -890,7 +890,7 @@ bool Inventory::operator == (const Inventory &other) const
 	if(m_lists.size() != other.m_lists.size())
 		return false;
 
-	for(u32 i=0; i<m_lists.size(); i++)
+	for (u32 i=0; i<m_lists.size(); i++)
 	{
 		if(*m_lists[i] != *other.m_lists[i])
 			return false;
@@ -900,7 +900,7 @@ bool Inventory::operator == (const Inventory &other) const
 
 void Inventory::serialize(std::ostream &os) const
 {
-	for(u32 i=0; i<m_lists.size(); i++)
+	for (u32 i=0; i<m_lists.size(); i++)
 	{
 		InventoryList *list = m_lists[i];
 		os<<"List "<<list->getName()<<" "<<list->getSize()<<"\n";
@@ -914,7 +914,7 @@ void Inventory::deSerialize(std::istream &is)
 {
 	clear();
 
-	for(;;)
+	for (;;)
 	{
 		std::string line;
 		std::getline(is, line, '\n');
@@ -988,7 +988,7 @@ InventoryList * Inventory::getList(const std::string &name)
 std::vector<const InventoryList*> Inventory::getLists()
 {
 	std::vector<const InventoryList*> lists;
-	for(u32 i=0; i<m_lists.size(); i++)
+	for (u32 i=0; i<m_lists.size(); i++)
 	{
 		InventoryList *list = m_lists[i];
 		lists.push_back(list);
@@ -1017,7 +1017,7 @@ const InventoryList * Inventory::getList(const std::string &name) const
 
 const s32 Inventory::getListIndex(const std::string &name) const
 {
-	for(u32 i=0; i<m_lists.size(); i++)
+	for (u32 i=0; i<m_lists.size(); i++)
 	{
 		if(m_lists[i]->getName() == name)
 			return i;

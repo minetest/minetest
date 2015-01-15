@@ -357,10 +357,10 @@ int MapgenV5::generateBaseTerrain()
 	u32 index2d = 0;
 	int stone_surface_max_y = -MAP_GENERATION_LIMIT;
 
-	for(s16 z=node_min.Z; z<=node_max.Z; z++) {
-		for(s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
+	for (s16 z=node_min.Z; z<=node_max.Z; z++) {
+		for (s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
 			u32 i = vm->m_area.index(node_min.X, y, z);
-			for(s16 x=node_min.X; x<=node_max.X; x++, i++, index++, index2d++) {
+			for (s16 x=node_min.X; x<=node_max.X; x++, i++, index++, index2d++) {
 				if(vm->m_data[i].getContent() != CONTENT_IGNORE)
 					continue;
 
@@ -396,10 +396,10 @@ void MapgenV5::generateBlobs()
 {
 	u32 index = 0;
 
-	for(s16 z=node_min.Z; z<=node_max.Z; z++) {
-		for(s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
+	for (s16 z=node_min.Z; z<=node_max.Z; z++) {
+		for (s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
 			u32 i = vm->m_area.index(node_min.X, y, z);
-			for(s16 x=node_min.X; x<=node_max.X; x++, i++, index++) {
+			for (s16 x=node_min.X; x<=node_max.X; x++, i++, index++) {
 				content_t c = vm->m_data[i].getContent();
 				if(c != c_stone)
 					continue;
@@ -515,10 +515,10 @@ void MapgenV5::generateCaves()
 {
 	u32 index = 0;
 
-	for(s16 z=node_min.Z; z<=node_max.Z; z++) {
-		for(s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
+	for (s16 z=node_min.Z; z<=node_max.Z; z++) {
+		for (s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
 			u32 i = vm->m_area.index(node_min.X, y, z);
-			for(s16 x=node_min.X; x<=node_max.X; x++, i++, index++) {
+			for (s16 x=node_min.X; x<=node_max.X; x++, i++, index++) {
 				content_t c = vm->m_data[i].getContent();
 				if(c == CONTENT_AIR || c == c_water_source)
 					continue;

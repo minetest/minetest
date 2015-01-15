@@ -447,7 +447,7 @@ u32 ShaderSource::getShaderIdDirect(const std::string &name,
 	}
 
 	// Check if already have such instance
-	for(u32 i=0; i<m_shaderinfo_cache.size(); i++){
+	for (u32 i=0; i<m_shaderinfo_cache.size(); i++){
 		ShaderInfo *info = &m_shaderinfo_cache[i];
 		if(info->name == name && info->material_type == material_type &&
 			info->drawtype == drawtype)
@@ -525,7 +525,7 @@ void ShaderSource::rebuildShaders()
 	*/
 
 	// Recreate shaders
-	for(u32 i=0; i<m_shaderinfo_cache.size(); i++){
+	for (u32 i=0; i<m_shaderinfo_cache.size(); i++){
 		ShaderInfo *info = &m_shaderinfo_cache[i];
 		if(info->name != ""){
 			*info = generate_shader(info->name, info->material_type,
@@ -537,7 +537,7 @@ void ShaderSource::rebuildShaders()
 void ShaderSource::onSetConstants(video::IMaterialRendererServices *services,
 		bool is_highlevel, const std::string &name)
 {
-	for(u32 i=0; i<m_global_setters.size(); i++){
+	for (u32 i=0; i<m_global_setters.size(); i++){
 		IShaderConstantSetter *setter = m_global_setters[i];
 		setter->onSetConstants(services, is_highlevel);
 	}

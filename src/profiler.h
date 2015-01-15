@@ -91,7 +91,7 @@ public:
 	void clear()
 	{
 		JMutexAutoLock lock(m_mutex);
-		for(std::map<std::string, float>::iterator
+		for (std::map<std::string, float>::iterator
 				i = m_data.begin();
 				i != m_data.end(); ++i)
 		{
@@ -112,7 +112,7 @@ public:
 		u32 minindex, maxindex;
 		paging(m_data.size(), page, pagecount, minindex, maxindex);
 
-		for(std::map<std::string, float>::iterator
+		for (std::map<std::string, float>::iterator
 				i = m_data.begin();
 				i != m_data.end(); ++i)
 		{
@@ -136,7 +136,7 @@ public:
 			o<<"  "<<name<<": ";
 			s32 clampsize = 40;
 			s32 space = clampsize - name.size();
-			for(s32 j=0; j<space; j++)
+			for (s32 j=0; j<space; j++)
 			{
 				if(j%2 == 0 && j < space - 1)
 					o<<"-";

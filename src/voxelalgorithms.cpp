@@ -26,9 +26,9 @@ namespace voxalgo
 void setLight(VoxelManipulator &v, VoxelArea a, u8 light,
 		INodeDefManager *ndef)
 {
-	for(s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
-	for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
-	for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
+	for (s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
+	for (s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
+	for (s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
 	{
 		v3s16 p(x,y,z);
 		MapNode &n = v.getNodeRefUnsafe(p);
@@ -48,9 +48,9 @@ void clearLightAndCollectSources(VoxelManipulator &v, VoxelArea a,
 	// Make sure we have access to it
 	v.addArea(a);
 
-	for(s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
-	for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
-	for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
+	for (s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
+	for (s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
+	for (s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
 	{
 		v3s16 p(x,y,z);
 		MapNode &n = v.getNodeRefUnsafe(p);
@@ -90,8 +90,8 @@ SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
 	s16 max_y = a.MaxEdge.Y;
 	s16 min_y = a.MinEdge.Y;
 
-	for(s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
-	for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
+	for (s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
+	for (s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
 	{
 		v3s16 p_overtop(x, max_y+1, z);
 		bool overtop_has_sunlight = false;
@@ -107,7 +107,7 @@ SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
 
 		// Copy overtop's sunlight all over the place
 		u8 incoming_light = overtop_has_sunlight ? LIGHT_SUN : 0;
-		for(s32 y=max_y; y>=min_y; y--)
+		for (s32 y=max_y; y>=min_y; y--)
 		{
 			v3s16 p(x,y,z);
 			MapNode &n = v.getNodeRefUnsafe(p);

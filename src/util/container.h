@@ -112,7 +112,7 @@ public:
 	std::list<Value> getValues()
 	{
 		std::list<Value> result;
-		for(typename std::map<Key, Value>::iterator
+		for (typename std::map<Key, Value>::iterator
 			i = m_values.begin();
 			i != m_values.end(); ++i){
 			result.push_back(i->second);

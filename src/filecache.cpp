@@ -39,7 +39,7 @@ bool FileCache::loadByPath(const std::string &path, std::ostream &os)
 	}
 
 	bool bad = false;
-	for(;;){
+	for (;;){
 		char buf[1024];
 		fis.read(buf, 1024);
 		std::streamsize len = fis.gcount();

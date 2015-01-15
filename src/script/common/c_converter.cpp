@@ -206,7 +206,7 @@ std::vector<aabb3f> read_aabb3f_vector(lua_State *L, int index, f32 scale)
 		int n = lua_objlen(L, index);
 		// Check if it's a single box or a list of boxes
 		bool possibly_single_box = (n == 6);
-		for(int i = 1; i <= n && possibly_single_box; i++){
+		for (int i = 1; i <= n && possibly_single_box; i++){
 			lua_rawgeti(L, index, i);
 			if(!lua_isnumber(L, -1))
 				possibly_single_box = false;
@@ -217,7 +217,7 @@ std::vector<aabb3f> read_aabb3f_vector(lua_State *L, int index, f32 scale)
 			boxes.push_back(read_aabb3f(L, index, scale));
 		} else {
 			// Read a list of boxes
-			for(int i = 1; i <= n; i++){
+			for (int i = 1; i <= n; i++){
 				lua_rawgeti(L, index, i);
 				boxes.push_back(read_aabb3f(L, -1, scale));
 				lua_pop(L, 1);

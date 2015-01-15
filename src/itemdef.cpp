@@ -145,7 +145,7 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	}
 	os<<serializeString(tool_capabilities_s);
 	writeU16(os, groups.size());
-	for(std::map<std::string, int>::const_iterator
+	for (std::map<std::string, int>::const_iterator
 			i = groups.begin(); i != groups.end(); i++){
 		os<<serializeString(i->first);
 		writeS16(os, i->second);
@@ -188,7 +188,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 	}
 	groups.clear();
 	u32 groups_size = readU16(is);
-	for(u32 i=0; i<groups_size; i++){
+	for (u32 i=0; i<groups_size; i++){
 		std::string name = deSerializeString(is);
 		int value = readS16(is);
 		groups[name] = value;
@@ -250,7 +250,7 @@ public:
 	{
 #ifndef SERVER
 		const std::list<ClientCached*> &values = m_clientcached.getValues();
-		for(std::list<ClientCached*>::const_iterator
+		for (std::list<ClientCached*>::const_iterator
 				i = values.begin(); i != values.end(); ++i)
 		{
 			ClientCached *cc = *i;
@@ -290,13 +290,13 @@ public:
 	virtual std::set<std::string> getAll() const
 	{
 		std::set<std::string> result;
-		for(std::map<std::string, ItemDefinition*>::const_iterator
+		for (std::map<std::string, ItemDefinition*>::const_iterator
 				i = m_item_definitions.begin();
 				i != m_item_definitions.end(); i++)
 		{
 			result.insert(i->first);
 		}
-		for(std::map<std::string, std::string>::const_iterator
+		for (std::map<std::string, std::string>::const_iterator
 				i = m_aliases.begin();
 				i != m_aliases.end(); i++)
 		{
@@ -511,7 +511,7 @@ public:
 #endif
 	void clear()
 	{
-		for(std::map<std::string, ItemDefinition*>::const_iterator
+		for (std::map<std::string, ItemDefinition*>::const_iterator
 				i = m_item_definitions.begin();
 				i != m_item_definitions.end(); i++)
 		{
@@ -581,7 +581,7 @@ public:
 		writeU8(os, 0); // version
 		u16 count = m_item_definitions.size();
 		writeU16(os, count);
-		for(std::map<std::string, ItemDefinition*>::const_iterator
+		for (std::map<std::string, ItemDefinition*>::const_iterator
 				i = m_item_definitions.begin();
 				i != m_item_definitions.end(); i++)
 		{
@@ -592,7 +592,7 @@ public:
 			os<<serializeString(tmp_os.str());
 		}
 		writeU16(os, m_aliases.size());
-		for(std::map<std::string, std::string>::const_iterator
+		for (std::map<std::string, std::string>::const_iterator
 			i = m_aliases.begin(); i != m_aliases.end(); i++)
 		{
 			os<<serializeString(i->first);
@@ -608,7 +608,7 @@ public:
 		if(version != 0)
 			throw SerializationError("unsupported ItemDefManager version");
 		u16 count = readU16(is);
-		for(u16 i=0; i<count; i++)
+		for (u16 i=0; i<count; i++)
 		{
 			// Deserialize a string and grab an ItemDefinition from it
 			std::istringstream tmp_is(deSerializeString(is), std::ios::binary);
@@ -618,7 +618,7 @@ public:
 			registerItem(def);
 		}
 		u16 num_aliases = readU16(is);
-		for(u16 i=0; i<num_aliases; i++)
+		for (u16 i=0; i<num_aliases; i++)
 		{
 			std::string name = deSerializeString(is);
 			std::string convert_to = deSerializeString(is);

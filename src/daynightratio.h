@@ -42,7 +42,7 @@ inline u32 time_to_daynight_ratio(float time_of_day, bool smooth)
 	};
 	if(!smooth){
 		float lastt = values[0][0];
-		for(u32 i=1; i<sizeof(values)/sizeof(*values); i++){
+		for (u32 i=1; i<sizeof(values)/sizeof(*values); i++){
 			float t0 = values[i][0];
 			float switch_t = (t0 + lastt) / 2;
 			lastt = t0;
@@ -52,7 +52,7 @@ inline u32 time_to_daynight_ratio(float time_of_day, bool smooth)
 		}
 		return 1000;
 	} else {
-		for(u32 i=0; i<sizeof(values)/sizeof(*values); i++){
+		for (u32 i=0; i<sizeof(values)/sizeof(*values); i++){
 			if(values[i][0] <= t)
 				continue;
 			if(i == 0)

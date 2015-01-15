@@ -108,7 +108,7 @@ MapNode mapnode_translate_to_internal(MapNode n_from, u8 version)
 	if(version <= 19)
 	{
 		content_t c_from = n_from.getContent();
-		for(u32 i=0; i<sizeof(trans_table_19)/sizeof(trans_table_19[0]); i++)
+		for (u32 i=0; i<sizeof(trans_table_19)/sizeof(trans_table_19[0]); i++)
 		{
 			if(trans_table_19[i][1] == c_from)
 			{

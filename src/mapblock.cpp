@@ -141,9 +141,9 @@ bool MapBlock::propagateSunlight(std::set<v3s16> & light_sources,
 	
 	v3s16 pos_relative = getPosRelative();
 	
-	for(s16 x=0; x<MAP_BLOCKSIZE; x++)
+	for (s16 x=0; x<MAP_BLOCKSIZE; x++)
 	{
-		for(s16 z=0; z<MAP_BLOCKSIZE; z++)
+		for (s16 z=0; z<MAP_BLOCKSIZE; z++)
 		{
 #if 1
 			bool no_sunlight = false;
@@ -219,7 +219,7 @@ bool MapBlock::propagateSunlight(std::set<v3s16> & light_sources,
 			
 			u8 current_light = no_sunlight ? 0 : LIGHT_SUN;
 
-			for(; y >= 0; y--)
+			for (; y >= 0; y--)
 			{
 				v3s16 pos(x, y, z);
 				MapNode &n = getNodeRef(pos);
@@ -344,7 +344,7 @@ void MapBlock::actuallyUpdateDayNightDiff()
 	/*
 		Check if any lighting value differs
 	*/
-	for(u32 i=0; i<MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE; i++)
+	for (u32 i=0; i<MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE; i++)
 	{
 		MapNode &n = data[i];
 		if(n.getLight(LIGHTBANK_DAY, nodemgr) != n.getLight(LIGHTBANK_NIGHT, nodemgr))
@@ -361,7 +361,7 @@ void MapBlock::actuallyUpdateDayNightDiff()
 	if(differs)
 	{
 		bool only_air = true;
-		for(u32 i=0; i<MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE; i++)
+		for (u32 i=0; i<MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE; i++)
 		{
 			MapNode &n = data[i];
 			if(n.getContent() != CONTENT_AIR)
@@ -398,7 +398,7 @@ s16 MapBlock::getGroundLevel(v2s16 p2d)
 	try
 	{
 		s16 y = MAP_BLOCKSIZE-1;
-		for(; y>=0; y--)
+		for (; y>=0; y--)
 		{
 			MapNode n = getNodeRef(p2d.X, y, p2d.Y);
 			if(m_gamedef->ndef()->get(n).walkable)
@@ -434,7 +434,7 @@ static void getBlockNodeIdMapping(NameIdMapping *nimap, MapNode *nodes,
 
 	std::set<content_t> unknown_contents;
 	content_t id_counter = 0;
-	for(u32 i=0; i<MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE; i++)
+	for (u32 i=0; i<MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE; i++)
 	{
 		content_t global_id = nodes[i].getContent();
 		content_t id = CONTENT_IGNORE;
@@ -460,7 +460,7 @@ static void getBlockNodeIdMapping(NameIdMapping *nimap, MapNode *nodes,
 		// Update the MapNode
 		nodes[i].setContent(id);
 	}
-	for(std::set<content_t>::const_iterator
+	for (std::set<content_t>::const_iterator
 			i = unknown_contents.begin();
 			i != unknown_contents.end(); i++){
 		errorstream<<"getBlockNodeIdMapping(): IGNORING ERROR: "
@@ -480,7 +480,7 @@ static void correctBlockNodeIds(const NameIdMapping *nimap, MapNode *nodes,
 	// correct ids.
 	std::set<content_t> unnamed_contents;
 	std::set<std::string> unallocatable_contents;
-	for(u32 i=0; i<MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE; i++)
+	for (u32 i=0; i<MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE; i++)
 	{
 		content_t local_id = nodes[i].getContent();
 		std::string name;
@@ -500,14 +500,14 @@ static void correctBlockNodeIds(const NameIdMapping *nimap, MapNode *nodes,
 		}
 		nodes[i].setContent(global_id);
 	}
-	for(std::set<content_t>::const_iterator
+	for (std::set<content_t>::const_iterator
 			i = unnamed_contents.begin();
 			i != unnamed_contents.end(); i++){
 		errorstream<<"correctBlockNodeIds(): IGNORING ERROR: "
 				<<"Block contains id "<<(*i)
 				<<" with no name mapping"<<std::endl;
 	}
-	for(std::set<std::string>::const_iterator
+	for (std::set<std::string>::const_iterator
 			i = unallocatable_contents.begin();
 			i != unallocatable_contents.end(); i++){
 		errorstream<<"correctBlockNodeIds(): IGNORING ERROR: "
@@ -552,7 +552,7 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 	if(disk)
 	{
 		MapNode *tmp_nodes = new MapNode[nodecount];
-		for(u32 i=0; i<nodecount; i++)
+		for (u32 i=0; i<nodecount; i++)
 			tmp_nodes[i] = data[i];
 		getBlockNodeIdMapping(&nimap, tmp_nodes, m_gamedef->ndef());
 
@@ -791,7 +791,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 			if(s.size() != nodecount)
 				throw SerializationError
 						("MapBlock::deSerialize: invalid format");
-			for(u32 i=0; i<s.size(); i++)
+			for (u32 i=0; i<s.size(); i++)
 			{
 				databuf_nodelist[i*ser_length] = s[i];
 			}
@@ -804,7 +804,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 			if(s.size() != nodecount)
 				throw SerializationError
 						("MapBlock::deSerialize: invalid format");
-			for(u32 i=0; i<s.size(); i++)
+			for (u32 i=0; i<s.size(); i++)
 			{
 				databuf_nodelist[i*ser_length + 1] = s[i];
 			}
@@ -819,7 +819,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 			if(s.size() != nodecount)
 				throw SerializationError
 						("MapBlock::deSerialize: invalid format");
-			for(u32 i=0; i<s.size(); i++)
+			for (u32 i=0; i<s.size(); i++)
 			{
 				databuf_nodelist[i*ser_length + 2] = s[i];
 			}
@@ -846,7 +846,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 					" other than nodecount*3");
 
 		// deserialize nodes from buffer
-		for(u32 i=0; i<nodecount; i++)
+		for (u32 i=0; i<nodecount; i++)
 		{
 			databuf_nodelist[i*ser_length] = s[i];
 			databuf_nodelist[i*ser_length + 1] = s[i+nodecount];
@@ -888,7 +888,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 	}
 
 	// Deserialize node data
-	for(u32 i=0; i<nodecount; i++)
+	for (u32 i=0; i<nodecount; i++)
 	{
 		data[i].deSerialize(&databuf_nodelist[i*ser_length], version);
 	}
@@ -938,7 +938,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 	// Legacy data changes
 	// This code has to convert from pre-22 to post-22 format.
 	INodeDefManager *nodedef = m_gamedef->ndef();
-	for(u32 i=0; i<nodecount; i++)
+	for (u32 i=0; i<nodecount; i++)
 	{
 		const ContentFeatures &f = nodedef->get(data[i].getContent());
 		// Mineral
@@ -966,7 +966,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 			u8 wallmounted_new_to_old[8] = {0x04, 0x08, 0x01, 0x02, 0x10, 0x20, 0, 0};
 			u8 dir_old_format = data[i].getParam2();
 			u8 dir_new_format = 0;
-			for(u8 j=0; j<8; j++)
+			for (u8 j=0; j<8; j++)
 			{
 				if((dir_old_format & wallmounted_new_to_old[j]) != 0)
 				{
@@ -1035,9 +1035,9 @@ std::string analyze_block(MapBlock *block)
 		bool some_ignore = false;
 		bool full_air = true;
 		bool some_air = false;
-		for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
-		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
-		for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
+		for (s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
+		for (s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+		for (s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
 		{
 			v3s16 p(x0,y0,z0);
 			MapNode n = block->getNodeNoEx(p);

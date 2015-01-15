@@ -71,10 +71,10 @@ void getFacePositions(std::list<v3s16> &list, u16 d)
 	}
 
 	// Take blocks in all sides, starting from y=0 and going +-y
-	for(s16 y=0; y<=d-1; y++)
+	for (s16 y=0; y<=d-1; y++)
 	{
 		// Left and right side, including borders
-		for(s16 z=-d; z<=d; z++)
+		for (s16 z=-d; z<=d; z++)
 		{
 			list.push_back(v3s16(d,y,z));
 			list.push_back(v3s16(-d,y,z));
@@ -85,7 +85,7 @@ void getFacePositions(std::list<v3s16> &list, u16 d)
 			}
 		}
 		// Back and front side, excluding borders
-		for(s16 x=-d+1; x<=d-1; x++)
+		for (s16 x=-d+1; x<=d-1; x++)
 		{
 			list.push_back(v3s16(x,y,d));
 			list.push_back(v3s16(x,y,-d));
@@ -99,8 +99,8 @@ void getFacePositions(std::list<v3s16> &list, u16 d)
 
 	// Take the bottom and top face with borders
 	// -d<x<d, y=+-d, -d<z<d
-	for(s16 x=-d; x<=d; x++)
-	for(s16 z=-d; z<=d; z++)
+	for (s16 x=-d; x<=d; x++)
+	for (s16 z=-d; z<=d; z++)
 	{
 		list.push_back(v3s16(x,-d,z));
 		list.push_back(v3s16(x,d,z));

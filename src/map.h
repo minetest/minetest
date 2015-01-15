@@ -112,7 +112,7 @@ struct MapEditEvent
 		case MEET_OTHER:
 		{
 			VoxelArea a;
-			for(std::set<v3s16>::iterator
+			for (std::set<v3s16>::iterator
 					i = modified_blocks.begin();
 					i != modified_blocks.end(); ++i)
 			{

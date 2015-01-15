@@ -34,7 +34,7 @@ void ToolCapabilities::serialize(std::ostream &os, u16 protocol_version) const
 	writeF1000(os, full_punch_interval);
 	writeS16(os, max_drop_level);
 	writeU32(os, groupcaps.size());
-	for(std::map<std::string, ToolGroupCap>::const_iterator
+	for (std::map<std::string, ToolGroupCap>::const_iterator
 			i = groupcaps.begin(); i != groupcaps.end(); i++){
 		const std::string *name = &i->first;
 		const ToolGroupCap *cap = &i->second;
@@ -42,7 +42,7 @@ void ToolCapabilities::serialize(std::ostream &os, u16 protocol_version) const
 		writeS16(os, cap->uses);
 		writeS16(os, cap->maxlevel);
 		writeU32(os, cap->times.size());
-		for(std::map<int, float>::const_iterator
+		for (std::map<int, float>::const_iterator
 				i = cap->times.begin(); i != cap->times.end(); i++){
 			writeS16(os, i->first);
 			writeF1000(os, i->second);
@@ -50,7 +50,7 @@ void ToolCapabilities::serialize(std::ostream &os, u16 protocol_version) const
 	}
 	if(protocol_version > 17){
 		writeU32(os, damageGroups.size());
-		for(std::map<std::string, s16>::const_iterator
+		for (std::map<std::string, s16>::const_iterator
 				i = damageGroups.begin(); i != damageGroups.end(); i++){
 			os<<serializeString(i->first);
 			writeS16(os, i->second);
@@ -67,13 +67,13 @@ void ToolCapabilities::deSerialize(std::istream &is)
 	max_drop_level = readS16(is);
 	groupcaps.clear();
 	u32 groupcaps_size = readU32(is);
-	for(u32 i=0; i<groupcaps_size; i++){
+	for (u32 i=0; i<groupcaps_size; i++){
 		std::string name = deSerializeString(is);
 		ToolGroupCap cap;
 		cap.uses = readS16(is);
 		cap.maxlevel = readS16(is);
 		u32 times_size = readU32(is);
-		for(u32 i=0; i<times_size; i++){
+		for (u32 i=0; i<times_size; i++){
 			int level = readS16(is);
 			float time = readF1000(is);
 			cap.times[level] = time;
@@ -83,7 +83,7 @@ void ToolCapabilities::deSerialize(std::istream &is)
 	if(version == 2)
 	{
 		u32 damage_groups_size = readU32(is);
-		for(u32 i=0; i<damage_groups_size; i++){
+		for (u32 i=0; i<damage_groups_size; i++){
 			std::string name = deSerializeString(is);
 			s16 rating = readS16(is);
 			damageGroups[name] = rating;
@@ -115,7 +115,7 @@ DigParams getDigParams(const ItemGroupList &groups,
 
 	int level = itemgroup_get(groups, "level");
 	//infostream<<"level="<<level<<std::endl;
-	for(std::map<std::string, ToolGroupCap>::const_iterator
+	for (std::map<std::string, ToolGroupCap>::const_iterator
 			i = tp->groupcaps.begin(); i != tp->groupcaps.end(); i++){
 		const std::string &name = i->first;
 		//infostream<<"group="<<name<<std::endl;
@@ -163,7 +163,7 @@ HitParams getHitParams(const ItemGroupList &armor_groups,
 	s16 damage = 0;
 	float full_punch_interval = tp->full_punch_interval;
 
-	for(std::map<std::string, s16>::const_iterator
+	for (std::map<std::string, s16>::const_iterator
 			i = tp->damageGroups.begin(); i != tp->damageGroups.end(); i++){
 		s16 armor = itemgroup_get(armor_groups, i->first);
 		damage += i->second * rangelim(time_from_last_punch / full_punch_interval, 0.0, 1.0)

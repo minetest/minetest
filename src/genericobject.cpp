@@ -109,7 +109,7 @@ std::string gob_cmd_update_armor_groups(const ItemGroupList &armor_groups)
 	std::ostringstream os(std::ios::binary);
 	writeU8(os, GENERIC_CMD_UPDATE_ARMOR_GROUPS);
 	writeU16(os, armor_groups.size());
-	for(ItemGroupList::const_iterator i = armor_groups.begin();
+	for (ItemGroupList::const_iterator i = armor_groups.begin();
 			i != armor_groups.end(); i++){
 		os<<serializeString(i->first);
 		writeS16(os, i->second);
