@@ -35,39 +35,22 @@ void main(void)
 #if (MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_LIQUID_OPAQUE) && ENABLE_WAVING_WATER
 	vec4 pos = gl_Vertex;
 	pos.y -= 2.0;
-
-	float posYbuf = (pos.z / WATER_WAVE_LENGTH + animationTimer * WATER_WAVE_SPEED * WATER_WAVE_LENGTH);
-
-	pos.y -= sin(posYbuf) * WATER_WAVE_HEIGHT + sin(posYbuf / 7.0) * WATER_WAVE_HEIGHT;
+	pos.y -= sin (pos.z/WATER_WAVE_LENGTH + animationTimer * WATER_WAVE_SPEED * WATER_WAVE_LENGTH) * WATER_WAVE_HEIGHT
+		+ sin ((pos.z/WATER_WAVE_LENGTH + animationTimer * WATER_WAVE_SPEED * WATER_WAVE_LENGTH) / 7.0) * WATER_WAVE_HEIGHT;
 	gl_Position = mWorldViewProj * pos;
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES
 	vec4 pos = gl_Vertex;
 	vec4 pos2 = mWorld * gl_Vertex;
-
-	/*
-	 * Mathematic optimization: pos2.x * A + pos2.z * A (2 multiplications + 1 addition)
-	 * replaced with: (pos2.x + pos2.z) * A (1 addition + 1 multiplication)
-	 * And bufferize calcul to a float
-	 */
-	float pos2XpZ = pos2.x + pos2.z;
-
-	pos.x += (smoothTriangleWave(animationTimer*10.0 + pos2XpZ * 0.01) * 2.0 - 1.0) * 0.4;
-	pos.y += (smoothTriangleWave(animationTimer*15.0 + pos2XpZ * -0.01) * 2.0 - 1.0) * 0.2;
-	pos.z += (smoothTriangleWave(animationTimer*10.0 + pos2XpZ * -0.01) * 2.0 - 1.0) * 0.4;
+	pos.x += (smoothTriangleWave(animationTimer*10.0 + pos2.x * 0.01 + pos2.z * 0.01) * 2.0 - 1.0) * 0.4;
+	pos.y += (smoothTriangleWave(animationTimer*15.0 + pos2.x * -0.01 + pos2.z * -0.01) * 2.0 - 1.0) * 0.2;
+	pos.z += (smoothTriangleWave(animationTimer*10.0 + pos2.x * -0.01 + pos2.z * -0.01) * 2.0 - 1.0) * 0.4;
 	gl_Position = mWorldViewProj * pos;
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS
 	vec4 pos = gl_Vertex;
 	vec4 pos2 = mWorld * gl_Vertex;
 	if (gl_TexCoord[0].y < 0.05) {
-		/*
-		 * Mathematic optimization: pos2.x * A + pos2.z * A (2 multiplications + 1 addition)
-		 * replaced with: (pos2.x + pos2.z) * A (1 addition + 1 multiplication)
-		 * And bufferize calcul to a float
-		 */
-		float pos2XpZ = pos2.x + pos2.z;
-
-		pos.x += (smoothTriangleWave(animationTimer * 20.0 + pos2XpZ * 0.1) * 2.0 - 1.0) * 0.8;
-		pos.y -= (smoothTriangleWave(animationTimer * 10.0 + pos2XpZ * -0.5) * 2.0 - 1.0) * 0.4;
+		pos.x += (smoothTriangleWave(animationTimer * 20.0 + pos2.x * 0.1 + pos2.z * 0.1) * 2.0 - 1.0) * 0.8;
+		pos.y -= (smoothTriangleWave(animationTimer * 10.0 + pos2.x * -0.5 + pos2.z * -0.5) * 2.0 - 1.0) * 0.4;
 	}
 	gl_Position = mWorldViewProj * pos;
 #else

@@ -87,12 +87,7 @@ vec4 base = texture2D(baseTexture, uv).rgba;
 		vec3 E = normalize(eyeVec);
 		float specular = pow(clamp(dot(reflect(L, bump.xyz), E), 0.0, 1.0),0.5); 
 		float diffuse = dot(E,bump.xyz);		
-		/* Mathematic optimization
-		* Original: color = 0.05*base.rgb + diffuse*base.rgb + 0.2*specular*base.rgb;
-		* This optimization save 2 multiplications (orig: 4 multiplications + 3 additions
-		* end: 2 multiplications + 3 additions)
-		*/
-		color = (0.05 + diffuse + 0.2 * specular) * base.rgb
+		color = 0.05*base.rgb + diffuse*base.rgb + 0.2*specular*base.rgb;
 	} else {
 		color = base.rgb;
 	}
