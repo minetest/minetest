@@ -300,7 +300,7 @@ void ClientMediaDownloader::remoteHashSetReceived(
 			// available on this server, add this server
 			// to the available_remotes array
 
-			for(std::map<std::string, FileStatus*>::iterator
+			for (std::map<std::string, FileStatus*>::iterator
 					it = m_files.upper_bound(m_name_bound);
 					it != m_files.end(); ++it) {
 				FileStatus *f = it->second;
@@ -328,7 +328,7 @@ void ClientMediaDownloader::remoteHashSetReceived(
 
 		// Assume every file is available on this server
 
-		for(std::map<std::string, FileStatus*>::iterator
+		for (std::map<std::string, FileStatus*>::iterator
 				it = m_files.upper_bound(m_name_bound);
 				it != m_files.end(); ++it) {
 			FileStatus *f = it->second;

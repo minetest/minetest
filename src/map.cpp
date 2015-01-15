@@ -89,7 +89,7 @@ Map::~Map()
 	/*
 		Free all MapSectors
 	*/
-	for(std::map<v2s16, MapSector*>::iterator i = m_sectors.begin();
+	for (std::map<v2s16, MapSector*>::iterator i = m_sectors.begin();
 		i != m_sectors.end(); ++i)
 	{
 		delete i->second;
@@ -108,7 +108,7 @@ void Map::removeEventReceiver(MapEventReceiver *event_receiver)
 
 void Map::dispatchEvent(MapEditEvent *event)
 {
-	for(std::set<MapEventReceiver*>::iterator
+	for (std::set<MapEventReceiver*>::iterator
 			i = m_event_receivers.begin();
 			i != m_event_receivers.end(); ++i)
 	{
@@ -295,7 +295,7 @@ void Map::unspreadLight(enum LightBank bank,
 	// Cache this a bit, too
 	bool block_checked_in_modified = false;
 
-	for(std::map<v3s16, u8>::iterator j = from_nodes.begin();
+	for (std::map<v3s16, u8>::iterator j = from_nodes.begin();
 		j != from_nodes.end(); ++j)
 	{
 		v3s16 pos = j->first;
@@ -328,7 +328,7 @@ void Map::unspreadLight(enum LightBank bank,
 		u8 oldlight = j->second;
 
 		// Loop through 6 neighbors
-		for(u16 i=0; i<6; i++)
+		for (u16 i=0; i<6; i++)
 		{
 			// Get the position of the neighbor node
 			v3s16 n2pos = pos + dirs[i];
@@ -474,7 +474,7 @@ void Map::spreadLight(enum LightBank bank,
 	// Cache this a bit, too
 	bool block_checked_in_modified = false;
 
-	for(std::set<v3s16>::iterator j = from_nodes.begin();
+	for (std::set<v3s16>::iterator j = from_nodes.begin();
 		j != from_nodes.end(); ++j)
 	{
 		v3s16 pos = *j;
@@ -508,7 +508,7 @@ void Map::spreadLight(enum LightBank bank,
 		u8 newlight = diminish_light(oldlight);
 
 		// Loop through 6 neighbors
-		for(u16 i=0; i<6; i++){
+		for (u16 i=0; i<6; i++){
 			// Get the position of the neighbor node
 			v3s16 n2pos = pos + dirs[i];
 
@@ -613,7 +613,7 @@ v3s16 Map::getBrightestNeighbour(enum LightBank bank, v3s16 p)
 	bool found_something = false;
 
 	// Loop through 6 neighbors
-	for(u16 i=0; i<6; i++){
+	for (u16 i=0; i<6; i++){
 		// Get the position of the neighbor node
 		v3s16 n2pos = p + dirs[i];
 		MapNode n2;
@@ -649,7 +649,7 @@ s16 Map::propagateSunlight(v3s16 start,
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 
 	s16 y = start.Y;
-	for(; ; y--)
+	for (; ; y--)
 	{
 		v3s16 pos(start.X, y, start.Z);
 
@@ -711,12 +711,12 @@ void Map::updateLighting(enum LightBank bank,
 	{
 	//TimeTaker t("first stuff");
 
-	for(std::map<v3s16, MapBlock*>::iterator i = a_blocks.begin();
+	for (std::map<v3s16, MapBlock*>::iterator i = a_blocks.begin();
 		i != a_blocks.end(); ++i)
 	{
 		MapBlock *block = i->second;
 
-		for(;;)
+		for (;;)
 		{
 			// Don't bother with dummy blocks.
 			if(block->isDummy())
@@ -730,9 +730,9 @@ void Map::updateLighting(enum LightBank bank,
 			/*
 				Clear all light from block
 			*/
-			for(s16 z=0; z<MAP_BLOCKSIZE; z++)
-			for(s16 x=0; x<MAP_BLOCKSIZE; x++)
-			for(s16 y=0; y<MAP_BLOCKSIZE; y++)
+			for (s16 z=0; z<MAP_BLOCKSIZE; z++)
+			for (s16 x=0; x<MAP_BLOCKSIZE; x++)
+			for (s16 y=0; y<MAP_BLOCKSIZE; y++)
 			{
 				v3s16 p(x,y,z);
 				bool is_valid_position;
@@ -818,7 +818,7 @@ void Map::updateLighting(enum LightBank bank,
 	{
 		core::map<v3s16, MapBlock*>::Iterator i;
 		i = blocks_to_update.getIterator();
-		for(; i.atEnd() == false; i++)
+		for (; i.atEnd() == false; i++)
 		{
 			MapBlock *block = i.getNode()->getValue();
 			v3s16 p = block->getPos();
@@ -867,7 +867,7 @@ void Map::updateLighting(enum LightBank bank,
 
 		core::map<v3s16, MapBlock*>::Iterator i;
 		i = blocks_to_update.getIterator();
-		for(; i.atEnd() == false; i++)
+		for (; i.atEnd() == false; i++)
 		{
 			MapBlock *block = i.getNode()->getValue();
 			v3s16 p = block->getPos();
@@ -880,9 +880,9 @@ void Map::updateLighting(enum LightBank bank,
 				NOTE: This doesn't quite do the job (not everything
 					  appropriate is lighted)
 			*/
-			/*for(s16 z=-1; z<=1; z++)
-			for(s16 y=-1; y<=1; y++)
-			for(s16 x=-1; x<=1; x++)
+			/*for (s16 z=-1; z<=1; z++)
+			for (s16 y=-1; y<=1; y++)
+			for (s16 x=-1; x<=1; x++)
 			{
 				v3s16 p2 = p + v3s16(x,y,z);
 				MapBlock *block = getBlockNoCreateNoEx(p2);
@@ -929,7 +929,7 @@ void Map::updateLighting(std::map<v3s16, MapBlock*> & a_blocks,
 	/*
 		Update information about whether day and night light differ
 	*/
-	for(std::map<v3s16, MapBlock*>::iterator
+	for (std::map<v3s16, MapBlock*>::iterator
 			i = modified_blocks.begin();
 			i != modified_blocks.end(); ++i)
 	{
@@ -990,7 +990,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		LIGHTBANK_DAY,
 		LIGHTBANK_NIGHT
 	};
-	for(s32 i=0; i<2; i++)
+	for (s32 i=0; i<2; i++)
 	{
 		enum LightBank bank = banks[i];
 
@@ -1046,7 +1046,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	if(node_under_sunlight && !ndef->get(n).sunlight_propagates)
 	{
 		s16 y = p.Y - 1;
-		for(;; y--){
+		for (;; y--){
 			//m_dout<<DTIME<<"y="<<y<<std::endl;
 			v3s16 n2pos(p.X, y, p.Z);
 
@@ -1069,7 +1069,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		}
 	}
 
-	for(s32 i=0; i<2; i++)
+	for (s32 i=0; i<2; i++)
 	{
 		enum LightBank bank = banks[i];
 
@@ -1082,7 +1082,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	/*
 		Update information about whether day and night light differ
 	*/
-	for(std::map<v3s16, MapBlock*>::iterator
+	for (std::map<v3s16, MapBlock*>::iterator
 			i = modified_blocks.begin();
 			i != modified_blocks.end(); ++i)
 	{
@@ -1113,7 +1113,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		v3s16(0,-1,0), // bottom
 		v3s16(-1,0,0), // left
 	};
-	for(u16 i=0; i<7; i++)
+	for (u16 i=0; i<7; i++)
 	{
 		v3s16 p2 = p + dirs[i];
 
@@ -1166,7 +1166,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 		LIGHTBANK_DAY,
 		LIGHTBANK_NIGHT
 	};
-	for(s32 i=0; i<2; i++)
+	for (s32 i=0; i<2; i++)
 	{
 		enum LightBank bank = banks[i];
 
@@ -1193,7 +1193,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	n.setContent(replace_material);
 	setNode(p, n);
 
-	for(s32 i=0; i<2; i++)
+	for (s32 i=0; i<2; i++)
 	{
 		enum LightBank bank = banks[i];
 
@@ -1221,7 +1221,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 				"Propagating sunlight";
 		m_dout<<DTIME<<" -> ybottom="<<ybottom<<std::endl;*/
 		s16 y = p.Y;
-		for(; y >= ybottom; y--)
+		for (; y >= ybottom; y--)
 		{
 			v3s16 p2(p.X, y, p.Z);
 			/*m_dout<<DTIME<<"lighting neighbors of node ("
@@ -1243,7 +1243,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 		}
 	}
 
-	for(s32 i=0; i<2; i++)
+	for (s32 i=0; i<2; i++)
 	{
 		enum LightBank bank = banks[i];
 
@@ -1261,7 +1261,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	/*
 		Update information about whether day and night light differ
 	*/
-	for(std::map<v3s16, MapBlock*>::iterator
+	for (std::map<v3s16, MapBlock*>::iterator
 			i = modified_blocks.begin();
 			i != modified_blocks.end(); ++i)
 	{
@@ -1292,7 +1292,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 		v3s16(-1,0,0), // left
 		v3s16(0,0,0), // self
 	};
-	for(u16 i=0; i<7; i++)
+	for (u16 i=0; i<7; i++)
 	{
 		v3s16 p2 = p + dirs[i];
 
@@ -1319,7 +1319,7 @@ bool Map::addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata)
 		addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
 
 		// Copy modified_blocks to event
-		for(std::map<v3s16, MapBlock*>::iterator
+		for (std::map<v3s16, MapBlock*>::iterator
 				i = modified_blocks.begin();
 				i != modified_blocks.end(); ++i)
 		{
@@ -1347,7 +1347,7 @@ bool Map::removeNodeWithEvent(v3s16 p)
 		removeNodeAndUpdate(p, modified_blocks);
 
 		// Copy modified_blocks to event
-		for(std::map<v3s16, MapBlock*>::iterator
+		for (std::map<v3s16, MapBlock*>::iterator
 				i = modified_blocks.begin();
 				i != modified_blocks.end(); ++i)
 		{
@@ -1437,7 +1437,7 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 	u32 block_count_all = 0;
 
 	beginSave();
-	for(std::map<v2s16, MapSector*>::iterator si = m_sectors.begin();
+	for (std::map<v2s16, MapSector*>::iterator si = m_sectors.begin();
 		si != m_sectors.end(); ++si)
 	{
 		MapSector *sector = si->second;
@@ -1447,7 +1447,7 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 		std::list<MapBlock*> blocks;
 		sector->getBlocks(blocks);
 
-		for(std::list<MapBlock*>::iterator i = blocks.begin();
+		for (std::list<MapBlock*>::iterator i = blocks.begin();
 				i != blocks.end(); ++i)
 		{
 			MapBlock *block = (*i);
@@ -1516,7 +1516,7 @@ void Map::unloadUnreferencedBlocks(std::list<v3s16> *unloaded_blocks)
 
 void Map::deleteSectors(std::list<v2s16> &list)
 {
-	for(std::list<v2s16>::iterator j = list.begin();
+	for (std::list<v2s16>::iterator j = list.begin();
 		j != list.end(); ++j)
 	{
 		MapSector *sector = m_sectors[*j];
@@ -1538,7 +1538,7 @@ void Map::unloadUnusedData(float timeout,
 	u32 saved_blocks_count = 0;
 
 	core::map<v2s16, MapSector*>::Iterator si = m_sectors.getIterator();
-	for(; si.atEnd() == false; si++)
+	for (; si.atEnd() == false; si++)
 	{
 		MapSector *sector = si.getNode()->getValue();
 
@@ -1546,7 +1546,7 @@ void Map::unloadUnusedData(float timeout,
 
 		core::list<MapBlock*> blocks;
 		sector->getBlocks(blocks);
-		for(core::list<MapBlock*>::Iterator i = blocks.begin();
+		for (core::list<MapBlock*>::Iterator i = blocks.begin();
 				i != blocks.end(); i++)
 		{
 			MapBlock *block = (*i);
@@ -2207,7 +2207,7 @@ ServerMap::~ServerMap()
 		Free all MapChunks
 	*/
 	core::map<v2s16, MapChunk*>::Iterator i = m_chunks.getIterator();
-	for(; i.atEnd() == false; i++)
+	for (; i.atEnd() == false; i++)
 	{
 		MapChunk *chunk = i.getNode()->getValue();
 		delete chunk;
@@ -2258,9 +2258,9 @@ bool ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 	{
 		//TimeTaker timer("initBlockMake() create area");
 
-		for(s16 x=blockpos_min.X-extra_borders.X;
+		for (s16 x=blockpos_min.X-extra_borders.X;
 				x<=blockpos_max.X+extra_borders.X; x++)
-		for(s16 z=blockpos_min.Z-extra_borders.Z;
+		for (s16 z=blockpos_min.Z-extra_borders.Z;
 				z<=blockpos_max.Z+extra_borders.Z; z++)
 		{
 			v2s16 sectorpos(x, z);
@@ -2269,7 +2269,7 @@ bool ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 			assert(sector);
 			(void) sector;
 
-			for(s16 y=blockpos_min.Y-extra_borders.Y;
+			for (s16 y=blockpos_min.Y-extra_borders.Y;
 					y<=blockpos_max.Y+extra_borders.Y; y++)
 			{
 				v3s16 p(x,y,z);
@@ -2355,11 +2355,11 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 	data->vmanip.print(infostream);*/
 
 	// Make sure affected blocks are loaded
-	for(s16 x=blockpos_min.X-extra_borders.X;
+	for (s16 x=blockpos_min.X-extra_borders.X;
 			x<=blockpos_max.X+extra_borders.X; x++)
-	for(s16 z=blockpos_min.Z-extra_borders.Z;
+	for (s16 z=blockpos_min.Z-extra_borders.Z;
 			z<=blockpos_max.Z+extra_borders.Z; z++)
-	for(s16 y=blockpos_min.Y-extra_borders.Y;
+	for (s16 y=blockpos_min.Y-extra_borders.Y;
 			y<=blockpos_max.Y+extra_borders.Y; y++)
 	{
 		v3s16 p(x, y, z);
@@ -2402,11 +2402,11 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 		core::map<v3s16, MapBlock*> lighting_update_blocks;
 
 		// Center blocks
-		for(s16 x=blockpos_min.X-extra_borders.X;
+		for (s16 x=blockpos_min.X-extra_borders.X;
 				x<=blockpos_max.X+extra_borders.X; x++)
-		for(s16 z=blockpos_min.Z-extra_borders.Z;
+		for (s16 z=blockpos_min.Z-extra_borders.Z;
 				z<=blockpos_max.Z+extra_borders.Z; z++)
-		for(s16 y=blockpos_min.Y-extra_borders.Y;
+		for (s16 y=blockpos_min.Y-extra_borders.Y;
 				y<=blockpos_max.Y+extra_borders.Y; y++)
 		{
 			v3s16 p(x, y, z);
@@ -2423,11 +2423,11 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 			This is cheating, but it is not fast enough if all of them
 			would actually be updated.
 		*/
-		for(s16 x=blockpos_min.X-extra_borders.X;
+		for (s16 x=blockpos_min.X-extra_borders.X;
 				x<=blockpos_max.X+extra_borders.X; x++)
-		for(s16 z=blockpos_min.Z-extra_borders.Z;
+		for (s16 z=blockpos_min.Z-extra_borders.Z;
 				z<=blockpos_max.Z+extra_borders.Z; z++)
-		for(s16 y=blockpos_min.Y-extra_borders.Y;
+		for (s16 y=blockpos_min.Y-extra_borders.Y;
 				y<=blockpos_max.Y+extra_borders.Y; y++)
 		{
 			v3s16 p(x, y, z);
@@ -2445,7 +2445,7 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 	/*
 		Go through changed blocks
 	*/
-	for(std::map<v3s16, MapBlock*>::iterator i = changed_blocks.begin();
+	for (std::map<v3s16, MapBlock*>::iterator i = changed_blocks.begin();
 			i != changed_blocks.end(); ++i)
 	{
 		MapBlock *block = i->second;
@@ -2465,9 +2465,9 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 	/*
 		Set central blocks as generated
 	*/
-	for(s16 x=blockpos_min.X; x<=blockpos_max.X; x++)
-	for(s16 z=blockpos_min.Z; z<=blockpos_max.Z; z++)
-	for(s16 y=blockpos_min.Y; y<=blockpos_max.Y; y++)
+	for (s16 x=blockpos_min.X; x<=blockpos_max.X; x++)
+	for (s16 z=blockpos_min.Z; z<=blockpos_max.Z; z++)
+	for (s16 y=blockpos_min.Y; y<=blockpos_max.Y; y++)
 	{
 		v3s16 p(x, y, z);
 		MapBlock *block = getBlockNoCreateNoEx(p);
@@ -2493,12 +2493,12 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 		/*
 			Analyze resulting blocks
 		*/
-		/*for(s16 x=blockpos_min.X-1; x<=blockpos_max.X+1; x++)
-		for(s16 z=blockpos_min.Z-1; z<=blockpos_max.Z+1; z++)
-		for(s16 y=blockpos_min.Y-1; y<=blockpos_max.Y+1; y++)*/
-		for(s16 x=blockpos_min.X-0; x<=blockpos_max.X+0; x++)
-		for(s16 z=blockpos_min.Z-0; z<=blockpos_max.Z+0; z++)
-		for(s16 y=blockpos_min.Y-0; y<=blockpos_max.Y+0; y++)
+		/*for (s16 x=blockpos_min.X-1; x<=blockpos_max.X+1; x++)
+		for (s16 z=blockpos_min.Z-1; z<=blockpos_max.Z+1; z++)
+		for (s16 y=blockpos_min.Y-1; y<=blockpos_max.Y+1; y++)*/
+		for (s16 x=blockpos_min.X-0; x<=blockpos_max.X+0; x++)
+		for (s16 z=blockpos_min.Z-0; z<=blockpos_max.Z+0; z++)
+		for (s16 y=blockpos_min.Y-0; y<=blockpos_max.Y+0; y++)
 		{
 			v3s16 p = v3s16(x,y,z);
 			MapBlock *block = getBlockNoCreateNoEx(p);
@@ -2640,9 +2640,9 @@ MapBlock * ServerMap::generateBlock(
 	if(block)
 	{
 		bool erroneus_content = false;
-		for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
-		for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
-		for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
+		for (s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
+		for (s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+		for (s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
 		{
 			v3s16 p(x0,y0,z0);
 			MapNode n = block->getNode(p);
@@ -2668,10 +2668,10 @@ MapBlock * ServerMap::generateBlock(
 	*/
 	if(block)
 	{
-		for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
-		for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
+		for (s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
+		for (s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
 		{
-			for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+			for (s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
 			{
 				MapNode n;
 				n.setContent(CONTENT_AIR);
@@ -2789,7 +2789,7 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 			event.p = p;
 
 			// Copy modified_blocks to event
-			for(std::map<v3s16, MapBlock*>::iterator
+			for (std::map<v3s16, MapBlock*>::iterator
 					i = modified_blocks.begin();
 					i != modified_blocks.end(); ++i)
 			{
@@ -2851,7 +2851,7 @@ s16 ServerMap::findGroundLevel(v2s16 p2d)
 	s16 max=63;
 	s16 min=-64;
 	v3s16 p(p2d.X, max, p2d.Y);
-	for(; p.Y>min; p.Y--)
+	for (; p.Y>min; p.Y--)
 	{
 		MapNode n = getNodeNoEx(p);
 		if(n.getContent() != CONTENT_IGNORE)
@@ -2863,7 +2863,7 @@ s16 ServerMap::findGroundLevel(v2s16 p2d)
 	if(getNodeNoEx(p).getContent() != CONTENT_AIR)
 		goto plan_b;
 	// Search existing walkable and return it
-	for(; p.Y>min; p.Y--)
+	for (; p.Y>min; p.Y--)
 	{
 		MapNode n = getNodeNoEx(p);
 		if(content_walkable(n.d) && n.getContent() != CONTENT_IGNORE)
@@ -3002,7 +3002,7 @@ void ServerMap::save(ModifiedState save_level)
 	// Don't do anything with sqlite unless something is really saved
 	bool save_started = false;
 
-	for(std::map<v2s16, MapSector*>::iterator i = m_sectors.begin();
+	for (std::map<v2s16, MapSector*>::iterator i = m_sectors.begin();
 		i != m_sectors.end(); ++i)
 	{
 		ServerMapSector *sector = (ServerMapSector*)i->second;
@@ -3016,7 +3016,7 @@ void ServerMap::save(ModifiedState save_level)
 		std::list<MapBlock*> blocks;
 		sector->getBlocks(blocks);
 
-		for(std::list<MapBlock*>::iterator j = blocks.begin();
+		for (std::list<MapBlock*>::iterator j = blocks.begin();
 			j != blocks.end(); ++j)
 		{
 			MapBlock *block = *j;
@@ -3075,7 +3075,7 @@ void ServerMap::listAllLoadableBlocks(std::list<v3s16> &dst)
 
 void ServerMap::listAllLoadedBlocks(std::list<v3s16> &dst)
 {
-	for(std::map<v2s16, MapSector*>::iterator si = m_sectors.begin();
+	for (std::map<v2s16, MapSector*>::iterator si = m_sectors.begin();
 		si != m_sectors.end(); ++si)
 	{
 		MapSector *sector = si->second;
@@ -3083,7 +3083,7 @@ void ServerMap::listAllLoadedBlocks(std::list<v3s16> &dst)
 		std::list<MapBlock*> blocks;
 		sector->getBlocks(blocks);
 
-		for(std::list<MapBlock*>::iterator i = blocks.begin();
+		for (std::list<MapBlock*>::iterator i = blocks.begin();
 				i != blocks.end(); ++i)
 		{
 			MapBlock *block = (*i);
@@ -3300,7 +3300,7 @@ bool ServerMap::loadSectorFull(v2s16 p2d)
 	std::vector<fs::DirListNode> list2 = fs::GetDirListing
 			(sectordir);
 	std::vector<fs::DirListNode>::iterator i2;
-	for(i2=list2.begin(); i2!=list2.end(); i2++)
+	for (i2=list2.begin(); i2!=list2.end(); i2++)
 	{
 		// We want files
 		if(i2->dir)
@@ -3628,9 +3628,9 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 
 	addArea(block_area_nodes);
 
-	for(s32 z=p_min.Z; z<=p_max.Z; z++)
-	for(s32 y=p_min.Y; y<=p_max.Y; y++)
-	for(s32 x=p_min.X; x<=p_max.X; x++)
+	for (s32 z=p_min.Z; z<=p_max.Z; z++)
+	for (s32 y=p_min.Y; y<=p_max.Y; y++)
+	for (s32 x=p_min.X; x<=p_max.X; x++)
 	{
 		u8 flags = 0;
 		MapBlock *block;
@@ -3673,8 +3673,8 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 				*/
 				VoxelArea a(p*MAP_BLOCKSIZE, (p+1)*MAP_BLOCKSIZE-v3s16(1,1,1));
 				// Fill with VOXELFLAG_NO_DATA
-				for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
-				for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
+				for (s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
+				for (s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
 				{
 					s32 i = m_area.index(a.MinEdge.X,y,z);
 					memset(&m_flags[i], VOXELFLAG_NO_DATA, MAP_BLOCKSIZE);
@@ -3702,7 +3702,7 @@ void MMVManip::blitBackAll(std::map<v3s16, MapBlock*> *modified_blocks,
 	/*
 		Copy data of all blocks
 	*/
-	for(std::map<v3s16, u8>::iterator
+	for (std::map<v3s16, u8>::iterator
 			i = m_loaded_blocks.begin();
 			i != m_loaded_blocks.end(); ++i)
 	{

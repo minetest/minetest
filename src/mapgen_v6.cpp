@@ -683,7 +683,7 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 	TimeTaker timer1("flow mud");
 
 	// Iterate a few times
-	for(s16 k = 0; k < 3; k++) {
+	for (s16 k = 0; k < 3; k++) {
 		for (s16 z = mudflow_minpos; z <= mudflow_maxpos; z++)
 		for (s16 x = mudflow_minpos; x <= mudflow_maxpos; x++) {
 			// Invert coordinates every 2nd iteration
@@ -702,11 +702,11 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 			while(y >= node_min.Y)
 			{
 
-			for(;; y--)
+			for (;; y--)
 			{
 				MapNode *n = NULL;
 				// Find mud
-				for(; y >= node_min.Y; y--) {
+				for (; y >= node_min.Y; y--) {
 					n = &vm->m_data[i];
 					if (n->getContent() == c_dirt ||
 						n->getContent() == c_dirt_with_grass ||
@@ -757,7 +757,7 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 					continue;
 
 				// Drop mud on side
-				for(u32 di=0; di<4; di++) {
+				for (u32 di=0; di<4; di++) {
 					v3s16 dirp = dirs4[di];
 					u32 i2 = i;
 					// Move to side

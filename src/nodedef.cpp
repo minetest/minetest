@@ -63,7 +63,7 @@ void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 	if(type == NODEBOX_FIXED || type == NODEBOX_LEVELED)
 	{
 		writeU16(os, fixed.size());
-		for(std::vector<aabb3f>::const_iterator
+		for (std::vector<aabb3f>::const_iterator
 				i = fixed.begin();
 				i != fixed.end(); i++)
 		{
@@ -200,13 +200,13 @@ void ContentFeatures::reset()
 	drawtype = NDT_NORMAL;
 	mesh = "";
 #ifndef SERVER
-	for(u32 i = 0; i < 24; i++)
+	for (u32 i = 0; i < 24; i++)
 		mesh_ptr[i] = NULL;
 #endif
 	visual_scale = 1.0;
-	for(u32 i = 0; i < 6; i++)
+	for (u32 i = 0; i < 6; i++)
 		tiledef[i] = TileDef();
-	for(u16 j = 0; j < CF_SPECIAL_COUNT; j++)
+	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++)
 		tiledef_special[j] = TileDef();
 	alpha = 255;
 	post_effect_color = video::SColor(0, 0, 0, 0);
@@ -252,7 +252,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 	writeU8(os, 7); // version
 	os<<serializeString(name);
 	writeU16(os, groups.size());
-	for(ItemGroupList::const_iterator
+	for (ItemGroupList::const_iterator
 			i = groups.begin(); i != groups.end(); i++){
 		os<<serializeString(i->first);
 		writeS16(os, i->second);
@@ -260,10 +260,10 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version)
 	writeU8(os, drawtype);
 	writeF1000(os, visual_scale);
 	writeU8(os, 6);
-	for(u32 i = 0; i < 6; i++)
+	for (u32 i = 0; i < 6; i++)
 		tiledef[i].serialize(os, protocol_version);
 	writeU8(os, CF_SPECIAL_COUNT);
-	for(u32 i = 0; i < CF_SPECIAL_COUNT; i++){
+	for (u32 i = 0; i < CF_SPECIAL_COUNT; i++){
 		tiledef_special[i].serialize(os, protocol_version);
 	}
 	writeU8(os, alpha);
@@ -318,7 +318,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	name = deSerializeString(is);
 	groups.clear();
 	u32 groups_size = readU16(is);
-	for(u32 i = 0; i < groups_size; i++){
+	for (u32 i = 0; i < groups_size; i++){
 		std::string name = deSerializeString(is);
 		int value = readS16(is);
 		groups[name] = value;
@@ -327,11 +327,11 @@ void ContentFeatures::deSerialize(std::istream &is)
 	visual_scale = readF1000(is);
 	if(readU8(is) != 6)
 		throw SerializationError("unsupported tile count");
-	for(u32 i = 0; i < 6; i++)
+	for (u32 i = 0; i < 6; i++)
 		tiledef[i].deSerialize(is);
 	if(readU8(is) != CF_SPECIAL_COUNT)
 		throw SerializationError("unsupported CF_SPECIAL_COUNT");
-	for(u32 i = 0; i < CF_SPECIAL_COUNT; i++)
+	for (u32 i = 0; i < CF_SPECIAL_COUNT; i++)
 		tiledef_special[i].deSerialize(is);
 	alpha = readU8(is);
 	post_effect_color.setAlpha(readU8(is));
@@ -1178,7 +1178,7 @@ void ContentFeatures::deSerializeOld(std::istream &is, int version)
 		name = deSerializeString(is);
 		groups.clear();
 		u32 groups_size = readU16(is);
-		for(u32 i=0; i<groups_size; i++){
+		for (u32 i=0; i<groups_size; i++){
 			std::string name = deSerializeString(is);
 			int value = readS16(is);
 			groups[name] = value;

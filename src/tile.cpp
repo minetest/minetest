@@ -58,7 +58,7 @@ static bool replace_ext(std::string &path, const char *ext)
 		return false;
 	// Find place of last dot, fail if \ or / found.
 	s32 last_dot_i = -1;
-	for(s32 i=path.size()-1; i>=0; i--)
+	for (s32 i=path.size()-1; i>=0; i--)
 	{
 		if(path[i] == '.')
 		{
@@ -190,7 +190,7 @@ class SourceImageCache
 {
 public:
 	~SourceImageCache() {
-		for(std::map<std::string, video::IImage*>::iterator iter = m_images.begin();
+		for (std::map<std::string, video::IImage*>::iterator iter = m_images.begin();
 				iter != m_images.end(); iter++) {
 			iter->second->drop();
 		}
@@ -694,7 +694,7 @@ void TextureSource::rebuildImagesAndTextures()
 	assert(driver != 0);
 
 	// Recreate textures
-	for(u32 i=0; i<m_textureinfo_cache.size(); i++){
+	for (u32 i=0; i<m_textureinfo_cache.size(); i++){
 		TextureInfo *ti = &m_textureinfo_cache[i];
 		video::IImage *img = generateImage(ti->name);
 #ifdef __ANDROID__
@@ -930,7 +930,7 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 	// Find last separator in the name
 	s32 last_separator_pos = -1;
 	u8 paren_bal = 0;
-	for(s32 i = name.size() - 1; i >= 0; i--) {
+	for (s32 i = name.size() - 1; i >= 0; i--) {
 		switch(name[i]) {
 		case separator:
 			if (paren_bal == 0) {
@@ -1276,8 +1276,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			core::dimension2d<u32> dim = baseimg->getDimension();
 
 			// Set alpha to full
-			for(u32 y=0; y<dim.Height; y++)
-			for(u32 x=0; x<dim.Width; x++)
+			for (u32 y=0; y<dim.Height; y++)
+			for (u32 x=0; x<dim.Width; x++)
 			{
 				video::SColor c = baseimg->getPixel(x,y);
 				c.setAlpha(255);
@@ -1311,8 +1311,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			oldbaseimg->drop();*/
 
 			// Set alpha to full
-			for(u32 y=0; y<dim.Height; y++)
-			for(u32 x=0; x<dim.Width; x++)
+			for (u32 y=0; y<dim.Height; y++)
+			for (u32 x=0; x<dim.Width; x++)
 			{
 				video::SColor c = baseimg->getPixel(x,y);
 				u32 r = c.getRed();
@@ -1645,8 +1645,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 static void blit_with_alpha(video::IImage *src, video::IImage *dst,
 		v2s32 src_pos, v2s32 dst_pos, v2u32 size)
 {
-	for(u32 y0=0; y0<size.Y; y0++)
-	for(u32 x0=0; x0<size.X; x0++)
+	for (u32 y0=0; y0<size.Y; y0++)
+	for (u32 x0=0; x0<size.X; x0++)
 	{
 		s32 src_x = src_pos.X + x0;
 		s32 src_y = src_pos.Y + y0;
@@ -1666,8 +1666,8 @@ static void blit_with_alpha(video::IImage *src, video::IImage *dst,
 static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
 		v2s32 src_pos, v2s32 dst_pos, v2u32 size)
 {
-	for(u32 y0=0; y0<size.Y; y0++)
-	for(u32 x0=0; x0<size.X; x0++)
+	for (u32 y0=0; y0<size.Y; y0++)
+	for (u32 x0=0; x0<size.X; x0++)
 	{
 		s32 src_x = src_pos.X + x0;
 		s32 src_y = src_pos.Y + y0;
@@ -1689,8 +1689,8 @@ static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
 static void apply_mask(video::IImage *mask, video::IImage *dst,
 		v2s32 mask_pos, v2s32 dst_pos, v2u32 size)
 {
-	for(u32 y0 = 0; y0 < size.Y; y0++) {
-		for(u32 x0 = 0; x0 < size.X; x0++) {
+	for (u32 y0 = 0; y0 < size.Y; y0++) {
+		for (u32 x0 = 0; x0 < size.X; x0++) {
 			s32 mask_x = x0 + mask_pos.X;
 			s32 mask_y = y0 + mask_pos.Y;
 			s32 dst_x = x0 + dst_pos.X;
@@ -1748,7 +1748,7 @@ static void draw_crack(video::IImage *crack, video::IImage *dst,
 		// Scale crack image by copying
 		crack_cropped->copyToScaling(crack_scaled);
 		// Copy or overlay crack image onto each frame
-		for(s32 i = 0; i < frame_count; ++i)
+		for (s32 i = 0; i < frame_count; ++i)
 		{
 			v2s32 dst_pos(0, dim_crack_scaled.Height * i);
 			if(use_overlay)
@@ -1780,8 +1780,8 @@ void brighten(video::IImage *image)
 
 	core::dimension2d<u32> dim = image->getDimension();
 
-	for(u32 y=0; y<dim.Height; y++)
-	for(u32 x=0; x<dim.Width; x++)
+	for (u32 y=0; y<dim.Height; y++)
+	for (u32 x=0; x<dim.Width; x++)
 	{
 		video::SColor c = image->getPixel(x,y);
 		c.setRed(0.5 * 255 + 0.5 * (float)c.getRed());
@@ -1807,7 +1807,7 @@ u32 parseImageTransform(const std::string& s)
 	while(pos < s.size())
 	{
 		int transform = -1;
-		for(int i = 0; i <= 7; ++i)
+		for (int i = 0; i <= 7; ++i)
 		{
 			const std::string &name_i = transform_names[i];
 
@@ -1884,8 +1884,8 @@ void imageTransform(u32 transform, video::IImage *src, video::IImage *dst)
 	else if(transform == 7)    // flip y then rotate by 90 degrees ccw
 		sxn = 3, syn = 1;  //   sx = (H-1) - dy, sy = (W-1) - dx
 
-	for(u32 dy=0; dy<dstdim.Height; dy++)
-	for(u32 dx=0; dx<dstdim.Width; dx++)
+	for (u32 dy=0; dy<dstdim.Height; dy++)
+	for (u32 dx=0; dx<dstdim.Width; dx++)
 	{
 		u32 entries[4] = {dx, dstdim.Width-1-dx, dy, dstdim.Height-1-dy};
 		u32 sx = entries[sxn];

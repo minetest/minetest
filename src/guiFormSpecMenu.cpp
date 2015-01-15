@@ -240,7 +240,7 @@ std::vector<std::string> split(const std::string &s, char delim) {
 
 	std::string current = "";
 	bool last_was_escape = false;
-	for(unsigned int i=0; i < s.size(); i++) {
+	for (unsigned int i=0; i < s.size(); i++) {
 		if (last_was_escape) {
 			current += '\\';
 			current += s.c_str()[i];
@@ -2038,7 +2038,7 @@ bool GUIFormSpecMenu::getAndroidUIInput()
 		return false;
 	}
 
-	for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
+	for (std::vector<FieldSpec>::iterator iter =  m_fields.begin();
 			iter != m_fields.end(); iter++) {
 
 		if (iter->fname != fieldname) {
@@ -2067,11 +2067,11 @@ GUIFormSpecMenu::ItemSpec GUIFormSpecMenu::getItemAtPos(v2s32 p) const
 {
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
 
-	for(u32 i=0; i<m_inventorylists.size(); i++)
+	for (u32 i=0; i<m_inventorylists.size(); i++)
 	{
 		const ListDrawSpec &s = m_inventorylists[i];
 
-		for(s32 i=0; i<s.geom.X*s.geom.Y; i++) {
+		for (s32 i=0; i<s.geom.X*s.geom.Y; i++) {
 			s32 item_i = i + s.start_item_i;
 			s32 x = (i%s.geom.X) * spacing.X;
 			s32 y = (i/s.geom.X) * spacing.Y;
@@ -2110,7 +2110,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
 
-	for(s32 i=0; i<s.geom.X*s.geom.Y; i++)
+	for (s32 i=0; i<s.geom.X*s.geom.Y; i++)
 	{
 		s32 item_i = i + s.start_item_i;
 		if(item_i >= (s32) ilist->getSize())
@@ -2257,7 +2257,7 @@ void GUIFormSpecMenu::drawMenu()
 	/*
 		Draw backgrounds
 	*/
-	for(u32 i=0; i<m_backgrounds.size(); i++)
+	for (u32 i=0; i<m_backgrounds.size(); i++)
 	{
 		const ImageDrawSpec &spec = m_backgrounds[i];
 		video::ITexture *texture = m_tsrc->getTexture(spec.name);
@@ -2292,7 +2292,7 @@ void GUIFormSpecMenu::drawMenu()
 	/*
 		Draw Boxes
 	*/
-	for(u32 i=0; i<m_boxes.size(); i++)
+	for (u32 i=0; i<m_boxes.size(); i++)
 	{
 		const BoxDrawSpec &spec = m_boxes[i];
 
@@ -2308,7 +2308,7 @@ void GUIFormSpecMenu::drawMenu()
 	/*
 		Draw images
 	*/
-	for(u32 i=0; i<m_images.size(); i++)
+	for (u32 i=0; i<m_images.size(); i++)
 	{
 		const ImageDrawSpec &spec = m_images[i];
 		video::ITexture *texture = m_tsrc->getTexture(spec.name);
@@ -2341,7 +2341,7 @@ void GUIFormSpecMenu::drawMenu()
 	/*
 		Draw item images
 	*/
-	for(u32 i=0; i<m_itemimages.size(); i++)
+	for (u32 i=0; i<m_itemimages.size(); i++)
 	{
 		if (m_gamedef == 0)
 			break;
@@ -2369,8 +2369,8 @@ void GUIFormSpecMenu::drawMenu()
 		Phase 1: Item images; prepare tooltip
 	*/
 	int start_phase=0;
-	for(int phase=start_phase; phase<=1; phase++)
-	for(u32 i=0; i<m_inventorylists.size(); i++)
+	for (int phase=start_phase; phase<=1; phase++)
+	for (u32 i=0; i<m_inventorylists.size(); i++)
 	{
 		drawList(m_inventorylists[i], phase);
 	}
@@ -2408,7 +2408,7 @@ void GUIFormSpecMenu::drawMenu()
 		}
 
 		if (id != -1 && delta >= m_tooltip_show_delay) {
-			for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
+			for (std::vector<FieldSpec>::iterator iter =  m_fields.begin();
 					iter != m_fields.end(); iter++) {
 				if ( (iter->fid == id) && (m_tooltips[iter->fname].tooltip != "") ){
 					if (m_old_tooltip != m_tooltips[iter->fname].tooltip) {
@@ -2470,7 +2470,7 @@ void GUIFormSpecMenu::updateSelectedItem()
 	}
 	else if(m_selected_content_guess.name != ""){
 		bool found = false;
-		for(u32 i=0; i<m_inventorylists.size() && !found; i++){
+		for (u32 i=0; i<m_inventorylists.size() && !found; i++){
 			const ListDrawSpec &s = m_inventorylists[i];
 			Inventory *inv = m_invmgr->getInventory(s.inventoryloc);
 			if(!inv)
@@ -2478,7 +2478,7 @@ void GUIFormSpecMenu::updateSelectedItem()
 			InventoryList *list = inv->getList(s.listname);
 			if(!list)
 				continue;
-			for(s32 i=0; i<s.geom.X*s.geom.Y && !found; i++){
+			for (s32 i=0; i<s.geom.X*s.geom.Y && !found; i++){
 				u32 item_i = i + s.start_item_i;
 				if(item_i >= list->getSize())
 					continue;
@@ -2505,7 +2505,7 @@ void GUIFormSpecMenu::updateSelectedItem()
 	// If craftresult is nonempty and nothing else is selected, select it now.
 	if(!m_selected_item)
 	{
-		for(u32 i=0; i<m_inventorylists.size(); i++)
+		for (u32 i=0; i<m_inventorylists.size(); i++)
 		{
 			const ListDrawSpec &s = m_inventorylists[i];
 			if(s.listname == "craftpreview")
@@ -2604,7 +2604,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 			current_keys_pending.key_escape = false;
 		}
 
-		for(unsigned int i=0; i<m_fields.size(); i++) {
+		for (unsigned int i=0; i<m_fields.size(); i++) {
 			const FieldSpec &s = m_fields[i];
 			if(s.send) {
 				std::string name  = wide_to_narrow(s.fname);
@@ -3328,7 +3328,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		if(event.GUIEvent.EventType==gui::EGET_TAB_CHANGED
 				&& isVisible()) {
 			// find the element that was clicked
-			for(unsigned int i=0; i<m_fields.size(); i++) {
+			for (unsigned int i=0; i<m_fields.size(); i++) {
 				FieldSpec &s = m_fields[i];
 				if ((s.ftype == f_TabHeader) &&
 						(s.fid == event.GUIEvent.Caller->getID())) {
@@ -3367,7 +3367,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			}
 
 			// find the element that was clicked
-			for(u32 i=0; i<m_fields.size(); i++) {
+			for (u32 i=0; i<m_fields.size(); i++) {
 				FieldSpec &s = m_fields[i];
 				// if its a button, set the send field so
 				// lua knows which button was pressed
@@ -3391,7 +3391,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				else if ((s.ftype == f_DropDown) &&
 						(s.fid == event.GUIEvent.Caller->getID())) {
 					// only send the changed dropdown
-					for(u32 i=0; i<m_fields.size(); i++) {
+					for (u32 i=0; i<m_fields.size(); i++) {
 						FieldSpec &s2 = m_fields[i];
 						if (s2.ftype == f_DropDown) {
 							s2.send = false;
@@ -3402,7 +3402,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 					// revert configuration to make sure dropdowns are sent on
 					// regular button click
-					for(u32 i=0; i<m_fields.size(); i++) {
+					for (u32 i=0; i<m_fields.size(); i++) {
 						FieldSpec &s2 = m_fields[i];
 						if (s2.ftype == f_DropDown) {
 							s2.send = true;
@@ -3439,7 +3439,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			int current_id = event.GUIEvent.Caller->getID();
 			if(current_id > 257) {
 				// find the element that was clicked
-				for(u32 i=0; i<m_fields.size(); i++) {
+				for (u32 i=0; i<m_fields.size(); i++) {
 					FieldSpec &s = m_fields[i];
 					// if it's a table, set the send field
 					// so lua knows which table was changed
@@ -3464,7 +3464,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
  */
 std::wstring GUIFormSpecMenu::getNameByID(s32 id)
 {
-	for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
+	for (std::vector<FieldSpec>::iterator iter =  m_fields.begin();
 				iter != m_fields.end(); iter++) {
 		if (iter->fid == id) {
 			return iter->fname;
@@ -3480,7 +3480,7 @@ std::wstring GUIFormSpecMenu::getNameByID(s32 id)
  */
 std::wstring GUIFormSpecMenu::getLabelByID(s32 id)
 {
-	for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
+	for (std::vector<FieldSpec>::iterator iter =  m_fields.begin();
 				iter != m_fields.end(); iter++) {
 		if (iter->fid == id) {
 			return iter->flabel;

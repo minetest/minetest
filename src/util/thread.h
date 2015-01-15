@@ -130,7 +130,7 @@ public:
 			/*
 				If the caller is already on the list, only update CallerData
 			*/
-			for(typename std::list< GetRequest<Key, T, Caller, CallerData> >::iterator
+			for (typename std::list< GetRequest<Key, T, Caller, CallerData> >::iterator
 					i = m_queue.getList().begin();
 					i != m_queue.getList().end(); ++i)
 			{
@@ -138,7 +138,7 @@ public:
 
 				if(request.key == key)
 				{
-					for(typename std::list< CallerInfo<Caller, CallerData, Key, T> >::iterator
+					for (typename std::list< CallerInfo<Caller, CallerData, Key, T> >::iterator
 							i = request.callers.begin();
 							i != request.callers.end(); ++i)
 					{
@@ -187,7 +187,7 @@ public:
 	void pushResult(GetRequest<Key, T, Caller, CallerData> req,
 					T res) {
 
-		for(typename std::list< CallerInfo<Caller, CallerData, Key, T> >::iterator
+		for (typename std::list< CallerInfo<Caller, CallerData, Key, T> >::iterator
 				i = req.callers.begin();
 				i != req.callers.end(); ++i)
 		{

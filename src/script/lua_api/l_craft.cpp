@@ -343,7 +343,7 @@ int ModApiCraft::l_get_craft_recipe(lua_State *L)
 	lua_newtable(L); // output table
 	if(got){
 		lua_newtable(L);
-		for(std::vector<ItemStack>::const_iterator
+		for (std::vector<ItemStack>::const_iterator
 			i = input.items.begin();
 			i != input.items.end(); i++, k++)
 		{

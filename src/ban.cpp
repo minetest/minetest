@@ -77,7 +77,7 @@ void BanManager::save()
 	infostream<<"BanManager: saving to "<<m_banfilepath<<std::endl;
 	std::ostringstream ss(std::ios_base::binary);
 
-	for(std::map<std::string, std::string>::iterator
+	for (std::map<std::string, std::string>::iterator
 			i = m_ips.begin();
 			i != m_ips.end(); i++)
 	{
@@ -102,7 +102,7 @@ std::string BanManager::getBanDescription(const std::string &ip_or_name)
 {
 	JMutexAutoLock lock(m_mutex);
 	std::string s = "";
-	for(std::map<std::string, std::string>::iterator
+	for (std::map<std::string, std::string>::iterator
 			i = m_ips.begin();
 			i != m_ips.end(); i++)
 	{
@@ -133,7 +133,7 @@ void BanManager::add(const std::string &ip, const std::string &name)
 void BanManager::remove(const std::string &ip_or_name)
 {
 	JMutexAutoLock lock(m_mutex);
-	for(std::map<std::string, std::string>::iterator
+	for (std::map<std::string, std::string>::iterator
 			i = m_ips.begin();
 			i != m_ips.end();)
 	{

@@ -198,7 +198,7 @@ void Particle::updateVertices()
 			c, tx0, ty0);
 
 	v3s16 camera_offset = m_env->getCameraOffset();
-	for(u16 i=0; i<4; i++)
+	for (u16 i=0; i<4; i++)
 	{
 		if (m_vertical) {
 			v3f ppos = m_player->getPosition()/BS;
@@ -259,7 +259,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 
 	if (m_spawntime != 0) // Spawner exists for a predefined timespan
 	{
-		for(std::vector<float>::iterator i = m_spawntimes.begin();
+		for (std::vector<float>::iterator i = m_spawntimes.begin();
 				i != m_spawntimes.end();)
 		{
 			if ((*i) <= m_time && m_amount > 0)
@@ -355,7 +355,7 @@ void ParticleManager::step(float dtime)
 void ParticleManager::stepSpawners (float dtime)
 {
 	JMutexAutoLock lock(m_spawner_list_lock);
-	for(std::map<u32, ParticleSpawner*>::iterator i = 
+	for (std::map<u32, ParticleSpawner*>::iterator i = 
 			m_particle_spawners.begin();
 			i != m_particle_spawners.end();)
 	{
@@ -375,7 +375,7 @@ void ParticleManager::stepSpawners (float dtime)
 void ParticleManager::stepParticles (float dtime)
 {
 	JMutexAutoLock lock(m_particle_list_lock);
-	for(std::vector<Particle*>::iterator i = m_particles.begin();
+	for (std::vector<Particle*>::iterator i = m_particles.begin();
 			i != m_particles.end();)
 	{
 		if ((*i)->get_expired())
@@ -396,7 +396,7 @@ void ParticleManager::clearAll ()
 {
 	JMutexAutoLock lock(m_spawner_list_lock);
 	JMutexAutoLock lock2(m_particle_list_lock);
-	for(std::map<u32, ParticleSpawner*>::iterator i =
+	for (std::map<u32, ParticleSpawner*>::iterator i =
 			m_particle_spawners.begin();
 			i != m_particle_spawners.end();)
 	{
@@ -404,7 +404,7 @@ void ParticleManager::clearAll ()
 		m_particle_spawners.erase(i++);
 	}
 
-	for(std::vector<Particle*>::iterator i =
+	for (std::vector<Particle*>::iterator i =
 			m_particles.begin();
 			i != m_particles.end();)
 	{

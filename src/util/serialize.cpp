@@ -52,7 +52,7 @@ std::string serializeWideString(const std::wstring &plain)
 	writeU16((u8*)buf, plain.size());
 	std::string s;
 	s.append(buf, 2);
-	for(u32 i=0; i<plain.size(); i++)
+	for (u32 i=0; i<plain.size(); i++)
 	{
 		writeU16((u8*)buf, plain[i]);
 		s.append(buf, 2);
@@ -90,7 +90,7 @@ std::wstring deSerializeWideString(std::istream &is)
 	if(s_size == 0)
 		return s;
 	s.reserve(s_size);
-	for(u32 i=0; i<s_size; i++)
+	for (u32 i=0; i<s_size; i++)
 	{
 		is.read(&buf[0], 2);
 		wchar_t c16 = readU16((u8*)buf);
@@ -133,7 +133,7 @@ std::string serializeJsonString(const std::string &plain)
 {
 	std::ostringstream os(std::ios::binary);
 	os<<"\"";
-	for(size_t i = 0; i < plain.size(); i++)
+	for (size_t i = 0; i < plain.size(); i++)
 	{
 		char c = plain[i];
 		switch(c)
@@ -177,7 +177,7 @@ std::string deSerializeJsonString(std::istream &is)
 		throw SerializationError("JSON string must start with doublequote");
 
 	// Parse characters
-	for(;;)
+	for (;;)
 	{
 		c = is.get();
 		if(is.eof())

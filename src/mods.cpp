@@ -86,7 +86,7 @@ std::map<std::string, ModSpec> getModsInPath(std::string path, bool part_of_modp
 
 	std::map<std::string, ModSpec> result;
 	std::vector<fs::DirListNode> dirlist = fs::GetDirListing(path);
-	for(u32 j=0; j<dirlist.size(); j++){
+	for (u32 j=0; j<dirlist.size(); j++){
 		if(!dirlist[j].dir)
 			continue;
 		std::string modname = dirlist[j].name;
@@ -107,7 +107,7 @@ std::map<std::string, ModSpec> getModsInPath(std::string path, bool part_of_modp
 std::map<std::string, ModSpec> flattenModTree(std::map<std::string, ModSpec> mods)
 {
 	std::map<std::string, ModSpec> result;
-	for(std::map<std::string,ModSpec>::iterator it = mods.begin();
+	for (std::map<std::string,ModSpec>::iterator it = mods.begin();
 		it != mods.end(); ++it)
 	{
 		ModSpec mod = (*it).second;
@@ -129,7 +129,7 @@ std::map<std::string, ModSpec> flattenModTree(std::map<std::string, ModSpec> mod
 std::vector<ModSpec> flattenMods(std::map<std::string, ModSpec> mods)
 {
 	std::vector<ModSpec> result;
-	for(std::map<std::string,ModSpec>::iterator it = mods.begin();
+	for (std::map<std::string,ModSpec>::iterator it = mods.begin();
 		it != mods.end(); ++it)
 	{
 		ModSpec mod = (*it).second;
@@ -163,7 +163,7 @@ ModConfiguration::ModConfiguration(std::string worldpath)
 	worldmt_settings.readConfigFile(worldmt.c_str());
 	std::vector<std::string> names = worldmt_settings.getNames();
 	std::set<std::string> include_mod_names;
-	for(std::vector<std::string>::iterator it = names.begin();
+	for (std::vector<std::string>::iterator it = names.begin();
 		it != names.end(); ++it)
 	{
 		std::string name = *it;
@@ -179,11 +179,11 @@ ModConfiguration::ModConfiguration(std::string worldpath)
 
 	// Collect all mods that are also in include_mod_names
 	std::vector<ModSpec> addon_mods;
-	for(std::set<std::string>::const_iterator it_path = gamespec.addon_mods_paths.begin();
+	for (std::set<std::string>::const_iterator it_path = gamespec.addon_mods_paths.begin();
 			it_path != gamespec.addon_mods_paths.end(); ++it_path)
 	{
 		std::vector<ModSpec> addon_mods_in_path = flattenMods(getModsInPath(*it_path));
-		for(std::vector<ModSpec>::iterator it = addon_mods_in_path.begin();
+		for (std::vector<ModSpec>::iterator it = addon_mods_in_path.begin();
 			it != addon_mods_in_path.end(); ++it)
 		{
 			ModSpec& mod = *it;
@@ -200,7 +200,7 @@ ModConfiguration::ModConfiguration(std::string worldpath)
 	// report on name conflicts
 	if(!m_name_conflicts.empty()){
 		std::string s = "Unresolved name conflicts for mods ";
-		for(std::set<std::string>::const_iterator it = m_name_conflicts.begin();
+		for (std::set<std::string>::const_iterator it = m_name_conflicts.begin();
 				it != m_name_conflicts.end(); ++it)
 		{
 			if(it != m_name_conflicts.begin()) s += ", ";
@@ -224,12 +224,12 @@ void ModConfiguration::addMods(std::vector<ModSpec> new_mods)
 	// Maintain a map of all existing m_unsatisfied_mods.
 	// Keys are mod names and values are indices into m_unsatisfied_mods.
 	std::map<std::string, u32> existing_mods;
-	for(u32 i = 0; i < m_unsatisfied_mods.size(); ++i){
+	for (u32 i = 0; i < m_unsatisfied_mods.size(); ++i){
 		existing_mods[m_unsatisfied_mods[i].name] = i;
 	}
 
 	// Add new mods
-	for(int want_from_modpack = 1; want_from_modpack >= 0; --want_from_modpack){
+	for (int want_from_modpack = 1; want_from_modpack >= 0; --want_from_modpack){
 		// First iteration:
 		// Add all the mods that come from modpacks
 		// Second iteration:
@@ -237,7 +237,7 @@ void ModConfiguration::addMods(std::vector<ModSpec> new_mods)
 
 		std::set<std::string> seen_this_iteration;
 
-		for(std::vector<ModSpec>::const_iterator it = new_mods.begin();
+		for (std::vector<ModSpec>::const_iterator it = new_mods.begin();
 				it != new_mods.end(); ++it){
 			const ModSpec &mod = *it;
 			if(mod.part_of_modpack != want_from_modpack)
@@ -281,7 +281,7 @@ void ModConfiguration::resolveDependencies()
 {
 	// Step 1: Compile a list of the mod names we're working with
 	std::set<std::string> modnames;
-	for(std::vector<ModSpec>::iterator it = m_unsatisfied_mods.begin();
+	for (std::vector<ModSpec>::iterator it = m_unsatisfied_mods.begin();
 		it != m_unsatisfied_mods.end(); ++it){
 		modnames.insert((*it).name);
 	}
@@ -290,12 +290,12 @@ void ModConfiguration::resolveDependencies()
 	// of each mod, split mods into satisfied and unsatisfied
 	std::list<ModSpec> satisfied;
 	std::list<ModSpec> unsatisfied;
-	for(std::vector<ModSpec>::iterator it = m_unsatisfied_mods.begin();
+	for (std::vector<ModSpec>::iterator it = m_unsatisfied_mods.begin();
 			it != m_unsatisfied_mods.end(); ++it){
 		ModSpec mod = *it;
 		mod.unsatisfied_depends = mod.depends;
 		// check which optional dependencies actually exist
-		for(std::set<std::string>::iterator it_optdep = mod.optdepends.begin();
+		for (std::set<std::string>::iterator it_optdep = mod.optdepends.begin();
 				it_optdep != mod.optdepends.end(); ++it_optdep){
 			std::string optdep = *it_optdep;
 			if(modnames.count(optdep) != 0)
@@ -314,7 +314,7 @@ void ModConfiguration::resolveDependencies()
 		ModSpec mod = satisfied.back();
 		m_sorted_mods.push_back(mod);
 		satisfied.pop_back();
-		for(std::list<ModSpec>::iterator it = unsatisfied.begin();
+		for (std::list<ModSpec>::iterator it = unsatisfied.begin();
 				it != unsatisfied.end(); ){
 			ModSpec& mod2 = *it;
 			mod2.unsatisfied_depends.erase(mod.name);

@@ -82,7 +82,7 @@ SHA1::~SHA1()
 {
 	// erase data
 	H0 = H1 = H2 = H3 = H4 = 0;
-	for( int c = 0; c < 64; c++ ) bytes[c] = 0;
+	for ( int c = 0; c < 64; c++ ) bytes[c] = 0;
 	unprocessedBytes = size = 0;
 }
 
@@ -100,15 +100,15 @@ void SHA1::process()
 	d = H3;
 	e = H4;
 	// copy and expand the message block
-	for( t = 0; t < 16; t++ ) W[t] = (bytes[t*4] << 24)
+	for ( t = 0; t < 16; t++ ) W[t] = (bytes[t*4] << 24)
 									+(bytes[t*4 + 1] << 16)
 									+(bytes[t*4 + 2] << 8)
 									+ bytes[t*4 + 3];
-	for(; t< 80; t++ ) W[t] = lrot( W[t-3]^W[t-8]^W[t-14]^W[t-16], 1 );
+	for (; t< 80; t++ ) W[t] = lrot( W[t-3]^W[t-8]^W[t-14]^W[t-16], 1 );
 	
 	/* main loop */
 	Uint32 temp;
-	for( t = 0; t < 80; t++ )
+	for ( t = 0; t < 80; t++ )
 	{
 		if( t < 20 ) {
 			K = 0x5a827999;

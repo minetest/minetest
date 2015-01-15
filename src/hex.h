@@ -30,7 +30,7 @@ static inline std::string hex_encode(const char *data, unsigned int data_size)
 	char buf2[3];
 	buf2[2] = '\0';
 
-	for(unsigned int i = 0; i < data_size; i++)
+	for (unsigned int i = 0; i < data_size; i++)
 	{
 		unsigned char c = (unsigned char) data[i];
 		buf2[0] = hex_chars[(c & 0xf0) >> 4];

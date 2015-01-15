@@ -78,7 +78,7 @@ int ModApiServer::l_get_player_privs(lua_State *L)
 	lua_newtable(L);
 	int table = lua_gettop(L);
 	std::set<std::string> privs_s = server->getPlayerEffectivePrivs(name);
-	for(std::set<std::string>::const_iterator
+	for (std::set<std::string>::const_iterator
 			i = privs_s.begin(); i != privs_s.end(); i++){
 		lua_pushboolean(L, true);
 		lua_setfield(L, table, i->c_str());
@@ -373,10 +373,10 @@ int ModApiServer::l_get_modnames(lua_State *L)
 	// Take unsorted items from mods_unsorted and sort them into
 	// mods_sorted; not great performance but the number of mods on a
 	// server will likely be small.
-	for(std::list<std::string>::iterator i = mods_unsorted.begin();
+	for (std::list<std::string>::iterator i = mods_unsorted.begin();
 			i != mods_unsorted.end(); ++i) {
 		bool added = false;
-		for(std::list<std::string>::iterator x = mods_sorted.begin();
+		for (std::list<std::string>::iterator x = mods_sorted.begin();
 				x != mods_sorted.end(); ++x) {
 			// I doubt anybody using Minetest will be using
 			// anything not ASCII based :)

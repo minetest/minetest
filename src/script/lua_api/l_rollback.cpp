@@ -87,7 +87,7 @@ int ModApiRollback::l_rollback_revert_actions_by(lua_State *L)
 	lua_pushboolean(L, success);
 	lua_createtable(L, log.size(), 0);
 	unsigned long i = 0;
-	for(std::list<std::string>::const_iterator iter = log.begin();
+	for (std::list<std::string>::const_iterator iter = log.begin();
 			iter != log.end(); ++i, ++iter) {
 		lua_pushnumber(L, i);
 		lua_pushstring(L, iter->c_str());

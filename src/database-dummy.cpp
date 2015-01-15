@@ -61,7 +61,7 @@ std::string Database_Dummy::loadBlock(v3s16 blockpos)
 
 void Database_Dummy::listAllLoadableBlocks(std::list<v3s16> &dst)
 {
-	for(std::map<u64, std::string>::iterator x = m_database.begin(); x != m_database.end(); ++x)
+	for (std::map<u64, std::string>::iterator x = m_database.begin(); x != m_database.end(); ++x)
 	{
 		v3s16 p = getIntegerAsBlock(x->first);
 		//dstream<<"block_i="<<block_i<<" p="<<PP(p)<<std::endl;

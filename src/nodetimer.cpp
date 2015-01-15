@@ -60,7 +60,7 @@ void NodeTimerList::serialize(std::ostream &os, u8 map_format_version) const
 		writeU16(os, m_data.size());
 	}
 
-	for(std::map<v3s16, NodeTimer>::const_iterator
+	for (std::map<v3s16, NodeTimer>::const_iterator
 			i = m_data.begin();
 			i != m_data.end(); i++){
 		v3s16 p = i->first;
@@ -92,7 +92,7 @@ void NodeTimerList::deSerialize(std::istream &is, u8 map_format_version)
 
 	u16 count = readU16(is);
 
-	for(u16 i=0; i<count; i++)
+	for (u16 i=0; i<count; i++)
 	{
 		u16 p16 = readU16(is);
 
@@ -132,7 +132,7 @@ std::map<v3s16, NodeTimer> NodeTimerList::step(float dtime)
 {
 	std::map<v3s16, NodeTimer> elapsed_timers;
 	// Increment timers
-	for(std::map<v3s16, NodeTimer>::iterator
+	for (std::map<v3s16, NodeTimer>::iterator
 			i = m_data.begin();
 			i != m_data.end(); i++){
 		v3s16 p = i->first;
@@ -144,7 +144,7 @@ std::map<v3s16, NodeTimer> NodeTimerList::step(float dtime)
 			i->second = t;
 	}
 	// Delete elapsed timers
-	for(std::map<v3s16, NodeTimer>::const_iterator
+	for (std::map<v3s16, NodeTimer>::const_iterator
 			i = elapsed_timers.begin();
 			i != elapsed_timers.end(); i++){
 		v3s16 p = i->first;

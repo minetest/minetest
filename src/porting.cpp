@@ -279,7 +279,7 @@ void pathRemoveFile(char *path, char delim)
 {
 	// Remove filename and path delimiter
 	int i;
-	for(i = strlen(path)-1; i>=0; i--)
+	for (i = strlen(path)-1; i>=0; i--)
 	{
 		if(path[i] == delim)
 			break;
@@ -493,7 +493,7 @@ void initializePaths()
 	trylist.push_back(path_user);
 #endif
 
-	for(std::list<std::string>::const_iterator i = trylist.begin();
+	for (std::list<std::string>::const_iterator i = trylist.begin();
 			i != trylist.end(); i++)
 	{
 		const std::string &trypath = *i;

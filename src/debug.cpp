@@ -39,7 +39,7 @@ FILE *g_debugstreams[DEBUGSTREAM_COUNT] = {stderr, NULL};
 
 #define DEBUGPRINT(...)\
 {\
-	for(int i=0; i<DEBUGSTREAM_COUNT; i++)\
+	for (int i=0; i<DEBUGSTREAM_COUNT; i++)\
 	{\
 		if(g_debugstreams[i] != NULL){\
 			fprintf(g_debugstreams[i], __VA_ARGS__);\
@@ -82,7 +82,7 @@ public:
 
 	int overflow(int c)
 	{
-		for(int i=0; i<DEBUGSTREAM_COUNT; i++)
+		for (int i=0; i<DEBUGSTREAM_COUNT; i++)
 		{
 			if(g_debugstreams[i] == stderr && m_disable_stderr)
 				continue;
@@ -99,7 +99,7 @@ public:
 #ifdef __ANDROID__
 		__android_log_print(ANDROID_LOG_VERBOSE, PROJECT_NAME, "%s", s);
 #endif
-		for(int i=0; i<DEBUGSTREAM_COUNT; i++)
+		for (int i=0; i<DEBUGSTREAM_COUNT; i++)
 		{
 			if(g_debugstreams[i] == stderr && m_disable_stderr)
 				continue;
@@ -171,7 +171,7 @@ void DebugStack::print(FILE *file, bool everything)
 	fprintf(file, "DEBUG STACK FOR THREAD %lx:\n",
 			(unsigned long)threadid);
 
-	for(int i=0; i<stack_max_i; i++)
+	for (int i=0; i<stack_max_i; i++)
 	{
 		if(i == stack_i && everything == false)
 			break;
@@ -190,7 +190,7 @@ void DebugStack::print(std::ostream &os, bool everything)
 {
 	os<<"DEBUG STACK FOR THREAD "<<(unsigned long)threadid<<": "<<std::endl;
 
-	for(int i=0; i<stack_max_i; i++)
+	for (int i=0; i<stack_max_i; i++)
 	{
 		if(i == stack_i && everything == false)
 			break;
@@ -218,7 +218,7 @@ void debug_stacks_print_to(std::ostream &os)
 
 	os<<"Debug stacks:"<<std::endl;
 
-	for(std::map<threadid_t, DebugStack*>::iterator
+	for (std::map<threadid_t, DebugStack*>::iterator
 			i = g_debug_stacks.begin();
 			i != g_debug_stacks.end(); ++i)
 	{
@@ -232,13 +232,13 @@ void debug_stacks_print()
 
 	DEBUGPRINT("Debug stacks:\n");
 
-	for(std::map<threadid_t, DebugStack*>::iterator
+	for (std::map<threadid_t, DebugStack*>::iterator
 			i = g_debug_stacks.begin();
 			i != g_debug_stacks.end(); ++i)
 	{
 		DebugStack *stack = i->second;
 
-		for(int i=0; i<DEBUGSTREAM_COUNT; i++)
+		for (int i=0; i<DEBUGSTREAM_COUNT; i++)
 		{
 			if(g_debugstreams[i] != NULL)
 				stack->print(g_debugstreams[i], true);

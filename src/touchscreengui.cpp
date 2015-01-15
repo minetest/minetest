@@ -576,7 +576,7 @@ void TouchScreenGUI::handleChangedButton(const SEvent &event)
 		if (m_buttons[i].ids.empty()) {
 			continue;
 		}
-		for(std::vector<int>::iterator iter = m_buttons[i].ids.begin();
+		for (std::vector<int>::iterator iter = m_buttons[i].ids.begin();
 				iter != m_buttons[i].ids.end(); iter++) {
 
 			if (event.TouchInput.ID == *iter) {

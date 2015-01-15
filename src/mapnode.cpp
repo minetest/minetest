@@ -172,7 +172,7 @@ static std::vector<aabb3f> transformNodeBox(const MapNode &n,
 		int facedir = n.getFaceDir(nodemgr);
 		u8 axisdir = facedir>>2;
 		facedir&=0x03;
-		for(std::vector<aabb3f>::const_iterator
+		for (std::vector<aabb3f>::const_iterator
 				i = fixed.begin();
 				i != fixed.end(); i++)
 		{
@@ -326,7 +326,7 @@ static std::vector<aabb3f> transformNodeBox(const MapNode &n,
 				nodebox.wall_side.MaxEdge
 			};
 
-			for(s32 i=0; i<2; i++)
+			for (s32 i=0; i<2; i++)
 			{
 				if(dir == v3s16(-1,0,0))
 					vertices[i].rotateXZBy(0);
@@ -512,17 +512,17 @@ void MapNode::serializeBulk(std::ostream &os, int version,
 	SharedBuffer<u8> databuf(nodecount * (content_width + params_width));
 
 	// Serialize content
-	for(u32 i=0; i<nodecount; i++)
+	for (u32 i=0; i<nodecount; i++)
 		writeU16(&databuf[i*2], nodes[i].param0);
 
 	// Serialize param1
 	u32 start1 = content_width * nodecount;
-	for(u32 i=0; i<nodecount; i++)
+	for (u32 i=0; i<nodecount; i++)
 		writeU8(&databuf[start1 + i], nodes[i].param1);
 
 	// Serialize param2
 	u32 start2 = (content_width + 1) * nodecount;
-	for(u32 i=0; i<nodecount; i++)
+	for (u32 i=0; i<nodecount; i++)
 		writeU8(&databuf[start2 + i], nodes[i].param2);
 
 	/*
@@ -575,25 +575,25 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 	// Deserialize content
 	if(content_width == 1)
 	{
-		for(u32 i=0; i<nodecount; i++)
+		for (u32 i=0; i<nodecount; i++)
 			nodes[i].param0 = readU8(&databuf[i]);
 	}
 	else if(content_width == 2)
 	{
-		for(u32 i=0; i<nodecount; i++)
+		for (u32 i=0; i<nodecount; i++)
 			nodes[i].param0 = readU16(&databuf[i*2]);
 	}
 
 	// Deserialize param1
 	u32 start1 = content_width * nodecount;
-	for(u32 i=0; i<nodecount; i++)
+	for (u32 i=0; i<nodecount; i++)
 		nodes[i].param1 = readU8(&databuf[start1 + i]);
 
 	// Deserialize param2
 	u32 start2 = (content_width + 1) * nodecount;
 	if(content_width == 1)
 	{
-		for(u32 i=0; i<nodecount; i++) {
+		for (u32 i=0; i<nodecount; i++) {
 			nodes[i].param2 = readU8(&databuf[start2 + i]);
 			if(nodes[i].param0 > 0x7F){
 				nodes[i].param0 <<= 4;
@@ -604,7 +604,7 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 	}
 	else if(content_width == 2)
 	{
-		for(u32 i=0; i<nodecount; i++)
+		for (u32 i=0; i<nodecount; i++)
 			nodes[i].param2 = readU8(&databuf[start2 + i]);
 	}
 }

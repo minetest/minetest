@@ -49,7 +49,7 @@ class MainMenuManager : public IMenuManager
 public:
 	virtual void createdMenu(GUIModalMenu *menu)
 	{
-		for(std::list<GUIModalMenu*>::iterator
+		for (std::list<GUIModalMenu*>::iterator
 				i = m_stack.begin();
 				i != m_stack.end(); ++i)
 		{
@@ -67,7 +67,7 @@ public:
 		bool removed_entry;
 		do{
 			removed_entry = false;
-			for(std::list<GUIModalMenu*>::iterator
+			for (std::list<GUIModalMenu*>::iterator
 					i = m_stack.begin();
 					i != m_stack.end(); ++i)
 			{
@@ -104,7 +104,7 @@ public:
 
 	bool pausesGame()
 	{
-		for(std::list<GUIModalMenu*>::iterator
+		for (std::list<GUIModalMenu*>::iterator
 				i = m_stack.begin(); i != m_stack.end(); ++i)
 		{
 			if((*i)->pausesGame())

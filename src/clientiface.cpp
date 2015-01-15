@@ -182,7 +182,7 @@ void RemoteClient::GetNextBlocks(
 	bool queue_is_full = false;
 
 	s16 d;
-	for(d = d_start; d <= d_max; d++)
+	for (d = d_start; d <= d_max; d++)
 	{
 		/*
 			Get the border/face dot coordinates of a "d-radiused"
@@ -192,7 +192,7 @@ void RemoteClient::GetNextBlocks(
 		getFacePositions(list, d);
 
 		std::list<v3s16>::iterator li;
-		for(li=list.begin(); li!=list.end(); ++li)
+		for (li=list.begin(); li!=list.end(); ++li)
 		{
 			v3s16 p = *li + center;
 
@@ -409,7 +409,7 @@ void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks)
 {
 	m_nearest_unsent_d = 0;
 
-	for(std::map<v3s16, MapBlock*>::iterator
+	for (std::map<v3s16, MapBlock*>::iterator
 			i = blocks.begin();
 			i != blocks.end(); ++i)
 	{
@@ -552,7 +552,7 @@ ClientInterface::~ClientInterface()
 	{
 		JMutexAutoLock clientslock(m_clients_mutex);
 
-		for(std::map<u16, RemoteClient*>::iterator
+		for (std::map<u16, RemoteClient*>::iterator
 			i = m_clients.begin();
 			i != m_clients.end(); ++i)
 		{
@@ -568,7 +568,7 @@ std::list<u16> ClientInterface::getClientIDs(ClientState min_state)
 	std::list<u16> reply;
 	JMutexAutoLock clientslock(m_clients_mutex);
 
-	for(std::map<u16, RemoteClient*>::iterator
+	for (std::map<u16, RemoteClient*>::iterator
 		i = m_clients.begin();
 		i != m_clients.end(); ++i)
 	{
@@ -605,7 +605,7 @@ void ClientInterface::UpdatePlayerList()
 
 		if(!clients.empty())
 			infostream<<"Players:"<<std::endl;
-		for(std::list<u16>::iterator
+		for (std::list<u16>::iterator
 			i = clients.begin();
 			i != clients.end(); ++i)
 		{
@@ -635,7 +635,7 @@ void ClientInterface::sendToAll(u16 channelnum,
 		SharedBuffer<u8> data, bool reliable)
 {
 	JMutexAutoLock clientslock(m_clients_mutex);
-	for(std::map<u16, RemoteClient*>::iterator
+	for (std::map<u16, RemoteClient*>::iterator
 		i = m_clients.begin();
 		i != m_clients.end(); ++i)
 	{
@@ -721,7 +721,7 @@ void ClientInterface::DeleteClient(u16 peer_id)
 	//TODO this should be done by client destructor!!!
 	RemoteClient *client = n->second;
 	// Handle objects
-	for(std::set<u16>::iterator
+	for (std::set<u16>::iterator
 			i = client->m_known_objects.begin();
 			i != client->m_known_objects.end(); ++i)
 	{

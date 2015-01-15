@@ -459,9 +459,9 @@ public:
 	/*void setExists(VoxelArea a)
 	{
 		addArea(a);
-		for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
-		for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
-		for(s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
+		for (s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
+		for (s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
+		for (s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
 		{
 			m_flags[m_area.index(x,y,z)] &= ~VOXELFLAG_NO_DATA;
 		}

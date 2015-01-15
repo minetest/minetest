@@ -252,12 +252,12 @@ Server::Server(
 	// complain about mods with unsatisfied dependencies
 	if(!modconf.isConsistent())
 	{
-		for(std::vector<ModSpec>::iterator it = unsatisfied_mods.begin();
+		for (std::vector<ModSpec>::iterator it = unsatisfied_mods.begin();
 			it != unsatisfied_mods.end(); ++it)
 		{
 			ModSpec mod = *it;
 			errorstream << "mod \"" << mod.name << "\" has unsatisfied dependencies: ";
-			for(std::set<std::string>::iterator dep_it = mod.unsatisfied_depends.begin();
+			for (std::set<std::string>::iterator dep_it = mod.unsatisfied_depends.begin();
 				dep_it != mod.unsatisfied_depends.end(); ++dep_it)
 				errorstream << " \"" << *dep_it << "\"";
 			errorstream << std::endl;
@@ -269,7 +269,7 @@ Server::Server(
 	worldmt_settings.readConfigFile(worldmt.c_str());
 	std::vector<std::string> names = worldmt_settings.getNames();
 	std::set<std::string> load_mod_names;
-	for(std::vector<std::string>::iterator it = names.begin();
+	for (std::vector<std::string>::iterator it = names.begin();
 		it != names.end(); ++it)
 	{
 		std::string name = *it;
@@ -277,16 +277,16 @@ Server::Server(
 			load_mod_names.insert(name.substr(9));
 	}
 	// complain about mods declared to be loaded, but not found
-	for(std::vector<ModSpec>::iterator it = m_mods.begin();
+	for (std::vector<ModSpec>::iterator it = m_mods.begin();
 			it != m_mods.end(); ++it)
 		load_mod_names.erase((*it).name);
-	for(std::vector<ModSpec>::iterator it = unsatisfied_mods.begin();
+	for (std::vector<ModSpec>::iterator it = unsatisfied_mods.begin();
 			it != unsatisfied_mods.end(); ++it)
 		load_mod_names.erase((*it).name);
 	if(!load_mod_names.empty())
 	{
 		errorstream << "The following mods could not be found:";
-		for(std::set<std::string>::iterator it = load_mod_names.begin();
+		for (std::set<std::string>::iterator it = load_mod_names.begin();
 			it != load_mod_names.end(); ++it)
 			errorstream << " \"" << (*it) << "\"";
 		errorstream << std::endl;
@@ -313,14 +313,14 @@ Server::Server(
 
 	// Print 'em
 	infostream<<"Server: Loading mods: ";
-	for(std::vector<ModSpec>::iterator i = m_mods.begin();
+	for (std::vector<ModSpec>::iterator i = m_mods.begin();
 			i != m_mods.end(); i++){
 		const ModSpec &mod = *i;
 		infostream<<mod.name<<" ";
 	}
 	infostream<<std::endl;
 	// Load and run "mod" scripts
-	for(std::vector<ModSpec>::iterator i = m_mods.begin();
+	for (std::vector<ModSpec>::iterator i = m_mods.begin();
 			i != m_mods.end(); i++){
 		const ModSpec &mod = *i;
 		std::string scriptpath = mod.path + DIR_DELIM + "init.lua";
@@ -590,7 +590,7 @@ void Server::AsyncRunStep(bool initial_step)
 
 		ScopeProfiler sp(g_profiler, "Server: handle players");
 
-		for(std::list<u16>::iterator
+		for (std::list<u16>::iterator
 			i = clientids.begin();
 			i != clientids.end(); ++i)
 		{
@@ -651,7 +651,7 @@ void Server::AsyncRunStep(bool initial_step)
 		map.updateLighting(modified_blocks, lighting_modified_blocks);
 
 		// Add blocks modified by lighting to modified_blocks
-		for(core::map<v3s16, MapBlock*>::Iterator
+		for (core::map<v3s16, MapBlock*>::Iterator
 				i = lighting_modified_blocks.getIterator();
 				i.atEnd() == false; i++)
 		{
@@ -713,7 +713,7 @@ void Server::AsyncRunStep(bool initial_step)
 		radius *= MAP_BLOCKSIZE;
 		player_radius *= MAP_BLOCKSIZE;
 
-		for(std::map<u16, RemoteClient*>::iterator
+		for (std::map<u16, RemoteClient*>::iterator
 			i = clients.begin();
 			i != clients.end(); ++i)
 		{
@@ -756,7 +756,7 @@ void Server::AsyncRunStep(bool initial_step)
 			// Handle removed objects
 			writeU16((u8*)buf, removed_objects.size());
 			data_buffer.append(buf, 2);
-			for(std::set<u16>::iterator
+			for (std::set<u16>::iterator
 					i = removed_objects.begin();
 					i != removed_objects.end(); ++i)
 			{
@@ -778,7 +778,7 @@ void Server::AsyncRunStep(bool initial_step)
 			// Handle added objects
 			writeU16((u8*)buf, added_objects.size());
 			data_buffer.append(buf, 2);
-			for(std::set<u16>::iterator
+			for (std::set<u16>::iterator
 					i = added_objects.begin();
 					i != added_objects.end(); ++i)
 			{
@@ -835,13 +835,13 @@ void Server::AsyncRunStep(bool initial_step)
 
 		core::map<u16, bool> all_known_objects;
 
-		for(core::map<u16, RemoteClient*>::Iterator
+		for (core::map<u16, RemoteClient*>::Iterator
 			i = m_clients.getIterator();
 			i.atEnd() == false; i++)
 		{
 			RemoteClient *client = i.getNode()->getValue();
 			// Go through all known objects of client
-			for(core::map<u16, bool>::Iterator
+			for (core::map<u16, bool>::Iterator
 					i = client->m_known_objects.getIterator();
 					i.atEnd()==false; i++)
 			{
@@ -867,7 +867,7 @@ void Server::AsyncRunStep(bool initial_step)
 		std::map<u16, std::list<ActiveObjectMessage>* > buffered_messages;
 
 		// Get active object messages from environment
-		for(;;)
+		for (;;)
 		{
 			ActiveObjectMessage aom = m_env->getActiveObjectMessage();
 			if(aom.id == 0)
@@ -891,7 +891,7 @@ void Server::AsyncRunStep(bool initial_step)
 		m_clients.Lock();
 		std::map<u16, RemoteClient*> clients = m_clients.getClientList();
 		// Route data to every client
-		for(std::map<u16, RemoteClient*>::iterator
+		for (std::map<u16, RemoteClient*>::iterator
 			i = clients.begin();
 			i != clients.end(); ++i)
 		{
@@ -899,7 +899,7 @@ void Server::AsyncRunStep(bool initial_step)
 			std::string reliable_data;
 			std::string unreliable_data;
 			// Go through all objects in message buffer
-			for(std::map<u16, std::list<ActiveObjectMessage>* >::iterator
+			for (std::map<u16, std::list<ActiveObjectMessage>* >::iterator
 					j = buffered_messages.begin();
 					j != buffered_messages.end(); ++j)
 			{
@@ -910,7 +910,7 @@ void Server::AsyncRunStep(bool initial_step)
 				// Get message list of object
 				std::list<ActiveObjectMessage>* list = j->second;
 				// Go through every message
-				for(std::list<ActiveObjectMessage>::iterator
+				for (std::list<ActiveObjectMessage>::iterator
 						k = list->begin(); k != list->end(); ++k)
 				{
 					// Compose the full new data with header
@@ -963,7 +963,7 @@ void Server::AsyncRunStep(bool initial_step)
 		m_clients.Unlock();
 
 		// Clear buffered_messages
-		for(std::map<u16, std::list<ActiveObjectMessage>* >::iterator
+		for (std::map<u16, std::list<ActiveObjectMessage>* >::iterator
 				i = buffered_messages.begin();
 				i != buffered_messages.end(); ++i)
 		{
@@ -1032,7 +1032,7 @@ void Server::AsyncRunStep(bool initial_step)
 			{
 				infostream<<"Server: MEET_OTHER"<<std::endl;
 				prof.add("MEET_OTHER", 1);
-				for(std::set<v3s16>::iterator
+				for (std::set<v3s16>::iterator
 						i = event->modified_blocks.begin();
 						i != event->modified_blocks.end(); ++i)
 				{
@@ -1053,7 +1053,7 @@ void Server::AsyncRunStep(bool initial_step)
 			{
 				// Convert list format to that wanted by SetBlocksNotSent
 				std::map<v3s16, MapBlock*> modified_blocks2;
-				for(std::set<v3s16>::iterator
+				for (std::set<v3s16>::iterator
 						i = event->modified_blocks.begin();
 						i != event->modified_blocks.end(); ++i)
 				{
@@ -1061,7 +1061,7 @@ void Server::AsyncRunStep(bool initial_step)
 							m_env->getMap().getBlockNoCreateNoEx(*i);
 				}
 				// Set blocks not sent
-				for(std::list<u16>::iterator
+				for (std::list<u16>::iterator
 						i = far_players.begin();
 						i != far_players.end(); ++i)
 				{
@@ -1525,7 +1525,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 		else
 		{
-			for(u32 i=0; i<PASSWORD_SIZE-1; i++)
+			for (u32 i=0; i<PASSWORD_SIZE-1; i++)
 			{
 				given_password[i] = data[23+i];
 			}
@@ -1723,7 +1723,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				<<getPlayerName(peer_id)<<std::endl;
 		verbosestream<<"TOSERVER_REQUEST_MEDIA: "<<std::endl;
 
-		for(int i = 0; i < numfiles; i++) {
+		for (int i = 0; i < numfiles; i++) {
 			std::string name = deSerializeString(is);
 			tosend.push_back(name);
 			verbosestream<<"TOSERVER_REQUEST_MEDIA: requested file "
@@ -1789,7 +1789,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		*/
 
 		u16 count = data[2];
-		for(u16 i=0; i<count; i++)
+		for (u16 i=0; i<count; i++)
 		{
 			if((s16)datasize < 2+1+(i+1)*6)
 				throw con::InvalidIncomingDataException
@@ -1888,7 +1888,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		*/
 
 		u16 count = data[2];
-		for(u16 i=0; i<count; i++)
+		for (u16 i=0; i<count; i++)
 		{
 			if((s16)datasize < 2+1+(i+1)*6)
 				throw con::InvalidIncomingDataException
@@ -2093,7 +2093,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		u16 len = readU16(buf);
 
 		std::wstring message;
-		for(u16 i=0; i<len; i++)
+		for (u16 i=0; i<len; i++)
 		{
 			is.read((char*)buf, 2);
 			message += (wchar_t)readU16(buf);
@@ -2160,7 +2160,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 				std::list<u16> clients = m_clients.getClientIDs();
 
-				for(std::list<u16>::iterator
+				for (std::list<u16>::iterator
 					i = clients.begin();
 					i != clients.end(); ++i)
 				{
@@ -2210,11 +2210,11 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(datasize != 2+PASSWORD_SIZE*2)
 			return;
 		/*char password[PASSWORD_SIZE];
-		for(u32 i=0; i<PASSWORD_SIZE-1; i++)
+		for (u32 i=0; i<PASSWORD_SIZE-1; i++)
 			password[i] = data[2+i];
 		password[PASSWORD_SIZE-1] = 0;*/
 		std::string oldpwd;
-		for(u32 i=0; i<PASSWORD_SIZE-1; i++)
+		for (u32 i=0; i<PASSWORD_SIZE-1; i++)
 		{
 			char c = data[2+i];
 			if(c == 0)
@@ -2222,7 +2222,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			oldpwd += c;
 		}
 		std::string newpwd;
-		for(u32 i=0; i<PASSWORD_SIZE-1; i++)
+		for (u32 i=0; i<PASSWORD_SIZE-1; i++)
 		{
 			char c = data[2+PASSWORD_SIZE+i];
 			if(c == 0)
@@ -2665,7 +2665,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		std::istringstream is(datastring, std::ios_base::binary);
 
 		int num = readU16(is);
-		for(int k=0; k<num; k++){
+		for (int k=0; k<num; k++){
 			s32 id = readS32(is);
 			std::map<s32, ServerPlayingSound>::iterator i =
 					m_playing_sounds.find(id);
@@ -2686,7 +2686,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		std::string formname = deSerializeString(is);
 		int num = readU16(is);
 		std::map<std::string, std::string> fields;
-		for(int k=0; k<num; k++){
+		for (int k=0; k<num; k++){
 			std::string fieldname = deSerializeString(is);
 			std::string fieldvalue = deSerializeLongString(is);
 			fields[fieldname] = fieldvalue;
@@ -2717,7 +2717,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		std::string formname = deSerializeString(is);
 		int num = readU16(is);
 		std::map<std::string, std::string> fields;
-		for(int k=0; k<num; k++){
+		for (int k=0; k<num; k++){
 			std::string fieldname = deSerializeString(is);
 			std::string fieldvalue = deSerializeLongString(is);
 			fields[fieldname] = fieldvalue;
@@ -3135,7 +3135,7 @@ void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
 	os.write((char*)buf, 2);
 
 	// Write string
-	for(u32 i=0; i<message.size(); i++)
+	for (u32 i=0; i<message.size(); i++)
 	{
 		u16 w = message[i];
 		writeU16(buf, w);
@@ -3405,7 +3405,7 @@ void Server::SendSetSky(u16 peer_id, const video::SColor &bgcolor,
 	writeARGB8(os, bgcolor);
 	os<<serializeString(type);
 	writeU16(os, params.size());
-	for(size_t i=0; i<params.size(); i++)
+	for (size_t i=0; i<params.size(); i++)
 		os<<serializeString(params[i]);
 
 	// Make data buffer
@@ -3551,7 +3551,7 @@ void Server::SendPlayerPrivileges(u16 peer_id)
 	std::ostringstream os(std::ios_base::binary);
 	writeU16(os, TOCLIENT_PRIVILEGES);
 	writeU16(os, privs.size());
-	for(std::set<std::string>::const_iterator i = privs.begin();
+	for (std::set<std::string>::const_iterator i = privs.begin();
 			i != privs.end(); i++){
 		os<<serializeString(*i);
 	}
@@ -3612,7 +3612,7 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 	{
 		std::list<u16> clients = m_clients.getClientIDs();
 
-		for(std::list<u16>::iterator
+		for (std::list<u16>::iterator
 				i = clients.begin(); i != clients.end(); ++i)
 		{
 			Player *player = m_env->getPlayer(*i);
@@ -3635,7 +3635,7 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 	m_playing_sounds[id] = ServerPlayingSound();
 	ServerPlayingSound &psound = m_playing_sounds[id];
 	psound.params = params;
-	for(std::list<u16>::iterator i = dst_clients.begin();
+	for (std::list<u16>::iterator i = dst_clients.begin();
 			i != dst_clients.end(); i++)
 		psound.clients.insert(*i);
 	// Create packet
@@ -3652,7 +3652,7 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 	std::string s = os.str();
 	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
 	// Send
-	for(std::list<u16>::iterator i = dst_clients.begin();
+	for (std::list<u16>::iterator i = dst_clients.begin();
 			i != dst_clients.end(); i++){
 		// Send as reliable
 		m_clients.send(*i, 0, data, true);
@@ -3675,7 +3675,7 @@ void Server::stopSound(s32 handle)
 	std::string s = os.str();
 	SharedBuffer<u8> data((u8*)s.c_str(), s.size());
 	// Send
-	for(std::set<u16>::iterator i = psound.clients.begin();
+	for (std::set<u16>::iterator i = psound.clients.begin();
 			i != psound.clients.end(); i++){
 		// Send as reliable
 		m_clients.send(*i, 0, data, true);
@@ -3699,7 +3699,7 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 	writeS16(&reply[6], p.Z);
 
 	std::list<u16> clients = m_clients.getClientIDs();
-	for(std::list<u16>::iterator
+	for (std::list<u16>::iterator
 		i = clients.begin();
 		i != clients.end(); ++i)
 	{
@@ -3732,7 +3732,7 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 	v3f p_f = intToFloat(p, BS);
 
 	std::list<u16> clients = m_clients.getClientIDs();
-		for(std::list<u16>::iterator
+		for (std::list<u16>::iterator
 			i = clients.begin();
 			i != clients.end(); ++i)
 		{
@@ -3788,7 +3788,7 @@ void Server::setBlockNotSent(v3s16 p)
 {
 	std::list<u16> clients = m_clients.getClientIDs();
 	m_clients.Lock();
-	for(std::list<u16>::iterator
+	for (std::list<u16>::iterator
 		i = clients.begin();
 		i != clients.end(); ++i)
 	{
@@ -3807,9 +3807,9 @@ void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver, u16 net_proto
 #if 0
 	// Analyze it a bit
 	bool completely_air = true;
-	for(s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
-	for(s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
-	for(s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
+	for (s16 z0=0; z0<MAP_BLOCKSIZE; z0++)
+	for (s16 x0=0; x0<MAP_BLOCKSIZE; x0++)
+	for (s16 y0=0; y0<MAP_BLOCKSIZE; y0++)
 	{
 		if(block->getNodeNoEx(v3s16(x0,y0,z0)).d != CONTENT_AIR)
 		{
@@ -3871,7 +3871,7 @@ void Server::SendBlocks(float dtime)
 		std::list<u16> clients = m_clients.getClientIDs();
 
 		m_clients.Lock();
-		for(std::list<u16>::iterator
+		for (std::list<u16>::iterator
 			i = clients.begin();
 			i != clients.end(); ++i)
 		{
@@ -3892,7 +3892,7 @@ void Server::SendBlocks(float dtime)
 	std::sort(queue.begin(), queue.end());
 
 	m_clients.Lock();
-	for(u32 i=0; i<queue.size(); i++)
+	for (u32 i=0; i<queue.size(); i++)
 	{
 		//TODO: Calculate limit dynamically
 		if(total_sending >= g_settings->getS32
@@ -3932,7 +3932,7 @@ void Server::fillMediaCache()
 
 	// Collect all media file paths
 	std::list<std::string> paths;
-	for(std::vector<ModSpec>::iterator i = m_mods.begin();
+	for (std::vector<ModSpec>::iterator i = m_mods.begin();
 			i != m_mods.end(); i++){
 		const ModSpec &mod = *i;
 		paths.push_back(mod.path + DIR_DELIM + "textures");
@@ -3943,12 +3943,12 @@ void Server::fillMediaCache()
 	paths.push_back(porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server");
 
 	// Collect media file information from paths into cache
-	for(std::list<std::string>::iterator i = paths.begin();
+	for (std::list<std::string>::iterator i = paths.begin();
 			i != paths.end(); i++)
 	{
 		std::string mediapath = *i;
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(mediapath);
-		for(u32 j=0; j<dirlist.size(); j++){
+		for (u32 j=0; j<dirlist.size(); j++){
 			if(dirlist[j].dir) // Ignode dirs
 				continue;
 			std::string filename = dirlist[j].name;
@@ -3982,7 +3982,7 @@ void Server::fillMediaCache()
 			}
 			std::ostringstream tmp_os(std::ios_base::binary);
 			bool bad = false;
-			for(;;){
+			for (;;){
 				char buf[1024];
 				fis.read(buf, 1024);
 				std::streamsize len = fis.gcount();
@@ -4041,7 +4041,7 @@ void Server::sendMediaAnnouncement(u16 peer_id)
 
 	std::list<SendableMediaAnnouncement> file_announcements;
 
-	for(std::map<std::string, MediaInfo>::iterator i = m_media.begin();
+	for (std::map<std::string, MediaInfo>::iterator i = m_media.begin();
 			i != m_media.end(); i++){
 		// Put in list
 		file_announcements.push_back(
@@ -4065,7 +4065,7 @@ void Server::sendMediaAnnouncement(u16 peer_id)
 	writeU16(os, TOCLIENT_ANNOUNCE_MEDIA);
 	writeU16(os, file_announcements.size());
 
-	for(std::list<SendableMediaAnnouncement>::iterator
+	for (std::list<SendableMediaAnnouncement>::iterator
 			j = file_announcements.begin();
 			j != file_announcements.end(); ++j){
 		os<<serializeString(j->name);
@@ -4113,7 +4113,7 @@ void Server::sendRequestedMedia(u16 peer_id,
 
 	u32 file_size_bunch_total = 0;
 
-	for(std::list<std::string>::const_iterator i = tosend.begin();
+	for (std::list<std::string>::const_iterator i = tosend.begin();
 			i != tosend.end(); ++i)
 	{
 		const std::string &name = *i;
@@ -4136,7 +4136,7 @@ void Server::sendRequestedMedia(u16 peer_id,
 		}
 		std::ostringstream tmp_os(std::ios_base::binary);
 		bool bad = false;
-		for(;;){
+		for (;;){
 			char buf[1024];
 			fis.read(buf, 1024);
 			std::streamsize len = fis.gcount();
@@ -4171,7 +4171,7 @@ void Server::sendRequestedMedia(u16 peer_id,
 	/* Create and send packets */
 
 	u32 num_bunches = file_bunches.size();
-	for(u32 i=0; i<num_bunches; i++)
+	for (u32 i=0; i<num_bunches; i++)
 	{
 		std::ostringstream os(std::ios_base::binary);
 
@@ -4193,7 +4193,7 @@ void Server::sendRequestedMedia(u16 peer_id,
 		writeU16(os, i);
 		writeU32(os, file_bunches[i].size());
 
-		for(std::list<SendableMedia>::iterator
+		for (std::list<SendableMedia>::iterator
 				j = file_bunches[i].begin();
 				j != file_bunches[i].end(); ++j){
 			os<<serializeString(j->name);
@@ -4244,7 +4244,7 @@ void Server::sendDetachedInventories(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	for(std::map<std::string, Inventory*>::iterator
+	for (std::map<std::string, Inventory*>::iterator
 			i = m_detached_inventories.begin();
 			i != m_detached_inventories.end(); i++){
 		const std::string &name = i->first;
@@ -4314,7 +4314,7 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 		/*
 			Clear references to playing sounds
 		*/
-		for(std::map<s32, ServerPlayingSound>::iterator
+		for (std::map<s32, ServerPlayingSound>::iterator
 				i = m_playing_sounds.begin();
 				i != m_playing_sounds.end();)
 		{
@@ -4363,7 +4363,7 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 				std::ostringstream os(std::ios_base::binary);
 				std::list<u16> clients = m_clients.getClientIDs();
 
-				for(std::list<u16>::iterator
+				for (std::list<u16>::iterator
 					i = clients.begin();
 					i != clients.end(); ++i)
 				{
@@ -4455,7 +4455,7 @@ std::wstring Server::getStatusString()
 	bool first = true;
 	os<<L", clients={";
 	std::list<u16> clients = m_clients.getClientIDs();
-	for(std::list<u16>::iterator i = clients.begin();
+	for (std::list<u16>::iterator i = clients.begin();
 		i != clients.end(); ++i)
 	{
 		// Get player
@@ -4496,7 +4496,7 @@ void Server::reportPrivsModified(const std::string &name)
 {
 	if(name == ""){
 		std::list<u16> clients = m_clients.getClientIDs();
-		for(std::list<u16>::iterator
+		for (std::list<u16>::iterator
 				i = clients.begin();
 				i != clients.end(); ++i){
 			Player *player = m_env->getPlayer(*i);
@@ -4718,7 +4718,7 @@ u32 Server::addParticleSpawner(const char *playername,
 		return -1;
 
 	u32 id = 0;
-	for(;;) // look for unused particlespawner id
+	for (;;) // look for unused particlespawner id
 	{
 		id++;
 		if (std::find(m_particlespawner_ids.begin(),
@@ -4747,7 +4747,7 @@ u32 Server::addParticleSpawnerAll(u16 amount, float spawntime,
 		bool collisiondetection, bool vertical, std::string texture)
 {
 	u32 id = 0;
-	for(;;) // look for unused particlespawner id
+	for (;;) // look for unused particlespawner id
 	{
 		id++;
 		if (std::find(m_particlespawner_ids.begin(),
@@ -4840,7 +4840,7 @@ bool Server::rollbackRevertActions(const std::list<RollbackAction> &actions,
 	int num_tried = 0;
 	int num_failed = 0;
 
-	for(std::list<RollbackAction>::const_iterator
+	for (std::list<RollbackAction>::const_iterator
 			i = actions.begin();
 			i != actions.end(); i++)
 	{
@@ -4925,7 +4925,7 @@ IWritableCraftDefManager* Server::getWritableCraftDefManager()
 
 const ModSpec* Server::getModSpec(const std::string &modname)
 {
-	for(std::vector<ModSpec>::iterator i = m_mods.begin();
+	for (std::vector<ModSpec>::iterator i = m_mods.begin();
 			i != m_mods.end(); i++){
 		const ModSpec &mod = *i;
 		if(mod.name == modname)
@@ -4935,7 +4935,7 @@ const ModSpec* Server::getModSpec(const std::string &modname)
 }
 void Server::getModNames(std::list<std::string> &modlist)
 {
-	for(std::vector<ModSpec>::iterator i = m_mods.begin(); i != m_mods.end(); i++)
+	for (std::vector<ModSpec>::iterator i = m_mods.begin(); i != m_mods.end(); i++)
 	{
 		modlist.push_back(i->name);
 	}
@@ -4960,7 +4960,7 @@ v3f findSpawnPos(ServerMap &map)
 	s16 water_level = map.getWaterLevel();
 
 	// Try to find a good place a few times
-	for(s32 i=0; i<1000; i++)
+	for (s32 i=0; i<1000; i++)
 	{
 		s32 range = 1 + i;
 		// We're going to try to throw the player to this position
@@ -5078,7 +5078,7 @@ void dedicated_server_loop(Server &server, bool &kill)
 
 	IntervalLimiter m_profiler_interval;
 
-	for(;;)
+	for (;;)
 	{
 		float steplen = g_settings->getFloat("dedicated_server_step");
 		// This is kind of a hack but can be done like this

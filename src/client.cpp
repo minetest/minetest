@@ -88,7 +88,7 @@ MeshUpdateQueue::~MeshUpdateQueue()
 {
 	JMutexAutoLock lock(m_mutex);
 
-	for(std::vector<QueuedMeshUpdate*>::iterator
+	for (std::vector<QueuedMeshUpdate*>::iterator
 			i = m_queue.begin();
 			i != m_queue.end(); i++)
 	{
@@ -115,7 +115,7 @@ void MeshUpdateQueue::addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_se
 		Find if block is already in queue.
 		If it is, update the data and quit.
 	*/
-	for(std::vector<QueuedMeshUpdate*>::iterator
+	for (std::vector<QueuedMeshUpdate*>::iterator
 			i = m_queue.begin();
 			i != m_queue.end(); i++)
 	{
@@ -148,7 +148,7 @@ QueuedMeshUpdate * MeshUpdateQueue::pop()
 	JMutexAutoLock lock(m_mutex);
 
 	bool must_be_urgent = !m_urgents.empty();
-	for(std::vector<QueuedMeshUpdate*>::iterator
+	for (std::vector<QueuedMeshUpdate*>::iterator
 			i = m_queue.begin();
 			i != m_queue.end(); i++)
 	{
@@ -347,7 +347,7 @@ Client::~Client()
 	delete m_inventory_from_server;
 
 	// Delete detached inventories
-	for(std::map<std::string, Inventory*>::iterator
+	for (std::map<std::string, Inventory*>::iterator
 			i = m_detached_inventories.begin();
 			i != m_detached_inventories.end(); i++){
 		delete i->second;
@@ -458,7 +458,7 @@ void Client::step(float dtime)
 
 				core::list<v3s16>::Iterator i = deleted_blocks.begin();
 				core::list<v3s16> sendlist;
-				for(;;)
+				for (;;)
 				{
 					if(sendlist.size() == 255 || i == deleted_blocks.end())
 					{
@@ -476,7 +476,7 @@ void Client::step(float dtime)
 						writeU16(&reply[0], TOSERVER_DELETEDBLOCKS);
 						reply[2] = sendlist.size();
 						u32 k = 0;
-						for(core::list<v3s16>::Iterator
+						for (core::list<v3s16>::Iterator
 								j = sendlist.begin();
 								j != sendlist.end(); j++)
 						{
@@ -574,7 +574,7 @@ void Client::step(float dtime)
 
 		std::list<v3s16>::iterator i = deleted_blocks.begin();
 		std::list<v3s16> sendlist;
-		for(;;)
+		for (;;)
 		{
 			if(sendlist.size() == 255 || i == deleted_blocks.end())
 			{
@@ -592,7 +592,7 @@ void Client::step(float dtime)
 				writeU16(&reply[0], TOSERVER_DELETEDBLOCKS);
 				reply[2] = sendlist.size();
 				u32 k = 0;
-				for(std::list<v3s16>::iterator
+				for (std::list<v3s16>::iterator
 						j = sendlist.begin();
 						j != sendlist.end(); ++j)
 				{
@@ -627,7 +627,7 @@ void Client::step(float dtime)
 		/*
 			Get events
 		*/
-		for(;;)
+		for (;;)
 		{
 			ClientEnvEvent event = m_env.getClientEvent();
 			if(event.type == CEE_NONE)
@@ -776,7 +776,7 @@ void Client::step(float dtime)
 		Update positions of sounds attached to objects
 	*/
 	{
-		for(std::map<int, u16>::iterator
+		for (std::map<int, u16>::iterator
 				i = m_sounds_to_objects.begin();
 				i != m_sounds_to_objects.end(); i++)
 		{
@@ -799,7 +799,7 @@ void Client::step(float dtime)
 		m_removed_sounds_check_timer = 0;
 		// Find removed sounds and clear references to them
 		std::set<s32> removed_server_ids;
-		for(std::map<s32, int>::iterator
+		for (std::map<s32, int>::iterator
 				i = m_sounds_server_to_client.begin();
 				i != m_sounds_server_to_client.end();)
 		{
@@ -821,7 +821,7 @@ void Client::step(float dtime)
 			size_t server_ids = removed_server_ids.size();
 			assert(server_ids <= 0xFFFF);
 			writeU16(os, (u16) (server_ids & 0xFFFF));
-			for(std::set<s32>::iterator i = removed_server_ids.begin();
+			for (std::set<s32>::iterator i = removed_server_ids.begin();
 					i != removed_server_ids.end(); i++)
 				writeS32(os, *i);
 			std::string s = os.str();
@@ -937,7 +937,7 @@ void Client::request_media(const std::list<std::string> &file_requests)
 	assert(file_requests_size <= 0xFFFF);
 	writeU16(os, (u16) (file_requests_size & 0xFFFF));
 
-	for(std::list<std::string>::const_iterator i = file_requests.begin();
+	for (std::list<std::string>::const_iterator i = file_requests.begin();
 			i != file_requests.end(); ++i) {
 		os<<serializeString(*i);
 	}
@@ -968,7 +968,7 @@ void Client::ReceiveAll()
 {
 	DSTACK(__FUNCTION_NAME);
 	u32 start_ms = porting::getTimeMs();
-	for(;;)
+	for (;;)
 	{
 		// Limit time even if there would be huge amounts of data to
 		// process
@@ -1284,7 +1284,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		u16 len = readU16(buf);
 
 		std::wstring message;
-		for(unsigned int i=0; i<len; i++)
+		for (unsigned int i=0; i<len; i++)
 		{
 			is.read((char*)buf, 2);
 			message += (wchar_t)readU16(buf);
@@ -1318,7 +1318,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		// Read removed objects
 		is.read(buf, 2);
 		u16 removed_count = readU16((u8*)buf);
-		for(unsigned int i=0; i<removed_count; i++)
+		for (unsigned int i=0; i<removed_count; i++)
 		{
 			is.read(buf, 2);
 			u16 id = readU16((u8*)buf);
@@ -1328,7 +1328,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		// Read added objects
 		is.read(buf, 2);
 		u16 added_count = readU16((u8*)buf);
-		for(unsigned int i=0; i<added_count; i++)
+		for (unsigned int i=0; i<added_count; i++)
 		{
 			is.read(buf, 2);
 			u16 id = readU16((u8*)buf);
@@ -1366,7 +1366,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			size_t message_size = readU16((u8*)buf);
 			std::string message;
 			message.reserve(message_size);
-			for(unsigned int i=0; i<message_size; i++)
+			for (unsigned int i=0; i<message_size; i++)
 			{
 				is.read(buf, 1);
 				message.append(buf, 1);
@@ -1496,7 +1496,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		// updating content definitions
 		assert(!m_mesh_update_thread.IsRunning());
 
-		for(int i=0; i<num_files; i++)
+		for (int i=0; i<num_files; i++)
 		{
 			std::string name = deSerializeString(is);
 			std::string sha1_base64 = deSerializeString(is);
@@ -1563,7 +1563,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		// updating content definitions
 		assert(!m_mesh_update_thread.IsRunning());
 
-		for(unsigned int i=0; i<num_files; i++){
+		for (unsigned int i=0; i<num_files; i++){
 			std::string name = deSerializeString(is);
 			std::string data = deSerializeLongString(is);
 			m_media_downloader->conventionalTransferDone(
@@ -1679,7 +1679,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		m_privileges.clear();
 		infostream<<"Client: Privileges updated: ";
 		u16 num_privileges = readU16(is);
-		for(unsigned int i=0; i<num_privileges; i++){
+		for (unsigned int i=0; i<num_privileges; i++){
 			std::string priv = deSerializeString(is);
 			m_privileges.insert(priv);
 			infostream<<priv<<" ";
@@ -1949,7 +1949,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		u16 count                        = readU16(is);
 		std::vector<std::string> *params = new std::vector<std::string>;
 
-		for(size_t i=0; i<count; i++)
+		for (size_t i=0; i<count; i++)
 			params->push_back(deSerializeString(is));
 
 		ClientEvent event;
@@ -2060,7 +2060,7 @@ void Client::sendNodemetaFields(v3s16 p, const std::string &formname,
 	size_t fields_size = fields.size();
 	assert(fields_size <= 0xFFFF);
 	writeU16(os, (u16) (fields_size & 0xFFFF));
-	for(std::map<std::string, std::string>::const_iterator
+	for (std::map<std::string, std::string>::const_iterator
 			i = fields.begin(); i != fields.end(); i++){
 		const std::string &name = i->first;
 		const std::string &value = i->second;
@@ -2085,7 +2085,7 @@ void Client::sendInventoryFields(const std::string &formname,
 	size_t fields_size = fields.size();
 	assert(fields_size <= 0xFFFF);
 	writeU16(os, (u16) (fields_size & 0xFFFF));
-	for(std::map<std::string, std::string>::const_iterator
+	for (std::map<std::string, std::string>::const_iterator
 			i = fields.begin(); i != fields.end(); i++){
 		const std::string &name  = i->first;
 		const std::string &value = i->second;
@@ -2136,7 +2136,7 @@ void Client::sendChatMessage(const std::wstring &message)
 	os.write((char*)buf, 2);
 
 	// Write string
-	for(unsigned int i=0; i<message.size(); i++)
+	for (unsigned int i=0; i<message.size(); i++)
 	{
 		u16 w = message[i];
 		writeU16(buf, w);
@@ -2170,7 +2170,7 @@ void Client::sendChangePassword(const std::wstring &oldpassword,
 	*/
 
 	writeU16(buf, TOSERVER_PASSWORD);
-	for(unsigned int i=0;i<PASSWORD_SIZE-1;i++)
+	for (unsigned int i=0;i<PASSWORD_SIZE-1;i++)
 	{
 		buf[2+i] = i<oldpwd.length()?oldpwd[i]:0;
 		buf[30+i] = i<newpwd.length()?newpwd[i]:0;
@@ -2345,7 +2345,7 @@ void Client::removeNode(v3s16 p)
 	{
 	}
 
-	for(std::map<v3s16, MapBlock * >::iterator
+	for (std::map<v3s16, MapBlock * >::iterator
 			i = modified_blocks.begin();
 			i != modified_blocks.end(); ++i)
 	{
@@ -2367,7 +2367,7 @@ void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
 	catch(InvalidPositionException &e)
 	{}
 
-	for(std::map<v3s16, MapBlock * >::iterator
+	for (std::map<v3s16, MapBlock * >::iterator
 			i = modified_blocks.begin();
 			i != modified_blocks.end(); ++i)
 	{
@@ -2478,7 +2478,7 @@ ClientActiveObject * Client::getSelectedActiveObject(
 	// After this, the closest object is the first in the array.
 	std::sort(objects.begin(), objects.end());
 
-	for(unsigned int i=0; i<objects.size(); i++)
+	for (unsigned int i=0; i<objects.size(); i++)
 	{
 		ClientActiveObject *obj = objects[i].obj;
 
@@ -2742,7 +2742,7 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 		size_t size = names.size();
 		size_t count = 0;
 		int percent = 0;
-		for(std::set<std::string>::const_iterator
+		for (std::set<std::string>::const_iterator
 				i = names.begin(); i != names.end(); ++i)
 		{
 			// Asking for these caches the result

@@ -269,7 +269,7 @@ public:
 
 	void clear()
 	{
-		for(std::map<u16, u16>::iterator
+		for (std::map<u16, u16>::iterator
 				i = m_packets.begin();
 				i != m_packets.end(); ++i)
 		{
@@ -279,7 +279,7 @@ public:
 
 	void print(std::ostream &o)
 	{
-		for(std::map<u16, u16>::iterator
+		for (std::map<u16, u16>::iterator
 				i = m_packets.begin();
 				i != m_packets.end(); ++i)
 		{

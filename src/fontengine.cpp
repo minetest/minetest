@@ -386,7 +386,7 @@ void FontEngine::initSimpleFont(unsigned int basesize, FontMode mode)
 
 	irr::gui::IGUIFont* font = NULL;
 
-	for(unsigned int offset = 0; offset < MAX_FONT_SIZE_OFFSET; offset++) {
+	for (unsigned int offset = 0; offset < MAX_FONT_SIZE_OFFSET; offset++) {
 
 		// try opening positive offset
 		std::stringstream fontsize_plus_png;

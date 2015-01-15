@@ -132,7 +132,7 @@ void ScriptApiPlayer::on_playerReceiveFields(ServerActiveObject *player,
 	lua_pushstring(L, formname.c_str());
 	// param 3
 	lua_newtable(L);
-	for(std::map<std::string, std::string>::const_iterator
+	for (std::map<std::string, std::string>::const_iterator
 			i = fields.begin(); i != fields.end(); i++){
 		const std::string &name = i->first;
 		const std::string &value = i->second;

@@ -136,7 +136,7 @@ bool RecursiveDelete(std::string path)
 		infostream<<"RecursiveDelete: Deleting content of directory "
 				<<path<<std::endl;
 		std::vector<DirListNode> content = GetDirListing(path);
-		for(int i=0; i<content.size(); i++){
+		for (int i=0; i<content.size(); i++){
 			const DirListNode &n = content[i];
 			std::string fullpath = path + DIR_DELIM + n.name;
 			bool did = RecursiveDelete(fullpath);
@@ -373,7 +373,7 @@ std::string TempPath()
 void GetRecursiveSubPaths(std::string path, std::vector<std::string> &dst)
 {
 	std::vector<DirListNode> content = GetDirListing(path);
-	for(unsigned int  i=0; i<content.size(); i++){
+	for (unsigned int  i=0; i<content.size(); i++){
 		const DirListNode &n = content[i];
 		std::string fullpath = path + DIR_DELIM + n.name;
 		dst.push_back(fullpath);
@@ -387,7 +387,7 @@ bool DeletePaths(const std::vector<std::string> &paths)
 {
 	bool success = true;
 	// Go backwards to succesfully delete the output of GetRecursiveSubPaths
-	for(int i=paths.size()-1; i>=0; i--){
+	for (int i=paths.size()-1; i>=0; i--){
 		const std::string &path = paths[i];
 		bool did = DeleteSingleFileOrEmptyDirectory(path);
 		if(!did){
@@ -402,7 +402,7 @@ bool RecursiveDeleteContent(std::string path)
 {
 	infostream<<"Removing content of \""<<path<<"\""<<std::endl;
 	std::vector<DirListNode> list = GetDirListing(path);
-	for(unsigned int i=0; i<list.size(); i++)
+	for (unsigned int i=0; i<list.size(); i++)
 	{
 		if(trim(list[i].name) == "." || trim(list[i].name) == "..")
 			continue;
@@ -429,7 +429,7 @@ bool CreateAllDirs(std::string path)
 		if(basepath.empty())
 			break;
 	}
-	for(int i=tocreate.size()-1;i>=0;i--)
+	for (int i=tocreate.size()-1;i>=0;i--)
 		if(!CreateDir(tocreate[i]))
 			return false;
 	return true;
@@ -498,7 +498,7 @@ bool CopyDir(std::string source, std::string target)
 		bool retval = true;
 		std::vector<DirListNode> content = fs::GetDirListing(source);
 
-		for(unsigned int i=0; i < content.size(); i++){
+		for (unsigned int i=0; i < content.size(); i++){
 			std::string sourcechild = source + DIR_DELIM + content[i].name;
 			std::string targetchild = target + DIR_DELIM + content[i].name;
 			if(content[i].dir){
@@ -525,7 +525,7 @@ bool PathStartsWith(std::string path, std::string prefix)
 	size_t pathpos = 0;
 	size_t prefixsize = prefix.size();
 	size_t prefixpos = 0;
-	for(;;){
+	for (;;){
 		bool delim1 = pathpos == pathsize
 			|| IsDirDelimiter(path[pathpos]);
 		bool delim2 = prefixpos == prefixsize
@@ -577,7 +577,7 @@ std::string RemoveLastPathComponent(std::string path,
 
 	size_t remaining = path.size();
 
-	for(int i = 0; i < count; ++i){
+	for (int i = 0; i < count; ++i){
 		// strip a dir delimiter
 		while(remaining != 0 && IsDirDelimiter(path[remaining-1]))
 			remaining--;

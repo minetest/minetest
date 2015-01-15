@@ -401,11 +401,11 @@ public:
 		std::set<std::string> paths;
 		std::set<std::string> datas;
 		m_fetcher->fetchSounds(name, paths, datas);
-		for(std::set<std::string>::iterator i = paths.begin();
+		for (std::set<std::string>::iterator i = paths.begin();
 				i != paths.end(); i++){
 			loadSoundFile(name, *i);
 		}
-		for(std::set<std::string>::iterator i = datas.begin();
+		for (std::set<std::string>::iterator i = datas.begin();
 				i != datas.end(); i++){
 			loadSoundData(name, *i);
 		}
@@ -419,7 +419,7 @@ public:
 				<<m_sounds_playing.size()<<" playing sounds, "
 				<<m_buffers.size()<<" sound names loaded"<<std::endl;
 		std::set<int> del_list;
-		for(std::map<int, PlayingSound*>::iterator
+		for (std::map<int, PlayingSound*>::iterator
 				i = m_sounds_playing.begin();
 				i != m_sounds_playing.end(); i++)
 		{
@@ -437,7 +437,7 @@ public:
 		if(!del_list.empty())
 			verbosestream<<"OpenALSoundManager::maintain(): deleting "
 					<<del_list.size()<<" playing sounds"<<std::endl;
-		for(std::set<int>::iterator i = del_list.begin();
+		for (std::set<int>::iterator i = del_list.begin();
 				i != del_list.end(); i++)
 		{
 			deleteSound(*i);

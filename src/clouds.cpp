@@ -162,8 +162,8 @@ void Clouds::render()
 
 	bool *grid = new bool[cloud_radius_i*2*cloud_radius_i*2];
 
-	for(s16 zi=-cloud_radius_i; zi<cloud_radius_i; zi++)
-	for(s16 xi=-cloud_radius_i; xi<cloud_radius_i; xi++)
+	for (s16 zi=-cloud_radius_i; zi<cloud_radius_i; zi++)
+	for (s16 xi=-cloud_radius_i; xi<cloud_radius_i; xi++)
 	{
 		u32 i = (zi+cloud_radius_i)*cloud_radius_i*2 + xi+cloud_radius_i;
 
@@ -192,8 +192,8 @@ void Clouds::render()
 #define INAREA(x, z, radius) \
 	((x) >= -(radius) && (x) < (radius) && (z) >= -(radius) && (z) < (radius))
 
-	for(s16 zi0=-cloud_radius_i; zi0<cloud_radius_i; zi0++)
-	for(s16 xi0=-cloud_radius_i; xi0<cloud_radius_i; xi0++)
+	for (s16 zi0=-cloud_radius_i; zi0<cloud_radius_i; zi0++)
+	for (s16 xi0=-cloud_radius_i; xi0<cloud_radius_i; xi0++)
 	{
 		s16 zi = zi0;
 		s16 xi = xi0;
@@ -233,12 +233,12 @@ void Clouds::render()
 		f32 ry = 8*BS;
 		f32 rz = cloud_size/2;
 
-		for(int i=0; i<num_faces_to_draw; i++)
+		for (int i=0; i<num_faces_to_draw; i++)
 		{
 			switch(i)
 			{
 			case 0:	// top
-				for(int j=0;j<4;j++){
+				for (int j=0;j<4;j++){
 					v[j].Normal.set(0,1,0);
 				}
 				v[0].Pos.set(-rx, ry,-rz);
@@ -252,7 +252,7 @@ void Clouds::render()
 					if(grid[j])
 						continue;
 				}
-				for(int j=0;j<4;j++){
+				for (int j=0;j<4;j++){
 					v[j].Color = c_side_1;
 					v[j].Normal.set(0,0,-1);
 				}
@@ -267,7 +267,7 @@ void Clouds::render()
 					if(grid[j])
 						continue;
 				}
-				for(int j=0;j<4;j++){
+				for (int j=0;j<4;j++){
 					v[j].Color = c_side_2;
 					v[j].Normal.set(1,0,0);
 				}
@@ -282,7 +282,7 @@ void Clouds::render()
 					if(grid[j])
 						continue;
 				}
-				for(int j=0;j<4;j++){
+				for (int j=0;j<4;j++){
 					v[j].Color = c_side_1;
 					v[j].Normal.set(0,0,-1);
 				}
@@ -297,7 +297,7 @@ void Clouds::render()
 					if(grid[j])
 						continue;
 				}
-				for(int j=0;j<4;j++){
+				for (int j=0;j<4;j++){
 					v[j].Color = c_side_2;
 					v[j].Normal.set(-1,0,0);
 				}
@@ -307,7 +307,7 @@ void Clouds::render()
 				v[3].Pos.set(-rx,-ry, rz);
 				break;
 			case 5: // bottom
-				for(int j=0;j<4;j++){
+				for (int j=0;j<4;j++){
 					v[j].Color = c_bottom;
 					v[j].Normal.set(0,-1,0);
 				}
@@ -321,7 +321,7 @@ void Clouds::render()
 			v3f pos(p0.X, m_cloud_y, p0.Y);
 			pos -= intToFloat(m_camera_offset, BS);
 
-			for(u16 i=0; i<4; i++)
+			for (u16 i=0; i<4; i++)
 				v[i].Pos += pos;
 			u16 indices[] = {0,1,2,2,3,0};
 			driver->drawVertexPrimitiveList(v, 4, indices, 2,

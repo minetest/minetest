@@ -49,19 +49,19 @@ void log_add_output(ILogOutput *out, enum LogMessageLevel lev)
 
 void log_add_output_maxlev(ILogOutput *out, enum LogMessageLevel lev)
 {
-	for(int i=0; i<=lev; i++)
+	for (int i=0; i<=lev; i++)
 		log_outputs[i].push_back(out);
 }
 
 void log_add_output_all_levs(ILogOutput *out)
 {
-	for(int i=0; i<LMT_NUM_VALUES; i++)
+	for (int i=0; i<LMT_NUM_VALUES; i++)
 		log_outputs[i].push_back(out);
 }
 
 void log_remove_output(ILogOutput *out)
 {
-	for(int i=0; i<LMT_NUM_VALUES; i++){
+	for (int i=0; i<LMT_NUM_VALUES; i++){
 		std::list<ILogOutput*>::iterator it =
 				std::find(log_outputs[i].begin(), log_outputs[i].end(), out);
 		if(it != log_outputs[i].end())
@@ -128,7 +128,7 @@ void log_printline(enum LogMessageLevel lev, const std::string &text)
 	std::string levelname = get_lev_string(lev);
 	std::ostringstream os(std::ios_base::binary);
 	os<<getTimestamp()<<": "<<levelname<<"["<<threadname<<"]: "<<text;
-	for(std::list<ILogOutput*>::iterator i = log_outputs[lev].begin();
+	for (std::list<ILogOutput*>::iterator i = log_outputs[lev].begin();
 			i != log_outputs[lev].end(); i++){
 		ILogOutput *out = *i;
 		if (out->silence)
@@ -160,7 +160,7 @@ public:
 	}
 	std::streamsize xsputn(const char *s, std::streamsize n)
 	{
-		for(int i=0; i<n; i++)
+		for (int i=0; i<n; i++)
 			bufchar(s[i]);
 		return n;
 	}

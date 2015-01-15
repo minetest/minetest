@@ -93,7 +93,7 @@ void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *n
 		"{default_stone.png";
 	f = ContentFeatures();
 	f.name = itemdef.name;
-	for(int i = 0; i < 6; i++)
+	for (int i = 0; i < 6; i++)
 		f.tiledef[i].name = "default_stone.png";
 	f.is_ground_content = true;
 	idef->registerItem(itemdef);
@@ -115,7 +115,7 @@ void define_some_nodes(IWritableItemDefManager *idef, IWritableNodeDefManager *n
 	f.name = itemdef.name;
 	f.tiledef[0].name = "default_grass.png";
 	f.tiledef[1].name = "default_dirt.png";
-	for(int i = 2; i < 6; i++)
+	for (int i = 2; i < 6; i++)
 		f.tiledef[i].name = "default_dirt.png^default_grass_side.png";
 	f.is_ground_content = true;
 	idef->registerItem(itemdef);
@@ -219,7 +219,7 @@ struct TestPath: public TestBase
 	// -> absolute paths start with "C:\\" on windows
 	std::string p(std::string path)
 	{
-		for(size_t i = 0; i < path.size(); ++i){
+		for (size_t i = 0; i < path.size(); ++i){
 			if(path[i] == '/'){
 				path.replace(i, 1, DIR_DELIM);
 				i += std::string(DIR_DELIM).size() - 1; // generally a no-op
@@ -616,7 +616,7 @@ struct TestSerialization: public TestBase
 			std::ostringstream tmp_os;
 			std::wostringstream tmp_os_w;
 			std::ostringstream tmp_os_w_encoded;
-			for(int i = 0; i < 256; i++)
+			for (int i = 0; i < 256; i++)
 			{
 				tmp_os<<(char)i;
 				tmp_os_w<<(wchar_t)i;
@@ -699,7 +699,7 @@ struct TestNodedefSerialization: public TestBase
 	{
 		ContentFeatures f;
 		f.name = "default:stone";
-		for(int i = 0; i < 6; i++)
+		for (int i = 0; i < 6; i++)
 			f.tiledef[i].name = "default_stone.png";
 		f.is_ground_content = true;
 		std::ostringstream os(std::ios::binary);
@@ -732,7 +732,7 @@ struct TestCompress: public TestBase
 
 		infostream<<"str_out.size()="<<str_out.size()<<std::endl;
 		infostream<<"TestCompress: 1,5,5,1 -> ";
-		for(u32 i=0; i<str_out.size(); i++)
+		for (u32 i=0; i<str_out.size(); i++)
 		{
 			infostream<<(u32)str_out[i]<<",";
 		}
@@ -758,7 +758,7 @@ struct TestCompress: public TestBase
 		std::string str_out2 = os2.str();
 
 		infostream<<"decompress: ";
-		for(u32 i=0; i<str_out2.size(); i++)
+		for (u32 i=0; i<str_out2.size(); i++)
 		{
 			infostream<<(u32)str_out2[i]<<",";
 		}
@@ -766,7 +766,7 @@ struct TestCompress: public TestBase
 
 		UASSERT(str_out2.size() == fromdata.getSize());
 
-		for(u32 i=0; i<str_out2.size(); i++)
+		for (u32 i=0; i<str_out2.size(); i++)
 		{
 			UASSERT(str_out2[i] == fromdata[i]);
 		}
@@ -788,7 +788,7 @@ struct TestCompress: public TestBase
 
 		infostream<<"str_out.size()="<<str_out.size()<<std::endl;
 		infostream<<"TestCompress: 1,5,5,1 -> ";
-		for(u32 i=0; i<str_out.size(); i++)
+		for (u32 i=0; i<str_out.size(); i++)
 		{
 			infostream<<(u32)str_out[i]<<",";
 		}
@@ -801,7 +801,7 @@ struct TestCompress: public TestBase
 		std::string str_out2 = os2.str();
 
 		infostream<<"decompress: ";
-		for(u32 i=0; i<str_out2.size(); i++)
+		for (u32 i=0; i<str_out2.size(); i++)
 		{
 			infostream<<(u32)str_out2[i]<<",";
 		}
@@ -809,7 +809,7 @@ struct TestCompress: public TestBase
 
 		UASSERT(str_out2.size() == fromdata.getSize());
 
-		for(u32 i=0; i<str_out2.size(); i++)
+		for (u32 i=0; i<str_out2.size(); i++)
 		{
 			UASSERT(str_out2[i] == fromdata[i]);
 		}
@@ -827,7 +827,7 @@ struct TestCompress: public TestBase
 			std::string data_in;
 			data_in.resize(size);
 			PseudoRandom pseudorandom(9420);
-			for(u32 i=0; i<size; i++)
+			for (u32 i=0; i<size; i++)
 				data_in[i] = pseudorandom.range(0,255);
 			std::ostringstream os_compressed(std::ios::binary);
 			compressZlib(data_in, os_compressed);
@@ -842,7 +842,7 @@ struct TestCompress: public TestBase
 			UTEST(str_decompressed.size() == data_in.size(), "Output size not"
 					" equal (output: %u, input: %u)",
 					(unsigned int)str_decompressed.size(), (unsigned int)data_in.size());
-			for(u32 i=0; i<size && i<str_decompressed.size(); i++){
+			for (u32 i=0; i<size && i<str_decompressed.size(); i++){
 				UTEST(str_decompressed[i] == data_in[i],
 						"index out[%i]=%i differs from in[%i]=%i",
 						i, str_decompressed[i], i, data_in[i]);
@@ -897,7 +897,7 @@ struct TestVoxelManipulator: public TestBase
 		UASSERT(aa.size() == results.size());
 
 		infostream<<"Result of diff:"<<std::endl;
-		for(std::list<VoxelArea>::const_iterator
+		for (std::list<VoxelArea>::const_iterator
 				i = aa.begin(); i != aa.end(); ++i)
 		{
 			i->print(infostream);
@@ -951,9 +951,9 @@ struct TestVoxelAlgorithms: public TestBase
 		*/
 		{
 			VoxelManipulator v;
-			for(u16 z=0; z<3; z++)
-			for(u16 y=0; y<3; y++)
-			for(u16 x=0; x<3; x++)
+			for (u16 z=0; z<3; z++)
+			for (u16 y=0; y<3; y++)
+			for (u16 x=0; x<3; x++)
 			{
 				v3s16 p(x,y,z);
 				v.setNodeNoRef(p, MapNode(CONTENT_AIR));
@@ -1059,9 +1059,9 @@ struct TestVoxelAlgorithms: public TestBase
 		*/
 		{
 			VoxelManipulator v;
-			for(u16 z=0; z<3; z++)
-			for(u16 y=0; y<3; y++)
-			for(u16 x=0; x<3; x++)
+			for (u16 z=0; z<3; z++)
+			for (u16 y=0; y<3; y++)
+			for (u16 x=0; x<3; x++)
 			{
 				v3s16 p(x,y,z);
 				v.setNode(p, MapNode(CONTENT_AIR));
@@ -1212,7 +1212,7 @@ struct TestMapBlock: public TestBase
 		{
 			//return position_valid ^ (p==position_valid_exception);
 			bool exception = false;
-			for(core::list<v3s16>::Iterator i=validity_exceptions.begin();
+			for (core::list<v3s16>::Iterator i=validity_exceptions.begin();
 					i != validity_exceptions.end(); i++)
 			{
 				if(p == *i)
@@ -1280,9 +1280,9 @@ struct TestMapBlock: public TestBase
 
 		// All nodes should have been set to
 		// .d=CONTENT_IGNORE and .getLight() = 0
-		for(u16 z=0; z<MAP_BLOCKSIZE; z++)
-		for(u16 y=0; y<MAP_BLOCKSIZE; y++)
-		for(u16 x=0; x<MAP_BLOCKSIZE; x++)
+		for (u16 z=0; z<MAP_BLOCKSIZE; z++)
+		for (u16 y=0; y<MAP_BLOCKSIZE; y++)
+		for (u16 x=0; x<MAP_BLOCKSIZE; x++)
 		{
 			//UASSERT(b.getNode(v3s16(x,y,z)).getContent() == CONTENT_AIR);
 			UASSERT(b.getNode(v3s16(x,y,z)).getContent() == CONTENT_IGNORE);
@@ -1292,9 +1292,9 @@ struct TestMapBlock: public TestBase
 
 		{
 			MapNode n(CONTENT_AIR);
-			for(u16 z=0; z<MAP_BLOCKSIZE; z++)
-			for(u16 y=0; y<MAP_BLOCKSIZE; y++)
-			for(u16 x=0; x<MAP_BLOCKSIZE; x++)
+			for (u16 z=0; z<MAP_BLOCKSIZE; z++)
+			for (u16 y=0; y<MAP_BLOCKSIZE; y++)
+			for (u16 x=0; x<MAP_BLOCKSIZE; x++)
 			{
 				b.setNode(v3s16(x,y,z), n);
 			}
@@ -1355,9 +1355,9 @@ struct TestMapBlock: public TestBase
 			propagateSunlight()
 		*/
 		// Set lighting of all nodes to 0
-		for(u16 z=0; z<MAP_BLOCKSIZE; z++){
-			for(u16 y=0; y<MAP_BLOCKSIZE; y++){
-				for(u16 x=0; x<MAP_BLOCKSIZE; x++){
+		for (u16 z=0; z<MAP_BLOCKSIZE; z++){
+			for (u16 y=0; y<MAP_BLOCKSIZE; y++){
+				for (u16 x=0; x<MAP_BLOCKSIZE; x++){
 					MapNode n = b.getNode(v3s16(x,y,z));
 					n.setLight(LIGHTBANK_DAY, 0);
 					n.setLight(LIGHTBANK_NIGHT, 0);
@@ -1422,9 +1422,9 @@ struct TestMapBlock: public TestBase
 		{
 			b.setIsUnderground(false);
 			// Clear block
-			for(u16 z=0; z<MAP_BLOCKSIZE; z++){
-				for(u16 y=0; y<MAP_BLOCKSIZE; y++){
-					for(u16 x=0; x<MAP_BLOCKSIZE; x++){
+			for (u16 z=0; z<MAP_BLOCKSIZE; z++){
+				for (u16 y=0; y<MAP_BLOCKSIZE; y++){
+					for (u16 x=0; x<MAP_BLOCKSIZE; x++){
 						MapNode n;
 						n.setContent(CONTENT_AIR);
 						n.setLight(LIGHTBANK_DAY, 0);
@@ -1435,8 +1435,8 @@ struct TestMapBlock: public TestBase
 			// Make neighbours invalid
 			parent.position_valid = false;
 			// Add exceptions to the top of the bottom block
-			for(u16 x=0; x<MAP_BLOCKSIZE; x++)
-			for(u16 z=0; z<MAP_BLOCKSIZE; z++)
+			for (u16 x=0; x<MAP_BLOCKSIZE; x++)
+			for (u16 z=0; z<MAP_BLOCKSIZE; z++)
 			{
 				parent.validity_exceptions.push_back(v3s16(MAP_BLOCKSIZE+x, MAP_BLOCKSIZE-1, MAP_BLOCKSIZE+z));
 			}
@@ -1526,9 +1526,9 @@ struct TestCollision: public TestBase
 			axisAlignedCollision
 		*/
 
-		for(s16 bx = -3; bx <= 3; bx++)
-		for(s16 by = -3; by <= 3; by++)
-		for(s16 bz = -3; bz <= 3; bz++)
+		for (s16 bx = -3; bx <= 3; bx++)
+		for (s16 by = -3; by <= 3; by++)
+		for (s16 bz = -3; bz <= 3; bz++)
 		{
 			// X-
 			{
@@ -1701,7 +1701,7 @@ struct TestSocket: public TestBase
 					char rcvbuffer[256] = { 0 };
 					Address sender;
 
-					for(;;) {
+					for (;;) {
 						if (socket6.Receive(sender, rcvbuffer, sizeof(rcvbuffer )) < 0)
 							break;
 					}
@@ -1729,7 +1729,7 @@ struct TestSocket: public TestBase
 
 			char rcvbuffer[256] = { 0 };
 			Address sender;
-			for(;;) {
+			for (;;) {
 				if (socket.Receive(sender, rcvbuffer, sizeof(rcvbuffer)) < 0)
 					break;
 			}
@@ -2048,15 +2048,15 @@ struct TestConnection: public TestBase
 		{
 			infostream<<"Sending large amounts of packets (infinite test)"<<std::endl;
 			int sendcount = 0;
-			for(;;){
+			for (;;){
 				int datasize = myrand_range(0,5)==0?myrand_range(100,10000):myrand_range(0,100);
 				infostream<<"datasize="<<datasize<<std::endl;
 				SharedBuffer<u8> data1(datasize);
-				for(u16 i=0; i<datasize; i++)
+				for (u16 i=0; i<datasize; i++)
 					data1[i] = i/4;
 
 				int sendtimes = myrand_range(1,10);
-				for(int i=0; i<sendtimes; i++){
+				for (int i=0; i<sendtimes; i++){
 					server.Send(peer_id_client, 0, data1, true);
 					sendcount++;
 				}
@@ -2064,7 +2064,7 @@ struct TestConnection: public TestBase
 
 				//int receivetimes = myrand_range(1,20);
 				int receivetimes = 20;
-				for(int i=0; i<receivetimes; i++){
+				for (int i=0; i<receivetimes; i++){
 					SharedBuffer<u8> recvdata;
 					u16 peer_id = 132;
 					u16 size = 0;
@@ -2084,12 +2084,12 @@ struct TestConnection: public TestBase
 		{
 			const int datasize = 30000;
 			SharedBuffer<u8> data1(datasize);
-			for(u16 i=0; i<datasize; i++){
+			for (u16 i=0; i<datasize; i++){
 				data1[i] = i/4;
 			}
 
 			infostream<<"Sending data (size="<<datasize<<"):";
-			for(int i=0; i<datasize && i<20; i++){
+			for (int i=0; i<datasize && i<20; i++){
 				if(i%2==0) infostream<<" ";
 				char buf[10];
 				snprintf(buf, 10, "%.2X", ((int)((const char*)*data1)[i])&0xff);
@@ -2109,7 +2109,7 @@ struct TestConnection: public TestBase
 			u16 size = 0;
 			bool received = false;
 			u32 timems0 = porting::getTimeMs();
-			for(;;){
+			for (;;){
 				if(porting::getTimeMs() - timems0 > 5000 || received)
 					break;
 				try{
@@ -2125,7 +2125,7 @@ struct TestConnection: public TestBase
 					<<std::endl;
 
 			infostream<<"Received data (size="<<size<<"): ";
-			for(int i=0; i<size && i<20; i++){
+			for (int i=0; i<size && i<20; i++){
 				if(i%2==0) infostream<<" ";
 				char buf[10];
 				snprintf(buf, 10, "%.2X", ((int)(recvdata[i]))&0xff);

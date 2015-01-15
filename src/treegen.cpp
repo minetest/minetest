@@ -45,7 +45,7 @@ void make_tree(MMVManip &vmanip, v3s16 p0,
 	PseudoRandom pr(seed);
 	s16 trunk_h = pr.range(4, 5);
 	v3s16 p1 = p0;
-	for(s16 ii=0; ii<trunk_h; ii++)
+	for (s16 ii=0; ii<trunk_h; ii++)
 	{
 		if(vmanip.m_area.contains(p1))
 			if(ii == 0 || vmanip.getNodeNoExNoEmerge(p1).getContent() == CONTENT_AIR)
@@ -59,22 +59,22 @@ void make_tree(MMVManip &vmanip, v3s16 p0,
 	VoxelArea leaves_a(v3s16(-2,-1,-2), v3s16(2,2,2));
 	//SharedPtr<u8> leaves_d(new u8[leaves_a.getVolume()]);
 	Buffer<u8> leaves_d(leaves_a.getVolume());
-	for(s32 i=0; i<leaves_a.getVolume(); i++)
+	for (s32 i=0; i<leaves_a.getVolume(); i++)
 		leaves_d[i] = 0;
 
 	// Force leaves at near the end of the trunk
 	{
 		s16 d = 1;
-		for(s16 z=-d; z<=d; z++)
-		for(s16 y=-d; y<=d; y++)
-		for(s16 x=-d; x<=d; x++)
+		for (s16 z=-d; z<=d; z++)
+		for (s16 y=-d; y<=d; y++)
+		for (s16 x=-d; x<=d; x++)
 		{
 			leaves_d[leaves_a.index(v3s16(x,y,z))] = 1;
 		}
 	}
 
 	// Add leaves randomly
-	for(u32 iii=0; iii<7; iii++)
+	for (u32 iii=0; iii<7; iii++)
 	{
 		s16 d = 1;
 
@@ -84,18 +84,18 @@ void make_tree(MMVManip &vmanip, v3s16 p0,
 			pr.range(leaves_a.MinEdge.Z, leaves_a.MaxEdge.Z-d)
 		);
 
-		for(s16 z=0; z<=d; z++)
-		for(s16 y=0; y<=d; y++)
-		for(s16 x=0; x<=d; x++)
+		for (s16 z=0; z<=d; z++)
+		for (s16 y=0; y<=d; y++)
+		for (s16 x=0; x<=d; x++)
 		{
 			leaves_d[leaves_a.index(p+v3s16(x,y,z))] = 1;
 		}
 	}
 
 	// Blit leaves to vmanip
-	for(s16 z=leaves_a.MinEdge.Z; z<=leaves_a.MaxEdge.Z; z++)
-	for(s16 y=leaves_a.MinEdge.Y; y<=leaves_a.MaxEdge.Y; y++)
-	for(s16 x=leaves_a.MinEdge.X; x<=leaves_a.MaxEdge.X; x++)
+	for (s16 z=leaves_a.MinEdge.Z; z<=leaves_a.MaxEdge.Z; z++)
+	for (s16 y=leaves_a.MinEdge.Y; y<=leaves_a.MaxEdge.Y; y++)
+	for (s16 x=leaves_a.MinEdge.X; x<=leaves_a.MaxEdge.X; x++)
 	{
 		v3s16 p(x,y,z);
 		p += p1;
@@ -140,7 +140,7 @@ treegen::error spawn_ltree(ServerEnvironment *env, v3s16 p0, INodeDefManager *nd
 	// Send a MEET_OTHER event
 	MapEditEvent event;
 	event.type = MEET_OTHER;
-	for(std::map<v3s16, MapBlock*>::iterator
+	for (std::map<v3s16, MapBlock*>::iterator
 		i = modified_blocks.begin();
 		i != modified_blocks.end(); ++i)
 	{
@@ -195,10 +195,10 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef,
 
 	//generate axiom
 	std::string axiom = tree_definition.initial_axiom;
-	for(s16 i=0; i<iterations; i++)
+	for (s16 i=0; i<iterations; i++)
 	{
 		std::string temp = "";
-		for(s16 j=0; j<(s16)axiom.size(); j++)
+		for (s16 j=0; j<(s16)axiom.size(); j++)
 		{
 			char axiom_char = axiom.at(j);
 			switch (axiom_char)
@@ -283,7 +283,7 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef,
     */
 
 	s16 x,y,z;
-	for(s16 i=0; i<(s16)axiom.size(); i++)
+	for (s16 i=0; i<(s16)axiom.size(); i++)
 	{
 		char axiom_char = axiom.at(i);
 		core::matrix4 temp_rotation;
@@ -335,9 +335,9 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef,
 			if (stack_orientation.empty() == false)
 			{
 				s16 size = 1;
-				for(x=-size; x<=size; x++)
-					for(y=-size; y<=size; y++)
-						for(z=-size; z<=size; z++)
+				for (x=-size; x<=size; x++)
+					for (y=-size; y<=size; y++)
+						for (z=-size; z<=size; z++)
 							if (abs(x) == size && abs(y) == size && abs(z) == size)
 							{
 								tree_leaves_placement(vmanip,v3f(position.X+x+1,position.Y+y,position.Z+z),ps.next(), tree_definition);
@@ -551,8 +551,8 @@ void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
 	MapNode leavesnode(c_leaves);
 
 	PseudoRandom pr(seed);
-	for(s16 x=-1; x<=1; x++)
-	for(s16 z=-1; z<=1; z++)
+	for (s16 x=-1; x<=1; x++)
+	for (s16 z=-1; z<=1; z++)
 	{
 		if(pr.range(0, 2) == 0)
 			continue;
@@ -588,22 +588,22 @@ void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
 	VoxelArea leaves_a(v3s16(-3,-2,-3), v3s16(3,2,3));
 	//SharedPtr<u8> leaves_d(new u8[leaves_a.getVolume()]);
 	Buffer<u8> leaves_d(leaves_a.getVolume());
-	for(s32 i=0; i<leaves_a.getVolume(); i++)
+	for (s32 i=0; i<leaves_a.getVolume(); i++)
 		leaves_d[i] = 0;
 
 	// Force leaves at near the end of the trunk
 	{
 		s16 d = 1;
-		for(s16 z=-d; z<=d; z++)
-		for(s16 y=-d; y<=d; y++)
-		for(s16 x=-d; x<=d; x++)
+		for (s16 z=-d; z<=d; z++)
+		for (s16 y=-d; y<=d; y++)
+		for (s16 x=-d; x<=d; x++)
 		{
 			leaves_d[leaves_a.index(v3s16(x,y,z))] = 1;
 		}
 	}
 
 	// Add leaves randomly
-	for(u32 iii=0; iii<30; iii++)
+	for (u32 iii=0; iii<30; iii++)
 	{
 		s16 d = 1;
 
@@ -613,18 +613,18 @@ void make_jungletree(VoxelManipulator &vmanip, v3s16 p0,
 			pr.range(leaves_a.MinEdge.Z, leaves_a.MaxEdge.Z-d)
 		);
 
-		for(s16 z=0; z<=d; z++)
-		for(s16 y=0; y<=d; y++)
-		for(s16 x=0; x<=d; x++)
+		for (s16 z=0; z<=d; z++)
+		for (s16 y=0; y<=d; y++)
+		for (s16 x=0; x<=d; x++)
 		{
 			leaves_d[leaves_a.index(p+v3s16(x,y,z))] = 1;
 		}
 	}
 
 	// Blit leaves to vmanip
-	for(s16 z=leaves_a.MinEdge.Z; z<=leaves_a.MaxEdge.Z; z++)
-	for(s16 y=leaves_a.MinEdge.Y; y<=leaves_a.MaxEdge.Y; y++)
-	for(s16 x=leaves_a.MinEdge.X; x<=leaves_a.MaxEdge.X; x++)
+	for (s16 z=leaves_a.MinEdge.Z; z<=leaves_a.MaxEdge.Z; z++)
+	for (s16 y=leaves_a.MinEdge.Y; y<=leaves_a.MaxEdge.Y; y++)
+	for (s16 x=leaves_a.MinEdge.X; x<=leaves_a.MaxEdge.X; x++)
 	{
 		v3s16 p(x,y,z);
 		p += p1;

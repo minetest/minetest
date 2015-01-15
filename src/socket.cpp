@@ -215,7 +215,7 @@ std::string Address::serializeString() const
 	else if(m_addr_family == AF_INET6)
 	{
 		std::ostringstream os;
-		for(int i = 0; i < 16; i += 2)
+		for (int i = 0; i < 16; i += 2)
 		{
 			u16 section =
 			(m_address.ipv6.sin6_addr.s6_addr[i] << 8) |
@@ -427,7 +427,7 @@ void UDPSocket::Send(const Address & destination, const void * data, int size)
 
 		// Print packet contents
 		dstream << ", data=";
-		for(int i = 0; i < size && i < 20; i++) {
+		for (int i = 0; i < size && i < 20; i++) {
 			if(i % 2 == 0)
 				dstream << " ";
 			unsigned int a = ((const unsigned char *)data)[i];
@@ -518,7 +518,7 @@ int UDPSocket::Receive(Address & sender, void *data, int size)
 		
 		// Print packet contents
 		dstream << ", data=";
-		for(int i = 0; i < received && i < 20; i++) {
+		for (int i = 0; i < received && i < 20; i++) {
 			if(i % 2 == 0)
 				dstream << " ";
 			unsigned int a = ((const unsigned char *) data)[i];

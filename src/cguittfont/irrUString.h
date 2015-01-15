@@ -1244,7 +1244,7 @@ public:
 			return false;
 
 		u32 i;
-		for(i=0; array[i] && str[i]; ++i)
+		for (i=0; array[i] && str[i]; ++i)
 			if (array[i] != str[i])
 				return false;
 
@@ -1255,7 +1255,7 @@ public:
 	//! Equality operator
 	bool operator ==(const ustring16<TAlloc>& other) const
 	{
-		for(u32 i=0; array[i] && other.array[i]; ++i)
+		for (u32 i=0; array[i] && other.array[i]; ++i)
 			if (array[i] != other.array[i])
 				return false;
 
@@ -1266,7 +1266,7 @@ public:
 	//! Is smaller comparator
 	bool operator <(const ustring16<TAlloc>& other) const
 	{
-		for(u32 i=0; array[i] && other.array[i]; ++i)
+		for (u32 i=0; array[i] && other.array[i]; ++i)
 		{
 			s32 diff = array[i] - other.array[i];
 			if ( diff )
@@ -1330,7 +1330,7 @@ public:
 	{
 		u32 i;
 		const uchar16_t* oa = other.c_str();
-		for(i=0; array[i] && oa[i] && i < n; ++i)
+		for (i=0; array[i] && oa[i] && i < n; ++i)
 			if (array[i] != oa[i])
 				return false;
 
@@ -1349,7 +1349,7 @@ public:
 		if (!str)
 			return false;
 		u32 i;
-		for(i=0; array[i] && str[i] && i < n; ++i)
+		for (i=0; array[i] && str[i] && i < n; ++i)
 			if (array[i] != str[i])
 				return false;
 
