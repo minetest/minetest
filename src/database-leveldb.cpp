@@ -80,6 +80,19 @@ std::string Database_LevelDB::loadBlock(v3s16 blockpos)
 		return "";
 }
 
+bool Database_LevelDB::deleteBlock(v3s16 blockpos)
+{
+	leveldb::Status status = m_database->Delete(leveldb::WriteOptions(),
+			i64tos(getBlockAsInteger(blockpos)));
+	if (!status.ok()) {
+		errorstream << "WARNING: deleteBlock: LevelDB error deleting block "
+			<< PP(blockpos) << ": " << status.ToString() << std::endl;
+		return false;
+	}
+
+	return true;
+}
+
 void Database_LevelDB::listAllLoadableBlocks(std::list<v3s16> &dst)
 {
 	leveldb::Iterator* it = m_database->NewIterator(leveldb::ReadOptions());

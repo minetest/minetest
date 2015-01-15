@@ -3588,6 +3588,23 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 	return getBlockNoCreateNoEx(blockpos);
 }
 
+bool ServerMap::deleteBlock(v3s16 blockpos)
+{
+	if (!dbase->deleteBlock(blockpos))
+		return false;
+
+	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	if (block) {
+		v2s16 p2d(blockpos.X, blockpos.Z);
+		MapSector *sector = getSectorNoGenerateNoEx(p2d);
+		if (!sector)
+			return false;
+		sector->deleteBlock(block);
+	}
+
+	return true;
+}
+
 void ServerMap::PrintInfo(std::ostream &out)
 {
 	out<<"ServerMap: ";

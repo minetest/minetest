@@ -38,6 +38,7 @@ public:
 	virtual void endSave();
 	virtual bool saveBlock(v3s16 blockpos, std::string &data);
 	virtual std::string loadBlock(v3s16 blockpos);
+	virtual bool deleteBlock(v3s16 blockpos);
 	virtual void listAllLoadableBlocks(std::list<v3s16> &dst);
 	virtual int Initialized(void);
 	~Database_LevelDB();

@@ -267,9 +267,10 @@ public:
 
 	virtual void save(ModifiedState save_level){assert(0);};
 
-	// Server implements this.
-	// Client leaves it as no-op.
+	// Server implements these.
+	// Client leaves them as no-op.
 	virtual bool saveBlock(MapBlock *block) { return false; };
+	virtual bool deleteBlock(v3s16 blockpos) { return false; };
 
 	/*
 		Updates usage timers and unloads unused blocks and sectors.
@@ -423,7 +424,7 @@ public:
 		- Create blank filled with CONTENT_IGNORE
 
 	*/
-	MapBlock * emergeBlock(v3s16 p, bool create_blank=true);
+	MapBlock *emergeBlock(v3s16 p, bool create_blank=true);
 
 	/*
 		Try to get a block.
@@ -497,6 +498,8 @@ public:
 	MapBlock* loadBlock(v3s16 p);
 	// Database version
 	void loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load=false);
+
+	bool deleteBlock(v3s16 blockpos);
 
 	void updateVManip(v3s16 pos);
 

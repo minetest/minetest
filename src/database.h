@@ -37,6 +37,7 @@ public:
 
 	virtual bool saveBlock(v3s16 blockpos, std::string &data) = 0;
 	virtual std::string loadBlock(v3s16 blockpos) = 0;
+	virtual bool deleteBlock(v3s16 blockpos) = 0;
 	s64 getBlockAsInteger(const v3s16 pos) const;
 	v3s16 getIntegerAsBlock(s64 i) const;
 	virtual void listAllLoadableBlocks(std::list<v3s16> &dst) = 0;

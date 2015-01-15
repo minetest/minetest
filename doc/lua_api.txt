@@ -1880,6 +1880,8 @@ and `minetest.auth_reload` call the authetification handler.
    * Generate all registered decorations within the VoxelManip specified by `vm`.
 * `minetest.clear_objects()`
     * clear all objects in the environments
+* `minetest.delete_area(pos1, pos2)`
+    * delete all mapblocks in the area from pos1 to pos2, inclusive
 * `minetest.line_of_sight(pos1, pos2, stepsize)`: returns `boolean, pos`
     * Check if there is a direct line of sight between `pos1` and `pos2`
     * Returns the position of the blocking node when `false`

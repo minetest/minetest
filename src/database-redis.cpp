@@ -123,6 +123,30 @@ std::string Database_Redis::loadBlock(v3s16 blockpos)
 	return str;
 }
 
+bool Database_Redis::deleteBlock(v3s16 blockpos)
+{
+	std::string tmp = i64tos(getBlockAsInteger(blockpos));
+
+	redisReply *reply = (redisReply *)redisCommand(ctx, "HDEL %s %s",
+		hash.c_str(), tmp.c_str());
+	if (!reply) {
+		errorstream << "WARNING: deleteBlock: redis command 'HDEL' failed on "
+			"block " << PP(blockpos) << ": " << ctx->errstr << std::endl;
+		freeReplyObject(reply);
+		return false;
+	}
+
+	if (reply->type == REDIS_REPLY_ERROR) {
+		errorstream << "WARNING: deleteBlock: deleting block " << PP(blockpos)
+			<< "failed" << std::endl;
+		freeReplyObject(reply);
+		return false;
+	}
+
+	freeReplyObject(reply);
+	return true;
+}
+
 void Database_Redis::listAllLoadableBlocks(std::list<v3s16> &dst)
 {
 	redisReply *reply;
