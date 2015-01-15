@@ -117,7 +117,7 @@ OPENSSL_TIMESTAMP = $(OPENSSL_DIR)timestamp
 OPENSSL_TIMESTAMP_INT = $(ROOT)/deps/openssl_timestamp
 OPENSSL_URL = http://www.openssl.org/source/openssl-$(OPENSSL_VERSION).tar.gz
 
-CURL_VERSION = 7.35.0
+CURL_VERSION = 7.40.0
 CURL_DIR = $(ROOT)/deps/curl-$(CURL_VERSION)
 CURL_LIB = $(CURL_DIR)/lib/.libs/libcurl.a
 CURL_TIMESTAMP = $(CURL_DIR)/timestamp
@@ -499,6 +499,7 @@ curl_download :
 		wget ${CURL_URL_HTTP} || exit 1;                                       \
 		tar -xjf curl-${CURL_VERSION}.tar.bz2 || exit 1;                       \
 		rm curl-${CURL_VERSION}.tar.bz2;                                       \
+		ln -s curl-${CURL_VERSION} curl;                                       \
 	fi
 
 curl : $(CURL_LIB)
@@ -542,7 +543,8 @@ $(CURL_LIB): $(CURL_TIMESTAMP) $(OPENSSL_LIB)
 	fi
 	
 clean_curl :
-	$(RM) -rf deps/curl-${CURL_VERSION}
+	$(RM) -rf deps/curl-${CURL_VERSION}                                        \
+	$(RM) -f deps/curl
 	
 	
 curl_binary: 

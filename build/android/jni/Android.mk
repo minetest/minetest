@@ -16,7 +16,7 @@ endif
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := curl
-LOCAL_SRC_FILES := deps/curl-7.35.0/lib/.libs/libcurl.a
+LOCAL_SRC_FILES := deps/curl/lib/.libs/libcurl.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
@@ -94,7 +94,7 @@ LOCAL_C_INCLUDES :=                               \
 		jni/src/cguittfont                        \
 		deps/irrlicht/include                     \
 		deps/freetype2-android/include            \
-		deps/curl-7.35.0/include                  \
+		deps/curl/include                         \
 		deps/openal-soft/jni/OpenAL/include       \
 		deps/libvorbis-libogg-android/jni/include \
 		deps/leveldb/include                      \
