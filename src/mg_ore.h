@@ -105,6 +105,7 @@ public:
 	float random_factor;
 	Noise *noise2;
 
+	OreVein();
 	virtual ~OreVein();
 
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,

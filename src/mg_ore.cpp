@@ -263,6 +263,12 @@ void OreBlob::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 ///////////////////////////////////////////////////////////////////////////////
 
+OreVein::OreVein()
+{
+	noise2 = NULL;
+}
+
+
 OreVein::~OreVein()
 {
 	delete noise2;
