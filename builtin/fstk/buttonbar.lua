@@ -50,10 +50,10 @@ local function buttonbar_formspec(self)
 			(self.orientation == "horizontal" and
 			(btn_pos.x + self.btn_size <= self.pos.x + self.size.x)) then
 			
-		local borders="true"
+		local borders = "true"
 		
-		if self.buttons[i].image ~= nil then
-			borders="false"
+		if self.buttons[i].image ~= "" then
+			borders = "false"
 		end
 			
 		formspec = formspec ..
