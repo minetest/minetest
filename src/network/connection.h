@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "socket.h"
 #include "exceptions.h"
 #include "constants.h"
+#include "network/networkpacket.h"
 #include "util/pointer.h"
 #include "util/container.h"
 #include "util/thread.h"
@@ -130,14 +131,14 @@ inline bool seqnum_higher(u16 totest, u16 base)
 {
 	if (totest > base)
 	{
-		if((totest - base) > (SEQNUM_MAX/2))
+		if ((totest - base) > (SEQNUM_MAX/2))
 			return false;
 		else
 			return true;
 	}
 	else
 	{
-		if((base - totest) > (SEQNUM_MAX/2))
+		if ((base - totest) > (SEQNUM_MAX/2))
 			return true;
 		else
 			return false;
@@ -362,9 +363,9 @@ public:
 		packet is constructed. If not, returns one of length 0.
 	*/
 	SharedBuffer<u8> insert(BufferedPacket &p, bool reliable);
-	
+
 	void removeUnreliableTimedOuts(float dtime, float timeout);
-	
+
 private:
 	// Key is seqnum
 	std::map<u16, IncomingSplitPacket*> m_buf;
@@ -495,7 +496,7 @@ public:
 
 	u16 readNextSplitSeqNum();
 	void setNextSplitSeqNum(u16 seqnum);
-	
+
 	// This is for buffering the incoming packets that are coming in
 	// the wrong order
 	ReliablePacketBuffer incoming_reliables;
@@ -873,7 +874,7 @@ struct ConnectionEvent
 
 	std::string describe()
 	{
-		switch(type){
+		switch(type) {
 		case CONNEVENT_NONE:
 			return "CONNEVENT_NONE";
 		case CONNEVENT_DATA_RECEIVED:
@@ -887,7 +888,7 @@ struct ConnectionEvent
 		}
 		return "Invalid ConnectionEvent";
 	}
-	
+
 	void dataReceived(u16 peer_id_, SharedBuffer<u8> data_)
 	{
 		type = CONNEVENT_DATA_RECEIVED;
@@ -1025,16 +1026,15 @@ public:
 	ConnectionEvent getEvent();
 	ConnectionEvent waitEvent(u32 timeout_ms);
 	void putCommand(ConnectionCommand &c);
-	
-	void SetTimeoutMs(int timeout){ m_bc_receive_timeout = timeout; }
+
+	void SetTimeoutMs(int timeout) { m_bc_receive_timeout = timeout; }
 	void Serve(Address bind_addr);
 	void Connect(Address address);
 	bool Connected();
 	void Disconnect();
 	u32 Receive(u16 &peer_id, SharedBuffer<u8> &data);
-	void SendToAll(u8 channelnum, SharedBuffer<u8> data, bool reliable);
-	void Send(u16 peer_id, u8 channelnum, SharedBuffer<u8> data, bool reliable);
-	u16 GetPeerID(){ return m_peer_id; }
+	void Send(u16 peer_id, u8 channelnum, NetworkPacket* pkt, bool reliable);
+	u16 GetPeerID() { return m_peer_id; }
 	Address GetPeerAddress(u16 peer_id);
 	float getPeerStat(u16 peer_id, rtt_stat_type type);
 	float getLocalStat(rate_stat_type type);
@@ -1051,14 +1051,14 @@ protected:
 	UDPPeer*  createServerPeer(Address& sender);
 	bool deletePeer(u16 peer_id, bool timeout);
 
-	void SetPeerID(u16 id){ m_peer_id = id; }
+	void SetPeerID(u16 id) { m_peer_id = id; }
 
 	void sendAck(u16 peer_id, u8 channelnum, u16 seqnum);
 
 	void PrintInfo(std::ostream &out);
 	void PrintInfo();
 
-	std::list<u16> getPeerIDs();
+	std::list<u16> getPeerIDs() { return m_peer_ids; }
 
 	UDPSocket m_udpSocket;
 	MutexedQueue<ConnectionCommand> m_command_queue;
@@ -1074,8 +1074,9 @@ private:
 
 	u16 m_peer_id;
 	u32 m_protocol_id;
-	
+
 	std::map<u16, Peer*> m_peers;
+	std::list<u16> m_peer_ids;
 	JMutex m_peers_mutex;
 
 	ConnectionSendThread m_sendThread;
@@ -1095,4 +1096,3 @@ private:
 } // namespace
 
 #endif
-

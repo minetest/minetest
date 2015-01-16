@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "serialization.h"             // for SER_FMT_VER_INVALID
 #include "jthread/jmutex.h"
+#include "network/networkpacket.h"
 
 #include <list>
 #include <vector>
@@ -393,10 +394,10 @@ public:
 	std::vector<std::string> getPlayerNames();
 
 	/* send message to client */
-	void send(u16 peer_id, u8 channelnum, SharedBuffer<u8> data, bool reliable);
+	void send(u16 peer_id, u8 channelnum, NetworkPacket* pkt, bool reliable, bool deletepkt=true);
 
 	/* send to all clients */
-	void sendToAll(u16 channelnum, SharedBuffer<u8> data, bool reliable);
+	void sendToAll(u16 channelnum, NetworkPacket* pkt, bool reliable);
 
 	/* delete a client */
 	void DeleteClient(u16 peer_id);
@@ -457,7 +458,7 @@ private:
 	JMutex m_env_mutex;
 
 	float m_print_info_timer;
-	
+
 	static const char *statenames[];
 };
 

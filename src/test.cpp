@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "main.h"
 #include "socket.h"
-#include "connection.h"
+#include "network/connection.h"
 #include "serialization.h"
 #include "voxel.h"
 #include "collision.h"
@@ -1986,168 +1986,57 @@ struct TestConnection: public TestBase
 		catch(con::NoIncomingDataException &e)
 		{
 		}
-#if 1
+
 		/*
 			Simple send-receive test
 		*/
 		{
-			/*u8 data[] = "Hello World!";
-			u32 datasize = sizeof(data);*/
-			SharedBuffer<u8> data = SharedBufferFromString("Hello World!");
+			NetworkPacket* pkt = new NetworkPacket((u8*) "Hello World !", 14, 0);
+
+			SharedBuffer<u8> sentdata = pkt->oldForgePacket();
 
 			infostream<<"** running client.Send()"<<std::endl;
-			client.Send(PEER_ID_SERVER, 0, data, true);
+			client.Send(PEER_ID_SERVER, 0, pkt, true);
 
 			sleep_ms(50);
 
 			u16 peer_id;
 			SharedBuffer<u8> recvdata;
-			infostream<<"** running server.Receive()"<<std::endl;
+			infostream << "** running server.Receive()" << std::endl;
 			u32 size = server.Receive(peer_id, recvdata);
-			infostream<<"** Server received: peer_id="<<peer_id
-					<<", size="<<size
-					<<", data="<<*data
-					<<std::endl;
-			UASSERT(memcmp(*data, *recvdata, data.getSize()) == 0);
+			infostream << "** Server received: peer_id=" << peer_id
+					<< ", size=" << size
+					<< ", data=" << (const char*)pkt->getU8Ptr(0)
+					<< std::endl;
+
+			UASSERT(memcmp(*sentdata, *recvdata, recvdata.getSize()) == 0);
 		}
-#endif
+
 		u16 peer_id_client = 2;
-#if 0
-		/*
-			Send consequent packets in different order
-			Not compatible with new Connection, thus commented out.
-		*/
-		{
-			//u8 data1[] = "hello1";
-			//u8 data2[] = "hello2";
-			SharedBuffer<u8> data1 = SharedBufferFromString("hello1");
-			SharedBuffer<u8> data2 = SharedBufferFromString("Hello2");
-
-			Address client_address =
-					server.GetPeerAddress(peer_id_client);
-
-			infostream<<"*** Sending packets in wrong order (2,1,2)"
-					<<std::endl;
-
-			u8 chn = 0;
-			con::Channel *ch = &server.getPeer(peer_id_client)->channels[chn];
-			u16 sn = ch->next_outgoing_seqnum;
-			ch->next_outgoing_seqnum = sn+1;
-			server.Send(peer_id_client, chn, data2, true);
-			ch->next_outgoing_seqnum = sn;
-			server.Send(peer_id_client, chn, data1, true);
-			ch->next_outgoing_seqnum = sn+1;
-			server.Send(peer_id_client, chn, data2, true);
-
-			sleep_ms(50);
-
-			infostream<<"*** Receiving the packets"<<std::endl;
-
-			u16 peer_id;
-			SharedBuffer<u8> recvdata;
-			u32 size;
-
-			infostream<<"** running client.Receive()"<<std::endl;
-			peer_id = 132;
-			size = client.Receive(peer_id, recvdata);
-			infostream<<"** Client received: peer_id="<<peer_id
-					<<", size="<<size
-					<<", data="<<*recvdata
-					<<std::endl;
-			UASSERT(size == data1.getSize());
-			UASSERT(memcmp(*data1, *recvdata, data1.getSize()) == 0);
-			UASSERT(peer_id == PEER_ID_SERVER);
-
-			infostream<<"** running client.Receive()"<<std::endl;
-			peer_id = 132;
-			size = client.Receive(peer_id, recvdata);
-			infostream<<"** Client received: peer_id="<<peer_id
-					<<", size="<<size
-					<<", data="<<*recvdata
-					<<std::endl;
-			UASSERT(size == data2.getSize());
-			UASSERT(memcmp(*data2, *recvdata, data2.getSize()) == 0);
-			UASSERT(peer_id == PEER_ID_SERVER);
-
-			bool got_exception = false;
-			try
-			{
-				infostream<<"** running client.Receive()"<<std::endl;
-				peer_id = 132;
-				size = client.Receive(peer_id, recvdata);
-				infostream<<"** Client received: peer_id="<<peer_id
-						<<", size="<<size
-						<<", data="<<*recvdata
-						<<std::endl;
-			}
-			catch(con::NoIncomingDataException &e)
-			{
-				infostream<<"** No incoming data for client"<<std::endl;
-				got_exception = true;
-			}
-			UASSERT(got_exception);
-		}
-#endif
-#if 0
-		/*
-			Send large amounts of packets (infinite test)
-			Commented out because of infinity.
-		*/
-		{
-			infostream<<"Sending large amounts of packets (infinite test)"<<std::endl;
-			int sendcount = 0;
-			for(;;){
-				int datasize = myrand_range(0,5)==0?myrand_range(100,10000):myrand_range(0,100);
-				infostream<<"datasize="<<datasize<<std::endl;
-				SharedBuffer<u8> data1(datasize);
-				for(u16 i=0; i<datasize; i++)
-					data1[i] = i/4;
-
-				int sendtimes = myrand_range(1,10);
-				for(int i=0; i<sendtimes; i++){
-					server.Send(peer_id_client, 0, data1, true);
-					sendcount++;
-				}
-				infostream<<"sendcount="<<sendcount<<std::endl;
-
-				//int receivetimes = myrand_range(1,20);
-				int receivetimes = 20;
-				for(int i=0; i<receivetimes; i++){
-					SharedBuffer<u8> recvdata;
-					u16 peer_id = 132;
-					u16 size = 0;
-					bool received = false;
-					try{
-						size = client.Receive(peer_id, recvdata);
-						received = true;
-					}catch(con::NoIncomingDataException &e){
-					}
-				}
-			}
-		}
-#endif
 		/*
 			Send a large packet
 		*/
 		{
 			const int datasize = 30000;
-			SharedBuffer<u8> data1(datasize);
+			NetworkPacket* pkt = new NetworkPacket(0, datasize);
 			for(u16 i=0; i<datasize; i++){
-				data1[i] = i/4;
+				*pkt << (u8) i/4;
 			}
 
 			infostream<<"Sending data (size="<<datasize<<"):";
 			for(int i=0; i<datasize && i<20; i++){
 				if(i%2==0) infostream<<" ";
 				char buf[10];
-				snprintf(buf, 10, "%.2X", ((int)((const char*)*data1)[i])&0xff);
+				snprintf(buf, 10, "%.2X", ((int)((const char*)pkt->getU8Ptr(0))[i])&0xff);
 				infostream<<buf;
 			}
 			if(datasize>20)
 				infostream<<"...";
 			infostream<<std::endl;
 
-			server.Send(peer_id_client, 0, data1, true);
+			SharedBuffer<u8> sentdata = pkt->oldForgePacket();
+
+			server.Send(peer_id_client, 0, pkt, true);
 
 			//sleep_ms(3000);
 
@@ -2183,7 +2072,7 @@ struct TestConnection: public TestBase
 				infostream<<"...";
 			infostream<<std::endl;
 
-			UASSERT(memcmp(*data1, *recvdata, data1.getSize()) == 0);
+			UASSERT(memcmp(*sentdata, *recvdata, recvdata.getSize()) == 0);
 			UASSERT(peer_id == PEER_ID_SERVER);
 		}
 

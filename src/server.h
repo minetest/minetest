@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER_HEADER
 #define SERVER_HEADER
 
-#include "connection.h"
+#include "network/connection.h"
 #include "irr_v3d.h"
 #include "map.h"
 #include "hud.h"
@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/thread.h"
 #include "environment.h"
 #include "clientiface.h"
-#include "network/toserverpacket.h"
+#include "network/networkpacket.h"
 #include <string>
 #include <list>
 #include <map>
@@ -193,31 +193,33 @@ public:
 	 * Command Handlers
 	 */
 
-	void handleCommand(ToServerPacket* pkt);
+	void handleCommand(NetworkPacket* pkt);
 
-	void handleCommand_Null(ToServerPacket* pkt) {};
-	void handleCommand_Deprecated(ToServerPacket* pkt);
-	void handleCommand_Init(ToServerPacket* pkt);
-	void handleCommand_Init2(ToServerPacket* pkt);
-	void handleCommand_RequestMedia(ToServerPacket* pkt);
-	void handleCommand_ReceivedMedia(ToServerPacket* pkt);
-	void handleCommand_ClientReady(ToServerPacket* pkt);
-	void handleCommand_GotBlocks(ToServerPacket* pkt);
-	void handleCommand_PlayerPos(ToServerPacket* pkt);
-	void handleCommand_DeletedBlocks(ToServerPacket* pkt);
-	void handleCommand_InventoryAction(ToServerPacket* pkt);
-	void handleCommand_ChatMessage(ToServerPacket* pkt);
-	void handleCommand_Damage(ToServerPacket* pkt);
-	void handleCommand_Breath(ToServerPacket* pkt);
-	void handleCommand_Password(ToServerPacket* pkt);
-	void handleCommand_PlayerItem(ToServerPacket* pkt);
-	void handleCommand_Respawn(ToServerPacket* pkt);
-	void handleCommand_Interact(ToServerPacket* pkt);
-	void handleCommand_RemovedSounds(ToServerPacket* pkt);
-	void handleCommand_NodeMetaFields(ToServerPacket* pkt);
-	void handleCommand_InventoryFields(ToServerPacket* pkt);
+	void handleCommand_Null(NetworkPacket* pkt) {};
+	void handleCommand_Deprecated(NetworkPacket* pkt);
+	void handleCommand_Init(NetworkPacket* pkt);
+	void handleCommand_Init2(NetworkPacket* pkt);
+	void handleCommand_RequestMedia(NetworkPacket* pkt);
+	void handleCommand_ReceivedMedia(NetworkPacket* pkt);
+	void handleCommand_ClientReady(NetworkPacket* pkt);
+	void handleCommand_GotBlocks(NetworkPacket* pkt);
+	void handleCommand_PlayerPos(NetworkPacket* pkt);
+	void handleCommand_DeletedBlocks(NetworkPacket* pkt);
+	void handleCommand_InventoryAction(NetworkPacket* pkt);
+	void handleCommand_ChatMessage(NetworkPacket* pkt);
+	void handleCommand_Damage(NetworkPacket* pkt);
+	void handleCommand_Breath(NetworkPacket* pkt);
+	void handleCommand_Password(NetworkPacket* pkt);
+	void handleCommand_PlayerItem(NetworkPacket* pkt);
+	void handleCommand_Respawn(NetworkPacket* pkt);
+	void handleCommand_Interact(NetworkPacket* pkt);
+	void handleCommand_RemovedSounds(NetworkPacket* pkt);
+	void handleCommand_NodeMetaFields(NetworkPacket* pkt);
+	void handleCommand_InventoryFields(NetworkPacket* pkt);
 
 	void ProcessData(u8 *data, u32 datasize, u16 peer_id);
+
+	void Send(NetworkPacket* pkt);
 
 	// Environment must be locked when called
 	void setTimeOfDay(u32 time);

@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "client.h"
 #include "networkprotocol.h"
-#include "toclientpacket.h"
+#include "networkpacket.h"
 
 enum ToClientConnectionState {
 	TOCLIENT_STATE_NOT_CONNECTED,
@@ -33,11 +33,20 @@ enum ToClientConnectionState {
 
 struct ToClientCommandHandler
 {
-    char const* name;
+    const char* name;
     ToClientConnectionState state;
-    void (Client::*handler)(ToClientPacket* pkt);
+    void (Client::*handler)(NetworkPacket* pkt);
+};
+
+struct ServerCommandFactory
+{
+	const char* name;
+	u16 channel;
+	bool reliable;
 };
 
 extern const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES];
+
+extern const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES];
 
 #endif
