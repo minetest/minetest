@@ -20,10 +20,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CHAT_HEADER
 #define CHAT_HEADER
 
-#include "irrlichttypes.h"
 #include <string>
 #include <vector>
 #include <list>
+
+#include "irrlichttypes.h"
+#include "util/coloredstring.h"
 
 // Chat console related classes, only used by the client
 
@@ -47,7 +49,7 @@ struct ChatLine
 struct ChatFormattedFragment
 {
 	// text string
-	std::wstring text;
+	ColoredString text;
 	// starting column
 	u32 column;
 	// formatting
@@ -272,4 +274,3 @@ private:
 };
 
 #endif
-

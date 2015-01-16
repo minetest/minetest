@@ -50,6 +50,8 @@ size_t mystrlcpy(char *dst, const char *src, size_t size);
 char *mystrtok_r(char *s, const char *sep, char **lasts);
 u64 read_seed(const char *str);
 bool parseColorString(const std::string &value, video::SColor &color, bool quiet);
+std::wstring colorizeText(const std::wstring &s, std::vector<video::SColor> &colors, const video::SColor &initial_color);
+std::wstring stripChatColors(const std::wstring &s);
 
 
 /**

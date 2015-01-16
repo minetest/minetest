@@ -610,6 +610,25 @@ struct TestSettings: public TestBase
 	}
 };
 
+struct TestStrings: public TestBase
+{
+	void Run()
+	{
+		{
+			std::vector<irr::video::SColor> colors;
+			std::wstring wstr = L"\v90EFDAtest\vAAEEDD\vEF34A0";
+			colorizeText(wstr, colors, irr::video::SColor(255, 255, 255, 255));
+			// 4 => strlen(test)
+			UASSERT(colors.size() == 4);
+		}
+
+		{
+			std::wstring wstr = stripChatColors(L"\v000000test\vFA34DAtest2\vA");
+			UASSERT(wstr == L"testtest2");
+		}
+	}
+};
+
 struct TestSerialization: public TestBase
 {
 	// To be used like this:
@@ -2144,6 +2163,7 @@ void run_tests()
 	TEST(TestSettings);
 	TEST(TestCompress);
 	TEST(TestSerialization);
+	TEST(TestStrings);
 	TEST(TestNodedefSerialization);
 	TESTPARAMS(TestMapNode, ndef);
 	TESTPARAMS(TestVoxelManipulator, ndef);

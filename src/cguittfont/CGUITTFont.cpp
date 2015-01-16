@@ -545,6 +545,13 @@ void CGUITTFont::setFontHinting(const bool enable, const bool enable_auto_hintin
 
 void CGUITTFont::draw(const core::stringw& text, const core::rect<s32>& position, video::SColor color, bool hcenter, bool vcenter, const core::rect<s32>* clip)
 {
+	std::vector<video::SColor> tmp;
+	tmp.push_back(color);
+	draw(text, position, tmp, hcenter, vcenter, clip);
+}
+
+void CGUITTFont::draw(const core::stringw& text, const core::rect<s32>& position, const std::vector<video::SColor>& color, bool hcenter, bool vcenter, const core::rect<s32>* clip)
+{
 	if (!Driver)
 		return;
 
@@ -581,6 +588,8 @@ void CGUITTFont::draw(const core::stringw& text, const core::rect<s32>& position
 	u32 n;
 	uchar32_t previousChar = 0;
 	core::ustring::const_iterator iter(utext);
+	std::vector<video::SColor> applied_colors;
+	size_t current_color = 0;
 	while (!iter.atEnd())
 	{
 		uchar32_t currentChar = *iter;
@@ -627,11 +636,14 @@ void CGUITTFont::draw(const core::stringw& text, const core::rect<s32>& position
 			page->render_positions.push_back(core::position2di(offset.X + offx, offset.Y + offy));
 			page->render_source_rects.push_back(glyph.source_rect);
 			Render_Map.set(glyph.glyph_page, page);
+			if (current_color < color.size())
+				applied_colors.push_back(color[current_color]);
 		}
 		offset.X += getWidthFromCharacter(currentChar);
 
 		previousChar = currentChar;
 		++iter;
+		++current_color;
 	}
 
 	// Draw now.
@@ -645,8 +657,6 @@ void CGUITTFont::draw(const core::stringw& text, const core::rect<s32>& position
 
 		CGUITTGlyphPage* page = n->getValue();
 
-		if (!use_transparency) color.color |= 0xff000000;
-
 		if (shadow_offset) {
 			for (size_t i = 0; i < page->render_positions.size(); ++i)
 				page->render_positions[i] += core::vector2di(shadow_offset, shadow_offset);
@@ -654,7 +664,17 @@ void CGUITTFont::draw(const core::stringw& text, const core::rect<s32>& position
 			for (size_t i = 0; i < page->render_positions.size(); ++i)
 				page->render_positions[i] -= core::vector2di(shadow_offset, shadow_offset);
 		}
-		Driver->draw2DImageBatch(page->texture, page->render_positions, page->render_source_rects, clip, color, true);
+		for (size_t i = 0; i < page->render_positions.size(); ++i) {
+			irr::video::SColor col;
+			if (!applied_colors.empty()) {
+				col = applied_colors[i < applied_colors.size() ? i : 0];
+			} else {
+				col = irr::video::SColor(255, 255, 255, 255);
+			}
+			if (!use_transparency)
+					col.color |= 0xff000000;
+			Driver->draw2DImage(page->texture, page->render_positions[i], page->render_source_rects[i], clip, col, true);
+		}
 	}
 }
 

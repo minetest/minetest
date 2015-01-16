@@ -1826,6 +1826,10 @@ and `minetest.auth_reload` call the authetification handler.
 ### Chat
 * `minetest.chat_send_all(text)`
 * `minetest.chat_send_player(name, text)`
+* `minetest.colorize(color, text)`
+    * `color` is a six characters string, this will reset color to white after the text
+*  `minetest.color(color)`
+    * Returns a valid escape sequence for `color`
 
 ### Environment access
 * `minetest.set_node(pos, node)`

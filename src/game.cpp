@@ -18,13 +18,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "game.h"
-#include "irrlichttypes_extrabloated.h"
 #include <IGUICheckBox.h>
 #include <IGUIEditBox.h>
 #include <IGUIButton.h>
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include <IMaterialRendererServices.h>
+#include "irrlichttypes_extrabloated.h"
 #include "IMeshCache.h"
 #include "client.h"
 #include "server.h"
@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiKeyChangeMenu.h"
 #include "guiFormSpecMenu.h"
 #include "tool.h"
-#include "guiChatConsole.h"
+#include "client/guiChatConsole.h"
 #include "config.h"
 #include "version.h"
 #include "clouds.h"
@@ -72,8 +72,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_cao.h"
 #include "fontengine.h"
 
+#if USE_FREETYPE
+	#include "util/statictext.h"
+#endif
+
 #ifdef HAVE_TOUCHSCREENGUI
-#include "touchscreengui.h"
+	#include "touchscreengui.h"
 #endif
 
 /*
@@ -2096,11 +2100,20 @@ bool Game::initGui(std::wstring *error_message)
 	guitext_status->setVisible(false);
 
 	// Chat text
+#if USE_FREETYPE
+	// Colored chat support when using FreeType
+	guitext_chat = new gui::StaticText(L"", false, guienv, guiroot, -1, core::rect<s32>(0, 0, 0, 0), false);
+	guitext_chat->setWordWrap(true);
+	guitext_chat->drop();
+#else
+	// Standard chat when FreeType is disabled
 	guitext_chat = guienv->addStaticText(
 			L"",
 			core::rect<s32>(0, 0, 0, 0),
 			//false, false); // Disable word wrap as of now
 			false, true, guiroot);
+#endif
+
 	// Remove stale "recent" chat messages from previous connections
 	chat_backend->clearRecentChat();
 
