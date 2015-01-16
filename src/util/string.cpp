@@ -579,8 +579,42 @@ static bool parseNamedColorString(const std::string &value, video::SColor &color
 	return true;
 }
 
+std::wstring colorizeText(const std::wstring &s, std::vector<video::SColor> &colors, const video::SColor &initial_color) {
+	std::wstring output;
+	colors.clear();
+	size_t i = 0;
+	video::SColor color = initial_color;
+	while (i < s.length()) {
+		if (s[i] == L'\v' && i + 6 < s.length()) {
+			parseColorString("#" + wide_to_narrow(s.substr(i + 1, 6)), color, true);
+			i += 7;
+			continue;
+		}
+		output += s[i];
+		colors.push_back(color);
+
+		++i;
+	}
+
+	return output;
+}
+
+// Removes escape sequences
+std::wstring sanitizeChatString(const std::wstring &s) {
+	std::wstring output;
+	size_t i = 0;
+	while (i < s.length()) {
+		if (s[i] == L'\v') {
+			i += 7;
+			continue;
+		}
+		output += s[i];
+		++i;
+	}
+	return output;
+}
+
 void str_replace(std::string &str, char from, char to)
 {
 	std::replace(str.begin(), str.end(), from, to);
 }
-

@@ -112,3 +112,18 @@ function core.record_protection_violation(pos, name)
 	end
 end
 
+function core.color(color)
+	if string.len(color) == 3 then
+		local r = string.sub(color, 1, 1)
+		local g = string.sub(color, 2, 2)
+		local b = string.sub(color, 3, 3)
+		color = r ..  r .. g .. g .. b .. b
+	end
+
+	assert(#color == 6, "Color must be six characters in length.")
+	return "\v" .. color
+end
+
+function core.colorize(color, message)
+	return core.color(color) .. message .. core.color("ffffff")
+end
