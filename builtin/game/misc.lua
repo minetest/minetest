@@ -197,3 +197,20 @@ function core.http_add_fetch(httpenv)
 
 	return httpenv
 end
+
+function core.get_color_escape_sequence(color)
+	--if string.len(color) == 3 then
+	--	local r = string.sub(color, 1, 1)
+	--	local g = string.sub(color, 2, 2)
+	--	local b = string.sub(color, 3, 3)
+	--	color = r ..  r .. g .. g .. b .. b
+	--end
+
+	--assert(#color == 6, "Color must be six characters in length.")
+	--return "\v" .. color
+	return "\v(color;" .. color .. ")"
+end
+
+function core.colorize(color, message)
+	return core.get_color_escape_sequence(color) .. message .. core.get_color_escape_sequence("ffffff")
+end

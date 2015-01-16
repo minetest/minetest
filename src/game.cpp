@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "filesys.h"
 #include "gettext.h"
-#include "guiChatConsole.h"
+#include "client/guiChatConsole.h"
 #include "guiFormSpecMenu.h"
 #include "guiKeyChangeMenu.h"
 #include "guiPasswordChange.h"
@@ -58,6 +58,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "minimap.h"
 #include "mapblock_mesh.h"
+
+#if USE_FREETYPE
+	#include "util/statictext.h"
+#endif
 
 #include "sound.h"
 
@@ -2239,12 +2243,20 @@ bool Game::initGui()
 			false, false, guiroot);
 	guitext_status->setVisible(false);
 
+#if USE_FREETYPE
+	// Colored chat support when using FreeType
+	guitext_chat = new gui::StaticText(L"", false, guienv, guiroot, -1, core::rect<s32>(0, 0, 0, 0), false);
+	guitext_chat->setWordWrap(true);
+	guitext_chat->drop();
+#else
+	// Standard chat when FreeType is disabled
 	// Chat text
 	guitext_chat = guienv->addStaticText(
 			L"",
 			core::rect<s32>(0, 0, 0, 0),
 			//false, false); // Disable word wrap as of now
 			false, true, guiroot);
+#endif
 	// Remove stale "recent" chat messages from previous connections
 	chat_backend->clearRecentChat();
 

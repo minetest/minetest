@@ -1,7 +1,16 @@
+if(USE_FREETYPE)
+	set(UTIL_FREETYPEDEP_SRCS
+		${CMAKE_CURRENT_SOURCE_DIR}/statictext.cpp
+	)
+else()
+	set(UTIL_FREETYPEDEP_SRCS )
+endif(USE_FREETYPE)
+
 set(UTIL_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/areastore.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/auth.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/base64.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/coloredstring.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/directiontables.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/numeric.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/pointedthing.cpp
@@ -11,5 +20,6 @@ set(UTIL_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/string.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/srp.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/timetaker.cpp
+	${UTIL_FREETYPEDEP_SRCS}
 	PARENT_SCOPE)
 
