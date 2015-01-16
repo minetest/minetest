@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "settings.h"
 #include "profiler.h"
-#include "main.h" // for profiling
 
 namespace con
 {
@@ -1728,8 +1727,8 @@ void ConnectionSendThread::connect(Address address)
 
 	// Send a dummy packet to server with peer_id = PEER_ID_INEXISTENT
 	m_connection->SetPeerID(PEER_ID_INEXISTENT);
-	SharedBuffer<u8> data(0);
-	m_connection->Send(PEER_ID_SERVER, 0, data, true);
+	NetworkPacket* pkt = new NetworkPacket(0,0);
+	m_connection->Send(PEER_ID_SERVER, 0, pkt, true);
 }
 
 void ConnectionSendThread::disconnect()
@@ -2107,20 +2106,17 @@ void ConnectionReceiveThread::receive()
 	/* first of all read packets from socket */
 	/* check for incoming data available */
 	while( (loop_count < 10) &&
-			(m_connection->m_udpSocket.WaitData(50)))
-	{
+			(m_connection->m_udpSocket.WaitData(50))) {
 		loop_count++;
-	try{
-		if (packet_queued)
-		{
-			bool no_data_left = false;
+	try {
+		if (packet_queued) {
+			bool data_left = true;
 			u16 peer_id;
 			SharedBuffer<u8> resultdata;
-			while(!no_data_left)
-			{
+			while(data_left) {
 				try {
-					no_data_left = !getFromBuffers(peer_id, resultdata);
-					if (!no_data_left) {
+					data_left = getFromBuffers(peer_id, resultdata);
+					if (data_left) {
 						ConnectionEvent e;
 						e.dataReceived(peer_id, resultdata);
 						m_connection->putEvent(e);
@@ -2136,8 +2132,7 @@ void ConnectionReceiveThread::receive()
 		Address sender;
 		s32 received_size = m_connection->m_udpSocket.Receive(sender, *packetdata, packet_maxsize);
 
-		if ((received_size < 0) ||
-			(received_size < BASE_HEADER_SIZE) ||
+		if ((received_size < BASE_HEADER_SIZE) ||
 			(readU32(&packetdata[0]) != m_connection->GetProtocolID()))
 		{
 			LOG(derr_con<<m_connection->getDesc()
@@ -2274,10 +2269,7 @@ bool ConnectionReceiveThread::getFromBuffers(u16 &peer_id, SharedBuffer<u8> &dst
 		{
 			Channel *channel = &(dynamic_cast<UDPPeer*>(&peer))->channels[i];
 
-			SharedBuffer<u8> resultdata;
-			bool got = checkIncomingBuffers(channel, peer_id, resultdata);
-			if(got){
-				dst = resultdata;
+			if(checkIncomingBuffers(channel, peer_id, dst)) {
 				return true;
 			}
 		}
@@ -2811,6 +2803,7 @@ bool Connection::deletePeer(u16 peer_id, bool timeout)
 			return false;
 		peer = m_peers[peer_id];
 		m_peers.erase(peer_id);
+		m_peer_ids.remove(peer_id);
 	}
 
 	Address peer_address;
@@ -2928,22 +2921,14 @@ u32 Connection::Receive(u16 &peer_id, SharedBuffer<u8> &data)
 	throw NoIncomingDataException("No incoming data");
 }
 
-void Connection::SendToAll(u8 channelnum, SharedBuffer<u8> data, bool reliable)
-{
-	assert(channelnum < CHANNEL_COUNT);
-
-	ConnectionCommand c;
-	c.sendToAll(channelnum, data, reliable);
-	putCommand(c);
-}
-
 void Connection::Send(u16 peer_id, u8 channelnum,
-		SharedBuffer<u8> data, bool reliable)
+		NetworkPacket* pkt, bool reliable)
 {
 	assert(channelnum < CHANNEL_COUNT);
 
 	ConnectionCommand c;
-	c.send(peer_id, channelnum, data, reliable);
+
+	c.send(peer_id, channelnum, pkt->oldForgePacket(), reliable);
 	putCommand(c);
 }
 
@@ -3013,37 +2998,37 @@ u16 Connection::createPeer(Address& sender, MTProtocols protocol, int fd)
 	/*
 		Find an unused peer id
 	*/
-	{
 	JMutexAutoLock lock(m_peers_mutex);
-		bool out_of_ids = false;
-		for(;;)
-		{
-			// Check if exists
-			if(m_peers.find(peer_id_new) == m_peers.end())
-				break;
-			// Check for overflow
-			if(peer_id_new == overflow){
-				out_of_ids = true;
-				break;
-			}
-			peer_id_new++;
-		}
-		if(out_of_ids){
-			errorstream<<getDesc()<<" ran out of peer ids"<<std::endl;
-			return PEER_ID_INEXISTENT;
-		}
+	bool out_of_ids = false;
+	for(;;) {
+		// Check if exists
+		if(m_peers.find(peer_id_new) == m_peers.end())
 
-		// Create a peer
-		Peer *peer = 0;
-		peer = new UDPPeer(peer_id_new, sender, this);
-
-		m_peers[peer->id] = peer;
+			break;
+		// Check for overflow
+		if(peer_id_new == overflow) {
+			out_of_ids = true;
+			break;
+		}
+		peer_id_new++;
 	}
 
-	m_next_remote_peer_id = (peer_id_new +1) % MAX_UDP_PEERS;
+	if(out_of_ids) {
+		errorstream << getDesc() << " ran out of peer ids" << std::endl;
+		return PEER_ID_INEXISTENT;
+	}
 
-	LOG(dout_con<<getDesc()
-			<<"createPeer(): giving peer_id="<<peer_id_new<<std::endl);
+	// Create a peer
+	Peer *peer = 0;
+	peer = new UDPPeer(peer_id_new, sender, this);
+
+	m_peers[peer->id] = peer;
+	m_peer_ids.push_back(peer->id);
+
+	m_next_remote_peer_id = (peer_id_new +1 ) % MAX_UDP_PEERS;
+
+	LOG(dout_con << getDesc()
+			<< "createPeer(): giving peer_id=" << peer_id_new << std::endl);
 
 	ConnectionCommand cmd;
 	SharedBuffer<u8> reply(4);
@@ -3051,7 +3036,7 @@ u16 Connection::createPeer(Address& sender, MTProtocols protocol, int fd)
 	writeU8(&reply[1], CONTROLTYPE_SET_PEER_ID);
 	writeU16(&reply[2], peer_id_new);
 	cmd.createPeer(peer_id_new,reply);
-	this->putCommand(cmd);
+	putCommand(cmd);
 
 	// Create peer addition event
 	ConnectionEvent e;
@@ -3119,22 +3104,10 @@ UDPPeer* Connection::createServerPeer(Address& address)
 	{
 		JMutexAutoLock lock(m_peers_mutex);
 		m_peers[peer->id] = peer;
+		m_peer_ids.push_back(peer->id);
 	}
 
 	return peer;
-}
-
-std::list<u16> Connection::getPeerIDs()
-{
-	std::list<u16> retval;
-
-	JMutexAutoLock lock(m_peers_mutex);
-	for(std::map<u16, Peer*>::iterator j = m_peers.begin();
-		j != m_peers.end(); ++j)
-	{
-		retval.push_back(j->first);
-	}
-	return retval;
 }
 
 } // namespace

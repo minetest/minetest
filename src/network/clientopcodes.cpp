@@ -108,3 +108,77 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_LOCAL_PLAYER_ANIMATIONS",  TOCLIENT_STATE_CONNECTED, &Client::handleCommand_LocalPlayerAnimations }, // 0x51
 	{ "TOCLIENT_EYE_OFFSET",               TOCLIENT_STATE_CONNECTED, &Client::handleCommand_EyeOffset }, // 0x52
 };
+
+const static ServerCommandFactory null_command_factory = { "TOSERVER_NULL", 0, false };
+
+const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
+{
+	null_command_factory, // 0x00
+	null_command_factory, // 0x01
+	null_command_factory, // 0x02
+	null_command_factory, // 0x03
+	null_command_factory, // 0x04
+	null_command_factory, // 0x05
+	null_command_factory, // 0x06
+	null_command_factory, // 0x07
+	null_command_factory, // 0x08
+	null_command_factory, // 0x09
+	null_command_factory, // 0x0a
+	null_command_factory, // 0x0b
+	null_command_factory, // 0x0c
+	null_command_factory, // 0x0d
+	null_command_factory, // 0x0e
+	null_command_factory, // 0x0f
+	{ "TOSERVER_INIT",               1, false }, // 0x10
+	{ "TOSERVER_INIT2",              1, true }, // 0x11
+	null_command_factory, // 0x12
+	null_command_factory, // 0x13
+	null_command_factory, // 0x14
+	null_command_factory, // 0x15
+	null_command_factory, // 0x16
+	null_command_factory, // 0x17
+	null_command_factory, // 0x18
+	null_command_factory, // 0x19
+	null_command_factory, // 0x1a
+	null_command_factory, // 0x1b
+	null_command_factory, // 0x1c
+	null_command_factory, // 0x1d
+	null_command_factory, // 0x1e
+	null_command_factory, // 0x1f
+	null_command_factory, // 0x20
+	null_command_factory, // 0x21
+	null_command_factory, // 0x22
+	{ "TOSERVER_PLAYERPOS",          0, false }, // 0x23
+	{ "TOSERVER_GOTBLOCKS",          2, true }, // 0x24
+	{ "TOSERVER_DELETEDBLOCKS",      2, true }, // 0x25
+	null_command_factory, // 0x26
+	{ "TOSERVER_CLICK_OBJECT",       0, false }, // 0x27
+	{ "TOSERVER_GROUND_ACTION",      0, false }, // 0x28
+	{ "TOSERVER_RELEASE",            0, false }, // 0x29
+	null_command_factory, // 0x2a
+	null_command_factory, // 0x2b
+	null_command_factory, // 0x2c
+	null_command_factory, // 0x2d
+	null_command_factory, // 0x2e
+	null_command_factory, // 0x2f
+	{ "TOSERVER_SIGNTEXT",           0, false }, // 0x30
+	{ "TOSERVER_INVENTORY_ACTION",   0, true }, // 0x31
+	{ "TOSERVER_CHAT_MESSAGE",       0, true }, // 0x32
+	{ "TOSERVER_SIGNNODETEXT",       0, false }, // 0x33
+	{ "TOSERVER_CLICK_ACTIVEOBJECT", 0, false }, // 0x34
+	{ "TOSERVER_DAMAGE",             0, true }, // 0x35
+	{ "TOSERVER_PASSWORD",           0, true }, // 0x36
+	{ "TOSERVER_PLAYERITEM",         0, true }, // 0x37
+	{ "TOSERVER_RESPAWN",            0, true }, // 0x38
+	{ "TOSERVER_INTERACT",           0, true }, // 0x39
+	{ "TOSERVER_REMOVED_SOUNDS",     1, true }, // 0x3a
+	{ "TOSERVER_NODEMETA_FIELDS",    0, true }, // 0x3b
+	{ "TOSERVER_INVENTORY_FIELDS",   0, true }, // 0x3c
+	null_command_factory, // 0x3d
+	null_command_factory, // 0x3e
+	null_command_factory, // 0x3f
+	{ "TOSERVER_REQUEST_MEDIA",      1, true }, // 0x40
+	{ "TOSERVER_RECEIVED_MEDIA",     1, true }, // 0x41
+	{ "TOSERVER_BREATH",             0, true }, // 0x42
+	{ "TOSERVER_CLIENT_READY",       0, true }, // 0x43
+};

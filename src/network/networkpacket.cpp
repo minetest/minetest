@@ -1,6 +1,5 @@
 /*
 Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 Copyright (C) 2015 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 This program is free software; you can redistribute it and/or modify
@@ -23,20 +22,31 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 
 NetworkPacket::NetworkPacket(u8 *data, u32 datasize, u16 peer_id):
-m_peer_id(peer_id)
+m_read_offset(0), m_peer_id(peer_id)
 {
 	m_read_offset = 0;
 	m_datasize = datasize - 2;
 
-	// Copy data packet to remove opcode
-	m_data = new u8[m_datasize];
+	// split command and datas
+	m_command = readU16(&data[0]);
+	m_data = std::vector<u8>(&data[2], &data[2 + m_datasize]);
+}
 
-	memcpy(m_data, &data[2], m_datasize);
+NetworkPacket::NetworkPacket(u16 command, u32 datasize, u16 peer_id):
+m_datasize(datasize), m_read_offset(0), m_command(command), m_peer_id(peer_id)
+{
+	m_data.resize(m_datasize);
+}
+
+NetworkPacket::NetworkPacket(u16 command, u32 datasize):
+m_datasize(datasize), m_read_offset(0), m_command(command), m_peer_id(0)
+{
+	m_data.resize(m_datasize);
 }
 
 NetworkPacket::~NetworkPacket()
 {
-	delete [] m_data;
+	m_data.clear();
 }
 
 char* NetworkPacket::getString(u32 from_offset)
@@ -46,11 +56,15 @@ char* NetworkPacket::getString(u32 from_offset)
 	return (char*)&m_data[from_offset];
 }
 
-char NetworkPacket::getChar(u32 offset)
+void NetworkPacket::putRawString(const char* src, u32 len)
 {
-	assert(offset < m_datasize);
+	if (m_read_offset + len * sizeof(char) >= m_datasize) {
+		m_datasize += len * sizeof(char);
+		m_data.resize(m_datasize);
+	}
 
-	return m_data[offset];
+	memcpy(&m_data[m_read_offset], src, len);
+	m_read_offset += len;
 }
 
 NetworkPacket& NetworkPacket::operator>>(std::string& dst)
@@ -64,12 +78,49 @@ NetworkPacket& NetworkPacket::operator>>(std::string& dst)
 		return *this;
 	}
 
-
 	dst.reserve(strLen);
 	dst.append((char*)&m_data[m_read_offset], strLen);
 
-	m_read_offset += strLen*sizeof(char);
+	m_read_offset += strLen * sizeof(char);
 	return *this;
+}
+
+NetworkPacket& NetworkPacket::operator<<(std::string src)
+{
+	u16 msgsize = src.size();
+	if (msgsize > 0xFFFF) {
+		msgsize = 0xFFFF;
+	}
+
+	*this << msgsize;
+
+	if (m_read_offset + msgsize * sizeof(char) >= m_datasize) {
+		m_datasize += msgsize * sizeof(char);
+		m_data.resize(m_datasize);
+	}
+
+	memcpy(&m_data[m_read_offset], src.c_str(), msgsize);
+	m_read_offset += msgsize;
+
+	return *this;
+}
+
+void NetworkPacket::putLongString(std::string src)
+{
+	u32 msgsize = src.size();
+	if (msgsize > 0xFFFFFFFF) {
+		msgsize = 0xFFFFFFFF;
+	}
+
+	*this << msgsize;
+
+	if (m_read_offset + msgsize * sizeof(char) >= m_datasize) {
+		m_datasize += msgsize * sizeof(char);
+		m_data.resize(m_datasize);
+	}
+
+	memcpy(&m_data[m_read_offset], src.c_str(), msgsize);
+	m_read_offset += msgsize;
 }
 
 NetworkPacket& NetworkPacket::operator>>(std::wstring& dst)
@@ -88,6 +139,23 @@ NetworkPacket& NetworkPacket::operator>>(std::wstring& dst)
 		wchar_t c16 = readU16(&m_data[m_read_offset]);
 		dst.append(&c16, 1);
 		m_read_offset += sizeof(u16);
+	}
+
+	return *this;
+}
+
+NetworkPacket& NetworkPacket::operator<<(std::wstring src)
+{
+	u16 msgsize = src.size();
+	if (msgsize > 0xFFFF) {
+		msgsize = 0xFFFF;
+	}
+
+	*this << msgsize;
+
+	// Write string
+	for (u16 i=0; i<msgsize; i++) {
+		*this << (u16) src[i];
 	}
 
 	return *this;
@@ -114,41 +182,134 @@ std::string NetworkPacket::readLongString()
 
 NetworkPacket& NetworkPacket::operator>>(char& dst)
 {
-	dst = getChar(m_read_offset);
+	assert(m_read_offset < m_datasize);
 
-	m_read_offset += sizeof(char);
+	dst = readU8(&m_data[m_read_offset]);
+
+	incrOffset<char>();
 	return *this;
 }
 
-u8* NetworkPacket::getU8Ptr(u32 from_offset)
-{
-	assert(from_offset < m_datasize);
-
-	return (u8*)&m_data[from_offset];
-}
-
-u8 NetworkPacket::getU8(u32 offset)
+char NetworkPacket::getChar(u32 offset)
 {
 	assert(offset < m_datasize);
 
-	return m_data[offset];
+	return readU8(&m_data[offset]);
 }
 
-NetworkPacket& NetworkPacket::operator>>(u8& dst)
+NetworkPacket& NetworkPacket::operator<<(char src)
 {
-	assert(m_read_offset < m_datasize);
-	dst = m_data[m_read_offset];
+	checkDataSize<u8>();
 
-	m_read_offset += sizeof(u8);
+	writeU8(&m_data[m_read_offset], src);
+
+	incrOffset<char>();
+	return *this;
+}
+
+NetworkPacket& NetworkPacket::operator<<(u8 src)
+{
+	checkDataSize<u8>();
+
+	writeU8(&m_data[m_read_offset], src);
+
+	incrOffset<u8>();
+	return *this;
+}
+
+NetworkPacket& NetworkPacket::operator<<(bool src)
+{
+	checkDataSize<u8>();
+
+	writeU8(&m_data[m_read_offset], src);
+
+	incrOffset<u8>();
+	return *this;
+}
+
+NetworkPacket& NetworkPacket::operator<<(u16 src)
+{
+	checkDataSize<u16>();
+
+	writeU16(&m_data[m_read_offset], src);
+
+	incrOffset<u16>();
+	return *this;
+}
+
+NetworkPacket& NetworkPacket::operator<<(u32 src)
+{
+	checkDataSize<u32>();
+
+	writeU32(&m_data[m_read_offset], src);
+
+	incrOffset<u32>();
+	return *this;
+}
+
+NetworkPacket& NetworkPacket::operator<<(u64 src)
+{
+	checkDataSize<u64>();
+
+	writeU64(&m_data[m_read_offset], src);
+
+	incrOffset<u64>();
+	return *this;
+}
+
+NetworkPacket& NetworkPacket::operator<<(float src)
+{
+	checkDataSize<float>();
+
+	writeF1000(&m_data[m_read_offset], src);
+
+	incrOffset<float>();
 	return *this;
 }
 
 NetworkPacket& NetworkPacket::operator>>(bool& dst)
 {
 	assert(m_read_offset < m_datasize);
-	dst = m_data[m_read_offset];
+	dst = readU8(&m_data[m_read_offset]);
 
-	m_read_offset += sizeof(u8);
+	incrOffset<u8>();
+	return *this;
+}
+
+NetworkPacket& NetworkPacket::operator>>(u8& dst)
+{
+	assert(m_read_offset < m_datasize);
+	dst = readU8(&m_data[m_read_offset]);
+
+	incrOffset<u8>();
+	return *this;
+}
+
+u8 NetworkPacket::getU8(u32 offset)
+{
+	assert(offset < m_datasize);
+
+	return readU8(&m_data[offset]);
+}
+
+u8* NetworkPacket::getU8Ptr(u32 from_offset)
+{
+	if (m_datasize == 0) {
+		return NULL;
+	}
+
+	assert(from_offset < m_datasize);
+
+	return (u8*)&m_data[from_offset];
+}
+
+NetworkPacket& NetworkPacket::operator>>(u16& dst)
+{
+	assert(m_read_offset < m_datasize);
+
+	dst = readU16(&m_data[m_read_offset]);
+
+	incrOffset<u16>();
 	return *this;
 }
 
@@ -159,56 +320,33 @@ u16 NetworkPacket::getU16(u32 from_offset)
 	return readU16(&m_data[from_offset]);
 }
 
-NetworkPacket& NetworkPacket::operator>>(u16& dst)
-{
-	dst = getU16(m_read_offset);
-
-	m_read_offset += sizeof(u16);
-	return *this;
-}
-
-u32 NetworkPacket::getU32(u32 from_offset)
-{
-	assert(from_offset < m_datasize);
-
-	return readU32(&m_data[from_offset]);
-}
-
 NetworkPacket& NetworkPacket::operator>>(u32& dst)
 {
-	dst = getU32(m_read_offset);
+	assert(m_read_offset < m_datasize);
 
-	m_read_offset += sizeof(u32);
+	dst = readU32(&m_data[m_read_offset]);
+
+	incrOffset<u32>();
 	return *this;
-}
-
-u64 NetworkPacket::getU64(u32 from_offset)
-{
-	assert(from_offset < m_datasize);
-
-	return readU64(&m_data[from_offset]);
 }
 
 NetworkPacket& NetworkPacket::operator>>(u64& dst)
 {
-	dst = getU64(m_read_offset);
+	assert(m_read_offset < m_datasize);
 
-	m_read_offset += sizeof(u64);
+	dst = readU64(&m_data[m_read_offset]);
+
+	incrOffset<u64>();
 	return *this;
-}
-
-float NetworkPacket::getF1000(u32 from_offset)
-{
-	assert(from_offset < m_datasize);
-
-	return readF1000(&m_data[from_offset]);
 }
 
 NetworkPacket& NetworkPacket::operator>>(float& dst)
 {
-	dst = getF1000(m_read_offset);
+	assert(m_read_offset< m_datasize);
 
-	m_read_offset += sizeof(float);
+	dst = readF1000(&m_data[m_read_offset]);
+
+	incrOffset<float>();
 	return *this;
 }
 
@@ -218,7 +356,7 @@ NetworkPacket& NetworkPacket::operator>>(v2f& dst)
 
 	dst = readV2F1000(&m_data[m_read_offset]);
 
-	m_read_offset += sizeof(v2f);
+	incrOffset<v2f>();
 	return *this;
 }
 
@@ -228,37 +366,49 @@ NetworkPacket& NetworkPacket::operator>>(v3f& dst)
 
 	dst = readV3F1000(&m_data[m_read_offset]);
 
-	m_read_offset += sizeof(v3f);
+	incrOffset<v3f>();
 	return *this;
-}
-
-s16 NetworkPacket::getS16(u32 from_offset)
-{
-	assert(from_offset < m_datasize);
-
-	return readS16(&m_data[from_offset]);
 }
 
 NetworkPacket& NetworkPacket::operator>>(s16& dst)
 {
-	dst = getS16(m_read_offset);
+	assert(m_read_offset < m_datasize);
 
-	m_read_offset += sizeof(s16);
+	dst = readS16(&m_data[m_read_offset]);
+
+	incrOffset<s16>();
 	return *this;
 }
 
-s32 NetworkPacket::getS32(u32 from_offset)
+NetworkPacket& NetworkPacket::operator<<(s16 src)
 {
-	assert(from_offset < m_datasize);
-
-	return readS32(&m_data[from_offset]);
+	*this << (u16) src;
+	return *this;
 }
 
 NetworkPacket& NetworkPacket::operator>>(s32& dst)
 {
-	dst = getS32(m_read_offset);
+	assert(m_read_offset < m_datasize);
 
-	m_read_offset += sizeof(s32);
+	dst = readS32(&m_data[m_read_offset]);
+
+	incrOffset<s32>();
+	return *this;
+}
+
+NetworkPacket& NetworkPacket::operator<<(s32 src)
+{
+	*this << (u32) src;
+	return *this;
+}
+
+NetworkPacket& NetworkPacket::operator>>(v3s16& dst)
+{
+	assert(m_read_offset < m_datasize);
+
+	dst = readV3S16(&m_data[m_read_offset]);
+
+	incrOffset<v3s16>();
 	return *this;
 }
 
@@ -266,36 +416,86 @@ NetworkPacket& NetworkPacket::operator>>(v2s32& dst)
 {
 	dst = readV2S32(&m_data[m_read_offset]);
 
-	m_read_offset += sizeof(v2s32);
+	incrOffset<v2s32>();
 	return *this;
-}
-
-v3s16 NetworkPacket::getV3S16(u32 from_offset)
-{
-	assert(from_offset < m_datasize);
-
-	return readV3S16(&m_data[from_offset]);
-}
-
-NetworkPacket& NetworkPacket::operator>>(v3s16& dst)
-{
-	dst = getV3S16(m_read_offset);
-
-	m_read_offset += sizeof(v3s16);
-	return *this;
-}
-
-v3s32 NetworkPacket::getV3S32(u32 from_offset)
-{
-	assert(from_offset < m_datasize);
-
-	return readV3S32(&m_data[from_offset]);
 }
 
 NetworkPacket& NetworkPacket::operator>>(v3s32& dst)
 {
-	dst = getV3S32(m_read_offset);
+	assert(m_read_offset < m_datasize);
 
-	m_read_offset += sizeof(v3s32);
+	dst = readV3S32(&m_data[m_read_offset]);
+
+	incrOffset<v3s32>();
 	return *this;
+}
+
+NetworkPacket& NetworkPacket::operator<<(v2f src)
+{
+	*this << (float) src.X;
+	*this << (float) src.Y;
+	return *this;
+}
+
+NetworkPacket& NetworkPacket::operator<<(v3f src)
+{
+	*this << (float) src.X;
+	*this << (float) src.Y;
+	*this << (float) src.Z;
+	return *this;
+}
+
+NetworkPacket& NetworkPacket::operator<<(v3s16 src)
+{
+	*this << (s16) src.X;
+	*this << (s16) src.Y;
+	*this << (s16) src.Z;
+	return *this;
+}
+
+NetworkPacket& NetworkPacket::operator<<(v2s32 src)
+{
+	*this << (s32) src.X;
+	*this << (s32) src.Y;
+	return *this;
+}
+
+NetworkPacket& NetworkPacket::operator<<(v3s32 src)
+{
+	*this << (s32) src.X;
+	*this << (s32) src.Y;
+	*this << (s32) src.Z;
+	return *this;
+}
+
+NetworkPacket& NetworkPacket::operator>>(video::SColor& dst)
+{
+	assert(m_read_offset < m_datasize);
+
+	dst = readARGB8(&m_data[m_read_offset]);
+
+	incrOffset<u32>();
+	return *this;
+}
+
+NetworkPacket& NetworkPacket::operator<<(video::SColor src)
+{
+	checkDataSize<u32>();
+
+	writeU32(&m_data[m_read_offset], src.color);
+
+	incrOffset<u32>();
+	return *this;
+}
+
+SharedBuffer<u8> NetworkPacket::oldForgePacket()
+{
+	SharedBuffer<u8> sb(m_datasize + 2);
+	writeU16(&sb[0], m_command);
+
+	u8* datas = getU8Ptr(0);
+
+	if (datas != NULL)
+		memcpy(&sb[2], datas, m_datasize);
+	return sb;
 }

@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLIENT_HEADER
 #define CLIENT_HEADER
 
-#include "connection.h"
+#include "network/connection.h"
 #include "environment.h"
 #include "irrlichttypes_extrabloated.h"
 #include "jthread/jmutex.h"
@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "localplayer.h"
 #include "hud.h"
 #include "particles.h"
-#include "network/toclientpacket.h"
+#include "network/networkpacket.h"
 
 struct MeshMakeData;
 class MapBlockMesh;
@@ -346,57 +346,57 @@ public:
 	 * Command Handlers
 	 */
 
-	void handleCommand(ToClientPacket* pkt);
+	void handleCommand(NetworkPacket* pkt);
 
-	void handleCommand_Null(ToClientPacket* pkt) {};
-	void handleCommand_Deprecated(ToClientPacket* pkt);
-	void handleCommand_Init(ToClientPacket* pkt);
-	void handleCommand_AccessDenied(ToClientPacket* pkt);
-	void handleCommand_RemoveNode(ToClientPacket* pkt);
-	void handleCommand_AddNode(ToClientPacket* pkt);
-	void handleCommand_BlockData(ToClientPacket* pkt);
-	void handleCommand_Inventory(ToClientPacket* pkt);
-	void handleCommand_TimeOfDay(ToClientPacket* pkt);
-	void handleCommand_ChatMessage(ToClientPacket* pkt);
-	void handleCommand_ActiveObjectRemoveAdd(ToClientPacket* pkt);
-	void handleCommand_ActiveObjectMessages(ToClientPacket* pkt);
-	void handleCommand_Movement(ToClientPacket* pkt);
-	void handleCommand_HP(ToClientPacket* pkt);
-	void handleCommand_Breath(ToClientPacket* pkt);
-	void handleCommand_MovePlayer(ToClientPacket* pkt);
-	void handleCommand_PlayerItem(ToClientPacket* pkt);
-	void handleCommand_DeathScreen(ToClientPacket* pkt);
-	void handleCommand_AnnounceMedia(ToClientPacket* pkt);
-	void handleCommand_Media(ToClientPacket* pkt);
-	void handleCommand_ToolDef(ToClientPacket* pkt);
-	void handleCommand_NodeDef(ToClientPacket* pkt);
-	void handleCommand_CraftItemDef(ToClientPacket* pkt);
-	void handleCommand_ItemDef(ToClientPacket* pkt);
-	void handleCommand_PlaySound(ToClientPacket* pkt);
-	void handleCommand_StopSound(ToClientPacket* pkt);
-	void handleCommand_Privileges(ToClientPacket* pkt);
-	void handleCommand_InventoryFormSpec(ToClientPacket* pkt);
-	void handleCommand_DetachedInventory(ToClientPacket* pkt);
-	void handleCommand_ShowFormSpec(ToClientPacket* pkt);
-	void handleCommand_SpawnParticle(ToClientPacket* pkt);
-	void handleCommand_AddParticleSpawner(ToClientPacket* pkt);
-	void handleCommand_DeleteParticleSpawner(ToClientPacket* pkt);
-	void handleCommand_HudAdd(ToClientPacket* pkt);
-	void handleCommand_HudRemove(ToClientPacket* pkt);
-	void handleCommand_HudChange(ToClientPacket* pkt);
-	void handleCommand_HudSetFlags(ToClientPacket* pkt);
-	void handleCommand_HudSetParam(ToClientPacket* pkt);
-	void handleCommand_HudSetSky(ToClientPacket* pkt);
-	void handleCommand_OverrideDayNightRatio(ToClientPacket* pkt);
-	void handleCommand_LocalPlayerAnimations(ToClientPacket* pkt);
-	void handleCommand_EyeOffset(ToClientPacket* pkt);
+	void handleCommand_Null(NetworkPacket* pkt) {};
+	void handleCommand_Deprecated(NetworkPacket* pkt);
+	void handleCommand_Init(NetworkPacket* pkt);
+	void handleCommand_AccessDenied(NetworkPacket* pkt);
+	void handleCommand_RemoveNode(NetworkPacket* pkt);
+	void handleCommand_AddNode(NetworkPacket* pkt);
+	void handleCommand_BlockData(NetworkPacket* pkt);
+	void handleCommand_Inventory(NetworkPacket* pkt);
+	void handleCommand_TimeOfDay(NetworkPacket* pkt);
+	void handleCommand_ChatMessage(NetworkPacket* pkt);
+	void handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt);
+	void handleCommand_ActiveObjectMessages(NetworkPacket* pkt);
+	void handleCommand_Movement(NetworkPacket* pkt);
+	void handleCommand_HP(NetworkPacket* pkt);
+	void handleCommand_Breath(NetworkPacket* pkt);
+	void handleCommand_MovePlayer(NetworkPacket* pkt);
+	void handleCommand_PlayerItem(NetworkPacket* pkt);
+	void handleCommand_DeathScreen(NetworkPacket* pkt);
+	void handleCommand_AnnounceMedia(NetworkPacket* pkt);
+	void handleCommand_Media(NetworkPacket* pkt);
+	void handleCommand_ToolDef(NetworkPacket* pkt);
+	void handleCommand_NodeDef(NetworkPacket* pkt);
+	void handleCommand_CraftItemDef(NetworkPacket* pkt);
+	void handleCommand_ItemDef(NetworkPacket* pkt);
+	void handleCommand_PlaySound(NetworkPacket* pkt);
+	void handleCommand_StopSound(NetworkPacket* pkt);
+	void handleCommand_Privileges(NetworkPacket* pkt);
+	void handleCommand_InventoryFormSpec(NetworkPacket* pkt);
+	void handleCommand_DetachedInventory(NetworkPacket* pkt);
+	void handleCommand_ShowFormSpec(NetworkPacket* pkt);
+	void handleCommand_SpawnParticle(NetworkPacket* pkt);
+	void handleCommand_AddParticleSpawner(NetworkPacket* pkt);
+	void handleCommand_DeleteParticleSpawner(NetworkPacket* pkt);
+	void handleCommand_HudAdd(NetworkPacket* pkt);
+	void handleCommand_HudRemove(NetworkPacket* pkt);
+	void handleCommand_HudChange(NetworkPacket* pkt);
+	void handleCommand_HudSetFlags(NetworkPacket* pkt);
+	void handleCommand_HudSetParam(NetworkPacket* pkt);
+	void handleCommand_HudSetSky(NetworkPacket* pkt);
+	void handleCommand_OverrideDayNightRatio(NetworkPacket* pkt);
+	void handleCommand_LocalPlayerAnimations(NetworkPacket* pkt);
+	void handleCommand_EyeOffset(NetworkPacket* pkt);
 
 	void ProcessData(u8 *data, u32 datasize, u16 sender_peer_id);
 
 	// Returns true if something was received
 	bool AsyncProcessPacket();
 	bool AsyncProcessData();
-	void Send(u16 channelnum, SharedBuffer<u8> data, bool reliable);
+	void Send(NetworkPacket* pkt);
 
 	void interact(u8 action, const PointedThing& pointed);
 
