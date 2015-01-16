@@ -357,5 +357,70 @@ inline bool is_power_of_two(u32 n)
 	return n != 0 && (n & (n-1)) == 0;
 }
 
-#endif
 
+/* ------------------------------------------------------------------------ */
+
+/** Compares two IEEE-754 32-bit floats for "almost equal".
+ *
+ *  Compare \p a and \p b for equality taking into account magnitude and
+ *  signicant digits. \p ulp is the precision/tolerance for two numbers to be
+ *  considered equivalant, referring to the least significant digit(s).
+ *
+ *  Examples:
+ *    For large numbers
+ *    -----------------
+ *    Let a = 899999995002880.250000000000000 and
+ *        b = 899999995002880.500000000000000
+ *    In this example a and b are considered equivalent by this function because
+ *    the magnitude of the number dwarfs the the what is after the decimal point.
+ *    I.e. in the above example 2.24999998751e+14 is correctly considered the
+ *    same as 2.24999998751e+14 (a simple if (fabs(a - b) <= .00001) { ... }
+ *    would fail here)
+ *
+ *   For smaller numbers (closer to 0)
+ *   ---------------------------------
+ *   Let a = 2.832272702997381 and
+ *       b = 2.832272640141574
+ *   These are considered equivalent because the magnitude of the number is small.
+ *
+ *  For a general purpose function, where the values of \p a and \p b are not
+ *  predictable, this approach is more valid than the simple
+ *  if (fabs(a - b) <= .00001) { ... } approach (the simpler approach would
+ *  fail for the large number example given above).
+ *
+ * References:
+ *   http://perso.ens-lyon.fr/jean-michel.muller/goldberg.pdf
+ *   http://en.wikipedia.org/wiki/Unit_in_the_last_place
+ *   http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
+ */
+inline bool f32_almost_equal(f32 a, f32 b, unsigned ulp = 1)
+{
+	static const u32 sign_bit = 0x80000000;
+
+	/* This initial test will only fail if a and b are significantly different
+	 * and both are not close to 0.0f
+	 */
+	if (fabs(a - b) <= 2 * FLT_EPSILON)
+		return true;	// equal
+
+	union {
+		float   f;
+		u32     i;
+	} repA = { a };
+
+	union {
+		float   f;
+		u32     i;
+	} repB = { b };
+
+	// Compare signs
+	if ((repA.i & sign_bit) != (repB.i & sign_bit))
+		return false; // difference in signedness, numbers are not almost equal
+
+	if (abs(repA.i - repB.i) <= ulp)
+		return true;
+
+	return false;
+}
+
+#endif
