@@ -171,7 +171,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	*/
 	//f32 d = pos_max_d * 1.1;
 	// A fairly large value in here makes moving smoother
-	f32 d = 0.15*BS;
+	f32 d = 0.3*BS;
 
 	// This should always apply, otherwise there are glitches
 	assert(d > pos_max_d);
@@ -330,7 +330,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		for(size_t i=0; i<result.collisions.size(); i++){
 			const CollisionInfo &info = result.collisions[i];
 			collision_info->push_back(info);
-			if(info.new_speed.Y - info.old_speed.Y > 0.1*BS &&
+			if(info.new_speed.Y - info.old_speed.Y > 0.2*BS &&
 					info.bouncy)
 				bouncy_jump = true;
 		}
@@ -546,7 +546,7 @@ void LocalPlayer::applyControl(float dtime)
 			v3f speedJ = getSpeed();
 			if(speedJ.Y >= -0.5 * BS)
 			{
-				speedJ.Y = movement_speed_jump * physics_override_jump;
+				speedJ.Y = (movement_speed_jump+14.3) * physics_override_jump;
 				setSpeed(speedJ);
 				
 				MtEvent *e = new SimpleTriggerEvent("PlayerJump");
