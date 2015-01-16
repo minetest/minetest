@@ -1,6 +1,5 @@
 /*
 Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 Copyright (C) 2015 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 This program is free software; you can redistribute it and/or modify
@@ -21,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef NETWORKPACKET_HEADER
 #define NETWORKPACKET_HEADER
 
+#include "util/pointer.h"
 #include "util/numeric.h"
 #include "networkprotocol.h"
 
@@ -29,57 +29,100 @@ class NetworkPacket
 
 public:
 		NetworkPacket(u8 *data, u32 datasize, u16 peer_id);
+		NetworkPacket(u16 command, u32 datasize, u16 peer_id);
+		NetworkPacket(u16 command, u32 datasize);
 		~NetworkPacket();
 
 		// Getters
 		u32 getSize() { return m_datasize; }
 		u16 getPeerId() { return m_peer_id; }
+		u16 getCommand() { return m_command; }
 
 		// Data extractors
 		char* getString(u32 from_offset);
+		void putRawString(const char* src, u32 len);
+
 		NetworkPacket& operator>>(std::string& dst);
+		NetworkPacket& operator<<(std::string src);
+
+		void putLongString(std::string src);
+
 		NetworkPacket& operator>>(std::wstring& dst);
+		NetworkPacket& operator<<(std::wstring src);
+
 		std::string readLongString();
 
 		char getChar(u32 offset);
 		NetworkPacket& operator>>(char& dst);
+		NetworkPacket& operator<<(char src);
 
 		NetworkPacket& operator>>(bool& dst);
+		NetworkPacket& operator<<(bool src);
 
 		u8 getU8(u32 offset);
+
 		NetworkPacket& operator>>(u8& dst);
+		NetworkPacket& operator<<(u8 src);
 
 		u8* getU8Ptr(u32 offset);
+
 		u16 getU16(u32 from_offset);
 		NetworkPacket& operator>>(u16& dst);
-		u32 getU32(u32 from_offset);
+		NetworkPacket& operator<<(u16 src);
+
 		NetworkPacket& operator>>(u32& dst);
-		u64 getU64(u32 from_offset);
+		NetworkPacket& operator<<(u32 src);
+
 		NetworkPacket& operator>>(u64& dst);
+		NetworkPacket& operator<<(u64 src);
 
-		float getF1000(u32 offset);
 		NetworkPacket& operator>>(float& dst);
-		NetworkPacket& operator>>(v2f& dst);
-		NetworkPacket& operator>>(v3f& dst);
+		NetworkPacket& operator<<(float src);
 
-		s16 getS16(u32 from_offset);
+		NetworkPacket& operator>>(v2f& dst);
+		NetworkPacket& operator<<(v2f src);
+
+		NetworkPacket& operator>>(v3f& dst);
+		NetworkPacket& operator<<(v3f src);
+
 		NetworkPacket& operator>>(s16& dst);
-		s32 getS32(u32 from_offset);
+		NetworkPacket& operator<<(s16 src);
+
 		NetworkPacket& operator>>(s32& dst);
+		NetworkPacket& operator<<(s32 src);
 
 		NetworkPacket& operator>>(v2s32& dst);
+		NetworkPacket& operator<<(v2s32 src);
 
-		v3s16 getV3S16(u32 from_offset);
 		NetworkPacket& operator>>(v3s16& dst);
+		NetworkPacket& operator<<(v3s16 src);
 
-		v3s32 getV3S32(u32 from_offset);
 		NetworkPacket& operator>>(v3s32& dst);
+		NetworkPacket& operator<<(v3s32 src);
 
-protected:
-		u8 *m_data;
+		NetworkPacket& operator>>(video::SColor& dst);
+		NetworkPacket& operator<<(video::SColor src);
+
+		// Temp, we remove SharedBuffer when migration finished
+		SharedBuffer<u8> oldForgePacket();
+private:
+		template<typename T> void checkDataSize()
+		{
+			if (m_read_offset + sizeof(T) > m_datasize) {
+				m_datasize += sizeof(T);
+				m_data.resize(m_datasize);
+			}
+		}
+
+		template<typename T> void incrOffset()
+		{
+			m_read_offset += sizeof(T);
+		}
+
+		std::vector<u8> m_data;
 		u32 m_datasize;
 		u32 m_read_offset;
-private:
+		u16 m_command;
 		u16 m_peer_id;
 };
 

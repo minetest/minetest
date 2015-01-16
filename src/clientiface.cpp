@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "settings.h"
 #include "mapblock.h"
-#include "connection.h"
+#include "network/connection.h"
 #include "environment.h"
 #include "map.h"
 #include "emerge.h"
@@ -625,27 +625,30 @@ void ClientInterface::UpdatePlayerList()
 	}
 }
 
-void ClientInterface::send(u16 peer_id,u8 channelnum,
-		SharedBuffer<u8> data, bool reliable)
+void ClientInterface::send(u16 peer_id, u8 channelnum,
+		NetworkPacket* pkt, bool reliable, bool deletepkt)
 {
-	m_con->Send(peer_id, channelnum, data, reliable);
+	m_con->Send(peer_id, channelnum, pkt, reliable);
+
+	if (deletepkt)
+		delete pkt;
 }
 
 void ClientInterface::sendToAll(u16 channelnum,
-		SharedBuffer<u8> data, bool reliable)
+		NetworkPacket* pkt, bool reliable)
 {
 	JMutexAutoLock clientslock(m_clients_mutex);
 	for(std::map<u16, RemoteClient*>::iterator
 		i = m_clients.begin();
-		i != m_clients.end(); ++i)
-	{
+		i != m_clients.end(); ++i) {
 		RemoteClient *client = i->second;
 
-		if (client->net_proto_version != 0)
-		{
-			m_con->Send(client->peer_id, channelnum, data, reliable);
+		if (client->net_proto_version != 0) {
+			m_con->Send(client->peer_id, channelnum, pkt, reliable);
 		}
 	}
+
+	delete pkt;
 }
 
 RemoteClient* ClientInterface::getClientNoEx(u16 peer_id, ClientState state_min)

@@ -93,3 +93,92 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	{ "TOSERVER_BREATH",                   TOSERVER_STATE_INGAME, &Server::handleCommand_Breath }, // 0x42
 	{ "TOSERVER_CLIENT_READY",             TOSERVER_STATE_STARTUP, &Server::handleCommand_ClientReady }, // 0x43
 };
+
+const static ClientCommandFactory null_command_factory = { "TOCLIENT_NULL", 0, false };
+
+const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
+{
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	{ "TOCLIENT_INIT",                     0, true }, // 0x10
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	{ "TOCLIENT_BLOCKDATA",                2, true }, // 0x20
+	{ "TOCLIENT_ADDNODE",                  0, true }, // 0x21
+	{ "TOCLIENT_REMOVENODE",               0, true }, // 0x22
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	{ "TOCLIENT_INVENTORY",                0, true }, // 0x27
+	null_command_factory,
+	{ "TOCLIENT_TIME_OF_DAY",              0, true }, // 0x29
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	{ "TOCLIENT_CHAT_MESSAGE",             0, true }, // 0x30
+	{ "TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD", 0, true }, // 0x31
+	{ "TOCLIENT_ACTIVE_OBJECT_MESSAGES",   0, true }, // 0x32 Special packet, sent by 0 (rel) and 1 (unrel) channel
+	{ "TOCLIENT_HP",                       0, true }, // 0x33
+	{ "TOCLIENT_MOVE_PLAYER",              0, true }, // 0x34
+	{ "TOCLIENT_ACCESS_DENIED",            0, true }, // 0x35
+	{ "TOCLIENT_PLAYERITEM",               0, false }, // 0x36 obsolete
+	{ "TOCLIENT_DEATHSCREEN",              0, true }, // 0x37
+	{ "TOCLIENT_MEDIA",                    2, true }, // 0x38
+	{ "TOCLIENT_TOOLDEF",                  0, false }, // 0x39 obsolete
+	{ "TOCLIENT_NODEDEF",                  0, true }, // 0x3a
+	{ "TOCLIENT_CRAFTITEMDEF",             0, false }, // 0x3b obsolete
+	{ "TOCLIENT_ANNOUNCE_MEDIA",           0, true }, // 0x3c
+	{ "TOCLIENT_ITEMDEF",                  0, true }, // 0x3d
+	null_command_factory,
+	{ "TOCLIENT_PLAY_SOUND",               0, true }, // 0x3f
+	{ "TOCLIENT_STOP_SOUND",               0, true }, // 0x40
+	{ "TOCLIENT_PRIVILEGES",               0, true }, // 0x41
+	{ "TOCLIENT_INVENTORY_FORMSPEC",       0, true }, // 0x42
+	{ "TOCLIENT_DETACHED_INVENTORY",       0, true }, // 0x43
+	{ "TOCLIENT_SHOW_FORMSPEC",            0, true }, // 0x44
+	{ "TOCLIENT_MOVEMENT",                 0, true }, // 0x45
+	{ "TOCLIENT_SPAWN_PARTICLE",           0, true }, // 0x46
+	{ "TOCLIENT_ADD_PARTICLESPAWNER",      0, true }, // 0x47
+	{ "TOCLIENT_DELETE_PARTICLESPAWNER",   0, true }, // 0x48
+	{ "TOCLIENT_HUDADD",                   1, true }, // 0x49
+	{ "TOCLIENT_HUDRM",                    1, true }, // 0x4a
+	{ "TOCLIENT_HUDCHANGE",                0, true }, // 0x4b
+	{ "TOCLIENT_HUD_SET_FLAGS",            0, true }, // 0x4c
+	{ "TOCLIENT_HUD_SET_PARAM",            0, true }, // 0x4d
+	{ "TOCLIENT_BREATH",                   0, true }, // 0x4e
+	{ "TOCLIENT_SET_SKY",                  0, true }, // 0x4f
+	{ "TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO", 0, true }, // 0x50
+	{ "TOCLIENT_LOCAL_PLAYER_ANIMATIONS",  0, true }, // 0x51
+	{ "TOCLIENT_EYE_OFFSET",               0, true }, // 0x52
+};

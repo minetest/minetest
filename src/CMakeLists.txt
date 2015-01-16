@@ -361,7 +361,6 @@ set(common_SRCS
 	cavegen.cpp
 	clientiface.cpp
 	collision.cpp
-	connection.cpp
 	content_abm.cpp
 	content_mapnode.cpp
 	content_nodemeta.cpp
@@ -429,9 +428,10 @@ set(common_SRCS
 	version.cpp
 	voxel.cpp
 	voxelalgorithms.cpp
+	network/connection.cpp
 	network/networkpacket.cpp
+	network/packethandlers/server.cpp
 	network/serveropcodes.cpp
-	network/toserverpacket.cpp
 	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}
 	${UTIL_SRCS}
@@ -496,7 +496,7 @@ set(minetest_SRCS
 	wieldmesh.cpp
 	client/clientlauncher.cpp
 	network/clientopcodes.cpp
-	network/toclientpacket.cpp
+	network/packethandlers/client.cpp
 	${minetest_SCRIPT_SRCS}
 )
 list(SORT minetest_SRCS)
