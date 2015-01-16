@@ -346,15 +346,15 @@ void finalColorBlend(video::SColor& result,
 		1, 4, 6, 6, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	};
-	b += emphase_blue_when_dark[b / 8];
-	b = irr::core::clamp (b, 0, 255);
+	b += emphase_blue_when_dark[irr::core::clamp(b, 0, 255) / 8];
+	b = irr::core::clamp(b, 0, 255);
 
 	// Artificial light is yellow-ish
 	static const u8 emphase_yellow_when_artificial[16] = {
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 10, 15, 15, 15
 	};
 	rg += emphase_yellow_when_artificial[night/16];
-	rg = irr::core::clamp (rg, 0, 255);
+	rg = irr::core::clamp(rg, 0, 255);
 
 	result.setRed(rg);
 	result.setGreen(rg);
