@@ -20,10 +20,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CHAT_HEADER
 #define CHAT_HEADER
 
-#include "irrlichttypes.h"
 #include <string>
 #include <vector>
 #include <list>
+
+#include "irrlichttypes.h"
+#include "util/coloredstring.h"
 
 // Chat console related classes
 
@@ -34,7 +36,7 @@ struct ChatLine
 	// name of sending player, or empty if sent by server
 	std::wstring name;
 	// message text
-	std::wstring text;
+	ColoredString text;
 
 	ChatLine(std::wstring a_name, std::wstring a_text):
 		age(0.0),
