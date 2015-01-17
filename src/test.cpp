@@ -855,9 +855,8 @@ struct TestMapNode: public TestBase
 {
 	void Run(INodeDefManager *nodedef)
 	{
-		MapNode n;
+		MapNode n(CONTENT_AIR);
 
-		// Default values
 		UASSERT(n.getContent() == CONTENT_AIR);
 		UASSERT(n.getLight(LIGHTBANK_DAY, nodedef) == 0);
 		UASSERT(n.getLight(LIGHTBANK_NIGHT, nodedef) == 0);

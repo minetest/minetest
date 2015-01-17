@@ -80,9 +80,9 @@ struct MapEditEvent
 
 	MapEditEvent():
 		type(MEET_OTHER),
+		n(CONTENT_AIR),
 		already_known_by_peer(0)
-	{
-	}
+	{ }
 
 	MapEditEvent * clone()
 	{
