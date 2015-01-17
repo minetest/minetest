@@ -3935,7 +3935,7 @@ void Game::updateGui(float *statustext_time, const RunStats &stats,
 		   << ", RTT = " << client->getRTT();
 		guitext->setText(narrow_to_wide(os.str()).c_str());
 		guitext->setVisible(true);
-	} else if (flags.show_hud || flags.show_chat) {
+	} else if ((flags.show_hud || flags.show_chat) && VERSION_EXTRA_STRING != "") {
 		std::ostringstream os(std::ios_base::binary);
 		os << "Minetest " << minetest_version_hash;
 		guitext->setText(narrow_to_wide(os.str()).c_str());
