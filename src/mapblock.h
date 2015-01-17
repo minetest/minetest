@@ -642,6 +642,16 @@ inline s16 getNodeBlockY(s16 y)
 	return getContainerPos(y, MAP_BLOCKSIZE);
 }
 
+inline void getNodeBlockPosWithOffset(const v3s16& p, v3s16& block, v3s16& offset)
+{
+	getContainerPosWithOffset(p, MAP_BLOCKSIZE, block, offset);
+}
+
+inline void getNodeSectorPosWithOffset(const v2s16& p, v2s16& block, v2s16& offset)
+{
+	getContainerPosWithOffset(p, MAP_BLOCKSIZE, block, offset);
+}
+
 /*
 	Get a quick string to describe what a block actually contains
 */
