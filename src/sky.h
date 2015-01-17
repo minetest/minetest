@@ -27,12 +27,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define SKY_MATERIAL_COUNT 5
 #define SKY_STAR_COUNT 200
 
+class ITextureSource;
+
 // Skybox, rendered with zbuffer turned off, before all other nodes.
 class Sky : public scene::ISceneNode
 {
 public:
 	//! constructor
-	Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id);
+	Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id,
+			ITextureSource *tsrc);
 
 	virtual void OnRegisterSceneNode();
 
