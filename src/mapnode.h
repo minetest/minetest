@@ -139,12 +139,15 @@ struct MapNode
 	*/
 	u8 param2;
 
+	MapNode()
+	{ }
+
 	MapNode(const MapNode & n)
 	{
 		*this = n;
 	}
 
-	MapNode(content_t content = CONTENT_AIR, u8 a_param1=0, u8 a_param2=0)
+	MapNode(content_t content, u8 a_param1=0, u8 a_param2=0)
 		: param0(content),
 		  param1(a_param1),
 		  param2(a_param2)

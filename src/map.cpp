@@ -1189,8 +1189,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 		This also clears the lighting.
 	*/
 
-	MapNode n;
-	n.setContent(replace_material);
+	MapNode n(replace_material);
 	setNode(p, n);
 
 	for(s32 i=0; i<2; i++)
@@ -1603,6 +1602,16 @@ struct NodeNeighbor {
 	NeighborType t;
 	v3s16 p;
 	bool l; //can liquid
+
+	NodeNeighbor()
+		: n(CONTENT_AIR)
+	{ }
+
+	NodeNeighbor(const MapNode &node, NeighborType n_type, v3s16 pos)
+		: n(node),
+		  t(n_type),
+		  p(pos)
+	{ }
 };
 
 void Map::transforming_liquid_add(v3s16 p) {
@@ -1716,7 +1725,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 					break;
 			}
 			v3s16 npos = p0 + dirs[i];
-			NodeNeighbor nb = {getNodeNoEx(npos), nt, npos};
+			NodeNeighbor nb(getNodeNoEx(npos), nt, npos);
 			switch (nodemgr->get(nb.n.getContent()).liquid_type) {
 				case LIQUID_NONE:
 					if (nb.n.getContent() == CONTENT_AIR) {

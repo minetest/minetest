@@ -173,10 +173,8 @@ void VoxelManipulator::addArea(const VoxelArea &area)
 	dstream<<", new_size="<<new_size;
 	dstream<<std::endl;*/
 
-	// Allocate and clear new data
-	// FIXME: UGLY KLUDGE because MapNode default constructor is FUBAR; it
-	//        initialises data that is going to be overwritten anyway
-	MapNode *new_data = (MapNode*)new char[new_size * sizeof (*new_data)];
+	// Allocate new data and clear flags
+	MapNode *new_data = new MapNode[new_size];
 	assert(new_data);
 	u8 *new_flags = new u8[new_size];
 	assert(new_flags);
