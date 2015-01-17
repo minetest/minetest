@@ -945,8 +945,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 			m_wield_meshnode = new WieldMeshSceneNode(
 					smgr->getRootSceneNode(), smgr, -1);
 			m_wield_meshnode->setItem(item, m_gamedef);
-			m_wield_meshnode->grab();
-			
+
 			m_wield_meshnode->setScale(v3f(m_prop.visual_size.X/2,
 					m_prop.visual_size.Y/2,
 					m_prop.visual_size.X/2));
@@ -975,7 +974,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 	updateBonePosition();
 	updateAttachments();
 }
-		
+
 void GenericCAO::updateLight(u8 light_at_pos)
 {
 	u8 li = decode_light(light_at_pos);
