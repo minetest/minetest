@@ -1,27 +1,25 @@
+core.hud_builtin_statbars = {}
+local hud_ids = core.hud_builtin_statbars
 
-local health_bar_definition =
-{
+local health_bar_definition = {
 	hud_elem_type = "statbar",
-	position = { x=0.5, y=1 },
+	position = {x = 0.5, y = 1},
 	text = "heart.png",
 	number = 20,
 	direction = 0,
-	size = { x=24, y=24 },
-	offset = { x=(-10*24)-25, y=-(48+24+10)},
+	size = {x = 24, y = 24},
+	offset = {x = (-10*24)-25, y =- (48+24+10)},
 }
 
-local breath_bar_definition =
-{
+local breath_bar_definition = {
 	hud_elem_type = "statbar",
-	position = { x=0.5, y=1 },
+	position = {x = 0.5, y = 1},
 	text = "bubble.png",
 	number = 20,
 	direction = 0,
-	size = { x=24, y=24 },
-	offset = {x=25,y=-(48+24+10)},
+	size = {x = 24, y = 24 },
+	offset = {x = 25, y = -(48+24+10)},
 }
-
-local hud_ids = {}
 
 local function initialize_builtin_statbars(player)
 
@@ -88,7 +86,7 @@ local function cleanup_builtin_statbars(player)
 	hud_ids[name] = nil
 end
 
-local function player_event_handler(player,eventname)
+local function player_event_handler(player, eventname)
 	assert(player:is_player())
 
 	local name = player:get_player_name()
