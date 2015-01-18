@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #include <string>
+#include <vector>
 #include "irrlicht.h"
 #include "irrlichttypes.h" // u32
 #include "irrlichttypes_extrabloated.h"
@@ -369,6 +370,10 @@ float getDisplayDensity();
 
 v2u32 getDisplaySize();
 v2u32 getWindowSize();
+
+std::vector<irr::video::E_DRIVER_TYPE> getSupportedVideoDrivers();
+const char *getVideoDriverName(irr::video::E_DRIVER_TYPE type);
+const char *getVideoDriverFriendlyName(irr::video::E_DRIVER_TYPE type);
 #endif
 
 inline const char * getPlatformName()

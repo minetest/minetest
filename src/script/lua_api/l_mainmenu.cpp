@@ -1025,28 +1025,25 @@ int ModApiMainMenu::l_download_file(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_video_drivers(lua_State *L)
 {
-	static const char* drivernames[] = {
-		"NULL Driver",
-		"Software",
-		"Burningsvideo",
-		"Direct3D 8",
-		"Direct3D 9",
-		"OpenGL",
-		"OGLES1",
-		"OGLES2"
-	};
 	unsigned int index = 1;
 	lua_newtable(L);
 	int top = lua_gettop(L);
 
-	for (unsigned int i = irr::video::EDT_SOFTWARE;
-			i < MYMIN(irr::video::EDT_COUNT, (sizeof(drivernames)/sizeof(drivernames[0])));
-			i++) {
-		if (irr::IrrlichtDevice::isDriverSupported((irr::video::E_DRIVER_TYPE) i)) {
-			lua_pushnumber(L,index++);
-			lua_pushstring(L,drivernames[i]);
-			lua_settable(L, top);
-		}
+	std::vector<irr::video::E_DRIVER_TYPE> drivers
+		= porting::getSupportedVideoDrivers();
+
+	lua_newtable(L);
+	for (u32 i = 0; i != drivers.size(); i++) {
+		const char *name  = porting::getVideoDriverName(drivers[i]);
+		const char *fname = porting::getVideoDriverFriendlyName(drivers[i]);
+
+		lua_newtable(L);
+		lua_pushstring(L, name);
+		lua_setfield(L, -2, "name");
+		lua_pushstring(L, fname);
+		lua_setfield(L, -2, "friendly_name");
+
+		lua_rawseti(L, -2, i + 1);
 	}
 
 	return 1;
