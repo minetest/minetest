@@ -433,11 +433,11 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 
 		{
 			JMutexAutoLock lock(m_spawner_list_lock);
-			if (m_particle_spawners.find(event->delete_particlespawner.id) !=
+			if (m_particle_spawners.find(event->add_particlespawner.id) !=
 							m_particle_spawners.end())
 			{
-				delete m_particle_spawners.find(event->delete_particlespawner.id)->second;
-				m_particle_spawners.erase(event->delete_particlespawner.id);
+				delete m_particle_spawners.find(event->add_particlespawner.id)->second;
+				m_particle_spawners.erase(event->add_particlespawner.id);
 			}
 		}
 		video::ITexture *texture =
@@ -475,7 +475,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 			JMutexAutoLock lock(m_spawner_list_lock);
 			m_particle_spawners.insert(
 					std::pair<u32, ParticleSpawner*>(
-							event->delete_particlespawner.id,
+							event->add_particlespawner.id,
 							toadd));
 		}
 
