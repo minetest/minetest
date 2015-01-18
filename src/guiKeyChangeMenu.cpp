@@ -47,6 +47,7 @@ enum
 	GUI_ID_KEY_LEFT_BUTTON,
 	GUI_ID_KEY_RIGHT_BUTTON,
 	GUI_ID_KEY_USE_BUTTON,
+	GUI_ID_KEY_AUTOJUMP_BUTTON,
 	GUI_ID_KEY_FLY_BUTTON,
 	GUI_ID_KEY_FAST_BUTTON,
 	GUI_ID_KEY_JUMP_BUTTON,
@@ -62,6 +63,7 @@ enum
 	// other
 	GUI_ID_CB_AUX1_DESCENDS,
 	GUI_ID_CB_DOUBLETAP_JUMP,
+	GUI_ID_CB_AUTOJUMP,
 };
 
 GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
@@ -107,7 +109,7 @@ void GUIKeyChangeMenu::removeChildren()
 void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 {
 	removeChildren();
-	v2s32 size(620, 430);
+	v2s32 size(720, 430);
 	
 	core::rect < s32 > rect(screensize.X / 2 - size.X / 2,
 							screensize.Y / 2 - size.Y / 2, screensize.X / 2 + size.X / 2,
@@ -119,7 +121,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	v2s32 topleft(0, 0);
 	
 	{
-		core::rect < s32 > rect(0, 0, 600, 40);
+		core::rect < s32 > rect(0, 0, 700, 40);
 		rect += topleft + v2s32(25, 3);
 		//gui::IGUIStaticText *t =
 		wchar_t* text = wgettext("Keybindings. (If this menu screws up, remove stuff from minetest.conf)");
@@ -137,20 +139,20 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		key_setting *k = key_settings.at(i);
 		{
-			core::rect < s32 > rect(0, 0, 100, 20);
+			core::rect < s32 > rect(0, 0, 140, 20);
 			rect += topleft + v2s32(offset.X, offset.Y);
 			Environment->addStaticText(k->button_name, rect, false, true, this, -1);
 		}
 
 		{
-			core::rect < s32 > rect(0, 0, 100, 30);
-			rect += topleft + v2s32(offset.X + 105, offset.Y - 5);
+			core::rect < s32 > rect(0, 0, 140, 30);
+			rect += topleft + v2s32(offset.X + 150, offset.Y - 5);
 			wchar_t* text = wgettext(k->key.name());
 			k->button = Environment->addButton(rect, this, k->id, text );
 			delete[] text;
 		}
 		if(i + 1 == KMaxButtonPerColumns)
-			offset = v2s32(250, 60);
+			offset = v2s32(350, 60);
 		else
 			offset += v2s32(0, 25);
 	}
@@ -200,7 +202,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		Environment->addButton(rect, this, GUI_ID_ABORT_BUTTON,
 							 text );
 		delete[] text;
-	}	
+	}
 }
 
 void GUIKeyChangeMenu::drawMenu()
@@ -213,7 +215,7 @@ void GUIKeyChangeMenu::drawMenu()
 	video::SColor bgcolor(140, 0, 0, 0);
 
 	{
-		core::rect < s32 > rect(0, 0, 620, 620);
+		core::rect < s32 > rect(0, 0, 720, 720);
 		rect += AbsoluteRect.UpperLeftCorner;
 		driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
 	}
@@ -237,6 +239,11 @@ bool GUIKeyChangeMenu::acceptInput()
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_DOUBLETAP_JUMP);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			g_settings->setBool("doubletap_jump", ((gui::IGUICheckBox*)e)->isChecked());
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_AUTOJUMP);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			g_settings->setBool("autojump", ((gui::IGUICheckBox*)e)->isChecked());
 	}
 
 	clearKeyCache();
@@ -291,7 +298,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		// Display Key already in use message
 		if (std::find(this->key_used.begin(), this->key_used.end(), kp) != this->key_used.end())
 		{
-			core::rect < s32 > rect(0, 0, 600, 40);
+			core::rect < s32 > rect(0, 0, 700, 40);
 			rect += v2s32(0, 0) + v2s32(25, 30);
 			wchar_t* text = wgettext("Key already in use");
 			this->key_used_text = Environment->addStaticText(text,
@@ -406,7 +413,8 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_CHAT_BUTTON,      wgettext("Chat"),          "keymap_chat");
 	this->add_key(GUI_ID_KEY_CMD_BUTTON,       wgettext("Command"),       "keymap_cmd");
 	this->add_key(GUI_ID_KEY_CONSOLE_BUTTON,   wgettext("Console"),       "keymap_console");
-	this->add_key(GUI_ID_KEY_FLY_BUTTON,       wgettext("Toggle fly"),    "keymap_freemove");
+	this->add_key(GUI_ID_KEY_AUTOJUMP_BUTTON,  wgettext("Toggle autojump"),"keymap_autojump");
+ 	this->add_key(GUI_ID_KEY_FLY_BUTTON,       wgettext("Toggle fly"),    "keymap_freemove");
 	this->add_key(GUI_ID_KEY_FAST_BUTTON,      wgettext("Toggle fast"),   "keymap_fastmove");
 	this->add_key(GUI_ID_KEY_NOCLIP_BUTTON,    wgettext("Toggle noclip"), "keymap_noclip");
 	this->add_key(GUI_ID_KEY_RANGE_BUTTON,     wgettext("Range select"),  "keymap_rangeselect");

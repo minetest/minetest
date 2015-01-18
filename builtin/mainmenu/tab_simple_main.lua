@@ -72,12 +72,15 @@ local function get_formspec(tabview, name, tabdata)
 
 	-- checkboxes
 	retval = retval ..
-		"checkbox[1.0,3.9;cb_creative;".. fgettext("Creative Mode") .. ";" ..
+		"checkbox[0.8,3.9;cb_creative;".. fgettext("Creative Mode") .. ";" ..
 		dump(core.setting_getbool("creative_mode")) .. "]"..
-		"checkbox[5.0,3.9;cb_damage;".. fgettext("Enable Damage") .. ";" ..
+		"checkbox[3.7,3.9;cb_damage;".. fgettext("Enable Damage") .. ";" ..
 		dump(core.setting_getbool("enable_damage")) .. "]" ..
-		"checkbox[8,3.9;cb_fly_mode;".. fgettext("Fly mode") .. ";" ..
-		dump(core.setting_getbool("free_move")) .. "]"
+		"checkbox[6.8,3.9;cb_fly_mode;".. fgettext("Fly mode") .. ";" ..
+		dump(core.setting_getbool("free_move")) .. "]" ..
+		"checkbox[9,3.9;cb_autojump;".. fgettext("Autojump") .. ";" ..
+		dump(core.setting_getbool("autojump")) .. "]"
+
 	-- buttons
 	retval = retval ..
 		"button[2.0,4.5;6,1.5;btn_start_singleplayer;" .. fgettext("Start Singleplayer") .. "]" ..
@@ -140,6 +143,11 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 	if fields["cb_fly_mode"] then
 		core.setting_set("free_move", fields["cb_fly_mode"])
+		return true
+	end
+
+	if fields["cb_autojump"] then
+		core.setting_set("autojump", fields["cb_autojump"])
 		return true
 	end
 
