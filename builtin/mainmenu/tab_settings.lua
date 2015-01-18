@@ -128,35 +128,35 @@ local function formspec(tabview, name, tabdata)
 		end
 	end
 
-	local filters = {
-		{"No Filter,Bilinear Filter,Trilinear Filter"},
-		{"", "bilinear_filter", "trilinear_filter"},
-	}
+local filters = {
+    {"No Filter,Bilinear Filter,Trilinear Filter"}, 
+    {"", "bilinear_filter", "trilinear_filter"},
+}
 
-	local mipmap = {
-		{"No Mipmap,Mipmap,Mipmap + Aniso. Filter"},
-		{"", "mip_map", "anisotropic_filter"},
-	}
+local mipmap = {
+    {"No Mipmap,Mipmap,Mipmap + Aniso. Filter"},
+    {"", "mip_map", "anisotropic_filter"},
+}
 
-	local function getFilterSettingIndex()
-		if (core.setting_get(filters[2][3]) == "true") then
-			return 3
-		end
-		if (core.setting_get(filters[2][3]) == "false" and core.setting_get(filters[2][2]) == "true") then
-			return 2
-		end
-		return 1
-	end
+local function getFilterSettingIndex()
+     if (core.setting_get(filters[2][3]) == "true") then
+        return 3
+     end
+     if (core.setting_get(filters[2][3]) == "false" and core.setting_get(filters[2][2]) == "true") then
+        return 2
+     end
+     return 1
+end	
 
-	local function getMipmapSettingIndex()
-		if (core.setting_get(mipmap[2][3]) == "true") then
-			return 3
-		end
-		if (core.setting_get(mipmap[2][3]) == "false" and core.setting_get(mipmap[2][2]) == "true") then
-			return 2
-		end
-		return 1
-	end
+local function getMipmapSettingIndex()
+     if (core.setting_get(mipmap[2][3]) == "true") then
+        return 3
+     end
+     if (core.setting_get(mipmap[2][3]) == "false" and core.setting_get(mipmap[2][2]) == "true") then
+        return 2
+     end
+     return 1
+end
 
 	local tab_string =
 		"box[0,0;3.5,3.9;#999999]" ..
@@ -241,8 +241,7 @@ local function formspec(tabview, name, tabdata)
 				"textlist[8.33,2.2;4,1;;#888888" .. fgettext("Waving Water") .. ";0;true]" ..
 				"textlist[8.33,2.7;4,1;;#888888" .. fgettext("Waving Leaves") .. ";0;true]" ..
 				"textlist[8.33,3.2;4,1;;#888888" .. fgettext("Waving Plants") .. ";0;true]"
-	end
-
+		end
 	return tab_string
 end
 
