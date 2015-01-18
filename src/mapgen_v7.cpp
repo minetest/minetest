@@ -285,33 +285,33 @@ void MapgenV7::calculateNoise()
 	int y = node_min.Y;
 	int z = node_min.Z;
 
-	noise_height_select->perlinMap2D(x, z);
 	noise_terrain_persist->perlinMap2D(x, z);
 	float *persistmap = noise_terrain_persist->result;
-	for (int i = 0; i != csize.X * csize.Z; i++)
-		persistmap[i] = rangelim(persistmap[i], 0.4, 0.9);
 
 	noise_terrain_base->perlinMap2D(x, z, persistmap);
 	noise_terrain_alt->perlinMap2D(x, z, persistmap);
-	noise_filler_depth->perlinMap2D(x, z);
-
-	if (spflags & MGV7_MOUNTAINS) {
-		noise_mountain->perlinMap3D(x, y, z);
-		noise_mount_height->perlinMap2D(x, z);
-	}
-
-	if (spflags & MGV7_RIDGES) {
-		noise_ridge->perlinMap3D(x, y, z);
-		noise_ridge_uwater->perlinMap2D(x, z);
-	}
+	noise_height_select->perlinMap2D(x, z);
 
 	if (flags & MG_CAVES) {
 		noise_cave1->perlinMap3D(x, y, z);
 		noise_cave2->perlinMap3D(x, y, z);
 	}
 
-	noise_heat->perlinMap2D(x, z);
-	noise_humidity->perlinMap2D(x, z);
+	if (node_max.Y >= water_level) {
+		noise_filler_depth->perlinMap2D(x, z);
+		noise_heat->perlinMap2D(x, z);
+		noise_humidity->perlinMap2D(x, z);
+
+		if (spflags & MGV7_MOUNTAINS) {
+			noise_mountain->perlinMap3D(x, y, z);
+			noise_mount_height->perlinMap2D(x, z);
+		}
+
+		if (spflags & MGV7_RIDGES) {
+			noise_ridge->perlinMap3D(x, y, z);
+			noise_ridge_uwater->perlinMap2D(x, z);
+		}
+	}
 
 	//printf("calculateNoise: %dus\n", t.stop());
 }
@@ -469,7 +469,7 @@ int MapgenV7::generateBaseTerrain()
 
 int MapgenV7::generateMountainTerrain(int ymax)
 {
-	if (node_max.Y <= water_level)
+	if (node_max.Y < water_level)
 		return ymax;
 
 	MapNode n_stone(c_stone);
@@ -500,6 +500,9 @@ int MapgenV7::generateMountainTerrain(int ymax)
 
 void MapgenV7::generateRidgeTerrain()
 {
+	if (node_max.Y < water_level)
+		return;
+
 	MapNode n_water(c_water_source);
 	MapNode n_air(CONTENT_AIR);
 	u32 index = 0;
@@ -637,11 +640,11 @@ void MapgenV7::generateBiomes()
 
 void MapgenV7::dustTopNodes()
 {
+	if (node_max.Y < water_level)
+		return;
+
 	v3s16 em = vm->m_area.getExtent();
 	u32 index = 0;
-
-	if (water_level > node_max.Y)
-		return;
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
