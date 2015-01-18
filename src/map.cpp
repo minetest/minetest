@@ -418,9 +418,9 @@ void Map::unspreadLight(enum LightBank bank,
 	}
 
 	/*infostream<<"unspreadLight(): Changed block "
-	<<blockchangecount<<" times"
-	<<" for "<<from_nodes.size()<<" nodes"
-	<<std::endl;*/
+			<<blockchangecount<<" times"
+			<<" for "<<from_nodes.size()<<" nodes"
+			<<std::endl;*/
 
 	if(!unlighted_nodes.empty())
 		unspreadLight(bank, unlighted_nodes, light_sources, modified_blocks);
@@ -471,7 +471,7 @@ void Map::spreadLight(enum LightBank bank,
 	*/
 	v3s16 blockpos_last;
 	MapBlock *block = NULL;
-		// Cache this a bit, too
+	// Cache this a bit, too
 	bool block_checked_in_modified = false;
 
 	for(std::set<v3s16>::iterator j = from_nodes.begin();
@@ -1907,7 +1907,6 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 		}
 	}
 	//infostream<<"Map::transformLiquids(): loopcount="<<loopcount<<std::endl;
-
 	for (std::deque<v3s16>::iterator iter = must_reflow.begin(); iter != must_reflow.end(); ++iter)
 		m_transforming_liquid.push_back(*iter);
 	updateLighting(lighting_modified_blocks, modified_blocks);
@@ -3677,7 +3676,7 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 				block = svrmap->emergeBlock(p, false);
 				if (block == NULL)
 					block = svrmap->createBlock(p);
-				block->copyTo(*this);
+					block->copyTo(*this);
 			} else {
 				flags |= VMANIP_BLOCK_DATA_INEXIST;
 
