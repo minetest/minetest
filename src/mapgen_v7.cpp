@@ -510,16 +510,16 @@ void MapgenV7::generateRidgeTerrain()
 		for (s16 x = node_min.X; x <= node_max.X; x++, index++, vi++) {
 			int j = (z - node_min.Z) * csize.X + (x - node_min.X);
 
-			if (heightmap[j] < water_level - 4)
+			if (heightmap[j] < water_level - 16)
+				continue;
+
+			float width = 0.2; // TODO: figure out acceptable perlin noise values
+			float uwatern = noise_ridge_uwater->result[j] * 2;
+			if (fabs(uwatern) > width)
 				continue;
 
 			float widthn = (noise_terrain_persist->result[j] - 0.6) / 0.1;
-			//widthn = rangelim(widthn, -0.05, 0.5);
-
-			float width = 0.3; // TODO: figure out acceptable perlin noise values
-			float uwatern = noise_ridge_uwater->result[j] * 2;
-			if (uwatern < -width || uwatern > width)
-				continue;
+			widthn = rangelim(widthn, -0.05, 0.5);
 
 			float height_mod = (float)(y + 17) / 2.5;
 			float width_mod  = (width - fabs(uwatern));
