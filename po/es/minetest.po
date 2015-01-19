@@ -26,7 +26,6 @@ msgstr "Aceptar"
 msgid "World:"
 msgstr "Mundo:"
 
-# El nombre completo no cabe.
 #: builtin/mainmenu/dlg_config_world.lua:30
 #: builtin/mainmenu/dlg_config_world.lua:32
 msgid "Hide Game"
@@ -67,7 +66,7 @@ msgstr "Desactivar paquete"
 #: builtin/mainmenu/dlg_config_world.lua:74
 #: builtin/mainmenu/dlg_config_world.lua:76
 msgid "enabled"
-msgstr "activado"
+msgstr "Activado"
 
 #: builtin/mainmenu/dlg_config_world.lua:82
 msgid "Enable all"
@@ -139,7 +138,7 @@ msgstr "Modmgr: Error al borrar \"$1\""
 
 #: builtin/mainmenu/dlg_delete_mod.lua:45
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr "Modmgr: Ruta de mod \"$1\" inválida"
+msgstr "Modmgr: Ruta del mod \"$1\" inválida"
 
 #: builtin/mainmenu/dlg_delete_world.lua:24
 msgid "Delete World \"$1\"?"
@@ -167,7 +166,7 @@ msgid ""
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"Instalar mod: Tipo de archivo no soportado \"$1\" o corrupto"
+"Instalar mod: Formato de archivo \"$1\" no soportado o archivo corrupto"
 
 #: builtin/mainmenu/modmgr.lua:363
 msgid "Failed to install $1 to $2"
@@ -181,7 +180,7 @@ msgstr ""
 
 #: builtin/mainmenu/modmgr.lua:386
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr "Instalar mod: Imposible encontrar el nombre de mod real para: $1"
+msgstr "Instalar mod: Imposible encontrar el nombre real del mod para: $1"
 
 #: builtin/mainmenu/store.lua:88
 msgid "Unsorted"
@@ -268,9 +267,10 @@ msgstr "Información del mod:"
 msgid "Rename"
 msgstr "Renombrar"
 
+# El nombre completo no cabe.
 #: builtin/mainmenu/tab_mods.lua:95
 msgid "Uninstall selected modpack"
-msgstr "Desinstalar el paquete de mods seleccionado"
+msgstr "Desinstalar el paquete selecc."
 
 #: builtin/mainmenu/tab_mods.lua:106
 msgid "Uninstall selected mod"
@@ -278,7 +278,7 @@ msgstr "Desinstalar el mod seleccionado"
 
 #: builtin/mainmenu/tab_mods.lua:121
 msgid "Select Mod File:"
-msgstr "Selecciona el fichero mod:"
+msgstr "Selecciona el fichero del mod:"
 
 #: builtin/mainmenu/tab_mods.lua:165
 msgid "Mods"
@@ -291,7 +291,7 @@ msgstr "Dirección / puerto:"
 #: builtin/mainmenu/tab_multiplayer.lua:24 builtin/mainmenu/tab_server.lua:37
 #: builtin/mainmenu/tab_simple_main.lua:25
 msgid "Name / Password :"
-msgstr "Nombre / clave:"
+msgstr "Nombre / contraseña:"
 
 #: builtin/mainmenu/tab_multiplayer.lua:29
 #: builtin/mainmenu/tab_simple_main.lua:30
@@ -352,7 +352,7 @@ msgstr "Puerto"
 
 #: builtin/mainmenu/tab_server.lua:51
 msgid "Server Port"
-msgstr "Puerto del servidor"
+msgstr "Puerto del servidor:"
 
 #: builtin/mainmenu/tab_server.lua:174
 msgid "Server"
@@ -504,9 +504,10 @@ msgstr "Seleccione un paquete de texturas:"
 msgid "No information available"
 msgstr "Sin información disponible"
 
+# No cabe "Paquetes de texturas".
 #: builtin/mainmenu/tab_texturepacks.lua:114
 msgid "Texturepacks"
-msgstr "Paquetes de texturas"
+msgstr "Texturas"
 
 #: src/client.cpp:2726
 msgid "Item textures..."
@@ -1150,7 +1151,7 @@ msgid "Change Keys"
 msgstr "Configurar teclas"
 
 msgid "Name/Password"
-msgstr "Nombre / clave"
+msgstr "Nombre / contraseña:"
 
 msgid "Node Highlighting"
 msgstr "Resaltar nodos"
