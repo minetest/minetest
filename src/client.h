@@ -74,7 +74,7 @@ public:
 	MeshUpdateQueue();
 
 	~MeshUpdateQueue();
-	
+
 	/*
 		peer_id=0 adds with nobody to send to
 	*/
@@ -90,7 +90,7 @@ public:
 		JMutexAutoLock lock(m_mutex);
 		return m_queue.size();
 	}
-	
+
 private:
 	std::vector<QueuedMeshUpdate*> m_queue;
 	std::set<v3s16> m_urgents;
@@ -127,7 +127,7 @@ public:
 	MutexedQueue<MeshUpdateResult> m_queue_out;
 
 	IGameDef *m_gamedef;
-	
+
 	v3s16 m_camera_offset;
 };
 
@@ -152,8 +152,8 @@ struct ClientEvent
 {
 	ClientEventType type;
 	union{
-		struct{
-		} none;
+		//struct{
+		//} none;
 		struct{
 			u8 amount;
 		} player_damage;
@@ -171,8 +171,8 @@ struct ClientEvent
 			std::string *formspec;
 			std::string *formname;
 		} show_formspec;
-		struct{
-		} textures_updated;
+		//struct{
+		//} textures_updated;
 		struct{
 			v3f *pos;
 			v3f *vel;
@@ -315,7 +315,7 @@ public:
 			MtEventManager *event,
 			bool ipv6
 	);
-	
+
 	~Client();
 
 	/*
@@ -362,11 +362,11 @@ public:
 
 	ClientEnvironment& getEnv()
 	{ return m_env; }
-	
+
 	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
 	void removeNode(v3s16 p);
 	void addNode(v3s16 p, MapNode n, bool remove_metadata = true);
-	
+
 	void setPlayerControl(PlayerControl &control);
 
 	void selectPlayerItem(u16 item);
@@ -378,7 +378,7 @@ public:
 	bool getLocalInventoryUpdated();
 	// Copies the inventory of the local player to parameter
 	void getLocalInventory(Inventory &dst);
-	
+
 	/* InventoryManager interface */
 	Inventory* getInventory(const InventoryLocation &loc);
 	void inventoryAction(InventoryAction *a);
@@ -416,13 +416,13 @@ public:
 	// Including blocks at appropriate edges
 	void addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server=false, bool urgent=false);
 	void addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server=false, bool urgent=false);
-	
+
 	void updateCameraOffset(v3s16 camera_offset)
 	{ m_mesh_update_thread.m_camera_offset = camera_offset; }
 
 	// Get event from queue. CE_NONE is returned if queue is empty.
 	ClientEvent getClientEvent();
-	
+
 	bool accessDenied()
 	{ return m_access_denied; }
 
@@ -476,14 +476,14 @@ private:
 	// Virtual methods from con::PeerHandler
 	void peerAdded(con::Peer *peer);
 	void deletingPeer(con::Peer *peer, bool timeout);
-	
+
 	void ReceiveAll();
 	void Receive();
-	
+
 	void sendPlayerPos();
 	// Send the item number 'item' as player item to the server
 	void sendPlayerItem(u16 item);
-	
+
 	float m_packetcounter_timer;
 	float m_connection_reinit_timer;
 	float m_avg_rtt_timer;

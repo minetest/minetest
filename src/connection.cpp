@@ -707,14 +707,14 @@ void Channel::UpdateTimers(float dtime,bool legacy_peer)
 
 		unsigned int packet_loss = 11; /* use a neutral value for initialization */
 		unsigned int packets_successfull = 0;
-		unsigned int packet_too_late = 0;
+		//unsigned int packet_too_late = 0;
 
 		bool reasonable_amount_of_data_transmitted = false;
 
 		{
 			JMutexAutoLock internal(m_internal_mutex);
 			packet_loss = current_packet_loss;
-			packet_too_late = current_packet_too_late;
+			//packet_too_late = current_packet_too_late;
 			packets_successfull = current_packet_successfull;
 
 			if (current_bytes_transfered > (unsigned int) (window_size*512/2))

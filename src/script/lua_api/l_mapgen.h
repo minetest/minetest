@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_base.h"
 
 class INodeDefManager;
-class NodeResolveInfo;
+struct NodeResolveInfo;
 class DecoSimple;
 class DecoSchematic;
 

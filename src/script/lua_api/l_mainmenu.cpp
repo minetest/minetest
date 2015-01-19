@@ -1025,10 +1025,6 @@ int ModApiMainMenu::l_download_file(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_video_drivers(lua_State *L)
 {
-	unsigned int index = 1;
-	lua_newtable(L);
-	int top = lua_gettop(L);
-
 	std::vector<irr::video::E_DRIVER_TYPE> drivers
 		= porting::getSupportedVideoDrivers();
 

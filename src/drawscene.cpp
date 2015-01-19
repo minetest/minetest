@@ -167,7 +167,7 @@ video::ITexture* draw_image(const v2u32& screensize,
 		image = images[1];
 	else
 		image = images[0];
-	
+
 	driver->setRenderTarget(image, true, true,
 			irr::video::SColor(255,
 					skycolor.getRed(), skycolor.getGreen(), skycolor.getBlue()));
@@ -421,79 +421,74 @@ void draw_scene(video::IVideoDriver* driver, scene::ISceneManager* smgr,
 		gui::IGUIEnvironment* guienv, std::vector<aabb3f> hilightboxes,
 		const v2u32& screensize, video::SColor skycolor, bool show_hud)
 {
-	//TODO check if usefull
-	u32 scenetime = 0;
-	{
-		TimeTaker timer("smgr");
+	TimeTaker timer("smgr");
 
-		bool draw_wield_tool = (show_hud &&
-				(player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE) &&
-				camera.getCameraMode() < CAMERA_MODE_THIRD );
+	bool draw_wield_tool = (show_hud &&
+			(player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE) &&
+			camera.getCameraMode() < CAMERA_MODE_THIRD );
 
-		bool draw_crosshair = ((player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
-				(camera.getCameraMode() != CAMERA_MODE_THIRD_FRONT));
+	bool draw_crosshair = ((player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
+			(camera.getCameraMode() != CAMERA_MODE_THIRD_FRONT));
 
 #ifdef HAVE_TOUCHSCREENGUI
-		try {
-			draw_crosshair = !g_settings->getBool("touchtarget");
-		}
-		catch(SettingNotFoundException) {}
+	try {
+		draw_crosshair = !g_settings->getBool("touchtarget");
+	}
+	catch(SettingNotFoundException) {}
 #endif
 
-		std::string draw_mode = g_settings->get("3d_mode");
+	std::string draw_mode = g_settings->get("3d_mode");
 
-		smgr->drawAll();
+	smgr->drawAll();
 
-		if (draw_mode == "anaglyph")
-		{
-			draw_anaglyph_3d_mode(camera, show_hud, hud, hilightboxes, driver,
-					smgr, draw_wield_tool, client, guienv);
-			draw_crosshair = false;
-		}
-		else if (draw_mode == "interlaced")
-		{
-			draw_interlaced_3d_mode(camera, show_hud, hud, hilightboxes, driver,
-					smgr, screensize, draw_wield_tool, client, guienv, skycolor);
-			draw_crosshair = false;
-		}
-		else if (draw_mode == "sidebyside")
-		{
-			draw_sidebyside_3d_mode(camera, show_hud, hud, hilightboxes, driver,
-					smgr, screensize, draw_wield_tool, client, guienv, skycolor);
-			show_hud = false;
-		}
-		else if (draw_mode == "topbottom")
-		{
-			draw_top_bottom_3d_mode(camera, show_hud, hud, hilightboxes, driver,
-					smgr, screensize, draw_wield_tool, client, guienv, skycolor);
-			show_hud = false;
-		}
-		else {
-			draw_plain(camera, show_hud, hud, hilightboxes, driver,
-					draw_wield_tool, client, guienv);
-		}
-
-		/*
-			Post effects
-		*/
-		{
-			client.getEnv().getClientMap().renderPostFx(camera.getCameraMode());
-		}
-
-		//TODO how to make those 3d too
-		if (show_hud)
-		{
-			if (draw_crosshair)
-				hud.drawCrosshair();
-			hud.drawHotbar(client.getPlayerItem());
-			hud.drawLuaElements(camera.getOffset());
-		}
-
-		guienv->drawAll();
-
-		scenetime = timer.stop(true);
+	if (draw_mode == "anaglyph")
+	{
+		draw_anaglyph_3d_mode(camera, show_hud, hud, hilightboxes, driver,
+				smgr, draw_wield_tool, client, guienv);
+		draw_crosshair = false;
+	}
+	else if (draw_mode == "interlaced")
+	{
+		draw_interlaced_3d_mode(camera, show_hud, hud, hilightboxes, driver,
+				smgr, screensize, draw_wield_tool, client, guienv, skycolor);
+		draw_crosshair = false;
+	}
+	else if (draw_mode == "sidebyside")
+	{
+		draw_sidebyside_3d_mode(camera, show_hud, hud, hilightboxes, driver,
+				smgr, screensize, draw_wield_tool, client, guienv, skycolor);
+		show_hud = false;
+	}
+	else if (draw_mode == "topbottom")
+	{
+		draw_top_bottom_3d_mode(camera, show_hud, hud, hilightboxes, driver,
+				smgr, screensize, draw_wield_tool, client, guienv, skycolor);
+		show_hud = false;
+	}
+	else {
+		draw_plain(camera, show_hud, hud, hilightboxes, driver,
+				draw_wield_tool, client, guienv);
 	}
 
+	/*
+		Post effects
+	*/
+	{
+		client.getEnv().getClientMap().renderPostFx(camera.getCameraMode());
+	}
+
+	//TODO how to make those 3d too
+	if (show_hud)
+	{
+		if (draw_crosshair)
+			hud.drawCrosshair();
+		hud.drawHotbar(client.getPlayerItem());
+		hud.drawLuaElements(camera.getOffset());
+	}
+
+	guienv->drawAll();
+
+	timer.stop(true);
 }
 
 /*

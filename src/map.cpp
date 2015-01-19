@@ -3220,8 +3220,6 @@ bool ServerMap::loadSectorMeta(v2s16 p2d)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	MapSector *sector = NULL;
-
 	// The directory layout we're going to load from.
 	//  1 - original sectors/xxxxzzzz/
 	//  2 - new sectors2/xxx/zzz/
@@ -3241,7 +3239,7 @@ bool ServerMap::loadSectorMeta(v2s16 p2d)
 	}
 
 	try{
-		sector = loadSectorMeta(sectordir, loadlayout != 2);
+		loadSectorMeta(sectordir, loadlayout != 2);
 	}
 	catch(InvalidFilenameException &e)
 	{

@@ -364,15 +364,14 @@ void GUIEngine::cloudPostProcess()
 {
 	float fps_max = g_settings->getFloat("fps_max");
 	// Time of frame without fps limit
-	float busytime;
 	u32 busytime_u32;
+
 	// not using getRealTime is necessary for wine
 	u32 time = m_device->getTimer()->getTime();
 	if(time > m_cloud.lasttime)
 		busytime_u32 = time - m_cloud.lasttime;
 	else
 		busytime_u32 = 0;
-	busytime = busytime_u32 / 1000.0;
 
 	// FPS limiter
 	u32 frametime_min = 1000./fps_max;

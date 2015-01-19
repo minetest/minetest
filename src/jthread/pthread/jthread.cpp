@@ -146,10 +146,7 @@ bool JThread::IsSameThread()
 
 void *JThread::TheThread(void *param)
 {
-	JThread *jthread;
-	void *ret;
-
-	jthread = (JThread *)param;
+	JThread *jthread = (JThread *)param;
 
 	jthread->continuemutex2.Lock();
 	jthread->running = true;
@@ -157,7 +154,7 @@ void *JThread::TheThread(void *param)
 	jthread->continuemutex.Lock();
 	jthread->continuemutex.Unlock();
 
-	ret = jthread->Thread();
+	jthread->Thread();
 
 	jthread->running = false;
 

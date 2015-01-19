@@ -438,7 +438,6 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 	this->ndef = data->nodedef;
 
 	// Hack: use minimum block coords for old code that assumes a single block
-	v3s16 blockpos = data->blockpos_requested;
 	v3s16 blockpos_min = data->blockpos_min;
 	v3s16 blockpos_max = data->blockpos_max;
 

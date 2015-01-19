@@ -310,7 +310,6 @@ void Mapgen::spreadLight(v3s16 nmin, v3s16 nmax)
 {
 	//TimeTaker t("spreadLight");
 	VoxelArea a(nmin, nmax);
-	v3s16 em = vm->m_area.getExtent();
 
 	for (int z = a.MinEdge.Z; z <= a.MaxEdge.Z; z++) {
 		for (int y = a.MinEdge.Y; y <= a.MaxEdge.Y; y++) {
