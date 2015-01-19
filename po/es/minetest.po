@@ -30,12 +30,12 @@ msgstr "Mundo:"
 #: builtin/mainmenu/dlg_config_world.lua:30
 #: builtin/mainmenu/dlg_config_world.lua:32
 msgid "Hide Game"
-msgstr "Ocul. juego"
+msgstr "Ocultar juego"
 
 #: builtin/mainmenu/dlg_config_world.lua:36
 #: builtin/mainmenu/dlg_config_world.lua:38
 msgid "Hide mp content"
-msgstr "Ocul. contenido mp"
+msgstr "Ocultar contenido mp"
 
 #: builtin/mainmenu/dlg_config_world.lua:46
 msgid "Mod:"
@@ -424,7 +424,7 @@ msgstr "Reiniciar mundo de un jugador"
 
 #: builtin/mainmenu/tab_settings.lua:171
 msgid "GUI scale factor"
-msgstr "Factor de escala de la GUI"
+msgstr "Factor de escala (GUI)"
 
 #: builtin/mainmenu/tab_settings.lua:175
 msgid "Scaling factor applied to menu elements: "
@@ -1147,30 +1147,5 @@ msgstr "Gamemgr: Imposible copiar el mod \"$1\" al juego \"$2\""
 msgid "Game Name"
 msgstr "Nombre del juego"
 
-#~ msgid "Create world"
-#~ msgstr "Crear Mundo"
-
-#~ msgid ""
-#~ "Default Controls:\n"
-#~ "- WASD: Walk\n"
-#~ "- Mouse left: dig/hit\n"
-#~ "- Mouse right: place/use\n"
-#~ "- Mouse wheel: select item\n"
-#~ "- 0...9: select item\n"
-#~ "- Shift: sneak\n"
-#~ "- R: Toggle viewing all loaded chunks\n"
-#~ "- I: Inventory menu\n"
-#~ "- ESC: This menu\n"
-#~ "- T: Chat\n"
-#~ msgstr ""
-#~ "Controles predeterminados:\n"
-#~ "- WASD: Caminar \n"
-#~ "- Ratón, izquierdo: Cavar/Golpear\n"
-#~ "- Ratón, derecho: Poner bloque/Usar\n"
-#~ "- Ratón, rueda: seleccionar objecto\n"
-#~ "- 0... 9: Seleccionar objecto\n"
-#~ "- Mayúscula: caminar despacio\n"
-#~ "- R: Ajustar distancia de los pedazos cargados\n"
-#~ "- I: Inventario \n"
-#~ "- ESC: Este Menu\n"
-#~ "- T: Conversar\n"
+msgid "Change Keys"
+msgstr "Configurar teclas"
