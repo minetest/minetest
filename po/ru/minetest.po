@@ -1129,7 +1129,7 @@ msgstr "Неправильная конфигурация игры."
 #~ msgid "You died."
 #~ msgstr "Вы умерли."
 
-#~ msgid "Shutting down..."
+#~ msgid "Shutting down stuff..."
 #~ msgstr "Завершение работы..."
 
 #~ msgid "Connecting to server..."

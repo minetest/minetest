@@ -1125,7 +1125,7 @@ msgstr "非法游戏模式规格。"
 #~ msgid "You died."
 #~ msgstr "你死了。"
 
-#~ msgid "Shutting down..."
+#~ msgid "Shutting down stuff..."
 #~ msgstr "关闭中......"
 
 #~ msgid "Connecting to server..."

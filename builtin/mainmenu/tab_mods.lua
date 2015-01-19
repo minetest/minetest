@@ -96,7 +96,7 @@ local function get_formspec(tabview, name, tabdata)
 		else
 			--show dependencies
 
-			retval = retval .. "," .. fgettext("Depends:") .. ","
+			retval = retval .. ",Depends:,"
 
 			local toadd = modmgr.get_dependencies(selected_mod.path)
 

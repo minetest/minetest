@@ -1124,7 +1124,7 @@ msgstr "gamespec invalide."
 #~ msgid "You died."
 #~ msgstr "Vous êtes mort."
 
-#~ msgid "Shutting down..."
+#~ msgid "Shutting down stuff..."
 #~ msgstr "Quitter le jeu..."
 
 #~ msgid "Connecting to server..."

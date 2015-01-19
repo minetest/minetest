@@ -1041,7 +1041,7 @@ msgstr "Specifica del gioco non valida."
 #~ msgid "You died."
 #~ msgstr "Siete morti."
 
-#~ msgid "Shutting down..."
+#~ msgid "Shutting down stuff..."
 #~ msgstr "Spegnimento della roba..."
 
 #~ msgid "Connecting to server..."

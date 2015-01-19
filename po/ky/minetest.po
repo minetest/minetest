@@ -1116,7 +1116,7 @@ msgstr ""
 #~ msgid "You died."
 #~ msgstr "Сиз өлдүңүз."
 
-#~ msgid "Shutting down..."
+#~ msgid "Shutting down stuff..."
 #~ msgstr "Оюн өчүрүлүүдө..."
 
 #~ msgid "Connecting to server..."
