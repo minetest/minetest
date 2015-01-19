@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-13 15:24+0100\n"
-"PO-Revision-Date: 2015-01-18 20:28+0100\n"
-"Last-Translator: Diego Martínez <lkaezadl3@yahoo.com>\n"
+"PO-Revision-Date: 2015-01-19 09:56+0100\n"
+"Last-Translator: Diego de las Heras <diegodelasheras@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -26,15 +26,16 @@ msgstr "Aceptar"
 msgid "World:"
 msgstr "Mundo:"
 
+# El nombre completo no cabe.
 #: builtin/mainmenu/dlg_config_world.lua:30
 #: builtin/mainmenu/dlg_config_world.lua:32
 msgid "Hide Game"
-msgstr "Ocultar juego"
+msgstr "Ocul. juego"
 
 #: builtin/mainmenu/dlg_config_world.lua:36
 #: builtin/mainmenu/dlg_config_world.lua:38
 msgid "Hide mp content"
-msgstr "Ocultar contenido mp"
+msgstr "Ocul. contenido mp"
 
 #: builtin/mainmenu/dlg_config_world.lua:46
 msgid "Mod:"
@@ -222,9 +223,10 @@ msgstr "Reinstalar"
 msgid "Install"
 msgstr "Instalar"
 
+# En el menú principal de mods pone repositorio no tienda.
 #: builtin/mainmenu/store.lua:522
 msgid "Close store"
-msgstr "Cerrar tienda"
+msgstr "Cerrar repositorio"
 
 #: builtin/mainmenu/store.lua:530
 msgid "Page $1 of $2"
@@ -236,7 +238,7 @@ msgstr "Créditos"
 
 #: builtin/mainmenu/tab_credits.lua:29
 msgid "Core Developers"
-msgstr "Núcleo de desarrolladores"
+msgstr "Desarrolladores principales"
 
 #: builtin/mainmenu/tab_credits.lua:43
 msgid "Active Contributors"
@@ -284,12 +286,12 @@ msgstr "Mods"
 
 #: builtin/mainmenu/tab_multiplayer.lua:23
 msgid "Address/Port"
-msgstr "Dirección/Puerto"
+msgstr "Dirección / puerto"
 
 #: builtin/mainmenu/tab_multiplayer.lua:24 builtin/mainmenu/tab_server.lua:37
 #: builtin/mainmenu/tab_simple_main.lua:25
 msgid "Name/Password"
-msgstr "Nombre/Clave"
+msgstr "Nombre / clave"
 
 #: builtin/mainmenu/tab_multiplayer.lua:29
 #: builtin/mainmenu/tab_simple_main.lua:30
@@ -669,9 +671,10 @@ msgstr "¡Las contraseñas no coinciden!"
 msgid "Sound Volume: "
 msgstr "Volúmen del sonido: "
 
+# Es en el menú de sonido. Salir suena muy fuerte.
 #: src/guiVolumeChange.cpp:120
 msgid "Exit"
-msgstr "Salir"
+msgstr "Cerrar"
 
 #: src/keycode.cpp:224
 msgid "Left Button"
@@ -691,7 +694,7 @@ msgstr "X Button 1"
 
 #: src/keycode.cpp:225
 msgid "Back"
-msgstr "Atras"
+msgstr "Atrás"
 
 #: src/keycode.cpp:225
 msgid "Clear"
@@ -1004,7 +1007,7 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
-"Controles predeterm.:\n"
+"Controles predeterminados:\n"
 "- WASD: moverse\n"
 "- Espacio: saltar/subir\n"
 "- Mayús.: puntillas/bajar\n"
@@ -1013,7 +1016,7 @@ msgstr ""
 "- Ratón: girar/mirar\n"
 "- Ratón izq.: cavar/golpear\n"
 "- Ratón der.: colocar/usar\n"
-"- Rueda ratón: elegir objeto\n"
+"- Ratón rueda: elegir objeto\n"
 "- T: chat\n"
 
 msgid "is required by:"
