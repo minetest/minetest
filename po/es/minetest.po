@@ -274,7 +274,7 @@ msgstr "Desinstalar el paquete de mods seleccionado"
 
 #: builtin/mainmenu/tab_mods.lua:106
 msgid "Uninstall selected mod"
-msgstr "Desinstalar mod seleccionado"
+msgstr "Desinstalar el mod seleccionado"
 
 #: builtin/mainmenu/tab_mods.lua:121
 msgid "Select Mod File:"
@@ -285,13 +285,13 @@ msgid "Mods"
 msgstr "Mods"
 
 #: builtin/mainmenu/tab_multiplayer.lua:23
-msgid "Address/Port"
-msgstr "Dirección / puerto"
+msgid "Address / Port :"
+msgstr "Dirección / puerto:"
 
 #: builtin/mainmenu/tab_multiplayer.lua:24 builtin/mainmenu/tab_server.lua:37
 #: builtin/mainmenu/tab_simple_main.lua:25
-msgid "Name/Password"
-msgstr "Nombre / clave"
+msgid "Name / Password :"
+msgstr "Nombre / clave:"
 
 #: builtin/mainmenu/tab_multiplayer.lua:29
 #: builtin/mainmenu/tab_simple_main.lua:30
@@ -498,16 +498,15 @@ msgstr "Un jugador"
 
 #: builtin/mainmenu/tab_texturepacks.lua:49
 msgid "Select texture pack:"
-msgstr "Seleccione paquete de texturas:"
+msgstr "Seleccione un paquete de texturas:"
 
 #: builtin/mainmenu/tab_texturepacks.lua:69
 msgid "No information available"
 msgstr "Sin información disponible"
 
 #: builtin/mainmenu/tab_texturepacks.lua:114
-#, fuzzy
 msgid "Texturepacks"
-msgstr "Paquete de texturas"
+msgstr "Paquetes de texturas"
 
 #: src/client.cpp:2726
 msgid "Item textures..."
@@ -523,11 +522,11 @@ msgstr "Revivir"
 
 #: src/game.cpp:2250
 msgid "Item definitions..."
-msgstr "Definición de objetos..."
+msgstr "Definiciones de objetos..."
 
 #: src/game.cpp:2255
 msgid "Node definitions..."
-msgstr "Definición de nodos..."
+msgstr "Definiciones de nodos..."
 
 #: src/game.cpp:2262
 msgid "Media..."
@@ -1096,8 +1095,8 @@ msgstr "Continuar"
 msgid "You died."
 msgstr "Has muerto."
 
-msgid "Shutting down stuff..."
-msgstr "Apagando cosas..."
+msgid "Shutting down..."
+msgstr "Cerrando..."
 
 msgid "Connecting to server..."
 msgstr "Conectando al servidor..."
@@ -1149,3 +1148,24 @@ msgstr "Nombre del juego"
 
 msgid "Change Keys"
 msgstr "Configurar teclas"
+
+msgid "Name/Password"
+msgstr "Nombre / clave"
+
+msgid "Node Highlighting"
+msgstr "Resaltar nodos"
+
+msgid "Texturing:"
+msgstr "Texturizado:"
+
+msgid "Rendering:"
+msgstr "Renderizado:"
+
+msgid "Rebuilding shaders..."
+msgstr "Reconstruyendo sombreadores..."
+
+msgid "Initializing nodes..."
+msgstr "Inicializando nodos..."
+
+msgid "Done!"
+msgstr "¡Completado!"
