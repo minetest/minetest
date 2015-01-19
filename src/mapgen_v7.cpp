@@ -521,15 +521,10 @@ void MapgenV7::generateRidgeTerrain()
 			if (fabs(uwatern) > width)
 				continue;
 
-			float widthn = (noise_terrain_persist->result[j] - 0.6) / 0.1;
-			widthn = rangelim(widthn, -0.05, 0.5);
-
-			float height_mod = (float)(y + 17) / 2.5;
-			float width_mod  = (width - fabs(uwatern));
-			float nridge = noise_ridge->result[index] * (float)y / 7.0;
-
-			if (y < water_level)
-				nridge = -fabs(nridge) * 3.0 * widthn * 0.3;
+			float altitude = y - water_level;
+			float height_mod = (altitude + 17) / 2.5;
+			float width_mod  = width - fabs(uwatern);
+			float nridge = noise_ridge->result[index] * MYMAX(altitude, 0) / 7.0;
 
 			if (nridge + width_mod * height_mod < 0.6)
 				continue;
