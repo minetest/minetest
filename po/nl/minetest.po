@@ -1128,7 +1128,7 @@ msgstr "Onjuiste gamespec."
 #~ msgid "You died."
 #~ msgstr "Je bent gestorven."
 
-#~ msgid "Shutting down stuff..."
+#~ msgid "Shutting down..."
 #~ msgstr "Stopzetten..."
 
 #~ msgid "Connecting to server..."

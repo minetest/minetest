@@ -1042,7 +1042,7 @@ msgstr "Neplatná specifikace hry."
 #~ msgid "You died."
 #~ msgstr "Zemřel jsi."
 
-#~ msgid "Shutting down stuff..."
+#~ msgid "Shutting down..."
 #~ msgstr "Vypínám to..."
 
 #~ msgid "Connecting to server..."

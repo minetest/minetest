@@ -1135,7 +1135,7 @@ msgstr "Nieprawidłowa specyfikacja trybu gry."
 #~ msgid "You died."
 #~ msgstr "Zginąłeś."
 
-#~ msgid "Shutting down stuff..."
+#~ msgid "Shutting down..."
 #~ msgstr "Wyłączanie..."
 
 #~ msgid "Connecting to server..."

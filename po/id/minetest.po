@@ -1040,7 +1040,7 @@ msgstr "Spesifikasi permainan tidak sah."
 #~ msgid "You died."
 #~ msgstr "Kamu mati."
 
-#~ msgid "Shutting down stuff..."
+#~ msgid "Shutting down..."
 #~ msgstr "Mematikan..."
 
 #~ msgid "Connecting to server..."

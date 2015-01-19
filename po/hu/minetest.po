@@ -1094,7 +1094,7 @@ msgstr "Nem valós játék spec."
 #~ msgid "You died."
 #~ msgstr "Meghaltál."
 
-#~ msgid "Shutting down stuff..."
+#~ msgid "Shutting down..."
 #~ msgstr "Dolog leállítása..."
 
 #~ msgid "Connecting to server..."

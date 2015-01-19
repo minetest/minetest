@@ -1132,7 +1132,7 @@ msgstr "Especificação do jogo inválida."
 #~ msgid "You died."
 #~ msgstr "Você morreu."
 
-#~ msgid "Shutting down stuff..."
+#~ msgid "Shutting down..."
 #~ msgstr "Desligando tudo..."
 
 #~ msgid "Connecting to server..."

@@ -1119,7 +1119,7 @@ msgstr "Invalide Spielspezif."
 #~ msgid "You died."
 #~ msgstr "Sie sind gestorben."
 
-#~ msgid "Shutting down stuff..."
+#~ msgid "Shutting down..."
 #~ msgstr "Herunterfahren..."
 
 #~ msgid "Connecting to server..."
