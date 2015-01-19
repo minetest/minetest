@@ -337,9 +337,11 @@ Apply a mask to the base image.
 
 The mask is applied using binary AND.
 
-#### `[colorize:<color>`
+#### `[colorize:<color>:<ratio>`
 Colorize the textures with the given color.
 `<color>` is specified as a `ColorString`.
+`<ratio>` is an int ranging from 0 to 255, and specifies how much of the
+color to apply. If ommitted, the alpha will be used.
 
 Sounds
 ------
@@ -3259,4 +3261,3 @@ Definition tables
         playername = "singleplayer"
     --  ^ Playername is optional, if specified spawns particle only on the player's client
     }
-
