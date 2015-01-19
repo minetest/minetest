@@ -2,25 +2,24 @@
 # Copyright (C) 2011 celeron
 # This file is distributed under the same license as the minetest-c55 package.
 # Constantin Wenger <constantin.wenger@googlemail.com>, 2011.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-13 15:24+0100\n"
-"PO-Revision-Date: 2013-12-29 14:29+0200\n"
-"Last-Translator: Pilz Adam <PilzAdam@gmx.de>\n"
-"Language-Team: Deutsch <>\n"
+"PO-Revision-Date: 2014-12-14 22:50+0200\n"
+"Last-Translator: Wuzzy <almikes@aol.com>\n"
+"Language-Team: NOINFO\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 1.7-dev\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
 
 #: builtin/fstk/ui.lua:67
 msgid "Ok"
-msgstr "Ok"
+msgstr "OK"
 
 #: builtin/mainmenu/dlg_config_world.lua:26
 msgid "World:"
@@ -34,7 +33,7 @@ msgstr "Spiel verstecken"
 #: builtin/mainmenu/dlg_config_world.lua:36
 #: builtin/mainmenu/dlg_config_world.lua:38
 msgid "Hide mp content"
-msgstr "MP mods verstecken"
+msgstr "MP-Mods verstecken"
 
 #: builtin/mainmenu/dlg_config_world.lua:46
 msgid "Mod:"
@@ -106,11 +105,13 @@ msgstr "Warnung: Die minimale Testversion ist für Entwickler gedacht."
 
 #: builtin/mainmenu/dlg_create_world.lua:73
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr "Andere Spiele (wie minetest_game) können von minetest.net heruntergeladen werden"
+msgstr ""
+"Andere Spiele (wie minetest_game) können von minetest.net heruntergeladen "
+"werden"
 
 #: builtin/mainmenu/dlg_create_world.lua:97
 msgid "A world named \"$1\" already exists"
-msgstr "Eine Welt namens \"$1\" existiert bereits"
+msgstr "Eine Welt namens »$1« existiert bereits"
 
 #: builtin/mainmenu/dlg_create_world.lua:116
 msgid "No worldname given or no game selected"
@@ -118,7 +119,7 @@ msgstr "Kein Weltname gegeben oder kein Spiel ausgewählt"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:26
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr "\"$1\" wirklich löschen?"
+msgstr "»$1« wirklich löschen?"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:27
 #: builtin/mainmenu/dlg_delete_world.lua:25
@@ -132,15 +133,15 @@ msgstr "Nein, natürlich nicht!"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:41
 msgid "Modmgr: failed to delete \"$1\""
-msgstr "Modmgr: Fehler beim löschen von \"$1\""
+msgstr "Modmgr: Fehler beim löschen von »$1«"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:45
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr "Modmgr: Unzulässiger Modpfad \"$1\""
+msgstr "Modmgr: Unzulässiger Modpfad »$1«"
 
 #: builtin/mainmenu/dlg_delete_world.lua:24
 msgid "Delete World \"$1\"?"
-msgstr "Welt \"$1\" löschen?"
+msgstr "Welt »$1« löschen?"
 
 #: builtin/mainmenu/dlg_delete_world.lua:26
 msgid "No"
@@ -156,7 +157,7 @@ msgstr "Annehmen"
 
 #: builtin/mainmenu/modmgr.lua:342
 msgid "Install Mod: file: \"$1\""
-msgstr "Mod installieren: Datei: \"$1\""
+msgstr "Mod installieren: Datei: »$1«"
 
 #: builtin/mainmenu/modmgr.lua:343
 msgid ""
@@ -164,19 +165,20 @@ msgid ""
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"Mod installieren: Nicht unterstützter Dateityp \"$1\" oder fehlerhaftes Archiv"
+"Mod installieren: Nicht unterstützter Dateityp »$1« oder kaputtes Archiv"
 
 #: builtin/mainmenu/modmgr.lua:363
 msgid "Failed to install $1 to $2"
-msgstr "Fehler beim installieren von $1 zu $2"
+msgstr "Fehler bei Installation von $1 zu $2"
 
 #: builtin/mainmenu/modmgr.lua:366
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
-msgstr "Mod installieren: Kann keinen Ordnernamen für Modpack $1 finden"
+msgstr ""
+"Mod installieren: Ordnernamen für Modpack $1 konnte nicht gefunden werden"
 
 #: builtin/mainmenu/modmgr.lua:386
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr "Mod installieren: Kann echten Namen für $1 nicht finden"
+msgstr "Mod installieren: Echter Name von $1 konnte nicht gefunden werden"
 
 #: builtin/mainmenu/store.lua:88
 msgid "Unsorted"
@@ -188,11 +190,11 @@ msgstr "Suchen"
 
 #: builtin/mainmenu/store.lua:125
 msgid "Downloading"
-msgstr "Lade herunter"
+msgstr "Herunterladen"
 
 #: builtin/mainmenu/store.lua:127
 msgid "please wait..."
-msgstr "Bitte warten..."
+msgstr "Bitte warten …"
 
 #: builtin/mainmenu/store.lua:159
 msgid "Successfully installed:"
@@ -204,7 +206,7 @@ msgstr "Kurzname:"
 
 #: builtin/mainmenu/store.lua:167 src/guiFormSpecMenu.cpp:2866
 msgid "ok"
-msgstr "ok"
+msgstr "OK"
 
 #: builtin/mainmenu/store.lua:476
 msgid "Rating"
@@ -228,11 +230,11 @@ msgstr "Seite $1 von $2"
 
 #: builtin/mainmenu/tab_credits.lua:22
 msgid "Credits"
-msgstr "Credits"
+msgstr "Mitwirkende"
 
 #: builtin/mainmenu/tab_credits.lua:29
 msgid "Core Developers"
-msgstr "Core Entwickler"
+msgstr "Hauptentwickler"
 
 #: builtin/mainmenu/tab_credits.lua:43
 msgid "Active Contributors"
@@ -248,15 +250,15 @@ msgstr "Installierte Mods:"
 
 #: builtin/mainmenu/tab_mods.lua:39
 msgid "Online mod repository"
-msgstr "Online Mod Speicher"
+msgstr "Online-Mod-Speicher"
 
 #: builtin/mainmenu/tab_mods.lua:78
 msgid "No mod description available"
-msgstr "Keine Mod Beschreibung verfügbar"
+msgstr "Keine Mod-Beschreibung verfügbar"
 
 #: builtin/mainmenu/tab_mods.lua:82
 msgid "Mod information:"
-msgstr "Mod Information:"
+msgstr "Mod-Information:"
 
 #: builtin/mainmenu/tab_mods.lua:93
 msgid "Rename"
@@ -272,7 +274,7 @@ msgstr "Ausgewählte Mod deinstallieren"
 
 #: builtin/mainmenu/tab_mods.lua:121
 msgid "Select Mod File:"
-msgstr "Mod Datei auswählen:"
+msgstr "Mod-Datei auswählen:"
 
 #: builtin/mainmenu/tab_mods.lua:165
 msgid "Mods"
@@ -280,7 +282,7 @@ msgstr "Mods"
 
 #: builtin/mainmenu/tab_multiplayer.lua:23
 msgid "Address/Port"
-msgstr "Adresse / Port"
+msgstr "Adresse/Port"
 
 #: builtin/mainmenu/tab_multiplayer.lua:24 builtin/mainmenu/tab_server.lua:37
 #: builtin/mainmenu/tab_simple_main.lua:25
@@ -325,7 +327,7 @@ msgstr "Welt wählen:"
 #: builtin/mainmenu/tab_server.lua:31 builtin/mainmenu/tab_simple_main.lua:63
 #: builtin/mainmenu/tab_singleplayer.lua:90
 msgid "Creative Mode"
-msgstr "Kreativitätsmodus"
+msgstr "Kreativmodus"
 
 #: builtin/mainmenu/tab_server.lua:33 builtin/mainmenu/tab_simple_main.lua:65
 #: builtin/mainmenu/tab_singleplayer.lua:92
@@ -338,7 +340,7 @@ msgstr "Öffentlich"
 
 #: builtin/mainmenu/tab_server.lua:45
 msgid "Bind Address"
-msgstr ""
+msgstr "Bind-Adresse"
 
 #: builtin/mainmenu/tab_server.lua:47
 msgid "Port"
@@ -346,7 +348,7 @@ msgstr "Port"
 
 #: builtin/mainmenu/tab_server.lua:51
 msgid "Server Port"
-msgstr "Server Port"
+msgstr "Server-Port"
 
 #: builtin/mainmenu/tab_server.lua:174
 msgid "Server"
@@ -354,7 +356,7 @@ msgstr "Server"
 
 #: builtin/mainmenu/tab_settings.lua:23
 msgid "Are you sure to reset your singleplayer world?"
-msgstr "Sind Sie sicher, dass Sie die Einzelspielerwelt löschen wollen?"
+msgstr "Sind Sie sicher, dass Sie die Einzelspielerwelt zurücksetzen wollen?"
 
 #: builtin/mainmenu/tab_settings.lua:27
 msgid "No!!!"
@@ -366,11 +368,11 @@ msgstr "Besseres Licht"
 
 #: builtin/mainmenu/tab_settings.lua:136
 msgid "Enable Particles"
-msgstr "Aktiviere Partikel"
+msgstr "Partikel aktivieren"
 
 #: builtin/mainmenu/tab_settings.lua:138
 msgid "3D Clouds"
-msgstr "3D Wolken"
+msgstr "3D-Wolken"
 
 #: builtin/mainmenu/tab_settings.lua:140
 msgid "Fancy Trees"
@@ -398,11 +400,11 @@ msgstr "Anisotroper Filter"
 
 #: builtin/mainmenu/tab_settings.lua:155
 msgid "Bi-Linear Filtering"
-msgstr "Bi-Linearer Filter"
+msgstr "Bilinearer Filter"
 
 #: builtin/mainmenu/tab_settings.lua:157
 msgid "Tri-Linear Filtering"
-msgstr "Tri-Linearer Filter"
+msgstr "Trilinearer Filter"
 
 #: builtin/mainmenu/tab_settings.lua:160
 msgid "Shaders"
@@ -426,11 +428,11 @@ msgstr "Skalierfaktor:"
 
 #: builtin/mainmenu/tab_settings.lua:181
 msgid "Touch free target"
-msgstr ""
+msgstr "Berührungsfreies Ziel"
 
 #: builtin/mainmenu/tab_settings.lua:187
 msgid "Touchthreshold (px)"
-msgstr ""
+msgstr "Berührungsempfindlichkeit (px)"
 
 #: builtin/mainmenu/tab_settings.lua:194 builtin/mainmenu/tab_settings.lua:208
 msgid "Bumpmapping"
@@ -438,7 +440,7 @@ msgstr "Bumpmapping"
 
 #: builtin/mainmenu/tab_settings.lua:196 builtin/mainmenu/tab_settings.lua:209
 msgid "Generate Normalmaps"
-msgstr "Generiere Normalmaps"
+msgstr "Normalmaps generieren"
 
 #: builtin/mainmenu/tab_settings.lua:198 builtin/mainmenu/tab_settings.lua:210
 msgid "Parallax Occlusion"
@@ -458,7 +460,7 @@ msgstr "Wogende Pflanzen"
 
 #: builtin/mainmenu/tab_settings.lua:255
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr "Um Shader zu benutzen muss der OpenGL Treiber benutzt werden."
+msgstr "Um Shader zu benutzen, muss der OpenGL Treiber benutzt werden."
 
 #: builtin/mainmenu/tab_settings.lua:330
 msgid "Settings"
@@ -470,7 +472,7 @@ msgstr "Flugmodus"
 
 #: builtin/mainmenu/tab_simple_main.lua:71
 msgid "Start Singleplayer"
-msgstr "Starte Einzelspieler"
+msgstr "Einzelspieler starten"
 
 #: builtin/mainmenu/tab_simple_main.lua:72
 msgid "Config mods"
@@ -490,7 +492,7 @@ msgstr "Einzelspieler"
 
 #: builtin/mainmenu/tab_texturepacks.lua:49
 msgid "Select texture pack:"
-msgstr "Texturen Paket auswählen:"
+msgstr "Texturenpaket auswählen:"
 
 #: builtin/mainmenu/tab_texturepacks.lua:69
 msgid "No information available"
@@ -498,11 +500,11 @@ msgstr "Keine Informationen vorhanden"
 
 #: builtin/mainmenu/tab_texturepacks.lua:114
 msgid "Texturepacks"
-msgstr "Texturen Pakete"
+msgstr "Texturenpakete"
 
 #: src/client.cpp:2726
 msgid "Item textures..."
-msgstr "Inventarbilder..."
+msgstr "Inventarbilder …"
 
 #: src/fontengine.cpp:70 src/fontengine.cpp:226
 msgid "needs_fallback_font"
@@ -514,15 +516,15 @@ msgstr "Wiederbeleben"
 
 #: src/game.cpp:2250
 msgid "Item definitions..."
-msgstr "Item Definitionen..."
+msgstr "Gegenstandsdefinitionen …"
 
 #: src/game.cpp:2255
 msgid "Node definitions..."
-msgstr "Node Definitionen..."
+msgstr "Node-Definitionen …"
 
 #: src/game.cpp:2262
 msgid "Media..."
-msgstr "Medien..."
+msgstr "Medien …"
 
 #: src/game.cpp:2267
 msgid " KB/s"
@@ -550,15 +552,17 @@ msgstr "Enter "
 
 #: src/guiKeyChangeMenu.cpp:125
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr "Steuerung"
+msgstr ""
+"Tastenbelegung. (Wenn dieses Menü versagt, entfernen Sie Sachen aus "
+"minetest.conf)"
 
 #: src/guiKeyChangeMenu.cpp:165
 msgid "\"Use\" = climb down"
-msgstr "\"Benutzen\" = herunterklettern"
+msgstr "Benutzen = runterklettern"
 
 #: src/guiKeyChangeMenu.cpp:180
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Doppelt \"springen\" zum fliegen"
+msgstr "2×Sprungtaste zum Fliegen"
 
 #: src/guiKeyChangeMenu.cpp:296
 msgid "Key already in use"
@@ -618,19 +622,19 @@ msgstr "Konsole"
 
 #: src/guiKeyChangeMenu.cpp:409
 msgid "Toggle fly"
-msgstr "Fliegen umsch."
+msgstr "Flugmodus"
 
 #: src/guiKeyChangeMenu.cpp:410
 msgid "Toggle fast"
-msgstr "Speed umsch."
+msgstr "Schnellmodus"
 
 #: src/guiKeyChangeMenu.cpp:411
 msgid "Toggle noclip"
-msgstr "Noclip umsch."
+msgstr "Geistermodus"
 
 #: src/guiKeyChangeMenu.cpp:412
 msgid "Range select"
-msgstr "Entfernung wählen"
+msgstr "Weite Sicht"
 
 #: src/guiKeyChangeMenu.cpp:413
 msgid "Print stacks"
@@ -658,7 +662,7 @@ msgstr "Passwörter passen nicht zusammen!"
 
 #: src/guiVolumeChange.cpp:106
 msgid "Sound Volume: "
-msgstr "Sound Lautstärke: "
+msgstr "Tonlautstärke: "
 
 #: src/guiVolumeChange.cpp:120
 msgid "Exit"
@@ -678,7 +682,7 @@ msgstr "Rechte Taste"
 
 #: src/keycode.cpp:224
 msgid "X Button 1"
-msgstr "X Knopf 1"
+msgstr "X-Knopf 1"
 
 #: src/keycode.cpp:225
 msgid "Back"
@@ -686,7 +690,7 @@ msgstr "Rücktaste"
 
 #: src/keycode.cpp:225
 msgid "Clear"
-msgstr "löschen"
+msgstr "Clear"
 
 #: src/keycode.cpp:225
 msgid "Return"
@@ -698,7 +702,7 @@ msgstr "Tab"
 
 #: src/keycode.cpp:225
 msgid "X Button 2"
-msgstr "X Knopf 2"
+msgstr "X-Knopf 2"
 
 #: src/keycode.cpp:226
 msgid "Capital"
@@ -726,7 +730,7 @@ msgstr "Umsch."
 
 #: src/keycode.cpp:227
 msgid "Convert"
-msgstr "Konvertieren"
+msgstr "Convert"
 
 #: src/keycode.cpp:227
 msgid "Escape"
@@ -746,7 +750,7 @@ msgstr "Kanji"
 
 #: src/keycode.cpp:227
 msgid "Nonconvert"
-msgstr "nicht konvertieren"
+msgstr "Nonconvert"
 
 #: src/keycode.cpp:228
 msgid "End"
@@ -786,7 +790,7 @@ msgstr "Druck"
 
 #: src/keycode.cpp:229
 msgid "Select"
-msgstr "Selektiere"
+msgstr "Select"
 
 #: src/keycode.cpp:229
 msgid "Up"
@@ -926,7 +930,7 @@ msgstr "Plus"
 
 #: src/keycode.cpp:248
 msgid "Attn"
-msgstr "Attn."
+msgstr "Attn"
 
 #: src/keycode.cpp:248
 msgid "CrSel"
@@ -978,7 +982,7 @@ msgstr "Kann Spiel nicht finden/laden \""
 
 #: src/main.cpp:1953
 msgid "Invalid gamespec."
-msgstr "Invalide Spielspezif."
+msgstr "Ungültige Spielspezif."
 
 #~ msgid "Left click: Move all items, Right click: Move single item"
 #~ msgstr "Linksklick: Alle Items bewegen, Rechtsklick: Einzelnes Item bewegen"
