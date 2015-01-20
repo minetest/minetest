@@ -78,6 +78,10 @@
 	#define HAVE_ENDIAN_H CMAKE_HAVE_ENDIAN_H
 #endif
 
+#ifndef VERSION_EXTRA_STRING
+	#define VERSION_EXTRA_STRING ""
+#endif
+
 #ifdef __ANDROID__
 	#include "android_version.h"
 	#define VERSION_STRING CMAKE_VERSION_STRING
