@@ -356,7 +356,7 @@ msgstr "Serveur"
 
 #: builtin/mainmenu/tab_settings.lua:23
 msgid "Are you sure to reset your singleplayer world?"
-msgstr "Êtes-vous sûr de mettre votre monde à zéro ?"
+msgstr "Êtes-vous sûr de réinitialiser votre monde ?"
 
 #: builtin/mainmenu/tab_settings.lua:27
 msgid "No!!!"
@@ -419,7 +419,7 @@ msgstr "Changer les touches"
 #: builtin/mainmenu/tab_settings.lua:167
 #, fuzzy
 msgid "Reset singleplayer world"
-msgstr "Remettre le monde solo à zéro"
+msgstr "Réinitialiser le monde"
 
 #: builtin/mainmenu/tab_settings.lua:171
 msgid "GUI scale factor"
