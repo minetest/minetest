@@ -30,7 +30,7 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#elif __MACH__
+#elif defined(__MACH__) && defined(__APPLE__)
 #include <mach/mach.h>
 #include <mach/task.h>
 #include <mach/semaphore.h>
@@ -43,7 +43,7 @@
 class Event {
 #ifdef _WIN32
 	HANDLE hEvent;
-#elif __MACH__
+#elif defined(__MACH__) && defined(__APPLE__)
 	semaphore_t sem;
 #else
 	sem_t sem;
