@@ -4206,6 +4206,8 @@ void the_game(bool *kill,
 		errorstream << "ServerError: " << e.what() << std::endl;
 	} catch (ModError &e) {
 		errorstream << "ModError: " << e.what() << std::endl;
-		error_message = narrow_to_wide(e.what()) + wgettext("\nCheck debug.txt for details.");
+		wchar_t *check_msg = wgettext("\nCheck debug.txt for details.");
+		error_message = narrow_to_wide(e.what()) + check_msg;
+		delete [] check_msg;
 	}
 }
