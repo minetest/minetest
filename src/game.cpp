@@ -1539,7 +1539,7 @@ protected:
 	// Misc
 	void limitFps(FpsControl *fps_timings, f32 *dtime);
 
-	void showOverlayMessage(const char *msg, float dtime, int percent,
+	void showOverlayMessage(const wchar_t *msg, float dtime, int percent,
 			bool draw_clouds = true);
 
 private:
@@ -1806,7 +1806,9 @@ void Game::run()
 
 void Game::shutdown()
 {
-	showOverlayMessage("Shutting down...", 0, 0, false);
+	wchar_t *msg = wgettext("Shutting down...");
+	showOverlayMessage(msg, 0, 0, false);
+	delete [] msg;
 
 	if (clouds)
 		clouds->drop();
@@ -1855,7 +1857,9 @@ bool Game::init(
 		u16 port,
 		const SubgameSpec &gamespec)
 {
-	showOverlayMessage("Loading...", 0, 0);
+	wchar_t *msg = wgettext("Loading...");
+	showOverlayMessage(msg, 0, 0);
+	delete [] msg;
 
 	texture_src = createTextureSource(device);
 	shader_src = createShaderSource(device);
@@ -1912,7 +1916,9 @@ bool Game::initSound()
 bool Game::createSingleplayerServer(const std::string map_dir,
 		const SubgameSpec &gamespec, u16 port, std::string *address)
 {
-	showOverlayMessage("Creating server...", 0, 5);
+	wchar_t *msg = wgettext("Creating server...");
+	showOverlayMessage(msg, 0, 5);
+	delete [] msg;
 
 	std::string bind_str = g_settings->get("bind_address");
 	Address bind_addr(0, 0, 0, 0, port);
@@ -1949,7 +1955,9 @@ bool Game::createClient(const std::string &playername,
 		const std::string &password, std::string *address, u16 port,
 		std::wstring *error_message)
 {
-	showOverlayMessage("Creating client...", 0, 10);
+	wchar_t *msg = wgettext("Creating client...");
+	showOverlayMessage(msg, 0, 10);
+	delete [] msg;
 
 	draw_control = new MapDrawControl;
 	if (!draw_control)
@@ -2122,7 +2130,9 @@ bool Game::connectToServer(const std::string &playername,
 	*aborted = false;
 	bool local_server_mode = false;
 
-	showOverlayMessage("Resolving address...", 0, 15);
+	wchar_t *msg = wgettext("Resolving address...");
+	showOverlayMessage(msg, 0, 15);
+	delete [] msg;
 
 	Address connect_address(0, 0, 0, 0, port);
 
@@ -2213,7 +2223,9 @@ bool Game::connectToServer(const std::string &playername,
 			}
 
 			// Update status
-			showOverlayMessage("Connecting to server...", dtime, 20);
+			wchar_t *msg = wgettext("Connecting to server...");
+			showOverlayMessage(msg, dtime, 20);
+			delete [] msg;
 		}
 	} catch (con::PeerNotFoundException &e) {
 		// TODO: Should something be done here? At least an info/error
@@ -4111,12 +4123,10 @@ inline void Game::limitFps(FpsControl *fps_timings, f32 *dtime)
 }
 
 
-void Game::showOverlayMessage(const char *msg, float dtime,
+void Game::showOverlayMessage(const wchar_t *msg, float dtime,
 		int percent, bool draw_clouds)
 {
-	wchar_t *text = wgettext(msg);
-	draw_load_screen(text, device, guienv, dtime, percent, draw_clouds);
-	delete[] text;
+	draw_load_screen(msg, device, guienv, dtime, percent, draw_clouds);
 }
 
 
