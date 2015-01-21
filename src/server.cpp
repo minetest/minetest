@@ -428,6 +428,9 @@ Server::~Server()
 void Server::start(Address bind_addr)
 {
 	DSTACK(__FUNCTION_NAME);
+
+	m_bind_addr = bind_addr;
+
 	infostream<<"Starting server on "
 			<< bind_addr.serializeString() <<"..."<<std::endl;
 
@@ -678,6 +681,7 @@ void Server::AsyncRunStep(bool initial_step)
 				g_settings->getBool("server_announce"))
 		{
 			ServerList::sendAnnounce(counter ? "update" : "start",
+					m_bind_addr.getPort(),
 					m_clients.getPlayerNames(),
 					m_uptime.get(),
 					m_env->getGameTime(),
@@ -5093,8 +5097,8 @@ void dedicated_server_loop(Server &server, bool &kill)
 		{
 			infostream<<"Dedicated server quitting"<<std::endl;
 #if USE_CURL
-			if(g_settings->getBool("server_announce") == true)
-				ServerList::sendAnnounce("delete");
+			if(g_settings->getBool("server_announce"))
+				ServerList::sendAnnounce("delete", server.m_bind_addr.getPort());
 #endif
 			break;
 		}
