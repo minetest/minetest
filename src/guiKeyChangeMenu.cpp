@@ -156,8 +156,8 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	}
 	
 	{
-		s32 option_x = offset.X + 10;
-		s32 option_y = offset.Y;
+		s32 option_x = offset.X;
+		s32 option_y = offset.Y + 5;
 		u32 option_w = 180;
 		{
 			core::rect<s32> rect(0, 0, option_w, 30);
@@ -171,9 +171,9 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	}
 
 	{
-		s32 option_x = offset.X + 10;
-		s32 option_y = offset.Y;
-		u32 option_w = 220;
+		s32 option_x = offset.X;
+		s32 option_y = offset.Y + 5;
+		u32 option_w = 280;
 		{
 			core::rect<s32> rect(0, 0, option_w, 30);
 			rect += topleft + v2s32(option_x, option_y);
