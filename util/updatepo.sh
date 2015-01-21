@@ -49,10 +49,15 @@ cd ..
 # --package-name
 potfile=po/minetest.pot
 xgettext --package-name=minetest \
-		-kN_ -kwgettext -kfgettext \
-		-F -n -o $potfile \
-		`find src/ -name '*.cpp' -o -name '*.h'` \
-		`find builtin/ -name '*.lua'`
+	--sort-by-file \
+	--add-location \
+	--keyword=N_ \
+	--keyword=wgettext \
+	--keyword=fgettext \
+	--keyword=wstrgettext \
+	--output $potfile \
+	`find src/ -name '*.cpp' -o -name '*.h'` \
+	`find builtin/ -name '*.lua'`
 
 # Now iterate on all languages and create the po file if missing, or update it
 # if it exists already
@@ -60,10 +65,10 @@ for lang in $langs ; do # note the missing quotes around $langs
 	pofile=po/$lang/minetest.po
 	if test -e $pofile; then
 		echo "[$lang]: updating strings"
-		msgmerge -F -U $pofile $potfile
+		msgmerge --update --sort-by-file $pofile $potfile
 	else
 		# This will ask for the translator identity
 		echo "[$lang]: NEW strings"
-		msginit -l $lang -o $pofile -i $potfile
+		msginit --locale=$lang --output-file=$pofile --input=$potfile
 	fi
 done
