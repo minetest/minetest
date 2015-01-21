@@ -17,13 +17,25 @@
 
 --------------------------------------------------------------------------------
 
+local dd_filter_labels = {
+	fgettext("No Filter"),
+	fgettext("Bilinear Filter"),
+	fgettext("Trilinear Filter")
+}
+
 local filters = {
-	{"No Filter,Bilinear Filter,Trilinear Filter"},
+	{dd_filter_labels[1]..","..dd_filter_labels[2]..","..dd_filter_labels[3]},
 	{"", "bilinear_filter", "trilinear_filter"},
 }
 
+local dd_mipmap_labels = {
+	fgettext("No Mipmap"),
+	fgettext("Mipmap"),
+	fgettext("Mipmap + Aniso. Filter")
+}
+
 local mipmap = {
-	{"No Mipmap,Mipmap,Mipmap + Aniso. Filter"},
+	{dd_mipmap_labels[1]..","..dd_mipmap_labels[2]..","..dd_mipmap_labels[3]},
 	{"", "mip_map", "anisotropic_filter"},
 }
 
@@ -347,32 +359,32 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 			video_driver_fname_to_name(fields["dd_video_driver"]))
 		ddhandled = true
 	end
-	if fields["dd_filters"] == "No Filter" then
+	if fields["dd_filters"] == dd_filter_labels[1] then
 		core.setting_set("bilinear_filter", "false")
 		core.setting_set("trilinear_filter", "false")
 		ddhandled = true
 	end
-	if fields["dd_filters"] == "Bilinear Filter" then
+	if fields["dd_filters"] == dd_filter_labels[2] then
 		core.setting_set("bilinear_filter", "true")
 		core.setting_set("trilinear_filter", "false")
 		ddhandled = true
 	end
-	if fields["dd_filters"] == "Trilinear Filter" then
+	if fields["dd_filters"] == dd_filter_labels[3] then
 		core.setting_set("bilinear_filter", "false")
 		core.setting_set("trilinear_filter", "true")
 		ddhandled = true
 	end
-	if fields["dd_mipmap"] == "No Mipmap" then
+	if fields["dd_mipmap"] == dd_mipmap_labels[1] then
 		core.setting_set("mip_map", "false")
 		core.setting_set("anisotropic_filter", "false")
 		ddhandled = true
 	end
-	if fields["dd_mipmap"] == "Mipmap" then
+	if fields["dd_mipmap"] == dd_mipmap_labels[2] then
 		core.setting_set("mip_map", "true")
 		core.setting_set("anisotropic_filter", "false")
 		ddhandled = true
 	end
-	if fields["dd_mipmap"] == "Mipmap + Aniso. Filter" then
+	if fields["dd_mipmap"] == dd_mipmap_labels[3] then
 		core.setting_set("mip_map", "true")
 		core.setting_set("anisotropic_filter", "true")
 		ddhandled = true
