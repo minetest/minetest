@@ -69,23 +69,11 @@ public:
 	void avg(const std::string &name, float value)
 	{
 		JMutexAutoLock lock(m_mutex);
-		{
-			std::map<std::string, int>::iterator n = m_avgcounts.find(name);
-			if(n == m_avgcounts.end())
-				m_avgcounts[name] = 1;
-			else{
-				/* No add shall have been used */
-				assert(n->second != -2);
-				n->second = MYMAX(n->second, 0) + 1;
-			}
-		}
-		{
-			std::map<std::string, float>::iterator n = m_data.find(name);
-			if(n == m_data.end())
-				m_data[name] = value;
-			else
-				n->second += value;
-		}
+		int &count = m_avgcounts[name];
+
+		assert(count != -2);
+		count = MYMAX(count, 0) + 1;
+		m_data[name] += value;
 	}
 
 	void clear()
@@ -103,6 +91,21 @@ public:
 	void print(std::ostream &o)
 	{
 		printPage(o, 1, 1);
+	}
+
+	float getValue(const std::string &name) const
+	{
+		std::map<std::string, float>::const_iterator numerator = m_data.find(name);
+		if (numerator == m_data.end())
+			return 0.f;
+
+		std::map<std::string, int>::const_iterator denominator = m_avgcounts.find(name);
+		if (denominator != m_avgcounts.end()){
+			if (denominator->second >= 1)
+				return numerator->second / denominator->second;
+		}
+
+		return numerator->second;
 	}
 
 	void printPage(std::ostream &o, u32 page, u32 pagecount)

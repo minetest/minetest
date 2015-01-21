@@ -43,6 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "noise.h" // PseudoRandom used for random data for compression
 #include "network/networkprotocol.h" // LATEST_PROTOCOL_VERSION
+#include "profiler.h"
 #include <algorithm>
 
 /*
@@ -2118,6 +2119,40 @@ struct TestConnection: public TestBase
 	}
 };
 
+struct TestProfiler : public TestBase
+{
+	void Run()
+	{
+		Profiler p;
+
+		p.avg("Test1", 1.f);
+		UASSERT(p.getValue("Test1") == 1.f);
+
+		p.avg("Test1", 2.f);
+		UASSERT(p.getValue("Test1") == 1.5f);
+
+		p.avg("Test1", 3.f);
+		UASSERT(p.getValue("Test1") == 2.f);
+
+		p.avg("Test1", 486.f);
+		UASSERT(p.getValue("Test1") == 123.f);
+
+		p.avg("Test1", 8);
+		UASSERT(p.getValue("Test1") == 100.f);
+
+		p.avg("Test1", 700);
+		UASSERT(p.getValue("Test1") == 200.f);
+
+		p.avg("Test1", 10000);
+		UASSERT(p.getValue("Test1") == 1600.f);
+
+		p.avg("Test2", 123.56);
+		p.avg("Test2", 123.58);
+
+		UASSERT(p.getValue("Test2") == 123.57f);
+	}
+};
+
 #define TEST(X) do {\
 	X x;\
 	infostream<<"Running " #X <<std::endl;\
@@ -2155,6 +2190,7 @@ void run_tests()
 	TEST(TestCompress);
 	TEST(TestSerialization);
 	TEST(TestNodedefSerialization);
+	TEST(TestProfiler);
 	TESTPARAMS(TestMapNode, ndef);
 	TESTPARAMS(TestVoxelManipulator, ndef);
 	TESTPARAMS(TestVoxelAlgorithms, ndef);
