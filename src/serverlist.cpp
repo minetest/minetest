@@ -189,6 +189,7 @@ const std::string serializeJson(const std::vector<ServerListSpec> &serverlist)
 
 #if USE_CURL
 void sendAnnounce(const std::string &action,
+		const u16 port,
 		const std::vector<std::string> &clients_names,
 		const double uptime,
 		const u32 game_time,
@@ -199,7 +200,7 @@ void sendAnnounce(const std::string &action,
 {
 	Json::Value server;
 	server["action"] = action;
-	server["port"]    = g_settings->getU16("port");
+	server["port"] = port;
 	if (g_settings->exists("server_address")) {
 		server["address"] = g_settings->get("server_address");
 	}
