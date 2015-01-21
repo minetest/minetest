@@ -23,7 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen.h"
 
 /////////////////// Mapgen V5 flags
-#define MGV5_BLOBS 0x01
+//#define MGV5_   0x01
+
+class BiomeManager;
 
 extern FlagDesc flagdesc_mapgen_v5[];
 
@@ -36,8 +38,6 @@ struct MapgenV5Params : public MapgenSpecificParams {
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
 	NoiseParams np_ground;
-	NoiseParams np_crumble;
-	NoiseParams np_wetness;
 
 	MapgenV5Params();
 	~MapgenV5Params() {}
@@ -67,8 +67,6 @@ public:
 	Noise *noise_cave1;
 	Noise *noise_cave2;
 	Noise *noise_ground;
-	Noise *noise_crumble;
-	Noise *noise_wetness;
 	Noise *noise_heat;
 	Noise *noise_humidity;
 
@@ -96,8 +94,7 @@ public:
 	void calculateNoise();
 	int generateBaseTerrain();
 	void generateBiomes();
-	void generateCaves();
-	void generateBlobs();
+	void generateCaves(int max_stone_y);
 	void dustTopNodes();
 };
 
