@@ -103,8 +103,8 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	*/
 	s32 ypos = 50;
 	{
-		core::rect<s32> rect(0, 0, 110, 20);
-		rect += topleft_client + v2s32(35, ypos+6);
+		core::rect<s32> rect(0, 0, 150, 20);
+		rect += topleft_client + v2s32(25, ypos+6);
 		text = wgettext("Old Password");
 		Environment->addStaticText(text, rect, false, true, this, -1);
 		delete[] text;
@@ -119,8 +119,8 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	}
 	ypos += 50;
 	{
-		core::rect<s32> rect(0, 0, 110, 20);
-		rect += topleft_client + v2s32(35, ypos+6);
+		core::rect<s32> rect(0, 0, 150, 20);
+		rect += topleft_client + v2s32(25, ypos+6);
 		text = wgettext("New Password");
 		Environment->addStaticText(text, rect, false, true, this, -1);
 		delete[] text;
@@ -134,8 +134,8 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	}
 	ypos += 50;
 	{
-		core::rect<s32> rect(0, 0, 110, 20);
-		rect += topleft_client + v2s32(35, ypos+6);
+		core::rect<s32> rect(0, 0, 150, 20);
+		rect += topleft_client + v2s32(25, ypos+6);
 		text = wgettext("Confirm Password");
 		Environment->addStaticText(text, rect, false, true, this, -1);
 		delete[] text;
