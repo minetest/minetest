@@ -190,7 +190,7 @@ msgstr "Rechercher"
 
 #: builtin/mainmenu/store.lua:125
 msgid "Downloading"
-msgstr "Télécharement"
+msgstr "Téléchargement"
 
 #: builtin/mainmenu/store.lua:127
 msgid "please wait..."
@@ -362,31 +362,33 @@ msgstr "Êtes-vous sûr de réinitialiser votre monde ?"
 msgid "No!!!"
 msgstr "Non !"
 
-#: builtin/mainmenu/tab_settings.lua:134
+#: builtin/mainmenu/tab_settings.lua:181
 msgid "Smooth Lighting"
 msgstr "Lumière douce"
 
-#: builtin/mainmenu/tab_settings.lua:136
+#: builtin/mainmenu/tab_settings.lua:183
 msgid "Enable Particles"
 msgstr "Activer les particules"
 
-#: builtin/mainmenu/tab_settings.lua:138
+#: builtin/mainmenu/tab_settings.lua:185
 msgid "3D Clouds"
 msgstr "Nuages 3D"
 
-#: builtin/mainmenu/tab_settings.lua:140
-
+#: builtin/mainmenu/tab_settings.lua:187
 msgid "Fancy Trees"
 msgstr "Arbres détaillés"
 
-#: builtin/mainmenu/tab_settings.lua:142
+#: builtin/mainmenu/tab_settings.lua:189
 msgid "Opaque Water"
 msgstr "Eau opaque"
 
-#: builtin/mainmenu/tab_settings.lua:144
-
+#: builtin/mainmenu/tab_settings.lua:191
 msgid "Connected Glass"
 msgstr "Verre connecté"
+
+#: builtin/mainmenu/tab_settings.lua:193
+msgid "Node Highlighting"
+msgstr "Eclairage des blocs"
 
 #: builtin/mainmenu/tab_settings.lua:149
 msgid "Restart minetest for driver change to take effect"
@@ -396,17 +398,29 @@ msgstr "Redémarrez Minetest pour que le changement du pilote prenne effet"
 msgid "Mip-Mapping"
 msgstr "Mip-mapping"
 
-#: builtin/mainmenu/tab_settings.lua:153
-msgid "Anisotropic Filtering"
-msgstr "Filtrage anisotrope"
+#: builtin/mainmenu/tab_settings.lua:21
+msgid "No Filter"
+msgstr "Pas de filtre"
 
-#: builtin/mainmenu/tab_settings.lua:155
-msgid "Bi-Linear Filtering"
+#: builtin/mainmenu/tab_settings.lua:22
+msgid "Bilinear Filter"
 msgstr "Filtrage bilinéaire"
 
-#: builtin/mainmenu/tab_settings.lua:157
-msgid "Tri-Linear Filtering"
+#: builtin/mainmenu/tab_settings.lua:23
+msgid "Trilinear Filter"
 msgstr "Filtrage trilinéaire"
+
+#: builtin/mainmenu/tab_settings.lua:32
+msgid "No Mipmap"
+msgstr "Pas de Mipmap"
+
+#: builtin/mainmenu/tab_settings.lua:33
+msgid "Mipmap"
+msgstr "Mipmap"
+
+#: builtin/mainmenu/tab_settings.lua:34
+msgid "Mipmap + Aniso. Filter"
+msgstr "Filtrage anisotrope"
 
 #: builtin/mainmenu/tab_settings.lua:160
 msgid "Shaders"
@@ -424,10 +438,6 @@ msgstr "Réinitialiser le monde"
 #: builtin/mainmenu/tab_settings.lua:171
 msgid "GUI scale factor"
 msgstr "Échelle des menus"
-
-#: builtin/mainmenu/tab_settings.lua:175
-msgid "Node Highlighting"
-msgstr "Eclairage des blocs"
 
 #: builtin/mainmenu/tab_settings.lua:178
 msgid "Texturing:"
