@@ -302,24 +302,25 @@ void MapgenV5::calculateNoise()
 	int y = node_min.Y - 1;
 	int z = node_min.Z;
 
-	noise_filler_depth->perlinMap2D(x, z);
 	noise_factor->perlinMap2D(x, z);
 	noise_height->perlinMap2D(x, z);
+	noise_ground->perlinMap3D(x, y, z);
 
 	if (flags & MG_CAVES) {
 		noise_cave1->perlinMap3D(x, y, z);
 		noise_cave2->perlinMap3D(x, y, z);
 	}
 
-	noise_ground->perlinMap3D(x, y, z);
-
 	if (spflags & MGV5_BLOBS) {
 		noise_crumble->perlinMap3D(x, y, z);
 		noise_wetness->perlinMap3D(x, y, z);
 	}
 
-	noise_heat->perlinMap2D(x, z);
-	noise_humidity->perlinMap2D(x, z);
+	if (node_max.Y >= water_level) {
+		noise_filler_depth->perlinMap2D(x, z);
+		noise_heat->perlinMap2D(x, z);
+		noise_humidity->perlinMap2D(x, z);
+	}
 
 	//printf("calculateNoise: %dus\n", t.stop());
 }
@@ -531,11 +532,11 @@ void MapgenV5::generateBlobs()
 
 void MapgenV5::dustTopNodes()
 {
+	if (node_max.Y < water_level)
+		return;
+
 	v3s16 em = vm->m_area.getExtent();
 	u32 index = 0;
-
-	if (water_level > node_max.Y)
-		return;
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
