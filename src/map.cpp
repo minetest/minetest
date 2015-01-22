@@ -3136,7 +3136,8 @@ void ServerMap::loadMapMeta()
 	std::string fullpath = m_savedir + DIR_DELIM "map_meta.txt";
 	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
 	if (!is.good()) {
-		errorstream << "ServerMap::loadMapMeta(): "
+		// This also happens when new world is created, it's not an error.
+		infostream << "ServerMap::loadMapMeta(): "
 				<< "could not open" << fullpath << std::endl;
 		throw FileNotGoodException("Cannot open map metadata");
 	}
