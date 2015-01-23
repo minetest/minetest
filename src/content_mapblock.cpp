@@ -756,7 +756,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			for(u32 j=0; j<6; j++)
 			{
 				// Check this neighbor
-				v3s16 n2p = blockpos_nodes + p + g_6dirs[j];
+				v3s16 dir = g_6dirs[j];
+				v3s16 n2p = blockpos_nodes + p + dir;
 				MapNode n2 = data->m_vmanip.getNodeNoEx(n2p);
 				// Don't make face if neighbor is of same type
 				if(n2.getContent() == n.getContent())
@@ -764,10 +765,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				// The face at Z+
 				video::S3DVertex vertices[4] = {
-					video::S3DVertex(-BS/2,-BS/2,BS/2, 0,0,0, c, 1,1),
-					video::S3DVertex(BS/2,-BS/2,BS/2, 0,0,0, c, 0,1),
-					video::S3DVertex(BS/2,BS/2,BS/2, 0,0,0, c, 0,0),
-					video::S3DVertex(-BS/2,BS/2,BS/2, 0,0,0, c, 1,0),
+					video::S3DVertex(-BS/2,-BS/2,BS/2, dir.X,dir.Y,dir.Z, c, 1,1),
+					video::S3DVertex(BS/2,-BS/2,BS/2, dir.X,dir.Y,dir.Z, c, 0,1),
+					video::S3DVertex(BS/2,BS/2,BS/2, dir.X,dir.Y,dir.Z, c, 0,0),
+					video::S3DVertex(-BS/2,BS/2,BS/2, dir.X,dir.Y,dir.Z, c, 1,0),
 				};
 				
 				// Rotations in the g_6dirs format
