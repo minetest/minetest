@@ -80,7 +80,7 @@ void parseModContents(ModSpec &spec)
 	}
 }
 
-std::map<std::string, ModSpec> getModsInPath(std::string path, bool part_of_modpack)
+std::map<std::string, ModSpec> getModsInPath(std::string path, bool part_of_modpack, std::string worldpath)
 {
 	// NOTE: this function works in mutual recursion with parseModContents
 
@@ -94,6 +94,24 @@ std::map<std::string, ModSpec> getModsInPath(std::string path, bool part_of_modp
 		// VCS directories like ".git" or ".svn"
 		if(modname[0] == '.')
 			continue;
+
+		// check world.mt file for mods explicitely declared to be
+		// disabled explicitly by a load_mod_<modname> = false line.
+		std::string worldmt = worldpath+DIR_DELIM+"world.mt";
+		Settings worldmt_settings;
+		worldmt_settings.readConfigFile(worldmt.c_str());
+		std::string disable = std::string("load_mod_") + modname;
+
+		// for backwards compatibility: exclude only mods which are
+		// explicitely excluded. if mod is not mentioned at all, it is
+		// enabled. So by default, all installed mods are enabled.
+		if (worldmt_settings.exists(disable) &&
+			!worldmt_settings.getBool(disable))
+		{
+			actionstream<<"Mod "<<modname<<" is explicitly disabled in world.mt"<<std::endl;
+			continue;
+		}
+
 		std::string modpath = path + DIR_DELIM + modname;
 
 		ModSpec spec(modname, modpath);
@@ -153,8 +171,8 @@ ModConfiguration::ModConfiguration(std::string worldpath)
 	SubgameSpec gamespec = findWorldSubgame(worldpath);
 
 	// Add all game mods and all world mods
-	addModsInPath(gamespec.gamemods_path);
-	addModsInPath(worldpath + DIR_DELIM + "worldmods");
+	addModsInPath(gamespec.gamemods_path, worldpath);
+	addModsInPath(worldpath + DIR_DELIM + "worldmods", worldpath);
 
 	// check world.mt file for mods explicitely declared to be
 	// loaded or not by a load_mod_<modname> = ... line.
@@ -214,9 +232,10 @@ ModConfiguration::ModConfiguration(std::string worldpath)
 	resolveDependencies();
 }
 
-void ModConfiguration::addModsInPath(std::string path)
+void ModConfiguration::addModsInPath(std::string path, std::string worldpath)
 {
-	addMods(flattenMods(getModsInPath(path)));
+	actionstream<<"Loading "<<path<<std::endl;
+	addMods(flattenMods(getModsInPath(path, false, worldpath)));
 }
 
 void ModConfiguration::addMods(std::vector<ModSpec> new_mods)

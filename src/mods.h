@@ -77,7 +77,7 @@ struct ModSpec
 // Retrieves depends, optdepends, is_modpack and modpack_content
 void parseModContents(ModSpec &mod);
 
-std::map<std::string,ModSpec> getModsInPath(std::string path, bool part_of_modpack = false);
+std::map<std::string,ModSpec> getModsInPath(std::string path, bool part_of_modpack = false, std::string worldpath = std::string(""));
 
 // If failed, returned modspec has name==""
 ModSpec findCommonMod(const std::string &modname);
@@ -122,7 +122,7 @@ public:
 private:
 	// adds all mods in the given path. used for games, modpacks
 	// and world-specific mods (worldmods-folders)
-	void addModsInPath(std::string path);
+	void addModsInPath(std::string path, std::string worldpath);
 
 	// adds all mods in the set.
 	void addMods(std::vector<ModSpec> new_mods);
