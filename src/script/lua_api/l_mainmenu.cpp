@@ -632,10 +632,9 @@ int ModApiMainMenu::l_create_world(lua_State *L)
 		// Create world if it doesn't exist
 		if(!initializeWorld(path, games[gameidx].id)){
 			lua_pushstring(L, "Failed to initialize world");
-
 		}
 		else {
-		lua_pushnil(L);
+			lua_pushnil(L);
 		}
 	}
 	else {

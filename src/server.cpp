@@ -295,7 +295,13 @@ Server::Server(
 	// Lock environment
 	JMutexAutoLock envlock(m_env_mutex);
 
-	// Load mapgen params from Settings
+	// Load mapgen params from global Settings
+	if (worldmt_settings.exists("mapgen") && worldmt_settings.exists("seedstr")) {
+		std::string mapgen = worldmt_settings.get("mapgen");
+		std::string seedstr = worldmt_settings.get("seedstr");
+		g_settings->set("mg_name",        mapgen);
+		g_settings->set("fixed_map_seed", seedstr);
+	}
 	m_emerge->loadMapgenParams();
 
 	// Create the Map (loads map_meta.txt, overriding configured mapgen params)
