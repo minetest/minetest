@@ -965,15 +965,15 @@ void Settings::clearNoLock()
 
 
 void Settings::registerChangedCallback(std::string name,
-	setting_changed_callback cbf, void *userdata)
+	setting_changed_callback cbf)
 {
-	m_callbacks[name].push_back(std::make_pair(cbf,userdata));
+	m_callbacks[name].push_back(cbf);
 }
 
 
 void Settings::doCallbacks(const std::string name)
 {
-	std::vector<std::pair<setting_changed_callback,void*> > tempvector;
+	std::vector<setting_changed_callback> tempvector;
 	{
 		JMutexAutoLock lock(m_mutex);
 		if (m_callbacks.find(name) != m_callbacks.end())
@@ -982,9 +982,9 @@ void Settings::doCallbacks(const std::string name)
 		}
 	}
 
-	std::vector<std::pair<setting_changed_callback, void*> >::iterator iter;
+	std::vector<setting_changed_callback>::iterator iter;
 	for (iter = tempvector.begin(); iter != tempvector.end(); iter++)
 	{
-		(iter->first)(name,iter->second);
+		(*iter)(name);
 	}
 }
