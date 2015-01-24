@@ -30,11 +30,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	--------------------------------
 
 	For map data (blocks, nodes, sectors).
-	
+
 	NOTE: The goal is to increment this so that saved maps will be
 	      loadable by any version. Other compatibility is not
 		  maintained.
-		  
+
 	0: original networked test with 1-byte nodes
 	1: update with 2-byte nodes
 	2: lighting is transmitted in param
@@ -70,7 +70,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Saved on disk version
 #define SER_FMT_VER_HIGHEST_WRITE 25
 // Lowest supported serialization version
-#define SER_FMT_VER_LOWEST 0
+#define SER_FMT_VER_LOWEST 24
 
 inline bool ser_ver_supported(s32 v) {
 	return v >= SER_FMT_VER_LOWEST && v <= SER_FMT_VER_HIGHEST_READ;
