@@ -2116,6 +2116,9 @@ bool Game::connectToServer(const std::string &playername,
 		const std::string &password, std::string *address, u16 port,
 		bool *connect_ok, bool *aborted)
 {
+	*connect_ok = false;	// Let's not be overly optimistic
+	*aborted = false;
+
 	showOverlayMessage("Resolving address...", 0, 15);
 
 	Address connect_address(0, 0, 0, 0, port);
@@ -2158,13 +2161,11 @@ bool Game::connectToServer(const std::string &playername,
 
 	gamedef = client;	// Client acts as our GameDef
 
-
 	infostream << "Connecting to server at ";
 	connect_address.print(&infostream);
 	infostream << std::endl;
 
 	client->connect(connect_address);
-
 
 	/*
 		Wait for server to accept connection
