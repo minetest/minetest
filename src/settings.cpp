@@ -963,28 +963,39 @@ void Settings::clearNoLock()
 	m_defaults.clear();
 }
 
-
 void Settings::registerChangedCallback(std::string name,
-	setting_changed_callback cbf)
+	setting_changed_callback cbf, void *userdata)
 {
-	m_callbacks[name].push_back(cbf);
+	JMutexAutoLock lock(m_callbackMutex);
+	m_callbacks[name].push_back(std::make_pair(cbf, userdata));
 }
 
+void Settings::deregisterChangedCallback(std::string name, setting_changed_callback cbf, void *userdata)
+{
+	JMutexAutoLock lock(m_callbackMutex);
+	std::map<std::string, std::vector<std::pair<setting_changed_callback, void*> > >::iterator iterToVector = m_callbacks.find(name);
+	if (iterToVector != m_callbacks.end())
+	{
+		std::vector<std::pair<setting_changed_callback, void*> > &vector = iterToVector->second;
+
+		std::vector<std::pair<setting_changed_callback, void*> >::iterator position =
+			std::find(vector.begin(), vector.end(), std::make_pair(cbf, userdata));
+
+		if (position != vector.end())
+			vector.erase(position);
+	}
+}
 
 void Settings::doCallbacks(const std::string name)
 {
-	std::vector<setting_changed_callback> tempvector;
+	JMutexAutoLock lock(m_callbackMutex);
+	std::map<std::string, std::vector<std::pair<setting_changed_callback, void*> > >::iterator iterToVector = m_callbacks.find(name);
+	if (iterToVector != m_callbacks.end())
 	{
-		JMutexAutoLock lock(m_mutex);
-		if (m_callbacks.find(name) != m_callbacks.end())
+		std::vector<std::pair<setting_changed_callback, void*> >::iterator iter;
+		for (iter = iterToVector->second.begin(); iter != iterToVector->second.end(); iter++)
 		{
-			tempvector = m_callbacks[name];
+			(iter->first)(name, iter->second);
 		}
-	}
-
-	std::vector<setting_changed_callback>::iterator iter;
-	for (iter = tempvector.begin(); iter != tempvector.end(); iter++)
-	{
-		(*iter)(name);
 	}
 }
