@@ -297,12 +297,24 @@ Server::Server(
 
 	// Load mapgen params from global Settings
 	if (worldmt_settings.exists("mapgen") && worldmt_settings.exists("seedstr")) {
+		// save current global Settings
+		std::string old_mapgen;
+		std::string old_seedstr;
+		g_settings->getNoEx("mg_name",        old_mapgen);
+		g_settings->getNoEx("fixed_map_seed", old_seedstr);
+		// overwrite mg_name and fixed_map_seed parameters
 		std::string mapgen = worldmt_settings.get("mapgen");
 		std::string seedstr = worldmt_settings.get("seedstr");
 		g_settings->set("mg_name",        mapgen);
 		g_settings->set("fixed_map_seed", seedstr);
+		// load mapgen params from global Settings
+		m_emerge->loadMapgenParams();
+		// restore old global Settings
+		g_settings->set("mg_name",        old_mapgen);
+		g_settings->set("fixed_map_seed", old_seedstr);
+	} else {
+		m_emerge->loadMapgenParams();
 	}
-	m_emerge->loadMapgenParams();
 
 	// Create the Map (loads map_meta.txt, overriding configured mapgen params)
 	ServerMap *servermap = new ServerMap(path_world, this, m_emerge);
