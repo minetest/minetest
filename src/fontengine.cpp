@@ -36,7 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 FontEngine* g_fontengine = NULL;
 
 /** callback to be used on change of font size setting */
-static void font_setting_changed(const std::string) {
+static void font_setting_changed(const std::string, void *userdata) {
 	g_fontengine->readSettings();
 }
 
