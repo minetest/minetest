@@ -194,7 +194,8 @@ Server::Server(
 	m_clients(&m_con),
 	m_shutdown_requested(false),
 	m_ignore_map_edit_events(false),
-	m_ignore_map_edit_events_peer_id(0)
+	m_ignore_map_edit_events_peer_id(0),
+	m_next_sound_id(0)
 
 {
 	m_liquid_transform_timer = 0.0;
