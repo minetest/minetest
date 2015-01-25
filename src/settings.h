@@ -32,7 +32,7 @@ class Settings;
 struct NoiseParams;
 
 /** function type to register a changed callback */
-typedef void (*setting_changed_callback)(const std::string);
+typedef void (*setting_changed_callback)(const std::string, void*);
 
 enum ValueType {
 	VALUETYPE_STRING,
@@ -204,7 +204,8 @@ public:
 	void clear();
 	void updateValue(const Settings &other, const std::string &name);
 	void update(const Settings &other);
-	void registerChangedCallback(std::string name, setting_changed_callback cbf);
+	void registerChangedCallback(std::string name, setting_changed_callback cbf, void *userdata = NULL);
+	void deregisterChangedCallback(std::string name, setting_changed_callback cbf, void *userdata = NULL);
 
 private:
 
@@ -215,9 +216,12 @@ private:
 
 	std::map<std::string, SettingsEntry> m_settings;
 	std::map<std::string, SettingsEntry> m_defaults;
-	std::map<std::string, std::vector<setting_changed_callback> > m_callbacks;
-	// All methods that access m_settings/m_defaults directly should lock this.
-	mutable JMutex m_mutex;
+
+	std::map<std::string, std::vector<std::pair<setting_changed_callback,void*> > > m_callbacks;
+
+	mutable JMutex m_callbackMutex;
+	mutable JMutex m_mutex; // All methods that access m_settings/m_defaults directly should lock this.
+
 };
 
 #endif

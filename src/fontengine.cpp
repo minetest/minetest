@@ -36,7 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 FontEngine* g_fontengine = NULL;
 
 /** callback to be used on change of font size setting */
-static void font_setting_changed(const std::string) {
+static void font_setting_changed(const std::string, void *userdata) {
 	g_fontengine->readSettings();
 }
 
@@ -91,22 +91,22 @@ FontEngine::FontEngine(Settings* main_settings, gui::IGUIEnvironment* env) :
 	updateSkin();
 
 	if (m_currentMode == FM_Standard) {
-		m_settings->registerChangedCallback("font_size", font_setting_changed);
-		m_settings->registerChangedCallback("font_path", font_setting_changed);
-		m_settings->registerChangedCallback("font_shadow", font_setting_changed);
-		m_settings->registerChangedCallback("font_shadow_alpha", font_setting_changed);
+		m_settings->registerChangedCallback("font_size", font_setting_changed, NULL);
+		m_settings->registerChangedCallback("font_path", font_setting_changed, NULL);
+		m_settings->registerChangedCallback("font_shadow", font_setting_changed, NULL);
+		m_settings->registerChangedCallback("font_shadow_alpha", font_setting_changed, NULL);
 	}
 	else if (m_currentMode == FM_Fallback) {
-		m_settings->registerChangedCallback("fallback_font_size", font_setting_changed);
-		m_settings->registerChangedCallback("fallback_font_path", font_setting_changed);
-		m_settings->registerChangedCallback("fallback_font_shadow", font_setting_changed);
-		m_settings->registerChangedCallback("fallback_font_shadow_alpha", font_setting_changed);
+		m_settings->registerChangedCallback("fallback_font_size", font_setting_changed, NULL);
+		m_settings->registerChangedCallback("fallback_font_path", font_setting_changed, NULL);
+		m_settings->registerChangedCallback("fallback_font_shadow", font_setting_changed, NULL);
+		m_settings->registerChangedCallback("fallback_font_shadow_alpha", font_setting_changed, NULL);
 	}
 
-	m_settings->registerChangedCallback("mono_font_path", font_setting_changed);
-	m_settings->registerChangedCallback("mono_font_size", font_setting_changed);
-	m_settings->registerChangedCallback("screen_dpi", font_setting_changed);
-	m_settings->registerChangedCallback("gui_scaling", font_setting_changed);
+	m_settings->registerChangedCallback("mono_font_path", font_setting_changed, NULL);
+	m_settings->registerChangedCallback("mono_font_size", font_setting_changed, NULL);
+	m_settings->registerChangedCallback("screen_dpi", font_setting_changed, NULL);
+	m_settings->registerChangedCallback("gui_scaling", font_setting_changed, NULL);
 }
 
 /******************************************************************************/
