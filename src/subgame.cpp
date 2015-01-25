@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "filesys.h"
 #include "settings.h"
+#include "main.h" // for g_settings
 #include "log.h"
 #include "strfnd.h"
 #ifndef SERVER
@@ -269,10 +270,19 @@ bool initializeWorld(const std::string &path, const std::string &gameid)
 	// Create world.mt if does not already exist
 	std::string worldmt_path = path + DIR_DELIM + "world.mt";
 	if(!fs::PathExists(worldmt_path)){
+		
+		std::string mg_name;
+		std::string seed_str;
+		g_settings->getNoEx("mg_name", mg_name);
+		g_settings->getNoEx("fixed_map_seed", seed_str);
+		
 		infostream<<"Creating world.mt ("<<worldmt_path<<")"<<std::endl;
 		fs::CreateAllDirs(path);
 		std::ostringstream ss(std::ios_base::binary);
-		ss<<"gameid = "<<gameid<< "\nbackend = sqlite3\n";
+		ss << "gameid = " << gameid << "\n";
+		ss << "backend = sqlite3" << "\n";
+		ss << "mapgen = " << mg_name << "\n";
+		ss << "seedstr = " << seed_str << "\n";
 		fs::safeWriteToFile(worldmt_path, ss.str());
 	}
 	return true;
