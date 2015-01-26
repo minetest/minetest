@@ -418,27 +418,28 @@ bool CraftDefinitionShaped::check(const CraftInput &input, IGameDef *gamedef) co
 		return false;  // it was empty
 
 	// Different sizes?
-	if(inp_max_x - inp_min_x != rec_max_x - rec_min_x)
-		return false;
-	if(inp_max_y - inp_min_y != rec_max_y - rec_min_y)
+	if(inp_max_x - inp_min_x != rec_max_x - rec_min_x ||
+			inp_max_y - inp_min_y != rec_max_y - rec_min_y)
 		return false;
 
 	// Verify that all item names in the bounding box are equal
 	unsigned int w = inp_max_x - inp_min_x + 1;
 	unsigned int h = inp_max_y - inp_min_y + 1;
-	for(unsigned int y=0; y<h; y++)
-	for(unsigned int x=0; x<w; x++)
-	{
-		unsigned int inp_x = inp_min_x + x;
-		unsigned int inp_y = inp_min_y + y;
-		unsigned int rec_x = rec_min_x + x;
-		unsigned int rec_y = rec_min_y + y;
 
-		if(!inputItemMatchesRecipe(
-				inp_names[inp_y * inp_width + inp_x],
-				rec_names[rec_y * rec_width + rec_x], gamedef->idef())
-		){
-			return false;
+	for(unsigned int y=0; y < h; y++) {
+		unsigned int inp_y = (inp_min_y + y) * inp_width;
+		unsigned int rec_y = (rec_min_y + y) * rec_width;
+
+		for(unsigned int x=0; x < w; x++) {
+			unsigned int inp_x = inp_min_x + x;
+			unsigned int rec_x = rec_min_x + x;
+
+			if(!inputItemMatchesRecipe(
+					inp_names[inp_y + inp_x],
+					rec_names[rec_y + rec_x], gamedef->idef())
+			) {
+				return false;
+			}
 		}
 	}
 
