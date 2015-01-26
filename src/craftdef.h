@@ -356,10 +356,8 @@ public:
 	// The main crafting function
 	virtual bool getCraftResult(CraftInput &input, CraftOutput &output,
 			bool decrementInput, IGameDef *gamedef) const=0;
-	virtual bool getCraftRecipe(CraftInput &input, CraftOutput &output,
-			IGameDef *gamedef) const=0;
 	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output,
-			IGameDef *gamedef) const=0;
+			IGameDef *gamedef, unsigned limit=0) const=0;
 	
 	// Print crafting recipes for debugging
 	virtual std::string dump() const=0;
@@ -376,22 +374,20 @@ public:
 	// The main crafting function
 	virtual bool getCraftResult(CraftInput &input, CraftOutput &output,
 			bool decrementInput, IGameDef *gamedef) const=0;
-	virtual bool getCraftRecipe(CraftInput &input, CraftOutput &output,
-			IGameDef *gamedef) const=0;
 	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output, 
-			IGameDef *gamedef) const=0;
+			IGameDef *gamedef, unsigned limit=0) const=0;
 
 	// Print crafting recipes for debugging
 	virtual std::string dump() const=0;
 
 	// Add a crafting definition.
 	// After calling this, the pointer belongs to the manager.
-	virtual void registerCraft(CraftDefinition *def)=0;
+	virtual void registerCraft(CraftDefinition *def, IGameDef *gamedef) = 0;
 	// Delete all crafting definitions
 	virtual void clear()=0;
 
 	virtual void serialize(std::ostream &os) const=0;
-	virtual void deSerialize(std::istream &is)=0;
+	virtual void deSerialize(std::istream &is, IGameDef *gamedef) = 0;
 };
 
 IWritableCraftDefManager* createCraftDefManager();
