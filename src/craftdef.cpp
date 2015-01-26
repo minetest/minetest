@@ -930,84 +930,24 @@ public:
 		}
 		return false;
 	}
-	virtual bool getCraftRecipe(CraftInput &input, CraftOutput &output,
-			IGameDef *gamedef) const
-	{
-		CraftOutput tmpout;
-		tmpout.item = "";
-		tmpout.time = 0;
 
-		// If output item is empty, abort.
-		if(output.item.empty())
-			return false;
-
-		// Walk crafting definitions from back to front, so that later
-		// definitions can override earlier ones.
-		for(std::vector<CraftDefinition*>::const_reverse_iterator
-				i = m_craft_definitions.rbegin();
-				i != m_craft_definitions.rend(); i++)
-		{
-			CraftDefinition *def = *i;
-
-			/*infostream<<"Checking "<<input.dump()<<std::endl
-					<<" against "<<def->dump()<<std::endl;*/
-
-			try {
-				tmpout = def->getOutput(input, gamedef);
-				if((tmpout.item.substr(0,output.item.length()) == output.item) &&
-					((tmpout.item[output.item.length()] == 0) ||
-					(tmpout.item[output.item.length()] == ' ')))
-				{
-					// Get output, then decrement input (if requested)
-					input = def->getInput(output, gamedef);
-					return true;
-				}
-			}
-			catch(SerializationError &e)
-			{
-				errorstream<<"getCraftResult: ERROR: "
-						<<"Serialization error in recipe "
-						<<def->dump()<<std::endl;
-				// then go on with the next craft definition
-			}
-		}
-		return false;
-	}
 	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output,
 			IGameDef *gamedef) const
 	{
 		std::vector<CraftDefinition*> recipes_list;
-		CraftInput input;
-		CraftOutput tmpout;
-		tmpout.item = "";
-		tmpout.time = 0;
+
+		std::map<std::string, std::vector<CraftDefinition*> >::const_iterator vec_iter =
+			m_output_to_craft_definition_map.find(output.item);
+
+		if (vec_iter == m_output_to_craft_definition_map.end())
+			return recipes_list;
 
 		for(std::vector<CraftDefinition*>::const_reverse_iterator
-				i = m_craft_definitions.rbegin();
-				i != m_craft_definitions.rend(); i++)
-		{
-			CraftDefinition *def = *i;
-
-			/*infostream<<"Checking "<<input.dump()<<std::endl
-					<<" against "<<def->dump()<<std::endl;*/
-
-			try {
-				tmpout = def->getOutput(input, gamedef);
-				if(tmpout.item.substr(0,output.item.length()) == output.item)
-				{
-					// Get output, then decrement input (if requested)
-					input = def->getInput(output, gamedef);
-					recipes_list.push_back(*i);
-				}
-			}
-			catch(SerializationError &e)
-			{
-				errorstream<<"getCraftResult: ERROR: "
-						<<"Serialization error in recipe "
-						<<def->dump()<<std::endl;
-				// then go on with the next craft definition
-			}
+			i = vec_iter->second.rbegin();
+			i != vec_iter->second.rend(); i++) {
+			recipes_list.push_back(*i);
 		}
+			
 		return recipes_list;
 	}
 	virtual std::string dump() const
@@ -1022,11 +962,19 @@ public:
 		}
 		return os.str();
 	}
-	virtual void registerCraft(CraftDefinition *def)
+	virtual void registerCraft(CraftDefinition *def, IGameDef *gamedef)
 	{
 		verbosestream<<"registerCraft: registering craft definition: "
 				<<def->dump()<<std::endl;
 		m_craft_definitions.push_back(def);
+
+		CraftInput input;
+		std::string outputItem;
+
+		std::istringstream ss (def->getOutput(input, gamedef).item);
+		ss >> outputItem;
+
+		m_output_to_craft_definition_map[outputItem].push_back(def);
 	}
 	virtual void clear()
 	{
@@ -1036,6 +984,7 @@ public:
 			delete *i;
 		}
 		m_craft_definitions.clear();
+		m_output_to_craft_definition_map.clear();
 	}
 	virtual void serialize(std::ostream &os) const
 	{
@@ -1052,7 +1001,7 @@ public:
 			os<<serializeString(tmp_os.str());
 		}
 	}
-	virtual void deSerialize(std::istream &is)
+	virtual void deSerialize(std::istream &is, IGameDef *gamedef)
 	{
 		// Clear everything
 		clear();
@@ -1066,11 +1015,12 @@ public:
 			std::istringstream tmp_is(deSerializeString(is), std::ios::binary);
 			CraftDefinition *def = CraftDefinition::deSerialize(tmp_is);
 			// Register
-			registerCraft(def);
+			registerCraft(def, gamedef);
 		}
 	}
 private:
 	std::vector<CraftDefinition*> m_craft_definitions;
+	std::map<std::string, std::vector<CraftDefinition*> > m_output_to_craft_definition_map;
 };
 
 IWritableCraftDefManager* createCraftDefManager()
