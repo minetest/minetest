@@ -3112,10 +3112,10 @@ void ServerMap::saveMapMeta()
 	std::string fullpath = m_savedir + DIR_DELIM + "map_meta.txt";
 	std::ostringstream ss(std::ios_base::binary);
 
-	Settings params;
-
-	m_emerge->saveParamsToSettings(&params);
-	params.writeLines(ss);
+	Settings tsettings;
+	
+	m_emerge->mpmanager->saveParamsToSettings(&tsettings, &m_emerge->params);
+	tsettings.writeLines(ss);
 
 	ss<<"[end_of_params]\n";
 
@@ -3141,14 +3141,14 @@ void ServerMap::loadMapMeta()
 		throw FileNotGoodException("Cannot open map metadata");
 	}
 
-	Settings params;
+	Settings tsettings;
 
-	if (!params.parseConfigLines(is, "[end_of_params]")) {
+	if (!tsettings.parseConfigLines(is, "[end_of_params]")) {
 		throw SerializationError("ServerMap::loadMapMeta(): "
 				"[end_of_params] not found!");
 	}
 
-	m_emerge->loadParamsFromSettings(&params);
+	m_emerge->mpmanager->loadParamsFromSettings(&tsettings, &m_emerge->params);
 
 	verbosestream << "ServerMap::loadMapMeta(): seed="
 		<< m_emerge->params.seed << std::endl;

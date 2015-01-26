@@ -66,6 +66,13 @@ struct BlockEmergeData {
 	u8 flags;
 };
 
+class MapgenParamsManager {
+public:
+	MapgenSpecificParams *createMapgenParams(const std::string &mgname);
+	void loadParamsFromSettings(Settings *settings, MapgenParams *params);
+	void saveParamsToSettings(Settings *settings, MapgenParams *params);
+};
+
 class EmergeManager {
 public:
 	INodeDefManager *ndef;
@@ -77,6 +84,7 @@ public:
 
 	//settings
 	MapgenParams params;
+	MapgenParamsManager *mpmanager;
 	bool mapgen_debug_info;
 	u16 qlimit_total;
 	u16 qlimit_diskonly;
@@ -105,14 +113,10 @@ public:
 	Mapgen *getCurrentMapgen();
 	Mapgen *createMapgen(const std::string &mgname, int mgid,
 		MapgenParams *mgparams);
-	MapgenSpecificParams *createMapgenParams(const std::string &mgname);
 	static void getMapgenNames(std::list<const char *> &mgnames);
 	void startThreads();
 	void stopThreads();
 	bool enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate);
-
-	void loadParamsFromSettings(Settings *settings);
-	void saveParamsToSettings(Settings *settings);
 
 	//mapgen helper methods
 	Biome *getBiomeAtPoint(v3s16 p);
