@@ -115,7 +115,7 @@ function core.serialize(x)
 	function dump_val(x)
 		local  tp = type(x)
 		if     x  == nil        then return "nil"
-		elseif tp == "number"   then return tostring(x)
+		elseif tp == "number"   then return string.format("%d", x)
 		elseif tp == "string"   then return string.format("%q", x)
 		elseif tp == "boolean"  then return x and "true" or "false"
 		elseif tp == "function" then
