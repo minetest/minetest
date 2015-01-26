@@ -1192,7 +1192,7 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 	m_clients.Unlock();
 
 	RemotePlayer *player =
-		static_cast<RemotePlayer*>(m_env->getPlayer(playername.c_str()));
+		static_cast<RemotePlayer*>(m_env->getPlayer(peer_id));
 
 	// If failed, cancel
 	if((playersao == NULL) || (player == NULL)) {
@@ -1601,7 +1601,6 @@ void Server::handleCommand_Init2(ToServerPacket* pkt)
 
 	m_clients.event(pkt->getPeerId(), CSE_GotInit2);
 	u16 protocol_version = m_clients.getProtocolVersion(pkt->getPeerId());
-
 
 	///// begin compatibility code
 	PlayerSAO* playersao = NULL;
@@ -5138,13 +5137,12 @@ v3f findSpawnPos(ServerMap &map)
 
 PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 {
-	RemotePlayer *player = NULL;
 	bool newplayer = false;
 
 	/*
 		Try to get an existing player
 	*/
-	player = static_cast<RemotePlayer*>(m_env->getPlayer(name));
+	RemotePlayer *player = static_cast<RemotePlayer*>(m_env->getPlayer(name));
 
 	// If player is already connected, cancel
 	if(player != NULL && player->peer_id != 0)
