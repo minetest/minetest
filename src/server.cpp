@@ -1366,7 +1366,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		// Use the highest version supported by both
 		int deployed = std::min(client_max, our_max);
 		// If it's lower than the lowest supported, give up.
-		if(deployed < SER_FMT_VER_LOWEST)
+		if(deployed < SER_FMT_CLIENT_VER_LOWEST)
 			deployed = SER_FMT_VER_INVALID;
 
 		if(deployed == SER_FMT_VER_INVALID)

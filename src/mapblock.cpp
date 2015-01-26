@@ -526,11 +526,7 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 		throw SerializationError("ERROR: Not writing dummy block.");
 	}
 
-	// Can't do this anymore; we have 16-bit dynamically allocated node IDs
-	// in memory; conversion just won't work in this direction.
-	if(version < 24)
-		throw SerializationError("MapBlock::serialize: serialization to "
-				"version < 24 not possible");
+	assert(version >= SER_FMT_CLIENT_VER_LOWEST);
 
 	// First byte
 	u8 flags = 0;
