@@ -21,8 +21,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "filesys.h"
 #include "settings.h"
+#include "defaultsettings.h" // for override_default_settings
 #include "log.h"
 #include "strfnd.h"
+#include "emerge.h" // for MapgenParamsManager
+#include "main.h" // for g_settings
 #ifndef SERVER
 #include "tile.h" // getImagePath
 #endif
@@ -274,6 +277,34 @@ bool initializeWorld(const std::string &path, const std::string &gameid)
 		std::ostringstream ss(std::ios_base::binary);
 		ss<<"gameid = "<<gameid<< "\nbackend = sqlite3\n";
 		fs::safeWriteToFile(worldmt_path, ss.str());
+	}
+	
+	std::string map_meta_path = path + DIR_DELIM + "map_meta.txt";
+	if(!fs::PathExists(map_meta_path)){
+		infostream<<"Creating map_meta.txt ("<<map_meta_path<<")"<<std::endl;
+		fs::CreateAllDirs(path);
+		std::ostringstream ss(std::ios_base::binary);
+	
+		// Initialize default settings and override defaults with those provided
+		// by the game
+		set_default_settings(g_settings);
+		SubgameSpec gamespec = findWorldSubgame(path);
+		Settings gamedefaults;
+		getGameMinetestConfig(gamespec.path, gamedefaults);
+		override_default_settings(g_settings, &gamedefaults);
+		
+		// load mapgen parameters
+		MapgenParamsManager *mpmanager = new MapgenParamsManager();
+		Settings tsettings;
+		MapgenParams params;
+
+		mpmanager->loadParamsFromSettings(g_settings, &params);
+		mpmanager->saveParamsToSettings(&tsettings, &params);
+		
+		tsettings.writeLines(ss);
+		ss<<"[end_of_params]\n";
+
+		fs::safeWriteToFile(map_meta_path, ss.str());
 	}
 	return true;
 }

@@ -101,6 +101,7 @@ EmergeManager::EmergeManager(IGameDef *gamedef)
 	this->decomgr   = new DecorationManager(gamedef);
 	this->schemmgr  = new SchematicManager(gamedef);
 	this->gen_notify_on = 0;
+	this->mpmanager = new MapgenParamsManager();
 
 	// Note that accesses to this variable are not synchronized.
 	// This is because the *only* thread ever starting or stopping
@@ -166,7 +167,7 @@ EmergeManager::~EmergeManager()
 
 void EmergeManager::loadMapgenParams()
 {
-	loadParamsFromSettings(g_settings);
+	mpmanager->loadParamsFromSettings(g_settings, &params);
 
 	if (g_settings->get("fixed_map_seed").empty()) {
 		params.seed = (((u64)(myrand() & 0xffff) << 0)
@@ -183,10 +184,10 @@ void EmergeManager::initMapgens()
 		return;
 
 	if (!params.sparams) {
-		params.sparams = createMapgenParams(params.mg_name);
+		params.sparams = mpmanager->createMapgenParams(params.mg_name);
 		if (!params.sparams) {
 			params.mg_name = DEFAULT_MAPGEN;
-			params.sparams = createMapgenParams(params.mg_name);
+			params.sparams = mpmanager->createMapgenParams(params.mg_name);
 			assert(params.sparams);
 		}
 		params.sparams->readParams(g_settings);
@@ -348,12 +349,14 @@ Mapgen *EmergeManager::createMapgen(const std::string &mgname, int mgid,
 }
 
 
-MapgenSpecificParams *EmergeManager::createMapgenParams(const std::string &mgname)
+/////////////////////////////// MapgenParams Manager ////////////////////////////////
+
+MapgenSpecificParams *MapgenParamsManager::createMapgenParams(const std::string &mgname)
 {
 	u32 i;
 	for (i = 0; i != ARRLEN(reg_mapgens) && mgname != reg_mapgens[i].name; i++);
 	if (i == ARRLEN(reg_mapgens)) {
-		errorstream << "EmergeManager; mapgen " << mgname <<
+		errorstream << "ParamsManager; mapgen " << mgname <<
 			" not registered" << std::endl;
 		return NULL;
 	}
@@ -363,40 +366,40 @@ MapgenSpecificParams *EmergeManager::createMapgenParams(const std::string &mgnam
 }
 
 
-void EmergeManager::loadParamsFromSettings(Settings *settings)
+void MapgenParamsManager::loadParamsFromSettings(Settings *settings, MapgenParams *params)
 {
 	std::string seed_str;
 	const char *setname = (settings == g_settings) ? "fixed_map_seed" : "seed";
 
 	if (settings->getNoEx(setname, seed_str))
-		params.seed = read_seed(seed_str.c_str());
+		params->seed = read_seed(seed_str.c_str());
 
-	settings->getNoEx("mg_name",         params.mg_name);
-	settings->getS16NoEx("water_level",  params.water_level);
-	settings->getS16NoEx("chunksize",    params.chunksize);
-	settings->getFlagStrNoEx("mg_flags", params.flags, flagdesc_mapgen);
-	settings->getNoiseParams("mg_biome_np_heat",     params.np_biome_heat);
-	settings->getNoiseParams("mg_biome_np_humidity", params.np_biome_humidity);
+	settings->getNoEx("mg_name",         params->mg_name);
+	settings->getS16NoEx("water_level",  params->water_level);
+	settings->getS16NoEx("chunksize",    params->chunksize);
+	settings->getFlagStrNoEx("mg_flags", params->flags, flagdesc_mapgen);
+	settings->getNoiseParams("mg_biome_np_heat",     params->np_biome_heat);
+	settings->getNoiseParams("mg_biome_np_humidity", params->np_biome_humidity);
 
-	delete params.sparams;
-	params.sparams = createMapgenParams(params.mg_name);
-	if (params.sparams)
-		params.sparams->readParams(settings);
+	delete params->sparams;
+	params->sparams = createMapgenParams(params->mg_name);
+	if (params->sparams)
+		params->sparams->readParams(settings);
 }
 
 
-void EmergeManager::saveParamsToSettings(Settings *settings)
+void MapgenParamsManager::saveParamsToSettings(Settings *settings, MapgenParams *params)
 {
-	settings->set("mg_name",         params.mg_name);
-	settings->setU64("seed",         params.seed);
-	settings->setS16("water_level",  params.water_level);
-	settings->setS16("chunksize",    params.chunksize);
-	settings->setFlagStr("mg_flags", params.flags, flagdesc_mapgen, (u32)-1);
-	settings->setNoiseParams("mg_biome_np_heat",     params.np_biome_heat);
-	settings->setNoiseParams("mg_biome_np_humidity", params.np_biome_humidity);
+	settings->set("mg_name",         params->mg_name);
+	settings->setU64("seed",         params->seed);
+	settings->setS16("water_level",  params->water_level);
+	settings->setS16("chunksize",    params->chunksize);
+	settings->setFlagStr("mg_flags", params->flags, flagdesc_mapgen, (u32)-1);
+	settings->setNoiseParams("mg_biome_np_heat",     params->np_biome_heat);
+	settings->setNoiseParams("mg_biome_np_humidity", params->np_biome_humidity);
 
-	if (params.sparams)
-		params.sparams->writeParams(settings);
+	if (params->sparams)
+		params->sparams->writeParams(settings);
 }
 
 

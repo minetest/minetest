@@ -90,14 +90,15 @@ local function create_world_buttonhandler(this, fields)
 
 			local message = nil
 
+			-- it's used in core.create_world, must be before
+			core.setting_set("fixed_map_seed", fields["te_seed"])
+
 			if not menudata.worldlist:uid_exists_raw(worldname) then
 				core.setting_set("mg_name",fields["dd_mapgen"])
 				message = core.create_world(worldname,gameindex)
 			else
 				message = fgettext("A world named \"$1\" already exists", worldname)
 			end
-
-			core.setting_set("fixed_map_seed", fields["te_seed"])
 
 			if message ~= nil then
 				gamedata.errormessage = message
