@@ -71,6 +71,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define SER_FMT_VER_HIGHEST_WRITE 25
 // Lowest supported serialization version
 #define SER_FMT_VER_LOWEST 0
+// Lowest client supported serialization version
+// Can't do < 24 anymore; we have 16-bit dynamically allocated node IDs
+// in memory; conversion just won't work in this direction.
+#define SER_FMT_CLIENT_VER_LOWEST 24
 
 inline bool ser_ver_supported(s32 v) {
 	return v >= SER_FMT_VER_LOWEST && v <= SER_FMT_VER_HIGHEST_READ;
