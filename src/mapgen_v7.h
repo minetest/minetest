@@ -48,8 +48,8 @@ struct MapgenV7Params : public MapgenSpecificParams {
 	MapgenV7Params();
 	~MapgenV7Params() {}
 
-	void readParams(Settings *settings);
-	void writeParams(Settings *settings);
+	void readParams(const Settings *settings);
+	void writeParams(Settings *settings) const;
 };
 
 class MapgenV7 : public Mapgen {

@@ -59,8 +59,8 @@ struct MapgenV6Params : public MapgenSpecificParams {
 	MapgenV6Params();
 	~MapgenV6Params() {}
 
-	void readParams(Settings *settings);
-	void writeParams(Settings *settings);
+	void readParams(const Settings *settings);
+	void writeParams(Settings *settings) const;
 };
 
 class MapgenV6 : public Mapgen {

@@ -142,7 +142,7 @@ MapgenV5Params::MapgenV5Params()
 //#define CAVE_NOISE_THRESHOLD (1.5/CAVE_NOISE_SCALE) = 0.125
 
 
-void MapgenV5Params::readParams(Settings *settings)
+void MapgenV5Params::readParams(const Settings *settings)
 {
 	settings->getFlagStrNoEx("mgv5_spflags", spflags, flagdesc_mapgen_v5);
 
@@ -155,7 +155,7 @@ void MapgenV5Params::readParams(Settings *settings)
 }
 
 
-void MapgenV5Params::writeParams(Settings *settings)
+void MapgenV5Params::writeParams(Settings *settings) const
 {
 	settings->setFlagStr("mgv5_spflags", spflags, flagdesc_mapgen_v5, (u32)-1);
 

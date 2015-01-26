@@ -3005,26 +3005,20 @@ void ServerMap::saveMapMeta()
 {
 	DSTACK(__FUNCTION_NAME);
 
-	/*infostream<<"ServerMap::saveMapMeta(): "
-			<<"seed="<<m_seed
-			<<std::endl;*/
-
 	createDirs(m_savedir);
 
-	std::string fullpath = m_savedir + DIR_DELIM "map_meta.txt";
-	std::ostringstream ss(std::ios_base::binary);
+	std::string fullpath = m_savedir + DIR_DELIM + "map_meta.txt";
+	std::ostringstream oss(std::ios_base::binary);
+	Settings conf;
 
-	Settings params;
+	m_emerge->params.save(conf);
+	conf.writeLines(oss);
 
-	m_emerge->saveParamsToSettings(&params);
-	params.writeLines(ss);
+	oss << "[end_of_params]\n";
 
-	ss<<"[end_of_params]\n";
-
-	if(!fs::safeWriteToFile(fullpath, ss.str()))
-	{
-		infostream<<"ERROR: ServerMap::saveMapMeta(): "
-				<<"could not write "<<fullpath<<std::endl;
+	if(!fs::safeWriteToFile(fullpath, oss.str())) {
+		errorstream << "ServerMap::saveMapMeta(): "
+				<< "could not write " << fullpath << std::endl;
 		throw FileNotGoodException("Cannot save chunk metadata");
 	}
 
@@ -3035,24 +3029,22 @@ void ServerMap::loadMapMeta()
 {
 	DSTACK(__FUNCTION_NAME);
 
-	Settings params;
-	std::string fullpath = m_savedir + DIR_DELIM "map_meta.txt";
+	Settings conf;
+	std::string fullpath = m_savedir + DIR_DELIM + "map_meta.txt";
 
-	if (fs::PathExists(fullpath)) {
-		std::ifstream is(fullpath.c_str(), std::ios_base::binary);
-		if (!is.good()) {
-			errorstream << "ServerMap::loadMapMeta(): "
-				"could not open " << fullpath << std::endl;
-			throw FileNotGoodException("Cannot open map metadata");
-		}
-
-		if (!params.parseConfigLines(is, "[end_of_params]")) {
-			throw SerializationError("ServerMap::loadMapMeta(): "
-				"[end_of_params] not found!");
-		}
+	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
+	if (!is.good()) {
+		errorstream << "ServerMap::loadMapMeta(): "
+			"could not open " << fullpath << std::endl;
+		throw FileNotGoodException("Cannot open map metadata");
 	}
 
-	m_emerge->loadParamsFromSettings(&params);
+	if (!conf.parseConfigLines(is, "[end_of_params]")) {
+		throw SerializationError("ServerMap::loadMapMeta(): "
+				"[end_of_params] not found!");
+	}
+
+	m_emerge->params.load(conf);
 
 	verbosestream << "ServerMap::loadMapMeta(): seed="
 		<< m_emerge->params.seed << std::endl;

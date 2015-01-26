@@ -222,22 +222,15 @@ Server::Server(
 	infostream<<"- world:  "<<m_path_world<<std::endl;
 	infostream<<"- game:   "<<m_gamespec.path<<std::endl;
 
-	// Initialize default settings and override defaults with those provided
-	// by the game
-	set_default_settings(g_settings);
-	Settings gamedefaults;
-	getGameMinetestConfig(gamespec.path, gamedefaults);
-	override_default_settings(g_settings, &gamedefaults);
+	// Create world if it doesn't exist
+	if(!initializeWorld(m_path_world, m_gamespec.id))
+		throw ServerError("Failed to initialize world");
 
 	// Create server thread
 	m_thread = new ServerThread(this);
 
 	// Create emerge manager
 	m_emerge = new EmergeManager(this);
-
-	// Create world if it doesn't exist
-	if(!initializeWorld(m_path_world, m_gamespec.id))
-		throw ServerError("Failed to initialize world");
 
 	// Create ban manager
 	std::string ban_path = m_path_world + DIR_DELIM "ipban.txt";
