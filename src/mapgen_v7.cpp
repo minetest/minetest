@@ -135,7 +135,7 @@ MapgenV7Params::MapgenV7Params()
 	np_filler_depth    = NoiseParams(0,    1.2, v3f(150, 150, 150), 261,   4, 0.7,  2.0);
 	np_mount_height    = NoiseParams(100,  30,  v3f(500, 500, 500), 72449, 4, 0.6,  2.0);
 	np_ridge_uwater    = NoiseParams(0,    1,   v3f(500, 500, 500), 85039, 4, 0.6,  2.0);
-	np_mountain        = NoiseParams(0,    1,   v3f(250, 350, 250), 5333,  5, 0.68, 2.0);
+	np_mountain        = NoiseParams(-0.6, 1,   v3f(250, 350, 250), 5333,  5, 0.68, 2.0);
 	np_ridge           = NoiseParams(0,    1,   v3f(100, 100, 100), 6467,  4, 0.75, 2.0);
 	np_cave1           = NoiseParams(0,    12,  v3f(100, 100, 100), 52534, 4, 0.5,  2.0);
 	np_cave2           = NoiseParams(0,    12,  v3f(100, 100, 100), 10325, 4, 0.5,  2.0);
@@ -187,11 +187,11 @@ int MapgenV7::getGroundLevelAtPoint(v2s16 p)
 	s16 y = baseTerrainLevelAtPoint(p.X, p.Y);
 
 	// Ridge/river terrain calculation
-	float width = 0.3;
+	float width = 0.2;
 	float uwatern = NoisePerlin2D(&noise_ridge_uwater->np, p.X, p.Y, seed) * 2;
 	// actually computing the depth of the ridge is much more expensive;
 	// if inside a river, simply guess
-	if (uwatern >= -width && uwatern <= width)
+	if (fabs(uwatern) <= width)
 		return water_level - 10;
 
 	// Mountain terrain calculation
@@ -297,22 +297,21 @@ void MapgenV7::calculateNoise()
 		noise_cave2->perlinMap3D(x, y, z);
 	}
 
+	if ((spflags & MGV7_RIDGES) && node_max.Y >= water_level) {
+		noise_ridge->perlinMap3D(x, y, z);
+		noise_ridge_uwater->perlinMap2D(x, z);
+	}
+
+	if ((spflags & MGV7_MOUNTAINS) && node_max.Y >= 0) {
+		noise_mountain->perlinMap3D(x, y, z);
+		noise_mount_height->perlinMap2D(x, z);
+	}
+
 	if (node_max.Y >= water_level) {
 		noise_filler_depth->perlinMap2D(x, z);
 		noise_heat->perlinMap2D(x, z);
 		noise_humidity->perlinMap2D(x, z);
-
-		if (spflags & MGV7_MOUNTAINS) {
-			noise_mountain->perlinMap3D(x, y, z);
-			noise_mount_height->perlinMap2D(x, z);
-		}
-
-		if (spflags & MGV7_RIDGES) {
-			noise_ridge->perlinMap3D(x, y, z);
-			noise_ridge_uwater->perlinMap2D(x, z);
-		}
 	}
-
 	//printf("calculateNoise: %dus\n", t.stop());
 }
 
@@ -333,7 +332,6 @@ float MapgenV7::baseTerrainLevelAtPoint(int x, int z)
 	hselect = rangelim(hselect, 0.0, 1.0);
 
 	float persist = NoisePerlin2D(&noise_terrain_persist->np, x, z, seed);
-	persist = rangelim(persist, 0.4, 0.9);
 
 	noise_terrain_base->np.persist = persist;
 	float height_base = NoisePerlin2D(&noise_terrain_base->np, x, z, seed);
@@ -364,18 +362,16 @@ float MapgenV7::baseTerrainLevelFromMap(int index)
 bool MapgenV7::getMountainTerrainAtPoint(int x, int y, int z)
 {
 	float mnt_h_n = NoisePerlin2D(&noise_mount_height->np, x, z, seed);
-	float height_modifier = -((float)y / mnt_h_n);
 	float mnt_n = NoisePerlin3D(&noise_mountain->np, x, y, z, seed);
-
-	return mnt_n + height_modifier >= 0.6;
+	return mnt_n * mnt_h_n >= (float)y;
 }
 
 
 bool MapgenV7::getMountainTerrainFromMap(int idx_xyz, int idx_xz, int y)
 {
 	float mounthn = noise_mount_height->result[idx_xz];
-	float height_modifier = -((float)y / mounthn);
-	return (noise_mountain->result[idx_xyz] + height_modifier >= 0.6);
+	float mountn = noise_mountain->result[idx_xyz];
+	return mountn * mounthn >= (float)y;
 }
 
 
@@ -469,7 +465,7 @@ int MapgenV7::generateBaseTerrain()
 
 int MapgenV7::generateMountainTerrain(int ymax)
 {
-	if (node_max.Y < water_level)
+	if (node_max.Y < 0)
 		return ymax;
 
 	MapNode n_stone(c_stone);
@@ -506,6 +502,7 @@ void MapgenV7::generateRidgeTerrain()
 	MapNode n_water(c_water_source);
 	MapNode n_air(CONTENT_AIR);
 	u32 index = 0;
+	float width = 0.2; // TODO: figure out acceptable perlin noise values
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 y = node_min.Y; y <= node_max.Y; y++) {
@@ -516,7 +513,6 @@ void MapgenV7::generateRidgeTerrain()
 			if (heightmap[j] < water_level - 16)
 				continue;
 
-			float width = 0.2; // TODO: figure out acceptable perlin noise values
 			float uwatern = noise_ridge_uwater->result[j] * 2;
 			if (fabs(uwatern) > width)
 				continue;
@@ -794,7 +790,7 @@ void MapgenV7::generateCaves(int max_stone_y)
 	}
 
 	PseudoRandom ps(blockseed + 21343);
-	u32 bruises_count = (ps.range(1, 6) == 1) ? ps.range(1, 2) : 0;
+	u32 bruises_count = (ps.range(1, 5) == 1) ? ps.range(1, 2) : 0;
 	for (u32 i = 0; i < bruises_count; i++) {
 		CaveV7 cave(this, &ps, true);
 		cave.makeCave(node_min, node_max, max_stone_y);
