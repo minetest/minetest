@@ -87,10 +87,10 @@ video::IImage* SGUITTGlyph::createGlyphImage(const FT_Bitmap& bits, video::IVide
 			const u32 image_pitch = image->getPitch() / sizeof(u16);
 			u16* image_data = (u16*)image->lock();
 			u8* glyph_data = bits.buffer;
-			for (s32 y = 0; y < bits.rows; ++y)
+			for (u32 y = 0; y < bits.rows; ++y)
 			{
 				u16* row = image_data;
-				for (s32 x = 0; x < bits.width; ++x)
+				for (u32 x = 0; x < bits.width; ++x)
 				{
 					// Monochrome bitmaps store 8 pixels per byte.  The left-most pixel is the bit 0x80.
 					// So, we go through the data each bit at a time.
@@ -116,10 +116,10 @@ video::IImage* SGUITTGlyph::createGlyphImage(const FT_Bitmap& bits, video::IVide
 			const u32 image_pitch = image->getPitch() / sizeof(u32);
 			u32* image_data = (u32*)image->lock();
 			u8* glyph_data = bits.buffer;
-			for (s32 y = 0; y < bits.rows; ++y)
+			for (u32 y = 0; y < bits.rows; ++y)
 			{
 				u8* row = glyph_data;
-				for (s32 x = 0; x < bits.width; ++x)
+				for (u32 x = 0; x < bits.width; ++x)
 				{
 					image_data[y * image_pitch + x] |= static_cast<u32>(255.0f * (static_cast<float>(*row++) / gray_count)) << 24;
 					//data[y * image_pitch + x] |= ((u32)(*bitsdata++) << 24);
