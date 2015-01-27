@@ -547,8 +547,10 @@
 #mgv7_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 4, 0.7, 2.0
 #mgv7_np_mount_height = 100, 30, (500, 500, 500), 72449, 4, 0.6, 2.0
 #mgv7_np_ridge_uwater = 0, 1, (500, 500, 500), 85039, 4, 0.6, 2.0
-#mgv7_np_mountain = 0, 1, (250, 350, 250), 5333, 5, 0.68, 2.0
+#mgv7_np_mountain = -0.6, 1, (250, 350, 250), 5333, 5, 0.68, 2.0
 #mgv7_np_ridge = 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
+#mgv7_np_cave1 = 0, 12, (100, 100, 100), 52534, 4, 0.5, 2.0
+#mgv7_np_cave2 = 0, 12, (100, 100, 100), 10325, 4, 0.5, 2.0
 
 #    Noise parameters for biome API temperature and humidity
 #mg_biome_np_heat = 50, 50, (500, 500, 500), 5349, 3, 0.5, 2.0
