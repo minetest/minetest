@@ -3109,7 +3109,7 @@ void ServerMap::saveMapMeta()
 
 	createDirs(m_savedir);
 
-	std::string fullpath = m_savedir + DIR_DELIM + "map_meta.txt";
+	std::string fullpath = m_savedir + DIR_DELIM "map_meta.txt";
 	std::ostringstream ss(std::ios_base::binary);
 
 	Settings params;
@@ -3133,19 +3133,21 @@ void ServerMap::loadMapMeta()
 {
 	DSTACK(__FUNCTION_NAME);
 
-	std::string fullpath = m_savedir + DIR_DELIM "map_meta.txt";
-	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
-	if (!is.good()) {
-		errorstream << "ServerMap::loadMapMeta(): "
-				<< "could not open" << fullpath << std::endl;
-		throw FileNotGoodException("Cannot open map metadata");
-	}
-
 	Settings params;
+	std::string fullpath = m_savedir + DIR_DELIM "map_meta.txt";
 
-	if (!params.parseConfigLines(is, "[end_of_params]")) {
-		throw SerializationError("ServerMap::loadMapMeta(): "
+	if (fs::PathExists(fullpath)) {
+		std::ifstream is(fullpath.c_str(), std::ios_base::binary);
+		if (!is.good()) {
+			errorstream << "ServerMap::loadMapMeta(): "
+				"could not open " << fullpath << std::endl;
+			throw FileNotGoodException("Cannot open map metadata");
+		}
+
+		if (!params.parseConfigLines(is, "[end_of_params]")) {
+			throw SerializationError("ServerMap::loadMapMeta(): "
 				"[end_of_params] not found!");
+		}
 	}
 
 	m_emerge->loadParamsFromSettings(&params);
