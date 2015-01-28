@@ -52,6 +52,7 @@ Database_SQLite3::Database_SQLite3(ServerMap *map, std::string savedir)
 	m_database_read = NULL;
 	m_database_write = NULL;
 	m_database_list = NULL;
+	m_database_delete = NULL;
 	m_savedir = savedir;
 	srvmap = map;
 }
