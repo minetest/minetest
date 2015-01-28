@@ -420,6 +420,10 @@ core.register_chatcommand("deleteblocks", {
 			p2 = p1
 		else
 			local pos1, pos2 = unpack(param:split(") ("))
+			if pos1 == nil or pos2 == nil then
+				return false, "Incorrect area format. Expected: (x1,y1,z1) (x2,y2,z2)"
+			end
+
 			p1 = core.string_to_pos(pos1 .. ")")
 			p2 = core.string_to_pos("(" .. pos2)
 
