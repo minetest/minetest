@@ -380,8 +380,11 @@ void EmergeManager::loadParamsFromSettings(Settings *settings)
 
 	delete params.sparams;
 	params.sparams = createMapgenParams(params.mg_name);
-	if (params.sparams)
+
+	if (params.sparams) {
+		params.sparams->readParams(g_settings);
 		params.sparams->readParams(settings);
+	}
 }
 
 
