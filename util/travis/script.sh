@@ -3,7 +3,7 @@
 if [ $WINDOWS = "no" ]; then
 	mkdir -p travisbuild
 	cd travisbuild
-	cmake -DENABLE_GETTEXT=1 ..
+	cmake -DENABLE_GETTEXT=1 -DENABLE_LEVELDB=1 -DENABLE_REDIS=1 ..
 	make -j2
 else
 	[ $CC = "clang" ] && exit 1 # Not supposed to happen
