@@ -159,6 +159,8 @@ public:
 		return m_is_local_player;
 	}
 
+	Type objectType() const;
+
 	inline std::string objectTypeName() const
 	{
 		return m_prop.object_type;

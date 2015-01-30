@@ -47,6 +47,15 @@ class WieldMeshSceneNode;
 class ClientActiveObject : public ActiveObject
 {
 public:
+	enum Type {
+		CAO_UNKNOWN,
+		CAO_ITEMSTACK,
+		CAO_FALLING_NODE,
+		CAO_BUILTIN_OTHER,
+		CAO_OTHER,
+		CAO_PROBABLY_ITEMSTACK,		// Cannot be determined for sure
+						// on older servers
+	};
 	ClientActiveObject(u16 id, IGameDef *gamedef, ClientEnvironment *env);
 	virtual ~ClientActiveObject();
 
@@ -74,6 +83,7 @@ public:
 	virtual std::string objectTypeName() const {return "";}
 	virtual bool collectibleIsSet() const {return false;}
 	virtual int collectible() const {return 0;}
+	virtual Type objectType() const {return CAO_UNKNOWN;}
 	virtual void setAttachments(){}
 	virtual bool doShowSelectionBox(){return true;}
 	virtual void updateCameraOffset(v3s16 camera_offset){};
