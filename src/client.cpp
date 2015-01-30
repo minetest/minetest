@@ -219,7 +219,6 @@ Client::Client(
 		IrrlichtDevice *device,
 		const char *playername,
 		std::string password,
-		bool is_simple_singleplayer_game,
 		MapDrawControl &control,
 		IWritableTextureSource *tsrc,
 		IWritableShaderSource *shsrc,
@@ -283,34 +282,6 @@ Client::Client(
 		m_env.addPlayer(player);
 	}
 
-	if (g_settings->getBool("enable_local_map_saving")
-			&& !is_simple_singleplayer_game) {
-		const std::string world_path = porting::path_user + DIR_DELIM + "worlds"
-				+ DIR_DELIM + "server_" + g_settings->get("address")
-				+ "_" + g_settings->get("remote_port");
-
-		SubgameSpec gamespec;
-		if (!getWorldExists(world_path)) {
-			gamespec = findSubgame(g_settings->get("default_game"));
-			if (!gamespec.isValid())
-				gamespec = findSubgame("minimal");
-		} else {
-			std::string world_gameid = getWorldGameId(world_path, false);
-			gamespec = findWorldSubgame(world_path);
-		}
-		if (!gamespec.isValid()) {
-			errorstream << "Couldn't find subgame for local map saving." << std::endl;
-			return;
-		}
-
-		localserver = new Server(world_path, gamespec, false, false);
-		localdb = new Database_SQLite3(&(ServerMap&)localserver->getMap(), world_path);
-		localdb->beginSave();
-		actionstream << "Local map saving started, map will be saved at '" << world_path << "'" << std::endl;
-	} else {
-		localdb = NULL;
-	}
-
 	m_cache_smooth_lighting = g_settings->getBool("smooth_lighting");
 }
 
@@ -321,6 +292,7 @@ void Client::Stop()
 	if (localdb != NULL) {
 		actionstream << "Local map saving ended" << std::endl;
 		localdb->endSave();
+		delete localserver;
 	}
 }
 
@@ -363,9 +335,14 @@ Client::~Client()
 	}
 }
 
-void Client::connect(Address address)
+void Client::connect(Address address,
+		const std::string &address_name,
+		bool is_local_server)
 {
 	DSTACK(__FUNCTION_NAME);
+
+	initLocalMapSaving(address, address_name, is_local_server);
+
 	m_con.SetTimeoutMs(0);
 	m_con.Connect(address);
 }
@@ -962,6 +939,41 @@ void Client::received_media()
 	Send(1, data, true);
 	infostream<<"Client: Notifying server that we received all media"
 			<<std::endl;
+}
+
+void Client::initLocalMapSaving(const Address &address,
+		const std::string &hostname,
+		bool is_local_server)
+{
+	localdb = NULL;
+
+	if (!g_settings->getBool("enable_local_map_saving") || is_local_server)
+		return;
+
+	const std::string world_path = porting::path_user
+		+ DIR_DELIM + "worlds"
+		+ DIR_DELIM + "server_"
+		+ hostname + "_" + to_string(address.getPort());
+
+	SubgameSpec gamespec;
+
+	if (!getWorldExists(world_path)) {
+		gamespec = findSubgame(g_settings->get("default_game"));
+		if (!gamespec.isValid())
+			gamespec = findSubgame("minimal");
+	} else {
+		gamespec = findWorldSubgame(world_path);
+	}
+
+	if (!gamespec.isValid()) {
+		errorstream << "Couldn't find subgame for local map saving." << std::endl;
+		return;
+	}
+
+	localserver = new Server(world_path, gamespec, false, false);
+	localdb = new Database_SQLite3(&(ServerMap&)localserver->getMap(), world_path);
+	localdb->beginSave();
+	actionstream << "Local map saving started, map will be saved at '" << world_path << "'" << std::endl;
 }
 
 void Client::ReceiveAll()
