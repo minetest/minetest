@@ -34,7 +34,7 @@ msgstr "Cacher le jeu"
 #: builtin/mainmenu/dlg_config_world.lua:36
 #: builtin/mainmenu/dlg_config_world.lua:38
 msgid "Hide mp content"
-msgstr "Cacher le contenu de packs de mods"
+msgstr "Cacher les sous-mods"
 
 #: builtin/mainmenu/dlg_config_world.lua:46
 msgid "Mod:"
@@ -57,11 +57,11 @@ msgstr "Annuler"
 
 #: builtin/mainmenu/dlg_config_world.lua:68
 msgid "Enable MP"
-msgstr "Activer le pack de mods"
+msgstr "Activer le pack"
 
 #: builtin/mainmenu/dlg_config_world.lua:70
 msgid "Disable MP"
-msgstr "Désactiver le pack de mods"
+msgstr "Désactiver le pack"
 
 #: builtin/mainmenu/dlg_config_world.lua:74
 #: builtin/mainmenu/dlg_config_world.lua:76
@@ -94,7 +94,7 @@ msgstr "Créer"
 
 #: builtin/mainmenu/dlg_create_world.lua:68
 msgid "You have no subgames installed."
-msgstr "Vous n'avez pas de sous-jeux installés."
+msgstr "Vous n'avez pas de jeux installés."
 
 #: builtin/mainmenu/dlg_create_world.lua:69
 msgid "Download one from minetest.net"
@@ -106,7 +106,7 @@ msgstr "Avertissement : le jeu minimal est fait pour les développeurs."
 
 #: builtin/mainmenu/dlg_create_world.lua:73
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr "Téléchargez un sosu-jeu, comme minetest_game, depuis minetest.net"
+msgstr "Téléchargez un jeu, comme minetest_game, depuis minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua:97
 msgid "A world named \"$1\" already exists"
@@ -148,7 +148,7 @@ msgstr "Non"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua:26
 msgid "Rename Modpack:"
-msgstr "Renommer le pack de mods :"
+msgstr "Renommer le modpack :"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua:31 src/keycode.cpp:228
 msgid "Accept"
@@ -190,7 +190,7 @@ msgstr "Rechercher"
 
 #: builtin/mainmenu/store.lua:125
 msgid "Downloading"
-msgstr "Télécharement"
+msgstr "Téléchargement"
 
 #: builtin/mainmenu/store.lua:127
 msgid "please wait..."
@@ -202,7 +202,7 @@ msgstr "Installé avec succès :"
 
 #: builtin/mainmenu/store.lua:163
 msgid "Shortname:"
-msgstr "Nom court :"
+msgstr "Nom :"
 
 #: builtin/mainmenu/store.lua:167 src/guiFormSpecMenu.cpp:2866
 msgid "ok"
@@ -266,11 +266,11 @@ msgstr "Renommer"
 
 #: builtin/mainmenu/tab_mods.lua:95
 msgid "Uninstall selected modpack"
-msgstr "Désinstaller le pack de mods sélectionné"
+msgstr "Désinstaller ce modpack"
 
 #: builtin/mainmenu/tab_mods.lua:106
 msgid "Uninstall selected mod"
-msgstr "Désinstaller le mod sélectionné"
+msgstr "Désinstaller ce mod"
 
 #: builtin/mainmenu/tab_mods.lua:121
 msgid "Select Mod File:"
@@ -281,18 +281,18 @@ msgid "Mods"
 msgstr "Mods"
 
 #: builtin/mainmenu/tab_multiplayer.lua:23
-msgid "Address/Port"
-msgstr "Adresse / Port"
+msgid "Address / Port :"
+msgstr "Adresse / Port :"
 
 #: builtin/mainmenu/tab_multiplayer.lua:24 builtin/mainmenu/tab_server.lua:37
 #: builtin/mainmenu/tab_simple_main.lua:25
-msgid "Name/Password"
-msgstr "Nom / Mot de passe"
+msgid "Name / Password :"
+msgstr "Nom / Mot de passe :"
 
 #: builtin/mainmenu/tab_multiplayer.lua:29
 #: builtin/mainmenu/tab_simple_main.lua:30
 msgid "Public Serverlist"
-msgstr "Liste de serveurs publics"
+msgstr "Liste des serveurs publics"
 
 #: builtin/mainmenu/tab_multiplayer.lua:34 builtin/mainmenu/tab_server.lua:26
 #: builtin/mainmenu/tab_singleplayer.lua:85 src/keycode.cpp:230
@@ -356,57 +356,71 @@ msgstr "Serveur"
 
 #: builtin/mainmenu/tab_settings.lua:23
 msgid "Are you sure to reset your singleplayer world?"
-msgstr "Êtes-vous sûr de remettre à zéro votre monde solo ?"
+msgstr "Êtes-vous sûr de réinitialiser votre monde ?"
 
 #: builtin/mainmenu/tab_settings.lua:27
 msgid "No!!!"
 msgstr "Non !"
 
-#: builtin/mainmenu/tab_settings.lua:134
+#: builtin/mainmenu/tab_settings.lua:181
 msgid "Smooth Lighting"
 msgstr "Lumière douce"
 
-#: builtin/mainmenu/tab_settings.lua:136
+#: builtin/mainmenu/tab_settings.lua:183
 msgid "Enable Particles"
 msgstr "Activer les particules"
 
-#: builtin/mainmenu/tab_settings.lua:138
+#: builtin/mainmenu/tab_settings.lua:185
 msgid "3D Clouds"
 msgstr "Nuages 3D"
 
-#: builtin/mainmenu/tab_settings.lua:140
-
+#: builtin/mainmenu/tab_settings.lua:187
 msgid "Fancy Trees"
 msgstr "Arbres détaillés"
 
-#: builtin/mainmenu/tab_settings.lua:142
+#: builtin/mainmenu/tab_settings.lua:189
 msgid "Opaque Water"
 msgstr "Eau opaque"
 
-#: builtin/mainmenu/tab_settings.lua:144
-
+#: builtin/mainmenu/tab_settings.lua:191
 msgid "Connected Glass"
 msgstr "Verre connecté"
 
+#: builtin/mainmenu/tab_settings.lua:193
+msgid "Node Highlighting"
+msgstr "Eclairage des blocs"
+
 #: builtin/mainmenu/tab_settings.lua:149
 msgid "Restart minetest for driver change to take effect"
-msgstr "Redémarrez Minetest pour que le changement de pilote prenne effet"
+msgstr "Redémarrez Minetest pour que le changement du pilote prenne effet"
 
 #: builtin/mainmenu/tab_settings.lua:151
 msgid "Mip-Mapping"
 msgstr "Mip-mapping"
 
-#: builtin/mainmenu/tab_settings.lua:153
-msgid "Anisotropic Filtering"
-msgstr "Filtrage anisotrope"
+#: builtin/mainmenu/tab_settings.lua:21
+msgid "No Filter"
+msgstr "Pas de filtre"
 
-#: builtin/mainmenu/tab_settings.lua:155
-msgid "Bi-Linear Filtering"
+#: builtin/mainmenu/tab_settings.lua:22
+msgid "Bilinear Filter"
 msgstr "Filtrage bilinéaire"
 
-#: builtin/mainmenu/tab_settings.lua:157
-msgid "Tri-Linear Filtering"
+#: builtin/mainmenu/tab_settings.lua:23
+msgid "Trilinear Filter"
 msgstr "Filtrage trilinéaire"
+
+#: builtin/mainmenu/tab_settings.lua:32
+msgid "No Mipmap"
+msgstr "Pas de Mipmap"
+
+#: builtin/mainmenu/tab_settings.lua:33
+msgid "Mipmap"
+msgstr "Mipmap"
+
+#: builtin/mainmenu/tab_settings.lua:34
+msgid "Mipmap + Aniso. Filter"
+msgstr "Filtrage anisotrope"
 
 #: builtin/mainmenu/tab_settings.lua:160
 msgid "Shaders"
@@ -419,13 +433,21 @@ msgstr "Changer les touches"
 #: builtin/mainmenu/tab_settings.lua:167
 #, fuzzy
 msgid "Reset singleplayer world"
-msgstr "Remettre le monde solo à zéro"
+msgstr "Réinitialiser le monde"
 
 #: builtin/mainmenu/tab_settings.lua:171
 msgid "GUI scale factor"
 msgstr "Échelle des menus"
 
-#: builtin/mainmenu/tab_settings.lua:175
+#: builtin/mainmenu/tab_settings.lua:178
+msgid "Texturing:"
+msgstr "Texturisation :"
+
+#: builtin/mainmenu/tab_settings.lua:183
+msgid "Rendering:"
+msgstr "Moteur de rendu :"
+
+#: builtin/mainmenu/tab_settings.lua:205
 msgid "Scaling factor applied to menu elements: "
 msgstr "Échelle appliquée aux menus :"
 
@@ -443,7 +465,7 @@ msgstr "Bump mapping"
 
 #: builtin/mainmenu/tab_settings.lua:196 builtin/mainmenu/tab_settings.lua:209
 msgid "Generate Normalmaps"
-msgstr "Générer des normal maps"
+msgstr "Normal maps"
 
 #: builtin/mainmenu/tab_settings.lua:198 builtin/mainmenu/tab_settings.lua:210
 msgid "Parallax Occlusion"
