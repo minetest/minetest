@@ -305,7 +305,6 @@ public:
 			IrrlichtDevice *device,
 			const char *playername,
 			std::string password,
-			bool is_simple_singleplayer_game,
 			MapDrawControl &control,
 			IWritableTextureSource *tsrc,
 			IWritableShaderSource *shsrc,
@@ -325,11 +324,14 @@ public:
 
 
 	bool isShutdown();
+
 	/*
 		The name of the local player should already be set when
 		calling this, as it is sent in the initialization.
 	*/
-	void connect(Address address);
+	void connect(Address address,
+			const std::string &address_name,
+			bool is_local_server);
 
 	/*
 		Stuff that references the environment is valid only as
@@ -476,6 +478,10 @@ private:
 	// Virtual methods from con::PeerHandler
 	void peerAdded(con::Peer *peer);
 	void deletingPeer(con::Peer *peer, bool timeout);
+
+	void initLocalMapSaving(const Address &address,
+			const std::string &hostname,
+			bool is_local_server);
 
 	void ReceiveAll();
 	void Receive();
