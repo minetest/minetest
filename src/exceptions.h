@@ -110,12 +110,6 @@ public:
 	ServerError(const std::string &s): BaseException(s) {}
 };
 
-// Only used on Windows (SEH)
-class FatalSystemException : public BaseException {
-public:
-	FatalSystemException(const std::string &s): BaseException(s) {}
-};
-
 class ClientStateError : public BaseException {
 public:
 	ClientStateError(std::string s): BaseException(s) {}

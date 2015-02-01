@@ -29,6 +29,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "jthread/jmutex.h"
 #include "jthread/jmutexautolock.h"
 #include "config.h"
+
+#ifdef _MSC_VER
+	#include <dbghelp.h>
+	#include "version.h"
+	#include "filesys.h"
+#endif
+
 /*
 	Debug output
 */
@@ -57,7 +64,7 @@ void debugstreams_init(bool disable_stderr, const char *filename)
 
 	if(filename)
 		g_debugstreams[1] = fopen(filename, "a");
-		
+
 	if(g_debugstreams[1])
 	{
 		fprintf(g_debugstreams[1], "\n\n-------------\n");
@@ -91,7 +98,7 @@ public:
 			//TODO: Is this slow?
 			fflush(g_debugstreams[i]);
 		}
-		
+
 		return c;
 	}
 	std::streamsize xsputn(const char *s, std::streamsize n)
@@ -111,7 +118,7 @@ public:
 
 		return n;
 	}
-	
+
 private:
 	bool m_disable_stderr;
 };
@@ -133,7 +140,7 @@ void assert_fail(const char *assertion, const char *file,
 			"%s:%u: %s: Assertion '%s' failed.\n",
 			(unsigned long)get_current_thread_id(),
 			file, line, function, assertion);
-	
+
 	debug_stacks_print();
 
 	if(g_debugstreams[1])
@@ -151,7 +158,7 @@ struct DebugStack
 	DebugStack(threadid_t id);
 	void print(FILE *file, bool everything);
 	void print(std::ostream &os, bool everything);
-	
+
 	threadid_t threadid;
 	char stack[DEBUG_STACK_SIZE][DEBUG_STACK_TEXT_SIZE];
 	int stack_i; // Points to the lowest empty position
@@ -285,10 +292,10 @@ DebugStacker::DebugStacker(const char *text)
 DebugStacker::~DebugStacker()
 {
 	JMutexAutoLock lock(g_debug_stacks_mutex);
-	
+
 	if(m_overflowed == true)
 		return;
-	
+
 	m_stack->stack_i--;
 
 	if(m_stack->stack_i == 0)
@@ -301,35 +308,124 @@ DebugStacker::~DebugStacker()
 	}
 }
 
-
 #ifdef _MSC_VER
-#if CATCH_UNHANDLED_EXCEPTIONS == 1
-void se_trans_func(unsigned int u, EXCEPTION_POINTERS* pExp)
+
+const char *Win32ExceptionCodeToString(DWORD exception_code)
 {
-	dstream<<"In trans_func.\n";
-	if(u == EXCEPTION_ACCESS_VIOLATION)
-	{
-		PEXCEPTION_RECORD r = pExp->ExceptionRecord;
-		dstream<<"Access violation at "<<r->ExceptionAddress
-				<<" write?="<<r->ExceptionInformation[0]
-				<<" address="<<r->ExceptionInformation[1]
-				<<std::endl;
-		throw FatalSystemException
-		("Access violation");
+	switch (exception_code) {
+	case EXCEPTION_ACCESS_VIOLATION:
+		return "Access violation";
+	case EXCEPTION_DATATYPE_MISALIGNMENT:
+		return "Misaligned data access";
+	case EXCEPTION_BREAKPOINT:
+		return "Breakpoint reached";
+	case EXCEPTION_SINGLE_STEP:
+		return "Single debug step";
+	case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
+		return "Array access out of bounds";
+	case EXCEPTION_FLT_DENORMAL_OPERAND:
+		return "Denormal floating point operand";
+	case EXCEPTION_FLT_DIVIDE_BY_ZERO:
+		return "Floating point division by zero";
+	case EXCEPTION_FLT_INEXACT_RESULT:
+		return "Inaccurate floating point result";
+	case EXCEPTION_FLT_INVALID_OPERATION:
+		return "Invalid floating point operation";
+	case EXCEPTION_FLT_OVERFLOW:
+		return "Floating point exponent overflow";
+	case EXCEPTION_FLT_STACK_CHECK:
+		return "Floating point stack overflow or underflow";
+	case EXCEPTION_FLT_UNDERFLOW:
+		return "Floating point exponent underflow";
+	case EXCEPTION_INT_DIVIDE_BY_ZERO:
+		return "Integer division by zero";
+	case EXCEPTION_INT_OVERFLOW:
+		return "Integer overflow";
+	case EXCEPTION_PRIV_INSTRUCTION:
+		return "Privileged instruction executed";
+	case EXCEPTION_IN_PAGE_ERROR:
+		return "Could not access or load page";
+	case EXCEPTION_ILLEGAL_INSTRUCTION:
+		return "Illegal instruction encountered";
+	case EXCEPTION_NONCONTINUABLE_EXCEPTION:
+		return "Attempted to continue after fatal exception";
+	case EXCEPTION_STACK_OVERFLOW:
+		return "Stack overflow";
+	case EXCEPTION_INVALID_DISPOSITION:
+		return "Invalid disposition returned to the exception dispatcher";
+	case EXCEPTION_GUARD_PAGE:
+		return "Attempted guard page access";
+	case EXCEPTION_INVALID_HANDLE:
+		return "Invalid handle";
 	}
-	if(u == EXCEPTION_STACK_OVERFLOW)
-	{
-		throw FatalSystemException
-		("Stack overflow");
-	}
-	if(u == EXCEPTION_ILLEGAL_INSTRUCTION)
-	{
-		throw FatalSystemException
-		("Illegal instruction");
-	}
+
+	return "Unknown exception";
 }
-#endif
+
+long WINAPI Win32ExceptionHandler(struct _EXCEPTION_POINTERS *pExceptInfo)
+{
+	char buf[512];
+	MINIDUMP_EXCEPTION_INFORMATION mdei;
+	MINIDUMP_USER_STREAM_INFORMATION mdusi;
+	MINIDUMP_USER_STREAM mdus;
+	bool minidump_created = false;
+	std::string version_str("Minetest ");
+
+	std::string dumpfile = porting::path_user + DIR_DELIM "minetest.dmp";
+
+	HANDLE hFile = CreateFileA(dumpfile.c_str(), GENERIC_WRITE,
+		FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hFile == INVALID_HANDLE_VALUE)
+		goto minidump_failed;
+
+	if (SetEndOfFile(hFile) == FALSE)
+		goto minidump_failed;
+
+	mdei.ClientPointers	   = NULL;
+	mdei.ExceptionPointers = pExceptInfo;
+	mdei.ThreadId		   = GetCurrentThreadId();
+
+	version_str += minetest_version_hash;
+
+	mdus.Type       = CommentStreamA;
+	mdus.BufferSize = version_str.size();
+	mdus.Buffer     = (PVOID)version_str.c_str();
+
+	mdusi.UserStreamArray = &mdus;
+	mdusi.UserStreamCount = 1;
+
+	if (MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile,
+			MiniDumpNormal, &mdei, &mdusi, NULL) == FALSE)
+		goto minidump_failed;
+
+	minidump_created = true;
+
+minidump_failed:
+
+	CloseHandle(hFile);
+
+	DWORD excode = pExceptInfo->ExceptionRecord->ExceptionCode;
+	_snprintf(buf, sizeof(buf),
+		" >> === FATAL ERROR ===\n"
+		" >> %s (Exception 0x%08X) at 0x%p\n",
+		Win32ExceptionCodeToString(excode), excode,
+		pExceptInfo->ExceptionRecord->ExceptionAddress);
+	dstream << buf;
+
+	if (minidump_created)
+		dstream << " >> Saved dump to " << dumpfile << std::endl;
+	else
+		dstream << " >> Failed to save dump" << std::endl;
+
+	return EXCEPTION_EXECUTE_HANDLER;
+}
+
 #endif
 
-
+void debug_set_exception_handler()
+{
+#ifdef _MSC_VER
+	SetUnhandledExceptionFilter(Win32ExceptionHandler);
+#endif
+}
 

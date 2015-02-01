@@ -419,6 +419,10 @@ inline const char * getPlatformName()
 void setXorgClassHint(const video::SExposedVideoData &video_data,
 	const std::string &name);
 
+// This only needs to be called at the start of execution, since all future
+// threads in the process inherit this exception handler
+void setWin32ExceptionHandler();
+
 } // namespace porting
 
 #ifdef __ANDROID__

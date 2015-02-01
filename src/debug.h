@@ -95,6 +95,8 @@ __NORETURN extern void assert_fail(
 
 #define assert(expr) ASSERT(expr)
 
+void debug_set_exception_handler();
+
 /*
 	DebugStack
 */
@@ -118,13 +120,12 @@ private:
 	bool m_overflowed;
 };
 
-#define DSTACK(msg)\
+#define DSTACK(msg) \
 	DebugStacker __debug_stacker(msg);
 
-#define DSTACKF(...)\
-	char __buf[DEBUG_STACK_TEXT_SIZE];\
-	snprintf(__buf,\
-			DEBUG_STACK_TEXT_SIZE, __VA_ARGS__);\
+#define DSTACKF(...) \
+	char __buf[DEBUG_STACK_TEXT_SIZE];                   \
+	snprintf(__buf, DEBUG_STACK_TEXT_SIZE, __VA_ARGS__); \
 	DebugStacker __debug_stacker(__buf);
 
 /*
@@ -132,34 +133,13 @@ private:
 */
 
 #if CATCH_UNHANDLED_EXCEPTIONS == 1
-	#define BEGIN_PORTABLE_DEBUG_EXCEPTION_HANDLER try{
-	#define END_PORTABLE_DEBUG_EXCEPTION_HANDLER(logstream)\
-		}catch(std::exception &e){\
-			logstream<<"ERROR: An unhandled exception occurred: "\
-					<<e.what()<<std::endl;\
-			assert(0);\
+	#define BEGIN_DEBUG_EXCEPTION_HANDLER try {
+	#define END_DEBUG_EXCEPTION_HANDLER(logstream) \
+		} catch (std::exception &e) {                               \
+			logstream << "ERROR: An unhandled exception occurred: " \
+				<< e.what() << std::endl;                           \
+			assert(0);                                              \
 		}
-	#ifdef _WIN32 // Windows
-		#ifdef _MSC_VER // MSVC
-void se_trans_func(unsigned int, EXCEPTION_POINTERS*);
-			#define BEGIN_DEBUG_EXCEPTION_HANDLER \
-				BEGIN_PORTABLE_DEBUG_EXCEPTION_HANDLER\
-				_set_se_translator(se_trans_func);
-
-			#define END_DEBUG_EXCEPTION_HANDLER(logstream) \
-				END_PORTABLE_DEBUG_EXCEPTION_HANDLER(logstream)
-		#else // Probably mingw
-			#define BEGIN_DEBUG_EXCEPTION_HANDLER\
-				BEGIN_PORTABLE_DEBUG_EXCEPTION_HANDLER
-			#define END_DEBUG_EXCEPTION_HANDLER(logstream)\
-				END_PORTABLE_DEBUG_EXCEPTION_HANDLER(logstream)
-		#endif
-	#else // Posix
-		#define BEGIN_DEBUG_EXCEPTION_HANDLER\
-			BEGIN_PORTABLE_DEBUG_EXCEPTION_HANDLER
-		#define END_DEBUG_EXCEPTION_HANDLER(logstream)\
-			END_PORTABLE_DEBUG_EXCEPTION_HANDLER(logstream)
-	#endif
 #else
 	// Dummy ones
 	#define BEGIN_DEBUG_EXCEPTION_HANDLER
