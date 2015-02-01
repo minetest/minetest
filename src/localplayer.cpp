@@ -232,7 +232,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		player is sneaking from, if any.  If the node from under
 		the player has been removed, the player falls.
 	*/
-	v3s16 current_node = floatToInt(position - v3f(0,BS/2,0), BS);
+	v3s16 current_node = floatToInt(position - v3f(0, 0.05 * BS, 0), BS);
 	if(m_sneak_node_exists &&
 	   nodemgr->get(map->getNodeNoEx(m_old_node_below)).name == "air" &&
 	   m_old_node_below_type != "air")
@@ -250,7 +250,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	}
 	if(m_need_to_get_new_sneak_node && physics_override_sneak)
 	{
-		v3s16 pos_i_bottom = floatToInt(position - v3f(0,BS/2,0), BS);
+		v3s16 pos_i_bottom = floatToInt(position - v3f(0, 0.05 * BS ,0), BS);
 		v2f player_p2df(position.X, position.Z);
 		f32 min_distance_f = 100000.0*BS;
 		// If already seeking from some node, compare to it.
