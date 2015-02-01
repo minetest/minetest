@@ -45,14 +45,9 @@ public:
 		NetworkPacket& operator>>(std::string& dst);
 		NetworkPacket& operator<<(std::string src);
 
-		void putLongString(std::string src);
-
 		NetworkPacket& operator>>(std::wstring& dst);
 		NetworkPacket& operator<<(std::wstring src);
 
-		std::string readLongString();
-
-		char getChar(u32 offset);
 		NetworkPacket& operator>>(char& dst);
 		NetworkPacket& operator<<(char src);
 

@@ -1032,7 +1032,7 @@ public:
 	void Connect(Address address);
 	bool Connected();
 	void Disconnect();
-	u32 Receive(u16 &peer_id, SharedBuffer<u8> &data);
+	NetworkPacket* Receive();
 	void Send(u16 peer_id, u8 channelnum, NetworkPacket* pkt, bool reliable);
 	u16 GetPeerID() { return m_peer_id; }
 	Address GetPeerAddress(u16 peer_id);

@@ -200,7 +200,6 @@ public:
 	void handleCommand_Init(NetworkPacket* pkt);
 	void handleCommand_Init2(NetworkPacket* pkt);
 	void handleCommand_RequestMedia(NetworkPacket* pkt);
-	void handleCommand_ReceivedMedia(NetworkPacket* pkt);
 	void handleCommand_ClientReady(NetworkPacket* pkt);
 	void handleCommand_GotBlocks(NetworkPacket* pkt);
 	void handleCommand_PlayerPos(NetworkPacket* pkt);
@@ -217,7 +216,7 @@ public:
 	void handleCommand_NodeMetaFields(NetworkPacket* pkt);
 	void handleCommand_InventoryFields(NetworkPacket* pkt);
 
-	void ProcessData(u8 *data, u32 datasize, u16 peer_id);
+	void ProcessData(NetworkPacket* pkt);
 
 	void Send(NetworkPacket* pkt);
 
@@ -366,7 +365,8 @@ public:
 	void peerAdded(con::Peer *peer);
 	void deletingPeer(con::Peer *peer, bool timeout);
 
-	void DenyAccess(u16 peer_id, const std::wstring &reason);
+	void DenyAccess(u16 peer_id, AccessDeniedCode reason);
+	void DenyAccess(u16 peer_id, std::wstring reason);
 	bool getClientConInfo(u16 peer_id, con::rtt_stat_type type,float* retval);
 	bool getClientInfo(u16 peer_id,ClientState* state, u32* uptime,
 			u8* ser_vers, u16* prot_vers, u8* major, u8* minor, u8* patch,
@@ -383,7 +383,8 @@ private:
 	void SendMovement(u16 peer_id);
 	void SendHP(u16 peer_id, u8 hp);
 	void SendBreath(u16 peer_id, u16 breath);
-	void SendAccessDenied(u16 peer_id,const std::wstring &reason);
+	void SendAccessDenied(u16 peer_id, AccessDeniedCode reason);
+	void SendAccessDenied(u16 peer_id, std::wstring reason);
 	void SendDeathscreen(u16 peer_id,bool set_camera_point_target, v3f camera_point_target);
 	void SendItemDef(u16 peer_id,IItemDefManager *itemdef, u16 protocol_version);
 	void SendNodeDef(u16 peer_id,INodeDefManager *nodedef, u16 protocol_version);

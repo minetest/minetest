@@ -2959,7 +2959,7 @@ Definition tables
         liquid_range = 8, -- number of flowing nodes around source (max. 8)
         drowning = 0, -- Player will take this amount of damage if no bubbles are left
         light_source = 0, -- Amount of light emitted by node
-        damage_per_second = 0, -- If player is inside node, this damage is caused
+        damage_per_second = 0, -- If player is inside node, this damage(or heal) is caused
         node_box = {type="regular"}, -- See "Node boxes"
         mesh = "model",
         selection_box = {type="regular"}, -- See "Node boxes" --[[

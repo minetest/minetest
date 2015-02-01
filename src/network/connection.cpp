@@ -1727,9 +1727,8 @@ void ConnectionSendThread::connect(Address address)
 
 	// Send a dummy packet to server with peer_id = PEER_ID_INEXISTENT
 	m_connection->SetPeerID(PEER_ID_INEXISTENT);
-	NetworkPacket* pkt = new NetworkPacket(0,0);
-	m_connection->Send(PEER_ID_SERVER, 0, pkt, true);
-	delete pkt;
+	NetworkPacket pkt(0,0);
+	m_connection->Send(PEER_ID_SERVER, 0, &pkt, true);
 }
 
 void ConnectionSendThread::disconnect()
@@ -2889,7 +2888,7 @@ void Connection::Disconnect()
 	putCommand(c);
 }
 
-u32 Connection::Receive(u16 &peer_id, SharedBuffer<u8> &data)
+NetworkPacket* Connection::Receive()
 {
 	for(;;) {
 		ConnectionEvent e = waitEvent(m_bc_receive_timeout);
@@ -2900,9 +2899,13 @@ u32 Connection::Receive(u16 &peer_id, SharedBuffer<u8> &data)
 		case CONNEVENT_NONE:
 			throw NoIncomingDataException("No incoming data");
 		case CONNEVENT_DATA_RECEIVED:
-			peer_id = e.peer_id;
-			data = SharedBuffer<u8>(e.data);
-			return e.data.getSize();
+		{
+			if (e.data.getSize() == 0) {
+				return NULL;
+			}
+
+			return new NetworkPacket(*(e.data), e.data.getSize(), e.peer_id);
+		}
 		case CONNEVENT_PEER_ADDED: {
 			UDPPeer tmp(e.peer_id, e.address, this);
 			if (m_bc_peerhandler)

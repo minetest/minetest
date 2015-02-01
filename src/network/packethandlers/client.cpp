@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "util/base64.h"
 #include "clientmedia.h"
+#include "gettext.h"
 #include "log.h"
 #include "map.h"
 #include "mapsector.h"
@@ -83,8 +84,8 @@ void Client::handleCommand_Init(NetworkPacket* pkt)
 	}
 
 	// Reply to server
-	NetworkPacket* resp_pkt = new NetworkPacket(TOSERVER_INIT2, 0);
-	Send(resp_pkt);
+	NetworkPacket resp_pkt(TOSERVER_INIT2, 0);
+	Send(&resp_pkt);
 
 	m_state = LC_Init;
 }
@@ -96,8 +97,17 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 	// not been agreed yet, the same as TOCLIENT_INIT.
 	m_access_denied = true;
 	m_access_denied_reason = L"Unknown";
-	if (pkt->getSize() >= 2) {
+	u8 denyCode = SERVER_ACCESSDENIED_UNEXPECTED_DATA;
+
+	if(pkt->getSize() >= 1) {
+		*pkt >> denyCode;
+	}
+
+	if (denyCode == SERVER_ACCESSDENIED_CUSTOM_STRING) {
 		*pkt >> m_access_denied_reason;
+	}
+	else if (denyCode < SERVER_ACCESSDENIED_MAX) {
+		m_access_denied_reason = accessDeniedStrings[denyCode];
 	}
 }
 
@@ -269,7 +279,6 @@ void Client::handleCommand_ChatMessage(NetworkPacket* pkt)
 void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)
 {
 	/*
-		u16 command
 		u16 count of removed objects
 		for all removed objects {
 			u16 id
@@ -278,7 +287,6 @@ void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)
 		for all added objects {
 			u16 id
 			u8 type
-			u32 initialization data length
 			string initialization data
 		}
 	*/
@@ -286,6 +294,7 @@ void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)
 	// Read removed objects
 	u8 type;
 	u16 removed_count, added_count, id;
+	std::string object;
 
 	*pkt >> removed_count;
 
@@ -298,8 +307,8 @@ void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)
 	*pkt >> added_count;
 
 	for (u16 i = 0; i < added_count; i++) {
-		*pkt >> id >> type;
-		m_env.addActiveObject(id, type, pkt->readLongString());
+		*pkt >> id >> type >> object;
+		m_env.addActiveObject(id, type, object);
 	}
 }
 
@@ -510,15 +519,12 @@ void Client::handleCommand_AnnounceMedia(NetworkPacket* pkt)
 void Client::handleCommand_Media(NetworkPacket* pkt)
 {
 	/*
-		u16 command
 		u16 total number of file bunches
 		u16 index of this bunch
 		u32 number of files in this bunch
 		for each file {
-			u16 length of name
 			string name
-			u32 length of data
-			data
+			string data
 		}
 	*/
 	u16 num_bunches;
@@ -552,20 +558,13 @@ void Client::handleCommand_Media(NetworkPacket* pkt)
 	assert(!m_mesh_update_thread.IsRunning());
 
 	for (u32 i=0; i < num_files; i++) {
-		std::string name;
+		std::string name, data;
 
-		*pkt >> name;
-
-		std::string data = pkt->readLongString();
+		*pkt >> name >> data;
 
 		m_media_downloader->conventionalTransferDone(
 				name, data, this);
 	}
-}
-
-void Client::handleCommand_ToolDef(NetworkPacket* pkt)
-{
-	infostream << "Client: WARNING: Ignoring TOCLIENT_TOOLDEF" << std::endl;
 }
 
 void Client::handleCommand_NodeDef(NetworkPacket* pkt)
@@ -588,11 +587,6 @@ void Client::handleCommand_NodeDef(NetworkPacket* pkt)
 	std::istringstream tmp_is2(tmp_os.str());
 	m_nodedef->deSerialize(tmp_is2);
 	m_nodedef_received = true;
-}
-
-void Client::handleCommand_CraftItemDef(NetworkPacket* pkt)
-{
-	infostream << "Client: WARNING: Ignoring TOCLIENT_CRAFTITEMDEF" << std::endl;
 }
 
 void Client::handleCommand_ItemDef(NetworkPacket* pkt)
@@ -699,7 +693,7 @@ void Client::handleCommand_InventoryFormSpec(NetworkPacket* pkt)
 	assert(player != NULL);
 
 	// Store formspec in LocalPlayer
-	player->inventory_formspec = pkt->readLongString();
+	*pkt >> player->inventory_formspec;
 }
 
 void Client::handleCommand_DetachedInventory(NetworkPacket* pkt)
@@ -724,10 +718,10 @@ void Client::handleCommand_DetachedInventory(NetworkPacket* pkt)
 
 void Client::handleCommand_ShowFormSpec(NetworkPacket* pkt)
 {
-	std::string formspec = pkt->readLongString();
+	std::string formspec;
 	std::string formname;
 
-	*pkt >> formname;
+	*pkt >> formspec >> formname;
 
 	ClientEvent event;
 	event.type = CE_SHOW_FORMSPEC;
@@ -785,19 +779,12 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	float maxsize;
 	bool collisiondetection;
 	u32 id;
+	std::string texture;
+	bool vertical = false;
 
 	*pkt >> amount >> spawntime >> minpos >> maxpos >> minvel >> maxvel
 		>> minacc >> maxacc >> minexptime >> maxexptime >> minsize
-		>> maxsize >> collisiondetection;
-
-	std::string texture = pkt->readLongString();
-
-	*pkt >> id;
-
-	bool vertical = false;
-	try {
-		*pkt >> vertical;
-	} catch (...) {}
+		>> maxsize >> collisiondetection >> texture >> id >> vertical;
 
 	ClientEvent event;
 	event.type                                   = CE_ADD_PARTICLESPAWNER;
@@ -824,13 +811,13 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 
 void Client::handleCommand_DeleteParticleSpawner(NetworkPacket* pkt)
 {
-	u16 id;
+	u32 id;
 
 	*pkt >> id;
 
 	ClientEvent event;
 	event.type                      = CE_DELETE_PARTICLESPAWNER;
-	event.delete_particlespawner.id = (u32) id;
+	event.delete_particlespawner.id = id;
 
 	m_client_event_queue.push_back(event);
 }
