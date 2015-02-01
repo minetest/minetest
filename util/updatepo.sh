@@ -54,6 +54,7 @@ xgettext --package-name=minetest \
 	--keyword=N_ \
 	--keyword=wgettext \
 	--keyword=fgettext \
+	--keyword=strgettext \
 	--keyword=wstrgettext \
 	--output $potfile \
 	`find src/ -name '*.cpp' -o -name '*.h'` \
