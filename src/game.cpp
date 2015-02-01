@@ -1806,9 +1806,7 @@ void Game::run()
 
 void Game::shutdown()
 {
-	wchar_t *msg = wgettext("Shutting down...");
-	showOverlayMessage(msg, 0, 0, false);
-	delete [] msg;
+	showOverlayMessage(wgettext("Shutting down..."), 0, 0, false);
 
 	if (clouds)
 		clouds->drop();
@@ -1857,9 +1855,7 @@ bool Game::init(
 		u16 port,
 		const SubgameSpec &gamespec)
 {
-	wchar_t *msg = wgettext("Loading...");
-	showOverlayMessage(msg, 0, 0);
-	delete [] msg;
+	showOverlayMessage(wgettext("Loading..."), 0, 0);
 
 	texture_src = createTextureSource(device);
 	shader_src = createShaderSource(device);
@@ -1916,9 +1912,7 @@ bool Game::initSound()
 bool Game::createSingleplayerServer(const std::string map_dir,
 		const SubgameSpec &gamespec, u16 port, std::string *address)
 {
-	wchar_t *msg = wgettext("Creating server...");
-	showOverlayMessage(msg, 0, 5);
-	delete [] msg;
+	showOverlayMessage(wgettext("Creating server..."), 0, 5);
 
 	std::string bind_str = g_settings->get("bind_address");
 	Address bind_addr(0, 0, 0, 0, port);
@@ -1955,9 +1949,7 @@ bool Game::createClient(const std::string &playername,
 		const std::string &password, std::string *address, u16 port,
 		std::wstring *error_message)
 {
-	wchar_t *msg = wgettext("Creating client...");
-	showOverlayMessage(msg, 0, 10);
-	delete [] msg;
+	showOverlayMessage(wgettext("Creating client..."), 0, 10);
 
 	draw_control = new MapDrawControl;
 	if (!draw_control)
@@ -2130,9 +2122,7 @@ bool Game::connectToServer(const std::string &playername,
 	*aborted = false;
 	bool local_server_mode = false;
 
-	wchar_t *msg = wgettext("Resolving address...");
-	showOverlayMessage(msg, 0, 15);
-	delete [] msg;
+	showOverlayMessage(wgettext("Resolving address..."), 0, 15);
 
 	Address connect_address(0, 0, 0, 0, port);
 
@@ -2223,9 +2213,7 @@ bool Game::connectToServer(const std::string &playername,
 			}
 
 			// Update status
-			wchar_t *msg = wgettext("Connecting to server...");
-			showOverlayMessage(msg, dtime, 20);
-			delete [] msg;
+			showOverlayMessage(wgettext("Connecting to server..."), dtime, 20);
 		}
 	} catch (con::PeerNotFoundException &e) {
 		// TODO: Should something be done here? At least an info/error
@@ -2283,12 +2271,12 @@ bool Game::getServerContent(bool *aborted)
 		int progress = 25;
 
 		if (!client->itemdefReceived()) {
-			wchar_t *text = wgettext("Item definitions...");
+			const wchar_t *text = wgettext("Item definitions...");
 			progress = 25;
 			draw_load_screen(text, device, guienv, dtime, progress);
 			delete[] text;
 		} else if (!client->nodedefReceived()) {
-			wchar_t *text = wgettext("Node definitions...");
+			const wchar_t *text = wgettext("Node definitions...");
 			progress = 30;
 			draw_load_screen(text, device, guienv, dtime, progress);
 			delete[] text;
@@ -2311,7 +2299,7 @@ bool Game::getServerContent(bool *aborted)
 			}
 
 			progress = 30 + client->mediaReceiveProgress() * 35 + 0.5;
-			draw_load_screen(narrow_to_wide(message.str().c_str()), device,
+			draw_load_screen(narrow_to_wide(message.str()), device,
 					guienv, dtime, progress);
 		}
 	}
@@ -4127,6 +4115,7 @@ void Game::showOverlayMessage(const wchar_t *msg, float dtime,
 		int percent, bool draw_clouds)
 {
 	draw_load_screen(msg, device, guienv, dtime, percent, draw_clouds);
+	delete[] msg;
 }
 
 
@@ -4206,8 +4195,7 @@ void the_game(bool *kill,
 		errorstream << "ServerError: " << e.what() << std::endl;
 	} catch (ModError &e) {
 		errorstream << "ModError: " << e.what() << std::endl;
-		wchar_t *check_msg = wgettext("\nCheck debug.txt for details.");
-		error_message = narrow_to_wide(e.what()) + check_msg;
-		delete [] check_msg;
+		error_message = narrow_to_wide(e.what()) + wstrgettext("\nCheck debug.txt for details.");
 	}
 }
+

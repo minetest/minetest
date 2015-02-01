@@ -28,9 +28,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "tile.h"
 #include "fontengine.h"
-#include <string>
-
+#include "log.h"
 #include "gettext.h"
+#include <string>
 
 #if USE_FREETYPE
 #include "xCGUITTFont.h"

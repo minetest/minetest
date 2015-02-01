@@ -103,7 +103,7 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 120, 20);
 		rect = rect + v2s32(size.X/2-60, size.Y/2-35);
-		wchar_t* text = wgettext("Sound Volume: ");
+		const wchar_t *text = wgettext("Sound Volume: ");
 		Environment->addStaticText(text, rect, false,
 				true, this, ID_soundText1);
 		delete[] text;
@@ -117,7 +117,7 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 	{
 		core::rect<s32> rect(0, 0, 80, 30);
 		rect = rect + v2s32(size.X/2-80/2, size.Y/2+55);
-		wchar_t* text = wgettext("Exit");
+		const wchar_t *text = wgettext("Exit");
 		Environment->addButton(rect, this, ID_soundExitButton,
 			text);
 		delete[] text;

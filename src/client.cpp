@@ -2716,7 +2716,7 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 	assert(m_nodedef_received);
 	assert(mediaReceived());
 
-	wchar_t* text = wgettext("Loading textures...");
+	const wchar_t* text = wgettext("Loading textures...");
 
 	// Rebuild inherited images and recreate textures
 	infostream<<"- Rebuilding images and textures"<<std::endl;

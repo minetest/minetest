@@ -2000,7 +2000,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			mydata.rect =
 					core::rect<s32>(size.X/2-70, pos.Y,
 							(size.X/2-70)+140, pos.Y + (m_btn_height*2));
-			wchar_t* text = wgettext("Proceed");
+			const wchar_t *text = wgettext("Proceed");
 			Environment->addButton(mydata.rect, this, 257, text);
 			delete[] text;
 		}

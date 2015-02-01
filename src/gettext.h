@@ -20,8 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef GETTEXT_HEADER
 #define GETTEXT_HEADER
 
-#include "config.h" // for USE_GETTEXT
-#include "log.h"
+//#include "config.h" // for USE_GETTEXT
 
 #if USE_GETTEXT
 #include <libintl.h>
@@ -33,64 +32,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define gettext_noop(String) String
 #define N_(String) gettext_noop (String)
 
-#if defined(_WIN32)
-#define WIN32_LEAN_AND_MEAN
-#ifndef _WIN32_WINNT
-	#define _WIN32_WINNT 0x0501
-#endif
-#include <windows.h>
-
-#endif // #if defined(_WIN32)
-
 #ifdef _MSC_VER
-void init_gettext(const char *path,std::string configured_language,int argc, char** argv);
+void init_gettext(const char *path, const std::string &configured_language, int argc, char** argv);
 #else
-void init_gettext(const char *path,std::string configured_language);
+void init_gettext(const char *path, const std::string &configured_language);
 #endif
 
-extern std::wstring narrow_to_wide(const std::string& mbs);
-#include "util/numeric.h"
+extern const wchar_t *narrow_to_wide_c(const char *mbs);
+extern std::wstring narrow_to_wide(const std::string &mbs);
 
 
-/******************************************************************************/
-inline wchar_t* chartowchar_t(const char *str)
+// You must free the returned string!
+inline const wchar_t *wgettext(const char *str)
 {
-	wchar_t* nstr = 0;
-#if defined(_WIN32)
-	int nResult = MultiByteToWideChar( CP_UTF8, 0, (LPCSTR) str, -1, 0, 0 );
-	if( nResult == 0 )
-	{
-		errorstream<<"gettext: MultiByteToWideChar returned null"<<std::endl;
-	}
-	else
-	{
-		nstr = new wchar_t[nResult];
-		MultiByteToWideChar( CP_UTF8, 0, (LPCSTR) str, -1, (WCHAR *) nstr, nResult );
-	}
-#else
-	size_t l = strlen(str);
-	nstr = new wchar_t[l+1];
-
-	std::wstring intermediate = narrow_to_wide(str);
-	memset(nstr, 0, (l+1)*sizeof(wchar_t));
-	memcpy(nstr, intermediate.c_str(), l*sizeof(wchar_t));
-#endif
-
-	return nstr;
+	return narrow_to_wide_c(gettext(str));
 }
 
-/******************************************************************************/
-inline wchar_t* wgettext(const char *str)
+inline std::wstring wstrgettext(const std::string &text)
 {
-	return chartowchar_t(gettext(str));
+	return narrow_to_wide(gettext(text.c_str()));
 }
 
-/******************************************************************************/
-inline std::wstring wstrgettext(std::string text) {
-	wchar_t* wlabel = wgettext(text.c_str());
-	std::wstring out = (std::wstring)wlabel;
-	delete[] wlabel;
-	return out;
+inline std::string strgettext(const std::string &text)
+{
+	return gettext(text.c_str());
 }
 
 #endif
