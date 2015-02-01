@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "localplayer.h"
 #include "mapblock_mesh.h"
 #include "event.h"
+#include "constants.h"
 #endif
 #include "daynightratio.h"
 #include "map.h"
@@ -2216,32 +2217,59 @@ void ClientEnvironment::step(float dtime)
 	}
 	
 	/*
-		A quick draft of lava damage
+		A draft of node damage
 	*/
-	if(m_lava_hurt_interval.step(dtime, 1.0))
-	{
+	if (m_lava_hurt_interval.step(dtime, 1.0)) {
 		v3f pf = lplayer->getPosition();
 		
 		// Feet, middle and head
-		v3s16 p1 = floatToInt(pf + v3f(0, BS*0.1, 0), BS);
-		MapNode n1 = m_map->getNodeNoEx(p1);
+		v3s16 p1 = floatToInt(pf + v3f(0, BS*0.1, 0), BS); // get pos
 		v3s16 p2 = floatToInt(pf + v3f(0, BS*0.8, 0), BS);
-		MapNode n2 = m_map->getNodeNoEx(p2);
 		v3s16 p3 = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
+		MapNode n1 = m_map->getNodeNoEx(p1); // get node
+		MapNode n2 = m_map->getNodeNoEx(p2);
 		MapNode n3 = m_map->getNodeNoEx(p3);
 
-		u32 damage_per_second = 0;
-		damage_per_second = MYMAX(damage_per_second,
-				m_gamedef->ndef()->get(n1).damage_per_second);
-		damage_per_second = MYMAX(damage_per_second,
-				m_gamedef->ndef()->get(n2).damage_per_second);
-		damage_per_second = MYMAX(damage_per_second,
-				m_gamedef->ndef()->get(n3).damage_per_second);
-		
-		if(damage_per_second != 0)
-		{
-			damageLocalPlayer(damage_per_second, true);
+		s32 damage_per_second = 0;
+		s32 damage_max = 0;
+		s32 damage_min = 0; // Healing
+
+		// check body
+		s32 d1 = m_gamedef->ndef()->get(n1).damage_per_second;
+		s32 d2 = m_gamedef->ndef()->get(n2).damage_per_second;
+		s32 d3 = m_gamedef->ndef()->get(n3).damage_per_second;
+		damage_max = MYMAX(damage_max, d1);
+		damage_min = MYMIN(damage_min, d1);
+		damage_max = MYMAX(damage_max, d2);
+		damage_min = MYMIN(damage_min, d2);
+		damage_max = MYMAX(damage_max, d3);
+		damage_min = MYMIN(damage_min, d3);
+
+		// check colliding nodes - iterate through collision list from lplayer->move
+		for (std::list<CollisionInfo>::iterator i = player_collisions.begin();
+				i != player_collisions.end();
+				++i) {
+			CollisionInfo &info = *i;
+			if (info.type == COLLISION_NODE) {
+				MapNode n = m_map->getNodeNoEx(info.node_p);
+				s32 d = m_gamedef->ndef()->get(n).damage_per_second;
+				damage_max = MYMAX(damage_max, d);
+				damage_min = MYMIN(damage_min, d);
+			}
 		}
+
+		// calculate dmg/s
+		if (damage_max >= 0) {
+			if (damage_min >= 0) // just damage
+				damage_per_second = damage_max;
+			else // damage - (-heal)
+				damage_per_second = damage_max + damage_min;
+		}
+		else if (damage_min < 0)
+			damage_per_second = damage_min; // just heal
+
+		if (damage_per_second != 0)
+			damageLocalPlayer(damage_per_second, true); // push damage
 	}
 
 	/*
@@ -2538,18 +2566,26 @@ void ClientEnvironment::processActiveObjectMessage(u16 id,
 	Callbacks for activeobjects
 */
 
-void ClientEnvironment::damageLocalPlayer(u8 damage, bool handle_hp)
+void ClientEnvironment::damageLocalPlayer(s16 damage, bool handle_hp)
 {
 	LocalPlayer *lplayer = getLocalPlayer();
 	assert(lplayer);
 	
-	if(handle_hp){
+	if (handle_hp) {
 		if (lplayer->hp == 0) // Don't damage a dead player
 			return;
-		if(lplayer->hp > damage)
-			lplayer->hp -= damage;
-		else
-			lplayer->hp = 0;
+		if (damage > 0) {
+			if (lplayer->hp > damage)
+				lplayer->hp -= damage;
+			else
+				lplayer->hp = 0;
+		}
+		else if (damage < 0) {
+			if (lplayer->hp < PLAYER_MAX_HP)
+				lplayer->hp -= damage; // damage is negative
+			else
+				lplayer->hp = PLAYER_MAX_HP;
+		}
 	}
 
 	ClientEnvEvent event;
