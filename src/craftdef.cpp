@@ -954,7 +954,9 @@ public:
 
 			try {
 				tmpout = def->getOutput(input, gamedef);
-				if(tmpout.item.substr(0,output.item.length()) == output.item)
+				if((tmpout.item.substr(0,output.item.length()) == output.item) &&
+					((tmpout.item[output.item.length()] == 0) ||
+					(tmpout.item[output.item.length()] == ' ')))
 				{
 					// Get output, then decrement input (if requested)
 					input = def->getInput(output, gamedef);
