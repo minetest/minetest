@@ -240,7 +240,7 @@ void ModConfiguration::addMods(std::vector<ModSpec> new_mods)
 		for(std::vector<ModSpec>::const_iterator it = new_mods.begin();
 				it != new_mods.end(); ++it){
 			const ModSpec &mod = *it;
-			if(mod.part_of_modpack != want_from_modpack)
+			if(mod.part_of_modpack != (bool)want_from_modpack)
 				continue;
 			if(existing_mods.count(mod.name) == 0){
 				// GOOD CASE: completely new mod.

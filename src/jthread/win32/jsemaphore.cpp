@@ -81,9 +81,9 @@ typedef struct _SEMAPHORE_BASIC_INFORMATION {
 
 /* Note: this will only work as long as jthread is directly linked to application */
 /* it's gonna fail if someone tries to build jthread as dll */
-static _NtQuerySemaphore NtQuerySemaphore = 
+static _NtQuerySemaphore NtQuerySemaphore =
 		(_NtQuerySemaphore)
-		GetProcAddress 
+		GetProcAddress
 		(GetModuleHandle ("ntdll.dll"), "NtQuerySemaphore");
 
 int JSemaphore::GetValue() {
@@ -91,16 +91,14 @@ int JSemaphore::GetValue() {
 	LONG retval;
 
 	assert(NtQuerySemaphore);
-	
+
 	retval = NtQuerySemaphore (m_hSemaphore, 0,
 		&BasicInfo, sizeof (SEMAPHORE_BASIC_INFORMATION), NULL);
 
 	if (retval == ERROR_SUCCESS)
-	{
 		return BasicInfo.CurrentCount;
-	}
-	else {
-		assert("unable to read semaphore count" == 0);
-	}
+
+	assert("unable to read semaphore count" == 0);
+	return 0;
 }
 
