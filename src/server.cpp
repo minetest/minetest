@@ -4294,6 +4294,7 @@ void Server::RespawnPlayer(u16 peer_id)
 			<<" respawns"<<std::endl;
 
 	playersao->setHP(PLAYER_MAX_HP);
+	playersao->setBreath(PLAYER_MAX_BREATH);
 
 	bool repositioned = m_script->on_respawnplayer(playersao);
 	if(!repositioned){

@@ -47,7 +47,7 @@ Player::Player(IGameDef *gamedef, const char *name):
 	keyPressed(0),
 // protected
 	m_gamedef(gamedef),
-	m_breath(-1),
+	m_breath(PLAYER_MAX_BREATH),
 	m_pitch(0),
 	m_yaw(0),
 	m_speed(0,0,0),
@@ -213,12 +213,12 @@ void Player::deSerialize(std::istream &is, std::string playername)
 	try{
 		hp = args.getS32("hp");
 	}catch(SettingNotFoundException &e) {
-		hp = 20;
+		hp = PLAYER_MAX_HP;
 	}
 	try{
 		m_breath = args.getS32("breath");
 	}catch(SettingNotFoundException &e) {
-		m_breath = 11;
+		m_breath = PLAYER_MAX_BREATH;
 	}
 
 	inventory.deSerialize(is);
