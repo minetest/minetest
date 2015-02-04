@@ -22,7 +22,7 @@ function meta:__newindex(name, value)
 				info.currentline, name)
 		if not warned[warn_key] and info.what ~= "main" and
 				info.what ~= "C" then
-			minetest.log("error", ("Assignment to undeclared "..
+			warn(("Assignment to undeclared "..
 					"global %q inside a function at %s.")
 				:format(name, desc))
 			warned[warn_key] = true
