@@ -227,7 +227,7 @@ Compiling on Windows:
 		http://gnuwin32.sourceforge.net/downlinks/gettext.php
 		- This is used for other UI languages. Feel free to leave it out.
 	* And, of course, Minetest:
-		http://minetest.net/download.php
+		http://minetest.net/download
 - Steps:
 	- Select a directory called DIR hereafter in which you will operate.
 	- Make sure you have CMake and a compiler installed.
