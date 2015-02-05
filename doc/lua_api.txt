@@ -1278,6 +1278,7 @@ examples.
     size[8,9]
     list[context;fuel;2,3;1,1;]
     list[context;src;2,1;1,1;]
+    list_predict[all,0]
     list[context;dst;5,1;2,2;]
     list[current_player;main;0,5;8,4;]
 
@@ -1287,6 +1288,7 @@ examples.
     image[1,0.6;1,2;player.png]
     list[current_player;main;0,3.5;8,4;]
     list[current_player;craft;3,0;3,3;]
+    list_predict[all,0]
     list[current_player;craftpreview;7,1;1,1;]
 
 ### Elements
@@ -1301,6 +1303,11 @@ examples.
 
 #### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
 * Show an inventory list
+
+#### `list_predict[<take_predict>,<put_predict>]
+* Predict how many items can be taken or put in the subsequent list[]
+* `take_predict`: `all`/integer >= 0
+* `put_predict`: `all`/integer >= 0
 
 #### `listcolors[<slot_bg_normal>;<slot_bg_hover>]`
 * Sets background color of slots as `ColorString`

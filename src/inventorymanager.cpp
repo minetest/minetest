@@ -219,8 +219,8 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	if(try_take_count == 0)
 		try_take_count = list_from->getItem(from_i).count;
 
-	int src_can_take_count = 0xffff;
-	int dst_can_put_count = 0xffff;
+	int src_can_take_count = DEFAULT_MAX_MOVE_INVENTORY_ITEMS;
+	int dst_can_put_count = DEFAULT_MAX_MOVE_INVENTORY_ITEMS;
 	
 	/* Query detached inventories */
 
@@ -465,26 +465,50 @@ void IMoveAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
 	// Optional InventoryAction operation that is run on the client
 	// to make lag less apparent.
 
+	/*
+		Disable moving items out of craftpreview
+	*/
+	if (from_list == "craftpreview") {
+		return;
+	}
+
+	/*
+		Disable moving items into craftresult and craftpreview
+	*/
+	if (to_list == "craftpreview" || to_list == "craftresult") {
+		return;
+	}
+
 	Inventory *inv_from = mgr->getInventory(from_inv);
 	Inventory *inv_to = mgr->getInventory(to_inv);
-	if(!inv_from || !inv_to)
-		return;
-
-	InventoryLocation current_player;
-	current_player.setCurrentPlayer();
-	Inventory *inv_player = mgr->getInventory(current_player);
-	if(inv_from != inv_player || inv_to != inv_player)
+	if (!inv_from || !inv_to)
 		return;
 
 	InventoryList *list_from = inv_from->getList(from_list);
 	InventoryList *list_to = inv_to->getList(to_list);
-	if(!list_from || !list_to)
+	if (!list_from || !list_to)
+		return;
+
+	if (count == 0)
+		count = list_from->getItem(from_i).count;
+
+	// Modify count according to collected data
+	if (count > take_predict)
+		count = take_predict;
+	if (count > put_predict)
+		count = put_predict;
+	// Limit according to source item count
+	if (count > list_from->getItem(from_i).count)
+		count = list_from->getItem(from_i).count;
+
+	// If no items will be moved, don't go further
+	if (count == 0)
 		return;
 
 	list_from->moveItem(from_i, list_to, to_i, count);
 
 	mgr->setInventoryModified(from_inv);
-	if(inv_from != inv_to)
+	if (inv_from != inv_to)
 		mgr->setInventoryModified(to_inv);
 }
 
@@ -655,21 +679,32 @@ void IDropAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
 	// Optional InventoryAction operation that is run on the client
 	// to make lag less apparent.
 
-	Inventory *inv_from = mgr->getInventory(from_inv);
-	if(!inv_from)
+	/*
+		Disable moving items out of craftpreview
+	*/
+	if (from_list == "craftpreview") {
 		return;
+	}
 
-	InventoryLocation current_player;
-	current_player.setCurrentPlayer();
-	Inventory *inv_player = mgr->getInventory(current_player);
-	if(inv_from != inv_player)
+	Inventory *inv_from = mgr->getInventory(from_inv);
+	if (!inv_from)
 		return;
 
 	InventoryList *list_from = inv_from->getList(from_list);
-	if(!list_from)
+	if (!list_from)
 		return;
 
-	if(count == 0)
+	if (count == 0)
+		count = list_from->getItem(from_i).count;
+
+	// Modify count according to collected data
+	if (count > take_predict)
+		count = take_predict;
+	// Limit according to source item count
+	if (count > list_from->getItem(from_i).count)
+		count = list_from->getItem(from_i).count;
+
+	if (count == 0)
 		list_from->changeItem(from_i, ItemStack());
 	else
 		list_from->takeItem(from_i, count);

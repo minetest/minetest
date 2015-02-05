@@ -293,6 +293,27 @@ void GUIFormSpecMenu::parseSize(parserData* data,std::string element)
 	errorstream<< "Invalid size element (" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
+void GUIFormSpecMenu::parseListPredict(parserData* data, std::string element)
+{
+	if (!m_gamedef) {
+		errorstream<<"WARNING: invalid use of 'list_predict' with m_gamedef==0"<<std::endl;
+		return;
+	}
+	std::vector<std::string> parts = split(element, ',');
+	if ((parts.size() == 2) ||
+			((parts.size() > 2) && (m_formspec_version > FORMSPEC_API_VERSION))) {
+		int take = DEFAULT_MAX_MOVE_INVENTORY_ITEMS;
+		int put = DEFAULT_MAX_MOVE_INVENTORY_ITEMS;
+		if (parts[0] != "all") {
+			take = stoi(parts[0]);
+		}
+		if (parts[1] != "all") {
+			put = stoi(parts[1]);
+		}
+		data->list_predict = ListPredict(take, put);
+	}
+}
+
 void GUIFormSpecMenu::parseList(parserData* data,std::string element)
 {
 	if (m_gamedef == 0) {
@@ -342,7 +363,9 @@ void GUIFormSpecMenu::parseList(parserData* data,std::string element)
 
 		if(!data->explicit_size)
 			errorstream<<"WARNING: invalid use of list without a size[] element"<<std::endl;
-		m_inventorylists.push_back(ListDrawSpec(loc, listname, pos, geom, start_i));
+		m_inventorylists.push_back(ListDrawSpec(loc, listname, pos, geom, start_i, data->list_predict));
+		// reset the list_predict for other lists
+		data->list_predict = ListPredict();
 		return;
 	}
 	errorstream<< "Invalid list element(" << parts.size() << "): '" << element << "'"  << std::endl;
@@ -1636,6 +1659,11 @@ void GUIFormSpecMenu::parseElement(parserData* data, std::string element)
 	std::string type = trim(parts[0]);
 	std::string description = trim(parts[1]);
 
+	if (type == "list_predict") {
+		parseListPredict(data, description);
+		return;
+	}
+
 	if (type == "list") {
 		parseList(data,description);
 		return;
@@ -2079,12 +2107,13 @@ GUIFormSpecMenu::ItemSpec GUIFormSpecMenu::getItemAtPos(v2s32 p) const
 			core::rect<s32> rect = imgrect + s.pos + p0;
 			if(rect.isPointInside(p))
 			{
-				return ItemSpec(s.inventoryloc, s.listname, item_i);
+				return ItemSpec(s.inventoryloc, s.listname, item_i, s.list_predict);
 			}
 		}
 	}
 
-	return ItemSpec(InventoryLocation(), "", -1);
+	ListPredict list_predict;
+	return ItemSpec(InventoryLocation(), "", -1, list_predict);
 }
 
 void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
@@ -2490,7 +2519,7 @@ void GUIFormSpecMenu::updateSelectedItem()
 							<<s.inventoryloc.dump()<<" "<<s.listname
 							<<" "<<item_i<<std::endl;
 					delete m_selected_item;
-					m_selected_item = new ItemSpec(s.inventoryloc, s.listname, item_i);
+					m_selected_item = new ItemSpec(s.inventoryloc, s.listname, item_i, s.list_predict);
 					m_selected_amount = stack.count;
 				}
 			}
@@ -2514,10 +2543,7 @@ void GUIFormSpecMenu::updateSelectedItem()
 				InventoryList *list = inv->getList("craftresult");
 				if(list && list->getSize() >= 1 && !list->getItem(0).empty())
 				{
-					m_selected_item = new ItemSpec;
-					m_selected_item->inventoryloc = s.inventoryloc;
-					m_selected_item->listname = "craftresult";
-					m_selected_item->i = 0;
+					m_selected_item = new ItemSpec(s.inventoryloc, "craftresult", 0, s.list_predict);
 					m_selected_amount = 0;
 					m_selected_dragging = false;
 					break;
@@ -3269,9 +3295,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			a->from_inv = m_selected_item->inventoryloc;
 			a->from_list = m_selected_item->listname;
 			a->from_i = m_selected_item->i;
+			a->take_predict = m_selected_item->list_predict.take;
 			a->to_inv = s.inventoryloc;
 			a->to_list = s.listname;
 			a->to_i = s.i;
+			a->put_predict = s.list_predict.put;
 			m_invmgr->inventoryAction(a);
 		}
 		else if(drop_amount > 0) {
@@ -3296,6 +3324,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			a->from_inv = m_selected_item->inventoryloc;
 			a->from_list = m_selected_item->listname;
 			a->from_i = m_selected_item->i;
+			a->take_predict = m_selected_item->list_predict.take;
 			m_invmgr->inventoryAction(a);
 		}
 		else if(craft_amount > 0) {

@@ -74,6 +74,25 @@ public:
 
 class GUIFormSpecMenu : public GUIModalMenu
 {
+	/**
+	 * Stores client predction values
+	 */
+	struct ListPredict
+	{
+		int take;
+		int put;
+
+		ListPredict() {
+			take = DEFAULT_MAX_MOVE_INVENTORY_ITEMS;
+			put = DEFAULT_MAX_MOVE_INVENTORY_ITEMS;
+		}
+
+		ListPredict(int a_take, int a_put) {
+			take = a_take;
+			put = a_put;
+		}
+	};
+
 	struct ItemSpec
 	{
 		ItemSpec()
@@ -82,11 +101,13 @@ class GUIFormSpecMenu : public GUIModalMenu
 		}
 		ItemSpec(const InventoryLocation &a_inventoryloc,
 				const std::string &a_listname,
-				s32 a_i)
+				s32 a_i,
+				ListPredict a_list_predict)
 		{
 			inventoryloc = a_inventoryloc;
 			listname = a_listname;
 			i = a_i;
+			list_predict = a_list_predict;
 		}
 		bool isValid() const
 		{
@@ -96,6 +117,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 		InventoryLocation inventoryloc;
 		std::string listname;
 		s32 i;
+		ListPredict list_predict;
 	};
 
 	struct ListDrawSpec
@@ -105,12 +127,14 @@ class GUIFormSpecMenu : public GUIModalMenu
 		}
 		ListDrawSpec(const InventoryLocation &a_inventoryloc,
 				const std::string &a_listname,
-				v2s32 a_pos, v2s32 a_geom, s32 a_start_item_i):
+				v2s32 a_pos, v2s32 a_geom, s32 a_start_item_i,
+				ListPredict a_list_predict):
 			inventoryloc(a_inventoryloc),
 			listname(a_listname),
 			pos(a_pos),
 			geom(a_geom),
-			start_item_i(a_start_item_i)
+			start_item_i(a_start_item_i),
+			list_predict(a_list_predict)
 		{
 		}
 
@@ -119,6 +143,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 		v2s32 pos;
 		v2s32 geom;
 		s32 start_item_i;
+		ListPredict list_predict;
 	};
 
 	struct ImageDrawSpec
@@ -361,6 +386,7 @@ private:
 		GUITable::TableColumns table_columns;
 		// used to restore table selection/scroll/treeview state
 		std::map<std::wstring,GUITable::DynamicData> table_dyndata;
+		ListPredict list_predict;
 	} parserData;
 
 	typedef struct {
@@ -375,6 +401,7 @@ private:
 	void parseElement(parserData* data,std::string element);
 
 	void parseSize(parserData* data,std::string element);
+	void parseListPredict(parserData* data, std::string element);
 	void parseList(parserData* data,std::string element);
 	void parseCheckbox(parserData* data,std::string element);
 	void parseImage(parserData* data,std::string element);
