@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef GETTEXT_HEADER
 #define GETTEXT_HEADER
 
-//#include "config.h" // for USE_GETTEXT
+#include "config.h" // for USE_GETTEXT
 
 #if USE_GETTEXT
 #include <libintl.h>
