@@ -159,7 +159,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_parallax_occlusion", "false");
 	settings->setDefault("generate_normalmaps", "false");
 	settings->setDefault("normalmaps_strength", "0.6");
-	settings->setDefault("normalmaps_smooth", "1");
+	settings->setDefault("normalmaps_smooth", "4");
 	settings->setDefault("parallax_occlusion_mode", "1");
 	settings->setDefault("parallax_occlusion_iterations", "4");
 	settings->setDefault("parallax_occlusion_scale", "0.08");
