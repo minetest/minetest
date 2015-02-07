@@ -74,6 +74,22 @@ void MapNode::setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr
 		assert(0);
 }
 
+bool MapNode::isLightDayNightEq(INodeDefManager *nodemgr) const
+{
+	const ContentFeatures &f = nodemgr->get(*this);
+	bool isEqual;
+
+	if (f.param_type == CPT_LIGHT) {
+		u8 day   = MYMAX(f.light_source, param1 & 0x0f);
+		u8 night = MYMAX(f.light_source, (param1 >> 4) & 0x0f);
+		isEqual = day == night;
+	} else {
+		isEqual = true;
+	}
+
+	return isEqual;
+}
+
 u8 MapNode::getLight(enum LightBank bank, INodeDefManager *nodemgr) const
 {
 	// Select the brightest of [light source, propagated light]
