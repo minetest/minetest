@@ -518,6 +518,9 @@ void Client::step(float dtime)
 
 			// Send as unreliable
 			Send(1, data, false);
+
+			// Empty the password, don't let it in memory !!!
+			m_password = "";
 		}
 
 		// Not connected, return
