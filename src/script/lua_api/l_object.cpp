@@ -77,7 +77,7 @@ ObjectRef* ObjectRef::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);
-	if(!ud) luaL_typerror(L, narg, className);
+	if(!ud) script_type_error(L, narg, className);
 	return *(ObjectRef**)ud;  // unbox pointer
 }
 
@@ -1299,7 +1299,7 @@ void ObjectRef::Register(lua_State *L)
 
 	lua_pop(L, 1);  // drop metatable
 
-	luaL_openlib(L, 0, methods, 0);  // fill methodtable
+	luaL_setfuncs(L, methods, 0);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 
 	// Cannot be created from Lua
@@ -1307,7 +1307,7 @@ void ObjectRef::Register(lua_State *L)
 }
 
 const char ObjectRef::className[] = "ObjectRef";
-const luaL_reg ObjectRef::methods[] = {
+const luaL_Reg ObjectRef::methods[] = {
 	// ServerActiveObject
 	luamethod(ObjectRef, remove),
 	luamethod(ObjectRef, getpos),

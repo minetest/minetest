@@ -1,6 +1,4 @@
-#
-# Lua 5.1.x
-#
+
 cmake_minimum_required(VERSION 2.4 FATAL_ERROR)
 
 project(lua C)
@@ -32,47 +30,24 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	set(DEFAULT_DLOPEN ON)
 endif()
 
-if(WIN32)
-	#set(BUILD_STATIC OFF)
-	set(BUILD_STATIC ON)
-else()
-	#option(BUILD_STATIC "build static library" ON)
-	set(BUILD_STATIC ON)
-endif()
+set(BUILD_STATIC ON)
 
 if(DEFAULT_DLOPEN)
 	option(LUA_USE_DLOPEN "Enable dlopen support." ON)
 else()
 	option(LUA_USE_DLOPEN "Enable dlopen support." OFF)
 endif()
-mark_as_advanced(LUA_USE_DLOPEN)
 
-if(DEFAULT_POSIX)
-else()
-endif()
+mark_as_advanced(LUA_USE_DLOPEN)
 
 if(DEFAULT_ANSI)
 	option(LUA_ANSI "Disable non-ansi features." ON)
 else()
 	option(LUA_ANSI "Disable non-ansi features." OFF)
 endif()
+
 mark_as_advanced(LUA_ANSI)
 
-#
-# Lua version
-#
-set(LUA_VERSION_MAJOR 5)
-set(LUA_VERSION_MINOR 1)
-set(LUA_VERSION_PATCH 4)
-set(LUA_VERSION
-				"${LUA_VERSION_MAJOR}.${LUA_VERSION_MINOR}.${LUA_VERSION_PATCH}")
-set(LUA_SOVERSION
-				"${LUA_VERSION_MAJOR}")
-
-#
-# libs & cflags
-#
-set(COMMON_LDFLAGS "${COMMON_LDFLAGS}")
 
 # For "Mac OS X 10.3-"
 if(LUA_USE_MACOSX)
@@ -91,24 +66,15 @@ if(LUA_ANSI)
 	set(COMMON_CFLAGS "${COMMON_CFLAGS} -DLUA_ANSI")
 endif(LUA_ANSI)
 
-#
-# COMMON_CFLAGS has no effect without this line
-#
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_CFLAGS}")
 
-#
-# standard flags to use for each build type.
-#
 if(CMAKE_COMPILER_IS_GNUCC)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pipe -Wall -Wextra -Wshadow -W -pedantic -std=gnu99")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pipe -Wall -Wextra -Wshadow -W -pedantic --std=c99")
 	set(CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}     -O2")
 	set(CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}       -O0 -g")
 	set(CMAKE_C_FLAGS_PROFILE        "${CMAKE_C_FLAGS_PROFILE}     -O1 -g")
 	set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_WITHDEBINFO} -O2 -g")
 endif(CMAKE_COMPILER_IS_GNUCC)
 
-#
-# sub-folders
-#
-ADD_SUBDIRECTORY(src build)
+add_subdirectory(src build)
 

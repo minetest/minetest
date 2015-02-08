@@ -419,7 +419,7 @@ LuaVoxelManip *LuaVoxelManip::checkobject(lua_State *L, int narg)
 
 	void *ud = luaL_checkudata(L, narg, className);
 	if (!ud)
-		luaL_typerror(L, narg, className);
+		script_type_error(L, narg, className);
 
 	return *(LuaVoxelManip **)ud;  // unbox pointer
 }
@@ -445,7 +445,7 @@ void LuaVoxelManip::Register(lua_State *L)
 
 	lua_pop(L, 1);  // drop metatable
 
-	luaL_openlib(L, 0, methods, 0);  // fill methodtable
+	luaL_setfuncs(L, methods, 0);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 
 	// Can be created from Lua (VoxelManip())
@@ -453,7 +453,7 @@ void LuaVoxelManip::Register(lua_State *L)
 }
 
 const char LuaVoxelManip::className[] = "VoxelManip";
-const luaL_reg LuaVoxelManip::methods[] = {
+const luaL_Reg LuaVoxelManip::methods[] = {
 	luamethod(LuaVoxelManip, read_from_map),
 	luamethod(LuaVoxelManip, get_data),
 	luamethod(LuaVoxelManip, set_data),

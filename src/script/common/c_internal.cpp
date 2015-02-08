@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h"
 #include "settings.h"
 
+
 std::string script_get_backtrace(lua_State *L)
 {
 	std::string s;
@@ -40,6 +41,35 @@ std::string script_get_backtrace(lua_State *L)
 	lua_pop(L, 1);
 	return s;
 }
+
+
+int script_type_error(lua_State *L, int narg, const char *tname)
+{
+	std::ostringstream os;
+
+	luaL_where(L, 1);
+	const char *where = lua_tostring(L, -1);
+	lua_pop(L, 1);
+
+	lua_Debug dbg;
+	lua_getstack(L, 1, &dbg);
+	lua_getinfo(L, "f", &dbg);
+
+	if (narg < 0) {
+		narg = lua_gettop(L) + narg + 1;
+	}
+
+	os << where << " bad argument " << narg
+		<< " to function '" << dbg.name << "' (" << tname
+		<< " expected, got " << lua_typename(L, narg) << ")";
+
+	std::string str = os.str();
+	lua_pushlstring(L, str.c_str(), str.size());
+	lua_error(L);  // Never returns
+
+	return 0;
+}
+
 
 int script_error_handler(lua_State *L) {
 	lua_getglobal(L, "debug");

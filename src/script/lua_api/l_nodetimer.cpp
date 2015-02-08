@@ -33,7 +33,7 @@ NodeTimerRef* NodeTimerRef::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);
-	if(!ud) luaL_typerror(L, narg, className);
+	if(!ud) script_type_error(L, narg, className);
 	return *(NodeTimerRef**)ud;  // unbox pointer
 }
 
@@ -148,7 +148,7 @@ void NodeTimerRef::Register(lua_State *L)
 
 	lua_pop(L, 1);  // drop metatable
 
-	luaL_openlib(L, 0, methods, 0);  // fill methodtable
+	luaL_setfuncs(L, methods, 0);  // fill methodtable
 	lua_pop(L, 1);  // drop methodtable
 
 	// Cannot be created from Lua
@@ -156,7 +156,7 @@ void NodeTimerRef::Register(lua_State *L)
 }
 
 const char NodeTimerRef::className[] = "NodeTimerRef";
-const luaL_reg NodeTimerRef::methods[] = {
+const luaL_Reg NodeTimerRef::methods[] = {
 	luamethod(NodeTimerRef, start),
 	luamethod(NodeTimerRef, set),
 	luamethod(NodeTimerRef, stop),

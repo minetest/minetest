@@ -27,7 +27,8 @@ function core.privs_to_string(privs, delim)
 end
 
 assert(core.string_to_privs("a,b").b == true)
-assert(core.privs_to_string({a=true,b=true}) == "a,b")
+local privstr = core.privs_to_string({a=true,b=true})
+assert(privstr == "a,b" or privstr == "b,a")
 
 core.auth_file_path = core.get_worldpath().."/auth.txt"
 core.auth_table = {}
