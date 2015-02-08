@@ -7,7 +7,7 @@ local health_bar_definition =
 	number = 20,
 	direction = 0,
 	size = { x=24, y=24 },
-	offset = { x=(-10*24)-25, y=-(48+24+10)},
+	offset = { x=(-10*24)-25, y=-(48+24+16)},
 }
 
 local breath_bar_definition =
@@ -18,7 +18,7 @@ local breath_bar_definition =
 	number = 20,
 	direction = 0,
 	size = { x=24, y=24 },
-	offset = {x=25,y=-(48+24+10)},
+	offset = {x=25,y=-(48+24+16)},
 }
 
 local hud_ids = {}
