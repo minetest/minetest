@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "httpfetch.h"
 #include "client.h"
-#include "clientserver.h"
+#include "network/networkprotocol.h"
 #include "filecache.h"
 #include "filesys.h"
 #include "hex.h"
