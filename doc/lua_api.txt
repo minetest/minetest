@@ -547,6 +547,26 @@ Look for examples in `games/minimal` or `games/minetest_game`.
 
 `*_optional` drawtypes need less rendering time if deactivated (always client side).
 
+default_stack_max
+-----------------
+
+Players on singleplayer or hosting a server can
+modify the stack max which is used when no
+stack_max is defined by the item's definition
+using default_stack_max in minetest.conf
+If you don't want players to do this, you can
+override the default_stack_max like this:
+
+    minetest.nodedef_default.stack_max = 123
+    minetest.craftitemdef_default.stack_max = 123
+    minetest.noneitemdef_default.stack_max = 123
+
+You should only do this if you absolutely don't want
+the player to change the stack_max. If you don't mind,
+then you can set default_stack_max in game/minetest.conf
+
+It only affects nodes registered after this call.
+
 Node boxes
 -----------
 Node selection boxes are defined using "node boxes"
@@ -593,7 +613,7 @@ set to level from `param2`.
 Meshes
 ------
 If drawtype `mesh` is used, tiles should hold model materials textures.
-Only static meshes are implemented.  
+Only static meshes are implemented.
 For supported model formats see Irrlicht engine documentation.
 
 
@@ -688,7 +708,7 @@ The relative height of the sheet can be controlled by the same perlin noise as w
 a non-zero `scale` parameter in `noise_params`.
 
 **IMPORTANT**: The noise is not transformed by `offset` or `scale` when comparing against the noise
-threshold, but scale is used to determine relative height.  
+threshold, but scale is used to determine relative height.
 The height of the blob is randomly scattered, with a maximum height of `clust_size`.
 
 `clust_scarcity` and `clust_num_ores` are ignored.
@@ -696,7 +716,7 @@ The height of the blob is randomly scattered, with a maximum height of `clust_si
 This is essentially an improved version of the so-called "stratus" ore seen in some unofficial mods.
 
 ### `blob`
-Creates a deformed sphere of ore according to 3d perlin noise described by 
+Creates a deformed sphere of ore according to 3d perlin noise described by
 `noise_params`.  The maximum size of the blob is `clust_size`, and
 `clust_scarcity` has the same meaning as with the `scatter` type.
 ### `vein
@@ -1185,7 +1205,7 @@ Damage calculation:
 Client predicts damage based on damage groups. Because of this, it is able to
 give an immediate response when an entity is damaged or dies; the response is
 pre-defined somehow (e.g. by defining a sprite animation) (not implemented;
-TODO).  
+TODO).
 Currently a smoke puff will appear when an entity dies.
 
 The group `immortal` completely disables normal damage.
@@ -2244,7 +2264,7 @@ Class reference
 ---------------
 
 ### `NodeMetaRef`
-Node metadata: reference extra data and functionality stored in a node.  
+Node metadata: reference extra data and functionality stored in a node.
 Can be gotten via `minetest.get_meta(pos)`.
 
 #### Methods
@@ -2260,7 +2280,7 @@ Can be gotten via `minetest.get_meta(pos)`.
     * See "Node Metadata"
 
 ### `NoteTimerRef`
-Node Timers: a high resolution persistent per-node timer.  
+Node Timers: a high resolution persistent per-node timer.
 Can be gotten via `minetest.get_node_timer(pos)`.
 
 #### Methods
@@ -2485,7 +2505,7 @@ It can be created via `PseudoRandom(seed)`.
 ### `PerlinNoise`
 A perlin noise generator.
 It can be created via `PerlinNoise(seed, octaves, persistence, scale)`
-or `PerlinNoise(noiseparams)`.  
+or `PerlinNoise(noiseparams)`.
 Alternatively with `minetest.get_perlin(seeddiff, octaves, persistence, scale)`
 or `minetest.get_perlin(noiseparams)`.
 

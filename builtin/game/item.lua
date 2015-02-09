@@ -106,7 +106,7 @@ function core.facedir_to_dir(facedir)
 					{x=0, y=1, z=0}})
 
 					--indexed into by a table of correlating facedirs
-					[({[0]=1, 2, 3, 4, 
+					[({[0]=1, 2, 3, 4,
 						5, 2, 6, 4,
 						6, 2, 5, 4,
 						1, 5, 3, 6,
@@ -238,7 +238,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 
 	core.log("action", placer:get_player_name() .. " places node "
 		.. def.name .. " at " .. core.pos_to_string(place_to))
-	
+
 	local oldnode = core.get_node(place_to)
 	local newnode = {name = def.name, param1 = 0, param2 = param2}
 
@@ -425,7 +425,7 @@ function core.node_dig(pos, node, digger)
 
 	local wielded = digger:get_wielded_item()
 	local drops = core.get_node_drops(node.name, wielded:get_name())
-	
+
 	local wdef = wielded:get_definition()
 	local tp = wielded:get_tool_capabilities()
 	local dp = core.get_dig_params(def.groups, tp)
@@ -438,7 +438,7 @@ function core.node_dig(pos, node, digger)
 		end
 	end
 	digger:set_wielded_item(wielded)
-	
+
 	-- Handle drops
 	core.handle_node_drops(pos, drops, digger)
 
@@ -449,7 +449,7 @@ function core.node_dig(pos, node, digger)
 
 	-- Remove node and update
 	core.remove_node(pos)
-	
+
 	-- Run callback
 	if def.after_dig_node then
 		-- Copy pos and node because callback can modify them
@@ -490,7 +490,7 @@ core.nodedef_default = {
 	inventory_image = "",
 	wield_image = "",
 	wield_scale = {x=1,y=1,z=1},
-	stack_max = 99,
+	stack_max = tonumber(core.setting_get("default_stack_max")) or 99,
 	usable = false,
 	liquids_pointable = false,
 	tool_capabilities = nil,
@@ -507,7 +507,7 @@ core.nodedef_default = {
 	on_dig = redef_wrapper(core, 'node_dig'), -- core.node_dig
 
 	on_receive_fields = nil,
-	
+
 	on_metadata_inventory_move = core.node_metadata_inventory_move_allow_all,
 	on_metadata_inventory_offer = core.node_metadata_inventory_offer_allow_all,
 	on_metadata_inventory_take = core.node_metadata_inventory_take_allow_all,
@@ -553,7 +553,7 @@ core.craftitemdef_default = {
 	inventory_image = "",
 	wield_image = "",
 	wield_scale = {x=1,y=1,z=1},
-	stack_max = 99,
+	stack_max = tonumber(core.setting_get("default_stack_max")) or 99,
 	liquids_pointable = false,
 	tool_capabilities = nil,
 
@@ -589,7 +589,7 @@ core.noneitemdef_default = {  -- This is used for the hand and unknown items
 	inventory_image = "",
 	wield_image = "",
 	wield_scale = {x=1,y=1,z=1},
-	stack_max = 99,
+	stack_max = tonumber(core.setting_get("default_stack_max")) or 99,
 	liquids_pointable = false,
 	tool_capabilities = nil,
 
