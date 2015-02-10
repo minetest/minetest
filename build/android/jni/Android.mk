@@ -214,7 +214,8 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/touchscreengui.cpp                \
 		jni/src/database-leveldb.cpp              \
 		jni/src/settings.cpp                      \
-		jni/src/wieldmesh.cpp
+		jni/src/wieldmesh.cpp                     \
+		jni/src/client/clientlauncher.cpp
 
 # Network
 LOCAL_SRC_FILES +=                                \
