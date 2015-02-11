@@ -62,20 +62,21 @@ int wctomb(char *s, wchar_t wc)
 
 int mbtowc(wchar_t *pwc, const char *s, size_t n)
 {
-	wchar_t *intermediate = narrow_to_wide(s);
+	const wchar_t *tmp = narrow_to_wide_c(s);
 
-	if (intermediate.length() > 0) {
-		*pwc = intermediate[0];
+	if (tmp[0] != '\0') {
+		*pwc = tmp[0];
 		return 1;
 	} else {
 		return -1;
 	}
 }
+
 // You must free the returned string!
 const wchar_t *narrow_to_wide_c(const char *mbs)
 {
 	size_t mbl = strlen(mbs);
-	wchar_t wcs = new wchar_t[mbl + 1];
+	wchar_t *wcs = new wchar_t[mbl + 1];
 
 	for (size_t i = 0; i < mbl; i++) {
 		if (((unsigned char) mbs[i] > 31) &&
