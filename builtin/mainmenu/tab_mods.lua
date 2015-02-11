@@ -57,7 +57,7 @@ local function get_formspec(tabview, name, tabdata)
 		end
 
 		if modscreenshot == nil then
-				modscreenshot = modstore.basetexturedir .. "no_screenshot.png"
+				modscreenshot = defaulttexturedir .. "no_screenshot.png"
 		end
 
 		retval = retval
