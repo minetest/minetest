@@ -42,7 +42,7 @@ static void applyFacesShading(video::SColor& color, float factor)
 	MeshMakeData
 */
 
-MeshMakeData::MeshMakeData(IGameDef *gamedef):
+MeshMakeData::MeshMakeData(IGameDef *gamedef, bool use_shaders):
 	m_vmanip(),
 	m_blockpos(-1337,-1337,-1337),
 	m_crack_pos_relative(-1337, -1337, -1337),
@@ -50,7 +50,8 @@ MeshMakeData::MeshMakeData(IGameDef *gamedef):
 	m_smooth_lighting(false),
 	m_show_hud(false),
 	m_highlight_mesh_color(255, 255, 255, 255),
-	m_gamedef(gamedef)
+	m_gamedef(gamedef),
+	m_use_shaders(use_shaders)
 {}
 
 void MeshMakeData::fill(MapBlock *block)
