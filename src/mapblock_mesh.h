@@ -45,9 +45,8 @@ struct MeshMakeData
 	video::SColor m_highlight_mesh_color;
 
 	IGameDef *m_gamedef;
-	bool m_use_shaders;
 
-	MeshMakeData(IGameDef *gamedef, bool use_shaders);
+	MeshMakeData(IGameDef *gamedef);
 
 	/*
 		Copy central data directly from block, and other data from
