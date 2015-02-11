@@ -2669,6 +2669,15 @@ void Game::dropSelectedItem()
 
 void Game::openInventory()
 {
+	/*
+	 * Don't permit to open inventory is CAO or player doesn't exists.
+	 * This prevent showing an empty inventory at player load
+	 */
+
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	if (player == NULL || player->getCAO() == NULL)
+		return;
+
 	infostream << "the_game: " << "Launching inventory" << std::endl;
 
 	PlayerInventoryFormSource *fs_src = new PlayerInventoryFormSource(client);
