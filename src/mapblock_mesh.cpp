@@ -42,7 +42,7 @@ static void applyFacesShading(video::SColor& color, float factor)
 	MeshMakeData
 */
 
-MeshMakeData::MeshMakeData(IGameDef *gamedef):
+MeshMakeData::MeshMakeData(IGameDef *gamedef, bool use_shaders):
 	m_vmanip(),
 	m_blockpos(-1337,-1337,-1337),
 	m_crack_pos_relative(-1337, -1337, -1337),
@@ -50,7 +50,8 @@ MeshMakeData::MeshMakeData(IGameDef *gamedef):
 	m_smooth_lighting(false),
 	m_show_hud(false),
 	m_highlight_mesh_color(255, 255, 255, 255),
-	m_gamedef(gamedef)
+	m_gamedef(gamedef),
+	m_use_shaders(use_shaders)
 {}
 
 void MeshMakeData::fill(MapBlock *block)
@@ -1028,7 +1029,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	m_last_daynight_ratio((u32) -1),
 	m_daynight_diffs()
 {
-	m_enable_shaders = g_settings->getBool("enable_shaders");
+	m_enable_shaders = data->m_use_shaders;
 	m_enable_highlighting = g_settings->getBool("enable_node_highlighting");
 
 	// 4-21ms for MAP_BLOCKSIZE=16  (NOTE: probably outdated)
