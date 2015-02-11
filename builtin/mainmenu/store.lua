@@ -122,35 +122,36 @@ end
 function modstore.showdownloading(title)
 	local new_dlg = dialog_create("store_downloading",
 		function(data)
-			return "size[6,2]label[0.25,0.75;" .. fgettext("Downloading") ..
-				" " .. data.title .. " " ..
-				fgettext("please wait...") .. "]"
+			return "size[6,2]label[0.25,0.75;" ..
+				fgettext("Downloading $1, please wait...", data.title) .. "]"
 		end,
 		function(this,fields)
 			if fields["btn_hidden_close_download"] ~= nil then
 				if fields["btn_hidden_close_download"].successfull then
 					modstore.lastmodentry = fields["btn_hidden_close_download"]
-					modstore.successfulldialog()
+					modstore.successfulldialog(this)
 				else
+					this.parent:show()
+					this:delete()
 					modstore.lastmodtitle = ""
 				end
 
-				this:delete()
 				return true
 			end
 
 			return false
 		end,
-		nil,
-		modstore.tv_store)
+		nil)
 
+	new_dlg:set_parent(modstore.tv_store)
+	modstore.tv_store:hide()
 	new_dlg.data.title = title
 	new_dlg:show()
 end
 
 --------------------------------------------------------------------------------
 -- @function [parent=#modstore] successfulldialog
-function modstore.successfulldialog()
+function modstore.successfulldialog(downloading_dlg)
 	local new_dlg = dialog_create("store_downloading",
 		function(data)
 			local retval = ""
@@ -158,18 +159,16 @@ function modstore.successfulldialog()
 			if modstore.lastmodentry ~= nil then
 				retval = retval .. "label[0,0.25;" .. fgettext("Successfully installed:") .. "]"
 				retval = retval .. "label[3,0.25;" .. modstore.lastmodentry.moddetails.title .. "]"
-
-
 				retval = retval .. "label[0,0.75;" .. fgettext("Shortname:") .. "]"
 				retval = retval .. "label[3,0.75;" .. core.formspec_escape(modstore.lastmodentry.moddetails.basename) .. "]"
-
 			end
-			retval = retval .. "button[2.5,1.5;1,0.5;btn_confirm_mod_successfull;" .. fgettext("ok") .. "]"
+			retval = retval .. "button[2.2,1.5;1.5,0.5;btn_confirm_mod_successfull;" .. fgettext("Ok") .. "]"
+			return retval
 		end,
 		function(this,fields)
 			if fields["btn_confirm_mod_successfull"] ~= nil then
 				this.parent:show()
-				this:hide()
+				downloading_dlg:delete()
 				this:delete()
 
 				return true
@@ -177,10 +176,10 @@ function modstore.successfulldialog()
 
 			return false
 		end,
-		nil,
-		modstore.tv_store)
+		nil)
 
-	new_dlg.data.title = title
+	new_dlg:set_parent(modstore.tv_store)
+	modstore.tv_store:hide()
 	new_dlg:show()
 end
 
@@ -217,7 +216,9 @@ function modstore.handle_buttons(parent, fields, name, data)
 	end
 
 	if fields["btn_modstore_close"] then
+		local maintab = ui.find_by_name("maintab")
 		parent:hide()
+		maintab:show()
 		return true
 	end
 
@@ -228,12 +229,7 @@ function modstore.handle_buttons(parent, fields, name, data)
 			for i=1,#modstore.modlist_unsorted.data,1 do
 				if modstore.modlist_unsorted.data[i].id == modid then
 					local moddetails = modstore.modlist_unsorted.data[i].details
-
-					if modstore.lastmodtitle ~= "" then
-						modstore.lastmodtitle = modstore.lastmodtitle .. ", "
-					end
-
-					modstore.lastmodtitle = modstore.lastmodtitle .. moddetails.title
+					modstore.lastmodtitle = moddetails.title
 
 					if not core.handle_async(
 						function(param)
@@ -281,7 +277,7 @@ function modstore.handle_buttons(parent, fields, name, data)
 							texturename = modstore.modlist_unsorted.data[i].texturename
 						},
 						function(result)
-							print("Result from async: " .. dump(result.successfull))
+							--print("Result from async: " .. dump(result.successfull))
 							if result.successfull then
 								modmgr.installmod(result.filename,result.moddetails.basename)
 								os.remove(result.filename)
@@ -299,7 +295,7 @@ function modstore.handle_buttons(parent, fields, name, data)
 						print("ERROR: async event failed")
 						gamedata.errormessage = "Failed to download " .. modstore.lastmodtitle
 					end
-					parent:hide()
+
 					modstore.showdownloading(modstore.lastmodtitle)
 					return true
 				end
