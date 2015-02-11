@@ -623,8 +623,9 @@ private:
 	Database *localdb;
 	Server *localserver;
 
-	// TODO: Add callback to update this when g_settings changes
+	// TODO: Add callback to update these when g_settings changes
 	bool m_cache_smooth_lighting;
+	bool m_cache_enable_shaders;
 };
 
 #endif // !CLIENT_HEADER

@@ -283,6 +283,7 @@ Client::Client(
 	}
 
 	m_cache_smooth_lighting = g_settings->getBool("smooth_lighting");
+	m_cache_enable_shaders  = g_settings->getBool("enable_shaders");
 }
 
 void Client::Stop()
@@ -2681,7 +2682,7 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server, bool urgent)
 		Create a task to update the mesh of the block
 	*/
 
-	MeshMakeData *data = new MeshMakeData(this);
+	MeshMakeData *data = new MeshMakeData(this, m_cache_enable_shaders);
 
 	{
 		//TimeTaker timer("data fill");
