@@ -216,6 +216,14 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/settings.cpp                      \
 		jni/src/wieldmesh.cpp
 
+# Network
+LOCAL_SRC_FILES +=                                \
+		jni/src/network/networkpacket.cpp         \
+		jni/src/network/clientopcodes.cpp         \
+		jni/src/network/serveropcodes.cpp         \
+		jni/src/network/toclientpacket.cpp        \
+		jni/src/network/toserverpacket.cpp
+
 # lua api
 LOCAL_SRC_FILES +=                                \
 		jni/src/script/common/c_content.cpp       \
