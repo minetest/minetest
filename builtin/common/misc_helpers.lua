@@ -545,12 +545,11 @@ function table.copy(t, seen)
 	seen = seen or {}
 	seen[t] = n
 	for k, v in pairs(t) do
-		n[type(k) ~= "table" and k or seen[k] or table.copy(k, seen)] =
-			type(v) ~= "table" and v or seen[v] or table.copy(v, seen)
+		n[(type(k) == "table" and (seen[k] or table.copy(k, seen))) or k] =
+			(type(v) == "table" and (seen[v] or table.copy(v, seen))) or v
 	end
 	return n
 end
-
 --------------------------------------------------------------------------------
 -- mainmenu only functions
 --------------------------------------------------------------------------------
