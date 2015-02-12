@@ -99,11 +99,13 @@ const wchar_t *narrow_to_wide_c(const char *mbs)
 {
 	wchar_t *wcs = NULL;
 #if defined(_WIN32)
-	int wcl = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR) mbs, -1, NULL, 0);
-	if (!wcl)
-		return NULL;
-	wcs = new wchar_t[wcl];
-	MultiByteToWideChar(CP_UTF8, 0, (LPCSTR) mbs, -1, (WCHAR *) wcs, wcl);
+	int nResult = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR) mbs, -1, 0, 0);
+	if (nResult == 0) {
+		errorstream << "gettext: MultiByteToWideChar returned null" << std::endl;
+	} else {
+		wcs = new wchar_t[nResult];
+		MultiByteToWideChar(CP_UTF8, 0, (LPCSTR) mbs, -1, (WCHAR *) wcs, nResult);
+	}
 #else
 	size_t wcl = mbstowcs(NULL, mbs, 0);
 	if (wcl == (size_t) -1)
@@ -121,12 +123,13 @@ const wchar_t *narrow_to_wide_c(const char *mbs)
 
 std::wstring narrow_to_wide(const std::string& mbs)
 {
-	const wchar_t *wcs = narrow_to_wide_c(mbs.c_str());
-	if (!wcs)
+	size_t wcl = mbs.size();
+	Buffer<wchar_t> wcs(wcl + 1);
+	size_t l = mbstowcs(*wcs, mbs.c_str(), wcl);
+	if (l == (size_t)(-1))
 		return L"<invalid multibyte string>";
-	std::wstring wstr(wcs);
-	delete [] wcs;
-	return wstr;
+	wcs[l] = 0;
+	return *wcs;
 }
 
 #ifdef __ANDROID__
