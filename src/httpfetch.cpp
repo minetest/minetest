@@ -194,7 +194,6 @@ private:
 	HTTPFetchRequest request;
 	HTTPFetchResult result;
 	std::ostringstream oss;
-	char *post_fields;
 	struct curl_slist *http_header;
 	curl_httppost *post;
 };
