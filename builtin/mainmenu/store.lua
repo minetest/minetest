@@ -391,7 +391,7 @@ function modstore.getscreenshot(ypos,listentry)
 		listentry.details.screenshot_url == "") then
 
 		if listentry.texturename == nil then
-			listentry.texturename = modstore.basetexturedir .. "no_screenshot.png"
+			listentry.texturename = defaulttexturedir .. "no_screenshot.png"
 		end
 
 		return "image[0,".. ypos .. ";3,2;" ..
