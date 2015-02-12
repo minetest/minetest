@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 
 #ifdef __ANDROID__
-unsigned int android_log_level_mapping[] {
+unsigned int android_log_level_mapping[] = {
 		/* LMT_ERROR */   ANDROID_LOG_ERROR,
 		/* LMT_ACTION */  ANDROID_LOG_WARN,
 		/* LMT_INFO */    ANDROID_LOG_INFO,
