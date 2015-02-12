@@ -41,16 +41,19 @@ void init_gettext(const char *path, const std::string &configured_language);
 extern const wchar_t *narrow_to_wide_c(const char *mbs);
 extern std::wstring narrow_to_wide(const std::string &mbs);
 
-
 // You must free the returned string!
 inline const wchar_t *wgettext(const char *str)
 {
 	return narrow_to_wide_c(gettext(str));
 }
 
+// Gettext under MSVC needs this strange way. Just don't ask...
 inline std::wstring wstrgettext(const std::string &text)
 {
-	return narrow_to_wide(gettext(text.c_str()));
+	const wchar_t *tmp = wgettext(text.c_str());
+	std::wstring retval = (std::wstring)tmp;
+	delete[] tmp;
+	return retval;
 }
 
 inline std::string strgettext(const std::string &text)
