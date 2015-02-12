@@ -593,7 +593,7 @@ set to level from `param2`.
 Meshes
 ------
 If drawtype `mesh` is used, tiles should hold model materials textures.
-Only static meshes are implemented.  
+Only static meshes are implemented.
 For supported model formats see Irrlicht engine documentation.
 
 
@@ -688,7 +688,7 @@ The relative height of the sheet can be controlled by the same perlin noise as w
 a non-zero `scale` parameter in `noise_params`.
 
 **IMPORTANT**: The noise is not transformed by `offset` or `scale` when comparing against the noise
-threshold, but scale is used to determine relative height.  
+threshold, but scale is used to determine relative height.
 The height of the blob is randomly scattered, with a maximum height of `clust_size`.
 
 `clust_scarcity` and `clust_num_ores` are ignored.
@@ -696,7 +696,7 @@ The height of the blob is randomly scattered, with a maximum height of `clust_si
 This is essentially an improved version of the so-called "stratus" ore seen in some unofficial mods.
 
 ### `blob`
-Creates a deformed sphere of ore according to 3d perlin noise described by 
+Creates a deformed sphere of ore according to 3d perlin noise described by
 `noise_params`.  The maximum size of the blob is `clust_size`, and
 `clust_scarcity` has the same meaning as with the `scatter` type.
 ### `vein
@@ -1185,7 +1185,7 @@ Damage calculation:
 Client predicts damage based on damage groups. Because of this, it is able to
 give an immediate response when an entity is damaged or dies; the response is
 pre-defined somehow (e.g. by defining a sprite animation) (not implemented;
-TODO).  
+TODO).
 Currently a smoke puff will appear when an entity dies.
 
 The group `immortal` completely disables normal damage.
@@ -1926,6 +1926,8 @@ and `minetest.auth_reload` call the authetification handler.
 * `minetest.create_detached_inventory(name, callbacks)`: returns an `InvRef`
     * callbacks: See "Detached inventory callbacks"
     * Creates a detached inventory. If it already exists, it is cleared.
+* `minetest.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)`: returns left over ItemStack
+    * See `minetest.item_eat` and `minetest.register_on_item_eat`
 
 ### Formspec
 * `minetest.show_formspec(playername, formname, formspec)`
@@ -2037,7 +2039,11 @@ These functions return the leftover itemstack.
 * `minetest.item_drop(itemstack, dropper, pos)`
     * Drop the item
 * `minetest.item_eat(hp_change, replace_with_item)`
-    * Eat the item. `replace_with_item` can be `nil`.
+    * Eat the item.
+    * `replace_with_item` is the itemstring which is added to the inventory.
+      If the player is eating a stack, then replace_with_item goes to a
+      different spot. Can be `nil`
+    * See `minetest.do_item_eat`
 
 ### Defaults for the `on_punch` and `on_dig` node definition callbacks
 * `minetest.node_punch(pos, node, puncher, pointed_thing)`
@@ -2244,7 +2250,7 @@ Class reference
 ---------------
 
 ### `NodeMetaRef`
-Node metadata: reference extra data and functionality stored in a node.  
+Node metadata: reference extra data and functionality stored in a node.
 Can be gotten via `minetest.get_meta(pos)`.
 
 #### Methods
@@ -2260,7 +2266,7 @@ Can be gotten via `minetest.get_meta(pos)`.
     * See "Node Metadata"
 
 ### `NoteTimerRef`
-Node Timers: a high resolution persistent per-node timer.  
+Node Timers: a high resolution persistent per-node timer.
 Can be gotten via `minetest.get_node_timer(pos)`.
 
 #### Methods
@@ -2485,7 +2491,7 @@ It can be created via `PseudoRandom(seed)`.
 ### `PerlinNoise`
 A perlin noise generator.
 It can be created via `PerlinNoise(seed, octaves, persistence, scale)`
-or `PerlinNoise(noiseparams)`.  
+or `PerlinNoise(noiseparams)`.
 Alternatively with `minetest.get_perlin(seeddiff, octaves, persistence, scale)`
 or `minetest.get_perlin(noiseparams)`.
 
