@@ -232,7 +232,7 @@
 #generate_normalmaps = false
 #    Set to true enables on the fly normalmap generation (Emboss effect).
 #    Requires bumpmapping enabled.
-#normalmaps_strength = 0.6
+#normalmaps_strength = 0.8
 #    Strength of generated normalmaps
 #normalmaps_smooth = 4
 #    Defines sampling step of texture (2^normalmaps_smooth).
