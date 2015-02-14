@@ -137,5 +137,19 @@ private:
 	video::ITexture* m_moon_tonemap;
 };
 
+class SkyBackgroundColorProvider
+{
+	Sky* m_sky;
+public:
+	void setSky(Sky *sky)
+	{
+		m_sky = sky;
+	}
+	video::SColor get()
+	{
+		return m_sky->getBgColor();
+	}
+};
+
 #endif
 
