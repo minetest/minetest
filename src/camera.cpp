@@ -93,7 +93,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	// all other 3D scene nodes and before the GUI.
 	m_wieldmgr = smgr->createNewSceneManager();
 	m_wieldmgr->addCameraSceneNode();
-	m_wieldnode = new WieldMeshSceneNode(m_wieldmgr->getRootSceneNode(), m_wieldmgr, -1, true);
+	m_wieldnode = new WieldMeshSceneNode(m_wieldmgr->getRootSceneNode(), m_wieldmgr, -1, false);
 	m_wieldnode->setItem(ItemStack(), m_gamedef);
 	m_wieldnode->drop(); // m_wieldmgr grabbed it
 	m_wieldlightnode = m_wieldmgr->addLightSceneNode(NULL, v3f(0.0, 50.0, 0.0));
@@ -487,6 +487,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	m_wieldmgr->setAmbientLight(player->light_color.getInterpolated(black, 0.7));
 	m_wieldlightnode->getLightData().DiffuseColor = player->light_color.getInterpolated(black, 0.3);
 	m_wieldlightnode->setPosition(v3f(30+5*sin(2*player->getYaw()*M_PI/180), -50, 0));
+	m_wieldnode->setColor(player->light_color);
 
 	// Render distance feedback loop
 	updateViewingRange(frametime, busytime);
