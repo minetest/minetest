@@ -198,8 +198,9 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		return true
 	end
 
-	if fields["btn_mp_connect"] ~= nil or
-		fields["key_enter"] ~= nil then
+	if (fields["btn_mp_connect"] ~= nil or
+		fields["key_enter"] ~= nil) and fields["te_address"] ~= nil and
+		fields["te_port"] ~= nil then
 
 		gamedata.playername     = fields["te_name"]
 		gamedata.password       = fields["te_pwd"]
