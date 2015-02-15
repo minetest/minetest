@@ -530,9 +530,8 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 	}
 
 	for(int d=1; d<=radius; d++){
-		std::list<v3s16> list;
-		getFacePositions(list, d);
-		for(std::list<v3s16>::iterator i = list.begin();
+		std::vector<v3s16> list = FacePositionCache::getFacePositions(d);
+		for(std::vector<v3s16>::iterator i = list.begin();
 				i != list.end(); ++i){
 			v3s16 p = pos + (*i);
 			content_t c = env->getMap().getNodeNoEx(p).getContent();

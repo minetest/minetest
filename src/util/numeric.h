@@ -25,10 +25,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../irr_v3d.h"
 #include "../irr_aabb3d.h"
 #include <list>
+#include <map>
+#include <vector>
 #include <algorithm>
 
-// Calculate the borders of a "d-radius" cube
-void getFacePositions(std::list<v3s16> &list, u16 d);
+
+/*
+ * This class permits to cache getFacePosition call results
+ * This reduces CPU usage and vector calls
+ */
+class FacePositionCache
+{
+public:
+	static std::vector<v3s16> getFacePositions(u16 d);
+private:
+	static void generateFacePosition(u16 d);
+	static std::map<u16, std::vector<v3s16> > m_cache;
+};
 
 class IndentationRaiser
 {
