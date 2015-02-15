@@ -48,6 +48,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
 	settings->setDefault("keymap_fastmove", "KEY_KEY_J");
 	settings->setDefault("keymap_noclip", "KEY_KEY_H");
+	settings->setDefault("keymap_cinematic", "KEY_F8");
 	settings->setDefault("keymap_screenshot", "KEY_F12");
 	settings->setDefault("keymap_toggle_hud", "KEY_F1");
 	settings->setDefault("keymap_toggle_chat", "KEY_F2");
@@ -115,6 +116,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("free_move", "false");
 	settings->setDefault("noclip", "false");
 	settings->setDefault("continuous_forward", "false");
+	settings->setDefault("cinematic", "false");
+	settings->setDefault("camera_smoothing", "0");
+	settings->setDefault("cinematic_camera_smoothing", "0.7");
 	settings->setDefault("fast_move", "false");
 	settings->setDefault("invert_mouse", "false");
 	settings->setDefault("enable_clouds", "true");

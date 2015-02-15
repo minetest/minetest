@@ -48,6 +48,7 @@
 #keymap_rangeselect = KEY_KEY_R
 #keymap_freemove = KEY_KEY_K
 #keymap_fastmove = KEY_KEY_J
+#keymap_cinematic = KEY_F8
 #keymap_screenshot = KEY_F12
 #    If true, keymap_special1 instead of keymap_sneak is used for climbing down and descending
 #aux1_descends = false
@@ -127,6 +128,13 @@
 #free_move = false
 #    Continuous forward movement (for testing)
 #continuous_forward = false
+#    Enable cinematic mode
+#cinematic = false
+#    Camera smoothing - smooths rotation of camera. 0 is no smoothing.
+#    Must be equal to or greater than 0, and less than 1.
+#camera_smoothing = 0.0
+#    Camera smoothing when in cinematic mode
+#cinematic_camera_smoothing = 0.7
 #    Fast movement (keymap_special1)
 #fast_move = false
 #    Invert mouse
