@@ -30,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ICameraSceneNode.h>
 #include <IGPUProgrammingServices.h>
 #include <IMaterialRenderer.h>
-#include <IMaterialRendererServices.h>
 #include <IShaderConstantSetCallBack.h>
 #include "EShaderTypes.h"
 #include "log.h"

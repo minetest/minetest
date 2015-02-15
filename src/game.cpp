@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIButton.h>
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
-#include <IMaterialRendererServices.h>
 #include "IMeshCache.h"
 #include "client.h"
 #include "server.h"

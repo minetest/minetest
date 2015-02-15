@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SHADER_HEADER
 #define SHADER_HEADER
 
+#include <IMaterialRendererServices.h>
 #include "irrlichttypes_extrabloated.h"
 #include "threads.h"
 #include <string>
