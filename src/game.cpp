@@ -1137,7 +1137,7 @@ static void show_pause_menu(GUIFormSpecMenu **cur_formspec,
 		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_change_password;"
 		   << wide_to_narrow(wstrgettext("Change Password")) << "]";
 	}
-	
+
 #ifndef __ANDROID__
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
 			<< wide_to_narrow(wstrgettext("Sound Volume")) << "]";
@@ -1253,6 +1253,7 @@ struct KeyCache {
 		KEYMAP_ID_FREEMOVE,
 		KEYMAP_ID_FASTMOVE,
 		KEYMAP_ID_NOCLIP,
+		KEYMAP_ID_CINEMATIC,
 		KEYMAP_ID_SCREENSHOT,
 		KEYMAP_ID_TOGGLE_HUD,
 		KEYMAP_ID_TOGGLE_CHAT,
@@ -1301,6 +1302,7 @@ void KeyCache::populate()
 	key[KEYMAP_ID_FREEMOVE]     = getKeySetting("keymap_freemove");
 	key[KEYMAP_ID_FASTMOVE]     = getKeySetting("keymap_fastmove");
 	key[KEYMAP_ID_NOCLIP]       = getKeySetting("keymap_noclip");
+	key[KEYMAP_ID_CINEMATIC]    = getKeySetting("keymap_cinematic");
 	key[KEYMAP_ID_SCREENSHOT]   = getKeySetting("keymap_screenshot");
 	key[KEYMAP_ID_TOGGLE_HUD]   = getKeySetting("keymap_toggle_hud");
 	key[KEYMAP_ID_TOGGLE_CHAT]  = getKeySetting("keymap_toggle_chat");
@@ -1497,6 +1499,7 @@ protected:
 	void toggleFreeMoveAlt(float *statustext_time, float *jump_timer);
 	void toggleFast(float *statustext_time);
 	void toggleNoClip(float *statustext_time);
+	void toggleCinematic(float *statustext_time);
 
 	void toggleChat(float *statustext_time, bool *flag);
 	void toggleHud(float *statustext_time, bool *flag);
@@ -1737,6 +1740,7 @@ void Game::run()
 {
 	ProfilerGraph graph;
 	RunStats stats              = { 0 };
+	CameraOrientation cam_view_target  = { 0 };
 	CameraOrientation cam_view  = { 0 };
 	GameRunData runData         = { 0 };
 	FpsControl draw_times       = { 0 };
@@ -1792,7 +1796,17 @@ void Game::run()
 		updateProfilers(runData, stats, draw_times, dtime);
 		processUserInput(&flags, &runData, dtime);
 		// Update camera before player movement to avoid camera lag of one frame
-		updateCameraDirection(&cam_view, &flags);
+		updateCameraDirection(&cam_view_target, &flags);
+		float cam_smoothing = 0;
+		if (g_settings->getBool("cinematic"))
+			cam_smoothing = 1 - g_settings->getFloat("cinematic_camera_smoothing");
+		else
+			cam_smoothing = 1 - g_settings->getFloat("camera_smoothing");
+		cam_smoothing = rangelim(cam_smoothing, 0.01f, 1.0f);
+		cam_view.camera_yaw += (cam_view_target.camera_yaw -
+				cam_view.camera_yaw) * cam_smoothing;
+		cam_view.camera_pitch += (cam_view_target.camera_pitch -
+				cam_view.camera_pitch) * cam_smoothing;
 		updatePlayerControl(cam_view);
 		step(&dtime);
 		processClientEvents(&cam_view, &runData.damage_flash);
@@ -2568,6 +2582,8 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 		toggleFast(statustext_time);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_NOCLIP])) {
 		toggleNoClip(statustext_time);
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_CINEMATIC])) {
+		toggleCinematic(statustext_time);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_SCREENSHOT])) {
 		client->makeScreenshot(device);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_HUD])) {
@@ -2752,6 +2768,16 @@ void Game::toggleNoClip(float *statustext_time)
 
 	if (noclip && !client->checkPrivilege("noclip"))
 		statustext += L" (note: no 'noclip' privilege)";
+}
+
+void Game::toggleCinematic(float *statustext_time)
+{
+	static const wchar_t *msg[] = { L"cinematic disabled", L"cinematic enabled" };
+	bool cinematic = !g_settings->getBool("cinematic");
+	g_settings->set("cinematic", bool_to_cstr(cinematic));
+
+	*statustext_time = 0;
+	statustext = msg[cinematic];
 }
 
 
@@ -4237,4 +4263,3 @@ void the_game(bool *kill,
 		error_message = narrow_to_wide(e.what()) + wstrgettext("\nCheck debug.txt for details.");
 	}
 }
-
