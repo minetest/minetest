@@ -1673,7 +1673,7 @@ struct TestSocket: public TestBase
 		Address address6((IPv6AddressBytes*) NULL, port);
 
 		// IPv6 socket test
-		{
+		if (g_settings->getBool("enable_ipv6")) {
 			UDPSocket socket6;
 
 			if (!socket6.init(true, true)) {
