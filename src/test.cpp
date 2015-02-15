@@ -1865,9 +1865,24 @@ struct TestConnection: public TestBase
 		Handler hand_server("server");
 		Handler hand_client("client");
 
+		Address address(0, 0, 0, 0, 30001);
+		Address bind_addr(0, 0, 0, 0, 30001);
+		/*
+		 * Try to use the bind_address for servers with no localhost address
+		 * For example: FreeBSD jails
+		 */
+		std::string bind_str = g_settings->get("bind_address");
+		try {
+			bind_addr.Resolve(bind_str.c_str());
+
+			if (!bind_addr.isIPv6()) {
+				address = bind_addr;
+			}
+		} catch (ResolveError &e) {
+		}
+
 		infostream<<"** Creating server Connection"<<std::endl;
 		con::Connection server(proto_id, 512, 5.0, false, &hand_server);
-		Address address(0,0,0,0, 30001);
 		server.Serve(address);
 
 		infostream<<"** Creating client Connection"<<std::endl;
@@ -1878,7 +1893,11 @@ struct TestConnection: public TestBase
 
 		sleep_ms(50);
 
-		Address server_address(127,0,0,1, 30001);
+		Address server_address(127, 0, 0, 1, 30001);
+		if (address != Address(0, 0, 0, 0, 30001)) {
+			server_address = bind_addr;
+		}
+
 		infostream<<"** running client.Connect()"<<std::endl;
 		client.Connect(server_address);
 
