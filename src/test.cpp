@@ -1669,8 +1669,23 @@ struct TestSocket: public TestBase
 	void Run()
 	{
 		const int port = 30003;
-		Address address(0,0,0,0, port);
+		Address address(0, 0, 0, 0, port);
+		Address bind_addr(0, 0, 0, 0, port);
 		Address address6((IPv6AddressBytes*) NULL, port);
+
+		/*
+		 * Try to use the bind_address for servers with no localhost address
+		 * For example: FreeBSD jails
+		 */
+		std::string bind_str = g_settings->get("bind_address");
+		try {
+			bind_addr.Resolve(bind_str.c_str());
+
+			if (!bind_addr.isIPv6()) {
+				address = bind_addr;
+			}
+		} catch (ResolveError &e) {
+		}
 
 		// IPv6 socket test
 		if (g_settings->getBool("enable_ipv6")) {
@@ -1709,7 +1724,7 @@ struct TestSocket: public TestBase
 					UASSERT(memcmp(sender.getAddress6().sin6_addr.s6_addr,
 							Address(&bytes, 0).getAddress6().sin6_addr.s6_addr, 16) == 0);
 				}
-				catch (SendFailedException e) {
+				catch (SendFailedException &e) {
 					errorstream << "IPv6 support enabled but not available!"
 					            << std::endl;
 				}
@@ -1722,7 +1737,15 @@ struct TestSocket: public TestBase
 			socket.Bind(address);
 
 			const char sendbuffer[] = "hello world!";
-			socket.Send(Address(127, 0, 0 ,1, port), sendbuffer, sizeof(sendbuffer));
+			/*
+			 * If there is a bind address, use it.
+			 * It's useful in container environments
+			 */
+			if (address != Address(0, 0, 0, 0, port)) {
+				socket.Send(address, sendbuffer, sizeof(sendbuffer));
+			}
+			else
+				socket.Send(Address(127, 0, 0 ,1, port), sendbuffer, sizeof(sendbuffer));
 
 			sleep_ms(50);
 
@@ -1734,8 +1757,15 @@ struct TestSocket: public TestBase
 			}
 			//FIXME: This fails on some systems
 			UASSERT(strncmp(sendbuffer, rcvbuffer, sizeof(sendbuffer)) == 0);
-			UASSERT(sender.getAddress().sin_addr.s_addr ==
-					Address(127, 0, 0, 1, 0).getAddress().sin_addr.s_addr);
+
+			if (address != Address(0, 0, 0, 0, port)) {
+				UASSERT(sender.getAddress().sin_addr.s_addr ==
+						address.getAddress().sin_addr.s_addr);
+			}
+			else {
+				UASSERT(sender.getAddress().sin_addr.s_addr ==
+						Address(127, 0, 0, 1, 0).getAddress().sin_addr.s_addr);
+			}
 		}
 	}
 };
