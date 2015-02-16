@@ -436,7 +436,7 @@ struct ClientEnvEvent
 		//struct{
 		//} none;
 		struct{
-			u8 amount;
+			s16 amount;
 			bool send_to_server;
 		} player_damage;
 		struct{
@@ -495,7 +495,7 @@ public:
 		Callbacks for activeobjects
 	*/
 
-	void damageLocalPlayer(u8 damage, bool handle_hp=true);
+	void damageLocalPlayer(s16 damage, bool handle_hp=true);
 	void updateLocalPlayerBreath(u16 breath);
 
 	/*

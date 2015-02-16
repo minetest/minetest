@@ -865,7 +865,7 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 
 void Server::handleCommand_Damage(NetworkPacket* pkt)
 {
-	u8 damage;
+	s16 damage;
 
 	*pkt >> damage;
 
@@ -888,17 +888,25 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 	}
 
 	if (g_settings->getBool("enable_damage")) {
-		actionstream << player->getName() << " damaged by "
-				<< (int)damage << " hp at " << PP(player->getPosition() / BS)
+		if (damage >= 0)
+			actionstream << player->getName() << " damaged by "
+				<< (int) damage << " hp at "  << PP(player->getPosition() / BS)
+				<< std::endl;
+		else if (playersao->getHP() < PLAYER_MAX_HP)
+			actionstream << player->getName() << " healed by "
+				<< (int)-damage << " hp at "  << PP(player->getPosition() / BS)
 				<< std::endl;
 
-		playersao->setHP(playersao->getHP() - damage);
+		// always send damage, send heal only if player hasn't max health already
+		if (damage >= 0 || (damage < 0 &&
+				playersao->getHP() < PLAYER_MAX_HP)) {
+			playersao->setHP(playersao->getHP() - damage);
 
-		if (playersao->getHP() == 0 && playersao->m_hp_not_sent)
-			DiePlayer(pkt->getPeerId());
-
-		if (playersao->m_hp_not_sent)
-			SendPlayerHP(pkt->getPeerId());
+			if (playersao->getHP() == 0 && playersao->m_hp_not_sent)
+				DiePlayer(pkt->getPeerId());
+			if (playersao->m_hp_not_sent)
+				SendPlayerHP(pkt->getPeerId());
+		}
 	}
 }
 

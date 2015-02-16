@@ -3006,16 +3006,17 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 
 		if (event.type == CE_PLAYER_DAMAGE &&
 				client->getHP() != 0) {
-			//u16 damage = event.player_damage.amount;
+			//s16 damage = event.player_damage.amount;
 			//infostream<<"Player damage: "<<damage<<std::endl;
 
-			*damage_flash += 100.0;
-			*damage_flash += 8.0 * event.player_damage.amount;
+			if (event.player_damage.amount > 0) {
+				*damage_flash += 100.0;
+				*damage_flash += 8.0 * event.player_damage.amount;
 
-			player->hurt_tilt_timer = 1.5;
-			player->hurt_tilt_strength = event.player_damage.amount / 4;
-			player->hurt_tilt_strength = rangelim(player->hurt_tilt_strength, 1.0, 4.0);
-
+				player->hurt_tilt_timer = 1.5;
+				player->hurt_tilt_strength = event.player_damage.amount / 4;
+				player->hurt_tilt_strength = rangelim(player->hurt_tilt_strength, 1.0, 4.0);
+			}
 			MtEvent *e = new SimpleTriggerEvent("PlayerDamage");
 			gamedef->event()->put(e);
 		} else if (event.type == CE_PLAYER_FORCE_MOVE) {

@@ -259,7 +259,7 @@ enum ToClientCommand
 	TOCLIENT_HP = 0x33,
 	/*
 		u16 command
-		u8 hp
+		u8 hp // TODO should be u16
 	*/
 
 	TOCLIENT_MOVE_PLAYER = 0x34,
@@ -691,7 +691,7 @@ enum ToServerCommand
 	TOSERVER_DAMAGE = 0x35,
 	/*
 		u16 command
-		u8 amount
+		s16 amount // in new protocol
 	*/
 
 	TOSERVER_PASSWORD=0x36,
