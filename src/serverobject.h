@@ -58,7 +58,7 @@ public:
 	ServerActiveObject(ServerEnvironment *env, v3f pos);
 	virtual ~ServerActiveObject();
 
-	virtual u8 getSendType() const
+	virtual ActiveObjectType getSendType() const
 	{ return getType(); }
 
 	// Called after id has been set and has been inserted in environment

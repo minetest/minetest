@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "tool.h"
 #include "serverobject.h"
-#include "content_object.h"
 #include "content_sao.h"
 #include "server.h"
 #include "hud.h"
