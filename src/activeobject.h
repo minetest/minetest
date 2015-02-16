@@ -23,7 +23,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_aabb3d.h"
 #include <string>
 
-#define ACTIVEOBJECT_TYPE_INVALID 0
+enum ActiveObjectType {
+	ACTIVEOBJECT_TYPE_INVALID = 0,
+	ACTIVEOBJECT_TYPE_TEST = 1,
+	ACTIVEOBJECT_TYPE_ITEM = 2,
+	ACTIVEOBJECT_TYPE_LUAENTITY = 7,
+// Special type, not stored as a static object
+	ACTIVEOBJECT_TYPE_PLAYER = 100,
+// Special type, only exists as CAO
+	ACTIVEOBJECT_TYPE_GENERIC = 101,
+};
 // Other types are defined in content_object.h
 
 struct ActiveObjectMessage
@@ -60,7 +69,7 @@ public:
 		m_id = id;
 	}
 
-	virtual u8 getType() const = 0;
+	virtual ActiveObjectType getType() const = 0;
 	virtual bool getCollisionBox(aabb3f *toset) = 0;
 	virtual bool collideWithObjects() = 0;
 protected:

@@ -406,19 +406,6 @@ int ModApiEnvMod::l_add_item(lua_State *L)
 		script_error(L);
 	lua_remove(L, errorhandler); // Remove error handler
 	return 1;
-	/*lua_pushvalue(L, 1);
-	lua_pushstring(L, "__builtin:item");
-	lua_pushstring(L, item.getItemString().c_str());
-	return l_add_entity(L);*/
-	/*// Do it
-	ServerActiveObject *obj = createItemSAO(env, pos, item.getItemString());
-	int objectid = env->addActiveObject(obj);
-	// If failed to add, return nothing (reads as nil)
-	if(objectid == 0)
-		return 0;
-	// Return ObjectRef
-	objectrefGetOrCreate(L, obj);
-	return 1;*/
 }
 
 // get_player_by_name(name)
