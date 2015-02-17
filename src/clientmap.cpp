@@ -247,7 +247,7 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 				continue;
 		}
 
-		std::list< MapBlock * > sectorblocks;
+		MapBlockVect sectorblocks;
 		sector->getBlocks(sectorblocks);
 
 		/*
@@ -256,8 +256,8 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 
 		u32 sector_blocks_drawn = 0;
 
-		std::list< MapBlock * >::iterator i;
-		for(i=sectorblocks.begin(); i!=sectorblocks.end(); i++)
+		for(MapBlockVect::iterator i = sectorblocks.begin();
+				i != sectorblocks.end(); i++)
 		{
 			MapBlock *block = *i;
 

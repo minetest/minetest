@@ -614,6 +614,8 @@ private:
 	int m_refcount;
 };
 
+typedef std::vector<MapBlock*> MapBlockVect;
+
 inline bool blockpos_over_limit(v3s16 p)
 {
 	return

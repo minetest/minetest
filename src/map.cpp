@@ -1440,23 +1440,20 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 
 		bool all_blocks_deleted = true;
 
-		std::list<MapBlock*> blocks;
+		MapBlockVect blocks;
 		sector->getBlocks(blocks);
 
-		for(std::list<MapBlock*>::iterator i = blocks.begin();
-				i != blocks.end(); ++i)
-		{
+		for(MapBlockVect::iterator i = blocks.begin();
+				i != blocks.end(); ++i) {
 			MapBlock *block = (*i);
 
 			block->incrementUsageTimer(dtime);
 
-			if(block->refGet() == 0 && block->getUsageTimer() > unload_timeout)
-			{
+			if(block->refGet() == 0 && block->getUsageTimer() > unload_timeout) {
 				v3s16 p = block->getPos();
 
 				// Save if modified
-				if (block->getModified() != MOD_STATE_CLEAN && save_before_unloading)
-				{
+				if (block->getModified() != MOD_STATE_CLEAN && save_before_unloading) {
 					modprofiler.add(block->getModifiedReason(), 1);
 					if (!saveBlock(block))
 						continue;
@@ -1471,15 +1468,13 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 
 				deleted_blocks_count++;
 			}
-			else
-			{
+			else {
 				all_blocks_deleted = false;
 				block_count_all++;
 			}
 		}
 
-		if(all_blocks_deleted)
-		{
+		if(all_blocks_deleted) {
 			sector_deletion_queue.push_back(si->first);
 		}
 	}
@@ -2982,8 +2977,7 @@ std::string ServerMap::getBlockFilename(v3s16 p)
 void ServerMap::save(ModifiedState save_level)
 {
 	DSTACK(__FUNCTION_NAME);
-	if(m_map_saving_enabled == false)
-	{
+	if(m_map_saving_enabled == false) {
 		infostream<<"WARNING: Not saving map, saving disabled."<<std::endl;
 		return;
 	}
@@ -2992,8 +2986,7 @@ void ServerMap::save(ModifiedState save_level)
 		infostream<<"ServerMap: Saving whole map, this can take time."
 				<<std::endl;
 
-	if(m_map_metadata_changed || save_level == MOD_STATE_CLEAN)
-	{
+	if(m_map_metadata_changed || save_level == MOD_STATE_CLEAN) {
 		saveMapMeta();
 	}
 
@@ -3008,30 +3001,27 @@ void ServerMap::save(ModifiedState save_level)
 	bool save_started = false;
 
 	for(std::map<v2s16, MapSector*>::iterator i = m_sectors.begin();
-		i != m_sectors.end(); ++i)
-	{
+		i != m_sectors.end(); ++i) {
 		ServerMapSector *sector = (ServerMapSector*)i->second;
 		assert(sector->getId() == MAPSECTOR_SERVER);
 
-		if(sector->differs_from_disk || save_level == MOD_STATE_CLEAN)
-		{
+		if(sector->differs_from_disk || save_level == MOD_STATE_CLEAN) {
 			saveSectorMeta(sector);
 			sector_meta_count++;
 		}
-		std::list<MapBlock*> blocks;
+
+		MapBlockVect blocks;
 		sector->getBlocks(blocks);
 
-		for(std::list<MapBlock*>::iterator j = blocks.begin();
-			j != blocks.end(); ++j)
-		{
+		for(MapBlockVect::iterator j = blocks.begin();
+			j != blocks.end(); ++j) {
 			MapBlock *block = *j;
 
 			block_count_all++;
 
-			if(block->getModified() >= (u32)save_level)
-			{
+			if(block->getModified() >= (u32)save_level) {
 				// Lazy beginSave()
-				if(!save_started){
+				if(!save_started) {
 					beginSave();
 					save_started = true;
 				}
@@ -3049,6 +3039,7 @@ void ServerMap::save(ModifiedState save_level)
 			}
 		}
 	}
+
 	if(save_started)
 		endSave();
 
@@ -3056,8 +3047,7 @@ void ServerMap::save(ModifiedState save_level)
 		Only print if something happened or saved whole map
 	*/
 	if(save_level == MOD_STATE_CLEAN || sector_meta_count != 0
-			|| block_count != 0)
-	{
+			|| block_count != 0) {
 		infostream<<"ServerMap: Written: "
 				<<sector_meta_count<<" sector metadata files, "
 				<<block_count<<" block files"
@@ -3085,14 +3075,12 @@ void ServerMap::listAllLoadedBlocks(std::vector<v3s16> &dst)
 	{
 		MapSector *sector = si->second;
 
-		std::list<MapBlock*> blocks;
+		MapBlockVect blocks;
 		sector->getBlocks(blocks);
 
-		for(std::list<MapBlock*>::iterator i = blocks.begin();
-				i != blocks.end(); ++i)
-		{
-			MapBlock *block = (*i);
-			v3s16 p = block->getPos();
+		for(MapBlockVect::iterator i = blocks.begin();
+				i != blocks.end(); ++i) {
+			v3s16 p = (*i)->getPos();
 			dst.push_back(p);
 		}
 	}
