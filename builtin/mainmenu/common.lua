@@ -16,8 +16,14 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 --------------------------------------------------------------------------------
 -- Global menu data
----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 menudata = {}
+
+--------------------------------------------------------------------------------
+-- Local cached values
+--------------------------------------------------------------------------------
+local min_supp_proto = core.get_min_supp_proto()
+local max_supp_proto = core.get_max_supp_proto()
 
 --------------------------------------------------------------------------------
 -- Menu helper functions
@@ -40,6 +46,25 @@ function image_column(tooltip, flagname)
 		"tooltip=" .. core.formspec_escape(tooltip) .. "," ..
 		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
 		"1=" .. core.formspec_escape(defaulttexturedir .. "server_flags_" .. flagname .. ".png")
+end
+
+--------------------------------------------------------------------------------
+function order_favorite_list(list)
+	local res = {}
+	--orders the favorite list after support
+	for i=1,#list,1 do
+		local fav = list[i]
+		if is_server_protocol_compat(fav.proto_min, fav.proto_max) then
+			table.insert(res, fav)
+		end
+	end
+	for i=1,#list,1 do
+		local fav = list[i]
+		if not is_server_protocol_compat(fav.proto_min, fav.proto_max) then
+			table.insert(res, fav)
+		end
+	end
+	return res
 end
 
 --------------------------------------------------------------------------------
@@ -68,6 +93,7 @@ function render_favorite(spec,render_details)
 	end
 
 	local details = ""
+	local grey_out = not is_server_protocol_compat(spec.proto_max, spec.proto_min)
 
 	if spec.clients ~= nil and spec.clients_max ~= nil then
 		local clients_color = ''
@@ -87,11 +113,17 @@ function render_favorite(spec,render_details)
 			clients_color = '#ffba97' -- 90-100%: orange
 		end
 
+		if grey_out then
+			clients_color = '#aaaaaa'
+		end
+
 		details = details ..
 				clients_color .. ',' ..
 				render_client_count(spec.clients) .. ',' ..
 				'/,' ..
 				render_client_count(spec.clients_max) .. ','
+	elseif grey_out then
+		details = details .. '#aaaaaa,?,/,?,'
 	else
 		details = details .. ',?,/,?,'
 	end
@@ -114,7 +146,7 @@ function render_favorite(spec,render_details)
 		details = details .. "0,"
 	end
 
-	return details .. text
+	return details .. (grey_out and '#aaaaaa,' or ',') .. text
 end
 
 --------------------------------------------------------------------------------
@@ -195,7 +227,7 @@ function asyncOnlineFavourites()
 		nil,
 		function(result)
 			if core.setting_getbool("public_serverlist") then
-				menudata.favorites = result
+				menudata.favorites = order_favorite_list(result)
 				core.event_handler("Refresh")
 			end
 		end
@@ -224,4 +256,22 @@ function text2textlist(xpos,ypos,width,height,tl_name,textlen,text,transparency)
 	retval = retval .. "]"
 
 	return retval
+end
+
+--------------------------------------------------------------------------------
+function is_server_protocol_compat(proto_min, proto_max)
+	return not ((min_supp_proto > (proto_max or 24)) or (max_supp_proto < (proto_min or 13)))
+end
+--------------------------------------------------------------------------------
+function is_server_protocol_compat_or_error(proto_min, proto_max)
+	if not is_server_protocol_compat(proto_min, proto_max) then
+		gamedata.errormessage = fgettext_ne("Protocol version mismatch, server " ..
+			((proto_min ~= proto_max) and "supports protocols between $1 and $2" or "enforces protocol version $1") ..
+			", we " ..
+			((min_supp_proto ~= max_supp_proto) and "support protocols between version $3 and $4." or "only support protocol version $3"),
+			proto_min or 13, proto_max or 24, min_supp_proto, max_supp_proto)
+		return false
+	end
+
+	return true
 end
