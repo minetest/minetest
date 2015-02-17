@@ -26,12 +26,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 enum ActiveObjectType {
 	ACTIVEOBJECT_TYPE_INVALID = 0,
 	ACTIVEOBJECT_TYPE_TEST = 1,
+// Deprecated stuff
 	ACTIVEOBJECT_TYPE_ITEM = 2,
-	// Compat layer, migrating objects from 0.3 to 0.4+
 	ACTIVEOBJECT_TYPE_RAT = 3,
 	ACTIVEOBJECT_TYPE_OERKKI1 = 4,
 	ACTIVEOBJECT_TYPE_FIREFLY = 5,
 	ACTIVEOBJECT_TYPE_MOBV2 = 6,
+// End deprecated stuff
 	ACTIVEOBJECT_TYPE_LUAENTITY = 7,
 // Special type, not stored as a static object
 	ACTIVEOBJECT_TYPE_PLAYER = 100,

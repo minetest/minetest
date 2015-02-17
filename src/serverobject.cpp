@@ -46,6 +46,11 @@ ServerActiveObject* ServerActiveObject::create(ActiveObjectType type,
 	std::map<u16, Factory>::iterator n;
 	n = m_types.find(type);
 	if(n == m_types.end()) {
+		// These are 0.3 entity types, return without error.
+		if (ACTIVEOBJECT_TYPE_ITEM <= type && type <= ACTIVEOBJECT_TYPE_MOBV2) {
+			return NULL;
+		}
+
 		// If factory is not found, just return.
 		dstream<<"WARNING: ServerActiveObject: No factory for type="
 				<<type<<std::endl;
