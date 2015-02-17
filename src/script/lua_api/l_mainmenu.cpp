@@ -472,6 +472,7 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 
 	for (unsigned int i = 0; i < servers.size(); i++)
 	{
+
 		lua_pushnumber(L,index);
 
 		lua_newtable(L);
@@ -506,6 +507,18 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 			lua_pushstring(L,"version");
 			std::string topush = servers[i]["version"].asString();
 			lua_pushstring(L,topush.c_str());
+			lua_settable(L, top_lvl2);
+		}
+
+		if (servers[i]["proto_min"].asString().size()) {
+			lua_pushstring(L,"proto_min");
+			lua_pushinteger(L,servers[i]["proto_min"].asInt());
+			lua_settable(L, top_lvl2);
+		}
+
+		if (servers[i]["proto_max"].asString().size()) {
+			lua_pushstring(L,"proto_max");
+			lua_pushinteger(L,servers[i]["proto_max"].asInt());
 			lua_settable(L, top_lvl2);
 		}
 
@@ -1083,6 +1096,19 @@ int ModApiMainMenu::l_get_screen_info(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_get_min_supp_proto(lua_State *L)
+{
+	lua_pushinteger(L, CLIENT_PROTOCOL_VERSION_MIN);
+	return 1;
+}
+
+int ModApiMainMenu::l_get_max_supp_proto(lua_State *L)
+{
+	lua_pushinteger(L, CLIENT_PROTOCOL_VERSION_MAX);
+	return 1;
+}
+
+/******************************************************************************/
 int ModApiMainMenu::l_do_async_callback(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
@@ -1142,6 +1168,8 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(gettext);
 	API_FCT(get_video_drivers);
 	API_FCT(get_screen_info);
+	API_FCT(get_min_supp_proto);
+	API_FCT(get_max_supp_proto);
 	API_FCT(do_async_callback);
 }
 
