@@ -570,6 +570,9 @@ core.register_chatcommand("rollback_check", {
 			.. " seconds=86400=24h, limit=5)",
 	privs = {rollback=true},
 	func = function(name, param)
+		if not core.setting_getbool("enable_rollback_recording") then
+			return false, "Rollback functions are disabled."
+		end
 		local range, seconds, limit =
 			param:match("(%d+) *(%d*) *(%d*)")
 		range = tonumber(range) or 0
@@ -583,6 +586,10 @@ core.register_chatcommand("rollback_check", {
 			local name = puncher:get_player_name()
 			core.chat_send_player(name, "Checking " .. core.pos_to_string(pos) .. "...")
 			local actions = core.rollback_get_node_actions(pos, range, seconds, limit)
+			if not actions then
+				core.chat_send_player(name, "Rollback functions are disabled")
+				return
+			end
 			local num_actions = #actions
 			if num_actions == 0 then
 				core.chat_send_player(name, "Nobody has touched"
@@ -614,6 +621,9 @@ core.register_chatcommand("rollback", {
 	description = "revert actions of a player; default for <seconds> is 60",
 	privs = {rollback=true},
 	func = function(name, param)
+		if not core.setting_getbool("enable_rollback_recording") then
+			return false, "Rollback functions are disabled."
+		end
 		local target_name, seconds = string.match(param, ":([^ ]+) *(%d*)")
 		if not target_name then
 			local player_name = nil
