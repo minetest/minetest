@@ -15,6 +15,9 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+local min_supp_proto = core.get_min_supp_proto()
+local max_supp_proto = core.get_max_supp_proto()
+
 --------------------------------------------------------------------------------
 local function get_formspec(tabview, name, tabdata)
 	local render_details = core.is_yes(core.setting_getbool("public_serverlist"))
@@ -62,6 +65,7 @@ local function get_formspec(tabview, name, tabdata)
 			image_column(fgettext("Creative mode"), "creative") .. ",padding=1;" ..
 			image_column(fgettext("Damage enabled"), "damage") .. ",padding=0.25;" ..
 			image_column(fgettext("PvP enabled"), "pvp") .. ",padding=0.25;" ..
+			"color,span=1;" ..
 			"text,padding=1]"                               -- name
 	else
 		retval = retval .. "tablecolumns[text]"
@@ -189,7 +193,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		local current_favourite = core.get_table_index("favourites")
 		if current_favourite == nil then return end
 		core.delete_favorite(current_favourite)
-		menudata.favorites   = core.get_favorites()
+		menudata.favorites = order_favorite_list(core.get_favorites())
 		tabdata.fav_selected = nil
 
 		core.setting_set("address","")
@@ -215,6 +219,17 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 			gamedata.servername        = menudata.favorites[fav_idx].name
 			gamedata.serverdescription = menudata.favorites[fav_idx].description
+
+			local proto_max = menudata.favorites[fav_idx].proto_max
+			local proto_min = menudata.favorites[fav_idx].proto_min
+			if proto_max and proto_min and
+				(min_supp_proto > proto_max or
+				max_supp_proto < proto_min) then
+				gamedata.errormessage = fgettext_ne("Protocol version mismatch, server " ..
+						((proto_min ~= proto_max) and "supports protocols between $1 and $2" or "enforces protocol version $1") ..
+						", we support protocols between $3 and $4.", proto_min, proto_max, min_supp_proto, max_supp_proto)
+				return true
+			end
 		else
 			gamedata.servername        = ""
 			gamedata.serverdescription = ""

@@ -16,8 +16,14 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 --------------------------------------------------------------------------------
 -- Global menu data
----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 menudata = {}
+
+--------------------------------------------------------------------------------
+-- Local cached values
+--------------------------------------------------------------------------------
+local min_supp_proto = core.get_min_supp_proto()
+local max_supp_proto = core.get_max_supp_proto()
 
 --------------------------------------------------------------------------------
 -- Menu helper functions
@@ -40,6 +46,29 @@ function image_column(tooltip, flagname)
 		"tooltip=" .. core.formspec_escape(tooltip) .. "," ..
 		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
 		"1=" .. core.formspec_escape(defaulttexturedir .. "server_flags_" .. flagname .. ".png")
+end
+
+--------------------------------------------------------------------------------
+function order_favorite_list(list)
+	local res = {}
+	--orders the favorite list after support
+	for i=1,#list,1 do
+		local fav = list[i]
+		if fav.proto_min == nil or fav.proto_max == nil or not
+			((min_supp_proto > fav.proto_max) or
+			(max_supp_proto < fav.proto_min)) then
+			table.insert(res, fav)
+		end
+	end
+	for i=1,#list,1 do
+		local fav = list[i]
+		if fav.proto_min and fav.proto_max and
+			((min_supp_proto > fav.proto_max) or
+			(max_supp_proto < fav.proto_min)) then
+			table.insert(res, fav)
+		end
+	end
+	return res
 end
 
 --------------------------------------------------------------------------------
@@ -68,6 +97,10 @@ function render_favorite(spec,render_details)
 	end
 
 	local details = ""
+	local grey_out = false
+	if spec.proto_min and spec.proto_max then
+		grey_out = (min_supp_proto > spec.proto_max) or (max_supp_proto < spec.proto_min)
+	end
 
 	if spec.clients ~= nil and spec.clients_max ~= nil then
 		local clients_color = ''
@@ -87,11 +120,17 @@ function render_favorite(spec,render_details)
 			clients_color = '#ffba97' -- 90-100%: orange
 		end
 
+		if grey_out then
+			clients_color = '#aaaaaa'
+		end
+
 		details = details ..
 				clients_color .. ',' ..
 				render_client_count(spec.clients) .. ',' ..
 				'/,' ..
 				render_client_count(spec.clients_max) .. ','
+	elseif grey_out then
+		details = details .. '#aaaaaa,?,/,?,'
 	else
 		details = details .. ',?,/,?,'
 	end
@@ -114,7 +153,7 @@ function render_favorite(spec,render_details)
 		details = details .. "0,"
 	end
 
-	return details .. text
+	return details .. (grey_out and '#aaaaaa,' or ',') .. text
 end
 
 --------------------------------------------------------------------------------
@@ -195,7 +234,7 @@ function asyncOnlineFavourites()
 		nil,
 		function(result)
 			if core.setting_getbool("public_serverlist") then
-				menudata.favorites = result
+				menudata.favorites = order_favorite_list(result)
 				core.event_handler("Refresh")
 			end
 		end
