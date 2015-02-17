@@ -62,6 +62,7 @@ local function get_formspec(tabview, name, tabdata)
 			image_column(fgettext("Creative mode"), "creative") .. ",padding=1;" ..
 			image_column(fgettext("Damage enabled"), "damage") .. ",padding=0.25;" ..
 			image_column(fgettext("PvP enabled"), "pvp") .. ",padding=0.25;" ..
+			"color,span=1;" ..
 			"text,padding=1]"                               -- name
 	else
 		retval = retval .. "tablecolumns[text]"
@@ -88,7 +89,6 @@ end
 
 --------------------------------------------------------------------------------
 local function main_button_handler(tabview, fields, name, tabdata)
-
 	if fields["te_name"] ~= nil then
 		gamedata.playername = fields["te_name"]
 		core.setting_set("name", fields["te_name"])
@@ -98,6 +98,10 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		local event = core.explode_table_event(fields["favourites"])
 		if event.type == "DCL" then
 			if event.row <= #menudata.favorites then
+				if not is_server_protocol_compat_or_error(menudata.favorites[event.row].proto_min,
+						menudata.favorites[event.row].proto_max) then
+					return true
+				end
 				gamedata.address    = menudata.favorites[event.row].address
 				gamedata.port       = menudata.favorites[event.row].port
 				gamedata.playername = fields["te_name"]
@@ -189,7 +193,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		local current_favourite = core.get_table_index("favourites")
 		if current_favourite == nil then return end
 		core.delete_favorite(current_favourite)
-		menudata.favorites   = core.get_favorites()
+		menudata.favorites = order_favorite_list(core.get_favorites())
 		tabdata.fav_selected = nil
 
 		core.setting_set("address","")
@@ -215,6 +219,11 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 			gamedata.servername        = menudata.favorites[fav_idx].name
 			gamedata.serverdescription = menudata.favorites[fav_idx].description
+
+			if not is_server_protocol_compat_or_error(menudata.favorites[fav_idx].proto_min,
+					menudata.favorites[fav_idx].proto_max)then
+				return true
+			end
 		else
 			gamedata.servername        = ""
 			gamedata.serverdescription = ""
