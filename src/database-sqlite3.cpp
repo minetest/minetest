@@ -274,12 +274,11 @@ void Database_SQLite3::createDatabase()
 
 }
 
-void Database_SQLite3::listAllLoadableBlocks(std::list<v3s16> &dst)
+void Database_SQLite3::listAllLoadableBlocks(std::vector<v3s16> &dst)
 {
 	verifyDatabase();
 
-	while(sqlite3_step(m_database_list) == SQLITE_ROW)
-	{
+	while(sqlite3_step(m_database_list) == SQLITE_ROW) {
 		sqlite3_int64 block_i = sqlite3_column_int64(m_database_list, 0);
 		v3s16 p = getIntegerAsBlock(block_i);
 		//dstream<<"block_i="<<block_i<<" p="<<PP(p)<<std::endl;

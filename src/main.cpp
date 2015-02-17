@@ -973,16 +973,17 @@ static bool migrate_database(const GameParams &game_params, const Settings &cmd_
 		return false;
 	}
 
-	std::list<v3s16> blocks;
+	std::vector<v3s16> blocks;
 	ServerMap &old_map = ((ServerMap&)server->getMap());
 	old_map.listAllLoadableBlocks(blocks);
 	int count = 0;
 	new_db->beginSave();
-	for (std::list<v3s16>::iterator i = blocks.begin(); i != blocks.end(); i++) {
+	for (std::vector<v3s16>::iterator i = blocks.begin(); i != blocks.end(); i++) {
 		MapBlock *block = old_map.loadBlock(*i);
 		if (!block) {
 			errorstream << "Failed to load block " << PP(*i) << ", skipping it.";
-		} else {
+		}
+		else {
 			old_map.saveBlock(block, new_db);
 			MapSector *sector = old_map.getSectorNoGenerate(v2s16(i->X, i->Z));
 			sector->deleteBlock(block);

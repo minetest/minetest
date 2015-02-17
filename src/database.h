@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef DATABASE_HEADER
 #define DATABASE_HEADER
 
-#include <list>
+#include <vector>
 #include <string>
 #include "irr_v3d.h"
 #include "irrlichttypes.h"
@@ -40,7 +40,7 @@ public:
 	virtual bool deleteBlock(v3s16 blockpos) = 0;
 	s64 getBlockAsInteger(const v3s16 pos) const;
 	v3s16 getIntegerAsBlock(s64 i) const;
-	virtual void listAllLoadableBlocks(std::list<v3s16> &dst) = 0;
+	virtual void listAllLoadableBlocks(std::vector<v3s16> &dst) = 0;
 	virtual int Initialized(void)=0;
 	virtual ~Database() {};
 };

@@ -65,7 +65,7 @@ bool Database_Dummy::deleteBlock(v3s16 blockpos)
 	return true;
 }
 
-void Database_Dummy::listAllLoadableBlocks(std::list<v3s16> &dst)
+void Database_Dummy::listAllLoadableBlocks(std::vector<v3s16> &dst)
 {
 	for(std::map<u64, std::string>::iterator x = m_database.begin(); x != m_database.end(); ++x)
 	{
