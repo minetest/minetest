@@ -38,15 +38,14 @@ ServerActiveObject::~ServerActiveObject()
 {
 }
 
-ServerActiveObject* ServerActiveObject::create(u8 type,
+ServerActiveObject* ServerActiveObject::create(ActiveObjectType type,
 		ServerEnvironment *env, u16 id, v3f pos,
 		const std::string &data)
 {
 	// Find factory function
 	std::map<u16, Factory>::iterator n;
 	n = m_types.find(type);
-	if(n == m_types.end())
-	{
+	if(n == m_types.end()) {
 		// If factory is not found, just return.
 		dstream<<"WARNING: ServerActiveObject: No factory for type="
 				<<type<<std::endl;

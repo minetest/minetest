@@ -1700,7 +1700,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 		StaticObject &s_obj = *i;
 		// Create an active object from the data
 		ServerActiveObject *obj = ServerActiveObject::create
-				(s_obj.type, this, 0, s_obj.pos, s_obj.data);
+				((ActiveObjectType) s_obj.type, this, 0, s_obj.pos, s_obj.data);
 		// If couldn't create object, store static data back.
 		if(obj==NULL)
 		{
@@ -2488,7 +2488,7 @@ void ClientEnvironment::addActiveObject(u16 id, u8 type,
 		const std::string &init_data)
 {
 	ClientActiveObject* obj =
-			ClientActiveObject::create(type, m_gamedef, this);
+			ClientActiveObject::create((ActiveObjectType) type, m_gamedef, this);
 	if(obj == NULL)
 	{
 		infostream<<"ClientEnvironment::addActiveObject(): "
