@@ -361,7 +361,10 @@ void EmergeManager::loadParamsFromSettings(Settings *settings)
 	std::string seed_str;
 	const char *setname = (settings == g_settings) ? "fixed_map_seed" : "seed";
 
-	if (settings->getNoEx(setname, seed_str) && !seed_str.empty()) {
+	if (!settings->getNoEx("seed", seed_str)) {
+		g_settings->getNoEx(setname, seed_str);
+	}
+	if (!seed_str.empty()) {
 		params.seed = read_seed(seed_str.c_str());
 	} else {
 		params.seed =
