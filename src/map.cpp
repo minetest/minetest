@@ -1863,11 +1863,11 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 
 		// Find out whether there is a suspect for this action
 		std::string suspect;
-		if(m_gamedef->rollback()){
+		if(m_gamedef->rollback()) {
 			suspect = m_gamedef->rollback()->getSuspect(p0, 83, 1);
 		}
 
-		if(!suspect.empty()){
+		if(m_gamedef->rollback() && !suspect.empty()){
 			// Blame suspect
 			RollbackScopeActor rollback_scope(m_gamedef->rollback(), suspect, true);
 			// Get old node for rollback

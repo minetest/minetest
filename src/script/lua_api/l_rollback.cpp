@@ -44,6 +44,9 @@ int ModApiRollback::l_rollback_get_node_actions(lua_State *L)
 	int limit = luaL_checknumber(L, 4);
 	Server *server = getServer(L);
 	IRollbackManager *rollback = server->getRollbackManager();
+	if (rollback == NULL) {
+		return 0;
+	}
 
 	std::list<RollbackAction> actions = rollback->getNodeActors(pos, range, seconds, limit);
 	std::list<RollbackAction>::iterator iter = actions.begin();
@@ -80,6 +83,13 @@ int ModApiRollback::l_rollback_revert_actions_by(lua_State *L)
 	int seconds = luaL_checknumber(L, 2);
 	Server *server = getServer(L);
 	IRollbackManager *rollback = server->getRollbackManager();
+
+	// If rollback is disabled, tell it's not a success.
+	if (rollback == NULL) {
+		lua_pushboolean(L, false);
+		lua_newtable(L);
+		return 2;
+	}
 	std::list<RollbackAction> actions = rollback->getRevertActions(actor, seconds);
 	std::list<std::string> log;
 	bool success = server->rollbackRevertActions(actions, &log);
