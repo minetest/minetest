@@ -337,6 +337,7 @@
 #    If true, disable cheat prevention in multiplayer
 #disable_anticheat = false
 #    If true, actions are recorded for rollback
+#    This option is only read when server starts
 #enable_rollback_recording = false
 #    Handling for deprecated lua api calls:
 #        "legacy" = (try to) mimic old behaviour (default for release).
