@@ -1421,7 +1421,7 @@ bool Map::getDayNightDiff(v3s16 blockpos)
 	Updates usage timers
 */
 void Map::timerUpdate(float dtime, float unload_timeout,
-		std::list<v3s16> *unloaded_blocks)
+		std::vector<v3s16> *unloaded_blocks)
 {
 	bool save_before_unloading = (mapType() == MAPTYPE_SERVER);
 
@@ -1435,8 +1435,7 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 
 	beginSave();
 	for(std::map<v2s16, MapSector*>::iterator si = m_sectors.begin();
-		si != m_sectors.end(); ++si)
-	{
+		si != m_sectors.end(); ++si) {
 		MapSector *sector = si->second;
 
 		bool all_blocks_deleted = true;
@@ -1506,7 +1505,7 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 	}
 }
 
-void Map::unloadUnreferencedBlocks(std::list<v3s16> *unloaded_blocks)
+void Map::unloadUnreferencedBlocks(std::vector<v3s16> *unloaded_blocks)
 {
 	timerUpdate(0.0, -1.0, unloaded_blocks);
 }

@@ -434,7 +434,7 @@ void Client::step(float dtime)
 	const float map_timer_and_unload_dtime = 5.25;
 	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime)) {
 		ScopeProfiler sp(g_profiler, "Client: map timer and unload");
-		std::list<v3s16> deleted_blocks;
+		std::vector<v3s16> deleted_blocks;
 		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
 				g_settings->getFloat("client_unload_unused_data_timeout"),
 				&deleted_blocks);
@@ -444,8 +444,8 @@ void Client::step(float dtime)
 			NOTE: This loop is intentionally iterated the way it is.
 		*/
 
-		std::list<v3s16>::iterator i = deleted_blocks.begin();
-		std::list<v3s16> sendlist;
+		std::vector<v3s16>::iterator i = deleted_blocks.begin();
+		std::vector<v3s16> sendlist;
 		for(;;) {
 			if(sendlist.size() == 255 || i == deleted_blocks.end()) {
 				if(sendlist.empty())
@@ -462,7 +462,7 @@ void Client::step(float dtime)
 				*pkt << (u8) sendlist.size();
 
 				u32 k = 0;
-				for(std::list<v3s16>::iterator
+				for(std::vector<v3s16>::iterator
 						j = sendlist.begin();
 						j != sendlist.end(); ++j) {
 					*pkt << *j;
