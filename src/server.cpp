@@ -243,9 +243,6 @@ Server::Server(
 	std::string ban_path = m_path_world + DIR_DELIM "ipban.txt";
 	m_banmanager = new BanManager(ban_path);
 
-	// Create rollback manager
-	m_rollback = new RollbackManager(m_path_world, this);
-
 	ModConfiguration modconf(m_path_world);
 	m_mods = modconf.getMods();
 	std::vector<ModSpec> unsatisfied_mods = modconf.getUnsatisfiedMods();
@@ -352,6 +349,12 @@ Server::Server(
 
 	// Initialize mapgens
 	m_emerge->initMapgens();
+
+	m_enable_rollback_recording = g_settings->getBool("enable_rollback_recording");
+	if (m_enable_rollback_recording) {
+		// Create rollback manager
+		m_rollback = new RollbackManager(m_path_world, this);
+	}
 
 	// Give environment reference to scripting api
 	m_script->initializeEnvironment(m_env);
@@ -1068,10 +1071,6 @@ void Server::AsyncRunStep(bool initial_step)
 			counter = 0.0;
 
 			m_emerge->startThreads();
-
-			// Update m_enable_rollback_recording here too
-			m_enable_rollback_recording =
-					g_settings->getBool("enable_rollback_recording");
 		}
 	}
 
