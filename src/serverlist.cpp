@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "porting.h"
 #include "log.h"
-#include "network/networkprotocol.h"
+#include "clientserver.h"
 #include "json/json.h"
 #include "convert_json.h"
 #include "httpfetch.h"
