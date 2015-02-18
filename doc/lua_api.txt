@@ -1,4 +1,4 @@
-Minetest Lua Modding API Reference 0.4.11
+Minetest Lua Modding API Reference 0.4.12
 =========================================
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
