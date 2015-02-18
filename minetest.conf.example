@@ -252,16 +252,16 @@
 #freetype = true
 #    Path to TrueTypeFont or bitmap
 #font_path = fonts/liberationsans.ttf
-#font_size = 13
+#font_size = 15
 #    Font shadow offset, if 0 then shadow will not be drawn
 #font_shadow = 1
 #    Font shadow alpha (opaqueness, between 0 and 255)
 #font_shadow_alpha = 128
 #mono_font_path = fonts/liberationmono.ttf
-#mono_font_size = 13
+#mono_font_size = 15
 #    This font will be used for certain languages
 #fallback_font_path = fonts/DroidSansFallbackFull.ttf
-#fallback_font_size = 13
+#fallback_font_size = 15
 #fallback_font_shadow = 1
 #fallback_font_shadow_alpha = 128
 #    Override language. When no value is provided (default) system language is used.
