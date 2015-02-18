@@ -139,7 +139,11 @@ local function init_globals()
 	tv_main:add(tab_credits)
 
 	tv_main:set_global_event_handler(main_event_handler)
-	tv_main:set_fixed_size(false)
+	if PLATFORM ~= "Android" then
+		tv_main:set_fixed_size(true)
+	else
+		tv_main:set_fixed_size(false)
+	end
 
 	if not (PLATFORM == "Android") then
 		tv_main:set_tab(core.setting_get("maintab_LAST"))
