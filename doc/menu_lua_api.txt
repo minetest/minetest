@@ -1,4 +1,4 @@
-Minetest Lua Mainmenu API Reference 0.4.11
+Minetest Lua Mainmenu API Reference 0.4.12
 ========================================
 
 Introduction
