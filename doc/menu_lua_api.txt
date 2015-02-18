@@ -197,9 +197,11 @@ core.delete_world(index)
 Helpers:
 core.gettext(string) -> string
 ^ look up the translation of a string in the gettext message catalog
-fgettext(string, ...) -> string
+fgettext_ne(string, ...)
 ^ call core.gettext(string), replace "$1"..."$9" with the given
-^ extra arguments, call core.formspec_escape and return the result
+^ extra arguments and return the result
+fgettext(string, ...) -> string
+^ same as fgettext_ne(), but calls core.formspec_escape before returning result
 core.parse_json(string[, nullvalue]) -> something (possible in async calls)
 ^ see core.parse_json (lua_api.txt)
 dump(obj, dumped={})
@@ -210,6 +212,12 @@ string:trim()
 ^ eg. string.trim("\n \t\tfoo bar\t ") == "foo bar"
 core.is_yes(arg) (possible in async calls)
 ^ returns whether arg can be interpreted as yes
+
+Version compat:
+core.get_min_supp_proto()
+^ returns the minimum supported network protocol version
+core.get_max_supp_proto()
+^ returns the maximum supported network protocol version
 
 Async:
 core.handle_async(async_job,parameters,finished)

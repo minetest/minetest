@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "porting.h"
 #include "log.h"
+#include "network/networkprotocol.h"
 #include "json/json.h"
 #include "convert_json.h"
 #include "httpfetch.h"
@@ -67,8 +68,11 @@ std::vector<ServerListSpec> getLocal()
 
 std::vector<ServerListSpec> getOnline()
 {
-	Json::Value root = fetchJsonValue(
-			(g_settings->get("serverlist_url") + "/list").c_str(), NULL);
+	std::ostringstream geturl;
+	geturl << g_settings->get("serverlist_url") <<
+		"/list?proto_version_min=" << CLIENT_PROTOCOL_VERSION_MIN <<
+		"&proto_version_max=" << CLIENT_PROTOCOL_VERSION_MAX;
+	Json::Value root = fetchJsonValue(geturl.str(), NULL);
 
 	std::vector<ServerListSpec> server_list;
 
@@ -205,9 +209,12 @@ void sendAnnounce(const std::string &action,
 		server["address"] = g_settings->get("server_address");
 	}
 	if (action != "delete") {
+		bool strict_checking = g_settings->getBool("strict_protocol_version_checking");
 		server["name"]         = g_settings->get("server_name");
 		server["description"]  = g_settings->get("server_description");
 		server["version"]      = minetest_version_simple;
+		server["proto_min"]    = strict_checking ? LATEST_PROTOCOL_VERSION : SERVER_PROTOCOL_VERSION_MIN;
+		server["proto_max"]    = strict_checking ? LATEST_PROTOCOL_VERSION : SERVER_PROTOCOL_VERSION_MAX;
 		server["url"]          = g_settings->get("server_url");
 		server["creative"]     = g_settings->getBool("creative_mode");
 		server["damage"]       = g_settings->getBool("enable_damage");
