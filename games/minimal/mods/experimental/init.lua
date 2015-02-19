@@ -523,6 +523,76 @@ minetest.register_craft({
 	}
 })
 
+local function hex_dump(buf)
+	local result = ""
+	for i=1,math.ceil(#buf/16) * 16 do
+		if (i-1) % 16 == 0 then result = result .. string.format('%08X	', i-1) end
+		result = result .. ( i > #buf and '	 ' or string.format('%02X ', buf:byte(i)) )
+		if i %	8 == 0 then result = result .. ' ' end
+		if i % 16 == 0 then result = result .. (buf:sub(i-16+1, i):gsub('%c','.') .. '\n' ) end
+	end
+	return result
+end
+
+minetest.register_craftitem("experimental:tester_tool_2", {
+	description = "Tester Tool 2",
+	inventory_image = "experimental_tester_tool_2.png",
+	liquids_pointable = true,
+	on_use = function(itemstack, user, pointed_thing)
+		--print(dump(pointed_thing))
+		if pointed_thing.type == "node" then
+			local p = pointed_thing.under
+			local n = minetest.get_node(p)
+			print(dump(minetest.get_nodedef(p)))
+			-- Set the facedir
+			local user_pos = user:getpos()
+			if user_pos then
+				local dir = {
+					x = p.x - user_pos.x,
+					y = p.y - user_pos.y,
+					z = p.z - user_pos.z
+				}
+				n.param2 = minetest.dir_to_facedir(dir)
+			end
+			-- Set the node
+			minetest.set_def(p, {
+					--tile_images = {
+					--	"default_mese.png",
+					--},
+					drawtype = "nodebox",
+					paramtype = "light",
+					paramtype2 = "facedir",
+					node_box = {
+						type = "fixed",
+						fixed = {
+							{-0.5, -0.5, -0.5, 0.5, 0, 0.5},
+							{-0.5, 0, 0, 0.5, 0.5, 0.5},
+						},
+					},
+			})
+			local meta = minetest.env:get_meta(p)
+			print("Stored data is")
+			print(hex_dump(meta:get_string("__nodedef")))
+			print(dump(minetest.get_nodedef(p)))
+		end
+	end,
+})
+
+minetest.register_craftitem("experimental:tester_tool_3", {
+	description = "Tester Tool 3",
+	inventory_image = "experimental_tester_tool_3.png",
+	liquids_pointable = true,
+	on_use = function(itemstack, user, pointed_thing)
+		--print(dump(pointed_thing))
+		if pointed_thing.type == "node" then
+			local p = pointed_thing.under
+			local ndef = minetest.get_nodedef(p)
+			print(minetest.get_node(p).name)
+			print(dump(ndef))
+		end
+	end,
+})
+
 --[[minetest.register_on_joinplayer(function(player)
 	minetest.after(3, function()
 		player:set_inventory_formspec("size[8,7.5]"..

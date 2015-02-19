@@ -34,10 +34,8 @@ public:
 		*refcount = 1;
 		ptr = t;
 	}
-	SharedPtr(SharedPtr<T> &t)
+	SharedPtr(const SharedPtr<T> &t)
 	{
-		//*this = t;
-		drop();
 		refcount = t.refcount;
 		(*refcount)++;
 		ptr = t.ptr;
@@ -54,7 +52,7 @@ public:
 		ptr = t;
 		return *this;
 	}
-	SharedPtr<T> & operator=(SharedPtr<T> &t)
+	SharedPtr<T> & operator=(const SharedPtr<T> &t)
 	{
 		drop();
 		refcount = t.refcount;
@@ -62,23 +60,27 @@ public:
 		ptr = t.ptr;
 		return *this;
 	}
-	T* operator->()
+	T* get() const
 	{
 		return ptr;
 	}
-	T & operator*()
+	T* operator->() const
+	{
+		return ptr;
+	}
+	T & operator*() const
 	{
 		return *ptr;
 	}
-	bool operator!=(T *t)
+	bool operator!=(T *t) const
 	{
 		return ptr != t;
 	}
-	bool operator==(T *t)
+	bool operator==(T *t) const
 	{
 		return ptr == t;
 	}
-	T & operator[](unsigned int i)
+	T & operator[](unsigned int i) const
 	{
 		return ptr[i];
 	}
@@ -96,6 +98,96 @@ private:
 	}
 	T *ptr;
 	int *refcount;
+};
+
+template <typename T>
+class HybridPtr
+{
+public:
+	HybridPtr(T *t=NULL)
+	{
+		refcount = new int;
+		*refcount = 1;
+		ptr = t;
+		never_delete = false;
+	}
+	HybridPtr(const HybridPtr<T> &t)
+	{
+		refcount = t.refcount;
+		(*refcount)++;
+		ptr = t.ptr;
+		never_delete = t.never_delete;
+	}
+	~HybridPtr()
+	{
+		drop();
+	}
+	HybridPtr<T> & operator=(T *t)
+	{
+		drop();
+		refcount = new int;
+		*refcount = 1;
+		ptr = t;
+		never_delete = false;
+		return *this;
+	}
+	HybridPtr<T> & operator=(const HybridPtr<T> &t)
+	{
+		drop();
+		refcount = t.refcount;
+		(*refcount)++;
+		ptr = t.ptr;
+		never_delete = t.never_delete;
+		return *this;
+	}
+	T* get() const
+	{
+		return ptr;
+	}
+	T* operator->() const
+	{
+		return ptr;
+	}
+	T & operator*() const
+	{
+		return *ptr;
+	}
+	bool operator!=(T *t) const
+	{
+		return ptr != t;
+	}
+	bool operator==(T *t) const
+	{
+		return ptr == t;
+	}
+	T & operator[](unsigned int i) const
+	{
+		return ptr[i];
+	}
+	// Can be used for transparently passing references to global things
+	void setNeverDelete(bool a_never_delete)
+	{
+		never_delete = a_never_delete;
+	}
+	bool getNeverDelete() const
+	{
+		return never_delete;
+	}
+private:
+	void drop()
+	{
+		assert((*refcount) > 0);
+		(*refcount)--;
+		if(*refcount == 0)
+		{
+			delete refcount;
+			if(ptr != NULL && !never_delete)
+				delete ptr;
+		}
+	}
+	T *ptr;
+	int *refcount;
+	bool never_delete;
 };
 
 template <typename T>

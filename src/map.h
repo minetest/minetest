@@ -33,6 +33,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modifiedstate.h"
 #include "util/container.h"
 #include "nodetimer.h"
+#include "nodedef.h" // For ContentFeatures
+#include "util/pointer.h" // HybridPtr
+#include "node_with_def.h"
 
 class Database;
 class ClientMap;
@@ -205,6 +208,15 @@ public:
 	// position is valid, otherwise false
 	MapNode getNodeNoEx(v3s16 p, bool *is_valid_position = NULL);
 
+	// Same as getNodeNoEx, but returns NULL if node is not found
+	HybridPtr<const ContentFeatures> getNodeDefNoEx(v3s16 p, bool *is_valid_position = NULL);
+	
+	// Same as getNodeNoEx
+	NodeWithDef getNodeWithDefNoEx(v3s16 p, bool *is_valid_position = NULL);
+	void setNode(v3s16 p, const NodeWithDef &nd);
+	
+	void setNodeDef(v3s16 p, const ContentFeatures *def);
+
 	void unspreadLight(enum LightBank bank,
 			std::map<v3s16, u8> & from_nodes,
 			std::set<v3s16> & light_sources,
@@ -231,14 +243,19 @@ public:
 	void updateLighting(enum LightBank bank,
 			std::map<v3s16, MapBlock*>  & a_blocks,
 			std::map<v3s16, MapBlock*> & modified_blocks);
-
+			
 	void updateLighting(std::map<v3s16, MapBlock*>  & a_blocks,
 			std::map<v3s16, MapBlock*> & modified_blocks);
+
+	void updateNodeLight(v3s16 p, std::map<v3s16, MapBlock*> &modified_blocks);
 
 	/*
 		These handle lighting but not faces.
 	*/
 	void addNodeAndUpdate(v3s16 p, MapNode n,
+			std::map<v3s16, MapBlock*> &modified_blocks,
+			bool remove_metadata = true);
+	void addNodeAndUpdate(v3s16 p, NodeWithDef nd,
 			std::map<v3s16, MapBlock*> &modified_blocks,
 			bool remove_metadata = true);
 	void removeNodeAndUpdate(v3s16 p,
@@ -249,6 +266,8 @@ public:
 		These emit events.
 		Return true if succeeded, false if not.
 	*/
+	bool updateNodeLightWithEvent(v3s16 p);
+	bool addNodeWithEvent(v3s16 p, NodeWithDef nd, bool remove_metadata = true);
 	bool addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata = true);
 	bool removeNodeWithEvent(v3s16 p);
 

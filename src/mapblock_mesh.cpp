@@ -38,6 +38,135 @@ static void applyFacesShading(video::SColor& color, float factor)
 	color.setGreen(core::clamp(core::round32(color.getGreen()*factor), 0, 255));
 }
 
+class MeshNodeDefManager: public INodeDefManager
+{
+	INodeDefManager *m_orig;
+	std::vector<ContentFeatures> m_content_features;
+public:
+	MeshNodeDefManager(INodeDefManager *orig):
+		m_orig(orig)
+	{
+	}
+	~MeshNodeDefManager()
+	{
+	}
+	// Get node definition
+	const ContentFeatures& get(content_t c) const
+	{
+		if ((c > MAX_REGISTERED_CONTENT) &&
+				(c-(MAX_REGISTERED_CONTENT+1) < m_content_features.size()))
+			return m_content_features[c-(MAX_REGISTERED_CONTENT+1)];
+		return m_orig->get(c);
+	}
+	const ContentFeatures& get(const MapNode &n) const
+	{
+		return get(n.getContent());
+	}
+	bool getId(const std::string &name, content_t &result) const
+	{
+		return m_orig->getId(name, result);
+	}
+	content_t getId(const std::string &name) const
+	{
+		return m_orig->getId(name);
+	}
+	// Allows "group:name" in addition to regular node names
+	void getIds(const std::string &name, std::set<content_t> &result) const
+	{
+		return m_orig->getIds(name, result);
+	}
+	const ContentFeatures& get(const std::string &name) const
+	{
+		return m_orig->get(name);
+	}
+	void serialize(std::ostream &os, u16 protocol_version)
+	{
+		m_orig->serialize(os, protocol_version);
+	}
+	/* Special interface */
+	void setSpecial(content_t id, const ContentFeatures &def)
+	{
+		if (id-(MAX_REGISTERED_CONTENT+1) >= m_content_features.size())
+			m_content_features.resize(id-MAX_REGISTERED_CONTENT);
+		m_content_features[id-(MAX_REGISTERED_CONTENT+1)] = def;
+	}
+	virtual void updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
+		scene::ISceneManager *smgr, scene::IMeshManipulator *meshmanip, IGameDef *gamedef)
+	{
+#ifndef SERVER
+		TextureSettings tsettings = TextureSettings();
+		
+		for(u32 i=0; i<m_content_features.size(); i++)
+		{
+			m_content_features[i].updateTextures(tsrc, shdsrc, smgr, meshmanip, gamedef, tsettings);
+		}
+#endif
+	}
+	
+	bool getNodeRegistrationStatus() const
+		{ return m_orig->getNodeRegistrationStatus(); }
+	void setNodeRegistrationStatus(bool completed)
+		{ return m_orig->setNodeRegistrationStatus(completed); }
+
+	void pendNodeResolve(NodeResolveInfo *nri)
+		{ return m_orig->pendNodeResolve(nri); }
+	void cancelNodeResolve(NodeResolver *resolver)
+		{ return m_orig->cancelNodeResolve(resolver); }
+	void runNodeResolverCallbacks()
+		{ return m_orig->runNodeResolverCallbacks(); }
+
+	bool getIdFromResolveInfo(NodeResolveInfo *nri,
+		const std::string &node_alt, content_t c_fallback, content_t &result)
+		{ return m_orig->getIdFromResolveInfo(nri, node_alt, c_fallback, result); }
+	bool getIdsFromResolveInfo(NodeResolveInfo *nri,
+		std::vector<content_t> &result)
+		{ return m_orig->getIdsFromResolveInfo(nri, result); }
+};
+
+class MeshGameDef: public IGameDef
+{
+	IGameDef *m_orig;
+	INodeDefManager *m_nodedef_replacement;
+public:
+	MeshGameDef(IGameDef *orig, INodeDefManager *nodedef_replacement):
+		m_orig(orig),
+		m_nodedef_replacement(nodedef_replacement)
+	{}
+	~MeshGameDef()
+	{
+		delete m_nodedef_replacement;
+	}
+	// These are thread-safe IF they are not edited while running threads.
+	// Thus, first they are set up and then they are only read.
+	IItemDefManager* getItemDefManager()
+		{ return m_orig->getItemDefManager(); }
+	INodeDefManager* getNodeDefManager()
+		{ return m_nodedef_replacement; }
+	ICraftDefManager* getCraftDefManager()
+		{ return m_orig->getCraftDefManager(); }
+
+	// This is always thread-safe, but referencing the irrlicht texture
+	// pointers in other threads than main thread will make things explode.
+	ITextureSource* getTextureSource()
+		{ return m_orig->getTextureSource(); }
+	
+	IShaderSource* getShaderSource()
+		{ return m_orig->getShaderSource(); }
+	
+	scene::ISceneManager* getSceneManager()
+		{ return m_orig->getSceneManager(); }
+	
+	// Used for keeping track of names/ids of unknown nodes
+	u16 allocateUnknownNodeId(const std::string &name)
+		{ return m_orig->allocateUnknownNodeId(name); }
+	
+	// Only usable on the client
+	ISoundManager* getSoundManager()
+		{ return m_orig->getSoundManager(); }
+	MtEventManager* getEventManager()
+		{ return m_orig->getEventManager(); }
+};
+
 /*
 	MeshMakeData
 */
@@ -51,8 +180,17 @@ MeshMakeData::MeshMakeData(IGameDef *gamedef, bool use_shaders):
 	m_show_hud(false),
 	m_highlight_mesh_color(255, 255, 255, 255),
 	m_gamedef(gamedef),
-	m_use_shaders(use_shaders)
+	m_use_shaders(use_shaders),
+	m_gamedef_not_global(false),
+	m_gamedef_taken(false)
 {}
+
+MeshMakeData::~MeshMakeData()
+{
+	if(m_gamedef_not_global && !m_gamedef_taken){
+		delete m_gamedef;
+	}
+}
 
 void MeshMakeData::fill(MapBlock *block)
 {
@@ -96,6 +234,61 @@ void MeshMakeData::fill(MapBlock *block)
 			MapBlock *b = map->getBlockNoCreateNoEx(bp);
 			if(b)
 				b->copyTo(m_vmanip);
+		}
+	}
+	
+	{
+		/*
+			If block has special node definitions, create wrapper gamedef and a
+			wrapper nodedef that will handle their metadata-modified nodedefs
+		*/
+
+		Map *map = block->getParent();
+
+		static v3s16 dirs[7] =
+		{
+			// +right, +top, +back
+			v3s16( 0, 0, 0), // this
+			v3s16( 0, 0, 1), // back
+			v3s16( 0, 1, 0), // top
+			v3s16( 1, 0, 0), // right
+			v3s16( 0, 0,-1), // front
+			v3s16( 0,-1, 0), // bottom
+			v3s16(-1, 0, 0) // left
+		};
+		MeshNodeDefManager *nodedef = NULL;
+		u16 special_id = MAX_REGISTERED_CONTENT+1;
+		for(u16 i=0; i<7; i++)
+		{
+			const v3s16 &dir = dirs[i];
+			v3s16 bp = m_blockpos + dir;
+			MapBlock *block = map->getBlockNoCreateNoEx(bp);
+			if(!block)
+				continue;
+			v3s16 blockpos_nodes = bp*MAP_BLOCKSIZE;
+			std::map<v3s16, ContentFeatures> *defs = &block->m_special_nodedefs;
+			if(!defs->empty())
+			{
+				if(nodedef == NULL){
+					nodedef = new MeshNodeDefManager(m_gamedef->ndef());
+					m_gamedef = new MeshGameDef(m_gamedef, nodedef);
+					m_gamedef_not_global = true;
+				}
+				for(std::map<v3s16, ContentFeatures>::iterator i = defs->begin();
+						i != defs->end(); i++)
+				{
+					const v3s16 &p = i->first;
+					const ContentFeatures &def = i->second;
+					m_vmanip.getNodeRef(blockpos_nodes+p).setContent(special_id);
+					nodedef->setSpecial(special_id, def);
+					special_id++;
+				}
+			}
+		}
+		if(nodedef) {
+			scene::ISceneManager* smgr = m_gamedef->getSceneManager();
+			nodedef->updateTextures(m_gamedef->tsrc(), m_gamedef->getShaderSource(),
+				smgr, smgr->getMeshManipulator(), m_gamedef);
 		}
 	}
 }
@@ -1037,6 +1230,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	//TimeTaker timer1("MapBlockMesh()");
 
 	std::vector<FastFace> fastfaces_new;
+	data->m_gamedef_taken = true;
+	m_gamedef_not_global = data->m_gamedef_not_global;
 
 	/*
 		We are including the faces of the trailing edges of the block.
@@ -1261,6 +1456,8 @@ MapBlockMesh::~MapBlockMesh()
 {
 	m_mesh->drop();
 	m_mesh = NULL;
+	if(m_gamedef_not_global)
+		delete m_gamedef;
 }
 
 bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_ratio)

@@ -309,6 +309,7 @@ public:
 
 	// Script-aware node setters
 	bool setNode(v3s16 p, const MapNode &n);
+	bool setNode(v3s16 p, const MapNode &n, ContentFeatures &def);
 	bool removeNode(v3s16 p);
 	bool swapNode(v3s16 p, const MapNode &n);
 

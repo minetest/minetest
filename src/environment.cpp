@@ -784,6 +784,28 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 	return true;
 }
 
+bool ServerEnvironment::setNode(v3s16 p, const MapNode &n, ContentFeatures &def)
+{
+	INodeDefManager *ndef = m_gamedef->ndef();
+	MapNode n_old = m_map->getNodeNoEx(p);
+	// Call destructor
+	if(ndef->get(n_old).has_on_destruct)
+		m_script->node_on_destruct(p, n_old);
+	// Replace node
+	HybridPtr<const ContentFeatures> def_ptr(new ContentFeatures(def));
+	NodeWithDef nd(n, def_ptr);
+	bool succeeded = m_map->addNodeWithEvent(p, nd);
+	if(!succeeded)
+		return false;
+	// Call post-destructor
+	if(ndef->get(n_old).has_after_destruct)
+		m_script->node_after_destruct(p, n_old);
+	// Call constructor
+	if(ndef->get(n).has_on_construct)
+		m_script->node_on_construct(p, n);
+	return true;
+}
+
 bool ServerEnvironment::removeNode(v3s16 p)
 {
 	INodeDefManager *ndef = m_gamedef->ndef();

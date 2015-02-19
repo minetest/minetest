@@ -49,6 +49,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Needed for determining pointing to nodes
 #include "nodedef.h"
 #include "nodemetadata.h"
+#include "node_with_def.h"
 #include "main.h" // For g_settings
 #include "itemdef.h"
 #include "tile.h" // For TextureSource
@@ -301,7 +302,6 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 	hilightboxes.clear();
 	selected_object = NULL;
 
-	INodeDefManager *nodedef = client->getNodeDefManager();
 	ClientMap &map = client->getEnv().getClientMap();
 
 	f32 mindistance = BS * 1001;
@@ -360,17 +360,17 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 	for (s16 y = ystart; y <= yend; y++)
 		for (s16 z = zstart; z <= zend; z++)
 			for (s16 x = xstart; x <= xend; x++) {
-				MapNode n;
+				NodeWithDef n;
 				bool is_valid_position;
 
-				n = map.getNodeNoEx(v3s16(x, y, z), &is_valid_position);
+				n = map.getNodeWithDefNoEx(v3s16(x, y, z), &is_valid_position);
 				if (!is_valid_position)
 					continue;
 
 				if (!isPointableNode(n, client, liquids_pointable))
 					continue;
 
-				std::vector<aabb3f> boxes = n.getSelectionBoxes(nodedef);
+				std::vector<aabb3f> boxes = n.getSelectionBoxes();
 
 				v3s16 np(x, y, z);
 				v3f npf = intToFloat(np, BS);

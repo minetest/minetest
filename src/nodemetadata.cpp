@@ -165,6 +165,11 @@ NodeMetadata* NodeMetadataList::get(v3s16 p)
 	return n->second;
 }
 
+std::map<v3s16, NodeMetadata*>* NodeMetadataList::getAll()
+{
+	return &m_data;
+}
+
 void NodeMetadataList::remove(v3s16 p)
 {
 	NodeMetadata *olddata = get(p);

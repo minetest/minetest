@@ -147,6 +147,19 @@ struct TestBase
 
 struct TestUtilities: public TestBase
 {
+	class TestThing
+	{
+		bool *m_dst_destructed;
+	public:
+		TestThing(bool *dst_destructed):
+			m_dst_destructed(dst_destructed)
+		{}
+		~TestThing()
+		{
+			*m_dst_destructed = true;
+		}
+	};
+
 	void Run()
 	{
 		/*infostream<<"wrapDegrees(100.0) = "<<wrapDegrees(100.0)<<std::endl;

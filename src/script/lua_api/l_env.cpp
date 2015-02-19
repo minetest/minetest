@@ -135,6 +135,24 @@ int ModApiEnvMod::l_swap_node(lua_State *L)
 	return 1;
 }
 
+// set_def(pos, adddef)
+// pos = {x=num, y=num, z=num}
+int ModApiEnvMod::l_set_def(lua_State *L)
+{
+	GET_ENV_PTR;
+	
+	INodeDefManager *ndef = env->getGameDef()->ndef();
+	// parameters
+	v3s16 pos = read_v3s16(L, 1);
+	MapNode n = env->getMap().getNodeNoEx(pos);
+	luaL_checktype(L, 2, LUA_TTABLE);
+	ContentFeatures def = read_content_features(L, 2, ndef->get(n));
+	bool succeeded = env->setNode(pos, n, def);
+	// Do it
+	lua_pushboolean(L, succeeded);
+	return 1;
+}
+
 // get_node(pos)
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_get_node(lua_State *L)
@@ -376,6 +394,33 @@ int ModApiEnvMod::l_add_entity(lua_State *L)
 	// Return ObjectRef
 	getScriptApiBase(L)->objectrefGetOrCreate(L, obj);
 	return 1;
+}
+
+// get_nodedef(pos, entityname)
+// pos = {x=num, y=num, z=num}
+int ModApiEnvMod::l_get_nodedef(lua_State *L)
+{
+	GET_ENV_PTR;
+	
+	// Do it
+	v3s16 p = read_v3s16(L, 1);
+	MapNode n = env->getMap().getNodeNoEx(p);
+	HybridPtr<const ContentFeatures> f_ptr = env->getMap().getNodeDefNoEx(p);
+	INodeDefManager *ndef = env->getGameDef()->ndef();
+	const ContentFeatures *f_current = f_ptr.get();
+	const ContentFeatures *f_orig = &ndef->get(n);
+	// If exact pointers, return from registered_nodes table
+	if(f_current == f_orig){
+		lua_getglobal(L, "minetest");
+		lua_getfield(L, -1, "registered_nodes");
+		lua_getfield(L, -1, f_current->name.c_str());
+		return 1;
+	}
+	// Otherwise convert f_current to lua table
+	else{
+		push_content_features(L, *f_current);
+		return 1;
+	}
 }
 
 // add_item(pos, itemstack or itemstring or table) -> ObjectRef or nil
@@ -845,11 +890,13 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(set_node);
 	API_FCT(add_node);
 	API_FCT(swap_node);
+	API_FCT(set_def);
 	API_FCT(add_item);
 	API_FCT(remove_node);
 	API_FCT(get_node);
 	API_FCT(get_node_or_nil);
 	API_FCT(get_node_light);
+	API_FCT(get_nodedef);
 	API_FCT(place_node);
 	API_FCT(dig_node);
 	API_FCT(punch_node);
