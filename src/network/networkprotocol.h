@@ -661,7 +661,7 @@ enum ToServerCommand
 
 	TOSERVER_INVENTORY_ACTION = 0x31,
 	/*
-		See InventoryAction in inventory.h
+		See InventoryAction in inventorymanager.h
 	*/
 
 	TOSERVER_CHAT_MESSAGE = 0x32,
