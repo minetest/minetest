@@ -3,8 +3,12 @@
 if [ $WINDOWS = "no" ]; then
 	mkdir -p travisbuild
 	cd travisbuild
-	cmake -DENABLE_GETTEXT=1 -DENABLE_LEVELDB=1 -DENABLE_REDIS=1 ..
+	cmake -DENABLE_GETTEXT=1 -DENABLE_LEVELDB=1 -DENABLE_REDIS=1 -DCMAKE_BUILD_TYPE=Debug ..
 	make -j2
+	echo "Running unit tests for minetest"
+	../bin/minetest --do-unittests
+	echo "Running unit tests for minetestserver"
+	../bin/minetestserver --do-unittests
 else
 	[ $CC = "clang" ] && exit 1 # Not supposed to happen
 	# We need to have our build directory outside of the minetest directory because
