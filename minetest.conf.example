@@ -76,6 +76,8 @@
 #    The allowed adjustment range for the automatic rendering range adjustment
 #viewing_range_nodes_max = 160
 #viewing_range_nodes_min = 35
+#    Speed by which the minimum viewing range is increased / decreased when adjusting it
+#viewing_range_change_speed = 300
 #    Initial window size
 #screenW = 800
 #screenH = 600
