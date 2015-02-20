@@ -103,21 +103,19 @@ Compiling on GNU/Linux:
 -----------------------
 
 Install dependencies. Here's an example for Debian/Ubuntu:
-$ apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libjsoncpp-dev
+$ sudo apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libjsoncpp-dev
 
 You can install git for easily keeping your copy up to date.
 If you dont want git, read below on how to get the source without git.
 This is an example for installing git on Debian/Ubuntu:
-$ apt-get install git-core
+$ sudo apt-get install git-core
 
 Download source (this is the URL to the latest of source repository, which might not work at all times) using git:
 $ git clone --depth 1 https://github.com/minetest/minetest.git
 $ cd minetest
 
 Download minetest_game (otherwise only the "Minimal development test" game is available) using git:
-$ cd games/
-$ git clone --depth 1 https://github.com/minetest/minetest_game.git
-$ cd ..
+$ git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
 
 Download source, without using git:
 $ wget https://github.com/minetest/minetest/archive/master.tar.gz
@@ -136,8 +134,7 @@ $ cmake . -DRUN_IN_PLACE=1
 $ make -j2
 
 Run it:
-$ cd bin
-$ ./minetest
+$ ./bin/minetest
 
 - Use cmake . -LH to see all CMake options and their current state
 - If you want to install it system-wide (or are making a distribution package), you will want to use -DRUN_IN_PLACE=0
