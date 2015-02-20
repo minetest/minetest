@@ -40,6 +40,7 @@
 #keymap_jump = KEY_SPACE
 #keymap_sneak = KEY_LSHIFT
 #keymap_inventory = KEY_KEY_I
+#keymap_zoom = KEY_KEY_Z
 #    Go down ladder / go down in fly mode / go fast in fast mode
 #keymap_special1 = KEY_KEY_E
 #keymap_chat = KEY_KEY_T
@@ -55,6 +56,8 @@
 #doubletap_jump = false
 #    If false aux1 is used to fly fast
 #always_fly_fast = true
+#    FOV when using zoom
+#zoom_fov = 15
 #    Some (temporary) keys for debugging
 #keymap_print_debug_stacks = KEY_KEY_P
 #keymap_quicktune_prev = KEY_HOME
