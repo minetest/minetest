@@ -51,11 +51,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_abm.h"
 #include "content_sao.h"
 #include "mods.h"
-#include "util/sha1.h"
-#include "util/base64.h"
 #include "sound.h" // dummySoundManager
 #include "event_manager.h"
-#include "hex.h"
 #include "serverlist.h"
 #include "util/string.h"
 #include "util/mathconstants.h"
@@ -63,6 +60,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/thread.h"
 #include "defaultsettings.h"
+#include "util/base64.h"
+#include "util/sha1.h"
+#include "util/hex.h"
 
 class ClientNotFoundException : public BaseException
 {

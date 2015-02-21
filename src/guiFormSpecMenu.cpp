@@ -39,9 +39,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "tile.h" // ITextureSource
 #include "hud.h" // drawItemStack
-#include "hex.h"
-#include "util/string.h"
-#include "util/numeric.h"
 #include "filesys.h"
 #include "gettime.h"
 #include "gettext.h"
@@ -50,8 +47,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h"
 #include "settings.h"
 #include "client.h"
-#include "util/string.h" // for parseColorString()
 #include "fontengine.h"
+#include "util/hex.h"
+#include "util/numeric.h"
+#include "util/string.h" // for parseColorString()
 
 #define MY_CHECKPOS(a,b)													\
 	if (v_pos.size() != 2) {												\
