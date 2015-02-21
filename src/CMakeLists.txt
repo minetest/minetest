@@ -135,13 +135,13 @@ if(WIN32)
 		set(PLATFORM_LIBS ws2_32.lib)
 	endif()
 	# Zlib stuff
-	set(ZLIB_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/../../zlib/zlib-1.2.5"
+	set(ZLIB_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/../../zlib/zlib-1.2.8"
 			CACHE PATH "Zlib include directory")
-	set(ZLIB_LIBRARIES "${PROJECT_SOURCE_DIR}/../../zlib125dll/dll32/zlibwapi.lib"
-			CACHE FILEPATH "Path to zlibwapi.lib")
-	set(ZLIB_DLL "${PROJECT_SOURCE_DIR}/../../zlib125dll/dll32/zlibwapi.dll"
-			CACHE FILEPATH "Path to zlibwapi.dll (for installation)")
-	set(IRRLICHT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../irrlicht-1.7.2"
+	set(ZLIB_LIBRARIES "${PROJECT_SOURCE_DIR}/../../zlib/zlib-1.2.8/Release/zlib.lib"
+			CACHE FILEPATH "Path to zlib.lib/zlibwapi.lib")
+	set(ZLIB_DLL "${PROJECT_SOURCE_DIR}/../../zlib/zlib-1.2.8/Release/zlib.dll"
+			CACHE FILEPATH "Path to zlib.dll/zlibwapi.dll (for installation)")
+	set(IRRLICHT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../irrlicht-1.8.1"
 			CACHE PATH "irrlicht dir")
 	if(USE_FREETYPE)
 		set(FREETYPE_INCLUDE_DIR_ft2build "${PROJECT_SOURCE_DIR}/../../freetype2/include/"
@@ -718,9 +718,6 @@ if(WIN32)
 	endif()
 	if(ZLIB_DLL)
 		install(FILES ${ZLIB_DLL} DESTINATION ${BINDIR})
-	endif()
-	if(ZLIBWAPI_DLL)
-		install(FILES ${ZLIBWAPI_DLL} DESTINATION ${BINDIR})
 	endif()
 	if(FREETYPE_DLL)
 		install(FILES ${FREETYPE_DLL} DESTINATION ${BINDIR})
