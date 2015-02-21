@@ -47,6 +47,11 @@ static bool parseDependsLine(std::istream &is,
 void parseModContents(ModSpec &spec)
 {
 	// NOTE: this function works in mutual recursion with getModsInPath
+	Settings info;
+	info.readConfigFile((spec.path+DIR_DELIM+"mod.conf").c_str());
+
+	if (info.exists("name"))
+		spec.name = info.get("name");
 
 	spec.depends.clear();
 	spec.optdepends.clear();
