@@ -956,6 +956,7 @@ void Client::Send(NetworkPacket* pkt)
 		serverCommandFactoryTable[pkt->getCommand()].channel,
 		pkt,
 		serverCommandFactoryTable[pkt->getCommand()].reliable);
+	delete pkt;
 }
 
 void Client::interact(u8 action, const PointedThing& pointed)

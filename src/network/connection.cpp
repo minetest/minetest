@@ -1729,6 +1729,7 @@ void ConnectionSendThread::connect(Address address)
 	m_connection->SetPeerID(PEER_ID_INEXISTENT);
 	NetworkPacket* pkt = new NetworkPacket(0,0);
 	m_connection->Send(PEER_ID_SERVER, 0, pkt, true);
+	delete pkt;
 }
 
 void ConnectionSendThread::disconnect()
