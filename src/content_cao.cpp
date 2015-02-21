@@ -565,6 +565,7 @@ GenericCAO::GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
 		m_animation_range(v2s32(0,0)),
 		m_animation_speed(15),
 		m_animation_blend(0),
+		m_animation_loop(true),
 		m_bone_position(std::map<std::string, core::vector2d<v3f> >()),
 		m_attachment_bone(""),
 		m_attachment_position(v3f(0,0,0)),
@@ -1465,9 +1466,18 @@ void GenericCAO::updateAnimation()
 {
 	if(m_animated_meshnode == NULL)
 		return;
-	m_animated_meshnode->setFrameLoop(m_animation_range.X, m_animation_range.Y);
-	m_animated_meshnode->setAnimationSpeed(m_animation_speed);
+
+	if (m_animated_meshnode->getStartFrame() != m_animation_range.X ||
+		m_animated_meshnode->getEndFrame() != m_animation_range.Y)
+			m_animated_meshnode->setFrameLoop(m_animation_range.X, m_animation_range.Y);
+	if (m_animated_meshnode->getAnimationSpeed() != m_animation_speed)
+		m_animated_meshnode->setAnimationSpeed(m_animation_speed);
 	m_animated_meshnode->setTransitionTime(m_animation_blend);
+// Requires Irrlicht 1.8 or greater
+#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR >= 8) || IRRLICHT_VERSION_MAJOR > 1
+	if (m_animated_meshnode->getLoopMode() != m_animation_loop)
+		m_animated_meshnode->setLoopMode(m_animation_loop);
+#endif
 }
 
 void GenericCAO::updateBonePosition()
@@ -1633,6 +1643,8 @@ void GenericCAO::processMessage(const std::string &data)
 			m_animation_range = v2s32((s32)range.X, (s32)range.Y);
 			m_animation_speed = readF1000(is);
 			m_animation_blend = readF1000(is);
+			// these are sent inverted so we get true when the server sends nothing
+			m_animation_loop = !readU8(is);
 			updateAnimation();
 		} else {
 			LocalPlayer *player = m_env->getLocalPlayer();
@@ -1641,6 +1653,8 @@ void GenericCAO::processMessage(const std::string &data)
 				m_animation_range = v2s32((s32)range.X, (s32)range.Y);
 				m_animation_speed = readF1000(is);
 				m_animation_blend = readF1000(is);
+				// these are sent inverted so we get true when the server sends nothing
+				m_animation_loop = !readU8(is);
 			}
 			// update animation only if local animations present
 			// and received animation is unknown (except idle animation)

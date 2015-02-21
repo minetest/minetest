@@ -449,7 +449,7 @@ int ObjectRef::l_get_physics_override(lua_State *L)
 	return 1;
 }
 
-// set_animation(self, frame_range, frame_speed, frame_blend)
+// set_animation(self, frame_range, frame_speed, frame_blend, frame_loop)
 int ObjectRef::l_set_animation(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -466,7 +466,10 @@ int ObjectRef::l_set_animation(lua_State *L)
 	float frame_blend = 0;
 	if(!lua_isnil(L, 4))
 		frame_blend = lua_tonumber(L, 4);
-	co->setAnimation(frames, frame_speed, frame_blend);
+	bool frame_loop = true;
+	if(lua_isboolean(L, 5))
+		frame_loop = lua_toboolean(L, 5);
+	co->setAnimation(frames, frame_speed, frame_blend, frame_loop);
 	return 0;
 }
 
@@ -482,12 +485,14 @@ int ObjectRef::l_get_animation(lua_State *L)
 	v2f frames = v2f(1,1);
 	float frame_speed = 15;
 	float frame_blend = 0;
-	co->getAnimation(&frames, &frame_speed, &frame_blend);
+	bool frame_loop = true;
+	co->getAnimation(&frames, &frame_speed, &frame_blend, &frame_loop);
 
 	push_v2f(L, frames);
 	lua_pushnumber(L, frame_speed);
 	lua_pushnumber(L, frame_blend);
-	return 3;
+	lua_pushboolean(L, frame_loop);
+	return 4;
 }
 
 // set_local_animation(self, {stand/idle}, {walk}, {dig}, {walk+dig}, frame_speed)

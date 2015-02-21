@@ -133,7 +133,7 @@ std::string gob_cmd_update_physics_override(float physics_override_speed, float 
 	return os.str();
 }
 
-std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_blend)
+std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_blend, bool frame_loop)
 {
 	std::ostringstream os(std::ios::binary);
 	// command 
@@ -142,6 +142,8 @@ std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_
 	writeV2F1000(os, frames);
 	writeF1000(os, frame_speed);
 	writeF1000(os, frame_blend);
+	// these are sent inverted so we get true when the server sends nothing
+	writeU8(os, !frame_loop);
 	return os.str();
 }
 
