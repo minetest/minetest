@@ -52,7 +52,7 @@ struct SimpleSoundSpec;
 struct ServerSoundParams;
 class Inventory;
 struct NodeBox;
-struct ContentFeatures;
+#include <nodedef.h>
 struct TileDef;
 class Server;
 struct DigParams;
@@ -62,7 +62,8 @@ struct NoiseParams;
 class Schematic;
 
 
-ContentFeatures    read_content_features         (lua_State *L, int index);
+ContentFeatures    read_content_features         (lua_State *L, int index, ContentFeatures f_base = ContentFeatures());
+void               push_content_features         (lua_State *L, const ContentFeatures &f);
 TileDef            read_tiledef                  (lua_State *L, int index);
 void               read_soundspec                (lua_State *L, int index,
                                                   SimpleSoundSpec &spec);
@@ -111,6 +112,8 @@ NodeBox            read_nodebox              (lua_State *L, int index);
 void               read_groups               (lua_State *L,
                                               int index,
                                               std::map<std::string, int> &result);
+void               push_groups               (lua_State *L,
+                                              std::map<std::string, int> groups);
 
 //TODO rename to "read_enum_field"
 int                getenumfield              (lua_State *L,
@@ -118,6 +121,13 @@ int                getenumfield              (lua_State *L,
                                               const char *fieldname,
                                               const EnumString *spec,
                                               int default_);
+
+
+void               setenumfield              (lua_State *L,
+                                              int table,
+                                              const char *fieldname,
+                                              const EnumString *spec,
+                                              int num);
 
 bool               getflagsfield             (lua_State *L, int table,
                                               const char *fieldname,
@@ -146,6 +156,9 @@ void               read_soundspec            (lua_State *L,
 bool               string_to_enum            (const EnumString *spec,
                                               int &result,
                                               const std::string &str);
+
+const char*        enum_to_string            (const EnumString *spec,
+                                              const int num);
 
 bool               read_noiseparams          (lua_State *L, int index,
                                               NoiseParams *np);

@@ -246,12 +246,35 @@ TileDef read_tiledef(lua_State *L, int index)
 }
 
 /******************************************************************************/
-ContentFeatures read_content_features(lua_State *L, int index)
+void push_tiledef(lua_State *L, TileDef tiledef)
+{
+	if (tiledef.backface_culling && tiledef.animation.type == TAT_NONE) {
+		lua_pushstring(L, tiledef.name.c_str());
+		return;
+	}
+	
+	lua_createtable(L, 0, 3);
+	
+	lua_pushstring(L, tiledef.name.c_str());
+	lua_setfield(L, -2, "name");
+	setboolfield(L, -1, "backface_culling", tiledef.backface_culling);
+
+	lua_createtable(L, 0, 4);
+	setenumfield(L, -1, "type", es_TileAnimationType, tiledef.animation.type);
+	setintfield(L, -1, "aspect_w", tiledef.animation.aspect_w);
+	setintfield(L, -1, "aspect_h", tiledef.animation.aspect_h);
+	setfloatfield(L, -1, "length", tiledef.animation.length);
+
+	lua_setfield(L, -2, "animation");
+}
+
+/******************************************************************************/
+ContentFeatures read_content_features(lua_State *L, int index, ContentFeatures f_base)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
 
-	ContentFeatures f;
+	ContentFeatures f = f_base;
 
 	/* Cache existence of some callbacks */
 	lua_getfield(L, index, "on_construct");
@@ -464,6 +487,133 @@ ContentFeatures read_content_features(lua_State *L, int index)
 }
 
 /******************************************************************************/
+void push_content_features(lua_State *L, const ContentFeatures &f)
+{
+	lua_newtable(L);
+	// TODO
+	/* Name */
+	lua_pushstring(L, f.name.c_str());
+	lua_setfield(L, -2, "name");
+
+	/* Groups */
+	push_groups(L, f.groups);
+	lua_setfield(L, -2, "groups");
+
+	/* Visual definition */
+	setenumfield(L, -1, "drawtype", ScriptApiNode::es_DrawType, f.drawtype);
+	setfloatfield(L, -1, "visual_scale", f.visual_scale);
+
+	lua_createtable(L, 6, 0);
+	for (int i=0; i<6; i++){
+		lua_pushinteger(L, i+1);
+		push_tiledef(L, f.tiledef[i]);
+		lua_settable(L, -3);
+	}
+	lua_setfield(L, -2, "tiles");
+	
+	lua_createtable(L, CF_SPECIAL_COUNT, 0);
+	for (int i=0; i<CF_SPECIAL_COUNT; i++){
+		lua_pushinteger(L, i+1);
+		push_tiledef(L, f.tiledef[i]);
+		lua_settable(L, -3);
+	}
+	lua_setfield(L, -2, "special_tiles");
+	
+	setintfield(L, -1, "alpha", f.alpha);
+	setboolfield(L, -1, "use_texture_alpha", (f.alpha == 0));
+	
+#if 0
+	/* Other stuff */
+
+	lua_getfield(L, index, "post_effect_color");
+	if(!lua_isnil(L, -1))
+		f.post_effect_color = readARGB8(L, -1);
+	lua_pop(L, 1);
+
+	f.param_type = (ContentParamType)getenumfield(L, index, "paramtype",
+			ScriptApiNode::es_ContentParamType, CPT_NONE);
+	f.param_type_2 = (ContentParamType2)getenumfield(L, index, "paramtype2",
+			ScriptApiNode::es_ContentParamType2, CPT2_NONE);
+
+	// True for all ground-like things like stone and mud, false for eg. trees
+	getboolfield(L, index, "is_ground_content", f.is_ground_content);
+	f.light_propagates = (f.param_type == CPT_LIGHT);
+	getboolfield(L, index, "sunlight_propagates", f.sunlight_propagates);
+	// This is used for collision detection.
+	// Also for general solidness queries.
+	getboolfield(L, index, "walkable", f.walkable);
+	// Player can point to these
+	getboolfield(L, index, "pointable", f.pointable);
+	// Player can dig these
+	getboolfield(L, index, "diggable", f.diggable);
+	// Player can climb these
+	getboolfield(L, index, "climbable", f.climbable);
+	// Player can build on these
+	getboolfield(L, index, "buildable_to", f.buildable_to);
+	// Whether the node is non-liquid, source liquid or flowing liquid
+	f.liquid_type = (LiquidType)getenumfield(L, index, "liquidtype",
+			ScriptApiNode::es_LiquidType, LIQUID_NONE);
+	// If the content is liquid, this is the flowing version of the liquid.
+	getstringfield(L, index, "liquid_alternative_flowing",
+			f.liquid_alternative_flowing);
+	// If the content is liquid, this is the source version of the liquid.
+	getstringfield(L, index, "liquid_alternative_source",
+			f.liquid_alternative_source);
+	// Viscosity for fluid flow, ranging from 1 to 7, with
+	// 1 giving almost instantaneous propagation and 7 being
+	// the slowest possible
+	f.liquid_viscosity = getintfield_default(L, index,
+			"liquid_viscosity", f.liquid_viscosity);
+	f.liquid_range = getintfield_default(L, index,
+			"liquid_range", f.liquid_range);
+	f.leveled = getintfield_default(L, index, "leveled", f.leveled);
+
+	getboolfield(L, index, "liquid_renewable", f.liquid_renewable);
+	getstringfield(L, index, "freezemelt", f.freezemelt);
+	f.drowning = getintfield_default(L, index,
+			"drowning", f.drowning);
+	// Amount of light the node emits
+	f.light_source = getintfield_default(L, index,
+			"light_source", f.light_source);
+	f.damage_per_second = getintfield_default(L, index,
+			"damage_per_second", f.damage_per_second);
+
+	lua_getfield(L, index, "node_box");
+	if(lua_istable(L, -1))
+		f.node_box = read_nodebox(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "selection_box");
+	if(lua_istable(L, -1))
+		f.selection_box = read_nodebox(L, -1);
+ 	lua_pop(L, 1);
+
+	f.waving = getintfield_default(L, index,
+			"waving", f.waving);
+
+	// Set to true if paramtype used to be 'facedir_simple'
+	getboolfield(L, index, "legacy_facedir_simple", f.legacy_facedir_simple);
+	// Set to true if wall_mounted used to be set to true
+	getboolfield(L, index, "legacy_wallmounted", f.legacy_wallmounted);
+
+	// Sound table
+	lua_getfield(L, index, "sounds");
+	if(lua_istable(L, -1)){
+		lua_getfield(L, -1, "footstep");
+		read_soundspec(L, -1, f.sound_footstep);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "dig");
+		read_soundspec(L, -1, f.sound_dig);
+		lua_pop(L, 1);
+		lua_getfield(L, -1, "dug");
+		read_soundspec(L, -1, f.sound_dug);
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 1);
+#endif
+}
+
+/******************************************************************************/
 void read_server_sound_params(lua_State *L, int index,
 		ServerSoundParams &params)
 {
@@ -568,7 +718,7 @@ MapNode readnode(lua_State *L, int index, INodeDefManager *ndef)
 /******************************************************************************/
 void pushnode(lua_State *L, const MapNode &n, INodeDefManager *ndef)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, 3);
 	lua_pushstring(L, ndef->get(n).name.c_str());
 	lua_setfield(L, -2, "name");
 	lua_pushnumber(L, n.getParam1());
@@ -602,6 +752,16 @@ int getenumfield(lua_State *L, int table,
 }
 
 /******************************************************************************/
+void setenumfield(lua_State *L, int table,
+		const char *fieldname, const EnumString *spec, int num)
+{
+	lua_pushstring(L, enum_to_string(spec, num));
+	if(table < 0)
+		table -= 1;
+	lua_setfield(L, table, fieldname);
+}
+
+/******************************************************************************/
 bool string_to_enum(const EnumString *spec, int &result,
 		const std::string &str)
 {
@@ -614,6 +774,19 @@ bool string_to_enum(const EnumString *spec, int &result,
 		esp++;
 	}
 	return false;
+}
+
+/******************************************************************************/
+const char* enum_to_string(const EnumString *spec, const int num)
+{
+	const EnumString *esp = spec;
+	while(esp->str){
+		if(num == esp->num){
+			return esp->str;
+		}
+		esp++;
+	}
+	return "";
 }
 
 /******************************************************************************/
@@ -670,48 +843,48 @@ ItemStack read_item(lua_State* L, int index,Server* srv)
 void push_tool_capabilities(lua_State *L,
 		const ToolCapabilities &toolcap)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, 4);
 	setfloatfield(L, -1, "full_punch_interval", toolcap.full_punch_interval);
-		setintfield(L, -1, "max_drop_level", toolcap.max_drop_level);
-		// Create groupcaps table
-		lua_newtable(L);
-		// For each groupcap
-		for(std::map<std::string, ToolGroupCap>::const_iterator
-				i = toolcap.groupcaps.begin(); i != toolcap.groupcaps.end(); i++){
-			// Create groupcap table
-			lua_newtable(L);
-			const std::string &name = i->first;
-			const ToolGroupCap &groupcap = i->second;
-			// Create subtable "times"
-			lua_newtable(L);
-			for(std::map<int, float>::const_iterator
-					i = groupcap.times.begin(); i != groupcap.times.end(); i++){
-				int rating = i->first;
-				float time = i->second;
-				lua_pushinteger(L, rating);
-				lua_pushnumber(L, time);
-				lua_settable(L, -3);
-			}
-			// Set subtable "times"
-			lua_setfield(L, -2, "times");
-			// Set simple parameters
-			setintfield(L, -1, "maxlevel", groupcap.maxlevel);
-			setintfield(L, -1, "uses", groupcap.uses);
-			// Insert groupcap table into groupcaps table
-			lua_setfield(L, -2, name.c_str());
+	setintfield(L, -1, "max_drop_level", toolcap.max_drop_level);
+	// Create groupcaps table
+	lua_createtable(L, 0, toolcap.groupcaps.size());
+	// For each groupcap
+	for(std::map<std::string, ToolGroupCap>::const_iterator
+			i = toolcap.groupcaps.begin(); i != toolcap.groupcaps.end(); i++){
+		// Create groupcap table
+		lua_createtable(L, 0, 3);
+		const std::string &name = i->first;
+		const ToolGroupCap &groupcap = i->second;
+		// Create subtable "times"
+		lua_createtable(L, groupcap.times.size(), 0);
+		for(std::map<int, float>::const_iterator
+				i = groupcap.times.begin(); i != groupcap.times.end(); i++){
+			int rating = i->first;
+			float time = i->second;
+			lua_pushinteger(L, rating);
+			lua_pushnumber(L, time);
+			lua_settable(L, -3);
 		}
-		// Set groupcaps table
-		lua_setfield(L, -2, "groupcaps");
-		//Create damage_groups table
-		lua_newtable(L);
-		// For each damage group
-		for(std::map<std::string, s16>::const_iterator
-				i = toolcap.damageGroups.begin(); i != toolcap.damageGroups.end(); i++){
-			// Create damage group table
-			lua_pushinteger(L, i->second);
-			lua_setfield(L, -2, i->first.c_str());
-		}
-		lua_setfield(L, -2, "damage_groups");
+		// Set subtable "times"
+		lua_setfield(L, -2, "times");
+		// Set simple parameters
+		setintfield(L, -1, "maxlevel", groupcap.maxlevel);
+		setintfield(L, -1, "uses", groupcap.uses);
+		// Insert groupcap table into groupcaps table
+		lua_setfield(L, -2, name.c_str());
+	}
+	// Set groupcaps table
+	lua_setfield(L, -2, "groupcaps");
+	//Create damage_groups table
+	lua_createtable(L, 0, toolcap.damageGroups.size());
+	// For each damage group
+	for(std::map<std::string, s16>::const_iterator
+			i = toolcap.damageGroups.begin(); i != toolcap.damageGroups.end(); i++){
+		// Create damage group table
+		lua_pushinteger(L, i->second);
+		lua_setfield(L, -2, i->first.c_str());
+	}
+	lua_setfield(L, -2, "damage_groups");
 }
 
 /******************************************************************************/
@@ -833,7 +1006,7 @@ ToolCapabilities read_tool_capabilities(
 /******************************************************************************/
 void push_dig_params(lua_State *L,const DigParams &params)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, 3);
 	setboolfield(L, -1, "diggable", params.diggable);
 	setfloatfield(L, -1, "time", params.time);
 	setintfield(L, -1, "wear", params.wear);
@@ -842,7 +1015,7 @@ void push_dig_params(lua_State *L,const DigParams &params)
 /******************************************************************************/
 void push_hit_params(lua_State *L,const HitParams &params)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, 2);
 	setintfield(L, -1, "hp", params.hp);
 	setintfield(L, -1, "wear", params.wear);
 }
@@ -922,6 +1095,17 @@ void read_groups(lua_State *L, int index,
 		result[name] = rating;
 		// removes value, keeps key for next iteration
 		lua_pop(L, 1);
+	}
+}
+
+/******************************************************************************/
+void push_groups(lua_State *L, std::map<std::string, int> groups)
+{
+        lua_createtable(L, 0, groups.size());
+	for(std::map<std::string, int>::iterator i = groups.begin();
+			i != groups.end(); i++)
+	{
+		setintfield(L, -1, i->first.c_str(), i->second);
 	}
 }
 

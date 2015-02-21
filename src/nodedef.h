@@ -131,6 +131,21 @@ struct TileDef
 	void deSerialize(std::istream &is);
 };
 
+struct TextureSettings
+{
+	bool new_style_water;
+	bool new_style_leaves;
+	bool opaque_water;
+	bool connected_glass;
+	bool use_normal_texture;
+	bool enable_mesh_cache;
+	
+	TextureSettings()
+	{ reset(); }
+	
+	void reset();
+};
+
 enum NodeDrawType
 {
 	NDT_NORMAL, // A basic solid block
@@ -263,9 +278,9 @@ struct ContentFeatures
 	ContentFeatures();
 	~ContentFeatures();
 	void reset();
-	void serialize(std::ostream &os, u16 protocol_version);
+	void serialize(std::ostream &os, u16 protocol_version) const;
 	void deSerialize(std::istream &is);
-	void serializeOld(std::ostream &os, u16 protocol_version);
+	void serializeOld(std::ostream &os, u16 protocol_version) const;
 	void deSerializeOld(std::istream &is, int version);
 
 	/*
@@ -278,6 +293,15 @@ struct ContentFeatures
 		if(!isLiquid() || !f.isLiquid()) return false;
 		return (liquid_alternative_flowing == f.liquid_alternative_flowing);
 	}
+
+#ifndef SERVER
+	void fillTileAttribs(ITextureSource *tsrc, TileSpec *tile, TileDef *tiledef,
+		u32 shader_id, bool use_normal_texture, bool backface_culling,
+		u8 alpha, u8 material_type);
+	void updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
+		scene::ISceneManager *smgr, scene::IMeshManipulator *meshmanip,
+		IGameDef *gamedef, TextureSettings tsettings);
+#endif
 };
 
 class NodeResolver;

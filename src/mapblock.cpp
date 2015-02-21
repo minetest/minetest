@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nameidmapping.h"
 #include "content_mapnode.h" // For legacy name-id mapping
 #include "content_nodemeta.h" // For legacy deserialization
+#include "network/networkprotocol.h"
 #include "serialization.h"
 #ifndef SERVER
 #include "mapblock_mesh.h"
@@ -84,6 +85,72 @@ MapBlock::~MapBlock()
 
 	if(data)
 		delete[] data;
+}
+
+NodeWithDef MapBlock::getNodeWithDefNoEx(v3s16 p)
+{
+	if(!isValidPosition(p))
+		return NodeWithDef(MapNode(CONTENT_IGNORE), m_gamedef->ndef());
+	return getNodeWithDefNoCheck(p, NULL);
+}
+
+HybridPtr<const ContentFeatures> MapBlock::getNodeDefNoCheck(v3s16 p, bool *valid_position)
+{
+	*valid_position = isValidPosition(p);
+	if(!valid_position) {
+		return NULL;
+	}
+	// If special definition exists, return a shared pointer to a copy of it
+	if(m_special_nodedefs.count(p))
+		return new ContentFeatures(m_special_nodedefs[p]);
+	// Otherwise look up from node definition manager
+	MapNode n = getNodeNoCheck(p, valid_position);
+	const ContentFeatures &c = m_gamedef->ndef()->get(n);
+	// Return a reference that won't be deleted
+	HybridPtr<const ContentFeatures> ptr(&c);
+	ptr.setNeverDelete(true);
+	return ptr;
+}
+
+NodeWithDef MapBlock::getNodeWithDefNoCheck(v3s16 p, bool *valid_position)
+{
+	return NodeWithDef(getNodeNoCheck(p, valid_position), getNodeDefNoCheck(p, valid_position));
+}
+
+void MapBlock::setNodeNoCheck(v3s16 p, const NodeWithDef &nd)
+{
+	setNodeNoCheck(p, nd.node());
+	// If nd's definition is global, it should not have __nodedef
+	if(nd.def_is_global())
+		setNodeDefNoCheck(p, NULL);
+	// If nd's definition is local, it should have __nodedef
+	else
+		setNodeDefNoCheck(p, nd.def());
+}
+
+// def=NULL resets to global definition
+void MapBlock::setNodeDefNoCheck(v3s16 p, const ContentFeatures *def)
+{
+	if(def == NULL){
+		NodeMetadata *meta = m_node_metadata.get(p);
+		if(meta != NULL && meta->getString("__nodedef") != "")
+			meta->setString("__nodedef", "");
+		m_special_nodedefs.erase(p);
+	}
+	else{
+		std::ostringstream os(std::ios::binary);
+		def->serialize(os, LATEST_PROTOCOL_VERSION);
+		const std::string &str = os.str();
+
+		NodeMetadata *meta = m_node_metadata.get(p);
+		if(meta == NULL){
+			meta = new NodeMetadata(m_gamedef);
+			m_node_metadata.set(p, meta);
+		}
+		if(str != meta->getString("__nodedef"))
+			meta->setString("__nodedef", str);
+		m_special_nodedefs[p] = *def;
+	}
 }
 
 bool MapBlock::isValidPositionParent(v3s16 p)
@@ -671,6 +738,32 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 		errorstream<<"WARNING: MapBlock::deSerialize(): Ignoring an error"
 				<<" while deserializing node metadata at ("
 				<<PP(getPos())<<": "<<e.what()<<std::endl;
+	}
+
+	/* Read special node definitions from metadata */
+	TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
+			<<": Special node definitions"<<std::endl);
+	m_special_nodedefs.clear();
+	std::map<v3s16, NodeMetadata*> *metamap = m_node_metadata.getAll();
+	for(std::map<v3s16, NodeMetadata*>::iterator i = metamap->begin();
+			i != metamap->end(); i++)
+	{
+		const v3s16 &p = i->first;
+		try{
+			NodeMetadata *m = i->second;
+			std::string def_s = m->getString("__nodedef");
+			if(def_s.empty())
+				continue;
+			std::istringstream is(def_s, std::ios::binary);
+			ContentFeatures def;
+			def.deSerialize(is);
+			m_special_nodedefs[p] = def;
+		}
+		catch(SerializationError &e){
+			errorstream<<"WARNING: MapBlock::deSerialize(): Ignoring an error"
+					<<" while deserializing nodedef from metadata at ("
+					<<PP(getPos())<<": "<<e.what()<<std::endl;
+		}
 	}
 
 	/*

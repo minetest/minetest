@@ -12,5 +12,6 @@ minetest.register_on_newplayer(function(player)
 	player:get_inventory():add_item('main', 'default:mese 99')
 	player:get_inventory():add_item('main', 'default:water_source 99')
 	player:get_inventory():add_item('main', 'experimental:tester_tool_1')
+	player:get_inventory():add_item('main', 'experimental:tester_tool_2')
 end)
 

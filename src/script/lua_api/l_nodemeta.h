@@ -87,6 +87,9 @@ private:
 
 	// from_table(self, table)
 	static int l_from_table(lua_State *L);
+	
+	// set_nodedef(self, def_base, def_changes)
+	static int l_set_nodedef(lua_State *L);
 
 public:
 	NodeMetaRef(v3s16 p, ServerEnvironment *env);

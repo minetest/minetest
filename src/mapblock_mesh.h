@@ -33,6 +33,7 @@ class IGameDef;
 
 
 class MapBlock;
+class MeshNodeDefManager;
 
 struct MeshMakeData
 {
@@ -47,7 +48,11 @@ struct MeshMakeData
 	IGameDef *m_gamedef;
 	bool m_use_shaders;
 
+	bool m_gamedef_not_global;
+	bool m_gamedef_taken;
+
 	MeshMakeData(IGameDef *gamedef, bool use_shaders);
+	~MeshMakeData();
 
 	/*
 		Copy central data directly from block, and other data from
@@ -129,6 +134,9 @@ private:
 
 	video::SColor m_highlight_mesh_color;
 	
+	// If true, m_gamedef is to be deleted
+	bool m_gamedef_not_global;
+
 	// Must animate() be called before rendering?
 	bool m_has_animation;
 	int m_animation_force_timer;
