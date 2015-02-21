@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "log.h"
 
-#include "base64.h"
 #include "content_abm.h"
 #include "content_sao.h"
 #include "emerge.h"
@@ -34,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
+#include "util/base64.h"
 #include "util/pointedthing.h"
 #include "util/serialize.h"
 

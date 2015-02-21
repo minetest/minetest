@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "clientmedia.h"
 #include "util/serialize.h"
+#include "util/sha1.h"
 #include "util/string.h"
 #include "httpfetch.h"
 #include "client.h"
@@ -26,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filecache.h"
 #include "filesys.h"
 #include "hex.h"
-#include "sha1.h"
 #include "debug.h"
 #include "log.h"
 #include "porting.h"

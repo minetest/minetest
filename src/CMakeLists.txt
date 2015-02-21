@@ -362,7 +362,6 @@ set (unittests_SRCS
 
 set(common_SRCS
 	ban.cpp
-	base64.cpp
 	cavegen.cpp
 	clientiface.cpp
 	collision.cpp
@@ -422,7 +421,6 @@ set(common_SRCS
 	serverlist.cpp
 	serverobject.cpp
 	settings.cpp
-	sha1.cpp
 	socket.cpp
 	sound.cpp
 	staticobject.cpp

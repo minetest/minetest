@@ -51,8 +51,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_abm.h"
 #include "content_sao.h"
 #include "mods.h"
-#include "sha1.h"
-#include "base64.h"
+#include "util/sha1.h"
+#include "util/base64.h"
 #include "sound.h" // dummySoundManager
 #include "event_manager.h"
 #include "hex.h"

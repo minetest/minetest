@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "client.h"
 
-#include "base64.h"
+#include "util/base64.h"
 #include "clientmedia.h"
 #include "log.h"
 #include "map.h"

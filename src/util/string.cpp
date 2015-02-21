@@ -22,8 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "numeric.h"
 #include "log.h"
 
-#include "../sha1.h"
-#include "../base64.h"
+#include "sha1.h"
+#include "base64.h"
 #include "../hex.h"
 #include "../porting.h"
 
