@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SHADER_HEADER
 #define SHADER_HEADER
 
+#include <IMaterialRendererServices.h>
 #include "irrlichttypes_extrabloated.h"
 #include "threads.h"
 #include <string>
@@ -74,6 +75,138 @@ public:
 			bool is_highlevel) = 0;
 };
 
+class IShaderConstantSetterFactory
+{
+public:
+	virtual IShaderConstantSetter* create() = 0;
+};
+
+template <typename T>
+class CachedVertexShaderSetting
+{
+	T m_sentValue;
+	T m_value;
+	const char *m_name;
+
+public:
+
+	CachedVertexShaderSetting(const char *name) :
+		m_name(name)
+	{}
+	void set(const T &value)
+	{
+		m_value = value;
+	}
+
+	void send(video::IMaterialRendererServices *services)
+	{
+		if (m_sentValue != m_value) {
+			services->setVertexShaderConstant(m_name, &m_value, 1);
+			m_sentValue = m_value;
+		}
+	}
+
+	void setAndSend(const T& value, video::IMaterialRendererServices *services)
+	{
+		set(value);
+		send(services);
+	}
+};
+
+template <typename T>
+class CachedPixelShaderSetting
+{
+	T m_sentValue;
+	T m_value;
+	const char *m_name;
+
+public:
+
+	CachedPixelShaderSetting(const char *name) :
+		m_name(name)
+	{}
+	void set(const T& value)
+	{
+		m_value = value;
+	}
+
+	void send(video::IMaterialRendererServices *services)
+	{
+		if (m_sentValue != m_value) {
+			services->setPixelShaderConstant(m_name, &m_value, 1);
+			m_sentValue = m_value;
+		}
+	}
+
+	void setAndSend(const T& value, video::IMaterialRendererServices *services)
+	{
+		set(value);
+		send(services);
+	}
+};
+
+template <typename T, std::size_t size>
+class CachedVertexShaderSetting<T[size]>
+{
+	T m_sentValue[size];
+	T m_value[size];
+	const char* m_name;
+public:
+
+	CachedVertexShaderSetting(const char *name) :
+		m_name(name)
+	{}
+	void set(const T value[size])
+	{
+		std::copy(value, value + size, m_value);
+	}
+
+	void send(video::IMaterialRendererServices *services)
+	{
+		if (!std::equal(m_sentValue, m_sentValue + size, m_value)) {
+			services->setVertexShaderConstant(m_name, m_value, size);
+			std::copy(m_value, m_value + size, m_sentValue);
+		}
+	}
+
+	void setAndSend(const T value[size], video::IMaterialRendererServices *services)
+	{
+		set(value);
+		send(services);
+	}
+};
+
+template <typename T, std::size_t size>
+class CachedPixelShaderSetting<T[size]>
+{
+	T m_sentValue[size];
+	T m_value[size];
+	const char* m_name;
+public:
+
+	CachedPixelShaderSetting(const char *name) :
+		m_name(name)
+	{}
+	void set(const T value[size])
+	{
+		std::copy(value, value + size, m_value);
+	}
+
+	void send(video::IMaterialRendererServices *services)
+	{
+		if (!std::equal(m_sentValue, m_sentValue + size, m_value)) {
+			services->setPixelShaderConstant(m_name, m_value, size);
+			std::copy(m_value, m_value + size, m_sentValue);
+		}
+	}
+
+	void setAndSend(const T value[size], video::IMaterialRendererServices *services)
+	{
+		set(value);
+		send(services);
+	}
+};
+
 /*
 	ShaderSource creates and caches shaders.
 */
@@ -105,7 +238,7 @@ public:
 	virtual void insertSourceShader(const std::string &name_of_shader,
 		const std::string &filename, const std::string &program)=0;
 	virtual void rebuildShaders()=0;
-	virtual void addGlobalConstantSetter(IShaderConstantSetter *setter)=0;
+	virtual void addShaderConstantSetterFactory(IShaderConstantSetterFactory *setter) = 0;
 };
 
 IWritableShaderSource* createShaderSource(IrrlichtDevice *device);
