@@ -44,7 +44,7 @@ else()
 		/usr/include/irrlicht
 	)
 
-	FIND_LIBRARY(IRRLICHT_LIBRARY NAMES libIrrlicht.a Irrlicht
+	FIND_LIBRARY(IRRLICHT_LIBRARY NAMES libIrrlicht.so libIrrlicht.a Irrlicht
 		PATHS
 		/usr/local/lib
 		/usr/lib
