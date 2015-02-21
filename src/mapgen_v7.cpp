@@ -38,7 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mg_ore.h"
 #include "mg_decoration.h"
 #include "mapgen_v7.h"
-
+#include "util/pointer.h"
 
 FlagDesc flagdesc_mapgen_v7[] = {
 	{"mountains", MGV7_MOUNTAINS},
@@ -64,7 +64,7 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	this->heightmap = new s16[csize.X * csize.Z];
 	this->ridge_heightmap = new s16[csize.X * csize.Z];
 
-	MapgenV7Params *sp = (MapgenV7Params *)params->sparams;
+	SAFE_DYNCAST(MapgenV7Params*, params->sparams, sp);
 	this->spflags = sp->spflags;
 
 	//// Terrain noise

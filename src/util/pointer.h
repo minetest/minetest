@@ -22,7 +22,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "../irrlichttypes.h"
 #include "../debug.h" // For assert()
+#include "string.h"
 #include <cstring>
+
+#define SAFE_DYNCAST(type, var_in, var_out) \
+type var_out = dynamic_cast<type>(var_in); \
+if(var_out == NULL) { \
+	throw BaseException(__FILE__  ":" TOSTRING(__LINE__) ": bad cast"); \
+}
+
 
 template <typename T>
 class SharedPtr

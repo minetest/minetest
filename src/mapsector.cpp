@@ -221,7 +221,8 @@ ServerMapSector* ServerMapSector::deSerialize(
 
 		MapSector *sector = n->second;
 		assert(sector->getId() == MAPSECTOR_SERVER);
-		return (ServerMapSector*)sector;
+		SAFE_DYNCAST(ServerMapSector*, sector, map_sector);
+		return map_sector;
 	}
 	else
 	{
