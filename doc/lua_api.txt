@@ -547,6 +547,26 @@ Look for examples in `games/minimal` or `games/minetest_game`.
 
 `*_optional` drawtypes need less rendering time if deactivated (always client side).
 
+default_stack_max
+-----------------
+
+Players on singleplayer or hosting a server can
+modify the stack max which is used when no
+stack_max is defined by the item's definition
+using default_stack_max in minetest.conf
+If you don't want players to do this, you can
+override the default_stack_max like this:
+
+    minetest.nodedef_default.stack_max = 123
+    minetest.craftitemdef_default.stack_max = 123
+    minetest.noneitemdef_default.stack_max = 123
+
+You should only do this if you absolutely don't want
+the player to change the stack_max. If you don't mind,
+then you can set default_stack_max in game/minetest.conf
+
+It only affects nodes registered after this call.
+
 Node boxes
 -----------
 Node selection boxes are defined using "node boxes"

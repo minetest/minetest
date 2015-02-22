@@ -422,6 +422,10 @@
 #    to IPv6 clients, depending on system configuration.
 #    Ignored if bind_address is set.
 #ipv6_server = false
+#    Set the default maximum stack size in the inventory, if the item's definition does not set it
+#    Games can stop the user from overriding the stack maximum.
+#    See "default_stack_max" in lua_api.txt for more information.
+#default_stack_max = 99
 
 #
 #    Physics stuff
