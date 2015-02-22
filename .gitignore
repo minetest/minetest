@@ -59,6 +59,8 @@ src/json/CMakeFiles/
 src/json/libjsoncpp.a
 src/sqlite/CMakeFiles/*
 src/sqlite/libsqlite3.a
+src/client/CMakeFiles/
+src/network/CMakeFiles/
 CMakeCache.txt
 CPackConfig.cmake
 CPackSourceConfig.cmake
