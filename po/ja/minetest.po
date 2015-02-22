@@ -3,38 +3,39 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-02-14 23:12+0900\n"
-"PO-Revision-Date: 2015-02-15 00:54+0900\n"
-"Last-Translator: Rui\n"
+"PO-Revision-Date: 2015-02-22 10:57+0900\n"
+"Last-Translator: Rui Takeda <mrrst0914@gmail.com>\n"
 "Language-Team: Japanese <minetest_jp@m.add.ac>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 1.6.5\n"
 
 msgid "Ok"
 msgstr "決定"
 
 msgid "World:"
-msgstr "ﾜｰﾙﾄﾞ："
+msgstr "ワールド:"
 
 msgid "Hide Game"
 msgstr "ｹﾞｰﾑを隠す"
 
 msgid "Hide mp content"
-msgstr "Modﾊﾟｯｸの簡略化"
+msgstr "Modパックの簡略化"
 
 msgid "Mod:"
-msgstr "Mod名："
+msgstr "Mod名:"
 
 msgid "Depends:"
-msgstr "依存Mod："
+msgstr "依存Mod:"
 
 msgid "Save"
 msgstr "保存"
 
 msgid "Cancel"
-msgstr "ｷｬﾝｾﾙ"
+msgstr "キャンセル"
 
 msgid "Enable MP"
 msgstr "有効化"
@@ -49,37 +50,37 @@ msgid "Enable all"
 msgstr "すべて有効化"
 
 msgid "World name"
-msgstr "ﾜｰﾙﾄﾞ名"
+msgstr "ワールド名"
 
 msgid "Seed"
 msgstr "Seed値"
 
 msgid "Mapgen"
-msgstr "ﾜｰﾙﾄﾞﾀｲﾌﾟ"
+msgstr "ワールドタイプ"
 
 msgid "Game"
-msgstr "ｹﾞｰﾑ"
+msgstr "ゲーム"
 
 msgid "Create"
 msgstr "作成"
 
 msgid "You have no subgames installed."
-msgstr "ｹﾞｰﾑがｲﾝｽﾄｰﾙされていません｡"
+msgstr "ゲームがインストールされていません。"
 
 msgid "Download one from minetest.net"
-msgstr "minetest.netから再ﾀﾞｳﾝﾛｰﾄﾞしてください｡"
+msgstr "minetest.netから再ダウンロードしてください。"
 
 msgid "Warning: The minimal development test is meant for developers."
-msgstr "警告：Minimal development testは開発者のためのｹﾞｰﾑです｡"
+msgstr "警告:Minimal development testは開発者のためのゲームです。"
 
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr "minetest.netからminetest_gameのｹﾞｰﾑをﾀﾞｳﾝﾛｰﾄﾞしてください｡"
+msgstr "minetest.netからminetest_gameのゲームをダウンロードしてください。"
 
 msgid "A world named \"$1\" already exists"
-msgstr "ﾜｰﾙﾄﾞ名\"$1\"はすでに使用されています｡"
+msgstr "ワールド名\"$1\"はすでに使用されています。"
 
 msgid "No worldname given or no game selected"
-msgstr "ﾜｰﾙﾄﾞ名が入力されていないか､ｹﾞｰﾑが選択されていません｡"
+msgstr "ワールド名が入力されていないか、ゲームが選択されていません。"
 
 msgid "Are you sure you want to delete \"$1\"?"
 msgstr "本当に\"$1\"を削除してよろしいですか？"
@@ -91,13 +92,13 @@ msgid "No of course not!"
 msgstr "いいえ"
 
 msgid "Modmgr: failed to delete \"$1\""
-msgstr "Modﾏﾈｰｼﾞｬｰ：\"$1\"の削除に失敗しました｡"
+msgstr "Modマネージャー:\"$1\"の削除に失敗しました。"
 
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr "Modﾏﾈｰｼﾞｬｰ：Mod\"$1\"の場所が不明です｡"
+msgstr "Modマネージャー:Mod\"$1\"の場所が不明です。"
 
 msgid "Delete World \"$1\"?"
-msgstr "ﾜｰﾙﾄﾞ\"$1\"を削除してよろしいですか？"
+msgstr "ワールド\"$1\"を削除してよろしいですか？"
 
 msgid "No"
 msgstr "いいえ"
@@ -109,23 +110,25 @@ msgid "Accept"
 msgstr "決定"
 
 msgid "Install Mod: file: \"$1\""
-msgstr "Modｲﾝｽﾄｰﾙ：ﾌｧｲﾙ\"$1\"からModをｲﾝｽﾄｰﾙします｡"
+msgstr "Modインストール:ファイル\"$1\"からModをインストールします。"
 
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"Modｲﾝｽﾄｰﾙ：ﾌｧｲﾙ\"$1\"は非対応の形式か､壊れています｡"
+"Modインストール:ファイル\"$1\"は非対応の形式か、壊れています。"
 
 msgid "Failed to install $1 to $2"
-msgstr "$2へ$1をｲﾝｽﾄｰﾙできませんでした｡"
+msgstr "$2へ$1をインストールできませんでした。"
 
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
-msgstr "Modｲﾝｽﾄｰﾙ：Modﾊﾟｯｸ$1に適したﾌｫﾙﾀﾞ名を見つけることができませんでした｡"
+msgstr ""
+"Modインストール:Modパック$1に適したフォルダ名を見つけることができませんでし"
+"た。"
 
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr "Modｲﾝｽﾄｰﾙ：$1の本来のMod名が不明です｡"
+msgstr "Modインストール:$1の本来のMod名が不明です。"
 
 msgid "Unsorted"
 msgstr "未分類"
@@ -134,10 +137,10 @@ msgid "Search"
 msgstr "検索"
 
 msgid "Downloading $1, please wait..."
-msgstr "$1をﾀﾞｳﾝﾛｰﾄﾞしています｡しばらくお待ちください..."
+msgstr "$1をダウンロードしています。しばらくお待ちください..."
 
 msgid "Successfully installed:"
-msgstr "ｲﾝｽﾄｰﾙが完了しました｡："
+msgstr "インストールが完了しました。:"
 
 msgid "Shortname:"
 msgstr "省略名"
@@ -146,16 +149,16 @@ msgid "Rating"
 msgstr "評価"
 
 msgid "re-Install"
-msgstr "再ｲﾝｽﾄｰﾙ"
+msgstr "再インストール"
 
 msgid "Install"
-msgstr "ｲﾝｽﾄｰﾙ"
+msgstr "インストール"
 
 msgid "Close store"
 msgstr "閉じる"
 
 msgid "Page $1 of $2"
-msgstr "ﾍﾟｰｼﾞ　$1/$2"
+msgstr "ページ　$1/$2"
 
 msgid "Credits"
 msgstr "ｸﾚｼﾞｯﾄ"
@@ -170,37 +173,37 @@ msgid "Previous Contributors"
 msgstr "以前の開発協力者"
 
 msgid "Installed Mods:"
-msgstr "ｲﾝｽﾄｰﾙ済みのMod："
+msgstr "インストール済みのMod:"
 
 msgid "Online mod repository"
-msgstr "ｵﾝﾗｲﾝでModを検索"
+msgstr "オンラインでModを検索"
 
 msgid "No mod description available"
-msgstr "Modの説明がありません｡"
+msgstr "Modの説明がありません。"
 
 msgid "Mod information:"
-msgstr "Modの情報："
+msgstr "Modの情報:"
 
 msgid "Rename"
 msgstr "名前を変更"
 
 msgid "Uninstall selected modpack"
-msgstr "選択したModﾊﾟｯｸを削除"
+msgstr "選択したModパックを削除"
 
 msgid "Uninstall selected mod"
 msgstr "選択したModを削除"
 
 msgid "Select Mod File:"
-msgstr "Modﾌｧｲﾙを選択"
+msgstr "Modファイルを選択"
 
 msgid "Mods"
 msgstr "Mod"
 
 msgid "Address / Port :"
-msgstr "ｱﾄﾞﾚｽとﾎﾟｰﾄ："
+msgstr "アドレスとポート:"
 
 msgid "Name / Password :"
-msgstr "名前とﾊﾟｽﾜｰﾄﾞ："
+msgstr "名前とパスワード:"
 
 msgid "Public Serverlist"
 msgstr "公開済みのｻｰﾊﾞｰの一覧"
@@ -230,10 +233,10 @@ msgid "Configure"
 msgstr "設定"
 
 msgid "Start Game"
-msgstr "ｹﾞｰﾑｽﾀｰﾄ"
+msgstr "ゲームスタート"
 
 msgid "Select World:"
-msgstr "ﾜｰﾙﾄﾞを選択："
+msgstr "ワールドを選択:"
 
 msgid "Creative Mode"
 msgstr "ｸﾘｴｲﾃｨﾌﾞﾓｰﾄﾞ"
@@ -245,40 +248,40 @@ msgid "Public"
 msgstr "ｻｰﾊﾞｰを公開する"
 
 msgid "Name/Password"
-msgstr "名前とﾊﾟｽﾜｰﾄﾞ"
+msgstr "名前とパスワード"
 
 msgid "Bind Address"
-msgstr "ﾊﾞｲﾝﾄﾞｱﾄﾞﾚｽ"
+msgstr "バインドアドレス"
 
 msgid "Port"
-msgstr "ﾎﾟｰﾄ"
+msgstr "ポート"
 
 msgid "Server Port"
-msgstr "ｻｰﾊﾞｰのﾎﾟｰﾄ"
+msgstr "サーバーのポート"
 
 msgid "Server"
 msgstr "ｻｰﾊﾞｰ"
 
 msgid "No Filter"
-msgstr "ﾌｨﾙﾀ無し"
+msgstr "フィルタ無し"
 
 msgid "Bilinear Filter"
-msgstr "ﾊﾞｲﾘﾆｱﾌｨﾙﾀ"
+msgstr "バイリニアフィルタ"
 
 msgid "Trilinear Filter"
-msgstr "ﾄﾘﾘﾆｱﾌｨﾙﾀ"
+msgstr "トリリニアフィルタ"
 
 msgid "No Mipmap"
-msgstr "ﾐｯﾌﾟﾏｯﾌﾟ無し"
+msgstr "ミップマップ無し"
 
 msgid "Mipmap"
-msgstr "ﾐｯﾌﾟﾏｯﾌﾟ"
+msgstr "ミップマップ"
 
 msgid "Mipmap + Aniso. Filter"
-msgstr "異方性ﾌｨﾙﾀ"
+msgstr "異方性フィルタ"
 
 msgid "Are you sure to reset your singleplayer world?"
-msgstr "ｼﾝｸﾞﾙﾌﾟﾚｲﾔｰのﾜｰﾙﾄﾞをﾘｾｯﾄしてよろしいですか？"
+msgstr "シングルプレイヤーのワールドをリセットしてよろしいですか？"
 
 msgid "No!!!"
 msgstr "いいえ"
@@ -287,7 +290,7 @@ msgid "Smooth Lighting"
 msgstr "滑らかな光"
 
 msgid "Enable Particles"
-msgstr "ﾊﾟｰﾃｨｸﾙを表示"
+msgstr "ﾊﾟｰﾃｨｸﾙ有効化"
 
 msgid "3D Clouds"
 msgstr "立体の雲"
@@ -299,19 +302,19 @@ msgid "Opaque Water"
 msgstr "不透明な水"
 
 msgid "Connected Glass"
-msgstr "ｶﾞﾗｽをつなげる"
+msgstr "ガラスをつなげる"
 
 msgid "Node Highlighting"
 msgstr "ﾉｰﾄﾞの強調"
 
 msgid "Texturing:"
-msgstr "ﾃｸｽﾁｬﾘﾝｸﾞ："
+msgstr "テクスチャリング:"
 
 msgid "Rendering:"
-msgstr "ﾚﾝﾀﾞﾘﾝｸﾞ："
+msgstr "レンダリング:"
 
 msgid "Restart minetest for driver change to take effect"
-msgstr "ﾄﾞﾗｲﾊﾞｰを変更するためMinetesを再起動します"
+msgstr "ドライバーを変更するためMinetesを再起動します"
 
 msgid "Shaders"
 msgstr "ｼｪｰﾀﾞｰ"
@@ -320,19 +323,19 @@ msgid "Change keys"
 msgstr "操作変更"
 
 msgid "Reset singleplayer world"
-msgstr "ｼﾝｸﾞﾙﾌﾟﾚｲﾔｰのﾜｰﾙﾄﾞをﾘｾｯﾄ"
+msgstr "シングルプレイヤーのワールドをリセット"
 
 msgid "GUI scale factor"
-msgstr "ﾒﾆｭｰの大きさ"
+msgstr "メニューの大きさ"
 
 msgid "Scaling factor applied to menu elements: "
-msgstr "ﾒﾆｭｰの大きさとして設定する数値："
+msgstr "メニューの大きさとして設定する数値:"
 
 msgid "Touch free target"
-msgstr "ﾀｯﾁ位置を自由にする"
+msgstr "タッチ位置を自由にする"
 
 msgid "Touchthreshold (px)"
-msgstr "ﾀｯﾁのしきい値（ﾋﾟｸｾﾙ単位）"
+msgstr "タッチのしきい値（ピクセル単位）"
 
 msgid "Bumpmapping"
 msgstr "ﾊﾞﾝﾌﾟﾏｯﾋﾟﾝｸﾞ"
@@ -353,73 +356,73 @@ msgid "Waving Plants"
 msgstr "揺れる草花"
 
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr "ｼｪｰﾀﾞｰを有効にするにはOpenGLを使用する必要があります｡"
+msgstr "ｼｪｰﾀﾞｰを有効にするにはOpenGLを使用する必要があります。"
 
 msgid "Settings"
 msgstr "設定"
 
 msgid "Fly mode"
-msgstr "飛行ﾓｰﾄﾞ"
+msgstr "飛行モード"
 
 msgid "Start Singleplayer"
-msgstr "ｹﾞｰﾑｽﾀｰﾄ"
+msgstr "ゲームスタート"
 
 msgid "Config mods"
 msgstr "Mod設定"
 
 msgid "Main"
-msgstr "ﾒｲﾝ"
+msgstr "メイン"
 
 msgid "Play"
-msgstr "ｹﾞｰﾑｽﾀｰﾄ"
+msgstr "ゲームスタート"
 
 msgid "Singleplayer"
 msgstr "ｼﾝｸﾞﾙﾌﾟﾚｲﾔｰ"
 
 msgid "Select texture pack:"
-msgstr "ﾃｸｽﾁｬﾊﾟｯｸを選択："
+msgstr "テクスチャパックを選択:"
 
 msgid "No information available"
-msgstr "情報がありません｡"
+msgstr "情報がありません。"
 
 msgid "Texturepacks"
 msgstr "ﾃｸｽﾁｬﾊﾟｯｸ"
 
 msgid "Loading textures..."
-msgstr "ﾃｸｽﾁｬ読み込み中..."
+msgstr "テクスチャ読み込み中..."
 
 msgid "Rebuilding shaders..."
-msgstr "ｼｪｰﾀﾞｰ構築中..."
+msgstr "シェーダー構築中..."
 
 msgid "Initializing nodes..."
-msgstr "ﾉｰﾄﾞの設定中..."
+msgstr "ノードの設定中..."
 
 msgid "Item textures..."
-msgstr "ｱｲﾃﾑのﾃｸｽﾁｬを設定中..."
+msgstr "アイテムのテクスチャを設定中..."
 
 msgid "Done!"
 msgstr "完了！"
 
 msgid "Main Menu"
-msgstr "ﾒｲﾝﾒﾆｭｰ"
+msgstr "メインメニュー"
 
 msgid "Player name too long."
-msgstr "名前が長過ぎます｡"
+msgstr "名前が長過ぎます。"
 
 msgid "Connection error (timed out?)"
-msgstr "接続失敗（またはﾀｲﾑｱｳﾄ）"
+msgstr "接続失敗（またはタイムアウト）"
 
 msgid "No world selected and no address provided. Nothing to do."
-msgstr "ﾜｰﾙﾄﾞが選択されていないｱﾄﾞﾚｽです｡続行できません｡"
+msgstr "ワールドが選択されていないアドレスです。続行できません。"
 
 msgid "Provided world path doesn't exist: "
-msgstr "ﾜｰﾙﾄﾞが存在しません："
+msgstr "ワールドが存在しません:"
 
 msgid "Could not find or load game \""
-msgstr "ｹﾞｰﾑ\"の読み込みができません｡"
+msgstr "ゲーム\"の読み込みができません。"
 
 msgid "Invalid gamespec."
-msgstr "無効なgamespecです｡"
+msgstr "無効なgamespecです。"
 
 msgid "needs_fallback_font"
 msgstr "yes"
@@ -428,10 +431,10 @@ msgid "Proceed"
 msgstr "決定"
 
 msgid "You died."
-msgstr "死んでしまった！"
+msgstr "You died."
 
 msgid "Respawn"
-msgstr "ﾘｽﾎﾟｰﾝ"
+msgstr "Respawn"
 
 msgid ""
 "Default Controls:\n"
@@ -447,18 +450,18 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
-"基本操作：\n"
-"ﾀｯﾁによる操作\n"
-"- ｼﾝｸﾞﾙﾀｯﾌﾟ：ﾌﾞﾛｯｸの破壊\n"
-"- ﾀﾞﾌﾞﾙﾀｯﾌﾟ：設置やｱｲﾃﾑの使用\n"
-"- 指でｽﾗｲﾄﾞ：見回す\n"
-"ﾒﾆｭｰ（ｲﾝﾍﾞﾝﾄﾘ）の操作\n"
-"- ﾀﾞﾌﾞﾙﾀｯﾌﾟ：\n"
+"基本操作:\n"
+"タッチによる操作\n"
+"- シングルタップ:ブロックの破壊\n"
+"- ダブルタップ:設置やアイテムの使用\n"
+"- 指でスライド:見回す\n"
+"メニュー（インベントリ）の操作\n"
+"- ダブルタップ:\n"
 "-- 閉じる\n"
-"- ｱｲﾃﾑｽﾛｯﾄをﾀｯﾁ：\n"
-"-- ｱｲﾃﾑの移動\n"
-"- ﾀｯﾁしてﾄﾞﾗｯｸﾞ：\n"
-"-- ｱｲﾃﾑを置く\n"
+"- アイテムスロットをタッチ:\n"
+"-- アイテムの移動\n"
+"- タッチしてドラッグ:\n"
+"-- アイテムを置く\n"
 
 msgid ""
 "Default Controls:\n"
@@ -473,23 +476,23 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
-"基本操作：\n"
-"- WASD：移動\n"
-"- ｽﾍﾟｰｽ：ｼﾞｬﾝﾌﾟ､登る\n"
-"- Shift：ｽﾆｰｸ､降りる\n"
-"- Q：ｱｲﾃﾑを落とす\n"
-"- I：ｲﾝﾍﾞﾝﾄﾘ\n"
-"- ﾏｳｽ移動：見回す\n"
-"- 左ｸﾘｯｸ：ﾌﾞﾛｯｸ破壊\n"
-"- 右ｸﾘｯｸ：設置や使用\n"
-"- ﾎｲｰﾙ：ｱｲﾃﾑ選択\n"
-"- T：ﾁｬｯﾄ画面\n"
+"基本操作:\n"
+"- WASD:移動\n"
+"- ｽﾍﾟｰｽ:ｼﾞｬﾝﾌﾟ､登る\n"
+"- Shift:ｽﾆｰｸ､降りる\n"
+"- Q:ｱｲﾃﾑを落とす\n"
+"- I:ｲﾝﾍﾞﾝﾄﾘ\n"
+"- ﾏｳｽ移動:見回す\n"
+"- 左ｸﾘｯｸ:ﾌﾞﾛｯｸ破壊\n"
+"- 右ｸﾘｯｸ:設置や使用\n"
+"- ﾎｲｰﾙ:ｱｲﾃﾑ選択\n"
+"- T:ﾁｬｯﾄ画面\n"
 
 msgid "Continue"
 msgstr "再開"
 
 msgid "Change Password"
-msgstr "ﾊﾟｽﾜｰﾄﾞ変更"
+msgstr "パスワード変更"
 
 msgid "Sound Volume"
 msgstr "音量"
@@ -498,7 +501,7 @@ msgid "Change Keys"
 msgstr "操作変更"
 
 msgid "Exit to Menu"
-msgstr "ﾀｲﾄﾙ"
+msgstr "タイトル"
 
 msgid "Exit to OS"
 msgstr "終了"
@@ -510,25 +513,25 @@ msgid "Loading..."
 msgstr "読み込み中..."
 
 msgid "Creating server..."
-msgstr "ｻｰﾊﾞｰ作成中..."
+msgstr "サーバー作成中..."
 
 msgid "Creating client..."
-msgstr "ｸﾗｲｱﾝﾄ作成中..."
+msgstr "クライアント作成中..."
 
 msgid "Resolving address..."
-msgstr "ｱﾄﾞﾚｽ解決中..."
+msgstr "アドレス解決中..."
 
 msgid "Connecting to server..."
-msgstr "ｻｰﾊﾞｰ接続中..."
+msgstr "サーバー接続中..."
 
 msgid "Item definitions..."
-msgstr "ｱｲﾃﾑ定義中..."
+msgstr "アイテム定義中..."
 
 msgid "Node definitions..."
-msgstr "ﾉｰﾄﾞ定義中..."
+msgstr "ノード定義中..."
 
 msgid "Media..."
-msgstr "処理中..."
+msgstr "..."
 
 msgid " KB/s"
 msgstr " KB/秒"
@@ -541,7 +544,7 @@ msgid ""
 "Check debug.txt for details."
 msgstr ""
 "\n"
-"詳細はdebug.txtをご覧ください｡"
+"詳細はdebug.txtをご覧ください。"
 
 msgid "Enter "
 msgstr "Enter"
@@ -550,19 +553,19 @@ msgid "ok"
 msgstr "決定"
 
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr "操作の設定を変更します｡"
+msgstr "操作の設定を変更します。"
 
 msgid "\"Use\" = climb down"
-msgstr "｢使用｣で降りる"
+msgstr "「使用」で降りる"
 
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "｢ｼﾞｬﾝﾌﾟ｣二回押しで飛行ﾓｰﾄﾞ"
+msgstr "「ジャンプ」二回押しで飛行モード"
 
 msgid "Key already in use"
-msgstr "すでに使われているｷｰです｡"
+msgstr "すでに使われているキーです。"
 
 msgid "press key"
-msgstr "ｷｰ入力待ち"
+msgstr "キー入力待ち"
 
 msgid "Forward"
 msgstr "前進"
@@ -580,73 +583,73 @@ msgid "Use"
 msgstr "使用"
 
 msgid "Jump"
-msgstr "ｼﾞｬﾝﾌﾟ"
+msgstr "ジャンプ"
 
 msgid "Sneak"
-msgstr "ｽﾆｰｸ"
+msgstr "スニーク"
 
 msgid "Drop"
 msgstr "落とす"
 
 msgid "Inventory"
-msgstr "ｲﾝﾍﾞﾝﾄﾘ"
+msgstr "インベントリ"
 
 msgid "Chat"
-msgstr "ﾁｬｯﾄ"
+msgstr "チャット"
 
 msgid "Command"
-msgstr "ｺﾏﾝﾄﾞ"
+msgstr "コマンド"
 
 msgid "Console"
-msgstr "ｺﾝｿｰﾙ"
+msgstr "コンソール"
 
 msgid "Toggle fly"
-msgstr "飛行ﾓｰﾄﾞ"
+msgstr "飛行モード"
 
 msgid "Toggle fast"
-msgstr "高速移動ﾓｰﾄﾞ"
+msgstr "高速移動モード"
 
 msgid "Toggle noclip"
-msgstr "すり抜けﾓｰﾄﾞ"
+msgstr "すり抜けモード"
 
 msgid "Range select"
 msgstr "視野範囲変更"
 
 msgid "Print stacks"
-msgstr "ｽﾀｯｸの表示"
+msgstr "スタックの表示"
 
 msgid "Old Password"
-msgstr "古いﾊﾟｽﾜｰﾄﾞ"
+msgstr "古いパスワード"
 
 msgid "New Password"
-msgstr "新しいﾊﾟｽﾜｰﾄﾞ"
+msgstr "新しいパスワード"
 
 msgid "Confirm Password"
-msgstr "ﾊﾟｽﾜｰﾄﾞの確認"
+msgstr "パスワードの確認"
 
 msgid "Change"
 msgstr "変更"
 
 msgid "Passwords do not match!"
-msgstr "ﾊﾟｽﾜｰﾄﾞが一致しません！"
+msgstr "パスワードが一致しません！"
 
 msgid "Sound Volume: "
-msgstr "音量："
+msgstr "音量:"
 
 msgid "Exit"
 msgstr "閉じる"
 
 msgid "Left Button"
-msgstr "左ﾎﾞﾀﾝ"
+msgstr "左ボタン"
 
 msgid "Middle Button"
-msgstr "中ﾎﾞﾀﾝ"
+msgstr "中ボタン"
 
 msgid "Right Button"
-msgstr "右ﾎﾞﾀﾝ"
+msgstr "右ボタン"
 
 msgid "X Button 1"
-msgstr "Xﾎﾞﾀﾝ1"
+msgstr "Xボタン1"
 
 msgid "Back"
 msgstr "Back"
@@ -655,28 +658,28 @@ msgid "Clear"
 msgstr "消す"
 
 msgid "Return"
-msgstr "ｴﾝﾀｰ"
+msgstr "エンター"
 
 msgid "Tab"
-msgstr "ﾀﾌﾞ"
+msgstr "タブ"
 
 msgid "X Button 2"
-msgstr "Xﾎﾞﾀﾝ2"
+msgstr "Xボタン2"
 
 msgid "Capital"
 msgstr "Caps Lock"
 
 msgid "Control"
-msgstr "ｺﾝﾄﾛｰﾙ"
+msgstr "コントロール"
 
 msgid "Kana"
 msgstr "かな"
 
 msgid "Menu"
-msgstr "ﾒﾆｭｰ"
+msgstr "メニュー"
 
 msgid "Pause"
-msgstr "ﾎﾟｰｽﾞ"
+msgstr "ポーズ"
 
 msgid "Shift"
 msgstr "Shift"
@@ -688,10 +691,10 @@ msgid "Escape"
 msgstr "Esc"
 
 msgid "Final"
-msgstr "Finalｷｰ"
+msgstr "Finalキー"
 
 msgid "Junja"
-msgstr "Junjaｷｰ"
+msgstr "Junjaキー"
 
 msgid "Kanji"
 msgstr "半角/全角"
@@ -706,7 +709,7 @@ msgid "Home"
 msgstr "Home"
 
 msgid "Mode Change"
-msgstr "ﾓｰﾄﾞ変更"
+msgstr "モード変更"
 
 msgid "Next"
 msgstr "Page Down"
@@ -715,25 +718,25 @@ msgid "Prior"
 msgstr "Page Up"
 
 msgid "Space"
-msgstr "ｽﾍﾟｰｽ"
+msgstr "スペース"
 
 msgid "Down"
 msgstr "下"
 
 msgid "Execute"
-msgstr "実行ｷｰ"
+msgstr "実行キー"
 
 msgid "Print"
-msgstr "印刷ｷｰ"
+msgstr "印刷キー"
 
 msgid "Select"
-msgstr "選択ｷｰ"
+msgstr "選択キー"
 
 msgid "Up"
 msgstr "上"
 
 msgid "Help"
-msgstr "ﾍﾙﾌﾟ"
+msgstr "ヘルプ"
 
 msgid "Insert"
 msgstr "Insert"
@@ -757,7 +760,7 @@ msgid "Right Windows"
 msgstr "右Windows"
 
 msgid "Sleep"
-msgstr "ｽﾘｰﾌﾟ"
+msgstr "スリープ"
 
 msgid "Numpad 2"
 msgstr "Numpad 2"
@@ -811,25 +814,25 @@ msgid "Left Control"
 msgstr "左Ctrl"
 
 msgid "Left Menu"
-msgstr "左ﾒﾆｭｰ"
+msgstr "左メニュー"
 
 msgid "Right Control"
 msgstr "右Ctrl"
 
 msgid "Right Menu"
-msgstr "右ﾒﾆｭｰ"
+msgstr "右メニュー"
 
 msgid "Comma"
 msgstr "読点"
 
 msgid "Minus"
-msgstr "ｰ"
+msgstr "ー"
 
 msgid "Period"
 msgstr "."
 
 msgid "Plus"
-msgstr "ﾌﾟﾗｽ"
+msgstr "プラス"
 
 msgid "Attn"
 msgstr ":"
@@ -850,4 +853,4 @@ msgid "PA1"
 msgstr "PA1"
 
 msgid "Zoom"
-msgstr "ｽﾞｰﾑ"
+msgstr "ズーム"
