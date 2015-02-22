@@ -20,7 +20,8 @@ source code patches to <celeron55@gmail.com>.
 
 Programming in Lua
 ------------------
-If you have any difficulty in understanding this, please read [Programming in Lua](http://www.lua.org/pil/).
+If you have any difficulty in understanding this, please read
+[Programming in Lua](http://www.lua.org/pil/).
 
 Startup
 -------
@@ -599,7 +600,8 @@ For supported model formats see Irrlicht engine documentation.
 
 Noise Parameters
 ----------------
-Noise Parameters, or commonly called "`NoiseParams`", define the properties of perlin noise.
+Noise Parameters, or commonly called "`NoiseParams`", define the properties of
+perlin noise.
 
 ### `offset`
 Offset that the noise is translated by (i.e. added) after calculation.
@@ -679,21 +681,23 @@ All default ores are of the uniformly-distributed scatter type.
 Randomly chooses a location and generates a cluster of ore.
 
 If `noise_params` is specified, the ore will be placed if the 3D perlin noise at
-that point is greater than the `noise_threshold`, giving the ability to create a non-equal
-distribution of ore.
+that point is greater than the `noise_threshold`, giving the ability to create
+a non-equal distribution of ore.
 
 ### `sheet`
-Creates a sheet of ore in a blob shape according to the 2D perlin noise described by `noise_params`.
-The relative height of the sheet can be controlled by the same perlin noise as well, by specifying
-a non-zero `scale` parameter in `noise_params`.
+Creates a sheet of ore in a blob shape according to the 2D perlin noise
+described by `noise_params`. The relative height of the sheet can be
+controlled by the same perlin noise as well, by specifying a non-zero
+`scale` parameter in `noise_params`.
 
-**IMPORTANT**: The noise is not transformed by `offset` or `scale` when comparing against the noise
-threshold, but scale is used to determine relative height.
+**IMPORTANT**: The noise is not transformed by `offset` or `scale` when comparing
+against the noise threshold, but scale is used to determine relative height.
 The height of the blob is randomly scattered, with a maximum height of `clust_size`.
 
 `clust_scarcity` and `clust_num_ores` are ignored.
 
-This is essentially an improved version of the so-called "stratus" ore seen in some unofficial mods.
+This is essentially an improved version of the so-called "stratus" ore seen in
+some unofficial mods.
 
 ### `blob`
 Creates a deformed sphere of ore according to 3d perlin noise described by
@@ -741,39 +745,47 @@ The varying types of decorations that can be placed.
 The default value is `simple`, and is currently the only type supported.
 
 ### `simple`
-Creates a 1 times `H` times 1 column of a specified node (or a random node from a list, if a
-decoration list is specified). Can specify a certain node it must spawn next to, such as water or
-lava, for example. Can also generate a decoration of random height between a specified lower and
-upper bound. This type of decoration is intended for placement of grass, flowers, cacti, papyri,
-and so on.
+Creates a 1 times `H` times 1 column of a specified node (or a random node from
+a list, if a decoration list is specified). Can specify a certain node it must
+spawn next to, such as water or lava, for example. Can also generate a
+decoration of random height between a specified lower and upper bound.
+This type of decoration is intended for placement of grass, flowers, cacti,
+papyri, and so on.
 
 ### `schematic`
-Copies a box of `MapNodes` from a specified schematic file (or raw description). Can specify a
-probability of a node randomly appearing when placed.  This decoration type is intended to be used
-for multi-node sized discrete structures, such as trees, cave spikes, rocks, and so on.
+Copies a box of `MapNodes` from a specified schematic file (or raw description).
+Can specify a probability of a node randomly appearing when placed.
+This decoration type is intended to be used for multi-node sized discrete
+structures, such as trees, cave spikes, rocks, and so on.
 
 
 Schematic specifier
 --------------------
-A schematic specifier identifies a schematic by either a filename to a Minetest Schematic file (`.mts`)
-or through raw data supplied through Lua, in the form of a table.  This table must specify two fields:
+A schematic specifier identifies a schematic by either a filename to a
+Minetest Schematic file (`.mts`) or through raw data supplied through Lua,
+in the form of a table.  This table must specify two fields:
 
 * The `size` field is a 3D vector containing the dimensions of the provided schematic.
-* The `data` field is a flat table of MapNodes making up the schematic, in the order of `[z [y [x]]]`.
+* The `data` field is a flat table of MapNodes making up the schematic,
+  in the order of `[z [y [x]]]`.
 
-**Important**: The default value for `param1` in MapNodes here is `255`, which represents "always place".
+**Important**: The default value for `param1` in MapNodes here is `255`,
+which represents "always place".
 
-In the bulk `MapNode` data, `param1`, instead of the typical light values, instead represents the
-probability of that node appearing in the structure.
+In the bulk `MapNode` data, `param1`, instead of the typical light values,
+instead represents the probability of that node appearing in the structure.
 
-When passed to `minetest.create_schematic`, probability is an integer value ranging from `0` to `255`:
+When passed to `minetest.create_schematic`, probability is an integer value
+ranging from `0` to `255`:
 
 * A probability value of `0` means that node will never appear (0% chance).
 * A probability value of `255` means the node will always appear (100% chance).
-* If the probability value `p` is greater than `0`, then there is a `(p / 256 * 100)`% chance that node
-  will appear when the schematic is placed on the map.
+* If the probability value `p` is greater than `0`, then there is a
+  `(p / 256 * 100)`% chance that node will appear when the schematic is
+  placed on the map.
 
-**Important note**: Node aliases cannot be used for a raw schematic provided when registering as a decoration.
+**Important note**: Node aliases cannot be used for a raw schematic provided
+  when registering as a decoration.
 
 
 Schematic attributes
@@ -791,14 +803,15 @@ HUD element types
 -----------------
 The position field is used for all element types.
 
-To account for differing resolutions, the position coordinates are the percentage of the screen,
-ranging in value from `0` to `1`.
+To account for differing resolutions, the position coordinates are the percentage
+of the screen, ranging in value from `0` to `1`.
 
-The name field is not yet used, but should contain a description of what the HUD element represents.
-The direction field is the direction in which something is drawn.
+The name field is not yet used, but should contain a description of what the
+HUD element represents. The direction field is the direction in which something
+is drawn.
 
-`0` draws from left to right, `1` draws from right to left, `2` draws from top to bottom,
-and `3` draws from bottom to top.
+`0` draws from left to right, `1` draws from right to left, `2` draws from
+top to bottom, and `3` draws from bottom to top.
 
 The `alignment` field specifies how the item will be aligned. It ranges from `-1` to `1`,
 with `0` being the center, `-1` is moved to the left/up, and `1` is to the right/down.
@@ -812,7 +825,8 @@ items in the HUD.
 
 Below are the specific uses for fields in each type; fields not listed for that type are ignored.
 
-**Note**: Future revisions to the HUD API may be incompatible; the HUD API is still in the experimental stages.
+**Note**: Future revisions to the HUD API may be incompatible; the HUD API is still
+in the experimental stages.
 
 ### `image`
 Displays an image on the HUD.
@@ -876,15 +890,18 @@ For helper functions see "Vector helpers".
 
 Flag Specifier Format
 ---------------------
-Flags using the standardized flag specifier format can be specified in either of two ways, by string or table.
+Flags using the standardized flag specifier format can be specified in either of
+two ways, by string or table.
 
-The string format is a comma-delimited set of flag names; whitespace and unrecognized flag fields are ignored.
-Specifying a flag in the string sets the flag, and specifying a flag prefixed by the string `"no"` explicitly
+The string format is a comma-delimited set of flag names; whitespace and
+unrecognized flag fields are ignored. Specifying a flag in the string sets the
+flag, and specifying a flag prefixed by the string `"no"` explicitly
 clears the flag from whatever the default may be.
 
-In addition to the standard string flag format, the schematic flags field can also be a table of flag names
-to boolean values representing whether or not the flag is set. Additionally, if a field with the flag name
-prefixed with `"no"` is present, mapped to a boolean of any value, the specified flag is unset.
+In addition to the standard string flag format, the schematic flags field can
+also be a table of flag names to boolean values representing whether or not the
+flag is set. Additionally, if a field with the flag name prefixed with `"no"`
+is present, mapped to a boolean of any value, the specified flag is unset.
 
 E.g. A flag field of value
 
@@ -1177,7 +1194,8 @@ Damage calculation:
 
     damage = 0
     foreach group in cap.damage_groups:
-        damage += cap.damage_groups[group] * limit(actual_interval / cap.full_punch_interval, 0.0, 1.0)
+        damage += cap.damage_groups[group] * limit(actual_interval /
+               cap.full_punch_interval, 0.0, 1.0)
             * (object.armor_groups[group] / 100.0)
             -- Where object.armor_groups[group] is 0 for inexistent values
     return damage
@@ -1198,8 +1216,8 @@ On the Lua side, every punch calls:
 
     entity:on_punch(puncher, time_from_last_punch, tool_capabilities, direction)
 
-This should never be called directly, because damage is usually not handled by the entity
-itself.
+This should never be called directly, because damage is usually not handled by
+the entity itself.
 
 * `puncher` is the object performing the punch. Can be `nil`. Should never be
   accessed unless absolutely required, to encourage interoperability.
@@ -1244,12 +1262,14 @@ Example stuff:
     print(dump(meta:to_table()))
     meta:from_table({
         inventory = {
-            main = {[1] = "default:dirt", [2] = "", [3] = "", [4] = "", [5] = "", [6] = "",
-                    [7] = "", [8] = "", [9] = "", [10] = "", [11] = "", [12] = "", [13] = "",
-                    [14] = "default:cobble", [15] = "", [16] = "", [17] = "", [18] = "",
-                    [19] = "", [20] = "default:cobble", [21] = "", [22] = "", [23] = "",
-                    [24] = "", [25] = "", [26] = "", [27] = "", [28] = "", [29] = "", [30] = "",
-                    [31] = "", [32] = ""}
+            main = {[1] = "default:dirt", [2] = "", [3] = "", [4] = "",
+                    [5] = "", [6] = "", [7] = "", [8] = "", [9] = "",
+                    [10] = "", [11] = "", [12] = "", [13] = "",
+                    [14] = "default:cobble", [15] = "", [16] = "", [17] = "",
+                    [18] = "", [19] = "", [20] = "default:cobble", [21] = "",
+                    [22] = "", [23] = "", [24] = "", [25] = "", [26] = "",
+                    [27] = "", [28] = "", [29] = "", [30] = "", [31] = "",
+                    [32] = ""}
         },
         fields = {
             formspec = "size[8,9]list[context;main;0,0;8,4;]list[current_player;main;0,5;8,4;]",
@@ -1866,8 +1886,10 @@ and `minetest.auth_reload` call the authetification handler.
   `mgname`, `seed`, `chunksize`, `water_level`, and `flags`.
 * `minetest.set_mapgen_params(MapgenParams)`
     * Set map generation parameters
-    * Function cannot be called after the registration period; only initialization and `on_mapgen_init`
-    * Takes a table as an argument with the fields `mgname`, `seed`, `water_level`, and `flags`.
+    * Function cannot be called after the registration period; only initialization
+      and `on_mapgen_init`
+    * Takes a table as an argument with the fields `mgname`, `seed`, `water_level`,
+      and `flags`.
         * Leave field unset to leave that parameter unchanged
         * `flags` contains a comma-delimited string of flags to set,
           or if the prefix `"no"` is attached, clears instead.
@@ -1926,7 +1948,8 @@ and `minetest.auth_reload` call the authetification handler.
 * `minetest.create_detached_inventory(name, callbacks)`: returns an `InvRef`
     * callbacks: See "Detached inventory callbacks"
     * Creates a detached inventory. If it already exists, it is cleared.
-* `minetest.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)`: returns left over ItemStack
+* `minetest.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)`:
+   returns left over ItemStack
     * See `minetest.item_eat` and `minetest.register_on_item_eat`
 
 ### Formspec
@@ -2100,12 +2123,15 @@ These functions return the leftover itemstack.
     * Create a schematic from the volume of map specified by the box formed by p1 and p2.
     * Apply the specified probability values to the specified nodes in `probability_list`.
         * `probability_list` is an array of tables containing two fields, `pos` and `prob`.
-            * `pos` is the 3D vector specifying the absolute coordinates of the node being modified,
+            * `pos` is the 3D vector specifying the absolute coordinates of the
+              node being modified,
             * `prob` is the integer value from `0` to `255` of the probability (see: Schematic specifier).
-            * If there are two or more entries with the same pos value, the last entry is used.
+            * If there are two or more entries with the same pos value, the
+              last entry is used.
             * If `pos` is not inside the box formed by `p1` and `p2`, it is ignored.
             * If `probability_list` equals `nil`, no probabilities are applied.
-            * Slice probability works in the same manner, except takes a field called `ypos` instead which
+            * Slice probability works in the same manner, except takes a field
+              called `ypos` instead which
               indicates the y position of the slice with a probability applied.
             * If slice probability list equals `nil`, no slice probabilities are applied.
     * Saves schematic in the Minetest Schematic format to filename.
@@ -2367,7 +2393,8 @@ This is basically a reference to a C++ `ServerActiveObject`
         * `gravity`: multiplier to default gravity value (default: `1`)
         * `sneak`: whether player can sneak (default: `true`)
         * `sneak_glitch`: whether player can use the sneak glitch (default: `true`)
-* `hud_add(hud definition)`: add a HUD element described by HUD def, returns ID number on success
+* `hud_add(hud definition)`: add a HUD element described by HUD def, returns ID
+   number on success
 * `hud_remove(id)`: remove the HUD element of the specified id
 * `hud_change(id, stat, value)`: change a value of a previously added HUD element
     * element `stat` values: `position`, `name`, `scale`, `text`, `number`, `item`, `dir`
@@ -2399,13 +2426,16 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `override_day_night_ratio(ratio or nil)`
     * `0`...`1`: Overrides day-night ratio, controlling sunlight to a specific amount
     * `nil`: Disables override, defaulting to sunlight based on day-night cycle
-* `set_local_animation({x=0, y=79}, {x=168, y=187}, {x=189, y=198}, {x=200, y=219}, frame_speed=30)`:
-  set animation for player model in third person view
-    * stand/idle animation key frames
-    * walk animation key frames
-    * dig animation key frames
-    * walk+dig animation key frames
-    * animation frame speed
+* `set_local_animation(walk, dig, walk+dig, frame_speed=frame_speed)`
+
+	set animation for player model in third person view
+
+        set_local_animation({x=0, y=79}, -- < stand/idle animation key frames
+            {x=168, y=187}, -- < walk animation key frames
+            {x=189, y=198}, -- <  dig animation key frames
+            {x=200, y=219}, -- <  walk+dig animation key frames
+            frame_speed=30): -- <  animation frame speed
+            
 * `set_eye_offset({x=0,y=0,z=0},{x=0,y=0,z=0})`: defines offset value for camera per player
     * in first person view
     * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
@@ -2526,36 +2556,43 @@ It can be created via `VoxelManip()` or `minetest.get_voxel_manip()`.
 The map will be pre-loaded if two positions are passed to either.
 
 #### Methods
-* `read_from_map(p1, p2)`:  Reads a chunk of map from the map containing the region formed by `p1` and `p2`.
+* `read_from_map(p1, p2)`:  Reads a chunk of map from the map containing the
+  region formed by `p1` and `p2`.
     * returns actual emerged `pmin`, actual emerged `pmax`
 * `write_to_map()`: Writes the data loaded from the `VoxelManip` back to the map.
     * **important**: data must be set using `VoxelManip:set_data` before calling this
-* `get_node_at(pos)`: Returns a `MapNode` table of the node currently loaded in the `VoxelManip` at that position
-* `set_node_at(pos, node)`: Sets a specific `MapNode` in the `VoxelManip` at that position
+* `get_node_at(pos)`: Returns a `MapNode` table of the node currently loaded in
+  the `VoxelManip` at that position
+* `set_node_at(pos, node)`: Sets a specific `MapNode` in the `VoxelManip` at
+  that position
 * `get_data()`: Gets the data read into the `VoxelManip` object
     * returns raw node data is in the form of an array of node content IDs
 * `set_data(data)`: Sets the data contents of the `VoxelManip` object
 * `update_map()`: Update map after writing chunk back to map.
-    * To be used only by `VoxelManip` objects created by the mod itself; not a `VoxelManip` that was
-      retrieved from `minetest.get_mapgen_object`
+    * To be used only by `VoxelManip` objects created by the mod itself;
+      not a `VoxelManip` that was retrieved from `minetest.get_mapgen_object`
 * `set_lighting(light, p1, p2)`: Set the lighting within the `VoxelManip` to a uniform value
     * `light` is a table, `{day=<0...15>, night=<0...15>}`
     * To be used only by a `VoxelManip` object from `minetest.get_mapgen_object`
-    * (`p1`, `p2`) is the area in which lighting is set; defaults to the whole area if left out
+    * (`p1`, `p2`) is the area in which lighting is set;
+      defaults to the whole area if left out
 * `get_light_data()`: Gets the light data read into the `VoxelManip` object
     * Returns an array (indices 1 to volume) of integers ranging from `0` to `255`
     * Each value is the bitwise combination of day and night light values (`0` to `15` each)
     * `light = day + (night * 16)`
-* `set_light_data(light_data)`: Sets the `param1` (light) contents of each node in the `VoxelManip`
+* `set_light_data(light_data)`: Sets the `param1` (light) contents of each node
+  in the `VoxelManip`
     * expects lighting data in the same format that `get_light_data()` returns
 * `get_param2_data()`: Gets the raw `param2` data read into the `VoxelManip` object
 * `set_param2_data(param2_data)`: Sets the `param2` contents of each node in the `VoxelManip`
 * `calc_lighting(p1, p2)`:  Calculate lighting within the `VoxelManip`
     * To be used only by a `VoxelManip` object from `minetest.get_mapgen_object`
-    * (`p1`, `p2`) is the area in which lighting is set; defaults to the whole area if left out
+    * (`p1`, `p2`) is the area in which lighting is set; defaults to the whole area
+      if left out
 * `update_liquids()`: Update liquid flow
-* `was_modified()`: Returns `true` or `false` if the data in the voxel manipulator had been modified since
-  the last read from map, due to a call to `minetest.set_data()` on the loaded area elsewhere
+* `was_modified()`: Returns `true` or `false` if the data in the voxel manipulator
+  had been modified since the last read from map, due to a call to
+  `minetest.set_data()` on the loaded area elsewhere
 * `get_emerged_area()`: Returns actual emerged minimum and maximum positions.
 
 ### `VoxelArea`
@@ -2564,10 +2601,12 @@ It can be created via `VoxelArea:new{MinEdge=pmin, MaxEdge=pmax}`.
 The coordinates are *inclusive*, like most other things in Minetest.
 
 #### Methods
-* `getExtent()`: returns a 3D vector containing the size of the area formed by `MinEdge` and `MaxEdge`
+* `getExtent()`: returns a 3D vector containing the size of the area formed by
+  `MinEdge` and `MaxEdge`
 * `getVolume()`: returns the volume of the area formed by `MinEdge` and `MaxEdge`
 * `index(x, y, z)`: returns the index of an absolute position in a flat array starting at `1`
-    * useful for things like `VoxelManip`, raw Schematic specifiers, `PerlinNoiseMap:get2d`/`3dMap`, and so on
+    * useful for things like `VoxelManip`, raw Schematic specifiers,
+      `PerlinNoiseMap:get2d`/`3dMap`, and so on
 * `indexp(p)`: same as above, except takes a vector
 * `position(i)`: returns the absolute position vector corresponding to index `i`
 * `contains(x, y, z)`: check if (`x`,`y`,`z`) is inside area formed by `MinEdge` and `MaxEdge`
@@ -2594,37 +2633,39 @@ It can be created via `Settings(filename)`.
 
 Mapgen objects
 --------------
-A mapgen object is a construct used in map generation. Mapgen objects can be used by an `on_generate`
-callback to speed up operations by avoiding unnecessary recalculations; these can be retrieved using the
-`minetest.get_mapgen_object()` function. If the requested Mapgen object is unavailable, or
-`get_mapgen_object()` was called outside of an `on_generate()` callback, `nil` is returned.
+A mapgen object is a construct used in map generation. Mapgen objects can be used
+by an `on_generate` callback to speed up operations by avoiding unnecessary
+recalculations; these can be retrieved using the `minetest.get_mapgen_object()`
+function. If the requested Mapgen object is unavailable, or `get_mapgen_object()`
+was called outside of an `on_generate()` callback, `nil` is returned.
 
 The following Mapgen objects are currently available:
 
 ### `voxelmanip`
-This returns three values; the `VoxelManip` object to be used, minimum and maximum emerged position, in that
-order. All mapgens support this object.
+This returns three values; the `VoxelManip` object to be used, minimum and maximum
+emerged position, in that order. All mapgens support this object.
 
 ### `heightmap`
-Returns an array containing the y coordinates of the ground levels of nodes in the most recently
-generated chunk by the current mapgen.
+Returns an array containing the y coordinates of the ground levels of nodes in
+the most recently generated chunk by the current mapgen.
 
 ### `biomemap`
-Returns an array containing the biome IDs of nodes in the most recently generated chunk by the
-current mapgen.
+Returns an array containing the biome IDs of nodes in the most recently
+generated chunk by the current mapgen.
 
 ### `heatmap`
-Returns an array containing the temperature values of nodes in the most recently generated chunk by
-the current mapgen.
+Returns an array containing the temperature values of nodes in the most
+recently generated chunk by the current mapgen.
 
 ### `humiditymap`
-Returns an array containing the humidity values of nodes in the most recently generated chunk by the
-current mapgen.
+Returns an array containing the humidity values of nodes in the most recently
+generated chunk by the current mapgen.
 
 ### `gennotify`
-Returns a table mapping requested generation notification types to arrays of positions at which the
-corresponding generated structures are located at within the current chunk. To set the capture of positions
-of interest to be recorded on generate, use `minetest.set_gen_notify()`.
+Returns a table mapping requested generation notification types to arrays of
+positions at which the corresponding generated structures are located at within
+the current chunk. To set the capture of positions of interest to be recorded
+on generate, use `minetest.set_gen_notify()`.
 
 Possible fields of the table returned are:
 
@@ -2636,7 +2677,8 @@ Possible fields of the table returned are:
 * `large_cave_end`
 * `decoration`
 
-Decorations have a key in the format of `"decoration#id"`, where `id` is the numeric unique decoration ID.
+Decorations have a key in the format of `"decoration#id"`, where `id` is the
+numeric unique decoration ID.
 
 Registered entities
 -------------------
@@ -2683,7 +2725,8 @@ L-system trees
         angle,         --num     angle in deg
         iterations,    --num     max # of iterations, usually 2 -5
         random_level,  --num     factor to lower nr of iterations, usually 0 - 3
-        trunk_type,    --string  single/double/crossed) type of trunk: 1 node, 2x2 nodes or 3x3 in cross shape
+        trunk_type,    --string  single/double/crossed) type of trunk: 1 node,
+                       --        2x2 nodes or 3x3 in cross shape
         thin_branches, --boolean true -> use thin (1 node) branches
         fruit,         --string  fruit node name
         fruit_chance,  --num     chance (0-100) to replace leaves with fruit node
