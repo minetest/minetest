@@ -543,8 +543,8 @@ void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 	v3f position((f32)ps.X / 100.0, (f32)ps.Y / 100.0, (f32)ps.Z / 100.0);
 	v3f speed((f32)ss.X / 100.0, (f32)ss.Y / 100.0, (f32)ss.Z / 100.0);
 
-	pitch = wrapDegrees(pitch);
-	yaw = wrapDegrees(yaw);
+	pitch = modulo360f(pitch);
+	yaw = modulo360f(yaw);
 
 	Player *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
