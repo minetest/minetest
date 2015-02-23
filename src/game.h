@@ -109,22 +109,13 @@ public:
 
 	virtual bool isKeyDown(const KeyPress &keyCode) = 0;
 	virtual bool wasKeyDown(const KeyPress &keyCode) = 0;
+	virtual bool getKeyState(const KeyPress &keyCode) = 0;
+	virtual bool getKeyReleased(const KeyPress &keyCode) = 0;
+	virtual void resetKeyClicked(const KeyPress &keyCode) = 0;
+	virtual void resetKeyReleased(const KeyPress &keyCode) = 0;
 
 	virtual v2s32 getMousePos() = 0;
 	virtual void setMousePos(s32 x, s32 y) = 0;
-
-	virtual bool getLeftState() = 0;
-	virtual bool getRightState() = 0;
-
-	virtual bool getLeftClicked() = 0;
-	virtual bool getRightClicked() = 0;
-	virtual void resetLeftClicked() = 0;
-	virtual void resetRightClicked() = 0;
-
-	virtual bool getLeftReleased() = 0;
-	virtual bool getRightReleased() = 0;
-	virtual void resetLeftReleased() = 0;
-	virtual void resetRightReleased() = 0;
 
 	virtual s32 getMouseWheel() = 0;
 

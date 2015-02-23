@@ -1220,6 +1220,10 @@ struct KeyCache {
 	KeyCache() { populate(); }
 
 	enum {
+		// Player interaction
+		KEYMAP_ID_DIG,
+		KEYMAP_ID_PLACE,
+
 		// Player movement
 		KEYMAP_ID_FORWARD,
 		KEYMAP_ID_BACKWARD,
@@ -1271,6 +1275,9 @@ struct KeyCache {
 
 void KeyCache::populate()
 {
+	key[KEYMAP_ID_DIG]      = getKeySetting("keymap_dig");
+	key[KEYMAP_ID_PLACE]      = getKeySetting("keymap_place");
+
 	key[KEYMAP_ID_FORWARD]      = getKeySetting("keymap_forward");
 	key[KEYMAP_ID_BACKWARD]     = getKeySetting("keymap_backward");
 	key[KEYMAP_ID_LEFT]         = getKeySetting("keymap_left");
@@ -2964,8 +2971,8 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_JUMP]),
 		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SPECIAL1]),
 		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SNEAK]),
-		input->getLeftState(),
-		input->getRightState(),
+		input->getKeyState(keycache.key[KeyCache::KEYMAP_ID_DIG]),
+		input->getKeyState(keycache.key[KeyCache::KEYMAP_ID_PLACE]),
 		cam.camera_pitch,
 		cam.camera_yaw
 	);
@@ -2978,8 +2985,8 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 			( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_JUMP])     & 0x1) << 4) |
 			( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SPECIAL1]) & 0x1) << 5) |
 			( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SNEAK])    & 0x1) << 6) |
-			( (u32)(input->getLeftState()                                        & 0x1) << 7) |
-			( (u32)(input->getRightState()                                       & 0x1) << 8
+			( (u32)(input->getKeyState(keycache.key[KeyCache::KEYMAP_ID_DIG])    & 0x1) << 7) |
+			( (u32)(input->getKeyState(keycache.key[KeyCache::KEYMAP_ID_PLACE])  & 0x1) << 8
 		);
 
 #ifdef ANDROID
@@ -3404,7 +3411,7 @@ void Game::processPlayerInteraction(std::vector<aabb3f> &highlight_boxes,
 		- pointing away from node
 	*/
 	if (runData->digging) {
-		if (input->getLeftReleased()) {
+		if (input->getKeyReleased(keycache.key[KeyCache::KEYMAP_ID_DIG])) {
 			infostream << "Left button released"
 			           << " (stopped digging)" << std::endl;
 			runData->digging = false;
@@ -3429,7 +3436,7 @@ void Game::processPlayerInteraction(std::vector<aabb3f> &highlight_boxes,
 		}
 	}
 
-	if (!runData->digging && runData->ldown_for_dig && !input->getLeftState()) {
+	if (!runData->digging && runData->ldown_for_dig && !input->getKeyState(keycache.key[KeyCache::KEYMAP_ID_DIG])) {
 		runData->ldown_for_dig = false;
 	}
 
@@ -3437,13 +3444,13 @@ void Game::processPlayerInteraction(std::vector<aabb3f> &highlight_boxes,
 
 	soundmaker->m_player_leftpunch_sound.name = "";
 
-	if (input->getRightState())
+	if (input->getKeyState(keycache.key[KeyCache::KEYMAP_ID_PLACE]))
 		runData->repeat_rightclick_timer += dtime;
 	else
 		runData->repeat_rightclick_timer = 0;
 
-	if (playeritem_def.usable && input->getLeftState()) {
-		if (input->getLeftClicked())
+	if (playeritem_def.usable && input->getKeyState(keycache.key[KeyCache::KEYMAP_ID_DIG])) {
+		if (input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_DIG]))
 			client->interact(4, pointed);
 	} else if (pointed.type == POINTEDTHING_NODE) {
 		ToolCapabilities playeritem_toolcap =
@@ -3453,21 +3460,21 @@ void Game::processPlayerInteraction(std::vector<aabb3f> &highlight_boxes,
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
 		handlePointingAtObject(runData, pointed, playeritem,
 				player_position, show_debug);
-	} else if (input->getLeftState()) {
+	} else if (input->getKeyState(keycache.key[KeyCache::KEYMAP_ID_DIG])) {
 		// When button is held down in air, show continuous animation
 		runData->left_punch = true;
 	}
 
 	runData->pointed_old = pointed;
 
-	if (runData->left_punch || input->getLeftClicked())
+	if (runData->left_punch || input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_DIG]))
 		camera->setDigging(0); // left click animation
 
-	input->resetLeftClicked();
-	input->resetRightClicked();
+	input->resetKeyClicked(keycache.key[KeyCache::KEYMAP_ID_DIG]);
+	input->resetKeyClicked(keycache.key[KeyCache::KEYMAP_ID_PLACE]);
 
-	input->resetLeftReleased();
-	input->resetRightReleased();
+	input->resetKeyReleased(keycache.key[KeyCache::KEYMAP_ID_DIG]);
+	input->resetKeyReleased(keycache.key[KeyCache::KEYMAP_ID_PLACE]);
 }
 
 
@@ -3496,12 +3503,12 @@ void Game::handlePointingAtNode(GameRunData *runData,
 		}
 	}
 
-	if (runData->nodig_delay_timer <= 0.0 && input->getLeftState()
+	if (runData->nodig_delay_timer <= 0.0 && input->getKeyState(keycache.key[KeyCache::KEYMAP_ID_DIG])
 			&& client->checkPrivilege("interact")) {
 		handleDigging(runData, pointed, nodepos, playeritem_toolcap, dtime);
 	}
 
-	if ((input->getRightClicked() ||
+	if ((input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_PLACE]) ||
 			runData->repeat_rightclick_timer >= m_repeat_right_click_time) &&
 			client->checkPrivilege("interact")) {
 		runData->repeat_rightclick_timer = 0;
@@ -3564,7 +3571,7 @@ void Game::handlePointingAtObject(GameRunData *runData,
 		infotext = narrow_to_wide(runData->selected_object->debugInfoText());
 	}
 
-	if (input->getLeftState()) {
+	if (input->getKeyState(keycache.key[KeyCache::KEYMAP_ID_DIG])) {
 		bool do_punch = false;
 		bool do_punch_damage = false;
 
@@ -3574,7 +3581,7 @@ void Game::handlePointingAtObject(GameRunData *runData,
 			runData->object_hit_delay_timer = object_hit_delay;
 		}
 
-		if (input->getLeftClicked())
+		if (input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_DIG]))
 			do_punch = true;
 
 		if (do_punch) {
@@ -3594,7 +3601,7 @@ void Game::handlePointingAtObject(GameRunData *runData,
 			if (!disable_send)
 				client->interact(0, pointed);
 		}
-	} else if (input->getRightClicked()) {
+	} else if (input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_PLACE])) {
 		infostream << "Right-clicked object" << std::endl;
 		client->interact(3, pointed);  // place
 	}
