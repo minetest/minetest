@@ -147,15 +147,45 @@ struct TestBase
 
 struct TestUtilities: public TestBase
 {
+	inline float ref_WrapDegrees180(float f)
+	{
+		// This is a slower alternative to the wrapDegrees_180() function;
+		// used as a reference for testing
+		float value = fmodf(f + 180, 360);
+		if (value < 0)
+			value += 360;
+		return value - 180;
+	}
+
+	inline float ref_WrapDegrees_0_360(float f)
+	{
+		// This is a slower alternative to the wrapDegrees_0_360() function;
+		// used as a reference for testing
+		float value = fmodf(f, 360);
+		if (value < 0)
+			value += 360;
+		return value < 0 ? value + 360 : value;
+	}
+
+
 	void Run()
 	{
-		/*infostream<<"wrapDegrees(100.0) = "<<wrapDegrees(100.0)<<std::endl;
-		infostream<<"wrapDegrees(720.5) = "<<wrapDegrees(720.5)<<std::endl;
-		infostream<<"wrapDegrees(-0.5) = "<<wrapDegrees(-0.5)<<std::endl;*/
-		UASSERT(fabs(wrapDegrees(100.0) - 100.0) < 0.001);
-		UASSERT(fabs(wrapDegrees(720.5) - 0.5) < 0.001);
-		UASSERT(fabs(wrapDegrees(-0.5) - (-0.5)) < 0.001);
-		UASSERT(fabs(wrapDegrees(-365.5) - (-5.5)) < 0.001);
+		UASSERT(fabs(modulo360f(100.0) - 100.0) < 0.001);
+		UASSERT(fabs(modulo360f(720.5) - 0.5) < 0.001);
+		UASSERT(fabs(modulo360f(-0.5) - (-0.5)) < 0.001);
+		UASSERT(fabs(modulo360f(-365.5) - (-5.5)) < 0.001);
+
+		for (float f = -720; f <= -360; f += 0.25) {
+			UASSERT(fabs(modulo360f(f) - modulo360f(f + 360)) < 0.001);
+		}
+
+		for (float f = -1440; f <= 1440; f += 0.25) {
+			UASSERT(fabs(modulo360f(f) - fmodf(f, 360)) < 0.001);
+			UASSERT(fabs(wrapDegrees_180(f) - ref_WrapDegrees180(f)) < 0.001);
+			UASSERT(fabs(wrapDegrees_0_360(f) - ref_WrapDegrees_0_360(f)) < 0.001);
+			UASSERT(wrapDegrees_0_360(fabs(wrapDegrees_180(f) - wrapDegrees_0_360(f))) < 0.001);
+		}
+
 		UASSERT(lowercase("Foo bAR") == "foo bar");
 		UASSERT(trim("\n \t\r  Foo bAR  \r\n\t\t  ") == "Foo bAR");
 		UASSERT(trim("\n \t\r    \r\n\t\t  ") == "");

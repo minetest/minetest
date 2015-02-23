@@ -184,57 +184,56 @@ inline void sortBoxVerticies(v3s16 &p1, v3s16 &p2) {
 }
 
 
-/*
-	See test.cpp for example cases.
-	wraps degrees to the range of -360...360
-	NOTE: Wrapping to 0...360 is not used because pitch needs negative values.
-*/
-inline float wrapDegrees(float f)
+/** Returns \p f wrapped to the range [-360, 360]
+ *
+ *  See test.cpp for example cases.
+ *
+ *  \note This is also used in cases where degrees wrapped to the range [0, 360]
+ *  is innapropriate (e.g. pitch needs negative values)
+ *
+ *  \internal functionally equivalent -- although precision may vary slightly --
+ *  to fmodf((f), 360.0f) however empirical tests indicate that this approach is
+ *  faster.
+ */
+inline float modulo360f(float f)
 {
-	// Take examples of f=10, f=720.5, f=-0.5, f=-360.5
-	// This results in
-	// 10, 720, -1, -361
-	int i = floor(f);
-	// 0, 2, 0, -1
-	int l = i / 360;
-	// NOTE: This would be used for wrapping to 0...360
-	// 0, 2, -1, -2
-	/*if(i < 0)
-		l -= 1;*/
-	// 0, 720, 0, -360
-	int k = l * 360;
-	// 10, 0.5, -0.5, -0.5
-	f -= float(k);
-	return f;
+	int sign;
+	int whole;
+	float fraction;
+
+	if (f < 0) {
+		f = -f;
+		sign = -1;
+	} else {
+		sign = 1;
+	}
+
+	whole = f;
+
+	fraction = f - whole;
+	whole %= 360;
+
+	return sign * (whole + fraction);
 }
 
-/* Wrap to 0...360 */
+
+/** Returns \p f wrapped to the range [0, 360]
+  */
 inline float wrapDegrees_0_360(float f)
 {
-	// Take examples of f=10, f=720.5, f=-0.5, f=-360.5
-	// This results in
-	// 10, 720, -1, -361
-	int i = floor(f);
-	// 0, 2, 0, -1
-	int l = i / 360;
-	// Wrap to 0...360
-	// 0, 2, -1, -2
-	if(i < 0)
-		l -= 1;
-	// 0, 720, 0, -360
-	int k = l * 360;
-	// 10, 0.5, -0.5, -0.5
-	f -= float(k);
-	return f;
+	float value = modulo360f(f);
+	return value < 0 ? value + 360 : value;
 }
 
-/* Wrap to -180...180 */
+
+/** Returns \p f wrapped to the range [-180, 180]
+  */
 inline float wrapDegrees_180(float f)
 {
-	f += 180;
-	f = wrapDegrees_0_360(f);
-	f -= 180;
-	return f;
+	float value = modulo360f(f + 180);
+	if (value < 0)
+		value += 360;
+	return value - 180;
 }
 
 /*
