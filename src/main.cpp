@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	// This would get rid of the console window
 	//#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
-	#pragma comment(lib, "zlibwapi.lib")
 	#pragma comment(lib, "Shell32.lib")
 #endif
 

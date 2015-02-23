@@ -211,10 +211,9 @@ VORBIS_DLL                      - Only if building with sound on Windows; path t
 VORBIS_INCLUDE_DIR              - Only if building with sound; directory that contains a directory vorbis with vorbisenc.h inside
 VORBIS_LIBRARY                  - Only if building with sound; path to libvorbis.a/libvorbis.so/libvorbis.dll.a
 XXF86VM_LIBRARY                 - Only on Linux; path to libXXf86vm.a/libXXf86vm.so
-ZLIB_DLL                        - Only on Windows; path to zlib1.dll
-ZLIBWAPI_DLL                    - Only on Windows; path to zlibwapi.dll
+ZLIB_DLL                        - Only on Windows; path to zlib.dll/zlibwapi.dll
 ZLIB_INCLUDE_DIR                - directory where zlib.h is located
-ZLIB_LIBRARY                    - path to libz.a/libz.so/zlibwapi.lib
+ZLIB_LIBRARY                    - path to libz.a/libz.so/zlib.lib/zlibwapi.lib
 
 Compiling on Windows:
 ---------------------
