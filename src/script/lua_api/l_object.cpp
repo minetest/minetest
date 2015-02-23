@@ -131,6 +131,7 @@ int ObjectRef::l_remove(lua_State *L)
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
 	if(co == NULL) return 0;
+	if(co->getType() == ACTIVEOBJECT_TYPE_PLAYER) return 0;
 	verbosestream<<"ObjectRef::l_remove(): id="<<co->getId()<<std::endl;
 	co->m_removed = true;
 	return 0;

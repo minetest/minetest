@@ -2294,6 +2294,7 @@ This is basically a reference to a C++ `ServerActiveObject`
 
 #### Methods
 * `remove()`: remove object (after returning from Lua)
+    * Note: Doesn't work on players, use minetest.kick_player instead
 * `getpos()`: returns `{x=num, y=num, z=num}`
 * `setpos(pos)`; `pos`=`{x=num, y=num, z=num}`
 * `moveto(pos, continuous=false)`: interpolated move
