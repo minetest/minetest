@@ -239,14 +239,15 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 	// Generate base terrain, mountains, and ridges with initial heightmaps
 	s16 stone_surface_max_y = generateTerrain();
 
+	// Create heightmap
 	updateHeightmap(node_min, node_max);
 
-	// Calculate biomes
+	// Create biomemap at heightmap surface
 	bmgr->calcBiomes(csize.X, csize.Z, noise_heat->result,
 		noise_humidity->result, heightmap, biomemap);
 
-	// Actually place the biome-specific nodes and what not
-	generateBiomes();
+	// Actually place the biome-specific nodes
+	generateBiomes(noise_heat->result, noise_humidity->result);
 
 	if (flags & MG_CAVES)
 		generateCaves(stone_surface_max_y);
@@ -534,7 +535,7 @@ void MapgenV7::generateRidgeTerrain()
 }
 
 
-void MapgenV7::generateBiomes()
+void MapgenV7::generateBiomes(float *heat_map, float *humidity_map)
 {
 	if (node_max.Y < water_level)
 		return;
@@ -548,12 +549,11 @@ void MapgenV7::generateBiomes()
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
-		Biome *biome        = (Biome *)bmgr->get(biomemap[index]);
-		s16 dfiller         = biome->depth_filler + noise_filler_depth->result[index];
-		s16 y0_top          = biome->depth_top;
-		s16 y0_filler       = biome->depth_top + dfiller;
-		s16 shore_max       = water_level + biome->height_shore;
-		s16 depth_water_top = biome->depth_water_top;
+		Biome *biome = NULL;
+		s16 dfiller = 0;
+		s16 y0_top = 0;
+		s16 y0_filler = 0;
+		s16 depth_water_top = 0;
 
 		s16 nplaced = 0;
 		u32 i = vm->m_area.index(x, node_max.Y, z);
@@ -574,25 +574,23 @@ void MapgenV7::generateBiomes()
 				have_air = !getMountainTerrainFromMap(j, index, y);
 			}
 
+			if (c != CONTENT_IGNORE && c != CONTENT_AIR && (y == node_max.Y || have_air)) {
+				biome           = bmgr->getBiome(heat_map[index], humidity_map[index], y);
+				dfiller         = biome->depth_filler + noise_filler_depth->result[index];
+				y0_top          = biome->depth_top;
+				y0_filler       = biome->depth_top + dfiller;
+				depth_water_top = biome->depth_water_top;
+			}
+
 			if (c == c_stone && have_air) {
 				content_t c_below = vm->m_data[i - em.X].getContent();
 
 				if (c_below != CONTENT_AIR) {
 					if (nplaced < y0_top) {
-						if(y < water_level)
-							vm->m_data[i] = MapNode(biome->c_underwater);
-						else if(y <= shore_max)
-							vm->m_data[i] = MapNode(biome->c_shore_top);
-						else
-							vm->m_data[i] = MapNode(biome->c_top);
+						vm->m_data[i] = MapNode(biome->c_top);
 						nplaced++;
 					} else if (nplaced < y0_filler && nplaced >= y0_top) {
-						if(y < water_level)
-							vm->m_data[i] = MapNode(biome->c_underwater);
-						else if(y <= shore_max)
-							vm->m_data[i] = MapNode(biome->c_shore_filler);
-						else
-							vm->m_data[i] = MapNode(biome->c_filler);
+						vm->m_data[i] = MapNode(biome->c_filler);
 						nplaced++;
 					} else if (c == c_stone) {
 						have_air = false;

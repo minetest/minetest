@@ -43,7 +43,6 @@ BiomeManager::BiomeManager(IGameDef *gamedef) :
 	b->flags           = 0;
 	b->depth_top       = 0;
 	b->depth_filler    = 0;
-	b->height_shore    = 0;
 	b->depth_water_top = 0;
 	b->y_min           = -MAP_GENERATION_LIMIT;
 	b->y_max           = MAP_GENERATION_LIMIT;
@@ -51,9 +50,6 @@ BiomeManager::BiomeManager(IGameDef *gamedef) :
 	b->humidity_point  = 0.0;
 
 	NodeResolveInfo *nri = new NodeResolveInfo(b);
-	nri->nodenames.push_back("air");
-	nri->nodenames.push_back("air");
-	nri->nodenames.push_back("air");
 	nri->nodenames.push_back("air");
 	nri->nodenames.push_back("air");
 	nri->nodenames.push_back("mapgen_stone");
@@ -126,9 +122,6 @@ void Biome::resolveNodeNames(NodeResolveInfo *nri)
 {
 	m_ndef->getIdFromResolveInfo(nri, "mapgen_dirt_with_grass", CONTENT_AIR,    c_top);
 	m_ndef->getIdFromResolveInfo(nri, "mapgen_dirt",            CONTENT_AIR,    c_filler);
-	m_ndef->getIdFromResolveInfo(nri, "mapgen_sand",            CONTENT_AIR,    c_shore_top);
-	m_ndef->getIdFromResolveInfo(nri, "mapgen_sand",            CONTENT_AIR,    c_shore_filler);
-	m_ndef->getIdFromResolveInfo(nri, "mapgen_sand",            CONTENT_AIR,    c_underwater);
 	m_ndef->getIdFromResolveInfo(nri, "mapgen_stone",           CONTENT_AIR,    c_stone);
 	m_ndef->getIdFromResolveInfo(nri, "mapgen_water_source",    CONTENT_AIR,    c_water_top);
 	m_ndef->getIdFromResolveInfo(nri, "mapgen_water_source",    CONTENT_AIR,    c_water);
