@@ -266,7 +266,7 @@ int main(int argc, char *argv[])
 
 #ifndef __ANDROID__
 	// Run unit tests
-	if (cmd_args.getFlag("do-unittests")) {
+	if (cmd_args.getFlag("run-unittests")) {
 		run_tests();
 		return 0;
 	}
@@ -339,7 +339,7 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Load configuration from specified file"))));
 	allowed_options->insert(std::make_pair("port", ValueSpec(VALUETYPE_STRING,
 			_("Set network port (UDP)"))));
-	allowed_options->insert(std::make_pair("do-unittests", ValueSpec(VALUETYPE_FLAG,
+	allowed_options->insert(std::make_pair("run-unittests", ValueSpec(VALUETYPE_FLAG,
 			_("Run the unit tests and exit"))));
 	allowed_options->insert(std::make_pair("map-dir", ValueSpec(VALUETYPE_STRING,
 			_("Same as --world (deprecated)"))));
