@@ -1,0 +1,1248 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-02-24 14:45+0200\n"
+"PO-Revision-Date: 2015-02-24 15:11+0200\n"
+"Last-Translator: Mahmut Elmas mahmutelmas06@gmail.com\n"
+"Language-Team: Türkçe <>\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Eazy Po 0.9.5.3\n"
+"X-Poedit-Language: Turkish\n"
+"X-Poedit-Basepath: \n"
+
+#: builtin/fstk/ui.lua:67
+#, approved
+msgid "Ok"
+msgstr "Tamam"
+
+#: builtin/mainmenu/dlg_config_world.lua:26
+#, approved
+#| msgid "World:"
+msgid "World:"
+msgstr "Dünya:"
+
+#: builtin/mainmenu/dlg_config_world.lua:30
+#: builtin/mainmenu/dlg_config_world.lua:32
+#, approved
+#| msgid "Hide Game"
+msgid "Hide Game"
+msgstr "Kök Eklentiler"
+
+#: builtin/mainmenu/dlg_config_world.lua:36
+#: builtin/mainmenu/dlg_config_world.lua:38
+#, approved
+msgid "Hide mp content"
+msgstr "Paket detaylarını gizle"
+
+#: builtin/mainmenu/dlg_config_world.lua:46
+#, approved
+#| msgid "Mod:"
+msgid "Mod:"
+msgstr "Eklnt: "
+
+#: builtin/mainmenu/dlg_config_world.lua:48
+#, approved
+#| msgid "Depends:"
+msgid "Depends:"
+msgstr "Bağımlılıklar :"
+
+#: builtin/mainmenu/dlg_config_world.lua:51 src/guiKeyChangeMenu.cpp:191
+#, approved
+msgid "Save"
+msgstr "Kaydet"
+
+#: builtin/mainmenu/dlg_config_world.lua:52
+#: builtin/mainmenu/dlg_create_world.lua:64
+#: builtin/mainmenu/dlg_rename_modpack.lua:33 src/guiKeyChangeMenu.cpp:199
+#: src/keycode.cpp:224
+#, approved
+#| msgid "Cancel"
+msgid "Cancel"
+msgstr "Vazgeç"
+
+#: builtin/mainmenu/dlg_config_world.lua:68
+#, approved
+msgid "Enable MP"
+msgstr "Eklenti paketini etkinleştir"
+
+#: builtin/mainmenu/dlg_config_world.lua:70
+#, approved
+#| msgid "Disable MP"
+msgid "Disable MP"
+msgstr "Eklenti paketini devre dışı bırak"
+
+#: builtin/mainmenu/dlg_config_world.lua:74
+#: builtin/mainmenu/dlg_config_world.lua:76
+#, approved
+#| msgid "enabled"
+msgid "enabled"
+msgstr "Etkinleştirildi"
+
+#: builtin/mainmenu/dlg_config_world.lua:82
+#, approved
+#| msgid "Enable all"
+msgid "Enable all"
+msgstr "Hepsini etkinleştir"
+
+#: builtin/mainmenu/dlg_create_world.lua:50
+#, approved
+msgid "World name"
+msgstr "Dünya adı"
+
+#: builtin/mainmenu/dlg_create_world.lua:53
+#, approved
+#| msgid "Seed"
+msgid "Seed"
+msgstr "Çekirdek"
+
+#: builtin/mainmenu/dlg_create_world.lua:56
+#, approved
+#| msgid "Mapgen"
+msgid "Mapgen"
+msgstr "Mapgen"
+
+#: builtin/mainmenu/dlg_create_world.lua:59
+#, approved
+msgid "Game"
+msgstr "Oyun"
+
+#: builtin/mainmenu/dlg_create_world.lua:63
+#, approved
+msgid "Create"
+msgstr "Oluştur"
+
+#: builtin/mainmenu/dlg_create_world.lua:68
+#, approved
+#| msgid "You have no subgames installed."
+msgid "You have no subgames installed."
+msgstr "Ek bir oyun modu yüklü değil."
+
+#: builtin/mainmenu/dlg_create_world.lua:69
+#, approved
+#| msgid "Download one from minetest.net"
+msgid "Download one from minetest.net"
+msgstr "Minetest.net adresinden indirin"
+
+#: builtin/mainmenu/dlg_create_world.lua:72
+#, approved
+msgid ""
+"Warning: The minimal development test is meant for "
+"developers."
+msgstr "Uyarı : Minimal Development Test geliştiriciler içindir."
+
+#: builtin/mainmenu/dlg_create_world.lua:73
+#, approved
+msgid ""
+"Download a subgame, such as minetest_game, from "
+"minetest.net"
+msgstr "Minetest.net adresinden bir oyun modu indirin"
+
+#: builtin/mainmenu/dlg_create_world.lua:97
+#, approved
+msgid "A world named \"$1\" already exists"
+msgstr " \"$1\" isimli dünya zaten var"
+
+#: builtin/mainmenu/dlg_create_world.lua:116
+#, approved
+msgid "No worldname given or no game selected"
+msgstr "Dünya seçilmedi ya da adlandırılmadı"
+
+#: builtin/mainmenu/dlg_delete_mod.lua:26
+#, approved
+msgid "Are you sure you want to delete \"$1\"?"
+msgstr ""
+" \"$1\" 'i silmek istediğinizden emin misiniz "
+"?"
+
+#: builtin/mainmenu/dlg_delete_mod.lua:27
+#: builtin/mainmenu/dlg_delete_world.lua:25
+#: builtin/mainmenu/tab_settings.lua:25
+#, approved
+msgid "Yes"
+msgstr "Evet"
+
+#: builtin/mainmenu/dlg_delete_mod.lua:28
+#, approved
+msgid "No of course not!"
+msgstr "Elbette hayır!"
+
+#: builtin/mainmenu/dlg_delete_mod.lua:41
+#, approved
+msgid "Modmgr: failed to delete \"$1\""
+msgstr "Modmgr:\"$1\" dosyası silerken hata"
+
+#: builtin/mainmenu/dlg_delete_mod.lua:45
+#, approved
+msgid "Modmgr: invalid modpath \"$1\""
+msgstr "Modmgr: \"$1\" eklenti konumu yanlış"
+
+#: builtin/mainmenu/dlg_delete_world.lua:24
+#, approved
+msgid "Delete World \"$1\"?"
+msgstr " \"$1\" dünyasını sil ?"
+
+#: builtin/mainmenu/dlg_delete_world.lua:26
+#, approved
+msgid "No"
+msgstr "Hayır"
+
+#: builtin/mainmenu/dlg_rename_modpack.lua:26
+#, approved
+msgid "Rename Modpack:"
+msgstr "Eklenti paketini yeniden adlandır :"
+
+#: builtin/mainmenu/dlg_rename_modpack.lua:31 src/keycode.cpp:228
+#, approved
+msgid "Accept"
+msgstr "Kabul et"
+
+#: builtin/mainmenu/modmgr.lua:342
+#, approved
+msgid "Install Mod: file: \"$1\""
+msgstr "Eklenti yükle: file: \"$1\""
+
+#: builtin/mainmenu/modmgr.lua:343
+#, approved
+msgid ""
+"\n"
+"Install Mod: unsupported filetype \"$1\" or broken "
+"archive"
+msgstr ""
+"\n"
+"Eklenti yükle: Desteklenmeyen dosya uzantısı \"$1\" veya bozuk "
+"dosya"
+
+#: builtin/mainmenu/modmgr.lua:363
+#, approved
+msgid "Failed to install $1 to $2"
+msgstr " $1 arası $2 yükleme başarısız"
+
+#: builtin/mainmenu/modmgr.lua:366
+#, approved
+msgid ""
+"Install Mod: unable to find suitable foldername for modpack "
+"$1"
+msgstr "Eklenti yükle:$1 eklenti paketi için uygun bir klasör adı bulunamadı"
+
+#: builtin/mainmenu/modmgr.lua:386
+#, approved
+msgid ""
+"Install Mod: unable to find real modname for: "
+"$1"
+msgstr "Eklenti yükle: $1 için eklenti adı bulunamadı"
+
+#: builtin/mainmenu/store.lua:88
+#, approved
+msgid "Unsorted"
+msgstr "Sıralanmamış"
+
+#: builtin/mainmenu/store.lua:99 builtin/mainmenu/store.lua:584
+#, approved
+msgid "Search"
+msgstr "Ara"
+
+#: builtin/mainmenu/store.lua:125
+#, approved
+msgid "Downloading"
+msgstr "İndiriliyor"
+
+#: builtin/mainmenu/store.lua:127
+#, approved
+msgid "please wait..."
+msgstr "lütfen bekleyin..."
+
+#: builtin/mainmenu/store.lua:159
+#, approved
+msgid "Successfully installed:"
+msgstr "Yükleme başarılı :"
+
+#: builtin/mainmenu/store.lua:163
+#, approved
+msgid "Shortname:"
+msgstr "Takma ad :"
+
+#: builtin/mainmenu/store.lua:167 src/guiFormSpecMenu.cpp:2866
+#, approved
+msgid "ok"
+msgstr "tamam"
+
+#: builtin/mainmenu/store.lua:476
+#, approved
+msgid "Rating"
+msgstr "Oylama"
+
+#: builtin/mainmenu/store.lua:501
+#, approved
+msgid "re-Install"
+msgstr "yeniden yükle"
+
+#: builtin/mainmenu/store.lua:503
+#, approved
+msgid "Install"
+msgstr "Yükle"
+
+#: builtin/mainmenu/store.lua:522
+#, approved
+msgid "Close store"
+msgstr "Mağazayı kapat"
+
+#: builtin/mainmenu/store.lua:530
+#, approved
+msgid "Page $1 of $2"
+msgstr "$2 sayfadan $1 'cisi"
+
+#: builtin/mainmenu/tab_credits.lua:22
+#, approved
+msgid "Credits"
+msgstr "Emeği Geçenler"
+
+#: builtin/mainmenu/tab_credits.lua:29
+#, approved
+msgid "Core Developers"
+msgstr "Ana geliştiriciler"
+
+#: builtin/mainmenu/tab_credits.lua:43
+#, approved
+msgid "Active Contributors"
+msgstr "Aktif katkı sağlayanlar"
+
+#: builtin/mainmenu/tab_credits.lua:48
+#, approved
+msgid "Previous Contributors"
+msgstr "Katkı sağlayanlar"
+
+#: builtin/mainmenu/tab_mods.lua:30
+#, approved
+msgid "Installed Mods:"
+msgstr "Yüklenen eklentiler :"
+
+#: builtin/mainmenu/tab_mods.lua:39
+#, approved
+msgid "Online mod repository"
+msgstr "Çevirimiçi eklenti deposu"
+
+#: builtin/mainmenu/tab_mods.lua:78
+#, approved
+msgid "No mod description available"
+msgstr "Eklenti bilgisi yok"
+
+#: builtin/mainmenu/tab_mods.lua:82
+#, approved
+msgid "Mod information:"
+msgstr "Eklenti bilgileri:"
+
+#: builtin/mainmenu/tab_mods.lua:93
+#, approved
+msgid "Rename"
+msgstr "Adlandır"
+
+#: builtin/mainmenu/tab_mods.lua:95
+#, approved
+msgid "Uninstall selected modpack"
+msgstr "Seçilen eklenti paketini sil"
+
+#: builtin/mainmenu/tab_mods.lua:106
+#, approved
+msgid "Uninstall selected mod"
+msgstr "Seçili eklentiyi sil"
+
+#: builtin/mainmenu/tab_mods.lua:121
+#, approved
+msgid "Select Mod File:"
+msgstr "Eklenti seç :"
+
+#: builtin/mainmenu/tab_mods.lua:165
+#, approved
+msgid "Mods"
+msgstr "Eklentiler"
+
+#: builtin/mainmenu/tab_multiplayer.lua:23
+#, approved
+msgid "Address/Port"
+msgstr "Adres / Port"
+
+#: builtin/mainmenu/tab_multiplayer.lua:24 builtin/mainmenu/tab_server.lua:37
+#: builtin/mainmenu/tab_simple_main.lua:25
+#, approved
+msgid "Name/Password"
+msgstr "Kullanıcı adı/Şifre"
+
+#: builtin/mainmenu/tab_multiplayer.lua:29
+#: builtin/mainmenu/tab_simple_main.lua:30
+#, approved
+msgid "Public Serverlist"
+msgstr "Çevirimiçi Oyun Listesi"
+
+#: builtin/mainmenu/tab_multiplayer.lua:34 builtin/mainmenu/tab_server.lua:26
+#: builtin/mainmenu/tab_singleplayer.lua:85 src/keycode.cpp:230
+#, approved
+msgid "Delete"
+msgstr "Sil"
+
+#: builtin/mainmenu/tab_multiplayer.lua:38
+#: builtin/mainmenu/tab_simple_main.lua:34
+#, approved
+msgid "Connect"
+msgstr "Bağlan"
+
+#: builtin/mainmenu/tab_multiplayer.lua:252
+#, approved
+msgid "Client"
+msgstr "Çevirimiçi Oyna"
+
+#: builtin/mainmenu/tab_server.lua:27 builtin/mainmenu/tab_singleplayer.lua:86
+#, approved
+msgid "New"
+msgstr "Yeni"
+
+#: builtin/mainmenu/tab_server.lua:28 builtin/mainmenu/tab_singleplayer.lua:87
+#, approved
+msgid "Configure"
+msgstr "Ayarla"
+
+#: builtin/mainmenu/tab_server.lua:29
+#, approved
+msgid "Start Game"
+msgstr "Oyunu Başlat"
+
+#: builtin/mainmenu/tab_server.lua:30 builtin/mainmenu/tab_singleplayer.lua:89
+#, approved
+msgid "Select World:"
+msgstr "Dünya seç :"
+
+#: builtin/mainmenu/tab_server.lua:31 builtin/mainmenu/tab_simple_main.lua:63
+#: builtin/mainmenu/tab_singleplayer.lua:90
+#, approved
+msgid "Creative Mode"
+msgstr "Yaratıcı Mod"
+
+#: builtin/mainmenu/tab_server.lua:33 builtin/mainmenu/tab_simple_main.lua:65
+#: builtin/mainmenu/tab_singleplayer.lua:92
+#, approved
+msgid "Enable Damage"
+msgstr "Hasarı etkinleştir"
+
+#: builtin/mainmenu/tab_server.lua:35
+#, approved
+msgid "Public"
+msgstr "Herkese Açık"
+
+#: builtin/mainmenu/tab_server.lua:45
+#, approved
+msgid "Bind Address"
+msgstr "Adresi doğrula"
+
+#: builtin/mainmenu/tab_server.lua:47
+#, approved
+msgid "Port"
+msgstr "Port"
+
+#: builtin/mainmenu/tab_server.lua:51
+#, approved
+msgid "Server Port"
+msgstr "Sunucu portu"
+
+#: builtin/mainmenu/tab_server.lua:174
+#, approved
+msgid "Server"
+msgstr "Sunucu Kur"
+
+#: builtin/mainmenu/tab_settings.lua:23
+#, approved
+msgid ""
+"Are you sure to reset your singleplayer "
+"world?"
+msgstr ""
+"Tek kişilik dünyayı sıfırlamak istediğinizden emin misiniz "
+"?"
+
+#: builtin/mainmenu/tab_settings.lua:27
+#, approved
+msgid "No!!!"
+msgstr "Hayır!!!"
+
+#: builtin/mainmenu/tab_settings.lua:134
+#, approved
+msgid "Smooth Lighting"
+msgstr "Pürüzsüz ışıklandırma"
+
+#: builtin/mainmenu/tab_settings.lua:136
+#, approved
+msgid "Enable Particles"
+msgstr "Parçacıkları etkinleştir"
+
+#: builtin/mainmenu/tab_settings.lua:138
+#, approved
+msgid "3D Clouds"
+msgstr "3 boyutlu bulutlar"
+
+#, approved
+msgid "Fancy Trees"
+msgstr "Şık ağaçlar"
+
+#: builtin/mainmenu/tab_settings.lua:142
+#, approved
+msgid "Opaque Water"
+msgstr "Şeffaf su"
+
+#, approved
+msgid "Connected Glass"
+msgstr "İçiçe geçmiş cam"
+
+#: builtin/mainmenu/tab_settings.lua:149
+#, approved
+msgid ""
+"Restart minetest for driver change to take "
+"effect"
+msgstr ""
+"Değişikliklerin etkin olabilmesi için minetesti yeniden "
+"başlatın"
+
+#: builtin/mainmenu/tab_settings.lua:151
+#, approved
+msgid "Mip-Mapping"
+msgstr "Mip-Mapping"
+
+#: builtin/mainmenu/tab_settings.lua:153
+#, approved
+msgid "Anisotropic Filtering"
+msgstr "Eşyönsüz süzme"
+
+#: builtin/mainmenu/tab_settings.lua:155
+#, approved
+msgid "Bi-Linear Filtering"
+msgstr "Çift yönlü süzme"
+
+#: builtin/mainmenu/tab_settings.lua:157
+#, approved
+msgid "Tri-Linear Filtering"
+msgstr "Üç yönlü süzme"
+
+#: builtin/mainmenu/tab_settings.lua:160
+#, approved
+msgid "Shaders"
+msgstr "Shaders"
+
+#: builtin/mainmenu/tab_settings.lua:164
+#, approved
+msgid "Change keys"
+msgstr "Tuşları değiştir"
+
+#: builtin/mainmenu/tab_settings.lua:167
+#, approved
+msgid "Reset singleplayer world"
+msgstr "Tek kişilik oyunu sıfırlayın"
+
+#: builtin/mainmenu/tab_settings.lua:171
+#, approved
+msgid "GUI scale factor"
+msgstr "Menü boyutları"
+
+#: builtin/mainmenu/tab_settings.lua:175
+#, approved
+msgid "Scaling factor applied to menu elements: "
+msgstr "Ölçeklendirme menülere işlendi:"
+
+#: builtin/mainmenu/tab_settings.lua:181
+#, approved
+msgid "Touch free target"
+msgstr "Touch free target"
+
+#: builtin/mainmenu/tab_settings.lua:187
+#, approved
+msgid "Touchthreshold (px)"
+msgstr "Touchthreshold (px)"
+
+#: builtin/mainmenu/tab_settings.lua:194 builtin/mainmenu/tab_settings.lua:208
+#, approved
+msgid "Bumpmapping"
+msgstr "Engebeler"
+
+#: builtin/mainmenu/tab_settings.lua:196 builtin/mainmenu/tab_settings.lua:209
+#, approved
+msgid "Generate Normalmaps"
+msgstr "Normal haritalar oluştur"
+
+#: builtin/mainmenu/tab_settings.lua:198 builtin/mainmenu/tab_settings.lua:210
+#, approved
+msgid "Parallax Occlusion"
+msgstr "Parallax Occlusion"
+
+#: builtin/mainmenu/tab_settings.lua:200 builtin/mainmenu/tab_settings.lua:211
+#, approved
+msgid "Waving Water"
+msgstr "Dalgalanan Su"
+
+#: builtin/mainmenu/tab_settings.lua:202 builtin/mainmenu/tab_settings.lua:212
+#, approved
+msgid "Waving Leaves"
+msgstr "Dalgalanan Yapraklar"
+
+#: builtin/mainmenu/tab_settings.lua:204 builtin/mainmenu/tab_settings.lua:213
+#, approved
+msgid "Waving Plants"
+msgstr "Dalgalanan Bitkiler"
+
+#: builtin/mainmenu/tab_settings.lua:255
+#, approved
+msgid ""
+"To enable shaders the OpenGL driver needs to be "
+"used."
+msgstr "OpenGL sürücüleri seçilmeden Shader etkinleştirilemez."
+
+#: builtin/mainmenu/tab_settings.lua:330
+#, approved
+msgid "Settings"
+msgstr "Ayarlar"
+
+#: builtin/mainmenu/tab_simple_main.lua:67
+#, approved
+msgid "Fly mode"
+msgstr "Uçuş modu"
+
+#: builtin/mainmenu/tab_simple_main.lua:71
+#, approved
+msgid "Start Singleplayer"
+msgstr "Tek kişilik oyunu başlat"
+
+#, approved
+msgid "Config mods"
+msgstr "Eklentileri ayarla"
+
+#: builtin/mainmenu/tab_simple_main.lua:191
+#, approved
+msgid "Main"
+msgstr "Ana"
+
+#: builtin/mainmenu/tab_singleplayer.lua:88 src/keycode.cpp:249
+#, approved
+msgid "Play"
+msgstr "Oyna"
+
+#: builtin/mainmenu/tab_singleplayer.lua:224
+#, approved
+msgid "Singleplayer"
+msgstr "Tek Kişilik"
+
+#: builtin/mainmenu/tab_texturepacks.lua:49
+#, approved
+msgid "Select texture pack:"
+msgstr "Doku paketi seç :"
+
+#: builtin/mainmenu/tab_texturepacks.lua:69
+#, approved
+msgid "No information available"
+msgstr "Bilgi yok"
+
+#: builtin/mainmenu/tab_texturepacks.lua:114
+#, approved
+msgid "Texturepacks"
+msgstr "Doku paketleri"
+
+#: src/client.cpp:2726
+#, approved
+msgid "Item textures..."
+msgstr "Nesne dokuları ..."
+
+#: src/fontengine.cpp:70 src/fontengine.cpp:226
+#, approved
+msgid "needs_fallback_font"
+msgstr "needs_fallback_font"
+
+#: src/game.cpp:1063
+#, approved
+msgid "Respawn"
+msgstr "Yeniden Canlan"
+
+#: src/game.cpp:2250
+#, approved
+msgid "Item definitions..."
+msgstr "Nesne tanımlamaları..."
+
+#: src/game.cpp:2255
+#, approved
+msgid "Node definitions..."
+msgstr "Blok tanımlamaları..."
+
+#: src/game.cpp:2262
+#, approved
+msgid "Media..."
+msgstr "Media..."
+
+#: src/game.cpp:2267
+#, approved
+msgid " KB/s"
+msgstr " KB/s"
+
+#: src/game.cpp:2271
+#, approved
+msgid " MB/s"
+msgstr " MB/s"
+
+#: src/game.cpp:4220
+#, approved
+msgid ""
+"\n"
+"Check debug.txt for details."
+msgstr ""
+"\n"
+"Hata ayrıntıları için debug.txt dosyasını inceleyin."
+
+#: src/guiFormSpecMenu.cpp:2055
+#, approved
+msgid "Proceed"
+msgstr "Uygula"
+
+#: src/guiFormSpecMenu.cpp:2846
+#, approved
+msgid "Enter "
+msgstr "Entrer "
+
+#: src/guiKeyChangeMenu.cpp:125
+#, approved
+msgid ""
+"Keybindings. (If this menu screws up, remove stuff from "
+"minetest.conf)"
+msgstr "Tuş ayaları. ( Olağandışı durumlarda minetest.conf 'u düzenleyin )"
+
+#: src/guiKeyChangeMenu.cpp:165
+#, approved
+msgid "\"Use\" = climb down"
+msgstr "\"Kullan\" = Aşağı in"
+
+#: src/guiKeyChangeMenu.cpp:180
+#, approved
+msgid "Double tap \"jump\" to toggle fly"
+msgstr "Çift zıplayarak uçma modunu aç/kapa"
+
+#: src/guiKeyChangeMenu.cpp:296
+#, approved
+msgid "Key already in use"
+msgstr "Tuş zaten kullanımda"
+
+#: src/guiKeyChangeMenu.cpp:371
+#, approved
+msgid "press key"
+msgstr "tuşa bas"
+
+#: src/guiKeyChangeMenu.cpp:397
+#, approved
+msgid "Forward"
+msgstr "İleri"
+
+#: src/guiKeyChangeMenu.cpp:398
+#, approved
+msgid "Backward"
+msgstr "Geri"
+
+#: src/guiKeyChangeMenu.cpp:399 src/keycode.cpp:229
+#, approved
+msgid "Left"
+msgstr "Sol"
+
+#: src/guiKeyChangeMenu.cpp:400 src/keycode.cpp:229
+#, approved
+msgid "Right"
+msgstr "Sağ"
+
+#: src/guiKeyChangeMenu.cpp:401
+#, approved
+msgid "Use"
+msgstr "Kullan"
+
+#: src/guiKeyChangeMenu.cpp:402
+#, approved
+msgid "Jump"
+msgstr "Zıpla"
+
+#: src/guiKeyChangeMenu.cpp:403
+#, approved
+msgid "Sneak"
+msgstr "Sessiz Yürü"
+
+#: src/guiKeyChangeMenu.cpp:404
+#, approved
+msgid "Drop"
+msgstr "Bırak"
+
+#: src/guiKeyChangeMenu.cpp:405
+#, approved
+msgid "Inventory"
+msgstr "Envanter"
+
+#: src/guiKeyChangeMenu.cpp:406
+#, approved
+msgid "Chat"
+msgstr "Konuşma"
+
+#: src/guiKeyChangeMenu.cpp:407
+#, approved
+msgid "Command"
+msgstr "Komut"
+
+#: src/guiKeyChangeMenu.cpp:408
+#, approved
+msgid "Console"
+msgstr "Konsol"
+
+#: src/guiKeyChangeMenu.cpp:409
+#, approved
+msgid "Toggle fly"
+msgstr "Uçuş modu aç/kapa"
+
+#: src/guiKeyChangeMenu.cpp:410
+#, approved
+msgid "Toggle fast"
+msgstr "Hız modu aç/kapa"
+
+#: src/guiKeyChangeMenu.cpp:411
+#, approved
+msgid "Toggle noclip"
+msgstr "Noclip aç/kapa"
+
+#: src/guiKeyChangeMenu.cpp:412
+#, approved
+msgid "Range select"
+msgstr "Uzaklık seçimi"
+
+#: src/guiKeyChangeMenu.cpp:413
+#, approved
+msgid "Print stacks"
+msgstr "Yazdırma yığınları"
+
+#: src/guiPasswordChange.cpp:106
+#, approved
+msgid "Old Password"
+msgstr "Eski şifre"
+
+#: src/guiPasswordChange.cpp:122
+#, approved
+msgid "New Password"
+msgstr "Yeni şifre"
+
+#: src/guiPasswordChange.cpp:137
+#, approved
+msgid "Confirm Password"
+msgstr "Şifreyi doğrulayın"
+
+#: src/guiPasswordChange.cpp:153
+#, approved
+msgid "Change"
+msgstr "Değiştir"
+
+#: src/guiPasswordChange.cpp:162
+#, approved
+msgid "Passwords do not match!"
+msgstr "Şifreler uyuşmuyor !"
+
+#: src/guiVolumeChange.cpp:106
+#, approved
+msgid "Sound Volume: "
+msgstr "Ses yüksekliği :"
+
+#: src/guiVolumeChange.cpp:120
+#, approved
+msgid "Exit"
+msgstr "Çıkış"
+
+#: src/keycode.cpp:224
+#, approved
+msgid "Left Button"
+msgstr "Sol tuşu"
+
+#: src/keycode.cpp:224
+#, approved
+msgid "Middle Button"
+msgstr "Orta Tuş"
+
+#: src/keycode.cpp:224
+#, approved
+msgid "Right Button"
+msgstr "Sağ tuş"
+
+#: src/keycode.cpp:224
+#, approved
+msgid "X Button 1"
+msgstr "X Button 1"
+
+#: src/keycode.cpp:225
+#, approved
+msgid "Back"
+msgstr "Geri"
+
+#: src/keycode.cpp:225
+#, approved
+msgid "Clear"
+msgstr "Temizle"
+
+#: src/keycode.cpp:225
+#, approved
+msgid "Return"
+msgstr "Return"
+
+#: src/keycode.cpp:225
+#, approved
+msgid "Tab"
+msgstr "Tab"
+
+#: src/keycode.cpp:225
+#, approved
+msgid "X Button 2"
+msgstr "X Button 2"
+
+#: src/keycode.cpp:226
+#, approved
+msgid "Capital"
+msgstr "Büyük"
+
+#: src/keycode.cpp:226
+#, approved
+msgid "Control"
+msgstr "Kontroller"
+
+#: src/keycode.cpp:226
+#, approved
+msgid "Kana"
+msgstr "Kana"
+
+#: src/keycode.cpp:226
+#, approved
+msgid "Menu"
+msgstr "Menü"
+
+#: src/keycode.cpp:226
+#, approved
+msgid "Pause"
+msgstr "Beklet"
+
+#: src/keycode.cpp:226
+#, approved
+msgid "Shift"
+msgstr "Shift"
+
+#: src/keycode.cpp:227
+#, approved
+msgid "Convert"
+msgstr "Dönüştür"
+
+#: src/keycode.cpp:227
+#, approved
+msgid "Escape"
+msgstr "Çıkış"
+
+#: src/keycode.cpp:227
+#, approved
+msgid "Final"
+msgstr "Bitiş"
+
+#: src/keycode.cpp:227
+#, approved
+msgid "Junja"
+msgstr "Junja"
+
+#: src/keycode.cpp:227
+#, approved
+msgid "Kanji"
+msgstr "Kanji"
+
+#: src/keycode.cpp:227
+#, approved
+msgid "Nonconvert"
+msgstr "Dönüştürme"
+
+#: src/keycode.cpp:228
+#, approved
+msgid "End"
+msgstr "Son"
+
+#: src/keycode.cpp:228
+#, approved
+msgid "Home"
+msgstr "Ev"
+
+#: src/keycode.cpp:228
+#, approved
+msgid "Mode Change"
+msgstr "Mod değiştir"
+
+#: src/keycode.cpp:228
+#, approved
+msgid "Next"
+msgstr "İleri"
+
+#: src/keycode.cpp:228
+#, approved
+msgid "Prior"
+msgstr "Öncelikli"
+
+#: src/keycode.cpp:228
+#, approved
+msgid "Space"
+msgstr "Boşluk"
+
+#: src/keycode.cpp:229
+#, approved
+msgid "Down"
+msgstr "Aşağı"
+
+#: src/keycode.cpp:229
+#, approved
+msgid "Execute"
+msgstr "Çalıştır"
+
+#: src/keycode.cpp:229
+#, approved
+msgid "Print"
+msgstr "Yazdır"
+
+#: src/keycode.cpp:229
+#, approved
+msgid "Select"
+msgstr "Seç"
+
+#: src/keycode.cpp:229
+#, approved
+msgid "Up"
+msgstr "Yukarı"
+
+#: src/keycode.cpp:230
+#, approved
+msgid "Help"
+msgstr "Yardım"
+
+#: src/keycode.cpp:230
+#, approved
+msgid "Insert"
+msgstr "Insert"
+
+#: src/keycode.cpp:230
+#, approved
+msgid "Snapshot"
+msgstr "Ekran Resmi"
+
+#: src/keycode.cpp:233
+#, approved
+msgid "Left Windows"
+msgstr "Sol Windows tuşu"
+
+#: src/keycode.cpp:234
+#, approved
+msgid "Apps"
+msgstr "Uygulamalar"
+
+#: src/keycode.cpp:234
+#, approved
+msgid "Numpad 0"
+msgstr "Numpad 0"
+
+#: src/keycode.cpp:234
+#, approved
+msgid "Numpad 1"
+msgstr "Numpad 1"
+
+#: src/keycode.cpp:234
+#, approved
+msgid "Right Windows"
+msgstr "Sağ Windows tuşu"
+
+#: src/keycode.cpp:234
+#, approved
+msgid "Sleep"
+msgstr "Uyu"
+
+#: src/keycode.cpp:235
+#, approved
+msgid "Numpad 2"
+msgstr "Numpad 2"
+
+#: src/keycode.cpp:235
+#, approved
+msgid "Numpad 3"
+msgstr "Numpad 3"
+
+#: src/keycode.cpp:235
+#, approved
+msgid "Numpad 4"
+msgstr "Numpad 4"
+
+#: src/keycode.cpp:235
+#, approved
+msgid "Numpad 5"
+msgstr "Numpad 5"
+
+#: src/keycode.cpp:235
+#, approved
+msgid "Numpad 6"
+msgstr "Numpad 6"
+
+#: src/keycode.cpp:235
+#, approved
+msgid "Numpad 7"
+msgstr "Numpad 7"
+
+#: src/keycode.cpp:236
+#, approved
+msgid "Numpad *"
+msgstr "Numpad *"
+
+#: src/keycode.cpp:236
+#, approved
+msgid "Numpad +"
+msgstr "Numpad +"
+
+#: src/keycode.cpp:236
+#, approved
+msgid "Numpad -"
+msgstr "Numpad -"
+
+#: src/keycode.cpp:236
+#, approved
+msgid "Numpad /"
+msgstr "Numpad /"
+
+#: src/keycode.cpp:236
+#, approved
+msgid "Numpad 8"
+msgstr "Numpad 8"
+
+#: src/keycode.cpp:236
+#, approved
+msgid "Numpad 9"
+msgstr "Numpad 9"
+
+#: src/keycode.cpp:240
+#, approved
+msgid "Num Lock"
+msgstr "Num Lock"
+
+#: src/keycode.cpp:240
+#, approved
+msgid "Scroll Lock"
+msgstr "Scroll Lock"
+
+#: src/keycode.cpp:241
+#, approved
+msgid "Left Shift"
+msgstr "Sol Shift"
+
+#: src/keycode.cpp:241
+#, approved
+msgid "Right Shift"
+msgstr "Sağ Shift"
+
+#: src/keycode.cpp:242
+#, approved
+msgid "Left Control"
+msgstr "Sol CTRL"
+
+#: src/keycode.cpp:242
+#, approved
+msgid "Left Menu"
+msgstr "Sol Menu"
+
+#: src/keycode.cpp:242
+#, approved
+msgid "Right Control"
+msgstr "Sağ CTRL"
+
+#: src/keycode.cpp:242
+#, approved
+msgid "Right Menu"
+msgstr "Sağ Menu"
+
+#: src/keycode.cpp:244
+#, approved
+msgid "Comma"
+msgstr "Virgul"
+
+#: src/keycode.cpp:244
+#, approved
+msgid "Minus"
+msgstr "Eksi"
+
+#: src/keycode.cpp:244
+#, approved
+msgid "Period"
+msgstr "Dönem"
+
+#: src/keycode.cpp:244
+#, approved
+msgid "Plus"
+msgstr "Artı"
+
+#: src/keycode.cpp:248
+#, approved
+msgid "Attn"
+msgstr "Dikkat"
+
+#: src/keycode.cpp:248
+#, approved
+msgid "CrSel"
+msgstr "CrSel"
+
+#: src/keycode.cpp:249
+#, approved
+msgid "Erase OEF"
+msgstr "l'OEF 'i sil"
+
+#: src/keycode.cpp:249
+#, approved
+msgid "ExSel"
+msgstr "ExSel"
+
+#: src/keycode.cpp:249
+#, approved
+msgid "OEM Clear"
+msgstr "OEM Temizle"
+
+#: src/keycode.cpp:249
+#, approved
+msgid "PA1"
+msgstr "PA1"
+
+#: src/keycode.cpp:249
+#, approved
+msgid "Zoom"
+msgstr "Yakınlaştır"
+
+#: src/main.cpp:1681
+#, approved
+msgid "Main Menu"
+msgstr "Ana menu"
+
+#: src/main.cpp:1719
+#, approved
+msgid "Player name too long."
+msgstr "Kullanıcı adı çok uzun."
+
+#: src/main.cpp:1757
+#, approved
+msgid "Connection error (timed out?)"
+msgstr "Bağlantı hatası ( Zaman aşımı ? )"
+
+#: src/main.cpp:1919
+#, approved
+msgid ""
+"No world selected and no address provided. Nothing to "
+"do."
+msgstr "Dünya veya adres seçilmedi."
+
+#: src/main.cpp:1926
+#, approved
+msgid "Provided world path doesn't exist: "
+msgstr "Belirtilen dünya konumu yok:"
+
+#: src/main.cpp:1935
+#, approved
+msgid "Could not find or load game \""
+msgstr "Oyun bulunamıyor veya yüklenemiyor \""
+
+#: src/main.cpp:1953
+#, approved
+msgid "Invalid gamespec."
+msgstr "Geçersiz oyun özellikleri."
