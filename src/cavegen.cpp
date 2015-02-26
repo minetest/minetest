@@ -173,6 +173,36 @@ void CaveV6::makeTunnel(bool dirswitch) {
 		);
 	}
 
+	// Do not make large caves that are above ground.
+	// It is only necessary to check the startpoint and endpoint.
+	if (large_cave) {
+		v3s16 orpi(orp.X, orp.Y, orp.Z);
+		v3s16 veci(vec.X, vec.Y, vec.Z);
+		v3s16 p;
+
+		p = orpi + veci + of + rs / 2;
+		if (p.Z >= node_min.Z && p.Z <= node_max.Z &&
+				p.X >= node_min.X && p.X <= node_max.X) {
+			u32 index = (p.Z - node_min.Z) * mg->ystride + (p.X - node_min.X);
+			s16 h = mg->heightmap[index];
+			if (h < p.Y)
+				return;
+		} else if (p.Y > water_level) {
+			return; // If it's not in our heightmap, use a simple heuristic
+		}
+
+		p = orpi + of + rs / 2;
+		if (p.Z >= node_min.Z && p.Z <= node_max.Z &&
+				p.X >= node_min.X && p.X <= node_max.X) {
+			u32 index = (p.Z - node_min.Z) * mg->ystride + (p.X - node_min.X);
+			s16 h = mg->heightmap[index];
+			if (h < p.Y)
+				return;
+		} else if (p.Y > water_level) {
+			return;
+		}
+	}
+
 	vec += main_direction;
 
 	v3f rp = orp + vec;
