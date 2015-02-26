@@ -45,8 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //              (compatible with ContentFeatures). If you specified 0,0,1,1
 //              for each face, that would be the same as passing NULL.
 void makeCuboid(MeshCollector *collector, const aabb3f &box,
-	TileSpec *tiles, int tilecount,
-	video::SColor &c, const f32* txc)
+	TileSpec *tiles, int tilecount, video::SColor &c, const f32* txc)
 {
 	assert(tilecount >= 1 && tilecount <= 6);
 
@@ -55,8 +54,7 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box,
  
  
  
-	if(txc == NULL)
-	{
+	if(txc == NULL) {
 		static const f32 txc_default[24] = {
 			0,0,1,1,
 			0,0,1,1,
@@ -160,14 +158,16 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box,
 			}
 	u16 indices[] = {0,1,2,2,3,0};
 	// Add to mesh collector
-	for(s32 j=0; j<24; j+=4)
-	{
-		int tileindex = MYMIN(j/4, tilecount-1);
-		collector->append(tiles[tileindex],
-				vertices+j, 4, indices, 6);
+	for (s32 j = 0; j < 24; j += 4) {
+		int tileindex = MYMIN(j / 4, tilecount - 1);
+		collector->append(tiles[tileindex], vertices + j, 4, indices, 6);
 	}
 }
 
+/*
+	TODO: Fix alpha blending for special nodes
+	Currently only the last element rendered is blended correct
+*/
 void mapblock_mesh_generate_special(MeshMakeData *data,
 		MeshCollector &collector)
 {
@@ -190,54 +190,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		node_liquid_level = 0.85;
 
 	v3s16 blockpos_nodes = data->m_blockpos*MAP_BLOCKSIZE;
-
-	// Create selection mesh
-	v3s16 p = data->m_highlighted_pos_relative;
-	if (data->m_show_hud &&
-			(p.X >= 0) && (p.X < MAP_BLOCKSIZE) &&
-			(p.Y >= 0) && (p.Y < MAP_BLOCKSIZE) &&
-			(p.Z >= 0) && (p.Z < MAP_BLOCKSIZE)) {
-
-		MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
-		if(n.getContent() != CONTENT_AIR) {
-			// Get selection mesh light level
-			static const v3s16 dirs[7] = {
-					v3s16( 0, 0, 0),
-					v3s16( 0, 1, 0),
-					v3s16( 0,-1, 0),
-					v3s16( 1, 0, 0),
-					v3s16(-1, 0, 0),
-					v3s16( 0, 0, 1),
-					v3s16( 0, 0,-1)
-			};
-
-			u16 l = 0;
-			u16 l1 = 0;
-			for (u8 i = 0; i < 7; i++) {
-				MapNode n1 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p + dirs[i]);	
-				l1 = getInteriorLight(n1, -4, nodedef);
-				if (l1 > l) 
-					l = l1;
-			}
-			video::SColor c = MapBlock_LightColor(255, l, 0);
-			data->m_highlight_mesh_color = c;
-			std::vector<aabb3f> boxes = n.getSelectionBoxes(nodedef);
-			TileSpec h_tile;			
-			h_tile.material_flags |= MATERIAL_FLAG_HIGHLIGHTED;
-			h_tile.texture = tsrc->getTexture("halo.png",&h_tile.texture_id);
-			v3f pos = intToFloat(p, BS);
-			f32 d = 0.05 * BS;
-			for(std::vector<aabb3f>::iterator
-					i = boxes.begin();
-					i != boxes.end(); i++)
-			{
-				aabb3f box = *i;
-				box.MinEdge += v3f(-d, -d, -d) + pos;
-				box.MaxEdge += v3f(d, d, d) + pos;
-				makeCuboid(&collector, box, &h_tile, 1, c, NULL);
-			}
-		}
-	}
 
 	for(s16 z = 0; z < MAP_BLOCKSIZE; z++)
 	for(s16 y = 0; y < MAP_BLOCKSIZE; y++)
@@ -1764,6 +1716,56 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				mesh->drop();
 			}
 		break;}
+		}
+	}
+	
+	/*
+		Caused by incorrect alpha blending, selection mesh needs to be created as
+		last element to ensure it gets blended correct over nodes with alpha channel
+	*/
+	// Create selection mesh
+	v3s16 p = data->m_highlighted_pos_relative;
+	if (data->m_show_hud &&
+			(p.X >= 0) && (p.X < MAP_BLOCKSIZE) &&
+			(p.Y >= 0) && (p.Y < MAP_BLOCKSIZE) &&
+			(p.Z >= 0) && (p.Z < MAP_BLOCKSIZE)) {
+
+		MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
+		if(n.getContent() != CONTENT_AIR) {
+			// Get selection mesh light level
+			static const v3s16 dirs[7] = {
+					v3s16( 0, 0, 0),
+					v3s16( 0, 1, 0),
+					v3s16( 0,-1, 0),
+					v3s16( 1, 0, 0),
+					v3s16(-1, 0, 0),
+					v3s16( 0, 0, 1),
+					v3s16( 0, 0,-1)
+			};
+
+			u16 l = 0;
+			u16 l1 = 0;
+			for (u8 i = 0; i < 7; i++) {
+				MapNode n1 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p + dirs[i]);	
+				l1 = getInteriorLight(n1, -4, nodedef);
+				if (l1 > l) 
+					l = l1;
+			}
+			video::SColor c = MapBlock_LightColor(255, l, 0);
+			data->m_highlight_mesh_color = c;
+			std::vector<aabb3f> boxes = n.getSelectionBoxes(nodedef);
+			TileSpec h_tile;			
+			h_tile.material_flags |= MATERIAL_FLAG_HIGHLIGHTED;
+			h_tile.texture = tsrc->getTexture("halo.png",&h_tile.texture_id);
+			v3f pos = intToFloat(p, BS);
+			f32 d = 0.05 * BS;
+			for (std::vector<aabb3f>::iterator i = boxes.begin();
+					i != boxes.end(); i++) {
+				aabb3f box = *i;
+				box.MinEdge += v3f(-d, -d, -d) + pos;
+				box.MaxEdge += v3f(d, d, d) + pos;
+				makeCuboid(&collector, box, &h_tile, 1, c, NULL);
+			}
 		}
 	}
 }

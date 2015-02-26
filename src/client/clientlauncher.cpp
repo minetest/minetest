@@ -116,6 +116,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 		input = new RealInputHandler(device, receiver);
 
 	smgr = device->getSceneManager();
+	smgr->getParameters()->setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
 
 	guienv = device->getGUIEnvironment();
 	skin = guienv->getSkin();
