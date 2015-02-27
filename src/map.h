@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/container.h"
 #include "nodetimer.h"
 
+class Settings;
 class Database;
 class ClientMap;
 class MapSector;
@@ -445,6 +446,7 @@ public:
 	/*
 		Database functions
 	*/
+	static Database *createDatabase(const std::string &name, const std::string &savedir, Settings &conf);
 	// Verify we can read/write to the database
 	void verifyDatabase();
 

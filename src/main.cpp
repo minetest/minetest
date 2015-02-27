@@ -46,20 +46,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "quicktune.h"
 #include "httpfetch.h"
 #include "guiEngine.h"
+#include "map.h"
 #include "mapsector.h"
 #include "fontengine.h"
 #include "gameparams.h"
+#include "database.h"
 #ifndef SERVER
 #include "client/clientlauncher.h"
-#endif
-
-#include "database-sqlite3.h"
-#ifdef USE_LEVELDB
-#include "database-leveldb.h"
-#endif
-
-#if USE_REDIS
-#include "database-redis.h"
 #endif
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -140,8 +133,7 @@ static bool get_game_from_cmdline(GameParams *game_params, const Settings &cmd_a
 static bool determine_subgame(GameParams *game_params);
 
 static bool run_dedicated_server(const GameParams &game_params, const Settings &cmd_args);
-static bool migrate_database(const GameParams &game_params, const Settings &cmd_args,
-		Server *server);
+static bool migrate_database(const GameParams &game_params, const Settings &cmd_args);
 
 /**********************************************************************/
 
@@ -894,13 +886,13 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 		return false;
 	}
 
+	// Database migration
+	if (cmd_args.exists("migrate"))
+		return migrate_database(game_params, cmd_args);
+
 	// Create server
 	Server server(game_params.world_path,
 			game_params.game_spec, false, bind_addr.isIPv6());
-
-	// Database migration
-	if (cmd_args.exists("migrate"))
-		return migrate_database(game_params, cmd_args, &server);
 
 	server.start(bind_addr);
 
@@ -911,68 +903,58 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 	return true;
 }
 
-static bool migrate_database(const GameParams &game_params, const Settings &cmd_args,
-		Server *server)
+static bool migrate_database(const GameParams &game_params, const Settings &cmd_args)
 {
 	std::string migrate_to = cmd_args.get("migrate");
 	Settings world_mt;
 	std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
-	bool success = world_mt.readConfigFile(world_mt_path.c_str());
-	if (!success) {
-		errorstream << "Cannot read world.mt" << std::endl;
-		return 1;
+	if (!world_mt.readConfigFile(world_mt_path.c_str())) {
+		errorstream << "Cannot read world.mt!" << std::endl;
+		return false;
 	}
 	if (!world_mt.exists("backend")) {
 		errorstream << "Please specify your current backend in world.mt:"
+			<< std::endl
+			<< "	backend = {sqlite3|leveldb|redis|dummy}"
 			<< std::endl;
-		errorstream << "	backend = {sqlite3|leveldb|redis|dummy}"
-			<< std::endl;
-		return 1;
+		return false;
 	}
 	std::string backend = world_mt.get("backend");
-	Database *new_db;
 	if (backend == migrate_to) {
 		errorstream << "Cannot migrate: new backend is same"
-			<<" as the old one" << std::endl;
-		return 1;
+			<< " as the old one" << std::endl;
+		return false;
 	}
-	if (migrate_to == "sqlite3")
-		new_db = new Database_SQLite3(game_params.world_path);
-	#if USE_LEVELDB
-	else if (migrate_to == "leveldb")
-		new_db = new Database_LevelDB(game_params.world_path);
-	#endif
-	#if USE_REDIS
-	else if (migrate_to == "redis")
-		new_db = new Database_Redis(world_mt);
-	#endif
-	else {
-		errorstream << "Migration to " << migrate_to
-			<< " is not supported" << std::endl;
-		return 1;
-	}
+	Database *old_db = ServerMap::createDatabase(backend, game_params.world_path, world_mt),
+		*new_db = ServerMap::createDatabase(migrate_to, game_params.world_path, world_mt);
+
+	u32 count = 0;
+	time_t last_update_time = 0;
+	bool &kill = *porting::signal_handler_killstatus();
 
 	std::vector<v3s16> blocks;
-	ServerMap &old_map = (ServerMap &) server->getMap();
-	old_map.listAllLoadableBlocks(blocks);
-	int count = 0;
+	old_db->listAllLoadableBlocks(blocks);
 	new_db->beginSave();
-	for (std::vector<v3s16>::iterator i = blocks.begin(); i != blocks.end(); i++) {
-		MapBlock *block = old_map.loadBlock(*i);
-		if (!block) {
-			errorstream << "Failed to load block " << PP(*i) << ", skipping it.";
+	for (std::vector<v3s16>::const_iterator it = blocks.begin(); it != blocks.end(); ++it) {
+		if (kill) return false;
+
+		const std::string &data = old_db->loadBlock(*it);
+		if (!data.empty()) {
+			new_db->saveBlock(*it, data);
+		} else {
+			errorstream << "Failed to load block " << PP(*it) << ", skipping it." << std::endl;
 		}
-		else {
-			old_map.saveBlock(block, new_db);
-			MapSector *sector = old_map.getSectorNoGenerate(v2s16(i->X, i->Z));
-			sector->deleteBlock(block);
+		if (++count % 0xFF == 0 && time(NULL) - last_update_time >= 1) {
+			std::cerr << " Migrated " << count << " blocks, "
+				<< (100.0 * count / blocks.size()) << "% completed.\r";
+			new_db->endSave();
+			new_db->beginSave();
+			last_update_time = time(NULL);
 		}
-		++count;
-		if (count % 500 == 0)
-			actionstream << "Migrated " << count << " blocks "
-				<< (100.0 * count / blocks.size()) << "% completed" << std::endl;
 	}
+	std::cerr << std::endl;
 	new_db->endSave();
+	delete old_db;
 	delete new_db;
 
 	actionstream << "Successfully migrated " << count << " blocks" << std::endl;
@@ -984,3 +966,4 @@ static bool migrate_database(const GameParams &game_params, const Settings &cmd_
 
 	return true;
 }
+

@@ -2018,20 +2018,7 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 		conf.set("backend", "sqlite3");
 	}
 	std::string backend = conf.get("backend");
-	if (backend == "dummy")
-		dbase = new Database_Dummy();
-	else if (backend == "sqlite3")
-		dbase = new Database_SQLite3(savedir);
-	#if USE_LEVELDB
-	else if (backend == "leveldb")
-		dbase = new Database_LevelDB(savedir);
-	#endif
-	#if USE_REDIS
-	else if (backend == "redis")
-		dbase = new Database_Redis(conf);
-	#endif
-	else
-		throw BaseException("Unknown map backend");
+	dbase = createDatabase(backend, savedir, conf);
 
 	if (!conf.updateConfigFile(conf_path.c_str()))
 		errorstream << "ServerMap::ServerMap(): Failed to update world.mt!" << std::endl;
@@ -2813,7 +2800,7 @@ plan_b:
 }
 
 bool ServerMap::loadFromFolders() {
-	if(!dbase->initialized() &&
+	if (!dbase->initialized() &&
 			!fs::PathExists(m_savedir + DIR_DELIM + "map.sqlite"))
 		return true;
 	return false;
@@ -2989,9 +2976,9 @@ void ServerMap::save(ModifiedState save_level)
 
 void ServerMap::listAllLoadableBlocks(std::vector<v3s16> &dst)
 {
-	if(loadFromFolders()){
-		errorstream<<"Map::listAllLoadableBlocks(): Result will be missing "
-				<<"all blocks that are stored in flat files"<<std::endl;
+	if (loadFromFolders()) {
+		errorstream << "Map::listAllLoadableBlocks(): Result will be missing "
+				<< "all blocks that are stored in flat files." << std::endl;
 	}
 	dbase->listAllLoadableBlocks(dst);
 }
@@ -3245,6 +3232,24 @@ bool ServerMap::loadSectorFull(v2s16 p2d)
 	return true;
 }
 #endif
+
+Database *ServerMap::createDatabase(const std::string &name, const std::string &savedir, Settings &conf)
+{
+	if (name == "sqlite3")
+		return new Database_SQLite3(savedir);
+	if (name == "dummy")
+		return new Database_Dummy();
+	#if USE_LEVELDB
+	else if (name == "leveldb")
+		return new Database_LevelDB(savedir);
+	#endif
+	#if USE_REDIS
+	else if (name == "redis")
+		return new Database_Redis(conf);
+	#endif
+	else
+		throw BaseException(std::string("Database backend ") + name + " not supported.");
+}
 
 void ServerMap::beginSave()
 {
