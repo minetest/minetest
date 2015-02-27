@@ -1869,7 +1869,7 @@ and `minetest.auth_reload` call the authetification handler.
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
 * `minetest.find_nodes_in_area(minp, maxp, nodenames)`: returns a list of positions
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
-* `minetest.find_surface_nodes_in_area(minp, maxp, nodenames)`: returns a list of positions
+* `minetest.find_nodes_in_area_under_air(minp, maxp, nodenames)`: returns a list of positions
     * returned positions are nodes with a node air above
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
 * `minetest.get_perlin(noiseparams)`

@@ -121,7 +121,7 @@ private:
 
 	// find_surface_nodes_in_area(minp, maxp, nodenames) -> list of positions
 	// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
-	static int l_find_surface_nodes_in_area(lua_State *L);
+	static int l_find_nodes_in_area_under_air(lua_State *L);
 
 	// delete_area(p1, p2) -> true/false
 	static int l_delete_area(lua_State *L);

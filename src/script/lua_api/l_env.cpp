@@ -570,17 +570,25 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 	return 1;
 }
 
-// find_surface_nodes_in_area(minp, maxp, nodenames) -> list of positions
-// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
-int ModApiEnvMod::l_find_surface_nodes_in_area(lua_State *L)
+// find_nodes_in_area_under_air(minp, maxp, nodenames) -> list of positions
+// nodenames: e.g. {"ignore", "group:tree"} or "default:dirt"
+int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 {
+	/* Note: A similar but generalized (and therefore slower) version of this
+	 * function could be created -- e.g. find_nodes_in_area_under -- which
+	 * would accept a node name (or ID?) or list of names that the "above node"
+	 * should be.
+	 * TODO
+	 */
+
 	GET_ENV_PTR;
 
 	INodeDefManager *ndef = getServer(L)->ndef();
 	v3s16 minp = read_v3s16(L, 1);
 	v3s16 maxp = read_v3s16(L, 2);
 	std::set<content_t> filter;
-	if(lua_istable(L, 3)) {
+
+	if (lua_istable(L, 3)) {
 		int table = 3;
 		lua_pushnil(L);
 		while(lua_next(L, table) != 0) {
@@ -590,18 +598,18 @@ int ModApiEnvMod::l_find_surface_nodes_in_area(lua_State *L)
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
-	} else if(lua_isstring(L, 3)) {
+	} else if (lua_isstring(L, 3)) {
 		ndef->getIds(lua_tostring(L, 3), filter);
 	}
 
 	lua_newtable(L);
 	u64 i = 0;
-	for(s16 x = minp.X; x <= maxp.X; x++)
-	for(s16 z = minp.Z; z <= maxp.Z; z++) {
+	for (s16 x = minp.X; x <= maxp.X; x++)
+	for (s16 z = minp.Z; z <= maxp.Z; z++) {
 		s16 y = minp.Y;
 		v3s16 p(x, y, z);
 		content_t c = env->getMap().getNodeNoEx(p).getContent();
-		for(; y <= maxp.Y; y++) {
+		for (; y <= maxp.Y; y++) {
 			v3s16 psurf(x, y + 1, z);
 			content_t csurf = env->getMap().getNodeNoEx(psurf).getContent();
 			if(c != CONTENT_AIR && csurf == CONTENT_AIR &&
@@ -912,7 +920,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(get_gametime);
 	API_FCT(find_node_near);
 	API_FCT(find_nodes_in_area);
-	API_FCT(find_surface_nodes_in_area);
+	API_FCT(find_nodes_in_area_under_air);
 	API_FCT(delete_area);
 	API_FCT(get_perlin);
 	API_FCT(get_perlin_map);
