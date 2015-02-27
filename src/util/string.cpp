@@ -40,6 +40,7 @@ static bool parseHexColorString(const std::string &value, video::SColor &color);
 static bool parseNamedColorString(const std::string &value, video::SColor &color);
 
 #ifdef __ANDROID__
+
 const wchar_t* wide_chars =
 	L" !\"#$%&'()*+,-./0123456789:;<=>?@"
 	L"ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`"
@@ -62,14 +63,18 @@ int wctomb(char *s, wchar_t wc)
 
 int mbtowc(wchar_t *pwc, const char *s, size_t n)
 {
-	const wchar_t *tmp = narrow_to_wide_c(s);
-
-	if (tmp[0] != '\0') {
-		*pwc = tmp[0];
-		return 1;
-	} else {
+	if (s == NULL || *s == '\0')
 		return -1;
-	}
+
+	const wchar_t *tmp = narrow_to_wide_c(s);
+	bool success = tmp[0] != '\0';
+
+	if (success)
+		*pwc = tmp[0];
+
+	delete tmp;
+
+	return success ? 1 : -1;
 }
 
 // You must free the returned string!
