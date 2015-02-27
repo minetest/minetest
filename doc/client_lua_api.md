@@ -794,6 +794,10 @@ Call these functions only at load time!
     * See documentation on `minetest.compress()` for supported compression methods.
     * currently supported.
     * `...` indicates method-specific arguments. Currently, no methods use this.
+* `minetest.rgba(red, green, blue[, alpha])`: returns a string
+    * Each argument is a 8 Bit unsigned integer
+    * Returns the ColorString from rgb or rgba values
+    * Example: `minetest.rgba(10, 20, 30, 40)`, returns `"#0A141E28"`
 * `minetest.encode_base64(string)`: returns string encoded in base64
     * Encodes a string in base64.
 * `minetest.decode_base64(string)`: returns string
