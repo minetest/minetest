@@ -160,7 +160,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 			gamedata.servername			= menudata.favorites[fav_idx].name
 			gamedata.serverdescription	= menudata.favorites[fav_idx].description
 
-			if not is_server_protocol_compat_or_error(menudata.favorites[fav_idx].proto_min,
+			if confirm_no_server_compat(menudata.favorites[fav_idx].proto_min,
 					menudata.favorites[fav_idx].proto_max) then
 				return true
 			end
