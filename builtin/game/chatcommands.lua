@@ -229,21 +229,28 @@ core.register_chatcommand("setpassword", {
 		if not toname then
 			return false, "Name field required"
 		end
-		local actstr = "?"
+		local act_str_past = "?"
+		local act_str_pres = "?"
 		if not raw_password then
 			core.set_player_password(toname, "")
-			actstr = "cleared"
+			act_str_past = "cleared"
+			act_str_pres = "clears"
 		else
 			core.set_player_password(toname,
 					core.get_password_hash(toname,
 							raw_password))
-			actstr = "set"
+			act_str_past = "set"
+			act_str_pres = "sets"
 		end
 		if toname ~= name then
 			core.chat_send_player(toname, "Your password was "
-					.. actstr .. " by " .. name)
+					.. act_str_past .. " by " .. name)
 		end
-		return true, "Password of player \"" .. toname .. "\" " .. actstr
+
+		core.log("action", name .. " " .. act_str_pres
+		.. " password of " .. toname .. ".")
+
+		return true, "Password of player \"" .. toname .. "\" " .. act_str_past
 	end,
 })
 
@@ -257,6 +264,9 @@ core.register_chatcommand("clearpassword", {
 			return false, "Name field required"
 		end
 		core.set_player_password(toname, '')
+
+		core.log("action", name .. " clears password of " .. toname .. ".")
+
 		return true, "Password of player \"" .. toname .. "\" cleared"
 	end,
 })
