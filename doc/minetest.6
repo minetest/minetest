@@ -1,12 +1,18 @@
-.\" Minetest man page
 .TH minetest 6 "10 September 2013" "" ""
 
 .SH NAME
-minetest \- Multiplayer infinite-world block sandbox
+minetest, minetestserver \- Multiplayer infinite-world block sandbox
 
 .SH SYNOPSIS
 .B minetest
-[ OPTION ... ]
+[\fB--server SERVER OPTIONS\fR | \fBCLIENT OPTIONS\fR]
+[\fBCOMMON OPTIONS\fR]
+[\fBWORLD PATH\fR]
+
+.B minetestserver
+[\fBSERVER OPTIONS\fR]
+[\fBCOMMON OPTIONS\fR]
+[\fBWORLD PATH\fR]
 
 .SH DESCRIPTION
 .B Minetest
@@ -14,79 +20,79 @@ is one of the first InfiniMiner/Minecraft(/whatever) inspired games (started Oct
 .PP
 The main design philosophy is to keep it technically simple, stable and portable. It will be kept lightweight enough to run on fairly old hardware.
 
-.SH OPTIONS
+.SH COMMON OPTIONS
 .TP
-\-\-address <value>
-Address to connect to
+.B \-\-help
+Print allowed options and exit
 .TP
-\-\-config <value>
+.B \-\-version
+Print version information and exit
+.TP
+.B \-\-config <value>
 Load configuration from specified file
 .TP
-\-\-disable\-unittests
-Disable unit tests
-.TP
-\-\-enable\-unittests
-Enable unit tests
-.TP
-\-\-gameid <value>
-Set gameid
-.TP
-\-\-go
-Disable main menu
-.TP
-\-\-help
-Show allowed options
-.TP
-\-\-version
-Show version information
-.TP
-\-\-logfile <value>
+.B \-\-logfile <value>
 Set logfile path (debug.txt)
 .TP
-\-\-map\-dir <value>
-Same as \-\-world (deprecated)
-.TP
-\-\-name <value>
-Set player name
-.TP
-\-\-password <value>
-Set password
-.TP
-\-\-port <value>
-Set network port (UDP) to use
-.TP
-\-\-random\-input
-Enable random user input, for testing
-.TP
-\-\-server
-Run dedicated server
-.TP
-\-\-speedtests
-Run speed tests
-.TP
-\-\-videomodes
-List available video modes
-.TP
-\-\-info
+.B \-\-info
 Print more information to console
 .TP
-\-\-verbose
+.B \-\-verbose
 Print even more information to console
 .TP
-\-\-trace
+.B \-\-trace
 Print enormous amounts of information to console
 .TP
-\-\-world <value>
-Set world path
+.B \-\-gameid <value>
+Set gameid
 .TP
-\-\-migrate <value>
-Migrate from current map backend to another. Possible values are sqlite3
-and leveldb. Only works when using \-\-server.
-
-.SH ENVIRONMENT VARIABLES
-
+.B \-\-worldname <value>
+Set world path by name
 .TP
-MINETEST_SUBGAME_PATH
+.B \-\-world <value> | list
+Set world path or list worlds
+.TP
+.B \-\-map\-dir <value>
+Same as \-\-world (deprecated)
+.TP
+.B \-\-port <value>
+Set network port (UDP) to use
+.TP
+.B \-\-run\-unittests
+Run unit tests and exit
+
+.SH CLIENT OPTIONS
+.TP
+.B \-\-address <value>
+Address to connect to
+.TP
+.B \-\-go
+Disable main menu
+.TP
+.B \-\-name <value>
+Set player name
+.TP
+.B \-\-password <value>
+Set password
+.TP
+.B \-\-random\-input
+Enable random user input, for testing (client only)
+.TP
+.B \-\-videomodes
+List available video modes (client only)
+.TP
+.B \-\-speedtests
+Run speed tests
+
+.SH SERVER OPTIONS
+.TP
+.B \-\-migrate <value>
+Migrate from current map backend to another. Possible values are sqlite3,
+leveldb, redis, and dummy.
+
+.SH ENVIRONMENT
+.TP
+.B MINETEST_SUBGAME_PATH
 Colon delimited list of directories to search for subgames.
 
 .SH BUGS
@@ -103,5 +109,3 @@ Juhani Numminen <juhaninumminen0@gmail.com>.
 .SH WWW
 http://www.minetest.net/
 
-.SH "SEE ALSO"
-.BR minetestserver(6)

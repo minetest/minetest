@@ -130,18 +130,21 @@ $ mv minetest_game-master minetest_game
 $ cd ..
 
 Build a version that runs directly from the source directory:
-$ cmake . -DRUN_IN_PLACE=1
-$ make -j2
+$ cmake . -DRUN_IN_PLACE=TRUE
+$ make -j <number of processors>
 
 Run it:
 $ ./bin/minetest
 
 - Use cmake . -LH to see all CMake options and their current state
-- If you want to install it system-wide (or are making a distribution package), you will want to use -DRUN_IN_PLACE=0
-- You can build a bare server or a bare client by specifying -DBUILD_CLIENT=0 or -DBUILD_SERVER=0
+- If you want to install it system-wide (or are making a distribution package),
+  you will want to use -DRUN_IN_PLACE=FALSE
+- You can build a bare server by specifying -DBUILD_SERVER=TRUE
+- You can disable the client build by specifying -DBUILD_CLIENT=FALSE
 - You can select between Release and Debug build by -DCMAKE_BUILD_TYPE=<Debug or Release>
   - Debug build is slower, but gives much more useful output in a debugger
-- If you build a bare server, you don't need to have Irrlicht installed. In that case use -DIRRLICHT_SOURCE_DIR=/the/irrlicht/source
+- If you build a bare server, you don't need to have Irrlicht installed.
+  In that case use -DIRRLICHT_SOURCE_DIR=/the/irrlicht/source
 
 CMake options
 -------------
@@ -152,16 +155,17 @@ BUILD_SERVER        - Build Minetest server
 CMAKE_BUILD_TYPE    - Type of build (Release vs. Debug)
     Release         - Release build
     Debug           - Debug build
+    SemiDebug       - Partially optimized debug build
     RelWithDebInfo  - Release build with Debug information
     MinSizeRel      - Release build with -Os passed to compiler to make executable as small as possible
 ENABLE_CURL         - Build with cURL; Enables use of online mod repo, public serverlist and remote media fetching via http
-ENABLE_FREETYPE     - Build with Freetype2; Allows using TTF fonts
+ENABLE_FREETYPE     - Build with FreeType2; Allows using TTF fonts
 ENABLE_GETTEXT      - Build with Gettext; Allows using translations
 ENABLE_GLES         - Search for Open GLES headers & libraries and use them
-ENABLE_LEVELDB      - Build with LevelDB; Enables use of LevelDB, which is much faster than SQLite, as map backend
-ENABLE_REDIS        - Build with libhiredis; Enables use of redis map backend
+ENABLE_LEVELDB      - Build with LevelDB; Enables use of LevelDB map backend (faster than SQLite3)
+ENABLE_REDIS        - Build with libhiredis; Enables use of Redis map backend
 ENABLE_SOUND        - Build with OpenAL, libogg & libvorbis; in-game Sounds
-DISABLE_LUAJIT      - Do not search for LuaJIT headers & library
+ENABLE_LUAJIT       - Build with LuaJIT (much faster than non-JIT Lua)
 RUN_IN_PLACE        - Create a portable install (worlds, settings etc. in current directory)
 USE_GPROF           - Enable profiling using GProf
 VERSION_EXTRA       - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
@@ -174,7 +178,7 @@ CURL_DLL                        - Only if building with cURL on Windows; path to
 CURL_INCLUDE_DIR                - Only if building with cURL; directory where curl.h is located
 CURL_LIBRARY                    - Only if building with cURL; path to libcurl.a/libcurl.so/libcurl.lib
 EGL_INCLUDE_DIR                 - Only if building with GLES; directory that contains egl.h
-EGL_egl_LIBRARY                 - Only if building with GLES; path to libEGL.a/libEGL.so
+EGL_LIBRARY                     - Only if building with GLES; path to libEGL.a/libEGL.so
 FREETYPE_INCLUDE_DIR_freetype2  - Only if building with Freetype2; directory that contains an freetype directory with files such as ftimage.h in it
 FREETYPE_INCLUDE_DIR_ft2build   - Only if building with Freetype2; directory that contains ft2build.h
 FREETYPE_LIBRARY                - Only if building with Freetype2; path to libfreetype.a/libfreetype.so/freetype.lib
@@ -190,8 +194,8 @@ IRRLICHT_LIBRARY                - path to libIrrlicht.a/libIrrlicht.so/libIrrlic
 LEVELDB_INCLUDE_DIR             - Only when building with LevelDB; directory that contains db.h
 LEVELDB_LIBRARY                 - Only when building with LevelDB; path to libleveldb.a/libleveldb.so/libleveldb.dll.a
 LEVELDB_DLL                     - Only when building with LevelDB on Windows; path to libleveldb.dll
-REDIS_INCLUDE_DIR               - Only when building with redis support; directory that contains hiredis.h
-REDIS_LIBRARY                   - Only when building with redis support; path to libhiredis.a/libhiredis.so
+REDIS_INCLUDE_DIR               - Only when building with Redis support; directory that contains hiredis.h
+REDIS_LIBRARY                   - Only when building with Redis support; path to libhiredis.a/libhiredis.so
 LUA_INCLUDE_DIR                 - Only if you want to use LuaJIT; directory where luajit.h is located
 LUA_LIBRARY                     - Only if you want to use LuaJIT; path to libluajit.a/libluajit.so
 MINGWM10_DLL                    - Only if compiling with MinGW; path to mingwm10.dll
@@ -202,7 +206,7 @@ OPENAL_DLL                      - Only if building with sound on Windows; path t
 OPENAL_INCLUDE_DIR              - Only if building with sound; directory where al.h is located
 OPENAL_LIBRARY                  - Only if building with sound; path to libopenal.a/libopenal.so/OpenAL32.lib
 OPENGLES2_INCLUDE_DIR           - Only if building with GLES; directory that contains gl2.h
-OPENGLES2_gl_LIBRARY            - Only if building with GLES; path to libGLESv2.a/libGLESv2.so
+OPENGLES2_LIBRARY               - Only if building with GLES; path to libGLESv2.a/libGLESv2.so
 SQLITE3_INCLUDE_DIR             - Only if you want to use SQLite from your OS; directory that contains sqlite3.h
 SQLITE3_LIBRARY                 - Only if you want to use the SQLite from your OS; path to libsqlite3.a/libsqlite3.so
 VORBISFILE_DLL                  - Only if building with sound on Windows; path to libvorbisfile-3.dll
@@ -336,7 +340,7 @@ set irrlichtpath="C:\tmp\irrlicht-1.7.2"
 set builddir=%sourcedir%\bvc10
 mkdir %builddir%
 pushd %builddir%
-cmake %sourcedir% -G "Visual Studio 10" -DIRRLICHT_SOURCE_DIR=%irrlichtpath% -DRUN_IN_PLACE=1 -DCMAKE_INSTALL_PREFIX=%installpath%
+cmake %sourcedir% -G "Visual Studio 10" -DIRRLICHT_SOURCE_DIR=%irrlichtpath% -DRUN_IN_PLACE=TRUE -DCMAKE_INSTALL_PREFIX=%installpath%
 if %errorlevel% neq 0 goto fail
 "C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" ALL_BUILD.vcxproj /p:Configuration=Release
 if %errorlevel% neq 0 goto fail

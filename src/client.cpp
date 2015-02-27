@@ -1126,12 +1126,12 @@ void Client::sendReady()
 	DSTACK(__FUNCTION_NAME);
 
 	NetworkPacket pkt(TOSERVER_CLIENT_READY,
-			1 + 1 + 1 + 1 + 2 + sizeof(char) * strlen(minetest_version_hash));
+			1 + 1 + 1 + 1 + 2 + sizeof(char) * strlen(g_version_hash));
 
-	pkt << (u8) VERSION_MAJOR << (u8) VERSION_MINOR << (u8) VERSION_PATCH_ORIG
-		<< (u8) 0 << (u16) strlen(minetest_version_hash);
+	pkt << (u8) VERSION_MAJOR << (u8) VERSION_MINOR << (u8) VERSION_PATCH
+		<< (u8) 0 << (u16) strlen(g_version_hash);
 
-	pkt.putRawString(minetest_version_hash, (u16) strlen(minetest_version_hash));
+	pkt.putRawString(g_version_hash, (u16) strlen(g_version_hash));
 	Send(&pkt);
 }
 

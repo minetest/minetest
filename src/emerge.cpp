@@ -519,20 +519,22 @@ void *EmergeThread::Thread()
 	}
 	catch (VersionMismatchException &e) {
 		std::ostringstream err;
-		err << "World data version mismatch in MapBlock "<<PP(last_tried_pos)<<std::endl;
-		err << "----"<<std::endl;
-		err << "\""<<e.what()<<"\""<<std::endl;
-		err << "See debug.txt."<<std::endl;
-		err << "World probably saved by a newer version of Minetest."<<std::endl;
+		err << "World data version mismatch in MapBlock " << PP(last_tried_pos) << std::endl
+			<< "----" << std::endl
+			<< "\"" << e.what() << "\"" << std::endl
+			<< "See debug.txt." << std::endl
+			<< "World probably saved by a newer version of " PROJECT_NAME "."
+			<< std::endl;
 		m_server->setAsyncFatalError(err.str());
 	}
 	catch (SerializationError &e) {
 		std::ostringstream err;
-		err << "Invalid data in MapBlock "<<PP(last_tried_pos)<<std::endl;
-		err << "----"<<std::endl;
-		err << "\""<<e.what()<<"\""<<std::endl;
-		err << "See debug.txt."<<std::endl;
-		err << "You can ignore this using [ignore_world_load_errors = true]."<<std::endl;
+		err << "Invalid data in MapBlock " << PP(last_tried_pos) << std::endl
+			<< "----" << std::endl
+			<< "\"" << e.what() << "\"" << std::endl
+			<< "See debug.txt." << std::endl
+			<< "You can ignore this using [ignore_world_load_errors = true]."
+			<< std::endl;
 		m_server->setAsyncFatalError(err.str());
 	}
 

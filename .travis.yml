@@ -3,9 +3,9 @@ compiler:
   - gcc
   - clang
 env:
-  - WINDOWS=32
-  - WINDOWS=64
-  - WINDOWS=no
+  - PLATFORM=Win32
+  - PLATFORM=Win64
+  - PLATFORM=Linux
 before_install: ./util/travis/before_install.sh
 script: ./util/travis/script.sh
 notifications:
@@ -13,7 +13,7 @@ notifications:
 matrix:
   fast_finish: true
   exclude:
-    - env: WINDOWS=32
+    - env: PLATFORM=Win32
       compiler: clang
-    - env: WINDOWS=64
+    - env: PLATFORM=Win64
       compiler: clang

@@ -1,15 +1,14 @@
-if( UNIX )
-	set(JTHREAD_SRCS
-		${CMAKE_CURRENT_SOURCE_DIR}/pthread/jmutex.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/pthread/jthread.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/pthread/jsemaphore.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/pthread/jevent.cpp
-		PARENT_SCOPE)
-else( UNIX )
-	set(JTHREAD_SRCS
-		${CMAKE_CURRENT_SOURCE_DIR}/win32/jmutex.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/win32/jthread.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/win32/jsemaphore.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/win32/jevent.cpp
-		PARENT_SCOPE)
-endif( UNIX )
+if(UNIX)
+	set(THREAD_SYS_DIR pthread)
+else()
+	set(THREAD_SYS_DIR win32)
+endif()
+
+set(SRC_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/${THREAD_SYS_DIR})
+set(JTHREAD_SRCS
+	${SRC_PREFIX}/jmutex.cpp
+	${SRC_PREFIX}/jthread.cpp
+	${SRC_PREFIX}/jsemaphore.cpp
+	${SRC_PREFIX}/jevent.cpp
+	PARENT_SCOPE)
+

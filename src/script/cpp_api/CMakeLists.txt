@@ -1,4 +1,3 @@
-# Used by server and client
 set(common_SCRIPT_CPP_API_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/s_base.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/s_entity.cpp
@@ -12,7 +11,7 @@ set(common_SCRIPT_CPP_API_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/s_async.cpp
 	PARENT_SCOPE)
 
-# Used by client only
-set(minetest_SCRIPT_CPP_API_SRCS
+set(client_SCRIPT_CPP_API_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/s_mainmenu.cpp
 	PARENT_SCOPE)
+

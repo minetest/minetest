@@ -980,7 +980,7 @@ int ModApiMainMenu::l_show_file_open_dialog(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_version(lua_State *L)
 {
-	lua_pushstring(L, minetest_version_simple);
+	lua_pushstring(L, g_version_string);
 	return 1;
 }
 

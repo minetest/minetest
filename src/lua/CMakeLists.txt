@@ -1,9 +1,11 @@
-#
-# Lua 5.1.x
-#
 cmake_minimum_required(VERSION 2.4 FATAL_ERROR)
 
 project(lua C)
+
+set(LUA_VERSION_MAJOR 5)
+set(LUA_VERSION_MINOR 1)
+set(LUA_VERSION_PATCH 4)
+set(LUA_VERSION "${LUA_VERSION_MAJOR}.${LUA_VERSION_MINOR}.${LUA_VERSION_PATCH}")
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -16,9 +18,7 @@ if(APPLE)
 	set(DEFAULT_DLOPEN ON)
 	# use this on Mac OS X 10.3-
 	option(LUA_USE_MACOSX "Mac OS X 10.3-" OFF)
-elseif(CYGWIN)
-	set(DEFAULT_POSIX TRUE)
-elseif(UNIX)
+elseif(UNIX OR CYGWIN)
 	set(DEFAULT_POSIX TRUE)
 elseif(WIN32)
 	set(LUA_WIN TRUE)
@@ -32,49 +32,17 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	set(DEFAULT_DLOPEN ON)
 endif()
 
-if(WIN32)
-	#set(BUILD_STATIC OFF)
-	set(BUILD_STATIC ON)
-else()
-	#option(BUILD_STATIC "build static library" ON)
-	set(BUILD_STATIC ON)
-endif()
-
-if(DEFAULT_DLOPEN)
-	option(LUA_USE_DLOPEN "Enable dlopen support." ON)
-else()
-	option(LUA_USE_DLOPEN "Enable dlopen support." OFF)
-endif()
-mark_as_advanced(LUA_USE_DLOPEN)
-
-if(DEFAULT_ANSI)
-	option(LUA_ANSI "Disable non-ansi features." ON)
-else()
-	option(LUA_ANSI "Disable non-ansi features." OFF)
-endif()
-mark_as_advanced(LUA_ANSI)
-
-#
-# Lua version
-#
-set(LUA_VERSION_MAJOR 5)
-set(LUA_VERSION_MINOR 1)
-set(LUA_VERSION_PATCH 4)
-set(LUA_VERSION
-				"${LUA_VERSION_MAJOR}.${LUA_VERSION_MINOR}.${LUA_VERSION_PATCH}")
-set(LUA_SOVERSION
-				"${LUA_VERSION_MAJOR}")
-
-#
-# libs & cflags
-#
-set(COMMON_LDFLAGS "${COMMON_LDFLAGS}")
-
 # For "Mac OS X 10.3-"
 if(LUA_USE_MACOSX)
 	set(COMMON_CFLAGS "${COMMON_CFLAGS} -DLUA_USE_MACOSX")
 	set(LUA_USE_DLOPEN FALSE)
 endif(LUA_USE_MACOSX)
+
+option(LUA_USE_DLOPEN "Enable dlopen support." ${DEFAULT_DLOPEN})
+mark_as_advanced(LUA_USE_DLOPEN)
+
+option(LUA_ANSI "Disable non-ANSI features." ${DEFAULT_ANSI})
+mark_as_advanced(LUA_ANSI)
 
 if(LUA_USE_DLOPEN)
 	set(COMMON_CFLAGS "${COMMON_CFLAGS} -DLUA_USE_DLOPEN")
@@ -91,14 +59,11 @@ if(LUA_ANSI)
 	set(COMMON_CFLAGS "${COMMON_CFLAGS} -DLUA_ANSI")
 endif(LUA_ANSI)
 
-#
 # COMMON_CFLAGS has no effect without this line
-#
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_CFLAGS}")
 
-#
-# standard flags to use for each build type.
-#
+
+# Standard flags to use for each build type.
 if(CMAKE_COMPILER_IS_GNUCC)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pipe -Wall -Wextra -Wshadow -W -pedantic -std=gnu99")
 	set(CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}     -O2")
@@ -107,8 +72,6 @@ if(CMAKE_COMPILER_IS_GNUCC)
 	set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_WITHDEBINFO} -O2 -g")
 endif(CMAKE_COMPILER_IS_GNUCC)
 
-#
-# sub-folders
-#
-ADD_SUBDIRECTORY(src build)
+
+add_subdirectory(src build)
 

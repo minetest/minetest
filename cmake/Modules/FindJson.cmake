@@ -1,18 +1,27 @@
-# Look for json, use our own if not found
+# Look for JSONCPP if asked to.
+# We use a bundled version by default because some distros ship versions of
+# JSONCPP that cause segfaults and other memory errors when we link with them.
+# See https://github.com/minetest/minetest/issues/1793
 
-#FIND_PATH(JSON_INCLUDE_DIR json.h)
+mark_as_advanced(JSON_LIBRARY JSON_INCLUDE_DIR)
+option(ENABLE_SYSTEM_JSONCPP "Enable using a system-wide JSONCPP.  May cause segfaults and other memory errors!" FALSE)
 
-#FIND_LIBRARY(JSON_LIBRARY NAMES jsoncpp)
+if(ENABLE_SYSTEM_JSONCPP)
+	find_library(JSON_LIBRARY NAMES jsoncpp)
+	find_path(JSON_INCLUDE_DIR json/features.h)
 
-#IF(JSON_LIBRARY AND JSON_INCLUDE_DIR)
-#	SET( JSON_FOUND TRUE )
-#ENDIF(JSON_LIBRARY AND JSON_INCLUDE_DIR)
+	include(FindPackageHandleStandardArgs)
+	find_package_handle_standard_args(JSONCPP DEFAULT_MSG JSON_LIBRARY JSON_INCLUDE_DIR)
 
-#IF(JSON_FOUND)
-#	MESSAGE(STATUS "Found system jsoncpp header file in ${JSON_INCLUDE_DIR}")
-#	MESSAGE(STATUS "Found system jsoncpp library ${JSON_LIBRARY}")
-#ELSE(JSON_FOUND)
-	SET(JSON_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/json)
-	SET(JSON_LIBRARY jsoncpp)
-	MESSAGE(STATUS "Using project jsoncpp library")
-#ENDIF(JSON_FOUND)
+	if(JSONCPP_FOUND)
+		message(STATUS "Using system JSONCPP library.")
+	endif()
+endif()
+
+if(NOT JSONCPP_FOUND)
+	message(STATUS "Using bundled JSONCPP library.")
+	set(JSON_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/json)
+	set(JSON_LIBRARY jsoncpp)
+	add_subdirectory(json)
+endif()
+

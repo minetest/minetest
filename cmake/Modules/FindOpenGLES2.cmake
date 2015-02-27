@@ -16,115 +16,97 @@
 #  EGL_INCLUDE_DIR  - the EGL include directory
 #  EGL_LIBRARIES    - Link these to use EGL
 
-# win32, apple, android NOT TESED
-# linux tested and works
+# Win32, Apple, and Android are not tested!
+# Linux tested and works
 
-IF (WIN32)
-  IF (CYGWIN)
-
-    FIND_PATH(OPENGLES2_INCLUDE_DIR GLES2/gl2.h )
-
-    FIND_LIBRARY(OPENGLES2_gl_LIBRARY libGLESv2 )
-
-  ELSE (CYGWIN)
-
-    IF(BORLAND)
-      SET (OPENGLES2_gl_LIBRARY import32 CACHE STRING "OpenGL ES 2.x library for win32")
-    ELSE(BORLAND)
-      # todo
-      # SET (OPENGLES_gl_LIBRARY ${SOURCE_DIR}/Dependencies/lib/release/libGLESv2.lib CACHE STRING "OpenGL ES 2.x library for win32"
-    ENDIF(BORLAND)
-
-  ENDIF (CYGWIN)
-
-ELSE (WIN32)
-
-  IF (APPLE)
-
+if(WIN32)
+	if(CYGWIN)
+		find_path(OPENGLES2_INCLUDE_DIR GLES2/gl2.h)
+		find_library(OPENGLES2_LIBRARY libGLESv2)
+	else()
+		if(BORLAND)
+			set(OPENGLES2_LIBRARY import32 CACHE STRING "OpenGL ES 2.x library for Win32")
+		else()
+			# TODO
+			# set(OPENGLES_LIBRARY ${SOURCE_DIR}/Dependencies/lib/release/libGLESv2.lib CACHE STRING "OpenGL ES 2.x library for win32"
+		else()
+	endif()
+elseif(APPLE)
 	create_search_paths(/Developer/Platforms)
 	findpkg_framework(OpenGLES2)
-    set(OPENGLES2_gl_LIBRARY "-framework OpenGLES")
+	set(OPENGLES2_LIBRARY "-framework OpenGLES")
+else()
+	find_path(OPENGLES2_INCLUDE_DIR GLES2/gl2.h
+		PATHS /usr/openwin/share/include
+			/opt/graphics/OpenGL/include
+			/usr/X11R6/include
+			/usr/include
+	)
 
-  ELSE(APPLE)
+	find_library(OPENGLES2_LIBRARY
+		NAMES GLESv2
+		PATHS /opt/graphics/OpenGL/lib
+			/usr/openwin/lib
+			/usr/shlib /usr/X11R6/lib
+			/usr/lib
+	)
 
-    FIND_PATH(OPENGLES2_INCLUDE_DIR GLES2/gl2.h
-      /usr/openwin/share/include
-      /opt/graphics/OpenGL/include /usr/X11R6/include
-      /usr/include
-    )
-
-    FIND_LIBRARY(OPENGLES2_gl_LIBRARY
-      NAMES GLESv2
-      PATHS /opt/graphics/OpenGL/lib
-            /usr/openwin/lib
-            /usr/shlib /usr/X11R6/lib
-            /usr/lib
-    )
-
-    IF (NOT BUILD_ANDROID)
-		FIND_PATH(EGL_INCLUDE_DIR EGL/egl.h
-		  /usr/openwin/share/include
-		  /opt/graphics/OpenGL/include /usr/X11R6/include
-		  /usr/include
+	if(NOT BUILD_ANDROID)
+		find_path(EGL_INCLUDE_DIR EGL/egl.h
+			PATHS /usr/openwin/share/include
+				/opt/graphics/OpenGL/include
+				/usr/X11R6/include
+				/usr/include
 		)
 
-		FIND_LIBRARY(EGL_egl_LIBRARY
-		  NAMES EGL
-		  PATHS /opt/graphics/OpenGL/lib
+		find_library(EGL_LIBRARY
+			NAMES EGL
+			PATHS /opt/graphics/OpenGL/lib
 				/usr/openwin/lib
-				/usr/shlib /usr/X11R6/lib
+				/usr/shlib
+				/usr/X11R6/lib
 				/usr/lib
 		)
 
-		# On Unix OpenGL most certainly always requires X11.
-		# Feel free to tighten up these conditions if you don't 
-		# think this is always true.
-		# It's not true on OSX.
+		# On Unix OpenGL usually requires X11.
+		# It doesn't require X11 on OSX.
 
-		IF (OPENGLES2_gl_LIBRARY)
-		  IF(NOT X11_FOUND)
-			INCLUDE(FindX11)
-		  ENDIF(NOT X11_FOUND)
-		  IF (X11_FOUND)
-			IF (NOT APPLE)
-			  SET (OPENGLES2_LIBRARIES ${X11_LIBRARIES})
-			ENDIF (NOT APPLE)
-		  ENDIF (X11_FOUND)
-		ENDIF (OPENGLES2_gl_LIBRARY)
-    ENDIF ()
+		if(OPENGLES2_LIBRARY)
+			if(NOT X11_FOUND)
+				include(FindX11)
+			endif()
+			if(X11_FOUND)
+				set(OPENGLES2_LIBRARIES ${X11_LIBRARIES})
+			endif()
+		endif()
+	endif()
+endif()
 
-  ENDIF(APPLE)
-ENDIF (WIN32)
+set(OPENGLES2_LIBRARIES ${OPENGLES2_LIBRARIES} ${OPENGLES2_LIBRARY})
 
-#SET( OPENGLES2_LIBRARIES ${OPENGLES2_gl_LIBRARY} ${OPENGLES2_LIBRARIES})
+if(BUILD_ANDROID)
+	if(OPENGLES2_LIBRARY)
+		set(EGL_LIBRARIES)
+		set(OPENGLES2_FOUND TRUE)
+	endif()
+else()
+	if(OPENGLES2_LIBRARY AND EGL_LIBRARY)
+		set(OPENGLES2_LIBRARIES ${OPENGLES2_LIBRARY} ${OPENGLES2_LIBRARIES})
+		set(EGL_LIBRARIES ${EGL_LIBRARY} ${EGL_LIBRARIES})
+		set(OPENGLES2_FOUND TRUE)
+	endif()
+endif()
 
-IF (BUILD_ANDROID)
-  IF(OPENGLES2_gl_LIBRARY)
-      SET( OPENGLES2_LIBRARIES ${OPENGLES2_gl_LIBRARY} ${OPENGLES2_LIBRARIES})
-      SET( EGL_LIBRARIES)
-      SET( OPENGLES2_FOUND "YES" )
-  ENDIF(OPENGLES2_gl_LIBRARY)
-ELSE ()
-
-  SET( OPENGLES2_LIBRARIES ${OPENGLES2_gl_LIBRARY} ${OPENGLES2_LIBRARIES})
-
-  IF(OPENGLES2_gl_LIBRARY AND EGL_egl_LIBRARY)
-    SET( OPENGLES2_LIBRARIES ${OPENGLES2_gl_LIBRARY} ${OPENGLES2_LIBRARIES})
-    SET( EGL_LIBRARIES ${EGL_egl_LIBRARY} ${EGL_LIBRARIES})
-    SET( OPENGLES2_FOUND "YES" )
-  ENDIF(OPENGLES2_gl_LIBRARY AND EGL_egl_LIBRARY)
-
-ENDIF ()
-
-MARK_AS_ADVANCED(
-  OPENGLES2_INCLUDE_DIR
-  OPENGLES2_gl_LIBRARY
-  EGL_INCLUDE_DIR
-  EGL_egl_LIBRARY
+mark_as_advanced(
+	OPENGLES2_INCLUDE_DIR
+	OPENGLES2_LIBRARY
+	EGL_INCLUDE_DIR
+	EGL_LIBRARY
 )
 
-IF(OPENGLES2_FOUND)
-    MESSAGE(STATUS "Found system opengles2 library ${OPENGLES2_LIBRARIES}")
-ELSE ()
-    SET(OPENGLES2_LIBRARIES "")
-ENDIF ()
+if(OPENGLES2_FOUND)
+	message(STATUS "Found system OpenGL ES 2 library: ${OPENGLES2_LIBRARIES}")
+else()
+	set(OPENGLES2_LIBRARIES "")
+endif()
+

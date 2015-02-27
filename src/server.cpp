@@ -2687,7 +2687,7 @@ std::wstring Server::getStatusString()
 	std::wostringstream os(std::ios_base::binary);
 	os<<L"# Server: ";
 	// Version
-	os<<L"version="<<narrow_to_wide(minetest_version_simple);
+	os<<L"version="<<narrow_to_wide(g_version_string);
 	// Uptime
 	os<<L", uptime="<<m_uptime.get();
 	// Max lag estimate
