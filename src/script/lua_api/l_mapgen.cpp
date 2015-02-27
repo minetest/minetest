@@ -444,8 +444,7 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 
 	b->name            = getstringfield_default(L, index, "name", "");
 	b->depth_top       = getintfield_default(L, index, "depth_top",          1);
-	b->depth_filler    = getintfield_default(L, index, "depth_filler",       3);
-	b->height_shore    = getintfield_default(L, index, "height_shore",       3);
+	b->depth_filler    = getintfield_default(L, index, "depth_filler",       2);
 	b->depth_water_top = getintfield_default(L, index, "depth_water_top",    0);
 	b->y_min           = getintfield_default(L, index, "y_min",         -31000);
 	b->y_max           = getintfield_default(L, index, "y_max",          31000);
@@ -463,9 +462,6 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 	std::list<std::string> &nnames = nri->nodenames;
 	nnames.push_back(getstringfield_default(L, index, "node_top",          ""));
 	nnames.push_back(getstringfield_default(L, index, "node_filler",       ""));
-	nnames.push_back(getstringfield_default(L, index, "node_shore_top",    ""));
-	nnames.push_back(getstringfield_default(L, index, "node_shore_filler", ""));
-	nnames.push_back(getstringfield_default(L, index, "node_underwater",   ""));
 	nnames.push_back(getstringfield_default(L, index, "node_stone",        ""));
 	nnames.push_back(getstringfield_default(L, index, "node_water_top",    ""));
 	nnames.push_back(getstringfield_default(L, index, "node_water",        ""));
