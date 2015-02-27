@@ -71,7 +71,6 @@ Particle::Particle(
 	m_material.setFlag(video::EMF_BACK_FACE_CULLING, false);
 	m_material.setFlag(video::EMF_BILINEAR_FILTER, false);
 	m_material.setFlag(video::EMF_FOG_ENABLE, true);
-	m_material.setFlag(video::EMF_ZWRITE_ENABLE, true);
 	m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 	m_material.setTexture(0, texture);
 	m_texpos = texpos;
@@ -120,7 +119,8 @@ void Particle::OnRegisterSceneNode()
 
 void Particle::render()
 {
-	SceneManager->getParameters()->setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
+	// TODO: Render particles in front of water and the selectionbox
+
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
 	driver->setMaterial(m_material);
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
