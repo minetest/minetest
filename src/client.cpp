@@ -503,7 +503,7 @@ void Client::step(float dtime)
 		}
 		else if(event.type == CEE_PLAYER_DAMAGE) {
 			if(m_ignore_damage_timer <= 0) {
-				u8 damage = event.player_damage.amount;
+				s16 damage = event.player_damage.amount;
 
 				if(event.player_damage.send_to_server)
 					sendDamage(damage);
@@ -1085,11 +1085,11 @@ void Client::sendChangePassword(const std::wstring &oldpassword,
 }
 
 
-void Client::sendDamage(u8 damage)
+void Client::sendDamage(s16 damage)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	NetworkPacket* pkt = new NetworkPacket(TOSERVER_DAMAGE, sizeof(u8));
+	NetworkPacket* pkt = new NetworkPacket(TOSERVER_DAMAGE, sizeof(s16));
 	*pkt << damage;
 	Send(pkt);
 }

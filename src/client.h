@@ -156,7 +156,7 @@ struct ClientEvent
 		//struct{
 		//} none;
 		struct{
-			u8 amount;
+			s16 amount;
 		} player_damage;
 		struct{
 			f32 pitch;
@@ -408,7 +408,7 @@ public:
 	void sendChatMessage(const std::wstring &message);
 	void sendChangePassword(const std::wstring &oldpassword,
 	                        const std::wstring &newpassword);
-	void sendDamage(u8 damage);
+	void sendDamage(s16 damage);
 	void sendBreath(u16 breath);
 	void sendRespawn();
 	void sendReady();
