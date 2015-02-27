@@ -498,6 +498,27 @@ function core.explode_scrollbar_event(evt)
 end
 
 --------------------------------------------------------------------------------
+local function format(n)
+	local str = string.format("%X", n)
+		if str:len() == 1 then
+			return "0" .. str
+		end
+		return str
+	end
+end
+
+function core.colorstring(red, green, blue, alpha)
+	local redstr = format(red)
+	local greenstr = format(green)
+	local bluestr = format(blue)
+	if alpha then
+		local alphastr = format(alpha)
+		return "#" .. redstr .. greenstr .. bluestr .. alphastr
+	end
+	return "#" .. redstr .. greenstr .. bluestr
+end
+
+--------------------------------------------------------------------------------
 function core.pos_to_string(pos, decimal_places)
 	local x = pos.x
 	local y = pos.y
