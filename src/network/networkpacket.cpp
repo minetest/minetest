@@ -71,8 +71,8 @@ void NetworkPacket::putRawString(const char* src, u32 len)
 
 NetworkPacket& NetworkPacket::operator>>(std::string& dst)
 {
-	u16 strLen = readU16(&m_data[m_read_offset]);
-	m_read_offset += sizeof(u16);
+	u32 strLen = readU32(&m_data[m_read_offset]);
+	incrOffset<u32>();
 
 	dst.clear();
 
@@ -89,26 +89,6 @@ NetworkPacket& NetworkPacket::operator>>(std::string& dst)
 
 NetworkPacket& NetworkPacket::operator<<(std::string src)
 {
-	u16 msgsize = src.size();
-	if (msgsize > 0xFFFF) {
-		msgsize = 0xFFFF;
-	}
-
-	*this << msgsize;
-
-	if (m_read_offset + msgsize * sizeof(char) >= m_datasize) {
-		m_datasize += msgsize * sizeof(char);
-		m_data.resize(m_datasize);
-	}
-
-	memcpy(&m_data[m_read_offset], src.c_str(), msgsize);
-	m_read_offset += msgsize;
-
-	return *this;
-}
-
-void NetworkPacket::putLongString(std::string src)
-{
 	u32 msgsize = src.size();
 	if (msgsize > 0xFFFFFFFF) {
 		msgsize = 0xFFFFFFFF;
@@ -123,6 +103,8 @@ void NetworkPacket::putLongString(std::string src)
 
 	memcpy(&m_data[m_read_offset], src.c_str(), msgsize);
 	m_read_offset += msgsize;
+
+	return *this;
 }
 
 NetworkPacket& NetworkPacket::operator>>(std::wstring& dst)
@@ -163,25 +145,6 @@ NetworkPacket& NetworkPacket::operator<<(std::wstring src)
 	return *this;
 }
 
-std::string NetworkPacket::readLongString()
-{
-	u32 strLen = readU32(&m_data[m_read_offset]);
-	m_read_offset += sizeof(u32);
-
-	if (strLen == 0) {
-		return "";
-	}
-
-	std::string dst;
-
-	dst.reserve(strLen);
-	dst.append((char*)&m_data[m_read_offset], strLen);
-
-	m_read_offset += strLen*sizeof(char);
-
-	return dst;
-}
-
 NetworkPacket& NetworkPacket::operator>>(char& dst)
 {
 	if (m_read_offset >= m_datasize)
@@ -191,14 +154,6 @@ NetworkPacket& NetworkPacket::operator>>(char& dst)
 
 	incrOffset<char>();
 	return *this;
-}
-
-char NetworkPacket::getChar(u32 offset)
-{
-	if (offset >= m_datasize)
-		throw SerializationError("Malformed packet read");
-
-	return readU8(&m_data[offset]);
 }
 
 NetworkPacket& NetworkPacket::operator<<(char src)

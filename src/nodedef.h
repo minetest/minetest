@@ -239,7 +239,8 @@ struct ContentFeatures
 	u8 drowning;
 	// Amount of light the node emits
 	u8 light_source;
-	u32 damage_per_second;
+	// damage/heal
+	s32 damage_per_second;
 	NodeBox node_box;
 	NodeBox selection_box;
 	NodeBox collision_box;

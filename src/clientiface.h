@@ -217,6 +217,7 @@ public:
 		m_version_minor(0),
 		m_version_patch(0),
 		m_full_version("unknown"),
+		m_supported_compressions(0),
 		m_connection_time(getTime(PRECISION_SECONDS))
 	{
 	}
@@ -308,6 +309,8 @@ public:
 		m_full_version = full;
 	}
 
+	void setSupportedCompressionModes(u8 byteFlag) { m_supported_compressions = byteFlag; }
+
 	/* read version information */
 	u8 getMajor() { return m_version_major; }
 	u8 getMinor() { return m_version_minor; }
@@ -370,6 +373,8 @@ private:
 
 	std::string m_full_version;
 
+	u8 m_supported_compressions;
+
 	/*
 		time this client was created
 	 */
@@ -394,7 +399,7 @@ public:
 	std::vector<std::string> getPlayerNames();
 
 	/* send message to client */
-	void send(u16 peer_id, u8 channelnum, NetworkPacket* pkt, bool reliable, bool deletepkt=true);
+	void send(u16 peer_id, u8 channelnum, NetworkPacket* pkt, bool reliable);
 
 	/* send to all clients */
 	void sendToAll(u16 channelnum, NetworkPacket* pkt, bool reliable);

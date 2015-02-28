@@ -1936,18 +1936,15 @@ struct TestConnection: public TestBase
 		// Client should not have added client yet
 		UASSERT(hand_client.count == 0);
 
-		try
-		{
-			u16 peer_id;
-			SharedBuffer<u8> data;
-			infostream<<"** running client.Receive()"<<std::endl;
-			u32 size = client.Receive(peer_id, data);
-			infostream<<"** Client received: peer_id="<<peer_id
-					<<", size="<<size
-					<<std::endl;
+		try {
+			infostream << "** running client.Receive()" << std::endl;
+			NetworkPacket* pkt = client.Receive();
+			infostream << "** Client received: peer_id=" << pkt->getPeerId()
+					<< ", size=" << pkt->getSize()
+					<< std::endl;
+			delete pkt;
 		}
-		catch(con::NoIncomingDataException &e)
-		{
+		catch(con::NoIncomingDataException &e) {
 		}
 
 		// Client should have added server now
@@ -1956,20 +1953,17 @@ struct TestConnection: public TestBase
 		// Server should not have added client yet
 		UASSERT(hand_server.count == 0);
 
-		sleep_ms(100);
+		sleep_ms(50);
 
-		try
-		{
-			u16 peer_id;
-			SharedBuffer<u8> data;
-			infostream<<"** running server.Receive()"<<std::endl;
-			u32 size = server.Receive(peer_id, data);
-			infostream<<"** Server received: peer_id="<<peer_id
-					<<", size="<<size
-					<<std::endl;
+		try {
+			infostream << "** running server.Receive()" << std::endl;
+			NetworkPacket* pkt = server.Receive();
+			infostream << "** Server received: peer_id=" << pkt->getPeerId()
+					<< ", size=" << pkt->getSize()
+					<< std::endl;
+			delete pkt;
 		}
-		catch(con::NoIncomingDataException &e)
-		{
+		catch(con::NoIncomingDataException &e) {
 			// No actual data received, but the client has
 			// probably been connected
 		}
@@ -1983,65 +1977,58 @@ struct TestConnection: public TestBase
 
 		//sleep_ms(50);
 
-		while(client.Connected() == false)
-		{
-			try
-			{
-				u16 peer_id;
-				SharedBuffer<u8> data;
-				infostream<<"** running client.Receive()"<<std::endl;
-				u32 size = client.Receive(peer_id, data);
-				infostream<<"** Client received: peer_id="<<peer_id
-						<<", size="<<size
-						<<std::endl;
+		while(client.Connected() == false) {
+			try {
+				infostream << "** running client.Receive()" << std::endl;
+				NetworkPacket* pkt = client.Receive();
+				infostream << "** Client received: peer_id=" << pkt->getPeerId()
+						<< ", size=" << pkt->getSize()
+						<< std::endl;
+				delete pkt;
 			}
-			catch(con::NoIncomingDataException &e)
-			{
+			catch(con::NoIncomingDataException &e) {
 			}
 			sleep_ms(50);
 		}
 
 		sleep_ms(50);
 
-		try
-		{
-			u16 peer_id;
-			SharedBuffer<u8> data;
-			infostream<<"** running server.Receive()"<<std::endl;
-			u32 size = server.Receive(peer_id, data);
-			infostream<<"** Server received: peer_id="<<peer_id
-					<<", size="<<size
-					<<std::endl;
+		try {
+			infostream << "** running client.Receive()" << std::endl;
+			NetworkPacket* pkt = server.Receive();
+			infostream << "** Client received: peer_id=" << pkt->getPeerId()
+					<< ", size=" << pkt->getSize()
+					<< std::endl;
+			delete pkt;
 		}
-		catch(con::NoIncomingDataException &e)
-		{
+		catch(con::NoIncomingDataException &e) {
 		}
 
 		/*
 			Simple send-receive test
 		*/
 		{
-			NetworkPacket* pkt = new NetworkPacket((u8*) "Hello World !", 14, 0);
+			NetworkPacket pkt((u8*) "Hello World !", 14, 0);
 
-			SharedBuffer<u8> sentdata = pkt->oldForgePacket();
+			SharedBuffer<u8> sentdata = pkt.oldForgePacket();
 
 			infostream<<"** running client.Send()"<<std::endl;
-			client.Send(PEER_ID_SERVER, 0, pkt, true);
+			client.Send(PEER_ID_SERVER, 0, &pkt, true);
 
 			sleep_ms(50);
 
-			u16 peer_id;
-			SharedBuffer<u8> recvdata;
 			infostream << "** running server.Receive()" << std::endl;
-			u32 size = server.Receive(peer_id, recvdata);
-			infostream << "** Server received: peer_id=" << peer_id
-					<< ", size=" << size
-					<< ", data=" << (const char*)pkt->getU8Ptr(0)
+			NetworkPacket* recvpkt = server.Receive();
+			infostream << "** Server received: peer_id=" << pkt.getPeerId()
+					<< ", size=" << pkt.getSize()
+					<< ", data=" << (const char*)pkt.getU8Ptr(0)
 					<< std::endl;
 
-			UASSERT(memcmp(*sentdata, *recvdata, recvdata.getSize()) == 0);
+			SharedBuffer<u8> recvdata = recvpkt->oldForgePacket();
 
-			delete pkt;
+			delete recvpkt;
+
+			UASSERT(memcmp(*sentdata, *recvdata, recvdata.getSize()) == 0);
 		}
 
 		u16 peer_id_client = 2;
@@ -2050,64 +2037,65 @@ struct TestConnection: public TestBase
 		*/
 		{
 			const int datasize = 30000;
-			NetworkPacket* pkt = new NetworkPacket(0, datasize);
+			NetworkPacket pkt(0, datasize);
 			for(u16 i=0; i<datasize; i++){
-				*pkt << (u8) i/4;
+				pkt << (u8) i/4;
 			}
 
 			infostream<<"Sending data (size="<<datasize<<"):";
 			for(int i=0; i<datasize && i<20; i++){
 				if(i%2==0) infostream<<" ";
 				char buf[10];
-				snprintf(buf, 10, "%.2X", ((int)((const char*)pkt->getU8Ptr(0))[i])&0xff);
+				snprintf(buf, 10, "%.2X", ((int)((const char*)pkt.getU8Ptr(0))[i])&0xff);
 				infostream<<buf;
 			}
 			if(datasize>20)
 				infostream<<"...";
 			infostream<<std::endl;
 
-			SharedBuffer<u8> sentdata = pkt->oldForgePacket();
+			SharedBuffer<u8> sentdata = pkt.oldForgePacket();
 
-			server.Send(peer_id_client, 0, pkt, true);
+			server.Send(peer_id_client, 0, &pkt, true);
 
-			//sleep_ms(3000);
-
-			SharedBuffer<u8> recvdata;
+			NetworkPacket* recvpkt = NULL;
 			infostream<<"** running client.Receive()"<<std::endl;
-			u16 peer_id = 132;
-			u16 size = 0;
 			bool received = false;
 			u32 timems0 = porting::getTimeMs();
 			for(;;){
 				if(porting::getTimeMs() - timems0 > 5000 || received)
 					break;
 				try{
-					size = client.Receive(peer_id, recvdata);
+					recvpkt = client.Receive();
 					received = true;
 				}catch(con::NoIncomingDataException &e){
 				}
 				sleep_ms(10);
 			}
 			UASSERT(received);
-			infostream<<"** Client received: peer_id="<<peer_id
-					<<", size="<<size
-					<<std::endl;
+			infostream << "** Client received: peer_id=" << recvpkt->getPeerId()
+					<< ", size=" << recvpkt->getSize()
+					<< std::endl;
 
-			infostream<<"Received data (size="<<size<<"): ";
-			for(int i=0; i<size && i<20; i++){
-				if(i%2==0) infostream<<" ";
+			infostream << "Received data (size=" << recvpkt->getSize() << "): ";
+
+			SharedBuffer<u8> recvdata = recvpkt->oldForgePacket();
+
+			for(u32 i=0; i<recvpkt->getSize() && i<20; i++) {
+				if(i%2==0)
+					infostream << " ";
 				char buf[10];
 				snprintf(buf, 10, "%.2X", ((int)(recvdata[i]))&0xff);
 				infostream<<buf;
 			}
-			if(size>20)
-				infostream<<"...";
-			infostream<<std::endl;
+			if(recvpkt->getSize() > 20)
+				infostream << "...";
+
+			infostream << std::endl;
 
 			UASSERT(memcmp(*sentdata, *recvdata, recvdata.getSize()) == 0);
-			UASSERT(peer_id == PEER_ID_SERVER);
+			UASSERT(recvpkt->getPeerId() == PEER_ID_SERVER);
 
-			delete pkt;
+			delete recvpkt;
 		}
 
 		// Check peer handlers

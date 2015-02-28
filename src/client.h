@@ -156,7 +156,7 @@ struct ClientEvent
 		//struct{
 		//} none;
 		struct{
-			u8 amount;
+			s16 amount;
 		} player_damage;
 		struct{
 			f32 pitch;
@@ -368,7 +368,6 @@ public:
 	void handleCommand_DeathScreen(NetworkPacket* pkt);
 	void handleCommand_AnnounceMedia(NetworkPacket* pkt);
 	void handleCommand_Media(NetworkPacket* pkt);
-	void handleCommand_ToolDef(NetworkPacket* pkt);
 	void handleCommand_NodeDef(NetworkPacket* pkt);
 	void handleCommand_CraftItemDef(NetworkPacket* pkt);
 	void handleCommand_ItemDef(NetworkPacket* pkt);
@@ -391,7 +390,7 @@ public:
 	void handleCommand_LocalPlayerAnimations(NetworkPacket* pkt);
 	void handleCommand_EyeOffset(NetworkPacket* pkt);
 
-	void ProcessData(u8 *data, u32 datasize, u16 sender_peer_id);
+	void ProcessData(NetworkPacket* pkt);
 
 	// Returns true if something was received
 	bool AsyncProcessPacket();
@@ -408,7 +407,7 @@ public:
 	void sendChatMessage(const std::wstring &message);
 	void sendChangePassword(const std::wstring &oldpassword,
 	                        const std::wstring &newpassword);
-	void sendDamage(u8 damage);
+	void sendDamage(s16 damage);
 	void sendBreath(u16 breath);
 	void sendRespawn();
 	void sendReady();
@@ -535,7 +534,6 @@ private:
 			bool is_local_server);
 
 	void ReceiveAll();
-	void Receive();
 
 	void sendPlayerPos();
 	// Send the item number 'item' as player item to the server
