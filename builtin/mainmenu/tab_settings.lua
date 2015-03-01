@@ -176,6 +176,31 @@ local function formspec(tabview, name, tabdata)
 		end
 	end
 
+	local language_formspec_string = "en" -- add english first because its default
+	local language_current_idx = 1
+	local language_count = 1
+	local language_selected = core.setting_get("language") or "en"
+
+	local locale_path = core.get_builtin_path() .. DIR_DELIM
+		.. ".." .. DIR_DELIM -- go back to 'minetest' folder
+		.. "locale" .. DIR_DELIM -- then enter 'locale' folder
+	local locale_list = core.get_dirlist(locale_path, true)
+
+	for i=1, #locale_list, 1 do
+		-- check if translation file exists
+		if file_exists(
+			locale_path .. locale_list[i] .. DIR_DELIM ..
+			"LC_MESSAGES" .. DIR_DELIM .. "minetest.mo"
+		) then
+			language_formspec_string =
+				language_formspec_string .. "," .. locale_list[i]
+			language_count = language_count +1
+			if locale_list[i] == language_selected then
+				language_current_idx = language_count -- handle english
+			end
+ 		end
+ 	end
+
 	local tab_string =
 		"box[0,0;3.5,3.9;#999999]" ..
 		"checkbox[0.25,0;cb_smooth_lighting;".. fgettext("Smooth Lighting")
@@ -203,9 +228,14 @@ local function formspec(tabview, name, tabdata)
 				.. driver_formspec_string .. ";" .. driver_current_idx .. "]" ..
 		"tooltip[dd_video_driver;" ..
 				fgettext("Restart minetest for driver change to take effect") .. "]" ..
-		"box[7.75,0;4,4;#999999]" ..
+		"box[7.75,0;4,4.5;#999999]" ..
 		"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
-				.. dump(core.setting_getbool("enable_shaders")) .. "]"
+				.. dump(core.setting_getbool("enable_shaders")) .. "]" ..
+		"label[8.5,3.8;".. fgettext("Language:") .. "]"..
+		"dropdown[10,3.7;1.5;dd_language;"
+				.. language_formspec_string .. ";" .. language_current_idx .. "]" ..
+		"tooltip[dd_language;" ..
+				fgettext("Restart minetest for language change to take effect") .. "]"
 
 	if PLATFORM ~= "Android" then
 		tab_string = tab_string ..
@@ -387,6 +417,11 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	if fields["dd_mipmap"] == dd_mipmap_labels[3] then
 		core.setting_set("mip_map", "true")
 		core.setting_set("anisotropic_filter", "true")
+		ddhandled = true
+	end
+	if fields["dd_language"] then
+		core.setting_set("language",
+			fields["dd_language"])
 		ddhandled = true
 	end
 
