@@ -55,6 +55,8 @@ MapgenV6::MapgenV6(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	this->m_emerge = emerge;
 	this->ystride = csize.X; //////fix this
 
+	this->heightmap = new s16[csize.X * csize.Z];
+
 	MapgenV6Params *sp = (MapgenV6Params *)params->sparams;
 	this->spflags     = sp->spflags;
 	this->freq_desert = sp->freq_desert;
@@ -497,6 +499,9 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 			flowMud(mudflow_minpos, mudflow_maxpos);
 
 	}
+
+	// Create heightmap after mudflow
+	updateHeightmap(node_min, node_max);
 
 	// Add dungeons
 	if ((flags & MG_DUNGEONS) && (stone_surface_max_y >= node_min.Y)) {
