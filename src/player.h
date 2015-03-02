@@ -29,6 +29,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PLAYERNAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
 
+enum PlayerGameEvent {
+        PLAYER_GAMEEVENT_JOIN	= 1,
+        PLAYER_GAMEEVENT_LEAVE	= 2,
+        PLAYER_GAMEEVENT_DIE	= 3,
+};
+
 struct PlayerControl
 {
 	PlayerControl()

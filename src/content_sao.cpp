@@ -1057,6 +1057,10 @@ int PlayerSAO::punch(v3f dir,
 			<<" HP"<<std::endl;
 
 	setHP(getHP() - hitparams.hp);
+	if (getHP() == 0) {
+		getServer(L)->SendPlayerGameEvent(PLAYER_GAMEEVENT_DIE,
+				m_player->getName());
+	}
 
 	return hitparams.wear;
 }

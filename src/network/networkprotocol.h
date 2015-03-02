@@ -111,6 +111,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION_25:
 		Fixes on many packets
 		TOSERVER_INIT: add compression_mode byteflag
+		TOCLIENT_PLAYER_GAMEEVENT
 		@TODO
 */
 
@@ -141,20 +142,24 @@ enum ToClientCommand
 		Server's reply to TOSERVER_INIT.
 		Sent second after connected.
 
-		[0] u16 TOSERVER_INIT
-		[2] u8 deployed version
-		[3] v3s16 player's position + v3f(0,BS/2,0) floatToInt'd
-		[12] u64 map seed (new as of 2011-02-27)
-		[20] f1000 recommended send interval (in seconds) (new as of 14)
+		[0] u8 deployed version
+		[1] v3s16 player's position + v3f(0,BS/2,0) floatToInt'd
+		[10] u64 map seed (new as of 2011-02-27)
+		[18] f1000 recommended send interval (in seconds) (new as of 14)
 
 		NOTE: The position in here is deprecated; position is
 		      explicitly sent afterwards
 	*/
 
+	TOCLIENT_PLAYER_GAMEEVENT = 0x11,
+	/*
+		u8 PlayerGameEvent ID
+		std::string player name
+	*/
+
 	TOCLIENT_BLOCKDATA = 0x20, //TODO: Multiple blocks
 	TOCLIENT_ADDNODE = 0x21,
 	/*
-		u16 command
 		v3s16 position
 		serialized mapnode
 		u8 keep_metadata // Added in protocol version 22

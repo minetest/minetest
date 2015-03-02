@@ -1579,6 +1579,15 @@ void Server::SendBreath(u16 peer_id, u16 breath)
 	Send(&pkt);
 }
 
+void Server::SendPlayerGameEvent(PlayerGameEvent event, const std::string playername)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_PLAYER_GAMEEVENT, 0);
+	*pkt << (u8)event << playername;
+	m_clients.sendToAll(0, pkt, true);
+}
+
 void Server::SendAccessDenied(u16 peer_id, AccessDeniedCode reason)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -2577,9 +2586,9 @@ void Server::DiePlayer(u16 peer_id)
 	PlayerSAO *playersao = getPlayerSAO(peer_id);
 	assert(playersao);
 
-	infostream<<"Server::DiePlayer(): Player "
-			<<playersao->getPlayer()->getName()
-			<<" dies"<<std::endl;
+	infostream << "Server::DiePlayer(): Player "
+			<< playersao->getPlayer()->getName()
+			<< " dies"<<std::endl;
 
 	playersao->setHP(0);
 
@@ -2588,6 +2597,7 @@ void Server::DiePlayer(u16 peer_id)
 
 	SendPlayerHP(peer_id);
 	SendDeathscreen(peer_id, false, v3f(0,0,0));
+	SendPlayerGameEvent(PLAYER_GAMEEVENT_DIE, playersao->getPlayer()->getName());
 }
 
 void Server::RespawnPlayer(u16 peer_id)

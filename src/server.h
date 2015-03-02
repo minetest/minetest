@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h" // For SER_FMT_VER_INVALID
 #include "mods.h"
 #include "inventorymanager.h"
+#include "player.h"
 #include "subgame.h"
 #include "util/numeric.h"
 #include "util/thread.h"
@@ -47,7 +48,6 @@ class IWritableCraftDefManager;
 class BanManager;
 class EventManager;
 class Inventory;
-class Player;
 class PlayerSAO;
 class IRollbackManager;
 struct RollbackAction;
@@ -381,6 +381,7 @@ private:
 	friend class RemoteClient;
 
 	void SendMovement(u16 peer_id);
+	void SendPlayerGameEvent(PlayerGameEvent event, const std::string name);
 	void SendHP(u16 peer_id, u8 hp);
 	void SendBreath(u16 peer_id, u16 breath);
 	void SendAccessDenied(u16 peer_id, AccessDeniedCode reason);
