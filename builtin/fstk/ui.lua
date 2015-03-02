@@ -23,7 +23,7 @@ ui.default = nil
 function ui.add(child)
 	--TODO check child
 	ui.childlist[child.name] = child
-	
+
 	return child.name
 end
 
@@ -33,7 +33,7 @@ function ui.delete(child)
 	if ui.childlist[child.name] == nil then
 		return false
 	end
-	
+
 	ui.childlist[child.name] = nil
 	return true
 end
@@ -60,11 +60,33 @@ function ui.update()
 
 	-- handle errors
 	if gamedata ~= nil and gamedata.errormessage ~= nil then
-		formspec = "size[12,3.2]" ..
-			"textarea[1,1;10,2;;ERROR: " ..
-			core.formspec_escape(gamedata.errormessage) ..
-			";]"..
-			"button[4.5,2.5;3,0.5;btn_error_confirm;" .. fgettext("Ok") .. "]"
+		local ar = gamedata.errormessage:split("\n")
+		for i = 1, #ar do
+			local text = ar[i]
+			-- Hack to add word wrapping.
+			-- TODO: Add engine support for wrapping in formspecs
+			while #text > 80 do
+				if formspec ~= "" then
+					formspec = formspec .. ","
+				end
+				formspec = formspec .. core.formspec_escape(string.sub(text, 1, 79))
+				text = string.sub(text, 80, #text)
+			end
+			if formspec ~= "" then
+				formspec = formspec .. ","
+			end
+			formspec = formspec .. core.formspec_escape(text)
+		end
+		local error_title
+		if string.find(gamedata.errormessage, "ModError") then
+			error_title = fgettext("An error occured in a Lua script, such as a mod:")
+		else
+			error_title = fgettext("An error occured:")
+		end
+		formspec = "size[12,5]" ..
+				"label[0.5,0;" .. error_title ..
+				"]textlist[0.2,0.8;11.5,3.5;;" .. formspec ..
+				"]button[4.5,4.6;3,0.5;btn_error_confirm;" .. fgettext("Ok") .. "]"
 	else
 		local active_toplevel_ui_elements = 0
 		for key,value in pairs(ui.childlist) do
@@ -77,7 +99,7 @@ function ui.update()
 				end
 			end
 		end
-		
+
 		-- no need to show addons if there ain't a toplevel element
 		if (active_toplevel_ui_elements > 0) then
 			for key,value in pairs(ui.childlist) do
@@ -127,7 +149,7 @@ end
 
 --------------------------------------------------------------------------------
 function ui.handle_events(event)
-	
+
 	for key,value in pairs(ui.childlist) do
 
 		if value.handle_events ~= nil then

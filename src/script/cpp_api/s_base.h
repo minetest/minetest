@@ -51,8 +51,8 @@ public:
 	ScriptApiBase();
 	virtual ~ScriptApiBase();
 
-	bool loadMod(const std::string &script_path, const std::string &mod_name);
-	bool loadScript(const std::string &script_path);
+	bool loadMod(const std::string &script_path, const std::string &mod_name, std::string *error=NULL);
+	bool loadScript(const std::string &script_path, std::string *error=NULL);
 
 	/* object */
 	void addObjectReference(ServerActiveObject *cobj);

@@ -239,11 +239,9 @@ Server::Server(
 	m_mods = modconf.getMods();
 	std::vector<ModSpec> unsatisfied_mods = modconf.getUnsatisfiedMods();
 	// complain about mods with unsatisfied dependencies
-	if(!modconf.isConsistent())
-	{
+	if(!modconf.isConsistent()) {
 		for(std::vector<ModSpec>::iterator it = unsatisfied_mods.begin();
-			it != unsatisfied_mods.end(); ++it)
-		{
+			it != unsatisfied_mods.end(); ++it) {
 			ModSpec mod = *it;
 			errorstream << "mod \"" << mod.name << "\" has unsatisfied dependencies: ";
 			for(std::set<std::string>::iterator dep_it = mod.unsatisfied_depends.begin();
@@ -259,8 +257,7 @@ Server::Server(
 	std::vector<std::string> names = worldmt_settings.getNames();
 	std::set<std::string> load_mod_names;
 	for(std::vector<std::string>::iterator it = names.begin();
-		it != names.end(); ++it)
-	{
+		it != names.end(); ++it) {
 		std::string name = *it;
 		if(name.compare(0,9,"load_mod_")==0 && worldmt_settings.getBool(name))
 			load_mod_names.insert(name.substr(9));
@@ -272,8 +269,7 @@ Server::Server(
 	for(std::vector<ModSpec>::iterator it = unsatisfied_mods.begin();
 			it != unsatisfied_mods.end(); ++it)
 		load_mod_names.erase((*it).name);
-	if(!load_mod_names.empty())
-	{
+	if(!load_mod_names.empty()) {
 		errorstream << "The following mods could not be found:";
 		for(std::set<std::string>::iterator it = load_mod_names.begin();
 			it != load_mod_names.end(); ++it)
@@ -296,15 +292,16 @@ Server::Server(
 	m_script = new GameScripting(this);
 
 	std::string script_path = getBuiltinLuaPath() + DIR_DELIM "init.lua";
+	std::string error_msg;
 
-	if (!m_script->loadMod(script_path, BUILTIN_MOD_NAME)) {
-		throw ModError("Failed to load and run " + script_path);
-	}
+	if (!m_script->loadMod(script_path, BUILTIN_MOD_NAME, &error_msg))
+		throw ModError("Failed to load and run " + script_path
+				+ "\nError from Lua:\n" + error_msg);
 
 	// Print mods
 	infostream << "Server: Loading mods: ";
 	for(std::vector<ModSpec>::iterator i = m_mods.begin();
-			i != m_mods.end(); i++){
+			i != m_mods.end(); i++) {
 		const ModSpec &mod = *i;
 		infostream << mod.name << " ";
 	}
@@ -314,18 +311,21 @@ Server::Server(
 			i != m_mods.end(); i++) {
 		const ModSpec &mod = *i;
 		if (!string_allowed(mod.name, MODNAME_ALLOWED_CHARS)) {
-			errorstream << "Error loading mod \"" << mod.name
+			std::ostringstream err;
+			err << "Error loading mod \"" << mod.name
 					<< "\": mod_name does not follow naming conventions: "
 					<< "Only chararacters [a-z0-9_] are allowed." << std::endl;
-			throw ModError("Mod \"" + mod.name + "\" does not follow naming conventions.");
+			errorstream << err.str().c_str();
+			throw ModError(err.str());
 		}
 		std::string script_path = mod.path + DIR_DELIM "init.lua";
 		infostream << "  [" << padStringRight(mod.name, 12) << "] [\""
 				<< script_path << "\"]" << std::endl;
-		if (!m_script->loadMod(script_path, mod.name)) {
+		if (!m_script->loadMod(script_path, mod.name, &error_msg)) {
 			errorstream << "Server: Failed to load and run "
 					<< script_path << std::endl;
-			throw ModError("Failed to load and run " + script_path);
+			throw ModError("Failed to load and run " + script_path
+					+ "\nError from Lua:\n" + error_msg);
 		}
 	}
 
