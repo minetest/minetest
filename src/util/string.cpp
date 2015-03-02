@@ -83,16 +83,18 @@ const wchar_t *narrow_to_wide_c(const char *mbs)
 	size_t mbl = strlen(mbs);
 	wchar_t *wcs = new wchar_t[mbl + 1];
 
-	for (size_t i = 0; i < mbl; i++) {
+	size_t i, dest_i = 0;
+	for (i = 0; i < mbl; i++) {
 		if (((unsigned char) mbs[i] > 31) &&
 				((unsigned char) mbs[i] < 127)) {
-			wcs[i] = wide_chars[(unsigned char) mbs[i] - 32];
+			wcs[dest_i++] = wide_chars[(unsigned char) mbs[i] - 32];
 		}
 		//handle newline
 		else if (mbs[i] == '\n') {
-			wcs[i] = L'\n';
+			wcs[dest_i++] = L'\n';
 		}
 	}
+	wcs[dest_i] = '\0';
 
 	return wcs;
 }
