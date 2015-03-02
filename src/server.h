@@ -372,6 +372,7 @@ public:
 			u8* ser_vers, u16* prot_vers, u8* major, u8* minor, u8* patch,
 			std::string* vers_string);
 
+	void SendPlayerHPOrDie(u16 peer_id, bool die) { die ? DiePlayer(peer_id) : SendPlayerHP(peer_id); }
 	// Bind address
 	Address m_bind_addr;
 
