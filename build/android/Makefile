@@ -293,7 +293,6 @@ openssl_download :
 		mkdir -p ${ROOT}/deps;                                                 \
 		cd ${ROOT}/deps ;                                                      \
 		git clone ${OPENSSL_URL} || exit 1;                                         \
-		tar -xzf ${OPENSSL_BASEDIR}.tar.gz;                                    \
 		cd ${OPENSSL_BASEDIR};                                                 \
 		patch -p1 < ../../openssl_arch.patch;                                  \
 	fi
