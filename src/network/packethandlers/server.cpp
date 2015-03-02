@@ -893,12 +893,7 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 				<< std::endl;
 
 		playersao->setHP(playersao->getHP() - damage);
-
-		if (playersao->getHP() == 0 && playersao->m_hp_not_sent)
-			DiePlayer(pkt->getPeerId());
-
-		if (playersao->m_hp_not_sent)
-			SendPlayerHP(pkt->getPeerId());
+		SendPlayerHPOrDie(playersao->getPeerID(), playersao->getHP() == 0);
 	}
 }
 
@@ -1048,8 +1043,8 @@ void Server::handleCommand_Respawn(NetworkPacket* pkt)
 
 	RespawnPlayer(pkt->getPeerId());
 
-	actionstream<<player->getName()<<" respawns at "
-			<<PP(player->getPosition()/BS)<<std::endl;
+	actionstream << player->getName() << " respawns at "
+			<< PP(player->getPosition()/BS) << std::endl;
 
 	// ActiveObject is added to environment in AsyncRunStep after
 	// the previous addition has been succesfully removed
@@ -1234,8 +1229,24 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 						).normalize();
 			float time_from_last_punch =
 				playersao->resetTimeFromLastPunch();
+
+			s16 src_original_hp = pointed_object->getHP();
+			s16 dst_origin_hp = playersao->getHP();
+
 			pointed_object->punch(dir, &toolcap, playersao,
 					time_from_last_punch);
+
+			// If the object is a player and its HP changed
+			if (src_original_hp != pointed_object->getHP() &&
+					pointed_object->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+				SendPlayerHPOrDie(((PlayerSAO*)pointed_object)->getPeerID(),
+						pointed_object->getHP() == 0);
+			}
+
+			// If the puncher is a player and its HP changed
+			if (dst_origin_hp != playersao->getHP()) {
+				SendPlayerHPOrDie(playersao->getPeerID(), playersao->getHP() == 0);
+			}
 		}
 
 	} // action == 0

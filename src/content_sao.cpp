@@ -718,7 +718,6 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	// public
 	m_moved(false),
 	m_inventory_not_sent(false),
-	m_hp_not_sent(false),
 	m_breath_not_sent(false),
 	m_wielded_item_not_sent(false),
 	m_physics_override_speed(1),
@@ -1081,27 +1080,18 @@ void PlayerSAO::setHP(s16 hp)
 {
 	s16 oldhp = m_player->hp;
 
-	if(hp < 0)
+	if (hp < 0)
 		hp = 0;
-	else if(hp > PLAYER_MAX_HP)
+	else if (hp > PLAYER_MAX_HP)
 		hp = PLAYER_MAX_HP;
-
-	if(hp < oldhp && g_settings->getBool("enable_damage") == false)
-	{
-		m_hp_not_sent = true; // fix wrong prediction on client
-		return;
-	}
 
 	m_player->hp = hp;
 
-	if(hp != oldhp) {
-		m_hp_not_sent = true;
-		if(oldhp > hp)
-			m_damage += oldhp - hp;
-	}
+	if (oldhp > hp)
+		m_damage += (oldhp - hp);
 
 	// Update properties on death
-	if((hp == 0) != (oldhp == 0))
+	if ((hp == 0) != (oldhp == 0))
 		m_properties_sent = false;
 }
 

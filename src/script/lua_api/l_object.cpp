@@ -208,8 +208,26 @@ int ObjectRef::l_punch(lua_State *L)
 		time_from_last_punch = lua_tonumber(L, 3);
 	ToolCapabilities toolcap = read_tool_capabilities(L, 4);
 	dir.normalize();
+
+	s16 src_original_hp = co->getHP();
+	s16 dst_origin_hp = puncher->getHP();
+
 	// Do it
 	co->punch(dir, &toolcap, puncher, time_from_last_punch);
+
+	// If the punched is a player, and its HP changed
+	if (src_original_hp != co->getHP() &&
+			co->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		getServer(L)->SendPlayerHPOrDie(((PlayerSAO*)co)->getPeerID(),
+				co->getHP() == 0);
+	}
+
+	// If the puncher is a player, and its HP changed
+	if (dst_origin_hp != puncher->getHP() &&
+			puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		getServer(L)->SendPlayerHPOrDie(((PlayerSAO*)puncher)->getPeerID(),
+				puncher->getHP() == 0);
+	}
 	return 0;
 }
 
@@ -243,6 +261,9 @@ int ObjectRef::l_set_hp(lua_State *L)
 			<<" hp="<<hp<<std::endl;*/
 	// Do it
 	co->setHP(hp);
+	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		getServer(L)->SendPlayerHPOrDie(((PlayerSAO*)co)->getPeerID(), co->getHP() == 0);
+	}
 	// Return
 	return 0;
 }
