@@ -119,14 +119,14 @@ ScriptApiBase::~ScriptApiBase()
 }
 
 bool ScriptApiBase::loadMod(const std::string &script_path,
-		const std::string &mod_name)
+		const std::string &mod_name, std::string *error)
 {
 	ModNameStorer mod_name_storer(getStack(), mod_name);
 
-	return loadScript(script_path);
+	return loadScript(script_path, error);
 }
 
-bool ScriptApiBase::loadScript(const std::string &script_path)
+bool ScriptApiBase::loadScript(const std::string &script_path, std::string *error)
 {
 	verbosestream << "Loading and running script from " << script_path << std::endl;
 
@@ -140,13 +140,14 @@ bool ScriptApiBase::loadScript(const std::string &script_path)
 	}
 	ok = ok && !lua_pcall(L, 0, 0, m_errorhandler);
 	if (!ok) {
-		errorstream << "========== ERROR FROM LUA ===========" << std::endl;
-		errorstream << "Failed to load and run script from " << std::endl;
-		errorstream << script_path << ":" << std::endl;
-		errorstream << std::endl;
-		errorstream << lua_tostring(L, -1) << std::endl;
-		errorstream << std::endl;
-		errorstream << "======= END OF ERROR FROM LUA ========" << std::endl;
+		std::string error_msg = lua_tostring(L, -1);
+		if (error)
+			(*error) = error_msg;
+		errorstream << "========== ERROR FROM LUA ===========" << std::endl
+			<< "Failed to load and run script from " << std::endl
+			<< script_path << ":" << std::endl << std::endl
+			<< error_msg << std::endl << std::endl
+			<< "======= END OF ERROR FROM LUA ========" << std::endl;
 		lua_pop(L, 1); // Pop error message from stack
 		return false;
 	}
@@ -268,4 +269,3 @@ void ScriptApiBase::objectrefGet(lua_State *L, u16 id)
 	lua_remove(L, -2); // object_refs
 	lua_remove(L, -2); // core
 }
-
