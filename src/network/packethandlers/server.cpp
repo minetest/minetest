@@ -922,7 +922,7 @@ void Server::handleCommand_Breath(NetworkPacket* pkt)
 	}
 
 	playersao->setBreath(breath);
-	m_script->player_event(playersao,"breath_changed");
+	SendPlayerBreath(pkt->getPeerId());
 }
 
 void Server::handleCommand_Password(NetworkPacket* pkt)

@@ -604,20 +604,15 @@ void Server::AsyncRunStep(bool initial_step)
 			if(playersao == NULL)
 				continue;
 
-			/*
-				Send player breath if changed
-			*/
-			if(playersao->m_breath_not_sent) {
-				SendPlayerBreath(*i);
+
+			if(playersao->m_moved) {
+				SendMovePlayer(*i);
+				playersao->m_moved = false;
 			}
 
 			/*
 				Send player inventories if necessary
 			*/
-			if(playersao->m_moved) {
-				SendMovePlayer(*i);
-				playersao->m_moved = false;
-			}
 			if(playersao->m_inventory_not_sent) {
 				UpdateCrafting(*i);
 				SendInventory(*i);
@@ -1892,8 +1887,8 @@ void Server::SendPlayerBreath(u16 peer_id)
 	DSTACK(__FUNCTION_NAME);
 	PlayerSAO *playersao = getPlayerSAO(peer_id);
 	assert(playersao);
-	playersao->m_breath_not_sent = false;
-	m_script->player_event(playersao,"breath_changed");
+
+	m_script->player_event(playersao, "breath_changed");
 	SendBreath(peer_id, playersao->getBreath());
 }
 
@@ -2604,6 +2599,7 @@ void Server::RespawnPlayer(u16 peer_id)
 	playersao->setBreath(PLAYER_MAX_BREATH);
 
 	SendPlayerHP(peer_id);
+	SendPlayerBreath(peer_id);
 
 	bool repositioned = m_script->on_respawnplayer(playersao);
 	if(!repositioned){

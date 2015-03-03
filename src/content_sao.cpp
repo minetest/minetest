@@ -718,7 +718,6 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	// public
 	m_moved(false),
 	m_inventory_not_sent(false),
-	m_breath_not_sent(false),
 	m_wielded_item_not_sent(false),
 	m_physics_override_speed(1),
 	m_physics_override_jump(1),

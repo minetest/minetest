@@ -318,7 +318,6 @@ public:
 	// Some flags used by Server
 	bool m_moved;
 	bool m_inventory_not_sent;
-	bool m_breath_not_sent;
 	bool m_wielded_item_not_sent;
 
 	float m_physics_override_speed;
