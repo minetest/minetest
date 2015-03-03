@@ -718,7 +718,6 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	// public
 	m_moved(false),
 	m_inventory_not_sent(false),
-	m_wielded_item_not_sent(false),
 	m_physics_override_speed(1),
 	m_physics_override_jump(1),
 	m_physics_override_gravity(1),
@@ -924,13 +923,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		m_messages_out.push_back(aom);
 	}
 
-	if(m_wielded_item_not_sent)
-	{
-		m_wielded_item_not_sent = false;
-		// GenericCAO has no special way to show this
-	}
-
-	if(m_armor_groups_sent == false){
+	if(m_armor_groups_sent == false) {
 		m_armor_groups_sent = true;
 		std::string str = gob_cmd_update_armor_groups(
 				m_armor_groups);
@@ -1186,10 +1179,8 @@ int PlayerSAO::getWieldIndex() const
 
 void PlayerSAO::setWieldIndex(int i)
 {
-	if(i != m_wield_index)
-	{
+	if(i != m_wield_index) {
 		m_wield_index = i;
-		m_wielded_item_not_sent = true;
 	}
 }
 

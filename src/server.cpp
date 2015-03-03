@@ -1386,7 +1386,6 @@ void Server::setInventoryModified(const InventoryLocation &loc)
 		if(!playersao)
 			return;
 		playersao->m_inventory_not_sent = true;
-		playersao->m_wielded_item_not_sent = true;
 	}
 		break;
 	case InventoryLocation::NODEMETA:
