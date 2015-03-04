@@ -1298,10 +1298,11 @@ msgid "Numpad 7"
 msgstr "Numpad 7"
 
 #: src/keycode.cpp:236
+
 #, approved
 msgid "Numpad *"
 msgstr "Numpad *"
-
+#, approved
 msgid "Numpad +"
 msgstr "Numpad +"
 
@@ -1310,6 +1311,7 @@ msgstr "Numpad +"
 msgid "Numpad "
 msgstr "Numpad "
 
+#, approved
 msgid "Numpad -"
 msgstr "Numpad -"
 
