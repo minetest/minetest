@@ -203,24 +203,42 @@ u32 Environment::getDayNightRatio()
 
 void Environment::setTimeOfDaySpeed(float speed)
 {
-	JMutexAutoLock(this->m_lock);
+	JMutexAutoLock(this->m_timeofday_lock);
 	m_time_of_day_speed = speed;
 }
 
 float Environment::getTimeOfDaySpeed()
 {
-	JMutexAutoLock(this->m_lock);
+	JMutexAutoLock(this->m_timeofday_lock);
 	float retval = m_time_of_day_speed;
+	return retval;
+}
+
+void Environment::setTimeOfDay(u32 time)
+{
+	JMutexAutoLock(this->m_time_lock);
+	m_time_of_day = time;
+	m_time_of_day_f = (float)time / 24000.0;
+}
+
+u32 Environment::getTimeOfDay()
+{
+	JMutexAutoLock(this->m_time_lock);
+	u32 retval = m_time_of_day;
+	return retval;
+}
+
+float Environment::getTimeOfDayF()
+{
+	JMutexAutoLock(this->m_time_lock);
+	float retval = m_time_of_day_f;
 	return retval;
 }
 
 void Environment::stepTimeOfDay(float dtime)
 {
-	float day_speed = 0;
-	{
-		JMutexAutoLock(this->m_lock);
-		day_speed = m_time_of_day_speed;
-	}
+	// getTimeOfDaySpeed lock the value we need to prevent MT problems
+	float day_speed = getTimeOfDaySpeed();
 	
 	m_time_counter += dtime;
 	f32 speed = day_speed * 24000./(24.*3600);

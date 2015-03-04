@@ -535,23 +535,18 @@ void Server::AsyncRunStep(bool initial_step)
 	/*
 		Update time of day and overall game time
 	*/
-	{
-		JMutexAutoLock envlock(m_env_mutex);
+	m_env->setTimeOfDaySpeed(g_settings->getFloat("time_speed"));
 
-		m_env->setTimeOfDaySpeed(g_settings->getFloat("time_speed"));
+	/*
+		Send to clients at constant intervals
+	*/
 
-		/*
-			Send to clients at constant intervals
-		*/
-
-		m_time_of_day_send_timer -= dtime;
-		if(m_time_of_day_send_timer < 0.0)
-		{
-			m_time_of_day_send_timer = g_settings->getFloat("time_send_interval");
-			u16 time = m_env->getTimeOfDay();
-			float time_speed = g_settings->getFloat("time_speed");
-			SendTimeOfDay(PEER_ID_INEXISTENT, time, time_speed);
-		}
+	m_time_of_day_send_timer -= dtime;
+	if(m_time_of_day_send_timer < 0.0) {
+		m_time_of_day_send_timer = g_settings->getFloat("time_send_interval");
+		u16 time = m_env->getTimeOfDay();
+		float time_speed = g_settings->getFloat("time_speed");
+		SendTimeOfDay(PEER_ID_INEXISTENT, time, time_speed);
 	}
 
 	{
