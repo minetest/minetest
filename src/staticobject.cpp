@@ -47,10 +47,9 @@ void StaticObjectList::serialize(std::ostream &os)
 	// count
 	u16 count = m_stored.size() + m_active.size();
 	writeU16(os, count);
-	for(std::list<StaticObject>::iterator
+	for(std::vector<StaticObject>::iterator
 			i = m_stored.begin();
-			i != m_stored.end(); ++i)
-	{
+			i != m_stored.end(); ++i) {
 		StaticObject &s_obj = *i;
 		s_obj.serialize(os);
 	}
@@ -68,8 +67,7 @@ void StaticObjectList::deSerialize(std::istream &is)
 	u8 version = readU8(is);
 	// count
 	u16 count = readU16(is);
-	for(u16 i=0; i<count; i++)
-	{
+	for(u16 i = 0; i < count; i++) {
 		StaticObject s_obj;
 		s_obj.deSerialize(is, version);
 		m_stored.push_back(s_obj);
