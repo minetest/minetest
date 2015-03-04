@@ -375,6 +375,9 @@ public:
 	void SendPlayerHPOrDie(u16 peer_id, bool die) { die ? DiePlayer(peer_id) : SendPlayerHP(peer_id); }
 	void SendPlayerBreath(u16 peer_id);
 
+	// Envlock and conlock should be locked when calling these
+	void SendInventory(u16 peer_id);
+
 	// Bind address
 	Address m_bind_addr;
 
@@ -394,8 +397,7 @@ private:
 	/* mark blocks not sent for all clients */
 	void SetBlocksNotSent(std::map<v3s16, MapBlock *>& block);
 
-	// Envlock and conlock should be locked when calling these
-	void SendInventory(u16 peer_id);
+
 	void SendChatMessage(u16 peer_id, const std::wstring &message);
 	void SendTimeOfDay(u16 peer_id, u16 time, f32 time_speed);
 	void SendPlayerHP(u16 peer_id);
@@ -466,7 +468,7 @@ private:
 	void DiePlayer(u16 peer_id);
 	void RespawnPlayer(u16 peer_id);
 	void DeleteClient(u16 peer_id, ClientDeletionReason reason);
-	void UpdateCrafting(u16 peer_id);
+	void UpdateCrafting(Player *player);
 
 	// When called, connection mutex should be locked
 	RemoteClient* getClient(u16 peer_id,ClientState state_min=CS_Active);

@@ -717,7 +717,6 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_attachment_sent(false),
 	// public
 	m_moved(false),
-	m_inventory_not_sent(false),
 	m_physics_override_speed(1),
 	m_physics_override_jump(1),
 	m_physics_override_gravity(1),
@@ -1160,11 +1159,6 @@ InventoryLocation PlayerSAO::getInventoryLocation() const
 	InventoryLocation loc;
 	loc.setPlayer(m_player->getName());
 	return loc;
-}
-
-void PlayerSAO::setInventoryModified()
-{
-	m_inventory_not_sent = true;
 }
 
 std::string PlayerSAO::getWieldList() const

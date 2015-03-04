@@ -205,7 +205,6 @@ public:
 	Inventory* getInventory();
 	const Inventory* getInventory() const;
 	InventoryLocation getInventoryLocation() const;
-	void setInventoryModified();
 	std::string getWieldList() const;
 	int getWieldIndex() const;
 	void setWieldIndex(int i);
@@ -317,7 +316,6 @@ private:
 public:
 	// Some flags used by Server
 	bool m_moved;
-	bool m_inventory_not_sent;
 
 	float m_physics_override_speed;
 	float m_physics_override_jump;
