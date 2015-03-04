@@ -34,12 +34,16 @@ local function get_formspec(data)
 	else
 		retval = retval .. "checkbox[0,5.75;cb_hide_gamemods;" .. fgettext("Hide Game") .. ";false]"
 	end
+	retval = retval .. "tooltip[cb_hide_gamemods;"..
+		fgettext("Enabling this checkbox will hide all mods from subgames in the main list.").."]"
 
 	if data.hide_modpackcontents then
 		retval = retval .. "checkbox[2,5.75;cb_hide_mpcontent;" .. fgettext("Hide mp content") .. ";true]"
 	else
 		retval = retval .. "checkbox[2,5.75;cb_hide_mpcontent;" .. fgettext("Hide mp content") .. ";false]"
 	end
+	retval = retval .. "tooltip[cb_hide_mpcontent;"..
+		fgettext("Enabling this checkbox Will hide all mods which are part of a mod pack.").."]"
 
 	if mod == nil then
 		mod = {name=""}
@@ -69,8 +73,12 @@ local function get_formspec(data)
 
 			if all_enabled == false then
 				retval = retval .. "button[5.5,-0.125;2,0.5;btn_mp_enable;" .. fgettext("Enable MP") .. "]"
+				retval = retval .. "tooltip[btn_mp_enable;"..
+					fgettext("Enable all mods in the selected mod pack").."]"
 			else
 				retval = retval .. "button[5.5,-0.125;2,0.5;btn_mp_disable;" .. fgettext("Disable MP") .. "]"
+				retval = retval .. "tooltip[btn_mp_disable;"..
+					fgettext("Disable all mods in the selected mod pack").."]"
 			end
 		else
 			if mod.enabled then
@@ -78,6 +86,7 @@ local function get_formspec(data)
 			else
 				retval = retval .. "checkbox[5.5,-0.375;cb_mod_enable;" .. fgettext("enabled") .. ";false]"
 			end
+			retval = retval .. "tooltip[cb_mod_enable;"..fgettext("Enable the selected mod").."]"
 		end
 	end
 
@@ -87,6 +96,8 @@ local function get_formspec(data)
 
 	retval = retval .. modmgr.render_modlist(data.list)
 	retval = retval .. ";" .. data.selected_mod .."]"
+
+	retval = retval .. "tooltip[btn_all_mods;"..fgettext("Enable all mods").."]"
 
 	return retval
 end

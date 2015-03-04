@@ -89,8 +89,10 @@ local function get_formspec(tabview, name, tabdata)
 			"label[4,-0.25;".. fgettext("Select World:") .. "]"..
 			"checkbox[0.25,0.25;cb_creative_mode;".. fgettext("Creative Mode") .. ";" ..
 			dump(core.setting_getbool("creative_mode")) .. "]"..
+			"tooltip[cb_creative_mode;"..tooltips.cb_creative_mode .. "]" ..
 			"checkbox[0.25,0.7;cb_enable_damage;".. fgettext("Enable Damage") .. ";" ..
 			dump(core.setting_getbool("enable_damage")) .. "]"..
+			"tooltip[cb_enable_damage;"..tooltips.cb_enable_damage .. "]" ..
 			"textlist[4,0.25;7.5,3.7;sp_worlds;" ..
 			menu_render_worldlist() ..
 			";" .. index .. "]"

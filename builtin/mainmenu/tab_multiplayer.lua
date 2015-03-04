@@ -24,10 +24,13 @@ local function get_formspec(tabview, name, tabdata)
 		"label[7.75,1.05;" .. fgettext("Name / Password :") .. "]" ..
 		"field[8,0.75;3.4,0.5;te_address;;" ..
 		core.formspec_escape(core.setting_get("address")) .. "]" ..
+		"tooltip[te_address;" .. tooltips.te_address .. "]" ..
 		"field[11.25,0.75;1.3,0.5;te_port;;" ..
 		core.formspec_escape(core.setting_get("remote_port")) .. "]" ..
+		"tooltip[te_port;" .. tooltips.te_port .. "]" ..
 		"checkbox[0,4.85;cb_public_serverlist;" .. fgettext("Public Serverlist") .. ";" ..
-		dump(core.setting_getbool("public_serverlist")) .. "]"
+		dump(core.setting_getbool("public_serverlist")) .. "]" ..
+		"tooltip[cb_public_serverlist;" .. tooltips.cb_public_serverlist.. "]"
 
 	if not core.setting_getbool("public_serverlist") then
 		retval = retval ..
@@ -36,9 +39,12 @@ local function get_formspec(tabview, name, tabdata)
 
 	retval = retval ..
 		"button[10,4.9;2,0.5;btn_mp_connect;" .. fgettext("Connect") .. "]" ..
+		"tooltip[btn_mp_connect;" .. tooltips.btn_mp_connect.. "]" ..
 		"field[8,1.95;2.95,0.5;te_name;;" ..
 		core.formspec_escape(core.setting_get("name")) .. "]" ..
+		"tooltip[te_name;" .. tooltips.te_name.. "]" ..
 		"pwdfield[10.78,1.95;1.77,0.5;te_pwd;]" ..
+		"tooltip[te_pwd;" .. tooltips.te_pwd.. "]" ..
 		"box[7.73,2.35;4.3,2.28;#999999]" ..
 		"textarea[8.1,2.4;4.26,2.6;;"
 		

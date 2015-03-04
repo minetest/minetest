@@ -96,14 +96,18 @@ local function buttonbar_formspec(self)
 		end
 		
 		formspec = formspec ..
-			string.format("image_button[%f,%f;%f,%f;;btnbar_dec_%s;%s;true;true]",
+			string.format("image_button[%f,%f;%f,%f;;btnbar_dec_%s;%s;true;true]"..
+					"tooltip[btnbar_dec_%s;%s]",
 					btn_dec_pos.x, btn_dec_pos.y, btn_size.x, btn_size.y,
-					self.name, text_dec)
+					self.name, text_dec, self.name,
+					fgettext("Show the previous entries"))
 				
 		formspec = formspec ..
-			string.format("image_button[%f,%f;%f,%f;;btnbar_inc_%s;%s;true;true]",
+			string.format("image_button[%f,%f;%f,%f;;btnbar_inc_%s;%s;true;true]"..
+					"tooltip[btnbar_inc_%s;%s]",
 					btn_inc_pos.x, btn_inc_pos.y, btn_size.x, btn_size.y,
-					 self.name, text_inc)
+					self.name, text_inc, self.name,
+					fgettext("Show the next entries"))
 	end
 	
 	return formspec

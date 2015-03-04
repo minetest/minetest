@@ -49,12 +49,25 @@ local function create_world_formspec(dialogdata)
 		"size[12,6,true]" ..
 		"label[2,0;" .. fgettext("World name") .. "]"..
 		"field[4.5,0.4;6,0.5;te_world_name;;]" ..
+		"tooltip[te_world_name;"..
+		fgettext("An unique identifier for your new world, used to tell "..
+			"different worlds apart. You may choose almost "..
+			"any name.") .. "]" ..
 
 		"label[2,1;" .. fgettext("Seed") .. "]"..
 		"field[4.5,1.4;6,0.5;te_seed;;".. current_seed .. "]" ..
+		"tooltip[te_seed;"..
+		fgettext("A non-negative integer used for the map generator, "..
+			"which will use this number to generate the world. Identical seeds "..
+			"produce identical results.\nIf left empty, Minetest will choose a "..
+			"random seed.") .. "]" ..
 
 		"label[2,2;" .. fgettext("Mapgen") .. "]"..
 		"dropdown[4.2,2;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
+		"tooltip[dd_mapgen;"..
+		fgettext("The map generator which is used to create most parts of the "..
+		"world. Different map generators produce different types of worlds.\nPlease "..
+		"note that mods may alter the world on their own, too.") .. "]" ..
 
 		"label[2,3;" .. fgettext("Game") .. "]"..
 		"textlist[4.2,3;5.8,2.3;games;" .. gamemgr.gamelist() ..

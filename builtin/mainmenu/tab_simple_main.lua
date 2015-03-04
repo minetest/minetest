@@ -25,17 +25,24 @@ local function get_formspec(tabview, name, tabdata)
 		"label[8,0.5;".. fgettext("Name/Password") .. "]" ..
 		"field[0.25,3.25;5.5,0.5;te_address;;" ..
 		core.formspec_escape(core.setting_get("address")) .."]" ..
+		"tooltip[te_address;" .. tooltips.te_address .. "]" ..
 		"field[5.75,3.25;2.25,0.5;te_port;;" ..
 		core.formspec_escape(core.setting_get("remote_port")) .."]" ..
+		"tooltip[te_port;" .. tooltips.te_port .. "]" ..
 		"checkbox[8,-0.25;cb_public_serverlist;".. fgettext("Public Serverlist") .. ";" ..
 		render_details .. "]"
+		"tooltip[cb_public_serverlist;" .. tooltips.cb_public_serverlist .. "]" ..
 
 	retval = retval ..
 		"button[8,2.5;4,1.5;btn_mp_connect;".. fgettext("Connect") .. "]" ..
+		"tooltip[btn_mp_connect;" .. tooltips.btn_mp_connect .. "]" ..
 		"field[8.75,1.5;3.5,0.5;te_name;;" ..
 		core.formspec_escape(core.setting_get("name")) .."]" ..
-		"pwdfield[8.75,2.3;3.5,0.5;te_pwd;]"
-		
+		"tooltip[te_name;" .. tooltips.te_name .. "]" ..
+		"pwdfield[8.75,2.3;3.5,0.5;te_pwd;]" ..
+		"tooltip[te_pwd;" .. tooltips.te_pwd .. "]"
+
+
 	if render_details then
 		retval = retval .. "tablecolumns[" ..
 			"color,span=3;" ..
