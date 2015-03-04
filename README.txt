@@ -147,24 +147,25 @@ CMake options
 -------------
 General options:
 
-BUILD_CLIENT        - Build Minetest client
-BUILD_SERVER        - Build Minetest server
-CMAKE_BUILD_TYPE    - Type of build (Release vs. Debug)
-    Release         - Release build
-    Debug           - Debug build
-    RelWithDebInfo  - Release build with Debug information
-    MinSizeRel      - Release build with -Os passed to compiler to make executable as small as possible
-ENABLE_CURL         - Build with cURL; Enables use of online mod repo, public serverlist and remote media fetching via http
-ENABLE_FREETYPE     - Build with Freetype2; Allows using TTF fonts
-ENABLE_GETTEXT      - Build with Gettext; Allows using translations
-ENABLE_GLES         - Search for Open GLES headers & libraries and use them
-ENABLE_LEVELDB      - Build with LevelDB; Enables use of LevelDB, which is much faster than SQLite, as map backend
-ENABLE_REDIS        - Build with libhiredis; Enables use of redis map backend
-ENABLE_SOUND        - Build with OpenAL, libogg & libvorbis; in-game Sounds
-DISABLE_LUAJIT      - Do not search for LuaJIT headers & library
-RUN_IN_PLACE        - Create a portable install (worlds, settings etc. in current directory)
-USE_GPROF           - Enable profiling using GProf
-VERSION_EXTRA       - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
+BUILD_CLIENT          - Build Minetest client
+BUILD_SERVER          - Build Minetest server
+CMAKE_BUILD_TYPE      - Type of build (Release vs. Debug)
+    Release           - Release build
+    Debug             - Debug build
+    RelWithDebInfo    - Release build with Debug information
+    MinSizeRel        - Release build with -Os passed to compiler to make executable as small as possible
+ENABLE_CURL           - Build with cURL; Enables use of online mod repo, public serverlist and remote media fetching via http
+ENABLE_FREETYPE       - Build with Freetype2; Allows using TTF fonts
+ENABLE_GETTEXT        - Build with Gettext; Allows using translations
+ENABLE_GLES           - Search for Open GLES headers & libraries and use them
+ENABLE_LEVELDB        - Build with LevelDB; Enables use of LevelDB, which is much faster than SQLite, as map backend
+ENABLE_REDIS          - Build with libhiredis; Enables use of redis map backend
+ENABLE_SOUND          - Build with OpenAL, libogg & libvorbis; in-game Sounds
+DISABLE_LUAJIT        - Do not search for LuaJIT headers & library
+DISABLE_GIT_DETECTION - Do not try to determine the exact version using git
+RUN_IN_PLACE          - Create a portable install (worlds, settings etc. in current directory)
+USE_GPROF             - Enable profiling using GProf
+VERSION_EXTRA         - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
 
 Library specific options:
 
