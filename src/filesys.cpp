@@ -370,6 +370,7 @@ std::string TempPath()
 
 #endif
 
+
 void GetRecursiveSubPaths(std::string path, std::vector<std::string> &dst)
 {
 	std::vector<DirListNode> content = GetDirListing(path);
@@ -649,6 +650,22 @@ std::string RemoveRelativePathComponents(std::string path)
 	while(pos != 0 && IsDirDelimiter(path[pos-1]))
 		pos--;
 	return path.substr(0, pos);
+}
+
+std::string AbsolutePath(const std::string & path)
+{
+	char * abs_path;
+#ifdef _WIN32
+	abs_path = _fullpath(NULL, path.c_str(), MAX_PATH);
+#else
+	abs_path = realpath(path.c_str(), NULL);
+#endif
+	if (abs_path == NULL) {
+		return std::string();
+	}
+	std::string abs_path_str(abs_path);
+	free(abs_path);
+	return abs_path_str;
 }
 
 bool safeWriteToFile(const std::string &path, const std::string &content)

@@ -326,10 +326,10 @@ public:
 	IWritableNodeDefManager* getWritableNodeDefManager();
 	IWritableCraftDefManager* getWritableCraftDefManager();
 
-	const ModSpec* getModSpec(const std::string &modname);
+	const ModSpec* getModSpec(const std::string &modname) const;
 	void getModNames(std::list<std::string> &modlist);
 	std::string getBuiltinLuaPath();
-	inline std::string getWorldPath()
+	inline std::string getWorldPath() const
 			{ return m_path_world; }
 
 	inline bool isSingleplayer()

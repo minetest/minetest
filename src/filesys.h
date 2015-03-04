@@ -98,6 +98,10 @@ std::string RemoveLastPathComponent(std::string path,
 // this does not resolve symlinks and check for existence of directories.
 std::string RemoveRelativePathComponents(std::string path);
 
+// Returns the absolute path for the passed path, with "." and ".." path
+// components and symlinks removed.  Returns "" on error.
+std::string AbsolutePath(const std::string & path);
+
 bool safeWriteToFile(const std::string &path, const std::string &content);
 
 }//fs
