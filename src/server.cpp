@@ -533,23 +533,18 @@ void Server::AsyncRunStep(bool initial_step)
 	/*
 		Update time of day and overall game time
 	*/
-	{
-		JMutexAutoLock envlock(m_env_mutex);
+	m_env->setTimeOfDaySpeed(g_settings->getFloat("time_speed"));
 
-		m_env->setTimeOfDaySpeed(g_settings->getFloat("time_speed"));
+	/*
+		Send to clients at constant intervals
+	*/
 
-		/*
-			Send to clients at constant intervals
-		*/
-
-		m_time_of_day_send_timer -= dtime;
-		if(m_time_of_day_send_timer < 0.0)
-		{
-			m_time_of_day_send_timer = g_settings->getFloat("time_send_interval");
-			u16 time = m_env->getTimeOfDay();
-			float time_speed = g_settings->getFloat("time_speed");
-			SendTimeOfDay(PEER_ID_INEXISTENT, time, time_speed);
-		}
+	m_time_of_day_send_timer -= dtime;
+	if(m_time_of_day_send_timer < 0.0) {
+		m_time_of_day_send_timer = g_settings->getFloat("time_send_interval");
+		u16 time = m_env->getTimeOfDay();
+		float time_speed = g_settings->getFloat("time_speed");
+		SendTimeOfDay(PEER_ID_INEXISTENT, time, time_speed);
 	}
 
 	{
@@ -583,56 +578,6 @@ void Server::AsyncRunStep(bool initial_step)
 	/*
 		Do background stuff
 	*/
-
-	/*
-		Handle players
-	*/
-	{
-		JMutexAutoLock lock(m_env_mutex);
-
-		std::list<u16> clientids = m_clients.getClientIDs();
-
-		ScopeProfiler sp(g_profiler, "Server: handle players");
-
-		for(std::list<u16>::iterator
-			i = clientids.begin();
-			i != clientids.end(); ++i)
-		{
-			PlayerSAO *playersao = getPlayerSAO(*i);
-			if(playersao == NULL)
-				continue;
-
-			/*
-				Handle player HPs (die if hp=0)
-			*/
-			if(playersao->m_hp_not_sent && g_settings->getBool("enable_damage"))
-			{
-				if(playersao->getHP() == 0)
-					DiePlayer(*i);
-				else
-					SendPlayerHP(*i);
-			}
-
-			/*
-				Send player breath if changed
-			*/
-			if(playersao->m_breath_not_sent) {
-				SendPlayerBreath(*i);
-			}
-
-			/*
-				Send player inventories if necessary
-			*/
-			if(playersao->m_moved) {
-				SendMovePlayer(*i);
-				playersao->m_moved = false;
-			}
-			if(playersao->m_inventory_not_sent) {
-				UpdateCrafting(*i);
-				SendInventory(*i);
-			}
-		}
-	}
 
 	/* Transform liquids */
 	m_liquid_transform_timer += dtime;
@@ -1178,8 +1123,7 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 	SendPlayerInventoryFormspec(peer_id);
 
 	// Send inventory
-	UpdateCrafting(peer_id);
-	SendInventory(peer_id);
+	SendInventory(playersao);
 
 	// Send HP
 	if(g_settings->getBool("enable_damage"))
@@ -1378,6 +1322,7 @@ Inventory* Server::getInventory(const InventoryLocation &loc)
 		break;
 	default:
 		assert(0);
+		break;
 	}
 	return NULL;
 }
@@ -1394,8 +1339,8 @@ void Server::setInventoryModified(const InventoryLocation &loc)
 		PlayerSAO *playersao = player->getPlayerSAO();
 		if(!playersao)
 			return;
-		playersao->m_inventory_not_sent = true;
-		playersao->m_wielded_item_not_sent = true;
+
+		SendInventory(playersao);
 	}
 		break;
 	case InventoryLocation::NODEMETA:
@@ -1416,6 +1361,7 @@ void Server::setInventoryModified(const InventoryLocation &loc)
 		break;
 	default:
 		assert(0);
+		break;
 	}
 }
 
@@ -1660,23 +1606,20 @@ void Server::SendNodeDef(u16 peer_id,
 	Non-static send methods
 */
 
-void Server::SendInventory(u16 peer_id)
+void Server::SendInventory(PlayerSAO* playerSAO)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	PlayerSAO *playersao = getPlayerSAO(peer_id);
-	assert(playersao);
-
-	playersao->m_inventory_not_sent = false;
+	UpdateCrafting(playerSAO->getPlayer());
 
 	/*
 		Serialize it
 	*/
 
-	NetworkPacket pkt(TOCLIENT_INVENTORY, 0, peer_id);
+	NetworkPacket pkt(TOCLIENT_INVENTORY, 0, playerSAO->getPeerID());
 
 	std::ostringstream os;
-	playersao->getInventory()->serialize(os);
+	playerSAO->getInventory()->serialize(os);
 
 	std::string s = os.str();
 
@@ -1882,7 +1825,6 @@ void Server::SendPlayerHP(u16 peer_id)
 	DSTACK(__FUNCTION_NAME);
 	PlayerSAO *playersao = getPlayerSAO(peer_id);
 	assert(playersao);
-	playersao->m_hp_not_sent = false;
 	SendHP(peer_id, playersao->getHP());
 	m_script->player_event(playersao,"health_changed");
 
@@ -1897,8 +1839,8 @@ void Server::SendPlayerBreath(u16 peer_id)
 	DSTACK(__FUNCTION_NAME);
 	PlayerSAO *playersao = getPlayerSAO(peer_id);
 	assert(playersao);
-	playersao->m_breath_not_sent = false;
-	m_script->player_event(playersao,"breath_changed");
+
+	m_script->player_event(playersao, "breath_changed");
 	SendBreath(peer_id, playersao->getBreath());
 }
 
@@ -2577,9 +2519,9 @@ void Server::DiePlayer(u16 peer_id)
 	PlayerSAO *playersao = getPlayerSAO(peer_id);
 	assert(playersao);
 
-	infostream<<"Server::DiePlayer(): Player "
-			<<playersao->getPlayer()->getName()
-			<<" dies"<<std::endl;
+	infostream << "Server::DiePlayer(): Player "
+			<< playersao->getPlayer()->getName()
+			<< " dies" << std::endl;
 
 	playersao->setHP(0);
 
@@ -2597,16 +2539,20 @@ void Server::RespawnPlayer(u16 peer_id)
 	PlayerSAO *playersao = getPlayerSAO(peer_id);
 	assert(playersao);
 
-	infostream<<"Server::RespawnPlayer(): Player "
-			<<playersao->getPlayer()->getName()
-			<<" respawns"<<std::endl;
+	infostream << "Server::RespawnPlayer(): Player "
+			<< playersao->getPlayer()->getName()
+			<< " respawns" << std::endl;
 
 	playersao->setHP(PLAYER_MAX_HP);
 	playersao->setBreath(PLAYER_MAX_BREATH);
 
+	SendPlayerHP(peer_id);
+	SendPlayerBreath(peer_id);
+
 	bool repositioned = m_script->on_respawnplayer(playersao);
 	if(!repositioned){
 		v3f pos = findSpawnPos(m_env->getServerMap());
+		// setPos will send the new position to client
 		playersao->setPos(pos);
 	}
 }
@@ -2714,12 +2660,9 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 		SendChatMessage(PEER_ID_INEXISTENT,message);
 }
 
-void Server::UpdateCrafting(u16 peer_id)
+void Server::UpdateCrafting(Player* player)
 {
 	DSTACK(__FUNCTION_NAME);
-
-	Player* player = m_env->getPlayer(peer_id);
-	assert(player);
 
 	// Get a preview for crafting
 	ItemStack preview;

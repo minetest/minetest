@@ -90,14 +90,9 @@ ItemStack ServerActiveObject::getWieldedItem() const
 
 bool ServerActiveObject::setWieldedItem(const ItemStack &item)
 {
-	Inventory *inv = getInventory();
-	if(inv)
-	{
-		InventoryList *list = inv->getList(getWieldList());
-		if (list)
-		{
+	if(Inventory *inv = getInventory()) {
+		if (InventoryList *list = inv->getList(getWieldList())) {
 			list->changeItem(getWieldIndex(), item);
-			setInventoryModified();
 			return true;
 		}
 	}
