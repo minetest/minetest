@@ -909,9 +909,6 @@ msgstr ""
 "Hata ayrıntıları için debug.txt dosyasını inceleyin."
 
 #: src/guiFormSpecMenu.cpp:2055
--#, approved
-msgid "Proceed"
-msgstr "Uygula"
 
 #: src/guiFormSpecMenu.cpp:2846
 #, approved
