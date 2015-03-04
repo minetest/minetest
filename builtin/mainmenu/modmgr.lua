@@ -283,8 +283,20 @@ function modmgr.render_modlist(render_list)
 end
 
 --------------------------------------------------------------------------------
-function modmgr.get_dependencies(modfolder)
+function modmgr.get_dependencies(modfolder, use_color, render_list)
 	local toadd = ""
+
+	if render_list == nil then
+		if modmgr.global_mods == nil then
+			modmgr.refresh_globals()
+		end
+		render_list = modmgr.global_mods
+	end
+
+	if use_color == nil then
+		use_color = false
+	end
+
 	if modfolder ~= nil then
 		local filename = modfolder ..
 					DIR_DELIM .. "depends.txt"
@@ -293,11 +305,39 @@ function modmgr.get_dependencies(modfolder)
 
 		if dependencyfile then
 			local dependency = dependencyfile:read("*l")
+			local basename
+			local color
 			while dependency do
+				color = ""
 				if toadd ~= "" then
 					toadd = toadd .. ","
 				end
-				toadd = toadd .. dependency
+				if use_color and dependency ~= "" then
+					local len = string.len(dependency)
+					if string.sub(dependency, len, len) == "?" then
+						basename = string.sub(dependency, 1, len-1)
+					else
+						basename = dependency
+					end
+
+					local modid = render_list:raw_index_by_uid(basename)
+
+					if modid ~= nil then
+						local mod = render_list:get_raw_element(modid)
+						if mod ~= nil then
+							if mod.typ == "game_mod" then
+								color = mt_color_blue
+							elseif mod.enabled then
+								color = mt_color_green
+							end
+						else
+							color = mt_color_red
+						end
+					else
+						color = mt_color_red
+					end
+				end
+				toadd = toadd .. color .. dependency
 				dependency = dependencyfile:read()
 			end
 			dependencyfile:close()

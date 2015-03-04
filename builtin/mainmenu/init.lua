@@ -19,6 +19,7 @@ mt_color_grey  = "#AAAAAA"
 mt_color_blue  = "#0000DD"
 mt_color_green = "#00DD00"
 mt_color_dark_green = "#003300"
+mt_color_red = "#DD0000"
 
 --for all other colors ask sfan5 to complete his work!
 
