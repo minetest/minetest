@@ -414,13 +414,14 @@ core.register_chatcommand("set", {
 })
 
 core.register_chatcommand("deleteblocks", {
-	params = "[here] [<pos1> <pos2>]",
+	params = "(here [radius]) | (<pos1> <pos2>)",
 	description = "delete map blocks contained in area pos1 to pos2",
 	privs = {server=true},
 	func = function(name, param)
 		local p1 = {}
 		local p2 = {}
-		if param == "here" then
+		local args = param:split(" ")
+		if args[1] == "here" then
 			local player = core.get_player_by_name(name)
 			if player == nil then
 				core.log("error", "player is nil")
@@ -428,6 +429,12 @@ core.register_chatcommand("deleteblocks", {
 			end
 			p1 = player:getpos()
 			p2 = p1
+
+			if #args >= 2 then
+				local radius = tonumber(args[2]) or 0
+				p1 = vector.add(p1, radius)
+				p2 = vector.subtract(p2, radius)
+			end
 		else
 			local pos1, pos2 = unpack(param:split(") ("))
 			if pos1 == nil or pos2 == nil then
