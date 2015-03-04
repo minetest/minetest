@@ -193,8 +193,9 @@ enum ToClientCommand
 
 	TOCLIENT_INVENTORY = 0x27,
 	/*
-		[0] u16 command
-		[2] serialized inventory
+		u16 command
+		std::string playername. "" refers to the player the client is logged in as.
+		std::string containing serialized inventory
 	*/
 
 	TOCLIENT_OBJECTDATA = 0x28, // Obsolete

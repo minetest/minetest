@@ -1606,25 +1606,33 @@ void Server::SendNodeDef(u16 peer_id,
 	Non-static send methods
 */
 
-void Server::SendInventory(PlayerSAO* playerSAO)
+void Server::SendInventory(PlayerSAO* ofPlayerSAO, const std::string& ofName, u16 to_peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	UpdateCrafting(playerSAO->getPlayer());
+	UpdateCrafting(ofPlayerSAO->getPlayer());
 
 	/*
 		Serialize it
 	*/
 
-	NetworkPacket pkt(TOCLIENT_INVENTORY, 0, playerSAO->getPeerID());
+	NetworkPacket pkt(TOCLIENT_INVENTORY, 0, to_peer_id);
 
 	std::ostringstream os;
-	playerSAO->getInventory()->serialize(os);
+	ofPlayerSAO->getInventory()->serialize(os);
 
 	std::string s = os.str();
 
-	pkt.putRawString(s.c_str(), s.size());
+	pkt << ofName << s;
+
 	Send(&pkt);
+}
+
+void Server::SendInventory(PlayerSAO* playerSAO)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	SendInventory(playerSAO, "", playerSAO->getPeerID());
 }
 
 void Server::SendChatMessage(u16 peer_id, const std::wstring &message)

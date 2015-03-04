@@ -193,19 +193,35 @@ void Client::handleCommand_Inventory(NetworkPacket* pkt)
 	if (pkt->getSize() < 1)
 		return;
 
-	std::string datastring(pkt->getString(0), pkt->getSize());
+	std::string name;
+	std::string datastring;
+
+	*pkt >> name >> datastring;
 	std::istringstream is(datastring, std::ios_base::binary);
 
-	Player *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	Player *player;
+	if (name.empty()) {
+		player = m_env.getLocalPlayer();
+		assert(player != NULL);
+		player->inventory.deSerialize(is);
 
-	player->inventory.deSerialize(is);
+		m_inventory_updated = true;
 
-	m_inventory_updated = true;
-
-	delete m_inventory_from_server;
-	m_inventory_from_server = new Inventory(player->inventory);
-	m_inventory_from_server_age = 0.0;
+		delete m_inventory_from_server;
+		m_inventory_from_server = new Inventory(player->inventory);
+		m_inventory_from_server_age = 0.0;
+	} else {
+		player = m_env.getPlayer(name.c_str());
+		if (player == NULL) {
+			errorstream << "Recieved inventory update for player \"" << name << "\". Couldn't find player with that name. Ignoring.";
+			return;
+		}
+		/* we don't need a fancy m_inventory_from_server mechanism here, as its mostly
+		 * intended to inform about lag problems, 3rd party inventories are accessed far
+		 * less frequently than a player's own inventory.
+		 */
+		player->inventory.deSerialize(is);
+	}
 }
 
 void Client::handleCommand_TimeOfDay(NetworkPacket* pkt)
