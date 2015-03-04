@@ -578,13 +578,13 @@ private:
 	// 0 <= m_daynight_i < DAYNIGHT_CACHE_COUNT
 	//s32 m_daynight_i;
 	//u32 m_daynight_ratio;
-	Queue<std::wstring> m_chat_queue;
+	std::queue<std::wstring> m_chat_queue;
 	// The seed returned by the server in TOCLIENT_INIT is stored here
 	u64 m_map_seed;
 	std::string m_password;
 	bool m_access_denied;
 	std::wstring m_access_denied_reason;
-	Queue<ClientEvent> m_client_event_queue;
+	std::queue<ClientEvent> m_client_event_queue;
 	bool m_itemdef_received;
 	bool m_nodedef_received;
 	ClientMediaDownloader *m_media_downloader;

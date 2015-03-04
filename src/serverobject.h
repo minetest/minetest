@@ -218,7 +218,7 @@ public:
 	/*
 		Queue of messages to be sent to the client
 	*/
-	Queue<ActiveObjectMessage> m_messages_out;
+	std::queue<ActiveObjectMessage> m_messages_out;
 	
 protected:
 	// Used for creating objects based on type

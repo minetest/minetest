@@ -582,7 +582,7 @@ private:
 		Queues stuff from peerAdded() and deletingPeer() to
 		handlePeerChanges()
 	*/
-	Queue<con::PeerChange> m_peer_change_queue;
+	std::queue<con::PeerChange> m_peer_change_queue;
 
 	/*
 		Random stuff
@@ -606,7 +606,7 @@ private:
 		Queue of map edits from the environment for sending to the clients
 		This is behind m_env_mutex
 	*/
-	Queue<MapEditEvent*> m_unsent_map_edit_queue;
+	std::queue<MapEditEvent*> m_unsent_map_edit_queue;
 	/*
 		Set to true when the server itself is modifying the map and does
 		all sending of information by itself.
