@@ -1125,7 +1125,7 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 	SendPlayerInventoryFormspec(peer_id);
 
 	// Send inventory
-	SendInventory(peer_id);
+	SendInventory(playersao);
 
 	// Send HP
 	if(g_settings->getBool("enable_damage"))
@@ -1329,6 +1329,7 @@ Inventory* Server::getInventory(const InventoryLocation &loc)
 		break;
 	default:
 		assert(0);
+		break;
 	}
 	return NULL;
 }
@@ -1346,7 +1347,7 @@ void Server::setInventoryModified(const InventoryLocation &loc)
 		if(!playersao)
 			return;
 
-		SendInventory(playersao->getPeerID());
+		SendInventory(playersao);
 	}
 		break;
 	case InventoryLocation::NODEMETA:
@@ -1367,6 +1368,7 @@ void Server::setInventoryModified(const InventoryLocation &loc)
 		break;
 	default:
 		assert(0);
+		break;
 	}
 }
 
@@ -1604,23 +1606,21 @@ void Server::SendNodeDef(u16 peer_id,
 	Non-static send methods
 */
 
-void Server::SendInventory(u16 peer_id)
+void Server::SendInventory(PlayerSAO* playerSAO)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	PlayerSAO *playersao = getPlayerSAO(peer_id);
-	assert(playersao);
-
-	UpdateCrafting(playersao->getPlayer());
+	UpdateCrafting(playerSAO->getPlayer());
 
 	/*
 		Serialize it
 	*/
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_INVENTORY, 0, peer_id);
+	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_INVENTORY, 0,
+			playerSAO->getPeerID());
 
 	std::ostringstream os;
-	playersao->getInventory()->serialize(os);
+	playerSAO->getInventory()->serialize(os);
 
 	std::string s = os.str();
 
