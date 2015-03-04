@@ -486,33 +486,14 @@
 #    flags       = "defaults"
 #}
 #    Only the group format supports noise flags which are needed for eased noise.
-#    Mgv5 uses eased noise for np_cave1, np_cave2, np_ground and np_crumble, so these are shown in
-#    group format, other noise parameters are shown in positional format to save space.
+#    Mgv5 uses eased noise for np_ground so this is shown in group format,
+#    other noise parameters are shown in positional format to save space.
 
-#mgv5_spflags = blobs
 #mgv5_np_filler_depth = 0, 1, (150, 150, 150), 261, 4, 0.7, 2.0
 #mgv5_np_factor = 0, 1, (250, 250, 250), 920381, 3, 0.45, 2.0
 #mgv5_np_height = 0, 10, (250, 250, 250), 84174, 4, 0.5, 2.0
-#mgv5_np_cave1 = {
-#    offset      = 0
-#    scale       = 6
-#    spread      = (50, 50, 50)
-#    seed        = 52534
-#    octaves     = 4
-#    persistence = 0.5
-#    lacunarity  = 2.0
-#    flags       = "eased"
-#}
-#mgv5_np_cave2 = {
-#    offset      = 0
-#    scale       = 6
-#    spread      = (50, 50, 50)
-#    seed        = 10325
-#    octaves     = 4
-#    persistence = 0.5
-#    lacunarity  = 2.0
-#    flags       = "eased"
-#}
+#mgv5_np_cave1 = 0, 12, (50, 50, 50), 52534, 4, 0.5, 2.0
+#mgv5_np_cave2 = 0, 12, (50, 50, 50), 10325, 4, 0.5, 2.0
 #mgv5_np_ground = {
 #    offset      = 0
 #    scale       = 40
@@ -523,17 +504,6 @@
 #    lacunarity  = 2.0
 #    flags       = "eased"
 #}
-#mgv5_np_crumble = {
-#    offset      = 0
-#    scale       = 1
-#    spread      = (20, 20, 20)
-#    seed        = 34413
-#    octaves     = 3
-#    persistence = 1.3
-#    lacunarity  = 2.0
-#    flags       = "eased"
-#}
-#mgv5_np_wetness = 0, 1, (40, 40, 40), 32474, 4, 1.1, 2.0
 
 #mgv6_spflags = biomeblend, jungles, mudflow
 #mgv6_np_terrain_base = -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0
