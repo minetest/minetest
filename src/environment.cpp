@@ -1239,7 +1239,8 @@ void ServerEnvironment::step(float dtime)
 			while(!obj->m_messages_out.empty())
 			{
 				m_active_object_messages.push_back(
-						obj->m_messages_out.pop_front());
+						obj->m_messages_out.front());
+				obj->m_messages_out.pop();
 			}
 		}
 	}

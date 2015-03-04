@@ -184,67 +184,6 @@ private:
 };
 
 /*
-FIFO queue (well, actually a FILO also)
-*/
-template<typename T>
-class Queue
-{
-public:
-	Queue():
-		m_list_size(0)
-	{}
-
-	void push_back(T t)
-	{
-		m_list.push_back(t);
-		++m_list_size;
-	}
-
-	void push_front(T t)
-	{
-		m_list.push_front(t);
-		++m_list_size;
-	}
-
-	T pop_front()
-	{
-		if(m_list.empty())
-			throw ItemNotFoundException("Queue: queue is empty");
-
-		typename std::list<T>::iterator begin = m_list.begin();
-		T t = *begin;
-		m_list.erase(begin);
-		--m_list_size;
-		return t;
-	}
-	T pop_back()
-	{
-		if(m_list.empty())
-			throw ItemNotFoundException("Queue: queue is empty");
-
-		typename std::list<T>::iterator last = m_list.back();
-		T t = *last;
-		m_list.erase(last);
-		--m_list_size;
-		return t;
-	}
-
-	u32 size()
-	{
-		return m_list_size;
-	}
-
-	bool empty()
-	{
-		return m_list.empty();
-	}
-
-protected:
-	std::list<T> m_list;
-	u32 m_list_size;
-};
-
-/*
 Thread-safe FIFO queue (well, actually a FILO also)
 */
 

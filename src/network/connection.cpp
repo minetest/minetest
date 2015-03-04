@@ -1058,22 +1058,19 @@ void UDPPeer::PutReliableSendCommand(ConnectionCommand &c,
 	if ( channels[c.channelnum].queued_commands.empty() &&
 			/* don't queue more packets then window size */
 			(channels[c.channelnum].queued_reliables.size()
-			< (channels[c.channelnum].getWindowSize()/2)))
-	{
+			< (channels[c.channelnum].getWindowSize()/2))) {
 		LOG(dout_con<<m_connection->getDesc()
 				<<" processing reliable command for peer id: " << c.peer_id
 				<<" data size: " << c.data.getSize() << std::endl);
-		if (!processReliableSendCommand(c,max_packet_size))
-		{
-			channels[c.channelnum].queued_commands.push_back(c);
+		if (!processReliableSendCommand(c,max_packet_size)) {
+			channels[c.channelnum].queued_commands.push(c);
 		}
 	}
-	else
-	{
+	else {
 		LOG(dout_con<<m_connection->getDesc()
 				<<" Queueing reliable command for peer id: " << c.peer_id
 				<<" data size: " << c.data.getSize() <<std::endl);
-		channels[c.channelnum].queued_commands.push_back(c);
+		channels[c.channelnum].queued_commands.push(c);
 	}
 }
 
@@ -1104,7 +1101,7 @@ bool UDPPeer::processReliableSendCommand(
 
 	bool have_sequence_number = true;
 	bool have_initial_sequence_number = false;
-	Queue<BufferedPacket> toadd;
+	std::queue<BufferedPacket> toadd;
 	volatile u16 initial_sequence_number = 0;
 
 	for(std::list<SharedBuffer<u8> >::iterator i = originals.begin();
@@ -1129,19 +1126,20 @@ bool UDPPeer::processReliableSendCommand(
 				m_connection->GetProtocolID(), m_connection->GetPeerID(),
 				c.channelnum);
 
-		toadd.push_back(p);
+		toadd.push(p);
 	}
 
 	if (have_sequence_number) {
 		volatile u16 pcount = 0;
 		while(toadd.size() > 0) {
-			BufferedPacket p = toadd.pop_front();
+			BufferedPacket p = toadd.front();
+			toadd.pop();
 //			LOG(dout_con<<connection->getDesc()
 //					<< " queuing reliable packet for peer_id: " << c.peer_id
 //					<< " channel: " << (c.channelnum&0xFF)
 //					<< " seqnum: " << readU16(&p.data[BASE_HEADER_SIZE+1])
 //					<< std::endl)
-			channels[c.channelnum].queued_reliables.push_back(p);
+			channels[c.channelnum].queued_reliables.push(p);
 			pcount++;
 		}
 		assert(channels[c.channelnum].queued_reliables.size() < 0xFFFF);
@@ -1156,7 +1154,7 @@ bool UDPPeer::processReliableSendCommand(
 		}
 		while(toadd.size() > 0) {
 			/* remove packet */
-			toadd.pop_front();
+			toadd.pop();
 
 			bool successfully_put_back_sequence_number
 				= channels[c.channelnum].putBackSequenceNumber(
@@ -1193,7 +1191,8 @@ void UDPPeer::RunCommandQueues(
 				(commands_processed < maxcommands))
 		{
 			try {
-				ConnectionCommand c = channels[i].queued_commands.pop_front();
+				ConnectionCommand c = channels[i].queued_commands.front();
+				channels[i].queued_commands.pop();
 				LOG(dout_con<<m_connection->getDesc()
 						<<" processing queued reliable command "<<std::endl);
 				if (!processReliableSendCommand(c,max_packet_size)) {
@@ -1201,7 +1200,7 @@ void UDPPeer::RunCommandQueues(
 							<< " Failed to queue packets for peer_id: " << c.peer_id
 							<< ", delaying sending of " << c.data.getSize()
 							<< " bytes" << std::endl);
-					channels[i].queued_commands.push_front(c);
+					channels[i].queued_commands.push(c);
 				}
 			}
 			catch (ItemNotFoundException &e) {
@@ -1550,7 +1549,7 @@ bool ConnectionSendThread::rawSendAsPacket(u16 peer_id, u8 channelnum,
 					<<" INFO: queueing reliable packet for peer_id: " << peer_id
 					<<" channel: " << channelnum
 					<<" seqnum: " << seqnum << std::endl);
-			channel->queued_reliables.push_back(p);
+			channel->queued_reliables.push(p);
 			return false;
 		}
 	}
@@ -1919,7 +1918,8 @@ void ConnectionSendThread::sendPackets(float dtime)
 							< dynamic_cast<UDPPeer*>(&peer)->channels[i].getWindowSize())&&
 							(peer->m_increment_packets_remaining > 0))
 			{
-				BufferedPacket p = dynamic_cast<UDPPeer*>(&peer)->channels[i].queued_reliables.pop_front();
+				BufferedPacket p = dynamic_cast<UDPPeer*>(&peer)->channels[i].queued_reliables.front();
+				dynamic_cast<UDPPeer*>(&peer)->channels[i].queued_reliables.pop();
 				Channel* channel = &(dynamic_cast<UDPPeer*>(&peer)->channels[i]);
 				LOG(dout_con<<m_connection->getDesc()
 						<<" INFO: sending a queued reliable packet "
@@ -1942,10 +1942,11 @@ void ConnectionSendThread::sendPackets(float dtime)
 	unsigned int initial_queuesize = m_outgoing_queue.size();
 	/* send non reliable packets*/
 	for(unsigned int i=0;i < initial_queuesize;i++) {
-		OutgoingPacket packet = m_outgoing_queue.pop_front();
+		OutgoingPacket packet = m_outgoing_queue.front();
+		m_outgoing_queue.pop();
 
-		assert(!packet.reliable &&
-			"reliable packets are not allowed in outgoing queue!");
+		if (packet.reliable)
+			continue;
 
 		PeerHelper peer = m_connection->getPeerNoEx(packet.peer_id);
 		if (!peer) {
@@ -1972,7 +1973,7 @@ void ConnectionSendThread::sendPackets(float dtime)
 			peer->m_increment_packets_remaining--;
 		}
 		else {
-			m_outgoing_queue.push_back(packet);
+			m_outgoing_queue.push(packet);
 			pending_unreliable[packet.peer_id] = true;
 		}
 	}
@@ -1992,7 +1993,7 @@ void ConnectionSendThread::sendAsPacket(u16 peer_id, u8 channelnum,
 		SharedBuffer<u8> data, bool ack)
 {
 	OutgoingPacket packet(peer_id, channelnum, data, false, ack);
-	m_outgoing_queue.push_back(packet);
+	m_outgoing_queue.push(packet);
 }
 
 ConnectionReceiveThread::ConnectionReceiveThread(unsigned int max_packet_size) :
