@@ -393,7 +393,7 @@ private:
 	u32 m_game_time;
 	// A helper variable for incrementing the latter
 	float m_game_time_fraction_counter;
-	std::list<ABMWithState> m_abms;
+	std::vector<ABMWithState> m_abms;
 	// An interval for generally sending object positions and stuff
 	float m_recommended_send_interval;
 	// Estimate for general maximum lag as determined by server.

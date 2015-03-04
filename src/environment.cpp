@@ -382,7 +382,7 @@ ServerEnvironment::~ServerEnvironment()
 	m_map->drop();
 
 	// Delete ActiveBlockModifiers
-	for(std::list<ABMWithState>::iterator
+	for(std::vector<ABMWithState>::iterator
 			i = m_abms.begin(); i != m_abms.end(); ++i){
 		delete i->abm;
 	}
@@ -560,7 +560,7 @@ private:
 	ServerEnvironment *m_env;
 	std::map<content_t, std::vector<ActiveABM> > m_aabms;
 public:
-	ABMHandler(std::list<ABMWithState> &abms,
+	ABMHandler(std::vector<ABMWithState> &abms,
 			float dtime_s, ServerEnvironment *env,
 			bool use_timers):
 		m_env(env)
@@ -568,8 +568,8 @@ public:
 		if(dtime_s < 0.001)
 			return;
 		INodeDefManager *ndef = env->getGameDef()->ndef();
-		for(std::list<ABMWithState>::iterator
-				i = abms.begin(); i != abms.end(); ++i){
+		for(std::vector<ABMWithState>::iterator
+				i = abms.begin(); i != abms.end(); ++i) {
 			ActiveBlockModifier *abm = i->abm;
 			float trigger_interval = abm->getTriggerInterval();
 			if(trigger_interval < 0.001)
@@ -1182,7 +1182,7 @@ void ServerEnvironment::step(float dtime)
 					<<") being handled"<<std::endl;*/
 
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
-			if(block==NULL)
+			if(block == NULL)
 				continue;
 			
 			// Set current time as timestamp
@@ -2081,7 +2081,7 @@ void ClientEnvironment::step(float dtime)
 	LocalPlayer *lplayer = getLocalPlayer();
 	assert(lplayer);
 	// collision info queue
-	std::list<CollisionInfo> player_collisions;
+	std::vector<CollisionInfo> player_collisions;
 	
 	/*
 		Get the speed the player is going
@@ -2196,10 +2196,8 @@ void ClientEnvironment::step(float dtime)
 		
 	//std::cout<<"Looped "<<loopcount<<" times."<<std::endl;
 	
-	for(std::list<CollisionInfo>::iterator
-			i = player_collisions.begin();
-			i != player_collisions.end(); ++i)
-	{
+	for(std::vector<CollisionInfo>::iterator i = player_collisions.begin();
+			i != player_collisions.end(); ++i) {
 		CollisionInfo &info = *i;
 		v3f speed_diff = info.new_speed - info.old_speed;;
 		// Handle only fall damage
