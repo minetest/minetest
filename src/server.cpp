@@ -581,32 +581,6 @@ void Server::AsyncRunStep(bool initial_step)
 		Do background stuff
 	*/
 
-	/*
-		Handle players
-	*/
-	{
-		JMutexAutoLock lock(m_env_mutex);
-
-		std::list<u16> clientids = m_clients.getClientIDs();
-
-		ScopeProfiler sp(g_profiler, "Server: handle players");
-
-		for(std::list<u16>::iterator
-			i = clientids.begin();
-			i != clientids.end(); ++i)
-		{
-			PlayerSAO *playersao = getPlayerSAO(*i);
-			if(playersao == NULL)
-				continue;
-
-
-			if(playersao->m_moved) {
-				SendMovePlayer(*i);
-				playersao->m_moved = false;
-			}
-		}
-	}
-
 	/* Transform liquids */
 	m_liquid_transform_timer += dtime;
 	if(m_liquid_transform_timer >= m_liquid_transform_every)
@@ -2590,6 +2564,7 @@ void Server::RespawnPlayer(u16 peer_id)
 	bool repositioned = m_script->on_respawnplayer(playersao);
 	if(!repositioned){
 		v3f pos = findSpawnPos(m_env->getServerMap());
+		// setPos will send the new position to client
 		playersao->setPos(pos);
 	}
 }

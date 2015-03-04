@@ -579,10 +579,10 @@ void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 	player->control.LMB = (keyPressed & 128);
 	player->control.RMB = (keyPressed & 256);
 
-	bool cheated = playersao->checkMovementCheat();
-	if (cheated) {
+	if (playersao->checkMovementCheat()) {
 		// Call callbacks
 		m_script->on_cheat(playersao, "moved_too_fast");
+		SendMovePlayer(pkt->getPeerId());
 	}
 }
 

@@ -314,9 +314,6 @@ private:
 	bool m_attachment_sent;
 
 public:
-	// Some flags used by Server
-	bool m_moved;
-
 	float m_physics_override_speed;
 	float m_physics_override_jump;
 	float m_physics_override_gravity;

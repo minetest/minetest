@@ -374,9 +374,8 @@ public:
 
 	void SendPlayerHPOrDie(u16 peer_id, bool die) { die ? DiePlayer(peer_id) : SendPlayerHP(peer_id); }
 	void SendPlayerBreath(u16 peer_id);
-
-	// Envlock and conlock should be locked when calling these
 	void SendInventory(u16 peer_id);
+	void SendMovePlayer(u16 peer_id);
 
 	// Bind address
 	Address m_bind_addr;
@@ -402,7 +401,6 @@ private:
 	void SendTimeOfDay(u16 peer_id, u16 time, f32 time_speed);
 	void SendPlayerHP(u16 peer_id);
 
-	void SendMovePlayer(u16 peer_id);
 	void SendLocalPlayerAnimations(u16 peer_id, v2s32 animation_frames[4], f32 animation_speed);
 	void SendEyeOffset(u16 peer_id, v3f first, v3f third);
 	void SendPlayerPrivileges(u16 peer_id);
