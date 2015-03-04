@@ -1313,8 +1313,6 @@ msgstr "Numpad +"
 msgid "Numpad "
 msgstr "Numpad "
 
-#: src/keycode.cpp:236
-#, approved
 msgid "Numpad -"
 msgstr "Numpad -"
 
