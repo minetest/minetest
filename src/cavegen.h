@@ -129,7 +129,6 @@ public:
 	int dswitchint;
 	int part_max_length_rs;
 
-	bool large_cave;
 	bool large_cave_is_flat;
 	bool flooded;
 
@@ -155,7 +154,7 @@ public:
 	int water_level;
 
 	CaveV7() {}
-	CaveV7(MapgenV7 *mg, PseudoRandom *ps, bool large_cave);
+	CaveV7(MapgenV7 *mg, PseudoRandom *ps);
 	void makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height);
 	void makeTunnel(bool dirswitch);
 	void carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine);

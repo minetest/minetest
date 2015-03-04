@@ -171,9 +171,9 @@ int MapgenV5::getGroundLevelAtPoint(v2s16 p)
 	//TimeTaker t("getGroundLevelAtPoint", NULL, PRECISION_MICRO);
 
 	float f = 0.55 + NoisePerlin2D(&noise_factor->np, p.X, p.Y, seed);
-	if(f < 0.01)
+	if (f < 0.01)
 		f = 0.01;
-	else if(f >= 1.0)
+	else if (f >= 1.0)
 		f *= 1.6;
 	float h = water_level + NoisePerlin2D(&noise_height->np, p.X, p.Y, seed);
 
@@ -183,8 +183,8 @@ int MapgenV5::getGroundLevelAtPoint(v2s16 p)
 	s16 level = -31000;
 	for (s16 y = search_top; y >= search_base; y--) {
 		float n_ground = NoisePerlin3D(&noise_ground->np, p.X, y, p.Y, seed);
-		if(n_ground * f > y - h) {
-			if(y >= search_top - 7)
+		if (n_ground * f > y - h) {
+			if (y >= search_top - 7)
 				break;
 			else
 				level = y;
@@ -322,22 +322,22 @@ int MapgenV5::generateBaseTerrain()
 	u32 index2d = 0;
 	int stone_surface_max_y = -MAP_GENERATION_LIMIT;
 
-	for(s16 z=node_min.Z; z<=node_max.Z; z++) {
-		for(s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
+	for (s16 z=node_min.Z; z<=node_max.Z; z++) {
+		for (s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
 			u32 i = vm->m_area.index(node_min.X, y, z);
-			for(s16 x=node_min.X; x<=node_max.X; x++, i++, index++, index2d++) {
-				if(vm->m_data[i].getContent() != CONTENT_IGNORE)
+			for (s16 x=node_min.X; x<=node_max.X; x++, i++, index++, index2d++) {
+				if (vm->m_data[i].getContent() != CONTENT_IGNORE)
 					continue;
 
 				float f = 0.55 + noise_factor->result[index2d];
-				if(f < 0.01)
+				if (f < 0.01)
 					f = 0.01;
-				else if(f >= 1.0)
+				else if (f >= 1.0)
 					f *= 1.6;
 				float h = noise_height->result[index2d];
 
-				if(noise_ground->result[index] * f < y - h) {
-					if(y <= water_level)
+				if (noise_ground->result[index] * f < y - h) {
+					if (y <= water_level)
 						vm->m_data[i] = MapNode(c_water_source);
 					else
 						vm->m_data[i] = MapNode(CONTENT_AIR);
@@ -443,13 +443,13 @@ void MapgenV5::generateCaves(int max_stone_y)
 	u32 index = 0;
 	u32 index2d = 0;
 
-	for(s16 z=node_min.Z; z<=node_max.Z; z++) {
-		for(s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
+	for (s16 z=node_min.Z; z<=node_max.Z; z++) {
+		for (s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
 			u32 i = vm->m_area.index(node_min.X, y, z);
-			for(s16 x=node_min.X; x<=node_max.X; x++, i++, index++, index2d++) {
+			for (s16 x=node_min.X; x<=node_max.X; x++, i++, index++, index2d++) {
 				Biome *biome = (Biome *)bmgr->get(biomemap[index2d]);
 				content_t c = vm->m_data[i].getContent();
-				if(c == CONTENT_AIR
+				if (c == CONTENT_AIR
 						|| (y <= water_level
 						&& c != biome->c_stone
 						&& c != c_stone))
@@ -457,7 +457,7 @@ void MapgenV5::generateCaves(int max_stone_y)
 
 				float d1 = contour(noise_cave1->result[index]);
 				float d2 = contour(noise_cave2->result[index]);
-				if(d1*d2 > 0.125)
+				if (d1*d2 > 0.125)
 					vm->m_data[i] = MapNode(CONTENT_AIR);
 			}
 			index2d = index2d - ystride;
