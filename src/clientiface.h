@@ -388,7 +388,7 @@ public:
 	void step(float dtime);
 
 	/* get list of active client id's */
-	std::list<u16> getClientIDs(ClientState min_state=CS_Active);
+	std::vector<u16> getClientIDs(ClientState min_state=CS_Active);
 
 	/* get list of client player names */
 	std::vector<std::string> getPlayerNames();

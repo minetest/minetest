@@ -1374,16 +1374,14 @@ void Server::setInventoryModified(const InventoryLocation &loc)
 
 void Server::SetBlocksNotSent(std::map<v3s16, MapBlock *>& block)
 {
-	std::list<u16> clients = m_clients.getClientIDs();
+	std::vector<u16> clients = m_clients.getClientIDs();
 	m_clients.Lock();
 	// Set the modified blocks unsent for all the clients
-	for (std::list<u16>::iterator
-		 i = clients.begin();
+	for (std::vector<u16>::iterator i = clients.begin();
 		 i != clients.end(); ++i) {
-			RemoteClient *client = m_clients.lockedGetClientNoEx(*i);
-			if (client != NULL)
+			if (RemoteClient *client = m_clients.lockedGetClientNoEx(*i))
 				client->SetBlocksNotSent(block);
-		}
+	}
 	m_clients.Unlock();
 }
 
@@ -1954,15 +1952,15 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 	}
 	else
 	{
-		std::list<u16> clients = m_clients.getClientIDs();
+		std::vector<u16> clients = m_clients.getClientIDs();
 
-		for(std::list<u16>::iterator
-				i = clients.begin(); i != clients.end(); ++i)
-		{
+		for(std::vector<u16>::iterator
+				i = clients.begin(); i != clients.end(); ++i) {
 			Player *player = m_env->getPlayer(*i);
 			if(!player)
 				continue;
-			if(pos_exists){
+
+			if(pos_exists) {
 				if(player->getPosition().getDistanceFrom(pos) >
 						params.max_hear_distance)
 					continue;
@@ -1970,6 +1968,7 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 			dst_clients.push_back(*i);
 		}
 	}
+
 	if(dst_clients.empty())
 		return -1;
 
@@ -2025,9 +2024,8 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_REMOVENODE, 6);
 	*pkt << p;
 
-	std::list<u16> clients = m_clients.getClientIDs();
-	for(std::list<u16>::iterator
-		i = clients.begin();
+	std::vector<u16> clients = m_clients.getClientIDs();
+	for(std::vector<u16>::iterator i = clients.begin();
 		i != clients.end(); ++i) {
 		if(far_players) {
 			// Get player
@@ -2055,22 +2053,16 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 	float maxd = far_d_nodes*BS;
 	v3f p_f = intToFloat(p, BS);
 
-	std::list<u16> clients = m_clients.getClientIDs();
-	for(std::list<u16>::iterator
-			i = clients.begin();
-			i != clients.end(); ++i)
-		{
+	std::vector<u16> clients = m_clients.getClientIDs();
+	for(std::vector<u16>::iterator i = clients.begin();
+			i != clients.end(); ++i) {
 
-		if(far_players)
-		{
+		if(far_players) {
 			// Get player
-			Player *player = m_env->getPlayer(*i);
-			if(player)
-			{
+			if(Player *player = m_env->getPlayer(*i)) {
 				// If player is far away, only set modified blocks not sent
 				v3f player_pos = player->getPosition();
-				if(player_pos.getDistanceFrom(p_f) > maxd)
-				{
+				if(player_pos.getDistanceFrom(p_f) > maxd) {
 					far_players->push_back(*i);
 					continue;
 				}
@@ -2102,12 +2094,10 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 
 void Server::setBlockNotSent(v3s16 p)
 {
-	std::list<u16> clients = m_clients.getClientIDs();
+	std::vector<u16> clients = m_clients.getClientIDs();
 	m_clients.Lock();
-	for(std::list<u16>::iterator
-		i = clients.begin();
-		i != clients.end(); ++i)
-	{
+	for(std::vector<u16>::iterator i = clients.begin();
+		i != clients.end(); ++i) {
 		RemoteClient *client = m_clients.lockedGetClientNoEx(*i);
 		client->SetBlockNotSent(p);
 	}
@@ -2153,13 +2143,11 @@ void Server::SendBlocks(float dtime)
 	{
 		ScopeProfiler sp(g_profiler, "Server: selecting blocks for sending");
 
-		std::list<u16> clients = m_clients.getClientIDs();
+		std::vector<u16> clients = m_clients.getClientIDs();
 
 		m_clients.Lock();
-		for(std::list<u16>::iterator
-			i = clients.begin();
-			i != clients.end(); ++i)
-		{
+		for(std::vector<u16>::iterator i = clients.begin();
+			i != clients.end(); ++i) {
 			RemoteClient *client = m_clients.lockedGetClientNoEx(*i, CS_Active);
 
 			if (client == NULL)
@@ -2630,26 +2618,24 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 			Print out action
 		*/
 		{
-			if(player != NULL && reason != CDR_DENY)
-			{
+			if(player != NULL && reason != CDR_DENY) {
 				std::ostringstream os(std::ios_base::binary);
-				std::list<u16> clients = m_clients.getClientIDs();
+				std::vector<u16> clients = m_clients.getClientIDs();
 
-				for(std::list<u16>::iterator
-					i = clients.begin();
-					i != clients.end(); ++i)
-				{
+				for(std::vector<u16>::iterator i = clients.begin();
+					i != clients.end(); ++i) {
 					// Get player
 					Player *player = m_env->getPlayer(*i);
 					if(!player)
 						continue;
+
 					// Get name of player
-					os<<player->getName()<<" ";
+					os << player->getName() << " ";
 				}
 
-				actionstream<<player->getName()<<" "
-						<<(reason==CDR_TIMEOUT?"times out.":"leaves game.")
-						<<" List of players: "<<os.str()<<std::endl;
+				actionstream << player->getName() << " "
+						<< (reason == CDR_TIMEOUT ? "times out." : "leaves game.")
+						<< " List of players: " << os.str() << std::endl;
 			}
 		}
 		{
@@ -2723,10 +2709,9 @@ std::wstring Server::getStatusString()
 	// Information about clients
 	bool first = true;
 	os<<L", clients={";
-	std::list<u16> clients = m_clients.getClientIDs();
-	for(std::list<u16>::iterator i = clients.begin();
-		i != clients.end(); ++i)
-	{
+	std::vector<u16> clients = m_clients.getClientIDs();
+	for(std::vector<u16>::iterator i = clients.begin();
+		i != clients.end(); ++i) {
 		// Get player
 		Player *player = m_env->getPlayer(*i);
 		// Get name of player
@@ -2735,12 +2720,12 @@ std::wstring Server::getStatusString()
 			name = narrow_to_wide(player->getName());
 		// Add name to information string
 		if(!first)
-			os<<L", ";
+			os << L", ";
 		else
 			first = false;
-		os<<name;
+		os << name;
 	}
-	os<<L"}";
+	os << L"}";
 	if(((ServerMap*)(&m_env->getMap()))->isSavingEnabled() == false)
 		os<<std::endl<<L"# Server: "<<" WARNING: Map saving is disabled.";
 	if(g_settings->get("motd") != "")
@@ -2763,11 +2748,10 @@ bool Server::checkPriv(const std::string &name, const std::string &priv)
 
 void Server::reportPrivsModified(const std::string &name)
 {
-	if(name == ""){
-		std::list<u16> clients = m_clients.getClientIDs();
-		for(std::list<u16>::iterator
-				i = clients.begin();
-				i != clients.end(); ++i){
+	if(name == "") {
+		std::vector<u16> clients = m_clients.getClientIDs();
+		for(std::vector<u16>::iterator i = clients.begin();
+				i != clients.end(); ++i) {
 			Player *player = m_env->getPlayer(*i);
 			reportPrivsModified(player->getName());
 		}

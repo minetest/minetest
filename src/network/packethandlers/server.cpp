@@ -851,10 +851,9 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 		else {
 			actionstream << "CHAT: " << wide_to_narrow(line)<<std::endl;
 
-			std::list<u16> clients = m_clients.getClientIDs();
+			std::vector<u16> clients = m_clients.getClientIDs();
 
-			for (std::list<u16>::iterator
-				i = clients.begin();
+			for (std::vector<u16>::iterator i = clients.begin();
 				i != clients.end(); ++i) {
 				if (*i != pkt->getPeerId())
 					SendChatMessage(*i, line);
