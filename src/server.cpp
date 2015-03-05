@@ -788,25 +788,22 @@ void Server::AsyncRunStep(bool initial_step)
 
 		// Key = object id
 		// Value = data sent by object
-		std::map<u16, std::list<ActiveObjectMessage>* > buffered_messages;
+		std::map<u16, std::vector<ActiveObjectMessage>* > buffered_messages;
 
 		// Get active object messages from environment
-		for(;;)
-		{
+		for(;;) {
 			ActiveObjectMessage aom = m_env->getActiveObjectMessage();
-			if(aom.id == 0)
+			if (aom.id == 0)
 				break;
 
-			std::list<ActiveObjectMessage>* message_list = NULL;
-			std::map<u16, std::list<ActiveObjectMessage>* >::iterator n;
+			std::vector<ActiveObjectMessage>* message_list = NULL;
+			std::map<u16, std::vector<ActiveObjectMessage>* >::iterator n;
 			n = buffered_messages.find(aom.id);
-			if(n == buffered_messages.end())
-			{
-				message_list = new std::list<ActiveObjectMessage>;
+			if (n == buffered_messages.end()) {
+				message_list = new std::vector<ActiveObjectMessage>;
 				buffered_messages[aom.id] = message_list;
 			}
-			else
-			{
+			else {
 				message_list = n->second;
 			}
 			message_list->push_back(aom);
@@ -815,28 +812,26 @@ void Server::AsyncRunStep(bool initial_step)
 		m_clients.Lock();
 		std::map<u16, RemoteClient*> clients = m_clients.getClientList();
 		// Route data to every client
-		for(std::map<u16, RemoteClient*>::iterator
+		for (std::map<u16, RemoteClient*>::iterator
 			i = clients.begin();
-			i != clients.end(); ++i)
-		{
+			i != clients.end(); ++i) {
 			RemoteClient *client = i->second;
 			std::string reliable_data;
 			std::string unreliable_data;
 			// Go through all objects in message buffer
-			for(std::map<u16, std::list<ActiveObjectMessage>* >::iterator
+			for (std::map<u16, std::vector<ActiveObjectMessage>* >::iterator
 					j = buffered_messages.begin();
-					j != buffered_messages.end(); ++j)
-			{
+					j != buffered_messages.end(); ++j) {
 				// If object is not known by client, skip it
 				u16 id = j->first;
-				if(client->m_known_objects.find(id) == client->m_known_objects.end())
+				if (client->m_known_objects.find(id) == client->m_known_objects.end())
 					continue;
+
 				// Get message list of object
-				std::list<ActiveObjectMessage>* list = j->second;
+				std::vector<ActiveObjectMessage>* list = j->second;
 				// Go through every message
-				for(std::list<ActiveObjectMessage>::iterator
-						k = list->begin(); k != list->end(); ++k)
-				{
+				for (std::vector<ActiveObjectMessage>::iterator
+						k = list->begin(); k != list->end(); ++k) {
 					// Compose the full new data with header
 					ActiveObjectMessage aom = *k;
 					std::string new_data;
@@ -876,10 +871,9 @@ void Server::AsyncRunStep(bool initial_step)
 		m_clients.Unlock();
 
 		// Clear buffered_messages
-		for(std::map<u16, std::list<ActiveObjectMessage>* >::iterator
+		for(std::map<u16, std::vector<ActiveObjectMessage>* >::iterator
 				i = buffered_messages.begin();
-				i != buffered_messages.end(); ++i)
-		{
+				i != buffered_messages.end(); ++i) {
 			delete i->second;
 		}
 	}
@@ -912,78 +906,61 @@ void Server::AsyncRunStep(bool initial_step)
 			// Players far away from the change are stored here.
 			// Instead of sending the changes, MapBlocks are set not sent
 			// for them.
-			std::list<u16> far_players;
+			std::vector<u16> far_players;
 
-			if(event->type == MEET_ADDNODE || event->type == MEET_SWAPNODE)
-			{
-				//infostream<<"Server: MEET_ADDNODE"<<std::endl;
+			switch (event->type) {
+			case MEET_ADDNODE:
+			case MEET_SWAPNODE:
 				prof.add("MEET_ADDNODE", 1);
-				if(disable_single_change_sending)
-					sendAddNode(event->p, event->n, event->already_known_by_peer,
-							&far_players, 5, event->type == MEET_ADDNODE);
-				else
-					sendAddNode(event->p, event->n, event->already_known_by_peer,
-							&far_players, 30, event->type == MEET_ADDNODE);
-			}
-			else if(event->type == MEET_REMOVENODE)
-			{
-				//infostream<<"Server: MEET_REMOVENODE"<<std::endl;
+				sendAddNode(event->p, event->n, event->already_known_by_peer,
+						&far_players, disable_single_change_sending ? 5 : 30,
+						event->type == MEET_ADDNODE);
+				break;
+			case MEET_REMOVENODE:
 				prof.add("MEET_REMOVENODE", 1);
-				if(disable_single_change_sending)
-					sendRemoveNode(event->p, event->already_known_by_peer,
-							&far_players, 5);
-				else
-					sendRemoveNode(event->p, event->already_known_by_peer,
-							&far_players, 30);
-			}
-			else if(event->type == MEET_BLOCK_NODE_METADATA_CHANGED)
-			{
-				infostream<<"Server: MEET_BLOCK_NODE_METADATA_CHANGED"<<std::endl;
-				prof.add("MEET_BLOCK_NODE_METADATA_CHANGED", 1);
-				setBlockNotSent(event->p);
-			}
-			else if(event->type == MEET_OTHER)
-			{
-				infostream<<"Server: MEET_OTHER"<<std::endl;
+				sendRemoveNode(event->p, event->already_known_by_peer,
+						&far_players, disable_single_change_sending ? 5 : 30);
+				break;
+			case MEET_BLOCK_NODE_METADATA_CHANGED:
+				infostream << "Server: MEET_BLOCK_NODE_METADATA_CHANGED" << std::endl;
+						prof.add("MEET_BLOCK_NODE_METADATA_CHANGED", 1);
+						setBlockNotSent(event->p);
+				break;
+			case MEET_OTHER:
+				infostream << "Server: MEET_OTHER" << std::endl;
 				prof.add("MEET_OTHER", 1);
 				for(std::set<v3s16>::iterator
 						i = event->modified_blocks.begin();
-						i != event->modified_blocks.end(); ++i)
-				{
+						i != event->modified_blocks.end(); ++i) {
 					setBlockNotSent(*i);
 				}
-			}
-			else
-			{
+				break;
+			default:
 				prof.add("unknown", 1);
-				infostream<<"WARNING: Server: Unknown MapEditEvent "
-						<<((u32)event->type)<<std::endl;
+				infostream << "WARNING: Server: Unknown MapEditEvent "
+						<< ((u32)event->type) << std::endl;
+				break;
 			}
 
 			/*
 				Set blocks not sent to far players
 			*/
-			if(!far_players.empty())
-			{
+			if(!far_players.empty()) {
 				// Convert list format to that wanted by SetBlocksNotSent
 				std::map<v3s16, MapBlock*> modified_blocks2;
 				for(std::set<v3s16>::iterator
 						i = event->modified_blocks.begin();
-						i != event->modified_blocks.end(); ++i)
-				{
+						i != event->modified_blocks.end(); ++i) {
 					modified_blocks2[*i] =
 							m_env->getMap().getBlockNoCreateNoEx(*i);
 				}
+
 				// Set blocks not sent
-				for(std::list<u16>::iterator
+				for(std::vector<u16>::iterator
 						i = far_players.begin();
-						i != far_players.end(); ++i)
-				{
-					u16 peer_id = *i;
-					RemoteClient *client = getClient(peer_id);
-					if(client==NULL)
-						continue;
-					client->SetBlocksNotSent(modified_blocks2);
+						i != far_players.end(); ++i) {
+					if(RemoteClient *client = getClient(*i))
+						client->SetBlocksNotSent(modified_blocks2);
 				}
 			}
 
@@ -2018,7 +1995,7 @@ void Server::stopSound(s32 handle)
 }
 
 void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
-	std::list<u16> *far_players, float far_d_nodes)
+	std::vector<u16> *far_players, float far_d_nodes)
 {
 	float maxd = far_d_nodes*BS;
 	v3f p_f = intToFloat(p, BS);
@@ -2029,7 +2006,7 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 	std::vector<u16> clients = m_clients.getClientIDs();
 	for(std::vector<u16>::iterator i = clients.begin();
 		i != clients.end(); ++i) {
-		if(far_players) {
+		if (far_players) {
 			// Get player
 			if(Player *player = m_env->getPlayer(*i)) {
 				// If player is far away, only set modified blocks not sent
@@ -2049,7 +2026,7 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 }
 
 void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
-		std::list<u16> *far_players, float far_d_nodes,
+		std::vector<u16> *far_players, float far_d_nodes,
 		bool remove_metadata)
 {
 	float maxd = far_d_nodes*BS;

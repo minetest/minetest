@@ -422,9 +422,9 @@ private:
 	*/
 	// Envlock and conlock should be locked when calling these
 	void sendRemoveNode(v3s16 p, u16 ignore_id=0,
-			std::list<u16> *far_players=NULL, float far_d_nodes=100);
+			std::vector<u16> *far_players=NULL, float far_d_nodes=100);
 	void sendAddNode(v3s16 p, MapNode n, u16 ignore_id=0,
-			std::list<u16> *far_players=NULL, float far_d_nodes=100,
+			std::vector<u16> *far_players=NULL, float far_d_nodes=100,
 			bool remove_metadata=true);
 	void setBlockNotSent(v3s16 p);
 
