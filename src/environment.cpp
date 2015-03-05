@@ -2025,9 +2025,8 @@ ClientEnvironment::~ClientEnvironment()
 		delete i->second;
 	}
 
-	for(std::list<ClientSimpleObject*>::iterator
-			i = m_simple_objects.begin(); i != m_simple_objects.end(); ++i)
-	{
+	for(std::vector<ClientSimpleObject*>::iterator
+			i = m_simple_objects.begin(); i != m_simple_objects.end(); ++i) {
 		delete *i;
 	}
 
@@ -2382,11 +2381,10 @@ void ClientEnvironment::step(float dtime)
 		Step and handle simple objects
 	*/
 	g_profiler->avg("CEnv: num of simple objects", m_simple_objects.size());
-	for(std::list<ClientSimpleObject*>::iterator
-			i = m_simple_objects.begin(); i != m_simple_objects.end();)
-	{
+	for(std::vector<ClientSimpleObject*>::iterator
+			i = m_simple_objects.begin(); i != m_simple_objects.end();) {
 		ClientSimpleObject *simple = *i;
-		std::list<ClientSimpleObject*>::iterator cur = i;
+		std::vector<ClientSimpleObject*>::iterator cur = i;
 		++i;
 		simple->step(dtime);
 		if(simple->m_to_be_removed){

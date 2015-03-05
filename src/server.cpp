@@ -3188,10 +3188,9 @@ const ModSpec* Server::getModSpec(const std::string &modname)
 	}
 	return NULL;
 }
-void Server::getModNames(std::list<std::string> &modlist)
+void Server::getModNames(std::vector<std::string> &modlist)
 {
-	for(std::vector<ModSpec>::iterator i = m_mods.begin(); i != m_mods.end(); i++)
-	{
+	for(std::vector<ModSpec>::iterator i = m_mods.begin(); i != m_mods.end(); i++) {
 		modlist.push_back(i->name);
 	}
 }

@@ -778,7 +778,7 @@ void Client::deletingPeer(con::Peer *peer, bool timeout)
 		string name
 	}
 */
-void Client::request_media(const std::list<std::string> &file_requests)
+void Client::request_media(const std::vector<std::string> &file_requests)
 {
 	std::ostringstream os(std::ios_base::binary);
 	writeU16(os, TOSERVER_REQUEST_MEDIA);
@@ -790,7 +790,7 @@ void Client::request_media(const std::list<std::string> &file_requests)
 
 	*pkt << (u16) (file_requests_size & 0xFFFF);
 
-	for(std::list<std::string>::const_iterator i = file_requests.begin();
+	for(std::vector<std::string>::const_iterator i = file_requests.begin();
 			i != file_requests.end(); ++i) {
 		*pkt << (*i);
 	}

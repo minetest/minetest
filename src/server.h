@@ -327,7 +327,7 @@ public:
 	IWritableCraftDefManager* getWritableCraftDefManager();
 
 	const ModSpec* getModSpec(const std::string &modname);
-	void getModNames(std::list<std::string> &modlist);
+	void getModNames(std::vector<std::string> &modlist);
 	std::string getBuiltinLuaPath();
 	inline std::string getWorldPath()
 			{ return m_path_world; }
@@ -587,9 +587,6 @@ private:
 	/*
 		Random stuff
 	*/
-
-	// Mod parent directory paths
-	std::list<std::string> m_modspaths;
 
 	bool m_shutdown_requested;
 

@@ -367,13 +367,14 @@ int ModApiServer::l_get_modnames(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	// Get a list of mods
-	std::list<std::string> mods_unsorted, mods_sorted;
+	std::vector<std::string> mods_unsorted;
+	std::list<std::string> mods_sorted;
 	getServer(L)->getModNames(mods_unsorted);
 
 	// Take unsorted items from mods_unsorted and sort them into
 	// mods_sorted; not great performance but the number of mods on a
 	// server will likely be small.
-	for(std::list<std::string>::iterator i = mods_unsorted.begin();
+	for(std::vector<std::string>::iterator i = mods_unsorted.begin();
 			i != mods_unsorted.end(); ++i) {
 		bool added = false;
 		for(std::list<std::string>::iterator x = mods_sorted.begin();
