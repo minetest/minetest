@@ -36,7 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "gamedef.h"
 #include "strfnd.h" // trim()
-#include "tile.h"
+#include "client/tile.h"
 
 /*
 	A cache from shader name to shader path

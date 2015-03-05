@@ -51,7 +51,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodemetadata.h"
 #include "main.h" // For g_settings
 #include "itemdef.h"
-#include "tile.h" // For TextureSource
+#include "client/tile.h" // For TextureSource
 #include "shader.h" // For ShaderSource
 #include "logoutputbuffer.h"
 #include "subgame.h"

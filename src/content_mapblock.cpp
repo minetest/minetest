@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock_mesh.h" // For MapBlock_LightColor() and MeshCollector
 #include "settings.h"
 #include "nodedef.h"
-#include "tile.h"
+#include "client/tile.h"
 #include "mesh.h"
 #include <IMeshManipulator.h>
 #include "gamedef.h"

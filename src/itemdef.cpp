@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock_mesh.h"
 #include "mesh.h"
 #include "wieldmesh.h"
-#include "tile.h"
+#include "client/tile.h"
 #endif
 #include "log.h"
 #include "main.h" // g_settings

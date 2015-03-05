@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include "mapnode.h"
 #ifndef SERVER
-#include "tile.h"
+#include "client/tile.h"
 #include "shader.h"
 #endif
 #include "itemgroup.h"

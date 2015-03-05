@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "itemdef.h"
 #include "inventory.h"
-#include "tile.h"
+#include "client/tile.h"
 #include "localplayer.h"
 #include "camera.h"
 #include "porting.h"

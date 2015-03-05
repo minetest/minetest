@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "mesh.h"
 #include "mapblock_mesh.h"
-#include "tile.h"
+#include "client/tile.h"
 #include "log.h"
 #include "util/numeric.h"
 #include <map>

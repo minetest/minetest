@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "main.h" // For g_profiler and g_settings
 #include "settings.h"
-#include "tile.h"
+#include "client/tile.h"
 #include "gamedef.h"
 #include "collision.h"
 #include <stdlib.h>

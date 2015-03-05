@@ -37,7 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUITabControl.h>
 #include <IGUIComboBox.h>
 #include "log.h"
-#include "tile.h" // ITextureSource
+#include "client/tile.h" // ITextureSource
 #include "hud.h" // drawItemStack
 #include "filesys.h"
 #include "gettime.h"

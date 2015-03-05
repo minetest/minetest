@@ -407,7 +407,7 @@ private:
 
 	// Textures that have been overwritten with other ones
 	// but can't be deleted because the ITexture* might still be used
-	std::list<video::ITexture*> m_texture_trash;
+	std::vector<video::ITexture*> m_texture_trash;
 
 	// Cached settings needed for making textures from meshes
 	bool m_setting_trilinear_filter;
@@ -455,10 +455,9 @@ TextureSource::~TextureSource()
 	}
 	m_textureinfo_cache.clear();
 
-	for (std::list<video::ITexture*>::iterator iter =
+	for (std::vector<video::ITexture*>::iterator iter =
 			m_texture_trash.begin(); iter != m_texture_trash.end();
-			iter++)
-	{
+			iter++) {
 		video::ITexture *t = *iter;
 
 		//cleanup trashed texture
