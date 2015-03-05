@@ -117,6 +117,8 @@ MapgenV6::~MapgenV6()
 	delete noise_mud;
 	delete noise_beach;
 	delete noise_biome;
+
+	delete[] heightmap;
 }
 
 
