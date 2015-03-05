@@ -367,34 +367,18 @@ int ModApiServer::l_get_modnames(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	// Get a list of mods
-	std::vector<std::string> mods_unsorted;
-	std::list<std::string> mods_sorted;
-	getServer(L)->getModNames(mods_unsorted);
+	std::vector<std::string> modlist;
+	getServer(L)->getModNames(modlist);
 
 	// Take unsorted items from mods_unsorted and sort them into
 	// mods_sorted; not great performance but the number of mods on a
 	// server will likely be small.
-	for(std::vector<std::string>::iterator i = mods_unsorted.begin();
-			i != mods_unsorted.end(); ++i) {
-		bool added = false;
-		for(std::list<std::string>::iterator x = mods_sorted.begin();
-				x != mods_sorted.end(); ++x) {
-			// I doubt anybody using Minetest will be using
-			// anything not ASCII based :)
-			if(i->compare(*x) <= 0) {
-				mods_sorted.insert(x, *i);
-				added = true;
-				break;
-			}
-		}
-		if(!added)
-			mods_sorted.push_back(*i);
-	}
+	std::sort(modlist.begin(), modlist.end());
 
 	// Package them up for Lua
-	lua_createtable(L, mods_sorted.size(), 0);
-	std::list<std::string>::iterator iter = mods_sorted.begin();
-	for (u16 i = 0; iter != mods_sorted.end(); iter++) {
+	lua_createtable(L, modlist.size(), 0);
+	std::vector<std::string>::iterator iter = modlist.begin();
+	for (u16 i = 0; iter != modlist.end(); iter++) {
 		lua_pushstring(L, iter->c_str());
 		lua_rawseti(L, -2, ++i);
 	}
