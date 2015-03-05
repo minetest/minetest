@@ -263,6 +263,9 @@ public:
 	f32 movement_liquid_fluidity_smooth;
 	f32 movement_liquid_sink;
 	f32 movement_gravity;
+	
+	f32 movement_damping_ground;
+	f32 movement_damping_air;
 
 	float physics_override_speed;
 	float physics_override_jump;

@@ -575,6 +575,13 @@ void LocalPlayer::applyControl(float dtime)
 	else
 		speedH = speedH.normalize() * movement_speed_walk;
 
+	if(speedH.getLengthSQ() == 0 && m_speed.getLengthSQ() >= 0.01)
+	{
+		f32 damping = (touching_ground) ? movement_damping_ground : movement_damping_air;
+		speedH.X = m_speed.X * damping;
+		speedH.Z = m_speed.Z * damping;
+	}
+
 	// Acceleration increase
 	f32 incH = 0; // Horizontal (X, Z)
 	f32 incV = 0; // Vertical (Y)
