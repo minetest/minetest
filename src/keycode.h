@@ -69,5 +69,22 @@ void clearKeyCache();
 
 irr::EKEY_CODE keyname_to_keycode(const char *name);
 
+
+typedef struct {
+	KeyPress key;
+	bool modifier_shift;
+	bool modifier_control;
+	std::string setting_name;
+	std::string command;
+} KeyCommand;
+
+// Command Key configuration getter
+KeyCommand getCommandKeySetting(size_t i);
+size_t getCommandKeySettingCount();
+
+// Clear fast lookup cache
+void clearCommandKeyCache();
+
+
 #endif
 
