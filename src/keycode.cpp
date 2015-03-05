@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "util/hex.h"
 
+#include "util/string.h"
+
 class UnknownKeycode : public BaseException
 {
 public:
@@ -362,4 +364,67 @@ KeyPress getKeySetting(const char *settingname)
 void clearKeyCache()
 {
 	g_key_setting_cache.clear();
+}
+
+/*
+Config to Command key aliases
+
+*/
+
+// A simple cache for quicker lookup
+static std::vector<KeyCommand> g_command_key_setting_cache;
+static bool command_key_cache_loaded=false;
+
+KeyCommand getCommandKeySetting(size_t i)
+{
+	if (i>=0 && i<g_command_key_setting_cache.size())
+		return g_command_key_setting_cache[i];
+	return KeyCommand();
+}
+
+size_t getCommandKeySettingCount()
+{
+	if (!command_key_cache_loaded)
+	{
+		std::vector<std::string> names = g_settings->getNames();
+		for (std::vector<std::string>::iterator it = names.begin(); it!=names.end(); ++it )
+		{
+			if (it->find("keymap_alias_") == 0)
+			{
+				std::string aname = it->substr(13);
+				KeyCommand k;
+				k.setting_name = aname;
+				k.key = g_settings->get(*it).c_str();
+				if (g_settings->exists("keymap_command_" + aname))
+					k.command = g_settings->get("keymap_command_" + aname).c_str();
+				k.modifier_control = false;
+				k.modifier_shift = false;
+				std::string modifier_list;
+				if (g_settings->exists("keymap_modifiers_" + aname))
+					modifier_list = g_settings->get("keymap_modifiers_" + aname).c_str();
+				size_t pos;
+				while(modifier_list != "")
+				{
+					pos = modifier_list.find(',');
+					std::string modifier = trim(modifier_list.substr(0,pos));
+					if (modifier == "KEY_CONTROL")
+						k.modifier_control = true;
+					if (modifier == "KEY_SHIFT")
+						k.modifier_shift = true;
+					if (pos == std::string::npos)
+						break;
+					modifier_list = modifier_list.substr(pos+1);
+				}
+				g_command_key_setting_cache.push_back(k);
+			}
+		}
+		command_key_cache_loaded = true;
+	}
+	return g_command_key_setting_cache.size();
+}
+
+void clearCommandKeyCache() //TODO: Not used, probably should be...
+{
+	g_command_key_setting_cache.clear();
+	command_key_cache_loaded=false;
 }
