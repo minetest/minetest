@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <iostream>
 #include "irrlichttypes_extrabloated.h"
-#include "tile.h"
+#include "client/tile.h"
 #include "localplayer.h"
 #include "environment.h"
 

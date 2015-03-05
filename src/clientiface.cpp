@@ -560,9 +560,9 @@ ClientInterface::~ClientInterface()
 	}
 }
 
-std::list<u16> ClientInterface::getClientIDs(ClientState min_state)
+std::vector<u16> ClientInterface::getClientIDs(ClientState min_state)
 {
-	std::list<u16> reply;
+	std::vector<u16> reply;
 	JMutexAutoLock clientslock(m_clients_mutex);
 
 	for(std::map<u16, RemoteClient*>::iterator
@@ -596,20 +596,22 @@ void ClientInterface::UpdatePlayerList()
 {
 	if (m_env != NULL)
 		{
-		std::list<u16> clients = getClientIDs();
+		std::vector<u16> clients = getClientIDs();
 		m_clients_names.clear();
 
 
 		if(!clients.empty())
 			infostream<<"Players:"<<std::endl;
-		for(std::list<u16>::iterator
+
+		for(std::vector<u16>::iterator
 			i = clients.begin();
-			i != clients.end(); ++i)
-		{
+			i != clients.end(); ++i) {
 			Player *player = m_env->getPlayer(*i);
-			if(player==NULL)
+
+			if (player == NULL)
 				continue;
-			infostream<<"* "<<player->getName()<<"\t";
+
+			infostream << "* " << player->getName() << "\t";
 
 			{
 				JMutexAutoLock clientslock(m_clients_mutex);
@@ -617,6 +619,7 @@ void ClientInterface::UpdatePlayerList()
 				if(client != NULL)
 					client->PrintInfo(infostream);
 			}
+
 			m_clients_names.push_back(player->getName());
 		}
 	}

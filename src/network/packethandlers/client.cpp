@@ -273,7 +273,7 @@ void Client::handleCommand_ChatMessage(NetworkPacket* pkt)
 		message += (wchar_t)read_wchar;
 	}
 
-	m_chat_queue.push_back(message);
+	m_chat_queue.push(message);
 }
 
 void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)
@@ -389,7 +389,7 @@ void Client::handleCommand_HP(NetworkPacket* pkt)
 		ClientEvent event;
 		event.type = CE_PLAYER_DAMAGE;
 		event.player_damage.amount = oldhp - hp;
-		m_client_event_queue.push_back(event);
+		m_client_event_queue.push(event);
 	}
 }
 
@@ -433,7 +433,7 @@ void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 	event.type = CE_PLAYER_FORCE_MOVE;
 	event.player_force_move.pitch = pitch;
 	event.player_force_move.yaw = yaw;
-	m_client_event_queue.push_back(event);
+	m_client_event_queue.push(event);
 
 	// Ignore damage for a few seconds, so that the player doesn't
 	// get damage from falling on ground
@@ -459,7 +459,7 @@ void Client::handleCommand_DeathScreen(NetworkPacket* pkt)
 	event.deathscreen.camera_point_target_x   = camera_point_target.X;
 	event.deathscreen.camera_point_target_y   = camera_point_target.Y;
 	event.deathscreen.camera_point_target_z   = camera_point_target.Z;
-	m_client_event_queue.push_back(event);
+	m_client_event_queue.push(event);
 }
 
 void Client::handleCommand_AnnounceMedia(NetworkPacket* pkt)
@@ -729,7 +729,7 @@ void Client::handleCommand_ShowFormSpec(NetworkPacket* pkt)
 	// adding a std:string to a struct isn't possible
 	event.show_formspec.formspec = new std::string(formspec);
 	event.show_formspec.formname = new std::string(formname);
-	m_client_event_queue.push_back(event);
+	m_client_event_queue.push(event);
 }
 
 void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
@@ -760,7 +760,7 @@ void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
 	event.spawn_particle.vertical           = vertical;
 	event.spawn_particle.texture            = new std::string(texture);
 
-	m_client_event_queue.push_back(event);
+	m_client_event_queue.push(event);
 }
 
 void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
@@ -805,7 +805,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	event.add_particlespawner.texture            = new std::string(texture);
 	event.add_particlespawner.id                 = id;
 
-	m_client_event_queue.push_back(event);
+	m_client_event_queue.push(event);
 }
 
 
@@ -819,7 +819,7 @@ void Client::handleCommand_DeleteParticleSpawner(NetworkPacket* pkt)
 	event.type                      = CE_DELETE_PARTICLESPAWNER;
 	event.delete_particlespawner.id = id;
 
-	m_client_event_queue.push_back(event);
+	m_client_event_queue.push(event);
 }
 
 void Client::handleCommand_HudAdd(NetworkPacket* pkt)
@@ -867,7 +867,7 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	event.hudadd.offset    = new v2f(offset);
 	event.hudadd.world_pos = new v3f(world_pos);
 	event.hudadd.size      = new v2s32(size);
-	m_client_event_queue.push_back(event);
+	m_client_event_queue.push(event);
 }
 
 void Client::handleCommand_HudRemove(NetworkPacket* pkt)
@@ -879,7 +879,7 @@ void Client::handleCommand_HudRemove(NetworkPacket* pkt)
 	ClientEvent event;
 	event.type     = CE_HUDRM;
 	event.hudrm.id = id;
-	m_client_event_queue.push_back(event);
+	m_client_event_queue.push(event);
 }
 
 void Client::handleCommand_HudChange(NetworkPacket* pkt)
@@ -915,7 +915,7 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 	event.hudchange.sdata   = new std::string(sdata);
 	event.hudchange.data    = intdata;
 	event.hudchange.v2s32data = new v2s32(v2s32data);
-	m_client_event_queue.push_back(event);
+	m_client_event_queue.push(event);
 }
 
 void Client::handleCommand_HudSetFlags(NetworkPacket* pkt)
@@ -971,7 +971,7 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 	event.set_sky.bgcolor = bgcolor;
 	event.set_sky.type    = type;
 	event.set_sky.params  = params;
-	m_client_event_queue.push_back(event);
+	m_client_event_queue.push(event);
 }
 
 void Client::handleCommand_OverrideDayNightRatio(NetworkPacket* pkt)
@@ -987,7 +987,7 @@ void Client::handleCommand_OverrideDayNightRatio(NetworkPacket* pkt)
 	event.type                                 = CE_OVERRIDE_DAY_NIGHT_RATIO;
 	event.override_day_night_ratio.do_override = do_override;
 	event.override_day_night_ratio.ratio_f     = day_night_ratio_f;
-	m_client_event_queue.push_back(event);
+	m_client_event_queue.push(event);
 }
 
 void Client::handleCommand_LocalPlayerAnimations(NetworkPacket* pkt)

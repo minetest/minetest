@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 
 #include "game.h"
-#include "tile.h"
+#include "client/tile.h"
 
 using namespace irr;
 using namespace irr::core;

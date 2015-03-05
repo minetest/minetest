@@ -57,6 +57,8 @@ MapgenV6::MapgenV6(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 
 	this->heightmap = new s16[csize.X * csize.Z];
 
+	initHeightMap(this->heightmap, csize.X * csize.Z);
+
 	MapgenV6Params *sp = (MapgenV6Params *)params->sparams;
 	this->spflags     = sp->spflags;
 	this->freq_desert = sp->freq_desert;
@@ -117,6 +119,8 @@ MapgenV6::~MapgenV6()
 	delete noise_mud;
 	delete noise_beach;
 	delete noise_biome;
+
+	delete[] heightmap;
 }
 
 

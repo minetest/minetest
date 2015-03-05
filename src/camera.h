@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "inventory.h"
 #include "mesh.h"
-#include "tile.h"
+#include "client/tile.h"
 #include "util/numeric.h"
 #include <ICameraSceneNode.h>
 

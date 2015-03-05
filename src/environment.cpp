@@ -383,7 +383,7 @@ ServerEnvironment::~ServerEnvironment()
 	m_map->drop();
 
 	// Delete ActiveBlockModifiers
-	for(std::list<ABMWithState>::iterator
+	for(std::vector<ABMWithState>::iterator
 			i = m_abms.begin(); i != m_abms.end(); ++i){
 		delete i->abm;
 	}
@@ -561,7 +561,7 @@ private:
 	ServerEnvironment *m_env;
 	std::map<content_t, std::vector<ActiveABM> > m_aabms;
 public:
-	ABMHandler(std::list<ABMWithState> &abms,
+	ABMHandler(std::vector<ABMWithState> &abms,
 			float dtime_s, ServerEnvironment *env,
 			bool use_timers):
 		m_env(env)
@@ -569,8 +569,8 @@ public:
 		if(dtime_s < 0.001)
 			return;
 		INodeDefManager *ndef = env->getGameDef()->ndef();
-		for(std::list<ABMWithState>::iterator
-				i = abms.begin(); i != abms.end(); ++i){
+		for(std::vector<ABMWithState>::iterator
+				i = abms.begin(); i != abms.end(); ++i) {
 			ActiveBlockModifier *abm = i->abm;
 			float trigger_interval = abm->getTriggerInterval();
 			if(trigger_interval < 0.001)
@@ -1183,7 +1183,7 @@ void ServerEnvironment::step(float dtime)
 					<<") being handled"<<std::endl;*/
 
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
-			if(block==NULL)
+			if(block == NULL)
 				continue;
 			
 			// Set current time as timestamp
@@ -1240,7 +1240,8 @@ void ServerEnvironment::step(float dtime)
 			while(!obj->m_messages_out.empty())
 			{
 				m_active_object_messages.push_back(
-						obj->m_messages_out.pop_front());
+						obj->m_messages_out.front());
+				obj->m_messages_out.pop();
 			}
 		}
 	}
@@ -1676,12 +1677,13 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 	// Ignore if no stored objects (to not set changed flag)
 	if(block->m_static_objects.m_stored.empty())
 		return;
+
 	verbosestream<<"ServerEnvironment::activateObjects(): "
 			<<"activating objects of block "<<PP(block->getPos())
 			<<" ("<<block->m_static_objects.m_stored.size()
 			<<" objects)"<<std::endl;
 	bool large_amount = (block->m_static_objects.m_stored.size() > g_settings->getU16("max_objects_per_block"));
-	if(large_amount){
+	if (large_amount) {
 		errorstream<<"suspiciously large amount of objects detected: "
 				<<block->m_static_objects.m_stored.size()<<" in "
 				<<PP(block->getPos())
@@ -1696,7 +1698,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 
 	// Activate stored objects
 	std::vector<StaticObject> new_stored;
-	for(std::list<StaticObject>::iterator
+	for (std::vector<StaticObject>::iterator
 			i = block->m_static_objects.m_stored.begin();
 			i != block->m_static_objects.m_stored.end(); ++i) {
 		StaticObject &s_obj = *i;
@@ -2024,9 +2026,8 @@ ClientEnvironment::~ClientEnvironment()
 		delete i->second;
 	}
 
-	for(std::list<ClientSimpleObject*>::iterator
-			i = m_simple_objects.begin(); i != m_simple_objects.end(); ++i)
-	{
+	for(std::vector<ClientSimpleObject*>::iterator
+			i = m_simple_objects.begin(); i != m_simple_objects.end(); ++i) {
 		delete *i;
 	}
 
@@ -2082,7 +2083,7 @@ void ClientEnvironment::step(float dtime)
 	LocalPlayer *lplayer = getLocalPlayer();
 	assert(lplayer);
 	// collision info queue
-	std::list<CollisionInfo> player_collisions;
+	std::vector<CollisionInfo> player_collisions;
 	
 	/*
 		Get the speed the player is going
@@ -2197,10 +2198,8 @@ void ClientEnvironment::step(float dtime)
 		
 	//std::cout<<"Looped "<<loopcount<<" times."<<std::endl;
 	
-	for(std::list<CollisionInfo>::iterator
-			i = player_collisions.begin();
-			i != player_collisions.end(); ++i)
-	{
+	for(std::vector<CollisionInfo>::iterator i = player_collisions.begin();
+			i != player_collisions.end(); ++i) {
 		CollisionInfo &info = *i;
 		v3f speed_diff = info.new_speed - info.old_speed;;
 		// Handle only fall damage
@@ -2410,16 +2409,18 @@ void ClientEnvironment::step(float dtime)
 		Step and handle simple objects
 	*/
 	g_profiler->avg("CEnv: num of simple objects", m_simple_objects.size());
-	for(std::list<ClientSimpleObject*>::iterator
-			i = m_simple_objects.begin(); i != m_simple_objects.end();)
-	{
-		ClientSimpleObject *simple = *i;
-		std::list<ClientSimpleObject*>::iterator cur = i;
-		++i;
+	for(std::vector<ClientSimpleObject*>::iterator
+			i = m_simple_objects.begin(); i != m_simple_objects.end();) {
+		std::vector<ClientSimpleObject*>::iterator cur = i;
+		ClientSimpleObject *simple = *cur;
+
 		simple->step(dtime);
-		if(simple->m_to_be_removed){
+		if(simple->m_to_be_removed) {
 			delete simple;
-			m_simple_objects.erase(cur);
+			i = m_simple_objects.erase(cur);
+		}
+		else {
+			++i;
 		}
 	}
 }

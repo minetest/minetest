@@ -502,7 +502,7 @@ void Client::step(float dtime)
 				ClientEvent event;
 				event.type = CE_PLAYER_DAMAGE;
 				event.player_damage.amount = damage;
-				m_client_event_queue.push_back(event);
+				m_client_event_queue.push(event);
 			}
 		}
 		else if(event.type == CEE_PLAYER_BREATH) {
@@ -768,7 +768,7 @@ void Client::deletingPeer(con::Peer *peer, bool timeout)
 		string name
 	}
 */
-void Client::request_media(const std::list<std::string> &file_requests)
+void Client::request_media(const std::vector<std::string> &file_requests)
 {
 	std::ostringstream os(std::ios_base::binary);
 	writeU16(os, TOSERVER_REQUEST_MEDIA);
@@ -780,7 +780,7 @@ void Client::request_media(const std::list<std::string> &file_requests)
 
 	pkt << (u16) (file_requests_size & 0xFFFF);
 
-	for(std::list<std::string>::const_iterator i = file_requests.begin();
+	for(std::vector<std::string>::const_iterator i = file_requests.begin();
 			i != file_requests.end(); ++i) {
 		pkt << (*i);
 	}
@@ -1394,7 +1394,8 @@ bool Client::getChatMessage(std::wstring &message)
 {
 	if(m_chat_queue.size() == 0)
 		return false;
-	message = m_chat_queue.pop_front();
+	message = m_chat_queue.front();
+	m_chat_queue.pop();
 	return true;
 }
 
@@ -1410,14 +1411,14 @@ void Client::typeChatMessage(const std::wstring &message)
 	// Show locally
 	if (message[0] == L'/')
 	{
-		m_chat_queue.push_back((std::wstring)L"issued command: " + message);
+		m_chat_queue.push((std::wstring)L"issued command: " + message);
 	}
 	else
 	{
 		LocalPlayer *player = m_env.getLocalPlayer();
 		assert(player != NULL);
 		std::wstring name = narrow_to_wide(player->getName());
-		m_chat_queue.push_back((std::wstring)L"<" + name + L"> " + message);
+		m_chat_queue.push((std::wstring)L"<" + name + L"> " + message);
 	}
 }
 
@@ -1510,13 +1511,15 @@ void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool ur
 
 ClientEvent Client::getClientEvent()
 {
-	if(m_client_event_queue.size() == 0)
-	{
-		ClientEvent event;
+	ClientEvent event;
+	if(m_client_event_queue.size() == 0) {
 		event.type = CE_NONE;
-		return event;
 	}
-	return m_client_event_queue.pop_front();
+	else {
+		event = m_client_event_queue.front();
+		m_client_event_queue.pop();
+	}
+	return event;
 }
 
 float Client::mediaReceiveProgress()
@@ -1634,7 +1637,7 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 			} else {
 				sstr << "Failed to save screenshot '" << filename << "'";
 			}
-			m_chat_queue.push_back(narrow_to_wide(sstr.str()));
+			m_chat_queue.push(narrow_to_wide(sstr.str()));
 			infostream << sstr.str() << std::endl;
 			image->drop();
 		}

@@ -67,7 +67,7 @@ LocalPlayer::~LocalPlayer()
 }
 
 void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
-		std::list<CollisionInfo> *collision_info)
+		std::vector<CollisionInfo> *collision_info)
 {
 	Map *map = &env->getMap();
 	INodeDefManager *nodemgr = m_gamedef->ndef();
@@ -323,9 +323,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	*/
 	bool bouncy_jump = false;
 	// Dont report if flying
-	if(collision_info && !(g_settings->getBool("free_move") && fly_allowed))
-	{
-		for(size_t i=0; i<result.collisions.size(); i++){
+	if(collision_info && !(g_settings->getBool("free_move") && fly_allowed)) {
+		for(size_t i=0; i<result.collisions.size(); i++) {
 			const CollisionInfo &info = result.collisions[i];
 			collision_info->push_back(info);
 			if(info.new_speed.Y - info.old_speed.Y > 0.1*BS &&

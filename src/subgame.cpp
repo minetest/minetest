@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "strfnd.h"
 #ifndef SERVER
-#include "tile.h" // getImagePath
+#include "client/tile.h" // getImagePath
 #endif
 #include "util/string.h"
 

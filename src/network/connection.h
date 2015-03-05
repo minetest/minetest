@@ -505,10 +505,10 @@ public:
 	ReliablePacketBuffer outgoing_reliables_sent;
 
 	//queued reliable packets
-	Queue<BufferedPacket> queued_reliables;
+	std::queue<BufferedPacket> queued_reliables;
 
 	//queue commands prior splitting to packets
-	Queue<ConnectionCommand> queued_commands;
+	std::queue<ConnectionCommand> queued_commands;
 
 	IncomingSplitBuffer incoming_splits;
 
@@ -964,7 +964,7 @@ private:
 	Connection*           m_connection;
 	unsigned int          m_max_packet_size;
 	float                 m_timeout;
-	Queue<OutgoingPacket> m_outgoing_queue;
+	std::queue<OutgoingPacket> m_outgoing_queue;
 	JSemaphore            m_send_sleep_semaphore;
 
 	unsigned int          m_iteration_packets_avaialble;

@@ -1428,7 +1428,7 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 	// Profile modified reasons
 	Profiler modprofiler;
 
-	std::list<v2s16> sector_deletion_queue;
+	std::vector<v2s16> sector_deletion_queue;
 	u32 deleted_blocks_count = 0;
 	u32 saved_blocks_count = 0;
 	u32 block_count_all = 0;
@@ -1505,11 +1505,10 @@ void Map::unloadUnreferencedBlocks(std::vector<v3s16> *unloaded_blocks)
 	timerUpdate(0.0, -1.0, unloaded_blocks);
 }
 
-void Map::deleteSectors(std::list<v2s16> &list)
+void Map::deleteSectors(std::vector<v2s16> &sectorList)
 {
-	for(std::list<v2s16>::iterator j = list.begin();
-		j != list.end(); ++j)
-	{
+	for(std::vector<v2s16>::iterator j = sectorList.begin();
+		j != sectorList.end(); ++j) {
 		MapSector *sector = m_sectors[*j];
 		// If sector is in sector cache, remove it from there
 		if(m_sector_cache == sector)
@@ -1519,63 +1518,6 @@ void Map::deleteSectors(std::list<v2s16> &list)
 		delete sector;
 	}
 }
-
-#if 0
-void Map::unloadUnusedData(float timeout,
-		core::list<v3s16> *deleted_blocks)
-{
-	core::list<v2s16> sector_deletion_queue;
-	u32 deleted_blocks_count = 0;
-	u32 saved_blocks_count = 0;
-
-	core::map<v2s16, MapSector*>::Iterator si = m_sectors.getIterator();
-	for(; si.atEnd() == false; si++)
-	{
-		MapSector *sector = si.getNode()->getValue();
-
-		bool all_blocks_deleted = true;
-
-		core::list<MapBlock*> blocks;
-		sector->getBlocks(blocks);
-		for(core::list<MapBlock*>::Iterator i = blocks.begin();
-				i != blocks.end(); i++)
-		{
-			MapBlock *block = (*i);
-
-			if(block->getUsageTimer() > timeout)
-			{
-				// Save if modified
-				if(block->getModified() != MOD_STATE_CLEAN)
-				{
-					saveBlock(block);
-					saved_blocks_count++;
-				}
-				// Delete from memory
-				sector->deleteBlock(block);
-				deleted_blocks_count++;
-			}
-			else
-			{
-				all_blocks_deleted = false;
-			}
-		}
-
-		if(all_blocks_deleted)
-		{
-			sector_deletion_queue.push_back(si.getNode()->getKey());
-		}
-	}
-
-	deleteSectors(sector_deletion_queue);
-
-	infostream<<"Map: Unloaded "<<deleted_blocks_count<<" blocks from memory"
-			<<", of which "<<saved_blocks_count<<" were wr."
-			<<std::endl;
-
-	//return sector_deletion_queue.getSize();
-	//return deleted_blocks_count;
-}
-#endif
 
 void Map::PrintInfo(std::ostream &out)
 {

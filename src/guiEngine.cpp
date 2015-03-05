@@ -38,7 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "fontengine.h"
 
 #ifdef __ANDROID__
-#include "tile.h"
+#include "client/tile.h"
 #include <GLES/gl.h>
 #endif
 

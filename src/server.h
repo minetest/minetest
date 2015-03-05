@@ -326,7 +326,7 @@ public:
 	IWritableCraftDefManager* getWritableCraftDefManager();
 
 	const ModSpec* getModSpec(const std::string &modname);
-	void getModNames(std::list<std::string> &modlist);
+	void getModNames(std::vector<std::string> &modlist);
 	std::string getBuiltinLuaPath();
 	inline std::string getWorldPath()
 			{ return m_path_world; }
@@ -423,9 +423,9 @@ private:
 	*/
 	// Envlock and conlock should be locked when calling these
 	void sendRemoveNode(v3s16 p, u16 ignore_id=0,
-			std::list<u16> *far_players=NULL, float far_d_nodes=100);
+			std::vector<u16> *far_players=NULL, float far_d_nodes=100);
 	void sendAddNode(v3s16 p, MapNode n, u16 ignore_id=0,
-			std::list<u16> *far_players=NULL, float far_d_nodes=100,
+			std::vector<u16> *far_players=NULL, float far_d_nodes=100,
 			bool remove_metadata=true);
 	void setBlockNotSent(v3s16 p);
 
@@ -438,7 +438,7 @@ private:
 	void fillMediaCache();
 	void sendMediaAnnouncement(u16 peer_id);
 	void sendRequestedMedia(u16 peer_id,
-			const std::list<std::string> &tosend);
+			const std::vector<std::string> &tosend);
 
 	void sendDetachedInventory(const std::string &name, u16 peer_id);
 	void sendDetachedInventories(u16 peer_id);
@@ -583,14 +583,11 @@ private:
 		Queues stuff from peerAdded() and deletingPeer() to
 		handlePeerChanges()
 	*/
-	Queue<con::PeerChange> m_peer_change_queue;
+	std::queue<con::PeerChange> m_peer_change_queue;
 
 	/*
 		Random stuff
 	*/
-
-	// Mod parent directory paths
-	std::list<std::string> m_modspaths;
 
 	bool m_shutdown_requested;
 
@@ -607,7 +604,7 @@ private:
 		Queue of map edits from the environment for sending to the clients
 		This is behind m_env_mutex
 	*/
-	Queue<MapEditEvent*> m_unsent_map_edit_queue;
+	std::queue<MapEditEvent*> m_unsent_map_edit_queue;
 	/*
 		Set to true when the server itself is modifying the map and does
 		all sending of information by itself.

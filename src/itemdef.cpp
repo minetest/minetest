@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock_mesh.h"
 #include "mesh.h"
 #include "wieldmesh.h"
-#include "tile.h"
+#include "client/tile.h"
 #endif
 #include "log.h"
 #include "main.h" // g_settings
@@ -249,8 +249,8 @@ public:
 	virtual ~CItemDefManager()
 	{
 #ifndef SERVER
-		const std::list<ClientCached*> &values = m_clientcached.getValues();
-		for(std::list<ClientCached*>::const_iterator
+		const std::vector<ClientCached*> &values = m_clientcached.getValues();
+		for(std::vector<ClientCached*>::const_iterator
 				i = values.begin(); i != values.end(); ++i)
 		{
 			ClientCached *cc = *i;

@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPBLOCK_MESH_HEADER
 
 #include "irrlichttypes_extrabloated.h"
-#include "tile.h"
+#include "client/tile.h"
 #include "voxel.h"
 #include <map>
 

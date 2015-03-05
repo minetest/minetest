@@ -786,25 +786,22 @@ void Server::AsyncRunStep(bool initial_step)
 
 		// Key = object id
 		// Value = data sent by object
-		std::map<u16, std::list<ActiveObjectMessage>* > buffered_messages;
+		std::map<u16, std::vector<ActiveObjectMessage>* > buffered_messages;
 
 		// Get active object messages from environment
-		for(;;)
-		{
+		for(;;) {
 			ActiveObjectMessage aom = m_env->getActiveObjectMessage();
-			if(aom.id == 0)
+			if (aom.id == 0)
 				break;
 
-			std::list<ActiveObjectMessage>* message_list = NULL;
-			std::map<u16, std::list<ActiveObjectMessage>* >::iterator n;
+			std::vector<ActiveObjectMessage>* message_list = NULL;
+			std::map<u16, std::vector<ActiveObjectMessage>* >::iterator n;
 			n = buffered_messages.find(aom.id);
-			if(n == buffered_messages.end())
-			{
-				message_list = new std::list<ActiveObjectMessage>;
+			if (n == buffered_messages.end()) {
+				message_list = new std::vector<ActiveObjectMessage>;
 				buffered_messages[aom.id] = message_list;
 			}
-			else
-			{
+			else {
 				message_list = n->second;
 			}
 			message_list->push_back(aom);
@@ -813,28 +810,26 @@ void Server::AsyncRunStep(bool initial_step)
 		m_clients.Lock();
 		std::map<u16, RemoteClient*> clients = m_clients.getClientList();
 		// Route data to every client
-		for(std::map<u16, RemoteClient*>::iterator
+		for (std::map<u16, RemoteClient*>::iterator
 			i = clients.begin();
-			i != clients.end(); ++i)
-		{
+			i != clients.end(); ++i) {
 			RemoteClient *client = i->second;
 			std::string reliable_data;
 			std::string unreliable_data;
 			// Go through all objects in message buffer
-			for(std::map<u16, std::list<ActiveObjectMessage>* >::iterator
+			for (std::map<u16, std::vector<ActiveObjectMessage>* >::iterator
 					j = buffered_messages.begin();
-					j != buffered_messages.end(); ++j)
-			{
+					j != buffered_messages.end(); ++j) {
 				// If object is not known by client, skip it
 				u16 id = j->first;
-				if(client->m_known_objects.find(id) == client->m_known_objects.end())
+				if (client->m_known_objects.find(id) == client->m_known_objects.end())
 					continue;
+
 				// Get message list of object
-				std::list<ActiveObjectMessage>* list = j->second;
+				std::vector<ActiveObjectMessage>* list = j->second;
 				// Go through every message
-				for(std::list<ActiveObjectMessage>::iterator
-						k = list->begin(); k != list->end(); ++k)
-				{
+				for (std::vector<ActiveObjectMessage>::iterator
+						k = list->begin(); k != list->end(); ++k) {
 					// Compose the full new data with header
 					ActiveObjectMessage aom = *k;
 					std::string new_data;
@@ -874,10 +869,9 @@ void Server::AsyncRunStep(bool initial_step)
 		m_clients.Unlock();
 
 		// Clear buffered_messages
-		for(std::map<u16, std::list<ActiveObjectMessage>* >::iterator
+		for(std::map<u16, std::vector<ActiveObjectMessage>* >::iterator
 				i = buffered_messages.begin();
-				i != buffered_messages.end(); ++i)
-		{
+				i != buffered_messages.end(); ++i) {
 			delete i->second;
 		}
 	}
@@ -904,83 +898,67 @@ void Server::AsyncRunStep(bool initial_step)
 
 		while(m_unsent_map_edit_queue.size() != 0)
 		{
-			MapEditEvent* event = m_unsent_map_edit_queue.pop_front();
+			MapEditEvent* event = m_unsent_map_edit_queue.front();
+			m_unsent_map_edit_queue.pop();
 
 			// Players far away from the change are stored here.
 			// Instead of sending the changes, MapBlocks are set not sent
 			// for them.
-			std::list<u16> far_players;
+			std::vector<u16> far_players;
 
-			if(event->type == MEET_ADDNODE || event->type == MEET_SWAPNODE)
-			{
-				//infostream<<"Server: MEET_ADDNODE"<<std::endl;
+			switch (event->type) {
+			case MEET_ADDNODE:
+			case MEET_SWAPNODE:
 				prof.add("MEET_ADDNODE", 1);
-				if(disable_single_change_sending)
-					sendAddNode(event->p, event->n, event->already_known_by_peer,
-							&far_players, 5, event->type == MEET_ADDNODE);
-				else
-					sendAddNode(event->p, event->n, event->already_known_by_peer,
-							&far_players, 30, event->type == MEET_ADDNODE);
-			}
-			else if(event->type == MEET_REMOVENODE)
-			{
-				//infostream<<"Server: MEET_REMOVENODE"<<std::endl;
+				sendAddNode(event->p, event->n, event->already_known_by_peer,
+						&far_players, disable_single_change_sending ? 5 : 30,
+						event->type == MEET_ADDNODE);
+				break;
+			case MEET_REMOVENODE:
 				prof.add("MEET_REMOVENODE", 1);
-				if(disable_single_change_sending)
-					sendRemoveNode(event->p, event->already_known_by_peer,
-							&far_players, 5);
-				else
-					sendRemoveNode(event->p, event->already_known_by_peer,
-							&far_players, 30);
-			}
-			else if(event->type == MEET_BLOCK_NODE_METADATA_CHANGED)
-			{
-				infostream<<"Server: MEET_BLOCK_NODE_METADATA_CHANGED"<<std::endl;
-				prof.add("MEET_BLOCK_NODE_METADATA_CHANGED", 1);
-				setBlockNotSent(event->p);
-			}
-			else if(event->type == MEET_OTHER)
-			{
-				infostream<<"Server: MEET_OTHER"<<std::endl;
+				sendRemoveNode(event->p, event->already_known_by_peer,
+						&far_players, disable_single_change_sending ? 5 : 30);
+				break;
+			case MEET_BLOCK_NODE_METADATA_CHANGED:
+				infostream << "Server: MEET_BLOCK_NODE_METADATA_CHANGED" << std::endl;
+						prof.add("MEET_BLOCK_NODE_METADATA_CHANGED", 1);
+						setBlockNotSent(event->p);
+				break;
+			case MEET_OTHER:
+				infostream << "Server: MEET_OTHER" << std::endl;
 				prof.add("MEET_OTHER", 1);
 				for(std::set<v3s16>::iterator
 						i = event->modified_blocks.begin();
-						i != event->modified_blocks.end(); ++i)
-				{
+						i != event->modified_blocks.end(); ++i) {
 					setBlockNotSent(*i);
 				}
-			}
-			else
-			{
+				break;
+			default:
 				prof.add("unknown", 1);
-				infostream<<"WARNING: Server: Unknown MapEditEvent "
-						<<((u32)event->type)<<std::endl;
+				infostream << "WARNING: Server: Unknown MapEditEvent "
+						<< ((u32)event->type) << std::endl;
+				break;
 			}
 
 			/*
 				Set blocks not sent to far players
 			*/
-			if(!far_players.empty())
-			{
+			if(!far_players.empty()) {
 				// Convert list format to that wanted by SetBlocksNotSent
 				std::map<v3s16, MapBlock*> modified_blocks2;
 				for(std::set<v3s16>::iterator
 						i = event->modified_blocks.begin();
-						i != event->modified_blocks.end(); ++i)
-				{
+						i != event->modified_blocks.end(); ++i) {
 					modified_blocks2[*i] =
 							m_env->getMap().getBlockNoCreateNoEx(*i);
 				}
+
 				// Set blocks not sent
-				for(std::list<u16>::iterator
+				for(std::vector<u16>::iterator
 						i = far_players.begin();
-						i != far_players.end(); ++i)
-				{
-					u16 peer_id = *i;
-					RemoteClient *client = getClient(peer_id);
-					if(client==NULL)
-						continue;
-					client->SetBlocksNotSent(modified_blocks2);
+						i != far_players.end(); ++i) {
+					if(RemoteClient *client = getClient(*i))
+						client->SetBlocksNotSent(modified_blocks2);
 				}
 			}
 
@@ -1285,7 +1263,7 @@ void Server::onMapEditEvent(MapEditEvent *event)
 	if(m_ignore_map_edit_events_area.contains(event->getArea()))
 		return;
 	MapEditEvent *e = event->clone();
-	m_unsent_map_edit_queue.push_back(e);
+	m_unsent_map_edit_queue.push(e);
 }
 
 Inventory* Server::getInventory(const InventoryLocation &loc)
@@ -1367,16 +1345,14 @@ void Server::setInventoryModified(const InventoryLocation &loc)
 
 void Server::SetBlocksNotSent(std::map<v3s16, MapBlock *>& block)
 {
-	std::list<u16> clients = m_clients.getClientIDs();
+	std::vector<u16> clients = m_clients.getClientIDs();
 	m_clients.Lock();
 	// Set the modified blocks unsent for all the clients
-	for (std::list<u16>::iterator
-		 i = clients.begin();
+	for (std::vector<u16>::iterator i = clients.begin();
 		 i != clients.end(); ++i) {
-			RemoteClient *client = m_clients.lockedGetClientNoEx(*i);
-			if (client != NULL)
+			if (RemoteClient *client = m_clients.lockedGetClientNoEx(*i))
 				client->SetBlocksNotSent(block);
-		}
+	}
 	m_clients.Unlock();
 }
 
@@ -1390,7 +1366,7 @@ void Server::peerAdded(con::Peer *peer)
 	c.type = con::PEER_ADDED;
 	c.peer_id = peer->id;
 	c.timeout = false;
-	m_peer_change_queue.push_back(c);
+	m_peer_change_queue.push(c);
 }
 
 void Server::deletingPeer(con::Peer *peer, bool timeout)
@@ -1404,7 +1380,7 @@ void Server::deletingPeer(con::Peer *peer, bool timeout)
 	c.type = con::PEER_REMOVED;
 	c.peer_id = peer->id;
 	c.timeout = timeout;
-	m_peer_change_queue.push_back(c);
+	m_peer_change_queue.push(c);
 }
 
 bool Server::getClientConInfo(u16 peer_id, con::rtt_stat_type type, float* retval)
@@ -1453,7 +1429,8 @@ void Server::handlePeerChanges()
 {
 	while(m_peer_change_queue.size() > 0)
 	{
-		con::PeerChange c = m_peer_change_queue.pop_front();
+		con::PeerChange c = m_peer_change_queue.front();
+		m_peer_change_queue.pop();
 
 		verbosestream<<"Server: Handling peer change: "
 				<<"id="<<c.peer_id<<", timeout="<<c.timeout
@@ -1831,7 +1808,7 @@ void Server::SendPlayerHP(u16 peer_id)
 	// Send to other clients
 	std::string str = gob_cmd_punched(playersao->readDamage(), playersao->getHP());
 	ActiveObjectMessage aom(playersao->getId(), true, str);
-	playersao->m_messages_out.push_back(aom);
+	playersao->m_messages_out.push(aom);
 }
 
 void Server::SendPlayerBreath(u16 peer_id)
@@ -1927,7 +1904,7 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 		return -1;
 
 	// Filter destination clients
-	std::list<u16> dst_clients;
+	std::vector<u16> dst_clients;
 	if(params.to_player != "")
 	{
 		Player *player = m_env->getPlayer(params.to_player.c_str());
@@ -1943,17 +1920,16 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 		}
 		dst_clients.push_back(player->peer_id);
 	}
-	else
-	{
-		std::list<u16> clients = m_clients.getClientIDs();
+	else {
+		std::vector<u16> clients = m_clients.getClientIDs();
 
-		for(std::list<u16>::iterator
-				i = clients.begin(); i != clients.end(); ++i)
-		{
+		for(std::vector<u16>::iterator
+				i = clients.begin(); i != clients.end(); ++i) {
 			Player *player = m_env->getPlayer(*i);
 			if(!player)
 				continue;
-			if(pos_exists){
+
+			if(pos_exists) {
 				if(player->getPosition().getDistanceFrom(pos) >
 						params.max_hear_distance)
 					continue;
@@ -1961,6 +1937,7 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 			dst_clients.push_back(*i);
 		}
 	}
+
 	if(dst_clients.empty())
 		return -1;
 
@@ -1970,16 +1947,14 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 	m_playing_sounds[id] = ServerPlayingSound();
 	ServerPlayingSound &psound = m_playing_sounds[id];
 	psound.params = params;
-	for(std::list<u16>::iterator i = dst_clients.begin();
-			i != dst_clients.end(); i++)
-		psound.clients.insert(*i);
 
 	NetworkPacket pkt(TOCLIENT_PLAY_SOUND, 4 + 0 + 4 + 1 + 6 + 2 + 1);
 	pkt << id << spec.name << (float) (spec.gain * params.gain)
 			<< (u8) params.type << pos << params.object << params.loop;
-	for(std::list<u16>::iterator i = dst_clients.begin();
+
+	for(std::vector<u16>::iterator i = dst_clients.begin();
 			i != dst_clients.end(); i++) {
-		// Send as reliable
+		psound.clients.insert(*i);
 		m_clients.send(*i, 0, &pkt, true);
 	}
 
@@ -2008,7 +1983,7 @@ void Server::stopSound(s32 handle)
 }
 
 void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
-	std::list<u16> *far_players, float far_d_nodes)
+	std::vector<u16> *far_players, float far_d_nodes)
 {
 	float maxd = far_d_nodes*BS;
 	v3f p_f = intToFloat(p, BS);
@@ -2016,11 +1991,10 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 	NetworkPacket pkt(TOCLIENT_REMOVENODE, 6);
 	pkt << p;
 
-	std::list<u16> clients = m_clients.getClientIDs();
-	for(std::list<u16>::iterator
-		i = clients.begin();
+	std::vector<u16> clients = m_clients.getClientIDs();
+	for(std::vector<u16>::iterator i = clients.begin();
 		i != clients.end(); ++i) {
-		if(far_players) {
+		if (far_players) {
 			// Get player
 			if(Player *player = m_env->getPlayer(*i)) {
 				// If player is far away, only set modified blocks not sent
@@ -2038,28 +2012,22 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 }
 
 void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
-		std::list<u16> *far_players, float far_d_nodes,
+		std::vector<u16> *far_players, float far_d_nodes,
 		bool remove_metadata)
 {
 	float maxd = far_d_nodes*BS;
 	v3f p_f = intToFloat(p, BS);
 
-	std::list<u16> clients = m_clients.getClientIDs();
-	for(std::list<u16>::iterator
-			i = clients.begin();
-			i != clients.end(); ++i)
-		{
+	std::vector<u16> clients = m_clients.getClientIDs();
+	for(std::vector<u16>::iterator i = clients.begin();
+			i != clients.end(); ++i) {
 
-		if(far_players)
-		{
+		if(far_players) {
 			// Get player
-			Player *player = m_env->getPlayer(*i);
-			if(player)
-			{
+			if(Player *player = m_env->getPlayer(*i)) {
 				// If player is far away, only set modified blocks not sent
 				v3f player_pos = player->getPosition();
-				if(player_pos.getDistanceFrom(p_f) > maxd)
-				{
+				if(player_pos.getDistanceFrom(p_f) > maxd) {
 					far_players->push_back(*i);
 					continue;
 				}
@@ -2091,12 +2059,10 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 
 void Server::setBlockNotSent(v3s16 p)
 {
-	std::list<u16> clients = m_clients.getClientIDs();
+	std::vector<u16> clients = m_clients.getClientIDs();
 	m_clients.Lock();
-	for(std::list<u16>::iterator
-		i = clients.begin();
-		i != clients.end(); ++i)
-	{
+	for(std::vector<u16>::iterator i = clients.begin();
+		i != clients.end(); ++i) {
 		RemoteClient *client = m_clients.lockedGetClientNoEx(*i);
 		client->SetBlockNotSent(p);
 	}
@@ -2142,13 +2108,11 @@ void Server::SendBlocks(float dtime)
 	{
 		ScopeProfiler sp(g_profiler, "Server: selecting blocks for sending");
 
-		std::list<u16> clients = m_clients.getClientIDs();
+		std::vector<u16> clients = m_clients.getClientIDs();
 
 		m_clients.Lock();
-		for(std::list<u16>::iterator
-			i = clients.begin();
-			i != clients.end(); ++i)
-		{
+		for(std::vector<u16>::iterator i = clients.begin();
+			i != clients.end(); ++i) {
 			RemoteClient *client = m_clients.lockedGetClientNoEx(*i, CS_Active);
 
 			if (client == NULL)
@@ -2205,9 +2169,9 @@ void Server::fillMediaCache()
 	infostream<<"Server: Calculating media file checksums"<<std::endl;
 
 	// Collect all media file paths
-	std::list<std::string> paths;
+	std::vector<std::string> paths;
 	for(std::vector<ModSpec>::iterator i = m_mods.begin();
-			i != m_mods.end(); i++){
+			i != m_mods.end(); i++) {
 		const ModSpec &mod = *i;
 		paths.push_back(mod.path + DIR_DELIM + "textures");
 		paths.push_back(mod.path + DIR_DELIM + "sounds");
@@ -2217,19 +2181,18 @@ void Server::fillMediaCache()
 	paths.push_back(porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server");
 
 	// Collect media file information from paths into cache
-	for(std::list<std::string>::iterator i = paths.begin();
-			i != paths.end(); i++)
-	{
+	for(std::vector<std::string>::iterator i = paths.begin();
+			i != paths.end(); i++) {
 		std::string mediapath = *i;
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(mediapath);
-		for(u32 j=0; j<dirlist.size(); j++){
-			if(dirlist[j].dir) // Ignode dirs
+		for (u32 j = 0; j < dirlist.size(); j++) {
+			if (dirlist[j].dir) // Ignode dirs
 				continue;
 			std::string filename = dirlist[j].name;
 			// If name contains illegal characters, ignore the file
-			if(!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)){
+			if (!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)) {
 				infostream<<"Server: ignoring illegal file name: \""
-						<<filename<<"\""<<std::endl;
+						<< filename << "\"" << std::endl;
 				continue;
 			}
 			// If name is not in a supported format, ignore it
@@ -2240,42 +2203,42 @@ void Server::fillMediaCache()
 				".x", ".b3d", ".md2", ".obj",
 				NULL
 			};
-			if(removeStringEnd(filename, supported_ext) == ""){
-				infostream<<"Server: ignoring unsupported file extension: \""
-						<<filename<<"\""<<std::endl;
+			if (removeStringEnd(filename, supported_ext) == ""){
+				infostream << "Server: ignoring unsupported file extension: \""
+						<< filename << "\"" << std::endl;
 				continue;
 			}
 			// Ok, attempt to load the file and add to cache
 			std::string filepath = mediapath + DIR_DELIM + filename;
 			// Read data
 			std::ifstream fis(filepath.c_str(), std::ios_base::binary);
-			if(fis.good() == false){
-				errorstream<<"Server::fillMediaCache(): Could not open \""
-						<<filename<<"\" for reading"<<std::endl;
+			if (!fis.good()) {
+				errorstream << "Server::fillMediaCache(): Could not open \""
+						<< filename << "\" for reading" << std::endl;
 				continue;
 			}
 			std::ostringstream tmp_os(std::ios_base::binary);
 			bool bad = false;
-			for(;;){
+			for(;;) {
 				char buf[1024];
 				fis.read(buf, 1024);
 				std::streamsize len = fis.gcount();
 				tmp_os.write(buf, len);
-				if(fis.eof())
+				if (fis.eof())
 					break;
-				if(!fis.good()){
+				if (!fis.good()) {
 					bad = true;
 					break;
 				}
 			}
-			if(bad){
+			if(bad) {
 				errorstream<<"Server::fillMediaCache(): Failed to read \""
-						<<filename<<"\""<<std::endl;
+						<< filename << "\"" << std::endl;
 				continue;
 			}
-			if(tmp_os.str().length() == 0){
-				errorstream<<"Server::fillMediaCache(): Empty file \""
-						<<filepath<<"\""<<std::endl;
+			if(tmp_os.str().length() == 0) {
+				errorstream << "Server::fillMediaCache(): Empty file \""
+						<< filepath << "\"" << std::endl;
 				continue;
 			}
 
@@ -2288,8 +2251,9 @@ void Server::fillMediaCache()
 			free(digest);
 
 			// Put in list
-			this->m_media[filename] = MediaInfo(filepath, sha1_base64);
-			verbosestream<<"Server: "<<sha1_hex<<" is "<<filename<<std::endl;
+			m_media[filename] = MediaInfo(filepath, sha1_base64);
+			verbosestream << "Server: " << sha1_hex << " is " << filename
+					<< std::endl;
 		}
 	}
 }
@@ -2313,9 +2277,9 @@ void Server::sendMediaAnnouncement(u16 peer_id)
 	verbosestream<<"Server: Announcing files to id("<<peer_id<<")"
 			<<std::endl;
 
-	std::list<SendableMediaAnnouncement> file_announcements;
+	std::vector<SendableMediaAnnouncement> file_announcements;
 
-	for(std::map<std::string, MediaInfo>::iterator i = m_media.begin();
+	for (std::map<std::string, MediaInfo>::iterator i = m_media.begin();
 			i != m_media.end(); i++){
 		// Put in list
 		file_announcements.push_back(
@@ -2338,7 +2302,7 @@ void Server::sendMediaAnnouncement(u16 peer_id)
 	NetworkPacket pkt(TOCLIENT_ANNOUNCE_MEDIA, 0, peer_id);
 	pkt << (u16) file_announcements.size();
 
-	for(std::list<SendableMediaAnnouncement>::iterator
+	for (std::vector<SendableMediaAnnouncement>::iterator
 			j = file_announcements.begin();
 			j != file_announcements.end(); ++j) {
 		pkt << j->name << j->sha1_digest;
@@ -2363,7 +2327,7 @@ struct SendableMedia
 };
 
 void Server::sendRequestedMedia(u16 peer_id,
-		const std::list<std::string> &tosend)
+		const std::vector<std::string> &tosend)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -2375,14 +2339,13 @@ void Server::sendRequestedMedia(u16 peer_id,
 	// Put 5kB in one bunch (this is not accurate)
 	u32 bytes_per_bunch = 5000;
 
-	std::vector< std::list<SendableMedia> > file_bunches;
-	file_bunches.push_back(std::list<SendableMedia>());
+	std::vector< std::vector<SendableMedia> > file_bunches;
+	file_bunches.push_back(std::vector<SendableMedia>());
 
 	u32 file_size_bunch_total = 0;
 
-	for(std::list<std::string>::const_iterator i = tosend.begin();
-			i != tosend.end(); ++i)
-	{
+	for(std::vector<std::string>::const_iterator i = tosend.begin();
+			i != tosend.end(); ++i) {
 		const std::string &name = *i;
 
 		if(m_media.find(name) == m_media.end()) {
@@ -2429,7 +2392,7 @@ void Server::sendRequestedMedia(u16 peer_id,
 
 		// Start next bunch if got enough data
 		if(file_size_bunch_total >= bytes_per_bunch) {
-			file_bunches.push_back(std::list<SendableMedia>());
+			file_bunches.push_back(std::vector<SendableMedia>());
 			file_size_bunch_total = 0;
 		}
 
@@ -2455,7 +2418,7 @@ void Server::sendRequestedMedia(u16 peer_id,
 		NetworkPacket pkt(TOCLIENT_MEDIA, 0, peer_id);
 		pkt << num_bunches << i << (u32) file_bunches[i].size();
 
-		for(std::list<SendableMedia>::iterator
+		for(std::vector<SendableMedia>::iterator
 				j = file_bunches[i].begin();
 				j != file_bunches[i].end(); ++j) {
 			pkt << j->name << j->data;
@@ -2627,26 +2590,24 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 			Print out action
 		*/
 		{
-			if(player != NULL && reason != CDR_DENY)
-			{
+			if(player != NULL && reason != CDR_DENY) {
 				std::ostringstream os(std::ios_base::binary);
-				std::list<u16> clients = m_clients.getClientIDs();
+				std::vector<u16> clients = m_clients.getClientIDs();
 
-				for(std::list<u16>::iterator
-					i = clients.begin();
-					i != clients.end(); ++i)
-				{
+				for(std::vector<u16>::iterator i = clients.begin();
+					i != clients.end(); ++i) {
 					// Get player
 					Player *player = m_env->getPlayer(*i);
 					if(!player)
 						continue;
+
 					// Get name of player
-					os<<player->getName()<<" ";
+					os << player->getName() << " ";
 				}
 
-				actionstream<<player->getName()<<" "
-						<<(reason==CDR_TIMEOUT?"times out.":"leaves game.")
-						<<" List of players: "<<os.str()<<std::endl;
+				actionstream << player->getName() << " "
+						<< (reason == CDR_TIMEOUT ? "times out." : "leaves game.")
+						<< " List of players: " << os.str() << std::endl;
 			}
 		}
 		{
@@ -2720,10 +2681,9 @@ std::wstring Server::getStatusString()
 	// Information about clients
 	bool first = true;
 	os<<L", clients={";
-	std::list<u16> clients = m_clients.getClientIDs();
-	for(std::list<u16>::iterator i = clients.begin();
-		i != clients.end(); ++i)
-	{
+	std::vector<u16> clients = m_clients.getClientIDs();
+	for(std::vector<u16>::iterator i = clients.begin();
+		i != clients.end(); ++i) {
 		// Get player
 		Player *player = m_env->getPlayer(*i);
 		// Get name of player
@@ -2732,12 +2692,12 @@ std::wstring Server::getStatusString()
 			name = narrow_to_wide(player->getName());
 		// Add name to information string
 		if(!first)
-			os<<L", ";
+			os << L", ";
 		else
 			first = false;
-		os<<name;
+		os << name;
 	}
-	os<<L"}";
+	os << L"}";
 	if(((ServerMap*)(&m_env->getMap()))->isSavingEnabled() == false)
 		os<<std::endl<<L"# Server: "<<" WARNING: Map saving is disabled.";
 	if(g_settings->get("motd") != "")
@@ -2760,11 +2720,10 @@ bool Server::checkPriv(const std::string &name, const std::string &priv)
 
 void Server::reportPrivsModified(const std::string &name)
 {
-	if(name == ""){
-		std::list<u16> clients = m_clients.getClientIDs();
-		for(std::list<u16>::iterator
-				i = clients.begin();
-				i != clients.end(); ++i){
+	if(name == "") {
+		std::vector<u16> clients = m_clients.getClientIDs();
+		for(std::vector<u16>::iterator i = clients.begin();
+				i != clients.end(); ++i) {
 			Player *player = m_env->getPlayer(*i);
 			reportPrivsModified(player->getName());
 		}
@@ -3199,10 +3158,9 @@ const ModSpec* Server::getModSpec(const std::string &modname)
 	}
 	return NULL;
 }
-void Server::getModNames(std::list<std::string> &modlist)
+void Server::getModNames(std::vector<std::string> &modlist)
 {
-	for(std::vector<ModSpec>::iterator i = m_mods.begin(); i != m_mods.end(); i++)
-	{
+	for(std::vector<ModSpec>::iterator i = m_mods.begin(); i != m_mods.end(); i++) {
 		modlist.push_back(i->name);
 	}
 }

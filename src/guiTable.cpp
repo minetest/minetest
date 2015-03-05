@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIScrollBar.h>
 #include "debug.h"
 #include "log.h"
-#include "tile.h"
+#include "client/tile.h"
 #include "gettime.h"
 #include "util/string.h"
 #include "util/numeric.h"
