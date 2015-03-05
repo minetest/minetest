@@ -2263,7 +2263,7 @@ void ClientEnvironment::step(float dtime)
 		damage_min = MYMIN(damage_min, d3);
 
 		// check colliding nodes - iterate through collision list from lplayer->move
-		for (std::list<CollisionInfo>::iterator i = player_collisions.begin();
+		for (std::vector<CollisionInfo>::iterator i = player_collisions.begin();
 				i != player_collisions.end();
 				++i) {
 			CollisionInfo &info = *i;
