@@ -91,7 +91,7 @@ public:
 private:
 	u32 m_notify_on;
 	std::set<u32> *m_notify_on_deco_ids;
-	std::list<GenNotifyEvent> m_notify_events;
+	std::vector<GenNotifyEvent> m_notify_events;
 };
 
 struct MapgenSpecificParams {

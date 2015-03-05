@@ -417,9 +417,8 @@ void GenerateNotifier::getEvents(
 	std::map<std::string, std::vector<v3s16> > &event_map,
 	bool peek_events)
 {
-	std::list<GenNotifyEvent>::iterator it;
-
-	for (it = m_notify_events.begin(); it != m_notify_events.end(); ++it) {
+	for (std::vector<GenNotifyEvent>::iterator it = m_notify_events.begin();
+			it != m_notify_events.end(); ++it) {
 		GenNotifyEvent &gn = *it;
 		std::string name = (gn.type == GENNOTIFY_DECORATION) ?
 			"decoration#"+ itos(gn.id) :
