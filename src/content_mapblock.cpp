@@ -1421,77 +1421,65 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			content_t thiscontent = n.getContent();
 			std::string groupname = "connect_to_raillike"; // name of the group that enables connecting to raillike nodes of different kind
-			bool self_connect_to_raillike = ((ItemGroupList) nodedef->get(n).groups)[groupname] != 0;
+			int self_group = ((ItemGroupList) nodedef->get(n).groups)[groupname];
 
 			if ((nodedef->get(n_minus_x).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_minus_x).groups)[groupname] != 0
-					&& self_connect_to_raillike)
+					&& ((ItemGroupList) nodedef->get(n_minus_x).groups)[groupname] != self_group)
 					|| n_minus_x.getContent() == thiscontent)
 				is_rail_x[0] = true;
 
 			if ((nodedef->get(n_minus_x_minus_y).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_minus_x_minus_y).groups)[groupname] != 0
-					&& self_connect_to_raillike)
+					&& ((ItemGroupList) nodedef->get(n_minus_x_minus_y).groups)[groupname] != self_group)
 					|| n_minus_x_minus_y.getContent() == thiscontent)
 				is_rail_x_minus_y[0] = true;
 
 			if ((nodedef->get(n_minus_x_plus_y).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_minus_x_plus_y).groups)[groupname] != 0
-					&& self_connect_to_raillike)
+					&& ((ItemGroupList) nodedef->get(n_minus_x_plus_y).groups)[groupname] != self_group)
 					|| n_minus_x_plus_y.getContent() == thiscontent)
 				is_rail_x_plus_y[0] = true;
 
 			if ((nodedef->get(n_plus_x).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_plus_x).groups)[groupname] != 0
-					&& self_connect_to_raillike)
+					&& ((ItemGroupList) nodedef->get(n_plus_x).groups)[groupname] != self_group)
 					|| n_plus_x.getContent() == thiscontent)
 				is_rail_x[1] = true;
 
 			if ((nodedef->get(n_plus_x_minus_y).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_plus_x_minus_y).groups)[groupname] != 0
-					&& self_connect_to_raillike)
+					&& ((ItemGroupList) nodedef->get(n_plus_x_minus_y).groups)[groupname] != self_group)
 					|| n_plus_x_minus_y.getContent() == thiscontent)
 				is_rail_x_minus_y[1] = true;
 
 			if ((nodedef->get(n_plus_x_plus_y).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_plus_x_plus_y).groups)[groupname] != 0
-					&& self_connect_to_raillike)
+					&& ((ItemGroupList) nodedef->get(n_plus_x_plus_y).groups)[groupname] != self_group)
 					|| n_plus_x_plus_y.getContent() == thiscontent)
 				is_rail_x_plus_y[1] = true;
 
 			if ((nodedef->get(n_minus_z).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_minus_z).groups)[groupname] != 0
-					&& self_connect_to_raillike)
+					&& ((ItemGroupList) nodedef->get(n_minus_z).groups)[groupname] != self_group)
 					|| n_minus_z.getContent() == thiscontent)
 				is_rail_z[0] = true;
 
 			if ((nodedef->get(n_minus_z_minus_y).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_minus_z_minus_y).groups)[groupname] != 0
-					&& self_connect_to_raillike)
+					&& ((ItemGroupList) nodedef->get(n_minus_z_minus_y).groups)[groupname] != self_group)
 					|| n_minus_z_minus_y.getContent() == thiscontent)
 				is_rail_z_minus_y[0] = true;
 
 			if ((nodedef->get(n_minus_z_plus_y).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_minus_z_plus_y).groups)[groupname] != 0
-					&& self_connect_to_raillike)
+					&& ((ItemGroupList) nodedef->get(n_minus_z_plus_y).groups)[groupname] != self_group)
 					|| n_minus_z_plus_y.getContent() == thiscontent)
 				is_rail_z_plus_y[0] = true;
 
 			if ((nodedef->get(n_plus_z).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_plus_z).groups)[groupname] != 0
-					&& self_connect_to_raillike)
+					&& ((ItemGroupList) nodedef->get(n_plus_z).groups)[groupname] != self_group)
 					|| n_plus_z.getContent() == thiscontent)
 				is_rail_z[1] = true;
 
 			if ((nodedef->get(n_plus_z_minus_y).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_plus_z_minus_y).groups)[groupname] != 0
-					&& self_connect_to_raillike)
+					&& ((ItemGroupList) nodedef->get(n_plus_z_minus_y).groups)[groupname] != self_group)
 					|| n_plus_z_minus_y.getContent() == thiscontent)
 				is_rail_z_minus_y[1] = true;
 
 			if ((nodedef->get(n_plus_z_plus_y).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_plus_z_plus_y).groups)[groupname] != 0
-					&& self_connect_to_raillike)
+					&& ((ItemGroupList) nodedef->get(n_plus_z_plus_y).groups)[groupname] != self_group)
 					|| n_plus_z_plus_y.getContent() == thiscontent)
 				is_rail_z_plus_y[1] = true;
 

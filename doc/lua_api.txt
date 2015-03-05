@@ -1053,8 +1053,8 @@ Another example: Make red wool from white wool and red dye:
   dropped as an item. If the node is wallmounted the wallmounted direction is
   checked.
 * `soil`: saplings will grow on nodes in this group
-* `connect_to_raillike`: makes nodes of raillike drawtype connect to
-  other group members with same drawtype
+* `connect_to_raillike`: makes nodes of raillike drawtype with same group value
+  connect to each other
 
 ### Known damage and digging time defining groups
 * `crumbly`: dirt, sand
