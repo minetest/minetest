@@ -25,29 +25,30 @@ menudata = {}
 tooltips = {}
 
 tooltips.te_address = fgettext("The hostname or IP address of the server")
-tooltips.te_port = fgettext("The UDP port of the server. Must be a number. "..
-		"If left empty, 30000 is used by default.")
-tooltips.cb_public_serverlist = fgettext("Enable this to see a list of "..
-		"servers from the Internet announced by a public master "..
-		"server.\nDisable this to view a list of servers you have "..
-		"visited recently.")
-tooltips.btn_mp_connect = fgettext("Connect to the host specified in the "..
-		"address and port fields")
+tooltips.te_port = fgettext(
+[[The UDP port of the server. Must be a number.
+If left empty, 30000 is used by default.]])
+tooltips.cb_public_serverlist = fgettext(
+[[Enable this to see a list of servers from the Internet announced by a public
+master server.
+Disable this to view a list of servers you have visited recently.]])
+tooltips.btn_mp_connect = fgettext(
+[[Connect to the host specified in the address and port fields]])
 tooltips.te_name = fgettext("Your player name used on the server")
-tooltips.te_pwd = fgettext("Password for the server, it is accociated with "..
-		"the name. Leave this field empty if you don't want to use a "..
-		"password.\nWARNING: Setting the password for the first time "..
-		"on a server will automatically create an account on the "..
-		"server and you need to use the same password afterwards.")
+tooltips.te_pwd = fgettext(
+[[Password for the server, it is accociated with the name. Leave this field
+empty if you don't want to use a password.
+WARNING: Setting the password for the first time on a server will
+automatically create an account on the server and you need to use the same
+password afterwards.]])
 
-tooltips.cb_creative_mode = fgettext("Creative Mode is intended to make "..
-		"creative activity easier, which is done by i.e. giving the "..
-		"player infinite supplies, higher damage, and so on.\nThe "..
-		"actual behaviour of Creative Mode depends a lot on the "..
-		"subgame.")
-tooltips.cb_enable_damage = fgettext("Enabling damage makes players mortal "..
-		"and they can take damage from attacks, falling, drowning "..
-		"and other hazards.\nDisabling damage makes players immortal.")
+tooltips.cb_creative_mode = fgettext(
+[[Creative Mode is intended to make creative activity easier, which is done by
+i.e. giving the player infinite supplies, higher damage, and so on.
+The actual behaviour of Creative Mode depends a lot on the subgame.]])
+tooltips.cb_enable_damage = fgettext(
+[[Enabling damage makes players mortal and they can take damage from attacks,
+falling, drowning and other hazards. Disabling damage makes players immortal.]])
 
 
 --------------------------------------------------------------------------------

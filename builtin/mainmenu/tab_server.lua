@@ -36,9 +36,9 @@ local function get_formspec(tabview, name, tabdata)
 		"tooltip[cb_enable_damage;"..tooltips.cb_enable_damage.. "]" ..
 		"checkbox[0.25,1.15;cb_server_announce;" .. fgettext("Public") .. ";" ..
 		dump(core.setting_getbool("server_announce")) .. "]" ..
-		"tooltip[cb_server_announce;"..fgettext("If enabled, your server will be "..
-			"announced to the public server list, where it can easily be seen "..
-			"and found by other players.").. "]" ..
+		"tooltip[cb_server_announce;"..fgettext(
+[[If enabled, your server will be announced to the public server list, where it
+can easily be seen and found by other players.]]).. "]" ..
 		"label[0.25,2.2;" .. fgettext("Name/Password") .. "]" ..
 		"field[0.55,3.2;3.5,0.5;te_playername;;" ..
 		core.formspec_escape(core.setting_get("name")) .. "]" ..

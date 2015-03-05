@@ -181,14 +181,15 @@ local function formspec(tabview, name, tabdata)
 		"checkbox[0.25,0;cb_smooth_lighting;".. fgettext("Smooth Lighting")
 				.. ";".. dump(core.setting_getbool("smooth_lighting")) .. "]"..
 		"tooltip[cb_smooth_lighting;"..
-		fgettext("If enabled, the light on surfaces will appear to be smooth.\nIf " ..
-				"disabled, the light will look rather flat, but is more " ..
-				"processor-friendly.") .. "]" ..
+		fgettext(
+[[If enabled, the light on surfaces will appear to be smooth. If disabled,
+the light will look rather flat, but is more processor-friendly.]]) .. "]" ..
 		"checkbox[0.25,0.5;cb_particles;".. fgettext("Enable Particles") .. ";"
 				.. dump(core.setting_getbool("enable_particles"))	.. "]"..
 		"tooltip[cb_particles;"..
-		fgettext("If enabled, particles are displayed for a variety of events, most "..
-				"often for digging blocks.") .. "]" ..
+		fgettext(
+[[If enabled, particles are displayed for a variety of events, most often
+for digging blocks.]]) .. "]" ..
 		"checkbox[0.25,1;cb_3d_clouds;".. fgettext("3D Clouds") .. ";"
 				.. dump(core.setting_getbool("enable_3d_clouds")) .. "]"..
 		"tooltip[cb_3d_clouds;"..
@@ -196,9 +197,11 @@ local function formspec(tabview, name, tabdata)
 		"checkbox[0.25,1.5;cb_fancy_trees;".. fgettext("Fancy Trees") .. ";"
 				.. dump(core.setting_getbool("new_style_leaves")) .. "]"..
 		"tooltip[cb_fancy_trees;"..
-		fgettext("If enabled, it is possible to look through leaves (and some other "..
-				"blocks).\nIf disabled, these blocks are opaque.\n\nIt may be "..
-				"neccessary to disable this effect on slow machines.") .. "]" ..
+		fgettext(
+[[If enabled, it is possible to look through leaves (and some other blocks).
+If disabled, these blocks are opaque.
+
+It may be neccessary to disable this effect on slow machines.]]) .. "]" ..
 		"checkbox[0.25,2.0;cb_opaque_water;".. fgettext("Opaque Water") .. ";"
 				.. dump(core.setting_getbool("opaque_water")) .. "]"..
 		"tooltip[cb_opaque_water;"..
@@ -206,53 +209,64 @@ local function formspec(tabview, name, tabdata)
 		"checkbox[0.25,2.5;cb_connected_glass;".. fgettext("Connected Glass") .. ";"
 				.. dump(core.setting_getbool("connected_glass"))	.. "]"..
 		"tooltip[cb_connected_glass;"..
-		fgettext("If enabled, certain glass blocks (and other, similar blocks) will "..
-				"form larger shapes when placed next to each other.\nIf disabled, "..
-				"each such block will be displayed as \"singleton\", without "..
-				"connections.") .. "]" ..
+		fgettext(
+[[If enabled, certain glass blocks (and other, similar blocks) will form larger
+shapes when placed next to each other.
+If disabled, each such block will be displayed as "singleton", without
+connections.]]) .. "]" ..
 		"checkbox[0.25,3.0;cb_node_highlighting;".. fgettext("Node Highlighting") .. ";"
 				.. dump(core.setting_getbool("enable_node_highlighting")) .. "]"..
 		"tooltip[cb_node_highlighting;"..
-		fgettext("If enabled, the pointed node (block) will be surrounded by a bright "..
-				"translucent cuboid in a certain color.\nIf disabled, the pointed "..
-				"node will have drawn a thin wireframe around it.") .. "]" ..
+		fgettext(
+[[If enabled, the pointed node (block) will be surrounded by a bright
+translucent cuboid in a certain color.
+If disabled, the pointed node will have drawn a thin wireframe around it.]]) .. "]" ..
 		"box[3.75,0;3.75,3.45;#999999]" ..
 		"label[3.85,0.1;".. fgettext("Texturing:") .. "]"..
 		"dropdown[3.85,0.55;3.85;dd_filters;" .. filters[1][1] .. ";"
 				.. getFilterSettingIndex() .. "]" ..
 		"tooltip[dd_filters;"..
-		fgettext("This changes the way how the surface images (textures) of blocks look.\n"..
-				"Using no filters will show the textures in their original form, "..
-				"which usually gives them a \"pixelated\" look.\nThe bilinear filter "..
-				"smoothens the textures.\nThe trilinear filter smoothens them "..
-				"even further.") .. "]" ..
+		fgettext(
+[[This changes the way how the surface images (textures) of blocks look.
+Using no filters will show the textures in their original form, which usually
+gives them a "pixelated" look.
+The bilinear filter smoothens the textures.
+The trilinear filter smoothens them even further.]]) .. "]" ..
 		"dropdown[3.85,1.35;3.85;dd_mipmap;" .. mipmap[1][1] .. ";"
 				.. getMipmapSettingIndex() .. "]" ..
 		"tooltip[dd_mipmap;" ..
-		fgettext("By using mip-mapping, objects which are further away will "..
-				"be using images of lower resolution.\nThe difference is barely "..
-				"visually noticable, but mip-mapping is great for slow machines.\n\n"..
-				"The anisotropic filter is another filter which will make the block "..
-				"surfaces look more smooth.") .. "]" ..
+		fgettext(
+[[By using mip-mapping, objects which are further away will be using images of
+lower resolution.
+The difference is barely visually noticable, but mip-mapping is great for slow
+machines.
+
+The anisotropic filter is another filter which will make the block surfaces
+look more smooth.]]) .. "]" ..
 
 		"label[3.85,2.15;".. fgettext("Rendering:") .. "]"..
 		"dropdown[3.85,2.6;3.85;dd_video_driver;"
 				.. driver_formspec_string .. ";" .. driver_current_idx .. "]" ..
 		"tooltip[dd_video_driver;" ..
-		fgettext("The renderer is the most basic component which calculates and draws "..
-				"almost everything you will see in Minetest.\nOpenGL is the best "..
-				"and fastest renderer, but is only available if your video card supports "..
-				"it. Always use OpenGL if you can.\nBurning's video is a legacy driver "..
-				"which is not well-supported by Minetest, it is not recommended to use "..
-				"it unless you know what you do.\nThe software renderer works without a "..
-				"video card, but produces the worst results.\n\nYou must restart "..
-				"Minetest for a renderer change to take effect.") .. "]" ..
+		fgettext(
+[[The renderer is the most basic component which calculates and draws almost
+everything you will see in Minetest.
+OpenGL is the best and fastest renderer, but is only available if your video
+card supports it. Always use OpenGL if you can.
+Burning's video is a legacy driver which is not well-supported by Minetest,
+it is not recommended to use it unless you know what you do.
+The software renderer works without a video card, but produces the worst
+results.
+
+You must restart Minetest for a renderer change to take effect.]]) .. "]" ..
 		"box[7.75,0;4,4;#999999]" ..
 		"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
 				.. dump(core.setting_getbool("enable_shaders")) .. "]" ..
 		"tooltip[cb_shaders;"..
-		fgettext("This enables a variety of shading and other techniques, which make the "..
-				"shadows look more realistic.\nDisable shaders on slow systems.") .. "]"
+		fgettext(
+[[This enables a variety of shading and other techniques, which make the
+shadows look more realistic.
+Disable shaders on slow systems.]]) .. "]"
 
 	if PLATFORM ~= "Android" then
 		tab_string = tab_string ..
@@ -264,8 +278,9 @@ local function formspec(tabview, name, tabdata)
 	end
 
 	local scale_tooltip
-	local scale_tooltip_pt1 = fgettext("This slider determines the size of all GUI elements.\n"..
-			"WARNING: The changes will immediately take effect.")
+	local scale_tooltip_pt1 = fgettext(
+[[This slider determines the size of all GUI elements.
+WARNING: The changes will immediately take effect.]])
 	local scale_tooltip_pt2 = fgettext("Currently, a scaling factor of %.2f is applied "..
 			"to the GUI elements.")
 	local gui_scale = tonumber(core.setting_get("gui_scaling"))
@@ -301,33 +316,34 @@ local function formspec(tabview, name, tabdata)
 				"checkbox[8,0.5;cb_bumpmapping;".. fgettext("Bumpmapping") .. ";"
 						.. dump(core.setting_getbool("enable_bumpmapping")) .. "]"..
 				"tooltip[cb_bumpmapping;" ..
-				fgettext("Bump-mapping simulates bumps and wrinkles on an otherwise flat "..
-						"surface.\nIt will enhance the looks of surfaces and is "..
-						"not too demanding on the hardware.") .. "]" ..
+				fgettext(
+[[Bump-mapping simulates bumps and wrinkles on an otherwise flat surface.
+It will enhance the looks of surfaces and is not too demanding on the hardware.]]) .. "]" ..
 				"checkbox[8,1.0;cb_generate_normalmaps;".. fgettext("Generate Normalmaps") .. ";"
 						.. dump(core.setting_getbool("generate_normalmaps")) .. "]"..
 				"checkbox[8,1.5;cb_parallax;".. fgettext("Parallax Occlusion") .. ";"
 						.. dump(core.setting_getbool("enable_parallax_occlusion")) .. "]"..
 				"tooltip[cb_parallax;" ..
-				fgettext("Gives more the illusion of depth to the entire scene by using "..
-						"shadows.\nThis effect is not very much demanding on your "..
-						"hardware.") .. "]" ..
+				fgettext(
+[[Gives more the illusion of depth to the entire scene by using shadows.
+This effect is not very much demanding on your hardware.]]) .. "]" ..
 				"checkbox[8,2.0;cb_waving_water;".. fgettext("Waving Water") .. ";"
 						.. dump(core.setting_getbool("enable_waving_water")) .. "]"..
 				"tooltip[cb_waving_water;" ..
-				fgettext("If enabled, water blocks (and other liquids) will have a "..
-						"subtle wave animation.") .. "]" ..
+				fgettext(
+[[If enabled, water blocks (and other liquids) will have a subtle wave animation.]]) .. "]" ..
 				"checkbox[8,2.5;cb_waving_leaves;".. fgettext("Waving Leaves") .. ";"
 						.. dump(core.setting_getbool("enable_waving_leaves")) .. "]"..
 				"tooltip[cb_waving_leaves;" ..
-				fgettext("If enabled, leaf blocks (and other, similar blocks) will have "..
-						"a waving animation, as if the wind blows into the "..
-						"leaves.") .. "]" ..
+				fgettext(
+[[If enabled, leaf blocks (and other, similar blocks) will have a waving
+animation, as if the wind blows into the leaves.]]) .. "]" ..
 				"checkbox[8,3.0;cb_waving_plants;".. fgettext("Waving Plants") .. ";"
 						.. dump(core.setting_getbool("enable_waving_plants")) .. "]" ..
 				"tooltip[cb_waving_plants;" ..
-				fgettext("If enabled, plants (and other, similar-looking blocks) will "..
-						"wiggle, as if the wind blows into them.") .. "]"
+				fgettext(
+[[If enabled, plants (and other, similar-looking blocks) will wiggle, as if the
+wind blows into them.]]) .. "]"
 
 	else
 		tab_string = tab_string ..
