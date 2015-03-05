@@ -35,10 +35,11 @@ enum DecorationType {
 	DECO_LSYSTEM
 };
 
-#define DECO_PLACE_CENTER_X 0x01
-#define DECO_PLACE_CENTER_Y 0x02
-#define DECO_PLACE_CENTER_Z 0x04
-#define DECO_USE_NOISE      0x08
+#define DECO_PLACE_CENTER_X  0x01
+#define DECO_PLACE_CENTER_Y  0x02
+#define DECO_PLACE_CENTER_Z  0x04
+#define DECO_USE_NOISE       0x08
+#define DECO_FORCE_PLACEMENT 0x10
 
 extern FlagDesc flagdesc_deco[];
 
