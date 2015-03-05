@@ -1913,7 +1913,7 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 		return -1;
 
 	// Filter destination clients
-	std::list<u16> dst_clients;
+	std::vector<u16> dst_clients;
 	if(params.to_player != "")
 	{
 		Player *player = m_env->getPlayer(params.to_player.c_str());
@@ -1929,8 +1929,7 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 		}
 		dst_clients.push_back(player->peer_id);
 	}
-	else
-	{
+	else {
 		std::vector<u16> clients = m_clients.getClientIDs();
 
 		for(std::vector<u16>::iterator
@@ -1957,16 +1956,14 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 	m_playing_sounds[id] = ServerPlayingSound();
 	ServerPlayingSound &psound = m_playing_sounds[id];
 	psound.params = params;
-	for(std::list<u16>::iterator i = dst_clients.begin();
-			i != dst_clients.end(); i++)
-		psound.clients.insert(*i);
 
 	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_PLAY_SOUND, 0);
 	*pkt << id << spec.name << (float) (spec.gain * params.gain)
 			<< (u8) params.type << pos << params.object << params.loop;
-	for(std::list<u16>::iterator i = dst_clients.begin();
+
+	for(std::vector<u16>::iterator i = dst_clients.begin();
 			i != dst_clients.end(); i++) {
-		// Send as reliable
+		psound.clients.insert(*i);
 		m_clients.send(*i, 0, pkt, true, false);
 	}
 	delete pkt;
@@ -2183,9 +2180,9 @@ void Server::fillMediaCache()
 	infostream<<"Server: Calculating media file checksums"<<std::endl;
 
 	// Collect all media file paths
-	std::list<std::string> paths;
+	std::vector<std::string> paths;
 	for(std::vector<ModSpec>::iterator i = m_mods.begin();
-			i != m_mods.end(); i++){
+			i != m_mods.end(); i++) {
 		const ModSpec &mod = *i;
 		paths.push_back(mod.path + DIR_DELIM + "textures");
 		paths.push_back(mod.path + DIR_DELIM + "sounds");
@@ -2195,19 +2192,18 @@ void Server::fillMediaCache()
 	paths.push_back(porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server");
 
 	// Collect media file information from paths into cache
-	for(std::list<std::string>::iterator i = paths.begin();
-			i != paths.end(); i++)
-	{
+	for(std::vector<std::string>::iterator i = paths.begin();
+			i != paths.end(); i++) {
 		std::string mediapath = *i;
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(mediapath);
-		for(u32 j=0; j<dirlist.size(); j++){
-			if(dirlist[j].dir) // Ignode dirs
+		for (u32 j = 0; j < dirlist.size(); j++) {
+			if (dirlist[j].dir) // Ignode dirs
 				continue;
 			std::string filename = dirlist[j].name;
 			// If name contains illegal characters, ignore the file
-			if(!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)){
+			if (!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)) {
 				infostream<<"Server: ignoring illegal file name: \""
-						<<filename<<"\""<<std::endl;
+						<< filename << "\"" << std::endl;
 				continue;
 			}
 			// If name is not in a supported format, ignore it
@@ -2218,42 +2214,42 @@ void Server::fillMediaCache()
 				".x", ".b3d", ".md2", ".obj",
 				NULL
 			};
-			if(removeStringEnd(filename, supported_ext) == ""){
-				infostream<<"Server: ignoring unsupported file extension: \""
-						<<filename<<"\""<<std::endl;
+			if (removeStringEnd(filename, supported_ext) == ""){
+				infostream << "Server: ignoring unsupported file extension: \""
+						<< filename << "\"" << std::endl;
 				continue;
 			}
 			// Ok, attempt to load the file and add to cache
 			std::string filepath = mediapath + DIR_DELIM + filename;
 			// Read data
 			std::ifstream fis(filepath.c_str(), std::ios_base::binary);
-			if(fis.good() == false){
-				errorstream<<"Server::fillMediaCache(): Could not open \""
-						<<filename<<"\" for reading"<<std::endl;
+			if (!fis.good()) {
+				errorstream << "Server::fillMediaCache(): Could not open \""
+						<< filename << "\" for reading" << std::endl;
 				continue;
 			}
 			std::ostringstream tmp_os(std::ios_base::binary);
 			bool bad = false;
-			for(;;){
+			for(;;) {
 				char buf[1024];
 				fis.read(buf, 1024);
 				std::streamsize len = fis.gcount();
 				tmp_os.write(buf, len);
-				if(fis.eof())
+				if (fis.eof())
 					break;
-				if(!fis.good()){
+				if (!fis.good()) {
 					bad = true;
 					break;
 				}
 			}
-			if(bad){
+			if(bad) {
 				errorstream<<"Server::fillMediaCache(): Failed to read \""
-						<<filename<<"\""<<std::endl;
+						<< filename << "\"" << std::endl;
 				continue;
 			}
-			if(tmp_os.str().length() == 0){
-				errorstream<<"Server::fillMediaCache(): Empty file \""
-						<<filepath<<"\""<<std::endl;
+			if(tmp_os.str().length() == 0) {
+				errorstream << "Server::fillMediaCache(): Empty file \""
+						<< filepath << "\"" << std::endl;
 				continue;
 			}
 
@@ -2266,8 +2262,9 @@ void Server::fillMediaCache()
 			free(digest);
 
 			// Put in list
-			this->m_media[filename] = MediaInfo(filepath, sha1_base64);
-			verbosestream<<"Server: "<<sha1_hex<<" is "<<filename<<std::endl;
+			m_media[filename] = MediaInfo(filepath, sha1_base64);
+			verbosestream << "Server: " << sha1_hex << " is " << filename
+					<< std::endl;
 		}
 	}
 }
@@ -2291,9 +2288,9 @@ void Server::sendMediaAnnouncement(u16 peer_id)
 	verbosestream<<"Server: Announcing files to id("<<peer_id<<")"
 			<<std::endl;
 
-	std::list<SendableMediaAnnouncement> file_announcements;
+	std::vector<SendableMediaAnnouncement> file_announcements;
 
-	for(std::map<std::string, MediaInfo>::iterator i = m_media.begin();
+	for (std::map<std::string, MediaInfo>::iterator i = m_media.begin();
 			i != m_media.end(); i++){
 		// Put in list
 		file_announcements.push_back(
@@ -2316,7 +2313,7 @@ void Server::sendMediaAnnouncement(u16 peer_id)
 	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_ANNOUNCE_MEDIA, 0, peer_id);
 	*pkt << (u16) file_announcements.size();
 
-	for(std::list<SendableMediaAnnouncement>::iterator
+	for (std::vector<SendableMediaAnnouncement>::iterator
 			j = file_announcements.begin();
 			j != file_announcements.end(); ++j) {
 		*pkt << j->name << j->sha1_digest;
@@ -2341,7 +2338,7 @@ struct SendableMedia
 };
 
 void Server::sendRequestedMedia(u16 peer_id,
-		const std::list<std::string> &tosend)
+		const std::vector<std::string> &tosend)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -2353,14 +2350,13 @@ void Server::sendRequestedMedia(u16 peer_id,
 	// Put 5kB in one bunch (this is not accurate)
 	u32 bytes_per_bunch = 5000;
 
-	std::vector< std::list<SendableMedia> > file_bunches;
-	file_bunches.push_back(std::list<SendableMedia>());
+	std::vector< std::vector<SendableMedia> > file_bunches;
+	file_bunches.push_back(std::vector<SendableMedia>());
 
 	u32 file_size_bunch_total = 0;
 
-	for(std::list<std::string>::const_iterator i = tosend.begin();
-			i != tosend.end(); ++i)
-	{
+	for(std::vector<std::string>::const_iterator i = tosend.begin();
+			i != tosend.end(); ++i) {
 		const std::string &name = *i;
 
 		if(m_media.find(name) == m_media.end()) {
@@ -2407,7 +2403,7 @@ void Server::sendRequestedMedia(u16 peer_id,
 
 		// Start next bunch if got enough data
 		if(file_size_bunch_total >= bytes_per_bunch) {
-			file_bunches.push_back(std::list<SendableMedia>());
+			file_bunches.push_back(std::vector<SendableMedia>());
 			file_size_bunch_total = 0;
 		}
 
@@ -2433,7 +2429,7 @@ void Server::sendRequestedMedia(u16 peer_id,
 		NetworkPacket* pkt = new NetworkPacket(TOCLIENT_MEDIA, 0, peer_id);
 		*pkt << num_bunches << i << (u32) file_bunches[i].size();
 
-		for(std::list<SendableMedia>::iterator
+		for(std::vector<SendableMedia>::iterator
 				j = file_bunches[i].begin();
 				j != file_bunches[i].end(); ++j) {
 			*pkt << j->name;

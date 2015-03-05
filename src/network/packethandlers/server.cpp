@@ -419,7 +419,7 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 
 void Server::handleCommand_RequestMedia(NetworkPacket* pkt)
 {
-	std::list<std::string> tosend;
+	std::vector<std::string> tosend;
 	u16 numfiles;
 
 	*pkt >> numfiles;
