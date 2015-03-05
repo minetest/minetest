@@ -271,6 +271,21 @@ core.register_chatcommand("clearpassword", {
 	end,
 })
 
+core.register_chatcommand("inv", {
+	params = "<name>",
+	description = "Shows inventory of <name>",
+	func = function(name, param)
+		local success = core.send_player_inventory(param, name)
+		local str = "size[8,6]"..
+			"label[3.5,4;"..param.."]"..
+			"list[player:"..param..";main;0,0;8,4;]"..
+			"button_exit[3,5;2,1;button;Done]"
+		if success then
+			core.show_formspec(name, "inventory", str)
+		end
+	end,
+})
+
 core.register_chatcommand("auth_reload", {
 	params = "",
 	description = "reload authentication data",

@@ -1635,6 +1635,21 @@ void Server::SendInventory(PlayerSAO* playerSAO)
 	SendInventory(playerSAO, "", playerSAO->getPeerID());
 }
 
+bool Server::sendInventory(const std::string &of_name, const std::string &to_name)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	PlayerSAO *of_player = getPlayerSAO(of_name);
+	PlayerSAO *to_player = getPlayerSAO(to_name);
+
+	if (of_player != NULL && to_player != NULL) {
+		SendInventory(of_player, of_name, to_player->getPeerID());
+		return true;
+	} else {
+		return false;
+	}
+}
+
 void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -2711,6 +2726,14 @@ PlayerSAO* Server::getPlayerSAO(u16 peer_id)
 {
 	Player *player = m_env->getPlayer(peer_id);
 	if(player == NULL)
+		return NULL;
+	return player->getPlayerSAO();
+}
+
+PlayerSAO* Server::getPlayerSAO(const std::string &name)
+{
+	Player *player = m_env->getPlayer(name.c_str());
+	if (player == NULL)
 		return NULL;
 	return player->getPlayerSAO();
 }

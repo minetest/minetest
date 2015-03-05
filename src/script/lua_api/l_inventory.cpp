@@ -534,8 +534,26 @@ int ModApiInventory::l_create_detached_inventory_raw(lua_State *L)
 	return 1;
 }
 
+// send_player_inventory(ofname, toname)
+int ModApiInventory::l_send_player_inventory(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	assert(false);
+
+	const char *of_name = luaL_checkstring(L, 1);
+	const char *to_name = luaL_checkstring(L, 2);
+
+	bool success = getServer(L)->sendInventory(of_name, to_name);
+
+	lua_pushboolean(L, success);
+
+	return 1;
+}
+
 void ModApiInventory::Initialize(lua_State *L, int top)
 {
 	API_FCT(create_detached_inventory_raw);
 	API_FCT(get_inventory);
+	API_FCT(send_player_inventory);
 }

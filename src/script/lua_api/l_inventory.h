@@ -123,6 +123,8 @@ private:
 
 	static int l_get_inventory(lua_State *L);
 
+	static int l_send_player_inventory(lua_State *L);
+
 	static void inventory_set_list_from_lua(Inventory *inv, const char *name,
 			lua_State *L, int tableindex, int forcesize);
 	static void inventory_get_list_to_lua(Inventory *inv, const char *name,

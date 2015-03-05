@@ -376,6 +376,7 @@ public:
 	void SendPlayerBreath(u16 peer_id);
 	void SendInventory(PlayerSAO* ofPlayerSAO, const std::string& ofName, u16 to_peer_id);
 	void SendInventory(PlayerSAO* playerSAO);
+	bool sendInventory(const std::string &of_name, const std::string &to_name);
 	void SendMovePlayer(u16 peer_id);
 
 	// Bind address
@@ -477,6 +478,7 @@ private:
 	// When called, environment mutex should be locked
 	std::string getPlayerName(u16 peer_id);
 	PlayerSAO* getPlayerSAO(u16 peer_id);
+	PlayerSAO* getPlayerSAO(const std::string &name);
 
 	/*
 		Get a player from memory or creates one.
