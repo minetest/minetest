@@ -200,12 +200,12 @@ public:
 	bool empty()
 	{
 		JMutexAutoLock lock(m_mutex);
-		return (m_size.GetValue() == 0);
+		return (m_queue.size() == 0);
 	}
 	void push_back(T t)
 	{
 		JMutexAutoLock lock(m_mutex);
-		m_list.push_back(t);
+		m_queue.push_back(t);
 		m_size.Post();
 	}
 
@@ -214,34 +214,28 @@ public:
 	*/
 	T pop_frontNoEx(u32 wait_time_max_ms)
 	{
-		if (m_size.Wait(wait_time_max_ms))
-		{
+		if (m_size.Wait(wait_time_max_ms)) {
 			JMutexAutoLock lock(m_mutex);
 
-			typename std::list<T>::iterator begin = m_list.begin();
-			T t = *begin;
-			m_list.erase(begin);
+			T t = m_queue.front();
+			m_queue.pop_front();
 			return t;
 		}
-		else
-		{
+		else {
 			return T();
 		}
 	}
 
 	T pop_front(u32 wait_time_max_ms)
 	{
-		if (m_size.Wait(wait_time_max_ms))
-		{
+		if (m_size.Wait(wait_time_max_ms)) {
 			JMutexAutoLock lock(m_mutex);
 
-			typename std::list<T>::iterator begin = m_list.begin();
-			T t = *begin;
-			m_list.erase(begin);
+			T t = m_queue.front();
+			m_queue.pop_front();
 			return t;
 		}
-		else
-		{
+		else {
 			throw ItemNotFoundException("MutexedQueue: queue is empty");
 		}
 	}
@@ -252,26 +246,21 @@ public:
 
 		JMutexAutoLock lock(m_mutex);
 
-		typename std::list<T>::iterator begin = m_list.begin();
-		T t = *begin;
-		m_list.erase(begin);
+		T t = m_queue.front();
+		m_queue.pop_front();
 		return t;
 	}
 
 	T pop_back(u32 wait_time_max_ms=0)
 	{
-		if (m_size.Wait(wait_time_max_ms))
-		{
+		if (m_size.Wait(wait_time_max_ms)) {
 			JMutexAutoLock lock(m_mutex);
 
-			typename std::list<T>::iterator last = m_list.end();
-			last--;
-			T t = *last;
-			m_list.erase(last);
+			T t = m_queue.back();
+			m_queue.pop_back();
 			return t;
 		}
-		else
-		{
+		else {
 			throw ItemNotFoundException("MutexedQueue: queue is empty");
 		}
 	}
@@ -281,18 +270,14 @@ public:
 	*/
 	T pop_backNoEx(u32 wait_time_max_ms=0)
 	{
-		if (m_size.Wait(wait_time_max_ms))
-		{
+		if (m_size.Wait(wait_time_max_ms)) {
 			JMutexAutoLock lock(m_mutex);
 
-			typename std::list<T>::iterator last = m_list.end();
-			last--;
-			T t = *last;
-			m_list.erase(last);
+			T t = m_queue.back();
+			m_queue.pop_back();
 			return t;
 		}
-		else
-		{
+		else {
 			return T();
 		}
 	}
@@ -303,10 +288,8 @@ public:
 
 		JMutexAutoLock lock(m_mutex);
 
-		typename std::list<T>::iterator last = m_list.end();
-		last--;
-		T t = *last;
-		m_list.erase(last);
+		T t = m_queue.back();
+		m_queue.pop_back();
 		return t;
 	}
 
@@ -316,15 +299,13 @@ protected:
 		return m_mutex;
 	}
 
-	// NEVER EVER modify the >>list<< you got by using this function!
-	// You may only modify it's content
-	std::list<T> & getList()
+	std::deque<T> & getQueue()
 	{
-		return m_list;
+		return m_queue;
 	}
 
+	std::deque<T> m_queue;
 	JMutex m_mutex;
-	std::list<T> m_list;
 	JSemaphore m_size;
 };
 

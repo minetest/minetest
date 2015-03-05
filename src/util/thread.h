@@ -130,9 +130,9 @@ public:
 			/*
 				If the caller is already on the list, only update CallerData
 			*/
-			for(typename std::list< GetRequest<Key, T, Caller, CallerData> >::iterator
-					i = m_queue.getList().begin();
-					i != m_queue.getList().end(); ++i)
+			for(typename std::deque< GetRequest<Key, T, Caller, CallerData> >::iterator
+					i = m_queue.getQueue().begin();
+					i != m_queue.getQueue().end(); ++i)
 			{
 				GetRequest<Key, T, Caller, CallerData> &request = *i;
 
