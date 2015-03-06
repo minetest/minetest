@@ -2115,8 +2115,6 @@ struct TestConnection: public TestBase
 		UASSERT(hand_client.last_id == 1);
 		UASSERT(hand_server.count == 1);
 		UASSERT(hand_server.last_id == 2);
-
-		//assert(0);
 	}
 };
 

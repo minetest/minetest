@@ -641,6 +641,7 @@ content_t CNodeDefManager::allocateId()
 // IWritableNodeDefManager
 content_t CNodeDefManager::set(const std::string &name, const ContentFeatures &def)
 {
+	// Pre-conditions
 	assert(name != "");
 	assert(name == def.name);
 
@@ -690,7 +691,7 @@ content_t CNodeDefManager::set(const std::string &name, const ContentFeatures &d
 
 content_t CNodeDefManager::allocateDummy(const std::string &name)
 {
-	assert(name != "");
+	assert(name != "");	// Pre-condition
 	ContentFeatures f;
 	f.name = name;
 	return set(name, f);
@@ -993,7 +994,9 @@ void CNodeDefManager::serialize(std::ostream &os, u16 protocol_version)
 		f->serialize(wrapper_os, protocol_version);
 		os2<<serializeString(wrapper_os.str());
 
-		assert(count + 1 > count); // must not overflow
+		// must not overflow
+		u16 next = count + 1;
+		FATAL_ERROR_IF(next < count, "Overflow");
 		count++;
 	}
 	writeU16(os, count);

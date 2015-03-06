@@ -391,7 +391,7 @@ void initializePaths()
 	//TODO: Test this code
 	char buf[BUFSIZ];
 	uint32_t len = sizeof(buf);
-	assert(_NSGetExecutablePath(buf, &len) != -1);
+	FATAL_ERROR_IF(_NSGetExecutablePath(buf, &len) == -1, "");
 
 	pathRemoveFile(buf, '/');
 
@@ -411,7 +411,7 @@ void initializePaths()
 	mib[1] = KERN_PROC;
 	mib[2] = KERN_PROC_PATHNAME;
 	mib[3] = -1;
-	assert(sysctl(mib, 4, buf, &len, NULL, 0) != -1);
+	FATAL_ERROR_IF(sysctl(mib, 4, buf, &len, NULL, 0) == -1, "");
 
 	pathRemoveFile(buf, '/');
 
@@ -446,13 +446,13 @@ void initializePaths()
 	*/
 	#if defined(_WIN32)
 
-	const DWORD buflen = 1000;
+	const DWORD buflen = 1000; // FIXME: Surely there is a better way to do this
 	char buf[buflen];
 	DWORD len;
 
 	// Find path of executable and set path_share relative to it
 	len = GetModuleFileName(GetModuleHandle(NULL), buf, buflen);
-	assert(len < buflen);
+	FATAL_ERROR_IF(len >= buflen, "Overlow");
 	pathRemoveFile(buf, '\\');
 
 	// Use ".\bin\.."
@@ -460,7 +460,7 @@ void initializePaths()
 
 	// Use "C:\Documents and Settings\user\Application Data\<PROJECT_NAME>"
 	len = GetEnvironmentVariable("APPDATA", buf, buflen);
-	assert(len < buflen);
+	FATAL_ERROR_IF(len >= buflen, "Overlow");
 	path_user = std::string(buf) + DIR_DELIM + PROJECT_NAME;
 
 	/*
@@ -476,7 +476,7 @@ void initializePaths()
 		if (readlink("/proc/self/exe", buf, BUFSIZ-1) == -1) {
 			errorstream << "Unable to read bindir "<< std::endl;
 #ifndef __ANDROID__
-			assert("Unable to read bindir" == 0);
+			FATAL_ERROR("Unable to read bindir");
 #endif
 		} else {
 			pathRemoveFile(buf, '/');

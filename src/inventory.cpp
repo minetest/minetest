@@ -620,13 +620,13 @@ u32 InventoryList::getFreeSlots() const
 
 const ItemStack& InventoryList::getItem(u32 i) const
 {
-	assert(i < m_size);
+	assert(i < m_size); // Pre-condition
 	return m_items[i];
 }
 
 ItemStack& InventoryList::getItem(u32 i)
 {
-	assert(i < m_size);
+	assert(i < m_size); // Pre-condition
 	return m_items[i];
 }
 
@@ -643,7 +643,7 @@ ItemStack InventoryList::changeItem(u32 i, const ItemStack &newitem)
 
 void InventoryList::deleteItem(u32 i)
 {
-	assert(i < m_items.size());
+	assert(i < m_items.size()); // Pre-condition
 	m_items[i].clear();
 }
 

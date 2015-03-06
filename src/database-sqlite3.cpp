@@ -210,14 +210,13 @@ std::string Database_SQLite3::loadBlock(const v3s16 &pos)
 
 void Database_SQLite3::createDatabase()
 {
-	assert(m_database);
+	assert(m_database); // Pre-condition
 	SQLOK(sqlite3_exec(m_database,
 		"CREATE TABLE IF NOT EXISTS `blocks` (\n"
 		"	`pos` INT PRIMARY KEY,\n"
 		"	`data` BLOB\n"
 		");\n",
 		NULL, NULL, NULL));
-
 }
 
 void Database_SQLite3::listAllLoadableBlocks(std::vector<v3s16> &dst)

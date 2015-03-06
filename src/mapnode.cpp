@@ -71,7 +71,7 @@ void MapNode::setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr
 		param1 |= (a_light & 0x0f)<<4;
 	}
 	else
-		assert(0);
+		assert("Invalid light bank" == NULL);
 }
 
 bool MapNode::isLightDayNightEq(INodeDefManager *nodemgr) const
@@ -516,8 +516,8 @@ void MapNode::serializeBulk(std::ostream &os, int version,
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
 
-	assert(content_width == 2);
-	assert(params_width == 2);
+	sanity_check(content_width == 2);
+	sanity_check(params_width == 2);
 
 	// Can't do this anymore; we have 16-bit dynamically allocated node IDs
 	// in memory; conversion just won't work in this direction.
@@ -563,9 +563,10 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
 
-	assert(version >= 22);
-	assert(content_width == 1 || content_width == 2);
-	assert(params_width == 2);
+	if (version < 22
+			|| (content_width != 1 && content_width != 2)
+			|| params_width != 2)
+		FATAL_ERROR("Deserialize bulk node data error");
 
 	// Uncompress or read data
 	u32 len = nodecount * (content_width + params_width);

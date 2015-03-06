@@ -212,6 +212,7 @@ int MapgenV7::getGroundLevelAtPoint(v2s16 p)
 
 void MapgenV7::makeChunk(BlockMakeData *data)
 {
+	// Pre-conditions
 	assert(data->vmanip);
 	assert(data->nodedef);
 	assert(data->blockpos_requested.X >= data->blockpos_min.X &&

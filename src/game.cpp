@@ -3112,7 +3112,7 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 
 			u32 new_id = player->addHud(e);
 			//if this isn't true our huds aren't consistent
-			assert(new_id == id);
+			sanity_check(new_id == id);
 
 			delete event.hudadd.pos;
 			delete event.hudadd.name;

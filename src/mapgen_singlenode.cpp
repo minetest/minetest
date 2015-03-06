@@ -62,6 +62,7 @@ MapgenSinglenode::~MapgenSinglenode()
 
 void MapgenSinglenode::makeChunk(BlockMakeData *data)
 {
+	// Pre-conditions
 	assert(data->vmanip);
 	assert(data->nodedef);
 	assert(data->blockpos_requested.X >= data->blockpos_min.X &&

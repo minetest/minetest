@@ -72,7 +72,7 @@ ClientMediaDownloader::~ClientMediaDownloader()
 
 void ClientMediaDownloader::addFile(std::string name, std::string sha1)
 {
-	assert(!m_initial_step_done);
+	assert(!m_initial_step_done); // pre-condition
 
 	// if name was already announced, ignore the new announcement
 	if (m_files.count(name) != 0) {
@@ -107,7 +107,7 @@ void ClientMediaDownloader::addFile(std::string name, std::string sha1)
 
 void ClientMediaDownloader::addRemoteServer(std::string baseurl)
 {
-	assert(!m_initial_step_done);
+	assert(!m_initial_step_done);	// pre-condition
 
 	#ifdef USE_CURL
 
@@ -356,11 +356,11 @@ void ClientMediaDownloader::remoteMediaReceived(
 		m_remote_file_transfers.erase(it);
 	}
 
-	assert(m_files.count(name) != 0);
+	sanity_check(m_files.count(name) != 0);
 
 	FileStatus *filestatus = m_files[name];
-	assert(!filestatus->received);
-	assert(filestatus->current_remote >= 0);
+	sanity_check(!filestatus->received);
+	sanity_check(filestatus->current_remote >= 0);
 
 	RemoteServerStatus *remote = m_remotes[filestatus->current_remote];
 
@@ -382,6 +382,7 @@ void ClientMediaDownloader::remoteMediaReceived(
 
 s32 ClientMediaDownloader::selectRemoteServer(FileStatus *filestatus)
 {
+	// Pre-conditions
 	assert(filestatus != NULL);
 	assert(!filestatus->received);
 	assert(filestatus->current_remote < 0);
@@ -483,7 +484,7 @@ void ClientMediaDownloader::startRemoteMediaTransfers()
 
 void ClientMediaDownloader::startConventionalTransfers(Client *client)
 {
-	assert(m_httpfetch_active == 0);
+	assert(m_httpfetch_active == 0);	// pre-condition
 
 	if (m_uncached_received_count != m_uncached_count) {
 		// Some media files have not been received yet, use the
@@ -616,7 +617,7 @@ std::string ClientMediaDownloader::serializeRequiredHashSet()
 			it = m_files.begin();
 			it != m_files.end(); ++it) {
 		if (!it->second->received) {
-			assert(it->second->sha1.size() == 20);
+			FATAL_ERROR_IF(it->second->sha1.size() != 20, "Invalid SHA1 size");
 			os << it->second->sha1;
 		}
 	}

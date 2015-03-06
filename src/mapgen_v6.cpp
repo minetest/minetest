@@ -430,6 +430,7 @@ u32 MapgenV6::get_blockseed(u64 seed, v3s16 p)
 
 void MapgenV6::makeChunk(BlockMakeData *data)
 {
+	// Pre-conditions
 	assert(data->vmanip);
 	assert(data->nodedef);
 	assert(data->blockpos_requested.X >= data->blockpos_min.X &&

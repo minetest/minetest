@@ -78,7 +78,7 @@ public:
 	}
 
 	void setCAO(GenericCAO* toset) {
-		assert( m_cao == NULL );
+		assert( m_cao == NULL ); // Pre-condition
 		m_cao = toset;
 	}
 

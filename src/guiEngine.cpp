@@ -304,7 +304,7 @@ void GUIEngine::run()
 GUIEngine::~GUIEngine()
 {
 	video::IVideoDriver* driver = m_device->getVideoDriver();
-	assert(driver != 0);
+	FATAL_ERROR_IF(driver == 0, "Could not get video driver");
 
 	if(m_sound_manager != &dummySoundManager){
 		delete m_sound_manager;
@@ -514,7 +514,7 @@ bool GUIEngine::setTexture(texture_layer layer, std::string texturepath,
 		bool tile_image, unsigned int minsize)
 {
 	video::IVideoDriver* driver = m_device->getVideoDriver();
-	assert(driver != 0);
+	FATAL_ERROR_IF(driver == 0, "Could not get video driver");
 
 	if (m_textures[layer].texture != NULL)
 	{
