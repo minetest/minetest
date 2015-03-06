@@ -33,8 +33,10 @@ tooltips.cb_public_serverlist = fgettext(
 master server.
 Disable this to view a list of servers you have visited recently.]])
 tooltips.btn_mp_connect = fgettext(
-[[Connect to the host specified in the address and port fields]])
-tooltips.te_name = fgettext("Your player name used on the server")
+[[Connect to the server specified in the address and port fields]])
+tooltips.te_name = fgettext(
+[[Player name. This name is used on the server to which you will connect to
+and will be visible to other players.]])
 tooltips.te_pwd = fgettext(
 [[Password for the server, it is accociated with the name. Leave this field
 empty if you don't want to use a password.

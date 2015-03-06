@@ -251,8 +251,10 @@ look more smooth.]]) .. "]" ..
 		fgettext(
 [[The renderer is the most basic component which calculates and draws almost
 everything you will see in Minetest.
-OpenGL is the best and fastest renderer, but is only available if your video
-card supports it. Always use OpenGL if you can.
+OpenGL is a cross-platform renderer which needs support from your video card.
+It supports shaders.
+DirectX 9.0 (direct3d9) is the native renderer for Windows and is only
+available on Windows systems and if your video card supports it.
 Burning's video is a legacy driver which is not well-supported by Minetest,
 it is not recommended to use it unless you know what you do.
 The software renderer works without a video card, but produces the worst
@@ -266,21 +268,19 @@ You must restart Minetest for a renderer change to take effect.]]) .. "]" ..
 		fgettext(
 [[This enables a variety of shading and other techniques, which make the
 shadows look more realistic.
+Shaders are only available if you choose OpenGL as renderer.
 Disable shaders on slow systems.]]) .. "]"
 
 	if PLATFORM ~= "Android" then
 		tab_string = tab_string ..
-		"button[8,4.75;3.75,0.5;btn_change_keys;".. fgettext("Change keys") .. "]" ..
-		"tooltip[btn_change_keys;".. fgettext("Change the key-bindings") .. "]"
+		"button[8,4.75;3.75,0.5;btn_change_keys;".. fgettext("Change key-bindings") .. "]"
 	else
 		tab_string = tab_string ..
 		"button[8,4.75;3.75,0.5;btn_reset_singleplayer;".. fgettext("Reset singleplayer world") .. "]"
 	end
 
 	local scale_tooltip
-	local scale_tooltip_pt1 = fgettext(
-[[This slider determines the size of all GUI elements.
-WARNING: The changes will immediately take effect.]])
+	local scale_tooltip_pt1 = fgettext("WARNING: The changes will immediately take effect.")
 	local scale_tooltip_pt2 = fgettext("Currently, a scaling factor of %.2f is applied "..
 			"to the GUI elements.")
 	local gui_scale = tonumber(core.setting_get("gui_scaling"))

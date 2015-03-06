@@ -58,8 +58,9 @@ apart. You may choose almost any name.]]) .. "]" ..
 		"field[4.5,1.4;6,0.5;te_seed;;".. current_seed .. "]" ..
 		"tooltip[te_seed;"..
 		fgettext(
-[[A non-negative integer used for the map generator, which will use this number
-to generate the world. Identical seeds produce identical results.
+[[A non-negative integer or some text used for the map generator, which will
+use this number to generate the world. Identical seeds produce identical
+results.
 If left empty, Minetest will choose a random seed.]]) .. "]" ..
 
 		"label[2,2;" .. fgettext("Mapgen") .. "]"..
