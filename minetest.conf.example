@@ -469,6 +469,8 @@
 #    Controls size of deserts and beaches in Mapgen V6
 #mgv6_freq_desert = 0.45
 #mgv6_freq_beach = 0.15
+#    Enable/disable floating dungeons and dungeon slices
+#enable_floating_dungeons = true
 
 #    Perlin noise attributes for different map generation parameters.
 #    Noise parameters can be specified as a set of positional values:

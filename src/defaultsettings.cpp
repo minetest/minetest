@@ -292,6 +292,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("water_level", "1");
 	settings->setDefault("chunksize", "5");
 	settings->setDefault("mg_flags", "");
+	settings->setDefault("enable_floating_dungeons", "true");
 
 	// IPv6
 	settings->setDefault("enable_ipv6", "true");
