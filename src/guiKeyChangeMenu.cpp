@@ -573,7 +573,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 							kc.modifier_control = false;
 							kc.modifier_shift = false;
 							kc.command = "";
-							add_command_alias_key(kc);
+							addCommandAliasKey(kc);
 							const wchar_t* text = wgettext(kc.setting_name.c_str());
 							m_command_combo->addItem(text,key_alias_settings.size()-1);
 							delete[] text;
@@ -716,7 +716,7 @@ void GUIKeyChangeMenu::add_key(int id, const wchar_t *button_name, const std::st
 	key_settings.push_back(k);
 }
 
-void GUIKeyChangeMenu::add_command_alias_key(const KeyCommand &key)
+void GUIKeyChangeMenu::addCommandAliasKey(const KeyCommand &key)
 {
 	key_alias_settings.push_back(key);
 }
@@ -743,6 +743,6 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_DUMP_BUTTON,      wgettext("Print stacks"),     "keymap_print_debug_stacks");
 
 	for (size_t i = 0; i<getCommandKeySettingCount(); ++i)
-		add_command_alias_key(getCommandKeySetting(i));
+		addCommandAliasKey(getCommandKeySetting(i));
 }
 
