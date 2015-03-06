@@ -138,7 +138,7 @@ void GUIKeyChangeMenu::removeChildren()
 void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 {
 	removeChildren();
-	v2s32 size(620, 430);
+	v2s32 size(620, 460);
 	
 	core::rect < s32 > rect(screensize.X / 2 - size.X / 2,
 							screensize.Y / 2 - size.Y / 2, screensize.X / 2 + size.X / 2,
