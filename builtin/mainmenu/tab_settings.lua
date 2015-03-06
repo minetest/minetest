@@ -249,9 +249,7 @@ look more smooth.]]) .. "]" ..
 				.. driver_formspec_string .. ";" .. driver_current_idx .. "]" ..
 		"tooltip[dd_video_driver;" ..
 		fgettext(
-[[The renderer is the most basic component which calculates and draws almost
-everything you will see in Minetest.
-OpenGL is a cross-platform renderer which needs support from your video card.
+[[OpenGL is a cross-platform renderer which needs support from your video card.
 It supports shaders.
 DirectX 9.0 (direct3d9) is the native renderer for Windows and is only
 available on Windows systems and if your video card supports it.
