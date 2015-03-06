@@ -75,7 +75,7 @@ private:
 	void add_key(int id, const wchar_t *button_name, const std::string &setting_name);
 
 	std::wstring keyUsedBy(int id, const KeyPress &key, bool modifier_shift, bool modifier_control);
-	void add_command_alias_key(const KeyCommand &key);
+	void addCommandAliasKey(const KeyCommand &key);
 	void commandComboChanged();
  
 	bool control_down;
