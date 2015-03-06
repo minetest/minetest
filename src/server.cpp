@@ -1306,7 +1306,7 @@ Inventory* Server::getInventory(const InventoryLocation &loc)
 	}
 		break;
 	default:
-		assert(0);
+		sanity_check(false); // abort
 		break;
 	}
 	return NULL;
@@ -1345,7 +1345,7 @@ void Server::setInventoryModified(const InventoryLocation &loc)
 	}
 		break;
 	default:
-		assert(0);
+		sanity_check(false); // abort
 		break;
 	}
 }
@@ -1454,7 +1454,7 @@ void Server::handlePeerChanges()
 			break;
 
 		default:
-			assert("Invalid peer change event received!" == 0);
+			FATAL_ERROR("Invalid peer change event received!");
 			break;
 		}
 	}
@@ -2637,8 +2637,8 @@ void Server::UpdateCrafting(Player* player)
 
 	// Put the new preview in
 	InventoryList *plist = player->inventory.getList("craftpreview");
-	assert(plist);
-	assert(plist->getSize() >= 1);
+	sanity_check(plist);
+	sanity_check(plist->getSize() >= 1);
 	plist->changeItem(0, preview);
 }
 
@@ -3026,7 +3026,7 @@ Inventory* Server::createDetachedInventory(const std::string &name)
 		infostream<<"Server creating detached inventory \""<<name<<"\""<<std::endl;
 	}
 	Inventory *inv = new Inventory(m_itemdef);
-	assert(inv);
+	sanity_check(inv);
 	m_detached_inventories[name] = inv;
 	//TODO find a better way to do this
 	sendDetachedInventory(name,PEER_ID_INEXISTENT);

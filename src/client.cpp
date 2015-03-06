@@ -97,7 +97,7 @@ void MeshUpdateQueue::addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_se
 {
 	DSTACK(__FUNCTION_NAME);
 
-	assert(data);
+	assert(data);	// pre-condition
 
 	JMutexAutoLock lock(m_mutex);
 
@@ -388,8 +388,9 @@ void Client::step(float dtime)
 		if(counter <= 0.0) {
 			counter = 2.0;
 
-			Player *myplayer = m_env.getLocalPlayer();
-			assert(myplayer != NULL);
+			Player *myplayer = m_env.getLocalPlayer();		
+			FATAL_ERROR_IF(myplayer == NULL, "Local player not found in environment.");
+
 			// Send TOSERVER_INIT
 			// [0] u16 TOSERVER_INIT
 			// [2] u8 SER_FMT_VER_HIGHEST_READ
@@ -707,7 +708,9 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 		// Create an irrlicht memory file
 		io::IReadFile *rfile = irrfs->createMemoryReadFile(
 				*data_rw, data_rw.getSize(), "_tempreadfile");
-		assert(rfile);
+
+		FATAL_ERROR_IF(!rfile, "Could not create irrlicht memory file.");
+
 		// Read image
 		video::IImage *img = vdrv->createImageFromFile(rfile);
 		if(!img){
@@ -785,7 +788,8 @@ void Client::request_media(const std::vector<std::string> &file_requests)
 	std::ostringstream os(std::ios_base::binary);
 	writeU16(os, TOSERVER_REQUEST_MEDIA);
 	size_t file_requests_size = file_requests.size();
-	assert(file_requests_size <= 0xFFFF);
+
+	FATAL_ERROR_IF(file_requests_size > 0xFFFF, "Unsupported number of file requests");
 
 	// Packet dynamicly resized
 	NetworkPacket* pkt = new NetworkPacket(TOSERVER_REQUEST_MEDIA, 2 + 0);
@@ -986,7 +990,8 @@ void Client::sendNodemetaFields(v3s16 p, const std::string &formname,
 		const std::map<std::string, std::string> &fields)
 {
 	size_t fields_size = fields.size();
-	assert(fields_size <= 0xFFFF);
+
+	FATAL_ERROR_IF(fields_size > 0xFFFF, "Unsupported number of nodemeta fields");
 
 	NetworkPacket* pkt = new NetworkPacket(TOSERVER_NODEMETA_FIELDS, 0);
 
@@ -1007,7 +1012,7 @@ void Client::sendInventoryFields(const std::string &formname,
 		const std::map<std::string, std::string> &fields)
 {
 	size_t fields_size = fields.size();
-	assert(fields_size <= 0xFFFF);
+	FATAL_ERROR_IF(fields_size > 0xFFFF, "Unsupported number of inventory fields");
 
 	NetworkPacket* pkt = new NetworkPacket(TOSERVER_INVENTORY_FIELDS, 0);
 	*pkt << formname << (u16) (fields_size & 0xFFFF);
@@ -1141,7 +1146,7 @@ void Client::sendPlayerPos()
 	// Set peer id if not set already
 	if(myplayer->peer_id == PEER_ID_INEXISTENT)
 		myplayer->peer_id = our_peer_id;
-	// Check that an existing peer_id is the same as the connection's
+
 	assert(myplayer->peer_id == our_peer_id);
 
 	v3f pf         = myplayer->getPosition();
@@ -1179,8 +1184,6 @@ void Client::sendPlayerItem(u16 item)
 	// Set peer id if not set already
 	if(myplayer->peer_id == PEER_ID_INEXISTENT)
 		myplayer->peer_id = our_peer_id;
-
-	// Check that an existing peer_id is the same as the connection's
 	assert(myplayer->peer_id == our_peer_id);
 
 	NetworkPacket* pkt = new NetworkPacket(TOSERVER_PLAYERITEM, 2);
@@ -1295,7 +1298,7 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 	}
 	break;
 	default:
-		assert(0);
+		FATAL_ERROR("Invalid inventory location type.");
 	}
 	return NULL;
 }
@@ -1555,9 +1558,9 @@ float Client::mediaReceiveProgress()
 void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 {
 	infostream<<"Client::afterContentReceived() started"<<std::endl;
-	assert(m_itemdef_received);
-	assert(m_nodedef_received);
-	assert(mediaReceived());
+	assert(m_itemdef_received); // pre-condition
+	assert(m_nodedef_received); // pre-condition
+	assert(mediaReceived()); // pre-condition
 
 	const wchar_t* text = wgettext("Loading textures...");
 
@@ -1697,9 +1700,10 @@ scene::ISceneManager* Client::getSceneManager()
 }
 u16 Client::allocateUnknownNodeId(const std::string &name)
 {
-	errorstream<<"Client::allocateUnknownNodeId(): "
-			<<"Client cannot allocate node IDs"<<std::endl;
-	assert(0);
+	errorstream << "Client::allocateUnknownNodeId(): "
+			<< "Client cannot allocate node IDs" << std::endl;
+	FATAL_ERROR("Client allocated unknown node");
+
 	return CONTENT_IGNORE;
 }
 ISoundManager* Client::getSoundManager()
@@ -1734,7 +1738,7 @@ scene::IAnimatedMesh* Client::getMesh(const std::string &filename)
 	io::IFileSystem *irrfs = m_device->getFileSystem();
 	io::IReadFile *rfile   = irrfs->createMemoryReadFile(
 			*data_rw, data_rw.getSize(), filename.c_str());
-	assert(rfile);
+	FATAL_ERROR_IF(!rfile, "Could not create/open RAM file");
 
 	scene::IAnimatedMesh *mesh = smgr->getMesh(rfile);
 	rfile->drop();

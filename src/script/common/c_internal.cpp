@@ -87,7 +87,7 @@ void script_error(lua_State *L)
 //     computed depending on mode
 void script_run_callbacks(lua_State *L, int nargs, RunCallbacksMode mode)
 {
-	assert(lua_gettop(L) >= nargs + 1);
+	FATAL_ERROR_IF(lua_gettop(L) < nargs + 1, "Not enough arguments");
 
 	// Insert error handler
 	lua_pushcfunction(L, script_error_handler);
@@ -136,9 +136,7 @@ void log_deprecated(lua_State *L, std::string message)
 		if (L != NULL) {
 			script_error(L);
 		} else {
-			/* As of april 2014 assert is not optimized to nop in release builds
-			 * therefore this is correct. */
-			assert("Can't do a scripterror for this deprecated message, so exit completely!");
+			FATAL_ERROR("Can't do a scripterror for this deprecated message, so exit completely!");
 		}
 	}
 

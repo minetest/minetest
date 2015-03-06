@@ -273,7 +273,7 @@ int main(int argc, char *argv[])
 	if (!game_configure(&game_params, cmd_args))
 		return 1;
 
-	assert(game_params.world_path != "");
+	sanity_check(game_params.world_path != "");
 
 	infostream << "Using commanded world path ["
 	           << game_params.world_path << "]" << std::endl;
@@ -549,7 +549,7 @@ static void startup_message()
 static bool read_config_file(const Settings &cmd_args)
 {
 	// Path of configuration file in use
-	assert(g_settings_path == "");	// Sanity check
+	sanity_check(g_settings_path == "");	// Sanity check
 
 	if (cmd_args.exists("config")) {
 		bool r = g_settings->readConfigFile(cmd_args.get("config").c_str());
@@ -748,7 +748,7 @@ static bool auto_select_world(GameParams *game_params)
 		           << world_path << "]" << std::endl;
 	}
 
-	assert(world_path != "");
+	assert(world_path != "");	// Post-condition
 	game_params->world_path = world_path;
 	return true;
 }
@@ -804,7 +804,7 @@ static bool determine_subgame(GameParams *game_params)
 {
 	SubgameSpec gamespec;
 
-	assert(game_params->world_path != "");	// pre-condition
+	assert(game_params->world_path != "");	// Pre-condition
 
 	verbosestream << _("Determining gameid/gamespec") << std::endl;
 	// If world doesn't exist

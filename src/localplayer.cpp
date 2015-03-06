@@ -172,7 +172,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	f32 d = 0.15*BS;
 
 	// This should always apply, otherwise there are glitches
-	assert(d > pos_max_d);
+	sanity_check(d > pos_max_d);
 
 	// Maximum distance over border for sneaking
 	f32 sneak_max = BS*0.4;

@@ -199,7 +199,7 @@ public:
 	void insert(const std::string &name, video::IImage *img,
 			bool prefer_local, video::IVideoDriver *driver)
 	{
-		assert(img);
+		assert(img); // Pre-condition
 		// Remove old image
 		std::map<std::string, video::IImage*>::iterator n;
 		n = m_images.find(name);
@@ -423,7 +423,7 @@ IWritableTextureSource* createTextureSource(IrrlichtDevice *device)
 TextureSource::TextureSource(IrrlichtDevice *device):
 		m_device(device)
 {
-	assert(m_device);
+	assert(m_device); // Pre-condition
 
 	m_main_thread = get_current_thread_id();
 
@@ -597,7 +597,7 @@ u32 TextureSource::generateTexture(const std::string &name)
 	}
 
 	video::IVideoDriver *driver = m_device->getVideoDriver();
-	assert(driver);
+	sanity_check(driver);
 
 	video::IImage *img = generateImage(name);
 
@@ -684,7 +684,7 @@ void TextureSource::insertSourceImage(const std::string &name, video::IImage *im
 {
 	//infostream<<"TextureSource::insertSourceImage(): name="<<name<<std::endl;
 
-	assert(get_current_thread_id() == m_main_thread);
+	sanity_check(get_current_thread_id() == m_main_thread);
 
 	m_sourcecache.insert(name, img, true, m_device->getVideoDriver());
 	m_source_image_existence.set(name, true);
@@ -695,7 +695,7 @@ void TextureSource::rebuildImagesAndTextures()
 	JMutexAutoLock lock(m_textureinfo_cache_mutex);
 
 	video::IVideoDriver* driver = m_device->getVideoDriver();
-	assert(driver != 0);
+	sanity_check(driver);
 
 	// Recreate textures
 	for (u32 i=0; i<m_textureinfo_cache.size(); i++){
@@ -703,8 +703,8 @@ void TextureSource::rebuildImagesAndTextures()
 		video::IImage *img = generateImage(ti->name);
 #ifdef __ANDROID__
 		img = Align2Npot2(img, driver);
-		assert(img->getDimension().Height == npot2(img->getDimension().Height));
-		assert(img->getDimension().Width == npot2(img->getDimension().Width));
+		sanity_check(img->getDimension().Height == npot2(img->getDimension().Height));
+		sanity_check(img->getDimension().Width == npot2(img->getDimension().Width));
 #endif
 		// Create texture from resulting image
 		video::ITexture *t = NULL;
@@ -725,7 +725,7 @@ video::ITexture* TextureSource::generateTextureFromMesh(
 		const TextureFromMeshParams &params)
 {
 	video::IVideoDriver *driver = m_device->getVideoDriver();
-	assert(driver);
+	sanity_check(driver);
 
 #ifdef __ANDROID__
 	const GLubyte* renderstr = glGetString(GL_RENDERER);
@@ -741,9 +741,9 @@ video::ITexture* TextureSource::generateTextureFromMesh(
 		) {
 		// Get a scene manager
 		scene::ISceneManager *smgr_main = m_device->getSceneManager();
-		assert(smgr_main);
+		sanity_check(smgr_main);
 		scene::ISceneManager *smgr = smgr_main->createNewSceneManager();
-		assert(smgr);
+		sanity_check(smgr);
 
 		const float scaling = 0.2;
 
@@ -978,7 +978,7 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 
 
 	video::IVideoDriver* driver = m_device->getVideoDriver();
-	assert(driver);
+	sanity_check(driver);
 
 	/*
 		Parse out the last part of the name of the image and act
@@ -1078,7 +1078,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		video::IImage *& baseimg)
 {
 	video::IVideoDriver* driver = m_device->getVideoDriver();
-	assert(driver);
+	sanity_check(driver);
 
 	// Stuff starting with [ are special commands
 	if (part_of_name.size() == 0 || part_of_name[0] != '[')
@@ -1106,7 +1106,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			//core::dimension2d<u32> dim(2,2);
 			core::dimension2d<u32> dim(1,1);
 			image = driver->createImage(video::ECF_A8R8G8B8, dim);
-			assert(image);
+			sanity_check(image != NULL);
 			/*image->setPixel(0,0, video::SColor(255,255,0,0));
 			image->setPixel(1,0, video::SColor(255,0,255,0));
 			image->setPixel(0,1, video::SColor(255,0,0,255));
@@ -1362,7 +1362,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 					transform, baseimg->getDimension());
 			video::IImage *image = driver->createImage(
 					baseimg->getColorFormat(), dim);
-			assert(image);
+			sanity_check(image != NULL);
 			imageTransform(transform, baseimg, image);
 			baseimg->drop();
 			baseimg = image;
@@ -1422,7 +1422,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 					(imagename_left + "__temp__").c_str(), img_left);
 			video::ITexture *texture_right = driver->addTexture(
 					(imagename_right + "__temp__").c_str(), img_right);
-			assert(texture_top && texture_left && texture_right);
+			FATAL_ERROR_IF(!(texture_top && texture_left && texture_right), "");
 
 			// Drop images
 			img_top->drop();
@@ -1476,7 +1476,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 
 			// Create image of render target
 			video::IImage *image = driver->createImage(rtt, v2s32(0, 0), params.dim);
-			assert(image);
+			FATAL_ERROR_IF(!image, "Could not create image of render target");
 
 			// Cleanup texture
 			driver->removeTexture(rtt);
@@ -1892,10 +1892,10 @@ void imageTransform(u32 transform, video::IImage *src, video::IImage *dst)
 	if (src == NULL || dst == NULL)
 		return;
 
-	core::dimension2d<u32> srcdim = src->getDimension();
 	core::dimension2d<u32> dstdim = dst->getDimension();
 
-	assert(dstdim == imageTransformDimension(transform, srcdim));
+	// Pre-conditions
+	assert(dstdim == imageTransformDimension(transform, src->getDimension()));
 	assert(transform <= 7);
 
 	/*

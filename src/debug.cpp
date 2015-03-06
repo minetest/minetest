@@ -133,13 +133,29 @@ Nullstream dummyout;
 	Assert
 */
 
-void assert_fail(const char *assertion, const char *file,
+void sanity_check_fn(const char *assertion, const char *file,
 		unsigned int line, const char *function)
 {
 	DEBUGPRINT("\nIn thread %lx:\n"
-			"%s:%u: %s: Assertion '%s' failed.\n",
+			"%s:%u: %s: An engine assumption '%s' failed.\n",
 			(unsigned long)get_current_thread_id(),
 			file, line, function, assertion);
+
+	debug_stacks_print();
+
+	if(g_debugstreams[1])
+		fclose(g_debugstreams[1]);
+
+	abort();
+}
+
+void fatal_error_fn(const char *msg, const char *file,
+		unsigned int line, const char *function)
+{
+	DEBUGPRINT("\nIn thread %lx:\n"
+			"%s:%u: %s: A fatal error occurred: %s\n",
+			(unsigned long)get_current_thread_id(),
+			file, line, function, msg);
 
 	debug_stacks_print();
 

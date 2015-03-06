@@ -170,7 +170,7 @@ public:
 		if (it == m_extrusion_meshes.end()) {
 			// no viable resolution found; use largest one
 			it = m_extrusion_meshes.find(MAX_EXTRUSION_MESH_RESOLUTION);
-			assert(it != m_extrusion_meshes.end());
+			sanity_check(it != m_extrusion_meshes.end());
 		}
 
 		scene::IMesh *mesh = it->second;
@@ -231,7 +231,7 @@ WieldMeshSceneNode::WieldMeshSceneNode(
 
 WieldMeshSceneNode::~WieldMeshSceneNode()
 {
-	assert(g_extrusion_mesh_cache);
+	sanity_check(g_extrusion_mesh_cache);
 	if (g_extrusion_mesh_cache->drop())
 		g_extrusion_mesh_cache = NULL;
 }

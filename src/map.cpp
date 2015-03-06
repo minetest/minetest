@@ -767,8 +767,7 @@ void Map::updateLighting(enum LightBank bank,
 			}
 			else
 			{
-				// Invalid lighting bank
-				assert(0);
+				assert("Invalid lighting bank" == NULL);
 			}
 
 			/*infostream<<"Bottom for sunlight-propagated block ("
@@ -783,7 +782,7 @@ void Map::updateLighting(enum LightBank bank,
 			}
 			catch(InvalidPositionException &e)
 			{
-				assert(0);
+				FATAL_ERROR("Invalid position");
 			}
 
 		}
@@ -1220,7 +1219,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 			n.setLight(LIGHTBANK_DAY, 0, ndef);
 			setNode(p, n);
 		} else {
-			assert(0);
+			FATAL_ERROR("Invalid position");
 		}
 	}
 
@@ -2180,7 +2179,7 @@ bool ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 			v2s16 sectorpos(x, z);
 			// Sector metadata is loaded from disk if not already loaded.
 			ServerMapSector *sector = createSector(sectorpos);
-			assert(sector);
+			FATAL_ERROR_IF(sector == NULL, "createSector() failed");
 			(void) sector;
 
 			for(s16 y=blockpos_min.Y-extra_borders.Y;
@@ -2628,7 +2627,7 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 		      lighting on blocks for them.
 	*/
 	ServerMapSector *sector;
-	try{
+	try {
 		sector = (ServerMapSector*)createSector(p2d);
 		assert(sector->getId() == MAPSECTOR_SERVER);
 	}
@@ -2861,9 +2860,10 @@ v2s16 ServerMap::getSectorPos(std::string dirname)
 	}
 	else
 	{
-		assert(false);
+		r = -1;
 	}
-	assert(r == 2);
+
+	FATAL_ERROR_IF(r != 2, "getSectorPos()");
 	v2s16 pos((s16)x, (s16)y);
 	return pos;
 }
@@ -3368,7 +3368,7 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile,
 				<<"what()="<<e.what()
 				<<std::endl;
 				// Ignoring. A new one will be generated.
-		assert(0);
+		abort();
 
 		// TODO: Backup file; name is in fullpath.
 	}
@@ -3438,7 +3438,6 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 					<<"(ignore_world_load_errors)"<<std::endl;
 		} else {
 			throw SerializationError("Invalid block data in database");
-			//assert(0);
 		}
 	}
 }

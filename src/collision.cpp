@@ -173,7 +173,7 @@ bool wouldCollideWithCeiling(
 {
 	//TimeTaker tt("wouldCollideWithCeiling");
 
-	assert(y_increase >= 0);
+	assert(y_increase >= 0);	// pre-condition
 
 	for(std::vector<aabb3f>::const_iterator
 			i = staticboxes.begin();
@@ -348,11 +348,11 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		}
 	} //tt3
 
-	assert(cboxes.size() == is_unloaded.size());
-	assert(cboxes.size() == is_step_up.size());
-	assert(cboxes.size() == bouncy_values.size());
-	assert(cboxes.size() == node_positions.size());
-	assert(cboxes.size() == is_object.size());
+	assert(cboxes.size() == is_unloaded.size());    // post-condition
+	assert(cboxes.size() == is_step_up.size());     // post-condition
+	assert(cboxes.size() == bouncy_values.size());  // post-condition
+	assert(cboxes.size() == node_positions.size()); // post-condition
+	assert(cboxes.size() == is_object.size());      // post-condition
 
 	/*
 		Collision detection
@@ -367,7 +367,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	//f32 d = 0.15*BS;
 
 	// This should always apply, otherwise there are glitches
-	assert(d > pos_max_d);
+	assert(d > pos_max_d);	// invariant
 
 	int loopcount = 0;
 

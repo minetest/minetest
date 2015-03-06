@@ -55,9 +55,9 @@ FontEngine::FontEngine(Settings* main_settings, gui::IGUIEnvironment* env) :
 		m_default_size[i] = (FontMode) FONT_SIZE_UNSPECIFIED;
 	}
 
-	assert(m_settings != NULL);
-	assert(m_env != NULL);
-	assert(m_env->getSkin() != NULL);
+	assert(m_settings != NULL); // pre-condition
+	assert(m_env != NULL); // pre-condition
+	assert(m_env->getSkin() != NULL); // pre-condition
 
 	m_currentMode = FM_Simple;
 
@@ -172,7 +172,7 @@ unsigned int FontEngine::getTextHeight(unsigned int font_size, FontMode mode)
 	if (font == NULL) {
 		font = m_env->getSkin()->getFont();
 	}
-	assert(font != NULL);
+	FATAL_ERROR_IF(font == NULL, "Could not get skin font");
 
 	return font->getDimension(L"Some unimportant example String").Height;
 }
@@ -187,7 +187,7 @@ unsigned int FontEngine::getTextWidth(const std::wstring& text,
 	if (font == NULL) {
 		font = m_env->getSkin()->getFont();
 	}
-	assert(font != NULL);
+	FATAL_ERROR_IF(font == NULL, "Could not get font");
 
 	return font->getDimension(text.c_str()).Width;
 }
@@ -202,7 +202,7 @@ unsigned int FontEngine::getLineHeight(unsigned int font_size, FontMode mode)
 	if (font == NULL) {
 		font = m_env->getSkin()->getFont();
 	}
-	assert(font != NULL);
+	FATAL_ERROR_IF(font == NULL, "Could not get font");
 
 	return font->getDimension(L"Some unimportant example String").Height
 			+ font->getKerningHeight();
@@ -255,7 +255,7 @@ void FontEngine::updateSkin()
 
 	// If we did fail to create a font our own make irrlicht find a default one
 	font = m_env->getSkin()->getFont();
-	assert(font);
+	FATAL_ERROR_IF(font == NULL, "Could not create/get font");
 
 	u32 text_height = font->getDimension(L"Hello, world!").Height;
 	infostream << "text_height=" << text_height << std::endl;
@@ -355,7 +355,7 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 /** initialize a font without freetype */
 void FontEngine::initSimpleFont(unsigned int basesize, FontMode mode)
 {
-	assert((mode == FM_Simple) || (mode == FM_SimpleMono));
+	assert(mode == FM_Simple || mode == FM_SimpleMono); // pre-condition
 
 	std::string font_path = "";
 	if (mode == FM_Simple) {
