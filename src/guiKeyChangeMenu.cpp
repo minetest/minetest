@@ -76,22 +76,22 @@ enum
 
 static void set_text(gui::IGUIElement *el, const std::string &textval)
 {
-    const wchar_t* text = wgettext(textval.c_str());
-    el->setText(text);
-    delete[] text;
+	const wchar_t* text = wgettext(textval.c_str());
+	el->setText(text);
+	delete[] text;
 }
 
 static void set_key_text(gui::IGUIElement *el, const KeyCommand &kc)
 {
-    if (std::string(kc.key.name()) != "")
-    {
-        std::string keytext = std::string(kc.modifier_control?"[Ctrl]-":"")
-                            + std::string(kc.modifier_shift?"[Shft]-":"")
-                            + kc.key.name();
-        set_text(el,keytext);
-    }
-    else
-        set_text(el,"Not set");
+	if (std::string(kc.key.name()) != "")
+	{
+		std::string keytext = std::string(kc.modifier_control?"[Ctrl]-":"")
+							+ std::string(kc.modifier_shift?"[Shft]-":"")
+							+ kc.key.name();
+		set_text(el,keytext);
+	}
+	else
+		set_text(el,"Not set");
 }
 
 GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
@@ -164,7 +164,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 
 	v2s32 offset(25, 60);
 
-	for(size_t i = 0; i < key_settings.size(); i++)
+	for (size_t i = 0; i < key_settings.size(); i++)
 	{
 		key_setting *k = key_settings.at(i);
 		{
@@ -180,7 +180,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 			k->button = Environment->addButton(rect, this, k->id, text);
 			delete[] text;
 		}
-		if(i + 1 == KMaxButtonPerColumns)
+		if (i + 1 == KMaxButtonPerColumns)
 			offset = v2s32(260, 60);
 		else
 			offset += v2s32(0, 25);
@@ -363,19 +363,19 @@ void GUIKeyChangeMenu::drawMenu()
 
 bool GUIKeyChangeMenu::acceptInput()
 {
-	for(size_t i = 0; i < key_settings.size(); i++)
+	for (size_t i = 0; i < key_settings.size(); i++)
 	{
 		key_setting *k = key_settings.at(i);
 		g_settings->set(k->setting_name, k->key.sym());
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_AUX1_DESCENDS);
-		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+		if (e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			g_settings->setBool("aux1_descends", ((gui::IGUICheckBox*)e)->isChecked());
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_DOUBLETAP_JUMP);
-		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+		if (e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			g_settings->setBool("doubletap_jump", ((gui::IGUICheckBox*)e)->isChecked());
 	}
 
@@ -412,7 +412,7 @@ bool GUIKeyChangeMenu::resetMenu()
 			for (size_t i = 0; i < key_settings.size(); i++)
 			{
 				key_setting *k = key_settings.at(i);
-				if(k->id == activeKey)
+				if (k->id == activeKey)
 				{
 					wchar_t* text = wgettext(k->key.name());
 					k->button->setText(text);
@@ -440,21 +440,21 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		KeyPress kp(event.KeyInput, prefer_character);
 		
 		bool shift_went_down = false;
-		if(!shift_down &&
+		if (!shift_down &&
 				(event.KeyInput.Key == irr::KEY_SHIFT ||
 				event.KeyInput.Key == irr::KEY_LSHIFT ||
 				event.KeyInput.Key == irr::KEY_RSHIFT))
 			shift_went_down = true;
 
 		bool control_went_down = false;
-		if(!control_down &&
+		if (!control_down &&
 				(event.KeyInput.Key == irr::KEY_CONTROL ||
 				event.KeyInput.Key == irr::KEY_LCONTROL ||
 				event.KeyInput.Key == irr::KEY_RCONTROL))
 			control_went_down = true;
 
 		// Remove Key already in use message
-		if(this->key_used_text)
+		if (this->key_used_text)
 		{
 			this->key_used_text->remove();
 			this->key_used_text = NULL;
@@ -472,12 +472,12 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		}
 
 		// But go on
-	    if (activeKey != GUI_ID_KEY_ALIAS_BUTTON)
+		if (activeKey != GUI_ID_KEY_ALIAS_BUTTON)
 		{
 			key_setting *k=NULL;
-			for(size_t i = 0; i < key_settings.size(); i++)
+			for (size_t i = 0; i < key_settings.size(); i++)
 			{
-				if(key_settings.at(i)->id == activeKey)
+				if (key_settings.at(i)->id == activeKey)
 				{
 					k = key_settings.at(i);
 					break;
@@ -540,7 +540,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 					quitMenu();
 					return true;
 				case GUI_ID_KEY_ALIAS_ADD:
-					if(!m_command_adding)
+					if (!m_command_adding)
 					{
 						m_command_adding = true;
 						m_command_name->setVisible(true);
@@ -594,7 +594,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 					}
 					return true;
 				case GUI_ID_KEY_ALIAS_REMOVE:
-					if(!m_command_adding)
+					if (!m_command_adding)
 					{
 						s32 sel = m_command_combo->getSelected();
 						m_command_combo->removeItem(sel);
@@ -627,9 +627,9 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 					return true;
 				default:
 					key_setting *k = NULL;
-					for(size_t i = 0; i < key_settings.size(); i++)
+					for (size_t i = 0; i < key_settings.size(); i++)
 					{
-						if(key_settings.at(i)->id == event.GUIEvent.Caller->getID())
+						if (key_settings.at(i)->id == event.GUIEvent.Caller->getID())
 						{
 							k = key_settings.at(i);
 							break;
