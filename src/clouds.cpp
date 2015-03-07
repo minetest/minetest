@@ -95,13 +95,13 @@ void Clouds::render()
 	*/
 
 	const s16 cloud_radius_i = 12;
-	const float cloud_size = BS*64;
-	const v2f cloud_speed(0, -BS*2);
+	const float cloud_size = BS * 64;
+	const v2f cloud_speed(0, -BS * 2);
 	
 	const float cloud_full_radius = cloud_size * cloud_radius_i;
 	
 	// Position of cloud noise origin in world coordinates
-	v2f world_cloud_origin_pos_f = m_time*cloud_speed;
+	v2f world_cloud_origin_pos_f = m_time * cloud_speed;
 	// Position of cloud noise origin from the camera
 	v2f cloud_origin_from_camera_f = world_cloud_origin_pos_f - m_camera_pos;
 	// The center point of drawing in the noise
@@ -160,32 +160,27 @@ void Clouds::render()
 
 	// Read noise
 
-	bool *grid = new bool[cloud_radius_i*2*cloud_radius_i*2];
+	bool *grid = new bool[cloud_radius_i * 2 * cloud_radius_i * 2];
 
-	for(s16 zi=-cloud_radius_i; zi<cloud_radius_i; zi++)
-	for(s16 xi=-cloud_radius_i; xi<cloud_radius_i; xi++)
-	{
-		u32 i = (zi+cloud_radius_i)*cloud_radius_i*2 + xi+cloud_radius_i;
+	float cloud_size_noise = cloud_size / BS / 200;
 
-		v2s16 p_in_noise_i(
-			xi+center_of_drawing_in_noise_i.X,
-			zi+center_of_drawing_in_noise_i.Y
-		);
+	for(s16 zi = -cloud_radius_i; zi < cloud_radius_i; zi++) {
+		u32 si = (zi + cloud_radius_i) * cloud_radius_i * 2 + cloud_radius_i;
 
-#if 0
-		double noise = noise2d_perlin_abs(
-				(float)p_in_noise_i.X*cloud_size/BS/200,
-				(float)p_in_noise_i.Y*cloud_size/BS/200,
-				m_seed, 3, 0.4);
-		grid[i] = (noise >= 0.80);
-#endif
-#if 1
-		double noise = noise2d_perlin(
-				(float)p_in_noise_i.X*cloud_size/BS/200,
-				(float)p_in_noise_i.Y*cloud_size/BS/200,
-				m_seed, 3, 0.5);
-		grid[i] = (noise >= 0.4);
-#endif
+		for(s16 xi = -cloud_radius_i; xi < cloud_radius_i; xi++) {
+			u32 i = si + xi;
+
+			v2s16 p_in_noise_i(
+				xi + center_of_drawing_in_noise_i.X,
+				zi + center_of_drawing_in_noise_i.Y
+			);
+
+			double noise = noise2d_perlin(
+					(float)p_in_noise_i.X * cloud_size_noise,
+					(float)p_in_noise_i.Y * cloud_size_noise,
+					m_seed, 3, 0.5);
+			grid[i] = (noise >= 0.4);
+		}
 	}
 
 #define GETINDEX(x, z, radius) (((z)+(radius))*(radius)*2 + (x)+(radius))
@@ -230,8 +225,8 @@ void Clouds::render()
 		}*/
 
 		f32 rx = cloud_size/2;
-		f32 ry = 8*BS;
-		f32 rz = cloud_size/2;
+		f32 ry = 8 * BS;
+		f32 rz = cloud_size / 2;
 
 		for(int i=0; i<num_faces_to_draw; i++)
 		{
