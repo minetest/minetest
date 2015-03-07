@@ -60,8 +60,6 @@ MapgenV5::MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	this->biomemap  = new u8[csize.X * csize.Z];
 	this->heightmap = new s16[csize.X * csize.Z];
 
-	initHeightMap(this->heightmap, csize.X * csize.Z);
-
 	MapgenV5Params *sp = (MapgenV5Params *)params->sparams;
 	this->spflags      = sp->spflags;
 

@@ -64,8 +64,6 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	this->heightmap = new s16[csize.X * csize.Z];
 	this->ridge_heightmap = new s16[csize.X * csize.Z];
 
-	initHeightMap(this->heightmap, csize.X * csize.Z);
-
 	MapgenV7Params *sp = (MapgenV7Params *)params->sparams;
 	this->spflags = sp->spflags;
 
