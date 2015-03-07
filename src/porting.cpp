@@ -375,7 +375,7 @@ void initializePaths()
 	char buf[BUFSIZ];
 	memset(buf, 0, BUFSIZ);
 	// Get path to executable
-	assert(readlink("/proc/self/exe", buf, BUFSIZ-1) != -1);
+	FATAL_ERROR_IF(readlink("/proc/self/exe", buf, BUFSIZ-1) == -1, "Failed to get cwd");
 
 	pathRemoveFile(buf, '/');
 
