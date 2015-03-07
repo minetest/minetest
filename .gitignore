@@ -35,6 +35,7 @@ doc/doxygen_*
 CMakeFiles/*
 src/CMakeFiles/*
 src/Makefile
+src/android_version.h
 src/cmake_config.h
 src/cmake_config_githash.h
 src/cmake_install.cmake
@@ -71,14 +72,16 @@ locale/
 *.layout
 *.o
 
-## Build variants
+## Android build files
 build/android/assets
 build/android/bin
 build/android/Debug
 build/android/deps
 build/android/gen
-build/android/jni/src/*
+build/android/jni/src
 build/android/libs
 build/android/obj
+build/android/path.cfg
+build/android/AndroidManifest.xml
 timestamp
 
