@@ -3,10 +3,12 @@
 OS := $(shell uname)
 
 #automaticaly set number of jobs
-ifeq ($(OS),Linux)
-  PARALLEL := $(shell grep -c ^processor /proc/cpuinfo)
-else
-  PARALLEL := 1
+ifndef PARALLEL
+	ifeq ($(OS),Linux)
+		PARALLEL := $(shell grep -c ^processor /proc/cpuinfo)
+	else
+		PARALLEL := 1
+	endif
 endif
 
 # compile with GPROF

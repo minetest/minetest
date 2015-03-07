@@ -12,6 +12,9 @@ notifications:
   email: false
 matrix:
   fast_finish: true
+  include:
+    - env: ANDROID=yes
+      compiler: gcc
   exclude:
     - env: WINDOWS=32
       compiler: clang
