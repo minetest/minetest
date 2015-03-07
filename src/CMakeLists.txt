@@ -352,19 +352,16 @@ add_custom_target(GenerateVersion
 	WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 
 add_subdirectory(jthread)
-add_subdirectory(network)
 add_subdirectory(script)
 add_subdirectory(util)
 
-set (unittests_SRCS
-	test.cpp
-)
-
 set(common_SRCS
 	ban.cpp
+	base64.cpp
 	cavegen.cpp
 	clientiface.cpp
 	collision.cpp
+	connection.cpp
 	content_abm.cpp
 	content_mapnode.cpp
 	content_nodemeta.cpp
@@ -421,20 +418,20 @@ set(common_SRCS
 	serverlist.cpp
 	serverobject.cpp
 	settings.cpp
+	sha1.cpp
 	socket.cpp
 	sound.cpp
 	staticobject.cpp
 	subgame.cpp
+	test.cpp
 	tool.cpp
 	treegen.cpp
 	version.cpp
 	voxel.cpp
 	voxelalgorithms.cpp
-	${common_network_SRCS}
 	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}
 	${UTIL_SRCS}
-	${unittests_SRCS}
 )
 
 # This gives us the icon and file version information
@@ -457,16 +454,9 @@ if(WIN32)
 endif()
 
 # Client sources
-
-if (BUILD_CLIENT)
-	add_subdirectory(client)
-endif(BUILD_CLIENT)
-
 set(minetest_SRCS
 	${common_SRCS}
 	${sound_SRCS}
-	${client_SRCS}
-	${client_network_SRCS}
 	camera.cpp
 	chat.cpp
 	client.cpp
@@ -499,6 +489,7 @@ set(minetest_SRCS
 	particles.cpp
 	shader.cpp
 	sky.cpp
+	tile.cpp
 	wieldmesh.cpp
 	${minetest_SCRIPT_SRCS}
 )

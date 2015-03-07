@@ -21,9 +21,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CONTENT_SAO_HEADER
 
 #include "serverobject.h"
+#include "content_object.h"
 #include "itemgroup.h"
 #include "player.h"
 #include "object_properties.h"
+
+ServerActiveObject* createItemSAO(ServerEnvironment *env, v3f pos,
+                                  const std::string &itemstring);
 
 /*
 	LuaEntitySAO needs some internals exposed.
@@ -35,9 +39,9 @@ public:
 	LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	             const std::string &name, const std::string &state);
 	~LuaEntitySAO();
-	ActiveObjectType getType() const
+	u8 getType() const
 	{ return ACTIVEOBJECT_TYPE_LUAENTITY; }
-	ActiveObjectType getSendType() const
+	u8 getSendType() const
 	{ return ACTIVEOBJECT_TYPE_GENERIC; }
 	virtual void addedToEnvironment(u32 dtime_s);
 	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
@@ -154,9 +158,9 @@ public:
 	PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 			const std::set<std::string> &privs, bool is_singleplayer);
 	~PlayerSAO();
-	ActiveObjectType getType() const
+	u8 getType() const
 	{ return ACTIVEOBJECT_TYPE_PLAYER; }
-	ActiveObjectType getSendType() const
+	u8 getSendType() const
 	{ return ACTIVEOBJECT_TYPE_GENERIC; }
 	std::string getDescription();
 
@@ -205,6 +209,7 @@ public:
 	Inventory* getInventory();
 	const Inventory* getInventory() const;
 	InventoryLocation getInventoryLocation() const;
+	void setInventoryModified();
 	std::string getWieldList() const;
 	int getWieldIndex() const;
 	void setWieldIndex(int i);
@@ -314,6 +319,13 @@ private:
 	bool m_attachment_sent;
 
 public:
+	// Some flags used by Server
+	bool m_moved;
+	bool m_inventory_not_sent;
+	bool m_hp_not_sent;
+	bool m_breath_not_sent;
+	bool m_wielded_item_not_sent;
+
 	float m_physics_override_speed;
 	float m_physics_override_jump;
 	float m_physics_override_gravity;

@@ -3,7 +3,7 @@
 #include "ISceneManager.h"
 #include "ICameraSceneNode.h"
 #include "S3DVertex.h"
-#include "client/tile.h"
+#include "tile.h"
 #include "noise.h" // easeCurve
 #include "main.h" // g_profiler
 #include "profiler.h"

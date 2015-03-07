@@ -42,7 +42,7 @@ static void applyFacesShading(video::SColor& color, float factor)
 	MeshMakeData
 */
 
-MeshMakeData::MeshMakeData(IGameDef *gamedef, bool use_shaders):
+MeshMakeData::MeshMakeData(IGameDef *gamedef):
 	m_vmanip(),
 	m_blockpos(-1337,-1337,-1337),
 	m_crack_pos_relative(-1337, -1337, -1337),
@@ -50,8 +50,7 @@ MeshMakeData::MeshMakeData(IGameDef *gamedef, bool use_shaders):
 	m_smooth_lighting(false),
 	m_show_hud(false),
 	m_highlight_mesh_color(255, 255, 255, 255),
-	m_gamedef(gamedef),
-	m_use_shaders(use_shaders)
+	m_gamedef(gamedef)
 {}
 
 void MeshMakeData::fill(MapBlock *block)
@@ -248,7 +247,7 @@ static u16 getSmoothLightCombined(v3s16 p, MeshMakeData *data)
 
 	for (u32 i = 0; i < 8; i++)
 	{
-		const MapNode &n = data->m_vmanip.getNodeRefUnsafeCheckFlags(p - dirs8[i]);
+		MapNode n = data->m_vmanip.getNodeNoEx(p - dirs8[i]);
 
 		// if it's CONTENT_IGNORE we can't do any light calculations
 		if (n.getContent() == CONTENT_IGNORE) {
@@ -438,6 +437,8 @@ struct FastFace
 static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		v3f p, v3s16 dir, v3f scale, u8 light_source, std::vector<FastFace> &dest)
 {
+	FastFace face;
+
 	// Position is at the center of the cube.
 	v3f pos = p * BS;
 
@@ -588,10 +589,6 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 
 	u8 alpha = tile.alpha;
 
-	dest.push_back(FastFace());
-
-	FastFace& face = *dest.rbegin();
-
 	face.vertices[0] = video::S3DVertex(vertex_pos[0], normal,
 			MapBlock_LightColor(alpha, li0, light_source),
 			core::vector2d<f32>(x0+w*abs_scale, y0+h));
@@ -606,6 +603,7 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 			core::vector2d<f32>(x0+w*abs_scale, y0));
 
 	face.tile = tile;
+	dest.push_back(face);
 }
 
 /*
@@ -746,8 +744,8 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
 static void getTileInfo(
 		// Input:
 		MeshMakeData *data,
-		const v3s16 &p,
-		const v3s16 &face_dir,
+		v3s16 p,
+		v3s16 face_dir,
 		// Output:
 		bool &makes_face,
 		v3s16 &p_corrected,
@@ -761,20 +759,14 @@ static void getTileInfo(
 	INodeDefManager *ndef = data->m_gamedef->ndef();
 	v3s16 blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
 
-	MapNode &n0 = vmanip.getNodeRefUnsafe(blockpos_nodes + p);
+	MapNode n0 = vmanip.getNodeNoEx(blockpos_nodes + p);
 
 	// Don't even try to get n1 if n0 is already CONTENT_IGNORE
-	if (n0.getContent() == CONTENT_IGNORE) {
+	if (n0.getContent() == CONTENT_IGNORE ) {
 		makes_face = false;
 		return;
 	}
-
-	const MapNode &n1 = vmanip.getNodeRefUnsafeCheckFlags(blockpos_nodes + p + face_dir);
-
-	if (n1.getContent() == CONTENT_IGNORE) {
-		makes_face = false;
-		return;
-	}
+	MapNode n1 = vmanip.getNodeNoEx(blockpos_nodes + p + face_dir);
 
 	// This is hackish
 	bool equivalent = false;
@@ -1036,7 +1028,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	m_last_daynight_ratio((u32) -1),
 	m_daynight_diffs()
 {
-	m_enable_shaders = data->m_use_shaders;
+	m_enable_shaders = g_settings->getBool("enable_shaders");
 	m_enable_highlighting = g_settings->getBool("enable_node_highlighting");
 
 	// 4-21ms for MAP_BLOCKSIZE=16  (NOTE: probably outdated)
@@ -1044,7 +1036,6 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	//TimeTaker timer1("MapBlockMesh()");
 
 	std::vector<FastFace> fastfaces_new;
-	fastfaces_new.reserve(512);
 
 	/*
 		We are including the faces of the trailing edges of the block.

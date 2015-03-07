@@ -229,28 +229,21 @@ core.register_chatcommand("setpassword", {
 		if not toname then
 			return false, "Name field required"
 		end
-		local act_str_past = "?"
-		local act_str_pres = "?"
+		local actstr = "?"
 		if not raw_password then
 			core.set_player_password(toname, "")
-			act_str_past = "cleared"
-			act_str_pres = "clears"
+			actstr = "cleared"
 		else
 			core.set_player_password(toname,
 					core.get_password_hash(toname,
 							raw_password))
-			act_str_past = "set"
-			act_str_pres = "sets"
+			actstr = "set"
 		end
 		if toname ~= name then
 			core.chat_send_player(toname, "Your password was "
-					.. act_str_past .. " by " .. name)
+					.. actstr .. " by " .. name)
 		end
-
-		core.log("action", name .. " " .. act_str_pres
-		.. " password of " .. toname .. ".")
-
-		return true, "Password of player \"" .. toname .. "\" " .. act_str_past
+		return true, "Password of player \"" .. toname .. "\" " .. actstr
 	end,
 })
 
@@ -264,9 +257,6 @@ core.register_chatcommand("clearpassword", {
 			return false, "Name field required"
 		end
 		core.set_player_password(toname, '')
-
-		core.log("action", name .. " clears password of " .. toname .. ".")
-
 		return true, "Password of player \"" .. toname .. "\" cleared"
 	end,
 })
@@ -414,14 +404,13 @@ core.register_chatcommand("set", {
 })
 
 core.register_chatcommand("deleteblocks", {
-	params = "(here [radius]) | (<pos1> <pos2>)",
+	params = "[here] [<pos1> <pos2>]",
 	description = "delete map blocks contained in area pos1 to pos2",
 	privs = {server=true},
 	func = function(name, param)
 		local p1 = {}
 		local p2 = {}
-		local args = param:split(" ")
-		if args[1] == "here" then
+		if param == "here" then
 			local player = core.get_player_by_name(name)
 			if player == nil then
 				core.log("error", "player is nil")
@@ -429,12 +418,6 @@ core.register_chatcommand("deleteblocks", {
 			end
 			p1 = player:getpos()
 			p2 = p1
-
-			if #args >= 2 then
-				local radius = tonumber(args[2]) or 0
-				p1 = vector.add(p1, radius)
-				p2 = vector.subtract(p2, radius)
-			end
 		else
 			local pos1, pos2 = unpack(param:split(") ("))
 			if pos1 == nil or pos2 == nil then
@@ -587,9 +570,6 @@ core.register_chatcommand("rollback_check", {
 			.. " seconds=86400=24h, limit=5)",
 	privs = {rollback=true},
 	func = function(name, param)
-		if not core.setting_getbool("enable_rollback_recording") then
-			return false, "Rollback functions are disabled."
-		end
 		local range, seconds, limit =
 			param:match("(%d+) *(%d*) *(%d*)")
 		range = tonumber(range) or 0
@@ -603,10 +583,6 @@ core.register_chatcommand("rollback_check", {
 			local name = puncher:get_player_name()
 			core.chat_send_player(name, "Checking " .. core.pos_to_string(pos) .. "...")
 			local actions = core.rollback_get_node_actions(pos, range, seconds, limit)
-			if not actions then
-				core.chat_send_player(name, "Rollback functions are disabled")
-				return
-			end
 			local num_actions = #actions
 			if num_actions == 0 then
 				core.chat_send_player(name, "Nobody has touched"
@@ -638,9 +614,6 @@ core.register_chatcommand("rollback", {
 	description = "revert actions of a player; default for <seconds> is 60",
 	privs = {rollback=true},
 	func = function(name, param)
-		if not core.setting_getbool("enable_rollback_recording") then
-			return false, "Rollback functions are disabled."
-		end
 		local target_name, seconds = string.match(param, ":([^ ]+) *(%d*)")
 		if not target_name then
 			local player_name = nil

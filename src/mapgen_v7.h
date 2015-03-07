@@ -114,7 +114,7 @@ public:
 	int generateMountainTerrain(int ymax);
 	void generateRidgeTerrain();
 
-	void generateBiomes(float *heat_map, float *humidity_map);
+	void generateBiomes();
 	void dustTopNodes();
 
 	//void addTopNodes();

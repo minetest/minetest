@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "main.h"  // for g_settings
 #include "porting.h"
-#include "client/tile.h"
+#include "tile.h"
 #include "fontengine.h"
 #include "log.h"
 #include "gettext.h"
@@ -99,7 +99,7 @@ GUIChatConsole::GUIChatConsole(
 	{
 		core::dimension2d<u32> dim = m_font->getDimension(L"M");
 		m_fontsize = v2u32(dim.Width, dim.Height);
-		m_font->grab();
+		dstream << "Font size: " << m_fontsize.X << " " << m_fontsize.Y << std::endl;
 	}
 	m_fontsize.X = MYMAX(m_fontsize.X, 1);
 	m_fontsize.Y = MYMAX(m_fontsize.Y, 1);
@@ -109,10 +109,7 @@ GUIChatConsole::GUIChatConsole(
 }
 
 GUIChatConsole::~GUIChatConsole()
-{
-	if (m_font)
-		m_font->drop();
-}
+{}
 
 void GUIChatConsole::openConsole(f32 height)
 {

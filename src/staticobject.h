@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include <string>
 #include <sstream>
-#include <vector>
+#include <list>
 #include <map>
 #include "debug.h"
 
@@ -95,7 +95,7 @@ public:
 		from m_stored and inserted to m_active.
 		The caller directly manipulates these containers.
 	*/
-	std::vector<StaticObject> m_stored;
+	std::list<StaticObject> m_stored;
 	std::map<u16, StaticObject> m_active;
 
 private:

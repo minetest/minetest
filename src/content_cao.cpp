@@ -27,13 +27,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h" // For IntervalLimiter
 #include "util/serialize.h"
 #include "util/mathconstants.h"
-#include "client/tile.h"
+#include "tile.h"
 #include "environment.h"
 #include "collision.h"
 #include "settings.h"
 #include "serialization.h" // For decompressZlib
 #include "gamedef.h"
 #include "clientobject.h"
+#include "content_object.h"
 #include "mesh.h"
 #include "itemdef.h"
 #include "tool.h"
@@ -144,7 +145,7 @@ public:
 	TestCAO(IGameDef *gamedef, ClientEnvironment *env);
 	virtual ~TestCAO();
 	
-	ActiveObjectType getType() const
+	u8 getType() const
 	{
 		return ACTIVEOBJECT_TYPE_TEST;
 	}
@@ -288,7 +289,7 @@ public:
 	ItemCAO(IGameDef *gamedef, ClientEnvironment *env);
 	virtual ~ItemCAO();
 	
-	ActiveObjectType getType() const
+	u8 getType() const
 	{
 		return ACTIVEOBJECT_TYPE_ITEM;
 	}
@@ -962,7 +963,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 		// Add a text node for showing the name
 		gui::IGUIEnvironment* gui = irr->getGUIEnvironment();
 		std::wstring wname = narrow_to_wide(m_name);
-		m_textnode = smgr->addTextSceneNode(gui->getSkin()->getFont(),
+		m_textnode = smgr->addTextSceneNode(gui->getBuiltInFont(),
 				wname.c_str(), video::SColor(255,255,255,255), node);
 		m_textnode->grab();
 		m_textnode->setPosition(v3f(0, BS*1.1, 0));

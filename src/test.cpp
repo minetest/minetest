@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "main.h"
 #include "socket.h"
-#include "network/connection.h"
+#include "connection.h"
 #include "serialization.h"
 #include "voxel.h"
 #include "collision.h"
@@ -42,7 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "util/serialize.h"
 #include "noise.h" // PseudoRandom used for random data for compression
-#include "network/networkprotocol.h" // LATEST_PROTOCOL_VERSION
+#include "clientserver.h" // LATEST_PROTOCOL_VERSION
 #include <algorithm>
 
 /*
@@ -147,45 +147,15 @@ struct TestBase
 
 struct TestUtilities: public TestBase
 {
-	inline float ref_WrapDegrees180(float f)
-	{
-		// This is a slower alternative to the wrapDegrees_180() function;
-		// used as a reference for testing
-		float value = fmodf(f + 180, 360);
-		if (value < 0)
-			value += 360;
-		return value - 180;
-	}
-
-	inline float ref_WrapDegrees_0_360(float f)
-	{
-		// This is a slower alternative to the wrapDegrees_0_360() function;
-		// used as a reference for testing
-		float value = fmodf(f, 360);
-		if (value < 0)
-			value += 360;
-		return value < 0 ? value + 360 : value;
-	}
-
-
 	void Run()
 	{
-		UASSERT(fabs(modulo360f(100.0) - 100.0) < 0.001);
-		UASSERT(fabs(modulo360f(720.5) - 0.5) < 0.001);
-		UASSERT(fabs(modulo360f(-0.5) - (-0.5)) < 0.001);
-		UASSERT(fabs(modulo360f(-365.5) - (-5.5)) < 0.001);
-
-		for (float f = -720; f <= -360; f += 0.25) {
-			UASSERT(fabs(modulo360f(f) - modulo360f(f + 360)) < 0.001);
-		}
-
-		for (float f = -1440; f <= 1440; f += 0.25) {
-			UASSERT(fabs(modulo360f(f) - fmodf(f, 360)) < 0.001);
-			UASSERT(fabs(wrapDegrees_180(f) - ref_WrapDegrees180(f)) < 0.001);
-			UASSERT(fabs(wrapDegrees_0_360(f) - ref_WrapDegrees_0_360(f)) < 0.001);
-			UASSERT(wrapDegrees_0_360(fabs(wrapDegrees_180(f) - wrapDegrees_0_360(f))) < 0.001);
-		}
-
+		/*infostream<<"wrapDegrees(100.0) = "<<wrapDegrees(100.0)<<std::endl;
+		infostream<<"wrapDegrees(720.5) = "<<wrapDegrees(720.5)<<std::endl;
+		infostream<<"wrapDegrees(-0.5) = "<<wrapDegrees(-0.5)<<std::endl;*/
+		UASSERT(fabs(wrapDegrees(100.0) - 100.0) < 0.001);
+		UASSERT(fabs(wrapDegrees(720.5) - 0.5) < 0.001);
+		UASSERT(fabs(wrapDegrees(-0.5) - (-0.5)) < 0.001);
+		UASSERT(fabs(wrapDegrees(-365.5) - (-5.5)) < 0.001);
 		UASSERT(lowercase("Foo bAR") == "foo bar");
 		UASSERT(trim("\n \t\r  Foo bAR  \r\n\t\t  ") == "Foo bAR");
 		UASSERT(trim("\n \t\r    \r\n\t\t  ") == "");
@@ -1699,26 +1669,11 @@ struct TestSocket: public TestBase
 	void Run()
 	{
 		const int port = 30003;
-		Address address(0, 0, 0, 0, port);
-		Address bind_addr(0, 0, 0, 0, port);
+		Address address(0,0,0,0, port);
 		Address address6((IPv6AddressBytes*) NULL, port);
 
-		/*
-		 * Try to use the bind_address for servers with no localhost address
-		 * For example: FreeBSD jails
-		 */
-		std::string bind_str = g_settings->get("bind_address");
-		try {
-			bind_addr.Resolve(bind_str.c_str());
-
-			if (!bind_addr.isIPv6()) {
-				address = bind_addr;
-			}
-		} catch (ResolveError &e) {
-		}
-
 		// IPv6 socket test
-		if (g_settings->getBool("enable_ipv6")) {
+		{
 			UDPSocket socket6;
 
 			if (!socket6.init(true, true)) {
@@ -1754,7 +1709,7 @@ struct TestSocket: public TestBase
 					UASSERT(memcmp(sender.getAddress6().sin6_addr.s6_addr,
 							Address(&bytes, 0).getAddress6().sin6_addr.s6_addr, 16) == 0);
 				}
-				catch (SendFailedException &e) {
+				catch (SendFailedException e) {
 					errorstream << "IPv6 support enabled but not available!"
 					            << std::endl;
 				}
@@ -1767,15 +1722,7 @@ struct TestSocket: public TestBase
 			socket.Bind(address);
 
 			const char sendbuffer[] = "hello world!";
-			/*
-			 * If there is a bind address, use it.
-			 * It's useful in container environments
-			 */
-			if (address != Address(0, 0, 0, 0, port)) {
-				socket.Send(address, sendbuffer, sizeof(sendbuffer));
-			}
-			else
-				socket.Send(Address(127, 0, 0 ,1, port), sendbuffer, sizeof(sendbuffer));
+			socket.Send(Address(127, 0, 0 ,1, port), sendbuffer, sizeof(sendbuffer));
 
 			sleep_ms(50);
 
@@ -1787,15 +1734,8 @@ struct TestSocket: public TestBase
 			}
 			//FIXME: This fails on some systems
 			UASSERT(strncmp(sendbuffer, rcvbuffer, sizeof(sendbuffer)) == 0);
-
-			if (address != Address(0, 0, 0, 0, port)) {
-				UASSERT(sender.getAddress().sin_addr.s_addr ==
-						address.getAddress().sin_addr.s_addr);
-			}
-			else {
-				UASSERT(sender.getAddress().sin_addr.s_addr ==
-						Address(127, 0, 0, 1, 0).getAddress().sin_addr.s_addr);
-			}
+			UASSERT(sender.getAddress().sin_addr.s_addr ==
+					Address(127, 0, 0, 1, 0).getAddress().sin_addr.s_addr);
 		}
 	}
 };
@@ -1895,24 +1835,9 @@ struct TestConnection: public TestBase
 		Handler hand_server("server");
 		Handler hand_client("client");
 
-		Address address(0, 0, 0, 0, 30001);
-		Address bind_addr(0, 0, 0, 0, 30001);
-		/*
-		 * Try to use the bind_address for servers with no localhost address
-		 * For example: FreeBSD jails
-		 */
-		std::string bind_str = g_settings->get("bind_address");
-		try {
-			bind_addr.Resolve(bind_str.c_str());
-
-			if (!bind_addr.isIPv6()) {
-				address = bind_addr;
-			}
-		} catch (ResolveError &e) {
-		}
-
 		infostream<<"** Creating server Connection"<<std::endl;
 		con::Connection server(proto_id, 512, 5.0, false, &hand_server);
+		Address address(0,0,0,0, 30001);
 		server.Serve(address);
 
 		infostream<<"** Creating client Connection"<<std::endl;
@@ -1923,11 +1848,7 @@ struct TestConnection: public TestBase
 
 		sleep_ms(50);
 
-		Address server_address(127, 0, 0, 1, 30001);
-		if (address != Address(0, 0, 0, 0, 30001)) {
-			server_address = bind_addr;
-		}
-
+		Address server_address(127,0,0,1, 30001);
 		infostream<<"** running client.Connect()"<<std::endl;
 		client.Connect(server_address);
 
@@ -2016,59 +1937,168 @@ struct TestConnection: public TestBase
 		catch(con::NoIncomingDataException &e)
 		{
 		}
-
+#if 1
 		/*
 			Simple send-receive test
 		*/
 		{
-			NetworkPacket* pkt = new NetworkPacket((u8*) "Hello World !", 14, 0);
-
-			SharedBuffer<u8> sentdata = pkt->oldForgePacket();
+			/*u8 data[] = "Hello World!";
+			u32 datasize = sizeof(data);*/
+			SharedBuffer<u8> data = SharedBufferFromString("Hello World!");
 
 			infostream<<"** running client.Send()"<<std::endl;
-			client.Send(PEER_ID_SERVER, 0, pkt, true);
+			client.Send(PEER_ID_SERVER, 0, data, true);
 
 			sleep_ms(50);
 
 			u16 peer_id;
 			SharedBuffer<u8> recvdata;
-			infostream << "** running server.Receive()" << std::endl;
+			infostream<<"** running server.Receive()"<<std::endl;
 			u32 size = server.Receive(peer_id, recvdata);
-			infostream << "** Server received: peer_id=" << peer_id
-					<< ", size=" << size
-					<< ", data=" << (const char*)pkt->getU8Ptr(0)
-					<< std::endl;
-
-			UASSERT(memcmp(*sentdata, *recvdata, recvdata.getSize()) == 0);
-
-			delete pkt;
+			infostream<<"** Server received: peer_id="<<peer_id
+					<<", size="<<size
+					<<", data="<<*data
+					<<std::endl;
+			UASSERT(memcmp(*data, *recvdata, data.getSize()) == 0);
 		}
-
+#endif
 		u16 peer_id_client = 2;
+#if 0
+		/*
+			Send consequent packets in different order
+			Not compatible with new Connection, thus commented out.
+		*/
+		{
+			//u8 data1[] = "hello1";
+			//u8 data2[] = "hello2";
+			SharedBuffer<u8> data1 = SharedBufferFromString("hello1");
+			SharedBuffer<u8> data2 = SharedBufferFromString("Hello2");
+
+			Address client_address =
+					server.GetPeerAddress(peer_id_client);
+
+			infostream<<"*** Sending packets in wrong order (2,1,2)"
+					<<std::endl;
+
+			u8 chn = 0;
+			con::Channel *ch = &server.getPeer(peer_id_client)->channels[chn];
+			u16 sn = ch->next_outgoing_seqnum;
+			ch->next_outgoing_seqnum = sn+1;
+			server.Send(peer_id_client, chn, data2, true);
+			ch->next_outgoing_seqnum = sn;
+			server.Send(peer_id_client, chn, data1, true);
+			ch->next_outgoing_seqnum = sn+1;
+			server.Send(peer_id_client, chn, data2, true);
+
+			sleep_ms(50);
+
+			infostream<<"*** Receiving the packets"<<std::endl;
+
+			u16 peer_id;
+			SharedBuffer<u8> recvdata;
+			u32 size;
+
+			infostream<<"** running client.Receive()"<<std::endl;
+			peer_id = 132;
+			size = client.Receive(peer_id, recvdata);
+			infostream<<"** Client received: peer_id="<<peer_id
+					<<", size="<<size
+					<<", data="<<*recvdata
+					<<std::endl;
+			UASSERT(size == data1.getSize());
+			UASSERT(memcmp(*data1, *recvdata, data1.getSize()) == 0);
+			UASSERT(peer_id == PEER_ID_SERVER);
+
+			infostream<<"** running client.Receive()"<<std::endl;
+			peer_id = 132;
+			size = client.Receive(peer_id, recvdata);
+			infostream<<"** Client received: peer_id="<<peer_id
+					<<", size="<<size
+					<<", data="<<*recvdata
+					<<std::endl;
+			UASSERT(size == data2.getSize());
+			UASSERT(memcmp(*data2, *recvdata, data2.getSize()) == 0);
+			UASSERT(peer_id == PEER_ID_SERVER);
+
+			bool got_exception = false;
+			try
+			{
+				infostream<<"** running client.Receive()"<<std::endl;
+				peer_id = 132;
+				size = client.Receive(peer_id, recvdata);
+				infostream<<"** Client received: peer_id="<<peer_id
+						<<", size="<<size
+						<<", data="<<*recvdata
+						<<std::endl;
+			}
+			catch(con::NoIncomingDataException &e)
+			{
+				infostream<<"** No incoming data for client"<<std::endl;
+				got_exception = true;
+			}
+			UASSERT(got_exception);
+		}
+#endif
+#if 0
+		/*
+			Send large amounts of packets (infinite test)
+			Commented out because of infinity.
+		*/
+		{
+			infostream<<"Sending large amounts of packets (infinite test)"<<std::endl;
+			int sendcount = 0;
+			for(;;){
+				int datasize = myrand_range(0,5)==0?myrand_range(100,10000):myrand_range(0,100);
+				infostream<<"datasize="<<datasize<<std::endl;
+				SharedBuffer<u8> data1(datasize);
+				for(u16 i=0; i<datasize; i++)
+					data1[i] = i/4;
+
+				int sendtimes = myrand_range(1,10);
+				for(int i=0; i<sendtimes; i++){
+					server.Send(peer_id_client, 0, data1, true);
+					sendcount++;
+				}
+				infostream<<"sendcount="<<sendcount<<std::endl;
+
+				//int receivetimes = myrand_range(1,20);
+				int receivetimes = 20;
+				for(int i=0; i<receivetimes; i++){
+					SharedBuffer<u8> recvdata;
+					u16 peer_id = 132;
+					u16 size = 0;
+					bool received = false;
+					try{
+						size = client.Receive(peer_id, recvdata);
+						received = true;
+					}catch(con::NoIncomingDataException &e){
+					}
+				}
+			}
+		}
+#endif
 		/*
 			Send a large packet
 		*/
 		{
 			const int datasize = 30000;
-			NetworkPacket* pkt = new NetworkPacket(0, datasize);
+			SharedBuffer<u8> data1(datasize);
 			for(u16 i=0; i<datasize; i++){
-				*pkt << (u8) i/4;
+				data1[i] = i/4;
 			}
 
 			infostream<<"Sending data (size="<<datasize<<"):";
 			for(int i=0; i<datasize && i<20; i++){
 				if(i%2==0) infostream<<" ";
 				char buf[10];
-				snprintf(buf, 10, "%.2X", ((int)((const char*)pkt->getU8Ptr(0))[i])&0xff);
+				snprintf(buf, 10, "%.2X", ((int)((const char*)*data1)[i])&0xff);
 				infostream<<buf;
 			}
 			if(datasize>20)
 				infostream<<"...";
 			infostream<<std::endl;
 
-			SharedBuffer<u8> sentdata = pkt->oldForgePacket();
-
-			server.Send(peer_id_client, 0, pkt, true);
+			server.Send(peer_id_client, 0, data1, true);
 
 			//sleep_ms(3000);
 
@@ -2104,10 +2134,8 @@ struct TestConnection: public TestBase
 				infostream<<"...";
 			infostream<<std::endl;
 
-			UASSERT(memcmp(*sentdata, *recvdata, recvdata.getSize()) == 0);
+			UASSERT(memcmp(*data1, *recvdata, data1.getSize()) == 0);
 			UASSERT(peer_id == PEER_ID_SERVER);
-
-			delete pkt;
 		}
 
 		// Check peer handlers
@@ -2166,9 +2194,9 @@ void run_tests()
 	TEST(TestCollision);
 	if(INTERNET_SIMULATOR == false){
 		TEST(TestSocket);
-		dout_con << "=== BEGIN RUNNING UNIT TESTS FOR CONNECTION ===" << std::endl;
+		dout_con<<"=== BEGIN RUNNING UNIT TESTS FOR CONNECTION ==="<<std::endl;
 		TEST(TestConnection);
-		dout_con << "=== END RUNNING UNIT TESTS FOR CONNECTION ===" << std::endl;
+		dout_con<<"=== END RUNNING UNIT TESTS FOR CONNECTION ==="<<std::endl;
 	}
 
 	log_set_lev_silence(LMT_ERROR, false);
@@ -2176,13 +2204,13 @@ void run_tests()
 	delete idef;
 	delete ndef;
 
-	if(tests_failed == 0) {
-		actionstream << "run_tests(): " << tests_failed << " / " << tests_run << " tests failed." << std::endl;
-		actionstream << "run_tests() passed." << std::endl;
+	if(tests_failed == 0){
+		infostream<<"run_tests(): "<<tests_failed<<" / "<<tests_run<<" tests failed."<<std::endl;
+		infostream<<"run_tests() passed."<<std::endl;
 		return;
 	} else {
-		errorstream << "run_tests(): " << tests_failed << " / " << tests_run << " tests failed." << std::endl;
-		errorstream << "run_tests() aborting." << std::endl;
+		errorstream<<"run_tests(): "<<tests_failed<<" / "<<tests_run<<" tests failed."<<std::endl;
+		errorstream<<"run_tests() aborting."<<std::endl;
 		abort();
 	}
 }

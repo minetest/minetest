@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "mesh.h"
 #include "mapblock_mesh.h"
-#include "client/tile.h"
+#include "tile.h"
 #include "log.h"
 #include "util/numeric.h"
 #include <map>
@@ -340,9 +340,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 		} else if (f.drawtype == NDT_NORMAL || f.drawtype == NDT_ALLFACES) {
 			setCube(f.tiles, def.wield_scale, tsrc);
 		} else {
-			//// TODO: Change false in the following constructor args to
-			//// appropriate value when shader is added for wield items (if applicable)
-			MeshMakeData mesh_make_data(gamedef, false);
+			MeshMakeData mesh_make_data(gamedef);
 			MapNode mesh_make_node(id, 255, 0);
 			mesh_make_data.fillSingleNode(&mesh_make_node);
 			MapBlockMesh mapblock_mesh(&mesh_make_data, v3s16(0, 0, 0));

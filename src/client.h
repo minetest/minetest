@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLIENT_HEADER
 #define CLIENT_HEADER
 
-#include "network/connection.h"
+#include "connection.h"
 #include "environment.h"
 #include "irrlichttypes_extrabloated.h"
 #include "jthread/jmutex.h"
@@ -34,7 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "localplayer.h"
 #include "hud.h"
 #include "particles.h"
-#include "network/networkpacket.h"
 
 struct MeshMakeData;
 class MapBlockMesh;
@@ -48,6 +47,7 @@ struct MapDrawControl;
 class MtEventManager;
 struct PointedThing;
 class Database;
+class Server;
 
 struct QueuedMeshUpdate
 {
@@ -341,61 +341,11 @@ public:
 	*/
 	void step(float dtime);
 
-	/*
-	 * Command Handlers
-	 */
-
-	void handleCommand(NetworkPacket* pkt);
-
-	void handleCommand_Null(NetworkPacket* pkt) {};
-	void handleCommand_Deprecated(NetworkPacket* pkt);
-	void handleCommand_Init(NetworkPacket* pkt);
-	void handleCommand_AccessDenied(NetworkPacket* pkt);
-	void handleCommand_RemoveNode(NetworkPacket* pkt);
-	void handleCommand_AddNode(NetworkPacket* pkt);
-	void handleCommand_BlockData(NetworkPacket* pkt);
-	void handleCommand_Inventory(NetworkPacket* pkt);
-	void handleCommand_TimeOfDay(NetworkPacket* pkt);
-	void handleCommand_ChatMessage(NetworkPacket* pkt);
-	void handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt);
-	void handleCommand_ActiveObjectMessages(NetworkPacket* pkt);
-	void handleCommand_Movement(NetworkPacket* pkt);
-	void handleCommand_HP(NetworkPacket* pkt);
-	void handleCommand_Breath(NetworkPacket* pkt);
-	void handleCommand_MovePlayer(NetworkPacket* pkt);
-	void handleCommand_PlayerItem(NetworkPacket* pkt);
-	void handleCommand_DeathScreen(NetworkPacket* pkt);
-	void handleCommand_AnnounceMedia(NetworkPacket* pkt);
-	void handleCommand_Media(NetworkPacket* pkt);
-	void handleCommand_ToolDef(NetworkPacket* pkt);
-	void handleCommand_NodeDef(NetworkPacket* pkt);
-	void handleCommand_CraftItemDef(NetworkPacket* pkt);
-	void handleCommand_ItemDef(NetworkPacket* pkt);
-	void handleCommand_PlaySound(NetworkPacket* pkt);
-	void handleCommand_StopSound(NetworkPacket* pkt);
-	void handleCommand_Privileges(NetworkPacket* pkt);
-	void handleCommand_InventoryFormSpec(NetworkPacket* pkt);
-	void handleCommand_DetachedInventory(NetworkPacket* pkt);
-	void handleCommand_ShowFormSpec(NetworkPacket* pkt);
-	void handleCommand_SpawnParticle(NetworkPacket* pkt);
-	void handleCommand_AddParticleSpawner(NetworkPacket* pkt);
-	void handleCommand_DeleteParticleSpawner(NetworkPacket* pkt);
-	void handleCommand_HudAdd(NetworkPacket* pkt);
-	void handleCommand_HudRemove(NetworkPacket* pkt);
-	void handleCommand_HudChange(NetworkPacket* pkt);
-	void handleCommand_HudSetFlags(NetworkPacket* pkt);
-	void handleCommand_HudSetParam(NetworkPacket* pkt);
-	void handleCommand_HudSetSky(NetworkPacket* pkt);
-	void handleCommand_OverrideDayNightRatio(NetworkPacket* pkt);
-	void handleCommand_LocalPlayerAnimations(NetworkPacket* pkt);
-	void handleCommand_EyeOffset(NetworkPacket* pkt);
-
 	void ProcessData(u8 *data, u32 datasize, u16 sender_peer_id);
-
 	// Returns true if something was received
 	bool AsyncProcessPacket();
 	bool AsyncProcessData();
-	void Send(NetworkPacket* pkt);
+	void Send(u16 channelnum, SharedBuffer<u8> data, bool reliable);
 
 	void interact(u8 action, const PointedThing& pointed);
 
@@ -515,7 +465,7 @@ public:
 	// Insert a media file appropriately into the appropriate manager
 	bool loadMedia(const std::string &data, const std::string &filename);
 	// Send a request for conventional media transfer
-	void request_media(const std::vector<std::string> &file_requests);
+	void request_media(const std::list<std::string> &file_requests);
 	// Send a notification that no conventional media transfer is needed
 	void received_media();
 
@@ -577,13 +527,13 @@ private:
 	// 0 <= m_daynight_i < DAYNIGHT_CACHE_COUNT
 	//s32 m_daynight_i;
 	//u32 m_daynight_ratio;
-	std::queue<std::wstring> m_chat_queue;
+	Queue<std::wstring> m_chat_queue;
 	// The seed returned by the server in TOCLIENT_INIT is stored here
 	u64 m_map_seed;
 	std::string m_password;
 	bool m_access_denied;
 	std::wstring m_access_denied_reason;
-	std::queue<ClientEvent> m_client_event_queue;
+	Queue<ClientEvent> m_client_event_queue;
 	bool m_itemdef_received;
 	bool m_nodedef_received;
 	ClientMediaDownloader *m_media_downloader;
@@ -619,13 +569,12 @@ private:
 	LocalClientState m_state;
 
 	// Used for saving server map to disk client-side
-	Database *m_localdb;
-	IntervalLimiter m_localdb_save_interval;
-	u16 m_cache_save_interval;
+	Database *localdb;
+	Server *localserver;
 
-	// TODO: Add callback to update these when g_settings changes
+	// TODO: Add callback to update this when g_settings changes
 	bool m_cache_smooth_lighting;
-	bool m_cache_enable_shaders;
 };
 
 #endif // !CLIENT_HEADER
+

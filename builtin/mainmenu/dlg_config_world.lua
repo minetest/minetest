@@ -16,9 +16,6 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 --------------------------------------------------------------------------------
-local function modname_valid(name)
-	return not name:find("[^a-z0-9_]")
-end
 
 local function get_formspec(data)
 
@@ -198,12 +195,10 @@ local function handle_buttons(this, fields)
 		for i,mod in ipairs(rawlist) do
 			if not mod.is_modpack and
 					mod.typ ~= "game_mod" then
-				if modname_valid(mod.name) then
-					worldfile:set("load_mod_"..mod.name, tostring(mod.enabled))
+				if mod.enabled then
+					worldfile:set("load_mod_"..mod.name, "true")
 				else
-					if mod.enabled then
-						gamedata.errormessage = fgettext_ne("Failed to enable mod \"$1\" as it contains disallowed characters. Only chararacters [a-z0-9_] are allowed.", mod.name)
-					end
+					worldfile:set("load_mod_"..mod.name, "false")
 				end
 				mods["load_mod_"..mod.name] = nil
 			end

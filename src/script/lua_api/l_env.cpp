@@ -406,6 +406,19 @@ int ModApiEnvMod::l_add_item(lua_State *L)
 		script_error(L);
 	lua_remove(L, errorhandler); // Remove error handler
 	return 1;
+	/*lua_pushvalue(L, 1);
+	lua_pushstring(L, "__builtin:item");
+	lua_pushstring(L, item.getItemString().c_str());
+	return l_add_entity(L);*/
+	/*// Do it
+	ServerActiveObject *obj = createItemSAO(env, pos, item.getItemString());
+	int objectid = env->addActiveObject(obj);
+	// If failed to add, return nothing (reads as nil)
+	if(objectid == 0)
+		return 0;
+	// Return ObjectRef
+	objectrefGetOrCreate(L, obj);
+	return 1;*/
 }
 
 // get_player_by_name(name)
@@ -517,8 +530,9 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 	}
 
 	for(int d=1; d<=radius; d++){
-		std::vector<v3s16> list = FacePositionCache::getFacePositions(d);
-		for(std::vector<v3s16>::iterator i = list.begin();
+		std::list<v3s16> list;
+		getFacePositions(list, d);
+		for(std::list<v3s16>::iterator i = list.begin();
 				i != list.end(); ++i){
 			v3s16 p = pos + (*i);
 			content_t c = env->getMap().getNodeNoEx(p).getContent();
@@ -541,17 +555,17 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 	v3s16 minp = read_v3s16(L, 1);
 	v3s16 maxp = read_v3s16(L, 2);
 	std::set<content_t> filter;
-	if(lua_istable(L, 3)) {
+	if(lua_istable(L, 3)){
 		int table = 3;
 		lua_pushnil(L);
-		while(lua_next(L, table) != 0) {
+		while(lua_next(L, table) != 0){
 			// key at index -2 and value at index -1
 			luaL_checktype(L, -1, LUA_TSTRING);
 			ndef->getIds(lua_tostring(L, -1), filter);
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
-	} else if(lua_isstring(L, 3)) {
+	} else if(lua_isstring(L, 3)){
 		ndef->getIds(lua_tostring(L, 3), filter);
 	}
 
@@ -565,59 +579,6 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 		if(filter.count(c) != 0) {
 			push_v3s16(L, p);
 			lua_rawseti(L, -2, ++i);
-		}
-	}
-	return 1;
-}
-
-// find_nodes_in_area_under_air(minp, maxp, nodenames) -> list of positions
-// nodenames: e.g. {"ignore", "group:tree"} or "default:dirt"
-int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
-{
-	/* Note: A similar but generalized (and therefore slower) version of this
-	 * function could be created -- e.g. find_nodes_in_area_under -- which
-	 * would accept a node name (or ID?) or list of names that the "above node"
-	 * should be.
-	 * TODO
-	 */
-
-	GET_ENV_PTR;
-
-	INodeDefManager *ndef = getServer(L)->ndef();
-	v3s16 minp = read_v3s16(L, 1);
-	v3s16 maxp = read_v3s16(L, 2);
-	std::set<content_t> filter;
-
-	if (lua_istable(L, 3)) {
-		int table = 3;
-		lua_pushnil(L);
-		while(lua_next(L, table) != 0) {
-			// key at index -2 and value at index -1
-			luaL_checktype(L, -1, LUA_TSTRING);
-			ndef->getIds(lua_tostring(L, -1), filter);
-			// removes value, keeps key for next iteration
-			lua_pop(L, 1);
-		}
-	} else if (lua_isstring(L, 3)) {
-		ndef->getIds(lua_tostring(L, 3), filter);
-	}
-
-	lua_newtable(L);
-	u64 i = 0;
-	for (s16 x = minp.X; x <= maxp.X; x++)
-	for (s16 z = minp.Z; z <= maxp.Z; z++) {
-		s16 y = minp.Y;
-		v3s16 p(x, y, z);
-		content_t c = env->getMap().getNodeNoEx(p).getContent();
-		for (; y <= maxp.Y; y++) {
-			v3s16 psurf(x, y + 1, z);
-			content_t csurf = env->getMap().getNodeNoEx(psurf).getContent();
-			if(c != CONTENT_AIR && csurf == CONTENT_AIR &&
-					filter.count(c) != 0) {
-				push_v3s16(L, v3s16(x, y, z));
-				lua_rawseti(L, -2, ++i);
-			}
-			c = csurf;
 		}
 	}
 	return 1;
@@ -920,7 +881,6 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(get_gametime);
 	API_FCT(find_node_near);
 	API_FCT(find_nodes_in_area);
-	API_FCT(find_nodes_in_area_under_air);
 	API_FCT(delete_area);
 	API_FCT(get_perlin);
 	API_FCT(get_perlin_map);

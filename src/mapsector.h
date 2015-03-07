@@ -22,11 +22,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes.h"
 #include "irr_v2d.h"
-#include "mapblock.h"
 #include <ostream>
 #include <map>
-#include <vector>
+#include <list>
 
+class MapBlock;
 class Map;
 class IGameDef;
 
@@ -61,7 +61,7 @@ public:
 	
 	void deleteBlock(MapBlock *block);
 	
-	void getBlocks(MapBlockVect &dest);
+	void getBlocks(std::list<MapBlock*> &dest);
 	
 	// Always false at the moment, because sector contains no metadata.
 	bool differs_from_disk;

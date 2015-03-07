@@ -102,6 +102,7 @@ LOCAL_C_INCLUDES :=                               \
 
 LOCAL_SRC_FILES :=                                \
 		jni/src/ban.cpp                           \
+		jni/src/base64.cpp                        \
 		jni/src/camera.cpp                        \
 		jni/src/cavegen.cpp                       \
 		jni/src/chat.cpp                          \
@@ -112,6 +113,7 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/clientobject.cpp                  \
 		jni/src/clouds.cpp                        \
 		jni/src/collision.cpp                     \
+		jni/src/connection.cpp                    \
 		jni/src/content_abm.cpp                   \
 		jni/src/content_cao.cpp                   \
 		jni/src/content_cso.cpp                   \
@@ -188,6 +190,7 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/server.cpp                        \
 		jni/src/serverlist.cpp                    \
 		jni/src/serverobject.cpp                  \
+		jni/src/sha1.cpp                          \
 		jni/src/shader.cpp                        \
 		jni/src/sky.cpp                           \
 		jni/src/socket.cpp                        \
@@ -196,34 +199,22 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/staticobject.cpp                  \
 		jni/src/subgame.cpp                       \
 		jni/src/test.cpp                          \
+		jni/src/tile.cpp                          \
 		jni/src/tool.cpp                          \
 		jni/src/treegen.cpp                       \
 		jni/src/version.cpp                       \
 		jni/src/voxel.cpp                         \
 		jni/src/voxelalgorithms.cpp               \
-		jni/src/util/base64.cpp                   \
 		jni/src/util/directiontables.cpp          \
 		jni/src/util/numeric.cpp                  \
 		jni/src/util/pointedthing.cpp             \
 		jni/src/util/serialize.cpp                \
-		jni/src/util/sha1.cpp                     \
 		jni/src/util/string.cpp                   \
 		jni/src/util/timetaker.cpp                \
 		jni/src/touchscreengui.cpp                \
 		jni/src/database-leveldb.cpp              \
 		jni/src/settings.cpp                      \
-		jni/src/wieldmesh.cpp                     \
-		jni/src/client/clientlauncher.cpp         \
-		jni/src/client/tile.cpp
-
-# Network
-LOCAL_SRC_FILES +=                                \
-		jni/src/network/connection.cpp            \
-		jni/src/network/networkpacket.cpp         \
-		jni/src/network/clientopcodes.cpp         \
-		jni/src/network/serveropcodes.cpp         \
-		jni/src/network/packethandlers/server.cpp \
-		jni/src/network/packethandlers/client.cpp
+		jni/src/wieldmesh.cpp
 
 # lua api
 LOCAL_SRC_FILES +=                                \

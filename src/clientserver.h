@@ -17,8 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef NETWORKPROTOCOL_HEADER
-#define NETWORKPROTOCOL_HEADER
+#ifndef CLIENTSERVER_HEADER
+#define CLIENTSERVER_HEADER
 #include "util/string.h"
 
 /*
@@ -556,8 +556,6 @@ enum ToClientCommand
 		v3f1000 first
 		v3f1000 third
 	*/
-
-	TOCLIENT_NUM_MSG_TYPES = 0x53,
 };
 
 enum ToServerCommand
@@ -661,7 +659,7 @@ enum ToServerCommand
 
 	TOSERVER_INVENTORY_ACTION = 0x31,
 	/*
-		See InventoryAction in inventorymanager.h
+		See InventoryAction in inventory.h
 	*/
 
 	TOSERVER_CHAT_MESSAGE = 0x32,
@@ -797,8 +795,7 @@ enum ToServerCommand
 		u16 len
 		u8[len] full_version_string
 	*/
-
-	TOSERVER_NUM_MSG_TYPES = 0x44,
 };
 
 #endif
+

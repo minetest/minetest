@@ -53,6 +53,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
+/*
+	SQLite format specification:
+	- Initially only replaces sectors/ and sectors2/
+
+	If map.sqlite does not exist in the save dir
+	or the block was not found in the database
+	the map will try to load from sectors folder.
+	In either case, map.sqlite will be created
+	and all future saves will save there.
+
+	Structure of map.sqlite:
+	Tables:
+		blocks
+			(PK) INT pos
+			BLOB data
+*/
 
 /*
 	Map
@@ -1405,39 +1421,43 @@ bool Map::getDayNightDiff(v3s16 blockpos)
 	Updates usage timers
 */
 void Map::timerUpdate(float dtime, float unload_timeout,
-		std::vector<v3s16> *unloaded_blocks)
+		std::list<v3s16> *unloaded_blocks)
 {
 	bool save_before_unloading = (mapType() == MAPTYPE_SERVER);
 
 	// Profile modified reasons
 	Profiler modprofiler;
 
-	std::vector<v2s16> sector_deletion_queue;
+	std::list<v2s16> sector_deletion_queue;
 	u32 deleted_blocks_count = 0;
 	u32 saved_blocks_count = 0;
 	u32 block_count_all = 0;
 
 	beginSave();
 	for(std::map<v2s16, MapSector*>::iterator si = m_sectors.begin();
-		si != m_sectors.end(); ++si) {
+		si != m_sectors.end(); ++si)
+	{
 		MapSector *sector = si->second;
 
 		bool all_blocks_deleted = true;
 
-		MapBlockVect blocks;
+		std::list<MapBlock*> blocks;
 		sector->getBlocks(blocks);
 
-		for(MapBlockVect::iterator i = blocks.begin();
-				i != blocks.end(); ++i) {
+		for(std::list<MapBlock*>::iterator i = blocks.begin();
+				i != blocks.end(); ++i)
+		{
 			MapBlock *block = (*i);
 
 			block->incrementUsageTimer(dtime);
 
-			if(block->refGet() == 0 && block->getUsageTimer() > unload_timeout) {
+			if(block->refGet() == 0 && block->getUsageTimer() > unload_timeout)
+			{
 				v3s16 p = block->getPos();
 
 				// Save if modified
-				if (block->getModified() != MOD_STATE_CLEAN && save_before_unloading) {
+				if (block->getModified() != MOD_STATE_CLEAN && save_before_unloading)
+				{
 					modprofiler.add(block->getModifiedReason(), 1);
 					if (!saveBlock(block))
 						continue;
@@ -1452,13 +1472,15 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 
 				deleted_blocks_count++;
 			}
-			else {
+			else
+			{
 				all_blocks_deleted = false;
 				block_count_all++;
 			}
 		}
 
-		if(all_blocks_deleted) {
+		if(all_blocks_deleted)
+		{
 			sector_deletion_queue.push_back(si->first);
 		}
 	}
@@ -1484,15 +1506,16 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 	}
 }
 
-void Map::unloadUnreferencedBlocks(std::vector<v3s16> *unloaded_blocks)
+void Map::unloadUnreferencedBlocks(std::list<v3s16> *unloaded_blocks)
 {
 	timerUpdate(0.0, -1.0, unloaded_blocks);
 }
 
-void Map::deleteSectors(std::vector<v2s16> &sectorList)
+void Map::deleteSectors(std::list<v2s16> &list)
 {
-	for(std::vector<v2s16>::iterator j = sectorList.begin();
-		j != sectorList.end(); ++j) {
+	for(std::list<v2s16>::iterator j = list.begin();
+		j != list.end(); ++j)
+	{
 		MapSector *sector = m_sectors[*j];
 		// If sector is in sector cache, remove it from there
 		if(m_sector_cache == sector)
@@ -1502,6 +1525,63 @@ void Map::deleteSectors(std::vector<v2s16> &sectorList)
 		delete sector;
 	}
 }
+
+#if 0
+void Map::unloadUnusedData(float timeout,
+		core::list<v3s16> *deleted_blocks)
+{
+	core::list<v2s16> sector_deletion_queue;
+	u32 deleted_blocks_count = 0;
+	u32 saved_blocks_count = 0;
+
+	core::map<v2s16, MapSector*>::Iterator si = m_sectors.getIterator();
+	for(; si.atEnd() == false; si++)
+	{
+		MapSector *sector = si.getNode()->getValue();
+
+		bool all_blocks_deleted = true;
+
+		core::list<MapBlock*> blocks;
+		sector->getBlocks(blocks);
+		for(core::list<MapBlock*>::Iterator i = blocks.begin();
+				i != blocks.end(); i++)
+		{
+			MapBlock *block = (*i);
+
+			if(block->getUsageTimer() > timeout)
+			{
+				// Save if modified
+				if(block->getModified() != MOD_STATE_CLEAN)
+				{
+					saveBlock(block);
+					saved_blocks_count++;
+				}
+				// Delete from memory
+				sector->deleteBlock(block);
+				deleted_blocks_count++;
+			}
+			else
+			{
+				all_blocks_deleted = false;
+			}
+		}
+
+		if(all_blocks_deleted)
+		{
+			sector_deletion_queue.push_back(si.getNode()->getKey());
+		}
+	}
+
+	deleteSectors(sector_deletion_queue);
+
+	infostream<<"Map: Unloaded "<<deleted_blocks_count<<" blocks from memory"
+			<<", of which "<<saved_blocks_count<<" were wr."
+			<<std::endl;
+
+	//return sector_deletion_queue.getSize();
+	//return deleted_blocks_count;
+}
+#endif
 
 void Map::PrintInfo(std::ostream &out)
 {
@@ -1783,11 +1863,11 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 
 		// Find out whether there is a suspect for this action
 		std::string suspect;
-		if(m_gamedef->rollback()) {
+		if(m_gamedef->rollback()){
 			suspect = m_gamedef->rollback()->getSuspect(p0, 83, 1);
 		}
 
-		if(m_gamedef->rollback() && !suspect.empty()){
+		if(!suspect.empty()){
 			// Blame suspect
 			RollbackScopeActor rollback_scope(m_gamedef->rollback(), suspect, true);
 			// Get old node for rollback
@@ -2015,13 +2095,25 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 	bool succeeded = conf.readConfigFile(conf_path.c_str());
 	if (!succeeded || !conf.exists("backend")) {
 		// fall back to sqlite3
+		dbase = new Database_SQLite3(this, savedir);
 		conf.set("backend", "sqlite3");
+	} else {
+		std::string backend = conf.get("backend");
+		if (backend == "dummy")
+			dbase = new Database_Dummy(this);
+		else if (backend == "sqlite3")
+			dbase = new Database_SQLite3(this, savedir);
+		#if USE_LEVELDB
+		else if (backend == "leveldb")
+			dbase = new Database_LevelDB(this, savedir);
+		#endif
+		#if USE_REDIS
+		else if (backend == "redis")
+			dbase = new Database_Redis(this, savedir);
+		#endif
+		else
+			throw BaseException("Unknown map backend");
 	}
-	std::string backend = conf.get("backend");
-	dbase = createDatabase(backend, savedir, conf);
-
-	if (!conf.updateConfigFile(conf_path.c_str()))
-		errorstream << "ServerMap::ServerMap(): Failed to update world.mt!" << std::endl;
 
 	m_savedir = savedir;
 	m_map_saving_enabled = false;
@@ -2800,8 +2892,7 @@ plan_b:
 }
 
 bool ServerMap::loadFromFolders() {
-	if (!dbase->initialized() &&
-			!fs::PathExists(m_savedir + DIR_DELIM + "map.sqlite"))
+	if(!dbase->Initialized() && !fs::PathExists(m_savedir + DIR_DELIM + "map.sqlite")) // ?
 		return true;
 	return false;
 }
@@ -2823,14 +2914,14 @@ std::string ServerMap::getSectorDir(v2s16 pos, int layout)
 	{
 		case 1:
 			snprintf(cc, 9, "%.4x%.4x",
-				(unsigned int) pos.X & 0xffff,
-				(unsigned int) pos.Y & 0xffff);
+				(unsigned int)pos.X&0xffff,
+				(unsigned int)pos.Y&0xffff);
 
 			return m_savedir + DIR_DELIM + "sectors" + DIR_DELIM + cc;
 		case 2:
-			snprintf(cc, 9, (std::string("%.3x") + DIR_DELIM + "%.3x").c_str(),
-				(unsigned int) pos.X & 0xfff,
-				(unsigned int) pos.Y & 0xfff);
+			snprintf(cc, 9, "%.3x" DIR_DELIM "%.3x",
+				(unsigned int)pos.X&0xfff,
+				(unsigned int)pos.Y&0xfff);
 
 			return m_savedir + DIR_DELIM + "sectors2" + DIR_DELIM + cc;
 		default:
@@ -2854,10 +2945,10 @@ v2s16 ServerMap::getSectorPos(std::string dirname)
 	{
 		// New layout
 		fs::RemoveLastPathComponent(dirname, &component, 2);
-		r = sscanf(component.c_str(), (std::string("%3x") + DIR_DELIM + "%3x").c_str(), &x, &y);
+		r = sscanf(component.c_str(), "%3x" DIR_DELIM "%3x", &x, &y);
 		// Sign-extend the 12 bit values up to 16 bits...
-		if(x & 0x800) x |= 0xF000;
-		if(y & 0x800) y |= 0xF000;
+		if(x&0x800) x|=0xF000;
+		if(y&0x800) y|=0xF000;
 	}
 	else
 	{
@@ -2892,7 +2983,8 @@ std::string ServerMap::getBlockFilename(v3s16 p)
 void ServerMap::save(ModifiedState save_level)
 {
 	DSTACK(__FUNCTION_NAME);
-	if(m_map_saving_enabled == false) {
+	if(m_map_saving_enabled == false)
+	{
 		infostream<<"WARNING: Not saving map, saving disabled."<<std::endl;
 		return;
 	}
@@ -2901,7 +2993,8 @@ void ServerMap::save(ModifiedState save_level)
 		infostream<<"ServerMap: Saving whole map, this can take time."
 				<<std::endl;
 
-	if(m_map_metadata_changed || save_level == MOD_STATE_CLEAN) {
+	if(m_map_metadata_changed || save_level == MOD_STATE_CLEAN)
+	{
 		saveMapMeta();
 	}
 
@@ -2916,27 +3009,30 @@ void ServerMap::save(ModifiedState save_level)
 	bool save_started = false;
 
 	for(std::map<v2s16, MapSector*>::iterator i = m_sectors.begin();
-		i != m_sectors.end(); ++i) {
+		i != m_sectors.end(); ++i)
+	{
 		ServerMapSector *sector = (ServerMapSector*)i->second;
 		assert(sector->getId() == MAPSECTOR_SERVER);
 
-		if(sector->differs_from_disk || save_level == MOD_STATE_CLEAN) {
+		if(sector->differs_from_disk || save_level == MOD_STATE_CLEAN)
+		{
 			saveSectorMeta(sector);
 			sector_meta_count++;
 		}
-
-		MapBlockVect blocks;
+		std::list<MapBlock*> blocks;
 		sector->getBlocks(blocks);
 
-		for(MapBlockVect::iterator j = blocks.begin();
-			j != blocks.end(); ++j) {
+		for(std::list<MapBlock*>::iterator j = blocks.begin();
+			j != blocks.end(); ++j)
+		{
 			MapBlock *block = *j;
 
 			block_count_all++;
 
-			if(block->getModified() >= (u32)save_level) {
+			if(block->getModified() >= (u32)save_level)
+			{
 				// Lazy beginSave()
-				if(!save_started) {
+				if(!save_started){
 					beginSave();
 					save_started = true;
 				}
@@ -2954,7 +3050,6 @@ void ServerMap::save(ModifiedState save_level)
 			}
 		}
 	}
-
 	if(save_started)
 		endSave();
 
@@ -2962,7 +3057,8 @@ void ServerMap::save(ModifiedState save_level)
 		Only print if something happened or saved whole map
 	*/
 	if(save_level == MOD_STATE_CLEAN || sector_meta_count != 0
-			|| block_count != 0) {
+			|| block_count != 0)
+	{
 		infostream<<"ServerMap: Written: "
 				<<sector_meta_count<<" sector metadata files, "
 				<<block_count<<" block files"
@@ -2974,28 +3070,30 @@ void ServerMap::save(ModifiedState save_level)
 	}
 }
 
-void ServerMap::listAllLoadableBlocks(std::vector<v3s16> &dst)
+void ServerMap::listAllLoadableBlocks(std::list<v3s16> &dst)
 {
-	if (loadFromFolders()) {
-		errorstream << "Map::listAllLoadableBlocks(): Result will be missing "
-				<< "all blocks that are stored in flat files." << std::endl;
+	if(loadFromFolders()){
+		errorstream<<"Map::listAllLoadableBlocks(): Result will be missing "
+				<<"all blocks that are stored in flat files"<<std::endl;
 	}
 	dbase->listAllLoadableBlocks(dst);
 }
 
-void ServerMap::listAllLoadedBlocks(std::vector<v3s16> &dst)
+void ServerMap::listAllLoadedBlocks(std::list<v3s16> &dst)
 {
 	for(std::map<v2s16, MapSector*>::iterator si = m_sectors.begin();
 		si != m_sectors.end(); ++si)
 	{
 		MapSector *sector = si->second;
 
-		MapBlockVect blocks;
+		std::list<MapBlock*> blocks;
 		sector->getBlocks(blocks);
 
-		for(MapBlockVect::iterator i = blocks.begin();
-				i != blocks.end(); ++i) {
-			v3s16 p = (*i)->getPos();
+		for(std::list<MapBlock*>::iterator i = blocks.begin();
+				i != blocks.end(); ++i)
+		{
+			MapBlock *block = (*i);
+			v3s16 p = block->getPos();
 			dst.push_back(p);
 		}
 	}
@@ -3233,24 +3331,6 @@ bool ServerMap::loadSectorFull(v2s16 p2d)
 }
 #endif
 
-Database *ServerMap::createDatabase(const std::string &name, const std::string &savedir, Settings &conf)
-{
-	if (name == "sqlite3")
-		return new Database_SQLite3(savedir);
-	if (name == "dummy")
-		return new Database_Dummy();
-	#if USE_LEVELDB
-	else if (name == "leveldb")
-		return new Database_LevelDB(savedir);
-	#endif
-	#if USE_REDIS
-	else if (name == "redis")
-		return new Database_Redis(conf);
-	#endif
-	else
-		throw BaseException(std::string("Database backend ") + name + " not supported.");
-}
-
 void ServerMap::beginSave()
 {
 	dbase->beginSave();
@@ -3290,7 +3370,7 @@ bool ServerMap::saveBlock(MapBlock *block, Database *db)
 
 	std::string data = o.str();
 	bool ret = db->saveBlock(p3d, data);
-	if (ret) {
+	if(ret) {
 		// We just wrote it to the disk so clear modified flag
 		block->resetModified();
 	}
@@ -3302,7 +3382,7 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile,
 {
 	DSTACK(__FUNCTION_NAME);
 
-	std::string fullpath = sectordir + DIR_DELIM + blockfile;
+	std::string fullpath = sectordir+DIR_DELIM+blockfile;
 	try {
 
 		std::ifstream is(fullpath.c_str(), std::ios_base::binary);
@@ -3504,7 +3584,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 	*/
 
 	std::string blockfilename = getBlockFilename(blockpos);
-	if(fs::PathExists(sectordir + DIR_DELIM + blockfilename) == false)
+	if(fs::PathExists(sectordir+DIR_DELIM+blockfilename) == false)
 		return NULL;
 
 	/*

@@ -48,7 +48,6 @@
 #keymap_rangeselect = KEY_KEY_R
 #keymap_freemove = KEY_KEY_K
 #keymap_fastmove = KEY_KEY_J
-#keymap_cinematic = KEY_F8
 #keymap_screenshot = KEY_F12
 #    If true, keymap_special1 instead of keymap_sneak is used for climbing down and descending
 #aux1_descends = false
@@ -128,13 +127,6 @@
 #free_move = false
 #    Continuous forward movement (for testing)
 #continuous_forward = false
-#    Enable cinematic mode
-#cinematic = false
-#    Camera smoothing - smooths rotation of camera. 0 is no smoothing.
-#    Must be equal to or greater than 0, and less than 1.
-#camera_smoothing = 0.0
-#    Camera smoothing when in cinematic mode
-#cinematic_camera_smoothing = 0.7
 #    Fast movement (keymap_special1)
 #fast_move = false
 #    Invert mouse
@@ -260,16 +252,16 @@
 #freetype = true
 #    Path to TrueTypeFont or bitmap
 #font_path = fonts/liberationsans.ttf
-#font_size = 15
+#font_size = 13
 #    Font shadow offset, if 0 then shadow will not be drawn
 #font_shadow = 1
 #    Font shadow alpha (opaqueness, between 0 and 255)
 #font_shadow_alpha = 128
 #mono_font_path = fonts/liberationmono.ttf
-#mono_font_size = 15
+#mono_font_size = 13
 #    This font will be used for certain languages
 #fallback_font_path = fonts/DroidSansFallbackFull.ttf
-#fallback_font_size = 15
+#fallback_font_size = 13
 #fallback_font_shadow = 1
 #fallback_font_shadow_alpha = 128
 #    Override language. When no value is provided (default) system language is used.
@@ -345,7 +337,6 @@
 #    If true, disable cheat prevention in multiplayer
 #disable_anticheat = false
 #    If true, actions are recorded for rollback
-#    This option is only read when server starts
 #enable_rollback_recording = false
 #    Handling for deprecated lua api calls:
 #        "legacy" = (try to) mimic old behaviour (default for release).
@@ -469,8 +460,6 @@
 #    Controls size of deserts and beaches in Mapgen V6
 #mgv6_freq_desert = 0.45
 #mgv6_freq_beach = 0.15
-#    Enable/disable floating dungeons and dungeon slices
-#enable_floating_dungeons = true
 
 #    Perlin noise attributes for different map generation parameters.
 #    Noise parameters can be specified as a set of positional values:
@@ -488,14 +477,33 @@
 #    flags       = "defaults"
 #}
 #    Only the group format supports noise flags which are needed for eased noise.
-#    Mgv5 uses eased noise for np_ground so this is shown in group format,
-#    other noise parameters are shown in positional format to save space.
+#    Mgv5 uses eased noise for np_cave1, np_cave2, np_ground and np_crumble, so these are shown in
+#    group format, other noise parameters are shown in positional format to save space.
 
+#mgv5_spflags = blobs
 #mgv5_np_filler_depth = 0, 1, (150, 150, 150), 261, 4, 0.7, 2.0
 #mgv5_np_factor = 0, 1, (250, 250, 250), 920381, 3, 0.45, 2.0
 #mgv5_np_height = 0, 10, (250, 250, 250), 84174, 4, 0.5, 2.0
-#mgv5_np_cave1 = 0, 12, (50, 50, 50), 52534, 4, 0.5, 2.0
-#mgv5_np_cave2 = 0, 12, (50, 50, 50), 10325, 4, 0.5, 2.0
+#mgv5_np_cave1 = {
+#    offset      = 0
+#    scale       = 6
+#    spread      = (50, 50, 50)
+#    seed        = 52534
+#    octaves     = 4
+#    persistence = 0.5
+#    lacunarity  = 2.0
+#    flags       = "eased"
+#}
+#mgv5_np_cave2 = {
+#    offset      = 0
+#    scale       = 6
+#    spread      = (50, 50, 50)
+#    seed        = 10325
+#    octaves     = 4
+#    persistence = 0.5
+#    lacunarity  = 2.0
+#    flags       = "eased"
+#}
 #mgv5_np_ground = {
 #    offset      = 0
 #    scale       = 40
@@ -506,6 +514,17 @@
 #    lacunarity  = 2.0
 #    flags       = "eased"
 #}
+#mgv5_np_crumble = {
+#    offset      = 0
+#    scale       = 1
+#    spread      = (20, 20, 20)
+#    seed        = 34413
+#    octaves     = 3
+#    persistence = 1.3
+#    lacunarity  = 2.0
+#    flags       = "eased"
+#}
+#mgv5_np_wetness = 0, 1, (40, 40, 40), 32474, 4, 1.1, 2.0
 
 #mgv6_spflags = biomeblend, jungles, mudflow
 #mgv6_np_terrain_base = -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0

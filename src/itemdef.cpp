@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock_mesh.h"
 #include "mesh.h"
 #include "wieldmesh.h"
-#include "client/tile.h"
+#include "tile.h"
 #endif
 #include "log.h"
 #include "main.h" // g_settings
@@ -249,8 +249,8 @@ public:
 	virtual ~CItemDefManager()
 	{
 #ifndef SERVER
-		const std::vector<ClientCached*> &values = m_clientcached.getValues();
-		for(std::vector<ClientCached*>::const_iterator
+		const std::list<ClientCached*> &values = m_clientcached.getValues();
+		for(std::list<ClientCached*>::const_iterator
 				i = values.begin(); i != values.end(); ++i)
 		{
 			ClientCached *cc = *i;
@@ -362,6 +362,8 @@ public:
 
 			scene::IMesh *node_mesh = NULL;
 
+			bool reenable_shaders = false;
+
 			if (need_rtt_mesh || need_wield_mesh) {
 				u8 param1 = 0;
 				if (f.param_type == CPT_LIGHT)
@@ -370,7 +372,11 @@ public:
 				/*
 					Make a mesh from the node
 				*/
-				MeshMakeData mesh_make_data(gamedef, false);
+				if (g_settings->getBool("enable_shaders")) {
+					reenable_shaders = true;
+					g_settings->setBool("enable_shaders", false);
+				}
+				MeshMakeData mesh_make_data(gamedef);
 				u8 param2 = 0;
 				if (f.param_type_2 == CPT2_WALLMOUNTED)
 					param2 = 1;
@@ -437,6 +443,9 @@ public:
 
 			if (node_mesh)
 				node_mesh->drop();
+
+			if (reenable_shaders)
+				g_settings->setBool("enable_shaders",true);
 		}
 
 		// Put in cache

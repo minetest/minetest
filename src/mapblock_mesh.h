@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPBLOCK_MESH_HEADER
 
 #include "irrlichttypes_extrabloated.h"
-#include "client/tile.h"
+#include "tile.h"
 #include "voxel.h"
 #include <map>
 
@@ -45,9 +45,8 @@ struct MeshMakeData
 	video::SColor m_highlight_mesh_color;
 
 	IGameDef *m_gamedef;
-	bool m_use_shaders;
 
-	MeshMakeData(IGameDef *gamedef, bool use_shaders);
+	MeshMakeData(IGameDef *gamedef);
 
 	/*
 		Copy central data directly from block, and other data from

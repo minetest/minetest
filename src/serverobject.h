@@ -58,7 +58,7 @@ public:
 	ServerActiveObject(ServerEnvironment *env, v3f pos);
 	virtual ~ServerActiveObject();
 
-	virtual ActiveObjectType getSendType() const
+	virtual u8 getSendType() const
 	{ return getType(); }
 
 	// Called after id has been set and has been inserted in environment
@@ -71,7 +71,7 @@ public:
 	{ return true; }
 	
 	// Create a certain type of ServerActiveObject
-	static ServerActiveObject* create(ActiveObjectType type,
+	static ServerActiveObject* create(u8 type,
 			ServerEnvironment *env, u16 id, v3f pos,
 			const std::string &data);
 	
@@ -218,7 +218,7 @@ public:
 	/*
 		Queue of messages to be sent to the client
 	*/
-	std::queue<ActiveObjectMessage> m_messages_out;
+	Queue<ActiveObjectMessage> m_messages_out;
 	
 protected:
 	// Used for creating objects based on type

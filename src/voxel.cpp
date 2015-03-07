@@ -621,8 +621,6 @@ void VoxelManipulator::spreadLight(enum LightBank bank,
 }
 #endif
 
-const MapNode VoxelManipulator::ContentIgnoreNode = MapNode(CONTENT_IGNORE);
-
 #if 1
 /*
 	Lights neighbors of from_nodes, collects all them and then

@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventorymanager.h"
 #include "modalMenu.h"
 #include "guiTable.h"
-#include "network/networkprotocol.h"
+#include "clientserver.h"
 
 class IGameDef;
 class InventoryManager;
@@ -246,20 +246,13 @@ public:
 		m_allowclose = value;
 	}
 
-	void lockSize(bool lock,v2u32 basescreensize=v2u32(0,0))
-	{
+	void lockSize(bool lock,v2u32 basescreensize=v2u32(0,0)) {
 		m_lock = lock;
 		m_lockscreensize = basescreensize;
 	}
 
 	void removeChildren();
 	void setInitialFocus();
-
-	void setFocus(std::wstring elementname)
-	{
-		m_focused_element = elementname;
-	}
-
 	/*
 		Remove and re-add (or reposition) stuff
 	*/
@@ -355,7 +348,6 @@ private:
 	IFormSource      *m_form_src;
 	TextDest         *m_text_dst;
 	unsigned int      m_formspec_version;
-	std::wstring      m_focused_element;
 
 	typedef struct {
 		bool explicit_size;

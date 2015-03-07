@@ -22,9 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "numeric.h"
 #include "log.h"
 
-#include "base64.h"
-#include "hex.h"
-#include "sha1.h"
+#include "../sha1.h"
+#include "../base64.h"
+#include "../hex.h"
 #include "../porting.h"
 
 #include <algorithm>
@@ -40,7 +40,6 @@ static bool parseHexColorString(const std::string &value, video::SColor &color);
 static bool parseNamedColorString(const std::string &value, video::SColor &color);
 
 #ifdef __ANDROID__
-
 const wchar_t* wide_chars =
 	L" !\"#$%&'()*+,-./0123456789:;<=>?@"
 	L"ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`"
@@ -63,38 +62,31 @@ int wctomb(char *s, wchar_t wc)
 
 int mbtowc(wchar_t *pwc, const char *s, size_t n)
 {
-	if (s == NULL || *s == '\0')
+	wchar_t *intermediate = narrow_to_wide(s);
+
+	if (intermediate.length() > 0) {
+		*pwc = intermediate[0];
+		return 1;
+	} else {
 		return -1;
-
-	const wchar_t *tmp = narrow_to_wide_c(s);
-	bool success = tmp[0] != '\0';
-
-	if (success)
-		*pwc = tmp[0];
-
-	delete tmp;
-
-	return success ? 1 : -1;
+	}
 }
-
 // You must free the returned string!
 const wchar_t *narrow_to_wide_c(const char *mbs)
 {
 	size_t mbl = strlen(mbs);
-	wchar_t *wcs = new wchar_t[mbl + 1];
+	wchar_t wcs = new wchar_t[mbl + 1];
 
-	size_t i, dest_i = 0;
-	for (i = 0; i < mbl; i++) {
+	for (size_t i = 0; i < mbl; i++) {
 		if (((unsigned char) mbs[i] > 31) &&
 				((unsigned char) mbs[i] < 127)) {
-			wcs[dest_i++] = wide_chars[(unsigned char) mbs[i] - 32];
+			wcs[i] = wide_chars[(unsigned char) mbs[i] - 32];
 		}
 		//handle newline
 		else if (mbs[i] == '\n') {
-			wcs[dest_i++] = L'\n';
+			wcs[i] = L'\n';
 		}
 	}
-	wcs[dest_i] = '\0';
 
 	return wcs;
 }
@@ -106,13 +98,11 @@ const wchar_t *narrow_to_wide_c(const char *mbs)
 {
 	wchar_t *wcs = NULL;
 #if defined(_WIN32)
-	int nResult = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR) mbs, -1, 0, 0);
-	if (nResult == 0) {
-		errorstream << "gettext: MultiByteToWideChar returned null" << std::endl;
-	} else {
-		wcs = new wchar_t[nResult];
-		MultiByteToWideChar(CP_UTF8, 0, (LPCSTR) mbs, -1, (WCHAR *) wcs, nResult);
-	}
+	int wcl = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR) mbs, -1, NULL, 0);
+	if (!wcl)
+		return NULL;
+	wcs = new wchar_t[wcl];
+	MultiByteToWideChar(CP_UTF8, 0, (LPCSTR) mbs, -1, (WCHAR *) wcs, wcl);
 #else
 	size_t wcl = mbstowcs(NULL, mbs, 0);
 	if (wcl == (size_t) -1)
@@ -130,13 +120,12 @@ const wchar_t *narrow_to_wide_c(const char *mbs)
 
 std::wstring narrow_to_wide(const std::string& mbs)
 {
-	size_t wcl = mbs.size();
-	Buffer<wchar_t> wcs(wcl + 1);
-	size_t l = mbstowcs(*wcs, mbs.c_str(), wcl);
-	if (l == (size_t)(-1))
+	const wchar_t *wcs = narrow_to_wide_c(mbs.c_str());
+	if (!wcs)
 		return L"<invalid multibyte string>";
-	wcs[l] = 0;
-	return *wcs;
+	std::wstring wstr(wcs);
+	delete [] wcs;
+	return wstr;
 }
 
 #ifdef __ANDROID__

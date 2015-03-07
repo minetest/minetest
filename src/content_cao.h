@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <map>
 #include "irrlichttypes_extrabloated.h"
+#include "content_object.h"
 #include "clientobject.h"
 #include "object_properties.h"
 #include "itemgroup.h"
@@ -114,7 +115,7 @@ public:
 		return new GenericCAO(gamedef, env);
 	}
 
-	inline ActiveObjectType getType() const
+	inline u8 getType() const
 	{
 		return ACTIVEOBJECT_TYPE_GENERIC;
 	}

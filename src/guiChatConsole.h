@@ -122,6 +122,9 @@ private:
 	// font
 	gui::IGUIFont* m_font;
 	v2u32 m_fontsize;
+#if USE_FREETYPE
+	bool m_use_freetype;
+#endif
 };
 
 

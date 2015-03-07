@@ -18,20 +18,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "clientmedia.h"
+#include "util/serialize.h"
+#include "util/string.h"
 #include "httpfetch.h"
 #include "client.h"
+#include "clientserver.h"
 #include "filecache.h"
 #include "filesys.h"
+#include "hex.h"
+#include "sha1.h"
 #include "debug.h"
 #include "log.h"
 #include "porting.h"
 #include "settings.h"
 #include "main.h"
-#include "network/networkprotocol.h"
-#include "util/hex.h"
-#include "util/serialize.h"
-#include "util/sha1.h"
-#include "util/string.h"
 
 static std::string getMediaCacheDir()
 {
@@ -488,7 +488,7 @@ void ClientMediaDownloader::startConventionalTransfers(Client *client)
 	if (m_uncached_received_count != m_uncached_count) {
 		// Some media files have not been received yet, use the
 		// conventional slow method (minetest protocol) to get them
-		std::vector<std::string> file_requests;
+		std::list<std::string> file_requests;
 		for (std::map<std::string, FileStatus*>::iterator
 				it = m_files.begin();
 				it != m_files.end(); ++it) {

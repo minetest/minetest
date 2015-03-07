@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "settings.h"
 #include "mapblock.h"
-#include "network/connection.h"
+#include "connection.h"
 #include "environment.h"
 #include "map.h"
 #include "emerge.h"
@@ -59,7 +59,7 @@ void RemoteClient::ResendBlockIfOnWire(v3s16 p)
 	}
 }
 
-void RemoteClient::GetNextBlocks (
+void RemoteClient::GetNextBlocks(
 		ServerEnvironment *env,
 		EmergeManager * emerge,
 		float dtime,
@@ -182,15 +182,18 @@ void RemoteClient::GetNextBlocks (
 	//bool queue_is_full = false;
 
 	s16 d;
-	for(d = d_start; d <= d_max; d++) {
+	for(d = d_start; d <= d_max; d++)
+	{
 		/*
 			Get the border/face dot coordinates of a "d-radiused"
 			box
 		*/
-		std::vector<v3s16> list = FacePositionCache::getFacePositions(d);
+		std::list<v3s16> list;
+		getFacePositions(list, d);
 
-		std::vector<v3s16>::iterator li;
-		for(li = list.begin(); li != list.end(); ++li) {
+		std::list<v3s16>::iterator li;
+		for(li=list.begin(); li!=list.end(); ++li)
+		{
 			v3s16 p = *li + center;
 
 			/*
@@ -560,9 +563,9 @@ ClientInterface::~ClientInterface()
 	}
 }
 
-std::vector<u16> ClientInterface::getClientIDs(ClientState min_state)
+std::list<u16> ClientInterface::getClientIDs(ClientState min_state)
 {
-	std::vector<u16> reply;
+	std::list<u16> reply;
 	JMutexAutoLock clientslock(m_clients_mutex);
 
 	for(std::map<u16, RemoteClient*>::iterator
@@ -596,22 +599,20 @@ void ClientInterface::UpdatePlayerList()
 {
 	if (m_env != NULL)
 		{
-		std::vector<u16> clients = getClientIDs();
+		std::list<u16> clients = getClientIDs();
 		m_clients_names.clear();
 
 
 		if(!clients.empty())
 			infostream<<"Players:"<<std::endl;
-
-		for(std::vector<u16>::iterator
+		for(std::list<u16>::iterator
 			i = clients.begin();
-			i != clients.end(); ++i) {
+			i != clients.end(); ++i)
+		{
 			Player *player = m_env->getPlayer(*i);
-
-			if (player == NULL)
+			if(player==NULL)
 				continue;
-
-			infostream << "* " << player->getName() << "\t";
+			infostream<<"* "<<player->getName()<<"\t";
 
 			{
 				JMutexAutoLock clientslock(m_clients_mutex);
@@ -619,36 +620,32 @@ void ClientInterface::UpdatePlayerList()
 				if(client != NULL)
 					client->PrintInfo(infostream);
 			}
-
 			m_clients_names.push_back(player->getName());
 		}
 	}
 }
 
-void ClientInterface::send(u16 peer_id, u8 channelnum,
-		NetworkPacket* pkt, bool reliable, bool deletepkt)
+void ClientInterface::send(u16 peer_id,u8 channelnum,
+		SharedBuffer<u8> data, bool reliable)
 {
-	m_con->Send(peer_id, channelnum, pkt, reliable);
-
-	if (deletepkt)
-		delete pkt;
+	m_con->Send(peer_id, channelnum, data, reliable);
 }
 
 void ClientInterface::sendToAll(u16 channelnum,
-		NetworkPacket* pkt, bool reliable)
+		SharedBuffer<u8> data, bool reliable)
 {
 	JMutexAutoLock clientslock(m_clients_mutex);
 	for(std::map<u16, RemoteClient*>::iterator
 		i = m_clients.begin();
-		i != m_clients.end(); ++i) {
+		i != m_clients.end(); ++i)
+	{
 		RemoteClient *client = i->second;
 
-		if (client->net_proto_version != 0) {
-			m_con->Send(client->peer_id, channelnum, pkt, reliable);
+		if (client->net_proto_version != 0)
+		{
+			m_con->Send(client->peer_id, channelnum, data, reliable);
 		}
 	}
-
-	delete pkt;
 }
 
 RemoteClient* ClientInterface::getClientNoEx(u16 peer_id, ClientState state_min)

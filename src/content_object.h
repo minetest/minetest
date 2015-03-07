@@ -17,17 +17,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef __GAME_PARAMS_H__
-#define __GAME_PARAMS_H__
+#ifndef CONTENT_OBJECT_HEADER
+#define CONTENT_OBJECT_HEADER
 
-#include "irrlichttypes_extrabloated.h"
+#define ACTIVEOBJECT_TYPE_TEST 1
+#define ACTIVEOBJECT_TYPE_ITEM 2
+#define ACTIVEOBJECT_TYPE_RAT 3
+#define ACTIVEOBJECT_TYPE_OERKKI1 4
+#define ACTIVEOBJECT_TYPE_FIREFLY 5
+#define ACTIVEOBJECT_TYPE_MOBV2 6
 
-struct GameParams {
-	u16 socket_port;
-	std::string world_path;
-	SubgameSpec game_spec;
-	bool is_dedicated_server;
-	int log_level;
-};
+#define ACTIVEOBJECT_TYPE_LUAENTITY 7
+
+// Special type, not stored as a static object
+#define ACTIVEOBJECT_TYPE_PLAYER 100
+
+// Special type, only exists as CAO
+#define ACTIVEOBJECT_TYPE_GENERIC 101
 
 #endif
+

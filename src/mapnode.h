@@ -192,14 +192,6 @@ struct MapNode
 	}
 
 	void setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr);
-
-	/**
-	 * Check if the light value for night differs from the light value for day.
-	 *
-	 * @return If the light values are equal, returns true; otherwise false
-	 */
-	bool isLightDayNightEq(INodeDefManager *nodemgr) const;
-
 	u8 getLight(enum LightBank bank, INodeDefManager *nodemgr) const;
 
 	/**
@@ -217,7 +209,7 @@ struct MapNode
 	 * @pre f != NULL
 	 * @pre f->param_type == CPT_LIGHT
 	 */
-	u8 getLightNoChecks(LightBank bank, const ContentFeatures *f) const;
+	u8 getLightNoChecks(LightBank bank, const ContentFeatures *f);
 
 	bool getLightBanks(u8 &lightday, u8 &lightnight, INodeDefManager *nodemgr) const;
 

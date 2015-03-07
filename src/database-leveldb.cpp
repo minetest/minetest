@@ -22,54 +22,57 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if USE_LEVELDB
 
 #include "database-leveldb.h"
-
-#include "log.h"
-#include "filesys.h"
-#include "exceptions.h"
-#include "util/string.h"
-
 #include "leveldb/db.h"
 
+#include "map.h"
+#include "mapsector.h"
+#include "mapblock.h"
+#include "serialization.h"
+#include "main.h"
+#include "settings.h"
+#include "log.h"
+#include "filesys.h"
 
 #define ENSURE_STATUS_OK(s) \
 	if (!(s).ok()) { \
-		throw FileNotGoodException(std::string("LevelDB error: ") + \
-				(s).ToString()); \
+		throw FileNotGoodException(std::string("LevelDB error: ") + (s).ToString()); \
 	}
 
-
-Database_LevelDB::Database_LevelDB(const std::string &savedir)
+Database_LevelDB::Database_LevelDB(ServerMap *map, std::string savedir)
 {
 	leveldb::Options options;
 	options.create_if_missing = true;
-	leveldb::Status status = leveldb::DB::Open(options,
-		savedir + DIR_DELIM + "map.db", &m_database);
+	leveldb::Status status = leveldb::DB::Open(options, savedir + DIR_DELIM + "map.db", &m_database);
 	ENSURE_STATUS_OK(status);
+	srvmap = map;
 }
 
-Database_LevelDB::~Database_LevelDB()
+int Database_LevelDB::Initialized(void)
 {
-	delete m_database;
+	return 1;
 }
 
-bool Database_LevelDB::saveBlock(const v3s16 &pos, const std::string &data)
+void Database_LevelDB::beginSave() {}
+void Database_LevelDB::endSave() {}
+
+bool Database_LevelDB::saveBlock(v3s16 blockpos, std::string &data)
 {
 	leveldb::Status status = m_database->Put(leveldb::WriteOptions(),
-			i64tos(getBlockAsInteger(pos)), data);
+			i64tos(getBlockAsInteger(blockpos)), data);
 	if (!status.ok()) {
 		errorstream << "WARNING: saveBlock: LevelDB error saving block "
-			<< PP(pos) << ": " << status.ToString() << std::endl;
+			<< PP(blockpos) << ": " << status.ToString() << std::endl;
 		return false;
 	}
 
 	return true;
 }
 
-std::string Database_LevelDB::loadBlock(const v3s16 &pos)
+std::string Database_LevelDB::loadBlock(v3s16 blockpos)
 {
 	std::string datastr;
 	leveldb::Status status = m_database->Get(leveldb::ReadOptions(),
-		i64tos(getBlockAsInteger(pos)), &datastr);
+		i64tos(getBlockAsInteger(blockpos)), &datastr);
 
 	if(status.ok())
 		return datastr;
@@ -77,20 +80,20 @@ std::string Database_LevelDB::loadBlock(const v3s16 &pos)
 		return "";
 }
 
-bool Database_LevelDB::deleteBlock(const v3s16 &pos)
+bool Database_LevelDB::deleteBlock(v3s16 blockpos)
 {
 	leveldb::Status status = m_database->Delete(leveldb::WriteOptions(),
-			i64tos(getBlockAsInteger(pos)));
+			i64tos(getBlockAsInteger(blockpos)));
 	if (!status.ok()) {
 		errorstream << "WARNING: deleteBlock: LevelDB error deleting block "
-			<< PP(pos) << ": " << status.ToString() << std::endl;
+			<< PP(blockpos) << ": " << status.ToString() << std::endl;
 		return false;
 	}
 
 	return true;
 }
 
-void Database_LevelDB::listAllLoadableBlocks(std::vector<v3s16> &dst)
+void Database_LevelDB::listAllLoadableBlocks(std::list<v3s16> &dst)
 {
 	leveldb::Iterator* it = m_database->NewIterator(leveldb::ReadOptions());
 	for (it->SeekToFirst(); it->Valid(); it->Next()) {
@@ -100,5 +103,8 @@ void Database_LevelDB::listAllLoadableBlocks(std::vector<v3s16> &dst)
 	delete it;
 }
 
-#endif // USE_LEVELDB
-
+Database_LevelDB::~Database_LevelDB()
+{
+	delete m_database;
+}
+#endif

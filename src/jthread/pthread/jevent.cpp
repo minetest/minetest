@@ -29,7 +29,7 @@
 
 #define UNUSED(expr) do { (void)(expr); } while (0)
 
-#if defined(__MACH__) && defined(__APPLE__)
+#ifdef __MACH__
 #undef sem_t
 #define sem_t semaphore_t
 #undef sem_init

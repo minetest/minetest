@@ -91,7 +91,7 @@ public:
 private:
 	u32 m_notify_on;
 	std::set<u32> *m_notify_on_deco_ids;
-	std::vector<GenNotifyEvent> m_notify_events;
+	std::list<GenNotifyEvent> m_notify_events;
 };
 
 struct MapgenSpecificParams {
@@ -151,7 +151,6 @@ public:
 	static u32 getBlockSeed2(v3s16 p, int seed);
 	s16 findGroundLevelFull(v2s16 p2d);
 	s16 findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax);
-	void initHeightMap(s16 *dest, size_t len);
 	void updateHeightmap(v3s16 nmin, v3s16 nmax);
 	void updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax);
 

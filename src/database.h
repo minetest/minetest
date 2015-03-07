@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef DATABASE_HEADER
 #define DATABASE_HEADER
 
-#include <vector>
+#include <list>
 #include <string>
 #include "irr_v3d.h"
 #include "irrlichttypes.h"
@@ -32,22 +32,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Database
 {
 public:
-	virtual ~Database() {}
+	virtual void beginSave() = 0;
+	virtual void endSave() = 0;
 
-	virtual void beginSave() {}
-	virtual void endSave() {}
-
-	virtual bool saveBlock(const v3s16 &pos, const std::string &data) = 0;
-	virtual std::string loadBlock(const v3s16 &pos) = 0;
-	virtual bool deleteBlock(const v3s16 &pos) = 0;
-
-	static s64 getBlockAsInteger(const v3s16 &pos);
-	static v3s16 getIntegerAsBlock(s64 i);
-
-	virtual void listAllLoadableBlocks(std::vector<v3s16> &dst) = 0;
-
-	virtual bool initialized() const { return true; }
+	virtual bool saveBlock(v3s16 blockpos, std::string &data) = 0;
+	virtual std::string loadBlock(v3s16 blockpos) = 0;
+	virtual bool deleteBlock(v3s16 blockpos) = 0;
+	s64 getBlockAsInteger(const v3s16 pos) const;
+	v3s16 getIntegerAsBlock(s64 i) const;
+	virtual void listAllLoadableBlocks(std::list<v3s16> &dst) = 0;
+	virtual int Initialized(void)=0;
+	virtual ~Database() {};
 };
-
 #endif
-

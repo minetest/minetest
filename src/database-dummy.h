@@ -25,17 +25,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database.h"
 #include "irrlichttypes.h"
 
+class ServerMap;
+
 class Database_Dummy : public Database
 {
 public:
-	virtual bool saveBlock(const v3s16 &pos, const std::string &data);
-	virtual std::string loadBlock(const v3s16 &pos);
-	virtual bool deleteBlock(const v3s16 &pos);
-	virtual void listAllLoadableBlocks(std::vector<v3s16> &dst);
-
+	Database_Dummy(ServerMap *map);
+	virtual void beginSave();
+	virtual void endSave();
+	virtual bool saveBlock(v3s16 blockpos, std::string &data);
+	virtual std::string loadBlock(v3s16 blockpos);
+	virtual bool deleteBlock(v3s16 blockpos);
+	virtual void listAllLoadableBlocks(std::list<v3s16> &dst);
+	virtual int Initialized(void);
+	~Database_Dummy();
 private:
-	std::map<s64, std::string> m_database;
+	ServerMap *srvmap;
+	std::map<u64, std::string> m_database;
 };
-
 #endif
-

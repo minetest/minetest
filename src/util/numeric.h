@@ -25,23 +25,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../irr_v3d.h"
 #include "../irr_aabb3d.h"
 #include <list>
-#include <map>
-#include <vector>
 #include <algorithm>
 
-
-/*
- * This class permits to cache getFacePosition call results
- * This reduces CPU usage and vector calls
- */
-class FacePositionCache
-{
-public:
-	static std::vector<v3s16> getFacePositions(u16 d);
-private:
-	static void generateFacePosition(u16 d);
-	static std::map<u16, std::vector<v3s16> > m_cache;
-};
+// Calculate the borders of a "d-radius" cube
+void getFacePositions(std::list<v3s16> &list, u16 d);
 
 class IndentationRaiser
 {
@@ -184,56 +171,57 @@ inline void sortBoxVerticies(v3s16 &p1, v3s16 &p2) {
 }
 
 
-/** Returns \p f wrapped to the range [-360, 360]
- *
- *  See test.cpp for example cases.
- *
- *  \note This is also used in cases where degrees wrapped to the range [0, 360]
- *  is innapropriate (e.g. pitch needs negative values)
- *
- *  \internal functionally equivalent -- although precision may vary slightly --
- *  to fmodf((f), 360.0f) however empirical tests indicate that this approach is
- *  faster.
- */
-inline float modulo360f(float f)
+/*
+	See test.cpp for example cases.
+	wraps degrees to the range of -360...360
+	NOTE: Wrapping to 0...360 is not used because pitch needs negative values.
+*/
+inline float wrapDegrees(float f)
 {
-	int sign;
-	int whole;
-	float fraction;
-
-	if (f < 0) {
-		f = -f;
-		sign = -1;
-	} else {
-		sign = 1;
-	}
-
-	whole = f;
-
-	fraction = f - whole;
-	whole %= 360;
-
-	return sign * (whole + fraction);
+	// Take examples of f=10, f=720.5, f=-0.5, f=-360.5
+	// This results in
+	// 10, 720, -1, -361
+	int i = floor(f);
+	// 0, 2, 0, -1
+	int l = i / 360;
+	// NOTE: This would be used for wrapping to 0...360
+	// 0, 2, -1, -2
+	/*if(i < 0)
+		l -= 1;*/
+	// 0, 720, 0, -360
+	int k = l * 360;
+	// 10, 0.5, -0.5, -0.5
+	f -= float(k);
+	return f;
 }
 
-
-/** Returns \p f wrapped to the range [0, 360]
-  */
+/* Wrap to 0...360 */
 inline float wrapDegrees_0_360(float f)
 {
-	float value = modulo360f(f);
-	return value < 0 ? value + 360 : value;
+	// Take examples of f=10, f=720.5, f=-0.5, f=-360.5
+	// This results in
+	// 10, 720, -1, -361
+	int i = floor(f);
+	// 0, 2, 0, -1
+	int l = i / 360;
+	// Wrap to 0...360
+	// 0, 2, -1, -2
+	if(i < 0)
+		l -= 1;
+	// 0, 720, 0, -360
+	int k = l * 360;
+	// 10, 0.5, -0.5, -0.5
+	f -= float(k);
+	return f;
 }
 
-
-/** Returns \p f wrapped to the range [-180, 180]
-  */
+/* Wrap to -180...180 */
 inline float wrapDegrees_180(float f)
 {
-	float value = modulo360f(f + 180);
-	if (value < 0)
-		value += 360;
-	return value - 180;
+	f += 180;
+	f = wrapDegrees_0_360(f);
+	f -= 180;
+	return f;
 }
 
 /*

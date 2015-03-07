@@ -42,10 +42,9 @@ local function get_formspec(tabview, name, tabdata)
 			"text,align=right;" ..                -- clients
 			"text,align=center,padding=0.25;" ..  -- "/"
 			"text,align=right,padding=0.25;" ..   -- clients_max
-			image_column(fgettext("Creative mode"), "creative") .. ",padding=1;" ..
-			image_column(fgettext("Damage enabled"), "damage") .. ",padding=0.25;" ..
-			image_column(fgettext("PvP enabled"), "pvp") .. ",padding=0.25;" ..
-			"color,span=1;" ..
+			image_column("Creative mode", "creative") .. ",padding=1;" ..
+			image_column("Damage enabled", "damage") .. ",padding=0.25;" ..
+			image_column("PvP enabled", "pvp") .. ",padding=0.25;" ..
 			"text,padding=1]"                               -- name
 	else
 		retval = retval .. "tablecolumns[text]"
@@ -88,6 +87,7 @@ local function get_formspec(tabview, name, tabdata)
 end
 
 --------------------------------------------------------------------------------
+
 local function main_button_handler(tabview, fields, name, tabdata)
 
 	if fields["btn_start_singleplayer"] then
@@ -159,11 +159,6 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 			gamedata.servername			= menudata.favorites[fav_idx].name
 			gamedata.serverdescription	= menudata.favorites[fav_idx].description
-
-			if not is_server_protocol_compat_or_error(menudata.favorites[fav_idx].proto_min,
-					menudata.favorites[fav_idx].proto_max) then
-				return true
-			end
 		else
 			gamedata.servername			= ""
 			gamedata.serverdescription	= ""

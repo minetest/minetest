@@ -545,11 +545,12 @@ function table.copy(t, seen)
 	seen = seen or {}
 	seen[t] = n
 	for k, v in pairs(t) do
-		n[(type(k) == "table" and (seen[k] or table.copy(k, seen))) or k] =
-			(type(v) == "table" and (seen[v] or table.copy(v, seen))) or v
+		n[type(k) ~= "table" and k or seen[k] or table.copy(k, seen)] =
+			type(v) ~= "table" and v or seen[v] or table.copy(v, seen)
 	end
 	return n
 end
+
 --------------------------------------------------------------------------------
 -- mainmenu only functions
 --------------------------------------------------------------------------------
@@ -564,7 +565,7 @@ if INIT == "mainmenu" then
 		return nil
 	end
 
-	function fgettext_ne(text, ...)
+	function fgettext(text, ...)
 		text = core.gettext(text)
 		local arg = {n=select('#', ...), ...}
 		if arg.n >= 1 then
@@ -586,11 +587,7 @@ if INIT == "mainmenu" then
 			end
 			text = result
 		end
-		return text
-	end
-
-	function fgettext(text, ...)
-		return core.formspec_escape(fgettext_ne(text, ...))
+		return core.formspec_escape(text)
 	end
 end
 
