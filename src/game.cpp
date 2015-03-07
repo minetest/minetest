@@ -4175,7 +4175,9 @@ inline void Game::limitFps(FpsControl *fps_timings, f32 *dtime)
 	fps_timings->last_time = time;
 }
 
-
+// Note: This will free (using delete[])! \p msg. If you want to use it later,
+// pass a copy of it to this function
+// Note: \p msg must be allocated using new (not malloc())
 void Game::showOverlayMessage(const wchar_t *msg, float dtime,
 		int percent, bool draw_clouds)
 {
