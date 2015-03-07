@@ -17,19 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifdef NDEBUG
-	/*#ifdef _WIN32
-		#pragma message ("Disabling unit tests")
-	#else
-		#warning "Disabling unit tests"
-	#endif*/
-	// Disable unit tests
-	#define ENABLE_TESTS 0
-#else
-	// Enable unit tests
-	#define ENABLE_TESTS 1
-#endif
-
 #ifdef _MSC_VER
 #ifndef SERVER // Dedicated server isn't linked with Irrlicht
 	#pragma comment(lib, "Irrlicht.lib")
@@ -75,18 +62,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverlist.h"
 #include "httpfetch.h"
 #include "guiEngine.h"
+#include "map.h"
 #include "mapsector.h"
 #include "player.h"
 #include "fontengine.h"
-
-#include "database-sqlite3.h"
-#ifdef USE_LEVELDB
-#include "database-leveldb.h"
-#endif
-
-#if USE_REDIS
-#include "database-redis.h"
-#endif
+#include "database.h"
 
 #ifdef HAVE_TOUCHSCREENGUI
 #include "touchscreengui.h"
@@ -174,8 +154,7 @@ static bool get_game_from_cmdline(GameParams *game_params, const Settings &cmd_a
 static bool determine_subgame(GameParams *game_params);
 
 static bool run_dedicated_server(const GameParams &game_params, const Settings &cmd_args);
-static bool migrate_database(const GameParams &game_params, const Settings &cmd_args,
-		Server *server);
+static bool migrate_database(const GameParams &game_params, const Settings &cmd_args);
 
 #ifndef SERVER
 static bool print_video_modes();
@@ -836,9 +815,9 @@ int main(int argc, char *argv[])
 
 #ifndef __ANDROID__
 	// Run unit tests
-	if ((ENABLE_TESTS && cmd_args.getFlag("disable-unittests") == false)
-			|| cmd_args.getFlag("enable-unittests") == true) {
+	if (cmd_args.getFlag("run-unittests")) {
 		run_tests();
+		return 0;
 	}
 #endif
 
@@ -909,10 +888,8 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Load configuration from specified file"))));
 	allowed_options->insert(std::make_pair("port", ValueSpec(VALUETYPE_STRING,
 			_("Set network port (UDP)"))));
-	allowed_options->insert(std::make_pair("disable-unittests", ValueSpec(VALUETYPE_FLAG,
-			_("Disable unit tests"))));
-	allowed_options->insert(std::make_pair("enable-unittests", ValueSpec(VALUETYPE_FLAG,
-			_("Enable unit tests"))));
+	allowed_options->insert(std::make_pair("run-unittests", ValueSpec(VALUETYPE_FLAG,
+			_("Run the unit tests and exit"))));
 	allowed_options->insert(std::make_pair("map-dir", ValueSpec(VALUETYPE_STRING,
 			_("Same as --world (deprecated)"))));
 	allowed_options->insert(std::make_pair("world", ValueSpec(VALUETYPE_STRING,
@@ -1466,13 +1443,13 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 		return false;
 	}
 
+	// Database migration
+	if (cmd_args.exists("migrate"))
+		return migrate_database(game_params, cmd_args);
+
 	// Create server
 	Server server(game_params.world_path,
 			game_params.game_spec, false, bind_addr.isIPv6());
-
-	// Database migration
-	if (cmd_args.exists("migrate"))
-		return migrate_database(game_params, cmd_args, &server);
 
 	server.start(bind_addr);
 
@@ -1483,79 +1460,63 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 	return true;
 }
 
-static bool migrate_database(const GameParams &game_params, const Settings &cmd_args,
-		Server *server)
+static bool migrate_database(const GameParams &game_params, const Settings &cmd_args)
 {
-	Settings world_mt;
-	bool success = world_mt.readConfigFile((game_params.world_path
-			+ DIR_DELIM + "world.mt").c_str());
-	if (!success) {
-		errorstream << "Cannot read world.mt" << std::endl;
-		return false;
-	}
-
-	if (!world_mt.exists("backend")) {
-		errorstream << "Please specify your current backend in world.mt file:"
-		            << std::endl << "	backend = {sqlite3|leveldb|redis|dummy}"
-		            << std::endl;
-		return false;
-	}
-
-	std::string backend = world_mt.get("backend");
-	Database *new_db;
 	std::string migrate_to = cmd_args.get("migrate");
-
+	Settings world_mt;
+	std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
+	if (!world_mt.readConfigFile(world_mt_path.c_str())) {
+		errorstream << "Cannot read world.mt!" << std::endl;
+		return false;
+	}
+	if (!world_mt.exists("backend")) {
+		errorstream << "Please specify your current backend in world.mt:"
+			<< std::endl
+			<< "	backend = {sqlite3|leveldb|redis|dummy}"
+			<< std::endl;
+		return false;
+	}
+	std::string backend = world_mt.get("backend");
 	if (backend == migrate_to) {
-		errorstream << "Cannot migrate: new backend is same as the old one"
-		            << std::endl;
+		errorstream << "Cannot migrate: new backend is same"
+			<< " as the old one" << std::endl;
 		return false;
 	}
+	Database *old_db = ServerMap::createDatabase(backend, game_params.world_path, world_mt),
+		*new_db = ServerMap::createDatabase(migrate_to, game_params.world_path, world_mt);
 
-	if (migrate_to == "sqlite3")
-		new_db = new Database_SQLite3(&(ServerMap&)server->getMap(),
-				game_params.world_path);
-#if USE_LEVELDB
-	else if (migrate_to == "leveldb")
-		new_db = new Database_LevelDB(&(ServerMap&)server->getMap(),
-				game_params.world_path);
-#endif
-#if USE_REDIS
-	else if (migrate_to == "redis")
-		new_db = new Database_Redis(&(ServerMap&)server->getMap(),
-				game_params.world_path);
-#endif
-	else {
-		errorstream << "Migration to " << migrate_to << " is not supported"
-		            << std::endl;
-		return false;
-	}
+	u32 count = 0;
+	time_t last_update_time = 0;
+	bool &kill = *porting::signal_handler_killstatus();
 
-	std::list<v3s16> blocks;
-	ServerMap &old_map = ((ServerMap&)server->getMap());
-	old_map.listAllLoadableBlocks(blocks);
-	int count = 0;
+	std::vector<v3s16> blocks;
+	old_db->listAllLoadableBlocks(blocks);
 	new_db->beginSave();
-	for (std::list<v3s16>::iterator i = blocks.begin(); i != blocks.end(); i++) {
-		MapBlock *block = old_map.loadBlock(*i);
-		if (!block) {
-			errorstream << "Failed to load block " << PP(*i) << ", skipping it.";
+	for (std::vector<v3s16>::const_iterator it = blocks.begin(); it != blocks.end(); ++it) {
+		if (kill) return false;
+
+		const std::string &data = old_db->loadBlock(*it);
+		if (!data.empty()) {
+			new_db->saveBlock(*it, data);
 		} else {
-			old_map.saveBlock(block, new_db);
-			MapSector *sector = old_map.getSectorNoGenerate(v2s16(i->X, i->Z));
-			sector->deleteBlock(block);
+			errorstream << "Failed to load block " << PP(*it) << ", skipping it." << std::endl;
 		}
-		++count;
-		if (count % 500 == 0)
-		   actionstream << "Migrated " << count << " blocks "
-			   << (100.0 * count / blocks.size()) << "% completed" << std::endl;
+		if (++count % 0xFF == 0 && time(NULL) - last_update_time >= 1) {
+			std::cerr << " Migrated " << count << " blocks, "
+				<< (100.0 * count / blocks.size()) << "% completed.\r";
+			new_db->endSave();
+			new_db->beginSave();
+			last_update_time = time(NULL);
+		}
 	}
+	std::cerr << std::endl;
 	new_db->endSave();
+	delete old_db;
 	delete new_db;
 
 	actionstream << "Successfully migrated " << count << " blocks" << std::endl;
 	world_mt.set("backend", migrate_to);
-	if (!world_mt.updateConfigFile(
-				(game_params.world_path+ DIR_DELIM + "world.mt").c_str()))
+	if (!world_mt.updateConfigFile(world_mt_path.c_str()))
 		errorstream << "Failed to update world.mt!" << std::endl;
 	else
 		actionstream << "world.mt updated" << std::endl;
@@ -1633,13 +1594,15 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 		input = new RealInputHandler(device, receiver);
 
 	smgr = device->getSceneManager();
+	smgr->getParameters()->setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
 
 	guienv = device->getGUIEnvironment();
 	skin = guienv->getSkin();
 	skin->setColor(gui::EGDC_BUTTON_TEXT, video::SColor(255, 255, 255, 255));
-	skin->setColor(gui::EGDC_3D_HIGH_LIGHT, video::SColor(255, 0, 0, 0));
+	skin->setColor(gui::EGDC_3D_LIGHT, video::SColor(0, 0, 0, 0));
+	skin->setColor(gui::EGDC_3D_HIGH_LIGHT, video::SColor(255, 30, 30, 30));
 	skin->setColor(gui::EGDC_3D_SHADOW, video::SColor(255, 0, 0, 0));
-	skin->setColor(gui::EGDC_HIGH_LIGHT, video::SColor(255, 70, 100, 50));
+	skin->setColor(gui::EGDC_HIGH_LIGHT, video::SColor(255, 70, 120, 50));
 	skin->setColor(gui::EGDC_HIGH_LIGHT_TEXT, video::SColor(255, 255, 255, 255));
 
 	g_fontengine = new FontEngine(g_settings, guienv);

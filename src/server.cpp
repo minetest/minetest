@@ -50,12 +50,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_abm.h"
 #include "content_sao.h"
 #include "mods.h"
-#include "sha1.h"
-#include "base64.h"
 #include "tool.h"
 #include "sound.h" // dummySoundManager
 #include "event_manager.h"
-#include "hex.h"
 #include "serverlist.h"
 #include "util/string.h"
 #include "util/pointedthing.h"
@@ -64,6 +61,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/thread.h"
 #include "defaultsettings.h"
+#include "util/base64.h"
+#include "util/sha1.h"
+#include "util/hex.h"
 
 class ClientNotFoundException : public BaseException
 {
@@ -244,9 +244,6 @@ Server::Server(
 	std::string ban_path = m_path_world + DIR_DELIM "ipban.txt";
 	m_banmanager = new BanManager(ban_path);
 
-	// Create rollback manager
-	m_rollback = new RollbackManager(m_path_world, this);
-
 	ModConfiguration modconf(m_path_world);
 	m_mods = modconf.getMods();
 	std::vector<ModSpec> unsatisfied_mods = modconf.getUnsatisfiedMods();
@@ -353,6 +350,12 @@ Server::Server(
 
 	// Initialize mapgens
 	m_emerge->initMapgens();
+
+	m_enable_rollback_recording = g_settings->getBool("enable_rollback_recording");
+	if (m_enable_rollback_recording) {
+		// Create rollback manager
+		m_rollback = new RollbackManager(m_path_world, this);
+	}
 
 	// Give environment reference to scripting api
 	m_script->initializeEnvironment(m_env);
@@ -533,23 +536,18 @@ void Server::AsyncRunStep(bool initial_step)
 	/*
 		Update time of day and overall game time
 	*/
-	{
-		JMutexAutoLock envlock(m_env_mutex);
+	m_env->setTimeOfDaySpeed(g_settings->getFloat("time_speed"));
 
-		m_env->setTimeOfDaySpeed(g_settings->getFloat("time_speed"));
+	/*
+		Send to clients at constant intervals
+	*/
 
-		/*
-			Send to clients at constant intervals
-		*/
-
-		m_time_of_day_send_timer -= dtime;
-		if(m_time_of_day_send_timer < 0.0)
-		{
-			m_time_of_day_send_timer = g_settings->getFloat("time_send_interval");
-			u16 time = m_env->getTimeOfDay();
-			float time_speed = g_settings->getFloat("time_speed");
-			SendTimeOfDay(PEER_ID_INEXISTENT, time, time_speed);
-		}
+	m_time_of_day_send_timer -= dtime;
+	if(m_time_of_day_send_timer < 0.0) {
+		m_time_of_day_send_timer = g_settings->getFloat("time_send_interval");
+		u16 time = m_env->getTimeOfDay();
+		float time_speed = g_settings->getFloat("time_speed");
+		SendTimeOfDay(PEER_ID_INEXISTENT, time, time_speed);
 	}
 
 	{
@@ -1108,10 +1106,6 @@ void Server::AsyncRunStep(bool initial_step)
 			counter = 0.0;
 
 			m_emerge->startThreads();
-
-			// Update m_enable_rollback_recording here too
-			m_enable_rollback_recording =
-					g_settings->getBool("enable_rollback_recording");
 		}
 	}
 
@@ -1851,8 +1845,8 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			keyPressed = (u32)readU32(&data[2+12+12+4+4]);
 		v3f position((f32)ps.X/100., (f32)ps.Y/100., (f32)ps.Z/100.);
 		v3f speed((f32)ss.X/100., (f32)ss.Y/100., (f32)ss.Z/100.);
-		pitch = wrapDegrees(pitch);
-		yaw = wrapDegrees(yaw);
+		pitch = modulo360f(pitch);
+		yaw = modulo360f(yaw);
 
 		player->setPosition(position);
 		player->setSpeed(speed);
@@ -2817,7 +2811,6 @@ void Server::setInventoryModified(const InventoryLocation &loc)
 		if(!playersao)
 			return;
 		playersao->m_inventory_not_sent = true;
-		playersao->m_wielded_item_not_sent = true;
 	}
 	break;
 	case InventoryLocation::NODEMETA:
@@ -4939,10 +4932,9 @@ const ModSpec* Server::getModSpec(const std::string &modname)
 	}
 	return NULL;
 }
-void Server::getModNames(std::list<std::string> &modlist)
+void Server::getModNames(std::vector<std::string> &modlist)
 {
-	for(std::vector<ModSpec>::iterator i = m_mods.begin(); i != m_mods.end(); i++)
-	{
+	for(std::vector<ModSpec>::iterator i = m_mods.begin(); i != m_mods.end(); i++) {
 		modlist.push_back(i->name);
 	}
 }

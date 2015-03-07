@@ -58,7 +58,7 @@ public:
 	ServerActiveObject(ServerEnvironment *env, v3f pos);
 	virtual ~ServerActiveObject();
 
-	virtual u8 getSendType() const
+	virtual ActiveObjectType getSendType() const
 	{ return getType(); }
 
 	// Called after id has been set and has been inserted in environment
@@ -71,7 +71,7 @@ public:
 	{ return true; }
 	
 	// Create a certain type of ServerActiveObject
-	static ServerActiveObject* create(u8 type,
+	static ServerActiveObject* create(ActiveObjectType type,
 			ServerEnvironment *env, u16 id, v3f pos,
 			const std::string &data);
 	

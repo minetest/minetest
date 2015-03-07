@@ -107,20 +107,13 @@ Particle::~Particle()
 void Particle::OnRegisterSceneNode()
 {
 	if (IsVisible)
-	{
-		SceneManager->registerNodeForRendering
-				(this, scene::ESNRP_TRANSPARENT);
-		SceneManager->registerNodeForRendering
-				(this, scene::ESNRP_SOLID);
-	}
+		SceneManager->registerNodeForRendering(this, scene::ESNRP_TRANSPARENT_EFFECT);
 
 	ISceneNode::OnRegisterSceneNode();
 }
 
 void Particle::render()
 {
-	// TODO: Render particles in front of water and the selectionbox
-
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
 	driver->setMaterial(m_material);
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);

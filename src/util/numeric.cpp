@@ -20,79 +20,84 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "numeric.h"
 #include "mathconstants.h"
 
-#include "../log.h"
+#include "log.h"
 #include "../constants.h" // BS, MAP_BLOCKSIZE
 #include <string.h>
 #include <iostream>
 
+std::map<u16, std::vector<v3s16> > FacePositionCache::m_cache;
 // Calculate the borders of a "d-radius" cube
-void getFacePositions(std::list<v3s16> &list, u16 d)
+std::vector<v3s16> FacePositionCache::getFacePositions(u16 d)
 {
-	if(d == 0)
-	{
-		list.push_back(v3s16(0,0,0));
+	if (m_cache.find(d) != m_cache.end())
+		return m_cache[d];
+
+	generateFacePosition(d);
+	return m_cache[d];
+
+}
+
+void FacePositionCache::generateFacePosition(u16 d)
+{
+	m_cache[d] = std::vector<v3s16>();
+	if(d == 0) {
+		m_cache[d].push_back(v3s16(0,0,0));
 		return;
 	}
-	if(d == 1)
-	{
+	if(d == 1) {
 		/*
 			This is an optimized sequence of coordinates.
 		*/
-		list.push_back(v3s16( 0, 1, 0)); // top
-		list.push_back(v3s16( 0, 0, 1)); // back
-		list.push_back(v3s16(-1, 0, 0)); // left
-		list.push_back(v3s16( 1, 0, 0)); // right
-		list.push_back(v3s16( 0, 0,-1)); // front
-		list.push_back(v3s16( 0,-1, 0)); // bottom
+		m_cache[d].push_back(v3s16( 0, 1, 0)); // top
+		m_cache[d].push_back(v3s16( 0, 0, 1)); // back
+		m_cache[d].push_back(v3s16(-1, 0, 0)); // left
+		m_cache[d].push_back(v3s16( 1, 0, 0)); // right
+		m_cache[d].push_back(v3s16( 0, 0,-1)); // front
+		m_cache[d].push_back(v3s16( 0,-1, 0)); // bottom
 		// 6
-		list.push_back(v3s16(-1, 0, 1)); // back left
-		list.push_back(v3s16( 1, 0, 1)); // back right
-		list.push_back(v3s16(-1, 0,-1)); // front left
-		list.push_back(v3s16( 1, 0,-1)); // front right
-		list.push_back(v3s16(-1,-1, 0)); // bottom left
-		list.push_back(v3s16( 1,-1, 0)); // bottom right
-		list.push_back(v3s16( 0,-1, 1)); // bottom back
-		list.push_back(v3s16( 0,-1,-1)); // bottom front
-		list.push_back(v3s16(-1, 1, 0)); // top left
-		list.push_back(v3s16( 1, 1, 0)); // top right
-		list.push_back(v3s16( 0, 1, 1)); // top back
-		list.push_back(v3s16( 0, 1,-1)); // top front
+		m_cache[d].push_back(v3s16(-1, 0, 1)); // back left
+		m_cache[d].push_back(v3s16( 1, 0, 1)); // back right
+		m_cache[d].push_back(v3s16(-1, 0,-1)); // front left
+		m_cache[d].push_back(v3s16( 1, 0,-1)); // front right
+		m_cache[d].push_back(v3s16(-1,-1, 0)); // bottom left
+		m_cache[d].push_back(v3s16( 1,-1, 0)); // bottom right
+		m_cache[d].push_back(v3s16( 0,-1, 1)); // bottom back
+		m_cache[d].push_back(v3s16( 0,-1,-1)); // bottom front
+		m_cache[d].push_back(v3s16(-1, 1, 0)); // top left
+		m_cache[d].push_back(v3s16( 1, 1, 0)); // top right
+		m_cache[d].push_back(v3s16( 0, 1, 1)); // top back
+		m_cache[d].push_back(v3s16( 0, 1,-1)); // top front
 		// 18
-		list.push_back(v3s16(-1, 1, 1)); // top back-left
-		list.push_back(v3s16( 1, 1, 1)); // top back-right
-		list.push_back(v3s16(-1, 1,-1)); // top front-left
-		list.push_back(v3s16( 1, 1,-1)); // top front-right
-		list.push_back(v3s16(-1,-1, 1)); // bottom back-left
-		list.push_back(v3s16( 1,-1, 1)); // bottom back-right
-		list.push_back(v3s16(-1,-1,-1)); // bottom front-left
-		list.push_back(v3s16( 1,-1,-1)); // bottom front-right
+		m_cache[d].push_back(v3s16(-1, 1, 1)); // top back-left
+		m_cache[d].push_back(v3s16( 1, 1, 1)); // top back-right
+		m_cache[d].push_back(v3s16(-1, 1,-1)); // top front-left
+		m_cache[d].push_back(v3s16( 1, 1,-1)); // top front-right
+		m_cache[d].push_back(v3s16(-1,-1, 1)); // bottom back-left
+		m_cache[d].push_back(v3s16( 1,-1, 1)); // bottom back-right
+		m_cache[d].push_back(v3s16(-1,-1,-1)); // bottom front-left
+		m_cache[d].push_back(v3s16( 1,-1,-1)); // bottom front-right
 		// 26
 		return;
 	}
 
 	// Take blocks in all sides, starting from y=0 and going +-y
-	for(s16 y=0; y<=d-1; y++)
-	{
+	for(s16 y=0; y<=d-1; y++) {
 		// Left and right side, including borders
-		for(s16 z=-d; z<=d; z++)
-		{
-			list.push_back(v3s16(d,y,z));
-			list.push_back(v3s16(-d,y,z));
-			if(y != 0)
-			{
-				list.push_back(v3s16(d,-y,z));
-				list.push_back(v3s16(-d,-y,z));
+		for(s16 z=-d; z<=d; z++) {
+			m_cache[d].push_back(v3s16(d,y,z));
+			m_cache[d].push_back(v3s16(-d,y,z));
+			if(y != 0) {
+				m_cache[d].push_back(v3s16(d,-y,z));
+				m_cache[d].push_back(v3s16(-d,-y,z));
 			}
 		}
 		// Back and front side, excluding borders
-		for(s16 x=-d+1; x<=d-1; x++)
-		{
-			list.push_back(v3s16(x,y,d));
-			list.push_back(v3s16(x,y,-d));
-			if(y != 0)
-			{
-				list.push_back(v3s16(x,-y,d));
-				list.push_back(v3s16(x,-y,-d));
+		for(s16 x=-d+1; x<=d-1; x++) {
+			m_cache[d].push_back(v3s16(x,y,d));
+			m_cache[d].push_back(v3s16(x,y,-d));
+			if(y != 0) {
+				m_cache[d].push_back(v3s16(x,-y,d));
+				m_cache[d].push_back(v3s16(x,-y,-d));
 			}
 		}
 	}
@@ -100,10 +105,9 @@ void getFacePositions(std::list<v3s16> &list, u16 d)
 	// Take the bottom and top face with borders
 	// -d<x<d, y=+-d, -d<z<d
 	for(s16 x=-d; x<=d; x++)
-	for(s16 z=-d; z<=d; z++)
-	{
-		list.push_back(v3s16(x,-d,z));
-		list.push_back(v3s16(x,d,z));
+	for(s16 z=-d; z<=d; z++) {
+		m_cache[d].push_back(v3s16(x,-d,z));
+		m_cache[d].push_back(v3s16(x,d,z));
 	}
 }
 

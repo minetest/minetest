@@ -1,239 +1,26 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-23 17:37+0100\n"
-"PO-Revision-Date: 2014-12-28 15:48+0900\n"
+"POT-Creation-Date: 2015-02-14 23:12+0900\n"
+"PO-Revision-Date: 2015-02-22 10:57+0900\n"
 "Last-Translator: Rui Takeda <mrrst0914@gmail.com>\n"
-"Language-Team: Japanese\n"
+"Language-Team: Japanese <minetest_jp@m.add.ac>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 1.6.5\n"
-"Language: ja_JP\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-
-msgid "Game Name"
-msgstr "ゲーム名"
-
-msgid "Create"
-msgstr "作成"
-
-msgid "Cancel"
-msgstr "キャンセル"
-
-msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-msgstr "Gamemgr: \"$1\"のModを \"$2\" にｺﾋﾟｰできません"
-
-msgid "Games"
-msgstr "ゲーム"
-
-msgid "Mods:"
-msgstr "Mod:"
-
-msgid "edit game"
-msgstr "ゲーム編集"
-
-msgid "new game"
-msgstr "新規ゲーム"
-
-msgid "Remove selected mod"
-msgstr "選択したModを削除"
 
 msgid "Ok"
 msgstr "決定"
-
-msgid "World name"
-msgstr "ワールド名"
-
-msgid "Seed"
-msgstr "シード値"
-
-msgid "Mapgen"
-msgstr "マップ生成"
-
-msgid "Game"
-msgstr "ゲーム"
-
-msgid "Delete World \"$1\"?"
-msgstr "\"$1\"のﾜｰﾙﾄﾞを削除しますか？"
-
-msgid "Yes"
-msgstr "はい"
-
-msgid "No"
-msgstr "いいえ"
-
-msgid "A world named \"$1\" already exists"
-msgstr "\"$1\"という名前のﾜｰﾙﾄﾞを作成できません。同名のﾜｰﾙﾄﾞが存在しています"
-
-msgid "No worldname given or no game selected"
-msgstr "ﾜｰﾙﾄﾞ名が入力されていないか、ｹﾞｰﾑが選択されていません"
-
-msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr "ｼｪｰﾀﾞｰを有効にするには、OpenGLのﾄﾞﾗｲﾊﾞが必要です"
-
-msgid "Address/Port"
-msgstr "アドレス/ポート"
-
-msgid "Name/Password"
-msgstr "名前/パスワード"
-
-msgid "Public Serverlist"
-msgstr "公開されているｻｰﾊﾞｰﾘｽﾄ"
-
-msgid "Delete"
-msgstr "削除"
-
-msgid "Connect"
-msgstr "接続"
-
-msgid "New"
-msgstr "作成"
-
-msgid "Configure"
-msgstr "設定"
-
-msgid "Start Game"
-msgstr "ゲームスタート"
-
-msgid "Select World:"
-msgstr "ワールド選択:"
-
-msgid "Creative Mode"
-msgstr "ｸﾘｴｲﾃｨﾌﾞﾓｰﾄﾞ"
-
-msgid "Enable Damage"
-msgstr "ﾀﾞﾒｰｼﾞ有効"
-
-msgid "Public"
-msgstr "公開する"
-
-msgid "Name"
-msgstr "名前"
-
-msgid "Password"
-msgstr "パスワード"
-
-msgid "Server Port"
-msgstr "ポート"
-
-msgid "Fancy Trees"
-msgstr "きれいな木"
-
-msgid "Smooth Lighting"
-msgstr "自然な光"
-
-msgid "3D Clouds"
-msgstr "立体な雲"
-
-msgid "Opaque Water"
-msgstr "不透明な水面"
-
-msgid "Mip-Mapping"
-msgstr "ﾐｯﾌﾟﾏｯﾌﾟ"
-
-msgid "Anisotropic Filtering"
-msgstr "異方性ﾌｨﾙﾀﾘﾝｸﾞ"
-
-msgid "Bi-Linear Filtering"
-msgstr "ﾊﾞｲﾘﾆｱﾌｨﾙﾀﾘﾝｸﾞ"
-
-msgid "Tri-Linear Filtering"
-msgstr "ﾄﾘﾘﾆｱﾌｨﾙﾀﾘﾝｸﾞ"
-
-msgid "Shaders"
-msgstr "ｼｪｰﾀﾞｰ"
-
-msgid "Connected Glass"
-msgstr "ガラスを繋げる"
-
-msgid "Enable Particles"
-msgstr "破片の有効化"
-
-msgid "Finite Liquid"
-msgstr "液体の制限"
-
-msgid "Change keys"
-msgstr "キー割当て変更"
-
-msgid "Play"
-msgstr "ゲームスタート"
-
-msgid "Select texture pack:"
-msgstr "テクスチャパックを選択:"
-
-msgid "No information available"
-msgstr "情報がありません"
-
-msgid "Core Developers"
-msgstr "開発者"
-
-msgid "Active Contributors"
-msgstr "貢献者"
-
-msgid "Previous Contributors"
-msgstr "以前の貢献者"
-
-msgid "Singleplayer"
-msgstr "シングルプレイ"
-
-msgid "Client"
-msgstr "クライアント"
-
-msgid "Server"
-msgstr "マルチプレイ"
-
-msgid "Settings"
-msgstr "設定"
-
-msgid "Texturepacks"
-msgstr "テクスチャパック"
-
-msgid "Mods"
-msgstr "Mod"
-
-msgid "Credits"
-msgstr "クレジット"
-
-msgid "Installed Mods:"
-msgstr "インストール済みのMod:"
-
-msgid "Online mod repository"
-msgstr "オンラインで検索"
-
-msgid "No mod description available"
-msgstr "Modの説明がありません"
-
-msgid "Mod information:"
-msgstr "Modの情報:"
-
-msgid "Rename"
-msgstr "名前を変更"
-
-msgid "Uninstall selected modpack"
-msgstr "選択したModパックを削除"
-
-msgid "Uninstall selected mod"
-msgstr "選択したModを削除"
-
-msgid "Rename Modpack:"
-msgstr "Modパックの名前を変更"
-
-msgid "Accept"
-msgstr "了承"
 
 msgid "World:"
 msgstr "ワールド:"
 
 msgid "Hide Game"
-msgstr "内部Mod"
+msgstr "ｹﾞｰﾑを隠す"
 
 msgid "Hide mp content"
 msgstr "Modパックの簡略化"
@@ -247,6 +34,9 @@ msgstr "依存Mod:"
 msgid "Save"
 msgstr "保存"
 
+msgid "Cancel"
+msgstr "キャンセル"
+
 msgid "Enable MP"
 msgstr "有効化"
 
@@ -257,22 +47,103 @@ msgid "enabled"
 msgstr "有効化"
 
 msgid "Enable all"
-msgstr "全て有効化"
+msgstr "すべて有効化"
 
-msgid "Modmgr: failed to delete \"$1\""
-msgstr "Modmgr: \"$1\"の削除に失敗しました"
+msgid "World name"
+msgstr "ワールド名"
 
-msgid "Modmgr: invalid modpath \"$1\""
-msgstr "Modmgr: \"$1\"は無効なModパスです"
+msgid "Seed"
+msgstr "Seed値"
+
+msgid "Mapgen"
+msgstr "ワールドタイプ"
+
+msgid "Game"
+msgstr "ゲーム"
+
+msgid "Create"
+msgstr "作成"
+
+msgid "You have no subgames installed."
+msgstr "ゲームがインストールされていません。"
+
+msgid "Download one from minetest.net"
+msgstr "minetest.netから再ダウンロードしてください。"
+
+msgid "Warning: The minimal development test is meant for developers."
+msgstr "警告:Minimal development testは開発者のためのゲームです。"
+
+msgid "Download a subgame, such as minetest_game, from minetest.net"
+msgstr "minetest.netからminetest_gameのゲームをダウンロードしてください。"
+
+msgid "A world named \"$1\" already exists"
+msgstr "ワールド名\"$1\"はすでに使用されています。"
+
+msgid "No worldname given or no game selected"
+msgstr "ワールド名が入力されていないか、ゲームが選択されていません。"
 
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr "\"$1\"を削除してよろしいですか？"
+msgstr "本当に\"$1\"を削除してよろしいですか？"
+
+msgid "Yes"
+msgstr "はい"
 
 msgid "No of course not!"
-msgstr "違います！"
+msgstr "いいえ"
 
-msgid "Page $1 of $2"
-msgstr "ページ $1/$2"
+msgid "Modmgr: failed to delete \"$1\""
+msgstr "Modマネージャー:\"$1\"の削除に失敗しました。"
+
+msgid "Modmgr: invalid modpath \"$1\""
+msgstr "Modマネージャー:Mod\"$1\"の場所が不明です。"
+
+msgid "Delete World \"$1\"?"
+msgstr "ワールド\"$1\"を削除してよろしいですか？"
+
+msgid "No"
+msgstr "いいえ"
+
+msgid "Rename Modpack:"
+msgstr "名前を変更"
+
+msgid "Accept"
+msgstr "決定"
+
+msgid "Install Mod: file: \"$1\""
+msgstr "Modインストール:ファイル\"$1\"からModをインストールします。"
+
+msgid ""
+"\n"
+"Install Mod: unsupported filetype \"$1\" or broken archive"
+msgstr ""
+"\n"
+"Modインストール:ファイル\"$1\"は非対応の形式か、壊れています。"
+
+msgid "Failed to install $1 to $2"
+msgstr "$2へ$1をインストールできませんでした。"
+
+msgid "Install Mod: unable to find suitable foldername for modpack $1"
+msgstr ""
+"Modインストール:Modパック$1に適したフォルダ名を見つけることができませんでし"
+"た。"
+
+msgid "Install Mod: unable to find real modname for: $1"
+msgstr "Modインストール:$1の本来のMod名が不明です。"
+
+msgid "Unsorted"
+msgstr "未分類"
+
+msgid "Search"
+msgstr "検索"
+
+msgid "Downloading $1, please wait..."
+msgstr "$1をダウンロードしています。しばらくお待ちください..."
+
+msgid "Successfully installed:"
+msgstr "インストールが完了しました。:"
+
+msgid "Shortname:"
+msgstr "省略名"
 
 msgid "Rating"
 msgstr "評価"
@@ -283,63 +154,415 @@ msgstr "再インストール"
 msgid "Install"
 msgstr "インストール"
 
+msgid "Close store"
+msgstr "閉じる"
+
+msgid "Page $1 of $2"
+msgstr "ページ　$1/$2"
+
+msgid "Credits"
+msgstr "ｸﾚｼﾞｯﾄ"
+
+msgid "Core Developers"
+msgstr "開発者"
+
+msgid "Active Contributors"
+msgstr "開発協力者"
+
+msgid "Previous Contributors"
+msgstr "以前の開発協力者"
+
+msgid "Installed Mods:"
+msgstr "インストール済みのMod:"
+
+msgid "Online mod repository"
+msgstr "オンラインでModを検索"
+
+msgid "No mod description available"
+msgstr "Modの説明がありません。"
+
+msgid "Mod information:"
+msgstr "Modの情報:"
+
+msgid "Rename"
+msgstr "名前を変更"
+
+msgid "Uninstall selected modpack"
+msgstr "選択したModパックを削除"
+
+msgid "Uninstall selected mod"
+msgstr "選択したModを削除"
+
+msgid "Select Mod File:"
+msgstr "Modファイルを選択"
+
+msgid "Mods"
+msgstr "Mod"
+
+msgid "Address / Port :"
+msgstr "アドレスとポート:"
+
+msgid "Name / Password :"
+msgstr "名前とパスワード:"
+
+msgid "Public Serverlist"
+msgstr "公開済みのｻｰﾊﾞｰの一覧"
+
+msgid "Delete"
+msgstr "削除"
+
+msgid "Connect"
+msgstr "接続"
+
+msgid "Creative mode"
+msgstr "ｸﾘｴｲﾃｨﾌﾞﾓｰﾄﾞ"
+
+msgid "Damage enabled"
+msgstr "HPあり"
+
+msgid "PvP enabled"
+msgstr "PvPあり"
+
+msgid "Client"
+msgstr "ｸﾗｲｱﾝﾄ"
+
+msgid "New"
+msgstr "作成"
+
+msgid "Configure"
+msgstr "設定"
+
+msgid "Start Game"
+msgstr "ゲームスタート"
+
+msgid "Select World:"
+msgstr "ワールドを選択:"
+
+msgid "Creative Mode"
+msgstr "ｸﾘｴｲﾃｨﾌﾞﾓｰﾄﾞ"
+
+msgid "Enable Damage"
+msgstr "ﾀﾞﾒｰｼﾞあり"
+
+msgid "Public"
+msgstr "ｻｰﾊﾞｰを公開する"
+
+msgid "Name/Password"
+msgstr "名前とパスワード"
+
+msgid "Bind Address"
+msgstr "バインドアドレス"
+
+msgid "Port"
+msgstr "ポート"
+
+msgid "Server Port"
+msgstr "サーバーのポート"
+
+msgid "Server"
+msgstr "ｻｰﾊﾞｰ"
+
+msgid "No Filter"
+msgstr "フィルタ無し"
+
+msgid "Bilinear Filter"
+msgstr "バイリニアフィルタ"
+
+msgid "Trilinear Filter"
+msgstr "トリリニアフィルタ"
+
+msgid "No Mipmap"
+msgstr "ミップマップ無し"
+
+msgid "Mipmap"
+msgstr "ミップマップ"
+
+msgid "Mipmap + Aniso. Filter"
+msgstr "異方性フィルタ"
+
+msgid "Are you sure to reset your singleplayer world?"
+msgstr "シングルプレイヤーのワールドをリセットしてよろしいですか？"
+
+msgid "No!!!"
+msgstr "いいえ"
+
+msgid "Smooth Lighting"
+msgstr "滑らかな光"
+
+msgid "Enable Particles"
+msgstr "ﾊﾟｰﾃｨｸﾙ有効化"
+
+msgid "3D Clouds"
+msgstr "立体の雲"
+
+msgid "Fancy Trees"
+msgstr "綺麗な木"
+
+msgid "Opaque Water"
+msgstr "不透明な水"
+
+msgid "Connected Glass"
+msgstr "ガラスをつなげる"
+
+msgid "Node Highlighting"
+msgstr "ﾉｰﾄﾞの強調"
+
+msgid "Texturing:"
+msgstr "テクスチャリング:"
+
+msgid "Rendering:"
+msgstr "レンダリング:"
+
+msgid "Restart minetest for driver change to take effect"
+msgstr "ドライバーを変更するためMinetesを再起動します"
+
+msgid "Shaders"
+msgstr "ｼｪｰﾀﾞｰ"
+
+msgid "Change keys"
+msgstr "操作変更"
+
+msgid "Reset singleplayer world"
+msgstr "シングルプレイヤーのワールドをリセット"
+
+msgid "GUI scale factor"
+msgstr "メニューの大きさ"
+
+msgid "Scaling factor applied to menu elements: "
+msgstr "メニューの大きさとして設定する数値:"
+
+msgid "Touch free target"
+msgstr "タッチ位置を自由にする"
+
+msgid "Touchthreshold (px)"
+msgstr "タッチのしきい値（ピクセル単位）"
+
+msgid "Bumpmapping"
+msgstr "ﾊﾞﾝﾌﾟﾏｯﾋﾟﾝｸﾞ"
+
+msgid "Generate Normalmaps"
+msgstr "ﾉｰﾏﾙﾏｯﾌﾟの生成"
+
+msgid "Parallax Occlusion"
+msgstr "視差遮蔽ﾏｯﾋﾟﾝｸﾞ"
+
+msgid "Waving Water"
+msgstr "揺れる水"
+
+msgid "Waving Leaves"
+msgstr "揺れる葉"
+
+msgid "Waving Plants"
+msgstr "揺れる草花"
+
+msgid "To enable shaders the OpenGL driver needs to be used."
+msgstr "ｼｪｰﾀﾞｰを有効にするにはOpenGLを使用する必要があります。"
+
+msgid "Settings"
+msgstr "設定"
+
+msgid "Fly mode"
+msgstr "飛行モード"
+
+msgid "Start Singleplayer"
+msgstr "ゲームスタート"
+
+msgid "Config mods"
+msgstr "Mod設定"
+
+msgid "Main"
+msgstr "メイン"
+
+msgid "Play"
+msgstr "ゲームスタート"
+
+msgid "Singleplayer"
+msgstr "ｼﾝｸﾞﾙﾌﾟﾚｲﾔｰ"
+
+msgid "Select texture pack:"
+msgstr "テクスチャパックを選択:"
+
+msgid "No information available"
+msgstr "情報がありません。"
+
+msgid "Texturepacks"
+msgstr "ﾃｸｽﾁｬﾊﾟｯｸ"
+
+msgid "Loading textures..."
+msgstr "テクスチャ読み込み中..."
+
+msgid "Rebuilding shaders..."
+msgstr "シェーダー構築中..."
+
+msgid "Initializing nodes..."
+msgstr "ノードの設定中..."
+
 msgid "Item textures..."
-msgstr "ｱｲﾃﾑのﾃｸｽﾁｬ設定中..."
+msgstr "アイテムのテクスチャを設定中..."
+
+msgid "Done!"
+msgstr "完了！"
+
+msgid "Main Menu"
+msgstr "メインメニュー"
+
+msgid "Player name too long."
+msgstr "名前が長過ぎます。"
+
+msgid "Connection error (timed out?)"
+msgstr "接続失敗（またはタイムアウト）"
+
+msgid "No world selected and no address provided. Nothing to do."
+msgstr "ワールドが選択されていないアドレスです。続行できません。"
+
+msgid "Provided world path doesn't exist: "
+msgstr "ワールドが存在しません:"
+
+msgid "Could not find or load game \""
+msgstr "ゲーム\"の読み込みができません。"
+
+msgid "Invalid gamespec."
+msgstr "無効なgamespecです。"
+
+msgid "needs_fallback_font"
+msgstr "yes"
+
+msgid "Proceed"
+msgstr "決定"
+
+msgid "You died."
+msgstr "You died."
+
+msgid "Respawn"
+msgstr "Respawn"
+
+msgid ""
+"Default Controls:\n"
+"No menu visible:\n"
+"- single tap: button activate\n"
+"- double tap: place/use\n"
+"- slide finger: look around\n"
+"Menu/Inventory visible:\n"
+"- double tap (outside):\n"
+" -->close\n"
+"- touch stack, touch slot:\n"
+" --> move stack\n"
+"- touch&drag, tap 2nd finger\n"
+" --> place single item to slot\n"
+msgstr ""
+"基本操作:\n"
+"タッチによる操作\n"
+"- シングルタップ:ブロックの破壊\n"
+"- ダブルタップ:設置やアイテムの使用\n"
+"- 指でスライド:見回す\n"
+"メニュー（インベントリ）の操作\n"
+"- ダブルタップ:\n"
+"-- 閉じる\n"
+"- アイテムスロットをタッチ:\n"
+"-- アイテムの移動\n"
+"- タッチしてドラッグ:\n"
+"-- アイテムを置く\n"
+
+msgid ""
+"Default Controls:\n"
+"- WASD: move\n"
+"- Space: jump/climb\n"
+"- Shift: sneak/go down\n"
+"- Q: drop item\n"
+"- I: inventory\n"
+"- Mouse: turn/look\n"
+"- Mouse left: dig/punch\n"
+"- Mouse right: place/use\n"
+"- Mouse wheel: select item\n"
+"- T: chat\n"
+msgstr ""
+"基本操作:\n"
+"- WASD:移動\n"
+"- ｽﾍﾟｰｽ:ｼﾞｬﾝﾌﾟ､登る\n"
+"- Shift:ｽﾆｰｸ､降りる\n"
+"- Q:ｱｲﾃﾑを落とす\n"
+"- I:ｲﾝﾍﾞﾝﾄﾘ\n"
+"- ﾏｳｽ移動:見回す\n"
+"- 左ｸﾘｯｸ:ﾌﾞﾛｯｸ破壊\n"
+"- 右ｸﾘｯｸ:設置や使用\n"
+"- ﾎｲｰﾙ:ｱｲﾃﾑ選択\n"
+"- T:ﾁｬｯﾄ画面\n"
+
+msgid "Continue"
+msgstr "再開"
+
+msgid "Change Password"
+msgstr "パスワード変更"
+
+msgid "Sound Volume"
+msgstr "音量"
+
+msgid "Change Keys"
+msgstr "操作変更"
+
+msgid "Exit to Menu"
+msgstr "タイトル"
+
+msgid "Exit to OS"
+msgstr "終了"
+
+msgid "Shutting down..."
+msgstr "終了中..."
 
 msgid "Loading..."
-msgstr "ﾛｰﾄﾞ中..."
+msgstr "読み込み中..."
 
 msgid "Creating server..."
-msgstr "ｻｰﾊﾞｰ構築中..."
+msgstr "サーバー作成中..."
 
 msgid "Creating client..."
-msgstr "ｸﾗｲｱﾝﾄ作成中..."
+msgstr "クライアント作成中..."
 
 msgid "Resolving address..."
-msgstr "ｱﾄﾞﾚｽ解決中..."
+msgstr "アドレス解決中..."
 
 msgid "Connecting to server..."
-msgstr "ｻｰﾊﾞｰ接続中..."
+msgstr "サーバー接続中..."
 
 msgid "Item definitions..."
-msgstr "ｱｲﾃﾑ定義中..."
+msgstr "アイテム定義中..."
 
 msgid "Node definitions..."
-msgstr "ﾉｰﾄﾞ定義中..."
+msgstr "ノード定義中..."
 
 msgid "Media..."
 msgstr "..."
 
-msgid "Shutting down..."
-msgstr "終了中..."
+msgid " KB/s"
+msgstr " KB/秒"
+
+msgid " MB/s"
+msgstr " MB/秒"
 
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
 "\n"
-"詳細はdebug.txtを御覧ください。"
+"詳細はdebug.txtをご覧ください。"
 
-msgid "You died."
-msgstr "You died!"
+msgid "Enter "
+msgstr "Enter"
 
-msgid "Respawn"
-msgstr "Respawn"
-
-msgid "Proceed"
+msgid "ok"
 msgstr "決定"
 
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr "キーバインド"
+msgstr "操作の設定を変更します。"
 
 msgid "\"Use\" = climb down"
-msgstr "「使う」キーで降りる"
+msgstr "「使用」で降りる"
 
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "ジャンプの二回押しで飛行"
+msgstr "「ジャンプ」二回押しで飛行モード"
 
 msgid "Key already in use"
-msgstr "既に使われているキーです"
+msgstr "すでに使われているキーです。"
 
 msgid "press key"
 msgstr "キー入力待ち"
@@ -351,19 +574,19 @@ msgid "Backward"
 msgstr "後退"
 
 msgid "Left"
-msgstr "左へ進む"
+msgstr "左に進む"
 
 msgid "Right"
-msgstr "右へ進む"
+msgstr "右に進む"
 
 msgid "Use"
-msgstr "使う"
+msgstr "使用"
 
 msgid "Jump"
 msgstr "ジャンプ"
 
 msgid "Sneak"
-msgstr "こっそり進む"
+msgstr "スニーク"
 
 msgid "Drop"
 msgstr "落とす"
@@ -381,16 +604,16 @@ msgid "Console"
 msgstr "コンソール"
 
 msgid "Toggle fly"
-msgstr "飛行"
+msgstr "飛行モード"
 
 msgid "Toggle fast"
-msgstr "高速移動"
+msgstr "高速移動モード"
 
 msgid "Toggle noclip"
-msgstr "すり抜け"
+msgstr "すり抜けモード"
 
 msgid "Range select"
-msgstr "視野切り替え"
+msgstr "視野範囲変更"
 
 msgid "Print stacks"
 msgstr "スタックの表示"
@@ -408,53 +631,13 @@ msgid "Change"
 msgstr "変更"
 
 msgid "Passwords do not match!"
-msgstr "パスワードが一致しません!"
-
-msgid "Continue"
-msgstr "続ける"
-
-msgid "Change Password"
-msgstr "ﾊﾟｽﾜｰﾄﾞ変更"
-
-msgid "Sound Volume"
-msgstr "音量"
-
-msgid "Exit to Menu"
-msgstr "タイトル"
-
-msgid "Exit to OS"
-msgstr "終了"
-
-msgid ""
-"Default Controls:\n"
-"- WASD: move\n"
-"- Space: jump/climb\n"
-"- Shift: sneak/go down\n"
-"- Q: drop item\n"
-"- I: inventory\n"
-"- Mouse: turn/look\n"
-"- Mouse left: dig/punch\n"
-"- Mouse right: place/use\n"
-"- Mouse wheel: select item\n"
-"- T: chat\n"
-msgstr ""
-"基本操作:\n"
-"WASD:移動\n"
-"ｽﾍﾟｰｽ:ｼﾞｬﾝﾌﾟ/登る\n"
-"ｼﾌﾄ:忍び歩き/降りる\n"
-"Q:ｱｲﾃﾑを落とす\n"
-"I:インベントリ\n"
-"ﾏｳｽ:見回す\n"
-"左ｸﾘｯｸ:掘る/ﾊﾟﾝﾁ\n"
-"右ｸﾘｯｸ:使う\n"
-"ﾏｳｽﾎｲｰﾙ:ｱｲﾃﾑ選択\n"
-"T:ﾁｬｯﾄ\n"
+msgstr "パスワードが一致しません！"
 
 msgid "Sound Volume: "
-msgstr "音量"
+msgstr "音量:"
 
 msgid "Exit"
-msgstr "戻る"
+msgstr "閉じる"
 
 msgid "Left Button"
 msgstr "左ボタン"
@@ -671,56 +854,3 @@ msgstr "PA1"
 
 msgid "Zoom"
 msgstr "ズーム"
-
-msgid "needs_fallback_font"
-msgstr "yes"
-
-msgid "Main Menu"
-msgstr "メインメニュー"
-
-msgid "No world selected and no address provided. Nothing to do."
-msgstr ""
-"ﾜｰﾙﾄﾞが選択できていないか、ｱﾄﾞﾚｽが入力されていません。そのため実行されませ"
-"ん。"
-
-msgid "Could not find or load game \""
-msgstr "読み込みか検索に失敗: \""
-
-msgid "Invalid gamespec."
-msgstr "無効なgamespecです"
-
-msgid "Connection error (timed out?)"
-msgstr "接続エラー(タイムアウト)"
-
-msgid "Bumpmapping"
-msgstr "ﾊﾞﾝﾌﾟﾏｯﾋﾟﾝｸﾞ"
-
-msgid "Generate Normalmaps"
-msgstr "法線ﾏｯﾋﾟﾝｸﾞ"
-
-msgid "Parallax Occlusion"
-msgstr "視差ｵｸﾙｰｼﾞｮﾝﾏｯﾋﾟﾝｸﾞ"
-
-msgid "Waving Water"
-msgstr "揺れる水"
-
-msgid "Waving Leaves"
-msgstr "揺れる葉"
-
-msgid "Waving Plants"
-msgstr "揺れる草花"
-
-msgid "GUI scale factor"
-msgstr "メニューの大きさ"
-
-msgid "Unsorted"
-msgstr "未分類"
-
-msgid "Search"
-msgstr "検索"
-
-msgid "Close store"
-msgstr "閉じる"
-
-msgid "Change Keys"
-msgstr "操作変更"

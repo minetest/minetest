@@ -43,7 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "itemdef.h"
 #include "shader.h"
-#include "base64.h"
+#include "util/base64.h"
 #include "clientmap.h"
 #include "clientmedia.h"
 #include "sound.h"
@@ -52,10 +52,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "version.h"
 #include "drawscene.h"
-#include "subgame.h"
-#include "server.h"
-#include "database.h"
 #include "database-sqlite3.h"
+#include "serialization.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -271,28 +269,26 @@ Client::Client(
 	m_time_of_day_update_timer(0),
 	m_recommended_send_interval(0.1),
 	m_removed_sounds_check_timer(0),
-	m_state(LC_Created)
+	m_state(LC_Created),
+	m_localdb(NULL)
 {
-	/*
-		Add local player
-	*/
-	{
-		Player *player = new LocalPlayer(this, playername);
+	// Add local player
+	m_env.addPlayer(new LocalPlayer(this, playername));
 
-		m_env.addPlayer(player);
-	}
+	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
 
 	m_cache_smooth_lighting = g_settings->getBool("smooth_lighting");
+	m_cache_enable_shaders  = g_settings->getBool("enable_shaders");
 }
 
 void Client::Stop()
 {
 	//request all client managed threads to stop
 	m_mesh_update_thread.Stop();
-	if (localdb != NULL) {
-		actionstream << "Local map saving ended" << std::endl;
-		localdb->endSave();
-		delete localserver;
+	// Save local server map
+	if (m_localdb) {
+		infostream << "Local map saving ended." << std::endl;
+		m_localdb->endSave();
 	}
 }
 
@@ -535,7 +531,7 @@ void Client::step(float dtime)
 	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime))
 	{
 		ScopeProfiler sp(g_profiler, "Client: map timer and unload");
-		std::list<v3s16> deleted_blocks;
+		std::vector<v3s16> deleted_blocks;
 		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
 				g_settings->getFloat("client_unload_unused_data_timeout"),
 				&deleted_blocks);
@@ -549,8 +545,8 @@ void Client::step(float dtime)
 			NOTE: This loop is intentionally iterated the way it is.
 		*/
 
-		std::list<v3s16>::iterator i = deleted_blocks.begin();
-		std::list<v3s16> sendlist;
+		std::vector<v3s16>::iterator i = deleted_blocks.begin();
+		std::vector<v3s16> sendlist;
 		for(;;)
 		{
 			if(sendlist.size() == 255 || i == deleted_blocks.end())
@@ -569,7 +565,7 @@ void Client::step(float dtime)
 				writeU16(&reply[0], TOSERVER_DELETEDBLOCKS);
 				reply[2] = sendlist.size();
 				u32 k = 0;
-				for(std::list<v3s16>::iterator
+				for(std::vector<v3s16>::iterator
 						j = sendlist.begin();
 						j != sendlist.end(); ++j)
 				{
@@ -807,6 +803,13 @@ void Client::step(float dtime)
 			Send(1, data, true);
 		}
 	}
+
+	// Write server map
+	if (m_localdb && m_localdb_save_interval.step(dtime,
+			m_cache_save_interval)) {
+		m_localdb->endSave();
+		m_localdb->beginSave();
+	}
 }
 
 bool Client::loadMedia(const std::string &data, const std::string &filename)
@@ -906,7 +909,7 @@ void Client::deletingPeer(con::Peer *peer, bool timeout)
 		string name
 	}
 */
-void Client::request_media(const std::list<std::string> &file_requests)
+void Client::request_media(const std::vector<std::string> &file_requests)
 {
 	std::ostringstream os(std::ios_base::binary);
 	writeU16(os, TOSERVER_REQUEST_MEDIA);
@@ -914,7 +917,7 @@ void Client::request_media(const std::list<std::string> &file_requests)
 	assert(file_requests_size <= 0xFFFF);
 	writeU16(os, (u16) (file_requests_size & 0xFFFF));
 
-	for(std::list<std::string>::const_iterator i = file_requests.begin();
+	for(std::vector<std::string>::const_iterator i = file_requests.begin();
 			i != file_requests.end(); ++i) {
 		os<<serializeString(*i);
 	}
@@ -945,34 +948,19 @@ void Client::initLocalMapSaving(const Address &address,
 		const std::string &hostname,
 		bool is_local_server)
 {
-	localdb = NULL;
-
-	if (!g_settings->getBool("enable_local_map_saving") || is_local_server)
+	if (!g_settings->getBool("enable_local_map_saving") || is_local_server) {
 		return;
+	}
 
 	const std::string world_path = porting::path_user
 		+ DIR_DELIM + "worlds"
 		+ DIR_DELIM + "server_"
 		+ hostname + "_" + to_string(address.getPort());
 
-	SubgameSpec gamespec;
+	fs::CreateAllDirs(world_path);
 
-	if (!getWorldExists(world_path)) {
-		gamespec = findSubgame(g_settings->get("default_game"));
-		if (!gamespec.isValid())
-			gamespec = findSubgame("minimal");
-	} else {
-		gamespec = findWorldSubgame(world_path);
-	}
-
-	if (!gamespec.isValid()) {
-		errorstream << "Couldn't find subgame for local map saving." << std::endl;
-		return;
-	}
-
-	localserver = new Server(world_path, gamespec, false, false);
-	localdb = new Database_SQLite3(&(ServerMap&)localserver->getMap(), world_path);
-	localdb->beginSave();
+	m_localdb = new Database_SQLite3(world_path);
+	m_localdb->beginSave();
 	actionstream << "Local map saving started, map will be saved at '" << world_path << "'" << std::endl;
 }
 
@@ -1209,8 +1197,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			sector->insertBlock(block);
 		}
 
-		if (localdb != NULL) {
-			((ServerMap&) localserver->getMap()).saveBlock(block, localdb);
+		if (m_localdb) {
+			ServerMap::saveBlock(block, m_localdb);
 		}
 
 		/*
@@ -2613,7 +2601,7 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server, bool urgent)
 		Create a task to update the mesh of the block
 	*/
 
-	MeshMakeData *data = new MeshMakeData(this);
+	MeshMakeData *data = new MeshMakeData(this, m_cache_enable_shaders);
 
 	{
 		//TimeTaker timer("data fill");
@@ -2807,7 +2795,8 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 		if (image) {
 			raw_image->copyTo(image);
 			irr::c8 filename[256];
-			snprintf(filename, sizeof(filename), "%s" DIR_DELIM "screenshot_%u.png",
+			snprintf(filename, sizeof(filename),
+				(std::string("%s") + DIR_DELIM + "screenshot_%u.png").c_str(),
 				 g_settings->get("screenshot_path").c_str(),
 				 device->getTimer()->getRealTime());
 			std::ostringstream sstr;

@@ -31,6 +31,7 @@ FlagDesc flagdesc_deco[] = {
 	{"place_center_x", DECO_PLACE_CENTER_X},
 	{"place_center_y", DECO_PLACE_CENTER_Y},
 	{"place_center_z", DECO_PLACE_CENTER_Z},
+	{"force_placement", DECO_FORCE_PLACEMENT},
 	{NULL,             0}
 };
 
@@ -140,6 +141,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 			s16 y = mg->heightmap ?
 					mg->heightmap[mapindex] :
 					mg->findGroundLevel(v2s16(x, z), nmin.Y, nmax.Y);
+			y = MYMAX(y, mg->water_level);
 
 			if (y < nmin.Y || y > nmax.Y ||
 				y < y_min  || y > y_max)
@@ -333,6 +335,8 @@ size_t DecoSchematic::generate(MMVManip *vm, PseudoRandom *pr, s16 max_y, v3s16 
 	if (flags & DECO_PLACE_CENTER_Z)
 		p.Z -= (schematic->size.Z + 1) / 2;
 
+	bool force_placement = (flags & DECO_FORCE_PLACEMENT);
+
 	if (!vm->m_area.contains(p))
 		return 0;
 
@@ -344,7 +348,7 @@ size_t DecoSchematic::generate(MMVManip *vm, PseudoRandom *pr, s16 max_y, v3s16 
 	Rotation rot = (rotation == ROTATE_RAND) ?
 		(Rotation)pr->range(ROTATE_0, ROTATE_270) : rotation;
 
-	schematic->blitToVManip(p, vm, rot, false, m_ndef);
+	schematic->blitToVManip(p, vm, rot, force_placement, m_ndef);
 
 	return 1;
 }

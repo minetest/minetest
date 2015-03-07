@@ -133,7 +133,7 @@ void MapSector::deleteBlock(MapBlock *block)
 	delete block;
 }
 
-void MapSector::getBlocks(std::list<MapBlock*> &dest)
+void MapSector::getBlocks(MapBlockVect &dest)
 {
 	for(std::map<s16, MapBlock*>::iterator bi = m_blocks.begin();
 		bi != m_blocks.end(); ++bi)

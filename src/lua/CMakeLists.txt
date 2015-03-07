@@ -47,10 +47,6 @@ else()
 endif()
 mark_as_advanced(LUA_USE_DLOPEN)
 
-if(DEFAULT_POSIX)
-else()
-endif()
-
 if(DEFAULT_ANSI)
 	option(LUA_ANSI "Disable non-ansi features." ON)
 else()
@@ -86,6 +82,10 @@ if(LUA_USE_DLOPEN)
 		set(COMMON_LDFLAGS "${COMMON_LDFLAGS} -ldl ")
 	endif(NOT APPLE)
 endif(LUA_USE_DLOPEN)
+
+if(DEFAULT_POSIX)
+	set(COMMON_CFLAGS "${COMMON_CFLAGS} -DLUA_USE_POSIX")
+endif(DEFAULT_POSIX)
 
 if(LUA_ANSI)
 	set(COMMON_CFLAGS "${COMMON_CFLAGS} -DLUA_ANSI")

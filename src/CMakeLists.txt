@@ -355,9 +355,12 @@ add_subdirectory(jthread)
 add_subdirectory(script)
 add_subdirectory(util)
 
+set (unittests_SRCS
+	test.cpp
+)
+
 set(common_SRCS
 	ban.cpp
-	base64.cpp
 	cavegen.cpp
 	clientiface.cpp
 	collision.cpp
@@ -418,12 +421,10 @@ set(common_SRCS
 	serverlist.cpp
 	serverobject.cpp
 	settings.cpp
-	sha1.cpp
 	socket.cpp
 	sound.cpp
 	staticobject.cpp
 	subgame.cpp
-	test.cpp
 	tool.cpp
 	treegen.cpp
 	version.cpp
@@ -432,6 +433,7 @@ set(common_SRCS
 	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}
 	${UTIL_SRCS}
+	${unittests_SRCS}
 )
 
 # This gives us the icon and file version information

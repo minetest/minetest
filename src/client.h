@@ -47,7 +47,6 @@ struct MapDrawControl;
 class MtEventManager;
 struct PointedThing;
 class Database;
-class Server;
 
 struct QueuedMeshUpdate
 {
@@ -465,7 +464,7 @@ public:
 	// Insert a media file appropriately into the appropriate manager
 	bool loadMedia(const std::string &data, const std::string &filename);
 	// Send a request for conventional media transfer
-	void request_media(const std::list<std::string> &file_requests);
+	void request_media(const std::vector<std::string> &file_requests);
 	// Send a notification that no conventional media transfer is needed
 	void received_media();
 
@@ -569,11 +568,13 @@ private:
 	LocalClientState m_state;
 
 	// Used for saving server map to disk client-side
-	Database *localdb;
-	Server *localserver;
+	Database *m_localdb;
+	IntervalLimiter m_localdb_save_interval;
+	u16 m_cache_save_interval;
 
-	// TODO: Add callback to update this when g_settings changes
+	// TODO: Add callback to update these when g_settings changes
 	bool m_cache_smooth_lighting;
+	bool m_cache_enable_shaders;
 };
 
 #endif // !CLIENT_HEADER

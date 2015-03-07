@@ -8,12 +8,15 @@ if [ $CC = "clang" ]; then
 	sudo apt-get install llvm-3.1
 	sudo apt-get install clang
 fi
+sudo apt-get install p7zip-full
 if [ $WINDOWS = "no" ]; then
 	sudo apt-get install libirrlicht-dev cmake libbz2-dev libpng12-dev \
-	libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev \
-	libvorbis-dev libopenal-dev gettext
+	libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libhiredis-dev \
+	libogg-dev libvorbis-dev libopenal-dev gettext
+	# Linking to LevelDB is broken, use a custom build
+	wget http://sfan5.pf-control.de/libleveldb-1.18-ubuntu12.04.7z
+	sudo 7z x -o/usr libleveldb-1.18-ubuntu12.04.7z
 else
-	sudo apt-get install p7zip-full
 	if [ $WINDOWS = "32" ]; then
 		wget http://sfan5.pf-control.de/mingw_w64_i686_ubuntu12.04_4.9.1.7z -O mingw.7z
 		sed -e "s|%PREFIX%|i686-w64-mingw32|" \

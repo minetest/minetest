@@ -22,8 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include "settings.h"
 #include "log.h"
-#include "hex.h"
 #include "debug.h"
+#include "util/hex.h"
 
 class UnknownKeycode : public BaseException
 {

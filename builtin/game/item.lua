@@ -106,7 +106,7 @@ function core.facedir_to_dir(facedir)
 					{x=0, y=1, z=0}})
 
 					--indexed into by a table of correlating facedirs
-					[({[0]=1, 2, 3, 4, 
+					[({[0]=1, 2, 3, 4,
 						5, 2, 6, 4,
 						6, 2, 5, 4,
 						1, 5, 3, 6,
@@ -238,7 +238,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 
 	core.log("action", placer:get_player_name() .. " places node "
 		.. def.name .. " at " .. core.pos_to_string(place_to))
-	
+
 	local oldnode = core.get_node(place_to)
 	local newnode = {name = def.name, param1 = 0, param2 = param2}
 
@@ -357,19 +357,37 @@ function core.item_drop(itemstack, dropper, pos)
 	return itemstack
 end
 
-function core.item_eat(hp_change, replace_with_item)
-	return function(itemstack, user, pointed_thing)  -- closure
-		for _, callback in pairs(core.registered_on_item_eats) do
-			local result = callback(hp_change, replace_with_item, itemstack, user, pointed_thing)
-			if result then
-				return result
+function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
+	for _, callback in pairs(core.registered_on_item_eats) do
+		local result = callback(hp_change, replace_with_item, itemstack, user, pointed_thing)
+		if result then
+			return result
+		end
+	end
+	if itemstack:take_item() ~= nil then
+		user:set_hp(user:get_hp() + hp_change)
+
+		if replace_with_item then
+			if itemstack:is_empty() then
+				itemstack:add_item(replace_with_item)
+			else
+				local inv = user:get_inventory()
+				if inv:room_for_item("main", {name=replace_with_item}) then
+					inv:add_item("main", replace_with_item)
+				else
+					local pos = user:getpos()
+					pos.y = math.floor(pos.y + 0.5)
+					core.add_item(pos, replace_with_item)
+				end
 			end
 		end
-		if itemstack:take_item() ~= nil then
-			user:set_hp(user:get_hp() + hp_change)
-			itemstack:add_item(replace_with_item) -- note: replace_with_item is optional
-		end
-		return itemstack
+	end
+	return itemstack
+end
+
+function core.item_eat(hp_change, replace_with_item)
+	return function(itemstack, user, pointed_thing)  -- closure
+		return core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
 	end
 end
 
@@ -425,7 +443,7 @@ function core.node_dig(pos, node, digger)
 
 	local wielded = digger:get_wielded_item()
 	local drops = core.get_node_drops(node.name, wielded:get_name())
-	
+
 	local wdef = wielded:get_definition()
 	local tp = wielded:get_tool_capabilities()
 	local dp = core.get_dig_params(def.groups, tp)
@@ -438,7 +456,7 @@ function core.node_dig(pos, node, digger)
 		end
 	end
 	digger:set_wielded_item(wielded)
-	
+
 	-- Handle drops
 	core.handle_node_drops(pos, drops, digger)
 
@@ -449,7 +467,7 @@ function core.node_dig(pos, node, digger)
 
 	-- Remove node and update
 	core.remove_node(pos)
-	
+
 	-- Run callback
 	if def.after_dig_node then
 		-- Copy pos and node because callback can modify them
@@ -507,7 +525,7 @@ core.nodedef_default = {
 	on_dig = redef_wrapper(core, 'node_dig'), -- core.node_dig
 
 	on_receive_fields = nil,
-	
+
 	on_metadata_inventory_move = core.node_metadata_inventory_move_allow_all,
 	on_metadata_inventory_offer = core.node_metadata_inventory_offer_allow_all,
 	on_metadata_inventory_take = core.node_metadata_inventory_take_allow_all,

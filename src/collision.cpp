@@ -300,16 +300,14 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		/* add object boxes to cboxes */
 
 
-		std::list<ActiveObject*> objects;
+		std::vector<ActiveObject*> objects;
 #ifndef SERVER
 		ClientEnvironment *c_env = dynamic_cast<ClientEnvironment*>(env);
-		if (c_env != 0)
-		{
+		if (c_env != 0) {
 			f32 distance = speed_f.getLength();
 			std::vector<DistanceSortedActiveObject> clientobjects;
 			c_env->getActiveObjects(pos_f,distance * 1.5,clientobjects);
-			for (size_t i=0; i < clientobjects.size(); i++)
-			{
+			for (size_t i=0; i < clientobjects.size(); i++) {
 				if ((self == 0) || (self != clientobjects[i].obj)) {
 					objects.push_back((ActiveObject*)clientobjects[i].obj);
 				}
@@ -319,12 +317,10 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 #endif
 		{
 			ServerEnvironment *s_env = dynamic_cast<ServerEnvironment*>(env);
-			if (s_env != 0)
-			{
+			if (s_env != 0) {
 				f32 distance = speed_f.getLength();
 				std::set<u16> s_objects = s_env->getObjectsInsideRadius(pos_f,distance * 1.5);
-				for (std::set<u16>::iterator iter = s_objects.begin(); iter != s_objects.end(); iter++)
-				{
+				for (std::set<u16>::iterator iter = s_objects.begin(); iter != s_objects.end(); iter++) {
 					ServerActiveObject *current = s_env->getActiveObject(*iter);
 					if ((self == 0) || (self != current)) {
 						objects.push_back((ActiveObject*)current);
@@ -333,16 +329,14 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			}
 		}
 
-		for (std::list<ActiveObject*>::const_iterator iter = objects.begin();iter != objects.end(); ++iter)
-		{
+		for (std::vector<ActiveObject*>::const_iterator iter = objects.begin();
+				iter != objects.end(); ++iter) {
 			ActiveObject *object = *iter;
 
-			if (object != NULL)
-			{
+			if (object != NULL) {
 				aabb3f object_collisionbox;
 				if (object->getCollisionBox(&object_collisionbox) &&
-						object->collideWithObjects())
-				{
+						object->collideWithObjects()) {
 					cboxes.push_back(object_collisionbox);
 					is_unloaded.push_back(false);
 					is_step_up.push_back(false);

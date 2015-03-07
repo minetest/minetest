@@ -59,7 +59,7 @@ void RemoteClient::ResendBlockIfOnWire(v3s16 p)
 	}
 }
 
-void RemoteClient::GetNextBlocks(
+void RemoteClient::GetNextBlocks (
 		ServerEnvironment *env,
 		EmergeManager * emerge,
 		float dtime,
@@ -182,18 +182,15 @@ void RemoteClient::GetNextBlocks(
 	//bool queue_is_full = false;
 
 	s16 d;
-	for(d = d_start; d <= d_max; d++)
-	{
+	for(d = d_start; d <= d_max; d++) {
 		/*
 			Get the border/face dot coordinates of a "d-radiused"
 			box
 		*/
-		std::list<v3s16> list;
-		getFacePositions(list, d);
+		std::vector<v3s16> list = FacePositionCache::getFacePositions(d);
 
-		std::list<v3s16>::iterator li;
-		for(li=list.begin(); li!=list.end(); ++li)
-		{
+		std::vector<v3s16>::iterator li;
+		for(li = list.begin(); li != list.end(); ++li) {
 			v3s16 p = *li + center;
 
 			/*

@@ -147,15 +147,45 @@ struct TestBase
 
 struct TestUtilities: public TestBase
 {
+	inline float ref_WrapDegrees180(float f)
+	{
+		// This is a slower alternative to the wrapDegrees_180() function;
+		// used as a reference for testing
+		float value = fmodf(f + 180, 360);
+		if (value < 0)
+			value += 360;
+		return value - 180;
+	}
+
+	inline float ref_WrapDegrees_0_360(float f)
+	{
+		// This is a slower alternative to the wrapDegrees_0_360() function;
+		// used as a reference for testing
+		float value = fmodf(f, 360);
+		if (value < 0)
+			value += 360;
+		return value < 0 ? value + 360 : value;
+	}
+
+
 	void Run()
 	{
-		/*infostream<<"wrapDegrees(100.0) = "<<wrapDegrees(100.0)<<std::endl;
-		infostream<<"wrapDegrees(720.5) = "<<wrapDegrees(720.5)<<std::endl;
-		infostream<<"wrapDegrees(-0.5) = "<<wrapDegrees(-0.5)<<std::endl;*/
-		UASSERT(fabs(wrapDegrees(100.0) - 100.0) < 0.001);
-		UASSERT(fabs(wrapDegrees(720.5) - 0.5) < 0.001);
-		UASSERT(fabs(wrapDegrees(-0.5) - (-0.5)) < 0.001);
-		UASSERT(fabs(wrapDegrees(-365.5) - (-5.5)) < 0.001);
+		UASSERT(fabs(modulo360f(100.0) - 100.0) < 0.001);
+		UASSERT(fabs(modulo360f(720.5) - 0.5) < 0.001);
+		UASSERT(fabs(modulo360f(-0.5) - (-0.5)) < 0.001);
+		UASSERT(fabs(modulo360f(-365.5) - (-5.5)) < 0.001);
+
+		for (float f = -720; f <= -360; f += 0.25) {
+			UASSERT(fabs(modulo360f(f) - modulo360f(f + 360)) < 0.001);
+		}
+
+		for (float f = -1440; f <= 1440; f += 0.25) {
+			UASSERT(fabs(modulo360f(f) - fmodf(f, 360)) < 0.001);
+			UASSERT(fabs(wrapDegrees_180(f) - ref_WrapDegrees180(f)) < 0.001);
+			UASSERT(fabs(wrapDegrees_0_360(f) - ref_WrapDegrees_0_360(f)) < 0.001);
+			UASSERT(wrapDegrees_0_360(fabs(wrapDegrees_180(f) - wrapDegrees_0_360(f))) < 0.001);
+		}
+
 		UASSERT(lowercase("Foo bAR") == "foo bar");
 		UASSERT(trim("\n \t\r  Foo bAR  \r\n\t\t  ") == "Foo bAR");
 		UASSERT(trim("\n \t\r    \r\n\t\t  ") == "");
@@ -1669,11 +1699,26 @@ struct TestSocket: public TestBase
 	void Run()
 	{
 		const int port = 30003;
-		Address address(0,0,0,0, port);
+		Address address(0, 0, 0, 0, port);
+		Address bind_addr(0, 0, 0, 0, port);
 		Address address6((IPv6AddressBytes*) NULL, port);
 
+		/*
+		 * Try to use the bind_address for servers with no localhost address
+		 * For example: FreeBSD jails
+		 */
+		std::string bind_str = g_settings->get("bind_address");
+		try {
+			bind_addr.Resolve(bind_str.c_str());
+
+			if (!bind_addr.isIPv6()) {
+				address = bind_addr;
+			}
+		} catch (ResolveError &e) {
+		}
+
 		// IPv6 socket test
-		{
+		if (g_settings->getBool("enable_ipv6")) {
 			UDPSocket socket6;
 
 			if (!socket6.init(true, true)) {
@@ -1709,7 +1754,7 @@ struct TestSocket: public TestBase
 					UASSERT(memcmp(sender.getAddress6().sin6_addr.s6_addr,
 							Address(&bytes, 0).getAddress6().sin6_addr.s6_addr, 16) == 0);
 				}
-				catch (SendFailedException e) {
+				catch (SendFailedException &e) {
 					errorstream << "IPv6 support enabled but not available!"
 					            << std::endl;
 				}
@@ -1722,7 +1767,15 @@ struct TestSocket: public TestBase
 			socket.Bind(address);
 
 			const char sendbuffer[] = "hello world!";
-			socket.Send(Address(127, 0, 0 ,1, port), sendbuffer, sizeof(sendbuffer));
+			/*
+			 * If there is a bind address, use it.
+			 * It's useful in container environments
+			 */
+			if (address != Address(0, 0, 0, 0, port)) {
+				socket.Send(address, sendbuffer, sizeof(sendbuffer));
+			}
+			else
+				socket.Send(Address(127, 0, 0 ,1, port), sendbuffer, sizeof(sendbuffer));
 
 			sleep_ms(50);
 
@@ -1734,8 +1787,15 @@ struct TestSocket: public TestBase
 			}
 			//FIXME: This fails on some systems
 			UASSERT(strncmp(sendbuffer, rcvbuffer, sizeof(sendbuffer)) == 0);
-			UASSERT(sender.getAddress().sin_addr.s_addr ==
-					Address(127, 0, 0, 1, 0).getAddress().sin_addr.s_addr);
+
+			if (address != Address(0, 0, 0, 0, port)) {
+				UASSERT(sender.getAddress().sin_addr.s_addr ==
+						address.getAddress().sin_addr.s_addr);
+			}
+			else {
+				UASSERT(sender.getAddress().sin_addr.s_addr ==
+						Address(127, 0, 0, 1, 0).getAddress().sin_addr.s_addr);
+			}
 		}
 	}
 };
@@ -1835,9 +1895,24 @@ struct TestConnection: public TestBase
 		Handler hand_server("server");
 		Handler hand_client("client");
 
+		Address address(0, 0, 0, 0, 30001);
+		Address bind_addr(0, 0, 0, 0, 30001);
+		/*
+		 * Try to use the bind_address for servers with no localhost address
+		 * For example: FreeBSD jails
+		 */
+		std::string bind_str = g_settings->get("bind_address");
+		try {
+			bind_addr.Resolve(bind_str.c_str());
+
+			if (!bind_addr.isIPv6()) {
+				address = bind_addr;
+			}
+		} catch (ResolveError &e) {
+		}
+
 		infostream<<"** Creating server Connection"<<std::endl;
 		con::Connection server(proto_id, 512, 5.0, false, &hand_server);
-		Address address(0,0,0,0, 30001);
 		server.Serve(address);
 
 		infostream<<"** Creating client Connection"<<std::endl;
@@ -1848,7 +1923,11 @@ struct TestConnection: public TestBase
 
 		sleep_ms(50);
 
-		Address server_address(127,0,0,1, 30001);
+		Address server_address(127, 0, 0, 1, 30001);
+		if (address != Address(0, 0, 0, 0, 30001)) {
+			server_address = bind_addr;
+		}
+
 		infostream<<"** running client.Connect()"<<std::endl;
 		client.Connect(server_address);
 
@@ -2194,9 +2273,9 @@ void run_tests()
 	TEST(TestCollision);
 	if(INTERNET_SIMULATOR == false){
 		TEST(TestSocket);
-		dout_con<<"=== BEGIN RUNNING UNIT TESTS FOR CONNECTION ==="<<std::endl;
+		dout_con << "=== BEGIN RUNNING UNIT TESTS FOR CONNECTION ===" << std::endl;
 		TEST(TestConnection);
-		dout_con<<"=== END RUNNING UNIT TESTS FOR CONNECTION ==="<<std::endl;
+		dout_con << "=== END RUNNING UNIT TESTS FOR CONNECTION ===" << std::endl;
 	}
 
 	log_set_lev_silence(LMT_ERROR, false);
@@ -2204,13 +2283,13 @@ void run_tests()
 	delete idef;
 	delete ndef;
 
-	if(tests_failed == 0){
-		infostream<<"run_tests(): "<<tests_failed<<" / "<<tests_run<<" tests failed."<<std::endl;
-		infostream<<"run_tests() passed."<<std::endl;
+	if(tests_failed == 0) {
+		actionstream << "run_tests(): " << tests_failed << " / " << tests_run << " tests failed." << std::endl;
+		actionstream << "run_tests() passed." << std::endl;
 		return;
 	} else {
-		errorstream<<"run_tests(): "<<tests_failed<<" / "<<tests_run<<" tests failed."<<std::endl;
-		errorstream<<"run_tests() aborting."<<std::endl;
+		errorstream << "run_tests(): " << tests_failed << " / " << tests_run << " tests failed." << std::endl;
+		errorstream << "run_tests() aborting." << std::endl;
 		abort();
 	}
 }
