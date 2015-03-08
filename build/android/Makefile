@@ -31,31 +31,31 @@ ANDROID_VERSION_CODE = 6
 ################################################################################
 # toolchain config for arm old processors
 ################################################################################
-TARGET_HOST = arm-linux
-TARGET_ABI = armeabi
-TARGET_LIBDIR = armeabi
-TARGET_TOOLCHAIN = arm-linux-androideabi-
-TARGET_CFLAGS_ADDON = -mfloat-abi=softfp -mfpu=vfp
-TARGET_ARCH = arm
-CROSS_PREFIX = arm-linux-androideabi-
-COMPILER_VERSION = 4.8
-HAVE_LEVELDB = 1
+#TARGET_HOST = arm-linux
+#TARGET_ABI = armeabi
+#TARGET_LIBDIR = armeabi
+#TARGET_TOOLCHAIN = arm-linux-androideabi-
+#TARGET_CFLAGS_ADDON = -mfloat-abi=softfp -mfpu=vfp
+#TARGET_ARCH = arm
+#CROSS_PREFIX = arm-linux-androideabi-
+#COMPILER_VERSION = 4.8
+#HAVE_LEVELDB = 1
 
 ################################################################################
 # toolchain config for arm new processors
 ################################################################################
-#TARGET_HOST = arm-linux
-#TARGET_ABI = armeabi-v7a-hard
-#TARGET_LIBDIR = armeabi-v7a
-#TARGET_TOOLCHAIN = arm-linux-androideabi-
-#TARGET_CFLAGS_ADDON =  -mfpu=vfpv3-d16 -D_NDK_MATH_NO_SOFTFP=1 \
-#						-mfloat-abi=hard -march=armv7-a
-#TARGET_CXXFLAGS_ADDON = $(TARGET_CFLAGS_ADDON)
-#TARGET_LDFLAGS_ADDON = -Wl,--no-warn-mismatch -lm_hard
-#TARGET_ARCH = armv7
-#CROSS_PREFIX = arm-linux-androideabi-
-#COMPILER_VERSION = 4.8
-#HAVE_LEVELDB = 1
+TARGET_HOST = arm-linux
+TARGET_ABI = armeabi-v7a-hard
+TARGET_LIBDIR = armeabi-v7a
+TARGET_TOOLCHAIN = arm-linux-androideabi-
+TARGET_CFLAGS_ADDON =  -mfpu=vfpv3-d16 -D_NDK_MATH_NO_SOFTFP=1 \
+						-mfloat-abi=hard -march=armv7-a
+TARGET_CXXFLAGS_ADDON = $(TARGET_CFLAGS_ADDON)
+TARGET_LDFLAGS_ADDON = -Wl,--no-warn-mismatch -lm_hard
+TARGET_ARCH = armv7
+CROSS_PREFIX = arm-linux-androideabi-
+COMPILER_VERSION = 4.8
+HAVE_LEVELDB = 1
 
 ################################################################################
 # toolchain config for little endian mips
@@ -109,7 +109,7 @@ IRRLICHT_TIMESTAMP = $(IRRLICHT_DIR)timestamp
 IRRLICHT_TIMESTAMP_INT = $(ROOT)/deps/irrlicht_timestamp
 IRRLICHT_URL_SVN = http://svn.code.sf.net/p/irrlicht/code/branches/ogl-es/
 
-OPENSSL_VERSION = 1.0.1j
+OPENSSL_VERSION = 1.0.1l
 OPENSSL_BASEDIR = openssl-$(OPENSSL_VERSION)
 OPENSSL_DIR = $(ROOT)/deps/$(OPENSSL_BASEDIR)/
 OPENSSL_LIB = $(OPENSSL_DIR)/libssl.so.1.0.0
@@ -117,7 +117,7 @@ OPENSSL_TIMESTAMP = $(OPENSSL_DIR)timestamp
 OPENSSL_TIMESTAMP_INT = $(ROOT)/deps/openssl_timestamp
 OPENSSL_URL = http://www.openssl.org/source/openssl-$(OPENSSL_VERSION).tar.gz
 
-CURL_VERSION = 7.40.0
+CURL_VERSION = 7.41.0
 CURL_DIR = $(ROOT)/deps/curl-$(CURL_VERSION)
 CURL_LIB = $(CURL_DIR)/lib/.libs/libcurl.a
 CURL_TIMESTAMP = $(CURL_DIR)/timestamp

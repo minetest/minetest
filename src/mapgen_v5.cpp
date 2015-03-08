@@ -60,8 +60,6 @@ MapgenV5::MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	this->biomemap  = new u8[csize.X * csize.Z];
 	this->heightmap = new s16[csize.X * csize.Z];
 
-	initHeightMap(this->heightmap, csize.X * csize.Z);
-
 	MapgenV5Params *sp = (MapgenV5Params *)params->sparams;
 	this->spflags      = sp->spflags;
 
@@ -142,7 +140,7 @@ MapgenV5Params::MapgenV5Params()
 //#define CAVE_NOISE_THRESHOLD (1.5/CAVE_NOISE_SCALE) = 0.125
 
 
-void MapgenV5Params::readParams(Settings *settings)
+void MapgenV5Params::readParams(const Settings *settings)
 {
 	settings->getFlagStrNoEx("mgv5_spflags", spflags, flagdesc_mapgen_v5);
 
@@ -155,7 +153,7 @@ void MapgenV5Params::readParams(Settings *settings)
 }
 
 
-void MapgenV5Params::writeParams(Settings *settings)
+void MapgenV5Params::writeParams(Settings *settings) const
 {
 	settings->setFlagStr("mgv5_spflags", spflags, flagdesc_mapgen_v5, (u32)-1);
 
@@ -201,6 +199,7 @@ int MapgenV5::getGroundLevelAtPoint(v2s16 p)
 
 void MapgenV5::makeChunk(BlockMakeData *data)
 {
+	// Pre-conditions
 	assert(data->vmanip);
 	assert(data->nodedef);
 	assert(data->blockpos_requested.X >= data->blockpos_min.X &&

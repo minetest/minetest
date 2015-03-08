@@ -41,8 +41,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 const char *GenElementManager::ELEMENT_TITLE = "element";
 
-static const s16 INVALID_HEIGHT = MAP_GENERATION_LIMIT + 1;
-
 FlagDesc flagdesc_mapgen[] = {
 	{"trees",    MG_TREES},
 	{"caves",    MG_CAVES},
@@ -140,6 +138,7 @@ s16 Mapgen::findGroundLevelFull(v2s16 p2d)
 }
 
 
+// Returns -MAP_GENERATION_LIMIT if not found
 s16 Mapgen::findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax)
 {
 	v3s16 em = vm->m_area.getExtent();
@@ -153,15 +152,9 @@ s16 Mapgen::findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax)
 
 		vm->m_area.add_y(em, i, -1);
 	}
-	return y;
+	return (y >= ymin) ? y : -MAP_GENERATION_LIMIT;
 }
 
-
-void Mapgen::initHeightMap(s16 *dest, size_t len)
-{
-	for (size_t i = 0; i < len; i++)
-		dest[i] = INVALID_HEIGHT;
-}
 
 void Mapgen::updateHeightmap(v3s16 nmin, v3s16 nmax)
 {
@@ -173,14 +166,6 @@ void Mapgen::updateHeightmap(v3s16 nmin, v3s16 nmax)
 	for (s16 z = nmin.Z; z <= nmax.Z; z++) {
 		for (s16 x = nmin.X; x <= nmax.X; x++, index++) {
 			s16 y = findGroundLevel(v2s16(x, z), nmin.Y, nmax.Y);
-
-			if (heightmap[index] != INVALID_HEIGHT) {
-				// if the values found are out of range, trust the old heightmap
-				if (y == nmax.Y && heightmap[index] > nmax.Y)
-					continue;
-				if (y == nmin.Y - 1 && heightmap[index] < nmin.Y)
-					continue;
-			}
 
 			heightmap[index] = y;
 		}
@@ -522,3 +507,47 @@ void GenElementManager::clear()
 {
 	m_elements.clear();
 }
+
+
+void MapgenParams::load(const Settings &settings)
+{
+	std::string seed_str;
+	const char *seed_name = (&settings == g_settings) ? "fixed_map_seed" : "seed";
+
+	if (settings.getNoEx(seed_name, seed_str) && !seed_str.empty()) {
+		seed = read_seed(seed_str.c_str());
+	} else {
+		seed = ((u64)(myrand() & 0xFFFF) << 0) |
+			((u64)(myrand() & 0xFFFF) << 16) |
+			((u64)(myrand() & 0xFFFF) << 32) |
+			((u64)(myrand() & 0xFFFF) << 48);
+	}
+
+	settings.getNoEx("mg_name", mg_name);
+	settings.getS16NoEx("water_level", water_level);
+	settings.getS16NoEx("chunksize", chunksize);
+	settings.getFlagStrNoEx("mg_flags", flags, flagdesc_mapgen);
+	settings.getNoiseParams("mg_biome_np_heat", np_biome_heat);
+	settings.getNoiseParams("mg_biome_np_humidity", np_biome_humidity);
+
+	delete sparams;
+	sparams = EmergeManager::createMapgenParams(mg_name);
+	if (sparams)
+		sparams->readParams(&settings);
+}
+
+
+void MapgenParams::save(Settings &settings) const
+{
+	settings.set("mg_name", mg_name);
+	settings.setU64("seed", seed);
+	settings.setS16("water_level", water_level);
+	settings.setS16("chunksize", chunksize);
+	settings.setFlagStr("mg_flags", flags, flagdesc_mapgen, (u32)-1);
+	settings.setNoiseParams("mg_biome_np_heat", np_biome_heat);
+	settings.setNoiseParams("mg_biome_np_humidity", np_biome_humidity);
+
+	if (sparams)
+		sparams->writeParams(&settings);
+}
+

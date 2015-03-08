@@ -792,11 +792,13 @@ Schematic attributes
 --------------------
 See section "Flag Specifier Format".
 
-Currently supported flags: `place_center_x`, `place_center_y`, `place_center_z`.
+Currently supported flags: `place_center_x`, `place_center_y`,
+			   `place_center_z`, `force_placement`.
 
 * `place_center_x`: Placement of this decoration is centered along the X axis.
 * `place_center_y`: Placement of this decoration is centered along the Y axis.
 * `place_center_z`: Placement of this decoration is centered along the Z axis.
+* `force_placement`: Schematic nodes other than "ignore" will replace existing nodes.
 
 
 HUD element types
@@ -3191,8 +3193,10 @@ Definition tables
         schematic = {
             size = {x=4, y=6, z=4},
             data = {
-                {name="cobble", param1=255, param2=0},
-                {name="dirt_with_grass", param1=255, param2=0},
+                {name="default:cobble", param1=255, param2=0},
+                {name="default:dirt_with_grass", param1=255, param2=0},
+                {name="ignore", param1=255, param2=0},
+                {name="air", param1=255, param2=0},
                  ...
             },
             yslice_prob = {
@@ -3203,7 +3207,7 @@ Definition tables
         },
     --  ^ See 'Schematic specifier' for details.
         replacements = {["oldname"] = "convert_to", ...},
-        flags = "place_center_x, place_center_z",
+        flags = "place_center_x, place_center_y, place_center_z, force_placement",
     --  ^ Flags for schematic decorations.  See 'Schematic attributes'.
         rotation = "90" -- rotate schematic 90 degrees on placement
     --  ^ Rotation can be "0", "90", "180", "270", or "random".

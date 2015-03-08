@@ -263,7 +263,8 @@ KeyPress::KeyPress(const char *name)
 			m_name = name;
 			if (strlen(name) > 8 && strncmp(name, "KEY_KEY_", 8) == 0) {
 				int chars_read = mbtowc(&Char, name + 8, 1);
-				assert (chars_read == 1 && "unexpected multibyte character");
+
+				FATAL_ERROR_IF(chars_read != 1, "Unexpected multibyte character");
 			} else
 				Char = L'\0';
 			return;
@@ -275,7 +276,8 @@ KeyPress::KeyPress(const char *name)
 		try {
 			Key = keyname_to_keycode(m_name.c_str());
 			int chars_read = mbtowc(&Char, name, 1);
-			assert (chars_read == 1 && "unexpected multibyte character");
+
+			FATAL_ERROR_IF(chars_read != 1, "Unexpected multibyte character");
 			return;
 		} catch (UnknownKeycode &e) {};
 	}
@@ -285,7 +287,7 @@ KeyPress::KeyPress(const char *name)
 	Key = irr::KEY_KEY_CODES_COUNT;
 
 	int mbtowc_ret = mbtowc(&Char, name, 1);
-	assert (mbtowc_ret == 1 && "unexpected multibyte character");
+	FATAL_ERROR_IF(mbtowc_ret != 1, "Unexpected multibyte character");
 	m_name = name[0];
 }
 

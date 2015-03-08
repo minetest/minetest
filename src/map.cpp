@@ -53,22 +53,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
-/*
-	SQLite format specification:
-	- Initially only replaces sectors/ and sectors2/
-
-	If map.sqlite does not exist in the save dir
-	or the block was not found in the database
-	the map will try to load from sectors folder.
-	In either case, map.sqlite will be created
-	and all future saves will save there.
-
-	Structure of map.sqlite:
-	Tables:
-		blocks
-			(PK) INT pos
-			BLOB data
-*/
 
 /*
 	Map
@@ -783,8 +767,7 @@ void Map::updateLighting(enum LightBank bank,
 			}
 			else
 			{
-				// Invalid lighting bank
-				assert(0);
+				assert("Invalid lighting bank" == NULL);
 			}
 
 			/*infostream<<"Bottom for sunlight-propagated block ("
@@ -799,7 +782,7 @@ void Map::updateLighting(enum LightBank bank,
 			}
 			catch(InvalidPositionException &e)
 			{
-				assert(0);
+				FATAL_ERROR("Invalid position");
 			}
 
 		}
@@ -1236,7 +1219,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 			n.setLight(LIGHTBANK_DAY, 0, ndef);
 			setNode(p, n);
 		} else {
-			assert(0);
+			FATAL_ERROR("Invalid position");
 		}
 	}
 
@@ -2031,25 +2014,13 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 	bool succeeded = conf.readConfigFile(conf_path.c_str());
 	if (!succeeded || !conf.exists("backend")) {
 		// fall back to sqlite3
-		dbase = new Database_SQLite3(this, savedir);
 		conf.set("backend", "sqlite3");
-	} else {
-		std::string backend = conf.get("backend");
-		if (backend == "dummy")
-			dbase = new Database_Dummy(this);
-		else if (backend == "sqlite3")
-			dbase = new Database_SQLite3(this, savedir);
-		#if USE_LEVELDB
-		else if (backend == "leveldb")
-			dbase = new Database_LevelDB(this, savedir);
-		#endif
-		#if USE_REDIS
-		else if (backend == "redis")
-			dbase = new Database_Redis(this, savedir);
-		#endif
-		else
-			throw BaseException("Unknown map backend");
 	}
+	std::string backend = conf.get("backend");
+	dbase = createDatabase(backend, savedir, conf);
+
+	if (!conf.updateConfigFile(conf_path.c_str()))
+		errorstream << "ServerMap::ServerMap(): Failed to update world.mt!" << std::endl;
 
 	m_savedir = savedir;
 	m_map_saving_enabled = false;
@@ -2208,7 +2179,7 @@ bool ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 			v2s16 sectorpos(x, z);
 			// Sector metadata is loaded from disk if not already loaded.
 			ServerMapSector *sector = createSector(sectorpos);
-			assert(sector);
+			FATAL_ERROR_IF(sector == NULL, "createSector() failed");
 			(void) sector;
 
 			for(s16 y=blockpos_min.Y-extra_borders.Y;
@@ -2656,7 +2627,7 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 		      lighting on blocks for them.
 	*/
 	ServerMapSector *sector;
-	try{
+	try {
 		sector = (ServerMapSector*)createSector(p2d);
 		assert(sector->getId() == MAPSECTOR_SERVER);
 	}
@@ -2828,7 +2799,8 @@ plan_b:
 }
 
 bool ServerMap::loadFromFolders() {
-	if(!dbase->Initialized() && !fs::PathExists(m_savedir + DIR_DELIM + "map.sqlite")) // ?
+	if (!dbase->initialized() &&
+			!fs::PathExists(m_savedir + DIR_DELIM + "map.sqlite"))
 		return true;
 	return false;
 }
@@ -2850,14 +2822,14 @@ std::string ServerMap::getSectorDir(v2s16 pos, int layout)
 	{
 		case 1:
 			snprintf(cc, 9, "%.4x%.4x",
-				(unsigned int)pos.X&0xffff,
-				(unsigned int)pos.Y&0xffff);
+				(unsigned int) pos.X & 0xffff,
+				(unsigned int) pos.Y & 0xffff);
 
 			return m_savedir + DIR_DELIM + "sectors" + DIR_DELIM + cc;
 		case 2:
-			snprintf(cc, 9, "%.3x" DIR_DELIM "%.3x",
-				(unsigned int)pos.X&0xfff,
-				(unsigned int)pos.Y&0xfff);
+			snprintf(cc, 9, (std::string("%.3x") + DIR_DELIM + "%.3x").c_str(),
+				(unsigned int) pos.X & 0xfff,
+				(unsigned int) pos.Y & 0xfff);
 
 			return m_savedir + DIR_DELIM + "sectors2" + DIR_DELIM + cc;
 		default:
@@ -2881,16 +2853,17 @@ v2s16 ServerMap::getSectorPos(std::string dirname)
 	{
 		// New layout
 		fs::RemoveLastPathComponent(dirname, &component, 2);
-		r = sscanf(component.c_str(), "%3x" DIR_DELIM "%3x", &x, &y);
+		r = sscanf(component.c_str(), (std::string("%3x") + DIR_DELIM + "%3x").c_str(), &x, &y);
 		// Sign-extend the 12 bit values up to 16 bits...
-		if(x&0x800) x|=0xF000;
-		if(y&0x800) y|=0xF000;
+		if(x & 0x800) x |= 0xF000;
+		if(y & 0x800) y |= 0xF000;
 	}
 	else
 	{
-		assert(false);
+		r = -1;
 	}
-	assert(r == 2);
+
+	FATAL_ERROR_IF(r != 2, "getSectorPos()");
 	v2s16 pos((s16)x, (s16)y);
 	return pos;
 }
@@ -3003,9 +2976,9 @@ void ServerMap::save(ModifiedState save_level)
 
 void ServerMap::listAllLoadableBlocks(std::vector<v3s16> &dst)
 {
-	if(loadFromFolders()){
-		errorstream<<"Map::listAllLoadableBlocks(): Result will be missing "
-				<<"all blocks that are stored in flat files"<<std::endl;
+	if (loadFromFolders()) {
+		errorstream << "Map::listAllLoadableBlocks(): Result will be missing "
+				<< "all blocks that are stored in flat files." << std::endl;
 	}
 	dbase->listAllLoadableBlocks(dst);
 }
@@ -3032,26 +3005,20 @@ void ServerMap::saveMapMeta()
 {
 	DSTACK(__FUNCTION_NAME);
 
-	/*infostream<<"ServerMap::saveMapMeta(): "
-			<<"seed="<<m_seed
-			<<std::endl;*/
-
 	createDirs(m_savedir);
 
-	std::string fullpath = m_savedir + DIR_DELIM "map_meta.txt";
-	std::ostringstream ss(std::ios_base::binary);
+	std::string fullpath = m_savedir + DIR_DELIM + "map_meta.txt";
+	std::ostringstream oss(std::ios_base::binary);
+	Settings conf;
 
-	Settings params;
+	m_emerge->params.save(conf);
+	conf.writeLines(oss);
 
-	m_emerge->saveParamsToSettings(&params);
-	params.writeLines(ss);
+	oss << "[end_of_params]\n";
 
-	ss<<"[end_of_params]\n";
-
-	if(!fs::safeWriteToFile(fullpath, ss.str()))
-	{
-		infostream<<"ERROR: ServerMap::saveMapMeta(): "
-				<<"could not write "<<fullpath<<std::endl;
+	if(!fs::safeWriteToFile(fullpath, oss.str())) {
+		errorstream << "ServerMap::saveMapMeta(): "
+				<< "could not write " << fullpath << std::endl;
 		throw FileNotGoodException("Cannot save chunk metadata");
 	}
 
@@ -3062,24 +3029,22 @@ void ServerMap::loadMapMeta()
 {
 	DSTACK(__FUNCTION_NAME);
 
-	Settings params;
-	std::string fullpath = m_savedir + DIR_DELIM "map_meta.txt";
+	Settings conf;
+	std::string fullpath = m_savedir + DIR_DELIM + "map_meta.txt";
 
-	if (fs::PathExists(fullpath)) {
-		std::ifstream is(fullpath.c_str(), std::ios_base::binary);
-		if (!is.good()) {
-			errorstream << "ServerMap::loadMapMeta(): "
-				"could not open " << fullpath << std::endl;
-			throw FileNotGoodException("Cannot open map metadata");
-		}
-
-		if (!params.parseConfigLines(is, "[end_of_params]")) {
-			throw SerializationError("ServerMap::loadMapMeta(): "
-				"[end_of_params] not found!");
-		}
+	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
+	if (!is.good()) {
+		errorstream << "ServerMap::loadMapMeta(): "
+			"could not open " << fullpath << std::endl;
+		throw FileNotGoodException("Cannot open map metadata");
 	}
 
-	m_emerge->loadParamsFromSettings(&params);
+	if (!conf.parseConfigLines(is, "[end_of_params]")) {
+		throw SerializationError("ServerMap::loadMapMeta(): "
+				"[end_of_params] not found!");
+	}
+
+	m_emerge->params.load(conf);
 
 	verbosestream << "ServerMap::loadMapMeta(): seed="
 		<< m_emerge->params.seed << std::endl;
@@ -3260,6 +3225,24 @@ bool ServerMap::loadSectorFull(v2s16 p2d)
 }
 #endif
 
+Database *ServerMap::createDatabase(const std::string &name, const std::string &savedir, Settings &conf)
+{
+	if (name == "sqlite3")
+		return new Database_SQLite3(savedir);
+	if (name == "dummy")
+		return new Database_Dummy();
+	#if USE_LEVELDB
+	else if (name == "leveldb")
+		return new Database_LevelDB(savedir);
+	#endif
+	#if USE_REDIS
+	else if (name == "redis")
+		return new Database_Redis(conf);
+	#endif
+	else
+		throw BaseException(std::string("Database backend ") + name + " not supported.");
+}
+
 void ServerMap::beginSave()
 {
 	dbase->beginSave();
@@ -3299,7 +3282,7 @@ bool ServerMap::saveBlock(MapBlock *block, Database *db)
 
 	std::string data = o.str();
 	bool ret = db->saveBlock(p3d, data);
-	if(ret) {
+	if (ret) {
 		// We just wrote it to the disk so clear modified flag
 		block->resetModified();
 	}
@@ -3311,7 +3294,7 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile,
 {
 	DSTACK(__FUNCTION_NAME);
 
-	std::string fullpath = sectordir+DIR_DELIM+blockfile;
+	std::string fullpath = sectordir + DIR_DELIM + blockfile;
 	try {
 
 		std::ifstream is(fullpath.c_str(), std::ios_base::binary);
@@ -3377,7 +3360,7 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile,
 				<<"what()="<<e.what()
 				<<std::endl;
 				// Ignoring. A new one will be generated.
-		assert(0);
+		abort();
 
 		// TODO: Backup file; name is in fullpath.
 	}
@@ -3447,7 +3430,6 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 					<<"(ignore_world_load_errors)"<<std::endl;
 		} else {
 			throw SerializationError("Invalid block data in database");
-			//assert(0);
 		}
 	}
 }
@@ -3513,7 +3495,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 	*/
 
 	std::string blockfilename = getBlockFilename(blockpos);
-	if(fs::PathExists(sectordir+DIR_DELIM+blockfilename) == false)
+	if(fs::PathExists(sectordir + DIR_DELIM + blockfilename) == false)
 		return NULL;
 
 	/*

@@ -1973,7 +1973,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_tooltip_element->setOverrideFont(m_font);
 
 	gui::IGUISkin* skin = Environment->getSkin();
-	assert(skin != NULL);
+	sanity_check(skin != NULL);
 	gui::IGUIFont *old_font = skin->getFont();
 	skin->setFont(m_font);
 
@@ -2217,9 +2217,9 @@ void GUIFormSpecMenu::drawSelectedItem()
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 
 	Inventory *inv = m_invmgr->getInventory(m_selected_item->inventoryloc);
-	assert(inv);
+	sanity_check(inv);
 	InventoryList *list = inv->getList(m_selected_item->listname);
-	assert(list);
+	sanity_check(list);
 	ItemStack stack = list->getItem(m_selected_item->i);
 	stack.count = m_selected_amount;
 
@@ -2239,7 +2239,7 @@ void GUIFormSpecMenu::drawMenu()
 	}
 
 	gui::IGUISkin* skin = Environment->getSkin();
-	assert(skin != NULL);
+	sanity_check(skin != NULL);
 	gui::IGUIFont *old_font = skin->getFont();
 	skin->setFont(m_font);
 
@@ -2725,7 +2725,7 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		if (hovered && isMyChild(hovered) &&
 				hovered->getType() == gui::EGUIET_TAB_CONTROL) {
 			gui::IGUISkin* skin = Environment->getSkin();
-			assert(skin != NULL);
+			sanity_check(skin != NULL);
 			gui::IGUIFont *old_font = skin->getFont();
 			skin->setFont(m_font);
 			bool retval = hovered->OnEvent(event);
@@ -3013,7 +3013,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				break;
 				default:
 					//can't happen at all!
-					assert("reached a source line that can't ever been reached" == 0);
+					FATAL_ERROR("Reached a source line that can't ever been reached");
 					break;
 			}
 			if (current_keys_pending.key_enter && m_allowclose) {
@@ -3047,8 +3047,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 		if(m_selected_item) {
 			inv_selected = m_invmgr->getInventory(m_selected_item->inventoryloc);
-			assert(inv_selected);
-			assert(inv_selected->getList(m_selected_item->listname) != NULL);
+			sanity_check(inv_selected);
+			sanity_check(inv_selected->getList(m_selected_item->listname) != NULL);
 		}
 
 		u32 s_count = 0;

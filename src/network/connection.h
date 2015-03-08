@@ -681,7 +681,7 @@ class Peer {
 
 		virtual ~Peer() {
 			JMutexAutoLock usage_lock(m_exclusive_access_mutex);
-			assert(m_usage == 0);
+			FATAL_ERROR_IF(m_usage != 0, "Reference counting failure");
 		};
 
 		// Unique id of the peer
@@ -926,7 +926,7 @@ public:
 	void Trigger();
 
 	void setParent(Connection* parent) {
-		assert(parent != NULL);
+		assert(parent != NULL); // Pre-condition
 		m_connection = parent;
 	}
 
@@ -980,7 +980,7 @@ public:
 	void * Thread       ();
 
 	void setParent(Connection* parent) {
-		assert(parent != NULL);
+		assert(parent != NULL); // Pre-condition
 		m_connection = parent;
 	}
 

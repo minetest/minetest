@@ -521,7 +521,7 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 		throw SerializationError("ERROR: Not writing dummy block.");
 	}
 
-	assert(version >= SER_FMT_CLIENT_VER_LOWEST);
+	FATAL_ERROR_IF(version < SER_FMT_CLIENT_VER_LOWEST, "Serialize version error");
 
 	// First byte
 	u8 flags = 0;

@@ -95,12 +95,13 @@ private:
 };
 
 struct MapgenSpecificParams {
-	virtual void readParams(Settings *settings) = 0;
-	virtual void writeParams(Settings *settings) = 0;
+	virtual void readParams(const Settings *settings) = 0;
+	virtual void writeParams(Settings *settings) const = 0;
 	virtual ~MapgenSpecificParams() {}
 };
 
-struct MapgenParams {
+class MapgenParams {
+public:
 	std::string mg_name;
 	s16 chunksize;
 	u64 seed;
@@ -112,17 +113,19 @@ struct MapgenParams {
 
 	MapgenSpecificParams *sparams;
 
-	MapgenParams()
-	{
-		mg_name     = DEFAULT_MAPGEN;
-		seed        = 0;
-		water_level = 1;
-		chunksize   = 5;
-		flags       = MG_TREES | MG_CAVES | MG_LIGHT;
-		sparams     = NULL;
-		np_biome_heat     = NoiseParams(50, 50, v3f(500.0, 500.0, 500.0), 5349, 3, 0.5, 2.0);
-		np_biome_humidity = NoiseParams(50, 50, v3f(500.0, 500.0, 500.0), 842, 3, 0.5, 2.0);
-	}
+	MapgenParams() :
+		mg_name(DEFAULT_MAPGEN),
+		chunksize(5),
+		seed(0),
+		water_level(1),
+		flags(MG_TREES | MG_CAVES | MG_LIGHT),
+		np_biome_heat(NoiseParams(50, 50, v3f(500.0, 500.0, 500.0), 5349, 3, 0.5, 2.0)),
+		np_biome_humidity(NoiseParams(50, 50, v3f(500.0, 500.0, 500.0), 842, 3, 0.5, 2.0)),
+		sparams(NULL)
+	{}
+
+	void load(const Settings &settings);
+	void save(Settings &settings) const;
 };
 
 class Mapgen {
@@ -151,7 +154,6 @@ public:
 	static u32 getBlockSeed2(v3s16 p, int seed);
 	s16 findGroundLevelFull(v2s16 p2d);
 	s16 findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax);
-	void initHeightMap(s16 *dest, size_t len);
 	void updateHeightmap(v3s16 nmin, v3s16 nmax);
 	void updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax);
 

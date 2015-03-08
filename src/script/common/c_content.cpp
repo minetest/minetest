@@ -546,22 +546,23 @@ NodeBox read_nodebox(lua_State *L, int index)
 MapNode readnode(lua_State *L, int index, INodeDefManager *ndef)
 {
 	lua_getfield(L, index, "name");
-	const char *name = luaL_checkstring(L, -1);
+	if (!lua_isstring(L, -1))
+		throw LuaError("Node name is not set or is not a string!");
+	const char *name = lua_tostring(L, -1);
 	lua_pop(L, 1);
-	u8 param1;
+
+	u8 param1 = 0;
 	lua_getfield(L, index, "param1");
-	if(lua_isnil(L, -1))
-		param1 = 0;
-	else
+	if (!lua_isnil(L, -1))
 		param1 = lua_tonumber(L, -1);
 	lua_pop(L, 1);
-	u8 param2;
+
+	u8 param2 = 0;
 	lua_getfield(L, index, "param2");
-	if(lua_isnil(L, -1))
-		param2 = 0;
-	else
+	if (!lua_isnil(L, -1))
 		param2 = lua_tonumber(L, -1);
 	lua_pop(L, 1);
+
 	return MapNode(ndef, name, param1, param2);
 }
 

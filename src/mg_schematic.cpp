@@ -159,7 +159,7 @@ void Schematic::blitToVManip(v3s16 p, MMVManip *vm, Rotation rot,
 void Schematic::placeStructure(Map *map, v3s16 p, u32 flags, Rotation rot,
 	bool force_placement, INodeDefManager *ndef)
 {
-	assert(schemdata != NULL);
+	assert(schemdata != NULL); // Pre-condition
 	MMVManip *vm = new MMVManip(map);
 
 	if (rot == ROTATE_RAND)

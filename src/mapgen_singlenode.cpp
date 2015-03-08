@@ -27,18 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "emerge.h"
 
-//////////////////////// Mapgen Singlenode parameter read/write
-
-void MapgenSinglenodeParams::readParams(Settings *settings)
-{
-}
-
-
-void MapgenSinglenodeParams::writeParams(Settings *settings)
-{
-}
-
-///////////////////////////////////////////////////////////////////////////////
 
 MapgenSinglenode::MapgenSinglenode(int mapgenid,
 	MapgenParams *params, EmergeManager *emerge)
@@ -62,6 +50,7 @@ MapgenSinglenode::~MapgenSinglenode()
 
 void MapgenSinglenode::makeChunk(BlockMakeData *data)
 {
+	// Pre-conditions
 	assert(data->vmanip);
 	assert(data->nodedef);
 	assert(data->blockpos_requested.X >= data->blockpos_min.X &&

@@ -216,7 +216,7 @@ public:
 	virtual PlayerSAO *getPlayerSAO()
 	{ return NULL; }
 	virtual void setPlayerSAO(PlayerSAO *sao)
-	{ assert(0); }
+	{ FATAL_ERROR("FIXME"); }
 
 	/*
 		serialize() writes a bunch of text that can contain

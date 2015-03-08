@@ -724,8 +724,8 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_physics_override_sneak_glitch(true),
 	m_physics_override_sent(false)
 {
-	assert(m_player);
-	assert(m_peer_id != 0);
+	assert(m_player);	// pre-condition
+	assert(m_peer_id != 0);	// pre-condition
 	setBasePosition(m_player->getPosition());
 	m_inventory = &m_player->inventory;
 	m_armor_groups["fleshy"] = 100;
@@ -833,7 +833,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 
 std::string PlayerSAO::getStaticData()
 {
-	assert(0);
+	FATAL_ERROR("Deprecated function (?)");
 	return "";
 }
 

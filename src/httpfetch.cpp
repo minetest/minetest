@@ -81,7 +81,7 @@ unsigned long httpfetch_caller_alloc()
 		}
 	}
 
-	assert("httpfetch_caller_alloc: ran out of caller IDs" == 0);
+	FATAL_ERROR("httpfetch_caller_alloc: ran out of caller IDs");
 	return discard;
 }
 
@@ -633,7 +633,7 @@ protected:
 			return NULL;
 		}
 
-		assert(m_all_ongoing.empty());
+		FATAL_ERROR_IF(!m_all_ongoing.empty(), "Expected empty");
 
 		while (!StopRequested()) {
 			BEGIN_DEBUG_EXCEPTION_HANDLER
@@ -714,7 +714,7 @@ void httpfetch_init(int parallel_limit)
 			<<std::endl;
 
 	CURLcode res = curl_global_init(CURL_GLOBAL_DEFAULT);
-	assert(res == CURLE_OK);
+	FATAL_ERROR_IF(res != CURLE_OK, "CURL init failed");
 
 	g_httpfetch_thread = new CurlFetchThread(parallel_limit);
 }

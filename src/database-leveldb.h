@@ -28,23 +28,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "leveldb/db.h"
 #include <string>
 
-class ServerMap;
-
 class Database_LevelDB : public Database
 {
 public:
-	Database_LevelDB(ServerMap *map, std::string savedir);
-	virtual void beginSave();
-	virtual void endSave();
-	virtual bool saveBlock(v3s16 blockpos, std::string &data);
-	virtual std::string loadBlock(v3s16 blockpos);
-	virtual bool deleteBlock(v3s16 blockpos);
-	virtual void listAllLoadableBlocks(std::vector<v3s16> &dst);
-	virtual int Initialized(void);
+	Database_LevelDB(const std::string &savedir);
 	~Database_LevelDB();
+
+	virtual bool saveBlock(const v3s16 &pos, const std::string &data);
+	virtual std::string loadBlock(const v3s16 &pos);
+	virtual bool deleteBlock(const v3s16 &pos);
+	virtual void listAllLoadableBlocks(std::vector<v3s16> &dst);
+
 private:
-	ServerMap *srvmap;
-	leveldb::DB* m_database;
+	leveldb::DB *m_database;
 };
+
+#endif // USE_LEVELDB
+
 #endif
-#endif
+

@@ -64,8 +64,6 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	this->heightmap = new s16[csize.X * csize.Z];
 	this->ridge_heightmap = new s16[csize.X * csize.Z];
 
-	initHeightMap(this->heightmap, csize.X * csize.Z);
-
 	MapgenV7Params *sp = (MapgenV7Params *)params->sparams;
 	this->spflags = sp->spflags;
 
@@ -144,7 +142,7 @@ MapgenV7Params::MapgenV7Params()
 }
 
 
-void MapgenV7Params::readParams(Settings *settings)
+void MapgenV7Params::readParams(const Settings *settings)
 {
 	settings->getFlagStrNoEx("mgv7_spflags", spflags, flagdesc_mapgen_v7);
 
@@ -162,7 +160,7 @@ void MapgenV7Params::readParams(Settings *settings)
 }
 
 
-void MapgenV7Params::writeParams(Settings *settings)
+void MapgenV7Params::writeParams(Settings *settings) const
 {
 	settings->setFlagStr("mgv7_spflags", spflags, flagdesc_mapgen_v7, (u32)-1);
 
@@ -212,6 +210,7 @@ int MapgenV7::getGroundLevelAtPoint(v2s16 p)
 
 void MapgenV7::makeChunk(BlockMakeData *data)
 {
+	// Pre-conditions
 	assert(data->vmanip);
 	assert(data->nodedef);
 	assert(data->blockpos_requested.X >= data->blockpos_min.X &&
