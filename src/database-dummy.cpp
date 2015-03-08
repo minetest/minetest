@@ -33,10 +33,10 @@ bool Database_Dummy::saveBlock(const v3s16 &pos, const std::string &data)
 std::string Database_Dummy::loadBlock(const v3s16 &pos)
 {
 	s64 i = getBlockAsInteger(pos);
-	if (m_database.count(i))
-		return m_database[i];
-	else
+	std::map<s64, std::string>::iterator it = m_database.find(i);
+	if (it == m_database.end())
 		return "";
+	return it->second;
 }
 
 bool Database_Dummy::deleteBlock(const v3s16 &pos)
