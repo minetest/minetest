@@ -223,6 +223,89 @@ public:
 			}
 		}
 
+		/* Apply the "clean transparent" filter to textures, removing borders on transparent textures.
+		 * PNG optimizers discard RGB values of fully-transparent pixels, but filters may expose the
+		 * replacement colors at borders by blending to them; this filter compensates for that by
+		 * filling in those RGB values from nearby pixels.
+		 */
+		if (g_settings->getBool("texture_clean_transparent")) {
+			const core::dimension2d<u32> dim = toadd->getDimension();
+
+			// Walk each pixel looking for ones that will show as transparent.
+			for (u32 ctrx = 0; ctrx < dim.Width; ctrx++)
+			for (u32 ctry = 0; ctry < dim.Height; ctry++) {
+				irr::video::SColor c = toadd->getPixel(ctrx, ctry);
+				if (c.getAlpha() > 127)
+					continue;
+
+				// Sample size and total weighted r, g, b values.
+				u32 ss = 0, sr = 0, sg = 0, sb = 0;
+
+				// Walk each neighbor pixel (clipped to image bounds).
+				for (u32 sx = (ctrx < 1) ? 0 : (ctrx - 1);
+						sx <= (ctrx + 1) && sx < dim.Width; sx++)
+				for (u32 sy = (ctry < 1) ? 0 : (ctry - 1);
+						sy <= (ctry + 1) && sy < dim.Height; sy++) {
+
+					// Ignore the center pixel (its RGB is already
+					// presumed meaningless).
+					if ((sx == ctrx) && (sy == ctry))
+						continue;
+
+					// Ignore other nearby pixels that would be
+					// transparent upon display.
+					irr::video::SColor d = toadd->getPixel(sx, sy);
+					if(d.getAlpha() < 128)
+						continue;
+
+					// Add one weighted sample.
+					ss++;
+					sr += d.getRed();
+					sg += d.getGreen();
+					sb += d.getBlue();
+				}
+
+				// If we found any neighbor RGB data, set pixel to average
+				// weighted by alpha.
+				if (ss > 0) {
+					c.setRed(sr / ss);
+					c.setGreen(sg / ss);
+					c.setBlue(sb / ss);
+					toadd->setPixel(ctrx, ctry, c);
+				}
+			}
+		}
+
+		/* Upscale textures to user's requested minimum size.  This is a trick to make
+		 * filters look as good on low-res textures as on high-res ones, by making
+		 * low-res textures BECOME high-res ones.  This is helpful for worlds that
+		 * mix high- and low-res textures, or for mods with least-common-denominator
+		 * textures that don't have the resources to offer high-res alternatives.
+		 */
+		s32 scaleto = g_settings->getS32("texture_min_size");
+		if (scaleto > 0) {
+
+			/* Calculate scaling needed to make the shortest texture dimension
+			 * equal to the target minimum.  If e.g. this is a vertical frames
+			 * animation, the short dimension will be the real size.
+			 */
+			const core::dimension2d<u32> dim = toadd->getDimension();
+			u32 xscale = scaleto / dim.Width;
+			u32 yscale = scaleto / dim.Height;
+			u32 scale = (xscale > yscale) ? xscale : yscale;
+
+			// Never downscale; only scale up by 2x or more.
+			if (scale > 1) {
+				u32 w = scale * dim.Width;
+				u32 h = scale * dim.Height;
+				const core::dimension2d<u32> newdim = core::dimension2d<u32>(w, h);
+				video::IImage *newimg = driver->createImage(
+						toadd->getColorFormat(), newdim);
+				toadd->copyToScaling(newimg);
+				toadd = newimg;
+			}
+		}
+
 		if (need_to_grab)
 			toadd->grab();
 		m_images[name] = toadd;
