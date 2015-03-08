@@ -401,6 +401,8 @@ void Client::step(float dtime)
 
 			char pName[PLAYERNAME_SIZE];
 			char pPassword[PASSWORD_SIZE];
+			bzero(pName, PLAYERNAME_SIZE);
+			bzero(pPassword, PLAYERNAME_SIZE);
 
 			snprintf(pName, PLAYERNAME_SIZE, "%s", myplayer->getName());
 			snprintf(pPassword, PASSWORD_SIZE, "%s", m_password.c_str());
