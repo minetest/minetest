@@ -193,6 +193,19 @@
 #anisotropic_filter = false
 #bilinear_filter = false
 #trilinear_filter = false
+#    Filtered textures can blend RGB values with fully-transparent neighbors,
+#    which PNG optimizers usually discard, sometimes resulting in a dark or
+#    light edge to transparent textures.  Apply this filter to clean that up
+#    at texture load time.
+#texture_clean_transparent = true
+#    When using bilinear/trilinear/anisotropic filters, low-resolution textures
+#    can be blurred, so automatically upscale them with nearest-neighbor
+#    interpolation to preserve crisp pixels.  This sets the minimum texture size
+#    for the upscaled textures; higher values look sharper, but require more
+#    memory.  Powers of 2 are recommended.  Setting this higher than 1 may not
+#    have a visible effect unless bilinear/trilinear/anisotropic filtering is
+#    enabled.
+#texture_min_size = 16
 #    Set to true to pre-generate all item visuals
 #preload_item_visuals = false
 #    Set to true to enable shaders. Disable them if video_driver = direct3d9/8.
