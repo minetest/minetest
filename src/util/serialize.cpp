@@ -31,7 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Creates a string with the length as the first two bytes
 std::string serializeString(const std::string &plain)
 {
-	//assert(plain.size() <= 65535);
 	if(plain.size() > 65535)
 		throw SerializationError("String too long for serializeString");
 	char buf[2];
@@ -45,7 +44,6 @@ std::string serializeString(const std::string &plain)
 // Creates a string with the length as the first two bytes from wide string
 std::string serializeWideString(const std::wstring &plain)
 {
-	//assert(plain.size() <= 65535);
 	if(plain.size() > 65535)
 		throw SerializationError("String too long for serializeString");
 	char buf[2];

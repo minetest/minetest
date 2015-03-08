@@ -426,9 +426,12 @@ public:
 	/* event to update client state */
 	void event(u16 peer_id, ClientStateEvent event);
 
-	/* set environment */
-	void setEnv(ServerEnvironment* env)
-	{ assert(m_env == 0); m_env = env; }
+	/* Set environment. Do not call this function if environment is already set */
+	void setEnv(ServerEnvironment *env)
+	{
+		assert(m_env == NULL); // pre-condition
+		m_env = env;
+	}
 
 	static std::string state2Name(ClientState state);
 

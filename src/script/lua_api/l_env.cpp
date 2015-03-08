@@ -49,7 +49,7 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 	scriptIface->realityCheck();
 
 	lua_State *L = scriptIface->getStack();
-	assert(lua_checkstack(L, 20));
+	sanity_check(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
 
 	lua_pushcfunction(L, script_error_handler);
@@ -65,7 +65,7 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 	lua_pushnumber(L, m_id);
 	lua_gettable(L, -2);
 	if(lua_isnil(L, -1))
-		assert(0);
+		FATAL_ERROR("");
 	lua_remove(L, -2); // Remove registered_abms
 
 	// Call action
@@ -459,7 +459,7 @@ int ModApiEnvMod::l_set_timeofday(lua_State *L)
 
 	// Do it
 	float timeofday_f = luaL_checknumber(L, 1);
-	assert(timeofday_f >= 0.0 && timeofday_f <= 1.0);
+	sanity_check(timeofday_f >= 0.0 && timeofday_f <= 1.0);
 	int timeofday_mh = (int)(timeofday_f * 24000.0);
 	// This should be set directly in the environment but currently
 	// such changes aren't immediately sent to the clients, so call

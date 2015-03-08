@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/container.h"
 #include "nodetimer.h"
 
+class Settings;
 class Database;
 class ClientMap;
 class MapSector;
@@ -262,15 +263,15 @@ public:
 	//bool updateChangedVisibleArea();
 
 	// Call these before and after saving of many blocks
-	virtual void beginSave() {return;};
-	virtual void endSave() {return;};
+	virtual void beginSave() { return; }
+	virtual void endSave() { return; }
 
-	virtual void save(ModifiedState save_level){assert(0);};
+	virtual void save(ModifiedState save_level) { FATAL_ERROR("FIXME"); }
 
 	// Server implements these.
 	// Client leaves them as no-op.
-	virtual bool saveBlock(MapBlock *block) { return false; };
-	virtual bool deleteBlock(v3s16 blockpos) { return false; };
+	virtual bool saveBlock(MapBlock *block) { return false; }
+	virtual bool deleteBlock(v3s16 blockpos) { return false; }
 
 	/*
 		Updates usage timers and unloads unused blocks and sectors.
@@ -445,6 +446,7 @@ public:
 	/*
 		Database functions
 	*/
+	static Database *createDatabase(const std::string &name, const std::string &savedir, Settings &conf);
 	// Verify we can read/write to the database
 	void verifyDatabase();
 
@@ -481,8 +483,8 @@ public:
 	// Returns true if sector now resides in memory
 	//bool deFlushSector(v2s16 p2d);
 
-	bool saveBlock(MapBlock *block, Database *db);
 	bool saveBlock(MapBlock *block);
+	static bool saveBlock(MapBlock *block, Database *db);
 	// This will generate a sector with getSector if not found.
 	void loadBlock(std::string sectordir, std::string blockfile, MapSector *sector, bool save_after_load=false);
 	MapBlock* loadBlock(v3s16 p);

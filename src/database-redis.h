@@ -28,24 +28,28 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <hiredis.h>
 #include <string>
 
-class ServerMap;
+class Settings;
 
 class Database_Redis : public Database
 {
 public:
-	Database_Redis(ServerMap *map, std::string savedir);
+	Database_Redis(Settings &conf);
+	~Database_Redis();
+
 	virtual void beginSave();
 	virtual void endSave();
-	virtual bool saveBlock(v3s16 blockpos, std::string &data);
-	virtual std::string loadBlock(v3s16 blockpos);
-	virtual bool deleteBlock(v3s16 blockpos);
+
+	virtual bool saveBlock(const v3s16 &pos, const std::string &data);
+	virtual std::string loadBlock(const v3s16 &pos);
+	virtual bool deleteBlock(const v3s16 &pos);
 	virtual void listAllLoadableBlocks(std::vector<v3s16> &dst);
-	virtual int Initialized(void);
-	~Database_Redis();
+
 private:
-	ServerMap *srvmap;
 	redisContext *ctx;
 	std::string hash;
 };
+
+#endif // USE_REDIS
+
 #endif
-#endif
+

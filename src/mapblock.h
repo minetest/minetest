@@ -140,7 +140,7 @@ public:
 	}
 	void unDummify()
 	{
-		assert(isDummy());
+		assert(isDummy()); // Pre-condition
 		reallocate();
 	}
 	

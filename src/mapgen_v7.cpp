@@ -144,7 +144,7 @@ MapgenV7Params::MapgenV7Params()
 }
 
 
-void MapgenV7Params::readParams(Settings *settings)
+void MapgenV7Params::readParams(const Settings *settings)
 {
 	settings->getFlagStrNoEx("mgv7_spflags", spflags, flagdesc_mapgen_v7);
 
@@ -162,7 +162,7 @@ void MapgenV7Params::readParams(Settings *settings)
 }
 
 
-void MapgenV7Params::writeParams(Settings *settings)
+void MapgenV7Params::writeParams(Settings *settings) const
 {
 	settings->setFlagStr("mgv7_spflags", spflags, flagdesc_mapgen_v7, (u32)-1);
 
@@ -212,6 +212,7 @@ int MapgenV7::getGroundLevelAtPoint(v2s16 p)
 
 void MapgenV7::makeChunk(BlockMakeData *data)
 {
+	// Pre-conditions
 	assert(data->vmanip);
 	assert(data->nodedef);
 	assert(data->blockpos_requested.X >= data->blockpos_min.X &&

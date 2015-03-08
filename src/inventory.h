@@ -71,7 +71,7 @@ struct ItemStack
 
 	void remove(u16 n)
 	{
-		assert(count >= n);
+		assert(count >= n); // Pre-condition
 		count -= n;
 		if(count == 0)
 			clear(); // reset name, wear and metadata too

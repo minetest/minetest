@@ -58,12 +58,12 @@ public:
 		if (max-min > (PSEUDORANDOM_MAX + 1) / 10)
 		{
 			//dstream<<"WARNING: PseudoRandom::range: max > 32767"<<std::endl;
-			assert(0);
+			assert("Something wrong with random number" == NULL);
 		}
 		if(min > max)
 		{
-			assert(0);
-			return max;
+			assert("Something wrong with random number" == NULL);
+			//return max;
 		}
 		return (next()%(max-min+1))+min;
 	}

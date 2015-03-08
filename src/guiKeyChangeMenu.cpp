@@ -139,7 +139,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 {
 	removeChildren();
 	v2s32 size(620, 460);
-	
+
 	core::rect < s32 > rect(screensize.X / 2 - size.X / 2,
 							screensize.Y / 2 - size.Y / 2, screensize.X / 2 + size.X / 2,
 							screensize.Y / 2 + size.Y / 2);
@@ -148,7 +148,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	recalculateAbsolutePosition(false);
 
 	v2s32 topleft(0, 0);
-	
+
 	{
 		core::rect < s32 > rect(0, 0, 600, 40);
 		rect += topleft + v2s32(25, 3);
@@ -185,7 +185,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		else
 			offset += v2s32(0, 25);
 	}
-	
+
 	{
 		s32 option_x = offset.X;
 		s32 option_y = offset.Y + 5;
@@ -340,7 +340,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		Environment->addButton(rect, this, GUI_ID_ABORT_BUTTON,
 				text);
 		delete[] text;
-	}	
+	}
 }
 
 void GUIKeyChangeMenu::drawMenu()
@@ -438,7 +438,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 	{
 		bool prefer_character = shift_down && (activeKey != GUI_ID_KEY_ALIAS_BUTTON);
 		KeyPress kp(event.KeyInput, prefer_character);
-		
+
 		bool shift_went_down = false;
 		if (!shift_down &&
 				(event.KeyInput.Key == irr::KEY_SHIFT ||
@@ -483,7 +483,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 					break;
 				}
 			}
-			assert(k);
+			FATAL_ERROR_IF(k == NULL, "Key setting not found");
 			k->key = kp;
 			const wchar_t *text = wgettext(k->key.name());
 			k->button->setText(text);
@@ -635,7 +635,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 							break;
 						}
 					}
-					assert(k);
+					FATAL_ERROR_IF(k == NULL, "Key setting not found");
 
 					resetMenu();
 					shift_down = false;

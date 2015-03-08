@@ -47,10 +47,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "version.h"
 #include "drawscene.h"
-#include "subgame.h"
-#include "server.h"
-#include "database.h"
 #include "database-sqlite3.h"
+#include "serialization.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -99,7 +97,7 @@ void MeshUpdateQueue::addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_se
 {
 	DSTACK(__FUNCTION_NAME);
 
-	assert(data);
+	assert(data);	// pre-condition
 
 	JMutexAutoLock lock(m_mutex);
 
@@ -266,16 +264,13 @@ Client::Client(
 	m_time_of_day_update_timer(0),
 	m_recommended_send_interval(0.1),
 	m_removed_sounds_check_timer(0),
-	m_state(LC_Created)
+	m_state(LC_Created),
+	m_localdb(NULL)
 {
-	/*
-		Add local player
-	*/
-	{
-		Player *player = new LocalPlayer(this, playername);
+	// Add local player
+	m_env.addPlayer(new LocalPlayer(this, playername));
 
-		m_env.addPlayer(player);
-	}
+	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
 
 	m_cache_smooth_lighting = g_settings->getBool("smooth_lighting");
 	m_cache_enable_shaders  = g_settings->getBool("enable_shaders");
@@ -285,10 +280,10 @@ void Client::Stop()
 {
 	//request all client managed threads to stop
 	m_mesh_update_thread.Stop();
-	if (localdb != NULL) {
-		actionstream << "Local map saving ended" << std::endl;
-		localdb->endSave();
-		delete localserver;
+	// Save local server map
+	if (m_localdb) {
+		infostream << "Local map saving ended." << std::endl;
+		m_localdb->endSave();
 	}
 }
 
@@ -393,8 +388,9 @@ void Client::step(float dtime)
 		if(counter <= 0.0) {
 			counter = 2.0;
 
-			Player *myplayer = m_env.getLocalPlayer();
-			assert(myplayer != NULL);
+			Player *myplayer = m_env.getLocalPlayer();		
+			FATAL_ERROR_IF(myplayer == NULL, "Local player not found in environment.");
+
 			// Send TOSERVER_INIT
 			// [0] u16 TOSERVER_INIT
 			// [2] u8 SER_FMT_VER_HIGHEST_READ
@@ -679,6 +675,13 @@ void Client::step(float dtime)
 			Send(pkt);
 		}
 	}
+
+	// Write server map
+	if (m_localdb && m_localdb_save_interval.step(dtime,
+			m_cache_save_interval)) {
+		m_localdb->endSave();
+		m_localdb->beginSave();
+	}
 }
 
 bool Client::loadMedia(const std::string &data, const std::string &filename)
@@ -705,7 +708,9 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 		// Create an irrlicht memory file
 		io::IReadFile *rfile = irrfs->createMemoryReadFile(
 				*data_rw, data_rw.getSize(), "_tempreadfile");
-		assert(rfile);
+
+		FATAL_ERROR_IF(!rfile, "Could not create irrlicht memory file.");
+
 		// Read image
 		video::IImage *img = vdrv->createImageFromFile(rfile);
 		if(!img){
@@ -783,7 +788,8 @@ void Client::request_media(const std::vector<std::string> &file_requests)
 	std::ostringstream os(std::ios_base::binary);
 	writeU16(os, TOSERVER_REQUEST_MEDIA);
 	size_t file_requests_size = file_requests.size();
-	assert(file_requests_size <= 0xFFFF);
+
+	FATAL_ERROR_IF(file_requests_size > 0xFFFF, "Unsupported number of file requests");
 
 	// Packet dynamicly resized
 	NetworkPacket* pkt = new NetworkPacket(TOSERVER_REQUEST_MEDIA, 2 + 0);
@@ -813,34 +819,19 @@ void Client::initLocalMapSaving(const Address &address,
 		const std::string &hostname,
 		bool is_local_server)
 {
-	localdb = NULL;
-
-	if (!g_settings->getBool("enable_local_map_saving") || is_local_server)
+	if (!g_settings->getBool("enable_local_map_saving") || is_local_server) {
 		return;
+	}
 
 	const std::string world_path = porting::path_user
 		+ DIR_DELIM + "worlds"
 		+ DIR_DELIM + "server_"
 		+ hostname + "_" + to_string(address.getPort());
 
-	SubgameSpec gamespec;
+	fs::CreateAllDirs(world_path);
 
-	if (!getWorldExists(world_path)) {
-		gamespec = findSubgame(g_settings->get("default_game"));
-		if (!gamespec.isValid())
-			gamespec = findSubgame("minimal");
-	} else {
-		gamespec = findWorldSubgame(world_path);
-	}
-
-	if (!gamespec.isValid()) {
-		errorstream << "Couldn't find subgame for local map saving." << std::endl;
-		return;
-	}
-
-	localserver = new Server(world_path, gamespec, false, false);
-	localdb = new Database_SQLite3(&(ServerMap&)localserver->getMap(), world_path);
-	localdb->beginSave();
+	m_localdb = new Database_SQLite3(world_path);
+	m_localdb->beginSave();
 	actionstream << "Local map saving started, map will be saved at '" << world_path << "'" << std::endl;
 }
 
@@ -999,7 +990,8 @@ void Client::sendNodemetaFields(v3s16 p, const std::string &formname,
 		const std::map<std::string, std::string> &fields)
 {
 	size_t fields_size = fields.size();
-	assert(fields_size <= 0xFFFF);
+
+	FATAL_ERROR_IF(fields_size > 0xFFFF, "Unsupported number of nodemeta fields");
 
 	NetworkPacket* pkt = new NetworkPacket(TOSERVER_NODEMETA_FIELDS, 0);
 
@@ -1020,7 +1012,7 @@ void Client::sendInventoryFields(const std::string &formname,
 		const std::map<std::string, std::string> &fields)
 {
 	size_t fields_size = fields.size();
-	assert(fields_size <= 0xFFFF);
+	FATAL_ERROR_IF(fields_size > 0xFFFF, "Unsupported number of inventory fields");
 
 	NetworkPacket* pkt = new NetworkPacket(TOSERVER_INVENTORY_FIELDS, 0);
 	*pkt << formname << (u16) (fields_size & 0xFFFF);
@@ -1154,7 +1146,7 @@ void Client::sendPlayerPos()
 	// Set peer id if not set already
 	if(myplayer->peer_id == PEER_ID_INEXISTENT)
 		myplayer->peer_id = our_peer_id;
-	// Check that an existing peer_id is the same as the connection's
+
 	assert(myplayer->peer_id == our_peer_id);
 
 	v3f pf         = myplayer->getPosition();
@@ -1192,8 +1184,6 @@ void Client::sendPlayerItem(u16 item)
 	// Set peer id if not set already
 	if(myplayer->peer_id == PEER_ID_INEXISTENT)
 		myplayer->peer_id = our_peer_id;
-
-	// Check that an existing peer_id is the same as the connection's
 	assert(myplayer->peer_id == our_peer_id);
 
 	NetworkPacket* pkt = new NetworkPacket(TOSERVER_PLAYERITEM, 2);
@@ -1308,7 +1298,7 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 	}
 	break;
 	default:
-		assert(0);
+		FATAL_ERROR("Invalid inventory location type.");
 	}
 	return NULL;
 }
@@ -1568,9 +1558,9 @@ float Client::mediaReceiveProgress()
 void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 {
 	infostream<<"Client::afterContentReceived() started"<<std::endl;
-	assert(m_itemdef_received);
-	assert(m_nodedef_received);
-	assert(mediaReceived());
+	assert(m_itemdef_received); // pre-condition
+	assert(m_nodedef_received); // pre-condition
+	assert(mediaReceived()); // pre-condition
 
 	const wchar_t* text = wgettext("Loading textures...");
 
@@ -1663,7 +1653,8 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 		if (image) {
 			raw_image->copyTo(image);
 			irr::c8 filename[256];
-			snprintf(filename, sizeof(filename), "%s" DIR_DELIM "screenshot_%u.png",
+			snprintf(filename, sizeof(filename),
+				(std::string("%s") + DIR_DELIM + "screenshot_%u.png").c_str(),
 				 g_settings->get("screenshot_path").c_str(),
 				 device->getTimer()->getRealTime());
 			std::ostringstream sstr;
@@ -1709,9 +1700,10 @@ scene::ISceneManager* Client::getSceneManager()
 }
 u16 Client::allocateUnknownNodeId(const std::string &name)
 {
-	errorstream<<"Client::allocateUnknownNodeId(): "
-			<<"Client cannot allocate node IDs"<<std::endl;
-	assert(0);
+	errorstream << "Client::allocateUnknownNodeId(): "
+			<< "Client cannot allocate node IDs" << std::endl;
+	FATAL_ERROR("Client allocated unknown node");
+
 	return CONTENT_IGNORE;
 }
 ISoundManager* Client::getSoundManager()
@@ -1746,7 +1738,7 @@ scene::IAnimatedMesh* Client::getMesh(const std::string &filename)
 	io::IFileSystem *irrfs = m_device->getFileSystem();
 	io::IReadFile *rfile   = irrfs->createMemoryReadFile(
 			*data_rw, data_rw.getSize(), filename.c_str());
-	assert(rfile);
+	FATAL_ERROR_IF(!rfile, "Could not create/open RAM file");
 
 	scene::IAnimatedMesh *mesh = smgr->getMesh(rfile);
 	rfile->drop();

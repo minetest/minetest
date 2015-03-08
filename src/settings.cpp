@@ -264,7 +264,7 @@ bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 			it = m_settings.find(name);
 			if (it != m_settings.end() && it->second.is_group) {
 				os << line << "\n";
-				assert(it->second.group != NULL);
+				sanity_check(it->second.group != NULL);
 				was_modified |= it->second.group->updateConfigObject(is, os,
 					"}", tab_depth + 1);
 			} else {

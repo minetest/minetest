@@ -155,7 +155,7 @@ void AsyncEngine::step(lua_State *L, int errorhandler)
 		lua_getfield(L, -1, "async_event_handler");
 
 		if (lua_isnil(L, -1)) {
-			assert("Async event handler does not exist!" == 0);
+			FATAL_ERROR("Async event handler does not exist!");
 		}
 
 		luaL_checktype(L, -1, LUA_TFUNCTION);
@@ -237,7 +237,7 @@ AsyncWorkerThread::AsyncWorkerThread(AsyncEngine* jobDispatcher,
 /******************************************************************************/
 AsyncWorkerThread::~AsyncWorkerThread()
 {
-	assert(IsRunning() == false);
+	sanity_check(IsRunning() == false);
 }
 
 /******************************************************************************/

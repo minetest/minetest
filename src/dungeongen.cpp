@@ -79,14 +79,17 @@ void DungeonGen::generate(u32 bseed, v3s16 nmin, v3s16 nmax) {
 	// Dungeon generator doesn't modify places which have this set
 	vm->clearFlag(VMANIP_FLAG_DUNGEON_INSIDE | VMANIP_FLAG_DUNGEON_PRESERVE);
 
-	// Set all air and water to be untouchable to make dungeons open
-	// to caves and open air
+	bool no_float = !g_settings->getBool("enable_floating_dungeons");
+
+	// Set all air and water (and optionally ignore) to be untouchable
+	// to make dungeons open to caves and open air
 	for (s16 z = nmin.Z; z <= nmax.Z; z++) {
 		for (s16 y = nmin.Y; y <= nmax.Y; y++) {
 			u32 i = vm->m_area.index(nmin.X, y, z);
 			for (s16 x = nmin.X; x <= nmax.X; x++) {
 				content_t c = vm->m_data[i].getContent();
-				if (c == CONTENT_AIR || c == dp.c_water)
+				if (c == CONTENT_AIR || c == dp.c_water
+						|| (no_float && c == CONTENT_IGNORE))
 					vm->m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
 				i++;
 			}

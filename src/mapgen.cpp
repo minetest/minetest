@@ -522,3 +522,47 @@ void GenElementManager::clear()
 {
 	m_elements.clear();
 }
+
+
+void MapgenParams::load(const Settings &settings)
+{
+	std::string seed_str;
+	const char *seed_name = (&settings == g_settings) ? "fixed_map_seed" : "seed";
+
+	if (settings.getNoEx(seed_name, seed_str) && !seed_str.empty()) {
+		seed = read_seed(seed_str.c_str());
+	} else {
+		seed = ((u64)(myrand() & 0xFFFF) << 0) |
+			((u64)(myrand() & 0xFFFF) << 16) |
+			((u64)(myrand() & 0xFFFF) << 32) |
+			((u64)(myrand() & 0xFFFF) << 48);
+	}
+
+	settings.getNoEx("mg_name", mg_name);
+	settings.getS16NoEx("water_level", water_level);
+	settings.getS16NoEx("chunksize", chunksize);
+	settings.getFlagStrNoEx("mg_flags", flags, flagdesc_mapgen);
+	settings.getNoiseParams("mg_biome_np_heat", np_biome_heat);
+	settings.getNoiseParams("mg_biome_np_humidity", np_biome_humidity);
+
+	delete sparams;
+	sparams = EmergeManager::createMapgenParams(mg_name);
+	if (sparams)
+		sparams->readParams(&settings);
+}
+
+
+void MapgenParams::save(Settings &settings) const
+{
+	settings.set("mg_name", mg_name);
+	settings.setU64("seed", seed);
+	settings.setS16("water_level", water_level);
+	settings.setS16("chunksize", chunksize);
+	settings.setFlagStr("mg_flags", flags, flagdesc_mapgen, (u32)-1);
+	settings.setNoiseParams("mg_biome_np_heat", np_biome_heat);
+	settings.setNoiseParams("mg_biome_np_humidity", np_biome_humidity);
+
+	if (sparams)
+		sparams->writeParams(&settings);
+}
+

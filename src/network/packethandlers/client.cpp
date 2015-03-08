@@ -168,8 +168,8 @@ void Client::handleCommand_BlockData(NetworkPacket* pkt)
 		sector->insertBlock(block);
 	}
 
-	if (localdb != NULL) {
-		((ServerMap&) localserver->getMap()).saveBlock(block, localdb);
+	if (m_localdb) {
+		ServerMap::saveBlock(block, m_localdb);
 	}
 
 	/*
@@ -476,7 +476,7 @@ void Client::handleCommand_AnnounceMedia(NetworkPacket* pkt)
 
 	// Mesh update thread must be stopped while
 	// updating content definitions
-	assert(!m_mesh_update_thread.IsRunning());
+	sanity_check(!m_mesh_update_thread.IsRunning());
 
 	for (u16 i = 0; i < num_files; i++) {
 		std::string name, sha1_base64;
@@ -549,7 +549,7 @@ void Client::handleCommand_Media(NetworkPacket* pkt)
 
 	// Mesh update thread must be stopped while
 	// updating content definitions
-	assert(!m_mesh_update_thread.IsRunning());
+	sanity_check(!m_mesh_update_thread.IsRunning());
 
 	for (u32 i=0; i < num_files; i++) {
 		std::string name;
@@ -575,7 +575,7 @@ void Client::handleCommand_NodeDef(NetworkPacket* pkt)
 
 	// Mesh update thread must be stopped while
 	// updating content definitions
-	assert(!m_mesh_update_thread.IsRunning());
+	sanity_check(!m_mesh_update_thread.IsRunning());
 
 	// Decompress node definitions
 	std::string datastring(pkt->getString(0), pkt->getSize());
@@ -602,7 +602,7 @@ void Client::handleCommand_ItemDef(NetworkPacket* pkt)
 
 	// Mesh update thread must be stopped while
 	// updating content definitions
-	assert(!m_mesh_update_thread.IsRunning());
+	sanity_check(!m_mesh_update_thread.IsRunning());
 
 	// Decompress item definitions
 	std::string datastring(pkt->getString(0), pkt->getSize());
