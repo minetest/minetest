@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettime.h"
 #include "util/numeric.h"
 #include "porting.h"
+#include "guiscalingfilter.h"
 
 #include <iostream>
 #include <algorithm>
@@ -130,15 +131,23 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, IEventReceiver* receiver)
 	m_screensize = m_device->getVideoDriver()->getScreenSize();
 }
 
-void TouchScreenGUI::loadButtonTexture(button_info* btn, const char* path)
+void TouchScreenGUI::loadButtonTexture(button_info* btn, const char* path, rect<s32> button_rect)
 {
 	unsigned int tid;
-	video::ITexture *texture = m_texturesource->getTexture(path,&tid);
+	video::ITexture *texture = guiScalingImageButton(m_device->getVideoDriver(),
+		m_texturesource->getTexture(path, &tid), button_rect.getWidth(), button_rect.getHeight());
 	if (texture) {
 		btn->guibutton->setUseAlphaChannel(true);
-		btn->guibutton->setImage(texture);
-		btn->guibutton->setPressedImage(texture);
-		btn->guibutton->setScaleImage(true);
+		if (g_settings->getBool("gui_scaling_filter")) {
+			rect<s32> txr_rect = rect<s32>(0, 0, button_rect.getWidth(), button_rect.getHeight());
+			btn->guibutton->setImage(texture, txr_rect);
+			btn->guibutton->setPressedImage(texture, txr_rect);
+			btn->guibutton->setScaleImage(false);
+		} else {
+			btn->guibutton->setImage(texture);
+			btn->guibutton->setPressedImage(texture);
+			btn->guibutton->setScaleImage(true);
+		}
 		btn->guibutton->setDrawBorder(false);
 		btn->guibutton->setText(L"");
 		}
@@ -157,7 +166,7 @@ void TouchScreenGUI::initButton(touch_gui_button_id id, rect<s32> button_rect,
 	btn->immediate_release = immediate_release;
 	btn->ids.clear();
 
-	loadButtonTexture(btn,touchgui_button_imagenames[id]);
+	loadButtonTexture(btn,touchgui_button_imagenames[id], button_rect);
 }
 
 static int getMaxControlPadSize(float density) {

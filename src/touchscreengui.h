@@ -130,7 +130,7 @@ private:
 			float repeat_delay = BUTTON_REPEAT_DELAY);
 
 	/* load texture */
-	void loadButtonTexture(button_info* btn, const char* path);
+	void loadButtonTexture(button_info* btn, const char* path, rect<s32> button_rect);
 
 	struct id_status{
 		int id;

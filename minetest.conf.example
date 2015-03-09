@@ -172,6 +172,19 @@
 #crosshair_alpha = 255
 #    Scale gui by a user specified value
 #gui_scaling = 1.0
+#    Use a nearest-neighbor-anti-alias filter to scale the GUI.
+#    This will smooth over some of the rough edges, and blend
+#    pixels when scaling down, at the cost of blurring some
+#    edge pixels when images are scaled by non-integer sizes.
+#gui_scaling_filter = false
+#    When gui_scaling_filter = true, all GUI images need to be
+#    filtered in software, but some images are generated directly
+#    to hardare (e.g. render-to-texture for nodes in inventory).
+#    When gui_scaling_filter_txr2img is true, copy those images
+#    from hardware to software for scaling.  When false, fall back
+#    to the old scaling method, for video drivers that don't
+#    propery support downloading textures back from hardware.
+#gui_scaling_filter_txr2img = true
 #    Sensitivity multiplier
 #mouse_sensitivity = 0.2
 #    Sound settings

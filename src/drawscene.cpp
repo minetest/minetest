@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientmap.h"
 #include "util/timetaker.h"
 #include "fontengine.h"
+#include "guiscalingfilter.h"
 
 typedef enum {
 	LEFT = -1,
@@ -324,19 +325,19 @@ void draw_sidebyside_3d_mode(Camera& camera, bool show_hud,
 	//makeColorKeyTexture mirrors texture so we do it twice to get it right again
 	driver->makeColorKeyTexture(hudtexture, irr::video::SColor(255, 0, 0, 0));
 
-	driver->draw2DImage(left_image,
+	draw2DImageFilterScaled(driver, left_image,
 			irr::core::rect<s32>(0, 0, screensize.X/2, screensize.Y),
 			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0, false);
 
-	driver->draw2DImage(hudtexture,
+	draw2DImageFilterScaled(driver, hudtexture,
 			irr::core::rect<s32>(0, 0, screensize.X/2, screensize.Y),
 			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0, true);
 
-	driver->draw2DImage(right_image,
+	draw2DImageFilterScaled(driver, right_image,
 			irr::core::rect<s32>(screensize.X/2, 0, screensize.X, screensize.Y),
 			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0, false);
 
-	driver->draw2DImage(hudtexture,
+	draw2DImageFilterScaled(driver, hudtexture,
 			irr::core::rect<s32>(screensize.X/2, 0, screensize.X, screensize.Y),
 			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0, true);
 
@@ -380,19 +381,19 @@ void draw_top_bottom_3d_mode(Camera& camera, bool show_hud,
 	//makeColorKeyTexture mirrors texture so we do it twice to get it right again
 	driver->makeColorKeyTexture(hudtexture, irr::video::SColor(255, 0, 0, 0));
 
-	driver->draw2DImage(left_image,
+	draw2DImageFilterScaled(driver, left_image,
 			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y/2),
 			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0, false);
 
-	driver->draw2DImage(hudtexture,
+	draw2DImageFilterScaled(driver, hudtexture,
 			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y/2),
 			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0, true);
 
-	driver->draw2DImage(right_image,
+	draw2DImageFilterScaled(driver, right_image,
 			irr::core::rect<s32>(0, screensize.Y/2, screensize.X, screensize.Y),
 			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0, false);
 
-	driver->draw2DImage(hudtexture,
+	draw2DImageFilterScaled(driver, hudtexture,
 			irr::core::rect<s32>(0, screensize.Y/2, screensize.X, screensize.Y),
 			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0, true);
 

@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threads.h"
 #include <string>
 #include <vector>
+#include "util/numeric.h"
 
 class IGameDef;
 
@@ -135,21 +136,6 @@ public:
 IWritableTextureSource* createTextureSource(IrrlichtDevice *device);
 
 #ifdef __ANDROID__
-/**
- * @param size get next npot2 value
- * @return npot2 value
- */
-inline unsigned int npot2(unsigned int size)
-{
-	if (size == 0) return 0;
-	unsigned int npot = 1;
-
-	while ((size >>= 1) > 0) {
-		npot <<= 1;
-	}
-	return npot;
-}
-
 video::IImage * Align2Npot2(video::IImage * image, video::IVideoDriver* driver);
 #endif
 
