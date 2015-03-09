@@ -2936,6 +2936,16 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 /******************************************************************************/
 bool GUIFormSpecMenu::DoubleClickDetection(const SEvent event)
 {
+	/* The following code is for capturing double-clicks of the mouse button
+	 * that are *not* in/in a control (i.e. when the mouse if positioned in an
+	 * unused area of the formspec) and translating the double-click into an
+	 * EET_KEY_INPUT_EVENT event which closes the form.
+	 *
+	 * There have been many github issues reporting this as a bug even though it
+	 * was an intended feature.  For this reason the code has been disabled for
+	 * non-Android builds
+	 */
+#ifdef __ANDROID__
 	if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
 		m_doubleclickdetect[0].pos  = m_doubleclickdetect[1].pos;
 		m_doubleclickdetect[0].time = m_doubleclickdetect[1].time;
@@ -2974,6 +2984,7 @@ bool GUIFormSpecMenu::DoubleClickDetection(const SEvent event)
 		delete translated;
 		return true;
 	}
+#endif
 	return false;
 }
 
