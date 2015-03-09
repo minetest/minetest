@@ -411,5 +411,16 @@ inline bool is_power_of_two(u32 n)
 	return n != 0 && (n & (n-1)) == 0;
 }
 
-#endif
+// Compute next-higher power of 2 efficiently, e.g. for power-of-2 texture sizes.
+// Public Domain: https://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
+inline u32 npot2(u32 orig) {
+	orig--;
+	orig |= orig >> 1;
+	orig |= orig >> 2;
+	orig |= orig >> 4;
+	orig |= orig >> 8;
+	orig |= orig >> 16;
+	return orig + 1;
+}
 
+#endif

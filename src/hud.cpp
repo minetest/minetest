@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "camera.h"
 #include "porting.h"
 #include "fontengine.h"
+#include "guiscalingfilter.h"
 #include <IGUIStaticText.h>
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -94,7 +95,7 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect, bool sele
 				imgrect2.LowerRightCorner.Y += (m_padding*2);
 					video::ITexture *texture = tsrc->getTexture(hotbar_selected_image);
 					core::dimension2di imgsize(texture->getOriginalSize());
-				driver->draw2DImage(texture, imgrect2,
+				draw2DImageFilterScaled(driver, texture, imgrect2,
 						core::rect<s32>(core::position2d<s32>(0,0), imgsize),
 						NULL, hbar_colors, true);
 			} else {
@@ -200,7 +201,7 @@ void Hud::drawItems(v2s32 upperleftpos, s32 itemcount, s32 offset,
 		core::rect<s32> rect2 = imgrect2 + pos;
 		video::ITexture *texture = tsrc->getTexture(hotbar_image);
 		core::dimension2di imgsize(texture->getOriginalSize());
-		driver->draw2DImage(texture, rect2,
+		draw2DImageFilterScaled(driver, texture, rect2,
 			core::rect<s32>(core::position2d<s32>(0,0), imgsize),
 			NULL, hbar_colors, true);
 	}
@@ -266,7 +267,7 @@ void Hud::drawLuaElements(v3s16 camera_offset) {
 				             (e->align.Y - 1.0) * dstsize.Y / 2);
 				core::rect<s32> rect(0, 0, dstsize.X, dstsize.Y);
 				rect += pos + offset + v2s32(e->offset.X, e->offset.Y);
-				driver->draw2DImage(texture, rect,
+				draw2DImageFilterScaled(driver, texture, rect,
 					core::rect<s32>(core::position2d<s32>(0,0), imgsize),
 					NULL, colors, true);
 				break; }
@@ -378,7 +379,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
 		core::rect<s32> dstrect(0,0, dstd.Width, dstd.Height);
 
 		dstrect += p;
-		driver->draw2DImage(stat_texture, dstrect, srcrect, NULL, colors, true);
+		draw2DImageFilterScaled(driver, stat_texture, dstrect, srcrect, NULL, colors, true);
 		p += steppos;
 	}
 
@@ -388,7 +389,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
 		core::rect<s32> dstrect(0,0, dstd.Width / 2, dstd.Height);
 
 		dstrect += p;
-		driver->draw2DImage(stat_texture, dstrect, srcrect, NULL, colors, true);
+		draw2DImageFilterScaled(driver, stat_texture, dstrect, srcrect, NULL, colors, true);
 	}
 }
 
@@ -502,7 +503,7 @@ void drawItemStack(video::IVideoDriver *driver,
 	{
 		const video::SColor color(255,255,255,255);
 		const video::SColor colors[] = {color,color,color,color};
-		driver->draw2DImage(texture, rect,
+		draw2DImageFilterScaled(driver, texture, rect,
 			core::rect<s32>(core::position2d<s32>(0,0),
 			core::dimension2di(texture->getOriginalSize())),
 			clip, colors, true);

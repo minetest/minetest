@@ -245,4 +245,3 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 
 	return true;
 }
-

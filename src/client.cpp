@@ -49,6 +49,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "drawscene.h"
 #include "database-sqlite3.h"
 #include "serialization.h"
+#include "guiscalingfilter.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -1606,6 +1607,11 @@ void Client::afterContentReceived(IrrlichtDevice *device)
 	assert(mediaReceived()); // pre-condition
 
 	const wchar_t* text = wgettext("Loading textures...");
+
+	// Clear cached pre-scaled 2D GUI images, as this cache
+	// might have images with the same name but different
+	// content from previous sessions.
+	guiScalingCacheClear(device->getVideoDriver());
 
 	// Rebuild inherited images and recreate textures
 	infostream<<"- Rebuilding images and textures"<<std::endl;

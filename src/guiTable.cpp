@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "main.h"
 #include "settings.h" // for settings
 #include "porting.h" // for dpi
+#include "guiscalingfilter.h"
 
 /*
 	GUITable

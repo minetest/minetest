@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "httpfetch.h"
 #include "log.h"
 #include "fontengine.h"
+#include "guiscalingfilter.h"
 
 #ifdef __ANDROID__
 #include "client/tile.h"
@@ -409,7 +410,7 @@ void GUIEngine::drawBackground(video::IVideoDriver* driver)
 		{
 			for (unsigned int y = 0; y < screensize.Y; y += tilesize.Y )
 			{
-				driver->draw2DImage(texture,
+				draw2DImageFilterScaled(driver, texture,
 					core::rect<s32>(x, y, x+tilesize.X, y+tilesize.Y),
 					core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
 					NULL, NULL, true);
@@ -419,7 +420,7 @@ void GUIEngine::drawBackground(video::IVideoDriver* driver)
 	}
 
 	/* Draw background texture */
-	driver->draw2DImage(texture,
+	draw2DImageFilterScaled(driver, texture,
 		core::rect<s32>(0, 0, screensize.X, screensize.Y),
 		core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
 		NULL, NULL, true);
@@ -438,7 +439,7 @@ void GUIEngine::drawOverlay(video::IVideoDriver* driver)
 
 	/* Draw background texture */
 	v2u32 sourcesize = texture->getOriginalSize();
-	driver->draw2DImage(texture,
+	draw2DImageFilterScaled(driver, texture,
 		core::rect<s32>(0, 0, screensize.X, screensize.Y),
 		core::rect<s32>(0, 0, sourcesize.X, sourcesize.Y),
 		NULL, NULL, true);
@@ -471,7 +472,7 @@ void GUIEngine::drawHeader(video::IVideoDriver* driver)
 
 	video::SColor bgcolor(255,50,50,50);
 
-	driver->draw2DImage(texture, splashrect,
+	draw2DImageFilterScaled(driver, texture, splashrect,
 		core::rect<s32>(core::position2d<s32>(0,0),
 		core::dimension2di(texture->getOriginalSize())),
 		NULL, NULL, true);
@@ -503,7 +504,7 @@ void GUIEngine::drawFooter(video::IVideoDriver* driver)
 		rect += v2s32(screensize.Width/2,screensize.Height-footersize.Y);
 		rect -= v2s32(footersize.X/2, 0);
 
-		driver->draw2DImage(texture, rect,
+		draw2DImageFilterScaled(driver, texture, rect,
 			core::rect<s32>(core::position2d<s32>(0,0),
 			core::dimension2di(texture->getOriginalSize())),
 			NULL, NULL, true);
