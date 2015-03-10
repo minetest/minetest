@@ -806,7 +806,7 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 	return 1;
 }
 
-// generate_ores(vm, [ore_id])
+// generate_ores(vm, p1, p2, [ore_id])
 int ModApiMapgen::l_generate_ores(lua_State *L)
 {
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
@@ -818,13 +818,15 @@ int ModApiMapgen::l_generate_ores(lua_State *L)
 
 	u32 blockseed = Mapgen::getBlockSeed(mg.vm->m_area.MinEdge, mg.seed);
 
-	emerge->oremgr->placeAllOres(&mg, blockseed,
-		mg.vm->m_area.MinEdge, mg.vm->m_area.MaxEdge);
+	v3s16 pmin = read_v3s16(L, 2);
+	v3s16 pmax = read_v3s16(L, 3);
+
+	emerge->oremgr->placeAllOres(&mg, blockseed, pmin, pmax);
 
 	return 0;
 }
 
-// generate_decorations(vm, [deco_id])
+// generate_decorations(vm, p1, p2, [deco_id])
 int ModApiMapgen::l_generate_decorations(lua_State *L)
 {
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
@@ -836,8 +838,10 @@ int ModApiMapgen::l_generate_decorations(lua_State *L)
 
 	u32 blockseed = Mapgen::getBlockSeed(mg.vm->m_area.MinEdge, mg.seed);
 
-	emerge->decomgr->placeAllDecos(&mg, blockseed,
-		mg.vm->m_area.MinEdge, mg.vm->m_area.MaxEdge);
+	v3s16 pmin = read_v3s16(L, 2);
+	v3s16 pmax = read_v3s16(L, 3);
+
+	emerge->decomgr->placeAllDecos(&mg, blockseed, pmin, pmax);
 
 	return 0;
 }
