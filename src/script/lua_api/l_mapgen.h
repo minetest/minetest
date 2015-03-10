@@ -62,10 +62,10 @@ private:
 	// clear_registered_decorations()
 	static int l_clear_registered_decorations(lua_State *L);
 
-	// generate_ores(vm)
+	// generate_ores(vm, p1, p2)
 	static int l_generate_ores(lua_State *L);
 
-	// generate_decorations(vm)
+	// generate_decorations(vm, p1, p2)
 	static int l_generate_decorations(lua_State *L);
 
 	// clear_registered_ores

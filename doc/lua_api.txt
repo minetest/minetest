@@ -1903,10 +1903,10 @@ and `minetest.auth_reload` call the authetification handler.
     * Sets the noiseparams setting of `name` to the noiseparams table specified in `noiseparams`.
     * `set_default` is an optional boolean (default: `true`) that specifies whether the setting
       should be applied to the default config or current active config
-* `minetest.generate_ores(vm)`
-   * Generate all registered ores within the VoxelManip specified by `vm`.
-* `minetest.generate_decorations(vm)`
-   * Generate all registered decorations within the VoxelManip specified by `vm`.
+* `minetest.generate_ores(vm, p1, p2)`
+   * Generate all registered ores within the VoxelManip `vm` and in the area from p1 to p2.
+* `minetest.generate_decorations(vm, p1, p2)`
+   * Generate all registered decorations within the VoxelManip `vm` and in the area from p1 to p2.
 * `minetest.clear_objects()`
     * clear all objects in the environments
 * `minetest.delete_area(pos1, pos2)`
