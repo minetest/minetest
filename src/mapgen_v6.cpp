@@ -56,6 +56,7 @@ MapgenV6::MapgenV6(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	this->ystride = csize.X; //////fix this
 
 	this->heightmap = new s16[csize.X * csize.Z];
+	memset(this->heightmap, 0, csize.X * csize.Z * sizeof(*this->heightmap));
 
 	MapgenV6Params *sp = (MapgenV6Params *)params->sparams;
 	this->spflags     = sp->spflags;
