@@ -1432,7 +1432,7 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 		video::ITexture *texture = idef->getInventoryTexture(item.getDefinition(idef).name, m_gamedef);
 
 		m_tooltips[narrow_to_wide(name)] =
-			TooltipSpec (item.getDefinition(idef).description,
+			TooltipSpec(item.getDefinition(idef).description,
 						m_default_tooltip_bgcolor,
 						m_default_tooltip_color);
 
@@ -1550,13 +1550,15 @@ void GUIFormSpecMenu::parseTooltip(parserData* data, std::string element)
 	std::vector<std::string> parts = split(element,';');
 	if (parts.size() == 2) {
 		std::string name = parts[0];
-		m_tooltips[narrow_to_wide(name)] = TooltipSpec (parts[1], m_default_tooltip_bgcolor, m_default_tooltip_color);
+		m_tooltips[narrow_to_wide(name)] = TooltipSpec(unescape_string(parts[1]),
+			m_default_tooltip_bgcolor, m_default_tooltip_color);
 		return;
 	} else if (parts.size() == 4) {
 		std::string name = parts[0];
 		video::SColor tmp_color1, tmp_color2;
 		if ( parseColorString(parts[2], tmp_color1, false) && parseColorString(parts[3], tmp_color2, false) ) {
-			m_tooltips[narrow_to_wide(name)] = TooltipSpec (parts[1], tmp_color1, tmp_color2);
+			m_tooltips[narrow_to_wide(name)] = TooltipSpec(unescape_string(parts[1]),
+				tmp_color1, tmp_color2);
 			return;
 		}
 	}
