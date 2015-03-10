@@ -41,7 +41,7 @@ else()
 endif()
 
 set(BUILD_CLIENT 1 CACHE BOOL "Build client")
-if(WIN32)
+if(WIN32 OR APPLE)
 	set(BUILD_SERVER 0 CACHE BOOL "Build server")
 else()
 	set(BUILD_SERVER 1 CACHE BOOL "Build server")
@@ -72,11 +72,13 @@ if(WIN32)
 	set(EXAMPLE_CONF_DIR ".")
 	set(LOCALEDIR "locale")
 elseif(APPLE)
-	set(SHAREDIR ".")
-	set(BINDIR ".")
-	set(DOCDIR "./doc/${PROJECT_NAME}")
+	set(BUNDLE_NAME ${PROJECT_NAME}.app)
+	set(BUNDLE_PATH "${BUNDLE_NAME}")
+	set(BINDIR ${BUNDLE_NAME}/Contents/MacOS)
+	set(SHAREDIR ${BUNDLE_NAME}/Contents/Resources)
+	set(DOCDIR "${SHAREDIR}/${PROJECT_NAME}")
 	set(EXAMPLE_CONF_DIR ${DOCDIR})
-	set(LOCALEDIR "locale")
+	set(LOCALEDIR "${SHAREDIR}/locale")
 elseif(UNIX) # Linux, BSD etc
 	if(RUN_IN_PLACE)
 		set(SHAREDIR ".")
@@ -176,6 +178,11 @@ if(UNIX AND NOT APPLE)
 	install(FILES "misc/minetest-icon.svg" DESTINATION "${ICONDIR}/hicolor/scalable/apps")
 endif()
 
+if(APPLE)
+	install(FILES "misc/minetest-icon.icns" DESTINATION "${SHAREDIR}")
+	install(FILES "misc/Info.plist" DESTINATION "${BUNDLE_PATH}/Contents")
+endif()
+
 #
 # Subdirectories
 # Be sure to add all relevant definitions above this
@@ -193,15 +200,6 @@ set(CPACK_PACKAGE_VENDOR "celeron55")
 set(CPACK_PACKAGE_CONTACT "Perttu Ahola <celeron55@gmail.com>")
 
 if(WIN32)
-	# For some reason these aren't copied otherwise
-	# NOTE: For some reason now it seems to work without these
-	#if(BUILD_CLIENT)
-	#	install(FILES bin/minetest.exe DESTINATION bin)
-	#endif()
-	#if(BUILD_SERVER)
-	#	install(FILES bin/minetestserver.exe DESTINATION bin)
-	#endif()
-
 	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 		set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-win64")
 	else(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -209,16 +207,10 @@ if(WIN32)
 	endif(CMAKE_SIZEOF_VOID_P EQUAL 8)
 
 	set(CPACK_GENERATOR ZIP)
-
-	# This might be needed for some installer
-	#set(CPACK_PACKAGE_EXECUTABLES bin/minetest.exe "Minetest" bin/minetestserver.exe "Minetest Server")
 elseif(APPLE)
+	set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 0)
 	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-osx")
-	set(CPACK_PACKAGE_ICON ${CMAKE_CURRENT_SOURCE_DIR}/misc/minetest-icon.icns)
-	set(CPACK_BUNDLE_NAME ${PROJECT_NAME})
-	set(CPACK_BUNDLE_ICON ${CPACK_PACKAGE_ICON})
-	set(CPACK_BUNDLE_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/misc/Info.plist)
-	set(CPACK_GENERATOR "Bundle")
+	set(CPACK_GENERATOR ZIP)
 else()
 	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-linux")
 	set(CPACK_GENERATOR TGZ)

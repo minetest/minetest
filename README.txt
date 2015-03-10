@@ -1,4 +1,4 @@
-﻿Minetest
+Minetest
 ========
 
 An InfiniMiner/Minecraft inspired game.
@@ -78,9 +78,9 @@ $share = /usr/share/minetest
 $user  = ~/.minetest
 
 OS X:
-$bin   = ?
-$share = ?
-$user  = ~/Library/Application Support/minetest
+$bin   = Contents/MacOS
+$share = Contents/Resources
+$user  = Contents/User OR ~/Library/Application Support/minetest
 
 World directory
 ----------------

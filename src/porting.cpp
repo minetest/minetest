@@ -387,16 +387,16 @@ void initializePaths()
 	*/
 	#elif defined(__APPLE__)
 
-	//https://developer.apple.com/library/mac/#documentation/Darwin/Reference/ManPages/man3/dyld.3.html
-	//TODO: Test this code
-	char buf[BUFSIZ];
-	uint32_t len = sizeof(buf);
-	FATAL_ERROR_IF(_NSGetExecutablePath(buf, &len) == -1, "");
-
-	pathRemoveFile(buf, '/');
-
-	path_share = std::string(buf) + "/..";
-	path_user = std::string(buf) + "/..";
+	CFBundleRef main_bundle = CFBundleGetMainBundle();
+	CFURLRef resources_url = CFBundleCopyResourcesDirectoryURL(main_bundle);
+	char path[PATH_MAX];
+	if (CFURLGetFileSystemRepresentation(resources_url, TRUE, (UInt8 *)path, PATH_MAX)) {
+		path_share = std::string(path);
+		path_user = std::string(path) + "/../User";
+	} else {
+		dstream << "WARNING: Could not determine bundle resource path" << std::endl;
+	}
+	CFRelease(resources_url);
 
 	/*
 		FreeBSD
@@ -523,24 +523,15 @@ void initializePaths()
 	*/
 	#elif defined(__APPLE__)
 
-	// Code based on
-	// http://stackoverflow.com/questions/516200/relative-paths-not-working-in-xcode-c
 	CFBundleRef main_bundle = CFBundleGetMainBundle();
 	CFURLRef resources_url = CFBundleCopyResourcesDirectoryURL(main_bundle);
 	char path[PATH_MAX];
-	if(CFURLGetFileSystemRepresentation(resources_url, TRUE, (UInt8 *)path, PATH_MAX))
-	{
-		dstream<<"Bundle resource path: "<<path<<std::endl;
-		//chdir(path);
-		path_share = std::string(path) + DIR_DELIM + STATIC_SHAREDIR;
-	}
-	else
-	{
-		// error!
-		dstream<<"WARNING: Could not determine bundle resource path"<<std::endl;
+	if (CFURLGetFileSystemRepresentation(resources_url, TRUE, (UInt8 *)path, PATH_MAX)) {
+		path_share = std::string(path);
+	} else {
+		dstream << "WARNING: Could not determine bundle resource path" << std::endl;
 	}
 	CFRelease(resources_url);
-
 	path_user = std::string(getenv("HOME")) + "/Library/Application Support/" + PROJECT_NAME;
 
 	#else // FreeBSD, and probably many other POSIX-like systems.

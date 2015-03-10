@@ -5,9 +5,9 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>../Resources/minetest</string>
+	<string>minetest</string>
 	<key>CFBundleIconFile</key>
-	<string>minetest.icns</string>
+	<string>minetest-icon.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>net.minetest.minetest</string>
 </dict>
