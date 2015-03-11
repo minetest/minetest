@@ -93,7 +93,7 @@ public:
 	int getGroundLevelAtPoint(v2s16 p);
 	void calculateNoise();
 	int generateBaseTerrain();
-	void generateBiomes(float *heat_map, float *humidity_map);
+	bool generateBiomes(float *heat_map, float *humidity_map);
 	void generateCaves(int max_stone_y);
 	void dustTopNodes();
 };

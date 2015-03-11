@@ -94,6 +94,10 @@ public:
 	content_t c_cobble;
 	content_t c_desert_sand;
 	content_t c_desert_stone;
+	content_t c_mossycobble;
+	content_t c_sandbrick;
+	content_t c_stair_cobble;
+	content_t c_stair_sandstone;
 
 	MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	~MapgenV7();
@@ -114,7 +118,7 @@ public:
 	int generateMountainTerrain(int ymax);
 	void generateRidgeTerrain();
 
-	void generateBiomes(float *heat_map, float *humidity_map);
+	bool generateBiomes(float *heat_map, float *humidity_map);
 	void dustTopNodes();
 
 	//void addTopNodes();
