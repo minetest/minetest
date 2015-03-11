@@ -419,19 +419,19 @@ int LuaEntitySAO::punch(v3f dir,
 		ServerActiveObject *puncher,
 		float time_from_last_punch)
 {
-	if(!m_registered){
+	if (!m_registered){
 		// Delete unknown LuaEntities when punched
 		m_removed = true;
 		return 0;
 	}
 
 	// It's best that attachments cannot be punched
-	if(isAttached())
+	if (isAttached())
 		return 0;
 
 	ItemStack *punchitem = NULL;
 	ItemStack punchitem_static;
-	if(puncher){
+	if (puncher) {
 		punchitem_static = puncher->getWieldedItem();
 		punchitem = &punchitem_static;
 	}
@@ -442,30 +442,25 @@ int LuaEntitySAO::punch(v3f dir,
 			punchitem,
 			time_from_last_punch);
 
-	if(result.did_punch)
-	{
+	if (result.did_punch) {
 		setHP(getHP() - result.damage);
 
+		if (result.damage > 0) {
+			std::string punchername = puncher ? puncher->getDescription() : "nil";
 
-		std::string punchername = "nil";
-
-		if ( puncher != 0 )
-			punchername = puncher->getDescription();
-
-		actionstream<<getDescription()<<" punched by "
-				<<punchername<<", damage "<<result.damage
-				<<" hp, health now "<<getHP()<<" hp"<<std::endl;
-
-		{
-			std::string str = gob_cmd_punched(result.damage, getHP());
-			// create message and add to list
-			ActiveObjectMessage aom(getId(), true, str);
-			m_messages_out.push(aom);
+			actionstream << getDescription() << " punched by "
+					<< punchername << ", damage " << result.damage
+					<< " hp, health now " << getHP() << " hp" << std::endl;
 		}
 
-		if(getHP() == 0)
-			m_removed = true;
+		std::string str = gob_cmd_punched(result.damage, getHP());
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push(aom);
 	}
+
+	if (getHP() == 0)
+		m_removed = true;
 
 	m_env->getScriptIface()->luaentity_Punch(m_id, puncher,
 			time_from_last_punch, toolcap, dir);
@@ -475,10 +470,10 @@ int LuaEntitySAO::punch(v3f dir,
 
 void LuaEntitySAO::rightClick(ServerActiveObject *clicker)
 {
-	if(!m_registered)
+	if (!m_registered)
 		return;
 	// It's best that attachments cannot be clicked
-	if(isAttached())
+	if (isAttached())
 		return;
 	m_env->getScriptIface()->luaentity_Rightclick(m_id, clicker);
 }
