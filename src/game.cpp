@@ -1489,7 +1489,8 @@ protected:
 			float *jump_timer,
 			bool *reset_jump_timer,
 			u32 *profiler_current_page,
-			u32 profiler_max_page);
+			u32 profiler_max_page,
+			f32 dtime);
 	void processItemSelection(u16 *new_playeritem);
 
 	void dropSelectedItem();
@@ -1510,8 +1511,8 @@ protected:
 	void toggleProfiler(float *statustext_time, u32 *profiler_current_page,
 			u32 profiler_max_page);
 
-	void increaseViewRange(float *statustext_time);
-	void decreaseViewRange(float *statustext_time);
+	void increaseViewRange(float *statustext_time, f32 dtime);
+	void decreaseViewRange(float *statustext_time, f32 dtime);
 	void toggleFullViewRange(float *statustext_time);
 
 	void updateCameraDirection(CameraOrientation *cam, VolatileRunFlags *flags);
@@ -2542,7 +2543,8 @@ void Game::processUserInput(VolatileRunFlags *flags,
 			&interact_args->jump_timer,
 			&interact_args->reset_jump_timer,
 			&interact_args->profiler_current_page,
-			interact_args->profiler_max_page);
+			interact_args->profiler_max_page,
+			dtime);
 
 	processItemSelection(&interact_args->new_playeritem);
 }
@@ -2553,7 +2555,8 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 		float *jump_timer,
 		bool *reset_jump_timer,
 		u32 *profiler_current_page,
-		u32 profiler_max_page)
+		u32 profiler_max_page,
+		f32 dtime)
 {
 
 	//TimeTaker tt("process kybd input", NULL, PRECISION_NANO);
@@ -2599,9 +2602,9 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_PROFILER])) {
 		toggleProfiler(statustext_time, profiler_current_page, profiler_max_page);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_INCREASE_VIEWING_RANGE])) {
-		increaseViewRange(statustext_time);
+		increaseViewRange(statustext_time, dtime);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_DECREASE_VIEWING_RANGE])) {
-		decreaseViewRange(statustext_time);
+		decreaseViewRange(statustext_time, dtime);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_RANGESELECT])) {
 		toggleFullViewRange(statustext_time);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_NEXT]))
@@ -2869,10 +2872,14 @@ void Game::toggleProfiler(float *statustext_time, u32 *profiler_current_page,
 }
 
 
-void Game::increaseViewRange(float *statustext_time)
+void Game::increaseViewRange(float *statustext_time, f32 dtime)
 {
 	s16 range = g_settings->getS16("viewing_range_nodes_min");
-	s16 range_new = range + 10;
+	s16 speed = g_settings->getS16("viewing_range_change_speed");
+	s16 rate = speed * dtime;
+
+	s16 range_new = range + (rate <= 10 ? 10 : (rate - rate % 10));
+
 	g_settings->set("viewing_range_nodes_min", itos(range_new));
 	statustext = narrow_to_wide("Minimum viewing range changed to "
 			+ itos(range_new));
@@ -2880,13 +2887,14 @@ void Game::increaseViewRange(float *statustext_time)
 }
 
 
-void Game::decreaseViewRange(float *statustext_time)
+void Game::decreaseViewRange(float *statustext_time, f32 dtime)
 {
 	s16 range = g_settings->getS16("viewing_range_nodes_min");
-	s16 range_new = range - 10;
+	s16 speed = g_settings->getS16("viewing_range_change_speed");
+	s16 rate = speed * dtime;
 
-	if (range_new < 0)
-		range_new = range;
+	s16 range_new = range - (rate <= 10 ? 10 : (rate - rate % 10));
+	if (range_new <= 0) range_new = range;
 
 	g_settings->set("viewing_range_nodes_min", itos(range_new));
 	statustext = narrow_to_wide("Minimum viewing range changed to "
