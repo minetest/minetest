@@ -100,8 +100,7 @@ struct MapgenSpecificParams {
 	virtual ~MapgenSpecificParams() {}
 };
 
-class MapgenParams {
-public:
+struct MapgenParams {
 	std::string mg_name;
 	s16 chunksize;
 	u64 seed;
