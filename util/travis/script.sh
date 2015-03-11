@@ -1,6 +1,17 @@
 #!/bin/bash -e
 
-if [ $WINDOWS = "no" ]; then
+if [ $ANDROID = "yes" ]; then
+	cd build/android
+	printf "%s\n%s\n%s" \
+		"ANDROID_NDK = /usr/local/android-ndk" \
+		"NDK_MODULE_PATH = /usr/local/android-ndk/toolchains" \
+		"SDKFOLDER = /usr/local/android-sdk" > path.cfg
+	# Parallelism is still unstable. Disable it.
+	export PARALLEL=1
+	ramreport() { while true; do sleep 21; df -h ; done }
+	ramreport &
+	make
+elif [ $WINDOWS = "no" ]; then
 	mkdir -p travisbuild
 	cd travisbuild
 	cmake -DENABLE_GETTEXT=1 -DENABLE_LEVELDB=1 -DENABLE_REDIS=1 -DCMAKE_BUILD_TYPE=Debug ..
