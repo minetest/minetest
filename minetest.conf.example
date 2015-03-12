@@ -341,6 +341,11 @@
 #    If this is set, players will always (re)spawn at the given position
 #static_spawnpoint = 0, 10, 0
 #    If true, new players cannot join with an empty password
+#disallow_guest_connection = false
+# If true, guests will not be allowed to connect to the server
+# Guests are defined by a playername starting with 'Guest' or 'guest'
+#min_playername_size = 3
+# Minimum size for playernames
 #disallow_empty_password = false
 #    If true, disable cheat prevention in multiplayer
 #disable_anticheat = false

@@ -209,18 +209,35 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		return;
 	}
 
-
-	if (playername[0]=='\0') {
+	if (playername[0] == '\0') {
 		actionstream << "Server: Player with an empty name "
 				<< "tried to connect from " << addr_s << std::endl;
 		DenyAccess(pkt->getPeerId(), L"Empty name");
 		return;
 	}
 
-	if (string_allowed(playername, PLAYERNAME_ALLOWED_CHARS) == false) {
+	if (!string_allowed(playername, PLAYERNAME_ALLOWED_CHARS)) {
 		actionstream << "Server: Player with an invalid name "
 				<< "tried to connect from " << addr_s << std::endl;
 		DenyAccess(pkt->getPeerId(), L"Name contains unallowed characters");
+		return;
+	}
+
+	if (strlen(playername) < g_settings->getU16("min_playername_size")) {
+		actionstream << "Server: Player with a too short name "
+				<< " tried to connect from " << addr_s << std::endl;
+		DenyAccess(pkt->getPeerId(), L"Your nickname is too short. "
+				L"Please choose a valid nickname.");
+		return;
+	}
+
+	if (g_settings->getBool("disallow_guest_connection") && (
+			strncmp(playername,"Guest",5) == 0 ||
+			strncmp(playername,"guest",5) == 0)) {
+		actionstream << "Server: Player with a guest name "
+				<< " tried to connect from " << addr_s << std::endl;
+		DenyAccess(pkt->getPeerId(), L"Guest nicknames are not allowed on "
+				L"this server. Please choose a valid nickname.");
 		return;
 	}
 
