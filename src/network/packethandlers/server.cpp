@@ -916,6 +916,15 @@ void Server::handleCommand_Breath(NetworkPacket* pkt)
 		return;
 	}
 
+	/*
+	 * If player is dead, we don't need to update the breath
+	 * He is dead !
+	 */
+	if (player->isDead()) {
+		return;
+	}
+
+
 	PlayerSAO *playersao = player->getPlayerSAO();
 	if (playersao == NULL) {
 		errorstream << "Server::ProcessData(): Cancelling: "
