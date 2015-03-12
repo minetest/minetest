@@ -148,7 +148,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 				continue;
 
 			int height = getHeight();
-			int max_y = nmax.Y;// + MAP_BLOCKSIZE - 1;
+			int max_y = nmax.Y + MAP_BLOCKSIZE - 1;
 			if (y + 1 + height > max_y) {
 				continue;
 #if 0
