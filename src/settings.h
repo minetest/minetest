@@ -202,6 +202,7 @@ public:
 	// remove a setting
 	bool remove(const std::string &name);
 	void clear();
+	void clearDefaults();
 	void updateValue(const Settings &other, const std::string &name);
 	void update(const Settings &other);
 	void registerChangedCallback(std::string name, setting_changed_callback cbf, void *userdata = NULL);
@@ -211,6 +212,7 @@ private:
 
 	void updateNoLock(const Settings &other);
 	void clearNoLock();
+	void clearDefaultsNoLock();
 
 	void doCallbacks(std::string name);
 

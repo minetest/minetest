@@ -887,6 +887,11 @@ void Settings::clear()
 	clearNoLock();
 }
 
+void Settings::clearDefaults()
+{
+	JMutexAutoLock lock(m_mutex);
+	clearDefaultsNoLock();
+}
 
 void Settings::updateValue(const Settings &other, const std::string &name)
 {
@@ -958,10 +963,17 @@ void Settings::clearNoLock()
 		delete it->second.group;
 	m_settings.clear();
 
+	clearDefaultsNoLock();
+}
+
+void Settings::clearDefaultsNoLock()
+{
+	std::map<std::string, SettingsEntry>::const_iterator it;
 	for (it = m_defaults.begin(); it != m_defaults.end(); ++it)
 		delete it->second.group;
 	m_defaults.clear();
 }
+
 
 void Settings::registerChangedCallback(std::string name,
 	setting_changed_callback cbf, void *userdata)
