@@ -951,7 +951,7 @@ void Client::interact(u8 action, const PointedThing& pointed)
 {
 	if(m_state != LC_Ready) {
 		errorstream << "Client::interact() "
-				"cancelled (not connected)"
+				"Canceled (not connected)"
 				<< std::endl;
 		return;
 	}
@@ -1296,6 +1296,7 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 	break;
 	default:
 		FATAL_ERROR("Invalid inventory location type.");
+		break;
 	}
 	return NULL;
 }
