@@ -223,7 +223,7 @@ Server::Server(
 	infostream<<"- game:   "<<m_gamespec.path<<std::endl;
 
 	// Create world if it doesn't exist
-	if(!initializeWorld(m_path_world, m_gamespec.id))
+	if(!loadGameConfAndInitWorld(m_path_world, m_gamespec))
 		throw ServerError("Failed to initialize world");
 
 	// Create server thread

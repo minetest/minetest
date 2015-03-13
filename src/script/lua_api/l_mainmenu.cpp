@@ -644,15 +644,12 @@ int ModApiMainMenu::l_create_world(lua_State *L)
 			(gameidx < (int) games.size())) {
 
 		// Create world if it doesn't exist
-		if(!initializeWorld(path, games[gameidx].id)){
+		if (!loadGameConfAndInitWorld(path, games[gameidx])) {
 			lua_pushstring(L, "Failed to initialize world");
-
+		} else {
+			lua_pushnil(L);
 		}
-		else {
-		lua_pushnil(L);
-		}
-	}
-	else {
+	} else {
 		lua_pushstring(L, "Invalid game index");
 	}
 	return 1;
