@@ -407,15 +407,15 @@ void Client::step(float dtime)
 			snprintf(pName, PLAYERNAME_SIZE, "%s", myplayer->getName());
 			snprintf(pPassword, PASSWORD_SIZE, "%s", m_password.c_str());
 
-			NetworkPacket* pkt = new NetworkPacket(TOSERVER_INIT_LEGACY,
+			NetworkPacket pkt(TOSERVER_INIT_LEGACY,
 					1 + PLAYERNAME_SIZE + PASSWORD_SIZE + 2 + 2);
 
-			*pkt << (u8) SER_FMT_VER_HIGHEST_READ;
-			pkt->putRawString(pName,PLAYERNAME_SIZE);
-			pkt->putRawString(pPassword, PASSWORD_SIZE);
-			*pkt << (u16) CLIENT_PROTOCOL_VERSION_MIN << (u16) CLIENT_PROTOCOL_VERSION_MAX;
+			pkt << (u8) SER_FMT_VER_HIGHEST_READ;
+			pkt.putRawString(pName,PLAYERNAME_SIZE);
+			pkt.putRawString(pPassword, PASSWORD_SIZE);
+			pkt << (u16) CLIENT_PROTOCOL_VERSION_MIN << (u16) CLIENT_PROTOCOL_VERSION_MAX;
 
-			Send(pkt);
+			Send(&pkt);
 		}
 
 		// Not connected, return
@@ -455,19 +455,19 @@ void Client::step(float dtime)
 					[3+6] v3s16 pos_1
 					...
 				*/
-				NetworkPacket* pkt = new NetworkPacket(TOSERVER_DELETEDBLOCKS, 1 + sizeof(v3s16) * sendlist.size());
+				NetworkPacket pkt(TOSERVER_DELETEDBLOCKS, 1 + sizeof(v3s16) * sendlist.size());
 
-				*pkt << (u8) sendlist.size();
+				pkt << (u8) sendlist.size();
 
 				u32 k = 0;
 				for(std::vector<v3s16>::iterator
 						j = sendlist.begin();
 						j != sendlist.end(); ++j) {
-					*pkt << *j;
+					pkt << *j;
 					k++;
 				}
 
-				Send(pkt);
+				Send(&pkt);
 
 				if(i == deleted_blocks.end())
 					break;
@@ -575,9 +575,9 @@ void Client::step(float dtime)
 					[0] u8 count
 					[1] v3s16 pos_0
 				*/
-				NetworkPacket* pkt = new NetworkPacket(TOSERVER_GOTBLOCKS, 1 + 6);
-				*pkt << (u8) 1 << r.p;
-				Send(pkt);
+				NetworkPacket pkt(TOSERVER_GOTBLOCKS, 1 + 6);
+				pkt << (u8) 1 << r.p;
+				Send(&pkt);
 			}
 		}
 
@@ -666,15 +666,15 @@ void Client::step(float dtime)
 			size_t server_ids = removed_server_ids.size();
 			assert(server_ids <= 0xFFFF);
 
-			NetworkPacket* pkt = new NetworkPacket(TOSERVER_REMOVED_SOUNDS, 2 + server_ids * 4);
+			NetworkPacket pkt(TOSERVER_REMOVED_SOUNDS, 2 + server_ids * 4);
 
-			*pkt << (u16) (server_ids & 0xFFFF);
+			pkt << (u16) (server_ids & 0xFFFF);
 
 			for(std::set<s32>::iterator i = removed_server_ids.begin();
 					i != removed_server_ids.end(); i++)
-				*pkt << *i;
+				pkt << *i;
 
-			Send(pkt);
+			Send(&pkt);
 		}
 	}
 
@@ -794,27 +794,27 @@ void Client::request_media(const std::vector<std::string> &file_requests)
 	FATAL_ERROR_IF(file_requests_size > 0xFFFF, "Unsupported number of file requests");
 
 	// Packet dynamicly resized
-	NetworkPacket* pkt = new NetworkPacket(TOSERVER_REQUEST_MEDIA, 2 + 0);
+	NetworkPacket pkt(TOSERVER_REQUEST_MEDIA, 2 + 0);
 
-	*pkt << (u16) (file_requests_size & 0xFFFF);
+	pkt << (u16) (file_requests_size & 0xFFFF);
 
 	for(std::vector<std::string>::const_iterator i = file_requests.begin();
 			i != file_requests.end(); ++i) {
-		*pkt << (*i);
+		pkt << (*i);
 	}
 
-	Send(pkt);
+	Send(&pkt);
 
-	infostream<<"Client: Sending media request list to server ("
-			<<file_requests.size()<<" files. packet size)"<<std::endl;
+	infostream << "Client: Sending media request list to server ("
+			<< file_requests.size() << " files. packet size)" << std::endl;
 }
 
 void Client::received_media()
 {
-	NetworkPacket* pkt = new NetworkPacket(TOSERVER_RECEIVED_MEDIA, 0);
-	Send(pkt);
-	infostream<<"Client: Notifying server that we received all media"
-			<<std::endl;
+	NetworkPacket pkt(TOSERVER_RECEIVED_MEDIA, 0);
+	Send(&pkt);
+	infostream << "Client: Notifying server that we received all media"
+			<< std::endl;
 }
 
 void Client::initLocalMapSaving(const Address &address,
@@ -891,9 +891,9 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		return;
 	}
 
-	NetworkPacket* pkt = new NetworkPacket(data, datasize, sender_peer_id);
+	NetworkPacket pkt(data, datasize, sender_peer_id);
 
-	ToClientCommand command = (ToClientCommand) pkt->getCommand();
+	ToClientCommand command = (ToClientCommand) pkt.getCommand();
 
 	//infostream<<"Client: received command="<<command<<std::endl;
 	m_packetcounter.add((u16)command);
@@ -906,7 +906,6 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		infostream << "Client::ProcessData(): Discarding data not "
 			"coming from server: peer_id=" << sender_peer_id
 			<< std::endl;
-		delete pkt;
 		return;
 	}
 
@@ -922,8 +921,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	 * as a byte mask
 	 */
 	if(toClientCommandTable[command].state == TOCLIENT_STATE_NOT_CONNECTED) {
-		handleCommand(pkt);
-		delete pkt;
+		handleCommand(&pkt);
 		return;
 	}
 
@@ -931,7 +929,6 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		infostream << "Client: Server serialization"
 				" format invalid or not initialized."
 				" Skipping incoming command=" << command << std::endl;
-		delete pkt;
 		return;
 	}
 
@@ -939,8 +936,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	  Handle runtime commands
 	*/
 
-	handleCommand(pkt);
-	delete pkt;
+	handleCommand(&pkt);
 }
 
 void Client::Send(NetworkPacket* pkt)
@@ -949,7 +945,6 @@ void Client::Send(NetworkPacket* pkt)
 		serverCommandFactoryTable[pkt->getCommand()].channel,
 		pkt,
 		serverCommandFactoryTable[pkt->getCommand()].reliable);
-	delete pkt;
 }
 
 void Client::interact(u8 action, const PointedThing& pointed)
@@ -975,17 +970,17 @@ void Client::interact(u8 action, const PointedThing& pointed)
 		4: use item
 	*/
 
-	NetworkPacket* pkt = new NetworkPacket(TOSERVER_INTERACT, 1 + 2 + 0);
+	NetworkPacket pkt(TOSERVER_INTERACT, 1 + 2 + 0);
 
-	*pkt << action;
-	*pkt << (u16)getPlayerItem();
+	pkt << action;
+	pkt << (u16)getPlayerItem();
 
 	std::ostringstream tmp_os(std::ios::binary);
 	pointed.serialize(tmp_os);
 
-	pkt->putLongString(tmp_os.str());
+	pkt.putLongString(tmp_os.str());
 
-	Send(pkt);
+	Send(&pkt);
 }
 
 void Client::sendNodemetaFields(v3s16 p, const std::string &formname,
@@ -995,19 +990,19 @@ void Client::sendNodemetaFields(v3s16 p, const std::string &formname,
 
 	FATAL_ERROR_IF(fields_size > 0xFFFF, "Unsupported number of nodemeta fields");
 
-	NetworkPacket* pkt = new NetworkPacket(TOSERVER_NODEMETA_FIELDS, 0);
+	NetworkPacket pkt(TOSERVER_NODEMETA_FIELDS, 0);
 
-	*pkt << p << formname << (u16) (fields_size & 0xFFFF);
+	pkt << p << formname << (u16) (fields_size & 0xFFFF);
 
 	for(std::map<std::string, std::string>::const_iterator
 			i = fields.begin(); i != fields.end(); i++) {
 		const std::string &name = i->first;
 		const std::string &value = i->second;
-		*pkt << name;
-		pkt->putLongString(value);
+		pkt << name;
+		pkt.putLongString(value);
 	}
 
-	Send(pkt);
+	Send(&pkt);
 }
 
 void Client::sendInventoryFields(const std::string &formname,
@@ -1016,18 +1011,18 @@ void Client::sendInventoryFields(const std::string &formname,
 	size_t fields_size = fields.size();
 	FATAL_ERROR_IF(fields_size > 0xFFFF, "Unsupported number of inventory fields");
 
-	NetworkPacket* pkt = new NetworkPacket(TOSERVER_INVENTORY_FIELDS, 0);
-	*pkt << formname << (u16) (fields_size & 0xFFFF);
+	NetworkPacket pkt(TOSERVER_INVENTORY_FIELDS, 0);
+	pkt << formname << (u16) (fields_size & 0xFFFF);
 
 	for(std::map<std::string, std::string>::const_iterator
 			i = fields.begin(); i != fields.end(); i++) {
 		const std::string &name  = i->first;
 		const std::string &value = i->second;
-		*pkt << name;
-		pkt->putLongString(value);
+		pkt << name;
+		pkt.putLongString(value);
 	}
 
-	Send(pkt);
+	Send(&pkt);
 }
 
 void Client::sendInventoryAction(InventoryAction *a)
@@ -1039,19 +1034,19 @@ void Client::sendInventoryAction(InventoryAction *a)
 	// Make data buffer
 	std::string s = os.str();
 
-	NetworkPacket* pkt = new NetworkPacket(TOSERVER_INVENTORY_ACTION, s.size());
-	pkt->putRawString(s.c_str(),s.size());
+	NetworkPacket pkt(TOSERVER_INVENTORY_ACTION, s.size());
+	pkt.putRawString(s.c_str(),s.size());
 
-	Send(pkt);
+	Send(&pkt);
 }
 
 void Client::sendChatMessage(const std::wstring &message)
 {
-	NetworkPacket* pkt = new NetworkPacket(TOSERVER_CHAT_MESSAGE, 2 + message.size() * sizeof(u16));
+	NetworkPacket pkt(TOSERVER_CHAT_MESSAGE, 2 + message.size() * sizeof(u16));
 
-	*pkt << message;
+	pkt << message;
 
-	Send(pkt);
+	Send(&pkt);
 }
 
 void Client::sendChangePassword(const std::wstring &oldpassword,
@@ -1065,17 +1060,17 @@ void Client::sendChangePassword(const std::wstring &oldpassword,
 	std::string oldpwd = translatePassword(playername, oldpassword);
 	std::string newpwd = translatePassword(playername, newpassword);
 
-	NetworkPacket* pkt = new NetworkPacket(TOSERVER_PASSWORD_LEGACY, 2 * PASSWORD_SIZE);
+	NetworkPacket pkt(TOSERVER_PASSWORD_LEGACY, 2 * PASSWORD_SIZE);
 
 	for(u8 i = 0; i < PASSWORD_SIZE; i++) {
-		*pkt << (u8) (i < oldpwd.length() ? oldpwd[i] : 0);
+		pkt << (u8) (i < oldpwd.length() ? oldpwd[i] : 0);
 	}
 
 	for(u8 i = 0; i < PASSWORD_SIZE; i++) {
-		*pkt << (u8) (i < newpwd.length() ? newpwd[i] : 0);
+		pkt << (u8) (i < newpwd.length() ? newpwd[i] : 0);
 	}
 
-	Send(pkt);
+	Send(&pkt);
 }
 
 
@@ -1083,40 +1078,40 @@ void Client::sendDamage(u8 damage)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	NetworkPacket* pkt = new NetworkPacket(TOSERVER_DAMAGE, sizeof(u8));
-	*pkt << damage;
-	Send(pkt);
+	NetworkPacket pkt(TOSERVER_DAMAGE, sizeof(u8));
+	pkt << damage;
+	Send(&pkt);
 }
 
 void Client::sendBreath(u16 breath)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	NetworkPacket* pkt = new NetworkPacket(TOSERVER_BREATH, sizeof(u16));
-	*pkt << breath;
-	Send(pkt);
+	NetworkPacket pkt(TOSERVER_BREATH, sizeof(u16));
+	pkt << breath;
+	Send(&pkt);
 }
 
 void Client::sendRespawn()
 {
 	DSTACK(__FUNCTION_NAME);
 
-	NetworkPacket* pkt = new NetworkPacket(TOSERVER_RESPAWN, 0);
-	Send(pkt);
+	NetworkPacket pkt(TOSERVER_RESPAWN, 0);
+	Send(&pkt);
 }
 
 void Client::sendReady()
 {
 	DSTACK(__FUNCTION_NAME);
 
-	NetworkPacket* pkt = new NetworkPacket(TOSERVER_CLIENT_READY,
+	NetworkPacket pkt(TOSERVER_CLIENT_READY,
 			1 + 1 + 1 + 1 + 2 + sizeof(char) * strlen(minetest_version_hash));
 
-	*pkt << (u8) VERSION_MAJOR << (u8) VERSION_MINOR << (u8) VERSION_PATCH_ORIG
+	pkt << (u8) VERSION_MAJOR << (u8) VERSION_MINOR << (u8) VERSION_PATCH_ORIG
 		<< (u8) 0 << (u16) strlen(minetest_version_hash);
 
-	pkt->putRawString(minetest_version_hash, (u16) strlen(minetest_version_hash));
-	Send(pkt);
+	pkt.putRawString(minetest_version_hash, (u16) strlen(minetest_version_hash));
+	Send(&pkt);
 }
 
 void Client::sendPlayerPos()
@@ -1168,11 +1163,11 @@ void Client::sendPlayerPos()
 		[12+12+4+4] u32 keyPressed
 	*/
 
-	NetworkPacket* pkt = new NetworkPacket(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4);
+	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4);
 
-	*pkt << position << speed << pitch << yaw << keyPressed;
+	pkt << position << speed << pitch << yaw << keyPressed;
 
-	Send(pkt);
+	Send(&pkt);
 }
 
 void Client::sendPlayerItem(u16 item)
@@ -1188,11 +1183,11 @@ void Client::sendPlayerItem(u16 item)
 		myplayer->peer_id = our_peer_id;
 	assert(myplayer->peer_id == our_peer_id);
 
-	NetworkPacket* pkt = new NetworkPacket(TOSERVER_PLAYERITEM, 2);
+	NetworkPacket pkt(TOSERVER_PLAYERITEM, 2);
 
-	*pkt << item;
+	pkt << item;
 
-	Send(pkt);
+	Send(&pkt);
 }
 
 void Client::removeNode(v3s16 p)

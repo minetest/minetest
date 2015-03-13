@@ -758,16 +758,16 @@ void Server::AsyncRunStep(bool initial_step)
 					obj->m_known_by_count++;
 			}
 
-			NetworkPacket* pkt = new NetworkPacket(TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD, 0, client->peer_id);
-			pkt->putRawString(data_buffer.c_str(), data_buffer.size());
+			NetworkPacket pkt(TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD, 0, client->peer_id);
+			pkt.putRawString(data_buffer.c_str(), data_buffer.size());
 
 
 			verbosestream << "Server: Sent object remove/add: "
 					<< removed_objects.size() << " removed, "
 					<< added_objects.size() << " added, "
-					<< "packet size is " << pkt->getSize() << std::endl;
+					<< "packet size is " << pkt.getSize() << std::endl;
 
-			Send(pkt);
+			Send(&pkt);
 		}
 		m_clients.Unlock();
 	}
@@ -846,19 +846,19 @@ void Server::AsyncRunStep(bool initial_step)
 				Send them.
 			*/
 			if(reliable_data.size() > 0) {
-				NetworkPacket* pkt = new NetworkPacket(TOCLIENT_ACTIVE_OBJECT_MESSAGES,
+				NetworkPacket pkt(TOCLIENT_ACTIVE_OBJECT_MESSAGES,
 						0, client->peer_id);
 
-				pkt->putRawString(reliable_data.c_str(), reliable_data.size());
-				Send(pkt);
+				pkt.putRawString(reliable_data.c_str(), reliable_data.size());
+				Send(&pkt);
 			}
 
 			if(unreliable_data.size() > 0) {
-				NetworkPacket* pkt = new NetworkPacket(TOCLIENT_ACTIVE_OBJECT_MESSAGES,
+				NetworkPacket pkt(TOCLIENT_ACTIVE_OBJECT_MESSAGES,
 						0, client->peer_id);
 
-				pkt->putRawString(unreliable_data.c_str(), unreliable_data.size());
-				Send(pkt);
+				pkt.putRawString(unreliable_data.c_str(), unreliable_data.size());
+				Send(&pkt);
 			}
 		}
 		m_clients.Unlock();
@@ -1194,9 +1194,9 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		if(datasize < 2)
 			return;
 
-		NetworkPacket* pkt = new NetworkPacket(data, datasize, peer_id);
+		NetworkPacket pkt(data, datasize, peer_id);
 
-		ToServerCommand command = (ToServerCommand) pkt->getCommand();
+		ToServerCommand command = (ToServerCommand) pkt.getCommand();
 
 		// Command must be handled into ToServerCommandHandler
 		if (command >= TOSERVER_NUM_MSG_TYPES) {
@@ -1205,8 +1205,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 
 		if (toServerCommandTable[command].state == TOSERVER_STATE_NOT_CONNECTED) {
-			handleCommand(pkt);
-			delete pkt;
+			handleCommand(&pkt);
 			return;
 		}
 
@@ -1216,15 +1215,12 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			errorstream << "Server::ProcessData(): Cancelling: Peer"
 					" serialization format invalid or not initialized."
 					" Skipping incoming command=" << command << std::endl;
-
-			delete pkt;
 			return;
 		}
 
 		/* Handle commands related to client startup */
 		if (toServerCommandTable[command].state == TOSERVER_STATE_STARTUP) {
-			handleCommand(pkt);
-			delete pkt;
+			handleCommand(&pkt);
 			return;
 		}
 
@@ -1234,14 +1230,10 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			errorstream << "Got packet command: " << command << " for peer id "
 					<< peer_id << " but client isn't active yet. Dropping packet "
 					<< std::endl;
-
-			delete pkt;
 			return;
 		}
 
-		handleCommand(pkt);
-		delete pkt;
-
+		handleCommand(&pkt);
 	}
 	catch(SendFailedException &e) {
 		errorstream << "Server::ProcessData(): SendFailedException: "
@@ -1466,40 +1458,40 @@ void Server::SendMovement(u16 peer_id)
 	DSTACK(__FUNCTION_NAME);
 	std::ostringstream os(std::ios_base::binary);
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_MOVEMENT, 12 * sizeof(float), peer_id);
+	NetworkPacket pkt(TOCLIENT_MOVEMENT, 12 * sizeof(float), peer_id);
 
-	*pkt << g_settings->getFloat("movement_acceleration_default");
-	*pkt << g_settings->getFloat("movement_acceleration_air");
-	*pkt << g_settings->getFloat("movement_acceleration_fast");
-	*pkt << g_settings->getFloat("movement_speed_walk");
-	*pkt << g_settings->getFloat("movement_speed_crouch");
-	*pkt << g_settings->getFloat("movement_speed_fast");
-	*pkt << g_settings->getFloat("movement_speed_climb");
-	*pkt << g_settings->getFloat("movement_speed_jump");
-	*pkt << g_settings->getFloat("movement_liquid_fluidity");
-	*pkt << g_settings->getFloat("movement_liquid_fluidity_smooth");
-	*pkt << g_settings->getFloat("movement_liquid_sink");
-	*pkt << g_settings->getFloat("movement_gravity");
+	pkt << g_settings->getFloat("movement_acceleration_default");
+	pkt << g_settings->getFloat("movement_acceleration_air");
+	pkt << g_settings->getFloat("movement_acceleration_fast");
+	pkt << g_settings->getFloat("movement_speed_walk");
+	pkt << g_settings->getFloat("movement_speed_crouch");
+	pkt << g_settings->getFloat("movement_speed_fast");
+	pkt << g_settings->getFloat("movement_speed_climb");
+	pkt << g_settings->getFloat("movement_speed_jump");
+	pkt << g_settings->getFloat("movement_liquid_fluidity");
+	pkt << g_settings->getFloat("movement_liquid_fluidity_smooth");
+	pkt << g_settings->getFloat("movement_liquid_sink");
+	pkt << g_settings->getFloat("movement_gravity");
 
-	Send(pkt);
+	Send(&pkt);
 }
 
 void Server::SendHP(u16 peer_id, u8 hp)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_HP, 1, peer_id);
-	*pkt << hp;
-	Send(pkt);
+	NetworkPacket pkt(TOCLIENT_HP, 1, peer_id);
+	pkt << hp;
+	Send(&pkt);
 }
 
 void Server::SendBreath(u16 peer_id, u16 breath)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_BREATH, 2, peer_id);
-	*pkt << (u16) breath;
-	Send(pkt);
+	NetworkPacket pkt(TOCLIENT_BREATH, 2, peer_id);
+	pkt << (u16) breath;
+	Send(&pkt);
 }
 
 void Server::SendAccessDenied(u16 peer_id, AccessDeniedCode reason, const std::wstring &custom_reason)
@@ -1519,9 +1511,9 @@ void Server::SendAccessDenied_Legacy(u16 peer_id,const std::wstring &reason)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_ACCESS_DENIED_LEGACY, 0, peer_id);
-	*pkt << reason;
-	Send(pkt);
+	NetworkPacket pkt(TOCLIENT_ACCESS_DENIED_LEGACY, 0, peer_id);
+	pkt << reason;
+	Send(&pkt);
 }
 
 void Server::SendDeathscreen(u16 peer_id,bool set_camera_point_target,
@@ -1529,9 +1521,9 @@ void Server::SendDeathscreen(u16 peer_id,bool set_camera_point_target,
 {
 	DSTACK(__FUNCTION_NAME);
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_DEATHSCREEN, 1 + sizeof(v3f), peer_id);
-	*pkt << set_camera_point_target << camera_point_target;
-	Send(pkt);
+	NetworkPacket pkt(TOCLIENT_DEATHSCREEN, 1 + sizeof(v3f), peer_id);
+	pkt << set_camera_point_target << camera_point_target;
+	Send(&pkt);
 }
 
 void Server::SendItemDef(u16 peer_id,
@@ -1539,7 +1531,7 @@ void Server::SendItemDef(u16 peer_id,
 {
 	DSTACK(__FUNCTION_NAME);
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_ITEMDEF, 0, peer_id);
+	NetworkPacket pkt(TOCLIENT_ITEMDEF, 0, peer_id);
 
 	/*
 		u16 command
@@ -1550,13 +1542,13 @@ void Server::SendItemDef(u16 peer_id,
 	itemdef->serialize(tmp_os, protocol_version);
 	std::ostringstream tmp_os2(std::ios::binary);
 	compressZlib(tmp_os.str(), tmp_os2);
-	pkt->putLongString(tmp_os2.str());
+	pkt.putLongString(tmp_os2.str());
 
 	// Make data buffer
 	verbosestream << "Server: Sending item definitions to id(" << peer_id
-			<< "): size=" << pkt->getSize() << std::endl;
+			<< "): size=" << pkt.getSize() << std::endl;
 
-	Send(pkt);
+	Send(&pkt);
 }
 
 void Server::SendNodeDef(u16 peer_id,
@@ -1564,7 +1556,7 @@ void Server::SendNodeDef(u16 peer_id,
 {
 	DSTACK(__FUNCTION_NAME);
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_NODEDEF, 0, peer_id);
+	NetworkPacket pkt(TOCLIENT_NODEDEF, 0, peer_id);
 
 	/*
 		u16 command
@@ -1576,13 +1568,13 @@ void Server::SendNodeDef(u16 peer_id,
 	std::ostringstream tmp_os2(std::ios::binary);
 	compressZlib(tmp_os.str(), tmp_os2);
 
-	pkt->putLongString(tmp_os2.str());
+	pkt.putLongString(tmp_os2.str());
 
 	// Make data buffer
 	verbosestream << "Server: Sending node definitions to id(" << peer_id
-			<< "): size=" << pkt->getSize() << std::endl;
+			<< "): size=" << pkt.getSize() << std::endl;
 
-	Send(pkt);
+	Send(&pkt);
 }
 
 /*
@@ -1599,30 +1591,29 @@ void Server::SendInventory(PlayerSAO* playerSAO)
 		Serialize it
 	*/
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_INVENTORY, 0,
-			playerSAO->getPeerID());
+	NetworkPacket pkt(TOCLIENT_INVENTORY, 0, playerSAO->getPeerID());
 
 	std::ostringstream os;
 	playerSAO->getInventory()->serialize(os);
 
 	std::string s = os.str();
 
-	pkt->putRawString(s.c_str(), s.size());
-	Send(pkt);
+	pkt.putRawString(s.c_str(), s.size());
+	Send(&pkt);
 }
 
 void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_CHAT_MESSAGE, 0, peer_id);
-	*pkt << message;
+	NetworkPacket pkt(TOCLIENT_CHAT_MESSAGE, 0, peer_id);
+	pkt << message;
 
 	if (peer_id != PEER_ID_INEXISTENT) {
-		Send(pkt);
+		Send(&pkt);
 	}
 	else {
-		m_clients.sendToAll(0,pkt,true);
+		m_clients.sendToAll(0, &pkt, true);
 	}
 }
 
@@ -1631,12 +1622,12 @@ void Server::SendShowFormspecMessage(u16 peer_id, const std::string &formspec,
 {
 	DSTACK(__FUNCTION_NAME);
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_SHOW_FORMSPEC, 0 , peer_id);
+	NetworkPacket pkt(TOCLIENT_SHOW_FORMSPEC, 0 , peer_id);
 
-	pkt->putLongString(FORMSPEC_VERSION_STRING + formspec);
-	*pkt << formname;
+	pkt.putLongString(FORMSPEC_VERSION_STRING + formspec);
+	pkt << formname;
 
-	Send(pkt);
+	Send(&pkt);
 }
 
 // Spawns a particle on peer with peer_id
@@ -1646,18 +1637,18 @@ void Server::SendSpawnParticle(u16 peer_id, v3f pos, v3f velocity, v3f accelerat
 {
 	DSTACK(__FUNCTION_NAME);
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_SPAWN_PARTICLE, 0, peer_id);
+	NetworkPacket pkt(TOCLIENT_SPAWN_PARTICLE, 0, peer_id);
 
-	*pkt << pos << velocity << acceleration << expirationtime
+	pkt << pos << velocity << acceleration << expirationtime
 			<< size << collisiondetection;
-	pkt->putLongString(texture);
-	*pkt << vertical;
+	pkt.putLongString(texture);
+	pkt << vertical;
 
 	if (peer_id != PEER_ID_INEXISTENT) {
-		Send(pkt);
+		Send(&pkt);
 	}
 	else {
-		m_clients.sendToAll(0,pkt,true);
+		m_clients.sendToAll(0, &pkt, true);
 	}
 }
 
@@ -1668,21 +1659,21 @@ void Server::SendAddParticleSpawner(u16 peer_id, u16 amount, float spawntime, v3
 {
 	DSTACK(__FUNCTION_NAME);
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_ADD_PARTICLESPAWNER, 0, peer_id);
+	NetworkPacket pkt(TOCLIENT_ADD_PARTICLESPAWNER, 0, peer_id);
 
-	*pkt << amount << spawntime << minpos << maxpos << minvel << maxvel
+	pkt << amount << spawntime << minpos << maxpos << minvel << maxvel
 			<< minacc << maxacc << minexptime << maxexptime << minsize
 			<< maxsize << collisiondetection;
 
-	pkt->putLongString(texture);
+	pkt.putLongString(texture);
 
-	*pkt << id << vertical;
+	pkt << id << vertical;
 
 	if (peer_id != PEER_ID_INEXISTENT) {
-		Send(pkt);
+		Send(&pkt);
 	}
 	else {
-		m_clients.sendToAll(0, pkt, true);
+		m_clients.sendToAll(0, &pkt, true);
 	}
 }
 
@@ -1690,124 +1681,124 @@ void Server::SendDeleteParticleSpawner(u16 peer_id, u32 id)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY, 2, peer_id);
+	NetworkPacket pkt(TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY, 2, peer_id);
 
 	// Ugly error in this packet
-	*pkt << (u16) id;
+	pkt << (u16) id;
 
 	if (peer_id != PEER_ID_INEXISTENT) {
-		Send(pkt);
+		Send(&pkt);
 	}
 	else {
-		m_clients.sendToAll(0, pkt, true);
+		m_clients.sendToAll(0, &pkt, true);
 	}
 
 }
 
 void Server::SendHUDAdd(u16 peer_id, u32 id, HudElement *form)
 {
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_HUDADD, 0 , peer_id);
+	NetworkPacket pkt(TOCLIENT_HUDADD, 0 , peer_id);
 
-	*pkt << id << (u8) form->type << form->pos << form->name << form->scale
+	pkt << id << (u8) form->type << form->pos << form->name << form->scale
 			<< form->text << form->number << form->item << form->dir
 			<< form->align << form->offset << form->world_pos << form->size;
 
-	Send(pkt);
+	Send(&pkt);
 }
 
 void Server::SendHUDRemove(u16 peer_id, u32 id)
 {
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_HUDRM, 4, peer_id);
-	*pkt << id;
-	Send(pkt);
+	NetworkPacket pkt(TOCLIENT_HUDRM, 4, peer_id);
+	pkt << id;
+	Send(&pkt);
 }
 
 void Server::SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value)
 {
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_HUDCHANGE, 0, peer_id);
-	*pkt << id << (u8) stat;
+	NetworkPacket pkt(TOCLIENT_HUDCHANGE, 0, peer_id);
+	pkt << id << (u8) stat;
 
 	switch (stat) {
 		case HUD_STAT_POS:
 		case HUD_STAT_SCALE:
 		case HUD_STAT_ALIGN:
 		case HUD_STAT_OFFSET:
-			*pkt << *(v2f *) value;
+			pkt << *(v2f *) value;
 			break;
 		case HUD_STAT_NAME:
 		case HUD_STAT_TEXT:
-			*pkt << *(std::string *) value;
+			pkt << *(std::string *) value;
 			break;
 		case HUD_STAT_WORLD_POS:
-			*pkt << *(v3f *) value;
+			pkt << *(v3f *) value;
 			break;
 		case HUD_STAT_SIZE:
-			*pkt << *(v2s32 *) value;
+			pkt << *(v2s32 *) value;
 			break;
 		case HUD_STAT_NUMBER:
 		case HUD_STAT_ITEM:
 		case HUD_STAT_DIR:
 		default:
-			*pkt << *(u32 *) value;
+			pkt << *(u32 *) value;
 			break;
 	}
 
-	Send(pkt);
+	Send(&pkt);
 }
 
 void Server::SendHUDSetFlags(u16 peer_id, u32 flags, u32 mask)
 {
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_HUD_SET_FLAGS, 4 + 4, peer_id);
+	NetworkPacket pkt(TOCLIENT_HUD_SET_FLAGS, 4 + 4, peer_id);
 
 	flags &= ~(HUD_FLAG_HEALTHBAR_VISIBLE | HUD_FLAG_BREATHBAR_VISIBLE);
 
-	*pkt << flags << mask;
+	pkt << flags << mask;
 
-	Send(pkt);
+	Send(&pkt);
 }
 
 void Server::SendHUDSetParam(u16 peer_id, u16 param, const std::string &value)
 {
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_HUD_SET_PARAM, 0, peer_id);
-	*pkt << param << value;
-	Send(pkt);
+	NetworkPacket pkt(TOCLIENT_HUD_SET_PARAM, 0, peer_id);
+	pkt << param << value;
+	Send(&pkt);
 }
 
 void Server::SendSetSky(u16 peer_id, const video::SColor &bgcolor,
 		const std::string &type, const std::vector<std::string> &params)
 {
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_SET_SKY, 0, peer_id);
-	*pkt << bgcolor << type << (u16) params.size();
+	NetworkPacket pkt(TOCLIENT_SET_SKY, 0, peer_id);
+	pkt << bgcolor << type << (u16) params.size();
 
 	for(size_t i=0; i<params.size(); i++)
-		*pkt << params[i];
+		pkt << params[i];
 
-	Send(pkt);
+	Send(&pkt);
 }
 
 void Server::SendOverrideDayNightRatio(u16 peer_id, bool do_override,
 		float ratio)
 {
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO,
+	NetworkPacket pkt(TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO,
 			1 + 2, peer_id);
 
-	*pkt << do_override << (u16) (ratio * 65535);
+	pkt << do_override << (u16) (ratio * 65535);
 
-	Send (pkt);
+	Send(&pkt);
 }
 
 void Server::SendTimeOfDay(u16 peer_id, u16 time, f32 time_speed)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_TIME_OF_DAY, 0, peer_id);
-	*pkt << time << time_speed;
+	NetworkPacket pkt(TOCLIENT_TIME_OF_DAY, 0, peer_id);
+	pkt << time << time_speed;
 
 	if (peer_id == PEER_ID_INEXISTENT) {
-		m_clients.sendToAll(0, pkt, true);
+		m_clients.sendToAll(0, &pkt, true);
 	}
 	else {
-		Send(pkt);
+		Send(&pkt);
 	}
 }
 
@@ -1841,39 +1832,39 @@ void Server::SendMovePlayer(u16 peer_id)
 	Player *player = m_env->getPlayer(peer_id);
 	assert(player);
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_MOVE_PLAYER, 0, peer_id);
-	*pkt << player->getPosition() << player->getPitch() << player->getYaw();
+	NetworkPacket pkt(TOCLIENT_MOVE_PLAYER, sizeof(v3f) + sizeof(f32) * 2, peer_id);
+	pkt << player->getPosition() << player->getPitch() << player->getYaw();
 
 	{
 		v3f pos = player->getPosition();
 		f32 pitch = player->getPitch();
 		f32 yaw = player->getYaw();
-		verbosestream<<"Server: Sending TOCLIENT_MOVE_PLAYER"
-				<<" pos=("<<pos.X<<","<<pos.Y<<","<<pos.Z<<")"
-				<<" pitch="<<pitch
-				<<" yaw="<<yaw
-				<<std::endl;
+		verbosestream << "Server: Sending TOCLIENT_MOVE_PLAYER"
+				<< " pos=(" << pos.X << "," << pos.Y << "," << pos.Z << ")"
+				<< " pitch=" << pitch
+				<< " yaw=" << yaw
+				<< std::endl;
 	}
 
-	Send(pkt);
+	Send(&pkt);
 }
 
 void Server::SendLocalPlayerAnimations(u16 peer_id, v2s32 animation_frames[4], f32 animation_speed)
 {
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_LOCAL_PLAYER_ANIMATIONS, 0,
+	NetworkPacket pkt(TOCLIENT_LOCAL_PLAYER_ANIMATIONS, 0,
 		peer_id);
 
-	*pkt << animation_frames[0] << animation_frames[1] << animation_frames[2]
+	pkt << animation_frames[0] << animation_frames[1] << animation_frames[2]
 			<< animation_frames[3] << animation_speed;
 
-	Send(pkt);
+	Send(&pkt);
 }
 
 void Server::SendEyeOffset(u16 peer_id, v3f first, v3f third)
 {
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_EYE_OFFSET, 0, peer_id);
-	*pkt << first << third;
-	Send(pkt);
+	NetworkPacket pkt(TOCLIENT_EYE_OFFSET, 0, peer_id);
+	pkt << first << third;
+	Send(&pkt);
 }
 void Server::SendPlayerPrivileges(u16 peer_id)
 {
@@ -1885,15 +1876,15 @@ void Server::SendPlayerPrivileges(u16 peer_id)
 	std::set<std::string> privs;
 	m_script->getAuth(player->getName(), NULL, &privs);
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_PRIVILEGES, 0, peer_id);
-	*pkt << (u16) privs.size();
+	NetworkPacket pkt(TOCLIENT_PRIVILEGES, 0, peer_id);
+	pkt << (u16) privs.size();
 
 	for(std::set<std::string>::const_iterator i = privs.begin();
 			i != privs.end(); i++) {
-		*pkt << (*i);
+		pkt << (*i);
 	}
 
-	Send(pkt);
+	Send(&pkt);
 }
 
 void Server::SendPlayerInventoryFormspec(u16 peer_id)
@@ -1903,9 +1894,9 @@ void Server::SendPlayerInventoryFormspec(u16 peer_id)
 	if(player->peer_id == PEER_ID_INEXISTENT)
 		return;
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_INVENTORY_FORMSPEC, 0, peer_id);
-	pkt->putLongString(FORMSPEC_VERSION_STRING + player->inventory_formspec);
-	Send(pkt);
+	NetworkPacket pkt(TOCLIENT_INVENTORY_FORMSPEC, 0, peer_id);
+	pkt.putLongString(FORMSPEC_VERSION_STRING + player->inventory_formspec);
+	Send(&pkt);
 }
 
 s32 Server::playSound(const SimpleSoundSpec &spec,
@@ -1963,16 +1954,15 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 	ServerPlayingSound &psound = m_playing_sounds[id];
 	psound.params = params;
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_PLAY_SOUND, 0);
-	*pkt << id << spec.name << (float) (spec.gain * params.gain)
+	NetworkPacket pkt(TOCLIENT_PLAY_SOUND, 0);
+	pkt << id << spec.name << (float) (spec.gain * params.gain)
 			<< (u8) params.type << pos << params.object << params.loop;
 
 	for(std::vector<u16>::iterator i = dst_clients.begin();
 			i != dst_clients.end(); i++) {
 		psound.clients.insert(*i);
-		m_clients.send(*i, 0, pkt, true, false);
+		m_clients.send(*i, 0, &pkt, true);
 	}
-	delete pkt;
 	return id;
 }
 void Server::stopSound(s32 handle)
@@ -1984,15 +1974,14 @@ void Server::stopSound(s32 handle)
 		return;
 	ServerPlayingSound &psound = i->second;
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_STOP_SOUND, 4);
-	*pkt << handle;
+	NetworkPacket pkt(TOCLIENT_STOP_SOUND, 4);
+	pkt << handle;
 
 	for(std::set<u16>::iterator i = psound.clients.begin();
 			i != psound.clients.end(); i++) {
 		// Send as reliable
-		m_clients.send(*i, 0, pkt, true, false);
+		m_clients.send(*i, 0, &pkt, true);
 	}
-	delete pkt;
 	// Remove sound reference
 	m_playing_sounds.erase(i);
 }
@@ -2003,8 +1992,8 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 	float maxd = far_d_nodes*BS;
 	v3f p_f = intToFloat(p, BS);
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_REMOVENODE, 6);
-	*pkt << p;
+	NetworkPacket pkt(TOCLIENT_REMOVENODE, 6);
+	pkt << p;
 
 	std::vector<u16> clients = m_clients.getClientIDs();
 	for(std::vector<u16>::iterator i = clients.begin();
@@ -2022,10 +2011,8 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 		}
 
 		// Send as reliable
-		m_clients.send(*i, 0, pkt, true, false);
+		m_clients.send(*i, 0, &pkt, true);
 	}
-	// This loop needs the deletion of the packet here
-	delete pkt;
 }
 
 void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
@@ -2051,11 +2038,11 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 			}
 		}
 
-		NetworkPacket* pkt = new NetworkPacket(TOCLIENT_ADDNODE, 6 + 2 + 1 + 1 + 1);
+		NetworkPacket pkt(TOCLIENT_ADDNODE, 6 + 2 + 1 + 1 + 1);
 		m_clients.Lock();
 		RemoteClient* client = m_clients.lockedGetClientNoEx(*i);
 		if (client != 0) {
-			*pkt << p << n.param0 << n.param1 << n.param2
+			pkt << p << n.param0 << n.param1 << n.param2
 					<< (u8) (remove_metadata ? 0 : 1);
 
 			if (!remove_metadata) {
@@ -2069,8 +2056,8 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 		m_clients.Unlock();
 
 		// Send as reliable
-		if (pkt->getSize() > 0)
-			m_clients.send(*i, 0, pkt, true);
+		if (pkt.getSize() > 0)
+			m_clients.send(*i, 0, &pkt, true);
 	}
 }
 
@@ -2101,12 +2088,11 @@ void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver, u16 net_proto
 	block->serializeNetworkSpecific(os, net_proto_version);
 	std::string s = os.str();
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_BLOCKDATA,
-		2 + 2 + 2 + 2 + s.size(), peer_id);
+	NetworkPacket pkt(TOCLIENT_BLOCKDATA, 2 + 2 + 2 + 2 + s.size(), peer_id);
 
-	*pkt << p;
-	pkt->putRawString(s.c_str(), s.size());
-	Send(pkt);
+	pkt << p;
+	pkt.putRawString(s.c_str(), s.size());
+	Send(&pkt);
 }
 
 void Server::SendBlocks(float dtime)
@@ -2306,27 +2292,17 @@ void Server::sendMediaAnnouncement(u16 peer_id)
 	// Make packet
 	std::ostringstream os(std::ios_base::binary);
 
-	/*
-		u32 number of files
-		for each texture {
-			u16 length of name
-			string name
-			u16 length of sha1_digest
-			string sha1_digest
-		}
-	*/
-
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_ANNOUNCE_MEDIA, 0, peer_id);
-	*pkt << (u16) file_announcements.size();
+	NetworkPacket pkt(TOCLIENT_ANNOUNCE_MEDIA, 0, peer_id);
+	pkt << (u16) file_announcements.size();
 
 	for (std::vector<SendableMediaAnnouncement>::iterator
 			j = file_announcements.begin();
 			j != file_announcements.end(); ++j) {
-		*pkt << j->name << j->sha1_digest;
+		pkt << j->name << j->sha1_digest;
 	}
 
-	*pkt << g_settings->get("remote_media");
-	Send(pkt);
+	pkt << g_settings->get("remote_media");
+	Send(&pkt);
 }
 
 struct SendableMedia
@@ -2432,21 +2408,21 @@ void Server::sendRequestedMedia(u16 peer_id,
 			}
 		*/
 
-		NetworkPacket* pkt = new NetworkPacket(TOCLIENT_MEDIA, 0, peer_id);
-		*pkt << num_bunches << i << (u32) file_bunches[i].size();
+		NetworkPacket pkt(TOCLIENT_MEDIA, 4 + 0, peer_id);
+		pkt << num_bunches << i << (u32) file_bunches[i].size();
 
 		for(std::vector<SendableMedia>::iterator
 				j = file_bunches[i].begin();
 				j != file_bunches[i].end(); ++j) {
-			*pkt << j->name;
-			pkt->putLongString(j->data);
+			pkt << j->name;
+			pkt.putLongString(j->data);
 		}
 
 		verbosestream << "Server::sendRequestedMedia(): bunch "
 				<< i << "/" << num_bunches
 				<< " files=" << file_bunches[i].size()
-				<< " size="  << pkt->getSize() << std::endl;
-		Send(pkt);
+				<< " size="  << pkt.getSize() << std::endl;
+		Send(&pkt);
 	}
 }
 
@@ -2465,14 +2441,14 @@ void Server::sendDetachedInventory(const std::string &name, u16 peer_id)
 	// Make data buffer
 	std::string s = os.str();
 
-	NetworkPacket* pkt = new NetworkPacket(TOCLIENT_DETACHED_INVENTORY, 0, peer_id);
-	pkt->putRawString(s.c_str(), s.size());
+	NetworkPacket pkt(TOCLIENT_DETACHED_INVENTORY, 0, peer_id);
+	pkt.putRawString(s.c_str(), s.size());
 
 	if (peer_id != PEER_ID_INEXISTENT) {
-		Send(pkt);
+		Send(&pkt);
 	}
 	else {
-		m_clients.sendToAll(0, pkt, true);
+		m_clients.sendToAll(0, &pkt, true);
 	}
 }
 

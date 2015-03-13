@@ -617,14 +617,14 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 		Answer with a TOCLIENT_INIT
 	*/
 
-	NetworkPacket* resp_pkt = new NetworkPacket(TOCLIENT_INIT_LEGACY, 1 + 6 + 8 + 4,
+	NetworkPacket resp_pkt(TOCLIENT_INIT_LEGACY, 1 + 6 + 8 + 4,
 			pkt->getPeerId());
 
-	*resp_pkt << (u8) deployed << (v3s16) floatToInt(v3f(0,0,0), BS)
+	resp_pkt << (u8) deployed << (v3s16) floatToInt(v3f(0,0,0), BS)
 			<< (u64) m_env->getServerMap().getSeed()
 			<< g_settings->getFloat("dedicated_server_step");
 
-	Send(resp_pkt);
+	Send(&resp_pkt);
 	m_clients.event(pkt->getPeerId(), CSE_Init);
 }
 

@@ -77,8 +77,8 @@ void Client::handleCommand_AuthAccept(NetworkPacket* pkt)
 					<< m_recommended_send_interval<<std::endl;
 
 	// Reply to server
-	NetworkPacket* resp_pkt = new NetworkPacket(TOSERVER_INIT2, 0);
-	Send(resp_pkt);
+	NetworkPacket resp_pkt(TOSERVER_INIT2, 0);
+	Send(&resp_pkt);
 
 	m_state = LC_Init;
 }
@@ -128,8 +128,8 @@ void Client::handleCommand_InitLegacy(NetworkPacket* pkt)
 	}
 
 	// Reply to server
-	NetworkPacket* resp_pkt = new NetworkPacket(TOSERVER_INIT2, 0);
-	Send(resp_pkt);
+	NetworkPacket resp_pkt(TOSERVER_INIT2, 0);
+	Send(&resp_pkt);
 
 	m_state = LC_Init;
 }

@@ -626,12 +626,9 @@ void ClientInterface::UpdatePlayerList()
 }
 
 void ClientInterface::send(u16 peer_id, u8 channelnum,
-		NetworkPacket* pkt, bool reliable, bool deletepkt)
+		NetworkPacket* pkt, bool reliable)
 {
 	m_con->Send(peer_id, channelnum, pkt, reliable);
-
-	if (deletepkt)
-		delete pkt;
 }
 
 void ClientInterface::sendToAll(u16 channelnum,
@@ -647,8 +644,6 @@ void ClientInterface::sendToAll(u16 channelnum,
 			m_con->Send(client->peer_id, channelnum, pkt, reliable);
 		}
 	}
-
-	delete pkt;
 }
 
 RemoteClient* ClientInterface::getClientNoEx(u16 peer_id, ClientState state_min)

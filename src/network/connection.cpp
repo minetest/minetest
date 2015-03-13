@@ -1725,9 +1725,8 @@ void ConnectionSendThread::connect(Address address)
 
 	// Send a dummy packet to server with peer_id = PEER_ID_INEXISTENT
 	m_connection->SetPeerID(PEER_ID_INEXISTENT);
-	NetworkPacket* pkt = new NetworkPacket(0,0);
-	m_connection->Send(PEER_ID_SERVER, 0, pkt, true);
-	delete pkt;
+	NetworkPacket pkt(0,0);
+	m_connection->Send(PEER_ID_SERVER, 0, &pkt, true);
 }
 
 void ConnectionSendThread::disconnect()

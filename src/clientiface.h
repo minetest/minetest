@@ -400,7 +400,7 @@ public:
 	std::vector<std::string> getPlayerNames();
 
 	/* send message to client */
-	void send(u16 peer_id, u8 channelnum, NetworkPacket* pkt, bool reliable, bool deletepkt=true);
+	void send(u16 peer_id, u8 channelnum, NetworkPacket* pkt, bool reliable);
 
 	/* send to all clients */
 	void sendToAll(u16 channelnum, NetworkPacket* pkt, bool reliable);

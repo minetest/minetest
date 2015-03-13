@@ -2022,12 +2022,12 @@ struct TestConnection: public TestBase
 			Simple send-receive test
 		*/
 		{
-			NetworkPacket* pkt = new NetworkPacket((u8*) "Hello World !", 14, 0);
+			NetworkPacket pkt((u8*) "Hello World !", 14, 0);
 
-			SharedBuffer<u8> sentdata = pkt->oldForgePacket();
+			SharedBuffer<u8> sentdata = pkt.oldForgePacket();
 
 			infostream<<"** running client.Send()"<<std::endl;
-			client.Send(PEER_ID_SERVER, 0, pkt, true);
+			client.Send(PEER_ID_SERVER, 0, &pkt, true);
 
 			sleep_ms(50);
 
@@ -2037,12 +2037,10 @@ struct TestConnection: public TestBase
 			u32 size = server.Receive(peer_id, recvdata);
 			infostream << "** Server received: peer_id=" << peer_id
 					<< ", size=" << size
-					<< ", data=" << (const char*)pkt->getU8Ptr(0)
+					<< ", data=" << (const char*)pkt.getU8Ptr(0)
 					<< std::endl;
 
 			UASSERT(memcmp(*sentdata, *recvdata, recvdata.getSize()) == 0);
-
-			delete pkt;
 		}
 
 		u16 peer_id_client = 2;
@@ -2051,25 +2049,25 @@ struct TestConnection: public TestBase
 		*/
 		{
 			const int datasize = 30000;
-			NetworkPacket* pkt = new NetworkPacket(0, datasize);
-			for(u16 i=0; i<datasize; i++){
-				*pkt << (u8) i/4;
+			NetworkPacket pkt(0, datasize);
+			for (u16 i=0; i<datasize; i++) {
+				pkt << (u8) i/4;
 			}
 
 			infostream<<"Sending data (size="<<datasize<<"):";
-			for(int i=0; i<datasize && i<20; i++){
+			for(int i=0; i<datasize && i<20; i++) {
 				if(i%2==0) infostream<<" ";
 				char buf[10];
-				snprintf(buf, 10, "%.2X", ((int)((const char*)pkt->getU8Ptr(0))[i])&0xff);
+				snprintf(buf, 10, "%.2X", ((int)((const char*)pkt.getU8Ptr(0))[i])&0xff);
 				infostream<<buf;
 			}
 			if(datasize>20)
 				infostream<<"...";
 			infostream<<std::endl;
 
-			SharedBuffer<u8> sentdata = pkt->oldForgePacket();
+			SharedBuffer<u8> sentdata = pkt.oldForgePacket();
 
-			server.Send(peer_id_client, 0, pkt, true);
+			server.Send(peer_id_client, 0, &pkt, true);
 
 			//sleep_ms(3000);
 
@@ -2107,8 +2105,6 @@ struct TestConnection: public TestBase
 
 			UASSERT(memcmp(*sentdata, *recvdata, recvdata.getSize()) == 0);
 			UASSERT(peer_id == PEER_ID_SERVER);
-
-			delete pkt;
 		}
 
 		// Check peer handlers
