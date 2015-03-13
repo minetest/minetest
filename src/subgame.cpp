@@ -270,6 +270,11 @@ std::vector<WorldSpec> getAvailableWorlds()
 bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamespec)
 {
 	// Override defaults with those provided by the game.
+	// Clearing and re-loading defaults is done, because the defaults
+	// might have been overridden by other subgame config files,
+	// that were loaded before.
+	g_settings->clearDefaults();
+	set_default_settings(g_settings);
 	Settings game_defaults;
 	getGameMinetestConfig(gamespec.path, game_defaults);
 	override_default_settings(g_settings, &game_defaults);
