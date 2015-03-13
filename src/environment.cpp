@@ -2563,9 +2563,11 @@ void ClientEnvironment::damageLocalPlayer(u8 damage, bool handle_hp)
 	LocalPlayer *lplayer = getLocalPlayer();
 	assert(lplayer);
 	
-	if(handle_hp){
-		if (lplayer->hp == 0) // Don't damage a dead player
+	if(handle_hp) {
+		// Don't damage a dead player
+		if (lplayer->isDead()) 
 			return;
+
 		if(lplayer->hp > damage)
 			lplayer->hp -= damage;
 		else

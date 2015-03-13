@@ -1106,7 +1106,7 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 	SendPlayerBreath(peer_id);
 
 	// Show death screen if necessary
-	if(player->hp == 0)
+	if(player->isDead())
 		SendDeathscreen(peer_id, false, v3f(0,0,0));
 
 	// Note things in chat if not in simple singleplayer mode

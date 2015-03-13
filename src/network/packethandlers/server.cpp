@@ -556,7 +556,9 @@ void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 	}
 
 	// If player is dead we don't care of this packet
-	if (player->hp == 0) {
+	if (player->isDead()) {
+		verbosestream << "TOSERVER_PLAYERPOS: " << player->getName()
+			<< " is dead. Ignoring packet";
 		return;
 	}
 
@@ -921,6 +923,8 @@ void Server::handleCommand_Breath(NetworkPacket* pkt)
 	 * He is dead !
 	 */
 	if (player->isDead()) {
+		verbosestream << "TOSERVER_BREATH: " << player->getName()
+			<< " is dead. Ignoring packet";
 		return;
 	}
 
@@ -1051,7 +1055,7 @@ void Server::handleCommand_Respawn(NetworkPacket* pkt)
 		return;
 	}
 
-	if (player->hp != 0 || !g_settings->getBool("enable_damage"))
+	if (!player->isDead() || !g_settings->getBool("enable_damage"))
 		return;
 
 	RespawnPlayer(pkt->getPeerId());
@@ -1108,9 +1112,9 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		return;
 	}
 
-	if (player->hp == 0) {
+	if (player->isDead()) {
 		verbosestream << "TOSERVER_INTERACT: " << player->getName()
-			<< " tried to interact, but is dead!" << std::endl;
+			<< " is dead. Ignoring packet";
 		return;
 	}
 
