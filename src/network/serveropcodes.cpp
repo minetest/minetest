@@ -26,8 +26,8 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 {
 	null_command_handler, // 0x00 (never use this)
 	null_command_handler, // 0x01
-	null_command_handler, // 0x02
-	null_command_handler, // 0x03
+	{ "TOSERVER_INIT",                    TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_Init }, // 0x02
+	{ "TOSERVER_AUTH",                    TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_Auth }, // 0x03
 	null_command_handler, // 0x04
 	null_command_handler, // 0x05
 	null_command_handler, // 0x06
@@ -78,14 +78,14 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	{ "TOSERVER_SIGNNODETEXT",             TOSERVER_STATE_INGAME, &Server::handleCommand_Deprecated }, // 0x33
 	{ "TOSERVER_CLICK_ACTIVEOBJECT",       TOSERVER_STATE_INGAME, &Server::handleCommand_Deprecated }, // 0x34
 	{ "TOSERVER_DAMAGE",                   TOSERVER_STATE_INGAME, &Server::handleCommand_Damage }, // 0x35
-	{ "TOSERVER_PASSWORD_LEGACY",          TOSERVER_STATE_INGAME, &Server::handleCommand_Password_Legacy }, // 0x36
+	{ "TOSERVER_PASSWORD_LEGACY",          TOSERVER_STATE_INGAME, &Server::handleCommand_Password }, // 0x36
 	{ "TOSERVER_PLAYERITEM",               TOSERVER_STATE_INGAME, &Server::handleCommand_PlayerItem }, // 0x37
 	{ "TOSERVER_RESPAWN",                  TOSERVER_STATE_INGAME, &Server::handleCommand_Respawn }, // 0x38
 	{ "TOSERVER_INTERACT",                 TOSERVER_STATE_INGAME, &Server::handleCommand_Interact }, // 0x39
 	{ "TOSERVER_REMOVED_SOUNDS",           TOSERVER_STATE_INGAME, &Server::handleCommand_RemovedSounds }, // 0x3a
 	{ "TOSERVER_NODEMETA_FIELDS",          TOSERVER_STATE_INGAME, &Server::handleCommand_NodeMetaFields }, // 0x3b
 	{ "TOSERVER_INVENTORY_FIELDS",         TOSERVER_STATE_INGAME, &Server::handleCommand_InventoryFields }, // 0x3c
-	null_command_handler, // 0x3d
+	{ "TOSERVER_PASSWORD",                 TOSERVER_STATE_INGAME, &Server::handleCommand_Password }, // 0x3d
 	null_command_handler, // 0x3e
 	null_command_handler, // 0x3f
 	{ "TOSERVER_REQUEST_MEDIA",            TOSERVER_STATE_STARTUP, &Server::handleCommand_RequestMedia }, // 0x40
@@ -100,8 +100,8 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 {
 	null_command_factory, // 0x00
 	null_command_factory, // 0x01
-	null_command_factory, // 0x02
-	null_command_factory, // 0x03
+	{ "TOCLIENT_HELLO",             0, true }, // 0x02
+	{ "TOCLIENT_AUTH_ACCEPT",       0, true }, // 0x03
 	null_command_factory, // 0x04
 	null_command_factory, // 0x05
 	null_command_factory, // 0x06

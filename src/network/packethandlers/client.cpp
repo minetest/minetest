@@ -38,7 +38,7 @@ void Client::handleCommand_Deprecated(NetworkPacket* pkt)
 			<< pkt->getPeerId() << "!" << std::endl;
 }
 
-void Client::handleCommand_Init(NetworkPacket* pkt)
+void Client::handleCommand_Hello(NetworkPacket* pkt)
 {
 	if (pkt->getSize() < 1)
 		return;
@@ -46,11 +46,56 @@ void Client::handleCommand_Init(NetworkPacket* pkt)
 	u8 deployed;
 	*pkt >> deployed;
 
-	infostream << "Client: TOCLIENT_INIT received with "
+	infostream << "Client: TOCLIENT_HELLO received with "
 			"deployed=" << ((int)deployed & 0xff) << std::endl;
 
 	if (!ser_ver_supported(deployed)) {
-		infostream << "Client: TOCLIENT_INIT: Server sent "
+		infostream << "Client: TOCLIENT_HELLO: Server sent "
+				<< "unsupported ser_fmt_ver"<< std::endl;
+		return;
+	}
+
+	m_server_ser_ver = deployed;
+
+	// @ TODO auth to server
+}
+
+void Client::handleCommand_AuthAccept(NetworkPacket* pkt)
+{
+	v3f playerpos;
+	*pkt >> playerpos >> m_map_seed >> m_recommended_send_interval;
+
+	playerpos -= v3f(0, BS / 2, 0);
+
+	// Set player position
+	Player *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+	player->setPosition(playerpos);
+
+	infostream << "Client: received map seed: " << m_map_seed << std::endl;
+	infostream << "Client: received recommended send interval "
+					<< m_recommended_send_interval<<std::endl;
+
+	// Reply to server
+	NetworkPacket* resp_pkt = new NetworkPacket(TOSERVER_INIT2, 0);
+	Send(resp_pkt);
+
+	m_state = LC_Init;
+}
+
+void Client::handleCommand_InitLegacy(NetworkPacket* pkt)
+{
+	if (pkt->getSize() < 1)
+		return;
+
+	u8 deployed;
+	*pkt >> deployed;
+
+	infostream << "Client: TOCLIENT_INIT_LEGACY received with "
+			"deployed=" << ((int)deployed & 0xff) << std::endl;
+
+	if (!ser_ver_supported(deployed)) {
+		infostream << "Client: TOCLIENT_INIT_LEGACY: Server sent "
 				<< "unsupported ser_fmt_ver"<< std::endl;
 		return;
 	}
@@ -98,10 +143,11 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 	m_access_denied_reason = L"Unknown";
 
 	if (pkt->getCommand() == TOCLIENT_ACCESS_DENIED) {
+		if (pkt->getSize() < 1)
+			return;
+
 		u8 denyCode = SERVER_ACCESSDENIED_UNEXPECTED_DATA;
-		if(pkt->getSize() >= 1) {
-			*pkt >> denyCode;
-		}
+		*pkt >> denyCode;
 		if (denyCode == SERVER_ACCESSDENIED_CUSTOM_STRING) {
 			*pkt >> m_access_denied_reason;
 		}

@@ -1040,7 +1040,7 @@ void Server::Receive()
 	}
 	catch(ClientStateError &e) {
 		errorstream << "ProcessData: peer=" << peer_id  << e.what() << std::endl;
-		DenyAccess(peer_id, L"Your client sent something server didn't expect."
+		DenyAccess_Legacy(peer_id, L"Your client sent something server didn't expect."
 				L"Try reconnecting or updating your client");
 	}
 	catch(con::PeerNotFoundException &e) {
@@ -1073,13 +1073,13 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 		if(player && player->peer_id != 0) {
 			errorstream<<"Server: "<<playername<<": Failed to emerge player"
 					<<" (player allocated to an another client)"<<std::endl;
-			DenyAccess(peer_id, L"Another client is connected with this "
+			DenyAccess_Legacy(peer_id, L"Another client is connected with this "
 					L"name. If your client closed unexpectedly, try again in "
 					L"a minute.");
 		} else {
 			errorstream<<"Server: "<<playername<<": Failed to emerge player"
 					<<std::endl;
-			DenyAccess(peer_id, L"Could not allocate player.");
+			DenyAccess_Legacy(peer_id, L"Could not allocate player.");
 		}
 		return NULL;
 	}
@@ -1173,7 +1173,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 					<< addr_s << "; banned name was "
 					<< ban_name << std::endl;
 			// This actually doesn't seem to transfer to the client
-			DenyAccess(peer_id, L"Your ip is banned. Banned name was "
+			DenyAccess_Legacy(peer_id, L"Your ip is banned. Banned name was "
 					+ narrow_to_wide(ban_name));
 			return;
 		}
@@ -1502,7 +1502,20 @@ void Server::SendBreath(u16 peer_id, u16 breath)
 	Send(pkt);
 }
 
-void Server::SendAccessDenied(u16 peer_id,const std::wstring &reason)
+void Server::SendAccessDenied(u16 peer_id, AccessDeniedCode reason, const std::wstring &custom_reason)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	NetworkPacket pkt(TOCLIENT_ACCESS_DENIED, 1, peer_id);
+	pkt << (u8) reason;
+
+	if (reason == SERVER_ACCESSDENIED_CUSTOM_STRING) {
+		pkt << custom_reason;
+	}
+	Send(&pkt);
+}
+
+void Server::SendAccessDenied_Legacy(u16 peer_id,const std::wstring &reason)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -2525,11 +2538,22 @@ void Server::RespawnPlayer(u16 peer_id)
 	}
 }
 
-void Server::DenyAccess(u16 peer_id, const std::wstring &reason)
+void Server::DenyAccess(u16 peer_id, AccessDeniedCode reason, const std::wstring &custom_reason)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	SendAccessDenied(peer_id, reason);
+	SendAccessDenied(peer_id, reason, custom_reason);
+	m_clients.event(peer_id, CSE_SetDenied);
+	m_con.DisconnectPeer(peer_id);
+}
+
+// 13/03/15: remove this function when protocol version 25 will become
+// the minimum version for MT users, maybe in 1 year
+void Server::DenyAccess_Legacy(u16 peer_id, const std::wstring &reason)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	SendAccessDenied_Legacy(peer_id, reason);
 	m_clients.event(peer_id, CSE_SetDenied);
 	m_con.DisconnectPeer(peer_id);
 }

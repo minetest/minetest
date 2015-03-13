@@ -26,8 +26,8 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 {
 	null_command_handler, // 0x00 (never use this)
 	null_command_handler, // 0x01
-	null_command_handler, // 0x02
-	null_command_handler, // 0x03
+	{ "TOCLIENT_HELLO",                   TOCLIENT_STATE_NOT_CONNECTED, &Client::handleCommand_Hello }, // 0x02
+	{ "TOCLIENT_AUTH_ACCEPT",             TOCLIENT_STATE_NOT_CONNECTED, &Client::handleCommand_AuthAccept }, // 0x03
 	null_command_handler, // 0x04
 	null_command_handler, // 0x05
 	null_command_handler, // 0x06
@@ -40,7 +40,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	null_command_handler, // 0x0D
 	null_command_handler, // 0x0E
 	null_command_handler, // 0x0F
-	{ "TOCLIENT_INIT",                    TOCLIENT_STATE_NOT_CONNECTED, &Client::handleCommand_Init }, // 0x10
+	{ "TOCLIENT_INIT",                    TOCLIENT_STATE_NOT_CONNECTED, &Client::handleCommand_InitLegacy }, // 0x10
 	null_command_handler,
 	null_command_handler,
 	null_command_handler,

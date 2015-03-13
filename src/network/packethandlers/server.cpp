@@ -43,6 +43,283 @@ void Server::handleCommand_Deprecated(NetworkPacket* pkt)
 		<< " not supported anymore" << std::endl;
 }
 
+void Server::handleCommand_Init(NetworkPacket* pkt)
+{
+
+	if(pkt->getSize() < 1)
+		return;
+
+	RemoteClient* client = getClient(pkt->getPeerId(), CS_Created);
+
+	std::string addr_s;
+	try {
+		Address address = getPeerAddress(pkt->getPeerId());
+		addr_s = address.serializeString();
+	}
+	catch (con::PeerNotFoundException &e) {
+		/*
+		 * no peer for this packet found
+		 * most common reason is peer timeout, e.g. peer didn't
+		 * respond for some time, your server was overloaded or
+		 * things like that.
+		 */
+		infostream << "Server::ProcessData(): Canceling: peer "
+				<< pkt->getPeerId() << " not found" << std::endl;
+		return;
+	}
+
+	// If net_proto_version is set, this client has already been handled
+	if (client->getState() > CS_Created) {
+		verbosestream << "Server: Ignoring multiple TOSERVER_INITs from "
+				<< addr_s << " (peer_id=" << pkt->getPeerId() << ")" << std::endl;
+		return;
+	}
+
+	verbosestream << "Server: Got TOSERVER_INIT from " << addr_s << " (peer_id="
+			<< pkt->getPeerId() << ")" << std::endl;
+
+	// Do not allow multiple players in simple singleplayer mode.
+	// This isn't a perfect way to do it, but will suffice for now
+	if (m_simple_singleplayer_mode && m_clients.getClientIDs().size() > 1) {
+		infostream << "Server: Not allowing another client (" << addr_s
+				<< ") to connect in simple singleplayer mode" << std::endl;
+		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_SINGLEPLAYER);
+		return;
+	}
+
+	// First byte after command is maximum supported
+	// serialization version
+	u8 client_max;
+	u8 compression_modes;
+	u16 min_net_proto_version = 0;
+	u16 max_net_proto_version;
+
+	*pkt >> client_max >> compression_modes >> min_net_proto_version
+			>> max_net_proto_version;
+
+	u8 our_max = SER_FMT_VER_HIGHEST_READ;
+	// Use the highest version supported by both
+	int deployed = std::min(client_max, our_max);
+	// If it's lower than the lowest supported, give up.
+	if (deployed < SER_FMT_VER_LOWEST)
+		deployed = SER_FMT_VER_INVALID;
+
+	if (deployed == SER_FMT_VER_INVALID) {
+		actionstream << "Server: A mismatched client tried to connect from "
+				<< addr_s << std::endl;
+		infostream<<"Server: Cannot negotiate serialization version with "
+				<< addr_s << std::endl;
+		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_VERSION);
+		return;
+	}
+
+	client->setPendingSerializationVersion(deployed);
+
+	/*
+		Read and check network protocol version
+	*/
+
+	u16 net_proto_version = 0;
+
+	// Figure out a working version if it is possible at all
+	if (max_net_proto_version >= SERVER_PROTOCOL_VERSION_MIN ||
+			min_net_proto_version <= SERVER_PROTOCOL_VERSION_MAX) {
+		// If maximum is larger than our maximum, go with our maximum
+		if (max_net_proto_version > SERVER_PROTOCOL_VERSION_MAX)
+			net_proto_version = SERVER_PROTOCOL_VERSION_MAX;
+		// Else go with client's maximum
+		else
+			net_proto_version = max_net_proto_version;
+	}
+
+	verbosestream << "Server: " << addr_s << ": Protocol version: min: "
+			<< min_net_proto_version << ", max: " << max_net_proto_version
+			<< ", chosen: " << net_proto_version << std::endl;
+
+	client->net_proto_version = net_proto_version;
+
+	// On this handler protocol version 25 is required
+	if (net_proto_version < 25 ||
+			net_proto_version < SERVER_PROTOCOL_VERSION_MIN ||
+			net_proto_version > SERVER_PROTOCOL_VERSION_MAX) {
+		actionstream << "Server: A mismatched client tried to connect from "
+				<< addr_s << std::endl;
+		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_VERSION);
+		return;
+	}
+
+	if (g_settings->getBool("strict_protocol_version_checking")) {
+		if (net_proto_version != LATEST_PROTOCOL_VERSION) {
+			actionstream << "Server: A mismatched (strict) client tried to "
+					<< "connect from " << addr_s << std::endl;
+			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_VERSION);
+			return;
+		}
+	}
+
+	// @TODO: check if we support same modes, but not required now
+
+	client->setSupportedCompressionModes(compression_modes);
+
+	m_clients.event(pkt->getPeerId(), CSE_Init);
+}
+
+void Server::handleCommand_Auth(NetworkPacket* pkt)
+{
+	std::string addr_s;
+	try {
+		Address address = getPeerAddress(pkt->getPeerId());
+		addr_s = address.serializeString();
+	}
+	catch (con::PeerNotFoundException &e) {
+		/*
+		 * no peer for this packet found
+		 * most common reason is peer timeout, e.g. peer didn't
+		 * respond for some time, your server was overloaded or
+		 * things like that.
+		 */
+		infostream << "Server::ProcessData(): Canceling: peer "
+				<< pkt->getPeerId() << " not found" << std::endl;
+		return;
+	}
+
+	std::string playerName, playerPassword;
+
+	*pkt >> playerName >> playerPassword;
+
+	const char* playername = playerName.c_str();
+
+	if (playerName.size() > PLAYERNAME_SIZE) {
+		actionstream << "Server: Player with an too long name "
+				<< "tried to connect from " << addr_s << std::endl;
+		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_NAME);
+		return;
+	}
+
+	if (string_allowed(playerName, PLAYERNAME_ALLOWED_CHARS) == false) {
+		actionstream << "Server: Player with an invalid name "
+				<< "tried to connect from " << addr_s << std::endl;
+		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_CHARS_IN_NAME);
+		return;
+	}
+
+	if (!isSingleplayer() && strcasecmp(playername, "singleplayer") == 0) {
+		actionstream << "Server: Player with the name \"singleplayer\" "
+				<< "tried to connect from " << addr_s << std::endl;
+		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_NAME);
+		return;
+	}
+
+	{
+		std::string reason;
+		if(m_script->on_prejoinplayer(playername, addr_s, reason)) {
+			actionstream << "Server: Player with the name \"" << playerName << "\" "
+					<< "tried to connect from " << addr_s << " "
+					<< "but it was disallowed for the following reason: "
+					<< reason << std::endl;
+			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_CUSTOM_STRING,
+					narrow_to_wide(reason.c_str()));
+			return;
+		}
+	}
+
+	if (playerPassword.size() > PASSWORD_SIZE) {
+		actionstream << "Server: Player with an too long password "
+				<< "tried to connect from " << addr_s << std::endl;
+		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_PASSWORD);
+		return;
+	}
+
+	infostream << "Server: New connection: \"" << playerName << "\" from "
+			<< addr_s << " (peer_id=" << pkt->getPeerId() << ")" << std::endl;
+
+	if(!base64_is_valid(playerPassword)){
+		actionstream << "Server: " << playerName
+				<< " supplied invalid password hash" << std::endl;
+		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_PASSWORD);
+		return;
+	}
+
+	// Enforce user limit.
+	// Don't enforce for users that have some admin right
+	if (m_clients.getClientIDs(CS_Created).size() >= g_settings->getU16("max_users") &&
+			!checkPriv(playername, "server") &&
+			!checkPriv(playername, "ban") &&
+			!checkPriv(playername, "privs") &&
+			!checkPriv(playername, "password") &&
+			playername != g_settings->get("name")) {
+		actionstream << "Server: " << playername << " tried to join, but there"
+				<< " are already max_users="
+				<< g_settings->getU16("max_users") << " players." << std::endl;
+		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_TOO_MANY_USERS);
+		return;
+	}
+
+	std::string checkpwd; // Password hash to check against
+	bool has_auth = m_script->getAuth(playername, &checkpwd, NULL);
+
+	// If no authentication info exists for user, create it
+	if (!has_auth) {
+		if (!isSingleplayer() &&
+				g_settings->getBool("disallow_empty_password") &&
+				playerPassword.empty()) {
+			actionstream << "Server: " << playerName
+					<< " supplied empty password" << std::endl;
+			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_EMPTY_PASSWORD);
+			return;
+		}
+		std::wstring raw_default_password =
+			narrow_to_wide(g_settings->get("default_password"));
+		std::string initial_password =
+			translatePassword(playername, raw_default_password);
+
+		// If default_password is empty, allow any initial password
+		if (raw_default_password.length() == 0)
+			initial_password = playerPassword.c_str();
+
+		m_script->createAuth(playername, initial_password);
+	}
+
+	has_auth = m_script->getAuth(playername, &checkpwd, NULL);
+
+	if(!has_auth) {
+		actionstream << "Server: " << playerName << " cannot be authenticated"
+				<< " (auth handler does not work?)" << std::endl;
+		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_SERVER_FAIL);
+		return;
+	}
+
+	if(playerPassword.c_str() != checkpwd) {
+		actionstream << "Server: " << playerName << " supplied wrong password"
+				<< std::endl;
+		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_PASSWORD);
+		return;
+	}
+
+	RemotePlayer *player =
+			static_cast<RemotePlayer*>(m_env->getPlayer(playername));
+
+	if (player && player->peer_id != 0) {
+		errorstream << "Server: " << playername << ": Failed to emerge player"
+				<< " (player allocated to an another client)" << std::endl;
+		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_ALREADY_CONNECTED);
+	}
+
+	m_clients.setPlayerName(pkt->getPeerId(), playername);
+
+	/*
+		Answer with a TOCLIENT_INIT
+	*/
+
+	NetworkPacket resp_pkt(TOCLIENT_AUTH_ACCEPT, 1 + 6 + 8 + 4, pkt->getPeerId());
+
+	resp_pkt << v3f(0,0,0) << (u64) m_env->getServerMap().getSeed()
+			<< g_settings->getFloat("dedicated_server_step");
+
+	Send(&resp_pkt);
+	m_clients.event(pkt->getPeerId(), CSE_Init);
+}
+
 void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 {
 	// [0] u8 SER_FMT_VER_HIGHEST_READ
@@ -86,7 +363,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 	if (m_simple_singleplayer_mode && m_clients.getClientIDs().size() > 1) {
 		infostream << "Server: Not allowing another client (" << addr_s
 				<< ") to connect in simple singleplayer mode" << std::endl;
-		DenyAccess(pkt->getPeerId(), L"Running in simple singleplayer mode.");
+		DenyAccess_Legacy(pkt->getPeerId(), L"Running in simple singleplayer mode.");
 		return;
 	}
 
@@ -108,7 +385,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 				<< addr_s << std::endl;
 		infostream<<"Server: Cannot negotiate serialization version with "
 				<< addr_s << std::endl;
-		DenyAccess(pkt->getPeerId(), std::wstring(
+		DenyAccess_Legacy(pkt->getPeerId(), std::wstring(
 				L"Your client's version is not supported.\n"
 				L"Server version is ")
 				+ narrow_to_wide(minetest_version_simple) + L"."
@@ -156,7 +433,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 			net_proto_version > SERVER_PROTOCOL_VERSION_MAX) {
 		actionstream << "Server: A mismatched client tried to connect from "
 				<< addr_s << std::endl;
-		DenyAccess(pkt->getPeerId(), std::wstring(
+		DenyAccess_Legacy(pkt->getPeerId(), std::wstring(
 				L"Your client's version is not supported.\n"
 				L"Server version is ")
 				+ narrow_to_wide(minetest_version_simple) + L",\n"
@@ -176,7 +453,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 		if (net_proto_version != LATEST_PROTOCOL_VERSION) {
 			actionstream << "Server: A mismatched (strict) client tried to "
 					<< "connect from " << addr_s << std::endl;
-			DenyAccess(pkt->getPeerId(), std::wstring(
+			DenyAccess_Legacy(pkt->getPeerId(), std::wstring(
 					L"Your client's version is not supported.\n"
 					L"Server version is ")
 					+ narrow_to_wide(minetest_version_simple) + L",\n"
@@ -205,7 +482,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 	if (playername_length == PLAYERNAME_SIZE) {
 		actionstream << "Server: Player with name exceeding max length "
 				<< "tried to connect from " << addr_s << std::endl;
-		DenyAccess(pkt->getPeerId(), L"Name too long");
+		DenyAccess_Legacy(pkt->getPeerId(), L"Name too long");
 		return;
 	}
 
@@ -213,21 +490,21 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 	if (playername[0]=='\0') {
 		actionstream << "Server: Player with an empty name "
 				<< "tried to connect from " << addr_s << std::endl;
-		DenyAccess(pkt->getPeerId(), L"Empty name");
+		DenyAccess_Legacy(pkt->getPeerId(), L"Empty name");
 		return;
 	}
 
 	if (string_allowed(playername, PLAYERNAME_ALLOWED_CHARS) == false) {
 		actionstream << "Server: Player with an invalid name "
 				<< "tried to connect from " << addr_s << std::endl;
-		DenyAccess(pkt->getPeerId(), L"Name contains unallowed characters");
+		DenyAccess_Legacy(pkt->getPeerId(), L"Name contains unallowed characters");
 		return;
 	}
 
 	if (!isSingleplayer() && strcasecmp(playername, "singleplayer") == 0) {
 		actionstream << "Server: Player with the name \"singleplayer\" "
 				<< "tried to connect from " << addr_s << std::endl;
-		DenyAccess(pkt->getPeerId(), L"Name is not allowed");
+		DenyAccess_Legacy(pkt->getPeerId(), L"Name is not allowed");
 		return;
 	}
 
@@ -238,7 +515,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 					<< "tried to connect from " << addr_s << " "
 					<< "but it was disallowed for the following reason: "
 					<< reason << std::endl;
-			DenyAccess(pkt->getPeerId(), narrow_to_wide(reason.c_str()));
+			DenyAccess_Legacy(pkt->getPeerId(), narrow_to_wide(reason.c_str()));
 			return;
 		}
 	}
@@ -262,7 +539,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 	if (!base64_is_valid(given_password)) {
 		actionstream << "Server: " << playername
 				<< " supplied invalid password hash" << std::endl;
-		DenyAccess(pkt->getPeerId(), L"Invalid password hash");
+		DenyAccess_Legacy(pkt->getPeerId(), L"Invalid password hash");
 		return;
 	}
 
@@ -277,7 +554,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 		actionstream << "Server: " << playername << " tried to join, but there"
 				<< " are already max_users="
 				<< g_settings->getU16("max_users") << " players." << std::endl;
-		DenyAccess(pkt->getPeerId(), L"Too many users.");
+		DenyAccess_Legacy(pkt->getPeerId(), L"Too many users.");
 		return;
 	}
 
@@ -291,7 +568,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 				std::string(given_password) == "") {
 			actionstream << "Server: " << playername
 					<< " supplied empty password" << std::endl;
-			DenyAccess(pkt->getPeerId(), L"Empty passwords are "
+			DenyAccess_Legacy(pkt->getPeerId(), L"Empty passwords are "
 					L"disallowed. Set a password and try again.");
 			return;
 		}
@@ -312,14 +589,14 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 	if (!has_auth) {
 		actionstream << "Server: " << playername << " cannot be authenticated"
 				<< " (auth handler does not work?)" << std::endl;
-		DenyAccess(pkt->getPeerId(), L"Not allowed to login");
+		DenyAccess_Legacy(pkt->getPeerId(), L"Not allowed to login");
 		return;
 	}
 
 	if (given_password != checkpwd) {
 		actionstream << "Server: " << playername << " supplied wrong password"
 				<< std::endl;
-		DenyAccess(pkt->getPeerId(), L"Wrong password");
+		DenyAccess_Legacy(pkt->getPeerId(), L"Wrong password");
 		return;
 	}
 
@@ -329,7 +606,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 	if (player && player->peer_id != 0) {
 		errorstream << "Server: " << playername << ": Failed to emerge player"
 				<< " (player allocated to an another client)" << std::endl;
-		DenyAccess(pkt->getPeerId(), L"Another client is connected with this "
+		DenyAccess_Legacy(pkt->getPeerId(), L"Another client is connected with this "
 				L"name. If your client closed unexpectedly, try again in "
 				L"a minute.");
 	}
@@ -340,7 +617,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 		Answer with a TOCLIENT_INIT
 	*/
 
-	NetworkPacket* resp_pkt = new NetworkPacket(TOCLIENT_INIT, 1 + 6 + 8 + 4,
+	NetworkPacket* resp_pkt = new NetworkPacket(TOCLIENT_INIT_LEGACY, 1 + 6 + 8 + 4,
 			pkt->getPeerId());
 
 	*resp_pkt << (u8) deployed << (v3s16) floatToInt(v3f(0,0,0), BS)
@@ -942,33 +1219,36 @@ void Server::handleCommand_Breath(NetworkPacket* pkt)
 	SendPlayerBreath(pkt->getPeerId());
 }
 
-void Server::handleCommand_Password_Legacy(NetworkPacket* pkt)
+void Server::handleCommand_Password(NetworkPacket* pkt)
 {
-	/*
-		[0] u16 TOSERVER_PASSWORD
-		[2] u8[28] old password
-		[30] u8[28] new password
-	*/
-
 	errorstream << "PAssword packet size: " << pkt->getSize() << " size required: " << PASSWORD_SIZE * 2 << std::endl;
-	if (pkt->getSize() != PASSWORD_SIZE * 2)
+	if ((pkt->getCommand() == TOSERVER_PASSWORD && pkt->getSize() < 4) ||
+			pkt->getSize() != PASSWORD_SIZE * 2)
 		return;
 
 	std::string oldpwd;
 	std::string newpwd;
 
-	for (u16 i = 0; i < PASSWORD_SIZE - 1; i++) {
-		char c = pkt->getChar(i);
-		if (c == 0)
-			break;
-		oldpwd += c;
+	if (pkt->getCommand() == TOSERVER_PASSWORD) {
+		*pkt >> oldpwd >> newpwd;
 	}
+	// 13/03/15
+	// Protocol v24 compat. Please remove in 1 year after
+	// client convergence to 0.4.13/0.5.x
+	else {
+		for (u16 i = 0; i < PASSWORD_SIZE - 1; i++) {
+			char c = pkt->getChar(i);
+			if (c == 0)
+				break;
+			oldpwd += c;
+		}
 
-	for (u16 i = 0; i < PASSWORD_SIZE - 1; i++) {
-		char c = pkt->getChar(PASSWORD_SIZE + i);
-		if (c == 0)
-			break;
-		newpwd += c;
+		for (u16 i = 0; i < PASSWORD_SIZE - 1; i++) {
+			char c = pkt->getChar(PASSWORD_SIZE + i);
+			if (c == 0)
+				break;
+			newpwd += c;
+		}
 	}
 
 	Player *player = m_env->getPlayer(pkt->getPeerId());
