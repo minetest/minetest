@@ -108,6 +108,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 24:
 		ContentFeatures version 7
 		ContentFeatures: change number of special tiles to 6 (CF_SPECIAL_COUNT)
+	PROTOCOL_VERSION 25:
+		Rename TOCLIENT_ACCESS_DENIED to TOCLIENT_ACCESS_DENIED_LEGAGY
+		Rename TOCLIENT_DELETE_PARTICLESPAWNER to TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY
+		Rename TOSERVER_PASSWORD to TOSERVER_PASSWORD_LEGACY
+		Rename TOSERVER_INIT to TOSERVER_INIT_LEGACY
+		Add TOCLIENT_ACCESS_DENIED new opcode (0x0A), using error codes
+			for standard error, keeping customisation possible. This
+			permit translation
+		Add TOCLIENT_DELETE_PARTICLESPAWNER (0x53), fixing the u16 read and
+			reading u32
 */
 
 #define LATEST_PROTOCOL_VERSION 24
@@ -133,6 +143,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 enum ToClientCommand
 {
+	TOCLIENT_ACCESS_DENIED = 0x0A,
+	/*
+		u16 command
+		u16 reason_length
+		wstring reason
+	*/
+
 	TOCLIENT_INIT = 0x10,
 	/*
 		Server's reply to TOSERVER_INIT.
@@ -460,7 +477,7 @@ enum ToClientCommand
 	TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY = 0x48,
 	/*
 		u16 command
-		u32 id
+		u16 id
 	*/
 
 	TOCLIENT_HUDADD = 0x49,
@@ -557,11 +574,30 @@ enum ToClientCommand
 		v3f1000 third
 	*/
 
-	TOCLIENT_NUM_MSG_TYPES = 0x53,
+	TOCLIENT_DELETE_PARTICLESPAWNER = 0x53,
+	/*
+		u16 command
+		u32 id
+	*/
+
+	TOCLIENT_NUM_MSG_TYPES = 0x54,
 };
 
 enum ToServerCommand
 {
+	TOSERVER_INIT = 0x0F,
+	/*
+		Sent first after connected.
+
+		[0] u16 TOSERVER_INIT
+		[2] u8 SER_FMT_VER_HIGHEST_READ
+		[3] u8 compression_modes
+		[4] std::string player_name
+		[4+*] std::string password (new in some version)
+		[4+*+*] u16 minimum supported network protocol version (added sometime)
+		[4+*+*+2] u16 maximum supported network protocol version (added later than the previous one)
+	*/
+
 	TOSERVER_INIT_LEGACY = 0x10,
 	/*
 		Sent first after connected.
@@ -767,6 +803,15 @@ enum ToServerCommand
 			u8[len] field value
 	*/
 
+	TOSERVER_PASSWORD = 0x3d,
+	/*
+		Sent to change password.
+
+		[0] u16 TOSERVER_PASSWORD
+		[2] std::string old password
+		[2+*] std::string new password
+	*/
+
 	TOSERVER_REQUEST_MEDIA = 0x40,
 	/*
 		u16 command
@@ -799,6 +844,37 @@ enum ToServerCommand
 	*/
 
 	TOSERVER_NUM_MSG_TYPES = 0x44,
+};
+
+enum AccessDeniedCode {
+	SERVER_ACCESSDENIED_WRONG_PASSWORD = 0,
+	SERVER_ACCESSDENIED_UNEXPECTED_DATA = 1,
+	SERVER_ACCESSDENIED_SINGLEPLAYER = 2,
+	SERVER_ACCESSDENIED_WRONG_VERSION = 3,
+	SERVER_ACCESSDENIED_WRONG_CHARS_IN_NAME = 4,
+	SERVER_ACCESSDENIED_WRONG_NAME = 5,
+	SERVER_ACCESSDENIED_TOO_MANY_USERS = 6,
+	SERVER_ACCESSDENIED_EMPTY_PASSWORD = 7,
+	SERVER_ACCESSDENIED_ALREADY_CONNECTED = 8,
+	SERVER_ACCESSDENIED_CUSTOM_STRING = 9,
+	SERVER_ACCESSDENIED_MAX = 10,
+};
+
+enum NetProtoCompressionMode {
+	NETPROTO_COMPRESSION_ZLIB = 0,
+};
+
+const static std::wstring accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
+	L"Invalid password",
+	L"Your client sent something server didn't expect. Try reconnecting or updating your client",
+	L"The server is running in simple singleplayer mode. You cannot connect.",
+	L"Your client's version is not supported.\nPlease contact server administrator.",
+	L"Name contains unallowed characters",
+	L"Name is not allowed",
+	L"Too many users.",
+	L"Empty passwords are disallowed. Set a password and try again.",
+	L"Another client is connected with this name. If your client closed unexpectedly, try again in a minute.",
+	L"",
 };
 
 #endif

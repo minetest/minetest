@@ -350,7 +350,7 @@ public:
 	void handleCommand_Null(NetworkPacket* pkt) {};
 	void handleCommand_Deprecated(NetworkPacket* pkt);
 	void handleCommand_Init(NetworkPacket* pkt);
-	void handleCommand_AccessDenied_Legacy(NetworkPacket* pkt);
+	void handleCommand_AccessDenied(NetworkPacket* pkt);
 	void handleCommand_RemoveNode(NetworkPacket* pkt);
 	void handleCommand_AddNode(NetworkPacket* pkt);
 	void handleCommand_BlockData(NetworkPacket* pkt);
@@ -379,7 +379,7 @@ public:
 	void handleCommand_ShowFormSpec(NetworkPacket* pkt);
 	void handleCommand_SpawnParticle(NetworkPacket* pkt);
 	void handleCommand_AddParticleSpawner(NetworkPacket* pkt);
-	void handleCommand_DeleteParticleSpawner_Legacy(NetworkPacket* pkt);
+	void handleCommand_DeleteParticleSpawner(NetworkPacket* pkt);
 	void handleCommand_HudAdd(NetworkPacket* pkt);
 	void handleCommand_HudRemove(NetworkPacket* pkt);
 	void handleCommand_HudChange(NetworkPacket* pkt);

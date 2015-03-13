@@ -24,22 +24,22 @@ const static ToClientCommandHandler null_command_handler = {"TOCLIENT_NULL", TOC
 
 const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 {
-	null_command_handler,
-	null_command_handler,
-	null_command_handler,
-	null_command_handler,
-	null_command_handler,
-	null_command_handler,
-	null_command_handler,
-	null_command_handler,
-	null_command_handler,
-	null_command_handler,
-	null_command_handler,
-	null_command_handler,
-	null_command_handler,
-	null_command_handler,
-	null_command_handler,
-	null_command_handler,
+	null_command_handler, // 0x00 (never use this)
+	null_command_handler, // 0x01
+	null_command_handler, // 0x02
+	null_command_handler, // 0x03
+	null_command_handler, // 0x04
+	null_command_handler, // 0x05
+	null_command_handler, // 0x06
+	null_command_handler, // 0x07
+	null_command_handler, // 0x08
+	null_command_handler, // 0x09
+	{ "TOCLIENT_ACCESS_DENIED",           TOCLIENT_STATE_NOT_CONNECTED, &Client::handleCommand_AccessDenied }, // 0x0A
+	null_command_handler, // 0x0B
+	null_command_handler, // 0x0C
+	null_command_handler, // 0x0D
+	null_command_handler, // 0x0E
+	null_command_handler, // 0x0F
 	{ "TOCLIENT_INIT",                    TOCLIENT_STATE_NOT_CONNECTED, &Client::handleCommand_Init }, // 0x10
 	null_command_handler,
 	null_command_handler,
@@ -77,7 +77,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_ACTIVE_OBJECT_MESSAGES",   TOCLIENT_STATE_CONNECTED, &Client::handleCommand_ActiveObjectMessages }, // 0x32
 	{ "TOCLIENT_HP",                       TOCLIENT_STATE_CONNECTED, &Client::handleCommand_HP }, // 0x33
 	{ "TOCLIENT_MOVE_PLAYER",              TOCLIENT_STATE_CONNECTED, &Client::handleCommand_MovePlayer }, // 0x34
-	{ "TOCLIENT_ACCESS_DENIED_LEGACY",     TOCLIENT_STATE_NOT_CONNECTED, &Client::handleCommand_AccessDenied_Legacy }, // 0x35
+	{ "TOCLIENT_ACCESS_DENIED_LEGACY",     TOCLIENT_STATE_NOT_CONNECTED, &Client::handleCommand_AccessDenied }, // 0x35
 	{ "TOCLIENT_PLAYERITEM",               TOCLIENT_STATE_CONNECTED, &Client::handleCommand_PlayerItem }, // 0x36
 	{ "TOCLIENT_DEATHSCREEN",              TOCLIENT_STATE_CONNECTED, &Client::handleCommand_DeathScreen }, // 0x37
 	{ "TOCLIENT_MEDIA",                    TOCLIENT_STATE_CONNECTED, &Client::handleCommand_Media }, // 0x38
@@ -96,7 +96,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_MOVEMENT",                 TOCLIENT_STATE_CONNECTED, &Client::handleCommand_Movement }, // 0x45
 	{ "TOCLIENT_SPAWN_PARTICLE",           TOCLIENT_STATE_CONNECTED, &Client::handleCommand_SpawnParticle }, // 0x46
 	{ "TOCLIENT_ADD_PARTICLESPAWNER",      TOCLIENT_STATE_CONNECTED, &Client::handleCommand_AddParticleSpawner }, // 0x47
-	{ "TOCLIENT_DELETE_PARTICLESPAWNER",   TOCLIENT_STATE_CONNECTED, &Client::handleCommand_DeleteParticleSpawner_Legacy }, // 0x48
+	{ "TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY",   TOCLIENT_STATE_CONNECTED, &Client::handleCommand_DeleteParticleSpawner }, // 0x48
 	{ "TOCLIENT_HUDADD",                   TOCLIENT_STATE_CONNECTED, &Client::handleCommand_HudAdd }, // 0x49
 	{ "TOCLIENT_HUDRM",                    TOCLIENT_STATE_CONNECTED, &Client::handleCommand_HudRemove }, // 0x4a
 	{ "TOCLIENT_HUDCHANGE",                TOCLIENT_STATE_CONNECTED, &Client::handleCommand_HudChange }, // 0x4b
@@ -107,6 +107,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO", TOCLIENT_STATE_CONNECTED, &Client::handleCommand_OverrideDayNightRatio }, // 0x50
 	{ "TOCLIENT_LOCAL_PLAYER_ANIMATIONS",  TOCLIENT_STATE_CONNECTED, &Client::handleCommand_LocalPlayerAnimations }, // 0x51
 	{ "TOCLIENT_EYE_OFFSET",               TOCLIENT_STATE_CONNECTED, &Client::handleCommand_EyeOffset }, // 0x52
+	{ "TOCLIENT_DELETE_PARTICLESPAWNER",   TOCLIENT_STATE_CONNECTED, &Client::handleCommand_DeleteParticleSpawner }, // 0x53
 };
 
 const static ServerCommandFactory null_command_factory = { "TOSERVER_NULL", 0, false };
@@ -128,8 +129,8 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_factory, // 0x0c
 	null_command_factory, // 0x0d
 	null_command_factory, // 0x0e
-	null_command_factory, // 0x0f
-	{ "TOSERVER_INIT",               1, false }, // 0x10
+	{ "TOSERVER_INIT",               1, false }, // 0x0F
+	{ "TOSERVER_INIT_LEGACY",        1, false }, // 0x10
 	{ "TOSERVER_INIT2",              1, true }, // 0x11
 	null_command_factory, // 0x12
 	null_command_factory, // 0x13
@@ -174,7 +175,7 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	{ "TOSERVER_REMOVED_SOUNDS",     1, true }, // 0x3a
 	{ "TOSERVER_NODEMETA_FIELDS",    0, true }, // 0x3b
 	{ "TOSERVER_INVENTORY_FIELDS",   0, true }, // 0x3c
-	null_command_factory, // 0x3d
+	{ "TOSERVER_PASSWORD",           0, true }, // 0x3d
 	null_command_factory, // 0x3e
 	null_command_factory, // 0x3f
 	{ "TOSERVER_REQUEST_MEDIA",      1, true }, // 0x40

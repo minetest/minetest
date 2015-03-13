@@ -89,15 +89,32 @@ void Client::handleCommand_Init(NetworkPacket* pkt)
 	m_state = LC_Init;
 }
 
-void Client::handleCommand_AccessDenied_Legacy(NetworkPacket* pkt)
+void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 {
 	// The server didn't like our password. Note, this needs
 	// to be processed even if the serialisation format has
 	// not been agreed yet, the same as TOCLIENT_INIT.
 	m_access_denied = true;
 	m_access_denied_reason = L"Unknown";
-	if (pkt->getSize() >= 2) {
-		*pkt >> m_access_denied_reason;
+
+	if (pkt->getCommand() == TOCLIENT_ACCESS_DENIED) {
+		u8 denyCode = SERVER_ACCESSDENIED_UNEXPECTED_DATA;
+		if(pkt->getSize() >= 1) {
+			*pkt >> denyCode;
+		}
+		if (denyCode == SERVER_ACCESSDENIED_CUSTOM_STRING) {
+			*pkt >> m_access_denied_reason;
+		}
+		else if (denyCode < SERVER_ACCESSDENIED_MAX) {
+			m_access_denied_reason = accessDeniedStrings[denyCode];
+		}
+	}
+	// 13/03/15 Legacy code from 0.4.12 and lesser. must stay 1 year
+	// for compat with old clients
+	else {
+		if (pkt->getSize() >= 2) {
+			*pkt >> m_access_denied_reason;
+		}
 	}
 }
 
@@ -822,15 +839,24 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 }
 
 
-void Client::handleCommand_DeleteParticleSpawner_Legacy(NetworkPacket* pkt)
+void Client::handleCommand_DeleteParticleSpawner(NetworkPacket* pkt)
 {
-	u16 id;
+	u16 legacy_id;
+	u32 id;
 
-	*pkt >> id;
+	// Modification set 13/03/15, 1 year of compat for protocol v24
+	if (pkt->getCommand() == TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY) {
+		*pkt >> legacy_id;
+	}
+	else {
+		*pkt >> id;
+	}
+
 
 	ClientEvent event;
 	event.type                      = CE_DELETE_PARTICLESPAWNER;
-	event.delete_particlespawner.id = (u32) id;
+	event.delete_particlespawner.id =
+			(pkt->getCommand() == TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY ? (u32) legacy_id : id);
 
 	m_client_event_queue.push(event);
 }
