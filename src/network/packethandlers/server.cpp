@@ -43,7 +43,7 @@ void Server::handleCommand_Deprecated(NetworkPacket* pkt)
 		<< " not supported anymore" << std::endl;
 }
 
-void Server::handleCommand_Init(NetworkPacket* pkt)
+void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 {
 	// [0] u8 SER_FMT_VER_HIGHEST_READ
 	// [1] u8[20] player_name
@@ -942,7 +942,7 @@ void Server::handleCommand_Breath(NetworkPacket* pkt)
 	SendPlayerBreath(pkt->getPeerId());
 }
 
-void Server::handleCommand_Password(NetworkPacket* pkt)
+void Server::handleCommand_Password_Legacy(NetworkPacket* pkt)
 {
 	/*
 		[0] u16 TOSERVER_PASSWORD

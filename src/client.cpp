@@ -407,7 +407,7 @@ void Client::step(float dtime)
 			snprintf(pName, PLAYERNAME_SIZE, "%s", myplayer->getName());
 			snprintf(pPassword, PASSWORD_SIZE, "%s", m_password.c_str());
 
-			NetworkPacket* pkt = new NetworkPacket(TOSERVER_INIT,
+			NetworkPacket* pkt = new NetworkPacket(TOSERVER_INIT_LEGACY,
 					1 + PLAYERNAME_SIZE + PASSWORD_SIZE + 2 + 2);
 
 			*pkt << (u8) SER_FMT_VER_HIGHEST_READ;
@@ -1065,7 +1065,7 @@ void Client::sendChangePassword(const std::wstring &oldpassword,
 	std::string oldpwd = translatePassword(playername, oldpassword);
 	std::string newpwd = translatePassword(playername, newpassword);
 
-	NetworkPacket* pkt = new NetworkPacket(TOSERVER_PASSWORD, 2 * PASSWORD_SIZE);
+	NetworkPacket* pkt = new NetworkPacket(TOSERVER_PASSWORD_LEGACY, 2 * PASSWORD_SIZE);
 
 	for(u8 i = 0; i < PASSWORD_SIZE; i++) {
 		*pkt << (u8) (i < oldpwd.length() ? oldpwd[i] : 0);

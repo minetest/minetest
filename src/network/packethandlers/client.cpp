@@ -89,7 +89,7 @@ void Client::handleCommand_Init(NetworkPacket* pkt)
 	m_state = LC_Init;
 }
 
-void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
+void Client::handleCommand_AccessDenied_Legacy(NetworkPacket* pkt)
 {
 	// The server didn't like our password. Note, this needs
 	// to be processed even if the serialisation format has
@@ -822,7 +822,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 }
 
 
-void Client::handleCommand_DeleteParticleSpawner(NetworkPacket* pkt)
+void Client::handleCommand_DeleteParticleSpawner_Legacy(NetworkPacket* pkt)
 {
 	u16 id;
 

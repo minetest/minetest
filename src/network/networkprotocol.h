@@ -270,7 +270,7 @@ enum ToClientCommand
 		f1000 player yaw
 	*/
 
-	TOCLIENT_ACCESS_DENIED = 0x35,
+	TOCLIENT_ACCESS_DENIED_LEGACY = 0x35,
 	/*
 		u16 command
 		u16 reason_length
@@ -457,7 +457,7 @@ enum ToClientCommand
 		u32 id
 	*/
 
-	TOCLIENT_DELETE_PARTICLESPAWNER = 0x48,
+	TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY = 0x48,
 	/*
 		u16 command
 		u32 id
@@ -562,7 +562,7 @@ enum ToClientCommand
 
 enum ToServerCommand
 {
-	TOSERVER_INIT=0x10,
+	TOSERVER_INIT_LEGACY = 0x10,
 	/*
 		Sent first after connected.
 
@@ -694,7 +694,7 @@ enum ToServerCommand
 		u8 amount
 	*/
 
-	TOSERVER_PASSWORD=0x36,
+	TOSERVER_PASSWORD_LEGACY = 0x36,
 	/*
 		Sent to change password.
 
@@ -703,7 +703,7 @@ enum ToServerCommand
 		[30] u8[28] new password
 	*/
 
-	TOSERVER_PLAYERITEM=0x37,
+	TOSERVER_PLAYERITEM = 0x37,
 	/*
 		Sent to change selected item.
 
@@ -711,7 +711,7 @@ enum ToServerCommand
 		[2] u16 item
 	*/
 
-	TOSERVER_RESPAWN=0x38,
+	TOSERVER_RESPAWN = 0x38,
 	/*
 		u16 TOSERVER_RESPAWN
 	*/

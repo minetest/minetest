@@ -40,7 +40,7 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_handler, // 0x0d
 	null_command_handler, // 0x0e
 	null_command_handler, // 0x0f
-	{ "TOSERVER_INIT",                     TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_Init }, // 0x10
+	{ "TOSERVER_INIT_LEGACY",               TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_Init_Legacy }, // 0x10
 	{ "TOSERVER_INIT2",                    TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_Init2 }, // 0x11
 	null_command_handler, // 0x12
 	null_command_handler, // 0x13
@@ -78,7 +78,7 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	{ "TOSERVER_SIGNNODETEXT",             TOSERVER_STATE_INGAME, &Server::handleCommand_Deprecated }, // 0x33
 	{ "TOSERVER_CLICK_ACTIVEOBJECT",       TOSERVER_STATE_INGAME, &Server::handleCommand_Deprecated }, // 0x34
 	{ "TOSERVER_DAMAGE",                   TOSERVER_STATE_INGAME, &Server::handleCommand_Damage }, // 0x35
-	{ "TOSERVER_PASSWORD",                 TOSERVER_STATE_INGAME, &Server::handleCommand_Password }, // 0x36
+	{ "TOSERVER_PASSWORD_LEGACY",          TOSERVER_STATE_INGAME, &Server::handleCommand_Password_Legacy }, // 0x36
 	{ "TOSERVER_PLAYERITEM",               TOSERVER_STATE_INGAME, &Server::handleCommand_PlayerItem }, // 0x37
 	{ "TOSERVER_RESPAWN",                  TOSERVER_STATE_INGAME, &Server::handleCommand_Respawn }, // 0x38
 	{ "TOSERVER_INTERACT",                 TOSERVER_STATE_INGAME, &Server::handleCommand_Interact }, // 0x39
@@ -151,7 +151,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_ACTIVE_OBJECT_MESSAGES",   0, true }, // 0x32 Special packet, sent by 0 (rel) and 1 (unrel) channel
 	{ "TOCLIENT_HP",                       0, true }, // 0x33
 	{ "TOCLIENT_MOVE_PLAYER",              0, true }, // 0x34
-	{ "TOCLIENT_ACCESS_DENIED",            0, true }, // 0x35
+	{ "TOCLIENT_ACCESS_DENIED_LEGACY",            0, true }, // 0x35
 	{ "TOCLIENT_PLAYERITEM",               0, false }, // 0x36 obsolete
 	{ "TOCLIENT_DEATHSCREEN",              0, true }, // 0x37
 	{ "TOCLIENT_MEDIA",                    2, true }, // 0x38
@@ -170,7 +170,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_MOVEMENT",                 0, true }, // 0x45
 	{ "TOCLIENT_SPAWN_PARTICLE",           0, true }, // 0x46
 	{ "TOCLIENT_ADD_PARTICLESPAWNER",      0, true }, // 0x47
-	{ "TOCLIENT_DELETE_PARTICLESPAWNER",   0, true }, // 0x48
+	{ "TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY",   0, true }, // 0x48
 	{ "TOCLIENT_HUDADD",                   1, true }, // 0x49
 	{ "TOCLIENT_HUDRM",                    1, true }, // 0x4a
 	{ "TOCLIENT_HUDCHANGE",                0, true }, // 0x4b
