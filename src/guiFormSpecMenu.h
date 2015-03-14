@@ -210,8 +210,8 @@ public:
 			ISimpleTextureSource *tsrc,
 			IFormSource* fs_src,
 			TextDest* txt_dst,
-			Client* client
-			);
+			Client* client,
+			bool remap_dbl_click = true);
 
 	~GUIFormSpecMenu();
 
@@ -435,6 +435,14 @@ private:
 	v2s32 m_down_pos;
 	std::wstring m_JavaDialogFieldName;
 #endif
+
+	/* If true, remap a double-click (or double-tap) action to ESC. This is so
+	 * that, for example, Android users can double-tap to close a formspec.
+	*
+	 * This value can (currently) only be set by the class constructor
+	 * and the default value for the setting is true.
+	 */
+	bool m_remap_dbl_click;
 
 };
 

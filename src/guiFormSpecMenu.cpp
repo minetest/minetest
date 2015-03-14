@@ -77,7 +77,7 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 		gui::IGUIElement* parent, s32 id, IMenuManager *menumgr,
 		InventoryManager *invmgr, IGameDef *gamedef,
 		ISimpleTextureSource *tsrc, IFormSource* fsrc, TextDest* tdst,
-		Client* client) :
+		Client* client, bool remap_dbl_click) :
 	GUIModalMenu(dev->getGUIEnvironment(), parent, id, menumgr),
 	m_device(dev),
 	m_invmgr(invmgr),
@@ -97,7 +97,8 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_text_dst(tdst),
 	m_formspec_version(0),
 	m_focused_element(L""),
-	m_font(NULL)
+	m_font(NULL),
+	m_remap_dbl_click(remap_dbl_click)
 #ifdef __ANDROID__
 	,m_JavaDialogFieldName(L"")
 #endif
@@ -2939,15 +2940,18 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 bool GUIFormSpecMenu::DoubleClickDetection(const SEvent event)
 {
 	/* The following code is for capturing double-clicks of the mouse button
-	 * that are *not* in/in a control (i.e. when the mouse if positioned in an
-	 * unused area of the formspec) and translating the double-click into an
-	 * EET_KEY_INPUT_EVENT event which closes the form.
+	 * and translating the double-click into an EET_KEY_INPUT_EVENT event
+	 * -- which closes the form -- under some circumstances.
 	 *
 	 * There have been many github issues reporting this as a bug even though it
-	 * was an intended feature.  For this reason the code has been disabled for
-	 * non-Android builds
+	 * was an intended feature.  For this reason, remapping the double-click as
+	 * an ESC must be explicitly set when creating this class via the
+	 * /p remap_dbl_click parameter of the constructor.
 	 */
-#ifdef __ANDROID__
+
+	if (!m_remap_dbl_click)
+		return false;
+
 	if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
 		m_doubleclickdetect[0].pos  = m_doubleclickdetect[1].pos;
 		m_doubleclickdetect[0].time = m_doubleclickdetect[1].time;
@@ -2986,7 +2990,7 @@ bool GUIFormSpecMenu::DoubleClickDetection(const SEvent event)
 		delete translated;
 		return true;
 	}
-#endif
+
 	return false;
 }
 
