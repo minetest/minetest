@@ -147,9 +147,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 				y < y_min  || y > y_max)
 				continue;
 
-			int height = getHeight();
-			int max_y = nmax.Y;// + MAP_BLOCKSIZE - 1;
-			if (y + 1 + height > max_y) {
+			if (y + getHeight() >= mg->vm->m_area.MaxEdge.Y) {
 				continue;
 #if 0
 				printf("Decoration at (%d %d %d) cut off\n", x, y, z);
@@ -170,7 +168,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 			}
 
 			v3s16 pos(x, y, z);
-			if (generate(mg->vm, &ps, max_y, pos))
+			if (generate(mg->vm, &ps, pos))
 				mg->gennotify.addEvent(GENNOTIFY_DECORATION, pos, id);
 		}
 	}
@@ -289,7 +287,7 @@ bool DecoSimple::canPlaceDecoration(MMVManip *vm, v3s16 p)
 }
 
 
-size_t DecoSimple::generate(MMVManip *vm, PseudoRandom *pr, s16 max_y, v3s16 p)
+size_t DecoSimple::generate(MMVManip *vm, PseudoRandom *pr, v3s16 p)
 {
 	if (!canPlaceDecoration(vm, p))
 		return 0;
@@ -298,8 +296,6 @@ size_t DecoSimple::generate(MMVManip *vm, PseudoRandom *pr, s16 max_y, v3s16 p)
 
 	s16 height = (deco_height_max > 0) ?
 		pr->range(deco_height, deco_height_max) : deco_height;
-
-	height = MYMIN(height, max_y - p.Y);
 
 	v3s16 em = vm->m_area.getExtent();
 	u32 vi = vm->m_area.index(p);
@@ -326,7 +322,7 @@ int DecoSimple::getHeight()
 ///////////////////////////////////////////////////////////////////////////////
 
 
-size_t DecoSchematic::generate(MMVManip *vm, PseudoRandom *pr, s16 max_y, v3s16 p)
+size_t DecoSchematic::generate(MMVManip *vm, PseudoRandom *pr, v3s16 p)
 {
 	if (flags & DECO_PLACE_CENTER_X)
 		p.X -= (schematic->size.X + 1) / 2;
