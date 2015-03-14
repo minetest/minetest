@@ -26,7 +26,7 @@ GAMES_TO_COPY = minetest_game
 # Android Version code
 # Increase for each build!
 ################################################################################
-ANDROID_VERSION_CODE = 6
+ANDROID_VERSION_CODE = 7
 
 ################################################################################
 # toolchain config for arm old processors
