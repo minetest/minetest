@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="org.minetest.minetest"
+	package="net.minetest.minetest"
 	android:versionCode="###ANDROID_VERSION###"
 	android:versionName="###BASE_VERSION###.###ANDROID_VERSION###"
 	android:installLocation="auto">
