@@ -1,4 +1,4 @@
-package org.minetest.minetest;
+package net.minetest.minetest;
 
 import android.app.NativeActivity;
 import android.content.Intent;
