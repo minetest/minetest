@@ -15,6 +15,13 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+local default_flags = {
+	v5 = "blobs",
+	v6 = "biomeblend, jungles, mudflow",
+	v7 = "mountains, ridges",
+	singlenode = "",
+}
+
 local function create_world_formspec(dialogdata)
 	local mapgens = core.get_mapgen_names()
 
@@ -43,6 +50,12 @@ local function create_world_formspec(dialogdata)
 			gameidx = 0
 		end
 	end
+	
+	local current_flags = core.formspec_escape(default_flags[current_mg])
+	-- reset ALL flags
+	core.setting_set("mgv5_spflags", default_flags.v5)
+	core.setting_set("mgv6_spflags", default_flags.v6)
+	core.setting_set("mgv7_spflags", default_flags.v7)
 
 	current_seed = core.formspec_escape(current_seed)
 	local retval =
@@ -54,7 +67,8 @@ local function create_world_formspec(dialogdata)
 		"field[4.5,1.4;6,0.5;te_seed;;".. current_seed .. "]" ..
 
 		"label[2,2;" .. fgettext("Mapgen") .. "]"..
-		"dropdown[4.2,2;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
+		"dropdown[4.2,1.9;3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
+		"field[7.5,2.4;3,0.5;te_flags;;".. current_flags .. "]" ..
 
 		"label[2,3;" .. fgettext("Game") .. "]"..
 		"textlist[4.2,3;5.8,2.3;games;" .. gamemgr.gamelist() ..
@@ -94,6 +108,7 @@ local function create_world_buttonhandler(this, fields)
 
 			if not menudata.worldlist:uid_exists_raw(worldname) then
 				core.setting_set("mg_name",fields["dd_mapgen"])
+				core.setting_set("mg"..fields["dd_mapgen"].."_spflags",fields["te_flags"])
 				message = core.create_world(worldname,gameindex)
 			else
 				message = fgettext("A world named \"$1\" already exists", worldname)
@@ -128,7 +143,13 @@ local function create_world_buttonhandler(this, fields)
 		return true
 	end
 
-	return false
+	local dd_handled = false
+	if fields["dd_mapgen"] then
+		core.setting_set("mg_name",fields["dd_mapgen"])
+		dd_handled = true
+	end
+
+	return dd_handled
 end
 
 
