@@ -106,13 +106,39 @@ local function main_button_handler(this, fields, name, tabdata)
 	if fields["sp_worlds"] ~= nil then
 		local event = core.explode_textlist_event(fields["sp_worlds"])
 
+		local selected = core.get_textlist_index("sp_worlds")
+		if selected ~= nil then
+			local filename = menudata.worldlist:get_list()[selected].path
+			local worldconfig = modmgr.get_worldconfig(filename)
+			filename = filename .. DIR_DELIM .. "world.mt"
+
+			if worldconfig.creative_mode ~= nil then
+				core.setting_set("creative_mode", worldconfig.creative_mode)
+			else
+				local worldfile = Settings(filename)
+				worldfile:set("creative_mode", core.setting_get("creative_mode"))
+				if not worldfile:write() then
+					core.log("error", "Failed to write world config file")
+				end
+			end
+			if worldconfig.enable_damage ~= nil then
+				core.setting_set("enable_damage", worldconfig.enable_damage)
+			else
+				local worldfile = Settings(filename)
+				worldfile:set("enable_damage", core.setting_get("enable_damage"))
+				if not worldfile:write() then
+					core.log("error", "Failed to write world config file")
+				end
+			end
+		end
+
 		if event.type == "DCL" then
 			world_doubleclick = true
 		end
 
-		if event.type == "CHG" then
+		if event.type == "CHG" and selected ~= nil then
 			core.setting_set("mainmenu_last_selected_world",
-				menudata.worldlist:get_raw_index(core.get_textlist_index("sp_worlds")))
+				menudata.worldlist:get_raw_index(selected))
 			return true
 		end
 	end
@@ -123,11 +149,29 @@ local function main_button_handler(this, fields, name, tabdata)
 
 	if fields["cb_creative_mode"] then
 		core.setting_set("creative_mode", fields["cb_creative_mode"])
+		local selected = core.get_textlist_index("sp_worlds")
+		local filename = menudata.worldlist:get_list()[selected].path ..
+				DIR_DELIM .. "world.mt"
+
+		local worldfile = Settings(filename)
+		worldfile:set("creative_mode", fields["cb_creative_mode"])
+		if not worldfile:write() then
+			core.log("error", "Failed to write world config file")
+		end
 		return true
 	end
 
 	if fields["cb_enable_damage"] then
 		core.setting_set("enable_damage", fields["cb_enable_damage"])
+		local selected = core.get_textlist_index("sp_worlds")
+		local filename = menudata.worldlist:get_list()[selected].path ..
+				DIR_DELIM .. "world.mt"
+
+		local worldfile = Settings(filename)
+		worldfile:set("enable_damage", fields["cb_enable_damage"])
+		if not worldfile:write() then
+			core.log("error", "Failed to write world config file")
+		end
 		return true
 	end
 

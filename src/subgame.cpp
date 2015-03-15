@@ -283,7 +283,9 @@ bool initializeWorld(const std::string &path, const std::string &gameid)
 	std::string worldmt_path = path + DIR_DELIM "world.mt";
 	if (!fs::PathExists(worldmt_path)) {
 		std::ostringstream ss(std::ios_base::binary);
-		ss << "gameid = " << gameid << "\nbackend = sqlite3\n";
+		ss << "gameid = " << gameid << "\nbackend = sqlite3\n"
+				<< "creative_mode = " << g_settings->get("creative_mode")
+				<< "\nenable_damage = " << g_settings->get("enable_damage") << "\n";
 		if (!fs::safeWriteToFile(worldmt_path, ss.str()))
 			return false;
 
