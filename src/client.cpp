@@ -1553,7 +1553,39 @@ float Client::mediaReceiveProgress()
 		return 1.0; // downloader only exists when not yet done
 }
 
-void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
+typedef struct TextureUpdateArgs {
+	IrrlichtDevice *device;
+	gui::IGUIEnvironment *guienv;
+	u32 last_time_ms;
+	u16 last_percent;
+	const wchar_t* text_base;
+} TextureUpdateArgs;
+
+void texture_update_progress(void *args, u32 progress, u32 max_progress)
+{
+		TextureUpdateArgs* targs = (TextureUpdateArgs*) args;
+		u16 cur_percent = ceil(progress / (double) max_progress * 100.);
+
+		// update the loading menu -- if neccessary
+		bool do_draw = false;
+		u32 time_ms = targs->last_time_ms;
+		if (cur_percent != targs->last_percent) {
+			targs->last_percent = cur_percent;
+			time_ms = getTimeMs();
+			// only draw when the user will notice something:
+			do_draw = (time_ms - targs->last_time_ms > 100);
+		}
+
+		if (do_draw) {
+			targs->last_time_ms = time_ms;
+			std::basic_stringstream<wchar_t> strm;
+			strm << targs->text_base << " " << targs->last_percent << "%...";
+			draw_load_screen(strm.str(), targs->device, targs->guienv, 0,
+				72 + (u16) ((18. / 100.) * (double) targs->last_percent));
+		}
+}
+
+void Client::afterContentReceived(IrrlichtDevice *device)
 {
 	infostream<<"Client::afterContentReceived() started"<<std::endl;
 	assert(m_itemdef_received); // pre-condition
@@ -1571,14 +1603,14 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 	// Rebuild shaders
 	infostream<<"- Rebuilding shaders"<<std::endl;
 	text = wgettext("Rebuilding shaders...");
-	draw_load_screen(text, device, guienv, 0, 75);
+	draw_load_screen(text, device, guienv, 0, 71);
 	m_shsrc->rebuildShaders();
 	delete[] text;
 
 	// Update node aliases
 	infostream<<"- Updating node aliases"<<std::endl;
 	text = wgettext("Initializing nodes...");
-	draw_load_screen(text, device, guienv, 0, 80);
+	draw_load_screen(text, device, guienv, 0, 72);
 	m_nodedef->updateAliases(m_itemdef);
 	m_nodedef->setNodeRegistrationStatus(true);
 	m_nodedef->runNodeResolverCallbacks();
@@ -1586,7 +1618,14 @@ void Client::afterContentReceived(IrrlichtDevice *device, gui::IGUIFont* font)
 
 	// Update node textures and assign shaders to each tile
 	infostream<<"- Updating node textures"<<std::endl;
-	m_nodedef->updateTextures(this);
+	TextureUpdateArgs tu_args;
+	tu_args.device = device;
+	tu_args.guienv = guienv;
+	tu_args.last_time_ms = getTimeMs();
+	tu_args.last_percent = 0;
+	tu_args.text_base =  wgettext("Initializing nodes");
+	m_nodedef->updateTextures(this, texture_update_progress, &tu_args);
+	delete[] tu_args.text_base;
 
 	// Preload item textures and meshes if configured to
 	if(g_settings->getBool("preload_item_visuals"))
