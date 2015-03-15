@@ -378,7 +378,9 @@ public:
 	/*
 		Update tile textures to latest return values of TextueSource.
 	*/
-	virtual void updateTextures(IGameDef *gamedef)=0;
+	virtual void updateTextures(IGameDef *gamedef,
+	/*argument: */void (*progress_callback)(void *progress_args, u32 progress, u32 max_progress),
+	/*argument: */void *progress_callback_args)=0;
 
 	virtual void serialize(std::ostream &os, u16 protocol_version)=0;
 	virtual void deSerialize(std::istream &is)=0;

@@ -398,7 +398,9 @@ public:
 	virtual content_t set(const std::string &name, const ContentFeatures &def);
 	virtual content_t allocateDummy(const std::string &name);
 	virtual void updateAliases(IItemDefManager *idef);
-	virtual void updateTextures(IGameDef *gamedef);
+	virtual void updateTextures(IGameDef *gamedef,
+	/*argument: */void (*progress_callback)(void *progress_args, u32 progress, u32 max_progress),
+	/*argument: */void *progress_callback_args);
 	void serialize(std::ostream &os, u16 protocol_version);
 	void deSerialize(std::istream &is);
 
@@ -715,7 +717,9 @@ void CNodeDefManager::updateAliases(IItemDefManager *idef)
 }
 
 
-void CNodeDefManager::updateTextures(IGameDef *gamedef)
+void CNodeDefManager::updateTextures(IGameDef *gamedef,
+	void (*progress_callback)(void *progress_args, u32 progress, u32 max_progress),
+	void *progress_callback_args)
 {
 #ifndef SERVER
 	infostream << "CNodeDefManager::updateTextures(): Updating "
@@ -738,7 +742,9 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef)
 	bool use_normal_texture = enable_shaders &&
 		(enable_bumpmapping || enable_parallax_occlusion);
 
-	for (u32 i = 0; i < m_content_features.size(); i++) {
+	u32 size = m_content_features.size();
+
+	for (u32 i = 0; i < size; i++) {
 		ContentFeatures *f = &m_content_features[i];
 
 		// Figure out the actual tiles to use
@@ -911,6 +917,8 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef)
 			recalculateBoundingBox(f->mesh_ptr[0]);
 			meshmanip->recalculateNormals(f->mesh_ptr[0], true, false);
 		}
+
+		progress_callback(progress_callback_args, i, size);
 	}
 #endif
 }
