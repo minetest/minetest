@@ -36,11 +36,13 @@ struct FlagDesc {
 	u32 flag;
 };
 
-// You must free the returned string!
-const wchar_t *narrow_to_wide_c(const char *mbs);
 
-std::wstring narrow_to_wide(const std::string& mbs);
-std::string wide_to_narrow(const std::wstring& wcs);
+// You must free the returned string!
+// The returned string is allocated using new
+wchar_t *narrow_to_wide_c(const char *str);
+
+std::wstring narrow_to_wide(const std::string &mbs);
+std::string wide_to_narrow(const std::wstring &wcs);
 std::string translatePassword(std::string playername, std::wstring password);
 std::string urlencode(std::string str);
 std::string urldecode(std::string str);

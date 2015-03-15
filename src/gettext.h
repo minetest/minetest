@@ -23,31 +23,31 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h" // for USE_GETTEXT
 
 #if USE_GETTEXT
-#include <libintl.h>
+	#include <libintl.h>
 #else
-#define gettext(String) String
+	#define gettext(String) String
 #endif
 
 #define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
+#define gettext_noop(String) (String)
+#define N_(String) gettext_noop((String))
 
 #ifdef _MSC_VER
-void init_gettext(const char *path, const std::string &configured_language, int argc, char** argv);
+void init_gettext(const char *path, const std::string &configured_language,
+		int argc, char** argv);
 #else
 void init_gettext(const char *path, const std::string &configured_language);
 #endif
 
-extern const wchar_t *narrow_to_wide_c(const char *mbs);
-extern std::wstring narrow_to_wide(const std::string &mbs);
+extern wchar_t *narrow_to_wide_c(const char *str);
 
 // You must free the returned string!
+// The returned string is allocated using new
 inline const wchar_t *wgettext(const char *str)
 {
 	return narrow_to_wide_c(gettext(str));
 }
 
-// Gettext under MSVC needs this strange way. Just don't ask...
 inline std::wstring wstrgettext(const std::string &text)
 {
 	const wchar_t *tmp = wgettext(text.c_str());
