@@ -26,7 +26,8 @@ GAMES_TO_COPY = minetest_game
 # Android Version code
 # Increase for each build!
 ################################################################################
-ANDROID_VERSION_CODE = 10
+# Play Store actual version (15/03/15): 10
+ANDROID_VERSION_CODE = 11
 
 ################################################################################
 # toolchain config for arm old processors
@@ -742,10 +743,8 @@ $(ROOT)/jni/src/android_version.h :
 	grep ^set\(VERSION_PATCH\ | sed 's/)/ /' | awk '{print $$2;}')"            \
 	>> ${ROOT}/jni/src/android_version.h;                                      \
 	export GITHASH=$$(git rev-parse --short=8 HEAD);                           \
-	if [ "x$$GITHASH" = "x" ] ; then                                           \
-		export GITHASH=gUnknown;                                               \
-	fi;                                                                        \
-	echo "#define CMAKE_VERSION_GITHASH \"$$GITHASH\""                         \
+	export GITTAG=$$(git describe --abbrev=0 --tags);                          \
+	echo "#define CMAKE_VERSION_GITHASH \"$$GITTAG-$$GITHASH-Android\""        \
 	>> ${ROOT}/jni/src/android_version.h;                                      \
 	echo "#define CMAKE_VERSION_STRING STR(VERSION_MAJOR)\".\"STR(VERSION_MINOR)\
 	\".\"STR(VERSION_PATCH)"                                                   \
