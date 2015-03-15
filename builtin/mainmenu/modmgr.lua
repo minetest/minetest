@@ -321,8 +321,10 @@ function modmgr.get_worldconfig(worldpath)
 	for key,value in pairs(worldfile:to_table()) do
 		if key == "gameid" then
 			worldconfig.id = value
-		else
+		elseif key:sub(0, 9) == "load_mod_" then
 			worldconfig.global_mods[key] = core.is_yes(value)
+		else
+			worldconfig[key] = value
 		end
 	end
 

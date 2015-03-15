@@ -189,7 +189,6 @@ end
 
 --------------------------------------------------------------------------------
 function menu_handle_key_up_down(fields,textlist,settingname)
-
 	if fields["key_up"] then
 		local oldidx = core.get_textlist_index(textlist)
 
@@ -197,6 +196,16 @@ function menu_handle_key_up_down(fields,textlist,settingname)
 			local newidx = oldidx -1
 			core.setting_set(settingname,
 				menudata.worldlist:get_raw_index(newidx))
+
+			local worldconfig = modmgr.get_worldconfig(
+					menudata.worldlist:get_list()[newidx].path)
+
+			if worldconfig.creative_mode ~= nil then
+				core.setting_set("creative_mode", worldconfig.creative_mode)
+			end
+			if worldconfig.enable_damage ~= nil then
+				core.setting_set("enable_damage", worldconfig.enable_damage)
+			end
 		end
 		return true
 	end
@@ -208,6 +217,15 @@ function menu_handle_key_up_down(fields,textlist,settingname)
 			local newidx = oldidx + 1
 			core.setting_set(settingname,
 				menudata.worldlist:get_raw_index(newidx))
+			local worldconfig = modmgr.get_worldconfig(
+					menudata.worldlist:get_list()[newidx].path)
+
+			if worldconfig.creative_mode ~= nil then
+				core.setting_set("creative_mode", worldconfig.creative_mode)
+			end
+			if worldconfig.enable_damage ~= nil then
+				core.setting_set("enable_damage", worldconfig.enable_damage)
+			end
 		end
 		
 		return true
