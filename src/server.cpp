@@ -1099,8 +1099,7 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 	SendInventory(playersao);
 
 	// Send HP
-	if(g_settings->getBool("enable_damage"))
-		SendPlayerHP(peer_id);
+	SendPlayerHPOrDie(peer_id, playersao->getHP() == 0);
 
 	// Send Breath
 	SendPlayerBreath(peer_id);
