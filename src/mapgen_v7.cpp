@@ -691,9 +691,28 @@ void MapgenV7::dustTopNodes()
 		if (biome->c_dust == CONTENT_IGNORE)
 			continue;
 
-		s16 y = node_max.Y;
-		u32 vi = vm->m_area.index(x, y, z);
-		for (; y >= node_min.Y; y--) {
+		s16 y_full_max = full_node_max.Y;
+		u32 vi_full_max = vm->m_area.index(x, y_full_max, z);
+		content_t c_full_max = vm->m_data[vi_full_max].getContent();
+		s16 y_start;
+
+		if (c_full_max == CONTENT_AIR) {
+			y_start = y_full_max - 1;
+		} else if (c_full_max == CONTENT_IGNORE) {
+			s16 y_max = node_max.Y;
+			u32 vi_max = vm->m_area.index(x, y_max, z);
+			content_t c_max = vm->m_data[vi_max].getContent();
+
+			if (c_max == CONTENT_AIR)
+				y_start = y_max - 1;
+			else
+				continue;
+		} else {
+			continue;
+		}
+
+		u32 vi = vm->m_area.index(x, y_start, z);
+		for (s16 y = y_start; y >= node_min.Y - 1; y--) {
 			if (vm->m_data[vi].getContent() != CONTENT_AIR)
 				break;
 
@@ -701,10 +720,7 @@ void MapgenV7::dustTopNodes()
 		}
 
 		content_t c = vm->m_data[vi].getContent();
-		if (!ndef->get(c).buildable_to && c != CONTENT_IGNORE) {
-			if (y == node_max.Y)
-				continue;
-
+		if (!ndef->get(c).buildable_to && c != CONTENT_IGNORE && c != biome->c_dust) {
 			vm->m_area.add_y(em, vi, 1);
 			vm->m_data[vi] = MapNode(biome->c_dust);
 		}
