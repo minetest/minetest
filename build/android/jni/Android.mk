@@ -221,9 +221,9 @@ LOCAL_SRC_FILES +=                                \
 		jni/src/network/connection.cpp            \
 		jni/src/network/networkpacket.cpp         \
 		jni/src/network/clientopcodes.cpp         \
+		jni/src/network/clientpackethandler.cpp   \
 		jni/src/network/serveropcodes.cpp         \
-		jni/src/network/packethandlers/server.cpp \
-		jni/src/network/packethandlers/client.cpp
+		jni/src/network/serverpackethandler.cpp   \
 
 # lua api
 LOCAL_SRC_FILES +=                                \
