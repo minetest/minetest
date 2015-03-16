@@ -758,16 +758,11 @@ void Server::AsyncRunStep(bool initial_step)
 					obj->m_known_by_count++;
 			}
 
-			NetworkPacket pkt(TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD, 0, client->peer_id);
-			pkt.putRawString(data_buffer.c_str(), data_buffer.size());
-
-
+			u32 pktSize = SendActiveObjectRemoveAdd(client->peer_id, data_buffer);
 			verbosestream << "Server: Sent object remove/add: "
 					<< removed_objects.size() << " removed, "
 					<< added_objects.size() << " added, "
-					<< "packet size is " << pkt.getSize() << std::endl;
-
-			Send(&pkt);
+					<< "packet size is " << pktSize << std::endl;
 		}
 		m_clients.Unlock();
 	}
@@ -846,19 +841,11 @@ void Server::AsyncRunStep(bool initial_step)
 				Send them.
 			*/
 			if(reliable_data.size() > 0) {
-				NetworkPacket pkt(TOCLIENT_ACTIVE_OBJECT_MESSAGES,
-						0, client->peer_id);
-
-				pkt.putRawString(reliable_data.c_str(), reliable_data.size());
-				Send(&pkt);
+				SendActiveObjectMessages(client->peer_id, reliable_data);
 			}
 
 			if(unreliable_data.size() > 0) {
-				NetworkPacket pkt(TOCLIENT_ACTIVE_OBJECT_MESSAGES,
-						0, client->peer_id);
-
-				pkt.putRawString(unreliable_data.c_str(), unreliable_data.size());
-				Send(&pkt);
+				SendActiveObjectMessages(client->peer_id, unreliable_data);
 			}
 		}
 		m_clients.Unlock();
@@ -1895,6 +1882,23 @@ void Server::SendPlayerInventoryFormspec(u16 peer_id)
 
 	NetworkPacket pkt(TOCLIENT_INVENTORY_FORMSPEC, 0, peer_id);
 	pkt.putLongString(FORMSPEC_VERSION_STRING + player->inventory_formspec);
+	Send(&pkt);
+}
+
+u32 Server::SendActiveObjectRemoveAdd(u16 peer_id, const std::string &datas)
+{
+	NetworkPacket pkt(TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD, 0, peer_id);
+	pkt.putRawString(datas.c_str(), datas.size());
+	Send(&pkt);
+	return pkt.getSize();
+}
+
+void Server::SendActiveObjectMessages(u16 peer_id, const std::string &datas)
+{
+	NetworkPacket pkt(TOCLIENT_ACTIVE_OBJECT_MESSAGES,
+			0, peer_id);
+
+	pkt.putRawString(datas.c_str(), datas.size());
 	Send(&pkt);
 }
 
