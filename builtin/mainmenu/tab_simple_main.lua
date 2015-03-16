@@ -98,12 +98,12 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	end
 
 	if fields["favourites"] ~= nil then
-		local event = core.explode_textlist_event(fields["favourites"])
+		local event = core.explode_table_event(fields["favourites"])
 
 		if event.type == "CHG" then
-			if event.index <= #menudata.favorites then
-				local address = menudata.favorites[event.index].address
-				local port = menudata.favorites[event.index].port
+			if event.row <= #menudata.favorites then
+				local address = menudata.favorites[event.row].address
+				local port = menudata.favorites[event.row].port
 
 				if address ~= nil and
 					port ~= nil then
@@ -111,7 +111,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 					core.setting_set("remote_port",port)
 				end
 
-				tabdata.fav_selected = event.index
+				tabdata.fav_selected = event.row
 			end
 		end
 		return true
