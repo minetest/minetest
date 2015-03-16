@@ -407,15 +407,7 @@ void Client::step(float dtime)
 			snprintf(pName, PLAYERNAME_SIZE, "%s", myplayer->getName());
 			snprintf(pPassword, PASSWORD_SIZE, "%s", m_password.c_str());
 
-			NetworkPacket pkt(TOSERVER_INIT_LEGACY,
-					1 + PLAYERNAME_SIZE + PASSWORD_SIZE + 2 + 2);
-
-			pkt << (u8) SER_FMT_VER_HIGHEST_READ;
-			pkt.putRawString(pName,PLAYERNAME_SIZE);
-			pkt.putRawString(pPassword, PASSWORD_SIZE);
-			pkt << (u16) CLIENT_PROTOCOL_VERSION_MIN << (u16) CLIENT_PROTOCOL_VERSION_MAX;
-
-			Send(&pkt);
+			sendLegacyInit(pName, pPassword);
 		}
 
 		// Not connected, return
@@ -455,19 +447,8 @@ void Client::step(float dtime)
 					[3+6] v3s16 pos_1
 					...
 				*/
-				NetworkPacket pkt(TOSERVER_DELETEDBLOCKS, 1 + sizeof(v3s16) * sendlist.size());
 
-				pkt << (u8) sendlist.size();
-
-				u32 k = 0;
-				for(std::vector<v3s16>::iterator
-						j = sendlist.begin();
-						j != sendlist.end(); ++j) {
-					pkt << *j;
-					k++;
-				}
-
-				Send(&pkt);
+				sendDeletedBlocks(sendlist);
 
 				if(i == deleted_blocks.end())
 					break;
@@ -575,9 +556,7 @@ void Client::step(float dtime)
 					[0] u8 count
 					[1] v3s16 pos_0
 				*/
-				NetworkPacket pkt(TOSERVER_GOTBLOCKS, 1 + 6);
-				pkt << (u8) 1 << r.p;
-				Send(&pkt);
+				sendGotBlocks(r.p);
 			}
 		}
 
@@ -646,7 +625,7 @@ void Client::step(float dtime)
 	if(m_removed_sounds_check_timer >= 2.32) {
 		m_removed_sounds_check_timer = 0;
 		// Find removed sounds and clear references to them
-		std::set<s32> removed_server_ids;
+		std::vector<s32> removed_server_ids;
 		for(std::map<s32, int>::iterator
 				i = m_sounds_server_to_client.begin();
 				i != m_sounds_server_to_client.end();) {
@@ -657,24 +636,13 @@ void Client::step(float dtime)
 				m_sounds_server_to_client.erase(server_id);
 				m_sounds_client_to_server.erase(client_id);
 				m_sounds_to_objects.erase(client_id);
-				removed_server_ids.insert(server_id);
+				removed_server_ids.push_back(server_id);
 			}
 		}
 
 		// Sync to server
 		if(!removed_server_ids.empty()) {
-			size_t server_ids = removed_server_ids.size();
-			assert(server_ids <= 0xFFFF);
-
-			NetworkPacket pkt(TOSERVER_REMOVED_SOUNDS, 2 + server_ids * 4);
-
-			pkt << (u16) (server_ids & 0xFFFF);
-
-			for(std::set<s32>::iterator i = removed_server_ids.begin();
-					i != removed_server_ids.end(); i++)
-				pkt << *i;
-
-			Send(&pkt);
+			sendRemovedSounds(removed_server_ids);
 		}
 	}
 
@@ -979,6 +947,59 @@ void Client::interact(u8 action, const PointedThing& pointed)
 	pointed.serialize(tmp_os);
 
 	pkt.putLongString(tmp_os.str());
+
+	Send(&pkt);
+}
+
+void Client::sendLegacyInit(const char* playerName, const char* playerPassword)
+{
+	NetworkPacket pkt(TOSERVER_INIT_LEGACY,
+			1 + PLAYERNAME_SIZE + PASSWORD_SIZE + 2 + 2);
+
+	pkt << (u8) SER_FMT_VER_HIGHEST_READ;
+	pkt.putRawString(playerName,PLAYERNAME_SIZE);
+	pkt.putRawString(playerPassword, PASSWORD_SIZE);
+	pkt << (u16) CLIENT_PROTOCOL_VERSION_MIN << (u16) CLIENT_PROTOCOL_VERSION_MAX;
+
+	Send(&pkt);
+}
+
+void Client::sendDeletedBlocks(std::vector<v3s16> &blocks)
+{
+	NetworkPacket pkt(TOSERVER_DELETEDBLOCKS, 1 + sizeof(v3s16) * blocks.size());
+
+	pkt << (u8) blocks.size();
+
+	u32 k = 0;
+	for(std::vector<v3s16>::iterator
+			j = blocks.begin();
+			j != blocks.end(); ++j) {
+		pkt << *j;
+		k++;
+	}
+
+	Send(&pkt);
+}
+
+void Client::sendGotBlocks(v3s16 block)
+{
+	NetworkPacket pkt(TOSERVER_GOTBLOCKS, 1 + 6);
+	pkt << (u8) 1 << block;
+	Send(&pkt);
+}
+
+void Client::sendRemovedSounds(std::vector<s32> &soundList)
+{
+	size_t server_ids = soundList.size();
+	assert(server_ids <= 0xFFFF);
+
+	NetworkPacket pkt(TOSERVER_REMOVED_SOUNDS, 2 + server_ids * 4);
+
+	pkt << (u16) (server_ids & 0xFFFF);
+
+	for(std::vector<s32>::iterator i = soundList.begin();
+			i != soundList.end(); i++)
+		pkt << *i;
 
 	Send(&pkt);
 }
