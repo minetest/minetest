@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include <IGUICheckBox.h>
 #include <IGUIEditBox.h>
+#include <IGUIListBox.h>
 #include <IGUIButton.h>
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
@@ -1255,6 +1256,7 @@ struct KeyCache {
 		KEYMAP_ID_NOCLIP,
 		KEYMAP_ID_CINEMATIC,
 		KEYMAP_ID_SCREENSHOT,
+		KEYMAP_ID_PLAYERLIST,
 		KEYMAP_ID_TOGGLE_HUD,
 		KEYMAP_ID_TOGGLE_CHAT,
 		KEYMAP_ID_TOGGLE_FORCE_FOG_OFF,
@@ -1304,6 +1306,7 @@ void KeyCache::populate()
 	key[KEYMAP_ID_NOCLIP]       = getKeySetting("keymap_noclip");
 	key[KEYMAP_ID_CINEMATIC]    = getKeySetting("keymap_cinematic");
 	key[KEYMAP_ID_SCREENSHOT]   = getKeySetting("keymap_screenshot");
+	key[KEYMAP_ID_PLAYERLIST]   = getKeySetting("keymap_playerlist");
 	key[KEYMAP_ID_TOGGLE_HUD]   = getKeySetting("keymap_toggle_hud");
 	key[KEYMAP_ID_TOGGLE_CHAT]  = getKeySetting("keymap_toggle_chat");
 	key[KEYMAP_ID_TOGGLE_FORCE_FOG_OFF]
@@ -1384,6 +1387,8 @@ struct GameRunData {
 
 	float time_of_day;
 	float time_of_day_smooth;
+
+	gui::IGUIListBox *playerlist;
 };
 
 struct Jitter {
@@ -1485,6 +1490,7 @@ protected:
 	void processUserInput(VolatileRunFlags *flags, GameRunData *interact_args,
 			f32 dtime);
 	void processKeyboardInput(VolatileRunFlags *flags,
+			GameRunData *runData,
 			float *statustext_time,
 			float *jump_timer,
 			bool *reset_jump_timer,
@@ -1502,6 +1508,7 @@ protected:
 	void toggleCinematic(float *statustext_time);
 
 	void toggleChat(float *statustext_time, bool *flag);
+	void togglePlayerlist(GameRunData *runData, bool show);
 	void toggleHud(float *statustext_time, bool *flag);
 	void toggleFog(float *statustext_time, bool *flag);
 	void toggleDebug(float *statustext_time, bool *show_debug,
@@ -2538,6 +2545,7 @@ void Game::processUserInput(VolatileRunFlags *flags,
 
 	processKeyboardInput(
 			flags,
+			interact_args,
 			&interact_args->statustext_time,
 			&interact_args->jump_timer,
 			&interact_args->reset_jump_timer,
@@ -2549,6 +2557,7 @@ void Game::processUserInput(VolatileRunFlags *flags,
 
 
 void Game::processKeyboardInput(VolatileRunFlags *flags,
+		GameRunData *runData,
 		float *statustext_time,
 		float *jump_timer,
 		bool *reset_jump_timer,
@@ -2586,6 +2595,10 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 		toggleCinematic(statustext_time);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_SCREENSHOT])) {
 		client->makeScreenshot(device);
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_PLAYERLIST])) {
+		togglePlayerlist(runData, true);
+	} else if (!input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_PLAYERLIST])) {
+		togglePlayerlist(runData, false);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_HUD])) {
 		toggleHud(statustext_time, &flags->show_hud);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_CHAT])) {
@@ -2790,6 +2803,33 @@ void Game::toggleChat(float *statustext_time, bool *flag)
 	statustext = msg[*flag];
 }
 
+void Game::togglePlayerlist(GameRunData *runData, bool show)
+{
+	if (show) {
+		if (runData->playerlist != NULL) return;
+		std::list<std::string> l;
+		s32 x, y, w, h;
+		unsigned text_height = g_fontengine->getTextHeight();
+		v2u32 screensize = driver->getScreenSize();
+
+		l = client->getEnv().getPlayerNames();
+		x = screensize.X*0.42; // 0.5 - (0.16 / 2)
+		y = screensize.Y*0.5 - (l.size() * (text_height+4) / 2);
+		w = screensize.X*0.16;
+		h = l.size() * (text_height+4);
+
+		runData->playerlist = guienv->addListBox(core::rect<s32>(x, y, x+w, y+h));
+		while (!l.empty()) {
+			runData->playerlist->addItem(narrow_to_wide(l.front()).c_str());
+			l.pop_front();
+		}
+		runData->playerlist->setSelected(-1);
+	} else {
+		if (runData->playerlist == NULL) return;
+		runData->playerlist->remove();
+		runData->playerlist = NULL;
+	}
+}
 
 void Game::toggleHud(float *statustext_time, bool *flag)
 {
@@ -3921,7 +3961,8 @@ void Game::updateFrame(std::vector<aabb3f> &highlight_boxes,
 	}
 
 	draw_scene(driver, smgr, *camera, *client, player, *hud, guienv,
-			highlight_boxes, screensize, skycolor, flags.show_hud);
+			highlight_boxes, screensize, skycolor, flags.show_hud,
+			runData->playerlist);
 
 	/*
 		Profiler graph
