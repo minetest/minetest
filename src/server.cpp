@@ -479,10 +479,13 @@ void Server::step(float dtime)
 		JMutexAutoLock lock(m_step_dtime_mutex);
 		m_step_dtime += dtime;
 	}
-	// Throw if fatal error occurred in thread
+	// Assert if fatal error occurred in thread
 	std::string async_err = m_async_fatal_error.get();
-	if(async_err != ""){
-		throw ServerError(async_err);
+	if(async_err != "") {
+		errorstream << "UNRECOVERABLE error occurred. Stopping server. "
+				<< "Please fix the following error:" << std::endl
+				<< async_err << std::endl;
+		assert(false);
 	}
 }
 
