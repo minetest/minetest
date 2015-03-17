@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "noise.h"
 
 #define AVERAGE_MUD_AMOUNT 4
+#define DESERT_STONE_BASE -32
 
 /////////////////// Mapgen V6 flags
 #define MGV6_JUNGLES    0x01
@@ -139,11 +140,9 @@ public:
 	int generateGround();
 	void addMud();
 	void flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos);
-	void addDirtGravelBlobs();
 	void growGrass();
 	void placeTreesAndJungleGrass();
 	virtual void generateCaves(int max_stone_y);
-	virtual void generateExperimental() {}
 };
 
 struct MapgenFactoryV6 : public MapgenFactory {

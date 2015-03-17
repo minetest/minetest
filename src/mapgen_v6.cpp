@@ -477,8 +477,6 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 	// Generate general ground level to full area
 	stone_surface_max_y = generateGround();
 
-	generateExperimental();
-
 	// Create initial heightmap to limit caves
 	updateHeightmap(node_min, node_max);
 
@@ -496,9 +494,6 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 
 		// Add mud to the central chunk
 		addMud();
-
-		// Add blobs of dirt and gravel underground
-		addDirtGravelBlobs();
 
 		// Flow mud away from steep edges
 		if (spflags & MGV6_MUDFLOW)
@@ -610,7 +605,8 @@ int MapgenV6::generateGround()
 		for (s16 y = node_min.Y; y <= node_max.Y; y++) {
 			if (vm->m_data[i].getContent() == CONTENT_IGNORE) {
 				if (y <= surface_y) {
-					vm->m_data[i] = (y > water_level && bt == BT_DESERT) ?
+					vm->m_data[i] = (y >= DESERT_STONE_BASE
+								&& bt == BT_DESERT) ?
 						n_desert_stone : n_stone;
 				} else if (y <= water_level) {
 					vm->m_data[i] = n_water_source;
@@ -823,45 +819,6 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 }
 
 
-void MapgenV6::addDirtGravelBlobs()
-{
-	if (getBiome(v2s16(node_min.X, node_min.Z)) != BT_NORMAL)
-		return;
-
-	PseudoRandom pr(blockseed + 983);
-	for (int i = 0; i < volume_nodes/10/10/10; i++) {
-		bool only_fill_cave = (myrand_range(0,1) != 0);
-		v3s16 size(
-			pr.range(1, 8),
-			pr.range(1, 8),
-			pr.range(1, 8)
-		);
-		v3s16 p0(
-			pr.range(node_min.X, node_max.X) - size.X / 2,
-			pr.range(node_min.Y, node_max.Y) - size.Y / 2,
-			pr.range(node_min.Z, node_max.Z) - size.Z / 2
-		);
-
-		MapNode n1((p0.Y > -32 && !pr.range(0, 1)) ? c_dirt : c_gravel);
-		for (int z1 = 0; z1 < size.Z; z1++)
-		for (int y1 = 0; y1 < size.Y; y1++)
-		for (int x1 = 0; x1 < size.X; x1++) {
-			v3s16 p = p0 + v3s16(x1, y1, z1);
-			u32 i = vm->m_area.index(p);
-			if (!vm->m_area.contains(i))
-				continue;
-			// Cancel if not stone and not cave air
-			if (vm->m_data[i].getContent() != c_stone &&
-				!(vm->m_flags[i] & VMANIP_FLAG_CAVE))
-				continue;
-			if (only_fill_cave && !(vm->m_flags[i] & VMANIP_FLAG_CAVE))
-				continue;
-			vm->m_data[i] = n1;
-		}
-	}
-}
-
-
 void MapgenV6::placeTreesAndJungleGrass()
 {
 	//TimeTaker t("placeTrees");
@@ -960,7 +917,7 @@ void MapgenV6::placeTreesAndJungleGrass()
 				treegen::make_jungletree(*vm, p, ndef, myrand());
 			} else {
 				bool is_apple_tree = (myrand_range(0, 3) == 0) &&
-										getHaveAppleTree(v2s16(x, z));
+							getHaveAppleTree(v2s16(x, z));
 				treegen::make_tree(*vm, p, is_apple_tree, ndef, myrand());
 			}
 		}
