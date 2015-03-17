@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 
 #include "cpp_api/s_base.h"
-
+#include "clientiface.h"
 
 class ScriptApiPlayer
 		: virtual public ScriptApiBase
@@ -35,7 +35,7 @@ public:
 	void on_dieplayer(ServerActiveObject *player);
 	bool on_respawnplayer(ServerActiveObject *player);
 	bool on_prejoinplayer(std::string name, std::string ip, std::string &reason);
-	void on_joinplayer(ServerActiveObject *player);
+	void on_joinplayer(ServerActiveObject *player, RemoteClient *client);
 	void on_leaveplayer(ServerActiveObject *player);
 	void on_cheat(ServerActiveObject *player, const std::string &cheat_type);
 
