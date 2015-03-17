@@ -2,13 +2,6 @@
 
 OS := $(shell uname)
 
-#automaticaly set number of jobs
-ifeq ($(OS),Linux)
-  PARALLEL := $(shell grep -c ^processor /proc/cpuinfo)
-else
-  PARALLEL := 1
-endif
-
 # compile with GPROF
 # GPROF = 1
 
@@ -159,17 +152,17 @@ endif
 debug : $(PATHCFGFILE)
 	export NDEBUG=;                                                            \
 	export BUILD_TYPE=debug;                                                   \
-	$(MAKE) -j${PARALLEL} apk
+	$(MAKE) apk
 	
 all : debug release
 	
 release : $(PATHCFGFILE)
 	@export NDEBUG=1;                                                          \
 	export BUILD_TYPE=release;                                                 \
-	$(MAKE) -j${PARALLEL} apk
+	$(MAKE) apk
 
 reconfig: delconfig
-	@$(MAKE) -j${PARALLEL} $(PATHCFGFILE)
+	@$(MAKE) $(PATHCFGFILE)
 
 delconfig :
 	$(RM) ${PATHCFGFILE}
@@ -225,7 +218,7 @@ $(OPENAL_LIB): $(OPENAL_TIMESTAMP)
 	echo "changed timestamp for openal detected building...";                  \
 	cd ${OPENAL_DIR};                                                          \
 	ndk-build NDEBUG=${NDEBUG} NDK_MODULE_PATH=${NDK_MODULE_PATH}              \
-	APP_ABI=${TARGET_ABI} APP_PLATFORM=${APP_PLATFORM} -j${PARALLEL}           \
+	APP_ABI=${TARGET_ABI} APP_PLATFORM=${APP_PLATFORM}                         \
 	TARGET_CFLAGS+="${TARGET_CFLAGS_ADDON}"                                    \
 	TARGET_LDFLAGS+="${TARGET_LDFLAGS_ADDON}"                                  \
 	TARGET_CXXFLAGS+="${TARGET_CXXFLAGS_ADDON}" || exit 1;                     \
@@ -270,7 +263,7 @@ $(OGG_LIB): $(OGG_TIMESTAMP)
 	echo "changed timestamp for ogg detected building...";                     \
 	cd ${OGG_DIR};                                                             \
 	ndk-build NDEBUG=${NDEBUG} NDK_MODULE_PATH=${NDK_MODULE_PATH}              \
-	APP_ABI=${TARGET_ABI} APP_PLATFORM=${APP_PLATFORM} -j${PARALLEL}           \
+	APP_ABI=${TARGET_ABI} APP_PLATFORM=${APP_PLATFORM}                         \
 	TARGET_CFLAGS+="${TARGET_CFLAGS_ADDON}"                                    \
 	TARGET_LDFLAGS+="${TARGET_LDFLAGS_ADDON}"                                  \
 	TARGET_CXXFLAGS+="${TARGET_CXXFLAGS_ADDON}" || exit 1;                     \
@@ -374,7 +367,7 @@ $(LEVELDB_LIB): $(LEVELDB_TIMESTAMP)
 	export CPPFLAGS="$${CPPFLAGS} ${TARGET_CFLAGS_ADDON}";                     \
 	export LDFLAGS="$${LDFLAGS} ${TARGET_LDFLAGS_ADDON}";                      \
 	export TARGET_OS=OS_ANDROID_CROSSCOMPILE;                                  \
-	$(MAKE) -j${PARALLEL} -s || exit 1;                                        \
+	$(MAKE) -s || exit 1;                                                      \
 	touch ${LEVELDB_TIMESTAMP};                                                \
 	touch ${LEVELDB_TIMESTAMP_INT};                                            \
 	$(RM) -rf $${TOOLCHAIN};                                                   \
@@ -424,7 +417,7 @@ $(FREETYPE_LIB) : $(FREETYPE_TIMESTAMP)
 	echo "changed timestamp for freetype detected building...";                \
 	cd ${FREETYPE_DIR}/Android/jni;                                            \
 	ndk-build NDEBUG=${NDEBUG} NDK_MODULE_PATH=${NDK_MODULE_PATH}              \
-	APP_PLATFORM=${APP_PLATFORM} APP_ABI=${TARGET_ABI} -j${PARALLEL}           \
+	APP_PLATFORM=${APP_PLATFORM} APP_ABI=${TARGET_ABI}                         \
 	TARGET_CFLAGS+="${TARGET_CFLAGS_ADDON}"                                    \
 	TARGET_LDFLAGS+="${TARGET_LDFLAGS_ADDON}"                                  \
 	TARGET_CXXFLAGS+="${TARGET_CXXFLAGS_ADDON}" || exit 1;                     \
@@ -473,7 +466,7 @@ $(IRRLICHT_LIB): $(IRRLICHT_TIMESTAMP) $(FREETYPE_LIB)
 	echo "changed timestamp for irrlicht detected building...";                \
 	cd deps/irrlicht/source/Irrlicht/Android;                                  \
 	ndk-build NDEBUG=${NDEBUG} NDK_MODULE_PATH=${NDK_MODULE_PATH}              \
-	APP_ABI=${TARGET_ABI} APP_PLATFORM=${APP_PLATFORM} -j${PARALLEL}           \
+	APP_ABI=${TARGET_ABI} APP_PLATFORM=${APP_PLATFORM}                         \
 	TARGET_CFLAGS+="${TARGET_CFLAGS_ADDON}"                                    \
 	TARGET_LDFLAGS+="${TARGET_LDFLAGS_ADDON}"                                  \
 	TARGET_CXXFLAGS+="${TARGET_CXXFLAGS_ADDON}" || exit 1;                     \
@@ -535,7 +528,7 @@ $(CURL_LIB): $(CURL_TIMESTAMP) $(OPENSSL_LIB)
 	export CFLAGS="$${CFLAGS} ${TARGET_CFLAGS_ADDON}";                         \
 	export LDFLAGS="$${LDFLAGS} -L${OPENSSL_DIR} ${TARGET_LDFLAGS_ADDON}";     \
 	./configure --host=${TARGET_HOST} --disable-shared --enable-static --with-ssl;  \
-	$(MAKE) -j${PARALLEL} -s || exit 1;                                        \
+	$(MAKE) -s || exit 1;                                                      \
 	touch ${CURL_TIMESTAMP};                                                   \
 	touch ${CURL_TIMESTAMP_INT};                                               \
 	$(RM) -rf $${TOOLCHAIN};                                                   \
@@ -643,7 +636,7 @@ assets : $(ASSETS_TIMESTAMP)
 	fi;                                                                        \
 	if [ $$REFRESH -ne 0 ] ; then                                              \
 	echo "assets changed, refreshing...";                                      \
-	$(MAKE) -j${PARALLEL} clean_assets;                                        \
+	$(MAKE) clean_assets;                                                      \
 	mkdir -p ${ROOT}/assets/Minetest;                                          \
 	cp ${ROOT}/../../minetest.conf.example ${ROOT}/assets/Minetest;            \
 	cp ${ROOT}/../../README.txt ${ROOT}/assets/Minetest;                       \
@@ -681,11 +674,11 @@ clean_assets :
 apk: $(PATHCFGFILE) assets $(IRRLICHT_LIB) $(CURL_LIB) $(LEVELDB_TARGET)       \
 	$(OPENAL_LIB) $(OGG_LIB) prep_srcdir $(ROOT)/jni/src/android_version.h     \
 	sqlite3_download
-	@export NDEBUG=$$NDEBUG; $(MAKE) -j${PARALLEL} manifest;                   \
+	@export NDEBUG=$$NDEBUG; $(MAKE) manifest;                                 \
 	export PATH=$$PATH:${SDKFOLDER}/platform-tools:${ANDROID_NDK};             \
 	export ANDROID_HOME=${SDKFOLDER};                                          \
 	mkdir -p ${ROOT}/src;                                                      \
-	ndk-build NDK_MODULE_PATH=${NDK_MODULE_PATH} -j${PARALLEL}                 \
+	ndk-build NDK_MODULE_PATH=${NDK_MODULE_PATH}                               \
 	GPROF=${GPROF} APP_ABI=${TARGET_ABI} HAVE_LEVELDB=${HAVE_LEVELDB}          \
 	APP_PLATFORM=${APP_PLATFORM}                                               \
 	TARGET_LIBDIR=${TARGET_LIBDIR}                                             \
@@ -719,7 +712,7 @@ envpaths :
 	echo "export ANDROID_HOME=${SDKFOLDER}" >> and_env;
 	
 clean_all : 
-	@$(MAKE) -j${PARALLEL} clean_apk;                                          \
+	@$(MAKE) clean_apk;                                                        \
 	$(MAKE) clean_assets clean_irrlicht clean_leveldb clean_curl clean_openssl \
 	clean_openal clean_ogg clean_manifest;                                     \
 	sleep 1;                                                                   \
