@@ -845,7 +845,7 @@ void Server::AsyncRunStep(bool initial_step)
 			}
 
 			if(unreliable_data.size() > 0) {
-				SendActiveObjectMessages(client->peer_id, unreliable_data);
+				SendActiveObjectMessages(client->peer_id, unreliable_data, false);
 			}
 		}
 		m_clients.Unlock();
@@ -1893,13 +1893,17 @@ u32 Server::SendActiveObjectRemoveAdd(u16 peer_id, const std::string &datas)
 	return pkt.getSize();
 }
 
-void Server::SendActiveObjectMessages(u16 peer_id, const std::string &datas)
+void Server::SendActiveObjectMessages(u16 peer_id, const std::string &datas, bool reliable)
 {
 	NetworkPacket pkt(TOCLIENT_ACTIVE_OBJECT_MESSAGES,
 			0, peer_id);
 
 	pkt.putRawString(datas.c_str(), datas.size());
-	Send(&pkt);
+
+	m_clients.send(pkt.getPeerId(),
+			clientCommandFactoryTable[pkt.getCommand()].channel,
+			&pkt, reliable);
+
 }
 
 s32 Server::playSound(const SimpleSoundSpec &spec,

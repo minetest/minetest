@@ -464,7 +464,7 @@ private:
 		bool collisiondetection, bool vertical, std::string texture);
 
 	u32 SendActiveObjectRemoveAdd(u16 peer_id, const std::string &datas);
-	void SendActiveObjectMessages(u16 peer_id, const std::string &datas);
+	void SendActiveObjectMessages(u16 peer_id, const std::string &datas, bool reliable = true);
 	/*
 		Something random
 	*/
