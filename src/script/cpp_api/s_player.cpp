@@ -76,16 +76,34 @@ bool ScriptApiPlayer::on_prejoinplayer(std::string name, std::string ip, std::st
 	return false;
 }
 
-void ScriptApiPlayer::on_joinplayer(ServerActiveObject *player)
+void ScriptApiPlayer::on_joinplayer(ServerActiveObject *player, RemoteClient *client)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
 	// Get core.registered_on_joinplayers
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_on_joinplayers");
-	// Call callbacks
+	// Set arguments
 	objectrefGetOrCreate(L, player);
-	script_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
+	if (client) {
+		lua_newtable(L);
+		lua_pushstring(L, "major");
+		lua_pushnumber(L, client->getMajor());
+		lua_settable(L, -3);
+		lua_pushstring(L, "minor");
+		lua_pushnumber(L, client->getMinor());
+		lua_settable(L, -3);
+		lua_pushstring(L, "patch");
+		lua_pushnumber(L, client->getPatch());
+		lua_settable(L, -3);
+		lua_pushstring(L, "full_version");
+		lua_pushstring(L, client->getVersion().c_str());
+		lua_settable(L, -3);
+	} else {
+		lua_pushnil(L);
+	}
+	// Call callbacks
+	script_run_callbacks(L, 2, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiPlayer::on_leaveplayer(ServerActiveObject *player)

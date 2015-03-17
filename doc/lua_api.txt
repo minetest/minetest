@@ -1751,7 +1751,7 @@ Call these functions only at load time!
 * `minetest.register_on_prejoinplayer(func(name, ip))`
      * Called before a player joins the game
      * If it returns a string, the player is disconnected with that string as reason
-* `minetest.register_on_joinplayer(func(ObjectRef))`
+* `minetest.register_on_joinplayer(func(ObjectRef, client_version))`
     * Called when a player joins the game
 * `minetest.register_on_leaveplayer(func(ObjectRef))`
     * Called when a player leaves the game

@@ -683,7 +683,8 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	///// begin compatibility code
 	if (protocol_version <= 22) {
 		m_clients.event(pkt->getPeerId(), CSE_SetClientReady);
-		m_script->on_joinplayer(playersao);
+		RemoteClient* client = getClientNoEx(pkt->getPeerId());
+		m_script->on_joinplayer(playersao, client);
 	}
 	///// end compatibility code
 
@@ -765,7 +766,8 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 			full_ver);
 
 	m_clients.event(peer_id, CSE_SetClientReady);
-	m_script->on_joinplayer(playersao);
+	RemoteClient* client = getClientNoEx(pkt->getPeerId());
+	m_script->on_joinplayer(playersao, client);
 }
 
 void Server::handleCommand_GotBlocks(NetworkPacket* pkt)
