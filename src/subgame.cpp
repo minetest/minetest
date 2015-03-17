@@ -267,23 +267,27 @@ std::vector<WorldSpec> getAvailableWorlds()
 	return worlds;
 }
 
-bool initializeWorld(const std::string &path, const std::string &gameid)
+bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamespec)
 {
+	// Override defaults with those provided by the game.
+	// Clearing and re-loading defaults is done, because the defaults
+	// might have been overridden by other subgame config files,
+	// that were loaded before.
+	g_settings->clearDefaults();
+	set_default_settings(g_settings);
+	Settings game_defaults;
+	getGameMinetestConfig(gamespec.path, game_defaults);
+	override_default_settings(g_settings, &game_defaults);
+
 	infostream << "Initializing world at " << path << std::endl;
 
 	fs::CreateAllDirs(path);
-
-	// Initialize default settings and override defaults with those
-	// provided by the game
-	Settings game_defaults;
-	getGameMinetestConfig(path, game_defaults);
-	override_default_settings(g_settings, &game_defaults);
 
 	// Create world.mt if does not already exist
 	std::string worldmt_path = path + DIR_DELIM "world.mt";
 	if (!fs::PathExists(worldmt_path)) {
 		std::ostringstream ss(std::ios_base::binary);
-		ss << "gameid = " << gameid << "\nbackend = sqlite3\n";
+		ss << "gameid = " << gamespec.id << "\nbackend = sqlite3\n";
 		if (!fs::safeWriteToFile(worldmt_path, ss.str()))
 			return false;
 
