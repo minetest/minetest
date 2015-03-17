@@ -732,7 +732,7 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 	if (peer_proto_ver <= 22) {
 		infostream << "Client sent message not expected by a "
 			<< "client using protocol version <= 22,"
-			<< "disconnecing peer_id: " << peer_id << std::endl;
+			<< "disconnecting peer_id: " << peer_id << std::endl;
 		m_con.DisconnectPeer(peer_id);
 		return;
 	}
@@ -756,12 +756,13 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 		return;
 	}
 
-	u8 major_ver, minor_ver, patch_ver;
-	*pkt >> major_ver >> minor_ver >> patch_ver;
+	u8 major_ver, minor_ver, patch_ver, reserved;
+	std::string full_ver;
+	*pkt >> major_ver >> minor_ver >> patch_ver >> reserved >> full_ver;
 
 	m_clients.setClientVersion(
 			peer_id, major_ver, minor_ver, patch_ver,
-			std::string(pkt->getString(6),(u16) pkt->getU8(4)));
+			full_ver);
 
 	m_clients.event(peer_id, CSE_SetClientReady);
 	m_script->on_joinplayer(playersao);
