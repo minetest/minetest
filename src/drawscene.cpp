@@ -419,7 +419,8 @@ void draw_plain(Camera& camera, bool show_hud, Hud& hud,
 void draw_scene(video::IVideoDriver* driver, scene::ISceneManager* smgr,
 		Camera& camera, Client& client, LocalPlayer* player, Hud& hud,
 		gui::IGUIEnvironment* guienv, std::vector<aabb3f> hilightboxes,
-		const v2u32& screensize, video::SColor skycolor, bool show_hud)
+		const v2u32& screensize, video::SColor skycolor, bool show_hud,
+		gui::IGUIListBox *playerlist)
 {
 	TimeTaker timer("smgr");
 
@@ -484,6 +485,21 @@ void draw_scene(video::IVideoDriver* driver, scene::ISceneManager* smgr,
 			hud.drawCrosshair();
 		hud.drawHotbar(client.getPlayerItem());
 		hud.drawLuaElements(camera.getOffset());
+	}
+
+	/*
+		Player list background
+	*/
+	if (playerlist != NULL) {
+		video::SColor console_bg;
+		if(!g_settings->get("console_color").empty()) {
+			v3f console_color = g_settings->getV3F("console_color");
+			console_bg = video::SColor(g_settings->getU16("console_alpha"),
+				console_color.X, console_color.Y, console_color.Z);
+		}
+		driver->draw2DRectangle(console_bg, playerlist->getAbsolutePosition());
+		driver->draw2DRectangleOutline(playerlist->getAbsolutePosition(),
+			video::SColor(255,128,128,128));
 	}
 
 	guienv->drawAll();
