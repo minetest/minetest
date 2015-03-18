@@ -1072,6 +1072,10 @@ void PlayerSAO::setHP(s16 hp)
 	else if (hp > PLAYER_MAX_HP)
 		hp = PLAYER_MAX_HP;
 
+	if(hp < oldhp && g_settings->getBool("enable_damage") == false) {
+		return;
+	}
+
 	m_player->hp = hp;
 
 	if (oldhp > hp)
