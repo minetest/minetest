@@ -83,6 +83,12 @@ private:
 	// 0 if not applicable to this type of object
 	static int l_get_hp(lua_State *L);
 
+	// apply_damage(self, damage)
+	// damage = amount of damage to apply
+	// if damage is negative, heal the player
+	// returns: nil
+	static int l_apply_damage(lua_State *L);
+
 	// get_inventory(self)
 	static int l_get_inventory(lua_State *L);
 

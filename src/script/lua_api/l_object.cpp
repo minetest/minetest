@@ -29,6 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_sao.h"
 #include "server.h"
 #include "hud.h"
+#include "settings.h"
+#include "main.h"
 
 
 struct EnumString es_HudElementType[] =
@@ -255,10 +257,10 @@ int ObjectRef::l_set_hp(lua_State *L)
 	ObjectRef *ref = checkobject(L, 1);
 	luaL_checknumber(L, 2);
 	ServerActiveObject *co = getobject(ref);
-	if(co == NULL) return 0;
+	if(co == NULL)
+		return 0;
 	int hp = lua_tonumber(L, 2);
-	/*infostream<<"ObjectRef::l_set_hp(): id="<<co->getId()
-			<<" hp="<<hp<<std::endl;*/
+
 	// Do it
 	co->setHP(hp);
 	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
@@ -287,6 +289,38 @@ int ObjectRef::l_get_hp(lua_State *L)
 	// Return
 	lua_pushnumber(L, hp);
 	return 1;
+}
+
+// apply_damage(self, damage)
+// damage = amount of damage to apply
+// if damage is negative, heal the player
+// returns: nil
+int ObjectRef::l_apply_damage(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	luaL_checknumber(L, 2);
+	ServerActiveObject *co = getobject(ref);
+	if(co == NULL)
+		return 0;
+
+	int damage = lua_tonumber(L, 2);
+
+	// No damage, no heal => do nothing
+	if (damage == 0)
+		return 0;
+
+	// If damage is positive (not healing) and damage is disabled, ignore
+	if (damage > 0 && g_settings->getBool("enable_damage") == false)
+		return 0;
+
+	// Do damage/heal
+	co->setHP(co->getHP() - damage);
+	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		getServer(L)->SendPlayerHPOrDie(((PlayerSAO*)co)->getPeerID(), co->getHP() == 0);
+	}
+
+	return 0;
 }
 
 // get_inventory(self)
@@ -1345,6 +1379,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, right_click),
 	luamethod(ObjectRef, set_hp),
 	luamethod(ObjectRef, get_hp),
+	luamethod(ObjectRef, apply_damage),
 	luamethod(ObjectRef, get_inventory),
 	luamethod(ObjectRef, get_wield_list),
 	luamethod(ObjectRef, get_wield_index),
