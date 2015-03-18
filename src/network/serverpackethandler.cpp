@@ -343,7 +343,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 		 * respond for some time, your server was overloaded or
 		 * things like that.
 		 */
-		infostream << "Server::ProcessData(): Cancelling: peer "
+		infostream << "Server::ProcessData(): Canceling: peer "
 				<< pkt->getPeerId() << " not found" << std::endl;
 		return;
 	}
@@ -826,7 +826,7 @@ void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 
 	Player *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
-		errorstream << "Server::ProcessData(): Cancelling: "
+		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
 		m_con.DisconnectPeer(pkt->getPeerId());
@@ -842,7 +842,7 @@ void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 
 	PlayerSAO *playersao = player->getPlayerSAO();
 	if (playersao == NULL) {
-		errorstream << "Server::ProcessData(): Cancelling: "
+		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
 		m_con.DisconnectPeer(pkt->getPeerId());
@@ -904,7 +904,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 {
 	Player *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
-		errorstream << "Server::ProcessData(): Cancelling: "
+		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
 		m_con.DisconnectPeer(pkt->getPeerId());
@@ -913,7 +913,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 
 	PlayerSAO *playersao = player->getPlayerSAO();
 	if (playersao == NULL) {
-		errorstream << "Server::ProcessData(): Cancelling: "
+		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
 		m_con.DisconnectPeer(pkt->getPeerId());
@@ -1074,7 +1074,7 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 
 	Player *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
-		errorstream << "Server::ProcessData(): Cancelling: "
+		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
 		m_con.DisconnectPeer(pkt->getPeerId());
@@ -1155,7 +1155,7 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 
 	Player *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
-		errorstream << "Server::ProcessData(): Cancelling: "
+		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
 		m_con.DisconnectPeer(pkt->getPeerId());
@@ -1164,7 +1164,7 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 
 	PlayerSAO *playersao = player->getPlayerSAO();
 	if (playersao == NULL) {
-		errorstream << "Server::ProcessData(): Cancelling: "
+		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
 		m_con.DisconnectPeer(pkt->getPeerId());
@@ -1189,7 +1189,7 @@ void Server::handleCommand_Breath(NetworkPacket* pkt)
 
 	Player *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
-		errorstream << "Server::ProcessData(): Cancelling: "
+		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
 		m_con.DisconnectPeer(pkt->getPeerId());
@@ -1209,7 +1209,7 @@ void Server::handleCommand_Breath(NetworkPacket* pkt)
 
 	PlayerSAO *playersao = player->getPlayerSAO();
 	if (playersao == NULL) {
-		errorstream << "Server::ProcessData(): Cancelling: "
+		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
 		m_con.DisconnectPeer(pkt->getPeerId());
@@ -1254,7 +1254,7 @@ void Server::handleCommand_Password(NetworkPacket* pkt)
 
 	Player *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
-		errorstream << "Server::ProcessData(): Cancelling: "
+		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
 		m_con.DisconnectPeer(pkt->getPeerId());
@@ -1291,7 +1291,7 @@ void Server::handleCommand_Password(NetworkPacket* pkt)
 	} else {
 		actionstream << player->getName() << " tries to change password but "
 				<< "it fails" << std::endl;
-		SendChatMessage(pkt->getPeerId(), L"Password change failed or inavailable.");
+		SendChatMessage(pkt->getPeerId(), L"Password change failed or unavailable.");
 	}
 }
 
@@ -1302,7 +1302,7 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 
 	Player *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
-		errorstream << "Server::ProcessData(): Cancelling: "
+		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
 		m_con.DisconnectPeer(pkt->getPeerId());
@@ -1311,7 +1311,7 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 
 	PlayerSAO *playersao = player->getPlayerSAO();
 	if (playersao == NULL) {
-		errorstream << "Server::ProcessData(): Cancelling: "
+		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
 		m_con.DisconnectPeer(pkt->getPeerId());
@@ -1329,7 +1329,7 @@ void Server::handleCommand_Respawn(NetworkPacket* pkt)
 {
 	Player *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
-		errorstream << "Server::ProcessData(): Cancelling: "
+		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
 		m_con.DisconnectPeer(pkt->getPeerId());
@@ -1345,7 +1345,7 @@ void Server::handleCommand_Respawn(NetworkPacket* pkt)
 			<< PP(player->getPosition()/BS) << std::endl;
 
 	// ActiveObject is added to environment in AsyncRunStep after
-	// the previous addition has been succesfully removed
+	// the previous addition has been successfully removed
 }
 
 void Server::handleCommand_Interact(NetworkPacket* pkt)
@@ -1377,7 +1377,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 
 	Player *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
-		errorstream << "Server::ProcessData(): Cancelling: "
+		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
 		m_con.DisconnectPeer(pkt->getPeerId());
@@ -1386,7 +1386,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 
 	PlayerSAO *playersao = player->getPlayerSAO();
 	if (playersao == NULL) {
-		errorstream << "Server::ProcessData(): Cancelling: "
+		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
 		m_con.DisconnectPeer(pkt->getPeerId());
@@ -1778,7 +1778,7 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 
 	Player *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
-		errorstream << "Server::ProcessData(): Cancelling: "
+		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
 		m_con.DisconnectPeer(pkt->getPeerId());
@@ -1787,7 +1787,7 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 
 	PlayerSAO *playersao = player->getPlayerSAO();
 	if (playersao == NULL) {
-		errorstream << "Server::ProcessData(): Cancelling: "
+		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!"  << std::endl;
 		m_con.DisconnectPeer(pkt->getPeerId());
