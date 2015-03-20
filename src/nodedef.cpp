@@ -445,7 +445,7 @@ private:
 	content_t m_next_id;
 
 	// List of node strings and node resolver callbacks to perform
-	std::vector<NodeResolveInfo *> m_pending_node_lookups;
+	std::list<NodeResolveInfo *> m_pending_node_lookups;
 
 	// True when all nodes have been registered
 	bool m_node_registration_complete;
@@ -481,7 +481,7 @@ void CNodeDefManager::clear()
 	m_next_id = 0;
 
 	m_node_registration_complete = false;
-	for (std::vector<NodeResolveInfo *>::iterator
+	for (std::list<NodeResolveInfo *>::iterator
 			it = m_pending_node_lookups.begin();
 			it != m_pending_node_lookups.end();
 			++it)
@@ -1320,7 +1320,7 @@ void CNodeDefManager::pendNodeResolve(NodeResolveInfo *nri)
 
 void CNodeDefManager::cancelNodeResolve(NodeResolver *resolver)
 {
-	for (std::vector<NodeResolveInfo *>::iterator
+	for (std::list<NodeResolveInfo *>::iterator
 			it = m_pending_node_lookups.begin();
 			it != m_pending_node_lookups.end();
 			++it) {
@@ -1337,7 +1337,7 @@ void CNodeDefManager::runNodeResolverCallbacks()
 {
 	while (!m_pending_node_lookups.empty()) {
 		NodeResolveInfo *nri = m_pending_node_lookups.front();
-		m_pending_node_lookups.erase(m_pending_node_lookups.begin());
+		m_pending_node_lookups.pop_front();
 		nri->resolver->resolveNodeNames(nri);
 		nri->resolver->m_lookup_done = true;
 		delete nri;
@@ -1356,7 +1356,7 @@ bool CNodeDefManager::getIdFromResolveInfo(NodeResolveInfo *nri,
 
 	content_t c;
 	std::string name = nri->nodenames.front();
-	nri->nodenames.erase(nri->nodenames.begin());
+	nri->nodenames.pop_front();
 
 	bool success = getId(name, c);
 	if (!success && node_alt != "") {
@@ -1396,7 +1396,7 @@ bool CNodeDefManager::getIdsFromResolveInfo(NodeResolveInfo *nri,
 
 		content_t c;
 		std::string name = nri->nodenames.front();
-		nri->nodenames.erase(nri->nodenames.begin());
+		nri->nodenames.pop_front();
 
 		if (name.substr(0,6) != "group:") {
 			if (getId(name, c)) {

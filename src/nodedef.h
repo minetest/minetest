@@ -309,7 +309,7 @@ struct NodeResolveInfo {
 		resolver = nr;
 	}
 
-	std::vector<std::string> nodenames;
+	std::list<std::string> nodenames;
 	std::list<NodeListInfo> nodelistinfo;
 	NodeResolver *resolver;
 };

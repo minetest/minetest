@@ -459,7 +459,7 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 	}
 
 	NodeResolveInfo *nri = new NodeResolveInfo(b);
-	std::vector<std::string> &nnames = nri->nodenames;
+	std::list<std::string> &nnames = nri->nodenames;
 	nnames.push_back(getstringfield_default(L, index, "node_top",          ""));
 	nnames.push_back(getstringfield_default(L, index, "node_filler",       ""));
 	nnames.push_back(getstringfield_default(L, index, "node_stone",        ""));
