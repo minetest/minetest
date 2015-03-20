@@ -377,9 +377,9 @@ int MapgenV5::generateBaseTerrain()
 						stone_surface_max_y = y;
 				}
 			}
-			index2d = index2d - ystride;
+			index2d -= ystride;
 		}
-		index2d = index2d + ystride;
+		index2d += ystride;
 	}
 
 	return stone_surface_max_y;
@@ -390,10 +390,6 @@ bool MapgenV5::generateBiomes(float *heat_map, float *humidity_map)
 {
 	if (node_max.Y < water_level)
 		return false;
-
-	MapNode n_air(CONTENT_AIR);
-	MapNode n_stone(c_stone);
-	MapNode n_water(c_water_source);
 
 	v3s16 em = vm->m_area.getExtent();
 	u32 index = 0;
@@ -496,9 +492,9 @@ void MapgenV5::generateCaves(int max_stone_y)
 				if (d1*d2 > 0.125)
 					vm->m_data[i] = MapNode(CONTENT_AIR);
 			}
-			index2d = index2d - ystride;
+			index2d -= ystride;
 		}
-		index2d = index2d + ystride;
+		index2d += ystride;
 	}
 
 	if (node_max.Y > LARGE_CAVE_DEPTH)
@@ -528,27 +524,25 @@ void MapgenV5::dustTopNodes()
 		if (biome->c_dust == CONTENT_IGNORE)
 			continue;
 
-		s16 y_full_max = full_node_max.Y;
-		u32 vi_full_max = vm->m_area.index(x, y_full_max, z);
-		content_t c_full_max = vm->m_data[vi_full_max].getContent();
+		u32 vi = vm->m_area.index(x, full_node_max.Y, z);
+		content_t c_full_max = vm->m_data[vi].getContent();
 		s16 y_start;
 
 		if (c_full_max == CONTENT_AIR) {
-			y_start = y_full_max - 1;
+			y_start = full_node_max.Y - 1;
 		} else if (c_full_max == CONTENT_IGNORE) {
-			s16 y_max = node_max.Y;
-			u32 vi_max = vm->m_area.index(x, y_max, z);
-			content_t c_max = vm->m_data[vi_max].getContent();
+			vi = vm->m_area.index(x, node_max.Y + 1, z);
+			content_t c_max = vm->m_data[vi].getContent();
 
 			if (c_max == CONTENT_AIR)
-				y_start = y_max - 1;
+				y_start = node_max.Y;
 			else
 				continue;
 		} else {
 			continue;
 		}
 
-		u32 vi = vm->m_area.index(x, y_start, z);
+		vi = vm->m_area.index(x, y_start, z);
 		for (s16 y = y_start; y >= node_min.Y - 1; y--) {
 			if (vm->m_data[vi].getContent() != CONTENT_AIR)
 				break;
