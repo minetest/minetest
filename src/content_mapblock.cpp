@@ -1398,97 +1398,42 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		break;}
 		case NDT_RAILLIKE:
 		{
-			bool is_rail_x [] = { false, false };  /* x-1, x+1 */
-			bool is_rail_z [] = { false, false };  /* z-1, z+1 */
-
-			bool is_rail_z_minus_y [] = { false, false };  /* z-1, z+1; y-1 */
-			bool is_rail_x_minus_y [] = { false, false };  /* x-1, z+1; y-1 */
-			bool is_rail_z_plus_y [] = { false, false };  /* z-1, z+1; y+1 */
-			bool is_rail_x_plus_y [] = { false, false };  /* x-1, x+1; y+1 */
-
-			MapNode n_minus_x = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x-1,y,z));
-			MapNode n_plus_x = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x+1,y,z));
-			MapNode n_minus_z = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y,z-1));
-			MapNode n_plus_z = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y,z+1));
-			MapNode n_plus_x_plus_y = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x+1, y+1, z));
-			MapNode n_plus_x_minus_y = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x+1, y-1, z));
-			MapNode n_minus_x_plus_y = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x-1, y+1, z));
-			MapNode n_minus_x_minus_y = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x-1, y-1, z));
-			MapNode n_plus_z_plus_y = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x, y+1, z+1));
-			MapNode n_minus_z_plus_y = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x, y+1, z-1));
-			MapNode n_plus_z_minus_y = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x, y-1, z+1));
-			MapNode n_minus_z_minus_y = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x, y-1, z-1));
+			bool is_rail_x[6]; /* (-1,-1,0) X (1,-1,0) (-1,0,0) X (1,0,0) (-1,1,0) X (1,1,0) */
+			bool is_rail_z[6];
 
 			content_t thiscontent = n.getContent();
 			std::string groupname = "connect_to_raillike"; // name of the group that enables connecting to raillike nodes of different kind
 			int self_group = ((ItemGroupList) nodedef->get(n).groups)[groupname];
 
-			if ((nodedef->get(n_minus_x).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_minus_x).groups)[groupname] != self_group)
-					|| n_minus_x.getContent() == thiscontent)
-				is_rail_x[0] = true;
+			u8 index = 0;
+			for (s8 y0 = -1; y0 <= 1; y0++) {
+				// Prevent from indexing never used coordinates
+				for (s8 xz = -1; xz <= 1; xz++) {
+					if (xz == 0)
+						continue;
+					MapNode n_xy = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x + xz, y + y0, z));
+					MapNode n_zy = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x, y + y0, z + xz));
+					ContentFeatures def_xy = nodedef->get(n_xy);
+					ContentFeatures def_zy = nodedef->get(n_zy);
 
-			if ((nodedef->get(n_minus_x_minus_y).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_minus_x_minus_y).groups)[groupname] != self_group)
-					|| n_minus_x_minus_y.getContent() == thiscontent)
-				is_rail_x_minus_y[0] = true;
+					// Check if current node would connect with the rail
+					is_rail_x[index] = ((def_xy.drawtype == NDT_RAILLIKE
+							&& ((ItemGroupList) def_xy.groups)[groupname] == self_group)
+							|| n_xy.getContent() == thiscontent);
 
-			if ((nodedef->get(n_minus_x_plus_y).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_minus_x_plus_y).groups)[groupname] != self_group)
-					|| n_minus_x_plus_y.getContent() == thiscontent)
-				is_rail_x_plus_y[0] = true;
+					is_rail_z[index] = ((def_zy.drawtype == NDT_RAILLIKE
+							&& ((ItemGroupList) def_zy.groups)[groupname] == self_group)
+							|| n_zy.getContent() == thiscontent);
+					index++;
+				}
+			}
 
-			if ((nodedef->get(n_plus_x).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_plus_x).groups)[groupname] != self_group)
-					|| n_plus_x.getContent() == thiscontent)
-				is_rail_x[1] = true;
-
-			if ((nodedef->get(n_plus_x_minus_y).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_plus_x_minus_y).groups)[groupname] != self_group)
-					|| n_plus_x_minus_y.getContent() == thiscontent)
-				is_rail_x_minus_y[1] = true;
-
-			if ((nodedef->get(n_plus_x_plus_y).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_plus_x_plus_y).groups)[groupname] != self_group)
-					|| n_plus_x_plus_y.getContent() == thiscontent)
-				is_rail_x_plus_y[1] = true;
-
-			if ((nodedef->get(n_minus_z).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_minus_z).groups)[groupname] != self_group)
-					|| n_minus_z.getContent() == thiscontent)
-				is_rail_z[0] = true;
-
-			if ((nodedef->get(n_minus_z_minus_y).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_minus_z_minus_y).groups)[groupname] != self_group)
-					|| n_minus_z_minus_y.getContent() == thiscontent)
-				is_rail_z_minus_y[0] = true;
-
-			if ((nodedef->get(n_minus_z_plus_y).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_minus_z_plus_y).groups)[groupname] != self_group)
-					|| n_minus_z_plus_y.getContent() == thiscontent)
-				is_rail_z_plus_y[0] = true;
-
-			if ((nodedef->get(n_plus_z).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_plus_z).groups)[groupname] != self_group)
-					|| n_plus_z.getContent() == thiscontent)
-				is_rail_z[1] = true;
-
-			if ((nodedef->get(n_plus_z_minus_y).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_plus_z_minus_y).groups)[groupname] != self_group)
-					|| n_plus_z_minus_y.getContent() == thiscontent)
-				is_rail_z_minus_y[1] = true;
-
-			if ((nodedef->get(n_plus_z_plus_y).drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) nodedef->get(n_plus_z_plus_y).groups)[groupname] != self_group)
-					|| n_plus_z_plus_y.getContent() == thiscontent)
-				is_rail_z_plus_y[1] = true;
-
-			bool is_rail_x_all[] = {false, false};
-			bool is_rail_z_all[] = {false, false};
-			is_rail_x_all[0]=is_rail_x[0] || is_rail_x_minus_y[0] || is_rail_x_plus_y[0];
-			is_rail_x_all[1]=is_rail_x[1] || is_rail_x_minus_y[1] || is_rail_x_plus_y[1];
-			is_rail_z_all[0]=is_rail_z[0] || is_rail_z_minus_y[0] || is_rail_z_plus_y[0];
-			is_rail_z_all[1]=is_rail_z[1] || is_rail_z_minus_y[1] || is_rail_z_plus_y[1];
+			bool is_rail_x_all[2]; // [0] = negative x, [1] = positive x coordinate from the current node position
+			bool is_rail_z_all[2];
+			is_rail_x_all[0] = is_rail_x[0] || is_rail_x[2] || is_rail_x[4];
+			is_rail_x_all[1] = is_rail_x[1] || is_rail_x[3] || is_rail_x[5];
+			is_rail_z_all[0] = is_rail_z[0] || is_rail_z[2] || is_rail_z[4];
+			is_rail_z_all[1] = is_rail_z[1] || is_rail_z[3] || is_rail_z[5];
 
 			// reasonable default, flat straight unrotated rail
 			bool is_straight = true;
@@ -1497,13 +1442,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			u8 tileindex = 0;
 
 			// check for sloped rail
-			if (is_rail_x_plus_y[0] || is_rail_x_plus_y[1] || is_rail_z_plus_y[0] || is_rail_z_plus_y[1])
-			{
-				adjacencies = 5; //5 means sloped
+			if (is_rail_x[4] || is_rail_x[5] || is_rail_z[4] || is_rail_z[5]) {
+				adjacencies = 5; // 5 means sloped
 				is_straight = true; // sloped is always straight
-			}
-			else
-			{
+			} else {
 				// is really straight, rails on both sides
 				is_straight = (is_rail_x_all[0] && is_rail_x_all[1]) || (is_rail_z_all[0] && is_rail_z_all[1]);
 				adjacencies = is_rail_x_all[0] + is_rail_x_all[1] + is_rail_z_all[0] + is_rail_z_all[1];
@@ -1511,44 +1453,44 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			switch (adjacencies) {
 			case 1:
-				if(is_rail_x_all[0] || is_rail_x_all[1])
+				if (is_rail_x_all[0] || is_rail_x_all[1])
 					angle = 90;
 				break;
 			case 2:
-				if(!is_straight)
+				if (!is_straight)
 					tileindex = 1; // curved
-				if(is_rail_x_all[0] && is_rail_x_all[1])
+				if (is_rail_x_all[0] && is_rail_x_all[1])
 					angle = 90;
-				if(is_rail_z_all[0] && is_rail_z_all[1]){
-					if (is_rail_z_plus_y[0])
+				if (is_rail_z_all[0] && is_rail_z_all[1]) {
+					if (is_rail_z[4])
 						angle = 180;
 				}
-				else if(is_rail_x_all[0] && is_rail_z_all[0])
+				else if (is_rail_x_all[0] && is_rail_z_all[0])
 					angle = 270;
-				else if(is_rail_x_all[0] && is_rail_z_all[1])
+				else if (is_rail_x_all[0] && is_rail_z_all[1])
 					angle = 180;
-				else if(is_rail_x_all[1] && is_rail_z_all[1])
+				else if (is_rail_x_all[1] && is_rail_z_all[1])
 					angle = 90;
 				break;
 			case 3:
 				// here is where the potential to 'switch' a junction is, but not implemented at present
 				tileindex = 2; // t-junction
 				if(!is_rail_x_all[1])
-					angle=180;
+					angle = 180;
 				if(!is_rail_z_all[0])
-					angle=90;
+					angle = 90;
 				if(!is_rail_z_all[1])
-					angle=270;
+					angle = 270;
 				break;
 			case 4:
 				tileindex = 3; // crossing
 				break;
 			case 5: //sloped
-				if(is_rail_z_plus_y[0])
+				if (is_rail_z[4])
 					angle = 180;
-				if(is_rail_x_plus_y[0])
+				if (is_rail_x[4])
 					angle = 90;
-				if(is_rail_x_plus_y[1])
+				if (is_rail_x[5])
 					angle = -90;
 				break;
 			default:
@@ -1566,7 +1508,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			float s = BS/2;
 
 			short g = -1;
-			if (is_rail_x_plus_y[0] || is_rail_x_plus_y[1] || is_rail_z_plus_y[0] || is_rail_z_plus_y[1])
+			if (is_rail_x[4] || is_rail_x[5] || is_rail_z[4] || is_rail_z[5])
 				g = 1; //Object is at a slope
 
 			video::S3DVertex vertices[4] =
