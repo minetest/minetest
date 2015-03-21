@@ -173,7 +173,7 @@ int ModApiCraft::l_register_craft(lua_State *L)
 
 		CraftDefinition *def = new CraftDefinitionShaped(
 				output, width, recipe, replacements);
-		craftdef->registerCraft(def);
+		craftdef->registerCraft(def, getServer(L));
 	}
 	/*
 		CraftDefinitionShapeless
@@ -205,7 +205,7 @@ int ModApiCraft::l_register_craft(lua_State *L)
 
 		CraftDefinition *def = new CraftDefinitionShapeless(
 				output, recipe, replacements);
-		craftdef->registerCraft(def);
+		craftdef->registerCraft(def, getServer(L));
 	}
 	/*
 		CraftDefinitionToolRepair
@@ -216,7 +216,7 @@ int ModApiCraft::l_register_craft(lua_State *L)
 
 		CraftDefinition *def = new CraftDefinitionToolRepair(
 				additional_wear);
-		craftdef->registerCraft(def);
+		craftdef->registerCraft(def, getServer(L));
 	}
 	/*
 		CraftDefinitionCooking
@@ -246,7 +246,7 @@ int ModApiCraft::l_register_craft(lua_State *L)
 
 		CraftDefinition *def = new CraftDefinitionCooking(
 				output, recipe, cooktime, replacements);
-		craftdef->registerCraft(def);
+		craftdef->registerCraft(def, getServer(L));
 	}
 	/*
 		CraftDefinitionFuel
@@ -270,7 +270,7 @@ int ModApiCraft::l_register_craft(lua_State *L)
 
 		CraftDefinition *def = new CraftDefinitionFuel(
 				recipe, burntime, replacements);
-		craftdef->registerCraft(def);
+		craftdef->registerCraft(def, getServer(L));
 	}
 	else
 	{
@@ -326,118 +326,87 @@ int ModApiCraft::l_get_craft_result(lua_State *L)
 	return 2;
 }
 
-// get_craft_recipe(result item)
-int ModApiCraft::l_get_craft_recipe(lua_State *L)
+int get_craft_recipe_helper(lua_State *L, IGameDef *gdef, bool return_multiple)
 {
-	NO_MAP_LOCK_REQUIRED;
+	std::string o_item = luaL_checkstring(L, 1);
 
-	int k = 1;
-	int input_i = 1;
-	std::string o_item = luaL_checkstring(L,input_i);
-
-	IGameDef *gdef = getServer(L);
 	ICraftDefManager *cdef = gdef->cdef();
 	CraftInput input;
-	CraftOutput output(o_item,0);
-	bool got = cdef->getCraftRecipe(input, output, gdef);
-	lua_newtable(L); // output table
-	if(got){
-		lua_newtable(L);
-		for(std::vector<ItemStack>::const_iterator
-			i = input.items.begin();
-			i != input.items.end(); i++, k++)
-		{
-			if (i->empty())
-			{
-				continue;
-			}
-			lua_pushinteger(L,k);
-			lua_pushstring(L,i->name.c_str());
-			lua_settable(L, -3);
-		}
-		lua_setfield(L, -2, "items");
-		setintfield(L, -1, "width", input.width);
-		switch (input.method) {
-		case CRAFT_METHOD_NORMAL:
-			lua_pushstring(L,"normal");
-			break;
-		case CRAFT_METHOD_COOKING:
-			lua_pushstring(L,"cooking");
-			break;
-		case CRAFT_METHOD_FUEL:
-			lua_pushstring(L,"fuel");
-			break;
-		default:
-			lua_pushstring(L,"unknown");
-		}
-		lua_setfield(L, -2, "type");
-	} else {
-		lua_pushnil(L);
-		lua_setfield(L, -2, "items");
-		setintfield(L, -1, "width", 0);
-	}
-	return 1;
-}
+	CraftOutput output(o_item, 0);
 
-// get_all_craft_recipes(result item)
-int ModApiCraft::l_get_all_craft_recipes(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
+	std::vector<CraftDefinition*> recipes_list = cdef->getCraftRecipes(output, gdef);
 
-	std::string o_item = luaL_checkstring(L,1);
-	IGameDef *gdef = getServer(L);
-	ICraftDefManager *cdef = gdef->cdef();
-	CraftInput input;
-	CraftOutput output(o_item,0);
-	std::vector<CraftDefinition*> recipes_list;
-	recipes_list = cdef->getCraftRecipes(output, gdef);
+	lua_createtable(L, return_multiple ? recipes_list.size() : 0, 0);
+
 	if (recipes_list.empty()) {
-		lua_pushnil(L);
+		if (return_multiple) {
+			lua_pushnil(L);
+		} else {
+			lua_pushnil(L);
+			lua_setfield(L, -2, "items");
+			setintfield(L, -1, "width", 0);
+		}
 		return 1;
 	}
 
-	lua_createtable(L, recipes_list.size(), 0);
 	std::vector<CraftDefinition*>::const_iterator iter = recipes_list.begin();
 	for (u16 i = 0; iter != recipes_list.end(); iter++) {
 		CraftOutput tmpout;
 		tmpout.item = "";
 		tmpout.time = 0;
 		tmpout = (*iter)->getOutput(input, gdef);
-		std::string query = tmpout.item;
-		char *fmtpos, *fmt = &query[0];
-		if (strtok_r(fmt, " ", &fmtpos) == output.item) {
-			input = (*iter)->getInput(output, gdef);
+		input = (*iter)->getInput(output, gdef);
+		if (return_multiple) // If multiple, shove each result into a table
 			lua_newtable(L);
-			lua_newtable(L); // items
-			std::vector<ItemStack>::const_iterator iter = input.items.begin();
-			for (u16 j = 1; iter != input.items.end(); iter++, j++) {
-				if (iter->empty())
-					continue;
-				lua_pushstring(L, iter->name.c_str());
-				lua_rawseti(L, -2, j);
-			}
-			lua_setfield(L, -2, "items");
-			setintfield(L, -1, "width", input.width);
-			switch (input.method) {
-				case CRAFT_METHOD_NORMAL:
-					lua_pushstring(L, "normal");
-					break;
-				case CRAFT_METHOD_COOKING:
-					lua_pushstring(L, "cooking");
-					break;
-				case CRAFT_METHOD_FUEL:
-					lua_pushstring(L, "fuel");
-					break;
-				default:
-					lua_pushstring(L, "unknown");
-			}
-			lua_setfield(L, -2, "type");
-			lua_pushstring(L, &tmpout.item[0]);
-			lua_setfield(L, -2, "output");
-			lua_rawseti(L, -2, ++i);
+
+		lua_newtable(L); // items
+		std::vector<ItemStack>::const_iterator iter = input.items.begin();
+		for (u16 j = 1; iter != input.items.end(); iter++, j++) {
+			if (iter->empty())
+				continue;
+			lua_pushstring(L, iter->name.c_str());
+			lua_rawseti(L, -2, j);
 		}
+		lua_setfield(L, -2, "items");
+		setintfield(L, -1, "width", input.width);
+		switch (input.method) {
+		case CRAFT_METHOD_NORMAL:
+			lua_pushstring(L, "normal");
+			break;
+		case CRAFT_METHOD_COOKING:
+			lua_pushstring(L, "cooking");
+			break;
+		case CRAFT_METHOD_FUEL:
+			lua_pushstring(L, "fuel");
+			break;
+		default:
+			lua_pushstring(L, "unknown");
+		}
+		lua_setfield(L, -2, "type");
+		lua_pushstring(L, &tmpout.item[0]);
+		lua_setfield(L, -2, "output");
+
+		if (return_multiple)
+			lua_rawseti(L, -2, ++i);
+		else
+			break;
 	}
+
 	return 1;
+}
+
+// get_craft_recipe(result item)
+int ModApiCraft::l_get_craft_recipe(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	return get_craft_recipe_helper(L, getServer(L), false);
+}
+
+// get_all_craft_recipes(result item)
+int ModApiCraft::l_get_all_craft_recipes(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	return get_craft_recipe_helper(L, getServer(L), true);
 }
 
 void ModApiCraft::Initialize(lua_State *L, int top)
