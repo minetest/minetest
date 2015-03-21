@@ -182,6 +182,42 @@ struct TextureInfo
 	}
 };
 
+/* Upscale textures to user's requested minimum size.  This is a trick to make
+ * filters look as good on low-res textures as on high-res ones, by making
+ * low-res textures BECOME high-res ones.  This is helpful for worlds that
+ * mix high- and low-res textures, or for mods with least-common-denominator
+ * textures that don't have the resources to offer high-res alternatives.
+ */
+video::IImage *textureMinSizeUpscale(video::IVideoDriver *driver, video::IImage *orig) {
+	if(orig == NULL)
+		return orig;
+	s32 scaleto = g_settings->getS32("texture_min_size");
+	if (scaleto > 0) {
+
+		/* Calculate scaling needed to make the shortest texture dimension
+		 * equal to the target minimum.  If e.g. this is a vertical frames
+		 * animation, the short dimension will be the real size.
+		 */
+		const core::dimension2d<u32> dim = orig->getDimension();
+		u32 xscale = scaleto / dim.Width;
+		u32 yscale = scaleto / dim.Height;
+		u32 scale = (xscale > yscale) ? xscale : yscale;
+
+		// Never downscale; only scale up by 2x or more.
+		if (scale > 1) {
+			u32 w = scale * dim.Width;
+			u32 h = scale * dim.Height;
+			const core::dimension2d<u32> newdim = core::dimension2d<u32>(w, h);
+			video::IImage *newimg = driver->createImage(
+					orig->getColorFormat(), newdim);
+			orig->copyToScaling(newimg);
+			return newimg;
+		}
+	}
+
+	return orig;
+}
+
 /*
 	SourceImageCache: A cache used for storing source images.
 */
@@ -273,36 +309,6 @@ public:
 					c.setBlue(sb / ss);
 					toadd->setPixel(ctrx, ctry, c);
 				}
-			}
-		}
-
-		/* Upscale textures to user's requested minimum size.  This is a trick to make
-		 * filters look as good on low-res textures as on high-res ones, by making
-		 * low-res textures BECOME high-res ones.  This is helpful for worlds that
-		 * mix high- and low-res textures, or for mods with least-common-denominator
-		 * textures that don't have the resources to offer high-res alternatives.
-		 */
-		s32 scaleto = g_settings->getS32("texture_min_size");
-		if (scaleto > 0) {
-
-			/* Calculate scaling needed to make the shortest texture dimension
-			 * equal to the target minimum.  If e.g. this is a vertical frames
-			 * animation, the short dimension will be the real size.
-			 */
-			const core::dimension2d<u32> dim = toadd->getDimension();
-			u32 xscale = scaleto / dim.Width;
-			u32 yscale = scaleto / dim.Height;
-			u32 scale = (xscale > yscale) ? xscale : yscale;
-
-			// Never downscale; only scale up by 2x or more.
-			if (scale > 1) {
-				u32 w = scale * dim.Width;
-				u32 h = scale * dim.Height;
-				const core::dimension2d<u32> newdim = core::dimension2d<u32>(w, h);
-				video::IImage *newimg = driver->createImage(
-						toadd->getColorFormat(), newdim);
-				toadd->copyToScaling(newimg);
-				toadd = newimg;
 			}
 		}
 
@@ -682,7 +688,8 @@ u32 TextureSource::generateTexture(const std::string &name)
 	video::IVideoDriver *driver = m_device->getVideoDriver();
 	sanity_check(driver);
 
-	video::IImage *img = generateImage(name);
+	video::IImage *origimg = generateImage(name);
+	video::IImage *img = textureMinSizeUpscale(driver, origimg);
 
 	video::ITexture *tex = NULL;
 
@@ -693,6 +700,8 @@ u32 TextureSource::generateTexture(const std::string &name)
 		// Create texture from resulting image
 		tex = driver->addTexture(name.c_str(), img);
 		img->drop();
+		if((origimg != NULL) && (img != origimg))
+			origimg->drop();
 	}
 
 	/*
@@ -783,7 +792,8 @@ void TextureSource::rebuildImagesAndTextures()
 	// Recreate textures
 	for (u32 i=0; i<m_textureinfo_cache.size(); i++){
 		TextureInfo *ti = &m_textureinfo_cache[i];
-		video::IImage *img = generateImage(ti->name);
+		video::IImage *origimg = generateImage(ti->name);
+		video::IImage *img = textureMinSizeUpscale(driver, origimg);
 #ifdef __ANDROID__
 		img = Align2Npot2(img, driver);
 		sanity_check(img->getDimension().Height == npot2(img->getDimension().Height));
@@ -794,6 +804,8 @@ void TextureSource::rebuildImagesAndTextures()
 		if (img) {
 			t = driver->addTexture(ti->name.c_str(), img);
 			img->drop();
+			if(origimg && (origimg != img))
+				origimg->drop();
 		}
 		video::ITexture *t_old = ti->texture;
 		// Replace texture
