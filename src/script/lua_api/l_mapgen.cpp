@@ -801,10 +801,13 @@ int ModApiMapgen::l_generate_ores(lua_State *L)
 	mg.vm   = LuaVoxelManip::checkobject(L, 1)->vm;
 	mg.ndef = getServer(L)->getNodeDefManager();
 
-	u32 blockseed = Mapgen::getBlockSeed(mg.vm->m_area.MinEdge, mg.seed);
+	v3s16 pmin = lua_istable(L, 2) ? read_v3s16(L, 2) :
+			mg.vm->m_area.MinEdge + v3s16(1,1,1) * MAP_BLOCKSIZE;
+	v3s16 pmax = lua_istable(L, 3) ? read_v3s16(L, 3) :
+			mg.vm->m_area.MaxEdge - v3s16(1,1,1) * MAP_BLOCKSIZE;
+	sortBoxVerticies(pmin, pmax);
 
-	v3s16 pmin = read_v3s16(L, 2);
-	v3s16 pmax = read_v3s16(L, 3);
+	u32 blockseed = Mapgen::getBlockSeed(pmin, mg.seed);
 
 	emerge->oremgr->placeAllOres(&mg, blockseed, pmin, pmax);
 
@@ -821,10 +824,13 @@ int ModApiMapgen::l_generate_decorations(lua_State *L)
 	mg.vm   = LuaVoxelManip::checkobject(L, 1)->vm;
 	mg.ndef = getServer(L)->getNodeDefManager();
 
-	u32 blockseed = Mapgen::getBlockSeed(mg.vm->m_area.MinEdge, mg.seed);
+	v3s16 pmin = lua_istable(L, 2) ? read_v3s16(L, 2) :
+			mg.vm->m_area.MinEdge + v3s16(1,1,1) * MAP_BLOCKSIZE;
+	v3s16 pmax = lua_istable(L, 3) ? read_v3s16(L, 3) :
+			mg.vm->m_area.MaxEdge - v3s16(1,1,1) * MAP_BLOCKSIZE;
+	sortBoxVerticies(pmin, pmax);
 
-	v3s16 pmin = read_v3s16(L, 2);
-	v3s16 pmax = read_v3s16(L, 3);
+	u32 blockseed = Mapgen::getBlockSeed(pmin, mg.seed);
 
 	emerge->decomgr->placeAllDecos(&mg, blockseed, pmin, pmax);
 
