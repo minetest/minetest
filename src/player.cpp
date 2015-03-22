@@ -240,6 +240,7 @@ void Player::deSerialize(std::istream &is, std::string playername)
 
 u32 Player::addHud(HudElement *toadd)
 {
+	JMutexAutoLock lock(m_mutex);
 	u32 id = getFreeHudID();
 
 	if (id < hud.size())
@@ -252,6 +253,8 @@ u32 Player::addHud(HudElement *toadd)
 
 HudElement* Player::getHud(u32 id)
 {
+	JMutexAutoLock lock(m_mutex);
+
 	if (id < hud.size())
 		return hud[id];
 
@@ -260,6 +263,8 @@ HudElement* Player::getHud(u32 id)
 
 HudElement* Player::removeHud(u32 id)
 {
+	JMutexAutoLock lock(m_mutex);
+
 	HudElement* retval = NULL;
 	if (id < hud.size()) {
 		retval = hud[id];
@@ -270,6 +275,8 @@ HudElement* Player::removeHud(u32 id)
 
 void Player::clearHud()
 {
+	JMutexAutoLock lock(m_mutex);
+
 	while(!hud.empty()) {
 		delete hud.back();
 		hud.pop_back();
