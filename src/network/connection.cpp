@@ -2924,7 +2924,7 @@ void Connection::Send(u16 peer_id, u8 channelnum,
 
 	ConnectionCommand c;
 
-	c.send(peer_id, channelnum, pkt->oldForgePacket(), reliable);
+	c.send(peer_id, channelnum, pkt, reliable);
 	putCommand(c);
 }
 

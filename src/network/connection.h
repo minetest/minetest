@@ -437,19 +437,12 @@ struct ConnectionCommand
 		peer_id = peer_id_;
 	}
 	void send(u16 peer_id_, u8 channelnum_,
-			SharedBuffer<u8> data_, bool reliable_)
+			NetworkPacket* pkt, bool reliable_)
 	{
 		type = CONNCMD_SEND;
 		peer_id = peer_id_;
 		channelnum = channelnum_;
-		data = data_;
-		reliable = reliable_;
-	}
-	void sendToAll(u8 channelnum_, SharedBuffer<u8> data_, bool reliable_)
-	{
-		type = CONNCMD_SEND_TO_ALL;
-		channelnum = channelnum_;
-		data = data_;
+		data = pkt->oldForgePacket();
 		reliable = reliable_;
 	}
 
