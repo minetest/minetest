@@ -1,9 +1,14 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR mahmutelmas06@gmail.com, 2015.
+#, approved
 msgid ""
 msgstr ""
-"Project-Id-Version: 0.0.1\n"
+"Project-Id-Version: 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-24 14:45+0200\n"
-"PO-Revision-Date: 2015-02-24 15:11+0200\n"
+"POT-Creation-Date: 2015-03-04 14:450200\n"
+"PO-Revision-Date: 2015-03-22 23:56+0200\n"
 "Last-Translator: Mahmut Elmas mahmutelmas06@gmail.com\n"
 "Language-Team: Türkçe <>\n"
 "Language: tr\n"
@@ -31,13 +36,13 @@ msgstr "Dünya:"
 #, approved
 #| msgid "Hide Game"
 msgid "Hide Game"
-msgstr "Kök Eklentiler"
+msgstr "Oyunu Gizle"
 
 #: builtin/mainmenu/dlg_config_world.lua:36
 #: builtin/mainmenu/dlg_config_world.lua:38
 #, approved
 msgid "Hide mp content"
-msgstr "Paket detaylarını gizle"
+msgstr "Detayları gizle"
 
 #: builtin/mainmenu/dlg_config_world.lua:46
 #, approved
@@ -68,13 +73,13 @@ msgstr "Vazgeç"
 #: builtin/mainmenu/dlg_config_world.lua:68
 #, approved
 msgid "Enable MP"
-msgstr "Eklenti paketini etkinleştir"
+msgstr "Paketi Aç"
 
 #: builtin/mainmenu/dlg_config_world.lua:70
 #, approved
 #| msgid "Disable MP"
 msgid "Disable MP"
-msgstr "Eklenti paketini devre dışı bırak"
+msgstr "Paketi Kapat"
 
 #: builtin/mainmenu/dlg_config_world.lua:74
 #: builtin/mainmenu/dlg_config_world.lua:76
@@ -204,7 +209,7 @@ msgstr "Kabul et"
 #: builtin/mainmenu/modmgr.lua:342
 #, approved
 msgid "Install Mod: file: \"$1\""
-msgstr "Eklenti yükle: file: \"$1\""
+msgstr "Eklenti yükle: Dosya: \"$1\""
 
 #: builtin/mainmenu/modmgr.lua:343
 #, approved
@@ -256,6 +261,10 @@ msgstr "İndiriliyor"
 msgid "please wait..."
 msgstr "lütfen bekleyin..."
 
+#, approved
+msgid "Downloading $1, please wait..."
+msgstr " $1, indiriliyor, lütfen bekleyin"
+
 #: builtin/mainmenu/store.lua:159
 #, approved
 msgid "Successfully installed:"
@@ -299,7 +308,7 @@ msgstr "$2 sayfadan $1 'cisi"
 #: builtin/mainmenu/tab_credits.lua:22
 #, approved
 msgid "Credits"
-msgstr "Emeği Geçenler"
+msgstr "Hakkında"
 
 #: builtin/mainmenu/tab_credits.lua:29
 #, approved
@@ -362,10 +371,6 @@ msgid "Mods"
 msgstr "Eklentiler"
 
 #: builtin/mainmenu/tab_multiplayer.lua:23
-#, approved
-msgid "Address/Port"
-msgstr "Adres / Port"
-
 #: builtin/mainmenu/tab_multiplayer.lua:24 builtin/mainmenu/tab_server.lua:37
 #: builtin/mainmenu/tab_simple_main.lua:25
 #, approved
@@ -377,6 +382,14 @@ msgstr "Kullanıcı adı/Şifre"
 #, approved
 msgid "Public Serverlist"
 msgstr "Çevirimiçi Oyun Listesi"
+
+#, approved
+msgid "Address / Port :"
+msgstr "Adres / Port :"
+
+#, approved
+msgid "Name / Password :"
+msgstr "Kullanıcı Adı / Şifre :"
 
 #: builtin/mainmenu/tab_multiplayer.lua:34 builtin/mainmenu/tab_server.lua:26
 #: builtin/mainmenu/tab_singleplayer.lua:85 src/keycode.cpp:230
@@ -391,6 +404,18 @@ msgid "Connect"
 msgstr "Bağlan"
 
 #: builtin/mainmenu/tab_multiplayer.lua:252
+#, approved
+msgid "Creative mode"
+msgstr "Yaratıcı mod"
+
+#, approved
+msgid "Damage enabled"
+msgstr "Hasar alma etkin"
+
+#, approved
+msgid "PvP enabled"
+msgstr "Mücadele modu"
+
 #, approved
 msgid "Client"
 msgstr "Çevirimiçi Oyna"
@@ -461,6 +486,30 @@ msgstr ""
 "Tek kişilik dünyayı sıfırlamak istediğinizden emin misiniz "
 "?"
 
+#, approved
+msgid "No Filter"
+msgstr "Süzme yok"
+
+#, approved
+msgid "Bilinear Filter"
+msgstr "İki yönlü süzme"
+
+#, approved
+msgid "Trilinear Filter"
+msgstr "Üç yönlü süzme"
+
+#, approved
+msgid "No Mipmap"
+msgstr "Mipmap kapalı"
+
+#, approved
+msgid "Mipmap"
+msgstr "Mipmap"
+
+#, approved
+msgid "Mipmap  Aniso. Filter"
+msgstr "Mipmap  Aniso. Süzgeci"
+
 #: builtin/mainmenu/tab_settings.lua:27
 #, approved
 msgid "No!!!"
@@ -517,6 +566,18 @@ msgstr "Eşyönsüz süzme"
 #, approved
 msgid "Bi-Linear Filtering"
 msgstr "Çift yönlü süzme"
+
+#, approved
+msgid "Node Highlighting"
+msgstr "Nesne seçme göstergesi"
+
+#, approved
+msgid "Texturing:"
+msgstr "Doku:"
+
+#, approved
+msgid "Rendering:"
+msgstr "Kaplama:"
 
 #: builtin/mainmenu/tab_settings.lua:157
 #, approved
@@ -642,24 +703,178 @@ msgstr "Bilgi yok"
 #: builtin/mainmenu/tab_texturepacks.lua:114
 #, approved
 msgid "Texturepacks"
-msgstr "Doku paketleri"
+msgstr "Doku paketi"
 
 #: src/client.cpp:2726
+#, approved
+msgid "Loading textures..."
+msgstr "Dokular yükleniyor..."
+
+#, approved
+msgid "Rebuilding shaders..."
+msgstr "Shader inşa ediliyor..."
+
+#, approved
+msgid "Initializing nodes..."
+msgstr "Nesneler yükleniyor..."
+
 #, approved
 msgid "Item textures..."
 msgstr "Nesne dokuları ..."
 
 #: src/fontengine.cpp:70 src/fontengine.cpp:226
 #, approved
+msgid "Done!"
+msgstr "Tamam!"
+
+#, approved
+msgid "Main Menu"
+msgstr "Ana menu"
+
+#, approved
+msgid "Player name too long."
+msgstr "Kullanıcı adı çok uzun."
+
+#, approved
+msgid "Connection error (timed out?)"
+msgstr "Bağlantı hatası ( Zaman aşımı ? )"
+
+#, approved
+msgid "No world selected and no address provided. Nothing to do."
+msgstr "Dünya veya adres seçilmedi."
+
+#, approved
+msgid "Provided world path doesn't exist: "
+msgstr "Belirtilen dünya konumu yok:"
+
+#, approved
+msgid "Could not find or load game \""
+msgstr "Oyun yüklenemiyor \""
+
+#, approved
+msgid "Invalid gamespec."
+msgstr "Geçersiz oyun özellikleri."
+
+#, approved
 msgid "needs_fallback_font"
 msgstr "needs_fallback_font"
 
 #: src/game.cpp:1063
 #, approved
+msgid "Proceed"
+msgstr "Uygula"
+
+#, approved
+msgid "You died."
+msgstr "Geberdin."
+
+#, approved
 msgid "Respawn"
 msgstr "Yeniden Canlan"
 
 #: src/game.cpp:2250
+#, approved
+msgid ""
+"Default Controls:\n"
+"No menu visible:\n"
+"- single tap: button activate\n"
+"- double tap: place/use\n"
+"- slide finger: look around\n"
+"Menu/Inventory visible:\n"
+"- double tap (outside):\n"
+" -->close\n"
+"- touch stack, touch slot:\n"
+" --> move stack\n"
+"- touch&drag, tap 2nd finger\n"
+" --> place single item to slot\n"
+msgstr ""
+"Varsayılan Kontroller:\n"
+"Tüm menüler gizli:\n"
+"- Tek tık: tuş etkin\n"
+"- Çift tık: yerleştir/kullan\n"
+"- Parmağı kaydır: etrafa bak\n"
+"Menu/Encanter görünür:\n"
+"- çift tık (dışarda):\n"
+" -->kapat\n"
+"- touch stack, touch slot:\n"
+" --> move stack\n"
+"- tut&bırak, iki parmağı kullan\n"
+" --> slotuna bir item bırak\n"
+
+#, approved
+msgid ""
+"Default Controls:\n"
+"- WASD: move\n"
+"- Space: jump/climb\n"
+"- Shift: sneak/go down\n"
+"- Q: drop item\n"
+"- I: inventory\n"
+"- Mouse: turn/look\n"
+"- Mouse left: dig/punch\n"
+"- Mouse right: place/use\n"
+"- Mouse wheel: select item\n"
+"- T: chat\n"
+msgstr ""
+"Varsayılanlar Kontroller:\n"
+"- WASD: Hareket et\n"
+"- Boşluk: Zıpla/Tırman\n"
+"- Shift: Sessiz yürü/Aşağı in\n"
+"- Q: Elindekini bırak\n"
+"- I: Envanter\n"
+"- Fare: Dön/Bak\n"
+"- Sol fare: Kaz/Vur\n"
+"- Sağ fare: Yerleştir/Kullan\n"
+"- Fare tekerleği: Araç seç\n"
+"- T: Sohbet\n"
+
+#, approved
+msgid "Continue"
+msgstr "Devam et"
+
+#, approved
+msgid "Change Password"
+msgstr "Şifre değiştir"
+
+#, approved
+msgid "Sound Volume"
+msgstr "Ses yüksekliği :"
+
+#, approved
+msgid "Change Keys"
+msgstr "Tuşları değiştir"
+
+#, approved
+msgid "Exit to Menu"
+msgstr "Menüye dön"
+
+#, approved
+msgid "Exit to OS"
+msgstr "Oyundan Çık"
+
+#, approved
+msgid "Shutting down..."
+msgstr "Kapatılıyor..."
+
+#, approved
+msgid "Loading..."
+msgstr "Yükleniyor..."
+
+#, approved
+msgid "Creating server..."
+msgstr "Sunucu oluşturuluyor..."
+
+#, approved
+msgid "Creating client..."
+msgstr "İstemci oluşturuluyor..."
+
+#, approved
+msgid "Resolving address..."
+msgstr "Adres çözümleniyor..."
+
+#, approved
+msgid "Connecting to server..."
+msgstr "Sunucuya bağlanılıyor..."
+
 #, approved
 msgid "Item definitions..."
 msgstr "Nesne tanımlamaları..."
@@ -694,10 +909,6 @@ msgstr ""
 "Hata ayrıntıları için debug.txt dosyasını inceleyin."
 
 #: src/guiFormSpecMenu.cpp:2055
-#, approved
-msgid "Proceed"
-msgstr "Uygula"
-
 #: src/guiFormSpecMenu.cpp:2846
 #, approved
 msgid "Enter "
@@ -713,7 +924,7 @@ msgstr "Tuş ayaları. ( Olağandışı durumlarda minetest.conf 'u düzenleyin 
 #: src/guiKeyChangeMenu.cpp:165
 #, approved
 msgid "\"Use\" = climb down"
-msgstr "\"Kullan\" = Aşağı in"
+msgstr "\"Kullan Tuşu\" = Aşağı in"
 
 #: src/guiKeyChangeMenu.cpp:180
 #, approved
@@ -1090,13 +1301,14 @@ msgstr "Numpad 7"
 msgid "Numpad *"
 msgstr "Numpad *"
 
-#: src/keycode.cpp:236
-#, approved
 msgid "Numpad +"
 msgstr "Numpad +"
 
 #: src/keycode.cpp:236
 #, approved
+msgid "Numpad "
+msgstr "Numpad "
+
 msgid "Numpad -"
 msgstr "Numpad -"
 
@@ -1209,40 +1421,3 @@ msgstr "PA1"
 #, approved
 msgid "Zoom"
 msgstr "Yakınlaştır"
-
-#: src/main.cpp:1681
-#, approved
-msgid "Main Menu"
-msgstr "Ana menu"
-
-#: src/main.cpp:1719
-#, approved
-msgid "Player name too long."
-msgstr "Kullanıcı adı çok uzun."
-
-#: src/main.cpp:1757
-#, approved
-msgid "Connection error (timed out?)"
-msgstr "Bağlantı hatası ( Zaman aşımı ? )"
-
-#: src/main.cpp:1919
-#, approved
-msgid ""
-"No world selected and no address provided. Nothing to "
-"do."
-msgstr "Dünya veya adres seçilmedi."
-
-#: src/main.cpp:1926
-#, approved
-msgid "Provided world path doesn't exist: "
-msgstr "Belirtilen dünya konumu yok:"
-
-#: src/main.cpp:1935
-#, approved
-msgid "Could not find or load game \""
-msgstr "Oyun bulunamıyor veya yüklenemiyor \""
-
-#: src/main.cpp:1953
-#, approved
-msgid "Invalid gamespec."
-msgstr "Geçersiz oyun özellikleri."
