@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include "inventory.h"
 #include "constants.h" // BS
-#include "jthread/jmutexautolock.h"
+#include "jthread/jmutex.h"
 #include <list>
 
 #define PLAYERNAME_SIZE 20
@@ -204,7 +204,6 @@ public:
 	}
 
 	u32 getFreeHudID() {
-		JMutexAutoLock lock(m_mutex);
 		size_t size = hud.size();
 		for (size_t i = 0; i != size; i++) {
 			if (!hud[i])
