@@ -30,45 +30,65 @@
 #include "irr_v3d.h"
 #include "util/string.h"
 
-#define PSEUDORANDOM_MAX 32767
-
 extern FlagDesc flagdesc_noiseparams[];
 
-class PseudoRandom
-{
+// Note: this class is not polymorphic so that its high level of
+// optimizability may be preserved in the common use case
+class PseudoRandom {
 public:
-	PseudoRandom(): m_next(0)
+	const static u32 RANDOM_RANGE = 32767;
+
+	inline PseudoRandom(int seed=0):
+		m_next(seed)
 	{
 	}
-	PseudoRandom(int seed): m_next(seed)
-	{
-	}
-	void seed(int seed)
+
+	inline void seed(int seed)
 	{
 		m_next = seed;
 	}
-	// Returns 0...PSEUDORANDOM_MAX
-	int next()
+
+	inline int next()
 	{
 		m_next = m_next * 1103515245 + 12345;
-		return((unsigned)(m_next/65536) % (PSEUDORANDOM_MAX + 1));
+		return (unsigned)(m_next / 65536) % (RANDOM_RANGE + 1);
 	}
-	int range(int min, int max)
+
+	inline int range(int min, int max)
 	{
-		if (max-min > (PSEUDORANDOM_MAX + 1) / 10)
-		{
-			//dstream<<"WARNING: PseudoRandom::range: max > 32767"<<std::endl;
-			assert("Something wrong with random number" == NULL);
-		}
-		if(min > max)
-		{
-			assert("Something wrong with random number" == NULL);
-			//return max;
-		}
-		return (next()%(max-min+1))+min;
+		assert(max >= min);
+		/*
+		Here, we ensure the range is not too large relative to RANDOM_MAX,
+		as otherwise the effects of bias would become noticable.  Unlike
+		PcgRandom, we cannot modify this RNG's range as it would change the
+		output of this RNG for reverse compatibility.
+		*/
+		assert((u32)(max - min) <= (RANDOM_RANGE + 1) / 10);
+
+		return (next() % (max - min + 1)) + min;
 	}
+
 private:
 	int m_next;
+};
+
+class PcgRandom {
+public:
+	const static s32 RANDOM_MIN   = -0x7fffffff - 1;
+	const static s32 RANDOM_MAX   = 0x7fffffff;
+	const static u32 RANDOM_RANGE = 0xffffffff;
+
+	PcgRandom(u64 state=0x853c49e6748fea9bULL, u64 seq=0xda3e39cb94b95bdbULL);
+	void seed(u64 state, u64 seq=0xda3e39cb94b95bdbULL);
+	u32 next();
+	u32 range(u32 bound);
+	s32 range(s32 min, s32 max);
+	void bytes(void *out, size_t len);
+	s32 randNormalDist(s32 min, s32 max, int num_trials=6);
+
+private:
+	u64 m_state;
+	u64 m_inc;
 };
 
 #define NOISE_FLAG_DEFAULTS    0x01
@@ -89,7 +109,8 @@ struct NoiseParams {
 	float lacunarity;
 	u32 flags;
 
-	NoiseParams() {
+	NoiseParams()
+	{
 		offset     = 0.0f;
 		scale      = 1.0f;
 		spread     = v3f(250, 250, 250);

@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "log.h"
 #include "../constants.h" // BS, MAP_BLOCKSIZE
+#include "../noise.h" // PseudoRandom, PcgRandom
 #include <string.h>
 #include <iostream>
 
@@ -115,36 +116,32 @@ void FacePositionCache::generateFacePosition(u16 d)
     myrand
 */
 
-static unsigned long next = 1;
+PcgRandom g_pcgrand;
 
-/* RAND_MAX assumed to be 32767 */
-int myrand(void)
+u32 myrand()
 {
-   next = next * 1103515245 + 12345;
-   return((unsigned)(next/65536) % 32768);
+	return g_pcgrand.next();
 }
 
-void mysrand(unsigned seed)
+void mysrand(unsigned int seed)
 {
-   next = seed;
+	g_pcgrand.seed(seed);
+}
+
+void myrand_bytes(void *out, size_t len)
+{
+	g_pcgrand.bytes(out, len);
 }
 
 int myrand_range(int min, int max)
 {
-	if(max-min > MYRAND_MAX)
-	{
-		errorstream<<"WARNING: myrand_range: max-min > MYRAND_MAX"<<std::endl;
-        max = min + MYRAND_MAX;
-	}
-	if(min > max)
-	{
-		errorstream<<"WARNING: myrand_range: min > max"<<std::endl;
-		return max;
-	}
-	return (myrand()%(max-min+1))+min;
+	return g_pcgrand.range(min, max);
 }
 
-// 64-bit unaligned version of MurmurHash
+
+/*
+	64-bit unaligned version of MurmurHash
+*/
 u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed)
 {
 	const u64 m = 0xc6a4a7935bd1e995ULL;
@@ -159,12 +156,12 @@ u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed)
 		memcpy(&k, data, sizeof(u64));
 		data++;
 
-		k *= m; 
-		k ^= k >> r; 
-		k *= m; 
-		
+		k *= m;
+		k ^= k >> r;
+		k *= m;
+
 		h ^= k;
-		h *= m; 
+		h *= m;
 	}
 
 	const unsigned char *data2 = (const unsigned char *)data;
@@ -178,13 +175,13 @@ u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed)
 		case 1: h ^= (u64)data2[0];
 				h *= m;
 	}
- 
+
 	h ^= h >> r;
 	h *= m;
 	h ^= h >> r;
-	
+
 	return h;
-} 
+}
 
 
 /*
@@ -197,7 +194,7 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 		f32 camera_fov, f32 range, f32 *distance_ptr)
 {
 	v3s16 blockpos_nodes = blockpos_b * MAP_BLOCKSIZE;
-	
+
 	// Block center position
 	v3f blockpos(
 			((float)blockpos_nodes.X + MAP_BLOCKSIZE/2) * BS,
@@ -213,7 +210,7 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 
 	if(distance_ptr)
 		*distance_ptr = d;
-	
+
 	// If block is far away, it's not in sight
 	if(d > range)
 		return false;
@@ -221,7 +218,7 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 	// Maximum radius of a block.  The magic number is
 	// sqrt(3.0) / 2.0 in literal form.
 	f32 block_max_radius = 0.866025403784 * MAP_BLOCKSIZE * BS;
-	
+
 	// If block is (nearly) touching the camera, don't
 	// bother validating further (that is, render it anyway)
 	if(d < block_max_radius)
@@ -242,7 +239,7 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 	// Cosine of the angle between the camera direction
 	// and the block direction (camera_dir is an unit vector)
 	f32 cosangle = dforward / blockpos_adj.getLength();
-	
+
 	// If block is not in the field of view, skip it
 	if(cosangle < cos(camera_fov / 2))
 		return false;

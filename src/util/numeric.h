@@ -239,10 +239,10 @@ inline float wrapDegrees_180(float f)
 /*
 	Pseudo-random (VC++ rand() sucks)
 */
-int myrand(void);
-void mysrand(unsigned seed);
-#define MYRAND_MAX 32767
-
+#define MYRAND_RANGE 0xffffffff
+u32 myrand();
+void mysrand(unsigned int seed);
+void myrand_bytes(void *out, size_t len);
 int myrand_range(int min, int max);
 
 /*

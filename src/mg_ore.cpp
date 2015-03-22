@@ -308,7 +308,7 @@ void OreVein::generate(MMVManip *vm, int mapseed, u32 blockseed,
 		}
 
 		// randval ranges from -1..1
-		float randval   = (float)pr.next() / (PSEUDORANDOM_MAX / 2) - 1.f;
+		float randval   = (float)pr.next() / (pr.RANDOM_RANGE / 2) - 1.f;
 		float noiseval  = contour(noise->result[index]);
 		float noiseval2 = contour(noise2->result[index]);
 		if (noiseval * noiseval2 + randval * random_factor < nthresh)

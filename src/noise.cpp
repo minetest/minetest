@@ -62,6 +62,107 @@ FlagDesc flagdesc_noiseparams[] = {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+PcgRandom::PcgRandom(u64 state, u64 seq)
+{
+	seed(state, seq);
+}
+
+void PcgRandom::seed(u64 state, u64 seq)
+{
+	m_state = 0U;
+	m_inc = (seq << 1u) | 1u;
+	next();
+	m_state += state;
+	next();
+}
+
+
+u32 PcgRandom::next()
+{
+	u64 oldstate = m_state;
+	m_state = oldstate * 6364136223846793005ULL + m_inc;
+
+	u32 xorshifted = ((oldstate >> 18u) ^ oldstate) >> 27u;
+	u32 rot = oldstate >> 59u;
+	return (xorshifted >> rot) | (xorshifted << ((-rot) & 31));
+}
+
+
+u32 PcgRandom::range(u32 bound)
+{
+	/*
+	If the bound is not a multiple of the RNG's range, it may cause bias,
+	e.g. a RNG has a range from 0 to 3 and we take want a number 0 to 2.
+	Using rand() % 3, the number 0 would be twice as likely to appear.
+	With a very large RNG range, the effect becomes less prevalent but
+	still present.  This can be solved by modifying the range of the RNG
+	to become a multiple of bound by dropping values above the a threshhold.
+	In our example, threshhold == 4 - 3 = 1 % 3 == 1, so reject 0, thus
+	making the range 3 with no bias.
+
+	This loop looks dangerous, but will always terminate due to the
+	RNG's property of uniformity.
+	*/
+	u32 threshhold = -bound % bound;
+	u32 r;
+
+	while ((r = next()) < threshhold);
+
+	return r % bound;
+}
+
+
+s32 PcgRandom::range(s32 min, s32 max)
+{
+	assert(max >= min);
+	u32 bound = max - min + 1;
+	return range(bound) + min;
+}
+
+
+void PcgRandom::bytes(void *out, size_t len)
+{
+	u32 r;
+	u8 *outb = (u8 *)out;
+
+	size_t len_alignment = (uintptr_t)out % sizeof(u32);
+	if (len_alignment) {
+		r = next();
+		while (len_alignment--) {
+			*outb = r & 0xFF;
+			outb++;
+			r >>= 8;
+		}
+	}
+
+	size_t len_dwords = len / sizeof(u32);
+	while (len_dwords--) {
+		r = next();
+		*(u32 *)outb = next();
+		outb += sizeof(u32);
+	}
+
+	size_t len_remaining = len % sizeof(u32);
+	if (len_remaining) {
+		r = next();
+		while (len_remaining--) {
+			*outb = r & 0xFF;
+			outb++;
+			r >>= 8;
+		}
+	}
+}
+
+
+s32 PcgRandom::randNormalDist(s32 min, s32 max, int num_trials)
+{
+	u32 accum = 0;
+	for (int i = 0; i != num_trials; i++)
+		accum += range(min, max);
+	return ((float)accum / num_trials) + 0.5f;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 float noise2d(int x, int y, int seed)
 {

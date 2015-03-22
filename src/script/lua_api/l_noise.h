@@ -64,6 +64,9 @@ class LuaPerlinNoiseMap : public ModApiBase {
 	static const char className[];
 	static const luaL_reg methods[];
 
+	// Exported functions
+
+	// garbage collector
 	static int gc_object(lua_State *L);
 
 	static int l_get2dMap(lua_State *L);
@@ -104,18 +107,51 @@ private:
 	static int l_next(lua_State *L);
 
 public:
-	LuaPseudoRandom(int seed);
-
-	~LuaPseudoRandom();
-
-	const PseudoRandom& getItem() const;
-	PseudoRandom& getItem();
+	LuaPseudoRandom(int seed) :
+		m_pseudo(seed) {}
 
 	// LuaPseudoRandom(seed)
 	// Creates an LuaPseudoRandom and leaves it on top of stack
 	static int create_object(lua_State *L);
 
-	static LuaPseudoRandom* checkobject(lua_State *L, int narg);
+	static LuaPseudoRandom *checkobject(lua_State *L, int narg);
+
+	static void Register(lua_State *L);
+};
+
+/*
+	LuaPcgRandom
+*/
+class LuaPcgRandom : public ModApiBase {
+private:
+	PcgRandom m_rnd;
+
+	static const char className[];
+	static const luaL_reg methods[];
+
+	// Exported functions
+
+	// garbage collector
+	static int gc_object(lua_State *L);
+
+	// next(self, min=-2147483648, max=2147483647) -> get next value
+	static int l_next(lua_State *L);
+
+	// rand_normal_dist(self, min=-2147483648, max=2147483647, num_trials=6) ->
+	// get next normally distributed random value
+	static int l_rand_normal_dist(lua_State *L);
+
+public:
+	LuaPcgRandom(u64 seed) :
+		m_rnd(seed) {}
+	LuaPcgRandom(u64 seed, u64 seq) :
+		m_rnd(seed, seq) {}
+
+	// LuaPcgRandom(seed)
+	// Creates an LuaPcgRandom and leaves it on top of stack
+	static int create_object(lua_State *L);
+
+	static LuaPcgRandom *checkobject(lua_State *L, int narg);
 
 	static void Register(lua_State *L);
 };
