@@ -106,7 +106,8 @@ u32 PcgRandom::range(u32 bound)
 	u32 threshhold = -bound % bound;
 	u32 r;
 
-	while ((r = next()) < threshhold);
+	while ((r = next()) < threshhold)
+		;
 
 	return r % bound;
 }
@@ -127,6 +128,7 @@ void PcgRandom::bytes(void *out, size_t len)
 
 	size_t len_alignment = (uintptr_t)out % sizeof(u32);
 	if (len_alignment) {
+		len -= len_alignment;
 		r = next();
 		while (len_alignment--) {
 			*outb = r & 0xFF;
@@ -156,7 +158,7 @@ void PcgRandom::bytes(void *out, size_t len)
 
 s32 PcgRandom::randNormalDist(s32 min, s32 max, int num_trials)
 {
-	u32 accum = 0;
+	s32 accum = 0;
 	for (int i = 0; i != num_trials; i++)
 		accum += range(min, max);
 	return ((float)accum / num_trials) + 0.5f;
