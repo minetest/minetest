@@ -2336,7 +2336,6 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `right_click(clicker)`; `clicker` is another `ObjectRef`
 * `get_hp()`: returns number of hitpoints (2 * number of hearts)
 * `set_hp(hp)`: set number of hitpoints (2 * number of hearts)
-* `apply_damage(damage)`: set amount of damage to object. If damage < 0, heal the target
 * `get_inventory()`: returns an `InvRef`
 * `get_wield_list()`: returns the name of the inventory list the wielded item is in
 * `get_wield_index()`: returns the index of the wielded item
