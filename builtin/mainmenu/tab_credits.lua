@@ -39,10 +39,15 @@ tab_credits = {
 				"Nathanael Courant (Nore/Novatux) <nore@mesecons.net>,"..
 				"BlockMen,"..
 				"Craig Robbins (Zeno),"..
+				"Loic Blot (nerzhul/nrz),"..
+				"paramat,"..
 				","..
 				"#FFFF00" .. fgettext("Active Contributors") .. "," ..
+				"SmallJoker <mk939@ymail.com>," ..
+				"est31 <MTest31@outlook.com>," ..
+				"gregorycu,"..
+				"Andrew Ward (rubenwardy) <rubenwardy@gmail.com>," ..
 				"TriBlade9 <triblade9@mail.com>,"..
-				"SmallJoker <mk939@ymail.com>,"..
 				"Zefram <zefram@fysh.org>,"..
 				"," ..
 				"#FFFF00" .. fgettext("Previous Contributors") .. "," ..
