@@ -31,6 +31,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <ISceneCollisionManager.h>
 
+// Very slow button repeat frequency (in seconds)
+#define SLOW_BUTTON_REPEAT	(1.0f)
+
 using namespace irr::core;
 
 extern Settings *g_settings;
@@ -121,6 +124,7 @@ TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, IEventReceiver* receiver)
 	for (unsigned int i=0; i < after_last_element_id; i++) {
 		m_buttons[i].guibutton     =  0;
 		m_buttons[i].repeatcounter = -1;
+		m_buttons[i].repeatdelay   = BUTTON_REPEAT_DELAY;
 	}
 
 	m_screensize = m_device->getVideoDriver()->getScreenSize();
@@ -141,13 +145,14 @@ void TouchScreenGUI::loadButtonTexture(button_info* btn, const char* path)
 }
 
 void TouchScreenGUI::initButton(touch_gui_button_id id, rect<s32> button_rect,
-		std::wstring caption, bool immediate_release )
+		std::wstring caption, bool immediate_release, float repeat_delay)
 {
 
 	button_info* btn       = &m_buttons[id];
 	btn->guibutton         = m_guienv->addButton(button_rect, 0, id, caption.c_str());
 	btn->guibutton->grab();
 	btn->repeatcounter     = -1;
+	btn->repeatdelay       = repeat_delay;
 	btn->keycode           = id2keycode(id);
 	btn->immediate_release = immediate_release;
 	btn->ids.clear();
@@ -240,25 +245,25 @@ void TouchScreenGUI::init(ISimpleTextureSource* tsrc, float density)
 			rect<s32>(m_screensize.X - (0.75*button_size),
 					m_screensize.Y - (2.25*button_size),
 					m_screensize.X, m_screensize.Y - (button_size*1.5)),
-			L"fly", true);
+			L"fly", false, SLOW_BUTTON_REPEAT);
 
 	/* init noclip button */
 	initButton(noclip_id,
 			rect<s32>(m_screensize.X - (0.75*button_size), 2.25*button_size,
 					m_screensize.X, 3*button_size),
-			L"clip", true);
+			L"clip", false, SLOW_BUTTON_REPEAT);
 
 	/* init fast button */
 	initButton(fast_id,
 			rect<s32>(m_screensize.X - (0.75*button_size), 1.5*button_size,
 					m_screensize.X, 2.25*button_size),
-			L"fast", true);
+			L"fast", false, SLOW_BUTTON_REPEAT);
 
 	/* init debug button */
 	initButton(debug_id,
 			rect<s32>(m_screensize.X - (0.75*button_size), 0.75*button_size,
 					m_screensize.X, 1.5*button_size),
-			L"dbg", true);
+			L"dbg", false, SLOW_BUTTON_REPEAT);
 
 	/* init chat button */
 	initButton(chat_id,
@@ -270,13 +275,13 @@ void TouchScreenGUI::init(ISimpleTextureSource* tsrc, float density)
 	initButton(camera_id,
 			rect<s32>(m_screensize.X - (1.5*button_size), 0,
 					m_screensize.X - (0.75*button_size), 0.75*button_size),
-			L"cam", true);
+			L"cam", false, SLOW_BUTTON_REPEAT);
 
 	/* init rangeselect button */
 	initButton(range_id,
 			rect<s32>(m_screensize.X - (2.25*button_size), 0,
 					m_screensize.X - (1.5*button_size), 0.75*button_size),
-			L"far", true);
+			L"far", false, SLOW_BUTTON_REPEAT);
 }
 
 touch_gui_button_id TouchScreenGUI::getButtonID(s32 x, s32 y)
@@ -687,7 +692,7 @@ void TouchScreenGUI::step(float dtime)
 			if (m_move_id != -1)
 				m_move_has_really_moved = true;
 
-			if (btn->repeatcounter < 0.2) continue;
+			if (btn->repeatcounter < btn->repeatdelay) continue;
 
 			btn->repeatcounter              = 0;
 			SEvent translated;
