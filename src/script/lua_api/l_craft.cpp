@@ -393,6 +393,8 @@ int ModApiCraft::l_get_craft_recipe(lua_State *L)
 	std::vector<CraftDefinition*> recipes = server->cdef()
 			->getCraftRecipes(output, server, 1);
 
+	lua_createtable(L, 1, 0);
+
 	if (recipes.empty()) {
 		lua_pushnil(L);
 		lua_setfield(L, -2, "items");
