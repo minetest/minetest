@@ -2021,7 +2021,8 @@ struct TestConnection: public TestBase
 			NetworkPacket pkt;
 			pkt.putRawPacket((u8*) "Hello World !", 14, 0);
 
-			Buffer<u8> sentdata = pkt.oldForgePacket();
+			Buffer<u8> sentdata(14+2);
+			pkt.oldForgePacket(sentdata);
 
 			infostream<<"** running client.Send()"<<std::endl;
 			client.Send(PEER_ID_SERVER, 0, &pkt, true);
@@ -2036,7 +2037,8 @@ struct TestConnection: public TestBase
 					<< ", data=" << (const char*)pkt.getU8Ptr(0)
 					<< std::endl;
 
-			Buffer<u8> recvdata = pkt.oldForgePacket();
+			Buffer<u8> recvdata(14+2);
+			pkt.oldForgePacket(recvdata);
 
 			UASSERT(memcmp(*sentdata, *recvdata, recvdata.getSize()) == 0);
 		}
@@ -2063,7 +2065,8 @@ struct TestConnection: public TestBase
 				infostream << "...";
 			infostream << std::endl;
 
-			Buffer<u8> sentdata = pkt.oldForgePacket();
+			Buffer<u8> sentdata(datasize+2);
+			pkt.oldForgePacket(sentdata);
 
 			server.Send(peer_id_client, 0, &pkt, true);
 
@@ -2083,7 +2086,8 @@ struct TestConnection: public TestBase
 					client.Receive(&pkt);
 					size = pkt.getSize();
 					peer_id = pkt.getPeerId();
-					recvdata = pkt.oldForgePacket();
+					recvdata = Buffer<u8>(size+2);
+					pkt.oldForgePacket(recvdata);
 					received = true;
 				} catch(con::NoIncomingDataException &e) {
 				}
