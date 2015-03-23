@@ -192,13 +192,18 @@ video::IImage *textureMinSizeUpscale(video::IVideoDriver *driver, video::IImage 
 	if(orig == NULL)
 		return orig;
 	s32 scaleto = g_settings->getS32("texture_min_size");
-	if (scaleto > 0) {
+	if (scaleto > 1) {
+		const core::dimension2d<u32> dim = orig->getDimension();
+
+		// Don't upscale 1px images.  They don't benefit from it anyway
+		// (wouldn't have been blurred) and MIGHT be sun/moon tonemaps.
+		if ((dim.Width <= 1) || (dim.Height <= 1))
+			return orig;
 
 		/* Calculate scaling needed to make the shortest texture dimension
 		 * equal to the target minimum.  If e.g. this is a vertical frames
 		 * animation, the short dimension will be the real size.
 		 */
-		const core::dimension2d<u32> dim = orig->getDimension();
 		u32 xscale = scaleto / dim.Width;
 		u32 yscale = scaleto / dim.Height;
 		u32 scale = (xscale > yscale) ? xscale : yscale;
