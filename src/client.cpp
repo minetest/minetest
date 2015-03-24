@@ -1710,13 +1710,22 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 
 		if (image) {
 			raw_image->copyTo(image);
-			irr::c8 filename[256];
-			snprintf(filename, sizeof(filename),
-				(std::string("%s") + DIR_DELIM + "screenshot_%u.png").c_str(),
-				 g_settings->get("screenshot_path").c_str(),
-				 device->getTimer()->getRealTime());
+
+			std::string filename;
+
+			time_t t = time(NULL);
+			struct tm *tm = localtime(&t);
+			char timetstamp_c[16]; // YYYYMMDD_HHMMSS + '\0'
+			strftime(timetstamp_c, sizeof(timetstamp_c), "%Y%m%d_%H%M%S", tm);
+
+			filename = g_settings->get("screenshot_path")
+			         + DIR_DELIM
+			         + std::string("screenshot_")
+			         + std::string(timetstamp_c)
+			         + ".png";
+
 			std::ostringstream sstr;
-			if (driver->writeImageToFile(image, filename)) {
+			if (driver->writeImageToFile(image, filename.c_str())) {
 				sstr << "Saved screenshot to '" << filename << "'";
 			} else {
 				sstr << "Failed to save screenshot '" << filename << "'";
