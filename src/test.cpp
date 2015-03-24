@@ -2024,7 +2024,8 @@ struct TestConnection: public TestBase
 		{
 			NetworkPacket pkt((u8*) "Hello World !", 14, 0);
 
-			SharedBuffer<u8> sentdata = pkt.oldForgePacket();
+			Buffer<u8> sentdata(14+2);
+			pkt.oldForgePacket(sentdata);
 
 			infostream<<"** running client.Send()"<<std::endl;
 			client.Send(PEER_ID_SERVER, 0, &pkt, true);
@@ -2065,7 +2066,8 @@ struct TestConnection: public TestBase
 				infostream<<"...";
 			infostream<<std::endl;
 
-			SharedBuffer<u8> sentdata = pkt.oldForgePacket();
+			Buffer<u8> sentdata(datasize+2);
+			pkt.oldForgePacket(sentdata);
 
 			server.Send(peer_id_client, 0, &pkt, true);
 

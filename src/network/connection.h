@@ -442,7 +442,8 @@ struct ConnectionCommand
 		type = CONNCMD_SEND;
 		peer_id = peer_id_;
 		channelnum = channelnum_;
-		data = pkt->oldForgePacket();
+		data = Buffer<u8>(pkt->getSize() + 2);
+		pkt->oldForgePacket(data);
 		reliable = reliable_;
 	}
 
