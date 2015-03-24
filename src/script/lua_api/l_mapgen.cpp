@@ -89,7 +89,7 @@ struct EnumString ModApiMapgen::es_Rotation[] =
 ///////////////////////////////////////////////////////////////////////////////
 
 
-bool read_schematic(lua_State *L, int index, Schematic *schem,
+bool read_schematic_def(lua_State *L, int index, Schematic *schem,
 	INodeDefManager *ndef, std::map<std::string, std::string> &replace_names)
 {
 	//// Get schematic size
@@ -175,20 +175,45 @@ bool read_schematic(lua_State *L, int index, Schematic *schem,
 }
 
 
-bool get_schematic(lua_State *L, int index, Schematic *schem,
-	INodeDefManager *ndef, std::map<std::string, std::string> &replace_names)
+Schematic *get_schematic(lua_State *L, int index, SchematicManager *schemmgr,
+	std::map<std::string, std::string> &replace_names)
 {
 	if (index < 0)
 		index = lua_gettop(L) + 1 + index;
 
-	if (lua_istable(L, index)) {
-		return read_schematic(L, index, schem, ndef, replace_names);
-	} else if (lua_isstring(L, index)) {
+	Schematic *schem;
+
+	if (lua_isnumber(L, index)) {
+		return (Schematic *)schemmgr->get(lua_tointeger(L, index));
+	} else if (lua_istable(L, index)) {
+		schem = new Schematic;
+		if (!read_schematic_def(L, index, schem,
+				schemmgr->getNodeDef(), replace_names)) {
+			delete schem;
+			return NULL;
+		}
+	} else  if (lua_isstring(L, index)) {
 		const char *filename = lua_tostring(L, index);
-		return schem->loadSchematicFromFile(filename, ndef, replace_names);
+		schem = (Schematic *)schemmgr->getByName(filename);
+		if (schem)
+			return schem;
+
+		schem = new Schematic;
+		if (!schem->loadSchematicFromFile(filename,
+				schemmgr->getNodeDef(), replace_names)) {
+			delete schem;
+			return NULL;
+		}
 	} else {
-		return false;
+		return NULL;
 	}
+
+	if (schemmgr->add(schem) == (u32)-1) {
+		delete schem;
+		return 0;
+	}
+
+	return schem;
 }
 
 
@@ -469,30 +494,8 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 	ndef->pendNodeResolve(nri);
 
 	verbosestream << "register_biome: " << b->name << std::endl;
-
 	lua_pushinteger(L, id);
 	return 1;
-}
-
-int ModApiMapgen::l_clear_registered_biomes(lua_State *L)
-{
-	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
-	bmgr->clear();
-	return 0;
-}
-
-int ModApiMapgen::l_clear_registered_decorations(lua_State *L)
-{
-	DecorationManager *dmgr = getServer(L)->getEmergeManager()->decomgr;
-	dmgr->clear();
-	return 0;
-}
-
-int ModApiMapgen::l_clear_registered_ores(lua_State *L)
-{
-	OreManager *omgr = getServer(L)->getEmergeManager()->oremgr;
-	omgr->clear();
-	return 0;
 }
 
 // register_decoration({lots of stuff})
@@ -504,6 +507,7 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	INodeDefManager *ndef      = getServer(L)->getNodeDefManager();
 	DecorationManager *decomgr = getServer(L)->getEmergeManager()->decomgr;
 	BiomeManager *biomemgr     = getServer(L)->getEmergeManager()->biomemgr;
+	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
 
 	enum DecorationType decotype = (DecorationType)getenumfield(L, index,
 				"deco_type", es_DecorationType, -1);
@@ -562,7 +566,7 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 			success = regDecoSimple(L, nri, (DecoSimple *)deco);
 			break;
 		case DECO_SCHEMATIC:
-			success = regDecoSchematic(L, ndef, (DecoSchematic *)deco);
+			success = regDecoSchematic(L, schemmgr, (DecoSchematic *)deco);
 			break;
 		case DECO_LSYSTEM:
 			break;
@@ -582,7 +586,6 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	}
 
 	verbosestream << "register_decoration: " << deco->name << std::endl;
-
 	lua_pushinteger(L, id);
 	return 1;
 }
@@ -627,8 +630,8 @@ bool ModApiMapgen::regDecoSimple(lua_State *L,
 	return true;
 }
 
-bool ModApiMapgen::regDecoSchematic(lua_State *L, INodeDefManager *ndef,
-	DecoSchematic *deco)
+bool ModApiMapgen::regDecoSchematic(lua_State *L,
+	SchematicManager *schemmgr, DecoSchematic *deco)
 {
 	int index = 1;
 
@@ -641,19 +644,12 @@ bool ModApiMapgen::regDecoSchematic(lua_State *L, INodeDefManager *ndef,
 		read_schematic_replacements(L, replace_names, lua_gettop(L));
 	lua_pop(L, 1);
 
-	// TODO(hmmmm): get a ref from registered schematics
-	Schematic *schem = new Schematic;
 	lua_getfield(L, index, "schematic");
-	if (!get_schematic(L, -1, schem, ndef, replace_names)) {
-		lua_pop(L, 1);
-		delete schem;
-		return false;
-	}
+	Schematic *schem = get_schematic(L, -1, schemmgr, replace_names);
 	lua_pop(L, 1);
 
 	deco->schematic = schem;
-
-	return true;
+	return schem != NULL;
 }
 
 // register_ore({lots of stuff})
@@ -741,9 +737,98 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	ndef->pendNodeResolve(nri);
 
 	verbosestream << "register_ore: " << ore->name << std::endl;
-
 	lua_pushinteger(L, id);
 	return 1;
+}
+
+// register_schematic({schematic}, replacements={})
+int ModApiMapgen::l_register_schematic(lua_State *L)
+{
+	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
+
+	std::map<std::string, std::string> replace_names;
+	if (lua_istable(L, 2))
+		read_schematic_replacements(L, replace_names, 2);
+
+	Schematic *schem = get_schematic(L, 1, schemmgr, replace_names);
+	if (!schem)
+		return 0;
+	printf("register_schematic!\n");
+	verbosestream << "register_schematic: " << schem->name << std::endl;
+	lua_pushinteger(L, schem->id);
+	return 1;
+}
+
+// clear_registered_biomes()
+int ModApiMapgen::l_clear_registered_biomes(lua_State *L)
+{
+	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+	bmgr->clear();
+	return 0;
+}
+
+// clear_registered_decorations()
+int ModApiMapgen::l_clear_registered_decorations(lua_State *L)
+{
+	DecorationManager *dmgr = getServer(L)->getEmergeManager()->decomgr;
+	dmgr->clear();
+	return 0;
+}
+
+// clear_registered_ores()
+int ModApiMapgen::l_clear_registered_ores(lua_State *L)
+{
+	OreManager *omgr = getServer(L)->getEmergeManager()->oremgr;
+	omgr->clear();
+	return 0;
+}
+
+// clear_registered_schematics()
+int ModApiMapgen::l_clear_registered_schematics(lua_State *L)
+{
+	SchematicManager *smgr = getServer(L)->getEmergeManager()->schemmgr;
+	smgr->clear();
+	return 0;
+}
+
+// generate_ores(vm, p1, p2, [ore_id])
+int ModApiMapgen::l_generate_ores(lua_State *L)
+{
+	EmergeManager *emerge = getServer(L)->getEmergeManager();
+
+	Mapgen mg;
+	mg.seed = emerge->params.seed;
+	mg.vm   = LuaVoxelManip::checkobject(L, 1)->vm;
+	mg.ndef = getServer(L)->getNodeDefManager();
+
+	u32 blockseed = Mapgen::getBlockSeed(mg.vm->m_area.MinEdge, mg.seed);
+
+	v3s16 pmin = read_v3s16(L, 2);
+	v3s16 pmax = read_v3s16(L, 3);
+
+	emerge->oremgr->placeAllOres(&mg, blockseed, pmin, pmax);
+
+	return 0;
+}
+
+// generate_decorations(vm, p1, p2, [deco_id])
+int ModApiMapgen::l_generate_decorations(lua_State *L)
+{
+	EmergeManager *emerge = getServer(L)->getEmergeManager();
+
+	Mapgen mg;
+	mg.seed = emerge->params.seed;
+	mg.vm   = LuaVoxelManip::checkobject(L, 1)->vm;
+	mg.ndef = getServer(L)->getNodeDefManager();
+
+	u32 blockseed = Mapgen::getBlockSeed(mg.vm->m_area.MinEdge, mg.seed);
+
+	v3s16 pmin = read_v3s16(L, 2);
+	v3s16 pmax = read_v3s16(L, 3);
+
+	emerge->decomgr->placeAllDecos(&mg, blockseed, pmin, pmax);
+
+	return 0;
 }
 
 // create_schematic(p1, p2, probability_list, filename)
@@ -806,53 +891,11 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 	return 1;
 }
 
-// generate_ores(vm, p1, p2, [ore_id])
-int ModApiMapgen::l_generate_ores(lua_State *L)
-{
-	EmergeManager *emerge = getServer(L)->getEmergeManager();
-
-	Mapgen mg;
-	mg.seed = emerge->params.seed;
-	mg.vm   = LuaVoxelManip::checkobject(L, 1)->vm;
-	mg.ndef = getServer(L)->getNodeDefManager();
-
-	u32 blockseed = Mapgen::getBlockSeed(mg.vm->m_area.MinEdge, mg.seed);
-
-	v3s16 pmin = read_v3s16(L, 2);
-	v3s16 pmax = read_v3s16(L, 3);
-
-	emerge->oremgr->placeAllOres(&mg, blockseed, pmin, pmax);
-
-	return 0;
-}
-
-// generate_decorations(vm, p1, p2, [deco_id])
-int ModApiMapgen::l_generate_decorations(lua_State *L)
-{
-	EmergeManager *emerge = getServer(L)->getEmergeManager();
-
-	Mapgen mg;
-	mg.seed = emerge->params.seed;
-	mg.vm   = LuaVoxelManip::checkobject(L, 1)->vm;
-	mg.ndef = getServer(L)->getNodeDefManager();
-
-	u32 blockseed = Mapgen::getBlockSeed(mg.vm->m_area.MinEdge, mg.seed);
-
-	v3s16 pmin = read_v3s16(L, 2);
-	v3s16 pmax = read_v3s16(L, 3);
-
-	emerge->decomgr->placeAllDecos(&mg, blockseed, pmin, pmax);
-
-	return 0;
-}
-
 // place_schematic(p, schematic, rotation, replacement)
 int ModApiMapgen::l_place_schematic(lua_State *L)
 {
-	Schematic schem;
-
 	Map *map = &(getEnv(L)->getMap());
-	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
+	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
 
 	//// Read position
 	v3s16 p = read_v3s16(L, 1);
@@ -873,12 +916,14 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 		read_schematic_replacements(L, replace_names, 4);
 
 	//// Read schematic
-	if (!get_schematic(L, 2, &schem, ndef, replace_names)) {
+	Schematic *schem = get_schematic(L, 2, schemmgr, replace_names);
+	if (!schem) {
 		errorstream << "place_schematic: failed to get schematic" << std::endl;
 		return 0;
 	}
 
-	schem.placeStructure(map, p, 0, (Rotation)rot, force_placement, ndef);
+	schem->placeStructure(map, p, 0, (Rotation)rot, force_placement,
+		schemmgr->getNodeDef());
 
 	return 1;
 }
@@ -895,14 +940,15 @@ void ModApiMapgen::Initialize(lua_State *L, int top)
 	API_FCT(register_biome);
 	API_FCT(register_decoration);
 	API_FCT(register_ore);
+	API_FCT(register_schematic);
 
 	API_FCT(clear_registered_biomes);
 	API_FCT(clear_registered_decorations);
 	API_FCT(clear_registered_ores);
+	API_FCT(clear_registered_schematics);
 
 	API_FCT(generate_ores);
 	API_FCT(generate_decorations);
-
 	API_FCT(create_schematic);
 	API_FCT(place_schematic);
 }
