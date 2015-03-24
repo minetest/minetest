@@ -123,35 +123,20 @@ s32 PcgRandom::range(s32 min, s32 max)
 
 void PcgRandom::bytes(void *out, size_t len)
 {
-	u32 r;
 	u8 *outb = (u8 *)out;
+	int bytes_left = 0;
+	u32 r;
 
-	size_t len_alignment = (uintptr_t)out % sizeof(u32);
-	if (len_alignment) {
-		len -= len_alignment;
-		r = next();
-		while (len_alignment--) {
-			*outb = r & 0xFF;
-			outb++;
-			r >>= 8;
+	while (len--) {
+		if (bytes_left == 0) {
+			bytes_left = sizeof(u32);
+			r = next();
 		}
-	}
 
-	size_t len_dwords = len / sizeof(u32);
-	while (len_dwords--) {
-		r = next();
-		*(u32 *)outb = next();
-		outb += sizeof(u32);
-	}
-
-	size_t len_remaining = len % sizeof(u32);
-	if (len_remaining) {
-		r = next();
-		while (len_remaining--) {
-			*outb = r & 0xFF;
-			outb++;
-			r >>= 8;
-		}
+		*outb = r & 0xFF;
+		outb++;
+		bytes_left--;
+		r >>= 8;
 	}
 }
 
