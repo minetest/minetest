@@ -515,14 +515,10 @@ void MapgenParams::load(const Settings &settings)
 	std::string seed_str;
 	const char *seed_name = (&settings == g_settings) ? "fixed_map_seed" : "seed";
 
-	if (settings.getNoEx(seed_name, seed_str) && !seed_str.empty()) {
+	if (settings.getNoEx(seed_name, seed_str) && !seed_str.empty())
 		seed = read_seed(seed_str.c_str());
-	} else {
-		seed = ((u64)(myrand() & 0xFFFF) << 0) |
-			((u64)(myrand() & 0xFFFF) << 16) |
-			((u64)(myrand() & 0xFFFF) << 32) |
-			((u64)(myrand() & 0xFFFF) << 48);
-	}
+	else
+		myrand_bytes(&seed, sizeof(seed));
 
 	settings.getNoEx("mg_name", mg_name);
 	settings.getS16NoEx("water_level", water_level);

@@ -104,7 +104,7 @@ public:
 		NetworkPacket& operator<<(video::SColor src);
 
 		// Temp, we remove SharedBuffer when migration finished
-		SharedBuffer<u8> oldForgePacket();
+		Buffer<u8> oldForgePacket();
 private:
 		template<typename T> void checkDataSize()
 		{

@@ -510,7 +510,7 @@ NetworkPacket& NetworkPacket::operator<<(video::SColor src)
 	return *this;
 }
 
-SharedBuffer<u8> NetworkPacket::oldForgePacket()
+Buffer<u8> NetworkPacket::oldForgePacket()
 {
 	SharedBuffer<u8> sb(m_datasize + 2);
 	writeU16(&sb[0], m_command);

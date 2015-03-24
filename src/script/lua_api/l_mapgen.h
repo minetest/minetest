@@ -26,6 +26,7 @@ class INodeDefManager;
 struct NodeResolveInfo;
 class DecoSimple;
 class DecoSchematic;
+class SchematicManager;
 
 class ModApiMapgen : public ModApiBase {
 private:
@@ -56,11 +57,17 @@ private:
 	// register_ore({lots of stuff})
 	static int l_register_ore(lua_State *L);
 
+	// register_schematic({schematic}, replacements={})
+	static int l_register_schematic(lua_State *L);
+
 	// clear_registered_biomes()
 	static int l_clear_registered_biomes(lua_State *L);
 
 	// clear_registered_decorations()
 	static int l_clear_registered_decorations(lua_State *L);
+
+	// clear_registered_schematics()
+	static int l_clear_registered_schematics(lua_State *L);
 
 	// generate_ores(vm, p1, p2)
 	static int l_generate_ores(lua_State *L);
@@ -80,7 +87,7 @@ private:
 	static bool regDecoSimple(lua_State *L,
 			NodeResolveInfo *nri, DecoSimple *deco);
 	static bool regDecoSchematic(lua_State *L,
-			INodeDefManager *ndef, DecoSchematic *deco);
+		SchematicManager *schemmgr, DecoSchematic *deco);
 
 	static struct EnumString es_BiomeTerrainType[];
 	static struct EnumString es_DecorationType[];

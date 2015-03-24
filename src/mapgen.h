@@ -204,6 +204,8 @@ public:
 
 	virtual GenElement *getByName(const std::string &name);
 
+	INodeDefManager *getNodeDef() { return m_ndef; }
+
 protected:
 	INodeDefManager *m_ndef;
 	std::vector<GenElement *> m_elements;
