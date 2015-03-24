@@ -54,6 +54,7 @@ typedef enum {
 
 #define MIN_DIG_TIME_MS 500
 #define MAX_TOUCH_COUNT 64
+#define BUTTON_REPEAT_DELAY 0.2f
 
 extern const char** touchgui_button_imagenames;
 
@@ -105,6 +106,7 @@ private:
 
 	struct button_info {
 		float            repeatcounter;
+		float            repeatdelay;
 		irr::EKEY_CODE   keycode;
 		std::vector<int> ids;
 		IGUIButton*      guibutton;
@@ -124,7 +126,8 @@ private:
 
 	/* initialize a button */
 	void initButton(touch_gui_button_id id, rect<s32> button_rect,
-			std::wstring caption, bool immediate_release );
+			std::wstring caption, bool immediate_release,
+			float repeat_delay = BUTTON_REPEAT_DELAY);
 
 	/* load texture */
 	void loadButtonTexture(button_info* btn, const char* path);
