@@ -207,6 +207,11 @@ bool Schematic::loadSchematicFromFile(const char *filename, INodeDefManager *nde
 	bool have_cignore = false;
 
 	std::ifstream is(filename, std::ios_base::binary);
+	if (!is.good()) {
+		errorstream << "loadSchematicFile: unable to open file '"
+			<< filename << "'" << std::endl;
+		return false;
+	}
 
 	u32 signature = readU32(is);
 	if (signature != MTSCHEM_FILE_SIGNATURE) {
