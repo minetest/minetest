@@ -237,7 +237,7 @@ public:
 		Shall be called with the environment and the connection locked.
 	*/
 	Inventory* getInventory(const InventoryLocation &loc);
-	void setInventoryModified(const InventoryLocation &loc);
+	void setInventoryModified(const InventoryLocation &loc, bool playerSend = true);
 
 	// Connection must be locked when called
 	std::wstring getStatusString();

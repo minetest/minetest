@@ -1290,13 +1290,16 @@ Inventory* Server::getInventory(const InventoryLocation &loc)
 	}
 	return NULL;
 }
-void Server::setInventoryModified(const InventoryLocation &loc)
+void Server::setInventoryModified(const InventoryLocation &loc, bool playerSend)
 {
 	switch(loc.type){
 	case InventoryLocation::UNDEFINED:
 		break;
 	case InventoryLocation::PLAYER:
 	{
+		if (!playerSend)
+			return;
+
 		Player *player = m_env->getPlayer(loc.name.c_str());
 		if(!player)
 			return;
