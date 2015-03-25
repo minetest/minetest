@@ -71,6 +71,16 @@ local function video_driver_fname_to_name(selected_driver)
 	return ""
 end
 
+local default_label = fgettext("Default")
+
+local function video_mode_to_option(opt)
+	local w, h = opt:match("(%d+) x (%d+)")
+	if w == nil or h == nil then
+		return nil
+	end
+	return tonumber(w), tonumber(h)
+end
+
 local function dlg_confirm_reset_formspec(data)
 	local retval =
 		"size[8,3]" ..
@@ -236,6 +246,36 @@ local function formspec(tabview, name, tabdata)
 				"dropdown[3.85,4.55;3.85;dd_touchthreshold;0,10,20,30,40,50;" ..
 				((tonumber(core.setting_get("touchscreen_threshold"))/10)+1) .. "]"
 	end
+	
+	if PLATFORM ~= "Android" then
+		local video_modes = core.get_video_modes()
+		local current_video_mode_width = tonumber(core.setting_get("screenW"))
+		local current_video_mode_height = tonumber(core.setting_get("screenH"))
+
+		local video_mode_formspec_string = ""
+		local video_mode_current_idx = 1
+
+		for i=1, #video_modes do
+			video_mode_formspec_string = video_mode_formspec_string 
+					.. video_modes[i].w .. " x " .. video_modes[i].h
+			if i ~= #video_modes then
+				video_mode_formspec_string = video_mode_formspec_string .. ","
+			end
+
+			if current_video_mode_width == video_modes[i].w 
+					and current_video_mode_height == video_modes[i].h then
+				video_mode_current_idx = i + 1
+			end
+		end
+
+		tab_string = tab_string ..
+		"box[3.75,3.55;3.75,1.4;#999999]" ..
+		"label[3.85,3.6;".. fgettext("Display resolution (after restart):") .. "]"..
+		"dropdown[3.85,4.05;3.85;dd_resolution;".. default_label .. "," 
+			.. video_mode_formspec_string .. ";" .. video_mode_current_idx .. "]" ..
+		"tooltip[dd_resolution;" ..
+				fgettext("Restart minetest for resolution change to take effect") .. "]"	
+	end
 
 	if core.setting_getbool("enable_shaders") then
 		tab_string = tab_string ..
@@ -389,6 +429,16 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.setting_set("anisotropic_filter", "true")
 		ddhandled = true
 	end
+	
+	local w, h
+	if fields["dd_resolution"] == default_label then
+		w = 800
+		h = 600
+	else
+		w, h = video_mode_to_option(fields["dd_resolution"])
+	end
+	core.setting_set("screenW", w)
+	core.setting_set("screenH", h)
 
 	return ddhandled
 end
