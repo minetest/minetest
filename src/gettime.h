@@ -48,7 +48,18 @@ extern u32 getTime(TimePrecision prec);
 #include <time.h>
 #include <string>
 
-inline std::string getTimestamp()
+inline std::string getShortTimestampStr()
+{
+	time_t t = time(NULL);
+	// This is not really thread-safe but it won't break anything
+	// except its own output, so just go with it.
+	struct tm *tm = localtime(&t);
+	char cs[20]; //HH:MM:SS + '\0'
+	strftime(cs, 20, "%H:%M:%S", tm);
+	return cs;
+}
+
+inline std::string getTimestampStr()
 {
 	time_t t = time(NULL);
 	// This is not really thread-safe but it won't break anything

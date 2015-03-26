@@ -898,7 +898,7 @@ void Map::updateLighting(enum LightBank bank,
 	}
 #endif
 
-	//m_dout<<"Done ("<<getTimestamp()<<")"<<std::endl;
+	//m_dout<<"Done ("<<getTimestampStr()<<")"<<std::endl;
 }
 
 void Map::updateLighting(std::map<v3s16, MapBlock*> & a_blocks,

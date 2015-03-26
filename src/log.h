@@ -64,19 +64,13 @@ void log_deregister_thread();
 
 void log_printline(enum LogMessageLevel lev, const std::string &text);
 
-#define LOGLINEF(lev, ...)\
-{\
-	char buf[10000];\
-	snprintf(buf, 10000, __VA_ARGS__);\
-	log_printline(lev, buf);\
-}
-
 extern std::ostream errorstream;
 extern std::ostream actionstream;
 extern std::ostream infostream;
 extern std::ostream verbosestream;
 
 extern bool log_trace_level_enabled;
+extern int log_timestamps_mode; /* 2 (default) da, 1 dates only, 0 disable */
 
 #define TRACESTREAM(x){ if(log_trace_level_enabled) verbosestream x; }
 #define TRACEDO(x){ if(log_trace_level_enabled){ x ;} }

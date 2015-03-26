@@ -349,6 +349,10 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Print enormous amounts of information to log and console"))));
 	allowed_options->insert(std::make_pair("logfile", ValueSpec(VALUETYPE_STRING,
 			_("Set logfile path ('' = no logging)"))));
+	allowed_options->insert(std::make_pair("disable-timestamps", ValueSpec(VALUETYPE_FLAG,
+			_("Don't prepend timestamps to log messages"))));
+	allowed_options->insert(std::make_pair("short-timestamps", ValueSpec(VALUETYPE_FLAG,
+			_("Don't add the date to timestamps for log messages"))));
 	allowed_options->insert(std::make_pair("gameid", ValueSpec(VALUETYPE_STRING,
 			_("Set gameid (\"--gameid list\" prints available ones)"))));
 	allowed_options->insert(std::make_pair("migrate", ValueSpec(VALUETYPE_STRING,
@@ -461,6 +465,13 @@ static void setup_log_params(const Settings &cmd_args)
 	if (cmd_args.getFlag("quiet")) {
 		log_remove_output(&main_stderr_log_out);
 		log_add_output_maxlev(&main_stderr_log_out, LMT_ERROR);
+	}
+
+	// If we are told to, don't prepend timestamps to log messages
+	if (cmd_args.getFlag("disable-timestamps")) {
+		log_timestamps_mode = 0;
+	} else if (cmd_args.getFlag("short-timestamps")) {
+		log_timestamps_mode = 1;
 	}
 
 	// If trace is enabled, enable logging of certain things
