@@ -54,7 +54,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Debug output
 */
 
-#define DTIME (getTimestamp()+": ")
+#define DTIME (getTimestampStr()+": ")
 
 extern void debugstreams_init(bool disable_stderr, const char *filename);
 extern void debugstreams_deinit();

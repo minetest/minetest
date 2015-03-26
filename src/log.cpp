@@ -124,7 +124,12 @@ void log_printline(enum LogMessageLevel lev, const std::string &text)
 		threadname = i->second;
 	std::string levelname = get_lev_string(lev);
 	std::ostringstream os(std::ios_base::binary);
-	os << getTimestamp() << ": " << levelname << "["<<threadname<<"]: " << text;
+	if (log_timestamps_mode  == 1)
+		os << getShortTimestampStr() << ": ";
+	else if (log_timestamps_mode  == 2)
+		os << getTimestampStr() << ": ";
+	os << levelname << "[" << threadname << "]: " << text;
+	std::string log_str = os.str();
 
 	for(std::vector<ILogOutput*>::iterator i = log_outputs[lev].begin();
 			i != log_outputs[lev].end(); i++) {
@@ -132,8 +137,8 @@ void log_printline(enum LogMessageLevel lev, const std::string &text)
 		if (out->silence)
 			continue;
 
-		out->printLog(os.str());
-		out->printLog(os.str(), lev);
+		out->printLog(log_str);
+		out->printLog(log_str, lev);
 		out->printLog(lev, text);
 	}
 }
@@ -195,5 +200,6 @@ std::ostream actionstream(&actionbuf);
 std::ostream infostream(&infobuf);
 std::ostream verbosestream(&verbosebuf);
 
+int log_timestamps_mode = 2;
 bool log_trace_level_enabled = false;
 
