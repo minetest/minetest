@@ -54,7 +54,8 @@ local function create_world_formspec(dialogdata)
 		"field[4.5,1.4;6,0.5;te_seed;;".. current_seed .. "]" ..
 
 		"label[2,2;" .. fgettext("Mapgen") .. "]"..
-		"dropdown[4.2,2;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
+		"dropdown[4.2,1.9;3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
+		"button[7.25,2.05;3,0.5;mg_flags;".. fgettext("Settings") .. "]" ..
 
 		"label[2,3;" .. fgettext("Game") .. "]"..
 		"textlist[4.2,3;5.8,2.3;games;" .. gamemgr.gamelist() ..
@@ -94,7 +95,6 @@ local function create_world_buttonhandler(this, fields)
 
 			if not menudata.worldlist:uid_exists_raw(worldname) then
 				core.settings:set("mg_name",fields["dd_mapgen"])
-				message = core.create_world(worldname,gameindex)
 			else
 				message = fgettext("A world named \"$1\" already exists", worldname)
 			end
@@ -128,7 +128,22 @@ local function create_world_buttonhandler(this, fields)
 		return true
 	end
 
-	return false
+	if fields["mg_flags"] ~= nil then
+		local mg_flags_dlg = create_mg_flags_dlg()
+		mg_flags_dlg:set_parent(this)
+		this:hide()
+		mg_flags_dlg:show()
+		return true
+	end
+
+	local ddhandled = false
+	if fields["dd_mapgen"] then
+		core.setting_set("mg_name",fields["dd_mapgen"])
+		ddhandled = true
+		return true
+	end
+
+	return ddhandled
 end
 
 
