@@ -54,7 +54,8 @@ local function create_world_formspec(dialogdata)
 		"field[4.5,1.4;6,0.5;te_seed;;".. current_seed .. "]" ..
 
 		"label[2,2;" .. fgettext("Mapgen") .. "]"..
-		"dropdown[4.2,2;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
+		"dropdown[4.2,1.9;3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
+		"button[7.25,2.05;3,0.5;mg_flags;".. fgettext("Flags") .. "]" ..
 
 		"label[2,3;" .. fgettext("Game") .. "]"..
 		"textlist[4.2,3;5.8,2.3;games;" .. gamemgr.gamelist() ..
@@ -125,6 +126,14 @@ local function create_world_buttonhandler(this, fields)
 	
 	if fields["world_create_cancel"] then
 		this:delete()
+		return true
+	end
+	
+	if fields["mg_flags"] ~= nil then
+		local mg_flags_dlg = create_mg_flags_dlg()
+		mg_flags_dlg:set_parent(this)
+		this:hide()
+		mg_flags_dlg:show()
 		return true
 	end
 

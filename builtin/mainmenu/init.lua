@@ -43,6 +43,7 @@ dofile(menupath .. DIR_DELIM .. "tab_mods.lua")
 dofile(menupath .. DIR_DELIM .. "tab_settings.lua")
 if PLATFORM ~= "Android" then
 	dofile(menupath .. DIR_DELIM .. "dlg_create_world.lua")
+	dofile(menupath .. DIR_DELIM .. "dlg_mg_flags.lua")
 	dofile(menupath .. DIR_DELIM .. "dlg_delete_mod.lua")
 	dofile(menupath .. DIR_DELIM .. "dlg_delete_world.lua")
 	dofile(menupath .. DIR_DELIM .. "dlg_rename_modpack.lua")
