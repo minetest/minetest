@@ -3023,7 +3023,7 @@ Definition tables
         ^ Called after destructing node when node was dug using
           minetest.node_dig / minetest.dig_node
         ^ default: nil ]]
-        can_dig = function(pos,player) --[[
+        can_dig = function(pos, [player]) --[[
         ^ returns true if node can be dug, or false if not
         ^ default: nil ]]
 
