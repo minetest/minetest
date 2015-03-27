@@ -29,7 +29,7 @@ if(WIN32)
 		else()
 			# TODO
 			# set(OPENGLES_LIBRARY ${SOURCE_DIR}/Dependencies/lib/release/libGLESv2.lib CACHE STRING "OpenGL ES 2.x library for win32"
-		else()
+		endif()
 	endif()
 elseif(APPLE)
 	create_search_paths(/Developer/Platforms)
