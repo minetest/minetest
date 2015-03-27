@@ -594,3 +594,12 @@ if INIT == "mainmenu" then
 	end
 end
 
+--------------------------------------------------------------------------------
+function toboolean(arg)
+	if arg == "true" or arg == "yes" or arg == 1 or arg == true then
+		return true
+	elseif arg == "false" or arg == "no" or arg == 0 or arg == false then
+		return false
+	end
+	return nil
+end
