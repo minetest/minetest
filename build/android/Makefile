@@ -717,11 +717,11 @@ clean_all :
 	clean_openal clean_ogg clean_manifest;                                     \
 	sleep 1;                                                                   \
 	$(RM) -r gen libs obj deps bin Debug and_env
-	
+
 $(ROOT)/jni/src/android_version.h :
-	@echo "#define STR_HELPER(x) #x"                                           \
+	@echo "#ifndef ANDROID_MT_VERSION_H"                                       \
 	>${ROOT}/jni/src/android_version.h;                                        \
-	echo "#define STR(x) STR_HELPER(x)"                                        \
+	echo "#define ANDROID_MT_VERSION_H"                                        \
 	>> ${ROOT}/jni/src/android_version.h;                                      \
 	echo "#define VERSION_MAJOR $$(cat ${ROOT}/../../CMakeLists.txt |          \
 	grep ^set\(VERSION_MAJOR\ | sed 's/)/ /' | awk '{print $$2;}')"            \
@@ -734,12 +734,14 @@ $(ROOT)/jni/src/android_version.h :
 	>> ${ROOT}/jni/src/android_version.h;                                      \
 	export GITHASH=$$(git rev-parse --short=8 HEAD);                           \
 	export GITTAG=$$(git describe --abbrev=0 --tags);                          \
-	echo "#define VERSION_GITHASH \"$$GITTAG-$$GITHASH-Android\""        \
+	echo "#define VERSION_GITHASH \"$$GITTAG-$$GITHASH-Android\""              \
 	>> ${ROOT}/jni/src/android_version.h;                                      \
 	echo "#define VERSION_STRING STR(VERSION_MAJOR)\".\"STR(VERSION_MINOR)\
 	\".\"STR(VERSION_PATCH)"                                                   \
+	>> ${ROOT}/jni/src/android_version.h;                                      \
+	echo "#endif"                                                              \
 	>> ${ROOT}/jni/src/android_version.h;
-	
+
 manifest :
 	@VERS_MAJOR=$$(cat ${ROOT}/../../CMakeLists.txt |                          \
 	grep ^set\(VERSION_MAJOR\ | sed 's/)/ /' | awk '{print $$2;}');            \
