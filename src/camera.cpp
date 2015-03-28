@@ -131,6 +131,8 @@ bool Camera::successfullyCreated(std::string &error_message)
 		error_message = "Failed to create the wielded item scene manager";
 	} else if (!m_wieldnode) {
 		error_message = "Failed to create the wielded item scene node";
+	} else {
+		error_message.clear();
 	}
 	return error_message.empty();
 }
