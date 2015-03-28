@@ -10,29 +10,23 @@
 #define STR(x) STRINGIFY(x)
 
 
-#ifdef USE_CMAKE_CONFIG_H
+#if defined USE_CMAKE_CONFIG_H
 	#include "cmake_config.h"
-#else
+#elif defined (__ANDROID__) || defined (ANDROID)
 	#define PROJECT_NAME "Minetest"
-	#define RUN_IN_PLACE 0
-	#define USE_CURL 0
-	#define USE_FREETYPE 0
-	#define USE_GETTEXT 0
-	#define USE_LEVELDB 0
-	#define USE_LUAJIT 0
-	#define USE_REDIS 0
-	#define USE_SOUND 0
-	#define HAVE_ENDIAN_H 0
 	#define STATIC_SHAREDIR ""
+	#include "android_version.h"
 	#ifdef NDEBUG
 		#define BUILD_TYPE "Release"
 	#else
 		#define BUILD_TYPE "Debug"
 	#endif
-#endif
-
-#ifdef __ANDROID__
-	#include "android_version.h"
+#else
+	#ifdef NDEBUG
+		#define BUILD_TYPE "Release"
+	#else
+		#define BUILD_TYPE "Debug"
+	#endif
 #endif
 
 #define BUILD_INFO "BUILD_TYPE=" BUILD_TYPE \
@@ -45,4 +39,3 @@
 		" STATIC_SHAREDIR=" STR(STATIC_SHAREDIR)
 
 #endif
-
