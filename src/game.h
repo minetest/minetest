@@ -145,7 +145,7 @@ void the_game(bool *kill,
 		const std::string &password,
 		const std::string &address, // If "", local server is used
 		u16 port,
-		std::wstring &error_message,
+		std::string &error_message,
 		ChatBackend &chat_backend,
 		const SubgameSpec &gamespec, // Used for local game
 		bool simple_singleplayer_mode);

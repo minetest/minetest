@@ -156,7 +156,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 
 	// If an error occurs, this is set to something by menu().
 	// It is then displayed before	the menu shows on the next call to menu()
-	std::wstring error_message = L"";
+	std::string error_message;
 
 	bool first_loop = true;
 
@@ -184,7 +184,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 			*/
 			guiroot = guienv->addStaticText(L"", core::rect<s32>(0, 0, 10000, 10000));
 
-			bool game_has_run = launch_game(&error_message, game_params, cmd_args);
+			bool game_has_run = launch_game(error_message, game_params, cmd_args);
 
 			// If skip_main_menu, we only want to startup once
 			if (skip_main_menu && !first_loop)
@@ -207,7 +207,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 			}
 
 			if (current_playername.length() > PLAYERNAME_SIZE-1) {
-				error_message = wgettext("Player name too long.");
+				error_message = gettext("Player name too long.");
 				playername = current_playername.substr(0, PLAYERNAME_SIZE-1);
 				g_settings->set("name", playername);
 				continue;
@@ -245,25 +245,24 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 
 		} //try
 		catch (con::PeerNotFoundException &e) {
-			error_message = wgettext("Connection error (timed out?)");
-			errorstream << wide_to_narrow(error_message) << std::endl;
+			error_message = gettext("Connection error (timed out?)");
+			errorstream << error_message << std::endl;
 		}
 
 #ifdef NDEBUG
 		catch (std::exception &e) {
-			std::string narrow_message = "Some exception: \"";
-			narrow_message += e.what();
-			narrow_message += "\"";
-			errorstream << narrow_message << std::endl;
-			error_message = narrow_to_wide(narrow_message);
+			std::string error_message = "Some exception: \"";
+			error_message += e.what();
+			error_message += "\"";
+			errorstream << error_message << std::endl;
 		}
 #endif
 
 		// If no main menu, show error and exit
 		if (skip_main_menu) {
-			if (error_message != L"") {
+			if (!error_message.empty()) {
 				verbosestream << "error_message = "
-				              << wide_to_narrow(error_message) << std::endl;
+				              << error_message << std::endl;
 				retval = false;
 			}
 			break;
@@ -312,7 +311,7 @@ bool ClientLauncher::init_engine(int log_level)
 	return device != NULL;
 }
 
-bool ClientLauncher::launch_game(std::wstring *error_message,
+bool ClientLauncher::launch_game(std::string &error_message,
 		GameParams &game_params, const Settings &cmd_args)
 {
 	// Initialize menu data
@@ -320,9 +319,9 @@ bool ClientLauncher::launch_game(std::wstring *error_message,
 	menudata.address      = address;
 	menudata.name         = playername;
 	menudata.port         = itos(game_params.socket_port);
-	menudata.errormessage = wide_to_narrow(*error_message);
+	menudata.errormessage = error_message;
 
-	*error_message = L"";
+	error_message.clear();
 
 	if (cmd_args.exists("password"))
 		menudata.password = cmd_args.get("password");
@@ -367,11 +366,11 @@ bool ClientLauncher::launch_game(std::wstring *error_message,
 		}
 	}
 
-	if (menudata.errormessage != "") {
+	if (!menudata.errormessage.empty()) {
 		/* The calling function will pass this back into this function upon the
 		 * next iteration (if any) causing it to be displayed by the GUI
 		 */
-		*error_message = narrow_to_wide(menudata.errormessage);
+		error_message = menudata.errormessage;
 		return false;
 	}
 
@@ -410,25 +409,25 @@ bool ClientLauncher::launch_game(std::wstring *error_message,
 
 	if (current_address == "") { // If local game
 		if (worldspec.path == "") {
-			*error_message = wgettext("No world selected and no address "
+			error_message = gettext("No world selected and no address "
 					"provided. Nothing to do.");
-			errorstream << wide_to_narrow(*error_message) << std::endl;
+			errorstream << error_message << std::endl;
 			return false;
 		}
 
 		if (!fs::PathExists(worldspec.path)) {
-			*error_message = wgettext("Provided world path doesn't exist: ")
-					+ narrow_to_wide(worldspec.path);
-			errorstream << wide_to_narrow(*error_message) << std::endl;
+			error_message = gettext("Provided world path doesn't exist: ")
+					+ worldspec.path;
+			errorstream << error_message << std::endl;
 			return false;
 		}
 
 		// Load gamespec for required game
 		gamespec = findWorldSubgame(worldspec.path);
 		if (!gamespec.isValid() && !game_params.game_spec.isValid()) {
-			*error_message = wgettext("Could not find or load game \"")
-					+ narrow_to_wide(worldspec.gameid) + L"\"";
-			errorstream << wide_to_narrow(*error_message) << std::endl;
+			error_message = gettext("Could not find or load game \"")
+					+ worldspec.gameid + "\"";
+			errorstream << error_message << std::endl;
 			return false;
 		}
 
@@ -444,10 +443,9 @@ bool ClientLauncher::launch_game(std::wstring *error_message,
 		}
 
 		if (!gamespec.isValid()) {
-			*error_message = wgettext("Invalid gamespec.");
-			*error_message += L" (world_gameid="
-					+ narrow_to_wide(worldspec.gameid) + L")";
-			errorstream << wide_to_narrow(*error_message) << std::endl;
+			error_message = gettext("Invalid gamespec.");
+			error_message += " (world.gameid=" + worldspec.gameid + ")";
+			errorstream << error_message << std::endl;
 			return false;
 		}
 	}

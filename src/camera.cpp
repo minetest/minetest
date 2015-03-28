@@ -119,34 +119,20 @@ Camera::~Camera()
 	m_wieldmgr->drop();
 }
 
-bool Camera::successfullyCreated(std::wstring& error_message)
+bool Camera::successfullyCreated(std::string &error_message)
 {
-	if (m_playernode == NULL)
-	{
-		error_message = L"Failed to create the player scene node";
-		return false;
+	if (!m_playernode) {
+		error_message = "Failed to create the player scene node";
+	} else if (!m_headnode) {
+		error_message = "Failed to create the head scene node";
+	} else if (!m_cameranode) {
+		error_message = "Failed to create the camera scene node";
+	} else if (!m_wieldmgr) {
+		error_message = "Failed to create the wielded item scene manager";
+	} else if (!m_wieldnode) {
+		error_message = "Failed to create the wielded item scene node";
 	}
-	if (m_headnode == NULL)
-	{
-		error_message = L"Failed to create the head scene node";
-		return false;
-	}
-	if (m_cameranode == NULL)
-	{
-		error_message = L"Failed to create the camera scene node";
-		return false;
-	}
-	if (m_wieldmgr == NULL)
-	{
-		error_message = L"Failed to create the wielded item scene manager";
-		return false;
-	}
-	if (m_wieldnode == NULL)
-	{
-		error_message = L"Failed to create the wielded item scene node";
-		return false;
-	}
-	return true;
+	return error_message.empty();
 }
 
 // Returns the fractional part of x

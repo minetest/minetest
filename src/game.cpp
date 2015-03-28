@@ -1423,7 +1423,7 @@ public:
 			// If address is "", local server is used and address is updated
 			std::string *address,
 			u16 port,
-			std::wstring *error_message,
+			std::string &error_message,
 			ChatBackend *chat_backend,
 			const SubgameSpec &gamespec,    // Used for local game
 			bool simple_singleplayer_mode);
@@ -1445,9 +1445,8 @@ protected:
 
 	// Client creation
 	bool createClient(const std::string &playername,
-			const std::string &password, std::string *address, u16 port,
-			std::wstring *error_message);
-	bool initGui(std::wstring *error_message);
+			const std::string &password, std::string *address, u16 port);
+	bool initGui();
 
 	// Client connection
 	bool connectToServer(const std::string &playername,
@@ -1575,7 +1574,7 @@ private:
 	video::IVideoDriver *driver;
 	scene::ISceneManager *smgr;
 	bool *kill;
-	std::wstring *error_message;
+	std::string *error_message;
 	IGameDef *gamedef;                     // Convenience (same as *client)
 	scene::ISceneNode *skybox;
 
@@ -1692,7 +1691,7 @@ bool Game::startup(bool *kill,
 		const std::string &password,
 		std::string *address,     // can change if simple_singleplayer_mode
 		u16 port,
-		std::wstring *error_message,
+		std::string &error_message,
 		ChatBackend *chat_backend,
 		const SubgameSpec &gamespec,
 		bool simple_singleplayer_mode)
@@ -1700,7 +1699,7 @@ bool Game::startup(bool *kill,
 	// "cache"
 	this->device        = device;
 	this->kill          = kill;
-	this->error_message = error_message;
+	this->error_message = &error_message;
 	this->random_input  = random_input;
 	this->input         = input;
 	this->chat_backend  = chat_backend;
@@ -1714,7 +1713,7 @@ bool Game::startup(bool *kill,
 	if (!init(map_dir, address, port, gamespec))
 		return false;
 
-	if (!createClient(playername, password, address, port, error_message))
+	if (!createClient(playername, password, address, port))
 		return false;
 
 	return true;
@@ -1934,10 +1933,10 @@ bool Game::createSingleplayerServer(const std::string map_dir,
 	}
 
 	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
-		*error_message = L"Unable to listen on " +
-				narrow_to_wide(bind_addr.serializeString()) +
-				L" because IPv6 is disabled";
-		errorstream << wide_to_narrow(*error_message) << std::endl;
+		*error_message = "Unable to listen on " +
+				bind_addr.serializeString() +
+				" because IPv6 is disabled";
+		errorstream << *error_message << std::endl;
 		return false;
 	}
 
@@ -1950,8 +1949,7 @@ bool Game::createSingleplayerServer(const std::string map_dir,
 }
 
 bool Game::createClient(const std::string &playername,
-		const std::string &password, std::string *address, u16 port,
-		std::wstring *error_message)
+		const std::string &password, std::string *address, u16 port)
 {
 	showOverlayMessage(wgettext("Creating client..."), 0, 10);
 
@@ -1966,19 +1964,19 @@ bool Game::createClient(const std::string &playername,
 		return false;
 
 	if (!could_connect) {
-		if (*error_message == L"" && !connect_aborted) {
+		if (error_message->empty() && !connect_aborted) {
 			// Should not happen if error messages are set properly
-			*error_message = L"Connection failed for unknown reason";
-			errorstream << wide_to_narrow(*error_message) << std::endl;
+			*error_message = "Connection failed for unknown reason";
+			errorstream << *error_message << std::endl;
 		}
 		return false;
 	}
 
 	if (!getServerContent(&connect_aborted)) {
-		if (*error_message == L"" && !connect_aborted) {
+		if (error_message->empty() && !connect_aborted) {
 			// Should not happen if error messages are set properly
-			*error_message = L"Connection failed for unknown reason";
-			errorstream << wide_to_narrow(*error_message) << std::endl;
+			*error_message = "Connection failed for unknown reason";
+			errorstream << *error_message << std::endl;
 		}
 		return false;
 	}
@@ -1997,9 +1995,8 @@ bool Game::createClient(const std::string &playername,
 	if (m_cache_enable_clouds) {
 		clouds = new Clouds(smgr->getRootSceneNode(), smgr, -1, time(0));
 		if (!clouds) {
-			*error_message = L"Memory allocation error";
-			*error_message += narrow_to_wide(" (clouds)");
-			errorstream << wide_to_narrow(*error_message) << std::endl;
+			*error_message = "Memory allocation error (clouds)";
+			errorstream << *error_message << std::endl;
 			return false;
 		}
 	}
@@ -2012,9 +2009,8 @@ bool Game::createClient(const std::string &playername,
 	local_inventory = new Inventory(itemdef_manager);
 
 	if (!(sky && local_inventory)) {
-		*error_message = L"Memory allocation error";
-		*error_message += narrow_to_wide(" (sky or local inventory)");
-		errorstream << wide_to_narrow(*error_message) << std::endl;
+		*error_message = "Memory allocation error (sky or local inventory)";
+		errorstream << *error_message << std::endl;
 		return false;
 	}
 
@@ -2028,7 +2024,7 @@ bool Game::createClient(const std::string &playername,
 		crack_animation_length = 5;
 	}
 
-	if (!initGui(error_message))
+	if (!initGui())
 		return false;
 
 	/* Set window caption
@@ -2046,15 +2042,15 @@ bool Game::createClient(const std::string &playername,
 	hud = new Hud(driver, smgr, guienv, gamedef, player, local_inventory);
 
 	if (!hud) {
-		*error_message = L"Memory error: could not create HUD";
-		errorstream << wide_to_narrow(*error_message) << std::endl;
+		*error_message = "Memory error: could not create HUD";
+		errorstream << *error_message << std::endl;
 		return false;
 	}
 
 	return true;
 }
 
-bool Game::initGui(std::wstring *error_message)
+bool Game::initGui()
 {
 	// First line of debug text
 	guitext = guienv->addStaticText(
@@ -2095,8 +2091,8 @@ bool Game::initGui(std::wstring *error_message)
 	gui_chat_console = new GUIChatConsole(guienv, guienv->getRootGUIElement(),
 			-1, chat_backend, client);
 	if (!gui_chat_console) {
-		*error_message = L"Could not allocate memory for chat console";
-		errorstream << wide_to_narrow(*error_message) << std::endl;
+		*error_message = "Could not allocate memory for chat console";
+		errorstream << *error_message << std::endl;
 		return false;
 	}
 
@@ -2146,16 +2142,16 @@ bool Game::connectToServer(const std::string &playername,
 			local_server_mode = true;
 		}
 	} catch (ResolveError &e) {
-		*error_message = L"Couldn't resolve address: " + narrow_to_wide(e.what());
-		errorstream << wide_to_narrow(*error_message) << std::endl;
+		*error_message = std::string("Couldn't resolve address: ") + e.what();
+		errorstream << *error_message << std::endl;
 		return false;
 	}
 
 	if (connect_address.isIPv6() && !g_settings->getBool("enable_ipv6")) {
-		*error_message = L"Unable to connect to " +
-				narrow_to_wide(connect_address.serializeString()) +
-				L" because IPv6 is disabled";
-		errorstream << wide_to_narrow(*error_message) << std::endl;
+		*error_message = "Unable to connect to " +
+				connect_address.serializeString() +
+				" because IPv6 is disabled";
+		errorstream << *error_message << std::endl;
 		return false;
 	}
 
@@ -2205,9 +2201,9 @@ bool Game::connectToServer(const std::string &playername,
 
 			// Break conditions
 			if (client->accessDenied()) {
-				*error_message = L"Access denied. Reason: "
+				*error_message = "Access denied. Reason: "
 						+ client->accessDeniedReason();
-				errorstream << wide_to_narrow(*error_message) << std::endl;
+				errorstream << *error_message << std::endl;
 				break;
 			}
 
@@ -2253,16 +2249,12 @@ bool Game::getServerContent(bool *aborted)
 		}
 
 		// Error conditions
-		if (client->accessDenied()) {
-			*error_message = L"Access denied. Reason: "
-					+ client->accessDeniedReason();
-			errorstream << wide_to_narrow(*error_message) << std::endl;
+		if (!checkConnection())
 			return false;
-		}
 
 		if (client->getState() < LC_Init) {
-			*error_message = L"Client disconnected";
-			errorstream << wide_to_narrow(*error_message) << std::endl;
+			*error_message = "Client disconnected";
+			errorstream << *error_message << std::endl;
 			return false;
 		}
 
@@ -2336,9 +2328,9 @@ inline void Game::updateInteractTimers(GameRunData *runData, f32 dtime)
 inline bool Game::checkConnection()
 {
 	if (client->accessDenied()) {
-		*error_message = L"Access denied. Reason: "
+		*error_message = "Access denied. Reason: "
 				+ client->accessDeniedReason();
-		errorstream << wide_to_narrow(*error_message) << std::endl;
+		errorstream << *error_message << std::endl;
 		return false;
 	}
 
@@ -4219,7 +4211,7 @@ void the_game(bool *kill,
 		const std::string &address,         // If empty local server is created
 		u16 port,
 
-		std::wstring &error_message,
+		std::string &error_message,
 		ChatBackend &chat_backend,
 		const SubgameSpec &gamespec,        // Used for local game
 		bool simple_singleplayer_mode)
@@ -4235,24 +4227,24 @@ void the_game(bool *kill,
 	try {
 
 		if (game.startup(kill, random_input, input, device, map_dir,
-					playername, password, &server_address, port,
-					&error_message, &chat_backend, gamespec,
-					simple_singleplayer_mode)) {
-
+				playername, password, &server_address, port,
+				error_message, &chat_backend, gamespec,
+				simple_singleplayer_mode)) {
 			game.run();
 			game.shutdown();
 		}
 
 	} catch (SerializationError &e) {
-		error_message = L"A serialization error occurred:\n"
-				+ narrow_to_wide(e.what()) + L"\n\nThe server is probably "
-				L" running a different version of " PROJECT_NAME ".";
-		errorstream << wide_to_narrow(error_message) << std::endl;
+		error_message = std::string("A serialization error occurred:\n")
+				+ e.what() + "\n\nThe server is probably "
+				" running a different version of " PROJECT_NAME ".";
+		errorstream << error_message << std::endl;
 	} catch (ServerError &e) {
-		error_message = narrow_to_wide(e.what());
-		errorstream << "ServerError: " << e.what() << std::endl;
+		error_message = e.what();
+		errorstream << "ServerError: " << error_message << std::endl;
 	} catch (ModError &e) {
-		errorstream << "ModError: " << e.what() << std::endl;
-		error_message = narrow_to_wide(e.what()) + wstrgettext("\nCheck debug.txt for details.");
+		error_message = e.what() + strgettext("\nCheck debug.txt for details.");
+		errorstream << "ModError: " << error_message << std::endl;
 	}
 }
+

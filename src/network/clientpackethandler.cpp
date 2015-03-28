@@ -140,7 +140,7 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 	// to be processed even if the serialisation format has
 	// not been agreed yet, the same as TOCLIENT_INIT.
 	m_access_denied = true;
-	m_access_denied_reason = L"Unknown";
+	m_access_denied_reason = "Unknown";
 
 	if (pkt->getCommand() == TOCLIENT_ACCESS_DENIED) {
 		if (pkt->getSize() < 1)
@@ -149,7 +149,9 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 		u8 denyCode = SERVER_ACCESSDENIED_UNEXPECTED_DATA;
 		*pkt >> denyCode;
 		if (denyCode == SERVER_ACCESSDENIED_CUSTOM_STRING) {
-			*pkt >> m_access_denied_reason;
+			std::wstring wide_reason;
+			*pkt >> wide_reason;
+			m_access_denied_reason = wide_to_narrow(wide_reason);
 		}
 		else if (denyCode < SERVER_ACCESSDENIED_MAX) {
 			m_access_denied_reason = accessDeniedStrings[denyCode];
@@ -159,7 +161,9 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 	// for compat with old clients
 	else {
 		if (pkt->getSize() >= 2) {
-			*pkt >> m_access_denied_reason;
+			std::wstring wide_reason;
+			*pkt >> wide_reason;
+			m_access_denied_reason = wide_to_narrow(wide_reason);
 		}
 	}
 }

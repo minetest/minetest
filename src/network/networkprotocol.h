@@ -861,36 +861,36 @@ enum ToServerCommand
 };
 
 enum AccessDeniedCode {
-	SERVER_ACCESSDENIED_WRONG_PASSWORD = 0,
-	SERVER_ACCESSDENIED_UNEXPECTED_DATA = 1,
-	SERVER_ACCESSDENIED_SINGLEPLAYER = 2,
-	SERVER_ACCESSDENIED_WRONG_VERSION = 3,
-	SERVER_ACCESSDENIED_WRONG_CHARS_IN_NAME = 4,
-	SERVER_ACCESSDENIED_WRONG_NAME = 5,
-	SERVER_ACCESSDENIED_TOO_MANY_USERS = 6,
-	SERVER_ACCESSDENIED_EMPTY_PASSWORD = 7,
-	SERVER_ACCESSDENIED_ALREADY_CONNECTED = 8,
-	SERVER_ACCESSDENIED_SERVER_FAIL = 9,
-	SERVER_ACCESSDENIED_CUSTOM_STRING = 10,
-	SERVER_ACCESSDENIED_MAX = 11,
+	SERVER_ACCESSDENIED_WRONG_PASSWORD,
+	SERVER_ACCESSDENIED_UNEXPECTED_DATA,
+	SERVER_ACCESSDENIED_SINGLEPLAYER,
+	SERVER_ACCESSDENIED_WRONG_VERSION,
+	SERVER_ACCESSDENIED_WRONG_CHARS_IN_NAME,
+	SERVER_ACCESSDENIED_WRONG_NAME,
+	SERVER_ACCESSDENIED_TOO_MANY_USERS,
+	SERVER_ACCESSDENIED_EMPTY_PASSWORD,
+	SERVER_ACCESSDENIED_ALREADY_CONNECTED,
+	SERVER_ACCESSDENIED_SERVER_FAIL,
+	SERVER_ACCESSDENIED_CUSTOM_STRING,
+	SERVER_ACCESSDENIED_MAX,
 };
 
 enum NetProtoCompressionMode {
 	NETPROTO_COMPRESSION_ZLIB = 0,
 };
 
-const static std::wstring accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
-	L"Invalid password",
-	L"Your client sent something server didn't expect. Try reconnecting or updating your client",
-	L"The server is running in simple singleplayer mode. You cannot connect.",
-	L"Your client's version is not supported.\nPlease contact server administrator.",
-	L"Name contains unallowed characters",
-	L"Name is not allowed",
-	L"Too many users.",
-	L"Empty passwords are disallowed. Set a password and try again.",
-	L"Another client is connected with this name. If your client closed unexpectedly, try again in a minute.",
-	L"Server authenticator failed. Maybe the servers has some problems."
-	L"",
+const static std::string accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
+	"Invalid password",
+	"Your client sent something the server didn't expect.  Try reconnecting or updating your client",
+	"The server is running in simple singleplayer mode.  You cannot connect.",
+	"Your client's version is not supported.\nPlease contact server administrator.",
+	"Player name contains disallowed characters.",
+	"Player name not allowed.",
+	"Too many users.",
+	"Empty passwords are disallowed.  Set a password and try again.",
+	"Another client is connected with this name.  If your client closed unexpectedly, try again in a minute.",
+	"Server authention failed.  This is likely a server error."
+	"",
 };
 
 #endif
