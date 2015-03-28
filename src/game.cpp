@@ -2969,19 +2969,37 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		cam.camera_pitch,
 		cam.camera_yaw
 	);
+
+	u32 keypress_bits =
+			( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_FORWARD])  & 0x1) << 0) |
+			( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_BACKWARD]) & 0x1) << 1) |
+			( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_LEFT])     & 0x1) << 2) |
+			( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_RIGHT])    & 0x1) << 3) |
+			( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_JUMP])     & 0x1) << 4) |
+			( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SPECIAL1]) & 0x1) << 5) |
+			( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SNEAK])    & 0x1) << 6) |
+			( (u32)(input->getLeftState()                                        & 0x1) << 7) |
+			( (u32)(input->getRightState()                                       & 0x1) << 8
+		);
+
+#ifdef ANDROID
+	/* For Android, invert the meaning of holding down the fast button (i.e.
+	 * holding down the fast button -- if there is one -- means walk), unless
+	 * performing an action, sneaking or jumping.
+	 */
+	const u32 autofast_exludebits =
+			  (1U << 4) | (1U << 6)     // jump, sneak
+			| (1U << 7) | (1U << 8);    // left state, right state
+
+	if ((keypress_bits & autofast_exludebits) == 0) {
+		control.aux1 = control.aux1 ^ true;
+		keypress_bits ^= ((u32)(1U << 5));
+	}
+#endif
+
 	client->setPlayerControl(control);
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
-	player->keyPressed =
-		( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_FORWARD])  & 0x1) << 0) |
-		( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_BACKWARD]) & 0x1) << 1) |
-		( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_LEFT])     & 0x1) << 2) |
-		( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_RIGHT])    & 0x1) << 3) |
-		( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_JUMP])     & 0x1) << 4) |
-		( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SPECIAL1]) & 0x1) << 5) |
-		( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SNEAK])    & 0x1) << 6) |
-		( (u32)(input->getLeftState()                                        & 0x1) << 7) |
-		( (u32)(input->getRightState()                                       & 0x1) << 8
-	);
+	player->keyPressed = keypress_bits;
 
 	//tt.stop();
 }
