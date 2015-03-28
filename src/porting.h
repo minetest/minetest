@@ -371,6 +371,7 @@ float getDisplayDensity();
 v2u32 getDisplaySize();
 v2u32 getWindowSize();
 
+std::vector<core::vector3d<u32> > getSupportedVideoModes();
 std::vector<irr::video::E_DRIVER_TYPE> getSupportedVideoDrivers();
 const char *getVideoDriverName(irr::video::E_DRIVER_TYPE type);
 const char *getVideoDriverFriendlyName(irr::video::E_DRIVER_TYPE type);
