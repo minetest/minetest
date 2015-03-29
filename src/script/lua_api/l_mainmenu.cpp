@@ -840,7 +840,7 @@ int ModApiMainMenu::l_copy_dir(lua_State *L)
 int ModApiMainMenu::l_extract_zip(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
-	sanity_check(engine != NULL);(engine != 0);
+	sanity_check(engine);
 
 	const char *zipfile	= luaL_checkstring(L, 1);
 	const char *destination	= luaL_checkstring(L, 2);
