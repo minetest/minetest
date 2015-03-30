@@ -840,7 +840,7 @@ int ModApiMainMenu::l_copy_dir(lua_State *L)
 int ModApiMainMenu::l_extract_zip(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
-	sanity_check(engine != NULL);(engine != 0);
+	sanity_check(engine);
 
 	const char *zipfile	= luaL_checkstring(L, 1);
 	const char *destination	= luaL_checkstring(L, 2);
@@ -980,7 +980,7 @@ int ModApiMainMenu::l_show_file_open_dialog(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_version(lua_State *L)
 {
-	lua_pushstring(L, minetest_version_simple);
+	lua_pushstring(L, g_version_string);
 	return 1;
 }
 
@@ -1049,6 +1049,28 @@ int ModApiMainMenu::l_get_video_drivers(lua_State *L)
 		lua_setfield(L, -2, "name");
 		lua_pushstring(L, fname);
 		lua_setfield(L, -2, "friendly_name");
+
+		lua_rawseti(L, -2, i + 1);
+	}
+
+	return 1;
+}
+
+/******************************************************************************/
+int ModApiMainMenu::l_get_video_modes(lua_State *L)
+{
+	std::vector<core::vector3d<u32> > videomodes
+		= porting::getSupportedVideoModes();
+
+	lua_newtable(L);
+	for (u32 i = 0; i != videomodes.size(); i++) {
+		lua_newtable(L);
+		lua_pushnumber(L, videomodes[i].X);
+		lua_setfield(L, -2, "w");
+		lua_pushnumber(L, videomodes[i].Y);
+		lua_setfield(L, -2, "h");
+		lua_pushnumber(L, videomodes[i].Z);
+		lua_setfield(L, -2, "depth");
 
 		lua_rawseti(L, -2, i + 1);
 	}
@@ -1164,6 +1186,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(sound_stop);
 	API_FCT(gettext);
 	API_FCT(get_video_drivers);
+	API_FCT(get_video_modes);
 	API_FCT(get_screen_info);
 	API_FCT(get_min_supp_proto);
 	API_FCT(get_max_supp_proto);

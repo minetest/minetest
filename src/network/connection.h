@@ -501,7 +501,7 @@ public:
 	std::queue<BufferedPacket> queued_reliables;
 
 	//queue commands prior splitting to packets
-	std::queue<ConnectionCommand> queued_commands;
+	std::deque<ConnectionCommand> queued_commands;
 
 	IncomingSplitBuffer incoming_splits;
 

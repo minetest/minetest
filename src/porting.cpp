@@ -461,7 +461,7 @@ void initializePaths()
 	// Use "C:\Documents and Settings\user\Application Data\<PROJECT_NAME>"
 	len = GetEnvironmentVariable("APPDATA", buf, buflen);
 	FATAL_ERROR_IF(len >= buflen, "Overlow");
-	path_user = std::string(buf) + DIR_DELIM + PROJECT_NAME;
+	path_user = std::string(buf) + DIR_DELIM + lowercase(PROJECT_NAME);
 
 	/*
 		Linux
@@ -491,7 +491,7 @@ void initializePaths()
 	if(static_sharedir != "" && static_sharedir != ".")
 		trylist.push_back(static_sharedir);
 	trylist.push_back(
-			bindir + DIR_DELIM + ".." + DIR_DELIM + "share" + DIR_DELIM + PROJECT_NAME);
+			bindir + DIR_DELIM + ".." + DIR_DELIM + "share" + DIR_DELIM + lowercase(PROJECT_NAME));
 	trylist.push_back(bindir + DIR_DELIM + "..");
 #ifdef __ANDROID__
 	trylist.push_back(path_user);
@@ -515,7 +515,7 @@ void initializePaths()
 		break;
 	}
 #ifndef __ANDROID__
-	path_user = std::string(getenv("HOME")) + DIR_DELIM + "." + PROJECT_NAME;
+	path_user = std::string(getenv("HOME")) + DIR_DELIM + "." + lowercase(PROJECT_NAME);
 #endif
 
 	/*
@@ -532,12 +532,13 @@ void initializePaths()
 		dstream << "WARNING: Could not determine bundle resource path" << std::endl;
 	}
 	CFRelease(resources_url);
-	path_user = std::string(getenv("HOME")) + "/Library/Application Support/" + PROJECT_NAME;
+
+	path_user = std::string(getenv("HOME")) + "/Library/Application Support/" + lowercase(PROJECT_NAME);
 
 	#else // FreeBSD, and probably many other POSIX-like systems.
 
 	path_share = STATIC_SHAREDIR;
-	path_user = std::string(getenv("HOME")) + DIR_DELIM + "." + PROJECT_NAME;
+	path_user = std::string(getenv("HOME")) + DIR_DELIM + "." + lowercase(PROJECT_NAME);
 
 	#endif
 
@@ -569,16 +570,20 @@ void setXorgClassHint(const video::SExposedVideoData &video_data,
 }
 
 #ifndef SERVER
+
 v2u32 getWindowSize()
 {
 	return device->getVideoDriver()->getScreenSize();
 }
 
 
-std::vector<core::vector3d<u32> > getVideoModes()
+std::vector<core::vector3d<u32> > getSupportedVideoModes()
 {
+	IrrlichtDevice *nulldevice = createDevice(video::EDT_NULL);
+	sanity_check(nulldevice != NULL);
+
 	std::vector<core::vector3d<u32> > mlist;
-	video::IVideoModeList *modelist = device->getVideoModeList();
+	video::IVideoModeList *modelist = nulldevice->getVideoModeList();
 
 	u32 num_modes = modelist->getVideoModeCount();
 	for (u32 i = 0; i != num_modes; i++) {
@@ -586,6 +591,8 @@ std::vector<core::vector3d<u32> > getVideoModes()
 		s32 mode_depth = modelist->getVideoModeDepth(i);
 		mlist.push_back(core::vector3d<u32>(mode_res.Width, mode_res.Height, mode_depth));
 	}
+
+	nulldevice->drop();
 
 	return mlist;
 }

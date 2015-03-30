@@ -20,9 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef VERSION_HEADER
 #define VERSION_HEADER
 
-extern const char *minetest_version_simple;
-extern const char *minetest_version_hash;
-extern const char *minetest_build_info;
+extern const char *g_version_string;
+extern const char *g_version_hash;
+extern const char *g_build_info;
 
 #endif
 

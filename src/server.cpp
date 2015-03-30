@@ -1290,13 +1290,16 @@ Inventory* Server::getInventory(const InventoryLocation &loc)
 	}
 	return NULL;
 }
-void Server::setInventoryModified(const InventoryLocation &loc)
+void Server::setInventoryModified(const InventoryLocation &loc, bool playerSend)
 {
 	switch(loc.type){
 	case InventoryLocation::UNDEFINED:
 		break;
 	case InventoryLocation::PLAYER:
 	{
+		if (!playerSend)
+			return;
+
 		Player *player = m_env->getPlayer(loc.name.c_str());
 		if(!player)
 			return;
@@ -2684,7 +2687,7 @@ std::wstring Server::getStatusString()
 	std::wostringstream os(std::ios_base::binary);
 	os<<L"# Server: ";
 	// Version
-	os<<L"version="<<narrow_to_wide(minetest_version_simple);
+	os<<L"version="<<narrow_to_wide(g_version_string);
 	// Uptime
 	os<<L", uptime="<<m_uptime.get();
 	// Max lag estimate

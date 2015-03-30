@@ -12,4 +12,5 @@ if (BUILD_CLIENT)
 		${CMAKE_CURRENT_SOURCE_DIR}/clientpackethandler.cpp
 		PARENT_SCOPE
 	)
-endif(BUILD_CLIENT)
+endif()
+

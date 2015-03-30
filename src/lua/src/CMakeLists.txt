@@ -39,11 +39,9 @@ set(LUA_LIB_HEADERS
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-				${CMAKE_CURRENT_BINARY_DIR})
+		${CMAKE_CURRENT_BINARY_DIR})
 
-#
 # Lua library.
-#
 add_library(lua STATIC ${LUA_CORE_SRC})
 target_link_libraries(lua ${LIBS})
 set(LUA_STATIC_LIB lua)
@@ -51,13 +49,6 @@ set(LUA_LIBS lua)
 
 set_target_properties(${LUA_LIBS} PROPERTIES
 	VERSION ${LUA_VERSION}
-	SOVERSION ${LUA_SOVERSION}
 	CLEAN_DIRECT_OUTPUT 1
 )
-
-# Install library
-#install(TARGETS ${LUA_LIBS}
-#				RUNTIME DESTINATION bin
-#				LIBRARY DESTINATION lib
-#				ARCHIVE DESTINATION lib)
 

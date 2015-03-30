@@ -1,17 +1,18 @@
-# name of the target operating system
-SET(CMAKE_SYSTEM_NAME Windows)
+# Target operating system name
+set(CMAKE_SYSTEM_NAME Windows)
 
-# which compilers to use for C and C++
-SET(CMAKE_C_COMPILER %PREFIX%-gcc)
-SET(CMAKE_CXX_COMPILER %PREFIX%-g++)
-SET(CMAKE_RC_COMPILER %PREFIX%-windres)
+# Compilers to use
+set(CMAKE_C_COMPILER %PREFIX%-gcc)
+set(CMAKE_CXX_COMPILER %PREFIX%-g++)
+set(CMAKE_RC_COMPILER %PREFIX%-windres)
 
-# here is the target environment located
-SET(CMAKE_FIND_ROOT_PATH %ROOTPATH%)
+# Location of the target environment
+set(CMAKE_FIND_ROOT_PATH %ROOTPATH%)
 
-# adjust the default behaviour of the FIND_XXX() commands:
-# search headers and libraries in the target environment, search
-# programs in the host environment
+# Adjust the default behaviour of the FIND_XXX() commands:
+# search for headers and libraries in the target environment,
+# search for programs in the host environment
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+

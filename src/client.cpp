@@ -1126,12 +1126,12 @@ void Client::sendReady()
 	DSTACK(__FUNCTION_NAME);
 
 	NetworkPacket pkt(TOSERVER_CLIENT_READY,
-			1 + 1 + 1 + 1 + 2 + sizeof(char) * strlen(minetest_version_hash));
+			1 + 1 + 1 + 1 + 2 + sizeof(char) * strlen(g_version_hash));
 
-	pkt << (u8) VERSION_MAJOR << (u8) VERSION_MINOR << (u8) VERSION_PATCH_ORIG
-		<< (u8) 0 << (u16) strlen(minetest_version_hash);
+	pkt << (u8) VERSION_MAJOR << (u8) VERSION_MINOR << (u8) VERSION_PATCH
+		<< (u8) 0 << (u16) strlen(g_version_hash);
 
-	pkt.putRawString(minetest_version_hash, (u16) strlen(minetest_version_hash));
+	pkt.putRawString(g_version_hash, (u16) strlen(g_version_hash));
 	Send(&pkt);
 }
 
@@ -1710,13 +1710,22 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 
 		if (image) {
 			raw_image->copyTo(image);
-			irr::c8 filename[256];
-			snprintf(filename, sizeof(filename),
-				(std::string("%s") + DIR_DELIM + "screenshot_%u.png").c_str(),
-				 g_settings->get("screenshot_path").c_str(),
-				 device->getTimer()->getRealTime());
+
+			std::string filename;
+
+			time_t t = time(NULL);
+			struct tm *tm = localtime(&t);
+			char timetstamp_c[16]; // YYYYMMDD_HHMMSS + '\0'
+			strftime(timetstamp_c, sizeof(timetstamp_c), "%Y%m%d_%H%M%S", tm);
+
+			filename = g_settings->get("screenshot_path")
+			         + DIR_DELIM
+			         + std::string("screenshot_")
+			         + std::string(timetstamp_c)
+			         + ".png";
+
 			std::ostringstream sstr;
-			if (driver->writeImageToFile(image, filename)) {
+			if (driver->writeImageToFile(image, filename.c_str())) {
 				sstr << "Saved screenshot to '" << filename << "'";
 			} else {
 				sstr << "Failed to save screenshot '" << filename << "'";

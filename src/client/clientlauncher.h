@@ -92,7 +92,7 @@ protected:
 	void init_args(GameParams &game_params, const Settings &cmd_args);
 	bool init_engine(int log_level);
 
-	bool launch_game(std::wstring *error_message, GameParams &game_params,
+	bool launch_game(std::string &error_message, GameParams &game_params,
 			const Settings &cmd_args);
 
 	void main_menu(MainMenuData *menudata);

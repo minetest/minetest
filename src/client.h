@@ -480,7 +480,7 @@ public:
 	bool accessDenied()
 	{ return m_access_denied; }
 
-	std::wstring accessDeniedReason()
+	std::string accessDeniedReason()
 	{ return m_access_denied_reason; }
 
 	bool itemdefReceived()
@@ -589,7 +589,7 @@ private:
 	u64 m_map_seed;
 	std::string m_password;
 	bool m_access_denied;
-	std::wstring m_access_denied_reason;
+	std::string m_access_denied_reason;
 	std::queue<ClientEvent> m_client_event_queue;
 	bool m_itemdef_received;
 	bool m_nodedef_received;
