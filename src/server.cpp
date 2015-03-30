@@ -335,6 +335,11 @@ Server::Server(
 	// Apply item aliases in the node definition manager
 	m_nodedef->updateAliases(m_itemdef);
 
+	// Apply texture overrides from texturepack/override.txt
+	std::string texture_path = g_settings->get("texture_path");
+	if (texture_path != "" && fs::IsDir(texture_path))
+		m_nodedef->applyTextureOverrides(texture_path + DIR_DELIM + "override.txt");
+
 	m_nodedef->setNodeRegistrationStatus(true);
 
 	// Perform pending node name resolutions
@@ -3397,5 +3402,3 @@ void dedicated_server_loop(Server &server, bool &kill)
 		}
 	}
 }
-
-
