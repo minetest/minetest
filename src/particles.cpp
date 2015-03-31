@@ -272,18 +272,16 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 {
 	if (event->type == CE_DELETE_PARTICLESPAWNER) {
 		JMutexAutoLock lock(m_spawner_list_lock);
-
 		if (irrlicht_spawners.find(event->delete_particlespawner.id) !=
 		    irrlicht_spawners.end())
 		{
 			scene::ISceneNode *node = smgr->getSceneNodeFromId(
 				irrlicht_spawners.find(event->delete_particlespawner.id)->second);
 			if(node)
-				smgr->addToDeletionQueue(node);
+				m_smgr->addToDeletionQueue(node);
 
-			irrlicht_spawners.erase(irrlicht_spawners.find(event->add_particlespawner.id));
+			irrlicht_spawners.erase(irrlicht_spawners.find(event->delete_particlespawner.id));
 		}
-		// no allocated memory in delete event
 		return;
 	}
 
