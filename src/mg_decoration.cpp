@@ -25,8 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/numeric.h"
 
-const char *DecorationManager::ELEMENT_TITLE = "decoration";
-
 FlagDesc flagdesc_deco[] = {
 	{"place_center_x", DECO_PLACE_CENTER_X},
 	{"place_center_y", DECO_PLACE_CENTER_Y},
@@ -40,7 +38,7 @@ FlagDesc flagdesc_deco[] = {
 
 
 DecorationManager::DecorationManager(IGameDef *gamedef) :
-	GenElementManager(gamedef)
+	ObjDefManager(gamedef, OBJDEF_DECORATION)
 {
 }
 
@@ -50,8 +48,8 @@ size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed,
 {
 	size_t nplaced = 0;
 
-	for (size_t i = 0; i != m_elements.size(); i++) {
-		Decoration *deco = (Decoration *)m_elements[i];
+	for (size_t i = 0; i != m_objects.size(); i++) {
+		Decoration *deco = (Decoration *)m_objects[i];
 		if (!deco)
 			continue;
 
@@ -65,11 +63,11 @@ size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed,
 
 void DecorationManager::clear()
 {
-	for (size_t i = 0; i < m_elements.size(); i++) {
-		Decoration *deco = (Decoration *)m_elements[i];
+	for (size_t i = 0; i < m_objects.size(); i++) {
+		Decoration *deco = (Decoration *)m_objects[i];
 		delete deco;
 	}
-	m_elements.clear();
+	m_objects.clear();
 }
 
 
@@ -169,7 +167,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 
 			v3s16 pos(x, y, z);
 			if (generate(mg->vm, &ps, pos))
-				mg->gennotify.addEvent(GENNOTIFY_DECORATION, pos, id);
+				mg->gennotify.addEvent(GENNOTIFY_DECORATION, pos, index);
 		}
 	}
 

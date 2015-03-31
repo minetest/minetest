@@ -36,10 +36,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "treegen.h"
 #include "serialization.h"
 #include "util/serialize.h"
+#include "util/numeric.h"
 #include "filesys.h"
 #include "log.h"
-
-const char *GenElementManager::ELEMENT_TITLE = "element";
 
 FlagDesc flagdesc_mapgen[] = {
 	{"trees",    MG_TREES},
@@ -63,6 +62,7 @@ FlagDesc flagdesc_gennotify[] = {
 
 
 ///////////////////////////////////////////////////////////////////////////////
+
 
 Mapgen::Mapgen()
 {
@@ -431,83 +431,160 @@ void GenerateNotifier::getEvents(
 ///////////////////////////////////////////////////////////////////////////////
 
 
-GenElementManager::GenElementManager(IGameDef *gamedef)
+ObjDefManager::ObjDefManager(IGameDef *gamedef, ObjDefType type)
 {
+	m_objtype = type;
 	m_ndef = gamedef->getNodeDefManager();
 }
 
 
-GenElementManager::~GenElementManager()
+ObjDefManager::~ObjDefManager()
 {
-	for (size_t i = 0; i != m_elements.size(); i++)
-		delete m_elements[i];
+	for (size_t i = 0; i != m_objects.size(); i++)
+		delete m_objects[i];
 }
 
 
-u32 GenElementManager::add(GenElement *elem)
+ObjDefHandle ObjDefManager::add(ObjDef *obj)
 {
-	size_t nelem = m_elements.size();
+	assert(obj);
 
-	for (size_t i = 0; i != nelem; i++) {
-		if (m_elements[i] == NULL) {
-			elem->id = i;
-			m_elements[i] = elem;
-			return i;
-		}
-	}
+	if (obj->name.length() && getByName(obj->name))
+		return OBJDEF_INVALID_HANDLE;
 
-	if (nelem >= this->ELEMENT_LIMIT)
+	u32 index = addRaw(obj);
+	if (index == OBJDEF_INVALID_INDEX)
+		return OBJDEF_INVALID_HANDLE;
+
+	obj->handle = createHandle(index, m_objtype, obj->uid);
+	return obj->handle;
+}
+
+
+ObjDef *ObjDefManager::get(ObjDefHandle handle) const
+{
+	u32 index = validateHandle(handle);
+	return (index != OBJDEF_INVALID_INDEX) ? getRaw(index) : NULL;
+}
+
+
+ObjDef *ObjDefManager::set(ObjDefHandle handle, ObjDef *obj)
+{
+	u32 index = validateHandle(handle);
+	return (index != OBJDEF_INVALID_INDEX) ? setRaw(index, obj) : NULL;
+}
+
+
+u32 ObjDefManager::addRaw(ObjDef *obj)
+{
+	size_t nobjects = m_objects.size();
+	if (nobjects >= OBJDEF_MAX_ITEMS)
 		return -1;
 
-	elem->id = nelem;
-	m_elements.push_back(elem);
+	obj->index = nobjects;
 
-	verbosestream << "GenElementManager: added " << this->ELEMENT_TITLE
-		<< " element '" << elem->name << "'" << std::endl;
+	// Ensure UID is nonzero so that a valid handle == OBJDEF_INVALID_HANDLE
+	// is not possible.  The slight randomness bias isn't very significant.
+	obj->uid = myrand() & OBJDEF_UID_MASK;
+	if (obj->uid == 0)
+		obj->uid = 1;
 
-	return nelem;
+	m_objects.push_back(obj);
+
+	infostream << "ObjDefManager: added " << getObjectTitle()
+		<< ": name=\"" << obj->name
+		<< "\" index=" << obj->index
+		<< " uid="     << obj->uid
+		<< std::endl;
+
+	return nobjects;
 }
 
 
-GenElement *GenElementManager::get(u32 id)
+ObjDef *ObjDefManager::getRaw(u32 index) const
 {
-	return (id < m_elements.size()) ? m_elements[id] : NULL;
+	return m_objects[index];
 }
 
 
-GenElement *GenElementManager::getByName(const std::string &name)
+ObjDef *ObjDefManager::setRaw(u32 index, ObjDef *obj)
 {
-	for (size_t i = 0; i != m_elements.size(); i++) {
-		GenElement *elem = m_elements[i];
-		if (elem && name == elem->name)
-			return elem;
+	ObjDef *old_obj = m_objects[index];
+	m_objects[index] = obj;
+	return old_obj;
+}
+
+
+ObjDef *ObjDefManager::getByName(const std::string &name) const
+{
+	for (size_t i = 0; i != m_objects.size(); i++) {
+		ObjDef *obj = m_objects[i];
+		if (obj && !strcasecmp(name.c_str(), obj->name.c_str()))
+			return obj;
 	}
 
 	return NULL;
 }
 
 
-GenElement *GenElementManager::update(u32 id, GenElement *elem)
+void ObjDefManager::clear()
 {
-	if (id >= m_elements.size())
-		return NULL;
+	for (size_t i = 0; i != m_objects.size(); i++)
+		delete m_objects[i];
 
-	GenElement *old_elem = m_elements[id];
-	m_elements[id] = elem;
-	return old_elem;
+	m_objects.clear();
 }
 
 
-GenElement *GenElementManager::remove(u32 id)
+u32 ObjDefManager::validateHandle(ObjDefHandle handle) const
 {
-	return update(id, NULL);
+	ObjDefType type;
+	u32 index;
+	u32 uid;
+
+	bool is_valid =
+		(handle != OBJDEF_INVALID_HANDLE)         &&
+		decodeHandle(handle, &index, &type, &uid) &&
+		(type == m_objtype)                       &&
+		(index < m_objects.size())                &&
+		(m_objects[index]->uid == uid);
+
+	return is_valid ? index : -1;
 }
 
 
-void GenElementManager::clear()
+ObjDefHandle ObjDefManager::createHandle(u32 index, ObjDefType type, u32 uid)
 {
-	m_elements.clear();
+	ObjDefHandle handle = 0;
+	set_bits(&handle, 0, 18, index);
+	set_bits(&handle, 18, 6, type);
+	set_bits(&handle, 24, 7, uid);
+
+	u32 parity = calc_parity(handle);
+	set_bits(&handle, 31, 1, parity);
+
+	return handle ^ OBJDEF_HANDLE_SALT;
 }
+
+
+bool ObjDefManager::decodeHandle(ObjDefHandle handle, u32 *index,
+	ObjDefType *type, u32 *uid)
+{
+	handle ^= OBJDEF_HANDLE_SALT;
+
+	u32 parity = get_bits(handle, 31, 1);
+	set_bits(&handle, 31, 1, 0);
+	if (parity != calc_parity(handle))
+		return false;
+
+	*index = get_bits(handle, 0, 18);
+	*type  = (ObjDefType)get_bits(handle, 18, 6);
+	*uid   = get_bits(handle, 24, 7);
+	return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
 
 
 void MapgenParams::load(const Settings &settings)

@@ -419,6 +419,11 @@ the global `minetest.registered_*` tables.
 * `minetest.register_craftitem(name, item definition)`
     * added to `minetest.registered_items[name]`
 
+* `minetest.register_biome(biome definition)`
+    * returns an integer uniquely identifying the registered biome
+    * added to `minetest.registered_biome` with the key of `biome.name`
+    * if `biome.name` is nil, the key is the returned ID
+
 * `minetest.register_ore(ore definition)`
     * returns an integer uniquely identifying the registered ore
     * added to `minetest.registered_ores` with the key of `ore.name`
@@ -429,11 +434,23 @@ the global `minetest.registered_*` tables.
     * added to `minetest.registered_decorations` with the key of `decoration.name`
     * if `decoration.name` is nil, the key is the returned ID
 
+* `minetest.register_schematic(schematic definition)`
+    * returns an integer uniquely identifying the registered schematic
+    * added to `minetest.registered_schematic` with the key of `schematic.name`
+    * if `schematic.name` is nil, the key is the returned ID
+    * if the schematic is loaded from a file, schematic.name is set to the filename
+
+* `minetest.clear_registered_biomes()`
+    * clears all biomes currently registered
+
 * `minetest.clear_registered_ores()`
-   * clears all ores currently registered
+    * clears all ores currently registered
 
 * `minetest.clear_registered_decorations()`
-   * clears all decorations currently registered
+    * clears all decorations currently registered
+
+* `minetest.clear_registered_schematics()`
+    * clears all schematics currently registered
 
 Note that in some cases you will stumble upon things that are not contained
 in these tables (e.g. when a mod has been removed). Always check for

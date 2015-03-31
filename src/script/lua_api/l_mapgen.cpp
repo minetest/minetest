@@ -86,11 +86,56 @@ struct EnumString ModApiMapgen::es_Rotation[] =
 };
 
 
+bool read_schematic_def(lua_State *L, int index, Schematic *schem,
+	INodeDefManager *ndef, StringMap *replace_names);
+
 ///////////////////////////////////////////////////////////////////////////////
 
 
+Schematic *get_schematic(lua_State *L, int index,
+	SchematicManager *schemmgr, StringMap *replace_names)
+{
+	if (index < 0)
+		index = lua_gettop(L) + 1 + index;
+
+	Schematic *schem;
+
+	if (lua_isnumber(L, index)) {
+		return (Schematic *)schemmgr->get(lua_tointeger(L, index));
+	} else if (lua_istable(L, index)) {
+		schem = new Schematic;
+		if (!read_schematic_def(L, index, schem,
+				schemmgr->getNodeDef(), replace_names)) {
+			delete schem;
+			return NULL;
+		}
+	} else  if (lua_isstring(L, index)) {
+		const char *filename = lua_tostring(L, index);
+		schem = (Schematic *)schemmgr->getByName(filename);
+		if (schem)
+			return schem;
+
+		schem = new Schematic;
+		if (!schem->loadSchematicFromFile(filename,
+				schemmgr->getNodeDef(), replace_names)) {
+			delete schem;
+			return NULL;
+		}
+	} else {
+		return NULL;
+	}
+
+	if (schemmgr->add(schem) == OBJDEF_INVALID_HANDLE) {
+		delete schem;
+		return NULL;
+	}
+
+	return schem;
+}
+
+
 bool read_schematic_def(lua_State *L, int index, Schematic *schem,
-	INodeDefManager *ndef, std::map<std::string, std::string> &replace_names)
+	INodeDefManager *ndef, StringMap *replace_names)
 {
 	//// Get schematic size
 	lua_getfield(L, index, "size");
@@ -128,9 +173,8 @@ bool read_schematic_def(lua_State *L, int index, Schematic *schem,
 		param2 = !lua_isnil(L, -1) ? lua_tonumber(L, -1) : 0;
 		lua_pop(L, 1);
 
-		std::map<std::string, std::string>::iterator it;
-		it = replace_names.find(name);
-		if (it != replace_names.end())
+		StringMap::iterator it = replace_names->find(name);
+		if (it != replace_names->end())
 			name = it->second;
 
 		schemdata[i] = MapNode(ndef, name, param1, param2);
@@ -175,51 +219,12 @@ bool read_schematic_def(lua_State *L, int index, Schematic *schem,
 }
 
 
-Schematic *get_schematic(lua_State *L, int index, SchematicManager *schemmgr,
-	std::map<std::string, std::string> &replace_names)
+
+void read_schematic_replacements(lua_State *L, int index, StringMap *replace_names)
 {
 	if (index < 0)
 		index = lua_gettop(L) + 1 + index;
 
-	Schematic *schem;
-
-	if (lua_isnumber(L, index)) {
-		return (Schematic *)schemmgr->get(lua_tointeger(L, index));
-	} else if (lua_istable(L, index)) {
-		schem = new Schematic;
-		if (!read_schematic_def(L, index, schem,
-				schemmgr->getNodeDef(), replace_names)) {
-			delete schem;
-			return NULL;
-		}
-	} else  if (lua_isstring(L, index)) {
-		const char *filename = lua_tostring(L, index);
-		schem = (Schematic *)schemmgr->getByName(filename);
-		if (schem)
-			return schem;
-
-		schem = new Schematic;
-		if (!schem->loadSchematicFromFile(filename,
-				schemmgr->getNodeDef(), replace_names)) {
-			delete schem;
-			return NULL;
-		}
-	} else {
-		return NULL;
-	}
-
-	if (schemmgr->add(schem) == (u32)-1) {
-		delete schem;
-		return 0;
-	}
-
-	return schem;
-}
-
-
-void read_schematic_replacements(lua_State *L,
-	std::map<std::string, std::string> &replace_names, int index)
-{
 	lua_pushnil(L);
 	while (lua_next(L, index)) {
 		std::string replace_from;
@@ -238,7 +243,7 @@ void read_schematic_replacements(lua_State *L,
 			replace_to = lua_tostring(L, -1);
 		}
 
-		replace_names[replace_from] = replace_to;
+		replace_names->insert(std::make_pair(replace_from, replace_to));
 		lua_pop(L, 1);
 	}
 }
@@ -477,24 +482,23 @@ int ModApiMapgen::l_register_biome(lua_State *L)
 	b->humidity_point  = getfloatfield_default(L, index, "humidity_point", 0.f);
 	b->flags           = 0; //reserved
 
-	u32 id = bmgr->add(b);
-	if (id == (u32)-1) {
+	ObjDefHandle handle = bmgr->add(b);
+	if (handle == OBJDEF_INVALID_HANDLE) {
 		delete b;
 		return 0;
 	}
 
 	NodeResolveInfo *nri = new NodeResolveInfo(b);
 	std::list<std::string> &nnames = nri->nodenames;
-	nnames.push_back(getstringfield_default(L, index, "node_top",          ""));
-	nnames.push_back(getstringfield_default(L, index, "node_filler",       ""));
-	nnames.push_back(getstringfield_default(L, index, "node_stone",        ""));
-	nnames.push_back(getstringfield_default(L, index, "node_water_top",    ""));
-	nnames.push_back(getstringfield_default(L, index, "node_water",        ""));
-	nnames.push_back(getstringfield_default(L, index, "node_dust",         ""));
+	nnames.push_back(getstringfield_default(L, index, "node_top",       ""));
+	nnames.push_back(getstringfield_default(L, index, "node_filler",    ""));
+	nnames.push_back(getstringfield_default(L, index, "node_stone",     ""));
+	nnames.push_back(getstringfield_default(L, index, "node_water_top", ""));
+	nnames.push_back(getstringfield_default(L, index, "node_water",     ""));
+	nnames.push_back(getstringfield_default(L, index, "node_dust",      ""));
 	ndef->pendNodeResolve(nri);
 
-	verbosestream << "register_biome: " << b->name << std::endl;
-	lua_pushinteger(L, id);
+	lua_pushinteger(L, handle);
 	return 1;
 }
 
@@ -556,20 +560,20 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 		if (!b)
 			continue;
 
-		deco->biomes.insert(b->id);
+		deco->biomes.insert(b->index);
 	}
 
 	//// Handle decoration type-specific parameters
 	bool success = false;
 	switch (decotype) {
-		case DECO_SIMPLE:
-			success = regDecoSimple(L, nri, (DecoSimple *)deco);
-			break;
-		case DECO_SCHEMATIC:
-			success = regDecoSchematic(L, schemmgr, (DecoSchematic *)deco);
-			break;
-		case DECO_LSYSTEM:
-			break;
+	case DECO_SIMPLE:
+		success = regDecoSimple(L, nri, (DecoSimple *)deco);
+		break;
+	case DECO_SCHEMATIC:
+		success = regDecoSchematic(L, schemmgr, (DecoSchematic *)deco);
+		break;
+	case DECO_LSYSTEM:
+		break;
 	}
 
 	ndef->pendNodeResolve(nri);
@@ -579,14 +583,13 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 		return 0;
 	}
 
-	u32 id = decomgr->add(deco);
-	if (id == (u32)-1) {
+	ObjDefHandle handle = decomgr->add(deco);
+	if (handle == OBJDEF_INVALID_HANDLE) {
 		delete deco;
 		return 0;
 	}
 
-	verbosestream << "register_decoration: " << deco->name << std::endl;
-	lua_pushinteger(L, id);
+	lua_pushinteger(L, handle);
 	return 1;
 }
 
@@ -638,14 +641,14 @@ bool ModApiMapgen::regDecoSchematic(lua_State *L,
 	deco->rotation = (Rotation)getenumfield(L, index, "rotation",
 		es_Rotation, ROTATE_0);
 
-	std::map<std::string, std::string> replace_names;
+	StringMap replace_names;
 	lua_getfield(L, index, "replacements");
 	if (lua_istable(L, -1))
-		read_schematic_replacements(L, replace_names, lua_gettop(L));
+		read_schematic_replacements(L, -1, &replace_names);
 	lua_pop(L, 1);
 
 	lua_getfield(L, index, "schematic");
-	Schematic *schem = get_schematic(L, -1, schemmgr, replace_names);
+	Schematic *schem = get_schematic(L, -1, schemmgr, &replace_names);
 	lua_pop(L, 1);
 
 	deco->schematic = schem;
@@ -719,8 +722,8 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 			"random_factor", 1.f);
 	}
 
-	u32 id = oremgr->add(ore);
-	if (id == (u32)-1) {
+	ObjDefHandle handle = oremgr->add(ore);
+	if (handle == OBJDEF_INVALID_HANDLE) {
 		delete ore;
 		return 0;
 	}
@@ -736,8 +739,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 
 	ndef->pendNodeResolve(nri);
 
-	verbosestream << "register_ore: " << ore->name << std::endl;
-	lua_pushinteger(L, id);
+	lua_pushinteger(L, handle);
 	return 1;
 }
 
@@ -746,16 +748,21 @@ int ModApiMapgen::l_register_schematic(lua_State *L)
 {
 	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
 
-	std::map<std::string, std::string> replace_names;
+	StringMap replace_names;
 	if (lua_istable(L, 2))
-		read_schematic_replacements(L, replace_names, 2);
+		read_schematic_replacements(L, 2, &replace_names);
 
-	Schematic *schem = get_schematic(L, 1, schemmgr, replace_names);
+	Schematic *schem = get_schematic(L, 1, schemmgr, &replace_names);
 	if (!schem)
 		return 0;
-	printf("register_schematic!\n");
-	verbosestream << "register_schematic: " << schem->name << std::endl;
-	lua_pushinteger(L, schem->id);
+
+	ObjDefHandle handle = schemmgr->add(schem);
+	if (handle == OBJDEF_INVALID_HANDLE) {
+		delete schem;
+		return 0;
+	}
+
+	lua_pushinteger(L, handle);
 	return 1;
 }
 
@@ -837,7 +844,7 @@ int ModApiMapgen::l_generate_decorations(lua_State *L)
 	return 0;
 }
 
-// create_schematic(p1, p2, probability_list, filename)
+// create_schematic(p1, p2, probability_list, filename, y_slice_prob_list)
 int ModApiMapgen::l_create_schematic(lua_State *L)
 {
 	Schematic schem;
@@ -894,6 +901,7 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 	actionstream << "create_schematic: saved schematic file '"
 		<< filename << "'." << std::endl;
 
+	lua_pushboolean(L, true);
 	return 1;
 }
 
@@ -917,12 +925,12 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 		force_placement = lua_toboolean(L, 5);
 
 	//// Read node replacements
-	std::map<std::string, std::string> replace_names;
+	StringMap replace_names;
 	if (lua_istable(L, 4))
-		read_schematic_replacements(L, replace_names, 4);
+		read_schematic_replacements(L, 4, &replace_names);
 
 	//// Read schematic
-	Schematic *schem = get_schematic(L, 2, schemmgr, replace_names);
+	Schematic *schem = get_schematic(L, 2, schemmgr, &replace_names);
 	if (!schem) {
 		errorstream << "place_schematic: failed to get schematic" << std::endl;
 		return 0;
@@ -931,6 +939,7 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 	schem->placeStructure(map, p, 0, (Rotation)rot, force_placement,
 		schemmgr->getNodeDef());
 
+	lua_pushboolean(L, true);
 	return 1;
 }
 

@@ -24,8 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "log.h"
 
-const char *OreManager::ELEMENT_TITLE = "ore";
-
 FlagDesc flagdesc_ore[] = {
 	{"absheight", OREFLAG_ABSHEIGHT},
 	{NULL,        0}
@@ -36,7 +34,7 @@ FlagDesc flagdesc_ore[] = {
 
 
 OreManager::OreManager(IGameDef *gamedef) :
-	GenElementManager(gamedef)
+	ObjDefManager(gamedef, OBJDEF_ORE)
 {
 }
 
@@ -45,8 +43,8 @@ size_t OreManager::placeAllOres(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nma
 {
 	size_t nplaced = 0;
 
-	for (size_t i = 0; i != m_elements.size(); i++) {
-		Ore *ore = (Ore *)m_elements[i];
+	for (size_t i = 0; i != m_objects.size(); i++) {
+		Ore *ore = (Ore *)m_objects[i];
 		if (!ore)
 			continue;
 
@@ -60,11 +58,11 @@ size_t OreManager::placeAllOres(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nma
 
 void OreManager::clear()
 {
-	for (size_t i = 0; i < m_elements.size(); i++) {
-		Ore *ore = (Ore *)m_elements[i];
+	for (size_t i = 0; i < m_objects.size(); i++) {
+		Ore *ore = (Ore *)m_objects[i];
 		delete ore;
 	}
-	m_elements.clear();
+	m_objects.clear();
 }
 
 

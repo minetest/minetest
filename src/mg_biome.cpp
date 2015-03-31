@@ -27,18 +27,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/mathconstants.h"
 #include "porting.h"
 
-const char *BiomeManager::ELEMENT_TITLE = "biome";
-
 
 ///////////////////////////////////////////////////////////////////////////////
 
+
 BiomeManager::BiomeManager(IGameDef *gamedef) :
-	GenElementManager(gamedef)
+	ObjDefManager(gamedef, OBJDEF_BIOME)
 {
 	// Create default biome to be used in case none exist
 	Biome *b = new Biome;
 
-	b->id              = 0;
 	b->name            = "Default";
 	b->flags           = 0;
 	b->depth_top       = 0;
@@ -75,8 +73,10 @@ BiomeManager::~BiomeManager()
 void BiomeManager::calcBiomes(s16 sx, s16 sy, float *heat_map,
 	float *humidity_map, s16 *height_map, u8 *biomeid_map)
 {
-	for (s32 i = 0; i != sx * sy; i++)
-		biomeid_map[i] = getBiome(heat_map[i], humidity_map[i], height_map[i])->id;
+	for (s32 i = 0; i != sx * sy; i++) {
+		Biome *biome = getBiome(heat_map[i], humidity_map[i], height_map[i]);
+		biomeid_map[i] = biome->index;
+	}
 }
 
 
@@ -85,8 +85,8 @@ Biome *BiomeManager::getBiome(float heat, float humidity, s16 y)
 	Biome *b, *biome_closest = NULL;
 	float dist_min = FLT_MAX;
 
-	for (size_t i = 1; i < m_elements.size(); i++) {
-		b = (Biome *)m_elements[i];
+	for (size_t i = 1; i < m_objects.size(); i++) {
+		b = (Biome *)m_objects[i];
 		if (!b || y > b->y_max || y < b->y_min)
 			continue;
 
@@ -100,18 +100,18 @@ Biome *BiomeManager::getBiome(float heat, float humidity, s16 y)
 		}
 	}
 
-	return biome_closest ? biome_closest : (Biome *)m_elements[0];
+	return biome_closest ? biome_closest : (Biome *)m_objects[0];
 }
 
 void BiomeManager::clear()
 {
 
-	for (size_t i = 1; i < m_elements.size(); i++) {
-		Biome *b = (Biome *)m_elements[i];
+	for (size_t i = 1; i < m_objects.size(); i++) {
+		Biome *b = (Biome *)m_objects[i];
 		delete b;
 	}
 
-	m_elements.resize(1);
+	m_objects.resize(1);
 }
 
 

@@ -47,7 +47,7 @@ enum OreType {
 
 extern FlagDesc flagdesc_ore[];
 
-class Ore : public GenElement, public NodeResolver {
+class Ore : public ObjDef, public NodeResolver {
 public:
 	static const bool NEEDS_NOISE = false;
 
@@ -112,13 +112,15 @@ public:
 		v3s16 nmin, v3s16 nmax);
 };
 
-class OreManager : public GenElementManager {
+class OreManager : public ObjDefManager {
 public:
-	static const char *ELEMENT_TITLE;
-	static const size_t ELEMENT_LIMIT = 0x10000;
-
 	OreManager(IGameDef *gamedef);
 	~OreManager() {}
+
+	const char *getObjectTitle() const
+	{
+		return "ore";
+	}
 
 	Ore *create(int type)
 	{

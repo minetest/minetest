@@ -59,7 +59,7 @@ struct CutoffData {
 };
 #endif
 
-class Decoration : public GenElement, public NodeResolver {
+class Decoration : public ObjDef, public NodeResolver {
 public:
 	INodeDefManager *ndef;
 
@@ -121,13 +121,15 @@ public:
 };
 */
 
-class DecorationManager : public GenElementManager {
+class DecorationManager : public ObjDefManager {
 public:
-	static const char *ELEMENT_TITLE;
-	static const size_t ELEMENT_LIMIT = 0x10000;
-
 	DecorationManager(IGameDef *gamedef);
 	~DecorationManager() {}
+
+	const char *getObjectTitle() const
+	{
+		return "decoration";
+	}
 
 	Decoration *create(int type)
 	{

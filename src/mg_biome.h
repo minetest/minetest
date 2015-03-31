@@ -33,7 +33,7 @@ enum BiomeType
 	BIOME_TYPE_FLAT
 };
 
-class Biome : public GenElement, public NodeResolver {
+class Biome : public ObjDef, public NodeResolver {
 public:
 	u32 flags;
 
@@ -56,13 +56,17 @@ public:
 	virtual void resolveNodeNames(NodeResolveInfo *nri);
 };
 
-class BiomeManager : public GenElementManager {
+class BiomeManager : public ObjDefManager {
 public:
-	static const char *ELEMENT_TITLE;
-	static const size_t ELEMENT_LIMIT = 0x100;
+	static const char *OBJECT_TITLE;
 
 	BiomeManager(IGameDef *gamedef);
 	~BiomeManager();
+
+	const char *getObjectTitle() const
+	{
+		return "biome";
+	}
 
 	Biome *create(int btt)
 	{

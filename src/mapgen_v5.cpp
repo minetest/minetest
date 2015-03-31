@@ -479,7 +479,7 @@ void MapgenV5::generateCaves(int max_stone_y)
 		for (s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
 			u32 i = vm->m_area.index(node_min.X, y, z);
 			for (s16 x=node_min.X; x<=node_max.X; x++, i++, index++, index2d++) {
-				Biome *biome = (Biome *)bmgr->get(biomemap[index2d]);
+				Biome *biome = (Biome *)bmgr->getRaw(biomemap[index2d]);
 				content_t c = vm->m_data[i].getContent();
 				if (c == CONTENT_AIR
 						|| (y <= water_level
@@ -519,7 +519,7 @@ void MapgenV5::dustTopNodes()
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
-		Biome *biome = (Biome *)bmgr->get(biomemap[index]);
+		Biome *biome = (Biome *)bmgr->getRaw(biomemap[index]);
 
 		if (biome->c_dust == CONTENT_IGNORE)
 			continue;

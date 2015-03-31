@@ -28,13 +28,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include "filesys.h"
 
-const char *SchematicManager::ELEMENT_TITLE = "schematic";
-
 ///////////////////////////////////////////////////////////////////////////////
 
 
 SchematicManager::SchematicManager(IGameDef *gamedef) :
-	GenElementManager(gamedef)
+	ObjDefManager(gamedef, OBJDEF_SCHEMATIC)
 {
 }
 
@@ -201,7 +199,7 @@ void Schematic::placeStructure(Map *map, v3s16 p, u32 flags, Rotation rot,
 
 
 bool Schematic::loadSchematicFromFile(const char *filename, INodeDefManager *ndef,
-	std::map<std::string, std::string> &replace_names)
+	StringMap *replace_names)
 {
 	content_t cignore = CONTENT_IGNORE;
 	bool have_cignore = false;
@@ -246,8 +244,8 @@ bool Schematic::loadSchematicFromFile(const char *filename, INodeDefManager *nde
 		}
 
 		std::map<std::string, std::string>::iterator it;
-		it = replace_names.find(name);
-		if (it != replace_names.end())
+		it = replace_names->find(name);
+		if (it != replace_names->end())
 			name = it->second;
 
 		nri->nodenames.push_back(name);

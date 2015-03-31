@@ -183,7 +183,6 @@ u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed)
 	return h;
 }
 
-
 /*
 	blockpos: position of block in block coordinates
 	camera_pos: position of camera in nodes
