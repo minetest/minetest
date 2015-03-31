@@ -392,7 +392,7 @@ public:
 	void handleCommand_LocalPlayerAnimations(NetworkPacket* pkt);
 	void handleCommand_EyeOffset(NetworkPacket* pkt);
 
-	void ProcessData(u8 *data, u32 datasize, u16 sender_peer_id);
+	void ProcessData(NetworkPacket *pkt);
 
 	// Returns true if something was received
 	bool AsyncProcessPacket();

@@ -34,6 +34,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <map>
 
+class NetworkPacket;
+
 namespace con
 {
 
@@ -1025,7 +1027,7 @@ public:
 	void Connect(Address address);
 	bool Connected();
 	void Disconnect();
-	u32 Receive(u16 &peer_id, SharedBuffer<u8> &data);
+	void Receive(NetworkPacket* pkt);
 	void Send(u16 peer_id, u8 channelnum, NetworkPacket* pkt, bool reliable);
 	u16 GetPeerID() { return m_peer_id; }
 	Address GetPeerAddress(u16 peer_id);

@@ -211,7 +211,7 @@ void TestCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 	// Set material
 	buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
 	buf->getMaterial().setFlag(video::EMF_BACK_FACE_CULLING, false);
-	buf->getMaterial().setTexture(0, tsrc->getTexture("rat.png"));
+	buf->getMaterial().setTexture(0, tsrc->getTextureForMesh("rat.png"));
 	buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 	buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
 	buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -822,7 +822,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 				NULL, v2f(1, 1), v3f(0,0,0), -1);
 		m_spritenode->grab();
 		m_spritenode->setMaterialTexture(0,
-				tsrc->getTexture("unknown_node.png"));
+				tsrc->getTextureForMesh("unknown_node.png"));
 		m_spritenode->setMaterialFlag(video::EMF_LIGHTING, false);
 		m_spritenode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
 		m_spritenode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
@@ -1299,7 +1299,7 @@ void GenericCAO::updateTextures(const std::string &mod)
 				texturestring = m_prop.textures[0];
 			texturestring += mod;
 			m_spritenode->setMaterialTexture(0,
-					tsrc->getTexture(texturestring));
+					tsrc->getTextureForMesh(texturestring));
 
 			// This allows setting per-material colors. However, until a real lighting
 			// system is added, the code below will have no effect. Once MineTest
@@ -1327,7 +1327,7 @@ void GenericCAO::updateTextures(const std::string &mod)
 				if(texturestring == "")
 					continue; // Empty texture string means don't modify that material
 				texturestring += mod;
-				video::ITexture* texture = tsrc->getTexture(texturestring);
+				video::ITexture* texture = tsrc->getTextureForMesh(texturestring);
 				if(!texture)
 				{
 					errorstream<<"GenericCAO::updateTextures(): Could not load texture "<<texturestring<<std::endl;
@@ -1376,7 +1376,7 @@ void GenericCAO::updateTextures(const std::string &mod)
 				material.setFlag(video::EMF_LIGHTING, false);
 				material.setFlag(video::EMF_BILINEAR_FILTER, false);
 				material.setTexture(0,
-						tsrc->getTexture(texturestring));
+						tsrc->getTextureForMesh(texturestring));
 				material.getTextureMatrix(0).makeIdentity();
 
 				// This allows setting per-material colors. However, until a real lighting
@@ -1404,7 +1404,7 @@ void GenericCAO::updateTextures(const std::string &mod)
 				tname += mod;
 				scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
 				buf->getMaterial().setTexture(0,
-						tsrc->getTexture(tname));
+						tsrc->getTextureForMesh(tname));
 
 				// This allows setting per-material colors. However, until a real lighting
 				// system is added, the code below will have no effect. Once MineTest
@@ -1429,7 +1429,7 @@ void GenericCAO::updateTextures(const std::string &mod)
 				tname += mod;
 				scene::IMeshBuffer *buf = mesh->getMeshBuffer(1);
 				buf->getMaterial().setTexture(0,
-						tsrc->getTexture(tname));
+						tsrc->getTextureForMesh(tname));
 
 				// This allows setting per-material colors. However, until a real lighting
 				// system is added, the code below will have no effect. Once MineTest

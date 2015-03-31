@@ -1130,7 +1130,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 			os<<":"<<(u32)p.tile.animation_frame_count<<":";
 			m_crack_materials.insert(std::make_pair(i, os.str()));
 			// Replace tile texture with the cracked one
-			p.tile.texture = tsrc->getTexture(
+			p.tile.texture = tsrc->getTextureForMesh(
 					os.str()+"0",
 					&p.tile.texture_id);
 		}
@@ -1204,9 +1204,9 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 				p.tile.applyMaterialOptionsWithShaders(material);
 				if (p.tile.normal_texture) {
 					material.setTexture(1, p.tile.normal_texture);
-					material.setTexture(2, tsrc->getTexture("enable_img.png"));
+					material.setTexture(2, tsrc->getTextureForMesh("enable_img.png"));
 				} else {
-					material.setTexture(2, tsrc->getTexture("disable_img.png"));
+					material.setTexture(2, tsrc->getTextureForMesh("disable_img.png"));
 				}
 			} else {
 				p.tile.applyMaterialOptions(material);
@@ -1298,7 +1298,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 			os<<basename<<crack;
 			u32 new_texture_id = 0;
 			video::ITexture *new_texture =
-				tsrc->getTexture(os.str(), &new_texture_id);
+				tsrc->getTextureForMesh(os.str(), &new_texture_id);
 			buf->getMaterial().setTexture(0, new_texture);
 
 			// If the current material is also animated,
@@ -1341,9 +1341,9 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 		if (m_enable_shaders) {
 			if (animation_frame.normal_texture) {
 				buf->getMaterial().setTexture(1, animation_frame.normal_texture);
-				buf->getMaterial().setTexture(2, tsrc->getTexture("enable_img.png"));
+				buf->getMaterial().setTexture(2, tsrc->getTextureForMesh("enable_img.png"));
 			} else {
-				buf->getMaterial().setTexture(2, tsrc->getTexture("disable_img.png"));
+				buf->getMaterial().setTexture(2, tsrc->getTextureForMesh("disable_img.png"));
 			}
 		}
 	}

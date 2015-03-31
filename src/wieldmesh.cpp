@@ -276,7 +276,7 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 
 	// Customize material
 	video::SMaterial &material = m_meshnode->getMaterial(0);
-	material.setTexture(0, texture);
+	material.setTexture(0, tsrc->getTextureForMesh(imagename));
 	material.MaterialType = m_material_type;
 	material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 	// Enable bi/trilinear filtering only for high resolution textures

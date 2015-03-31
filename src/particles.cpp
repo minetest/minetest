@@ -307,7 +307,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 		}
 
 		video::ITexture *texture =
-				gamedef->tsrc()->getTexture(*(event->add_particlespawner.texture));
+				gamedef->tsrc()->getTextureForMesh(*(event->add_particlespawner.texture));
 
 		scene::IParticleSystemSceneNode * ps = m_smgr->addParticleSystemSceneNode();
 
@@ -374,7 +374,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 		//TODO: use fixNumEmitter here?
 
 		//		video::ITexture *texture =
-		//			gamedef->tsrc()->getTexture(*(event->spawn_particle.texture));
+		//			gamedef->tsrc()->getTextureForMesh(*(event->spawn_particle.texture));
 
 		//		Particle* toadd = new Particle(gamedef, smgr, player, m_env,
 		//				*event->spawn_particle.pos,
