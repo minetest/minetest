@@ -1190,15 +1190,18 @@ void UDPPeer::RunCommandQueues(
 				(commands_processed < maxcommands)) {
 			try {
 				ConnectionCommand c = channels[i].queued_commands.front();
-				channels[i].queued_commands.pop_front();
-				LOG(dout_con<<m_connection->getDesc()
-						<<" processing queued reliable command "<<std::endl);
-				if (!processReliableSendCommand(c,max_packet_size)) {
-					LOG(dout_con<<m_connection->getDesc()
+
+				LOG(dout_con << m_connection->getDesc()
+						<< " processing queued reliable command " << std::endl);
+
+				// Packet is processed, remove it from queue
+				if (processReliableSendCommand(c,max_packet_size)) {
+					channels[i].queued_commands.pop_front();
+				} else {
+					LOG(dout_con << m_connection->getDesc()
 							<< " Failed to queue packets for peer_id: " << c.peer_id
 							<< ", delaying sending of " << c.data.getSize()
 							<< " bytes" << std::endl);
-					channels[i].queued_commands.push_front(c);
 				}
 			}
 			catch (ItemNotFoundException &e) {
