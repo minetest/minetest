@@ -608,7 +608,7 @@ void Channel::setNextSplitSeqNum(u16 seqnum)
 	next_outgoing_split_seqnum = seqnum;
 }
 
-u16 Channel::getOutgoingSequenceNumber(bool& successfull)
+u16 Channel::getOutgoingSequenceNumber(bool& successful)
 {
 	JMutexAutoLock internal(m_internal_mutex);
 	u16 retval = next_outgoing_seqnum;
@@ -628,7 +628,7 @@ u16 Channel::getOutgoingSequenceNumber(bool& successfull)
 			// know about difference of two unsigned may be negative in general
 			// but we already made sure it won't happen in this case
 			if (((u16)(next_outgoing_seqnum - lowest_unacked_seqnumber)) > window_size) {
-				successfull = false;
+				successful = false;
 				return 0;
 			}
 		}
@@ -638,7 +638,7 @@ u16 Channel::getOutgoingSequenceNumber(bool& successfull)
 			// but we already made sure it won't happen in this case
 			if ((next_outgoing_seqnum + (u16)(SEQNUM_MAX - lowest_unacked_seqnumber)) >
 				window_size) {
-				successfull = false;
+				successful = false;
 				return 0;
 			}
 		}
