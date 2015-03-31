@@ -1704,25 +1704,42 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 {
 	irr::video::IVideoDriver *driver = device->getVideoDriver();
 	irr::video::IImage* const raw_image = driver->createScreenShot();
-	if (raw_image) {
-		irr::video::IImage* const image = driver->createImage(video::ECF_R8G8B8,
-			raw_image->getDimension());
+
+	if (!raw_image)
+		return;
+
+	time_t t = time(NULL);
+	struct tm *tm = localtime(&t);
+
+	char timetstamp_c[64];
+	strftime(timetstamp_c, sizeof(timetstamp_c), "%FT%T", tm);
+
+	std::string filename_base = g_settings->get("screenshot_path")
+			+ DIR_DELIM
+			+ std::string("screenshot_")
+			+ std::string(timetstamp_c);
+	std::string filename_ext = ".png";
+	std::string filename;
+
+	// Try to find a unique filename
+	unsigned serial = 0;
+
+	while (serial < SCREENSHOT_MAX_SERIAL_TRIES) {
+		filename = filename_base + (serial > 0 ? ("-" + itos(serial)) : "") + filename_ext;
+		std::ifstream tmp(filename.c_str());
+		if (!tmp.good())
+			break;	// File did not apparently exist, we'll go with it
+		serial++;
+	}
+
+	if (serial == SCREENSHOT_MAX_SERIAL_TRIES) {
+		infostream << "Could not find suitable filename for screenshot" << std::endl;
+	} else {
+		irr::video::IImage* const image =
+				driver->createImage(video::ECF_R8G8B8, raw_image->getDimension());
 
 		if (image) {
 			raw_image->copyTo(image);
-
-			std::string filename;
-
-			time_t t = time(NULL);
-			struct tm *tm = localtime(&t);
-			char timetstamp_c[16]; // YYYYMMDD_HHMMSS + '\0'
-			strftime(timetstamp_c, sizeof(timetstamp_c), "%Y%m%d_%H%M%S", tm);
-
-			filename = g_settings->get("screenshot_path")
-			         + DIR_DELIM
-			         + std::string("screenshot_")
-			         + std::string(timetstamp_c)
-			         + ".png";
 
 			std::ostringstream sstr;
 			if (driver->writeImageToFile(image, filename.c_str())) {
@@ -1734,8 +1751,9 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 			infostream << sstr.str() << std::endl;
 			image->drop();
 		}
-		raw_image->drop();
 	}
+
+	raw_image->drop();
 }
 
 // IGameDef interface

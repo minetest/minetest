@@ -97,6 +97,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // TODO: Use case-insensitive player names instead of this hack.
 #define PLAYER_FILE_ALTERNATE_TRIES 1000
 
+// For screenshots a serial number is appended to the filename + datetimestamp
+// if filename + datetimestamp is not unique.
+// This is the maximum number of attempts to try and add a serial to the end of
+// the file attempting to ensure a unique filename
+#define SCREENSHOT_MAX_SERIAL_TRIES 1000
+
 /*
     GUI related things
 */
