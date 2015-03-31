@@ -234,19 +234,21 @@ void ParticleManager::step(float dtime)
 {
 	return;
 
+	//update position and handle expired spawners
+
 	v3s16 offset = m_env->getCameraOffset();
 
 	JMutexAutoLock lock(m_spawner_list_lock);
-	for(std::list<s32>::iterator i =
-			particlespawners.begin();
-			i != particlespawners.end(); i++)
+	for(std::map<u32, s32>::iterator i =
+			irrlicht_spawners.begin();
+			i != irrlicht_spawners.end();)
 	{
-		// TODO: get smgr to update position
-//		scene::ISceneNode *node = smgr->getSceneNodeFromId(id);
+		// TODO: get smgr to update position?
+//		scene::ISceneNode *node = smgr->getSceneNodeFromId(i->second);
 //		v3f pos = node->getPosition();
-
 //		if(node)
 //			node->setPosition(pos * BS - intToFloat(offset, BS));
+		// TODO: expired
 	}
 	return;
 }
@@ -256,16 +258,17 @@ void ParticleManager::clearAll ()
 	return;
 
 	JMutexAutoLock lock(m_spawner_list_lock);
-	for(std::list<s32>::iterator i =
-			particlespawners.begin();
-			i != particlespawners.end();)
+	for(std::map<u32, s32>::iterator i =
+	    irrlicht_spawners.begin();
+	    i != irrlicht_spawners.end();)
 	{
-		// TODO: get smgr for deletion
-//		scene::ISceneNode *node = smgr->getSceneNodeFromId(id);
-//		if(node) smgr->addToDeletionQueue(node);
-
-		particlespawners.erase(i++);
+		// TODO: get smgr to delete?
+//		scene::ISceneNode *node = smgr->getSceneNodeFromId(i->second);
+//		if(node)
+//			smgr->addToDeletionQueue(i->second);
+//		irrlicht_spawners.erase(i++);
 	}
+	return;
 }
 
 void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
@@ -273,16 +276,16 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 {
 	if (event->type == CE_DELETE_PARTICLESPAWNER) {
 		JMutexAutoLock lock(m_spawner_list_lock);
-		s32 id = event->delete_particlespawner.id;
 
-		std::list<s32>::iterator find = std::find(particlespawners.begin(), particlespawners.end(), id);
-		if (find != particlespawners.end())
+		if (irrlicht_spawners.find(event->delete_particlespawner.id) !=
+		    irrlicht_spawners.end())
 		{
-			scene::ISceneNode *node = smgr->getSceneNodeFromId(id);
+			scene::ISceneNode *node = smgr->getSceneNodeFromId(
+				irrlicht_spawners.find(event->delete_particlespawner.id)->second);
 			if(node)
 				smgr->addToDeletionQueue(node);
 
-			particlespawners.erase(find);
+			irrlicht_spawners.erase(irrlicht_spawners.find(event->add_particlespawner.id));
 		}
 		// no allocated memory in delete event
 		return;
@@ -290,15 +293,17 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 
 	if (event->type == CE_ADD_PARTICLESPAWNER) {
 
-		s32 id = event->add_particlespawner.id;
-		std::list<s32>::iterator find = std::find(particlespawners.begin(), particlespawners.end(), id);
-		if (find != particlespawners.end())
 		{
-			scene::ISceneNode *node = smgr->getSceneNodeFromId(id);
-			if(node)
-				smgr->addToDeletionQueue(node);
-
-			particlespawners.erase(find);
+			JMutexAutoLock lock(m_spawner_list_lock);
+			if (irrlicht_spawners.find(event->add_particlespawner.id) !=
+			    irrlicht_spawners.end())
+			{
+				scene::ISceneNode *node = smgr->getSceneNodeFromId(
+							irrlicht_spawners.find(event->delete_particlespawner.id)->second);
+				if(node)
+					smgr->addToDeletionQueue(node);
+				irrlicht_spawners.erase(irrlicht_spawners.find(event->add_particlespawner.id));
+			}
 		}
 
 		video::ITexture *texture =
@@ -352,7 +357,10 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 
 		{
 			JMutexAutoLock lock(m_spawner_list_lock);
-			particlespawners.push_back(ps->getID());
+			irrlicht_spawners.insert(
+						std::pair<u32, s32>(
+							event->add_particlespawner.id,
+							ps->getID()));
 		}
 
 		return;
