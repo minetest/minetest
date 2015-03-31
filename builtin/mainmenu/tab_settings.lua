@@ -179,7 +179,7 @@ local function formspec(tabview, name, tabdata)
 	local language_formspec_string = "en" -- add english first because its default
 	local language_current_idx = 1
 	local language_count = 1
-	local language_selected = core.setting_get("language") or "en"
+	local language_selected = core.setting_get("language") or os.getenv("LANG")
 
 	local locale_path = core.get_builtin_path() .. DIR_DELIM
 		.. ".." .. DIR_DELIM -- go back to 'minetest' folder
@@ -196,7 +196,7 @@ local function formspec(tabview, name, tabdata)
 				language_formspec_string .. "," .. locale_list[i]
 			language_count = language_count +1
 			if locale_list[i] == language_selected then
-				language_current_idx = language_count -- handle english
+				language_current_idx = language_count -- handle system language
 			end
  		end
  	end
@@ -419,9 +419,9 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.setting_set("anisotropic_filter", "true")
 		ddhandled = true
 	end
+
 	if fields["dd_language"] then
-		core.setting_set("language",
-			fields["dd_language"])
+		core.setting_set("language", fields["dd_language"])
 		ddhandled = true
 	end
 
