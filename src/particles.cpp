@@ -221,8 +221,9 @@ private:
         irr::scene::ISceneManager* SceneManager;
 };
 
-ParticleManager::ParticleManager(ClientEnvironment* env) :
-	m_env(env)
+ParticleManager::ParticleManager(ClientEnvironment* env, irr::scene::ISceneManager* smgr) :
+	m_env(env),
+	m_smgr(smgr)
 {}
 
 ParticleManager::~ParticleManager()
@@ -232,9 +233,7 @@ ParticleManager::~ParticleManager()
 
 void ParticleManager::step(float dtime)
 {
-	return;
-
-	//update position and handle expired spawners
+	// update position and handle expired spawners
 
 	v3s16 offset = m_env->getCameraOffset();
 
@@ -243,30 +242,27 @@ void ParticleManager::step(float dtime)
 			irrlicht_spawners.begin();
 			i != irrlicht_spawners.end();)
 	{
-		// TODO: get smgr to update position?
-//		scene::ISceneNode *node = smgr->getSceneNodeFromId(i->second);
-//		v3f pos = node->getPosition();
-//		if(node)
-//			node->setPosition(pos * BS - intToFloat(offset, BS));
+		scene::ISceneNode *node = m_smgr->getSceneNodeFromId(i->second);
+		v3f pos = node->getPosition();
+		if(node)
+			node->setPosition(pos * BS - intToFloat(offset, BS));
 		// TODO: expired
+		i++;
 	}
 	return;
 }
 
 void ParticleManager::clearAll ()
 {
-	return;
-
 	JMutexAutoLock lock(m_spawner_list_lock);
 	for(std::map<u32, s32>::iterator i =
 	    irrlicht_spawners.begin();
 	    i != irrlicht_spawners.end();)
 	{
-		// TODO: get smgr to delete?
-//		scene::ISceneNode *node = smgr->getSceneNodeFromId(i->second);
-//		if(node)
-//			smgr->addToDeletionQueue(i->second);
-//		irrlicht_spawners.erase(i++);
+		scene::ISceneNode *node = m_smgr->getSceneNodeFromId(i->second);
+		if(node)
+			m_smgr->addToDeletionQueue(node);
+		irrlicht_spawners.erase(i++);
 	}
 	return;
 }

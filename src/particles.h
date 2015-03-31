@@ -37,7 +37,7 @@ class ParticleManager;
 class ParticleManager
 {
 public:
-	ParticleManager(ClientEnvironment* env);
+	ParticleManager(ClientEnvironment* env, irr::scene::ISceneManager* smgr);
 	~ParticleManager();
 
 	void step (float dtime);
@@ -65,6 +65,7 @@ private:
 	std::map<u32, s32> irrlicht_spawners; //mt id/irrlicht node id
 
 	ClientEnvironment* m_env;
+	irr::scene::ISceneManager* m_smgr;
 	JMutex m_spawner_list_lock;
 };
 
