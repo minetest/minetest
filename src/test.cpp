@@ -1939,13 +1939,12 @@ struct TestConnection: public TestBase
 
 		try
 		{
-			u16 peer_id;
-			SharedBuffer<u8> data;
-			infostream<<"** running client.Receive()"<<std::endl;
-			u32 size = client.Receive(peer_id, data);
-			infostream<<"** Client received: peer_id="<<peer_id
-					<<", size="<<size
-					<<std::endl;
+			NetworkPacket pkt;
+			infostream << "** running client.Receive()" << std::endl;
+			client.Receive(&pkt);
+			infostream << "** Client received: peer_id=" << pkt.getPeerId()
+					<< ", size=" << pkt.getSize()
+					<< std::endl;
 		}
 		catch(con::NoIncomingDataException &e)
 		{
@@ -1961,13 +1960,12 @@ struct TestConnection: public TestBase
 
 		try
 		{
-			u16 peer_id;
-			SharedBuffer<u8> data;
-			infostream<<"** running server.Receive()"<<std::endl;
-			u32 size = server.Receive(peer_id, data);
-			infostream<<"** Server received: peer_id="<<peer_id
-					<<", size="<<size
-					<<std::endl;
+			NetworkPacket pkt;
+			infostream << "** running server.Receive()" << std::endl;
+			server.Receive(&pkt);
+			infostream<<"** Server received: peer_id=" << pkt.getPeerId()
+					<< ", size=" << pkt.getSize()
+					<< std::endl;
 		}
 		catch(con::NoIncomingDataException &e)
 		{
@@ -1988,13 +1986,12 @@ struct TestConnection: public TestBase
 		{
 			try
 			{
-				u16 peer_id;
-				SharedBuffer<u8> data;
-				infostream<<"** running client.Receive()"<<std::endl;
-				u32 size = client.Receive(peer_id, data);
-				infostream<<"** Client received: peer_id="<<peer_id
-						<<", size="<<size
-						<<std::endl;
+				NetworkPacket pkt;
+				infostream << "** running client.Receive()" << std::endl;
+				client.Receive(&pkt);
+				infostream << "** Client received: peer_id=" << pkt.getPeerId()
+						<< ", size=" << pkt.getSize()
+						<< std::endl;
 			}
 			catch(con::NoIncomingDataException &e)
 			{
@@ -2006,13 +2003,12 @@ struct TestConnection: public TestBase
 
 		try
 		{
-			u16 peer_id;
-			SharedBuffer<u8> data;
-			infostream<<"** running server.Receive()"<<std::endl;
-			u32 size = server.Receive(peer_id, data);
-			infostream<<"** Server received: peer_id="<<peer_id
-					<<", size="<<size
-					<<std::endl;
+			NetworkPacket pkt;
+			infostream << "** running server.Receive()" << std::endl;
+			server.Receive(&pkt);
+			infostream << "** Server received: peer_id=" << pkt.getPeerId()
+					<< ", size=" << pkt.getSize()
+					<< std::endl;
 		}
 		catch(con::NoIncomingDataException &e)
 		{
@@ -2022,23 +2018,25 @@ struct TestConnection: public TestBase
 			Simple send-receive test
 		*/
 		{
-			NetworkPacket pkt((u8*) "Hello World !", 14, 0);
+			NetworkPacket pkt;
+			pkt.putRawPacket((u8*) "Hello World !", 14, 0);
 
-			SharedBuffer<u8> sentdata = pkt.oldForgePacket();
+			Buffer<u8> sentdata = pkt.oldForgePacket();
 
 			infostream<<"** running client.Send()"<<std::endl;
 			client.Send(PEER_ID_SERVER, 0, &pkt, true);
 
 			sleep_ms(50);
 
-			u16 peer_id;
-			SharedBuffer<u8> recvdata;
+			NetworkPacket recvpacket;
 			infostream << "** running server.Receive()" << std::endl;
-			u32 size = server.Receive(peer_id, recvdata);
-			infostream << "** Server received: peer_id=" << peer_id
-					<< ", size=" << size
+			server.Receive(&recvpacket);
+			infostream << "** Server received: peer_id=" << pkt.getPeerId()
+					<< ", size=" << pkt.getSize()
 					<< ", data=" << (const char*)pkt.getU8Ptr(0)
 					<< std::endl;
+
+			Buffer<u8> recvdata = pkt.oldForgePacket();
 
 			UASSERT(memcmp(*sentdata, *recvdata, recvdata.getSize()) == 0);
 		}
@@ -2061,29 +2059,33 @@ struct TestConnection: public TestBase
 				snprintf(buf, 10, "%.2X", ((int)((const char*)pkt.getU8Ptr(0))[i])&0xff);
 				infostream<<buf;
 			}
-			if(datasize>20)
-				infostream<<"...";
-			infostream<<std::endl;
+			if(datasize > 20)
+				infostream << "...";
+			infostream << std::endl;
 
-			SharedBuffer<u8> sentdata = pkt.oldForgePacket();
+			Buffer<u8> sentdata = pkt.oldForgePacket();
 
 			server.Send(peer_id_client, 0, &pkt, true);
 
 			//sleep_ms(3000);
 
-			SharedBuffer<u8> recvdata;
-			infostream<<"** running client.Receive()"<<std::endl;
+			Buffer<u8> recvdata;
+			infostream << "** running client.Receive()" << std::endl;
 			u16 peer_id = 132;
 			u16 size = 0;
 			bool received = false;
 			u32 timems0 = porting::getTimeMs();
-			for(;;){
+			for(;;) {
 				if(porting::getTimeMs() - timems0 > 5000 || received)
 					break;
-				try{
-					size = client.Receive(peer_id, recvdata);
+				try {
+					NetworkPacket pkt;
+					client.Receive(&pkt);
+					size = pkt.getSize();
+					peer_id = pkt.getPeerId();
+					recvdata = pkt.oldForgePacket();
 					received = true;
-				}catch(con::NoIncomingDataException &e){
+				} catch(con::NoIncomingDataException &e) {
 				}
 				sleep_ms(10);
 			}

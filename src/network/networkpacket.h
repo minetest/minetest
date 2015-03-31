@@ -28,10 +28,13 @@ class NetworkPacket
 {
 
 public:
-		NetworkPacket(u8 *data, u32 datasize, u16 peer_id);
 		NetworkPacket(u16 command, u32 datasize, u16 peer_id);
 		NetworkPacket(u16 command, u32 datasize);
+		NetworkPacket(): m_datasize(0), m_read_offset(0), m_command(0),
+				m_peer_id(0) {}
 		~NetworkPacket();
+
+		void putRawPacket(u8 *data, u32 datasize, u16 peer_id);
 
 		// Getters
 		u32 getSize() { return m_datasize; }

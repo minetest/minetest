@@ -1018,10 +1018,11 @@ void Server::Receive()
 	DSTACK(__FUNCTION_NAME);
 	SharedBuffer<u8> data;
 	u16 peer_id;
-	u32 datasize;
 	try {
-		datasize = m_con.Receive(peer_id,data);
-		ProcessData(*data, datasize, peer_id);
+		NetworkPacket pkt;
+		m_con.Receive(&pkt);
+		peer_id = pkt.getPeerId();
+		ProcessData(&pkt);
 	}
 	catch(con::InvalidIncomingDataException &e) {
 		infostream<<"Server::Receive(): "
@@ -1149,13 +1150,14 @@ inline void Server::handleCommand(NetworkPacket* pkt)
 	(this->*opHandle.handler)(pkt);
 }
 
-void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
+void Server::ProcessData(NetworkPacket *pkt)
 {
 	DSTACK(__FUNCTION_NAME);
 	// Environment is locked first.
 	JMutexAutoLock envlock(m_env_mutex);
 
 	ScopeProfiler sp(g_profiler, "Server::ProcessData");
+	u32 peer_id = pkt->getPeerId();
 
 	try {
 		Address address = getPeerAddress(peer_id);
@@ -1179,18 +1181,13 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		 * respond for some time, your server was overloaded or
 		 * things like that.
 		 */
-		infostream << "Server::ProcessData(): Cancelling: peer "
+		infostream << "Server::ProcessData(): Canceling: peer "
 				<< peer_id << " not found" << std::endl;
 		return;
 	}
 
 	try {
-		if(datasize < 2)
-			return;
-
-		NetworkPacket pkt(data, datasize, peer_id);
-
-		ToServerCommand command = (ToServerCommand) pkt.getCommand();
+		ToServerCommand command = (ToServerCommand) pkt->getCommand();
 
 		// Command must be handled into ToServerCommandHandler
 		if (command >= TOSERVER_NUM_MSG_TYPES) {
@@ -1199,7 +1196,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 		}
 
 		if (toServerCommandTable[command].state == TOSERVER_STATE_NOT_CONNECTED) {
-			handleCommand(&pkt);
+			handleCommand(pkt);
 			return;
 		}
 
@@ -1214,7 +1211,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 
 		/* Handle commands related to client startup */
 		if (toServerCommandTable[command].state == TOSERVER_STATE_STARTUP) {
-			handleCommand(&pkt);
+			handleCommand(pkt);
 			return;
 		}
 
@@ -1227,7 +1224,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 		}
 
-		handleCommand(&pkt);
+		handleCommand(pkt);
 	}
 	catch(SendFailedException &e) {
 		errorstream << "Server::ProcessData(): SendFailedException: "

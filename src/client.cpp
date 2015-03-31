@@ -834,10 +834,9 @@ void Client::ReceiveAll()
 void Client::Receive()
 {
 	DSTACK(__FUNCTION_NAME);
-	SharedBuffer<u8> data;
-	u16 sender_peer_id;
-	u32 datasize = m_con.Receive(sender_peer_id, data);
-	ProcessData(*data, datasize, sender_peer_id);
+	NetworkPacket pkt;
+	m_con.Receive(&pkt);
+	ProcessData(&pkt);
 }
 
 inline void Client::handleCommand(NetworkPacket* pkt)
@@ -849,19 +848,12 @@ inline void Client::handleCommand(NetworkPacket* pkt)
 /*
 	sender_peer_id given to this shall be quaranteed to be a valid peer
 */
-void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
+void Client::ProcessData(NetworkPacket *pkt)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	// Ignore packets that don't even fit a command
-	if(datasize < 2) {
-		m_packetcounter.add(60000);
-		return;
-	}
-
-	NetworkPacket pkt(data, datasize, sender_peer_id);
-
-	ToClientCommand command = (ToClientCommand) pkt.getCommand();
+	ToClientCommand command = (ToClientCommand) pkt->getCommand();
+	u32 sender_peer_id = pkt->getPeerId();
 
 	//infostream<<"Client: received command="<<command<<std::endl;
 	m_packetcounter.add((u16)command);
@@ -889,7 +881,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	 * as a byte mask
 	 */
 	if(toClientCommandTable[command].state == TOCLIENT_STATE_NOT_CONNECTED) {
-		handleCommand(&pkt);
+		handleCommand(pkt);
 		return;
 	}
 
@@ -904,7 +896,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	  Handle runtime commands
 	*/
 
-	handleCommand(&pkt);
+	handleCommand(pkt);
 }
 
 void Client::Send(NetworkPacket* pkt)
