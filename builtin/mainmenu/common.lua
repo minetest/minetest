@@ -231,6 +231,29 @@ function menu_handle_key_up_down(fields,textlist,settingname)
 	return false
 end
 
+function menu_save_worldmt(selected, setting, value)
+	if menudata.worldlist:get_list()[selected] ~= nil then
+		local filename = menudata.worldlist:get_list()[selected].path ..
+				DIR_DELIM .. "world.mt"
+		local worldfile = Settings(filename)
+		worldfile:set(setting, value)
+		if not worldfile:write() then
+			core.log("error", "Failed to write world config file")
+		end
+	end
+end
+
+function menu_get_worldmt(selected, setting)
+	if menudata.worldlist:get_list()[selected] ~= nil then
+		local filename = menudata.worldlist:get_list()[selected].path ..
+				DIR_DELIM .. "world.mt"
+		local worldfile = Settings(filename)
+		return worldfile:get(setting)
+	else
+		return nil
+	end
+end
+
 --------------------------------------------------------------------------------
 function asyncOnlineFavourites()
 
