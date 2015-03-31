@@ -31,133 +31,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct ClientEvent;
 class ParticleManager;
 
-class Particle : public scene::ISceneNode
-{
-	public:
-	Particle(
-		IGameDef* gamedef,
-		scene::ISceneManager* mgr,
-		LocalPlayer *player,
-		ClientEnvironment *env,
-		v3f pos,
-		v3f velocity,
-		v3f acceleration,
-		float expirationtime,
-		float size,
-		bool collisiondetection,
-		bool vertical,
-		video::ITexture *texture,
-		v2f texpos,
-		v2f texsize
-	);
-	~Particle();
-
-	virtual const core::aabbox3d<f32>& getBoundingBox() const
-	{
-		return m_box;
-	}
-
-	virtual u32 getMaterialCount() const
-	{
-		return 1;
-	}
-
-	virtual video::SMaterial& getMaterial(u32 i)
-	{
-		return m_material;
-	}
-
-	virtual void OnRegisterSceneNode();
-	virtual void render();
-
-	void step(float dtime);
-
-	bool get_expired ()
-	{ return m_expiration < m_time; }
-
-private:
-	void updateLight();
-	void updateVertices();
-
-	video::S3DVertex m_vertices[4];
-	float m_time;
-	float m_expiration;
-
-	ClientEnvironment *m_env;
-	IGameDef *m_gamedef;
-	core::aabbox3d<f32> m_box;
-	core::aabbox3d<f32> m_collisionbox;
-	video::SMaterial m_material;
-	v2f m_texpos;
-	v2f m_texsize;
-	v3f m_pos;
-	v3f m_velocity;
-	v3f m_acceleration;
-	LocalPlayer *m_player;
-	float m_size;
-	u8 m_light;
-	bool m_collisiondetection;
-	bool m_vertical;
-	v3s16 m_camera_offset;
-};
-
-class ParticleSpawner
-{
-	public:
-	ParticleSpawner(IGameDef* gamedef,
-		scene::ISceneManager *smgr,
-		LocalPlayer *player,
-		u16 amount,
-		float time,
-		v3f minp, v3f maxp,
-		v3f minvel, v3f maxvel,
-		v3f minacc, v3f maxacc,
-		float minexptime, float maxexptime,
-		float minsize, float maxsize,
-		bool collisiondetection,
-		bool vertical,
-		video::ITexture *texture,
-		u32 id,
-		ParticleManager* p_manager);
-
-	~ParticleSpawner();
-
-	void step(float dtime, ClientEnvironment *env);
-
-	bool get_expired ()
-	{ return (m_amount <= 0) && m_spawntime != 0; }
-
-	private:
-	ParticleManager* m_particlemanager;
-	float m_time;
-	IGameDef *m_gamedef;
-	scene::ISceneManager *m_smgr;
-	LocalPlayer *m_player;
-	u16 m_amount;
-	float m_spawntime;
-	v3f m_minpos;
-	v3f m_maxpos;
-	v3f m_minvel;
-	v3f m_maxvel;
-	v3f m_minacc;
-	v3f m_maxacc;
-	float m_minexptime;
-	float m_maxexptime;
-	float m_minsize;
-	float m_maxsize;
-	video::ITexture *m_texture;
-	std::vector<float> m_spawntimes;
-	bool m_collisiondetection;
-	bool m_vertical;
-
-};
-
 /**
  * Class doing particle as well as their spawners handling
  */
 class ParticleManager
 {
-friend class ParticleSpawner;
 public:
 	ParticleManager(ClientEnvironment* env);
 	~ParticleManager();
@@ -177,24 +55,16 @@ public:
 		LocalPlayer *player, v3s16 pos, const TileSpec tiles[], int number);
 
 protected:
-	void addParticle(Particle* toadd);
+//	void addParticle(Particle* toadd);
 
 private:
-
-	void stepParticles (float dtime);
 	void stepSpawners (float dtime);
 
 	void clearAll ();
 
-	std::vector<Particle*> m_particles;
-	std::map<u32, ParticleSpawner*> m_particle_spawners;
-
 	std::map<u32, s32> irrlicht_spawners; //mt id/irrlicht node id
 
-	//std::list<s32> particlespawners;
-
 	ClientEnvironment* m_env;
-	JMutex m_particle_list_lock;
 	JMutex m_spawner_list_lock;
 };
 
