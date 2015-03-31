@@ -174,7 +174,7 @@ public:
 		LocalPlayer *player, v3s16 pos, const TileSpec tiles[]);
 
 	void addNodeParticle(IGameDef* gamedef, scene::ISceneManager* smgr,
-		LocalPlayer *player, v3s16 pos, const TileSpec tiles[]);
+		LocalPlayer *player, v3s16 pos, const TileSpec tiles[], int number);
 
 protected:
 	void addParticle(Particle* toadd);
