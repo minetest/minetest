@@ -1686,7 +1686,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			std::vector<aabb3f> boxes = n.getSelectionBoxes(nodedef);
 			TileSpec h_tile;			
 			h_tile.material_flags |= MATERIAL_FLAG_HIGHLIGHTED;
-			h_tile.texture = tsrc->getTexture("halo.png",&h_tile.texture_id);
+			h_tile.texture = tsrc->getTextureForMesh("halo.png",&h_tile.texture_id);
 			v3f pos = intToFloat(p, BS);
 			f32 d = 0.05 * BS;
 			for (std::vector<aabb3f>::iterator i = boxes.begin();

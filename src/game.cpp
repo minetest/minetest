@@ -3202,12 +3202,12 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 					event.set_sky.params->size() == 6) {
 				sky->setFallbackBgColor(*event.set_sky.bgcolor);
 				skybox = smgr->addSkyBoxSceneNode(
-						 texture_src->getTexture((*event.set_sky.params)[0]),
-						 texture_src->getTexture((*event.set_sky.params)[1]),
-						 texture_src->getTexture((*event.set_sky.params)[2]),
-						 texture_src->getTexture((*event.set_sky.params)[3]),
-						 texture_src->getTexture((*event.set_sky.params)[4]),
-						 texture_src->getTexture((*event.set_sky.params)[5]));
+						 texture_src->getTextureForMesh((*event.set_sky.params)[0]),
+						 texture_src->getTextureForMesh((*event.set_sky.params)[1]),
+						 texture_src->getTextureForMesh((*event.set_sky.params)[2]),
+						 texture_src->getTextureForMesh((*event.set_sky.params)[3]),
+						 texture_src->getTextureForMesh((*event.set_sky.params)[4]),
+						 texture_src->getTextureForMesh((*event.set_sky.params)[5]));
 			}
 			// Handle everything else as plain color
 			else {
