@@ -31,8 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * transparent.  Should be 127 for 3d where alpha is threshold, but 0 for
  * 2d where alpha is blended.
  */
-void imageCleanTransparent(video::IImage *src, u32 threshold) {
-
+void imageCleanTransparent(video::IImage *src, u32 threshold)
+{
 	core::dimension2d<u32> dim = src->getDimension();
 
 	// Walk each pixel looking for fully transparent ones.
@@ -85,8 +85,8 @@ void imageCleanTransparent(video::IImage *src, u32 threshold) {
  * filter is designed to produce the most accurate results for both upscaling
  * and downscaling.
  */
-void imageScaleNNAA(video::IImage *src, const core::rect<s32> &srcrect, video::IImage *dest) {
-
+void imageScaleNNAA(video::IImage *src, const core::rect<s32> &srcrect, video::IImage *dest)
+{
 	double sx, sy, minsx, maxsx, minsy, maxsy, area, ra, ga, ba, aa, pw, ph, pa;
 	u32 dy, dx;
 	video::SColor pxl;
