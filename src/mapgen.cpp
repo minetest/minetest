@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "content_mapnode.h" // For content_mapnode_get_new_name
 #include "voxelalgorithms.h"
+#include "porting.h"
 #include "profiler.h"
 #include "settings.h"
 #include "treegen.h"
