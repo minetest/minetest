@@ -258,7 +258,7 @@ inline u32 get_bits(u32 x, u32 pos, u32 len)
 inline void set_bits(u32 *x, u32 pos, u32 len, u32 val)
 {
 	u32 mask = (1 << len) - 1;
-	*x &= ~(mask << len);
+	*x &= ~(mask << pos);
 	*x |= (val & mask) << pos;
 }
 
