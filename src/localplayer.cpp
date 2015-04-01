@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "localplayer.h"
 
-#include "main.h" // For g_settings
 #include "event.h"
 #include "collision.h"
 #include "gamedef.h"

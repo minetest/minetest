@@ -17,12 +17,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <fstream>
 #include <iostream>
 #include <sstream>
 #include <algorithm>
 
 #include "version.h"
-#include "main.h" // for g_settings
 #include "settings.h"
 #include "serverlist.h"
 #include "filesys.h"

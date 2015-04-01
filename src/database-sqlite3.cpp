@@ -30,7 +30,6 @@ SQLite format specification:
 #include "log.h"
 #include "filesys.h"
 #include "exceptions.h"
-#include "main.h"
 #include "settings.h"
 #include "util/string.h"
 

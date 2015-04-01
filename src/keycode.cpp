@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "keycode.h"
-#include "main.h" // For g_settings
 #include "exceptions.h"
 #include "settings.h"
 #include "log.h"

@@ -51,7 +51,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "log.h"
 #include "util/string.h"
-#include "main.h"
 #include "settings.h"
 #include <list>
 

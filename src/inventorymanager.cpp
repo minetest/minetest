@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "scripting_game.h"
 #include "serverobject.h"
-#include "main.h"  // for g_settings
 #include "settings.h"
 #include "craftdef.h"
 #include "rollback_interface.h"

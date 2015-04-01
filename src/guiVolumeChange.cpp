@@ -26,7 +26,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <IGUIScrollBar.h>
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
-#include "main.h"
 #include "settings.h"
 
 #include "gettext.h"

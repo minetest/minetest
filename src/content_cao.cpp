@@ -42,7 +42,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "localplayer.h"
 #include "map.h"
-#include "main.h" // g_settings
 #include "camera.h" // CameraModes
 #include "wieldmesh.h"
 #include "log.h"

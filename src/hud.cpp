@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "hud.h"
-#include "main.h"
 #include "settings.h"
 #include "util/numeric.h"
 #include "log.h"

@@ -31,6 +31,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Settings;
 struct NoiseParams;
 
+// Global objects
+extern Settings *g_settings;
+extern std::string g_settings_path;
+
 /** function type to register a changed callback */
 typedef void (*setting_changed_callback)(const std::string, void*);
 

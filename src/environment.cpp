@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <fstream>
 #include "environment.h"
 #include "filesys.h"
 #include "porting.h"
@@ -31,7 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scripting_game.h"
 #include "nodedef.h"
 #include "nodemetadata.h"
-#include "main.h" // For g_settings, g_profiler
 #include "gamedef.h"
 #ifndef SERVER
 #include "clientmap.h"

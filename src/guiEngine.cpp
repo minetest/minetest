@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "guiEngine.h"
 
+#include <fstream>
 #include <IGUIStaticText.h>
 #include <ICameraSceneNode.h>
 #include "scripting_mainmenu.h"
@@ -27,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "porting.h"
 #include "filesys.h"
-#include "main.h"
 #include "settings.h"
 #include "guiMainMenu.h"
 #include "sound.h"

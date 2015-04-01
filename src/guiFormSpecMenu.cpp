@@ -44,7 +44,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include "scripting_game.h"
 #include "porting.h"
-#include "main.h"
 #include "settings.h"
 #include "client.h"
 #include "fontengine.h"

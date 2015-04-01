@@ -329,6 +329,7 @@ set(common_SRCS
 	pathfinder.cpp
 	player.cpp
 	porting.cpp
+	profiler.cpp
 	quicktune.cpp
 	rollback.cpp
 	rollback_interface.cpp

@@ -21,9 +21,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "noise.h"
 #include "constants.h"
 #include "debug.h"
-#include "main.h" // For g_profiler and g_settings
 #include "profiler.h"
 #include "settings.h"
+
+
+// Menu clouds are created later
+class Clouds;
+Clouds *g_menuclouds = NULL;
+irr::scene::ISceneManager *g_menucloudsmgr = NULL;
 
 Clouds::Clouds(
 		scene::ISceneNode* parent,

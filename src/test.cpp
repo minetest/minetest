@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "map.h"
 #include "player.h"
-#include "main.h"
 #include "socket.h"
 #include "network/connection.h"
 #include "serialization.h"

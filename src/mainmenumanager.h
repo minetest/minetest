@@ -39,7 +39,7 @@ public:
 	virtual void signalKeyConfigChange() = 0;
 };
 
-extern gui::IGUIEnvironment* guienv;
+extern gui::IGUIEnvironment *guienv;
 extern gui::IGUIStaticText *guiroot;
 
 // Handler for the modal menus

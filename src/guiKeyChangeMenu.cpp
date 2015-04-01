@@ -22,7 +22,6 @@
 #include "guiKeyChangeMenu.h"
 #include "debug.h"
 #include "serialization.h"
-#include "main.h"
 #include <string>
 #include <IGUICheckBox.h>
 #include <IGUIEditBox.h>

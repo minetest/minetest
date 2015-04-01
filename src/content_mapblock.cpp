@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapblock.h"
 #include "util/numeric.h"
 #include "util/directiontables.h"
-#include "main.h" // For g_settings
 #include "mapblock_mesh.h" // For MapBlock_LightColor() and MeshCollector
 #include "settings.h"
 #include "nodedef.h"

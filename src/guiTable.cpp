@@ -33,7 +33,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/numeric.h"
 #include "util/string.h" // for parseColorString()
-#include "main.h"
 #include "settings.h" // for settings
 #include "porting.h" // for dpi
 #include "guiscalingfilter.h"

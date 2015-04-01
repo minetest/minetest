@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlicht.h" // createDevice
 
-#include "main.h"
 #include "mainmenumanager.h"
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
@@ -58,38 +57,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifdef HAVE_TOUCHSCREENGUI
 #include "touchscreengui.h"
 #endif
-
-/*
-	Settings.
-	These are loaded from the config file.
-*/
-static Settings main_settings;
-Settings *g_settings = &main_settings;
-std::string g_settings_path;
-
-// Global profiler
-Profiler main_profiler;
-Profiler *g_profiler = &main_profiler;
-
-// Menu clouds are created later
-Clouds *g_menuclouds = 0;
-irr::scene::ISceneManager *g_menucloudsmgr = 0;
-
-/*
-	Debug streams
-*/
-
-// Connection
-std::ostream *dout_con_ptr = &dummyout;
-std::ostream *derr_con_ptr = &verbosestream;
-
-// Server
-std::ostream *dout_server_ptr = &infostream;
-std::ostream *derr_server_ptr = &errorstream;
-
-// Client
-std::ostream *dout_client_ptr = &infostream;
-std::ostream *derr_client_ptr = &errorstream;
 
 #define DEBUGFILE "debug.txt"
 #define DEFAULT_SERVER_PORT 30000
@@ -136,26 +103,6 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 static bool migrate_database(const GameParams &game_params, const Settings &cmd_args);
 
 /**********************************************************************/
-
-#ifndef SERVER
-/*
-	Random stuff
-*/
-
-/* mainmenumanager.h */
-
-gui::IGUIEnvironment* guienv = NULL;
-gui::IGUIStaticText *guiroot = NULL;
-MainMenuManager g_menumgr;
-
-bool noMenuActive()
-{
-	return (g_menumgr.menuCount() == 0);
-}
-
-// Passed to menus to allow disconnecting and exiting
-MainGameCallback *g_gamecallback = NULL;
-#endif
 
 /*
 	gettime.h implementation

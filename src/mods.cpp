@@ -17,15 +17,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <cctype>
+#include <fstream>
 #include "mods.h"
-#include "main.h"
 #include "filesys.h"
 #include "strfnd.h"
 #include "log.h"
 #include "subgame.h"
 #include "settings.h"
 #include "strfnd.h"
-#include <cctype>
 #include "convert_json.h"
 
 static bool parseDependsLine(std::istream &is,

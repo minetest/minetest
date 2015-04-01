@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
-#include "main.h" // for g_settings
 #include "filesys.h"
 #include "settings.h"
 #include "mesh.h"

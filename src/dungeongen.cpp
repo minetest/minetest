@@ -26,8 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "nodedef.h"
 #include "profiler.h"
-#include "settings.h" // For g_settings
-#include "main.h" // For g_profiler
+#include "settings.h"
 
 //#define DGEN_USE_TORCHES
 

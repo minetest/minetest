@@ -33,7 +33,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen_v5.h"
 #include "mapgen_v7.h"
 #include "settings.h"
-#include "main.h"
 #include "log.h"
 
 
