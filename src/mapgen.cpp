@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxelalgorithms.h"
 #include "profiler.h"
 #include "settings.h"
+#include "porting.h" // For str functions
 #include "treegen.h"
 #include "serialization.h"
 #include "util/serialize.h"
