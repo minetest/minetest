@@ -151,6 +151,24 @@ inline bool str_starts_with(const std::basic_string<T> &str,
 	return true;
 }
 
+/**
+ * Check whether \p str begins with the string prefix. If \p case_insensitive
+ * is true then the check is case insensitve (default is false; i.e. case is
+ * significant).
+ *
+ * @param str
+ * @param prefix
+ * @param case_insensitive
+ * @return true if the str begins with prefix
+ */
+template <typename T>
+inline bool str_starts_with(const std::basic_string<T> &str,
+		const T *prefix,
+		bool case_insensitive = false)
+{
+	return str_starts_with(str, std::basic_string<T>(prefix),
+			case_insensitive);
+}
 
 /**
  * Splits a string into its component parts separated by the character
