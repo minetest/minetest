@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "collision.h"
 #include "environment.h"
 #include "settings.h"
-#include "main.h" // For g_profiler
 #include "profiler.h"
 #include "serialization.h" // For compressZlib
 #include "tool.h" // For ToolCapabilities

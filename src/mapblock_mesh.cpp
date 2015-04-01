@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "light.h"
 #include "mapblock.h"
 #include "map.h"
-#include "main.h" // for g_profiler
 #include "profiler.h"
 #include "nodedef.h"
 #include "gamedef.h"

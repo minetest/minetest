@@ -183,6 +183,7 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/player.cpp                        \
 		jni/src/porting_android.cpp               \
 		jni/src/porting.cpp                       \
+		jni/src/profiler.cpp                      \
 		jni/src/quicktune.cpp                     \
 		jni/src/rollback.cpp                      \
 		jni/src/rollback_interface.cpp            \

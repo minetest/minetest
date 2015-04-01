@@ -30,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "emerge.h"
 #include "serverobject.h"              // TODO this is used for cleanup of only
-#include "main.h"                      // for g_settings
 #include "log.h"
 
 const char *ClientInterface::statenames[] = {

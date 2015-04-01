@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettime.h"
 #include "keycode.h"
 #include "settings.h"
-#include "main.h"  // for g_settings
 #include "porting.h"
 #include "client/tile.h"
 #include "fontengine.h"

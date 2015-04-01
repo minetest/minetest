@@ -28,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include <set>
 #include "util/timetaker.h"
-#include "main.h" // g_profiler
 #include "profiler.h"
 
 // float error is 10 - 9.96875 = 0.03125

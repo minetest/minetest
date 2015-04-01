@@ -17,7 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "main.h"
 #include "mainmenumanager.h"
 #include "debug.h"
 #include "clouds.h"
@@ -35,9 +34,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "fontengine.h"
 #include "clientlauncher.h"
 
-// A pointer to a global instance of the time getter
-// TODO: why?
-TimeGetter *g_timegetter = NULL;
+/* mainmenumanager.h
+ */
+gui::IGUIEnvironment *guienv = NULL;
+gui::IGUIStaticText *guiroot = NULL;
+MainMenuManager g_menumgr;
+
+bool noMenuActive()
+{
+	return g_menumgr.menuCount() == 0;
+}
+
+// Passed to menus to allow disconnecting and exiting
+MainGameCallback *g_gamecallback = NULL;
+
+
+// Instance of the time getter
+static TimeGetter *g_timegetter = NULL;
 
 u32 getTimeMs()
 {

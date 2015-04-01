@@ -33,7 +33,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/container.h"
 #include "util/thread.h"
 #include "version.h"
-#include "main.h"
 #include "settings.h"
 
 JMutex g_httpfetch_mutex;

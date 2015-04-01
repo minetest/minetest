@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "nodedef.h"
 
-#include "main.h" // For g_settings
 #include "itemdef.h"
 #ifndef SERVER
 #include "client/tile.h"

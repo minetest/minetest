@@ -34,7 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "sound.h"
 #include "settings.h"
-#include "main.h" // for g_settings
 #include "log.h"
 #include "EDriverTypes.h"
 

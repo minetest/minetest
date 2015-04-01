@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "drawscene.h"
-#include "main.h" // for g_settings
 #include "settings.h"
 #include "clouds.h"
 #include "clientmap.h"

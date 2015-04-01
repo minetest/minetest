@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h" //for MMVManip
 #include "log.h"
 #include "util/numeric.h"
-#include "main.h"
 #include "util/mathconstants.h"
 #include "porting.h"
 

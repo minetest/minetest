@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiscalingfilter.h"
 #include "imagefilters.h"
 #include "settings.h"
-#include "main.h"		// for g_settings
 #include "util/numeric.h"
 #include <stdio.h>
 

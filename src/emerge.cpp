@@ -28,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "util/container.h"
 #include "util/thread.h"
-#include "main.h"
 #include "constants.h"
 #include "voxel.h"
 #include "config.h"

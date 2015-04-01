@@ -21,16 +21,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "filesys.h"
 #include "settings.h"
-#include "main.h"
 #include "log.h"
 #include "strfnd.h"
 #include "defaultsettings.h"  // for override_default_settings
 #include "mapgen.h"  // for MapgenParams
-#include "main.h" // for g_settings
-#ifndef SERVER
-#include "client/tile.h" // getImagePath
-#endif
 #include "util/string.h"
+
+#ifndef SERVER
+	#include "client/tile.h" // getImagePath
+#endif
 
 bool getGameMinetestConfig(const std::string &game_path, Settings &conf)
 {

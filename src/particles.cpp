@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "particles.h"
 #include "constants.h"
 #include "debug.h"
-#include "main.h" // For g_profiler and g_settings
 #include "settings.h"
 #include "client/tile.h"
 #include "gamedef.h"

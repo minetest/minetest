@@ -4,13 +4,12 @@
 #include "ICameraSceneNode.h"
 #include "S3DVertex.h"
 #include "client/tile.h"
-#include "noise.h" // easeCurve
-#include "main.h" // g_profiler
+#include "noise.h"            // easeCurve
 #include "profiler.h"
-#include "util/numeric.h" // MYMIN
+#include "util/numeric.h"
 #include <cmath>
 #include "settings.h"
-#include "camera.h" // CameraModes
+#include "camera.h"           // CameraModes
 
 //! constructor
 Sky::Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id,

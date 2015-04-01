@@ -30,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h"
 #include "filesys.h"
 #include "settings.h"
-#include "main.h"  //required for g_settings, g_settings_path
 
 // debug(...)
 // Writes a line to dstream

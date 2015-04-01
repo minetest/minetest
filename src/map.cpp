@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "mapsector.h"
 #include "mapblock.h"
-#include "main.h"
 #include "filesys.h"
 #include "voxel.h"
 #include "porting.h"

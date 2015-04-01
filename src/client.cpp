@@ -28,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "client.h"
 #include "network/clientopcodes.h"
-#include "main.h"
 #include "filesys.h"
 #include "porting.h"
 #include "mapblock_mesh.h"

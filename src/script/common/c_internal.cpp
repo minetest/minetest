@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_internal.h"
 #include "debug.h"
 #include "log.h"
-#include "main.h"
 #include "settings.h"
 
 std::string script_get_backtrace(lua_State *L)
