@@ -224,10 +224,6 @@ public:
 			}
 		}
 
-		// Apply the "clean transparent" filter, if configured.
-		if (g_settings->getBool("texture_clean_transparent"))
-			imageCleanTransparent(toadd, 127);
-
 		if (need_to_grab)
 			toadd->grab();
 		m_images[name] = toadd;
@@ -676,7 +672,7 @@ video::ITexture* TextureSource::getTexture(const std::string &name, u32 *id)
 
 video::ITexture* TextureSource::getTextureForMesh(const std::string &name, u32 *id)
 {
-	return getTexture(name + "^[autoupscaleformesh", id);
+	return getTexture(name + "^[applyfiltersformesh", id);
 }
 
 void TextureSource::processQueue()
@@ -1191,7 +1187,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			Adds a cracking texture
 			N = animation frame count, P = crack progression
 		*/
-		if (part_of_name.substr(0,6) == "[crack")
+		if (str_starts_with(part_of_name, "[crack"))
 		{
 			if (baseimg == NULL) {
 				errorstream<<"generateImagePart(): baseimg == NULL "
@@ -1228,7 +1224,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			[combine:WxH:X,Y=filename:X,Y=filename2
 			Creates a bigger texture from an amount of smaller ones
 		*/
-		else if (part_of_name.substr(0,8) == "[combine")
+		else if (str_starts_with(part_of_name, "[combine"))
 		{
 			Strfnd sf(part_of_name);
 			sf.next(":");
@@ -1272,7 +1268,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		/*
 			"[brighten"
 		*/
-		else if (part_of_name.substr(0,9) == "[brighten")
+		else if (str_starts_with(part_of_name, "[brighten"))
 		{
 			if (baseimg == NULL) {
 				errorstream<<"generateImagePart(): baseimg==NULL "
@@ -1290,7 +1286,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			that the transparent parts don't look completely black
 			when simple alpha channel is used for rendering.
 		*/
-		else if (part_of_name.substr(0,8) == "[noalpha")
+		else if (str_starts_with(part_of_name, "[noalpha"))
 		{
 			if (baseimg == NULL){
 				errorstream<<"generateImagePart(): baseimg==NULL "
@@ -1314,7 +1310,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			"[makealpha:R,G,B"
 			Convert one color to transparent.
 		*/
-		else if (part_of_name.substr(0,11) == "[makealpha:")
+		else if (str_starts_with(part_of_name, "[makealpha:"))
 		{
 			if (baseimg == NULL) {
 				errorstream<<"generateImagePart(): baseimg == NULL "
@@ -1370,7 +1366,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			The resulting transform will be equivalent to one of the
 			eight existing ones, though (see: dihedral group).
 		*/
-		else if (part_of_name.substr(0,10) == "[transform")
+		else if (str_starts_with(part_of_name, "[transform"))
 		{
 			if (baseimg == NULL) {
 				errorstream<<"generateImagePart(): baseimg == NULL "
@@ -1397,7 +1393,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			Example (a grass block (not actually used in game):
 			"[inventorycube{grass.png{mud.png&grass_side.png{mud.png&grass_side.png"
 		*/
-		else if (part_of_name.substr(0,14) == "[inventorycube")
+		else if (str_starts_with(part_of_name, "[inventorycube"))
 		{
 			if (baseimg != NULL){
 				errorstream<<"generateImagePart(): baseimg != NULL "
@@ -1514,7 +1510,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			[lowpart:percent:filename
 			Adds the lower part of a texture
 		*/
-		else if (part_of_name.substr(0,9) == "[lowpart:")
+		else if (str_starts_with(part_of_name, "[lowpart:"))
 		{
 			Strfnd sf(part_of_name);
 			sf.next(":");
@@ -1550,7 +1546,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			Crops a frame of a vertical animation.
 			N = frame count, I = frame index
 		*/
-		else if (part_of_name.substr(0,15) == "[verticalframe:")
+		else if (str_starts_with(part_of_name, "[verticalframe:"))
 		{
 			Strfnd sf(part_of_name);
 			sf.next(":");
@@ -1594,7 +1590,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			[mask:filename
 			Applies a mask to an image
 		*/
-		else if (part_of_name.substr(0,6) == "[mask:")
+		else if (str_starts_with(part_of_name, "[mask:"))
 		{
 			if (baseimg == NULL) {
 				errorstream << "generateImage(): baseimg == NULL "
@@ -1620,7 +1616,8 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			Overlays image with given color
 			color = color as ColorString
 		*/
-		else if (part_of_name.substr(0,10) == "[colorize:") {
+		else if (str_starts_with(part_of_name, "[colorize:"))
+		{
 			Strfnd sf(part_of_name);
 			sf.next(":");
 			std::string color_str = sf.next(":");
@@ -1657,7 +1654,12 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			blit_with_interpolate_overlay(img, baseimg, v2s32(0,0), v2s32(0,0), dim, ratio);
 			img->drop();
 		}
-		else if (part_of_name.substr(0,19) == "[autoupscaleformesh") {
+		else if (str_starts_with(part_of_name, "[applyfiltersformesh"))
+		{
+			// Apply the "clean transparent" filter, if configured.
+			if (g_settings->getBool("texture_clean_transparent"))
+				imageCleanTransparent(baseimg, 127);
+
 			/* Upscale textures to user's requested minimum size.  This is a trick to make
 			 * filters look as good on low-res textures as on high-res ones, by making
 			 * low-res textures BECOME high-res ones.  This is helpful for worlds that
