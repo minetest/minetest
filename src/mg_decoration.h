@@ -131,7 +131,7 @@ public:
 		return "decoration";
 	}
 
-	Decoration *create(int type)
+	static Decoration *create(DecorationType type)
 	{
 		switch (type) {
 		case DECO_SIMPLE:

@@ -26,11 +26,11 @@ struct NoiseParams;
 
 enum BiomeType
 {
-	BIOME_TYPE_NORMAL,
-	BIOME_TYPE_LIQUID,
-	BIOME_TYPE_NETHER,
-	BIOME_TYPE_AETHER,
-	BIOME_TYPE_FLAT
+	BIOME_NORMAL,
+	BIOME_LIQUID,
+	BIOME_NETHER,
+	BIOME_AETHER,
+	BIOME_FLAT
 };
 
 class Biome : public ObjDef, public NodeResolver {
@@ -68,7 +68,7 @@ public:
 		return "biome";
 	}
 
-	Biome *create(int btt)
+	static Biome *create(BiomeType type)
 	{
 		return new Biome;
 	}

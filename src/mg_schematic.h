@@ -41,6 +41,11 @@ class NodeResolver;
 #define MTSCHEM_PROB_NEVER  0x00
 #define MTSCHEM_PROB_ALWAYS 0xFF
 
+enum SchematicType
+{
+	SCHEMATIC_NORMAL,
+};
+
 
 class Schematic : public ObjDef, public NodeResolver {
 public:
@@ -83,7 +88,7 @@ public:
 		return "schematic";
 	}
 
-	Schematic *create(int type)
+	static Schematic *create(SchematicType type)
 	{
 		return new Schematic;
 	}

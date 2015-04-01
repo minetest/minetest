@@ -84,19 +84,14 @@ private:
 	// place_schematic(p, schematic, rotation, replacement)
 	static int l_place_schematic(lua_State *L);
 
-	static bool regDecoSimple(lua_State *L,
-			NodeResolveInfo *nri, DecoSimple *deco);
-	static bool regDecoSchematic(lua_State *L,
-		SchematicManager *schemmgr, DecoSchematic *deco);
+public:
+	static void Initialize(lua_State *L, int top);
 
 	static struct EnumString es_BiomeTerrainType[];
 	static struct EnumString es_DecorationType[];
 	static struct EnumString es_MapgenObject[];
 	static struct EnumString es_OreType[];
 	static struct EnumString es_Rotation[];
-
-public:
-	static void Initialize(lua_State *L, int top);
 };
 
 #endif /* L_MAPGEN_H_ */
