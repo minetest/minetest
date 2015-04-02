@@ -72,7 +72,8 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 		video::ITexture *src, const core::rect<s32> &srcrect,
 		const core::rect<s32> &destrect)
 {
-
+	if (src == NULL)
+		return src;
 	if (!g_settings->getBool("gui_scaling_filter"))
 		return src;
 
@@ -139,6 +140,8 @@ video::ITexture *guiScalingResizeCached(video::IVideoDriver *driver,
 video::ITexture *guiScalingImageButton(video::IVideoDriver *driver,
 		video::ITexture *src, s32 width, s32 height)
 {
+	if (src == NULL)
+		return src;
 	return guiScalingResizeCached(driver, src,
 		core::rect<s32>(0, 0, src->getSize().Width, src->getSize().Height),
 		core::rect<s32>(0, 0, width, height));
@@ -154,6 +157,8 @@ void draw2DImageFilterScaled(video::IVideoDriver *driver, video::ITexture *txr,
 {
 	// Attempt to pre-scale image in software in high quality.
 	video::ITexture *scaled = guiScalingResizeCached(driver, txr, srcrect, destrect);
+	if (scaled == NULL)
+		return;
 
 	// Correct source rect based on scaled image.
 	const core::rect<s32> mysrcrect = (scaled != txr)
