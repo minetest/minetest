@@ -491,6 +491,8 @@ private:
 	*/
 	PlayerSAO *emergePlayer(const char *name, u16 peer_id);
 
+	v3f findSpawnPos(ServerMap &map);
+
 	void handlePeerChanges();
 
 	/*

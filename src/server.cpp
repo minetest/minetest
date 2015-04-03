@@ -3179,18 +3179,18 @@ std::string Server::getBuiltinLuaPath()
 	return porting::path_share + DIR_DELIM + "builtin";
 }
 
-v3f findSpawnPos(ServerMap &map)
+v3f Server::findSpawnPos(ServerMap &map)
 {
-	//return v3f(50,50,50)*BS;
-
 	v3s16 nodepos;
+	v3f nodeposf;
 
-#if 0
-	nodepos = v2s16(0,0);
-	groundheight = 20;
-#endif
+	// Initialize nodepos with static_spawnpoint if set this permit to solve
+	// some spawnpoints sets to 0,0,0 if the static_spawnpoint is set and
+	// we don't find a good place
+	if (g_settings->getV3FNoEx("static_spawnpoint", nodeposf)) {
+		return nodeposf * BS;
+	}
 
-#if 1
 	s16 water_level = map.getWaterLevel();
 
 	// Try to find a good place a few times
@@ -3231,7 +3231,6 @@ v3f findSpawnPos(ServerMap &map)
 			break;
 		}
 	}
-#endif
 
 	return intToFloat(nodepos, BS);
 }
