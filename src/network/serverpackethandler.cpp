@@ -1223,7 +1223,6 @@ void Server::handleCommand_Breath(NetworkPacket* pkt)
 
 void Server::handleCommand_Password(NetworkPacket* pkt)
 {
-	errorstream << "PAssword packet size: " << pkt->getSize() << " size required: " << PASSWORD_SIZE * 2 << std::endl;
 	if ((pkt->getCommand() == TOSERVER_PASSWORD && pkt->getSize() < 4) ||
 			pkt->getSize() != PASSWORD_SIZE * 2)
 		return;
