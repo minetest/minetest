@@ -336,7 +336,6 @@ void Client::handleCommand_ChatMessage(NetworkPacket* pkt)
 void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)
 {
 	/*
-		u16 command
 		u16 count of removed objects
 		for all removed objects {
 			u16 id
@@ -350,23 +349,28 @@ void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)
 		}
 	*/
 
-	// Read removed objects
-	u8 type;
-	u16 removed_count, added_count, id;
+	try {
+		u8 type;
+		u16 removed_count, added_count, id;
 
-	*pkt >> removed_count;
+		// Read removed objects
+		*pkt >> removed_count;
 
-	for (u16 i = 0; i < removed_count; i++) {
-		*pkt >> id;
-		m_env.removeActiveObject(id);
-	}
+		for (u16 i = 0; i < removed_count; i++) {
+			*pkt >> id;
+			m_env.removeActiveObject(id);
+		}
 
-	// Read added objects
-	*pkt >> added_count;
+		// Read added objects
+		*pkt >> added_count;
 
-	for (u16 i = 0; i < added_count; i++) {
-		*pkt >> id >> type;
-		m_env.addActiveObject(id, type, pkt->readLongString());
+		for (u16 i = 0; i < added_count; i++) {
+			*pkt >> id >> type;
+			m_env.addActiveObject(id, type, pkt->readLongString());
+		}
+	} catch (PacketError &e) {
+		infostream << "handleCommand_ActiveObjectRemoveAdd: " << e.what()
+				<< ". The packet is unreliable, ignoring" << std::endl;
 	}
 }
 
