@@ -221,6 +221,40 @@ private:
         irr::scene::ISceneManager* SceneManager;
 };
 
+class DeleteTimeAffector : public irr::scene::IParticleAffector
+{
+public:
+        DeleteTimeAffector(irr::scene::IParticleSystemSceneNode* ps, irr::scene::ISceneManager* smgr,
+                           ParticleManager * pm, u32 exptime)
+        {
+                ParticleSystem = ps;
+                SceneManager = smgr;
+                ParticleM = pm;
+                tm  = 0;
+                em  = exptime;
+        }
+
+        void affect(u32 now, irr::scene::SParticle* particlearray, u32 count)
+        {
+                if (tm == 0) {
+                        tm = now;
+                } else if ( now - tm >= em) {
+                        SceneManager->addToDeletionQueue(ParticleSystem);
+                        ParticleM->deleteID(ParticleSystem->getID());
+                }
+        }
+
+        irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const {
+                return (irr::scene::E_PARTICLE_AFFECTOR_TYPE) 668;
+        }
+private:
+        irr::scene::IParticleSystemSceneNode* ParticleSystem;
+        irr::scene::ISceneManager* SceneManager;
+        ParticleManager * ParticleM;
+        u32 tm;
+        u32 em;
+};
+
 ParticleManager::ParticleManager(ClientEnvironment* env, irr::scene::ISceneManager* smgr) :
 	m_env(env),
 	m_smgr(smgr),
@@ -247,7 +281,7 @@ void ParticleManager::step(float dtime)
 		scene::ISceneNode *node = m_smgr->getSceneNodeFromId(i->second);
 		v3f pos = node->getAbsolutePosition();
 
-		//std::cout << pos.X << " " << pos.Y << " " << pos.Z << std::endl;
+		std::cout << pos.X << " " << pos.Y << " " << pos.Z << std::endl;
 
 		if(node) {
 			node->setPosition(pos * BS + intToFloat(offset, 10));
@@ -326,9 +360,9 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 		float maxsize = event->add_particlespawner.maxsize;
 
 		scene::IParticlePointEmitter * em = ps->createPointEmitter(
-					random_v3f(v3f(0,0,0), v3f(1, 1, 1))/10,
-					5, //minpps
-					20,//maxpps
+					random_v3f(v3f(-0.25,-0.25,-0.25), v3f(0.25, 0.25, 0.25))/10,
+					pps, // 5, //minpps
+					pps, // 20,//maxpps
 					video::SColor(255.0, 255.0, 255.0, 255.0), //mincol,
 					video::SColor(255.0, 255.0, 255.0, 255.0), //maxcol,
 					event->add_particlespawner.minexptime*1000,
@@ -353,10 +387,15 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 		ps->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
 
 		if (time != 0) {
+			//hm, this does not work... need to delete from irrlicht_spawners too.
+//			scene::ISceneNodeAnimator* pan =  m_smgr->createDeleteAnimator(time * 1000);
+//			ps->addAnimator(pan);
+//			pan->drop();
 
-			scene::ISceneNodeAnimator* pan =  m_smgr->createDeleteAnimator(time * 1000);
-			ps->addAnimator(pan);
-			pan->drop();
+			scene::IParticleAffector * paf =
+					new DeleteTimeAffector(ps, m_smgr, this, time*1000);
+			ps->addAffector(paf);
+			paf->drop();
 		}
 
 		{
@@ -444,5 +483,18 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, LocalPlayer *player,
 	ps->setMaterialFlag(video::EMF_LIGHTING, false);
 	ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, true );
 	ps->setMaterialTexture(0, texture);
+}
+
+void ParticleManager::deleteID(s32 id)
+{
+	JMutexAutoLock lock(m_spawner_list_lock);
+	if (irrlicht_spawners.find(id) == irrlicht_spawners.end()) {
+		std::cout << "ParticleManager received invalid id: " << id << std::endl;
+	} else {
+	std::cout << "ParticleManager erased id: " << id << std:: endl;
+	irrlicht_spawners.erase(irrlicht_spawners.find(id));
+	std::cout << "irrlicht_spawners size: " << irrlicht_spawners.size() << std:: endl;
+
+	}
 }
 
