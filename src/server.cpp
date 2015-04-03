@@ -334,6 +334,9 @@ Server::Server(
 	// Perform pending node name resolutions
 	m_nodedef->runNodeResolverCallbacks();
 
+	// init the recipe hashes to speed up crafting
+	m_craftdef->initHashes(this);
+
 	// Initialize Environment
 	m_env = new ServerEnvironment(servermap, m_script, this, m_path_world);
 
