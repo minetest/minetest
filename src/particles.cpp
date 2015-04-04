@@ -468,11 +468,11 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, LocalPlayer *player,
 	ps->setEmitter(em);
 	em->drop();
 
-	irr::scene::IParticleAffector* paf1 = ps->createGravityAffector(v3f(0.0, -0.1, 0.0), 2000);
+	scene::IParticleAffector* paf1 = ps->createGravityAffector(v3f(0.0, -0.1, 0.0), 2000);
 	ps->addAffector(paf1);
 	paf1->drop();
 
-	irr::scene::IParticleAffector* paf2 = new CollisionAffector(gamedef, *m_env);
+	scene::IParticleAffector* paf2 = new CollisionAffector(gamedef, *m_env);
 	ps->addAffector(paf2);
 	paf2->drop();
 
@@ -480,9 +480,13 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, LocalPlayer *player,
 	ps->addAffector(paf3);
 	paf3->drop();
 
-	ps->setMaterialFlag(video::EMF_LIGHTING, false);
-	ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, true );
 	ps->setMaterialTexture(0, texture);
+
+	ps->setMaterialFlag(video::EMF_LIGHTING, false);
+	ps->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
+	ps->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+	ps->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+	ps->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
 }
 
 void ParticleManager::deleteID(s32 id)
