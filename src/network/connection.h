@@ -865,7 +865,8 @@ struct ConnectionEvent
 	bool timeout;
 	Address address;
 
-	ConnectionEvent(): type(CONNEVENT_NONE) {}
+	ConnectionEvent(): type(CONNEVENT_NONE), peer_id(0),
+			timeout(false) {}
 
 	std::string describe()
 	{
