@@ -531,6 +531,7 @@ u64 CraftDefinitionShaped::getHash(CraftHashType type) const
 	} else {
 		//illegal hash type for this CraftDefinition (pre-condition)
 		assert(false);
+		return 0;
 	}
 }
 
@@ -676,6 +677,7 @@ u64 CraftDefinitionShapeless::getHash(CraftHashType type) const
 	} else {
 		//illegal hash type for this CraftDefinition (pre-condition)
 		assert(false);
+		return 0;
 	}
 }
 
@@ -902,6 +904,7 @@ u64 CraftDefinitionCooking::getHash(CraftHashType type) const
 	} else {
 		//illegal hash type for this CraftDefinition (pre-condition)
 		assert(false);
+		return 0;
 	}
 }
 
@@ -1011,6 +1014,7 @@ u64 CraftDefinitionFuel::getHash(CraftHashType type) const
 	} else {
 		//illegal hash type for this CraftDefinition (pre-condition)
 		assert(false);
+		return 0;
 	}
 }
 
