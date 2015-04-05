@@ -377,7 +377,6 @@ void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)
 void Client::handleCommand_ActiveObjectMessages(NetworkPacket* pkt)
 {
 	/*
-		u16 command
 		for all objects
 		{
 			u16 id
@@ -391,21 +390,27 @@ void Client::handleCommand_ActiveObjectMessages(NetworkPacket* pkt)
 	// Throw them in an istringstream
 	std::istringstream is(datastring, std::ios_base::binary);
 
-	while(is.eof() == false) {
-		is.read(buf, 2);
-		u16 id = readU16((u8*)buf);
-		if (is.eof())
-			break;
-		is.read(buf, 2);
-		size_t message_size = readU16((u8*)buf);
-		std::string message;
-		message.reserve(message_size);
-		for (u32 i = 0; i < message_size; i++) {
-			is.read(buf, 1);
-			message.append(buf, 1);
+	try {
+		while(is.eof() == false) {
+			is.read(buf, 2);
+			u16 id = readU16((u8*)buf);
+			if (is.eof())
+				break;
+			is.read(buf, 2);
+			size_t message_size = readU16((u8*)buf);
+			std::string message;
+			message.reserve(message_size);
+			for (u32 i = 0; i < message_size; i++) {
+				is.read(buf, 1);
+				message.append(buf, 1);
+			}
+			// Pass on to the environment
+			m_env.processActiveObjectMessage(id, message);
 		}
-		// Pass on to the environment
-		m_env.processActiveObjectMessage(id, message);
+	// Packet could be unreliable then ignore it
+	} catch (PacketError &e) {
+		infostream << "handleCommand_ActiveObjectMessages: " << e.what()
+					<< ". The packet is unreliable, ignoring" << std::endl;
 	}
 }
 
