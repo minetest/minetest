@@ -309,7 +309,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 						*(m_maxsize-m_minsize)
 						+m_minsize;
 
-				new Particle(
+				Particle* toadd = new Particle(
 					m_gamedef,
 					m_smgr,
 					m_player,
@@ -324,6 +324,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 					m_texture,
 					v2f(0.0, 0.0),
 					v2f(1.0, 1.0));
+				m_particlemanager->addParticle(toadd);
 			}
 		}
 	}
