@@ -411,11 +411,12 @@ bool MapgenV5::generateBiomes(float *heat_map, float *humidity_map)
 		for (s16 y = node_max.Y; y >= node_min.Y; y--) {
 			content_t c = vm->m_data[i].getContent();
 
-			if (c != CONTENT_IGNORE && c != CONTENT_AIR && (y == node_max.Y || have_air)) {
-				biome           = bmgr->getBiome(heat_map[index], humidity_map[index], y);
-				dfiller         = biome->depth_filler + noise_filler_depth->result[index];
-				y0_top          = biome->depth_top;
-				y0_filler       = biome->depth_top + dfiller;
+			if (c != CONTENT_IGNORE && c != CONTENT_AIR &&
+					(y == node_max.Y || have_air)) {
+				biome = bmgr->getBiome(heat_map[index], humidity_map[index], y);
+				dfiller = biome->depth_filler + noise_filler_depth->result[index];
+				y0_top = biome->depth_top;
+				y0_filler = biome->depth_top + dfiller;
 				depth_water_top = biome->depth_water_top;
 
 				if (biome->c_stone == c_desert_stone)
@@ -478,18 +479,19 @@ void MapgenV5::generateCaves(int max_stone_y)
 		for (s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
 			u32 i = vm->m_area.index(node_min.X, y, z);
 			for (s16 x=node_min.X; x<=node_max.X; x++, i++, index++, index2d++) {
-				Biome *biome = (Biome *)bmgr->getRaw(biomemap[index2d]);
-				content_t c = vm->m_data[i].getContent();
-				if (c == CONTENT_AIR
-						|| (y <= water_level
-						&& c != biome->c_stone
-						&& c != c_stone))
-					continue;
-
 				float d1 = contour(noise_cave1->result[index]);
 				float d2 = contour(noise_cave2->result[index]);
-				if (d1*d2 > 0.125)
+				if (d1*d2 > 0.125) {
+					Biome *biome = (Biome *)bmgr->getRaw(biomemap[index2d]);
+					content_t c = vm->m_data[i].getContent();
+					if (!ndef->get(c).is_ground_content || c == CONTENT_AIR ||
+							(y <= water_level &&
+							c != biome->c_stone &&
+							c != c_stone))
+						continue;
+
 					vm->m_data[i] = MapNode(CONTENT_AIR);
+				}
 			}
 			index2d -= ystride;
 		}
@@ -500,7 +502,7 @@ void MapgenV5::generateCaves(int max_stone_y)
 		return;
 
 	PseudoRandom ps(blockseed + 21343);
-	u32 bruises_count = (ps.range(1, 5) == 1) ? ps.range(1, 2) : 0;
+	u32 bruises_count = (ps.range(1, 4) == 1) ? ps.range(1, 2) : 0;
 	for (u32 i = 0; i < bruises_count; i++) {
 		CaveV5 cave(this, &ps);
 		cave.makeCave(node_min, node_max, max_stone_y);
