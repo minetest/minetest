@@ -616,7 +616,7 @@ enum ToServerCommand
 	/*
 		Sent first after connected.
 
-		[0] u16 TOSERVER_INIT
+		[0] u16 TOSERVER_INIT_LEGACY
 		[2] u8 SER_FMT_VER_HIGHEST_READ
 		[3] u8[20] player_name
 		[23] u8[28] password (new in some version)

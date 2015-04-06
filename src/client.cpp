@@ -391,8 +391,8 @@ void Client::step(float dtime)
 			Player *myplayer = m_env.getLocalPlayer();		
 			FATAL_ERROR_IF(myplayer == NULL, "Local player not found in environment.");
 
-			// Send TOSERVER_INIT
-			// [0] u16 TOSERVER_INIT
+			// Send TOSERVER_INIT_LEGACY
+			// [0] u16 TOSERVER_INIT_LEGACY
 			// [2] u8 SER_FMT_VER_HIGHEST_READ
 			// [3] u8[20] player_name
 			// [23] u8[28] password (new in some version)
