@@ -64,7 +64,9 @@ Database_SQLite3::Database_SQLite3(const std::string &savedir) :
 	m_stmt_read(NULL),
 	m_stmt_write(NULL),
 	m_stmt_list(NULL),
-	m_stmt_delete(NULL)
+	m_stmt_delete(NULL),
+	m_stmt_begin(NULL),
+	m_stmt_end(NULL)
 {
 }
 
