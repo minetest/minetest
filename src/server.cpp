@@ -1911,7 +1911,7 @@ void Server::SendActiveObjectMessages(u16 peer_id, const std::string &datas, boo
 	pkt.putRawString(datas.c_str(), datas.size());
 
 	m_clients.send(pkt.getPeerId(),
-			clientCommandFactoryTable[pkt.getCommand()].channel,
+			reliable ? clientCommandFactoryTable[pkt.getCommand()].channel : 1,
 			&pkt, reliable);
 
 }
