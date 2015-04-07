@@ -24,8 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <map>
 
-#include "jthread/jmutex.h"
-#include "jthread/jmutexautolock.h"
+#include "threading/mutex.h"
+#include "threading/mutex_auto_lock.h"
 #include "util/timetaker.h"
 #include "util/numeric.h"      // paging()
 #include "debug.h"             // assert()
@@ -49,7 +49,7 @@ public:
 
 	void add(const std::string &name, float value)
 	{
-		JMutexAutoLock lock(m_mutex);
+		MutexAutoLock lock(m_mutex);
 		{
 			/* No average shall have been used; mark add used as -2 */
 			std::map<std::string, int>::iterator n = m_avgcounts.find(name);
@@ -72,7 +72,7 @@ public:
 
 	void avg(const std::string &name, float value)
 	{
-		JMutexAutoLock lock(m_mutex);
+		MutexAutoLock lock(m_mutex);
 		int &count = m_avgcounts[name];
 
 		assert(count != -2);
@@ -82,7 +82,7 @@ public:
 
 	void clear()
 	{
-		JMutexAutoLock lock(m_mutex);
+		MutexAutoLock lock(m_mutex);
 		for(std::map<std::string, float>::iterator
 				i = m_data.begin();
 				i != m_data.end(); ++i)
@@ -114,7 +114,7 @@ public:
 
 	void printPage(std::ostream &o, u32 page, u32 pagecount)
 	{
-		JMutexAutoLock lock(m_mutex);
+		MutexAutoLock lock(m_mutex);
 
 		u32 minindex, maxindex;
 		paging(m_data.size(), page, pagecount, minindex, maxindex);
@@ -159,7 +159,7 @@ public:
 
 	void graphAdd(const std::string &id, float value)
 	{
-		JMutexAutoLock lock(m_mutex);
+		MutexAutoLock lock(m_mutex);
 		std::map<std::string, float>::iterator i =
 				m_graphvalues.find(id);
 		if(i == m_graphvalues.end())
@@ -169,20 +169,20 @@ public:
 	}
 	void graphGet(GraphValues &result)
 	{
-		JMutexAutoLock lock(m_mutex);
+		MutexAutoLock lock(m_mutex);
 		result = m_graphvalues;
 		m_graphvalues.clear();
 	}
 
 	void remove(const std::string& name)
 	{
-		JMutexAutoLock lock(m_mutex);
+		MutexAutoLock lock(m_mutex);
 		m_avgcounts.erase(name);
 		m_data.erase(name);
 	}
 
 private:
-	JMutex m_mutex;
+	Mutex m_mutex;
 	std::map<std::string, float> m_data;
 	std::map<std::string, int> m_avgcounts;
 	std::map<std::string, float> m_graphvalues;

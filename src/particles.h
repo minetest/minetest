@@ -190,8 +190,8 @@ private:
 	std::map<u32, ParticleSpawner*> m_particle_spawners;
 
 	ClientEnvironment* m_env;
-	JMutex m_particle_list_lock;
-	JMutex m_spawner_list_lock;
+	Mutex m_particle_list_lock;
+	Mutex m_spawner_list_lock;
 };
 
 #endif

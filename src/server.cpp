@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "ban.h"
 #include "environment.h"
 #include "map.h"
-#include "jthread/jmutexautolock.h"
+#include "threading/mutex_auto_lock.h"
 #include "constants.h"
 #include "voxel.h"
 #include "config.h"
@@ -71,35 +71,29 @@ public:
 	{}
 };
 
-class ServerThread : public JThread
+class ServerThread : public Thread
 {
-	Server *m_server;
-
 public:
 
 	ServerThread(Server *server):
-		JThread(),
+		Thread("Server"),
 		m_server(server)
-	{
-	}
+	{}
 
-	void * Thread();
+	void *run();
+
+private:
+	Server *m_server;
 };
 
-void *ServerThread::Thread()
+void *ServerThread::run()
 {
-	log_register_thread("ServerThread");
-
 	DSTACK(__FUNCTION_NAME);
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
 	m_server->AsyncRunStep(true);
 
-	ThreadStarted();
-
-	porting::setThreadName("ServerThread");
-
-	while (!StopRequested()) {
+	while (!stopRequested()) {
 		try {
 			//TimeTaker timer("AsyncRunStep() + Receive()");
 
@@ -267,8 +261,8 @@ Server::Server(
 		errorstream << std::endl;
 	}
 
-	// Lock environment
-	JMutexAutoLock envlock(m_env_mutex);
+	//lock environment
+	MutexAutoLock envlock(m_env_mutex);
 
 	// Load mapgen params from Settings
 	m_emerge->loadMapgenParams();
@@ -379,7 +373,7 @@ Server::~Server()
 	SendChatMessage(PEER_ID_INEXISTENT, L"*** Server shutting down");
 
 	{
-		JMutexAutoLock envlock(m_env_mutex);
+		MutexAutoLock envlock(m_env_mutex);
 
 		// Execute script shutdown hooks
 		m_script->on_shutdown();
@@ -447,14 +441,14 @@ void Server::start(Address bind_addr)
 			<< bind_addr.serializeString() <<"..."<<std::endl;
 
 	// Stop thread if already running
-	m_thread->Stop();
+	m_thread->stop();
 
 	// Initialize connection
 	m_con.SetTimeoutMs(30);
 	m_con.Serve(bind_addr);
 
 	// Start thread
-	m_thread->Start();
+	m_thread->start();
 
 	// ASCII art for the win!
 	actionstream
@@ -477,9 +471,9 @@ void Server::stop()
 	infostream<<"Server: Stopping and waiting threads"<<std::endl;
 
 	// Stop threads (set run=false first so both start stopping)
-	m_thread->Stop();
+	m_thread->stop();
 	//m_emergethread.setRun(false);
-	m_thread->Wait();
+	m_thread->wait();
 	//m_emergethread.stop();
 
 	infostream<<"Server: Threads stopped"<<std::endl;
@@ -492,7 +486,7 @@ void Server::step(float dtime)
 	if(dtime > 2.0)
 		dtime = 2.0;
 	{
-		JMutexAutoLock lock(m_step_dtime_mutex);
+		MutexAutoLock lock(m_step_dtime_mutex);
 		m_step_dtime += dtime;
 	}
 	// Throw if fatal error occurred in thread
@@ -521,7 +515,7 @@ void Server::AsyncRunStep(bool initial_step)
 
 	float dtime;
 	{
-		JMutexAutoLock lock1(m_step_dtime_mutex);
+		MutexAutoLock lock1(m_step_dtime_mutex);
 		dtime = m_step_dtime;
 	}
 
@@ -539,7 +533,7 @@ void Server::AsyncRunStep(bool initial_step)
 	//infostream<<"Server::AsyncRunStep(): dtime="<<dtime<<std::endl;
 
 	{
-		JMutexAutoLock lock1(m_step_dtime_mutex);
+		MutexAutoLock lock1(m_step_dtime_mutex);
 		m_step_dtime -= dtime;
 	}
 
@@ -570,7 +564,7 @@ void Server::AsyncRunStep(bool initial_step)
 	}
 
 	{
-		JMutexAutoLock lock(m_env_mutex);
+		MutexAutoLock lock(m_env_mutex);
 		// Figure out and report maximum lag to environment
 		float max_lag = m_env->getMaxLagEstimate();
 		max_lag *= 0.9998; // Decrease slowly (about half per 5 minutes)
@@ -590,7 +584,7 @@ void Server::AsyncRunStep(bool initial_step)
 	static const float map_timer_and_unload_dtime = 2.92;
 	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime))
 	{
-		JMutexAutoLock lock(m_env_mutex);
+		MutexAutoLock lock(m_env_mutex);
 		// Run Map's timers and unload unused data
 		ScopeProfiler sp(g_profiler, "Server: map timer and unload");
 		m_env->getMap().timerUpdate(map_timer_and_unload_dtime,
@@ -608,7 +602,7 @@ void Server::AsyncRunStep(bool initial_step)
 	{
 		m_liquid_transform_timer -= m_liquid_transform_every;
 
-		JMutexAutoLock lock(m_env_mutex);
+		MutexAutoLock lock(m_env_mutex);
 
 		ScopeProfiler sp(g_profiler, "Server: liquid transform");
 
@@ -669,9 +663,9 @@ void Server::AsyncRunStep(bool initial_step)
 	*/
 	{
 		//infostream<<"Server: Checking added and deleted active objects"<<std::endl;
-		JMutexAutoLock envlock(m_env_mutex);
+		MutexAutoLock envlock(m_env_mutex);
 
-		m_clients.Lock();
+		m_clients.lock();
 		std::map<u16, RemoteClient*> clients = m_clients.getClientList();
 		ScopeProfiler sp(g_profiler, "Server: checking added and deleted objs");
 
@@ -792,14 +786,14 @@ void Server::AsyncRunStep(bool initial_step)
 					<< added_objects.size() << " added, "
 					<< "packet size is " << pktSize << std::endl;
 		}
-		m_clients.Unlock();
+		m_clients.unlock();
 	}
 
 	/*
 		Send object messages
 	*/
 	{
-		JMutexAutoLock envlock(m_env_mutex);
+		MutexAutoLock envlock(m_env_mutex);
 		ScopeProfiler sp(g_profiler, "Server: sending object messages");
 
 		// Key = object id
@@ -825,7 +819,7 @@ void Server::AsyncRunStep(bool initial_step)
 			message_list->push_back(aom);
 		}
 
-		m_clients.Lock();
+		m_clients.lock();
 		std::map<u16, RemoteClient*> clients = m_clients.getClientList();
 		// Route data to every client
 		for (std::map<u16, RemoteClient*>::iterator
@@ -876,7 +870,7 @@ void Server::AsyncRunStep(bool initial_step)
 				SendActiveObjectMessages(client->peer_id, unreliable_data, false);
 			}
 		}
-		m_clients.Unlock();
+		m_clients.unlock();
 
 		// Clear buffered_messages
 		for(std::map<u16, std::vector<ActiveObjectMessage>* >::iterator
@@ -891,7 +885,7 @@ void Server::AsyncRunStep(bool initial_step)
 	*/
 	{
 		// We will be accessing the environment
-		JMutexAutoLock lock(m_env_mutex);
+		MutexAutoLock lock(m_env_mutex);
 
 		// Don't send too many at a time
 		//u32 count = 0;
@@ -1012,7 +1006,7 @@ void Server::AsyncRunStep(bool initial_step)
 		if(counter >= g_settings->getFloat("server_map_save_interval"))
 		{
 			counter = 0.0;
-			JMutexAutoLock lock(m_env_mutex);
+			MutexAutoLock lock(m_env_mutex);
 
 			ScopeProfiler sp(g_profiler, "Server: saving stuff");
 
@@ -1068,7 +1062,7 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 {
 	std::string playername = "";
 	PlayerSAO *playersao = NULL;
-	m_clients.Lock();
+	m_clients.lock();
 	try {
 		RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id, CS_InitDone);
 		if (client != NULL) {
@@ -1076,10 +1070,10 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 			playersao = emergePlayer(playername.c_str(), peer_id, client->net_proto_version);
 		}
 	} catch (std::exception &e) {
-		m_clients.Unlock();
+		m_clients.unlock();
 		throw;
 	}
-	m_clients.Unlock();
+	m_clients.unlock();
 
 	RemotePlayer *player =
 		static_cast<RemotePlayer*>(m_env->getPlayer(playername.c_str()));
@@ -1174,7 +1168,7 @@ void Server::ProcessData(NetworkPacket *pkt)
 {
 	DSTACK(__FUNCTION_NAME);
 	// Environment is locked first.
-	JMutexAutoLock envlock(m_env_mutex);
+	MutexAutoLock envlock(m_env_mutex);
 
 	ScopeProfiler sp(g_profiler, "Server::ProcessData");
 	u32 peer_id = pkt->getPeerId();
@@ -1356,14 +1350,14 @@ void Server::setInventoryModified(const InventoryLocation &loc, bool playerSend)
 void Server::SetBlocksNotSent(std::map<v3s16, MapBlock *>& block)
 {
 	std::vector<u16> clients = m_clients.getClientIDs();
-	m_clients.Lock();
+	m_clients.lock();
 	// Set the modified blocks unsent for all the clients
 	for (std::vector<u16>::iterator i = clients.begin();
 		 i != clients.end(); ++i) {
 			if (RemoteClient *client = m_clients.lockedGetClientNoEx(*i))
 				client->SetBlocksNotSent(block);
 	}
-	m_clients.Unlock();
+	m_clients.unlock();
 }
 
 void Server::peerAdded(con::Peer *peer)
@@ -1413,11 +1407,11 @@ bool Server::getClientInfo(
 	)
 {
 	*state = m_clients.getClientState(peer_id);
-	m_clients.Lock();
+	m_clients.lock();
 	RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id, CS_Invalid);
 
 	if (client == NULL) {
-		m_clients.Unlock();
+		m_clients.unlock();
 		return false;
 	}
 
@@ -1430,7 +1424,7 @@ bool Server::getClientInfo(
 	*patch = client->getPatch();
 	*vers_string = client->getPatch();
 
-	m_clients.Unlock();
+	m_clients.unlock();
 
 	return true;
 }
@@ -2098,7 +2092,7 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 		}
 
 		NetworkPacket pkt(TOCLIENT_ADDNODE, 6 + 2 + 1 + 1 + 1);
-		m_clients.Lock();
+		m_clients.lock();
 		RemoteClient* client = m_clients.lockedGetClientNoEx(*i);
 		if (client != 0) {
 			pkt << p << n.param0 << n.param1 << n.param2
@@ -2112,7 +2106,7 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 				}
 			}
 		}
-		m_clients.Unlock();
+		m_clients.unlock();
 
 		// Send as reliable
 		if (pkt.getSize() > 0)
@@ -2123,13 +2117,13 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 void Server::setBlockNotSent(v3s16 p)
 {
 	std::vector<u16> clients = m_clients.getClientIDs();
-	m_clients.Lock();
+	m_clients.lock();
 	for(std::vector<u16>::iterator i = clients.begin();
 		i != clients.end(); ++i) {
 		RemoteClient *client = m_clients.lockedGetClientNoEx(*i);
 		client->SetBlockNotSent(p);
 	}
-	m_clients.Unlock();
+	m_clients.unlock();
 }
 
 void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver, u16 net_proto_version)
@@ -2158,7 +2152,7 @@ void Server::SendBlocks(float dtime)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	JMutexAutoLock envlock(m_env_mutex);
+	MutexAutoLock envlock(m_env_mutex);
 	//TODO check if one big lock could be faster then multiple small ones
 
 	ScopeProfiler sp(g_profiler, "Server: sel and send blocks to clients");
@@ -2172,7 +2166,7 @@ void Server::SendBlocks(float dtime)
 
 		std::vector<u16> clients = m_clients.getClientIDs();
 
-		m_clients.Lock();
+		m_clients.lock();
 		for(std::vector<u16>::iterator i = clients.begin();
 			i != clients.end(); ++i) {
 			RemoteClient *client = m_clients.lockedGetClientNoEx(*i, CS_Active);
@@ -2183,7 +2177,7 @@ void Server::SendBlocks(float dtime)
 			total_sending += client->SendingCount();
 			client->GetNextBlocks(m_env,m_emerge, dtime, queue);
 		}
-		m_clients.Unlock();
+		m_clients.unlock();
 	}
 
 	// Sort.
@@ -2191,7 +2185,7 @@ void Server::SendBlocks(float dtime)
 	// Lowest is most important.
 	std::sort(queue.begin(), queue.end());
 
-	m_clients.Lock();
+	m_clients.lock();
 	for(u32 i=0; i<queue.size(); i++)
 	{
 		//TODO: Calculate limit dynamically
@@ -2221,7 +2215,7 @@ void Server::SendBlocks(float dtime)
 		client->SentBlock(q.pos);
 		total_sending++;
 	}
-	m_clients.Unlock();
+	m_clients.unlock();
 }
 
 void Server::fillMediaCache()
@@ -2702,7 +2696,7 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 			}
 		}
 		{
-			JMutexAutoLock env_lock(m_env_mutex);
+			MutexAutoLock env_lock(m_env_mutex);
 			m_clients.DeleteClient(peer_id);
 		}
 	}

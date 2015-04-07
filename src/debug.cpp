@@ -26,8 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <stdlib.h>
 #include <cstring>
 #include <map>
-#include "jthread/jmutex.h"
-#include "jthread/jmutexautolock.h"
+#include "threading/mutex.h"
+#include "threading/mutex_auto_lock.h"
 #include "config.h"
 
 #ifdef _MSC_VER
@@ -229,7 +229,7 @@ void DebugStack::print(std::ostream &os, bool everything)
 }
 
 std::map<threadid_t, DebugStack*> g_debug_stacks;
-JMutex g_debug_stacks_mutex;
+Mutex g_debug_stacks_mutex;
 
 void debug_stacks_init()
 {
@@ -237,7 +237,7 @@ void debug_stacks_init()
 
 void debug_stacks_print_to(std::ostream &os)
 {
-	JMutexAutoLock lock(g_debug_stacks_mutex);
+	MutexAutoLock lock(g_debug_stacks_mutex);
 
 	os<<"Debug stacks:"<<std::endl;
 
@@ -251,7 +251,7 @@ void debug_stacks_print_to(std::ostream &os)
 
 void debug_stacks_print()
 {
-	JMutexAutoLock lock(g_debug_stacks_mutex);
+	MutexAutoLock lock(g_debug_stacks_mutex);
 
 	DEBUGPRINT("Debug stacks:\n");
 
@@ -273,7 +273,7 @@ DebugStacker::DebugStacker(const char *text)
 {
 	threadid_t threadid = get_current_thread_id();
 
-	JMutexAutoLock lock(g_debug_stacks_mutex);
+	MutexAutoLock lock(g_debug_stacks_mutex);
 
 	std::map<threadid_t, DebugStack*>::iterator n;
 	n = g_debug_stacks.find(threadid);
@@ -307,7 +307,7 @@ DebugStacker::DebugStacker(const char *text)
 
 DebugStacker::~DebugStacker()
 {
-	JMutexAutoLock lock(g_debug_stacks_mutex);
+	MutexAutoLock lock(g_debug_stacks_mutex);
 
 	if(m_overflowed == true)
 		return;

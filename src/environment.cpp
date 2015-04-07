@@ -44,7 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "emerge.h"
 #include "util/serialize.h"
-#include "jthread/jmutexautolock.h"
+#include "threading/mutex_auto_lock.h"
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -204,34 +204,34 @@ u32 Environment::getDayNightRatio()
 
 void Environment::setTimeOfDaySpeed(float speed)
 {
-	JMutexAutoLock(this->m_timeofday_lock);
+	MutexAutoLock(this->m_timeofday_lock);
 	m_time_of_day_speed = speed;
 }
 
 float Environment::getTimeOfDaySpeed()
 {
-	JMutexAutoLock(this->m_timeofday_lock);
+	MutexAutoLock(this->m_timeofday_lock);
 	float retval = m_time_of_day_speed;
 	return retval;
 }
 
 void Environment::setTimeOfDay(u32 time)
 {
-	JMutexAutoLock(this->m_time_lock);
+	MutexAutoLock(this->m_time_lock);
 	m_time_of_day = time;
 	m_time_of_day_f = (float)time / 24000.0;
 }
 
 u32 Environment::getTimeOfDay()
 {
-	JMutexAutoLock(this->m_time_lock);
+	MutexAutoLock(this->m_time_lock);
 	u32 retval = m_time_of_day;
 	return retval;
 }
 
 float Environment::getTimeOfDayF()
 {
-	JMutexAutoLock(this->m_time_lock);
+	MutexAutoLock(this->m_time_lock);
 	float retval = m_time_of_day_f;
 	return retval;
 }

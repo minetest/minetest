@@ -349,7 +349,7 @@ private:
 
 	u16 m_oldest_non_answered_ack;
 
-	JMutex m_list_mutex;
+	Mutex m_list_mutex;
 };
 
 /*
@@ -372,7 +372,7 @@ private:
 	// Key is seqnum
 	std::map<u16, IncomingSplitPacket*> m_buf;
 
-	JMutex m_map_mutex;
+	Mutex m_map_mutex;
 };
 
 struct OutgoingPacket
@@ -519,32 +519,32 @@ public:
 	void UpdateTimers(float dtime, bool legacy_peer);
 
 	const float getCurrentDownloadRateKB()
-		{ JMutexAutoLock lock(m_internal_mutex); return cur_kbps; };
+		{ MutexAutoLock lock(m_internal_mutex); return cur_kbps; };
 	const float getMaxDownloadRateKB()
-		{ JMutexAutoLock lock(m_internal_mutex); return max_kbps; };
+		{ MutexAutoLock lock(m_internal_mutex); return max_kbps; };
 
 	const float getCurrentLossRateKB()
-		{ JMutexAutoLock lock(m_internal_mutex); return cur_kbps_lost; };
+		{ MutexAutoLock lock(m_internal_mutex); return cur_kbps_lost; };
 	const float getMaxLossRateKB()
-		{ JMutexAutoLock lock(m_internal_mutex); return max_kbps_lost; };
+		{ MutexAutoLock lock(m_internal_mutex); return max_kbps_lost; };
 
 	const float getCurrentIncomingRateKB()
-		{ JMutexAutoLock lock(m_internal_mutex); return cur_incoming_kbps; };
+		{ MutexAutoLock lock(m_internal_mutex); return cur_incoming_kbps; };
 	const float getMaxIncomingRateKB()
-		{ JMutexAutoLock lock(m_internal_mutex); return max_incoming_kbps; };
+		{ MutexAutoLock lock(m_internal_mutex); return max_incoming_kbps; };
 
 	const float getAvgDownloadRateKB()
-		{ JMutexAutoLock lock(m_internal_mutex); return avg_kbps; };
+		{ MutexAutoLock lock(m_internal_mutex); return avg_kbps; };
 	const float getAvgLossRateKB()
-		{ JMutexAutoLock lock(m_internal_mutex); return avg_kbps_lost; };
+		{ MutexAutoLock lock(m_internal_mutex); return avg_kbps_lost; };
 	const float getAvgIncomingRateKB()
-		{ JMutexAutoLock lock(m_internal_mutex); return avg_incoming_kbps; };
+		{ MutexAutoLock lock(m_internal_mutex); return avg_incoming_kbps; };
 
 	const unsigned int getWindowSize() const { return window_size; };
 
 	void setWindowSize(unsigned int size) { window_size = size; };
 private:
-	JMutex m_internal_mutex;
+	Mutex m_internal_mutex;
 	int window_size;
 
 	u16 next_incoming_seqnum;
@@ -675,7 +675,7 @@ class Peer {
 		};
 
 		virtual ~Peer() {
-			JMutexAutoLock usage_lock(m_exclusive_access_mutex);
+			MutexAutoLock usage_lock(m_exclusive_access_mutex);
 			FATAL_ERROR_IF(m_usage != 0, "Reference counting failure");
 		};
 
@@ -692,15 +692,15 @@ class Peer {
 		virtual bool getAddress(MTProtocols type, Address& toset) = 0;
 
 		void ResetTimeout()
-			{JMutexAutoLock lock(m_exclusive_access_mutex); m_timeout_counter=0.0; };
+			{MutexAutoLock lock(m_exclusive_access_mutex); m_timeout_counter=0.0; };
 
 		bool isTimedOut(float timeout);
 
 		void setSentWithID()
-		{ JMutexAutoLock lock(m_exclusive_access_mutex); m_has_sent_with_id = true; };
+		{ MutexAutoLock lock(m_exclusive_access_mutex); m_has_sent_with_id = true; };
 
 		bool hasSentWithID()
-		{ JMutexAutoLock lock(m_exclusive_access_mutex); return m_has_sent_with_id; };
+		{ MutexAutoLock lock(m_exclusive_access_mutex); return m_has_sent_with_id; };
 
 		unsigned int m_increment_packets_remaining;
 		unsigned int m_increment_bytes_remaining;
@@ -744,7 +744,7 @@ class Peer {
 		bool IncUseCount();
 		void DecUseCount();
 
-		JMutex m_exclusive_access_mutex;
+		Mutex m_exclusive_access_mutex;
 
 		bool m_pending_deletion;
 
@@ -826,10 +826,10 @@ protected:
 					unsigned int maxtransfer);
 
 	float getResendTimeout()
-		{ JMutexAutoLock lock(m_exclusive_access_mutex); return resend_timeout; }
+		{ MutexAutoLock lock(m_exclusive_access_mutex); return resend_timeout; }
 
 	void setResendTimeout(float timeout)
-		{ JMutexAutoLock lock(m_exclusive_access_mutex); resend_timeout = timeout; }
+		{ MutexAutoLock lock(m_exclusive_access_mutex); resend_timeout = timeout; }
 	bool Ping(float dtime,SharedBuffer<u8>& data);
 
 	Channel channels[CHANNEL_COUNT];
@@ -910,14 +910,14 @@ struct ConnectionEvent
 	}
 };
 
-class ConnectionSendThread : public JThread {
+class ConnectionSendThread : public Thread {
 
 public:
 	friend class UDPPeer;
 
 	ConnectionSendThread(unsigned int max_packet_size, float timeout);
 
-	void * Thread       ();
+	void *run();
 
 	void Trigger();
 
@@ -961,7 +961,7 @@ private:
 	unsigned int          m_max_packet_size;
 	float                 m_timeout;
 	std::queue<OutgoingPacket> m_outgoing_queue;
-	JSemaphore            m_send_sleep_semaphore;
+	Semaphore             m_send_sleep_semaphore;
 
 	unsigned int          m_iteration_packets_avaialble;
 	unsigned int          m_max_commands_per_iteration;
@@ -969,24 +969,24 @@ private:
 	unsigned int          m_max_packets_requeued;
 };
 
-class ConnectionReceiveThread : public JThread {
+class ConnectionReceiveThread : public Thread {
 public:
 	ConnectionReceiveThread(unsigned int max_packet_size);
 
-	void * Thread       ();
+	void *run();
 
-	void setParent(Connection* parent) {
-		assert(parent != NULL); // Pre-condition
+	void setParent(Connection *parent) {
+		assert(parent); // Pre-condition
 		m_connection = parent;
 	}
 
 private:
-	void receive        ();
+	void receive();
 
 	// Returns next data from a buffer if possible
 	// If found, returns true; if not, false.
 	// If found, sets peer_id and dst
-	bool getFromBuffers (u16 &peer_id, SharedBuffer<u8> &dst);
+	bool getFromBuffers(u16 &peer_id, SharedBuffer<u8> &dst);
 
 	bool checkIncomingBuffers(Channel *channel, u16 &peer_id,
 							SharedBuffer<u8> &dst);
@@ -1054,7 +1054,7 @@ protected:
 
 	std::list<u16> getPeerIDs()
 	{
-		JMutexAutoLock peerlock(m_peers_mutex);
+		MutexAutoLock peerlock(m_peers_mutex);
 		return m_peer_ids;
 	}
 
@@ -1075,12 +1075,12 @@ private:
 
 	std::map<u16, Peer*> m_peers;
 	std::list<u16> m_peer_ids;
-	JMutex m_peers_mutex;
+	Mutex m_peers_mutex;
 
 	ConnectionSendThread m_sendThread;
 	ConnectionReceiveThread m_receiveThread;
 
-	JMutex m_info_mutex;
+	Mutex m_info_mutex;
 
 	// Backwards compatibility
 	PeerHandler *m_bc_peerhandler;

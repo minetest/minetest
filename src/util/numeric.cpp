@@ -23,17 +23,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "../constants.h" // BS, MAP_BLOCKSIZE
 #include "../noise.h" // PseudoRandom, PcgRandom
-#include "../jthread/jmutexautolock.h"
+#include "../threading/mutex_auto_lock.h"
 #include <string.h>
 #include <iostream>
 
 std::map<u16, std::vector<v3s16> > FacePositionCache::m_cache;
-JMutex FacePositionCache::m_cache_mutex;
+Mutex FacePositionCache::m_cache_mutex;
 // Calculate the borders of a "d-radius" cube
 // TODO: Make it work without mutex and data races, probably thread-local
 std::vector<v3s16> FacePositionCache::getFacePositions(u16 d)
 {
-	JMutexAutoLock cachelock(m_cache_mutex);
+	MutexAutoLock cachelock(m_cache_mutex);
 	if (m_cache.find(d) != m_cache.end())
 		return m_cache[d];
 

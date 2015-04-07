@@ -84,7 +84,7 @@ public:
 
 	std::set<u8> biomes;
 	//std::list<CutoffData> cutoffs;
-	//JMutex cutoff_mutex;
+	//Mutex cutoff_mutex;
 };
 
 class DecoSimple : public Decoration {

@@ -36,45 +36,18 @@ doc/html/
 doc/doxygen_*
 
 ## Build files
-CMakeFiles/*
-src/CMakeFiles/*
-src/Makefile
-src/android_version_githash.h
-src/android_version.h
-src/cmake_config.h
-src/cmake_config_githash.h
-src/cmake_install.cmake
-src/script/CMakeFiles/*
-src/script/common/CMakeFiles/*
-src/script/cpp_api/CMakeFiles/*
-src/script/lua_api/CMakeFiles/*
-src/util/CMakeFiles/*
-src/unittest/CMakeFiles/*
-src/jthread/CMakeFiles/*
-src/jthread/Makefile
-src/jthread/cmake_config.h
-src/jthread/cmake_install.cmake
-src/jthread/libjthread.a
-src/json/libjson.a
-src/lua/build/
-src/lua/CMakeFiles/
-src/cguittfont/CMakeFiles/
-src/cguittfont/libcguittfont.a
-src/cguittfont/cmake_install.cmake
-src/cguittfont/Makefile
-src/gmp/CMakeFiles/
-src/gmp/libgmp.a
-src/json/CMakeFiles/
-src/json/libjsoncpp.a
-src/sqlite/CMakeFiles/*
-src/sqlite/libsqlite3.a
-src/client/CMakeFiles/
-src/network/CMakeFiles/
+CMakeFiles
+Makefile
+!build/android/Makefile
+cmake_install.cmake
 CMakeCache.txt
 CPackConfig.cmake
 CPackSourceConfig.cmake
-Makefile
-cmake_install.cmake
+src/android_version.h
+src/android_version_githash.h
+src/cmake_config.h
+src/cmake_config_githash.h
+src/lua/build/
 locale/
 .directory
 .kdev4/
@@ -82,6 +55,7 @@ locale/
 *.kdev4
 *.layout
 *.o
+*.a
 
 ## Android build files
 build/android/assets

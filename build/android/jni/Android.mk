@@ -342,17 +342,16 @@ LOCAL_SRC_FILES +=                                \
 		jni/src/lua/src/lzio.c                    \
 		jni/src/lua/src/print.c
 
-# sqlite
+# SQLite3
 LOCAL_SRC_FILES += deps/sqlite/sqlite3.c
 
-# jthread
-LOCAL_SRC_FILES +=                                \
-		jni/src/jthread/pthread/jevent.cpp        \
-		jni/src/jthread/pthread/jmutex.cpp        \
-		jni/src/jthread/pthread/jsemaphore.cpp    \
-		jni/src/jthread/pthread/jthread.cpp
+# Threading
+LOCAL_SRC_FILES += \
+		jni/src/threading/Mutex.cpp \
+		jni/src/threading/Semaphore.cpp \
+		jni/src/threading/Thread.cpp
 
-# json
+# JSONCPP
 LOCAL_SRC_FILES += jni/src/json/jsoncpp.cpp
 
 LOCAL_SHARED_LIBRARIES := iconv openal ogg vorbis gmp

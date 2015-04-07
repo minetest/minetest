@@ -96,7 +96,7 @@ MapBlock::~MapBlock()
 {
 #ifndef SERVER
 	{
-		//JMutexAutoLock lock(mesh_mutex);
+		//MutexAutoLock lock(mesh_mutex);
 
 		if(mesh)
 		{

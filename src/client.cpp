@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 #include <sstream>
 #include <IFileSystem.h>
-#include "jthread/jmutexautolock.h"
+#include "threading/mutex_auto_lock.h"
 #include "util/auth.h"
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
@@ -82,7 +82,7 @@ MeshUpdateQueue::MeshUpdateQueue()
 
 MeshUpdateQueue::~MeshUpdateQueue()
 {
-	JMutexAutoLock lock(m_mutex);
+	MutexAutoLock lock(m_mutex);
 
 	for(std::vector<QueuedMeshUpdate*>::iterator
 			i = m_queue.begin();
@@ -102,7 +102,7 @@ void MeshUpdateQueue::addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_se
 
 	assert(data);	// pre-condition
 
-	JMutexAutoLock lock(m_mutex);
+	MutexAutoLock lock(m_mutex);
 
 	if(urgent)
 		m_urgents.insert(p);
@@ -141,7 +141,7 @@ void MeshUpdateQueue::addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_se
 // Returns NULL if queue is empty
 QueuedMeshUpdate *MeshUpdateQueue::pop()
 {
-	JMutexAutoLock lock(m_mutex);
+	MutexAutoLock lock(m_mutex);
 
 	bool must_be_urgent = !m_urgents.empty();
 	for(std::vector<QueuedMeshUpdate*>::iterator
@@ -269,7 +269,7 @@ Client::Client(
 void Client::Stop()
 {
 	//request all client managed threads to stop
-	m_mesh_update_thread.Stop();
+	m_mesh_update_thread.stop();
 	// Save local server map
 	if (m_localdb) {
 		infostream << "Local map saving ended." << std::endl;
@@ -280,7 +280,7 @@ void Client::Stop()
 bool Client::isShutdown()
 {
 
-	if (!m_mesh_update_thread.IsRunning()) return true;
+	if (!m_mesh_update_thread.isRunning()) return true;
 
 	return false;
 }
@@ -289,8 +289,8 @@ Client::~Client()
 {
 	m_con.Disconnect();
 
-	m_mesh_update_thread.Stop();
-	m_mesh_update_thread.Wait();
+	m_mesh_update_thread.stop();
+	m_mesh_update_thread.wait();
 	while (!m_mesh_update_thread.m_queue_out.empty()) {
 		MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_frontNoEx();
 		delete r.mesh;
@@ -1270,7 +1270,7 @@ void Client::sendPlayerPos()
 
 	u16 our_peer_id;
 	{
-		//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
+		//MutexAutoLock lock(m_con_mutex); //bulk comment-out
 		our_peer_id = m_con.GetPeerID();
 	}
 
@@ -1794,7 +1794,7 @@ void Client::afterContentReceived(IrrlichtDevice *device)
 
 	// Start mesh update thread after setting up content definitions
 	infostream<<"- Starting mesh update thread"<<std::endl;
-	m_mesh_update_thread.Start();
+	m_mesh_update_thread.start();
 
 	m_state = LC_Ready;
 	sendReady();

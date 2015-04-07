@@ -89,7 +89,7 @@ public:
 
 	void updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset)
 	{
-		JMutexAutoLock lock(m_camera_mutex);
+		MutexAutoLock lock(m_camera_mutex);
 		m_camera_position = pos;
 		m_camera_direction = dir;
 		m_camera_fov = fov;
@@ -149,7 +149,7 @@ private:
 	v3f m_camera_direction;
 	f32 m_camera_fov;
 	v3s16 m_camera_offset;
-	JMutex m_camera_mutex;
+	Mutex m_camera_mutex;
 
 	std::map<v3s16, MapBlock*> m_drawlist;
 	

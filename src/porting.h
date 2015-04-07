@@ -64,28 +64,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		#define _GNU_SOURCE
 	#endif
 
-	#include <sched.h>
-
-	#ifdef __FreeBSD__
-		#include <pthread_np.h>
-		typedef cpuset_t cpu_set_t;
-	#elif defined(__sun) || defined(sun)
-		#include <sys/types.h>
-		#include <sys/processor.h>
-	#elif defined(_AIX)
-		#include <sys/processor.h>
-	#elif __APPLE__
-		#include <mach/mach_init.h>
-		#include <mach/thread_policy.h>
-	#endif
-
 	#define sleep_ms(x) usleep(x*1000)
-
-	#define THREAD_PRIORITY_LOWEST       0
-	#define THREAD_PRIORITY_BELOW_NORMAL 1
-	#define THREAD_PRIORITY_NORMAL       2
-	#define THREAD_PRIORITY_ABOVE_NORMAL 3
-	#define THREAD_PRIORITY_HIGHEST      4
 #endif
 
 #ifdef _MSC_VER
@@ -164,21 +143,6 @@ std::string getDataPath(const char *subpath);
 	Initialize path_share and path_user.
 */
 void initializePaths();
-
-/*
-	Get number of online processors in the system.
-*/
-int getNumberOfProcessors();
-
-/*
-	Set a thread's affinity to a particular processor.
-*/
-bool threadBindToProcessor(threadid_t tid, int pnumber);
-
-/*
-	Set a thread's priority.
-*/
-bool threadSetPriority(threadid_t tid, int prio);
 
 /*
 	Return system information
@@ -311,59 +275,6 @@ inline u32 getDeltaMs(u32 old_time_ms, u32 new_time_ms)
 	}
 }
 
-#if defined(linux) || defined(__linux)
-	#include <sys/prctl.h>
-
-	inline void setThreadName(const char *name) {
-		/* It would be cleaner to do this with pthread_setname_np,
-		 * which was added to glibc in version 2.12, but some major
-		 * distributions are still runing 2.11 and previous versions.
-		 */
-		prctl(PR_SET_NAME, name);
-	}
-#elif defined(__FreeBSD__) || defined(__OpenBSD__)
-	#include <pthread.h>
-	#include <pthread_np.h>
-
-	inline void setThreadName(const char *name) {
-		pthread_set_name_np(pthread_self(), name);
-	}
-#elif defined(__NetBSD__)
-	#include <pthread.h>
-
-	inline void setThreadName(const char *name) {
-		pthread_setname_np(pthread_self(), name);
-	}
-#elif defined(_MSC_VER)
-	typedef struct tagTHREADNAME_INFO {
-		DWORD dwType; // must be 0x1000
-		LPCSTR szName; // pointer to name (in user addr space)
-		DWORD dwThreadID; // thread ID (-1=caller thread)
-		DWORD dwFlags; // reserved for future use, must be zero
-	} THREADNAME_INFO;
-
-	inline void setThreadName(const char *name) {
-		THREADNAME_INFO info;
-		info.dwType = 0x1000;
-		info.szName = name;
-		info.dwThreadID = -1;
-		info.dwFlags = 0;
-		__try {
-			RaiseException(0x406D1388, 0, sizeof(info) / sizeof(DWORD), (ULONG_PTR *) &info);
-		} __except (EXCEPTION_CONTINUE_EXECUTION) {}
-	}
-#elif defined(__APPLE__)
-	#include <pthread.h>
-
-	inline void setThreadName(const char *name) {
-		pthread_setname_np(name);
-	}
-#elif defined(_WIN32) || defined(__GNU__)
-	inline void setThreadName(const char* name) {}
-#else
-	#warning "Unrecognized platform, thread names will not be available."
-	inline void setThreadName(const char* name) {}
-#endif
 
 #ifndef SERVER
 float getDisplayDensity();

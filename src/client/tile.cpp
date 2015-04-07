@@ -414,7 +414,7 @@ private:
 	// Maps a texture name to an index in the former.
 	std::map<std::string, u32> m_name_to_id;
 	// The two former containers are behind this mutex
-	JMutex m_textureinfo_cache_mutex;
+	Mutex m_textureinfo_cache_mutex;
 
 	// Queued texture fetches (to be processed by the main thread)
 	RequestQueue<std::string, u32, u8, u8> m_get_texture_queue;
@@ -490,7 +490,7 @@ u32 TextureSource::getTextureId(const std::string &name)
 		/*
 			See if texture already exists
 		*/
-		JMutexAutoLock lock(m_textureinfo_cache_mutex);
+		MutexAutoLock lock(m_textureinfo_cache_mutex);
 		std::map<std::string, u32>::iterator n;
 		n = m_name_to_id.find(name);
 		if (n != m_name_to_id.end())
@@ -593,7 +593,7 @@ u32 TextureSource::generateTexture(const std::string &name)
 		/*
 			See if texture already exists
 		*/
-		JMutexAutoLock lock(m_textureinfo_cache_mutex);
+		MutexAutoLock lock(m_textureinfo_cache_mutex);
 		std::map<std::string, u32>::iterator n;
 		n = m_name_to_id.find(name);
 		if (n != m_name_to_id.end()) {
@@ -631,7 +631,7 @@ u32 TextureSource::generateTexture(const std::string &name)
 		Add texture to caches (add NULL textures too)
 	*/
 
-	JMutexAutoLock lock(m_textureinfo_cache_mutex);
+	MutexAutoLock lock(m_textureinfo_cache_mutex);
 
 	u32 id = m_textureinfo_cache.size();
 	TextureInfo ti(name, tex);
@@ -643,7 +643,7 @@ u32 TextureSource::generateTexture(const std::string &name)
 
 std::string TextureSource::getTextureName(u32 id)
 {
-	JMutexAutoLock lock(m_textureinfo_cache_mutex);
+	MutexAutoLock lock(m_textureinfo_cache_mutex);
 
 	if (id >= m_textureinfo_cache.size())
 	{
@@ -658,7 +658,7 @@ std::string TextureSource::getTextureName(u32 id)
 
 video::ITexture* TextureSource::getTexture(u32 id)
 {
-	JMutexAutoLock lock(m_textureinfo_cache_mutex);
+	MutexAutoLock lock(m_textureinfo_cache_mutex);
 
 	if (id >= m_textureinfo_cache.size())
 		return NULL;
@@ -712,7 +712,7 @@ void TextureSource::insertSourceImage(const std::string &name, video::IImage *im
 
 void TextureSource::rebuildImagesAndTextures()
 {
-	JMutexAutoLock lock(m_textureinfo_cache_mutex);
+	MutexAutoLock lock(m_textureinfo_cache_mutex);
 
 	video::IVideoDriver* driver = m_device->getVideoDriver();
 	sanity_check(driver);

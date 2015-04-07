@@ -20,9 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef THREADS_HEADER
 #define THREADS_HEADER
 
-#include "jthread/jmutex.h"
+#include "threading/mutex.h"
 
-#if (defined(WIN32) || defined(_WIN32_WCE))
+#if defined(WIN32) || defined(_WIN32_WCE)
 typedef DWORD threadid_t;
 #else
 typedef pthread_t threadid_t;
@@ -30,7 +30,7 @@ typedef pthread_t threadid_t;
 
 inline threadid_t get_current_thread_id()
 {
-#if (defined(WIN32) || defined(_WIN32_WCE))
+#if defined(WIN32) || defined(_WIN32_WCE)
 	return GetCurrentThreadId();
 #else
 	return pthread_self();

@@ -21,9 +21,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define BAN_HEADER
 
 #include "util/string.h"
-#include "jthread/jthread.h"
-#include "jthread/jmutex.h"
+#include "threading/thread.h"
+#include "threading/mutex.h"
 #include "exceptions.h"
+#include <map>
+#include <string>
 
 class BanManager
 {
@@ -40,7 +42,7 @@ public:
 	void remove(const std::string &ip_or_name);
 	bool isModified();
 private:
-	JMutex m_mutex;
+	Mutex m_mutex;
 	std::string m_banfilepath;
 	StringMap m_ips;
 	bool m_modified;

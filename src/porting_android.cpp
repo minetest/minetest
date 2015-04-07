@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "porting.h"
 #include "porting_android.h"
+#include "threading/thread.h"
 #include "config.h"
 #include "filesys.h"
 #include "log.h"
@@ -39,30 +40,28 @@ void android_main(android_app *app)
 	int retval = 0;
 	porting::app_global = app;
 
-	porting::setThreadName("MainThread");
+	Thread::setName("MainThread");
 
 	try {
 		app_dummy();
-		char *argv[] = { (char*) "minetest" };
+		char *argv[] = {(char*) "minetest"};
 		main(sizeof(argv) / sizeof(argv[0]), argv);
-		}
-	catch(BaseException e) {
+	} catch (BaseException &e) {
 		std::stringstream msg;
 		msg << "Exception handled by main: " << e.what();
-		const char* message = msg.str().c_str();
+		const char *message = msg.str().c_str();
 		__android_log_print(ANDROID_LOG_ERROR, PROJECT_NAME, "%s", message);
 		errorstream << msg << std::endl;
 		retval = -1;
-	}
-	catch(...) {
+	} catch (...) {
 		__android_log_print(ANDROID_LOG_ERROR, PROJECT_NAME,
-				"Some exception occured");
+				"An unknown exception occured!");
 		errorstream << "Uncaught exception in main thread!" << std::endl;
 		retval = -1;
 	}
 
 	porting::cleanupAndroid();
-	errorstream << "Shutting down minetest." << std::endl;
+	errorstream << "Shutting down." << std::endl;
 	exit(retval);
 }
 

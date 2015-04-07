@@ -516,7 +516,7 @@ private:
 
 	// Environment
 	ServerEnvironment *m_env;
-	JMutex m_env_mutex;
+	Mutex m_env_mutex;
 
 	// server connection
 	con::Connection m_con;
@@ -557,7 +557,7 @@ private:
 	// A buffer for time steps
 	// step() increments and AsyncRunStep() run by m_thread reads it.
 	float m_step_dtime;
-	JMutex m_step_dtime_mutex;
+	Mutex m_step_dtime_mutex;
 
 	// current server step lag counter
 	float m_lag;

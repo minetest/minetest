@@ -86,7 +86,7 @@ public:
 	std::set<u32> gen_notify_on_deco_ids;
 
 	//// Block emerge queue data structures
-	JMutex queuemutex;
+	Mutex queuemutex;
 	std::map<v3s16, BlockEmergeData *> blocks_enqueued;
 	std::map<u16, u16> peer_queue_count;
 

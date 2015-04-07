@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 
 #include <fstream>
-#include "jthread/jmutexautolock.h"
+#include "threading/mutex_auto_lock.h"
 #include "util/numeric.h"
 #include "hud.h"
 #include "constants.h"
@@ -217,7 +217,7 @@ void Player::deSerialize(std::istream &is, std::string playername)
 
 u32 Player::addHud(HudElement *toadd)
 {
-	JMutexAutoLock lock(m_mutex);
+	MutexAutoLock lock(m_mutex);
 
 	u32 id = getFreeHudID();
 
@@ -231,7 +231,7 @@ u32 Player::addHud(HudElement *toadd)
 
 HudElement* Player::getHud(u32 id)
 {
-	JMutexAutoLock lock(m_mutex);
+	MutexAutoLock lock(m_mutex);
 
 	if (id < hud.size())
 		return hud[id];
@@ -241,7 +241,7 @@ HudElement* Player::getHud(u32 id)
 
 HudElement* Player::removeHud(u32 id)
 {
-	JMutexAutoLock lock(m_mutex);
+	MutexAutoLock lock(m_mutex);
 
 	HudElement* retval = NULL;
 	if (id < hud.size()) {
@@ -253,7 +253,7 @@ HudElement* Player::removeHud(u32 id)
 
 void Player::clearHud()
 {
-	JMutexAutoLock lock(m_mutex);
+	MutexAutoLock lock(m_mutex);
 
 	while(!hud.empty()) {
 		delete hud.back();

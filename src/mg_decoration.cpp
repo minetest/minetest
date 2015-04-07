@@ -139,7 +139,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 #if 0
 				printf("Decoration at (%d %d %d) cut off\n", x, y, z);
 				//add to queue
-				JMutexAutoLock cutofflock(cutoff_mutex);
+				MutexAutoLock cutofflock(cutoff_mutex);
 				cutoffs.push_back(CutoffData(x, y, z, height));
 #endif
 			}
@@ -172,7 +172,7 @@ void Decoration::placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 
 	// Copy over the cutoffs we're interested in so we don't needlessly hold a lock
 	{
-		JMutexAutoLock cutofflock(cutoff_mutex);
+		MutexAutoLock cutofflock(cutoff_mutex);
 		for (std::list<CutoffData>::iterator i = cutoffs.begin();
 			i != cutoffs.end(); ++i) {
 			CutoffData cutoff = *i;
@@ -203,7 +203,7 @@ void Decoration::placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 
 	// Remove cutoffs that were handled from the cutoff list
 	{
-		JMutexAutoLock cutofflock(cutoff_mutex);
+		MutexAutoLock cutofflock(cutoff_mutex);
 		for (std::list<CutoffData>::iterator i = cutoffs.begin();
 			i != cutoffs.end(); ++i) {
 

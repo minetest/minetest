@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
 	log_add_output_maxlev(&main_stderr_log_out, LMT_ACTION);
 	log_add_output_all_levs(&main_dstream_no_stderr_log_out);
 
-	log_register_thread("main");
+	log_register_thread("Main");
 
 	Settings cmd_args;
 	bool cmd_args_ok = get_cmdline_opts(argc, argv, &cmd_args);

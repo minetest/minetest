@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "constants.h"
 #include "serialization.h"             // for SER_FMT_VER_INVALID
-#include "jthread/jmutex.h"
+#include "threading/mutex.h"
 #include "network/networkpacket.h"
 
 #include <list>
@@ -487,10 +487,8 @@ public:
 
 protected:
 	//TODO find way to avoid this functions
-	void Lock()
-		{ m_clients_mutex.Lock(); }
-	void Unlock()
-		{ m_clients_mutex.Unlock(); }
+	void lock() { m_clients_mutex.lock(); }
+	void unlock() { m_clients_mutex.unlock(); }
 
 	std::map<u16, RemoteClient*>& getClientList()
 		{ return m_clients; }
@@ -501,14 +499,14 @@ private:
 
 	// Connection
 	con::Connection* m_con;
-	JMutex m_clients_mutex;
+	Mutex m_clients_mutex;
 	// Connected clients (behind the con mutex)
 	std::map<u16, RemoteClient*> m_clients;
 	std::vector<std::string> m_clients_names; //for announcing masterserver
 
 	// Environment
 	ServerEnvironment *m_env;
-	JMutex m_env_mutex;
+	Mutex m_env_mutex;
 
 	float m_print_info_timer;
 

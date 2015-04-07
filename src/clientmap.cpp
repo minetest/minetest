@@ -70,7 +70,7 @@ ClientMap::ClientMap(
 
 ClientMap::~ClientMap()
 {
-	/*JMutexAutoLock lock(mesh_mutex);
+	/*MutexAutoLock lock(mesh_mutex);
 
 	if(mesh != NULL)
 	{
@@ -94,7 +94,7 @@ MapSector * ClientMap::emergeSector(v2s16 p2d)
 	ClientMapSector *sector = new ClientMapSector(this, p2d, m_gamedef);
 
 	{
-		//JMutexAutoLock lock(m_sector_mutex); // Bulk comment-out
+		//MutexAutoLock lock(m_sector_mutex); // Bulk comment-out
 		m_sectors[p2d] = sector;
 	}
 
@@ -157,12 +157,12 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 	}
 	m_drawlist.clear();
 
-	m_camera_mutex.Lock();
+	m_camera_mutex.lock();
 	v3f camera_position = m_camera_position;
 	v3f camera_direction = m_camera_direction;
 	f32 camera_fov = m_camera_fov;
 	//v3s16 camera_offset = m_camera_offset;
-	m_camera_mutex.Unlock();
+	m_camera_mutex.unlock();
 
 	// Use a higher fov to accomodate faster camera movements.
 	// Blocks are cropped better when they are drawn.
@@ -263,7 +263,7 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 				Ignore if mesh doesn't exist
 			*/
 			{
-				//JMutexAutoLock lock(block->mesh_mutex);
+				//MutexAutoLock lock(block->mesh_mutex);
 
 				if(block->mesh == NULL){
 					blocks_in_range_without_mesh++;
@@ -433,11 +433,11 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	int crack = m_client->getCrackLevel();
 	u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
 
-	m_camera_mutex.Lock();
+	m_camera_mutex.lock();
 	v3f camera_position = m_camera_position;
 	v3f camera_direction = m_camera_direction;
 	f32 camera_fov = m_camera_fov;
-	m_camera_mutex.Unlock();
+	m_camera_mutex.unlock();
 
 	/*
 		Get all blocks and draw all visible ones
@@ -504,7 +504,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 		// Mesh animation
 		{
-			//JMutexAutoLock lock(block->mesh_mutex);
+			//MutexAutoLock lock(block->mesh_mutex);
 			MapBlockMesh *mapBlockMesh = block->mesh;
 			assert(mapBlockMesh);
 			// Pretty random but this should work somewhat nicely
@@ -534,7 +534,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			Get the meshbuffers of the block
 		*/
 		{
-			//JMutexAutoLock lock(block->mesh_mutex);
+			//MutexAutoLock lock(block->mesh_mutex);
 
 			MapBlockMesh *mapBlockMesh = block->mesh;
 			assert(mapBlockMesh);
@@ -799,9 +799,9 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 	// Sadly ISceneManager has no "post effects" render pass, in that case we
 	// could just register for that and handle it in renderMap().
 
-	m_camera_mutex.Lock();
+	m_camera_mutex.lock();
 	v3f camera_position = m_camera_position;
-	m_camera_mutex.Unlock();
+	m_camera_mutex.unlock();
 
 	MapNode n = getNodeNoEx(floatToInt(camera_position, BS));
 

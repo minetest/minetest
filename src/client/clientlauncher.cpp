@@ -651,14 +651,14 @@ void ClientLauncher::speed_tests()
 		infostream << "Around 5000/ms should do well here." << std::endl;
 		TimeTaker timer("Testing mutex speed");
 
-		JMutex m;
+		Mutex m;
 		u32 n = 0;
 		u32 i = 0;
 		do {
 			n += 10000;
 			for (; i < n; i++) {
-				m.Lock();
-				m.Unlock();
+				m.lock();
+				m.unlock();
 			}
 		}
 		// Do at least 10ms

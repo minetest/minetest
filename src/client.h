@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/connection.h"
 #include "environment.h"
 #include "irrlichttypes_extrabloated.h"
-#include "jthread/jmutex.h"
+#include "threading/mutex.h"
 #include <ostream>
 #include <map>
 #include <set>
@@ -89,14 +89,14 @@ public:
 
 	u32 size()
 	{
-		JMutexAutoLock lock(m_mutex);
+		MutexAutoLock lock(m_mutex);
 		return m_queue.size();
 	}
 
 private:
 	std::vector<QueuedMeshUpdate*> m_queue;
 	std::set<v3s16> m_urgents;
-	JMutex m_mutex;
+	Mutex m_mutex;
 };
 
 struct MeshUpdateResult
@@ -119,19 +119,14 @@ private:
 	MeshUpdateQueue m_queue_in;
 
 protected:
-	const char *getName()
-	{ return "MeshUpdateThread"; }
 	virtual void doUpdate();
 
 public:
 
-	MeshUpdateThread()
-	{
-	}
+	MeshUpdateThread() : UpdateThread("Mesh") {}
 
 	void enqueueUpdate(v3s16 p, MeshMakeData *data,
 			bool ack_block_to_server, bool urgent);
-
 	MutexedQueue<MeshUpdateResult> m_queue_out;
 
 	v3s16 m_camera_offset;

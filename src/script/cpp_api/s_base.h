@@ -28,8 +28,8 @@ extern "C" {
 }
 
 #include "irrlichttypes.h"
-#include "jthread/jmutex.h"
-#include "jthread/jmutexautolock.h"
+#include "threading/mutex.h"
+#include "threading/mutex_auto_lock.h"
 #include "common/c_types.h"
 #include "common/c_internal.h"
 
@@ -108,7 +108,7 @@ protected:
 	void objectrefGetOrCreate(lua_State *L, ServerActiveObject *cobj);
 	void objectrefGet(lua_State *L, u16 id);
 
-	JMutex          m_luastackmutex;
+	Mutex           m_luastackmutex;
 	std::string     m_last_run_mod;
 	// Stack index of Lua error handler
 	int             m_errorhandler;

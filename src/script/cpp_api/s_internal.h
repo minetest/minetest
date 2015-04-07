@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h" // assert()
 class LockChecker {
 public:
-	LockChecker(bool* variable) {
+	LockChecker(bool *variable) {
 		assert(*variable == false);
 
 		m_variable = variable;
@@ -44,7 +44,7 @@ public:
 		*m_variable = false;
 	}
 private:
-bool* m_variable;
+	bool *m_variable;
 };
 
 #define SCRIPTAPI_LOCK_CHECK LockChecker(&(this->m_locked))
@@ -53,7 +53,7 @@ bool* m_variable;
 #endif
 
 #define SCRIPTAPI_PRECHECKHEADER                                               \
-		JMutexAutoLock(this->m_luastackmutex);                                 \
+		MutexAutoLock(this->m_luastackmutex);                                 \
 		SCRIPTAPI_LOCK_CHECK;                                                  \
 		realityCheck();                                                        \
 		lua_State *L = getStack();                                             \

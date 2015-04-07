@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include "inventory.h"
 #include "constants.h" // BS
-#include "jthread/jmutex.h"
+#include "threading/mutex.h"
 #include <list>
 
 #define PLAYERNAME_SIZE 20
@@ -413,7 +413,7 @@ private:
 	// Protect some critical areas
 	// hud for example can be modified by EmergeThread
 	// and ServerThread
-	JMutex m_mutex;
+	Mutex m_mutex;
 };
 
 

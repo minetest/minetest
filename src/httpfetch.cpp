@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <map>
 #include <errno.h>
-#include "jthread/jevent.h"
+#include "threading/event.h"
 #include "config.h"
 #include "exceptions.h"
 #include "debug.h"
@@ -35,7 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "settings.h"
 
-JMutex g_httpfetch_mutex;
+Mutex g_httpfetch_mutex;
 std::map<unsigned long, std::queue<HTTPFetchResult> > g_httpfetch_results;
 
 HTTPFetchRequest::HTTPFetchRequest()
@@ -55,7 +55,7 @@ static void httpfetch_deliver_result(const HTTPFetchResult &fetch_result)
 {
 	unsigned long caller = fetch_result.caller;
 	if (caller != HTTPFETCH_DISCARD) {
-		JMutexAutoLock lock(g_httpfetch_mutex);
+		MutexAutoLock lock(g_httpfetch_mutex);
 		g_httpfetch_results[caller].push(fetch_result);
 	}
 }
@@ -64,7 +64,7 @@ static void httpfetch_request_clear(unsigned long caller);
 
 unsigned long httpfetch_caller_alloc()
 {
-	JMutexAutoLock lock(g_httpfetch_mutex);
+	MutexAutoLock lock(g_httpfetch_mutex);
 
 	// Check each caller ID except HTTPFETCH_DISCARD
 	const unsigned long discard = HTTPFETCH_DISCARD;
@@ -91,14 +91,14 @@ void httpfetch_caller_free(unsigned long caller)
 
 	httpfetch_request_clear(caller);
 	if (caller != HTTPFETCH_DISCARD) {
-		JMutexAutoLock lock(g_httpfetch_mutex);
+		MutexAutoLock lock(g_httpfetch_mutex);
 		g_httpfetch_results.erase(caller);
 	}
 }
 
 bool httpfetch_async_get(unsigned long caller, HTTPFetchResult &fetch_result)
 {
-	JMutexAutoLock lock(g_httpfetch_mutex);
+	MutexAutoLock lock(g_httpfetch_mutex);
 
 	// Check that caller exists
 	std::map<unsigned long, std::queue<HTTPFetchResult> >::iterator
@@ -390,7 +390,7 @@ HTTPFetchOngoing::~HTTPFetchOngoing()
 }
 
 
-class CurlFetchThread : public JThread
+class CurlFetchThread : public Thread
 {
 protected:
 	enum RequestType {
@@ -414,7 +414,8 @@ protected:
 	std::list<HTTPFetchRequest> m_queued_fetches;
 
 public:
-	CurlFetchThread(int parallel_limit)
+	CurlFetchThread(int parallel_limit) :
+		Thread("CurlFetch")
 	{
 		if (parallel_limit >= 1)
 			m_parallel_limit = parallel_limit;
@@ -613,13 +614,9 @@ protected:
 		}
 	}
 
-	void * Thread()
+	void *run()
 	{
-		ThreadStarted();
-		log_register_thread("CurlFetchThread");
 		DSTACK(__FUNCTION_NAME);
-
-		porting::setThreadName("CurlFetchThread");
 
 		CurlHandlePool pool;
 
@@ -631,7 +628,7 @@ protected:
 
 		FATAL_ERROR_IF(!m_all_ongoing.empty(), "Expected empty");
 
-		while (!StopRequested()) {
+		while (!stopRequested()) {
 			BEGIN_DEBUG_EXCEPTION_HANDLER
 
 			/*
@@ -719,9 +716,9 @@ void httpfetch_cleanup()
 {
 	verbosestream<<"httpfetch_cleanup: cleaning up"<<std::endl;
 
-	g_httpfetch_thread->Stop();
+	g_httpfetch_thread->stop();
 	g_httpfetch_thread->requestWakeUp();
-	g_httpfetch_thread->Wait();
+	g_httpfetch_thread->wait();
 	delete g_httpfetch_thread;
 
 	curl_global_cleanup();
@@ -730,18 +727,17 @@ void httpfetch_cleanup()
 void httpfetch_async(const HTTPFetchRequest &fetch_request)
 {
 	g_httpfetch_thread->requestFetch(fetch_request);
-	if (!g_httpfetch_thread->IsRunning())
-		g_httpfetch_thread->Start();
+	if (!g_httpfetch_thread->isRunning())
+		g_httpfetch_thread->start();
 }
 
 static void httpfetch_request_clear(unsigned long caller)
 {
-	if (g_httpfetch_thread->IsRunning()) {
+	if (g_httpfetch_thread->isRunning()) {
 		Event event;
 		g_httpfetch_thread->requestClear(caller, &event);
 		event.wait();
-	}
-	else {
+	} else {
 		g_httpfetch_thread->requestClear(caller, NULL);
 	}
 }

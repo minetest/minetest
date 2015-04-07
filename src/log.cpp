@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <algorithm>
 #include "threads.h"
-#include "jthread/jmutexautolock.h"
+#include "threading/mutex_auto_lock.h"
 #include "debug.h"
 #include "gettime.h"
 #include "porting.h"
@@ -54,8 +54,8 @@ unsigned int android_log_level_mapping[] = {
 #endif
 
 std::vector<ILogOutput*> log_outputs[LMT_NUM_VALUES];
-std::map<threadid_t, std::string> log_threadnames;
-JMutex                            log_threadnamemutex;
+std::map<threadid_t, std::string> log_thread_names;
+Mutex log_thread_name_mutex;
 
 void log_add_output(ILogOutput *out, enum LogMessageLevel lev)
 {
@@ -86,7 +86,7 @@ void log_remove_output(ILogOutput *out)
 
 void log_set_lev_silence(enum LogMessageLevel lev, bool silence)
 {
-	JMutexAutoLock lock(log_threadnamemutex);
+	MutexAutoLock lock(log_thread_name_mutex);
 
 	for (std::vector<ILogOutput *>::iterator it = log_outputs[lev].begin();
 			it != log_outputs[lev].end(); ++it) {
@@ -98,17 +98,17 @@ void log_set_lev_silence(enum LogMessageLevel lev, bool silence)
 void log_register_thread(const std::string &name)
 {
 	threadid_t id = get_current_thread_id();
-	JMutexAutoLock lock(log_threadnamemutex);
+	MutexAutoLock lock(log_thread_name_mutex);
 
-	log_threadnames[id] = name;
+	log_thread_names[id] = name;
 }
 
 void log_deregister_thread()
 {
 	threadid_t id = get_current_thread_id();
-	JMutexAutoLock lock(log_threadnamemutex);
+	MutexAutoLock lock(log_thread_name_mutex);
 
-	log_threadnames.erase(id);
+	log_thread_names.erase(id);
 }
 
 static std::string get_lev_string(enum LogMessageLevel lev)
@@ -130,11 +130,11 @@ static std::string get_lev_string(enum LogMessageLevel lev)
 
 void log_printline(enum LogMessageLevel lev, const std::string &text)
 {
-	JMutexAutoLock lock(log_threadnamemutex);
+	MutexAutoLock lock(log_thread_name_mutex);
 	std::string threadname = "(unknown thread)";
 	std::map<threadid_t, std::string>::const_iterator i;
-	i = log_threadnames.find(get_current_thread_id());
-	if(i != log_threadnames.end())
+	i = log_thread_names.find(get_current_thread_id());
+	if(i != log_thread_names.end())
 		threadname = i->second;
 	std::string levelname = get_lev_string(lev);
 	std::ostringstream os(std::ios_base::binary);
