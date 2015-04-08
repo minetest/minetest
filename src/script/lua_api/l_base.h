@@ -35,11 +35,12 @@ class GUIEngine;
 
 class ModApiBase {
 
-protected:
+public:
 	static ScriptApiBase*   getScriptApiBase(lua_State *L);
 	static Server*          getServer(lua_State *L);
 	static Environment*     getEnv(lua_State *L);
 	static GUIEngine*       getGuiEngine(lua_State *L);
+	static std::string      getCurrentModPath(lua_State *L);
 
 	// Get an arbitrary subclass of ScriptApiBase
 	// by using dynamic_cast<> on getScriptApiBase()

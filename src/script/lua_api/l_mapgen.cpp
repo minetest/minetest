@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mg_schematic.h"
 #include "mapgen_v5.h"
 #include "mapgen_v7.h"
+#include "filesys.h"
 #include "settings.h"
 #include "log.h"
 
@@ -142,7 +143,12 @@ Schematic *load_schematic(lua_State *L, int index,
 		return NULL;
 	} else if (lua_isstring(L, index)) {
 		schem = SchematicManager::create(SCHEMATIC_NORMAL);
-		if (!schem->loadSchematicFromFile(lua_tostring(L, index),
+
+		std::string filepath = lua_tostring(L, index);
+		if (!fs::IsPathAbsolute(filepath))
+			filepath = ModApiBase::getCurrentModPath(L) + DIR_DELIM + filepath;
+
+		if (!schem->loadSchematicFromFile(filepath.c_str(),
 				schemmgr->getNodeDef(), replace_names)) {
 			delete schem;
 			return NULL;

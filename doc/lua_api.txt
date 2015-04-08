@@ -439,6 +439,7 @@ the global `minetest.registered_*` tables.
     * added to `minetest.registered_schematic` with the key of `schematic.name`
     * if `schematic.name` is nil, the key is the returned ID
     * if the schematic is loaded from a file, schematic.name is set to the filename
+    * the current mod path will be prepended to the schematic filename if it is a relative path
 
 * `minetest.clear_registered_biomes()`
     * clears all biomes currently registered

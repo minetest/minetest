@@ -34,8 +34,9 @@ namespace fs
 
 #define _WIN32_WINNT 0x0501
 #include <windows.h>
+#include <shlwapi.h>
 
-std::vector<DirListNode> GetDirListing(std::string pathstring)
+std::vector<DirListNode> GetDirListing(const std::string &pathstring)
 {
 	std::vector<DirListNode> listing;
 
@@ -44,7 +45,7 @@ std::vector<DirListNode> GetDirListing(std::string pathstring)
 	DWORD dwError;
 
 	std::string dirSpec = pathstring + "\\*";
-	
+
 	// Find the first file in the directory.
 	hFind = FindFirstFile(dirSpec.c_str(), &FindFileData);
 
@@ -86,7 +87,7 @@ std::vector<DirListNode> GetDirListing(std::string pathstring)
 	return listing;
 }
 
-bool CreateDir(std::string path)
+bool CreateDir(const std::string &path)
 {
 	bool r = CreateDirectory(path.c_str(), NULL);
 	if(r == true)
@@ -96,12 +97,17 @@ bool CreateDir(std::string path)
 	return false;
 }
 
-bool PathExists(std::string path)
+bool PathExists(const std::string &path)
 {
 	return (GetFileAttributes(path.c_str()) != INVALID_FILE_ATTRIBUTES);
 }
 
-bool IsDir(std::string path)
+bool IsPathAbsolute(const std::string &path)
+{
+	return !PathIsRelative(path.c_str());
+}
+
+bool IsDir(const std::string &path)
 {
 	DWORD attr = GetFileAttributes(path.c_str());
 	return (attr != INVALID_FILE_ATTRIBUTES &&
@@ -113,7 +119,7 @@ bool IsDirDelimiter(char c)
 	return c == '/' || c == '\\';
 }
 
-bool RecursiveDelete(std::string path)
+bool RecursiveDelete(const std::string &path)
 {
 	infostream<<"Recursively deleting \""<<path<<"\""<<std::endl;
 
@@ -158,7 +164,7 @@ bool RecursiveDelete(std::string path)
 	return true;
 }
 
-bool DeleteSingleFileOrEmptyDirectory(std::string path)
+bool DeleteSingleFileOrEmptyDirectory(const std::string &path)
 {
 	DWORD attr = GetFileAttributes(path.c_str());
 	bool is_directory = (attr != INVALID_FILE_ATTRIBUTES &&
@@ -199,7 +205,7 @@ std::string TempPath()
 #include <sys/wait.h>
 #include <unistd.h>
 
-std::vector<DirListNode> GetDirListing(std::string pathstring)
+std::vector<DirListNode> GetDirListing(const std::string &pathstring)
 {
 	std::vector<DirListNode> listing;
 
@@ -252,7 +258,7 @@ std::vector<DirListNode> GetDirListing(std::string pathstring)
 	return listing;
 }
 
-bool CreateDir(std::string path)
+bool CreateDir(const std::string &path)
 {
 	int r = mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 	if(r == 0)
@@ -268,13 +274,18 @@ bool CreateDir(std::string path)
 	}
 }
 
-bool PathExists(std::string path)
+bool PathExists(const std::string &path)
 {
 	struct stat st;
 	return (stat(path.c_str(),&st) == 0);
 }
 
-bool IsDir(std::string path)
+bool IsPathAbsolute(const std::string &path)
+{
+	return path[0] == '/';
+}
+
+bool IsDir(const std::string &path)
 {
 	struct stat statbuf;
 	if(stat(path.c_str(), &statbuf))
@@ -287,16 +298,16 @@ bool IsDirDelimiter(char c)
 	return c == '/';
 }
 
-bool RecursiveDelete(std::string path)
+bool RecursiveDelete(const std::string &path)
 {
 	/*
 		Execute the 'rm' command directly, by fork() and execve()
 	*/
-	
+
 	infostream<<"Removing \""<<path<<"\""<<std::endl;
 
 	//return false;
-	
+
 	pid_t child_pid = fork();
 
 	if(child_pid == 0)
@@ -314,9 +325,9 @@ bool RecursiveDelete(std::string path)
 
 		verbosestream<<"Executing '"<<argv[0]<<"' '"<<argv[1]<<"' '"
 				<<argv[2]<<"'"<<std::endl;
-		
+
 		execv(argv[0], argv);
-		
+
 		// Execv shouldn't return. Failed.
 		_exit(1);
 	}
@@ -333,7 +344,7 @@ bool RecursiveDelete(std::string path)
 	}
 }
 
-bool DeleteSingleFileOrEmptyDirectory(std::string path)
+bool DeleteSingleFileOrEmptyDirectory(const std::string &path)
 {
 	if(IsDir(path)){
 		bool did = (rmdir(path.c_str()) == 0);
@@ -370,7 +381,7 @@ std::string TempPath()
 
 #endif
 
-void GetRecursiveSubPaths(std::string path, std::vector<std::string> &dst)
+void GetRecursiveSubPaths(const std::string &path, std::vector<std::string> &dst)
 {
 	std::vector<DirListNode> content = GetDirListing(path);
 	for(unsigned int  i=0; i<content.size(); i++){
@@ -398,7 +409,7 @@ bool DeletePaths(const std::vector<std::string> &paths)
 	return success;
 }
 
-bool RecursiveDeleteContent(std::string path)
+bool RecursiveDeleteContent(const std::string &path)
 {
 	infostream<<"Removing content of \""<<path<<"\""<<std::endl;
 	std::vector<DirListNode> list = GetDirListing(path);
@@ -417,7 +428,7 @@ bool RecursiveDeleteContent(std::string path)
 	return true;
 }
 
-bool CreateAllDirs(std::string path)
+bool CreateAllDirs(const std::string &path)
 {
 
 	std::vector<std::string> tocreate;
@@ -435,7 +446,7 @@ bool CreateAllDirs(std::string path)
 	return true;
 }
 
-bool CopyFileContents(std::string source, std::string target)
+bool CopyFileContents(const std::string &source, const std::string &target)
 {
 	FILE *sourcefile = fopen(source.c_str(), "rb");
 	if(sourcefile == NULL){
@@ -489,7 +500,7 @@ bool CopyFileContents(std::string source, std::string target)
 	return retval;
 }
 
-bool CopyDir(std::string source, std::string target)
+bool CopyDir(const std::string &source, const std::string &target)
 {
 	if(PathExists(source)){
 		if(!PathExists(target)){
@@ -519,7 +530,7 @@ bool CopyDir(std::string source, std::string target)
 	}
 }
 
-bool PathStartsWith(std::string path, std::string prefix)
+bool PathStartsWith(const std::string &path, const std::string &prefix)
 {
 	size_t pathsize = path.size();
 	size_t pathpos = 0;
@@ -569,7 +580,7 @@ bool PathStartsWith(std::string path, std::string prefix)
 	}
 }
 
-std::string RemoveLastPathComponent(std::string path,
+std::string RemoveLastPathComponent(const std::string &path,
 		std::string *removed, int count)
 {
 	if(removed)
