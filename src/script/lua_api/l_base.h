@@ -40,6 +40,7 @@ public:
 	static Server*          getServer(lua_State *L);
 	static Environment*     getEnv(lua_State *L);
 	static GUIEngine*       getGuiEngine(lua_State *L);
+	// When we are not loading the mod, this function returns "."
 	static std::string      getCurrentModPath(lua_State *L);
 
 	// Get an arbitrary subclass of ScriptApiBase

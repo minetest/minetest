@@ -439,7 +439,8 @@ the global `minetest.registered_*` tables.
     * added to `minetest.registered_schematic` with the key of `schematic.name`
     * if `schematic.name` is nil, the key is the returned ID
     * if the schematic is loaded from a file, schematic.name is set to the filename
-    * the current mod path will be prepended to the schematic filename if it is a relative path
+    * if the function is called when loading the mod, and schematic.name is a relative path,
+    * then the current mod path will be prepended to the schematic filename
 
 * `minetest.clear_registered_biomes()`
     * clears all biomes currently registered
@@ -1667,7 +1668,7 @@ Helper functions
 
 ### Utilities
 
-* `minetest.get_current_modname()`: returns a string
+* `minetest.get_current_modname()`: returns the currently loading mod's name, when we are loading a mod
 * `minetest.get_modpath(modname)`: returns e.g. `"/home/user/.minetest/usermods/modname"`
     * Useful for loading additional `.lua` modules or static data from mod
 * `minetest.get_modnames()`: returns a list of installed mods
