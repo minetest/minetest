@@ -1345,7 +1345,6 @@ struct GameRunData {
 	bool digging;
 	bool ldown_for_dig;
 	bool left_punch;
-	bool update_wielded_item_trigger;
 	bool reset_jump_timer;
 	float nodig_delay_timer;
 	float dig_time;
@@ -1733,7 +1732,6 @@ void Game::run()
 
 	runData.time_from_last_punch  = 10.0;
 	runData.profiler_max_page = 3;
-	runData.update_wielded_item_trigger = true;
 
 	flags.show_chat = true;
 	flags.show_hud = true;
@@ -3853,25 +3851,39 @@ void Game::updateFrame(std::vector<aabb3f> &highlight_boxes,
 		Inventory
 	*/
 
-	if (client->getPlayerItem() != runData->new_playeritem)
+	bool inventory_selection_changed = false;
+	bool inventory_changed = false;
+
+	if (client->getPlayerItem() != runData->new_playeritem) {
 		client->selectPlayerItem(runData->new_playeritem);
+		inventory_selection_changed = true;
+	}
 
 	// Update local inventory if it has changed
 	if (client->getLocalInventoryUpdated()) {
 		//infostream<<"Updating local inventory"<<std::endl;
 		client->getLocalInventory(*local_inventory);
-		runData->update_wielded_item_trigger = true;
+		inventory_changed = true;
 	}
 
-	if (runData->update_wielded_item_trigger) {
+	if (inventory_selection_changed || inventory_changed) {
 		// Update wielded tool
 		InventoryList *mlist = local_inventory->getList("main");
 
 		if (mlist && (client->getPlayerItem() < mlist->getSize())) {
-			ItemStack item = mlist->getItem(client->getPlayerItem());
+			u16 player_item_id = client->getPlayerItem();
+			ItemStack item = mlist->getItem(player_item_id);
+//			actionstream << "Updating wield item to " << item.getItemString()
+//					  << " [selected inventory item: " << player_item_id << "]"
+//					  << std::endl;
 			camera->wield(item);
+
+			// Show item description
+			if (inventory_selection_changed) {
+				statustext = narrow_to_wide(item.getDefinition(itemdef_manager).description);
+				runData->statustext_time = 0;
+			}
 		}
-		runData->update_wielded_item_trigger = false;
 	}
 
 	/*
@@ -4074,7 +4086,7 @@ void Game::updateGui(float *statustext_time, const RunStats &stats,
 	guitext_info->setText(infotext.c_str());
 	guitext_info->setVisible(flags.show_hud && g_menumgr.menuCount() == 0);
 
-	float statustext_time_max = 1.5;
+	const float statustext_time_max = 1.5;
 
 	if (!statustext.empty()) {
 		*statustext_time += dtime;
