@@ -69,6 +69,8 @@ void               setfloatfield(lua_State *L, int table,
                              const char *fieldname, float value);
 void               setboolfield(lua_State *L, int table,
                              const char *fieldname, bool value);
+void               setstringfield(lua_State *L, int table,
+                             const char *fieldname, const char *value);
 
 
 v3f                 checkFloatPos       (lua_State *L, int index);

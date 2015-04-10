@@ -262,7 +262,7 @@ HTTPFetchOngoing::HTTPFetchOngoing(HTTPFetchRequest request_, CurlHandlePool *po
 	}
 
 	// Set POST (or GET) data
-	if (request.post_fields.empty()) {
+	if (request.post_fields.empty() && request.post_data.empty()) {
 		curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 	} else if (request.multipart) {
 		curl_httppost *last = NULL;
