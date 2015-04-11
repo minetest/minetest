@@ -150,13 +150,14 @@ local function main_button_handler(this, fields, name, tabdata)
 	if fields["cb_creative_mode"] then
 		core.setting_set("creative_mode", fields["cb_creative_mode"])
 		local selected = core.get_textlist_index("sp_worlds")
-		local filename = menudata.worldlist:get_list()[selected].path ..
-				DIR_DELIM .. "world.mt"
-
-		local worldfile = Settings(filename)
-		worldfile:set("creative_mode", fields["cb_creative_mode"])
-		if not worldfile:write() then
-			core.log("error", "Failed to write world config file")
+		if selected ~= nil then
+			local filename = menudata.worldlist:get_list()[selected].path ..
+					DIR_DELIM .. "world.mt"
+			local worldfile = Settings(filename)
+			worldfile:set("creative_mode", fields["cb_creative_mode"])
+			if not worldfile:write() then
+				core.log("error", "Failed to write world config file")
+			end
 		end
 		return true
 	end
@@ -164,13 +165,14 @@ local function main_button_handler(this, fields, name, tabdata)
 	if fields["cb_enable_damage"] then
 		core.setting_set("enable_damage", fields["cb_enable_damage"])
 		local selected = core.get_textlist_index("sp_worlds")
-		local filename = menudata.worldlist:get_list()[selected].path ..
-				DIR_DELIM .. "world.mt"
-
-		local worldfile = Settings(filename)
-		worldfile:set("enable_damage", fields["cb_enable_damage"])
-		if not worldfile:write() then
-			core.log("error", "Failed to write world config file")
+		if selected ~= nil then
+			local filename = menudata.worldlist:get_list()[selected].path ..
+					DIR_DELIM .. "world.mt"
+			local worldfile = Settings(filename)
+			worldfile:set("enable_damage", fields["cb_enable_damage"])
+			if not worldfile:write() then
+				core.log("error", "Failed to write world config file")
+			end
 		end
 		return true
 	end
