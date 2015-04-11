@@ -1802,7 +1802,11 @@ void Server::SendPlayerHP(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
 	PlayerSAO *playersao = getPlayerSAO(peer_id);
-	assert(playersao);
+	// In some rare case, if the player is disconnected
+	// while Lua call l_punch, for example, this can be NULL
+	if (!playersao)
+		return;
+
 	SendHP(peer_id, playersao->getHP());
 	m_script->player_event(playersao,"health_changed");
 
