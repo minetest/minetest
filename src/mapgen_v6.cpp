@@ -944,13 +944,14 @@ void MapgenV6::placeTreesAndJungleGrass()
 				continue;
 
 			v3s16 p(x, y, z);
-			// Trees grow only on mud and grass
+			// Trees grow only on mud and grass and snowblock
 			{
 				u32 i = vm->m_area.index(p);
 				content_t c = vm->m_data[i].getContent();
 				if (c != c_dirt &&
 						c != c_dirt_with_grass &&
-						c != c_dirt_with_snow)
+						c != c_dirt_with_snow &&
+						c != c_snowblock)
 					continue;
 			}
 			p.Y++;
@@ -959,7 +960,7 @@ void MapgenV6::placeTreesAndJungleGrass()
 			if (bt == BT_JUNGLE) {
 				treegen::make_jungletree(*vm, p, ndef, myrand());
 			} else if (bt == BT_TAIGA) {
-				treegen::make_pine_tree(*vm, p, ndef, myrand());
+				treegen::make_pine_tree(*vm, p - v3s16(0, 1, 0), ndef, myrand());
 			} else if (bt == BT_NORMAL) {
 				bool is_apple_tree = (myrand_range(0, 3) == 0) &&
 							getHaveAppleTree(v2s16(x, z));
