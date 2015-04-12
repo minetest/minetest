@@ -32,9 +32,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
+#include "util/auth.h"
 #include "util/base64.h"
 #include "util/pointedthing.h"
 #include "util/serialize.h"
+#include "util/srp.h"
 
 void Server::handleCommand_Deprecated(NetworkPacket* pkt)
 {
@@ -92,13 +94,14 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	u8 compression_modes;
 	u16 min_net_proto_version = 0;
 	u16 max_net_proto_version;
+	std::string playerName;
 
 	*pkt >> client_max >> compression_modes >> min_net_proto_version
-			>> max_net_proto_version;
+			>> max_net_proto_version >> playerName;
 
 	u8 our_max = SER_FMT_VER_HIGHEST_READ;
 	// Use the highest version supported by both
-	int deployed = std::min(client_max, our_max);
+	u8 deployed = std::min(client_max, our_max);
 	// If it's lower than the lowest supported, give up.
 	if (deployed < SER_FMT_VER_LOWEST)
 		deployed = SER_FMT_VER_INVALID;
@@ -137,7 +140,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 
 	client->net_proto_version = net_proto_version;
 
-	// On this handler protocol version 25 is required
+	// On this handler at least protocol version 25 is required
 	if (net_proto_version < 25 ||
 			net_proto_version < SERVER_PROTOCOL_VERSION_MIN ||
 			net_proto_version > SERVER_PROTOCOL_VERSION_MAX) {
@@ -156,36 +159,9 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		}
 	}
 
-	// @TODO: check if we support same modes, but not required now
-
-	client->setSupportedCompressionModes(compression_modes);
-
-	m_clients.event(pkt->getPeerId(), CSE_Init);
-}
-
-void Server::handleCommand_Auth(NetworkPacket* pkt)
-{
-	std::string addr_s;
-	try {
-		Address address = getPeerAddress(pkt->getPeerId());
-		addr_s = address.serializeString();
-	}
-	catch (con::PeerNotFoundException &e) {
-		/*
-		 * no peer for this packet found
-		 * most common reason is peer timeout, e.g. peer didn't
-		 * respond for some time, your server was overloaded or
-		 * things like that.
-		 */
-		infostream << "Server::ProcessData(): Canceling: peer "
-				<< pkt->getPeerId() << " not found" << std::endl;
-		return;
-	}
-
-	std::string playerName, playerPassword;
-
-	*pkt >> playerName >> playerPassword;
-
+	/*
+		Validate player name
+	*/
 	const char* playername = playerName.c_str();
 
 	if (playerName.size() > PLAYERNAME_SIZE) {
@@ -201,6 +177,11 @@ void Server::handleCommand_Auth(NetworkPacket* pkt)
 		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_CHARS_IN_NAME);
 		return;
 	}
+
+	m_clients.setPlayerName(pkt->getPeerId(), playername);
+	//TODO (later) case insensitivity
+
+	std::string legacyPlayerNameCasing = playerName;
 
 	if (!isSingleplayer() && strcasecmp(playername, "singleplayer") == 0) {
 		actionstream << "Server: Player with the name \"singleplayer\" "
@@ -222,22 +203,8 @@ void Server::handleCommand_Auth(NetworkPacket* pkt)
 		}
 	}
 
-	if (playerPassword.size() > PASSWORD_SIZE) {
-		actionstream << "Server: Player with an too long password "
-				<< "tried to connect from " << addr_s << std::endl;
-		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_PASSWORD);
-		return;
-	}
-
 	infostream << "Server: New connection: \"" << playerName << "\" from "
 			<< addr_s << " (peer_id=" << pkt->getPeerId() << ")" << std::endl;
-
-	if(!base64_is_valid(playerPassword)){
-		actionstream << "Server: " << playerName
-				<< " supplied invalid password hash" << std::endl;
-		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_PASSWORD);
-		return;
-	}
 
 	// Enforce user limit.
 	// Don't enforce for users that have some admin right
@@ -247,76 +214,74 @@ void Server::handleCommand_Auth(NetworkPacket* pkt)
 			!checkPriv(playername, "privs") &&
 			!checkPriv(playername, "password") &&
 			playername != g_settings->get("name")) {
-		actionstream << "Server: " << playername << " tried to join, but there"
-				<< " are already max_users="
+		actionstream << "Server: " << playername << " tried to join from "
+				<< addr_s << ", but there" << " are already max_users="
 				<< g_settings->getU16("max_users") << " players." << std::endl;
 		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_TOO_MANY_USERS);
 		return;
 	}
 
-	std::string checkpwd; // Password hash to check against
-	bool has_auth = m_script->getAuth(playername, &checkpwd, NULL);
+	/*
+		Compose auth methods for answer
+	*/
+	std::string encpwd; // encrypted Password field for the user
+	bool has_auth = m_script->getAuth(playername, &encpwd, NULL);
+	u32 auth_mechs = 0;
 
-	// If no authentication info exists for user, create it
-	if (!has_auth) {
-		if (!isSingleplayer() &&
-				g_settings->getBool("disallow_empty_password") &&
-				playerPassword.empty()) {
-			actionstream << "Server: " << playerName
-					<< " supplied empty password" << std::endl;
-			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_EMPTY_PASSWORD);
+	client->chosen_mech = AUTH_MECHANISM_NONE;
+
+	if (has_auth) {
+		std::vector<std::string> pwd_components = str_split(encpwd, '#');
+		if (pwd_components.size() == 4) {
+			if (pwd_components[1] == "1") { // 1 means srp
+				auth_mechs |= AUTH_MECHANISM_SRP;
+				client->enc_pwd = encpwd;
+			} else {
+				actionstream << "User " << playername
+					<< " tried to log in, but password field"
+					<< " was invalid (unknown mechcode)." << std::endl;
+				DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_SERVER_FAIL);
+				return;
+			}
+		} else if (base64_is_valid(encpwd)) {
+			auth_mechs |= AUTH_MECHANISM_LEGACY_PASSWORD;
+			client->enc_pwd = encpwd;
+		} else {
+			actionstream << "User " << playername
+				<< " tried to log in, but password field"
+				<< " was invalid (invalid base64)." << std::endl;
+			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_SERVER_FAIL);
 			return;
 		}
-		std::string raw_default_password =
-			g_settings->get("default_password");
-		std::string initial_password =
-			translatePassword(playername, raw_default_password);
-
-		// If default_password is empty, allow any initial password
-		if (raw_default_password.length() == 0)
-			initial_password = playerPassword.c_str();
-
-		m_script->createAuth(playername, initial_password);
+	} else {
+		std::string default_password = g_settings->get("default_password");
+		if (default_password.length() == 0) {
+			auth_mechs |= AUTH_MECHANISM_FIRST_SRP;
+		} else {
+			// Take care of default passwords.
+			client->enc_pwd = getSRPVerifier(playerName, default_password);
+			auth_mechs |= AUTH_MECHANISM_SRP;
+		}
 	}
-
-	has_auth = m_script->getAuth(playername, &checkpwd, NULL);
-
-	if(!has_auth) {
-		actionstream << "Server: " << playerName << " cannot be authenticated"
-				<< " (auth handler does not work?)" << std::endl;
-		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_SERVER_FAIL);
-		return;
-	}
-
-	if(playerPassword.c_str() != checkpwd) {
-		actionstream << "Server: " << playerName << " supplied wrong password"
-				<< std::endl;
-		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_PASSWORD);
-		return;
-	}
-
-	RemotePlayer *player =
-			static_cast<RemotePlayer*>(m_env->getPlayer(playername));
-
-	if (player && player->peer_id != 0) {
-		errorstream << "Server: " << playername << ": Failed to emerge player"
-				<< " (player allocated to an another client)" << std::endl;
-		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_ALREADY_CONNECTED);
-	}
-
-	m_clients.setPlayerName(pkt->getPeerId(), playername);
 
 	/*
-		Answer with a TOCLIENT_INIT
+		Answer with a TOCLIENT_HELLO
 	*/
 
-	NetworkPacket resp_pkt(TOCLIENT_AUTH_ACCEPT, 1 + 6 + 8 + 4, pkt->getPeerId());
+	verbosestream << "Sending TOCLIENT_HELLO with auth method field: "
+		<< auth_mechs << std::endl;
 
-	resp_pkt << v3f(0,0,0) << (u64) m_env->getServerMap().getSeed()
-			<< g_settings->getFloat("dedicated_server_step");
+	NetworkPacket resp_pkt(TOCLIENT_HELLO, 1 + 4
+		+ legacyPlayerNameCasing.size(), pkt->getPeerId());
+
+	resp_pkt << deployed << auth_mechs << legacyPlayerNameCasing;
 
 	Send(&resp_pkt);
-	m_clients.event(pkt->getPeerId(), CSE_Init);
+
+	client->allowed_auth_mechs = auth_mechs;
+	client->setSupportedCompressionModes(compression_modes);
+
+	m_clients.event(pkt->getPeerId(), CSE_Hello);
 }
 
 void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
@@ -354,7 +319,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 		return;
 	}
 
-	verbosestream << "Server: Got TOSERVER_INIT from " << addr_s << " (peer_id="
+	verbosestream << "Server: Got TOSERVER_INIT_LEGACY from " << addr_s << " (peer_id="
 			<< pkt->getPeerId() << ")" << std::endl;
 
 	// Do not allow multiple players in simple singleplayer mode.
@@ -421,6 +386,10 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 		else
 			net_proto_version = max_net_proto_version;
 	}
+
+	// The client will send up to date init packet, ignore this one
+	if (net_proto_version >= 25)
+		return;
 
 	verbosestream << "Server: " << addr_s << ": Protocol version: min: "
 			<< min_net_proto_version << ", max: " << max_net_proto_version
@@ -624,7 +593,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 			<< g_settings->getFloat("dedicated_server_step");
 
 	Send(&resp_pkt);
-	m_clients.event(pkt->getPeerId(), CSE_Init);
+	m_clients.event(pkt->getPeerId(), CSE_InitLegacy);
 }
 
 void Server::handleCommand_Init2(NetworkPacket* pkt)
@@ -1223,33 +1192,33 @@ void Server::handleCommand_Breath(NetworkPacket* pkt)
 
 void Server::handleCommand_Password(NetworkPacket* pkt)
 {
-	if ((pkt->getCommand() == TOSERVER_PASSWORD && pkt->getSize() < 4) ||
-			pkt->getSize() != PASSWORD_SIZE * 2)
+	if (pkt->getSize() != PASSWORD_SIZE * 2)
 		return;
 
 	std::string oldpwd;
 	std::string newpwd;
 
-	if (pkt->getCommand() == TOSERVER_PASSWORD) {
-		*pkt >> oldpwd >> newpwd;
+	// Deny for clients using the new protocol
+	RemoteClient* client = getClient(pkt->getPeerId(), CS_Created);
+	if (client->net_proto_version >= 25) {
+		infostream << "Server::handleCommand_Password(): Denying change: "
+			<< " Client protocol version for peer_id=" << pkt->getPeerId()
+			<< " too new!" << std::endl;
+		return;
 	}
-	// 13/03/15
-	// Protocol v24 compat. Please remove in 1 year after
-	// client convergence to 0.4.13/0.5.x
-	else {
-		for (u16 i = 0; i < PASSWORD_SIZE - 1; i++) {
-			char c = pkt->getChar(i);
-			if (c == 0)
-				break;
-			oldpwd += c;
-		}
 
-		for (u16 i = 0; i < PASSWORD_SIZE - 1; i++) {
-			char c = pkt->getChar(PASSWORD_SIZE + i);
-			if (c == 0)
-				break;
-			newpwd += c;
-		}
+	for (u16 i = 0; i < PASSWORD_SIZE - 1; i++) {
+		char c = pkt->getChar(i);
+		if (c == 0)
+			break;
+		oldpwd += c;
+	}
+
+	for (u16 i = 0; i < PASSWORD_SIZE - 1; i++) {
+		char c = pkt->getChar(PASSWORD_SIZE + i);
+		if (c == 0)
+			break;
+		newpwd += c;
 	}
 
 	Player *player = m_env->getPlayer(pkt->getPeerId());
@@ -1847,4 +1816,259 @@ void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 	}
 
 	m_script->on_playerReceiveFields(playersao, formname, fields);
+}
+
+void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
+{
+	RemoteClient* client = getClient(pkt->getPeerId(), CS_Invalid);
+	ClientState cstate = client->getState();
+
+	std::string playername = client->getName();
+
+	std::string salt;
+	std::string verification_key;
+
+	std::string addr_s = getPeerAddress(pkt->getPeerId()).serializeString();
+	u8 is_empty;
+
+	*pkt >> salt >> verification_key >> is_empty;
+
+	verbosestream << "Server: Got TOSERVER_FIRST_SRP from " << addr_s
+		<< ", with is_empty= " << is_empty << std::endl;
+
+	// Either this packet is sent because the user is new or to change the password
+	if (cstate == CS_HelloSent) {
+		if (!client->isMechAllowed(AUTH_MECHANISM_FIRST_SRP)) {
+			actionstream << "Server: Client from " << addr_s
+					<< " tried to set password without being "
+					<< "authenticated, or the username being new." << std::endl;
+			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_UNEXPECTED_DATA);
+			return;
+		}
+
+		if (!isSingleplayer() &&
+				g_settings->getBool("disallow_empty_password") &&
+				is_empty == 1) {
+			actionstream << "Server: " << playername
+					<< " supplied empty password from " << addr_s << std::endl;
+			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_EMPTY_PASSWORD);
+			return;
+		}
+
+		std::string initial_ver_key;
+		std::string raw_default_password = g_settings->get("default_password");
+		// If default_password is empty, allow any initial password
+		if (raw_default_password.length() == 0) {
+			initial_ver_key = encodeSRPVerifier(verification_key, salt);
+		} else {
+			initial_ver_key = getSRPVerifier(playername, raw_default_password);
+		}
+
+		m_script->createAuth(playername, initial_ver_key);
+
+		acceptAuth(pkt->getPeerId(), false);
+	} else {
+		if (cstate < CS_SudoMode) {
+			infostream << "Server::ProcessData(): Ignoring TOSERVER_FIRST_SRP from "
+					<< addr_s << ": " << "Client has wrong state " << cstate << "."
+					<< std::endl;
+			return;
+		}
+		m_clients.event(pkt->getPeerId(), CSE_SudoLeave);
+		std::string pw_db_field = encodeSRPVerifier(verification_key, salt);
+		bool success = m_script->setPassword(playername, pw_db_field);
+		if (success) {
+			actionstream << playername << " changes password" << std::endl;
+			SendChatMessage(pkt->getPeerId(), L"Password change successful.");
+		} else {
+			actionstream << playername << " tries to change password but "
+				<< "it fails" << std::endl;
+			SendChatMessage(pkt->getPeerId(), L"Password change failed or unavailable.");
+		}
+	}
+}
+
+void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
+{
+	RemoteClient* client = getClient(pkt->getPeerId(), CS_Invalid);
+	ClientState cstate = client->getState();
+
+	bool wantSudo = (cstate == CS_Active);
+
+	if (!((cstate == CS_HelloSent) || (cstate == CS_Active))) {
+		actionstream << "Server: got SRP _A packet in wrong state "
+			<< cstate << " from "
+			<< getPeerAddress(pkt->getPeerId()).serializeString()
+			<< ". Ignoring." << std::endl;
+		return;
+	}
+
+	if (client->chosen_mech != AUTH_MECHANISM_NONE) {
+		actionstream << "Server: got SRP _A packet, while auth"
+			<< "is already going on with mech " << client->chosen_mech
+			<< " from " << getPeerAddress(pkt->getPeerId()).serializeString()
+			<< " (wantSudo=" << wantSudo << "). Ignoring." << std::endl;
+		if (wantSudo) {
+			DenySudoAccess(pkt->getPeerId());
+			return;
+		} else {
+			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_UNEXPECTED_DATA);
+			return;
+		}
+	}
+
+	std::string bytes_A;
+	u8 based_on;
+	*pkt >> bytes_A >> based_on;
+
+	infostream << "Server: TOSERVER_SRP_BYTES_A received with "
+		<< "based_on=" << int(based_on) << " and len_A="
+		<< bytes_A.length() << "." << std::endl;
+
+	AuthMechanism chosen = (based_on == 0) ?
+		AUTH_MECHANISM_LEGACY_PASSWORD : AUTH_MECHANISM_SRP;
+
+	if (wantSudo) {
+		if (!client->isSudoMechAllowed(chosen)) {
+			actionstream << "Server: Player \"" << client->getName()
+				<< "\" at " << getPeerAddress(pkt->getPeerId()).serializeString()
+				<< " tried to change password using unallowed mech "
+				<< chosen << "." << std::endl;
+			DenySudoAccess(pkt->getPeerId());
+			return;
+		}
+	} else {
+		if (!client->isMechAllowed(chosen)) {
+			actionstream << "Server: Client tried to authenticate from "
+				<< getPeerAddress(pkt->getPeerId()).serializeString()
+				<< " using unallowed mech " << chosen << "." << std::endl;
+			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_UNEXPECTED_DATA);
+			return;
+		}
+	}
+
+	client->chosen_mech = chosen;
+
+	std::string bytes_s;
+	std::string bytes_v;
+
+	if (based_on == 0) {
+		char *p_bytes_s = 0;
+		size_t len_s = 0;
+		char *p_bytes_v = 0;
+		size_t len_v = 0;
+		getSRPVerifier(client->getName(), client->enc_pwd,
+			&p_bytes_s, &len_s,
+			&p_bytes_v, &len_v);
+		bytes_s = std::string(p_bytes_s, len_s);
+		bytes_v = std::string(p_bytes_v, len_v);
+		free(p_bytes_s);
+		free(p_bytes_v);
+	} else if (!decodeSRPVerifier(client->enc_pwd, &bytes_s, &bytes_v)) {
+		// Non-base64 errors should have been catched in the init handler
+		actionstream << "Server: User " << client->getName()
+			<< " tried to log in, but srp verifier field"
+			<< " was invalid (most likely invalid base64)." << std::endl;
+		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_SERVER_FAIL);
+		return;
+	}
+
+	char *bytes_B = 0;
+	size_t len_B = 0;
+
+	client->auth_data = srp_verifier_new(SRP_SHA256, SRP_NG_2048,
+		client->getName().c_str(),
+		(const unsigned char *) bytes_s.c_str(), bytes_s.size(),
+		(const unsigned char *) bytes_v.c_str(), bytes_v.size(),
+		(const unsigned char *) bytes_A.c_str(), bytes_A.size(),
+		NULL, 0,
+		(unsigned char **) &bytes_B, &len_B, NULL, NULL);
+
+	if (!bytes_B) {
+		actionstream << "Server: User " << client->getName()
+			<< " tried to log in, SRP-6a safety check violated in _A handler."
+			<< std::endl;
+		if (wantSudo) {
+			DenySudoAccess(pkt->getPeerId());
+			return;
+		} else {
+			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_UNEXPECTED_DATA);
+			return;
+		}
+	}
+
+	NetworkPacket resp_pkt(TOCLIENT_SRP_BYTES_S_B, 0, pkt->getPeerId());
+	resp_pkt << bytes_s << std::string(bytes_B, len_B);
+	Send(&resp_pkt);
+}
+
+void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
+{
+	RemoteClient* client = getClient(pkt->getPeerId(), CS_Invalid);
+	ClientState cstate = client->getState();
+
+	bool wantSudo = (cstate == CS_Active);
+
+	verbosestream << "Server: Recieved TOCLIENT_SRP_BYTES_M." << std::endl;
+
+	if (!((cstate == CS_HelloSent) || (cstate == CS_Active))) {
+		actionstream << "Server: got SRP _M packet in wrong state "
+			<< cstate << " from "
+			<< getPeerAddress(pkt->getPeerId()).serializeString()
+			<< ". Ignoring." << std::endl;
+		return;
+	}
+
+	if ((client->chosen_mech != AUTH_MECHANISM_SRP)
+		&& (client->chosen_mech != AUTH_MECHANISM_LEGACY_PASSWORD)) {
+		actionstream << "Server: got SRP _M packet, while auth"
+			<< "is going on with mech " << client->chosen_mech
+			<< " from " << getPeerAddress(pkt->getPeerId()).serializeString()
+			<< " (wantSudo=" << wantSudo << "). Denying." << std::endl;
+		if (wantSudo) {
+			DenySudoAccess(pkt->getPeerId());
+			return;
+		} else {
+			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_UNEXPECTED_DATA);
+			return;
+		}
+	}
+
+	std::string bytes_M;
+	*pkt >> bytes_M;
+
+	if (srp_verifier_get_session_key_length((SRPVerifier *) client->auth_data)
+			!= bytes_M.size()) {
+		actionstream << "Server: User " << client->getName()
+			<< " at " << getPeerAddress(pkt->getPeerId()).serializeString()
+			<< " sent bytes_M with invalid length " << bytes_M.size() << std::endl;
+		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_UNEXPECTED_DATA);
+		return;
+	}
+
+	unsigned char *bytes_HAMK = 0;
+
+	srp_verifier_verify_session((SRPVerifier *) client->auth_data,
+		(unsigned char *)bytes_M.c_str(), &bytes_HAMK);
+
+	if (!bytes_HAMK) {
+		if (wantSudo) {
+			actionstream << "Server: User " << client->getName()
+				<< " at " << getPeerAddress(pkt->getPeerId()).serializeString()
+				<< " tried to change their password, but supplied wrong"
+				<< " (SRP) password for authentication." << std::endl;
+			DenySudoAccess(pkt->getPeerId());
+			return;
+		} else {
+			actionstream << "Server: User " << client->getName()
+				<< " at " << getPeerAddress(pkt->getPeerId()).serializeString()
+				<< " supplied wrong (SRP) password from address "
+				<< getPeerAddress(pkt->getPeerId()).serializeString()
+				<< "." << std::endl;
+			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_PASSWORD);
+			return;
+		}
+	}
+
+	acceptAuth(pkt->getPeerId(), wantSudo);
 }
