@@ -26,8 +26,8 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 {
 	null_command_handler, // 0x00 (never use this)
 	null_command_handler, // 0x01
-	{ "TOSERVER_INIT",                    TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_Init }, // 0x02
-	{ "TOSERVER_AUTH",                    TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_Auth }, // 0x03
+	{ "TOSERVER_INIT",                     TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_Init }, // 0x02
+	null_command_handler, // 0x03
 	null_command_handler, // 0x04
 	null_command_handler, // 0x05
 	null_command_handler, // 0x06
@@ -85,13 +85,28 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	{ "TOSERVER_REMOVED_SOUNDS",           TOSERVER_STATE_INGAME, &Server::handleCommand_RemovedSounds }, // 0x3a
 	{ "TOSERVER_NODEMETA_FIELDS",          TOSERVER_STATE_INGAME, &Server::handleCommand_NodeMetaFields }, // 0x3b
 	{ "TOSERVER_INVENTORY_FIELDS",         TOSERVER_STATE_INGAME, &Server::handleCommand_InventoryFields }, // 0x3c
-	{ "TOSERVER_PASSWORD",                 TOSERVER_STATE_INGAME, &Server::handleCommand_Password }, // 0x3d
+	null_command_handler, // 0x3d
 	null_command_handler, // 0x3e
 	null_command_handler, // 0x3f
 	{ "TOSERVER_REQUEST_MEDIA",            TOSERVER_STATE_STARTUP, &Server::handleCommand_RequestMedia }, // 0x40
 	{ "TOSERVER_RECEIVED_MEDIA",           TOSERVER_STATE_STARTUP, &Server::handleCommand_ReceivedMedia }, // 0x41
 	{ "TOSERVER_BREATH",                   TOSERVER_STATE_INGAME, &Server::handleCommand_Breath }, // 0x42
 	{ "TOSERVER_CLIENT_READY",             TOSERVER_STATE_STARTUP, &Server::handleCommand_ClientReady }, // 0x43
+	null_command_handler, // 0x44
+	null_command_handler, // 0x45
+	null_command_handler, // 0x46
+	null_command_handler, // 0x47
+	null_command_handler, // 0x48
+	null_command_handler, // 0x49
+	null_command_handler, // 0x4a
+	null_command_handler, // 0x4b
+	null_command_handler, // 0x4c
+	null_command_handler, // 0x4d
+	null_command_handler, // 0x4e
+	null_command_handler, // 0x4f
+	{ "TOSERVER_FIRST_SRP",          TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_FirstSrp }, // 0x50
+	{ "TOSERVER_SRP_BYTES_A",        TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_SrpBytesA }, // 0x51
+	{ "TOSERVER_SRP_BYTES_M",        TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_SrpBytesM }, // 0x52
 };
 
 const static ClientCommandFactory null_command_factory = { "TOCLIENT_NULL", 0, false };
@@ -100,10 +115,10 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 {
 	null_command_factory, // 0x00
 	null_command_factory, // 0x01
-	{ "TOCLIENT_HELLO",             0, true }, // 0x02
+	null_command_factory, // 0x02
 	{ "TOCLIENT_AUTH_ACCEPT",       0, true }, // 0x03
-	null_command_factory, // 0x04
-	null_command_factory, // 0x05
+	{ "TOCLIENT_ACCEPT_SUDO_MODE",  0, true }, // 0x04
+	{ "TOCLIENT_DENY_SUDO_MODE",    0, true }, // 0x05
 	null_command_factory, // 0x06
 	null_command_factory, // 0x07
 	null_command_factory, // 0x08
@@ -182,4 +197,17 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_LOCAL_PLAYER_ANIMATIONS",  0, true }, // 0x51
 	{ "TOCLIENT_EYE_OFFSET",               0, true }, // 0x52
 	{ "TOCLIENT_DELETE_PARTICLESPAWNER",   0, true }, // 0x53
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	null_command_factory,
+	{ "TOSERVER_SRP_BYTES_S_B",            0, true }, // 0x60
 };

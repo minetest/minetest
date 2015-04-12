@@ -2537,6 +2537,13 @@ void Server::RespawnPlayer(u16 peer_id)
 		playersao->setPos(pos);
 	}
 }
+void Server::DenySudoAccess(u16 peer_id)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	NetworkPacket pkt(TOCLIENT_DENY_SUDO_MODE, 0, peer_id);
+	Send(&pkt);
+}
 
 void Server::DenyAccess(u16 peer_id, AccessDeniedCode reason, const std::string &custom_reason)
 {
@@ -2556,6 +2563,37 @@ void Server::DenyAccess_Legacy(u16 peer_id, const std::wstring &reason)
 	SendAccessDenied_Legacy(peer_id, reason);
 	m_clients.event(peer_id, CSE_SetDenied);
 	m_con.DisconnectPeer(peer_id);
+}
+
+void Server::acceptAuth(u16 peer_id, bool forSudoMode)
+{
+	DSTACK(__FUNCTION_NAME);
+
+	if (!forSudoMode) {
+		RemoteClient* client = getClient(peer_id, CS_Invalid);
+
+		NetworkPacket resp_pkt(TOCLIENT_AUTH_ACCEPT, 1 + 6 + 8 + 4, peer_id);
+
+		// Right now, the auth mechs don't change between login and sudo mode.
+		u32 sudo_auth_mechs = client->allowed_auth_mechs;
+		client->allowed_sudo_mechs = sudo_auth_mechs;
+
+		resp_pkt << v3f(0,0,0) << (u64) m_env->getServerMap().getSeed()
+				<< g_settings->getFloat("dedicated_server_step")
+				<< sudo_auth_mechs;
+
+		Send(&resp_pkt);
+		m_clients.event(peer_id, CSE_AuthAccept);
+	} else {
+		NetworkPacket resp_pkt(TOCLIENT_ACCEPT_SUDO_MODE, 1 + 6 + 8 + 4, peer_id);
+
+		// We only support SRP right now
+		u32 sudo_auth_mechs = AUTH_MECHANISM_FIRST_SRP;
+
+		resp_pkt << sudo_auth_mechs;
+		Send(&resp_pkt);
+		m_clients.event(peer_id, CSE_SudoSuccess);
+	}
 }
 
 void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)

@@ -208,6 +208,7 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/version.cpp                       \
 		jni/src/voxel.cpp                         \
 		jni/src/voxelalgorithms.cpp               \
+		jni/src/util/auth.cpp                     \
 		jni/src/util/base64.cpp                   \
 		jni/src/util/directiontables.cpp          \
 		jni/src/util/numeric.cpp                  \
@@ -215,6 +216,7 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/util/serialize.cpp                \
 		jni/src/util/sha1.cpp                     \
 		jni/src/util/string.cpp                   \
+		jni/src/util/srp.cpp                      \
 		jni/src/util/timetaker.cpp                \
 		jni/src/unittest/test.cpp                 \
 		jni/src/unittest/test_collision.cpp       \
@@ -242,6 +244,8 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/wieldmesh.cpp                     \
 		jni/src/client/clientlauncher.cpp         \
 		jni/src/client/tile.cpp
+
+# intentionally kept out (we already build openssl itself): jni/src/util/sha256.c
 
 # Network
 LOCAL_SRC_FILES +=                                \

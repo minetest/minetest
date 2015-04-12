@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h"
 #include "filesys.h"
 #include "settings.h"
+#include "util/auth.h"
 
 // debug(...)
 // Writes a line to dstream

@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "serverobject.h"              // TODO this is used for cleanup of only
 #include "log.h"
+#include "util/srp.h"
 
 const char *ClientInterface::statenames[] = {
 	"Invalid",
@@ -427,10 +428,12 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 		//intentionally do nothing
 		break;
 	case CS_Created:
-		switch(event)
-		{
-		case CSE_Init:
-			m_state = CS_InitSent;
+		switch (event) {
+		case CSE_Hello:
+			m_state = CS_HelloSent;
+			break;
+		case CSE_InitLegacy:
+			m_state = CS_AwaitingInit2;
 			break;
 		case CSE_Disconnect:
 			m_state = CS_Disconnecting;
@@ -447,7 +450,32 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 	case CS_Denied:
 		/* don't do anything if in denied state */
 		break;
-	case CS_InitSent:
+	case CS_HelloSent:
+		switch(event)
+		{
+		case CSE_AuthAccept:
+			m_state = CS_AwaitingInit2;
+			if ((chosen_mech == AUTH_MECHANISM_SRP)
+					|| (chosen_mech == AUTH_MECHANISM_LEGACY_PASSWORD))
+				srp_verifier_delete((SRPVerifier *) auth_data);
+			chosen_mech = AUTH_MECHANISM_NONE;
+			break;
+		case CSE_Disconnect:
+			m_state = CS_Disconnecting;
+			break;
+		case CSE_SetDenied:
+			m_state = CS_Denied;
+			if ((chosen_mech == AUTH_MECHANISM_SRP)
+					|| (chosen_mech == AUTH_MECHANISM_LEGACY_PASSWORD))
+				srp_verifier_delete((SRPVerifier *) auth_data);
+			chosen_mech = AUTH_MECHANISM_NONE;
+			break;
+		default:
+			myerror << "HelloSent: Invalid client state transition! " << event;
+			throw ClientStateError(myerror.str());
+		}
+		break;
+	case CS_AwaitingInit2:
 		switch(event)
 		{
 		case CSE_GotInit2:
@@ -514,7 +542,32 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 		case CSE_Disconnect:
 			m_state = CS_Disconnecting;
 			break;
+		case CSE_SudoSuccess:
+			m_state = CS_SudoMode;
+			if ((chosen_mech == AUTH_MECHANISM_SRP)
+					|| (chosen_mech == AUTH_MECHANISM_LEGACY_PASSWORD))
+				srp_verifier_delete((SRPVerifier *) auth_data);
+			chosen_mech = AUTH_MECHANISM_NONE;
+			break;
 		/* Init GotInit2 SetDefinitionsSent SetMediaSent SetDenied */
+		default:
+			myerror << "Active: Invalid client state transition! " << event;
+			throw ClientStateError(myerror.str());
+			break;
+		}
+		break;
+	case CS_SudoMode:
+		switch(event)
+		{
+		case CSE_SetDenied:
+			m_state = CS_Denied;
+			break;
+		case CSE_Disconnect:
+			m_state = CS_Disconnecting;
+			break;
+		case CSE_SudoLeave:
+			m_state = CS_Active;
+			break;
 		default:
 			myerror << "Active: Invalid client state transition! " << event;
 			throw ClientStateError(myerror.str());

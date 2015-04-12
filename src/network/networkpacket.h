@@ -41,8 +41,10 @@ public:
 		u16 getPeerId() { return m_peer_id; }
 		u16 getCommand() { return m_command; }
 
-		// Data extractors
+		// Returns a c-string without copying.
+		// A better name for this would be getRawString()
 		char* getString(u32 from_offset);
+		// major difference to putCString(): doesn't write len into the buffer
 		void putRawString(const char* src, u32 len);
 
 		NetworkPacket& operator>>(std::string& dst);
