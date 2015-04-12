@@ -103,7 +103,7 @@ Compiling on GNU/Linux:
 -----------------------
 
 Install dependencies. Here's an example for Debian/Ubuntu:
-$ sudo apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libjsoncpp-dev
+$ sudo apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
 You can install git for easily keeping your copy up to date.
 If you dont want git, read below on how to get the source without git.
@@ -166,6 +166,7 @@ ENABLE_LEVELDB      - Build with LevelDB; Enables use of LevelDB map backend (fa
 ENABLE_REDIS        - Build with libhiredis; Enables use of Redis map backend
 ENABLE_SOUND        - Build with OpenAL, libogg & libvorbis; in-game Sounds
 ENABLE_LUAJIT       - Build with LuaJIT (much faster than non-JIT Lua)
+ENABLE_SYSTEM_GMP   - Use GMP from system (much faster than bundled mini-gmp)
 RUN_IN_PLACE        - Create a portable install (worlds, settings etc. in current directory)
 USE_GPROF           - Enable profiling using GProf
 VERSION_EXTRA       - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
