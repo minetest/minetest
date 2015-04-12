@@ -198,71 +198,59 @@ void Schematic::placeStructure(Map *map, v3s16 p, u32 flags, Rotation rot,
 }
 
 
-bool Schematic::loadSchematicFromFile(const char *filename, INodeDefManager *ndef,
-	StringMap *replace_names)
+bool Schematic::deserializeFromMts(std::istream *is,
+	INodeDefManager *ndef, std::vector<std::string> *names)
 {
+	std::istream &ss = *is;
 	content_t cignore = CONTENT_IGNORE;
 	bool have_cignore = false;
 
-	std::ifstream is(filename, std::ios_base::binary);
-	if (!is.good()) {
-		errorstream << "loadSchematicFile: unable to open file '"
-			<< filename << "'" << std::endl;
-		return false;
-	}
-
-	u32 signature = readU32(is);
+	u32 signature = readU32(ss);
 	if (signature != MTSCHEM_FILE_SIGNATURE) {
-		errorstream << "loadSchematicFile: invalid schematic "
+		errorstream << "Schematic::deserializeFromMts: invalid schematic "
 			"file" << std::endl;
 		return false;
 	}
 
-	u16 version = readU16(is);
+	u16 version = readU16(ss);
 	if (version > MTSCHEM_FILE_VER_HIGHEST_READ) {
-		errorstream << "loadSchematicFile: unsupported schematic "
+		errorstream << "Schematic::deserializeFromMts: unsupported schematic "
 			"file version" << std::endl;
 		return false;
 	}
 
-	size = readV3S16(is);
+	size = readV3S16(ss);
 
 	delete []slice_probs;
 	slice_probs = new u8[size.Y];
 	for (int y = 0; y != size.Y; y++)
-		slice_probs[y] = (version >= 3) ? readU8(is) : MTSCHEM_PROB_ALWAYS;
+		slice_probs[y] = (version >= 3) ? readU8(ss) : MTSCHEM_PROB_ALWAYS;
 
-	NodeResolveInfo *nri = new NodeResolveInfo(this);
-
-	u16 nidmapcount = readU16(is);
+	u16 nidmapcount = readU16(ss);
 	for (int i = 0; i != nidmapcount; i++) {
-		std::string name = deSerializeString(is);
+		std::string name = deSerializeString(ss);
+
+		// Instances of "ignore" from ver 1 are converted to air (and instances
+		// are fixed to have MTSCHEM_PROB_NEVER later on).
 		if (name == "ignore") {
 			name = "air";
 			cignore = i;
 			have_cignore = true;
 		}
 
-		std::map<std::string, std::string>::iterator it;
-		it = replace_names->find(name);
-		if (it != replace_names->end())
-			name = it->second;
-
-		nri->nodenames.push_back(name);
+		names->push_back(name);
 	}
-
-	nri->nodelistinfo.push_back(NodeListInfo(nidmapcount, CONTENT_AIR));
-	ndef->pendNodeResolve(nri);
 
 	size_t nodecount = size.X * size.Y * size.Z;
 
 	delete []schemdata;
 	schemdata = new MapNode[nodecount];
 
-	MapNode::deSerializeBulk(is, SER_FMT_VER_HIGHEST_READ, schemdata,
+	MapNode::deSerializeBulk(ss, SER_FMT_VER_HIGHEST_READ, schemdata,
 		nodecount, 2, 2, true);
 
-	if (version == 1) { // fix up the probability values
+	// fix any probability values for nodes that were ignore
+	if (version == 1) {
 		for (size_t i = 0; i != nodecount; i++) {
 			if (schemdata[i].param1 == 0)
 				schemdata[i].param1 = MTSCHEM_PROB_ALWAYS;
@@ -275,39 +263,9 @@ bool Schematic::loadSchematicFromFile(const char *filename, INodeDefManager *nde
 }
 
 
-/*
-	Minetest Schematic File Format
-
-	All values are stored in big-endian byte order.
-	[u32] signature: 'MTSM'
-	[u16] version: 3
-	[u16] size X
-	[u16] size Y
-	[u16] size Z
-	For each Y:
-		[u8] slice probability value
-	[Name-ID table] Name ID Mapping Table
-		[u16] name-id count
-		For each name-id mapping:
-			[u16] name length
-			[u8[]] name
-	ZLib deflated {
-	For each node in schematic:  (for z, y, x)
-		[u16] content
-	For each node in schematic:
-		[u8] probability of occurance (param1)
-	For each node in schematic:
-		[u8] param2
-	}
-
-	Version changes:
-	1 - Initial version
-	2 - Fixed messy never/always place; 0 probability is now never, 0xFF is always
-	3 - Added y-slice probabilities; this allows for variable height structures
-*/
-void Schematic::saveSchematicToFile(const char *filename, INodeDefManager *ndef)
+bool Schematic::serializeToMts(std::ostream *os, INodeDefManager *ndef)
 {
-	std::ostringstream ss(std::ios_base::binary);
+	std::ostream &ss = *os;
 
 	writeU32(ss, MTSCHEM_FILE_SIGNATURE);         // signature
 	writeU16(ss, MTSCHEM_FILE_VER_HIGHEST_WRITE); // version
@@ -326,35 +284,108 @@ void Schematic::saveSchematicToFile(const char *filename, INodeDefManager *ndef)
 		ss << serializeString(ndef->get(usednodes[i]).name); // node names
 
 	// compressed bulk node data
-	MapNode::serializeBulk(ss, SER_FMT_VER_HIGHEST_WRITE, schemdata,
-				nodecount, 2, 2, true);
+	MapNode::serializeBulk(ss, SER_FMT_VER_HIGHEST_WRITE,
+		schemdata, nodecount, 2, 2, true);
 
-	fs::safeWriteToFile(filename, ss.str());
+	return true;
 }
 
 
-void build_nnlist_and_update_ids(MapNode *nodes, u32 nodecount,
-	std::vector<content_t> *usednodes)
+bool Schematic::serializeToLua(std::ostream *os,
+	INodeDefManager *ndef, bool use_comments)
 {
-	std::map<content_t, content_t> nodeidmap;
-	content_t numids = 0;
+	std::ostream &ss = *os;
 
-	for (u32 i = 0; i != nodecount; i++) {
-		content_t id;
-		content_t c = nodes[i].getContent();
-
-		std::map<content_t, content_t>::const_iterator it = nodeidmap.find(c);
-		if (it == nodeidmap.end()) {
-			id = numids;
-			numids++;
-
-			usednodes->push_back(c);
-			nodeidmap.insert(std::make_pair(c, id));
-		} else {
-			id = it->second;
-		}
-		nodes[i].setContent(id);
+	//// Write header
+	{
+		ss << "schematic = {" << std::endl;
+		ss << "\tsize = "
+			<< "{x=" << size.X
+			<< ", y=" << size.Y
+			<< ", z=" << size.Z
+			<< "}," << std::endl;
 	}
+
+	//// Write y-slice probabilities
+	{
+		ss << "\tyslice_prob = {" << std::endl;
+
+		for (u16 y = 0; y != size.Y; y++) {
+			ss << "\t\t{"
+				<< "ypos=" << y
+				<< ", prob=" << (u16)slice_probs[y]
+				<< "}," << std::endl;
+		}
+
+		ss << "\t}," << std::endl;
+	}
+
+	//// Write node data
+	{
+		ss << "\tdata = {" << std::endl;
+
+		u32 i = 0;
+		for (u16 z = 0; z != size.Z; z++)
+		for (u16 y = 0; y != size.Y; y++) {
+			if (use_comments) {
+				ss << std::endl
+					<< "\t\t-- z=" << z
+					<< ", y=" << y << std::endl;
+			}
+
+			for (u16 x = 0; x != size.X; x++, i++) {
+				ss << "\t\t{"
+					<< "name=\"" << ndef->get(schemdata[i]).name
+					<< "\", param1=" << (u16)schemdata[i].param1
+					<< ", param2=" << (u16)schemdata[i].param2
+					<< "}," << std::endl;
+			}
+		}
+
+		ss << "\t}," << std::endl;
+	}
+
+	ss << "}" << std::endl;
+
+	return true;
+}
+
+
+bool Schematic::loadSchematicFromFile(const char *filename,
+	INodeDefManager *ndef, StringMap *replace_names)
+{
+	std::ifstream is(filename, std::ios_base::binary);
+	if (!is.good()) {
+		errorstream << "Schematic::loadSchematicFile: unable to open file '"
+			<< filename << "'" << std::endl;
+		return false;
+	}
+
+	std::vector<std::string> names;
+	if (!deserializeFromMts(&is, ndef, &names))
+		return false;
+
+	NodeResolveInfo *nri = new NodeResolveInfo(this);
+	for (size_t i = 0; i != names.size(); i++) {
+		if (replace_names) {
+			StringMap::iterator it = replace_names->find(names[i]);
+			if (it != replace_names->end())
+				names[i] = it->second;
+		}
+		nri->nodenames.push_back(names[i]);
+	}
+	nri->nodelistinfo.push_back(NodeListInfo(names.size(), CONTENT_AIR));
+	ndef->pendNodeResolve(nri);
+
+	return true;
+}
+
+
+bool Schematic::saveSchematicToFile(const char *filename, INodeDefManager *ndef)
+{
+	std::ostringstream os(std::ios_base::binary);
+	serializeToMts(&os, ndef);
+	return fs::safeWriteToFile(filename, os.str());
 }
 
 
@@ -409,5 +440,30 @@ void Schematic::applyProbabilities(v3s16 p0,
 	for (size_t i = 0; i != splist->size(); i++) {
 		s16 y = (*splist)[i].first - p0.Y;
 		slice_probs[y] = (*splist)[i].second;
+	}
+}
+
+
+void build_nnlist_and_update_ids(MapNode *nodes, u32 nodecount,
+	std::vector<content_t> *usednodes)
+{
+	std::map<content_t, content_t> nodeidmap;
+	content_t numids = 0;
+
+	for (u32 i = 0; i != nodecount; i++) {
+		content_t id;
+		content_t c = nodes[i].getContent();
+
+		std::map<content_t, content_t>::const_iterator it = nodeidmap.find(c);
+		if (it == nodeidmap.end()) {
+			id = numids;
+			numids++;
+
+			usednodes->push_back(c);
+			nodeidmap.insert(std::make_pair(c, id));
+		} else {
+			id = it->second;
+		}
+		nodes[i].setContent(id);
 	}
 }

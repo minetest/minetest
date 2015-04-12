@@ -84,6 +84,9 @@ private:
 	// place_schematic(p, schematic, rotation, replacement)
 	static int l_place_schematic(lua_State *L);
 
+	// serialize_schematic(schematic, format, use_comments)
+	static int l_serialize_schematic(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 
@@ -92,6 +95,7 @@ public:
 	static struct EnumString es_MapgenObject[];
 	static struct EnumString es_OreType[];
 	static struct EnumString es_Rotation[];
+	static struct EnumString es_SchematicFormatType[];
 };
 
 #endif /* L_MAPGEN_H_ */

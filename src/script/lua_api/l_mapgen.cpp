@@ -36,7 +36,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "log.h"
 
-
 struct EnumString ModApiMapgen::es_BiomeTerrainType[] =
 {
 	{BIOME_NORMAL, "normal"},
@@ -85,6 +84,13 @@ struct EnumString ModApiMapgen::es_Rotation[] =
 	{0, NULL},
 };
 
+struct EnumString ModApiMapgen::es_SchematicFormatType[] =
+{
+	{SCHEM_FMT_HANDLE, "handle"},
+	{SCHEM_FMT_MTS,    "mts"},
+	{SCHEM_FMT_LUA,    "lua"},
+	{0, NULL},
+};
 
 ObjDef *get_objdef(lua_State *L, int index, ObjDefManager *objmgr);
 
@@ -329,9 +335,11 @@ Schematic *read_schematic_def(lua_State *L, int index,
 		param2 = !lua_isnil(L, -1) ? lua_tonumber(L, -1) : 0;
 		lua_pop(L, 1);
 
-		StringMap::iterator it = replace_names->find(name);
-		if (it != replace_names->end())
-			name = it->second;
+		if (replace_names) {
+			StringMap::iterator it = replace_names->find(name);
+			if (it != replace_names->end())
+				name = it->second;
+		}
 
 		schemdata[i] = MapNode(ndef, name, param1, param2);
 
@@ -1067,8 +1075,9 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 
 	//// Read rotation
 	int rot = ROTATE_0;
-	if (lua_isstring(L, 3))
-		string_to_enum(es_Rotation, rot, std::string(lua_tostring(L, 3)));
+	const char *enumstr = lua_tostring(L, 3);
+	if (enumstr)
+		string_to_enum(es_Rotation, rot, std::string(enumstr));
 
 	//// Read force placement
 	bool force_placement = true;
@@ -1091,6 +1100,48 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 		schemmgr->getNodeDef());
 
 	lua_pushboolean(L, true);
+	return 1;
+}
+
+// serialize_schematic(schematic, format, use_comments)
+int ModApiMapgen::l_serialize_schematic(lua_State *L)
+{
+	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
+	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
+
+	//// Read schematic
+	Schematic *schem = get_or_load_schematic(L, 1, schemmgr, NULL);
+	if (!schem) {
+		errorstream << "serialize_schematic: failed to get schematic" << std::endl;
+		return 0;
+	}
+
+	//// Read format of definition to save as
+	int schem_format = SCHEM_FMT_MTS;
+	const char *enumstr = lua_tostring(L, 2);
+	if (enumstr)
+		string_to_enum(es_SchematicFormatType, schem_format, std::string(enumstr));
+
+	//// Read use_comments
+	bool use_comments = false;
+	if (lua_isboolean(L, 3))
+		use_comments = lua_toboolean(L, 3);
+
+	//// Serialize to binary string
+	std::ostringstream os(std::ios_base::binary);
+	switch (schem_format) {
+	case SCHEM_FMT_MTS:
+		schem->serializeToMts(&os, ndef);
+		break;
+	case SCHEM_FMT_LUA:
+		schem->serializeToLua(&os, ndef, use_comments);
+		break;
+	default:
+		return 0;
+	}
+
+	std::string ser = os.str();
+	lua_pushlstring(L, ser.c_str(), ser.length());
 	return 1;
 }
 
@@ -1118,4 +1169,5 @@ void ModApiMapgen::Initialize(lua_State *L, int top)
 	API_FCT(generate_decorations);
 	API_FCT(create_schematic);
 	API_FCT(place_schematic);
+	API_FCT(serialize_schematic);
 }

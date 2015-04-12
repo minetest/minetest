@@ -30,9 +30,39 @@ class MMVManip;
 class PseudoRandom;
 class NodeResolver;
 
+/*
+	Minetest Schematic File Format
+
+	All values are stored in big-endian byte order.
+	[u32] signature: 'MTSM'
+	[u16] version: 3
+	[u16] size X
+	[u16] size Y
+	[u16] size Z
+	For each Y:
+		[u8] slice probability value
+	[Name-ID table] Name ID Mapping Table
+		[u16] name-id count
+		For each name-id mapping:
+			[u16] name length
+			[u8[]] name
+	ZLib deflated {
+	For each node in schematic:  (for z, y, x)
+		[u16] content
+	For each node in schematic:
+		[u8] probability of occurance (param1)
+	For each node in schematic:
+		[u8] param2
+	}
+
+	Version changes:
+	1 - Initial version
+	2 - Fixed messy never/always place; 0 probability is now never, 0xFF is always
+	3 - Added y-slice probabilities; this allows for variable height structures
+*/
+
 /////////////////// Schematic flags
 #define SCHEM_CIDS_UPDATED 0x08
-
 
 #define MTSCHEM_FILE_SIGNATURE 0x4d54534d // 'MTSM'
 #define MTSCHEM_FILE_VER_HIGHEST_READ  3
@@ -46,6 +76,11 @@ enum SchematicType
 	SCHEMATIC_NORMAL,
 };
 
+enum SchematicFormatType {
+	SCHEM_FMT_HANDLE,
+	SCHEM_FMT_MTS,
+	SCHEM_FMT_LUA,
+};
 
 class Schematic : public ObjDef, public NodeResolver {
 public:
@@ -68,14 +103,23 @@ public:
 
 	bool loadSchematicFromFile(const char *filename, INodeDefManager *ndef,
 		StringMap *replace_names);
-	void saveSchematicToFile(const char *filename, INodeDefManager *ndef);
+	bool saveSchematicToFile(const char *filename, INodeDefManager *ndef);
 	bool getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2);
+
+	bool deserializeFromMts(std::istream *is, INodeDefManager *ndef,
+		std::vector<std::string> *names);
+	bool serializeToMts(std::ostream *os, INodeDefManager *ndef);
+	bool serializeToLua(std::ostream *os,
+		INodeDefManager *ndef, bool use_comments);
+
 
 	void placeStructure(Map *map, v3s16 p, u32 flags,
 		Rotation rot, bool force_placement, INodeDefManager *nef);
 	void applyProbabilities(v3s16 p0,
 		std::vector<std::pair<v3s16, u8> > *plist,
 		std::vector<std::pair<s16, u8> > *splist);
+
+	std::string getAsLuaTable(INodeDefManager *ndef, bool use_comments);
 };
 
 class SchematicManager : public ObjDefManager {

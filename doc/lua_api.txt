@@ -2170,6 +2170,15 @@ These functions return the leftover itemstack.
     * `force_placement` is a boolean indicating whether nodes other than `air` and
       `ignore` are replaced by the schematic
 
+* `minetest.serialize_schematic(schematic, format, use_comments)`
+    * Return the serialized schematic specified by schematic (see: Schematic specifier)
+    * in the `format` of either "mts" or "lua".
+    * "mts" - a string containing the binary MTS data used in the MTS file format
+    * "lua" - a string containing Lua code representing the schematic in table format
+    * If `use_comments` is true, the Lua code generated will have (X, Z) position comments
+    * for every X row generated in the schematic data for easier reading.  This parameter
+    * is ignored if `format` is not "lua".
+
 ### Misc.
 * `minetest.get_connected_players()`: returns list of `ObjectRefs`
 * `minetest.hash_node_position({x=,y=,z=})`: returns an 48-bit integer
