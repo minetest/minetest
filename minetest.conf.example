@@ -298,17 +298,6 @@
 #fallback_font_size = 15
 #fallback_font_shadow = 1
 #fallback_font_shadow_alpha = 128
-#    Override language. When no value is provided (default) system language is used.
-#    Check "locale" directory for the list of available translations.
-#language =
-#main_menu_script =
-#main_menu_game_mgr = 0
-#main_menu_mod_mgr = 1
-#modstore_download_url = https://forum.minetest.net/media/
-#modstore_listmods_url = https://forum.minetest.net/mmdb/mods/
-#modstore_details_url  = https://forum.minetest.net/mmdb/mod/*/
-#    Makes DirectX work with LuaJIT. Disable if it causes troubles.
-#high_precision_fpu = true
 
 #
 #    Server stuff
@@ -447,12 +436,24 @@
 #    try reducing it, but don't reduce it to a number below double of targeted
 #    client number.
 #max_packets_per_iteration = 1024
+
 #    Enable/disable IPv6
 #enable_ipv6 = true
 #    Enable/disable running an IPv6 server.  An IPv6 server may be restricted
 #    to IPv6 clients, depending on system configuration.
 #    Ignored if bind_address is set.
 #ipv6_server = false
+#main_menu_script =
+#main_menu_game_mgr = 0
+#main_menu_mod_mgr = 1
+#modstore_download_url = https://forum.minetest.net/media/
+#modstore_listmods_url = https://forum.minetest.net/mmdb/mods/
+#modstore_details_url  = https://forum.minetest.net/mmdb/mod/*/
+#    Makes DirectX work with LuaJIT. Disable if it causes troubles.
+#high_precision_fpu = true
+#    Override language. When no value is provided (default) system language is used.
+#    Check "locale" directory for the list of available translations.
+#language =
 
 #
 #    Physics stuff
@@ -485,15 +486,16 @@
 #    Global map generation attributes.  Currently supported: trees, caves, flat, dungeons, light.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    To explicitly turn off a flag, prepend "no" to the beginning, e.g. nolight.
-#mg_flags = trees, caves, light
+#mg_flags = trees, caves, dungeons, light
 #    Enable/disable floating dungeons and dungeon slices
 #enable_floating_dungeons = true
 
 #    Map generation attributes specific to Mapgen V6.
 #    Currently supported: jungles, biomeblend, mudflow, snowbiomes.
-#    When snowbiomes are enabled jungles are enabled, the jungles flag is ignored.
-#mgv6_spflags = biomeblend, mudflow
+#    When snowbiomes are enabled jungles are enabled and the jungles flag is ignored.
+#mgv6_spflags = jungles, biomeblend, mudflow
 #    Controls size of deserts and beaches in Mapgen V6
+#    When snowbiomes are enabled 'mgv6_freq_desert' is ignored.
 #mgv6_freq_desert = 0.45
 #mgv6_freq_beach = 0.15
 
