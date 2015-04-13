@@ -409,9 +409,6 @@
 #    Controls length of day/night cycle.
 #    72=20min, 360=4min, 1=24hour, 0=day/night/whatever stays unchanged.
 #time_speed = 72
-#    Length of year in days for seasons change.
-#    With default time_speed 365 days = 5 real days for year, 30 days = 10 real hours.
-#year_days = 30
 #server_unload_unused_data_timeout = 29
 #    Maximum number of statically stored objects in a block
 #max_objects_per_block = 49
@@ -488,21 +485,27 @@
 #    Global map generation attributes.  Currently supported: trees, caves, flat, dungeons, light.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    To explicitly turn off a flag, prepend "no" to the beginning, e.g. nolight.
-#mg_flags = trees, caves
+#mg_flags = trees, caves, light
+#    Enable/disable floating dungeons and dungeon slices
+#enable_floating_dungeons = true
+
 #    Map generation attributes specific to Mapgen V6.
-#    Currently supported: biomeblend, jungles, mudflow.
-#mgv6_spflags = biomeblend, jungles, mudflow
+#    Currently supported: jungles, biomeblend, mudflow, snowbiomes.
+#    When snowbiomes are enabled jungles are enabled, the jungles flag is ignored.
+#mgv6_spflags = biomeblend, mudflow
 #    Controls size of deserts and beaches in Mapgen V6
 #mgv6_freq_desert = 0.45
 #mgv6_freq_beach = 0.15
-#    Enable/disable floating dungeons and dungeon slices
-#enable_floating_dungeons = true
+
+#    Map generation attributes specific to Mapgen V7.
+#    Currently supported: mountains, ridges.
+#mgv7_spflags = mountains, ridges
 
 #    Perlin noise attributes for different map generation parameters.
 #    Noise parameters can be specified as a set of positional values:
 #    Offset, scale, (spread factors), seed offset, number of octaves, persistence, lacunarity.
 #mgv6_np_terrain_base = -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0
-#    Or the new group format can be used instead:
+#    Or the new group format can be used instead, for example:
 #mgv6_np_terrain_base = {
 #    offset      = -4
 #    scale       = 20
@@ -516,6 +519,10 @@
 #    Only the group format supports noise flags which are needed for eased noise.
 #    Mgv5 uses eased noise for np_ground so this is shown in group format,
 #    other noise parameters are shown in positional format to save space.
+
+#    Noise parameters for biome API temperature and humidity
+#mg_biome_np_heat = 50, 50, (500, 500, 500), 5349, 3, 0.5, 2.0
+#mg_biome_np_humidity = 50, 50, (500, 500, 500), 842, 3, 0.5, 2.0
 
 #mgv5_np_filler_depth = 0, 1, (150, 150, 150), 261, 4, 0.7, 2.0
 #mgv5_np_factor = 0, 1, (250, 250, 250), 920381, 3, 0.45, 2.0
@@ -533,7 +540,6 @@
 #    flags       = "eased"
 #}
 
-#mgv6_spflags = biomeblend, jungles, mudflow
 #mgv6_np_terrain_base = -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0
 #mgv6_np_terrain_higher = 20, 16, (500, 500, 500), 85039, 5, 0.6, 2.0
 #mgv6_np_steepness = 0.85, 0.5, (125, 125, 125), -932, 5, 0.7, 2.0
@@ -546,7 +552,6 @@
 #mgv6_np_trees = 0, 1, (125, 125, 125), 2, 4, 0.66, 2.0
 #mgv6_np_apple_trees = 0, 1, (100, 100, 100), 342902, 3, 0.45, 2.0
 
-#mgv7_spflags = mountains, ridges
 #mgv7_np_terrain_base = 4, 70, (300, 300, 300), 82341, 6, 0.7, 2.0
 #mgv7_np_terrain_alt = 4, 25, (600, 600, 600), 5934, 5, 0.6, 2.0
 #mgv7_np_terrain_persist = 0.6, 0.1, (500, 500, 500), 539, 3, 0.6, 2.0
@@ -559,6 +564,3 @@
 #mgv7_np_cave1 = 0, 12, (100, 100, 100), 52534, 4, 0.5, 2.0
 #mgv7_np_cave2 = 0, 12, (100, 100, 100), 10325, 4, 0.5, 2.0
 
-#    Noise parameters for biome API temperature and humidity
-#mg_biome_np_heat = 50, 50, (500, 500, 500), 5349, 3, 0.5, 2.0
-#mg_biome_np_humidity = 50, 50, (500, 500, 500), 842, 3, 0.5, 2.0
