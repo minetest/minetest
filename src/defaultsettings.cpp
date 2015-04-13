@@ -295,7 +295,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("mg_name", "v6");
 	settings->setDefault("water_level", "1");
 	settings->setDefault("chunksize", "5");
-	settings->setDefault("mg_flags", "");
+	settings->setDefault("mg_flags", "trees, caves, v6_jungles, v6_biome_blend");
 	settings->setDefault("enable_floating_dungeons", "true");
 
 	// IPv6
