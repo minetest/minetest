@@ -420,13 +420,13 @@ BiomeV6Type MapgenV6::getBiome(int index, v2s16 p)
 	if (spflags & MGV6_SNOWBIOMES) {
 		float blend = (spflags & MGV6_BIOMEBLEND) ? noise2d(p.X, p.Y, seed) / 40 : 0;
 
-		if (d > FREQ_HOT + blend) {
-			if (h > FREQ_JUNGLE + blend)
+		if (d > (float)FREQ_HOT + blend) {
+			if (h > (float)FREQ_JUNGLE + blend)
 				return BT_JUNGLE;
 			else
 				return BT_DESERT;
-		} else if (d < FREQ_SNOW + blend) {
-			if (h > FREQ_TAIGA + blend)
+		} else if (d < (float)FREQ_SNOW + blend) {
+			if (h > (float)FREQ_TAIGA + blend)
 				return BT_TAIGA;
 			else
 				return BT_TUNDRA;
@@ -644,11 +644,11 @@ int MapgenV6::generateGround()
 		for (s16 y = node_min.Y; y <= node_max.Y; y++) {
 			if (vm->m_data[i].getContent() == CONTENT_IGNORE) {
 				if (y <= surface_y) {
-					vm->m_data[i] = (y >= DESERT_STONE_BASE
+					vm->m_data[i] = (y >= (s16)DESERT_STONE_BASE
 							&& bt == BT_DESERT) ?
 						n_desert_stone : n_stone;
 				} else if (y <= water_level) {
-					vm->m_data[i] = (y >= ICE_BASE
+					vm->m_data[i] = (y >= (s16)ICE_BASE
 							&& bt == BT_TUNDRA) ?
 						n_ice : n_water_source;
 				} else {
