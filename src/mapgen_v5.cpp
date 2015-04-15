@@ -498,7 +498,7 @@ void MapgenV5::generateCaves(int max_stone_y)
 		index2d += ystride;
 	}
 
-	if (node_max.Y > LARGE_CAVE_DEPTH)
+	if (node_max.Y > (s16)LARGE_CAVE_DEPTH)
 		return;
 
 	PseudoRandom ps(blockseed + 21343);
