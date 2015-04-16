@@ -388,7 +388,7 @@ void Client::step(float dtime)
 		if(counter <= 0.0) {
 			counter = 2.0;
 
-			Player *myplayer = m_env.getLocalPlayer();		
+			Player *myplayer = m_env.getLocalPlayer();
 			FATAL_ERROR_IF(myplayer == NULL, "Local player not found in environment.");
 
 			// Send TOSERVER_INIT_LEGACY
@@ -1631,7 +1631,7 @@ void Client::afterContentReceived(IrrlichtDevice *device)
 	draw_load_screen(text, device, guienv, 0, 72);
 	m_nodedef->updateAliases(m_itemdef);
 	m_nodedef->setNodeRegistrationStatus(true);
-	m_nodedef->runNodeResolverCallbacks();
+	m_nodedef->runNodeResolveCallbacks();
 	delete[] text;
 
 	// Update node textures and assign shaders to each tile

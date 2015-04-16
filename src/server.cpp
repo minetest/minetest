@@ -332,7 +332,7 @@ Server::Server(
 	m_nodedef->setNodeRegistrationStatus(true);
 
 	// Perform pending node name resolutions
-	m_nodedef->runNodeResolverCallbacks();
+	m_nodedef->runNodeResolveCallbacks();
 
 	// init the recipe hashes to speed up crafting
 	m_craftdef->initHashes(this);

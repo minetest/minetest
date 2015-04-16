@@ -46,14 +46,13 @@ BiomeManager::BiomeManager(IGameDef *gamedef) :
 	b->heat_point      = 0.0;
 	b->humidity_point  = 0.0;
 
-	NodeResolveInfo *nri = new NodeResolveInfo(b);
-	nri->nodenames.push_back("air");
-	nri->nodenames.push_back("air");
-	nri->nodenames.push_back("mapgen_stone");
-	nri->nodenames.push_back("mapgen_water_source");
-	nri->nodenames.push_back("mapgen_water_source");
-	nri->nodenames.push_back("air");
-	m_ndef->pendNodeResolve(nri);
+	b->m_nodenames.push_back("air");
+	b->m_nodenames.push_back("air");
+	b->m_nodenames.push_back("mapgen_stone");
+	b->m_nodenames.push_back("mapgen_water_source");
+	b->m_nodenames.push_back("mapgen_water_source");
+	b->m_nodenames.push_back("air");
+	m_ndef->pendNodeResolve(b, NODE_RESOLVE_DEFERRED);
 
 	add(b);
 }
@@ -117,13 +116,13 @@ void BiomeManager::clear()
 ///////////////////////////////////////////////////////////////////////////////
 
 
-void Biome::resolveNodeNames(NodeResolveInfo *nri)
+void Biome::resolveNodeNames()
 {
-	m_ndef->getIdFromResolveInfo(nri, "mapgen_dirt_with_grass", CONTENT_AIR,    c_top);
-	m_ndef->getIdFromResolveInfo(nri, "mapgen_dirt",            CONTENT_AIR,    c_filler);
-	m_ndef->getIdFromResolveInfo(nri, "mapgen_stone",           CONTENT_AIR,    c_stone);
-	m_ndef->getIdFromResolveInfo(nri, "mapgen_water_source",    CONTENT_AIR,    c_water_top);
-	m_ndef->getIdFromResolveInfo(nri, "mapgen_water_source",    CONTENT_AIR,    c_water);
-	m_ndef->getIdFromResolveInfo(nri, "air",                    CONTENT_IGNORE, c_dust);
+	getIdFromNrBacklog(&c_top,       "mapgen_dirt_with_grass", CONTENT_AIR);
+	getIdFromNrBacklog(&c_filler,    "mapgen_dirt",            CONTENT_AIR);
+	getIdFromNrBacklog(&c_stone,     "mapgen_stone",           CONTENT_AIR);
+	getIdFromNrBacklog(&c_water_top, "mapgen_water_source",    CONTENT_AIR);
+	getIdFromNrBacklog(&c_water,     "mapgen_water_source",    CONTENT_AIR);
+	getIdFromNrBacklog(&c_dust,      "air",                    CONTENT_IGNORE);
 }
 

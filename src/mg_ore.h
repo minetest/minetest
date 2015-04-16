@@ -67,7 +67,7 @@ public:
 	Ore();
 	virtual ~Ore();
 
-	virtual void resolveNodeNames(NodeResolveInfo *nri);
+	virtual void resolveNodeNames();
 
 	size_t placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,

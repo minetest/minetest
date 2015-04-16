@@ -2170,14 +2170,23 @@ These functions return the leftover itemstack.
     * `force_placement` is a boolean indicating whether nodes other than `air` and
       `ignore` are replaced by the schematic
 
-* `minetest.serialize_schematic(schematic, format, use_comments)`
+* `minetest.serialize_schematic(schematic, format, options)`
     * Return the serialized schematic specified by schematic (see: Schematic specifier)
     * in the `format` of either "mts" or "lua".
     * "mts" - a string containing the binary MTS data used in the MTS file format
     * "lua" - a string containing Lua code representing the schematic in table format
-    * If `use_comments` is true, the Lua code generated will have (X, Z) position comments
-    * for every X row generated in the schematic data for easier reading.  This parameter
-    * is ignored if `format` is not "lua".
+    * `options` is a table containing the following optional parameters:
+    * If `use_comments` is true and `format` is "lua", the Lua code generated will have (X, Z)
+    * position comments for every X row generated in the schematic data for easier reading.
+    * If `register_after_load` is true, then `schematic`, if not yet loaded, will be registered
+    * after loading and persist in memory.
+    * node_resolve_method can be one of either "none", "direct", or "deferred" (default: "none")
+    * This sets the way method by with node names are mapped to their content IDs, if loaded:
+    * "none" performs no node resolution and preserves all node names from the schematic definition
+    * "direct" performs an immediate lookup of content ID, given all the nodes that have been
+    * registered up to this point in script execution
+    * "deferred" pends node resolution until after the script registration phase has ended
+    * In practice, it is recommended to use "none" in nearly all use cases.
 
 ### Misc.
 * `minetest.get_connected_players()`: returns list of `ObjectRefs`

@@ -88,9 +88,9 @@ Decoration::~Decoration()
 }
 
 
-void Decoration::resolveNodeNames(NodeResolveInfo *nri)
+void Decoration::resolveNodeNames()
 {
-	m_ndef->getIdsFromResolveInfo(nri, c_place_on);
+	getIdsFromNrBacklog(&c_place_on);
 }
 
 
@@ -232,11 +232,11 @@ void Decoration::placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 ///////////////////////////////////////////////////////////////////////////////
 
 
-void DecoSimple::resolveNodeNames(NodeResolveInfo *nri)
+void DecoSimple::resolveNodeNames()
 {
-	Decoration::resolveNodeNames(nri);
-	m_ndef->getIdsFromResolveInfo(nri, c_decos);
-	m_ndef->getIdsFromResolveInfo(nri, c_spawnby);
+	Decoration::resolveNodeNames();
+	getIdsFromNrBacklog(&c_decos);
+	getIdsFromNrBacklog(&c_spawnby);
 }
 
 

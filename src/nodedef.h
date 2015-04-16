@@ -34,10 +34,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sound.h" // SimpleSoundSpec
 #include "constants.h" // BS
 
+class INodeDefManager;
 class IItemDefManager;
 class ITextureSource;
 class IShaderSource;
 class IGameDef;
+class NodeResolver;
 
 typedef std::list<std::pair<content_t, int> > GroupItems;
 
@@ -280,38 +282,10 @@ struct ContentFeatures
 	}
 };
 
-class NodeResolver;
-class INodeDefManager;
-
-struct NodeListInfo {
-	NodeListInfo(u32 len)
-	{
-		length       = len;
-		all_required = false;
-		c_fallback   = CONTENT_IGNORE;
-	}
-
-	NodeListInfo(u32 len, content_t fallback)
-	{
-		length       = len;
-		all_required = true;
-		c_fallback   = fallback;
-	}
-
-	u32 length;
-	bool all_required;
-	content_t c_fallback;
-};
-
-struct NodeResolveInfo {
-	NodeResolveInfo(NodeResolver *nr)
-	{
-		resolver = nr;
-	}
-
-	std::list<std::string> nodenames;
-	std::list<NodeListInfo> nodelistinfo;
-	NodeResolver *resolver;
+enum NodeResolveMethod {
+	NODE_RESOLVE_NONE,
+	NODE_RESOLVE_DIRECT,
+	NODE_RESOLVE_DEFERRED,
 };
 
 class INodeDefManager
@@ -334,14 +308,9 @@ public:
 	virtual bool getNodeRegistrationStatus() const=0;
 	virtual void setNodeRegistrationStatus(bool completed)=0;
 
-	virtual void pendNodeResolve(NodeResolveInfo *nri)=0;
-	virtual void cancelNodeResolve(NodeResolver *resolver)=0;
-	virtual void runNodeResolverCallbacks()=0;
-
-	virtual bool getIdFromResolveInfo(NodeResolveInfo *nri,
-		const std::string &node_alt, content_t c_fallback, content_t &result)=0;
-	virtual bool getIdsFromResolveInfo(NodeResolveInfo *nri,
-		std::vector<content_t> &result)=0;
+	virtual void pendNodeResolve(NodeResolver *nr, NodeResolveMethod how)=0;
+	virtual bool cancelNodeResolveCallback(NodeResolver *nr)=0;
+	virtual void runNodeResolveCallbacks()=0;
 };
 
 class IWritableNodeDefManager : public INodeDefManager
@@ -388,38 +357,34 @@ public:
 	virtual bool getNodeRegistrationStatus() const=0;
 	virtual void setNodeRegistrationStatus(bool completed)=0;
 
-	virtual void pendNodeResolve(NodeResolveInfo *nri)=0;
-	virtual void cancelNodeResolve(NodeResolver *resolver)=0;
-	virtual void runNodeResolverCallbacks()=0;
-
-	virtual bool getIdFromResolveInfo(NodeResolveInfo *nri,
-		const std::string &node_alt, content_t c_fallback, content_t &result)=0;
-	virtual bool getIdsFromResolveInfo(NodeResolveInfo *nri,
-		std::vector<content_t> &result)=0;
+	virtual void pendNodeResolve(NodeResolver *nr, NodeResolveMethod how)=0;
+	virtual bool cancelNodeResolveCallback(NodeResolver *nr)=0;
+	virtual void runNodeResolveCallbacks()=0;
 };
 
 IWritableNodeDefManager *createNodeDefManager();
 
 class NodeResolver {
 public:
-	NodeResolver()
-	{
-		m_lookup_done = false;
-		m_ndef = NULL;
-	}
+	NodeResolver();
+	virtual ~NodeResolver();
+	virtual void resolveNodeNames() = 0;
 
-	virtual ~NodeResolver()
-	{
-		if (!m_lookup_done && m_ndef)
-			m_ndef->cancelNodeResolve(this);
-	}
+	bool getIdFromNrBacklog(content_t *result_out,
+		const std::string &node_alt, content_t c_fallback);
+	bool getIdsFromNrBacklog(std::vector<content_t> *result_out,
+		bool all_required=false, content_t c_fallback=CONTENT_IGNORE);
+	const std::string &getNodeName(content_t c) const;
 
-	virtual void resolveNodeNames(NodeResolveInfo *nri) = 0;
+	void nodeResolveInternal();
 
-	bool m_lookup_done;
+	u32 m_nodenames_idx;
+	u32 m_nnlistsizes_idx;
+	std::vector<std::string> m_nodenames;
+	std::vector<size_t> m_nnlistsizes;
 	INodeDefManager *m_ndef;
+	bool m_resolve_done;
 };
-
 
 #endif
 

@@ -82,10 +82,10 @@ Ore::~Ore()
 }
 
 
-void Ore::resolveNodeNames(NodeResolveInfo *nri)
+void Ore::resolveNodeNames()
 {
-	m_ndef->getIdFromResolveInfo(nri, "", CONTENT_AIR, c_ore);
-	m_ndef->getIdsFromResolveInfo(nri, c_wherein);
+	getIdFromNrBacklog(&c_ore, "", CONTENT_AIR);
+	getIdsFromNrBacklog(&c_wherein);
 }
 
 

@@ -406,14 +406,9 @@ public:
 	inline virtual bool getNodeRegistrationStatus() const;
 	inline virtual void setNodeRegistrationStatus(bool completed);
 
-	virtual void pendNodeResolve(NodeResolveInfo *nri);
-	virtual void cancelNodeResolve(NodeResolver *resolver);
-	virtual void runNodeResolverCallbacks();
-
-	virtual bool getIdFromResolveInfo(NodeResolveInfo *nri,
-		const std::string &node_alt, content_t c_fallback, content_t &result);
-	virtual bool getIdsFromResolveInfo(NodeResolveInfo *nri,
-		std::vector<content_t> &result);
+	virtual void pendNodeResolve(NodeResolver *nr, NodeResolveMethod how);
+	virtual bool cancelNodeResolveCallback(NodeResolver *nr);
+	virtual void runNodeResolveCallbacks();
 
 private:
 	void addNameIdMapping(content_t i, std::string name);
@@ -443,8 +438,8 @@ private:
 	// Next possibly free id
 	content_t m_next_id;
 
-	// List of node strings and node resolver callbacks to perform
-	std::list<NodeResolveInfo *> m_pending_node_lookups;
+	// NodeResolvers to callback once node registration has ended
+	std::vector<NodeResolver *> m_pending_resolve_callbacks;
 
 	// True when all nodes have been registered
 	bool m_node_registration_complete;
@@ -480,12 +475,7 @@ void CNodeDefManager::clear()
 	m_next_id = 0;
 
 	m_node_registration_complete = false;
-	for (std::list<NodeResolveInfo *>::iterator
-			it = m_pending_node_lookups.begin();
-			it != m_pending_node_lookups.end();
-			++it)
-		delete *it;
-	m_pending_node_lookups.clear();
+	m_pending_resolve_callbacks.clear();
 
 	u32 initial_length = 0;
 	initial_length = MYMAX(initial_length, CONTENT_UNKNOWN + 1);
@@ -1304,114 +1294,167 @@ inline void CNodeDefManager::setNodeRegistrationStatus(bool completed)
 }
 
 
-void CNodeDefManager::pendNodeResolve(NodeResolveInfo *nri)
+void CNodeDefManager::pendNodeResolve(NodeResolver *nr, NodeResolveMethod how)
 {
-	nri->resolver->m_ndef = this;
-	if (m_node_registration_complete) {
-		nri->resolver->resolveNodeNames(nri);
-		nri->resolver->m_lookup_done = true;
-		delete nri;
+	nr->m_ndef = this;
+
+	switch (how) {
+	case NODE_RESOLVE_NONE:
+		break;
+	case NODE_RESOLVE_DIRECT:
+		nr->nodeResolveInternal();
+		break;
+	case NODE_RESOLVE_DEFERRED:
+		if (m_node_registration_complete)
+			nr->nodeResolveInternal();
+		else
+			m_pending_resolve_callbacks.push_back(nr);
+		break;
+	}
+}
+
+
+bool CNodeDefManager::cancelNodeResolveCallback(NodeResolver *nr)
+{
+	size_t len = m_pending_resolve_callbacks.size();
+	for (size_t i = 0; i != len; i++) {
+		if (nr != m_pending_resolve_callbacks[i])
+			continue;
+
+		len--;
+		m_pending_resolve_callbacks[i] = m_pending_resolve_callbacks[len];
+		m_pending_resolve_callbacks.resize(len);
+		return true;
+	}
+
+	return false;
+}
+
+
+void CNodeDefManager::runNodeResolveCallbacks()
+{
+	for (size_t i = 0; i != m_pending_resolve_callbacks.size(); i++) {
+		NodeResolver *nr = m_pending_resolve_callbacks[i];
+		nr->nodeResolveInternal();
+	}
+
+	m_pending_resolve_callbacks.clear();
+}
+
+
+////
+//// NodeResolver
+////
+
+NodeResolver::NodeResolver() {
+	m_ndef            = NULL;
+	m_nodenames_idx   = 0;
+	m_nnlistsizes_idx = 0;
+	m_resolve_done    = false;
+
+	m_nodenames.reserve(16);
+	m_nnlistsizes.reserve(4);
+}
+
+
+NodeResolver::~NodeResolver()
+{
+	if (!m_resolve_done && m_ndef)
+		m_ndef->cancelNodeResolveCallback(this);
+}
+
+
+void NodeResolver::nodeResolveInternal()
+{
+	m_nodenames_idx   = 0;
+	m_nnlistsizes_idx = 0;
+
+	resolveNodeNames();
+	m_resolve_done = true;
+
+	m_nodenames.clear();
+	m_nnlistsizes.clear();
+}
+
+
+const std::string &NodeResolver::getNodeName(content_t c) const
+{
+	if (m_nodenames.size() == 0) {
+		return m_ndef->get(c).name;
 	} else {
-		m_pending_node_lookups.push_back(nri);
+		if (c < m_nodenames.size())
+			return m_nodenames[c];
+		else
+			return m_ndef->get(CONTENT_UNKNOWN).name;
 	}
 }
 
 
-void CNodeDefManager::cancelNodeResolve(NodeResolver *resolver)
+bool NodeResolver::getIdFromNrBacklog(content_t *result_out,
+	const std::string &node_alt, content_t c_fallback)
 {
-	for (std::list<NodeResolveInfo *>::iterator
-			it = m_pending_node_lookups.begin();
-			it != m_pending_node_lookups.end();
-			++it) {
-		NodeResolveInfo *nri = *it;
-		if (resolver == nri->resolver) {
-			it = m_pending_node_lookups.erase(it);
-			delete nri;
-		}
-	}
-}
-
-
-void CNodeDefManager::runNodeResolverCallbacks()
-{
-	while (!m_pending_node_lookups.empty()) {
-		NodeResolveInfo *nri = m_pending_node_lookups.front();
-		m_pending_node_lookups.pop_front();
-		nri->resolver->resolveNodeNames(nri);
-		nri->resolver->m_lookup_done = true;
-		delete nri;
-	}
-}
-
-
-bool CNodeDefManager::getIdFromResolveInfo(NodeResolveInfo *nri,
-	const std::string &node_alt, content_t c_fallback, content_t &result)
-{
-	if (nri->nodenames.empty()) {
-		result = c_fallback;
-		errorstream << "Resolver empty nodename list" << std::endl;
+	if (m_nodenames_idx == m_nodenames.size()) {
+		*result_out = c_fallback;
+		errorstream << "Resolver: no more nodes in list" << std::endl;
 		return false;
 	}
 
 	content_t c;
-	std::string name = nri->nodenames.front();
-	nri->nodenames.pop_front();
+	std::string name = m_nodenames[m_nodenames_idx++];
 
-	bool success = getId(name, c);
+	bool success = m_ndef->getId(name, c);
 	if (!success && node_alt != "") {
 		name = node_alt;
-		success = getId(name, c);
+		success = m_ndef->getId(name, c);
 	}
 
 	if (!success) {
-		errorstream << "Resolver: Failed to resolve node name '" << name
+		errorstream << "NodeResolver: failed to resolve node name '" << name
 			<< "'." << std::endl;
 		c = c_fallback;
 	}
 
-	result = c;
+	*result_out = c;
 	return success;
 }
 
 
-bool CNodeDefManager::getIdsFromResolveInfo(NodeResolveInfo *nri,
-	std::vector<content_t> &result)
+bool NodeResolver::getIdsFromNrBacklog(std::vector<content_t> *result_out,
+	bool all_required, content_t c_fallback)
 {
 	bool success = true;
 
-	if (nri->nodelistinfo.empty()) {
-		errorstream << "Resolver: Empty nodelistinfo list" << std::endl;
+	if (m_nnlistsizes_idx == m_nnlistsizes.size()) {
+		errorstream << "NodeResolver: no more node lists" << std::endl;
 		return false;
 	}
 
-	NodeListInfo listinfo = nri->nodelistinfo.front();
-	nri->nodelistinfo.pop_front();
+	size_t length = m_nnlistsizes[m_nnlistsizes_idx++];
 
-	while (listinfo.length--) {
-		if (nri->nodenames.empty()) {
-			errorstream << "Resolver: Empty nodename list" << std::endl;
+	while (length--) {
+		if (m_nodenames_idx == m_nodenames.size()) {
+			errorstream << "NodeResolver: no more nodes in list" << std::endl;
 			return false;
 		}
 
 		content_t c;
-		std::string name = nri->nodenames.front();
-		nri->nodenames.pop_front();
+		std::string &name = m_nodenames[m_nodenames_idx++];
 
 		if (name.substr(0,6) != "group:") {
-			if (getId(name, c)) {
-				result.push_back(c);
-			} else if (listinfo.all_required) {
-				errorstream << "Resolver: Failed to resolve node name '" << name
-					<< "'." << std::endl;
-				result.push_back(listinfo.c_fallback);
+			if (m_ndef->getId(name, c)) {
+				result_out->push_back(c);
+			} else if (all_required) {
+				errorstream << "NodeResolver: failed to resolve node name '"
+					<< name << "'." << std::endl;
+				result_out->push_back(c_fallback);
 				success = false;
 			}
 		} else {
 			std::set<content_t> cids;
 			std::set<content_t>::iterator it;
-			getIds(name, cids);
+			m_ndef->getIds(name, cids);
 			for (it = cids.begin(); it != cids.end(); ++it)
-				result.push_back(*it);
+				result_out->push_back(*it);
 		}
 	}
 

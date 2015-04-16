@@ -53,7 +53,7 @@ public:
 	float heat_point;
 	float humidity_point;
 
-	virtual void resolveNodeNames(NodeResolveInfo *nri);
+	virtual void resolveNodeNames();
 };
 
 class BiomeManager : public ObjDefManager {

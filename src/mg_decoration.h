@@ -79,7 +79,7 @@ public:
 	Decoration();
 	virtual ~Decoration();
 
-	virtual void resolveNodeNames(NodeResolveInfo *nri);
+	virtual void resolveNodeNames();
 
 	size_t placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	//size_t placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
@@ -96,7 +96,7 @@ public:
 	s16 deco_height_max;
 	s16 nspawnby;
 
-	virtual void resolveNodeNames(NodeResolveInfo *nri);
+	virtual void resolveNodeNames();
 
 	bool canPlaceDecoration(MMVManip *vm, v3s16 p);
 	virtual size_t generate(MMVManip *vm, PseudoRandom *pr, v3s16 p);

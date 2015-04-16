@@ -48,9 +48,9 @@ int                getintfield_default           (lua_State *L, int table,
 
 bool               getstringfield(lua_State *L, int table,
                              const char *fieldname, std::string &result);
-bool               getstringlistfield(lua_State *L, int table,
+size_t             getstringlistfield(lua_State *L, int table,
                              const char *fieldname,
-                             std::vector<const char *> &result);
+                             std::vector<std::string> *result);
 bool               getintfield(lua_State *L, int table,
                              const char *fieldname, int &result);
 void               read_groups(lua_State *L, int index,
@@ -83,8 +83,8 @@ video::SColor       readARGB8           (lua_State *L, int index);
 aabb3f              read_aabb3f         (lua_State *L, int index, f32 scale);
 v3s16               read_v3s16          (lua_State *L, int index);
 std::vector<aabb3f> read_aabb3f_vector  (lua_State *L, int index, f32 scale);
-bool                read_stringlist     (lua_State *L, int index,
-                                         std::vector<const char *> &result);
+size_t              read_stringlist     (lua_State *L, int index,
+                                         std::vector<std::string> *result);
 
 void                push_v3s16          (lua_State *L, v3s16 p);
 void                pushFloatPos        (lua_State *L, v3f p);

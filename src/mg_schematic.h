@@ -94,23 +94,21 @@ public:
 	Schematic();
 	virtual ~Schematic();
 
-	virtual void resolveNodeNames(NodeResolveInfo *nri);
+	virtual void resolveNodeNames();
 
 	void updateContentIds();
 
 	void blitToVManip(v3s16 p, MMVManip *vm,
 		Rotation rot, bool force_placement, INodeDefManager *ndef);
 
-	bool loadSchematicFromFile(const char *filename, INodeDefManager *ndef,
-		StringMap *replace_names);
-	bool saveSchematicToFile(const char *filename, INodeDefManager *ndef);
+	bool loadSchematicFromFile(const std::string &filename, INodeDefManager *ndef,
+		StringMap *replace_names, NodeResolveMethod resolve_method);
+	bool saveSchematicToFile(const std::string &filename);
 	bool getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2);
 
-	bool deserializeFromMts(std::istream *is, INodeDefManager *ndef,
-		std::vector<std::string> *names);
-	bool serializeToMts(std::ostream *os, INodeDefManager *ndef);
-	bool serializeToLua(std::ostream *os,
-		INodeDefManager *ndef, bool use_comments);
+	bool deserializeFromMts(std::istream *is, std::vector<std::string> *names_out);
+	bool serializeToMts(std::ostream *os);
+	bool serializeToLua(std::ostream *os, bool use_comments);
 
 
 	void placeStructure(Map *map, v3s16 p, u32 flags,
@@ -118,8 +116,6 @@ public:
 	void applyProbabilities(v3s16 p0,
 		std::vector<std::pair<v3s16, u8> > *plist,
 		std::vector<std::pair<s16, u8> > *splist);
-
-	std::string getAsLuaTable(INodeDefManager *ndef, bool use_comments);
 };
 
 class SchematicManager : public ObjDefManager {
