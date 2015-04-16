@@ -1,8 +1,8 @@
 // "License": Public Domain
 // I, Mathias Panzenböck, place this file hereby into the public domain. Use it at your own risk for whatever you like.
 
-#ifndef PORTABLE_ENDIAN_H__
-#define PORTABLE_ENDIAN_H__
+#ifndef UTIL_PORTABLE_ENDIAN_HEAD
+#define UTIL_PORTABLE_ENDIAN_HEAD
 
 #if (defined(_WIN16) || defined(_WIN32) || defined(_WIN64)) && !defined(__WINDOWS__)
 
@@ -22,12 +22,12 @@
 #	define htole16(x) OSSwapHostToLittleInt16(x)
 #	define be16toh(x) OSSwapBigToHostInt16(x)
 #	define le16toh(x) OSSwapLittleToHostInt16(x)
- 
+
 #	define htobe32(x) OSSwapHostToBigInt32(x)
 #	define htole32(x) OSSwapHostToLittleInt32(x)
 #	define be32toh(x) OSSwapBigToHostInt32(x)
 #	define le32toh(x) OSSwapLittleToHostInt32(x)
- 
+
 #	define htobe64(x) OSSwapHostToBigInt64(x)
 #	define htole64(x) OSSwapHostToLittleInt64(x)
 #	define be64toh(x) OSSwapBigToHostInt64(x)
@@ -66,12 +66,12 @@
 #		define htole16(x) (x)
 #		define be16toh(x) ntohs(x)
 #		define le16toh(x) (x)
- 
+
 #		define htobe32(x) htonl(x)
 #		define htole32(x) (x)
 #		define be32toh(x) ntohl(x)
 #		define le32toh(x) (x)
- 
+
 #		define htobe64(x) htonll(x)
 #		define htole64(x) (x)
 #		define be64toh(x) ntohll(x)
@@ -84,12 +84,12 @@
 #		define htole16(x) __builtin_bswap16(x)
 #		define be16toh(x) (x)
 #		define le16toh(x) __builtin_bswap16(x)
- 
+
 #		define htobe32(x) (x)
 #		define htole32(x) __builtin_bswap32(x)
 #		define be32toh(x) (x)
 #		define le32toh(x) __builtin_bswap32(x)
- 
+
 #		define htobe64(x) (x)
 #		define htole64(x) __builtin_bswap64(x)
 #		define be64toh(x) (x)
