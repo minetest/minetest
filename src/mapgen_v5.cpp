@@ -175,7 +175,7 @@ int MapgenV5::getGroundLevelAtPoint(v2s16 p)
 		f = 0.01;
 	else if (f >= 1.0)
 		f *= 1.6;
-	float h = water_level + NoisePerlin2D(&noise_height->np, p.X, p.Y, seed);
+	float h = NoisePerlin2D(&noise_height->np, p.X, p.Y, seed);
 
 	s16 search_top = water_level + 15;
 	s16 search_base = water_level;
