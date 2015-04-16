@@ -438,10 +438,11 @@ int ModApiEnvMod::l_get_objects_inside_radius(lua_State *L)
 	// Do it
 	v3f pos = checkFloatPos(L, 1);
 	float radius = luaL_checknumber(L, 2) * BS;
-	std::set<u16> ids = env->getObjectsInsideRadius(pos, radius);
+	std::vector<u16> ids;
+	env->getObjectsInsideRadius(ids, pos, radius);
 	ScriptApiBase *script = getScriptApiBase(L);
 	lua_createtable(L, ids.size(), 0);
-	std::set<u16>::const_iterator iter = ids.begin();
+	std::vector<u16>::const_iterator iter = ids.begin();
 	for(u32 i = 0; iter != ids.end(); iter++) {
 		ServerActiveObject *obj = env->getActiveObject(*iter);
 		// Insert object reference into table

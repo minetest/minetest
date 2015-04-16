@@ -305,7 +305,7 @@ public:
 	bool swapNode(v3s16 p, const MapNode &n);
 
 	// Find all active objects inside a radius around a point
-	std::set<u16> getObjectsInsideRadius(v3f pos, float radius);
+	void getObjectsInsideRadius(std::vector<u16> &objects, v3f pos, float radius);
 
 	// Clear all objects, loading and going through every MapBlock
 	void clearAllObjects();
