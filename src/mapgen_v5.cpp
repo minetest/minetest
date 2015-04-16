@@ -426,7 +426,7 @@ bool MapgenV5::generateBiomes(float *heat_map, float *humidity_map)
 			if (c == c_stone && have_air) {
 				content_t c_below = vm->m_data[i - em.X].getContent();
 
-				if (c_below != CONTENT_AIR) {
+				if (c_below != CONTENT_AIR && c_below != c_water_source) {
 					if (nplaced < y0_top) {
 						vm->m_data[i] = MapNode(biome->c_top);
 						nplaced++;
