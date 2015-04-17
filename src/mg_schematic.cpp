@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <fstream>
+#include <typeinfo>
 #include "mg_schematic.h"
 #include "gamedef.h"
 #include "mapgen.h"
@@ -53,7 +54,7 @@ void SchematicManager::clear()
 			DecoSchematic *dschem = dynamic_cast<DecoSchematic *>(deco);
 			if (dschem)
 				dschem->schematic = NULL;
-		} catch(std::bad_cast) {
+		} catch (std::bad_cast) {
 		}
 	}
 
