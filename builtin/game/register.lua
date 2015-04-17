@@ -398,7 +398,7 @@ local function make_registration_wrap(reg_fn_name, clear_fn_name)
 
 	local orig_clear_fn = core[clear_fn_name]
 	core[clear_fn_name] = function()
-		for k in list do
+		for k in pairs(list) do
 		 list[k]=nil
 		end
 		return orig_clear_fn()
