@@ -229,6 +229,8 @@ public:
 	virtual ObjDef *getRaw(u32 index) const;
 	virtual ObjDef *setRaw(u32 index, ObjDef *obj);
 
+	size_t getNumObjects() const { return m_objects.size(); }
+	ObjDefType getType() const { return m_objtype; }
 	INodeDefManager *getNodeDef() const { return m_ndef; }
 
 	u32 validateHandle(ObjDefHandle handle) const;

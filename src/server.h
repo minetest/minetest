@@ -297,9 +297,6 @@ public:
 	// Envlock and conlock should be locked when using scriptapi
 	GameScripting *getScriptIface(){ return m_script; }
 
-	//TODO: determine what (if anything) should be locked to access EmergeManager
-	EmergeManager *getEmergeManager(){ return m_emerge; }
-
 	// actions: time-reversed list
 	// Return value: success/failure
 	bool rollbackRevertActions(const std::list<RollbackAction> &actions,
@@ -317,7 +314,7 @@ public:
 	virtual MtEventManager* getEventManager();
 	virtual scene::ISceneManager* getSceneManager();
 	virtual IRollbackManager *getRollbackManager() { return m_rollback; }
-
+	virtual EmergeManager *getEmergeManager() { return m_emerge; }
 
 	IWritableItemDefManager* getWritableItemDefManager();
 	IWritableNodeDefManager* getWritableNodeDefManager();

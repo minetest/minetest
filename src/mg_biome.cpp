@@ -18,6 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "mg_biome.h"
+#include "mg_decoration.h"
+#include "emerge.h"
 #include "gamedef.h"
 #include "nodedef.h"
 #include "map.h" //for MMVManip
@@ -33,6 +35,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 BiomeManager::BiomeManager(IGameDef *gamedef) :
 	ObjDefManager(gamedef, OBJDEF_BIOME)
 {
+	m_gamedef = gamedef;
+
 	// Create default biome to be used in case none exist
 	Biome *b = new Biome;
 
@@ -103,7 +107,16 @@ Biome *BiomeManager::getBiome(float heat, float humidity, s16 y)
 
 void BiomeManager::clear()
 {
+	EmergeManager *emerge = m_gamedef->getEmergeManager();
 
+	// Remove all dangling references in Decorations
+	DecorationManager *decomgr = emerge->decomgr;
+	for (size_t i = 0; i != decomgr->getNumObjects(); i++) {
+		Decoration *deco = (Decoration *)decomgr->getRaw(i);
+		deco->biomes.clear();
+	}
+
+	// Don't delete the first biome
 	for (size_t i = 1; i < m_objects.size(); i++) {
 		Biome *b = (Biome *)m_objects[i];
 		delete b;

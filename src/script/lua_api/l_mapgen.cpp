@@ -1039,7 +1039,6 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 	Schematic schem;
 
 	Map *map = &(getEnv(L)->getMap());
-	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
 
 	v3s16 p1 = read_v3s16(L, 1);
 	v3s16 p2 = read_v3s16(L, 2);
