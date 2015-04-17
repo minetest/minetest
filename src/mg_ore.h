@@ -115,7 +115,7 @@ public:
 class OreManager : public ObjDefManager {
 public:
 	OreManager(IGameDef *gamedef);
-	~OreManager() {}
+	virtual ~OreManager() {}
 
 	const char *getObjectTitle() const
 	{

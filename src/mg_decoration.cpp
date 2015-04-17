@@ -61,16 +61,6 @@ size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed,
 }
 
 
-void DecorationManager::clear()
-{
-	for (size_t i = 0; i < m_objects.size(); i++) {
-		Decoration *deco = (Decoration *)m_objects[i];
-		delete deco;
-	}
-	m_objects.clear();
-}
-
-
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -320,8 +310,20 @@ int DecoSimple::getHeight()
 ///////////////////////////////////////////////////////////////////////////////
 
 
+DecoSchematic::DecoSchematic() :
+	Decoration::Decoration()
+{
+	schematic = NULL;
+}
+
+
 size_t DecoSchematic::generate(MMVManip *vm, PseudoRandom *pr, v3s16 p)
 {
+	// Schematic could have been unloaded but not the decoration
+	// In this case generate() does nothing (but doesn't *fail*)
+	if (schematic == NULL)
+		return 0;
+
 	if (flags & DECO_PLACE_CENTER_X)
 		p.X -= (schematic->size.X + 1) / 2;
 	if (flags & DECO_PLACE_CENTER_Y)

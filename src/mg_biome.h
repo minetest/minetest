@@ -61,7 +61,7 @@ public:
 	static const char *OBJECT_TITLE;
 
 	BiomeManager(IGameDef *gamedef);
-	~BiomeManager();
+	virtual ~BiomeManager();
 
 	const char *getObjectTitle() const
 	{
@@ -73,7 +73,7 @@ public:
 		return new Biome;
 	}
 
-	void clear();
+	virtual void clear();
 
 	void calcBiomes(s16 sx, s16 sy, float *heat_map, float *humidity_map,
 		s16 *height_map, u8 *biomeid_map);

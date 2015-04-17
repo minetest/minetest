@@ -61,7 +61,16 @@ struct CutoffData {
 
 class Decoration : public ObjDef, public NodeResolver {
 public:
-	INodeDefManager *ndef;
+	Decoration();
+	virtual ~Decoration();
+
+	virtual void resolveNodeNames();
+
+	size_t placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+	//size_t placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+
+	virtual size_t generate(MMVManip *vm, PseudoRandom *pr, v3s16 p) = 0;
+	virtual int getHeight() = 0;
 
 	u32 flags;
 	int mapseed;
@@ -75,42 +84,32 @@ public:
 	std::set<u8> biomes;
 	//std::list<CutoffData> cutoffs;
 	//JMutex cutoff_mutex;
-
-	Decoration();
-	virtual ~Decoration();
-
-	virtual void resolveNodeNames();
-
-	size_t placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
-	//size_t placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
-
-	virtual size_t generate(MMVManip *vm, PseudoRandom *pr, v3s16 p) = 0;
-	virtual int getHeight() = 0;
 };
 
 class DecoSimple : public Decoration {
 public:
+	virtual size_t generate(MMVManip *vm, PseudoRandom *pr, v3s16 p);
+	bool canPlaceDecoration(MMVManip *vm, v3s16 p);
+	virtual int getHeight();
+
+	virtual void resolveNodeNames();
+
 	std::vector<content_t> c_decos;
 	std::vector<content_t> c_spawnby;
 	s16 deco_height;
 	s16 deco_height_max;
 	s16 nspawnby;
-
-	virtual void resolveNodeNames();
-
-	bool canPlaceDecoration(MMVManip *vm, v3s16 p);
-	virtual size_t generate(MMVManip *vm, PseudoRandom *pr, v3s16 p);
-	virtual int getHeight();
 };
 
 class DecoSchematic : public Decoration {
 public:
-	Rotation rotation;
-	Schematic *schematic;
-	std::string filename;
+	DecoSchematic();
 
 	virtual size_t generate(MMVManip *vm, PseudoRandom *pr, v3s16 p);
 	virtual int getHeight();
+
+	Rotation rotation;
+	Schematic *schematic;
 };
 
 
@@ -124,7 +123,7 @@ public:
 class DecorationManager : public ObjDefManager {
 public:
 	DecorationManager(IGameDef *gamedef);
-	~DecorationManager() {}
+	virtual ~DecorationManager() {}
 
 	const char *getObjectTitle() const
 	{
@@ -144,8 +143,6 @@ public:
 			return NULL;
 		}
 	}
-
-	void clear();
 
 	size_t placeAllDecos(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 };

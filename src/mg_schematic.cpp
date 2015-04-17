@@ -19,7 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <fstream>
 #include "mg_schematic.h"
+#include "gamedef.h"
 #include "mapgen.h"
+#include "emerge.h"
 #include "map.h"
 #include "mapblock.h"
 #include "log.h"
@@ -34,6 +36,28 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 SchematicManager::SchematicManager(IGameDef *gamedef) :
 	ObjDefManager(gamedef, OBJDEF_SCHEMATIC)
 {
+	m_gamedef = gamedef;
+}
+
+
+void SchematicManager::clear()
+{
+	EmergeManager *emerge = m_gamedef->getEmergeManager();
+
+	// Remove all dangling references in Decorations
+	DecorationManager *decomgr = emerge->decomgr;
+	for (size_t i = 0; i != decomgr->getNumObjects(); i++) {
+		Decoration *deco = (Decoration *)decomgr->getRaw(i);
+
+		try {
+			DecoSchematic *dschem = dynamic_cast<DecoSchematic *>(deco);
+			if (dschem)
+				dschem->schematic = NULL;
+		} catch(std::bad_cast) {
+		}
+	}
+
+	ObjDefManager::clear();
 }
 
 

@@ -29,6 +29,7 @@ class Mapgen;
 class MMVManip;
 class PseudoRandom;
 class NodeResolver;
+class IGameDef;
 
 /*
 	Minetest Schematic File Format
@@ -121,7 +122,9 @@ public:
 class SchematicManager : public ObjDefManager {
 public:
 	SchematicManager(IGameDef *gamedef);
-	~SchematicManager() {}
+	virtual ~SchematicManager() {}
+
+	virtual void clear();
 
 	const char *getObjectTitle() const
 	{
@@ -132,6 +135,9 @@ public:
 	{
 		return new Schematic;
 	}
+
+private:
+	IGameDef *m_gamedef;
 };
 
 void build_nnlist_and_update_ids(MapNode *nodes, u32 nodecount,
