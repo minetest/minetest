@@ -5,6 +5,7 @@ Comment=Multiplayer infinite-world block sandbox
 Comment[de]=Mehrspieler-Sandkastenspiel mit unendlichen Blockwelten
 Comment[es]=Juego sandbox multijugador con mundos infinitos
 Comment[fr]=Jeu multijoueurs de type bac à sable avec des mondes infinis
+Comment[ru]=Игра-песочница с безграничным миром, состоящим из блоков
 Comment[tr]=Tek-Çok oyuncuyla küplerden sonsuz dünyalar inşa et
 Exec=minetest
 Icon=minetest-icon
