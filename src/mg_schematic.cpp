@@ -345,7 +345,7 @@ bool Schematic::loadSchematicFromFile(const std::string &filename,
 	INodeDefManager *ndef, StringMap *replace_names,
 	NodeResolveMethod resolve_method)
 {
-	std::ifstream is(filename, std::ios_base::binary);
+	std::ifstream is(filename.c_str(), std::ios_base::binary);
 	if (!is.good()) {
 		errorstream << "Schematic::loadSchematicFile: unable to open file '"
 			<< filename << "'" << std::endl;
