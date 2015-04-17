@@ -181,12 +181,13 @@ std::string wide_to_narrow(const std::wstring &wcs)
 // their password. (Exception : if the password field is
 // blank, we send a blank password - this is for backwards
 // compatibility with password-less players).
-std::string translatePassword(std::string playername, std::wstring password)
+std::string translatePassword(const std::string &playername,
+	const std::string &password)
 {
 	if (password.length() == 0)
 		return "";
 
-	std::string slt = playername + wide_to_narrow(password);
+	std::string slt = playername + password;
 	SHA1 sha1;
 	sha1.addBytes(slt.c_str(), slt.length());
 	unsigned char *digest = sha1.getDigest();

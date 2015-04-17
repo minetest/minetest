@@ -407,8 +407,8 @@ public:
 			const std::map<std::string, std::string> &fields);
 	void sendInventoryAction(InventoryAction *a);
 	void sendChatMessage(const std::wstring &message);
-	void sendChangePassword(const std::wstring &oldpassword,
-	                        const std::wstring &newpassword);
+	void sendChangePassword(const std::string &oldpassword,
+	                        const std::string &newpassword);
 	void sendDamage(u8 damage);
 	void sendBreath(u16 breath);
 	void sendRespawn();

@@ -392,7 +392,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	else
 		playername = menudata.name;
 
-	password = translatePassword(playername, narrow_to_wide(menudata.password));
+	password = translatePassword(playername, menudata.password);
 
 	g_settings->set("name", playername);
 

@@ -1062,8 +1062,8 @@ void Client::sendChatMessage(const std::wstring &message)
 	Send(&pkt);
 }
 
-void Client::sendChangePassword(const std::wstring &oldpassword,
-        const std::wstring &newpassword)
+void Client::sendChangePassword(const std::string &oldpassword,
+        const std::string &newpassword)
 {
 	Player *player = m_env.getLocalPlayer();
 	if(player == NULL)

@@ -255,8 +255,7 @@ int ModApiUtil::l_get_password_hash(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	std::string name = luaL_checkstring(L, 1);
 	std::string raw_password = luaL_checkstring(L, 2);
-	std::string hash = translatePassword(name,
-			narrow_to_wide(raw_password));
+	std::string hash = translatePassword(name, raw_password);
 	lua_pushstring(L, hash.c_str());
 	return 1;
 }
