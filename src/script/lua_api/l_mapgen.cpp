@@ -1037,6 +1037,7 @@ int ModApiMapgen::l_generate_decorations(lua_State *L)
 int ModApiMapgen::l_create_schematic(lua_State *L)
 {
 	Schematic schem;
+	schem.m_ndef = getServer(L)->getNodeDefManager();
 
 	Map *map = &(getEnv(L)->getMap());
 
