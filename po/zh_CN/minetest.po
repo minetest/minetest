@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-13 15:24+0100\n"
-"PO-Revision-Date: 2013-11-25 10:04+0200\n"
-"Last-Translator: Shen Zheyu <arsdragonfly@gmail.com>\n"
+"PO-Revision-Date: 2015-04-19 02:00+0800\n"
+"Last-Translator: Ang Weijie <fishyWET@hotmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: builtin/fstk/ui.lua:67
 msgid "Ok"
-msgstr "OK"
+msgstr "确定"
 
 #: builtin/mainmenu/dlg_config_world.lua:26
 msgid "World:"
@@ -94,19 +94,19 @@ msgstr "创建"
 
 #: builtin/mainmenu/dlg_create_world.lua:68
 msgid "You have no subgames installed."
-msgstr ""
+msgstr "你没有安装任何游戏"
 
 #: builtin/mainmenu/dlg_create_world.lua:69
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "从minetest.net下载一个"
 
 #: builtin/mainmenu/dlg_create_world.lua:72
 msgid "Warning: The minimal development test is meant for developers."
-msgstr ""
+msgstr "警告: 甚微发展测试只是为了开发人员"
 
 #: builtin/mainmenu/dlg_create_world.lua:73
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr ""
+msgstr "从minetest.net下载一个游戏，例如:minetest_game"
 
 #: builtin/mainmenu/dlg_create_world.lua:97
 msgid "A world named \"$1\" already exists"
@@ -181,33 +181,33 @@ msgstr "安装MOD：找不到$1的真正MOD名"
 
 #: builtin/mainmenu/store.lua:88
 msgid "Unsorted"
-msgstr ""
+msgstr "未分类"
 
 #: builtin/mainmenu/store.lua:99 builtin/mainmenu/store.lua:584
 msgid "Search"
-msgstr ""
+msgstr "搜索"
 
 #: builtin/mainmenu/store.lua:125
 #, fuzzy
 msgid "Downloading"
-msgstr "下载"
+msgstr "下载中"
 
 #: builtin/mainmenu/store.lua:127
 msgid "please wait..."
-msgstr ""
+msgstr "请稍候..."
 
 #: builtin/mainmenu/store.lua:159
 msgid "Successfully installed:"
-msgstr ""
+msgstr "成功的安装："
 
 #: builtin/mainmenu/store.lua:163
 #, fuzzy
 msgid "Shortname:"
-msgstr "世界名称"
+msgstr "短名称"
 
 #: builtin/mainmenu/store.lua:167 src/guiFormSpecMenu.cpp:2866
 msgid "ok"
-msgstr ""
+msgstr "确定"
 
 #: builtin/mainmenu/store.lua:476
 msgid "Rating"
@@ -223,7 +223,7 @@ msgstr "安装"
 
 #: builtin/mainmenu/store.lua:522
 msgid "Close store"
-msgstr ""
+msgstr "关闭店"
 
 #: builtin/mainmenu/store.lua:530
 msgid "Page $1 of $2"
@@ -231,19 +231,19 @@ msgstr "第$1页,共$2页"
 
 #: builtin/mainmenu/tab_credits.lua:22
 msgid "Credits"
-msgstr "关于"
+msgstr "归功"
 
 #: builtin/mainmenu/tab_credits.lua:29
 msgid "Core Developers"
-msgstr "核心开发人员"
+msgstr "内部开发人员"
 
 #: builtin/mainmenu/tab_credits.lua:43
 msgid "Active Contributors"
-msgstr "活跃的贡献者"
+msgstr "积极贡献者"
 
 #: builtin/mainmenu/tab_credits.lua:48
 msgid "Previous Contributors"
-msgstr "以往的贡献者"
+msgstr "前贡献者"
 
 #: builtin/mainmenu/tab_mods.lua:30
 msgid "Installed Mods:"
@@ -251,27 +251,27 @@ msgstr "已安装的MOD："
 
 #: builtin/mainmenu/tab_mods.lua:39
 msgid "Online mod repository"
-msgstr "在线mod库"
+msgstr "网上MOD库"
 
 #: builtin/mainmenu/tab_mods.lua:78
 msgid "No mod description available"
-msgstr "无可用mod信息"
+msgstr "无MOD资料可得"
 
 #: builtin/mainmenu/tab_mods.lua:82
 msgid "Mod information:"
-msgstr "mod信息："
+msgstr "MOD资料："
 
 #: builtin/mainmenu/tab_mods.lua:93
 msgid "Rename"
-msgstr "重命名"
+msgstr "改名"
 
 #: builtin/mainmenu/tab_mods.lua:95
 msgid "Uninstall selected modpack"
-msgstr "删除选定mod包"
+msgstr "删除选中的MOD包"
 
 #: builtin/mainmenu/tab_mods.lua:106
 msgid "Uninstall selected mod"
-msgstr "删除选中MOD"
+msgstr "删除选中的MOD"
 
 #: builtin/mainmenu/tab_mods.lua:121
 msgid "Select Mod File:"
@@ -333,7 +333,7 @@ msgstr "创造模式"
 #: builtin/mainmenu/tab_server.lua:33 builtin/mainmenu/tab_simple_main.lua:65
 #: builtin/mainmenu/tab_singleplayer.lua:92
 msgid "Enable Damage"
-msgstr "开启伤害"
+msgstr "开启伤害风险"
 
 #: builtin/mainmenu/tab_server.lua:35
 msgid "Public"
@@ -341,11 +341,11 @@ msgstr "公共服务器"
 
 #: builtin/mainmenu/tab_server.lua:45
 msgid "Bind Address"
-msgstr ""
+msgstr "绑定地址"
 
 #: builtin/mainmenu/tab_server.lua:47
 msgid "Port"
-msgstr ""
+msgstr "端口"
 
 #: builtin/mainmenu/tab_server.lua:51
 msgid "Server Port"
@@ -357,11 +357,11 @@ msgstr "服务器"
 
 #: builtin/mainmenu/tab_settings.lua:23
 msgid "Are you sure to reset your singleplayer world?"
-msgstr ""
+msgstr "你确定要重置您的单人世界吗？"
 
 #: builtin/mainmenu/tab_settings.lua:27
 msgid "No!!!"
-msgstr ""
+msgstr "不!!!"
 
 #: builtin/mainmenu/tab_settings.lua:134
 msgid "Smooth Lighting"
@@ -373,12 +373,12 @@ msgstr "启用粒子效果"
 
 #: builtin/mainmenu/tab_settings.lua:138
 msgid "3D Clouds"
-msgstr "3D云彩"
+msgstr "三维云彩"
 
 #: builtin/mainmenu/tab_settings.lua:140
 #, fuzzy
 msgid "Fancy Trees"
-msgstr "更漂亮的树"
+msgstr "花式树"
 
 #: builtin/mainmenu/tab_settings.lua:142
 msgid "Opaque Water"
@@ -387,11 +387,11 @@ msgstr "不透明的水"
 #: builtin/mainmenu/tab_settings.lua:144
 #, fuzzy
 msgid "Connected Glass"
-msgstr "连接"
+msgstr "连接的玻璃"
 
 #: builtin/mainmenu/tab_settings.lua:149
 msgid "Restart minetest for driver change to take effect"
-msgstr ""
+msgstr "重启minetest让驱动变化生效"
 
 #: builtin/mainmenu/tab_settings.lua:151
 msgid "Mip-Mapping"
@@ -420,19 +420,19 @@ msgstr "改变键位设置"
 #: builtin/mainmenu/tab_settings.lua:167
 #, fuzzy
 msgid "Reset singleplayer world"
-msgstr "单人游戏"
+msgstr "重置单人游戏"
 
 #: builtin/mainmenu/tab_settings.lua:171
 msgid "GUI scale factor"
-msgstr ""
+msgstr "GUI缩放因子"
 
 #: builtin/mainmenu/tab_settings.lua:175
 msgid "Scaling factor applied to menu elements: "
-msgstr ""
+msgstr "菜单元素应用缩放因子"
 
 #: builtin/mainmenu/tab_settings.lua:181
 msgid "Touch free target"
-msgstr ""
+msgstr "自由触摸目标"
 
 #: builtin/mainmenu/tab_settings.lua:187
 msgid "Touchthreshold (px)"
@@ -445,7 +445,7 @@ msgstr "贴图处理"
 
 #: builtin/mainmenu/tab_settings.lua:196 builtin/mainmenu/tab_settings.lua:209
 msgid "Generate Normalmaps"
-msgstr ""
+msgstr "产生法线贴图"
 
 #: builtin/mainmenu/tab_settings.lua:198 builtin/mainmenu/tab_settings.lua:210
 msgid "Parallax Occlusion"
@@ -453,15 +453,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:200 builtin/mainmenu/tab_settings.lua:211
 msgid "Waving Water"
-msgstr ""
+msgstr "摇动的水"
 
 #: builtin/mainmenu/tab_settings.lua:202 builtin/mainmenu/tab_settings.lua:212
 msgid "Waving Leaves"
-msgstr ""
+msgstr "摇动的叶子"
 
 #: builtin/mainmenu/tab_settings.lua:204 builtin/mainmenu/tab_settings.lua:213
 msgid "Waving Plants"
-msgstr ""
+msgstr "摇动的植物"
 
 #: builtin/mainmenu/tab_settings.lua:255
 msgid "To enable shaders the OpenGL driver needs to be used."
@@ -473,7 +473,7 @@ msgstr "设置"
 
 #: builtin/mainmenu/tab_simple_main.lua:67
 msgid "Fly mode"
-msgstr ""
+msgstr "飞行模式"
 
 #: builtin/mainmenu/tab_simple_main.lua:71
 #, fuzzy
@@ -483,7 +483,7 @@ msgstr "单人游戏"
 #: builtin/mainmenu/tab_simple_main.lua:72
 #, fuzzy
 msgid "Config mods"
-msgstr "配置"
+msgstr "配置MOD"
 
 #: builtin/mainmenu/tab_simple_main.lua:191
 #, fuzzy
@@ -504,7 +504,7 @@ msgstr "选择材质包："
 
 #: builtin/mainmenu/tab_texturepacks.lua:69
 msgid "No information available"
-msgstr "无可用信息"
+msgstr "无资料可得"
 
 #: builtin/mainmenu/tab_texturepacks.lua:114
 #, fuzzy
@@ -517,7 +517,7 @@ msgstr "物品材质..."
 
 #: src/fontengine.cpp:70 src/fontengine.cpp:226
 msgid "needs_fallback_font"
-msgstr "yes"
+msgstr ""
 
 #: src/game.cpp:1063
 msgid "Respawn"
@@ -537,11 +537,11 @@ msgstr "媒体..."
 
 #: src/game.cpp:2267
 msgid " KB/s"
-msgstr ""
+msgstr "千字节/秒"
 
 #: src/game.cpp:2271
 msgid " MB/s"
-msgstr ""
+msgstr "兆字节/秒"
 
 #: src/game.cpp:4220
 msgid ""
@@ -553,11 +553,11 @@ msgstr ""
 
 #: src/guiFormSpecMenu.cpp:2055
 msgid "Proceed"
-msgstr "继续游戏"
+msgstr "继续"
 
 #: src/guiFormSpecMenu.cpp:2846
 msgid "Enter "
-msgstr ""
+msgstr "输入"
 
 #: src/guiKeyChangeMenu.cpp:125
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -569,7 +569,7 @@ msgstr "“使用” = 向下爬"
 
 #: src/guiKeyChangeMenu.cpp:180
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "连按两次“跳”切换飞行状态"
+msgstr "连按两次“跳”切换飞行模式"
 
 #: src/guiKeyChangeMenu.cpp:296
 msgid "Key already in use"
@@ -629,11 +629,11 @@ msgstr "控制台"
 
 #: src/guiKeyChangeMenu.cpp:409
 msgid "Toggle fly"
-msgstr "切换飞行状态"
+msgstr "切换飞行模式"
 
 #: src/guiKeyChangeMenu.cpp:410
 msgid "Toggle fast"
-msgstr "切换快速移动状态"
+msgstr "切换快速移动模式"
 
 #: src/guiKeyChangeMenu.cpp:411
 msgid "Toggle noclip"
@@ -717,7 +717,7 @@ msgstr "大写"
 
 #: src/keycode.cpp:226
 msgid "Control"
-msgstr "Ctrl"
+msgstr "Ctrl键"
 
 #: src/keycode.cpp:226
 msgid "Kana"
@@ -969,7 +969,7 @@ msgstr "主菜单"
 
 #: src/main.cpp:1719
 msgid "Player name too long."
-msgstr ""
+msgstr "玩家的名字太长了"
 
 #: src/main.cpp:1757
 msgid "Connection error (timed out?)"
@@ -981,11 +981,11 @@ msgstr "没有选择世界或提供地址。未执行操作。"
 
 #: src/main.cpp:1926
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "提供世界地址不存在"
 
 #: src/main.cpp:1935
 msgid "Could not find or load game \""
-msgstr "无法找到或载入游戏模式“"
+msgstr "无法找到或载入游戏模式"
 
 #: src/main.cpp:1953
 msgid "Invalid gamespec."
@@ -1207,7 +1207,7 @@ msgstr "非法游戏模式规格。"
 #~ msgstr "游戏"
 
 #~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "Gamemgr: 无法复制MOD“$1”到游戏“$2”"
+#~ msgstr "游戏管理: 无法复制MOD“$1”到游戏“$2”"
 
 #~ msgid "Game Name"
 #~ msgstr "游戏名"
