@@ -3086,8 +3086,7 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 		} else if ((event.type == CE_SPAWN_PARTICLE) ||
 				(event.type == CE_ADD_PARTICLESPAWNER) ||
 				(event.type == CE_DELETE_PARTICLESPAWNER)) {
-			client->getParticleManager()->handleParticleEvent(&event, gamedef,
-					smgr, player);
+			client->getParticleManager()->handleParticleEvent(&event, gamedef, player);
 		} else if (event.type == CE_HUDADD) {
 			u32 id = event.hudadd.id;
 
@@ -3652,7 +3651,7 @@ void Game::handleDigging(GameRunData *runData,
 		if (m_cache_enable_particles) {
 			const ContentFeatures &features =
 					client->getNodeDefManager()->get(n);
-			client->getParticleManager()->addPunchingParticles(gamedef, smgr,
+			client->getParticleManager()->addPunchingParticles(gamedef,
 					player, nodepos, features.tiles);
 		}
 	}
@@ -3699,7 +3698,7 @@ void Game::handleDigging(GameRunData *runData,
 		if (m_cache_enable_particles) {
 			const ContentFeatures &features =
 				client->getNodeDefManager()->get(wasnode);
-			client->getParticleManager()->addDiggingParticles(gamedef, smgr,
+			client->getParticleManager()->addDiggingParticles(gamedef,
 					player, nodepos, features.tiles);
 		}
 
