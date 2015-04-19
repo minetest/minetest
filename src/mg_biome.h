@@ -42,6 +42,7 @@ public:
 	content_t c_stone;
 	content_t c_water_top;
 	content_t c_water;
+	content_t c_river_water;
 	content_t c_dust;
 
 	s16 depth_top;
