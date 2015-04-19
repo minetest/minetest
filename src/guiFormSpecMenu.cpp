@@ -450,7 +450,7 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, std::string element)
 	if (parts.size() >= 5) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::vector<std::string> v_dim = split(parts[1],',');
-		std::string name = parts[2];
+		std::string name = parts[3];
 		std::string value = parts[4];
 
 		MY_CHECKPOS("scrollbar",0);
