@@ -377,7 +377,7 @@ const char *getVideoDriverName(irr::video::E_DRIVER_TYPE type);
 const char *getVideoDriverFriendlyName(irr::video::E_DRIVER_TYPE type);
 #endif
 
-inline const char * getPlatformName()
+inline const char *getPlatformName()
 {
 	return
 #if defined(ANDROID)
@@ -401,8 +401,12 @@ inline const char * getPlatformName()
 	"AIX"
 #elif defined(__hpux)
 	"HP-UX"
-#elif defined(__sun) && defined(__SVR4)
-	"Solaris"
+#elif defined(__sun) || defined(sun)
+	#if defined(__SVR4)
+		"Solaris"
+	#else
+		"SunOS"
+	#endif
 #elif defined(__CYGWIN__)
 	"Cygwin"
 #elif defined(__unix__) || defined(__unix)
