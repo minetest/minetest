@@ -389,22 +389,23 @@ Biome *read_biome_def(lua_State *L, int index, INodeDefManager *ndef)
 	Biome *b = BiomeManager::create(biometype);
 
 	b->name            = getstringfield_default(L, index, "name", "");
-	b->depth_top       = getintfield_default(L, index, "depth_top",          1);
-	b->depth_filler    = getintfield_default(L, index, "depth_filler",       2);
-	b->depth_water_top = getintfield_default(L, index, "depth_water_top",    0);
-	b->y_min           = getintfield_default(L, index, "y_min",         -31000);
-	b->y_max           = getintfield_default(L, index, "y_max",          31000);
-	b->heat_point      = getfloatfield_default(L, index, "heat_point",     0.f);
-	b->humidity_point  = getfloatfield_default(L, index, "humidity_point", 0.f);
+	b->depth_top       = getintfield_default(L,    index, "depth_top",       1);
+	b->depth_filler    = getintfield_default(L,    index, "depth_filler",    2);
+	b->depth_water_top = getintfield_default(L,    index, "depth_water_top", 0);
+	b->y_min           = getintfield_default(L,    index, "y_min",           -31000);
+	b->y_max           = getintfield_default(L,    index, "y_max",           31000);
+	b->heat_point      = getfloatfield_default(L,  index, "heat_point",      0.f);
+	b->humidity_point  = getfloatfield_default(L,  index, "humidity_point",  0.f);
 	b->flags           = 0; //reserved
 
 	std::vector<std::string> &nn = b->m_nodenames;
-	nn.push_back(getstringfield_default(L, index, "node_top",       ""));
-	nn.push_back(getstringfield_default(L, index, "node_filler",    ""));
-	nn.push_back(getstringfield_default(L, index, "node_stone",     ""));
-	nn.push_back(getstringfield_default(L, index, "node_water_top", ""));
-	nn.push_back(getstringfield_default(L, index, "node_water",     ""));
-	nn.push_back(getstringfield_default(L, index, "node_dust",      ""));
+	nn.push_back(getstringfield_default(L, index, "node_top",         ""));
+	nn.push_back(getstringfield_default(L, index, "node_filler",      ""));
+	nn.push_back(getstringfield_default(L, index, "node_stone",       ""));
+	nn.push_back(getstringfield_default(L, index, "node_water_top",   ""));
+	nn.push_back(getstringfield_default(L, index, "node_water",       ""));
+	nn.push_back(getstringfield_default(L, index, "node_river_water", ""));
+	nn.push_back(getstringfield_default(L, index, "node_dust",        ""));
 	ndef->pendNodeResolve(b, NODE_RESOLVE_DEFERRED);
 
 	return b;
