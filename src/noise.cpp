@@ -485,6 +485,13 @@ Noise::~Noise()
 
 void Noise::allocBuffers()
 {
+	if (sx < 1)
+		sx = 1;
+	if (sy < 1)
+		sy = 1;
+	if (sz < 1)
+		sz = 1;
+
 	this->noise_buf = NULL;
 	resizeNoiseBuf(sz > 1);
 
