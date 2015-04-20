@@ -386,12 +386,9 @@ bool getCurrentExecPath(char *buf, size_t len)
 //// Mac OS X, Darwin
 #elif defined(__APPLE__)
 
-bool getCurrentExecPath(char *buf, size_t len)
+bool getCurrentExecPath(char *buf, uint32_t len)
 {
-	if (_NSGetExecutablePath(buf, &len) == -1)
-		return false;
-
-	return true;
+	return _NSGetExecutablePath(buf, &len) != -1;
 }
 
 
