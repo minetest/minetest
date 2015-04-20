@@ -388,7 +388,8 @@ bool getCurrentExecPath(char *buf, size_t len)
 
 bool getCurrentExecPath(char *buf, size_t len)
 {
-	if (_NSGetExecutablePath(buf, &len) == -1)
+	uint32_t lenb = (uint32_t)len;
+	if (_NSGetExecutablePath(buf, &lenb) == -1)
 		return false;
 
 	return true;
