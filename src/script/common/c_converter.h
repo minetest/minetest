@@ -53,6 +53,10 @@ size_t             getstringlistfield(lua_State *L, int table,
                              std::vector<std::string> *result);
 bool               getintfield(lua_State *L, int table,
                              const char *fieldname, int &result);
+bool               getintfield(lua_State *L, int table,
+                             const char *fieldname, u16 &result);
+bool               getintfield(lua_State *L, int table,
+                             const char *fieldname, u32 &result);
 void               read_groups(lua_State *L, int index,
                              std::map<std::string, int> &result);
 bool               getboolfield(lua_State *L, int table,
@@ -72,6 +76,8 @@ void               setboolfield(lua_State *L, int table,
 
 
 v3f                 checkFloatPos       (lua_State *L, int index);
+v2f                 check_v2f           (lua_State *L, int index);
+v2s16               check_v2s16         (lua_State *L, int index);
 v3f                 check_v3f           (lua_State *L, int index);
 v3s16               check_v3s16         (lua_State *L, int index);
 

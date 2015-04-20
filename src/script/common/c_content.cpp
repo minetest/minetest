@@ -983,14 +983,16 @@ bool read_noiseparams(lua_State *L, int index, NoiseParams *np)
 	if (!lua_istable(L, index))
 		return false;
 
-	np->offset     = getfloatfield_default(L, index, "offset",     0.0);
-	np->scale      = getfloatfield_default(L, index, "scale",      0.0);
-	np->persist    = getfloatfield_default(L, index, "persist",    0.0);
-	np->lacunarity = getfloatfield_default(L, index, "lacunarity", 2.0);
-	np->seed       = getintfield_default(L,   index, "seed",       0);
-	np->octaves    = getintfield_default(L,   index, "octaves",    0);
+	getfloatfield(L, index, "offset",      np->offset);
+	getfloatfield(L, index, "scale",       np->scale);
+	getfloatfield(L, index, "persist",     np->persist);
+	getfloatfield(L, index, "persistence", np->persist);
+	getfloatfield(L, index, "lacunarity",  np->lacunarity);
+	getintfield(L,   index, "seed",        np->seed);
+	getintfield(L,   index, "octaves",     np->octaves);
 
-	u32 flags = 0, flagmask = 0;
+	u32 flags    = 0;
+	u32 flagmask = 0;
 	np->flags = getflagsfield(L, index, "flags", flagdesc_noiseparams,
 		&flags, &flagmask) ? flags : NOISE_FLAG_DEFAULTS;
 

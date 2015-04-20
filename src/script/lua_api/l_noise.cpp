@@ -43,7 +43,7 @@ int LuaPerlinNoise::l_get2d(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaPerlinNoise *o = checkobject(L, 1);
-	v2f p = read_v2f(L, 2);
+	v2f p = check_v2f(L, 2);
 	lua_Number val = NoisePerlin2D(&o->np, p.X, p.Y, 0);
 	lua_pushnumber(L, val);
 	return 1;
@@ -54,7 +54,7 @@ int LuaPerlinNoise::l_get3d(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaPerlinNoise *o = checkobject(L, 1);
-	v3f p = read_v3f(L, 2);
+	v3f p = check_v3f(L, 2);
 	lua_Number val = NoisePerlin3D(&o->np, p.X, p.Y, p.Z, 0);
 	lua_pushnumber(L, val);
 	return 1;
@@ -168,7 +168,7 @@ int LuaPerlinNoiseMap::l_get2dMap(lua_State *L)
 	size_t i = 0;
 
 	LuaPerlinNoiseMap *o = checkobject(L, 1);
-	v2f p = read_v2f(L, 2);
+	v2f p = check_v2f(L, 2);
 
 	Noise *n = o->noise;
 	n->perlinMap2D(p.X, p.Y);
@@ -191,7 +191,7 @@ int LuaPerlinNoiseMap::l_get2dMap_flat(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaPerlinNoiseMap *o = checkobject(L, 1);
-	v2f p = read_v2f(L, 2);
+	v2f p = check_v2f(L, 2);
 
 	Noise *n = o->noise;
 	n->perlinMap2D(p.X, p.Y);
@@ -213,7 +213,7 @@ int LuaPerlinNoiseMap::l_get3dMap(lua_State *L)
 	size_t i = 0;
 
 	LuaPerlinNoiseMap *o = checkobject(L, 1);
-	v3f p = read_v3f(L, 2);
+	v3f p = check_v3f(L, 2);
 
 	if (!o->m_is3d)
 		return 0;
@@ -243,7 +243,7 @@ int LuaPerlinNoiseMap::l_get3dMap_flat(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaPerlinNoiseMap *o = checkobject(L, 1);
-	v3f p = read_v3f(L, 2);
+	v3f p = check_v3f(L, 2);
 
 	if (!o->m_is3d)
 		return 0;

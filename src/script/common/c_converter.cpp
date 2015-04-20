@@ -59,6 +59,19 @@ v2s16 read_v2s16(lua_State *L, int index)
 	return p;
 }
 
+v2s16 check_v2s16(lua_State *L, int index)
+{
+	v2s16 p;
+	luaL_checktype(L, index, LUA_TTABLE);
+	lua_getfield(L, index, "x");
+	p.X = luaL_checknumber(L, -1);
+	lua_pop(L, 1);
+	lua_getfield(L, index, "y");
+	p.Y = luaL_checknumber(L, -1);
+	lua_pop(L, 1);
+	return p;
+}
+
 v2s32 read_v2s32(lua_State *L, int index)
 {
 	v2s32 p;
@@ -81,6 +94,19 @@ v2f read_v2f(lua_State *L, int index)
 	lua_pop(L, 1);
 	lua_getfield(L, index, "y");
 	p.Y = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	return p;
+}
+
+v2f check_v2f(lua_State *L, int index)
+{
+	v2f p;
+	luaL_checktype(L, index, LUA_TTABLE);
+	lua_getfield(L, index, "x");
+	p.X = luaL_checknumber(L, -1);
+	lua_pop(L, 1);
+	lua_getfield(L, index, "y");
+	p.Y = luaL_checknumber(L, -1);
 	lua_pop(L, 1);
 	return p;
 }
@@ -274,6 +300,32 @@ bool getstringfield(lua_State *L, int table,
 
 bool getintfield(lua_State *L, int table,
 		const char *fieldname, int &result)
+{
+	lua_getfield(L, table, fieldname);
+	bool got = false;
+	if(lua_isnumber(L, -1)){
+		result = lua_tonumber(L, -1);
+		got = true;
+	}
+	lua_pop(L, 1);
+	return got;
+}
+
+bool getintfield(lua_State *L, int table,
+		const char *fieldname, u16 &result)
+{
+	lua_getfield(L, table, fieldname);
+	bool got = false;
+	if(lua_isnumber(L, -1)){
+		result = lua_tonumber(L, -1);
+		got = true;
+	}
+	lua_pop(L, 1);
+	return got;
+}
+
+bool getintfield(lua_State *L, int table,
+		const char *fieldname, u32 &result)
 {
 	lua_getfield(L, table, fieldname);
 	bool got = false;
