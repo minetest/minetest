@@ -324,25 +324,22 @@ size_t DecoSchematic::generate(MMVManip *vm, PseudoRandom *pr, v3s16 p)
 	if (schematic == NULL)
 		return 0;
 
-	if (flags & DECO_PLACE_CENTER_X)
-		p.X -= (schematic->size.X + 1) / 2;
-	if (flags & DECO_PLACE_CENTER_Y)
-		p.Y -= (schematic->size.Y + 1) / 2;
-	if (flags & DECO_PLACE_CENTER_Z)
-		p.Z -= (schematic->size.Z + 1) / 2;
-
-	bool force_placement = (flags & DECO_FORCE_PLACEMENT);
-
-	if (!vm->m_area.contains(p))
-		return 0;
-
 	u32 vi = vm->m_area.index(p);
 	content_t c = vm->m_data[vi].getContent();
 	if (!CONTAINS(c_place_on, c))
 		return 0;
 
+	if (flags & DECO_PLACE_CENTER_X)
+		p.X -= (schematic->size.X - 1) / 2;
+	if (flags & DECO_PLACE_CENTER_Y)
+		p.Y -= (schematic->size.Y - 1) / 2;
+	if (flags & DECO_PLACE_CENTER_Z)
+		p.Z -= (schematic->size.Z - 1) / 2;
+
 	Rotation rot = (rotation == ROTATE_RAND) ?
 		(Rotation)pr->range(ROTATE_0, ROTATE_270) : rotation;
+
+	bool force_placement = (flags & DECO_FORCE_PLACEMENT);
 
 	schematic->blitToVManip(p, vm, rot, force_placement, m_ndef);
 
