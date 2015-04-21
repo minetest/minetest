@@ -538,19 +538,28 @@ void Noise::setOctaves(int octaves)
 
 void Noise::resizeNoiseBuf(bool is3d)
 {
-	int nlx, nly, nlz;
-	float ofactor;
-
 	//maximum possible spread value factor
-	ofactor = pow(np.lacunarity, np.octaves - 1);
+	float ofactor = (np.lacunarity > 1.0) ?
+		pow(np.lacunarity, np.octaves - 1) :
+		np.lacunarity;
 
-	//noise lattice point count
-	//(int)(sz * spread * ofactor) is # of lattice points crossed due to length
+	// noise lattice point count
+	// (int)(sz * spread * ofactor) is # of lattice points crossed due to length
+	float num_noise_points_x = sx * ofactor / np.spread.X;
+	float num_noise_points_y = sy * ofactor / np.spread.Y;
+	float num_noise_points_z = sz * ofactor / np.spread.Z;
+
+	// protect against obviously invalid parameters
+	if (num_noise_points_x > 1000000000.f ||
+		num_noise_points_y > 1000000000.f ||
+		num_noise_points_z > 1000000000.f)
+		throw InvalidNoiseParamsException();
+
 	// + 2 for the two initial endpoints
 	// + 1 for potentially crossing a boundary due to offset
-	nlx = (int)ceil(sx * ofactor / np.spread.X) + 3;
-	nly = (int)ceil(sy * ofactor / np.spread.Y) + 3;
-	nlz = is3d ? (int)ceil(sz * ofactor / np.spread.Z) + 3 : 1;
+	size_t nlx = (size_t)ceil(num_noise_points_x) + 3;
+	size_t nly = (size_t)ceil(num_noise_points_y) + 3;
+	size_t nlz = is3d ? (size_t)ceil(num_noise_points_z) + 3 : 1;
 
 	delete[] noise_buf;
 	try {
