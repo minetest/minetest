@@ -112,7 +112,7 @@ size_t Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 
 	nmin.Y = actual_ymin;
 	nmax.Y = actual_ymax;
-	generate(mg->vm, mg->seed, blockseed, nmin, nmax);
+	generate(mg->vm, mg->seed, blockseed, nmin, nmax, mg->biomemap);
 
 	return 1;
 }
@@ -122,17 +122,18 @@ size_t Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 
 
 void OreScatter::generate(MMVManip *vm, int mapseed, u32 blockseed,
-	v3s16 nmin, v3s16 nmax)
+	v3s16 nmin, v3s16 nmax, u8 *biomemap)
 {
 	PseudoRandom pr(blockseed);
 	MapNode n_ore(c_ore, 0, ore_param2);
 
-	int volume = (nmax.X - nmin.X + 1) *
+	u32 sizex  = (nmax.X - nmin.X + 1);
+	u32 volume = (nmax.X - nmin.X + 1) *
 				 (nmax.Y - nmin.Y + 1) *
 				 (nmax.Z - nmin.Z + 1);
-	int csize     = clust_size;
-	int orechance = (csize * csize * csize) / clust_num_ores;
-	int nclusters = volume / clust_scarcity;
+	u32 csize     = clust_size;
+	u32 orechance = (csize * csize * csize) / clust_num_ores;
+	u32 nclusters = volume / clust_scarcity;
 
 	for (int i = 0; i != nclusters; i++) {
 		int x0 = pr.range(nmin.X, nmax.X - csize + 1);
@@ -143,9 +144,16 @@ void OreScatter::generate(MMVManip *vm, int mapseed, u32 blockseed,
 			(NoisePerlin3D(&np, x0, y0, z0, mapseed) < nthresh))
 			continue;
 
-		for (int z1 = 0; z1 != csize; z1++)
-		for (int y1 = 0; y1 != csize; y1++)
-		for (int x1 = 0; x1 != csize; x1++) {
+		if (biomemap && !biomes.empty()) {
+			u32 index = sizex * (z0 - nmin.Z) + (x0 - nmin.X);
+			std::set<u8>::iterator it = biomes.find(biomemap[index]);
+			if (it == biomes.end())
+				continue;
+		}
+
+		for (u32 z1 = 0; z1 != csize; z1++)
+		for (u32 y1 = 0; y1 != csize; y1++)
+		for (u32 x1 = 0; x1 != csize; x1++) {
 			if (pr.range(1, orechance) != 1)
 				continue;
 
@@ -163,7 +171,7 @@ void OreScatter::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 
 void OreSheet::generate(MMVManip *vm, int mapseed, u32 blockseed,
-	v3s16 nmin, v3s16 nmax)
+	v3s16 nmin, v3s16 nmax, u8 *biomemap)
 {
 	PseudoRandom pr(blockseed + 4234);
 	MapNode n_ore(c_ore, 0, ore_param2);
@@ -181,10 +189,16 @@ void OreSheet::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 	size_t index = 0;
 	for (int z = nmin.Z; z <= nmax.Z; z++)
-	for (int x = nmin.X; x <= nmax.X; x++) {
-		float noiseval = noise->result[index++];
+	for (int x = nmin.X; x <= nmax.X; x++, index++) {
+		float noiseval = noise->result[index];
 		if (noiseval < nthresh)
 			continue;
+
+		if (biomemap && !biomes.empty()) {
+			std::set<u8>::iterator it = biomes.find(biomemap[index]);
+			if (it == biomes.end())
+				continue;
+		}
 
 		int height = max_height * (1. / pr.range(1, 3));
 		int y0 = y_start + np.scale * noiseval; //pr.range(1, 3) - 1;
@@ -205,24 +219,32 @@ void OreSheet::generate(MMVManip *vm, int mapseed, u32 blockseed,
 ///////////////////////////////////////////////////////////////////////////////
 
 void OreBlob::generate(MMVManip *vm, int mapseed, u32 blockseed,
-	v3s16 nmin, v3s16 nmax)
+	v3s16 nmin, v3s16 nmax, u8 *biomemap)
 {
 	PseudoRandom pr(blockseed + 2404);
 	MapNode n_ore(c_ore, 0, ore_param2);
 
-	int volume = (nmax.X - nmin.X + 1) *
+	u32 sizex  = (nmax.X - nmin.X + 1);
+	u32 volume = (nmax.X - nmin.X + 1) *
 				 (nmax.Y - nmin.Y + 1) *
 				 (nmax.Z - nmin.Z + 1);
-	int csize  = clust_size;
-	int nblobs = volume / clust_scarcity;
+	u32 csize  = clust_size;
+	u32 nblobs = volume / clust_scarcity;
 
 	if (!noise)
 		noise = new Noise(&np, mapseed, csize, csize, csize);
 
-	for (int i = 0; i != nblobs; i++) {
+	for (u32 i = 0; i != nblobs; i++) {
 		int x0 = pr.range(nmin.X, nmax.X - csize + 1);
 		int y0 = pr.range(nmin.Y, nmax.Y - csize + 1);
 		int z0 = pr.range(nmin.Z, nmax.Z - csize + 1);
+
+		if (biomemap && !biomes.empty()) {
+			u32 bmapidx = sizex * (z0 - nmin.Z) + (x0 - nmin.X);
+			std::set<u8>::iterator it = biomes.find(biomemap[bmapidx]);
+			if (it == biomes.end())
+				continue;
+		}
 
 		bool noise_generated = false;
 		noise->seed = blockseed + i;
@@ -274,10 +296,12 @@ OreVein::~OreVein()
 
 
 void OreVein::generate(MMVManip *vm, int mapseed, u32 blockseed,
-	v3s16 nmin, v3s16 nmax)
+	v3s16 nmin, v3s16 nmax, u8 *biomemap)
 {
 	PseudoRandom pr(blockseed + 520);
 	MapNode n_ore(c_ore, 0, ore_param2);
+
+	u32 sizex = (nmax.X - nmin.X + 1);
 
 	if (!noise) {
 		int sx = nmax.X - nmin.X + 1;
@@ -297,6 +321,13 @@ void OreVein::generate(MMVManip *vm, int mapseed, u32 blockseed,
 			continue;
 		if (!CONTAINS(c_wherein, vm->m_data[i].getContent()))
 			continue;
+
+		if (biomemap && !biomes.empty()) {
+			u32 bmapidx = sizex * (z - nmin.Z) + (x - nmin.X);
+			std::set<u8>::iterator it = biomes.find(biomemap[bmapidx]);
+			if (it == biomes.end())
+				continue;
+		}
 
 		// Same lazy generation optimization as in OreBlob
 		if (!noise_generated) {

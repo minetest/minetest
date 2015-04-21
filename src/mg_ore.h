@@ -63,6 +63,7 @@ public:
 	float nthresh;      // threshhold for noise at which an ore is placed
 	NoiseParams np;     // noise for distribution of clusters (NULL for uniform scattering)
 	Noise *noise;
+	std::set<u8> biomes;
 
 	Ore();
 	virtual ~Ore();
@@ -71,7 +72,7 @@ public:
 
 	size_t placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax) = 0;
+		v3s16 nmin, v3s16 nmax, u8 *biomemap) = 0;
 };
 
 class OreScatter : public Ore {
@@ -79,7 +80,7 @@ public:
 	static const bool NEEDS_NOISE = false;
 
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax);
+		v3s16 nmin, v3s16 nmax, u8 *biomemap);
 };
 
 class OreSheet : public Ore {
@@ -87,7 +88,7 @@ public:
 	static const bool NEEDS_NOISE = true;
 
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax);
+		v3s16 nmin, v3s16 nmax, u8 *biomemap);
 };
 
 class OreBlob : public Ore {
@@ -95,7 +96,7 @@ public:
 	static const bool NEEDS_NOISE = true;
 
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax);
+		v3s16 nmin, v3s16 nmax, u8 *biomemap);
 };
 
 class OreVein : public Ore {
@@ -109,7 +110,7 @@ public:
 	virtual ~OreVein();
 
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
-		v3s16 nmin, v3s16 nmax);
+		v3s16 nmin, v3s16 nmax, u8 *biomemap);
 };
 
 class OreManager : public ObjDefManager {

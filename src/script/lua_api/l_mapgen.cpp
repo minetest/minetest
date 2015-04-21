@@ -847,6 +847,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	luaL_checktype(L, index, LUA_TTABLE);
 
 	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
+	BiomeManager *bmgr    = getServer(L)->getEmergeManager()->biomemgr;
 	OreManager *oremgr    = getServer(L)->getEmergeManager()->oremgr;
 
 	enum OreType oretype = (OreType)getenumfield(L, index,
@@ -866,6 +867,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	ore->noise          = NULL;
 	ore->flags          = 0;
 
+	//// Get y_min/y_max
 	warn_if_field_exists(L, index, "height_min",
 		"Deprecated: new name is \"y_min\".");
 	warn_if_field_exists(L, index, "height_max",
@@ -888,8 +890,16 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 		return 0;
 	}
 
+	//// Get flags
 	getflagsfield(L, index, "flags", flagdesc_ore, &ore->flags, NULL);
 
+	//// Get biomes associated with this decoration (if any)
+	lua_getfield(L, index, "biomes");
+	if (get_biome_list(L, -1, bmgr, &ore->biomes))
+		errorstream << "register_ore: couldn't get all biomes " << std::endl;
+	lua_pop(L, 1);
+
+	//// Get noise parameters if needed
 	lua_getfield(L, index, "noise_params");
 	if (read_noiseparams(L, -1, &ore->np)) {
 		ore->flags |= OREFLAG_USE_NOISE;

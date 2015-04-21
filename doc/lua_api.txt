@@ -3195,6 +3195,10 @@ Definition tables
     --  ^ Multiplier of the randomness contribution to the noise value at any
     --   given point to decide if ore should be placed.  Set to 0 for solid veins.
     --  ^ This parameter is only valid for ore_type == "vein".
+        biomes = {"desert", "rainforest"}
+    --  ^ List of biomes in which this decoration occurs.  Occurs in all biomes if this is omitted,
+    --  ^ and ignored if the Mapgen being used does not support biomes.
+    --  ^ Can be a list of (or a single) biome names, IDs, or definitions.
     }
 
 ### Decoration definition (`register_decoration`)
