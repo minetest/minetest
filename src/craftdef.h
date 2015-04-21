@@ -128,8 +128,6 @@ struct CraftReplacements
 		pairs(pairs_)
 	{}
 	std::string dump() const;
-	void serialize(std::ostream &os) const;
-	void deSerialize(std::istream &is);
 };
 
 /*
@@ -140,9 +138,6 @@ class CraftDefinition
 public:
 	CraftDefinition(){}
 	virtual ~CraftDefinition(){}
-
-	void serialize(std::ostream &os) const;
-	static CraftDefinition* deSerialize(std::istream &is);
 
 	// Returns type of crafting definition
 	virtual std::string getName() const=0;
@@ -164,9 +159,6 @@ public:
 	virtual void initHash(IGameDef *gamedef) = 0;
 
 	virtual std::string dump() const=0;
-protected:
-	virtual void serializeBody(std::ostream &os) const=0;
-	virtual void deSerializeBody(std::istream &is, int version)=0;
 };
 
 /*
@@ -203,10 +195,6 @@ public:
 	virtual void initHash(IGameDef *gamedef);
 
 	virtual std::string dump() const;
-
-protected:
-	virtual void serializeBody(std::ostream &os) const;
-	virtual void deSerializeBody(std::istream &is, int version);
 
 private:
 	// Output itemstring
@@ -256,10 +244,6 @@ public:
 
 	virtual std::string dump() const;
 
-protected:
-	virtual void serializeBody(std::ostream &os) const;
-	virtual void deSerializeBody(std::istream &is, int version);
-
 private:
 	// Output itemstring
 	std::string output;
@@ -303,10 +287,6 @@ public:
 
 	virtual std::string dump() const;
 
-protected:
-	virtual void serializeBody(std::ostream &os) const;
-	virtual void deSerializeBody(std::istream &is, int version);
-
 private:
 	// This is a constant that is added to the wear of the result.
 	// May be positive or negative, allowed range [-1,1].
@@ -348,10 +328,6 @@ public:
 	virtual void initHash(IGameDef *gamedef);
 
 	virtual std::string dump() const;
-
-protected:
-	virtual void serializeBody(std::ostream &os) const;
-	virtual void deSerializeBody(std::istream &is, int version);
 
 private:
 	// Output itemstring
@@ -398,10 +374,6 @@ public:
 
 	virtual std::string dump() const;
 
-protected:
-	virtual void serializeBody(std::ostream &os) const;
-	virtual void deSerializeBody(std::istream &is, int version);
-
 private:
 	// Recipe itemstring
 	std::string recipe;
@@ -429,7 +401,7 @@ public:
 			bool decrementInput, IGameDef *gamedef) const=0;
 	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output,
 			IGameDef *gamedef, unsigned limit=0) const=0;
-	
+
 	// Print crafting recipes for debugging
 	virtual std::string dump() const=0;
 };
@@ -443,7 +415,7 @@ public:
 	// The main crafting function
 	virtual bool getCraftResult(CraftInput &input, CraftOutput &output,
 			bool decrementInput, IGameDef *gamedef) const=0;
-	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output, 
+	virtual std::vector<CraftDefinition*> getCraftRecipes(CraftOutput &output,
 			IGameDef *gamedef, unsigned limit=0) const=0;
 
 	// Print crafting recipes for debugging

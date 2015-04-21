@@ -322,63 +322,6 @@ std::string CraftReplacements::dump() const
 	return os.str();
 }
 
-void CraftReplacements::serialize(std::ostream &os) const
-{
-	writeU16(os, pairs.size());
-	for (u32 i=0; i<pairs.size(); i++) {
-		os << serializeString(pairs[i].first);
-		os << serializeString(pairs[i].second);
-	}
-}
-
-void CraftReplacements::deSerialize(std::istream &is)
-{
-	pairs.clear();
-	u32 count = readU16(is);
-	for (u32 i=0; i<count; i++) {
-		std::string first = deSerializeString(is);
-		std::string second = deSerializeString(is);
-		pairs.push_back(std::make_pair(first, second));
-	}
-}
-
-/*
-	CraftDefinition
-*/
-
-void CraftDefinition::serialize(std::ostream &os) const
-{
-	writeU8(os, 1); // version
-	os << serializeString(getName());
-	serializeBody(os);
-}
-
-CraftDefinition* CraftDefinition::deSerialize(std::istream &is)
-{
-	int version = readU8(is);
-	if (version != 1) throw SerializationError(
-			"unsupported CraftDefinition version");
-	std::string name = deSerializeString(is);
-	CraftDefinition *def = NULL;
-	if (name == "shaped") {
-		def = new CraftDefinitionShaped;
-	} else if (name == "shapeless") {
-		def = new CraftDefinitionShapeless;
-	} else if (name == "toolrepair") {
-		def = new CraftDefinitionToolRepair;
-	} else if (name == "cooking") {
-		def = new CraftDefinitionCooking;
-	} else if (name == "fuel") {
-		def = new CraftDefinitionFuel;
-	} else {
-		infostream << "Unknown CraftDefinition name=\""
-			<< name << '"' << std::endl;
-		throw SerializationError("Unknown CraftDefinition name");
-	}
-	def->deSerializeBody(is, version);
-	return def;
-}
-
 /*
 	CraftDefinitionShaped
 */
@@ -513,29 +456,6 @@ std::string CraftDefinitionShaped::dump() const
 	return os.str();
 }
 
-void CraftDefinitionShaped::serializeBody(std::ostream &os) const
-{
-	os << serializeString(output);
-	writeU16(os, width);
-	writeU16(os, recipe.size());
-	for (u32 i=0; i<recipe.size(); i++)
-		os << serializeString(recipe[i]);
-	replacements.serialize(os);
-}
-
-void CraftDefinitionShaped::deSerializeBody(std::istream &is, int version)
-{
-	if (version != 1) throw SerializationError(
-			"unsupported CraftDefinitionShaped version");
-	output = deSerializeString(is);
-	width = readU16(is);
-	recipe.clear();
-	u32 count = readU16(is);
-	for (u32 i=0; i<count; i++)
-		recipe.push_back(deSerializeString(is));
-	replacements.deSerialize(is);
-}
-
 /*
 	CraftDefinitionShapeless
 */
@@ -655,27 +575,6 @@ std::string CraftDefinitionShapeless::dump() const
 	return os.str();
 }
 
-void CraftDefinitionShapeless::serializeBody(std::ostream &os) const
-{
-	os << serializeString(output);
-	writeU16(os, recipe.size());
-	for (u32 i=0; i<recipe.size(); i++)
-		os << serializeString(recipe[i]);
-	replacements.serialize(os);
-}
-
-void CraftDefinitionShapeless::deSerializeBody(std::istream &is, int version)
-{
-	if (version != 1) throw SerializationError(
-			"unsupported CraftDefinitionShapeless version");
-	output = deSerializeString(is);
-	recipe.clear();
-	u32 count = readU16(is);
-	for (u32 i=0; i<count; i++)
-		recipe.push_back(deSerializeString(is));
-	replacements.deSerialize(is);
-}
-
 /*
 	CraftDefinitionToolRepair
 */
@@ -773,18 +672,6 @@ std::string CraftDefinitionToolRepair::dump() const
 	return os.str();
 }
 
-void CraftDefinitionToolRepair::serializeBody(std::ostream &os) const
-{
-	writeF1000(os, additional_wear);
-}
-
-void CraftDefinitionToolRepair::deSerializeBody(std::istream &is, int version)
-{
-	if (version != 1) throw SerializationError(
-			"unsupported CraftDefinitionToolRepair version");
-	additional_wear = readF1000(is);
-}
-
 /*
 	CraftDefinitionCooking
 */
@@ -876,24 +763,6 @@ std::string CraftDefinitionCooking::dump() const
 	return os.str();
 }
 
-void CraftDefinitionCooking::serializeBody(std::ostream &os) const
-{
-	os << serializeString(output);
-	os << serializeString(recipe);
-	writeF1000(os, cooktime);
-	replacements.serialize(os);
-}
-
-void CraftDefinitionCooking::deSerializeBody(std::istream &is, int version)
-{
-	if (version != 1) throw SerializationError(
-			"unsupported CraftDefinitionCooking version");
-	output = deSerializeString(is);
-	recipe = deSerializeString(is);
-	cooktime = readF1000(is);
-	replacements.deSerialize(is);
-}
-
 /*
 	CraftDefinitionFuel
 */
@@ -981,22 +850,6 @@ std::string CraftDefinitionFuel::dump() const
 		<< "\", burntime=" << burntime << ")"
 		<< ", replacements=" << replacements.dump() << ")";
 	return os.str();
-}
-
-void CraftDefinitionFuel::serializeBody(std::ostream &os) const
-{
-	os << serializeString(recipe);
-	writeF1000(os, burntime);
-	replacements.serialize(os);
-}
-
-void CraftDefinitionFuel::deSerializeBody(std::istream &is, int version)
-{
-	if (version != 1) throw SerializationError(
-			"unsupported CraftDefinitionFuel version");
-	recipe = deSerializeString(is);
-	burntime = readF1000(is);
-	replacements.deSerialize(is);
 }
 
 /*
