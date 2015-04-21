@@ -75,8 +75,7 @@ bool * signal_handler_killstatus(void)
 
 void sigint_handler(int sig)
 {
-	if(g_killed == false)
-	{
+	if(!g_killed) {
 		dstream<<DTIME<<"INFO: sigint_handler(): "
 				<<"Ctrl-C pressed, shutting down."<<std::endl;
 
@@ -86,9 +85,7 @@ void sigint_handler(int sig)
 		debug_stacks_print();*/
 
 		g_killed = true;
-	}
-	else
-	{
+	} else {
 		(void)signal(SIGINT, SIG_DFL);
 	}
 }
@@ -126,7 +123,7 @@ BOOL WINAPI event_handler(DWORD sig)
 
 void signal_handler_init(void)
 {
-	SetConsoleCtrlHandler( (PHANDLER_ROUTINE)event_handler,TRUE);
+	SetConsoleCtrlHandler((PHANDLER_ROUTINE)event_handler, TRUE);
 }
 
 #endif
@@ -306,14 +303,14 @@ std::string get_sysinfo()
 
 	oss << "Windows/" << osvi.dwMajorVersion << "."
 		<< osvi.dwMinorVersion;
-	if(osvi.szCSDVersion[0])
+	if (osvi.szCSDVersion[0])
 		oss << "-" << tmp;
 	oss << " ";
 	#ifdef _WIN64
 	oss << "x86_64";
 	#else
 	BOOL is64 = FALSE;
-	if(IsWow64Process(GetCurrentProcess(), &is64) && is64)
+	if (IsWow64Process(GetCurrentProcess(), &is64) && is64)
 		oss << "x86_64"; // 32-bit app on 64-bit OS
 	else
 		oss << "x86";
@@ -598,7 +595,7 @@ void initializePaths()
 		getExecPathFromProcfs(buf, sizeof(buf));
 
 	if (success) {
-		pathRemoveFile(buf, '/');
+		pathRemoveFile(buf, DIR_DELIM_CHAR);
 		std::string execpath(buf);
 
 		path_share = execpath + DIR_DELIM "..";
