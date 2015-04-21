@@ -1238,7 +1238,7 @@ void ServerEnvironment::step(float dtime)
 			// Read messages from object
 			while(!obj->m_messages_out.empty())
 			{
-				m_active_object_messages.push_back(
+				m_active_object_messages_queue.push(
 						obj->m_messages_out.front());
 				obj->m_messages_out.pop();
 			}
@@ -1458,11 +1458,11 @@ void ServerEnvironment::getRemovedActiveObjects(v3s16 pos, s16 radius,
 
 ActiveObjectMessage ServerEnvironment::getActiveObjectMessage()
 {
-	if(m_active_object_messages.empty())
+	if(m_active_object_messages_queue.empty())
 		return ActiveObjectMessage(0);
 
-	ActiveObjectMessage message = m_active_object_messages.front();
-	m_active_object_messages.pop_front();
+	ActiveObjectMessage message = m_active_object_messages_queue.front();
+	m_active_object_messages_queue.pop();
 	return message;
 }
 
