@@ -218,9 +218,7 @@ static void craftDecrementOrReplaceInput(CraftInput &input,
 			for (std::vector<std::pair<std::string, std::string> >::iterator
 					j = pairs.begin();
 					j != pairs.end(); j++) {
-				ItemStack from_item;
-				from_item.deSerialize(j->first, gamedef->idef());
-				if (i->name == from_item.name) {
+				if (i->name == craftGetItemName(j->first, gamedef)) {
 					i->deSerialize(j->second, gamedef->idef());
 					found_replacement = true;
 					pairs.erase(j);
