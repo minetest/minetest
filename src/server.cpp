@@ -1490,7 +1490,7 @@ void Server::SendBreath(u16 peer_id, u16 breath)
 	Send(&pkt);
 }
 
-void Server::SendAccessDenied(u16 peer_id, AccessDeniedCode reason, const std::wstring &custom_reason)
+void Server::SendAccessDenied(u16 peer_id, AccessDeniedCode reason, const std::string &custom_reason)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -2535,7 +2535,7 @@ void Server::RespawnPlayer(u16 peer_id)
 	}
 }
 
-void Server::DenyAccess(u16 peer_id, AccessDeniedCode reason, const std::wstring &custom_reason)
+void Server::DenyAccess(u16 peer_id, AccessDeniedCode reason, const std::string &custom_reason)
 {
 	DSTACK(__FUNCTION_NAME);
 

@@ -360,7 +360,7 @@ public:
 	void peerAdded(con::Peer *peer);
 	void deletingPeer(con::Peer *peer, bool timeout);
 
-	void DenyAccess(u16 peer_id, AccessDeniedCode reason, const std::wstring &custom_reason=NULL);
+	void DenyAccess(u16 peer_id, AccessDeniedCode reason, const std::string &custom_reason="");
 	void DenyAccess_Legacy(u16 peer_id, const std::wstring &reason);
 	bool getClientConInfo(u16 peer_id, con::rtt_stat_type type,float* retval);
 	bool getClientInfo(u16 peer_id,ClientState* state, u32* uptime,
@@ -383,7 +383,7 @@ private:
 	void SendMovement(u16 peer_id);
 	void SendHP(u16 peer_id, u8 hp);
 	void SendBreath(u16 peer_id, u16 breath);
-	void SendAccessDenied(u16 peer_id, AccessDeniedCode reason, const std::wstring &custom_reason);
+	void SendAccessDenied(u16 peer_id, AccessDeniedCode reason, const std::string &custom_reason);
 	void SendAccessDenied_Legacy(u16 peer_id, const std::wstring &reason);
 	void SendDeathscreen(u16 peer_id,bool set_camera_point_target, v3f camera_point_target);
 	void SendItemDef(u16 peer_id,IItemDefManager *itemdef, u16 protocol_version);

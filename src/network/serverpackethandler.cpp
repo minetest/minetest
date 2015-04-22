@@ -217,7 +217,7 @@ void Server::handleCommand_Auth(NetworkPacket* pkt)
 					<< "but it was disallowed for the following reason: "
 					<< reason << std::endl;
 			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_CUSTOM_STRING,
-					narrow_to_wide(reason.c_str()));
+					reason.c_str());
 			return;
 		}
 	}
