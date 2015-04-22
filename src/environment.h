@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <set>
 #include <list>
+#include <queue>
 #include <map>
 #include "irr_v3d.h"
 #include "activeobject.h"
@@ -378,7 +379,7 @@ private:
 	// Active object list
 	std::map<u16, ServerActiveObject*> m_active_objects;
 	// Outgoing network message buffer for active objects
-	std::list<ActiveObjectMessage> m_active_object_messages;
+	std::queue<ActiveObjectMessage> m_active_object_messages;
 	// Some timers
 	float m_send_recommended_timer;
 	IntervalLimiter m_object_management_interval;

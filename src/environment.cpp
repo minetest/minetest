@@ -1238,7 +1238,7 @@ void ServerEnvironment::step(float dtime)
 			// Read messages from object
 			while(!obj->m_messages_out.empty())
 			{
-				m_active_object_messages.push_back(
+				m_active_object_messages.push(
 						obj->m_messages_out.front());
 				obj->m_messages_out.pop();
 			}
@@ -1462,7 +1462,7 @@ ActiveObjectMessage ServerEnvironment::getActiveObjectMessage()
 		return ActiveObjectMessage(0);
 
 	ActiveObjectMessage message = m_active_object_messages.front();
-	m_active_object_messages.pop_front();
+	m_active_object_messages.pop();
 	return message;
 }
 
