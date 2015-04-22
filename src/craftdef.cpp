@@ -39,7 +39,7 @@ inline bool isGroupRecipeStr(const std::string &rec_name)
 
 inline u64 getHashForString(const std::string &recipe_str)
 {
-	/*errorstream << "Hashing craft string  \"" << recipe_str << "\"";*/
+	/*errorstream << "Hashing craft string  \"" << recipe_str << '"';*/
 	return murmur_hash_64_ua(recipe_str.data(), recipe_str.length(), 0xdeadbeef);
 }
 
@@ -253,7 +253,7 @@ static std::string craftDumpMatrix(const std::vector<std::string> &items,
 		} else if (x != 0) {
 			os<<",";
 		}
-		os << "\"" << (*i) << "\"";
+		os << '"' << (*i) << '"';
 	}
 	os << " }";
 	return os.str();
@@ -275,7 +275,7 @@ std::string craftDumpMatrix(const std::vector<ItemStack> &items,
 		} else if (x != 0) {
 			os<<",";
 		}
-		os << "\"" << (i->getItemString()) << "\"";
+		os << '"' << (i->getItemString()) << '"';
 	}
 	os << " }";
 	return os.str();
@@ -317,7 +317,7 @@ std::string CraftReplacements::dump() const
 	for (std::vector<std::pair<std::string, std::string> >::const_iterator
 			i = pairs.begin();
 			i != pairs.end(); i++) {
-		os << sep << "\"" << (i->first) << "\"=>\"" << (i->second) << "\"";
+		os << sep << '"' << (i->first) << "\"=>\"" << (i->second) << '"';
 		sep = ",";
 	}
 	os << "}";
@@ -374,7 +374,7 @@ CraftDefinition* CraftDefinition::deSerialize(std::istream &is)
 		def = new CraftDefinitionFuel;
 	} else {
 		infostream << "Unknown CraftDefinition name=\""
-			<< name << "\"" << std::endl;
+			<< name << '"' << std::endl;
 		throw SerializationError("Unknown CraftDefinition name");
 	}
 	def->deSerializeBody(is, version);
