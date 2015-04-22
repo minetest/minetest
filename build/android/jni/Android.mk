@@ -178,6 +178,7 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/mapgen_v5.cpp                     \
 		jni/src/mapgen_v6.cpp                     \
 		jni/src/mapgen_v7.cpp                     \
+		jni/src/mapgen_watershed.cpp              \
 		jni/src/mapnode.cpp                       \
 		jni/src/mapsector.cpp                     \
 		jni/src/mesh.cpp                          \
