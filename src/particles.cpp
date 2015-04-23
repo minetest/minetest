@@ -133,10 +133,11 @@ public:
 class CollisionAffector : public irr::scene::IParticleAffector
 {
 public:
-        CollisionAffector(IGameDef *gamedef, ClientEnvironment &env)
+        CollisionAffector(/*IGameDef *gamedef,*/ ClientEnvironment &env)
         {
-                m_gamedef = gamedef;
+                //m_gamedef = gamedef;
                 m_env = &env;
+                m_gamedef = m_env->getGameDef();
         }
         void affect(u32 now, irr::scene::SParticle* particlearray, u32 count)
         {
@@ -221,44 +222,45 @@ private:
         irr::scene::ISceneManager* SceneManager;
 };
 
-class DeleteTimeAffector : public irr::scene::IParticleAffector
+class CameraOffsetAffector : public irr::scene::IParticleAffector
 {
 public:
-        DeleteTimeAffector(irr::scene::IParticleSystemSceneNode* ps, irr::scene::ISceneManager* smgr,
-                           ParticleManager * pm, u32 exptime)
+        CameraOffsetAffector(ClientEnvironment &env,
+                             irr::scene::IParticleSystemSceneNode* ps, v3f pos)
         {
-                ParticleSystem = ps;
-                SceneManager = smgr;
-                ParticleM = pm;
-                tm  = 0;
-                em  = exptime;
+                m_env = &env;
+                m_offset = v3s16(666, 666, 666);// m_env->getCameraOffset();
+                m_ps = ps;
+                m_pos = pos;
         }
 
         void affect(u32 now, irr::scene::SParticle* particlearray, u32 count)
         {
-                if (tm == 0) {
-                        tm = now;
-                } else if ( now - tm >= em) {
-                        SceneManager->addToDeletionQueue(ParticleSystem);
-                        ParticleM->deleteID(ParticleSystem->getID());
-                }
+                v3s16 offset = m_env->getCameraOffset();
+                if (offset == m_offset)
+                        return;
+                m_offset = offset;
+                v3f off = intToFloat(offset, 10);
+                m_ps->clearParticles();
+                m_ps->setPosition(m_pos - off);
+                std::cout << "updating particle spawner no: " << m_ps->getID() << std::endl;
         }
-
         irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const {
-                return (irr::scene::E_PARTICLE_AFFECTOR_TYPE) 668;
+                return (irr::scene::E_PARTICLE_AFFECTOR_TYPE) 669;
         }
 private:
-        irr::scene::IParticleSystemSceneNode* ParticleSystem;
-        irr::scene::ISceneManager* SceneManager;
-        ParticleManager * ParticleM;
-        u32 tm;
-        u32 em;
+        ClientEnvironment *m_env;
+        v3s16 m_offset;
+        irr::scene::IParticleSystemSceneNode* m_ps;
+        v3f m_pos;
 };
+
+
 
 ParticleManager::ParticleManager(ClientEnvironment* env, irr::scene::ISceneManager* smgr) :
 	m_env(env),
-	m_smgr(smgr),
-	m_camera_offset(env->getCameraOffset())
+	m_smgr(smgr)
+	//m_camera_offset(env->getCameraOffset())
 {}
 
 ParticleManager::~ParticleManager()
@@ -266,87 +268,32 @@ ParticleManager::~ParticleManager()
 	clearAll();
 }
 
-void ParticleManager::step(float dtime)
-{
-	// update position and handle expired spawners
-	v3s16 offset = m_env->getCameraOffset();
-	if (m_camera_offset == offset)
-		return;
-
-	JMutexAutoLock lock(m_spawner_list_lock);
-	for(std::map<u32, s32>::iterator i =
-			irrlicht_spawners.begin();
-			i != irrlicht_spawners.end();)
-	{
-		scene::ISceneNode *node = m_smgr->getSceneNodeFromId(i->second);
-		v3f pos = node->getAbsolutePosition();
-
-		std::cout << pos.X << " " << pos.Y << " " << pos.Z << std::endl;
-
-		if(node) {
-			node->setPosition(pos * BS + intToFloat(offset, 10));
-		}
-		// TODO: expired
-		i++;
-	}
-	m_camera_offset = offset;
-	return;
-}
-
 void ParticleManager::clearAll ()
 {
-	JMutexAutoLock lock(m_spawner_list_lock);
-	for(std::map<u32, s32>::iterator i =
-	    irrlicht_spawners.begin();
-	    i != irrlicht_spawners.end();)
-	{
-		scene::ISceneNode *node = m_smgr->getSceneNodeFromId(i->second);
-		if(node)
-			m_smgr->addToDeletionQueue(node);
-		irrlicht_spawners.erase(i++);
-	}
 	return;
 }
 
 void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef, LocalPlayer *player)
 {
 	if (event->type == CE_DELETE_PARTICLESPAWNER) {
-		JMutexAutoLock lock(m_spawner_list_lock);
-		if (irrlicht_spawners.find(event->delete_particlespawner.id) !=
-		    irrlicht_spawners.end())
-		{
-			scene::ISceneNode *node = m_smgr->getSceneNodeFromId(
-				irrlicht_spawners.find(event->delete_particlespawner.id)->second);
-			if(node)
-				m_smgr->addToDeletionQueue(node);
-
-			irrlicht_spawners.erase(irrlicht_spawners.find(event->delete_particlespawner.id));
-		}
+		scene::ISceneNode *node = m_smgr->getSceneNodeFromId(
+					event->delete_particlespawner.id);
+		if (node)
+			m_smgr->addToDeletionQueue(node);
 		return;
 	}
 
 	if (event->type == CE_ADD_PARTICLESPAWNER) {
 
-		{
-			JMutexAutoLock lock(m_spawner_list_lock);
-			if (irrlicht_spawners.find(event->add_particlespawner.id) !=
-			    irrlicht_spawners.end())
-			{
-				scene::ISceneNode *node = m_smgr->getSceneNodeFromId(
-							irrlicht_spawners.find(event->delete_particlespawner.id)->second);
-				if(node)
-					m_smgr->addToDeletionQueue(node);
-				irrlicht_spawners.erase(irrlicht_spawners.find(event->add_particlespawner.id));
-			}
-		}
+		scene::ISceneNode *node = m_smgr->getSceneNodeFromId(
+					event->delete_particlespawner.id);
+		if (node)
+			m_smgr->addToDeletionQueue(node);
 
 		video::ITexture *texture =
 				gamedef->tsrc()->getTextureForMesh(*(event->add_particlespawner.texture));
 
 		scene::IParticleSystemSceneNode * ps = m_smgr->addParticleSystemSceneNode();
-
-		// hm, we need to set ids ourselves, so mt ids are used. could irrlicht_spawners
-		// be a vector instead of a map mt id / irrlicht id?
 
 		ps->setID((s32) event->add_particlespawner.id);
 
@@ -375,10 +322,13 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 		em->drop();
 
 		ps->setMaterialTexture(0, texture);
+		//ps->setAutomaticCulling(scene::EAC_BOX);
+		//ps->setDebugDataVisible(irr::scene::EDS_BBOX);
 
 		v3f pos = *event->add_particlespawner.minpos;
-		pos = pos * BS - intToFloat(m_env->getCameraOffset(), BS);
-		ps->setPosition(pos);
+//		pos = pos * BS - intToFloat(m_env->getCameraOffset(), BS);
+		pos = pos * BS;
+		//ps->setPosition(pos);
 
 		ps->setMaterialFlag(video::EMF_LIGHTING, false);
 		ps->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
@@ -386,26 +336,16 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 		ps->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 		ps->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
 
+		scene::IParticleAffector * caf =
+				new CameraOffsetAffector(*m_env, ps, pos);
+		ps->addAffector(caf);
+		caf->drop();
+
 		if (time != 0) {
-			//hm, this does not work... need to delete from irrlicht_spawners too.
-//			scene::ISceneNodeAnimator* pan =  m_smgr->createDeleteAnimator(time * 1000);
-//			ps->addAnimator(pan);
-//			pan->drop();
-
-			scene::IParticleAffector * paf =
-					new DeleteTimeAffector(ps, m_smgr, this, time*1000);
-			ps->addAffector(paf);
-			paf->drop();
+			scene::ISceneNodeAnimator* pan =  m_smgr->createDeleteAnimator(time * 1000);
+			ps->addAnimator(pan);
+			pan->drop();
 		}
-
-		{
-			JMutexAutoLock lock(m_spawner_list_lock);
-			irrlicht_spawners.insert(
-						std::pair<u32, s32>(
-							event->add_particlespawner.id,
-							ps->getID()));
-		}
-
 		return;
 	}
 
@@ -456,7 +396,8 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, LocalPlayer *player,
 	u8 texid = myrand_range(0, 5);
 	video::ITexture *texture = tiles[texid].texture;
 
-	//to ensure particles are at correct position
+	// set camera offset manually, single burst spawner
+	// is not updated
 	v3s16 camera_offset = m_env->getCameraOffset();
 	v3f particlepos = intToFloat(pos, BS) - intToFloat(camera_offset, BS);
 
@@ -472,7 +413,7 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, LocalPlayer *player,
 	ps->addAffector(paf1);
 	paf1->drop();
 
-	scene::IParticleAffector* paf2 = new CollisionAffector(gamedef, *m_env);
+	scene::IParticleAffector* paf2 = new CollisionAffector(/*gamedef, */*m_env);
 	ps->addAffector(paf2);
 	paf2->drop();
 
@@ -487,18 +428,5 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, LocalPlayer *player,
 	ps->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
 	ps->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 	ps->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
-}
-
-void ParticleManager::deleteID(s32 id)
-{
-	JMutexAutoLock lock(m_spawner_list_lock);
-	if (irrlicht_spawners.find(id) == irrlicht_spawners.end()) {
-		std::cout << "ParticleManager received invalid id: " << id << std::endl;
-	} else {
-	std::cout << "ParticleManager erased id: " << id << std:: endl;
-	irrlicht_spawners.erase(irrlicht_spawners.find(id));
-	std::cout << "irrlicht_spawners size: " << irrlicht_spawners.size() << std:: endl;
-
-	}
 }
 

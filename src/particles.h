@@ -40,8 +40,6 @@ public:
 	ParticleManager(ClientEnvironment* env, irr::scene::ISceneManager* smgr);
 	~ParticleManager();
 
-	void step (float dtime);
-
 	void handleParticleEvent(ClientEvent *event, IGameDef *gamedef, LocalPlayer *player);
 
 	void addDiggingParticles(IGameDef* gamedef, LocalPlayer *player,
@@ -53,24 +51,20 @@ public:
 	void addNodeParticle(IGameDef* gamedef, LocalPlayer *player,
 			     v3s16 pos, const TileSpec tiles[], int number);
 
-	void deleteID(s32 id);
-
-
 protected:
-//	void addParticle(Particle* toadd);
 
 private:
-	void stepSpawners (float dtime);
+//	void stepSpawners (float dtime);
 
 	void clearAll ();
 
-	std::map<u32, s32> irrlicht_spawners; //mt id/irrlicht node id
-	v3s16 m_camera_offset;
+	//std::map<u32, s32> irrlicht_spawners; //mt id/irrlicht node id
+	//v3s16 m_camera_offset;
 
 
 	ClientEnvironment* m_env;
 	irr::scene::ISceneManager* m_smgr;
-	JMutex m_spawner_list_lock;
+	//JMutex m_spawner_list_lock;
 };
 
 #endif

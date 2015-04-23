@@ -3810,7 +3810,7 @@ void Game::updateFrame(std::vector<aabb3f> &highlight_boxes,
 	/*
 		Update particles
 	*/
-	client->getParticleManager()->step(dtime);
+	//client->getParticleManager()->step(dtime);
 
 	/*
 		Fog
