@@ -2196,117 +2196,117 @@ void ClientEnvironment::step(float dtime)
 	//std::cout<<"Looped "<<loopcount<<" times."<<std::endl;
 
 	if (lplayer->hp > 0) {
-	for(std::vector<CollisionInfo>::iterator i = player_collisions.begin();
-			i != player_collisions.end(); ++i) {
-		CollisionInfo &info = *i;
-		v3f speed_diff = info.new_speed - info.old_speed;;
-		// Handle only fall damage
-		// (because otherwise walking against something in fast_move kills you)
-		if(speed_diff.Y < 0 || info.old_speed.Y >= 0)
-			continue;
-		// Get rid of other components
-		speed_diff.X = 0;
-		speed_diff.Z = 0;
-		f32 pre_factor = 1; // 1 hp per node/s
-		f32 tolerance = BS*14; // 5 without damage
-		f32 post_factor = 1; // 1 hp per node/s
-		if(info.type == COLLISION_NODE)
-		{
-			const ContentFeatures &f = m_gamedef->ndef()->
-					get(m_map->getNodeNoEx(info.node_p));
-			// Determine fall damage multiplier
-			int addp = itemgroup_get(f.groups, "fall_damage_add_percent");
-			pre_factor = 1.0 + (float)addp/100.0;
-		}
-		float speed = pre_factor * speed_diff.getLength();
-		if(speed > tolerance)
-		{
-			f32 damage_f = (speed - tolerance)/BS * post_factor;
-			u16 damage = (u16)(damage_f+0.5);
-			if(damage != 0){
-				damageLocalPlayer(damage, true);
-				MtEvent *e = new SimpleTriggerEvent("PlayerFallingDamage");
-				m_gamedef->event()->put(e);
+		for(std::vector<CollisionInfo>::iterator i = player_collisions.begin();
+				i != player_collisions.end(); ++i) {
+			CollisionInfo &info = *i;
+			v3f speed_diff = info.new_speed - info.old_speed;;
+			// Handle only fall damage
+			// (because otherwise walking against something in fast_move kills you)
+			if(speed_diff.Y < 0 || info.old_speed.Y >= 0)
+				continue;
+			// Get rid of other components
+			speed_diff.X = 0;
+			speed_diff.Z = 0;
+			f32 pre_factor = 1; // 1 hp per node/s
+			f32 tolerance = BS*14; // 5 without damage
+			f32 post_factor = 1; // 1 hp per node/s
+			if(info.type == COLLISION_NODE)
+			{
+				const ContentFeatures &f = m_gamedef->ndef()->
+						get(m_map->getNodeNoEx(info.node_p));
+				// Determine fall damage multiplier
+				int addp = itemgroup_get(f.groups, "fall_damage_add_percent");
+				pre_factor = 1.0 + (float)addp/100.0;
+			}
+			float speed = pre_factor * speed_diff.getLength();
+			if(speed > tolerance)
+			{
+				f32 damage_f = (speed - tolerance)/BS * post_factor;
+				u16 damage = (u16)(damage_f+0.5);
+				if(damage != 0){
+					damageLocalPlayer(damage, true);
+					MtEvent *e = new SimpleTriggerEvent("PlayerFallingDamage");
+					m_gamedef->event()->put(e);
+				}
 			}
 		}
-	}
 
-	/*
-		A quick draft of lava damage
-	*/
-	if(m_lava_hurt_interval.step(dtime, 1.0))
-	{
-		v3f pf = lplayer->getPosition();
-
-		// Feet, middle and head
-		v3s16 p1 = floatToInt(pf + v3f(0, BS*0.1, 0), BS);
-		MapNode n1 = m_map->getNodeNoEx(p1);
-		v3s16 p2 = floatToInt(pf + v3f(0, BS*0.8, 0), BS);
-		MapNode n2 = m_map->getNodeNoEx(p2);
-		v3s16 p3 = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
-		MapNode n3 = m_map->getNodeNoEx(p3);
-
-		u32 damage_per_second = 0;
-		damage_per_second = MYMAX(damage_per_second,
-				m_gamedef->ndef()->get(n1).damage_per_second);
-		damage_per_second = MYMAX(damage_per_second,
-				m_gamedef->ndef()->get(n2).damage_per_second);
-		damage_per_second = MYMAX(damage_per_second,
-				m_gamedef->ndef()->get(n3).damage_per_second);
-
-		if(damage_per_second != 0)
+		/*
+			A quick draft of lava damage
+		*/
+		if(m_lava_hurt_interval.step(dtime, 1.0))
 		{
-			damageLocalPlayer(damage_per_second, true);
-		}
-	}
+			v3f pf = lplayer->getPosition();
 
-	/*
-		Drowning
-	*/
+			// Feet, middle and head
+			v3s16 p1 = floatToInt(pf + v3f(0, BS*0.1, 0), BS);
+			MapNode n1 = m_map->getNodeNoEx(p1);
+			v3s16 p2 = floatToInt(pf + v3f(0, BS*0.8, 0), BS);
+			MapNode n2 = m_map->getNodeNoEx(p2);
+			v3s16 p3 = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
+			MapNode n3 = m_map->getNodeNoEx(p3);
+
+			u32 damage_per_second = 0;
+			damage_per_second = MYMAX(damage_per_second,
+					m_gamedef->ndef()->get(n1).damage_per_second);
+			damage_per_second = MYMAX(damage_per_second,
+					m_gamedef->ndef()->get(n2).damage_per_second);
+			damage_per_second = MYMAX(damage_per_second,
+					m_gamedef->ndef()->get(n3).damage_per_second);
+
+			if(damage_per_second != 0)
+			{
+				damageLocalPlayer(damage_per_second, true);
+			}
+		}
+
+		/*
+			Drowning
+		*/
 		if (m_drowning_interval.step(dtime, 2.0)) {
-		v3f pf = lplayer->getPosition();
+			v3f pf = lplayer->getPosition();
 
-		// head
-		v3s16 p = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
-		MapNode n = m_map->getNodeNoEx(p);
-		ContentFeatures c = m_gamedef->ndef()->get(n);
-		u8 drowning_damage = c.drowning;
-			if (drowning_damage > 0){
-			u16 breath = lplayer->getBreath();
-			if(breath > 10){
-				breath = 11;
-			}
-			if(breath > 0){
-				breath -= 1;
-			}
-			lplayer->setBreath(breath);
-			updateLocalPlayerBreath(breath);
-		}
-
-		if(lplayer->getBreath() == 0 && drowning_damage > 0){
-			damageLocalPlayer(drowning_damage, true);
-		}
-	}
-	if(m_breathing_interval.step(dtime, 0.5))
-	{
-		v3f pf = lplayer->getPosition();
-
-		// head
-		v3s16 p = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
-		MapNode n = m_map->getNodeNoEx(p);
-		ContentFeatures c = m_gamedef->ndef()->get(n);
-		if (!lplayer->hp){
-			lplayer->setBreath(11);
-		}
-		else if(c.drowning == 0){
-			u16 breath = lplayer->getBreath();
-			if(breath <= 10){
-				breath += 1;
+			// head
+			v3s16 p = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
+			MapNode n = m_map->getNodeNoEx(p);
+			ContentFeatures c = m_gamedef->ndef()->get(n);
+			u8 drowning_damage = c.drowning;
+			if (drowning_damage > 0) {
+				u16 breath = lplayer->getBreath();
+				if(breath > 10){
+					breath = 11;
+				}
+				if(breath > 0){
+					breath -= 1;
+				}
 				lplayer->setBreath(breath);
 				updateLocalPlayerBreath(breath);
 			}
+
+			if(lplayer->getBreath() == 0 && drowning_damage > 0){
+				damageLocalPlayer(drowning_damage, true);
+			}
 		}
-	}
+		if(m_breathing_interval.step(dtime, 0.5))
+		{
+			v3f pf = lplayer->getPosition();
+
+			// head
+			v3s16 p = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
+			MapNode n = m_map->getNodeNoEx(p);
+			ContentFeatures c = m_gamedef->ndef()->get(n);
+			if (!lplayer->hp){
+				lplayer->setBreath(11);
+			}
+			else if(c.drowning == 0){
+				u16 breath = lplayer->getBreath();
+				if(breath <= 10){
+					breath += 1;
+					lplayer->setBreath(breath);
+					updateLocalPlayerBreath(breath);
+				}
+			}
+		}
 	}
 
 	/*
