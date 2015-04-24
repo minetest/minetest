@@ -2195,6 +2195,7 @@ void ClientEnvironment::step(float dtime)
 
 	//std::cout<<"Looped "<<loopcount<<" times."<<std::endl;
 
+	if (lplayer->hp > 0) {
 	for(std::vector<CollisionInfo>::iterator i = player_collisions.begin();
 			i != player_collisions.end(); ++i) {
 		CollisionInfo &info = *i;
@@ -2262,8 +2263,7 @@ void ClientEnvironment::step(float dtime)
 	/*
 		Drowning
 	*/
-	if(m_drowning_interval.step(dtime, 2.0))
-	{
+		if (m_drowning_interval.step(dtime, 2.0)) {
 		v3f pf = lplayer->getPosition();
 
 		// head
@@ -2271,7 +2271,7 @@ void ClientEnvironment::step(float dtime)
 		MapNode n = m_map->getNodeNoEx(p);
 		ContentFeatures c = m_gamedef->ndef()->get(n);
 		u8 drowning_damage = c.drowning;
-		if(drowning_damage > 0 && lplayer->hp > 0){
+			if (drowning_damage > 0){
 			u16 breath = lplayer->getBreath();
 			if(breath > 10){
 				breath = 11;
@@ -2306,6 +2306,7 @@ void ClientEnvironment::step(float dtime)
 				updateLocalPlayerBreath(breath);
 			}
 		}
+	}
 	}
 
 	/*
