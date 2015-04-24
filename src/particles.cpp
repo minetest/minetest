@@ -133,9 +133,8 @@ public:
 class CollisionAffector : public irr::scene::IParticleAffector
 {
 public:
-        CollisionAffector(/*IGameDef *gamedef,*/ ClientEnvironment &env)
+        CollisionAffector(ClientEnvironment &env)
         {
-                //m_gamedef = gamedef;
                 m_env = &env;
                 m_gamedef = m_env->getGameDef();
         }
@@ -151,14 +150,14 @@ public:
                 LastTime = now;
                 if( !Enabled )
                         return;
+
+                v3f acc = v3f(0.0, 0.0, 0.0);
                 for(u32 i=0; i<count; ++i)
                 {
                         irr::scene::SParticle p = particlearray[i];
                         float size = p.size.Width;
                         core::aabbox3d<f32> box = core::aabbox3d<f32>
                                         (-size/2,-size/2,-size/2,size/2,size/2,size/2);
-
-                        v3f acc = v3f(0.0, 0.0, 0.0);
 
                         //to ensure particles collide with correct position
                         v3f off = intToFloat(m_env->getCameraOffset(), BS);
@@ -229,7 +228,9 @@ public:
                              irr::scene::IParticleSystemSceneNode* ps, v3f pos)
         {
                 m_env = &env;
-                m_offset = v3s16(666, 666, 666);// m_env->getCameraOffset();
+
+                // invalid offset intentional, updated after creating
+                m_offset = v3s16(666, 666, 666);
                 m_ps = ps;
                 m_pos = pos;
         }
@@ -240,10 +241,15 @@ public:
                 if (offset == m_offset)
                         return;
                 m_offset = offset;
-                v3f off = intToFloat(offset, 10);
-                m_ps->clearParticles();
+                v3f off = intToFloat(offset, BS);
+                // this is done to avoid burst of emitted particles in wrong location
+                // when moving around. maybe keep the loop through particles and adjust
+                // those already around before moving the spawner instead of deleting them.
+                //m_ps->clearParticles();
+                for(u32 i=0; i<count; ++i) {
+                        particlearray[i].pos -= off;
+                }
                 m_ps->setPosition(m_pos - off);
-                std::cout << "updating particle spawner no: " << m_ps->getID() << std::endl;
         }
         irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const {
                 return (irr::scene::E_PARTICLE_AFFECTOR_TYPE) 669;
@@ -255,12 +261,9 @@ private:
         v3f m_pos;
 };
 
-
-
 ParticleManager::ParticleManager(ClientEnvironment* env, irr::scene::ISceneManager* smgr) :
 	m_env(env),
 	m_smgr(smgr)
-	//m_camera_offset(env->getCameraOffset())
 {}
 
 ParticleManager::~ParticleManager()
@@ -322,12 +325,14 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 		em->drop();
 
 		ps->setMaterialTexture(0, texture);
-		//ps->setAutomaticCulling(scene::EAC_BOX);
+		ps->setAutomaticCulling(scene::EAC_FRUSTUM_BOX);
 		//ps->setDebugDataVisible(irr::scene::EDS_BBOX);
 
 		v3f pos = *event->add_particlespawner.minpos;
 //		pos = pos * BS - intToFloat(m_env->getCameraOffset(), BS);
 		pos = pos * BS;
+
+		// position is updated with affector
 		//ps->setPosition(pos);
 
 		ps->setMaterialFlag(video::EMF_LIGHTING, false);
@@ -341,6 +346,18 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 		ps->addAffector(caf);
 		caf->drop();
 
+		// TODO: create acceleration affector similar to GravityAffector
+		// with min/max acceleration
+		scene::IParticleAffector* paf1 = ps->createGravityAffector(v3f(0.0, 0.01, 0.0), 2000);
+		ps->addAffector(paf1);
+		paf1->drop();
+
+		if (event->add_particlespawner.collisiondetection) {
+			scene::IParticleAffector* paf2 = new CollisionAffector(*m_env);
+			ps->addAffector(paf2);
+			paf2->drop();
+		}
+
 		if (time != 0) {
 			scene::ISceneNodeAnimator* pan =  m_smgr->createDeleteAnimator(time * 1000);
 			ps->addAnimator(pan);
@@ -350,7 +367,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 	}
 
 	if (event->type == CE_SPAWN_PARTICLE) {
-		//TODO: use fixNumEmitter here?
+		//TODO: use fixNumEmitter here
 
 		//		video::ITexture *texture =
 		//			gamedef->tsrc()->getTextureForMesh(*(event->spawn_particle.texture));
@@ -368,11 +385,6 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 		//				v2f(1.0, 1.0));
 
 		//		addParticle(toadd);
-
-		//		delete event->spawn_particle.pos;
-		//		delete event->spawn_particle.vel;
-		//		delete event->spawn_particle.acc;
-
 		return;
 	}
 }
@@ -396,8 +408,8 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, LocalPlayer *player,
 	u8 texid = myrand_range(0, 5);
 	video::ITexture *texture = tiles[texid].texture;
 
-	// set camera offset manually, single burst spawner
-	// is not updated
+	// set camera offset manually, single burst spawner is not updated
+	// test if update via affector is instantaneous enough
 	v3s16 camera_offset = m_env->getCameraOffset();
 	v3f particlepos = intToFloat(pos, BS) - intToFloat(camera_offset, BS);
 
@@ -413,7 +425,7 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, LocalPlayer *player,
 	ps->addAffector(paf1);
 	paf1->drop();
 
-	scene::IParticleAffector* paf2 = new CollisionAffector(/*gamedef, */*m_env);
+	scene::IParticleAffector* paf2 = new CollisionAffector(*m_env);
 	ps->addAffector(paf2);
 	paf2->drop();
 
