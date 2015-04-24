@@ -573,7 +573,6 @@ private:
 	bool m_inventory_updated;
 	Inventory *m_inventory_from_server;
 	float m_inventory_from_server_age;
-	std::set<v3s16> m_active_blocks;
 	PacketCounter m_packetcounter;
 	bool m_show_highlighted;
 	// Block mesh animation parameters
