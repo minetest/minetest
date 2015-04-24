@@ -112,9 +112,9 @@ static std::vector<std::string> craftGetItemNames(
 {
 	std::vector<std::string> result;
 	for (std::vector<std::string>::const_iterator
-			i = itemstrings.begin();
-			i != itemstrings.end(); i++) {
-		result.push_back(craftGetItemName(*i, gamedef));
+			it = itemstrings.begin();
+			it != itemstrings.end(); it++) {
+		result.push_back(craftGetItemName(*it, gamedef));
 	}
 	return result;
 }
@@ -125,9 +125,9 @@ static std::vector<std::string> craftGetItemNames(
 {
 	std::vector<std::string> result;
 	for (std::vector<ItemStack>::const_iterator
-			i = items.begin();
-			i != items.end(); i++) {
-		result.push_back(i->name);
+			it = items.begin();
+			it != items.end(); it++) {
+		result.push_back(it->name);
 	}
 	return result;
 }
@@ -138,9 +138,9 @@ static std::vector<ItemStack> craftGetItems(
 {
 	std::vector<ItemStack> result;
 	for (std::vector<std::string>::const_iterator
-			i = items.begin();
-			i != items.end(); i++) {
-		result.push_back(ItemStack(std::string(*i), (u16)1,
+			it = items.begin();
+			it != items.end(); it++) {
+		result.push_back(ItemStack(std::string(*it), (u16)1,
 			(u16)0, "", gamedef->getItemDefManager()));
 	}
 	return result;
@@ -156,10 +156,10 @@ static bool craftGetBounds(const std::vector<std::string> &items, unsigned int w
 	unsigned int x = 0;
 	unsigned int y = 0;
 	for (std::vector<std::string>::const_iterator
-			i = items.begin();
-			i != items.end(); i++) {
+			it = items.begin();
+			it != items.end(); it++) {
 		// Is this an actual item?
-		if (*i != "") {
+		if (*it != "") {
 			if (!success) {
 				// This is the first nonempty item
 				min_x = max_x = x;
@@ -187,10 +187,10 @@ static bool craftGetBounds(const std::vector<std::string> &items, unsigned int w
 static void craftDecrementInput(CraftInput &input, IGameDef *gamedef)
 {
 	for (std::vector<ItemStack>::iterator
-			i = input.items.begin();
-			i != input.items.end(); i++) {
-		if (i->count != 0)
-			i->remove(1);
+			it = input.items.begin();
+			it != input.items.end(); it++) {
+		if (it->count != 0)
+			it->remove(1);
 	}
 }
 
@@ -210,16 +210,16 @@ static void craftDecrementOrReplaceInput(CraftInput &input,
 	std::vector<std::pair<std::string, std::string> > pairs = replacements.pairs;
 
 	for (std::vector<ItemStack>::iterator
-			i = input.items.begin();
-			i != input.items.end(); i++) {
-		if (i->count == 1) {
+			it = input.items.begin();
+			it != input.items.end(); it++) {
+		if (it->count == 1) {
 			// Find an appropriate replacement
 			bool found_replacement = false;
 			for (std::vector<std::pair<std::string, std::string> >::iterator
 					j = pairs.begin();
 					j != pairs.end(); j++) {
-				if (i->name == craftGetItemName(j->first, gamedef)) {
-					i->deSerialize(j->second, gamedef->idef());
+				if (it->name == craftGetItemName(j->first, gamedef)) {
+					it->deSerialize(j->second, gamedef->idef());
 					found_replacement = true;
 					pairs.erase(j);
 					break;
@@ -227,10 +227,10 @@ static void craftDecrementOrReplaceInput(CraftInput &input,
 			}
 			// No replacement was found, simply decrement count to zero
 			if (!found_replacement)
-				i->remove(1);
-		} else if (i->count >= 2) {
+				it->remove(1);
+		} else if (it->count >= 2) {
 			// Ignore replacements for items with count >= 2
-			i->remove(1);
+			it->remove(1);
 		}
 	}
 }
@@ -243,15 +243,15 @@ static std::string craftDumpMatrix(const std::vector<std::string> &items,
 	os<<"{ ";
 	unsigned int x = 0;
 	for(std::vector<std::string>::const_iterator
-			i = items.begin();
-			i != items.end(); i++, x++) {
+			it = items.begin();
+			it != items.end(); it++, x++) {
 		if (x == width) {
 			os<<"; ";
 			x = 0;
 		} else if (x != 0) {
 			os<<",";
 		}
-		os << '"' << (*i) << '"';
+		os << '"' << (*it) << '"';
 	}
 	os << " }";
 	return os.str();
@@ -265,15 +265,15 @@ std::string craftDumpMatrix(const std::vector<ItemStack> &items,
 	os << "{ ";
 	unsigned int x = 0;
 	for (std::vector<ItemStack>::const_iterator
-			i = items.begin();
-			i != items.end(); i++, x++) {
+			it = items.begin();
+			it != items.end(); it++, x++) {
 		if (x == width) {
 			os << "; ";
 			x = 0;
 		} else if (x != 0) {
 			os<<",";
 		}
-		os << '"' << (i->getItemString()) << '"';
+		os << '"' << (it->getItemString()) << '"';
 	}
 	os << " }";
 	return os.str();
@@ -313,9 +313,9 @@ std::string CraftReplacements::dump() const
 	os<<"{";
 	const char *sep = "";
 	for (std::vector<std::pair<std::string, std::string> >::const_iterator
-			i = pairs.begin();
-			i != pairs.end(); i++) {
-		os << sep << '"' << (i->first) << "\"=>\"" << (i->second) << '"';
+			it = pairs.begin();
+			it != pairs.end(); it++) {
+		os << sep << '"' << (it->first) << "\"=>\"" << (it->second) << '"';
 		sep = ",";
 	}
 	os << "}";
@@ -473,10 +473,10 @@ bool CraftDefinitionShapeless::check(const CraftInput &input, IGameDef *gamedef)
 	// Filter empty items out of input
 	std::vector<std::string> input_filtered;
 	for (std::vector<ItemStack>::const_iterator
-			i = input.items.begin();
-			i != input.items.end(); i++) {
-		if (i->name != "")
-			input_filtered.push_back(i->name);
+			it = input.items.begin();
+			it != input.items.end(); it++) {
+		if (it->name != "")
+			input_filtered.push_back(it->name);
 	}
 
 	// If there is a wrong number of items in input, no match
@@ -620,13 +620,13 @@ bool CraftDefinitionToolRepair::check(const CraftInput &input, IGameDef *gamedef
 	ItemStack item1;
 	ItemStack item2;
 	for (std::vector<ItemStack>::const_iterator
-			i = input.items.begin();
-			i != input.items.end(); i++) {
-		if (!i->empty()) {
+			it = input.items.begin();
+			it != input.items.end(); it++) {
+		if (!it->empty()) {
 			if (item1.empty())
-				item1 = *i;
+				item1 = *it;
 			else if (item2.empty())
-				item2 = *i;
+				item2 = *it;
 			else
 				return false;
 		}
@@ -640,13 +640,13 @@ CraftOutput CraftDefinitionToolRepair::getOutput(const CraftInput &input, IGameD
 	ItemStack item1;
 	ItemStack item2;
 	for (std::vector<ItemStack>::const_iterator
-			i = input.items.begin();
-			i != input.items.end(); i++) {
-		if (!i->empty()) {
+			it = input.items.begin();
+			it != input.items.end(); it++) {
+		if (!it->empty()) {
 			if (item1.empty())
-				item1 = *i;
+				item1 = *it;
 			else if (item2.empty())
-				item2 = *i;
+				item2 = *it;
 		}
 	}
 	ItemStack repaired = craftToolRepair(item1, item2, additional_wear, gamedef);
@@ -689,10 +689,10 @@ bool CraftDefinitionCooking::check(const CraftInput &input, IGameDef *gamedef) c
 	// Filter empty items out of input
 	std::vector<std::string> input_filtered;
 	for (std::vector<ItemStack>::const_iterator
-			i = input.items.begin();
-			i != input.items.end(); i++) {
-		if (i->name != "")
-			input_filtered.push_back(i->name);
+			it = input.items.begin();
+			it != input.items.end(); it++) {
+		if (it->name != "")
+			input_filtered.push_back(it->name);
 	}
 
 	// If there is a wrong number of items in input, no match
@@ -780,10 +780,10 @@ bool CraftDefinitionFuel::check(const CraftInput &input, IGameDef *gamedef) cons
 	// Filter empty items out of input
 	std::vector<std::string> input_filtered;
 	for (std::vector<ItemStack>::const_iterator
-			i = input.items.begin();
-			i != input.items.end(); i++) {
-		if (i->name != "")
-			input_filtered.push_back(i->name);
+			it = input.items.begin();
+			it != input.items.end(); it++) {
+		if (it->name != "")
+			input_filtered.push_back(it->name);
 	}
 
 	// If there is a wrong number of items in input, no match
@@ -878,9 +878,9 @@ public:
 		// If all input items are empty, abort.
 		bool all_empty = true;
 		for (std::vector<ItemStack>::const_iterator
-				i = input.items.begin();
-				i != input.items.end(); i++) {
-			if (!i->empty()) {
+				it = input.items.begin();
+				it != input.items.end(); it++) {
+			if (!it->empty()) {
 				all_empty = false;
 				break;
 			}
@@ -910,9 +910,9 @@ public:
 			// Walk crafting definitions from back to front, so that later
 			// definitions can override earlier ones.
 			for (std::vector<CraftDefinition*>::const_reverse_iterator
-					i = hash_collisions.rbegin();
-					i != hash_collisions.rend(); i++) {
-				CraftDefinition *def = *i;
+					it = hash_collisions.rbegin();
+					it != hash_collisions.rend(); it++) {
+				CraftDefinition *def = *it;
 
 				/*errorstream << "Checking " << input.dump() << std::endl
 					<< " against " << def->dump() << std::endl;*/
@@ -960,11 +960,11 @@ public:
 		os << "Crafting definitions:\n";
 		for (int type = 0; type <= craft_hash_type_max; type++) {
 			for (std::map<u64, std::vector<CraftDefinition*> >::const_iterator
-					i = (m_craft_defs[type]).begin();
-					i != (m_craft_defs[type]).end(); i++) {
+					it = (m_craft_defs[type]).begin();
+					it != (m_craft_defs[type]).end(); it++) {
 				for (std::vector<CraftDefinition*>::const_iterator
-						ii = i->second.begin(); ii != i->second.end(); ii++) {
-					os << "type " << type << " hash " << i->first << (*ii)->dump() << "\n";
+						iit = it->second.begin(); iit != it->second.end(); iit++) {
+					os << "type " << type << " hash " << it->first << (*iit)->dump() << "\n";
 				}
 			}
 		}
@@ -985,13 +985,13 @@ public:
 	{
 		for (int type = 0; type <= craft_hash_type_max; type++) {
 			for (std::map<u64, std::vector<CraftDefinition*> >::iterator
-					i = m_craft_defs[type].begin();
-					i != m_craft_defs[type].end(); i++) {
+					it = m_craft_defs[type].begin();
+					it != m_craft_defs[type].end(); it++) {
 				for (std::vector<CraftDefinition*>::iterator
-						ii = i->second.begin(); ii != i->second.end(); ii++) {
-					delete *ii;
+						iit = it->second.begin(); iit != it->second.end(); iit++) {
+					delete *iit;
 				}
-				i->second.clear();
+				it->second.clear();
 			}
 			m_craft_defs[type].clear();
 		}
@@ -1001,9 +1001,9 @@ public:
 	{
 		// Move the CraftDefs from the unhashed layer into layers higher up.
 		for (std::vector<CraftDefinition*>::iterator
-			i = (m_craft_defs[(int) CRAFT_HASH_TYPE_UNHASHED][0]).begin();
-			i != (m_craft_defs[(int) CRAFT_HASH_TYPE_UNHASHED][0]).end(); i++) {
-			CraftDefinition *def = *i;
+			it = (m_craft_defs[(int) CRAFT_HASH_TYPE_UNHASHED][0]).begin();
+			it != (m_craft_defs[(int) CRAFT_HASH_TYPE_UNHASHED][0]).end(); it++) {
+			CraftDefinition *def = *it;
 
 			// Initialize and get the definition's hash
 			def->initHash(gamedef);
