@@ -69,20 +69,18 @@ local function get_formspec(tabview, name, tabdata)
 
 	-- separator
 	retval = retval ..
-		"box[-0.3,3.75;12.4,0.1;#FFFFFF]"
+		"box[-0.28,3.75;12.4,0.1;#FFFFFF]"
 
 	-- checkboxes
 	retval = retval ..
-		"checkbox[1.0,3.9;cb_creative;".. fgettext("Creative Mode") .. ";" ..
+		"checkbox[8.0,3.9;cb_creative;".. fgettext("Creative Mode") .. ";" ..
 		dump(core.setting_getbool("creative_mode")) .. "]"..
-		"checkbox[5.0,3.9;cb_damage;".. fgettext("Enable Damage") .. ";" ..
-		dump(core.setting_getbool("enable_damage")) .. "]" ..
-		"checkbox[8,3.9;cb_fly_mode;".. fgettext("Fly mode") .. ";" ..
-		dump(core.setting_getbool("free_move")) .. "]"
+		"checkbox[8.0,4.4;cb_damage;".. fgettext("Enable Damage") .. ";" ..
+		dump(core.setting_getbool("enable_damage")) .. "]"
 	-- buttons
 	retval = retval ..
-		"button[2.0,4.5;6,1.5;btn_start_singleplayer;" .. fgettext("Start Singleplayer") .. "]" ..
-		"button[8.25,4.5;2.5,1.5;btn_config_sp_world;" .. fgettext("Config mods") .. "]"
+		"button[0,3.7;8,1.5;btn_start_singleplayer;" .. fgettext("Start Singleplayer") .. "]" ..
+		"button[0,4.5;8,1.5;btn_config_sp_world;" .. fgettext("Config mods") .. "]"
 
 	return retval
 end
@@ -135,11 +133,6 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 	if fields["cb_damage"] then
 		core.setting_set("enable_damage", fields["cb_damage"])
-		return true
-	end
-
-	if fields["cb_fly_mode"] then
-		core.setting_set("free_move", fields["cb_fly_mode"])
 		return true
 	end
 
