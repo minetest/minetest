@@ -1793,7 +1793,7 @@ void Game::run()
 				cam_view.camera_pitch) * cam_smoothing;
 		updatePlayerControl(cam_view);
 		step(&dtime);
-		processClientEvents(&cam_view, &runData.damage_flash);
+		processClientEvents(&cam_view_target, &runData.damage_flash);
 		updateCamera(&flags, draw_times.busy_time, dtime,
 				runData.time_from_last_punch);
 		updateSound(dtime);
