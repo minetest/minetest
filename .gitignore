@@ -44,6 +44,7 @@ src/script/common/CMakeFiles/*
 src/script/cpp_api/CMakeFiles/*
 src/script/lua_api/CMakeFiles/*
 src/util/CMakeFiles/*
+src/unittest/CMakeFiles/*
 src/jthread/CMakeFiles/*
 src/jthread/Makefile
 src/jthread/cmake_config.h
@@ -68,7 +69,10 @@ CPackSourceConfig.cmake
 Makefile
 cmake_install.cmake
 locale/
+.directory
+.kdev4/
 *.cbp
+*.kdev4
 *.layout
 *.o
 
