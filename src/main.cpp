@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mainmenumanager.h"
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
-#include "test.h"
+#include "unittest/test.h"
 #include "server.h"
 #include "filesys.h"
 #include "version.h"

@@ -198,7 +198,6 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/sound_openal.cpp                  \
 		jni/src/staticobject.cpp                  \
 		jni/src/subgame.cpp                       \
-		jni/src/test.cpp                          \
 		jni/src/tool.cpp                          \
 		jni/src/treegen.cpp                       \
 		jni/src/version.cpp                       \
@@ -212,6 +211,22 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/util/sha1.cpp                     \
 		jni/src/util/string.cpp                   \
 		jni/src/util/timetaker.cpp                \
+		jni/src/unittest/test.cpp                 \
+		jni/src/unittest/test_collision.cpp       \
+		jni/src/unittest/test_compression.cpp     \
+		jni/src/unittest/test_connection.cpp      \
+		jni/src/unittest/test_filepath.cpp        \
+		jni/src/unittest/test_inventory.cpp       \
+		jni/src/unittest/test_mapnode.cpp         \
+		jni/src/unittest/test_nodedef.cpp         \
+		jni/src/unittest/test_noise.cpp           \
+		jni/src/unittest/test_profiler.cpp        \
+		jni/src/unittest/test_serialization.cpp   \
+		jni/src/unittest/test_settings.cpp        \
+		jni/src/unittest/test_socket.cpp          \
+		jni/src/unittest/test_utilities.cpp       \
+		jni/src/unittest/test_voxelalgorithms.cpp \
+		jni/src/unittest/test_voxelmanipulator.cpp \
 		jni/src/touchscreengui.cpp                \
 		jni/src/database-leveldb.cpp              \
 		jni/src/settings.cpp                      \
