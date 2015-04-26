@@ -278,12 +278,8 @@ add_custom_target(GenerateVersion
 add_subdirectory(jthread)
 add_subdirectory(network)
 add_subdirectory(script)
+add_subdirectory(unittest)
 add_subdirectory(util)
-
-
-set (unittests_SRCS
-	test.cpp
-)
 
 set(common_SRCS
 	ban.cpp
@@ -360,7 +356,7 @@ set(common_SRCS
 	${JTHREAD_SRCS}
 	${common_SCRIPT_SRCS}
 	${UTIL_SRCS}
-	${unittests_SRCS}
+	${UNITTEST_SRCS}
 )
 
 

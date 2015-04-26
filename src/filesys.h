@@ -103,6 +103,10 @@ std::string RemoveLastPathComponent(const std::string &path,
 // this does not resolve symlinks and check for existence of directories.
 std::string RemoveRelativePathComponents(std::string path);
 
+// Return the filename from a path or the entire path if no directory delimiter
+// is found.
+const char *GetFilenameFromPath(const char *path);
+
 bool safeWriteToFile(const std::string &path, const std::string &content);
 
 }//fs

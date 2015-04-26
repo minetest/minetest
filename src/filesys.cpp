@@ -662,6 +662,12 @@ std::string RemoveRelativePathComponents(std::string path)
 	return path.substr(0, pos);
 }
 
+const char *GetFilenameFromPath(const char *path)
+{
+	const char *filename = strrchr(path, DIR_DELIM_CHAR);
+	return filename ? filename + 1 : path;
+}
+
 bool safeWriteToFile(const std::string &path, const std::string &content)
 {
 	std::string tmp_file = path + ".~mt";
