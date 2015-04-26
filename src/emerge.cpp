@@ -522,7 +522,7 @@ void *EmergeThread::Thread()
 			<< "----" << std::endl
 			<< "\"" << e.what() << "\"" << std::endl
 			<< "See debug.txt." << std::endl
-			<< "World probably saved by a newer version of " PROJECT_NAME "."
+			<< "World probably saved by a newer version of " PROJECT_NAME_C "."
 			<< std::endl;
 		m_server->setAsyncFatalError(err.str());
 	}

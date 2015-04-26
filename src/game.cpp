@@ -1134,7 +1134,7 @@ static void show_pause_menu(GUIFormSpecMenu **cur_formspec,
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"
 			<< wide_to_narrow(wstrgettext("Exit to OS"))   << "]"
 			<< "textarea[7.5,0.25;3.9,6.25;;" << control_text << ";]"
-			<< "textarea[0.4,0.25;3.5,6;;" << PROJECT_NAME "\n"
+			<< "textarea[0.4,0.25;3.5,6;;" << PROJECT_NAME_C "\n"
 			<< g_build_info << "\n"
 			<< "path_user = " << wrap_rows(porting::path_user, 20)
 			<< "\n;]";
@@ -2029,7 +2029,7 @@ bool Game::createClient(const std::string &playername,
 
 	/* Set window caption
 	 */
-	std::wstring str = narrow_to_wide(PROJECT_NAME);
+	std::wstring str = narrow_to_wide(PROJECT_NAME_C);
 	str += L" [";
 	str += driver->getName();
 	str += L"]";
@@ -2054,7 +2054,7 @@ bool Game::initGui()
 {
 	// First line of debug text
 	guitext = guienv->addStaticText(
-			narrow_to_wide(PROJECT_NAME).c_str(),
+			narrow_to_wide(PROJECT_NAME_C).c_str(),
 			core::rect<s32>(0, 0, 0, 0),
 			false, false, guiroot);
 
@@ -4018,7 +4018,7 @@ void Game::updateGui(float *statustext_time, const RunStats &stats,
 
 		std::ostringstream os(std::ios_base::binary);
 		os << std::fixed
-		   << PROJECT_NAME " " << g_version_hash
+		   << PROJECT_NAME_C " " << g_version_hash
 		   << " FPS = " << fps
 		   << " (R: range_all=" << draw_control->range_all << ")"
 		   << std::setprecision(0)
@@ -4034,7 +4034,7 @@ void Game::updateGui(float *statustext_time, const RunStats &stats,
 		guitext->setVisible(true);
 	} else if (flags.show_hud || flags.show_chat) {
 		std::ostringstream os(std::ios_base::binary);
-		os << PROJECT_NAME " " << g_version_hash;
+		os << PROJECT_NAME_C " " << g_version_hash;
 		guitext->setText(narrow_to_wide(os.str()).c_str());
 		guitext->setVisible(true);
 	} else {
@@ -4267,7 +4267,7 @@ void the_game(bool *kill,
 	} catch (SerializationError &e) {
 		error_message = std::string("A serialization error occurred:\n")
 				+ e.what() + "\n\nThe server is probably "
-				" running a different version of " PROJECT_NAME ".";
+				" running a different version of " PROJECT_NAME_C ".";
 		errorstream << error_message << std::endl;
 	} catch (ServerError &e) {
 		error_message = e.what();
