@@ -14,7 +14,6 @@
 	#include "cmake_config.h"
 #elif defined (__ANDROID__) || defined (ANDROID)
 	#define PROJECT_NAME "Minetest"
-	#define PROJECT_NAME_LOWER "minetest"
 	#define STATIC_SHAREDIR ""
 	#include "android_version.h"
 	#ifdef NDEBUG
