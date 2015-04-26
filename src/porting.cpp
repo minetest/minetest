@@ -475,11 +475,11 @@ bool setSystemPaths()
 	// Use ".\bin\.."
 	path_share = std::string(buf) + "\\..";
 
-	// Use "C:\Documents and Settings\user\Application Data\<PROJECT_NAME_LOWER>"
+	// Use "C:\Documents and Settings\user\Application Data\<PROJECT_NAME>"
 	DWORD len = GetEnvironmentVariable("APPDATA", buf, sizeof(buf));
 	FATAL_ERROR_IF(len == 0 || len > sizeof(buf), "Failed to get APPDATA");
 
-	path_user = std::string(buf) + DIR_DELIM PROJECT_NAME_LOWER;
+	path_user = std::string(buf) + DIR_DELIM + lowercase(PROJECT_NAME);
 	return true;
 }
 
@@ -511,7 +511,7 @@ bool setSystemPaths()
 		trylist.push_back(static_sharedir);
 
 	trylist.push_back(bindir + DIR_DELIM ".." DIR_DELIM "share"
-		DIR_DELIM PROJECT_NAME_LOWER);
+		DIR_DELIM + lowercase(PROJECT_NAME));
 	trylist.push_back(bindir + DIR_DELIM "..");
 
 #ifdef __ANDROID__
@@ -540,7 +540,7 @@ bool setSystemPaths()
 
 #ifndef __ANDROID__
 	path_user = std::string(getenv("HOME")) + DIR_DELIM "."
-		PROJECT_NAME_LOWER;
+		+ lowercase(PROJECT_NAME);
 #endif
 
 	return true;
@@ -563,8 +563,9 @@ bool setSystemPaths()
 	}
 	CFRelease(resources_url);
 
-	path_user = std::string(getenv("HOME")) +
-		"/Library/Application Support/" PROJECT_NAME_LOWER;
+	path_user = std::string(getenv("HOME"))
+		+ "/Library/Application Support/"
+		+ lowercase(PROJECT_NAME);
 	return true;
 }
 
@@ -575,7 +576,7 @@ bool setSystemPaths()
 {
 	path_share = STATIC_SHAREDIR;
 	path_user  = std::string(getenv("HOME")) + DIR_DELIM "."
-		PROJECT_NAME_LOWER;
+		+ lowercase(PROJECT_NAME);
 	return true;
 }
 
