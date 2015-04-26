@@ -106,8 +106,8 @@ public:
 		NetworkPacket& operator>>(video::SColor& dst);
 		NetworkPacket& operator<<(video::SColor src);
 
-		// Temp, we remove SharedBuffer when migration finished
-		Buffer<u8> oldForgePacket();
+		// Temp, we remove Buffer when migration finished
+		void oldForgePacket(Buffer<u8> &buf);
 private:
 		void checkReadOffset(u32 from_offset);
 
