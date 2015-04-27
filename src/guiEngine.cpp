@@ -172,7 +172,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 		m_sound_manager = &dummySoundManager;
 
 	//create topleft header
-	std::wstring t = narrow_to_wide(std::string(PROJECT_NAME " ") +
+	std::wstring t = narrow_to_wide(std::string(PROJECT_NAME_C " ") +
 			g_version_hash);
 
 	core::rect<s32> rect(0, 0, g_fontengine->getTextWidth(t), g_fontengine->getTextHeight());
@@ -572,7 +572,7 @@ bool GUIEngine::downloadFile(std::string url, std::string target)
 /******************************************************************************/
 void GUIEngine::setTopleftText(std::string append)
 {
-	std::wstring toset = narrow_to_wide(std::string(PROJECT_NAME " ") +
+	std::wstring toset = narrow_to_wide(std::string(PROJECT_NAME_C " ") +
 			g_version_hash);
 
 	if (append != "")

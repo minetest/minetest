@@ -6,8 +6,8 @@ if(${CMAKE_VERSION} STREQUAL "2.8.2")
 endif()
 
 # This can be read from ${PROJECT_NAME} after project() is called
-project(Minetest)
-string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
+project(minetest)
+set(PROJECT_NAME_CAPITALIZED "Minetest")
 
 
 # Also remember to set PROTOCOL_VERSION in network/networkprotocol.h when releasing
@@ -65,11 +65,11 @@ if(WIN32)
 	set(EXAMPLE_CONF_DIR ".")
 	set(LOCALEDIR "locale")
 elseif(APPLE)
-	set(BUNDLE_NAME ${PROJECT_NAME_LOWER}.app)
+	set(BUNDLE_NAME ${PROJECT_NAME}.app)
 	set(BUNDLE_PATH "${BUNDLE_NAME}")
 	set(BINDIR ${BUNDLE_NAME}/Contents/MacOS)
 	set(SHAREDIR ${BUNDLE_NAME}/Contents/Resources)
-	set(DOCDIR "${SHAREDIR}/${PROJECT_NAME_LOWER}")
+	set(DOCDIR "${SHAREDIR}/${PROJECT_NAME}")
 	set(EXAMPLE_CONF_DIR ${DOCDIR})
 	set(LOCALEDIR "${SHAREDIR}/locale")
 elseif(UNIX) # Linux, BSD etc
@@ -84,15 +84,15 @@ elseif(UNIX) # Linux, BSD etc
 		set(ICONDIR "unix/icons")
 		set(LOCALEDIR "locale")
 	else()
-		set(SHAREDIR "${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME_LOWER}")
+		set(SHAREDIR "${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}")
 		set(BINDIR "${CMAKE_INSTALL_PREFIX}/bin")
-		set(DOCDIR "${CMAKE_INSTALL_PREFIX}/share/doc/${PROJECT_NAME_LOWER}")
+		set(DOCDIR "${CMAKE_INSTALL_PREFIX}/share/doc/${PROJECT_NAME}")
 		set(MANDIR "${CMAKE_INSTALL_PREFIX}/share/man")
 		set(EXAMPLE_CONF_DIR ${DOCDIR})
 		set(XDG_APPS_DIR "${CMAKE_INSTALL_PREFIX}/share/applications")
 		set(APPDATADIR "${CMAKE_INSTALL_PREFIX}/share/appdata")
 		set(ICONDIR "${CMAKE_INSTALL_PREFIX}/share/icons")
-		set(LOCALEDIR "${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME_LOWER}/locale")
+		set(LOCALEDIR "${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/locale")
 	endif()
 endif()
 

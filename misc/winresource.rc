@@ -37,15 +37,15 @@ BEGIN
         BLOCK "040904b0"
     BEGIN
         VALUE "Comments", ""
-        VALUE "CompanyName", PROJECT_NAME " community"
-        VALUE "FileDescription", PROJECT_NAME " engine main executable"
+        VALUE "CompanyName", PROJECT_NAME_C " community"
+        VALUE "FileDescription", PROJECT_NAME_C " engine"
         VALUE "FileVersion", VERSION_STRING
         VALUE "InternalName", PROJECT_NAME
-        VALUE "LegalCopyright", "(c) 2014 celeron55"
+        VALUE "LegalCopyright", "(c) 2011-2015 celeron55"
         VALUE "LegalTrademarks", """Minetest"" is the property of the Minetest community, don't use it without permission!"
         VALUE "OriginalFilename", "minetest.exe"
         VALUE "PrivateBuild", VERSION_EXTRA
-        VALUE "ProductName", PROJECT_NAME
+        VALUE "ProductName", PROJECT_NAME_C
         VALUE "ProductVersion", PRODUCT_VERSION_STRING
         VALUE "SpecialBuild", BUILDMODE
     END

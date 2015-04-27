@@ -479,7 +479,7 @@ bool setSystemPaths()
 	DWORD len = GetEnvironmentVariable("APPDATA", buf, sizeof(buf));
 	FATAL_ERROR_IF(len == 0 || len > sizeof(buf), "Failed to get APPDATA");
 
-	path_user = std::string(buf) + DIR_DELIM + lowercase(PROJECT_NAME);
+	path_user = std::string(buf) + DIR_DELIM + PROJECT_NAME;
 	return true;
 }
 
@@ -511,7 +511,7 @@ bool setSystemPaths()
 		trylist.push_back(static_sharedir);
 
 	trylist.push_back(bindir + DIR_DELIM ".." DIR_DELIM "share"
-		DIR_DELIM + lowercase(PROJECT_NAME));
+		DIR_DELIM + PROJECT_NAME);
 	trylist.push_back(bindir + DIR_DELIM "..");
 
 #ifdef __ANDROID__
@@ -540,7 +540,7 @@ bool setSystemPaths()
 
 #ifndef __ANDROID__
 	path_user = std::string(getenv("HOME")) + DIR_DELIM "."
-		+ lowercase(PROJECT_NAME);
+		+ PROJECT_NAME;
 #endif
 
 	return true;
@@ -565,7 +565,7 @@ bool setSystemPaths()
 
 	path_user = std::string(getenv("HOME"))
 		+ "/Library/Application Support/"
-		+ lowercase(PROJECT_NAME);
+		+ PROJECT_NAME;
 	return true;
 }
 
