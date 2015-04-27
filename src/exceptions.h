@@ -120,6 +120,11 @@ public:
 	ClientStateError(std::string s): BaseException(s) {}
 };
 
+class PrngException : public BaseException {
+public:
+	PrngException(std::string s): BaseException(s) {}
+};
+
 /*
 	Some "old-style" interrupts:
 */
