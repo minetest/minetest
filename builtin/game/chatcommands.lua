@@ -14,16 +14,13 @@ function core.register_chatcommand(cmd, def)
 end
 
 if core.setting_getbool("mod_profiling") then
-	local tracefct = profiling_print_log
+	core.register_chatcommand("dump_mod_profile", {
+		params      = "[filter]",
+		description = "Dump mod profiling data to log",
+		privs       = {server=true},
+		func        = profiling_print_log,
+	})
 	profiling_print_log = nil
-	core.register_chatcommand("save_mod_profile",
-			{
-				params      = "",
-				description = "save mod profiling data to logfile " ..
-						"(depends on default loglevel)",
-				func        = tracefct,
-				privs       = { server=true }
-			})
 end
 
 core.register_on_chat_message(function(name, message)
