@@ -37,7 +37,7 @@ class TestFailedException : public std::exception {
 	try {                           \
 		fxn(__VA_ARGS__);           \
 		dstream << "[PASS] ";       \
-	} catch (TestFailedException) { \
+	} catch (...) {                 \
 		dstream << "[FAIL] ";       \
 		num_tests_failed++;         \
 	}                               \
