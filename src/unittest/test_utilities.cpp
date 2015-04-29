@@ -45,6 +45,7 @@ public:
 	void testWrapRows();
 	void testIsNumber();
 	void testIsPowerOfTwo();
+	void testMyround();
 };
 
 static TestUtilities g_test_instance;
@@ -67,6 +68,7 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testWrapRows);
 	TEST(testIsNumber);
 	TEST(testIsPowerOfTwo);
+	TEST(testMyround);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -238,4 +240,12 @@ void TestUtilities::testIsPowerOfTwo()
 		UASSERT(is_power_of_two((1 << exponent) + 1) == false);
 	}
 	UASSERT(is_power_of_two((u32)-1) == false);
+}
+
+void TestUtilities::testMyround()
+{
+	UASSERT(myround(4.6f) == 5);
+	UASSERT(myround(1.2f) == 1);
+	UASSERT(myround(-3.1f) == -3);
+	UASSERT(myround(-6.5f) == -7);
 }
