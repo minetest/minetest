@@ -148,7 +148,7 @@ s32 PcgRandom::randNormalDist(s32 min, s32 max, int num_trials)
 	s32 accum = 0;
 	for (int i = 0; i != num_trials; i++)
 		accum += range(min, max);
-	return round((float)accum / num_trials);
+	return myround((float)accum / num_trials);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

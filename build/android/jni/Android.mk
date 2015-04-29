@@ -221,6 +221,7 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/unittest/test_nodedef.cpp         \
 		jni/src/unittest/test_noise.cpp           \
 		jni/src/unittest/test_profiler.cpp        \
+		jni/src/unittest/test_random.cpp          \
 		jni/src/unittest/test_serialization.cpp   \
 		jni/src/unittest/test_settings.cpp        \
 		jni/src/unittest/test_socket.cpp          \

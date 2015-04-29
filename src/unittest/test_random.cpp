@@ -74,13 +74,10 @@ void TestRandom::testPseudoRandomRange()
 	EXCEPTION_CHECK(PrngException, pr.range(5, 1));
 
 	for (u32 i = 0; i != 32768; i++) {
-		int min = pr.next() % 3000;
-		int max = pr.next() % 3000;
-		if (min > max) {
-			int temp = min;
-			min = max;
-			max = temp;
-		}
+		int min = (pr.next() % 3000) - 500;
+		int max = (pr.next() % 3000) - 500;
+		if (min > max)
+			SWAP(int, min, max);
 
 		int randval = pr.range(min, max);
 		UASSERT(randval >= min);
@@ -105,13 +102,10 @@ void TestRandom::testPcgRandomRange()
 	EXCEPTION_CHECK(PrngException, pr.range(5, 1));
 
 	for (u32 i = 0; i != 32768; i++) {
-		int min = pr.next() % 3000;
-		int max = pr.next() % 3000;
-		if (min > max) {
-			int temp = min;
-			min = max;
-			max = temp;
-		}
+		int min = (pr.next() % 3000) - 500;
+		int max = (pr.next() % 3000) - 500;
+		if (min > max)
+			SWAP(int, min, max);
 
 		int randval = pr.range(min, max);
 		UASSERT(randval >= min);
@@ -146,7 +140,7 @@ void TestRandom::testPcgRandomNormalDist()
 	s32 bins[max - min + 1];
 	memset(bins, 0, sizeof(bins));
 
-	PcgRandom r(486456179 + (int)time(NULL));
+	PcgRandom r(486179 + (int)time(NULL));
 
 	for (u32 i = 0; i != num_samples; i++) {
 		s32 randval = r.randNormalDist(min, max, num_trials);
@@ -173,8 +167,8 @@ void TestRandom::testPcgRandomNormalDist()
 	//// Simple normality test using the 68-95-99.7% rule
 	for (u32 i = 0; i != ARRLEN(prediction_intervals); i++) {
 		float deviations = i / 2.f + 1.f;
-		int lbound = round(mean - deviations * stddev);
-		int ubound = round(mean + deviations * stddev);
+		int lbound = myround(mean - deviations * stddev);
+		int ubound = myround(mean + deviations * stddev);
 		UASSERT(lbound >= min);
 		UASSERT(ubound <= max);
 

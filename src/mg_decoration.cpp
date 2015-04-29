@@ -310,8 +310,7 @@ int DecoSimple::getHeight()
 ///////////////////////////////////////////////////////////////////////////////
 
 
-DecoSchematic::DecoSchematic() :
-	Decoration::Decoration()
+DecoSchematic::DecoSchematic()
 {
 	schematic = NULL;
 }
