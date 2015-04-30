@@ -288,7 +288,7 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 */
 inline s32 myround(f32 f)
 {
-	return floor(f + 0.5);
+	return f < 0.f ? (s32)(f - 0.5f) : (s32)(f + 0.5f);
 }
 
 /*
