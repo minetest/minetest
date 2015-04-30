@@ -123,7 +123,7 @@ public:
         virtual const core::vector3df& getCenter() const { return v3f(0.0, 0.0, 0.0); }
         virtual f32 getRadius() const { return 1.; }
         virtual irr::scene::E_PARTICLE_EMITTER_TYPE getType() const {
-                return (irr::scene::E_PARTICLE_EMITTER_TYPE) 666;
+                return (irr::scene::E_PARTICLE_EMITTER_TYPE) (irr::scene::EPET_COUNT+1);
         }
 
         void restart() { emitted=0; }
@@ -190,8 +190,8 @@ public:
 //                        particlearray[i].color = video::SColor(255, plight, plight, plight);
                 }
         }
-        irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const {
-                return (irr::scene::E_PARTICLE_AFFECTOR_TYPE) 666;
+        virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const {
+                return (irr::scene::E_PARTICLE_AFFECTOR_TYPE) (irr::scene::EPAT_COUNT+1);
         }
         irr::u32 LastTime;
         IGameDef *m_gamedef;
@@ -213,8 +213,8 @@ public:
                         SceneManager->addToDeletionQueue(ParticleSystem);
                 }
         }
-        irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const {
-                return (irr::scene::E_PARTICLE_AFFECTOR_TYPE) 667;
+        virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const {
+                return (irr::scene::E_PARTICLE_AFFECTOR_TYPE) (irr::scene::EPAT_COUNT+2);
         }
 private:
         irr::scene::IParticleSystemSceneNode* ParticleSystem;
@@ -251,8 +251,8 @@ public:
                 }
                 m_ps->setPosition(m_pos - off);
         }
-        irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const {
-                return (irr::scene::E_PARTICLE_AFFECTOR_TYPE) 669;
+        virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const {
+                return (irr::scene::E_PARTICLE_AFFECTOR_TYPE) (irr::scene::EPAT_COUNT+3);
         }
 private:
         ClientEnvironment *m_env;
