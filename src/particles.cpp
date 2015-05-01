@@ -49,7 +49,7 @@ v3f random_v3f(v3f min, v3f max)
 			rand()/(float)RAND_MAX*(max.Z-min.Z)+min.Z);
 }
 
-class fixNumEmitter :  public irr::scene::IParticleEmitter {
+class FixNumEmitter :  public irr::scene::IParticleEmitter {
 private:
         core::array<irr::scene::SParticle> particles;
 
@@ -58,7 +58,7 @@ private:
         u32 emitted;
 public:
 
-        fixNumEmitter(v3f pos, int number) : number(number), pos(pos), emitted(0) {}
+        FixNumEmitter(v3f pos, int number) : number(number), pos(pos), emitted(0) {}
 
         s32 emitt(u32 now, u32 timeSinceLastCall, irr::scene::SParticle*& outArray)
         {
@@ -303,7 +303,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 		float pps = event->add_particlespawner.amount;
 		float time = event->add_particlespawner.spawntime;
 
-		if (time != 0)
+		if (time <= 0)
 			pps = pps / time;
 
 		float minsize = event->add_particlespawner.minsize;
@@ -367,7 +367,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 	}
 
 	if (event->type == CE_SPAWN_PARTICLE) {
-		//TODO: use fixNumEmitter here
+		//TODO: use FixNumEmitter here
 
 		//		video::ITexture *texture =
 		//			gamedef->tsrc()->getTextureForMesh(*(event->spawn_particle.texture));
@@ -417,7 +417,7 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, LocalPlayer *player,
 			m_smgr->addParticleSystemSceneNode(false);
 	scene::IParticleEmitter* em;
 
-	em = new fixNumEmitter(particlepos, number);
+	em = new FixNumEmitter(particlepos, number);
 	ps->setEmitter(em);
 	em->drop();
 
