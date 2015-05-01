@@ -7,6 +7,9 @@ tags
 *.orig
 *.rej
 
+## Files related to minetest development cycle
+/*.patch
+
 ## Non-static Minetest directories
 /bin/
 /games/*
