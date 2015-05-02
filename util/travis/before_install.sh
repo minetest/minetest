@@ -11,7 +11,7 @@ fi
 sudo apt-get install p7zip-full
 if [[ $PLATFORM == "Linux" ]]; then
 	sudo apt-get install libirrlicht-dev cmake libbz2-dev libpng12-dev \
-		libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev \
+		libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev \
 		libhiredis-dev libogg-dev libvorbis-dev libopenal-dev gettext
 	# Linking to LevelDB is broken, use a custom build
 	wget http://sfan5.pf-control.de/libleveldb-1.18-ubuntu12.04.7z
