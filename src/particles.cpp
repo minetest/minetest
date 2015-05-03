@@ -42,23 +42,17 @@ class Environment;
 	Utility
 */
 
-v3f random_v3f(v3f min, v3f max)
-{
+v3f random_v3f(v3f min, v3f max) {
 	return v3f( rand()/(float)RAND_MAX*(max.X-min.X)+min.X,
-			rand()/(float)RAND_MAX*(max.Y-min.Y)+min.Y,
-			rand()/(float)RAND_MAX*(max.Z-min.Z)+min.Z);
+		    rand()/(float)RAND_MAX*(max.Y-min.Y)+min.Y,
+		    rand()/(float)RAND_MAX*(max.Z-min.Z)+min.Z);
 }
 
 class FixNumEmitter :  public irr::scene::IParticleEmitter {
-private:
-        core::array<irr::scene::SParticle> particles;
 
-        u32 number;
-        v3f pos;
-        u32 emitted;
 public:
 
-        FixNumEmitter(v3f pos, int number) : number(number), pos(pos), emitted(0) {}
+        FixNumEmitter(u32 number) : number(number), emitted(0) {}
 
         s32 emitt(u32 now, u32 timeSinceLastCall, irr::scene::SParticle*& outArray)
         {
@@ -67,17 +61,13 @@ public:
                 particles.set_used(0);
 
                 irr::scene::SParticle p;
-                for(u32 i=0; i<number; ++i)
-                {
-                        v3f particlepos = v3f(
-                                                /*pos.X + */rand() %100 /200. - 0.25,
-                                                /*pos.Y + */rand() %100 /200. - 0.25,
-                                                /*pos.Z + */rand() %100 /200. - 0.25);
-
+                for(u32 i=0; i<number; ++i) {
+                        v3f particlepos = random_v3f( v3f(-0.25, -0.25, -0.25),
+                                                      v3f( 0.25,  0.25,  0.25));
                         p.pos.set(particlepos);
 
                         v3f velocity((rand() % 100 / 50. - 1) / 1.5,
-                                     rand() % 100 / 35.,
+                                      rand() % 100 / 35.,
                                      (rand() % 100 / 50. - 1) / 1.5);
                         p.vector = velocity/100;
                         p.startVector = p.vector;
@@ -87,7 +77,7 @@ public:
 
                         p.color = video::SColor(255.0, 255.0, 255.0, 255.0);
                         p.startColor = p.color;
-                        float size = rand() % 64 / 51.2;
+                        float size = rand() % 16 / BS;
                         p.startSize = core::dimension2d<f32>(size, size);
                         p.size = p.startSize;
                         particles.push_back(p);
@@ -126,8 +116,11 @@ public:
                 return (irr::scene::E_PARTICLE_EMITTER_TYPE) (irr::scene::EPET_COUNT+1);
         }
 
-        void restart() { emitted=0; }
+private:
+        core::array<irr::scene::SParticle> particles;
 
+        u32 number;
+        u32 emitted;
 };
 
 class CollisionAffector : public irr::scene::IParticleAffector
@@ -160,7 +153,7 @@ public:
                                         (-size/2,-size/2,-size/2,size/2,size/2,size/2);
 
                         //to ensure particles collide with correct position
-                        v3f off = intToFloat(m_env->getCameraOffset(), BS);
+                        const v3f off = intToFloat(m_env->getCameraOffset(), BS);
 
                         particlearray[i].pos += off;
 
@@ -206,35 +199,26 @@ public:
         {
                 m_env = &env;
 
-                // invalid offset intentional, updated after creating
-                m_offset = m_env->getCameraOffset();// v3s16(666, 666, 666);
+                m_offset = m_env->getCameraOffset();
                 m_ps = ps;
                 m_pos = pos;
-                once = true;
+                first_run = true;
         }
 
         void affect(u32 now, irr::scene::SParticle* particlearray, u32 count)
         {
-                bool update = false;
-                v3s16 camera_offset = m_env->getCameraOffset();
-                if (camera_offset != m_offset) {
-                        update = true;
-                }
-
-                v3f offset = intToFloat(camera_offset, BS);
-
-                if (once) {
-                        once = false;
+                if (first_run) {
                         m_ps->setPosition( m_pos - intToFloat(m_offset, BS));
                         for (u32 i=0; i<count; ++i) {
-                                //Particles[i].pos += intToFloat(m_offset, BS);
                                 particlearray[i].pos -= intToFloat(m_offset, BS);
                         }
+                        first_run = false;
+                        return;
                 }
 
-                if (update) {
-                        once = false;
-                        m_ps->setPosition( m_pos - offset);
+                v3s16 camera_offset = m_env->getCameraOffset();
+                if (camera_offset != m_offset) {
+                        m_ps->setPosition( m_pos - intToFloat(camera_offset, BS));
 
                         for (u32 i=0; i<count; ++i) {
                                 particlearray[i].pos += intToFloat(m_offset, BS);
@@ -251,23 +235,13 @@ private:
         v3s16 m_offset;
         irr::scene::IParticleSystemSceneNode* m_ps;
         v3f m_pos;
-        bool once;
+        bool first_run;
 };
 
 ParticleManager::ParticleManager(ClientEnvironment* env, irr::scene::ISceneManager* smgr) :
 	m_env(env),
 	m_smgr(smgr)
 {}
-
-ParticleManager::~ParticleManager()
-{
-	clearAll();
-}
-
-void ParticleManager::clearAll ()
-{
-	return;
-}
 
 void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef, LocalPlayer *player)
 {
@@ -285,9 +259,6 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 					event->delete_particlespawner.id);
 		if (node)
 			m_smgr->addToDeletionQueue(node);
-
-		video::ITexture *texture =
-				gamedef->tsrc()->getTextureForMesh(*(event->add_particlespawner.texture));
 
 		scene::IParticleSystemSceneNode * ps = m_smgr->addParticleSystemSceneNode();
 
@@ -317,25 +288,27 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 		ps->setEmitter(em);
 		em->drop();
 
-		ps->setMaterialTexture(0, texture);
 		ps->setAutomaticCulling(scene::EAC_FRUSTUM_BOX);
-		ps->setDebugDataVisible(irr::scene::EDS_BBOX);
 
 		v3f pos = *event->add_particlespawner.minpos;
 		pos = pos * BS;
-
 		ps->setPosition(pos);
+		ps->setDebugDataVisible(irr::scene::EDS_BBOX);
+
+		scene::IParticleAffector * caf =
+				new CameraOffsetAffector(*m_env, ps, pos);
+		ps->addAffector(caf);
+		caf->drop();
+
+		video::ITexture *texture =
+				gamedef->tsrc()->getTextureForMesh(*(event->add_particlespawner.texture));
+		ps->setMaterialTexture(0, texture);
 
 		ps->setMaterialFlag(video::EMF_LIGHTING, false);
 		ps->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
 		ps->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
 		ps->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 		ps->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
-
-		scene::IParticleAffector * caf =
-				new CameraOffsetAffector(*m_env, ps, pos);
-		ps->addAffector(caf);
-		caf->drop();
 
 		// TODO: create acceleration affector similar to GravityAffector
 		// with min/max acceleration
@@ -383,7 +356,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 void ParticleManager::addDiggingParticles(IGameDef* gamedef,
 		LocalPlayer *player, v3s16 pos, const TileSpec tiles[])
 {
-		addNodeParticle(gamedef, player, pos, tiles, 32);
+	addNodeParticle(gamedef, player, pos, tiles, 32);
 }
 
 void ParticleManager::addPunchingParticles(IGameDef* gamedef,
@@ -393,25 +366,19 @@ void ParticleManager::addPunchingParticles(IGameDef* gamedef,
 }
 
 void ParticleManager::addNodeParticle(IGameDef* gamedef, LocalPlayer *player,
-				      v3s16 pos, const TileSpec tiles[], int number)
+				      v3s16 pos, const TileSpec tiles[], u32 number)
 {
-	// Texture
-	u8 texid = myrand_range(0, 5);
-	video::ITexture *texture = tiles[texid].texture;
+	scene::IParticleSystemSceneNode* ps =
+			m_smgr->addParticleSystemSceneNode(false);
 
 	// set camera offset manually, single burst spawner is not updated
 	v3s16 camera_offset = m_env->getCameraOffset();
 	v3f particlepos = intToFloat(pos, BS) - intToFloat(camera_offset, BS);
-
-	scene::IParticleSystemSceneNode* ps =
-			m_smgr->addParticleSystemSceneNode(false);
-
-	ps->setDebugDataVisible(irr::scene::EDS_BBOX);
 	ps->setPosition(particlepos);
+	ps->setDebugDataVisible(irr::scene::EDS_BBOX);
 
 	scene::IParticleEmitter* em;
-
-	em = new FixNumEmitter(particlepos, number);
+	em = new FixNumEmitter(number);
 	ps->setEmitter(em);
 	em->drop();
 
@@ -427,6 +394,8 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, LocalPlayer *player,
 	ps->addAnimator(pan);
 	pan->drop();
 
+	u8 texid = myrand_range(0, 5);
+	video::ITexture *texture = tiles[texid].texture;
 	ps->setMaterialTexture(0, texture);
 
 	ps->setMaterialFlag(video::EMF_LIGHTING, false);
