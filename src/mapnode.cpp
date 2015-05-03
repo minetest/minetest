@@ -163,6 +163,9 @@ void MapNode::rotateAlongYAxis(INodeDefManager *nodemgr, Rotation rot) {
 	ContentParamType2 cpt2 = nodemgr->get(*this).param_type_2;
 
 	if (cpt2 == CPT2_FACEDIR) {
+		if (param2 >= 4)
+			return;
+
 		u8 newrot = param2 & 3;
 		param2 &= ~3;
 		param2 |= (newrot + rot) & 3;
