@@ -1,27 +1,23 @@
 # Always run during 'make'
 
-if(VERSION_EXTRA)
-	set(VERSION_GITHASH "${VERSION_STRING}")
-else()
-	execute_process(COMMAND git describe --tag --dirty
+if(DEVELOPMENT_BUILD)
+	execute_process(COMMAND git rev-parse --short HEAD
 		WORKING_DIRECTORY "${GENERATE_VERSION_SOURCE_DIR}"
 		OUTPUT_VARIABLE VERSION_GITHASH OUTPUT_STRIP_TRAILING_WHITESPACE
 		ERROR_QUIET)
-
 	if(VERSION_GITHASH)
-		message(STATUS "*** Detected Git version ${VERSION_GITHASH} ***")
-	else()
-		execute_process(COMMAND git describe --always --tag --dirty
+		set(VERSION_GITHASH "${VERSION_STRING}-${VERSION_GITHASH}")
+		execute_process(COMMAND git diff-index --quiet HEAD
 			WORKING_DIRECTORY "${GENERATE_VERSION_SOURCE_DIR}"
-			OUTPUT_VARIABLE VERSION_GITHASH OUTPUT_STRIP_TRAILING_WHITESPACE
-			ERROR_QUIET)
-		if(VERSION_GITHASH)
-			set(VERSION_GITHASH "${VERSION_STRING}-${VERSION_GITHASH}")
-			message(STATUS "*** Detected shallow Git version ${VERSION_GITHASH} ***")
-		else()
-			set(VERSION_GITHASH "${VERSION_STRING}")
+			RESULT_VARIABLE IS_DIRTY)
+		if(IS_DIRTY)
+			set(VERSION_GITHASH "${VERSION_GITHASH}-dirty")
 		endif()
+		message(STATUS "*** Detected Git version ${VERSION_GITHASH} ***")
 	endif()
+endif()
+if(NOT VERSION_GITHASH)
+	set(VERSION_GITHASH "${VERSION_STRING}")
 endif()
 
 configure_file(
