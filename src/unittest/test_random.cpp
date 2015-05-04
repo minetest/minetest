@@ -173,8 +173,8 @@ void TestRandom::testPcgRandomNormalDist()
 		UASSERT(ubound <= max);
 
 		int accum = 0;
-		for (int i = lbound; i != ubound; i++)
-			accum += bins[i - min];
+		for (int j = lbound; j != ubound; j++)
+			accum += bins[j - min];
 
 		float actual = (float)accum / num_samples;
 		UASSERT(fabs(actual - prediction_intervals[i]) < 0.02);
