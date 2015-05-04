@@ -259,14 +259,20 @@ void WieldMeshSceneNode::setCube(const TileSpec tiles[6],
 }
 
 void WieldMeshSceneNode::setExtruded(const std::string &imagename,
-		v3f wield_scale, ITextureSource *tsrc)
+		v3f wield_scale, ITextureSource *tsrc, u8 num_frames)
 {
 	video::ITexture *texture = tsrc->getTexture(imagename);
 	if (!texture) {
 		changeToMesh(NULL);
 		return;
 	}
+
 	core::dimension2d<u32> dim = texture->getSize();
+	// Detect animation texture and pull off top frame instead of using entire thing
+	if (num_frames > 1) {
+		u32 frame_height = dim.Height / num_frames;
+		dim = core::dimension2d<u32>(dim.Width, frame_height);
+	}
 	scene::IMesh *mesh = g_extrusion_mesh_cache->create(dim);
 	changeToMesh(mesh);
 	mesh->drop();
@@ -319,7 +325,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 
 	// If wield_image is defined, it overrides everything else
 	if (def.wield_image != "") {
-		setExtruded(def.wield_image, def.wield_scale, tsrc);
+		setExtruded(def.wield_image, def.wield_scale, tsrc, 1);
 		return;
 	}
 	// Handle nodes
@@ -335,7 +341,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 		} else if (f.drawtype == NDT_AIRLIKE) {
 			changeToMesh(NULL);
 		} else if (f.drawtype == NDT_PLANTLIKE) {
-			setExtruded(tsrc->getTextureName(f.tiles[0].texture_id), def.wield_scale, tsrc);
+			setExtruded(tsrc->getTextureName(f.tiles[0].texture_id), def.wield_scale, tsrc, f.tiles[0].animation_frame_count);
 		} else if (f.drawtype == NDT_NORMAL || f.drawtype == NDT_ALLFACES) {
 			setCube(f.tiles, def.wield_scale, tsrc);
 		} else {
@@ -385,7 +391,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 		return;
 	}
 	else if (def.inventory_image != "") {
-		setExtruded(def.inventory_image, def.wield_scale, tsrc);
+		setExtruded(def.inventory_image, def.wield_scale, tsrc, 1);
 		return;
 	}
 

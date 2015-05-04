@@ -41,7 +41,7 @@ public:
 	void setCube(const TileSpec tiles[6],
 			v3f wield_scale, ITextureSource *tsrc);
 	void setExtruded(const std::string &imagename,
-			v3f wield_scale, ITextureSource *tsrc);
+			v3f wield_scale, ITextureSource *tsrc, u8 num_frames);
 	void setItem(const ItemStack &item, IGameDef *gamedef);
 
 	// Sets the vertex color of the wield mesh.
