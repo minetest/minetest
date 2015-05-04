@@ -96,10 +96,10 @@ void Clouds::render()
 	driver->setMaterial(m_material);
 	
 	/*
-		Clouds move from X+ towards X-
+		Clouds move from Z+ towards Z-
 	*/
 
-	const s16 cloud_radius_i = 12;
+	const s16 cloud_radius_i = g_settings->getS16("cloud_radius");
 	const float cloud_size = BS * 64;
 	const v2f cloud_speed(0, -BS * 2);
 	
