@@ -142,6 +142,9 @@
 #    Enable/disable clouds
 #enable_clouds = true
 #cloud_height = 120
+#    Radius of cloud area stated in number of 64 node cloud squares.
+#    Values > 22 will start to produce clipping of the cloud area corners.
+#cloud_radius = 12
 #enable_3d_clouds = true
 #    Use a cloud animation for the main menu background
 #menu_clouds = true
