@@ -72,8 +72,8 @@ char* NetworkPacket::getString(u32 from_offset)
 
 void NetworkPacket::putRawString(const char* src, u32 len)
 {
-	if (m_read_offset + len * sizeof(char) > m_datasize) {
-		m_datasize = m_read_offset + len * sizeof(char);
+	if (m_read_offset + len > m_datasize) {
+		m_datasize = m_read_offset + len;
 		m_data.resize(m_datasize);
 	}
 
@@ -95,7 +95,7 @@ NetworkPacket& NetworkPacket::operator>>(std::string& dst)
 	dst.reserve(strLen);
 	dst.append((char*)&m_data[m_read_offset], strLen);
 
-	m_read_offset += strLen * sizeof(char);
+	m_read_offset += strLen;
 	return *this;
 }
 
@@ -177,7 +177,7 @@ std::string NetworkPacket::readLongString()
 	dst.reserve(strLen);
 	dst.append((char*)&m_data[m_read_offset], strLen);
 
-	m_read_offset += strLen*sizeof(char);
+	m_read_offset += strLen;
 
 	return dst;
 }
