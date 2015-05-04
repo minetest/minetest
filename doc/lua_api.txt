@@ -1704,6 +1704,11 @@ Helper functions
 * `minetest.mkdir(path)`: returns success.
     * Creates a directory specified by `path`, creating parent directories
       if they don't exist.
+* `minetest.get_dir_list(path, [is_dir])`: returns list of entry names
+    * is_dir is one of:
+      * nil: return all entries,
+      * true: return only subdirectory names, or
+      * false: return only file names.
 
 ### Logging
 * `minetest.debug(line)`

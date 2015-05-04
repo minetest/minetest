@@ -50,7 +50,7 @@ local function get_formspec(tabview, name, tabdata)
 			"textlist[4,0.25;7.5,5.0;TPs;"
 
 	local current_texture_path = core.setting_get("texture_path")
-	local list = filter_texture_pack_list(core.get_dirlist(core.get_texturepath(), true))
+	local list = filter_texture_pack_list(core.get_dir_list(core.get_texturepath(), true))
 	local index = tonumber(core.setting_get("mainmenu_last_selected_TP"))
 
 	if index == nil then index = 1 end
@@ -94,7 +94,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 			local index = core.get_textlist_index("TPs")
 			core.setting_set("mainmenu_last_selected_TP",
 				index)
-			local list = filter_texture_pack_list(core.get_dirlist(core.get_texturepath(), true))
+			local list = filter_texture_pack_list(core.get_dir_list(core.get_texturepath(), true))
 			local current_index = core.get_textlist_index("TPs")
 			if current_index ~= nil and #list >= current_index then
 				local new_path = core.get_texturepath()..DIR_DELIM..list[current_index]

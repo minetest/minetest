@@ -339,6 +339,29 @@ int ModApiUtil::l_mkdir(lua_State *L)
 	return 1;
 }
 
+// get_dir_list(path, is_dir)
+int ModApiUtil::l_get_dir_list(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	const char *path = luaL_checkstring(L, 1);
+	short is_dir = lua_isboolean(L, 2) ? lua_toboolean(L, 2) : -1;
+
+	CHECK_SECURE_PATH_OPTIONAL(L, path);
+
+	std::vector<fs::DirListNode> list = fs::GetDirListing(path);
+
+	int index = 0;
+	lua_newtable(L);
+
+	for (size_t i = 0; i < list.size(); i++) {
+		if (is_dir == -1 || is_dir == list[i].dir) {
+			lua_pushstring(L, list[i].name.c_str());
+			lua_rawseti(L, -2, ++index);
+		}
+	}
+
+	return 1;
+}
 
 int ModApiUtil::l_request_insecure_environment(lua_State *L)
 {
@@ -391,6 +414,7 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(decompress);
 
 	API_FCT(mkdir);
+	API_FCT(get_dir_list);
 
 	API_FCT(request_insecure_environment);
 }
@@ -417,5 +441,6 @@ void ModApiUtil::InitializeAsync(AsyncEngine& engine)
 	ASYNC_API_FCT(decompress);
 
 	ASYNC_API_FCT(mkdir);
+	ASYNC_API_FCT(get_dir_list);
 }
 

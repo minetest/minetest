@@ -90,6 +90,9 @@ private:
 	// mkdir(path)
 	static int l_mkdir(lua_State *L);
 
+	// get_dir_list(path, is_dir)
+	static int l_get_dir_list(lua_State *L);
+
 	// request_insecure_environment()
 	static int l_request_insecure_environment(lua_State *L);
 
