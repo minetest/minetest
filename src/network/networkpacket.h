@@ -114,7 +114,7 @@ private:
 		template<typename T> void checkDataSize()
 		{
 			if (m_read_offset + sizeof(T) > m_datasize) {
-				m_datasize += sizeof(T);
+				m_datasize = m_read_offset + sizeof(T);
 				m_data.resize(m_datasize);
 			}
 		}
