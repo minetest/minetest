@@ -87,7 +87,7 @@ sed -i -re "s/^set\(VERSION_MINOR [0-9]+\)$/set(VERSION_MINOR $NEW_VERSION_MINOR
 
 sed -i -re "s/^set\(VERSION_PATCH [0-9]+\)$/set(VERSION_PATCH $NEW_VERSION_PATCH)/" CMakeLists.txt || die "Failed to update VERSION_PATCH"
 
-sed -i -re "s/^\tset\(VERSION_PATCH \\\$.VERSION_PATCH}-dev\)$/\t#set(VERSION_PATCH \${VERSION_PATCH}-dev)/" CMakeLists.txt || die "Failed to disable -dev suffix"
+sed -i -re "s/^set\(DEVELOPMENT_BUILD TRUE\)$/set(DEVELOPMENT_BUILD FALSE)/" CMakeLists.txt || die "Failed to unset DEVELOPMENT_BUILD"
 
 sed -i -re "s/^ANDROID_VERSION_CODE = [0-9]+$/ANDROID_VERSION_CODE = $NEW_ANDROID_VERSION_CODE/" build/android/Makefile || die "Failed to update ANDROID_VERSION_CODE"
 
@@ -98,3 +98,24 @@ sed -i -re "1s/[0-9]+\.[0-9]+\.[0-9]+/$NEW_VERSION/g" doc/menu_lua_api.txt || di
 git add -f CMakeLists.txt build/android/Makefile doc/lua_api.txt doc/menu_lua_api.txt || die "git add failed"
 
 git commit -m "Bump version to $NEW_VERSION" || die "git commit failed"
+
+############
+# Create tag
+############
+
+echo "Tagging $NEW_VERSION"
+
+git tag -a "$NEW_VERSION" -m "$NEW_VERSION" || die 'Adding tag failed'
+
+######################
+# Create revert commit
+######################
+
+echo 'Creating "revert to development" commit'
+
+sed -i -re 's/^set\(DEVELOPMENT_BUILD FALSE\)$/set(DEVELOPMENT_BUILD TRUE)/' CMakeLists.txt || die 'Failed to set DEVELOPMENT_BUILD'
+
+git add -f CMakeLists.txt || die 'git add failed'
+
+git commit -m "Continue with $NEW_VERSION-dev" || die 'git commit failed'
+

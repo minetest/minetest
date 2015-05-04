@@ -16,11 +16,13 @@ set(VERSION_MINOR 4)
 set(VERSION_PATCH 12)
 set(VERSION_EXTRA "" CACHE STRING "Stuff to append to version string")
 
+# Change to false for releases
+set(DEVELOPMENT_BUILD TRUE)
+
 set(VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 if(VERSION_EXTRA)
 	set(VERSION_STRING ${VERSION_STRING}-${VERSION_EXTRA})
-else()
-	# Comment the following line during release
+elseif(DEVELOPMENT_BUILD)
 	set(VERSION_STRING "${VERSION_STRING}-dev")
 endif()
 
