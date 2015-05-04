@@ -206,12 +206,15 @@ public:
 	std::string name;
 };
 
+// WARNING: Ownership of ObjDefs is transferred to the ObjDefManager it is
+// added/set to.  Note that ObjDefs managed by ObjDefManager are NOT refcounted,
+// so the same ObjDef instance must not be referenced multiple
 class ObjDefManager {
 public:
 	ObjDefManager(IGameDef *gamedef, ObjDefType type);
 	virtual ~ObjDefManager();
 
-	virtual const char *getObjectTitle() const = 0;
+	virtual const char *getObjectTitle() const { return "ObjDef"; }
 
 	virtual void clear();
 	virtual ObjDef *getByName(const std::string &name) const;

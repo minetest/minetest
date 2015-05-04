@@ -434,7 +434,7 @@ void GenerateNotifier::getEvents(
 ObjDefManager::ObjDefManager(IGameDef *gamedef, ObjDefType type)
 {
 	m_objtype = type;
-	m_ndef = gamedef->getNodeDefManager();
+	m_ndef = gamedef ? gamedef->getNodeDefManager() : NULL;
 }
 
 
@@ -471,7 +471,16 @@ ObjDef *ObjDefManager::get(ObjDefHandle handle) const
 ObjDef *ObjDefManager::set(ObjDefHandle handle, ObjDef *obj)
 {
 	u32 index = validateHandle(handle);
-	return (index != OBJDEF_INVALID_INDEX) ? setRaw(index, obj) : NULL;
+	if (index == OBJDEF_INVALID_INDEX)
+		return NULL;
+
+	ObjDef *oldobj = setRaw(index, obj);
+
+	obj->uid    = oldobj->uid;
+	obj->index  = oldobj->index;
+	obj->handle = oldobj->handle;
+
+	return oldobj;
 }
 
 
