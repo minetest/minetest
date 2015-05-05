@@ -38,6 +38,8 @@ class Map;
 class IGameDef;
 class Environment;
 
+#define PARTICLES_BBOX
+
 /*
 	Utility
 */
@@ -48,27 +50,27 @@ v3f random_v3f(v3f min, v3f max) {
 		    rand()/(float)RAND_MAX*(max.Z-min.Z)+min.Z);
 }
 
-class FixNumEmitter :  public irr::scene::IParticleEmitter {
-
+class FixNumEmitter :  public irr::scene::IParticleEmitter
+{
 public:
-
-        FixNumEmitter(u32 number) : number(number), emitted(0) {}
+        FixNumEmitter(u32 number):
+                number(number),
+                emitted(0)
+        {}
 
         s32 emitt(u32 now, u32 timeSinceLastCall, irr::scene::SParticle*& outArray)
         {
-                if (emitted > 0) return 0;
+                if (emitted > 0)
+                        return 0;
 
                 particles.set_used(0);
-
                 irr::scene::SParticle p;
                 for(u32 i=0; i<number; ++i) {
-                        v3f particlepos = random_v3f( v3f(-0.25, -0.25, -0.25),
-                                                      v3f( 0.25,  0.25,  0.25));
+                        v3f particlepos = random_v3f( v3f(-0.75, -0.75, -0.75),
+                                                      v3f( 0.75,  0.75,  0.75));
                         p.pos.set(particlepos);
+                        v3f velocity = random_v3f(v3f(-0.9, 0.6, -0.9), v3f( 0.9, 0.6, 0.9));
 
-                        v3f velocity((rand() % 100 / 50. - 1) / 1.5,
-                                      rand() % 100 / 35.,
-                                     (rand() % 100 / 50. - 1) / 1.5);
                         p.vector = velocity/100;
                         p.startVector = p.vector;
 
@@ -118,7 +120,6 @@ public:
 
 private:
         core::array<irr::scene::SParticle> particles;
-
         u32 number;
         u32 emitted;
 };
@@ -126,40 +127,38 @@ private:
 class CollisionAffector : public irr::scene::IParticleAffector
 {
 public:
-        CollisionAffector(ClientEnvironment &env)
-        {
-                m_env = &env;
-                m_gamedef = m_env->getGameDef();
-        }
+        CollisionAffector(ClientEnvironment &env):
+                env(&env),
+                gamedef(env.getGameDef())
+        {}
+
         void affect(u32 now, irr::scene::SParticle* particlearray, u32 count)
         {
-                if( LastTime == 0 )
-                {
-                        LastTime = now;
+                if ( last_time == 0 ) {
+                        last_time = now;
                         return;
                 }
-                f32 timeDelta = ( now - LastTime ) / 1000.0f;
+                f32 dtime = ( now - last_time ) / 1000.0f;
+                last_time = now;
 
-                LastTime = now;
-                if( !Enabled )
+                if ( !Enabled )
                         return;
 
                 v3f acc = v3f(0.0, 0.0, 0.0);
-                for(u32 i=0; i<count; ++i)
-                {
+                for (u32 i=0; i<count; ++i) {
                         irr::scene::SParticle p = particlearray[i];
                         float size = p.size.Width;
                         core::aabbox3d<f32> box = core::aabbox3d<f32>
-                                        (-size/2,-size/2,-size/2,size/2,size/2,size/2);
+                                        (-size/2, -size/2, -size/2, size/2, size/2, size/2);
 
-                        //to ensure particles collide with correct position
-                        const v3f off = intToFloat(m_env->getCameraOffset(), BS);
-
+                        // Collision detection works in MT coordinates,
+                        // adjust for camera offset.
+                        v3f off = intToFloat(env->getCameraOffset(), BS);
                         particlearray[i].pos += off;
 
-                        collisionMoveSimple(m_env, m_gamedef,
+                        collisionMoveSimple(env, gamedef,
                                             BS * 0.5, box,
-                                            0, timeDelta,
+                                            0, dtime,
                                             particlearray[i].pos,
                                             particlearray[i].vector,
                                             acc);
@@ -184,61 +183,44 @@ public:
                 }
         }
         virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const {
-                return (irr::scene::E_PARTICLE_AFFECTOR_TYPE) (irr::scene::EPAT_COUNT+1);
+                return (irr::scene::E_PARTICLE_AFFECTOR_TYPE) (irr::scene::EPAT_COUNT + 1);
         }
-        irr::u32 LastTime;
-        IGameDef *m_gamedef;
-        ClientEnvironment *m_env;
+        u32 last_time;
+        ClientEnvironment *env;
+        IGameDef *gamedef;
 };
 
 class CameraOffsetAffector : public irr::scene::IParticleAffector
 {
 public:
-        CameraOffsetAffector(ClientEnvironment &env,
-                             irr::scene::IParticleSystemSceneNode* ps, v3f pos)
-        {
-                m_env = &env;
-
-                m_offset = m_env->getCameraOffset();
-                m_ps = ps;
-                m_pos = pos;
-                first_run = true;
-        }
+        CameraOffsetAffector(ClientEnvironment &env, irr::scene::IParticleSystemSceneNode* ps):
+                        env(&env),
+                        old_camera_offset(v3s16(0,0,0)),
+                        ps(ps)
+        {}
 
         void affect(u32 now, irr::scene::SParticle* particlearray, u32 count)
         {
-                if (first_run) {
-                        m_ps->setPosition( m_pos - intToFloat(m_offset, BS));
+                v3s16 camera_offset = env->getCameraOffset();
+                if (camera_offset != old_camera_offset) {
+                        v3f ps_offset = intToFloat(old_camera_offset - camera_offset, BS);
+                        ps->setPosition(ps->getPosition() + ps_offset);
                         for (u32 i=0; i<count; ++i) {
-                                particlearray[i].pos -= intToFloat(m_offset, BS);
+                                particlearray[i].pos += ps_offset;
                         }
-                        first_run = false;
-                        return;
-                }
-
-                v3s16 camera_offset = m_env->getCameraOffset();
-                if (camera_offset != m_offset) {
-                        m_ps->setPosition( m_pos - intToFloat(camera_offset, BS));
-
-                        for (u32 i=0; i<count; ++i) {
-                                particlearray[i].pos += intToFloat(m_offset, BS);
-                                particlearray[i].pos -= intToFloat(camera_offset, BS);
-                        }
-                        m_offset = camera_offset;
+                        old_camera_offset = camera_offset;
                 }
         }
         virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const {
                 return (irr::scene::E_PARTICLE_AFFECTOR_TYPE) (irr::scene::EPAT_COUNT+2);
         }
 private:
-        ClientEnvironment *m_env;
-        v3s16 m_offset;
-        irr::scene::IParticleSystemSceneNode* m_ps;
-        v3f m_pos;
-        bool first_run;
+        ClientEnvironment *env;
+        v3s16 old_camera_offset;
+        irr::scene::IParticleSystemSceneNode* ps;
 };
 
-ParticleManager::ParticleManager(ClientEnvironment* env, irr::scene::ISceneManager* smgr) :
+ParticleManager::ParticleManager(ClientEnvironment* env, irr::scene::ISceneManager* smgr):
 	m_env(env),
 	m_smgr(smgr)
 {}
@@ -293,10 +275,10 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 		v3f pos = *event->add_particlespawner.minpos;
 		pos = pos * BS;
 		ps->setPosition(pos);
+#ifdef PARTICLES_BBOX
 		ps->setDebugDataVisible(irr::scene::EDS_BBOX);
-
-		scene::IParticleAffector * caf =
-				new CameraOffsetAffector(*m_env, ps, pos);
+#endif
+		scene::IParticleAffector * caf = new CameraOffsetAffector(*m_env, ps);
 		ps->addAffector(caf);
 		caf->drop();
 
@@ -332,23 +314,6 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 
 	if (event->type == CE_SPAWN_PARTICLE) {
 		//TODO: use FixNumEmitter here
-
-		//		video::ITexture *texture =
-		//			gamedef->tsrc()->getTextureForMesh(*(event->spawn_particle.texture));
-
-		//		Particle* toadd = new Particle(gamedef, smgr, player, m_env,
-		//				*event->spawn_particle.pos,
-		//				*event->spawn_particle.vel,
-		//				*event->spawn_particle.acc,
-		//				event->spawn_particle.expirationtime,
-		//				event->spawn_particle.size,
-		//				event->spawn_particle.collisiondetection,
-		//				event->spawn_particle.vertical,
-		//				texture,
-		//				v2f(0.0, 0.0),
-		//				v2f(1.0, 1.0));
-
-		//		addParticle(toadd);
 		return;
 	}
 }
@@ -375,8 +340,9 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, LocalPlayer *player,
 	v3s16 camera_offset = m_env->getCameraOffset();
 	v3f particlepos = intToFloat(pos, BS) - intToFloat(camera_offset, BS);
 	ps->setPosition(particlepos);
+#ifdef PARTICLES_BBOX
 	ps->setDebugDataVisible(irr::scene::EDS_BBOX);
-
+#endif
 	scene::IParticleEmitter* em;
 	em = new FixNumEmitter(number);
 	ps->setEmitter(em);
