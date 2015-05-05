@@ -1871,6 +1871,8 @@ and `minetest.auth_reload` call the authetification handler.
 * `minetest.punch_node(pos)`
     * Punch node with the same effects that a player would cause
 
+* `minetest.find_nodes_with_meta(pos1, pos2)`
+    * Get a table of positions of nodes that have metadata within a region {pos1, pos2}
 * `minetest.get_meta(pos)`
     * Get a `NodeMetaRef` at that position
 * `minetest.get_node_timer(pos)`

@@ -301,7 +301,8 @@ public:
 		These are basically coordinate wrappers to MapBlock
 	*/
 
-	NodeMetadata* getNodeMetadata(v3s16 p);
+	std::vector<v3s16> findNodesWithMetadata(v3s16 p1, v3s16 p2);
+	NodeMetadata *getNodeMetadata(v3s16 p);
 
 	/**
 	 * Sets metadata for a node.

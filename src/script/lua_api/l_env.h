@@ -64,7 +64,6 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_punch_node(lua_State *L);
 
-
 	// get_node_max_level(pos)
 	// pos = {x=num, y=num, z=num}
 	static int l_get_node_max_level(lua_State *L);
@@ -80,6 +79,9 @@ private:
 	// add_node_level(pos)
 	// pos = {x=num, y=num, z=num}
 	static int l_add_node_level(lua_State *L);
+
+	// find_nodes_with_meta(pos1, pos2)
+	static int l_find_nodes_with_meta(lua_State *L);
 
 	// get_meta(pos)
 	static int l_get_meta(lua_State *L);

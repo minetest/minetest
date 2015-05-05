@@ -157,10 +157,21 @@ NodeMetadataList::~NodeMetadataList()
 	clear();
 }
 
-NodeMetadata* NodeMetadataList::get(v3s16 p)
+std::vector<v3s16> NodeMetadataList::getAllKeys()
 {
-	std::map<v3s16, NodeMetadata*>::const_iterator n = m_data.find(p);
-	if(n == m_data.end())
+	std::vector<v3s16> keys;
+
+	std::map<v3s16, NodeMetadata *>::const_iterator it;
+	for (it = m_data.begin(); it != m_data.end(); ++it)
+		keys.push_back(it->first);
+
+	return keys;
+}
+
+NodeMetadata *NodeMetadataList::get(v3s16 p)
+{
+	std::map<v3s16, NodeMetadata *>::const_iterator n = m_data.find(p);
+	if (n == m_data.end())
 		return NULL;
 	return n->second;
 }
@@ -168,8 +179,7 @@ NodeMetadata* NodeMetadataList::get(v3s16 p)
 void NodeMetadataList::remove(v3s16 p)
 {
 	NodeMetadata *olddata = get(p);
-	if(olddata)
-	{
+	if (olddata) {
 		delete olddata;
 		m_data.erase(p);
 	}
@@ -183,16 +193,15 @@ void NodeMetadataList::set(v3s16 p, NodeMetadata *d)
 
 void NodeMetadataList::clear()
 {
-	for(std::map<v3s16, NodeMetadata*>::iterator
-			i = m_data.begin();
-			i != m_data.end(); i++)
-	{
-		delete i->second;
+	std::map<v3s16, NodeMetadata*>::iterator it;
+	for (it = m_data.begin(); it != m_data.end(); ++it) {
+		delete it->second;
 	}
 	m_data.clear();
 }
 
-std::string NodeMetadata::getString(const std::string &name, unsigned short recursion) const
+std::string NodeMetadata::getString(const std::string &name,
+	unsigned short recursion) const
 {
 	std::map<std::string, std::string>::const_iterator it;
 	it = m_stringvars.find(name);
@@ -211,7 +220,8 @@ void NodeMetadata::setString(const std::string &name, const std::string &var)
 	}
 }
 
-std::string NodeMetadata::resolveString(const std::string &str, unsigned short recursion) const
+std::string NodeMetadata::resolveString(const std::string &str,
+	unsigned short recursion) const
 {
 	if (recursion > 1) {
 		return str;
