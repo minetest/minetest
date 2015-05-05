@@ -124,9 +124,12 @@ public:
 };
 
 // A few item and node definitions for those tests that need them
-extern content_t CONTENT_STONE;
-extern content_t CONTENT_GRASS;
-extern content_t CONTENT_TORCH;
+extern content_t t_CONTENT_STONE;
+extern content_t t_CONTENT_GRASS;
+extern content_t t_CONTENT_TORCH;
+extern content_t t_CONTENT_WATER;
+extern content_t t_CONTENT_LAVA;
+extern content_t t_CONTENT_BRICK;
 
 void run_tests();
 

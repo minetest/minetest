@@ -1346,7 +1346,8 @@ void CNodeDefManager::runNodeResolveCallbacks()
 //// NodeResolver
 ////
 
-NodeResolver::NodeResolver() {
+NodeResolver::NodeResolver()
+{
 	m_ndef            = NULL;
 	m_nodenames_idx   = 0;
 	m_nnlistsizes_idx = 0;
@@ -1379,14 +1380,14 @@ void NodeResolver::nodeResolveInternal()
 
 const std::string &NodeResolver::getNodeName(content_t c) const
 {
-	if (m_nodenames.size() == 0) {
+	if (c < m_nodenames.size())
+		return m_nodenames[c];
+
+	if (m_ndef)
 		return m_ndef->get(c).name;
-	} else {
-		if (c < m_nodenames.size())
-			return m_nodenames[c];
-		else
-			return m_ndef->get(CONTENT_UNKNOWN).name;
-	}
+
+	static const std::string unknown_str("unknown");
+	return unknown_str;
 }
 
 
@@ -1395,7 +1396,7 @@ bool NodeResolver::getIdFromNrBacklog(content_t *result_out,
 {
 	if (m_nodenames_idx == m_nodenames.size()) {
 		*result_out = c_fallback;
-		errorstream << "Resolver: no more nodes in list" << std::endl;
+		errorstream << "NodeResolver: no more nodes in list" << std::endl;
 		return false;
 	}
 

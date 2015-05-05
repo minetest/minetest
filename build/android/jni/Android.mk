@@ -219,6 +219,7 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/unittest/test_inventory.cpp       \
 		jni/src/unittest/test_mapnode.cpp         \
 		jni/src/unittest/test_nodedef.cpp         \
+		jni/src/unittest/test_noderesolver.cpp    \
 		jni/src/unittest/test_noise.cpp           \
 		jni/src/unittest/test_objdef.cpp          \
 		jni/src/unittest/test_profiler.cpp        \

@@ -87,10 +87,10 @@ void TestVoxelManipulator::testVoxelManipulator(INodeDefManager *nodedef)
 	v.print(infostream, nodedef);
 
 	infostream << "*** Setting (-1,0,-1)=2 ***" << std::endl;
-	v.setNodeNoRef(v3s16(-1,0,-1), MapNode(CONTENT_GRASS));
+	v.setNodeNoRef(v3s16(-1,0,-1), MapNode(t_CONTENT_GRASS));
 
 	v.print(infostream, nodedef);
-	UASSERT(v.getNode(v3s16(-1,0,-1)).getContent() == CONTENT_GRASS);
+	UASSERT(v.getNode(v3s16(-1,0,-1)).getContent() == t_CONTENT_GRASS);
 
 	infostream << "*** Reading from inexistent (0,0,-1) ***" << std::endl;
 
@@ -103,6 +103,6 @@ void TestVoxelManipulator::testVoxelManipulator(INodeDefManager *nodedef)
 	v.addArea(a);
 	v.print(infostream, nodedef);
 
-	UASSERT(v.getNode(v3s16(-1,0,-1)).getContent() == CONTENT_GRASS);
+	UASSERT(v.getNode(v3s16(-1,0,-1)).getContent() == t_CONTENT_GRASS);
 	EXCEPTION_CHECK(InvalidPositionException, v.getNode(v3s16(0,1,1)));
 }

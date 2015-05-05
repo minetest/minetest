@@ -69,7 +69,7 @@ void TestVoxelAlgorithms::testPropogateSunlight(INodeDefManager *ndef)
 				== LIGHT_SUN);
 	}
 
-	v.setNodeNoRef(v3s16(0,0,0), MapNode(CONTENT_STONE));
+	v.setNodeNoRef(v3s16(0,0,0), MapNode(t_CONTENT_STONE));
 
 	{
 		std::set<v3s16> light_sources;
@@ -91,7 +91,7 @@ void TestVoxelAlgorithms::testPropogateSunlight(INodeDefManager *ndef)
 				== 0);
 	}
 
-	v.setNodeNoRef(v3s16(1,3,2), MapNode(CONTENT_STONE));
+	v.setNodeNoRef(v3s16(1,3,2), MapNode(t_CONTENT_STONE));
 
 	{
 		std::set<v3s16> light_sources;
@@ -180,8 +180,8 @@ void TestVoxelAlgorithms::testClearLightAndCollectSources(INodeDefManager *ndef)
 	}
 
 	VoxelArea a(v3s16(0,0,0), v3s16(2,2,2));
-	v.setNodeNoRef(v3s16(0,0,0), MapNode(CONTENT_STONE));
-	v.setNodeNoRef(v3s16(1,1,1), MapNode(CONTENT_TORCH));
+	v.setNodeNoRef(v3s16(0,0,0), MapNode(t_CONTENT_STONE));
+	v.setNodeNoRef(v3s16(1,1,1), MapNode(t_CONTENT_TORCH));
 
 	{
 		MapNode n(CONTENT_AIR);

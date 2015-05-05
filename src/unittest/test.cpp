@@ -25,9 +25,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemdef.h"
 #include "gamedef.h"
 
-content_t CONTENT_STONE;
-content_t CONTENT_GRASS;
-content_t CONTENT_TORCH;
+content_t t_CONTENT_STONE;
+content_t t_CONTENT_GRASS;
+content_t t_CONTENT_TORCH;
+content_t t_CONTENT_WATER;
+content_t t_CONTENT_LAVA;
+content_t t_CONTENT_BRICK;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -111,7 +114,7 @@ void TestGameDef::defineSomeNodes()
 		f.tiledef[i].name = "default_stone.png";
 	f.is_ground_content = true;
 	idef->registerItem(itemdef);
-	CONTENT_STONE = ndef->set(f.name, f);
+	t_CONTENT_STONE = ndef->set(f.name, f);
 
 	//// Grass
 	itemdef = ItemDefinition();
@@ -131,7 +134,7 @@ void TestGameDef::defineSomeNodes()
 		f.tiledef[i].name = "default_dirt.png^default_grass_side.png";
 	f.is_ground_content = true;
 	idef->registerItem(itemdef);
-	CONTENT_GRASS = ndef->set(f.name, f);
+	t_CONTENT_GRASS = ndef->set(f.name, f);
 
 	//// Torch (minimal definition for lighting tests)
 	itemdef = ItemDefinition();
@@ -144,7 +147,69 @@ void TestGameDef::defineSomeNodes()
 	f.sunlight_propagates = true;
 	f.light_source = LIGHT_MAX-1;
 	idef->registerItem(itemdef);
-	CONTENT_TORCH = ndef->set(f.name, f);
+	t_CONTENT_TORCH = ndef->set(f.name, f);
+
+	//// Water
+	itemdef = ItemDefinition();
+	itemdef.type = ITEM_NODE;
+	itemdef.name = "default:water";
+	itemdef.description = "Water";
+	itemdef.inventory_image = "[inventorycube"
+		"{default_water.png"
+		"{default_water.png"
+		"{default_water.png";
+	f = ContentFeatures();
+	f.name = itemdef.name;
+	f.alpha = 128;
+	f.liquid_type = LIQUID_SOURCE;
+	f.liquid_viscosity = 4;
+	f.is_ground_content = true;
+	f.groups["liquids"] = 3;
+	for(int i = 0; i < 6; i++)
+		f.tiledef[i].name = "default_water.png";
+	idef->registerItem(itemdef);
+	t_CONTENT_WATER = ndef->set(f.name, f);
+
+	//// Lava
+	itemdef = ItemDefinition();
+	itemdef.type = ITEM_NODE;
+	itemdef.name = "default:lava";
+	itemdef.description = "Lava";
+	itemdef.inventory_image = "[inventorycube"
+		"{default_lava.png"
+		"{default_lava.png"
+		"{default_lava.png";
+	f = ContentFeatures();
+	f.name = itemdef.name;
+	f.alpha = 128;
+	f.liquid_type = LIQUID_SOURCE;
+	f.liquid_viscosity = 7;
+	f.light_source = LIGHT_MAX-1;
+	f.is_ground_content = true;
+	f.groups["liquids"] = 3;
+	for(int i = 0; i < 6; i++)
+		f.tiledef[i].name = "default_lava.png";
+	idef->registerItem(itemdef);
+	t_CONTENT_LAVA = ndef->set(f.name, f);
+
+
+	//// Brick
+	itemdef = ItemDefinition();
+	itemdef.type = ITEM_NODE;
+	itemdef.name = "default:brick";
+	itemdef.description = "Brick";
+	itemdef.groups["cracky"] = 3;
+	itemdef.inventory_image = "[inventorycube"
+		"{default_brick.png"
+		"{default_brick.png"
+		"{default_brick.png";
+	f = ContentFeatures();
+	f.name = itemdef.name;
+	for(int i = 0; i < 6; i++)
+		f.tiledef[i].name = "default_brick.png";
+	f.is_ground_content = true;
+	idef->registerItem(itemdef);
+	t_CONTENT_BRICK = ndef->set(f.name, f);
 }
 
 ////
