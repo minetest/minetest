@@ -31,36 +31,30 @@ public:
 
 	void runTests(IGameDef *gamedef);
 
-	void testNodeResolving(INodeDefManager *ndef);
-	void testPendingResolveCancellation(INodeDefManager *ndef);
-	void testDirectResolveMethod(INodeDefManager *ndef);
-	void testNoneResolveMethod(INodeDefManager *ndef);
+	void testNodeResolving(IWritableNodeDefManager *ndef);
+	void testPendingResolveCancellation(IWritableNodeDefManager *ndef);
+	void testDirectResolveMethod(IWritableNodeDefManager *ndef);
+	void testNoneResolveMethod(IWritableNodeDefManager *ndef);
 };
 
 static TestNodeResolver g_test_instance;
 
 void TestNodeResolver::runTests(IGameDef *gamedef)
 {
-	IWritableNodeDefManager *parent_ndef;
-	INodeDefManager *ndef;
+	IWritableNodeDefManager *ndef =
+		(IWritableNodeDefManager *)gamedef->getNodeDefManager();
 
-	parent_ndef = (IWritableNodeDefManager *)gamedef->getNodeDefManager();
-
-	ndef = parent_ndef->clone();
+	ndef->resetNodeResolveState();
 	TEST(testNodeResolving, ndef);
-	delete ndef;
 
-	ndef = parent_ndef->clone();
+	ndef->resetNodeResolveState();
 	TEST(testPendingResolveCancellation, ndef);
-	delete ndef;
 
-	ndef = parent_ndef->clone();
+	ndef->resetNodeResolveState();
 	TEST(testDirectResolveMethod, ndef);
-	delete ndef;
 
-	ndef = parent_ndef->clone();
+	ndef->resetNodeResolveState();
 	TEST(testNoneResolveMethod, ndef);
-	delete ndef;
 }
 
 class Foobar : public NodeResolver {
@@ -113,7 +107,7 @@ void Foobaz::resolveNodeNames()
 }
 
 
-void TestNodeResolver::testNodeResolving(INodeDefManager *ndef)
+void TestNodeResolver::testNodeResolving(IWritableNodeDefManager *ndef)
 {
 	Foobar foobar;
 	size_t i;
@@ -191,7 +185,7 @@ void TestNodeResolver::testNodeResolving(INodeDefManager *ndef)
 }
 
 
-void TestNodeResolver::testPendingResolveCancellation(INodeDefManager *ndef)
+void TestNodeResolver::testPendingResolveCancellation(IWritableNodeDefManager *ndef)
 {
 	Foobaz foobaz1;
 	foobaz1.test_content1 = 1234;
@@ -219,7 +213,7 @@ void TestNodeResolver::testPendingResolveCancellation(INodeDefManager *ndef)
 }
 
 
-void TestNodeResolver::testDirectResolveMethod(INodeDefManager *ndef)
+void TestNodeResolver::testDirectResolveMethod(IWritableNodeDefManager *ndef)
 {
 	Foobaz foobaz;
 
@@ -240,7 +234,7 @@ void TestNodeResolver::testDirectResolveMethod(INodeDefManager *ndef)
 }
 
 
-void TestNodeResolver::testNoneResolveMethod(INodeDefManager *ndef)
+void TestNodeResolver::testNoneResolveMethod(IWritableNodeDefManager *ndef)
 {
 	Foobaz foobaz;
 
