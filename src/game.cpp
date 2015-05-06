@@ -2298,14 +2298,14 @@ bool Game::getServerContent(bool *aborted)
 			if ((USE_CURL == 0) ||
 					(!g_settings->getBool("enable_remote_media_server"))) {
 				float cur = client->getCurRate();
-				std::string cur_unit = gettext(" KB/s");
+				std::string cur_unit = gettext("KiB/s");
 
 				if (cur > 900) {
 					cur /= 1024.0;
-					cur_unit = gettext(" MB/s");
+					cur_unit = gettext("MiB/s");
 				}
 
-				message << " ( " << cur << cur_unit << " )";
+				message << " (" << cur << ' ' << cur_unit << ")";
 			}
 
 			progress = 30 + client->mediaReceiveProgress() * 35 + 0.5;
