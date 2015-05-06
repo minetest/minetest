@@ -26,6 +26,19 @@ extern "C" {
 #include "common/c_converter.h"
 #include "constants.h"
 
+
+#define CHECK_TYPE(index, name, type) do { \
+	int t = lua_type(L, (index)); \
+	if (t != (type)) { \
+		throw LuaError(std::string("Invalid ") + (name) + \
+			" (expected " + lua_typename(L, (type)) + \
+			" got " + lua_typename(L, t) + ")."); \
+	} \
+} while(0)
+#define CHECK_POS_COORD(name) CHECK_TYPE(-1, "position coordinate '" name "'", LUA_TNUMBER)
+#define CHECK_POS_TAB(index) CHECK_TYPE(index, "position", LUA_TTABLE)
+
+
 void push_v3f(lua_State *L, v3f p)
 {
 	lua_newtable(L);
@@ -49,7 +62,7 @@ void push_v2f(lua_State *L, v2f p)
 v2s16 read_v2s16(lua_State *L, int index)
 {
 	v2s16 p;
-	luaL_checktype(L, index, LUA_TTABLE);
+	CHECK_POS_TAB(index);
 	lua_getfield(L, index, "x");
 	p.X = lua_tonumber(L, -1);
 	lua_pop(L, 1);
@@ -62,12 +75,14 @@ v2s16 read_v2s16(lua_State *L, int index)
 v2s16 check_v2s16(lua_State *L, int index)
 {
 	v2s16 p;
-	luaL_checktype(L, index, LUA_TTABLE);
+	CHECK_POS_TAB(index);
 	lua_getfield(L, index, "x");
-	p.X = luaL_checknumber(L, -1);
+	CHECK_POS_COORD("x");
+	p.X = lua_tonumber(L, -1);
 	lua_pop(L, 1);
 	lua_getfield(L, index, "y");
-	p.Y = luaL_checknumber(L, -1);
+	CHECK_POS_COORD("y");
+	p.Y = lua_tonumber(L, -1);
 	lua_pop(L, 1);
 	return p;
 }
@@ -75,7 +90,7 @@ v2s16 check_v2s16(lua_State *L, int index)
 v2s32 read_v2s32(lua_State *L, int index)
 {
 	v2s32 p;
-	luaL_checktype(L, index, LUA_TTABLE);
+	CHECK_POS_TAB(index);
 	lua_getfield(L, index, "x");
 	p.X = lua_tonumber(L, -1);
 	lua_pop(L, 1);
@@ -88,7 +103,8 @@ v2s32 read_v2s32(lua_State *L, int index)
 v2f read_v2f(lua_State *L, int index)
 {
 	v2f p;
-	luaL_checktype(L, index, LUA_TTABLE);
+	CHECK_POS_TAB(index);
+	lua_getfield(L, index, "x");
 	lua_getfield(L, index, "x");
 	p.X = lua_tonumber(L, -1);
 	lua_pop(L, 1);
@@ -101,12 +117,14 @@ v2f read_v2f(lua_State *L, int index)
 v2f check_v2f(lua_State *L, int index)
 {
 	v2f p;
-	luaL_checktype(L, index, LUA_TTABLE);
+	CHECK_POS_TAB(index);
 	lua_getfield(L, index, "x");
-	p.X = luaL_checknumber(L, -1);
+	CHECK_POS_COORD("x");
+	p.X = lua_tonumber(L, -1);
 	lua_pop(L, 1);
 	lua_getfield(L, index, "y");
-	p.Y = luaL_checknumber(L, -1);
+	CHECK_POS_COORD("y");
+	p.Y = lua_tonumber(L, -1);
 	lua_pop(L, 1);
 	return p;
 }
@@ -114,7 +132,7 @@ v2f check_v2f(lua_State *L, int index)
 v3f read_v3f(lua_State *L, int index)
 {
 	v3f pos;
-	luaL_checktype(L, index, LUA_TTABLE);
+	CHECK_POS_TAB(index);
 	lua_getfield(L, index, "x");
 	pos.X = lua_tonumber(L, -1);
 	lua_pop(L, 1);
@@ -130,15 +148,18 @@ v3f read_v3f(lua_State *L, int index)
 v3f check_v3f(lua_State *L, int index)
 {
 	v3f pos;
-	luaL_checktype(L, index, LUA_TTABLE);
+	CHECK_POS_TAB(index);
 	lua_getfield(L, index, "x");
-	pos.X = luaL_checknumber(L, -1);
+	CHECK_POS_COORD("x");
+	pos.X = lua_tonumber(L, -1);
 	lua_pop(L, 1);
 	lua_getfield(L, index, "y");
-	pos.Y = luaL_checknumber(L, -1);
+	CHECK_POS_COORD("y");
+	pos.Z = lua_tonumber(L, -1);
 	lua_pop(L, 1);
 	lua_getfield(L, index, "z");
-	pos.Z = luaL_checknumber(L, -1);
+	CHECK_POS_COORD("z");
+	pos.Z = lua_tonumber(L, -1);
 	lua_pop(L, 1);
 	return pos;
 }
@@ -182,7 +203,7 @@ v3s16 check_v3s16(lua_State *L, int index)
 video::SColor readARGB8(lua_State *L, int index)
 {
 	video::SColor color(0);
-	luaL_checktype(L, index, LUA_TTABLE);
+	CHECK_TYPE(index, "ARGB color", LUA_TTABLE);
 	lua_getfield(L, index, "a");
 	if(lua_isnumber(L, -1))
 		color.setAlpha(lua_tonumber(L, -1));
@@ -378,9 +399,11 @@ std::string checkstringfield(lua_State *L, int table,
 		const char *fieldname)
 {
 	lua_getfield(L, table, fieldname);
-	std::string s = luaL_checkstring(L, -1);
+	CHECK_TYPE(-1, std::string("field \"") + fieldname + '"', LUA_TSTRING);
+	size_t len;
+	const char *s = lua_tolstring(L, -1, &len);
 	lua_pop(L, 1);
-	return s;
+	return std::string(s, len);
 }
 
 std::string getstringfield_default(lua_State *L, int table,
