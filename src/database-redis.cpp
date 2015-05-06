@@ -47,7 +47,7 @@ Database_Redis::Database_Redis(Settings &conf)
 	ctx = redisConnect(addr, port);
 	if (!ctx) {
 		throw FileNotGoodException("Cannot allocate redis context");
-	} else if(ctx->err) {
+	} else if (ctx->err) {
 		std::string err = std::string("Connection error: ") + ctx->errstr;
 		redisFree(ctx);
 		throw FileNotGoodException(err);
@@ -92,7 +92,7 @@ bool Database_Redis::saveBlock(const v3s16 &pos, const std::string &data)
 
 	if (reply->type == REDIS_REPLY_ERROR) {
 		errorstream << "WARNING: saveBlock: saving block " << PP(pos)
-			<< "failed" << std::endl;
+			<< " failed: " << reply->str << std::endl;
 		freeReplyObject(reply);
 		return false;
 	}
@@ -110,13 +110,20 @@ std::string Database_Redis::loadBlock(const v3s16 &pos)
 	if (!reply) {
 		throw FileNotGoodException(std::string(
 			"Redis command 'HGET %s %s' failed: ") + ctx->errstr);
-	} else if (reply->type != REDIS_REPLY_STRING) {
-		return "";
 	}
-
-	std::string str(reply->str, reply->len);
-	freeReplyObject(reply); // std::string copies the memory so this won't cause any problems
-	return str;
+	switch (reply->type) {
+	case REDIS_REPLY_STRING: {
+		std::string str(reply->str, reply->len);
+		// std::string copies the memory so this won't cause any problems
+		freeReplyObject(reply);
+		return str;
+	}
+	case REDIS_REPLY_ERROR:
+		errorstream << "WARNING: loadBlock: loading block " << PP(pos)
+			<< " failed: " << reply->str << std::endl;
+	}
+	freeReplyObject(reply);
+	return "";
 }
 
 bool Database_Redis::deleteBlock(const v3s16 &pos)
@@ -130,7 +137,7 @@ bool Database_Redis::deleteBlock(const v3s16 &pos)
 			"Redis command 'HDEL %s %s' failed: ") + ctx->errstr);
 	} else if (reply->type == REDIS_REPLY_ERROR) {
 		errorstream << "WARNING: deleteBlock: deleting block " << PP(pos)
-			<< " failed" << std::endl;
+			<< " failed: " << reply->str << std::endl;
 		freeReplyObject(reply);
 		return false;
 	}
@@ -145,12 +152,16 @@ void Database_Redis::listAllLoadableBlocks(std::vector<v3s16> &dst)
 	if (!reply) {
 		throw FileNotGoodException(std::string(
 			"Redis command 'HKEYS %s' failed: ") + ctx->errstr);
-	} else if (reply->type != REDIS_REPLY_ARRAY) {
-		throw FileNotGoodException("Failed to get keys from database");
 	}
-	for (size_t i = 0; i < reply->elements; i++) {
-		assert(reply->element[i]->type == REDIS_REPLY_STRING);
-		dst.push_back(getIntegerAsBlock(stoi64(reply->element[i]->str)));
+	switch (reply->type) {
+	case REDIS_REPLY_ARRAY:
+		for (size_t i = 0; i < reply->elements; i++) {
+			assert(reply->element[i]->type == REDIS_REPLY_STRING);
+			dst.push_back(getIntegerAsBlock(stoi64(reply->element[i]->str)));
+		}
+	case REDIS_REPLY_ERROR:
+		throw FileNotGoodException(std::string(
+			"Failed to get keys from database: ") + reply->str);
 	}
 	freeReplyObject(reply);
 }
