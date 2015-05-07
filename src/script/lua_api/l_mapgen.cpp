@@ -1134,7 +1134,8 @@ int ModApiMapgen::l_serialize_schematic(lua_State *L)
 	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
 
 	//// Read options
-	bool use_comments = getboolfield_default(L, 3, "use_lua_comments", false);
+	bool use_comments = getboolfield_default(L, 3, "lua_use_comments", false);
+	u32 indent_spaces = getintfield_default(L, 3, "lua_num_indent_spaces", 0);
 
 	//// Get schematic
 	bool was_loaded = false;
@@ -1161,7 +1162,8 @@ int ModApiMapgen::l_serialize_schematic(lua_State *L)
 		schem->serializeToMts(&os, schem->m_nodenames);
 		break;
 	case SCHEM_FMT_LUA:
-		schem->serializeToLua(&os, schem->m_nodenames, use_comments);
+		schem->serializeToLua(&os, schem->m_nodenames,
+			use_comments, indent_spaces);
 		break;
 	default:
 		return 0;

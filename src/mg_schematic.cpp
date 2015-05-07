@@ -309,14 +309,18 @@ bool Schematic::serializeToMts(std::ostream *os,
 
 
 bool Schematic::serializeToLua(std::ostream *os,
-	const std::vector<std::string> &names, bool use_comments)
+	const std::vector<std::string> &names, bool use_comments, u32 indent_spaces)
 {
 	std::ostream &ss = *os;
+
+	std::string indent("\t");
+	if (indent_spaces > 0)
+		indent.assign(indent_spaces, ' ');
 
 	//// Write header
 	{
 		ss << "schematic = {" << std::endl;
-		ss << "\tsize = "
+		ss << indent << "size = "
 			<< "{x=" << size.X
 			<< ", y=" << size.Y
 			<< ", z=" << size.Z
@@ -325,33 +329,34 @@ bool Schematic::serializeToLua(std::ostream *os,
 
 	//// Write y-slice probabilities
 	{
-		ss << "\tyslice_prob = {" << std::endl;
+		ss << indent << "yslice_prob = {" << std::endl;
 
 		for (u16 y = 0; y != size.Y; y++) {
-			ss << "\t\t{"
+			ss << indent << indent << "{"
 				<< "ypos=" << y
 				<< ", prob=" << (u16)slice_probs[y]
 				<< "}," << std::endl;
 		}
 
-		ss << "\t}," << std::endl;
+		ss << indent << "}," << std::endl;
 	}
 
 	//// Write node data
 	{
-		ss << "\tdata = {" << std::endl;
+		ss << indent << "data = {" << std::endl;
 
 		u32 i = 0;
 		for (u16 z = 0; z != size.Z; z++)
 		for (u16 y = 0; y != size.Y; y++) {
 			if (use_comments) {
 				ss << std::endl
-					<< "\t\t-- z=" << z
+					<< indent << indent
+					<< "-- z=" << z
 					<< ", y=" << y << std::endl;
 			}
 
 			for (u16 x = 0; x != size.X; x++, i++) {
-				ss << "\t\t{"
+				ss << indent << indent << "{"
 					<< "name=\"" << names[schemdata[i].getContent()]
 					<< "\", param1=" << (u16)schemdata[i].param1
 					<< ", param2=" << (u16)schemdata[i].param2
@@ -359,7 +364,7 @@ bool Schematic::serializeToLua(std::ostream *os,
 			}
 		}
 
-		ss << "\t}," << std::endl;
+		ss << indent << "}," << std::endl;
 	}
 
 	ss << "}" << std::endl;

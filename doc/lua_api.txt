@@ -2178,8 +2178,10 @@ These functions return the leftover itemstack.
     * "mts" - a string containing the binary MTS data used in the MTS file format
     * "lua" - a string containing Lua code representing the schematic in table format
     * `options` is a table containing the following optional parameters:
-    * If `use_comments` is true and `format` is "lua", the Lua code generated will have (X, Z)
+    * If `lua_use_comments` is true and `format` is "lua", the Lua code generated will have (X, Z)
     * position comments for every X row generated in the schematic data for easier reading.
+    * If `lua_num_indent_spaces` is a nonzero number and `format` is "lua", the Lua code generated
+    * will use that number of spaces as indentation instead of a tab character.
 
 ### Misc.
 * `minetest.get_connected_players()`: returns list of `ObjectRefs`

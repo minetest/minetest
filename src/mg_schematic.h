@@ -110,7 +110,7 @@ public:
 	bool deserializeFromMts(std::istream *is, std::vector<std::string> *names);
 	bool serializeToMts(std::ostream *os, const std::vector<std::string> &names);
 	bool serializeToLua(std::ostream *os, const std::vector<std::string> &names,
-		bool use_comments);
+		bool use_comments, u32 indent_spaces);
 
 	void placeStructure(Map *map, v3s16 p, u32 flags,
 		Rotation rot, bool force_placement);
