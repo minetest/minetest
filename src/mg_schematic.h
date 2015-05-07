@@ -100,20 +100,20 @@ public:
 	void updateContentIds();
 
 	void blitToVManip(v3s16 p, MMVManip *vm,
-		Rotation rot, bool force_placement, INodeDefManager *ndef);
+		Rotation rot, bool force_placement);
 
 	bool loadSchematicFromFile(const std::string &filename, INodeDefManager *ndef,
-		StringMap *replace_names, NodeResolveMethod resolve_method);
+		StringMap *replace_names);
 	bool saveSchematicToFile(const std::string &filename);
 	bool getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2);
 
-	bool deserializeFromMts(std::istream *is, std::vector<std::string> *names_out);
-	bool serializeToMts(std::ostream *os);
-	bool serializeToLua(std::ostream *os, bool use_comments);
-
+	bool deserializeFromMts(std::istream *is, std::vector<std::string> *names);
+	bool serializeToMts(std::ostream *os, const std::vector<std::string> &names);
+	bool serializeToLua(std::ostream *os, const std::vector<std::string> &names,
+		bool use_comments);
 
 	void placeStructure(Map *map, v3s16 p, u32 flags,
-		Rotation rot, bool force_placement, INodeDefManager *nef);
+		Rotation rot, bool force_placement);
 	void applyProbabilities(v3s16 p0,
 		std::vector<std::pair<v3s16, u8> > *plist,
 		std::vector<std::pair<s16, u8> > *splist);
@@ -140,8 +140,7 @@ private:
 	IGameDef *m_gamedef;
 };
 
-void build_nnlist_and_update_ids(MapNode *nodes, u32 nodecount,
-	std::vector<content_t> *usednodes);
-
+void generate_nodelist_and_update_ids(MapNode *nodes, size_t nodecount,
+	std::vector<std::string> *usednodes, INodeDefManager *ndef);
 
 #endif

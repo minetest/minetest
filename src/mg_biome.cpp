@@ -57,7 +57,7 @@ BiomeManager::BiomeManager(IGameDef *gamedef) :
 	b->m_nodenames.push_back("mapgen_water_source");
 	b->m_nodenames.push_back("mapgen_river_water_source");
 	b->m_nodenames.push_back("air");
-	m_ndef->pendNodeResolve(b, NODE_RESOLVE_DEFERRED);
+	m_ndef->pendNodeResolve(b);
 
 	add(b);
 }

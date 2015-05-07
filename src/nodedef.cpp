@@ -406,7 +406,7 @@ public:
 	inline virtual bool getNodeRegistrationStatus() const;
 	inline virtual void setNodeRegistrationStatus(bool completed);
 
-	virtual void pendNodeResolve(NodeResolver *nr, NodeResolveMethod how);
+	virtual void pendNodeResolve(NodeResolver *nr);
 	virtual bool cancelNodeResolveCallback(NodeResolver *nr);
 	virtual void runNodeResolveCallbacks();
 	virtual void resetNodeResolveState();
@@ -1294,23 +1294,13 @@ inline void CNodeDefManager::setNodeRegistrationStatus(bool completed)
 }
 
 
-void CNodeDefManager::pendNodeResolve(NodeResolver *nr, NodeResolveMethod how)
+void CNodeDefManager::pendNodeResolve(NodeResolver *nr)
 {
 	nr->m_ndef = this;
-
-	switch (how) {
-	case NODE_RESOLVE_NONE:
-		break;
-	case NODE_RESOLVE_DIRECT:
+	if (m_node_registration_complete)
 		nr->nodeResolveInternal();
-		break;
-	case NODE_RESOLVE_DEFERRED:
-		if (m_node_registration_complete)
-			nr->nodeResolveInternal();
-		else
-			m_pending_resolve_callbacks.push_back(nr);
-		break;
-	}
+	else
+		m_pending_resolve_callbacks.push_back(nr);
 }
 
 
@@ -1382,19 +1372,6 @@ void NodeResolver::nodeResolveInternal()
 
 	m_nodenames.clear();
 	m_nnlistsizes.clear();
-}
-
-
-const std::string &NodeResolver::getNodeName(content_t c) const
-{
-	if (c < m_nodenames.size())
-		return m_nodenames[c];
-
-	if (m_ndef)
-		return m_ndef->get(c).name;
-
-	static const std::string unknown_str("unknown");
-	return unknown_str;
 }
 
 

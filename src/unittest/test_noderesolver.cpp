@@ -50,12 +50,6 @@ void TestNodeResolver::runTests(IGameDef *gamedef)
 
 	ndef->resetNodeResolveState();
 	TEST(testPendingResolveCancellation, ndef);
-
-	ndef->resetNodeResolveState();
-	TEST(testDirectResolveMethod, ndef);
-
-	ndef->resetNodeResolveState();
-	TEST(testNoneResolveMethod, ndef);
 }
 
 class Foobar : public NodeResolver {
@@ -136,7 +130,7 @@ void TestNodeResolver::testNodeResolving(IWritableNodeDefManager *ndef)
 	foobar.m_nodenames.push_back("default:desert_stone");
 	foobar.m_nodenames.push_back("default:shnitzle");
 
-	ndef->pendNodeResolve(&foobar, NODE_RESOLVE_DEFERRED);
+	ndef->pendNodeResolve(&foobar);
 	UASSERT(foobar.m_ndef == ndef);
 
 	ndef->setNodeRegistrationStatus(true);
@@ -193,14 +187,14 @@ void TestNodeResolver::testPendingResolveCancellation(IWritableNodeDefManager *n
 	foobaz1.test_content2 = 5678;
 	foobaz1.m_nodenames.push_back("default:dirt_with_grass");
 	foobaz1.m_nodenames.push_back("default:abloobloobloo");
-	ndef->pendNodeResolve(&foobaz1, NODE_RESOLVE_DEFERRED);
+	ndef->pendNodeResolve(&foobaz1);
 
 	Foobaz foobaz2;
 	foobaz2.test_content1 = 1234;
 	foobaz2.test_content2 = 5678;
 	foobaz2.m_nodenames.push_back("default:dirt_with_grass");
 	foobaz2.m_nodenames.push_back("default:abloobloobloo");
-	ndef->pendNodeResolve(&foobaz2, NODE_RESOLVE_DEFERRED);
+	ndef->pendNodeResolve(&foobaz2);
 
 	ndef->cancelNodeResolveCallback(&foobaz1);
 
@@ -211,38 +205,4 @@ void TestNodeResolver::testPendingResolveCancellation(IWritableNodeDefManager *n
 	UASSERT(foobaz1.test_content2 == 5678);
 	UASSERT(foobaz2.test_content1 == t_CONTENT_GRASS);
 	UASSERT(foobaz2.test_content2 == CONTENT_IGNORE);
-}
-
-
-void TestNodeResolver::testDirectResolveMethod(IWritableNodeDefManager *ndef)
-{
-	Foobaz foobaz;
-
-	foobaz.m_nodenames.push_back("default:dirt_with_grass");
-	foobaz.m_nodenames.push_back("default:abloobloobloo");
-
-	UASSERTEQ(std::string, foobaz.getNodeName(1), "default:abloobloobloo");
-
-	ndef->pendNodeResolve(&foobaz, NODE_RESOLVE_DIRECT);
-
-	UASSERTEQ(content_t, foobaz.test_content1, t_CONTENT_GRASS);
-	UASSERTEQ(content_t, foobaz.test_content2, CONTENT_IGNORE);
-
-	// We expect this to be *different* because the resolution of this node had
-	// failed.  The internal nodename buffer is cleared and lookups should now
-	// use the nodedef manager.
-	UASSERT(foobaz.getNodeName(1) != "default:abloobloobloo");
-}
-
-
-void TestNodeResolver::testNoneResolveMethod(IWritableNodeDefManager *ndef)
-{
-	Foobaz foobaz;
-
-	foobaz.m_nodenames.push_back("default:dirt_with_grass");
-	foobaz.m_nodenames.push_back("default:abloobloobloo");
-
-	ndef->pendNodeResolve(&foobaz, NODE_RESOLVE_NONE);
-
-	UASSERTEQ(std::string, foobaz.getNodeName(1), "default:abloobloobloo");
 }

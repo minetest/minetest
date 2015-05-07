@@ -340,7 +340,7 @@ size_t DecoSchematic::generate(MMVManip *vm, PseudoRandom *pr, v3s16 p)
 
 	bool force_placement = (flags & DECO_FORCE_PLACEMENT);
 
-	schematic->blitToVManip(p, vm, rot, force_placement, m_ndef);
+	schematic->blitToVManip(p, vm, rot, force_placement);
 
 	return 1;
 }

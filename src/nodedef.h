@@ -282,12 +282,6 @@ struct ContentFeatures
 	}
 };
 
-enum NodeResolveMethod {
-	NODE_RESOLVE_NONE,
-	NODE_RESOLVE_DIRECT,
-	NODE_RESOLVE_DEFERRED,
-};
-
 class INodeDefManager {
 public:
 	INodeDefManager(){}
@@ -306,7 +300,7 @@ public:
 
 	virtual bool getNodeRegistrationStatus() const=0;
 
-	virtual void pendNodeResolve(NodeResolver *nr, NodeResolveMethod how)=0;
+	virtual void pendNodeResolve(NodeResolver *nr)=0;
 	virtual bool cancelNodeResolveCallback(NodeResolver *nr)=0;
 };
 
@@ -353,7 +347,7 @@ public:
 	virtual bool getNodeRegistrationStatus() const=0;
 	virtual void setNodeRegistrationStatus(bool completed)=0;
 
-	virtual void pendNodeResolve(NodeResolver *nr, NodeResolveMethod how)=0;
+	virtual void pendNodeResolve(NodeResolver *nr)=0;
 	virtual bool cancelNodeResolveCallback(NodeResolver *nr)=0;
 	virtual void runNodeResolveCallbacks()=0;
 	virtual void resetNodeResolveState()=0;
@@ -371,7 +365,6 @@ public:
 		const std::string &node_alt, content_t c_fallback);
 	bool getIdsFromNrBacklog(std::vector<content_t> *result_out,
 		bool all_required=false, content_t c_fallback=CONTENT_IGNORE);
-	const std::string &getNodeName(content_t c) const;
 
 	void nodeResolveInternal();
 
