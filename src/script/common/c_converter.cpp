@@ -105,7 +105,6 @@ v2f read_v2f(lua_State *L, int index)
 	v2f p;
 	CHECK_POS_TAB(index);
 	lua_getfield(L, index, "x");
-	lua_getfield(L, index, "x");
 	p.X = lua_tonumber(L, -1);
 	lua_pop(L, 1);
 	lua_getfield(L, index, "y");
