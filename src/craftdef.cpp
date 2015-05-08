@@ -67,6 +67,7 @@ static u64 getHashForGrid(CraftHashType type, const std::vector<std::string> &gr
 	}
 	// invalid CraftHashType
 	assert(false);
+	return 0;
 }
 
 // Check if input matches recipe
