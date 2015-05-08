@@ -154,7 +154,7 @@ v3f check_v3f(lua_State *L, int index)
 	lua_pop(L, 1);
 	lua_getfield(L, index, "y");
 	CHECK_POS_COORD("y");
-	pos.Z = lua_tonumber(L, -1);
+	pos.Y = lua_tonumber(L, -1);
 	lua_pop(L, 1);
 	lua_getfield(L, index, "z");
 	CHECK_POS_COORD("z");
