@@ -1227,9 +1227,12 @@ void Server::ProcessData(NetworkPacket *pkt)
 		}
 
 		handleCommand(pkt);
-	}
-	catch(SendFailedException &e) {
+	} catch (SendFailedException &e) {
 		errorstream << "Server::ProcessData(): SendFailedException: "
+				<< "what=" << e.what()
+				<< std::endl;
+	} catch (PacketError &e) {
+		actionstream << "Server::ProcessData(): PacketError: "
 				<< "what=" << e.what()
 				<< std::endl;
 	}
