@@ -102,11 +102,17 @@ class IGameDef;
 class TestBase {
 public:
 	bool testModule(IGameDef *gamedef);
+	std::string getTestTempDirectory();
+	std::string getTestTempFile();
+
 	virtual void runTests(IGameDef *gamedef) = 0;
 	virtual const char *getName() = 0;
 
 	u32 num_tests_failed;
 	u32 num_tests_run;
+
+private:
+	std::string m_test_dir;
 };
 
 class TestManager {

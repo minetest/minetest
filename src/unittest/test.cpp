@@ -276,7 +276,33 @@ bool TestBase::testModule(IGameDef *gamedef)
 		<< " failures / " << num_tests_run << " tests) - " << tdiff
 		<< "ms" << std::endl;
 
+	if (!m_test_dir.empty())
+		fs::RecursiveDelete(m_test_dir);
+
 	return num_tests_failed == 0;
+}
+
+std::string TestBase::getTestTempDirectory()
+{
+	if (!m_test_dir.empty())
+		return m_test_dir;
+
+	char buf[32];
+	snprintf(buf, sizeof(buf), "%08X", myrand());
+
+	m_test_dir = fs::TempPath() + DIR_DELIM "mttest_" + buf;
+	if (!fs::CreateDir(m_test_dir))
+		throw TestFailedException();
+
+	return m_test_dir;
+}
+
+std::string TestBase::getTestTempFile()
+{
+	char buf[32];
+	snprintf(buf, sizeof(buf), "%08X", myrand());
+
+	return getTestTempDirectory() + DIR_DELIM + buf + ".tmp";
 }
 
 

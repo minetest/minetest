@@ -94,8 +94,7 @@ void Schematic::resolveNodeNames()
 }
 
 
-void Schematic::blitToVManip(v3s16 p, MMVManip *vm,
-	Rotation rot, bool force_placement)
+void Schematic::blitToVManip(v3s16 p, MMVManip *vm, Rotation rot, bool force_place)
 {
 	sanity_check(m_ndef != NULL);
 
@@ -151,7 +150,7 @@ void Schematic::blitToVManip(v3s16 p, MMVManip *vm,
 				if (schemdata[i].param1 == MTSCHEM_PROB_NEVER)
 					continue;
 
-				if (!force_placement) {
+				if (!force_place) {
 					content_t c = vm->m_data[vi].getContent();
 					if (c != CONTENT_AIR && c != CONTENT_IGNORE)
 						continue;
@@ -174,7 +173,7 @@ void Schematic::blitToVManip(v3s16 p, MMVManip *vm,
 
 
 void Schematic::placeStructure(Map *map, v3s16 p, u32 flags,
-	Rotation rot, bool force_placement)
+	Rotation rot, bool force_place)
 {
 	assert(schemdata != NULL); // Pre-condition
 	sanity_check(m_ndef != NULL);
@@ -198,7 +197,7 @@ void Schematic::placeStructure(Map *map, v3s16 p, u32 flags,
 	v3s16 bp2 = getNodeBlockPos(p + s - v3s16(1,1,1));
 	vm->initialEmerge(bp1, bp2);
 
-	blitToVManip(p, vm, rot, force_placement);
+	blitToVManip(p, vm, rot, force_place);
 
 	std::map<v3s16, MapBlock *> lighting_modified_blocks;
 	std::map<v3s16, MapBlock *> modified_blocks;
@@ -405,15 +404,17 @@ bool Schematic::loadSchematicFromFile(const std::string &filename,
 }
 
 
-bool Schematic::saveSchematicToFile(const std::string &filename)
+bool Schematic::saveSchematicToFile(const std::string &filename,
+	INodeDefManager *ndef)
 {
 	MapNode *orig_schemdata = schemdata;
 	std::vector<std::string> ndef_nodenames;
 	std::vector<std::string> *names;
 
-	// Only carry out the modification if we know the nodes
-	// were resolved at this point
-	if (m_resolve_done) {
+	if (m_resolve_done && ndef == NULL)
+		ndef = m_ndef;
+
+	if (ndef) {
 		names = &ndef_nodenames;
 
 		u32 volume = size.X * size.Y * size.Z;
@@ -421,18 +422,21 @@ bool Schematic::saveSchematicToFile(const std::string &filename)
 		for (u32 i = 0; i != volume; i++)
 			schemdata[i] = orig_schemdata[i];
 
-		generate_nodelist_and_update_ids(schemdata, volume, names, m_ndef);
+		generate_nodelist_and_update_ids(schemdata, volume, names, ndef);
 	} else { // otherwise, use the names we have on hand in the list
 		names = &m_nodenames;
 	}
 
 	std::ostringstream os(std::ios_base::binary);
-	serializeToMts(&os, *names);
+	bool status = serializeToMts(&os, *names);
 
-	if (m_resolve_done) {
+	if (ndef) {
 		delete []schemdata;
 		schemdata = orig_schemdata;
 	}
+
+	if (!status)
+		return false;
 
 	return fs::safeWriteToFile(filename, os.str());
 }

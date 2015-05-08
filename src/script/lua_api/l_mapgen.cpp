@@ -1031,10 +1031,9 @@ int ModApiMapgen::l_generate_decorations(lua_State *L)
 // create_schematic(p1, p2, probability_list, filename, y_slice_prob_list)
 int ModApiMapgen::l_create_schematic(lua_State *L)
 {
-	Schematic schem;
-	schem.m_ndef = getServer(L)->getNodeDefManager();
-
+	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
 	Map *map = &(getEnv(L)->getMap());
+	Schematic schem;
 
 	v3s16 p1 = check_v3s16(L, 1);
 	v3s16 p2 = check_v3s16(L, 2);
@@ -1081,7 +1080,7 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 
 	schem.applyProbabilities(p1, &prob_list, &slice_prob_list);
 
-	schem.saveSchematicToFile(filename);
+	schem.saveSchematicToFile(filename, ndef);
 	actionstream << "create_schematic: saved schematic file '"
 		<< filename << "'." << std::endl;
 
