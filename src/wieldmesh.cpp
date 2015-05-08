@@ -357,8 +357,13 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 					def.wield_scale * WIELD_SCALE_FACTOR
 					/ (BS * f.visual_scale));
 		}
-		for (u32 i = 0; i < m_meshnode->getMaterialCount(); ++i) {
-			assert(i < 6);
+		u32 material_count = m_meshnode->getMaterialCount();
+		if (material_count >= 6) {
+			errorstream << "WieldMeshSceneNode::setItem: Invalid material "
+				"count " << material_count << ", truncating to 6" << std::endl;
+			material_count = 6;
+		}
+		for (u32 i = 0; i < material_count; ++i) {
 			video::SMaterial &material = m_meshnode->getMaterial(i);
 			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
