@@ -79,7 +79,7 @@ void TestSchematic::testMtsSerializeDeserialize(INodeDefManager *ndef)
 	schem.slice_probs = new u8[size.Y];
 	for (size_t i = 0; i != volume; i++)
 		schem.schemdata[i] = MapNode(test_schem_data[i], MTSCHEM_PROB_ALWAYS, 0);
-	for (size_t y = 0; y != size.Y; y++)
+	for (s16 y = 0; y != size.Y; y++)
 		schem.slice_probs[y] = MTSCHEM_PROB_ALWAYS;
 
 	UASSERT(schem.serializeToMts(&ss, names));
@@ -116,7 +116,7 @@ void TestSchematic::testLuaTableSerialize(INodeDefManager *ndef)
 	schem.slice_probs = new u8[size.Y];
 	for (size_t i = 0; i != volume; i++)
 		schem.schemdata[i] = MapNode(test_schem_data2[i], MTSCHEM_PROB_ALWAYS, 0);
-	for (size_t y = 0; y != size.Y; y++)
+	for (s16 y = 0; y != size.Y; y++)
 		schem.slice_probs[y] = MTSCHEM_PROB_ALWAYS;
 
 	std::vector<std::string> names;
