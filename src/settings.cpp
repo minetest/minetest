@@ -37,17 +37,155 @@ static Settings main_settings;
 Settings *g_settings = &main_settings;
 std::string g_settings_path;
 
-Settings::~Settings()
+static std::map<std::string, MTSetting> mtsettings_names; //TODO change to unordered_map
+
+static MTSetting get_mtsetting_for_name(const std::string &name)
+{
+	if (mtsettings_names.empty()) {
+#define MTCONF_SET_EXT(enumname, lcase, default)\
+	mtsettings_names[lcase] = CNF_##enumname;
+#include "settingdef.h"
+#undef MTCONF_SET_EXT
+	}
+	std::map<std::string, MTSetting>::iterator it;
+	it = mtsettings_names.find(name);
+	if (it != mtsettings_names.end()) {
+		return it->second;
+	} else {
+		return CNF_COUNT;
+	}
+}
+
+
+static std::string get_name_of_mtsetting(MTSetting setting)
+{
+	switch(setting) {
+#define MTCONF_SET_EXT(enumname, lcase, default)\
+		case CNF_##enumname: return lcase;
+#include "settingdef.h"
+#undef MTCONF_SET_EXT
+		default:
+			return "";
+	}
+}
+
+
+MTSettingsContainer::~MTSettingsContainer()
 {
 	clear();
 }
 
 
-Settings & Settings::operator += (const Settings &other)
+const SettingsEntry* MTSettingsContainer::find(const std::string &name) const
 {
-	update(other);
+	std::map<std::string, SettingsEntry*>::const_iterator it;
+	it = m_map.find(name);
+	if (it == m_map.end()) {
+		return NULL;
+	} else {
+		return it->second;
+	}
+}
 
-	return *this;
+
+const SettingsEntry* MTSettingsContainer::find(MTSetting setting) const
+{
+	return m_entries[setting];
+}
+
+
+std::map<std::string, SettingsEntry*>::const_iterator MTSettingsContainer::begin() const
+{
+	return m_map.begin();
+}
+
+
+std::map<std::string, SettingsEntry*>::const_iterator MTSettingsContainer::end() const
+{
+	return m_map.end();
+}
+
+
+bool MTSettingsContainer::has(const std::string &name) const
+{
+	return m_map.find(name) != m_map.end();
+}
+
+
+bool MTSettingsContainer::has(MTSetting setting) const
+{
+	// m_entries always contains an entry for a setting, but m_map doesn't always
+	return m_map.find(get_name_of_mtsetting(setting)) != m_map.end();
+}
+
+
+SettingsEntry& MTSettingsContainer::operator[] (const std::string &name)
+{
+	std::map<std::string, SettingsEntry*>::iterator it;
+	it = m_map.find(name);
+	if (it == m_map.end()) {
+		SettingsEntry *entry = new SettingsEntry;
+		m_map[name] = entry;
+		MTSetting s = get_mtsetting_for_name(name);
+		if (s != CNF_COUNT)
+			m_entries[s] = entry;
+		return *entry;
+	} else {
+		return *it->second;
+	}
+}
+
+
+SettingsEntry& MTSettingsContainer::operator[] (MTSetting setting)
+{
+	if (setting < CNF_COUNT) {
+		SettingsEntry *entry = m_entries[setting];
+		if (entry != NULL)
+			return *entry;
+	}
+	SettingsEntry *entry = new SettingsEntry;
+	m_entries[setting] = entry;
+	m_map[get_name_of_mtsetting(setting)] = entry;
+	return *entry;
+}
+
+
+void MTSettingsContainer::operator= (const MTSettingsContainer &other)
+{
+	clear();
+	m_map.insert(other.m_map.begin(), other.m_map.end());
+	m_entries = other.m_entries;
+}
+
+
+bool MTSettingsContainer::erase(const std::string &name)
+{
+	return m_map.erase(name);
+}
+
+
+bool MTSettingsContainer::erase(MTSetting setting)
+{
+	return m_map.erase(get_name_of_mtsetting(setting));
+}
+
+
+void MTSettingsContainer::clear()
+{
+	std::map<std::string, SettingsEntry*>::iterator it;
+	for (it = m_map.begin(); it != m_map.end(); ++it) {
+		delete it->second->group;
+		delete it->second;
+	}
+
+	m_map.clear();
+	m_entries.clear();
+}
+
+
+Settings::~Settings()
+{
+	clear();
 }
 
 
@@ -60,7 +198,8 @@ Settings & Settings::operator = (const Settings &other)
 	JMutexAutoLock lock2(other.m_mutex);
 
 	clearNoLock();
-	updateNoLock(other);
+	m_settings = other.m_settings;
+	m_defaults = other.m_defaults;
 
 	return *this;
 }
@@ -195,10 +334,10 @@ void Settings::writeLines(std::ostream &os, u32 tab_depth) const
 {
 	JMutexAutoLock lock(m_mutex);
 
-	for (std::map<std::string, SettingsEntry>::const_iterator
+	for (std::map<std::string, SettingsEntry*>::const_iterator
 			it = m_settings.begin();
 			it != m_settings.end(); ++it)
-		printEntry(os, it->first, it->second, tab_depth);
+		printEntry(os, it->first, *it->second, tab_depth);
 }
 
 
@@ -230,7 +369,8 @@ void Settings::printEntry(std::ostream &os, const std::string &name,
 bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 	const std::string &end, u32 tab_depth)
 {
-	std::map<std::string, SettingsEntry>::const_iterator it;
+	const SettingsEntry *entry;
+	std::map<std::string, SettingsEntry*>::const_iterator it;
 	std::set<std::string> present_entries;
 	std::string line, name, value;
 	bool was_modified = false;
@@ -251,10 +391,10 @@ bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 			value = getMultiline(is);
 			/* FALLTHROUGH */
 		case SPE_KVPAIR:
-			it = m_settings.find(name);
-			if (it != m_settings.end() &&
-				(it->second.is_group || it->second.value != value)) {
-				printEntry(os, name, it->second, tab_depth);
+			entry = m_settings.find(name);
+			if (entry != NULL &&
+				(entry->is_group || entry->value != value)) {
+				printEntry(os, name, *entry, tab_depth);
 				was_modified = true;
 			} else {
 				os << line << "\n";
@@ -264,14 +404,14 @@ bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 			present_entries.insert(name);
 			break;
 		case SPE_GROUP:
-			it = m_settings.find(name);
-			if (it != m_settings.end() && it->second.is_group) {
+			entry = m_settings.find(name);
+			if (entry != NULL && entry->is_group) {
 				os << line << "\n";
-				sanity_check(it->second.group != NULL);
-				was_modified |= it->second.group->updateConfigObject(is, os,
+				sanity_check(entry->group != NULL);
+				was_modified |= entry->group->updateConfigObject(is, os,
 					"}", tab_depth + 1);
 			} else {
-				printEntry(os, name, it->second, tab_depth);
+				printEntry(os, name, *entry, tab_depth);
 				was_modified = true;
 			}
 			present_entries.insert(name);
@@ -287,7 +427,7 @@ bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 		if (present_entries.find(it->first) != present_entries.end())
 			continue;
 
-		printEntry(os, it->first, it->second, tab_depth);
+		printEntry(os, it->first, *it->second, tab_depth);
 		was_modified = true;
 	}
 
@@ -380,12 +520,12 @@ const SettingsEntry &Settings::getEntry(const std::string &name) const
 {
 	JMutexAutoLock lock(m_mutex);
 
-	std::map<std::string, SettingsEntry>::const_iterator n;
-	if ((n = m_settings.find(name)) == m_settings.end()) {
-		if ((n = m_defaults.find(name)) == m_defaults.end())
+	const SettingsEntry *n;
+	if ((n = m_settings.find(name)) == NULL) {
+		if ((n = m_defaults.find(name)) == NULL)
 			throw SettingNotFoundException("Setting [" + name + "] not found.");
 	}
-	return n->second;
+	return *n;
 }
 
 
@@ -403,6 +543,7 @@ std::string Settings::get(const std::string &name) const
 	const SettingsEntry &entry = getEntry(name);
 	if (entry.is_group)
 		throw SettingNotFoundException("Setting [" + name + "] is a group.");
+	// errorstream << "getting " << name << " = " << entry.value << std::endl;
 	return entry.value;
 }
 
@@ -559,19 +700,114 @@ bool Settings::getNoiseParamsFromGroup(const std::string &name,
 }
 
 
+const SettingsEntry &Settings::getEntry(MTSetting setting) const
+{
+	JMutexAutoLock lock(m_mutex);
+
+	const SettingsEntry *n;
+	if ((n = m_settings.find(setting)) == NULL) {
+		if ((n = m_defaults.find(setting)) == NULL)
+			throw SettingNotFoundException("Setting [id=" + itos(setting) + "] not found.");
+	}
+	return *n;
+}
+
+
+Settings *Settings::getGroup(MTSetting setting) const
+{
+	const SettingsEntry &entry = getEntry(setting);
+	if (!entry.is_group)
+		throw SettingNotFoundException("Setting [id=" + itos(setting) + "] is not a group.");
+	return entry.group;
+}
+
+
+std::string Settings::get(MTSetting setting) const
+{
+	const SettingsEntry &entry = getEntry(setting);
+	if (entry.is_group)
+		throw SettingNotFoundException("Setting [id=" + itos(setting) + "] is a group.");
+	return entry.value;
+}
+
+
+bool Settings::getBool(MTSetting setting) const
+{
+	return is_yes(get(setting));
+}
+
+
+u16 Settings::getU16(MTSetting setting) const
+{
+	return stoi(get(setting), 0, 65535);
+}
+
+
+s16 Settings::getS16(MTSetting setting) const
+{
+	return stoi(get(setting), -32768, 32767);
+}
+
+
+s32 Settings::getS32(MTSetting setting) const
+{
+	return stoi(get(setting));
+}
+
+
+float Settings::getFloat(MTSetting setting) const
+{
+	return stof(get(setting));
+}
+
+
+u64 Settings::getU64(MTSetting setting) const
+{
+	u64 value = 0;
+	std::string s = get(setting);
+	std::istringstream ss(s);
+	ss >> value;
+	return value;
+}
+
+
+v2f Settings::getV2F(MTSetting setting) const
+{
+	v2f value;
+	Strfnd f(get(setting));
+	f.next("(");
+	value.X = stof(f.next(","));
+	value.Y = stof(f.next(")"));
+	return value;
+}
+
+
+v3f Settings::getV3F(MTSetting setting) const
+{
+	v3f value;
+	Strfnd f(get(setting));
+	f.next("(");
+	value.X = stof(f.next(","));
+	value.Y = stof(f.next(","));
+	value.Z = stof(f.next(")"));
+	return value;
+}
+
+
+
 bool Settings::exists(const std::string &name) const
 {
 	JMutexAutoLock lock(m_mutex);
 
-	return (m_settings.find(name) != m_settings.end() ||
-		m_defaults.find(name) != m_defaults.end());
+	return (m_settings.has(name) ||
+		m_defaults.has(name));
 }
 
 
 std::vector<std::string> Settings::getNames() const
 {
 	std::vector<std::string> names;
-	for (std::map<std::string, SettingsEntry>::const_iterator
+	for (std::map<std::string, SettingsEntry*>::const_iterator
 			i = m_settings.begin();
 			i != m_settings.end(); ++i) {
 		names.push_back(i->first);
@@ -912,18 +1148,6 @@ void Settings::updateValue(const Settings &other, const std::string &name)
 }
 
 
-void Settings::update(const Settings &other)
-{
-	if (&other == this)
-		return;
-
-	JMutexAutoLock lock(m_mutex);
-	JMutexAutoLock lock2(other.m_mutex);
-
-	updateNoLock(other);
-}
-
-
 SettingsParseEvent Settings::parseConfigObject(const std::string &line,
 	const std::string &end, std::string &name, std::string &value)
 {
@@ -952,18 +1176,8 @@ SettingsParseEvent Settings::parseConfigObject(const std::string &line,
 }
 
 
-void Settings::updateNoLock(const Settings &other)
-{
-	m_settings.insert(other.m_settings.begin(), other.m_settings.end());
-	m_defaults.insert(other.m_defaults.begin(), other.m_defaults.end());
-}
-
-
 void Settings::clearNoLock()
 {
-	std::map<std::string, SettingsEntry>::const_iterator it;
-	for (it = m_settings.begin(); it != m_settings.end(); ++it)
-		delete it->second.group;
 	m_settings.clear();
 
 	clearDefaultsNoLock();
@@ -971,21 +1185,18 @@ void Settings::clearNoLock()
 
 void Settings::clearDefaultsNoLock()
 {
-	std::map<std::string, SettingsEntry>::const_iterator it;
-	for (it = m_defaults.begin(); it != m_defaults.end(); ++it)
-		delete it->second.group;
 	m_defaults.clear();
 }
 
 
-void Settings::registerChangedCallback(std::string name,
+void Settings::registerChangedCallback(const std::string &name,
 	setting_changed_callback cbf, void *userdata)
 {
 	JMutexAutoLock lock(m_callbackMutex);
 	m_callbacks[name].push_back(std::make_pair(cbf, userdata));
 }
 
-void Settings::deregisterChangedCallback(std::string name, setting_changed_callback cbf, void *userdata)
+void Settings::deregisterChangedCallback(const std::string &name, setting_changed_callback cbf, void *userdata)
 {
 	JMutexAutoLock lock(m_callbackMutex);
 	std::map<std::string, std::vector<std::pair<setting_changed_callback, void*> > >::iterator iterToVector = m_callbacks.find(name);
