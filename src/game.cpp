@@ -68,6 +68,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include "touchscreengui.h"
 #endif
 
+#ifdef ANDROID
+	#include "porting_android.h"
+#endif
+
 extern Settings *g_settings;
 extern Profiler *g_profiler;
 
@@ -1758,6 +1762,10 @@ void Game::run()
 	set_light_table(g_settings->getFloat("display_gamma"));
 
 	while (device->run() && !(*kill || g_gamecallback->shutdown_requested)) {
+
+#ifdef ANDROID
+		porting::handleAndroidActivityEvents();
+#endif
 
 		/* Must be called immediately after a device->run() call because it
 		 * uses device->getTimer()->getTime()

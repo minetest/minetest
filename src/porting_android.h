@@ -76,6 +76,7 @@ int getInputDialogState();
  */
 std::string getInputDialogValue();
 
+void handleAndroidActivityEvents();
 }
 
 #endif
