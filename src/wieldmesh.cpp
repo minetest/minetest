@@ -358,7 +358,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 					/ (BS * f.visual_scale));
 		}
 		u32 material_count = m_meshnode->getMaterialCount();
-		if (material_count >= 6) {
+		if (material_count > 6) {
 			errorstream << "WieldMeshSceneNode::setItem: Invalid material "
 				"count " << material_count << ", truncating to 6" << std::endl;
 			material_count = 6;
