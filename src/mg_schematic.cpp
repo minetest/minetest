@@ -133,8 +133,8 @@ void Schematic::blitToVManip(v3s16 p, MMVManip *vm, Rotation rot, bool force_pla
 
 	s16 y_map = p.Y;
 	for (s16 y = 0; y != sy; y++) {
-		if (slice_probs[y] != MTSCHEM_PROB_ALWAYS &&
-			myrand_range(1, 255) > slice_probs[y])
+		if ((slice_probs[y] != MTSCHEM_PROB_ALWAYS) &&
+			(slice_probs[y] <= myrand_range(1, MTSCHEM_PROB_ALWAYS)))
 			continue;
 
 		for (s16 z = 0; z != sz; z++) {
@@ -147,17 +147,20 @@ void Schematic::blitToVManip(v3s16 p, MMVManip *vm, Rotation rot, bool force_pla
 				if (schemdata[i].getContent() == CONTENT_IGNORE)
 					continue;
 
-				if (schemdata[i].param1 == MTSCHEM_PROB_NEVER)
+				u8 placement_prob     = schemdata[i].param1 & MTSCHEM_PROB_MASK;
+				bool force_place_node = schemdata[i].param1 & MTSCHEM_FORCE_PLACE;
+
+				if (placement_prob == MTSCHEM_PROB_NEVER)
 					continue;
 
-				if (!force_place) {
+				if (!force_place && !force_place_node) {
 					content_t c = vm->m_data[vi].getContent();
 					if (c != CONTENT_AIR && c != CONTENT_IGNORE)
 						continue;
 				}
 
-				if (schemdata[i].param1 != MTSCHEM_PROB_ALWAYS &&
-					myrand_range(1, 255) > schemdata[i].param1)
+				if ((placement_prob != MTSCHEM_PROB_ALWAYS) &&
+					(placement_prob <= myrand_range(1, MTSCHEM_PROB_ALWAYS)))
 					continue;
 
 				vm->m_data[vi] = schemdata[i];
@@ -225,6 +228,7 @@ bool Schematic::deserializeFromMts(std::istream *is,
 	content_t cignore = CONTENT_IGNORE;
 	bool have_cignore = false;
 
+	//// Read signature
 	u32 signature = readU32(ss);
 	if (signature != MTSCHEM_FILE_SIGNATURE) {
 		errorstream << "Schematic::deserializeFromMts: invalid schematic "
@@ -232,6 +236,7 @@ bool Schematic::deserializeFromMts(std::istream *is,
 		return false;
 	}
 
+	//// Read version
 	u16 version = readU16(ss);
 	if (version > MTSCHEM_FILE_VER_HIGHEST_READ) {
 		errorstream << "Schematic::deserializeFromMts: unsupported schematic "
@@ -239,18 +244,21 @@ bool Schematic::deserializeFromMts(std::istream *is,
 		return false;
 	}
 
+	//// Read size
 	size = readV3S16(ss);
 
+	//// Read Y-slice probability values
 	delete []slice_probs;
 	slice_probs = new u8[size.Y];
 	for (int y = 0; y != size.Y; y++)
-		slice_probs[y] = (version >= 3) ? readU8(ss) : MTSCHEM_PROB_ALWAYS;
+		slice_probs[y] = (version >= 3) ? readU8(ss) : MTSCHEM_PROB_ALWAYS_OLD;
 
+	//// Read node names
 	u16 nidmapcount = readU16(ss);
 	for (int i = 0; i != nidmapcount; i++) {
 		std::string name = deSerializeString(ss);
 
-		// Instances of "ignore" from ver 1 are converted to air (and instances
+		// Instances of "ignore" from v1 are converted to air (and instances
 		// are fixed to have MTSCHEM_PROB_NEVER later on).
 		if (name == "ignore") {
 			name = "air";
@@ -261,6 +269,7 @@ bool Schematic::deserializeFromMts(std::istream *is,
 		names->push_back(name);
 	}
 
+	//// Read node data
 	size_t nodecount = size.X * size.Y * size.Z;
 
 	delete []schemdata;
@@ -269,14 +278,22 @@ bool Schematic::deserializeFromMts(std::istream *is,
 	MapNode::deSerializeBulk(ss, SER_FMT_VER_HIGHEST_READ, schemdata,
 		nodecount, 2, 2, true);
 
-	// fix any probability values for nodes that were ignore
-	if (version == 1) {
+	// Fix probability values for nodes that were ignore; removed in v2
+	if (version < 2) {
 		for (size_t i = 0; i != nodecount; i++) {
 			if (schemdata[i].param1 == 0)
 				schemdata[i].param1 = MTSCHEM_PROB_ALWAYS;
 			if (have_cignore && schemdata[i].getContent() == cignore)
 				schemdata[i].param1 = MTSCHEM_PROB_NEVER;
 		}
+	}
+
+	// Fix probability values for probability range truncation introduced in v4
+	if (version < 4) {
+		for (s16 y = 0; y != size.Y; y++)
+			slice_probs[y] >>= 1;
+		for (size_t i = 0; i != nodecount; i++)
+			schemdata[i].param1 >>= 1;
 	}
 
 	return true;
@@ -331,9 +348,11 @@ bool Schematic::serializeToLua(std::ostream *os,
 		ss << indent << "yslice_prob = {" << std::endl;
 
 		for (u16 y = 0; y != size.Y; y++) {
+			u8 probability = slice_probs[y] & MTSCHEM_PROB_MASK;
+
 			ss << indent << indent << "{"
 				<< "ypos=" << y
-				<< ", prob=" << (u16)slice_probs[y]
+				<< ", prob=" << (u16)probability * 2
 				<< "}," << std::endl;
 		}
 
@@ -355,11 +374,18 @@ bool Schematic::serializeToLua(std::ostream *os,
 			}
 
 			for (u16 x = 0; x != size.X; x++, i++) {
+				u8 probability   = schemdata[i].param1 & MTSCHEM_PROB_MASK;
+				bool force_place = schemdata[i].param1 & MTSCHEM_FORCE_PLACE;
+
 				ss << indent << indent << "{"
 					<< "name=\"" << names[schemdata[i].getContent()]
-					<< "\", param1=" << (u16)schemdata[i].param1
-					<< ", param2=" << (u16)schemdata[i].param2
-					<< "}," << std::endl;
+					<< "\", prob=" << (u16)probability * 2
+					<< ", param2=" << (u16)schemdata[i].param2;
+
+				if (force_place)
+					ss << ", force_place=true";
+
+				ss << "}," << std::endl;
 			}
 		}
 

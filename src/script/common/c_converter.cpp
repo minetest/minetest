@@ -332,6 +332,19 @@ bool getintfield(lua_State *L, int table,
 }
 
 bool getintfield(lua_State *L, int table,
+		const char *fieldname, u8 &result)
+{
+	lua_getfield(L, table, fieldname);
+	bool got = false;
+	if(lua_isnumber(L, -1)){
+		result = lua_tonumber(L, -1);
+		got = true;
+	}
+	lua_pop(L, 1);
+	return got;
+}
+
+bool getintfield(lua_State *L, int table,
 		const char *fieldname, u16 &result)
 {
 	lua_getfield(L, table, fieldname);

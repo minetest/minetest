@@ -782,29 +782,26 @@ Schematic specifier
 --------------------
 A schematic specifier identifies a schematic by either a filename to a
 Minetest Schematic file (`.mts`) or through raw data supplied through Lua,
-in the form of a table.  This table must specify two fields:
+in the form of a table.  This table specifies the following fields:
 
-* The `size` field is a 3D vector containing the dimensions of the provided schematic.
-* The `data` field is a flat table of MapNodes making up the schematic,
-  in the order of `[z [y [x]]]`.
+* The `size` field is a 3D vector containing the dimensions of the provided schematic. (required)
+* The `yslice_prob` field is a table of {ypos, prob} which sets the `ypos`th vertical slice
+  of the schematic to have a `prob / 256 * 100` chance of occuring. (default: 255)
+* The `data` field is a flat table of MapNode tables making up the schematic,
+  in the order of `[z [y [x]]]`. (required)
+  Each MapNode table contains:
+  * `name`: the name of the map node to place (required)
+  * `prob` (alias `param1`): the probability of this node being placed (default: 255)
+  * `param2`: the raw param2 value of the node being placed onto the map (default: 0)
+  * `force_place`: boolean representing if the node should forcibly overwrite any
+     previous contents (default: false)
 
-**Important**: The default value for `param1` in MapNodes here is `255`,
-which represents "always place".
-
-In the bulk `MapNode` data, `param1`, instead of the typical light values,
-instead represents the probability of that node appearing in the structure.
-
-When passed to `minetest.create_schematic`, probability is an integer value
-ranging from `0` to `255`:
-
-* A probability value of `0` means that node will never appear (0% chance).
-* A probability value of `255` means the node will always appear (100% chance).
-* If the probability value `p` is greater than `0`, then there is a
-  `(p / 256 * 100)`% chance that node will appear when the schematic is
+About probability values:
+* A probability value of `0` or `1` means that node will never appear (0% chance).
+* A probability value of `254` or `255` means the node will always appear (100% chance).
+* If the probability value `p` is greater than `1`, then there is a
+  `(p / 256 * 100)` percent chance that node will appear when the schematic is
   placed on the map.
-
-**Important note**: Node aliases cannot be used for a raw schematic provided
-  when registering as a decoration.
 
 
 Schematic attributes

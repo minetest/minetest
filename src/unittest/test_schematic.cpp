@@ -34,8 +34,9 @@ public:
 	void testLuaTableSerialize(INodeDefManager *ndef);
 	void testFileSerializeDeserialize(INodeDefManager *ndef);
 
-	static const content_t test_schem_data[7 * 6 * 4];
-	static const content_t test_schem_data2[3 * 3 * 3];
+	static const content_t test_schem1_data[7 * 6 * 4];
+	static const content_t test_schem2_data[3 * 3 * 3];
+	static const u8 test_schem2_prob[3 * 3 * 3];
 	static const char *expected_lua_output;
 };
 
@@ -78,7 +79,7 @@ void TestSchematic::testMtsSerializeDeserialize(INodeDefManager *ndef)
 	schem.schemdata   = new MapNode[volume];
 	schem.slice_probs = new u8[size.Y];
 	for (size_t i = 0; i != volume; i++)
-		schem.schemdata[i] = MapNode(test_schem_data[i], MTSCHEM_PROB_ALWAYS, 0);
+		schem.schemdata[i] = MapNode(test_schem1_data[i], MTSCHEM_PROB_ALWAYS, 0);
 	for (s16 y = 0; y != size.Y; y++)
 		schem.slice_probs[y] = MTSCHEM_PROB_ALWAYS;
 
@@ -115,7 +116,7 @@ void TestSchematic::testLuaTableSerialize(INodeDefManager *ndef)
 	schem.schemdata   = new MapNode[volume];
 	schem.slice_probs = new u8[size.Y];
 	for (size_t i = 0; i != volume; i++)
-		schem.schemdata[i] = MapNode(test_schem_data2[i], MTSCHEM_PROB_ALWAYS, 0);
+		schem.schemdata[i] = MapNode(test_schem2_data[i], test_schem2_prob[i], 0);
 	for (s16 y = 0; y != size.Y; y++)
 		schem.slice_probs[y] = MTSCHEM_PROB_ALWAYS;
 
@@ -160,8 +161,8 @@ void TestSchematic::testFileSerializeDeserialize(INodeDefManager *ndef)
 	schem1.slice_probs[2] = 240;
 
 	for (size_t i = 0; i != volume; i++) {
-		content_t c = content_map[test_schem_data2[i]];
-		schem1.schemdata[i] = MapNode(c, MTSCHEM_PROB_ALWAYS, 0);
+		content_t c = content_map[test_schem2_data[i]];
+		schem1.schemdata[i] = MapNode(c, test_schem2_prob[i], 0);
 	}
 
 	std::string temp_file = getTestTempFile();
@@ -174,14 +175,14 @@ void TestSchematic::testFileSerializeDeserialize(INodeDefManager *ndef)
 	UASSERT(schem2.slice_probs[2] == 240);
 
 	for (size_t i = 0; i != volume; i++) {
-		content_t c = content_map2[test_schem_data2[i]];
-		UASSERT(schem2.schemdata[i] == MapNode(c, MTSCHEM_PROB_ALWAYS, 0));
+		content_t c = content_map2[test_schem2_data[i]];
+		UASSERT(schem2.schemdata[i] == MapNode(c, test_schem2_prob[i], 0));
 	}
 }
 
 
 // Should form a cross-shaped-thing...?
-const content_t TestSchematic::test_schem_data[7 * 6 * 4] = {
+const content_t TestSchematic::test_schem1_data[7 * 6 * 4] = {
 	3, 3, 1, 1, 1, 3, 3, // Y=0, Z=0
 	3, 0, 1, 2, 1, 0, 3, // Y=1, Z=0
 	3, 0, 1, 2, 1, 0, 3, // Y=2, Z=0
@@ -211,7 +212,7 @@ const content_t TestSchematic::test_schem_data[7 * 6 * 4] = {
 	3, 1, 1, 2, 1, 1, 3, // Y=5, Z=3
 };
 
-const content_t TestSchematic::test_schem_data2[3 * 3 * 3] = {
+const content_t TestSchematic::test_schem2_data[3 * 3 * 3] = {
 	0, 0, 0,
 	0, 2, 0,
 	0, 0, 0,
@@ -225,41 +226,55 @@ const content_t TestSchematic::test_schem_data2[3 * 3 * 3] = {
 	0, 0, 0,
 };
 
+const u8 TestSchematic::test_schem2_prob[3 * 3 * 3] = {
+	0x00, 0x00, 0x00,
+	0x00, 0xFF, 0x00,
+	0x00, 0x00, 0x00,
+
+	0x00, 0xFF, 0x00,
+	0xFF, 0xFF, 0xFF,
+	0x00, 0xFF, 0x00,
+
+	0x00, 0x00, 0x00,
+	0x00, 0xFF, 0x00,
+	0x00, 0x00, 0x00,
+};
+
 const char *TestSchematic::expected_lua_output =
 	"schematic = {\n"
 	"\tsize = {x=3, y=3, z=3},\n"
 	"\tyslice_prob = {\n"
-	"\t\t{ypos=0, prob=255},\n"
-	"\t\t{ypos=1, prob=255},\n"
-	"\t\t{ypos=2, prob=255},\n"
+	"\t\t{ypos=0, prob=254},\n"
+	"\t\t{ypos=1, prob=254},\n"
+	"\t\t{ypos=2, prob=254},\n"
 	"\t},\n"
 	"\tdata = {\n"
-	"\t\t{name=\"air\", param1=255, param2=0},\n"
-	"\t\t{name=\"air\", param1=255, param2=0},\n"
-	"\t\t{name=\"air\", param1=255, param2=0},\n"
-	"\t\t{name=\"air\", param1=255, param2=0},\n"
-	"\t\t{name=\"default:glass\", param1=255, param2=0},\n"
-	"\t\t{name=\"air\", param1=255, param2=0},\n"
-	"\t\t{name=\"air\", param1=255, param2=0},\n"
-	"\t\t{name=\"air\", param1=255, param2=0},\n"
-	"\t\t{name=\"air\", param1=255, param2=0},\n"
-	"\t\t{name=\"air\", param1=255, param2=0},\n"
-	"\t\t{name=\"default:glass\", param1=255, param2=0},\n"
-	"\t\t{name=\"air\", param1=255, param2=0},\n"
-	"\t\t{name=\"default:glass\", param1=255, param2=0},\n"
-	"\t\t{name=\"default:lava_source\", param1=255, param2=0},\n"
-	"\t\t{name=\"default:glass\", param1=255, param2=0},\n"
-	"\t\t{name=\"air\", param1=255, param2=0},\n"
-	"\t\t{name=\"default:glass\", param1=255, param2=0},\n"
-	"\t\t{name=\"air\", param1=255, param2=0},\n"
-	"\t\t{name=\"air\", param1=255, param2=0},\n"
-	"\t\t{name=\"air\", param1=255, param2=0},\n"
-	"\t\t{name=\"air\", param1=255, param2=0},\n"
-	"\t\t{name=\"air\", param1=255, param2=0},\n"
-	"\t\t{name=\"default:glass\", param1=255, param2=0},\n"
-	"\t\t{name=\"air\", param1=255, param2=0},\n"
-	"\t\t{name=\"air\", param1=255, param2=0},\n"
-	"\t\t{name=\"air\", param1=255, param2=0},\n"
-	"\t\t{name=\"air\", param1=255, param2=0},\n"
+	"\t\t{name=\"air\", prob=0, param2=0},\n"
+	"\t\t{name=\"air\", prob=0, param2=0},\n"
+	"\t\t{name=\"air\", prob=0, param2=0},\n"
+	"\t\t{name=\"air\", prob=0, param2=0},\n"
+	"\t\t{name=\"default:glass\", prob=254, param2=0, force_place=true},\n"
+	"\t\t{name=\"air\", prob=0, param2=0},\n"
+	"\t\t{name=\"air\", prob=0, param2=0},\n"
+	"\t\t{name=\"air\", prob=0, param2=0},\n"
+	"\t\t{name=\"air\", prob=0, param2=0},\n"
+	"\t\t{name=\"air\", prob=0, param2=0},\n"
+	"\t\t{name=\"default:glass\", prob=254, param2=0, force_place=true},\n"
+	"\t\t{name=\"air\", prob=0, param2=0},\n"
+	"\t\t{name=\"default:glass\", prob=254, param2=0, force_place=true},\n"
+	"\t\t{name=\"default:lava_source\", prob=254, param2=0, force_place=true},\n"
+	"\t\t{name=\"default:glass\", prob=254, param2=0, force_place=true},\n"
+	"\t\t{name=\"air\", prob=0, param2=0},\n"
+	"\t\t{name=\"default:glass\", prob=254, param2=0, force_place=true},\n"
+	"\t\t{name=\"air\", prob=0, param2=0},\n"
+	"\t\t{name=\"air\", prob=0, param2=0},\n"
+	"\t\t{name=\"air\", prob=0, param2=0},\n"
+	"\t\t{name=\"air\", prob=0, param2=0},\n"
+	"\t\t{name=\"air\", prob=0, param2=0},\n"
+	"\t\t{name=\"default:glass\", prob=254, param2=0, force_place=true},\n"
+	"\t\t{name=\"air\", prob=0, param2=0},\n"
+	"\t\t{name=\"air\", prob=0, param2=0},\n"
+	"\t\t{name=\"air\", prob=0, param2=0},\n"
+	"\t\t{name=\"air\", prob=0, param2=0},\n"
 	"\t},\n"
 	"}\n";

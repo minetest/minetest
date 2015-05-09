@@ -36,7 +36,7 @@ class IGameDef;
 
 	All values are stored in big-endian byte order.
 	[u32] signature: 'MTSM'
-	[u16] version: 3
+	[u16] version: 4
 	[u16] size X
 	[u16] size Y
 	[u16] size Z
@@ -51,7 +51,9 @@ class IGameDef;
 	For each node in schematic:  (for z, y, x)
 		[u16] content
 	For each node in schematic:
-		[u8] probability of occurance (param1)
+		[u8] param1
+		  bit 0-6: probability
+		  bit 7:   specific node force placement
 	For each node in schematic:
 		[u8] param2
 	}
@@ -60,17 +62,21 @@ class IGameDef;
 	1 - Initial version
 	2 - Fixed messy never/always place; 0 probability is now never, 0xFF is always
 	3 - Added y-slice probabilities; this allows for variable height structures
+	4 - Compressed range of node occurence prob., added per-node force placement bit
 */
 
-/////////////////// Schematic flags
-#define SCHEM_CIDS_UPDATED 0x08
-
+//// Schematic constants
 #define MTSCHEM_FILE_SIGNATURE 0x4d54534d // 'MTSM'
-#define MTSCHEM_FILE_VER_HIGHEST_READ  3
-#define MTSCHEM_FILE_VER_HIGHEST_WRITE 3
+#define MTSCHEM_FILE_VER_HIGHEST_READ  4
+#define MTSCHEM_FILE_VER_HIGHEST_WRITE 4
 
-#define MTSCHEM_PROB_NEVER  0x00
-#define MTSCHEM_PROB_ALWAYS 0xFF
+#define MTSCHEM_PROB_MASK       0x7F
+
+#define MTSCHEM_PROB_NEVER      0x00
+#define MTSCHEM_PROB_ALWAYS     0x7F
+#define MTSCHEM_PROB_ALWAYS_OLD 0xFF
+
+#define MTSCHEM_FORCE_PLACE     0x80
 
 enum SchematicType
 {

@@ -237,36 +237,32 @@ bool read_schematic_def(lua_State *L, int index,
 	lua_getfield(L, index, "data");
 	luaL_checktype(L, -1, LUA_TTABLE);
 
-	int numnodes = size.X * size.Y * size.Z;
+	u32 numnodes = size.X * size.Y * size.Z;
 	schem->schemdata = new MapNode[numnodes];
-	int i = 0;
 
 	size_t names_base = names->size();
 	std::map<std::string, content_t> name_id_map;
 
-	lua_pushnil(L);
-	while (lua_next(L, -2)) {
-		if (i >= numnodes) {
-			i++;
-			lua_pop(L, 1);
+	u32 i = 0;
+	for (lua_pushnil(L); lua_next(L, -2); i++, lua_pop(L, 1)) {
+		if (i >= numnodes)
 			continue;
-		}
 
-		// same as readnode, except param1 default is MTSCHEM_PROB_CONST
-		lua_getfield(L, -1, "name");
-		std::string name = luaL_checkstring(L, -1);
-		lua_pop(L, 1);
+		//// Read name
+		std::string name;
+		if (!getstringfield(L, -1, "name", name))
+			throw LuaError("Schematic data definition with missing name field");
 
+		//// Read param1/prob
 		u8 param1;
-		lua_getfield(L, -1, "param1");
-		param1 = !lua_isnil(L, -1) ? lua_tonumber(L, -1) : MTSCHEM_PROB_ALWAYS;
-		lua_pop(L, 1);
+		if (!getintfield(L, -1, "param1", param1) &&
+			!getintfield(L, -1, "prob", param1))
+			param1 = MTSCHEM_PROB_ALWAYS_OLD;
 
-		u8 param2;
-		lua_getfield(L, -1, "param2");
-		param2 = !lua_isnil(L, -1) ? lua_tonumber(L, -1) : 0;
-		lua_pop(L, 1);
+		//// Read param2
+		u8 param2 = getintfield_default(L, -1, "param2", 0);
 
+		//// Find or add new nodename-to-ID mapping
 		std::map<std::string, content_t>::iterator it = name_id_map.find(name);
 		content_t name_index;
 		if (it != name_id_map.end()) {
@@ -277,10 +273,13 @@ bool read_schematic_def(lua_State *L, int index,
 			names->push_back(name);
 		}
 
-		schem->schemdata[i] = MapNode(name_index, param1, param2);
+		//// Perform probability/force_place fixup on param1
+		param1 >>= 1;
+		if (getboolfield_default(L, -1, "force_place", false))
+			param1 |= MTSCHEM_FORCE_PLACE;
 
-		i++;
-		lua_pop(L, 1);
+		//// Actually set the node in the schematic
+		schem->schemdata[i] = MapNode(name_index, param1, param2);
 	}
 
 	if (i != numnodes) {
@@ -297,13 +296,13 @@ bool read_schematic_def(lua_State *L, int index,
 
 	lua_getfield(L, index, "yslice_prob");
 	if (lua_istable(L, -1)) {
-		lua_pushnil(L);
-		while (lua_next(L, -2)) {
-			if (getintfield(L, -1, "ypos", i) && i >= 0 && i < size.Y) {
-				schem->slice_probs[i] = getintfield_default(L, -1,
-					"prob", MTSCHEM_PROB_ALWAYS);
-			}
-			lua_pop(L, 1);
+		for (lua_pushnil(L); lua_next(L, -2); lua_pop(L, 1)) {
+			u16 ypos;
+			if (!getintfield(L, -1, "ypos", ypos) || (ypos >= size.Y) ||
+				!getintfield(L, -1, "prob", schem->slice_probs[ypos]))
+				continue;
+
+			schem->slice_probs[ypos] >>= 1;
 		}
 	}
 
