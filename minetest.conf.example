@@ -116,7 +116,7 @@
 #    Disable for speed or for different looks.
 #smooth_lighting = true
 #    Adjust the gamma encoding for the light tables. Valid values are in the range
-#    1.1 to 3.0 (inclusive); lower numbers are brighter.  This setting is for the
+#    1.0 to 3.0 (inclusive); lower numbers are brighter.  This setting is for the
 #    client only and is ignored by the server
 #display_gamma = 1.8
 # Path to texture directory. All textures are first searched from here.

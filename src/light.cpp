@@ -88,7 +88,7 @@ void set_light_table(float gamma)
 		0
 	};
 
-	gamma = rangelim(gamma, 1.1, 3.0);
+	gamma = rangelim(gamma, 1.0, 3.0);
 
 	float brightness = brightness_step;
 
