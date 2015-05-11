@@ -60,6 +60,8 @@ src/cguittfont/CMakeFiles/
 src/cguittfont/libcguittfont.a
 src/cguittfont/cmake_install.cmake
 src/cguittfont/Makefile
+src/gmp/CMakeFiles/
+src/gmp/libgmp.a
 src/json/CMakeFiles/
 src/json/libjsoncpp.a
 src/sqlite/CMakeFiles/*

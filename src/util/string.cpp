@@ -22,12 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "numeric.h"
 #include "log.h"
 
-#include "sha1.h"
-#include "base64.h"
 #include "hex.h"
 #include "../porting.h"
 
-#include <algorithm>
 #include <sstream>
 #include <iomanip>
 #include <map>
@@ -175,26 +172,6 @@ std::string wide_to_narrow(const std::wstring &wcs)
 }
 
 #endif
-
-// Get an sha-1 hash of the player's name combined with
-// the password entered. That's what the server uses as
-// their password. (Exception : if the password field is
-// blank, we send a blank password - this is for backwards
-// compatibility with password-less players).
-std::string translatePassword(const std::string &playername,
-	const std::string &password)
-{
-	if (password.length() == 0)
-		return "";
-
-	std::string slt = playername + password;
-	SHA1 sha1;
-	sha1.addBytes(slt.c_str(), slt.length());
-	unsigned char *digest = sha1.getDigest();
-	std::string pwd = base64_encode(digest, 20);
-	free(digest);
-	return pwd;
-}
 
 std::string urlencode(std::string str)
 {

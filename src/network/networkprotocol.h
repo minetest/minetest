@@ -120,11 +120,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			permit translation
 		Add TOCLIENT_DELETE_PARTICLESPAWNER (0x53), fixing the u16 read and
 			reading u32
-		Add TOSERVER_INIT new opcode (0x02) for client presentation to server
-		Add TOSERVER_AUTH new opcode (0x03) for client authentication
+		Add new opcode TOSERVER_INIT for client presentation to server
+		Add new opcodes TOSERVER_FIRST_SRP, TOSERVER_SRP_BYTES_A,
+			TOSERVER_SRP_BYTES_M, TOCLIENT_SRP_BYTES_S_B
+			for the three supported auth mechanisms around srp
+		Add new opcodes TOCLIENT_ACCEPT_SUDO_MODE and TOCLIENT_DENY_SUDO_MODE
+			for sudo mode handling (auth mech generic way of changing password).
 		Add TOCLIENT_HELLO for presenting server to client after client
 			presentation
-		Add TOCLIENT_AUTH_ACCEPT to accept connexion from client
+		Add TOCLIENT_AUTH_ACCEPT to accept connection from client
 */
 
 #define LATEST_PROTOCOL_VERSION 24
@@ -151,14 +155,31 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 enum ToClientCommand
 {
 	TOCLIENT_HELLO = 0x02,
-	TOCLIENT_AUTH_ACCEPT = 0x03,
-	TOCLIENT_ACCESS_DENIED = 0x0A,
 	/*
-		u16 command
-		u16 reason_length
-		wstring reason
-	*/
+		Sent after TOSERVER_INIT.
 
+		u8 deployed version
+		u32 supported auth methods
+		std::string username that should be used for legacy hash (for proper casing)
+	*/
+	TOCLIENT_AUTH_ACCEPT = 0x03,
+	/*
+		Message from server to accept auth.
+
+		v3s16 player's position + v3f(0,BS/2,0) floatToInt'd
+		u64 map seed
+		f1000 recommended send interval
+		u32 : supported auth methods for sudo mode
+		      (where the user can change their password)
+	*/
+	TOCLIENT_ACCEPT_SUDO_MODE = 0x04,
+	/*
+		Sent to client to show it is in sudo mode now.
+	*/
+	TOCLIENT_DENY_SUDO_MODE = 0x05,
+	/*
+		Signals client that sudo mode auth failed.
+	*/
 	TOCLIENT_INIT_LEGACY = 0x10,
 	/*
 		Server's reply to TOSERVER_INIT.
@@ -173,7 +194,11 @@ enum ToClientCommand
 		NOTE: The position in here is deprecated; position is
 		      explicitly sent afterwards
 	*/
-
+	TOCLIENT_ACCESS_DENIED = 0x0A,
+	/*
+		u8 reason
+		std::string custom reason (if reason == SERVER_ACCESSDENIED_CUSTOM_STRING)
+	*/
 	TOCLIENT_BLOCKDATA = 0x20, //TODO: Multiple blocks
 	TOCLIENT_ADDNODE = 0x21,
 	/*
@@ -589,7 +614,16 @@ enum ToClientCommand
 		u32 id
 	*/
 
-	TOCLIENT_NUM_MSG_TYPES = 0x54,
+	TOCLIENT_SRP_BYTES_S_B = 0x60,
+	/*
+		Belonging to AUTH_MECHANISM_LEGACY_PASSWORD and AUTH_MECHANISM_SRP.
+
+		u16 command
+		std::string bytes_s
+		std::string bytes_B
+	*/
+
+	TOCLIENT_NUM_MSG_TYPES = 0x61,
 };
 
 enum ToServerCommand
@@ -598,18 +632,11 @@ enum ToServerCommand
 	/*
 		Sent first after connected.
 
-		[0] u16 TOSERVER_INIT
 		[2] u8 SER_FMT_VER_HIGHEST_READ
 		[3] u8 compression_modes
-	*/
-
-	TOSERVER_AUTH = 0x03,
-	/*
-		Sent first after presentation (INIT).
-		[0] std::string player_name
-		[0+*] std::string password (new in some version)
-		[0+*+*] u16 minimum supported network protocol version (added sometime)
-		[0+*+*+2] u16 maximum supported network protocol version (added later than the previous one)
+		[4] u16 minimum supported network protocol version
+		[6] u16 maximum supported network protocol version
+		[8] std::string player name
 	*/
 
 	TOSERVER_INIT_LEGACY = 0x10,
@@ -817,15 +844,6 @@ enum ToServerCommand
 			u8[len] field value
 	*/
 
-	TOSERVER_PASSWORD = 0x3d,
-	/*
-		Sent to change password.
-
-		[0] u16 TOSERVER_PASSWORD
-		[2] std::string old password
-		[2+*] std::string new password
-	*/
-
 	TOSERVER_REQUEST_MEDIA = 0x40,
 	/*
 		u16 command
@@ -857,7 +875,49 @@ enum ToServerCommand
 		u8[len] full_version_string
 	*/
 
-	TOSERVER_NUM_MSG_TYPES = 0x44,
+	TOSERVER_FIRST_SRP = 0x50,
+	/*
+		Belonging to AUTH_MECHANISM_FIRST_SRP.
+
+		std::string srp salt
+		std::string srp verification key
+		u8 is_empty (=1 if password is empty, 0 otherwise)
+	*/
+
+	TOSERVER_SRP_BYTES_A = 0x51,
+	/*
+		Belonging to AUTH_MECHANISM_LEGACY_PASSWORD and AUTH_MECHANISM_SRP,
+			depending on current_login_based_on.
+
+		std::string bytes_A
+		u8 current_login_based_on : on which version of the password's
+		                            hash this login is based on (0 legacy hash,
+		                            or 1 directly the password)
+	*/
+
+	TOSERVER_SRP_BYTES_M = 0x52,
+	/*
+		Belonging to AUTH_MECHANISM_LEGACY_PASSWORD and AUTH_MECHANISM_SRP.
+
+		std::string bytes_M
+	*/
+
+	TOSERVER_NUM_MSG_TYPES = 0x53,
+};
+
+enum AuthMechanism
+{
+	// reserved
+	AUTH_MECHANISM_NONE = 0,
+
+	// SRP based on the legacy hash
+	AUTH_MECHANISM_LEGACY_PASSWORD = 1 << 0,
+
+	// SRP based on the srp verification key
+	AUTH_MECHANISM_SRP = 1 << 1,
+
+	// Establishes a srp verification key, for first login and password changing
+	AUTH_MECHANISM_FIRST_SRP = 1 << 2,
 };
 
 enum AccessDeniedCode {

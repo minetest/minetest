@@ -43,8 +43,7 @@ wchar_t *narrow_to_wide_c(const char *str);
 
 std::wstring narrow_to_wide(const std::string &mbs);
 std::string wide_to_narrow(const std::wstring &wcs);
-std::string translatePassword(const std::string &playername,
-	const std::string &password);
+
 std::string urlencode(std::string str);
 std::string urldecode(std::string str);
 u32 readFlagString(std::string str, const FlagDesc *flagdesc, u32 *flagmask);

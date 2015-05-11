@@ -20,6 +20,7 @@
 #cmakedefine01 USE_FREETYPE
 #cmakedefine01 USE_LEVELDB
 #cmakedefine01 USE_LUAJIT
+#cmakedefine01 USE_SYSTEM_GMP
 #cmakedefine01 USE_REDIS
 #cmakedefine01 HAVE_ENDIAN_H
 

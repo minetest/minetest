@@ -28,8 +28,8 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	null_command_handler, // 0x01
 	{ "TOCLIENT_HELLO",                   TOCLIENT_STATE_NOT_CONNECTED, &Client::handleCommand_Hello }, // 0x02
 	{ "TOCLIENT_AUTH_ACCEPT",             TOCLIENT_STATE_NOT_CONNECTED, &Client::handleCommand_AuthAccept }, // 0x03
-	null_command_handler, // 0x04
-	null_command_handler, // 0x05
+	{ "TOCLIENT_ACCEPT_SUDO_MODE",        TOCLIENT_STATE_CONNECTED, &Client::handleCommand_AcceptSudoMode}, // 0x04
+	{ "TOCLIENT_DENY_SUDO_MODE",          TOCLIENT_STATE_CONNECTED, &Client::handleCommand_DenySudoMode}, // 0x05
 	null_command_handler, // 0x06
 	null_command_handler, // 0x07
 	null_command_handler, // 0x08
@@ -108,6 +108,19 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_LOCAL_PLAYER_ANIMATIONS",  TOCLIENT_STATE_CONNECTED, &Client::handleCommand_LocalPlayerAnimations }, // 0x51
 	{ "TOCLIENT_EYE_OFFSET",               TOCLIENT_STATE_CONNECTED, &Client::handleCommand_EyeOffset }, // 0x52
 	{ "TOCLIENT_DELETE_PARTICLESPAWNER",   TOCLIENT_STATE_CONNECTED, &Client::handleCommand_DeleteParticleSpawner }, // 0x53
+	null_command_handler,
+	null_command_handler,
+	null_command_handler,
+	null_command_handler,
+	null_command_handler,
+	null_command_handler,
+	null_command_handler,
+	null_command_handler,
+	null_command_handler,
+	null_command_handler,
+	null_command_handler,
+	null_command_handler,
+	{ "TOCLIENT_SRP_BYTES_S_B",            TOCLIENT_STATE_NOT_CONNECTED, &Client::handleCommand_SrpBytesSandB }, // 0x60
 };
 
 const static ServerCommandFactory null_command_factory = { "TOSERVER_NULL", 0, false };
@@ -116,7 +129,7 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 {
 	null_command_factory, // 0x00
 	null_command_factory, // 0x01
-	null_command_factory, // 0x02
+	{ "TOSERVER_INIT",               1, false }, // 0x02
 	null_command_factory, // 0x03
 	null_command_factory, // 0x04
 	null_command_factory, // 0x05
@@ -129,7 +142,7 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_factory, // 0x0c
 	null_command_factory, // 0x0d
 	null_command_factory, // 0x0e
-	{ "TOSERVER_INIT",               1, false }, // 0x0F
+	null_command_factory, // 0x0F
 	{ "TOSERVER_INIT_LEGACY",        1, false }, // 0x10
 	{ "TOSERVER_INIT2",              1, true }, // 0x11
 	null_command_factory, // 0x12
@@ -175,11 +188,26 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	{ "TOSERVER_REMOVED_SOUNDS",     1, true }, // 0x3a
 	{ "TOSERVER_NODEMETA_FIELDS",    0, true }, // 0x3b
 	{ "TOSERVER_INVENTORY_FIELDS",   0, true }, // 0x3c
-	{ "TOSERVER_PASSWORD",           0, true }, // 0x3d
+	null_command_factory, // 0x3d
 	null_command_factory, // 0x3e
 	null_command_factory, // 0x3f
 	{ "TOSERVER_REQUEST_MEDIA",      1, true }, // 0x40
 	{ "TOSERVER_RECEIVED_MEDIA",     1, true }, // 0x41
 	{ "TOSERVER_BREATH",             0, true }, // 0x42
 	{ "TOSERVER_CLIENT_READY",       0, true }, // 0x43
+	null_command_factory, // 0x44
+	null_command_factory, // 0x45
+	null_command_factory, // 0x46
+	null_command_factory, // 0x47
+	null_command_factory, // 0x48
+	null_command_factory, // 0x49
+	null_command_factory, // 0x4a
+	null_command_factory, // 0x4b
+	null_command_factory, // 0x4c
+	null_command_factory, // 0x4d
+	null_command_factory, // 0x4e
+	null_command_factory, // 0x4f
+	{ "TOSERVER_FIRST_SRP",          1, true }, // 0x50
+	{ "TOSERVER_SRP_BYTES_A",        1, true }, // 0x51
+	{ "TOSERVER_SRP_BYTES_M",        1, true }, // 0x52
 };
