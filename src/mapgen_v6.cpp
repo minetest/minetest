@@ -89,30 +89,25 @@ MapgenV6::MapgenV6(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	c_water_source    = ndef->getId("mapgen_water_source");
 	c_lava_source     = ndef->getId("mapgen_lava_source");
 	c_gravel          = ndef->getId("mapgen_gravel");
-	c_cobble          = ndef->getId("mapgen_cobble");
-	c_desert_sand     = ndef->getId("mapgen_desert_sand");
 	c_desert_stone    = ndef->getId("mapgen_desert_stone");
+	c_desert_sand     = ndef->getId("mapgen_desert_sand");
 	c_dirt_with_snow  = ndef->getId("mapgen_dirt_with_snow");
 	c_snow            = ndef->getId("mapgen_snow");
 	c_snowblock       = ndef->getId("mapgen_snowblock");
 	c_ice             = ndef->getId("mapgen_ice");
 
-	c_mossycobble     = ndef->getId("mapgen_mossycobble");
-	c_sandbrick       = ndef->getId("mapgen_sandstonebrick");
+	c_cobble          = ndef->getId("mapgen_cobble");
 	c_stair_cobble    = ndef->getId("mapgen_stair_cobble");
-	c_stair_sandstone = ndef->getId("mapgen_stair_sandstone");
+	c_mossycobble     = ndef->getId("mapgen_mossycobble");
+
 	if (c_desert_sand == CONTENT_IGNORE)
 		c_desert_sand = c_sand;
 	if (c_desert_stone == CONTENT_IGNORE)
 		c_desert_stone = c_stone;
 	if (c_mossycobble == CONTENT_IGNORE)
 		c_mossycobble = c_cobble;
-	if (c_sandbrick == CONTENT_IGNORE)
-		c_sandbrick = c_desert_stone;
 	if (c_stair_cobble == CONTENT_IGNORE)
 		c_stair_cobble = c_cobble;
-	if (c_stair_sandstone == CONTENT_IGNORE)
-		c_stair_sandstone = c_sandbrick;
 }
 
 
@@ -543,27 +538,27 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 		dp.np_rarity  = nparams_dungeon_rarity;
 		dp.np_density = nparams_dungeon_density;
 		dp.np_wetness = nparams_dungeon_wetness;
-		dp.c_water = c_water_source;
+		dp.c_water    = c_water_source;
 		if (getBiome(0, v2s16(node_min.X, node_min.Z)) == BT_DESERT) {
-			dp.c_cobble  = c_sandbrick;
-			dp.c_moss    = c_sandbrick; // should make this 'cracked sandstone' later
-			dp.c_stair   = c_stair_sandstone;
+			dp.c_cobble = c_desert_stone;
+			dp.c_moss   = c_desert_stone;
+			dp.c_stair  = c_desert_stone;
 
 			dp.diagonal_dirs = true;
-			dp.mossratio  = 0.0;
-			dp.holesize   = v3s16(2, 3, 2);
-			dp.roomsize   = v3s16(2, 5, 2);
-			dp.notifytype = GENNOTIFY_TEMPLE;
+			dp.mossratio     = 0.0;
+			dp.holesize      = v3s16(2, 3, 2);
+			dp.roomsize      = v3s16(2, 5, 2);
+			dp.notifytype    = GENNOTIFY_TEMPLE;
 		} else {
-			dp.c_cobble  = c_cobble;
-			dp.c_moss    = c_mossycobble;
-			dp.c_stair   = c_stair_cobble;
+			dp.c_cobble = c_cobble;
+			dp.c_moss   = c_mossycobble;
+			dp.c_stair  = c_stair_cobble;
 
 			dp.diagonal_dirs = false;
-			dp.mossratio  = 3.0;
-			dp.holesize   = v3s16(1, 2, 1);
-			dp.roomsize   = v3s16(0, 0, 0);
-			dp.notifytype = GENNOTIFY_DUNGEON;
+			dp.mossratio     = 3.0;
+			dp.holesize      = v3s16(1, 2, 1);
+			dp.roomsize      = v3s16(0, 0, 0);
+			dp.notifytype    = GENNOTIFY_DUNGEON;
 		}
 
 		DungeonGen dgen(this, &dp);
