@@ -70,6 +70,13 @@ enum GenNotifyType {
 	NUM_GENNOTIFY_TYPES
 };
 
+// TODO(hmmmm/paramat): make stone type selection dynamic
+enum MgStoneType {
+	STONE,
+	DESERT_STONE,
+	SANDSTONE,
+};
+
 struct GenNotifyEvent {
 	GenNotifyType type;
 	v3s16 pos;

@@ -84,6 +84,7 @@ MapgenV5::MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	c_lava_source          = ndef->getId("mapgen_lava_source");
 	c_desert_stone         = ndef->getId("mapgen_desert_stone");
 	c_ice                  = ndef->getId("mapgen_ice");
+	c_sandstone            = ndef->getId("mapgen_sandstone");
 
 	c_cobble               = ndef->getId("mapgen_cobble");
 	c_stair_cobble         = ndef->getId("mapgen_stair_cobble");
@@ -98,9 +99,9 @@ MapgenV5::MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	if (c_stair_cobble == CONTENT_IGNORE)
 		c_stair_cobble = c_cobble;
 	if (c_sandstonebrick == CONTENT_IGNORE)
-		c_sandstonebrick = c_desert_stone;
+		c_sandstonebrick = c_sandstone;
 	if (c_stair_sandstonebrick == CONTENT_IGNORE)
-		c_stair_sandstonebrick = c_sandstonebrick;
+		c_stair_sandstonebrick = c_sandstone;
 }
 
 
@@ -236,7 +237,7 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 		noise_humidity->result, heightmap, biomemap);
 
 	// Actually place the biome-specific nodes
-	bool desert_stone = generateBiomes(noise_heat->result, noise_humidity->result);
+	MgStoneType stone_type = generateBiomes(noise_heat->result, noise_humidity->result);
 
 	// Generate caves
 	if ((flags & MG_CAVES) && (stone_surface_max_y >= node_min.Y))
@@ -250,7 +251,17 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 		dp.np_density = nparams_dungeon_density;
 		dp.np_wetness = nparams_dungeon_wetness;
 		dp.c_water    = c_water_source;
-		if (desert_stone) {
+		if (stone_type == STONE) {
+			dp.c_cobble = c_cobble;
+			dp.c_moss   = c_mossycobble;
+			dp.c_stair  = c_stair_cobble;
+
+			dp.diagonal_dirs = false;
+			dp.mossratio     = 3.0;
+			dp.holesize      = v3s16(1, 2, 1);
+			dp.roomsize      = v3s16(0, 0, 0);
+			dp.notifytype    = GENNOTIFY_DUNGEON;
+		} else if (stone_type == DESERT_STONE) {
 			dp.c_cobble = c_desert_stone;
 			dp.c_moss   = c_desert_stone;
 			dp.c_stair  = c_desert_stone;
@@ -260,15 +271,15 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 			dp.holesize      = v3s16(2, 3, 2);
 			dp.roomsize      = v3s16(2, 5, 2);
 			dp.notifytype    = GENNOTIFY_TEMPLE;
-		} else {
-			dp.c_cobble = c_cobble;
-			dp.c_moss   = c_mossycobble;
-			dp.c_stair  = c_stair_cobble;
+		} else if (stone_type == SANDSTONE) {
+			dp.c_cobble = c_sandstonebrick;
+			dp.c_moss   = c_sandstonebrick;
+			dp.c_stair  = c_sandstonebrick;
 
 			dp.diagonal_dirs = false;
-			dp.mossratio     = 3.0;
-			dp.holesize      = v3s16(1, 2, 1);
-			dp.roomsize      = v3s16(0, 0, 0);
+			dp.mossratio     = 0.0;
+			dp.holesize      = v3s16(2, 2, 2);
+			dp.roomsize      = v3s16(2, 0, 2);
 			dp.notifytype    = GENNOTIFY_DUNGEON;
 		}
 
@@ -383,14 +394,14 @@ int MapgenV5::generateBaseTerrain()
 }
 
 
-bool MapgenV5::generateBiomes(float *heat_map, float *humidity_map)
+MgStoneType MapgenV5::generateBiomes(float *heat_map, float *humidity_map)
 {
 	if (node_max.Y < water_level)
-		return false;
+		return STONE;
 
 	v3s16 em = vm->m_area.getExtent();
 	u32 index = 0;
-	bool desert_stone = false;
+	MgStoneType stone_type = STONE;
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
@@ -418,7 +429,9 @@ bool MapgenV5::generateBiomes(float *heat_map, float *humidity_map)
 				depth_water_top = biome->depth_water_top;
 
 				if (biome->c_stone == c_desert_stone)
-					desert_stone = true;
+					stone_type = DESERT_STONE;
+				else if (biome->c_stone == c_sandstone)
+					stone_type = SANDSTONE;
 			}
 
 			if (c == c_stone && have_air) {
@@ -464,7 +477,7 @@ bool MapgenV5::generateBiomes(float *heat_map, float *humidity_map)
 		}
 	}
 
-	return desert_stone;
+	return stone_type;
 }
 
 
