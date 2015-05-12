@@ -2387,6 +2387,7 @@ This is basically a reference to a C++ `ServerActiveObject`
     * `position`: `{x=num, y=num, z=num}` (relative)
     * `rotation`: `{x=num, y=num, z=num}`
 * `set_properties(object property table)`
+* `is_player()`: returns true for players, false otherwise
 
 ##### LuaEntitySAO-only (no-op for other objects)
 * `setvelocity({x=num, y=num, z=num})`
@@ -2404,7 +2405,6 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_luaentity()`
 
 ##### Player-only (no-op for other objects)
-* `is_player()`: true for players, false for others
 * `get_player_name()`: returns `""` if is not a player
 * `get_look_dir()`: get camera direction as a unit vector
 * `get_look_pitch()`: pitch in radians

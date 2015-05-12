@@ -120,6 +120,9 @@ private:
 	// set_properties(self, properties)
 	static int l_set_properties(lua_State *L);
 
+	// is_player(self)
+	static int l_is_player(lua_State *L);
+
 	/* LuaEntitySAO-only */
 
 	// setvelocity(self, {x=num, y=num, z=num})
@@ -155,9 +158,6 @@ private:
 	static int l_get_luaentity(lua_State *L);
 
 	/* Player-only */
-
-	// is_player(self)
-	static int l_is_player(lua_State *L);
 
 	// is_player_connected(self)
 	static int l_is_player_connected(lua_State *L);

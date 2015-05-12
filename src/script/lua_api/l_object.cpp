@@ -557,6 +557,16 @@ int ObjectRef::l_set_properties(lua_State *L)
 	return 0;
 }
 
+// is_player(self)
+int ObjectRef::l_is_player(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	lua_pushboolean(L, (player != NULL));
+	return 1;
+}
+
 /* LuaEntitySAO-only */
 
 // setvelocity(self, {x=num, y=num, z=num})
@@ -704,16 +714,6 @@ int ObjectRef::l_get_luaentity(lua_State *L)
 }
 
 /* Player-only */
-
-// is_player(self)
-int ObjectRef::l_is_player(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
-	lua_pushboolean(L, (player != NULL));
-	return 1;
-}
 
 // is_player_connected(self)
 int ObjectRef::l_is_player_connected(lua_State *L)
