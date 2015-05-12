@@ -88,6 +88,7 @@ public:
 	content_t c_lava_source;
 	content_t c_desert_stone;
 	content_t c_ice;
+	content_t c_sandstone;
 
 	content_t c_cobble;
 	content_t c_stair_cobble;
@@ -114,7 +115,7 @@ public:
 	int generateMountainTerrain(int ymax);
 	void generateRidgeTerrain();
 
-	bool generateBiomes(float *heat_map, float *humidity_map);
+	MgStoneType generateBiomes(float *heat_map, float *humidity_map);
 	void dustTopNodes();
 
 	//void addTopNodes();
