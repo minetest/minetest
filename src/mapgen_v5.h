@@ -73,20 +73,16 @@ public:
 	Noise *noise_humidity;
 
 	content_t c_stone;
-	content_t c_dirt;
-	content_t c_dirt_with_grass;
-	content_t c_sand;
 	content_t c_water_source;
 	content_t c_lava_source;
-	content_t c_ice;
-	content_t c_gravel;
-	content_t c_cobble;
-	content_t c_desert_sand;
 	content_t c_desert_stone;
-	content_t c_mossycobble;
-	content_t c_sandbrick;
+	content_t c_ice;
+
+	content_t c_cobble;
 	content_t c_stair_cobble;
-	content_t c_stair_sandstone;
+	content_t c_mossycobble;
+	content_t c_sandstonebrick;
+	content_t c_stair_sandstonebrick;
 
 	MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	~MapgenV5();

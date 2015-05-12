@@ -111,18 +111,16 @@ public:
 	content_t c_water_source;
 	content_t c_lava_source;
 	content_t c_gravel;
-	content_t c_cobble;
-	content_t c_desert_sand;
 	content_t c_desert_stone;
+	content_t c_desert_sand;
 	content_t c_dirt_with_snow;
 	content_t c_snow;
 	content_t c_snowblock;
 	content_t c_ice;
 
+	content_t c_cobble;
 	content_t c_mossycobble;
-	content_t c_sandbrick;
 	content_t c_stair_cobble;
-	content_t c_stair_sandstone;
 
 	MapgenV6(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	~MapgenV6();
