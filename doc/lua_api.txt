@@ -2190,6 +2190,10 @@ These functions return the leftover itemstack.
     * Get rating of a group of an item. (`0` means: not in group)
 * `minetest.get_node_group(name, group)`: returns a rating
     * Deprecated: An alias for the former.
+* `minetest.raillike_group(name)`: returns a rating
+    * Returns rating of the connect_to_raillike group corresponding to name
+    * If name is not yet the name of a connect_to_raillike group, a new group id
+    * is created, with that name
 * `minetest.get_content_id(name)`: returns an integer
     * Gets the internal content ID of `name`
 * `minetest.get_name_from_content_id(content_id)`: returns a string
