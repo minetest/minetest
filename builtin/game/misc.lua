@@ -112,3 +112,14 @@ function core.record_protection_violation(pos, name)
 	end
 end
 
+local raillike_ids = {}
+local raillike_cur_id = 0
+function core.raillike_group(name)
+	local id = raillike_ids[name]
+	if not id then
+		raillike_cur_id = raillike_cur_id + 1
+		raillike_ids[name] = raillike_cur_id
+		id = raillike_cur_id
+	end
+	return id
+end
