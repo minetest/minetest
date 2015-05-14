@@ -155,7 +155,17 @@ core.register_entity(":__builtin:item", {
 		end
 		local p = self.object:getpos()
 		p.y = p.y - 0.5
-		local nn = core.get_node(p).name
+		local node = core.get_node_or_nil(p)
+		local in_unloaded = (node == nil)
+		if in_unloaded then
+			-- Don't infinetly fall into unloaded map
+			self.object:setvelocity({x = 0, y = 0, z = 0})
+			self.object:setacceleration({x = 0, y = 0, z = 0})
+			self.physical_state = false
+			self.object:set_properties({physical = false})
+			return
+		end
+		local nn = node.name
 		-- If node is not registered or node is walkably solid and resting on nodebox
 		local v = self.object:getvelocity()
 		if not core.registered_nodes[nn] or core.registered_nodes[nn].walkable and v.y == 0 then
