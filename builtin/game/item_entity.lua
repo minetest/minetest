@@ -105,7 +105,9 @@ core.register_entity(":__builtin:item", {
 		end
 		local p = self.object:getpos()
 		p.y = p.y - 0.5
-		local nn = core.get_node(p).name
+		local nn = core.get_node_or_nil(p)
+		-- This line stops items being dropped into unloaded map space from crashing game
+		if nn and nn.name then nn=nn.name else return end
 		-- If node is not registered or node is walkably solid and resting on nodebox
 		local v = self.object:getvelocity()
 		if not core.registered_nodes[nn] or core.registered_nodes[nn].walkable and v.y == 0 then
