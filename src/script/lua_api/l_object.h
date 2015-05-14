@@ -240,6 +240,12 @@ private:
 	// set_eye_offset(self, v3f first pv, v3f third pv)
 	static int l_set_eye_offset(lua_State *L);
 
+	// set_nametag_color(self, color)
+	static int l_set_nametag_color(lua_State *L);
+
+	// get_nametag_color(self)
+	static int l_get_nametag_color(lua_State *L);
+
 public:
 	ObjectRef(ServerActiveObject *object);
 

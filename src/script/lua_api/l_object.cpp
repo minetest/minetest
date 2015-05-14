@@ -1274,6 +1274,48 @@ int ObjectRef::l_override_day_night_ratio(lua_State *L)
 	return 1;
 }
 
+// set_nametag_color(self, color)
+int ObjectRef::l_set_nametag_color(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	PlayerSAO *playersao = getplayersao(ref);
+	if (playersao == NULL)
+		return 0;
+
+	video::SColor color(255,255,255,255);
+	if (!lua_isnil(L, 2))
+		color = readARGB8(L, 2);
+	playersao->setNametagColor(color);
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+// get_nametag_color(self)
+int ObjectRef::l_get_nametag_color(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	PlayerSAO *playersao = getplayersao(ref);
+	if (playersao == NULL)
+		return 0;
+
+	video::SColor color = playersao->getNametagColor();
+
+	lua_newtable(L);
+	lua_pushnumber(L, color.getAlpha());
+	lua_setfield(L, -2, "a");
+	lua_pushnumber(L, color.getRed());
+	lua_setfield(L, -2, "r");
+	lua_pushnumber(L, color.getGreen());
+	lua_setfield(L, -2, "g");
+	lua_pushnumber(L, color.getBlue());
+	lua_setfield(L, -2, "b");
+
+	return 1;
+}
+
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
 {
@@ -1396,5 +1438,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, override_day_night_ratio),
 	luamethod(ObjectRef, set_local_animation),
 	luamethod(ObjectRef, set_eye_offset),
+	luamethod(ObjectRef, set_nametag_color),
+	luamethod(ObjectRef, get_nametag_color),
 	{0,0}
 };

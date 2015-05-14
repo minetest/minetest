@@ -170,3 +170,12 @@ std::string gob_cmd_update_attachment(int parent_id, std::string bone, v3f posit
 	return os.str();
 }
 
+std::string gob_cmd_set_nametag_color(video::SColor color)
+{
+	std::ostringstream os(std::ios::binary);
+	// command
+	writeU8(os, GENERIC_CMD_SET_NAMETAG_COLOR);
+	// parameters
+	writeARGB8(os, color);
+	return os.str();
+}

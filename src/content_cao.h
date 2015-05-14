@@ -71,6 +71,7 @@ private:
 	scene::IAnimatedMeshSceneNode *m_animated_meshnode;
 	WieldMeshSceneNode *m_wield_meshnode;
 	scene::IBillboardSceneNode *m_spritenode;
+	video::SColor m_nametag_color;
 	scene::ITextSceneNode* m_textnode;
 	v3f m_position;
 	v3f m_velocity;
