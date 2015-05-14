@@ -715,6 +715,8 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 	m_bone_position_sent(false),
 	m_attachment_parent_id(0),
 	m_attachment_sent(false),
+	m_nametag_color(video::SColor(255, 255, 255, 255)),
+	m_nametag_sent(false),
 	// public
 	m_physics_override_speed(1),
 	m_physics_override_jump(1),
@@ -801,7 +803,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 		writeF1000(os, m_player->getYaw());
 		writeS16(os, getHP());
 
-		writeU8(os, 5 + m_bone_position.size()); // number of messages stuffed in here
+		writeU8(os, 6 + m_bone_position.size()); // number of messages stuffed in here
 		os<<serializeLongString(getPropertyPacket()); // message 1
 		os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
 		os<<serializeLongString(gob_cmd_update_animation(m_animation_range, m_animation_speed, m_animation_blend)); // 3
@@ -812,6 +814,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 		os<<serializeLongString(gob_cmd_update_physics_override(m_physics_override_speed,
 				m_physics_override_jump, m_physics_override_gravity, m_physics_override_sneak,
 				m_physics_override_sneak_glitch)); // 5
+		os << serializeLongString(gob_cmd_set_nametag_color(m_nametag_color)); // 6
 	}
 	else
 	{
@@ -961,6 +964,14 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	if(m_attachment_sent == false){
 		m_attachment_sent = true;
 		std::string str = gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push(aom);
+	}
+
+	if (m_nametag_sent == false) {
+		m_nametag_sent = true;
+		std::string str = gob_cmd_set_nametag_color(m_nametag_color);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push(aom);
@@ -1142,6 +1153,17 @@ ObjectProperties* PlayerSAO::accessObjectProperties()
 void PlayerSAO::notifyObjectPropertiesModified()
 {
 	m_properties_sent = false;
+}
+
+void PlayerSAO::setNametagColor(video::SColor color)
+{
+	m_nametag_color = color;
+	m_nametag_sent = false;
+}
+
+video::SColor PlayerSAO::getNametagColor()
+{
+	return m_nametag_color;
 }
 
 Inventory* PlayerSAO::getInventory()
