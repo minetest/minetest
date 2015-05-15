@@ -86,6 +86,12 @@ public class MtNativeActivity extends NativeActivity {
 		System.loadLibrary("vorbis");
 		System.loadLibrary("ssl");
 		System.loadLibrary("crypto");
+		System.loadLibrary("gmp");
+
+		// We don't have to load libminetest.so ourselves,
+		// but if we do, we get nicer logcat errors when
+		// loading fails.
+		System.loadLibrary("minetest");
 	}
 	
 	private int m_MessagReturnCode;

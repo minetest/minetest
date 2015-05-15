@@ -120,7 +120,7 @@ CURL_URL_HTTP = http://curl.haxx.se/download/curl-${CURL_VERSION}.tar.bz2
 
 GMP_VERSION = 6.0.0
 GMP_DIR = $(ROOT)/deps/gmp-$(GMP_VERSION)
-GMP_LIB = $(GMP_DIR)/usr/lib/libgmp.la
+GMP_LIB = $(GMP_DIR)/usr/lib/libgmp.so
 GMP_TIMESTAMP = $(GMP_DIR)/timestamp
 GMP_TIMESTAMP_INT = $(ROOT)/deps/gmp_timestamp
 GMP_URL_HTTP = https://gmplib.org/download/gmp/gmp-$(GMP_VERSION).tar.bz2
@@ -602,6 +602,8 @@ $(GMP_LIB): $(GMP_TIMESTAMP)
 	export PATH="$${TOOLCHAIN}/bin:$${PATH}";                                  \
 	export CC=${CROSS_PREFIX}gcc;                                              \
 	export CXX=${CROSS_PREFIX}g++;                                             \
+	export LIBGMP_LDFLAGS="-avoid-version";                                    \
+	export LIBGMPXX_LDFLAGS="-avoid-version";                                  \
 	./configure --disable-static --host=${TARGET_HOST} --prefix=/usr;          \
 	$(MAKE) install DESTDIR=/${GMP_DIR} || exit 1;                             \
 	touch ${GMP_TIMESTAMP};                                                    \
