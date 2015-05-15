@@ -149,18 +149,18 @@ class Noise {
 public:
 	NoiseParams np;
 	int seed;
-	int sx;
-	int sy;
-	int sz;
+	u32 sx;
+	u32 sy;
+	u32 sz;
 	float *noise_buf;
 	float *gradient_buf;
 	float *persist_buf;
 	float *result;
 
-	Noise(NoiseParams *np, int seed, int sx, int sy, int sz=1);
+	Noise(NoiseParams *np, int seed, u32 sx, u32 sy, u32 sz=1);
 	~Noise();
 
-	void setSize(int sx, int sy, int sz=1);
+	void setSize(u32 sx, u32 sy, u32 sz=1);
 	void setSpreadFactor(v3f spread);
 	void setOctaves(int octaves);
 
