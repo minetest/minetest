@@ -61,3 +61,4 @@ bool* m_variable;
 		StackUnroller stack_unroller(L);
 
 #endif /* S_INTERNAL_H_ */
+
