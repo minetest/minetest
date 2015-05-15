@@ -1274,8 +1274,8 @@ int ObjectRef::l_override_day_night_ratio(lua_State *L)
 	return 1;
 }
 
-// set_nametag_color(self, color)
-int ObjectRef::l_set_nametag_color(lua_State *L)
+// set_nametag_attributes(self, attributes)
+int ObjectRef::l_set_nametag_attributes(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1283,17 +1283,18 @@ int ObjectRef::l_set_nametag_color(lua_State *L)
 	if (playersao == NULL)
 		return 0;
 
-	video::SColor color(255,255,255,255);
-	if (!lua_isnil(L, 2))
-		color = readARGB8(L, 2);
+	video::SColor color = playersao->getNametagColor();
+	lua_getfield(L, 2, "color");
+	if (!lua_isnil(L, -1))
+		color = readARGB8(L, -1);
 	playersao->setNametagColor(color);
 
 	lua_pushboolean(L, true);
 	return 1;
 }
 
-// get_nametag_color(self)
-int ObjectRef::l_get_nametag_color(lua_State *L)
+// get_nametag_attributes(self)
+int ObjectRef::l_get_nametag_attributes(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1304,6 +1305,7 @@ int ObjectRef::l_get_nametag_color(lua_State *L)
 	video::SColor color = playersao->getNametagColor();
 
 	lua_newtable(L);
+	lua_newtable(L);
 	lua_pushnumber(L, color.getAlpha());
 	lua_setfield(L, -2, "a");
 	lua_pushnumber(L, color.getRed());
@@ -1312,6 +1314,7 @@ int ObjectRef::l_get_nametag_color(lua_State *L)
 	lua_setfield(L, -2, "g");
 	lua_pushnumber(L, color.getBlue());
 	lua_setfield(L, -2, "b");
+	lua_setfield(L, -2, "color");
 
 	return 1;
 }
@@ -1438,7 +1441,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, override_day_night_ratio),
 	luamethod(ObjectRef, set_local_animation),
 	luamethod(ObjectRef, set_eye_offset),
-	luamethod(ObjectRef, set_nametag_color),
-	luamethod(ObjectRef, get_nametag_color),
+	luamethod(ObjectRef, set_nametag_attributes),
+	luamethod(ObjectRef, get_nametag_attributes),
 	{0,0}
 };

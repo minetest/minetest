@@ -2491,12 +2491,17 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `set_eye_offset({x=0,y=0,z=0},{x=0,y=0,z=0})`: defines offset value for camera per player
     * in first person view
     * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
-* `get_nametag_color()`
-    * returns the color of the nametag as table
-    * { a = 0...255, r = 0...255, g = 0...255, b = 0...255 }
-* `set_nametag_color(color)`
-    * sets the color of the nametag
-    * `color`: { a = 0...255, r = 0...255, g = 0...255, b = 0...255 }
+* `get_nametag_attributes()`
+    * returns a table with the attributes of the nametag of the player
+    * {
+        color = { a = 0...255, r = 0...255, g = 0...255, b = 0...255 }
+      }
+* `set_nametag_attributes(attributes)`
+    * sets the attributes of the nametag of the player
+    * `attributes`:
+      {
+        color = { a = 0...255, r = 0...255, g = 0...255, b = 0...255 }
+      }
 
 ### `InvRef`
 An `InvRef` is a reference to an inventory.

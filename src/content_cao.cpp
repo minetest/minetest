@@ -1715,7 +1715,8 @@ void GenericCAO::processMessage(const std::string &data)
 			int rating = readS16(is);
 			m_armor_groups[name] = rating;
 		}
-	} else if (cmd == GENERIC_CMD_SET_NAMETAG_COLOR) {
+	} else if (cmd == GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES) {
+		u8 version = readU8(is); // forward compatibility
 		m_nametag_color = readARGB8(is);
 		if (m_textnode != NULL) {
 			m_textnode->setTextColor(m_nametag_color);
