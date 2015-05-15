@@ -2997,17 +2997,10 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 
 #ifdef ANDROID
 	/* For Android, invert the meaning of holding down the fast button (i.e.
-	 * holding down the fast button -- if there is one -- means walk), unless
-	 * performing an action, sneaking or jumping.
+	 * holding down the fast button -- if there is one -- means walk)
 	 */
-	const u32 autofast_exludebits =
-			  (1U << 4) | (1U << 6)     // jump, sneak
-			| (1U << 7) | (1U << 8);    // left state, right state
-
-	if ((keypress_bits & autofast_exludebits) == 0) {
-		control.aux1 = control.aux1 ^ true;
-		keypress_bits ^= ((u32)(1U << 5));
-	}
+	control.aux1 = control.aux1 ^ true;
+	keypress_bits ^= ((u32)(1U << 5));
 #endif
 
 	client->setPlayerControl(control);
