@@ -337,7 +337,7 @@ public:
 	void setPendingSerializationVersion(u8 version)
 		{ m_pending_serialization_version = version; }
 
-	void setSupportedCompressionModes(u8 byteFlag)
+	void setSupportedCompressionModes(u16 byteFlag)
 		{ m_supported_compressions = byteFlag; }
 
 	void confirmSerializationVersion()
@@ -416,7 +416,7 @@ private:
 
 	std::string m_full_version;
 
-	u8 m_supported_compressions;
+	u16 m_supported_compressions;
 
 	/*
 		time this client was created

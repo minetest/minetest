@@ -115,7 +115,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 {
 	null_command_factory, // 0x00
 	null_command_factory, // 0x01
-	null_command_factory, // 0x02
+	{ "TOCLIENT_HELLO",             0, true }, // 0x02
 	{ "TOCLIENT_AUTH_ACCEPT",       0, true }, // 0x03
 	{ "TOCLIENT_ACCEPT_SUDO_MODE",  0, true }, // 0x04
 	{ "TOCLIENT_DENY_SUDO_MODE",    0, true }, // 0x05

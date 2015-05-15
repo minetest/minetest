@@ -1000,8 +1000,9 @@ void Client::sendInit(const std::string &playerName)
 {
 	NetworkPacket pkt(TOSERVER_INIT, 1 + 2 + 2 + (1 + playerName.size()));
 
-	// TODO (later) actually send supported compression modes
-	pkt << (u8) SER_FMT_VER_HIGHEST_READ << (u8) 42;
+	// we don't support network compression yet
+	u16 supp_comp_modes = NETPROTO_COMPRESSION_NONE;
+	pkt << (u8) SER_FMT_VER_HIGHEST_READ << (u16) supp_comp_modes;
 	pkt << (u16) CLIENT_PROTOCOL_VERSION_MIN << (u16) CLIENT_PROTOCOL_VERSION_MAX;
 	pkt << playerName;
 

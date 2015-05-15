@@ -44,26 +44,31 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 	if (pkt->getSize() < 1)
 		return;
 
-	u8 deployed;
+	u8 serialization_ver;
+	u16 proto_ver;
+	u16 compression_mode;
 	u32 auth_mechs;
 	std::string username_legacy; // for case insensitivity
-	*pkt >> deployed >> auth_mechs >> username_legacy;
+	*pkt >> serialization_ver >> compression_mode >> proto_ver
+		>> auth_mechs >> username_legacy;
 
 	// Chose an auth method we support
 	AuthMechanism chosen_auth_mechanism = choseAuthMech(auth_mechs);
 
 	infostream << "Client: TOCLIENT_HELLO received with "
-			"deployed=" << ((int)deployed & 0xff) << ", auth_mechs="
-			<< auth_mechs << ", chosen=" << chosen_auth_mechanism << std::endl;
+			<< "serialization_ver=" << serialization_ver
+			<< ", auth_mechs=" << auth_mechs
+			<< ", compression_mode=" << compression_mode
+			<< ". Doing auth with mech " << chosen_auth_mechanism << std::endl;
 
-	if (!ser_ver_supported(deployed)) {
+	if (!ser_ver_supported(serialization_ver)) {
 		infostream << "Client: TOCLIENT_HELLO: Server sent "
 				<< "unsupported ser_fmt_ver"<< std::endl;
 		return;
 	}
 
-	m_server_ser_ver = deployed;
-	m_proto_ver = deployed;
+	m_server_ser_ver = serialization_ver;
+	m_proto_ver = proto_ver;
 
 	//TODO verify that username_legacy matches sent username, only
 	// differs in casing (make both uppercase and compare)

@@ -131,7 +131,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add TOCLIENT_AUTH_ACCEPT to accept connection from client
 */
 
-#define LATEST_PROTOCOL_VERSION 24
+#define LATEST_PROTOCOL_VERSION 25
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13
@@ -158,7 +158,9 @@ enum ToClientCommand
 	/*
 		Sent after TOSERVER_INIT.
 
-		u8 deployed version
+		u8 deployed serialisation version
+		u16 deployed network compression mode
+		u16 deployed protocol version
 		u32 supported auth methods
 		std::string username that should be used for legacy hash (for proper casing)
 	*/
@@ -632,11 +634,11 @@ enum ToServerCommand
 	/*
 		Sent first after connected.
 
-		[2] u8 SER_FMT_VER_HIGHEST_READ
-		[3] u8 compression_modes
-		[4] u16 minimum supported network protocol version
-		[6] u16 maximum supported network protocol version
-		[8] std::string player name
+		u8 serialisation version (=SER_FMT_VER_HIGHEST_READ)
+		u16 supported network compression modes
+		u16 minimum supported network protocol version
+		u16 maximum supported network protocol version
+		std::string player name
 	*/
 
 	TOSERVER_INIT_LEGACY = 0x10,
@@ -936,7 +938,7 @@ enum AccessDeniedCode {
 };
 
 enum NetProtoCompressionMode {
-	NETPROTO_COMPRESSION_ZLIB = 0,
+	NETPROTO_COMPRESSION_NONE = 0,
 };
 
 const static std::string accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
