@@ -154,6 +154,9 @@ registered callbacks.
 `minetest.setting_get(name)` and `minetest.setting_getbool(name)` can be used
 to read custom or existing settings at load time, if necessary.
 
+If your mod uses a namespace, this function should return it (see Mod
+Namespaces).
+
 ### `models`
 Models for entities or meshnodes.
 
@@ -1662,6 +1665,18 @@ Helper functions
 
 `minetest` namespace reference
 ------------------------------
+
+### Mod Namespaces
+
+Anything returned by a mod's `init.lua` is stored in the `minetest.mods`
+table, indexed by the mod name.  If a mod returns nothing (`nil`) a value of
+`true` will be stored instead.  Returning `false` indicates that the mod did
+not successfully complete loading, but there was no fatal error (for example,
+exiting because an `enable_mymod` setting is `false`).
+
+This is often useful for exposing an external API, or for storing an internal
+API where all parts of a large mod can access it.
+
 
 ### Utilities
 

@@ -65,46 +65,54 @@ public:
 	ScriptApiBase
 */
 
-ScriptApiBase::ScriptApiBase()
+ScriptApiBase::ScriptApiBase() :
+#ifdef SCRIPTAPI_LOCK_DEBUG
+	m_locked(false),
+#endif
+	m_server(NULL),
+	m_environment(NULL),
+	m_guiengine(NULL)
 {
-	#ifdef SCRIPTAPI_LOCK_DEBUG
-	m_locked = false;
-	#endif
-
 	m_luastack = luaL_newstate();
-	FATAL_ERROR_IF(!m_luastack, "luaL_newstate() failed");
+	FATAL_ERROR_IF(!m_luastack, "luaL_newstate() failed!  Are you running "
+			"LuaJIT in valgrind without LUAJIT_USE_VALGRIND?");
+	lua_State *L = m_luastack;
 
-	luaL_openlibs(m_luastack);
+	luaL_openlibs(L);
 
 	// Add and save an error handler
-	lua_pushcfunction(m_luastack, script_error_handler);
-	m_errorhandler = lua_gettop(m_luastack);
+	lua_pushcfunction(L, script_error_handler);
+	m_errorhandler = lua_gettop(L);
 
 	// Make the ScriptApiBase* accessible to ModApiBase
-	lua_pushlightuserdata(m_luastack, this);
-	lua_setfield(m_luastack, LUA_REGISTRYINDEX, "scriptapi");
+	lua_pushlightuserdata(L, this);
+	lua_setfield(L, LUA_REGISTRYINDEX, "scriptapi");
 
 	// If we are using LuaJIT add a C++ wrapper function to catch
 	// exceptions thrown in Lua -> C++ calls
 #if USE_LUAJIT
-	lua_pushlightuserdata(m_luastack, (void*) script_exception_wrapper);
-	luaJIT_setmode(m_luastack, -1, LUAJIT_MODE_WRAPCFUNC | LUAJIT_MODE_ON);
-	lua_pop(m_luastack, 1);
+	lua_pushlightuserdata(L, (void *) script_exception_wrapper);
+	luaJIT_setmode(L, -1, LUAJIT_MODE_WRAPCFUNC | LUAJIT_MODE_ON);
+	lua_pop(L, 1);
 #endif
 
 	// Add basic globals
-	lua_newtable(m_luastack);
-	lua_setglobal(m_luastack, "core");
 
-	lua_pushstring(m_luastack, DIR_DELIM);
-	lua_setglobal(m_luastack, "DIR_DELIM");
+	// Core table
+	lua_newtable(L);
 
-	lua_pushstring(m_luastack, porting::getPlatformName());
-	lua_setglobal(m_luastack, "PLATFORM");
+	// Mods sub-table
+	lua_newtable(L);
+	lua_setfield(L, -2, "mods");
 
-	m_server = NULL;
-	m_environment = NULL;
-	m_guiengine = NULL;
+	lua_setglobal(L, "core");
+
+
+	lua_pushliteral(L, DIR_DELIM);
+	lua_setglobal(L, "DIR_DELIM");
+
+	lua_pushstring(L, porting::getPlatformName());
+	lua_setglobal(L, "PLATFORM");
 }
 
 ScriptApiBase::~ScriptApiBase()
@@ -112,32 +120,62 @@ ScriptApiBase::~ScriptApiBase()
 	lua_close(m_luastack);
 }
 
-bool ScriptApiBase::loadMod(const std::string &scriptpath,
-		const std::string &modname)
+bool ScriptApiBase::loadMod(const std::string &script_path,
+		const std::string &mod_name)
 {
-	ModNameStorer modnamestorer(getStack(), modname);
-
-	if (!string_allowed(modname, MODNAME_ALLOWED_CHARS)) {
-		errorstream<<"Error loading mod \""<<modname
-				<<"\": modname does not follow naming conventions: "
+	if (!string_allowed(mod_name, MODNAME_ALLOWED_CHARS)) {
+		errorstream<<"Error loading mod \""<<mod_name
+				<<"\": mod name does not follow naming conventions: "
 				<<"Only chararacters [a-z0-9_] are allowed."<<std::endl;
 		return false;
 	}
 
-	return loadScript(scriptpath);
+	lua_State *L = getStack();
+
+	// Store mod name in registry for get_current_modname
+	ModNameStorer mod_name_storer(L, mod_name);
+
+	if (!loadScript(script_path, 1))
+		return false;
+
+	// Set the script return value as core.mods[mod_name]
+	// Return value is on the top of the stack
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "mods");
+	lua_remove(L, -2); // Remove core
+	lua_insert(L, -2); // Insert mods before return value
+
+	// If nothing was returned default to true
+	if (lua_isnone(L, -1) || lua_isnil(L, -1)) {
+		lua_pop(L, 1);
+		lua_pushboolean(L, true);
+	}
+
+	lua_setfield(L, -2, mod_name.c_str());
+
+	lua_pop(L, 1); // Pop mods
+
+	return true;
 }
 
-bool ScriptApiBase::loadScript(const std::string &scriptpath)
+bool ScriptApiBase::loadScript(const std::string &script_path, int nret)
 {
-	verbosestream<<"Loading and running script from "<<scriptpath<<std::endl;
+	verbosestream << "Loading and running script from " << script_path << std::endl;
 
 	lua_State *L = getStack();
 
-	int ret = luaL_loadfile(L, scriptpath.c_str()) || lua_pcall(L, 0, 0, m_errorhandler);
-	if (ret) {
+	const char *err_type = NULL;
+
+	if (luaL_loadfile(L, script_path.c_str())) {
+		err_type = "load";
+	} else if (lua_pcall(L, 0, nret, m_errorhandler)) {
+		err_type = "run";
+	}
+
+	if (err_type) {
 		errorstream << "========== ERROR FROM LUA ===========" << std::endl;
-		errorstream << "Failed to load and run script from " << std::endl;
-		errorstream << scriptpath << ":" << std::endl;
+		errorstream << "Failed to " << err_type << " script from " << std::endl;
+		errorstream << script_path << ":" << std::endl;
 		errorstream << std::endl;
 		errorstream << lua_tostring(L, -1) << std::endl;
 		errorstream << std::endl;
@@ -150,9 +188,8 @@ bool ScriptApiBase::loadScript(const std::string &scriptpath)
 
 void ScriptApiBase::realityCheck()
 {
-	int top = lua_gettop(m_luastack);
-	if(top >= 30){
-		dstream<<"Stack is over 30:"<<std::endl;
+	if (lua_gettop(m_luastack) >= 30) {
+		dstream << "Stack is over 30:" << std::endl;
 		stackDump(dstream);
 		std::string traceback = script_get_backtrace(m_luastack);
 		throw LuaError("Stack is over 30 (reality check)\n" + traceback);
@@ -166,34 +203,27 @@ void ScriptApiBase::scriptError()
 
 void ScriptApiBase::stackDump(std::ostream &o)
 {
-	int i;
 	int top = lua_gettop(m_luastack);
-	for (i = 1; i <= top; i++) {  /* repeat for each level */
-		int t = lua_type(m_luastack, i);
-		switch (t) {
-
-			case LUA_TSTRING:  /* strings */
-				o<<"\""<<lua_tostring(m_luastack, i)<<"\"";
-				break;
-
-			case LUA_TBOOLEAN:  /* booleans */
-				o<<(lua_toboolean(m_luastack, i) ? "true" : "false");
-				break;
-
-			case LUA_TNUMBER:  /* numbers */ {
-				char buf[10];
-				snprintf(buf, 10, "%g", lua_tonumber(m_luastack, i));
-				o<<buf;
-				break; }
-
-			default:  /* other values */
-				o<<lua_typename(m_luastack, t);
-				break;
-
+	for (int i = 1; i <= top; i++) {  // Repeat for each level
+		int type = lua_type(m_luastack, i);
+		switch (type) {
+		case LUA_TSTRING:
+			o << '"' << lua_tostring(m_luastack, i) << '"';
+			break;
+		case LUA_TBOOLEAN:
+			o << (lua_toboolean(m_luastack, i) ? "true" : "false");
+			break;
+		case LUA_TNUMBER: {
+			o << lua_tonumber(m_luastack, i);
+			break;
 		}
-		o<<" ";
+		default:
+			o << lua_typename(m_luastack, type);
+			break;
+		}
+		o << ' ';
 	}
-	o<<std::endl;
+	o << std::endl;
 }
 
 void ScriptApiBase::addObjectReference(ServerActiveObject *cobj)
