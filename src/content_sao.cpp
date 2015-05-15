@@ -814,7 +814,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 		os<<serializeLongString(gob_cmd_update_physics_override(m_physics_override_speed,
 				m_physics_override_jump, m_physics_override_gravity, m_physics_override_sneak,
 				m_physics_override_sneak_glitch)); // 5
-		os << serializeLongString(gob_cmd_set_nametag_color(m_nametag_color)); // 6
+		os << serializeLongString(gob_cmd_update_nametag_attributes(m_nametag_color)); // 6
 	}
 	else
 	{
@@ -971,7 +971,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 	if (m_nametag_sent == false) {
 		m_nametag_sent = true;
-		std::string str = gob_cmd_set_nametag_color(m_nametag_color);
+		std::string str = gob_cmd_update_nametag_attributes(m_nametag_color);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push(aom);
