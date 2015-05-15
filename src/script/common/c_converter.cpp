@@ -39,6 +39,19 @@ extern "C" {
 #define CHECK_POS_TAB(index) CHECK_TYPE(index, "position", LUA_TTABLE)
 
 
+void push_ARGB8(lua_State *L, video::SColor color)
+{
+	lua_newtable(L);
+	lua_pushnumber(L, color.getAlpha());
+	lua_setfield(L, -2, "a");
+	lua_pushnumber(L, color.getRed());
+	lua_setfield(L, -2, "r");
+	lua_pushnumber(L, color.getGreen());
+	lua_setfield(L, -2, "g");
+	lua_pushnumber(L, color.getBlue());
+	lua_setfield(L, -2, "b");
+}
+
 void push_v3f(lua_State *L, v3f p)
 {
 	lua_newtable(L);

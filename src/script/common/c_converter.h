@@ -95,6 +95,7 @@ size_t              read_stringlist     (lua_State *L, int index,
                                          std::vector<std::string> *result);
 
 void                push_v3s16          (lua_State *L, v3s16 p);
+void                push_ARGB8          (lua_State *L, video::SColor color);
 void                pushFloatPos        (lua_State *L, v3f p);
 void                push_v3f            (lua_State *L, v3f p);
 void                push_v2f            (lua_State *L, v2f p);

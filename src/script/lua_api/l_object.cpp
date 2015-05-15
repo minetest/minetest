@@ -1305,15 +1305,7 @@ int ObjectRef::l_get_nametag_attributes(lua_State *L)
 	video::SColor color = playersao->getNametagColor();
 
 	lua_newtable(L);
-	lua_newtable(L);
-	lua_pushnumber(L, color.getAlpha());
-	lua_setfield(L, -2, "a");
-	lua_pushnumber(L, color.getRed());
-	lua_setfield(L, -2, "r");
-	lua_pushnumber(L, color.getGreen());
-	lua_setfield(L, -2, "g");
-	lua_pushnumber(L, color.getBlue());
-	lua_setfield(L, -2, "b");
+	push_ARGB8(L, color);
 	lua_setfield(L, -2, "color");
 
 	return 1;
