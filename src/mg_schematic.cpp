@@ -282,7 +282,7 @@ bool Schematic::deserializeFromMts(std::istream *is,
 	if (version < 2) {
 		for (size_t i = 0; i != nodecount; i++) {
 			if (schemdata[i].param1 == 0)
-				schemdata[i].param1 = MTSCHEM_PROB_ALWAYS;
+				schemdata[i].param1 = MTSCHEM_PROB_ALWAYS_OLD;
 			if (have_cignore && schemdata[i].getContent() == cignore)
 				schemdata[i].param1 = MTSCHEM_PROB_NEVER;
 		}
