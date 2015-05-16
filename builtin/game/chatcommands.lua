@@ -318,7 +318,7 @@ core.register_chatcommand("teleport", {
 			teleportee:setpos(p)
 			return true, "Teleporting to "..core.pos_to_string(p)
 		end
-		
+
 		local teleportee = nil
 		local p = nil
 		local target_name = nil
@@ -355,7 +355,7 @@ core.register_chatcommand("teleport", {
 			return true, "Teleporting " .. teleportee_name
 					.. " to " .. core.pos_to_string(p)
 		end
-		
+
 		local teleportee = nil
 		local p = nil
 		local teleportee_name = nil
@@ -377,7 +377,7 @@ core.register_chatcommand("teleport", {
 					.. " to " .. target_name
 					.. " at " .. core.pos_to_string(p)
 		end
-		
+
 		return false, 'Invalid parameters ("' .. param
 				.. '") or player not found (see /help teleport)'
 	end,
@@ -679,19 +679,41 @@ core.register_chatcommand("status", {
 })
 
 core.register_chatcommand("time", {
-	params = "<0...24000>",
+	params = "<0..23>:<0..59> | <0..24000>",
 	description = "set time of day",
-	privs = {settime=true},
+	privs = {},
 	func = function(name, param)
 		if param == "" then
-			return false, "Missing time."
+			local current_time = math.floor(core.get_timeofday() * 1440)
+			local minutes = current_time % 60
+			local hour = (current_time - minutes) / 60
+			return true, ("Current time is %d:%02d"):format(hour, minutes)
 		end
-		local newtime = tonumber(param)
-		if newtime == nil then
-			return false, "Invalid time."
+		local player_privs = minetest.get_player_privs(name)
+		if not player_privs.settime then
+			return false, "You don't have permission to run this command " ..
+				"(missing privilege: settime)."
 		end
-		core.set_timeofday((newtime % 24000) / 24000)
-		core.log("action", name .. " sets time " .. newtime)
+		local hour, minute = param:match("^(%d+):(%d+)$")
+		if not hour then
+			local new_time = tonumber(param)
+			if not new_time then
+				return false, "Invalid time."
+			end
+			-- Backward compatibility.
+			core.set_timeofday((new_time % 24000) / 24000)
+			core.log("action", name .. " sets time to " .. new_time)
+			return true, "Time of day changed."
+		end
+		hour = tonumber(hour)
+		minute = tonumber(minute)
+		if hour < 0 or hour > 23 then
+			return false, "Invalid hour (must be between 0 and 23 inclusive)."
+		elseif minute < 0 or minute > 59 then
+			return false, "Invalid minute (must be between 0 and 59 inclusive)."
+		end
+		core.set_timeofday((hour * 60 + minute) / 1440)
+		core.log("action", name .. " sets time to " .. hour .. ":" .. minute)
 		return true, "Time of day changed."
 	end,
 })
