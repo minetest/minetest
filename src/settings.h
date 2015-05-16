@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include "util/string.h"
 #include "jthread/jmutex.h"
+#include "config.h"
 #include <string>
 #include <map>
 #include <list>
@@ -34,6 +35,15 @@ struct NoiseParams;
 // Global objects
 extern Settings *g_settings;
 extern std::string g_settings_path;
+
+enum MTSetting {
+#define MTCONF_SET_EXT(enumname, lcase, default) CNF_##enumname,
+#define MTCONF_EXEC_FOR_DEFAULT(code)
+#include "settingdef.h"
+#undef MTCONF_SET_EXT
+#undef MTCONF_EXEC_FOR_DEFAULT
+	CNF_COUNT
+};
 
 /** function type to register a changed callback */
 typedef void (*setting_changed_callback)(const std::string, void*);
@@ -89,12 +99,48 @@ struct SettingsEntry {
 	bool is_group;
 };
 
+class MTSettingsContainer {
+public:
+	MTSettingsContainer():
+		m_entries(CNF_COUNT)
+	{
+	}
+	~MTSettingsContainer();
+
+	const SettingsEntry *find(const std::string &name) const;
+	const SettingsEntry *find(MTSetting setting) const;
+
+	std::map<std::string, SettingsEntry*>::const_iterator begin() const;
+	std::map<std::string, SettingsEntry*>::const_iterator end() const;
+
+	bool has(MTSetting setting) const;
+	bool has(const std::string &name) const;
+
+
+	SettingsEntry &operator[] (MTSetting setting);
+	SettingsEntry &operator[] (const std::string &name);
+
+	void operator= (const MTSettingsContainer &other);
+
+	bool erase(const std::string &name);
+	bool erase(MTSetting setting);
+
+	void clear();
+
+private:
+	void fillWithMTSettings();
+
+	std::map<std::string, SettingsEntry*> m_map;
+	std::vector<SettingsEntry*> m_entries;
+};
+
 class Settings {
 public:
 	Settings() {}
+	// N.B. Groups not allocated with new must be set to NULL in the settings
+	// tree before object destruction.
 	~Settings();
 
-	Settings & operator += (const Settings &other);
 	Settings & operator = (const Settings &other);
 
 	/***********************
@@ -149,6 +195,18 @@ public:
 	bool getNoiseParamsFromValue(const std::string &name, NoiseParams &np) const;
 	bool getNoiseParamsFromGroup(const std::string &name, NoiseParams &np) const;
 
+	const SettingsEntry &getEntry(MTSetting setting) const;
+	Settings *getGroup(MTSetting setting) const;
+	std::string get(MTSetting setting) const;
+	bool getBool(MTSetting setting) const;
+	u16 getU16(MTSetting setting) const;
+	s16 getS16(MTSetting setting) const;
+	s32 getS32(MTSetting setting) const;
+	u64 getU64(MTSetting setting) const;
+	float getFloat(MTSetting setting) const;
+	v2f getV2F(MTSetting setting) const;
+	v3f getV3F(MTSetting setting) const;
+
 	// return all keys used
 	std::vector<std::string> getNames() const;
 	bool exists(const std::string &name) const;
@@ -179,10 +237,6 @@ public:
 	 * Setters *
 	 ***********/
 
-	// N.B. Groups not allocated with new must be set to NULL in the settings
-	// tree before object destruction.
-	bool setEntry(const std::string &name, const void *entry,
-		bool set_group, bool set_default);
 	bool set(const std::string &name, const std::string &value);
 	bool setDefault(const std::string &name, const std::string &value);
 	bool setGroup(const std::string &name, Settings *group);
@@ -209,19 +263,23 @@ public:
 	void clearDefaults();
 	void updateValue(const Settings &other, const std::string &name);
 	void update(const Settings &other);
-	void registerChangedCallback(std::string name, setting_changed_callback cbf, void *userdata = NULL);
-	void deregisterChangedCallback(std::string name, setting_changed_callback cbf, void *userdata = NULL);
+	void registerChangedCallback(const std::string &name, setting_changed_callback cbf, void *userdata = NULL);
+	void deregisterChangedCallback(const std::string &name, setting_changed_callback cbf, void *userdata = NULL);
 
 private:
 
-	void updateNoLock(const Settings &other);
+	// N.B. Groups not allocated with new must be set to NULL in the settings
+	// tree before object destruction.
+	bool setEntry(const std::string &name, const void *entry,
+		bool set_group, bool set_default);
+
 	void clearNoLock();
 	void clearDefaultsNoLock();
 
 	void doCallbacks(std::string name);
 
-	std::map<std::string, SettingsEntry> m_settings;
-	std::map<std::string, SettingsEntry> m_defaults;
+	MTSettingsContainer m_settings;
+	MTSettingsContainer m_defaults;
 
 	std::map<std::string, std::vector<std::pair<setting_changed_callback,void*> > > m_callbacks;
 
