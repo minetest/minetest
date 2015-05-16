@@ -49,12 +49,12 @@ GUIEngine *ModApiBase::getGuiEngine(lua_State *L)
 
 std::string ModApiBase::getCurrentModPath(lua_State *L)
 {
-	lua_getfield(L, LUA_REGISTRYINDEX, "current_modname");
-	const char *current_modname = lua_tostring(L, -1);
-	if (!current_modname)
+	lua_getfield(L, LUA_REGISTRYINDEX, SCRIPT_MOD_NAME_FIELD);
+	const char *current_mod_name = lua_tostring(L, -1);
+	if (!current_mod_name)
 		return ".";
 
-	const ModSpec *mod = getServer(L)->getModSpec(current_modname);
+	const ModSpec *mod = getServer(L)->getModSpec(current_mod_name);
 	if (!mod)
 		return ".";
 
