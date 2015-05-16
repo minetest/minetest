@@ -23,8 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../irrlichttypes_bloated.h"
 #include "config.h"
 #if HAVE_ENDIAN_H
-  #include "portable_endian.h"
-  #include <string.h> // for memcpy
+	#include "portable_endian.h"
+	#include <string.h> // for memcpy
 #endif
 #include <iostream>
 #include <string>
