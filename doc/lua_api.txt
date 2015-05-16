@@ -1607,6 +1607,16 @@ To specify the value of the alpha channel, append `#AA` to the end of the color 
 (e.g. `colorname#08`). For named colors the hexadecimal string representing the alpha
 value must (always) be two hexadecimal digits.
 
+`ColorSpec`
+-----------
+A ColorSpec specifies a 32-bit color.  It can be written in either:
+table form, each element ranging from 0..255 (a, if absent, defaults to 255):
+    `colorspec = {a=255, r=0, g=255, b=0}`
+numerical form, the raw integer value of an ARGB8 quad:
+    `colorspec = 0xFF00FF00`
+or string form, a ColorString (defined above):
+    `colorspec = "green"`
+
 Vector helpers
 --------------
 
@@ -2481,7 +2491,7 @@ This is basically a reference to a C++ `ServerActiveObject`
     * `name`: `"breath"` or `"health"`
     * `hud_definition`: definition to replace builtin definition
 * `set_sky(bgcolor, type, {texture names})`
-    * `bgcolor`: `{r=0...255, g=0...255, b=0...255}` or `nil`, defaults to white
+    * `bgcolor`: ColorSpec, defaults to white
     * Available types:
         * `"regular"`: Uses 0 textures, `bgcolor` ignored
         * `"skybox"`: Uses 6 textures, `bgcolor` used
@@ -2507,13 +2517,13 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_nametag_attributes()`
     * returns a table with the attributes of the nametag of the player
     * {
-        color = { a = 0...255, r = 0...255, g = 0...255, b = 0...255 }
+        color = {a=0..255, r=0..255, g=0..255, b=0..255},
       }
 * `set_nametag_attributes(attributes)`
     * sets the attributes of the nametag of the player
     * `attributes`:
       {
-        color = { a = 0...255, r = 0...255, g = 0...255, b = 0...255 }
+        color = ColorSpec,
       }
 
 ### `InvRef`
@@ -3023,7 +3033,7 @@ Definition tables
         ^ List can be shortened to needed length ]]
         alpha = 255,
         use_texture_alpha = false, -- Use texture's alpha channel
-        post_effect_color = {a=0, r=0, g=0, b=0}, -- If player is inside node
+        post_effect_color = "green#0F", -- If player is inside node, see "ColorSpec"
         paramtype = "none", -- See "Nodes" --[[
         ^ paramtype = "light" allows light to propagate from or through the node with light value
         ^ falling by 1 per node. This line is essential for a light source node to spread its light. ]]

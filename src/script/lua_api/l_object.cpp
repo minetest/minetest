@@ -1222,8 +1222,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 		return 0;
 
 	video::SColor bgcolor(255,255,255,255);
-	if (!lua_isnil(L, 2))
-		bgcolor = readARGB8(L, 2);
+	read_color(L, 2, &bgcolor);
 
 	std::string type = luaL_checkstring(L, 3);
 
@@ -1283,11 +1282,13 @@ int ObjectRef::l_set_nametag_attributes(lua_State *L)
 	if (playersao == NULL)
 		return 0;
 
-	video::SColor color = playersao->getNametagColor();
 	lua_getfield(L, 2, "color");
-	if (!lua_isnil(L, -1))
-		color = readARGB8(L, -1);
-	playersao->setNametagColor(color);
+	if (!lua_isnil(L, -1)) {
+		video::SColor color = playersao->getNametagColor();
+		if (!read_color(L, -1, &color))
+			return 0;
+		playersao->setNametagColor(color);
+	}
 
 	lua_pushboolean(L, true);
 	return 1;

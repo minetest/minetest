@@ -162,18 +162,13 @@ void read_object_properties(lua_State *L, int index,
 	lua_pop(L, 1);
 
 	lua_getfield(L, -1, "colors");
-	if(lua_istable(L, -1)){
-		prop->colors.clear();
+	if (lua_istable(L, -1)) {
 		int table = lua_gettop(L);
-		lua_pushnil(L);
-		while(lua_next(L, table) != 0){
-			// key at index -2 and value at index -1
-			if(lua_isstring(L, -1))
-				prop->colors.push_back(readARGB8(L, -1));
-			else
-				prop->colors.push_back(video::SColor(255, 255, 255, 255));
-			// removes value, keeps key for next iteration
-			lua_pop(L, 1);
+		prop->colors.clear();
+		for (lua_pushnil(L); lua_next(L, table); lua_pop(L, 1)) {
+			video::SColor color(255, 255, 255, 255);
+			read_color(L, -1, &color);
+			prop->colors.push_back(color);
 		}
 	}
 	lua_pop(L, 1);
@@ -357,8 +352,7 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	/* Other stuff */
 
 	lua_getfield(L, index, "post_effect_color");
-	if(!lua_isnil(L, -1))
-		f.post_effect_color = readARGB8(L, -1);
+	read_color(L, -1, &f.post_effect_color);
 	lua_pop(L, 1);
 
 	f.param_type = (ContentParamType)getenumfield(L, index, "paramtype",

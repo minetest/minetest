@@ -76,7 +76,6 @@ void               setfloatfield(lua_State *L, int table,
 void               setboolfield(lua_State *L, int table,
                              const char *fieldname, bool value);
 
-
 v3f                 checkFloatPos       (lua_State *L, int index);
 v2f                 check_v2f           (lua_State *L, int index);
 v2s16               check_v2s16         (lua_State *L, int index);
@@ -87,7 +86,10 @@ v3f                 read_v3f            (lua_State *L, int index);
 v2f                 read_v2f            (lua_State *L, int index);
 v2s16               read_v2s16          (lua_State *L, int index);
 v2s32               read_v2s32          (lua_State *L, int index);
-video::SColor       readARGB8           (lua_State *L, int index);
+video::SColor       read_ARGB8          (lua_State *L, int index);
+bool                read_color          (lua_State *L, int index,
+                                         video::SColor *color);
+
 aabb3f              read_aabb3f         (lua_State *L, int index, f32 scale);
 v3s16               read_v3s16          (lua_State *L, int index);
 std::vector<aabb3f> read_aabb3f_vector  (lua_State *L, int index, f32 scale);
@@ -100,11 +102,8 @@ void                pushFloatPos        (lua_State *L, v3f p);
 void                push_v3f            (lua_State *L, v3f p);
 void                push_v2f            (lua_State *L, v2f p);
 
-
-
-void                warn_if_field_exists      (lua_State *L,
-                                              int table,
-                                              const char *fieldname,
-                                              const std::string &message);
+void                warn_if_field_exists(lua_State *L, int table,
+                                         const char *fieldname,
+                                         const std::string &message);
 
 #endif /* C_CONVERTER_H_ */
