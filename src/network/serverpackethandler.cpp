@@ -281,7 +281,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	Send(&resp_pkt);
 
 	client->allowed_auth_mechs = auth_mechs;
-	client->setSupportedCompressionModes(compression_modes);
+	client->setDeployedCompressionMode(depl_compress_mode);
 
 	m_clients.event(pkt->getPeerId(), CSE_Hello);
 }

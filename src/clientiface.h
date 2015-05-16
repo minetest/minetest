@@ -260,7 +260,7 @@ public:
 		m_version_minor(0),
 		m_version_patch(0),
 		m_full_version("unknown"),
-		m_supported_compressions(0),
+		m_deployed_compression(0),
 		m_connection_time(getTime(PRECISION_SECONDS))
 	{
 	}
@@ -337,8 +337,8 @@ public:
 	void setPendingSerializationVersion(u8 version)
 		{ m_pending_serialization_version = version; }
 
-	void setSupportedCompressionModes(u16 byteFlag)
-		{ m_supported_compressions = byteFlag; }
+	void setDeployedCompressionMode(u16 byteFlag)
+		{ m_deployed_compression = byteFlag; }
 
 	void confirmSerializationVersion()
 		{ serialization_version = m_pending_serialization_version; }
@@ -416,7 +416,7 @@ private:
 
 	std::string m_full_version;
 
-	u16 m_supported_compressions;
+	u16 m_deployed_compression;
 
 	/*
 		time this client was created
