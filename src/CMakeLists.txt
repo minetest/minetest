@@ -590,6 +590,7 @@ else()
 	if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 		# clang does not understand __extern_always_inline but libc headers use it
 		set(OTHER_FLAGS "${OTHER_FLAGS} \"-D__extern_always_inline=extern __always_inline\"")
+		set(OTHER_FLAGS "${OTHER_FLAGS} -Wsign-compare")
 	endif()
 
 	if(MINGW)

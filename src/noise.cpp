@@ -590,8 +590,8 @@ void Noise::gradientMap2D(
 		int seed)
 {
 	float v00, v01, v10, v11, u, v, orig_u;
-	int index, i, j, x0, y0, noisex, noisey;
-	int nlx, nly;
+	u32 index, i, j, x0, y0, noisex, noisey;
+	u32 nlx, nly;
 
 	bool eased = np.flags & (NOISE_FLAG_DEFAULTS | NOISE_FLAG_EASED);
 	Interp2dFxn interpolate = eased ?
@@ -604,8 +604,8 @@ void Noise::gradientMap2D(
 	orig_u = u;
 
 	//calculate noise point lattice
-	nlx = (int)(u + sx * step_x) + 2;
-	nly = (int)(v + sy * step_y) + 2;
+	nlx = (u32)(u + sx * step_x) + 2;
+	nly = (u32)(v + sy * step_y) + 2;
 	index = 0;
 	for (j = 0; j != nly; j++)
 		for (i = 0; i != nlx; i++)
@@ -655,8 +655,8 @@ void Noise::gradientMap3D(
 	float v000, v010, v100, v110;
 	float v001, v011, v101, v111;
 	float u, v, w, orig_u, orig_v;
-	int index, i, j, k, x0, y0, z0, noisex, noisey, noisez;
-	int nlx, nly, nlz;
+	u32 index, i, j, k, x0, y0, z0, noisex, noisey, noisez;
+	u32 nlx, nly, nlz;
 
 	Interp3dFxn interpolate = (np.flags & NOISE_FLAG_EASED) ?
 		triLinearInterpolation : triLinearInterpolationNoEase;
@@ -671,9 +671,9 @@ void Noise::gradientMap3D(
 	orig_v = v;
 
 	//calculate noise point lattice
-	nlx = (int)(u + sx * step_x) + 2;
-	nly = (int)(v + sy * step_y) + 2;
-	nlz = (int)(w + sz * step_z) + 2;
+	nlx = (u32)(u + sx * step_x) + 2;
+	nly = (u32)(v + sy * step_y) + 2;
+	nlz = (u32)(w + sz * step_z) + 2;
 	index = 0;
 	for (k = 0; k != nlz; k++)
 		for (j = 0; j != nly; j++)

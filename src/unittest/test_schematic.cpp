@@ -99,7 +99,7 @@ void TestSchematic::testMtsSerializeDeserialize(INodeDefManager *ndef)
 	UASSERT(schem2.size == size);
 	for (size_t i = 0; i != volume; i++)
 		UASSERT(schem2.schemdata[i] == schem.schemdata[i]);
-	for (size_t y = 0; y != size.Y; y++)
+	for (s16 y = 0; y != size.Y; y++)
 		UASSERTEQ(u8, schem2.slice_probs[y], schem.slice_probs[y]);
 }
 
