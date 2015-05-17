@@ -590,8 +590,9 @@ void Noise::gradientMap2D(
 		int seed)
 {
 	float v00, v01, v10, v11, u, v, orig_u;
-	u32 index, i, j, x0, y0, noisex, noisey;
+	u32 index, i, j, noisex, noisey;
 	u32 nlx, nly;
+	s32 x0, y0;
 
 	bool eased = np.flags & (NOISE_FLAG_DEFAULTS | NOISE_FLAG_EASED);
 	Interp2dFxn interpolate = eased ?
@@ -655,8 +656,9 @@ void Noise::gradientMap3D(
 	float v000, v010, v100, v110;
 	float v001, v011, v101, v111;
 	float u, v, w, orig_u, orig_v;
-	u32 index, i, j, k, x0, y0, z0, noisex, noisey, noisez;
+	u32 index, i, j, k, noisex, noisey, noisez;
 	u32 nlx, nly, nlz;
+	s32 x0, y0, z0;
 
 	Interp3dFxn interpolate = (np.flags & NOISE_FLAG_EASED) ?
 		triLinearInterpolation : triLinearInterpolationNoEase;
