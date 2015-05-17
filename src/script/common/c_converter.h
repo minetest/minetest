@@ -106,4 +106,9 @@ void                warn_if_field_exists(lua_State *L, int table,
                                          const char *fieldname,
                                          const std::string &message);
 
+size_t write_array_slice_float(lua_State *L, int table_index, float *data,
+	v3u16 data_size, v3u16 slice_offset, v3u16 slice_size);
+size_t write_array_slice_u16(lua_State *L, int table_index, u16 *data,
+	v3u16 data_size, v3u16 slice_offset, v3u16 slice_size);
+
 #endif /* C_CONVERTER_H_ */

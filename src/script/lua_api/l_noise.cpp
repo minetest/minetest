@@ -272,6 +272,61 @@ int LuaPerlinNoiseMap::l_get3dMap_flat(lua_State *L)
 }
 
 
+int LuaPerlinNoiseMap::l_calc2dMap(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaPerlinNoiseMap *o = checkobject(L, 1);
+	v2f p                = check_v2f(L, 2);
+
+	Noise *n = o->noise;
+	n->perlinMap2D(p.X, p.Y);
+
+	return 0;
+}
+
+int LuaPerlinNoiseMap::l_calc3dMap(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaPerlinNoiseMap *o = checkobject(L, 1);
+	v3f p                = check_v3f(L, 2);
+
+	if (!o->m_is3d)
+		return 0;
+
+	Noise *n = o->noise;
+	n->perlinMap3D(p.X, p.Y, p.Z);
+
+	return 0;
+}
+
+
+int LuaPerlinNoiseMap::l_getMapSlice(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaPerlinNoiseMap *o = checkobject(L, 1);
+	v3s16 slice_offset   = read_v3s16(L, 2);
+	v3s16 slice_size     = read_v3s16(L, 3);
+	bool use_buffer      = lua_istable(L, 4);
+
+	Noise *n = o->noise;
+
+	if (use_buffer)
+		lua_pushvalue(L, 3);
+	else
+		lua_newtable(L);
+
+	write_array_slice_float(L, lua_gettop(L), n->result,
+		v3u16(n->sx, n->sy, n->sz),
+		v3u16(slice_offset.X, slice_offset.Y, slice_offset.Z),
+		v3u16(slice_size.X, slice_size.Y, slice_size.Z));
+
+	return 1;
+}
+
+
 int LuaPerlinNoiseMap::create_object(lua_State *L)
 {
 	NoiseParams np;
@@ -339,8 +394,11 @@ const char LuaPerlinNoiseMap::className[] = "PerlinNoiseMap";
 const luaL_reg LuaPerlinNoiseMap::methods[] = {
 	luamethod(LuaPerlinNoiseMap, get2dMap),
 	luamethod(LuaPerlinNoiseMap, get2dMap_flat),
+	luamethod(LuaPerlinNoiseMap, calc2dMap),
 	luamethod(LuaPerlinNoiseMap, get3dMap),
 	luamethod(LuaPerlinNoiseMap, get3dMap_flat),
+	luamethod(LuaPerlinNoiseMap, calc3dMap),
+	luamethod(LuaPerlinNoiseMap, getMapSlice),
 	{0,0}
 };
 
