@@ -174,9 +174,9 @@ int LuaPerlinNoiseMap::l_get2dMap(lua_State *L)
 	n->perlinMap2D(p.X, p.Y);
 
 	lua_newtable(L);
-	for (int y = 0; y != n->sy; y++) {
+	for (u32 y = 0; y != n->sy; y++) {
 		lua_newtable(L);
-		for (int x = 0; x != n->sx; x++) {
+		for (u32 x = 0; x != n->sx; x++) {
 			lua_pushnumber(L, n->result[i++]);
 			lua_rawseti(L, -2, x + 1);
 		}
@@ -191,14 +191,19 @@ int LuaPerlinNoiseMap::l_get2dMap_flat(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaPerlinNoiseMap *o = checkobject(L, 1);
-	v2f p = check_v2f(L, 2);
+	v2f p                = check_v2f(L, 2);
+	bool use_buffer      = lua_istable(L, 3);
 
 	Noise *n = o->noise;
 	n->perlinMap2D(p.X, p.Y);
 
 	size_t maplen = n->sx * n->sy;
 
-	lua_newtable(L);
+	if (use_buffer)
+		lua_pushvalue(L, 3);
+	else
+		lua_newtable(L);
+
 	for (size_t i = 0; i != maplen; i++) {
 		lua_pushnumber(L, n->result[i]);
 		lua_rawseti(L, -2, i + 1);
@@ -222,11 +227,11 @@ int LuaPerlinNoiseMap::l_get3dMap(lua_State *L)
 	n->perlinMap3D(p.X, p.Y, p.Z);
 
 	lua_newtable(L);
-	for (int z = 0; z != n->sz; z++) {
+	for (u32 z = 0; z != n->sz; z++) {
 		lua_newtable(L);
-		for (int y = 0; y != n->sy; y++) {
+		for (u32 y = 0; y != n->sy; y++) {
 			lua_newtable(L);
-			for (int x = 0; x != n->sx; x++) {
+			for (u32 x = 0; x != n->sx; x++) {
 				lua_pushnumber(L, n->result[i++]);
 				lua_rawseti(L, -2, x + 1);
 			}
@@ -243,7 +248,8 @@ int LuaPerlinNoiseMap::l_get3dMap_flat(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaPerlinNoiseMap *o = checkobject(L, 1);
-	v3f p = check_v3f(L, 2);
+	v3f p                = check_v3f(L, 2);
+	bool use_buffer      = lua_istable(L, 3);
 
 	if (!o->m_is3d)
 		return 0;
@@ -253,7 +259,11 @@ int LuaPerlinNoiseMap::l_get3dMap_flat(lua_State *L)
 
 	size_t maplen = n->sx * n->sy * n->sz;
 
-	lua_newtable(L);
+	if (use_buffer)
+		lua_pushvalue(L, 3);
+	else
+		lua_newtable(L);
+
 	for (size_t i = 0; i != maplen; i++) {
 		lua_pushnumber(L, n->result[i]);
 		lua_rawseti(L, -2, i + 1);

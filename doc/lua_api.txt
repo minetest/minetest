@@ -2647,7 +2647,9 @@ for 2D noise, and it must be must be larger than 1 for 3D noise (otherwise
   of 3D noise with values starting at `pos={x=,y=,z=}`
 * `get2dMap_flat(pos)`: returns a flat `<size.x * size.y>` element array of 2D noise
   with values starting at `pos={x=,y=}`
+    * if the param `buffer` is present, this table will be used to store the result instead
 * `get3dMap_flat(pos)`: Same as `get2dMap_flat`, but 3D noise
+    * if the param `buffer` is present, this table will be used to store the result instead
 
 ### `VoxelManip`
 An interface to the `MapVoxelManipulator` for Lua.
@@ -2665,8 +2667,9 @@ The map will be pre-loaded if two positions are passed to either.
   the `VoxelManip` at that position
 * `set_node_at(pos, node)`: Sets a specific `MapNode` in the `VoxelManip` at
   that position
-* `get_data()`: Gets the data read into the `VoxelManip` object
-    * returns raw node data is in the form of an array of node content IDs
+* `get_data(buffer)`: Gets the data read into the `VoxelManip` object
+    * returns raw node data in the form of an array of node content IDs
+    * if the param `buffer` is present, this table will be used to store the result instead
 * `set_data(data)`: Sets the data contents of the `VoxelManip` object
 * `update_map()`: Update map after writing chunk back to map.
     * To be used only by `VoxelManip` objects created by the mod itself;

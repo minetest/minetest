@@ -63,12 +63,18 @@ int LuaVoxelManip::l_get_data(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaVoxelManip *o = checkobject(L, 1);
+	bool use_buffer  = lua_istable(L, 2);
+
 	MMVManip *vm = o->vm;
 
-	int volume = vm->m_area.getVolume();
+	u32 volume = vm->m_area.getVolume();
 
-	lua_newtable(L);
-	for (int i = 0; i != volume; i++) {
+	if (use_buffer)
+		lua_pushvalue(L, 2);
+	else
+		lua_newtable(L);
+
+	for (u32 i = 0; i != volume; i++) {
 		lua_Integer cid = vm->m_data[i].getContent();
 		lua_pushinteger(L, cid);
 		lua_rawseti(L, -2, i + 1);
@@ -87,8 +93,8 @@ int LuaVoxelManip::l_set_data(lua_State *L)
 	if (!lua_istable(L, 2))
 		return 0;
 
-	int volume = vm->m_area.getVolume();
-	for (int i = 0; i != volume; i++) {
+	u32 volume = vm->m_area.getVolume();
+	for (u32 i = 0; i != volume; i++) {
 		lua_rawgeti(L, 2, i + 1);
 		content_t c = lua_tointeger(L, -1);
 
@@ -228,10 +234,10 @@ int LuaVoxelManip::l_get_light_data(lua_State *L)
 	LuaVoxelManip *o = checkobject(L, 1);
 	MMVManip *vm = o->vm;
 
-	int volume = vm->m_area.getVolume();
+	u32 volume = vm->m_area.getVolume();
 
 	lua_newtable(L);
-	for (int i = 0; i != volume; i++) {
+	for (u32 i = 0; i != volume; i++) {
 		lua_Integer light = vm->m_data[i].param1;
 		lua_pushinteger(L, light);
 		lua_rawseti(L, -2, i + 1);
@@ -250,8 +256,8 @@ int LuaVoxelManip::l_set_light_data(lua_State *L)
 	if (!lua_istable(L, 2))
 		return 0;
 
-	int volume = vm->m_area.getVolume();
-	for (int i = 0; i != volume; i++) {
+	u32 volume = vm->m_area.getVolume();
+	for (u32 i = 0; i != volume; i++) {
 		lua_rawgeti(L, 2, i + 1);
 		u8 light = lua_tointeger(L, -1);
 
@@ -270,10 +276,10 @@ int LuaVoxelManip::l_get_param2_data(lua_State *L)
 	LuaVoxelManip *o = checkobject(L, 1);
 	MMVManip *vm = o->vm;
 
-	int volume = vm->m_area.getVolume();
+	u32 volume = vm->m_area.getVolume();
 
 	lua_newtable(L);
-	for (int i = 0; i != volume; i++) {
+	for (u32 i = 0; i != volume; i++) {
 		lua_Integer param2 = vm->m_data[i].param2;
 		lua_pushinteger(L, param2);
 		lua_rawseti(L, -2, i + 1);
@@ -292,8 +298,8 @@ int LuaVoxelManip::l_set_param2_data(lua_State *L)
 	if (!lua_istable(L, 2))
 		return 0;
 
-	int volume = vm->m_area.getVolume();
-	for (int i = 0; i != volume; i++) {
+	u32 volume = vm->m_area.getVolume();
+	for (u32 i = 0; i != volume; i++) {
 		lua_rawgeti(L, 2, i + 1);
 		u8 param2 = lua_tointeger(L, -1);
 
