@@ -63,9 +63,10 @@ void NodeMetaRef::reportMetadataChange(NodeMetaRef *ref)
 	ref->m_env->getMap().dispatchEvent(&event);
 	// Set the block to be saved
 	MapBlock *block = ref->m_env->getMap().getBlockNoCreateNoEx(blockpos);
-	if(block)
+	if (block) {
 		block->raiseModified(MOD_STATE_WRITE_NEEDED,
-				"NodeMetaRef::reportMetadataChange");
+			MOD_REASON_REPORT_META_CHANGE);
+	}
 }
 
 // Exported functions

@@ -1436,7 +1436,7 @@ void Map::timerUpdate(float dtime, float unload_timeout,
 
 				// Save if modified
 				if (block->getModified() != MOD_STATE_CLEAN && save_before_unloading) {
-					modprofiler.add(block->getModifiedReason(), 1);
+					modprofiler.add(block->getModifiedReasonString(), 1);
 					if (!saveBlock(block))
 						continue;
 					saved_blocks_count++;
@@ -2412,7 +2412,7 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 			Set block as modified
 		*/
 		block->raiseModified(MOD_STATE_WRITE_NEEDED,
-				"finishBlockMake expireDayNightDiff");
+			MOD_REASON_EXPIRE_DAYNIGHTDIFF);
 	}
 
 	/*
@@ -2981,7 +2981,7 @@ void ServerMap::save(ModifiedState save_level)
 					save_started = true;
 				}
 
-				modprofiler.add(block->getModifiedReason(), 1);
+				modprofiler.add(block->getModifiedReasonString(), 1);
 
 				saveBlock(block);
 				block_count++;

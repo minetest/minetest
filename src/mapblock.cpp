@@ -38,6 +38,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
+static const char *modified_reason_strings[] = {
+	"initial",
+	"reallocate",
+	"setIsUnderground",
+	"setLightingExpired",
+	"setGenerated",
+	"setNode",
+	"setNodeNoCheck",
+	"setTimestamp",
+	"NodeMetaRef::reportMetadataChange",
+	"clearAllObjects",
+	"Timestamp expired (step)",
+	"addActiveObjectRaw",
+	"removeRemovedObjects/remove",
+	"removeRemovedObjects/deactivate",
+	"Stored list cleared in activateObjects due to overflow",
+	"deactivateFarObjects: Static data moved in",
+	"deactivateFarObjects: Static data moved out",
+	"deactivateFarObjects: Static data changed considerably",
+	"finishBlockMake: expireDayNightDiff"
+	"unknown",
+};
+
+
 /*
 	MapBlock
 */
@@ -47,8 +71,7 @@ MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
 		m_pos(pos),
 		m_gamedef(gamedef),
 		m_modified(MOD_STATE_WRITE_NEEDED),
-		m_modified_reason("initial"),
-		m_modified_reason_too_long(false),
+		m_modified_reason(MOD_REASON_INITIAL),
 		is_underground(false),
 		m_lighting_expired(true),
 		m_day_night_differs(false),
@@ -110,6 +133,27 @@ MapNode MapBlock::getNodeParent(v3s16 p, bool *is_valid_position)
 	if (is_valid_position)
 		*is_valid_position = true;
 	return data[p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X];
+}
+
+std::string MapBlock::getModifiedReasonString()
+{
+	std::string reason;
+
+	const u32 ubound = MYMIN(sizeof(m_modified_reason) * CHAR_BIT,
+		ARRLEN(modified_reason_strings));
+
+	for (u32 i = 0; i != ubound; i++) {
+		if ((m_modified_reason & (1 << i)) == 0)
+			continue;
+
+		reason += modified_reason_strings[i];
+		reason += ", ";
+	}
+
+	if (reason.length() > 2)
+		reason.resize(reason.length() - 2);
+
+	return reason;
 }
 
 /*

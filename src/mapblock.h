@@ -97,21 +97,46 @@ public:
 };
 #endif
 
-/*
-	MapBlock itself
-*/
+////
+//// MapBlock modified reason flags
+////
+
+#define MOD_REASON_INITIAL                   (1 << 0)
+#define MOD_REASON_REALLOCATE                (1 << 1)
+#define MOD_REASON_SET_IS_UNDERGROUND        (1 << 2)
+#define MOD_REASON_SET_LIGHTING_EXPIRED      (1 << 3)
+#define MOD_REASON_SET_GENERATED             (1 << 4)
+#define MOD_REASON_SET_NODE                  (1 << 5)
+#define MOD_REASON_SET_NODE_NO_CHECK         (1 << 6)
+#define MOD_REASON_SET_TIMESTAMP             (1 << 7)
+#define MOD_REASON_REPORT_META_CHANGE        (1 << 8)
+#define MOD_REASON_CLEAR_ALL_OBJECTS         (1 << 9)
+#define MOD_REASON_BLOCK_EXPIRED             (1 << 10)
+#define MOD_REASON_ADD_ACTIVE_OBJECT_RAW     (1 << 11)
+#define MOD_REASON_REMOVE_OBJECTS_REMOVE     (1 << 12)
+#define MOD_REASON_REMOVE_OBJECTS_DEACTIVATE (1 << 13)
+#define MOD_REASON_TOO_MANY_OBJECTS          (1 << 14)
+#define MOD_REASON_STATIC_DATA_ADDED         (1 << 15)
+#define MOD_REASON_STATIC_DATA_REMOVED       (1 << 16)
+#define MOD_REASON_STATIC_DATA_CHANGED       (1 << 17)
+#define MOD_REASON_EXPIRE_DAYNIGHTDIFF       (1 << 18)
+#define MOD_REASON_UNKNOWN                   (1 << 19)
+
+////
+//// MapBlock itself
+////
 
 class MapBlock /*: public NodeContainer*/
 {
 public:
 	MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy=false);
 	~MapBlock();
-	
+
 	/*virtual u16 nodeContainerId() const
 	{
 		return NODECONTAINER_ID_MAPBLOCK;
 	}*/
-	
+
 	Map * getParent()
 	{
 		return m_parent;
@@ -119,150 +144,125 @@ public:
 
 	void reallocate()
 	{
-		if(data != NULL)
-			delete[] data;
-		u32 l = MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE;
-		data = new MapNode[l];
-		for(u32 i=0; i<l; i++){
-			//data[i] = MapNode();
+		delete[] data;
+		u32 datasize = MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE;
+		data = new MapNode[datasize];
+		for (u32 i = 0; i < datasize; i++)
 			data[i] = MapNode(CONTENT_IGNORE);
-		}
-		raiseModified(MOD_STATE_WRITE_NEEDED, "reallocate");
+
+		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_REALLOCATE);
 	}
 
-	/*
-		Flags
-	*/
+	////
+	//// Modification tracking methods
+	////
+	void raiseModified(u32 mod, u32 reason=MOD_REASON_UNKNOWN)
+	{
+		if (mod > m_modified) {
+			m_modified = mod;
+			m_modified_reason = reason;
+			if (m_modified >= MOD_STATE_WRITE_AT_UNLOAD)
+				m_disk_timestamp = m_timestamp;
+		} else if (mod == m_modified) {
+			m_modified_reason |= reason;
+		}
+	}
 
-	bool isDummy()
+	inline u32 getModified()
+	{
+		return m_modified;
+	}
+
+	inline u32 getModifiedReason()
+	{
+		return m_modified_reason;
+	}
+
+	std::string getModifiedReasonString();
+
+	inline void resetModified()
+	{
+		m_modified = MOD_STATE_CLEAN;
+		m_modified_reason = 0;
+	}
+
+	////
+	//// Flags
+	////
+
+	inline bool isDummy()
 	{
 		return (data == NULL);
 	}
-	void unDummify()
+
+	inline void unDummify()
 	{
 		assert(isDummy()); // Pre-condition
 		reallocate();
 	}
-	
-	// m_modified methods
-	void raiseModified(u32 mod, const std::string &reason="unknown")
-	{
-		if(mod > m_modified){
-			m_modified = mod;
-			m_modified_reason = reason;
-			m_modified_reason_too_long = false;
 
-			if(m_modified >= MOD_STATE_WRITE_AT_UNLOAD){
-				m_disk_timestamp = m_timestamp;
-			}
-		} else if(mod == m_modified){
-			if(!m_modified_reason_too_long){
-				if(m_modified_reason.size() < 40)
-					m_modified_reason += ", " + reason;
-				else{
-					m_modified_reason += "...";
-					m_modified_reason_too_long = true;
-				}
-			}
-		}
-	}
-	void raiseModified(u32 mod, const char *reason)
-	{
-		if (mod > m_modified){
-			m_modified = mod;
-			m_modified_reason = reason;
-			m_modified_reason_too_long = false;
-
-			if (m_modified >= MOD_STATE_WRITE_AT_UNLOAD){
-				m_disk_timestamp = m_timestamp;
-			}
-		}
-		else if (mod == m_modified){
-			if (!m_modified_reason_too_long){
-				if (m_modified_reason.size() < 40)
-					m_modified_reason += ", " + std::string(reason);
-				else{
-					m_modified_reason += "...";
-					m_modified_reason_too_long = true;
-				}
-			}
-		}
-	}
-
-	u32 getModified()
-	{
-		return m_modified;
-	}
-	std::string getModifiedReason()
-	{
-		return m_modified_reason;
-	}
-	void resetModified()
-	{
-		m_modified = MOD_STATE_CLEAN;
-		m_modified_reason = "none";
-		m_modified_reason_too_long = false;
-	}
-	
 	// is_underground getter/setter
-	bool getIsUnderground()
+	inline bool getIsUnderground()
 	{
 		return is_underground;
 	}
-	void setIsUnderground(bool a_is_underground)
+
+	inline void setIsUnderground(bool a_is_underground)
 	{
 		is_underground = a_is_underground;
-		raiseModified(MOD_STATE_WRITE_NEEDED, "setIsUnderground");
+		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_IS_UNDERGROUND);
 	}
 
-	void setLightingExpired(bool expired)
+	inline void setLightingExpired(bool expired)
 	{
-		if(expired != m_lighting_expired){
+		if (expired != m_lighting_expired){
 			m_lighting_expired = expired;
-			raiseModified(MOD_STATE_WRITE_NEEDED, "setLightingExpired");
+			raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_LIGHTING_EXPIRED);
 		}
 	}
-	bool getLightingExpired()
+
+	inline bool getLightingExpired()
 	{
 		return m_lighting_expired;
 	}
 
-	bool isGenerated()
+	inline bool isGenerated()
 	{
 		return m_generated;
 	}
-	void setGenerated(bool b)
+
+	inline void setGenerated(bool b)
 	{
-		if(b != m_generated){
-			raiseModified(MOD_STATE_WRITE_NEEDED, "setGenerated");
+		if (b != m_generated) {
+			raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_GENERATED);
 			m_generated = b;
 		}
 	}
 
-	bool isValid()
+	inline bool isValid()
 	{
-		if(m_lighting_expired)
+		if (m_lighting_expired)
 			return false;
-		if(data == NULL)
+		if (data == NULL)
 			return false;
 		return true;
 	}
 
-	/*
-		Position stuff
-	*/
+	////
+	//// Position stuff
+	////
 
-	v3s16 getPos()
+	inline v3s16 getPos()
 	{
 		return m_pos;
 	}
-		
-	v3s16 getPosRelative()
+
+	inline v3s16 getPosRelative()
 	{
 		return m_pos * MAP_BLOCKSIZE;
 	}
-		
-	core::aabbox3d<s16> getBox()
+
+	inline core::aabbox3d<s16> getBox()
 	{
 		return core::aabbox3d<s16>(getPosRelative(),
 				getPosRelative()
@@ -270,140 +270,135 @@ public:
 				- v3s16(1,1,1));
 	}
 
-	/*
-		Regular MapNode get-setters
-	*/
-	
-	bool isValidPosition(s16 x, s16 y, s16 z)
+	////
+	//// Regular MapNode get-setters
+	////
+
+	inline bool isValidPosition(s16 x, s16 y, s16 z)
 	{
 		return data != NULL
-				&& x >= 0 && x < MAP_BLOCKSIZE
-				&& y >= 0 && y < MAP_BLOCKSIZE
-				&& z >= 0 && z < MAP_BLOCKSIZE;
+			&& x >= 0 && x < MAP_BLOCKSIZE
+			&& y >= 0 && y < MAP_BLOCKSIZE
+			&& z >= 0 && z < MAP_BLOCKSIZE;
 	}
 
-	bool isValidPosition(v3s16 p)
+	inline bool isValidPosition(v3s16 p)
 	{
 		return isValidPosition(p.X, p.Y, p.Z);
 	}
 
-	MapNode getNode(s16 x, s16 y, s16 z, bool *valid_position)
+	inline MapNode getNode(s16 x, s16 y, s16 z, bool *valid_position)
 	{
 		*valid_position = isValidPosition(x, y, z);
 
 		if (!*valid_position)
 			return MapNode(CONTENT_IGNORE);
 
-		return data[z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + y*MAP_BLOCKSIZE + x];
+		return data[z * MAP_BLOCKSIZE * MAP_BLOCKSIZE + y * MAP_BLOCKSIZE + x];
 	}
-	
-	MapNode getNode(v3s16 p, bool *valid_position)
+
+	inline MapNode getNode(v3s16 p, bool *valid_position)
 	{
 		return getNode(p.X, p.Y, p.Z, valid_position);
 	}
-	
-	MapNode getNodeNoEx(v3s16 p)
+
+	inline MapNode getNodeNoEx(v3s16 p)
 	{
 		bool is_valid;
 		MapNode node = getNode(p.X, p.Y, p.Z, &is_valid);
 		return is_valid ? node : MapNode(CONTENT_IGNORE);
 	}
-	
-	void setNode(s16 x, s16 y, s16 z, MapNode & n)
+
+	inline void setNode(s16 x, s16 y, s16 z, MapNode & n)
 	{
-		if(data == NULL)
+		if (!isValidPosition(x, y, z))
 			throw InvalidPositionException();
-		if(x < 0 || x >= MAP_BLOCKSIZE) throw InvalidPositionException();
-		if(y < 0 || y >= MAP_BLOCKSIZE) throw InvalidPositionException();
-		if(z < 0 || z >= MAP_BLOCKSIZE) throw InvalidPositionException();
-		data[z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + y*MAP_BLOCKSIZE + x] = n;
-		raiseModified(MOD_STATE_WRITE_NEEDED, "setNode");
+
+		data[z * zstride + y * ystride + x] = n;
+		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_NODE);
 	}
-	
-	void setNode(v3s16 p, MapNode & n)
+
+	inline void setNode(v3s16 p, MapNode & n)
 	{
 		setNode(p.X, p.Y, p.Z, n);
 	}
 
-	/*
-		Non-checking variants of the above
-	*/
+	////
+	//// Non-checking variants of the above
+	////
 
-	MapNode getNodeNoCheck(s16 x, s16 y, s16 z, bool *valid_position)
+	inline MapNode getNodeNoCheck(s16 x, s16 y, s16 z, bool *valid_position)
 	{
 		*valid_position = data != NULL;
-		if(!valid_position)
+		if (!valid_position)
 			return MapNode(CONTENT_IGNORE);
 
-		return data[z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + y*MAP_BLOCKSIZE + x];
+		return data[z * zstride + y * ystride + x];
 	}
-	
-	MapNode getNodeNoCheck(v3s16 p, bool *valid_position)
+
+	inline MapNode getNodeNoCheck(v3s16 p, bool *valid_position)
 	{
 		return getNodeNoCheck(p.X, p.Y, p.Z, valid_position);
 	}
-	
-	void setNodeNoCheck(s16 x, s16 y, s16 z, MapNode & n)
+
+	inline void setNodeNoCheck(s16 x, s16 y, s16 z, MapNode & n)
 	{
-		if(data == NULL)
+		if (data == NULL)
 			throw InvalidPositionException();
-		data[z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + y*MAP_BLOCKSIZE + x] = n;
-		raiseModified(MOD_STATE_WRITE_NEEDED, "setNodeNoCheck");
+
+		data[z * zstride + y * ystride + x] = n;
+		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_NODE_NO_CHECK);
 	}
-	
-	void setNodeNoCheck(v3s16 p, MapNode & n)
+
+	inline void setNodeNoCheck(v3s16 p, MapNode & n)
 	{
 		setNodeNoCheck(p.X, p.Y, p.Z, n);
 	}
 
-	/*
-		These functions consult the parent container if the position
-		is not valid on this MapBlock.
-	*/
+	// These functions consult the parent container if the position
+	// is not valid on this MapBlock.
 	bool isValidPositionParent(v3s16 p);
 	MapNode getNodeParent(v3s16 p, bool *is_valid_position = NULL);
 	void setNodeParent(v3s16 p, MapNode & n);
 
-	void drawbox(s16 x0, s16 y0, s16 z0, s16 w, s16 h, s16 d, MapNode node)
+	inline void drawbox(s16 x0, s16 y0, s16 z0, s16 w, s16 h, s16 d, MapNode node)
 	{
-		for(u16 z=0; z<d; z++)
-			for(u16 y=0; y<h; y++)
-				for(u16 x=0; x<w; x++)
-					setNode(x0+x, y0+y, z0+z, node);
+		for (u16 z = 0; z < d; z++)
+		for (u16 y = 0; y < h; y++)
+		for (u16 x = 0; x < w; x++)
+			setNode(x0 + x, y0 + y, z0 + z, node);
 	}
 
 	// See comments in mapblock.cpp
-	bool propagateSunlight(std::set<v3s16> & light_sources,
-			bool remove_light=false, bool *black_air_left=NULL);
-	
+	bool propagateSunlight(std::set<v3s16> &light_sources,
+		bool remove_light=false, bool *black_air_left=NULL);
+
 	// Copies data to VoxelManipulator to getPosRelative()
 	void copyTo(VoxelManipulator &dst);
+
 	// Copies data from VoxelManipulator getPosRelative()
 	void copyFrom(VoxelManipulator &dst);
 
-	/*
-		Update day-night lighting difference flag.
-		Sets m_day_night_differs to appropriate value.
-		These methods don't care about neighboring blocks.
-	*/
+	// Update day-night lighting difference flag.
+	// Sets m_day_night_differs to appropriate value.
+	// These methods don't care about neighboring blocks.
 	void actuallyUpdateDayNightDiff();
-	/*
-		Call this to schedule what the previous function does to be done
-		when the value is actually needed.
-	*/
+
+	// Call this to schedule what the previous function does to be done
+	// when the value is actually needed.
 	void expireDayNightDiff();
 
-	bool getDayNightDiff()
+	inline bool getDayNightDiff()
 	{
-		if(m_day_night_differs_expired)
+		if (m_day_night_differs_expired)
 			actuallyUpdateDayNightDiff();
 		return m_day_night_differs;
 	}
 
-	/*
-		Miscellaneous stuff
-	*/
-	
+	////
+	//// Miscellaneous stuff
+	////
+
 	/*
 		Tries to measure ground level.
 		Return value:
@@ -414,84 +409,99 @@ public:
 	*/
 	s16 getGroundLevel(v2s16 p2d);
 
-	/*
-		Timestamp (see m_timestamp)
-		NOTE: BLOCK_TIMESTAMP_UNDEFINED=0xffffffff means there is no timestamp.
-	*/
-	void setTimestamp(u32 time)
+	////
+	//// Timestamp (see m_timestamp)
+	////
+
+	// NOTE: BLOCK_TIMESTAMP_UNDEFINED=0xffffffff means there is no timestamp.
+
+	inline void setTimestamp(u32 time)
 	{
 		m_timestamp = time;
-		raiseModified(MOD_STATE_WRITE_AT_UNLOAD, "setTimestamp");
+		raiseModified(MOD_STATE_WRITE_AT_UNLOAD, MOD_REASON_SET_TIMESTAMP);
 	}
-	void setTimestampNoChangedFlag(u32 time)
+
+	inline void setTimestampNoChangedFlag(u32 time)
 	{
 		m_timestamp = time;
 	}
-	u32 getTimestamp()
+
+	inline u32 getTimestamp()
 	{
 		return m_timestamp;
 	}
-	u32 getDiskTimestamp()
+
+	inline u32 getDiskTimestamp()
 	{
 		return m_disk_timestamp;
 	}
-	
-	/*
-		See m_usage_timer
-	*/
-	void resetUsageTimer()
+
+	////
+	//// Usage timer (see m_usage_timer)
+	////
+
+	inline void resetUsageTimer()
 	{
 		m_usage_timer = 0;
 	}
-	void incrementUsageTimer(float dtime)
+
+	inline void incrementUsageTimer(float dtime)
 	{
 		m_usage_timer += dtime;
 	}
-	float getUsageTimer()
+
+	inline float getUsageTimer()
 	{
 		return m_usage_timer;
 	}
 
-	/*
-		See m_refcount
-	*/
-	void refGrab()
+	////
+	//// Reference counting (see m_refcount)
+	////
+
+	inline void refGrab()
 	{
 		m_refcount++;
 	}
-	void refDrop()
+
+	inline void refDrop()
 	{
 		m_refcount--;
 	}
-	int refGet()
+
+	inline int refGet()
 	{
 		return m_refcount;
 	}
-	
-	/*
-		Node Timers
-	*/
-	// Get timer
-	NodeTimer getNodeTimer(v3s16 p){ 
+
+	////
+	//// Node Timers
+	////
+
+	inline NodeTimer getNodeTimer(v3s16 p)
+	{
 		return m_node_timers.get(p);
 	}
-	// Deletes timer
-	void removeNodeTimer(v3s16 p){
+
+	inline void removeNodeTimer(v3s16 p)
+	{
 		m_node_timers.remove(p);
 	}
-	// Deletes old timer and sets a new one
-	void setNodeTimer(v3s16 p, NodeTimer t){
+
+	inline void setNodeTimer(v3s16 p, NodeTimer t)
+	{
 		m_node_timers.set(p,t);
 	}
-	// Deletes all timers
-	void clearNodeTimers(){
+
+	inline void clearNodeTimers()
+	{
 		m_node_timers.clear();
 	}
 
-	/*
-		Serialization
-	*/
-	
+	////
+	//// Serialization
+	///
+
 	// These don't write or read version by itself
 	// Set disk to true for on-disk format, false for over-the-network format
 	// Precondition: version >= SER_FMT_CLIENT_VER_LOWEST
@@ -514,16 +524,15 @@ private:
 		Used only internally, because changes can't be tracked
 	*/
 
-	MapNode & getNodeRef(s16 x, s16 y, s16 z)
+	inline MapNode &getNodeRef(s16 x, s16 y, s16 z)
 	{
-		if(data == NULL)
+		if (!isValidPosition(x, y, z))
 			throw InvalidPositionException();
-		if(x < 0 || x >= MAP_BLOCKSIZE) throw InvalidPositionException();
-		if(y < 0 || y >= MAP_BLOCKSIZE) throw InvalidPositionException();
-		if(z < 0 || z >= MAP_BLOCKSIZE) throw InvalidPositionException();
-		return data[z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + y*MAP_BLOCKSIZE + x];
+
+		return data[z * zstride + y * ystride + x];
 	}
-	MapNode & getNodeRef(v3s16 &p)
+
+	inline MapNode &getNodeRef(v3s16 &p)
 	{
 		return getNodeRef(p.X, p.Y, p.Z);
 	}
@@ -536,10 +545,13 @@ public:
 #ifndef SERVER // Only on client
 	MapBlockMesh *mesh;
 #endif
-	
+
 	NodeMetadataList m_node_metadata;
 	NodeTimerList m_node_timers;
 	StaticObjectList m_static_objects;
+
+	static const u32 ystride = MAP_BLOCKSIZE;
+	static const u32 zstride = MAP_BLOCKSIZE * MAP_BLOCKSIZE;
 
 private:
 	/*
@@ -552,12 +564,12 @@ private:
 	v3s16 m_pos;
 
 	IGameDef *m_gamedef;
-	
+
 	/*
 		If NULL, block is a dummy block.
 		Dummy blocks are used for caching not-found-on-disk blocks.
 	*/
-	MapNode * data;
+	MapNode *data;
 
 	/*
 		- On the server, this is used for telling whether the
@@ -565,8 +577,7 @@ private:
 		- On the client, this is used for nothing.
 	*/
 	u32 m_modified;
-	std::string m_modified_reason;
-	bool m_modified_reason_too_long;
+	u32 m_modified_reason;
 
 	/*
 		When propagating sunlight and the above block doesn't exist,
@@ -586,13 +597,13 @@ private:
 		If this is true, lighting might be wrong or right.
 	*/
 	bool m_lighting_expired;
-	
+
 	// Whether day and night lighting differs
 	bool m_day_night_differs;
 	bool m_day_night_differs_expired;
 
 	bool m_generated;
-	
+
 	/*
 		When block is removed from active blocks, this is set to gametime.
 		Value BLOCK_TIMESTAMP_UNDEFINED=0xffffffff means there is no timestamp.

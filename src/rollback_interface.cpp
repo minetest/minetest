@@ -178,7 +178,7 @@ bool RollbackAction::applyRevert(Map *map, InventoryManager *imgr, IGameDef *gam
 				MapBlock *block = map->getBlockNoCreateNoEx(blockpos);
 				if (block) {
 					block->raiseModified(MOD_STATE_WRITE_NEEDED,
-						"NodeMetaRef::reportMetadataChange");
+						MOD_REASON_REPORT_META_CHANGE);
 				}
 			} catch (InvalidPositionException &e) {
 				infostream << "RollbackAction::applyRevert(): "
