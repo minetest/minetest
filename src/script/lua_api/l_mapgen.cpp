@@ -215,7 +215,8 @@ Schematic *load_schematic_from_def(lua_State *L, int index,
 		}
 	}
 
-	ndef->pendNodeResolve(schem);
+	if (ndef)
+		ndef->pendNodeResolve(schem);
 
 	return schem;
 }
