@@ -613,7 +613,7 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 		playersao = StageTwoClientInit(pkt->getPeerId());
 
 		if (playersao == NULL) {
-			errorstream
+			actionstream
 				<< "TOSERVER_INIT2 stage 2 client init failed for peer "
 				<< pkt->getPeerId() << std::endl;
 			return;
@@ -710,7 +710,7 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 	PlayerSAO* playersao = StageTwoClientInit(peer_id);
 
 	if (playersao == NULL) {
-		errorstream
+		actionstream
 			<< "TOSERVER_CLIENT_READY stage 2 client init failed for peer_id: "
 			<< peer_id << std::endl;
 		m_con.DisconnectPeer(peer_id);
