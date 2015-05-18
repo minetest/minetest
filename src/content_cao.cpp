@@ -1721,6 +1721,11 @@ void GenericCAO::processMessage(const std::string &data)
 			m_nametag_color = readARGB8(is);
 			if (m_textnode != NULL) {
 				m_textnode->setTextColor(m_nametag_color);
+
+				// Enforce hiding nametag,
+				// because if freetype is enabled, a grey
+				// shadow can remain.
+				m_textnode->setVisible(m_nametag_color.getAlpha() > 0);
 			}
 		}
 	}
