@@ -1716,10 +1716,12 @@ void GenericCAO::processMessage(const std::string &data)
 			m_armor_groups[name] = rating;
 		}
 	} else if (cmd == GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES) {
-		//u8 version = readU8(is); // forward compatibility
-		m_nametag_color = readARGB8(is);
-		if (m_textnode != NULL) {
-			m_textnode->setTextColor(m_nametag_color);
+		u8 version = readU8(is); // forward compatibility
+		if (version == 1) {
+			m_nametag_color = readARGB8(is);
+			if (m_textnode != NULL) {
+				m_textnode->setTextColor(m_nametag_color);
+			}
 		}
 	}
 }
