@@ -1102,7 +1102,7 @@ void Client::sendRemovedSounds(std::vector<s32> &soundList)
 }
 
 void Client::sendNodemetaFields(v3s16 p, const std::string &formname,
-		const std::map<std::string, std::string> &fields)
+		const StringMap &fields)
 {
 	size_t fields_size = fields.size();
 
@@ -1112,10 +1112,10 @@ void Client::sendNodemetaFields(v3s16 p, const std::string &formname,
 
 	pkt << p << formname << (u16) (fields_size & 0xFFFF);
 
-	for(std::map<std::string, std::string>::const_iterator
-			i = fields.begin(); i != fields.end(); i++) {
-		const std::string &name = i->first;
-		const std::string &value = i->second;
+	StringMap::const_iterator it;
+	for (it = fields.begin(); it != fields.end(); ++it) {
+		const std::string &name = it->first;
+		const std::string &value = it->second;
 		pkt << name;
 		pkt.putLongString(value);
 	}
@@ -1124,7 +1124,7 @@ void Client::sendNodemetaFields(v3s16 p, const std::string &formname,
 }
 
 void Client::sendInventoryFields(const std::string &formname,
-		const std::map<std::string, std::string> &fields)
+		const StringMap &fields)
 {
 	size_t fields_size = fields.size();
 	FATAL_ERROR_IF(fields_size > 0xFFFF, "Unsupported number of inventory fields");
@@ -1132,10 +1132,10 @@ void Client::sendInventoryFields(const std::string &formname,
 	NetworkPacket pkt(TOSERVER_INVENTORY_FIELDS, 0);
 	pkt << formname << (u16) (fields_size & 0xFFFF);
 
-	for(std::map<std::string, std::string>::const_iterator
-			i = fields.begin(); i != fields.end(); i++) {
-		const std::string &name  = i->first;
-		const std::string &value = i->second;
+	StringMap::const_iterator it;
+	for (it = fields.begin(); it != fields.end(); ++it) {
+		const std::string &name  = it->first;
+		const std::string &value = it->second;
 		pkt << name;
 		pkt.putLongString(value);
 	}
@@ -1918,14 +1918,13 @@ ParticleManager* Client::getParticleManager()
 
 scene::IAnimatedMesh* Client::getMesh(const std::string &filename)
 {
-	std::map<std::string, std::string>::const_iterator i =
-			m_mesh_data.find(filename);
-	if(i == m_mesh_data.end()){
-		errorstream<<"Client::getMesh(): Mesh not found: \""<<filename<<"\""
-				<<std::endl;
+	StringMap::const_iterator it = m_mesh_data.find(filename);
+	if (it == m_mesh_data.end()) {
+		errorstream << "Client::getMesh(): Mesh not found: \"" << filename
+			<< "\"" << std::endl;
 		return NULL;
 	}
-	const std::string &data    = i->second;
+	const std::string &data    = it->second;
 	scene::ISceneManager *smgr = m_device->getSceneManager();
 
 	// Create the mesh, remove it from cache and return it

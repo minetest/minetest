@@ -192,7 +192,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 
 	{
 		std::string reason;
-		if(m_script->on_prejoinplayer(playername, addr_s, reason)) {
+		if (m_script->on_prejoinplayer(playername, addr_s, &reason)) {
 			actionstream << "Server: Player with the name \"" << playerName << "\" "
 					<< "tried to connect from " << addr_s << " "
 					<< "but it was disallowed for the following reason: "
@@ -480,7 +480,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 
 	{
 		std::string reason;
-		if (m_script->on_prejoinplayer(playername, addr_s, reason)) {
+		if (m_script->on_prejoinplayer(playername, addr_s, &reason)) {
 			actionstream << "Server: Player with the name \"" << playername << "\" "
 					<< "tried to connect from " << addr_s << " "
 					<< "but it was disallowed for the following reason: "
@@ -1742,7 +1742,7 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 
 	*pkt >> p >> formname >> num;
 
-	std::map<std::string, std::string> fields;
+	StringMap fields;
 	for (u16 k = 0; k < num; k++) {
 		std::string fieldname;
 		*pkt >> fieldname;
@@ -1792,7 +1792,7 @@ void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 
 	*pkt >> formname >> num;
 
-	std::map<std::string, std::string> fields;
+	StringMap fields;
 	for (u16 k = 0; k < num; k++) {
 		std::string fieldname;
 		*pkt >> fieldname;

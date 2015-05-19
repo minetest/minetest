@@ -2579,7 +2579,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 {
 	if(m_text_dst)
 	{
-		std::map<std::string, std::string> fields;
+		StringMap fields;
 
 		if (quitmode == quit_mode_accept) {
 			fields["quit"] = "true";

@@ -20,10 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef S_PLAYER_H_
 #define S_PLAYER_H_
 
-#include <map>
-
 #include "cpp_api/s_base.h"
 #include "irr_v3d.h"
+#include "util/string.h"
 
 struct ToolCapabilities;
 
@@ -36,17 +35,16 @@ public:
 	void on_newplayer(ServerActiveObject *player);
 	void on_dieplayer(ServerActiveObject *player);
 	bool on_respawnplayer(ServerActiveObject *player);
-	bool on_prejoinplayer(std::string name, std::string ip, std::string &reason);
+	bool on_prejoinplayer(const std::string &name, const std::string &ip,
+		std::string *reason);
 	void on_joinplayer(ServerActiveObject *player);
 	void on_leaveplayer(ServerActiveObject *player);
 	void on_cheat(ServerActiveObject *player, const std::string &cheat_type);
 	bool on_punchplayer(ServerActiveObject *player,
 		ServerActiveObject *hitter, float time_from_last_punch,
 		const ToolCapabilities *toolcap, v3f dir, s16 damage);
-
 	void on_playerReceiveFields(ServerActiveObject *player,
-			const std::string &formname,
-			const std::map<std::string, std::string> &fields);
+		const std::string &formname, const StringMap &fields);
 };
 
 

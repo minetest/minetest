@@ -405,13 +405,13 @@ public:
 	void interact(u8 action, const PointedThing& pointed);
 
 	void sendNodemetaFields(v3s16 p, const std::string &formname,
-			const std::map<std::string, std::string> &fields);
+		const StringMap &fields);
 	void sendInventoryFields(const std::string &formname,
-			const std::map<std::string, std::string> &fields);
+		const StringMap &fields);
 	void sendInventoryAction(InventoryAction *a);
 	void sendChatMessage(const std::wstring &message);
 	void sendChangePassword(const std::string &oldpassword,
-	                        const std::string &newpassword);
+		const std::string &newpassword);
 	void sendDamage(u8 damage);
 	void sendBreath(u16 breath);
 	void sendRespawn();
@@ -648,7 +648,7 @@ private:
 	std::map<std::string, Inventory*> m_detached_inventories;
 
 	// Storage for mesh data for creating multiple instances of the same mesh
-	std::map<std::string, std::string> m_mesh_data;
+	StringMap m_mesh_data;
 
 	// own state
 	LocalClientState m_state;

@@ -45,10 +45,11 @@ void NodeMetadata::serialize(std::ostream &os) const
 {
 	int num_vars = m_stringvars.size();
 	writeU32(os, num_vars);
-	for(std::map<std::string, std::string>::const_iterator
-			i = m_stringvars.begin(); i != m_stringvars.end(); i++){
-		os<<serializeString(i->first);
-		os<<serializeLongString(i->second);
+	for (StringMap::const_iterator
+			it = m_stringvars.begin();
+			it != m_stringvars.end(); ++it) {
+		os << serializeString(it->first);
+		os << serializeLongString(it->second);
 	}
 
 	m_inventory->serialize(os);
@@ -203,11 +204,10 @@ void NodeMetadataList::clear()
 std::string NodeMetadata::getString(const std::string &name,
 	unsigned short recursion) const
 {
-	std::map<std::string, std::string>::const_iterator it;
-	it = m_stringvars.find(name);
-	if (it == m_stringvars.end()) {
+	StringMap::const_iterator it = m_stringvars.find(name);
+	if (it == m_stringvars.end())
 		return "";
-	}
+
 	return resolveString(it->second, recursion);
 }
 

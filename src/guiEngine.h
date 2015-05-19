@@ -73,7 +73,7 @@ public:
 	 * receive fields transmitted by guiFormSpecMenu
 	 * @param fields map containing formspec field elements currently active
 	 */
-	void gotText(std::map<std::string, std::string> fields);
+	void gotText(const StringMap &fields);
 
 	/**
 	 * receive text/events transmitted by guiFormSpecMenu

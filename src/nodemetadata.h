@@ -21,10 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define NODEMETADATA_HEADER
 
 #include "irr_v3d.h"
-#include <string>
 #include <iostream>
 #include <vector>
-#include <map>
+#include "util/string.h"
 
 /*
 	NodeMetadata stores arbitary amounts of data for special blocks.
@@ -54,19 +53,19 @@ public:
 	void setString(const std::string &name, const std::string &var);
 	// Support variable names in values
 	std::string resolveString(const std::string &str, unsigned short recursion = 0) const;
-	std::map<std::string, std::string> getStrings() const
+	StringMap getStrings() const
 	{
 		return m_stringvars;
 	}
 
 	// The inventory
-	Inventory* getInventory()
+	Inventory *getInventory()
 	{
 		return m_inventory;
 	}
 
 private:
-	std::map<std::string, std::string> m_stringvars;
+	StringMap m_stringvars;
 	Inventory *m_inventory;
 };
 

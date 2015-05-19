@@ -56,7 +56,7 @@ void BanManager::load()
 		infostream<<"BanManager: failed loading from "<<m_banfilepath<<std::endl;
 		throw SerializationError("BanManager::load(): Couldn't open file");
 	}
-	
+
 	while(!is.eof() && is.good())
 	{
 		std::string line;
@@ -74,18 +74,14 @@ void BanManager::load()
 void BanManager::save()
 {
 	JMutexAutoLock lock(m_mutex);
-	infostream<<"BanManager: saving to "<<m_banfilepath<<std::endl;
+	infostream << "BanManager: saving to " << m_banfilepath << std::endl;
 	std::ostringstream ss(std::ios_base::binary);
 
-	for(std::map<std::string, std::string>::iterator
-			i = m_ips.begin();
-			i != m_ips.end(); i++)
-	{
-		ss << i->first << "|" << i->second << "\n";
-	}
+	for (StringMap::iterator it = m_ips.begin(); it != m_ips.end(); ++it)
+		ss << it->first << "|" << it->second << "\n";
 
-	if(!fs::safeWriteToFile(m_banfilepath, ss.str())) {
-		infostream<<"BanManager: failed saving to "<<m_banfilepath<<std::endl;
+	if (!fs::safeWriteToFile(m_banfilepath, ss.str())) {
+		infostream << "BanManager: failed saving to " << m_banfilepath << std::endl;
 		throw SerializationError("BanManager::save(): Couldn't write file");
 	}
 
@@ -102,25 +98,23 @@ std::string BanManager::getBanDescription(const std::string &ip_or_name)
 {
 	JMutexAutoLock lock(m_mutex);
 	std::string s = "";
-	for(std::map<std::string, std::string>::iterator
-			i = m_ips.begin();
-			i != m_ips.end(); i++)
-	{
-		if(i->first == ip_or_name || i->second == ip_or_name
-				|| ip_or_name == "")
-			s += i->first + "|" + i->second + ", ";
+	for (StringMap::iterator it = m_ips.begin(); it != m_ips.end(); ++it) {
+		if (it->first  == ip_or_name || it->second == ip_or_name
+				|| ip_or_name == "") {
+			s += it->first + "|" + it->second + ", ";
+		}
 	}
-	s = s.substr(0, s.size()-2);
+	s = s.substr(0, s.size() - 2);
 	return s;
 }
 
 std::string BanManager::getBanName(const std::string &ip)
 {
 	JMutexAutoLock lock(m_mutex);
-	std::map<std::string, std::string>::iterator i = m_ips.find(ip);
-	if(i == m_ips.end())
+	StringMap::iterator it = m_ips.find(ip);
+	if (it == m_ips.end())
 		return "";
-	return i->second;
+	return it->second;
 }
 
 void BanManager::add(const std::string &ip, const std::string &name)
@@ -133,19 +127,16 @@ void BanManager::add(const std::string &ip, const std::string &name)
 void BanManager::remove(const std::string &ip_or_name)
 {
 	JMutexAutoLock lock(m_mutex);
-	for(std::map<std::string, std::string>::iterator
-			i = m_ips.begin();
-			i != m_ips.end();)
-	{
-		if((i->first == ip_or_name) || (i->second == ip_or_name)) {
-			m_ips.erase(i++);
+	for (StringMap::iterator it = m_ips.begin(); it != m_ips.end();) {
+		if ((it->first == ip_or_name) || (it->second == ip_or_name)) {
+			m_ips.erase(it++);
 		} else {
-			++i;
+			++it;
 		}
 	}
 	m_modified = true;
 }
-	
+
 
 bool BanManager::isModified()
 {

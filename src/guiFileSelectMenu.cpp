@@ -84,7 +84,7 @@ void GUIFileSelectMenu::drawMenu()
 
 void GUIFileSelectMenu::acceptInput() {
 	if ((m_text_dst != 0) && (this->m_formname != "")){
-		std::map<std::string, std::string> fields;
+		StringMap fields;
 
 		if (m_accepted)
 			fields[m_formname + "_accepted"] = wide_to_narrow(m_fileOpenDialog->getFileName());

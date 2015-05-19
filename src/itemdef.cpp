@@ -280,26 +280,23 @@ public:
 	}
 	virtual std::string getAlias(const std::string &name) const
 	{
-		std::map<std::string, std::string>::const_iterator i;
-		i = m_aliases.find(name);
-		if(i != m_aliases.end())
-			return i->second;
+		StringMap::const_iterator it = m_aliases.find(name);
+		if (it != m_aliases.end())
+			return it->second;
 		return name;
 	}
 	virtual std::set<std::string> getAll() const
 	{
 		std::set<std::string> result;
-		for(std::map<std::string, ItemDefinition*>::const_iterator
-				i = m_item_definitions.begin();
-				i != m_item_definitions.end(); i++)
-		{
-			result.insert(i->first);
+		for(std::map<std::string, ItemDefinition *>::const_iterator
+				it = m_item_definitions.begin();
+				it != m_item_definitions.end(); ++it) {
+			result.insert(it->first);
 		}
-		for(std::map<std::string, std::string>::const_iterator
-				i = m_aliases.begin();
-				i != m_aliases.end(); i++)
-		{
-			result.insert(i->first);
+		for (StringMap::const_iterator
+				it = m_aliases.begin();
+				it != m_aliases.end(); ++it) {
+			result.insert(it->first);
 		}
 		return result;
 	}
@@ -571,22 +568,24 @@ public:
 		writeU8(os, 0); // version
 		u16 count = m_item_definitions.size();
 		writeU16(os, count);
-		for(std::map<std::string, ItemDefinition*>::const_iterator
-				i = m_item_definitions.begin();
-				i != m_item_definitions.end(); i++)
-		{
-			ItemDefinition *def = i->second;
+
+		for (std::map<std::string, ItemDefinition *>::const_iterator
+				it = m_item_definitions.begin();
+				it != m_item_definitions.end(); ++it) {
+			ItemDefinition *def = it->second;
 			// Serialize ItemDefinition and write wrapped in a string
 			std::ostringstream tmp_os(std::ios::binary);
 			def->serialize(tmp_os, protocol_version);
-			os<<serializeString(tmp_os.str());
+			os << serializeString(tmp_os.str());
 		}
+
 		writeU16(os, m_aliases.size());
-		for(std::map<std::string, std::string>::const_iterator
-			i = m_aliases.begin(); i != m_aliases.end(); i++)
-		{
-			os<<serializeString(i->first);
-			os<<serializeString(i->second);
+
+		for (StringMap::const_iterator
+				it = m_aliases.begin();
+				it != m_aliases.end(); ++it) {
+			os << serializeString(it->first);
+			os << serializeString(it->second);
 		}
 	}
 	void deSerialize(std::istream &is)
@@ -633,7 +632,7 @@ private:
 	// Key is name
 	std::map<std::string, ItemDefinition*> m_item_definitions;
 	// Aliases
-	std::map<std::string, std::string> m_aliases;
+	StringMap m_aliases;
 #ifndef SERVER
 	// The id of the thread that is allowed to use irrlicht directly
 	threadid_t m_main_thread;

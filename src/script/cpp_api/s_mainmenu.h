@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define S_MAINMENU_H_
 
 #include "cpp_api/s_base.h"
-#include <map>
+#include "util/string.h"
 
 class ScriptApiMainMenu
 		: virtual public ScriptApiBase
@@ -43,7 +43,7 @@ public:
 	 * process field data recieved from formspec
 	 * @param fields data in field format
 	 */
-	void handleMainMenuButtons(std::map<std::string, std::string> fields);
+	void handleMainMenuButtons(const StringMap &fields);
 };
 
 #endif /* S_MAINMENU_H_ */

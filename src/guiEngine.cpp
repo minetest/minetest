@@ -53,7 +53,7 @@ TextDestGuiEngine::TextDestGuiEngine(GUIEngine* engine)
 }
 
 /******************************************************************************/
-void TextDestGuiEngine::gotText(std::map<std::string, std::string> fields)
+void TextDestGuiEngine::gotText(const StringMap &fields)
 {
 	m_engine->getScriptIface()->handleMainMenuButtons(fields);
 }

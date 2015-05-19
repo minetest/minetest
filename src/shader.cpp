@@ -103,10 +103,8 @@ std::string getShaderPath(const std::string &name_of_shader,
 class SourceShaderCache
 {
 public:
-	void insert(const std::string &name_of_shader,
-			const std::string &filename,
-			const std::string &program,
-			bool prefer_local)
+	void insert(const std::string &name_of_shader, const std::string &filename,
+		const std::string &program, bool prefer_local)
 	{
 		std::string combined = name_of_shader + DIR_DELIM + filename;
 		// Try to use local shader instead if asked to
@@ -122,42 +120,43 @@ public:
 		}
 		m_programs[combined] = program;
 	}
+
 	std::string get(const std::string &name_of_shader,
-			const std::string &filename)
+		const std::string &filename)
 	{
 		std::string combined = name_of_shader + DIR_DELIM + filename;
-		std::map<std::string, std::string>::iterator n;
-		n = m_programs.find(combined);
-		if(n != m_programs.end())
+		StringMap::iterator n = m_programs.find(combined);
+		if (n != m_programs.end())
 			return n->second;
 		return "";
 	}
+
 	// Primarily fetches from cache, secondarily tries to read from filesystem
 	std::string getOrLoad(const std::string &name_of_shader,
-			const std::string &filename)
+		const std::string &filename)
 	{
 		std::string combined = name_of_shader + DIR_DELIM + filename;
-		std::map<std::string, std::string>::iterator n;
-		n = m_programs.find(combined);
-		if(n != m_programs.end())
+		StringMap::iterator n = m_programs.find(combined);
+		if (n != m_programs.end())
 			return n->second;
 		std::string path = getShaderPath(name_of_shader, filename);
-		if(path == ""){
-			infostream<<"SourceShaderCache::getOrLoad(): No path found for \""
-					<<combined<<"\""<<std::endl;
+		if (path == "") {
+			infostream << "SourceShaderCache::getOrLoad(): No path found for \""
+				<< combined << "\"" << std::endl;
 			return "";
 		}
-		infostream<<"SourceShaderCache::getOrLoad(): Loading path \""<<path
-				<<"\""<<std::endl;
+		infostream << "SourceShaderCache::getOrLoad(): Loading path \""
+			<< path << "\"" << std::endl;
 		std::string p = readFile(path);
-		if(p != ""){
+		if (p != "") {
 			m_programs[combined] = p;
 			return p;
 		}
 		return "";
 	}
 private:
-	std::map<std::string, std::string> m_programs;
+	StringMap m_programs;
+
 	std::string readFile(const std::string &path)
 	{
 		std::ifstream is(path.c_str(), std::ios::binary);
@@ -274,23 +273,23 @@ public:
 
 		The id 0 points to a null shader. Its material is EMT_SOLID.
 	*/
-	u32 getShaderIdDirect(const std::string &name, 
+	u32 getShaderIdDirect(const std::string &name,
 		const u8 material_type, const u8 drawtype);
 
 	/*
 		If shader specified by the name pointed by the id doesn't
-		exist, create it, then return id. 
+		exist, create it, then return id.
 
 		Can be called from any thread. If called from some other thread
 		and not found in cache, the call is queued to the main thread
 		for processing.
 	*/
-	
+
 	u32 getShader(const std::string &name,
 		const u8 material_type, const u8 drawtype);
-	
+
 	ShaderInfo getShaderInfo(u32 id);
-	
+
 	// Processes queued shader requests from other threads.
 	// Shall be called from the main thread.
 	void processQueue();
@@ -391,7 +390,7 @@ ShaderSource::~ShaderSource()
 	}
 }
 
-u32 ShaderSource::getShader(const std::string &name, 
+u32 ShaderSource::getShader(const std::string &name,
 		const u8 material_type, const u8 drawtype)
 {
 	/*
@@ -435,7 +434,7 @@ u32 ShaderSource::getShader(const std::string &name,
 /*
 	This method generates all the shaders
 */
-u32 ShaderSource::getShaderIdDirect(const std::string &name, 
+u32 ShaderSource::getShaderIdDirect(const std::string &name,
 		const u8 material_type, const u8 drawtype)
 {
 	//infostream<<"getShaderIdDirect(): name=\""<<name<<"\""<<std::endl;
@@ -494,7 +493,7 @@ ShaderInfo ShaderSource::getShaderInfo(u32 id)
 
 void ShaderSource::processQueue()
 {
- 
+
 
 }
 
@@ -572,7 +571,7 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 			shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		break;
 	}
-	
+
 	bool enable_shaders = g_settings->getBool("enable_shaders");
 	if(!enable_shaders)
 		return shaderinfo;
@@ -648,7 +647,7 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 		"NDT_FIRELIKE",
 		"NDT_GLASSLIKE_FRAMED_OPTIONAL"
 	};
-	
+
 	for (int i = 0; i < 14; i++){
 		shaders_header += "#define ";
 		shaders_header += drawTypes[i];
@@ -741,10 +740,10 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 	shaders_header += "#define ENABLE_WAVING_LEAVES ";
 	if (g_settings->getBool("enable_waving_leaves"))
 		shaders_header += "1\n";
-	else 	
+	else
 		shaders_header += "0\n";
 
-	shaders_header += "#define ENABLE_WAVING_PLANTS ";		
+	shaders_header += "#define ENABLE_WAVING_PLANTS ";
 	if (g_settings->getBool("enable_waving_plants"))
 		shaders_header += "1\n";
 	else
