@@ -21,9 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MG_DECORATION_HEADER
 
 #include <set>
-#include "mapgen.h"
+#include "objdef.h"
+#include "noise.h"
+#include "nodedef.h"
 
-struct NoiseParams;
 class Mapgen;
 class MMVManip;
 class PseudoRandom;

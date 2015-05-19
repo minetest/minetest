@@ -20,9 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MG_BIOME_HEADER
 #define MG_BIOME_HEADER
 
-#include "mapgen.h"
-
-struct NoiseParams;
+#include "objdef.h"
+#include "nodedef.h"
 
 enum BiomeType
 {

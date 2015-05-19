@@ -25,17 +25,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <cstring>
 #include <vector>
+#include <map>
 #include <sstream>
 #include <cctype>
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
+typedef std::map<std::string, std::string> StringMap;
+
 struct FlagDesc {
 	const char *name;
 	u32 flag;
 };
-
 
 // You must free the returned string!
 // The returned string is allocated using new

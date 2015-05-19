@@ -20,8 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "test.h"
 
 #include "exceptions.h"
-#include "mapgen.h"
-
+#include "objdef.h"
 
 class TestObjDef : public TestBase {
 public:

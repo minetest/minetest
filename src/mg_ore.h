@@ -20,10 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MG_ORE_HEADER
 #define MG_ORE_HEADER
 
-#include "util/string.h"
-#include "mapgen.h"
+#include "objdef.h"
+#include "noise.h"
+#include "nodedef.h"
 
-struct NoiseParams;
 class Noise;
 class Mapgen;
 class MMVManip;
