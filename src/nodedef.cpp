@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include "debug.h"
 #include "gamedef.h"
+#include <fstream> // Used in applyTextureOverrides()
 
 /*
 	NodeBox
@@ -397,6 +398,7 @@ public:
 	virtual content_t set(const std::string &name, const ContentFeatures &def);
 	virtual content_t allocateDummy(const std::string &name);
 	virtual void updateAliases(IItemDefManager *idef);
+	virtual void applyTextureOverrides(std::string override_filepath);
 	virtual void updateTextures(IGameDef *gamedef,
 		void (*progress_cbk)(void *progress_args, u32 progress, u32 max_progress),
 		void *progress_cbk_args);
@@ -701,6 +703,63 @@ void CNodeDefManager::updateAliases(IItemDefManager *idef)
 		if (m_name_id_mapping.getId(convert_to, id)) {
 			m_name_id_mapping_with_aliases.insert(
 					std::make_pair(name, id));
+		}
+	}
+}
+
+void CNodeDefManager::applyTextureOverrides(std::string override_filepath)
+{
+	infostream << "CNodeDefManager::applyTextureOverrides(): Applying "
+		"overrides to textures from " << override_filepath.c_str() << std::endl;
+
+	std::ifstream infile(override_filepath.c_str());
+	std::string line;
+	int line_c = 0;
+	while (std::getline(infile, line)) {
+		line_c++;
+		if (trim(line) == "")
+			continue;
+		std::vector<std::string> splitted = str_split(line, ' ');
+		if (splitted.size() != 3) {
+			errorstream << override_filepath.c_str()
+					<< " : Syntax error on line "
+					<< line_c << std::endl;
+			continue;
+		}
+
+		content_t id;
+		if (!getId(splitted[0], id)) {
+			errorstream << override_filepath.c_str()
+					<< " : Unknown node " << splitted[0] << " on line "
+					<< line_c << std::endl;
+			continue;
+		}
+
+		ContentFeatures &nodedef = m_content_features[id];
+
+		if (splitted[1] == "top")
+			nodedef.tiledef[0].name = splitted[2];
+		else if (splitted[1] == "bottom")
+			nodedef.tiledef[1].name = splitted[2];
+		else if (splitted[1] == "right")
+			nodedef.tiledef[2].name = splitted[2];
+		else if (splitted[1] == "left")
+			nodedef.tiledef[3].name = splitted[2];
+		else if (splitted[1] == "back")
+			nodedef.tiledef[4].name = splitted[2];
+		else if (splitted[1] == "front")
+			nodedef.tiledef[5].name = splitted[2];
+		else if (splitted[1] == "all" || splitted[1] == "*")
+			for (int i = 0; i < 6; i++)
+				nodedef.tiledef[i].name = splitted[2];
+		else if (splitted[1] == "sides")
+			for (int i = 2; i < 6; i++)
+				nodedef.tiledef[i].name = splitted[2];
+		else {
+			errorstream << override_filepath.c_str()
+					<< " : Unknown node side on line "
+					<< line_c << std::endl;
+			continue;
 		}
 	}
 }
