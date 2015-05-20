@@ -29,7 +29,7 @@ Face Selectors
 | right         | x+                                                |
 | front         | z-                                                |
 | back          | z+                                                |
-| top           | z+                                                |
-| bottom        | z-                                                |
+| top           | y+                                                |
+| bottom        | y-                                                |
 | sides         | x-, x+, z-, z+                                    |
 | all           | All faces. You can also use '*' instead of 'all'. |
