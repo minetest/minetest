@@ -1716,17 +1716,15 @@ void GenericCAO::processMessage(const std::string &data)
 			m_armor_groups[name] = rating;
 		}
 	} else if (cmd == GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES) {
-		u8 version = readU8(is); // forward compatibility
-		if (version == 1) {
-			m_nametag_color = readARGB8(is);
-			if (m_textnode != NULL) {
-				m_textnode->setTextColor(m_nametag_color);
+		readU8(is); // version
+		m_nametag_color = readARGB8(is);
+		if (m_textnode != NULL) {
+			m_textnode->setTextColor(m_nametag_color);
 
-				// Enforce hiding nametag,
-				// because if freetype is enabled, a grey
-				// shadow can remain.
-				m_textnode->setVisible(m_nametag_color.getAlpha() > 0);
-			}
+			// Enforce hiding nametag,
+			// because if freetype is enabled, a grey
+			// shadow can remain.
+			m_textnode->setVisible(m_nametag_color.getAlpha() > 0);
 		}
 	}
 }
