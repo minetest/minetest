@@ -164,9 +164,11 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	*/
 	const char* playername = playerName.c_str();
 
-	if (playerName.size() > PLAYERNAME_SIZE) {
-		actionstream << "Server: Player with an too long name "
-				<< "tried to connect from " << addr_s << std::endl;
+	size_t pns = playerName.size();
+	if (pns == 0 || pns > PLAYERNAME_SIZE) {
+		actionstream << "Server: Player with "
+			<< ((pns > PLAYERNAME_SIZE) ? "a too long" : "an empty")
+			<< " name tried to connect from " << addr_s << std::endl;
 		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_NAME);
 		return;
 	}
