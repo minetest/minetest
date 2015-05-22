@@ -20,9 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef OBJDEF_HEADER
 #define OBJDEF_HEADER
 
-#include <string>
-#include <vector>
-#include "irrlichttypes.h"
+#include "porting.h"
 
 class IGameDef;
 class INodeDefManager;

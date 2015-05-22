@@ -264,7 +264,7 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path)
 		fp = stdin;
 		chunk_name = const_cast<char *>("=stdin");
 	} else {
-		fp = fopen(path, "r");
+		fp = fopen(path, "rb");
 		if (!fp) {
 			lua_pushfstring(L, "%s: %s", path, strerror(errno));
 			return false;
