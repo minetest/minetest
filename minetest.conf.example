@@ -526,8 +526,8 @@
 #    other noise parameters are shown in positional format to save space.
 
 #    Noise parameters for biome API temperature and humidity
-#mg_biome_np_heat = 50, 50, (500, 500, 500), 5349, 3, 0.5, 2.0
-#mg_biome_np_humidity = 50, 50, (500, 500, 500), 842, 3, 0.5, 2.0
+#mg_biome_np_heat = 50, 50, (750, 750, 750), 5349, 3, 0.5, 2.0
+#mg_biome_np_humidity = 50, 50, (750, 750, 750), 842, 3, 0.5, 2.0
 
 #mgv5_np_filler_depth = 0, 1, (150, 150, 150), 261, 4, 0.7, 2.0
 #mgv5_np_factor = 0, 1, (250, 250, 250), 920381, 3, 0.45, 2.0

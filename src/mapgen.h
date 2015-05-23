@@ -125,8 +125,8 @@ struct MapgenParams {
 		seed(0),
 		water_level(1),
 		flags(MG_TREES | MG_CAVES | MG_LIGHT),
-		np_biome_heat(NoiseParams(50, 50, v3f(500.0, 500.0, 500.0), 5349, 3, 0.5, 2.0)),
-		np_biome_humidity(NoiseParams(50, 50, v3f(500.0, 500.0, 500.0), 842, 3, 0.5, 2.0)),
+		np_biome_heat(NoiseParams(50, 50, v3f(750.0, 750.0, 750.0), 5349, 3, 0.5, 2.0)),
+		np_biome_humidity(NoiseParams(50, 50, v3f(750.0, 750.0, 750.0), 842, 3, 0.5, 2.0)),
 		sparams(NULL)
 	{}
 
