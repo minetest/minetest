@@ -141,17 +141,17 @@ MapgenV7Params::MapgenV7Params()
 {
 	spflags = MGV7_MOUNTAINS | MGV7_RIDGES;
 
-	np_terrain_base    = NoiseParams(4,    70,  v3f(300, 300, 300), 82341, 6, 0.7,  2.0);
-	np_terrain_alt     = NoiseParams(4,    25,  v3f(600, 600, 600), 5934,  5, 0.6,  2.0);
-	np_terrain_persist = NoiseParams(0.6,  0.1, v3f(500, 500, 500), 539,   3, 0.6,  2.0);
-	np_height_select   = NoiseParams(-0.5, 1,   v3f(250, 250, 250), 4213,  5, 0.69, 2.0);
-	np_filler_depth    = NoiseParams(0,    1.2, v3f(150, 150, 150), 261,   4, 0.7,  2.0);
-	np_mount_height    = NoiseParams(100,  30,  v3f(500, 500, 500), 72449, 4, 0.6,  2.0);
-	np_ridge_uwater    = NoiseParams(0,    1,   v3f(500, 500, 500), 85039, 4, 0.6,  2.0);
-	np_mountain        = NoiseParams(-0.6, 1,   v3f(250, 350, 250), 5333,  5, 0.68, 2.0);
-	np_ridge           = NoiseParams(0,    1,   v3f(100, 100, 100), 6467,  4, 0.75, 2.0);
-	np_cave1           = NoiseParams(0,    12,  v3f(100, 100, 100), 52534, 4, 0.5,  2.0);
-	np_cave2           = NoiseParams(0,    12,  v3f(100, 100, 100), 10325, 4, 0.5,  2.0);
+	np_terrain_base    = NoiseParams(4,    70,  v3f(600,  600,  600),  82341, 6, 0.7,  2.0);
+	np_terrain_alt     = NoiseParams(4,    25,  v3f(600,  600,  600),  5934,  5, 0.6,  2.0);
+	np_terrain_persist = NoiseParams(0.6,  0.1, v3f(500,  500,  500),  539,   3, 0.6,  2.0);
+	np_height_select   = NoiseParams(-12,  24,  v3f(500,  500,  500),  4213,  6, 0.69, 2.0);
+	np_filler_depth    = NoiseParams(0,    1.2, v3f(150,  150,  150),  261,   4, 0.7,  2.0);
+	np_mount_height    = NoiseParams(184,  72,  v3f(500,  500,  500),  72449, 4, 0.6,  2.0);
+	np_ridge_uwater    = NoiseParams(0,    1,   v3f(1000, 1000, 1000), 85039, 5, 0.6,  2.0);
+	np_mountain        = NoiseParams(-0.6, 1,   v3f(250,  350,  250),  5333,  5, 0.68, 2.0);
+	np_ridge           = NoiseParams(0,    1,   v3f(100,  100,  100),  6467,  4, 0.75, 2.0);
+	np_cave1           = NoiseParams(0,    12,  v3f(100,  100,  100),  52534, 4, 0.5,  2.0);
+	np_cave2           = NoiseParams(0,    12,  v3f(100,  100,  100),  10325, 4, 0.5,  2.0);
 }
 
 
