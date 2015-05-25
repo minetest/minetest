@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define FREQ_HOT 0.4
 #define FREQ_SNOW -0.4
 #define FREQ_TAIGA 0.5
-#define FREQ_JUNGLE 0.7
+#define FREQ_JUNGLE 0.5
 
 //////////// Mapgen V6 flags
 #define MGV6_JUNGLES    0x01
