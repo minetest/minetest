@@ -496,7 +496,7 @@
 #    Map generation attributes specific to Mapgen V6.
 #    Currently supported: jungles, biomeblend, mudflow, snowbiomes.
 #    When snowbiomes are enabled jungles are enabled and the jungles flag is ignored.
-#mgv6_spflags = jungles, biomeblend, mudflow
+#mgv6_spflags = jungles, biomeblend, mudflow, snowbiomes
 #    Controls size of deserts and beaches in Mapgen V6
 #    When snowbiomes are enabled 'mgv6_freq_desert' is ignored.
 #mgv6_freq_desert = 0.45
@@ -551,9 +551,9 @@
 #mgv6_np_height_select = 0.5, 1, (250, 250, 250), 4213, 5, 0.69, 2.0
 #mgv6_np_mud = 4, 2, (200, 200, 200), 91013, 3, 0.55, 2.0
 #mgv6_np_beach = 0, 1, (250, 250, 250), 59420, 3, 0.50, 2.0
-#mgv6_np_biome = 0, 1, (250, 250, 250), 9130, 3, 0.50, 2.0
+#mgv6_np_biome = 0, 1, (500, 500, 500), 9130, 3, 0.50, 2.0
 #mgv6_np_cave = 6, 6, (250, 250, 250), 34329, 3, 0.50, 2.0
-#mgv6_np_humidity = 0.5, 0.5, (500, 500, 500), 72384, 4, 0.66, 2.0
+#mgv6_np_humidity = 0.5, 0.5, (500, 500, 500), 72384, 3, 0.50, 2.0
 #mgv6_np_trees = 0, 1, (125, 125, 125), 2, 4, 0.66, 2.0
 #mgv6_np_apple_trees = 0, 1, (100, 100, 100), 342902, 3, 0.45, 2.0
 
