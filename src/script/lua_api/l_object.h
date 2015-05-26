@@ -101,24 +101,42 @@ private:
 	// set_armor_groups(self, groups)
 	static int l_set_armor_groups(lua_State *L);
 
+	// get_armor_groups(self)
+	static int l_get_armor_groups(lua_State *L);
+
 	// set_physics_override(self, physics_override_speed, physics_override_jump,
 	//                      physics_override_gravity, sneak, sneak_glitch)
 	static int l_set_physics_override(lua_State *L);
 
+	// get_physics_override(self)
+	static int l_get_physics_override(lua_State *L);
+
 	// set_animation(self, frame_range, frame_speed, frame_blend)
 	static int l_set_animation(lua_State *L);
+
+	// get_animation(self)
+	static int l_get_animation(lua_State *L);
 
 	// set_bone_position(self, std::string bone, v3f position, v3f rotation)
 	static int l_set_bone_position(lua_State *L);
 
+	// get_bone_position(self, bone)
+	static int l_get_bone_position(lua_State *L);
+
 	// set_attach(self, parent, bone, position, rotation)
 	static int l_set_attach(lua_State *L);
+
+	// get_attach(self)
+	static int l_get_attach(lua_State *L);
 
 	// set_detach(self)
 	static int l_set_detach(lua_State *L);
 
 	// set_properties(self, properties)
 	static int l_set_properties(lua_State *L);
+
+	// get_properties(self)
+	static int l_get_properties(lua_State *L);
 
 	// is_player(self)
 	static int l_is_player(lua_State *L);
@@ -222,23 +240,44 @@ private:
 	// hud_set_hotbar_itemcount(self, hotbar_itemcount)
 	static int l_hud_set_hotbar_itemcount(lua_State *L);
 
+	// hud_get_hotbar_itemcount(self)
+	static int l_hud_get_hotbar_itemcount(lua_State *L);
+
 	// hud_set_hotbar_image(self, name)
 	static int l_hud_set_hotbar_image(lua_State *L);
+
+	// hud_get_hotbar_image(self)
+	static int l_hud_get_hotbar_image(lua_State *L);
 
 	// hud_set_hotbar_selected_image(self, name)
 	static int l_hud_set_hotbar_selected_image(lua_State *L);
 
+	// hud_get_hotbar_selected_image(self)
+	static int l_hud_get_hotbar_selected_image(lua_State *L);
+
 	// set_sky(self, type, list)
 	static int l_set_sky(lua_State *L);
 
-	// override_day_night_ratio(self, type, list)
+	// get_sky(self, type, list)
+	static int l_get_sky(lua_State *L);
+
+	// override_day_night_ratio(self, type)
 	static int l_override_day_night_ratio(lua_State *L);
+
+	// get_day_night_ratio(self)
+	static int l_get_day_night_ratio(lua_State *L);
 
 	// set_local_animation(self, {stand/idle}, {walk}, {dig}, {walk+dig}, frame_speed)
 	static int l_set_local_animation(lua_State *L);
 
+	// get_local_animation(self)
+	static int l_get_local_animation(lua_State *L);
+
 	// set_eye_offset(self, v3f first pv, v3f third pv)
 	static int l_set_eye_offset(lua_State *L);
+
+	// get_eye_offset(self)
+	static int l_get_eye_offset(lua_State *L);
 
 	// set_nametag_attributes(self, attributes)
 	static int l_set_nametag_attributes(lua_State *L);

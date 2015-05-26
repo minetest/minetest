@@ -200,6 +200,64 @@ void read_object_properties(lua_State *L, int index,
 }
 
 /******************************************************************************/
+void push_object_properties(lua_State *L, ObjectProperties *prop)
+{
+	lua_newtable(L);
+	lua_pushnumber(L, prop->hp_max);
+	lua_setfield(L, -2, "hp_max");
+	lua_pushboolean(L, prop->physical);
+	lua_setfield(L, -2, "physical");
+	lua_pushboolean(L, prop->collideWithObjects);
+	lua_setfield(L, -2, "collide_with_objects");
+	lua_pushnumber(L, prop->weight);
+	lua_setfield(L, -2, "weight");
+	push_aabb3f(L, prop->collisionbox);
+	lua_setfield(L, -2, "collisionbox");
+	lua_pushlstring(L, prop->visual.c_str(), prop->visual.size());
+	lua_setfield(L, -2, "visual");
+	lua_pushlstring(L, prop->mesh.c_str(), prop->mesh.size());
+	lua_setfield(L, -2, "mesh");
+	push_v2f(L, prop->visual_size);
+	lua_setfield(L, -2, "visual_size");
+
+	lua_newtable(L);
+	u16 i = 1;
+	for (std::vector<std::string>::iterator it = prop->textures.begin();
+			it != prop->textures.end(); ++it) {
+		lua_pushlstring(L, it->c_str(), it->size());
+		lua_rawseti(L, -2, i);
+	}
+	lua_setfield(L, -2, "textures");
+
+	lua_newtable(L);
+	i = 1;
+	for (std::vector<video::SColor>::iterator it = prop->colors.begin();
+			it != prop->colors.end(); ++it) {
+		push_ARGB8(L, *it);
+		lua_rawseti(L, -2, i);
+	}
+	lua_setfield(L, -2, "colors");
+
+	push_v2s16(L, prop->spritediv);
+	lua_setfield(L, -2, "spritediv");
+	push_v2s16(L, prop->initial_sprite_basepos);
+	lua_setfield(L, -2, "initial_sprite_basepos");
+	lua_pushboolean(L, prop->is_visible);
+	lua_setfield(L, -2, "is_visible");
+	lua_pushboolean(L, prop->makes_footstep_sound);
+	lua_setfield(L, -2, "makes_footstep_sound");
+	lua_pushnumber(L, prop->automatic_rotate);
+	lua_setfield(L, -2, "automatic_rotate");
+	lua_pushnumber(L, prop->stepheight / BS);
+	lua_setfield(L, -2, "stepheight");
+	if (prop->automatic_face_movement_dir)
+		lua_pushnumber(L, prop->automatic_face_movement_dir_offset);
+	else
+		lua_pushboolean(L, false);
+	lua_setfield(L, -2, "automatic_face_movement_dir");
+}
+
+/******************************************************************************/
 TileDef read_tiledef(lua_State *L, int index)
 {
 	if(index < 0)
@@ -896,6 +954,12 @@ u32 read_flags_table(lua_State *L, int table, FlagDesc *flagdesc, u32 *flagmask)
 	return flags;
 }
 
+void push_flags_string(lua_State *L, FlagDesc *flagdesc, u32 flags, u32 flagmask)
+{
+	std::string flagstring = writeFlagString(flags, flagdesc, flagmask);
+	lua_pushlstring(L, flagstring.c_str(), flagstring.size());
+}
+
 /******************************************************************************/
 /* Lua Stored data!                                                           */
 /******************************************************************************/
@@ -917,6 +981,17 @@ void read_groups(lua_State *L, int index,
 		result[name] = rating;
 		// removes value, keeps key for next iteration
 		lua_pop(L, 1);
+	}
+}
+
+/******************************************************************************/
+void push_groups(lua_State *L, std::map<std::string, int> groups)
+{
+	lua_newtable(L);
+	for (std::map<std::string, int>::iterator it = groups.begin();
+			it != groups.end(); ++it) {
+		lua_pushnumber(L, it->second);
+		lua_setfield(L, -2, it->first.c_str());
 	}
 }
 
@@ -995,6 +1070,30 @@ bool read_noiseparams(lua_State *L, int index, NoiseParams *np)
 	lua_pop(L, 1);
 
 	return true;
+}
+
+void push_noiseparams(lua_State *L, NoiseParams *np)
+{
+	lua_newtable(L);
+	lua_pushnumber(L, np->offset);
+	lua_setfield(L, -2, "offset");
+	lua_pushnumber(L, np->scale);
+	lua_setfield(L, -2, "scale");
+	lua_pushnumber(L, np->persist);
+	lua_setfield(L, -2, "persistence");
+	lua_pushnumber(L, np->lacunarity);
+	lua_setfield(L, -2, "lacunarity");
+	lua_pushnumber(L, np->seed);
+	lua_setfield(L, -2, "seed");
+	lua_pushnumber(L, np->octaves);
+	lua_setfield(L, -2, "octaves");
+
+	push_flags_string(L, flagdesc_noiseparams, np->flags,
+		np->flags);
+	lua_setfield(L, -2, "flags");
+
+	push_v3f(L, np->spread);
+	lua_setfield(L, -2, "spread");
 }
 
 /******************************************************************************/

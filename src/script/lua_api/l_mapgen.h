@@ -39,8 +39,14 @@ private:
 	// set_noiseparam_defaults(name, noiseparams, set_default)
 	static int l_set_noiseparams(lua_State *L);
 
+	// get_noiseparam_defaults(name)
+	static int l_get_noiseparams(lua_State *L);
+
 	// set_gen_notify(flagstring)
 	static int l_set_gen_notify(lua_State *L);
+
+	// set_gen_notify(flagstring)
+	static int l_get_gen_notify(lua_State *L);
 
 	// register_biome({lots of stuff})
 	static int l_register_biome(lua_State *L);

@@ -147,13 +147,21 @@ public:
 
 	virtual void setArmorGroups(const ItemGroupList &armor_groups)
 	{}
+	virtual ItemGroupList getArmorGroups()
+	{ return ItemGroupList(); }
 	virtual void setPhysicsOverride(float physics_override_speed, float physics_override_jump, float physics_override_gravity)
 	{}
 	virtual void setAnimation(v2f frames, float frame_speed, float frame_blend)
 	{}
+	virtual void getAnimation(v2f *frames, float *frame_spee, float *frame_blend)
+	{}
 	virtual void setBonePosition(const std::string &bone, v3f position, v3f rotation)
 	{}
+	virtual void getBonePosition(const std::string &bone, v3f *position, v3f *lotation)
+	{}
 	virtual void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation)
+	{}
+	virtual void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation)
 	{}
 	virtual ObjectProperties* accessObjectProperties()
 	{ return NULL; }

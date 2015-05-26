@@ -62,8 +62,6 @@ public:
 	unsigned int last_keyPressed;
 
 	float camera_impact;
-	v3f eye_offset_first;
-	v3f eye_offset_third;
 
 	int last_animation;
 	float last_animation_speed;

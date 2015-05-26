@@ -343,8 +343,11 @@ public:
 	bool hudChange(Player *player, u32 id, HudElementStat stat, void *value);
 	bool hudSetFlags(Player *player, u32 flags, u32 mask);
 	bool hudSetHotbarItemcount(Player *player, s32 hotbar_itemcount);
+	s32 hudGetHotbarItemcount(Player *player);
 	void hudSetHotbarImage(Player *player, std::string name);
+	std::string hudGetHotbarImage(Player *player);
 	void hudSetHotbarSelectedImage(Player *player, std::string name);
+	std::string hudGetHotbarSelectedImage(Player *player);
 
 	inline Address getPeerAddress(u16 peer_id)
 			{ return m_con.GetPeerAddress(peer_id); }

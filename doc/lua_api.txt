@@ -1932,6 +1932,7 @@ and `minetest.auth_reload` call the authetification handler.
     * `flags` is a flag field with the available flags: `dungeon`, `temple`, `cave_begin`,
    `cave_end`, `large_cave_begin`, `large_cave_end`, `decoration`
    * The second parameter is a list of IDS of decorations which notification is requested for
+* `get_gen_notify()`: returns a flagstring and a table with the deco_ids
 * `minetest.get_mapgen_object(objectname)`
     * Return requested mapgen object if available (see "Mapgen objects")
 * `minetest.get_mapgen_params()` Returns mapgen parameters, a table containing
@@ -1950,6 +1951,7 @@ and `minetest.auth_reload` call the authetification handler.
     * Sets the noiseparams setting of `name` to the noiseparams table specified in `noiseparams`.
     * `set_default` is an optional boolean (default: `true`) that specifies whether the setting
       should be applied to the default config or current active config
+* `minetest.get_noiseparams(name)`: returns a table of the noiseparams for name
 * `minetest.generate_ores(vm, pos1, pos2)`
     * Generate all registered ores within the VoxelManip `vm` and in the area from `pos1` to `pos2`.
     * `pos1` and `pos2` are optional and default to mapchunk minp and maxp.
@@ -2412,17 +2414,22 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_wielded_item()`: returns an `ItemStack`
 * `set_wielded_item(item)`: replaces the wielded item, returns `true` if successful
 * `set_armor_groups({group1=rating, group2=rating, ...})`
+* `get_armor_groups()`: returns a table with the armor group ratings
 * `set_animation({x=1,y=1}, frame_speed=15, frame_blend=0)`
+* `get_animation()`: returns range, frame_speed and frame_blend
 * `set_attach(parent, bone, position, rotation)`
     * `bone`: string
     * `position`: `{x=num, y=num, z=num}` (relative)
     * `rotation`: `{x=num, y=num, z=num}`
+* `get_attach()`: returns parent, bone, position, rotation or nil if it isn't attached
 * `set_detach()`
 * `set_bone_position(bone, position, rotation)`
     * `bone`: string
     * `position`: `{x=num, y=num, z=num}` (relative)
     * `rotation`: `{x=num, y=num, z=num}`
+* `get_bone_position(bone)`: returns position and rotation of the bone
 * `set_properties(object property table)`
+* `get_properties()`: returns object property table
 * `is_player()`: returns true for players, false otherwise
 
 ##### LuaEntitySAO-only (no-op for other objects)
@@ -2468,6 +2475,7 @@ This is basically a reference to a C++ `ServerActiveObject`
         * `gravity`: multiplier to default gravity value (default: `1`)
         * `sneak`: whether player can sneak (default: `true`)
         * `sneak_glitch`: whether player can use the sneak glitch (default: `true`)
+* `get_physics_override()`: returns the table given to set_physics_override
 * `hud_add(hud definition)`: add a HUD element described by HUD def, returns ID
    number on success
 * `hud_remove(id)`: remove the HUD element of the specified id
@@ -2482,10 +2490,13 @@ This is basically a reference to a C++ `ServerActiveObject`
     * returns `{ hotbar=true, healthbar=true, crosshair=true, wielditem=true, breathbar=true }`
 * `hud_set_hotbar_itemcount(count)`: sets number of items in builtin hotbar
     * `count`: number of items, must be between `1` and `23`
+* `hud_get_hotbar_itemcount`: returns number of visible items
 * `hud_set_hotbar_image(texturename)`
     * sets background image for hotbar
+* `hud_get_hotbar_image`: returns texturename
 * `hud_set_hotbar_selected_image(texturename)`
     * sets image for selected item of hotbar
+* `hud_get_hotbar_selected_image`: returns texturename
 * `hud_replace_builtin(name, hud_definition)`
     * replace definition of a builtin hud element
     * `name`: `"breath"` or `"health"`
@@ -2498,10 +2509,12 @@ This is basically a reference to a C++ `ServerActiveObject`
         * `"plain"`: Uses 0 textures, `bgcolor` used
     * **Note**: currently does not work directly in `on_joinplayer`; use
       `minetest.after(0)` in there.
+* `get_sky()`: returns bgcolor, type and a table with the textures
 * `override_day_night_ratio(ratio or nil)`
     * `0`...`1`: Overrides day-night ratio, controlling sunlight to a specific amount
     * `nil`: Disables override, defaulting to sunlight based on day-night cycle
-* `set_local_animation(walk, dig, walk+dig, frame_speed=frame_speed)`
+* `get_day_night_ratio()`: returns the ratio or nil if it isn't overridden
+* `set_local_animation(stand/idle, walk, dig, walk+dig, frame_speed=frame_speed)`
 
 	set animation for player model in third person view
 
@@ -2510,10 +2523,11 @@ This is basically a reference to a C++ `ServerActiveObject`
             {x=189, y=198}, -- <  dig animation key frames
             {x=200, y=219}, -- <  walk+dig animation key frames
             frame_speed=30): -- <  animation frame speed
-
+* `get_local_animation()`: returns stand, walk, dig, dig+walk tables and frame_speed
 * `set_eye_offset({x=0,y=0,z=0},{x=0,y=0,z=0})`: defines offset value for camera per player
     * in first person view
     * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
+* `get_eye_offset()`: returns offset_first and offset_third
 * `get_nametag_attributes()`
     * returns a table with the attributes of the nametag of the player
     * {

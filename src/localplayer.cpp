@@ -42,8 +42,6 @@ LocalPlayer::LocalPlayer(IGameDef *gamedef, const char *name):
 	last_pitch(0),
 	last_yaw(0),
 	last_keyPressed(0),
-	eye_offset_first(v3f(0,0,0)),
-	eye_offset_third(v3f(0,0,0)),
 	last_animation(NO_ANIM),
 	hotbar_image(""),
 	hotbar_selected_image(""),
@@ -59,6 +57,8 @@ LocalPlayer::LocalPlayer(IGameDef *gamedef, const char *name):
 	// Initialize hp to 0, so that no hearts will be shown if server
 	// doesn't support health points
 	hp = 0;
+	eye_offset_first = v3f(0,0,0);
+	eye_offset_third = v3f(0,0,0);
 }
 
 LocalPlayer::~LocalPlayer()
