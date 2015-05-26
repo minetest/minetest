@@ -88,6 +88,24 @@ v2s16 check_v2s16(lua_State *L, int index)
 	return p;
 }
 
+void push_v2s16(lua_State *L, v2s16 p)
+{
+	lua_newtable(L);
+	lua_pushnumber(L, p.X);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, p.Y);
+	lua_setfield(L, -2, "y");
+}
+
+void push_v2s32(lua_State *L, v2s32 p)
+{
+	lua_newtable(L);
+	lua_pushnumber(L, p.X);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, p.Y);
+	lua_setfield(L, -2, "y");
+}
+
 v2s32 read_v2s32(lua_State *L, int index)
 {
 	v2s32 p;
@@ -275,6 +293,23 @@ aabb3f read_aabb3f(lua_State *L, int index, f32 scale)
 		lua_pop(L, 1);
 	}
 	return box;
+}
+
+void push_aabb3f(lua_State *L, aabb3f box)
+{
+	lua_newtable(L);
+	lua_pushnumber(L, box.MinEdge.X);
+	lua_rawseti(L, -2, 1);
+	lua_pushnumber(L, box.MinEdge.Y);
+	lua_rawseti(L, -2, 2);
+	lua_pushnumber(L, box.MinEdge.Z);
+	lua_rawseti(L, -2, 3);
+	lua_pushnumber(L, box.MaxEdge.X);
+	lua_rawseti(L, -2, 4);
+	lua_pushnumber(L, box.MaxEdge.Y);
+	lua_rawseti(L, -2, 5);
+	lua_pushnumber(L, box.MaxEdge.Z);
+	lua_rawseti(L, -2, 6);
 }
 
 std::vector<aabb3f> read_aabb3f_vector(lua_State *L, int index, f32 scale)
