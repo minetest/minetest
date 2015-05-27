@@ -541,13 +541,13 @@ void LuaEntitySAO::setAnimation(v2f frame_range, float frame_speed, float frame_
 	m_animation_sent = false;
 }
 
-void LuaEntitySAO::setBonePosition(std::string bone, v3f position, v3f rotation)
+void LuaEntitySAO::setBonePosition(const std::string &bone, v3f position, v3f rotation)
 {
 	m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
 	m_bone_position_sent = false;
 }
 
-void LuaEntitySAO::setAttachment(int parent_id, std::string bone, v3f position, v3f rotation)
+void LuaEntitySAO::setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation)
 {
 	// Attachments need to be handled on both the server and client.
 	// If we just attach on the server, we can only copy the position of the parent. Attachments
@@ -1142,14 +1142,14 @@ void PlayerSAO::setAnimation(v2f frame_range, float frame_speed, float frame_ble
 	m_animation_sent = false;
 }
 
-void PlayerSAO::setBonePosition(std::string bone, v3f position, v3f rotation)
+void PlayerSAO::setBonePosition(const std::string &bone, v3f position, v3f rotation)
 {
 	// store these so they can be updated to clients
 	m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
 	m_bone_position_sent = false;
 }
 
-void PlayerSAO::setAttachment(int parent_id, std::string bone, v3f position, v3f rotation)
+void PlayerSAO::setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation)
 {
 	// Attachments need to be handled on both the server and client.
 	// If we just attach on the server, we can only copy the position of the parent. Attachments

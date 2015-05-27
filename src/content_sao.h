@@ -59,8 +59,8 @@ public:
 	s16 getHP() const;
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	void setAnimation(v2f frame_range, float frame_speed, float frame_blend);
-	void setBonePosition(std::string bone, v3f position, v3f rotation);
-	void setAttachment(int parent_id, std::string bone, v3f position, v3f rotation);
+	void setBonePosition(const std::string &bone, v3f position, v3f rotation);
+	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
 	ObjectProperties* accessObjectProperties();
 	void notifyObjectPropertiesModified();
 	/* LuaEntitySAO-specific */
@@ -193,8 +193,8 @@ public:
 	void setBreath(u16 breath);
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	void setAnimation(v2f frame_range, float frame_speed, float frame_blend);
-	void setBonePosition(std::string bone, v3f position, v3f rotation);
-	void setAttachment(int parent_id, std::string bone, v3f position, v3f rotation);
+	void setBonePosition(const std::string &bone, v3f position, v3f rotation);
+	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
 	ObjectProperties* accessObjectProperties();
 	void notifyObjectPropertiesModified();
 	void setNametagColor(video::SColor color);
