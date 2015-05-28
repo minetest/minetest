@@ -153,7 +153,7 @@ public:
 	{}
 	virtual void setAnimation(v2f frames, float frame_speed, float frame_blend)
 	{}
-	virtual void getAnimation(v2f *frames, float *frame_spee, float *frame_blend)
+	virtual void getAnimation(v2f *frames, float *frame_speed, float *frame_blend)
 	{}
 	virtual void setBonePosition(const std::string &bone, v3f position, v3f rotation)
 	{}
