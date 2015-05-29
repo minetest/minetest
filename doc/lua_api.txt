@@ -3705,7 +3705,8 @@ Definition tables
         collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
         visual = "cube"/"sprite"/"upright_sprite"/"mesh"/"wielditem",
         visual_size = {x=1, y=1},
-        mesh = "model",
+        mesh = "model", -- for players (0, -1, 0) is ground level,
+			-- for all other entities (0, 0, 0) is ground level.
         textures = {}, -- number of required textures depends on visual
         colors = {}, -- number of required colors depends on visual
         spritediv = {x=1, y=1},

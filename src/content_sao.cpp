@@ -1429,7 +1429,10 @@ bool PlayerSAO::checkMovementCheat()
 
 bool PlayerSAO::getCollisionBox(aabb3f *toset) const
 {
-	*toset = aabb3f(-BS * 0.30, 0.0, -BS * 0.30, BS * 0.30, BS * 1.75, BS * 0.30);
+	//update collision box
+	toset->MinEdge = m_prop.collisionbox.MinEdge * BS + v3f(0, BS, 0);
+	toset->MaxEdge = m_prop.collisionbox.MaxEdge * BS + v3f(0, BS, 0);
+
 	toset->MinEdge += m_base_position;
 	toset->MaxEdge += m_base_position;
 	return true;
