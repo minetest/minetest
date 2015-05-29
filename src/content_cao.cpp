@@ -972,7 +972,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		if (m_is_visible) {
 			int old_anim = player->last_animation;
 			float old_anim_speed = player->last_animation_speed;
-			m_position = player->getPosition() + v3f(0,BS,0);
+			m_position = player->getPosition();
 			m_velocity = v3f(0,0,0);
 			m_acceleration = v3f(0,0,0);
 			pos_translator.vect_show = m_position;
@@ -1512,6 +1512,7 @@ void GenericCAO::processMessage(const std::string &data)
 		if (m_is_local_player) {
 			LocalPlayer *player = m_env->getLocalPlayer();
 			player->makes_footstep_sound = m_prop.makes_footstep_sound;
+			player->setCollisionbox(m_selection_box);
 		}
 
 		if ((m_is_player && !m_is_local_player) && m_prop.nametag == "")

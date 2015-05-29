@@ -140,6 +140,8 @@ public:
 	v3f getEyePosition() const { return m_position + getEyeOffset(); }
 	v3f getEyeOffset() const;
 
+	void setCollisionbox(const aabb3f &box) { m_collisionbox = box; }
+
 private:
 	void accelerateHorizontal(const v3f &target_speed, const f32 max_increase);
 	void accelerateVertical(const v3f &target_speed, const f32 max_increase);
