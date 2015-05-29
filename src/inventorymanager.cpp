@@ -611,8 +611,8 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	// Drop the item
 	ItemStack item1 = list_from->getItem(from_i);
 	item1.count = take_count;
-	if (PLAYER_TO_SA(player)->item_OnDrop(item1, player,
-				player->getBasePosition() + v3f(0,1,0))) {
+	if(PLAYER_TO_SA(player)->item_OnDrop(item1, player,
+				player->getBasePosition())) {
 		actually_dropped_count = take_count - item1.count;
 
 		if (actually_dropped_count == 0) {
@@ -815,7 +815,7 @@ void ICraftAction::apply(InventoryManager *mgr,
 		u16 count = it->count;
 		do {
 			PLAYER_TO_SA(player)->item_OnDrop(*it, player,
-				player->getBasePosition() + v3f(0,1,0));
+				player->getBasePosition());
 			if (count >= it->count) {
 				errorstream << "Couldn't drop replacement stack " <<
 					it->getItemString() << " because drop loop didn't "
