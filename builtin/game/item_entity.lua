@@ -8,7 +8,7 @@ function core.spawn_item(pos, item)
 	return obj
 end
 
--- If item_entity_ttl is not set, enity will have default life time 
+-- If item_entity_ttl is not set, enity will have default life time
 -- Setting it to -1 disables the feature
 
 local time_to_live = tonumber(core.setting_get("item_entity_ttl"))
@@ -81,7 +81,7 @@ core.register_entity(":__builtin:item", {
 			if data and type(data) == "table" then
 				self.itemstring = data.itemstring
 				self.always_collect = data.always_collect
-				if data.age then 
+				if data.age then
 					self.age = data.age + dtime_s
 				else
 					self.age = dtime_s

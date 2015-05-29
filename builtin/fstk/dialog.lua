@@ -61,7 +61,7 @@ function dialog_create(name,get_formspec,buttonhandler,eventhandler)
 	self.formspec      = get_formspec
 	self.buttonhandler = buttonhandler
 	self.user_eventhandler  = eventhandler
-	
+
 	setmetatable(self,dialog_metatable)
 
 	ui.add(self)

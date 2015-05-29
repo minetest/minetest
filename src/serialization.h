@@ -30,11 +30,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	--------------------------------
 
 	For map data (blocks, nodes, sectors).
-	
+
 	NOTE: The goal is to increment this so that saved maps will be
 	      loadable by any version. Other compatibility is not
 		  maintained.
-		  
+
 	0: original networked test with 1-byte nodes
 	1: update with 2-byte nodes
 	2: lighting is transmitted in param

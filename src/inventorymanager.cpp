@@ -169,7 +169,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 {
 	Inventory *inv_from = mgr->getInventory(from_inv);
 	Inventory *inv_to = mgr->getInventory(to_inv);
-	
+
 	if(!inv_from){
 		infostream<<"IMoveAction::apply(): FAIL: source inventory not found: "
 				<<"from_inv=\""<<from_inv.dump()<<"\""
@@ -220,7 +220,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 	int src_can_take_count = 0xffff;
 	int dst_can_put_count = 0xffff;
-	
+
 	/* Query detached inventories */
 
 	// Move occurs in the same detached inventory
@@ -287,7 +287,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	}
 
 	int old_count = count;
-	
+
 	/* Modify count according to collected data */
 	count = try_take_count;
 	if(src_can_take_count != -1 && count > src_can_take_count)
@@ -297,7 +297,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	/* Limit according to source item count */
 	if(count > list_from->getItem(from_i).count)
 		count = list_from->getItem(from_i).count;
-	
+
 	/* If no items will be moved, don't go further */
 	if(count == 0)
 	{
@@ -400,7 +400,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	/*
 		Report move to endpoints
 	*/
-	
+
 	/* Detached inventories */
 
 	// Both endpoints are same detached
@@ -453,7 +453,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 					from_inv.p, from_list, from_i, src_item, player);
 		}
 	}
-	
+
 	mgr->setInventoryModified(from_inv, false);
 	if(inv_from != inv_to)
 		mgr->setInventoryModified(to_inv, false);
@@ -510,7 +510,7 @@ IDropAction::IDropAction(std::istream &is)
 void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef)
 {
 	Inventory *inv_from = mgr->getInventory(from_inv);
-	
+
 	if(!inv_from){
 		infostream<<"IDropAction::apply(): FAIL: source inventory not found: "
 				<<"from_inv=\""<<from_inv.dump()<<"\""<<std::endl;
@@ -570,7 +570,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 	if(src_can_take_count != -1 && src_can_take_count < take_count)
 		take_count = src_can_take_count;
-	
+
 	int actually_dropped_count = 0;
 
 	ItemStack src_item = list_from->getItem(from_i);
@@ -587,7 +587,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			infostream<<"Actually dropped no items"<<std::endl;
 			return;
 		}
-		
+
 		// If source isn't infinite
 		if(src_can_take_count != -1){
 			// Take item from source list
@@ -605,13 +605,13 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			<<" list=\""<<from_list<<"\""
 			<<" i="<<from_i
 			<<std::endl;
-	
+
 	src_item.count = actually_dropped_count;
 
 	/*
 		Report drop to endpoints
 	*/
-	
+
 	// Source is detached
 	if(from_inv.type == InventoryLocation::DETACHED)
 	{
@@ -694,7 +694,7 @@ ICraftAction::ICraftAction(std::istream &is)
 void ICraftAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef)
 {
 	Inventory *inv_craft = mgr->getInventory(craft_inv);
-	
+
 	if(!inv_craft){
 		infostream<<"ICraftAction::apply(): FAIL: inventory not found: "
 				<<"craft_inv=\""<<craft_inv.dump()<<"\""<<std::endl;
@@ -733,7 +733,7 @@ void ICraftAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGam
 	while(found && list_craftresult->itemFits(0, crafted))
 	{
 		InventoryList saved_craft_list = *list_craft;
-		
+
 		// Decrement input and add crafting output
 		getCraftingResult(inv_craft, crafted, true, gamedef);
 		PLAYER_TO_SA(player)->item_OnCraft(crafted, player, &saved_craft_list, craft_inv);
@@ -774,7 +774,7 @@ bool getCraftingResult(Inventory *inv, ItemStack& result,
 		bool decrementInput, IGameDef *gamedef)
 {
 	DSTACK(__FUNCTION_NAME);
-	
+
 	result.clear();
 
 	// Get the InventoryList in which we will operate

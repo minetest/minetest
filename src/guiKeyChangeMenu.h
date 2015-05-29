@@ -67,9 +67,9 @@ private:
 	void add_key(int id, const wchar_t *button_name, const std::string &setting_name);
 
 	bool shift_down;
-	
+
 	s32 activeKey;
-	
+
 	std::vector<KeyPress> key_used;
 	gui::IGUIStaticText *key_used_text;
 	std::vector<key_setting *> key_settings;

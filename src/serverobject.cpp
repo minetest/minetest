@@ -82,7 +82,7 @@ ItemStack ServerActiveObject::getWieldedItem() const
 	if(inv)
 	{
 		const InventoryList *list = inv->getList(getWieldList());
-		if(list && (getWieldIndex() < (s32)list->getSize())) 
+		if(list && (getWieldIndex() < (s32)list->getSize()))
 			return list->getItem(getWieldIndex());
 	}
 	return ItemStack();

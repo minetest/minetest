@@ -75,7 +75,7 @@ void NodeTimerList::serialize(std::ostream &os, u8 map_format_version) const
 void NodeTimerList::deSerialize(std::istream &is, u8 map_format_version)
 {
 	m_data.clear();
-	
+
 	if(map_format_version == 24){
 		u8 timer_version = readU8(is);
 		if(timer_version == 0)

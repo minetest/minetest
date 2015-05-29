@@ -18,7 +18,7 @@
 --------------------------------------------------------------------------------
 
 local function rename_modpack_formspec(dialogdata)
-	
+
 	dialogdata.mod = modmgr.global_mods:get_list()[dialogdata.selected]
 
 	local retval =
@@ -31,7 +31,7 @@ local function rename_modpack_formspec(dialogdata)
 				fgettext("Accept") .. "]" ..
 		"button[7.5,4.2;2.8,0.5;dlg_rename_modpack_cancel;"..
 				fgettext("Cancel") .. "]"
-	
+
 	return retval
 end
 
@@ -44,11 +44,11 @@ local function rename_modpack_buttonhandler(this, fields)
 		modmgr.refresh_globals()
 		modmgr.selected_mod = modmgr.global_mods:get_current_index(
 			modmgr.global_mods:raw_index_by_uid(fields["te_modpack_name"]))
-			
+
 		this:delete()
 		return true
 	end
-	
+
 	if fields["dlg_rename_modpack_cancel"] then
 		this:delete()
 		return true

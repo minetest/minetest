@@ -106,7 +106,7 @@ DigParams getDigParams(const ItemGroupList &groups,
 	default:
 		break;
 	}
-	
+
 	// Values to be returned (with a bit of conversion)
 	bool result_diggable = false;
 	float result_time = 0.0;
@@ -197,7 +197,7 @@ PunchDamageResult getPunchDamage(
 				do_hit = false;
 		}
 	}
-	
+
 	PunchDamageResult result;
 	if(do_hit)
 	{

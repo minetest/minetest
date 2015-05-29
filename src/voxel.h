@@ -329,7 +329,7 @@ public:
 	v3s16 MaxEdge;
 };
 
-// unused 
+// unused
 #define VOXELFLAG_UNUSED   (1<<0)
 // no data about that node
 #define VOXELFLAG_NO_DATA  (1<<1)

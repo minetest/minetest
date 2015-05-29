@@ -84,7 +84,7 @@ public:
 	{
 		return m_camera_direction;
 	}
-	
+
 	// Get the camera offset
 	inline v3s16 getOffset() const
 	{
@@ -163,7 +163,7 @@ private:
 
 	// draw control
 	MapDrawControl& m_draw_control;
-	
+
 	IGameDef *m_gamedef;
 
 	// Absolute camera position

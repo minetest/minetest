@@ -18,7 +18,7 @@
 --------------------------------------------------------------------------------
 local function get_formspec(tabview, name, tabdata)
 	local render_details = core.is_yes(core.setting_getbool("public_serverlist"))
-	
+
 	local retval =
 		"label[7.75,-0.15;" .. fgettext("Address / Port :") .. "]" ..
 		"label[7.75,1.05;" .. fgettext("Name / Password :") .. "]" ..
@@ -41,7 +41,7 @@ local function get_formspec(tabview, name, tabdata)
 		"pwdfield[10.78,1.95;1.77,0.5;te_pwd;]" ..
 		"box[7.73,2.35;4.3,2.28;#999999]" ..
 		"textarea[8.1,2.4;4.26,2.6;;"
-		
+
 	if tabdata.fav_selected ~= nil and
 		menudata.favorites[tabdata.fav_selected] ~= nil and
 		menudata.favorites[tabdata.fav_selected].description ~= nil then
@@ -138,7 +138,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 				tabdata.fav_selected = event.row
 			end
-			
+
 			return true
 		end
 	end
@@ -157,13 +157,13 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		else
 			fav_idx = 1
 		end
-		
+
 		if menudata.favorites == nil or
 			menudata.favorites[fav_idx] == nil then
 			tabdata.fav_selected = 0
 			return true
 		end
-	
+
 		local address = menudata.favorites[fav_idx].address
 		local port    = menudata.favorites[fav_idx].port
 

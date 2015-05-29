@@ -110,7 +110,7 @@ void Sky::render()
 
 	if (!camera || !driver)
 		return;
-	
+
 	ScopeProfiler sp(g_profiler, "Sky::render()", SPT_AVG);
 
 	// draw perspective skybox
@@ -140,7 +140,7 @@ void Sky::render()
 		float moonsize = 0.04;
 		video::SColorf mooncolor_f(0.50, 0.57, 0.65, 1);
 		video::SColorf mooncolor2_f(0.85, 0.875, 0.9, 1);
-		
+
 		float nightlength = 0.415;
 		float wn = nightlength / 2;
 		float wicked_time_of_day = 0;
@@ -180,13 +180,13 @@ void Sky::render()
 		const f32 o = 0.0f;
 		static const u16 indices[4] = {0,1,2,3};
 		video::S3DVertex vertices[4];
-		
+
 		driver->setMaterial(m_materials[1]);
-		
+
 		//video::SColor cloudyfogcolor(255,255,255,255);
 		video::SColor cloudyfogcolor = m_bgcolor;
 		//video::SColor cloudyfogcolor = m_bgcolor.getInterpolated(m_skycolor, 0.5);
-		
+
 		// Draw far cloudy fog thing
 		for(u32 j=0; j<4; j++)
 		{
@@ -354,7 +354,7 @@ void Sky::render()
 					vertices[i].Pos.rotateXYBy(wicked_time_of_day * 360 - 90);
 				}
 				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
-			
+
 				d = moonsize * 1.3;
 				c = mooncolor;
 				c.setAlpha(0.15*255);
@@ -459,7 +459,7 @@ void Sky::render()
 					indices, SKY_STAR_COUNT, video::EVT_STANDARD,
 					scene::EPT_QUADS, video::EIT_16BIT);
 		}while(0);
-		
+
 		for(u32 j=0; j<2; j++)
 		{
 			//video::SColor c = m_skycolor;
@@ -503,7 +503,7 @@ void Sky::update(float time_of_day, float time_brightness,
 	m_time_of_day = time_of_day;
 	m_time_brightness = time_brightness;
 	m_sunlight_seen = sunlight_seen;
-	
+
 	bool is_dawn = (time_brightness >= 0.20 && time_brightness < 0.35);
 
 	//video::SColorf bgcolor_bright_normal_f(170./255,200./255,230./255, 1.0);
@@ -520,7 +520,7 @@ void Sky::update(float time_of_day, float time_brightness,
 			video::SColor(255, 140, 186, 250);
 	video::SColorf skycolor_bright_dawn_f =
 			video::SColor(255, 180, 186, 250);
-	
+
 	video::SColorf cloudcolor_bright_normal_f =
 			video::SColor(255, 240,240,255);
 	//video::SColorf cloudcolor_bright_dawn_f(1.0, 0.591, 0.4);
@@ -543,7 +543,7 @@ void Sky::update(float time_of_day, float time_brightness,
 		else
 			m_brightness = m_brightness * 0.98 + direct_brightness * 0.02;
 	}
-	
+
 	m_clouds_visible = true;
 	float color_change_fraction = 0.98;
 	if(sunlight_seen){

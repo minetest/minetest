@@ -478,7 +478,7 @@ CGUITTGlyphPage* CGUITTFont::getLastGlyphPage() const
 CGUITTGlyphPage* CGUITTFont::createGlyphPage(const u8& pixel_mode)
 {
 	CGUITTGlyphPage* page = 0;
-	
+
 	// Name of our page.
 	io::path name("TTFontGlyphPage_");
 	name += tt_face->family_name;

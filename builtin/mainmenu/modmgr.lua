@@ -18,7 +18,7 @@
 --------------------------------------------------------------------------------
 function get_mods(path,retval,modpack)
 	local mods = core.get_dir_list(path, true)
-	
+
 	for i=1, #mods, 1 do
 		if mods[i]:sub(1,1) ~= "." then
 			local toadd = {}

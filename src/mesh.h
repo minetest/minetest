@@ -69,8 +69,8 @@ void rotateMeshBy6dFacedir(scene::IMesh *mesh, int facedir);
 */
 void rotateMeshXYby (scene::IMesh *mesh, f64 degrees);
 void rotateMeshXZby (scene::IMesh *mesh, f64 degrees);
-void rotateMeshYZby (scene::IMesh *mesh, f64 degrees); 
- 
+void rotateMeshYZby (scene::IMesh *mesh, f64 degrees);
+
 /*
 	Clone the mesh.
 */

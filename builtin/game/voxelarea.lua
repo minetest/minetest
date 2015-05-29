@@ -50,7 +50,7 @@ end
 function VoxelArea:position(i)
 	local p = {}
 	local MinEdge = self.MinEdge
- 
+
 	i = i - 1
 
 	p.z = math.floor(i / self.zstride) + MinEdge.z
