@@ -1620,6 +1620,11 @@ private:
 	bool m_cache_enable_fog;
 	f32  m_cache_mouse_sensitivity;
 	f32  m_repeat_right_click_time;
+
+#ifdef __ANDROID__
+	bool m_cache_hold_aux1;
+#endif
+
 };
 
 Game::Game() :
@@ -1653,6 +1658,11 @@ Game::Game() :
 	m_repeat_right_click_time         = g_settings->getFloat("repeat_rightclick_time");
 
 	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001, 100.0);
+
+#ifdef __ANDROID__
+	m_cache_hold_aux1 = false;	// This is initialised properly later
+#endif
+
 }
 
 
@@ -1758,6 +1768,11 @@ void Game::run()
 	std::vector<aabb3f> highlight_boxes;
 
 	set_light_table(g_settings->getFloat("display_gamma"));
+
+#ifdef __ANDROID__
+	m_cache_hold_aux1 = g_settings->getBool("fast_move")
+			&& client->checkPrivilege("fast");
+#endif
 
 	while (device->run() && !(*kill || g_gamecallback->shutdown_requested)) {
 
@@ -2747,8 +2762,14 @@ void Game::toggleFast(float *statustext_time)
 	*statustext_time = 0;
 	statustext = msg[fast_move];
 
-	if (fast_move && !client->checkPrivilege("fast"))
+	bool has_fast_privs = client->checkPrivilege("fast");
+
+	if (fast_move && !has_fast_privs)
 		statustext += L" (note: no 'fast' privilege)";
+
+#ifdef __ANDROID__
+	m_cache_hold_aux1 = fast_move && has_fast_privs;
+#endif
 }
 
 
@@ -2998,11 +3019,15 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 		);
 
 #ifdef ANDROID
-	/* For Android, invert the meaning of holding down the fast button (i.e.
-	 * holding down the fast button -- if there is one -- means walk)
+	/* For Android, simulate holding down AUX1 (fast move) if the user has
+	 * the fast_move setting toggled on. If there is an aux1 key defined for
+	 * Android then its meaning is inverted (i.e. holding aux1 means walk and
+	 * not fast)
 	 */
-	control.aux1 = control.aux1 ^ true;
-	keypress_bits ^= ((u32)(1U << 5));
+	if (m_cache_hold_aux1) {
+		control.aux1 = control.aux1 ^ true;
+		keypress_bits ^= ((u32)(1U << 5));
+	}
 #endif
 
 	client->setPlayerControl(control);
