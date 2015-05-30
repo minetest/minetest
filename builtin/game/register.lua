@@ -407,6 +407,34 @@ local function make_registration_wrap(reg_fn_name, clear_fn_name)
 	return list
 end
 
+core.registered_on_player_hpchanges = { modifiers = { }, loggers = { } }
+function core.registered_on_player_hpchange(player, hp_change)
+	local last = false
+	for i = #core.registered_on_player_hpchanges.modifiers, 1, -1 do
+		local func = core.registered_on_player_hpchanges.modifiers[i]
+		hp_change, last = func(player, hp_change)
+		if type(hp_change) ~= "number" then
+			local debuginfo = debug.getinfo(func)
+			error("The register_on_hp_changes function has to return a number at " ..
+				debuginfo.short_src .. " line " .. debuginfo.linedefined)
+		end
+		if last then
+			break
+		end
+	end
+	for i, func in ipairs(core.registered_on_player_hpchanges.loggers) do
+		func(player, hp_change)
+	end
+	return hp_change
+end
+function core.register_on_player_hpchange(func, modifier)
+	if modifier then
+		table.insert(core.registered_on_player_hpchanges.modifiers, func)
+	else
+		table.insert(core.registered_on_player_hpchanges.loggers, func)
+	end
+end
+
 core.registered_biomes      = make_registration_wrap("register_biome",      "clear_registered_biomes")
 core.registered_ores        = make_registration_wrap("register_ore",        "clear_registered_ores")
 core.registered_decorations = make_registration_wrap("register_decoration", "clear_registered_decorations")
