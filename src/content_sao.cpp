@@ -1125,6 +1125,12 @@ void PlayerSAO::setHP(s16 hp)
 {
 	s16 oldhp = m_player->hp;
 
+	s16 hp_change = m_env->getScriptIface()->on_player_hpchange(this,
+		hp - oldhp);
+	if (hp_change == 0)
+		return;
+	hp = oldhp + hp_change;
+
 	if (hp < 0)
 		hp = 0;
 	else if (hp > PLAYER_MAX_HP)

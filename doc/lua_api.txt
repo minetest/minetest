@@ -1785,6 +1785,13 @@ Call these functions only at load time!
        the puncher to the punched.
      * `damage` - number that represents the damage calculated by the engine
      * should return `true` to prevent the default damage mechanism
+* `minetest.register_on_player_hpchange(func(player, hp_change), modifier)`
+    * Called when the player gets damaged or healed
+    * `player`: ObjectRef of the player
+    * `hp_change`: the amount of change. Negative when it is damage.
+    * `modifier`: when true, the function should return the actual hp_change.
+      Note: modifiers only get a temporary hp_change that can be modified by later modifiers.
+      modifiers can return true as a second argument to stop the execution of further functions.
 * `minetest.register_on_respawnplayer(func(ObjectRef))`
      * Called when player is to be respawned
      * Called _before_ repositioning of player occurs

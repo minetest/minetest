@@ -69,6 +69,25 @@ bool ScriptApiPlayer::on_punchplayer(ServerActiveObject *player,
 	return lua_toboolean(L, -1);
 }
 
+s16 ScriptApiPlayer::on_player_hpchange(ServerActiveObject *player,
+	s16 hp_change)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_player_hpchange
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_player_hpchange");
+	lua_remove(L, -2);
+
+	objectrefGetOrCreate(L, player);
+	lua_pushnumber(L, hp_change);
+	if (lua_pcall(L, 2, 1, m_errorhandler))
+		scriptError();
+	hp_change = lua_tointeger(L, -1);
+	lua_pop(L, -1);
+	return hp_change;
+}
+
 bool ScriptApiPlayer::on_respawnplayer(ServerActiveObject *player)
 {
 	SCRIPTAPI_PRECHECKHEADER
