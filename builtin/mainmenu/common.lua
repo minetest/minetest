@@ -234,7 +234,13 @@ end
 --------------------------------------------------------------------------------
 function asyncOnlineFavourites()
 
-	menudata.favorites = {}
+	if not menudata.public_known then
+		menudata.public_known = {{
+			name = fgettext("Loading..."),
+			description = fgettext("Try reenabling public serverlist and check your internet connection.")
+		}}
+	end
+	menudata.favorites = menudata.public_known
 	core.handle_async(
 		function(param)
 			return core.get_favorites("online")
@@ -242,11 +248,15 @@ function asyncOnlineFavourites()
 		nil,
 		function(result)
 			if core.setting_getbool("public_serverlist") then
-				menudata.favorites = order_favorite_list(result)
+				local favs = order_favorite_list(result)
+				if favs[1] then
+					menudata.public_known = favs
+					menudata.favorites = menudata.public_known
+				end
 				core.event_handler("Refresh")
 			end
 		end
-		)
+	)
 end
 
 --------------------------------------------------------------------------------
