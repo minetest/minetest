@@ -1917,6 +1917,7 @@ and `minetest.auth_reload` call the authetification handler.
 * `minetest.find_node_near(pos, radius, nodenames)`: returns pos or `nil`
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
 * `minetest.find_nodes_in_area(minp, maxp, nodenames)`: returns a list of positions
+    * returns as second value a table with the count of the individual nodes found
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
 * `minetest.find_nodes_in_area_under_air(minp, maxp, nodenames)`: returns a list of positions
     * returned positions are nodes with a node air above
