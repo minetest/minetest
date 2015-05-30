@@ -2075,6 +2075,7 @@ void ClientEnvironment::step(float dtime)
 	// Get some settings
 	bool fly_allowed = m_gamedef->checkLocalPrivilege("fly");
 	bool free_move = fly_allowed && g_settings->getBool("free_move");
+	bool enable_damage = g_settings->getBool("enable_damage");
 
 	// Get local player
 	LocalPlayer *lplayer = getLocalPlayer();
@@ -2116,8 +2117,7 @@ void ClientEnvironment::step(float dtime)
 	*/
 
 	u32 loopcount = 0;
-	do
-	{
+	while (dtime_downcount > 0.001) {
 		loopcount++;
 
 		f32 dtime_part;
@@ -2143,11 +2143,11 @@ void ClientEnvironment::step(float dtime)
 
 		{
 			// Apply physics
-			if(free_move == false && is_climbing == false)
+			if (!free_move && !is_climbing)
 			{
 				// Gravity
 				v3f speed = lplayer->getSpeed();
-				if(lplayer->in_liquid == false)
+				if (!lplayer->in_liquid)
 					speed.Y -= lplayer->movement_gravity * lplayer->physics_override_gravity * dtime_part * 2;
 
 				// Liquid floating / sinking
@@ -2191,38 +2191,37 @@ void ClientEnvironment::step(float dtime)
 					&player_collisions);
 		}
 	}
-	while(dtime_downcount > 0.001);
 
-	//std::cout<<"Looped "<<loopcount<<" times."<<std::endl;
+	if (enable_damage) {
+		for(std::vector<CollisionInfo>::iterator i = player_collisions.begin();
+				i != player_collisions.end(); ++i) {
+			CollisionInfo &info = *i;
+			v3f speed_diff = info.new_speed - info.old_speed;
+			// Handle only fall damage
+			// (because otherwise walking against something in fast_move kills you)
+			if(speed_diff.Y < 0 || info.old_speed.Y >= 0)
+				continue;
+			// Get rid of other components
+			speed_diff.X = 0;
+			speed_diff.Z = 0;
+			f32 pre_factor = 1; // 1 hp per node/s
+			f32 tolerance = BS*14; // 5 without damage
+			f32 post_factor = 1; // 1 hp per node/s
+			if(info.type == COLLISION_NODE)
+			{
+				const ContentFeatures &f = m_gamedef->ndef()->
+						get(m_map->getNodeNoEx(info.node_p));
+				// Determine fall damage multiplier
+				int addp = itemgroup_get(f.groups, "fall_damage_add_percent");
+				pre_factor = 1.0 + (float)addp/100.0;
+			}
+			float speed = pre_factor * speed_diff.getLength();
+			if (speed <= tolerance)
+				continue;
 
-	for(std::vector<CollisionInfo>::iterator i = player_collisions.begin();
-			i != player_collisions.end(); ++i) {
-		CollisionInfo &info = *i;
-		v3f speed_diff = info.new_speed - info.old_speed;;
-		// Handle only fall damage
-		// (because otherwise walking against something in fast_move kills you)
-		if(speed_diff.Y < 0 || info.old_speed.Y >= 0)
-			continue;
-		// Get rid of other components
-		speed_diff.X = 0;
-		speed_diff.Z = 0;
-		f32 pre_factor = 1; // 1 hp per node/s
-		f32 tolerance = BS*14; // 5 without damage
-		f32 post_factor = 1; // 1 hp per node/s
-		if(info.type == COLLISION_NODE)
-		{
-			const ContentFeatures &f = m_gamedef->ndef()->
-					get(m_map->getNodeNoEx(info.node_p));
-			// Determine fall damage multiplier
-			int addp = itemgroup_get(f.groups, "fall_damage_add_percent");
-			pre_factor = 1.0 + (float)addp/100.0;
-		}
-		float speed = pre_factor * speed_diff.getLength();
-		if(speed > tolerance)
-		{
 			f32 damage_f = (speed - tolerance)/BS * post_factor;
 			u16 damage = (u16)(damage_f+0.5);
-			if(damage != 0){
+			if (damage != 0) {
 				damageLocalPlayer(damage, true);
 				MtEvent *e = new SimpleTriggerEvent("PlayerFallingDamage");
 				m_gamedef->event()->put(e);
@@ -2233,7 +2232,7 @@ void ClientEnvironment::step(float dtime)
 	/*
 		A quick draft of lava damage
 	*/
-	if(m_lava_hurt_interval.step(dtime, 1.0))
+	if(m_lava_hurt_interval.step(dtime, 1.0) && enable_damage)
 	{
 		v3f pf = lplayer->getPosition();
 
@@ -2254,15 +2253,13 @@ void ClientEnvironment::step(float dtime)
 				m_gamedef->ndef()->get(n3).damage_per_second);
 
 		if(damage_per_second != 0)
-		{
 			damageLocalPlayer(damage_per_second, true);
-		}
 	}
 
 	/*
 		Drowning
 	*/
-	if(m_drowning_interval.step(dtime, 2.0))
+	if(m_drowning_interval.step(dtime, 2.0) && enable_damage)
 	{
 		v3f pf = lplayer->getPosition();
 
@@ -2287,7 +2284,7 @@ void ClientEnvironment::step(float dtime)
 			damageLocalPlayer(drowning_damage, true);
 		}
 	}
-	if(m_breathing_interval.step(dtime, 0.5))
+	if(m_breathing_interval.step(dtime, 0.5) && enable_damage)
 	{
 		v3f pf = lplayer->getPosition();
 
@@ -2318,10 +2315,9 @@ void ClientEnvironment::step(float dtime)
 		/*
 			Handle non-local players
 		*/
-		if(player->isLocal() == false) {
+		if(!player->isLocal()) {
 			// Move
 			player->move(dtime, this, 100*BS);
-
 		}
 	}
 
