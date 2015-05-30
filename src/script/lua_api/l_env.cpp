@@ -572,19 +572,28 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 		ndef->getIds(lua_tostring(L, 3), filter);
 	}
 
+	std::map<content_t, u16> individual_count;
+
 	lua_newtable(L);
 	u64 i = 0;
-	for(s16 x = minp.X; x <= maxp.X; x++)
-	for(s16 y = minp.Y; y <= maxp.Y; y++)
-	for(s16 z = minp.Z; z <= maxp.Z; z++) {
-		v3s16 p(x, y, z);
-		content_t c = env->getMap().getNodeNoEx(p).getContent();
-		if(filter.count(c) != 0) {
-			push_v3s16(L, p);
-			lua_rawseti(L, -2, ++i);
-		}
+	for (s16 x = minp.X; x <= maxp.X; x++)
+		for (s16 y = minp.Y; y <= maxp.Y; y++)
+			for (s16 z = minp.Z; z <= maxp.Z; z++) {
+				v3s16 p(x, y, z);
+				content_t c = env->getMap().getNodeNoEx(p).getContent();
+				if (filter.count(c) != 0) {
+					push_v3s16(L, p);
+					lua_rawseti(L, -2, ++i);
+					individual_count[c]++;
+				}
 	}
-	return 1;
+	lua_newtable(L);
+	for (std::set<content_t>::iterator it = filter.begin();
+			it != filter.end(); ++it) {
+		lua_pushnumber(L, individual_count[*it]);
+		lua_setfield(L, -2, ndef->get(*it).name.c_str());
+	}
+	return 2;
 }
 
 // find_nodes_in_area_under_air(minp, maxp, nodenames) -> list of positions
