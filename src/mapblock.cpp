@@ -132,7 +132,7 @@ MapNode MapBlock::getNodeParent(v3s16 p, bool *is_valid_position)
 	}
 	if (is_valid_position)
 		*is_valid_position = true;
-	return data[p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X];
+	return data[p.Z * zstride + p.Y * ystride + p.X];
 }
 
 std::string MapBlock::getModifiedReasonString()
@@ -388,7 +388,7 @@ void MapBlock::actuallyUpdateDayNightDiff()
 	/*
 		Check if any lighting value differs
 	*/
-	for (u32 i = 0; i < MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE; i++) {
+	for (u32 i = 0; i < nodecount; i++) {
 		MapNode &n = data[i];
 
 		differs = !n.isLightDayNightEq(nodemgr);
@@ -402,7 +402,7 @@ void MapBlock::actuallyUpdateDayNightDiff()
 	*/
 	if (differs) {
 		bool only_air = true;
-		for (u32 i = 0; i < MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE; i++) {
+		for (u32 i = 0; i < nodecount; i++) {
 			MapNode &n = data[i];
 			if (n.getContent() != CONTENT_AIR) {
 				only_air = false;
@@ -473,8 +473,7 @@ static void getBlockNodeIdMapping(NameIdMapping *nimap, MapNode *nodes,
 
 	std::set<content_t> unknown_contents;
 	content_t id_counter = 0;
-	for(u32 i=0; i<MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE; i++)
-	{
+	for (u32 i = 0; i < MapBlock::nodecount; i++) {
 		content_t global_id = nodes[i].getContent();
 		content_t id = CONTENT_IGNORE;
 
@@ -519,8 +518,7 @@ static void correctBlockNodeIds(const NameIdMapping *nimap, MapNode *nodes,
 	// correct ids.
 	std::set<content_t> unnamed_contents;
 	std::set<std::string> unallocatable_contents;
-	for(u32 i=0; i<MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE; i++)
-	{
+	for (u32 i = 0; i < MapBlock::nodecount; i++) {
 		content_t local_id = nodes[i].getContent();
 		std::string name;
 		bool found = nimap->getName(local_id, name);
@@ -583,7 +581,6 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 		Bulk node data
 	*/
 	NameIdMapping nimap;
-	u32 nodecount = MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE;
 	if(disk)
 	{
 		MapNode *tmp_nodes = new MapNode[nodecount];
@@ -683,7 +680,6 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 	*/
 	TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
 			<<": Bulk node data"<<std::endl);
-	u32 nodecount = MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE;
 	u8 content_width = readU8(is);
 	u8 params_width = readU8(is);
 	if(content_width != 1 && content_width != 2)
@@ -786,8 +782,6 @@ void MapBlock::deSerializeNetworkSpecific(std::istream &is)
 
 void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 {
-	u32 nodecount = MAP_BLOCKSIZE*MAP_BLOCKSIZE*MAP_BLOCKSIZE;
-
 	// Initialize default flags
 	is_underground = false;
 	m_day_night_differs = false;

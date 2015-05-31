@@ -145,9 +145,8 @@ public:
 	void reallocate()
 	{
 		delete[] data;
-		u32 datasize = MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE;
-		data = new MapNode[datasize];
-		for (u32 i = 0; i < datasize; i++)
+		data = new MapNode[nodecount];
+		for (u32 i = 0; i < nodecount; i++)
 			data[i] = MapNode(CONTENT_IGNORE);
 
 		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_REALLOCATE);
@@ -294,7 +293,7 @@ public:
 		if (!*valid_position)
 			return MapNode(CONTENT_IGNORE);
 
-		return data[z * MAP_BLOCKSIZE * MAP_BLOCKSIZE + y * MAP_BLOCKSIZE + x];
+		return data[z * zstride + y * ystride + x];
 	}
 
 	inline MapNode getNode(v3s16 p, bool *valid_position)
@@ -552,6 +551,8 @@ public:
 
 	static const u32 ystride = MAP_BLOCKSIZE;
 	static const u32 zstride = MAP_BLOCKSIZE * MAP_BLOCKSIZE;
+
+	static const u32 nodecount = MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE;
 
 private:
 	/*
