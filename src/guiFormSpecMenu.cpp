@@ -236,28 +236,27 @@ GUITable* GUIFormSpecMenu::getTable(std::wstring tablename)
 	return 0;
 }
 
-std::vector<std::string> split(const std::string &s, char delim) {
+static std::vector<std::string> split(const std::string &s, char delim)
+{
 	std::vector<std::string> tokens;
 
 	std::string current = "";
 	bool last_was_escape = false;
-	for(unsigned int i=0; i < s.size(); i++) {
+	for (unsigned int i = 0; i < s.size(); i++) {
+		char si = s.c_str()[i];
 		if (last_was_escape) {
 			current += '\\';
-			current += s.c_str()[i];
+			current += si;
 			last_was_escape = false;
-		}
-		else {
-			if (s.c_str()[i] == delim) {
+		} else {
+			if (si == delim) {
 				tokens.push_back(current);
 				current = "";
 				last_was_escape = false;
-			}
-			else if (s.c_str()[i] == '\\'){
+			} else if (si == '\\') {
 				last_was_escape = true;
-			}
-			else {
-				current += s.c_str()[i];
+			} else {
+				current += si;
 				last_was_escape = false;
 			}
 		}
