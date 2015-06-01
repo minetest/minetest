@@ -1,6 +1,11 @@
 -- Minetest: builtin/misc_helpers.lua
 
 --------------------------------------------------------------------------------
+-- Localize functions to avoid table lookups (better performance).
+local table_insert = table.insert
+local string_sub, string_sub = string.sub, string.find
+
+--------------------------------------------------------------------------------
 function basic_dump(o)
 	local tp = type(o)
 	if tp == "number" then
@@ -89,13 +94,13 @@ function dump2(o, name, dumped)
 				-- the form _G["table: 0xFFFFFFF"]
 				keyStr = string.format("_G[%q]", tostring(k))
 				-- Dump key table
-				table.insert(t, dump2(k, keyStr, dumped))
+				table_insert(t, dump2(k, keyStr, dumped))
 			end
 		else
 			keyStr = basic_dump(k)
 		end
 		local vname = string.format("%s[%s]", name, keyStr)
-		table.insert(t, dump2(v, vname, dumped))
+		table_insert(t, dump2(v, vname, dumped))
 	end
 	return string.format("%s = {}\n%s", name, table.concat(t))
 end
@@ -130,7 +135,7 @@ function dump(o, indent, nested, level)
 	local t = {}
 	local dumped_indexes = {}
 	for i, v in ipairs(o) do
-		table.insert(t, dump(v, indent, nested, level + 1))
+		table_insert(t, dump(v, indent, nested, level + 1))
 		dumped_indexes[i] = true
 	end
 	for k, v in pairs(o) do
@@ -139,7 +144,7 @@ function dump(o, indent, nested, level)
 				k = "["..dump(k, indent, nested, level + 1).."]"
 			end
 			v = dump(v, indent, nested, level + 1)
-			table.insert(t, k.." = "..v)
+			table_insert(t, k.." = "..v)
 		end
 	end
 	nested[o] = nil
@@ -154,10 +159,6 @@ function dump(o, indent, nested, level)
 	return "{"..table.concat(t, ", ").."}"
 end
 
---------------------------------------------------------------------------------
--- Localize functions to avoid table lookups (better performance).
-local table_insert = table.insert
-local str_sub, str_find = string.sub, string.find
 function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
 	delim = delim or ","
 	max_splits = max_splits or -1
@@ -166,13 +167,13 @@ function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
 	local plain = not sep_is_pattern
 	max_splits = max_splits + 1
 	repeat
-		local np, npe = str_find(str, delim, pos, plain)
+		local np, npe = string_sub(str, delim, pos, plain)
 		np, npe = (np or (len+1)), (npe or (len+1))
 		if (not np) or (max_splits == 1) then
 			np = len + 1
 			npe = np
 		end
-		local s = str_sub(str, pos, np - 1)
+		local s = string_sub(str, pos, np - 1)
 		if include_empty or (s ~= "") then
 			max_splits = max_splits - 1
 			table_insert(items, s)
@@ -298,8 +299,8 @@ function core.splittext(text,charlimit)
 
 	local current_idx = 1
 
-	local start,stop = string.find(text," ",current_idx)
-	local nl_start,nl_stop = string.find(text,"\n",current_idx)
+	local start,stop = string_find(text, " ", current_idx)
+	local nl_start,nl_stop = string_find(text, "\n", current_idx)
 	local gotnewline = false
 	if nl_start ~= nil and (start == nil or nl_start < start) then
 		start = nl_start
@@ -309,7 +310,7 @@ function core.splittext(text,charlimit)
 	local last_line = ""
 	while start ~= nil do
 		if string.len(last_line) + (stop-start) > charlimit then
-			table.insert(retval,last_line)
+			table_insert(retval, last_line)
 			last_line = ""
 		end
 
@@ -317,17 +318,17 @@ function core.splittext(text,charlimit)
 			last_line = last_line .. " "
 		end
 
-		last_line = last_line .. string.sub(text,current_idx,stop -1)
+		last_line = last_line .. string_sub(text, current_idx, stop - 1)
 
 		if gotnewline then
-			table.insert(retval,last_line)
+			table_insert(retval, last_line)
 			last_line = ""
 			gotnewline = false
 		end
 		current_idx = stop+1
 
-		start,stop = string.find(text," ",current_idx)
-		nl_start,nl_stop = string.find(text,"\n",current_idx)
+		start,stop = string_find(text, " ", current_idx)
+		nl_start,nl_stop = string_find(text, "\n", current_idx)
 
 		if nl_start ~= nil and (start == nil or nl_start < start) then
 			start = nl_start
@@ -338,11 +339,11 @@ function core.splittext(text,charlimit)
 
 	--add last part of text
 	if string.len(last_line) + (string.len(text) - current_idx) > charlimit then
-			table.insert(retval,last_line)
-			table.insert(retval,string.sub(text,current_idx))
+			table_insert(retval, last_line)
+			table_insert(retval, string_sub(text, current_idx))
 	else
-		last_line = last_line .. " " .. string.sub(text,current_idx)
-		table.insert(retval,last_line)
+		last_line = last_line .. " " .. string_sub(text, current_idx)
+		table_insert(retval, last_line)
 	end
 
 	return retval
