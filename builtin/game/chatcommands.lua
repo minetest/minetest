@@ -713,7 +713,7 @@ core.register_chatcommand("time", {
 			return false, "Invalid minute (must be between 0 and 59 inclusive)."
 		end
 		core.set_timeofday((hour * 60 + minute) / 1440)
-		core.log("action", name .. " sets time to " .. hour .. ":" .. minute)
+		core.log("action", ("%s sets time to %d:%02d"):format(name, hour, minute))
 		return true, "Time of day changed."
 	end,
 })
