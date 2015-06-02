@@ -199,6 +199,7 @@ static void craftDecrementInput(CraftInput &input, IGameDef *gamedef)
 // Example: if replacements contains the pair ("bucket:bucket_water", "bucket:bucket_empty"),
 //   a water bucket will not be removed but replaced by an empty bucket.
 static void craftDecrementOrReplaceInput(CraftInput &input,
+		std::vector<ItemStack> &output_replacements,
 		const CraftReplacements &replacements,
 		IGameDef *gamedef)
 {
@@ -213,26 +214,30 @@ static void craftDecrementOrReplaceInput(CraftInput &input,
 	for (std::vector<ItemStack>::iterator
 			it = input.items.begin();
 			it != input.items.end(); it++) {
-		if (it->count == 1) {
-			// Find an appropriate replacement
-			bool found_replacement = false;
-			for (std::vector<std::pair<std::string, std::string> >::iterator
-					j = pairs.begin();
-					j != pairs.end(); j++) {
-				if (it->name == craftGetItemName(j->first, gamedef)) {
+		// Find an appropriate replacement
+		bool found_replacement = false;
+		for (std::vector<std::pair<std::string, std::string> >::iterator
+				j = pairs.begin();
+				j != pairs.end(); j++) {
+			if (it->name == craftGetItemName(j->first, gamedef)) {
+				if (it->count == 1) {
 					it->deSerialize(j->second, gamedef->idef());
 					found_replacement = true;
 					pairs.erase(j);
 					break;
+				} else {
+					ItemStack rep;
+					rep.deSerialize(j->second, gamedef->idef());
+					it->remove(1);
+					found_replacement = true;
+					output_replacements.push_back(rep);
+					break;
 				}
 			}
-			// No replacement was found, simply decrement count to zero
-			if (!found_replacement)
-				it->remove(1);
-		} else if (it->count >= 2) {
-			// Ignore replacements for items with count >= 2
-			it->remove(1);
 		}
+		// No replacement was found, simply decrement count to zero
+		if (!found_replacement)
+			it->remove(1);
 	}
 }
 
@@ -408,9 +413,10 @@ CraftInput CraftDefinitionShaped::getInput(const CraftOutput &output, IGameDef *
 	return CraftInput(CRAFT_METHOD_NORMAL,width,craftGetItems(recipe,gamedef));
 }
 
-void CraftDefinitionShaped::decrementInput(CraftInput &input, IGameDef *gamedef) const
+void CraftDefinitionShaped::decrementInput(CraftInput &input, std::vector<ItemStack> &output_replacements,
+	 IGameDef *gamedef) const
 {
-	craftDecrementOrReplaceInput(input, replacements, gamedef);
+	craftDecrementOrReplaceInput(input, output_replacements, replacements, gamedef);
 }
 
 CraftHashType CraftDefinitionShaped::getHashType() const
@@ -529,9 +535,10 @@ CraftInput CraftDefinitionShapeless::getInput(const CraftOutput &output, IGameDe
 	return CraftInput(CRAFT_METHOD_NORMAL, 0, craftGetItems(recipe, gamedef));
 }
 
-void CraftDefinitionShapeless::decrementInput(CraftInput &input, IGameDef *gamedef) const
+void CraftDefinitionShapeless::decrementInput(CraftInput &input, std::vector<ItemStack> &output_replacements,
+	IGameDef *gamedef) const
 {
-	craftDecrementOrReplaceInput(input, replacements, gamedef);
+	craftDecrementOrReplaceInput(input, output_replacements, replacements, gamedef);
 }
 
 CraftHashType CraftDefinitionShapeless::getHashType() const
@@ -661,7 +668,8 @@ CraftInput CraftDefinitionToolRepair::getInput(const CraftOutput &output, IGameD
 	return CraftInput(CRAFT_METHOD_COOKING, additional_wear, stack);
 }
 
-void CraftDefinitionToolRepair::decrementInput(CraftInput &input, IGameDef *gamedef) const
+void CraftDefinitionToolRepair::decrementInput(CraftInput &input, std::vector<ItemStack> &output_replacements,
+	IGameDef *gamedef) const
 {
 	craftDecrementInput(input, gamedef);
 }
@@ -720,9 +728,10 @@ CraftInput CraftDefinitionCooking::getInput(const CraftOutput &output, IGameDef 
 	return CraftInput(CRAFT_METHOD_COOKING,cooktime,craftGetItems(rec,gamedef));
 }
 
-void CraftDefinitionCooking::decrementInput(CraftInput &input, IGameDef *gamedef) const
+void CraftDefinitionCooking::decrementInput(CraftInput &input, std::vector<ItemStack> &output_replacements,
+	IGameDef *gamedef) const
 {
-	craftDecrementOrReplaceInput(input, replacements, gamedef);
+	craftDecrementOrReplaceInput(input, output_replacements, replacements, gamedef);
 }
 
 CraftHashType CraftDefinitionCooking::getHashType() const
@@ -811,9 +820,10 @@ CraftInput CraftDefinitionFuel::getInput(const CraftOutput &output, IGameDef *ga
 	return CraftInput(CRAFT_METHOD_COOKING,(int)burntime,craftGetItems(rec,gamedef));
 }
 
-void CraftDefinitionFuel::decrementInput(CraftInput &input, IGameDef *gamedef) const
+void CraftDefinitionFuel::decrementInput(CraftInput &input, std::vector<ItemStack> &output_replacements,
+	IGameDef *gamedef) const
 {
-	craftDecrementOrReplaceInput(input, replacements, gamedef);
+	craftDecrementOrReplaceInput(input, output_replacements, replacements, gamedef);
 }
 
 CraftHashType CraftDefinitionFuel::getHashType() const
@@ -871,7 +881,8 @@ public:
 	}
 
 	virtual bool getCraftResult(CraftInput &input, CraftOutput &output,
-			bool decrementInput, IGameDef *gamedef) const
+			std::vector<ItemStack> &output_replacement, bool decrementInput,
+			IGameDef *gamedef) const
 	{
 		output.item = "";
 		output.time = 0;
@@ -922,7 +933,7 @@ public:
 					// Get output, then decrement input (if requested)
 					output = def->getOutput(input, gamedef);
 					if (decrementInput)
-						def->decrementInput(input, gamedef);
+						def->decrementInput(input, output_replacement, gamedef);
 					/*errorstream << "Check RETURNS TRUE" << std::endl;*/
 					return true;
 				}

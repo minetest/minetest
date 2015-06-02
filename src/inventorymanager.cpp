@@ -691,70 +691,110 @@ ICraftAction::ICraftAction(std::istream &is)
 	craft_inv.deSerialize(ts);
 }
 
-void ICraftAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef)
+void ICraftAction::apply(InventoryManager *mgr,
+	ServerActiveObject *player, IGameDef *gamedef)
 {
 	Inventory *inv_craft = mgr->getInventory(craft_inv);
 	
-	if(!inv_craft){
-		infostream<<"ICraftAction::apply(): FAIL: inventory not found: "
-				<<"craft_inv=\""<<craft_inv.dump()<<"\""<<std::endl;
+	if (!inv_craft) {
+		infostream << "ICraftAction::apply(): FAIL: inventory not found: "
+				<< "craft_inv=\"" << craft_inv.dump() << "\"" << std::endl;
 		return;
 	}
 
 	InventoryList *list_craft = inv_craft->getList("craft");
 	InventoryList *list_craftresult = inv_craft->getList("craftresult");
+	InventoryList *list_main = inv_craft->getList("main");
 
 	/*
 		If a list doesn't exist or the source item doesn't exist
 	*/
-	if(!list_craft){
-		infostream<<"ICraftAction::apply(): FAIL: craft list not found: "
-				<<"craft_inv=\""<<craft_inv.dump()<<"\""<<std::endl;
+	if (!list_craft) {
+		infostream << "ICraftAction::apply(): FAIL: craft list not found: "
+				<< "craft_inv=\"" << craft_inv.dump() << "\"" << std::endl;
 		return;
 	}
-	if(!list_craftresult){
-		infostream<<"ICraftAction::apply(): FAIL: craftresult list not found: "
-				<<"craft_inv=\""<<craft_inv.dump()<<"\""<<std::endl;
+	if (!list_craftresult) {
+		infostream << "ICraftAction::apply(): FAIL: craftresult list not found: "
+				<< "craft_inv=\"" << craft_inv.dump() << "\"" << std::endl;
 		return;
 	}
-	if(list_craftresult->getSize() < 1){
-		infostream<<"ICraftAction::apply(): FAIL: craftresult list too short: "
-				<<"craft_inv=\""<<craft_inv.dump()<<"\""<<std::endl;
+	if (list_craftresult->getSize() < 1) {
+		infostream << "ICraftAction::apply(): FAIL: craftresult list too short: "
+				<< "craft_inv=\"" << craft_inv.dump() << "\"" << std::endl;
 		return;
 	}
 
 	ItemStack crafted;
 	ItemStack craftresultitem;
 	int count_remaining = count;
-	getCraftingResult(inv_craft, crafted, false, gamedef);
+	std::vector<ItemStack> output_replacements;
+	getCraftingResult(inv_craft, crafted, output_replacements, false, gamedef);
 	PLAYER_TO_SA(player)->item_CraftPredict(crafted, player, list_craft, craft_inv);
 	bool found = !crafted.empty();
 
-	while(found && list_craftresult->itemFits(0, crafted))
-	{
+	while (found && list_craftresult->itemFits(0, crafted)) {
 		InventoryList saved_craft_list = *list_craft;
-		
+
+		std::vector<ItemStack> temp;
 		// Decrement input and add crafting output
-		getCraftingResult(inv_craft, crafted, true, gamedef);
+		getCraftingResult(inv_craft, crafted, temp, true, gamedef);
 		PLAYER_TO_SA(player)->item_OnCraft(crafted, player, &saved_craft_list, craft_inv);
 		list_craftresult->addItem(0, crafted);
 		mgr->setInventoryModified(craft_inv);
 
-		actionstream<<player->getDescription()
-				<<" crafts "
-				<<crafted.getItemString()
-				<<std::endl;
+		// Add the new replacements to the list
+		IItemDefManager *itemdef = gamedef->getItemDefManager();
+		for (std::vector<ItemStack>::iterator it = temp.begin();
+				it != temp.end(); it++) {
+			for (std::vector<ItemStack>::iterator jt = output_replacements.begin();
+					jt != output_replacements.end(); jt++) {
+				if (it->name == jt->name) {
+					*it = jt->addItem(*it, itemdef);
+					if (it->empty())
+						continue;
+				}
+			}
+			output_replacements.push_back(*it);
+		}
+
+		actionstream << player->getDescription()
+				<< " crafts "
+				<< crafted.getItemString()
+				<< std::endl;
 
 		// Decrement counter
-		if(count_remaining == 1)
+		if (count_remaining == 1)
 			break;
-		else if(count_remaining > 1)
+		else if (count_remaining > 1)
 			count_remaining--;
 
 		// Get next crafting result
-		found = getCraftingResult(inv_craft, crafted, false, gamedef);
+		found = getCraftingResult(inv_craft, crafted, temp, false, gamedef);
 		PLAYER_TO_SA(player)->item_CraftPredict(crafted, player, list_craft, craft_inv);
 		found = !crafted.empty();
+	}
+
+	// Put the replacements in the inventory or drop them on the floor, if
+	// the invenotry is full
+	for (std::vector<ItemStack>::iterator it = output_replacements.begin();
+			it != output_replacements.end(); it++) {
+		if (list_main)
+			*it = list_main->addItem(*it);
+		if (it->empty())
+			continue;
+		u16 count = it->count;
+		do {
+			PLAYER_TO_SA(player)->item_OnDrop(*it, player,
+				player->getBasePosition() + v3f(0,1,0));
+			if (count >= it->count) {
+				errorstream << "Couldn't drop replacement stack " <<
+					it->getItemString() << " because drop loop didn't "
+					"decrease count." << std::endl;
+
+				break;
+			}
+		} while (!it->empty());
 	}
 
 	infostream<<"ICraftAction::apply(): crafted "
@@ -771,6 +811,7 @@ void ICraftAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
 
 // Crafting helper
 bool getCraftingResult(Inventory *inv, ItemStack& result,
+		std::vector<ItemStack> &output_replacements,
 		bool decrementInput, IGameDef *gamedef)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -792,7 +833,7 @@ bool getCraftingResult(Inventory *inv, ItemStack& result,
 	// Find out what is crafted and add it to result item slot
 	CraftOutput co;
 	bool found = gamedef->getCraftDefManager()->getCraftResult(
-			ci, co, decrementInput, gamedef);
+			ci, co, output_replacements, decrementInput, gamedef);
 	if(found)
 		result.deSerialize(co.item, gamedef->getItemDefManager());
 
