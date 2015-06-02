@@ -94,26 +94,45 @@ scene::IAnimatedMesh* createCubeMesh(v3f scale)
 
 void scaleMesh(scene::IMesh *mesh, v3f scale)
 {
-	if(mesh == NULL)
+	if (mesh == NULL)
 		return;
 
 	core::aabbox3d<f32> bbox;
-	bbox.reset(0,0,0);
+	bbox.reset(0, 0, 0);
 
 	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j=0; j<mc; j++)
-	{
+	for (u16 j = 0; j < mc; j++) {
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-		u16 vc = buf->getVertexCount();
-		for(u16 i=0; i<vc; i++)
-		{
-			vertices[i].Pos *= scale;
+		u16 vertex_count = buf->getVertexCount();
+		const video::E_VERTEX_TYPE vType = buf->getVertexType();
+		switch (vType) {
+			case video::EVT_STANDARD: {
+				video::S3DVertex *vertices =
+					(video::S3DVertex*)buf->getVertices();
+				for (u16 i = 0; i < vertex_count; i++)			
+					vertices[i].Pos *= scale;
+				break;
+			}
+			case video::EVT_2TCOORDS: {
+				video::S3DVertex2TCoords *vertices =
+					(video::S3DVertex2TCoords*)buf->getVertices();
+				for (u16 i = 0; i < vertex_count; i++)			
+					vertices[i].Pos *= scale;
+				break;
+			}
+			case video::EVT_TANGENTS: {
+				video::S3DVertexTangents *vertices =
+					(video::S3DVertexTangents*)buf->getVertices();
+				for (u16 i = 0; i < vertex_count; i++)			
+					vertices[i].Pos *= scale;
+				break;
+			}
 		}
+
 		buf->recalculateBoundingBox();
 
 		// calculate total bounding box
-		if(j == 0)
+		if (j == 0)
 			bbox = buf->getBoundingBox();
 		else
 			bbox.addInternalBox(buf->getBoundingBox());
@@ -123,26 +142,44 @@ void scaleMesh(scene::IMesh *mesh, v3f scale)
 
 void translateMesh(scene::IMesh *mesh, v3f vec)
 {
-	if(mesh == NULL)
+	if (mesh == NULL)
 		return;
 
 	core::aabbox3d<f32> bbox;
-	bbox.reset(0,0,0);
+	bbox.reset(0, 0, 0);
 
 	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j=0; j<mc; j++)
-	{
+	for (u16 j = 0; j < mc; j++) {
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-		u16 vc = buf->getVertexCount();
-		for(u16 i=0; i<vc; i++)
-		{
-			vertices[i].Pos += vec;
+		u16 vertex_count = buf->getVertexCount();
+		const video::E_VERTEX_TYPE vType = buf->getVertexType();
+		switch (vType) {
+			case video::EVT_STANDARD: {
+				video::S3DVertex *vertices =
+					(video::S3DVertex*)buf->getVertices();
+				for (u16 i = 0; i < vertex_count; i++)			
+					vertices[i].Pos += vec;
+				break;
+			}
+			case video::EVT_2TCOORDS: {
+				video::S3DVertex2TCoords *vertices =
+					(video::S3DVertex2TCoords*)buf->getVertices();
+				for (u16 i = 0; i < vertex_count; i++)			
+					vertices[i].Pos += vec;
+				break;
+			}
+			case video::EVT_TANGENTS: {
+				video::S3DVertexTangents *vertices =
+					(video::S3DVertexTangents*)buf->getVertices();
+				for (u16 i = 0; i < vertex_count; i++)			
+					vertices[i].Pos += vec;
+				break;
+			}
 		}
 		buf->recalculateBoundingBox();
 
 		// calculate total bounding box
-		if(j == 0)
+		if (j == 0)
 			bbox = buf->getBoundingBox();
 		else
 			bbox.addInternalBox(buf->getBoundingBox());
@@ -150,20 +187,39 @@ void translateMesh(scene::IMesh *mesh, v3f vec)
 	mesh->setBoundingBox(bbox);
 }
 
+
 void setMeshColor(scene::IMesh *mesh, const video::SColor &color)
 {
-	if(mesh == NULL)
+	if (mesh == NULL)
 		return;
-	
+
 	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j=0; j<mc; j++)
-	{
+	for (u16 j = 0; j < mc; j++) {
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-		u16 vc = buf->getVertexCount();
-		for(u16 i=0; i<vc; i++)
-		{
-			vertices[i].Color = color;
+		u16 vertex_count = buf->getVertexCount();
+		const video::E_VERTEX_TYPE vType = buf->getVertexType();
+		switch (vType) {
+			case video::EVT_STANDARD: {
+				video::S3DVertex *vertices =
+					(video::S3DVertex*)buf->getVertices();
+				for (u16 i = 0; i < vertex_count; i++)
+					vertices[i].Color = color;
+				break;
+			}
+			case video::EVT_2TCOORDS: {
+				video::S3DVertex2TCoords *vertices =
+					(video::S3DVertex2TCoords*)buf->getVertices();
+				for (u16 i = 0; i < vertex_count; i++)
+					vertices[i].Color = color;
+				break;
+			}
+			case video::EVT_TANGENTS: {
+				video::S3DVertexTangents *vertices =
+					(video::S3DVertexTangents*)buf->getVertices();
+				for (u16 i = 0; i < vertex_count; i++)
+					vertices[i].Color = color;
+				break;
+			}
 		}
 	}
 }

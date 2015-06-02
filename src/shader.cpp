@@ -681,7 +681,7 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 	shaders_header += "\n";
 
 	if (g_settings->getBool("generate_normalmaps")){
-		shaders_header += "#define GENERATE_NORMALMAPS\n";
+		shaders_header += "#define GENERATE_NORMALMAPS 1\n";
 		shaders_header += "#define NORMALMAPS_STRENGTH ";
 		shaders_header += ftos(g_settings->getFloat("normalmaps_strength"));
 		shaders_header += "\n";
@@ -704,18 +704,26 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 		shaders_header += "#define SAMPLE_STEP ";
 		shaders_header += ftos(sample_step);
 		shaders_header += "\n";
-	}
+	} else {
+		shaders_header += "#define GENERATE_NORMALMAPS 0\n";
+	}	
 
 	if (g_settings->getBool("enable_bumpmapping"))
 		shaders_header += "#define ENABLE_BUMPMAPPING\n";
 
 	if (g_settings->getBool("enable_parallax_occlusion")){
+		float scale = g_settings->getFloat("parallax_occlusion_scale");
+		float bias = g_settings->getFloat("parallax_occlusion_bias");
+		int iterations = g_settings->getFloat("parallax_occlusion_iterations");
 		shaders_header += "#define ENABLE_PARALLAX_OCCLUSION\n";
 		shaders_header += "#define PARALLAX_OCCLUSION_SCALE ";
-		shaders_header += ftos(g_settings->getFloat("parallax_occlusion_scale"));
+		shaders_header += ftos(scale);
 		shaders_header += "\n";
 		shaders_header += "#define PARALLAX_OCCLUSION_BIAS ";
-		shaders_header += ftos(g_settings->getFloat("parallax_occlusion_bias"));
+		shaders_header += ftos(bias);
+		shaders_header += "\n";
+		shaders_header += "#define PARALLAX_OCCLUSION_ITERATIONS ";
+		shaders_header += itos(iterations);
 		shaders_header += "\n";
 	}
 
@@ -755,7 +763,6 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 		vertex_program = shaders_header + vertex_program;
 	if(geometry_program != "")
 		geometry_program = shaders_header + geometry_program;
-
 	// Call addHighLevelShaderMaterial() or addShaderMaterial()
 	const c8* vertex_program_ptr = 0;
 	const c8* pixel_program_ptr = 0;
