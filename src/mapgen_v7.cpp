@@ -610,21 +610,24 @@ MgStoneType MapgenV7::generateBiomes(float *heat_map, float *humidity_map)
 		// generated mapchunk or if not, a node of overgenerated base terrain.
 		content_t c_above = vm->m_data[vi + em.X].getContent();
 		bool air_above = c_above == CONTENT_AIR;
+		bool water_above = c_above == c_water_source;
 
-		// If there is air above enable top/filler placement, otherwise force nplaced to
-		// stone level by setting a number that will exceed any possible filler depth.
-		u16 nplaced = (air_above) ? 0 : (u16)-1;
+		// If there is air or water above enable top/filler placement, otherwise force
+		// nplaced to stone level by setting a number exceeding any possible filler depth.
+		u16 nplaced = (air_above || water_above) ? 0 : (u16)-1;
 
 		for (s16 y = node_max.Y; y >= node_min.Y; y--) {
 			content_t c = vm->m_data[vi].getContent();
 
-			// Biome is only (re)calculated for each stone/water upper surface found
-			// below air while working downwards. The chosen biome then remains in
-			// effect for all nodes below until the next biome recalculation.
-			// Biome is (re)calculated when a stone/water node is either: detected
-			// below an air node, or, is at column top and might be underground
-			// or underwater and therefore might not be below air.
-			if (c != CONTENT_AIR && (y == node_max.Y || air_above)) {
+			// Biome is recalculated each time an upper surface is detected while
+			// working down a column. The selected biome then remains in effect for
+			// all nodes below until the next surface and biome recalculation.
+			// Biome is recalculated:
+			// 1. At the surface of stone below air or water.
+			// 2. At the surface of water below air.
+			// 3. When stone or water is detected but biome has not yet been calculated.
+			if ((c == c_stone && (air_above || water_above || !biome)) ||
+					(c == c_water_source && (air_above || !biome))) {
 				biome = bmgr->getBiome(heat_map[index], humidity_map[index], y);
 				depth_top = biome->depth_top;
 				base_filler = MYMAX(depth_top + biome->depth_filler
@@ -661,17 +664,21 @@ MgStoneType MapgenV7::generateBiomes(float *heat_map, float *humidity_map)
 				}
 
 				air_above = false;
+				water_above = false;
 			} else if (c == c_water_source) {
 				vm->m_data[vi] = MapNode((y > (s32)(water_level - depth_water_top)) ?
 						biome->c_water_top : biome->c_water);
 				nplaced = 0;  // Enable top/filler placement for next surface
-				air_above = false;  // Biome is not recalculated underwater
+				air_above = false;
+				water_above = true;
 			} else if (c == CONTENT_AIR) {
 				nplaced = 0;  // Enable top/filler placement for next surface
-				air_above = true;  // Biome will be recalculated at next surface
+				air_above = true;
+				water_above = false;
 			} else {  // Possible various nodes overgenerated from neighbouring mapchunks
 				nplaced = (u16)-1;  // Disable top/filler placement
 				air_above = false;
+				water_above = false;
 			}
 
 			vm->m_area.add_y(em, vi, -1);
