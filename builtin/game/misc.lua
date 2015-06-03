@@ -4,40 +4,72 @@
 -- Misc. API functions
 --
 
-core.timers_to_add = {}
-core.timers = {}
-core.register_globalstep(function(dtime)
-	for _, timer in ipairs(core.timers_to_add) do
-		table.insert(core.timers, timer)
-	end
-	core.timers_to_add = {}
-	local index = 1
-	while index <= #core.timers do
-		local timer = core.timers[index]
-		timer.time = timer.time - dtime
+local timers = {}
+local mintime
+local function update_timers(delay)
+	mintime = false
+	local sub = 0
+	for index = 1, #timers do
+		index = index - sub
+		local timer = timers[index]
+		timer.time = timer.time - delay
 		if timer.time <= 0 then
 			timer.func(unpack(timer.args or {}))
-			table.remove(core.timers,index)
+			table.remove(timers, index)
+			sub = sub + 1
+		elseif mintime then
+			mintime = math.min(mintime, timer.time)
 		else
-			index = index + 1
+			mintime = timer.time
 		end
 	end
+end
+
+local timers_to_add
+local function add_timers()
+	for _, timer in ipairs(timers_to_add) do
+		table.insert(timers, timer)
+	end
+	timers_to_add = false
+end
+
+local delay = 0
+core.register_globalstep(function(dtime)
+	if not mintime then
+		-- abort if no timers are running
+		return
+	end
+	if timers_to_add then
+		add_timers()
+	end
+	delay = delay + dtime
+	if delay < mintime then
+		return
+	end
+	update_timers(delay)
+	delay = 0
 end)
 
 function core.after(time, func, ...)
 	assert(tonumber(time) and type(func) == "function",
 			"Invalid core.after invocation")
-	table.insert(core.timers_to_add, {time=time, func=func, args={...}})
+	if not mintime then
+		mintime = time
+		timers_to_add = {{time=time+delay, func=func, args={...}}}
+		return
+	end
+	mintime = math.min(mintime, time)
+	timers_to_add = timers_to_add or {}
+	timers_to_add[#timers_to_add+1] = {time=time+delay, func=func, args={...}}
 end
 
 function core.check_player_privs(name, privs)
 	local player_privs = core.get_player_privs(name)
 	local missing_privileges = {}
 	for priv, val in pairs(privs) do
-		if val then
-			if not player_privs[priv] then
-				table.insert(missing_privileges, priv)
-			end
+		if val
+		and not player_privs[priv] then
+			table.insert(missing_privileges, priv)
 		end
 	end
 	if #missing_privileges > 0 then
