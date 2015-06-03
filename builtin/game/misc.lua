@@ -27,23 +27,27 @@ local function update_timers(delay)
 	end
 end
 
+local function update_timers_to_add(delay)
+	update_timers(delay)
+	for _, timer in ipairs(timers_to_add) do
+		table.insert(timers, timer)
+		if mintime then
+			mintime = math.min(mintime, timer.time)
+		else
+			mintime = timer.time
+		end
+	end
+	timers_to_add = {}
+end
+
 local delay = 0
 core.register_globalstep(function(dtime)
 	if not mintime then
 		return
 	end
 	if #timers_to_add ~= 0 then
-		update_timers(delay)
+		update_timers_to_add(delay)
 		delay = 0
-		for _, timer in ipairs(timers_to_add) do
-			table.insert(timers, timer)
-			if mintime then
-				mintime = math.min(mintime, timer.time)
-			else
-				mintime = timer.time
-			end
-		end
-		timers_to_add = {}
 	end
 	delay = delay+dtime
 	if delay < mintime then
