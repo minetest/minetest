@@ -68,13 +68,15 @@ MapgenV5::MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	noise_height       = new Noise(&sp->np_height,       seed, csize.X, csize.Z);
 
 	// 3D terrain noise
-	noise_cave1        = new Noise(&sp->np_cave1,   seed, csize.X, csize.Y + 2, csize.Z);
-	noise_cave2        = new Noise(&sp->np_cave2,   seed, csize.X, csize.Y + 2, csize.Z);
-	noise_ground       = new Noise(&sp->np_ground,  seed, csize.X, csize.Y + 2, csize.Z);
+	noise_cave1  = new Noise(&sp->np_cave1,  seed, csize.X, csize.Y + 2, csize.Z);
+	noise_cave2  = new Noise(&sp->np_cave2,  seed, csize.X, csize.Y + 2, csize.Z);
+	noise_ground = new Noise(&sp->np_ground, seed, csize.X, csize.Y + 2, csize.Z);
 
 	// Biome noise
-	noise_heat         = new Noise(&params->np_biome_heat,     seed, csize.X, csize.Z);
-	noise_humidity     = new Noise(&params->np_biome_humidity, seed, csize.X, csize.Z);
+	noise_heat           = new Noise(&params->np_biome_heat,           seed, csize.X, csize.Z);
+	noise_humidity       = new Noise(&params->np_biome_humidity,       seed, csize.X, csize.Z);
+	noise_heat_blend     = new Noise(&params->np_biome_heat_blend,     seed, csize.X, csize.Z);
+	noise_humidity_blend = new Noise(&params->np_biome_humidity_blend, seed, csize.X, csize.Z);
 
 	//// Resolve nodes to be used
 	INodeDefManager *ndef = emerge->ndef;
@@ -116,6 +118,8 @@ MapgenV5::~MapgenV5()
 
 	delete noise_heat;
 	delete noise_humidity;
+	delete noise_heat_blend;
+	delete noise_humidity_blend;
 
 	delete[] heightmap;
 	delete[] biomemap;
@@ -330,7 +334,13 @@ void MapgenV5::calculateNoise()
 	noise_filler_depth->perlinMap2D(x, z);
 	noise_heat->perlinMap2D(x, z);
 	noise_humidity->perlinMap2D(x, z);
+	noise_heat_blend->perlinMap2D(x, z);
+	noise_humidity_blend->perlinMap2D(x, z);
 
+	for (s32 i = 0; i < csize.X * csize.Z; i++) {
+		noise_heat->result[i] += noise_heat_blend->result[i];
+		noise_humidity->result[i] += noise_humidity_blend->result[i];
+	}
 	//printf("calculateNoise: %dus\n", t.stop());
 }
 

@@ -115,7 +115,9 @@ struct MapgenParams {
 	u32 flags;
 
 	NoiseParams np_biome_heat;
+	NoiseParams np_biome_heat_blend;
 	NoiseParams np_biome_humidity;
+	NoiseParams np_biome_humidity_blend;
 
 	MapgenSpecificParams *sparams;
 
@@ -126,7 +128,9 @@ struct MapgenParams {
 		water_level(1),
 		flags(MG_TREES | MG_CAVES | MG_LIGHT),
 		np_biome_heat(NoiseParams(50, 50, v3f(750.0, 750.0, 750.0), 5349, 3, 0.5, 2.0)),
+		np_biome_heat_blend(NoiseParams(0, 1.5, v3f(8.0, 8.0, 8.0), 13, 2, 1.0, 2.0)),
 		np_biome_humidity(NoiseParams(50, 50, v3f(750.0, 750.0, 750.0), 842, 3, 0.5, 2.0)),
+		np_biome_humidity_blend(NoiseParams(0, 1.5, v3f(8.0, 8.0, 8.0), 90003, 2, 1.0, 2.0)),
 		sparams(NULL)
 	{}
 
