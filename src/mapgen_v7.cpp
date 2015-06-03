@@ -82,8 +82,10 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	noise_cave2    = new Noise(&sp->np_cave2,    seed, csize.X, csize.Y + 2, csize.Z);
 
 	//// Biome noise
-	noise_heat     = new Noise(&params->np_biome_heat,     seed, csize.X, csize.Z);
-	noise_humidity = new Noise(&params->np_biome_humidity, seed, csize.X, csize.Z);
+	noise_heat           = new Noise(&params->np_biome_heat,           seed, csize.X, csize.Z);
+	noise_humidity       = new Noise(&params->np_biome_humidity,       seed, csize.X, csize.Z);
+	noise_heat_blend     = new Noise(&params->np_biome_heat_blend,     seed, csize.X, csize.Z);
+	noise_humidity_blend = new Noise(&params->np_biome_humidity_blend, seed, csize.X, csize.Z);
 
 	//// Resolve nodes to be used
 	INodeDefManager *ndef = emerge->ndef;
@@ -130,6 +132,8 @@ MapgenV7::~MapgenV7()
 
 	delete noise_heat;
 	delete noise_humidity;
+	delete noise_heat_blend;
+	delete noise_humidity_blend;
 
 	delete[] ridge_heightmap;
 	delete[] heightmap;
@@ -227,11 +231,11 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 	assert(data->vmanip);
 	assert(data->nodedef);
 	assert(data->blockpos_requested.X >= data->blockpos_min.X &&
-		   data->blockpos_requested.Y >= data->blockpos_min.Y &&
-		   data->blockpos_requested.Z >= data->blockpos_min.Z);
+		data->blockpos_requested.Y >= data->blockpos_min.Y &&
+		data->blockpos_requested.Z >= data->blockpos_min.Z);
 	assert(data->blockpos_requested.X <= data->blockpos_max.X &&
-		   data->blockpos_requested.Y <= data->blockpos_max.Y &&
-		   data->blockpos_requested.Z <= data->blockpos_max.Z);
+		data->blockpos_requested.Y <= data->blockpos_max.Y &&
+		data->blockpos_requested.Z <= data->blockpos_max.Z);
 
 	this->generating = true;
 	this->vm   = data->vmanip;
@@ -365,14 +369,23 @@ void MapgenV7::calculateNoise()
 	noise_filler_depth->perlinMap2D(x, z);
 	noise_heat->perlinMap2D(x, z);
 	noise_humidity->perlinMap2D(x, z);
+	noise_heat_blend->perlinMap2D(x, z);
+	noise_humidity_blend->perlinMap2D(x, z);
+
+	for (s32 i = 0; i < csize.X * csize.Z; i++) {
+		noise_heat->result[i] += noise_heat_blend->result[i];
+		noise_humidity->result[i] += noise_humidity_blend->result[i];
+	}
 	//printf("calculateNoise: %dus\n", t.stop());
 }
 
 
 Biome *MapgenV7::getBiomeAtPoint(v3s16 p)
 {
-	float heat      = NoisePerlin2D(&noise_heat->np, p.X, p.Z, seed);
-	float humidity  = NoisePerlin2D(&noise_humidity->np, p.X, p.Z, seed);
+	float heat = NoisePerlin2D(&noise_heat->np, p.X, p.Z, seed) +
+		NoisePerlin2D(&noise_heat_blend->np, p.X, p.Z, seed);
+	float humidity = NoisePerlin2D(&noise_humidity->np, p.X, p.Z, seed) +
+		NoisePerlin2D(&noise_humidity_blend->np, p.X, p.Z, seed);
 	s16 groundlevel = baseTerrainLevelAtPoint(p.X, p.Z);
 
 	return bmgr->getBiome(heat, humidity, groundlevel);

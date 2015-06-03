@@ -445,7 +445,9 @@ void MapgenParams::load(const Settings &settings)
 	settings.getS16NoEx("chunksize", chunksize);
 	settings.getFlagStrNoEx("mg_flags", flags, flagdesc_mapgen);
 	settings.getNoiseParams("mg_biome_np_heat", np_biome_heat);
+	settings.getNoiseParams("mg_biome_np_heat_blend", np_biome_heat_blend);
 	settings.getNoiseParams("mg_biome_np_humidity", np_biome_humidity);
+	settings.getNoiseParams("mg_biome_np_humidity_blend", np_biome_humidity_blend);
 
 	delete sparams;
 	sparams = EmergeManager::createMapgenParams(mg_name);
@@ -462,7 +464,9 @@ void MapgenParams::save(Settings &settings) const
 	settings.setS16("chunksize", chunksize);
 	settings.setFlagStr("mg_flags", flags, flagdesc_mapgen, (u32)-1);
 	settings.setNoiseParams("mg_biome_np_heat", np_biome_heat);
+	settings.setNoiseParams("mg_biome_np_heat_blend", np_biome_heat_blend);
 	settings.setNoiseParams("mg_biome_np_humidity", np_biome_humidity);
+	settings.setNoiseParams("mg_biome_np_humidity_blend", np_biome_humidity_blend);
 
 	if (sparams)
 		sparams->writeParams(&settings);

@@ -82,6 +82,8 @@ public:
 
 	Noise *noise_heat;
 	Noise *noise_humidity;
+	Noise *noise_heat_blend;
+	Noise *noise_humidity_blend;
 
 	content_t c_stone;
 	content_t c_water_source;
