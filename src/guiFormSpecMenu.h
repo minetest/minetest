@@ -335,7 +335,6 @@ protected:
 	s32 m_old_tooltip_id;
 	std::string m_old_tooltip;
 
-	bool m_rmouse_auto_place;
 
 	bool m_allowclose;
 	bool m_lock;
