@@ -4,13 +4,12 @@
 -- Misc. API functions
 --
 
-local timers_to_add = {}
 local timers = {}
 local mintime
 local function update_timers(delay)
 	mintime = false
 	local sub = 0
-	for index = 1,#timers do
+	for index = 1, #timers do
 		index = index - sub
 		local timer = timers[index]
 		timer.time = timer.time - delay
@@ -18,8 +17,7 @@ local function update_timers(delay)
 			timer.func(unpack(timer.args or {}))
 			table.remove(timers, index)
 			sub = sub + 1
-		elseif mintime
-		and mintime ~= true then
+		elseif mintime then
 			mintime = math.min(mintime, timer.time)
 		else
 			mintime = timer.time
@@ -27,29 +25,24 @@ local function update_timers(delay)
 	end
 end
 
-local function update_timers_to_add(delay)
-	update_timers(delay)
+local timers_to_add
+local function add_timers()
 	for _, timer in ipairs(timers_to_add) do
 		table.insert(timers, timer)
-		if mintime then
-			mintime = math.min(mintime, timer.time)
-		else
-			mintime = timer.time
-		end
 	end
-	timers_to_add = {}
+	timers_to_add = false
 end
 
 local delay = 0
 core.register_globalstep(function(dtime)
 	if not mintime then
+		-- abort if no timers are running
 		return
 	end
-	if #timers_to_add ~= 0 then
-		update_timers_to_add(delay)
-		delay = 0
+	if timers_to_add then
+		add_timers()
 	end
-	delay = delay+dtime
+	delay = delay + dtime
 	if delay < mintime then
 		return
 	end
@@ -60,21 +53,23 @@ end)
 function core.after(time, func, ...)
 	assert(tonumber(time) and type(func) == "function",
 			"Invalid core.after invocation")
-	mintime = true
-	table.insert(timers_to_add, {time=time, func=func, args={...}})
+	if not mintime then
+		mintime = time
+		timers_to_add = {{time=time+delay, func=func, args={...}}}
+		return
+	end
+	mintime = math.min(mintime, time)
+	timers_to_add = timers_to_add or {}
+	timers_to_add[#timers_to_add+1] = {time=time+delay, func=func, args={...}}
 end
-
-core.timers_to_add = timers_to_add
-core.timers = timers
 
 function core.check_player_privs(name, privs)
 	local player_privs = core.get_player_privs(name)
 	local missing_privileges = {}
 	for priv, val in pairs(privs) do
-		if val then
-			if not player_privs[priv] then
-				table.insert(missing_privileges, priv)
-			end
+		if val
+		and not player_privs[priv] then
+			table.insert(missing_privileges, priv)
 		end
 	end
 	if #missing_privileges > 0 then
