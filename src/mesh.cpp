@@ -103,31 +103,11 @@ void scaleMesh(scene::IMesh *mesh, v3f scale)
 	u16 mc = mesh->getMeshBufferCount();
 	for (u16 j = 0; j < mc; j++) {
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+		const u32 stride = getVertexPitchFromType(buf->getVertexType());
 		u16 vertex_count = buf->getVertexCount();
-		const video::E_VERTEX_TYPE vType = buf->getVertexType();
-		switch (vType) {
-			case video::EVT_STANDARD: {
-				video::S3DVertex *vertices =
-					(video::S3DVertex*)buf->getVertices();
-				for (u16 i = 0; i < vertex_count; i++)			
-					vertices[i].Pos *= scale;
-				break;
-			}
-			case video::EVT_2TCOORDS: {
-				video::S3DVertex2TCoords *vertices =
-					(video::S3DVertex2TCoords*)buf->getVertices();
-				for (u16 i = 0; i < vertex_count; i++)			
-					vertices[i].Pos *= scale;
-				break;
-			}
-			case video::EVT_TANGENTS: {
-				video::S3DVertexTangents *vertices =
-					(video::S3DVertexTangents*)buf->getVertices();
-				for (u16 i = 0; i < vertex_count; i++)			
-					vertices[i].Pos *= scale;
-				break;
-			}
-		}
+		u8 *vertices = (u8 *)buf->getVertices();
+		for (u16 i = 0; i < vertex_count; i++) 
+			((video::S3DVertex *)(vertices + i * stride))->Pos *= scale;
 
 		buf->recalculateBoundingBox();
 
@@ -151,31 +131,12 @@ void translateMesh(scene::IMesh *mesh, v3f vec)
 	u16 mc = mesh->getMeshBufferCount();
 	for (u16 j = 0; j < mc; j++) {
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+		const u32 stride = getVertexPitchFromType(buf->getVertexType());
 		u16 vertex_count = buf->getVertexCount();
-		const video::E_VERTEX_TYPE vType = buf->getVertexType();
-		switch (vType) {
-			case video::EVT_STANDARD: {
-				video::S3DVertex *vertices =
-					(video::S3DVertex*)buf->getVertices();
-				for (u16 i = 0; i < vertex_count; i++)			
-					vertices[i].Pos += vec;
-				break;
-			}
-			case video::EVT_2TCOORDS: {
-				video::S3DVertex2TCoords *vertices =
-					(video::S3DVertex2TCoords*)buf->getVertices();
-				for (u16 i = 0; i < vertex_count; i++)			
-					vertices[i].Pos += vec;
-				break;
-			}
-			case video::EVT_TANGENTS: {
-				video::S3DVertexTangents *vertices =
-					(video::S3DVertexTangents*)buf->getVertices();
-				for (u16 i = 0; i < vertex_count; i++)			
-					vertices[i].Pos += vec;
-				break;
-			}
-		}
+		u8 *vertices = (u8 *)buf->getVertices();
+		for (u16 i = 0; i < vertex_count; i++) 
+			((video::S3DVertex *)(vertices + i * stride))->Pos += vec;
+
 		buf->recalculateBoundingBox();
 
 		// calculate total bounding box
@@ -196,31 +157,11 @@ void setMeshColor(scene::IMesh *mesh, const video::SColor &color)
 	u16 mc = mesh->getMeshBufferCount();
 	for (u16 j = 0; j < mc; j++) {
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+		const u32 stride = getVertexPitchFromType(buf->getVertexType());
 		u16 vertex_count = buf->getVertexCount();
-		const video::E_VERTEX_TYPE vType = buf->getVertexType();
-		switch (vType) {
-			case video::EVT_STANDARD: {
-				video::S3DVertex *vertices =
-					(video::S3DVertex*)buf->getVertices();
-				for (u16 i = 0; i < vertex_count; i++)
-					vertices[i].Color = color;
-				break;
-			}
-			case video::EVT_2TCOORDS: {
-				video::S3DVertex2TCoords *vertices =
-					(video::S3DVertex2TCoords*)buf->getVertices();
-				for (u16 i = 0; i < vertex_count; i++)
-					vertices[i].Color = color;
-				break;
-			}
-			case video::EVT_TANGENTS: {
-				video::S3DVertexTangents *vertices =
-					(video::S3DVertexTangents*)buf->getVertices();
-				for (u16 i = 0; i < vertex_count; i++)
-					vertices[i].Color = color;
-				break;
-			}
-		}
+		u8 *vertices = (u8 *)buf->getVertices();
+		for (u16 i = 0; i < vertex_count; i++) 
+			((video::S3DVertex *)(vertices + i * stride))->Color = color;
 	}
 }
 
