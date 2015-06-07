@@ -452,9 +452,7 @@ minetest.register_craft({
 	}
 })
 
---
--- Crafting (tool repair)
---
+-- Tool repair
 minetest.register_craft({
 	type = "toolrepair",
 	additional_wear = -0.02,
@@ -707,7 +705,7 @@ function default.node_sound_glass_defaults(table)
 	return table
 end
 
---
+-- Register nodes
 
 minetest.register_node("default:stone", {
 	description = "Stone",
@@ -1496,6 +1494,9 @@ minetest.register_node("default:apple", {
 	sounds = default.node_sound_defaults(),
 })
 
+--
+-- Grow tree function
+--
 
 local c_air = minetest.get_content_id("air")
 local c_ignore = minetest.get_content_id("ignore")
@@ -1567,6 +1568,10 @@ function default.grow_tree(data, a, pos, is_apple_tree, seed)
 	end
 	end
 end
+
+--
+-- ABMs
+--
 
 minetest.register_abm({
 	nodenames = {"default:sapling"},
@@ -1674,29 +1679,9 @@ minetest.register_craftitem("default:scorched_stuff", {
 })
 
 --
--- Aliases for the current map generator outputs
+-- Support old code
 --
 
-minetest.register_alias("mapgen_air", "air")
-minetest.register_alias("mapgen_stone", "default:stone")
-minetest.register_alias("mapgen_tree", "default:tree")
-minetest.register_alias("mapgen_leaves", "default:leaves")
-minetest.register_alias("mapgen_apple", "default:apple")
-minetest.register_alias("mapgen_water_source", "default:water_source")
-minetest.register_alias("mapgen_dirt", "default:dirt")
-minetest.register_alias("mapgen_sand", "default:sand")
-minetest.register_alias("mapgen_gravel", "default:gravel")
-minetest.register_alias("mapgen_clay", "default:clay")
-minetest.register_alias("mapgen_lava_source", "default:lava_source")
-minetest.register_alias("mapgen_cobble", "default:cobble")
-minetest.register_alias("mapgen_mossycobble", "default:mossycobble")
-minetest.register_alias("mapgen_dirt_with_grass", "default:dirt_with_grass")
-minetest.register_alias("mapgen_junglegrass", "default:junglegrass")
-minetest.register_alias("mapgen_stone_with_coal", "default:stone_with_coal")
-minetest.register_alias("mapgen_stone_with_iron", "default:stone_with_iron")
-minetest.register_alias("mapgen_mese", "default:mese")
-
--- Support old code
 function default.spawn_falling_node(p, nodename)
 	spawn_falling_node(p, nodename)
 end
@@ -1795,3 +1780,4 @@ test_get_craft_result()
 --dump2(minetest.registered_entities)
 
 -- END
+
