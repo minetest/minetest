@@ -1066,7 +1066,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		Convert FastFaces to MeshCollector
 	*/
 
-	MeshCollector collector;
+	MeshCollector collector(m_enable_shaders);
 
 	{
 		// avg 0ms (100ms spikes when loading textures the first time)
@@ -1156,23 +1156,28 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 		if(m_enable_highlighting && p.tile.material_flags & MATERIAL_FLAG_HIGHLIGHTED)
 			m_highlighted_materials.push_back(i);	
-
-		for(u32 j = 0; j < p.vertices.size(); j++)
+		
+		
+		u32 pitch = p.getVertexPitch();
+		u32 vertex_count = p.getVertexCount();
+		u8 *vertices = p.getVertices();
+		for(u32 j = 0; j < vertex_count; j++)
 		{
+			video::S3DVertex *vertex = ((video::S3DVertex *)(vertices + j * pitch));
 			// Note applyFacesShading second parameter is precalculated sqrt
 			// value for speed improvement
 			// Skip it for lightsources and top faces.
-			video::SColor &vc = p.vertices[j].Color;
+			video::SColor &vc = vertex->Color;
 			if (!vc.getBlue()) {
-				if (p.vertices[j].Normal.Y < -0.5) {
+				if (vertex->Normal.Y < -0.5) {
 					applyFacesShading (vc, 0.447213);
-				} else if (p.vertices[j].Normal.X > 0.5) {
+				} else if (vertex->Normal.X > 0.5) {
 					applyFacesShading (vc, 0.670820);
-				} else if (p.vertices[j].Normal.X < -0.5) {
+				} else if (vertex->Normal.X < -0.5) {
 					applyFacesShading (vc, 0.670820);
-				} else if (p.vertices[j].Normal.Z > 0.5) {
+				} else if (vertex->Normal.Z > 0.5) {
 					applyFacesShading (vc, 0.836660);
-				} else if (p.vertices[j].Normal.Z < -0.5) {
+				} else if (vertex->Normal.Z < -0.5) {
 					applyFacesShading (vc, 0.836660);
 				}
 			}
@@ -1214,17 +1219,27 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		}
 
 		// Create meshbuffer
-		// This is a "Standard MeshBuffer",
-		// it's a typedeffed CMeshBuffer<video::S3DVertex>
-		scene::SMeshBufferTangents *buf = new scene::SMeshBufferTangents();
-		// Set material
-		buf->Material = material;
-		// Add to mesh
-		m_mesh->addMeshBuffer(buf);
-		// Mesh grabbed it
-		buf->drop();
-		buf->append(&p.vertices[0], p.vertices.size(),
+		if (m_enable_shaders) {
+			scene::SMeshBufferTangents *buf = new scene::SMeshBufferTangents();
+			// Set material
+			buf->Material = material;
+			// Add to mesh
+			m_mesh->addMeshBuffer(buf);
+			// Mesh grabbed it
+			buf->drop();
+			buf->append(&p.tangent_vertices[0], p.tangent_vertices.size(),
 				&p.indices[0], p.indices.size());
+		} else {
+			scene::SMeshBuffer *buf = new scene::SMeshBuffer();
+			// Set material
+			buf->Material = material;
+			// Add to mesh
+			m_mesh->addMeshBuffer(buf);
+			// Mesh grabbed it
+			buf->drop();
+			buf->append(&p.vertices[0], p.vertices.size(),
+				&p.indices[0], p.indices.size());
+		}
 	}
 
 	m_camera_offset = camera_offset;
@@ -1358,7 +1373,8 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 				i != m_daynight_diffs.end(); i++)
 		{
 			scene::IMeshBuffer *buf = m_mesh->getMeshBuffer(i->first);
-			video::S3DVertexTangents *vertices = (video::S3DVertexTangents *)buf->getVertices();
+			const u32 stride = getVertexPitchFromType(buf->getVertexType());
+			u8 *vertices = (u8 *)buf->getVertices();
 			for(std::map<u32, std::pair<u8, u8 > >::iterator
 					j = i->second.begin();
 					j != i->second.end(); j++)
@@ -1366,7 +1382,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 				u32 vertexIndex = j->first;
 				u8 day = j->second.first;
 				u8 night = j->second.second;
-				finalColorBlend(vertices[vertexIndex].Color,
+				finalColorBlend(((video::S3DVertex *)(vertices + vertexIndex * stride))->Color,
 						day, night, daynight_ratio);
 			}
 		}
@@ -1391,11 +1407,13 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 			i != m_highlighted_materials.end(); i++)
 		{
 			scene::IMeshBuffer *buf = m_mesh->getMeshBuffer(*i);
-			video::S3DVertexTangents *vertices = (video::S3DVertexTangents *)buf->getVertices();
+			const u32 stride = getVertexPitchFromType(buf->getVertexType());
+			u8 *vertices = (u8 *)buf->getVertices();
 			for (u32 j = 0; j < buf->getVertexCount() ;j++)
-				vertices[j].Color = hc;
+				((video::S3DVertex *)(vertices + j * stride))->Color = hc;
 		}
 	}
+
 	return true;
 }
 
@@ -1410,6 +1428,14 @@ void MapBlockMesh::updateCameraOffset(v3s16 camera_offset)
 /*
 	MeshCollector
 */
+
+MeshCollector::MeshCollector (bool enable_shaders):
+	m_enable_shaders(enable_shaders)
+{
+}
+MeshCollector::~MeshCollector ()
+{
+}
 
 void MeshCollector::append(const TileSpec &tile,
 		const video::S3DVertex *vertices, u32 numVertices,
@@ -1433,21 +1459,31 @@ void MeshCollector::append(const TileSpec &tile,
 	}
 
 	if (p == NULL) {
-		PreMeshBuffer pp;
+		PreMeshBuffer pp(m_enable_shaders);
 		pp.tile = tile;
 		prebuffers.push_back(pp);
 		p = &prebuffers[prebuffers.size() - 1];
 	}
 
-	u32 vertex_count = p->vertices.size();
-	for (u32 i = 0; i < numIndices; i++) {
+	u32 vertex_count;
+	if (m_enable_shaders) {
+		vertex_count = p->tangent_vertices.size();
+		for (u32 i = 0; i < numVertices; i++) {
+			video::S3DVertexTangents vert(vertices[i].Pos, vertices[i].Normal,
+				vertices[i].Color, vertices[i].TCoords);
+			p->tangent_vertices.push_back(vert);
+		}
+	} else {
+		vertex_count = p->vertices.size();
+		for (u32 i = 0; i < numVertices; i++) {
+			video::S3DVertex vert(vertices[i].Pos, vertices[i].Normal,
+				vertices[i].Color, vertices[i].TCoords);
+			p->vertices.push_back(vert);
+		}
+	}
+	for (u32 i = 0; i < numIndices; i++)	{
 		u32 j = indices[i] + vertex_count;
 		p->indices.push_back(j);
-	}
-	for (u32 i = 0; i < numVertices; i++) {
-		video::S3DVertexTangents vert(vertices[i].Pos, vertices[i].Normal,
-			vertices[i].Color, vertices[i].TCoords);
-		p->vertices.push_back(vert);
 	}
 }
 
@@ -1478,22 +1514,30 @@ void MeshCollector::append(const TileSpec &tile,
 	}
 
 	if (p == NULL) {
-		PreMeshBuffer pp;
+		PreMeshBuffer pp(m_enable_shaders);
 		pp.tile = tile;
 		prebuffers.push_back(pp);
 		p = &prebuffers[prebuffers.size() - 1];
 	}
 
-	u32 vertex_count = p->vertices.size();
+	u32 vertex_count;
+	if (m_enable_shaders) {
+		vertex_count = p->tangent_vertices.size();
+		for (u32 i = 0; i < numVertices; i++) {
+			video::S3DVertexTangents vert(vertices[i].Pos + pos, vertices[i].Normal,
+				c, vertices[i].TCoords);
+			p->tangent_vertices.push_back(vert);
+		}
+	} else {
+		vertex_count = p->vertices.size();
+		for (u32 i = 0; i < numVertices; i++) {
+			video::S3DVertex vert(vertices[i].Pos + pos, vertices[i].Normal,
+				c, vertices[i].TCoords);
+			p->vertices.push_back(vert);
+		}
+	}
 	for (u32 i = 0; i < numIndices; i++)	{
 		u32 j = indices[i] + vertex_count;
 		p->indices.push_back(j);
-	}
-	for (u32 i = 0; i < numVertices; i++) {
-		video::S3DVertexTangents vert(vertices[i].Pos, vertices[i].Normal,
-			vertices[i].Color, vertices[i].TCoords);
-		vert.Pos += pos;
-		vert.Color = c;		
-		p->vertices.push_back(vert);
 	}
 }

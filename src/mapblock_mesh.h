@@ -164,17 +164,69 @@ private:
 /*
 	This is used because CMeshBuffer::append() is very slow
 */
-struct PreMeshBuffer
+class PreMeshBuffer
 {
+private:
+	bool m_enable_shaders;
+	u32 m_vertex_pitch;
+public:
 	TileSpec tile;
 	std::vector<u16> indices;
-	std::vector<video::S3DVertexTangents> vertices;
+	std::vector<video::S3DVertex> vertices;
+	std::vector<video::S3DVertexTangents> tangent_vertices;
+
+	PreMeshBuffer(bool enable_shaders):
+	m_enable_shaders(enable_shaders)
+	{
+		if (m_enable_shaders)
+			m_vertex_pitch = getVertexPitchFromType(video::EVT_TANGENTS);
+		else 
+			m_vertex_pitch = getVertexPitchFromType(video::EVT_STANDARD);
+	}
+
+	~PreMeshBuffer()
+	{
+	}	
+
+	u32 getVertexPitch ()
+	{
+		return m_vertex_pitch;
+	}
+
+	u32 getVertexCount ()
+	{
+		if (m_enable_shaders)
+			return tangent_vertices.size();
+		else 
+			return vertices.size();
+	}
+
+	u8 * getVertices()
+	{
+		if (m_enable_shaders)
+			return (u8 *)&tangent_vertices[0];
+		else 
+			return (u8 *)&vertices[0];
+	}
+
+	u8 * getVertex(u32 index)
+	{
+		if (m_enable_shaders)
+			return (u8 *)&tangent_vertices[index];
+		else 
+			return (u8 *)&vertices[index];
+	}
 };
 
-struct MeshCollector
+class MeshCollector
 {
+private:
+	bool m_enable_shaders;
+public:
 	std::vector<PreMeshBuffer> prebuffers;
 
+	MeshCollector(bool enable_shaders);
+	~MeshCollector();
 	void append(const TileSpec &material,
 			const video::S3DVertex *vertices, u32 numVertices,
 			const u16 *indices, u32 numIndices);
