@@ -225,40 +225,47 @@
 #    Set to true to pre-generate all item visuals
 #preload_item_visuals = false
 #    Set to true to enable shaders. Disable them if video_driver = direct3d9/8.
+
 #enable_shaders = true
-#    Set to true to enable textures bumpmapping. Requires shaders enabled.
 #enable_bumpmapping = false
-#    Set to true enables parallax occlusion mapping. Requires shaders enabled.
+#    Set to true to enable textures bumpmapping. Requires shaders enabled.
 #generate_normalmaps = false
 #    Set to true enables on the fly normalmap generation (Emboss effect).
 #    Requires bumpmapping enabled.
 #normalmaps_strength = 0.6
 #    Strength of generated normalmaps
-#normalmaps_smooth = 1
+#normalmaps_smooth = 0
 #    Defines sampling step of texture (0 - 2).
 #    A higher value results in smoother normal maps.
+#parallax_occlusion_mode = 1
+#    0 = parallax occlusion with slope information (faster)
+#    1 = relief mapping (slower, more accurate)
 #enable_parallax_occlusion = false
-#    Scale of parallax occlusion effect
+#    Set to true enables parallax occlusion mapping. Requires shaders enabled.
+#parallax_occlusion_iterations = 4
+#    Number of parallax occlusion iterations
 #parallax_occlusion_scale = 0.08
-#    Bias of parallax occlusion effect, usually scale/2
+#    Overall scale of parallax occlusion effect
 #parallax_occlusion_bias = 0.04
-#    Set to true enables waving water. Requires shaders enabled.
+#    Overall bias of parallax occlusion effect, usually scale/2
 #enable_waving_water = false
+#    Set to true enables waving water. Requires shaders enabled.
 #    Parameters for waving water:
 #water_wave_height = 1.0
 #water_wave_length = 20.0
 #water_wave_speed = 5.0
-#    Set to true enables waving leaves. Requires shaders enabled.
 #enable_waving_leaves = false
-#    Set to true enables waving plants. Requires shaders enabled.
+#    Set to true enables waving leaves. Requires shaders enabled.
 #enable_waving_plants = false
-#    Enables caching of facedir rotated meshes
+#    Set to true enables waving plants. Requires shaders enabled.
 #ambient_occlusion_gamma = 2.2
 #    The strength (darkness) of node ambient-occlusion shading.
 #    Lower is darker, Higher is lighter. The valid range of values for this
 #    setting is 0.25 to 4.0 inclusive. If the value is out of range it will be
 #    set to the nearest valid value.
 #enable_mesh_cache = true
+#    Enables caching of facedir rotated meshes
+
 #    The time in seconds it takes between repeated
 #    right clicks when holding the right mouse button.
 #repeat_rightclick_time = 0.25

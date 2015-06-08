@@ -94,26 +94,25 @@ scene::IAnimatedMesh* createCubeMesh(v3f scale)
 
 void scaleMesh(scene::IMesh *mesh, v3f scale)
 {
-	if(mesh == NULL)
+	if (mesh == NULL)
 		return;
 
 	core::aabbox3d<f32> bbox;
-	bbox.reset(0,0,0);
+	bbox.reset(0, 0, 0);
 
-	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j=0; j<mc; j++)
-	{
+	u32 mc = mesh->getMeshBufferCount();
+	for (u32 j = 0; j < mc; j++) {
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-		u16 vc = buf->getVertexCount();
-		for(u16 i=0; i<vc; i++)
-		{
-			vertices[i].Pos *= scale;
-		}
+		const u32 stride = getVertexPitchFromType(buf->getVertexType());
+		u32 vertex_count = buf->getVertexCount();
+		u8 *vertices = (u8 *)buf->getVertices();
+		for (u32 i = 0; i < vertex_count; i++) 
+			((video::S3DVertex *)(vertices + i * stride))->Pos *= scale;
+
 		buf->recalculateBoundingBox();
 
 		// calculate total bounding box
-		if(j == 0)
+		if (j == 0)
 			bbox = buf->getBoundingBox();
 		else
 			bbox.addInternalBox(buf->getBoundingBox());
@@ -123,26 +122,25 @@ void scaleMesh(scene::IMesh *mesh, v3f scale)
 
 void translateMesh(scene::IMesh *mesh, v3f vec)
 {
-	if(mesh == NULL)
+	if (mesh == NULL)
 		return;
 
 	core::aabbox3d<f32> bbox;
-	bbox.reset(0,0,0);
+	bbox.reset(0, 0, 0);
 
-	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j=0; j<mc; j++)
-	{
+	u32 mc = mesh->getMeshBufferCount();
+	for (u32 j = 0; j < mc; j++) {
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-		u16 vc = buf->getVertexCount();
-		for(u16 i=0; i<vc; i++)
-		{
-			vertices[i].Pos += vec;
-		}
+		const u32 stride = getVertexPitchFromType(buf->getVertexType());
+		u32 vertex_count = buf->getVertexCount();
+		u8 *vertices = (u8 *)buf->getVertices();
+		for (u32 i = 0; i < vertex_count; i++) 
+			((video::S3DVertex *)(vertices + i * stride))->Pos += vec;
+
 		buf->recalculateBoundingBox();
 
 		// calculate total bounding box
-		if(j == 0)
+		if (j == 0)
 			bbox = buf->getBoundingBox();
 		else
 			bbox.addInternalBox(buf->getBoundingBox());
@@ -150,21 +148,20 @@ void translateMesh(scene::IMesh *mesh, v3f vec)
 	mesh->setBoundingBox(bbox);
 }
 
+
 void setMeshColor(scene::IMesh *mesh, const video::SColor &color)
 {
-	if(mesh == NULL)
+	if (mesh == NULL)
 		return;
-	
-	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j=0; j<mc; j++)
-	{
+
+	u32 mc = mesh->getMeshBufferCount();
+	for (u32 j = 0; j < mc; j++) {
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-		u16 vc = buf->getVertexCount();
-		for(u16 i=0; i<vc; i++)
-		{
-			vertices[i].Color = color;
-		}
+		const u32 stride = getVertexPitchFromType(buf->getVertexType());
+		u32 vertex_count = buf->getVertexCount();
+		u8 *vertices = (u8 *)buf->getVertices();
+		for (u32 i = 0; i < vertex_count; i++) 
+			((video::S3DVertex *)(vertices + i * stride))->Color = color;
 	}
 }
 

@@ -539,7 +539,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			MapBlockMesh *mapBlockMesh = block->mesh;
 			assert(mapBlockMesh);
 
-			scene::SMesh *mesh = mapBlockMesh->getMesh();
+			scene::IMesh *mesh = mapBlockMesh->getMesh();
 			assert(mesh);
 
 			u32 c = mesh->getMeshBufferCount();

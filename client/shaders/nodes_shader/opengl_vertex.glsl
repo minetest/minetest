@@ -14,25 +14,36 @@ varying vec3 eyeVec;
 varying vec3 lightVec;
 varying vec3 tsEyeVec;
 varying vec3 tsLightVec;
+varying float generate_heightmaps;
 
 const float e = 2.718281828459;
 const float BS = 10.0;
 
-float smoothCurve( float x ) {
-  return x * x *( 3.0 - 2.0 * x );
+float smoothCurve(float x)
+{
+	return x * x * (3.0 - 2.0 * x);
 }
-float triangleWave( float x ) {
-  return abs( fract( x + 0.5 ) * 2.0 - 1.0 );
+float triangleWave(float x)
+{
+	return abs(fract(x + 0.5) * 2.0 - 1.0);
 }
-float smoothTriangleWave( float x ) {
-  return smoothCurve( triangleWave( x ) ) * 2.0 - 1.0;
+float smoothTriangleWave(float x)
+{
+	return smoothCurve(triangleWave(x)) * 2.0 - 1.0;
 }
 
 void main(void)
 {
 	gl_TexCoord[0] = gl_MultiTexCoord0;
-	
-#if (MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_LIQUID_OPAQUE) && ENABLE_WAVING_WATER
+	gl_TexCoord[0].y += 0.008;
+
+#if ((DRAW_TYPE == NDT_NORMAL || DRAW_TYPE == NDT_LIQUID || DRAW_TYPE == NDT_FLOWINGLIQUID) && GENERATE_NORMALMAPS)
+	generate_heightmaps = 1.0;
+#else 
+	generate_heightmaps = 0.0;
+#endif
+
+#if ((MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_LIQUID_OPAQUE) && ENABLE_WAVING_WATER)
 	vec4 pos = gl_Vertex;
 	pos.y -= 2.0;
 
@@ -76,43 +87,33 @@ void main(void)
 
 	vPosition = gl_Position.xyz;
 	worldPosition = (mWorld * gl_Vertex).xyz;
+
+	// Don't generate heightmaps when too far from the eye
+	float dist = distance (worldPosition, eyePosition);
+	if (dist > 100.00) {
+		generate_heightmaps = 0.0;
+	}
+
 	vec3 sunPosition = vec3 (0.0, eyePosition.y * BS + 900.0, 0.0);
 
 	vec3 normal, tangent, binormal;
 	normal = normalize(gl_NormalMatrix * gl_Normal);
-	if (gl_Normal.x > 0.5) {
-		//  1.0,  0.0,  0.0
-		tangent  = normalize(gl_NormalMatrix * vec3( 0.0,  0.0, -1.0));
-		binormal = normalize(gl_NormalMatrix * vec3( 0.0, -1.0,  0.0));
-	} else if (gl_Normal.x < -0.5) {
-		// -1.0,  0.0,  0.0
-		tangent  = normalize(gl_NormalMatrix * vec3( 0.0,  0.0,  1.0));
-		binormal = normalize(gl_NormalMatrix * vec3( 0.0, -1.0,  0.0));
-	} else if (gl_Normal.y > 0.5) {
-		//  0.0,  1.0,  0.0
-		tangent  = normalize(gl_NormalMatrix * vec3( 1.0,  0.0,  0.0));
-		binormal = normalize(gl_NormalMatrix * vec3( 0.0,  0.0,  1.0));
-	} else if (gl_Normal.y < -0.5) {
-		//  0.0, -1.0,  0.0
-		tangent  = normalize(gl_NormalMatrix * vec3( 1.0,  0.0,  0.0));
-		binormal = normalize(gl_NormalMatrix * vec3( 0.0,  0.0,  1.0));
-	} else if (gl_Normal.z > 0.5) {
-		//  0.0,  0.0,  1.0
-		tangent  = normalize(gl_NormalMatrix * vec3( 1.0,  0.0,  0.0));
-		binormal = normalize(gl_NormalMatrix * vec3( 0.0, -1.0,  0.0));
-	} else if (gl_Normal.z < -0.5) {
-		//  0.0,  0.0, -1.0
-		tangent  = normalize(gl_NormalMatrix * vec3(-1.0,  0.0,  0.0));
-		binormal = normalize(gl_NormalMatrix * vec3( 0.0, -1.0,  0.0));
-	}
-	mat3 tbnMatrix = mat3(	tangent.x, binormal.x, normal.x,
-							tangent.y, binormal.y, normal.y,
-							tangent.z, binormal.z, normal.z);
+	tangent = normalize(gl_NormalMatrix * gl_MultiTexCoord1.xyz);
+	binormal = normalize(gl_NormalMatrix * -gl_MultiTexCoord2.xyz);
+
+	vec3 v;
 
 	lightVec = sunPosition - worldPosition;
-	tsLightVec = lightVec * tbnMatrix;
-	eyeVec = (gl_ModelViewMatrix * gl_Vertex).xyz;
-	tsEyeVec = eyeVec * tbnMatrix;
+	v.x = dot(lightVec, tangent);
+	v.y = dot(lightVec, binormal);
+	v.z = dot(lightVec, normal);
+	tsLightVec = v;
+
+	eyeVec = -(gl_ModelViewMatrix * gl_Vertex).xyz;
+	v.x = dot(eyeVec, tangent);
+	v.y = dot(eyeVec, binormal);
+	v.z = dot(eyeVec, normal);
+	tsEyeVec = v;
 
 	vec4 color;
 	float day = gl_Color.r;
