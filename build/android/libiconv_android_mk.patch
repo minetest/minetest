@@ -1,0 +1,51 @@
+From fe27aae178d65b06d5f4104158343b0d2d33e3f0 Mon Sep 17 00:00:00 2001
+From: Pierre Zurek <pierrezurek@gmail.com>
+Date: Sat, 2 Apr 2011 23:11:57 +0200
+Subject: [PATCH] Added Android.mk.
+
+This makefile first executes the configure script, that will
+generate the config.h files necessary to build iconv.
+---
+ Android.mk | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+ create mode 100644 Android.mk
+
+diff --git a/jni/Android.mk b/jni/Android.mk
+new file mode 100644
+index 0000000..799b22d
+--- /dev/null
++++ b/jni/Android.mk
+@@ -0,0 +1,32 @@
++LOCAL_PATH := $(call my-dir)
++include $(CLEAR_VARS)
++
++LOCAL_ARM_MODE := arm
++
++LOCAL_SRC_FILES := src/lib/iconv.c \
++                   src/libcharset/lib/localcharset.c \
++                   src/lib/relocatable.c
++
++LOCAL_C_INCLUDES += $(LOCAL_PATH)/src/include \
++                    $(LOCAL_PATH)/src/libcharset \
++                    $(LOCAL_PATH)/src/libcharset/include
++
++LOCAL_CFLAGS := \
++    -DLIBDIR="\"c\"" \
++    -D_ANDROID \
++    -DBUILDING_LIBCHARSET \
++    -DBUILDING_LIBICONV \
++    -DBUILDING_LIBICONV \
++    -DIN_LIBRARY
++
++LOCAL_MODULE:= iconv
++
++$(info Configuring iconv...)
++COMMAND := $(shell \
++           export PATH=$(TOOLCHAIN_INSTALL_DIR)/bin:$$PATH; \
++           cd $(LOCAL_PATH); \
++           make distclean; \
++           ./configure --host="arm-linux-androideabi")
++$(info iconv configured.)
++
++include $(BUILD_STATIC_LIBRARY)
++
