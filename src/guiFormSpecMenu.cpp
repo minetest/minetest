@@ -52,6 +52,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h" // for parseColorString()
 #include "guiscalingfilter.h"
 
+#if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
+#include "intlGUIEditBox.h"
+#endif
+
 #define MY_CHECKPOS(a,b)													\
 	if (v_pos.size() != 2) {												\
 		errorstream<< "Invalid pos for element " << a << "specified: \""	\
@@ -96,11 +100,11 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_form_src(fsrc),
 	m_text_dst(tdst),
 	m_formspec_version(0),
-	m_focused_element(L""),
+	m_focused_element(""),
 	m_font(NULL),
 	m_remap_dbl_click(remap_dbl_click)
 #ifdef __ANDROID__
-	,m_JavaDialogFieldName(L"")
+	, m_JavaDialogFieldName("")
 #endif
 {
 	current_keys_pending.key_down = false;
@@ -227,7 +231,7 @@ void GUIFormSpecMenu::setInitialFocus()
 		Environment->setFocus(*(children.begin()));
 }
 
-GUITable* GUIFormSpecMenu::getTable(std::wstring tablename)
+GUITable* GUIFormSpecMenu::getTable(const std::string &tablename)
 {
 	for (u32 i = 0; i < m_tables.size(); ++i) {
 		if (tablename == m_tables[i].first.fname)
@@ -374,7 +378,7 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 		if (selected == "true")
 			fselected = true;
 
-		std::wstring wlabel = narrow_to_wide(label);
+		std::wstring wlabel = utf8_to_wide(label);
 
 		core::rect<s32> rect = core::rect<s32>(
 				pos.X, pos.Y + ((imgsize.Y/2) - m_btn_height),
@@ -382,7 +386,7 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 				pos.Y + ((imgsize.Y/2) + m_btn_height));
 
 		FieldSpec spec(
-				narrow_to_wide(name),
+				name,
 				wlabel, //Needed for displaying text on MSVC
 				wlabel,
 				258+m_fields.size()
@@ -434,7 +438,7 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, std::string element)
 				core::rect<s32>(pos.X, pos.Y, pos.X + dim.X, pos.Y + dim.Y);
 
 		FieldSpec spec(
-				narrow_to_wide(name),
+				name,
 				L"",
 				L"",
 				258+m_fields.size()
@@ -572,10 +576,10 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
 
 		label = unescape_string(label);
 
-		std::wstring wlabel = narrow_to_wide(label);
+		std::wstring wlabel = utf8_to_wide(label);
 
 		FieldSpec spec(
-			narrow_to_wide(name),
+			name,
 			wlabel,
 			L"",
 			258+m_fields.size()
@@ -697,10 +701,8 @@ void GUIFormSpecMenu::parseTable(parserData* data,std::string element)
 
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
-		std::wstring fname_w = narrow_to_wide(name);
-
 		FieldSpec spec(
-			fname_w,
+			name,
 			L"",
 			L"",
 			258+m_fields.size()
@@ -722,8 +724,8 @@ void GUIFormSpecMenu::parseTable(parserData* data,std::string element)
 
 		e->setTable(data->table_options, data->table_columns, items);
 
-		if (data->table_dyndata.find(fname_w) != data->table_dyndata.end()) {
-			e->setDynamicData(data->table_dyndata[fname_w]);
+		if (data->table_dyndata.find(name) != data->table_dyndata.end()) {
+			e->setDynamicData(data->table_dyndata[name]);
 		}
 
 		if ((str_initial_selection != "") &&
@@ -771,10 +773,8 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element)
 
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
-		std::wstring fname_w = narrow_to_wide(name);
-
 		FieldSpec spec(
-			fname_w,
+			name,
 			L"",
 			L"",
 			258+m_fields.size()
@@ -796,8 +796,8 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element)
 
 		e->setTextList(items, is_yes(str_transparent));
 
-		if (data->table_dyndata.find(fname_w) != data->table_dyndata.end()) {
-			e->setDynamicData(data->table_dyndata[fname_w]);
+		if (data->table_dyndata.find(name) != data->table_dyndata.end()) {
+			e->setDynamicData(data->table_dyndata[name]);
 		}
 
 		if ((str_initial_selection != "") &&
@@ -836,10 +836,8 @@ void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element)
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y,
 				pos.X + width, pos.Y + (m_btn_height * 2));
 
-		std::wstring fname_w = narrow_to_wide(name);
-
 		FieldSpec spec(
-			fname_w,
+			name,
 			L"",
 			L"",
 			258+m_fields.size()
@@ -856,7 +854,7 @@ void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element)
 		}
 
 		for (unsigned int i=0; i < items.size(); i++) {
-			e->addItem(narrow_to_wide(items[i]).c_str());
+			e->addItem(utf8_to_wide(items[i]).c_str());
 		}
 
 		if (str_initial_selection != "")
@@ -899,10 +897,10 @@ void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element)
 
 		label = unescape_string(label);
 
-		std::wstring wlabel = narrow_to_wide(label);
+		std::wstring wlabel = utf8_to_wide(label);
 
 		FieldSpec spec(
-			narrow_to_wide(name),
+			name,
 			wlabel,
 			L"",
 			258+m_fields.size()
@@ -965,12 +963,12 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 	default_val = unescape_string(default_val);
 	label = unescape_string(label);
 
-	std::wstring wlabel = narrow_to_wide(label);
+	std::wstring wlabel = utf8_to_wide(label);
 
 	FieldSpec spec(
-		narrow_to_wide(name),
+		name,
 		wlabel,
-		narrow_to_wide(default_val),
+		utf8_to_wide(default_val),
 		258+m_fields.size()
 	);
 
@@ -982,9 +980,17 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 	else
 	{
 		spec.send = true;
-		gui::IGUIEditBox *e =
-			Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
-
+		gui::IGUIElement *e;
+#if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
+		if (g_settings->getBool("freetype")) {
+			e = (gui::IGUIElement *) new gui::intlGUIEditBox(spec.fdefault.c_str(),
+				true, Environment, this, spec.fid, rect);
+		} else {
+#else
+		{
+#endif
+			e = Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
+		}
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
 		}
@@ -1055,12 +1061,12 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 	default_val = unescape_string(default_val);
 	label = unescape_string(label);
 
-	std::wstring wlabel = narrow_to_wide(label);
+	std::wstring wlabel = utf8_to_wide(label);
 
 	FieldSpec spec(
-		narrow_to_wide(name),
+		name,
 		wlabel,
-		narrow_to_wide(default_val),
+		utf8_to_wide(default_val),
 		258+m_fields.size()
 	);
 
@@ -1072,8 +1078,18 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 	else
 	{
 		spec.send = true;
-		gui::IGUIEditBox *e =
-			Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
+
+		gui::IGUIEditBox *e;
+#if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
+		if (g_settings->getBool("freetype")) {
+			e = (gui::IGUIEditBox *) new gui::intlGUIEditBox(spec.fdefault.c_str(),
+				true, Environment, this, spec.fid, rect);
+		} else {
+#else
+		{
+#endif
+			e = Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
+		}
 
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
@@ -1158,13 +1174,13 @@ void GUIFormSpecMenu::parseLabel(parserData* data,std::string element)
 			// in the integer cases: 0.4 is not exactly
 			// representable in binary floating point.
 			s32 posy = pos.Y + ((float)i) * spacing.Y * 2.0 / 5.0;
-			std::wstring wlabel = narrow_to_wide(lines[i]);
+			std::wstring wlabel = utf8_to_wide(lines[i]);
 			core::rect<s32> rect = core::rect<s32>(
 				pos.X, posy - m_btn_height,
 				pos.X + m_font->getDimension(wlabel.c_str()).Width,
 				posy + m_btn_height);
 			FieldSpec spec(
-				L"",
+				"",
 				wlabel,
 				L"",
 				258+m_fields.size()
@@ -1190,7 +1206,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element)
 		((parts.size() > 2) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
 		std::vector<std::string> v_pos = split(parts[0],',');
-		std::wstring text = narrow_to_wide(unescape_string(parts[1]));
+		std::wstring text = utf8_to_wide(unescape_string(parts[1]));
 
 		MY_CHECKPOS("vertlabel",1);
 
@@ -1217,7 +1233,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element)
 		}
 
 		FieldSpec spec(
-			L"",
+			"",
 			label,
 			L"",
 			258+m_fields.size()
@@ -1279,12 +1295,12 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 		pressed_image_name = unescape_string(pressed_image_name);
 		label = unescape_string(label);
 
-		std::wstring wlabel = narrow_to_wide(label);
+		std::wstring wlabel = utf8_to_wide(label);
 
 		FieldSpec spec(
-			narrow_to_wide(name),
+			name,
 			wlabel,
-			narrow_to_wide(image_name),
+			utf8_to_wide(image_name),
 			258+m_fields.size()
 		);
 		spec.ftype = f_Button;
@@ -1346,7 +1362,7 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element)
 		}
 
 		FieldSpec spec(
-			narrow_to_wide(name),
+			name,
 			L"",
 			L"",
 			258+m_fields.size()
@@ -1376,8 +1392,8 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element)
 
 		e->setNotClipped(true);
 
-		for (unsigned int i=0; i< buttons.size(); i++) {
-			e->addTab(narrow_to_wide(buttons[i]).c_str(), -1);
+		for (unsigned int i = 0; i < buttons.size(); i++) {
+			e->addTab(utf8_to_wide(buttons[i]).c_str(), -1);
 		}
 
 		if ((tab_index >= 0) &&
@@ -1433,17 +1449,17 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 		item.deSerialize(item_name, idef);
 		video::ITexture *texture = idef->getInventoryTexture(item.getDefinition(idef).name, m_gamedef);
 
-		m_tooltips[narrow_to_wide(name)] =
+		m_tooltips[name] =
 			TooltipSpec(item.getDefinition(idef).description,
 						m_default_tooltip_bgcolor,
 						m_default_tooltip_color);
 
 		label = unescape_string(label);
 		FieldSpec spec(
-			narrow_to_wide(name),
-			narrow_to_wide(label),
-			narrow_to_wide(item_name),
-			258+m_fields.size()
+			name,
+			utf8_to_wide(label),
+			utf8_to_wide(item_name),
+			258 + m_fields.size()
 		);
 
 		gui::IGUIButton *e = Environment->addButton(rect, this, spec.fid, spec.flabel.c_str());
@@ -1552,14 +1568,14 @@ void GUIFormSpecMenu::parseTooltip(parserData* data, std::string element)
 	std::vector<std::string> parts = split(element,';');
 	if (parts.size() == 2) {
 		std::string name = parts[0];
-		m_tooltips[narrow_to_wide(name)] = TooltipSpec(unescape_string(parts[1]),
+		m_tooltips[name] = TooltipSpec(unescape_string(parts[1]),
 			m_default_tooltip_bgcolor, m_default_tooltip_color);
 		return;
 	} else if (parts.size() == 4) {
 		std::string name = parts[0];
 		video::SColor tmp_color1, tmp_color2;
 		if ( parseColorString(parts[2], tmp_color1, false) && parseColorString(parts[3], tmp_color2, false) ) {
-			m_tooltips[narrow_to_wide(name)] = TooltipSpec(unescape_string(parts[1]),
+			m_tooltips[name] = TooltipSpec(unescape_string(parts[1]),
 				tmp_color1, tmp_color2);
 			return;
 		}
@@ -1772,7 +1788,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 	//preserve tables
 	for (u32 i = 0; i < m_tables.size(); ++i) {
-		std::wstring tablename = m_tables[i].first.fname;
+		std::string tablename = m_tables[i].first.fname;
 		GUITable *table = m_tables[i].second;
 		mydata.table_dyndata[tablename] = table->getDynamicData();
 	}
@@ -2027,7 +2043,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 bool GUIFormSpecMenu::getAndroidUIInput()
 {
 	/* no dialog shown */
-	if (m_JavaDialogFieldName == L"") {
+	if (m_JavaDialogFieldName == "") {
 		return false;
 	}
 
@@ -2036,8 +2052,8 @@ bool GUIFormSpecMenu::getAndroidUIInput()
 		return true;
 	}
 
-	std::wstring fieldname = m_JavaDialogFieldName;
-	m_JavaDialogFieldName = L"";
+	std::string fieldname = m_JavaDialogFieldName;
+	m_JavaDialogFieldName = "";
 
 	/* no value abort dialog processing */
 	if (porting::getInputDialogState() != 0) {
@@ -2063,7 +2079,7 @@ bool GUIFormSpecMenu::getAndroidUIInput()
 		std::string text = porting::getInputDialogValue();
 
 		((gui::IGUIEditBox*) tochange)->
-			setText(narrow_to_wide(text).c_str());
+			setText(utf8_to_wide(text).c_str());
 	}
 	return false;
 }
@@ -2187,7 +2203,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 				m_tooltip_element->setOverrideColor(m_default_tooltip_color);
 				m_tooltip_element->setVisible(true);
 				this->bringToFront(m_tooltip_element);
-				m_tooltip_element->setText(narrow_to_wide(tooltip_text).c_str());
+				m_tooltip_element->setText(utf8_to_wide(tooltip_text).c_str());
 				s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
 				s32 tooltip_height = m_tooltip_element->getTextHeight() * tt_rows.size() + 5;
 				v2u32 screenSize = driver->getScreenSize();
@@ -2419,7 +2435,7 @@ void GUIFormSpecMenu::drawMenu()
 				if ( (iter->fid == id) && (m_tooltips[iter->fname].tooltip != "") ){
 					if (m_old_tooltip != m_tooltips[iter->fname].tooltip) {
 						m_old_tooltip = m_tooltips[iter->fname].tooltip;
-						m_tooltip_element->setText(narrow_to_wide(m_tooltips[iter->fname].tooltip).c_str());
+						m_tooltip_element->setText(utf8_to_wide(m_tooltips[iter->fname].tooltip).c_str());
 						std::vector<std::string> tt_rows = str_split(m_tooltips[iter->fname].tooltip, '\n');
 						s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
 						s32 tooltip_height = m_tooltip_element->getTextHeight() * tt_rows.size() + 5;
@@ -2613,11 +2629,10 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 		for(unsigned int i=0; i<m_fields.size(); i++) {
 			const FieldSpec &s = m_fields[i];
 			if(s.send) {
-				std::string name  = wide_to_narrow(s.fname);
-				if(s.ftype == f_Button) {
-					fields[name] = wide_to_narrow(s.flabel);
-				}
-				else if(s.ftype == f_Table) {
+				std::string name = s.fname;
+				if (s.ftype == f_Button) {
+					fields[name] = wide_to_utf8(s.flabel);
+				} else if (s.ftype == f_Table) {
 					GUITable *table = getTable(s.fname);
 					if (table) {
 						fields[name] = table->checkEvent();
@@ -2634,7 +2649,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 					s32 selected = e->getSelected();
 					if (selected >= 0) {
 						fields[name] =
-							wide_to_narrow(e->getItem(selected));
+							wide_to_utf8(e->getItem(selected));
 					}
 				}
 				else if (s.ftype == f_TabHeader) {
@@ -2690,7 +2705,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 				{
 					IGUIElement* e = getElementFromId(s.fid);
 					if(e != NULL) {
-						fields[name] = wide_to_narrow(e->getText());
+						fields[name] = wide_to_utf8(e->getText());
 					}
 				}
 			}
@@ -2798,7 +2813,7 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 			}
 			m_JavaDialogFieldName = getNameByID(hovered->getID());
 			std::string message   = gettext("Enter ");
-			std::string label     = wide_to_narrow(getLabelByID(hovered->getID()));
+			std::string label     = wide_to_utf8(getLabelByID(hovered->getID()));
 			if (label == "") {
 				label = "text";
 			}
@@ -2818,7 +2833,7 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 			}
 
 			porting::showInputDialog(gettext("ok"), "",
-					wide_to_narrow(((gui::IGUIEditBox*) hovered)->getText()),
+					wide_to_utf8(((gui::IGUIEditBox*) hovered)->getText()),
 					type);
 			return retval;
 		}
@@ -3006,7 +3021,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				acceptInput(quit_mode_cancel);
 				quitMenu();
 			} else {
-				m_text_dst->gotText(narrow_to_wide("MenuQuit"));
+				m_text_dst->gotText(L"MenuQuit");
 			}
 			return true;
 		} else if (m_client != NULL && event.KeyInput.PressedDown &&
@@ -3380,7 +3395,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					quitMenu();
 				} else {
 					acceptInput();
-					m_text_dst->gotText(narrow_to_wide("ExitButton"));
+					m_text_dst->gotText(L"ExitButton");
 				}
 				// quitMenu deallocates menu
 				return true;
@@ -3399,7 +3414,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 							acceptInput(quit_mode_accept);
 							quitMenu();
 						} else {
-							m_text_dst->gotText(narrow_to_wide("ExitButton"));
+							m_text_dst->gotText(L"ExitButton");
 						}
 						return true;
 					} else {
@@ -3482,7 +3497,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
  * @param id of element
  * @return name string or empty string
  */
-std::wstring GUIFormSpecMenu::getNameByID(s32 id)
+std::string GUIFormSpecMenu::getNameByID(s32 id)
 {
 	for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
 				iter != m_fields.end(); iter++) {
@@ -3490,7 +3505,7 @@ std::wstring GUIFormSpecMenu::getNameByID(s32 id)
 			return iter->fname;
 		}
 	}
-	return L"";
+	return "";
 }
 
 /**
