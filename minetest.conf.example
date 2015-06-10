@@ -252,13 +252,13 @@
 #enable_waving_leaves = false
 #    Set to true enables waving plants. Requires shaders enabled.
 #enable_waving_plants = false
-#    Enables caching of facedir rotated meshes
-#ambient_occlusion_gamma = 2.2
 #    The strength (darkness) of node ambient-occlusion shading.
 #    Lower is darker, Higher is lighter. The valid range of values for this
 #    setting is 0.25 to 4.0 inclusive. If the value is out of range it will be
 #    set to the nearest valid value.
-#enable_mesh_cache = true
+#ambient_occlusion_gamma = 2.2
+#    Enables caching of facedir rotated meshes
+#enable_mesh_cache = false
 #    The time in seconds it takes between repeated
 #    right clicks when holding the right mouse button.
 #repeat_rightclick_time = 0.25
