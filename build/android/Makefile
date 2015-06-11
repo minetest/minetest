@@ -399,12 +399,6 @@ freetype_download :
 		git clone ${FREETYPE_URL_GIT} || exit 1;                               \
 	fi
 
-$(IRRLICHT_TIMESTAMP) : irrlicht_download
-	@LAST_MODIF=$$(find ${IRRLICHT_DIR} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
-	if [ $$(basename $$LAST_MODIF) != "timestamp" ] ; then                     \
-		touch ${IRRLICHT_TIMESTAMP};                                           \
-	fi
-
 freetype : $(FREETYPE_LIB)
 
 $(FREETYPE_LIB) : $(FREETYPE_TIMESTAMP)
@@ -452,6 +446,12 @@ irrlicht_download :
 		patch -p1 < ../../irrlicht-touchcount.patch || exit 1;                 \
 		patch -p1 < ../../irrlicht-back_button.patch || exit 1;                \
 		patch -p1 < ../../irrlicht-texturehack.patch || exit 1;                \
+	fi
+
+$(IRRLICHT_TIMESTAMP) : irrlicht_download
+	@LAST_MODIF=$$(find ${IRRLICHT_DIR} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
+	if [ $$(basename $$LAST_MODIF) != "timestamp" ] ; then                     \
+		touch ${IRRLICHT_TIMESTAMP};                                           \
 	fi
 
 irrlicht : $(IRRLICHT_LIB)
