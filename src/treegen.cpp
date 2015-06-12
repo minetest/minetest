@@ -656,15 +656,8 @@ void make_jungletree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, int seed
 		and in games that have saplings; both are deprecated but not
 		replaced yet
 	*/
-	content_t c_tree   = ndef->getId("mapgen_jungletree");
-	content_t c_leaves = ndef->getId("mapgen_jungleleaves");
-	if (c_tree == CONTENT_IGNORE)
-		c_tree = ndef->getId("mapgen_tree");
-	if (c_leaves == CONTENT_IGNORE)
-		c_leaves = ndef->getId("mapgen_leaves");
-
-	MapNode treenode(c_tree);
-	MapNode leavesnode(c_leaves);
+	MapNode treenode(ndef->getId("mapgen_jungletree"));
+	MapNode leavesnode(ndef->getId("mapgen_jungleleaves"));
 
 	PseudoRandom pr(seed);
 	for (s16 x= -1; x <= 1; x++)
