@@ -407,7 +407,8 @@ int ScriptApiSecurity::sl_g_dofile(lua_State *L)
 {
 	int nret = sl_g_loadfile(L);
 	if (nret != 1) {
-		return nret;
+		lua_error(L);
+		// code after this function isn't executed
 	}
 	int top_precall = lua_gettop(L);
 	lua_call(L, 0, LUA_MULTRET);
