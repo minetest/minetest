@@ -327,11 +327,9 @@ void MapgenV5::calculateNoise()
 		noise_cave2->perlinMap3D(x, y, z);
 	}
 
-	if (node_max.Y >= BIOMEGEN_BASE_V5) {
-		noise_filler_depth->perlinMap2D(x, z);
-		noise_heat->perlinMap2D(x, z);
-		noise_humidity->perlinMap2D(x, z);
-	}
+	noise_filler_depth->perlinMap2D(x, z);
+	noise_heat->perlinMap2D(x, z);
+	noise_humidity->perlinMap2D(x, z);
 
 	//printf("calculateNoise: %dus\n", t.stop());
 }
@@ -396,9 +394,6 @@ int MapgenV5::generateBaseTerrain()
 
 MgStoneType MapgenV5::generateBiomes(float *heat_map, float *humidity_map)
 {
-	if (node_max.Y < BIOMEGEN_BASE_V5)
-		return STONE;
-
 	v3s16 em = vm->m_area.getExtent();
 	u32 index = 0;
 	MgStoneType stone_type = STONE;
