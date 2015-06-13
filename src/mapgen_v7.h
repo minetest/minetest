@@ -22,8 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapgen.h"
 
-#define BIOMEGEN_BASE_V7 -192
-
 /////////////////// Mapgen V7 flags
 #define MGV7_MOUNTAINS   0x01
 #define MGV7_RIDGES      0x02

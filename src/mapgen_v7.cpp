@@ -362,11 +362,9 @@ void MapgenV7::calculateNoise()
 		noise_mount_height->perlinMap2D(x, z);
 	}
 
-	if (node_max.Y >= BIOMEGEN_BASE_V7) {
-		noise_filler_depth->perlinMap2D(x, z);
-		noise_heat->perlinMap2D(x, z);
-		noise_humidity->perlinMap2D(x, z);
-	}
+	noise_filler_depth->perlinMap2D(x, z);
+	noise_heat->perlinMap2D(x, z);
+	noise_humidity->perlinMap2D(x, z);
 	//printf("calculateNoise: %dus\n", t.stop());
 }
 
@@ -591,9 +589,6 @@ void MapgenV7::generateRidgeTerrain()
 
 MgStoneType MapgenV7::generateBiomes(float *heat_map, float *humidity_map)
 {
-	if (node_max.Y < BIOMEGEN_BASE_V7)
-		return STONE;
-
 	v3s16 em = vm->m_area.getExtent();
 	u32 index = 0;
 	MgStoneType stone_type = STONE;
