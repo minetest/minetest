@@ -25,46 +25,48 @@ tab_credits = {
 			return "label[0.5,3.2;Minetest " .. core.get_version() .. "]" ..
 				"label[0.5,3.5;http://minetest.net]" ..
 				"image[0.5,1;" .. core.formspec_escape(logofile) .. "]" ..
-				"textlist[3.5,-0.25;8.5,5.8;list_credits;" ..
-				"#FFFF00" .. fgettext("Core Developers") .."," ..
-				"Perttu Ahola (celeron55) <celeron55@gmail.com>,"..
-				"Ryan Kwolek (kwolekr) <kwolekr@minetest.net>,"..
-				"PilzAdam <pilzadam@minetest.net>," ..
-				"Lisa Milne (darkrose) <lisa@ltmnet.com>,"..
-				"Maciej Kasatkin (RealBadAngel) <mk@realbadangel.pl>,"..
-				"sfan5 <sfan5@live.de>,"..
-				"kahrl <kahrl@gmx.net>,"..
-				"sapier,"..
-				"ShadowNinja <shadowninja@minetest.net>,"..
-				"Nathanael Courant (Nore/Novatux) <nore@mesecons.net>,"..
-				"BlockMen,"..
-				"Craig Robbins (Zeno),"..
-				"Loic Blot (nerzhul/nrz),"..
-				"paramat,"..
-				","..
-				"#FFFF00" .. fgettext("Active Contributors") .. "," ..
-				"SmallJoker <mk939@ymail.com>," ..
-				"est31 <MTest31@outlook.com>," ..
-				"gregorycu,"..
-				"Andrew Ward (rubenwardy) <rubenwardy@gmail.com>," ..
-				"TriBlade9 <triblade9@mail.com>,"..
-				"Zefram <zefram@fysh.org>,"..
-				"," ..
-				"#FFFF00" .. fgettext("Previous Contributors") .. "," ..
-				"Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>,"..
-				"Jurgen Doser (doserj) <jurgen.doser@gmail.com>,"..
-				"Jeija <jeija@mesecons.net>,"..
-				"MirceaKitsune <mirceakitsune@gmail.com>,"..
-				"dannydark <the_skeleton_of_a_child@yahoo.co.uk>,"..
-				"0gb.us <0gb.us@0gb.us>,"..
-				"proller <proler@gmail.com>,"..
-				"Ilya Zhuravlev (xyz) <xyz@minetest.net>,"..
-				"Guiseppe Bilotta (Oblomov) <guiseppe.bilotta@gmail.com>,"..
-				"Jonathan Neuschafer <j.neuschaefer@gmx.net>,"..
-				"Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net>,"..
-				"Constantin Wenger (SpeedProg) <constantin.wenger@googlemail.com>,"..
-				"matttpt <matttpt@gmail.com>,"..
-				"JacobF <queatz@gmail.com>,"..
-				";0;true]"
+				"tablecolumns[color;text]" ..
+				"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
+				"table[3.5,-0.25;8.5,5.8;list_credits;" ..
+				"#FFFF00," .. fgettext("Core Developers") .."," ..
+				",Perttu Ahola (celeron55) <celeron55@gmail.com>,"..
+				",Ryan Kwolek (kwolekr) <kwolekr@minetest.net>,"..
+				",PilzAdam <pilzadam@minetest.net>," ..
+				",Lisa Milne (darkrose) <lisa@ltmnet.com>,"..
+				",Maciej Kasatkin (RealBadAngel) <mk@realbadangel.pl>,"..
+				",sfan5 <sfan5@live.de>,"..
+				",kahrl <kahrl@gmx.net>,"..
+				",sapier,"..
+				",ShadowNinja <shadowninja@minetest.net>,"..
+				",Nathanael Courant (Nore/Novatux) <nore@mesecons.net>,"..
+				",BlockMen,"..
+				",Craig Robbins (Zeno),"..
+				",Loic Blot (nerzhul/nrz),"..
+				",paramat,"..
+				",,"..
+				"#FFFF00," .. fgettext("Active Contributors") .. "," ..
+				",SmallJoker <mk939@ymail.com>," ..
+				",est31 <MTest31@outlook.com>," ..
+				",gregorycu,"..
+				",Andrew Ward (rubenwardy) <rubenwardy@gmail.com>," ..
+				",TriBlade9 <triblade9@mail.com>,"..
+				",Zefram <zefram@fysh.org>,"..
+				",," ..
+				"#FFFF00," .. fgettext("Previous Contributors") .. "," ..
+				",Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>,"..
+				",Jurgen Doser (doserj) <jurgen.doser@gmail.com>,"..
+				",Jeija <jeija@mesecons.net>,"..
+				",MirceaKitsune <mirceakitsune@gmail.com>,"..
+				",dannydark <the_skeleton_of_a_child@yahoo.co.uk>,"..
+				",0gb.us <0gb.us@0gb.us>,"..
+				",proller <proler@gmail.com>,"..
+				",Ilya Zhuravlev (xyz) <xyz@minetest.net>,"..
+				",Guiseppe Bilotta (Oblomov) <guiseppe.bilotta@gmail.com>,"..
+				",Jonathan Neuschafer <j.neuschaefer@gmx.net>,"..
+				",Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net>,"..
+				",Constantin Wenger (SpeedProg) <constantin.wenger@googlemail.com>,"..
+				",matttpt <matttpt@gmail.com>,"..
+				",JacobF <queatz@gmail.com>,"..
+				";1]"
 			end
 	}
