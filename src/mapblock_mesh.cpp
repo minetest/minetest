@@ -1213,7 +1213,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 				p.tile.applyMaterialOptions(material);
 			}
 		}
-	
+
 	// Create meshbuffer
 	scene::SMeshBufferTangents *buf = new scene::SMeshBufferTangents();
 	// Set material

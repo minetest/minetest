@@ -106,7 +106,7 @@ void scaleMesh(scene::IMesh *mesh, v3f scale)
 		const u32 stride = getVertexPitchFromType(buf->getVertexType());
 		u32 vertex_count = buf->getVertexCount();
 		u8 *vertices = (u8 *)buf->getVertices();
-		for (u32 i = 0; i < vertex_count; i++) 
+		for (u32 i = 0; i < vertex_count; i++)
 			((video::S3DVertex *)(vertices + i * stride))->Pos *= scale;
 
 		buf->recalculateBoundingBox();
@@ -134,7 +134,7 @@ void translateMesh(scene::IMesh *mesh, v3f vec)
 		const u32 stride = getVertexPitchFromType(buf->getVertexType());
 		u32 vertex_count = buf->getVertexCount();
 		u8 *vertices = (u8 *)buf->getVertices();
-		for (u32 i = 0; i < vertex_count; i++) 
+		for (u32 i = 0; i < vertex_count; i++)
 			((video::S3DVertex *)(vertices + i * stride))->Pos += vec;
 
 		buf->recalculateBoundingBox();
@@ -160,7 +160,7 @@ void setMeshColor(scene::IMesh *mesh, const video::SColor &color)
 		const u32 stride = getVertexPitchFromType(buf->getVertexType());
 		u32 vertex_count = buf->getVertexCount();
 		u8 *vertices = (u8 *)buf->getVertices();
-		for (u32 i = 0; i < vertex_count; i++) 
+		for (u32 i = 0; i < vertex_count; i++)
 			((video::S3DVertex *)(vertices + i * stride))->Color = color;
 	}
 }
