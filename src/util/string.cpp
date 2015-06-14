@@ -102,6 +102,13 @@ std::wstring utf8_to_wide(const std::string &input)
 	return out;
 }
 
+#ifdef __ANDROID__
+// TODO: this is an ugly fix for wide_to_utf8 somehow not working on android
+std::string wide_to_utf8(const std::wstring &input)
+{
+	return wide_to_narrow(input);
+}
+#else
 std::string wide_to_utf8(const std::wstring &input)
 {
 	size_t inbuf_size = (input.length() + 1) * sizeof(wchar_t);
@@ -128,6 +135,7 @@ std::string wide_to_utf8(const std::wstring &input)
 	return out;
 }
 
+#endif
 #else // _WIN32
 
 std::wstring utf8_to_wide(const std::string &input)
