@@ -62,8 +62,7 @@ void main (void)
 	} 
 #endif
 		
-#ifdef GENERATE_NORMALMAPS
-	if (use_normalmap == false){
+	if (GENERATE_NORMALMAPS == 1 && use_normalmap == false){
 		float tl = get_rgb_height (vec2(uv.x-SAMPLE_STEP,uv.y+SAMPLE_STEP));
 		float t  = get_rgb_height (vec2(uv.x-SAMPLE_STEP,uv.y-SAMPLE_STEP));
 		float tr = get_rgb_height (vec2(uv.x+SAMPLE_STEP,uv.y+SAMPLE_STEP));
@@ -77,7 +76,6 @@ void main (void)
 		bump = vec4 (normalize(vec3 (dX, -dY, NORMALMAPS_STRENGTH)),1.0);
 		use_normalmap = true;
 	}
-#endif
 
 vec4 base = texture2D(baseTexture, uv).rgba;
 	
