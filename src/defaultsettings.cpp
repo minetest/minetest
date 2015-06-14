@@ -160,8 +160,10 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("generate_normalmaps", "false");
 	settings->setDefault("normalmaps_strength", "0.6");
 	settings->setDefault("normalmaps_smooth", "1");
-	settings->setDefault("parallax_occlusion_scale", "0.06");
-	settings->setDefault("parallax_occlusion_bias", "0.03");
+	settings->setDefault("parallax_occlusion_mode", "1");
+	settings->setDefault("parallax_occlusion_iterations", "4");
+	settings->setDefault("parallax_occlusion_scale", "0.08");
+	settings->setDefault("parallax_occlusion_bias", "0.04");
 	settings->setDefault("enable_waving_water", "false");
 	settings->setDefault("water_wave_height", "1.0");
 	settings->setDefault("water_wave_length", "20.0");

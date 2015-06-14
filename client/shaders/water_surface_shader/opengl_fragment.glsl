@@ -14,7 +14,7 @@ varying vec3 tsEyeVec;
 varying vec3 lightVec;
 varying vec3 tsLightVec;
 
-bool normalTexturePresent = false; 
+bool normalTexturePresent = false;
 
 const float e = 2.718281828459;
 const float BS = 10.0;
@@ -40,15 +40,15 @@ void main (void)
 	vec4 bump;
 	vec2 uv = gl_TexCoord[0].st;
 	bool use_normalmap = false;
-	
+
 #ifdef USE_NORMALMAPS
-	if (texture2D(useNormalmap,vec2(1.0,1.0)).r > 0.0){
+	if (texture2D(useNormalmap,vec2(1.0,1.0)).r > 0.0) {
 		normalTexturePresent = true;
 	}
 #endif
 
 #ifdef ENABLE_PARALLAX_OCCLUSION
-	if (normalTexturePresent){
+	if (normalTexturePresent) {
 		vec3 tsEye = normalize(tsEyeVec);
 		float height = PARALLAX_OCCLUSION_SCALE * texture2D(normalTexture, uv).a - PARALLAX_OCCLUSION_BIAS;
 		uv = uv + texture2D(normalTexture, uv).z * height * vec2(tsEye.x,-tsEye.y);
@@ -56,14 +56,13 @@ void main (void)
 #endif
 
 #ifdef USE_NORMALMAPS
-	if (normalTexturePresent){
+	if (normalTexturePresent) {
 		bump = get_normal_map(uv);
 		use_normalmap = true;
 	} 
 #endif
-		
-#ifdef GENERATE_NORMALMAPS
-	if (use_normalmap == false){
+
+	if (GENERATE_NORMALMAPS == 1 && use_normalmap == false) {
 		float tl = get_rgb_height (vec2(uv.x-SAMPLE_STEP,uv.y+SAMPLE_STEP));
 		float t  = get_rgb_height (vec2(uv.x-SAMPLE_STEP,uv.y-SAMPLE_STEP));
 		float tr = get_rgb_height (vec2(uv.x+SAMPLE_STEP,uv.y+SAMPLE_STEP));
@@ -77,16 +76,15 @@ void main (void)
 		bump = vec4 (normalize(vec3 (dX, -dY, NORMALMAPS_STRENGTH)),1.0);
 		use_normalmap = true;
 	}
-#endif
 
 vec4 base = texture2D(baseTexture, uv).rgba;
-	
+
 #ifdef ENABLE_BUMPMAPPING
-	if (use_normalmap){
+	if (use_normalmap) {
 		vec3 L = normalize(lightVec);
 		vec3 E = normalize(eyeVec);
-		float specular = pow(clamp(dot(reflect(L, bump.xyz), E), 0.0, 1.0),0.5); 
-		float diffuse = dot(E,bump.xyz);		
+		float specular = pow(clamp(dot(reflect(L, bump.xyz), E), 0.0, 1.0),0.5);
+		float diffuse = dot(E,bump.xyz);
 		/* Mathematic optimization
 		* Original: color = 0.05*base.rgb + diffuse*base.rgb + 0.2*specular*base.rgb;
 		* This optimization save 2 multiplications (orig: 4 multiplications + 3 additions

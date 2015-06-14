@@ -18,20 +18,23 @@ varying vec3 tsLightVec;
 const float e = 2.718281828459;
 const float BS = 10.0;
 
-float smoothCurve( float x ) {
-  return x * x *( 3.0 - 2.0 * x );
+float smoothCurve(float x)
+{
+	return x * x * (3.0 - 2.0 * x);
 }
-float triangleWave( float x ) {
-  return abs( fract( x + 0.5 ) * 2.0 - 1.0 );
+float triangleWave(float x)
+{
+	return abs(fract( x + 0.5 ) * 2.0 - 1.0);
 }
-float smoothTriangleWave( float x ) {
-  return smoothCurve( triangleWave( x ) ) * 2.0 - 1.0;
+float smoothTriangleWave(float x)
+{
+	return smoothCurve(triangleWave( x )) * 2.0 - 1.0;
 }
 
 void main(void)
 {
 	gl_TexCoord[0] = gl_MultiTexCoord0;
-	
+
 #if (MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_LIQUID_OPAQUE) && ENABLE_WAVING_WATER
 	vec4 pos = gl_Vertex;
 	pos.y -= 2.0;
