@@ -2048,9 +2048,16 @@ void the_game(bool &kill, bool random_input, InputHandler *input,
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_mute")))
 		{
-			g_settings->setFloat("sound_volume", 0.0),
-			statustext = narrow_to_wide(
-					"Volume changed to 0%");
+			float volume = g_settings->getFloat("sound_volume");
+			if(volume < 0.001) {
+				g_settings->setFloat("sound_volume", 1.0);
+				statustext = narrow_to_wide(
+						"Volume changed to 100%");
+			} else {
+				g_settings->setFloat("sound_volume", 0.0);
+				statustext = narrow_to_wide(
+						"Volume changed to 0%");
+			}
 			statustext_time = 0;
 		}
 		else if(input->wasKeyDown(getKeySetting("keymap_increase_volume")))
