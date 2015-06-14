@@ -37,11 +37,13 @@ public:
 	void testUrlEncode();
 	void testUrlDecode();
 	void testPadString();
+	void testStartsWith();
 	void testStrEqual();
 	void testStringTrim();
 	void testStrToIntConversion();
 	void testStringReplace();
 	void testStringAllowed();
+	void testUTF8();
 	void testWrapRows();
 	void testIsNumber();
 	void testIsPowerOfTwo();
@@ -60,11 +62,13 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testUrlEncode);
 	TEST(testUrlDecode);
 	TEST(testPadString);
+	TEST(testStartsWith);
 	TEST(testStrEqual);
 	TEST(testStringTrim);
 	TEST(testStrToIntConversion);
 	TEST(testStringReplace);
 	TEST(testStringAllowed);
+	TEST(testUTF8);
 	TEST(testWrapRows);
 	TEST(testIsNumber);
 	TEST(testIsPowerOfTwo);
@@ -123,6 +127,8 @@ void TestUtilities::testLowercase()
 
 void TestUtilities::testTrim()
 {
+	UASSERT(trim("") == "");
+	UASSERT(trim("dirt_with_grass") == "dirt_with_grass");
 	UASSERT(trim("\n \t\r  Foo bAR  \r\n\t\t  ") == "Foo bAR");
 	UASSERT(trim("\n \t\r    \r\n\t\t  ") == "");
 }
@@ -169,6 +175,19 @@ void TestUtilities::testPadString()
 	UASSERT(padStringRight("hello", 8) == "hello   ");
 }
 
+void TestUtilities::testStartsWith()
+{
+	UASSERT(str_starts_with(std::string(), std::string()) == true);
+	UASSERT(str_starts_with(std::string("the sharp pickaxe"),
+		std::string()) == true);
+	UASSERT(str_starts_with(std::string("the sharp pickaxe"),
+		std::string("the")) == true);
+	UASSERT(str_starts_with(std::string("the sharp pickaxe"),
+		std::string("The")) == false);
+	UASSERT(str_starts_with(std::string("the sharp pickaxe"),
+		std::string("The"), true) == true);
+	UASSERT(str_starts_with(std::string("T"), std::string("The")) == false);
+}
 
 void TestUtilities::testStrEqual()
 {
@@ -213,6 +232,12 @@ void TestUtilities::testStringAllowed()
 	UASSERT(string_allowed_blacklist("hello123", "123") == false);
 }
 
+void TestUtilities::testUTF8()
+{
+	UASSERT(wide_to_utf8(utf8_to_wide("")) == "");
+	UASSERT(wide_to_utf8(utf8_to_wide("the shovel dug a crumbly node!"))
+		== "the shovel dug a crumbly node!");
+}
 
 void TestUtilities::testWrapRows()
 {
