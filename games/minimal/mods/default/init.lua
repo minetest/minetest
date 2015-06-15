@@ -1660,7 +1660,12 @@ minetest.register_abm({
 	interval = 10,
 	chance = 50,
 	action = function(pos, node)
-		local is_soil = minetest.registered_nodes[minetest.get_node({x=pos.x, y=pos.y-1, z=pos.z}).name].groups.soil
+		local node_under = minetest.registered_nodes[
+			minetest.get_node({x = pos.x, y = pos.y - 1, z = pos.z}).name]
+		if not node_under then
+			return
+		end
+		local is_soil = node_under.groups.soil
 		if is_soil == nil or is_soil == 0 then return end
 		print("A sapling grows into a tree at "..minetest.pos_to_string(pos))
 		local vm = minetest.get_voxel_manip()
