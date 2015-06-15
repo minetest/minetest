@@ -948,7 +948,7 @@ const static std::string accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
 	"Your client's version is not supported.\nPlease contact a server administrator.",
 	"The player name contains unallowed characters. Allowed characters are a-z, A-Z, 0-9, hyphen and underscore.",
 	"The player name is not allowed.",
-	"There are currently too many users on this server and it won't accept further users. Please wait until a few users have left.",
+	"There are currently too many users on this server. Please wait until a few users have left.",
 	"Empty passwords are disallowed. Set a password and try again.",
 	"Another client is connected with this name. If your client closed unexpectedly, try again in a minute.",
 	"Server authentication failed. This is likely a server error."
