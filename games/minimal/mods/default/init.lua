@@ -1158,7 +1158,8 @@ minetest.register_node("default:chest", {
 		meta:set_string("formspec",
 				"size[8,9]"..
 				"list[current_name;main;0,0;8,4;]"..
-				"list[current_player;main;0,5;8,4;]")
+				"list[current_player;main;0,5;8,4;]" ..
+				"listring[]")
 		meta:set_string("infotext", "Chest")
 		local inv = meta:get_inventory()
 		inv:set_size("main", 8*4)
@@ -1197,7 +1198,8 @@ minetest.register_node("default:chest_locked", {
 		meta:set_string("formspec",
 				"size[8,9]"..
 				"list[current_name;main;0,0;8,4;]"..
-				"list[current_player;main;0,5;8,4;]")
+				"list[current_player;main;0,5;8,4;]" ..
+				"listring[]")
 		meta:set_string("infotext", "Locked Chest")
 		meta:set_string("owner", "")
 		local inv = meta:get_inventory()
@@ -1261,7 +1263,11 @@ default.furnace_inactive_formspec =
 	"list[current_name;fuel;2,3;1,1;]"..
 	"list[current_name;src;2,1;1,1;]"..
 	"list[current_name;dst;5,1;2,2;]"..
-	"list[current_player;main;0,5;8,4;]"
+	"list[current_player;main;0,5;8,4;]" ..
+	"listring[current_name;dst]" ..
+	"listring[current_player;main]" ..
+	"listring[current_name;src]" ..
+	"listring[current_player;main]"
 
 minetest.register_node("default:furnace", {
 	description = "Furnace",
@@ -1398,7 +1404,11 @@ minetest.register_abm({
 				"list[current_name;fuel;2,3;1,1;]"..
 				"list[current_name;src;2,1;1,1;]"..
 				"list[current_name;dst;5,1;2,2;]"..
-				"list[current_player;main;0,5;8,4;]")
+				"list[current_player;main;0,5;8,4;]" ..
+				"listring[current_name;dst]" ..
+				"listring[current_player;main]" ..
+				"listring[current_name;src]" ..
+				"listring[current_player;main]")
 			return
 		end
 

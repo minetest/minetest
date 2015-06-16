@@ -1340,6 +1340,17 @@ examples.
 #### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;<starting item index>]`
 * Show an inventory list
 
+#### `listring[<inventory location>;<list name>]`
+* Allows to create a ring of inventory lists
+* Shift-clicking on items in one element of the ring
+* will send them to the next inventory list inside the ring
+* The first occurrence of an element inside the ring will
+* determine the inventory where items will be sent to
+
+#### `listring[]`
+* Shorthand for doing `listring[<inventory location>;<list name>]`
+* for the last two inventory lists added by list[...]
+
 #### `listcolors[<slot_bg_normal>;<slot_bg_hover>]`
 * Sets background color of slots as `ColorString`
 * Sets background color of slots on mouse hovering

@@ -71,6 +71,7 @@ Player::Player(IGameDef *gamedef, const char *name):
 		//"image[1,0.6;1,2;player.png]"
 		"list[current_player;main;0,3.5;8,4;]"
 		"list[current_player;craft;3,0;3,3;]"
+		"listring[]"
 		"list[current_player;craftpreview;7,1;1,1;]";
 
 	// Initialize movement settings at default values, so movement can work if the server fails to send them

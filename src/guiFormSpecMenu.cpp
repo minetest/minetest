@@ -352,6 +352,40 @@ void GUIFormSpecMenu::parseList(parserData* data,std::string element)
 	errorstream<< "Invalid list element(" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
+void GUIFormSpecMenu::parseListRing(parserData* data, std::string element)
+{
+	if (m_gamedef == 0) {
+		errorstream << "WARNING: invalid use of 'listring' with m_gamedef==0" << std::endl;
+		return;
+	}
+
+	std::vector<std::string> parts = split(element, ';');
+
+	if (parts.size() == 2) {
+		std::string location = parts[0];
+		std::string listname = parts[1];
+
+		InventoryLocation loc;
+
+		if (location == "context" || location == "current_name")
+			loc = m_current_inventory_location;
+		else
+			loc.deSerialize(location);
+
+		m_inventory_rings.push_back(ListRingSpec(loc, listname));
+		return;
+	} else if ((element == "") && (m_inventorylists.size() > 1)) {
+		size_t siz = m_inventorylists.size();
+		// insert the last two inv list elements into the list ring
+		const ListDrawSpec &spa = m_inventorylists[siz - 2];
+		const ListDrawSpec &spb = m_inventorylists[siz - 1];
+		m_inventory_rings.push_back(ListRingSpec(spa.inventoryloc, spa.listname));
+		m_inventory_rings.push_back(ListRingSpec(spb.inventoryloc, spb.listname));
+	}
+	errorstream<< "Invalid list ring element(" << parts.size() << ", "
+		<< m_inventorylists.size() << "): '" << element << "'"  << std::endl;
+}
+
 void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
@@ -1658,6 +1692,11 @@ void GUIFormSpecMenu::parseElement(parserData* data, std::string element)
 
 	if (type == "list") {
 		parseList(data,description);
+		return;
+	}
+
+	if (type == "listring") {
+		parseListRing(data, description);
 		return;
 	}
 
@@ -3145,6 +3184,10 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		// from m_selected_item to s.
 		u32 move_amount = 0;
 
+		// Set this number to a positive value to generate a move action
+		// from s to the next inventory ring.
+		u32 shift_move_amount = 0;
+
 		// Set this number to a positive value to generate a drop action
 		// from m_selected_item.
 		u32 drop_amount = 0;
@@ -3166,18 +3209,29 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			}
 			else if(m_selected_item == NULL) {
 				if(s_count != 0) {
-					// Non-empty stack has been clicked: select it
+					// Non-empty stack has been clicked: select or shift-move it
 					m_selected_item = new ItemSpec(s);
 
+					u32 count;
 					if(button == 1)  // right
-						m_selected_amount = (s_count + 1) / 2;
+						count = (s_count + 1) / 2;
 					else if(button == 2)  // middle
-						m_selected_amount = MYMIN(s_count, 10);
+						count = MYMIN(s_count, 10);
 					else  // left
-						m_selected_amount = s_count;
+						count = s_count;
 
-					m_selected_dragging = true;
-					m_rmouse_auto_place = false;
+					if (!event.MouseInput.Shift) {
+						// no shift: select item
+						m_selected_amount = count;
+						m_selected_dragging = true;
+						m_rmouse_auto_place = false;
+					} else {
+						// shift pressed: move item
+						if (button != 1)
+							shift_move_amount = count;
+						else // count of 1 at left click like after drag & drop
+							shift_move_amount = 1;
+					}
 				}
 			}
 			else { // m_selected_item != NULL
@@ -3259,8 +3313,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		}
 
 		// Possibly send inventory action to server
-		if(move_amount > 0)
-		{
+		if (move_amount > 0) {
 			// Send IACTION_MOVE
 
 			assert(m_selected_item && m_selected_item->isValid());
@@ -3308,8 +3361,57 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			a->to_list = s.listname;
 			a->to_i = s.i;
 			m_invmgr->inventoryAction(a);
-		}
-		else if(drop_amount > 0) {
+		} else if (shift_move_amount > 0) {
+			u32 mis = m_inventory_rings.size();
+			u32 i = 0;
+			for (; i < mis; i++) {
+				const ListRingSpec &sp = m_inventory_rings[i];
+				if (sp.inventoryloc == s.inventoryloc
+						&& sp.listname == s.listname)
+					break;
+			}
+			do {
+				if (i >= mis) // if not found
+					break;
+				u32 to_inv_ind = (i + 1) % mis;
+				const ListRingSpec &to_inv_sp = m_inventory_rings[to_inv_ind];
+				InventoryList *list_from = inv_s->getList(s.listname);
+				if (!list_from)
+					break;
+				Inventory *inv_to = m_invmgr->getInventory(to_inv_sp.inventoryloc);
+				if (!inv_to)
+					break;
+				InventoryList *list_to = inv_to->getList(to_inv_sp.listname);
+				if (!list_to)
+					break;
+				ItemStack stack_from = list_from->getItem(s.i);
+				assert(shift_move_amount <= stack_from.count);
+
+				// find a place (or more than one) to add the new item
+				u32 slot_to = 0;
+				u32 ilt_size = list_to->getSize();
+				ItemStack leftover;
+				for (; slot_to < ilt_size && shift_move_amount > 0; slot_to++) {
+					list_to->itemFits(slot_to, stack_from, &leftover);
+					if (leftover.count < stack_from.count) {
+						infostream << "Handing IACTION_MOVE to manager" << std::endl;
+						IMoveAction *a = new IMoveAction();
+						a->count = MYMIN(shift_move_amount,
+							(u32) (stack_from.count - leftover.count));
+						shift_move_amount -= a->count;
+						a->from_inv = s.inventoryloc;
+						a->from_list = s.listname;
+						a->from_i = s.i;
+						a->to_inv = to_inv_sp.inventoryloc;
+						a->to_list = to_inv_sp.listname;
+						a->to_i = slot_to;
+						m_invmgr->inventoryAction(a);
+						stack_from = leftover;
+					}
+				}
+			} while (0);
+
+		} else if (drop_amount > 0) {
 			m_selected_content_guess = ItemStack(); // Clear
 
 			// Send IACTION_DROP
