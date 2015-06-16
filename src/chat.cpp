@@ -511,7 +511,7 @@ void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwa
 		{
 			std::wstring completion = narrow_to_wide(*i);
 			if (prefix_start == 0)
-				completion += L":";
+				completion += L": ";
 			completions.push_back(completion);
 		}
 	}
@@ -541,7 +541,7 @@ void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwa
 			}
 		}
 	}
-	std::wstring replacement = completions[replacement_index] + L" ";
+	std::wstring replacement = completions[replacement_index];
 	if (word_end < m_line.size() && isspace(word_end))
 		++word_end;
 
