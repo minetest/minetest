@@ -470,7 +470,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 	if (string_allowed(playername, PLAYERNAME_ALLOWED_CHARS) == false) {
 		actionstream << "Server: Player with an invalid name "
 				<< "tried to connect from " << addr_s << std::endl;
-		DenyAccess_Legacy(pkt->getPeerId(), L"The chosen name contains unallowed characters."
+		DenyAccess_Legacy(pkt->getPeerId(), L"The chosen name contains disallowed characters."
 				L" Allowed characters are a-z, A-Z, 0-9, hyphen and underscore.");
 		return;
 	}
@@ -531,8 +531,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 				<< " are already max_users="
 				<< g_settings->getU16("max_users") << " players." << std::endl;
 		DenyAccess_Legacy(pkt->getPeerId(), L"There are currently too many users on this"
-				L" server and it won't accept further users."
-				L" Please wait until a few users have left.");
+				L" server. Please wait until a few users have left.");
 		return;
 	}
 
@@ -1942,7 +1941,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 		if (!client->isSudoMechAllowed(chosen)) {
 			actionstream << "Server: Player \"" << client->getName()
 				<< "\" at " << getPeerAddress(pkt->getPeerId()).serializeString()
-				<< " tried to change password using unallowed mech "
+				<< " tried to change password using disallowed mech "
 				<< chosen << "." << std::endl;
 			DenySudoAccess(pkt->getPeerId());
 			return;
@@ -1951,7 +1950,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 		if (!client->isMechAllowed(chosen)) {
 			actionstream << "Server: Client tried to authenticate from "
 				<< getPeerAddress(pkt->getPeerId()).serializeString()
-				<< " using unallowed mech " << chosen << "." << std::endl;
+				<< " using disallowed mech " << chosen << "." << std::endl;
 			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_UNEXPECTED_DATA);
 			return;
 		}
