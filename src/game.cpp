@@ -790,13 +790,30 @@ public:
 	}
 };
 
+// before 1.8 there isn't a "integer interface", only float
+#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
+typedef irr::f32 SamplerLayer_t;
+#else
+typedef irr::s32 SamplerLayer_t;
+#endif
+
 class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 {
-	Sky *m_sky;
+	SkyBackgroundColorProvider *m_sky;
 	bool *m_force_fog_off;
 	f32 *m_fog_range;
 	Client *m_client;
 	bool m_fogEnabled;
+	CachedPixelShaderSetting<float[4]> m_skyBgColor;
+	CachedPixelShaderSetting<float> m_fogDistance;
+	CachedVertexShaderSetting<float> m_animationTimerVertex;
+	CachedPixelShaderSetting<float> m_animationTimerPixel;
+	CachedPixelShaderSetting<float> m_dayNightRatio;
+	CachedPixelShaderSetting<float[3]> m_eyePositionPixel;
+	CachedVertexShaderSetting<float[3]> m_eyePositionVertex;
+	CachedPixelShaderSetting<SamplerLayer_t> m_baseTexture;
+	CachedPixelShaderSetting<SamplerLayer_t> m_normalTexture;
+	CachedPixelShaderSetting<SamplerLayer_t> m_useNormalmap;
 
 public:
 	void onSettingsChange(const std::string &name)
@@ -810,12 +827,22 @@ public:
 		reinterpret_cast<GameGlobalShaderConstantSetter*>(userdata)->onSettingsChange(name);
 	}
 
-	GameGlobalShaderConstantSetter(Sky *sky, bool *force_fog_off,
-			f32 *fog_range, Client *client) :
-		m_sky(sky),
-		m_force_fog_off(force_fog_off),
-		m_fog_range(fog_range),
-		m_client(client)
+	GameGlobalShaderConstantSetter(SkyBackgroundColorProvider *sky, bool *force_fog_off,
+		f32 *fog_range, Client *client) :
+		m_sky(sky) ,
+		m_force_fog_off(force_fog_off) ,
+		m_fog_range(fog_range), 
+		m_client(client) ,
+		m_skyBgColor("skyBgColor") ,
+		m_fogDistance("fogDistance") ,
+		m_animationTimerVertex("animationTimer") ,
+		m_animationTimerPixel("animationTimer") ,
+		m_dayNightRatio("dayNightRatio") ,
+		m_eyePositionPixel("eyePosition") ,
+		m_eyePositionVertex("eyePosition") ,
+		m_baseTexture("baseTexture") ,
+		m_normalTexture("normalTexture") ,
+		m_useNormalmap("useNormalmap")
 	{
 		g_settings->registerChangedCallback("enable_fog", SettingsCallback, this);
 		m_fogEnabled = g_settings->getBool("enable_fog");
@@ -833,7 +860,7 @@ public:
 			return;
 
 		// Background color
-		video::SColor bgcolor = m_sky->getBgColor();
+		video::SColor bgcolor = m_sky->get();
 		video::SColorf bgcolorf(bgcolor);
 		float bgcolorfa[4] = {
 			bgcolorf.r,
@@ -841,7 +868,7 @@ public:
 			bgcolorf.b,
 			bgcolorf.a,
 		};
-		services->setPixelShaderConstant("skyBgColor", bgcolorfa, 4);
+		m_skyBgColor.setAndSend(bgcolorfa, services);
 
 		// Fog distance
 		float fog_distance = 10000 * BS;
@@ -849,37 +876,52 @@ public:
 		if (m_fogEnabled && !*m_force_fog_off)
 			fog_distance = *m_fog_range;
 
-		services->setPixelShaderConstant("fogDistance", &fog_distance, 1);
+		m_fogDistance.setAndSend(fog_distance, services);
 
-		// Day-night ratio
-		u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
-		float daynight_ratio_f = (float)daynight_ratio / 1000.0;
-		services->setPixelShaderConstant("dayNightRatio", &daynight_ratio_f, 1);
+		m_dayNightRatio.setAndSend(m_client->getEnv().getDayNightRatio() / 1000.f, services);
 
 		u32 animation_timer = porting::getTimeMs() % 100000;
-		float animation_timer_f = (float)animation_timer / 100000.0;
-		services->setPixelShaderConstant("animationTimer", &animation_timer_f, 1);
-		services->setVertexShaderConstant("animationTimer", &animation_timer_f, 1);
+		float animation_timer_f = animation_timer / 100000.f;
+		m_animationTimerVertex.setAndSend(animation_timer_f, services);
+		m_animationTimerPixel.setAndSend(animation_timer_f, services);
 
-		LocalPlayer *player = m_client->getEnv().getLocalPlayer();
-		v3f eye_position = player->getEyePosition();
-		services->setPixelShaderConstant("eyePosition", (irr::f32 *)&eye_position, 3);
-		services->setVertexShaderConstant("eyePosition", (irr::f32 *)&eye_position, 3);
-
-		// Uniform sampler layers
-		int layer0 = 0;
-		int layer1 = 1;
-		int layer2 = 2;
-		// before 1.8 there isn't a "integer interface", only float
+		float eye_position_array[3];
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
-		services->setPixelShaderConstant("baseTexture" , (irr::f32 *)&layer0, 1);
-		services->setPixelShaderConstant("normalTexture" , (irr::f32 *)&layer1, 1);
-		services->setPixelShaderConstant("useNormalmap" , (irr::f32 *)&layer2, 1);
+		v3f epos = m_client->getEnv().getLocalPlayer()->getEyePosition();
+		eye_position_array[0] = epos.X;
+		eye_position_array[1] = epos.Y;
+		eye_position_array[2] = epos.Z;
 #else
-		services->setPixelShaderConstant("baseTexture" , (irr::s32 *)&layer0, 1);
-		services->setPixelShaderConstant("normalTexture" , (irr::s32 *)&layer1, 1);
-		services->setPixelShaderConstant("useNormalmap" , (irr::s32 *)&layer2, 1);
+		m_client->getEnv().getLocalPlayer()->getEyePosition().getAs3Values(eye_position_array);
 #endif
+		m_eyePositionPixel.setAndSend(eye_position_array, services);
+		m_eyePositionVertex.setAndSend(eye_position_array, services);
+
+		m_baseTexture.setAndSend(0,services);
+		m_normalTexture.setAndSend(1, services);
+		m_useNormalmap.setAndSend(2, services);
+	}
+};
+
+class GameGlobalShaderConstantSetterFactory : public IShaderConstantSetterFactory
+{
+	SkyBackgroundColorProvider *m_sky;
+	bool *m_force_fog_off;
+	f32 *m_fog_range;
+	Client *m_client;
+public:
+	GameGlobalShaderConstantSetterFactory(SkyBackgroundColorProvider *sky, bool *force_fog_off,
+		f32 *fog_range, Client *client) :
+	m_sky(sky),
+		m_force_fog_off(force_fog_off),
+		m_fog_range(fog_range),
+		m_client(client)
+	{
+	}
+
+	virtual IShaderConstantSetter* create()
+	{
+		return new GameGlobalShaderConstantSetter(m_sky, m_force_fog_off, m_fog_range, m_client);
 	}
 };
 
@@ -1566,8 +1608,12 @@ private:
 	Camera *camera;
 	Clouds *clouds;	                  // Free using ->Drop()
 	Sky *sky;                         // Free using ->Drop()
+	SkyBackgroundColorProvider sky_background_color_provider; // Used by the shaders
 	Inventory *local_inventory;
 	Hud *hud;
+
+	GameRunData runData;
+	VolatileRunFlags flags;
 
 	/* 'cache'
 	   This class does take ownership/responsibily for cleaning up etc of any of
@@ -1723,6 +1769,21 @@ bool Game::startup(bool *kill,
 
 	smgr->getParameters()->setAttribute(scene::OBJ_LOADER_IGNORE_MATERIAL_FILES, true);
 
+	GameRunData clearedGameRunData = {0};
+	runData = clearedGameRunData;
+
+	runData.time_from_last_punch = 10.0;
+	runData.profiler_max_page = 3;
+	runData.update_wielded_item_trigger = true;
+
+	memset(&flags, 0, sizeof flags);
+
+	flags.show_chat = true;
+	flags.show_hud = true;
+	flags.show_debug = g_settings->getBool("show_debug");
+	flags.invert_mouse = g_settings->getBool("invert_mouse");
+	flags.first_loop_after_window_activation = true;
+
 	if (!init(map_dir, address, port, gamespec))
 		return false;
 
@@ -1739,32 +1800,14 @@ void Game::run()
 	RunStats stats              = { 0 };
 	CameraOrientation cam_view_target  = { 0 };
 	CameraOrientation cam_view  = { 0 };
-	GameRunData runData         = { 0 };
 	FpsControl draw_times       = { 0 };
-	VolatileRunFlags flags      = { 0 };
 	f32 dtime; // in seconds
-
-	runData.time_from_last_punch  = 10.0;
-	runData.profiler_max_page = 3;
-	runData.update_wielded_item_trigger = true;
-
-	flags.show_chat = true;
-	flags.show_hud = true;
-	flags.show_debug = g_settings->getBool("show_debug");
-	flags.invert_mouse = g_settings->getBool("invert_mouse");
-	flags.first_loop_after_window_activation = true;
 
 	/* Clear the profiler */
 	Profiler::GraphValues dummyvalues;
 	g_profiler->graphGet(dummyvalues);
 
 	draw_times.last_time = device->getTimer()->getTime();
-
-	shader_src->addGlobalConstantSetter(new GameGlobalShaderConstantSetter(
-			sky,
-			&flags.force_fog_off,
-			&runData.fog_range,
-			client));
 
 	std::vector<aabb3f> highlight_boxes;
 
@@ -1999,6 +2042,12 @@ bool Game::createClient(const std::string &playername,
 		return false;
 	}
 
+	shader_src->addShaderConstantSetterFactory(new GameGlobalShaderConstantSetterFactory(
+		&sky_background_color_provider,
+		&flags.force_fog_off,
+		&runData.fog_range,
+		client));
+
 	// Update cached textures, meshes and materials
 	client->afterContentReceived(device);
 
@@ -2022,6 +2071,9 @@ bool Game::createClient(const std::string &playername,
 	/* Skybox
 	 */
 	sky = new Sky(smgr->getRootSceneNode(), smgr, -1, texture_src);
+
+	sky_background_color_provider.setSky(sky);
+
 	skybox = NULL;	// This is used/set later on in the main run loop
 
 	local_inventory = new Inventory(itemdef_manager);
