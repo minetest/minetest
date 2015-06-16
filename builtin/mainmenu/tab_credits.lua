@@ -32,7 +32,6 @@ tab_credits = {
 				",Perttu Ahola (celeron55) <celeron55@gmail.com>,"..
 				",Ryan Kwolek (kwolekr) <kwolekr@minetest.net>,"..
 				",PilzAdam <pilzadam@minetest.net>," ..
-				",Lisa Milne (darkrose) <lisa@ltmnet.com>,"..
 				",Maciej Kasatkin (RealBadAngel) <mk@realbadangel.pl>,"..
 				",sfan5 <sfan5@live.de>,"..
 				",kahrl <kahrl@gmx.net>,"..
@@ -43,14 +42,19 @@ tab_credits = {
 				",Craig Robbins (Zeno),"..
 				",Loic Blot (nerzhul/nrz),"..
 				",paramat,"..
+				",est31 <MTest31@outlook.com>," ..
 				",,"..
 				"#FFFF00," .. fgettext("Active Contributors") .. "," ..
 				",SmallJoker <mk939@ymail.com>," ..
-				",est31 <MTest31@outlook.com>," ..
-				",gregorycu,"..
+				",gregorycu," ..
 				",Andrew Ward (rubenwardy) <rubenwardy@gmail.com>," ..
-				",TriBlade9 <triblade9@mail.com>,"..
-				",Zefram <zefram@fysh.org>,"..
+				",Aaron Suen <warr1024@gmail.com>," ..
+				",TeTpaAka," ..
+				",," ..
+				"#FFFF00," .. fgettext("Previous Core Developers") .."," ..
+				",Lisa Milne (darkrose) <lisa@ltmnet.com>," ..
+				",proller <proler@gmail.com>," ..
+				",Ilya Zhuravlev (xyz) <xyz@minetest.net>," ..
 				",," ..
 				"#FFFF00," .. fgettext("Previous Contributors") .. "," ..
 				",Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>,"..
@@ -59,14 +63,14 @@ tab_credits = {
 				",MirceaKitsune <mirceakitsune@gmail.com>,"..
 				",dannydark <the_skeleton_of_a_child@yahoo.co.uk>,"..
 				",0gb.us <0gb.us@0gb.us>,"..
-				",proller <proler@gmail.com>,"..
-				",Ilya Zhuravlev (xyz) <xyz@minetest.net>,"..
 				",Guiseppe Bilotta (Oblomov) <guiseppe.bilotta@gmail.com>,"..
 				",Jonathan Neuschafer <j.neuschaefer@gmx.net>,"..
 				",Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net>,"..
 				",Constantin Wenger (SpeedProg) <constantin.wenger@googlemail.com>,"..
 				",matttpt <matttpt@gmail.com>,"..
 				",JacobF <queatz@gmail.com>,"..
+				",TriBlade9 <triblade9@mail.com>,"..
+				",Zefram <zefram@fysh.org>,"..
 				";1]"
 			end
 	}
