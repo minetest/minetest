@@ -474,7 +474,7 @@ void ChatPrompt::historyNext()
 	}
 }
 
-void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwards)
+void ChatPrompt::nickCompletion(const std::list<std::string> &names, bool backwards)
 {
 	// Two cases:
 	// (a) m_nick_completion_start == m_nick_completion_end == 0
@@ -511,7 +511,7 @@ void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwa
 		{
 			std::wstring completion = narrow_to_wide(*i);
 			if (prefix_start == 0)
-				completion += L":";
+				completion += L": ";
 			completions.push_back(completion);
 		}
 	}
@@ -541,7 +541,7 @@ void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwa
 			}
 		}
 	}
-	std::wstring replacement = completions[replacement_index] + L" ";
+	std::wstring replacement = completions[replacement_index] + L"";
 	if (word_end < m_line.size() && isspace(word_end))
 		++word_end;
 
@@ -551,7 +551,7 @@ void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwa
 	m_cursor = prefix_start + replacement.size();
 	clampView();
 	m_nick_completion_start = prefix_start;
-	m_nick_completion_end = prefix_end;
+	   m_nick_completion_end = prefix_end;
 }
 
 void ChatPrompt::reformat(u32 cols)
