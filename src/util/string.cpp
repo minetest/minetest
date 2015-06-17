@@ -40,7 +40,7 @@ static bool parseHexColorString(const std::string &value, video::SColor &color);
 static bool parseNamedColorString(const std::string &value, video::SColor &color);
 
 #ifndef _WIN32
-size_t convert(const char *to, const char *from, char *outbuf,
+bool convert(const char *to, const char *from, char *outbuf,
 		size_t outbuf_size, char *inbuf, size_t inbuf_size)
 {
 	iconv_t cd = iconv_open(to, from);
@@ -56,11 +56,18 @@ size_t convert(const char *to, const char *from, char *outbuf,
 	size_t *inbuf_left_ptr = &inbuf_size;
 	size_t *outbuf_left_ptr = &outbuf_size;
 
-	while (inbuf_size > 0)
+	size_t old_size = inbuf_size;
+	while (inbuf_size > 0) {
 		iconv(cd, &inbuf_ptr, inbuf_left_ptr, &outbuf_ptr, outbuf_left_ptr);
+		if (inbuf_size == old_size) {
+			iconv_close(cd);
+			return false;
+		}
+		old_size = inbuf_size;
+	}
 
 	iconv_close(cd);
-	return 0;
+	return true;
 }
 
 std::wstring utf8_to_wide(const std::string &input)
@@ -74,7 +81,13 @@ std::wstring utf8_to_wide(const std::string &input)
 	char *outbuf = new char[outbuf_size];
 	memset(outbuf, 0, outbuf_size);
 
-	convert("WCHAR_T", "UTF-8", outbuf, outbuf_size, inbuf, inbuf_size);
+	if (!convert("WCHAR_T", "UTF-8", outbuf, outbuf_size, inbuf, inbuf_size)) {
+		infostream << "Couldn't convert UTF-8 string 0x" << hex_encode(input)
+			<< " into wstring" << std::endl;
+		delete[] inbuf;
+		delete[] outbuf;
+		return L"<invalid UTF-8 string>";
+	}
 	std::wstring out((wchar_t*)outbuf);
 
 	delete[] inbuf;
@@ -101,7 +114,13 @@ std::string wide_to_utf8(const std::wstring &input)
 	char *outbuf = new char[outbuf_size];
 	memset(outbuf, 0, outbuf_size);
 
-	convert("UTF-8", "WCHAR_T", outbuf, outbuf_size, inbuf, inbuf_size);
+	if (!convert("UTF-8", "WCHAR_T", outbuf, outbuf_size, inbuf, inbuf_size)) {
+		infostream << "Couldn't convert wstring 0x" << hex_encode(inbuf, inbuf_size)
+			<< " into wstring" << std::endl;
+		delete[] inbuf;
+		delete[] outbuf;
+		return "<invalid wstring>";
+	}
 	std::string out(outbuf);
 
 	delete[] inbuf;
