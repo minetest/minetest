@@ -32,6 +32,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
+// Checks whether a byte is an inner byte for an utf-8 multibyte sequence
+#define IS_UTF8_MULTB_INNER(x) (((unsigned char)x >= 0x80) && ((unsigned char)x <= 0xc0))
+
 typedef std::map<std::string, std::string> StringMap;
 
 struct FlagDesc {
@@ -411,7 +414,10 @@ inline bool string_allowed_blacklist(const std::string &str,
  *	every \p row_len characters whether it breaks a word or not.  It is
  *	intended to be used for, for example, showing paths in the GUI.
  *
- * @param from The string to be wrapped into rows.
+ * @note This function doesn't wrap inside utf-8 multibyte sequences and also
+ * 	counts multibyte sequences correcly as single characters.
+ *
+ * @param from The (utf-8) string to be wrapped into rows.
  * @param row_len The row length (in characters).
  * @return A new string with the wrapping applied.
  */
@@ -420,9 +426,12 @@ inline std::string wrap_rows(const std::string &from,
 {
 	std::string to;
 
+	size_t character_idx = 0;
 	for (size_t i = 0; i < from.size(); i++) {
-		if (i != 0 && i % row_len == 0)
+		if (character_idx > 0 && character_idx % row_len == 0)
 			to += '\n';
+		if (!IS_UTF8_MULTB_INNER(from[i]))
+			character_idx++;
 		to += from[i];
 	}
 
