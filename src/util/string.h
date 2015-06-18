@@ -433,6 +433,7 @@ inline std::string wrap_rows(const std::string &from,
 		if (character_idx > 0 && character_idx % row_len == 0)
 			need_to_wrap = true;
 		if (!IS_UTF8_MULTB_INNER(from[i])) {
+			// Warp string if needed before next char started
 			if (need_to_wrap) {
 				to += '\n';
 				need_to_wrap = false;
