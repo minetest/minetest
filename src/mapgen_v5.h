@@ -24,9 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define LARGE_CAVE_DEPTH -256
 
-/////////////////// Mapgen V5 flags
-//#define MGV5_   0x01
-
 class BiomeManager;
 
 extern FlagDesc flagdesc_mapgen_v5[];

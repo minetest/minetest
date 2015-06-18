@@ -510,21 +510,26 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 
 		return 1;
 	}
-	case MGOBJ_HEATMAP: { // Mapgen V7 specific objects
-	case MGOBJ_HUMIDMAP:
-		if (strcmp(emerge->params.mg_name.c_str(), "v7"))
-			return 0;
-
-		MapgenV7 *mgv7 = (MapgenV7 *)mg;
-
-		float *arr = (mgobj == MGOBJ_HEATMAP) ?
-			mgv7->noise_heat->result : mgv7->noise_humidity->result;
-		if (!arr)
+	case MGOBJ_HEATMAP: {
+		if (!mg->heatmap)
 			return 0;
 
 		lua_newtable(L);
 		for (size_t i = 0; i != maplen; i++) {
-			lua_pushnumber(L, arr[i]);
+			lua_pushnumber(L, mg->heatmap[i]);
+			lua_rawseti(L, -2, i + 1);
+		}
+
+		return 1;
+	}
+
+	case MGOBJ_HUMIDMAP: {
+		if (!mg->humidmap)
+			return 0;
+
+		lua_newtable(L);
+		for (size_t i = 0; i != maplen; i++) {
+			lua_pushnumber(L, mg->humidmap[i]);
 			lua_rawseti(L, -2, i + 1);
 		}
 

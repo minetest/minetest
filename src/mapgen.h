@@ -152,6 +152,8 @@ public:
 	u32 blockseed;
 	s16 *heightmap;
 	u8 *biomemap;
+	float *heatmap;
+	float *humidmap;
 	v3s16 csize;
 
 	GenerateNotifier gennotify;

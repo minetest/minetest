@@ -59,8 +59,10 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	this->ystride = csize.X;
 	this->zstride = csize.X * (csize.Y + 2);
 
-	this->biomemap  = new u8[csize.X * csize.Z];
-	this->heightmap = new s16[csize.X * csize.Z];
+	this->biomemap        = new u8[csize.X * csize.Z];
+	this->heightmap       = new s16[csize.X * csize.Z];
+	this->heatmap         = NULL;
+	this->humidmap        = NULL;
 	this->ridge_heightmap = new s16[csize.X * csize.Z];
 
 	MapgenV7Params *sp = (MapgenV7Params *)params->sparams;
@@ -376,6 +378,9 @@ void MapgenV7::calculateNoise()
 		noise_heat->result[i] += noise_heat_blend->result[i];
 		noise_humidity->result[i] += noise_humidity_blend->result[i];
 	}
+
+	heatmap = noise_heat->result;
+	humidmap = noise_humidity->result;
 	//printf("calculateNoise: %dus\n", t.stop());
 }
 

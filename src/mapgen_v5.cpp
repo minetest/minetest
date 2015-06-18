@@ -58,6 +58,8 @@ MapgenV5::MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 
 	this->biomemap  = new u8[csize.X * csize.Z];
 	this->heightmap = new s16[csize.X * csize.Z];
+	this->heatmap   = NULL;
+	this->humidmap  = NULL;
 
 	MapgenV5Params *sp = (MapgenV5Params *)params->sparams;
 	this->spflags      = sp->spflags;
@@ -341,6 +343,9 @@ void MapgenV5::calculateNoise()
 		noise_heat->result[i] += noise_heat_blend->result[i];
 		noise_humidity->result[i] += noise_humidity_blend->result[i];
 	}
+
+	heatmap = noise_heat->result;
+	humidmap = noise_humidity->result;
 	//printf("calculateNoise: %dus\n", t.stop());
 }
 
