@@ -67,33 +67,37 @@ FlagDesc flagdesc_gennotify[] = {
 
 Mapgen::Mapgen()
 {
-	generating    = false;
-	id            = -1;
-	seed          = 0;
-	water_level   = 0;
-	flags         = 0;
+	generating  = false;
+	id          = -1;
+	seed        = 0;
+	water_level = 0;
+	flags       = 0;
 
-	vm          = NULL;
-	ndef        = NULL;
-	heightmap   = NULL;
-	biomemap    = NULL;
+	vm        = NULL;
+	ndef      = NULL;
+	heightmap = NULL;
+	biomemap  = NULL;
+	heatmap   = NULL;
+	humidmap  = NULL;
 }
 
 
 Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge) :
 	gennotify(emerge->gen_notify_on, &emerge->gen_notify_on_deco_ids)
 {
-	generating    = false;
-	id            = mapgenid;
-	seed          = (int)params->seed;
-	water_level   = params->water_level;
-	flags         = params->flags;
-	csize         = v3s16(1, 1, 1) * (params->chunksize * MAP_BLOCKSIZE);
+	generating  = false;
+	id          = mapgenid;
+	seed        = (int)params->seed;
+	water_level = params->water_level;
+	flags       = params->flags;
+	csize       = v3s16(1, 1, 1) * (params->chunksize * MAP_BLOCKSIZE);
 
 	vm        = NULL;
 	ndef      = NULL;
 	heightmap = NULL;
 	biomemap  = NULL;
+	heatmap   = NULL;
+	humidmap  = NULL;
 }
 
 
