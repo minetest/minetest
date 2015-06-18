@@ -1007,7 +1007,7 @@ void MapgenV6::growGrass() // Add surface nodes
 			} else if (bt == BT_TUNDRA) {
 				if (c == c_dirt) {
 					vm->m_data[i] = n_dirt_with_snow;
-				} else if (c == c_stone) {
+				} else if (c == c_stone && surface_y < node_max.Y) {
 					vm->m_area.add_y(em, i, 1);
 					vm->m_data[i] = n_snow;
 				}
