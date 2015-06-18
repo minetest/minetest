@@ -381,6 +381,7 @@ void GUIFormSpecMenu::parseListRing(parserData* data, std::string element)
 		const ListDrawSpec &spb = m_inventorylists[siz - 1];
 		m_inventory_rings.push_back(ListRingSpec(spa.inventoryloc, spa.listname));
 		m_inventory_rings.push_back(ListRingSpec(spb.inventoryloc, spb.listname));
+		return;
 	}
 	errorstream<< "Invalid list ring element(" << parts.size() << ", "
 		<< m_inventorylists.size() << "): '" << element << "'"  << std::endl;
