@@ -426,18 +426,12 @@ inline std::string wrap_rows(const std::string &from,
 {
 	std::string to;
 
-	bool need_to_wrap = false;
-
 	size_t character_idx = 0;
 	for (size_t i = 0; i < from.size(); i++) {
-		if (character_idx > 0 && character_idx % row_len == 0)
-			need_to_wrap = true;
 		if (!IS_UTF8_MULTB_INNER(from[i])) {
-			// Wrap string if needed before next char started
-			if (need_to_wrap) {
+			// Wrap string after last inner byte of char
+			if (character_idx > 0 && character_idx % row_len == 0)
 				to += '\n';
-				need_to_wrap = false;
-			}
 			character_idx++;
 		}
 		to += from[i];
