@@ -162,6 +162,8 @@ public:
 		m_is_visible = toset;
 	}
 
+	void setChildrenVisible(bool toset);
+
 	void setAttachments();
 
 	void removeFromScene(bool permanent);

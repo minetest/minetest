@@ -727,6 +727,17 @@ scene::IBillboardSceneNode* GenericCAO::getSpriteSceneNode()
 	return m_spritenode;
 }
 
+void GenericCAO::setChildrenVisible(bool toset)
+{
+	for (std::vector<u16>::iterator ci = m_children.begin();
+			ci != m_children.end(); ci++) {
+		GenericCAO *obj = m_env->getGenericCAO(*ci);
+		if (obj) {
+			obj->setVisible(toset);
+		}
+	}
+}
+
 void GenericCAO::setAttachments()
 {
 	updateAttachments();
@@ -1489,16 +1500,7 @@ void GenericCAO::updateBonePosition()
 void GenericCAO::updateAttachments()
 {
 
-	// localplayer itself can't be attached to localplayer
-	if (!m_is_local_player)
-	{
-		m_attached_to_local = getParent() != NULL && getParent()->isLocalPlayer();
-		// Objects attached to the local player should always be hidden
-		m_is_visible = !m_attached_to_local;
-	}
-
-	if(getParent() == NULL || m_attached_to_local) // Detach or don't attach
-	{
+	if (getParent() == NULL) { // Detach or don't attach
 		scene::ISceneNode *node = getSceneNode();
 		if (node) {
 			v3f old_position = node->getAbsolutePosition();
@@ -1667,13 +1669,25 @@ void GenericCAO::processMessage(const std::string &data)
 		m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
 
 		updateBonePosition();
-	}
-	else if(cmd == GENERIC_CMD_SET_ATTACHMENT) {
-		m_env->m_attachements[getId()] = readS16(is);
-		m_children.push_back(m_env->m_attachements[getId()]);
+	} else if (cmd == GENERIC_CMD_SET_ATTACHMENT) {
+		u16 parentID = readS16(is);
+		m_env->m_attachements[getId()] = parentID;
+		GenericCAO *parentobj = m_env->getGenericCAO(parentID);
+
+		if (parentobj) {
+			parentobj->m_children.push_back(getId());
+		}
+
 		m_attachment_bone = deSerializeString(is);
 		m_attachment_position = readV3F1000(is);
 		m_attachment_rotation = readV3F1000(is);
+
+		// localplayer itself can't be attached to localplayer
+		if (!m_is_local_player) {
+			m_attached_to_local = getParent() != NULL && getParent()->isLocalPlayer();
+			// Objects attached to the local player should be hidden by default
+			m_is_visible = !m_attached_to_local;
+		}
 
 		updateAttachments();
 	}

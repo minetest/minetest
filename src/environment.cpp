@@ -2400,6 +2400,15 @@ void ClientEnvironment::addSimpleObject(ClientSimpleObject *simple)
 	m_simple_objects.push_back(simple);
 }
 
+GenericCAO* ClientEnvironment::getGenericCAO(u16 id)
+{
+	ClientActiveObject *obj = getActiveObject(id);
+	if (obj && obj->getType() == ACTIVEOBJECT_TYPE_GENERIC)
+		return (GenericCAO*) obj;
+	else
+		return NULL;
+}
+
 ClientActiveObject* ClientEnvironment::getActiveObject(u16 id)
 {
 	std::map<u16, ClientActiveObject*>::iterator n;
