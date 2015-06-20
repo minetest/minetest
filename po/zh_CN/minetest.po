@@ -102,7 +102,7 @@ msgstr "从minetest.net下载一个"
 
 #: builtin/mainmenu/dlg_create_world.lua:72
 msgid "Warning: The minimal development test is meant for developers."
-msgstr "警告: 甚微发展测试只是为了开发人员"
+msgstr "警告: 最小化开发测试为开发人员所使用。"
 
 #: builtin/mainmenu/dlg_create_world.lua:73
 msgid "Download a subgame, such as minetest_game, from minetest.net"
@@ -223,7 +223,7 @@ msgstr "安装"
 
 #: builtin/mainmenu/store.lua:522
 msgid "Close store"
-msgstr "关闭店"
+msgstr "关闭商店"
 
 #: builtin/mainmenu/store.lua:530
 msgid "Page $1 of $2"
@@ -436,7 +436,7 @@ msgstr "自由触摸目标"
 
 #: builtin/mainmenu/tab_settings.lua:187
 msgid "Touchthreshold (px)"
-msgstr ""
+msgstr "触控阈值（像素）"
 
 #: builtin/mainmenu/tab_settings.lua:194 builtin/mainmenu/tab_settings.lua:208
 #, fuzzy
@@ -449,7 +449,7 @@ msgstr "产生法线贴图"
 
 #: builtin/mainmenu/tab_settings.lua:198 builtin/mainmenu/tab_settings.lua:210
 msgid "Parallax Occlusion"
-msgstr ""
+msgstr "视差贴图"
 
 #: builtin/mainmenu/tab_settings.lua:200 builtin/mainmenu/tab_settings.lua:211
 msgid "Waving Water"
@@ -517,7 +517,7 @@ msgstr "物品材质..."
 
 #: src/fontengine.cpp:70 src/fontengine.cpp:226
 msgid "needs_fallback_font"
-msgstr ""
+msgstr "yes"
 
 #: src/game.cpp:1063
 msgid "Respawn"
