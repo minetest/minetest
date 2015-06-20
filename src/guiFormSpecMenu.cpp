@@ -3384,31 +3384,42 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					break;
 				ItemStack stack_from = list_from->getItem(s.i);
 				assert(shift_move_amount <= stack_from.count);
-
-				// find a place (or more than one) to add the new item
-				u32 ilt_size = list_to->getSize();
-				ItemStack leftover;
-				for (u32 slot_to = 0; slot_to < ilt_size
-						&& shift_move_amount > 0; slot_to++) {
-					list_to->itemFits(slot_to, stack_from, &leftover);
-					if (leftover.count < stack_from.count) {
-						infostream << "Handing IACTION_MOVE to manager" << std::endl;
-						IMoveAction *a = new IMoveAction();
-						a->count = MYMIN(shift_move_amount,
-							(u32) (stack_from.count - leftover.count));
-						shift_move_amount -= a->count;
-						a->from_inv = s.inventoryloc;
-						a->from_list = s.listname;
-						a->from_i = s.i;
-						a->to_inv = to_inv_sp.inventoryloc;
-						a->to_list = to_inv_sp.listname;
-						a->to_i = slot_to;
-						m_invmgr->inventoryAction(a);
-						stack_from = leftover;
+				if (m_client->getProtoVersion() >= 25) {
+					infostream << "Handing IACTION_MOVE to manager" << std::endl;
+					IMoveAction *a = new IMoveAction();
+					a->count = shift_move_amount;
+					a->from_inv = s.inventoryloc;
+					a->from_list = s.listname;
+					a->from_i = s.i;
+					a->to_inv = to_inv_sp.inventoryloc;
+					a->to_list = to_inv_sp.listname;
+					a->move_somewhere = true;
+					m_invmgr->inventoryAction(a);
+				} else {
+					// find a place (or more than one) to add the new item
+					u32 ilt_size = list_to->getSize();
+					ItemStack leftover;
+					for (u32 slot_to = 0; slot_to < ilt_size
+							&& shift_move_amount > 0; slot_to++) {
+						list_to->itemFits(slot_to, stack_from, &leftover);
+						if (leftover.count < stack_from.count) {
+							infostream << "Handing IACTION_MOVE to manager" << std::endl;
+							IMoveAction *a = new IMoveAction();
+							a->count = MYMIN(shift_move_amount,
+								(u32) (stack_from.count - leftover.count));
+							shift_move_amount -= a->count;
+							a->from_inv = s.inventoryloc;
+							a->from_list = s.listname;
+							a->from_i = s.i;
+							a->to_inv = to_inv_sp.inventoryloc;
+							a->to_list = to_inv_sp.listname;
+							a->to_i = slot_to;
+							m_invmgr->inventoryAction(a);
+							stack_from = leftover;
+						}
 					}
 				}
 			} while (0);
-
 		} else if (drop_amount > 0) {
 			m_selected_content_guess = ItemStack(); // Clear
 

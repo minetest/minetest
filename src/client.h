@@ -493,6 +493,9 @@ public:
 	bool mediaReceived()
 	{ return m_media_downloader == NULL; }
 
+	u8 getProtoVersion()
+	{ return m_proto_ver; }
+
 	float mediaReceiveProgress();
 
 	void afterContentReceived(IrrlichtDevice *device);
