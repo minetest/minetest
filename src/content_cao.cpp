@@ -543,7 +543,6 @@ GenericCAO::GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
 		//
 		m_is_player(false),
 		m_is_local_player(false),
-		m_id(0),
 		//
 		m_smgr(NULL),
 		m_irr(NULL),
@@ -747,7 +746,7 @@ ClientActiveObject* GenericCAO::getParent()
 {
 	ClientActiveObject *obj = NULL;
 
-	u16 attached_id = m_env->m_attachements[getId()];
+	u16 attached_id = m_env->attachement_parent_ids[getId()];
 
 	if ((attached_id != 0) &&
 			(attached_id != getId())) {
@@ -764,12 +763,12 @@ void GenericCAO::removeFromScene(bool permanent)
 		for(std::vector<u16>::iterator ci = m_children.begin();
 						ci != m_children.end(); ci++)
 		{
-			if (m_env->m_attachements[*ci] == getId()) {
-				m_env->m_attachements[*ci] = 0;
+			if (m_env->attachement_parent_ids[*ci] == getId()) {
+				m_env->attachement_parent_ids[*ci] = 0;
 			}
 		}
 
-		m_env->m_attachements[getId()] = 0;
+		m_env->attachement_parent_ids[getId()] = 0;
 
 		LocalPlayer* player = m_env->getLocalPlayer();
 		if (this == player->parent) {
@@ -1111,7 +1110,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		for(std::vector<u16>::iterator ci = m_children.begin();
 				ci != m_children.end();)
 		{
-			if (m_env->m_attachements[*ci] != getId()) {
+			if (m_env->attachement_parent_ids[*ci] != getId()) {
 				ci = m_children.erase(ci);
 				continue;
 			}
@@ -1669,9 +1668,9 @@ void GenericCAO::processMessage(const std::string &data)
 		m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
 
 		updateBonePosition();
-	} else if (cmd == GENERIC_CMD_SET_ATTACHMENT) {
+	} else if (cmd == GENERIC_CMD_ATTACH_TO) {
 		u16 parentID = readS16(is);
-		m_env->m_attachements[getId()] = parentID;
+		m_env->attachement_parent_ids[getId()] = parentID;
 		GenericCAO *parentobj = m_env->getGenericCAO(parentID);
 
 		if (parentobj) {

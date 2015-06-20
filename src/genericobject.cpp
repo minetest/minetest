@@ -161,7 +161,7 @@ std::string gob_cmd_update_attachment(int parent_id, std::string bone, v3f posit
 {
 	std::ostringstream os(std::ios::binary);
 	// command 
-	writeU8(os, GENERIC_CMD_SET_ATTACHMENT);
+	writeU8(os, GENERIC_CMD_ATTACH_TO);
 	// parameters
 	writeS16(os, parent_id);
 	os<<serializeString(bone);

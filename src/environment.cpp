@@ -2009,7 +2009,7 @@ ClientEnvironment::ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
 	m_irr(irr)
 {
 	char zero = 0;
-	memset(m_attachements, zero, sizeof(m_attachements));
+	memset(attachement_parent_ids, zero, sizeof(attachement_parent_ids));
 }
 
 ClientEnvironment::~ClientEnvironment()

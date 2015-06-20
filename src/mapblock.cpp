@@ -465,11 +465,11 @@ s16 MapBlock::getGroundLevel(v2s16 p2d)
 // sure we can handle all content ids. But it's absolutely worth it as it's
 // a speedup of 4 for one of the major time consuming functions on storing
 // mapblocks.
-static content_t getBlockNodeIdMapping_mapping[USHRT_MAX];
+static content_t getBlockNodeIdMapping_mapping[USHRT_MAX + 1];
 static void getBlockNodeIdMapping(NameIdMapping *nimap, MapNode *nodes,
 		INodeDefManager *nodedef)
 {
-	memset(getBlockNodeIdMapping_mapping, 0xFF, USHRT_MAX * sizeof(content_t));
+	memset(getBlockNodeIdMapping_mapping, 0xFF, (USHRT_MAX + 1) * sizeof(content_t));
 
 	std::set<content_t> unknown_contents;
 	content_t id_counter = 0;
