@@ -615,7 +615,7 @@ clean_curl :
 
 curl_binary:
 	@if [ ! -d "deps/curl-${CURL_VERSION_BINARY}" ] ; then                     \
-		echo "curl sources missing, downloading...";                           \
+		echo "curl binary missing, downloading...";                           \
 		mkdir -p ${ROOT}/deps;                                                 \
 		cd deps;                                                               \
 		wget http://curl.haxx.se/gknw.net/7.34.0/dist-android/curl-7.34.0-rtmp-ssh2-ssl-zlib-static-bin-android.tar.gz || exit 1;\
@@ -696,47 +696,14 @@ clean_sqlite3:
 
 $(ASSETS_TIMESTAMP) : $(IRRLICHT_LIB)
 	@mkdir -p ${ROOT}/deps;                                                     \
-	LAST_MODIF=$$(find ${ROOT}/../../builtin -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
-	if [ $$(basename $$LAST_MODIF) != "timestamp" ] ; then                     \
-		touch ${ROOT}/../../builtin/timestamp;                                 \
-		touch ${ASSETS_TIMESTAMP};                                             \
-		echo builtin changed $$LAST_MODIF;                                     \
-	fi;                                                                        \
-	LAST_MODIF=$$(find ${ROOT}/../../client -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
-	if [ $$(basename $$LAST_MODIF) != "timestamp" ] ; then                     \
-		touch ${ROOT}/../../client/timestamp;                                  \
-		touch ${ASSETS_TIMESTAMP};                                             \
-	fi;                                                                        \
-	LAST_MODIF=$$(find ${ROOT}/../../doc -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
-	if [ $$(basename $$LAST_MODIF) != "timestamp" ] ; then                     \
-		touch ${ROOT}/../../doc/timestamp;                                     \
-		touch ${ASSETS_TIMESTAMP};                                             \
-	fi;                                                                        \
-	LAST_MODIF=$$(find ${ROOT}/../../fonts -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
-	if [ $$(basename $$LAST_MODIF) != "timestamp" ] ; then                     \
-		touch ${ROOT}/../../fonts/timestamp;                                   \
-		touch ${ASSETS_TIMESTAMP};                                             \
-	fi;                                                                        \
-	LAST_MODIF=$$(find ${ROOT}/../../games -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
-	if [ $$(basename $$LAST_MODIF) != "timestamp" ] ; then                     \
-		touch ${ROOT}/../../games/timestamp;                                   \
-		touch ${ASSETS_TIMESTAMP};                                             \
-	fi;                                                                        \
-	LAST_MODIF=$$(find ${ROOT}/../../mods -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
-	if [ $$(basename $$LAST_MODIF) != "timestamp" ] ; then                     \
-		touch ${ROOT}/../../mods/timestamp;                                    \
-		touch ${ASSETS_TIMESTAMP};                                             \
-	fi;                                                                        \
-	LAST_MODIF=$$(find ${ROOT}/../../po -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
-	if [ $$(basename $$LAST_MODIF) != "timestamp" ] ; then                     \
-		touch ${ROOT}/../../po/timestamp;                                      \
-		touch ${ASSETS_TIMESTAMP};                                             \
-	fi;                                                                        \
-	LAST_MODIF=$$(find ${ROOT}/../../textures -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
-	if [ $$(basename $$LAST_MODIF) != "timestamp" ] ; then                     \
-		touch ${ROOT}/../../textures/timestamp;                                \
-		touch ${ASSETS_TIMESTAMP};                                             \
-	fi;                                                                        \
+	for DIRNAME in {builtin,client,doc,fonts,games,mods,po,textures}; do        \
+		LAST_MODIF=$$(find ${ROOT}/../../${DIRNAME} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
+		if [ $$(basename $$LAST_MODIF) != "timestamp" ]; then               \
+			touch ${ROOT}/../../$DIRNAME/timestamp;                     \
+			touch ${ASSETS_TIMESTAMP};                                  \
+			echo ${DIRNAME} changed $$LAST_MODIF;                       \
+		fi;                                                                 \
+	done;                                                                       \
 	LAST_MODIF=$$(find ${IRRLICHT_DIR}/media -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
 	if [ $$(basename $$LAST_MODIF) != "timestamp" ] ; then                     \
 		touch ${IRRLICHT_DIR}/media/timestamp;                                 \
