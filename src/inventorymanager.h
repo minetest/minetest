@@ -143,15 +143,24 @@ struct IMoveAction : public InventoryAction
 	InventoryLocation to_inv;
 	std::string to_list;
 	s16 to_i;
+	bool move_somewhere;
+
+	// treat these as private
+	// related to movement to somewhere
+	bool caused_by_move_somewhere;
+	u32 move_count;
 	
 	IMoveAction()
 	{
 		count = 0;
 		from_i = -1;
 		to_i = -1;
+		move_somewhere = false;
+		caused_by_move_somewhere = false;
+		move_count = 0;
 	}
 	
-	IMoveAction(std::istream &is);
+	IMoveAction(std::istream &is, bool somewhere);
 
 	u16 getType() const
 	{
@@ -160,14 +169,18 @@ struct IMoveAction : public InventoryAction
 
 	void serialize(std::ostream &os) const
 	{
-		os<<"Move ";
-		os<<count<<" ";
-		os<<from_inv.dump()<<" ";
-		os<<from_list<<" ";
-		os<<from_i<<" ";
-		os<<to_inv.dump()<<" ";
-		os<<to_list<<" ";
-		os<<to_i;
+		if (!move_somewhere)
+			os << "Move ";
+		else
+			os << "MoveSomewhere ";
+		os << count << " ";
+		os << from_inv.dump() << " ";
+		os << from_list << " ";
+		os << from_i << " ";
+		os << to_inv.dump() << " ";
+		os << to_list;
+		if (!move_somewhere)
+			os << " " << to_i;
 	}
 
 	void apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef);

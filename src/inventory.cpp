@@ -782,10 +782,47 @@ ItemStack InventoryList::peekItem(u32 i, u32 peekcount) const
 	return m_items[i].peekItem(peekcount);
 }
 
-void InventoryList::moveItem(u32 i, InventoryList *dest, u32 dest_i, u32 count)
+void InventoryList::moveItemSomewhere(u32 i, InventoryList *dest, u32 count)
+{
+	// Take item from source list
+	ItemStack item1;
+	if (count == 0)
+		item1 = changeItem(i, ItemStack());
+	else
+		item1 = takeItem(i, count);
+
+	if (item1.empty())
+		return;
+
+	// Try to add the item to destination list
+	u32 oldcount = item1.count;
+	u32 dest_size = dest->getSize();
+	// First try all the non-empty slots
+	for (u32 dest_i = 0; dest_i < dest_size; dest_i++) {
+		if (!m_items[dest_i].empty()) {
+			item1 = dest->addItem(dest_i, item1);
+			if (item1.empty()) return;
+		}
+	}
+
+	// Then try all the empty ones
+	for (u32 dest_i = 0; dest_i < dest_size; dest_i++) {
+		if (m_items[dest_i].empty()) {
+			item1 = dest->addItem(dest_i, item1);
+			if (item1.empty()) return;
+		}
+	}
+
+	// If we reach this, the item was not fully added
+	// Add the remaining part back to the source item
+	addItem(i, item1);
+}
+
+u32 InventoryList::moveItem(u32 i, InventoryList *dest, u32 dest_i,
+		u32 count, bool swap_if_needed)
 {
 	if(this == dest && i == dest_i)
-		return;
+		return count;
 
 	// Take item from source list
 	ItemStack item1;
@@ -795,7 +832,7 @@ void InventoryList::moveItem(u32 i, InventoryList *dest, u32 dest_i, u32 count)
 		item1 = takeItem(i, count);
 
 	if(item1.empty())
-		return;
+		return 0;
 
 	// Try to add the item to destination list
 	u32 oldcount = item1.count;
@@ -813,8 +850,7 @@ void InventoryList::moveItem(u32 i, InventoryList *dest, u32 dest_i, u32 count)
 
 		// If olditem is returned, nothing was added.
 		// Swap the items
-		if(nothing_added)
-		{
+		if (nothing_added && swap_if_needed) {
 			// Take item from source list
 			item1 = changeItem(i, ItemStack());
 			// Adding was not possible, swap the items.
@@ -823,6 +859,7 @@ void InventoryList::moveItem(u32 i, InventoryList *dest, u32 dest_i, u32 count)
 			changeItem(i, item2);
 		}
 	}
+	return (oldcount - item1.count);
 }
 
 /*
