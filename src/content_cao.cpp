@@ -728,9 +728,8 @@ scene::IBillboardSceneNode* GenericCAO::getSpriteSceneNode()
 
 void GenericCAO::setChildrenVisible(bool toset)
 {
-	for (std::vector<u16>::iterator ci = m_children.begin();
-			ci != m_children.end(); ci++) {
-		GenericCAO *obj = m_env->getGenericCAO(*ci);
+	for (std::vector<u16>::size_type i = 0; i < m_children.size(); i++) {
+		GenericCAO *obj = m_env->getGenericCAO(m_children[i]);
 		if (obj) {
 			obj->setVisible(toset);
 		}
@@ -760,11 +759,10 @@ void GenericCAO::removeFromScene(bool permanent)
 	// Should be true when removing the object permanently and false when refreshing (eg: updating visuals)
 	if((m_env != NULL) && (permanent))
 	{
-		for(std::vector<u16>::iterator ci = m_children.begin();
-						ci != m_children.end(); ci++)
-		{
-			if (m_env->attachement_parent_ids[*ci] == getId()) {
-				m_env->attachement_parent_ids[*ci] = 0;
+		for (std::vector<u16>::size_type i = 0; i < m_children.size(); i++) {
+			u16 ci = m_children[i];
+			if (m_env->attachement_parent_ids[ci] == getId()) {
+				m_env->attachement_parent_ids[ci] = 0;
 			}
 		}
 
@@ -1127,11 +1125,9 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		addToScene(m_smgr, m_gamedef->tsrc(), m_irr);
 
 		// Attachments, part 2: Now that the parent has been refreshed, put its attachments back
-		for(std::vector<u16>::iterator ci = m_children.begin();
-						ci != m_children.end(); ci++)
-		{
+		for (std::vector<u16>::size_type i = 0; i < m_children.size(); i++) {
 			// Get the object of the child
-			ClientActiveObject *obj = m_env->getActiveObject(*ci);
+			ClientActiveObject *obj = m_env->getActiveObject(m_children[i]);
 			if (obj)
 				obj->setAttachments();
 		}
@@ -1670,6 +1666,11 @@ void GenericCAO::processMessage(const std::string &data)
 		updateBonePosition();
 	} else if (cmd == GENERIC_CMD_ATTACH_TO) {
 		u16 parentID = readS16(is);
+		u16 oldparent = m_env->attachement_parent_ids[getId()];
+		if (oldparent) {
+			m_children.erase(std::remove(m_children.begin(), m_children.end(),
+				getId()), m_children.end());
+		}
 		m_env->attachement_parent_ids[getId()] = parentID;
 		GenericCAO *parentobj = m_env->getGenericCAO(parentID);
 
