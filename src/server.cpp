@@ -2698,7 +2698,8 @@ void Server::UpdateCrafting(Player* player)
 	ItemStack preview;
 	InventoryLocation loc;
 	loc.setPlayer(player->getName());
-	getCraftingResult(&player->inventory, preview, false, this);
+	std::vector<ItemStack> output_replacements;
+	getCraftingResult(&player->inventory, preview, output_replacements, false, this);
 	m_env->getScriptIface()->item_CraftPredict(preview, player->getPlayerSAO(), (&player->inventory)->getList("craft"), loc);
 
 	// Put the new preview in

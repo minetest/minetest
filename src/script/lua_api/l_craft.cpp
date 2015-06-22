@@ -303,18 +303,23 @@ int ModApiCraft::l_get_craft_result(lua_State *L)
 	ICraftDefManager *cdef = gdef->cdef();
 	CraftInput input(method, width, items);
 	CraftOutput output;
-	bool got = cdef->getCraftResult(input, output, true, gdef);
+	std::vector<ItemStack> output_replacements;
+	bool got = cdef->getCraftResult(input, output, output_replacements, true, gdef);
 	lua_newtable(L); // output table
-	if(got){
+	if (got) {
 		ItemStack item;
 		item.deSerialize(output.item, gdef->idef());
 		LuaItemStack::create(L, item);
 		lua_setfield(L, -2, "item");
 		setintfield(L, -1, "time", output.time);
+		push_items(L, output_replacements);
+		lua_setfield(L, -2, "replacements");
 	} else {
 		LuaItemStack::create(L, ItemStack());
 		lua_setfield(L, -2, "item");
 		setintfield(L, -1, "time", 0);
+		lua_newtable(L);
+		lua_setfield(L, -2, "replacements");
 	}
 	lua_newtable(L); // decremented input table
 	lua_pushstring(L, method_s.c_str());

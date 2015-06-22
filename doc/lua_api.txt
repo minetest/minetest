@@ -2077,6 +2077,8 @@ and `minetest.auth_reload` call the authetification handler.
       `{ stack1, stack2, stack3, stack4, stack 5, stack 6, stack 7, stack 8, stack 9 }`
     * `output.item` = `ItemStack`, if unsuccessful: empty `ItemStack`
     * `output.time` = a number, if unsuccessful: `0`
+    * `output.replacements` = list of `ItemStack`s that couldn't be placed in
+      `decremented_input.items`
     * `decremented_input` = like `input`
 * `minetest.get_craft_recipe(output)`: returns input
     * returns last registered recipe for output item (node)
