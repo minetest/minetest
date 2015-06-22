@@ -57,6 +57,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
 #include "version.h"
+#include "minimap.h"
 
 #include "sound.h"
 
@@ -866,6 +867,9 @@ public:
 		services->setPixelShaderConstant("eyePosition", (irr::f32 *)&eye_position, 3);
 		services->setVertexShaderConstant("eyePosition", (irr::f32 *)&eye_position, 3);
 
+		v3f minimap_yaw_vec = m_client->getMapper()->getYawVec();
+		services->setPixelShaderConstant("yawVec", (irr::f32 *)&minimap_yaw_vec, 3);
+
 		// Uniform sampler layers
 		int layer0 = 0;
 		int layer1 = 1;
@@ -1238,6 +1242,7 @@ struct KeyCache {
 		KEYMAP_ID_CHAT,
 		KEYMAP_ID_CMD,
 		KEYMAP_ID_CONSOLE,
+		KEYMAP_ID_MINIMAP,
 		KEYMAP_ID_FREEMOVE,
 		KEYMAP_ID_FASTMOVE,
 		KEYMAP_ID_NOCLIP,
@@ -1287,6 +1292,7 @@ void KeyCache::populate()
 	key[KEYMAP_ID_CHAT]         = getKeySetting("keymap_chat");
 	key[KEYMAP_ID_CMD]          = getKeySetting("keymap_cmd");
 	key[KEYMAP_ID_CONSOLE]      = getKeySetting("keymap_console");
+	key[KEYMAP_ID_MINIMAP]      = getKeySetting("keymap_minimap");
 	key[KEYMAP_ID_FREEMOVE]     = getKeySetting("keymap_freemove");
 	key[KEYMAP_ID_FASTMOVE]     = getKeySetting("keymap_fastmove");
 	key[KEYMAP_ID_NOCLIP]       = getKeySetting("keymap_noclip");
@@ -1392,6 +1398,7 @@ struct VolatileRunFlags {
 	bool invert_mouse;
 	bool show_chat;
 	bool show_hud;
+	bool show_minimap;
 	bool force_fog_off;
 	bool show_debug;
 	bool show_profiler_graph;
@@ -1490,6 +1497,8 @@ protected:
 
 	void toggleChat(float *statustext_time, bool *flag);
 	void toggleHud(float *statustext_time, bool *flag);
+	void toggleMinimap(float *statustext_time, bool *flag1, bool *flag2,
+			bool shift_pressed);
 	void toggleFog(float *statustext_time, bool *flag);
 	void toggleDebug(float *statustext_time, bool *show_debug,
 			bool *show_profiler_graph);
@@ -1568,6 +1577,7 @@ private:
 	Sky *sky;                         // Free using ->Drop()
 	Inventory *local_inventory;
 	Hud *hud;
+	Mapper *mapper;
 
 	/* 'cache'
 	   This class does take ownership/responsibily for cleaning up etc of any of
@@ -1648,7 +1658,8 @@ Game::Game() :
 	clouds(NULL),
 	sky(NULL),
 	local_inventory(NULL),
-	hud(NULL)
+	hud(NULL),
+	mapper(NULL)
 {
 	m_cache_doubletap_jump            = g_settings->getBool("doubletap_jump");
 	m_cache_enable_node_highlighting  = g_settings->getBool("enable_node_highlighting");
@@ -1750,6 +1761,7 @@ void Game::run()
 
 	flags.show_chat = true;
 	flags.show_hud = true;
+	flags.show_minimap = g_settings->getBool("enable_minimap");
 	flags.show_debug = g_settings->getBool("show_debug");
 	flags.invert_mouse = g_settings->getBool("invert_mouse");
 	flags.first_loop_after_window_activation = true;
@@ -2064,6 +2076,9 @@ bool Game::createClient(const std::string &playername,
 		errorstream << *error_message << std::endl;
 		return false;
 	}
+
+	mapper = client->getMapper();
+	mapper->setMinimapMode(MINIMAP_MODE_OFF);
 
 	return true;
 }
@@ -2599,6 +2614,9 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 		client->makeScreenshot(device);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_HUD])) {
 		toggleHud(statustext_time, &flags->show_hud);
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_MINIMAP])) {
+		toggleMinimap(statustext_time, &flags->show_minimap, &flags->show_hud,
+			input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SNEAK]));
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_CHAT])) {
 		toggleChat(statustext_time, &flags->show_chat);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_FORCE_FOG_OFF])) {
@@ -2819,6 +2837,44 @@ void Game::toggleHud(float *statustext_time, bool *flag)
 		client->setHighlighted(client->getHighlighted(), *flag);
 }
 
+void Game::toggleMinimap(float *statustext_time, bool *flag, bool *show_hud, bool shift_pressed)
+{
+	if (*show_hud && g_settings->getBool("enable_minimap")) {
+		if (shift_pressed) {
+			mapper->toggleMinimapShape();
+			return;
+		}
+		MinimapMode mode = mapper->getMinimapMode();
+		mode = (MinimapMode)((int)(mode) + 1);
+		*flag = true;
+		switch (mode) {
+			case MINIMAP_MODE_SURFACEx1:
+				statustext = L"Minimap in surface mode, Zoom x1";
+				break;
+			case MINIMAP_MODE_SURFACEx2:
+				statustext = L"Minimap in surface mode, Zoom x2";
+				break;
+			case MINIMAP_MODE_SURFACEx4:
+				statustext = L"Minimap in surface mode, Zoom x4";
+				break;
+			case MINIMAP_MODE_RADARx1:
+				statustext = L"Minimap in radar mode, Zoom x1";
+				break;
+			case MINIMAP_MODE_RADARx2:
+				statustext = L"Minimap in radar mode, Zoom x2";
+				break;
+			case MINIMAP_MODE_RADARx4:
+				statustext = L"Minimap in radar mode, Zoom x4";
+				break;
+			default:
+				mode = MINIMAP_MODE_OFF;
+				*flag = false;
+				statustext = L"Minimap hidden";
+		}
+		*statustext_time = 0;
+		mapper->setMinimapMode(mode);
+	}
+}
 
 void Game::toggleFog(float *statustext_time, bool *flag)
 {
@@ -3953,8 +4009,9 @@ void Game::updateFrame(std::vector<aabb3f> &highlight_boxes,
 		stats->beginscenetime = timer.stop(true);
 	}
 
-	draw_scene(driver, smgr, *camera, *client, player, *hud, guienv,
-			highlight_boxes, screensize, skycolor, flags.show_hud);
+	draw_scene(driver, smgr, *camera, *client, player, *hud, *mapper,
+			guienv,	highlight_boxes, screensize, skycolor, flags.show_hud,
+			flags.show_minimap);
 
 	/*
 		Profiler graph
@@ -3985,6 +4042,13 @@ void Game::updateFrame(std::vector<aabb3f> &highlight_boxes,
 
 		if (player->hurt_tilt_timer < 0)
 			player->hurt_tilt_strength = 0;
+	}
+
+	/*
+		Update minimap pos
+	*/
+	if (flags.show_minimap && flags.show_hud) {
+		mapper->setPos(floatToInt(player->getPosition(), BS));
 	}
 
 	/*

@@ -423,6 +423,7 @@ set(client_SRCS
 	main.cpp
 	mapblock_mesh.cpp
 	mesh.cpp
+	minimap.cpp
 	particles.cpp
 	shader.cpp
 	sky.cpp

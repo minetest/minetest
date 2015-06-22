@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "gamedef.h"
 #include "mesh.h"
+#include "minimap.h"
 #include "content_mapblock.h"
 #include "noise.h"
 #include "shader.h"
@@ -1028,6 +1029,7 @@ static void updateAllFastFaceRows(MeshMakeData *data,
 
 MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	m_mesh(new scene::SMesh()),
+	m_minimap_mapblock(new MinimapMapblock),
 	m_gamedef(data->m_gamedef),
 	m_tsrc(m_gamedef->getTextureSource()),
 	m_shdrsrc(m_gamedef->getShaderSource()),
@@ -1040,6 +1042,32 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 {
 	m_enable_shaders = data->m_use_shaders;
 	m_enable_highlighting = g_settings->getBool("enable_node_highlighting");
+
+	if (g_settings->getBool("enable_minimap")) {
+		v3s16 blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
+		for(s16 x = 0; x < MAP_BLOCKSIZE; x++) {
+			for(s16 z = 0; z < MAP_BLOCKSIZE; z++) {
+				s16 air_count = 0;
+				bool surface_found = false;
+				MinimapPixel* minimap_pixel = &m_minimap_mapblock->data[x + z * MAP_BLOCKSIZE];
+				for(s16 y = MAP_BLOCKSIZE -1; y > -1; y--) {
+					v3s16 p(x, y, z);
+					MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
+					if (!surface_found && n.getContent() != CONTENT_AIR) {
+						minimap_pixel->height = y;
+						minimap_pixel->id = n.getContent();
+						surface_found = true;
+					} else if (n.getContent() == CONTENT_AIR) {
+						air_count++;
+					}
+				}
+				if (!surface_found) {
+					minimap_pixel->id = CONTENT_AIR;
+				}
+				minimap_pixel->air_count = air_count;
+			}
+		}
+	}
 
 	// 4-21ms for MAP_BLOCKSIZE=16  (NOTE: probably outdated)
 	// 24-155ms for MAP_BLOCKSIZE=32  (NOTE: probably outdated)
