@@ -34,17 +34,20 @@ int ModApiParticles::l_add_particle(lua_State *L)
 {
 	// Get parameters
 	v3f pos, vel, acc;
-	    pos= vel= acc= v3f(0, 0, 0);
+	pos = vel = acc = v3f(0, 0, 0);
+
 	float expirationtime, size;
-	      expirationtime= size= 1;
+	expirationtime = size = 1;
+
 	bool collisiondetection, vertical;
-	     collisiondetection= vertical= false;
+	collisiondetection = vertical = false;
+
 	std::string texture = "";
 	const char *playername = "";
 
 	if (lua_gettop(L) > 1) // deprecated
 	{
-		log_deprecated(L,"Deprecated add_particle call with individual parameters instead of definition");
+		log_deprecated(L, "Deprecated add_particle call with individual parameters instead of definition");
 		pos = check_v3f(L, 1);
 		vel = check_v3f(L, 2);
 		acc = check_v3f(L, 3);
@@ -62,29 +65,37 @@ int ModApiParticles::l_add_particle(lua_State *L)
 		while (lua_next(L, table) != 0)
 		{
 			const char *key = lua_tostring(L, -2);
-				  if(strcmp(key,"pos")==0){
-					pos=check_v3f(L, -1);
-			}else if(strcmp(key,"vel")==0){
-					vel=check_v3f(L, -1);
-			}else if(strcmp(key,"acc")==0){
-					acc=check_v3f(L, -1);
-			}else if(strcmp(key,"expirationtime")==0){
-					expirationtime=luaL_checknumber(L, -1);
-			}else if(strcmp(key,"size")==0){
-					size=luaL_checknumber(L, -1);
-			}else if(strcmp(key,"collisiondetection")==0){
-					collisiondetection=lua_toboolean(L, -1);
-			}else if(strcmp(key,"vertical")==0){
-					vertical=lua_toboolean(L, -1);
-			}else if(strcmp(key,"texture")==0){
-					texture=luaL_checkstring(L, -1);
-			}else if(strcmp(key,"playername")==0){
-					playername=luaL_checkstring(L, -1);
+			if (strcmp(key, "pos") == 0) {
+				pos = check_v3f(L, -1);
+			} else if (strcmp(key,"vel") == 0) {
+				vel = check_v3f(L, -1);
+				log_deprecated(L, "The use of vel is deprecated. "
+					"Use velocity instead");
+			} else if (strcmp(key,"velocity") == 0) {
+				vel = check_v3f(L, -1);
+			} else if (strcmp(key,"acc") == 0) {
+				acc = check_v3f(L, -1);
+				log_deprecated(L, "The use of acc is deprecated. "
+					"Use acceleration instead");
+			} else if (strcmp(key,"acceleration") == 0) {
+				acc = check_v3f(L, -1);
+			} else if (strcmp(key,"expirationtime") == 0) {
+				expirationtime = luaL_checknumber(L, -1);
+			} else if (strcmp(key,"size") == 0) {
+				size = luaL_checknumber(L, -1);
+			} else if (strcmp(key,"collisiondetection") == 0) {
+				collisiondetection = lua_toboolean(L, -1);
+			} else if (strcmp(key,"vertical") == 0) {
+				vertical = lua_toboolean(L, -1);
+			} else if (strcmp(key,"texture") == 0) {
+				texture = luaL_checkstring(L, -1);
+			} else if (strcmp(key,"playername") == 0) {
+				playername = luaL_checkstring(L, -1);
 			}
 			lua_pop(L, 1);
 		}
 	}
-	if (strcmp(playername, "")==0) // spawn for all players
+	if (strcmp(playername, "") == 0) // spawn for all players
 	{
 		getServer(L)->spawnParticleAll(pos, vel, acc,
 			expirationtime, size, collisiondetection, vertical, texture);
