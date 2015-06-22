@@ -348,7 +348,7 @@ void ParticleManager::step(float dtime)
 void ParticleManager::stepSpawners (float dtime)
 {
 	JMutexAutoLock lock(m_spawner_list_lock);
-	for(std::map<u32, ParticleSpawner*>::iterator i = 
+	for(std::map<u32, ParticleSpawner*>::iterator i =
 			m_particle_spawners.begin();
 			i != m_particle_spawners.end();)
 	{

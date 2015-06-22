@@ -55,7 +55,7 @@ public:
 	void update(float m_time_of_day, float time_brightness,
 			float direct_brightness, bool sunlight_seen, CameraMode cam_mode,
 			float yaw, float pitch);
-	
+
 	float getBrightness(){ return m_brightness; }
 
 	video::SColor getBgColor(){
@@ -64,7 +64,7 @@ public:
 	video::SColor getSkyColor(){
 		return m_visible ? m_skycolor : m_fallback_bg_color;
 	}
-	
+
 	bool getCloudsVisible(){ return m_clouds_visible && m_visible; }
 	video::SColorf getCloudColor(){ return m_cloudcolor_f; }
 

@@ -40,7 +40,7 @@ class IGameDef;
 class MapSector
 {
 public:
-	
+
 	MapSector(Map *parent, v2s16 pos, IGameDef *gamedef);
 	virtual ~MapSector();
 
@@ -58,16 +58,16 @@ public:
 	MapBlock * createBlankBlock(s16 y);
 
 	void insertBlock(MapBlock *block);
-	
+
 	void deleteBlock(MapBlock *block);
-	
+
 	void getBlocks(MapBlockVect &dest);
-	
+
 	// Always false at the moment, because sector contains no metadata.
 	bool differs_from_disk;
 
 protected:
-	
+
 	// The pile of MapBlocks
 	std::map<s16, MapBlock*> m_blocks;
 
@@ -76,12 +76,12 @@ protected:
 	v2s16 m_pos;
 
 	IGameDef *m_gamedef;
- 	
+
 	// Last-used block is cached here for quicker access.
-	// Be sure to set this to NULL when the cached block is deleted 
+	// Be sure to set this to NULL when the cached block is deleted
 	MapBlock *m_block_cache;
 	s16 m_block_cache_y;
-	
+
 	/*
 		Private methods
 	*/
@@ -94,7 +94,7 @@ class ServerMapSector : public MapSector
 public:
 	ServerMapSector(Map *parent, v2s16 pos, IGameDef *gamedef);
 	~ServerMapSector();
-	
+
 	u32 getId() const
 	{
 		return MAPSECTOR_SERVER;
@@ -106,7 +106,7 @@ public:
 	*/
 
 	void serialize(std::ostream &os, u8 version);
-	
+
 	static ServerMapSector* deSerialize(
 			std::istream &is,
 			Map *parent,
@@ -114,7 +114,7 @@ public:
 			std::map<v2s16, MapSector*> & sectors,
 			IGameDef *gamedef
 		);
-		
+
 private:
 };
 
@@ -124,7 +124,7 @@ class ClientMapSector : public MapSector
 public:
 	ClientMapSector(Map *parent, v2s16 pos, IGameDef *gamedef);
 	~ClientMapSector();
-	
+
 	u32 getId() const
 	{
 		return MAPSECTOR_CLIENT;
@@ -133,6 +133,6 @@ public:
 private:
 };
 #endif
-	
+
 #endif
 

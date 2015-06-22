@@ -40,15 +40,15 @@ function mod_statistics.log_time(type, modname, time_in_us)
 	if modname == nil then
 		modname = "builtin"
 	end
-	
+
 	if mod_statistics.data[modname] == nil then
 		mod_statistics.data[modname] = {}
 	end
-	
+
 	if mod_statistics.data[modname][type] == nil then
 		mod_statistics.data[modname][type] = 0
 	end
-	
+
 	mod_statistics.data[modname][type] =
 		mod_statistics.data[modname][type] + time_in_us
 	mod_statistics.step_total = mod_statistics.step_total + time_in_us
@@ -57,7 +57,7 @@ end
 --------------------------------------------------------------------------------
 function mod_statistics.update_statistics(dtime)
 	for modname,types in pairs(mod_statistics.data) do
-		
+
 		if mod_statistics.stats[modname] == nil then
 			mod_statistics.stats[modname] = {
 				min_us = math.huge,
@@ -68,7 +68,7 @@ function mod_statistics.update_statistics(dtime)
 				avg_per = 0
 			}
 		end
-		
+
 		local modtime = 0
 		for type,time in pairs(types) do
 			modtime = modtime + time
@@ -85,27 +85,27 @@ function mod_statistics.update_statistics(dtime)
 					avg_per = 0
 				}
 			end
-			
+
 			local toupdate = mod_statistics.stats[modname].types[type]
-			
+
 			--update us values
 			toupdate.min_us = math.min(time, toupdate.min_us)
 			toupdate.max_us = math.max(time, toupdate.max_us)
 			--TODO find better algorithm
 			toupdate.avg_us = toupdate.avg_us * 0.99 + modtime * 0.01
-				
+
 			--update percentage values
 			local cur_per = (time/mod_statistics.step_total) * 100
 			toupdate.min_per = math.min(toupdate.min_per, cur_per)
-				
+
 			toupdate.max_per = math.max(toupdate.max_per, cur_per)
-				
+
 			--TODO find better algorithm
 			toupdate.avg_per = toupdate.avg_per * 0.99 + cur_per * 0.01
-			
+
 			mod_statistics.data[modname][type] = 0
 		end
-		
+
 		--per mod statistics
 		--update us values
 		mod_statistics.stats[modname].min_us =
@@ -115,20 +115,20 @@ function mod_statistics.update_statistics(dtime)
 		--TODO find better algorithm
 		mod_statistics.stats[modname].avg_us =
 			mod_statistics.stats[modname].avg_us * 0.99 + modtime * 0.01
-			
+
 		--update percentage values
 		local cur_per = (modtime/mod_statistics.step_total) * 100
 		mod_statistics.stats[modname].min_per =
 			math.min(mod_statistics.stats[modname].min_per, cur_per)
-			
+
 		mod_statistics.stats[modname].max_per =
 			math.max(mod_statistics.stats[modname].max_per, cur_per)
-			
+
 		--TODO find better algorithm
 		mod_statistics.stats[modname].avg_per =
 			mod_statistics.stats[modname].avg_per * 0.99 + cur_per * 0.01
 	end
-	
+
 	--update "total"
 	mod_statistics.stats["total"].min_us =
 		math.min(mod_statistics.step_total, mod_statistics.stats["total"].min_us)
@@ -138,7 +138,7 @@ function mod_statistics.update_statistics(dtime)
 	mod_statistics.stats["total"].avg_us =
 		mod_statistics.stats["total"].avg_us * 0.99 +
 		mod_statistics.step_total * 0.01
-	
+
 	mod_statistics.step_total = 0
 end
 
@@ -146,7 +146,7 @@ end
 local function build_callback(log_id, fct)
 	return function( toregister )
 		local modname = core.get_current_modname()
-		
+
 		fct(function(...)
 			local starttime = core.get_us_time()
 			-- note maximum 10 return values are supported unless someone finds
@@ -177,12 +177,12 @@ function profiling_print_log(cmd, filter)
 		"-----------+-----------+-----------+-----------+-----------")
 	for modname,statistics in pairs(mod_statistics.stats) do
 		if modname ~= "total" then
-		
+
 			if (filter == "") or (modname == filter) then
 				if modname:len() > 16 then
 					modname = "..." .. modname:sub(-13)
 				end
-			
+
 				core.log("action",
 					string.format("%16s | %25s | %9d | %9d | %9d | %9d | %9d | %9d",
 					modname,
@@ -197,11 +197,11 @@ function profiling_print_log(cmd, filter)
 				if core.setting_getbool("detailed_profiling") then
 					if statistics.types ~= nil then
 						for type,typestats in pairs(statistics.types) do
-						
+
 							if type:len() > 25 then
 								type = "..." .. type:sub(-22)
 							end
-						
+
 							core.log("action",
 								string.format(
 								"%16s | %25s | %9d | %9d | %9d | %9d | %9d | %9d",
@@ -223,7 +223,7 @@ function profiling_print_log(cmd, filter)
 		core.log("action",
 			"-----------------+---------------------------+-----------+" ..
 			"-----------+-----------+-----------+-----------+-----------")
-			
+
 	if filter == "" then
 		core.log("action",
 			string.format("%16s | %25s | %9d | %9d | %9d | %9d | %9d | %9d",
@@ -238,19 +238,19 @@ function profiling_print_log(cmd, filter)
 		)
 	end
 	core.log("action", " ")
-	
+
 	return true
 end
 
 --------------------------------------------------------------------------------
 local function initialize_profiling()
 	core.log("action", "Initialize tracing")
-	
+
 	mod_statistics.entity_callbacks = {}
-	
+
 	-- first register our own globalstep handler
 	core.register_globalstep(mod_statistics.update_statistics)
-	
+
 	local rp_register_entity = core.register_entity
 	core.register_entity = function(name, prototype)
 		local modname = core.get_current_modname()
@@ -259,7 +259,7 @@ local function initialize_profiling()
 		local new_on_punch = nil
 		local new_rightclick = nil
 		local new_get_staticdata = nil
-		
+
 		if prototype.on_activate ~= nil then
 			local cbid = name .. "#oa"
 			mod_statistics.entity_callbacks[cbid] = prototype.on_activate
@@ -270,7 +270,7 @@ local function initialize_profiling()
 				mod_statistics.log_time(cbid, modname, delta)
 			end
 		end
-		
+
 		if prototype.on_step ~= nil then
 			local cbid = name .. "#os"
 			mod_statistics.entity_callbacks[cbid] = prototype.on_step
@@ -281,7 +281,7 @@ local function initialize_profiling()
 				mod_statistics.log_time(cbid, modname, delta)
 			end
 		end
-	
+
 		if prototype.on_punch ~= nil then
 			local cbid = name .. "#op"
 			mod_statistics.entity_callbacks[cbid] = prototype.on_punch
@@ -292,7 +292,7 @@ local function initialize_profiling()
 				mod_statistics.log_time(cbid, modname, delta)
 			end
 		end
-		
+
 		if prototype.rightclick ~= nil then
 			local cbid = name .. "#rc"
 			mod_statistics.entity_callbacks[cbid] = prototype.rightclick
@@ -303,7 +303,7 @@ local function initialize_profiling()
 				mod_statistics.log_time(cbid, modname, delta)
 			end
 		end
-		
+
 		if prototype.get_staticdata ~= nil then
 			local cbid = name .. "#gs"
 			mod_statistics.entity_callbacks[cbid] = prototype.get_staticdata
@@ -315,26 +315,26 @@ local function initialize_profiling()
 				return retval
 			end
 		end
-	
+
 		prototype.on_activate = new_on_activate
 		prototype.on_step = new_on_step
 		prototype.on_punch = new_on_punch
 		prototype.rightclick = new_rightclick
 		prototype.get_staticdata = new_get_staticdata
-		
+
 		rp_register_entity(name,prototype)
 	end
-	
+
 	for i,v in ipairs(replacement_table) do
 		local to_replace = core[v]
 		core[v] = build_callback(v, to_replace)
 	end
-	
+
 	local rp_register_abm = core.register_abm
 	core.register_abm = function(spec)
-	
+
 		local modname = core.get_current_modname()
-	
+
 		local replacement_spec = {
 			nodenames = spec.nodenames,
 			neighbors = spec.neighbors,
@@ -349,7 +349,7 @@ local function initialize_profiling()
 		}
 		rp_register_abm(replacement_spec)
 	end
-	
+
 	core.log("action", "Mod profiling initialized")
 end
 

@@ -123,7 +123,7 @@ private:
 	u32 m_scrollback;
 	// Array of unformatted chat lines
 	std::vector<ChatLine> m_unformatted;
-	
+
 	// Number of character columns in console
 	u32 m_cols;
 	// Number of character rows in console
@@ -213,7 +213,7 @@ private:
 	std::wstring m_line;
 	// History buffer
 	std::vector<std::wstring> m_history;
-	// History index (0 <= m_history_index <= m_history.size()) 
+	// History index (0 <= m_history_index <= m_history.size())
 	u32 m_history_index;
 	// Maximum number of history entries
 	u32 m_history_limit;

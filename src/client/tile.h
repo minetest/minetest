@@ -213,7 +213,7 @@ struct TileSpec
 	{
 		return !(*this == other);
 	}
-	
+
 	// Sets everything else except the texture in the material
 	void applyMaterialOptions(video::SMaterial &material) const
 	{
@@ -246,11 +246,11 @@ struct TileSpec
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING)
 			? true : false;
 	}
-	
+
 	u32 texture_id;
 	video::ITexture *texture;
 	video::ITexture *normal_texture;
-	
+
 	// Vertex alpha (when MATERIAL_ALPHA_VERTEX is used)
 	u8 alpha;
 	// Material parameters

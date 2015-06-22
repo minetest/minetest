@@ -33,7 +33,7 @@ public:
 			IMenuManager *menumgr,
 			Client* client);
 	~GUIVolumeChange();
-	
+
 	void removeChildren();
 	/*
 		Remove and re-add (or reposition) stuff
@@ -43,7 +43,7 @@ public:
 	void drawMenu();
 
 	bool OnEvent(const SEvent& event);
-	
+
 	bool pausesGame() { return true; }
 };
 

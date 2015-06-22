@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /* report a zlib or i/o error */
 void zerr(int ret)
-{   
+{
     dstream<<"zerr: ";
     switch (ret) {
     case Z_ERRNO:
@@ -68,7 +68,7 @@ void compressZlib(SharedBuffer<u8> data, std::ostream &os, int level)
 	ret = deflateInit(&z, level);
 	if(ret != Z_OK)
 		throw SerializationError("compressZlib: deflateInit failed");
-	
+
 	// Point zlib to our input buffer
 	z.next_in = (Bytef*)&data[0];
 	z.avail_in = data.getSize();
@@ -77,7 +77,7 @@ void compressZlib(SharedBuffer<u8> data, std::ostream &os, int level)
 	{
 		z.next_out = (Bytef*)output_buffer;
 		z.avail_out = bufsize;
-		
+
 		status = deflate(&z, Z_FINISH);
 		if(status == Z_NEED_DICT || status == Z_DATA_ERROR
 				|| status == Z_MEM_ERROR)
@@ -120,9 +120,9 @@ void decompressZlib(std::istream &is, std::ostream &os)
 	ret = inflateInit(&z);
 	if(ret != Z_OK)
 		throw SerializationError("dcompressZlib: inflateInit failed");
-	
+
 	z.avail_in = 0;
-	
+
 	//dstream<<"initial fail="<<is.fail()<<" bad="<<is.bad()<<std::endl;
 
 	for(;;)
@@ -142,7 +142,7 @@ void decompressZlib(std::istream &is, std::ostream &os)
 			//dstream<<"z.avail_in == 0"<<std::endl;
 			break;
 		}
-			
+
 		//dstream<<"1 z.avail_in="<<z.avail_in<<std::endl;
 		status = inflate(&z, Z_NO_FLUSH);
 		//dstream<<"2 z.avail_in="<<z.avail_in<<std::endl;
@@ -162,7 +162,7 @@ void decompressZlib(std::istream &is, std::ostream &os)
 		if(status == Z_STREAM_END)
 		{
 			//dstream<<"Z_STREAM_END"<<std::endl;
-			
+
 			//dstream<<"z.avail_in="<<z.avail_in<<std::endl;
 			//dstream<<"fail="<<is.fail()<<" bad="<<is.bad()<<std::endl;
 			// Unget all the data that inflate didn't take
@@ -176,7 +176,7 @@ void decompressZlib(std::istream &is, std::ostream &os)
 					throw SerializationError("decompressZlib: unget failed");
 				}
 			}
-			
+
 			break;
 		}
 	}
@@ -194,13 +194,13 @@ void compress(SharedBuffer<u8> data, std::ostream &os, u8 version)
 
 	if(data.getSize() == 0)
 		return;
-	
+
 	// Write length (u32)
 
 	u8 tmp[4];
 	writeU32(tmp, data.getSize());
 	os.write((char*)tmp, 4);
-	
+
 	// We will be writing 8-bit pairs of more_count and byte
 	u8 more_count = 0;
 	u8 current_byte = data[0];
@@ -240,7 +240,7 @@ void decompress(std::istream &is, std::ostream &os, u8 version)
 	u8 tmp[4];
 	is.read((char*)tmp, 4);
 	u32 len = readU32(tmp);
-	
+
 	// We will be reading 8-bit pairs of more_count and byte
 	u32 count = 0;
 	for(;;)
@@ -249,7 +249,7 @@ void decompress(std::istream &is, std::ostream &os, u8 version)
 		u8 byte=0;
 
 		is.read((char*)&more_count, 1);
-		
+
 		is.read((char*)&byte, 1);
 
 		if(is.eof())

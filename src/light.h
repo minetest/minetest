@@ -40,7 +40,7 @@ inline u8 diminish_light(u8 light)
 		return 0;
 	if(light >= LIGHT_MAX)
 		return LIGHT_MAX - 1;
-		
+
 	return light - 1;
 }
 
@@ -59,7 +59,7 @@ inline u8 undiminish_light(u8 light)
 		return 0;
 	if(light == LIGHT_MAX)
 		return light;
-	
+
 	return light + 1;
 }
 
@@ -85,7 +85,7 @@ inline u8 decode_light(u8 light)
 {
 	if(light > LIGHT_MAX)
 		light = LIGHT_MAX;
-	
+
 	return light_decode_table[light];
 }
 

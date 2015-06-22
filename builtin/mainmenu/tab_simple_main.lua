@@ -35,7 +35,7 @@ local function get_formspec(tabview, name, tabdata)
 		"field[8.75,1.5;3.5,0.5;te_name;;" ..
 		core.formspec_escape(core.setting_get("name")) .."]" ..
 		"pwdfield[8.75,2.3;3.5,0.5;te_pwd;]"
-		
+
 	if render_details then
 		retval = retval .. "tablecolumns[" ..
 			"color,span=3;" ..

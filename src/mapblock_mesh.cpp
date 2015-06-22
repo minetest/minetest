@@ -1155,7 +1155,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		}
 
 		if(m_enable_highlighting && p.tile.material_flags & MATERIAL_FLAG_HIGHLIGHTED)
-			m_highlighted_materials.push_back(i);	
+			m_highlighted_materials.push_back(i);
 
 		for(u32 j = 0; j < p.vertices.size(); j++)
 		{
@@ -1372,7 +1372,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 	// Node highlighting
 	if (m_enable_highlighting) {
 		u8 day = m_highlight_mesh_color.getRed();
-		u8 night = m_highlight_mesh_color.getGreen();	
+		u8 night = m_highlight_mesh_color.getGreen();
 		video::SColor hc;
 		finalColorBlend(hc, day, night, daynight_ratio);
 		float sin_r = 0.07 * sin(1.5 * time);

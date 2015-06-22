@@ -79,7 +79,7 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 		Remove stuff
 	*/
 	removeChildren();
-	
+
 	/*
 		Calculate new sizes and positions
 	*/
@@ -89,7 +89,7 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 			screensize.X/2 + 380/2,
 			screensize.Y/2 + 200/2
 	);
-	
+
 	DesiredRect = rect;
 	recalculateAbsolutePosition(false);
 

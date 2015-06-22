@@ -70,7 +70,7 @@ struct RollbackAction
 	v3s16 p;
 	RollbackNode n_old;
 	RollbackNode n_new;
-	
+
 	std::string inventory_location;
 	std::string inventory_list;
 	u32 inventory_index;
@@ -103,13 +103,13 @@ struct RollbackAction
 		inventory_add = add_;
 		inventory_stack = inventory_stack_;
 	}
-	
+
 	// String should not contain newlines or nulls
 	std::string toString() const;
-	
+
 	// Eg. flowing water level changes are not important
 	bool isImportant(IGameDef *gamedef) const;
-	
+
 	bool getPosition(v3s16 *dst) const;
 
 	bool applyRevert(Map *map, InventoryManager *imgr, IGameDef *gamedef) const;

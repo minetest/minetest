@@ -44,7 +44,7 @@ local function get_formspec(data)
 	if mod == nil then
 		mod = {name=""}
 	end
-	
+
 	retval = retval ..
 		"label[0,0.45;" .. fgettext("Mod:") .. "]" ..
 		"label[0.75,0.45;" .. mod.name .. "]" ..
@@ -126,7 +126,7 @@ local function handle_buttons(this, fields)
 		if event.type == "DCL" then
 			enable_mod(this)
 		end
-		
+
 		return true
 	end
 
@@ -155,7 +155,7 @@ local function handle_buttons(this, fields)
 		if current == nil then
 			current = {}
 		end
-		
+
 		if fields["cb_hide_gamemods"] ~= nil then
 			if core.is_yes(fields["cb_hide_gamemods"]) then
 				current.hide_game = true
@@ -219,7 +219,7 @@ local function handle_buttons(this, fields)
 		if not worldfile:write() then
 			core.log("error", "Failed to write world config file")
 		end
-	
+
 		this:delete()
 		return true
 	end
@@ -262,14 +262,14 @@ function create_configure_world_dlg(worldidx)
 	if dlg.data.worldspec == nil then dlg:delete() return nil end
 
 	dlg.data.worldconfig = modmgr.get_worldconfig(dlg.data.worldspec.path)
-	
+
 	if dlg.data.worldconfig == nil or dlg.data.worldconfig.id == nil or
 			dlg.data.worldconfig.id == "" then
 
 		dlg:delete()
 		return nil
 	end
-	
+
 	dlg.data.list = filterlist.create(
 			modmgr.preparemodlist, --refresh
 			modmgr.comparemod, --compare

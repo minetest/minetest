@@ -90,23 +90,23 @@ void Clouds::render()
 		return;
 
 	ScopeProfiler sp(g_profiler, "Rendering of clouds, avg", SPT_AVG);
-	
+
 	int num_faces_to_draw = m_enable_3d ? 6 : 1;
-	
+
 	m_material.setFlag(video::EMF_BACK_FACE_CULLING, m_enable_3d);
 
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 	driver->setMaterial(m_material);
-	
+
 	/*
 		Clouds move from Z+ towards Z-
 	*/
 
 	const float cloud_size = BS * 64;
 	const v2f cloud_speed(0, -BS * 2);
-	
+
 	const float cloud_full_radius = cloud_size * m_cloud_radius_i;
-	
+
 	// Position of cloud noise origin in world coordinates
 	v2f world_cloud_origin_pos_f = m_time * cloud_speed;
 	// Position of cloud noise origin from the camera
@@ -160,7 +160,7 @@ void Clouds::render()
 	bool fog_rangefog = false;
 	driver->getFog(fog_color, fog_type, fog_start, fog_end, fog_density,
 			fog_pixelfog, fog_rangefog);
-	
+
 	// Set our own fog
 	driver->setFog(fog_color, fog_type, cloud_full_radius * 0.5,
 			cloud_full_radius*1.2, fog_density, fog_pixelfog, fog_rangefog);
@@ -332,7 +332,7 @@ void Clouds::render()
 	}
 
 	delete[] grid;
-	
+
 	// Restore fog settings
 	driver->setFog(fog_color, fog_type, fog_start, fog_end, fog_density,
 			fog_pixelfog, fog_rangefog);

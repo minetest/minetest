@@ -59,7 +59,7 @@ class ITextureSource;
 
 /*
 	ClientMap
-	
+
 	This is the only map class that is able to render itself on screen.
 */
 
@@ -115,12 +115,12 @@ public:
 		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		renderMap(driver, SceneManager->getSceneNodeRenderPass());
 	}
-	
+
 	virtual const core::aabbox3d<f32>& getBoundingBox() const
 	{
 		return m_box;
 	}
-	
+
 	void updateDrawList(video::IVideoDriver* driver);
 	void renderMap(video::IVideoDriver* driver, s32 pass);
 
@@ -131,18 +131,18 @@ public:
 
 	// For debug printing
 	virtual void PrintInfo(std::ostream &out);
-	
+
 	// Check if sector was drawn on last render()
 	bool sectorWasDrawn(v2s16 p)
 	{
 		return (m_last_drawn_sectors.find(p) != m_last_drawn_sectors.end());
 	}
-	
+
 private:
 	Client *m_client;
-	
+
 	core::aabbox3d<f32> m_box;
-	
+
 	MapDrawControl &m_control;
 
 	v3f m_camera_position;
@@ -152,7 +152,7 @@ private:
 	JMutex m_camera_mutex;
 
 	std::map<v3s16, MapBlock*> m_drawlist;
-	
+
 	std::set<v2s16> m_last_drawn_sectors;
 
 	bool m_cache_trilinear_filter;

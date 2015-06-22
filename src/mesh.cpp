@@ -172,7 +172,7 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 {
 	if(mesh == NULL)
 		return;
-	
+
 	u16 mc = mesh->getMeshBufferCount();
 	for(u16 j=0; j<mc; j++)
 	{
@@ -195,8 +195,8 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 	}
 }
 
-void rotateMeshXYby (scene::IMesh *mesh, f64 degrees) 
-{	
+void rotateMeshXYby (scene::IMesh *mesh, f64 degrees)
+{
 	u16 mc = mesh->getMeshBufferCount();
 	for(u16 j = 0; j < mc; j++)
 	{
@@ -210,8 +210,8 @@ void rotateMeshXYby (scene::IMesh *mesh, f64 degrees)
 	}
 }
 
-void rotateMeshXZby (scene::IMesh *mesh, f64 degrees) 
-{	
+void rotateMeshXZby (scene::IMesh *mesh, f64 degrees)
+{
 	u16 mc = mesh->getMeshBufferCount();
 	for(u16 j = 0; j < mc; j++)
 	{
@@ -225,8 +225,8 @@ void rotateMeshXZby (scene::IMesh *mesh, f64 degrees)
 	}
 }
 
-void rotateMeshYZby (scene::IMesh *mesh, f64 degrees) 
-{	
+void rotateMeshYZby (scene::IMesh *mesh, f64 degrees)
+{
 	u16 mc = mesh->getMeshBufferCount();
 	for(u16 j = 0; j < mc; j++)
 	{
@@ -241,7 +241,7 @@ void rotateMeshYZby (scene::IMesh *mesh, f64 degrees)
 }
 
 void rotateMeshBy6dFacedir(scene::IMesh *mesh, int facedir)
-{		
+{
 	int axisdir = facedir>>2;
 	facedir &= 0x03;
 
@@ -345,7 +345,7 @@ scene::IMesh* cloneMesh(scene::IMesh *src_mesh)
 		dst_mesh->addMeshBuffer(temp_buf);
 		temp_buf->drop();
 	}
-	return dst_mesh;					
+	return dst_mesh;
 }
 
 scene::IMesh* convertNodeboxNodeToMesh(ContentFeatures *f)
@@ -359,11 +359,11 @@ scene::IMesh* convertNodeboxNodeToMesh(ContentFeatures *f)
 		dst_mesh->addMeshBuffer(buf);
 		buf->drop();
 	}
-	
-	video::SColor c(255,255,255,255);	
+
+	video::SColor c(255,255,255,255);
 
 	std::vector<aabb3f> boxes = f->node_box.fixed;
-		
+
 	for(std::vector<aabb3f>::iterator
 			i = boxes.begin();
 			i != boxes.end(); i++)
@@ -455,7 +455,7 @@ scene::IMesh* convertNodeboxNodeToMesh(ContentFeatures *f)
 			buf->append(vertices + j, 4, indices, 6);
 		}
 	}
-	return dst_mesh;					
+	return dst_mesh;
 }
 
 struct vcache

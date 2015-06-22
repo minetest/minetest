@@ -46,13 +46,13 @@ public:
 		JMutexAutoLock lock(m_mutex);
 		m_value = value;
 	}
-	
+
 	// You'll want to grab this in a SharedPtr
 	JMutexAutoLock * getLock()
 	{
 		return new JMutexAutoLock(m_mutex);
 	}
-	
+
 	// You pretty surely want to grab the lock when accessing this
 	T m_value;
 
@@ -100,7 +100,7 @@ public:
 	~GetRequest()
 	{
 	}
-	
+
 	Key key;
 	std::list<CallerInfo<Caller, CallerData, Key, T> > callers;
 };
@@ -170,7 +170,7 @@ public:
 		ca.data = callerdata;
 		ca.dest = dest;
 		request.callers.push_back(ca);
-		
+
 		m_queue.push_back(request);
 	}
 

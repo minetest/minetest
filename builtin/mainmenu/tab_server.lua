@@ -17,7 +17,7 @@
 
 --------------------------------------------------------------------------------
 local function get_formspec(tabview, name, tabdata)
-	
+
 	local index = menudata.worldlist:get_current_index(
 				tonumber(core.setting_get("mainmenu_last_selected_world"))
 				)
@@ -51,12 +51,12 @@ local function get_formspec(tabview, name, tabdata)
 			"field[0.55,5.2;3.5,0.5;te_serverport;" .. fgettext("Server Port") .. ";" ..
 			core.formspec_escape(core.setting_get("port")) .. "]"
 	end
-	
+
 	retval = retval ..
 		"textlist[4,0.25;7.5,3.7;srv_worlds;" ..
 		menu_render_worldlist() ..
 		";" .. index .. "]"
-	
+
 	return retval
 end
 
@@ -159,7 +159,7 @@ local function main_button_handler(this, fields, name, tabdata)
 
 			--update last game
 			local world = menudata.worldlist:get_raw_element(gamedata.selected_world)
-			
+
 			local game,index = gamemgr.find_by_gameid(world.gameid)
 			core.setting_set("menu_last_game",game.id)
 			core.start()
@@ -190,7 +190,7 @@ local function main_button_handler(this, fields, name, tabdata)
 				this:hide()
 			end
 		end
-		
+
 		return true
 	end
 
@@ -200,7 +200,7 @@ local function main_button_handler(this, fields, name, tabdata)
 			local configdialog =
 				create_configure_world_dlg(
 						menudata.worldlist:get_raw_index(selected))
-			
+
 			if (configdialog ~= nil) then
 				configdialog:set_parent(this)
 				configdialog:show()

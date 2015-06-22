@@ -31,7 +31,7 @@ class NameIdMapping
 public:
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
-	
+
 	void clear(){
 		m_id_to_name.clear();
 		m_name_to_id.clear();

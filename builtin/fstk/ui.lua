@@ -23,7 +23,7 @@ ui.default = nil
 function ui.add(child)
 	--TODO check child
 	ui.childlist[child.name] = child
-	
+
 	return child.name
 end
 
@@ -33,7 +33,7 @@ function ui.delete(child)
 	if ui.childlist[child.name] == nil then
 		return false
 	end
-	
+
 	ui.childlist[child.name] = nil
 	return true
 end
@@ -77,7 +77,7 @@ function ui.update()
 				end
 			end
 		end
-		
+
 		-- no need to show addons if there ain't a toplevel element
 		if (active_toplevel_ui_elements > 0) then
 			for key,value in pairs(ui.childlist) do
@@ -127,7 +127,7 @@ end
 
 --------------------------------------------------------------------------------
 function ui.handle_events(event)
-	
+
 	for key,value in pairs(ui.childlist) do
 
 		if value.handle_events ~= nil then

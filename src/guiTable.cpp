@@ -109,7 +109,7 @@ GUITable::~GUITable()
 
 	if (m_font)
 		m_font->drop();
-	
+
 	m_scrollbar->remove();
 }
 

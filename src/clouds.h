@@ -52,7 +52,7 @@ public:
 	virtual void OnRegisterSceneNode();
 
 	virtual void render();
-	
+
 	virtual const core::aabbox3d<f32>& getBoundingBox() const
 	{
 		return m_box;
@@ -67,7 +67,7 @@ public:
 	{
 		return m_material;
 	}
-	
+
 	/*
 		Other stuff
 	*/
@@ -75,7 +75,7 @@ public:
 	void step(float dtime);
 
 	void update(v2f camera_p, video::SColorf color);
-	
+
 	void updateCameraOffset(v3s16 camera_offset)
 	{
 		m_camera_offset = camera_offset;

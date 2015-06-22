@@ -34,7 +34,7 @@ public:
 		m_dir(dir)
 	{
 	}
-	
+
 	bool update(const std::string &name, const std::string &data);
 	bool load(const std::string &name, std::ostream &os);
 private:

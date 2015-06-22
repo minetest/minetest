@@ -88,7 +88,7 @@ public:
 
 	void serialize(std::ostream &os);
 	void deSerialize(std::istream &is);
-	
+
 	/*
 		NOTE: When an object is transformed to active, it is removed
 		from m_stored and inserted to m_active.
