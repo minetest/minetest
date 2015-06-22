@@ -382,6 +382,8 @@ public:
 	video::IImage* generateImage(const std::string &name);
 
 	video::ITexture* getNormalTexture(const std::string &name);
+	video::SColor getTextureAverageColor(const std::string &name);
+
 private:
 
 	// The id of the thread that is allowed to use irrlicht directly
@@ -2007,4 +2009,42 @@ video::ITexture* TextureSource::getNormalTexture(const std::string &name)
 		return getTexture(fname_base, &id);
 		}
 	return NULL;
+}
+
+video::SColor TextureSource::getTextureAverageColor(const std::string &name)
+{
+	video::IVideoDriver *driver = m_device->getVideoDriver();
+	video::SColor c(0, 0, 0, 0);
+	u32 id;
+	video::ITexture *texture = getTexture(name, &id);
+	video::IImage *image = driver->createImage(texture,
+		core::position2d<s32>(0, 0),
+		texture->getOriginalSize());
+	u32 total = 0;
+	u32 tR = 0;
+	u32 tG = 0;
+	u32 tB = 0;
+	core::dimension2d<u32> dim = image->getDimension();
+	u16 step = 1;
+	if (dim.Width > 16)
+		step = dim.Width / 16;
+	for (u16 x = 0; x < dim.Width; x += step) {
+		for (u16 y = 0; y < dim.Width; y += step) {
+			c = image->getPixel(x,y);
+			if (c.getAlpha() > 0) {
+				total++;
+				tR += c.getRed();
+				tG += c.getGreen();
+				tB += c.getBlue();
+			}
+		}
+	}
+	image->drop();
+	if (total > 0) {
+		c.setRed(tR / total);
+		c.setGreen(tG / total);
+		c.setBlue(tB / total);
+	}
+	c.setAlpha(255);
+	return c;
 }

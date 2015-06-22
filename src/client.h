@@ -48,6 +48,8 @@ struct MapDrawControl;
 class MtEventManager;
 struct PointedThing;
 class Database;
+class Mapper;
+struct MinimapMapblock;
 
 struct QueuedMeshUpdate
 {
@@ -501,6 +503,9 @@ public:
 	float getCurRate(void);
 	float getAvgRate(void);
 
+	Mapper* getMapper ()
+	{ return m_mapper; }
+
 	// IGameDef interface
 	virtual IItemDefManager* getItemDefManager();
 	virtual INodeDefManager* getNodeDefManager();
@@ -580,6 +585,7 @@ private:
 	ParticleManager m_particle_manager;
 	con::Connection m_con;
 	IrrlichtDevice *m_device;
+	Mapper *m_mapper;
 	// Server serialization version
 	u8 m_server_ser_ver;
 	// Used version of the protocol with server
