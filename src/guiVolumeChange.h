@@ -1,8 +1,8 @@
 /*
 Part of Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-Copyright (C) 2013 Ciaran Gultnieks <ciaran@ciarang.com>
-Copyright (C) 2013 RealBadAngel, Maciej Kasatkin <mk@realbadangel.pl>
+Copyright (C) 2010-2015 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2013-2015 Ciaran Gultnieks <ciaran@ciarang.com>
+Copyright (C) 2013-2015 RealBadAngel, Maciej Kasatkin <mk@realbadangel.pl>
 
 Permission to use, copy, modify, and distribute this software for any
 purpose with or without fee is hereby granted, provided that the above

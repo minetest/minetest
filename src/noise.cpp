@@ -1,7 +1,7 @@
 /*
  * Minetest
- * Copyright (C) 2010-2014 celeron55, Perttu Ahola <celeron55@gmail.com>
- * Copyright (C) 2010-2014 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+ * Copyright (C) 2010-2015 celeron55, Perttu Ahola <celeron55@gmail.com>
+ * Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are
