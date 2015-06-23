@@ -116,7 +116,7 @@ std::string wide_to_utf8(const std::wstring &input)
 
 	if (!convert("UTF-8", "WCHAR_T", outbuf, outbuf_size, inbuf, inbuf_size)) {
 		infostream << "Couldn't convert wstring 0x" << hex_encode(inbuf, inbuf_size)
-			<< " into wstring" << std::endl;
+			<< " into UTF-8 string" << std::endl;
 		delete[] inbuf;
 		delete[] outbuf;
 		return "<invalid wstring>";
