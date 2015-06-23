@@ -55,7 +55,7 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 	// Chose an auth method we support
 	AuthMechanism chosen_auth_mechanism = choseAuthMech(auth_mechs);
 
-	infostream << "Client: TOCLIENT_HELLO recieved with "
+	infostream << "Client: TOCLIENT_HELLO received with "
 			<< "serialization_ver=" << (u32)serialization_ver
 			<< ", auth_mechs=" << auth_mechs
 			<< ", proto_ver=" << proto_ver
