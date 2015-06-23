@@ -576,7 +576,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 			static_cast<RemotePlayer*>(m_env->getPlayer(playername));
 
 	if (player && player->peer_id != 0) {
-		errorstream << "Server: " << playername << ": Failed to emerge player"
+		actionstream << "Server: " << playername << ": Failed to emerge player"
 				<< " (player allocated to an another client)" << std::endl;
 		DenyAccess_Legacy(pkt->getPeerId(), L"Another client is connected with this "
 				L"name. If your client closed unexpectedly, try again in "
