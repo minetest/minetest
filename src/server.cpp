@@ -1206,6 +1206,7 @@ void Server::ProcessData(NetworkPacket *pkt)
 		if (command >= TOSERVER_NUM_MSG_TYPES) {
 			infostream << "Server: Ignoring unknown command "
 					 << command << std::endl;
+			return;
 		}
 
 		if (toServerCommandTable[command].state == TOSERVER_STATE_NOT_CONNECTED) {

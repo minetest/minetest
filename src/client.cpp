@@ -880,6 +880,7 @@ void Client::ProcessData(NetworkPacket *pkt)
 	if (command >= TOCLIENT_NUM_MSG_TYPES) {
 		infostream << "Client: Ignoring unknown command "
 			<< command << std::endl;
+		return;
 	}
 
 	/*
