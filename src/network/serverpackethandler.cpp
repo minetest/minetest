@@ -1529,10 +1529,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 					m_script->on_cheat(playersao, "finished_unknown_dig");
 				}
 				// Get player's wielded item
-				ItemStack playeritem;
-				InventoryList *mlist = playersao->getInventory()->getList("main");
-				if (mlist != NULL)
-					playeritem = mlist->getItem(playersao->getWieldIndex());
+				ItemStack playeritem = playersao->getWieldedItem();
 				ToolCapabilities playeritem_toolcap =
 						playeritem.getToolCapabilities(m_itemdef);
 				// Get diggability and expected digging time

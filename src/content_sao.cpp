@@ -1341,6 +1341,42 @@ std::string PlayerSAO::getWieldList() const
 	return "main";
 }
 
+ItemStack PlayerSAO::getWieldedItem() const
+{
+	const Inventory *inv = getInventory();
+	ItemStack ret;
+	const InventoryList *mlist = inv->getList(getWieldList());
+	if (mlist && getWieldIndex() < (s32)mlist->getSize())
+		ret = mlist->getItem(getWieldIndex());
+	if (ret.name.empty()) {
+		const InventoryList *hlist = inv->getList("hand");
+		if (hlist)
+			ret = hlist->getItem(0);
+	}
+	return ret;
+}
+
+bool PlayerSAO::setWieldedItem(const ItemStack &item)
+{
+	Inventory *inv = getInventory();
+	if (inv) {
+		InventoryList *mlist = inv->getList(getWieldList());
+		if (mlist) {
+			ItemStack olditem = mlist->getItem(getWieldIndex());
+			if (olditem.name.empty()) {
+				InventoryList *hlist = inv->getList("hand");
+				if (hlist) {
+					hlist->changeItem(0, item);
+					return true;
+				}
+			}
+			mlist->changeItem(getWieldIndex(), item);
+			return true;
+		}
+	}
+	return false;
+}
+
 int PlayerSAO::getWieldIndex() const
 {
 	return m_wield_index;
