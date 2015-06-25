@@ -530,11 +530,11 @@ core.register_chatcommand("giveme", {
 })
 
 core.register_chatcommand("spawnentity", {
-	params = "<EntityName>",
-	description = "Spawn entity at your position",
+	params = "<EntityName> [<X>,<Y>,<Z>]",
+	description = "Spawn entity at given (or your) position",
 	privs = {give=true, interact=true},
 	func = function(name, param)
-		local entityname = string.match(param, "(.+)$")
+		local entityname, p = string.match(param, "^([^ ]+) *(.*)$")
 		if not entityname then
 			return false, "EntityName required"
 		end
@@ -545,7 +545,14 @@ core.register_chatcommand("spawnentity", {
 			core.log("error", "Unable to spawn entity, player is nil")
 			return false, "Unable to spawn entity, player is nil"
 		end
-		local p = player:getpos()
+		if p == '' then
+			p = player:getpos()
+		else
+			p = core.string_to_pos(p)
+			if p == nil then
+				return false, "Invalid parameters ('" .. param .. "')"
+			end
+		end
 		p.y = p.y + 1
 		core.add_entity(p, entityname)
 		return true, ("%q spawned."):format(entityname)
