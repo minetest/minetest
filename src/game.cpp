@@ -3684,6 +3684,12 @@ void Game::updateCamera(VolatileRunFlags *flags, u32 busy_time,
 		if (mlist && client->getPlayerItem() < mlist->getSize())
 			playeritem = mlist->getItem(client->getPlayerItem());
 	}
+	if (playeritem.getDefinition(itemdef_manager).name.empty()) { // override the hand
+		InventoryList *hlist = local_inventory->getList("hand");
+		if (hlist)
+			playeritem = hlist->getItem(0);
+	}
+
 
 	ToolCapabilities playeritem_toolcap =
 		playeritem.getToolCapabilities(itemdef_manager);
@@ -3768,6 +3774,11 @@ void Game::processPlayerInteraction(GameRunData *runData,
 			playeritem = mlist->getItem(client->getPlayerItem());
 	}
 
+	if (playeritem.getDefinition(itemdef_manager).name.empty()) { // override the hand
+		InventoryList *hlist = local_inventory->getList("hand");
+		if (hlist)
+			playeritem = hlist->getItem(0);
+	}
 	const ItemDefinition &playeritem_def =
 			playeritem.getDefinition(itemdef_manager);
 
@@ -4321,8 +4332,14 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
 
 		if (mlist && (client->getPlayerItem() < mlist->getSize())) {
 			ItemStack item = mlist->getItem(client->getPlayerItem());
+			if (item.getDefinition(itemdef_manager).name.empty()) { // override the hand
+				InventoryList *hlist = local_inventory->getList("hand");
+				if (hlist)
+					item = hlist->getItem(0);
+			}
 			camera->wield(item);
 		}
+
 		runData->update_wielded_item_trigger = false;
 	}
 
