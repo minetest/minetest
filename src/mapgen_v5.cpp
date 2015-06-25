@@ -506,30 +506,24 @@ MgStoneType MapgenV5::generateBiomes(float *heat_map, float *humidity_map)
 
 void MapgenV5::generateCaves(int max_stone_y)
 {
-	u32 index = 0;
-	u32 index2d = 0;
+	if (max_stone_y >= node_min.Y) {
+		u32 index = 0;
 
-	for (s16 z=node_min.Z; z<=node_max.Z; z++) {
-		for (s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
+		for (s16 z = node_min.Z; z <= node_max.Z; z++)
+		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
 			u32 i = vm->m_area.index(node_min.X, y, z);
-			for (s16 x=node_min.X; x<=node_max.X; x++, i++, index++, index2d++) {
+			for (s16 x = node_min.X; x <= node_max.X; x++, i++, index++) {
 				float d1 = contour(noise_cave1->result[index]);
 				float d2 = contour(noise_cave2->result[index]);
 				if (d1*d2 > 0.125) {
-					Biome *biome = (Biome *)bmgr->getRaw(biomemap[index2d]);
 					content_t c = vm->m_data[i].getContent();
-					if (!ndef->get(c).is_ground_content || c == CONTENT_AIR ||
-							(y <= water_level &&
-							c != biome->c_stone &&
-							c != c_stone))
+					if (!ndef->get(c).is_ground_content || c == CONTENT_AIR)
 						continue;
 
 					vm->m_data[i] = MapNode(CONTENT_AIR);
 				}
 			}
-			index2d -= ystride;
 		}
-		index2d += ystride;
 	}
 
 	if (node_max.Y > LARGE_CAVE_DEPTH)
