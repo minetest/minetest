@@ -23,8 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../irrlichttypes_bloated.h"
 #include "config.h"
 #if HAVE_ENDIAN_H
-#include <endian.h>
-#include <string.h> // for memcpy
+	#include "portable_endian.h"
+	#include <string.h> // for memcpy
 #endif
 #include <iostream>
 #include <string>
@@ -461,4 +461,3 @@ bool deSerializeStringToStruct(std::string valstr,
 	std::string format, void *out, size_t olen);
 
 #endif
-

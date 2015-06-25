@@ -248,15 +248,23 @@ else()
 		set(PLATFORM_LIBS "-framework CoreFoundation" ${PLATFORM_LIBS})
 	else()
 		set(PLATFORM_LIBS -lrt ${PLATFORM_LIBS})
+		#set(CLIENT_PLATFORM_LIBS -lXxf86vm)
+		# This way Xxf86vm is found on OpenBSD too
+		find_library(XXF86VM_LIBRARY Xxf86vm)
+		mark_as_advanced(XXF86VM_LIBRARY)
+		set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
 	endif(APPLE)
-	#set(CLIENT_PLATFORM_LIBS -lXxf86vm)
-	# This way Xxf86vm is found on OpenBSD too
-	find_library(XXF86VM_LIBRARY Xxf86vm)
-	mark_as_advanced(XXF86VM_LIBRARY)
-	set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
 endif()
 
-check_include_files(endian.h HAVE_ENDIAN_H)
+if(APPLE)
+	set(ENDIAN_H "machine/endian.h")
+elseif(FreeBSD)
+	set(ENDIAN_H "sys/endian.h")
+else()
+	set(ENDIAN_H "endian.h")
+endif(APPLE)
+check_include_files(${ENDIAN_H} HAVE_ENDIAN_H)
+
 
 configure_file(
 	"${PROJECT_SOURCE_DIR}/cmake_config.h.in"
