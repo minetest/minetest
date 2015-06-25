@@ -795,7 +795,6 @@ void InventoryList::moveItemSomewhere(u32 i, InventoryList *dest, u32 count)
 		return;
 
 	// Try to add the item to destination list
-	u32 oldcount = item1.count;
 	u32 dest_size = dest->getSize();
 	// First try all the non-empty slots
 	for (u32 dest_i = 0; dest_i < dest_size; dest_i++) {
