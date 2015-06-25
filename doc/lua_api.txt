@@ -2470,6 +2470,7 @@ This is basically a reference to a C++ `ServerActiveObject`
 
 ##### Player-only (no-op for other objects)
 * `get_player_name()`: returns `""` if is not a player
+* `get_player_velocity()`: returns `nil` if is not a player otherwise a table {x, y, z} representing the player's instantaneous velocity in nodes/s
 * `get_look_dir()`: get camera direction as a unit vector
 * `get_look_pitch()`: pitch in radians
 * `get_look_yaw()`: yaw in radians (wraps around pretty randomly as of now)
