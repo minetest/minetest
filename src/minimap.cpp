@@ -164,6 +164,15 @@ void *MinimapUpdateThread::Thread()
 	return NULL;
 }
 
+MinimapUpdateThread::~MinimapUpdateThread()
+{
+	for (std::map<v3s16, MinimapMapblock *>::iterator
+			it = m_blocks_cache.begin();
+			it != m_blocks_cache.end(); it++) {
+		delete it->second;
+	}
+}
+
 MinimapPixel *MinimapUpdateThread::getMinimapPixel (v3s16 pos, s16 height, s16 &pixel_height)
 {
 	pixel_height = height - MAP_BLOCKSIZE;
@@ -236,6 +245,12 @@ Mapper::Mapper(IrrlichtDevice *device, Client *client)
 	this->shdrsrc = client->getShaderSource();
 
 	m_enable_shaders = g_settings->getBool("enable_shaders");
+	m_enable_shaders = g_settings->getBool("enable_shaders");
+	if (g_settings->getBool("minimap_double_scan_height")) {
+		m_surface_mode_scan_height = 256;
+	} else {
+		m_surface_mode_scan_height = 128;
+	}
 	data = new MinimapData;
 	data->mode = MINIMAP_MODE_OFF;
 	data->radar = false;
@@ -265,13 +280,6 @@ Mapper::~Mapper()
 {
 	m_minimap_update_thread->Stop();
 	m_minimap_update_thread->Wait();
-
-	for (std::map<v3s16, MinimapMapblock *>::iterator
-			it = m_minimap_update_thread->m_blocks_cache.begin();
-			it != m_minimap_update_thread->m_blocks_cache.end(); it++){
-		delete it->second;
-	}
-
 	m_meshbuffer->drop();
 	data->minimap_mask_round->drop();
 	data->minimap_mask_square->drop();
@@ -303,9 +311,9 @@ void Mapper::setMinimapMode(MinimapMode mode)
 {
 	static const u16 modeDefs[7 * 3] = {
 		0, 0, 0,
-		0, 256, 256,
-		0, 256, 128,
-		0, 256, 64,
+		0, m_surface_mode_scan_height, 256,
+		0, m_surface_mode_scan_height, 128,
+		0, m_surface_mode_scan_height, 64,
 		1, 32, 128,
 		1, 32, 64,
 		1, 32, 32};
