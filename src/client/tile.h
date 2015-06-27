@@ -110,6 +110,7 @@ public:
 	virtual video::ITexture* generateTextureFromMesh(
 			const TextureFromMeshParams &params)=0;
 	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
+	virtual video::SColor getTextureAverageColor(const std::string &name)=0;
 };
 
 class IWritableTextureSource : public ITextureSource
@@ -131,6 +132,7 @@ public:
 	virtual void insertSourceImage(const std::string &name, video::IImage *img)=0;
 	virtual void rebuildImagesAndTextures()=0;
 	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
+	virtual video::SColor getTextureAverageColor(const std::string &name)=0;
 };
 
 IWritableTextureSource* createTextureSource(IrrlichtDevice *device);

@@ -22,16 +22,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "camera.h"
 #include "hud.h"
+#include "minimap.h"
 #include "irrlichttypes_extrabloated.h"
 
 
-void draw_load_screen(const std::wstring &text, IrrlichtDevice* device,
-		gui::IGUIEnvironment* guienv, float dtime=0, int percent=0,
-		bool clouds=true);
+void draw_load_screen(const std::wstring &text, IrrlichtDevice *device,
+		gui::IGUIEnvironment *guienv, float dtime = 0, int percent = 0,
+		bool clouds = true);
 
-void draw_scene(video::IVideoDriver* driver, scene::ISceneManager* smgr,
-		Camera& camera, Client& client, LocalPlayer* player, Hud& hud,
-		gui::IGUIEnvironment* guienv, std::vector<aabb3f> hilightboxes,
-		const v2u32& screensize, video::SColor skycolor, bool show_hud);
+void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
+		Camera &camera, Client &client, LocalPlayer *player, Hud &hud,
+		Mapper &mapper, gui::IGUIEnvironment *guienv,
+		std::vector<aabb3f> hilightboxes, const v2u32 &screensize,
+		video::SColor skycolor, bool show_hud, bool show_minimap);
 
 #endif /* DRAWSCENE_H_ */

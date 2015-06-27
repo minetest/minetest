@@ -416,10 +416,11 @@ void draw_plain(Camera& camera, bool show_hud, Hud& hud,
 		camera.drawWieldedTool();
 }
 
-void draw_scene(video::IVideoDriver* driver, scene::ISceneManager* smgr,
-		Camera& camera, Client& client, LocalPlayer* player, Hud& hud,
-		gui::IGUIEnvironment* guienv, std::vector<aabb3f> hilightboxes,
-		const v2u32& screensize, video::SColor skycolor, bool show_hud)
+void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
+		Camera &camera, Client& client, LocalPlayer *player, Hud &hud,
+		Mapper &mapper, gui::IGUIEnvironment *guienv,
+		std::vector<aabb3f> hilightboxes, const v2u32 &screensize,
+		video::SColor skycolor, bool show_hud, bool show_minimap)
 {
 	TimeTaker timer("smgr");
 
@@ -484,6 +485,8 @@ void draw_scene(video::IVideoDriver* driver, scene::ISceneManager* smgr,
 			hud.drawCrosshair();
 		hud.drawHotbar(client.getPlayerItem());
 		hud.drawLuaElements(camera.getOffset());
+		if (show_minimap)
+			mapper.drawMinimap();
 	}
 
 	guienv->drawAll();
