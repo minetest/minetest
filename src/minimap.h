@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "voxel.h"
 #include "jthread/jmutex.h"
+#include "jthread/jsemaphore.h"
 #include <map>
 #include <string>
 #include <vector>
@@ -93,8 +94,9 @@ public:
 
 	~MinimapUpdateQueue();
 
-	void addBlock(v3s16 pos, MinimapMapblock *data);
+	bool addBlock(v3s16 pos, MinimapMapblock *data);
 
+	// blocking!!
 	QueuedMinimapUpdate *pop();
 
 	u32 size()
@@ -104,13 +106,15 @@ public:
 	}
 
 private:
-	std::vector<QueuedMinimapUpdate*> m_queue;
+	std::list<QueuedMinimapUpdate*> m_queue;
 	JMutex m_mutex;
 };
 
 class MinimapUpdateThread : public JThread
 {
 private:
+	JSemaphore m_queue_sem;
+	MinimapUpdateQueue m_queue;
 
 public:
 	MinimapUpdateThread(IrrlichtDevice *device, Client *client)
@@ -124,13 +128,16 @@ public:
 	MinimapPixel *getMinimapPixel (v3s16 pos, s16 height, s16 &pixel_height);
 	s16 getAirCount (v3s16 pos, s16 height);
 	video::SColor getColorFromId(u16 id);
+
+	void enqueue_Block(v3s16 pos, MinimapMapblock *data);
+
 	IrrlichtDevice *device;
 	Client *client;
 	video::IVideoDriver *driver;
 	ITextureSource *tsrc;
+	void Stop();
 	void *Thread();
 	MinimapData *data;
-	MinimapUpdateQueue m_queue;
 	std::map<v3s16, MinimapMapblock *> m_blocks_cache;
 };
 

@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "minimap.h"
 #include "logoutputbuffer.h"
 #include "jthread/jmutexautolock.h"
+#include "jthread/jsemaphore.h"
 #include "clientmap.h"
 #include "settings.h"
 #include "nodedef.h"
@@ -47,16 +48,15 @@ MinimapUpdateQueue::~MinimapUpdateQueue()
 {
 	JMutexAutoLock lock(m_mutex);
 
-	for (std::vector<QueuedMinimapUpdate*>::iterator
+	for (std::list<QueuedMinimapUpdate*>::iterator
 			i = m_queue.begin();
-			i != m_queue.end(); i++)
-	{
+			i != m_queue.end(); ++i) {
 		QueuedMinimapUpdate *q = *i;
 		delete q;
 	}
 }
 
-void MinimapUpdateQueue::addBlock(v3s16 pos, MinimapMapblock *data)
+bool MinimapUpdateQueue::addBlock(v3s16 pos, MinimapMapblock *data)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -66,15 +66,14 @@ void MinimapUpdateQueue::addBlock(v3s16 pos, MinimapMapblock *data)
 		Find if block is already in queue.
 		If it is, update the data and quit.
 	*/
-	for (std::vector<QueuedMinimapUpdate*>::iterator
+	for (std::list<QueuedMinimapUpdate*>::iterator
 			i = m_queue.begin();
-			i != m_queue.end(); i++)
-	{
+			i != m_queue.end(); ++i) {
 		QueuedMinimapUpdate *q = *i;
 		if (q->pos == pos) {
 			delete q->data;
 			q->data = data;
-			return;
+			return false;
 		}
 	}
 
@@ -85,16 +84,16 @@ void MinimapUpdateQueue::addBlock(v3s16 pos, MinimapMapblock *data)
 	q->pos = pos;
 	q->data = data;
 	m_queue.push_back(q);
+	return true;
 }
 
 QueuedMinimapUpdate * MinimapUpdateQueue::pop()
 {
 	JMutexAutoLock lock(m_mutex);
 
-	for (std::vector<QueuedMinimapUpdate*>::iterator
+	for (std::list<QueuedMinimapUpdate*>::iterator
 			i = m_queue.begin();
-			i != m_queue.end(); i++)
-	{
+			i != m_queue.end(); i++) {
 		QueuedMinimapUpdate *q = *i;
 		m_queue.erase(i);
 		return q;
@@ -105,6 +104,22 @@ QueuedMinimapUpdate * MinimapUpdateQueue::pop()
 /*
 	Minimap update thread
 */
+
+void MinimapUpdateThread::Stop()
+{
+	JThread::Stop();
+
+	// give us a nudge
+	m_queue_sem.Post();
+}
+
+void MinimapUpdateThread::enqueue_Block(v3s16 pos, MinimapMapblock *data)
+{
+	if (m_queue.addBlock(pos, data))
+		// we had to allocate a new block
+		m_queue_sem.Post();
+}
+
 
 void *MinimapUpdateThread::Thread()
 {
@@ -120,8 +135,13 @@ void *MinimapUpdateThread::Thread()
 
 	while (!StopRequested()) {
 
+		m_queue_sem.Wait();
+		if (StopRequested()) break;
+
 		while (m_queue.size()) {
 			QueuedMinimapUpdate *q = m_queue.pop();
+			if (!q)
+				break;
 			std::map<v3s16, MinimapMapblock *>::iterator it;
 			it = m_blocks_cache.find(q->pos);
 			if (q->data) {
@@ -138,7 +158,6 @@ void *MinimapUpdateThread::Thread()
 				data->map_invalidated = false;
 			}
 		}
-	//	sleep_ms(10);
 	}
 	END_DEBUG_EXCEPTION_HANDLER(errorstream)
 
@@ -266,7 +285,7 @@ Mapper::~Mapper()
 
 void Mapper::addBlock (v3s16 pos, MinimapMapblock *data)
 {
-	m_minimap_update_thread->m_queue.addBlock(pos, data);
+	m_minimap_update_thread->enqueue_Block(pos, data);
 }
 
 MinimapMode Mapper::getMinimapMode()
