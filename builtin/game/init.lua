@@ -25,9 +25,9 @@ dofile(gamepath.."features.lua")
 dofile(gamepath.."voxelarea.lua")
 dofile(gamepath.."forceloading.lua")
 dofile(gamepath.."statbars.lua")
-minetest.register_on_shutdown(function())
-	for _,player in ipairs(minetest.get_connected_players()) do
+minetest.register_on_shutdown(function()
+    for _,player in ipairs(minetest.get_connected_players()) do
 		local name = player:get_player_name()
-		core.kick_player(name, "Server shutting down.")
+		core.kick_player(name,'Server shutting down.')
 	end
-end
+end)

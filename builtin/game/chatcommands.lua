@@ -732,7 +732,6 @@ core.register_chatcommand("shutdown", {
 	end,
 })
 
-})
 
 core.register_chatcommand("ban", {
 	params = "<name>",
