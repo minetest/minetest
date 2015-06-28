@@ -476,6 +476,7 @@ class SoundMaker
 	ISoundManager *m_sound;
 	INodeDefManager *m_ndef;
 public:
+	bool makes_footstep_sound;
 	float m_player_step_timer;
 
 	SimpleSoundSpec m_player_step_sound;
@@ -485,6 +486,7 @@ public:
 	SoundMaker(ISoundManager *sound, INodeDefManager *ndef):
 		m_sound(sound),
 		m_ndef(ndef),
+		makes_footstep_sound(true),
 		m_player_step_timer(0)
 	{
 	}
@@ -493,7 +495,8 @@ public:
 	{
 		if (m_player_step_timer <= 0 && m_player_step_sound.exists()) {
 			m_player_step_timer = 0.03;
-			m_sound->playSound(m_player_step_sound, false);
+			if (makes_footstep_sound)
+				m_sound->playSound(m_player_step_sound, false);
 		}
 	}
 
@@ -3419,11 +3422,14 @@ void Game::updateSound(f32 dtime)
 			      camera->getCameraNode()->getUpVector());
 	sound->setListenerGain(g_settings->getFloat("sound_volume"));
 
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+
+	// Tell the sound maker whether to make footstep sounds
+	soundmaker->makes_footstep_sound = player->makes_footstep_sound;
 
 	//	Update sound maker
-	soundmaker->step(dtime);
-
-	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	if (player->makes_footstep_sound)
+		soundmaker->step(dtime);
 
 	ClientMap &map = client->getEnv().getClientMap();
 	MapNode n = map.getNodeNoEx(player->getFootstepNodePos());

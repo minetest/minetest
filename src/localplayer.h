@@ -91,6 +91,8 @@ public:
 
 	float camera_impact;
 
+	bool makes_footstep_sound;
+
 	int last_animation;
 	float last_animation_speed;
 

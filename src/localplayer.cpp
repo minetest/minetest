@@ -58,6 +58,7 @@ LocalPlayer::LocalPlayer(Client *client, const char *name):
 	last_camera_fov(0),
 	last_wanted_range(0),
 	camera_impact(0.f),
+	makes_footstep_sound(true),
 	last_animation(NO_ANIM),
 	hotbar_image(""),
 	hotbar_selected_image(""),
