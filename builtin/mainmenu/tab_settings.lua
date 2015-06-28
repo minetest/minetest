@@ -60,6 +60,19 @@ local function getLeavesStyleSettingIndex()
 	return 1
 end
 
+local dd_antialiasing_labels = {
+	fgettext("None"),
+	fgettext("2x"),
+	fgettext("4x"),
+	fgettext("8x"),
+}
+
+local antialiasing = {
+   {dd_antialiasing_labels[1]..","..dd_antialiasing_labels[2]..","..
+       dd_antialiasing_labels[3]..","..dd_antialiasing_labels[4]},
+   {"0", "2", "4", "8"}
+}
+
 local function getFilterSettingIndex()
 	if (core.setting_get(filters[2][3]) == "true") then
 		return 3
@@ -78,6 +91,26 @@ local function getMipmapSettingIndex()
 		return 2
 	end
 	return 1
+end
+
+local function getAntialiasingSettingIndex()
+	local antialiasing_setting = core.setting_get("fsaa")
+	for i=1, #(antialiasing[2]) do
+		if antialiasing_setting == antialiasing[2][i] then
+			return i
+		end
+	end
+	return 1
+end
+
+local function antialiasing_fname_to_name(fname)
+   for i=1, #(dd_antialiasing_labels) do
+      if fname == dd_antialiasing_labels[i] then
+         return antialiasing[2][i]
+      end
+   end
+
+   return "0"
 end
 
 local function video_driver_fname_to_name(selected_driver)
@@ -214,13 +247,17 @@ local function formspec(tabview, name, tabdata)
 		"dropdown[0.25,3.2;3.3;dd_leaves_style;" .. leaves_style[1][1] .. ";"
 				.. getLeavesStyleSettingIndex() .. "]" ..
 		"box[3.75,0;3.75,3.45;#999999]" ..
+		"box[3.75,0;3.75,4.7;#999999]" ..
 		"label[3.85,0.1;".. fgettext("Texturing:") .. "]"..
 		"dropdown[3.85,0.55;3.85;dd_filters;" .. filters[1][1] .. ";"
 				.. getFilterSettingIndex() .. "]" ..
 		"dropdown[3.85,1.35;3.85;dd_mipmap;" .. mipmap[1][1] .. ";"
 				.. getMipmapSettingIndex() .. "]" ..
-		"label[3.85,2.15;".. fgettext("Rendering:") .. "]"..
-		"dropdown[3.85,2.6;3.85;dd_video_driver;"
+		"label[3.85,2.15;".. fgettext("Antialiasing:") .. "]"..
+		"dropdown[3.85,2.6;3.85;dd_antialiasing;" .. antialiasing[1][1] .. ";"
+		.. getAntialiasingSettingIndex() .. "]" ..
+		"label[3.85,3.4;".. fgettext("Rendering:") .. "]"..
+		"dropdown[3.85,3.85;3.85;dd_video_driver;"
 				.. driver_formspec_string .. ";" .. driver_current_idx .. "]" ..
 		"tooltip[dd_video_driver;" ..
 				fgettext("Restart minetest for driver change to take effect") .. "]" ..
@@ -421,6 +458,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.setting_set("anisotropic_filter", "true")
 		ddhandled = true
 	end
+	core.setting_set("fsaa",
+		antialiasing_fname_to_name(fields["dd_antialiasing"]))
 
 	return ddhandled
 end
