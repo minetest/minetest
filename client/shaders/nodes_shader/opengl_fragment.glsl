@@ -66,7 +66,7 @@ float find_intersection(vec2 dp, vec2 ds)
 }
 
 float find_intersectionRGB(vec2 dp, vec2 ds) {
-	const float iterations = 24;
+	const float iterations = 24.0;
 	const float depth_step = 1.0 / iterations;
 	float depth = 1.0;
 	for (int i = 0 ; i < iterations ; i++) {
