@@ -266,6 +266,14 @@
 #enable_mesh_cache = true
 #    Enables caching of facedir rotated meshes
 
+#enable_minimap = true
+#    Enables minimap
+#minimap_shape_round = true
+#    true - round shape, false - square
+#minimap_double_scan_height = true
+#    true = 256, false = 128
+#    useable to make minimap smoother on slower machines
+
 #    The time in seconds it takes between repeated
 #    right clicks when holding the right mouse button.
 #repeat_rightclick_time = 0.25

@@ -124,6 +124,7 @@ public:
 		this->driver = device->getVideoDriver();
 		this->tsrc = client->getTextureSource();
 	}
+	~MinimapUpdateThread();
 	void getMap (v3s16 pos, s16 size, s16 height, bool radar);
 	MinimapPixel *getMinimapPixel (v3s16 pos, s16 height, s16 &pixel_height);
 	s16 getAirCount (v3s16 pos, s16 height);
@@ -148,6 +149,7 @@ private:
 	video::ITexture *minimap_texture;
 	scene::SMeshBuffer *m_meshbuffer;
 	bool m_enable_shaders;
+	u16 m_surface_mode_scan_height;
 	JMutex m_mutex;
 
 public:
