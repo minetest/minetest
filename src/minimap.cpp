@@ -120,6 +120,10 @@ void MinimapUpdateThread::enqueue_Block(v3s16 pos, MinimapMapblock *data)
 		m_queue_sem.Post();
 }
 
+void MinimapUpdateThread::forceUpdate()
+{
+	m_queue_sem.Post();
+}
 
 void *MinimapUpdateThread::Thread()
 {
@@ -323,12 +327,17 @@ void Mapper::setMinimapMode(MinimapMode mode)
 	data->scan_height = modeDefs[(int)mode * 3 + 1];
 	data->map_size = modeDefs[(int)mode * 3 + 2];
 	data->mode = mode;
+	m_minimap_update_thread->forceUpdate();
 }
 
 void Mapper::setPos(v3s16 pos)
 {
 	JMutexAutoLock lock(m_mutex);
-	data->pos = pos;
+	if (pos != data->old_pos) {
+		data->old_pos = data->pos;
+		data->pos = pos;
+		m_minimap_update_thread->forceUpdate();
+	}
 }
 
 video::ITexture *Mapper::getMinimapTexture()

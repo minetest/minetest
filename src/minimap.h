@@ -131,7 +131,7 @@ public:
 	video::SColor getColorFromId(u16 id);
 
 	void enqueue_Block(v3s16 pos, MinimapMapblock *data);
-
+	void forceUpdate();
 	IrrlichtDevice *device;
 	Client *client;
 	video::IVideoDriver *driver;
