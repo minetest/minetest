@@ -37,6 +37,8 @@
 #keymap_backward = KEY_KEY_S
 #keymap_left = KEY_KEY_A
 #keymap_right = KEY_KEY_D
+#keymap_dig = KEY_LBUTTON
+#keymap_place = KEY_RBUTTON
 #keymap_jump = KEY_SPACE
 #keymap_sneak = KEY_LSHIFT
 #keymap_inventory = KEY_KEY_I
