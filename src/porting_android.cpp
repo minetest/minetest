@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "log.h"
 #include <sstream>
+#include <android_native_app_glue.h>
 
 #ifdef GPROF
 #include "prof.h"
@@ -62,7 +63,9 @@ void android_main(android_app *app)
 	}
 
 	porting::cleanupAndroid();
+
 	errorstream << "Shutting down minetest." << std::endl;
+
 	exit(retval);
 }
 
@@ -87,6 +90,19 @@ std::string path_storage = DIR_DELIM "sdcard" DIR_DELIM;
 android_app* app_global;
 JNIEnv*      jnienv;
 jclass       nativeActivity;
+
+
+void handleAndroidActivityEvents()
+{
+	int ident;
+	int events;
+	struct android_poll_source *source;
+
+	while ((ident = ALooper_pollOnce(0, NULL, &events, (void**)&source)) >= 0) {
+		if (source)
+			source->process(porting::app_global, source);
+	}
+}
 
 jclass findClass(std::string classname)
 {
@@ -162,8 +178,8 @@ void cleanupAndroid()
 	moncleanup();
 #endif
 
-	JavaVM *jvm = app_global->activity->vm;
-	jvm->DetachCurrentThread();
+	app_global->activity->vm->DetachCurrentThread();
+	ANativeActivity_finish(app_global->activity);
 }
 
 void setExternalStorageDir(JNIEnv* lJNIEnv)
