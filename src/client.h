@@ -113,22 +113,26 @@ struct MeshUpdateResult
 	}
 };
 
-class MeshUpdateThread : public JThread
+class MeshUpdateThread : public UpdateThread
 {
+private:
+	MeshUpdateQueue m_queue_in;
+
+protected:
+	const char *getName()
+	{ return "MeshUpdateThread"; }
+	virtual void doUpdate();
+
 public:
 
-	MeshUpdateThread(IGameDef *gamedef):
-		m_gamedef(gamedef)
+	MeshUpdateThread()
 	{
 	}
 
-	void * Thread();
-
-	MeshUpdateQueue m_queue_in;
+	void enqueueUpdate(v3s16 p, MeshMakeData *data,
+			bool ack_block_to_server, bool urgent);
 
 	MutexedQueue<MeshUpdateResult> m_queue_out;
-
-	IGameDef *m_gamedef;
 
 	v3s16 m_camera_offset;
 };

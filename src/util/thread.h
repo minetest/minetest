@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../jthread/jmutex.h"
 #include "../jthread/jmutexautolock.h"
 #include "porting.h"
+#include "log.h"
 
 template<typename T>
 class MutexedVariable
@@ -206,6 +207,66 @@ public:
 
 private:
 	MutexedQueue< GetRequest<Key, T, Caller, CallerData> > m_queue;
+};
+
+class UpdateThread : public JThread
+{
+private:
+	JSemaphore m_update_sem;
+
+protected:
+	virtual void doUpdate() = 0;
+	virtual const char *getName() = 0;
+
+public:
+	UpdateThread()
+	{
+	}
+	~UpdateThread()
+	{}
+
+	void deferUpdate()
+	{
+		m_update_sem.Post();
+	}
+
+	void Stop()
+	{
+		JThread::Stop();
+
+		// give us a nudge
+		m_update_sem.Post();
+	}
+
+	void *Thread()
+	{
+		ThreadStarted();
+
+		const char *thread_name = getName();
+
+		log_register_thread(thread_name);
+
+		DSTACK(__FUNCTION_NAME);
+
+		BEGIN_DEBUG_EXCEPTION_HANDLER
+
+		porting::setThreadName(thread_name);
+
+		while (!StopRequested()) {
+
+			m_update_sem.Wait();
+
+			// Empty the queue, just in case doUpdate() is expensive
+			while (m_update_sem.GetValue()) m_update_sem.Wait();
+
+			if (StopRequested()) break;
+
+			doUpdate();
+		}
+		END_DEBUG_EXCEPTION_HANDLER(errorstream)
+
+		return NULL;
+	}
 };
 
 #endif
