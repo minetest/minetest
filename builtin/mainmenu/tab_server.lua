@@ -67,32 +67,9 @@ local function main_button_handler(this, fields, name, tabdata)
 
 	if fields["srv_worlds"] ~= nil then
 		local event = core.explode_textlist_event(fields["srv_worlds"])
-
 		local selected = core.get_textlist_index("srv_worlds")
-		if selected ~= nil then
-			local filename = menudata.worldlist:get_list()[selected].path
-			local worldconfig = modmgr.get_worldconfig(filename)
-			filename = filename .. DIR_DELIM .. "world.mt"
 
-			if worldconfig.creative_mode ~= nil then
-				core.setting_set("creative_mode", worldconfig.creative_mode)
-			else
-				local worldfile = Settings(filename)
-				worldfile:set("creative_mode", core.setting_get("creative_mode"))
-				if not worldfile:write() then
-					core.log("error", "Failed to write world config file")
-				end
-			end
-			if worldconfig.enable_damage ~= nil then
-				core.setting_set("enable_damage", worldconfig.enable_damage)
-			else
-				local worldfile = Settings(filename)
-				worldfile:set("enable_damage", core.setting_get("enable_damage"))
-				if not worldfile:write() then
-					core.log("error", "Failed to write world config file")
-				end
-			end
-		end
+		menu_worldmt_legacy()
 
 		if event.type == "DCL" then
 			world_doubleclick = true
@@ -111,28 +88,16 @@ local function main_button_handler(this, fields, name, tabdata)
 	if fields["cb_creative_mode"] then
 		core.setting_set("creative_mode", fields["cb_creative_mode"])
 		local selected = core.get_textlist_index("srv_worlds")
-		local filename = menudata.worldlist:get_list()[selected].path ..
-				DIR_DELIM .. "world.mt"
+		menu_worldmt(selected, "creative_mode", fields["cb_creative_mode"])
 
-		local worldfile = Settings(filename)
-		worldfile:set("creative_mode", fields["cb_creative_mode"])
-		if not worldfile:write() then
-			core.log("error", "Failed to write world config file")
-		end
 		return true
 	end
 
 	if fields["cb_enable_damage"] then
 		core.setting_set("enable_damage", fields["cb_enable_damage"])
 		local selected = core.get_textlist_index("srv_worlds")
-		local filename = menudata.worldlist:get_list()[selected].path ..
-				DIR_DELIM .. "world.mt"
+		menu_worldmt(selected, "enable_damage", fields["cb_enable_damage"])
 
-		local worldfile = Settings(filename)
-		worldfile:set("enable_damage", fields["cb_enable_damage"])
-		if not worldfile:write() then
-			core.log("error", "Failed to write world config file")
-		end
 		return true
 	end
 
@@ -159,9 +124,11 @@ local function main_button_handler(this, fields, name, tabdata)
 
 			--update last game
 			local world = menudata.worldlist:get_raw_element(gamedata.selected_world)
+			if world then
+				local game, index = gamemgr.find_by_gameid(world.gameid)
+				core.setting_set("menu_last_game", game.id)
+			end
 			
-			local game,index = gamemgr.find_by_gameid(world.gameid)
-			core.setting_set("menu_last_game",game.id)
 			core.start()
 			return true
 		end
