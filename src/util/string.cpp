@@ -30,22 +30,28 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 
 #ifndef _WIN32
-#include <iconv.h>
+	#include <iconv.h>
 #else
-#define _WIN32_WINNT 0x0501
-#include <windows.h>
+	#define _WIN32_WINNT 0x0501
+	#include <windows.h>
+#endif
+
+#if defined(_ICONV_H_) && (defined(__FreeBSD__) || defined(__NetBSD__) || \
+	defined(__OpenBSD__) || defined(__DragonFly__))
+	#define BSD_ICONV_USED
 #endif
 
 static bool parseHexColorString(const std::string &value, video::SColor &color);
 static bool parseNamedColorString(const std::string &value, video::SColor &color);
 
 #ifndef _WIN32
+
 bool convert(const char *to, const char *from, char *outbuf,
 		size_t outbuf_size, char *inbuf, size_t inbuf_size)
 {
 	iconv_t cd = iconv_open(to, from);
 
-#if defined(__FreeBSD__) || defined(__FreeBSD)
+#ifdef BSD_ICONV_USED
 	const char *inbuf_ptr = inbuf;
 #else
 	char *inbuf_ptr = inbuf;
@@ -88,7 +94,7 @@ std::wstring utf8_to_wide(const std::string &input)
 		delete[] outbuf;
 		return L"<invalid UTF-8 string>";
 	}
-	std::wstring out((wchar_t*)outbuf);
+	std::wstring out((wchar_t *)outbuf);
 
 	delete[] inbuf;
 	delete[] outbuf;
@@ -97,12 +103,15 @@ std::wstring utf8_to_wide(const std::string &input)
 }
 
 #ifdef __ANDROID__
+
 // TODO: this is an ugly fix for wide_to_utf8 somehow not working on android
 std::string wide_to_utf8(const std::wstring &input)
 {
 	return wide_to_narrow(input);
 }
-#else
+
+#else // __ANDROID__
+
 std::string wide_to_utf8(const std::wstring &input)
 {
 	size_t inbuf_size = (input.length() + 1) * sizeof(wchar_t);
@@ -128,14 +137,18 @@ std::string wide_to_utf8(const std::wstring &input)
 
 	return out;
 }
-#endif
-#else
+
+#endif // __ANDROID__
+
+#else // _WIN32
+
 std::wstring utf8_to_wide(const std::string &input)
 {
 	size_t outbuf_size = input.size() + 1;
 	wchar_t *outbuf = new wchar_t[outbuf_size];
 	memset(outbuf, 0, outbuf_size * sizeof(wchar_t));
-	MultiByteToWideChar(CP_UTF8, 0, input.c_str(), input.size(), outbuf, outbuf_size);
+	MultiByteToWideChar(CP_UTF8, 0, input.c_str(), input.size(),
+		outbuf, outbuf_size);
 	std::wstring out(outbuf);
 	delete[] outbuf;
 	return out;
@@ -146,18 +159,20 @@ std::string wide_to_utf8(const std::wstring &input)
 	size_t outbuf_size = (input.size() + 1) * 6;
 	char *outbuf = new char[outbuf_size];
 	memset(outbuf, 0, outbuf_size);
-	WideCharToMultiByte(CP_UTF8, 0, input.c_str(), input.size(), outbuf, outbuf_size, NULL, NULL);
+	WideCharToMultiByte(CP_UTF8, 0, input.c_str(), input.size(),
+		outbuf, outbuf_size, NULL, NULL);
 	std::string out(outbuf);
 	delete[] outbuf;
 	return out;
 }
-#endif
+
+#endif // _WIN32
 
 // You must free the returned string!
 // The returned string is allocated using new
 wchar_t *narrow_to_wide_c(const char *str)
 {
-	wchar_t* nstr = 0;
+	wchar_t *nstr = NULL;
 #if defined(_WIN32)
 	int nResult = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR) str, -1, 0, 0);
 	if (nResult == 0) {
@@ -168,7 +183,7 @@ wchar_t *narrow_to_wide_c(const char *str)
 	}
 #else
 	size_t len = strlen(str);
-	nstr = new wchar_t[len+1];
+	nstr = new wchar_t[len + 1];
 
 	std::wstring intermediate = narrow_to_wide(str);
 	memset(nstr, 0, (len + 1) * sizeof(wchar_t));
