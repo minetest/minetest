@@ -300,3 +300,34 @@ function is_server_protocol_compat_or_error(proto_min, proto_max)
 
 	return true
 end
+--------------------------------------------------------------------------------
+function menu_worldmt(selected, setting, value)
+	local world = menudata.worldlist:get_list()[selected]
+	if world then
+		local filename = world.path .. DIR_DELIM .. "world.mt"
+		local world_conf = Settings(filename)
+
+		if value then
+			if not world_conf:write() then
+				core.log("error", "Failed to write world config file")
+			end
+			return world_conf:set(setting, value)
+		else
+			return world_conf:get(setting)
+		end
+	else
+		return nil
+	end
+end
+
+function menu_worldmt_legacy()
+	local modes = {"creative_mode", "enable_damage"}
+	for _, mode in pairs(modes) do
+		local mode = menu_worldmt(selected, ""..mode.."")
+		if mode then
+			core.setting_set(""..mode.."", mode)
+		else
+			menu_worldmt(selected, ""..mode.."", core.setting_get(""..mode..""))
+		end
+	end
+end
