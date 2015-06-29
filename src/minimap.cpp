@@ -105,67 +105,31 @@ QueuedMinimapUpdate * MinimapUpdateQueue::pop()
 	Minimap update thread
 */
 
-void MinimapUpdateThread::Stop()
-{
-	JThread::Stop();
-
-	// give us a nudge
-	m_queue_sem.Post();
-}
-
 void MinimapUpdateThread::enqueue_Block(v3s16 pos, MinimapMapblock *data)
 {
-	if (m_queue.addBlock(pos, data))
-		// we had to allocate a new block
-		m_queue_sem.Post();
+	m_queue.addBlock(pos, data);
+	deferUpdate();
 }
 
-void MinimapUpdateThread::forceUpdate()
+void MinimapUpdateThread::doUpdate()
 {
-	m_queue_sem.Post();
-}
-
-void *MinimapUpdateThread::Thread()
-{
-	ThreadStarted();
-
-	log_register_thread("MinimapUpdateThread");
-
-	DSTACK(__FUNCTION_NAME);
-
-	BEGIN_DEBUG_EXCEPTION_HANDLER
-
-	porting::setThreadName("MinimapUpdateThread");
-
-	while (!StopRequested()) {
-
-		m_queue_sem.Wait();
-		if (StopRequested()) break;
-
-		while (m_queue.size()) {
-			QueuedMinimapUpdate *q = m_queue.pop();
-			if (!q)
-				break;
-			std::map<v3s16, MinimapMapblock *>::iterator it;
-			it = m_blocks_cache.find(q->pos);
-			if (q->data) {
-				m_blocks_cache[q->pos] = q->data;
-			} else if (it != m_blocks_cache.end()) {
-				delete it->second;
-				m_blocks_cache.erase(it);
-			}
-		}
-
-		if (data->map_invalidated) {
-			if (data->mode != MINIMAP_MODE_OFF) {
-				getMap(data->pos, data->map_size, data->scan_height, data->radar);
-				data->map_invalidated = false;
-			}
+	while (m_queue.size()) {
+		QueuedMinimapUpdate *q = m_queue.pop();
+		std::map<v3s16, MinimapMapblock *>::iterator it;
+		it = m_blocks_cache.find(q->pos);
+		if (q->data) {
+			m_blocks_cache[q->pos] = q->data;
+		} else if (it != m_blocks_cache.end()) {
+			delete it->second;
+			m_blocks_cache.erase(it);
 		}
 	}
-	END_DEBUG_EXCEPTION_HANDLER(errorstream)
-
-	return NULL;
+	if (data->map_invalidated) {
+		if (data->mode != MINIMAP_MODE_OFF) {
+			getMap(data->pos, data->map_size, data->scan_height, data->radar);
+			data->map_invalidated = false;
+		}
+	}
 }
 
 MinimapUpdateThread::~MinimapUpdateThread()
@@ -177,7 +141,7 @@ MinimapUpdateThread::~MinimapUpdateThread()
 	}
 }
 
-MinimapPixel *MinimapUpdateThread::getMinimapPixel (v3s16 pos, s16 height, s16 &pixel_height)
+MinimapPixel *MinimapUpdateThread::getMinimapPixel(v3s16 pos, s16 height, s16 &pixel_height)
 {
 	pixel_height = height - MAP_BLOCKSIZE;
 	v3s16 blockpos_max, blockpos_min, relpos;
@@ -198,7 +162,7 @@ MinimapPixel *MinimapUpdateThread::getMinimapPixel (v3s16 pos, s16 height, s16 &
 	return NULL;
 }
 
-s16 MinimapUpdateThread::getAirCount (v3s16 pos, s16 height)
+s16 MinimapUpdateThread::getAirCount(v3s16 pos, s16 height)
 {
 	s16 air_count = 0;
 	v3s16 blockpos_max, blockpos_min, relpos;
@@ -215,7 +179,7 @@ s16 MinimapUpdateThread::getAirCount (v3s16 pos, s16 height)
 	return air_count;
 }
 
-void MinimapUpdateThread::getMap (v3s16 pos, s16 size, s16 height, bool radar)
+void MinimapUpdateThread::getMap(v3s16 pos, s16 size, s16 height, bool radar)
 {
 	v3s16 p = v3s16 (pos.X - size / 2, pos.Y, pos.Z - size / 2);
 
@@ -327,7 +291,7 @@ void Mapper::setMinimapMode(MinimapMode mode)
 	data->scan_height = modeDefs[(int)mode * 3 + 1];
 	data->map_size = modeDefs[(int)mode * 3 + 2];
 	data->mode = mode;
-	m_minimap_update_thread->forceUpdate();
+	m_minimap_update_thread->deferUpdate();
 }
 
 void Mapper::setPos(v3s16 pos)
@@ -336,7 +300,7 @@ void Mapper::setPos(v3s16 pos)
 	if (pos != data->old_pos) {
 		data->old_pos = data->pos;
 		data->pos = pos;
-		m_minimap_update_thread->forceUpdate();
+		m_minimap_update_thread->deferUpdate();
 	}
 }
 
