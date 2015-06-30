@@ -273,6 +273,7 @@ void Mapper::toggleMinimapShape()
 {
 	data->minimap_shape_round = !data->minimap_shape_round;
 	g_settings->setBool(("minimap_shape_round"), data->minimap_shape_round);
+	m_minimap_update_thread->deferUpdate();
 }
 
 void Mapper::setMinimapMode(MinimapMode mode)
