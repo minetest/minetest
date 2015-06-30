@@ -320,7 +320,7 @@ function menu_worldmt(selected, setting, value)
 	end
 end
 
-function menu_worldmt_legacy()
+function menu_worldmt_legacy(selected)
 	local modes = {"creative_mode", "enable_damage"}
 	for _, mode in pairs(modes) do
 		local mode = menu_worldmt(selected, ""..mode.."")
