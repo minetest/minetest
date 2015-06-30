@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CAVEGEN_HEADER
 
 #define VMANIP_FLAG_CAVE VOXELFLAG_CHECKED1
+#define MGV7_LAVA_DEPTH -256
 
 class MapgenV5;
 class MapgenV6;

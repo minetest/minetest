@@ -32,11 +32,11 @@ NoiseParams nparams_caveliquids(0, 1, v3f(150.0, 150.0, 150.0), 776, 3, 0.6, 2.0
 
 
 CaveV5::CaveV5(MapgenV5 *mg, PseudoRandom *ps) {
-	this->mg   = mg;
-	this->vm   = mg->vm;
-	this->ndef = mg->ndef;
-	this->water_level = mg->water_level;
-	this->ps = ps;
+	this->mg             = mg;
+	this->vm             = mg->vm;
+	this->ndef           = mg->ndef;
+	this->water_level    = mg->water_level;
+	this->ps             = ps;
 	this->c_water_source = mg->c_water_source;
 	this->c_lava_source  = mg->c_lava_source;
 	this->c_ice          = mg->c_ice;
@@ -45,8 +45,8 @@ CaveV5::CaveV5(MapgenV5 *mg, PseudoRandom *ps) {
 	dswitchint = ps->range(1, 14);
 	flooded    = ps->range(1, 2) == 2;
 
-	part_max_length_rs = ps->range(2, 4);
-	tunnel_routepoints = ps->range(5, ps->range(15, 30));
+	part_max_length_rs  = ps->range(2, 4);
+	tunnel_routepoints  = ps->range(5, ps->range(15, 30));
 	min_tunnel_diameter = 5;
 	max_tunnel_diameter = ps->range(7, ps->range(8, 24));
 
@@ -157,7 +157,7 @@ void CaveV5::makeTunnel(bool dirswitch) {
 
 	p = orpi + of + rs / 2;
 	if (p.Z >= node_min.Z && p.Z <= node_max.Z &&
-		p.X >= node_min.X && p.X <= node_max.X) {
+			p.X >= node_min.X && p.X <= node_max.X) {
 		u32 index = (p.Z - node_min.Z) * mg->ystride + (p.X - node_min.X);
 		s16 h = mg->heightmap[index];
 		if (h < p.Y)
@@ -215,7 +215,7 @@ void CaveV5::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
 	startp += of;
 
 	float nval = NoisePerlin3D(np_caveliquids, startp.X,
-							startp.Y, startp.Z, mg->seed);
+		startp.Y, startp.Z, mg->seed);
 	MapNode liquidnode = nval < 0.40 ? lavanode : waternode;
 
 	v3f fp = orp + vec * f;
@@ -238,7 +238,7 @@ void CaveV5::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
 			s16 maxabsxz = MYMAX(abs(x0), abs(z0));
 
 			s16 si2 = is_ravine ? MYMIN(ps->range(25, 26), ar.Y) :
-								 rs / 2 - MYMAX(0, maxabsxz - rs / 7 - 1);
+				rs / 2 - MYMAX(0, maxabsxz - rs / 7 - 1);
 
 			for (s16 y0 = -si2; y0 <= si2; y0++) {
 				if (large_cave_is_flat) {
@@ -251,9 +251,10 @@ void CaveV5::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
 				p += of;
 
 				if (!is_ravine && mg->heightmap && should_make_cave_hole &&
-					p.X <= node_max.X && p.Z <= node_max.Z) {
+						p.X <= node_max.X && p.Z <= node_max.Z) {
 					int maplen = node_max.X - node_min.X + 1;
-					int idx = (p.Z - node_min.Z) * maplen + (p.X - node_min.X);
+					int idx = (p.Z - node_min.Z) * maplen +
+						(p.X - node_min.X);
 					if (p.Y >= mg->heightmap[idx] - 2)
 						continue;
 				}
@@ -269,10 +270,13 @@ void CaveV5::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
 				int full_ymin = node_min.Y - MAP_BLOCKSIZE;
 				int full_ymax = node_max.Y + MAP_BLOCKSIZE;
 
-				if (flooded && full_ymin < water_level && full_ymax > water_level)
-					vm->m_data[i] = (p.Y <= water_level) ? waternode : airnode;
+				if (flooded && full_ymin < water_level &&
+						full_ymax > water_level)
+					vm->m_data[i] = (p.Y <= water_level) ?
+						waternode : airnode;
 				else if (flooded && full_ymax < water_level)
-					vm->m_data[i] = (p.Y < startp.Y - 4) ? liquidnode : airnode;
+					vm->m_data[i] = (p.Y < startp.Y - 4) ?
+						liquidnode : airnode;
 				else
 					vm->m_data[i] = airnode;
 			}
@@ -285,24 +289,24 @@ void CaveV5::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
 
 
 CaveV6::CaveV6(MapgenV6 *mg, PseudoRandom *ps, PseudoRandom *ps2, bool is_large_cave) {
-	this->mg   = mg;
-	this->vm   = mg->vm;
-	this->ndef = mg->ndef;
-	this->water_level = mg->water_level;
-	this->large_cave = is_large_cave;
-	this->ps  = ps;
-	this->ps2 = ps2;
+	this->mg             = mg;
+	this->vm             = mg->vm;
+	this->ndef           = mg->ndef;
+	this->water_level    = mg->water_level;
+	this->large_cave     = is_large_cave;
+	this->ps             = ps;
+	this->ps2            = ps2;
 	this->c_water_source = mg->c_water_source;
 	this->c_lava_source  = mg->c_lava_source;
 
 	min_tunnel_diameter = 2;
 	max_tunnel_diameter = ps->range(2, 6);
-	dswitchint = ps->range(1, 14);
-	flooded = true;
+	dswitchint          = ps->range(1, 14);
+	flooded             = true;
 
 	if (large_cave) {
-		part_max_length_rs = ps->range(2,4);
-		tunnel_routepoints = ps->range(5, ps->range(15,30));
+		part_max_length_rs  = ps->range(2,4);
+		tunnel_routepoints  = ps->range(5, ps->range(15,30));
 		min_tunnel_diameter = 5;
 		max_tunnel_diameter = ps->range(7, ps->range(8,24));
 	} else {
@@ -438,7 +442,8 @@ void CaveV6::makeTunnel(bool dirswitch) {
 		v3s16 p1 = orpi + veci + of + rs / 2;
 		if (p1.Z >= node_min.Z && p1.Z <= node_max.Z &&
 				p1.X >= node_min.X && p1.X <= node_max.X) {
-			u32 index1 = (p1.Z - node_min.Z) * mg->ystride + (p1.X - node_min.X);
+			u32 index1 = (p1.Z - node_min.Z) * mg->ystride +
+				(p1.X - node_min.X);
 			h1 = mg->heightmap[index1];
 		} else {
 			h1 = water_level; // If not in heightmap
@@ -447,7 +452,8 @@ void CaveV6::makeTunnel(bool dirswitch) {
 		v3s16 p2 = orpi + of + rs / 2;
 		if (p2.Z >= node_min.Z && p2.Z <= node_max.Z &&
 				p2.X >= node_min.X && p2.X <= node_max.X) {
-			u32 index2 = (p2.Z - node_min.Z) * mg->ystride + (p2.X - node_min.X);
+			u32 index2 = (p2.Z - node_min.Z) * mg->ystride +
+				(p2.X - node_min.X);
 			h2 = mg->heightmap[index2];
 		} else {
 			h2 = water_level;
@@ -540,10 +546,13 @@ void CaveV6::carveRoute(v3f vec, float f, bool randomize_xz) {
 					int full_ymin = node_min.Y - MAP_BLOCKSIZE;
 					int full_ymax = node_max.Y + MAP_BLOCKSIZE;
 
-					if (flooded && full_ymin < water_level && full_ymax > water_level) {
-						vm->m_data[i] = (p.Y <= water_level) ? waternode : airnode;
+					if (flooded && full_ymin < water_level &&
+							full_ymax > water_level) {
+						vm->m_data[i] = (p.Y <= water_level) ?
+							waternode : airnode;
 					} else if (flooded && full_ymax < water_level) {
-						vm->m_data[i] = (p.Y < startp.Y - 2) ? lavanode : airnode;
+						vm->m_data[i] = (p.Y < startp.Y - 2) ?
+							lavanode : airnode;
 					} else {
 						vm->m_data[i] = airnode;
 					}
@@ -564,11 +573,11 @@ void CaveV6::carveRoute(v3f vec, float f, bool randomize_xz) {
 
 
 CaveV7::CaveV7(MapgenV7 *mg, PseudoRandom *ps) {
-	this->mg   = mg;
-	this->vm   = mg->vm;
-	this->ndef = mg->ndef;
-	this->water_level = mg->water_level;
-	this->ps = ps;
+	this->mg             = mg;
+	this->vm             = mg->vm;
+	this->ndef           = mg->ndef;
+	this->water_level    = mg->water_level;
+	this->ps             = ps;
 	this->c_water_source = mg->c_water_source;
 	this->c_lava_source  = mg->c_lava_source;
 	this->c_ice          = mg->c_ice;
@@ -577,8 +586,8 @@ CaveV7::CaveV7(MapgenV7 *mg, PseudoRandom *ps) {
 	dswitchint = ps->range(1, 14);
 	flooded    = ps->range(1, 2) == 2;
 
-	part_max_length_rs = ps->range(2, 4);
-	tunnel_routepoints = ps->range(5, ps->range(15, 30));
+	part_max_length_rs  = ps->range(2, 4);
+	tunnel_routepoints  = ps->range(5, ps->range(15, 30));
 	min_tunnel_diameter = 5;
 	max_tunnel_diameter = ps->range(7, ps->range(8, 24));
 
@@ -748,8 +757,9 @@ void CaveV7::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
 	startp += of;
 
 	float nval = NoisePerlin3D(np_caveliquids, startp.X,
-							startp.Y, startp.Z, mg->seed);
-	MapNode liquidnode = (nval < 0.40 && node_max.Y < -256) ? lavanode : waternode;
+		startp.Y, startp.Z, mg->seed);
+	MapNode liquidnode = (nval < 0.40 && node_max.Y < MGV7_LAVA_DEPTH) ?
+		lavanode : waternode;
 
 	v3f fp = orp + vec * f;
 	fp.X += 0.1 * ps->range(-10, 10);
@@ -771,7 +781,7 @@ void CaveV7::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
 			s16 maxabsxz = MYMAX(abs(x0), abs(z0));
 
 			s16 si2 = is_ravine ? MYMIN(ps->range(25, 26), ar.Y) :
-								 rs / 2 - MYMAX(0, maxabsxz - rs / 7 - 1);
+				rs / 2 - MYMAX(0, maxabsxz - rs / 7 - 1);
 
 			for (s16 y0 = -si2; y0 <= si2; y0++) {
 				if (large_cave_is_flat) {
@@ -784,9 +794,10 @@ void CaveV7::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
 				p += of;
 
 				if (!is_ravine && mg->heightmap && should_make_cave_hole &&
-					p.X <= node_max.X && p.Z <= node_max.Z) {
+						p.X <= node_max.X && p.Z <= node_max.Z) {
 					int maplen = node_max.X - node_min.X + 1;
-					int idx = (p.Z - node_min.Z) * maplen + (p.X - node_min.X);
+					int idx = (p.Z - node_min.Z) * maplen +
+						(p.X - node_min.X);
 					if (p.Y >= mg->heightmap[idx] - 2)
 						continue;
 				}
@@ -802,10 +813,13 @@ void CaveV7::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
 				int full_ymin = node_min.Y - MAP_BLOCKSIZE;
 				int full_ymax = node_max.Y + MAP_BLOCKSIZE;
 
-				if (flooded && full_ymin < water_level && full_ymax > water_level)
-					vm->m_data[i] = (p.Y <= water_level) ? waternode : airnode;
+				if (flooded && full_ymin < water_level &&
+						full_ymax > water_level)
+					vm->m_data[i] = (p.Y <= water_level) ?
+						waternode : airnode;
 				else if (flooded && full_ymax < water_level)
-					vm->m_data[i] = (p.Y < startp.Y - 4) ? liquidnode : airnode;
+					vm->m_data[i] = (p.Y < startp.Y - 4) ?
+						liquidnode : airnode;
 				else
 					vm->m_data[i] = airnode;
 			}
