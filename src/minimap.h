@@ -113,6 +113,7 @@ class MinimapUpdateThread : public UpdateThread
 {
 private:
 	MinimapUpdateQueue m_queue;
+	std::map<v3s16, MinimapMapblock *> m_blocks_cache;
 
 protected:
 	const char *getName()
@@ -139,7 +140,6 @@ public:
 	video::IVideoDriver *driver;
 	ITextureSource *tsrc;
 	MinimapData *data;
-	std::map<v3s16, MinimapMapblock *> m_blocks_cache;
 };
 
 class Mapper
