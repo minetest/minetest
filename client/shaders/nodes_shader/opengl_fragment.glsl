@@ -39,37 +39,21 @@ vec4 get_normal_map(vec2 uv)
 
 float find_intersection(vec2 dp, vec2 ds)
 {
-	const int linear_steps = 10;
-	const int binary_steps = 5;
-	const float depth_step = 1.0 / linear_steps;
-	float size = depth_step;
+	const float depth_step = 1.0 / 24.0;
 	float depth = 1.0;
-	float best_depth = 1.0;
-	for (int i = 0 ; i < linear_steps - 1 ; ++i) {
-		vec4 t = texture2D(normalTexture, dp + ds * depth);
-		if (best_depth > 0.05)
-			if (depth >= t.a)
-				best_depth = depth;
-		depth -= size;
+	for (int i = 0 ; i < 24 ; i++) {
+		float h = texture2D(normalTexture, dp + ds * depth).a;
+		if (h >= depth)
+			break;
+		depth -= depth_step;
 	}
-	depth = best_depth - size;
-	for (int i = 0 ; i < binary_steps ; ++i) {
-		size *= 0.5;
-		vec4 t = texture2D(normalTexture, dp + ds * depth);
-		if (depth >= t.a) {
-			best_depth = depth;
-			depth -= 2 * size;
-		}
-		depth += size;
-	}
-	return best_depth;
+	return depth;
 }
 
 float find_intersectionRGB(vec2 dp, vec2 ds) {
-	const float iterations = 24.0;
-	const float depth_step = 1.0 / iterations;
+	const float depth_step = 1.0 / 24.0;
 	float depth = 1.0;
-	for (int i = 0 ; i < iterations ; i++) {
+	for (int i = 0 ; i < 24 ; i++) {
 		float h = get_rgb_height(dp + ds * depth);
 		if (h >= depth)
 			break;
@@ -85,40 +69,41 @@ void main (void)
 	vec2 uv = gl_TexCoord[0].st;
 	bool use_normalmap = false;
 
-#ifdef USE_NORMALMAPS
+#if USE_NORMALMAPS == 1
 	if (texture2D(useNormalmap,vec2(1.0, 1.0)).r > 0.0) {
 		normalTexturePresent = true;
 	}
 #endif
 
 #ifdef ENABLE_PARALLAX_OCCLUSION
-	vec3 eyeRay = normalize(tsEyeVec);
+	vec2 eyeRay = vec2 (tsEyeVec.x, -tsEyeVec.y);
+	const float scale = PARALLAX_OCCLUSION_SCALE / PARALLAX_OCCLUSION_ITERATIONS;
+	const float bias = PARALLAX_OCCLUSION_BIAS / PARALLAX_OCCLUSION_ITERATIONS;
+		
 #if PARALLAX_OCCLUSION_MODE == 0
 	// Parallax occlusion with slope information
 	if (normalTexturePresent && area_enable_parallax > 0.0) {
-		const float scale = PARALLAX_OCCLUSION_SCALE / PARALLAX_OCCLUSION_ITERATIONS;
-		const float bias = PARALLAX_OCCLUSION_BIAS / PARALLAX_OCCLUSION_ITERATIONS;
-		for(int i = 0; i < PARALLAX_OCCLUSION_ITERATIONS; i++) {
+		for (int i = 0; i < PARALLAX_OCCLUSION_ITERATIONS; i++) {
 			vec4 normal = texture2D(normalTexture, uv.xy);
 			float h = normal.a * scale - bias;
-			uv += h * normal.z * eyeRay.xy;
+			uv += h * normal.z * eyeRay;
 		}
 #endif
 #if PARALLAX_OCCLUSION_MODE == 1
 	// Relief mapping
 	if (normalTexturePresent && area_enable_parallax > 0.0) {
-		vec2 ds = eyeRay.xy * PARALLAX_OCCLUSION_SCALE;
+		vec2 ds = eyeRay * PARALLAX_OCCLUSION_SCALE;
 		float dist = find_intersection(uv, ds);
 		uv += dist * ds;
 #endif
-	} else if (area_enable_parallax > 0.0) {
-		vec2 ds = eyeRay.xy * PARALLAX_OCCLUSION_SCALE;
+	} else if (GENERATE_NORMALMAPS == 1 && area_enable_parallax > 0.0) {
+		vec2 ds = eyeRay * PARALLAX_OCCLUSION_SCALE;
 		float dist = find_intersectionRGB(uv, ds);
 		uv += dist * ds;
 	}
 #endif
 
-#ifdef USE_NORMALMAPS
+#if USE_NORMALMAPS == 1
 	if (normalTexturePresent) {
 		bump = get_normal_map(uv);
 		use_normalmap = true;
@@ -136,7 +121,7 @@ void main (void)
 		float l  = get_rgb_height(vec2(uv.x - SAMPLE_STEP, uv.y));
 		float dX = (tr + 2.0 * r + br) - (tl + 2.0 * l + bl);
 		float dY = (bl + 2.0 * b + br) - (tl + 2.0 * t + tr);
-		bump = vec4(normalize(vec3 (-dX, -dY, NORMALMAPS_STRENGTH)), 1.0);
+		bump = vec4(normalize(vec3 (dX, dY, NORMALMAPS_STRENGTH)), 1.0);
 		use_normalmap = true;
 	}
 
@@ -145,9 +130,9 @@ void main (void)
 #ifdef ENABLE_BUMPMAPPING
 	if (use_normalmap) {
 		vec3 L = normalize(lightVec);
-		vec3 E = normalize(-eyeVec);
-		float specular = pow(clamp(dot(reflect(L, bump.xyz), -E), 0.0, 1.0), 1.0);
-		float diffuse = dot(E,bump.xyz);
+		vec3 E = normalize(eyeVec);
+		float specular = pow(clamp(dot(reflect(L, bump.xyz), E), 0.0, 1.0), 1.0);
+		float diffuse = dot(-E,bump.xyz);
 		color = (diffuse + 0.1 * specular) * base.rgb;
 	} else {
 		color = base.rgb;

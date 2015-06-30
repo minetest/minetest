@@ -731,8 +731,11 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 		shaders_header += "\n";
 	}
 
+	shaders_header += "#define USE_NORMALMAPS ";
 	if (g_settings->getBool("enable_bumpmapping") || g_settings->getBool("enable_parallax_occlusion"))
-		shaders_header += "#define USE_NORMALMAPS\n";
+		shaders_header += "1\n";
+	else
+		shaders_header += "0\n";
 
 	if (g_settings->getBool("enable_waving_water")){
 		shaders_header += "#define ENABLE_WAVING_WATER 1\n";
