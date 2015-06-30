@@ -307,7 +307,7 @@ function menu_worldmt(selected, setting, value)
 		local filename = world.path .. DIR_DELIM .. "world.mt"
 		local world_conf = Settings(filename)
 
-		if value then
+		if value ~= nil then
 			if not world_conf:write() then
 				core.log("error", "Failed to write world config file")
 			end
@@ -320,14 +320,14 @@ function menu_worldmt(selected, setting, value)
 	end
 end
 
-function menu_worldmt_legacy()
-	local modes = {"creative_mode", "enable_damage"}
-	for _, mode in pairs(modes) do
-		local mode = menu_worldmt(selected, ""..mode.."")
-		if mode then
-			core.setting_set(""..mode.."", mode)
+function menu_worldmt_legacy(selected)
+	local modes_names = {"creative_mode", "enable_damage"}
+	for _, mode_name in pairs(modes_names) do
+		local mode_val = menu_worldmt(selected, mode_name)
+		if mode_val ~= nil then
+			core.setting_set(mode_name, mode_val)
 		else
-			menu_worldmt(selected, ""..mode.."", core.setting_get(""..mode..""))
+			menu_worldmt(selected, mode_name, core.setting_get(mode_name))
 		end
 	end
 end

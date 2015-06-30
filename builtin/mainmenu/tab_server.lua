@@ -69,7 +69,7 @@ local function main_button_handler(this, fields, name, tabdata)
 		local event = core.explode_textlist_event(fields["srv_worlds"])
 		local selected = core.get_textlist_index("srv_worlds")
 
-		menu_worldmt_legacy()
+		menu_worldmt_legacy(selected)
 
 		if event.type == "DCL" then
 			world_doubleclick = true
