@@ -311,7 +311,8 @@ function menu_worldmt(selected, setting, value)
 			if not world_conf:write() then
 				core.log("error", "Failed to write world config file")
 			end
-			return world_conf:set(setting, value)
+			world_conf:set(setting, value)
+			world_conf:write()
 		else
 			return world_conf:get(setting)
 		end
