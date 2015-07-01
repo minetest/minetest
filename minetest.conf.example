@@ -263,7 +263,7 @@
 #    Lower is darker, Higher is lighter. The valid range of values for this
 #    setting is 0.25 to 4.0 inclusive. If the value is out of range it will be
 #    set to the nearest valid value.
-#enable_mesh_cache = true
+#enable_mesh_cache = false
 #    Enables caching of facedir rotated meshes
 
 #enable_minimap = true
