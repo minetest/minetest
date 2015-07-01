@@ -725,13 +725,8 @@ core.register_chatcommand("shutdown", {
 		core.log("action", name .. " shuts down server")
 		core.request_shutdown()
 		core.chat_send_all("*** Server shutting down (operator request).")
-		for _,player in ipairs(minetest.get_connected_players()) do
-			local name = player:get_player_name()
-			core.kick_player(name, "Server shutting down.")
-		end
 	end,
 })
-
 
 core.register_chatcommand("ban", {
 	params = "<name>",
