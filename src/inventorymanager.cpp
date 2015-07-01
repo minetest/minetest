@@ -172,16 +172,16 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	Inventory *inv_from = mgr->getInventory(from_inv);
 	Inventory *inv_to = mgr->getInventory(to_inv);
 	
-	if(!inv_from){
-		infostream<<"IMoveAction::apply(): FAIL: source inventory not found: "
-				<<"from_inv=\""<<from_inv.dump()<<"\""
-				<<", to_inv=\""<<to_inv.dump()<<"\""<<std::endl;
+	if (!inv_from) {
+		infostream << "IMoveAction::apply(): FAIL: source inventory not found: "
+			<< "from_inv=\""<<from_inv.dump() << "\""
+			<< ", to_inv=\"" << to_inv.dump() << "\"" << std::endl;
 		return;
 	}
-	if(!inv_to){
-		infostream<<"IMoveAction::apply(): FAIL: destination inventory not found: "
-				<<"from_inv=\""<<from_inv.dump()<<"\""
-				<<", to_inv=\""<<to_inv.dump()<<"\""<<std::endl;
+	if (!inv_to) {
+		infostream << "IMoveAction::apply(): FAIL: destination inventory not found: "
+			<< "from_inv=\"" << from_inv.dump() << "\""
+			<< ", to_inv=\"" << to_inv.dump() << "\"" << std::endl;
 		return;
 	}
 
@@ -191,16 +191,16 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	/*
 		If a list doesn't exist or the source item doesn't exist
 	*/
-	if(!list_from){
-		infostream<<"IMoveAction::apply(): FAIL: source list not found: "
-				<<"from_inv=\""<<from_inv.dump()<<"\""
-				<<", from_list=\""<<from_list<<"\""<<std::endl;
+	if (!list_from) {
+		infostream << "IMoveAction::apply(): FAIL: source list not found: "
+			<< "from_inv=\"" << from_inv.dump() << "\""
+			<< ", from_list=\"" << from_list << "\"" << std::endl;
 		return;
 	}
-	if(!list_to){
-		infostream<<"IMoveAction::apply(): FAIL: destination list not found: "
-				<<"to_inv=\""<<to_inv.dump()<<"\""
-				<<", to_list=\""<<to_list<<"\""<<std::endl;
+	if (!list_to) {
+		infostream << "IMoveAction::apply(): FAIL: destination list not found: "
+			<< "to_inv=\""<<to_inv.dump() << "\""
+			<< ", to_list=\"" << to_list << "\"" << std::endl;
 		return;
 	}
 
@@ -244,6 +244,13 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		count = old_count;
 		caused_by_move_somewhere = false;
 		move_somewhere = true;
+		return;
+	}
+
+	if ((u16)to_i > list_to->getSize()) {
+		infostream << "IMoveAction::apply(): FAIL: destination index out of bounds: "
+			<< "to_i=" << to_i
+			<< ", size=" << list_to->getSize() << std::endl;
 		return;
 	}
 	/*
