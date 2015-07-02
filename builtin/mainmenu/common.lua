@@ -322,7 +322,7 @@ function menu_worldmt(selected, setting, value)
 end
 
 function menu_worldmt_legacy(selected)
-	local modes_names = {"creative_mode", "enable_damage"}
+	local modes_names = {"creative_mode", "enable_damage", "server_announce"}
 	for _, mode_name in pairs(modes_names) do
 		local mode_val = menu_worldmt(selected, mode_name)
 		if mode_val ~= nil then
