@@ -103,6 +103,9 @@ local function main_button_handler(this, fields, name, tabdata)
 
 	if fields["cb_server_announce"] then
 		core.setting_set("server_announce", fields["cb_server_announce"])
+		local selected = core.get_textlist_index("srv_worlds")
+		menu_worldmt(selected, "server_announce", fields["cb_server_announce"])
+
 		return true
 	end
 
