@@ -41,7 +41,7 @@ void main(void)
 
 	//Allow parallax/relief mapping only for certain kind of nodes
 	//Variable is also used to control area of the effect
-#if ((DRAW_TYPE == NDT_NORMAL || DRAW_TYPE == NDT_LIQUID || DRAW_TYPE == NDT_FLOWINGLIQUID) && GENERATE_NORMALMAPS)
+#if (DRAW_TYPE == NDT_NORMAL || DRAW_TYPE == NDT_LIQUID || DRAW_TYPE == NDT_FLOWINGLIQUID)
 	area_enable_parallax = 1.0;
 #else
 	area_enable_parallax = 0.0;
@@ -94,7 +94,7 @@ void main(void)
 
 	// Don't generate heightmaps when too far from the eye
 	float dist = distance (vec3(0.0, 0.0 ,0.0), vPosition);
-	if (dist > 100.0) {
+	if (dist > 120.0) {
 		area_enable_parallax = 0.0;
 	}
 
@@ -103,7 +103,7 @@ void main(void)
 	vec3 normal, tangent, binormal;
 	normal = normalize(gl_NormalMatrix * gl_Normal);
 	tangent = normalize(gl_NormalMatrix * gl_MultiTexCoord1.xyz);
-	binormal = normalize(gl_NormalMatrix * -gl_MultiTexCoord2.xyz);
+	binormal = normalize(gl_NormalMatrix * gl_MultiTexCoord2.xyz);
 
 	vec3 v;
 
@@ -111,13 +111,13 @@ void main(void)
 	v.x = dot(lightVec, tangent);
 	v.y = dot(lightVec, binormal);
 	v.z = dot(lightVec, normal);
-	tsLightVec = v;
+	tsLightVec = normalize (v);
 
 	eyeVec = -(gl_ModelViewMatrix * gl_Vertex).xyz;
 	v.x = dot(eyeVec, tangent);
 	v.y = dot(eyeVec, binormal);
 	v.z = dot(eyeVec, normal);
-	tsEyeVec = v;
+	tsEyeVec = normalize (v);
 
 	vec4 color;
 	float day = gl_Color.r;
