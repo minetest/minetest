@@ -62,61 +62,56 @@ struct NoiseParams;
 class Schematic;
 
 
-ContentFeatures    read_content_features         (lua_State *L, int index);
-TileDef            read_tiledef                  (lua_State *L, int index);
-void               read_soundspec                (lua_State *L, int index,
-                                                  SimpleSoundSpec &spec);
-NodeBox            read_nodebox                  (lua_State *L, int index);
+ContentFeatures    read_content_features     (lua_State *L, int index);
+TileDef            read_tiledef              (lua_State *L, int index);
+void               read_soundspec            (lua_State *L, int index,
+                                              SimpleSoundSpec &spec);
+NodeBox            read_nodebox              (lua_State *L, int index);
 
-void               read_server_sound_params      (lua_State *L, int index,
-                                                  ServerSoundParams &params);
+void               read_server_sound_params  (lua_State *L, int index,
+                                              ServerSoundParams &params);
 
-void          push_dig_params           (lua_State *L,const DigParams &params);
-void          push_hit_params           (lua_State *L,const HitParams &params);
+void               push_dig_params           (lua_State *L,
+                                              const DigParams &params);
+void               push_hit_params           (lua_State *L,
+                                              const HitParams &params);
 
-ItemStack     read_item                 (lua_State *L, int index, Server* srv);
+ItemStack          read_item                 (lua_State *L, int index, Server *srv);
 
 
-ToolCapabilities   read_tool_capabilities    (lua_State *L,
-                                              int table);
+ToolCapabilities   read_tool_capabilities    (lua_State *L, int table);
 void               push_tool_capabilities    (lua_State *L,
                                               const ToolCapabilities &prop);
 
-ItemDefinition     read_item_definition      (lua_State *L,
-                                              int index,
+ItemDefinition     read_item_definition      (lua_State *L, int index,
                                               ItemDefinition default_def);
-void               read_object_properties    (lua_State *L,
-                                              int index,
+void               read_object_properties    (lua_State *L, int index,
                                               ObjectProperties *prop);
-void		   push_object_properties    (lua_State *L,
-					      ObjectProperties *prop);
+void               push_object_properties    (lua_State *L,
+                                              ObjectProperties *prop);
 
 void               push_inventory_list       (lua_State *L,
                                               Inventory *inv,
                                               const char *name);
-void               read_inventory_list       (lua_State *L,
-                                              int tableindex,
-                                              Inventory *inv,
-                                              const char *name,
-                                              Server* srv,
-                                              int forcesize=-1);
+void               read_inventory_list       (lua_State *L, int tableindex,
+                                              Inventory *inv, const char *name,
+                                              Server *srv, int forcesize=-1);
 
-MapNode            readnode                  (lua_State *L,
-                                              int index,
+MapNode            readnode                  (lua_State *L, int index,
                                               INodeDefManager *ndef);
-void               pushnode                  (lua_State *L,
-                                              const MapNode &n,
+void               pushnode                  (lua_State *L, const MapNode &n,
                                               INodeDefManager *ndef);
 
 NodeBox            read_nodebox              (lua_State *L, int index);
 
-void               read_groups               (lua_State *L,
-                                              int index,
+void               read_groups               (lua_State *L, int index,
                                               std::map<std::string, int> &result);
 
+void               push_groups               (lua_State *L,
+                                              const std::map<std::string, int> &groups);
+
 //TODO rename to "read_enum_field"
-int                getenumfield              (lua_State *L,
-                                              int table,
+int                getenumfield              (lua_State *L, int table,
                                               const char *fieldname,
                                               const EnumString *spec,
                                               int default_);
@@ -129,8 +124,9 @@ bool               getflagsfield             (lua_State *L, int table,
 bool               read_flags                (lua_State *L, int index,
                                               FlagDesc *flagdesc,
                                               u32 *flags, u32 *flagmask);
-void		   push_flags_string	     (lua_State *L, FlagDesc *flagdesc,
-					      u32 flags, u32 flagmask);
+
+void               push_flags_string         (lua_State *L, FlagDesc *flagdesc,
+                                              u32 flags, u32 flagmask);
 
 u32                read_flags_table          (lua_State *L, int table,
                                               FlagDesc *flagdesc, u32 *flagmask);
@@ -146,24 +142,21 @@ void               read_soundspec            (lua_State *L,
                                               int index,
                                               SimpleSoundSpec &spec);
 
-
 bool               string_to_enum            (const EnumString *spec,
                                               int &result,
                                               const std::string &str);
 
 bool               read_noiseparams          (lua_State *L, int index,
                                               NoiseParams *np);
-void		   push_noiseparams	     (lua_State *L, NoiseParams *np);
+void               push_noiseparams          (lua_State *L, NoiseParams *np);
 
 void               luaentity_get             (lua_State *L,u16 id);
 
 bool               push_json_value           (lua_State *L,
                                               const Json::Value &value,
                                               int nullindex);
-void               read_json_value           (lua_State *L,
-                                              Json::Value &root,
-                                              int index,
-                                              u8 recursion = 0);
+void               read_json_value           (lua_State *L, Json::Value &root,
+                                              int index, u8 recursion = 0);
 
 extern struct EnumString es_TileAnimationType[];
 

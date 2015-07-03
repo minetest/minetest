@@ -267,11 +267,11 @@ public:
 	void spawnParticle(const char *playername,
 		v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
-		bool collisiondetection, bool vertical, std::string texture);
+		bool collisiondetection, bool vertical, const std::string &texture);
 
 	void spawnParticleAll(v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
-		bool collisiondetection, bool vertical, std::string texture);
+		bool collisiondetection, bool vertical, const std::string &texture);
 
 	u32 addParticleSpawner(const char *playername,
 		u16 amount, float spawntime,
@@ -280,7 +280,7 @@ public:
 		v3f minacc, v3f maxacc,
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
-		bool collisiondetection, bool vertical, std::string texture);
+		bool collisiondetection, bool vertical, const std::string &texture);
 
 	u32 addParticleSpawnerAll(u16 amount, float spawntime,
 		v3f minpos, v3f maxpos,
@@ -288,7 +288,7 @@ public:
 		v3f minacc, v3f maxacc,
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
-		bool collisiondetection, bool vertical, std::string texture);
+		bool collisiondetection, bool vertical, const std::string &texture);
 
 	void deleteParticleSpawner(const char *playername, u32 id);
 	void deleteParticleSpawnerAll(u32 id);

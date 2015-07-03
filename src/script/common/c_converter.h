@@ -104,8 +104,6 @@ void                push_ARGB8          (lua_State *L, video::SColor color);
 void                pushFloatPos        (lua_State *L, v3f p);
 void                push_v3f            (lua_State *L, v3f p);
 void                push_v2f            (lua_State *L, v2f p);
-void		    push_groups		(lua_State *L,
-					 std::map<std::string, int> groups);
 
 void                warn_if_field_exists(lua_State *L, int table,
                                          const char *fieldname,

@@ -985,11 +985,11 @@ void read_groups(lua_State *L, int index,
 }
 
 /******************************************************************************/
-void push_groups(lua_State *L, std::map<std::string, int> groups)
+void push_groups(lua_State *L, const std::map<std::string, int> &groups)
 {
 	lua_newtable(L);
-	for (std::map<std::string, int>::iterator it = groups.begin();
-			it != groups.end(); ++it) {
+	std::map<std::string, int>::const_iterator it;
+	for (it = groups.begin(); it != groups.end(); ++it) {
 		lua_pushnumber(L, it->second);
 		lua_setfield(L, -2, it->first.c_str());
 	}
@@ -998,12 +998,10 @@ void push_groups(lua_State *L, std::map<std::string, int> groups)
 /******************************************************************************/
 void push_items(lua_State *L, const std::vector<ItemStack> &items)
 {
-	// Create and fill table
 	lua_createtable(L, items.size(), 0);
-	std::vector<ItemStack>::const_iterator iter = items.begin();
-	for (u32 i = 0; iter != items.end(); iter++) {
-		LuaItemStack::create(L, *iter);
-		lua_rawseti(L, -2, ++i);
+	for (u32 i = 0; i != items.size(); i++) {
+		LuaItemStack::create(L, items[i]);
+		lua_rawseti(L, -2, i + 1);
 	}
 }
 
