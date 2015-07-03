@@ -363,7 +363,7 @@ void MapgenV7::calculateNoise()
 		noise_ridge_uwater->perlinMap2D(x, z);
 	}
 
-	if ((spflags & MGV7_MOUNTAINS) && node_max.Y >= 0) {
+	if ((spflags & MGV7_MOUNTAINS) && node_max.Y >= MOUNTAIN_BASE) {
 		noise_mountain->perlinMap3D(x, y, z);
 		noise_mount_height->perlinMap2D(x, z);
 	}
@@ -536,7 +536,7 @@ int MapgenV7::generateBaseTerrain()
 
 int MapgenV7::generateMountainTerrain(int ymax)
 {
-	if (node_max.Y < 0)
+	if (node_max.Y < MOUNTAIN_BASE)
 		return ymax;
 
 	MapNode n_stone(c_stone);
