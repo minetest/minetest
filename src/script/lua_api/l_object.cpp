@@ -132,10 +132,22 @@ int ObjectRef::gc_object(lua_State *L) {
 int ObjectRef::l_remove(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
+	GET_ENV_PTR;
+
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if(co == NULL) return 0;
-	if(co->getType() == ACTIVEOBJECT_TYPE_PLAYER) return 0;
+	if (co == NULL)
+		return 0;
+	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
+		return 0;
+
+	std::set<int> child_ids = co->getAttachmentChildIds();
+	std::set<int>::iterator it;
+	for (it = child_ids.begin(); it != child_ids.end(); ++it) {
+		ServerActiveObject *child = env->getActiveObject(*it);
+		child->setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0));
+	}
+
 	verbosestream<<"ObjectRef::l_remove(): id="<<co->getId()<<std::endl;
 	co->m_removed = true;
 	return 0;
@@ -632,23 +644,38 @@ int ObjectRef::l_get_bone_position(lua_State *L)
 int ObjectRef::l_set_attach(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
+	GET_ENV_PTR;
+
 	ObjectRef *ref = checkobject(L, 1);
 	ObjectRef *parent_ref = checkobject(L, 2);
 	ServerActiveObject *co = getobject(ref);
 	ServerActiveObject *parent = getobject(parent_ref);
-	if(co == NULL) return 0;
-	if(parent == NULL) return 0;
+	if (co == NULL)
+		return 0;
+	if (parent == NULL)
+		return 0;
 	// Do it
+	int parent_id = 0;
 	std::string bone = "";
-	if(!lua_isnil(L, 3))
-		bone = lua_tostring(L, 3);
 	v3f position = v3f(0, 0, 0);
-	if(!lua_isnil(L, 4))
-		position = read_v3f(L, 4);
 	v3f rotation = v3f(0, 0, 0);
-	if(!lua_isnil(L, 5))
+	co->getAttachment(&parent_id, &bone, &position, &rotation);
+	if (parent_id) {
+		ServerActiveObject *old_parent = env->getActiveObject(parent_id);
+		old_parent->removeAttachmentChild(co->getId());
+	}
+
+	bone = "";
+	if (!lua_isnil(L, 3))
+		bone = lua_tostring(L, 3);
+	position = v3f(0, 0, 0);
+	if (!lua_isnil(L, 4))
+		position = read_v3f(L, 4);
+	rotation = v3f(0, 0, 0);
+	if (!lua_isnil(L, 5))
 		rotation = read_v3f(L, 5);
 	co->setAttachment(parent->getId(), bone, position, rotation);
+	parent->addAttachmentChild(co->getId());
 	return 0;
 }
 
@@ -684,11 +711,26 @@ int ObjectRef::l_get_attach(lua_State *L)
 int ObjectRef::l_set_detach(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
+	GET_ENV_PTR;
+
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL)
+		return 0;
+
+	int parent_id = 0;
+	std::string bone = "";
+	v3f position;
+	v3f rotation;
+	co->getAttachment(&parent_id, &bone, &position, &rotation);
+	ServerActiveObject *parent = NULL;
+	if (parent_id)
+		parent = env->getActiveObject(parent_id);
+
 	// Do it
 	co->setAttachment(0, "", v3f(0,0,0), v3f(0,0,0));
+	if (parent != NULL)
+		parent->removeAttachmentChild(co->getId());
 	return 0;
 }
 

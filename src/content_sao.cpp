@@ -591,6 +591,21 @@ void LuaEntitySAO::getAttachment(int *parent_id, std::string *bone, v3f *positio
 	*rotation = m_attachment_rotation;
 }
 
+void LuaEntitySAO::addAttachmentChild(int child_id)
+{
+	m_attachment_child_ids.insert(child_id);
+}
+
+void LuaEntitySAO::removeAttachmentChild(int child_id)
+{
+	m_attachment_child_ids.erase(child_id);
+}
+
+std::set<int> LuaEntitySAO::getAttachmentChildIds()
+{
+	return m_attachment_child_ids;
+}
+
 ObjectProperties* LuaEntitySAO::accessObjectProperties()
 {
 	return &m_prop;
@@ -1229,6 +1244,21 @@ void PlayerSAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
 	*bone = m_attachment_bone;
 	*position = m_attachment_position;
 	*rotation = m_attachment_rotation;
+}
+
+void PlayerSAO::addAttachmentChild(int child_id)
+{
+	m_attachment_child_ids.insert(child_id);
+}
+
+void PlayerSAO::removeAttachmentChild(int child_id)
+{
+	m_attachment_child_ids.erase(child_id);
+}
+
+std::set<int> PlayerSAO::getAttachmentChildIds()
+{
+	return m_attachment_child_ids;
 }
 
 ObjectProperties* PlayerSAO::accessObjectProperties()
