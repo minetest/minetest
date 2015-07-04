@@ -113,12 +113,12 @@ local function main_button_handler(this, fields, name, tabdata)
 		world_doubleclick or
 		fields["key_enter"] then
 		local selected = core.get_textlist_index("srv_worlds")
-		if selected ~= nil then
+		gamedata.selected_world = menudata.worldlist:get_raw_index(selected)
+		if selected ~= nil and gamedata.selected_world ~= 0 then
 			gamedata.playername     = fields["te_playername"]
 			gamedata.password       = fields["te_passwd"]
 			gamedata.port           = fields["te_serverport"]
 			gamedata.address        = ""
-			gamedata.selected_world = menudata.worldlist:get_raw_index(selected)
 
 			core.setting_set("port",gamedata.port)
 			if fields["te_serveraddr"] ~= nil then
@@ -133,8 +133,11 @@ local function main_button_handler(this, fields, name, tabdata)
 			end
 			
 			core.start()
-			return true
+		else
+			gamedata.errormessage =
+				fgettext("No world created or selected!")
 		end
+		return true
 	end
 
 	if fields["world_create"] ~= nil then

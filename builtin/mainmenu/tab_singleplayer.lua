@@ -40,10 +40,13 @@ local function singleplayer_refresh_gamebar()
 					menudata.worldlist:set_filtercriteria(gamemgr.games[j].id)
 					local index = filterlist.get_current_index(menudata.worldlist,
 						tonumber(core.setting_get("mainmenu_last_selected_world")))
-					local selected = core.get_textlist_index("sp_worlds")
 					if not index or index < 1 then
-						index = math.min(core.get_textlist_index("sp_worlds"),
-							#menudata.worldlist:get_list())
+						local selected = core.get_textlist_index("sp_worlds")
+						if selected ~= nil and selected < #menudata.worldlist:get_list() then
+							index = selected
+						else
+							index = #menudata.worldlist:get_list()
+						end
 					end
 					menu_worldmt_legacy(index)
 					return true
