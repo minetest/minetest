@@ -363,10 +363,7 @@ void MapgenV7::calculateNoise()
 		noise_ridge_uwater->perlinMap2D(x, z);
 	}
 
-	if ((spflags & MGV7_MOUNTAINS) && node_max.Y >= MOUNTAIN_BASE) {
-		noise_mountain->perlinMap3D(x, y, z);
-		noise_mount_height->perlinMap2D(x, z);
-	}
+	// Mountain noises are calculated in generateMountainTerrain()
 
 	noise_filler_depth->perlinMap2D(x, z);
 	noise_heat->perlinMap2D(x, z);
@@ -397,7 +394,7 @@ Biome *MapgenV7::getBiomeAtPoint(v3s16 p)
 }
 
 //needs to be updated
-float MapgenV7::baseTerrainLevelAtPoint(int x, int z)
+float MapgenV7::baseTerrainLevelAtPoint(s16 x, s16 z)
 {
 	float hselect = NoisePerlin2D(&noise_height_select->np, x, z, seed);
 	hselect = rangelim(hselect, 0.0, 1.0);
@@ -430,7 +427,7 @@ float MapgenV7::baseTerrainLevelFromMap(int index)
 }
 
 
-bool MapgenV7::getMountainTerrainAtPoint(int x, int y, int z)
+bool MapgenV7::getMountainTerrainAtPoint(s16 x, s16 y, s16 z)
 {
 	float mnt_h_n = NoisePerlin2D(&noise_mount_height->np, x, z, seed);
 	float mnt_n = NoisePerlin3D(&noise_mountain->np, x, y, z, seed);
@@ -438,7 +435,7 @@ bool MapgenV7::getMountainTerrainAtPoint(int x, int y, int z)
 }
 
 
-bool MapgenV7::getMountainTerrainFromMap(int idx_xyz, int idx_xz, int y)
+bool MapgenV7::getMountainTerrainFromMap(int idx_xyz, int idx_xz, s16 y)
 {
 	float mounthn = noise_mount_height->result[idx_xz];
 	float mountn = noise_mountain->result[idx_xyz];
@@ -483,26 +480,30 @@ void MapgenV7::carveRivers() {
 
 int MapgenV7::generateTerrain()
 {
-	int ymax = generateBaseTerrain();
+	s16 stone_surface_min_y;
+	s16 stone_surface_max_y;
 
-	if (spflags & MGV7_MOUNTAINS)
-		ymax = generateMountainTerrain(ymax);
+	generateBaseTerrain(&stone_surface_min_y, &stone_surface_max_y);
+
+	if ((spflags & MGV7_MOUNTAINS) && stone_surface_min_y < node_max.Y)
+		stone_surface_max_y = generateMountainTerrain(stone_surface_max_y);
 
 	if (spflags & MGV7_RIDGES)
 		generateRidgeTerrain();
 
-	return ymax;
+	return stone_surface_max_y;
 }
 
 
-int MapgenV7::generateBaseTerrain()
+void MapgenV7::generateBaseTerrain(s16 *stone_surface_min_y, s16 *stone_surface_max_y)
 {
 	MapNode n_air(CONTENT_AIR);
 	MapNode n_stone(c_stone);
 	MapNode n_water(c_water_source);
 
-	int stone_surface_max_y = -MAP_GENERATION_LIMIT;
 	v3s16 em = vm->m_area.getExtent();
+	s16 surface_min_y = MAP_GENERATION_LIMIT;
+	s16 surface_max_y = -MAP_GENERATION_LIMIT;
 	u32 index = 0;
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
@@ -513,8 +514,11 @@ int MapgenV7::generateBaseTerrain()
 		heightmap[index]       = surface_y;
 		ridge_heightmap[index] = surface_y;
 
-		if (surface_y > stone_surface_max_y)
-			stone_surface_max_y = surface_y;
+		if (surface_y < surface_min_y)
+			surface_min_y = surface_y;
+
+		if (surface_y > surface_max_y)
+			surface_max_y = surface_y;
 
 		u32 i = vm->m_area.index(x, node_min.Y - 1, z);
 		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
@@ -530,14 +534,15 @@ int MapgenV7::generateBaseTerrain()
 		}
 	}
 
-	return stone_surface_max_y;
+	*stone_surface_min_y = surface_min_y;
+	*stone_surface_max_y = surface_max_y;
 }
 
 
-int MapgenV7::generateMountainTerrain(int ymax)
+int MapgenV7::generateMountainTerrain(s16 ymax)
 {
-	if (node_max.Y < MOUNTAIN_BASE)
-		return ymax;
+	noise_mountain->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
+	noise_mount_height->perlinMap2D(node_min.X, node_min.Z);
 
 	MapNode n_stone(c_stone);
 	u32 j = 0;
@@ -848,7 +853,7 @@ void MapgenV7::addTopNodes()
 #endif
 
 
-void MapgenV7::generateCaves(int max_stone_y)
+void MapgenV7::generateCaves(s16 max_stone_y)
 {
 	if (max_stone_y >= node_min.Y) {
 		u32 index   = 0;
