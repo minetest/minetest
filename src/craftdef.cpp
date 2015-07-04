@@ -235,8 +235,8 @@ static void craftDecrementOrReplaceInput(CraftInput &input,
 				}
 			}
 		}
-		// No replacement was found, simply decrement count to zero
-		if (!found_replacement)
+		// No replacement was found, simply decrement count by one
+		if (!found_replacement && it->count > 0)
 			it->remove(1);
 	}
 }
