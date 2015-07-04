@@ -242,12 +242,13 @@ static std::string craftDumpMatrix(const std::vector<std::string> &items,
 {
 	std::ostringstream os(std::ios::binary);
 	os << "{ ";
+	unsigned int x = 0;
 	for(std::vector<std::string>::size_type i = 0;
-			i < items.size(); i++) {
-		if (i == width) {
+			i < items.size(); i++, x++) {
+		if (x == width) {
 			os << "; ";
-			i = 0;
-		} else if (i != 0) {
+			x = 0;
+		} else if (x != 0) {
 			os << ",";
 		}
 		os << '"' << items[i] << '"';
@@ -262,12 +263,13 @@ std::string craftDumpMatrix(const std::vector<ItemStack> &items,
 {
 	std::ostringstream os(std::ios::binary);
 	os << "{ ";
+	unsigned int x = 0;
 	for (std::vector<ItemStack>::size_type i = 0;
-			i < items.size(); i++) {
-		if (i == width) {
+			i < items.size(); i++, x++) {
+		if (x == width) {
 			os << "; ";
-			i = 0;
-		} else if (i != 0) {
+			x = 0;
+		} else if (x != 0) {
 			os << ",";
 		}
 		os << '"' << (items[i].getItemString()) << '"';
