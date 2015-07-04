@@ -152,12 +152,14 @@ local function main_button_handler(this, fields, name, tabdata)
 		world_doubleclick or
 		fields["key_enter"] then
 		local selected = core.get_textlist_index("sp_worlds")
+		gamedata.selected_world = menudata.worldlist:get_raw_index(selected)
 		
-		if selected ~= nil then
-			gamedata.selected_world = menudata.worldlist:get_raw_index(selected)
-			gamedata.singleplayer   = true
-			
+		if selected ~= nil and gamedata.selected_world ~= 0 then
+			gamedata.singleplayer = true
 			core.start()
+		else
+			gamedata.errormessage =
+				fgettext("No world created or selected!")
 		end
 		return true
 	end
