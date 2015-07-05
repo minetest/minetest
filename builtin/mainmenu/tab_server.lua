@@ -30,14 +30,21 @@ local function get_formspec(tabview, name, tabdata)
 		"label[4,-0.25;" .. fgettext("Select World:") .. "]" ..
 		"checkbox[0.25,0.25;cb_creative_mode;" .. fgettext("Creative Mode") .. ";" ..
 		dump(core.setting_getbool("creative_mode")) .. "]" ..
+		"tooltip[cb_creative_mode;"..tooltips.cb_creative_mode .. "]" ..
 		"checkbox[0.25,0.7;cb_enable_damage;" .. fgettext("Enable Damage") .. ";" ..
 		dump(core.setting_getbool("enable_damage")) .. "]" ..
+		"tooltip[cb_enable_damage;"..tooltips.cb_enable_damage.. "]" ..
 		"checkbox[0.25,1.15;cb_server_announce;" .. fgettext("Public") .. ";" ..
 		dump(core.setting_getbool("server_announce")) .. "]" ..
+		"tooltip[cb_server_announce;"..fgettext(
+[[If enabled, your server will be announced to the public server list, where it
+can easily be seen and found by other players.]]).. "]" ..
 		"label[0.25,2.2;" .. fgettext("Name/Password") .. "]" ..
 		"field[0.55,3.2;3.5,0.5;te_playername;;" ..
 		core.formspec_escape(core.setting_get("name")) .. "]" ..
-		"pwdfield[0.55,4;3.5,0.5;te_passwd;]"
+		"tooltip[te_playername;"..tooltips.te_name.. "]" ..
+		"pwdfield[0.55,4;3.5,0.5;te_passwd;]" ..
+		"tooltip[te_passwd;"..tooltips.te_pwd.. "]"
 
 	local bind_addr = core.setting_get("bind_address")
 	if bind_addr ~= nil and bind_addr ~= "" then
@@ -49,7 +56,8 @@ local function get_formspec(tabview, name, tabdata)
 	else
 		retval = retval ..
 			"field[0.55,5.2;3.5,0.5;te_serverport;" .. fgettext("Server Port") .. ";" ..
-			core.formspec_escape(core.setting_get("port")) .. "]"
+			core.formspec_escape(core.setting_get("port")) .. "]" ..
+			"tooltip[te_serverport;"..tooltips.te_port.. "]"
 	end
 	
 	retval = retval ..
