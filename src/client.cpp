@@ -229,6 +229,7 @@ Client::Client(
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this),
 	m_device(device),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
+	m_proto_ver(0),
 	m_playeritem(0),
 	m_inventory_updated(false),
 	m_inventory_from_server(NULL),
