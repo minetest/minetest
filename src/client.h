@@ -595,8 +595,14 @@ private:
 	Mapper *m_mapper;
 	// Server serialization version
 	u8 m_server_ser_ver;
+
 	// Used version of the protocol with server
+	// Values smaller than 25 only mean they are smaller than 25,
+	// and aren't accurate. We simply just don't know, because
+	// the server didn't send the version back then.
+	// If 0, server init hasn't been received yet.
 	u8 m_proto_ver;
+
 	u16 m_playeritem;
 	bool m_inventory_updated;
 	Inventory *m_inventory_from_server;

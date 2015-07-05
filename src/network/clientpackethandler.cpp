@@ -151,20 +151,23 @@ void Client::handleCommand_InitLegacy(NetworkPacket* pkt)
 	if (pkt->getSize() < 1)
 		return;
 
-	u8 deployed;
-	*pkt >> deployed;
+	u8 server_ser_ver;
+	*pkt >> server_ser_ver;
 
 	infostream << "Client: TOCLIENT_INIT_LEGACY received with "
-			"deployed=" << ((int)deployed & 0xff) << std::endl;
+		"server_ser_ver=" << ((int)server_ser_ver & 0xff) << std::endl;
 
-	if (!ser_ver_supported(deployed)) {
+	if (!ser_ver_supported(server_ser_ver)) {
 		infostream << "Client: TOCLIENT_INIT_LEGACY: Server sent "
 				<< "unsupported ser_fmt_ver"<< std::endl;
 		return;
 	}
 
-	m_server_ser_ver = deployed;
-	m_proto_ver = deployed;
+	m_server_ser_ver = server_ser_ver;
+
+	// We can be totally wrong with this guess
+	// but we only need some value < 25.
+	m_proto_ver = 24;
 
 	// Get player position
 	v3s16 playerpos_s16(0, BS * 2 + BS * 20, 0);
