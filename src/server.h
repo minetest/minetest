@@ -218,6 +218,7 @@ public:
 
 	void ProcessData(NetworkPacket *pkt);
 
+	void SendTo(NetworkPacket* pkt, u16 peer_id);
 	void Send(NetworkPacket* pkt);
 
 	// Environment must be locked when called
@@ -237,7 +238,7 @@ public:
 	void setInventoryModified(const InventoryLocation &loc, bool playerSend = true);
 
 	// Connection must be locked when called
-	std::wstring getStatusString();
+	std::string getStatusString();
 
 	// read shutdown state
 	inline bool getShutdownRequested()
@@ -262,8 +263,8 @@ public:
 	void unsetIpBanned(const std::string &ip_or_name);
 	std::string getBanDescription(const std::string &ip_or_name);
 
-	void notifyPlayer(const char *name, const std::wstring &msg);
-	void notifyPlayers(const std::wstring &msg);
+	void notifyPlayer(const char *name, const std::string &msg);
+	void notifyPlayers(const std::string &msg);
 	void spawnParticle(const char *playername,
 		v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
@@ -400,7 +401,10 @@ private:
 	void SetBlocksNotSent(std::map<v3s16, MapBlock *>& block);
 
 
-	void SendChatMessage(u16 peer_id, const std::wstring &message);
+	void SendChatMessage(u16 peer_id, const std::string &message,
+		const std::string &from_player = "", bool has_wstring = false,
+		const std::wstring &wmessage = L"",
+		u16 avoid_peer_id = PEER_ID_INEXISTENT);
 	void SendTimeOfDay(u16 peer_id, u16 time, f32 time_speed);
 	void SendPlayerHP(u16 peer_id);
 

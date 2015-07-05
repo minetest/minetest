@@ -141,7 +141,7 @@ void Client::handleCommand_AcceptSudoMode(NetworkPacket* pkt)
 }
 void Client::handleCommand_DenySudoMode(NetworkPacket* pkt)
 {
-	m_chat_queue.push(L"Password change denied. Password NOT changed.");
+	pushChatQueue("Password change denied. Password NOT changed.");
 	// reset everything and be sad
 	deleteAuthData();
 	m_chosen_auth_mech = AUTH_MECHANISM_NONE;
@@ -381,21 +381,29 @@ void Client::handleCommand_TimeOfDay(NetworkPacket* pkt)
 void Client::handleCommand_ChatMessage(NetworkPacket* pkt)
 {
 	/*
-		u16 command
-		u16 length
-		wstring message
+		For protocol < 26:
+			u16 length
+			wstring message
+
+		For protocol >= 26:
+			std::string from_player
+			std::string message
 	*/
-	u16 len, read_wchar;
-
-	*pkt >> len;
-
-	std::wstring message;
-	for (u32 i = 0; i < len; i++) {
-		*pkt >> read_wchar;
-		message += (wchar_t)read_wchar;
+	if (m_proto_ver >= 26) {
+		std::string message;
+		std::string from_player;
+		*pkt >> from_player;
+		*pkt >> message;
+		if (from_player.length() > 0)
+			pushChatQueueNamed(from_player, message);
+		else
+			pushChatQueue(message);
+	} else {
+		std::wstring message;
+		*pkt >> message;
+		pushChatQueue(wide_to_utf8(message));
 	}
 
-	m_chat_queue.push(message);
 }
 
 void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)

@@ -32,11 +32,11 @@ struct ChatLine
 	// age in seconds
 	f32 age;
 	// name of sending player, or empty if sent by server
-	std::wstring name;
+	std::string name;
 	// message text
-	std::wstring text;
+	std::string text;
 
-	ChatLine(std::wstring a_name, std::wstring a_text):
+	ChatLine(const std::string &a_name, const std::string &a_text):
 		age(0.0),
 		name(a_name),
 		text(a_text)
@@ -47,7 +47,7 @@ struct ChatLine
 struct ChatFormattedFragment
 {
 	// text string
-	std::wstring text;
+	std::string text;
 	// starting column
 	u32 column;
 	// formatting
@@ -70,7 +70,7 @@ public:
 
 	// Append chat line
 	// Removes oldest chat line if scrollback size is reached
-	void addLine(std::wstring name, std::wstring text);
+	void addLine(const std::string &name, const std::string &text);
 
 	// Remove all chat lines
 	void clear();
@@ -147,13 +147,13 @@ public:
 	void input(const std::wstring &str);
 
 	// Submit, clear and return current line
-	std::wstring submit();
+	std::string submit();
 
 	// Clear the current line
 	void clear();
 
 	// Replace the current line with the given text
-	void replace(std::wstring line);
+	void replace(const std::wstring &line);
 
 	// Select previous command from history
 	void historyPrev();
@@ -238,16 +238,16 @@ public:
 	~ChatBackend();
 
 	// Add chat message
-	void addMessage(std::wstring name, std::wstring text);
+	void addMessage(const std::string &name, const std::string &text);
 	// Parse and add unparsed chat message
-	void addUnparsedMessage(std::wstring line);
+	void addUnparsedMessage(const std::string &line);
 
 	// Get the console buffer
 	ChatBuffer& getConsoleBuffer();
 	// Get the recent messages buffer
 	ChatBuffer& getRecentBuffer();
 	// Concatenate all recent messages
-	std::wstring getRecentChat();
+	std::string getRecentChat();
 	// Get the console prompt
 	ChatPrompt& getPrompt();
 

@@ -130,9 +130,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			presentation
 		Add TOCLIENT_AUTH_ACCEPT to accept connection from client
 		Rename GENERIC_CMD_SET_ATTACHMENT to GENERIC_CMD_ATTACH_TO
+	PROTOCOL_VERSION 26:
+		TOCLIENT_CHAT_MESSAGE uses utf-8 strings now,
+			instead of locale dependent wstring.
+		TOSERVER_CHAT_MESSAGE uses utf-8 strings now,
+			instead of locale dependent wstring.
+		TOCLIENT_CHAT_MESSAGE got an extra field for the sender name.
 */
 
-#define LATEST_PROTOCOL_VERSION 25
+#define LATEST_PROTOCOL_VERSION 26
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13
@@ -278,9 +284,8 @@ enum ToClientCommand
 
 	TOCLIENT_CHAT_MESSAGE = 0x30,
 	/*
-		u16 command
-		u16 length
-		wstring message
+		std::string from_player (since v26, empty for non-chat messages)
+		std::string message (since v26, wstring message before)
 	*/
 
 	TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD = 0x31,
@@ -746,9 +751,7 @@ enum ToServerCommand
 
 	TOSERVER_CHAT_MESSAGE = 0x32,
 	/*
-		u16 command
-		u16 length
-		wstring message
+		std::string message (since v26, wstring message before)
 	*/
 
 	TOSERVER_SIGNNODETEXT = 0x33, // obsolete

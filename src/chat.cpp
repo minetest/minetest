@@ -43,7 +43,7 @@ ChatBuffer::~ChatBuffer()
 {
 }
 
-void ChatBuffer::addLine(std::wstring name, std::wstring text)
+void ChatBuffer::addLine(const std::string &name, const std::string &text)
 {
 	ChatLine line(name, text);
 	m_unformatted.push_back(line);
@@ -246,7 +246,7 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 	// Format the sender name and produce fragments
 	if (!line.name.empty())
 	{
-		temp_frag.text = L"<";
+		temp_frag.text = "<";
 		temp_frag.column = 0;
 		//temp_frag.bold = 0;
 		next_frags.push_back(temp_frag);
@@ -254,7 +254,7 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 		temp_frag.column = 0;
 		//temp_frag.bold = 1;
 		next_frags.push_back(temp_frag);
-		temp_frag.text = L"> ";
+		temp_frag.text = "> ";
 		temp_frag.column = 0;
 		//temp_frag.bold = 0;
 		next_frags.push_back(temp_frag);
@@ -417,12 +417,11 @@ void ChatPrompt::input(const std::wstring &str)
 	m_nick_completion_end = 0;
 }
 
-std::wstring ChatPrompt::submit()
+std::string ChatPrompt::submit()
 {
-	std::wstring line = m_line;
-	m_line.clear();
+	std::string line = wide_to_utf8(m_line);
 	if (!line.empty())
-		m_history.push_back(line);
+		m_history.push_back(m_line);
 	if (m_history.size() > m_history_limit)
 		m_history.erase(m_history.begin());
 	m_history_index = m_history.size();
@@ -430,6 +429,8 @@ std::wstring ChatPrompt::submit()
 	m_cursor = 0;
 	m_nick_completion_start = 0;
 	m_nick_completion_end = 0;
+
+	m_line.clear();
 	return line;
 }
 
@@ -442,10 +443,10 @@ void ChatPrompt::clear()
 	m_nick_completion_end = 0;
 }
 
-void ChatPrompt::replace(std::wstring line)
+void ChatPrompt::replace(const std::wstring &line)
 {
-	m_line =  line;
-	m_view = m_cursor = line.size();
+	m_line = line;
+	m_view = m_cursor = m_line.size();
 	clampView();
 	m_nick_completion_start = 0;
 	m_nick_completion_end = 0;
@@ -505,14 +506,12 @@ void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwa
 	std::vector<std::wstring> completions;
 	for (std::list<std::string>::const_iterator
 			i = names.begin();
-			i != names.end(); ++i)
-	{
-		if (str_starts_with(narrow_to_wide(*i), prefix, true))
-		{
-			std::wstring completion = narrow_to_wide(*i);
+			i != names.end(); ++i) {
+		std::wstring wname = utf8_to_wide(*i);
+		if (str_starts_with(wname, prefix, true)) {
 			if (prefix_start == 0)
-				completion += L": ";
-			completions.push_back(completion);
+				wname += L": ";
+			completions.push_back(wname);
 		}
 	}
 	if (completions.empty())
@@ -675,39 +674,40 @@ ChatBackend::~ChatBackend()
 {
 }
 
-void ChatBackend::addMessage(std::wstring name, std::wstring text)
+void ChatBackend::addMessage(const std::string &name, const std::string &text)
 {
 	// Note: A message may consist of multiple lines, for example the MOTD.
-	WStrfnd fnd(text);
+	Strfnd fnd(text);
 	while (!fnd.atend())
 	{
-		std::wstring line = fnd.next(L"\n");
+		std::string line = fnd.next("\n");
 		m_console_buffer.addLine(name, line);
 		m_recent_buffer.addLine(name, line);
 	}
 }
 
-void ChatBackend::addUnparsedMessage(std::wstring message)
+void ChatBackend::addUnparsedMessage(const std::string &message)
 {
-	// TODO: Remove the need to parse chat messages client-side, by sending
-	// separate name and text fields in TOCLIENT_CHAT_MESSAGE.
+	// TODO: Remove this when dropping support for protocols < 26.
+	// From protocol v26 on we send separate name and text fields
+	// in TOCLIENT_CHAT_MESSAGE, this method not needed.
 
 	if (message.size() >= 2 && message[0] == L'<')
 	{
 		std::size_t closing = message.find_first_of(L'>', 1);
-		if (closing != std::wstring::npos &&
+		if (closing != std::string::npos &&
 				closing + 2 <= message.size() &&
 				message[closing+1] == L' ')
 		{
-			std::wstring name = message.substr(1, closing - 1);
-			std::wstring text = message.substr(closing + 2);
+			std::string name = message.substr(1, closing - 1);
+			std::string text = message.substr(closing + 2);
 			addMessage(name, text);
 			return;
 		}
 	}
 
 	// Unable to parse, probably a server message.
-	addMessage(L"", message);
+	addMessage("", message);
 }
 
 ChatBuffer& ChatBackend::getConsoleBuffer()
@@ -720,16 +720,16 @@ ChatBuffer& ChatBackend::getRecentBuffer()
 	return m_recent_buffer;
 }
 
-std::wstring ChatBackend::getRecentChat()
+std::string ChatBackend::getRecentChat()
 {
-	std::wostringstream stream;
+	std::ostringstream stream;
 	for (u32 i = 0; i < m_recent_buffer.getLineCount(); ++i)
 	{
 		const ChatLine& line = m_recent_buffer.getLine(i);
 		if (i != 0)
-			stream << L"\n";
+			stream << "\n";
 		if (!line.name.empty())
-			stream << L"<" << line.name << L"> ";
+			stream << "<" << line.name << "> ";
 		stream << line.text;
 	}
 	return stream.str();

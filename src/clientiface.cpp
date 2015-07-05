@@ -687,7 +687,7 @@ void ClientInterface::sendToAll(u16 channelnum,
 		NetworkPacket* pkt, bool reliable)
 {
 	JMutexAutoLock clientslock(m_clients_mutex);
-	for(std::map<u16, RemoteClient*>::iterator
+	for (std::map<u16, RemoteClient*>::iterator
 		i = m_clients.begin();
 		i != m_clients.end(); ++i) {
 		RemoteClient *client = i->second;
