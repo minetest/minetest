@@ -388,6 +388,7 @@ set(common_SRCS
 	dungeongen.cpp
 	emerge.cpp
 	environment.cpp
+	face_position_cache.cpp
 	filesys.cpp
 	genericobject.cpp
 	gettext.cpp

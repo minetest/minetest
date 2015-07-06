@@ -26,28 +26,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../irr_v3d.h"
 #include "../irr_aabb3d.h"
 #include "../threading/mutex.h"
-#include "cpp11_container.h"
-#include <list>
-#include <vector>
 
+#define rangelim(d, min, max) ((d) < (min) ? (min) : ((d) > (max) ? (max) : (d)))
+#define myfloor(x) ((x) > 0.0 ? (int)(x) : (int)(x) - 1)
+// The naive swap performs better than the xor version
+#define SWAP(t, x, y) do { \
+	t temp = x; \
+	x = y; \
+	y = temp; \
+} while (0)
 
-/*
- * This class permits to cache getFacePosition call results
- * This reduces CPU usage and vector calls
- */
-class FacePositionCache
-{
-public:
-	static std::vector<v3s16> getFacePositions(u16 d);
-private:
-	static void generateFacePosition(u16 d);
-	static UNORDERED_MAP<u16, std::vector<v3s16> > m_cache;
-	static Mutex m_cache_mutex;
-};
 
 inline s16 getContainerPos(s16 p, s16 d)
 {
-	return (p>=0 ? p : p-d+1) / d;
+	return (p >= 0 ? p : p - d + 1) / d;
 }
 
 inline v2s16 getContainerPos(v2s16 p, s16 d)
@@ -129,16 +121,6 @@ inline bool isInArea(v3s16 p, v3s16 d)
 		p.Z >= 0 && p.Z < d.Z
 	);
 }
-
-#define rangelim(d, min, max) ((d) < (min) ? (min) : ((d)>(max)?(max):(d)))
-#define myfloor(x) ((x) > 0.0 ? (int)(x) : (int)(x) - 1)
-
-// The naive swap performs better than the xor version
-#define SWAP(t, x, y) do { \
-	t temp = x;            \
-	x = y;                 \
-	y = temp;              \
-} while (0)
 
 inline void sortBoxVerticies(v3s16 &p1, v3s16 &p2) {
 	if (p1.X > p2.X)
@@ -266,11 +248,10 @@ inline s32 myround(f32 f)
 */
 inline v3s16 floatToInt(v3f p, f32 d)
 {
-	v3s16 p2(
-		(p.X + (p.X>0 ? d/2 : -d/2))/d,
-		(p.Y + (p.Y>0 ? d/2 : -d/2))/d,
-		(p.Z + (p.Z>0 ? d/2 : -d/2))/d);
-	return p2;
+	return v3s16(
+		(p.X + (p.X > 0 ? d / 2 : -d / 2)) / d,
+		(p.Y + (p.Y > 0 ? d / 2 : -d / 2)) / d,
+		(p.Z + (p.Z > 0 ? d / 2 : -d / 2)) / d);
 }
 
 /*
@@ -278,34 +259,31 @@ inline v3s16 floatToInt(v3f p, f32 d)
 */
 inline v3f intToFloat(v3s16 p, f32 d)
 {
-	v3f p2(
+	return v3f(
 		(f32)p.X * d,
 		(f32)p.Y * d,
 		(f32)p.Z * d
 	);
-	return p2;
 }
 
 // Random helper. Usually d=BS
 inline aabb3f getNodeBox(v3s16 p, float d)
 {
 	return aabb3f(
-		(float)p.X * d - 0.5*d,
-		(float)p.Y * d - 0.5*d,
-		(float)p.Z * d - 0.5*d,
-		(float)p.X * d + 0.5*d,
-		(float)p.Y * d + 0.5*d,
-		(float)p.Z * d + 0.5*d
+		(float)p.X * d - 0.5 * d,
+		(float)p.Y * d - 0.5 * d,
+		(float)p.Z * d - 0.5 * d,
+		(float)p.X * d + 0.5 * d,
+		(float)p.Y * d + 0.5 * d,
+		(float)p.Z * d + 0.5 * d
 	);
 }
+
 
 class IntervalLimiter
 {
 public:
-	IntervalLimiter():
-		m_accumulator(0)
-	{
-	}
+	IntervalLimiter() : m_accumulator(0) {}
 	/*
 		dtime: time from last call to this method
 		wanted_interval: interval wanted
@@ -316,14 +294,16 @@ public:
 	bool step(float dtime, float wanted_interval)
 	{
 		m_accumulator += dtime;
-		if(m_accumulator < wanted_interval)
+		if (m_accumulator < wanted_interval)
 			return false;
 		m_accumulator -= wanted_interval;
 		return true;
 	}
-protected:
+
+private:
 	float m_accumulator;
 };
+
 
 /*
 	Splits a list into "pages". For example, the list [1,2,3,4,5] split
@@ -340,29 +320,21 @@ protected:
 */
 inline void paging(u32 length, u32 page, u32 pagecount, u32 &minindex, u32 &maxindex)
 {
-	if(length < 1 || pagecount < 1 || page < 1 || page > pagecount)
-	{
+	if (length < 1 || pagecount < 1 || page < 1 || page > pagecount) {
 		// Special cases or invalid parameters
 		minindex = maxindex = 0;
-	}
-	else if(pagecount <= length)
-	{
+	} else if(pagecount <= length) {
 		// Less pages than entries in the list:
 		// Each page contains at least one entry
 		minindex = (length * (page-1) + (pagecount-1)) / pagecount;
 		maxindex = (length * page + (pagecount-1)) / pagecount;
-	}
-	else
-	{
+	} else {
 		// More pages than entries in the list:
 		// Make sure the empty pages are at the end
-		if(page < length)
-		{
+		if (page < length) {
 			minindex = page-1;
 			maxindex = page;
-		}
-		else
-		{
+		} else {
 			minindex = 0;
 			maxindex = 0;
 		}
@@ -371,14 +343,14 @@ inline void paging(u32 length, u32 page, u32 pagecount, u32 &minindex, u32 &maxi
 
 inline float cycle_shift(float value, float by = 0, float max = 1)
 {
-    if (value + by < 0) return max + by + value;
+    if (value + by < 0)   return value + by + max;
     if (value + by > max) return value + by - max;
     return value + by;
 }
 
 inline bool is_power_of_two(u32 n)
 {
-	return n != 0 && (n & (n-1)) == 0;
+	return n != 0 && (n & (n - 1)) == 0;
 }
 
 // Compute next-higher power of 2 efficiently, e.g. for power-of-2 texture sizes.

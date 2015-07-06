@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "treegen.h"
 #include "emerge.h"
 #include "pathfinder.h"
+#include "face_position_cache.h"
 
 struct EnumString ModApiEnvMod::es_ClearObjectsMode[] =
 {

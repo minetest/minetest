@@ -143,6 +143,7 @@ LOCAL_SRC_FILES := \
 		jni/src/dungeongen.cpp                    \
 		jni/src/emerge.cpp                        \
 		jni/src/environment.cpp                   \
+		jni/src/face_position_cache.cpp           \
 		jni/src/filecache.cpp                     \
 		jni/src/filesys.cpp                       \
 		jni/src/fontengine.cpp                    \

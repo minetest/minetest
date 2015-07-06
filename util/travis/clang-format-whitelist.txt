@@ -72,6 +72,8 @@ src/environment.cpp
 src/event.h
 src/event_manager.h
 src/exceptions.h
+src/face_position_cache.cpp
+src/face_position_cache.h
 src/filecache.cpp
 src/filesys.cpp
 src/filesys.h
