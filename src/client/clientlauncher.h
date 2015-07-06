@@ -90,13 +90,13 @@ public:
 
 protected:
 	void init_args(GameParams &game_params, const Settings &cmd_args);
-	bool init_engine(int log_level);
+	bool init_engine();
 
 	bool launch_game(std::string &error_message, bool reconnect_requested,
 		GameParams &game_params, const Settings &cmd_args);
 
 	void main_menu(MainMenuData *menudata);
-	bool create_engine_device(int log_level);
+	bool create_engine_device();
 
 	void speed_tests();
 	bool print_video_modes();

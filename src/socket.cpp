@@ -571,9 +571,8 @@ bool UDPSocket::WaitData(int timeout_ms)
 		int e = WSAGetLastError();
 		dstream << (int) m_handle << ": WSAGetLastError()="
 		        << e << std::endl;
-		if(e == 10004 /* = WSAEINTR */ || e == 10009 /*WSAEBADF*/)
-		{
-			dstream << "WARNING: Ignoring WSAEINTR/WSAEBADF." << std::endl;
+		if (e == 10004 /* WSAEINTR */ || e == 10009 /* WSAEBADF */) {
+			infostream << "Ignoring WSAEINTR/WSAEBADF." << std::endl;
 			return false;
 		}
 #endif

@@ -22,11 +22,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <iostream>
 #include <exception>
-#include <assert.h>
+#include <cassert>
 #include "gettime.h"
+#include "log.h"
 
 #if (defined(WIN32) || defined(_WIN32_WCE))
-	#define WIN32_LEAN_AND_MEAN
+	#ifndef WIN32_LEAN_AND_MEAN
+		#define WIN32_LEAN_AND_MEAN
+	#endif
 	#ifndef _WIN32_WINNT
 		#define _WIN32_WINNT 0x0501
 	#endif
@@ -34,11 +37,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#ifdef _MSC_VER
 		#include <eh.h>
 	#endif
-	#define __NORETURN __declspec(noreturn)
-	#define __FUNCTION_NAME __FUNCTION__
+	#define NORETURN __declspec(noreturn)
+	#define FUNCTION_NAME __FUNCTION__
 #else
-	#define __NORETURN __attribute__ ((__noreturn__))
-	#define __FUNCTION_NAME __PRETTY_FUNCTION__
+	#define NORETURN __attribute__ ((__noreturn__))
+	#define FUNCTION_NAME __PRETTY_FUNCTION__
 #endif
 
 // Whether to catch all std::exceptions.
@@ -50,63 +53,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define CATCH_UNHANDLED_EXCEPTIONS 0
 #endif
 
-/*
-	Debug output
-*/
 
-#define DTIME (getTimestamp()+": ")
-
-extern void debugstreams_init(bool disable_stderr, const char *filename);
-extern void debugstreams_deinit();
-
-// This is used to redirect output to /dev/null
-class Nullstream : public std::ostream {
-public:
-	Nullstream():
-		std::ostream(0)
-	{
-	}
-private:
-};
-
-extern std::ostream dstream;
-extern std::ostream dstream_no_stderr;
-extern Nullstream dummyout;
-
-
-/* Abort program execution immediately
- */
-__NORETURN extern void fatal_error_fn(
-		const char *msg, const char *file,
+// Abort program execution immediately
+NORETURN extern void fatal_error_fn(const std::string &msg, const char *file,
 		unsigned int line, const char *function);
 
+extern const std::string fe_prefix;
 #define FATAL_ERROR(msg) \
-	fatal_error_fn((msg), __FILE__, __LINE__, __FUNCTION_NAME)
+	fatal_error_fn(fe_prefix + (msg), __FILE__, __LINE__, FUNCTION_NAME)
 
-#define FATAL_ERROR_IF(expr, msg) \
-	((expr) \
-	? fatal_error_fn((msg), __FILE__, __LINE__, __FUNCTION_NAME) \
-	: (void)(0))
+#define FATAL_ERROR_IF(expr, msg) ((expr) ? FATAL_ERROR(msg) : (void)(0))
 
 /*
-	sanity_check()
-	Equivalent to assert() but persists in Release builds (i.e. when NDEBUG is
-	defined)
-*/
+ * Equivalent to assert() but persists in Release builds (i.e. when NDEBUG is
+ * defined)
+ */
 
-__NORETURN extern void sanity_check_fn(
-		const char *assertion, const char *file,
-		unsigned int line, const char *function);
-
-#define SANITY_CHECK(expr) \
-	((expr) \
-	? (void)(0) \
-	: sanity_check_fn(#expr, __FILE__, __LINE__, __FUNCTION_NAME))
+#define SANITY_CHECK(expr) ((expr) ? (void)(0) : \
+	fatal_error_fn("An engine assumption '" #expr "' failed.", \
+			__FILE__, __LINE__, FUNCTION_NAME))
 
 #define sanity_check(expr) SANITY_CHECK(expr)
 
-
+#ifdef _MSC_VER
 void debug_set_exception_handler();
+#else
+static inline void debug_set_exception_handler() {}
+#endif
 
 /*
 	DebugStack
@@ -115,11 +88,10 @@ void debug_set_exception_handler();
 #define DEBUG_STACK_SIZE 50
 #define DEBUG_STACK_TEXT_SIZE 300
 
-extern void debug_stacks_init();
 extern void debug_stacks_print_to(std::ostream &os);
-extern void debug_stacks_print();
+static inline void debug_stacks_print() { debug_stacks_print_to(dstream); }
 
-struct DebugStack;
+class DebugStack;
 class DebugStacker
 {
 public:
@@ -132,12 +104,12 @@ private:
 };
 
 #define DSTACK(msg) \
-	DebugStacker __debug_stacker(msg);
+	DebugStacker _debug_stacker(msg);
 
 #define DSTACKF(...) \
-	char __buf[DEBUG_STACK_TEXT_SIZE];                   \
-	snprintf(__buf, DEBUG_STACK_TEXT_SIZE, __VA_ARGS__); \
-	DebugStacker __debug_stacker(__buf);
+	char _buf[DEBUG_STACK_TEXT_SIZE];                   \
+	snprintf(_buf, DEBUG_STACK_TEXT_SIZE, __VA_ARGS__); \
+	DebugStacker _debug_stacker(_buf);
 
 /*
 	These should be put into every thread
@@ -145,18 +117,15 @@ private:
 
 #if CATCH_UNHANDLED_EXCEPTIONS == 1
 	#define BEGIN_DEBUG_EXCEPTION_HANDLER try {
-	#define END_DEBUG_EXCEPTION_HANDLER(logstream) \
-		} catch (std::exception &e) {                               \
-			logstream << "ERROR: An unhandled exception occurred: " \
-				<< e.what() << std::endl;                           \
-			assert(0);                                              \
+	#define END_DEBUG_EXCEPTION_HANDLER \
+		} catch (std::exception &e) { \
+			FATAL_ERROR("An unhandled exception occurred: " + \
+				std::string(e.what())); \
 		}
 #else
 	// Dummy ones
 	#define BEGIN_DEBUG_EXCEPTION_HANDLER
-	#define END_DEBUG_EXCEPTION_HANDLER(logstream)
+	#define END_DEBUG_EXCEPTION_HANDLER
 #endif
 
 #endif // DEBUG_HEADER
-
-

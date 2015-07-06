@@ -89,7 +89,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 	if (list_video_modes)
 		return print_video_modes();
 
-	if (!init_engine(game_params.log_level)) {
+	if (!init_engine()) {
 		errorstream << "Could not initialize game engine." << std::endl;
 		return false;
 	}
@@ -321,10 +321,10 @@ void ClientLauncher::init_args(GameParams &game_params, const Settings &cmd_args
 			|| cmd_args.getFlag("random-input");
 }
 
-bool ClientLauncher::init_engine(int log_level)
+bool ClientLauncher::init_engine()
 {
 	receiver = new MyEventReceiver();
-	create_engine_device(log_level);
+	create_engine_device();
 	return device != NULL;
 }
 
@@ -455,7 +455,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 
 		if (game_params.game_spec.isValid() &&
 				game_params.game_spec.id != worldspec.gameid) {
-			errorstream << "WARNING: Overriding gamespec from \""
+			warningstream << "Overriding gamespec from \""
 			            << worldspec.gameid << "\" to \""
 			            << game_params.game_spec.id << "\"" << std::endl;
 			gamespec = game_params.game_spec;
@@ -500,20 +500,8 @@ void ClientLauncher::main_menu(MainMenuData *menudata)
 	smgr->clear();	/* leave scene manager in a clean state */
 }
 
-bool ClientLauncher::create_engine_device(int log_level)
+bool ClientLauncher::create_engine_device()
 {
-	static const irr::ELOG_LEVEL irr_log_level[5] = {
-		ELL_NONE,
-		ELL_ERROR,
-		ELL_WARNING,
-		ELL_INFORMATION,
-#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
-		ELL_INFORMATION
-#else
-		ELL_DEBUG
-#endif
-	};
-
 	// Resolution selection
 	bool fullscreen = g_settings->getBool("fullscreen");
 	u16 screenW = g_settings->getU16("screenW");
@@ -561,10 +549,6 @@ bool ClientLauncher::create_engine_device(int log_level)
 	device = createDeviceEx(params);
 
 	if (device) {
-		// Map our log level to irrlicht engine one.
-		ILogger* irr_logger = device->getLogger();
-		irr_logger->setLogLevel(irr_log_level[log_level]);
-
 		porting::initIrrlicht(device);
 	}
 

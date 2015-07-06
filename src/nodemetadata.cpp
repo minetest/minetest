@@ -120,7 +120,7 @@ void NodeMetadataList::deSerialize(std::istream &is, IGameDef *gamedef)
 	}
 
 	if(version != 1){
-		infostream<<__FUNCTION_NAME<<": version "<<version<<" not supported"
+		infostream<<FUNCTION_NAME<<": version "<<version<<" not supported"
 				<<std::endl;
 		throw SerializationError("NodeMetadataList::deSerialize");
 	}
@@ -140,7 +140,7 @@ void NodeMetadataList::deSerialize(std::istream &is, IGameDef *gamedef)
 
 		if(m_data.find(p) != m_data.end())
 		{
-			infostream<<"WARNING: NodeMetadataList::deSerialize(): "
+			warningstream<<"NodeMetadataList::deSerialize(): "
 					<<"already set data at position"
 					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<"): Ignoring."
 					<<std::endl;

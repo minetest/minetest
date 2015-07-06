@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IMeshManipulator.h>
 #include <IAnimatedMeshSceneNode.h>
 #include <IBoneSceneNode.h>
+#include <algorithm>
 #include "content_cao.h"
 #include "util/numeric.h" // For IntervalLimiter
 #include "util/serialize.h"
@@ -465,7 +466,7 @@ void ItemCAO::updateTexture()
 	}
 	catch(SerializationError &e)
 	{
-		infostream<<"WARNING: "<<__FUNCTION_NAME
+		warningstream<<FUNCTION_NAME
 				<<": error deSerializing itemstring \""
 				<<m_itemstring<<std::endl;
 	}

@@ -70,7 +70,7 @@ Environment::~Environment()
 
 void Environment::addPlayer(Player *player)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 	/*
 		Check that peer_ids are unique.
 		Also check that names are unique.
@@ -87,7 +87,7 @@ void Environment::addPlayer(Player *player)
 
 void Environment::removePlayer(u16 peer_id)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 
 	for(std::vector<Player*>::iterator i = m_players.begin();
 			i != m_players.end();)
@@ -1002,7 +1002,7 @@ void ServerEnvironment::clearAllObjects()
 
 void ServerEnvironment::step(float dtime)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 
 	//TimeTaker timer("ServerEnv step");
 
@@ -1208,7 +1208,7 @@ void ServerEnvironment::step(float dtime)
 		u32 time_ms = timer.stop(true);
 		u32 max_time_ms = 200;
 		if(time_ms > max_time_ms){
-			infostream<<"WARNING: active block modifiers took "
+			warningstream<<"active block modifiers took "
 					<<time_ms<<"ms (longer than "
 					<<max_time_ms<<"ms)"<<std::endl;
 			m_active_block_interval_overload_skip = (time_ms / max_time_ms) + 1;
@@ -1921,7 +1921,7 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 					// reason. Unsuccessful attempts have been made to find
 					// said reason.
 					if(id && block->m_static_objects.m_active.find(id) != block->m_static_objects.m_active.end()){
-						infostream<<"ServerEnv: WARNING: Performing hack #83274"
+						warningstream<<"ServerEnv: Performing hack #83274"
 								<<std::endl;
 						block->m_static_objects.remove(id);
 					}
@@ -2039,7 +2039,7 @@ ClientMap & ClientEnvironment::getClientMap()
 
 void ClientEnvironment::addPlayer(Player *player)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 	/*
 		It is a failure if player is local and there already is a local
 		player
@@ -2063,7 +2063,7 @@ LocalPlayer * ClientEnvironment::getLocalPlayer()
 
 void ClientEnvironment::step(float dtime)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 
 	/* Step time of day */
 	stepTimeOfDay(dtime);

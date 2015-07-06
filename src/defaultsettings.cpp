@@ -279,7 +279,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("dedicated_server_step", "0.1");
 	settings->setDefault("ignore_world_load_errors", "false");
 	settings->setDefault("remote_media", "");
-	settings->setDefault("debug_log_level", "2");
+	settings->setDefault("debug_log_level", "action");
 	settings->setDefault("emergequeue_limit_total", "256");
 	settings->setDefault("emergequeue_limit_diskonly", "32");
 	settings->setDefault("emergequeue_limit_generate", "32");

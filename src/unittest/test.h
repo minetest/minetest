@@ -36,24 +36,24 @@ class TestFailedException : public std::exception {
 	u32 t1 = porting::getTime(PRECISION_MILLI);                             \
 	try {                                                                   \
 		fxn(__VA_ARGS__);                                                   \
-		dstream << "[PASS] ";                                               \
+		rawstream << "[PASS] ";                                               \
 	} catch (TestFailedException &e) {                                      \
-		dstream << "[FAIL] ";                                               \
+		rawstream << "[FAIL] ";                                               \
 		num_tests_failed++;                                                 \
 	} catch (std::exception &e) {                                           \
-		dstream << "Caught unhandled exception: " << e.what() << std::endl; \
-		dstream << "[FAIL] ";                                               \
+		rawstream << "Caught unhandled exception: " << e.what() << std::endl; \
+		rawstream << "[FAIL] ";                                               \
 		num_tests_failed++;                                                 \
 	}                                                                       \
 	num_tests_run++;                                                        \
 	u32 tdiff = porting::getTime(PRECISION_MILLI) - t1;                     \
-	dstream << #fxn << " - " << tdiff << "ms" << std::endl;                 \
+	rawstream << #fxn << " - " << tdiff << "ms" << std::endl;                 \
 } while (0)
 
 // Asserts the specified condition is true, or fails the current unit test
 #define UASSERT(x) do {                                       \
 	if (!(x)) {                                               \
-		dstream << "Test assertion failed: " #x << std::endl  \
+		rawstream << "Test assertion failed: " #x << std::endl  \
 			<< "    at " << fs::GetFilenameFromPath(__FILE__) \
 			<< ":" << __LINE__ << std::endl;                  \
 		throw TestFailedException();                          \
@@ -66,7 +66,7 @@ class TestFailedException : public std::exception {
 	if (!(x)) {                                                        \
 		char utest_buf[1024];                                          \
 		snprintf(utest_buf, sizeof(utest_buf), fmt, __VA_ARGS__);      \
-		dstream << "Test assertion failed: " << utest_buf << std::endl \
+		rawstream << "Test assertion failed: " << utest_buf << std::endl \
 			<< "    at " << fs::GetFilenameFromPath(__FILE__)          \
 			<< ":" << __LINE__ << std::endl;                           \
 		throw TestFailedException();                                   \
@@ -78,7 +78,7 @@ class TestFailedException : public std::exception {
 	T a = (actual);                                                           \
 	T e = (expected);                                                         \
 	if (!(a CMP e)) {                                                         \
-		dstream << "Test assertion failed: " << #actual << " " << #CMP << " " \
+		rawstream << "Test assertion failed: " << #actual << " " << #CMP << " " \
 			<< #expected << std::endl                                         \
 			<< "    at " << fs::GetFilenameFromPath(__FILE__) << ":"          \
 			<< __LINE__ << std::endl                                          \

@@ -65,7 +65,7 @@ void RemoteClient::GetNextBlocks (
 		float dtime,
 		std::vector<PrioritySortedBlockTransfer> &dest)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 
 
 	// Increment timers
