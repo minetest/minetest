@@ -24,42 +24,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../irr_v2d.h"
 #include "../irr_v3d.h"
 #include "../irr_aabb3d.h"
-#include "../threading/mutex.h"
-#include <list>
-#include <map>
-#include <vector>
-#include <algorithm>
 
+#define ARRLEN(a) (sizeof(a) / sizeof((a)[0]))
+#define MYMIN(a,b) ((a)<(b)?(a):(b))
+#define MYMAX(a,b) ((a)>(b)?(a):(b))
+#define rangelim(d, min, max) ((d) < (min) ? (min) : ((d)>(max)?(max):(d)))
+#define myfloor(x) ((x) > 0.0 ? (int)(x) : (int)(x) - 1)
+// Requires <algorithm>
+#define CONTAINS(c, v) (std::find((c).begin(), (c).end(), (v)) != (c).end())
+// The naive swap performs better than the xor version
+#define SWAP(t, x, y) do { \
+	t temp = x; \
+	x = y; \
+	y = temp; \
+} while (0)
 
-/*
- * This class permits to cache getFacePosition call results
- * This reduces CPU usage and vector calls
- */
-class FacePositionCache
-{
-public:
-	static std::vector<v3s16> getFacePositions(u16 d);
-private:
-	static void generateFacePosition(u16 d);
-	static std::map<u16, std::vector<v3s16> > m_cache;
-	static Mutex m_cache_mutex;
-};
-
-class IndentationRaiser
-{
-public:
-	IndentationRaiser(u16 *indentation)
-	{
-		m_indentation = indentation;
-		(*m_indentation)++;
-	}
-	~IndentationRaiser()
-	{
-		(*m_indentation)--;
-	}
-private:
-	u16 *m_indentation;
-};
 
 inline s16 getContainerPos(s16 p, s16 d)
 {
@@ -146,35 +125,22 @@ inline bool isInArea(v3s16 p, v3s16 d)
 	);
 }
 
-#define rangelim(d, min, max) ((d) < (min) ? (min) : ((d)>(max)?(max):(d)))
-#define myfloor(x) ((x) > 0.0 ? (int)(x) : (int)(x) - 1)
-
 inline v3s16 arealim(v3s16 p, s16 d)
 {
-	if(p.X < 0)
+	if (p.X < 0)
 		p.X = 0;
-	if(p.Y < 0)
+	if (p.Y < 0)
 		p.Y = 0;
-	if(p.Z < 0)
+	if (p.Z < 0)
 		p.Z = 0;
-	if(p.X > d-1)
-		p.X = d-1;
-	if(p.Y > d-1)
-		p.Y = d-1;
-	if(p.Z > d-1)
-		p.Z = d-1;
+	if (p.X > d - 1)
+		p.X = d - 1;
+	if (p.Y > d - 1)
+		p.Y = d - 1;
+	if (p.Z > d - 1)
+		p.Z = d - 1;
 	return p;
 }
-
-#define ARRLEN(x) (sizeof(x) / sizeof((x)[0]))
-#define CONTAINS(c, v) (std::find((c).begin(), (c).end(), (v)) != (c).end())
-
-// The naive swap performs better than the xor version
-#define SWAP(t, x, y) do { \
-	t temp = x;            \
-	x = y;                 \
-	y = temp;              \
-} while (0)
 
 inline void sortBoxVerticies(v3s16 &p1, v3s16 &p2) {
 	if (p1.X > p2.X)
@@ -279,12 +245,6 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 		f32 camera_fov, f32 range, f32 *distance_ptr=NULL);
 
 /*
-	Some helper stuff
-*/
-#define MYMIN(a,b) ((a)<(b)?(a):(b))
-#define MYMAX(a,b) ((a)>(b)?(a):(b))
-
-/*
 	Returns nearest 32-bit integer for given floating point number.
 	<cmath> and <math.h> in VC++ don't provide round().
 */
@@ -331,13 +291,11 @@ inline core::aabbox3d<f32> getNodeBox(v3s16 p, float d)
 	);
 }
 
+
 class IntervalLimiter
 {
 public:
-	IntervalLimiter():
-		m_accumulator(0)
-	{
-	}
+	IntervalLimiter() : accumulator(0) {}
 	/*
 		dtime: time from last call to this method
 		wanted_interval: interval wanted
@@ -347,15 +305,17 @@ public:
 	*/
 	bool step(float dtime, float wanted_interval)
 	{
-		m_accumulator += dtime;
-		if(m_accumulator < wanted_interval)
+		accumulator += dtime;
+		if (accumulator < wanted_interval)
 			return false;
-		m_accumulator -= wanted_interval;
+		accumulator -= wanted_interval;
 		return true;
 	}
-protected:
-	float m_accumulator;
+
+private:
+	float accumulator;
 };
+
 
 /*
 	Splits a list into "pages". For example, the list [1,2,3,4,5] split
@@ -372,29 +332,21 @@ protected:
 */
 inline void paging(u32 length, u32 page, u32 pagecount, u32 &minindex, u32 &maxindex)
 {
-	if(length < 1 || pagecount < 1 || page < 1 || page > pagecount)
-	{
+	if (length < 1 || pagecount < 1 || page < 1 || page > pagecount) {
 		// Special cases or invalid parameters
 		minindex = maxindex = 0;
-	}
-	else if(pagecount <= length)
-	{
+	} else if(pagecount <= length) {
 		// Less pages than entries in the list:
 		// Each page contains at least one entry
 		minindex = (length * (page-1) + (pagecount-1)) / pagecount;
 		maxindex = (length * page + (pagecount-1)) / pagecount;
-	}
-	else
-	{
+	} else {
 		// More pages than entries in the list:
 		// Make sure the empty pages are at the end
-		if(page < length)
-		{
+		if (page < length) {
 			minindex = page-1;
 			maxindex = page;
-		}
-		else
-		{
+		} else {
 			minindex = 0;
 			maxindex = 0;
 		}
@@ -403,7 +355,7 @@ inline void paging(u32 length, u32 page, u32 pagecount, u32 &minindex, u32 &maxi
 
 inline float cycle_shift(float value, float by = 0, float max = 1)
 {
-    if (value + by < 0) return max + by + value;
+    if (value + by < 0)   return value + by + max;
     if (value + by > max) return value + by - max;
     return value + by;
 }

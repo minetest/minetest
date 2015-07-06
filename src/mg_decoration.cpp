@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "log.h"
 #include "util/numeric.h"
+#include <algorithm>
+
 
 FlagDesc flagdesc_deco[] = {
 	{"place_center_x", DECO_PLACE_CENTER_X},
@@ -246,7 +248,7 @@ bool DecoSimple::canPlaceDecoration(MMVManip *vm, v3s16 p)
 		return true;
 
 	int nneighs = 0;
-	v3s16 dirs[16] = {
+	static const v3s16 dirs[] = {
 		v3s16( 0, 0,  1),
 		v3s16( 0, 0, -1),
 		v3s16( 1, 0,  0),
