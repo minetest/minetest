@@ -35,10 +35,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "treegen.h"
 #include "emerge.h"
 #include "pathfinder.h"
+#include "face_position_cache.h"
 
-#define GET_ENV_PTR ServerEnvironment* env =                                   \
-				dynamic_cast<ServerEnvironment*>(getEnv(L));                   \
-				if (env == NULL) return 0
+#define GET_ENV_PTR ServerEnvironment* env = \
+			dynamic_cast<ServerEnvironment*>(getEnv(L)); \
+	if (env == NULL) return 0
 
 ///////////////////////////////////////////////////////////////////////////////
 

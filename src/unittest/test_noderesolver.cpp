@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "nodedef.h"
 
+#include <algorithm>
+
 
 class TestNodeResolver : public TestBase {
 public:

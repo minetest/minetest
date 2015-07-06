@@ -20,9 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mg_ore.h"
 #include "mapgen.h"
 #include "noise.h"
-#include "util/numeric.h"
 #include "map.h"
 #include "log.h"
+#include <algorithm>
+
 
 FlagDesc flagdesc_ore[] = {
 	{"absheight",                 OREFLAG_ABSHEIGHT},
