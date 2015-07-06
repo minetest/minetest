@@ -120,7 +120,7 @@ void NodeMetadataList::deSerialize(std::istream &is, IItemDefManager *item_def_m
 	}
 
 	if (version != 1) {
-		std::string err_str = std::string(__FUNCTION_NAME)
+		std::string err_str = std::string(FUNCTION_NAME)
 			+ ": version " + itos(version) + " not supported";
 		infostream << err_str << std::endl;
 		throw SerializationError(err_str);
@@ -139,7 +139,7 @@ void NodeMetadataList::deSerialize(std::istream &is, IItemDefManager *item_def_m
 		p.X = p16;
 
 		if (m_data.find(p) != m_data.end()) {
-			infostream<<"WARNING: NodeMetadataList::deSerialize(): "
+			warningstream<<"NodeMetadataList::deSerialize(): "
 					<<"already set data at position"
 					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<"): Ignoring."
 					<<std::endl;

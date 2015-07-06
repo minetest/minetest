@@ -18,8 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "minimap.h"
-#include <math.h>
-#include "logoutputbuffer.h"
 #include "threading/mutex_auto_lock.h"
 #include "threading/semaphore.h"
 #include "clientmap.h"
@@ -28,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "util/numeric.h"
 #include "util/string.h"
+#include <math.h>
 
 
 ////

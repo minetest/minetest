@@ -6,7 +6,7 @@
 --
 
 -- Initialize some very basic things
-print = core.debug
+function core.debug(...) core.log(table.concat({...}, "\t")) end
 math.randomseed(os.time())
 os.setlocale("C", "numeric")
 minetest = core

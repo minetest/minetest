@@ -209,7 +209,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		Calculate new velocity
 	*/
 	if( dtime > 0.5 ) {
-		infostream<<"collisionMoveSimple: WARNING: maximum step interval exceeded, lost movement details!"<<std::endl;
+		warningstream<<"collisionMoveSimple: maximum step interval exceeded, lost movement details!"<<std::endl;
 		dtime = 0.5;
 	}
 	speed_f += accel_f * dtime;
@@ -388,7 +388,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		loopcount++;
 		if(loopcount >= 100)
 		{
-			infostream<<"collisionMoveSimple: WARNING: Loop count exceeded, aborting to avoid infiniite loop"<<std::endl;
+			warningstream<<"collisionMoveSimple: Loop count exceeded, aborting to avoid infiniite loop"<<std::endl;
 			dtime = 0;
 			break;
 		}

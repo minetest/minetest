@@ -440,7 +440,7 @@ bool EmergeThread::getBlockOrStartGen(v3s16 p, MapBlock **b,
 
 void *EmergeThread::run()
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 	BEGIN_DEBUG_EXCEPTION_HANDLER
 
 	v3s16 last_tried_pos(-32768,-32768,-32768); // For error output
@@ -570,6 +570,6 @@ void *EmergeThread::run()
 		}
 	}
 
-	END_DEBUG_EXCEPTION_HANDLER(errorstream)
+	END_DEBUG_EXCEPTION_HANDLER
 	return NULL;
 }

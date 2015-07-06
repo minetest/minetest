@@ -256,7 +256,7 @@ void ModConfiguration::addMods(std::vector<ModSpec> new_mods)
 				// BAD CASE: name conflict in different levels.
 				u32 oldindex = existing_mods[mod.name];
 				const ModSpec &oldmod = m_unsatisfied_mods[oldindex];
-				actionstream<<"WARNING: Mod name conflict detected: \""
+				warningstream<<"Mod name conflict detected: \""
 					<<mod.name<<"\""<<std::endl
 					<<"Will not load: "<<oldmod.path<<std::endl
 					<<"Overridden by: "<<mod.path<<std::endl;
@@ -270,7 +270,7 @@ void ModConfiguration::addMods(std::vector<ModSpec> new_mods)
 				// VERY BAD CASE: name conflict in the same level.
 				u32 oldindex = existing_mods[mod.name];
 				const ModSpec &oldmod = m_unsatisfied_mods[oldindex];
-				errorstream<<"WARNING: Mod name conflict detected: \""
+				warningstream<<"Mod name conflict detected: \""
 					<<mod.name<<"\""<<std::endl
 					<<"Will not load: "<<oldmod.path<<std::endl
 					<<"Will not load: "<<mod.path<<std::endl;

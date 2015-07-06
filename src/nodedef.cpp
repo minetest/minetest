@@ -653,7 +653,7 @@ content_t CNodeDefManager::set(const std::string &name, const ContentFeatures &d
 
 	// Don't allow redefining ignore (but allow air and unknown)
 	if (name == "ignore") {
-		infostream << "NodeDefManager: WARNING: Ignoring "
+		warningstream << "NodeDefManager: Ignoring "
 			"CONTENT_IGNORE redefinition"<<std::endl;
 		return CONTENT_IGNORE;
 	}
@@ -663,7 +663,7 @@ content_t CNodeDefManager::set(const std::string &name, const ContentFeatures &d
 		// Get new id
 		id = allocateId();
 		if (id == CONTENT_IGNORE) {
-			infostream << "NodeDefManager: WARNING: Absolute "
+			warningstream << "NodeDefManager: Absolute "
 				"limit reached" << std::endl;
 			return CONTENT_IGNORE;
 		}
@@ -1112,12 +1112,12 @@ void CNodeDefManager::deSerialize(std::istream &is)
 
 		// Check error conditions
 		if (i == CONTENT_IGNORE || i == CONTENT_AIR || i == CONTENT_UNKNOWN) {
-			infostream << "NodeDefManager::deSerialize(): WARNING: "
+			warningstream << "NodeDefManager::deSerialize(): "
 				"not changing builtin node " << i << std::endl;
 			continue;
 		}
 		if (f.name == "") {
-			infostream << "NodeDefManager::deSerialize(): WARNING: "
+			warningstream << "NodeDefManager::deSerialize(): "
 				"received empty name" << std::endl;
 			continue;
 		}
@@ -1125,7 +1125,7 @@ void CNodeDefManager::deSerialize(std::istream &is)
 		// Ignore aliases
 		u16 existing_id;
 		if (m_name_id_mapping.getId(f.name, existing_id) && i != existing_id) {
-			infostream << "NodeDefManager::deSerialize(): WARNING: "
+			warningstream << "NodeDefManager::deSerialize(): "
 				"already defined with different ID: " << f.name << std::endl;
 			continue;
 		}

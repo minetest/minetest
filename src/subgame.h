@@ -51,10 +51,7 @@ struct SubgameSpec
 		menuicon_path(menuicon_path_)
 	{}
 
-	bool isValid() const
-	{
-		return (id != "" && path != "");
-	}
+	bool isValid() const { return !id.empty() && !path.empty(); }
 };
 
 // minetest.conf

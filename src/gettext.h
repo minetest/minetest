@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #ifdef _MSC_VER
 void init_gettext(const char *path, const std::string &configured_language,
-		int argc, char** argv);
+		int argc, const char *argv[]);
 #else
 void init_gettext(const char *path, const std::string &configured_language);
 #endif

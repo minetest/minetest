@@ -167,13 +167,12 @@ public:
 		NOTE: Every public method should be thread-safe
 	*/
 
-	Server(
-		const std::string &path_world,
+	Server(const std::string &path_world,
 		const SubgameSpec &gamespec,
 		bool simple_singleplayer_mode,
-		bool ipv6
-	);
+		bool ipv6, bool dedicated);
 	~Server();
+
 	void start(Address bind_addr);
 	void stop();
 	// This is mainly a way to pass the time to the server.
@@ -647,6 +646,8 @@ private:
 		Particles
 	*/
 	std::vector<u32> m_particlespawner_ids;
+
+	bool m_dedicated;
 };
 
 /*

@@ -20,83 +20,166 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef LOG_HEADER
 #define LOG_HEADER
 
+#include <map>
+#include <queue>
 #include <string>
+#include <fstream>
+#include "threads.h"
 
-/*
-	Use this for logging everything.
 
-	If you need to explicitly print something, use dstream or cout or cerr.
-*/
+namespace logging {
 
-enum LogMessageLevel {
-	LMT_ERROR, /* Something failed ("invalid map data on disk, block (2,2,1)") */
-	LMT_ACTION, /* In-game actions ("celeron55 placed block at (12,4,-5)") */
-	LMT_INFO, /* More deep info ("saving map on disk (only_modified=true)") */
-	LMT_VERBOSE, /* Flood-style ("loaded block (2,2,2) from disk") */
-	LMT_NUM_VALUES,
+/* Use this for logging everything.
+ * If you need to explicitly print something, use cout or cerr.
+ */
+
+class ILogOutput;
+
+
+// TODO: Use C++11 enum class
+enum LogLevel {
+	LL_NONE, // Special level that is always printed
+	LL_ERROR,
+	LL_WARNING,
+	LL_ACTION,  // In-game actions
+	LL_INFO,
+	LL_VERBOSE,
+	LL_MAX,
 };
+
+LogLevel stringToLevel(const std::string &name);
+
+class Logger {
+public:
+	void addOutput(ILogOutput *out) { addOutputMaxLevel(out, LL_MAX); }
+	void addOutput(ILogOutput *, LogLevel);
+	void addOutputMaxLevel(ILogOutput *, LogLevel);
+	void removeOutput(ILogOutput *);
+	void setLevelSilenced(LogLevel, bool);
+
+	void registerThread(const std::string &name);
+	void deregisterThread();
+
+	void log(LogLevel, const std::string &text);
+	// Logs without a prefix
+	void logRaw(LogLevel, const std::string &text);
+
+	void setTraceEnabled(bool x) { trace_enabled = x; }
+	bool getTraceEnabled() { return trace_enabled; }
+
+private:
+	void logToSystem(LogLevel, const std::string &text);
+	void logToOutputs(LogLevel, const std::string &text);
+
+	const std::string getLevelLabel(LogLevel lev);
+	const std::string getThreadName();
+
+	typedef std::vector<ILogOutput*> OutputList;
+
+	OutputList outputs[LL_MAX];
+	// Should implement atomic loads and stores (even though it's only
+	// written to when one thread has access currently).
+	// Works on all known architectures (x86, ARM, MIPS).
+	volatile bool silenced_levels[LL_MAX];
+	std::map<threadid_t, std::string> thread_names;
+	mutable Mutex mutex;
+	bool trace_enabled;
+};
+
 
 class ILogOutput
 {
 public:
-	ILogOutput() :
-		silence(false)
-	{}
-
-	/* line: Full line with timestamp, level and thread */
-	virtual void printLog(const std::string &line){};
-	/* line: Full line with timestamp, level and thread */
-	virtual void printLog(const std::string &line, enum LogMessageLevel lev){};
-	/* line: Only actual printed text */
-	virtual void printLog(enum LogMessageLevel lev, const std::string &line){};
-
-	bool silence;
+	virtual void log(const std::string &line) = 0;
 };
 
-void log_add_output(ILogOutput *out, enum LogMessageLevel lev);
-void log_add_output_maxlev(ILogOutput *out, enum LogMessageLevel lev);
-void log_add_output_all_levs(ILogOutput *out);
-void log_remove_output(ILogOutput *out);
-void log_set_lev_silence(enum LogMessageLevel lev, bool silence);
 
-void log_register_thread(const std::string &name);
-void log_deregister_thread();
+class StreamLogOutput : public ILogOutput
+{
+public:
+	StreamLogOutput(std::ostream &stream) : stream(stream) {}
+	void log(const std::string &line) { stream << line << std::endl; }
+private:
+	std::ostream &stream;
+};
 
-void log_printline(enum LogMessageLevel lev, const std::string &text);
 
-#define LOGLINEF(lev, ...)\
-{\
-	char buf[10000];\
-	snprintf(buf, 10000, __VA_ARGS__);\
-	log_printline(lev, buf);\
-}
+class FileLogOutput : public ILogOutput
+{
+public:
+	void open(const std::string &filename);
+	void log(const std::string &line) { stream << line << std::endl; }
 
-extern std::ostream errorstream;
-extern std::ostream actionstream;
-extern std::ostream infostream;
-extern std::ostream verbosestream;
+private:
+	std::ofstream stream;
+};
 
-extern bool log_trace_level_enabled;
 
-#define TRACESTREAM(x){ if(log_trace_level_enabled) verbosestream x; }
-#define TRACEDO(x){ if(log_trace_level_enabled){ x ;} }
+class LogOutputBuffer : public ILogOutput
+{
+public:
+	LogOutputBuffer(Logger &logger, LogLevel lev) : logger(logger)
+		{ logger.addOutput(this, lev); }
+	~LogOutputBuffer() { logger.removeOutput(this); }
+
+	virtual void log(const std::string &line) { buffer.push(line); }
+	bool empty() { return buffer.empty(); }
+
+	std::string get()
+	{
+		if (empty())
+			return "";
+		std::string s = buffer.front();
+		buffer.pop();
+		return s;
+	}
+private:
+	std::queue<std::string> buffer;
+	Logger &logger;
+};
+
+
+extern StreamLogOutput stdout_output;
+extern StreamLogOutput stderr_output;
+extern std::ostream null_stream;
 
 extern std::ostream *dout_con_ptr;
 extern std::ostream *derr_con_ptr;
 extern std::ostream *dout_server_ptr;
-extern std::ostream *derr_server_ptr;
-#define dout_con (*dout_con_ptr)
-#define derr_con (*derr_con_ptr)
-#define dout_server (*dout_server_ptr)
-#define derr_server (*derr_server_ptr)
+extern std::ostream *dout_client_ptr;
 
 #ifndef SERVER
-extern std::ostream *dout_client_ptr;
 extern std::ostream *derr_client_ptr;
-#define dout_client (*dout_client_ptr)
-#define derr_client (*derr_client_ptr)
-
+extern std::ostream *derr_server_ptr;
 #endif
 
+}; // namespace logging
+
+extern logging::Logger g_logger;
+
+// Writes directly to all LL_NONE log outputs for g_logger with no prefix.
+extern std::ostream rawstream;
+
+extern std::ostream errorstream;
+extern std::ostream warningstream;
+extern std::ostream actionstream;
+extern std::ostream infostream;
+extern std::ostream verbosestream;
+extern std::ostream dstream;
+
+
+#define TRACEDO(x) { if (g_logger.getTraceEnabled()) { x; } }
+#define TRACESTREAM(x) TRACEDO(verbosestream x)
+
+#define dout_con (*logging::dout_con_ptr)
+#define derr_con (*logging::derr_con_ptr)
+#define dout_server (*logging::dout_server_ptr)
+#define derr_server (*logging::derr_server_ptr)
+
+#ifndef SERVER
+	#define dout_client (*logging::dout_client_ptr)
+	#define derr_client (*logging::derr_client_ptr)
 #endif
 
+
+#endif

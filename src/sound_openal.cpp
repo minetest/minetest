@@ -92,7 +92,7 @@ static ALenum warn_if_error(ALenum err, const char *desc)
 {
 	if(err == AL_NO_ERROR)
 		return err;
-	errorstream<<"WARNING: "<<desc<<": "<<alErrorString(err)<<std::endl;
+	warningstream<<desc<<": "<<alErrorString(err)<<std::endl;
 	return err;
 }
 
