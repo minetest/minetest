@@ -780,7 +780,6 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 	scene::IMeshManipulator* meshmanip = smgr->getMeshManipulator();
 
 	bool new_style_water           = g_settings->getBool("new_style_water");
-	bool new_style_leaves          = g_settings->getBool("new_style_leaves");
 	bool connected_glass           = g_settings->getBool("connected_glass");
 	bool opaque_water              = g_settings->getBool("opaque_water");
 	bool enable_shaders            = g_settings->getBool("enable_shaders");
@@ -788,6 +787,7 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 	bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
 	bool enable_mesh_cache         = g_settings->getBool("enable_mesh_cache");
 	bool enable_minimap            = g_settings->getBool("enable_minimap");
+	std::string leaves_style       = g_settings->get("leaves_style");
 
 	bool use_normal_texture = enable_shaders &&
 		(enable_bumpmapping || enable_parallax_occlusion);
@@ -860,8 +860,16 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 			f->visual_solidness = 1;
 			break;
 		case NDT_ALLFACES_OPTIONAL:
-			if (new_style_leaves) {
+			if (leaves_style == "fancy") {
 				f->drawtype = NDT_ALLFACES;
+				f->solidness = 0;
+				f->visual_solidness = 1;
+			} else if (leaves_style == "simple") {
+				for (u32 j = 0; j < 6; j++) {
+					if (f->tiledef_special[j].name != "")
+						tiledef[j].name = f->tiledef_special[j].name;
+				}
+				f->drawtype = NDT_GLASSLIKE;
 				f->solidness = 0;
 				f->visual_solidness = 1;
 			} else {
