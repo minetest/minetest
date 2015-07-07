@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: Minetest 0.4.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-13 15:24+0100\n"
-"PO-Revision-Date: 2014-06-01 19:05+0100\n"
-"Last-Translator: Enki <sohayl@users.sourceforge.net>\n"
-"Language-Team: \n"
+"PO-Revision-Date: 2015-07-07 14:43+0200\n"
+"Last-Translator: Michal Čihař <michal@cihar.com>\n"
+"Language-Team: Italian "
+"<https://hosted.weblate.org/projects/minetest/minetest/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2.4-dev\n"
 
 #: builtin/fstk/ui.lua:67
 msgid "Ok"
@@ -674,7 +676,7 @@ msgstr "Le password non coincidono!"
 
 #: src/guiVolumeChange.cpp:106
 msgid "Sound Volume: "
-msgstr "Volume suono:"
+msgstr "Volume suono: "
 
 #: src/guiVolumeChange.cpp:120
 msgid "Exit"
