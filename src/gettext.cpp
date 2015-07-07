@@ -102,8 +102,9 @@ const char* MSVC_LocaleLookup(const char* raw_shortname) {
 
 	last_raw_value = shortname;
 
-	if (glb_supported_locales.find(narrow_to_wide(shortname)) != glb_supported_locales.end()) {
-		last_full_name = wide_to_narrow(glb_supported_locales[narrow_to_wide(shortname)]);
+	if (glb_supported_locales.find(utf8_to_wide(shortname)) != glb_supported_locales.end()) {
+		last_full_name = wide_to_utf8(
+			glb_supported_locales[utf8_to_wide(shortname)]);
 		return last_full_name.c_str();
 	}
 

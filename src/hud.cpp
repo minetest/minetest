@@ -275,7 +275,7 @@ void Hud::drawLuaElements(v3s16 camera_offset) {
 										 (e->number >> 8)  & 0xFF,
 										 (e->number >> 0)  & 0xFF);
 				core::rect<s32> size(0, 0, e->scale.X, text_height * e->scale.Y);
-				std::wstring text = narrow_to_wide(e->text);
+				std::wstring text = utf8_to_wide(e->text);
 				core::dimension2d<u32> textsize = font->getDimension(text.c_str());
 				v2s32 offset((e->align.X - 1.0) * (textsize.Width / 2),
 				             (e->align.Y - 1.0) * (textsize.Height / 2));
@@ -310,11 +310,11 @@ void Hud::drawLuaElements(v3s16 camera_offset) {
 										 (e->number >> 8)  & 0xFF,
 										 (e->number >> 0)  & 0xFF);
 				core::rect<s32> size(0, 0, 200, 2 * text_height);
-				std::wstring text = narrow_to_wide(e->name);
+				std::wstring text = utf8_to_wide(e->name);
 				font->draw(text.c_str(), size + pos, color);
 				std::ostringstream os;
-				os<<distance<<e->text;
-				text = narrow_to_wide(os.str());
+				os << distance << e->text;
+				text = utf8_to_wide(os.str());
 				pos.Y += text_height;
 				font->draw(text.c_str(), size + pos, color);
 				break; }
@@ -552,7 +552,7 @@ void drawItemStack(video::IVideoDriver *driver,
 	{
 		// Get the item count as a string
 		std::string text = itos(item.count);
-		v2u32 dim = font->getDimension(narrow_to_wide(text).c_str());
+		v2u32 dim = font->getDimension(utf8_to_wide(text).c_str());
 		v2s32 sdim(dim.X,dim.Y);
 
 		core::rect<s32> rect2(

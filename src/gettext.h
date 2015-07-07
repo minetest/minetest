@@ -39,13 +39,13 @@ void init_gettext(const char *path, const std::string &configured_language,
 void init_gettext(const char *path, const std::string &configured_language);
 #endif
 
-extern wchar_t *narrow_to_wide_c(const char *str);
+extern wchar_t *utf8_to_wide_c(const char *str);
 
 // You must free the returned string!
 // The returned string is allocated using new
 inline const wchar_t *wgettext(const char *str)
 {
-	return narrow_to_wide_c(gettext(str));
+	return utf8_to_wide_c(gettext(str));
 }
 
 inline std::wstring wstrgettext(const std::string &text)

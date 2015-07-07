@@ -356,7 +356,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 		DenyAccess_Legacy(pkt->getPeerId(), std::wstring(
 				L"Your client's version is not supported.\n"
 				L"Server version is ")
-				+ narrow_to_wide(g_version_string) + L"."
+				+ utf8_to_wide(g_version_string) + L"."
 		);
 		return;
 	}
@@ -408,15 +408,15 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 		DenyAccess_Legacy(pkt->getPeerId(), std::wstring(
 				L"Your client's version is not supported.\n"
 				L"Server version is ")
-				+ narrow_to_wide(g_version_string) + L",\n"
+				+ utf8_to_wide(g_version_string) + L",\n"
 				+ L"server's PROTOCOL_VERSION is "
-				+ narrow_to_wide(itos(SERVER_PROTOCOL_VERSION_MIN))
+				+ utf8_to_wide(itos(SERVER_PROTOCOL_VERSION_MIN))
 				+ L"..."
-				+ narrow_to_wide(itos(SERVER_PROTOCOL_VERSION_MAX))
+				+ utf8_to_wide(itos(SERVER_PROTOCOL_VERSION_MAX))
 				+ L", client's PROTOCOL_VERSION is "
-				+ narrow_to_wide(itos(min_net_proto_version))
+				+ utf8_to_wide(itos(min_net_proto_version))
 				+ L"..."
-				+ narrow_to_wide(itos(max_net_proto_version))
+				+ utf8_to_wide(itos(max_net_proto_version))
 		);
 		return;
 	}
@@ -428,13 +428,13 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 			DenyAccess_Legacy(pkt->getPeerId(), std::wstring(
 					L"Your client's version is not supported.\n"
 					L"Server version is ")
-					+ narrow_to_wide(g_version_string) + L",\n"
+					+ utf8_to_wide(g_version_string) + L",\n"
 					+ L"server's PROTOCOL_VERSION (strict) is "
-					+ narrow_to_wide(itos(LATEST_PROTOCOL_VERSION))
+					+ utf8_to_wide(itos(LATEST_PROTOCOL_VERSION))
 					+ L", client's PROTOCOL_VERSION is "
-					+ narrow_to_wide(itos(min_net_proto_version))
+					+ utf8_to_wide(itos(min_net_proto_version))
 					+ L"..."
-					+ narrow_to_wide(itos(max_net_proto_version))
+					+ utf8_to_wide(itos(max_net_proto_version))
 			);
 			return;
 		}
@@ -487,7 +487,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 					<< "tried to connect from " << addr_s << " "
 					<< "but it was disallowed for the following reason: "
 					<< reason << std::endl;
-			DenyAccess_Legacy(pkt->getPeerId(), narrow_to_wide(reason.c_str()));
+			DenyAccess_Legacy(pkt->getPeerId(), utf8_to_wide(reason.c_str()));
 			return;
 		}
 	}

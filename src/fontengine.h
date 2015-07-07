@@ -59,7 +59,7 @@ public:
 			unsigned int font_size=FONT_SIZE_UNSPECIFIED,
 			FontMode mode=FM_Unspecified)
 	{
-		return getTextWidth(narrow_to_wide(text));
+		return getTextWidth(utf8_to_wide(text));
 	}
 
 	/** get text width if a text for a specific font */
