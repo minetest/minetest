@@ -192,7 +192,7 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.setting_getbool("connected_glass"))	.. "]"..
 		"checkbox[0.25,3.0;cb_node_highlighting;".. fgettext("Node Highlighting") .. ";"
 				.. dump(core.setting_getbool("enable_node_highlighting")) .. "]"..
-		"box[3.75,0;3.75,3.45;#999999]" ..
+		"box[3.75,0;3.75,3.9;#999999]" ..
 		"label[3.85,0.1;".. fgettext("Texturing:") .. "]"..
 		"dropdown[3.85,0.55;3.85;dd_filters;" .. filters[1][1] .. ";"
 				.. getFilterSettingIndex() .. "]" ..
@@ -203,13 +203,15 @@ local function formspec(tabview, name, tabdata)
 				.. driver_formspec_string .. ";" .. driver_current_idx .. "]" ..
 		"tooltip[dd_video_driver;" ..
 				fgettext("Restart minetest for driver change to take effect") .. "]" ..
-		"box[7.75,0;4,4;#999999]" ..
+		"box[7.75,0;4,3.9;#999999]" ..
 		"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
 				.. dump(core.setting_getbool("enable_shaders")) .. "]"
 
 	if PLATFORM ~= "Android" then
 		tab_string = tab_string ..
-		"button[8,4.75;3.75,0.5;btn_change_keys;".. fgettext("Change keys") .. "]"
+		"button[8,4.75;3.75,0.5;btn_change_keys;".. fgettext("Change keys") .. "]" ..
+		"checkbox[3.85,3.15;cb_fullscreen;".. fgettext("Fullscreen (requires restart)") .. ";" ..
+			dump(core.setting_getbool("fullscreen")) .. "]"
 	else
 		tab_string = tab_string ..
 		"button[8,4.75;3.75,0.5;btn_reset_singleplayer;".. fgettext("Reset singleplayer world") .. "]"
@@ -358,6 +360,10 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.setting_set("video_driver",
 			video_driver_fname_to_name(fields["dd_video_driver"]))
 		ddhandled = true
+	end
+	if fields["cb_fullscreen"] then
+		core.setting_set("fullscreen", fields["cb_fullscreen"])
+		return true
 	end
 	if fields["dd_filters"] == dd_filter_labels[1] then
 		core.setting_set("bilinear_filter", "false")

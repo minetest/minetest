@@ -419,6 +419,18 @@ msgstr ""
 msgid "Node Highlighting"
 msgstr ""
 
+#: builtin/mainmenu/tab_settings.lua:149
+msgid "Restart minetest for driver change to take effect"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:207
+msgid "Fullscreen (requires restart)"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:151
+msgid "Mip-Mapping"
+msgstr ""
+
 #: builtin/mainmenu/tab_settings.lua:196
 msgid "Texturing:"
 msgstr ""
