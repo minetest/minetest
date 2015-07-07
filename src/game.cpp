@@ -85,7 +85,7 @@ struct TextDestNodeMetadata : public TextDest {
 	// This is deprecated I guess? -celeron55
 	void gotText(std::wstring text)
 	{
-		std::string ntext = wide_to_narrow(text);
+		std::string ntext = wide_to_utf8(text);
 		infostream << "Submitting 'text' field of node at (" << m_p.X << ","
 			   << m_p.Y << "," << m_p.Z << "): " << ntext << std::endl;
 		StringMap fields;
@@ -183,7 +183,7 @@ struct LocalFormspecHandler : public TextDest {
 					(fields.find("quit") != fields.end())) {
 				StringMap::const_iterator it = fields.find("f_text");
 				if (it != fields.end())
-					m_client->typeChatMessage(narrow_to_wide(it->second));
+					m_client->typeChatMessage(utf8_to_wide(it->second));
 
 				return;
 			}
@@ -445,7 +445,7 @@ void update_profiler_gui(gui::IGUIStaticText *guitext_profiler, FontEngine *fe,
 
 		std::ostringstream os(std::ios_base::binary);
 		g_profiler->printPage(os, show_profiler, show_profiler_max);
-		std::wstring text = narrow_to_wide(os.str());
+		std::wstring text = utf8_to_wide(os.str());
 		guitext_profiler->setText(text.c_str());
 		guitext_profiler->setVisible(true);
 
@@ -582,16 +582,16 @@ public:
 			s32 texth = 15;
 			char buf[10];
 			snprintf(buf, 10, "%.3g", show_max);
-			font->draw(narrow_to_wide(buf).c_str(),
+			font->draw(utf8_to_wide(buf).c_str(),
 					core::rect<s32>(textx, y - graphh,
 						   textx2, y - graphh + texth),
 					meta.color);
 			snprintf(buf, 10, "%.3g", show_min);
-			font->draw(narrow_to_wide(buf).c_str(),
+			font->draw(utf8_to_wide(buf).c_str(),
 					core::rect<s32>(textx, y - texth,
 						   textx2, y),
 					meta.color);
-			font->draw(narrow_to_wide(id).c_str(),
+			font->draw(utf8_to_wide(id).c_str(),
 					core::rect<s32>(textx, y - graphh / 2 - texth / 2,
 						   textx2, y - graphh / 2 + texth / 2),
 					meta.color);
@@ -1049,7 +1049,7 @@ static void show_chat_menu(GUIFormSpecMenu **cur_formspec,
 		FORMSPEC_VERSION_STRING
 		SIZE_TAG
 		"field[3,2.35;6,0.5;f_text;;" + text + "]"
-		"button_exit[4,3;3,0.5;btn_send;" + wide_to_narrow(wstrgettext("Proceed")) + "]"
+		"button_exit[4,3;3,0.5;btn_send;" + wide_to_utf8(wstrgettext("Proceed")) + "]"
 		;
 
 	/* Create menu */
@@ -1089,7 +1089,7 @@ static void show_pause_menu(GUIFormSpecMenu **cur_formspec,
 		bool singleplayermode)
 {
 #ifdef __ANDROID__
-	std::string control_text = wide_to_narrow(wstrgettext("Default Controls:\n"
+	std::string control_text = wide_to_utf8(wstrgettext("Default Controls:\n"
 				   "No menu visible:\n"
 				   "- single tap: button activate\n"
 				   "- double tap: place/use\n"
@@ -1103,7 +1103,7 @@ static void show_pause_menu(GUIFormSpecMenu **cur_formspec,
 				   " --> place single item to slot\n"
 							     ));
 #else
-	std::string control_text = wide_to_narrow(wstrgettext("Default Controls:\n"
+	std::string control_text = wide_to_utf8(wstrgettext("Default Controls:\n"
 				   "- WASD: move\n"
 				   "- Space: jump/climb\n"
 				   "- Shift: sneak/go down\n"
@@ -1122,23 +1122,23 @@ static void show_pause_menu(GUIFormSpecMenu **cur_formspec,
 
 	os << FORMSPEC_VERSION_STRING  << SIZE_TAG
 	   << "button_exit[4," << (ypos++) << ";3,0.5;btn_continue;"
-	   << wide_to_narrow(wstrgettext("Continue"))     << "]";
+	   << wide_to_utf8(wstrgettext("Continue"))     << "]";
 
 	if (!singleplayermode) {
 		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_change_password;"
-		   << wide_to_narrow(wstrgettext("Change Password")) << "]";
+		   << wide_to_utf8(wstrgettext("Change Password")) << "]";
 	}
 
 #ifndef __ANDROID__
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
-			<< wide_to_narrow(wstrgettext("Sound Volume")) << "]";
+			<< wide_to_utf8(wstrgettext("Sound Volume")) << "]";
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_key_config;"
-			<< wide_to_narrow(wstrgettext("Change Keys"))  << "]";
+			<< wide_to_utf8(wstrgettext("Change Keys"))  << "]";
 #endif
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_menu;"
-			<< wide_to_narrow(wstrgettext("Exit to Menu")) << "]";
+			<< wide_to_utf8(wstrgettext("Exit to Menu")) << "]";
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"
-			<< wide_to_narrow(wstrgettext("Exit to OS"))   << "]"
+			<< wide_to_utf8(wstrgettext("Exit to OS"))   << "]"
 			<< "textarea[7.5,0.25;3.9,6.25;;" << control_text << ";]"
 			<< "textarea[0.4,0.25;3.5,6;;" << PROJECT_NAME_C "\n"
 			<< g_build_info << "\n"
@@ -1167,7 +1167,7 @@ static void updateChat(Client &client, f32 dtime, bool show_debug,
 
 	// Get new messages from error log buffer
 	while (!chat_log_error_buf.empty()) {
-		chat_backend.addMessage(L"", narrow_to_wide(chat_log_error_buf.get()));
+		chat_backend.addMessage(L"", utf8_to_wide(chat_log_error_buf.get()));
 	}
 
 	// Get new messages from client
@@ -2059,7 +2059,7 @@ bool Game::createClient(const std::string &playername,
 
 	/* Set window caption
 	 */
-	std::wstring str = narrow_to_wide(PROJECT_NAME_C);
+	std::wstring str = utf8_to_wide(PROJECT_NAME_C);
 	str += L" [";
 	str += driver->getName();
 	str += L"]";
@@ -2087,7 +2087,7 @@ bool Game::initGui()
 {
 	// First line of debug text
 	guitext = guienv->addStaticText(
-			narrow_to_wide(PROJECT_NAME_C).c_str(),
+			utf8_to_wide(PROJECT_NAME_C).c_str(),
 			core::rect<s32>(0, 0, 0, 0),
 			false, false, guiroot);
 
@@ -2342,7 +2342,7 @@ bool Game::getServerContent(bool *aborted)
 			}
 
 			progress = 30 + client->mediaReceiveProgress() * 35 + 0.5;
-			draw_load_screen(narrow_to_wide(message.str()), device,
+			draw_load_screen(utf8_to_wide(message.str()), device,
 					guienv, dtime, progress);
 		}
 	}
@@ -2660,7 +2660,7 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 
 	if (quicktune->hasMessage()) {
 		std::string msg = quicktune->getMessage();
-		statustext = narrow_to_wide(msg);
+		statustext = utf8_to_wide(msg);
 		*statustext_time = 0;
 	}
 }
@@ -2947,7 +2947,7 @@ void Game::increaseViewRange(float *statustext_time)
 	s16 range = g_settings->getS16("viewing_range_nodes_min");
 	s16 range_new = range + 10;
 	g_settings->set("viewing_range_nodes_min", itos(range_new));
-	statustext = narrow_to_wide("Minimum viewing range changed to "
+	statustext = utf8_to_wide("Minimum viewing range changed to "
 			+ itos(range_new));
 	*statustext_time = 0;
 }
@@ -2962,7 +2962,7 @@ void Game::decreaseViewRange(float *statustext_time)
 		range_new = range;
 
 	g_settings->set("viewing_range_nodes_min", itos(range_new));
-	statustext = narrow_to_wide("Minimum viewing range changed to "
+	statustext = utf8_to_wide("Minimum viewing range changed to "
 			+ itos(range_new));
 	*statustext_time = 0;
 }
@@ -3577,13 +3577,13 @@ void Game::handlePointingAtNode(GameRunData *runData,
 	NodeMetadata *meta = map.getNodeMetadata(nodepos);
 
 	if (meta) {
-		infotext = narrow_to_wide(meta->getString("infotext"));
+		infotext = utf8_to_wide(meta->getString("infotext"));
 	} else {
 		MapNode n = map.getNodeNoEx(nodepos);
 
 		if (nodedef_manager->get(n).tiledef[0].name == "unknown_node.png") {
 			infotext = L"Unknown node: ";
-			infotext += narrow_to_wide(nodedef_manager->get(n).name);
+			infotext += utf8_to_wide(nodedef_manager->get(n).name);
 		}
 	}
 
@@ -3649,10 +3649,10 @@ void Game::handlePointingAtObject(GameRunData *runData,
 		const v3f &player_position,
 		bool show_debug)
 {
-	infotext = narrow_to_wide(runData->selected_object->infoText());
+	infotext = utf8_to_wide(runData->selected_object->infoText());
 
 	if (infotext == L"" && show_debug) {
-		infotext = narrow_to_wide(runData->selected_object->debugInfoText());
+		infotext = utf8_to_wide(runData->selected_object->debugInfoText());
 	}
 
 	if (input->getLeftState()) {
@@ -4117,12 +4117,12 @@ void Game::updateGui(float *statustext_time, const RunStats &stats,
 		   << ", v_range = " << draw_control->wanted_range
 		   << std::setprecision(3)
 		   << ", RTT = " << client->getRTT();
-		guitext->setText(narrow_to_wide(os.str()).c_str());
+		guitext->setText(utf8_to_wide(os.str()).c_str());
 		guitext->setVisible(true);
 	} else if (flags.show_hud || flags.show_chat) {
 		std::ostringstream os(std::ios_base::binary);
 		os << PROJECT_NAME_C " " << g_version_hash;
-		guitext->setText(narrow_to_wide(os.str()).c_str());
+		guitext->setText(utf8_to_wide(os.str()).c_str());
 		guitext->setVisible(true);
 	} else {
 		guitext->setVisible(false);
@@ -4159,7 +4159,7 @@ void Game::updateGui(float *statustext_time, const RunStats &stats,
 			}
 		}
 
-		guitext2->setText(narrow_to_wide(os.str()).c_str());
+		guitext2->setText(utf8_to_wide(os.str()).c_str());
 		guitext2->setVisible(true);
 
 		core::rect<s32> rect(

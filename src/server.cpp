@@ -1183,7 +1183,7 @@ void Server::ProcessData(NetworkPacket *pkt)
 					<< ban_name << std::endl;
 			// This actually doesn't seem to transfer to the client
 			DenyAccess_Legacy(peer_id, L"Your ip is banned. Banned name was "
-					+ narrow_to_wide(ban_name));
+					+ utf8_to_wide(ban_name));
 			return;
 		}
 	}

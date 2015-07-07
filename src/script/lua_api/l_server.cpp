@@ -307,7 +307,7 @@ int ModApiServer::l_kick_player(lua_State *L)
 		lua_pushboolean(L, false); // No such player
 		return 1;
 	}
-	getServer(L)->DenyAccess_Legacy(player->peer_id, narrow_to_wide(message));
+	getServer(L)->DenyAccess_Legacy(player->peer_id, utf8_to_wide(message));
 	lua_pushboolean(L, true);
 	return 1;
 }

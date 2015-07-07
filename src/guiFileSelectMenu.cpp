@@ -26,7 +26,7 @@ GUIFileSelectMenu::GUIFileSelectMenu(gui::IGUIEnvironment* env,
 				std::string title, std::string formname) :
 GUIModalMenu(env, parent, id, menumgr)
 {
-	m_title = narrow_to_wide(title);
+	m_title = utf8_to_wide(title);
 	m_parent = parent;
 	m_formname = formname;
 	m_text_dst = 0;
@@ -87,7 +87,7 @@ void GUIFileSelectMenu::acceptInput() {
 		StringMap fields;
 
 		if (m_accepted)
-			fields[m_formname + "_accepted"] = wide_to_narrow(m_fileOpenDialog->getFileName());
+			fields[m_formname + "_accepted"] = wide_to_utf8(m_fileOpenDialog->getFileName());
 		else
 			fields[m_formname + "_canceled"] = m_formname;
 

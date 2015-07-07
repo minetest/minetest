@@ -47,6 +47,8 @@ struct FlagDesc {
 std::wstring utf8_to_wide(const std::string &input);
 std::string wide_to_utf8(const std::wstring &input);
 
+wchar_t *utf8_to_wide_c(const char *str);
+
 // NEVER use those two functions unless you have a VERY GOOD reason to
 // they just convert between wide and multibyte encoding
 // multibyte encoding depends on current locale, this is no good, especially on Windows

@@ -228,7 +228,7 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 		if (pkt->getSize() >= 2) {
 			std::wstring wide_reason;
 			*pkt >> wide_reason;
-			m_access_denied_reason = wide_to_narrow(wide_reason);
+			m_access_denied_reason = wide_to_utf8(wide_reason);
 		}
 	}
 }

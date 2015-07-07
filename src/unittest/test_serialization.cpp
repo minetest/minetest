@@ -102,7 +102,7 @@ void TestSerialization::testSerializeWideString()
 	UASSERT(serializeWideString(L"") == mkstr("\0\0"));
 
 	// Test basic string
-	UASSERT(serializeWideString(narrow_to_wide("Hello world!")) ==
+	UASSERT(serializeWideString(utf8_to_wide("Hello world!")) ==
 		mkstr("\0\14\0H\0e\0l\0l\0o\0 \0w\0o\0r\0l\0d\0!"));
 
 	// Test character range

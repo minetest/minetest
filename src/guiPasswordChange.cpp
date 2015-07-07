@@ -203,8 +203,8 @@ bool GUIPasswordChange::acceptInput()
 				e->setVisible(true);
 			return false;
 		}
-		m_client->sendChangePassword(wide_to_narrow(oldpass),
-			wide_to_narrow(newpass));
+		m_client->sendChangePassword(wide_to_utf8(oldpass),
+			wide_to_utf8(newpass));
 		return true;
 }
 

@@ -168,6 +168,16 @@ std::string wide_to_utf8(const std::wstring &input)
 
 #endif // _WIN32
 
+wchar_t *utf8_to_wide_c(const char *str)
+{
+	std::wstring ret = utf8_to_wide(std::string(str)).c_str();
+	size_t len = ret.length();
+	wchar_t *ret_c = new wchar_t[len + 1];
+	memset(ret_c, 0, (len + 1) * sizeof(wchar_t));
+	memcpy(ret_c, ret.c_str(), len * sizeof(wchar_t));
+	return ret_c;
+}
+
 // You must free the returned string!
 // The returned string is allocated using new
 wchar_t *narrow_to_wide_c(const char *str)
