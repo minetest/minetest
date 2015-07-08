@@ -17,6 +17,17 @@
 
 --------------------------------------------------------------------------------
 
+local leaves_style_labels = {
+	fgettext("Opaque Leaves"),
+	fgettext("Simple Leaves"),
+	fgettext("Fancy Leaves")
+}
+
+local leaves_style = {
+	{leaves_style_labels[1]..","..leaves_style_labels[2]..","..leaves_style_labels[3]},
+	{"opaque", "simple", "fancy"},
+}
+
 local dd_filter_labels = {
 	fgettext("No Filter"),
 	fgettext("Bilinear Filter"),
@@ -38,6 +49,16 @@ local mipmap = {
 	{dd_mipmap_labels[1]..","..dd_mipmap_labels[2]..","..dd_mipmap_labels[3]},
 	{"", "mip_map", "anisotropic_filter"},
 }
+
+local function getLeavesStyleSettingIndex()
+	local style = core.setting_get("leaves_style")
+	if (style == leaves_style[2][3]) then
+		return 3
+	elseif (style == leaves_style[2][2]) then
+		return 2
+	end
+	return 1
+end
 
 local function getFilterSettingIndex()
 	if (core.setting_get(filters[2][3]) == "true") then
@@ -177,21 +198,21 @@ local function formspec(tabview, name, tabdata)
 	end
 
 	local tab_string =
-		"box[0,0;3.5,3.9;#999999]" ..
+		"box[0,0;3.5,4.0;#999999]" ..
 		"checkbox[0.25,0;cb_smooth_lighting;".. fgettext("Smooth Lighting")
 				.. ";".. dump(core.setting_getbool("smooth_lighting")) .. "]"..
 		"checkbox[0.25,0.5;cb_particles;".. fgettext("Enable Particles") .. ";"
 				.. dump(core.setting_getbool("enable_particles"))	.. "]"..
 		"checkbox[0.25,1;cb_3d_clouds;".. fgettext("3D Clouds") .. ";"
 				.. dump(core.setting_getbool("enable_3d_clouds")) .. "]"..
-		"checkbox[0.25,1.5;cb_fancy_trees;".. fgettext("Fancy Trees") .. ";"
-				.. dump(core.setting_getbool("new_style_leaves")) .. "]"..
-		"checkbox[0.25,2.0;cb_opaque_water;".. fgettext("Opaque Water") .. ";"
+		"checkbox[0.25,1.5;cb_opaque_water;".. fgettext("Opaque Water") .. ";"
 				.. dump(core.setting_getbool("opaque_water")) .. "]"..
-		"checkbox[0.25,2.5;cb_connected_glass;".. fgettext("Connected Glass") .. ";"
+		"checkbox[0.25,2.0;cb_connected_glass;".. fgettext("Connected Glass") .. ";"
 				.. dump(core.setting_getbool("connected_glass"))	.. "]"..
-		"checkbox[0.25,3.0;cb_node_highlighting;".. fgettext("Node Highlighting") .. ";"
+		"checkbox[0.25,2.5;cb_node_highlighting;".. fgettext("Node Highlighting") .. ";"
 				.. dump(core.setting_getbool("enable_node_highlighting")) .. "]"..
+		"dropdown[0.25,3.2;3.3;dd_leaves_style;" .. leaves_style[1][1] .. ";"
+				.. getLeavesStyleSettingIndex() .. "]" ..
 		"box[3.75,0;3.75,3.45;#999999]" ..
 		"label[3.85,0.1;".. fgettext("Texturing:") .. "]"..
 		"dropdown[3.85,0.55;3.85;dd_filters;" .. filters[1][1] .. ";"
@@ -353,7 +374,18 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.setting_set("touchscreen_threshold",fields["dd_touchthreshold"])
 		ddhandled = true
 	end
-
+	if fields["dd_leaves_style"] == leaves_style_labels[3] then
+		core.setting_set("leaves_style", leaves_style[2][3])
+		ddhandled = true
+	end
+	if fields["dd_leaves_style"] == leaves_style_labels[2] then
+		core.setting_set("leaves_style", leaves_style[2][2])
+		ddhandled = true
+	end
+	if fields["dd_leaves_style"] == leaves_style_labels[1] then
+		core.setting_set("leaves_style", leaves_style[2][1])
+		ddhandled = true
+	end
 	if fields["dd_video_driver"] then
 		core.setting_set("video_driver",
 			video_driver_fname_to_name(fields["dd_video_driver"]))
