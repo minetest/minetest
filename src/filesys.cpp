@@ -142,7 +142,7 @@ bool RecursiveDelete(const std::string &path)
 		infostream<<"RecursiveDelete: Deleting content of directory "
 				<<path<<std::endl;
 		std::vector<DirListNode> content = GetDirListing(path);
-		for(int i=0; i<content.size(); i++){
+		for(size_t i=0; i<content.size(); i++){
 			const DirListNode &n = content[i];
 			std::string fullpath = path + DIR_DELIM + n.name;
 			bool did = RecursiveDelete(fullpath);
@@ -183,7 +183,7 @@ bool DeleteSingleFileOrEmptyDirectory(const std::string &path)
 
 std::string TempPath()
 {
-	DWORD bufsize = GetTempPath(0, "");
+	DWORD bufsize = GetTempPath(0, NULL);
 	if(bufsize == 0){
 		errorstream<<"GetTempPath failed, error = "<<GetLastError()<<std::endl;
 		return "";
