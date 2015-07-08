@@ -246,7 +246,7 @@ bool DecoSimple::canPlaceDecoration(MMVManip *vm, v3s16 p)
 		return true;
 
 	int nneighs = 0;
-	v3s16 dirs[8] = {
+	v3s16 dirs[16] = {
 		v3s16( 0, 0,  1),
 		v3s16( 0, 0, -1),
 		v3s16( 1, 0,  0),
@@ -254,7 +254,16 @@ bool DecoSimple::canPlaceDecoration(MMVManip *vm, v3s16 p)
 		v3s16( 1, 0,  1),
 		v3s16(-1, 0,  1),
 		v3s16(-1, 0, -1),
-		v3s16( 1, 0, -1)
+		v3s16( 1, 0, -1),
+
+		v3s16( 0, 1,  1),
+		v3s16( 0, 1, -1),
+		v3s16( 1, 1,  0),
+		v3s16(-1, 1,  0),
+		v3s16( 1, 1,  1),
+		v3s16(-1, 1,  1),
+		v3s16(-1, 1, -1),
+		v3s16( 1, 1, -1)
 	};
 
 	// Check a Moore neighborhood if there are enough spawnby nodes

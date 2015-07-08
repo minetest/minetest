@@ -3331,7 +3331,9 @@ Definition tables
     --      ^ Number of nodes the decoration can be at maximum.
     --  ^ If absent, the parameter 'height' is used as a constant.
         spawn_by = "default:water",
-    --  ^ Node that the decoration only spawns next to, in a 1-node square radius.
+    --  ^ Node that the decoration only spawns next to.
+    --  ^ The neighbours checked are the 8 nodes horizontally surrounding the lowest node of the
+    --  ^ decoration, and the 8 nodes horizontally surrounding the ground node below the decoration.
         num_spawn_by = 1,
     --  ^ Number of spawn_by nodes that must be surrounding the decoration position to occur.
     --  ^ If absent or -1, decorations occur next to any nodes.
