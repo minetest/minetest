@@ -20,14 +20,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MINIMAP_HEADER
 #define MINIMAP_HEADER
 
+#include <map>
+#include <string>
+#include <vector>
 #include "irrlichttypes_extrabloated.h"
 #include "client.h"
 #include "voxel.h"
 #include "jthread/jmutex.h"
 #include "jthread/jsemaphore.h"
-#include <map>
-#include <string>
-#include <vector>
+
+#define MINIMAP_MAX_SX 512
+#define MINIMAP_MAX_SY 512
 
 enum MinimapMode {
 	MINIMAP_MODE_OFF,
@@ -36,31 +39,37 @@ enum MinimapMode {
 	MINIMAP_MODE_SURFACEx4,
 	MINIMAP_MODE_RADARx1,
 	MINIMAP_MODE_RADARx2,
-	MINIMAP_MODE_RADARx4
+	MINIMAP_MODE_RADARx4,
+	MINIMAP_MODE_COUNT,
 };
 
-struct MinimapPixel
-{
+struct MinimapModeDef {
+	bool is_radar;
+	u16 scan_height;
+	u16 map_size;
+};
+
+struct MinimapPixel {
 	u16 id;
 	u16 height;
 	u16 air_count;
 	u16 light;
 };
 
-struct MinimapMapblock
-{
+struct MinimapMapblock {
+	void getMinimapNodes(VoxelManipulator *vmanip, v3s16 pos);
+
 	MinimapPixel data[MAP_BLOCKSIZE * MAP_BLOCKSIZE];
 };
 
-struct MinimapData
-{
-	bool radar;
+struct MinimapData {
+	bool is_radar;
 	MinimapMode mode;
 	v3s16 pos;
 	v3s16 old_pos;
 	u16 scan_height;
 	u16 map_size;
-	MinimapPixel minimap_scan[512 * 512];
+	MinimapPixel minimap_scan[MINIMAP_MAX_SX * MINIMAP_MAX_SY];
 	bool map_invalidated;
 	bool minimap_shape_round;
 	video::IImage *minimap_image;
@@ -74,104 +83,79 @@ struct MinimapData
 	video::ITexture *player_marker;
 };
 
-struct QueuedMinimapUpdate
-{
+struct QueuedMinimapUpdate {
 	v3s16 pos;
 	MinimapMapblock *data;
-
-	QueuedMinimapUpdate();
-	~QueuedMinimapUpdate();
 };
 
-/*
-	A thread-safe queue of minimap mapblocks update tasks
-*/
-
-class MinimapUpdateQueue
-{
+class MinimapUpdateThread : public UpdateThread {
 public:
-	MinimapUpdateQueue();
+	virtual ~MinimapUpdateThread();
 
-	~MinimapUpdateQueue();
+	void getMap(v3s16 pos, s16 size, s16 height, bool radar);
+	MinimapPixel *getMinimapPixel(v3s16 pos, s16 height, s16 *pixel_height);
+	s16 getAirCount(v3s16 pos, s16 height);
+	video::SColor getColorFromId(u16 id);
 
-	bool addBlock(v3s16 pos, MinimapMapblock *data);
+	void enqueueBlock(v3s16 pos, MinimapMapblock *data);
 
-	QueuedMinimapUpdate *pop();
+	bool pushBlockUpdate(v3s16 pos, MinimapMapblock *data);
+	bool popBlockUpdate(QueuedMinimapUpdate *update);
 
-	u32 size()
-	{
-		JMutexAutoLock lock(m_mutex);
-		return m_queue.size();
-	}
-
-private:
-	std::list<QueuedMinimapUpdate*> m_queue;
-	JMutex m_mutex;
-};
-
-class MinimapUpdateThread : public UpdateThread
-{
-private:
-	MinimapUpdateQueue m_queue;
-	std::map<v3s16, MinimapMapblock *> m_blocks_cache;
+	MinimapData *data;
 
 protected:
 	const char *getName()
-	{ return "MinimapUpdateThread"; }
+	{
+		return "MinimapUpdateThread";
+	}
+
 	virtual void doUpdate();
 
-public:
-	MinimapUpdateThread(IrrlichtDevice *device, Client *client)
-	{
-		this->device = device;
-		this->client = client;
-		this->driver = device->getVideoDriver();
-		this->tsrc = client->getTextureSource();
-	}
-	~MinimapUpdateThread();
-	void getMap (v3s16 pos, s16 size, s16 height, bool radar);
-	MinimapPixel *getMinimapPixel (v3s16 pos, s16 height, s16 &pixel_height);
-	s16 getAirCount (v3s16 pos, s16 height);
-	video::SColor getColorFromId(u16 id);
-
-	void enqueue_Block(v3s16 pos, MinimapMapblock *data);
-	IrrlichtDevice *device;
-	Client *client;
-	video::IVideoDriver *driver;
-	ITextureSource *tsrc;
-	MinimapData *data;
+private:
+	JMutex m_queue_mutex;
+	std::deque<QueuedMinimapUpdate> m_update_queue;
+	std::map<v3s16, MinimapMapblock *> m_blocks_cache;
 };
 
-class Mapper
-{
-private:
-	MinimapUpdateThread *m_minimap_update_thread;
-	video::ITexture *minimap_texture;
-	scene::SMeshBuffer *m_meshbuffer;
-	bool m_enable_shaders;
-	u16 m_surface_mode_scan_height;
-	JMutex m_mutex;
-
+class Mapper {
 public:
 	Mapper(IrrlichtDevice *device, Client *client);
 	~Mapper();
 
 	void addBlock(v3s16 pos, MinimapMapblock *data);
-	void setPos(v3s16 pos);
-	video::ITexture* getMinimapTexture();
+
 	v3f getYawVec();
 	MinimapMode getMinimapMode();
+
+	void setPos(v3s16 pos);
+	void setAngle(f32 angle);
 	void setMinimapMode(MinimapMode mode);
 	void toggleMinimapShape();
+
+
+	video::ITexture *getMinimapTexture();
+
+	void blitMinimapPixelsToImageRadar(video::IImage *map_image);
+	void blitMinimapPixelsToImageSurface(video::IImage *map_image,
+		video::IImage *heightmap_image);
+
 	scene::SMeshBuffer *getMinimapMeshBuffer();
 	void drawMinimap();
-	IrrlichtDevice *device;
-	Client *client;
+
 	video::IVideoDriver *driver;
-	LocalPlayer *player;
-	ITextureSource *tsrc;
-	IShaderSource *shdrsrc;
 	MinimapData *data;
+
+private:
+	ITextureSource *m_tsrc;
+	IShaderSource *m_shdrsrc;
+	INodeDefManager *m_ndef;
+	MinimapUpdateThread *m_minimap_update_thread;
+	scene::SMeshBuffer *m_meshbuffer;
+	bool m_enable_shaders;
+	u16 m_surface_mode_scan_height;
+	f32 m_angle;
+	JMutex m_mutex;
 };
 
 #endif

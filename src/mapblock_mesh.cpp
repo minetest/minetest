@@ -1029,7 +1029,7 @@ static void updateAllFastFaceRows(MeshMakeData *data,
 
 MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	m_mesh(new scene::SMesh()),
-	m_minimap_mapblock(new MinimapMapblock),
+	m_minimap_mapblock(NULL),
 	m_gamedef(data->m_gamedef),
 	m_tsrc(m_gamedef->getTextureSource()),
 	m_shdrsrc(m_gamedef->getShaderSource()),
@@ -1044,29 +1044,9 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	m_enable_highlighting = g_settings->getBool("enable_node_highlighting");
 
 	if (g_settings->getBool("enable_minimap")) {
-		v3s16 blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
-		for(s16 x = 0; x < MAP_BLOCKSIZE; x++) {
-			for(s16 z = 0; z < MAP_BLOCKSIZE; z++) {
-				s16 air_count = 0;
-				bool surface_found = false;
-				MinimapPixel* minimap_pixel = &m_minimap_mapblock->data[x + z * MAP_BLOCKSIZE];
-				for(s16 y = MAP_BLOCKSIZE -1; y > -1; y--) {
-					v3s16 p(x, y, z);
-					MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
-					if (!surface_found && n.getContent() != CONTENT_AIR) {
-						minimap_pixel->height = y;
-						minimap_pixel->id = n.getContent();
-						surface_found = true;
-					} else if (n.getContent() == CONTENT_AIR) {
-						air_count++;
-					}
-				}
-				if (!surface_found) {
-					minimap_pixel->id = CONTENT_AIR;
-				}
-				minimap_pixel->air_count = air_count;
-			}
-		}
+		m_minimap_mapblock = new MinimapMapblock;
+		m_minimap_mapblock->getMinimapNodes(
+			&data->m_vmanip, data->m_blockpos * MAP_BLOCKSIZE);
 	}
 
 	// 4-21ms for MAP_BLOCKSIZE=16  (NOTE: probably outdated)
@@ -1183,7 +1163,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		}
 
 		if(m_enable_highlighting && p.tile.material_flags & MATERIAL_FLAG_HIGHLIGHTED)
-			m_highlighted_materials.push_back(i);	
+			m_highlighted_materials.push_back(i);
 
 		for(u32 j = 0; j < p.vertices.size(); j++)
 		{
@@ -1400,7 +1380,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 	// Node highlighting
 	if (m_enable_highlighting) {
 		u8 day = m_highlight_mesh_color.getRed();
-		u8 night = m_highlight_mesh_color.getGreen();	
+		u8 night = m_highlight_mesh_color.getGreen();
 		video::SColor hc;
 		finalColorBlend(hc, day, night, daynight_ratio);
 		float sin_r = 0.07 * sin(1.5 * time);

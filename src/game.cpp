@@ -4045,10 +4045,11 @@ void Game::updateFrame(std::vector<aabb3f> &highlight_boxes,
 	}
 
 	/*
-		Update minimap pos
+		Update minimap pos and rotation
 	*/
 	if (flags.show_minimap && flags.show_hud) {
 		mapper->setPos(floatToInt(player->getPosition(), BS));
+		mapper->setAngle(player->getYaw());
 	}
 
 	/*

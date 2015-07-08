@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "minimap.h"
+#include <math.h>
 #include "logoutputbuffer.h"
 #include "jthread/jmutexautolock.h"
 #include "jthread/jsemaphore.h"
@@ -27,138 +28,125 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "util/numeric.h"
 #include "util/string.h"
-#include <math.h>
 
-QueuedMinimapUpdate::QueuedMinimapUpdate():
-	pos(-1337,-1337,-1337),
-	data(NULL)
-{
-}
 
-QueuedMinimapUpdate::~QueuedMinimapUpdate()
-{
-	delete data;
-}
-
-MinimapUpdateQueue::MinimapUpdateQueue()
-{
-}
-
-MinimapUpdateQueue::~MinimapUpdateQueue()
-{
-	JMutexAutoLock lock(m_mutex);
-
-	for (std::list<QueuedMinimapUpdate*>::iterator
-			i = m_queue.begin();
-			i != m_queue.end(); ++i) {
-		QueuedMinimapUpdate *q = *i;
-		delete q;
-	}
-}
-
-bool MinimapUpdateQueue::addBlock(v3s16 pos, MinimapMapblock *data)
-{
-	DSTACK(__FUNCTION_NAME);
-
-	JMutexAutoLock lock(m_mutex);
-
-	/*
-		Find if block is already in queue.
-		If it is, update the data and quit.
-	*/
-	for (std::list<QueuedMinimapUpdate*>::iterator
-			i = m_queue.begin();
-			i != m_queue.end(); ++i) {
-		QueuedMinimapUpdate *q = *i;
-		if (q->pos == pos) {
-			delete q->data;
-			q->data = data;
-			return false;
-		}
-	}
-
-	/*
-		Add the block
-	*/
-	QueuedMinimapUpdate *q = new QueuedMinimapUpdate;
-	q->pos = pos;
-	q->data = data;
-	m_queue.push_back(q);
-	return true;
-}
-
-QueuedMinimapUpdate * MinimapUpdateQueue::pop()
-{
-	JMutexAutoLock lock(m_mutex);
-
-	for (std::list<QueuedMinimapUpdate*>::iterator
-			i = m_queue.begin();
-			i != m_queue.end(); i++) {
-		QueuedMinimapUpdate *q = *i;
-		m_queue.erase(i);
-		return q;
-	}
-	return NULL;
-}
-
-/*
-	Minimap update thread
-*/
-
-void MinimapUpdateThread::enqueue_Block(v3s16 pos, MinimapMapblock *data)
-{
-	m_queue.addBlock(pos, data);
-	deferUpdate();
-}
-
-void MinimapUpdateThread::doUpdate()
-{
-	while (m_queue.size()) {
-		QueuedMinimapUpdate *q = m_queue.pop();
-		std::map<v3s16, MinimapMapblock *>::iterator it;
-		it = m_blocks_cache.find(q->pos);
-		if (q->data) {
-			m_blocks_cache[q->pos] = q->data;
-		} else if (it != m_blocks_cache.end()) {
-			delete it->second;
-			m_blocks_cache.erase(it);
-		}
-	}
-	if (data->map_invalidated) {
-		if (data->mode != MINIMAP_MODE_OFF) {
-			getMap(data->pos, data->map_size, data->scan_height, data->radar);
-			data->map_invalidated = false;
-		}
-	}
-}
+////
+//// MinimapUpdateThread
+////
 
 MinimapUpdateThread::~MinimapUpdateThread()
 {
 	for (std::map<v3s16, MinimapMapblock *>::iterator
 			it = m_blocks_cache.begin();
-			it != m_blocks_cache.end(); it++) {
+			it != m_blocks_cache.end(); ++it) {
 		delete it->second;
+	}
+
+	for (std::deque<QueuedMinimapUpdate>::iterator
+			it = m_update_queue.begin();
+			it != m_update_queue.end(); ++it) {
+		QueuedMinimapUpdate &q = *it;
+		delete q.data;
 	}
 }
 
-MinimapPixel *MinimapUpdateThread::getMinimapPixel(v3s16 pos, s16 height, s16 &pixel_height)
+bool MinimapUpdateThread::pushBlockUpdate(v3s16 pos, MinimapMapblock *data)
 {
-	pixel_height = height - MAP_BLOCKSIZE;
+	JMutexAutoLock lock(m_queue_mutex);
+
+	// Find if block is already in queue.
+	// If it is, update the data and quit.
+	for (std::deque<QueuedMinimapUpdate>::iterator
+			it = m_update_queue.begin();
+			it != m_update_queue.end(); ++it) {
+		QueuedMinimapUpdate &q = *it;
+		if (q.pos == pos) {
+			delete q.data;
+			q.data = data;
+			return false;
+		}
+	}
+
+	// Add the block
+	QueuedMinimapUpdate q;
+	q.pos  = pos;
+	q.data = data;
+	m_update_queue.push_back(q);
+
+	return true;
+}
+
+bool MinimapUpdateThread::popBlockUpdate(QueuedMinimapUpdate *update)
+{
+	JMutexAutoLock lock(m_queue_mutex);
+
+	if (m_update_queue.empty())
+		return false;
+
+	*update = m_update_queue.front();
+	m_update_queue.pop_front();
+
+	return true;
+}
+
+void MinimapUpdateThread::enqueueBlock(v3s16 pos, MinimapMapblock *data)
+{
+	pushBlockUpdate(pos, data);
+	deferUpdate();
+}
+
+
+void MinimapUpdateThread::doUpdate()
+{
+	QueuedMinimapUpdate update;
+
+	while (popBlockUpdate(&update)) {
+		if (update.data) {
+			m_blocks_cache[update.pos] = update.data;
+		} else {
+			std::map<v3s16, MinimapMapblock *>::iterator it;
+			it = m_blocks_cache.find(update.pos);
+			if (it != m_blocks_cache.end()) {
+				delete it->second;
+				m_blocks_cache.erase(it);
+			}
+		}
+	}
+
+	if (data->map_invalidated && data->mode != MINIMAP_MODE_OFF) {
+		getMap(data->pos, data->map_size, data->scan_height, data->is_radar);
+		data->map_invalidated = false;
+	}
+}
+
+MinimapPixel *MinimapUpdateThread::getMinimapPixel(v3s16 pos,
+	s16 scan_height, s16 *pixel_height)
+{
+	s16 height = scan_height - MAP_BLOCKSIZE;
 	v3s16 blockpos_max, blockpos_min, relpos;
-	getNodeBlockPosWithOffset(v3s16(pos.X, pos.Y - height / 2, pos.Z), blockpos_min, relpos);
-	getNodeBlockPosWithOffset(v3s16(pos.X, pos.Y + height / 2, pos.Z), blockpos_max, relpos);
-	std::map<v3s16, MinimapMapblock *>::iterator it;
+
+	getNodeBlockPosWithOffset(
+		v3s16(pos.X, pos.Y - scan_height / 2, pos.Z),
+		blockpos_min, relpos);
+	getNodeBlockPosWithOffset(
+		v3s16(pos.X, pos.Y + scan_height / 2, pos.Z),
+		blockpos_max, relpos);
+
 	for (s16 i = blockpos_max.Y; i > blockpos_min.Y - 1; i--) {
-		it = m_blocks_cache.find(v3s16(blockpos_max.X, i, blockpos_max.Z));
+		std::map<v3s16, MinimapMapblock *>::iterator it =
+			m_blocks_cache.find(v3s16(blockpos_max.X, i, blockpos_max.Z));
 		if (it != m_blocks_cache.end()) {
-			MinimapPixel *pixel = &it->second->data[relpos.X + relpos.Z * MAP_BLOCKSIZE];
+			MinimapMapblock *mmblock = it->second;
+			MinimapPixel *pixel = &mmblock->data[relpos.Z * MAP_BLOCKSIZE + relpos.X];
 			if (pixel->id != CONTENT_AIR) {
-				pixel_height += pixel->height;
+				*pixel_height = height + pixel->height;
 				return pixel;
 			}
 		}
-		pixel_height -= MAP_BLOCKSIZE;
+
+		height -= MAP_BLOCKSIZE;
 	}
+
 	return NULL;
 }
 
@@ -166,80 +154,100 @@ s16 MinimapUpdateThread::getAirCount(v3s16 pos, s16 height)
 {
 	s16 air_count = 0;
 	v3s16 blockpos_max, blockpos_min, relpos;
-	getNodeBlockPosWithOffset(v3s16(pos.X, pos.Y - height / 2, pos.Z), blockpos_min, relpos);
-	getNodeBlockPosWithOffset(v3s16(pos.X, pos.Y + height / 2, pos.Z), blockpos_max, relpos);
-	std::map<v3s16, MinimapMapblock *>::iterator it;
+
+	getNodeBlockPosWithOffset(
+		v3s16(pos.X, pos.Y - height / 2, pos.Z),
+		blockpos_min, relpos);
+	getNodeBlockPosWithOffset(
+		v3s16(pos.X, pos.Y + height / 2, pos.Z),
+		blockpos_max, relpos);
+
 	for (s16 i = blockpos_max.Y; i > blockpos_min.Y - 1; i--) {
-		it = m_blocks_cache.find(v3s16(blockpos_max.X, i, blockpos_max.Z));
+		std::map<v3s16, MinimapMapblock *>::iterator it =
+			m_blocks_cache.find(v3s16(blockpos_max.X, i, blockpos_max.Z));
 		if (it != m_blocks_cache.end()) {
-			MinimapPixel *pixel = &it->second->data[relpos.X + relpos.Z * MAP_BLOCKSIZE];
+			MinimapMapblock *mmblock = it->second;
+			MinimapPixel *pixel = &mmblock->data[relpos.Z * MAP_BLOCKSIZE + relpos.X];
 			air_count += pixel->air_count;
 		}
 	}
+
 	return air_count;
 }
 
-void MinimapUpdateThread::getMap(v3s16 pos, s16 size, s16 height, bool radar)
+void MinimapUpdateThread::getMap(v3s16 pos, s16 size, s16 height, bool is_radar)
 {
-	v3s16 p = v3s16 (pos.X - size / 2, pos.Y, pos.Z - size / 2);
+	v3s16 p = v3s16(pos.X - size / 2, pos.Y, pos.Z - size / 2);
 
-	for (s16 x = 0; x < size; x++) {
-		for (s16 z = 0; z < size; z++){
-			u16 id = CONTENT_AIR;
-			MinimapPixel* minimap_pixel = &data->minimap_scan[x + z * size];
-			if (!radar) {
-				s16 pixel_height = 0;
-				MinimapPixel* cached_pixel =
-					getMinimapPixel(v3s16(p.X + x, p.Y, p.Z + z), height, pixel_height);
-				if (cached_pixel) {
-					id = cached_pixel->id;
-					minimap_pixel->height = pixel_height;
-				}
-			} else {
-				minimap_pixel->air_count = getAirCount (v3s16(p.X + x, p.Y, p.Z + z), height);
+	for (s16 x = 0; x < size; x++)
+	for (s16 z = 0; z < size; z++) {
+		u16 id = CONTENT_AIR;
+		MinimapPixel *mmpixel = &data->minimap_scan[x + z * size];
+
+		if (!is_radar) {
+			s16 pixel_height = 0;
+			MinimapPixel *cached_pixel =
+				getMinimapPixel(v3s16(p.X + x, p.Y, p.Z + z), height, &pixel_height);
+			if (cached_pixel) {
+				id = cached_pixel->id;
+				mmpixel->height = pixel_height;
 			}
-			minimap_pixel->id = id;
+		} else {
+			mmpixel->air_count = getAirCount(v3s16(p.X + x, p.Y, p.Z + z), height);
 		}
+
+		mmpixel->id = id;
 	}
 }
 
+////
+//// Mapper
+////
+
 Mapper::Mapper(IrrlichtDevice *device, Client *client)
 {
-	this->device = device;
-	this->client = client;
-	this->driver = device->getVideoDriver();
-	this->tsrc = client->getTextureSource();
-	this->player = client->getEnv().getLocalPlayer();
-	this->shdrsrc = client->getShaderSource();
+	this->driver    = device->getVideoDriver();
+	this->m_tsrc    = client->getTextureSource();
+	this->m_shdrsrc = client->getShaderSource();
+	this->m_ndef    = client->getNodeDefManager();
 
+	// Initialize static settings
 	m_enable_shaders = g_settings->getBool("enable_shaders");
-	m_enable_shaders = g_settings->getBool("enable_shaders");
-	if (g_settings->getBool("minimap_double_scan_height")) {
-		m_surface_mode_scan_height = 256;
-	} else {
-		m_surface_mode_scan_height = 128;
-	}
+	m_surface_mode_scan_height =
+		g_settings->getBool("minimap_double_scan_height") ? 256 : 128;
+
+	// Initialize minimap data
 	data = new MinimapData;
-	data->mode = MINIMAP_MODE_OFF;
-	data->radar = false;
+	data->mode            = MINIMAP_MODE_OFF;
+	data->is_radar        = false;
 	data->map_invalidated = true;
 	data->heightmap_image = NULL;
-	data->minimap_image = NULL;
-	data->texture = NULL;
+	data->minimap_image   = NULL;
+	data->texture         = NULL;
 	data->minimap_shape_round = g_settings->getBool("minimap_shape_round");
-	std::string fname1 = "minimap_mask_round.png";
-	std::string fname2 = "minimap_overlay_round.png";
-	data->minimap_mask_round = driver->createImage (tsrc->getTexture(fname1),
-			core::position2d<s32>(0,0), core::dimension2d<u32>(512,512));
-	data->minimap_overlay_round = tsrc->getTexture(fname2);
-	fname1 = "minimap_mask_square.png";
-	fname2 = "minimap_overlay_square.png";
-	data->minimap_mask_square = driver->createImage (tsrc->getTexture(fname1),
-			core::position2d<s32>(0,0), core::dimension2d<u32>(512,512));
-	data->minimap_overlay_square = tsrc->getTexture(fname2);
-	data->player_marker = tsrc->getTexture("player_marker.png");
+
+	// Get round minimap textures
+	data->minimap_mask_round = driver->createImage(
+		m_tsrc->getTexture("minimap_mask_round.png"),
+		core::position2d<s32>(0, 0),
+		core::dimension2d<u32>(MINIMAP_MAX_SX, MINIMAP_MAX_SY));
+	data->minimap_overlay_round = m_tsrc->getTexture("minimap_overlay_round.png");
+
+	// Get square minimap textures
+	data->minimap_mask_square = driver->createImage(
+		m_tsrc->getTexture("minimap_mask_square.png"),
+		core::position2d<s32>(0, 0),
+		core::dimension2d<u32>(MINIMAP_MAX_SX, MINIMAP_MAX_SY));
+	data->minimap_overlay_square = m_tsrc->getTexture("minimap_overlay_square.png");
+
+	// Create player marker texture
+	data->player_marker = m_tsrc->getTexture("player_marker.png");
+
+	// Create mesh buffer for minimap
 	m_meshbuffer = getMinimapMeshBuffer();
-	m_minimap_update_thread = new MinimapUpdateThread(device, client);
+
+	// Initialize and start thread
+	m_minimap_update_thread = new MinimapUpdateThread();
 	m_minimap_update_thread->data = data;
 	m_minimap_update_thread->Start();
 }
@@ -248,20 +256,24 @@ Mapper::~Mapper()
 {
 	m_minimap_update_thread->Stop();
 	m_minimap_update_thread->Wait();
+
 	m_meshbuffer->drop();
+
 	data->minimap_mask_round->drop();
 	data->minimap_mask_square->drop();
+
 	driver->removeTexture(data->texture);
 	driver->removeTexture(data->heightmap_texture);
 	driver->removeTexture(data->minimap_overlay_round);
 	driver->removeTexture(data->minimap_overlay_square);
+
 	delete data;
 	delete m_minimap_update_thread;
 }
 
-void Mapper::addBlock (v3s16 pos, MinimapMapblock *data)
+void Mapper::addBlock(v3s16 pos, MinimapMapblock *data)
 {
-	m_minimap_update_thread->enqueue_Block(pos, data);
+	m_minimap_update_thread->enqueueBlock(pos, data);
 }
 
 MinimapMode Mapper::getMinimapMode()
@@ -271,121 +283,150 @@ MinimapMode Mapper::getMinimapMode()
 
 void Mapper::toggleMinimapShape()
 {
+	JMutexAutoLock lock(m_mutex);
+
 	data->minimap_shape_round = !data->minimap_shape_round;
-	g_settings->setBool(("minimap_shape_round"), data->minimap_shape_round);
+	g_settings->setBool("minimap_shape_round", data->minimap_shape_round);
 	m_minimap_update_thread->deferUpdate();
 }
 
 void Mapper::setMinimapMode(MinimapMode mode)
 {
-	static const u16 modeDefs[7 * 3] = {
-		0, 0, 0,
-		0, m_surface_mode_scan_height, 256,
-		0, m_surface_mode_scan_height, 128,
-		0, m_surface_mode_scan_height, 64,
-		1, 32, 128,
-		1, 32, 64,
-		1, 32, 32};
+	static const MinimapModeDef modedefs[MINIMAP_MODE_COUNT] = {
+		{false, 0, 0},
+		{false, m_surface_mode_scan_height, 256},
+		{false, m_surface_mode_scan_height, 128},
+		{false, m_surface_mode_scan_height, 64},
+		{true, 32, 128},
+		{true, 32, 64},
+		{true, 32, 32}
+	};
+
+	if (mode >= MINIMAP_MODE_COUNT)
+		return;
 
 	JMutexAutoLock lock(m_mutex);
-	data->radar = (bool)modeDefs[(int)mode * 3];
-	data->scan_height = modeDefs[(int)mode * 3 + 1];
-	data->map_size = modeDefs[(int)mode * 3 + 2];
-	data->mode = mode;
+
+	data->is_radar    = modedefs[mode].is_radar;
+	data->scan_height = modedefs[mode].scan_height;
+	data->map_size    = modedefs[mode].map_size;
+	data->mode        = mode;
+
 	m_minimap_update_thread->deferUpdate();
 }
 
 void Mapper::setPos(v3s16 pos)
 {
-	JMutexAutoLock lock(m_mutex);
-	if (pos != data->old_pos) {
-		data->old_pos = data->pos;
-		data->pos = pos;
+	bool do_update = false;
+
+	{
+		JMutexAutoLock lock(m_mutex);
+
+		if (pos != data->old_pos) {
+			data->old_pos = data->pos;
+			data->pos = pos;
+			do_update = true;
+		}
+	}
+
+	if (do_update)
 		m_minimap_update_thread->deferUpdate();
+}
+
+void Mapper::setAngle(f32 angle)
+{
+	m_angle = angle;
+}
+
+void Mapper::blitMinimapPixelsToImageRadar(video::IImage *map_image)
+{
+	for (s16 x = 0; x < data->map_size; x++)
+	for (s16 z = 0; z < data->map_size; z++) {
+		MinimapPixel *mmpixel = &data->minimap_scan[x + z * data->map_size];
+
+		video::SColor c(240, 0, 0, 0);
+		if (mmpixel->air_count > 0)
+			c.setGreen(core::clamp(core::round32(32 + mmpixel->air_count * 8), 0, 255));
+
+		map_image->setPixel(x, data->map_size - z - 1, c);
+	}
+}
+
+void Mapper::blitMinimapPixelsToImageSurface(
+	video::IImage *map_image, video::IImage *heightmap_image)
+{
+	for (s16 x = 0; x < data->map_size; x++)
+	for (s16 z = 0; z < data->map_size; z++) {
+		MinimapPixel *mmpixel = &data->minimap_scan[x + z * data->map_size];
+
+		video::SColor c = m_ndef->get(mmpixel->id).minimap_color;
+		c.setAlpha(240);
+
+		map_image->setPixel(x, data->map_size - z - 1, c);
+
+		u32 h = mmpixel->height;
+		heightmap_image->setPixel(x,data->map_size - z - 1,
+			video::SColor(255, h, h, h));
 	}
 }
 
 video::ITexture *Mapper::getMinimapTexture()
 {
 	// update minimap textures when new scan is ready
-	if (!data->map_invalidated) {
-		// create minimap and heightmap image
-		core::dimension2d<u32> dim(data->map_size,data->map_size);
-		video::IImage *map_image = driver->createImage(video::ECF_A8R8G8B8, dim);
-		video::IImage *heightmap_image = driver->createImage(video::ECF_A8R8G8B8, dim);
-		video::IImage *minimap_image = driver->createImage(video::ECF_A8R8G8B8,
-			core::dimension2d<u32>(512, 512));
+	if (data->map_invalidated)
+		return data->texture;
 
-		video::SColor c;
-		if (!data->radar) {
-			// surface mode
-			for (s16 x = 0; x < data->map_size; x++) {
-				for (s16 z = 0; z < data->map_size; z++) {
-					MinimapPixel* minimap_pixel = &data->minimap_scan[x + z * data->map_size];
-					const ContentFeatures &f = client->getNodeDefManager()->get(minimap_pixel->id);
-					c = f.minimap_color;
-					c.setAlpha(240);
-					map_image->setPixel(x, data->map_size - z -1, c);
-					u32 h = minimap_pixel->height;
-					heightmap_image->setPixel(x,data->map_size -z -1,
-						video::SColor(255, h, h, h));
-				}
-			}
-		} else {
-			// radar mode
-			c = video::SColor (240, 0 , 0, 0);
-			for (s16 x = 0; x < data->map_size; x++) {
-				for (s16 z = 0; z < data->map_size; z++) {
-					MinimapPixel* minimap_pixel = &data->minimap_scan[x + z * data->map_size];
-					if (minimap_pixel->air_count > 0) {
-						c.setGreen(core::clamp(core::round32(32 + minimap_pixel->air_count * 8), 0, 255));
-					} else {
-						c.setGreen(0);
-					}
-					map_image->setPixel(x, data->map_size - z -1, c);
-				}
-			}
-		}
+	// create minimap and heightmap images in memory
+	core::dimension2d<u32> dim(data->map_size, data->map_size);
+	video::IImage *map_image       = driver->createImage(video::ECF_A8R8G8B8, dim);
+	video::IImage *heightmap_image = driver->createImage(video::ECF_A8R8G8B8, dim);
+	video::IImage *minimap_image   = driver->createImage(video::ECF_A8R8G8B8,
+		core::dimension2d<u32>(MINIMAP_MAX_SX, MINIMAP_MAX_SY));
 
-		map_image->copyToScaling(minimap_image);
-		map_image->drop();
+	// Blit MinimapPixels to images
+	if (data->is_radar)
+		blitMinimapPixelsToImageRadar(map_image);
+	else
+		blitMinimapPixelsToImageSurface(map_image, heightmap_image);
 
-		video::IImage *minimap_mask;
-		if (data->minimap_shape_round) {
-			minimap_mask = data->minimap_mask_round;
-		} else {
-			minimap_mask = data->minimap_mask_square;
-		}
-		for (s16 x = 0; x < 512; x++) {
-			for (s16 y = 0; y < 512; y++) {
-				video::SColor mask_col = minimap_mask->getPixel(x, y);
-				if (!mask_col.getAlpha()) {
-					minimap_image->setPixel(x, y, video::SColor(0,0,0,0));
-				}
-			}
-		}
+	map_image->copyToScaling(minimap_image);
+	map_image->drop();
 
-		if (data->texture) {
-			driver->removeTexture(data->texture);
-		}
-		if (data->heightmap_texture) {
-			driver->removeTexture(data->heightmap_texture);
-		}
-		data->texture = driver->addTexture("minimap__", minimap_image);
-		data->heightmap_texture = driver->addTexture("minimap_heightmap__", heightmap_image);
-		minimap_image->drop();
-		heightmap_image->drop();
+	video::IImage *minimap_mask = data->minimap_shape_round ?
+		data->minimap_mask_round : data->minimap_mask_square;
 
-		data->map_invalidated = true;
+	if (minimap_mask) {
+		for (s16 y = 0; y < MINIMAP_MAX_SY; y++)
+		for (s16 x = 0; x < MINIMAP_MAX_SX; x++) {
+			video::SColor mask_col = minimap_mask->getPixel(x, y);
+			if (!mask_col.getAlpha())
+				minimap_image->setPixel(x, y, video::SColor(0,0,0,0));
+		}
 	}
+
+	if (data->texture)
+		driver->removeTexture(data->texture);
+	if (data->heightmap_texture)
+		driver->removeTexture(data->heightmap_texture);
+
+	data->texture = driver->addTexture("minimap__", minimap_image);
+	data->heightmap_texture =
+		driver->addTexture("minimap_heightmap__", heightmap_image);
+	minimap_image->drop();
+	heightmap_image->drop();
+
+	data->map_invalidated = true;
+
 	return data->texture;
 }
 
 v3f Mapper::getYawVec()
 {
 	if (data->minimap_shape_round) {
-		return v3f(cos(player->getYaw()* core::DEGTORAD),
-			sin(player->getYaw()* core::DEGTORAD), 1.0);
+		return v3f(
+			cos(m_angle * core::DEGTORAD),
+			sin(m_angle * core::DEGTORAD),
+			1.0);
 	} else {
 		return v3f(1.0, 0.0, 1.0);
 	}
@@ -395,7 +436,7 @@ scene::SMeshBuffer *Mapper::getMinimapMeshBuffer()
 {
 	scene::SMeshBuffer *buf = new scene::SMeshBuffer();
 	buf->Vertices.set_used(4);
-	buf->Indices .set_used(6);
+	buf->Indices.set_used(6);
 	video::SColor c(255, 255, 255, 255);
 
 	buf->Vertices[0] = video::S3DVertex(-1, -1, 0, 0, 0, 1, c, 0, 1);
@@ -415,59 +456,99 @@ scene::SMeshBuffer *Mapper::getMinimapMeshBuffer()
 
 void Mapper::drawMinimap()
 {
+	video::ITexture *minimap_texture = getMinimapTexture();
+	if (!minimap_texture)
+		return;
+
 	v2u32 screensize = porting::getWindowSize();
-	u32 size = 0.25 * screensize.Y;
-	video::ITexture* minimap_texture = getMinimapTexture();
-	core::matrix4 matrix;
+	const u32 size = 0.25 * screensize.Y;
 
 	core::rect<s32> oldViewPort = driver->getViewPort();
-	driver->setViewPort(core::rect<s32>(screensize.X - size - 10, 10,
-		screensize.X - 10, size + 10));
 	core::matrix4 oldProjMat = driver->getTransform(video::ETS_PROJECTION);
-	driver->setTransform(video::ETS_PROJECTION, core::matrix4());
 	core::matrix4 oldViewMat = driver->getTransform(video::ETS_VIEW);
+
+	driver->setViewPort(core::rect<s32>(
+		screensize.X - size - 10, 10,
+		screensize.X - 10, size + 10));
+	driver->setTransform(video::ETS_PROJECTION, core::matrix4());
 	driver->setTransform(video::ETS_VIEW, core::matrix4());
+
+	core::matrix4 matrix;
 	matrix.makeIdentity();
 
-	if (minimap_texture) {
-		video::SMaterial& material = m_meshbuffer->getMaterial();
-		material.setFlag(video::EMF_TRILINEAR_FILTER, true);
-		material.Lighting = false;
-		material.TextureLayer[0].Texture = minimap_texture;
-		material.TextureLayer[1].Texture = data->heightmap_texture;
-		if (m_enable_shaders && !data->radar) {
-			u16 sid = shdrsrc->getShader("minimap_shader", 1, 1);
-			material.MaterialType = shdrsrc->getShaderInfo(sid).material;
-		} else {
-			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-		}
+	video::SMaterial &material = m_meshbuffer->getMaterial();
+	material.setFlag(video::EMF_TRILINEAR_FILTER, true);
+	material.Lighting = false;
+	material.TextureLayer[0].Texture = minimap_texture;
+	material.TextureLayer[1].Texture = data->heightmap_texture;
 
-		if (data->minimap_shape_round)
-			matrix.setRotationDegrees(core::vector3df(0, 0, 360 - player->getYaw()));
+	if (m_enable_shaders && !data->is_radar) {
+		u16 sid = m_shdrsrc->getShader("minimap_shader", 1, 1);
+		material.MaterialType = m_shdrsrc->getShaderInfo(sid).material;
+	} else {
+		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	}
+
+	if (data->minimap_shape_round)
+		matrix.setRotationDegrees(core::vector3df(0, 0, 360 - m_angle));
+
+	// Draw minimap
+	driver->setTransform(video::ETS_WORLD, matrix);
+	driver->setMaterial(material);
+	driver->drawMeshBuffer(m_meshbuffer);
+
+	// Draw overlay
+	video::ITexture *minimap_overlay = data->minimap_shape_round ?
+		data->minimap_overlay_round : data->minimap_overlay_square;
+	material.TextureLayer[0].Texture = minimap_overlay;
+	material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	driver->setMaterial(material);
+	driver->drawMeshBuffer(m_meshbuffer);
+
+	// If round minimap, draw player marker
+	if (!data->minimap_shape_round) {
+		matrix.setRotationDegrees(core::vector3df(0, 0, m_angle));
+		material.TextureLayer[0].Texture = data->player_marker;
+
 		driver->setTransform(video::ETS_WORLD, matrix);
 		driver->setMaterial(material);
 		driver->drawMeshBuffer(m_meshbuffer);
-		video::ITexture *minimap_overlay;
-		if (data->minimap_shape_round) {
-			minimap_overlay = data->minimap_overlay_round;
-		} else {
-			minimap_overlay = data->minimap_overlay_square;
-		}
-		material.TextureLayer[0].Texture = minimap_overlay;
-		material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-		driver->setMaterial(material);
-		driver->drawMeshBuffer(m_meshbuffer);
-
-		if (!data->minimap_shape_round) {
-			matrix.setRotationDegrees(core::vector3df(0, 0, player->getYaw()));
-			driver->setTransform(video::ETS_WORLD, matrix);
-			material.TextureLayer[0].Texture = data->player_marker;
-			driver->setMaterial(material);
-			driver->drawMeshBuffer(m_meshbuffer);
-		}
 	}
 
+	// Reset transformations
 	driver->setTransform(video::ETS_VIEW, oldViewMat);
 	driver->setTransform(video::ETS_PROJECTION, oldProjMat);
 	driver->setViewPort(oldViewPort);
+}
+
+////
+//// MinimapMapblock
+////
+
+void MinimapMapblock::getMinimapNodes(VoxelManipulator *vmanip, v3s16 pos)
+{
+
+	for (s16 x = 0; x < MAP_BLOCKSIZE; x++)
+	for (s16 z = 0; z < MAP_BLOCKSIZE; z++) {
+		s16 air_count = 0;
+		bool surface_found = false;
+		MinimapPixel *mmpixel = &data[z * MAP_BLOCKSIZE + x];
+
+		for (s16 y = MAP_BLOCKSIZE -1; y >= 0; y--) {
+			v3s16 p(x, y, z);
+			MapNode n = vmanip->getNodeNoEx(pos + p);
+			if (!surface_found && n.getContent() != CONTENT_AIR) {
+				mmpixel->height = y;
+				mmpixel->id = n.getContent();
+				surface_found = true;
+			} else if (n.getContent() == CONTENT_AIR) {
+				air_count++;
+			}
+		}
+
+		if (!surface_found)
+			mmpixel->id = CONTENT_AIR;
+
+		mmpixel->air_count = air_count;
+	}
 }

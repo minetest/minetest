@@ -525,18 +525,23 @@ void Client::step(float dtime)
 		while (!m_mesh_update_thread.m_queue_out.empty())
 		{
 			num_processed_meshes++;
+
+			MinimapMapblock *minimap_mapblock = NULL;
+			bool do_mapper_update = true;
+
 			MeshUpdateResult r = m_mesh_update_thread.m_queue_out.pop_frontNoEx();
 			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(r.p);
-			MinimapMapblock *minimap_mapblock = NULL;
 			if (block) {
 				// Delete the old mesh
-				if (block->mesh != NULL)	{
+				if (block->mesh != NULL) {
 					delete block->mesh;
 					block->mesh = NULL;
 				}
 
-				if (r.mesh)
+				if (r.mesh) {
 					minimap_mapblock = r.mesh->getMinimapMapblock();
+					do_mapper_update = (minimap_mapblock != NULL);
+				}
 
 				if (r.mesh && r.mesh->getMesh()->getMeshBufferCount() == 0) {
 					delete r.mesh;
@@ -550,7 +555,8 @@ void Client::step(float dtime)
 				minimap_mapblock = NULL;
 			}
 
-			m_mapper->addBlock(r.p, minimap_mapblock);
+			if (do_mapper_update)
+				m_mapper->addBlock(r.p, minimap_mapblock);
 
 			if (r.ack_block_to_server) {
 				/*
