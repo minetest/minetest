@@ -3,14 +3,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-23 02:38+0900\n"
-"PO-Revision-Date: 2015-02-22 10:57+0900\n"
-"Last-Translator: Rui\n"
-"Language-Team: Minetest JP\n"
+"PO-Revision-Date: 2015-07-08 23:33+0200\n"
+"Last-Translator: Tae Lim Kook <tkook11@gmail.com>\n"
+"Language-Team: Japanese "
+"<https://hosted.weblate.org/projects/minetest/minetest/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 2.4-dev\n"
 
 #: builtin/fstk/ui.lua:67 builtin/mainmenu/store.lua:165
 msgid "Ok"
@@ -92,7 +94,7 @@ msgstr "ゲームがインストールされていません。"
 
 #: builtin/mainmenu/dlg_create_world.lua:69
 msgid "Download one from minetest.net"
-msgstr "minetest.netから再ダウンロードしてください。"
+msgstr "minetest.netから再ダウンロードしてください"
 
 #: builtin/mainmenu/dlg_create_world.lua:72
 msgid "Warning: The minimal development test is meant for developers."
@@ -100,15 +102,15 @@ msgstr "警告:Minimal development testは開発者のためのゲームです�
 
 #: builtin/mainmenu/dlg_create_world.lua:73
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr "minetest.netからminetest_gameのゲームをダウンロードしてください。"
+msgstr "minetest.netからminetest_gameのゲームをダウンロードしてください"
 
 #: builtin/mainmenu/dlg_create_world.lua:99
 msgid "A world named \"$1\" already exists"
-msgstr "ﾜｰﾙﾄﾞ名\"$1\"はすでに使用されています。"
+msgstr "ﾜｰﾙﾄﾞ名\"$1\"はすでに使用されています"
 
 #: builtin/mainmenu/dlg_create_world.lua:116
 msgid "No worldname given or no game selected"
-msgstr "ﾜｰﾙﾄﾞ名が入力されていないか、ゲームが選択されていません。"
+msgstr "ﾜｰﾙﾄﾞ名が入力されていないか、ゲームが選択されていません"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:26
 msgid "Are you sure you want to delete \"$1\"?"
