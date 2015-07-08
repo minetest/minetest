@@ -108,8 +108,11 @@
 #liquid_queue_purge_time = 0
 #    Liquid update interval in seconds
 #liquid_update = 1.0
-#    Enable transparent leaf textures, disable for speed
-#new_style_leaves = true
+#    Leaves style:
+#     fancy  - all faces visible
+#     simple - only outer faces, if defined special_tiles are used
+#     opaque - disable transparency
+#leaves_style = fancy
 #    Connects glass if supported by node
 #connected_glass = false
 #    Enable smooth lighting with simple ambient occlusion.
