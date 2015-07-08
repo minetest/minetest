@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-12-13 15:24+0100\n"
-"PO-Revision-Date: 2014-12-14 17:34+0100\n"
-"Last-Translator: Calinou <calinou@opmbx.org>\n"
-"Language-Team: Français <>\n"
+"PO-Revision-Date: 2015-07-08 11:41+0200\n"
+"Last-Translator: Jean-Patrick G. <jeanpatrick.guerrero@gmail.com>\n"
+"Language-Team: French "
+"<https://hosted.weblate.org/projects/minetest/minetest/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 1.7-dev\n"
+"X-Generator: Weblate 2.4-dev\n"
 
 #: builtin/fstk/ui.lua:67
 msgid "Ok"
@@ -34,7 +35,7 @@ msgstr "Cacher le jeu"
 #: builtin/mainmenu/dlg_config_world.lua:36
 #: builtin/mainmenu/dlg_config_world.lua:38
 msgid "Hide mp content"
-msgstr "Cacher le contenu de packs de mods"
+msgstr "Cacher le pack de mods"
 
 #: builtin/mainmenu/dlg_config_world.lua:46
 msgid "Mod:"
@@ -98,7 +99,7 @@ msgstr "Vous n'avez pas de sous-jeux installés."
 
 #: builtin/mainmenu/dlg_create_world.lua:69
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "Téléchargez-en un depuis minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua:72
 msgid "Warning: The minimal development test is meant for developers."
@@ -106,7 +107,7 @@ msgstr "Avertissement : le jeu minimal est fait pour les développeurs."
 
 #: builtin/mainmenu/dlg_create_world.lua:73
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr "Téléchargez un sosu-jeu, comme minetest_game, depuis minetest.net"
+msgstr "Téléchargez un sous-jeu, comme minetest_game, depuis minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua:97
 msgid "A world named \"$1\" already exists"
@@ -118,7 +119,7 @@ msgstr "Nom du monde manquant ou aucun jeu sélectionné"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:26
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr "Êtes-vous sûr de supprimer \"$1\" ?"
+msgstr "Êtes-vous sûr de vouloir supprimer \"$1\" ?"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:27
 #: builtin/mainmenu/dlg_delete_world.lua:25
@@ -190,7 +191,7 @@ msgstr "Rechercher"
 
 #: builtin/mainmenu/store.lua:125
 msgid "Downloading"
-msgstr "Télécharement"
+msgstr "Téléchargement"
 
 #: builtin/mainmenu/store.lua:127
 msgid "please wait..."
@@ -202,7 +203,7 @@ msgstr "Installé avec succès :"
 
 #: builtin/mainmenu/store.lua:163
 msgid "Shortname:"
-msgstr "Nom court :"
+msgstr "Nom :"
 
 #: builtin/mainmenu/store.lua:167 src/guiFormSpecMenu.cpp:2866
 msgid "ok"
@@ -266,11 +267,11 @@ msgstr "Renommer"
 
 #: builtin/mainmenu/tab_mods.lua:95
 msgid "Uninstall selected modpack"
-msgstr "Désinstaller le pack de mods sélectionné"
+msgstr "Désinstaller le pack de mods"
 
 #: builtin/mainmenu/tab_mods.lua:106
 msgid "Uninstall selected mod"
-msgstr "Désinstaller le mod sélectionné"
+msgstr "Désinstaller le mod"
 
 #: builtin/mainmenu/tab_mods.lua:121
 msgid "Select Mod File:"
@@ -356,7 +357,7 @@ msgstr "Serveur"
 
 #: builtin/mainmenu/tab_settings.lua:23
 msgid "Are you sure to reset your singleplayer world?"
-msgstr "Êtes-vous sûr de remettre à zéro votre monde solo ?"
+msgstr "Êtes-vous sûr de vouloir réinitialiser votre monde ?"
 
 #: builtin/mainmenu/tab_settings.lua:27
 msgid "No!!!"
@@ -375,7 +376,6 @@ msgid "3D Clouds"
 msgstr "Nuages 3D"
 
 #: builtin/mainmenu/tab_settings.lua:140
-
 msgid "Fancy Trees"
 msgstr "Arbres détaillés"
 
@@ -384,13 +384,12 @@ msgid "Opaque Water"
 msgstr "Eau opaque"
 
 #: builtin/mainmenu/tab_settings.lua:144
-
 msgid "Connected Glass"
 msgstr "Verre connecté"
 
 #: builtin/mainmenu/tab_settings.lua:149
 msgid "Restart minetest for driver change to take effect"
-msgstr "Redémarrez Minetest pour que le changement de pilote prenne effet"
+msgstr "Redémarrez Minetest pour que le changement du pilote prenne effet"
 
 #: builtin/mainmenu/tab_settings.lua:151
 msgid "Mip-Mapping"
@@ -417,17 +416,16 @@ msgid "Change keys"
 msgstr "Changer les touches"
 
 #: builtin/mainmenu/tab_settings.lua:167
-#, fuzzy
 msgid "Reset singleplayer world"
-msgstr "Remettre le monde solo à zéro"
+msgstr "Réinitialiser le monde"
 
 #: builtin/mainmenu/tab_settings.lua:171
 msgid "GUI scale factor"
-msgstr "Échelle des menus"
+msgstr "Taille des menus"
 
 #: builtin/mainmenu/tab_settings.lua:175
 msgid "Scaling factor applied to menu elements: "
-msgstr "Échelle appliquée aux menus :"
+msgstr "Taille appliquée aux menus : "
 
 #: builtin/mainmenu/tab_settings.lua:181
 msgid "Touch free target"
@@ -443,7 +441,7 @@ msgstr "Bump mapping"
 
 #: builtin/mainmenu/tab_settings.lua:196 builtin/mainmenu/tab_settings.lua:209
 msgid "Generate Normalmaps"
-msgstr "Générer des normal maps"
+msgstr "Normal mapping"
 
 #: builtin/mainmenu/tab_settings.lua:198 builtin/mainmenu/tab_settings.lua:210
 msgid "Parallax Occlusion"
@@ -451,15 +449,15 @@ msgstr "Occlusion parallaxe"
 
 #: builtin/mainmenu/tab_settings.lua:200 builtin/mainmenu/tab_settings.lua:211
 msgid "Waving Water"
-msgstr "Liquides animés"
+msgstr "Liquides mouvants"
 
 #: builtin/mainmenu/tab_settings.lua:202 builtin/mainmenu/tab_settings.lua:212
 msgid "Waving Leaves"
-msgstr "Feuilles animées"
+msgstr "Feuilles mouvantes"
 
 #: builtin/mainmenu/tab_settings.lua:204 builtin/mainmenu/tab_settings.lua:213
 msgid "Waving Plants"
-msgstr "Plantes animées"
+msgstr "Plantes mouvantes"
 
 #: builtin/mainmenu/tab_settings.lua:255
 msgid "To enable shaders the OpenGL driver needs to be used."
@@ -478,7 +476,6 @@ msgid "Start Singleplayer"
 msgstr "Démarrer la partie solo"
 
 #: builtin/mainmenu/tab_simple_main.lua:72
-
 msgid "Config mods"
 msgstr "Configurer les mods"
 
@@ -516,7 +513,7 @@ msgstr "needs_fallback_font"
 
 #: src/game.cpp:1063
 msgid "Respawn"
-msgstr "Réapparaître"
+msgstr "Ressusciter"
 
 #: src/game.cpp:2250
 msgid "Item definitions..."
@@ -564,7 +561,7 @@ msgstr "\"Use\" = descendre (escalade)"
 
 #: src/guiKeyChangeMenu.cpp:180
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Double appui sur \"saut\" pour voler"
+msgstr "Double-appui sur \"saut\" pour voler"
 
 #: src/guiKeyChangeMenu.cpp:296
 msgid "Key already in use"
@@ -604,7 +601,7 @@ msgstr "Marcher"
 
 #: src/guiKeyChangeMenu.cpp:404
 msgid "Drop"
-msgstr "Lâcher"
+msgstr "Jeter"
 
 #: src/guiKeyChangeMenu.cpp:405
 msgid "Inventory"
@@ -612,7 +609,7 @@ msgstr "Inventaire"
 
 #: src/guiKeyChangeMenu.cpp:406
 msgid "Chat"
-msgstr "Messagerie"
+msgstr "Chatter"
 
 #: src/guiKeyChangeMenu.cpp:407
 msgid "Command"
@@ -632,11 +629,11 @@ msgstr "Mode rapide"
 
 #: src/guiKeyChangeMenu.cpp:411
 msgid "Toggle noclip"
-msgstr "Mode noclip"
+msgstr "Mode sans collision"
 
 #: src/guiKeyChangeMenu.cpp:412
 msgid "Range select"
-msgstr "Distance de rendu"
+msgstr "Distance d'affichage"
 
 #: src/guiKeyChangeMenu.cpp:413
 msgid "Print stacks"
@@ -728,7 +725,7 @@ msgstr "Pause"
 
 #: src/keycode.cpp:226
 msgid "Shift"
-msgstr "Majuscule"
+msgstr "Shift"
 
 #: src/keycode.cpp:227
 msgid "Convert"
@@ -892,11 +889,11 @@ msgstr "Verr. défilement"
 
 #: src/keycode.cpp:241
 msgid "Left Shift"
-msgstr "Majuscule gauche"
+msgstr "Shift gauche"
 
 #: src/keycode.cpp:241
 msgid "Right Shift"
-msgstr "Majuscule droite"
+msgstr "Shift droite"
 
 #: src/keycode.cpp:242
 msgid "Left Control"
