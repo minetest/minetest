@@ -138,7 +138,7 @@ void PcgRandom::bytes(void *out, size_t len)
 		*outb = r & 0xFF;
 		outb++;
 		bytes_left--;
-		r >>= 8;
+		r >>= CHAR_BIT;
 	}
 }
 

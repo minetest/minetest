@@ -57,7 +57,7 @@ static const char *modified_reason_strings[] = {
 	"deactivateFarObjects: Static data moved in",
 	"deactivateFarObjects: Static data moved out",
 	"deactivateFarObjects: Static data changed considerably",
-	"finishBlockMake: expireDayNightDiff"
+	"finishBlockMake: expireDayNightDiff",
 	"unknown",
 };
 

@@ -105,11 +105,7 @@ public:
 	MinimapData *data;
 
 protected:
-	const char *getName()
-	{
-		return "MinimapUpdateThread";
-	}
-
+	const char *getName() { return "MinimapUpdateThread"; }
 	virtual void doUpdate();
 
 private:

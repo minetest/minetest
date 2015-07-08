@@ -88,15 +88,14 @@ public:
 		} else if (event.EventType == irr::EET_LOG_TEXT_EVENT) {
 			static const enum LogMessageLevel irr_loglev_conv[] = {
 				LMT_VERBOSE, // ELL_DEBUG
-				LMT_INFO, // ELL_INFORMATION
-				LMT_ACTION, // ELL_WARNING
-				LMT_ERROR, // ELL_ERROR
-				LMT_ERROR, // ELL_NONE
+				LMT_INFO,    // ELL_INFORMATION
+				LMT_ACTION,  // ELL_WARNING
+				LMT_ERROR,   // ELL_ERROR
+				LMT_ERROR,   // ELL_NONE
 			};
-			assert(event.LogEvent.Level < sizeof(irr_loglev_conv));
+			assert(event.LogEvent.Level < ARRLEN(irr_loglev_conv));
 			log_printline(irr_loglev_conv[event.LogEvent.Level],
-				std::string("Irrlicht: ")
-				+ (const char*) event.LogEvent.Text);
+				std::string("Irrlicht: ") + (const char *)event.LogEvent.Text);
 			return true;
 		}
 		/* always return false in order to continue processing events */
