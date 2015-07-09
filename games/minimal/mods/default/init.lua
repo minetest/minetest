@@ -734,7 +734,9 @@ minetest.register_node("default:stone_with_iron", {
 
 minetest.register_node("default:dirt_with_grass", {
 	description = "Dirt with grass",
-	tiles ={"default_grass.png", "default_dirt.png", "default_dirt.png^default_grass_side.png"},
+	tiles ={"default_grass.png", "default_dirt.png",
+		{name = "default_dirt.png^default_grass_side.png",
+		tileable_vertical = false}},
 	groups = {crumbly=3, soil=1},
 	drop = 'default:dirt',
 	sounds = default.node_sound_dirt_defaults({
@@ -744,7 +746,9 @@ minetest.register_node("default:dirt_with_grass", {
 
 minetest.register_node("default:dirt_with_grass_footsteps", {
 	description = "Dirt with grass and footsteps",
-	tiles ={"default_grass_footsteps.png", "default_dirt.png", "default_dirt.png^default_grass_side.png"},
+	tiles ={"default_grass_footsteps.png", "default_dirt.png",
+		{name = "default_dirt.png^default_grass_side.png",
+		tileable_vertical = false}},
 	groups = {crumbly=3, soil=1},
 	drop = 'default:dirt',
 	sounds = default.node_sound_dirt_defaults({
@@ -1520,7 +1524,10 @@ minetest.register_node("default:apple", {
 
 minetest.register_node("default:dirt_with_snow", {
 	description = "Dirt with Snow",
-	tiles = {"default_snow.png", "default_dirt.png", "default_dirt.png^default_snow_side.png"},
+	tiles = {"default_snow.png", "default_dirt.png",
+		{name = "default_dirt.png^default_snow_side.png",
+		tileable_vertical = false}
+		},
 	groups = {crumbly=3,soil=1},
 	drop = 'default:dirt',
 	sounds = default.node_sound_dirt_defaults(),

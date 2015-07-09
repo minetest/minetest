@@ -878,11 +878,11 @@ public:
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
 		services->setPixelShaderConstant("baseTexture" , (irr::f32 *)&layer0, 1);
 		services->setPixelShaderConstant("normalTexture" , (irr::f32 *)&layer1, 1);
-		services->setPixelShaderConstant("useNormalmap" , (irr::f32 *)&layer2, 1);
+		services->setPixelShaderConstant("textureFlags" , (irr::f32 *)&layer2, 1);
 #else
 		services->setPixelShaderConstant("baseTexture" , (irr::s32 *)&layer0, 1);
 		services->setPixelShaderConstant("normalTexture" , (irr::s32 *)&layer1, 1);
-		services->setPixelShaderConstant("useNormalmap" , (irr::s32 *)&layer2, 1);
+		services->setPixelShaderConstant("textureFlags" , (irr::s32 *)&layer2, 1);
 #endif
 	}
 };
