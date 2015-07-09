@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-23 02:38+0900\n"
-"PO-Revision-Date: 2015-07-08 23:33+0200\n"
-"Last-Translator: Tae Lim Kook <tkook11@gmail.com>\n"
+"PO-Revision-Date: 2015-07-09 15:56+0200\n"
+"Last-Translator: sfan5 <sfan5@live.de>\n"
 "Language-Team: Japanese "
 "<https://hosted.weblate.org/projects/minetest/minetest/ja/>\n"
 "Language: ja\n"
@@ -430,7 +430,7 @@ msgstr "レンダリング:"
 
 #: builtin/mainmenu/tab_settings.lua:205
 msgid "Restart minetest for driver change to take effect"
-msgstr "ドライバーを変更するためMinetesを再起動します"
+msgstr "ドライバーを変更するためMinetestを再起動します"
 
 #: builtin/mainmenu/tab_settings.lua:207
 msgid "Shaders"
