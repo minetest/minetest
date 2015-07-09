@@ -83,9 +83,12 @@ public:
 			BS * 1000000, m_cloud_y + BS - BS * camera_offset.Y, BS * 1000000);
 	}
 
+	void readSettings();
+
 private:
 	video::SMaterial m_material;
 	core::aabbox3d<f32> m_box;
+	s16 m_passed_cloud_y;
 	float m_cloud_y;
 	u16 m_cloud_radius_i;
 	bool m_enable_3d;
