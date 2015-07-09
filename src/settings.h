@@ -36,7 +36,7 @@ extern Settings *g_settings;
 extern std::string g_settings_path;
 
 /** function type to register a changed callback */
-typedef void (*setting_changed_callback)(const std::string, void*);
+typedef void (*setting_changed_callback)(const std::string &name, void *data);
 
 enum ValueType {
 	VALUETYPE_STRING,

@@ -30,7 +30,7 @@ class Clouds;
 Clouds *g_menuclouds = NULL;
 irr::scene::ISceneManager *g_menucloudsmgr = NULL;
 
-static void cloud_3d_setting_changed(const std::string settingname, void *data)
+static void cloud_3d_setting_changed(const std::string &settingname, void *data)
 {
 	((Clouds *)data)->readSettings();
 }
