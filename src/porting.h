@@ -60,7 +60,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <unistd.h>
 	#include <stdint.h> //for uintptr_t
 
-#if (defined(linux) || defined(__linux) || defined(__GNU__)) && !defined(_GNU_SOURCE)
+	#if (defined(linux) || defined(__linux) || defined(__GNU__)) && !defined(_GNU_SOURCE)
 		#define _GNU_SOURCE
 	#endif
 
