@@ -426,6 +426,9 @@ inline video::SColor readARGB8(std::istream &is)
 	More serialization stuff
 */
 
+// 8 MB is a conservative limit.  Increase later if problematic.
+#define LONG_STRING_MAX (8 * 1024 * 1024)
+
 // Creates a string with the length as the first two bytes
 std::string serializeString(const std::string &plain);
 
@@ -449,6 +452,9 @@ std::string serializeJsonString(const std::string &plain);
 
 // Reads a string encoded in JSON format
 std::string deSerializeJsonString(std::istream &is);
+
+// Creates a string consisting of the hexadecimal representation of `data`
+std::string serializeHexString(const std::string &data, bool insert_spaces=false);
 
 // Creates a string containing comma delimited values of a struct whose layout is
 // described by the parameter format

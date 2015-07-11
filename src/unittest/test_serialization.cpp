@@ -34,6 +34,10 @@ public:
 	void testSerializeWideString();
 	void testSerializeLongString();
 	void testSerializeJsonString();
+	void testSerializeHex();
+	void testDeSerializeString();
+	void testDeSerializeWideString();
+	void testDeSerializeLongString();
 
 	std::string teststring2;
 	std::wstring teststring2_w;
@@ -47,9 +51,13 @@ void TestSerialization::runTests(IGameDef *gamedef)
 	buildTestStrings();
 
 	TEST(testSerializeString);
+	TEST(testDeSerializeString);
 	TEST(testSerializeWideString);
+	TEST(testDeSerializeWideString);
 	TEST(testSerializeLongString);
+	TEST(testDeSerializeLongString);
 	TEST(testSerializeJsonString);
+	TEST(testSerializeHex);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -80,20 +88,37 @@ void TestSerialization::buildTestStrings()
 void TestSerialization::testSerializeString()
 {
 	// Test blank string
-	UASSERT(serializeString("Hello world!") == mkstr("\0\14Hello world!"));
+	UASSERT(serializeString("") == mkstr("\0\0"));
 
 	// Test basic string
-	UASSERT(serializeString("") == mkstr("\0\0"));
+	UASSERT(serializeString("Hello world!") == mkstr("\0\14Hello world!"));
 
 	// Test character range
 	UASSERT(serializeString(teststring2) == mkstr("\1\0") + teststring2);
+}
 
+void TestSerialization::testDeSerializeString()
+{
 	// Test deserialize
-	std::istringstream is(serializeString(teststring2), std::ios::binary);
-	UASSERT(deSerializeString(is) == teststring2);
-	UASSERT(!is.eof());
-	is.get();
-	UASSERT(is.eof());
+	{
+		std::istringstream is(serializeString(teststring2), std::ios::binary);
+		UASSERT(deSerializeString(is) == teststring2);
+		UASSERT(!is.eof());
+		is.get();
+		UASSERT(is.eof());
+	}
+
+	// Test deserialize an incomplete length specifier
+	{
+		std::istringstream is(mkstr("\x53"), std::ios::binary);
+		EXCEPTION_CHECK(SerializationError, deSerializeString(is));
+	}
+
+	// Test deserialize a string with incomplete data
+	{
+		std::istringstream is(mkstr("\x00\x55 abcdefg"), std::ios::binary);
+		EXCEPTION_CHECK(SerializationError, deSerializeString(is));
+	}
 }
 
 void TestSerialization::testSerializeWideString()
@@ -108,13 +133,36 @@ void TestSerialization::testSerializeWideString()
 	// Test character range
 	UASSERT(serializeWideString(teststring2_w) ==
 		mkstr("\1\0") + teststring2_w_encoded);
+}
 
+void TestSerialization::testDeSerializeWideString()
+{
 	// Test deserialize
-	std::istringstream is(serializeWideString(teststring2_w), std::ios::binary);
-	UASSERT(deSerializeWideString(is) == teststring2_w);
-	UASSERT(!is.eof());
-	is.get();
-	UASSERT(is.eof());
+	{
+		std::istringstream is(serializeWideString(teststring2_w), std::ios::binary);
+		UASSERT(deSerializeWideString(is) == teststring2_w);
+		UASSERT(!is.eof());
+		is.get();
+		UASSERT(is.eof());
+	}
+
+	// Test deserialize an incomplete length specifier
+	{
+		std::istringstream is(mkstr("\x53"), std::ios::binary);
+		EXCEPTION_CHECK(SerializationError, deSerializeWideString(is));
+	}
+
+	// Test deserialize a string with an incomplete character
+	{
+		std::istringstream is(mkstr("\x00\x07\0a\0b\0c\0d\0e\0f\0"), std::ios::binary);
+		EXCEPTION_CHECK(SerializationError, deSerializeWideString(is));
+	}
+
+	// Test deserialize a string with incomplete data
+	{
+		std::istringstream is(mkstr("\x00\x08\0a\0b\0c\0d\0e\0f"), std::ios::binary);
+		EXCEPTION_CHECK(SerializationError, deSerializeWideString(is));
+	}
 }
 
 void TestSerialization::testSerializeLongString()
@@ -127,14 +175,38 @@ void TestSerialization::testSerializeLongString()
 
 	// Test character range
 	UASSERT(serializeLongString(teststring2) == mkstr("\0\0\1\0") + teststring2);
-
-	// Test deserialize
-	std::istringstream is(serializeLongString(teststring2), std::ios::binary);
-	UASSERT(deSerializeLongString(is) == teststring2);
-	UASSERT(!is.eof());
-	is.get();
-	UASSERT(is.eof());
 }
+
+void TestSerialization::testDeSerializeLongString()
+{
+	// Test deserialize
+	{
+		std::istringstream is(serializeLongString(teststring2), std::ios::binary);
+		UASSERT(deSerializeLongString(is) == teststring2);
+		UASSERT(!is.eof());
+		is.get();
+		UASSERT(is.eof());
+	}
+
+	// Test deserialize an incomplete length specifier
+	{
+		std::istringstream is(mkstr("\x53"), std::ios::binary);
+		EXCEPTION_CHECK(SerializationError, deSerializeLongString(is));
+	}
+
+	// Test deserialize a string with incomplete data
+	{
+		std::istringstream is(mkstr("\x00\x00\x00\x05 abc"), std::ios::binary);
+		EXCEPTION_CHECK(SerializationError, deSerializeLongString(is));
+	}
+
+	// Test deserialize a string with a length too large
+	{
+		std::istringstream is(mkstr("\xFF\xFF\xFF\xFF blah"), std::ios::binary);
+		EXCEPTION_CHECK(SerializationError, deSerializeLongString(is));
+	}
+}
+
 
 void TestSerialization::testSerializeJsonString()
 {
@@ -179,4 +251,23 @@ void TestSerialization::testSerializeJsonString()
 	UASSERT(!is.eof());
 	is.get();
 	UASSERT(is.eof());
+}
+
+void TestSerialization::testSerializeHex()
+{
+	// Test blank string
+	UASSERT(serializeHexString("") == "");
+	UASSERT(serializeHexString("", true) == "");
+
+	// Test basic string
+	UASSERT(serializeHexString("Hello world!") ==
+		"48656c6c6f20776f726c6421");
+	UASSERT(serializeHexString("Hello world!", true) ==
+		"48 65 6c 6c 6f 20 77 6f 72 6c 64 21");
+
+	// Test binary string
+	UASSERT(serializeHexString(mkstr("\x00\x0a\xb0\x63\x1f\x00\xff")) ==
+		"000ab0631f00ff");
+	UASSERT(serializeHexString(mkstr("\x00\x0a\xb0\x63\x1f\x00\xff"), true) ==
+		"00 0a b0 63 1f 00 ff");
 }

@@ -28,76 +28,101 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iomanip>
 #include <vector>
 
-// Creates a string with the length as the first two bytes
+////
+//// String
+////
+
 std::string serializeString(const std::string &plain)
 {
-	if(plain.size() > 65535)
-		throw SerializationError("String too long for serializeString");
-	char buf[2];
-	writeU16((u8*)&buf[0], plain.size());
 	std::string s;
+	char buf[2];
+
+	if (plain.size() > 65535)
+		throw SerializationError("String too long for serializeString");
+
+	writeU16((u8 *)&buf[0], plain.size());
 	s.append(buf, 2);
+
 	s.append(plain);
 	return s;
 }
 
-// Creates a string with the length as the first two bytes from wide string
-std::string serializeWideString(const std::wstring &plain)
-{
-	if(plain.size() > 65535)
-		throw SerializationError("String too long for serializeString");
-	char buf[2];
-	writeU16((u8*)buf, plain.size());
-	std::string s;
-	s.append(buf, 2);
-	for(u32 i=0; i<plain.size(); i++)
-	{
-		writeU16((u8*)buf, plain[i]);
-		s.append(buf, 2);
-	}
-	return s;
-}
-
-// Reads a string with the length as the first two bytes
 std::string deSerializeString(std::istream &is)
 {
-	char buf[2];
-	is.read(buf, 2);
-	if(is.gcount() != 2)
-		throw SerializationError("deSerializeString: size not read");
-	u16 s_size = readU16((u8*)buf);
 	std::string s;
-	if(s_size == 0)
+	char buf[2];
+
+	is.read(buf, 2);
+	if (is.gcount() != 2)
+		throw SerializationError("deSerializeString: size not read");
+
+	u16 s_size = readU16((u8 *)buf);
+	if (s_size == 0)
 		return s;
+
 	Buffer<char> buf2(s_size);
 	is.read(&buf2[0], s_size);
+	if (is.gcount() != s_size)
+		throw SerializationError("deSerializeString: couldn't read all chars");
+
 	s.reserve(s_size);
 	s.append(&buf2[0], s_size);
 	return s;
 }
 
-// Reads a wide string with the length as the first two bytes
+////
+//// Wide String
+////
+
+std::string serializeWideString(const std::wstring &plain)
+{
+	std::string s;
+	char buf[2];
+
+	if (plain.size() > 65535)
+		throw SerializationError("String too long for serializeString");
+
+	writeU16((u8 *)buf, plain.size());
+	s.append(buf, 2);
+
+	for (u32 i = 0; i < plain.size(); i++) {
+		writeU16((u8 *)buf, plain[i]);
+		s.append(buf, 2);
+	}
+	return s;
+}
+
 std::wstring deSerializeWideString(std::istream &is)
 {
-	char buf[2];
-	is.read(buf, 2);
-	if(is.gcount() != 2)
-		throw SerializationError("deSerializeString: size not read");
-	u16 s_size = readU16((u8*)buf);
 	std::wstring s;
-	if(s_size == 0)
+	char buf[2];
+
+	is.read(buf, 2);
+	if (is.gcount() != 2)
+		throw SerializationError("deSerializeString: size not read");
+
+	u16 s_size = readU16((u8 *)buf);
+	if (s_size == 0)
 		return s;
+
 	s.reserve(s_size);
-	for(u32 i=0; i<s_size; i++)
-	{
+	for (u32 i = 0; i < s_size; i++) {
 		is.read(&buf[0], 2);
-		wchar_t c16 = readU16((u8*)buf);
+		if (is.gcount() != 2) {
+			throw SerializationError(
+				"deSerializeWideString: couldn't read all chars");
+		}
+
+		wchar_t c16 = readU16((u8 *)buf);
 		s.append(&c16, 1);
 	}
 	return s;
 }
 
-// Creates a string with the length as the first four bytes
+////
+//// Long String
+////
+
 std::string serializeLongString(const std::string &plain)
 {
 	char buf[4];
@@ -108,62 +133,86 @@ std::string serializeLongString(const std::string &plain)
 	return s;
 }
 
-// Reads a string with the length as the first four bytes
 std::string deSerializeLongString(std::istream &is)
 {
-	char buf[4];
-	is.read(buf, 4);
-	if(is.gcount() != 4)
-		throw SerializationError("deSerializeLongString: size not read");
-	u32 s_size = readU32((u8*)buf);
 	std::string s;
-	if(s_size == 0)
+	char buf[4];
+
+	is.read(buf, 4);
+	if (is.gcount() != 4)
+		throw SerializationError("deSerializeLongString: size not read");
+
+	u32 s_size = readU32((u8 *)buf);
+	if (s_size == 0)
 		return s;
+
+	// We don't really want a remote attacker to force us to allocate 4GB...
+	if (s_size > LONG_STRING_MAX)
+		throw SerializationError("deSerializeLongString: string too long");
+
 	Buffer<char> buf2(s_size);
 	is.read(&buf2[0], s_size);
+	if (is.gcount() != s_size)
+		throw SerializationError("deSerializeString: couldn't read all chars");
+
 	s.reserve(s_size);
 	s.append(&buf2[0], s_size);
 	return s;
 }
 
-// Creates a string encoded in JSON format (almost equivalent to a C string literal)
+////
+//// JSON
+////
+
 std::string serializeJsonString(const std::string &plain)
 {
 	std::ostringstream os(std::ios::binary);
-	os<<"\"";
-	for(size_t i = 0; i < plain.size(); i++)
-	{
+	os << "\"";
+
+	for (size_t i = 0; i < plain.size(); i++) {
 		char c = plain[i];
-		switch(c)
-		{
-			case '"': os<<"\\\""; break;
-			case '\\': os<<"\\\\"; break;
-			case '/': os<<"\\/"; break;
-			case '\b': os<<"\\b"; break;
-			case '\f': os<<"\\f"; break;
-			case '\n': os<<"\\n"; break;
-			case '\r': os<<"\\r"; break;
-			case '\t': os<<"\\t"; break;
-			default:
-			{
-				if(c >= 32 && c <= 126)
-				{
-					os<<c;
-				}
-				else
-				{
-					u32 cnum = (u32) (u8) c;
-					os<<"\\u"<<std::hex<<std::setw(4)<<std::setfill('0')<<cnum;
+		switch (c) {
+			case '"':
+				os << "\\\"";
+				break;
+			case '\\':
+				os << "\\\\";
+				break;
+			case '/':
+				os << "\\/";
+				break;
+			case '\b':
+				os << "\\b";
+				break;
+			case '\f':
+				os << "\\f";
+				break;
+			case '\n':
+				os << "\\n";
+				break;
+			case '\r':
+				os << "\\r";
+				break;
+			case '\t':
+				os << "\\t";
+				break;
+			default: {
+				if (c >= 32 && c <= 126) {
+					os << c;
+				} else {
+					u32 cnum = (u8)c;
+					os << "\\u" << std::hex << std::setw(4)
+						<< std::setfill('0') << cnum;
 				}
 				break;
 			}
 		}
 	}
-	os<<"\"";
+
+	os << "\"";
 	return os.str();
 }
 
-// Reads a string encoded in JSON format
 std::string deSerializeJsonString(std::istream &is)
 {
 	std::ostringstream os(std::ios::binary);
@@ -171,55 +220,66 @@ std::string deSerializeJsonString(std::istream &is)
 
 	// Parse initial doublequote
 	is >> c;
-	if(c != '"')
+	if (c != '"')
 		throw SerializationError("JSON string must start with doublequote");
 
 	// Parse characters
-	for(;;)
-	{
+	for (;;) {
 		c = is.get();
-		if(is.eof())
+		if (is.eof())
 			throw SerializationError("JSON string ended prematurely");
-		if(c == '"')
-		{
+
+		if (c == '"') {
 			return os.str();
-		}
-		else if(c == '\\')
-		{
+		} else if (c == '\\') {
 			c2 = is.get();
-			if(is.eof())
+			if (is.eof())
 				throw SerializationError("JSON string ended prematurely");
-			switch(c2)
-			{
-				default:  os<<c2; break;
-				case 'b': os<<'\b'; break;
-				case 'f': os<<'\f'; break;
-				case 'n': os<<'\n'; break;
-				case 'r': os<<'\r'; break;
-				case 't': os<<'\t'; break;
-				case 'u':
-				{
-					char hexdigits[4+1];
+			switch (c2) {
+				case 'b':
+					os << '\b';
+					break;
+				case 'f':
+					os << '\f';
+					break;
+				case 'n':
+					os << '\n';
+					break;
+				case 'r':
+					os << '\r';
+					break;
+				case 't':
+					os << '\t';
+					break;
+				case 'u': {
+					int hexnumber;
+					char hexdigits[4 + 1];
+
 					is.read(hexdigits, 4);
-					if(is.eof())
+					if (is.eof())
 						throw SerializationError("JSON string ended prematurely");
 					hexdigits[4] = 0;
+
 					std::istringstream tmp_is(hexdigits, std::ios::binary);
-					int hexnumber;
 					tmp_is >> std::hex >> hexnumber;
-					os<<((char)hexnumber);
+					os << (char)hexnumber;
 					break;
 				}
+				default:
+					os << c2;
+					break;
 			}
-		}
-		else
-		{
-			os<<c;
+		} else {
+			os << c;
 		}
 	}
+
 	return os.str();
 }
 
+////
+//// String/Struct conversions
+////
 
 bool deSerializeStringToStruct(std::string valstr,
 	std::string format, void *out, size_t olen)
@@ -382,7 +442,6 @@ fail:
 	return true;
 }
 
-
 // Casts *buf to a signed or unsigned fixed-width integer of 'w' width
 #define SIGN_CAST(w, buf) (is_unsigned ? *((u##w *) buf) : *((s##w *) buf))
 
@@ -469,11 +528,33 @@ bool serializeStructToString(std::string *out,
 	*out = os.str();
 
 	// Trim off the trailing comma and space
-	if (out->size() >= 2) {
+	if (out->size() >= 2)
 		out->resize(out->size() - 2);
-	}
 
 	return true;
 }
 
 #undef SIGN_CAST
+
+////
+//// Other
+////
+
+std::string serializeHexString(const std::string &data, bool insert_spaces)
+{
+	std::string result;
+	result.reserve(data.size() * (2 + insert_spaces));
+
+	static const char hex_chars[] = "0123456789abcdef";
+
+	const size_t len = data.size();
+	for (size_t i = 0; i != len; i++) {
+		u8 byte = data[i];
+		result.push_back(hex_chars[(byte >> 4) & 0x0F]);
+		result.push_back(hex_chars[(byte >> 0) & 0x0F]);
+		if (insert_spaces && i != len - 1)
+			result.push_back(' ');
+	}
+
+	return result;
+}
