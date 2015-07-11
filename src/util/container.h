@@ -309,5 +309,74 @@ protected:
 	JSemaphore m_size;
 };
 
+template<typename K, typename V>
+class LRUCache
+{
+public:
+	LRUCache(size_t limit, void (*cache_miss)(void *data, const K &key, V *dest),
+			void *data)
+	{
+		m_limit = limit;
+		m_cache_miss = cache_miss;
+		m_cache_miss_data = data;
+	}
+
+	void setLimit(size_t limit)
+	{
+		m_limit = limit;
+		invalidate();
+	}
+
+	void invalidate()
+	{
+		m_map.clear();
+		m_queue.clear();
+	}
+
+	const V *lookupCache(K key)
+	{
+		typename cache_type::iterator it = m_map.find(key);
+		V *ret;
+		if (it != m_map.end()) {
+			// found!
+
+			cache_entry_t &entry = it->second;
+
+			ret = &entry.second;
+
+			// update the usage information
+			m_queue.erase(entry.first);
+			m_queue.push_front(key);
+			entry.first = m_queue.begin();
+		} else {
+			// cache miss -- enter into cache
+			cache_entry_t &entry =
+				m_map[key];
+			ret = &entry.second;
+			m_cache_miss(m_cache_miss_data, key, &entry.second);
+
+			// delete old entries
+			if (m_queue.size() == m_limit) {
+				const K &id = m_queue.back();
+				m_map.erase(id);
+				m_queue.pop_back();
+			}
+
+			m_queue.push_front(key);
+			entry.first = m_queue.begin();
+		}
+		return ret;
+	}
+private:
+	void (*m_cache_miss)(void *data, const K &key, V *dest);
+	void *m_cache_miss_data;
+	size_t m_limit;
+	typedef typename std::template pair<typename std::template list<K>::iterator, V> cache_entry_t;
+	typedef std::template map<K, cache_entry_t> cache_type;
+	cache_type m_map;
+	// we can't use std::deque here, because its iterators get invalidated
+	std::list<K> m_queue;
+};
+
 #endif
 

@@ -164,6 +164,7 @@ ENABLE_GETTEXT      - Build with Gettext; Allows using translations
 ENABLE_GLES         - Search for Open GLES headers & libraries and use them
 ENABLE_LEVELDB      - Build with LevelDB; Enables use of LevelDB map backend (faster than SQLite3)
 ENABLE_REDIS        - Build with libhiredis; Enables use of Redis map backend
+ENABLE_SPATIAL      - Build with LibSpatial; Speeds up AreaStores
 ENABLE_SOUND        - Build with OpenAL, libogg & libvorbis; in-game Sounds
 ENABLE_LUAJIT       - Build with LuaJIT (much faster than non-JIT Lua)
 ENABLE_SYSTEM_GMP   - Use GMP from system (much faster than bundled mini-gmp)
@@ -197,6 +198,8 @@ LEVELDB_LIBRARY                 - Only when building with LevelDB; path to lible
 LEVELDB_DLL                     - Only when building with LevelDB on Windows; path to libleveldb.dll
 REDIS_INCLUDE_DIR               - Only when building with Redis support; directory that contains hiredis.h
 REDIS_LIBRARY                   - Only when building with Redis support; path to libhiredis.a/libhiredis.so
+SPATIAL_INCLUDE_DIR             - Only if you want to build with LibSpatial; directory that contains spatialindex/SpatialIndex.h
+SPATIAL_LIBRARY                 - Only if you want to build with LibSpatial; path to libspatialindex_c.so
 LUA_INCLUDE_DIR                 - Only if you want to use LuaJIT; directory where luajit.h is located
 LUA_LIBRARY                     - Only if you want to use LuaJIT; path to libluajit.a/libluajit.so
 MINGWM10_DLL                    - Only if compiling with MinGW; path to mingwm10.dll
