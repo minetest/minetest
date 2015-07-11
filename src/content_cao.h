@@ -102,7 +102,9 @@ private:
 	float m_step_distance_counter;
 	u8 m_last_light;
 	bool m_is_visible;
-
+	bool m_enable_shaders;
+	video::E_MATERIAL_TYPE m_material_type;
+	IGameDef *m_gamedef;
 	std::vector<u16> m_children;
 
 public:
