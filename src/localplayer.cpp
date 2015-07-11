@@ -361,6 +361,21 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	m_can_jump = touching_ground && !in_liquid;
 	if(itemgroup_get(f.groups, "disable_jump"))
 		m_can_jump = false;
+	// Jump key pressed while jumping off from a bouncy block
+	if (m_can_jump && control.jump && itemgroup_get(f.groups, "bouncy") &&
+		m_speed.Y >= -0.5 * BS)
+	{
+		float jumpspeed = movement_speed_jump * physics_override_jump;
+		if (m_speed.Y > 1)
+		{
+			// Reduce boost when speed already is high
+			m_speed.Y += jumpspeed / (1 + (m_speed.Y / 16 ));
+		} else {
+			m_speed.Y += jumpspeed;
+		}
+		setSpeed(m_speed);
+		m_can_jump = false;
+	}
 }
 
 void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
