@@ -94,7 +94,7 @@ msgstr "ゲームがインストールされていません。"
 
 #: builtin/mainmenu/dlg_create_world.lua:69
 msgid "Download one from minetest.net"
-msgstr "minetest.netから再ダウンロードしてください"
+msgstr "minetest.netから再ダウンロードしてください。"
 
 #: builtin/mainmenu/dlg_create_world.lua:72
 msgid "Warning: The minimal development test is meant for developers."
@@ -102,15 +102,15 @@ msgstr "警告:Minimal development testは開発者のためのゲームです�
 
 #: builtin/mainmenu/dlg_create_world.lua:73
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr "minetest.netからminetest_gameのゲームをダウンロードしてください"
+msgstr "minetest.netからminetest_gameのゲームをダウンロードしてください。"
 
 #: builtin/mainmenu/dlg_create_world.lua:99
 msgid "A world named \"$1\" already exists"
-msgstr "ﾜｰﾙﾄﾞ名\"$1\"はすでに使用されています"
+msgstr "ﾜｰﾙﾄﾞ名\"$1\"はすでに使用されています。"
 
 #: builtin/mainmenu/dlg_create_world.lua:116
 msgid "No worldname given or no game selected"
-msgstr "ﾜｰﾙﾄﾞ名が入力されていないか、ゲームが選択されていません"
+msgstr "ﾜｰﾙﾄﾞ名が入力されていないか、ゲームが選択されていません。"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:26
 msgid "Are you sure you want to delete \"$1\"?"
@@ -168,9 +168,7 @@ msgstr "$2へ$1をインストールできませんでした。"
 
 #: builtin/mainmenu/modmgr.lua:368
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
-msgstr ""
-"Modインストール:Modパック$1に適したフォルダ名を見つけることができませんでし"
-"た。"
+msgstr "Modインストール:Modパック$1に適したフォルダ名を見つけることができませんでした。"
 
 #: builtin/mainmenu/modmgr.lua:388
 msgid "Install Mod: unable to find real modname for: $1"
@@ -430,7 +428,7 @@ msgstr "レンダリング:"
 
 #: builtin/mainmenu/tab_settings.lua:205
 msgid "Restart minetest for driver change to take effect"
-msgstr "ドライバーを変更するためMinetestを再起動します"
+msgstr "ドライバーを変更するためMinetesを再起動します"
 
 #: builtin/mainmenu/tab_settings.lua:207
 msgid "Shaders"
