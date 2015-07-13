@@ -736,9 +736,8 @@ void CaveV7::makeTunnel(bool dirswitch) {
 	bool randomize_xz = (ps->range(1, 2) == 1);
 
 	// Make a ravine every once in a while if it's long enough
-	//float xylen = vec.X * vec.X + vec.Z * vec.Z;
-	//disable ravines for now
-	bool is_ravine = false; //(xylen > 500.0) && !large_cave && (ps->range(1, 8) == 1);
+	float xylen = vec.X * vec.X + vec.Z * vec.Z;
+	bool is_ravine = (xylen > 1024.0);// && (ps->range(1, 4) == 1);
 
 	// Carve routes
 	for (float f = 0; f < 1.0; f += 1.0 / veclen)
@@ -780,7 +779,7 @@ void CaveV7::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
 		for (s16 x0 = -si - ps->range(0,1); x0 <= si - 1 + ps->range(0,1); x0++) {
 			s16 maxabsxz = MYMAX(abs(x0), abs(z0));
 
-			s16 si2 = is_ravine ? MYMIN(ps->range(25, 26), ar.Y) :
+			s16 si2 = is_ravine ? 26 - MYMAX(0, maxabsxz - rs / 7 - 1) :
 				rs / 2 - MYMAX(0, maxabsxz - rs / 7 - 1);
 
 			for (s16 y0 = -si2; y0 <= si2; y0++) {
