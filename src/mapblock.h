@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodetimer.h"
 #include "modifiedstate.h"
 #include "util/numeric.h" // getContainerPos
+#include "settings.h"
 
 class Map;
 class NodeMetadataList;
@@ -630,13 +631,14 @@ typedef std::vector<MapBlock*> MapBlockVect;
 
 inline bool blockpos_over_limit(v3s16 p)
 {
-	return
-	  (p.X < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-	|| p.X >  MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-	|| p.Y < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-	|| p.Y >  MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-	|| p.Z < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-	|| p.Z >  MAP_GENERATION_LIMIT / MAP_BLOCKSIZE);
+	const static u16 map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
+		g_settings->getU16("map_generation_limit"));
+	return (p.X < -map_gen_limit / MAP_BLOCKSIZE
+			|| p.X >  map_gen_limit / MAP_BLOCKSIZE
+			|| p.Y < -map_gen_limit / MAP_BLOCKSIZE
+			|| p.Y >  map_gen_limit / MAP_BLOCKSIZE
+			|| p.Z < -map_gen_limit / MAP_BLOCKSIZE
+			|| p.Z >  map_gen_limit / MAP_BLOCKSIZE);
 }
 
 /*
@@ -673,4 +675,3 @@ inline void getNodeSectorPosWithOffset(const v2s16 &p, v2s16 &block, v2s16 &offs
 std::string analyze_block(MapBlock *block);
 
 #endif
-
