@@ -2502,10 +2502,12 @@ ServerMapSector * ServerMap::createSector(v2s16 p2d)
 	/*
 		Do not create over-limit
 	*/
-	if(p2d.X < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-	|| p2d.X > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-	|| p2d.Y < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-	|| p2d.Y > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE)
+	const static u16 map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
+		g_settings->getU16("map_generation_limit"));
+	if(p2d.X < -map_gen_limit / MAP_BLOCKSIZE
+			|| p2d.X >  map_gen_limit / MAP_BLOCKSIZE
+			|| p2d.Y < -map_gen_limit / MAP_BLOCKSIZE
+			|| p2d.Y >  map_gen_limit / MAP_BLOCKSIZE)
 		throw InvalidPositionException("createSector(): pos. over limit");
 
 	/*
@@ -2649,12 +2651,7 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 	/*
 		Do not create over-limit
 	*/
-	if(p.X < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-	|| p.X > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-	|| p.Y < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-	|| p.Y > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-	|| p.Z < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-	|| p.Z > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE)
+	if (blockpos_over_limit(p))
 		throw InvalidPositionException("createBlock(): pos. over limit");
 
 	v2s16 p2d(p.X, p.Z);

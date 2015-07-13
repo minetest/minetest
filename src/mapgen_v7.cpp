@@ -505,8 +505,8 @@ void MapgenV7::generateBaseTerrain(s16 *stone_surface_min_y, s16 *stone_surface_
 	MapNode n_water(c_water_source);
 
 	v3s16 em = vm->m_area.getExtent();
-	s16 surface_min_y = MAP_GENERATION_LIMIT;
-	s16 surface_max_y = -MAP_GENERATION_LIMIT;
+	s16 surface_min_y = MAX_MAP_GENERATION_LIMIT;
+	s16 surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 	u32 index = 0;
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
@@ -885,4 +885,3 @@ void MapgenV7::generateCaves(s16 max_stone_y)
 		cave.makeCave(node_min, node_max, max_stone_y);
 	}
 }
-

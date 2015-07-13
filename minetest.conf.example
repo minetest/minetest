@@ -417,6 +417,13 @@
 #max_block_send_distance = 10
 #    From how far blocks are generated for clients, stated in mapblocks (16 nodes)
 #max_block_generate_distance = 6
+#    Where the map generator stops.
+#    Please note:
+#      * Limited to 31000 (setting above has no effect)
+#      * The map generator works in groups of 80x80x80 nodes (5x5x5 MapBlocks).
+#      * Those groups have an offset of -32, -32 nodes from the origin.
+#      * Only groups which are within the map_generation_limit are generated
+#map_generation_limit = 31000
 #    Number of extra blocks that can be loaded by /clearobjects at once.
 #    This is a trade-off between sqlite transaction overhead and
 #    memory consumption (4096=100MB, as a rule of thumb).
@@ -603,4 +610,3 @@
 #    Comma-separated list of trusted mods that are allowed to access insecure
 #    functions even when mod security is on (via request_insecure_environment()).
 #secure.trusted_mods =
-
