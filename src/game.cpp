@@ -4352,9 +4352,13 @@ void the_game(bool *kill,
 		}
 
 	} catch (SerializationError &e) {
-		error_message = std::string("A serialization error occurred:\n")
-				+ e.what() + "\n\nThe server is probably "
-				" running a different version of " PROJECT_NAME_C ".";
+		error_message = strgettext("A serialization error occurred:")
+				+ "\n" + e.what();
+		if (!simple_singleplayer_mode) {
+			error_message += "\n\n"
+					+ strgettext("The server is probably running a different version of")
+					+ " " PROJECT_NAME_C ".";
+		}
 		errorstream << error_message << std::endl;
 	} catch (ServerError &e) {
 		error_message = e.what();
