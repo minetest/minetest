@@ -2640,30 +2640,6 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 */
 
 Connection::Connection(u32 protocol_id, u32 max_packet_size, float timeout,
-		bool ipv6) :
-	m_udpSocket(ipv6),
-	m_command_queue(),
-	m_event_queue(),
-	m_peer_id(0),
-	m_protocol_id(protocol_id),
-	m_sendThread(max_packet_size, timeout),
-	m_receiveThread(max_packet_size),
-	m_info_mutex(),
-	m_bc_peerhandler(0),
-	m_bc_receive_timeout(0),
-	m_shutting_down(false),
-	m_next_remote_peer_id(2)
-{
-	m_udpSocket.setTimeoutMs(5);
-
-	m_sendThread.setParent(this);
-	m_receiveThread.setParent(this);
-
-	m_sendThread.Start();
-	m_receiveThread.Start();
-}
-
-Connection::Connection(u32 protocol_id, u32 max_packet_size, float timeout,
 		bool ipv6, PeerHandler *peerhandler) :
 	m_udpSocket(ipv6),
 	m_command_queue(),
