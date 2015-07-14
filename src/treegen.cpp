@@ -111,9 +111,23 @@ void make_tree(MMVManip &vmanip, v3s16 p0,
 }
 
 
+static void set_param_to_id(INodeDefManager *ndef, MapNode *n, u8 id)
+{
+	content_t t = n->getContent();
+	const ContentFeatures &f = ndef->get(t);
+	if (f.param_type_2 == CPT2_NONE) {
+		n->param2 = id;
+	} else {
+		if (f.param_type == CPT_NONE) {
+			n->param1 = id;
+		}
+	}
+}
+
+
 // L-System tree LUA spawner
 treegen::error spawn_ltree(ServerEnvironment *env, v3s16 p0,
-		INodeDefManager *ndef, TreeDef tree_definition)
+		INodeDefManager *ndef, const TreeDef &tree_definition)
 {
 	ServerMap *map = &env->getServerMap();
 	std::map<v3s16, MapBlock*> modified_blocks;
@@ -182,6 +196,17 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
 	position.Z = p0.Z;
 	std::stack <core::matrix4> stack_orientation;
 	std::stack <v3f> stack_position;
+
+	// fill NodeDefs with unique id if requested
+	if (tree_definition.enable_unique_ids) {
+		u8 unique_id = 0;
+		PcgRandom r((((p0.X << 16) + p0.Y) << 16) + p0.Z);
+		unique_id = r.next();
+		if (!unique_id) unique_id = 1;
+		set_param_to_id(ndef, &tree_definition.trunknode, unique_id);
+		set_param_to_id(ndef, &tree_definition.leavesnode, unique_id);
+		set_param_to_id(ndef, &tree_definition.leaves2node, unique_id);
+	}
 
 	//generate axiom
 	std::string axiom = tree_definition.initial_axiom;

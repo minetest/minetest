@@ -864,6 +864,7 @@ int ModApiEnvMod::l_spawn_tree(lua_State *L)
 			getintfield(L, 2, "fruit_chance",tree_def.fruit_chance);
 		}
 		tree_def.explicit_seed = getintfield(L, 2, "seed", tree_def.seed);
+		tree_def.enable_unique_ids = getboolfield_default(L, 2, "enable_unique_ids", false);
 	}
 	else
 		return 0;

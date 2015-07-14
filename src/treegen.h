@@ -56,6 +56,7 @@ namespace treegen {
 		int fruit_chance;
 		int seed;
 		bool explicit_seed;
+		bool enable_unique_ids;
 	};
 
 	// Add default tree
@@ -72,8 +73,8 @@ namespace treegen {
 	treegen::error make_ltree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef,
 		TreeDef tree_definition);
 	// Spawn L-systems tree from LUA
-	treegen::error spawn_ltree (ServerEnvironment *env, v3s16 p0, INodeDefManager *ndef,
-		TreeDef tree_definition);
+	treegen::error spawn_ltree(ServerEnvironment *env, v3s16 p0,
+		INodeDefManager *ndef, const TreeDef &tree_definition);
 
 	// L-System tree gen helper functions
 	void tree_node_placement(MMVManip &vmanip, v3f p0,
