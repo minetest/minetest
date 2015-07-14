@@ -120,7 +120,9 @@ void NodeBox::deSerialize(std::istream &is)
 
 void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 {
-	if(protocol_version >= 17)
+	if (protocol_version >= 26)
+		writeU8(os, 2);
+	else if (protocol_version >= 17)
 		writeU8(os, 1);
 	else
 		writeU8(os, 0);
@@ -129,8 +131,12 @@ void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 	writeU16(os, animation.aspect_w);
 	writeU16(os, animation.aspect_h);
 	writeF1000(os, animation.length);
-	if(protocol_version >= 17)
+	if (protocol_version >= 17)
 		writeU8(os, backface_culling);
+	if (protocol_version >= 26) {
+		writeU8(os, tileable_horizontal);
+		writeU8(os, tileable_vertical);
+	}
 }
 
 void TileDef::deSerialize(std::istream &is)
@@ -141,9 +147,14 @@ void TileDef::deSerialize(std::istream &is)
 	animation.aspect_w = readU16(is);
 	animation.aspect_h = readU16(is);
 	animation.length = readF1000(is);
-	if(version >= 1)
+	if (version >= 1)
 		backface_culling = readU8(is);
+	if (version >= 2) {
+		tileable_horizontal = readU8(is);
+		tileable_vertical = readU8(is);
+	}
 }
+
 
 /*
 	SimpleSoundSpec serialization
@@ -183,6 +194,7 @@ void ContentFeatures::reset()
 	solidness = 2;
 	visual_solidness = 0;
 	backface_culling = true;
+
 #endif
 	has_on_construct = false;
 	has_on_destruct = false;
@@ -996,9 +1008,11 @@ void CNodeDefManager::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 	tile->alpha         = alpha;
 	tile->material_type = material_type;
 
-	// Normal texture
-	if (use_normal_texture)
+	// Normal texture and shader flags texture
+	if (use_normal_texture) {
 		tile->normal_texture = tsrc->getNormalTexture(tiledef->name);
+	}
+	tile->flags_texture = tsrc->getShaderFlagsTexture(tiledef, tile);
 
 	// Material flags
 	tile->material_flags = 0;
@@ -1038,6 +1052,7 @@ void CNodeDefManager::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 			frame.texture = tsrc->getTextureForMesh(os.str(), &frame.texture_id);
 			if (tile->normal_texture)
 				frame.normal_texture = tsrc->getNormalTexture(os.str());
+			frame.flags_texture = tile->flags_texture;
 			tile->frames[i] = frame;
 		}
 	}

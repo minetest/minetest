@@ -94,7 +94,7 @@ void main(void)
 
 	// Don't generate heightmaps when too far from the eye
 	float dist = distance (vec3(0.0, 0.0 ,0.0), vPosition);
-	if (dist > 120.0) {
+	if (dist > 300.0) {
 		area_enable_parallax = 0.0;
 	}
 
