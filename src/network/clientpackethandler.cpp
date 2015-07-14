@@ -449,33 +449,23 @@ void Client::handleCommand_ActiveObjectMessages(NetworkPacket* pkt)
 			string message
 		}
 	*/
-	char buf[6];
-	// Get all data except the command number
 	std::string datastring(pkt->getString(0), pkt->getSize());
-	// Throw them in an istringstream
 	std::istringstream is(datastring, std::ios_base::binary);
 
 	try {
-		while(is.eof() == false) {
-			is.read(buf, 2);
-			u16 id = readU16((u8*)buf);
-			if (is.eof())
+		while (is.good()) {
+			u16 id = readU16(is);
+			if (!is.good())
 				break;
-			is.read(buf, 2);
-			size_t message_size = readU16((u8*)buf);
-			std::string message;
-			message.reserve(message_size);
-			for (u32 i = 0; i < message_size; i++) {
-				is.read(buf, 1);
-				message.append(buf, 1);
-			}
+
+			std::string message = deSerializeString(is);
+
 			// Pass on to the environment
 			m_env.processActiveObjectMessage(id, message);
 		}
-	// Packet could be unreliable then ignore it
-	} catch (PacketError &e) {
-		infostream << "handleCommand_ActiveObjectMessages: " << e.what()
-					<< ". The packet is unreliable, ignoring" << std::endl;
+	} catch (SerializationError &e) {
+		errorstream << "Client::handleCommand_ActiveObjectMessages: "
+			<< "caught SerializationError: " << e.what() << std::endl;
 	}
 }
 
