@@ -126,6 +126,10 @@ std::wstring deSerializeWideString(std::istream &is)
 std::string serializeLongString(const std::string &plain)
 {
 	char buf[4];
+
+	if (plain.size() > LONG_STRING_MAX)
+		throw SerializationError("String too long for serializeLongString");
+
 	writeU32((u8*)&buf[0], plain.size());
 	std::string s;
 	s.append(buf, 4);
@@ -147,8 +151,10 @@ std::string deSerializeLongString(std::istream &is)
 		return s;
 
 	// We don't really want a remote attacker to force us to allocate 4GB...
-	if (s_size > LONG_STRING_MAX)
-		throw SerializationError("deSerializeLongString: string too long");
+	if (s_size > LONG_STRING_MAX) {
+		throw SerializationError("deSerializeLongString: "
+			"string too long: " + itos(s_size) + " bytes");
+	}
 
 	Buffer<char> buf2(s_size);
 	is.read(&buf2[0], s_size);

@@ -426,8 +426,8 @@ inline video::SColor readARGB8(std::istream &is)
 	More serialization stuff
 */
 
-// 8 MB is a conservative limit.  Increase later if problematic.
-#define LONG_STRING_MAX (8 * 1024 * 1024)
+// 64 MB ought to be enough for anybody - Billy G.
+#define LONG_STRING_MAX (64 * 1024 * 1024)
 
 // Creates a string with the length as the first two bytes
 std::string serializeString(const std::string &plain);
