@@ -145,6 +145,29 @@ function mm_texture.set_game(identifier,gamedetails)
 	
 	local path = gamedetails.path .. DIR_DELIM .."menu" ..
 									 DIR_DELIM .. identifier .. ".png"
+
+	local count = 1
+	for i = 1, 9 do
+		local check_path = gamedetails.path .. DIR_DELIM .."menu" ..
+			DIR_DELIM .. identifier .. "." .. i .. ".png"
+		local file = io.open(check_path, "rb")
+		if file == nil then
+			count = i - 1
+			break
+		else
+			io.close(file)
+		end
+	end
+	local new_path = gamedetails.path .. DIR_DELIM .."menu" .. DIR_DELIM ..
+		identifier .. "." .. math.random(1, count) .. ".png"
+	local exists = io.open(new_path, "rb")
+	if exists ~= nil and math.random(1, (count+1)) ~= 1 then
+		io.close(exists)
+		path = new_path
+	elseif exists ~= nil then
+		io.close(exists)
+	end
+
 	if core.set_background(identifier,path) then
 		return true
 	end
