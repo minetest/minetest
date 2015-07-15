@@ -45,7 +45,7 @@ end
 
 --------------------------------------------------------------------------------
 local function get_formspec(tabview, name, tabdata)
-	
+
 	local retval = "label[4,-0.25;".. fgettext("Select texture pack:") .. "]"..
 			"textlist[4,0.25;7.5,5.0;TPs;"
 
@@ -62,10 +62,18 @@ local function get_formspec(tabview, name, tabdata)
 		return retval
 	end
 
-	local infofile = current_texture_path ..DIR_DELIM.."info.txt"
+	local infofile = current_texture_path ..DIR_DELIM.."description.txt"
+	-- This adds backwards compatibility for old texture pack description files named
+	-- "info.txt", and should be removed once all such texture packs have been updated
+	if not file_exists(infofile) then
+		infofile = current_texture_path ..DIR_DELIM.."info.txt"
+		if file_exists(infofile) then
+			minetest.log("info.txt is depreciated. description.txt should be used instead.");
+		end
+	end
 	local infotext = ""
 	local f = io.open(infofile, "r")
-	if f==nil then
+	if not f then
 		infotext = fgettext("No information available")
 	else
 		infotext = f:read("*all")
