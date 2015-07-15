@@ -146,17 +146,17 @@ MapgenV7Params::MapgenV7Params()
 {
 	spflags = MGV7_MOUNTAINS | MGV7_RIDGES;
 
-	np_terrain_base    = NoiseParams(4,    70,   v3f(600,  600,  600),  82341, 5, 0.6,  2.0);
-	np_terrain_alt     = NoiseParams(4,    25,   v3f(600,  600,  600),  5934,  5, 0.6,  2.0);
-	np_terrain_persist = NoiseParams(0.6,  0.12, v3f(2000, 2000, 2000), 539,   3, 0.5,  2.0);
-	np_height_select   = NoiseParams(-12,  24,   v3f(500,  500,  500),  4213,  6, 0.69, 2.0);
-	np_filler_depth    = NoiseParams(0,    1.2,  v3f(150,  150,  150),  261,   4, 0.7,  2.0);
-	np_mount_height    = NoiseParams(184,  72,   v3f(1000, 1000, 1000), 72449, 3, 0.5,  2.0);
-	np_ridge_uwater    = NoiseParams(0,    1,    v3f(1000, 1000, 1000), 85039, 5, 0.6,  2.0);
-	np_mountain        = NoiseParams(-0.6, 1,    v3f(250,  350,  250),  5333,  5, 0.68, 2.0);
-	np_ridge           = NoiseParams(0,    1,    v3f(100,  100,  100),  6467,  4, 0.75, 2.0);
-	np_cave1           = NoiseParams(0,    12,   v3f(100,  100,  100),  52534, 4, 0.5,  2.0);
-	np_cave2           = NoiseParams(0,    12,   v3f(100,  100,  100),  10325, 4, 0.5,  2.0);
+	np_terrain_base    = NoiseParams(4,    70,  v3f(600,  600,  600),  82341, 5, 0.6,  2.0);
+	np_terrain_alt     = NoiseParams(4,    25,  v3f(600,  600,  600),  5934,  5, 0.6,  2.0);
+	np_terrain_persist = NoiseParams(0.6,  0.1, v3f(2000, 2000, 2000), 539,   3, 0.6,  2.0);
+	np_height_select   = NoiseParams(-12,  24,  v3f(500,  500,  500),  4213,  6, 0.7,  2.0);
+	np_filler_depth    = NoiseParams(0,    1.2, v3f(150,  150,  150),  261,   3, 0.7,  2.0);
+	np_mount_height    = NoiseParams(256,  112, v3f(1000, 1000, 1000), 72449, 3, 0.6,  2.0);
+	np_ridge_uwater    = NoiseParams(0,    1,   v3f(1000, 1000, 1000), 85039, 5, 0.6,  2.0);
+	np_mountain        = NoiseParams(-0.6, 1,   v3f(250,  350,  250),  5333,  5, 0.63, 2.0);
+	np_ridge           = NoiseParams(0,    1,   v3f(100,  100,  100),  6467,  4, 0.75, 2.0);
+	np_cave1           = NoiseParams(0,    12,  v3f(100,  100,  100),  52534, 4, 0.5,  2.0);
+	np_cave2           = NoiseParams(0,    12,  v3f(100,  100,  100),  10325, 4, 0.5,  2.0);
 }
 
 
@@ -429,16 +429,20 @@ float MapgenV7::baseTerrainLevelFromMap(int index)
 bool MapgenV7::getMountainTerrainAtPoint(s16 x, s16 y, s16 z)
 {
 	float mnt_h_n = NoisePerlin2D(&noise_mount_height->np, x, z, seed);
+	float density_gradient = -((float)y / mnt_h_n);
 	float mnt_n = NoisePerlin3D(&noise_mountain->np, x, y, z, seed);
-	return mnt_n * mnt_h_n >= (float)y;
+
+	return mnt_n + density_gradient >= 0.0;
 }
 
 
 bool MapgenV7::getMountainTerrainFromMap(int idx_xyz, int idx_xz, s16 y)
 {
 	float mounthn = noise_mount_height->result[idx_xz];
+	float density_gradient = -((float)y / mounthn);
 	float mountn = noise_mountain->result[idx_xyz];
-	return mountn * mounthn >= (float)y;
+
+	return mountn + density_gradient >= 0.0;
 }
 
 
