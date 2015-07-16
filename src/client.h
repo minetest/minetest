@@ -415,7 +415,8 @@ public:
 	void sendInventoryFields(const std::string &formname,
 		const StringMap &fields);
 	void sendInventoryAction(InventoryAction *a);
-	void sendChatMessage(const std::wstring &message);
+	void sendChatMessage(const std::string &message);
+	void sendChatMessageLegacy(const std::string &message);
 	void sendChangePassword(const std::string &oldpassword,
 		const std::string &newpassword);
 	void sendDamage(u8 damage);
@@ -470,8 +471,8 @@ public:
 	bool checkPrivilege(const std::string &priv)
 	{ return (m_privileges.count(priv) != 0); }
 
-	bool getChatMessage(std::wstring &message);
-	void typeChatMessage(const std::wstring& message);
+	bool getChatMessage(std::pair<std::string, std::string> &message_pair);
+	void typeChatMessage(const std::string &message);
 
 	u64 getMapSeed(){ return m_map_seed; }
 
@@ -617,7 +618,14 @@ private:
 	// 0 <= m_daynight_i < DAYNIGHT_CACHE_COUNT
 	//s32 m_daynight_i;
 	//u32 m_daynight_ratio;
-	std::queue<std::wstring> m_chat_queue;
+
+	std::queue<std::pair<std::string, std::string> > m_chat_queue;
+
+	void pushChatQueue(const std::string &msg)
+	{ m_chat_queue.push(std::make_pair("", msg)); }
+
+	void pushChatQueueNamed(const std::string &name, const std::string &msg)
+	{ m_chat_queue.push(std::make_pair(name, msg)); }
 
 	// The authentication methods we can use to enter sudo mode (=change password)
 	u32 m_sudo_auth_methods;

@@ -386,7 +386,7 @@ Server::~Server()
 	infostream<<"Server destructing"<<std::endl;
 
 	// Send shutdown message
-	SendChatMessage(PEER_ID_INEXISTENT, L"*** Server shutting down");
+	SendChatMessage(PEER_ID_INEXISTENT, "*** Server shutting down");
 
 	{
 		JMutexAutoLock envlock(m_env_mutex);
@@ -1124,16 +1124,16 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 
 		// Send information about joining in chat
 		{
-			std::wstring name = L"unknown";
+			std::string name = "unknown";
 			Player *player = m_env->getPlayer(peer_id);
 			if(player != NULL)
-				name = narrow_to_wide(player->getName());
+				name = player->getName();
 
-			std::wstring message;
-			message += L"*** ";
+			std::string message;
+			message += "*** ";
 			message += name;
-			message += L" joined the game.";
-			SendChatMessage(PEER_ID_INEXISTENT,message);
+			message += " joined the game.";
+			SendChatMessage(PEER_ID_INEXISTENT, message);
 		}
 	}
 	Address addr = getPeerAddress(player->peer_id);
@@ -1456,6 +1456,14 @@ void Server::handlePeerChanges()
 	}
 }
 
+void Server::SendTo(NetworkPacket* pkt, u16 peer_id)
+{
+	m_clients.send(peer_id,
+		clientCommandFactoryTable[pkt->getCommand()].channel,
+		pkt,
+		clientCommandFactoryTable[pkt->getCommand()].reliable);
+}
+
 void Server::Send(NetworkPacket* pkt)
 {
 	m_clients.send(pkt->getPeerId(),
@@ -1627,18 +1635,67 @@ void Server::SendInventory(PlayerSAO* playerSAO)
 	Send(&pkt);
 }
 
-void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
+void Server::SendChatMessage(u16 peer_id, const std::string &message,
+	const std::string &from_player, bool has_wstring,
+	const std::wstring &wmessage, u16 avoid_peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	NetworkPacket pkt(TOCLIENT_CHAT_MESSAGE, 0, peer_id);
-	pkt << message;
+	if (peer_id != PEER_ID_INEXISTENT) { // send to peer_id
+		RemoteClient *client = getClient(peer_id, CS_Created);
+		if (client->net_proto_version >= 26) {
+			NetworkPacket pkt(TOCLIENT_CHAT_MESSAGE, 0, peer_id);
+			pkt << from_player;
+			pkt << message;
+			Send(&pkt);
+		} else {
+			NetworkPacket legacy_pkt(TOCLIENT_CHAT_MESSAGE, 0, peer_id);
 
-	if (peer_id != PEER_ID_INEXISTENT) {
-		Send(&pkt);
-	}
-	else {
-		m_clients.sendToAll(0, &pkt, true);
+			std::wostringstream wos(std::ios_base::binary);
+
+			if (from_player.size() > 0)
+				wos << L"<" << utf8_to_wide(from_player) << L">";
+			if (has_wstring)
+				wos << wmessage;
+			else
+				wos << utf8_to_wide(message);
+			legacy_pkt << wos.str();
+
+			Send(&legacy_pkt);
+		}
+	} else { // Send to all peers, except avoid_peer_id
+
+		NetworkPacket pkt(TOCLIENT_CHAT_MESSAGE, 0, peer_id);
+		pkt << from_player;
+		pkt << message;
+
+		NetworkPacket legacy_pkt(TOCLIENT_CHAT_MESSAGE, 0, peer_id);
+		std::wostringstream wos(std::ios_base::binary);
+
+		if (from_player.size() > 0)
+			wos << L"<" << utf8_to_wide(from_player) << L">";
+		if (has_wstring)
+			wos << wmessage;
+		else
+			wos << utf8_to_wide(message);
+		legacy_pkt << wos.str();
+
+		std::map<u16, RemoteClient*> clients = m_clients.getClientList();
+		m_clients.Lock();
+		for (std::map<u16, RemoteClient*>::iterator
+				i = clients.begin();
+				i != clients.end(); ++i) {
+			RemoteClient *client = i->second;
+			if (client->peer_id == avoid_peer_id ||
+					client->net_proto_version == 0)
+				continue;
+			if (client->net_proto_version >= 26) {
+				SendTo(&pkt, client->peer_id);
+			} else {
+				SendTo(&legacy_pkt, client->peer_id);
+			}
+		}
+		m_clients.Unlock();
 	}
 }
 
@@ -2625,7 +2682,7 @@ void Server::acceptAuth(u16 peer_id, bool forSudoMode)
 void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 {
 	DSTACK(__FUNCTION_NAME);
-	std::wstring message;
+	std::string message;
 	{
 		/*
 			Clear references to playing sounds
@@ -2648,12 +2705,12 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 		{
 			if(player != NULL && reason != CDR_DENY)
 			{
-				std::wstring name = narrow_to_wide(player->getName());
-				message += L"*** ";
+				std::string name = player->getName();
+				message += "*** ";
 				message += name;
-				message += L" left the game.";
-				if(reason == CDR_TIMEOUT)
-					message += L" (timed out)";
+				message += " left the game.";
+				if (reason == CDR_TIMEOUT)
+					message += " (timed out)";
 			}
 		}
 
@@ -2702,7 +2759,7 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 
 	// Send leave chat message to all remaining clients
 	if(message.length() != 0)
-		SendChatMessage(PEER_ID_INEXISTENT,message);
+		SendChatMessage(PEER_ID_INEXISTENT, message);
 }
 
 void Server::UpdateCrafting(Player* player)
@@ -2753,40 +2810,40 @@ PlayerSAO* Server::getPlayerSAO(u16 peer_id)
 	return player->getPlayerSAO();
 }
 
-std::wstring Server::getStatusString()
+std::string Server::getStatusString()
 {
-	std::wostringstream os(std::ios_base::binary);
-	os<<L"# Server: ";
+	std::ostringstream os(std::ios_base::binary);
+	os << "# Server: ";
 	// Version
-	os<<L"version="<<narrow_to_wide(g_version_string);
+	os << "version=" << g_version_string;
 	// Uptime
-	os<<L", uptime="<<m_uptime.get();
+	os << ", uptime="<< m_uptime.get();
 	// Max lag estimate
-	os<<L", max_lag="<<m_env->getMaxLagEstimate();
+	os << ", max_lag=" << m_env->getMaxLagEstimate();
 	// Information about clients
 	bool first = true;
-	os<<L", clients={";
+	os << ", clients={";
 	std::vector<u16> clients = m_clients.getClientIDs();
-	for(std::vector<u16>::iterator i = clients.begin();
+	for (std::vector<u16>::iterator i = clients.begin();
 		i != clients.end(); ++i) {
 		// Get player
 		Player *player = m_env->getPlayer(*i);
 		// Get name of player
-		std::wstring name = L"unknown";
-		if(player != NULL)
-			name = narrow_to_wide(player->getName());
+		std::string name = "unknown";
+		if (player != NULL)
+			name = player->getName();
 		// Add name to information string
-		if(!first)
-			os << L", ";
+		if (!first)
+			os << ", ";
 		else
 			first = false;
 		os << name;
 	}
-	os << L"}";
-	if(((ServerMap*)(&m_env->getMap()))->isSavingEnabled() == false)
-		os<<std::endl<<L"# Server: "<<" WARNING: Map saving is disabled.";
-	if(g_settings->get("motd") != "")
-		os<<std::endl<<L"# Server: "<<narrow_to_wide(g_settings->get("motd"));
+	os << "}";
+	if (((ServerMap *)(&m_env->getMap()))->isSavingEnabled() == false)
+		os << std::endl << "# Server: " << " WARNING: Map saving is disabled.";
+	if (g_settings->get("motd") != "")
+		os << std::endl << "# Server: " << g_settings->get("motd");
 	return os.str();
 }
 
@@ -2849,7 +2906,7 @@ std::string Server::getBanDescription(const std::string &ip_or_name)
 	return m_banmanager->getBanDescription(ip_or_name);
 }
 
-void Server::notifyPlayer(const char *name, const std::wstring &msg)
+void Server::notifyPlayer(const char *name, const std::string &msg)
 {
 	Player *player = m_env->getPlayer(name);
 	if (!player)
@@ -3023,9 +3080,9 @@ bool Server::overrideDayNightRatio(Player *player, bool do_override,
 	return true;
 }
 
-void Server::notifyPlayers(const std::wstring &msg)
+void Server::notifyPlayers(const std::string &msg)
 {
-	SendChatMessage(PEER_ID_INEXISTENT,msg);
+	SendChatMessage(PEER_ID_INEXISTENT, msg);
 }
 
 void Server::spawnParticle(const char *playername, v3f pos,

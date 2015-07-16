@@ -661,8 +661,8 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 
 	// Warnings about protocol version can be issued here
 	if (getClient(pkt->getPeerId())->net_proto_version < LATEST_PROTOCOL_VERSION) {
-		SendChatMessage(pkt->getPeerId(), L"# Server: WARNING: YOUR CLIENT'S "
-				L"VERSION MAY NOT BE FULLY COMPATIBLE WITH THIS SERVER!");
+		SendChatMessage(pkt->getPeerId(), "# Server: WARNING: YOUR CLIENT'S "
+			"VERSION MAY NOT BE FULLY COMPATIBLE WITH THIS SERVER!");
 	}
 }
 
@@ -1031,20 +1031,13 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 {
 	/*
-		u16 command
-		u16 length
-		wstring message
+		For protocol < 26:
+			u16 length
+			wstring message
+
+		For protocol >= 26:
+			std::string message
 	*/
-	u16 len;
-	*pkt >> len;
-
-	std::wstring message;
-	for (u16 i = 0; i < len; i++) {
-		u16 tmp_wchar;
-		*pkt >> tmp_wchar;
-
-		message += (wchar_t)tmp_wchar;
-	}
 
 	Player *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
@@ -1055,69 +1048,73 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 		return;
 	}
 
-	// If something goes wrong, this player is to blame
-	RollbackScopeActor rollback_scope(m_rollback,
-			std::string("player:")+player->getName());
+	RemoteClient *client = getClient(pkt->getPeerId(), CS_Active);
+
+	std::string message;
+	std::wstring wmessage;
+	bool is_new_pkt = (client->net_proto_version >= 26);
+
+	if (is_new_pkt) {
+		*pkt >> message;
+	} else {
+		*pkt >> wmessage;
+		message = wide_to_utf8(wmessage);
+	}
 
 	// Get player name of this client
-	std::wstring name = narrow_to_wide(player->getName());
+	std::string name = player->getName();
+
+	// If something goes wrong, this player is to blame
+	RollbackScopeActor rollback_scope(m_rollback,
+		std::string("player:") + name);
 
 	// Run script hook
 	bool ate = m_script->on_chat_message(player->getName(),
-			wide_to_narrow(message));
+		message);
 	// If script ate the message, don't proceed
 	if (ate)
 		return;
 
-	// Line to send to players
-	std::wstring line;
-	// Whether to send to the player that sent the line
-	bool send_to_sender_only = false;
+	// Line to send to player if is_chat_line == false
+	std::string line;
+
+	// Whether to send this as chat line to all players.
+	// If false, only sent to player that sent the message
+	bool is_chat_line = true;
 
 	// Commands are implemented in Lua, so only catch invalid
 	// commands that were not "eaten" and send an error back
-	if (message[0] == L'/') {
+	if (message[0] == '/') {
 		message = message.substr(1);
-		send_to_sender_only = true;
+		is_chat_line = false;
 		if (message.length() == 0)
-			line += L"-!- Empty command";
+			line += "-!- Empty command";
 		else
-			line += L"-!- Invalid command: " + str_split(message, L' ')[0];
-	}
-	else {
-		if (checkPriv(player->getName(), "shout")) {
-			line += L"<";
-			line += name;
-			line += L"> ";
-			line += message;
+			line += "-!- Invalid command: " + str_split(message, ' ')[0];
+	} else {
+		if (checkPriv(name, "shout")) {
+			is_chat_line = true;
 		} else {
-			line += L"-!- You don't have permission to shout.";
-			send_to_sender_only = true;
+			line += "-!- You don't have permission to shout.";
+			is_chat_line = false;
 		}
 	}
 
-	if (line != L"")
-	{
+	if (is_chat_line) {
+		/*
+			Send the message to everybody except sender
+		*/
+		if (message.size() > 0) {
+			actionstream << "CHAT: <" << name << "> " << message << std::endl;
+
+			SendChatMessage(PEER_ID_INEXISTENT, message,
+				name, !is_new_pkt, wmessage, pkt->getPeerId());
+		}
+	} else if (line != "") {
 		/*
 			Send the message to sender
 		*/
-		if (send_to_sender_only) {
-			SendChatMessage(pkt->getPeerId(), line);
-		}
-		/*
-			Send the message to others
-		*/
-		else {
-			actionstream << "CHAT: " << wide_to_narrow(line)<<std::endl;
-
-			std::vector<u16> clients = m_clients.getClientIDs();
-
-			for (std::vector<u16>::iterator i = clients.begin();
-				i != clients.end(); ++i) {
-				if (*i != pkt->getPeerId())
-					SendChatMessage(*i, line);
-			}
-		}
+		SendChatMessage(pkt->getPeerId(), line);
 	}
 }
 
@@ -1238,7 +1235,7 @@ void Server::handleCommand_Password(NetworkPacket* pkt)
 		infostream<<"Server: " << player->getName() <<
 				" supplied invalid password hash" << std::endl;
 		// Wrong old password supplied!!
-		SendChatMessage(pkt->getPeerId(), L"Invalid new password hash supplied. Password NOT changed.");
+		SendChatMessage(pkt->getPeerId(), "Invalid new password hash supplied. Password NOT changed.");
 		return;
 	}
 
@@ -1253,18 +1250,18 @@ void Server::handleCommand_Password(NetworkPacket* pkt)
 	if (oldpwd != checkpwd) {
 		infostream << "Server: invalid old password" << std::endl;
 		// Wrong old password supplied!!
-		SendChatMessage(pkt->getPeerId(), L"Invalid old password supplied. Password NOT changed.");
+		SendChatMessage(pkt->getPeerId(), "Invalid old password supplied. Password NOT changed.");
 		return;
 	}
 
 	bool success = m_script->setPassword(playername, newpwd);
 	if (success) {
 		actionstream << player->getName() << " changes password" << std::endl;
-		SendChatMessage(pkt->getPeerId(), L"Password change successful.");
+		SendChatMessage(pkt->getPeerId(), "Password change successful.");
 	} else {
 		actionstream << player->getName() << " tries to change password but "
 				<< "it fails" << std::endl;
-		SendChatMessage(pkt->getPeerId(), L"Password change failed or unavailable.");
+		SendChatMessage(pkt->getPeerId(), "Password change failed or unavailable.");
 	}
 }
 
@@ -1881,11 +1878,11 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 		bool success = m_script->setPassword(playername, pw_db_field);
 		if (success) {
 			actionstream << playername << " changes password" << std::endl;
-			SendChatMessage(pkt->getPeerId(), L"Password change successful.");
+			SendChatMessage(pkt->getPeerId(), "Password change successful.");
 		} else {
 			actionstream << playername << " tries to change password but "
 				<< "it fails" << std::endl;
-			SendChatMessage(pkt->getPeerId(), L"Password change failed or unavailable.");
+			SendChatMessage(pkt->getPeerId(), "Password change failed or unavailable.");
 		}
 	}
 }

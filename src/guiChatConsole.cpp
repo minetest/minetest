@@ -314,10 +314,11 @@ void GUIChatConsole::drawText()
 		{
 			const ChatFormattedFragment& fragment = line.fragments[i];
 			s32 x = (fragment.column + 1) * m_fontsize.X;
+			std::wstring wtext =  utf8_to_wide(fragment.text);
 			core::rect<s32> destrect(
-				x, y, x + m_fontsize.X * fragment.text.size(), y + m_fontsize.Y);
+				x, y, x + m_fontsize.X * wtext.size(), y + m_fontsize.Y);
 			m_font->draw(
-				fragment.text.c_str(),
+				wtext.c_str(),
 				destrect,
 				video::SColor(255, 255, 255, 255),
 				false,
@@ -412,7 +413,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		}
 		else if(event.KeyInput.Key == KEY_RETURN)
 		{
-			std::wstring text = m_chat_backend->getPrompt().submit();
+			std::string text = m_chat_backend->getPrompt().submit();
 			m_client->typeChatMessage(text);
 			return true;
 		}
@@ -514,7 +515,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			const c8 *text = os_operator->getTextFromClipboard();
 			if (text)
 			{
-				std::wstring wtext = narrow_to_wide(text);
+				std::wstring wtext = utf8_to_wide(text);
 				m_chat_backend->getPrompt().input(wtext);
 			}
 			return true;

@@ -183,7 +183,7 @@ struct LocalFormspecHandler : public TextDest {
 					(fields.find("quit") != fields.end())) {
 				StringMap::const_iterator it = fields.find("f_text");
 				if (it != fields.end())
-					m_client->typeChatMessage(utf8_to_wide(it->second));
+					m_client->typeChatMessage(it->second);
 
 				return;
 			}
@@ -1167,14 +1167,27 @@ static void updateChat(Client &client, f32 dtime, bool show_debug,
 
 	// Get new messages from error log buffer
 	while (!chat_log_error_buf.empty()) {
-		chat_backend.addMessage(L"", utf8_to_wide(chat_log_error_buf.get()));
+		chat_backend.addMessage("", chat_log_error_buf.get());
 	}
 
 	// Get new messages from client
-	std::wstring message;
+	std::pair<std::string, std::string> message_pair;
 
-	while (client.getChatMessage(message)) {
-		chat_backend.addUnparsedMessage(message);
+	if (client.getProtoVersion() >= 26) {
+		while (client.getChatMessage(message_pair)) {
+			chat_backend.addMessage(message_pair.first,
+				message_pair.second);
+		}
+	} else {
+		while (client.getChatMessage(message_pair)) {
+			if (message_pair.first.empty())
+				chat_backend.addUnparsedMessage(message_pair.second);
+			else {
+				// This is only needed for the own messages
+				chat_backend.addMessage(message_pair.first,
+					message_pair.second);
+			}
+		}
 	}
 
 	// Remove old messages
@@ -1182,10 +1195,10 @@ static void updateChat(Client &client, f32 dtime, bool show_debug,
 
 	// Display all messages in a static text element
 	unsigned int recent_chat_count = chat_backend.getRecentBuffer().getLineCount();
-	std::wstring recent_chat       = chat_backend.getRecentChat();
+	std::string recent_chat        = chat_backend.getRecentChat();
 	unsigned int line_height       = g_fontengine->getLineHeight();
 
-	guitext_chat->setText(recent_chat.c_str());
+	guitext_chat->setText(utf8_to_wide(recent_chat).c_str());
 
 	// Update gui element size and position
 	s32 chat_y = 5 + line_height;
@@ -1860,8 +1873,8 @@ void Game::shutdown()
 		current_formspec = NULL;
 	}
 
-	chat_backend->addMessage(L"", L"# Disconnected.");
-	chat_backend->addMessage(L"", L"");
+	chat_backend->addMessage("", "# Disconnected.");
+	chat_backend->addMessage("", "");
 
 	if (client) {
 		client->Stop();
@@ -3143,7 +3156,7 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 			show_deathscreen(&current_formspec, client, gamedef, texture_src,
 					 device, client);
 
-			chat_backend->addMessage(L"", L"You died.");
+			chat_backend->addMessage("", "You died.");
 
 			/* Handle visualization */
 			*damage_flash = 0;

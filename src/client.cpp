@@ -1160,9 +1160,18 @@ void Client::sendInventoryAction(InventoryAction *a)
 	Send(&pkt);
 }
 
-void Client::sendChatMessage(const std::wstring &message)
+void Client::sendChatMessageLegacy(const std::string &message)
 {
 	NetworkPacket pkt(TOSERVER_CHAT_MESSAGE, 2 + message.size() * sizeof(u16));
+
+	pkt << utf8_to_wide(message);
+
+	Send(&pkt);
+}
+
+void Client::sendChatMessage(const std::string &message)
+{
+	NetworkPacket pkt(TOSERVER_CHAT_MESSAGE, 2 + message.size());
 
 	pkt << message;
 
@@ -1539,35 +1548,34 @@ u16 Client::getBreath()
 	return player->getBreath();
 }
 
-bool Client::getChatMessage(std::wstring &message)
+bool Client::getChatMessage(std::pair<std::string, std::string> &message_pair)
 {
 	if(m_chat_queue.size() == 0)
 		return false;
-	message = m_chat_queue.front();
+	message_pair = m_chat_queue.front();
 	m_chat_queue.pop();
 	return true;
 }
 
-void Client::typeChatMessage(const std::wstring &message)
+void Client::typeChatMessage(const std::string &message)
 {
 	// Discard empty line
-	if(message == L"")
+	if(message == "")
 		return;
 
 	// Send to others
-	sendChatMessage(message);
+	if (m_proto_ver >= 26)
+		sendChatMessage(message);
+	else
+		sendChatMessageLegacy(message);
 
 	// Show locally
-	if (message[0] == L'/')
-	{
-		m_chat_queue.push((std::wstring)L"issued command: " + message);
-	}
-	else
-	{
+	if (message[0] == '/') {
+		pushChatQueue("issued command: " + message);
+	} else {
 		LocalPlayer *player = m_env.getLocalPlayer();
 		assert(player != NULL);
-		std::wstring name = narrow_to_wide(player->getName());
-		m_chat_queue.push((std::wstring)L"<" + name + L"> " + message);
+		pushChatQueueNamed(player->getName(), message);
 	}
 }
 
@@ -1860,7 +1868,7 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 			} else {
 				sstr << "Failed to save screenshot '" << filename << "'";
 			}
-			m_chat_queue.push(narrow_to_wide(sstr.str()));
+			pushChatQueue(sstr.str());
 			infostream << sstr.str() << std::endl;
 			image->drop();
 		}
