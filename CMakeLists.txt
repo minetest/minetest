@@ -54,7 +54,7 @@ endif()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 
-# This is done here so that relative search paths are more reasnable
+# This is done here so that relative search paths are more reasonable
 find_package(Irrlicht)
 
 
