@@ -1,6 +1,6 @@
 uniform sampler2D baseTexture;
 uniform sampler2D normalTexture;
-uniform sampler2D useNormalmap;
+uniform sampler2D textureFlags;
 
 uniform vec4 skyBgColor;
 uniform float fogDistance;
@@ -15,37 +15,55 @@ varying vec3 lightVec;
 varying vec3 tsLightVec;
 
 bool normalTexturePresent = false;
+bool texTileableHorizontal = false;
+bool texTileableVertical = false;
+bool texSeamless = false;
 
 const float e = 2.718281828459;
 const float BS = 10.0;
- 
-float intensity (vec3 color){
+
+void get_texture_flags()
+{
+	vec4 flags = texture2D(textureFlags, vec2(0.0, 0.0));
+	if (flags.r > 0.5) {
+		normalTexturePresent = true;
+	}
+	if (flags.g > 0.5) {
+		texTileableHorizontal = true;
+	}
+	if (flags.b > 0.5) {
+		texTileableVertical = true;
+	}
+	if (texTileableHorizontal && texTileableVertical) {
+		texSeamless = true;
+	}
+}
+
+float intensity(vec3 color)
+{
 	return (color.r + color.g + color.b) / 3.0;
 }
 
-float get_rgb_height (vec2 uv){
+float get_rgb_height(vec2 uv)
+{
 	return intensity(texture2D(baseTexture,uv).rgb);
 }
 
-vec4 get_normal_map(vec2 uv){
+vec4 get_normal_map(vec2 uv)
+{
 	vec4 bump = texture2D(normalTexture, uv).rgba;
 	bump.xyz = normalize(bump.xyz * 2.0 -1.0);
 	bump.y = -bump.y;
 	return bump;
 }
 
-void main (void)
+void main(void)
 {
 	vec3 color;
 	vec4 bump;
 	vec2 uv = gl_TexCoord[0].st;
 	bool use_normalmap = false;
-
-#ifdef USE_NORMALMAPS
-	if (texture2D(useNormalmap,vec2(1.0,1.0)).r > 0.0) {
-		normalTexturePresent = true;
-	}
-#endif
+	get_texture_flags();
 
 #ifdef ENABLE_PARALLAX_OCCLUSION
 	if (normalTexturePresent) {

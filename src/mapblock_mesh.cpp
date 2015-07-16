@@ -1213,10 +1213,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 				p.tile.applyMaterialOptionsWithShaders(material);
 				if (p.tile.normal_texture) {
 					material.setTexture(1, p.tile.normal_texture);
-					material.setTexture(2, m_tsrc->getTextureForMesh("enable_img.png"));
-				} else {
-					material.setTexture(2, m_tsrc->getTextureForMesh("disable_img.png"));
 				}
+				material.setTexture(2, p.tile.flags_texture);
 			} else {
 				p.tile.applyMaterialOptions(material);
 			}
@@ -1349,10 +1347,8 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 		if (m_enable_shaders) {
 			if (animation_frame.normal_texture) {
 				buf->getMaterial().setTexture(1, animation_frame.normal_texture);
-				buf->getMaterial().setTexture(2, m_tsrc->getTextureForMesh("enable_img.png"));
-			} else {
-				buf->getMaterial().setTexture(2, m_tsrc->getTextureForMesh("disable_img.png"));
 			}
+			buf->getMaterial().setTexture(2, animation_frame.flags_texture);
 		}
 	}
 

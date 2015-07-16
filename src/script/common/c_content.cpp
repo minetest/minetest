@@ -277,20 +277,24 @@ TileDef read_tiledef(lua_State *L, int index)
 		getstringfield(L, index, "name", tiledef.name);
 		getstringfield(L, index, "image", tiledef.name); // MaterialSpec compat.
 		tiledef.backface_culling = getboolfield_default(
-					L, index, "backface_culling", true);
+			L, index, "backface_culling", true);
+		tiledef.tileable_horizontal = getboolfield_default(
+			L, index, "tileable_horizontal", true);
+		tiledef.tileable_vertical = getboolfield_default(
+			L, index, "tileable_vertical", true);
 		// animation = {}
 		lua_getfield(L, index, "animation");
 		if(lua_istable(L, -1)){
 			// {type="vertical_frames", aspect_w=16, aspect_h=16, length=2.0}
 			tiledef.animation.type = (TileAnimationType)
-					getenumfield(L, -1, "type", es_TileAnimationType,
-					TAT_NONE);
+				getenumfield(L, -1, "type", es_TileAnimationType,
+				TAT_NONE);
 			tiledef.animation.aspect_w =
-					getintfield_default(L, -1, "aspect_w", 16);
+				getintfield_default(L, -1, "aspect_w", 16);
 			tiledef.animation.aspect_h =
-					getintfield_default(L, -1, "aspect_h", 16);
+				getintfield_default(L, -1, "aspect_h", 16);
 			tiledef.animation.length =
-					getfloatfield_default(L, -1, "length", 1.0);
+				getfloatfield_default(L, -1, "length", 1.0);
 		}
 		lua_pop(L, 1);
 	}

@@ -35,6 +35,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h" // for parseColorString()
 #include "imagefilters.h"
 #include "guiscalingfilter.h"
+#include "nodedef.h"
+
 
 #ifdef __ANDROID__
 #include <GLES/gl.h>
@@ -330,7 +332,7 @@ public:
 	*/
 	video::ITexture* getTexture(u32 id);
 
-	video::ITexture* getTexture(const std::string &name, u32 *id);
+	video::ITexture* getTexture(const std::string &name, u32 *id = NULL);
 
 	/*
 		Get a texture specifically intended for mesh
@@ -383,6 +385,7 @@ public:
 
 	video::ITexture* getNormalTexture(const std::string &name);
 	video::SColor getTextureAverageColor(const std::string &name);
+	video::ITexture *getShaderFlagsTexture(TileDef *tiledef, TileSpec *tile);
 
 private:
 
@@ -1992,9 +1995,8 @@ void imageTransform(u32 transform, video::IImage *src, video::IImage *dst)
 
 video::ITexture* TextureSource::getNormalTexture(const std::string &name)
 {
-	u32 id;
 	if (isKnownSourceImage("override_normal.png"))
-		return getTexture("override_normal.png", &id);
+		return getTexture("override_normal.png");
 	std::string fname_base = name;
 	std::string normal_ext = "_normal.png";
 	size_t pos = fname_base.find(".");
@@ -2006,7 +2008,7 @@ video::ITexture* TextureSource::getNormalTexture(const std::string &name)
 			fname_base.replace(i, 4, normal_ext);
 			i += normal_ext.length();
 		}
-		return getTexture(fname_base, &id);
+		return getTexture(fname_base);
 		}
 	return NULL;
 }
@@ -2015,8 +2017,7 @@ video::SColor TextureSource::getTextureAverageColor(const std::string &name)
 {
 	video::IVideoDriver *driver = m_device->getVideoDriver();
 	video::SColor c(0, 0, 0, 0);
-	u32 id;
-	video::ITexture *texture = getTexture(name, &id);
+	video::ITexture *texture = getTexture(name);
 	video::IImage *image = driver->createImage(texture,
 		core::position2d<s32>(0, 0),
 		texture->getOriginalSize());
@@ -2047,4 +2048,32 @@ video::SColor TextureSource::getTextureAverageColor(const std::string &name)
 	}
 	c.setAlpha(255);
 	return c;
+}
+
+video::ITexture *TextureSource::getShaderFlagsTexture(TileDef *tiledef, TileSpec *tile)
+{
+	std::string tname = "__shaderFlagsTexture";
+
+	bool normalmap_present = tile->normal_texture ? true : false;
+	tname += normalmap_present ? "1" : "0";
+	tname += tiledef->tileable_horizontal ? "1" : "0";
+	tname += tiledef->tileable_vertical ? "1" : "0";
+
+	if (isKnownSourceImage(tname)) {
+		return getTexture(tname);
+	} else {
+		video::IVideoDriver *driver = m_device->getVideoDriver();
+		video::IImage *flags_image = driver->createImage(
+			video::ECF_A8R8G8B8, core::dimension2d<u32>(1, 1));
+		sanity_check(flags_image != NULL);
+		video::SColor c(
+			255,
+			normalmap_present ? 255 : 0,
+			tiledef->tileable_horizontal ? 255 : 0,
+			tiledef->tileable_vertical ? 255 : 0);
+		flags_image->setPixel(0, 0, c);
+		insertSourceImage(tname, flags_image);
+		flags_image->drop();
+		return getTexture(tname);
+	}
 }

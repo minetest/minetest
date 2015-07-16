@@ -130,6 +130,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			presentation
 		Add TOCLIENT_AUTH_ACCEPT to accept connection from client
 		Rename GENERIC_CMD_SET_ATTACHMENT to GENERIC_CMD_ATTACH_TO
+	PROTOCOL_VERSION 26:
+		Add TileDef tileable_horizontal, tileable_vertical flags
 */
 
 #define LATEST_PROTOCOL_VERSION 25

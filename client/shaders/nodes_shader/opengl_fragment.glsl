@@ -1,6 +1,6 @@
 uniform sampler2D baseTexture;
 uniform sampler2D normalTexture;
-uniform sampler2D useNormalmap;
+uniform sampler2D textureFlags;
 
 uniform vec4 skyBgColor;
 uniform float fogDistance;
@@ -15,19 +15,73 @@ varying vec3 tsEyeVec;
 varying vec3 lightVec;
 varying vec3 tsLightVec;
 
-bool normalTexturePresent = false; 
+bool normalTexturePresent = false;
+bool texTileableHorizontal = false;
+bool texTileableVertical = false;
+bool texSeamless = false;
 
 const float e = 2.718281828459;
 const float BS = 10.0;
- 
-float intensity (vec3 color)
+
+void get_texture_flags()
+{
+	vec4 flags = texture2D(textureFlags, vec2(0.0, 0.0));
+	if (flags.r > 0.5) {
+		normalTexturePresent = true;
+	}
+	if (flags.g > 0.5) {
+		texTileableHorizontal = true;
+	}
+	if (flags.b > 0.5) {
+		texTileableVertical = true;
+	}
+	if (texTileableHorizontal && texTileableVertical) {
+		texSeamless = true;
+	}
+}
+
+vec2 validate_displacement(vec2 uv, vec2 ds, float dist)
+{
+	if (texSeamless) {
+		uv += dist * ds;
+	} else if (texTileableVertical == false) {
+		vec2 uv2 = uv + dist * ds;
+		// limit vertical texure displacement
+		if ((uv.y + uv2.y) < 0.0) {
+			uv.y = 0.0;
+		} else if ((uv.y + uv2.y) > 1.999) {
+			uv.y = 0.999;
+		} else {
+			uv.y = uv2.y;
+		}
+		uv.x = uv2.x;
+	} else {
+		vec2 uv2 = uv + dist * ds;
+		// limit horizontal texure displacement 
+		if ((uv.x + uv2.x) < 0.0) {
+			uv.x = 0.0;
+		} else if ((uv.x + uv2.x) > 1.999) {
+			uv.x = 0.999;
+		} else {
+			uv.x = uv2.x;
+		}
+		uv.y = uv2.y;
+	}
+	return uv;
+}
+
+float intensity(vec3 color)
 {
 	return (color.r + color.g + color.b) / 3.0;
 }
 
-float get_rgb_height (vec2 uv)
+float get_rgb_height(vec2 uv)
 {
-	return intensity(texture2D(baseTexture,uv).rgb);
+	if (texSeamless) {
+		return intensity(texture2D(baseTexture, uv).rgb);
+	} else {
+		return intensity(texture2D(baseTexture, clamp(uv, 0.0, 0.999)).rgb);
+	}
 }
 
 vec4 get_normal_map(vec2 uv)
@@ -50,7 +104,8 @@ float find_intersection(vec2 dp, vec2 ds)
 	return depth;
 }
 
-float find_intersectionRGB(vec2 dp, vec2 ds) {
+float find_intersectionRGB(vec2 dp, vec2 ds)
+{
 	const float depth_step = 1.0 / 24.0;
 	float depth = 1.0;
 	for (int i = 0 ; i < 24 ; i++) {
@@ -62,24 +117,19 @@ float find_intersectionRGB(vec2 dp, vec2 ds) {
 	return depth;
 }
 
-void main (void)
+void main(void)
 {
 	vec3 color;
 	vec4 bump;
 	vec2 uv = gl_TexCoord[0].st;
 	bool use_normalmap = false;
-
-#if USE_NORMALMAPS == 1
-	if (texture2D(useNormalmap,vec2(1.0, 1.0)).r > 0.0) {
-		normalTexturePresent = true;
-	}
-#endif
+	get_texture_flags();
 
 #ifdef ENABLE_PARALLAX_OCCLUSION
 	vec2 eyeRay = vec2 (tsEyeVec.x, -tsEyeVec.y);
 	const float scale = PARALLAX_OCCLUSION_SCALE / PARALLAX_OCCLUSION_ITERATIONS;
 	const float bias = PARALLAX_OCCLUSION_BIAS / PARALLAX_OCCLUSION_ITERATIONS;
-		
+
 #if PARALLAX_OCCLUSION_MODE == 0
 	// Parallax occlusion with slope information
 	if (normalTexturePresent && area_enable_parallax > 0.0) {
@@ -89,17 +139,23 @@ void main (void)
 			uv += h * normal.z * eyeRay;
 		}
 #endif
+
 #if PARALLAX_OCCLUSION_MODE == 1
 	// Relief mapping
 	if (normalTexturePresent && area_enable_parallax > 0.0) {
 		vec2 ds = eyeRay * PARALLAX_OCCLUSION_SCALE;
+		// offset the texture by maximum possible displacement,
+		// this will help align seamless and non seamless textures
+		uv -= ds;
 		float dist = find_intersection(uv, ds);
-		uv += dist * ds;
+		uv = validate_displacement(uv, ds, dist);
+
 #endif
 	} else if (GENERATE_NORMALMAPS == 1 && area_enable_parallax > 0.0) {
 		vec2 ds = eyeRay * PARALLAX_OCCLUSION_SCALE;
+		uv -= ds;
 		float dist = find_intersectionRGB(uv, ds);
-		uv += dist * ds;
+		uv = validate_displacement(uv, ds, dist);
 	}
 #endif
 
@@ -107,10 +163,10 @@ void main (void)
 	if (normalTexturePresent) {
 		bump = get_normal_map(uv);
 		use_normalmap = true;
-	} 
+	}
 #endif
 
-	if (GENERATE_NORMALMAPS == 1 && use_normalmap == false) {
+	if (GENERATE_NORMALMAPS == 1 && normalTexturePresent == false) {
 		float tl = get_rgb_height(vec2(uv.x - SAMPLE_STEP, uv.y + SAMPLE_STEP));
 		float t  = get_rgb_height(vec2(uv.x - SAMPLE_STEP, uv.y - SAMPLE_STEP));
 		float tr = get_rgb_height(vec2(uv.x + SAMPLE_STEP, uv.y + SAMPLE_STEP));
