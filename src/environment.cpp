@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock_mesh.h"
 #include "event.h"
 #endif
+#include "server.h"
 #include "daynightratio.h"
 #include "map.h"
 #include "emerge.h"
@@ -423,6 +424,15 @@ bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize, v3s16 
 		}
 	}
 	return true;
+}
+
+void ServerEnvironment::kickAllPlayers(const std::string &reason)
+{
+	for (std::vector<Player*>::iterator it = m_players.begin();
+			it != m_players.end();
+			++it) {
+		((Server*)m_gamedef)->DenyAccess_Legacy((*it)->peer_id, utf8_to_wide(reason));
+	}
 }
 
 void ServerEnvironment::saveLoadedPlayers()

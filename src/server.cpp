@@ -394,10 +394,13 @@ Server::~Server()
 		// Execute script shutdown hooks
 		m_script->on_shutdown();
 
-		infostream<<"Server: Saving players"<<std::endl;
+		infostream << "Server: Saving players" << std::endl;
 		m_env->saveLoadedPlayers();
 
-		infostream<<"Server: Saving environment metadata"<<std::endl;
+		infostream << "Server: kick players" << std::endl;
+		m_env->kickAllPlayers("Server shutting down...");
+
+		infostream << "Server: Saving environment metadata" << std::endl;
 		m_env->saveMeta();
 	}
 
@@ -499,6 +502,7 @@ void Server::step(float dtime)
 			throw ServerError(async_err);
 		}
 		else {
+			m_env->kickAllPlayers("The server has crashed. Disconnecting all players. Please reconnect soon...");
 			errorstream << "UNRECOVERABLE error occurred. Stopping server. "
 					<< "Please fix the following error:" << std::endl
 					<< async_err << std::endl;

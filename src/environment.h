@@ -221,6 +221,7 @@ public:
 	float getSendRecommendedInterval()
 		{ return m_recommended_send_interval; }
 
+	void kickAllPlayers(const std::string &reason);
 	// Save players
 	void saveLoadedPlayers();
 	void savePlayer(const std::string &playername);
