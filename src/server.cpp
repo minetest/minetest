@@ -1523,16 +1523,17 @@ void Server::SendBreath(u16 peer_id, u16 breath)
 	Send(&pkt);
 }
 
-void Server::SendAccessDenied(u16 peer_id, AccessDeniedCode reason, const std::string &custom_reason)
+void Server::SendAccessDenied(u16 peer_id, AccessDeniedCode reason,
+		const std::string &str_reason)
 {
 	DSTACK(__FUNCTION_NAME);
 
 	NetworkPacket pkt(TOCLIENT_ACCESS_DENIED, 1, peer_id);
 	pkt << (u8) reason;
 
-	if (reason == SERVER_ACCESSDENIED_CUSTOM_STRING) {
-		pkt << custom_reason;
-	}
+	// Custom or fallback reason
+	pkt << str_reason;
+
 	Send(&pkt);
 }
 
@@ -2575,11 +2576,18 @@ void Server::DenySudoAccess(u16 peer_id)
 	Send(&pkt);
 }
 
-void Server::DenyAccess(u16 peer_id, AccessDeniedCode reason, const std::string &custom_reason)
+void Server::DenyAccess(u16 peer_id, AccessDeniedCode reason,
+		const std::string &custom_reason)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	SendAccessDenied(peer_id, reason, custom_reason);
+	if((u8) reason > 10) {
+		// Send fallback
+		SendAccessDenied(peer_id, reason, accessDeniedStrings[(u8) reason]);
+	} else {
+		SendAccessDenied(peer_id, reason, custom_reason);
+	}
+
 	m_clients.event(peer_id, CSE_SetDenied);
 	m_con.DisconnectPeer(peer_id);
 }

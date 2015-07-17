@@ -202,7 +202,8 @@ enum ToClientCommand
 	TOCLIENT_ACCESS_DENIED = 0x0A,
 	/*
 		u8 reason
-		std::string custom reason (if reason == SERVER_ACCESSDENIED_CUSTOM_STRING)
+		std::string custom reason (if reason == SERVER_ACCESSDENIED_CUSTOM_STRING),
+			also used as string fallback for new reasons beyond the initial 10.
 	*/
 	TOCLIENT_BLOCKDATA = 0x20, //TODO: Multiple blocks
 	TOCLIENT_ADDNODE = 0x21,
