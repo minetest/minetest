@@ -390,7 +390,7 @@ private:
 	void SendMovement(u16 peer_id);
 	void SendHP(u16 peer_id, u8 hp);
 	void SendBreath(u16 peer_id, u16 breath);
-	void SendAccessDenied(u16 peer_id, AccessDeniedCode reason, const std::string &custom_reason);
+	void SendAccessDenied(u16 peer_id, AccessDeniedCode reason, const std::string &str_reason);
 	void SendAccessDenied_Legacy(u16 peer_id, const std::wstring &reason);
 	void SendDeathscreen(u16 peer_id,bool set_camera_point_target, v3f camera_point_target);
 	void SendItemDef(u16 peer_id,IItemDefManager *itemdef, u16 protocol_version);

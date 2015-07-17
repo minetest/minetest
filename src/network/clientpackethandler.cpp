@@ -217,9 +217,11 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 		*pkt >> denyCode;
 		if (denyCode == SERVER_ACCESSDENIED_CUSTOM_STRING) {
 			*pkt >> m_access_denied_reason;
-		}
-		else if (denyCode < SERVER_ACCESSDENIED_MAX) {
+		} else if (denyCode < SERVER_ACCESSDENIED_MAX) {
 			m_access_denied_reason = accessDeniedStrings[denyCode];
+		} else {
+			// Use the fallback string sent by the server
+			*pkt >> m_access_denied_reason;
 		}
 	}
 	// 13/03/15 Legacy code from 0.4.12 and lesser. must stay 1 year
