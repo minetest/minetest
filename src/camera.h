@@ -159,7 +159,6 @@ private:
 
 	scene::ISceneManager* m_wieldmgr;
 	WieldMeshSceneNode* m_wieldnode;
-	scene::ILightSceneNode* m_wieldlightnode;
 
 	// draw control
 	MapDrawControl& m_draw_control;

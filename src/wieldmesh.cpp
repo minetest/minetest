@@ -282,6 +282,8 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	// Customize material
 	video::SMaterial &material = m_meshnode->getMaterial(0);
 	material.setTexture(0, tsrc->getTextureForMesh(imagename));
+	material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+	material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE; 
 	material.MaterialType = m_material_type;
 	material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 	// Enable bi/trilinear filtering only for high resolution textures
@@ -298,30 +300,22 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	material.setFlag(video::EMF_USE_MIP_MAPS, false);
 #endif
 
-#if 0
-//// TODO(RealBadAngel): Reactivate when shader is added for wield items
-	if (m_enable_shaders)
-		material.setTexture(2, tsrc->getTexture("disable_img.png"));
-#endif
 }
 
 void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 {
 	ITextureSource *tsrc = gamedef->getTextureSource();
 	IItemDefManager *idef = gamedef->getItemDefManager();
-	//IShaderSource *shdrsrc = gamedef->getShaderSource();
+	IShaderSource *shdrsrc = gamedef->getShaderSource();
 	INodeDefManager *ndef = gamedef->getNodeDefManager();
 	const ItemDefinition &def = item.getDefinition(idef);
 	const ContentFeatures &f = ndef->get(def.name);
 	content_t id = ndef->getId(def.name);
 
-#if 0
-//// TODO(RealBadAngel): Reactivate when shader is added for wield items
 	if (m_enable_shaders) {
-		u32 shader_id = shdrsrc->getShader("nodes_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
+		u32 shader_id = shdrsrc->getShader("wielded_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
 		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
 	}
-#endif
 
 	// If wield_image is defined, it overrides everything else
 	if (def.wield_image != "") {
@@ -345,8 +339,6 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 		} else if (f.drawtype == NDT_NORMAL || f.drawtype == NDT_ALLFACES) {
 			setCube(f.tiles, def.wield_scale, tsrc);
 		} else {
-			//// TODO: Change false in the following constructor args to
-			//// appropriate value when shader is added for wield items (if applicable)
 			MeshMakeData mesh_make_data(gamedef, false);
 			MapNode mesh_make_node(id, 255, 0);
 			mesh_make_data.fillSingleNode(&mesh_make_node);
@@ -376,8 +368,6 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 				material.setTexture(0, f.tiles[i].texture);
 			}
 			material.MaterialType = m_material_type;
-#if 0
-//// TODO(RealBadAngel): Reactivate when shader is added for wield items
 			if (m_enable_shaders) {
 				if (f.tiles[i].normal_texture) {
 					if (animated) {
@@ -386,12 +376,9 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 					} else {
 						material.setTexture(1, f.tiles[i].normal_texture);
 					}
-					material.setTexture(2, tsrc->getTexture("enable_img.png"));
-				} else {
-					material.setTexture(2, tsrc->getTexture("disable_img.png"));
 				}
+				material.setTexture(2, f.tiles[i].flags_texture);
 			}
-#endif
 		}
 		return;
 	}
