@@ -22,16 +22,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_base.h"
 #include "util/string.h"
+#include "../guiMainMenu.h"
 
-class ScriptApiMainMenu
-		: virtual public ScriptApiBase
-{
+class ScriptApiMainMenu : virtual public ScriptApiBase {
 public:
 	/**
-	 * set gamedata.errormessage to inform lua of an error
-	 * @param errormessage the error message
+	 * Hand over MainMenuDataForScript to lua to inform lua of the content
+	 * @param data the data
 	 */
-	void setMainMenuErrorMessage(std::string errormessage);
+	void setMainMenuData(MainMenuDataForScript *data);
 
 	/**
 	 * process events received from formspec

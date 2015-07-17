@@ -362,6 +362,7 @@ public:
 	float hurt_tilt_timer;
 	float hurt_tilt_strength;
 
+	u16 protocol_version;
 	u16 peer_id;
 
 	std::string inventory_formspec;

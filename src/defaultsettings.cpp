@@ -254,6 +254,7 @@ void set_default_settings(Settings *settings)
 
 	settings->setDefault("kick_msg_shutdown", "Server shutting down.");
 	settings->setDefault("kick_msg_crash", "This server has experienced an internal error. You will now be disconnected.");
+	settings->setDefault("ask_reconnect_on_crash", "false");
 
 	settings->setDefault("profiler_print_interval", "0");
 	settings->setDefault("enable_mapgen_debug_info", "false");

@@ -191,6 +191,7 @@ Server::Server(
 	m_uptime(0),
 	m_clients(&m_con),
 	m_shutdown_requested(false),
+	m_shutdown_ask_reconnect(false),
 	m_ignore_map_edit_events(false),
 	m_ignore_map_edit_events_peer_id(0),
 	m_next_sound_id(0)
@@ -398,7 +399,17 @@ Server::~Server()
 		m_env->saveLoadedPlayers();
 
 		infostream << "Server: Kicking players" << std::endl;
-		m_env->kickAllPlayers(g_settings->get("kick_msg_shutdown"));
+		std::string kick_msg;
+		bool reconnect = false;
+		if (getShutdownRequested()) {
+			reconnect = m_shutdown_ask_reconnect;
+			kick_msg = m_shutdown_msg;
+		}
+		if (kick_msg == "") {
+			kick_msg = g_settings->get("kick_msg_shutdown");
+		}
+		m_env->kickAllPlayers(SERVER_ACCESSDENIED_SHUTDOWN,
+			kick_msg, reconnect);
 
 		infostream << "Server: Saving environment metadata" << std::endl;
 		m_env->saveMeta();
@@ -502,7 +513,9 @@ void Server::step(float dtime)
 			throw ServerError(async_err);
 		}
 		else {
-			m_env->kickAllPlayers(g_settings->get("kick_msg_crash"));
+			m_env->kickAllPlayers(SERVER_ACCESSDENIED_CRASH,
+				g_settings->get("kick_msg_crash"),
+				g_settings->getBool("ask_reconnect_on_crash"));
 			errorstream << "UNRECOVERABLE error occurred. Stopping server. "
 					<< "Please fix the following error:" << std::endl
 					<< async_err << std::endl;
@@ -1070,7 +1083,7 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 		RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id, CS_InitDone);
 		if (client != NULL) {
 			playername = client->getName();
-			playersao = emergePlayer(playername.c_str(), peer_id);
+			playersao = emergePlayer(playername.c_str(), peer_id, client->net_proto_version);
 		}
 	} catch (std::exception &e) {
 		m_clients.Unlock();
@@ -1523,16 +1536,18 @@ void Server::SendBreath(u16 peer_id, u16 breath)
 	Send(&pkt);
 }
 
-void Server::SendAccessDenied(u16 peer_id, AccessDeniedCode reason, const std::string &custom_reason)
+void Server::SendAccessDenied(u16 peer_id, AccessDeniedCode reason,
+		const std::string &custom_reason, bool reconnect)
 {
-	DSTACK(__FUNCTION_NAME);
+	assert(reason < SERVER_ACCESSDENIED_MAX);
 
 	NetworkPacket pkt(TOCLIENT_ACCESS_DENIED, 1, peer_id);
-	pkt << (u8) reason;
-
-	if (reason == SERVER_ACCESSDENIED_CUSTOM_STRING) {
+	pkt << (u8)reason;
+	if (reason == SERVER_ACCESSDENIED_CUSTOM_STRING)
 		pkt << custom_reason;
-	}
+	else if (reason == SERVER_ACCESSDENIED_SHUTDOWN ||
+			reason == SERVER_ACCESSDENIED_CRASH)
+		pkt << custom_reason << (u8)reconnect;
 	Send(&pkt);
 }
 
@@ -2567,6 +2582,8 @@ void Server::RespawnPlayer(u16 peer_id)
 		playersao->setPos(pos);
 	}
 }
+
+
 void Server::DenySudoAccess(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -2574,6 +2591,24 @@ void Server::DenySudoAccess(u16 peer_id)
 	NetworkPacket pkt(TOCLIENT_DENY_SUDO_MODE, 0, peer_id);
 	Send(&pkt);
 }
+
+
+void Server::DenyAccessVerCompliant(u16 peer_id, u16 proto_ver, AccessDeniedCode reason,
+		const std::string &str_reason, bool reconnect)
+{
+	if (proto_ver >= 25) {
+		SendAccessDenied(peer_id, reason, str_reason);
+	} else {
+		std::wstring wreason = utf8_to_wide(
+			reason == SERVER_ACCESSDENIED_CUSTOM_STRING ? str_reason :
+			accessDeniedStrings[(u8)reason]);
+		SendAccessDenied_Legacy(peer_id, wreason);
+	}
+
+	m_clients.event(peer_id, CSE_SetDenied);
+	m_con.DisconnectPeer(peer_id);
+}
+
 
 void Server::DenyAccess(u16 peer_id, AccessDeniedCode reason, const std::string &custom_reason)
 {
@@ -3330,7 +3365,7 @@ v3f Server::findSpawnPos()
 	return intToFloat(nodepos, BS);
 }
 
-PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
+PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id, u16 proto_version)
 {
 	bool newplayer = false;
 
@@ -3382,6 +3417,8 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id)
 	PlayerSAO *playersao = new PlayerSAO(m_env, player, peer_id,
 			getPlayerEffectivePrivs(player->getName()),
 			isSingleplayer());
+
+	player->protocol_version = proto_version;
 
 	/* Clean up old HUD elements from previous sessions */
 	player->clearHud();
