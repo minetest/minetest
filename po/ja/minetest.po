@@ -16,11 +16,11 @@ msgstr ""
 
 #: builtin/fstk/ui.lua:82
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
+msgstr "以下のModのLuaスクリプト内でエラーが発生しました:"
 
 #: builtin/fstk/ui.lua:84
 msgid "An error occured:"
-msgstr ""
+msgstr "エラーが発生しました:"
 
 #: builtin/fstk/ui.lua:89 builtin/mainmenu/store.lua:165
 msgid "Ok"
@@ -32,7 +32,7 @@ msgstr "読み込み中..."
 
 #: builtin/mainmenu/common.lua:240
 msgid "Try reenabling public serverlist and check your internet connection."
-msgstr ""
+msgstr "インターネット接続を確認し、公開サーバーリストを再有効化してください。"
 
 #: builtin/mainmenu/dlg_config_world.lua:29
 msgid "World:"
@@ -41,12 +41,12 @@ msgstr "ワールド:"
 #: builtin/mainmenu/dlg_config_world.lua:33
 #: builtin/mainmenu/dlg_config_world.lua:35
 msgid "Hide Game"
-msgstr "ｹﾞｰﾑを隠す"
+msgstr "ゲームを非表示"
 
 #: builtin/mainmenu/dlg_config_world.lua:39
 #: builtin/mainmenu/dlg_config_world.lua:41
 msgid "Hide mp content"
-msgstr "Modパックの簡略化"
+msgstr "Modパックを非表示"
 
 #: builtin/mainmenu/dlg_config_world.lua:49
 msgid "Mod:"
@@ -110,23 +110,23 @@ msgstr "ゲームがインストールされていません。"
 
 #: builtin/mainmenu/dlg_create_world.lua:69
 msgid "Download one from minetest.net"
-msgstr "minetest.netから再ダウンロードしてください。"
+msgstr "minetest.netから再ダウンロードしてください"
 
 #: builtin/mainmenu/dlg_create_world.lua:72
 msgid "Warning: The minimal development test is meant for developers."
-msgstr "警告:Minimal development testは開発者のためのゲームです。"
+msgstr "警告: Minimal development testは開発者のためのゲームです。"
 
 #: builtin/mainmenu/dlg_create_world.lua:73
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr "minetest.netからminetest_gameのゲームをダウンロードしてください。"
+msgstr "minetest.netからminetest_gameのゲームをダウンロードしてください"
 
 #: builtin/mainmenu/dlg_create_world.lua:99
 msgid "A world named \"$1\" already exists"
-msgstr "ﾜｰﾙﾄﾞ名\"$1\"はすでに使用されています。"
+msgstr "ワールド名\"$1\"はすでに使用されています"
 
 #: builtin/mainmenu/dlg_create_world.lua:116
 msgid "No worldname given or no game selected"
-msgstr "ﾜｰﾙﾄﾞ名が入力されていないか、ゲームが選択されていません。"
+msgstr "ワールド名が入力されていないか、ゲームが選択されていません"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:26
 msgid "Are you sure you want to delete \"$1\"?"
@@ -144,15 +144,15 @@ msgstr "いいえ"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:41
 msgid "Modmgr: failed to delete \"$1\""
-msgstr "Modマネージャ:\"$1\"の削除に失敗しました。"
+msgstr "Modマネージャ: \"$1\"の削除に失敗しました"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:45
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr "Modマネージャ:Mod\"$1\"の場所が不明です。"
+msgstr "Modマネージャ: Mod\"$1\"の場所が不明です"
 
 #: builtin/mainmenu/dlg_delete_world.lua:24
 msgid "Delete World \"$1\"?"
-msgstr "ﾜｰﾙﾄﾞ\"$1\"を削除してよろしいですか？"
+msgstr "ワールド\"$1\"を削除しますか？"
 
 #: builtin/mainmenu/dlg_delete_world.lua:26
 msgid "No"
@@ -168,7 +168,7 @@ msgstr "決定"
 
 #: builtin/mainmenu/modmgr.lua:344
 msgid "Install Mod: file: \"$1\""
-msgstr "Modインストール:ファイル\"$1\"からModをインストールします。"
+msgstr "Modインストール: ファイル\"$1\"からModをインストールします。"
 
 #: builtin/mainmenu/modmgr.lua:345
 msgid ""
@@ -176,21 +176,19 @@ msgid ""
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"Modインストール:ファイル\"$1\"は非対応の形式か、壊れています。"
+"Modインストール: ファイル\"$1\"は非対応の形式か、壊れています。"
 
 #: builtin/mainmenu/modmgr.lua:365
 msgid "Failed to install $1 to $2"
-msgstr "$2へ$1をインストールできませんでした。"
+msgstr "$2へ$1をインストールできませんでした"
 
 #: builtin/mainmenu/modmgr.lua:368
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
-msgstr ""
-"Modインストール:Modパック$1に適したフォルダ名を見つけることができませんでし"
-"た。"
+msgstr "Modインストール: Modパック$1に適したフォルダ名を見つけることができませんでした"
 
 #: builtin/mainmenu/modmgr.lua:388
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr "Modインストール:$1の本来のMod名が不明です。"
+msgstr "Modインストール: $1の本来のMod名が不明です"
 
 #: builtin/mainmenu/store.lua:88
 msgid "Unsorted"
@@ -206,7 +204,7 @@ msgstr "$1をダウンロードしています。しばらくお待ちくださ�
 
 #: builtin/mainmenu/store.lua:160
 msgid "Successfully installed:"
-msgstr "インストールが完了しました。:"
+msgstr "インストールが完了しました:"
 
 #: builtin/mainmenu/store.lua:162
 msgid "Shortname:"
@@ -230,11 +228,11 @@ msgstr "閉じる"
 
 #: builtin/mainmenu/store.lua:526
 msgid "Page $1 of $2"
-msgstr "ページ　$1/$2"
+msgstr "ページ $1 / $2"
 
 #: builtin/mainmenu/tab_credits.lua:22
 msgid "Credits"
-msgstr "ｸﾚｼﾞｯﾄ"
+msgstr "クレジット"
 
 #: builtin/mainmenu/tab_credits.lua:31
 msgid "Core Developers"
@@ -245,9 +243,8 @@ msgid "Active Contributors"
 msgstr "開発協力者"
 
 #: builtin/mainmenu/tab_credits.lua:54
-#, fuzzy
 msgid "Previous Core Developers"
-msgstr "開発者"
+msgstr "以前の開発者"
 
 #: builtin/mainmenu/tab_credits.lua:59
 msgid "Previous Contributors"
@@ -300,7 +297,7 @@ msgstr "名前とパスワード:"
 #: builtin/mainmenu/tab_multiplayer.lua:29
 #: builtin/mainmenu/tab_simple_main.lua:30
 msgid "Public Serverlist"
-msgstr "公開済みのｻｰﾊﾞｰの一覧"
+msgstr "公開サーバーリスト"
 
 #: builtin/mainmenu/tab_multiplayer.lua:34 builtin/mainmenu/tab_server.lua:26
 #: builtin/mainmenu/tab_singleplayer.lua:96 src/keycode.cpp:229
@@ -315,21 +312,21 @@ msgstr "接続"
 #: builtin/mainmenu/tab_multiplayer.lua:62
 #: builtin/mainmenu/tab_simple_main.lua:45
 msgid "Creative mode"
-msgstr "ｸﾘｴｲﾃｨﾌﾞﾓｰﾄﾞ"
+msgstr "クリエイティブモード"
 
 #: builtin/mainmenu/tab_multiplayer.lua:63
 #: builtin/mainmenu/tab_simple_main.lua:46
 msgid "Damage enabled"
-msgstr "HPあり"
+msgstr "ダメージ有効"
 
 #: builtin/mainmenu/tab_multiplayer.lua:64
 #: builtin/mainmenu/tab_simple_main.lua:47
 msgid "PvP enabled"
-msgstr "PvPあり"
+msgstr "PvP有効"
 
 #: builtin/mainmenu/tab_multiplayer.lua:257
 msgid "Client"
-msgstr "ｸﾗｲｱﾝﾄ"
+msgstr "クライアント"
 
 #: builtin/mainmenu/tab_server.lua:27 builtin/mainmenu/tab_singleplayer.lua:97
 msgid "New"
@@ -351,16 +348,16 @@ msgstr "ワールドを選択:"
 #: builtin/mainmenu/tab_server.lua:31 builtin/mainmenu/tab_simple_main.lua:76
 #: builtin/mainmenu/tab_singleplayer.lua:101
 msgid "Creative Mode"
-msgstr "ｸﾘｴｲﾃｨﾌﾞﾓｰﾄﾞ"
+msgstr "クリエイティブモード"
 
 #: builtin/mainmenu/tab_server.lua:33 builtin/mainmenu/tab_simple_main.lua:78
 #: builtin/mainmenu/tab_singleplayer.lua:103
 msgid "Enable Damage"
-msgstr "ﾀﾞﾒｰｼﾞあり"
+msgstr "ダメージ有効"
 
 #: builtin/mainmenu/tab_server.lua:35
 msgid "Public"
-msgstr "ｻｰﾊﾞｰを公開する"
+msgstr "公開サーバー"
 
 #: builtin/mainmenu/tab_server.lua:37 builtin/mainmenu/tab_simple_main.lua:25
 msgid "Name/Password"
@@ -380,28 +377,24 @@ msgstr "サーバーのポート"
 
 #: builtin/mainmenu/tab_server.lua:138
 #: builtin/mainmenu/tab_singleplayer.lua:165
-#, fuzzy
 msgid "No world created or selected!"
-msgstr "ﾜｰﾙﾄﾞ名が入力されていないか、ゲームが選択されていません。"
+msgstr "ワールドが作成または選択されていません！"
 
 #: builtin/mainmenu/tab_server.lua:191
 msgid "Server"
-msgstr "ｻｰﾊﾞｰ"
+msgstr "サーバー"
 
 #: builtin/mainmenu/tab_settings.lua:21
-#, fuzzy
 msgid "Opaque Leaves"
-msgstr "不透明な水"
+msgstr "不透明な葉"
 
 #: builtin/mainmenu/tab_settings.lua:22
-#, fuzzy
 msgid "Simple Leaves"
-msgstr "揺れる葉"
+msgstr "シンプルな葉"
 
 #: builtin/mainmenu/tab_settings.lua:23
-#, fuzzy
 msgid "Fancy Leaves"
-msgstr "綺麗な木"
+msgstr "綺麗な葉"
 
 #: builtin/mainmenu/tab_settings.lua:32
 msgid "No Filter"
@@ -433,7 +426,7 @@ msgstr "シングルプレイヤーのワールドをリセットしてよろし
 
 #: builtin/mainmenu/tab_settings.lua:102
 msgid "No!!!"
-msgstr "いいえ"
+msgstr "いいえ！！！"
 
 #: builtin/mainmenu/tab_settings.lua:202
 msgid "Smooth Lighting"
@@ -441,11 +434,11 @@ msgstr "滑らかな光"
 
 #: builtin/mainmenu/tab_settings.lua:204
 msgid "Enable Particles"
-msgstr "ﾊﾟｰﾃｨｸﾙ有効化"
+msgstr "パーティクル有効化"
 
 #: builtin/mainmenu/tab_settings.lua:206
 msgid "3D Clouds"
-msgstr "立体の雲"
+msgstr "3Dの雲"
 
 #: builtin/mainmenu/tab_settings.lua:208
 msgid "Opaque Water"
@@ -453,11 +446,11 @@ msgstr "不透明な水"
 
 #: builtin/mainmenu/tab_settings.lua:210
 msgid "Connected Glass"
-msgstr "ガラスをつなげる"
+msgstr "ガラスを繋げる"
 
 #: builtin/mainmenu/tab_settings.lua:212
 msgid "Node Highlighting"
-msgstr "ﾉｰﾄﾞの強調"
+msgstr "ノードをハイライト"
 
 #: builtin/mainmenu/tab_settings.lua:217
 msgid "Texturing:"
@@ -469,11 +462,11 @@ msgstr "レンダリング:"
 
 #: builtin/mainmenu/tab_settings.lua:226
 msgid "Restart minetest for driver change to take effect"
-msgstr "ドライバーを変更するためMinetesを再起動します"
+msgstr "ドライバーを変更するためMinetestを再起動します"
 
 #: builtin/mainmenu/tab_settings.lua:228
 msgid "Shaders"
-msgstr "ｼｪｰﾀﾞｰ"
+msgstr "シェーダー"
 
 #: builtin/mainmenu/tab_settings.lua:233
 msgid "Change keys"
@@ -497,19 +490,19 @@ msgstr "タッチ位置を自由にする"
 
 #: builtin/mainmenu/tab_settings.lua:256
 msgid "Touchthreshold (px)"
-msgstr "タッチのしきい値（ピクセル単位）"
+msgstr "タッチのしきい値（ピクセル）"
 
 #: builtin/mainmenu/tab_settings.lua:263 builtin/mainmenu/tab_settings.lua:277
 msgid "Bumpmapping"
-msgstr "ﾊﾞﾝﾌﾟﾏｯﾋﾟﾝｸﾞ"
+msgstr "バンプマッピング"
 
 #: builtin/mainmenu/tab_settings.lua:265 builtin/mainmenu/tab_settings.lua:278
 msgid "Generate Normalmaps"
-msgstr "ﾉｰﾏﾙﾏｯﾌﾟの生成"
+msgstr "ノーマルマップの生成"
 
 #: builtin/mainmenu/tab_settings.lua:267 builtin/mainmenu/tab_settings.lua:279
 msgid "Parallax Occlusion"
-msgstr "視差遮蔽ﾏｯﾋﾟﾝｸﾞ"
+msgstr "視差遮蔽マッピング"
 
 #: builtin/mainmenu/tab_settings.lua:269 builtin/mainmenu/tab_settings.lua:280
 msgid "Waving Water"
@@ -525,7 +518,7 @@ msgstr "揺れる草花"
 
 #: builtin/mainmenu/tab_settings.lua:308
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr "ｼｪｰﾀﾞｰを有効にするにはOpenGLを使用する必要があります。"
+msgstr "シェーダーを有効にするにはOpenGLを使用する必要があります。"
 
 #: builtin/mainmenu/tab_settings.lua:430
 msgid "Settings"
@@ -533,7 +526,7 @@ msgstr "設定"
 
 #: builtin/mainmenu/tab_simple_main.lua:82
 msgid "Start Singleplayer"
-msgstr "ゲームスタート"
+msgstr "シングルプレイ開始"
 
 #: builtin/mainmenu/tab_simple_main.lua:83
 msgid "Config mods"
@@ -545,11 +538,11 @@ msgstr "メイン"
 
 #: builtin/mainmenu/tab_singleplayer.lua:99 src/keycode.cpp:248
 msgid "Play"
-msgstr "ゲームスタート"
+msgstr "プレイ"
 
 #: builtin/mainmenu/tab_singleplayer.lua:246
 msgid "Singleplayer"
-msgstr "ｼﾝｸﾞﾙﾌﾟﾚｲﾔｰ"
+msgstr "シングルプレイヤー"
 
 #: builtin/mainmenu/tab_texturepacks.lua:49
 msgid "Select texture pack:"
@@ -561,7 +554,7 @@ msgstr "情報がありません。"
 
 #: builtin/mainmenu/tab_texturepacks.lua:114
 msgid "Texturepacks"
-msgstr "ﾃｸｽﾁｬﾊﾟｯｸ"
+msgstr "テクスチャパック"
 
 #: src/client.cpp:1721
 msgid "Loading textures..."
@@ -581,7 +574,7 @@ msgstr "ノードを設定中"
 
 #: src/client.cpp:1768
 msgid "Item textures..."
-msgstr "アイテムのテクスチャを設定中..."
+msgstr "テクスチャを設定中..."
 
 #: src/client.cpp:1793
 msgid "Done!"
@@ -625,11 +618,11 @@ msgstr "決定"
 
 #: src/game.cpp:1072
 msgid "You died."
-msgstr "You died."
+msgstr "死にました。"
 
 #: src/game.cpp:1073
 msgid "Respawn"
-msgstr "Respawn"
+msgstr "リスポーン"
 
 #: src/game.cpp:1092
 msgid ""
@@ -647,17 +640,17 @@ msgid ""
 " --> place single item to slot\n"
 msgstr ""
 "基本操作:\n"
-"タッチによる操作\n"
-"- シングルタップ:ブロックの破壊\n"
-"- ダブルタップ:設置やアイテムの使用\n"
-"- 指でスライド:見回す\n"
-"メニュー（インベントリ）の操作\n"
-"- ダブルタップ:\n"
-"-- 閉じる\n"
-"- アイテムスロットをタッチ:\n"
-"-- アイテムの移動\n"
-"- タッチしてドラッグ:\n"
-"-- アイテムを置く\n"
+"タッチ操作:\n"
+"- シングルタップ: ブロックの破壊\n"
+"- ダブルタップ: 設置、使用\n"
+"- スライド: 見回す\n"
+"メニュー、インベントリの操作:\n"
+"- メニューの外をダブルタップ:\n"
+" --> 閉じる\n"
+"- アイテムをタッチ:\n"
+" --> アイテムの移動\n"
+"- タッチしてドラッグ、二本指タップ:\n"
+" --> アイテムを一つスロットに置く\n"
 
 #: src/game.cpp:1106
 msgid ""
@@ -674,16 +667,16 @@ msgid ""
 "- T: chat\n"
 msgstr ""
 "基本操作:\n"
-"- WASD:移動\n"
-"- ｽﾍﾟｰｽ:ｼﾞｬﾝﾌﾟ､登る\n"
-"- Shift:ｽﾆｰｸ､降りる\n"
-"- Q:ｱｲﾃﾑを落とす\n"
-"- I:ｲﾝﾍﾞﾝﾄﾘ\n"
-"- ﾏｳｽ移動:見回す\n"
-"- 左ｸﾘｯｸ:ﾌﾞﾛｯｸ破壊\n"
-"- 右ｸﾘｯｸ:設置や使用\n"
-"- ﾎｲｰﾙ:ｱｲﾃﾑ選択\n"
-"- T:ﾁｬｯﾄ画面\n"
+"- WASD: 移動\n"
+"- スペース: ジャンプ､登る\n"
+"- Shift:　スニーク､降りる\n"
+"- Q: アイテムを落とす\n"
+"- I: インベントリ\n"
+"- マウス: 見回す\n"
+"- 左クリック: 破壊、パンチ\n"
+"- 右クリック: 設置、使用\n"
+"- ホイール: アイテム選択\n"
+"- T: チャット画面\n"
 
 #: src/game.cpp:1125
 msgid "Continue"
@@ -691,7 +684,7 @@ msgstr "再開"
 
 #: src/game.cpp:1129
 msgid "Change Password"
-msgstr "ﾊﾟｽﾜｰﾄﾞ変更"
+msgstr "パスワード変更"
 
 #: src/game.cpp:1134
 msgid "Sound Volume"
@@ -715,11 +708,11 @@ msgstr "終了中..."
 
 #: src/game.cpp:1948
 msgid "Creating server..."
-msgstr "サーバー作成中..."
+msgstr "サーバー起動中..."
 
 #: src/game.cpp:1984
 msgid "Creating client..."
-msgstr "クライアント作成中..."
+msgstr "クライアント起動中..."
 
 #: src/game.cpp:2159
 msgid "Resolving address..."
@@ -739,15 +732,15 @@ msgstr "ノード定義中..."
 
 #: src/game.cpp:2329
 msgid "Media..."
-msgstr "..."
+msgstr "通信中..."
 
 #: src/game.cpp:2334
 msgid "KiB/s"
-msgstr ""
+msgstr "KB/秒"
 
 #: src/game.cpp:2338
 msgid "MiB/s"
-msgstr ""
+msgstr "MB/秒"
 
 #: src/game.cpp:4363
 msgid ""
@@ -759,7 +752,7 @@ msgstr ""
 
 #: src/guiFormSpecMenu.cpp:2855
 msgid "Enter "
-msgstr "Enter"
+msgstr "エンター"
 
 #: src/guiFormSpecMenu.cpp:2875
 msgid "ok"
@@ -779,7 +772,7 @@ msgstr "「ジャンプ」二回押しで飛行モード"
 
 #: src/guiKeyChangeMenu.cpp:295
 msgid "Key already in use"
-msgstr "すでに使われているキーです。"
+msgstr "キーが重複しています。"
 
 #: src/guiKeyChangeMenu.cpp:373
 msgid "press key"
@@ -795,11 +788,11 @@ msgstr "後退"
 
 #: src/guiKeyChangeMenu.cpp:401 src/keycode.cpp:228
 msgid "Left"
-msgstr "左に進む"
+msgstr "左"
 
 #: src/guiKeyChangeMenu.cpp:402 src/keycode.cpp:228
 msgid "Right"
-msgstr "右に進む"
+msgstr "右"
 
 #: src/guiKeyChangeMenu.cpp:403
 msgid "Use"
@@ -843,7 +836,7 @@ msgstr "高速移動モード"
 
 #: src/guiKeyChangeMenu.cpp:413
 msgid "Toggle Cinematic"
-msgstr "シネマティックモード"
+msgstr "映画風カメラ"
 
 #: src/guiKeyChangeMenu.cpp:414
 msgid "Toggle noclip"
@@ -1031,7 +1024,7 @@ msgstr "左Windows"
 
 #: src/keycode.cpp:233
 msgid "Apps"
-msgstr "Apps"
+msgstr "アプリ"
 
 #: src/keycode.cpp:233
 msgid "Numpad 0"
@@ -1135,7 +1128,7 @@ msgstr "読点"
 
 #: src/keycode.cpp:243
 msgid "Minus"
-msgstr "ー"
+msgstr "-"
 
 #: src/keycode.cpp:243
 msgid "Period"
