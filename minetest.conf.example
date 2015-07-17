@@ -393,6 +393,9 @@
 #    A message to be displayed to all clients when the server shuts down
 #kick_msg_crash = This server has experienced an internal error. You will now be disconnected.
 #    A message to be displayed to all clients when the server crashes
+#ask_reconnect_on_crash = false
+#    Whether to ask clients to reconnect after a (lua) crash.
+#    Set this to true if your server is set up to restart automatically.
 
 #    Mod profiler
 #mod_profiling = false

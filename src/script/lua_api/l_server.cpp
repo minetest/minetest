@@ -30,7 +30,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // request_shutdown()
 int ModApiServer::l_request_shutdown(lua_State *L)
 {
-	getServer(L)->requestShutdown();
+	const char *msg = lua_tolstring(L, 1, NULL);
+	bool reconnect = lua_toboolean(L, 2);
+	getServer(L)->requestShutdown(msg ? msg : "", reconnect);
 	return 0;
 }
 

@@ -426,13 +426,15 @@ bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize, v3s16 
 	return true;
 }
 
-void ServerEnvironment::kickAllPlayers(const std::string &reason)
+void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,
+		const std::string &str_reason, bool reconnect)
 {
-	std::wstring wreason = utf8_to_wide(reason);
 	for (std::vector<Player*>::iterator it = m_players.begin();
 			it != m_players.end();
 			++it) {
-		((Server*)m_gamedef)->DenyAccess_Legacy((*it)->peer_id, wreason);
+		((Server*)m_gamedef)->DenyAccessVerCompliant((*it)->peer_id,
+			(*it)->protocol_version, (AccessDeniedCode)reason,
+			str_reason, reconnect);
 	}
 }
 

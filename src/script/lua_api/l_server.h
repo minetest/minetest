@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class ModApiServer : public ModApiBase {
 private:
-	// request_shutdown()
+	// request_shutdown([message], [reconnect])
 	static int l_request_shutdown(lua_State *L);
 
 	// get_server_status()

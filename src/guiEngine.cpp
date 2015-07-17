@@ -208,10 +208,8 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	m_script = new MainMenuScripting(this);
 
 	try {
-		if (m_data->errormessage != "") {
-			m_script->setMainMenuErrorMessage(m_data->errormessage);
-			m_data->errormessage = "";
-		}
+		m_script->setMainMenuData(&m_data->script_data);
+		m_data->script_data.errormessage = "";
 
 		if (!loadMainMenuScript()) {
 			errorstream << "No future without mainmenu" << std::endl;
@@ -219,10 +217,9 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 		}
 
 		run();
-	}
-	catch(LuaError &e) {
+	} catch (LuaError &e) {
 		errorstream << "MAINMENU ERROR: " << e.what() << std::endl;
-		m_data->errormessage = e.what();
+		m_data->script_data.errormessage = e.what();
 	}
 
 	m_menu->quitMenu();
