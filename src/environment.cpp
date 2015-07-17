@@ -428,10 +428,11 @@ bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize, v3s16 
 
 void ServerEnvironment::kickAllPlayers(const std::string &reason)
 {
+	std::wstring wreason = utf8_to_wide(reason);
 	for (std::vector<Player*>::iterator it = m_players.begin();
 			it != m_players.end();
 			++it) {
-		((Server*)m_gamedef)->DenyAccess_Legacy((*it)->peer_id, utf8_to_wide(reason));
+		((Server*)m_gamedef)->DenyAccess_Legacy((*it)->peer_id, wreason);
 	}
 }
 

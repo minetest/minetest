@@ -397,8 +397,8 @@ Server::~Server()
 		infostream << "Server: Saving players" << std::endl;
 		m_env->saveLoadedPlayers();
 
-		infostream << "Server: kick players" << std::endl;
-		m_env->kickAllPlayers("Server shutting down...");
+		infostream << "Server: Kicking players" << std::endl;
+		m_env->kickAllPlayers(g_settings->get("kick_msg_shutdown"));
 
 		infostream << "Server: Saving environment metadata" << std::endl;
 		m_env->saveMeta();
@@ -502,7 +502,7 @@ void Server::step(float dtime)
 			throw ServerError(async_err);
 		}
 		else {
-			m_env->kickAllPlayers("The server has crashed. Disconnecting all players. Please reconnect soon...");
+			m_env->kickAllPlayers(g_settings->get("kick_msg_crash"));
 			errorstream << "UNRECOVERABLE error occurred. Stopping server. "
 					<< "Please fix the following error:" << std::endl
 					<< async_err << std::endl;

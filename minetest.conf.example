@@ -388,6 +388,12 @@
 #        "log"    = mimic and log backtrace of deprecated call (default for debug).
 #        "error"  = abort on usage of deprecated call (suggested for mod developers).
 #deprecated_lua_api_handling = legacy
+
+#kick_msg_shutdown = Server shutting down.
+#    A message to be displayed to all clients when the server shuts down
+#kick_msg_crash = This server has experienced an internal error. You will now be disconnected.
+#    A message to be displayed to all clients when the server crashes
+
 #    Mod profiler
 #mod_profiling = false
 #    Detailed mod profile data
