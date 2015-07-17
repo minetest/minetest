@@ -3,10 +3,10 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-07-09 15:56+0200\n"
-"Last-Translator: sfan5 <sfan5@live.de>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
-"minetest/ja/>\n"
+"PO-Revision-Date: 2015-07-17 14:33+0200\n"
+"Last-Translator: Rui <mrrst0914@gmail.com>\n"
+"Language-Team: Japanese "
+"<https://hosted.weblate.org/projects/minetest/minetest/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -140,7 +140,7 @@ msgstr "はい"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:28
 msgid "No of course not!"
-msgstr "いいえ"
+msgstr "いいえ！"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:41
 msgid "Modmgr: failed to delete \"$1\""
@@ -160,7 +160,7 @@ msgstr "いいえ"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua:26
 msgid "Rename Modpack:"
-msgstr "名前を変更"
+msgstr "名前を変更:"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua:31 src/keycode.cpp:227
 msgid "Accept"
@@ -168,7 +168,7 @@ msgstr "決定"
 
 #: builtin/mainmenu/modmgr.lua:344
 msgid "Install Mod: file: \"$1\""
-msgstr "Modインストール: ファイル\"$1\"からModをインストールします。"
+msgstr "Modインストール: ファイル: \"$1\""
 
 #: builtin/mainmenu/modmgr.lua:345
 msgid ""
@@ -176,7 +176,7 @@ msgid ""
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"Modインストール: ファイル\"$1\"は非対応の形式か、壊れています。"
+"Modインストール: ファイル\"$1\"は非対応の形式か、壊れています"
 
 #: builtin/mainmenu/modmgr.lua:365
 msgid "Failed to install $1 to $2"
@@ -208,7 +208,7 @@ msgstr "インストールが完了しました:"
 
 #: builtin/mainmenu/store.lua:162
 msgid "Shortname:"
-msgstr "省略名"
+msgstr "省略名:"
 
 #: builtin/mainmenu/store.lua:472
 msgid "Rating"
@@ -260,7 +260,7 @@ msgstr "オンラインでModを検索"
 
 #: builtin/mainmenu/tab_mods.lua:78
 msgid "No mod description available"
-msgstr "Modの説明がありません。"
+msgstr "Modの説明がありません"
 
 #: builtin/mainmenu/tab_mods.lua:82
 msgid "Mod information:"
@@ -280,7 +280,7 @@ msgstr "選択したModを削除"
 
 #: builtin/mainmenu/tab_mods.lua:121
 msgid "Select Mod File:"
-msgstr "Modファイルを選択"
+msgstr "Modファイルを選択:"
 
 #: builtin/mainmenu/tab_mods.lua:165
 msgid "Mods"
@@ -482,7 +482,7 @@ msgstr "メニューの大きさ"
 
 #: builtin/mainmenu/tab_settings.lua:244
 msgid "Scaling factor applied to menu elements: "
-msgstr "メニューの大きさとして設定する数値:"
+msgstr "メニューの大きさとして設定する数値: "
 
 #: builtin/mainmenu/tab_settings.lua:250
 msgid "Touch free target"
@@ -550,7 +550,7 @@ msgstr "テクスチャパックを選択:"
 
 #: builtin/mainmenu/tab_texturepacks.lua:69
 msgid "No information available"
-msgstr "情報がありません。"
+msgstr "情報がありません"
 
 #: builtin/mainmenu/tab_texturepacks.lua:114
 msgid "Texturepacks"
@@ -598,11 +598,11 @@ msgstr "ワールドが選択されていないアドレスです。続行でき
 
 #: src/client/clientlauncher.cpp:432
 msgid "Provided world path doesn't exist: "
-msgstr "ワールドが存在しません:"
+msgstr "ワールドが存在しません: "
 
 #: src/client/clientlauncher.cpp:441
 msgid "Could not find or load game \""
-msgstr "ゲーム\"の読み込みができません。"
+msgstr "ゲーム\"の読み込みができません"
 
 #: src/client/clientlauncher.cpp:459
 msgid "Invalid gamespec."
@@ -752,7 +752,7 @@ msgstr ""
 
 #: src/guiFormSpecMenu.cpp:2855
 msgid "Enter "
-msgstr "エンター"
+msgstr "エンター "
 
 #: src/guiFormSpecMenu.cpp:2875
 msgid "ok"
@@ -760,7 +760,7 @@ msgstr "決定"
 
 #: src/guiKeyChangeMenu.cpp:125
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr "操作の設定を変更します。"
+msgstr "操作の設定です。（変更に失敗した場合、minetest.confから該当する設定を削除してください）"
 
 #: src/guiKeyChangeMenu.cpp:165
 msgid "\"Use\" = climb down"
@@ -772,7 +772,7 @@ msgstr "「ジャンプ」二回押しで飛行モード"
 
 #: src/guiKeyChangeMenu.cpp:295
 msgid "Key already in use"
-msgstr "キーが重複しています。"
+msgstr "キーが重複しています"
 
 #: src/guiKeyChangeMenu.cpp:373
 msgid "press key"
@@ -872,7 +872,7 @@ msgstr "パスワードが一致しません！"
 
 #: src/guiVolumeChange.cpp:105
 msgid "Sound Volume: "
-msgstr "音量:"
+msgstr "音量: "
 
 #: src/guiVolumeChange.cpp:119
 msgid "Exit"
@@ -896,7 +896,7 @@ msgstr "Xボタン1"
 
 #: src/keycode.cpp:224
 msgid "Back"
-msgstr "Back"
+msgstr "戻るキー"
 
 #: src/keycode.cpp:224
 msgid "Clear"
@@ -1028,11 +1028,11 @@ msgstr "アプリ"
 
 #: src/keycode.cpp:233
 msgid "Numpad 0"
-msgstr "Numpad 0"
+msgstr "テンキー 0"
 
 #: src/keycode.cpp:233
 msgid "Numpad 1"
-msgstr "Numpad 1"
+msgstr "テンキー 1"
 
 #: src/keycode.cpp:233
 msgid "Right Windows"
@@ -1044,51 +1044,51 @@ msgstr "スリープ"
 
 #: src/keycode.cpp:234
 msgid "Numpad 2"
-msgstr "Numpad 2"
+msgstr "テンキー 2"
 
 #: src/keycode.cpp:234
 msgid "Numpad 3"
-msgstr "Numpad 3"
+msgstr "テンキー 3"
 
 #: src/keycode.cpp:234
 msgid "Numpad 4"
-msgstr "Numpad 4"
+msgstr "テンキー 4"
 
 #: src/keycode.cpp:234
 msgid "Numpad 5"
-msgstr "Numpad 5"
+msgstr "テンキー 5"
 
 #: src/keycode.cpp:234
 msgid "Numpad 6"
-msgstr "Numpad 6"
+msgstr "テンキー 6"
 
 #: src/keycode.cpp:234
 msgid "Numpad 7"
-msgstr "Numpad 7"
+msgstr "テンキー 7"
 
 #: src/keycode.cpp:235
 msgid "Numpad *"
-msgstr "Numpad *"
+msgstr "テンキー *"
 
 #: src/keycode.cpp:235
 msgid "Numpad +"
-msgstr "Numpad +"
+msgstr "テンキー +"
 
 #: src/keycode.cpp:235
 msgid "Numpad -"
-msgstr "Numpad -"
+msgstr "テンキー -"
 
 #: src/keycode.cpp:235
 msgid "Numpad /"
-msgstr "Numpad /"
+msgstr "テンキー /"
 
 #: src/keycode.cpp:235
 msgid "Numpad 8"
-msgstr "Numpad 8"
+msgstr "テンキー 8"
 
 #: src/keycode.cpp:235
 msgid "Numpad 9"
-msgstr "Numpad 9"
+msgstr "テンキー 9"
 
 #: src/keycode.cpp:239
 msgid "Num Lock"
