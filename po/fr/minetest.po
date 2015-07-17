@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-07-08 11:41+0200\n"
+"PO-Revision-Date: 2015-07-17 09:55+0200\n"
 "Last-Translator: Jean-Patrick G. <jeanpatrick.guerrero@gmail.com>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
-"fr/>\n"
+"Language-Team: French "
+"<https://hosted.weblate.org/projects/minetest/minetest/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,11 +21,11 @@ msgstr ""
 
 #: builtin/fstk/ui.lua:82
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
+msgstr "Une erreur est survenue avec un script Lua, comme un mod :"
 
 #: builtin/fstk/ui.lua:84
 msgid "An error occured:"
-msgstr ""
+msgstr "Une erreur est survenue :"
 
 #: builtin/fstk/ui.lua:89 builtin/mainmenu/store.lua:165
 msgid "Ok"
@@ -38,6 +38,7 @@ msgstr "Chargement..."
 #: builtin/mainmenu/common.lua:240
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
+"Rechargez la liste des serveurs publics et vérifiez votre connexion Internet."
 
 #: builtin/mainmenu/dlg_config_world.lua:29
 msgid "World:"
@@ -206,9 +207,8 @@ msgid "Search"
 msgstr "Rechercher"
 
 #: builtin/mainmenu/store.lua:126
-#, fuzzy
 msgid "Downloading $1, please wait..."
-msgstr "veuillez patienter..."
+msgstr "Téléchargement de $1, veuillez patienter..."
 
 #: builtin/mainmenu/store.lua:160
 msgid "Successfully installed:"
@@ -251,9 +251,8 @@ msgid "Active Contributors"
 msgstr "Contributeurs actifs"
 
 #: builtin/mainmenu/tab_credits.lua:54
-#, fuzzy
 msgid "Previous Core Developers"
-msgstr "Développeurs principaux"
+msgstr "Anciens développeurs"
 
 #: builtin/mainmenu/tab_credits.lua:59
 msgid "Previous Contributors"
@@ -296,14 +295,12 @@ msgid "Mods"
 msgstr "Mods"
 
 #: builtin/mainmenu/tab_multiplayer.lua:23
-#, fuzzy
 msgid "Address / Port :"
-msgstr "Adresse / Port"
+msgstr "Adresse / Port :"
 
 #: builtin/mainmenu/tab_multiplayer.lua:24
-#, fuzzy
 msgid "Name / Password :"
-msgstr "Nom / Mot de passe"
+msgstr "Nom / Mot de passe :"
 
 #: builtin/mainmenu/tab_multiplayer.lua:29
 #: builtin/mainmenu/tab_simple_main.lua:30
@@ -322,21 +319,18 @@ msgstr "Rejoindre"
 
 #: builtin/mainmenu/tab_multiplayer.lua:62
 #: builtin/mainmenu/tab_simple_main.lua:45
-#, fuzzy
 msgid "Creative mode"
 msgstr "Mode créatif"
 
 #: builtin/mainmenu/tab_multiplayer.lua:63
 #: builtin/mainmenu/tab_simple_main.lua:46
-#, fuzzy
 msgid "Damage enabled"
-msgstr "activé"
+msgstr "Dégâts activés"
 
 #: builtin/mainmenu/tab_multiplayer.lua:64
 #: builtin/mainmenu/tab_simple_main.lua:47
-#, fuzzy
 msgid "PvP enabled"
-msgstr "activé"
+msgstr "Combat activé"
 
 #: builtin/mainmenu/tab_multiplayer.lua:257
 msgid "Client"
@@ -391,54 +385,48 @@ msgstr "Port du serveur"
 
 #: builtin/mainmenu/tab_server.lua:138
 #: builtin/mainmenu/tab_singleplayer.lua:165
-#, fuzzy
 msgid "No world created or selected!"
-msgstr "Nom du monde manquant ou aucun jeu sélectionné"
+msgstr "Aucun monde créé ou sélectionné !"
 
 #: builtin/mainmenu/tab_server.lua:191
 msgid "Server"
 msgstr "Serveur"
 
 #: builtin/mainmenu/tab_settings.lua:21
-#, fuzzy
 msgid "Opaque Leaves"
-msgstr "Eau opaque"
+msgstr "Arbres minimaux"
 
 #: builtin/mainmenu/tab_settings.lua:22
-#, fuzzy
 msgid "Simple Leaves"
-msgstr "Feuilles mouvantes"
+msgstr "Arbres simples"
 
 #: builtin/mainmenu/tab_settings.lua:23
-#, fuzzy
 msgid "Fancy Leaves"
 msgstr "Arbres détaillés"
 
 #: builtin/mainmenu/tab_settings.lua:32
 msgid "No Filter"
-msgstr ""
+msgstr "Aucun filtrage"
 
 #: builtin/mainmenu/tab_settings.lua:33
-#, fuzzy
 msgid "Bilinear Filter"
 msgstr "Filtrage bilinéaire"
 
 #: builtin/mainmenu/tab_settings.lua:34
-#, fuzzy
 msgid "Trilinear Filter"
 msgstr "Filtrage trilinéaire"
 
 #: builtin/mainmenu/tab_settings.lua:43
 msgid "No Mipmap"
-msgstr ""
+msgstr "Sans MIP map"
 
 #: builtin/mainmenu/tab_settings.lua:44
 msgid "Mipmap"
-msgstr ""
+msgstr "MIP mapping"
 
 #: builtin/mainmenu/tab_settings.lua:45
 msgid "Mipmap + Aniso. Filter"
-msgstr ""
+msgstr "MIP map + anisotropie"
 
 #: builtin/mainmenu/tab_settings.lua:98
 msgid "Are you sure to reset your singleplayer world?"
@@ -470,15 +458,15 @@ msgstr "Verre connecté"
 
 #: builtin/mainmenu/tab_settings.lua:212
 msgid "Node Highlighting"
-msgstr ""
+msgstr "Eclairage des nodes"
 
 #: builtin/mainmenu/tab_settings.lua:217
 msgid "Texturing:"
-msgstr ""
+msgstr "Textures :"
 
 #: builtin/mainmenu/tab_settings.lua:222
 msgid "Rendering:"
-msgstr ""
+msgstr "Affichage :"
 
 #: builtin/mainmenu/tab_settings.lua:226
 msgid "Restart minetest for driver change to take effect"
@@ -505,10 +493,12 @@ msgid "Scaling factor applied to menu elements: "
 msgstr "Taille appliquée aux menus : "
 
 #: builtin/mainmenu/tab_settings.lua:250
+#, fuzzy
 msgid "Touch free target"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:256
+#, fuzzy
 msgid "Touchthreshold (px)"
 msgstr ""
 
@@ -577,22 +567,20 @@ msgid "Texturepacks"
 msgstr "Packs de textures"
 
 #: src/client.cpp:1721
-#, fuzzy
 msgid "Loading textures..."
-msgstr "Chargement..."
+msgstr "Chargement des textures..."
 
 #: src/client.cpp:1736
-#, fuzzy
 msgid "Rebuilding shaders..."
-msgstr "Résolution de l'adresse..."
+msgstr "Construction des shaders..."
 
 #: src/client.cpp:1743
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "Initialisation des nodes..."
 
 #: src/client.cpp:1760
 msgid "Initializing nodes"
-msgstr ""
+msgstr "Initialisation des nodes"
 
 #: src/client.cpp:1768
 msgid "Item textures..."
@@ -600,7 +588,7 @@ msgstr "Textures d'objets..."
 
 #: src/client.cpp:1793
 msgid "Done!"
-msgstr ""
+msgstr "Terminé !"
 
 #: src/client/clientlauncher.cpp:185
 msgid "Main Menu"
@@ -620,7 +608,7 @@ msgstr "Pas de monde sélectionné et pas d'adresse fournie. Rien à faire."
 
 #: src/client/clientlauncher.cpp:432
 msgid "Provided world path doesn't exist: "
-msgstr "Le chemin du monde spécifié n'existe pas :"
+msgstr "Le chemin du monde spécifié n'existe pas : "
 
 #: src/client/clientlauncher.cpp:441
 msgid "Could not find or load game \""
@@ -631,6 +619,7 @@ msgid "Invalid gamespec."
 msgstr "gamespec invalide."
 
 #: src/fontengine.cpp:70 src/fontengine.cpp:226
+#, fuzzy
 msgid "needs_fallback_font"
 msgstr "needs_fallback_font"
 
@@ -647,6 +636,7 @@ msgid "Respawn"
 msgstr "Ressusciter"
 
 #: src/game.cpp:1092
+#, fuzzy
 msgid ""
 "Default Controls:\n"
 "No menu visible:\n"
@@ -701,7 +691,6 @@ msgid "Sound Volume"
 msgstr "Volume du son"
 
 #: src/game.cpp:1136
-#, fuzzy
 msgid "Change Keys"
 msgstr "Changer les touches"
 
@@ -714,12 +703,10 @@ msgid "Exit to OS"
 msgstr "Quitter le jeu"
 
 #: src/game.cpp:1841
-#, fuzzy
 msgid "Shutting down..."
-msgstr "Quitter le jeu..."
+msgstr "Fermeture du jeu..."
 
 #: src/game.cpp:1948
-#, fuzzy
 msgid "Creating server..."
 msgstr "Création du serveur..."
 
@@ -749,11 +736,11 @@ msgstr "Média..."
 
 #: src/game.cpp:2334
 msgid "KiB/s"
-msgstr ""
+msgstr "Ko/s"
 
 #: src/game.cpp:2338
 msgid "MiB/s"
-msgstr ""
+msgstr "Mo/s"
 
 #: src/game.cpp:4363
 msgid ""
@@ -848,9 +835,8 @@ msgid "Toggle fast"
 msgstr "Mode rapide"
 
 #: src/guiKeyChangeMenu.cpp:413
-#, fuzzy
 msgid "Toggle Cinematic"
-msgstr "Mode rapide"
+msgstr "Mode cinématique"
 
 #: src/guiKeyChangeMenu.cpp:414
 msgid "Toggle noclip"
@@ -886,7 +872,7 @@ msgstr "Les mots de passe ne correspondent pas !"
 
 #: src/guiVolumeChange.cpp:105
 msgid "Sound Volume: "
-msgstr "Volume du son :"
+msgstr "Volume du son : "
 
 #: src/guiVolumeChange.cpp:119
 msgid "Exit"
@@ -930,13 +916,14 @@ msgstr "Bouton X 2"
 
 #: src/keycode.cpp:225
 msgid "Capital"
-msgstr "Verr. maj."
+msgstr "Verr Maj"
 
 #: src/keycode.cpp:225
 msgid "Control"
 msgstr "Contrôle"
 
 #: src/keycode.cpp:225
+#, fuzzy
 msgid "Kana"
 msgstr "Kana"
 
@@ -965,14 +952,17 @@ msgid "Final"
 msgstr "Final"
 
 #: src/keycode.cpp:226
+#, fuzzy
 msgid "Junja"
 msgstr "Junja"
 
 #: src/keycode.cpp:226
+#, fuzzy
 msgid "Kanji"
 msgstr "Kanji"
 
 #: src/keycode.cpp:226
+#, fuzzy
 msgid "Nonconvert"
 msgstr "Nonconvert"
 
@@ -1106,7 +1096,7 @@ msgstr "Pavé num. 9"
 
 #: src/keycode.cpp:239
 msgid "Num Lock"
-msgstr "Verr. pavé num."
+msgstr "Verr Num"
 
 #: src/keycode.cpp:239
 msgid "Scroll Lock"
@@ -1165,10 +1155,12 @@ msgid "Erase OEF"
 msgstr "Écraser l'OEF"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "ExSel"
 msgstr "ExSel"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "OEM Clear"
 msgstr "OEM Clear"
 
