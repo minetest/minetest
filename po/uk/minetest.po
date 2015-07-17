@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-13 15:24+0100\n"
+"POT-Creation-Date: 2015-07-17 07:23+0200\n"
 "PO-Revision-Date: 2013-06-27 01:22+0200\n"
 "Last-Translator: Vladimir a <c-vld@ya.ru>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,62 +19,78 @@ msgstr ""
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Weblate 1.4-dev\n"
 
-#: builtin/fstk/ui.lua:67
+#: builtin/fstk/ui.lua:82
+msgid "An error occured in a Lua script, such as a mod:"
+msgstr ""
+
+#: builtin/fstk/ui.lua:84
+msgid "An error occured:"
+msgstr ""
+
+#: builtin/fstk/ui.lua:89 builtin/mainmenu/store.lua:165
 msgid "Ok"
 msgstr ""
 
-#: builtin/mainmenu/dlg_config_world.lua:26
+#: builtin/mainmenu/common.lua:239 src/game.cpp:1891
+msgid "Loading..."
+msgstr "Завантаження..."
+
+#: builtin/mainmenu/common.lua:240
+msgid "Try reenabling public serverlist and check your internet connection."
+msgstr ""
+
+#: builtin/mainmenu/dlg_config_world.lua:29
 #, fuzzy
 msgid "World:"
 msgstr "Виберіть світ:"
 
-#: builtin/mainmenu/dlg_config_world.lua:30
-#: builtin/mainmenu/dlg_config_world.lua:32
+#: builtin/mainmenu/dlg_config_world.lua:33
+#: builtin/mainmenu/dlg_config_world.lua:35
 #, fuzzy
 msgid "Hide Game"
 msgstr "Гра"
 
-#: builtin/mainmenu/dlg_config_world.lua:36
-#: builtin/mainmenu/dlg_config_world.lua:38
+#: builtin/mainmenu/dlg_config_world.lua:39
+#: builtin/mainmenu/dlg_config_world.lua:41
 msgid "Hide mp content"
 msgstr ""
 
-#: builtin/mainmenu/dlg_config_world.lua:46
+#: builtin/mainmenu/dlg_config_world.lua:49
 msgid "Mod:"
 msgstr ""
 
-#: builtin/mainmenu/dlg_config_world.lua:48
+#: builtin/mainmenu/dlg_config_world.lua:51 builtin/mainmenu/tab_mods.lua:99
 #, fuzzy
 msgid "Depends:"
 msgstr "залежить від:"
 
-#: builtin/mainmenu/dlg_config_world.lua:51 src/guiKeyChangeMenu.cpp:191
+#: builtin/mainmenu/dlg_config_world.lua:54 src/guiKeyChangeMenu.cpp:191
 msgid "Save"
 msgstr "Зберегти"
 
-#: builtin/mainmenu/dlg_config_world.lua:52
+#: builtin/mainmenu/dlg_config_world.lua:55
 #: builtin/mainmenu/dlg_create_world.lua:64
 #: builtin/mainmenu/dlg_rename_modpack.lua:33 src/guiKeyChangeMenu.cpp:199
-#: src/keycode.cpp:224
+#: src/keycode.cpp:223
 msgid "Cancel"
 msgstr "Відміна"
 
-#: builtin/mainmenu/dlg_config_world.lua:68
+#: builtin/mainmenu/dlg_config_world.lua:71
 #, fuzzy
 msgid "Enable MP"
 msgstr "Увімкнути Все"
 
-#: builtin/mainmenu/dlg_config_world.lua:70
+#: builtin/mainmenu/dlg_config_world.lua:73
 #, fuzzy
 msgid "Disable MP"
 msgstr "Вимкнути Усе"
 
-#: builtin/mainmenu/dlg_config_world.lua:74
-#: builtin/mainmenu/dlg_config_world.lua:76
+#: builtin/mainmenu/dlg_config_world.lua:77
+#: builtin/mainmenu/dlg_config_world.lua:79
 msgid "enabled"
 msgstr "Увімкнено"
 
-#: builtin/mainmenu/dlg_config_world.lua:82
+#: builtin/mainmenu/dlg_config_world.lua:85
 #, fuzzy
 msgid "Enable all"
 msgstr "Увімкнути Все"
@@ -115,7 +131,7 @@ msgstr ""
 msgid "Download a subgame, such as minetest_game, from minetest.net"
 msgstr ""
 
-#: builtin/mainmenu/dlg_create_world.lua:97
+#: builtin/mainmenu/dlg_create_world.lua:99
 #, fuzzy
 msgid "A world named \"$1\" already exists"
 msgstr "Неможливо створити світ: Світ з таким ім'ям вже існує"
@@ -130,7 +146,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_delete_mod.lua:27
 #: builtin/mainmenu/dlg_delete_world.lua:25
-#: builtin/mainmenu/tab_settings.lua:25
+#: builtin/mainmenu/tab_settings.lua:100
 msgid "Yes"
 msgstr "Так"
 
@@ -159,31 +175,31 @@ msgstr "Ні"
 msgid "Rename Modpack:"
 msgstr ""
 
-#: builtin/mainmenu/dlg_rename_modpack.lua:31 src/keycode.cpp:228
+#: builtin/mainmenu/dlg_rename_modpack.lua:31 src/keycode.cpp:227
 #, fuzzy
 msgid "Accept"
 msgstr "Підтвердити"
 
-#: builtin/mainmenu/modmgr.lua:342
+#: builtin/mainmenu/modmgr.lua:344
 msgid "Install Mod: file: \"$1\""
 msgstr ""
 
-#: builtin/mainmenu/modmgr.lua:343
+#: builtin/mainmenu/modmgr.lua:345
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 
-#: builtin/mainmenu/modmgr.lua:363
+#: builtin/mainmenu/modmgr.lua:365
 #, fuzzy
 msgid "Failed to install $1 to $2"
 msgstr "Не вдалося ініціалізувати світ"
 
-#: builtin/mainmenu/modmgr.lua:366
+#: builtin/mainmenu/modmgr.lua:368
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
 msgstr ""
 
-#: builtin/mainmenu/modmgr.lua:386
+#: builtin/mainmenu/modmgr.lua:388
 msgid "Install Mod: unable to find real modname for: $1"
 msgstr ""
 
@@ -191,49 +207,40 @@ msgstr ""
 msgid "Unsorted"
 msgstr ""
 
-#: builtin/mainmenu/store.lua:99 builtin/mainmenu/store.lua:584
+#: builtin/mainmenu/store.lua:99 builtin/mainmenu/store.lua:580
 msgid "Search"
 msgstr ""
 
-#: builtin/mainmenu/store.lua:125
-#, fuzzy
-msgid "Downloading"
-msgstr "Вниз"
-
-#: builtin/mainmenu/store.lua:127
-msgid "please wait..."
+#: builtin/mainmenu/store.lua:126
+msgid "Downloading $1, please wait..."
 msgstr ""
 
-#: builtin/mainmenu/store.lua:159
+#: builtin/mainmenu/store.lua:160
 msgid "Successfully installed:"
 msgstr ""
 
-#: builtin/mainmenu/store.lua:163
+#: builtin/mainmenu/store.lua:162
 #, fuzzy
 msgid "Shortname:"
 msgstr "Назва Світу"
 
-#: builtin/mainmenu/store.lua:167 src/guiFormSpecMenu.cpp:2866
-msgid "ok"
-msgstr ""
-
-#: builtin/mainmenu/store.lua:476
+#: builtin/mainmenu/store.lua:472
 msgid "Rating"
 msgstr ""
 
-#: builtin/mainmenu/store.lua:501
+#: builtin/mainmenu/store.lua:497
 msgid "re-Install"
 msgstr ""
 
-#: builtin/mainmenu/store.lua:503
+#: builtin/mainmenu/store.lua:499
 msgid "Install"
 msgstr ""
 
-#: builtin/mainmenu/store.lua:522
+#: builtin/mainmenu/store.lua:518
 msgid "Close store"
 msgstr ""
 
-#: builtin/mainmenu/store.lua:530
+#: builtin/mainmenu/store.lua:526
 msgid "Page $1 of $2"
 msgstr ""
 
@@ -241,15 +248,19 @@ msgstr ""
 msgid "Credits"
 msgstr "Подяка"
 
-#: builtin/mainmenu/tab_credits.lua:29
+#: builtin/mainmenu/tab_credits.lua:31
 msgid "Core Developers"
 msgstr ""
 
-#: builtin/mainmenu/tab_credits.lua:43
+#: builtin/mainmenu/tab_credits.lua:47
 msgid "Active Contributors"
 msgstr ""
 
-#: builtin/mainmenu/tab_credits.lua:48
+#: builtin/mainmenu/tab_credits.lua:54
+msgid "Previous Core Developers"
+msgstr ""
+
+#: builtin/mainmenu/tab_credits.lua:59
 msgid "Previous Contributors"
 msgstr ""
 
@@ -291,12 +302,13 @@ msgid "Mods"
 msgstr ""
 
 #: builtin/mainmenu/tab_multiplayer.lua:23
-msgid "Address/Port"
+#, fuzzy
+msgid "Address / Port :"
 msgstr "Адреса/Порт"
 
-#: builtin/mainmenu/tab_multiplayer.lua:24 builtin/mainmenu/tab_server.lua:37
-#: builtin/mainmenu/tab_simple_main.lua:25
-msgid "Name/Password"
+#: builtin/mainmenu/tab_multiplayer.lua:24
+#, fuzzy
+msgid "Name / Password :"
 msgstr "Ім'я/Пароль"
 
 #: builtin/mainmenu/tab_multiplayer.lua:29
@@ -306,7 +318,7 @@ msgid "Public Serverlist"
 msgstr "Список публічних серверів:"
 
 #: builtin/mainmenu/tab_multiplayer.lua:34 builtin/mainmenu/tab_server.lua:26
-#: builtin/mainmenu/tab_singleplayer.lua:85 src/keycode.cpp:230
+#: builtin/mainmenu/tab_singleplayer.lua:96 src/keycode.cpp:229
 msgid "Delete"
 msgstr "Видалити"
 
@@ -315,15 +327,33 @@ msgstr "Видалити"
 msgid "Connect"
 msgstr "Підключитися"
 
-#: builtin/mainmenu/tab_multiplayer.lua:252
+#: builtin/mainmenu/tab_multiplayer.lua:62
+#: builtin/mainmenu/tab_simple_main.lua:45
+#, fuzzy
+msgid "Creative mode"
+msgstr "Режим Створення"
+
+#: builtin/mainmenu/tab_multiplayer.lua:63
+#: builtin/mainmenu/tab_simple_main.lua:46
+#, fuzzy
+msgid "Damage enabled"
+msgstr "Увімкнено"
+
+#: builtin/mainmenu/tab_multiplayer.lua:64
+#: builtin/mainmenu/tab_simple_main.lua:47
+#, fuzzy
+msgid "PvP enabled"
+msgstr "Увімкнено"
+
+#: builtin/mainmenu/tab_multiplayer.lua:257
 msgid "Client"
 msgstr ""
 
-#: builtin/mainmenu/tab_server.lua:27 builtin/mainmenu/tab_singleplayer.lua:86
+#: builtin/mainmenu/tab_server.lua:27 builtin/mainmenu/tab_singleplayer.lua:97
 msgid "New"
 msgstr "Новий"
 
-#: builtin/mainmenu/tab_server.lua:28 builtin/mainmenu/tab_singleplayer.lua:87
+#: builtin/mainmenu/tab_server.lua:28 builtin/mainmenu/tab_singleplayer.lua:98
 msgid "Configure"
 msgstr "Налаштувати"
 
@@ -332,23 +362,28 @@ msgstr "Налаштувати"
 msgid "Start Game"
 msgstr "Почати гру / Підключитися"
 
-#: builtin/mainmenu/tab_server.lua:30 builtin/mainmenu/tab_singleplayer.lua:89
+#: builtin/mainmenu/tab_server.lua:30
+#: builtin/mainmenu/tab_singleplayer.lua:100
 msgid "Select World:"
 msgstr "Виберіть світ:"
 
-#: builtin/mainmenu/tab_server.lua:31 builtin/mainmenu/tab_simple_main.lua:63
-#: builtin/mainmenu/tab_singleplayer.lua:90
+#: builtin/mainmenu/tab_server.lua:31 builtin/mainmenu/tab_simple_main.lua:76
+#: builtin/mainmenu/tab_singleplayer.lua:101
 msgid "Creative Mode"
 msgstr "Режим Створення"
 
-#: builtin/mainmenu/tab_server.lua:33 builtin/mainmenu/tab_simple_main.lua:65
-#: builtin/mainmenu/tab_singleplayer.lua:92
+#: builtin/mainmenu/tab_server.lua:33 builtin/mainmenu/tab_simple_main.lua:78
+#: builtin/mainmenu/tab_singleplayer.lua:103
 msgid "Enable Damage"
 msgstr "Ввімкнути урон"
 
 #: builtin/mainmenu/tab_server.lua:35
 msgid "Public"
 msgstr "Публичний"
+
+#: builtin/mainmenu/tab_server.lua:37 builtin/mainmenu/tab_simple_main.lua:25
+msgid "Name/Password"
+msgstr "Ім'я/Пароль"
 
 #: builtin/mainmenu/tab_server.lua:45
 msgid "Bind Address"
@@ -362,151 +397,183 @@ msgstr ""
 msgid "Server Port"
 msgstr ""
 
-#: builtin/mainmenu/tab_server.lua:174
+#: builtin/mainmenu/tab_server.lua:138
+#: builtin/mainmenu/tab_singleplayer.lua:165
+msgid "No world created or selected!"
+msgstr ""
+
+#: builtin/mainmenu/tab_server.lua:191
 msgid "Server"
 msgstr ""
 
+#: builtin/mainmenu/tab_settings.lua:21
+#, fuzzy
+msgid "Opaque Leaves"
+msgstr "Непрозора вода"
+
+#: builtin/mainmenu/tab_settings.lua:22
+msgid "Simple Leaves"
+msgstr ""
+
 #: builtin/mainmenu/tab_settings.lua:23
+#, fuzzy
+msgid "Fancy Leaves"
+msgstr "Гарні дерева"
+
+#: builtin/mainmenu/tab_settings.lua:32
+msgid "No Filter"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:33
+#, fuzzy
+msgid "Bilinear Filter"
+msgstr "Білінійна фільтрація"
+
+#: builtin/mainmenu/tab_settings.lua:34
+#, fuzzy
+msgid "Trilinear Filter"
+msgstr "Трилінійна фільтрація"
+
+#: builtin/mainmenu/tab_settings.lua:43
+msgid "No Mipmap"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:44
+msgid "Mipmap"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:45
+msgid "Mipmap + Aniso. Filter"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:98
 msgid "Are you sure to reset your singleplayer world?"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:27
+#: builtin/mainmenu/tab_settings.lua:102
 msgid "No!!!"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:134
+#: builtin/mainmenu/tab_settings.lua:202
 msgid "Smooth Lighting"
 msgstr "Рівне освітлення"
 
-#: builtin/mainmenu/tab_settings.lua:136
+#: builtin/mainmenu/tab_settings.lua:204
 msgid "Enable Particles"
 msgstr "Ввімкнути частки"
 
-#: builtin/mainmenu/tab_settings.lua:138
+#: builtin/mainmenu/tab_settings.lua:206
 msgid "3D Clouds"
 msgstr "3D Хмари"
 
-#: builtin/mainmenu/tab_settings.lua:140
-#, fuzzy
-msgid "Fancy Trees"
-msgstr "Гарні дерева"
-
-#: builtin/mainmenu/tab_settings.lua:142
+#: builtin/mainmenu/tab_settings.lua:208
 #, fuzzy
 msgid "Opaque Water"
 msgstr "Непрозора вода"
 
-#: builtin/mainmenu/tab_settings.lua:144
+#: builtin/mainmenu/tab_settings.lua:210
 #, fuzzy
 msgid "Connected Glass"
 msgstr "Підключитися"
 
-#: builtin/mainmenu/tab_settings.lua:149
+#: builtin/mainmenu/tab_settings.lua:212
+msgid "Node Highlighting"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:217
+msgid "Texturing:"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:222
+msgid "Rendering:"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua:226
 msgid "Restart minetest for driver change to take effect"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:151
-msgid "Mip-Mapping"
-msgstr "MIP-текстурування"
-
-#: builtin/mainmenu/tab_settings.lua:153
-msgid "Anisotropic Filtering"
-msgstr "Анізотропна фільтрація"
-
-#: builtin/mainmenu/tab_settings.lua:155
-msgid "Bi-Linear Filtering"
-msgstr "Білінійна фільтрація"
-
-#: builtin/mainmenu/tab_settings.lua:157
-msgid "Tri-Linear Filtering"
-msgstr "Трилінійна фільтрація"
-
-#: builtin/mainmenu/tab_settings.lua:160
+#: builtin/mainmenu/tab_settings.lua:228
 msgid "Shaders"
 msgstr "Шейдери"
 
-#: builtin/mainmenu/tab_settings.lua:164
+#: builtin/mainmenu/tab_settings.lua:233
 msgid "Change keys"
 msgstr "Змінити клавіши"
 
-#: builtin/mainmenu/tab_settings.lua:167
+#: builtin/mainmenu/tab_settings.lua:236
 #, fuzzy
 msgid "Reset singleplayer world"
 msgstr "Одиночна гра"
 
-#: builtin/mainmenu/tab_settings.lua:171
+#: builtin/mainmenu/tab_settings.lua:240
 msgid "GUI scale factor"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:175
+#: builtin/mainmenu/tab_settings.lua:244
 msgid "Scaling factor applied to menu elements: "
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:181
+#: builtin/mainmenu/tab_settings.lua:250
 msgid "Touch free target"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:187
+#: builtin/mainmenu/tab_settings.lua:256
 msgid "Touchthreshold (px)"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:194 builtin/mainmenu/tab_settings.lua:208
+#: builtin/mainmenu/tab_settings.lua:263 builtin/mainmenu/tab_settings.lua:277
 #, fuzzy
 msgid "Bumpmapping"
 msgstr "MIP-текстурування"
 
-#: builtin/mainmenu/tab_settings.lua:196 builtin/mainmenu/tab_settings.lua:209
+#: builtin/mainmenu/tab_settings.lua:265 builtin/mainmenu/tab_settings.lua:278
 msgid "Generate Normalmaps"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:198 builtin/mainmenu/tab_settings.lua:210
+#: builtin/mainmenu/tab_settings.lua:267 builtin/mainmenu/tab_settings.lua:279
 msgid "Parallax Occlusion"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:200 builtin/mainmenu/tab_settings.lua:211
+#: builtin/mainmenu/tab_settings.lua:269 builtin/mainmenu/tab_settings.lua:280
 msgid "Waving Water"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:202 builtin/mainmenu/tab_settings.lua:212
+#: builtin/mainmenu/tab_settings.lua:271 builtin/mainmenu/tab_settings.lua:281
 msgid "Waving Leaves"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:204 builtin/mainmenu/tab_settings.lua:213
+#: builtin/mainmenu/tab_settings.lua:273 builtin/mainmenu/tab_settings.lua:282
 msgid "Waving Plants"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:255
+#: builtin/mainmenu/tab_settings.lua:308
 msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:330
+#: builtin/mainmenu/tab_settings.lua:430
 msgid "Settings"
 msgstr "Налаштування"
 
-#: builtin/mainmenu/tab_simple_main.lua:67
-msgid "Fly mode"
-msgstr ""
-
-#: builtin/mainmenu/tab_simple_main.lua:71
+#: builtin/mainmenu/tab_simple_main.lua:82
 #, fuzzy
 msgid "Start Singleplayer"
 msgstr "Одиночна гра"
 
-#: builtin/mainmenu/tab_simple_main.lua:72
+#: builtin/mainmenu/tab_simple_main.lua:83
 #, fuzzy
 msgid "Config mods"
 msgstr "Налаштувати"
 
-#: builtin/mainmenu/tab_simple_main.lua:191
+#: builtin/mainmenu/tab_simple_main.lua:201
 #, fuzzy
 msgid "Main"
 msgstr "Головне Меню"
 
-#: builtin/mainmenu/tab_singleplayer.lua:88 src/keycode.cpp:249
+#: builtin/mainmenu/tab_singleplayer.lua:99 src/keycode.cpp:248
 msgid "Play"
 msgstr "Грати"
 
-#: builtin/mainmenu/tab_singleplayer.lua:224
+#: builtin/mainmenu/tab_singleplayer.lua:246
 msgid "Singleplayer"
 msgstr "Одиночна гра"
 
@@ -522,39 +589,186 @@ msgstr ""
 msgid "Texturepacks"
 msgstr ""
 
-#: src/client.cpp:2726
+#: src/client.cpp:1721
+#, fuzzy
+msgid "Loading textures..."
+msgstr "Завантаження..."
+
+#: src/client.cpp:1736
+#, fuzzy
+msgid "Rebuilding shaders..."
+msgstr "Отримання адреси..."
+
+#: src/client.cpp:1743
+msgid "Initializing nodes..."
+msgstr ""
+
+#: src/client.cpp:1760
+msgid "Initializing nodes"
+msgstr ""
+
+#: src/client.cpp:1768
 msgid "Item textures..."
 msgstr "Текстура предметів..."
+
+#: src/client.cpp:1793
+msgid "Done!"
+msgstr ""
+
+#: src/client/clientlauncher.cpp:185
+msgid "Main Menu"
+msgstr "Головне Меню"
+
+#: src/client/clientlauncher.cpp:223
+msgid "Player name too long."
+msgstr ""
+
+#: src/client/clientlauncher.cpp:261
+msgid "Connection error (timed out?)"
+msgstr "Помилка з'єднання (час вийшов?)"
+
+#: src/client/clientlauncher.cpp:425
+msgid "No world selected and no address provided. Nothing to do."
+msgstr "Жоден світ не вибрано та не надано адреси. Нічого не робити."
+
+#: src/client/clientlauncher.cpp:432
+msgid "Provided world path doesn't exist: "
+msgstr ""
+
+#: src/client/clientlauncher.cpp:441
+msgid "Could not find or load game \""
+msgstr "Неможливо знайти, або завантажити гру \""
+
+#: src/client/clientlauncher.cpp:459
+msgid "Invalid gamespec."
+msgstr "Помилкова конфігурація гри."
 
 #: src/fontengine.cpp:70 src/fontengine.cpp:226
 msgid "needs_fallback_font"
 msgstr ""
 
-#: src/game.cpp:1063
+#: src/game.cpp:1052 src/guiFormSpecMenu.cpp:2065
+msgid "Proceed"
+msgstr "Далі"
+
+#: src/game.cpp:1072
+msgid "You died."
+msgstr "Ви загинули."
+
+#: src/game.cpp:1073
 msgid "Respawn"
 msgstr "Народитися"
 
-#: src/game.cpp:2250
+#: src/game.cpp:1092
+msgid ""
+"Default Controls:\n"
+"No menu visible:\n"
+"- single tap: button activate\n"
+"- double tap: place/use\n"
+"- slide finger: look around\n"
+"Menu/Inventory visible:\n"
+"- double tap (outside):\n"
+" -->close\n"
+"- touch stack, touch slot:\n"
+" --> move stack\n"
+"- touch&drag, tap 2nd finger\n"
+" --> place single item to slot\n"
+msgstr ""
+
+#: src/game.cpp:1106
+#, fuzzy
+msgid ""
+"Default Controls:\n"
+"- WASD: move\n"
+"- Space: jump/climb\n"
+"- Shift: sneak/go down\n"
+"- Q: drop item\n"
+"- I: inventory\n"
+"- Mouse: turn/look\n"
+"- Mouse left: dig/punch\n"
+"- Mouse right: place/use\n"
+"- Mouse wheel: select item\n"
+"- T: chat\n"
+msgstr ""
+"Управління за замовчанню:\n"
+"- WASD: рух\n"
+"- Space: стрибок/лізти в гору\n"
+"- Shift: крастися/лізти в низ\n"
+"- Q: кинути предмет\n"
+"- I: інвентар\n"
+"- Мишка: поворот/дивитися\n"
+"- Ліва клавіша миші: копати/удар\n"
+"- Права клавіша миші: поставити/використовувати\n"
+"- Колесо миші: вибір предмета\n"
+"- T: чат\n"
+
+#: src/game.cpp:1125
+msgid "Continue"
+msgstr "Продовжити"
+
+#: src/game.cpp:1129
+msgid "Change Password"
+msgstr "Змінити Пароль"
+
+#: src/game.cpp:1134
+msgid "Sound Volume"
+msgstr "Гучність звуку"
+
+#: src/game.cpp:1136
+#, fuzzy
+msgid "Change Keys"
+msgstr "Змінити клавіши"
+
+#: src/game.cpp:1139
+msgid "Exit to Menu"
+msgstr "Вихід в меню"
+
+#: src/game.cpp:1141
+msgid "Exit to OS"
+msgstr "Вихід з гри"
+
+#: src/game.cpp:1841
+msgid "Shutting down..."
+msgstr ""
+
+#: src/game.cpp:1948
+#, fuzzy
+msgid "Creating server..."
+msgstr "Створення сервера..."
+
+#: src/game.cpp:1984
+msgid "Creating client..."
+msgstr "Створення клієнта..."
+
+#: src/game.cpp:2159
+msgid "Resolving address..."
+msgstr "Отримання адреси..."
+
+#: src/game.cpp:2261
+msgid "Connecting to server..."
+msgstr "Підключення до сервера..."
+
+#: src/game.cpp:2317
 msgid "Item definitions..."
 msgstr ""
 
-#: src/game.cpp:2255
+#: src/game.cpp:2322
 msgid "Node definitions..."
 msgstr ""
 
-#: src/game.cpp:2262
+#: src/game.cpp:2329
 msgid "Media..."
 msgstr ""
 
-#: src/game.cpp:2267
-msgid " KB/s"
+#: src/game.cpp:2334
+msgid "KiB/s"
 msgstr ""
 
-#: src/game.cpp:2271
-msgid " MB/s"
+#: src/game.cpp:2338
+msgid "MiB/s"
 msgstr ""
 
-#: src/game.cpp:4220
+#: src/game.cpp:4363
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -562,12 +776,12 @@ msgstr ""
 "\n"
 "Деталі у файлі debug.txt."
 
-#: src/guiFormSpecMenu.cpp:2055
-msgid "Proceed"
-msgstr "Далі"
-
-#: src/guiFormSpecMenu.cpp:2846
+#: src/guiFormSpecMenu.cpp:2855
 msgid "Enter "
+msgstr ""
+
+#: src/guiFormSpecMenu.cpp:2875
+msgid "ok"
 msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:125
@@ -585,573 +799,501 @@ msgstr "\"Використовувати\" = підніматися в гору"
 msgid "Double tap \"jump\" to toggle fly"
 msgstr "Подвійний \"Стрибок\" щоб полетіти"
 
-#: src/guiKeyChangeMenu.cpp:296
+#: src/guiKeyChangeMenu.cpp:295
 msgid "Key already in use"
 msgstr "Клавіша вже використовується"
 
-#: src/guiKeyChangeMenu.cpp:371
+#: src/guiKeyChangeMenu.cpp:373
 msgid "press key"
 msgstr "Натисніть клавішу"
 
-#: src/guiKeyChangeMenu.cpp:397
+#: src/guiKeyChangeMenu.cpp:399
 msgid "Forward"
 msgstr "Уперед"
 
-#: src/guiKeyChangeMenu.cpp:398
+#: src/guiKeyChangeMenu.cpp:400
 msgid "Backward"
 msgstr "Назад"
 
-#: src/guiKeyChangeMenu.cpp:399 src/keycode.cpp:229
+#: src/guiKeyChangeMenu.cpp:401 src/keycode.cpp:228
 msgid "Left"
 msgstr "Ліворуч"
 
-#: src/guiKeyChangeMenu.cpp:400 src/keycode.cpp:229
+#: src/guiKeyChangeMenu.cpp:402 src/keycode.cpp:228
 msgid "Right"
 msgstr "Праворуч"
 
-#: src/guiKeyChangeMenu.cpp:401
+#: src/guiKeyChangeMenu.cpp:403
 msgid "Use"
 msgstr "Використовувати"
 
-#: src/guiKeyChangeMenu.cpp:402
+#: src/guiKeyChangeMenu.cpp:404
 msgid "Jump"
 msgstr "Стрибок"
 
-#: src/guiKeyChangeMenu.cpp:403
+#: src/guiKeyChangeMenu.cpp:405
 msgid "Sneak"
 msgstr "Крастися"
 
-#: src/guiKeyChangeMenu.cpp:404
+#: src/guiKeyChangeMenu.cpp:406
 msgid "Drop"
 msgstr "Викинути"
 
-#: src/guiKeyChangeMenu.cpp:405
+#: src/guiKeyChangeMenu.cpp:407
 msgid "Inventory"
 msgstr "Інвентар"
 
-#: src/guiKeyChangeMenu.cpp:406
+#: src/guiKeyChangeMenu.cpp:408
 msgid "Chat"
 msgstr "Чат"
 
-#: src/guiKeyChangeMenu.cpp:407
+#: src/guiKeyChangeMenu.cpp:409
 msgid "Command"
 msgstr "Комманда"
 
-#: src/guiKeyChangeMenu.cpp:408
+#: src/guiKeyChangeMenu.cpp:410
 msgid "Console"
 msgstr "Консоль"
 
-#: src/guiKeyChangeMenu.cpp:409
+#: src/guiKeyChangeMenu.cpp:411
 msgid "Toggle fly"
 msgstr "Переключити режим польоту"
 
-#: src/guiKeyChangeMenu.cpp:410
+#: src/guiKeyChangeMenu.cpp:412
 msgid "Toggle fast"
 msgstr "Переключити швидкий режим"
 
-#: src/guiKeyChangeMenu.cpp:411
+#: src/guiKeyChangeMenu.cpp:413
+#, fuzzy
+msgid "Toggle Cinematic"
+msgstr "Переключити швидкий режим"
+
+#: src/guiKeyChangeMenu.cpp:414
 msgid "Toggle noclip"
 msgstr "Переключити режим проходження скрізь стін"
 
-#: src/guiKeyChangeMenu.cpp:412
+#: src/guiKeyChangeMenu.cpp:415
 msgid "Range select"
 msgstr "Вибір діапазону"
 
-#: src/guiKeyChangeMenu.cpp:413
+#: src/guiKeyChangeMenu.cpp:416
 msgid "Print stacks"
 msgstr "Надрукувати стек"
 
-#: src/guiPasswordChange.cpp:106
+#: src/guiPasswordChange.cpp:108
 msgid "Old Password"
 msgstr "Старий Пароль"
 
-#: src/guiPasswordChange.cpp:122
+#: src/guiPasswordChange.cpp:124
 msgid "New Password"
 msgstr "Новий Пароль"
 
-#: src/guiPasswordChange.cpp:137
+#: src/guiPasswordChange.cpp:139
 msgid "Confirm Password"
 msgstr "Підтвердження нового пароля"
 
-#: src/guiPasswordChange.cpp:153
+#: src/guiPasswordChange.cpp:155
 msgid "Change"
 msgstr "Змінити"
 
-#: src/guiPasswordChange.cpp:162
+#: src/guiPasswordChange.cpp:164
 msgid "Passwords do not match!"
 msgstr "Паролі не збігаються!"
 
-#: src/guiVolumeChange.cpp:106
+#: src/guiVolumeChange.cpp:105
 msgid "Sound Volume: "
 msgstr "Гучність Звуку: "
 
-#: src/guiVolumeChange.cpp:120
+#: src/guiVolumeChange.cpp:119
 msgid "Exit"
 msgstr "Вихід"
 
-#: src/keycode.cpp:224
+#: src/keycode.cpp:223
 msgid "Left Button"
 msgstr "Ліва кнопка"
 
-#: src/keycode.cpp:224
+#: src/keycode.cpp:223
 msgid "Middle Button"
 msgstr "Середня кнопка"
 
-#: src/keycode.cpp:224
+#: src/keycode.cpp:223
 msgid "Right Button"
 msgstr "Права кнопка"
 
-#: src/keycode.cpp:224
+#: src/keycode.cpp:223
 msgid "X Button 1"
 msgstr "Додаткова кнопка 1"
 
-#: src/keycode.cpp:225
+#: src/keycode.cpp:224
 #, fuzzy
 msgid "Back"
 msgstr "Назад"
 
-#: src/keycode.cpp:225
+#: src/keycode.cpp:224
 #, fuzzy
 msgid "Clear"
 msgstr "Clear"
 
-#: src/keycode.cpp:225
+#: src/keycode.cpp:224
 #, fuzzy
 msgid "Return"
 msgstr "Enter"
 
-#: src/keycode.cpp:225
+#: src/keycode.cpp:224
 msgid "Tab"
 msgstr "Tab"
 
-#: src/keycode.cpp:225
+#: src/keycode.cpp:224
 msgid "X Button 2"
 msgstr "Додаткова кнопка 2"
 
-#: src/keycode.cpp:226
+#: src/keycode.cpp:225
 msgid "Capital"
 msgstr "Caps Lock"
 
-#: src/keycode.cpp:226
+#: src/keycode.cpp:225
 msgid "Control"
 msgstr "Ctrl"
 
-#: src/keycode.cpp:226
+#: src/keycode.cpp:225
 msgid "Kana"
 msgstr "Kana"
 
-#: src/keycode.cpp:226
+#: src/keycode.cpp:225
 msgid "Menu"
 msgstr "Меню"
 
-#: src/keycode.cpp:226
+#: src/keycode.cpp:225
 msgid "Pause"
 msgstr "Пауза"
 
-#: src/keycode.cpp:226
+#: src/keycode.cpp:225
 msgid "Shift"
 msgstr "Shift"
 
-#: src/keycode.cpp:227
+#: src/keycode.cpp:226
 #, fuzzy
 msgid "Convert"
 msgstr "Конвертувати"
 
-#: src/keycode.cpp:227
+#: src/keycode.cpp:226
 msgid "Escape"
 msgstr "Esc"
 
-#: src/keycode.cpp:227
+#: src/keycode.cpp:226
 #, fuzzy
 msgid "Final"
 msgstr "Кинець"
 
-#: src/keycode.cpp:227
+#: src/keycode.cpp:226
 msgid "Junja"
 msgstr "Junja"
 
-#: src/keycode.cpp:227
+#: src/keycode.cpp:226
 msgid "Kanji"
 msgstr "Kanji"
 
-#: src/keycode.cpp:227
+#: src/keycode.cpp:226
 #, fuzzy
 msgid "Nonconvert"
 msgstr "Не конвертуванно"
 
-#: src/keycode.cpp:228
+#: src/keycode.cpp:227
 msgid "End"
 msgstr "End"
 
-#: src/keycode.cpp:228
+#: src/keycode.cpp:227
 #, fuzzy
 msgid "Home"
 msgstr "Home"
 
-#: src/keycode.cpp:228
+#: src/keycode.cpp:227
 #, fuzzy
 msgid "Mode Change"
 msgstr "Mode"
 
-#: src/keycode.cpp:228
+#: src/keycode.cpp:227
 msgid "Next"
 msgstr "Page Up"
 
-#: src/keycode.cpp:228
+#: src/keycode.cpp:227
 msgid "Prior"
 msgstr "Page Down"
 
-#: src/keycode.cpp:228
+#: src/keycode.cpp:227
 #, fuzzy
 msgid "Space"
 msgstr "Space"
 
-#: src/keycode.cpp:229
+#: src/keycode.cpp:228
 msgid "Down"
 msgstr "Вниз"
 
-#: src/keycode.cpp:229
+#: src/keycode.cpp:228
 #, fuzzy
 msgid "Execute"
 msgstr "Виконати"
 
-#: src/keycode.cpp:229
+#: src/keycode.cpp:228
 msgid "Print"
 msgstr "Print Screen"
 
-#: src/keycode.cpp:229
+#: src/keycode.cpp:228
 msgid "Select"
 msgstr "Select"
 
-#: src/keycode.cpp:229
+#: src/keycode.cpp:228
 msgid "Up"
 msgstr "Вгору"
 
-#: src/keycode.cpp:230
+#: src/keycode.cpp:229
 msgid "Help"
 msgstr "Допомога"
 
-#: src/keycode.cpp:230
+#: src/keycode.cpp:229
 msgid "Insert"
 msgstr "Insert"
 
-#: src/keycode.cpp:230
+#: src/keycode.cpp:229
 #, fuzzy
 msgid "Snapshot"
 msgstr "Знімок"
 
-#: src/keycode.cpp:233
+#: src/keycode.cpp:232
 msgid "Left Windows"
 msgstr "Ліва клавіша Win (Command)"
 
-#: src/keycode.cpp:234
+#: src/keycode.cpp:233
 msgid "Apps"
 msgstr "Додатки"
 
-#: src/keycode.cpp:234
+#: src/keycode.cpp:233
 msgid "Numpad 0"
 msgstr "Num 0"
 
-#: src/keycode.cpp:234
+#: src/keycode.cpp:233
 msgid "Numpad 1"
 msgstr "Num 1"
 
-#: src/keycode.cpp:234
+#: src/keycode.cpp:233
 msgid "Right Windows"
 msgstr "Права клавіша Win (Command)"
 
-#: src/keycode.cpp:234
+#: src/keycode.cpp:233
 msgid "Sleep"
 msgstr "Сон"
 
-#: src/keycode.cpp:235
+#: src/keycode.cpp:234
 msgid "Numpad 2"
 msgstr "Num 2"
 
-#: src/keycode.cpp:235
+#: src/keycode.cpp:234
 msgid "Numpad 3"
 msgstr "Num 3"
 
-#: src/keycode.cpp:235
+#: src/keycode.cpp:234
 msgid "Numpad 4"
 msgstr "Num 4"
 
-#: src/keycode.cpp:235
+#: src/keycode.cpp:234
 msgid "Numpad 5"
 msgstr "Num 5"
 
-#: src/keycode.cpp:235
+#: src/keycode.cpp:234
 msgid "Numpad 6"
 msgstr "Num 6"
 
-#: src/keycode.cpp:235
+#: src/keycode.cpp:234
 msgid "Numpad 7"
 msgstr "Num 7"
 
-#: src/keycode.cpp:236
+#: src/keycode.cpp:235
 msgid "Numpad *"
 msgstr "Num *"
 
-#: src/keycode.cpp:236
+#: src/keycode.cpp:235
 msgid "Numpad +"
 msgstr "Num +"
 
-#: src/keycode.cpp:236
+#: src/keycode.cpp:235
 msgid "Numpad -"
 msgstr "Num -"
 
-#: src/keycode.cpp:236
+#: src/keycode.cpp:235
 msgid "Numpad /"
 msgstr "Num /"
 
-#: src/keycode.cpp:236
+#: src/keycode.cpp:235
 msgid "Numpad 8"
 msgstr "Num 8"
 
-#: src/keycode.cpp:236
+#: src/keycode.cpp:235
 msgid "Numpad 9"
 msgstr "Num 9"
 
-#: src/keycode.cpp:240
+#: src/keycode.cpp:239
 msgid "Num Lock"
 msgstr "Num Lock"
 
-#: src/keycode.cpp:240
+#: src/keycode.cpp:239
 msgid "Scroll Lock"
 msgstr "Scroll Lock"
 
-#: src/keycode.cpp:241
+#: src/keycode.cpp:240
 msgid "Left Shift"
 msgstr "Ліва клавіша Shift"
 
-#: src/keycode.cpp:241
+#: src/keycode.cpp:240
 msgid "Right Shift"
 msgstr "Права клавіша Shift"
 
-#: src/keycode.cpp:242
+#: src/keycode.cpp:241
 msgid "Left Control"
 msgstr "Ліва клавіша Control"
 
-#: src/keycode.cpp:242
+#: src/keycode.cpp:241
 msgid "Left Menu"
 msgstr "Ліва клавіша Menu"
 
-#: src/keycode.cpp:242
+#: src/keycode.cpp:241
 msgid "Right Control"
 msgstr "Права клавіша Control"
 
-#: src/keycode.cpp:242
+#: src/keycode.cpp:241
 msgid "Right Menu"
 msgstr "Права клавіша Menu"
 
-#: src/keycode.cpp:244
+#: src/keycode.cpp:243
 msgid "Comma"
 msgstr "Кома"
 
-#: src/keycode.cpp:244
+#: src/keycode.cpp:243
 msgid "Minus"
 msgstr "Мінус"
 
-#: src/keycode.cpp:244
+#: src/keycode.cpp:243
 #, fuzzy
 msgid "Period"
 msgstr "Період"
 
-#: src/keycode.cpp:244
+#: src/keycode.cpp:243
 msgid "Plus"
 msgstr "Плюс"
 
-#: src/keycode.cpp:248
+#: src/keycode.cpp:247
 #, fuzzy
 msgid "Attn"
 msgstr "Увага"
 
-#: src/keycode.cpp:248
+#: src/keycode.cpp:247
 msgid "CrSel"
 msgstr "CrSel"
 
-#: src/keycode.cpp:249
+#: src/keycode.cpp:248
 #, fuzzy
 msgid "Erase OEF"
 msgstr "Erase OEF"
 
-#: src/keycode.cpp:249
+#: src/keycode.cpp:248
 #, fuzzy
 msgid "ExSel"
 msgstr "ExSel"
 
-#: src/keycode.cpp:249
+#: src/keycode.cpp:248
 #, fuzzy
 msgid "OEM Clear"
 msgstr "OEM Очистити"
 
-#: src/keycode.cpp:249
+#: src/keycode.cpp:248
 msgid "PA1"
 msgstr "PA1"
 
-#: src/keycode.cpp:249
+#: src/keycode.cpp:248
 #, fuzzy
 msgid "Zoom"
 msgstr "Збільшити"
 
-#: src/main.cpp:1681
-msgid "Main Menu"
-msgstr "Головне Меню"
+#, fuzzy
+#~ msgid "Game Name"
+#~ msgstr "Гра"
 
-#: src/main.cpp:1719
-msgid "Player name too long."
-msgstr ""
+#, fuzzy
+#~ msgid "Games"
+#~ msgstr "Гра"
 
-#: src/main.cpp:1757
-msgid "Connection error (timed out?)"
-msgstr "Помилка з'єднання (час вийшов?)"
+#~ msgid "Favorites:"
+#~ msgstr "Улюблені:"
 
-#: src/main.cpp:1919
-msgid "No world selected and no address provided. Nothing to do."
-msgstr "Жоден світ не вибрано та не надано адреси. Нічого не робити."
+#, fuzzy
+#~ msgid "Password"
+#~ msgstr "Старий Пароль"
 
-#: src/main.cpp:1926
-msgid "Provided world path doesn't exist: "
-msgstr ""
+#~ msgid "Preload item visuals"
+#~ msgstr "Попереднє завантаження зображень"
 
-#: src/main.cpp:1935
-msgid "Could not find or load game \""
-msgstr "Неможливо знайти, або завантажити гру \""
+#, fuzzy
+#~ msgid "Finite Liquid"
+#~ msgstr "Кінцеві рідини"
 
-#: src/main.cpp:1953
-msgid "Invalid gamespec."
-msgstr "Помилкова конфігурація гри."
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Помилка при видаленні файлів світу"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Неможливо налаштувати світ: Нічого не вибрано"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Неможливо створити світ: Не знайдено жодної гри"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "Файлів, що підлягають видаленню"
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Неможливо видалити світ: Нічого не вибрано"
+
+#~ msgid "Address required."
+#~ msgstr "Адреса необхідна."
+
+#~ msgid "Create world"
+#~ msgstr "Створити світ"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Залишіть адресу незаповненою для створення локального серверу."
+
+#~ msgid "Show Favorites"
+#~ msgstr "Показати Улюблені"
+
+#~ msgid "Show Public"
+#~ msgstr "Показати Публічні"
+
+#~ msgid "Advanced"
+#~ msgstr "Додатково"
+
+#~ msgid "Multiplayer"
+#~ msgstr "Мережева гра"
+
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Неможливо створити світ: Ім'я містить недопустимі символи"
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Попередження: Помилкова конфігурація.  "
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "Налаштування Збережено.  "
+
+#~ msgid "is required by:"
+#~ msgstr "необхідний для:"
 
 #~ msgid "Left click: Move all items, Right click: Move single item"
 #~ msgstr ""
 #~ "Ліва кнопка миші: Перемістити усі предмети, Права кнопка миші: "
 #~ "Перемістити один предмет"
 
-#~ msgid "is required by:"
-#~ msgstr "необхідний для:"
+#~ msgid "Anisotropic Filtering"
+#~ msgstr "Анізотропна фільтрація"
 
-#~ msgid "Configuration saved.  "
-#~ msgstr "Налаштування Збережено.  "
-
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Попередження: Помилкова конфігурація.  "
-
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Неможливо створити світ: Ім'я містить недопустимі символи"
-
-#~ msgid "Multiplayer"
-#~ msgstr "Мережева гра"
-
-#~ msgid "Advanced"
-#~ msgstr "Додатково"
-
-#~ msgid "Show Public"
-#~ msgstr "Показати Публічні"
-
-#~ msgid "Show Favorites"
-#~ msgstr "Показати Улюблені"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Залишіть адресу незаповненою для створення локального серверу."
-
-#~ msgid "Create world"
-#~ msgstr "Створити світ"
-
-#~ msgid "Address required."
-#~ msgstr "Адреса необхідна."
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Неможливо видалити світ: Нічого не вибрано"
-
-#~ msgid "Files to be deleted"
-#~ msgstr "Файлів, що підлягають видаленню"
-
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Неможливо створити світ: Не знайдено жодної гри"
-
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Неможливо налаштувати світ: Нічого не вибрано"
-
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Помилка при видаленні файлів світу"
+#~ msgid "Mip-Mapping"
+#~ msgstr "MIP-текстурування"
 
 #, fuzzy
-#~ msgid ""
-#~ "Default Controls:\n"
-#~ "- WASD: move\n"
-#~ "- Space: jump/climb\n"
-#~ "- Shift: sneak/go down\n"
-#~ "- Q: drop item\n"
-#~ "- I: inventory\n"
-#~ "- Mouse: turn/look\n"
-#~ "- Mouse left: dig/punch\n"
-#~ "- Mouse right: place/use\n"
-#~ "- Mouse wheel: select item\n"
-#~ "- T: chat\n"
-#~ msgstr ""
-#~ "Управління за замовчанню:\n"
-#~ "- WASD: рух\n"
-#~ "- Space: стрибок/лізти в гору\n"
-#~ "- Shift: крастися/лізти в низ\n"
-#~ "- Q: кинути предмет\n"
-#~ "- I: інвентар\n"
-#~ "- Мишка: поворот/дивитися\n"
-#~ "- Ліва клавіша миші: копати/удар\n"
-#~ "- Права клавіша миші: поставити/використовувати\n"
-#~ "- Колесо миші: вибір предмета\n"
-#~ "- T: чат\n"
-
-#~ msgid "Exit to OS"
-#~ msgstr "Вихід з гри"
-
-#~ msgid "Exit to Menu"
-#~ msgstr "Вихід в меню"
-
-#~ msgid "Sound Volume"
-#~ msgstr "Гучність звуку"
-
-#~ msgid "Change Password"
-#~ msgstr "Змінити Пароль"
-
-#~ msgid "Continue"
-#~ msgstr "Продовжити"
-
-#~ msgid "You died."
-#~ msgstr "Ви загинули."
-
-#~ msgid "Connecting to server..."
-#~ msgstr "Підключення до сервера..."
-
-#~ msgid "Resolving address..."
-#~ msgstr "Отримання адреси..."
-
-#~ msgid "Creating client..."
-#~ msgstr "Створення клієнта..."
-
-#~ msgid "Creating server...."
-#~ msgstr "Створення сервера..."
-
-#~ msgid "Loading..."
-#~ msgstr "Завантаження..."
-
-#, fuzzy
-#~ msgid "Finite Liquid"
-#~ msgstr "Кінцеві рідини"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Попереднє завантаження зображень"
-
-#, fuzzy
-#~ msgid "Password"
-#~ msgstr "Старий Пароль"
-
-#~ msgid "Favorites:"
-#~ msgstr "Улюблені:"
-
-#, fuzzy
-#~ msgid "Games"
-#~ msgstr "Гра"
-
-#, fuzzy
-#~ msgid "Game Name"
-#~ msgstr "Гра"
+#~ msgid "Downloading"
+#~ msgstr "Вниз"
