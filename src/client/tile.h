@@ -113,7 +113,8 @@ public:
 			const TextureFromMeshParams &params)=0;
 	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
 	virtual video::SColor getTextureAverageColor(const std::string &name)=0;
-	virtual video::ITexture *getShaderFlagsTexture(TileDef *tiledef, TileSpec *tile)=0;
+	virtual video::ITexture *getShaderFlagsTexture(bool normamap_present,
+			bool tileable_vertical, bool tileable_horizontal)=0;
 };
 
 class IWritableTextureSource : public ITextureSource
@@ -136,7 +137,8 @@ public:
 	virtual void rebuildImagesAndTextures()=0;
 	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
 	virtual video::SColor getTextureAverageColor(const std::string &name)=0;
-	virtual video::ITexture *getShaderFlagsTexture(TileDef *tiledef, TileSpec *tile)=0;
+	virtual video::ITexture *getShaderFlagsTexture(bool normamap_present,
+			bool tileable_vertical, bool tileable_horizontal)=0;
 };
 
 IWritableTextureSource* createTextureSource(IrrlichtDevice *device);

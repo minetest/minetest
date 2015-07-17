@@ -49,6 +49,12 @@ void translateMesh(scene::IMesh *mesh, v3f vec);
 void setMeshColor(scene::IMesh *mesh, const video::SColor &color);
 
 /*
+	Shade mesh faces according to their normals
+*/
+
+void shadeMeshFaces(scene::IMesh *mesh);
+
+/*
 	Set the color of all vertices in the mesh.
 	For each vertex, determine the largest absolute entry in
 	the normal vector, and choose one of colorX, colorY or

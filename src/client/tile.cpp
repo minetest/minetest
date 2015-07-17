@@ -385,7 +385,8 @@ public:
 
 	video::ITexture* getNormalTexture(const std::string &name);
 	video::SColor getTextureAverageColor(const std::string &name);
-	video::ITexture *getShaderFlagsTexture(TileDef *tiledef, TileSpec *tile);
+	video::ITexture *getShaderFlagsTexture(
+		bool normamap_present, bool tileable_vertical, bool tileable_horizontal);
 
 private:
 
@@ -2050,14 +2051,14 @@ video::SColor TextureSource::getTextureAverageColor(const std::string &name)
 	return c;
 }
 
-video::ITexture *TextureSource::getShaderFlagsTexture(TileDef *tiledef, TileSpec *tile)
+
+video::ITexture *TextureSource::getShaderFlagsTexture(
+	bool normalmap_present, bool tileable_vertical, bool tileable_horizontal)
 {
 	std::string tname = "__shaderFlagsTexture";
-
-	bool normalmap_present = tile->normal_texture ? true : false;
 	tname += normalmap_present ? "1" : "0";
-	tname += tiledef->tileable_horizontal ? "1" : "0";
-	tname += tiledef->tileable_vertical ? "1" : "0";
+	tname += tileable_horizontal ? "1" : "0";
+	tname += tileable_vertical ? "1" : "0";
 
 	if (isKnownSourceImage(tname)) {
 		return getTexture(tname);
@@ -2069,8 +2070,8 @@ video::ITexture *TextureSource::getShaderFlagsTexture(TileDef *tiledef, TileSpec
 		video::SColor c(
 			255,
 			normalmap_present ? 255 : 0,
-			tiledef->tileable_horizontal ? 255 : 0,
-			tiledef->tileable_vertical ? 255 : 0);
+			tileable_horizontal ? 255 : 0,
+			tileable_vertical ? 255 : 0);
 		flags_image->setPixel(0, 0, c);
 		insertSourceImage(tname, flags_image);
 		flags_image->drop();

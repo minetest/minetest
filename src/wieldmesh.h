@@ -48,6 +48,9 @@ public:
 	// Must only be used if the constructor was called with lighting = false
 	void setColor(video::SColor color);
 
+	scene::IMesh *getMesh()
+	{ return m_meshnode->getMesh(); }
+
 	virtual void render();
 
 	virtual const core::aabbox3d<f32>& getBoundingBox() const
