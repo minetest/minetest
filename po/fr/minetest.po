@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-07-17 09:55+0200\n"
+"PO-Revision-Date: 2015-07-17 22:49+0200\n"
 "Last-Translator: Jean-Patrick G. <jeanpatrick.guerrero@gmail.com>\n"
 "Language-Team: French "
 "<https://hosted.weblate.org/projects/minetest/minetest/fr/>\n"
@@ -442,7 +442,7 @@ msgstr "Lumière douce"
 
 #: builtin/mainmenu/tab_settings.lua:204
 msgid "Enable Particles"
-msgstr "Activer les particules"
+msgstr "Particules"
 
 #: builtin/mainmenu/tab_settings.lua:206
 msgid "3D Clouds"
