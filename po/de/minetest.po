@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-07-17 07:39+0200\n"
+"PO-Revision-Date: 2015-07-17 16:47+0200\n"
 "Last-Translator: est31 <MTest31@outlook.com>\n"
 "Language-Team: German "
 "<https://hosted.weblate.org/projects/minetest/minetest/de/>\n"
@@ -253,7 +253,7 @@ msgstr "Aktive Mitwirkende"
 
 #: builtin/mainmenu/tab_credits.lua:54
 msgid "Previous Core Developers"
-msgstr "Ehemalige Hauptentwickler"
+msgstr "Frühere Hauptentwickler"
 
 #: builtin/mainmenu/tab_credits.lua:59
 msgid "Previous Contributors"
