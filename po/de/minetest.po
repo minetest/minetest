@@ -8,23 +8,24 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-03-16 15:50+0100\n"
-"Last-Translator: Wuzzy <almikes@aol.com>\n"
-"Language-Team: Deutsch <>\n"
+"PO-Revision-Date: 2015-07-17 07:39+0200\n"
+"Last-Translator: est31 <MTest31@outlook.com>\n"
+"Language-Team: German "
+"<https://hosted.weblate.org/projects/minetest/minetest/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 1.7.1\n"
+"X-Generator: Weblate 2.4-dev\n"
 
 #: builtin/fstk/ui.lua:82
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
+msgstr "Fehler in Lua (z. B. wegen mod):"
 
 #: builtin/fstk/ui.lua:84
 msgid "An error occured:"
-msgstr ""
+msgstr "Ein Fehler ist aufgetreten:"
 
 #: builtin/fstk/ui.lua:89 builtin/mainmenu/store.lua:165
 msgid "Ok"
@@ -251,9 +252,8 @@ msgid "Active Contributors"
 msgstr "Aktive Mitwirkende"
 
 #: builtin/mainmenu/tab_credits.lua:54
-#, fuzzy
 msgid "Previous Core Developers"
-msgstr "Hauptentwickler"
+msgstr "Ehemalige Hauptentwickler"
 
 #: builtin/mainmenu/tab_credits.lua:59
 msgid "Previous Contributors"
@@ -386,28 +386,24 @@ msgstr "Serverport"
 
 #: builtin/mainmenu/tab_server.lua:138
 #: builtin/mainmenu/tab_singleplayer.lua:165
-#, fuzzy
 msgid "No world created or selected!"
-msgstr "Kein Weltname gegeben oder kein Spiel ausgewählt"
+msgstr "Kein Weltname angegeben oder kein Spiel ausgewählt!"
 
 #: builtin/mainmenu/tab_server.lua:191
 msgid "Server"
 msgstr "Server"
 
 #: builtin/mainmenu/tab_settings.lua:21
-#, fuzzy
 msgid "Opaque Leaves"
-msgstr "Undurchs. Wasser"
+msgstr "Undurchs. Blätter"
 
 #: builtin/mainmenu/tab_settings.lua:22
-#, fuzzy
 msgid "Simple Leaves"
-msgstr "Wehende Blätter"
+msgstr "Einfache Blätter"
 
 #: builtin/mainmenu/tab_settings.lua:23
-#, fuzzy
 msgid "Fancy Leaves"
-msgstr "Schöne Bäume"
+msgstr "Schöne Blätter"
 
 #: builtin/mainmenu/tab_settings.lua:32
 msgid "No Filter"
@@ -582,9 +578,8 @@ msgid "Initializing nodes..."
 msgstr "Blöcke initialisieren ..."
 
 #: src/client.cpp:1760
-#, fuzzy
 msgid "Initializing nodes"
-msgstr "Blöcke initialisieren ..."
+msgstr "Blöcke initialisieren"
 
 #: src/client.cpp:1768
 msgid "Item textures..."
@@ -750,11 +745,11 @@ msgstr "Medien ..."
 
 #: src/game.cpp:2334
 msgid "KiB/s"
-msgstr ""
+msgstr "KiB/s"
 
 #: src/game.cpp:2338
 msgid "MiB/s"
-msgstr ""
+msgstr "MiB/s"
 
 #: src/game.cpp:4363
 msgid ""
