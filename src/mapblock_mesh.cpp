@@ -1278,6 +1278,7 @@ MapBlockMesh::~MapBlockMesh()
 {
 	m_mesh->drop();
 	m_mesh = NULL;
+	delete m_minimap_mapblock;
 }
 
 bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_ratio)
