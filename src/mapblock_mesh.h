@@ -104,14 +104,16 @@ public:
 	// Returns true if anything has been changed.
 	bool animate(bool faraway, float time, int crack, u32 daynight_ratio);
 
-	scene::SMesh* getMesh()
+	scene::SMesh *getMesh()
 	{
 		return m_mesh;
 	}
 
-	MinimapMapblock* getMinimapMapblock()
+	MinimapMapblock *moveMinimapMapblock()
 	{
-		return m_minimap_mapblock;
+		MinimapMapblock *p = m_minimap_mapblock;
+		m_minimap_mapblock = NULL;
+		return p;
 	}
 
 	bool isAnimationForced() const

@@ -540,20 +540,19 @@ void Client::step(float dtime)
 				}
 
 				if (r.mesh) {
-					minimap_mapblock = r.mesh->getMinimapMapblock();
-					do_mapper_update = (minimap_mapblock != NULL);
+					minimap_mapblock = r.mesh->moveMinimapMapblock();
+					if (minimap_mapblock == NULL)
+						do_mapper_update = false;
 				}
 
 				if (r.mesh && r.mesh->getMesh()->getMeshBufferCount() == 0) {
 					delete r.mesh;
-					block->mesh = NULL;
 				} else {
 					// Replace with the new mesh
 					block->mesh = r.mesh;
 				}
 			} else {
 				delete r.mesh;
-				minimap_mapblock = NULL;
 			}
 
 			if (do_mapper_update)

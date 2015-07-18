@@ -102,7 +102,13 @@ void MinimapUpdateThread::doUpdate()
 
 	while (popBlockUpdate(&update)) {
 		if (update.data) {
-			m_blocks_cache[update.pos] = update.data;
+			// Swap two values in the map using single lookup
+			std::pair<std::map<v3s16, MinimapMapblock*>::iterator, bool>
+			    result = m_blocks_cache.insert(std::make_pair(update.pos, update.data));
+			if (result.second == false) {
+				delete result.first->second;
+				result.first->second = update.data;
+			}
 		} else {
 			std::map<v3s16, MinimapMapblock *>::iterator it;
 			it = m_blocks_cache.find(update.pos);
