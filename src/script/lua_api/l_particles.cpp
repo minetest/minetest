@@ -43,7 +43,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 	collisiondetection = vertical = false;
 
 	std::string texture = "";
-	const char *playername = "";
+	std::string playername = "";
 
 	if (lua_gettop(L) > 1) // deprecated
 	{
@@ -60,49 +60,47 @@ int ModApiParticles::l_add_particle(lua_State *L)
 	}
 	else if (lua_istable(L, 1))
 	{
-		int table = lua_gettop(L);
-		lua_pushnil(L);
-		while (lua_next(L, table) != 0)
-		{
-			const char *key = lua_tostring(L, -2);
-			if (strcmp(key, "pos") == 0) {
-				pos = check_v3f(L, -1);
-			} else if (strcmp(key,"vel") == 0) {
-				vel = check_v3f(L, -1);
-				log_deprecated(L, "The use of vel is deprecated. "
-					"Use velocity instead");
-			} else if (strcmp(key,"velocity") == 0) {
-				vel = check_v3f(L, -1);
-			} else if (strcmp(key,"acc") == 0) {
-				acc = check_v3f(L, -1);
-				log_deprecated(L, "The use of acc is deprecated. "
-					"Use acceleration instead");
-			} else if (strcmp(key,"acceleration") == 0) {
-				acc = check_v3f(L, -1);
-			} else if (strcmp(key,"expirationtime") == 0) {
-				expirationtime = luaL_checknumber(L, -1);
-			} else if (strcmp(key,"size") == 0) {
-				size = luaL_checknumber(L, -1);
-			} else if (strcmp(key,"collisiondetection") == 0) {
-				collisiondetection = lua_toboolean(L, -1);
-			} else if (strcmp(key,"vertical") == 0) {
-				vertical = lua_toboolean(L, -1);
-			} else if (strcmp(key,"texture") == 0) {
-				texture = luaL_checkstring(L, -1);
-			} else if (strcmp(key,"playername") == 0) {
-				playername = luaL_checkstring(L, -1);
-			}
-			lua_pop(L, 1);
+		lua_getfield(L, 1, "pos");
+		pos = lua_istable(L, -1) ? check_v3f(L, -1) : v3f();
+		lua_pop(L, 1);
+
+		lua_getfield(L, 1, "vel");
+		if (lua_istable(L, -1)) {
+			vel = check_v3f(L, -1);
+			log_deprecated(L, "The use of vel is deprecated. "
+				"Use velocity instead");
 		}
+		lua_pop(L, 1);
+
+		lua_getfield(L, 1, "velocity");
+		vel = lua_istable(L, -1) ? check_v3f(L, -1) : vel;
+		lua_pop(L, 1);
+
+		lua_getfield(L, 1, "acc");
+		if (lua_istable(L, -1)) {
+			acc = check_v3f(L, -1);
+			log_deprecated(L, "The use of acc is deprecated. "
+				"Use acceleration instead");
+		}
+		lua_pop(L, 1);
+
+		lua_getfield(L, 1, "acceleration");
+		acc = lua_istable(L, -1) ? check_v3f(L, -1) : acc;
+		lua_pop(L, 1);
+
+		expirationtime = getfloatfield_default(L, 1, "expirationtime", 1);
+		size = getfloatfield_default(L, 1, "size", 1);
+		collisiondetection = getboolfield_default(L, 1,
+			"collisiondetection", collisiondetection);
+		vertical = getboolfield_default(L, 1, "vertical", vertical);
+		texture = getstringfield_default(L, 1, "texture", "");
+		playername = getstringfield_default(L, 1, "playername", "");
 	}
-	if (strcmp(playername, "") == 0) // spawn for all players
-	{
+	if (playername == "") { // spawn for all players
 		getServer(L)->spawnParticleAll(pos, vel, acc,
 			expirationtime, size, collisiondetection, vertical, texture);
-	}
-	else
-	{
-		getServer(L)->spawnParticle(playername,
+	} else {
+		getServer(L)->spawnParticle(playername.c_str(),
 			pos, vel, acc, expirationtime,
 			size, collisiondetection, vertical, texture);
 	}
@@ -136,7 +134,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 	bool collisiondetection, vertical;
 	     collisiondetection= vertical= false;
 	std::string texture = "";
-	const char *playername = "";
+	std::string playername = "";
 
 	if (lua_gettop(L) > 1) //deprecated
 	{
@@ -160,49 +158,44 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 	}
 	else if (lua_istable(L, 1))
 	{
-		int table = lua_gettop(L);
-		lua_pushnil(L);
-		while (lua_next(L, table) != 0)
-		{
-			const char *key = lua_tostring(L, -2);
-			      if(strcmp(key,"amount")==0){
-					amount=luaL_checknumber(L, -1);
-			}else if(strcmp(key,"time")==0){
-					time=luaL_checknumber(L, -1);
-			}else if(strcmp(key,"minpos")==0){
-					minpos=check_v3f(L, -1);
-			}else if(strcmp(key,"maxpos")==0){
-					maxpos=check_v3f(L, -1);
-			}else if(strcmp(key,"minvel")==0){
-					minvel=check_v3f(L, -1);
-			}else if(strcmp(key,"maxvel")==0){
-					maxvel=check_v3f(L, -1);
-			}else if(strcmp(key,"minacc")==0){
-					minacc=check_v3f(L, -1);
-			}else if(strcmp(key,"maxacc")==0){
-					maxacc=check_v3f(L, -1);
-			}else if(strcmp(key,"minexptime")==0){
-					minexptime=luaL_checknumber(L, -1);
-			}else if(strcmp(key,"maxexptime")==0){
-					maxexptime=luaL_checknumber(L, -1);
-			}else if(strcmp(key,"minsize")==0){
-					minsize=luaL_checknumber(L, -1);
-			}else if(strcmp(key,"maxsize")==0){
-					maxsize=luaL_checknumber(L, -1);
-			}else if(strcmp(key,"collisiondetection")==0){
-					collisiondetection=lua_toboolean(L, -1);
-			}else if(strcmp(key,"vertical")==0){
-					vertical=lua_toboolean(L, -1);
-			}else if(strcmp(key,"texture")==0){
-					texture=luaL_checkstring(L, -1);
-			}else if(strcmp(key,"playername")==0){
-					playername=luaL_checkstring(L, -1);
-			}
-			lua_pop(L, 1);
-		}
+		amount = getintfield_default(L, 1, "amount", amount);
+		time = getfloatfield_default(L, 1, "time", time);
+
+		lua_getfield(L, 1, "minpos");
+		minpos = lua_istable(L, -1) ? check_v3f(L, -1) : minpos;
+		lua_pop(L, 1);
+
+		lua_getfield(L, 1, "maxpos");
+		maxpos = lua_istable(L, -1) ? check_v3f(L, -1) : maxpos;
+		lua_pop(L, 1);
+
+		lua_getfield(L, 1, "minvel");
+		minvel = lua_istable(L, -1) ? check_v3f(L, -1) : minvel;
+		lua_pop(L, 1);
+
+		lua_getfield(L, 1, "maxvel");
+		maxvel = lua_istable(L, -1) ? check_v3f(L, -1) : maxvel;
+		lua_pop(L, 1);
+
+		lua_getfield(L, 1, "minacc");
+		minacc = lua_istable(L, -1) ? check_v3f(L, -1) : minacc;
+		lua_pop(L, 1);
+
+		lua_getfield(L, 1, "maxacc");
+		maxacc = lua_istable(L, -1) ? check_v3f(L, -1) : maxacc;
+		lua_pop(L, 1);
+
+		minexptime = getfloatfield_default(L, 1, "minexptime", minexptime);
+		maxexptime = getfloatfield_default(L, 1, "maxexptime", maxexptime);
+		minsize = getfloatfield_default(L, 1, "minsize", minsize);
+		maxsize = getfloatfield_default(L, 1, "maxsize", maxsize);
+		collisiondetection = getboolfield_default(L, 1,
+			"collisiondetection", collisiondetection);
+		vertical = getboolfield_default(L, 1, "vertical", vertical);
+		texture = getstringfield_default(L, 1, "texture", "");
+		playername = getstringfield_default(L, 1, "playername", "");
 	}
-	if (strcmp(playername, "")==0) //spawn for all players
-	{
+	if (playername == "") { //spawn for all players
 		u32 id = getServer(L)->addParticleSpawnerAll(	amount, time,
 							minpos, maxpos,
 							minvel, maxvel,
@@ -213,10 +206,8 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 							vertical,
 							texture);
 		lua_pushnumber(L, id);
-	}
-	else
-	{
-		u32 id = getServer(L)->addParticleSpawner(playername,
+	} else {
+		u32 id = getServer(L)->addParticleSpawner(playername.c_str(),
 							amount, time,
 							minpos, maxpos,
 							minvel, maxvel,
