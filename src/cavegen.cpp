@@ -138,7 +138,7 @@ void CaveV5::makeTunnel(bool dirswitch) {
 		(float)(ps->next() % maxlen.Z) - (float)maxlen.Z / 2
 	);
 
-	// Do not make large caves that are above ground.
+	// Do not make caves that are above ground.
 	// It is only necessary to check the startpoint and endpoint.
 	v3s16 orpi(orp.X, orp.Y, orp.Z);
 	v3s16 veci(vec.X, vec.Y, vec.Z);
@@ -193,20 +193,15 @@ void CaveV5::makeTunnel(bool dirswitch) {
 	// Every second section is rough
 	bool randomize_xz = (ps->range(1, 2) == 1);
 
-	// Make a ravine every once in a while if it's long enough
-	//float xylen = vec.X * vec.X + vec.Z * vec.Z;
-	//disable ravines for now
-	bool is_ravine = false; //(xylen > 500.0) && !large_cave && (ps->range(1, 8) == 1);
-
 	// Carve routes
 	for (float f = 0; f < 1.0; f += 1.0 / veclen)
-		carveRoute(vec, f, randomize_xz, is_ravine);
+		carveRoute(vec, f, randomize_xz);
 
 	orp = rp;
 }
 
 
-void CaveV5::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
+void CaveV5::carveRoute(v3f vec, float f, bool randomize_xz) {
 	MapNode airnode(CONTENT_AIR);
 	MapNode waternode(c_water_source);
 	MapNode lavanode(c_lava_source);
@@ -230,15 +225,12 @@ void CaveV5::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
 		d1 += ps->range(-1, 1);
 	}
 
-	bool should_make_cave_hole = ps->range(1, 10) == 1;
-
 	for (s16 z0 = d0; z0 <= d1; z0++) {
 		s16 si = rs / 2 - MYMAX(0, abs(z0) - rs / 7 - 1);
 		for (s16 x0 = -si - ps->range(0,1); x0 <= si - 1 + ps->range(0,1); x0++) {
 			s16 maxabsxz = MYMAX(abs(x0), abs(z0));
 
-			s16 si2 = is_ravine ? MYMIN(ps->range(25, 26), ar.Y) :
-				rs / 2 - MYMAX(0, maxabsxz - rs / 7 - 1);
+			s16 si2 = rs / 2 - MYMAX(0, maxabsxz - rs / 7 - 1);
 
 			for (s16 y0 = -si2; y0 <= si2; y0++) {
 				if (large_cave_is_flat) {
@@ -249,15 +241,6 @@ void CaveV5::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
 
 				v3s16 p(cp.X + x0, cp.Y + y0, cp.Z + z0);
 				p += of;
-
-				if (!is_ravine && mg->heightmap && should_make_cave_hole &&
-						p.X <= node_max.X && p.Z <= node_max.Z) {
-					int maplen = node_max.X - node_min.X + 1;
-					int idx = (p.Z - node_min.Z) * maplen +
-						(p.X - node_min.X);
-					if (p.Y >= mg->heightmap[idx] - 2)
-						continue;
-				}
 
 				if (vm->m_area.contains(p) == false)
 					continue;
@@ -431,37 +414,35 @@ void CaveV6::makeTunnel(bool dirswitch) {
 		);
 	}
 
-	// Do not make large caves that are entirely above ground.
+	// Do not make caves that are entirely above ground.
 	// It is only necessary to check the startpoint and endpoint.
-	if (large_cave) {
-		v3s16 orpi(orp.X, orp.Y, orp.Z);
-		v3s16 veci(vec.X, vec.Y, vec.Z);
-		s16 h1;
-		s16 h2;
+	v3s16 orpi(orp.X, orp.Y, orp.Z);
+	v3s16 veci(vec.X, vec.Y, vec.Z);
+	s16 h1;
+	s16 h2;
 
-		v3s16 p1 = orpi + veci + of + rs / 2;
-		if (p1.Z >= node_min.Z && p1.Z <= node_max.Z &&
-				p1.X >= node_min.X && p1.X <= node_max.X) {
-			u32 index1 = (p1.Z - node_min.Z) * mg->ystride +
-				(p1.X - node_min.X);
-			h1 = mg->heightmap[index1];
-		} else {
-			h1 = water_level; // If not in heightmap
-		}
-
-		v3s16 p2 = orpi + of + rs / 2;
-		if (p2.Z >= node_min.Z && p2.Z <= node_max.Z &&
-				p2.X >= node_min.X && p2.X <= node_max.X) {
-			u32 index2 = (p2.Z - node_min.Z) * mg->ystride +
-				(p2.X - node_min.X);
-			h2 = mg->heightmap[index2];
-		} else {
-			h2 = water_level;
-		}
-
-		if (p1.Y > h1 && p2.Y > h2) // If startpoint and endpoint are above ground
-			return;
+	v3s16 p1 = orpi + veci + of + rs / 2;
+	if (p1.Z >= node_min.Z && p1.Z <= node_max.Z &&
+			p1.X >= node_min.X && p1.X <= node_max.X) {
+		u32 index1 = (p1.Z - node_min.Z) * mg->ystride +
+			(p1.X - node_min.X);
+		h1 = mg->heightmap[index1];
+	} else {
+		h1 = water_level; // If not in heightmap
 	}
+
+	v3s16 p2 = orpi + of + rs / 2;
+	if (p2.Z >= node_min.Z && p2.Z <= node_max.Z &&
+			p2.X >= node_min.X && p2.X <= node_max.X) {
+		u32 index2 = (p2.Z - node_min.Z) * mg->ystride +
+			(p2.X - node_min.X);
+		h2 = mg->heightmap[index2];
+	} else {
+		h2 = water_level;
+	}
+
+	if (p1.Y > h1 && p2.Y > h2) // If startpoint and endpoint are above ground
+		return;
 
 	vec += main_direction;
 
@@ -680,7 +661,7 @@ void CaveV7::makeTunnel(bool dirswitch) {
 		(float)(ps->next() % maxlen.Z) - (float)maxlen.Z / 2
 	);
 
-	// Do not make large caves that are above ground.
+	// Do not make caves that are above ground.
 	// It is only necessary to check the startpoint and endpoint.
 	v3s16 orpi(orp.X, orp.Y, orp.Z);
 	v3s16 veci(vec.X, vec.Y, vec.Z);
@@ -735,20 +716,15 @@ void CaveV7::makeTunnel(bool dirswitch) {
 	// Every second section is rough
 	bool randomize_xz = (ps->range(1, 2) == 1);
 
-	// Make a ravine every once in a while if it's long enough
-	//float xylen = vec.X * vec.X + vec.Z * vec.Z;
-	//disable ravines for now
-	bool is_ravine = false; //(xylen > 500.0) && !large_cave && (ps->range(1, 8) == 1);
-
 	// Carve routes
 	for (float f = 0; f < 1.0; f += 1.0 / veclen)
-		carveRoute(vec, f, randomize_xz, is_ravine);
+		carveRoute(vec, f, randomize_xz);
 
 	orp = rp;
 }
 
 
-void CaveV7::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
+void CaveV7::carveRoute(v3f vec, float f, bool randomize_xz) {
 	MapNode airnode(CONTENT_AIR);
 	MapNode waternode(c_water_source);
 	MapNode lavanode(c_lava_source);
@@ -773,15 +749,12 @@ void CaveV7::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
 		d1 += ps->range(-1, 1);
 	}
 
-	bool should_make_cave_hole = ps->range(1, 10) == 1;
-
 	for (s16 z0 = d0; z0 <= d1; z0++) {
 		s16 si = rs / 2 - MYMAX(0, abs(z0) - rs / 7 - 1);
 		for (s16 x0 = -si - ps->range(0,1); x0 <= si - 1 + ps->range(0,1); x0++) {
 			s16 maxabsxz = MYMAX(abs(x0), abs(z0));
 
-			s16 si2 = is_ravine ? MYMIN(ps->range(25, 26), ar.Y) :
-				rs / 2 - MYMAX(0, maxabsxz - rs / 7 - 1);
+			s16 si2 = rs / 2 - MYMAX(0, maxabsxz - rs / 7 - 1);
 
 			for (s16 y0 = -si2; y0 <= si2; y0++) {
 				if (large_cave_is_flat) {
@@ -792,15 +765,6 @@ void CaveV7::carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine) {
 
 				v3s16 p(cp.X + x0, cp.Y + y0, cp.Z + z0);
 				p += of;
-
-				if (!is_ravine && mg->heightmap && should_make_cave_hole &&
-						p.X <= node_max.X && p.Z <= node_max.Z) {
-					int maplen = node_max.X - node_min.X + 1;
-					int idx = (p.Z - node_min.Z) * maplen +
-						(p.X - node_min.X);
-					if (p.Y >= mg->heightmap[idx] - 2)
-						continue;
-				}
 
 				if (vm->m_area.contains(p) == false)
 					continue;

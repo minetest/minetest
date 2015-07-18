@@ -69,7 +69,7 @@ public:
 	CaveV5(MapgenV5 *mg, PseudoRandom *ps);
 	void makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height);
 	void makeTunnel(bool dirswitch);
-	void carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine);
+	void carveRoute(v3f vec, float f, bool randomize_xz);
 };
 
 class CaveV6 {
@@ -158,7 +158,7 @@ public:
 	CaveV7(MapgenV7 *mg, PseudoRandom *ps);
 	void makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height);
 	void makeTunnel(bool dirswitch);
-	void carveRoute(v3f vec, float f, bool randomize_xz, bool is_ravine);
+	void carveRoute(v3f vec, float f, bool randomize_xz);
 };
 
 #endif
