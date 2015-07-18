@@ -454,7 +454,8 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 	if (playername_length == PLAYERNAME_SIZE) {
 		actionstream << "Server: Player with name exceeding max length "
 				<< "tried to connect from " << addr_s << std::endl;
-		DenyAccess_Legacy(pkt->getPeerId(), L"Name too long");
+		DenyAccess_Legacy(pkt->getPeerId(), L"This name is too long. Maximum allowed length: "
+				+ narrow_to_wide(itos(PLAYERNAME_SIZE)));
 		return;
 	}
 
@@ -462,21 +463,24 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 	if (playername[0]=='\0') {
 		actionstream << "Server: Player with an empty name "
 				<< "tried to connect from " << addr_s << std::endl;
-		DenyAccess_Legacy(pkt->getPeerId(), L"Empty name");
+		DenyAccess_Legacy(pkt->getPeerId(), L"The name is empty.");
 		return;
 	}
 
 	if (string_allowed(playername, PLAYERNAME_ALLOWED_CHARS) == false) {
 		actionstream << "Server: Player with an invalid name "
 				<< "tried to connect from " << addr_s << std::endl;
-		DenyAccess_Legacy(pkt->getPeerId(), L"Name contains unallowed characters");
+		DenyAccess_Legacy(pkt->getPeerId(), L"The chosen name contains disallowed characters."
+				L" Allowed characters are a-z, A-Z, 0-9, hyphen and underscore.");
 		return;
 	}
 
 	if (!isSingleplayer() && strcasecmp(playername, "singleplayer") == 0) {
 		actionstream << "Server: Player with the name \"singleplayer\" "
 				<< "tried to connect from " << addr_s << std::endl;
-		DenyAccess_Legacy(pkt->getPeerId(), L"Name is not allowed");
+		DenyAccess_Legacy(pkt->getPeerId(), L"The name \"singleplayer\" is a special name"
+				L" which is reserved for singleplayer games. It can"
+				L" not be used on multiplayer servers.");
 		return;
 	}
 
@@ -526,7 +530,8 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 		actionstream << "Server: " << playername << " tried to join, but there"
 				<< " are already max_users="
 				<< g_settings->getU16("max_users") << " players." << std::endl;
-		DenyAccess_Legacy(pkt->getPeerId(), L"Too many users.");
+		DenyAccess_Legacy(pkt->getPeerId(), L"There are currently too many users on this"
+				L" server. Please wait until a few users have left.");
 		return;
 	}
 
@@ -568,7 +573,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 	if (given_password != checkpwd) {
 		actionstream << "Server: " << playername << " supplied wrong password"
 				<< std::endl;
-		DenyAccess_Legacy(pkt->getPeerId(), L"Wrong password");
+		DenyAccess_Legacy(pkt->getPeerId(), L"You have entered the wrong password.");
 		return;
 	}
 
@@ -1934,7 +1939,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 		if (!client->isSudoMechAllowed(chosen)) {
 			actionstream << "Server: Player \"" << client->getName()
 				<< "\" at " << getPeerAddress(pkt->getPeerId()).serializeString()
-				<< " tried to change password using unallowed mech "
+				<< " tried to change password using disallowed mech "
 				<< chosen << "." << std::endl;
 			DenySudoAccess(pkt->getPeerId());
 			return;
@@ -1943,7 +1948,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 		if (!client->isMechAllowed(chosen)) {
 			actionstream << "Server: Client tried to authenticate from "
 				<< getPeerAddress(pkt->getPeerId()).serializeString()
-				<< " using unallowed mech " << chosen << "." << std::endl;
+				<< " using disallowed mech " << chosen << "." << std::endl;
 			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_UNEXPECTED_DATA);
 			return;
 		}
