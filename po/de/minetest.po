@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-07-20 11:44+0200\n"
+"PO-Revision-Date: 2015-07-20 11:46+0200\n"
 "Last-Translator: Jackie Coe <wilk.gr76@gmail.com>\n"
 "Language-Team: German "
 "<https://hosted.weblate.org/projects/minetest/minetest/de/>\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: builtin/fstk/ui.lua:82
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr "Fehler in Lua (z. B. wegen mod):"
+msgstr "Fehler in Lua ist aufgetreten (z. B. wegen mod):"
 
 #: builtin/fstk/ui.lua:84
 msgid "An error occured:"
@@ -33,7 +33,7 @@ msgstr "OK"
 
 #: builtin/mainmenu/common.lua:239 src/game.cpp:1891
 msgid "Loading..."
-msgstr "Laden ..."
+msgstr "Lädt..."
 
 #: builtin/mainmenu/common.lua:240
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -48,7 +48,7 @@ msgstr "Welt:"
 #: builtin/mainmenu/dlg_config_world.lua:33
 #: builtin/mainmenu/dlg_config_world.lua:35
 msgid "Hide Game"
-msgstr "Spiel verstecken"
+msgstr "Spiel ausblenden"
 
 #: builtin/mainmenu/dlg_config_world.lua:39
 #: builtin/mainmenu/dlg_config_world.lua:41
