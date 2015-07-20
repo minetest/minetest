@@ -162,55 +162,37 @@ void Camera::step(f32 dtime)
 	{
 		//f32 offset = dtime * m_view_bobbing_speed * 0.035;
 		f32 offset = dtime * m_view_bobbing_speed * 0.030;
-		if (m_view_bobbing_state == 2)
-		{
-#if 0
+		if (m_view_bobbing_state == 2) {
 			// Animation is getting turned off
-			if (m_view_bobbing_anim < 0.5)
+			if (m_view_bobbing_anim < 0.25) {
 				m_view_bobbing_anim -= offset;
-			else
-				m_view_bobbing_anim += offset;
-			if (m_view_bobbing_anim <= 0 || m_view_bobbing_anim >= 1)
-			{
-				m_view_bobbing_anim = 0;
-				m_view_bobbing_state = 0;
-			}
-#endif
-#if 1
-			// Animation is getting turned off
-			if(m_view_bobbing_anim < 0.25)
-			{
-				m_view_bobbing_anim -= offset;
-			} else if(m_view_bobbing_anim > 0.75) {
+			} else if (m_view_bobbing_anim > 0.75) {
 				m_view_bobbing_anim += offset;
 			}
-			if(m_view_bobbing_anim < 0.5)
-			{
+
+			if (m_view_bobbing_anim < 0.5) {
 				m_view_bobbing_anim += offset;
-				if(m_view_bobbing_anim > 0.5)
+				if (m_view_bobbing_anim > 0.5)
 					m_view_bobbing_anim = 0.5;
 			} else {
 				m_view_bobbing_anim -= offset;
-				if(m_view_bobbing_anim < 0.5)
+				if (m_view_bobbing_anim < 0.5)
 					m_view_bobbing_anim = 0.5;
 			}
-			if(m_view_bobbing_anim <= 0 || m_view_bobbing_anim >= 1 ||
-					fabs(m_view_bobbing_anim - 0.5) < 0.01)
-			{
+
+			if (m_view_bobbing_anim <= 0 || m_view_bobbing_anim >= 1 ||
+					fabs(m_view_bobbing_anim - 0.5) < 0.01) {
 				m_view_bobbing_anim = 0;
 				m_view_bobbing_state = 0;
 			}
-#endif
 		}
-		else
-		{
+		else {
 			float was = m_view_bobbing_anim;
 			m_view_bobbing_anim = my_modf(m_view_bobbing_anim + offset);
 			bool step = (was == 0 ||
 					(was < 0.5f && m_view_bobbing_anim >= 0.5f) ||
 					(was > 0.5f && m_view_bobbing_anim <= 0.5f));
-			if(step)
-			{
+			if(step) {
 				MtEvent *e = new SimpleTriggerEvent("ViewBobbingStep");
 				m_gamedef->event()->put(e);
 			}
