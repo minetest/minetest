@@ -40,7 +40,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "game.h"
 #include "defaultsettings.h"
 #include "gettext.h"
-#include "profiler.h"
 #include "log.h"
 #include "quicktune.h"
 #include "httpfetch.h"
