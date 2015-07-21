@@ -57,9 +57,9 @@ void getSRPVerifier(const std::string &name,
 }
 
 // Get a db-ready SRP verifier
-// The salt param is only modifyable by this method so that you can free it
-// if it was allocated. You shouldn't use it for other purposes, as you will
-// need the contents of salt_len too.
+// If the salt param is NULL, one is automatically generated.
+// Please free() it afterwards. You shouldn't use it for other purposes,
+// as you will need the contents of salt_len too.
 inline static std::string getSRPVerifier(const std::string &name,
 	const std::string &password, char ** salt, size_t salt_len)
 {
