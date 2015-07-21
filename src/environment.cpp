@@ -1267,6 +1267,50 @@ void ServerEnvironment::step(float dtime)
 		*/
 		removeRemovedObjects();
 	}
+
+	/*
+		Manage particle spawner expiration
+	*/
+	if (m_particle_management_interval.step(dtime, 1.0)) {
+		for(std::map<u32, float>::iterator i =
+		    m_particle_spawners.begin();
+		    i != m_particle_spawners.end();) {
+			//non expiring spawners
+			if (i->second <= -1.f) {
+				i++;
+				continue;
+			}
+
+			i->second -= 1.0;
+			if (i->second < 0.f)
+				m_particle_spawners.erase(i++);
+			else
+				i++;
+		}
+	}
+}
+
+u32 ServerEnvironment::addParticleSpawner(float exptime)
+{
+	// Timers with lifetime 0 do not expire
+	float time = exptime > 0.f ? exptime : -1.f;
+
+	u32 id = 0;
+	for (;;) { // look for unused particlespawner id
+		id++;
+		std::map<u32, float>::iterator f;
+		f = m_particle_spawners.find(id);
+		if (f == m_particle_spawners.end()) {
+			m_particle_spawners[id] = time;
+			break;
+		}
+	}
+	return id;
+}
+
+void ServerEnvironment::deleteParticleSpawner(u32 id)
+{
+	m_particle_spawners.erase(id);
 }
 
 ServerActiveObject* ServerEnvironment::getActiveObject(u16 id)

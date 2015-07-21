@@ -3061,19 +3061,7 @@ u32 Server::addParticleSpawner(const char *playername, u16 amount, float spawnti
 	if(!player)
 		return -1;
 
-	u32 id = 0;
-	for(;;) // look for unused particlespawner id
-	{
-		id++;
-		if (std::find(m_particlespawner_ids.begin(),
-				m_particlespawner_ids.end(), id)
-				== m_particlespawner_ids.end())
-		{
-			m_particlespawner_ids.push_back(id);
-			break;
-		}
-	}
-
+	u32 id = m_env->addParticleSpawner(spawntime);
 	SendAddParticleSpawner(player->peer_id, amount, spawntime,
 		minpos, maxpos, minvel, maxvel, minacc, maxacc,
 		minexptime, maxexptime, minsize, maxsize,
@@ -3090,19 +3078,7 @@ u32 Server::addParticleSpawnerAll(u16 amount, float spawntime,
 	float minsize, float maxsize,
 	bool collisiondetection, bool vertical, const std::string &texture)
 {
-	u32 id = 0;
-	for(;;) // look for unused particlespawner id
-	{
-		id++;
-		if (std::find(m_particlespawner_ids.begin(),
-				m_particlespawner_ids.end(), id)
-				== m_particlespawner_ids.end())
-		{
-			m_particlespawner_ids.push_back(id);
-			break;
-		}
-	}
-
+	u32 id = m_env->addParticleSpawner(spawntime);
 	SendAddParticleSpawner(PEER_ID_INEXISTENT, amount, spawntime,
 		minpos, maxpos, minvel, maxvel, minacc, maxacc,
 		minexptime, maxexptime, minsize, maxsize,
@@ -3117,19 +3093,13 @@ void Server::deleteParticleSpawner(const char *playername, u32 id)
 	if(!player)
 		return;
 
-	m_particlespawner_ids.erase(
-			std::remove(m_particlespawner_ids.begin(),
-			m_particlespawner_ids.end(), id),
-			m_particlespawner_ids.end());
+	m_env->deleteParticleSpawner(id);
 	SendDeleteParticleSpawner(player->peer_id, id);
 }
 
 void Server::deleteParticleSpawnerAll(u32 id)
 {
-	m_particlespawner_ids.erase(
-			std::remove(m_particlespawner_ids.begin(),
-			m_particlespawner_ids.end(), id),
-			m_particlespawner_ids.end());
+	m_env->deleteParticleSpawner(id);
 	SendDeleteParticleSpawner(PEER_ID_INEXISTENT, id);
 }
 

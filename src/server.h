@@ -645,11 +645,6 @@ private:
 	*/
 	// key = name
 	std::map<std::string, Inventory*> m_detached_inventories;
-
-	/*
-		Particles
-	*/
-	std::vector<u32> m_particlespawner_ids;
 };
 
 /*
