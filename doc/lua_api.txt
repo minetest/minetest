@@ -65,6 +65,15 @@ e.g.
 The game directory can contain the file minetest.conf, which will be used
 to set default settings when running the particular game.
 
+### Menu images
+
+Games can provide custom main menu images. They are put inside a `menu` directory inside the game directory.
+
+The images are named `$identifier.png`, where `$identifier` is one of `overlay,background,footer,header`.
+If you want to specify multiple images for one identifier, add additional images named like `$identifier.$n.png`, with an ascending number $n starting with 1,
+and a random image will be chosen from the provided ones.
+
+
 Mod load path
 -------------
 Generic:
@@ -1711,7 +1720,7 @@ Helper functions
             max_jitter = 0.5,          -- maximum packet time jitter
             avg_jitter = 0.03,         -- average packet time jitter
             connection_uptime = 200,   -- seconds since client connected
-    
+
             -- following information is available on debug build only!!!
             -- DO NOT USE IN MODS
             --ser_vers = 26,             -- serialization version used by client
