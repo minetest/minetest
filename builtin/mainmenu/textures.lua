@@ -144,10 +144,11 @@ function mm_texture.set_game(identifier, gamedetails)
 	end
 	
 	-- Find out how many randomized textures the subgame provides
-	local n, filename
+	local n = 0
+	local filename
 	local menu_files = core.get_dir_list(gamedetails.path .. DIR_DELIM .. "menu", false)
 	for i = 1, #menu_files do
-		local filename = identifier .. "." .. i .. ".png"
+		filename = identifier .. "." .. i .. ".png"
 		if table.indexof(menu_files, filename) == -1 then
 			n = i - 1
 			break
