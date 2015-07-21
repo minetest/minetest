@@ -263,6 +263,8 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 			// Take care of default passwords.
 			client->enc_pwd = getSRPVerifier(playerName, default_password);
 			auth_mechs |= AUTH_MECHANISM_SRP;
+			// Create auth, but only on successful login
+			client->create_player_on_auth_success = true;
 		}
 	}
 
@@ -1858,14 +1860,8 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 		}
 
 		std::string initial_ver_key;
-		std::string raw_default_password = g_settings->get("default_password");
-		// If default_password is empty, allow any initial password
-		if (raw_default_password.length() == 0) {
-			initial_ver_key = encodeSRPVerifier(verification_key, salt);
-		} else {
-			initial_ver_key = getSRPVerifier(playername, raw_default_password);
-		}
 
+		initial_ver_key = encodeSRPVerifier(verification_key, salt);
 		m_script->createAuth(playername, initial_ver_key);
 
 		acceptAuth(pkt->getPeerId(), false);
@@ -2070,6 +2066,20 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_PASSWORD);
 			return;
 		}
+	}
+
+	if (client->create_player_on_auth_success) {
+		std::string playername = client->getName();
+		m_script->createAuth(playername, client->enc_pwd);
+
+		std::string checkpwd; // not used, but needed for passing something
+		if (!m_script->getAuth(playername, &checkpwd, NULL)) {
+			actionstream << "Server: " << playername << " cannot be authenticated"
+				<< " (auth handler does not work?)" << std::endl;
+			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_SERVER_FAIL);
+			return;
+		}
+		client->create_player_on_auth_success = false;
 	}
 
 	acceptAuth(pkt->getPeerId(), wantSudo);

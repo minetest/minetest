@@ -232,6 +232,7 @@ public:
 
 	/* Authentication information */
 	std::string enc_pwd;
+	bool create_player_on_auth_success;
 	AuthMechanism chosen_mech;
 	void * auth_data;
 	u32 allowed_auth_mechs;
@@ -246,6 +247,7 @@ public:
 		peer_id(PEER_ID_INEXISTENT),
 		serialization_version(SER_FMT_VER_INVALID),
 		net_proto_version(0),
+		create_player_on_auth_success(false),
 		chosen_mech(AUTH_MECHANISM_NONE),
 		auth_data(NULL),
 		m_time_from_building(9999),
