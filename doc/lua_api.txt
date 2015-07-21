@@ -1833,6 +1833,7 @@ Call these functions only at load time!
         * `dug_too_fast`
 * `minetest.register_on_chat_message(func(name, message))`
     * Called always when a player says something
+    * Return `true` to mark the message as handled, which means that it will not be sent to other players
 * `minetest.register_on_player_receive_fields(func(player, formname, fields))`
     * Called when a button is pressed in player's inventory form
     * Newest functions are called first
