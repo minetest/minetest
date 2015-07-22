@@ -674,7 +674,7 @@ int ModApiMapgen::l_set_gen_notify(lua_State *L)
 		lua_pushnil(L);
 		while (lua_next(L, 2)) {
 			if (lua_isnumber(L, -1))
-				emerge->gen_notify_on_deco_ids.insert(lua_tonumber(L, -1));
+				emerge->gen_notify_on_deco_ids.insert((u32)lua_tonumber(L, -1));
 			lua_pop(L, 1);
 		}
 	}
