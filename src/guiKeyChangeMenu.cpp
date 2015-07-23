@@ -62,6 +62,7 @@ enum
 	// other
 	GUI_ID_CB_AUX1_DESCENDS,
 	GUI_ID_CB_DOUBLETAP_JUMP,
+	GUI_ID_CB_INVERT_MOUSE
 };
 
 GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
@@ -184,6 +185,21 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		}
 		offset += v2s32(0, 25);
 	}
+	
+		{
+		s32 option_x = offset.X;
+		s32 option_y = offset.Y + 5;
+		u32 option_w = 380;
+		{
+			core::rect<s32> rect(0, 0, option_w, 30);
+			rect += topleft + v2s32(option_x, option_y);
+			const wchar_t *text = wgettext("Invert Mouse");
+			Environment->addCheckBox(g_settings->getBool("invert_mouse"), rect, this,
+					GUI_ID_CB_INVERT_MOUSE, text);
+			delete[] text;
+		}
+		offset += v2s32(0, 25);
+	}
 
 	{
 		core::rect < s32 > rect(0, 0, 100, 30);
@@ -237,6 +253,11 @@ bool GUIKeyChangeMenu::acceptInput()
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_DOUBLETAP_JUMP);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
 			g_settings->setBool("doubletap_jump", ((gui::IGUICheckBox*)e)->isChecked());
+	}
+		{
+		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_INVERT_MOUSE);
+		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
+			g_settings->setBool("invert_mouse", ((gui::IGUICheckBox*)e)->isChecked());
 	}
 
 	clearKeyCache();
