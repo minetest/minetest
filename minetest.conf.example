@@ -235,11 +235,11 @@
 #generate_normalmaps = false
 #    Set to true enables on the fly normalmap generation (Emboss effect).
 #    Requires bumpmapping enabled.
-#normalmaps_strength = 0.6
+#normalmaps_strength = 0.8
 #    Strength of generated normalmaps
-#normalmaps_smooth = 0
-#    Defines sampling step of texture (0 - 2).
-#    A higher value results in smoother normal maps.
+#normalmaps_smooth = 4
+#    Defines sampling step of texture (2^normalmaps_smooth).
+#    A higher value results in normal maps with higher resolution.
 #parallax_occlusion_mode = 1
 #    0 = parallax occlusion with slope information (faster)
 #    1 = relief mapping (slower, more accurate)

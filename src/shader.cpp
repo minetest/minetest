@@ -688,24 +688,8 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 	shaders_header += "#define NORMALMAPS_STRENGTH ";
 	shaders_header += ftos(g_settings->getFloat("normalmaps_strength"));
 	shaders_header += "\n";
-	float sample_step;
-	int smooth = (int)g_settings->getFloat("normalmaps_smooth");
-	switch (smooth){
-	case 0:
-		sample_step = 0.0078125; // 1.0 / 128.0
-		break;
-	case 1:
-		sample_step = 0.00390625; // 1.0 / 256.0
-		break;
-	case 2:
-		sample_step = 0.001953125; // 1.0 / 512.0
-		break;
-	default:
-		sample_step = 0.0078125;
-		break;
-	}
 	shaders_header += "#define SAMPLE_STEP ";
-	shaders_header += ftos(sample_step);
+	shaders_header += ftos(1 / pow(2, (u8)g_settings->getFloat("normalmaps_smooth")));
 	shaders_header += "\n";
 
 	if (g_settings->getBool("enable_bumpmapping"))
