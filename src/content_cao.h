@@ -178,6 +178,8 @@ public:
 
 	void updateLight(u8 light_at_pos);
 
+	void updateLightNoCheck(u8 light_at_pos);
+
 	v3s16 getLightPosition();
 
 	void updateNodePos();
