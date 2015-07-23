@@ -985,19 +985,37 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 
 void GenericCAO::updateLight(u8 light_at_pos)
 {
+	// Don't update light of attached one
+	if (getParent() != NULL) {
+		return;
+	}
+
+	updateLightNoCheck(light_at_pos);
+
+	// Update light of all children
+	for (std::vector<u16>::size_type i = 0; i < m_children.size(); i++) {
+		ClientActiveObject *obj = m_env->getActiveObject(m_children[i]);
+		if (obj) {
+			obj->updateLightNoCheck(light_at_pos);
+		}
+	}
+}
+
+void GenericCAO::updateLightNoCheck(u8 light_at_pos)
+{
 	u8 li = decode_light(light_at_pos);
-	if(li != m_last_light)
-	{
+	if (li != m_last_light)	{
 		m_last_light = li;
 		video::SColor color(255,li,li,li);
-		if(m_meshnode)
+		if (m_meshnode) {
 			setMeshColor(m_meshnode->getMesh(), color);
-		if(m_animated_meshnode)
+		} else if (m_animated_meshnode) {
 			setMeshColor(m_animated_meshnode->getMesh(), color);
-		if(m_wield_meshnode)
+		} else if (m_wield_meshnode) {
 			m_wield_meshnode->setColor(color);
-		if(m_spritenode)
+		} else if (m_spritenode) {
 			m_spritenode->setColor(color);
+		}
 	}
 }
 
