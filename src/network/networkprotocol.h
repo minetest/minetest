@@ -134,7 +134,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add TileDef tileable_horizontal, tileable_vertical flags
 */
 
-#define LATEST_PROTOCOL_VERSION 25
+#define LATEST_PROTOCOL_VERSION 26
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13
