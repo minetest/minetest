@@ -37,7 +37,7 @@ tab_credits = {
 				",kahrl <kahrl@gmx.net>,"..
 				",sapier,"..
 				",ShadowNinja <shadowninja@minetest.net>,"..
-				",Nathanael Courant (Nore/Novatux) <nore@mesecons.net>,"..
+				",Nathanael Courant (Nore/Ekdohibs) <nore@mesecons.net>,"..
 				",BlockMen,"..
 				",Craig Robbins (Zeno),"..
 				",Loic Blot (nerzhul/nrz),"..
