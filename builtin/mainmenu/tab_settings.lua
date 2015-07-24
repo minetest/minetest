@@ -113,18 +113,6 @@ local function antialiasing_fname_to_name(fname)
    return "0"
 end
 
-local function video_driver_fname_to_name(selected_driver)
-	local video_drivers = core.get_video_drivers()
-
-	for i=1, #video_drivers do
-		if selected_driver == video_drivers[i].friendly_name then
-			return video_drivers[i].name:lower()
-		end
-	end
-
-	return ""
-end
-
 local function dlg_confirm_reset_formspec(data)
 	local retval =
 		"size[8,3]" ..
@@ -213,23 +201,6 @@ local function scrollbar_to_gui_scale(value)
 end
 
 local function formspec(tabview, name, tabdata)
-	local video_drivers = core.get_video_drivers()
-	local current_video_driver = core.setting_get("video_driver"):lower()
-
-	local driver_formspec_string = ""
-	local driver_current_idx = 0
-
-	for i=2, #video_drivers do
-		driver_formspec_string = driver_formspec_string .. video_drivers[i].friendly_name
-		if i ~= #video_drivers then
-			driver_formspec_string = driver_formspec_string .. ","
-		end
-
-		if current_video_driver == video_drivers[i].name:lower() then
-			driver_current_idx = i - 1
-		end
-	end
-
 	local tab_string =
 		"box[0,0;3.5,4.0;#999999]" ..
 		"checkbox[0.25,0;cb_smooth_lighting;".. fgettext("Smooth Lighting")
@@ -247,7 +218,6 @@ local function formspec(tabview, name, tabdata)
 		"dropdown[0.25,3.2;3.3;dd_leaves_style;" .. leaves_style[1][1] .. ";"
 				.. getLeavesStyleSettingIndex() .. "]" ..
 		"box[3.75,0;3.75,3.45;#999999]" ..
-		"box[3.75,0;3.75,4.7;#999999]" ..
 		"label[3.85,0.1;".. fgettext("Texturing:") .. "]"..
 		"dropdown[3.85,0.55;3.85;dd_filters;" .. filters[1][1] .. ";"
 				.. getFilterSettingIndex() .. "]" ..
@@ -256,11 +226,6 @@ local function formspec(tabview, name, tabdata)
 		"label[3.85,2.15;".. fgettext("Antialiasing:") .. "]"..
 		"dropdown[3.85,2.6;3.85;dd_antialiasing;" .. antialiasing[1][1] .. ";"
 		.. getAntialiasingSettingIndex() .. "]" ..
-		"label[3.85,3.4;".. fgettext("Rendering:") .. "]"..
-		"dropdown[3.85,3.85;3.85;dd_video_driver;"
-				.. driver_formspec_string .. ";" .. driver_current_idx .. "]" ..
-		"tooltip[dd_video_driver;" ..
-				fgettext("Restart minetest for driver change to take effect") .. "]" ..
 		"box[7.75,0;4,4;#999999]" ..
 		"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
 				.. dump(core.setting_getbool("enable_shaders")) .. "]"
@@ -421,11 +386,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 	if fields["dd_leaves_style"] == leaves_style_labels[1] then
 		core.setting_set("leaves_style", leaves_style[2][1])
-		ddhandled = true
-	end
-	if fields["dd_video_driver"] then
-		core.setting_set("video_driver",
-			video_driver_fname_to_name(fields["dd_video_driver"]))
 		ddhandled = true
 	end
 	if fields["dd_filters"] == dd_filter_labels[1] then
