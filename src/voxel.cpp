@@ -390,7 +390,6 @@ void VoxelManipulator::unspreadLight(enum LightBank bank, v3s16 p, u8 oldlight,
 	}
 }
 
-#if 1
 /*
 	Goes recursively through the neighbours of the node.
 
@@ -421,115 +420,6 @@ void VoxelManipulator::unspreadLight(enum LightBank bank,
 		unspreadLight(bank, j->first, j->second, light_sources, nodemgr);
 	}
 }
-#endif
-
-#if 0
-/*
-	Goes recursively through the neighbours of the node.
-
-	Alters only transparent nodes.
-
-	If the lighting of the neighbour is lower than the lighting of
-	the node was (before changing it to 0 at the step before), the
-	lighting of the neighbour is set to 0 and then the same stuff
-	repeats for the neighbour.
-
-	The ending nodes of the routine are stored in light_sources.
-	This is useful when a light is removed. In such case, this
-	routine can be called for the light node and then again for
-	light_sources to re-light the area without the removed light.
-
-	values of from_nodes are lighting values.
-*/
-void VoxelManipulator::unspreadLight(enum LightBank bank,
-		core::map<v3s16, u8> & from_nodes,
-		core::map<v3s16, bool> & light_sources)
-{
-	v3s16 dirs[6] = {
-		v3s16(0,0,1), // back
-		v3s16(0,1,0), // top
-		v3s16(1,0,0), // right
-		v3s16(0,0,-1), // front
-		v3s16(0,-1,0), // bottom
-		v3s16(-1,0,0), // left
-	};
-
-	if(from_nodes.size() == 0)
-		return;
-
-	core::map<v3s16, u8> unlighted_nodes;
-	core::map<v3s16, u8>::Iterator j;
-	j = from_nodes.getIterator();
-
-	for(; j.atEnd() == false; j++)
-	{
-		v3s16 pos = j.getNode()->getKey();
-
-		addArea(VoxelArea(pos - v3s16(1,1,1), pos + v3s16(1,1,1)));
-
-		//MapNode &n = m_data[m_area.index(pos)];
-
-		u8 oldlight = j.getNode()->getValue();
-
-		// Loop through 6 neighbors
-		for(u16 i=0; i<6; i++)
-		{
-			// Get the position of the neighbor node
-			v3s16 n2pos = pos + dirs[i];
-
-			u32 n2i = m_area.index(n2pos);
-
-			if(m_flags[n2i] & VOXELFLAG_NO_DATA)
-				continue;
-
-			MapNode &n2 = m_data[n2i];
-
-			/*
-				If the neighbor is dimmer than what was specified
-				as oldlight (the light of the previous node)
-			*/
-			if(n2.getLight(bank, nodemgr) < oldlight)
-			{
-				/*
-					And the neighbor is transparent and it has some light
-				*/
-				if(nodemgr->get(n2).light_propagates && n2.getLight(bank, nodemgr) != 0)
-				{
-					/*
-						Set light to 0 and add to queue
-					*/
-
-					u8 current_light = n2.getLight(bank, nodemgr);
-					n2.setLight(bank, 0);
-
-					unlighted_nodes.insert(n2pos, current_light);
-
-					/*
-						Remove from light_sources if it is there
-						NOTE: This doesn't happen nearly at all
-					*/
-					/*if(light_sources.find(n2pos))
-					{
-						std::cout<<"Removed from light_sources"<<std::endl;
-						light_sources.remove(n2pos);
-					}*/
-				}
-			}
-			else{
-				light_sources.insert(n2pos, true);
-			}
-		}
-	}
-
-	/*dstream<<"unspreadLight(): Changed block "
-			<<blockchangecount<<" times"
-			<<" for "<<from_nodes.size()<<" nodes"
-			<<std::endl;*/
-
-	if(unlighted_nodes.size() > 0)
-		unspreadLight(bank, unlighted_nodes, light_sources);
-}
-#endif
 
 void VoxelManipulator::spreadLight(enum LightBank bank, v3s16 p,
 		INodeDefManager *nodemgr)
@@ -594,36 +484,9 @@ void VoxelManipulator::spreadLight(enum LightBank bank, v3s16 p,
 	}
 }
 
-#if 0
-/*
-	Lights neighbors of from_nodes, collects all them and then
-	goes on recursively.
-
-	NOTE: This is faster on small areas but will overflow the
-	      stack on large areas. Thus it is not used.
-*/
-void VoxelManipulator::spreadLight(enum LightBank bank,
-		core::map<v3s16, bool> & from_nodes)
-{
-	if(from_nodes.size() == 0)
-		return;
-
-	core::map<v3s16, bool> lighted_nodes;
-	core::map<v3s16, bool>::Iterator j;
-	j = from_nodes.getIterator();
-
-	for(; j.atEnd() == false; j++)
-	{
-		v3s16 pos = j.getNode()->getKey();
-
-		spreadLight(bank, pos);
-	}
-}
-#endif
 
 const MapNode VoxelManipulator::ContentIgnoreNode = MapNode(CONTENT_IGNORE);
 
-#if 1
 /*
 	Lights neighbors of from_nodes, collects all them and then
 	goes on recursively.
@@ -716,6 +579,5 @@ void VoxelManipulator::spreadLight(enum LightBank bank,
 	if(!lighted_nodes.empty())
 		spreadLight(bank, lighted_nodes, nodemgr);
 }
-#endif
 
 //END

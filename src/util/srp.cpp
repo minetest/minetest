@@ -172,7 +172,7 @@ static NGConstant *new_ng( SRP_NGType ng_type, const char *n_hex, const char *g_
 	mpz_init(ng->N);
 	mpz_init(ng->g);
 
-	if (!ng || !ng->N || !ng->g)
+	if (!ng)
 		return 0;
 
 	if (ng_type != SRP_NG_CUSTOM) {
@@ -823,7 +823,7 @@ struct SRPUser *srp_user_new(SRP_HashAlgorithm alg, SRP_NGType ng_type,
 	mpz_init(usr->A);
 	mpz_init(usr->S);
 
-	if (!usr->ng || !usr->a || !usr->A || !usr->S)
+	if (!usr->ng)
 		goto err_exit;
 
 	usr->username = (char*)malloc(ulen);
