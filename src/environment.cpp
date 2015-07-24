@@ -1312,51 +1312,6 @@ u16 ServerEnvironment::addActiveObject(ServerActiveObject *object)
 	return id;
 }
 
-#if 0
-bool ServerEnvironment::addActiveObjectAsStatic(ServerActiveObject *obj)
-{
-	assert(obj);
-
-	v3f objectpos = obj->getBasePosition();
-
-	// The block in which the object resides in
-	v3s16 blockpos_o = getNodeBlockPos(floatToInt(objectpos, BS));
-
-	/*
-		Update the static data
-	*/
-
-	// Create new static object
-	std::string staticdata = obj->getStaticData();
-	StaticObject s_obj(obj->getType(), objectpos, staticdata);
-	// Add to the block where the object is located in
-	v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
-	// Get or generate the block
-	MapBlock *block = m_map->emergeBlock(blockpos);
-
-	bool succeeded = false;
-
-	if(block)
-	{
-		block->m_static_objects.insert(0, s_obj);
-		block->raiseModified(MOD_STATE_WRITE_AT_UNLOAD,
-				"addActiveObjectAsStatic");
-		succeeded = true;
-	}
-	else{
-		infostream<<"ServerEnvironment::addActiveObjectAsStatic: "
-				<<"Could not find or generate "
-				<<"a block for storing static object"<<std::endl;
-		succeeded = false;
-	}
-
-	if(obj->environmentDeletes())
-		delete obj;
-
-	return succeeded;
-}
-#endif
-
 /*
 	Finds out what new objects have been added to
 	inside a radius around a position
@@ -2180,15 +2135,6 @@ void ClientEnvironment::step(float dtime)
 
 					v3f d = d_wanted.normalize() * dl;
 					speed += d;
-
-#if 0 // old code
-					if(speed.X > lplayer->movement_liquid_fluidity + lplayer->movement_liquid_fluidity_smooth)	speed.X -= lplayer->movement_liquid_fluidity_smooth;
-					if(speed.X < -lplayer->movement_liquid_fluidity - lplayer->movement_liquid_fluidity_smooth)	speed.X += lplayer->movement_liquid_fluidity_smooth;
-					if(speed.Y > lplayer->movement_liquid_fluidity + lplayer->movement_liquid_fluidity_smooth)	speed.Y -= lplayer->movement_liquid_fluidity_smooth;
-					if(speed.Y < -lplayer->movement_liquid_fluidity - lplayer->movement_liquid_fluidity_smooth)	speed.Y += lplayer->movement_liquid_fluidity_smooth;
-					if(speed.Z > lplayer->movement_liquid_fluidity + lplayer->movement_liquid_fluidity_smooth)	speed.Z -= lplayer->movement_liquid_fluidity_smooth;
-					if(speed.Z < -lplayer->movement_liquid_fluidity - lplayer->movement_liquid_fluidity_smooth)	speed.Z += lplayer->movement_liquid_fluidity_smooth;
-#endif
 				}
 
 				lplayer->setSpeed(speed);
