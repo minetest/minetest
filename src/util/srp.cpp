@@ -166,6 +166,15 @@ static struct NGHex global_Ng_constants[] = {
 };
 
 
+static void delete_ng(NGConstant *ng)
+{
+	if (ng) {
+		mpz_clear(ng->N);
+		mpz_clear(ng->g);
+		free(ng);
+	}
+}
+
 static NGConstant *new_ng( SRP_NGType ng_type, const char *n_hex, const char *g_hex )
 {
 	NGConstant *ng = (NGConstant *) malloc(sizeof(NGConstant));
@@ -180,21 +189,17 @@ static NGConstant *new_ng( SRP_NGType ng_type, const char *n_hex, const char *g_
 		g_hex = global_Ng_constants[ ng_type ].g_hex;
 	}
 
-	mpz_set_str(ng->N, n_hex, 16);
-	mpz_set_str(ng->g, g_hex, 16);
+	int rv = 0;
+	rv = mpz_set_str(ng->N, n_hex, 16);
+	rv = rv | mpz_set_str(ng->g, g_hex, 16);
+
+	if (rv) {
+		delete_ng(ng);
+		return 0;
+	}
 
 	return ng;
 }
-
-static void delete_ng( NGConstant *ng )
-{
-	if (ng) {
-		mpz_clear(ng->N);
-		mpz_clear(ng->g);
-		free(ng);
-	}
-}
-
 
 
 typedef union
@@ -849,6 +854,8 @@ err_exit:
 		mpz_clear(usr->a);
 		mpz_clear(usr->A);
 		mpz_clear(usr->S);
+		if (usr->ng)
+			delete_ng(usr->ng);
 		if (usr->username)
 			free(usr->username);
 		if (usr->username_verifier)
