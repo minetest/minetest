@@ -665,9 +665,9 @@ private:
 /*
 	Runs a simple dedicated server loop.
 
-	Shuts down when run is set to false.
+	Shuts down when kill is set to true.
 */
-void dedicated_server_loop(Server &server, bool &run);
+void dedicated_server_loop(Server &server, bool &kill);
 
 #endif
 
