@@ -68,9 +68,9 @@ local dd_antialiasing_labels = {
 }
 
 local antialiasing = {
-   {dd_antialiasing_labels[1]..","..dd_antialiasing_labels[2]..","..
-       dd_antialiasing_labels[3]..","..dd_antialiasing_labels[4]},
-   {"0", "2", "4", "8"}
+	{dd_antialiasing_labels[1]..","..dd_antialiasing_labels[2]..","..
+		dd_antialiasing_labels[3]..","..dd_antialiasing_labels[4]},
+	{"0", "2", "4", "8"}
 }
 
 local function getFilterSettingIndex()
@@ -95,7 +95,7 @@ end
 
 local function getAntialiasingSettingIndex()
 	local antialiasing_setting = core.setting_get("fsaa")
-	for i=1, #(antialiasing[2]) do
+	for i = 1, #(antialiasing[2]) do
 		if antialiasing_setting == antialiasing[2][i] then
 			return i
 		end
@@ -104,13 +104,12 @@ local function getAntialiasingSettingIndex()
 end
 
 local function antialiasing_fname_to_name(fname)
-   for i=1, #(dd_antialiasing_labels) do
-      if fname == dd_antialiasing_labels[i] then
-         return antialiasing[2][i]
-      end
-   end
-
-   return "0"
+	for i = 1, #(dd_antialiasing_labels) do
+		if fname == dd_antialiasing_labels[i] then
+			return antialiasing[2][i]
+		end
+	end
+	return 0
 end
 
 local function dlg_confirm_reset_formspec(data)
@@ -418,8 +417,11 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.setting_set("anisotropic_filter", "true")
 		ddhandled = true
 	end
-	core.setting_set("fsaa",
-		antialiasing_fname_to_name(fields["dd_antialiasing"]))
+	if fields["dd_antialiasing"] then
+		core.setting_set("fsaa",
+			antialiasing_fname_to_name(fields["dd_antialiasing"]))
+		ddhandled = true
+	end
 
 	return ddhandled
 end
