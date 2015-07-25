@@ -45,6 +45,16 @@ int ModApiServer::l_get_server_status(lua_State *L)
 	return 1;
 }
 
+// print(text)
+int ModApiServer::l_print(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	std::string text;
+	text = luaL_checkstring(L, 1);
+	getServer(L)->printToConsoleOnly(text);
+	return 0;
+}
+
 // chat_send_all(text)
 int ModApiServer::l_chat_send_all(lua_State *L)
 {
@@ -504,6 +514,8 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(get_current_modname);
 	API_FCT(get_modpath);
 	API_FCT(get_modnames);
+
+	API_FCT(print);
 
 	API_FCT(chat_send_all);
 	API_FCT(chat_send_player);

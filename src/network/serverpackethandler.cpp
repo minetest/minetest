@@ -1059,69 +1059,14 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 		return;
 	}
 
-	// If something goes wrong, this player is to blame
-	RollbackScopeActor rollback_scope(m_rollback,
-			std::string("player:")+player->getName());
-
 	// Get player name of this client
-	std::wstring name = narrow_to_wide(player->getName());
+	std::string name = player->getName();
+	std::wstring wname = narrow_to_wide(name);
 
-	// Run script hook
-	bool ate = m_script->on_chat_message(player->getName(),
-			wide_to_narrow(message));
-	// If script ate the message, don't proceed
-	if (ate)
-		return;
-
-	// Line to send to players
-	std::wstring line;
-	// Whether to send to the player that sent the line
-	bool send_to_sender_only = false;
-
-	// Commands are implemented in Lua, so only catch invalid
-	// commands that were not "eaten" and send an error back
-	if (message[0] == L'/') {
-		message = message.substr(1);
-		send_to_sender_only = true;
-		if (message.length() == 0)
-			line += L"-!- Empty command";
-		else
-			line += L"-!- Invalid command: " + str_split(message, L' ')[0];
-	}
-	else {
-		if (checkPriv(player->getName(), "shout")) {
-			line += L"<";
-			line += name;
-			line += L"> ";
-			line += message;
-		} else {
-			line += L"-!- You don't have permission to shout.";
-			send_to_sender_only = true;
-		}
-	}
-
-	if (line != L"")
-	{
-		/*
-			Send the message to sender
-		*/
-		if (send_to_sender_only) {
-			SendChatMessage(pkt->getPeerId(), line);
-		}
-		/*
-			Send the message to others
-		*/
-		else {
-			actionstream << "CHAT: " << wide_to_narrow(line)<<std::endl;
-
-			std::vector<u16> clients = m_clients.getClientIDs();
-
-			for (std::vector<u16>::iterator i = clients.begin();
-				i != clients.end(); ++i) {
-				if (*i != pkt->getPeerId())
-					SendChatMessage(*i, line);
-			}
-		}
+	std::wstring answer_to_sender = handleChat(name, wname, message, pkt->getPeerId());
+	if (!answer_to_sender.empty()) {
+		// Send the answer to sender
+		SendChatMessage(pkt->getPeerId(), answer_to_sender);
 	}
 }
 

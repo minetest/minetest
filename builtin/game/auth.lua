@@ -88,16 +88,10 @@ core.builtin_auth_handler = {
 		-- always has an empty password, otherwise use default, which is
 		-- usually empty too)
 		local new_password_hash = ""
-		-- If not in authentication table, return nil
-		if not core.auth_table[name] then
-			return nil
-		end
 		-- Figure out what privileges the player should have.
 		-- Take a copy of the privilege table
 		local privileges = {}
-		for priv, _ in pairs(core.auth_table[name].privileges) do
-			privileges[priv] = true
-		end
+		local is_admin = false
 		-- If singleplayer, give all privileges except those marked as give_to_singleplayer = false
 		if core.is_singleplayer() then
 			for priv, def in pairs(core.registered_privileges) do
@@ -110,13 +104,31 @@ core.builtin_auth_handler = {
 			for priv, def in pairs(core.registered_privileges) do
 				privileges[priv] = true
 			end
+			is_admin = true
 		end
+
+		local auth_table_entry = core.auth_table[name]
+		if auth_table_entry then
+			for priv, _ in pairs(auth_table_entry.privileges) do
+				privileges[priv] = true
+			end
+		-- If the admin doesn't already have an account, disallow creation.
+		-- but pretend there is an account so that the ncurses terminal user
+		-- can do stuff.
+		elseif is_admin then
+			-- create a fake password entry so that nobody logs in as the admin
+			auth_table_entry = { password = "!", last_login = os.time() }
+		-- If not in authentication table, and no admin, return nil
+		else
+			return nil
+		end
+
 		-- All done
 		return {
-			password = core.auth_table[name].password,
+			password = auth_table_entry.password,
 			privileges = privileges,
 			-- Is set to nil if unknown
-			last_login = core.auth_table[name].last_login,
+			last_login = auth_table_entry.last_login,
 		}
 	end,
 	create_auth = function(name, password)
