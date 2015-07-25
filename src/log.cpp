@@ -181,6 +181,14 @@ void Logger::addOutput(ILogOutput *out, LogLevel lev)
 	m_outputs[lev].push_back(out);
 }
 
+void Logger::addOutputMasked(ILogOutput *out, LogLevelMask mask)
+{
+	for (size_t i = 0; i < LL_MAX; i++) {
+		if (mask & LOGLEVEL_TO_MASKLEVEL(i))
+			m_outputs[i].push_back(out);
+	}
+}
+
 void Logger::addOutputMaxLevel(ILogOutput *out, LogLevel lev)
 {
 	assert(lev < LL_MAX);
@@ -188,15 +196,19 @@ void Logger::addOutputMaxLevel(ILogOutput *out, LogLevel lev)
 		m_outputs[i].push_back(out);
 }
 
-void Logger::removeOutput(ILogOutput *out)
+LogLevelMask Logger::removeOutput(ILogOutput *out)
 {
+	LogLevelMask ret_mask = 0;
 	for (size_t i = 0; i < LL_MAX; i++) {
 		std::vector<ILogOutput *>::iterator it;
 
 		it = std::find(m_outputs[i].begin(), m_outputs[i].end(), out);
-		if (it != m_outputs[i].end())
+		if (it != m_outputs[i].end()) {
+			ret_mask |= LOGLEVEL_TO_MASKLEVEL(i);
 			m_outputs[i].erase(it);
+		}
 	}
+	return ret_mask;
 }
 
 void Logger::setLevelSilenced(LogLevel lev, bool silenced)
