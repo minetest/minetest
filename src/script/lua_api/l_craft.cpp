@@ -332,7 +332,7 @@ int ModApiCraft::l_get_craft_result(lua_State *L)
 }
 
 
-void push_craft_recipe(lua_State *L, IGameDef *gdef,
+static void push_craft_recipe(lua_State *L, IGameDef *gdef,
 		const CraftDefinition *recipe,
 		const CraftOutput &tmpout)
 {
@@ -363,11 +363,11 @@ void push_craft_recipe(lua_State *L, IGameDef *gdef,
 		lua_pushstring(L, "unknown");
 	}
 	lua_setfield(L, -2, "type");
-	lua_pushstring(L, tmpout.item.c_str());
+	lua_pushstring(L, output.item.c_str());
 	lua_setfield(L, -2, "output");
 }
 
-void push_craft_recipes(lua_State *L, IGameDef *gdef,
+static void push_craft_recipes(lua_State *L, IGameDef *gdef,
 		const std::vector<CraftDefinition*> &recipes,
 		const CraftOutput &output)
 {
