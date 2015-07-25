@@ -96,14 +96,8 @@ int ModApiParticles::l_add_particle(lua_State *L)
 		texture = getstringfield_default(L, 1, "texture", "");
 		playername = getstringfield_default(L, 1, "playername", "");
 	}
-	if (playername == "") { // spawn for all players
-		getServer(L)->spawnParticleAll(pos, vel, acc,
+	getServer(L)->spawnParticle(playername, pos, vel, acc,
 			expirationtime, size, collisiondetection, vertical, texture);
-	} else {
-		getServer(L)->spawnParticle(playername.c_str(),
-			pos, vel, acc, expirationtime,
-			size, collisiondetection, vertical, texture);
-	}
 	return 1;
 }
 
@@ -195,30 +189,18 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 		texture = getstringfield_default(L, 1, "texture", "");
 		playername = getstringfield_default(L, 1, "playername", "");
 	}
-	if (playername == "") { //spawn for all players
-		u32 id = getServer(L)->addParticleSpawnerAll(	amount, time,
-							minpos, maxpos,
-							minvel, maxvel,
-							minacc, maxacc,
-							minexptime, maxexptime,
-							minsize, maxsize,
-							collisiondetection,
-							vertical,
-							texture);
-		lua_pushnumber(L, id);
-	} else {
-		u32 id = getServer(L)->addParticleSpawner(playername.c_str(),
-							amount, time,
-							minpos, maxpos,
-							minvel, maxvel,
-							minacc, maxacc,
-							minexptime, maxexptime,
-							minsize, maxsize,
-							collisiondetection,
-							vertical,
-							texture);
-		lua_pushnumber(L, id);
-	}
+
+	u32 id = getServer(L)->addParticleSpawner(amount, time,
+			minpos, maxpos,
+			minvel, maxvel,
+			minacc, maxacc,
+			minexptime, maxexptime,
+			minsize, maxsize,
+			collisiondetection,
+			vertical,
+			texture, playername);
+	lua_pushnumber(L, id);
+
 	return 1;
 }
 
@@ -228,16 +210,12 @@ int ModApiParticles::l_delete_particlespawner(lua_State *L)
 {
 	// Get parameters
 	u32 id = luaL_checknumber(L, 1);
+	std::string playername = "";
+	if (lua_gettop(L) == 2) {
+		playername = luaL_checkstring(L, 2);
+	}
 
-	if (lua_gettop(L) == 2) // only delete for one player
-	{
-		const char *playername = luaL_checkstring(L, 2);
-		getServer(L)->deleteParticleSpawner(playername, id);
-	}
-	else // delete for all players
-	{
-		getServer(L)->deleteParticleSpawnerAll(id);
-	}
+	getServer(L)->deleteParticleSpawner(playername, id);
 	return 1;
 }
 

@@ -3067,34 +3067,36 @@ void Server::notifyPlayers(const std::wstring &msg)
 	SendChatMessage(PEER_ID_INEXISTENT,msg);
 }
 
-void Server::spawnParticle(const char *playername, v3f pos,
+void Server::spawnParticle(const std::string &playername, v3f pos,
 	v3f velocity, v3f acceleration,
 	float expirationtime, float size, bool
 	collisiondetection, bool vertical, const std::string &texture)
 {
-	Player *player = m_env->getPlayer(playername);
-	if(!player)
-		return;
-	SendSpawnParticle(player->peer_id, pos, velocity, acceleration,
+	u16 peer_id = PEER_ID_INEXISTENT;
+	if (playername != "") {
+		Player* player = m_env->getPlayer(playername.c_str());
+		if (!player)
+			return;
+		peer_id = player->peer_id;
+	}
+
+	SendSpawnParticle(peer_id, pos, velocity, acceleration,
 			expirationtime, size, collisiondetection, vertical, texture);
 }
 
-void Server::spawnParticleAll(v3f pos, v3f velocity, v3f acceleration,
-	float expirationtime, float size,
-	bool collisiondetection, bool vertical, const std::string &texture)
-{
-	SendSpawnParticle(PEER_ID_INEXISTENT,pos, velocity, acceleration,
-			expirationtime, size, collisiondetection, vertical, texture);
-}
-
-u32 Server::addParticleSpawner(const char *playername, u16 amount, float spawntime,
+u32 Server::addParticleSpawner(u16 amount, float spawntime,
 	v3f minpos, v3f maxpos, v3f minvel, v3f maxvel, v3f minacc, v3f maxacc,
 	float minexptime, float maxexptime, float minsize, float maxsize,
-	bool collisiondetection, bool vertical, const std::string &texture)
+	bool collisiondetection, bool vertical, const std::string &texture,
+	const std::string &playername)
 {
-	Player *player = m_env->getPlayer(playername);
-	if(!player)
-		return -1;
+	u16 peer_id = PEER_ID_INEXISTENT;
+	if (playername != "") {
+		Player* player = m_env->getPlayer(playername.c_str());
+		if (!player)
+			return -1;
+		peer_id = player->peer_id;
+	}
 
 	u32 id = 0;
 	for(;;) // look for unused particlespawner id
@@ -3109,7 +3111,7 @@ u32 Server::addParticleSpawner(const char *playername, u16 amount, float spawnti
 		}
 	}
 
-	SendAddParticleSpawner(player->peer_id, amount, spawntime,
+	SendAddParticleSpawner(peer_id, amount, spawntime,
 		minpos, maxpos, minvel, maxvel, minacc, maxacc,
 		minexptime, maxexptime, minsize, maxsize,
 		collisiondetection, vertical, texture, id);
@@ -3117,55 +3119,21 @@ u32 Server::addParticleSpawner(const char *playername, u16 amount, float spawnti
 	return id;
 }
 
-u32 Server::addParticleSpawnerAll(u16 amount, float spawntime,
-	v3f minpos, v3f maxpos,
-	v3f minvel, v3f maxvel,
-	v3f minacc, v3f maxacc,
-	float minexptime, float maxexptime,
-	float minsize, float maxsize,
-	bool collisiondetection, bool vertical, const std::string &texture)
+void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 {
-	u32 id = 0;
-	for(;;) // look for unused particlespawner id
-	{
-		id++;
-		if (std::find(m_particlespawner_ids.begin(),
-				m_particlespawner_ids.end(), id)
-				== m_particlespawner_ids.end())
-		{
-			m_particlespawner_ids.push_back(id);
-			break;
-		}
+	u16 peer_id = PEER_ID_INEXISTENT;
+	if (playername != "") {
+		Player* player = m_env->getPlayer(playername.c_str());
+		if (!player)
+			return;
+		peer_id = player->peer_id;
 	}
 
-	SendAddParticleSpawner(PEER_ID_INEXISTENT, amount, spawntime,
-		minpos, maxpos, minvel, maxvel, minacc, maxacc,
-		minexptime, maxexptime, minsize, maxsize,
-		collisiondetection, vertical, texture, id);
-
-	return id;
-}
-
-void Server::deleteParticleSpawner(const char *playername, u32 id)
-{
-	Player *player = m_env->getPlayer(playername);
-	if(!player)
-		return;
-
 	m_particlespawner_ids.erase(
 			std::remove(m_particlespawner_ids.begin(),
 			m_particlespawner_ids.end(), id),
 			m_particlespawner_ids.end());
-	SendDeleteParticleSpawner(player->peer_id, id);
-}
-
-void Server::deleteParticleSpawnerAll(u32 id)
-{
-	m_particlespawner_ids.erase(
-			std::remove(m_particlespawner_ids.begin(),
-			m_particlespawner_ids.end(), id),
-			m_particlespawner_ids.end());
-	SendDeleteParticleSpawner(PEER_ID_INEXISTENT, id);
+	SendDeleteParticleSpawner(peer_id, id);
 }
 
 Inventory* Server::createDetachedInventory(const std::string &name)

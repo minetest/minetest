@@ -269,34 +269,21 @@ public:
 
 	void notifyPlayer(const char *name, const std::wstring &msg);
 	void notifyPlayers(const std::wstring &msg);
-	void spawnParticle(const char *playername,
+	void spawnParticle(const std::string &playername,
 		v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
 		bool collisiondetection, bool vertical, const std::string &texture);
 
-	void spawnParticleAll(v3f pos, v3f velocity, v3f acceleration,
-		float expirationtime, float size,
-		bool collisiondetection, bool vertical, const std::string &texture);
-
-	u32 addParticleSpawner(const char *playername,
-		u16 amount, float spawntime,
+	u32 addParticleSpawner(u16 amount, float spawntime,
 		v3f minpos, v3f maxpos,
 		v3f minvel, v3f maxvel,
 		v3f minacc, v3f maxacc,
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
-		bool collisiondetection, bool vertical, const std::string &texture);
+		bool collisiondetection, bool vertical, const std::string &texture,
+		const std::string &playername);
 
-	u32 addParticleSpawnerAll(u16 amount, float spawntime,
-		v3f minpos, v3f maxpos,
-		v3f minvel, v3f maxvel,
-		v3f minacc, v3f maxacc,
-		float minexptime, float maxexptime,
-		float minsize, float maxsize,
-		bool collisiondetection, bool vertical, const std::string &texture);
-
-	void deleteParticleSpawner(const char *playername, u32 id);
-	void deleteParticleSpawnerAll(u32 id);
+	void deleteParticleSpawner(const std::string &playername, u32 id);
 
 	// Creates or resets inventory
 	Inventory* createDetachedInventory(const std::string &name);
