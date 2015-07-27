@@ -190,16 +190,16 @@ GETTEXT_ICONV_DLL               - Only when building with Gettext on Windows; pa
 GETTEXT_INCLUDE_DIR             - Only when building with Gettext; directory that contains iconv.h
 GETTEXT_LIBRARY                 - Only when building with Gettext on Windows; path to libintl.dll.a
 GETTEXT_MSGFMT                  - Only when building with Gettext; path to msgfmt/msgfmt.exe
-IRRLICHT_DLL                    - path to Irrlicht.dll
-IRRLICHT_INCLUDE_DIR            - directory that contains IrrCompileConfig.h
-IRRLICHT_LIBRARY                - path to libIrrlicht.a/libIrrlicht.so/libIrrlicht.dll.a
+IRRLICHT_DLL                    - Only on Windows; path to Irrlicht.dll
+IRRLICHT_INCLUDE_DIR            - Directory that contains IrrCompileConfig.h
+IRRLICHT_LIBRARY                - Path to libIrrlicht.a/libIrrlicht.so/libIrrlicht.dll.a/Irrlicht.lib
 LEVELDB_INCLUDE_DIR             - Only when building with LevelDB; directory that contains db.h
 LEVELDB_LIBRARY                 - Only when building with LevelDB; path to libleveldb.a/libleveldb.so/libleveldb.dll.a
 LEVELDB_DLL                     - Only when building with LevelDB on Windows; path to libleveldb.dll
-REDIS_INCLUDE_DIR               - Only when building with Redis support; directory that contains hiredis.h
-REDIS_LIBRARY                   - Only when building with Redis support; path to libhiredis.a/libhiredis.so
-SPATIAL_INCLUDE_DIR             - Only if you want to build with LibSpatial; directory that contains spatialindex/SpatialIndex.h
-SPATIAL_LIBRARY                 - Only if you want to build with LibSpatial; path to libspatialindex_c.so
+REDIS_INCLUDE_DIR               - Only when building with Redis; directory that contains hiredis.h
+REDIS_LIBRARY                   - Only when building with Redis; path to libhiredis.a/libhiredis.so
+SPATIAL_INCLUDE_DIR             - Only when building with LibSpatial; directory that contains spatialindex/SpatialIndex.h
+SPATIAL_LIBRARY                 - Only when building with LibSpatial; path to libspatialindex_c.so/spatialindex-32.lib
 LUA_INCLUDE_DIR                 - Only if you want to use LuaJIT; directory where luajit.h is located
 LUA_LIBRARY                     - Only if you want to use LuaJIT; path to libluajit.a/libluajit.so
 MINGWM10_DLL                    - Only if compiling with MinGW; path to mingwm10.dll
@@ -211,8 +211,8 @@ OPENAL_INCLUDE_DIR              - Only if building with sound; directory where a
 OPENAL_LIBRARY                  - Only if building with sound; path to libopenal.a/libopenal.so/OpenAL32.lib
 OPENGLES2_INCLUDE_DIR           - Only if building with GLES; directory that contains gl2.h
 OPENGLES2_LIBRARY               - Only if building with GLES; path to libGLESv2.a/libGLESv2.so
-SQLITE3_INCLUDE_DIR             - Only if you want to use SQLite from your OS; directory that contains sqlite3.h
-SQLITE3_LIBRARY                 - Only if you want to use the SQLite from your OS; path to libsqlite3.a/libsqlite3.so
+SQLITE3_INCLUDE_DIR             - Directory that contains sqlite3.h
+SQLITE3_LIBRARY                 - Path to libsqlite3.a/libsqlite3.so/sqlite3.lib
 VORBISFILE_DLL                  - Only if building with sound on Windows; path to libvorbisfile-3.dll
 VORBISFILE_LIBRARY              - Only if building with sound; path to libvorbisfile.a/libvorbisfile.so/libvorbisfile.dll.a
 VORBIS_DLL                      - Only if building with sound on Windows; path to libvorbis-0.dll
@@ -221,8 +221,8 @@ VORBIS_LIBRARY                  - Only if building with sound; path to libvorbis
 XXF86VM_LIBRARY                 - Only on Linux; path to libXXf86vm.a/libXXf86vm.so
 ZLIB_DLL                        - Only on Windows; path to zlib1.dll
 ZLIBWAPI_DLL                    - Only on Windows; path to zlibwapi.dll
-ZLIB_INCLUDE_DIR                - directory where zlib.h is located
-ZLIB_LIBRARY                    - path to libz.a/libz.so/zlibwapi.lib
+ZLIB_INCLUDE_DIR                - Directory that contains zlib.h
+ZLIB_LIBRARY                    - Path to libz.a/libz.so/zlibwapi.lib
 
 Compiling on Windows:
 ---------------------
