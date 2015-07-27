@@ -14,6 +14,8 @@ import java.lang.Object;
 import android.app.Activity;
 import android.content.res.AssetFileDescriptor;
 
+import android.content.Context;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -31,18 +33,18 @@ public class MinetestAssetCopy extends Activity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		
+
 		setContentView(R.layout.assetcopy);
-		
+
 		m_ProgressBar = (ProgressBar) findViewById(R.id.progressBar1);
 		m_Filename = (TextView) findViewById(R.id.textView1);
-		
+
 		Display display = getWindowManager().getDefaultDisplay();
 		m_ProgressBar.getLayoutParams().width = (int) (display.getWidth() * 0.8);
 		m_ProgressBar.invalidate();
-		
+
 		/* check if there's already a copy in progress and reuse in case it is*/
-		MinetestAssetCopy prevActivity = 
+		MinetestAssetCopy prevActivity =
 				(MinetestAssetCopy) getLastNonConfigurationInstance();
 		if(prevActivity!= null) {
 			m_AssetCopy = prevActivity.m_AssetCopy;
@@ -52,7 +54,7 @@ public class MinetestAssetCopy extends Activity
 			m_AssetCopy.execute();
 		}
 	}
-	
+
 	/* preserve asset copy background task to prevent restart of copying */
 	/* this way of doing it is not recommended for latest android version */
 	/* but the recommended way isn't available on android 2.x */
@@ -60,12 +62,12 @@ public class MinetestAssetCopy extends Activity
 	{
 		return this;
 	}
-	
+
 	ProgressBar m_ProgressBar;
 	TextView m_Filename;
-	
+
 	copyAssetTask m_AssetCopy;
-	
+
 	private class copyAssetTask extends AsyncTask<String, Integer, String>
 	{
 		private long getFullSize(String filename)
@@ -74,7 +76,7 @@ public class MinetestAssetCopy extends Activity
 			try {
 				InputStream src = getAssets().open(filename);
 				byte[] buf = new byte[4096];
-				
+
 				int len = 0;
 				while ((len = src.read(buf)) > 0)
 				{
@@ -95,70 +97,75 @@ public class MinetestAssetCopy extends Activity
 			m_filenames    = new Vector<String>();
 			m_tocopy       = new Vector<String>();
 			m_asset_size_unknown = new Vector<String>();
-			String baseDir = 
-					Environment.getExternalStorageDirectory().getAbsolutePath()
-					+ "/";
-			
-			
+
+			Context con = getApplicationContext();
+			String baseDir = con.getFilesDir().getAbsolutePath() + "/";
+//			String baseDir =
+//					Environment.getExternalStorageDirectory().getAbsolutePath()
+//					+ "/";
+
+
 			// prepare temp folder
-			File TempFolder = new File(baseDir + "Minetest/tmp/");
-			
+			File TempFolder = new File(baseDir
+				+ MtNativeActivity.ProjectName + "/tmp/");
+
 			if (!TempFolder.exists())
 			{
 				TempFolder.mkdir();
 			}
 			else {
 				File[] todel = TempFolder.listFiles();
-				
+
 				for(int i=0; i < todel.length; i++)
 				{
 					Log.v("MinetestAssetCopy","deleting: " + todel[i].getAbsolutePath());
 					todel[i].delete();
 				}
 			}
-			
+
 			// add a .nomedia file
 			try {
-				OutputStream dst = new FileOutputStream(baseDir + "Minetest/.nomedia");
+				OutputStream dst = new FileOutputStream(baseDir
+					+ MtNativeActivity.ProjectName + "/.nomedia");
 				dst.close();
 			} catch (IOException e) {
 				Log.e("MinetestAssetCopy","Failed to create .nomedia file");
 				e.printStackTrace();
 			}
-			
-			
+
+
 			// build lists from prepared data
 			BuildFolderList();
 			BuildFileList();
-			
+
 			// scan filelist
 			ProcessFileList();
-			
+
 			// doing work
 			m_copy_started = true;
 			m_ProgressBar.setMax(m_tocopy.size());
-			
+
 			for (int i = 0; i < m_tocopy.size(); i++)
 			{
 				try
 				{
 					String filename = m_tocopy.get(i);
 					publishProgress(i);
-					
+
 					boolean asset_size_unknown = false;
 					long filesize = -1;
-					
+
 					if (m_asset_size_unknown.contains(filename))
 					{
 						File testme = new File(baseDir + "/" + filename);
-						
+
 						if(testme.exists())
 						{
 							filesize = testme.length();
 						}
 						asset_size_unknown = true;
 					}
-					
+
 					InputStream src;
 					try
 					{
@@ -168,11 +175,11 @@ public class MinetestAssetCopy extends Activity
 						e.printStackTrace();
 						continue;
 					}
-					
+
 					// Transfer bytes from in to out
 					byte[] buf = new byte[1*1024];
 					int len = src.read(buf, 0, 1024);
-					
+
 					/* following handling is crazy but we need to deal with    */
 					/* compressed assets.Flash chips limited livetime due to   */
 					/* write operations, we can't allow large files to destroy */
@@ -184,7 +191,7 @@ public class MinetestAssetCopy extends Activity
 							src.close();
 							continue;
 						}
-						
+
 						if (len == buf.length)
 						{
 							src.close();
@@ -213,13 +220,13 @@ public class MinetestAssetCopy extends Activity
 						}
 						dst.write(buf, 0, len);
 						total_filesize += len;
-						
+
 						while ((len = src.read(buf)) > 0)
 						{
 							dst.write(buf, 0, len);
 							total_filesize += len;
 						}
-						
+
 						dst.close();
 						Log.v("MinetestAssetCopy","Copied file: " +
 									m_tocopy.get(i) + " (" + total_filesize +
@@ -231,7 +238,7 @@ public class MinetestAssetCopy extends Activity
 								m_tocopy.get(i) + " failed, size < 0");
 					}
 					src.close();
-				} 
+				}
 				catch (IOException e)
 				{
 					Log.e("MinetestAssetCopy","Copying file: " +
@@ -241,25 +248,25 @@ public class MinetestAssetCopy extends Activity
 			}
 			return "";
 		}
-		
-		
+
+
 		/**
 		 * update progress bar
 		 */
 		protected void onProgressUpdate(Integer... progress)
 		{
-			
+
 			if (m_copy_started)
 			{
 				boolean shortened = false;
 				String todisplay = m_tocopy.get(progress[0]);
 				m_ProgressBar.setProgress(progress[0]);
-				
+
 				// make sure our text doesn't exceed our layout width
 				Rect bounds = new Rect();
 				Paint textPaint = m_Filename.getPaint();
 				textPaint.getTextBounds(todisplay, 0, todisplay.length(), bounds);
-				
+
 				while (bounds.width() > getResources().getDisplayMetrics().widthPixels * 0.7) {
 					if (todisplay.length() < 2) {
 						break;
@@ -268,7 +275,7 @@ public class MinetestAssetCopy extends Activity
 					textPaint.getTextBounds(todisplay, 0, todisplay.length(), bounds);
 					shortened = true;
 				}
-				
+
 				if (! shortened) {
 					m_Filename.setText(todisplay);
 				}
@@ -285,7 +292,7 @@ public class MinetestAssetCopy extends Activity
 				Rect bounds = new Rect();
 				Paint textPaint = m_Filename.getPaint();
 				textPaint.getTextBounds(full_text, 0, full_text.length(), bounds);
-				
+
 				while (bounds.width() > getResources().getDisplayMetrics().widthPixels * 0.7) {
 					if (todisplay.length() < 2) {
 						break;
@@ -295,7 +302,7 @@ public class MinetestAssetCopy extends Activity
 					textPaint.getTextBounds(full_text, 0, full_text.length(), bounds);
 					shortened = true;
 				}
-				
+
 				if (! shortened) {
 					m_Filename.setText(full_text);
 				}
@@ -304,28 +311,28 @@ public class MinetestAssetCopy extends Activity
 				}
 			}
 		}
-		
+
 		/**
 		 * check al files and folders in filelist
 		 */
 		protected void ProcessFileList()
 		{
-			String FlashBaseDir = 
-					Environment.getExternalStorageDirectory().getAbsolutePath();
-			
+			Context con = getApplicationContext();
+			String FlashBaseDir = con.getFilesDir().getAbsolutePath();
+
 			Iterator itr = m_filenames.iterator();
-			
+
 			while (itr.hasNext())
 			{
 				String current_path = (String) itr.next();
 				String FlashPath = FlashBaseDir + "/" + current_path;
-				
+
 				if (isAssetFolder(current_path))
 				{
 					/* store information and update gui */
 					m_Foldername = current_path;
 					publishProgress(0);
-					
+
 					/* open file in order to check if it's a folder */
 					File current_folder = new File(FlashPath);
 					if (!current_folder.exists())
@@ -341,18 +348,18 @@ public class MinetestAssetCopy extends Activity
 									FlashPath);
 						}
 					}
-					
+
 					continue;
 				}
-				
+
 				/* if it's not a folder it's most likely a file */
 				boolean refresh = true;
-				
+
 				File testme = new File(FlashPath);
-				
+
 				long asset_filesize = -1;
 				long stored_filesize = -1;
-				
+
 				if (testme.exists())
 				{
 					try
@@ -360,7 +367,7 @@ public class MinetestAssetCopy extends Activity
 						AssetFileDescriptor fd = getAssets().openFd(current_path);
 						asset_filesize         = fd.getLength();
 						fd.close();
-					} 
+					}
 					catch (IOException e)
 					{
 						refresh = true;
@@ -368,23 +375,23 @@ public class MinetestAssetCopy extends Activity
 						Log.e("MinetestAssetCopy","Failed to open asset file \"" +
 								FlashPath + "\" for size check");
 					}
-					
+
 					stored_filesize = testme.length();
-					
+
 					if (asset_filesize == stored_filesize)
 					{
 						refresh = false;
 					}
-					
+
 				}
-				
+
 				if (refresh)
 				{
 					m_tocopy.add(current_path);
 				}
 			}
 		}
-		
+
 		/**
 		 * read list of folders prepared on package build
 		 */
@@ -394,7 +401,7 @@ public class MinetestAssetCopy extends Activity
 			{
 				InputStream is = getAssets().open("index.txt");
 				BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		
+
 				String line = reader.readLine();
 				while (line != null)
 				{
@@ -408,7 +415,7 @@ public class MinetestAssetCopy extends Activity
 				e1.printStackTrace();
 			}
 		}
-		
+
 		/**
 		 * read list of asset files prepared on package build
 		 */
@@ -419,7 +426,7 @@ public class MinetestAssetCopy extends Activity
 			{
 				InputStream is = getAssets().open("filelist.txt");
 				BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		
+
 				String line = reader.readLine();
 				while (line != null)
 				{
@@ -435,17 +442,17 @@ public class MinetestAssetCopy extends Activity
 				e1.printStackTrace();
 			}
 		}
-		
+
 		protected void onPostExecute (String result)
 		{
 			finish();
 		}
-		
+
 		protected boolean isAssetFolder(String path)
 		{
 			return m_foldernames.contains(path);
 		}
-		
+
 		boolean m_copy_started = false;
 		String m_Foldername = "media";
 		Vector<String> m_foldernames;

@@ -66,11 +66,11 @@ void android_main(android_app *app)
 	exit(retval);
 }
 
-/* handler for finished message box input */
 /* Intentionally NOT in namespace porting */
-/* TODO this doesn't work as expected, no idea why but there's a workaround   */
-/* for it right now */
 extern "C" {
+	/* handler for finished message box input */
+	/* TODO this doesn't work as expected, no idea why but there's a workaround   */
+	/* for it right now */
 	JNIEXPORT void JNICALL Java_net_minetest_MtNativeActivity_putMessageBoxResult(
 			JNIEnv * env, jclass thiz, jstring text)
 	{
@@ -78,11 +78,16 @@ extern "C" {
 				<< std::string((const char*)env->GetStringChars(text,0))
 				<< std::endl;
 	}
+
+	/* function to get project name */
+	JNIEXPORT jstring JNICALL Java_net_minetest_minetest_MtNativeActivity_getProjectName(
+			JNIEnv * env)
+	{
+		return env->NewStringUTF(PROJECT_NAME);
+	}
 }
 
 namespace porting {
-
-std::string path_storage = DIR_DELIM "sdcard" DIR_DELIM;
 
 android_app* app_global;
 JNIEnv*      jnienv;
@@ -166,27 +171,38 @@ void cleanupAndroid()
 	jvm->DetachCurrentThread();
 }
 
+void getDirForContextMethodName(const std::string &method_name)
+{
+	jmethodID dialogvalue = jnienv->GetMethodID(nativeActivity,
+		"getDialogValue", "()Ljava/lang/String;");
+
+	if (dialogvalue == 0) {
+		assert("porting::getInputDialogValue unable to find java dialog value method" == 0);
+	}
+
+	jobject result = jnienv->CallObjectMethod(app_global->activity->clazz,
+			dialogvalue);
+
+	const char* javachars = jnienv->GetStringUTFChars((jstring) result,0);
+	std::string text(javachars);
+	jnienv->ReleaseStringUTFChars((jstring) result, javachars);
+}
+
 void setExternalStorageDir(JNIEnv* lJNIEnv)
 {
-	// Android: Retrieve ablsolute path to external storage device (sdcard)
-	jclass ClassEnv      = lJNIEnv->FindClass("android/os/Environment");
-	jmethodID MethodDir  =
-			lJNIEnv->GetStaticMethodID(ClassEnv,
-					"getExternalStorageDirectory","()Ljava/io/File;");
-	jobject ObjectFile   = lJNIEnv->CallStaticObjectMethod(ClassEnv, MethodDir);
-	jclass ClassFile     = lJNIEnv->FindClass("java/io/File");
+	// Android: Retrieve ablsolute path to storage
 
-	jmethodID MethodPath =
-			lJNIEnv->GetMethodID(ClassFile, "getAbsolutePath",
-					"()Ljava/lang/String;");
-	jstring StringPath   =
-			(jstring) lJNIEnv->CallObjectMethod(ObjectFile, MethodPath);
+	jmethodID path_getter =
+		lJNIEnv->GetMethodID(nativeActivity, "getFilesDirStr",
+			"()Ljava/lang/String;");
+
+	jstring StringPath =
+		(jstring) lJNIEnv->CallObjectMethod(app_global->activity->clazz, path_getter);
 
 	const char *externalPath = lJNIEnv->GetStringUTFChars(StringPath, NULL);
 	std::string userPath(externalPath);
 	lJNIEnv->ReleaseStringUTFChars(StringPath, externalPath);
 
-	path_storage             = userPath;
 	path_user                = userPath + DIR_DELIM + PROJECT_NAME;
 	path_share               = userPath + DIR_DELIM + PROJECT_NAME;
 }
