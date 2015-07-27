@@ -100,7 +100,6 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 
 void Client::handleCommand_AuthAccept(NetworkPacket* pkt)
 {
-	m_chosen_auth_mech = AUTH_MECHANISM_NONE;
 	deleteAuthData();
 
 	v3f playerpos;
@@ -126,7 +125,6 @@ void Client::handleCommand_AuthAccept(NetworkPacket* pkt)
 }
 void Client::handleCommand_AcceptSudoMode(NetworkPacket* pkt)
 {
-	m_chosen_auth_mech = AUTH_MECHANISM_NONE;
 	deleteAuthData();
 
 	m_password = m_new_password;
@@ -144,7 +142,6 @@ void Client::handleCommand_DenySudoMode(NetworkPacket* pkt)
 	m_chat_queue.push(L"Password change denied. Password NOT changed.");
 	// reset everything and be sad
 	deleteAuthData();
-	m_chosen_auth_mech = AUTH_MECHANISM_NONE;
 }
 void Client::handleCommand_InitLegacy(NetworkPacket* pkt)
 {
