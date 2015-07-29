@@ -699,7 +699,7 @@ $(ASSETS_TIMESTAMP) : $(IRRLICHT_LIB)
 	for DIRNAME in {builtin,client,doc,fonts,games,mods,po,textures}; do        \
 		LAST_MODIF=$$(find ${ROOT}/../../${DIRNAME} -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" "); \
 		if [ $$(basename $$LAST_MODIF) != "timestamp" ]; then               \
-			touch ${ROOT}/../../$DIRNAME/timestamp;                     \
+			touch ${ROOT}/../../${DIRNAME}/timestamp;                   \
 			touch ${ASSETS_TIMESTAMP};                                  \
 			echo ${DIRNAME} changed $$LAST_MODIF;                       \
 		fi;                                                                 \
@@ -855,8 +855,8 @@ manifest :
 		DBG_FLAG="android:debuggable=\"true\"";                                \
 	fi;                                                                        \
 	cat ${ROOT}/AndroidManifest.xml.template |                                 \
-	sed s/###ANDROID_VERSION###/${ANDROID_VERSION_CODE}/g |                    \
-	sed s/###BASE_VERSION###/$$BASE_VERSION/g |                                \
+	sed "s/###ANDROID_VERSION###/${ANDROID_VERSION_CODE}/g" |                  \
+	sed "s/###BASE_VERSION###/$$BASE_VERSION/g" |                              \
 	sed -e "s@###DEBUG_BUILD###@$$DBG@g" |                                     \
 	sed -e "s@###DEBUG_FLAG###@$$DBG_FLAG@g" >${ROOT}/AndroidManifest.xml
 
