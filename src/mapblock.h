@@ -258,7 +258,7 @@ public:
 
 	inline v3s16 getPosRelative()
 	{
-		return m_pos * MAP_BLOCKSIZE;
+		return m_pos_relative;
 	}
 
 	inline core::aabbox3d<s16> getBox()
@@ -563,6 +563,14 @@ private:
 	Map *m_parent;
 	// Position in blocks on parent
 	v3s16 m_pos;
+
+	/* This is the precalculated m_pos_relative value
+	* This caches the value, improving performance by removing 3 s16 multiplications
+	* at runtime on each getPosRelative call
+	* For a 5 minutes runtime with valgrind this removes 3 * 19M s16 multiplications
+	* The gain can be estimated in Release Build to 3 * 100M multiply operations for 5 mins
+	*/
+	v3s16 m_pos_relative;
 
 	IGameDef *m_gamedef;
 
