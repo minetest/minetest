@@ -133,7 +133,7 @@ FREETYPE_URL_GIT = https://github.com/cdave1/freetype2-android
 
 ICONV_VERSION = 1.14
 ICONV_DIR = $(ROOT)/deps/libiconv/
-ICONV_LIB = $(ICONV_DIR)/iconv.so
+ICONV_LIB = $(ICONV_DIR)/lib/.libs/libiconv.so
 ICONV_TIMESTAMP = $(ICONV_DIR)timestamp
 ICONV_TIMESTAMP_INT = $(ROOT)/deps/iconv_timestamp
 ICONV_URL_HTTP = http://ftp.gnu.org/pub/gnu/libiconv/libiconv-$(ICONV_VERSION).tar.gz
@@ -445,52 +445,55 @@ $(ICONV_TIMESTAMP) : iconv_download
 	fi
 
 iconv_download :
-	@if [ ! -d ${ICONV_DIR} ] ; then                                        \
-		echo "iconv sources missing, downloading...";                       \
-		mkdir -p ${ROOT}/deps;                                                 \
-		cd ${ROOT}/deps;                                                               \
-		wget ${ICONV_URL_HTTP} || exit 1;                                    \
-		tar -xzf libiconv-${ICONV_VERSION}.tar.gz || exit 1;                     \
-		rm libiconv-${ICONV_VERSION}.tar.gz;                                     \
-		ln -s libiconv-${ICONV_VERSION} libiconv;                                      \
-		cd ${ICONV_DIR};                                                                   \
-		patch -p1 < ${ROOT}/libiconv_android.patch;                                                     \
-		patch -p1 < ${ROOT}/libiconv_android_mk.patch;                                                     \
-		patch -p1 < ${ROOT}/libiconv_stdio.patch;                                                     \
-		cd jni;                                                                       \
-		ln -s .. src;                                                                         \
+	@if [ ! -d ${ICONV_DIR} ] ; then                                           \
+		echo "iconv sources missing, downloading...";                      \
+		mkdir -p ${ROOT}/deps;                                             \
+		cd ${ROOT}/deps;                                                   \
+		wget ${ICONV_URL_HTTP} || exit 1;                                  \
+		tar -xzf libiconv-${ICONV_VERSION}.tar.gz || exit 1;               \
+		rm libiconv-${ICONV_VERSION}.tar.gz;                               \
+		ln -s libiconv-${ICONV_VERSION} libiconv;                          \
+		cd ${ICONV_DIR};                                                   \
+		patch -p1 < ${ROOT}/libiconv_android.patch;                        \
+		patch -p1 < ${ROOT}/libiconv_stdio.patch;                          \
 	fi
 
 iconv : $(ICONV_LIB)
 
 $(ICONV_LIB) : $(ICONV_TIMESTAMP)
 	@REFRESH=0;                                                                \
-	if [ ! -e ${ICONV_TIMESTAMP_INT} ] ; then                               \
-		REFRESH=1;                                                             \
+	if [ ! -e ${ICONV_TIMESTAMP_INT} ] ; then                                  \
+		REFRESH=1;                                                         \
 	fi;                                                                        \
-	if [ ! -e ${ICONV_LIB} ] ; then                                         \
-		REFRESH=1;                                                             \
+	if [ ! -e ${ICONV_LIB} ] ; then                                            \
+		REFRESH=1;                                                         \
 	fi;                                                                        \
-	if [ ${ICONV_TIMESTAMP} -nt ${ICONV_TIMESTAMP_INT} ] ; then          \
-		REFRESH=1;                                                             \
+	if [ ${ICONV_TIMESTAMP} -nt ${ICONV_TIMESTAMP_INT} ] ; then                \
+		REFRESH=1;                                                         \
 	fi;                                                                        \
 	if [ $$REFRESH -ne 0 ] ; then                                              \
-	mkdir -p ${ICONV_DIR};                                                  \
+	mkdir -p ${ICONV_DIR};                                                     \
 	export PATH=$$PATH:${SDKFOLDER}/platform-tools:${ANDROID_NDK};             \
-	echo "changed timestamp for iconv detected building...";                \
-	cd ${ICONV_DIR};                                            \
-	./configure;                                            \
-	make;                                            \
-	export NDK_PROJECT_PATH=${ICONV_DIR};                                \
-	ndk-build NDEBUG=${NDEBUG} NDK_MODULE_PATH=${NDK_MODULE_PATH}              \
-	APP_PLATFORM=${APP_PLATFORM} APP_ABI=${TARGET_ABI}                         \
-	TARGET_CFLAGS+="${TARGET_CFLAGS_ADDON}"                                    \
-	TARGET_LDFLAGS+="${TARGET_LDFLAGS_ADDON}"                                  \
-	TARGET_CXXFLAGS+="${TARGET_CXXFLAGS_ADDON}" || exit 1;                     \
-	touch ${ICONV_TIMESTAMP};                                               \
-	touch ${ICONV_TIMESTAMP_INT};                                           \
+	echo "changed timestamp for iconv detected building...";                   \
+	cd ${ICONV_DIR};                                                           \
+	\
+	export TOOLCHAIN=/tmp/ndk-${TARGET_HOST}-iconv;                            \
+	${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh                    \
+	--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                         \
+	--install-dir=$${TOOLCHAIN};                                               \
+	export PATH="$${TOOLCHAIN}/bin:$${PATH}";                                  \
+	export CC=${CROSS_PREFIX}gcc;                                              \
+	export CXX=${CROSS_PREFIX}g++;                                             \
+	export TARGET_OS=OS_ANDROID_CROSSCOMPILE;                                  \
+	./configure --host=${TARGET_HOST} || exit 1;                               \
+	sed -i 's/LIBICONV_VERSION_INFO) /LIBICONV_VERSION_INFO) -avoid-version /g' lib/Makefile; \
+	grep "iconv_LDFLAGS" src/Makefile;                                         \
+	$(MAKE) -s || exit 1;                                                      \
+	touch ${ICONV_TIMESTAMP};                                                  \
+	touch ${ICONV_TIMESTAMP_INT};                                              \
+	rm -rf ${TOOLCHAIN};                                                       \
 	else                                                                       \
-		echo "nothing to be done for iconv";                                \
+		echo "nothing to be done for iconv";                               \
 	fi
 
 clean_iconv :
