@@ -117,6 +117,9 @@ function core.serialize(x)
 		if     x  == nil        then return "nil"
 		elseif tp == "string"   then return string.format("%q", x)
 		elseif tp == "boolean"  then return x and "true" or "false"
+		elseif tp == "userdata" then
+			print ("serialize.lua cannot handle userdata")
+			return "userdata"
 		elseif tp == "function" then
 			return string.format("loadstring(%q)", string.dump(x))
 		elseif tp == "number"   then
