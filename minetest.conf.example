@@ -604,4 +604,4 @@
 #    functions even when mod security is on (via request_insecure_environment()).
 #secure.trusted_mods =
 #	enable mod manager 
-#enable_modmanager = true
+#enable_modmanager = false
