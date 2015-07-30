@@ -2330,44 +2330,22 @@ void Server::fillMediaCache()
 	}
 }
 
-struct SendableMediaAnnouncement
-{
-	std::string name;
-	std::string sha1_digest;
-
-	SendableMediaAnnouncement(const std::string &name_="",
-	                          const std::string &sha1_digest_=""):
-		name(name_),
-		sha1_digest(sha1_digest_)
-	{}
-};
-
 void Server::sendMediaAnnouncement(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
 
-	verbosestream<<"Server: Announcing files to id("<<peer_id<<")"
-			<<std::endl;
-
-	std::vector<SendableMediaAnnouncement> file_announcements;
-
-	for (std::map<std::string, MediaInfo>::iterator i = m_media.begin();
-			i != m_media.end(); i++){
-		// Put in list
-		file_announcements.push_back(
-				SendableMediaAnnouncement(i->first, i->second.sha1_digest));
-	}
+	verbosestream << "Server: Announcing files to id(" << peer_id << ")"
+		<< std::endl;
 
 	// Make packet
 	std::ostringstream os(std::ios_base::binary);
 
 	NetworkPacket pkt(TOCLIENT_ANNOUNCE_MEDIA, 0, peer_id);
-	pkt << (u16) file_announcements.size();
+	pkt << (u16) m_media.size();
 
-	for (std::vector<SendableMediaAnnouncement>::iterator
-			j = file_announcements.begin();
-			j != file_announcements.end(); ++j) {
-		pkt << j->name << j->sha1_digest;
+	for (std::map<std::string, MediaInfo>::iterator i = m_media.begin();
+			i != m_media.end(); ++i) {
+		pkt << i->first << i->second.sha1_digest;
 	}
 
 	pkt << g_settings->get("remote_media");
