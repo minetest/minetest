@@ -8,28 +8,29 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2013-12-29 16:58+0200\n"
-"Last-Translator: Сергей Голубев <seria-2@mail.ru>\n"
-"Language-Team: Russian\n"
+"PO-Revision-Date: 2015-07-30 15:32+0200\n"
+"Last-Translator: Andrey K. <narutrey@ya.ru>\n"
+"Language-Team: Russian "
+"<https://hosted.weblate.org/projects/minetest/minetest/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 1.7-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 2.4-dev\n"
 
 #: builtin/fstk/ui.lua:82
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
+msgstr "Ошибка в скрипте Lua в моде:"
 
 #: builtin/fstk/ui.lua:84
 msgid "An error occured:"
-msgstr ""
+msgstr "Произошла ошибка:"
 
 #: builtin/fstk/ui.lua:89 builtin/mainmenu/store.lua:165
 msgid "Ok"
-msgstr "Ok"
+msgstr "OK"
 
 #: builtin/mainmenu/common.lua:239 src/game.cpp:1891
 msgid "Loading..."
@@ -38,6 +39,7 @@ msgstr "Загрузка..."
 #: builtin/mainmenu/common.lua:240
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
+"Попробуйте обновить список публичных серверов и проверьте связь с Интернетом."
 
 #: builtin/mainmenu/dlg_config_world.lua:29
 msgid "World:"
@@ -95,7 +97,7 @@ msgstr "Название мира"
 
 #: builtin/mainmenu/dlg_create_world.lua:53
 msgid "Seed"
-msgstr "Сид"
+msgstr "Зерно"
 
 #: builtin/mainmenu/dlg_create_world.lua:56
 msgid "Mapgen"
@@ -111,19 +113,19 @@ msgstr "Создать"
 
 #: builtin/mainmenu/dlg_create_world.lua:68
 msgid "You have no subgames installed."
-msgstr ""
+msgstr "У вас не установлено мини-игр."
 
 #: builtin/mainmenu/dlg_create_world.lua:69
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "Загрузите их с minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua:72
 msgid "Warning: The minimal development test is meant for developers."
-msgstr ""
+msgstr "Внимание: \"Minimal development test\" для разработчиков."
 
 #: builtin/mainmenu/dlg_create_world.lua:73
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr ""
+msgstr "Скачайте мини-игры, такие как minetest_game, на minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua:99
 msgid "A world named \"$1\" already exists"
@@ -176,13 +178,12 @@ msgid "Install Mod: file: \"$1\""
 msgstr "Установка мода: файл \"$1\""
 
 #: builtin/mainmenu/modmgr.lua:345
-#, fuzzy
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"Установка мода: неподдерживаемый тип \"$1\""
+"Установка мода: неподдерживаемый тип файла \"$1\" или битый архив"
 
 #: builtin/mainmenu/modmgr.lua:365
 msgid "Failed to install $1 to $2"
@@ -199,24 +200,23 @@ msgstr "Установка мода: невозможно определить �
 
 #: builtin/mainmenu/store.lua:88
 msgid "Unsorted"
-msgstr ""
+msgstr "Не сортировано"
 
 #: builtin/mainmenu/store.lua:99 builtin/mainmenu/store.lua:580
 msgid "Search"
-msgstr ""
+msgstr "Поиск"
 
 #: builtin/mainmenu/store.lua:126
 msgid "Downloading $1, please wait..."
-msgstr ""
+msgstr "Загрузка $1..."
 
 #: builtin/mainmenu/store.lua:160
 msgid "Successfully installed:"
-msgstr ""
+msgstr "Успешно установлено:"
 
 #: builtin/mainmenu/store.lua:162
-#, fuzzy
 msgid "Shortname:"
-msgstr "Название мира"
+msgstr "Краткое имя:"
 
 #: builtin/mainmenu/store.lua:472
 msgid "Rating"
@@ -232,7 +232,7 @@ msgstr "Установить"
 
 #: builtin/mainmenu/store.lua:518
 msgid "Close store"
-msgstr ""
+msgstr "Закрыть хранилище"
 
 #: builtin/mainmenu/store.lua:526
 msgid "Page $1 of $2"
@@ -251,13 +251,12 @@ msgid "Active Contributors"
 msgstr "Активные контрибьюторы"
 
 #: builtin/mainmenu/tab_credits.lua:54
-#, fuzzy
 msgid "Previous Core Developers"
-msgstr "Основные разработчики"
+msgstr "Разработчики в отставке"
 
 #: builtin/mainmenu/tab_credits.lua:59
 msgid "Previous Contributors"
-msgstr "В отставке"
+msgstr "Контрибьюторы в отставке"
 
 #: builtin/mainmenu/tab_mods.lua:30
 msgid "Installed Mods:"
@@ -265,7 +264,7 @@ msgstr "Установленные моды:"
 
 #: builtin/mainmenu/tab_mods.lua:39
 msgid "Online mod repository"
-msgstr "Онлайн хранилище модов"
+msgstr "Онлайн-хранилище модов"
 
 #: builtin/mainmenu/tab_mods.lua:78
 msgid "No mod description available"
@@ -296,14 +295,12 @@ msgid "Mods"
 msgstr "Моды"
 
 #: builtin/mainmenu/tab_multiplayer.lua:23
-#, fuzzy
 msgid "Address / Port :"
-msgstr "Адрес/Порт"
+msgstr "Адрес / Порт:"
 
 #: builtin/mainmenu/tab_multiplayer.lua:24
-#, fuzzy
 msgid "Name / Password :"
-msgstr "Имя/Пароль"
+msgstr "Имя / Пароль:"
 
 #: builtin/mainmenu/tab_multiplayer.lua:29
 #: builtin/mainmenu/tab_simple_main.lua:30
@@ -322,21 +319,18 @@ msgstr "Подключиться"
 
 #: builtin/mainmenu/tab_multiplayer.lua:62
 #: builtin/mainmenu/tab_simple_main.lua:45
-#, fuzzy
 msgid "Creative mode"
-msgstr "Режим создания"
+msgstr "Режим творчества"
 
 #: builtin/mainmenu/tab_multiplayer.lua:63
 #: builtin/mainmenu/tab_simple_main.lua:46
-#, fuzzy
 msgid "Damage enabled"
-msgstr "включено"
+msgstr "Разрешить увечья"
 
 #: builtin/mainmenu/tab_multiplayer.lua:64
 #: builtin/mainmenu/tab_simple_main.lua:47
-#, fuzzy
 msgid "PvP enabled"
-msgstr "включено"
+msgstr "PvP разрешён"
 
 #: builtin/mainmenu/tab_multiplayer.lua:257
 msgid "Client"
@@ -362,12 +356,12 @@ msgstr "Выберите мир:"
 #: builtin/mainmenu/tab_server.lua:31 builtin/mainmenu/tab_simple_main.lua:76
 #: builtin/mainmenu/tab_singleplayer.lua:101
 msgid "Creative Mode"
-msgstr "Режим создания"
+msgstr "Режим творчества"
 
 #: builtin/mainmenu/tab_server.lua:33 builtin/mainmenu/tab_simple_main.lua:78
 #: builtin/mainmenu/tab_singleplayer.lua:103
 msgid "Enable Damage"
-msgstr "Включить урон"
+msgstr "Разрешить увечья"
 
 #: builtin/mainmenu/tab_server.lua:35
 msgid "Public"
@@ -375,77 +369,72 @@ msgstr "Публичные"
 
 #: builtin/mainmenu/tab_server.lua:37 builtin/mainmenu/tab_simple_main.lua:25
 msgid "Name/Password"
-msgstr "Имя/Пароль"
+msgstr "Имя / Пароль"
 
 #: builtin/mainmenu/tab_server.lua:45
 msgid "Bind Address"
-msgstr ""
+msgstr "Адрес"
 
 #: builtin/mainmenu/tab_server.lua:47
 msgid "Port"
-msgstr ""
+msgstr "Порт"
 
 #: builtin/mainmenu/tab_server.lua:51
 msgid "Server Port"
-msgstr "Порт"
+msgstr "Порт сервера"
 
 #: builtin/mainmenu/tab_server.lua:138
 #: builtin/mainmenu/tab_singleplayer.lua:165
-#, fuzzy
 msgid "No world created or selected!"
-msgstr "Не задано имя мира или не выбрана игра"
+msgstr "Не выбран мир!"
 
 #: builtin/mainmenu/tab_server.lua:191
 msgid "Server"
 msgstr "Сервер"
 
 #: builtin/mainmenu/tab_settings.lua:21
-#, fuzzy
 msgid "Opaque Leaves"
-msgstr "Непрозрачная вода"
+msgstr "Непрозрачная листва"
 
 #: builtin/mainmenu/tab_settings.lua:22
 msgid "Simple Leaves"
-msgstr ""
+msgstr "Упрощённая листва"
 
 #: builtin/mainmenu/tab_settings.lua:23
-#, fuzzy
 msgid "Fancy Leaves"
-msgstr "Красивые деревья"
+msgstr "Красивая листва"
 
 #: builtin/mainmenu/tab_settings.lua:32
 msgid "No Filter"
-msgstr ""
+msgstr "Без фильтраций"
 
 #: builtin/mainmenu/tab_settings.lua:33
-#, fuzzy
 msgid "Bilinear Filter"
 msgstr "Билинейная фильтрация"
 
 #: builtin/mainmenu/tab_settings.lua:34
-#, fuzzy
 msgid "Trilinear Filter"
 msgstr "Трилинейная фильтрация"
 
 #: builtin/mainmenu/tab_settings.lua:43
 msgid "No Mipmap"
-msgstr ""
+msgstr "Без Мипмаппинга"
 
 #: builtin/mainmenu/tab_settings.lua:44
 msgid "Mipmap"
-msgstr ""
+msgstr "Мипмаппинг"
 
 #: builtin/mainmenu/tab_settings.lua:45
 msgid "Mipmap + Aniso. Filter"
-msgstr ""
+msgstr "Мипмаппинг с анизотр. фильтром"
 
 #: builtin/mainmenu/tab_settings.lua:98
 msgid "Are you sure to reset your singleplayer world?"
-msgstr ""
+msgstr "Уверены, что хотите сбросить мир одиночной игры?"
 
 #: builtin/mainmenu/tab_settings.lua:102
 msgid "No!!!"
-msgstr ""
+msgstr "Нет!"
 
 #: builtin/mainmenu/tab_settings.lua:202
 msgid "Smooth Lighting"
@@ -464,25 +453,24 @@ msgid "Opaque Water"
 msgstr "Непрозрачная вода"
 
 #: builtin/mainmenu/tab_settings.lua:210
-#, fuzzy
 msgid "Connected Glass"
-msgstr "Подключиться"
+msgstr "Стёкла без швов"
 
 #: builtin/mainmenu/tab_settings.lua:212
 msgid "Node Highlighting"
-msgstr ""
+msgstr "Подсветка нод"
 
 #: builtin/mainmenu/tab_settings.lua:217
 msgid "Texturing:"
-msgstr ""
+msgstr "Текстуирование:"
 
 #: builtin/mainmenu/tab_settings.lua:222
 msgid "Rendering:"
-msgstr ""
+msgstr "Отрисовка:"
 
 #: builtin/mainmenu/tab_settings.lua:226
 msgid "Restart minetest for driver change to take effect"
-msgstr ""
+msgstr "Перезапустите Minetest для принятия изменений"
 
 #: builtin/mainmenu/tab_settings.lua:228
 msgid "Shaders"
@@ -493,50 +481,48 @@ msgid "Change keys"
 msgstr "Смена управления"
 
 #: builtin/mainmenu/tab_settings.lua:236
-#, fuzzy
 msgid "Reset singleplayer world"
-msgstr "Одиночная игра"
+msgstr "Сброс одиночной игры"
 
 #: builtin/mainmenu/tab_settings.lua:240
 msgid "GUI scale factor"
-msgstr ""
+msgstr "Масштаб интерфейса"
 
 #: builtin/mainmenu/tab_settings.lua:244
 msgid "Scaling factor applied to menu elements: "
-msgstr ""
+msgstr "Коэффициент масштаба интерфейса: "
 
 #: builtin/mainmenu/tab_settings.lua:250
 msgid "Touch free target"
-msgstr ""
+msgstr "Свободный выбор цели"
 
 #: builtin/mainmenu/tab_settings.lua:256
 msgid "Touchthreshold (px)"
-msgstr ""
+msgstr "Чувствительность (пк)"
 
 #: builtin/mainmenu/tab_settings.lua:263 builtin/mainmenu/tab_settings.lua:277
-#, fuzzy
 msgid "Bumpmapping"
-msgstr "Mip-текстурирование"
+msgstr "Бампмаппинг"
 
 #: builtin/mainmenu/tab_settings.lua:265 builtin/mainmenu/tab_settings.lua:278
 msgid "Generate Normalmaps"
-msgstr ""
+msgstr "Генерировать карты нормалей"
 
 #: builtin/mainmenu/tab_settings.lua:267 builtin/mainmenu/tab_settings.lua:279
 msgid "Parallax Occlusion"
-msgstr ""
+msgstr "Parallax Occlusion"
 
 #: builtin/mainmenu/tab_settings.lua:269 builtin/mainmenu/tab_settings.lua:280
 msgid "Waving Water"
-msgstr ""
+msgstr "Волны на воде"
 
 #: builtin/mainmenu/tab_settings.lua:271 builtin/mainmenu/tab_settings.lua:281
 msgid "Waving Leaves"
-msgstr ""
+msgstr "Покачивание листвы"
 
 #: builtin/mainmenu/tab_settings.lua:273 builtin/mainmenu/tab_settings.lua:282
 msgid "Waving Plants"
-msgstr ""
+msgstr "Покачивание растений"
 
 #: builtin/mainmenu/tab_settings.lua:308
 msgid "To enable shaders the OpenGL driver needs to be used."
@@ -547,17 +533,14 @@ msgid "Settings"
 msgstr "Настройки"
 
 #: builtin/mainmenu/tab_simple_main.lua:82
-#, fuzzy
 msgid "Start Singleplayer"
-msgstr "Одиночная игра"
+msgstr "Начать одиночную игру"
 
 #: builtin/mainmenu/tab_simple_main.lua:83
-#, fuzzy
 msgid "Config mods"
-msgstr "Настроить"
+msgstr "Настройка модов"
 
 #: builtin/mainmenu/tab_simple_main.lua:201
-#, fuzzy
 msgid "Main"
 msgstr "Главное меню"
 
@@ -578,27 +561,24 @@ msgid "No information available"
 msgstr "Описание отсутствует"
 
 #: builtin/mainmenu/tab_texturepacks.lua:114
-#, fuzzy
 msgid "Texturepacks"
 msgstr "Пакеты текстур"
 
 #: src/client.cpp:1721
-#, fuzzy
 msgid "Loading textures..."
-msgstr "Загрузка..."
+msgstr "Загрузка текстур..."
 
 #: src/client.cpp:1736
-#, fuzzy
 msgid "Rebuilding shaders..."
-msgstr "Получение адреса..."
+msgstr "Сборка шейдеров..."
 
 #: src/client.cpp:1743
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "Инициирование нод..."
 
 #: src/client.cpp:1760
 msgid "Initializing nodes"
-msgstr ""
+msgstr "Инициирование нод"
 
 #: src/client.cpp:1768
 msgid "Item textures..."
@@ -606,7 +586,7 @@ msgstr "Текстуры предметов..."
 
 #: src/client.cpp:1793
 msgid "Done!"
-msgstr ""
+msgstr "Готово!"
 
 #: src/client/clientlauncher.cpp:185
 msgid "Main Menu"
@@ -614,7 +594,7 @@ msgstr "Главное меню"
 
 #: src/client/clientlauncher.cpp:223
 msgid "Player name too long."
-msgstr ""
+msgstr "Имя игрока слишком длинное."
 
 #: src/client/clientlauncher.cpp:261
 msgid "Connection error (timed out?)"
@@ -626,7 +606,7 @@ msgstr "Не выбран мир и не введен адрес."
 
 #: src/client/clientlauncher.cpp:432
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "По этому пути мира нет: "
 
 #: src/client/clientlauncher.cpp:441
 msgid "Could not find or load game \""
@@ -667,6 +647,19 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
+"Управление по умолчанию:\n"
+"Не в меню:\n"
+"- одно нажатие: кнопка активаций\n"
+"- двойное нажатие: положить/использовать\n"
+"- скольжение пальцем: осмотреться\n"
+"В меню/инвертаре:\n"
+"- двойное нажатие (вне меню)\n"
+"--> закрыть меню\n"
+"- Нажать на стопку, затем на ячейку:\n"
+"--> Двигать стопку\n"
+"- Потащить одним пальцем стопку в нужную ячейку, нажать вторым пальцем на "
+"экран:\n"
+"--> Положить один предмет в ячейку\n"
 
 #: src/game.cpp:1106
 msgid ""
@@ -707,7 +700,6 @@ msgid "Sound Volume"
 msgstr "Громкость звука"
 
 #: src/game.cpp:1136
-#, fuzzy
 msgid "Change Keys"
 msgstr "Смена управления"
 
@@ -720,12 +712,10 @@ msgid "Exit to OS"
 msgstr "Выход в ОС"
 
 #: src/game.cpp:1841
-#, fuzzy
 msgid "Shutting down..."
-msgstr "Завершение работы..."
+msgstr "Завершение..."
 
 #: src/game.cpp:1948
-#, fuzzy
 msgid "Creating server..."
 msgstr "Создание сервера..."
 
@@ -755,11 +745,11 @@ msgstr "Медиафайлы..."
 
 #: src/game.cpp:2334
 msgid "KiB/s"
-msgstr ""
+msgstr "КиБ/с"
 
 #: src/game.cpp:2338
 msgid "MiB/s"
-msgstr ""
+msgstr "МиБ/с"
 
 #: src/game.cpp:4363
 msgid ""
@@ -771,11 +761,11 @@ msgstr ""
 
 #: src/guiFormSpecMenu.cpp:2855
 msgid "Enter "
-msgstr ""
+msgstr "Введите "
 
 #: src/guiFormSpecMenu.cpp:2875
 msgid "ok"
-msgstr ""
+msgstr "OK"
 
 #: src/guiKeyChangeMenu.cpp:125
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -856,9 +846,8 @@ msgid "Toggle fast"
 msgstr "Ускорение"
 
 #: src/guiKeyChangeMenu.cpp:413
-#, fuzzy
 msgid "Toggle Cinematic"
-msgstr "Ускорение"
+msgstr "Киношность"
 
 #: src/guiKeyChangeMenu.cpp:414
 msgid "Toggle noclip"
