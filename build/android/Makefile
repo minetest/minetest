@@ -791,8 +791,9 @@ apk: $(PATHCFGFILE) assets $(ICONV_LIB) $(IRRLICHT_LIB) $(CURL_LIB) $(GMP_LIB) $
 	echo "You can install it with \`adb install -r bin/Minetest-$$BUILD_TYPE.apk\`"
 
 prep_srcdir :
-	@rm ${ROOT}/jni/src;                                                       \
-	ln -s ${ROOT}/../../src ${ROOT}/jni/src
+	@if [ ! -e ${ROOT}/jni/src ]; then                                         \
+		ln -s ${ROOT}/../../src ${ROOT}/jni/src;                           \
+	fi
 
 clean_apk : manifest
 	@export PATH=$$PATH:${SDKFOLDER}platform-tools:${ANDROID_NDK};             \
@@ -818,8 +819,10 @@ clean_all :
 	sleep 1;                                                                   \
 	$(RM) -r gen libs obj deps bin Debug and_env
 
-$(ROOT)/jni/src/android_version.h :
-	@ {                                                                        \
+$(ROOT)/jni/src/android_version.h : prep_srcdir
+	@export VERSION_FILE=${ROOT}/jni/src/android_version.h;                    \
+	export VERSION_FILE_NEW=$${VERSION_FILE}.new;                              \
+	{                                                                          \
 	echo "#ifndef ANDROID_MT_VERSION_H";                                       \
 	echo "#define ANDROID_MT_VERSION_H";                                       \
 	export CMAKE_FILE=${ROOT}/../../CMakeLists.txt;                            \
@@ -838,7 +841,13 @@ $(ROOT)/jni/src/android_version.h :
 	echo "#define VERSION_STRING STR(VERSION_MAJOR)\".\"STR(VERSION_MINOR)\
 	\".\"STR(VERSION_PATCH)";                                                  \
 	echo "#endif";                                                             \
-	} > ${ROOT}/jni/src/android_version.h
+	} > $${VERSION_FILE_NEW};                                                  \
+	if ! cmp -s $${VERSION_FILE} $${VERSION_FILE_NEW}; then                    \
+		echo "android_version.h changed, updating...";                     \
+		mv $${VERSION_FILE_NEW} $${VERSION_FILE};                          \
+	else                                                                       \
+		rm $${VERSION_FILE_NEW};                                           \
+	fi
 
 manifest :
 	@VERS_MAJOR=$$(cat ${ROOT}/../../CMakeLists.txt |                          \
