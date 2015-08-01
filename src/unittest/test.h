@@ -32,18 +32,22 @@ class TestFailedException : public std::exception {
 };
 
 // Runs a unit test and reports results
-#define TEST(fxn, ...) do {         \
-	u32 t1 = porting::getTime(PRECISION_MILLI); \
-	try {                           \
-		fxn(__VA_ARGS__);           \
-		dstream << "[PASS] ";       \
-	} catch (...) {                 \
-		dstream << "[FAIL] ";       \
-		num_tests_failed++;         \
-	}                               \
-	num_tests_run++;                \
-	u32 tdiff = porting::getTime(PRECISION_MILLI) - t1;     \
-	dstream << #fxn << " - " << tdiff << "ms" << std::endl; \
+#define TEST(fxn, ...) do {                                                 \
+	u32 t1 = porting::getTime(PRECISION_MILLI);                             \
+	try {                                                                   \
+		fxn(__VA_ARGS__);                                                   \
+		dstream << "[PASS] ";                                               \
+	} catch (TestFailedException &e) {                                      \
+		dstream << "[FAIL] ";                                               \
+		num_tests_failed++;                                                 \
+	} catch (std::exception &e) {                                           \
+		dstream << "Caught unhandled exception: " << e.what() << std::endl; \
+		dstream << "[FAIL] ";                                               \
+		num_tests_failed++;                                                 \
+	}                                                                       \
+	num_tests_run++;                                                        \
+	u32 tdiff = porting::getTime(PRECISION_MILLI) - t1;                     \
+	dstream << #fxn << " - " << tdiff << "ms" << std::endl;                 \
 } while (0)
 
 // Asserts the specified condition is true, or fails the current unit test
