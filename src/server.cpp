@@ -86,7 +86,7 @@ public:
 	void * Thread();
 };
 
-void * ServerThread::Thread()
+void *ServerThread::Thread()
 {
 	log_register_thread("ServerThread");
 
@@ -99,33 +99,22 @@ void * ServerThread::Thread()
 
 	porting::setThreadName("ServerThread");
 
-	while(!StopRequested())
-	{
-		try{
+	while (!StopRequested()) {
+		try {
 			//TimeTaker timer("AsyncRunStep() + Receive()");
 
 			m_server->AsyncRunStep();
 
 			m_server->Receive();
 
-		}
-		catch(con::NoIncomingDataException &e)
-		{
-		}
-		catch(con::PeerNotFoundException &e)
-		{
+		} catch (con::NoIncomingDataException &e) {
+		} catch (con::PeerNotFoundException &e) {
 			infostream<<"Server: PeerNotFoundException"<<std::endl;
-		}
-		catch(ClientNotFoundException &e)
-		{
-		}
-		catch(con::ConnectionBindFailed &e)
-		{
+		} catch (ClientNotFoundException &e) {
+		} catch (con::ConnectionBindFailed &e) {
 			m_server->setAsyncFatalError(e.what());
-		}
-		catch(LuaError &e)
-		{
-			m_server->setAsyncFatalError(e.what());
+		} catch (LuaError &e) {
+			m_server->setAsyncFatalError("Lua: " + std::string(e.what()));
 		}
 	}
 
