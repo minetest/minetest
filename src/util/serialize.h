@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define UTIL_SERIALIZE_HEADER
 
 #include "../irrlichttypes_bloated.h"
+#include "../debug.h" // for assert
 #include "config.h"
 #if HAVE_ENDIAN_H
 #include <endian.h>
@@ -30,7 +31,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 
 #define FIXEDPOINT_FACTOR 1000.0f
-#define FIXEDPOINT_INVFACTOR (1.0f/FIXEDPOINT_FACTOR)
+
+// 0x7FFFFFFF / 1000.0f is not serializable.
+// The limited float precision at this magnitude may cause the result to round
+// to a greater value than can be represented by a 32 bit integer when increased
+// by a factor of FIXEDPOINT_FACTOR.  As a result, [F1000_MIN..F1000_MAX] does
+// not represent the full range, but rather the largest safe range, of values on
+// all supported architectures.  Note: This definition makes assumptions on
+// platform float-to-int conversion behavior.
+#define F1000_MIN ((float)(s32)((-0x7FFFFFFF - 1) / FIXEDPOINT_FACTOR))
+#define F1000_MAX ((float)(s32)((0x7FFFFFFF) / FIXEDPOINT_FACTOR))
 
 #define STRING_MAX_LEN 0xFFFF
 #define WIDE_STRING_MAX_LEN 0xFFFF
@@ -163,7 +173,7 @@ inline s64 readS64(const u8 *data)
 
 inline f32 readF1000(const u8 *data)
 {
-	return (f32)readS32(data) * FIXEDPOINT_INVFACTOR;
+	return (f32)readS32(data) / FIXEDPOINT_FACTOR;
 }
 
 inline video::SColor readARGB8(const u8 *data)
@@ -252,6 +262,7 @@ inline void writeS64(u8 *data, s64 i)
 
 inline void writeF1000(u8 *data, f32 i)
 {
+	assert(i >= F1000_MIN && i <= F1000_MAX);
 	writeS32(data, i * FIXEDPOINT_FACTOR);
 }
 

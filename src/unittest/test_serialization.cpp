@@ -296,10 +296,10 @@ void TestSerialization::testStreamRead()
 	UASSERT(readS32(is) == -6);
 	UASSERT(readS64(is) == -43);
 
-	UASSERT(fabs(readF1000(is) - 53.534f) < 0.005);
-	UASSERT(fabs(readF1000(is) - -300000.32f) < 0.05);
-	UASSERT(fabs(readF1000(is) - -2147483.f) < 0.05);
-	UASSERT(fabs(readF1000(is) - 2147483.f) < 0.05);
+	UASSERT(readF1000(is) == 53.534f);
+	UASSERT(readF1000(is) == -300000.32f);
+	UASSERT(readF1000(is) == F1000_MIN);
+	UASSERT(readF1000(is) == F1000_MAX);
 
 	UASSERT(deSerializeString(is) == "foobar!");
 
@@ -307,18 +307,11 @@ void TestSerialization::testStreamRead()
 	UASSERT(readV3S16(is) == v3s16(4207, 604, -30));
 	UASSERT(readV2S32(is) == v2s32(1920, 1080));
 	UASSERT(readV3S32(is) == v3s32(-400, 6400054, 290549855));
-
-	v2f vec2 = readV2F1000(is);
-	UASSERT(fabs(vec2.X - 500.656f) < 0.005);
-	UASSERT(fabs(vec2.Y - 350.345f) < 0.005);
+	UASSERT(readV2F1000(is) == v2f(500.656f, 350.345f));
 
 	UASSERT(deSerializeWideString(is) == L"\x02~woof~\x5455");
 
-	v3f vec3 = readV3F1000(is);
-	UASSERT(fabs(vec3.X - 500.f) < 0.005);
-	UASSERT(fabs(vec3.Y - 10024.2f) < 0.005);
-	UASSERT(fabs(vec3.Z - -192.54f) < 0.005);
-
+	UASSERT(readV3F1000(is) == v3f(500, 10024.2f, -192.54f));
 	UASSERT(readARGB8(is) == video::SColor(255, 128, 50, 128));
 
 	UASSERT(deSerializeLongString(is) == "some longer string here");
@@ -346,8 +339,8 @@ void TestSerialization::testStreamWrite()
 
 	writeF1000(os, 53.53467f);
 	writeF1000(os, -300000.32f);
-	writeF1000(os, -2147483.f);
-	writeF1000(os, 2147483.f);
+	writeF1000(os, F1000_MIN);
+	writeF1000(os, F1000_MAX);
 
 	os << serializeString("foobar!");
 
