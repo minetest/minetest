@@ -1053,7 +1053,11 @@ protected:
 	void PrintInfo(std::ostream &out);
 	void PrintInfo();
 
-	std::list<u16> getPeerIDs() { return m_peer_ids; }
+	std::list<u16> getPeerIDs()
+	{
+		JMutexAutoLock peerlock(m_peers_mutex);
+		return m_peer_ids;
+	}
 
 	UDPSocket m_udpSocket;
 	MutexedQueue<ConnectionCommand> m_command_queue;
