@@ -32,183 +32,144 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define FIXEDPOINT_FACTOR 1000.0f
 #define FIXEDPOINT_INVFACTOR (1.0f/FIXEDPOINT_FACTOR)
 
+#define STRING_MAX_LEN 0xFFFF
+#define WIDE_STRING_MAX_LEN 0xFFFF
+// 64 MB ought to be enough for anybody - Billy G.
+#define LONG_STRING_MAX_LEN (64 * 1024 * 1024)
+
+
 #if HAVE_ENDIAN_H
 // use machine native byte swapping routines
 // Note: memcpy below is optimized out by modern compilers
 
-inline void writeU64(u8* data, u64 i)
-{
-	u64 val = htobe64(i);
-	memcpy(data, &val, 8);
-}
-
-inline void writeU32(u8* data, u32 i)
-{
-	u32 val = htobe32(i);
-	memcpy(data, &val, 4);
-}
-
-inline void writeU16(u8* data, u16 i)
-{
-	u16 val = htobe16(i);
-	memcpy(data, &val, 2);
-}
-
-inline u64 readU64(const u8* data)
-{
-	u64 val;
-	memcpy(&val, data, 8);
-	return be64toh(val);
-}
-
-inline u32 readU32(const u8* data)
-{
-	u32 val;
-	memcpy(&val, data, 4);
-	return be32toh(val);
-}
-
-inline u16 readU16(const u8* data)
+inline u16 readU16(const u8 *data)
 {
 	u16 val;
 	memcpy(&val, data, 2);
 	return be16toh(val);
 }
 
-#else
-// generic byte-swapping implementation
-
-inline void writeU64(u8 *data, u64 i)
+inline u32 readU32(const u8 *data)
 {
-	data[0] = ((i>>56)&0xff);
-	data[1] = ((i>>48)&0xff);
-	data[2] = ((i>>40)&0xff);
-	data[3] = ((i>>32)&0xff);
-	data[4] = ((i>>24)&0xff);
-	data[5] = ((i>>16)&0xff);
-	data[6] = ((i>> 8)&0xff);
-	data[7] = ((i>> 0)&0xff);
-}
-
-inline void writeU32(u8 *data, u32 i)
-{
-	data[0] = ((i>>24)&0xff);
-	data[1] = ((i>>16)&0xff);
-	data[2] = ((i>> 8)&0xff);
-	data[3] = ((i>> 0)&0xff);
-}
-
-inline void writeU16(u8 *data, u16 i)
-{
-	data[0] = ((i>> 8)&0xff);
-	data[1] = ((i>> 0)&0xff);
+	u32 val;
+	memcpy(&val, data, 4);
+	return be32toh(val);
 }
 
 inline u64 readU64(const u8 *data)
 {
-	return ((u64)data[0]<<56) | ((u64)data[1]<<48)
-		| ((u64)data[2]<<40) | ((u64)data[3]<<32)
-		| ((u64)data[4]<<24) | ((u64)data[5]<<16)
-		| ((u64)data[6]<<8) | ((u64)data[7]<<0);
+	u64 val;
+	memcpy(&val, data, 8);
+	return be64toh(val);
+}
+
+inline void writeU16(u8 *data, u16 i)
+{
+	u16 val = htobe16(i);
+	memcpy(data, &val, 2);
+}
+
+inline void writeU32(u8 *data, u32 i)
+{
+	u32 val = htobe32(i);
+	memcpy(data, &val, 4);
+}
+
+inline void writeU64(u8 *data, u64 i)
+{
+	u64 val = htobe64(i);
+	memcpy(data, &val, 8);
+}
+
+#else
+// generic byte-swapping implementation
+
+inline u16 readU16(const u8 *data)
+{
+	return
+		((u16)data[0] << 8) | ((u16)data[1] << 0);
 }
 
 inline u32 readU32(const u8 *data)
 {
-	return (data[0]<<24) | (data[1]<<16) | (data[2]<<8) | (data[3]<<0);
+	return
+		((u32)data[0] << 24) | ((u32)data[1] << 16) |
+		((u32)data[2] <<  8) | ((u32)data[3] <<  0);
 }
 
-inline u16 readU16(const u8 *data)
+inline u64 readU64(const u8 *data)
 {
-	return (data[0]<<8) | (data[1]<<0);
+	return
+		((u64)data[0] << 56) | ((u64)data[1] << 48) |
+		((u64)data[2] << 40) | ((u64)data[3] << 32) |
+		((u64)data[4] << 24) | ((u64)data[5] << 16) |
+		((u64)data[6] <<  8) | ((u64)data[7] << 0);
 }
 
-#endif
-
-inline void writeU8(u8 *data, u8 i)
+inline void writeU16(u8 *data, u16 i)
 {
-	data[0] = ((i>> 0)&0xff);
+	data[0] = (i >> 8) & 0xFF;
+	data[1] = (i >> 0) & 0xFF;
 }
+
+inline void writeU32(u8 *data, u32 i)
+{
+	data[0] = (i >> 24) & 0xFF;
+	data[1] = (i >> 16) & 0xFF;
+	data[2] = (i >>  8) & 0xFF;
+	data[3] = (i >>  0) & 0xFF;
+}
+
+inline void writeU64(u8 *data, u64 i)
+{
+	data[0] = (i >> 56) & 0xFF;
+	data[1] = (i >> 48) & 0xFF;
+	data[2] = (i >> 40) & 0xFF;
+	data[3] = (i >> 32) & 0xFF;
+	data[4] = (i >> 24) & 0xFF;
+	data[5] = (i >> 16) & 0xFF;
+	data[6] = (i >>  8) & 0xFF;
+	data[7] = (i >>  0) & 0xFF;
+}
+
+#endif // HAVE_ENDIAN_H
+
+//////////////// read routines ////////////////
 
 inline u8 readU8(const u8 *data)
 {
-	return (data[0]<<0);
+	return ((u8)data[0] << 0);
 }
 
-inline void writeS32(u8 *data, s32 i){
-	writeU32(data, (u32)i);
-}
-inline s32 readS32(const u8 *data){
-	return (s32)readU32(data);
-}
-
-inline void writeS16(u8 *data, s16 i){
-	writeU16(data, (u16)i);
-}
-inline s16 readS16(const u8 *data){
-	return (s16)readU16(data);
-}
-
-inline void writeS8(u8 *data, s8 i){
-	writeU8(data, (u8)i);
-}
-inline s8 readS8(const u8 *data){
+inline s8 readS8(const u8 *data)
+{
 	return (s8)readU8(data);
 }
 
-inline void writeF1000(u8 *data, f32 i){
-	writeS32(data, i*FIXEDPOINT_FACTOR);
-}
-inline f32 readF1000(const u8 *data){
-	return (f32)readS32(data)*FIXEDPOINT_INVFACTOR;
+inline s16 readS16(const u8 *data)
+{
+	return (s16)readU16(data);
 }
 
-inline void writeV3S32(u8 *data, v3s32 p)
+inline s32 readS32(const u8 *data)
 {
-	writeS32(&data[0], p.X);
-	writeS32(&data[4], p.Y);
-	writeS32(&data[8], p.Z);
+	return (s32)readU32(data);
 }
-inline v3s32 readV3S32(const u8 *data)
+
+inline s64 readS64(const u8 *data)
 {
-	v3s32 p;
-	p.X = readS32(&data[0]);
-	p.Y = readS32(&data[4]);
-	p.Z = readS32(&data[8]);
+	return (s64)readU64(data);
+}
+
+inline f32 readF1000(const u8 *data)
+{
+	return (f32)readS32(data) * FIXEDPOINT_INVFACTOR;
+}
+
+inline video::SColor readARGB8(const u8 *data)
+{
+	video::SColor p(readU32(data));
 	return p;
-}
-
-inline void writeV3F1000(u8 *data, v3f p)
-{
-	writeF1000(&data[0], p.X);
-	writeF1000(&data[4], p.Y);
-	writeF1000(&data[8], p.Z);
-}
-inline v3f readV3F1000(const u8 *data)
-{
-	v3f p;
-	p.X = (float)readF1000(&data[0]);
-	p.Y = (float)readF1000(&data[4]);
-	p.Z = (float)readF1000(&data[8]);
-	return p;
-}
-
-inline void writeV2F1000(u8 *data, v2f p)
-{
-	writeF1000(&data[0], p.X);
-	writeF1000(&data[4], p.Y);
-}
-inline v2f readV2F1000(const u8 *data)
-{
-	v2f p;
-	p.X = (float)readF1000(&data[0]);
-	p.Y = (float)readF1000(&data[4]);
-	return p;
-}
-
-inline void writeV2S16(u8 *data, v2s16 p)
-{
-	writeS16(&data[0], p.X);
-	writeS16(&data[2], p.Y);
 }
 
 inline v2s16 readV2S16(const u8 *data)
@@ -217,27 +178,6 @@ inline v2s16 readV2S16(const u8 *data)
 	p.X = readS16(&data[0]);
 	p.Y = readS16(&data[2]);
 	return p;
-}
-
-inline void writeV2S32(u8 *data, v2s32 p)
-{
-	writeS32(&data[0], p.X);
-	writeS32(&data[4], p.Y);
-}
-
-inline v2s32 readV2S32(const u8 *data)
-{
-	v2s32 p;
-	p.X = readS32(&data[0]);
-	p.Y = readS32(&data[4]);
-	return p;
-}
-
-inline void writeV3S16(u8 *data, v3s16 p)
-{
-	writeS16(&data[0], p.X);
-	writeS16(&data[2], p.Y);
-	writeS16(&data[4], p.Z);
 }
 
 inline v3s16 readV3S16(const u8 *data)
@@ -249,185 +189,173 @@ inline v3s16 readV3S16(const u8 *data)
 	return p;
 }
 
+inline v2s32 readV2S32(const u8 *data)
+{
+	v2s32 p;
+	p.X = readS32(&data[0]);
+	p.Y = readS32(&data[4]);
+	return p;
+}
+
+inline v3s32 readV3S32(const u8 *data)
+{
+	v3s32 p;
+	p.X = readS32(&data[0]);
+	p.Y = readS32(&data[4]);
+	p.Z = readS32(&data[8]);
+	return p;
+}
+
+inline v2f readV2F1000(const u8 *data)
+{
+	v2f p;
+	p.X = (float)readF1000(&data[0]);
+	p.Y = (float)readF1000(&data[4]);
+	return p;
+}
+
+inline v3f readV3F1000(const u8 *data)
+{
+	v3f p;
+	p.X = (float)readF1000(&data[0]);
+	p.Y = (float)readF1000(&data[4]);
+	p.Z = (float)readF1000(&data[8]);
+	return p;
+}
+
+/////////////// write routines ////////////////
+
+inline void writeU8(u8 *data, u8 i)
+{
+	data[0] = (i >> 0) & 0xFF;
+}
+
+inline void writeS8(u8 *data, s8 i)
+{
+	writeU8(data, (u8)i);
+}
+
+inline void writeS16(u8 *data, s16 i)
+{
+	writeU16(data, (u16)i);
+}
+
+inline void writeS32(u8 *data, s32 i)
+{
+	writeU32(data, (u32)i);
+}
+
+inline void writeS64(u8 *data, s64 i)
+{
+	writeU64(data, (u64)i);
+}
+
+inline void writeF1000(u8 *data, f32 i)
+{
+	writeS32(data, i * FIXEDPOINT_FACTOR);
+}
+
 inline void writeARGB8(u8 *data, video::SColor p)
 {
 	writeU32(data, p.color);
 }
 
-inline video::SColor readARGB8(const u8 *data)
+inline void writeV2S16(u8 *data, v2s16 p)
 {
-	video::SColor p(readU32(data));
-	return p;
+	writeS16(&data[0], p.X);
+	writeS16(&data[2], p.Y);
 }
 
-/*
-	The above stuff directly interfaced to iostream
-*/
-
-inline void writeU8(std::ostream &os, u8 p)
+inline void writeV3S16(u8 *data, v3s16 p)
 {
-	char buf[1];
-	writeU8((u8*)buf, p);
-	os.write(buf, 1);
-}
-inline u8 readU8(std::istream &is)
-{
-	char buf[1] = {0};
-	is.read(buf, 1);
-	return readU8((u8*)buf);
+	writeS16(&data[0], p.X);
+	writeS16(&data[2], p.Y);
+	writeS16(&data[4], p.Z);
 }
 
-inline void writeU16(std::ostream &os, u16 p)
+inline void writeV2S32(u8 *data, v2s32 p)
 {
-	char buf[2];
-	writeU16((u8*)buf, p);
-	os.write(buf, 2);
-}
-inline u16 readU16(std::istream &is)
-{
-	char buf[2] = {0};
-	is.read(buf, 2);
-	return readU16((u8*)buf);
+	writeS32(&data[0], p.X);
+	writeS32(&data[4], p.Y);
 }
 
-inline void writeU32(std::ostream &os, u32 p)
+inline void writeV3S32(u8 *data, v3s32 p)
 {
-	char buf[4];
-	writeU32((u8*)buf, p);
-	os.write(buf, 4);
-}
-inline u32 readU32(std::istream &is)
-{
-	char buf[4] = {0};
-	is.read(buf, 4);
-	return readU32((u8*)buf);
+	writeS32(&data[0], p.X);
+	writeS32(&data[4], p.Y);
+	writeS32(&data[8], p.Z);
 }
 
-inline void writeS32(std::ostream &os, s32 p)
+inline void writeV2F1000(u8 *data, v2f p)
 {
-	writeU32(os, (u32) p);
-}
-inline s32 readS32(std::istream &is)
-{
-	return (s32)readU32(is);
+	writeF1000(&data[0], p.X);
+	writeF1000(&data[4], p.Y);
 }
 
-inline void writeS16(std::ostream &os, s16 p)
+inline void writeV3F1000(u8 *data, v3f p)
 {
-	writeU16(os, (u16) p);
-}
-inline s16 readS16(std::istream &is)
-{
-	return (s16)readU16(is);
+	writeF1000(&data[0], p.X);
+	writeF1000(&data[4], p.Y);
+	writeF1000(&data[8], p.Z);
 }
 
-inline void writeS8(std::ostream &os, s8 p)
-{
-	writeU8(os, (u8) p);
-}
-inline s8 readS8(std::istream &is)
-{
-	return (s8)readU8(is);
-}
+////
+//// Iostream wrapper for data read/write
+////
 
-inline void writeF1000(std::ostream &os, f32 p)
-{
-	char buf[4];
-	writeF1000((u8*)buf, p);
-	os.write(buf, 4);
-}
-inline f32 readF1000(std::istream &is)
-{
-	char buf[4] = {0};
-	is.read(buf, 4);
-	return readF1000((u8*)buf);
-}
+#define MAKE_STREAM_READ_FXN(T, N, S)    \
+	inline T read ## N(std::istream &is) \
+	{                                    \
+		char buf[S] = {0};               \
+		is.read(buf, sizeof(buf));       \
+		return read ## N((u8 *)buf);     \
+	}
 
-inline void writeV3F1000(std::ostream &os, v3f p)
-{
-	char buf[12];
-	writeV3F1000((u8*)buf, p);
-	os.write(buf, 12);
-}
-inline v3f readV3F1000(std::istream &is)
-{
-	char buf[12];
-	is.read(buf, 12);
-	return readV3F1000((u8*)buf);
-}
+#define MAKE_STREAM_WRITE_FXN(T, N, S)              \
+	inline void write ## N(std::ostream &os, T val) \
+	{                                               \
+		char buf[S];                                \
+		write ## N((u8 *)buf, val);                 \
+		os.write(buf, sizeof(buf));                 \
+	}
 
-inline void writeV2F1000(std::ostream &os, v2f p)
-{
-	char buf[8];
-	writeV2F1000((u8*)buf, p);
-	os.write(buf, 8);
-}
-inline v2f readV2F1000(std::istream &is)
-{
-	char buf[8] = {0};
-	is.read(buf, 8);
-	return readV2F1000((u8*)buf);
-}
+MAKE_STREAM_READ_FXN(u8,    U8,       1);
+MAKE_STREAM_READ_FXN(u16,   U16,      2);
+MAKE_STREAM_READ_FXN(u32,   U32,      4);
+MAKE_STREAM_READ_FXN(u64,   U64,      8);
+MAKE_STREAM_READ_FXN(s8,    S8,       1);
+MAKE_STREAM_READ_FXN(s16,   S16,      2);
+MAKE_STREAM_READ_FXN(s32,   S32,      4);
+MAKE_STREAM_READ_FXN(s64,   S64,      8);
+MAKE_STREAM_READ_FXN(f32,   F1000,    4);
+MAKE_STREAM_READ_FXN(v2s16, V2S16,    4);
+MAKE_STREAM_READ_FXN(v3s16, V3S16,    6);
+MAKE_STREAM_READ_FXN(v2s32, V2S32,    8);
+MAKE_STREAM_READ_FXN(v3s32, V3S32,   12);
+MAKE_STREAM_READ_FXN(v2f,   V2F1000,  8);
+MAKE_STREAM_READ_FXN(v3f,   V3F1000, 12);
+MAKE_STREAM_READ_FXN(video::SColor, ARGB8, 4);
 
-inline void writeV2S16(std::ostream &os, v2s16 p)
-{
-	char buf[4];
-	writeV2S16((u8*)buf, p);
-	os.write(buf, 4);
-}
-inline v2s16 readV2S16(std::istream &is)
-{
-	char buf[4] = {0};
-	is.read(buf, 4);
-	return readV2S16((u8*)buf);
-}
+MAKE_STREAM_WRITE_FXN(u8,    U8,       1);
+MAKE_STREAM_WRITE_FXN(u16,   U16,      2);
+MAKE_STREAM_WRITE_FXN(u32,   U32,      4);
+MAKE_STREAM_WRITE_FXN(u64,   U64,      8);
+MAKE_STREAM_WRITE_FXN(s8,    S8,       1);
+MAKE_STREAM_WRITE_FXN(s16,   S16,      2);
+MAKE_STREAM_WRITE_FXN(s32,   S32,      4);
+MAKE_STREAM_WRITE_FXN(s64,   S64,      8);
+MAKE_STREAM_WRITE_FXN(f32,   F1000,    4);
+MAKE_STREAM_WRITE_FXN(v2s16, V2S16,    4);
+MAKE_STREAM_WRITE_FXN(v3s16, V3S16,    6);
+MAKE_STREAM_WRITE_FXN(v2s32, V2S32,    8);
+MAKE_STREAM_WRITE_FXN(v3s32, V3S32,   12);
+MAKE_STREAM_WRITE_FXN(v2f,   V2F1000,  8);
+MAKE_STREAM_WRITE_FXN(v3f,   V3F1000, 12);
+MAKE_STREAM_WRITE_FXN(video::SColor, ARGB8, 4);
 
-inline void writeV2S32(std::ostream &os, v2s32 p)
-{
-	char buf[8];
-	writeV2S32((u8*)buf, p);
-	os.write(buf, 8);
-}
-inline v2s32 readV2S32(std::istream &is)
-{
-	char buf[8] = {0};
-	is.read(buf, 8);
-	return readV2S32((u8*)buf);
-}
-
-inline void writeV3S16(std::ostream &os, v3s16 p)
-{
-	char buf[6];
-	writeV3S16((u8*)buf, p);
-	os.write(buf, 6);
-}
-inline v3s16 readV3S16(std::istream &is)
-{
-	char buf[6] = {0};
-	is.read(buf, 6);
-	return readV3S16((u8*)buf);
-}
-
-inline void writeARGB8(std::ostream &os, video::SColor p)
-{
-	char buf[4];
-	writeARGB8((u8*)buf, p);
-	os.write(buf, 4);
-}
-
-inline video::SColor readARGB8(std::istream &is)
-{
-	char buf[4] = {0};
-	is.read(buf, 4);
-	return readARGB8((u8*)buf);
-}
-
-/*
-	More serialization stuff
-*/
-
-// 64 MB ought to be enough for anybody - Billy G.
-#define LONG_STRING_MAX (64 * 1024 * 1024)
+////
+//// More serialization stuff
+////
 
 // Creates a string with the length as the first two bytes
 std::string serializeString(const std::string &plain);
@@ -467,4 +395,3 @@ bool deSerializeStringToStruct(std::string valstr,
 	std::string format, void *out, size_t olen);
 
 #endif
-

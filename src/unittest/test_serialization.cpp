@@ -38,10 +38,14 @@ public:
 	void testDeSerializeString();
 	void testDeSerializeWideString();
 	void testDeSerializeLongString();
+	void testStreamRead();
+	void testStreamWrite();
 
 	std::string teststring2;
 	std::wstring teststring2_w;
 	std::string teststring2_w_encoded;
+
+	static const u8 test_serialized_data[12 * 13];
 };
 
 static TestSerialization g_test_instance;
@@ -58,6 +62,8 @@ void TestSerialization::runTests(IGameDef *gamedef)
 	TEST(testDeSerializeLongString);
 	TEST(testSerializeJsonString);
 	TEST(testSerializeHex);
+	TEST(testStreamRead);
+	TEST(testStreamWrite);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -271,3 +277,117 @@ void TestSerialization::testSerializeHex()
 	UASSERT(serializeHexString(mkstr("\x00\x0a\xb0\x63\x1f\x00\xff"), true) ==
 		"00 0a b0 63 1f 00 ff");
 }
+
+
+void TestSerialization::testStreamRead()
+{
+	std::string datastr(
+		(const char *)test_serialized_data,
+		sizeof(test_serialized_data));
+	std::istringstream is(datastr, std::ios_base::binary);
+
+	UASSERT(readU8(is) == 0x11);
+	UASSERT(readU16(is) == 0x2233);
+	UASSERT(readU32(is) == 0x44556677);
+	UASSERT(readU64(is) == 0x8899AABBCCDDEEFF);
+
+	UASSERT(readS8(is) == -128);
+	UASSERT(readS16(is) == 30000);
+	UASSERT(readS32(is) == -6);
+	UASSERT(readS64(is) == -43);
+
+	UASSERT(fabs(readF1000(is) - 53.534f) < 0.005);
+	UASSERT(fabs(readF1000(is) - -300000.32f) < 0.05);
+	UASSERT(fabs(readF1000(is) - -2147483.f) < 0.05);
+	UASSERT(fabs(readF1000(is) - 2147483.f) < 0.05);
+
+	UASSERT(deSerializeString(is) == "foobar!");
+
+	UASSERT(readV2S16(is) == v2s16(500, 500));
+	UASSERT(readV3S16(is) == v3s16(4207, 604, -30));
+	UASSERT(readV2S32(is) == v2s32(1920, 1080));
+	UASSERT(readV3S32(is) == v3s32(-400, 6400054, 290549855));
+
+	v2f vec2 = readV2F1000(is);
+	UASSERT(fabs(vec2.X - 500.656f) < 0.005);
+	UASSERT(fabs(vec2.Y - 350.345f) < 0.005);
+
+	UASSERT(deSerializeWideString(is) == L"\x02~woof~\x5455");
+
+	v3f vec3 = readV3F1000(is);
+	UASSERT(fabs(vec3.X - 500.f) < 0.005);
+	UASSERT(fabs(vec3.Y - 10024.2f) < 0.005);
+	UASSERT(fabs(vec3.Z - -192.54f) < 0.005);
+
+	UASSERT(readARGB8(is) == video::SColor(255, 128, 50, 128));
+
+	UASSERT(deSerializeLongString(is) == "some longer string here");
+
+	UASSERT(is.rdbuf()->in_avail() == 2);
+	UASSERT(readU16(is) == 0xF00D);
+	UASSERT(is.rdbuf()->in_avail() == 0);
+}
+
+
+void TestSerialization::testStreamWrite()
+{
+	std::ostringstream os(std::ios_base::binary);
+	std::string data;
+
+	writeU8(os, 0x11);
+	writeU16(os, 0x2233);
+	writeU32(os, 0x44556677);
+	writeU64(os, 0x8899AABBCCDDEEFF);
+
+	writeS8(os, -128);
+	writeS16(os, 30000);
+	writeS32(os, -6);
+	writeS64(os, -43);
+
+	writeF1000(os, 53.53467f);
+	writeF1000(os, -300000.32f);
+	writeF1000(os, -2147483.f);
+	writeF1000(os, 2147483.f);
+
+	os << serializeString("foobar!");
+
+	data = os.str();
+	UASSERT(data.size() < sizeof(test_serialized_data));
+	UASSERT(!memcmp(&data[0], test_serialized_data, data.size()));
+
+	writeV2S16(os, v2s16(500, 500));
+	writeV3S16(os, v3s16(4207, 604, -30));
+	writeV2S32(os, v2s32(1920, 1080));
+	writeV3S32(os, v3s32(-400, 6400054, 290549855));
+	writeV2F1000(os, v2f(500.65661f, 350.34567f));
+
+	os << serializeWideString(L"\x02~woof~\x5455");
+
+	writeV3F1000(os, v3f(500, 10024.2f, -192.54f));
+	writeARGB8(os, video::SColor(255, 128, 50, 128));
+
+	os << serializeLongString("some longer string here");
+
+	writeU16(os, 0xF00D);
+
+	data = os.str();
+	UASSERT(data.size() == sizeof(test_serialized_data));
+	UASSERT(!memcmp(&data[0], test_serialized_data, sizeof(test_serialized_data)));
+}
+
+
+const u8 TestSerialization::test_serialized_data[12 * 13] = {
+	0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc,
+	0xdd, 0xee, 0xff, 0x80, 0x75, 0x30, 0xff, 0xff, 0xff, 0xfa, 0xff, 0xff,
+	0xff, 0xff, 0xff, 0xff, 0xff, 0xd5, 0x00, 0x00, 0xd1, 0x1e, 0xee, 0x1e,
+	0x5b, 0xc0, 0x80, 0x00, 0x02, 0x80, 0x7F, 0xFF, 0xFD, 0x80, 0x00, 0x07,
+	0x66, 0x6f, 0x6f, 0x62, 0x61, 0x72, 0x21, 0x01, 0xf4, 0x01, 0xf4, 0x10,
+	0x6f, 0x02, 0x5c, 0xff, 0xe2, 0x00, 0x00, 0x07, 0x80, 0x00, 0x00, 0x04,
+	0x38, 0xff, 0xff, 0xfe, 0x70, 0x00, 0x61, 0xa8, 0x36, 0x11, 0x51, 0x70,
+	0x5f, 0x00, 0x07, 0xa3, 0xb0, 0x00, 0x05, 0x58, 0x89, 0x00, 0x08, 0x00,
+	0x02, 0x00, 0x7e, 0x00, 0x77, 0x00, 0x6f, 0x00, 0x6f, 0x00, 0x66, 0x00,
+	0x7e, 0x54, 0x55, 0x00, 0x07, 0xa1, 0x20, 0x00, 0x98, 0xf5, 0x08, 0xff,
+	0xfd, 0x0f, 0xe4, 0xff, 0x80, 0x32, 0x80, 0x00, 0x00, 0x00, 0x17, 0x73,
+	0x6f, 0x6d, 0x65, 0x20, 0x6c, 0x6f, 0x6e, 0x67, 0x65, 0x72, 0x20, 0x73,
+	0x74, 0x72, 0x69, 0x6e, 0x67, 0x20, 0x68, 0x65, 0x72, 0x65, 0xF0, 0x0D,
+};
