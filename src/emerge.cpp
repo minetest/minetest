@@ -494,8 +494,8 @@ void *EmergeThread::Thread()
 					try {  // takes about 90ms with -O1 on an e3-1230v2
 						m_server->getScriptIface()->environment_OnGenerated(
 								minp, maxp, mapgen->blockseed);
-					} catch(LuaError &e) {
-						m_server->setAsyncFatalError(e.what());
+					} catch (LuaError &e) {
+						m_server->setAsyncFatalError("Lua: " + std::string(e.what()));
 					}
 
 					EMERGE_DBG_OUT("ended up with: " << analyze_block(block));
