@@ -37,7 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MIN_EXTRUSION_MESH_RESOLUTION 16
 #define MAX_EXTRUSION_MESH_RESOLUTION 512
 
-static scene::IMesh* createExtrusionMesh(int resolution_x, int resolution_y)
+static scene::IMesh *createExtrusionMesh(int resolution_x, int resolution_y)
 {
 	const f32 r = 0.5;
 
@@ -114,8 +114,9 @@ static scene::IMesh* createExtrusionMesh(int resolution_x, int resolution_y)
 	mesh->addMeshBuffer(buf);
 	buf->drop();
 	scaleMesh(mesh, scale);  // also recalculates bounding box
-	mesh = (scene::SMesh *)createForsythOptimizedMesh(mesh);
-	return mesh;
+	scene::IMesh *newmesh = createForsythOptimizedMesh(mesh);
+	mesh->drop();
+	return newmesh;
 }
 
 /*
