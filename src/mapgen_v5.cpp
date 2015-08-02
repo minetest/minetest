@@ -370,7 +370,7 @@ int MapgenV5::generateBaseTerrain()
 {
 	u32 index = 0;
 	u32 index2d = 0;
-	int stone_surface_max_y = -MAP_GENERATION_LIMIT;
+	int stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 
 	for (s16 z=node_min.Z; z<=node_max.Z; z++) {
 		for (s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
@@ -585,4 +585,3 @@ void MapgenV5::dustTopNodes()
 		}
 	}
 }
-

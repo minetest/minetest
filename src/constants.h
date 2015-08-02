@@ -64,7 +64,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // The absolute working limit is (2^15 - viewing_range).
 // I really don't want to make every algorithm to check if it's going near
 // the limit or not, so this is lower.
-#define MAP_GENERATION_LIMIT (31000)
+// This is the maximum value the setting map_generation_limit can be
+#define MAX_MAP_GENERATION_LIMIT (31000)
 
 // Size of node in floating-point units
 // The original idea behind this is to disallow plain casts between
@@ -116,4 +117,3 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define DEFAULT_FONT_SIZE       (10)
 
 #endif
-

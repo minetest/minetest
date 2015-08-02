@@ -626,7 +626,7 @@ int MapgenV6::generateGround()
 	MapNode n_air(CONTENT_AIR), n_water_source(c_water_source);
 	MapNode n_stone(c_stone), n_desert_stone(c_desert_stone);
 	MapNode n_ice(c_ice);
-	int stone_surface_max_y = -MAP_GENERATION_LIMIT;
+	int stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 
 	u32 index = 0;
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)

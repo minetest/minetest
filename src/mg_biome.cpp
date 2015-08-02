@@ -45,8 +45,8 @@ BiomeManager::BiomeManager(IGameDef *gamedef) :
 	b->depth_top       = 0;
 	b->depth_filler    = 0;
 	b->depth_water_top = 0;
-	b->y_min           = -MAP_GENERATION_LIMIT;
-	b->y_max           = MAP_GENERATION_LIMIT;
+	b->y_min           = -MAX_MAP_GENERATION_LIMIT;
+	b->y_max           = MAX_MAP_GENERATION_LIMIT;
 	b->heat_point      = 0.0;
 	b->humidity_point  = 0.0;
 
@@ -140,4 +140,3 @@ void Biome::resolveNodeNames()
 	getIdFromNrBacklog(&c_river_water, "mapgen_river_water_source", CONTENT_AIR);
 	getIdFromNrBacklog(&c_dust,        "air",                       CONTENT_IGNORE);
 }
-
