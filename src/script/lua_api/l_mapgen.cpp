@@ -374,8 +374,8 @@ Biome *read_biome_def(lua_State *L, int index, INodeDefManager *ndef)
 	Biome *b = BiomeManager::create(biometype);
 
 	b->name            = getstringfield_default(L, index, "name", "");
-	b->depth_top       = getintfield_default(L,    index, "depth_top",       1);
-	b->depth_filler    = getintfield_default(L,    index, "depth_filler",    2);
+	b->depth_top       = getintfield_default(L,    index, "depth_top",       0);
+	b->depth_filler    = getintfield_default(L,    index, "depth_filler",    -31000);
 	b->depth_water_top = getintfield_default(L,    index, "depth_water_top", 0);
 	b->y_min           = getintfield_default(L,    index, "y_min",           -31000);
 	b->y_max           = getintfield_default(L,    index, "y_max",           31000);
