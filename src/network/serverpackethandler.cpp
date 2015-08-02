@@ -150,13 +150,14 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		return;
 	}
 
-	if (g_settings->getBool("strict_protocol_version_checking")) {
-		if (net_proto_version != LATEST_PROTOCOL_VERSION) {
-			actionstream << "Server: A mismatched (strict) client tried to "
-					<< "connect from " << addr_s << std::endl;
-			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_VERSION);
-			return;
-		}
+	s16 strict_protocol_check_range = (g_settings->get("strict_protocol_version_checking") == "true")?
+			1 : g_settings->getS16("strict_protocol_version_checking");
+	if (strict_protocol_check_range > 0 &&
+			abs(LATEST_PROTOCOL_VERSION - net_proto_version) >= strict_protocol_check_range) {
+		actionstream << "Server: A mismatched (strict) client tried to "
+				<< "connect from " << addr_s << std::endl;
+		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_VERSION);
+		return;
 	}
 
 	/*
