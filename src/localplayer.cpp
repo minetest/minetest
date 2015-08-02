@@ -319,23 +319,13 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	/*
 		Report collisions
 	*/
-	bool bouncy_jump = false;
+
 	// Dont report if flying
 	if(collision_info && !(g_settings->getBool("free_move") && fly_allowed)) {
 		for(size_t i=0; i<result.collisions.size(); i++) {
 			const CollisionInfo &info = result.collisions[i];
 			collision_info->push_back(info);
-			if(info.new_speed.Y - info.old_speed.Y > 0.1*BS &&
-					info.bouncy)
-				bouncy_jump = true;
 		}
-	}
-
-	if(bouncy_jump && control.jump){
-		m_speed.Y += movement_speed_jump*BS;
-		touching_ground = false;
-		MtEvent *e = new SimpleTriggerEvent("PlayerJump");
-		m_gamedef->event()->put(e);
 	}
 
 	if(!touching_ground_was && touching_ground){
@@ -371,6 +361,20 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	m_can_jump = touching_ground && !in_liquid;
 	if(itemgroup_get(f.groups, "disable_jump"))
 		m_can_jump = false;
+	// Jump key pressed while jumping off from a bouncy block
+	if (m_can_jump && control.jump && itemgroup_get(f.groups, "bouncy") &&
+		m_speed.Y >= -0.5 * BS) {
+
+		float jumpspeed = movement_speed_jump * physics_override_jump;
+		if (m_speed.Y > 1) {
+			// Reduce boost when speed already is high
+			m_speed.Y += jumpspeed / (1 + (m_speed.Y / 16 ));
+		} else {
+			m_speed.Y += jumpspeed;
+		}
+		setSpeed(m_speed);
+		m_can_jump = false;
+	}
 }
 
 void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
