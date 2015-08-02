@@ -43,15 +43,15 @@ BiomeManager::BiomeManager(IGameDef *gamedef) :
 	b->name            = "Default";
 	b->flags           = 0;
 	b->depth_top       = 0;
-	b->depth_filler    = 0;
+	b->depth_filler    = -MAX_MAP_GENERATION_LIMIT;
 	b->depth_water_top = 0;
 	b->y_min           = -MAX_MAP_GENERATION_LIMIT;
 	b->y_max           = MAX_MAP_GENERATION_LIMIT;
 	b->heat_point      = 0.0;
 	b->humidity_point  = 0.0;
 
-	b->m_nodenames.push_back("air");
-	b->m_nodenames.push_back("air");
+	b->m_nodenames.push_back("mapgen_stone");
+	b->m_nodenames.push_back("mapgen_stone");
 	b->m_nodenames.push_back("mapgen_stone");
 	b->m_nodenames.push_back("mapgen_water_source");
 	b->m_nodenames.push_back("mapgen_water_source");
@@ -132,8 +132,8 @@ void BiomeManager::clear()
 
 void Biome::resolveNodeNames()
 {
-	getIdFromNrBacklog(&c_top,         "mapgen_dirt_with_grass",    CONTENT_AIR);
-	getIdFromNrBacklog(&c_filler,      "mapgen_dirt",               CONTENT_AIR);
+	getIdFromNrBacklog(&c_top,         "mapgen_stone",              CONTENT_AIR);
+	getIdFromNrBacklog(&c_filler,      "mapgen_stone",              CONTENT_AIR);
 	getIdFromNrBacklog(&c_stone,       "mapgen_stone",              CONTENT_AIR);
 	getIdFromNrBacklog(&c_water_top,   "mapgen_water_source",       CONTENT_AIR);
 	getIdFromNrBacklog(&c_water,       "mapgen_water_source",       CONTENT_AIR);
