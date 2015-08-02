@@ -1209,21 +1209,22 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			s32 frame_count = stoi(sf.next(":"));
 			s32 progression = stoi(sf.next(":"));
 
-			/*
-				Load crack image.
+			if (progression >= 0) {
+				/*
+					Load crack image.
 
-				It is an image with a number of cracking stages
-				horizontally tiled.
-			*/
-			video::IImage *img_crack = m_sourcecache.getOrLoad(
-					"crack_anylength.png", m_device);
+					It is an image with a number of cracking stages
+					horizontally tiled.
+				*/
+				video::IImage *img_crack = m_sourcecache.getOrLoad(
+						"crack_anylength.png", m_device);
 
-			if (img_crack && progression >= 0)
-			{
-				draw_crack(img_crack, baseimg,
-						use_overlay, frame_count,
-						progression, driver);
-				img_crack->drop();
+				if (img_crack) {
+					draw_crack(img_crack, baseimg,
+							use_overlay, frame_count,
+							progression, driver);
+					img_crack->drop();
+				}
 			}
 		}
 		/*
@@ -1612,6 +1613,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			if (img) {
 				apply_mask(img, baseimg, v2s32(0, 0), v2s32(0, 0),
 						img->getDimension());
+				img->drop();
 			} else {
 				errorstream << "generateImage(): Failed to load \""
 						<< filename << "\".";
