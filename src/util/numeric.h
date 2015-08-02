@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../irr_v2d.h"
 #include "../irr_v3d.h"
 #include "../irr_aabb3d.h"
+#include "../jthread/jmutex.h"
 #include <list>
 #include <map>
 #include <vector>
@@ -41,6 +42,7 @@ public:
 private:
 	static void generateFacePosition(u16 d);
 	static std::map<u16, std::vector<v3s16> > m_cache;
+	static JMutex m_cache_mutex;
 };
 
 class IndentationRaiser
