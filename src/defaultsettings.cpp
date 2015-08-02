@@ -31,6 +31,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("name", "");
 
 	// Client stuff
+
 	settings->setDefault("remote_port", "30000");
 	settings->setDefault("keymap_forward", "KEY_KEY_W");
 	settings->setDefault("keymap_backward", "KEY_KEY_S");
@@ -224,6 +225,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("font_size", fontsize.str());
 	settings->setDefault("mono_font_size", fontsize.str());
 #endif
+	//Main menu
+	settings->setDefault("enable_modmanager", "false");
 
 	// Server stuff
 	// "map-dir" doesn't exist by default.
@@ -327,6 +330,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("high_precision_fpu", "true");
 
 	settings->setDefault("language", "");
+
 
 #ifdef __ANDROID__
 	settings->setDefault("screenW", "0");

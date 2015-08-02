@@ -39,7 +39,9 @@ dofile(menupath .. DIR_DELIM .. "modmgr.lua")
 dofile(menupath .. DIR_DELIM .. "store.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_config_world.lua")
 dofile(menupath .. DIR_DELIM .. "tab_credits.lua")
-dofile(menupath .. DIR_DELIM .. "tab_mods.lua")
+if core.setting_getbool("enable_modmanager") then
+	dofile(menupath .. DIR_DELIM .. "tab_mods.lua")
+end
 dofile(menupath .. DIR_DELIM .. "tab_settings.lua")
 if PLATFORM ~= "Android" then
 	dofile(menupath .. DIR_DELIM .. "dlg_create_world.lua")
@@ -135,7 +137,9 @@ local function init_globals()
 	if PLATFORM ~= "Android" then
 		tv_main:add(tab_texturepacks)
 	end
-	tv_main:add(tab_mods)
+	if core.setting_getbool("enable_modmanager") then
+		tv_main:add(tab_mods)
+	end
 	tv_main:add(tab_credits)
 
 	tv_main:set_global_event_handler(main_event_handler)
