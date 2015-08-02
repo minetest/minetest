@@ -47,13 +47,11 @@ ANDROID_VERSION_CODE = 12
 # toolchain config for arm new processors
 ################################################################################
 TARGET_HOST = arm-linux
-TARGET_ABI = armeabi-v7a-hard
+TARGET_ABI = armeabi-v7a
 TARGET_LIBDIR = armeabi-v7a
 TARGET_TOOLCHAIN = arm-linux-androideabi-
-TARGET_CFLAGS_ADDON =  -mfpu=vfpv3-d16 -D_NDK_MATH_NO_SOFTFP=1 \
-						-mfloat-abi=hard -march=armv7-a
+TARGET_CFLAGS_ADDON = -mfloat-abi=softfp -mfpu=vfpv3
 TARGET_CXXFLAGS_ADDON = $(TARGET_CFLAGS_ADDON)
-TARGET_LDFLAGS_ADDON = -Wl,--no-warn-mismatch -lm_hard
 TARGET_ARCH = armv7
 CROSS_PREFIX = arm-linux-androideabi-
 COMPILER_VERSION = 4.8
@@ -241,8 +239,8 @@ $(OPENAL_LIB): $(OPENAL_TIMESTAMP)
 	echo "changed timestamp for openal detected building...";                  \
 	cd ${OPENAL_DIR};                                                          \
 	ndk-build NDEBUG=${NDEBUG} NDK_MODULE_PATH=${NDK_MODULE_PATH}              \
-	APP_ABI=${TARGET_ABI} APP_PLATFORM=${APP_PLATFORM}                         \
-	TARGET_CFLAGS+="${TARGET_CFLAGS_ADDON}"                                    \
+	APP_ABI=${TARGET_ABI} TARGET_ARCH_ABI=${TARGET_ABI}                        \
+	APP_PLATFORM=${APP_PLATFORM} TARGET_CFLAGS+="${TARGET_CFLAGS_ADDON}"       \
 	TARGET_LDFLAGS+="${TARGET_LDFLAGS_ADDON}"                                  \
 	TARGET_CXXFLAGS+="${TARGET_CXXFLAGS_ADDON}" || exit 1;                     \
 	touch ${OPENAL_TIMESTAMP};                                                 \
@@ -268,6 +266,7 @@ ogg_download :
 		git clone ${OGG_URL_GIT}|| exit 1;                                     \
 		cd libvorbis-libogg-android ;                                          \
 		patch -p1 < ../../libvorbis-libogg-fpu.patch || exit 1;                \
+		sed -i 's-:-?-' jni/Application.mk;                                    \
 	fi
 
 ogg : $(OGG_LIB)

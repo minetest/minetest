@@ -39,7 +39,7 @@ doc/doxygen_*
 CMakeFiles/*
 src/CMakeFiles/*
 src/Makefile
-src/android_config_githash.h
+src/android_version_githash.h
 src/android_version.h
 src/cmake_config.h
 src/cmake_config_githash.h
