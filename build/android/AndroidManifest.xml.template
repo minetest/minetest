@@ -14,7 +14,7 @@
 	<activity android:name=".MtNativeActivity"
 		android:label="Minetest"
 		android:launchMode="singleTask"
-		android:configChanges="orientation|keyboard|keyboardHidden|navigation"
+                android:configChanges="orientation|keyboard|keyboardHidden|navigation|screenSize"
 		android:screenOrientation="sensorLandscape"
 		android:clearTaskOnLaunch="true">
 		<intent-filter>
