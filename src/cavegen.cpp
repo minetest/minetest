@@ -31,7 +31,8 @@ NoiseParams nparams_caveliquids(0, 1, v3f(150.0, 150.0, 150.0), 776, 3, 0.6, 2.0
 ///////////////////////////////////////// Caves V5
 
 
-CaveV5::CaveV5(MapgenV5 *mg, PseudoRandom *ps) {
+CaveV5::CaveV5(MapgenV5 *mg, PseudoRandom *ps)
+{
 	this->mg             = mg;
 	this->vm             = mg->vm;
 	this->ndef           = mg->ndef;
@@ -54,7 +55,8 @@ CaveV5::CaveV5(MapgenV5 *mg, PseudoRandom *ps) {
 }
 
 
-void CaveV5::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height) {
+void CaveV5::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height)
+{
 	node_min = nmin;
 	node_max = nmax;
 	main_direction = v3f(0, 0, 0);
@@ -115,8 +117,8 @@ void CaveV5::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height) {
 }
 
 
-void CaveV5::makeTunnel(bool dirswitch) {
-
+void CaveV5::makeTunnel(bool dirswitch)
+{
 	// Randomize size
 	s16 min_d = min_tunnel_diameter;
 	s16 max_d = max_tunnel_diameter;
@@ -201,7 +203,8 @@ void CaveV5::makeTunnel(bool dirswitch) {
 }
 
 
-void CaveV5::carveRoute(v3f vec, float f, bool randomize_xz) {
+void CaveV5::carveRoute(v3f vec, float f, bool randomize_xz) 
+{
 	MapNode airnode(CONTENT_AIR);
 	MapNode waternode(c_water_source);
 	MapNode lavanode(c_lava_source);
@@ -271,7 +274,8 @@ void CaveV5::carveRoute(v3f vec, float f, bool randomize_xz) {
 ///////////////////////////////////////// Caves V6
 
 
-CaveV6::CaveV6(MapgenV6 *mg, PseudoRandom *ps, PseudoRandom *ps2, bool is_large_cave) {
+CaveV6::CaveV6(MapgenV6 *mg, PseudoRandom *ps, PseudoRandom *ps2, bool is_large_cave)
+{
 	this->mg             = mg;
 	this->vm             = mg->vm;
 	this->ndef           = mg->ndef;
@@ -301,7 +305,8 @@ CaveV6::CaveV6(MapgenV6 *mg, PseudoRandom *ps, PseudoRandom *ps2, bool is_large_
 }
 
 
-void CaveV6::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height) {
+void CaveV6::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height)
+{
 	node_min = nmin;
 	node_max = nmax;
 	max_stone_y = max_stone_height;
@@ -368,7 +373,8 @@ void CaveV6::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height) {
 }
 
 
-void CaveV6::makeTunnel(bool dirswitch) {
+void CaveV6::makeTunnel(bool dirswitch)
+{
 	if (dirswitch && !large_cave) {
 		main_direction = v3f(
 			((float)(ps->next() % 20) - (float)10) / 10,
@@ -414,7 +420,8 @@ void CaveV6::makeTunnel(bool dirswitch) {
 		);
 	}
 
-	// Do not make caves that are entirely above ground.
+	// Do not make caves that are entirely above ground, to fix
+	// shadow bugs caused by overgenerated large caves.
 	// It is only necessary to check the startpoint and endpoint.
 	v3s16 orpi(orp.X, orp.Y, orp.Z);
 	v3s16 veci(vec.X, vec.Y, vec.Z);
@@ -441,8 +448,11 @@ void CaveV6::makeTunnel(bool dirswitch) {
 		h2 = water_level;
 	}
 
-	if (p1.Y > h1 && p2.Y > h2) // If startpoint and endpoint are above ground
-		return;
+	// If startpoint and endpoint are above ground,
+	// disable placing of nodes in carveRoute while
+	// still running all pseudorandom calls to ensure
+	// caves consistent with existing worlds.
+	bool tunnel_above_ground = p1.Y > h1 && p2.Y > h2;
 
 	vec += main_direction;
 
@@ -474,13 +484,14 @@ void CaveV6::makeTunnel(bool dirswitch) {
 
 	// Carve routes
 	for (float f = 0; f < 1.0; f += 1.0 / veclen)
-		carveRoute(vec, f, randomize_xz);
+		carveRoute(vec, f, randomize_xz, tunnel_above_ground);
 
 	orp = rp;
 }
 
 
-void CaveV6::carveRoute(v3f vec, float f, bool randomize_xz) {
+void CaveV6::carveRoute(v3f vec, float f, bool randomize_xz, bool tunnel_above_ground)
+{
 	MapNode airnode(CONTENT_AIR);
 	MapNode waternode(c_water_source);
 	MapNode lavanode(c_lava_source);
@@ -503,6 +514,9 @@ void CaveV6::carveRoute(v3f vec, float f, bool randomize_xz) {
 	for (s16 z0 = d0; z0 <= d1; z0++) {
 		s16 si = rs / 2 - MYMAX(0, abs(z0) - rs / 7 - 1);
 		for (s16 x0 = -si - ps->range(0,1); x0 <= si - 1 + ps->range(0,1); x0++) {
+			if (tunnel_above_ground)
+				continue;
+
 			s16 maxabsxz = MYMAX(abs(x0), abs(z0));
 			s16 si2 = rs / 2 - MYMAX(0, maxabsxz - rs / 7 - 1);
 			for (s16 y0 = -si2; y0 <= si2; y0++) {
@@ -553,7 +567,8 @@ void CaveV6::carveRoute(v3f vec, float f, bool randomize_xz) {
 ///////////////////////////////////////// Caves V7
 
 
-CaveV7::CaveV7(MapgenV7 *mg, PseudoRandom *ps) {
+CaveV7::CaveV7(MapgenV7 *mg, PseudoRandom *ps)
+{
 	this->mg             = mg;
 	this->vm             = mg->vm;
 	this->ndef           = mg->ndef;
@@ -576,7 +591,8 @@ CaveV7::CaveV7(MapgenV7 *mg, PseudoRandom *ps) {
 }
 
 
-void CaveV7::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height) {
+void CaveV7::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height)
+{
 	node_min = nmin;
 	node_max = nmax;
 	max_stone_y = max_stone_height;
@@ -638,8 +654,8 @@ void CaveV7::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height) {
 }
 
 
-void CaveV7::makeTunnel(bool dirswitch) {
-
+void CaveV7::makeTunnel(bool dirswitch)
+{
 	// Randomize size
 	s16 min_d = min_tunnel_diameter;
 	s16 max_d = max_tunnel_diameter;
@@ -724,7 +740,8 @@ void CaveV7::makeTunnel(bool dirswitch) {
 }
 
 
-void CaveV7::carveRoute(v3f vec, float f, bool randomize_xz) {
+void CaveV7::carveRoute(v3f vec, float f, bool randomize_xz)
+{
 	MapNode airnode(CONTENT_AIR);
 	MapNode waternode(c_water_source);
 	MapNode lavanode(c_lava_source);
@@ -790,4 +807,3 @@ void CaveV7::carveRoute(v3f vec, float f, bool randomize_xz) {
 		}
 	}
 }
-

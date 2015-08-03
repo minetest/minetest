@@ -113,7 +113,7 @@ public:
 	CaveV6(MapgenV6 *mg, PseudoRandom *ps, PseudoRandom *ps2, bool large_cave);
 	void makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height);
 	void makeTunnel(bool dirswitch);
-	void carveRoute(v3f vec, float f, bool randomize_xz);
+	void carveRoute(v3f vec, float f, bool randomize_xz, bool tunnel_above_ground);
 };
 
 class CaveV7 {
