@@ -1014,7 +1014,7 @@ void CNodeDefManager::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 	}
 	tile->flags_texture = tsrc->getShaderFlagsTexture(
 		tile->normal_texture ? true : false,
-		tiledef->tileable_horizontal, tiledef->tileable_vertical);
+		tiledef->tileable_vertical, tiledef->tileable_horizontal);
 
 	// Material flags
 	tile->material_flags = 0;
@@ -1022,6 +1022,10 @@ void CNodeDefManager::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 		tile->material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
 	if (tiledef->animation.type == TAT_VERTICAL_FRAMES)
 		tile->material_flags |= MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
+	if (tiledef->tileable_horizontal)
+		tile->material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
+	if (tiledef->tileable_vertical)
+		tile->material_flags |= MATERIAL_FLAG_TILEABLE_VERTICAL;
 
 	// Animation parameters
 	int frame_count = 1;

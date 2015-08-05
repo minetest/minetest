@@ -63,7 +63,8 @@ class Schematic;
 
 
 ContentFeatures    read_content_features     (lua_State *L, int index);
-TileDef            read_tiledef              (lua_State *L, int index);
+TileDef            read_tiledef              (lua_State *L, int index,
+                                              u8 drawtype);
 void               read_soundspec            (lua_State *L, int index,
                                               SimpleSoundSpec &spec);
 NodeBox            read_nodebox              (lua_State *L, int index);
