@@ -312,13 +312,29 @@ BufferedPacket ReliablePacketBuffer::popSeqnum(u16 seqnum)
 void ReliablePacketBuffer::insert(BufferedPacket &p,u16 next_expected)
 {
 	JMutexAutoLock listlock(m_list_mutex);
-	FATAL_ERROR_IF(p.data.getSize() < BASE_HEADER_SIZE+3, "Invalid data size");
-	u8 type = readU8(&p.data[BASE_HEADER_SIZE+0]);
-	sanity_check(type == TYPE_RELIABLE);
-	u16 seqnum = readU16(&p.data[BASE_HEADER_SIZE+1]);
+	if (p.data.getSize() < BASE_HEADER_SIZE + 3) {
+		errorstream << "ReliablePacketBuffer::insert(): Invalid data size for "
+			"reliable packet" << std::endl;
+		return;
+	}
+	u8 type = readU8(&p.data[BASE_HEADER_SIZE + 0]);
+	if (type != TYPE_RELIABLE) {
+		errorstream << "ReliablePacketBuffer::insert(): type is not reliable"
+			<< std::endl;
+		return;
+	}
+	u16 seqnum = readU16(&p.data[BASE_HEADER_SIZE + 1]);
 
-	sanity_check(seqnum_in_window(seqnum, next_expected, MAX_RELIABLE_WINDOW_SIZE));
-	sanity_check(seqnum != next_expected);
+	if (!seqnum_in_window(seqnum, next_expected, MAX_RELIABLE_WINDOW_SIZE)) {
+		errorstream << "ReliablePacketBuffer::insert(): seqnum is outside of "
+			"expected window " << std::endl;
+		return;
+	}
+	if (seqnum == next_expected) {
+		errorstream << "ReliablePacketBuffer::insert(): seqnum is next expected"
+			<< std::endl;
+		return;
+	}
 
 	++m_list_size;
 	sanity_check(m_list_size <= SEQNUM_MAX+1);	// FIXME: Handle the error?
@@ -376,10 +392,6 @@ void ReliablePacketBuffer::insert(BufferedPacket &p,u16 next_expected)
 					p.address.serializeString().c_str());
 			throw IncomingDataCorruption("duplicated packet isn't same as original one");
 		}
-
-		sanity_check(readU16(&(i->data[BASE_HEADER_SIZE+1])) == seqnum);
-		sanity_check(i->data.getSize() == p.data.getSize());
-		sanity_check(i->address == p.address);
 
 		/* nothing to do this seems to be a resent packet */
 		/* for paranoia reason data should be compared */
@@ -449,12 +461,20 @@ SharedBuffer<u8> IncomingSplitBuffer::insert(BufferedPacket &p, bool reliable)
 {
 	JMutexAutoLock listlock(m_map_mutex);
 	u32 headersize = BASE_HEADER_SIZE + 7;
-	FATAL_ERROR_IF(p.data.getSize() < headersize, "Invalid data size");
+	if (p.data.getSize() < headersize) {
+		errorstream << "Invalid data size for split packet" << std::endl;
+		return SharedBuffer<u8>();
+	}
 	u8 type = readU8(&p.data[BASE_HEADER_SIZE+0]);
-	sanity_check(type == TYPE_SPLIT);
 	u16 seqnum = readU16(&p.data[BASE_HEADER_SIZE+1]);
 	u16 chunk_count = readU16(&p.data[BASE_HEADER_SIZE+3]);
 	u16 chunk_num = readU16(&p.data[BASE_HEADER_SIZE+5]);
+
+	if (type != TYPE_SPLIT) {
+		errorstream << "IncomingSplitBuffer::insert(): type is not split"
+			<< std::endl;
+		return SharedBuffer<u8>();
+	}
 
 	// Add if doesn't exist
 	if (m_buf.find(seqnum) == m_buf.end())
@@ -2327,8 +2347,9 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 	u8 type = readU8(&(packetdata[0]));
 
 	if (MAX_UDP_PEERS <= 65535 && peer_id >= MAX_UDP_PEERS) {
-		errorstream << "Something is wrong with peer_id" << std::endl;
-		FATAL_ERROR("");
+		std::string errmsg = "Invalid peer_id=" + itos(peer_id);
+		errorstream << errmsg << std::endl;
+		throw InvalidIncomingDataException(errmsg.c_str());
 	}
 
 	if (type == TYPE_CONTROL)
@@ -2340,10 +2361,12 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 
 		if (controltype == CONTROLTYPE_ACK)
 		{
-			FATAL_ERROR_IF(channel == 0, "Invalid channel (0)");
-			if (packetdata.getSize() < 4)
-				throw InvalidIncomingDataException
-						("packetdata.getSize() < 4 (ACK header size)");
+			assert(channel != NULL);
+
+			if (packetdata.getSize() < 4) {
+				throw InvalidIncomingDataException(
+					"packetdata.getSize() < 4 (ACK header size)");
+			}
 
 			u16 seqnum = readU16(&packetdata[2]);
 			LOG(dout_con<<m_connection->getDesc()
@@ -2508,7 +2531,8 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 	}
 	else if (type == TYPE_RELIABLE)
 	{
-		FATAL_ERROR_IF(channel == 0, "Invalid channel (0)");
+		assert(channel != NULL);
+
 		// Recursive reliable packets not allowed
 		if (reliable)
 			throw InvalidIncomingDataException("Found nested reliable packets");
