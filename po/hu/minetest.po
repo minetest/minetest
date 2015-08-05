@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2013-08-11 03:05+0200\n"
-"Last-Translator: Sasikaa Lacikaa <sasikaa@gmail.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2015-08-05 13:29+0200\n"
+"Last-Translator: Kisbenedek Márton <martonkisbenedek@gmail.com>\n"
+"Language-Team: Hungarian "
+"<https://hosted.weblate.org/projects/minetest/minetest/hu/>\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Weblate 1.4-dev\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2.4-dev\n"
 
 #: builtin/fstk/ui.lua:82
 msgid "An error occured in a Lua script, such as a mod:"
@@ -24,11 +25,11 @@ msgstr ""
 
 #: builtin/fstk/ui.lua:84
 msgid "An error occured:"
-msgstr ""
+msgstr "Hiba történt:"
 
 #: builtin/fstk/ui.lua:89 builtin/mainmenu/store.lua:165
 msgid "Ok"
-msgstr ""
+msgstr "OK"
 
 #: builtin/mainmenu/common.lua:239 src/game.cpp:1891
 msgid "Loading..."
@@ -37,31 +38,31 @@ msgstr "Betöltés..."
 #: builtin/mainmenu/common.lua:240
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
+"Próbáld újra engedélyezni a nyilvános szerverlistát és ellenőrizd az "
+"internetkapcsolatot."
 
 #: builtin/mainmenu/dlg_config_world.lua:29
-#, fuzzy
 msgid "World:"
-msgstr "Világ kiválasztása:"
+msgstr "Világ:"
 
 #: builtin/mainmenu/dlg_config_world.lua:33
 #: builtin/mainmenu/dlg_config_world.lua:35
-#, fuzzy
 msgid "Hide Game"
-msgstr "Játék"
+msgstr "Játék elrejtése"
 
 #: builtin/mainmenu/dlg_config_world.lua:39
 #: builtin/mainmenu/dlg_config_world.lua:41
 msgid "Hide mp content"
-msgstr ""
+msgstr "Modpakk tartalom elrejtése"
 
 #: builtin/mainmenu/dlg_config_world.lua:49
+#, fuzzy
 msgid "Mod:"
-msgstr ""
+msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua:51 builtin/mainmenu/tab_mods.lua:99
-#, fuzzy
 msgid "Depends:"
-msgstr "Attól függ:"
+msgstr "Függ ettől:"
 
 #: builtin/mainmenu/dlg_config_world.lua:54 src/guiKeyChangeMenu.cpp:191
 msgid "Save"
@@ -75,14 +76,12 @@ msgid "Cancel"
 msgstr "Mégse"
 
 #: builtin/mainmenu/dlg_config_world.lua:71
-#, fuzzy
 msgid "Enable MP"
-msgstr "Összes engedélyezve"
+msgstr "Modpakk engedélyezése"
 
 #: builtin/mainmenu/dlg_config_world.lua:73
-#, fuzzy
 msgid "Disable MP"
-msgstr "Összes tiltva"
+msgstr "Modpakk letiltása"
 
 #: builtin/mainmenu/dlg_config_world.lua:77
 #: builtin/mainmenu/dlg_config_world.lua:79
@@ -90,21 +89,21 @@ msgid "enabled"
 msgstr "Engedélyezve"
 
 #: builtin/mainmenu/dlg_config_world.lua:85
-#, fuzzy
 msgid "Enable all"
-msgstr "Összes engedélyezve"
+msgstr "Összes engedélyezése"
 
 #: builtin/mainmenu/dlg_create_world.lua:50
 msgid "World name"
 msgstr "Világ neve"
 
 #: builtin/mainmenu/dlg_create_world.lua:53
+#, fuzzy
 msgid "Seed"
-msgstr ""
+msgstr "Seed"
 
 #: builtin/mainmenu/dlg_create_world.lua:56
 msgid "Mapgen"
-msgstr ""
+msgstr "Térkép generátor"
 
 #: builtin/mainmenu/dlg_create_world.lua:59
 msgid "Game"
@@ -116,32 +115,32 @@ msgstr "Létrehozás"
 
 #: builtin/mainmenu/dlg_create_world.lua:68
 msgid "You have no subgames installed."
-msgstr ""
+msgstr "Nincsenek al-játékok telepítve."
 
 #: builtin/mainmenu/dlg_create_world.lua:69
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "Letöltés a minetest.net-ről"
 
 #: builtin/mainmenu/dlg_create_world.lua:72
 msgid "Warning: The minimal development test is meant for developers."
 msgstr ""
+"Figyelmeztetés: A \"minimal development test\" csak fejlesztőknek ajánlott."
 
 #: builtin/mainmenu/dlg_create_world.lua:73
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr ""
+msgstr "Tölts le egy al-játékot (pl. minetest_game) a minetest.net-ről"
 
 #: builtin/mainmenu/dlg_create_world.lua:99
-#, fuzzy
 msgid "A world named \"$1\" already exists"
-msgstr "Nem sikerült a viág létrehozása: A világ neve már használva van"
+msgstr "\"$1\" nevű világ már létezik"
 
 #: builtin/mainmenu/dlg_create_world.lua:116
 msgid "No worldname given or no game selected"
-msgstr ""
+msgstr "Nincs megadva a világ neve, vagy nincs kiválasztva játék"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:26
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "Biztosan törölni akarod: \"$1\"?"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:27
 #: builtin/mainmenu/dlg_delete_world.lua:25
@@ -151,20 +150,19 @@ msgstr "Igen"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:28
 msgid "No of course not!"
-msgstr ""
+msgstr "Persze, hogy nem!"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:41
 msgid "Modmgr: failed to delete \"$1\""
-msgstr ""
+msgstr "Modmgr: \"$1\" törlése meghiúsult"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:45
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr ""
+msgstr "Modmgr: érvénytelen mod útvonal: \"$1\""
 
 #: builtin/mainmenu/dlg_delete_world.lua:24
-#, fuzzy
 msgid "Delete World \"$1\"?"
-msgstr "Világ törlése"
+msgstr "\"$1\" világ törlése?"
 
 #: builtin/mainmenu/dlg_delete_world.lua:26
 msgid "No"
@@ -172,148 +170,145 @@ msgstr "Nem"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua:26
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "Modpakk átnevezése:"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua:31 src/keycode.cpp:227
 msgid "Accept"
-msgstr "Elfogadva"
+msgstr "Elfogad"
 
 #: builtin/mainmenu/modmgr.lua:344
 msgid "Install Mod: file: \"$1\""
-msgstr ""
+msgstr "Mod telepítés: fájl: \"$1\""
 
 #: builtin/mainmenu/modmgr.lua:345
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
+"\n"
+"Mod telepítés: \"$1\" nem támogatott fájltípus, vagy hibás archívum"
 
 #: builtin/mainmenu/modmgr.lua:365
-#, fuzzy
 msgid "Failed to install $1 to $2"
-msgstr "A világ betöltése közben hiba"
+msgstr "$1 telepítése meghiúsult"
 
 #: builtin/mainmenu/modmgr.lua:368
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
 msgstr ""
+"Mod telepítése: nem található megfelelő mappanév ehhez a modpakk-hoz: $1"
 
 #: builtin/mainmenu/modmgr.lua:388
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr ""
+msgstr "Mod telepítése: nem található megfelelő mod név ehhez: $1"
 
 #: builtin/mainmenu/store.lua:88
 msgid "Unsorted"
-msgstr ""
+msgstr "Rendezetlen"
 
 #: builtin/mainmenu/store.lua:99 builtin/mainmenu/store.lua:580
 msgid "Search"
-msgstr ""
+msgstr "Keresés"
 
 #: builtin/mainmenu/store.lua:126
 msgid "Downloading $1, please wait..."
-msgstr ""
+msgstr "$1 letöltése, kérlek várj..."
 
 #: builtin/mainmenu/store.lua:160
 msgid "Successfully installed:"
-msgstr ""
+msgstr "Sikeresen telepítve:"
 
 #: builtin/mainmenu/store.lua:162
-#, fuzzy
 msgid "Shortname:"
-msgstr "Világ neve"
+msgstr "Rövid név:"
 
 #: builtin/mainmenu/store.lua:472
 msgid "Rating"
-msgstr ""
+msgstr "Értékelés"
 
 #: builtin/mainmenu/store.lua:497
 msgid "re-Install"
-msgstr ""
+msgstr "Újratelepítés"
 
 #: builtin/mainmenu/store.lua:499
 msgid "Install"
-msgstr ""
+msgstr "Telepítés"
 
 #: builtin/mainmenu/store.lua:518
 msgid "Close store"
-msgstr ""
+msgstr "Áruház bezárása"
 
 #: builtin/mainmenu/store.lua:526
 msgid "Page $1 of $2"
-msgstr ""
+msgstr "Oldal $1 ennyiből: $2"
 
 #: builtin/mainmenu/tab_credits.lua:22
 msgid "Credits"
-msgstr "Stáblista"
+msgstr "Készítők"
 
 #: builtin/mainmenu/tab_credits.lua:31
 msgid "Core Developers"
-msgstr ""
+msgstr "Belső fejlesztők"
 
 #: builtin/mainmenu/tab_credits.lua:47
 msgid "Active Contributors"
-msgstr ""
+msgstr "Tevékeny hozzájárulók"
 
 #: builtin/mainmenu/tab_credits.lua:54
 msgid "Previous Core Developers"
-msgstr ""
+msgstr "Korábbi belső fejlesztők"
 
 #: builtin/mainmenu/tab_credits.lua:59
 msgid "Previous Contributors"
-msgstr ""
+msgstr "Korábbi hozzájárulók"
 
 #: builtin/mainmenu/tab_mods.lua:30
 msgid "Installed Mods:"
-msgstr ""
+msgstr "Telepített modok:"
 
 #: builtin/mainmenu/tab_mods.lua:39
 msgid "Online mod repository"
-msgstr ""
+msgstr "Online mod tároló"
 
 #: builtin/mainmenu/tab_mods.lua:78
 msgid "No mod description available"
-msgstr ""
+msgstr "Nincs elérhető mod leírás"
 
 #: builtin/mainmenu/tab_mods.lua:82
 msgid "Mod information:"
-msgstr ""
+msgstr "Mod ismertető:"
 
 #: builtin/mainmenu/tab_mods.lua:93
 msgid "Rename"
-msgstr ""
+msgstr "Átnevez"
 
 #: builtin/mainmenu/tab_mods.lua:95
 msgid "Uninstall selected modpack"
-msgstr ""
+msgstr "Kiválasztott modpakk törlése"
 
 #: builtin/mainmenu/tab_mods.lua:106
 msgid "Uninstall selected mod"
-msgstr ""
+msgstr "Kiválasztott mod törlése"
 
 #: builtin/mainmenu/tab_mods.lua:121
-#, fuzzy
 msgid "Select Mod File:"
-msgstr "Világ kiválasztása:"
+msgstr "Mod fájl kiválasztása:"
 
 #: builtin/mainmenu/tab_mods.lua:165
 msgid "Mods"
-msgstr ""
+msgstr "Modok"
 
 #: builtin/mainmenu/tab_multiplayer.lua:23
-#, fuzzy
 msgid "Address / Port :"
-msgstr "Cím/Port"
+msgstr "Cím / Port:"
 
 #: builtin/mainmenu/tab_multiplayer.lua:24
-#, fuzzy
 msgid "Name / Password :"
-msgstr "Név/jelszó"
+msgstr "Név / jelszó:"
 
 #: builtin/mainmenu/tab_multiplayer.lua:29
 #: builtin/mainmenu/tab_simple_main.lua:30
-#, fuzzy
 msgid "Public Serverlist"
-msgstr "Publikus Szerver Lista:"
+msgstr "Nyilvános szerverlista"
 
 #: builtin/mainmenu/tab_multiplayer.lua:34 builtin/mainmenu/tab_server.lua:26
 #: builtin/mainmenu/tab_singleplayer.lua:96 src/keycode.cpp:229
@@ -327,25 +322,22 @@ msgstr "Csatlakozás"
 
 #: builtin/mainmenu/tab_multiplayer.lua:62
 #: builtin/mainmenu/tab_simple_main.lua:45
-#, fuzzy
 msgid "Creative mode"
 msgstr "Kreatív mód"
 
 #: builtin/mainmenu/tab_multiplayer.lua:63
 #: builtin/mainmenu/tab_simple_main.lua:46
-#, fuzzy
 msgid "Damage enabled"
-msgstr "Engedélyezve"
+msgstr "Sérülés engedélyezve"
 
 #: builtin/mainmenu/tab_multiplayer.lua:64
 #: builtin/mainmenu/tab_simple_main.lua:47
-#, fuzzy
 msgid "PvP enabled"
-msgstr "Engedélyezve"
+msgstr "PvP engedélyezve"
 
 #: builtin/mainmenu/tab_multiplayer.lua:257
 msgid "Client"
-msgstr ""
+msgstr "Kliens"
 
 #: builtin/mainmenu/tab_server.lua:27 builtin/mainmenu/tab_singleplayer.lua:97
 msgid "New"
@@ -356,9 +348,8 @@ msgid "Configure"
 msgstr "Beállítás"
 
 #: builtin/mainmenu/tab_server.lua:29
-#, fuzzy
 msgid "Start Game"
-msgstr "Játék indítása / Csatlakozás"
+msgstr "Játék indítása"
 
 #: builtin/mainmenu/tab_server.lua:30
 #: builtin/mainmenu/tab_singleplayer.lua:100
@@ -377,80 +368,80 @@ msgstr "Sérülés engedélyezése"
 
 #: builtin/mainmenu/tab_server.lua:35
 msgid "Public"
-msgstr "Publikus"
+msgstr "Nyilvános"
 
 #: builtin/mainmenu/tab_server.lua:37 builtin/mainmenu/tab_simple_main.lua:25
 msgid "Name/Password"
 msgstr "Név/jelszó"
 
 #: builtin/mainmenu/tab_server.lua:45
+#, fuzzy
 msgid "Bind Address"
-msgstr ""
+msgstr "Bind Address"
 
 #: builtin/mainmenu/tab_server.lua:47
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: builtin/mainmenu/tab_server.lua:51
 msgid "Server Port"
-msgstr ""
+msgstr "Szerver port"
 
 #: builtin/mainmenu/tab_server.lua:138
 #: builtin/mainmenu/tab_singleplayer.lua:165
 msgid "No world created or selected!"
-msgstr ""
+msgstr "Nincs létrehozva, vagy kiválasztva világ!"
 
 #: builtin/mainmenu/tab_server.lua:191
 msgid "Server"
-msgstr ""
+msgstr "Szerver"
 
 #: builtin/mainmenu/tab_settings.lua:21
-#, fuzzy
 msgid "Opaque Leaves"
-msgstr "Átlátszó víz"
+msgstr "Áttetsző levelek"
 
 #: builtin/mainmenu/tab_settings.lua:22
 msgid "Simple Leaves"
-msgstr ""
+msgstr "Egyszerű levelek"
 
 #: builtin/mainmenu/tab_settings.lua:23
-#, fuzzy
 msgid "Fancy Leaves"
-msgstr "Szép fák"
+msgstr "Szép levelek"
 
 #: builtin/mainmenu/tab_settings.lua:32
 msgid "No Filter"
-msgstr ""
+msgstr "Nincs szűrés"
 
 #: builtin/mainmenu/tab_settings.lua:33
-#, fuzzy
 msgid "Bilinear Filter"
-msgstr "Bi-Linear Szűrés"
+msgstr "Bi-lineáris szűrés"
 
 #: builtin/mainmenu/tab_settings.lua:34
-#, fuzzy
 msgid "Trilinear Filter"
-msgstr "Tri-Linear Szűrés"
+msgstr "Tri-lineáris szűrés"
 
 #: builtin/mainmenu/tab_settings.lua:43
+#, fuzzy
 msgid "No Mipmap"
-msgstr ""
+msgstr "No Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua:44
+#, fuzzy
 msgid "Mipmap"
-msgstr ""
+msgstr "Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua:45
+#, fuzzy
 msgid "Mipmap + Aniso. Filter"
-msgstr ""
+msgstr "Mipmap + Aniso. Filter"
 
 #: builtin/mainmenu/tab_settings.lua:98
 msgid "Are you sure to reset your singleplayer world?"
-msgstr ""
+msgstr "Biztosan visszaállítod az egyjátékos világod?"
 
 #: builtin/mainmenu/tab_settings.lua:102
 msgid "No!!!"
-msgstr ""
+msgstr "Nem!!!"
 
 #: builtin/mainmenu/tab_settings.lua:202
 msgid "Smooth Lighting"
@@ -462,33 +453,31 @@ msgstr "Részecskék engedélyezése"
 
 #: builtin/mainmenu/tab_settings.lua:206
 msgid "3D Clouds"
-msgstr "3D Felhők"
+msgstr "3D felhők"
 
 #: builtin/mainmenu/tab_settings.lua:208
-#, fuzzy
 msgid "Opaque Water"
-msgstr "Átlátszó víz"
+msgstr "Áttetsző víz"
 
 #: builtin/mainmenu/tab_settings.lua:210
-#, fuzzy
 msgid "Connected Glass"
-msgstr "Csatlakozás"
+msgstr "Tiszta (csatlakozó) üveg"
 
 #: builtin/mainmenu/tab_settings.lua:212
 msgid "Node Highlighting"
-msgstr ""
+msgstr "Node kiemelés"
 
 #: builtin/mainmenu/tab_settings.lua:217
 msgid "Texturing:"
-msgstr ""
+msgstr "Textúrázás:"
 
 #: builtin/mainmenu/tab_settings.lua:222
 msgid "Rendering:"
-msgstr ""
+msgstr "Renderelés:"
 
 #: builtin/mainmenu/tab_settings.lua:226
 msgid "Restart minetest for driver change to take effect"
-msgstr ""
+msgstr "A driver változások életbe lépéséhez indítsd újra a Minetestet"
 
 #: builtin/mainmenu/tab_settings.lua:228
 msgid "Shaders"
@@ -496,76 +485,76 @@ msgstr "Shaderek"
 
 #: builtin/mainmenu/tab_settings.lua:233
 msgid "Change keys"
-msgstr "Gomb választása"
+msgstr "Gombok változtatása"
 
 #: builtin/mainmenu/tab_settings.lua:236
-#, fuzzy
 msgid "Reset singleplayer world"
-msgstr "Egyjátékos mód"
+msgstr "Egyjátékos világ visszaállítása"
 
 #: builtin/mainmenu/tab_settings.lua:240
 msgid "GUI scale factor"
-msgstr ""
+msgstr "Felhasználói felület méretaránya"
 
 #: builtin/mainmenu/tab_settings.lua:244
 msgid "Scaling factor applied to menu elements: "
-msgstr ""
+msgstr "A méretarány alkalmazva a menü elemekre: "
 
 #: builtin/mainmenu/tab_settings.lua:250
+#, fuzzy
 msgid "Touch free target"
-msgstr ""
+msgstr "Touch free target"
 
 #: builtin/mainmenu/tab_settings.lua:256
+#, fuzzy
 msgid "Touchthreshold (px)"
-msgstr ""
+msgstr "Touchthreshold (px)"
 
 #: builtin/mainmenu/tab_settings.lua:263 builtin/mainmenu/tab_settings.lua:277
 #, fuzzy
 msgid "Bumpmapping"
-msgstr "Mip-mapping"
+msgstr "Bumpmapping"
 
 #: builtin/mainmenu/tab_settings.lua:265 builtin/mainmenu/tab_settings.lua:278
+#, fuzzy
 msgid "Generate Normalmaps"
-msgstr ""
+msgstr "Generate Normalmaps"
 
 #: builtin/mainmenu/tab_settings.lua:267 builtin/mainmenu/tab_settings.lua:279
+#, fuzzy
 msgid "Parallax Occlusion"
-msgstr ""
+msgstr "Parallax Occlusion"
 
 #: builtin/mainmenu/tab_settings.lua:269 builtin/mainmenu/tab_settings.lua:280
 msgid "Waving Water"
-msgstr ""
+msgstr "Hullámzó víz"
 
 #: builtin/mainmenu/tab_settings.lua:271 builtin/mainmenu/tab_settings.lua:281
 msgid "Waving Leaves"
-msgstr ""
+msgstr "Hullámzó levelek"
 
 #: builtin/mainmenu/tab_settings.lua:273 builtin/mainmenu/tab_settings.lua:282
 msgid "Waving Plants"
-msgstr ""
+msgstr "Hullámzó növények"
 
 #: builtin/mainmenu/tab_settings.lua:308
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr ""
+msgstr "A shaderek engedélyezéséhez OpenGL driver használata szükséges."
 
 #: builtin/mainmenu/tab_settings.lua:430
 msgid "Settings"
 msgstr "Beállítások"
 
 #: builtin/mainmenu/tab_simple_main.lua:82
-#, fuzzy
 msgid "Start Singleplayer"
-msgstr "Egyjátékos mód"
+msgstr "Egyjátékos mód indítása"
 
 #: builtin/mainmenu/tab_simple_main.lua:83
-#, fuzzy
 msgid "Config mods"
-msgstr "Beállítás"
+msgstr "Modok beállítása"
 
 #: builtin/mainmenu/tab_simple_main.lua:201
-#, fuzzy
 msgid "Main"
-msgstr "Fő menü"
+msgstr "Főmenü"
 
 #: builtin/mainmenu/tab_singleplayer.lua:99 src/keycode.cpp:248
 msgid "Play"
@@ -577,77 +566,76 @@ msgstr "Egyjátékos mód"
 
 #: builtin/mainmenu/tab_texturepacks.lua:49
 msgid "Select texture pack:"
-msgstr ""
+msgstr "Textúra pakk kiválasztása:"
 
 #: builtin/mainmenu/tab_texturepacks.lua:69
 msgid "No information available"
-msgstr ""
+msgstr "Nincs elérhető információ"
 
 #: builtin/mainmenu/tab_texturepacks.lua:114
 msgid "Texturepacks"
-msgstr ""
+msgstr "Textúra pakkok"
 
 #: src/client.cpp:1721
-#, fuzzy
 msgid "Loading textures..."
-msgstr "Betöltés..."
+msgstr "Textúrák betöltése..."
 
 #: src/client.cpp:1736
-#, fuzzy
 msgid "Rebuilding shaders..."
-msgstr "Cím létrehozása..."
+msgstr "Shaderek újraépítése..."
 
 #: src/client.cpp:1743
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "Csomópontok inicializálása..."
 
 #: src/client.cpp:1760
 msgid "Initializing nodes"
-msgstr ""
+msgstr "Csomópontok inicializálása"
 
 #: src/client.cpp:1768
 msgid "Item textures..."
-msgstr "Tárgy textúrák..."
+msgstr "Elem textúrák..."
 
 #: src/client.cpp:1793
 msgid "Done!"
-msgstr ""
+msgstr "Kész!"
 
 #: src/client/clientlauncher.cpp:185
 msgid "Main Menu"
-msgstr "Fő menü"
+msgstr "Főmenü"
 
 #: src/client/clientlauncher.cpp:223
 msgid "Player name too long."
-msgstr ""
+msgstr "Túl hosszú játékosnév."
 
 #: src/client/clientlauncher.cpp:261
 msgid "Connection error (timed out?)"
-msgstr "Csatlakozási hiba (Idő lejárt?)"
+msgstr "Csatlakozási hiba (idő lejárt?)"
 
 #: src/client/clientlauncher.cpp:425
 msgid "No world selected and no address provided. Nothing to do."
-msgstr "Nincs kiválasztott világ, nincs cím. Nincs mit tenni."
+msgstr "Nincs világ kiválasztva és nincs cím megadva. Nincs mit tenni."
 
 #: src/client/clientlauncher.cpp:432
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "A megadott világ útvonala nem létezik: "
 
 #: src/client/clientlauncher.cpp:441
 msgid "Could not find or load game \""
-msgstr "Nem található, vagy nem betöltött játék \""
+msgstr "Nem lehet betölteni, vagy nem található játék \""
 
 #: src/client/clientlauncher.cpp:459
 msgid "Invalid gamespec."
 msgstr "Nem valós játék spec."
 
 #: src/fontengine.cpp:70 src/fontengine.cpp:226
+#, fuzzy
 msgid "needs_fallback_font"
-msgstr ""
+msgstr "needs_fallback_font"
 
 #: src/game.cpp:1052 src/guiFormSpecMenu.cpp:2065
 msgid "Proceed"
-msgstr "Elfogadva"
+msgstr "Folytatás"
 
 #: src/game.cpp:1072
 msgid "You died."
@@ -655,7 +643,7 @@ msgstr "Meghaltál."
 
 #: src/game.cpp:1073
 msgid "Respawn"
-msgstr "Újra éledés"
+msgstr "Újraéledés"
 
 #: src/game.cpp:1092
 msgid ""
@@ -672,6 +660,18 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
+"Alapértelmezett irányítás:\n"
+"Nem látható menü:\n"
+"- egy érintés: gomb aktiválás\n"
+"- dupla érintés: helyez/használat\n"
+"- ujj csúsztatás: körbenéz\n"
+"Menü/Inventory látható:\n"
+"- dupla érintés (külső):\n"
+" -->bezár\n"
+"- stack, vagy slot érintése:\n"
+" --> stack mozgatása\n"
+"- érint&megfogás, érintés 2. ujjal\n"
+" --> egy elem slotba helyezése\n"
 
 #: src/game.cpp:1106
 msgid ""
@@ -687,15 +687,15 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
-"Alap beállítások:\n"
+"Alapértelmezett irányítás:\n"
 "- WASD: Mozgás\n"
 "- Space: Ugrás/Mászás\n"
 "- Shift: Lopakodás/Lefele menés\n"
 "- Q: Tárgyak eldobása\n"
 "- I: Invertory\n"
 "- Egér: Forgás/Nézelődés\n"
-"- Egér Bal-gomb: Ásás/ütés\n"
-"- Egér jobb-gomb: elhejezés/használat\n"
+"- Egér Bal-gomb: Ásás/Ütés\n"
+"- Egér jobb-gomb: Helyezés/Használat\n"
 "- Egér görgő: Tárgyak kiválasztása\n"
 "- T: Beszélgetés\n"
 
@@ -712,9 +712,8 @@ msgid "Sound Volume"
 msgstr "Hangerő"
 
 #: src/game.cpp:1136
-#, fuzzy
 msgid "Change Keys"
-msgstr "Gomb választása"
+msgstr "Gombok változtatása"
 
 #: src/game.cpp:1139
 msgid "Exit to Menu"
@@ -725,12 +724,10 @@ msgid "Exit to OS"
 msgstr "Kilépés az OP-rendszerbe"
 
 #: src/game.cpp:1841
-#, fuzzy
 msgid "Shutting down..."
-msgstr "Dolog leállítása..."
+msgstr "Leállítás..."
 
 #: src/game.cpp:1948
-#, fuzzy
 msgid "Creating server..."
 msgstr "Szerver létrehozása..."
 
@@ -740,7 +737,7 @@ msgstr "Kliens létrehozása..."
 
 #: src/game.cpp:2159
 msgid "Resolving address..."
-msgstr "Cím létrehozása..."
+msgstr "Cím feloldása..."
 
 #: src/game.cpp:2261
 msgid "Connecting to server..."
@@ -748,43 +745,45 @@ msgstr "Csatlakozás a szerverhez..."
 
 #: src/game.cpp:2317
 msgid "Item definitions..."
-msgstr ""
+msgstr "Elem definíciók..."
 
 #: src/game.cpp:2322
 msgid "Node definitions..."
-msgstr ""
+msgstr "Csomópont definíciók..."
 
 #: src/game.cpp:2329
 msgid "Media..."
-msgstr ""
+msgstr "Média..."
 
 #: src/game.cpp:2334
 msgid "KiB/s"
-msgstr ""
+msgstr "KiB/mp"
 
 #: src/game.cpp:2338
 msgid "MiB/s"
-msgstr ""
+msgstr "MiB/mp"
 
 #: src/game.cpp:4363
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
+"\n"
+"Részletekért tekintsd meg a debug.txt fájlt."
 
 #: src/guiFormSpecMenu.cpp:2855
 msgid "Enter "
-msgstr ""
+msgstr "Belépés "
 
 #: src/guiFormSpecMenu.cpp:2875
 msgid "ok"
-msgstr ""
+msgstr "Ok"
 
 #: src/guiKeyChangeMenu.cpp:125
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
-"Gombkiosztás. (Amíg ez a menü fejlesztve van, el van távolítva a minetest."
-"conf-ból)"
+"Gombkiosztás. (Ha elfuserálod ezt a menüt, távolíts el néhány cuccot a "
+"minetest.conf-ból)"
 
 #: src/guiKeyChangeMenu.cpp:165
 msgid "\"Use\" = climb down"
@@ -792,7 +791,7 @@ msgstr "\"Használat\" = Lemászás"
 
 #: src/guiKeyChangeMenu.cpp:180
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Duplán nyomd meg az \"ugrás\" gombot ahhoz hogy repülj"
+msgstr "Az \"ugrás\" gomb duplán a repüléshez"
 
 #: src/guiKeyChangeMenu.cpp:295
 msgid "Key already in use"
@@ -804,11 +803,11 @@ msgstr "Nyomj meg egy gombot"
 
 #: src/guiKeyChangeMenu.cpp:399
 msgid "Forward"
-msgstr "Vissza"
+msgstr "Előre"
 
 #: src/guiKeyChangeMenu.cpp:400
 msgid "Backward"
-msgstr "Előre"
+msgstr "Vissza"
 
 #: src/guiKeyChangeMenu.cpp:401 src/keycode.cpp:228
 msgid "Left"
@@ -820,7 +819,7 @@ msgstr "Jobb"
 
 #: src/guiKeyChangeMenu.cpp:403
 msgid "Use"
-msgstr "Használni"
+msgstr "Használat"
 
 #: src/guiKeyChangeMenu.cpp:404
 msgid "Jump"
@@ -832,11 +831,12 @@ msgstr "Lopakodás"
 
 #: src/guiKeyChangeMenu.cpp:406
 msgid "Drop"
-msgstr "Dobás"
+msgstr "Eldobás"
 
 #: src/guiKeyChangeMenu.cpp:407
+#, fuzzy
 msgid "Inventory"
-msgstr "Invertory"
+msgstr "Inventory"
 
 #: src/guiKeyChangeMenu.cpp:408
 msgid "Chat"
@@ -861,15 +861,15 @@ msgstr "Gyorsaság bekapcsolása"
 #: src/guiKeyChangeMenu.cpp:413
 #, fuzzy
 msgid "Toggle Cinematic"
-msgstr "Gyorsaság bekapcsolása"
+msgstr "Toggle Cinematic"
 
 #: src/guiKeyChangeMenu.cpp:414
 msgid "Toggle noclip"
-msgstr "váltás noclip-re"
+msgstr "Váltás noclip-re"
 
 #: src/guiKeyChangeMenu.cpp:415
 msgid "Range select"
-msgstr "Távolság választása"
+msgstr "Látótávolság választása"
 
 #: src/guiKeyChangeMenu.cpp:416
 msgid "Print stacks"
@@ -885,7 +885,7 @@ msgstr "Új jelszó"
 
 #: src/guiPasswordChange.cpp:139
 msgid "Confirm Password"
-msgstr "Jelszó visszaigazolás"
+msgstr "Jelszó megerősítés"
 
 #: src/guiPasswordChange.cpp:155
 msgid "Change"
@@ -893,7 +893,7 @@ msgstr "Változtat"
 
 #: src/guiPasswordChange.cpp:164
 msgid "Passwords do not match!"
-msgstr "Nem eggyeznek a jelszavak!"
+msgstr "Nem egyeznek a jelszavak!"
 
 #: src/guiVolumeChange.cpp:105
 msgid "Sound Volume: "
@@ -941,15 +941,17 @@ msgstr "X Gomb 2"
 
 #: src/keycode.cpp:225
 msgid "Capital"
-msgstr "Kapital"
+msgstr "Nagybetű"
 
 #: src/keycode.cpp:225
+#, fuzzy
 msgid "Control"
-msgstr "Controll"
+msgstr "Control"
 
 #: src/keycode.cpp:225
+#, fuzzy
 msgid "Kana"
-msgstr "Kanaa"
+msgstr "Kana"
 
 #: src/keycode.cpp:225
 msgid "Menu"
@@ -957,11 +959,12 @@ msgstr "Menü"
 
 #: src/keycode.cpp:225
 msgid "Pause"
-msgstr "Pillanat-álj"
+msgstr "Szünet"
 
 #: src/keycode.cpp:225
+#, fuzzy
 msgid "Shift"
-msgstr "váltás"
+msgstr "Shift"
 
 #: src/keycode.cpp:226
 msgid "Convert"
@@ -1005,11 +1008,11 @@ msgstr "Következő"
 
 #: src/keycode.cpp:227
 msgid "Prior"
-msgstr "Priorr"
+msgstr "Elsődleges"
 
 #: src/keycode.cpp:227
 msgid "Space"
-msgstr "Hely"
+msgstr "Szóköz"
 
 #: src/keycode.cpp:228
 msgid "Down"
@@ -1017,7 +1020,7 @@ msgstr "Le"
 
 #: src/keycode.cpp:228
 msgid "Execute"
-msgstr "Tömörít"
+msgstr "Végrehajt"
 
 #: src/keycode.cpp:228
 msgid "Print"
@@ -1041,7 +1044,7 @@ msgstr "Beilleszt"
 
 #: src/keycode.cpp:229
 msgid "Snapshot"
-msgstr "Verzió"
+msgstr "Pillanatkép"
 
 #: src/keycode.cpp:232
 msgid "Left Windows"
@@ -1049,7 +1052,7 @@ msgstr "Bal Windows"
 
 #: src/keycode.cpp:233
 msgid "Apps"
-msgstr "Prog"
+msgstr "Alkalmazások"
 
 #: src/keycode.cpp:233
 msgid "Numpad 0"
@@ -1117,11 +1120,11 @@ msgstr "Numerikus billentyű 9"
 
 #: src/keycode.cpp:239
 msgid "Num Lock"
-msgstr "Numerikus lock"
+msgstr "Numlock"
 
 #: src/keycode.cpp:239
 msgid "Scroll Lock"
-msgstr "Skroll Lock"
+msgstr "ScrollLock"
 
 #: src/keycode.cpp:240
 msgid "Left Shift"
@@ -1141,7 +1144,7 @@ msgstr "Bal menü"
 
 #: src/keycode.cpp:241
 msgid "Right Control"
-msgstr "Jobb Controll"
+msgstr "Jobb Control"
 
 #: src/keycode.cpp:241
 msgid "Right Menu"
@@ -1153,39 +1156,45 @@ msgstr "Vessző"
 
 #: src/keycode.cpp:243
 msgid "Minus"
-msgstr "Minusz"
+msgstr "Mínusz"
 
 #: src/keycode.cpp:243
 msgid "Period"
-msgstr "tizedes"
+msgstr "Pont"
 
 #: src/keycode.cpp:243
 msgid "Plus"
 msgstr "Plusz"
 
 #: src/keycode.cpp:247
+#, fuzzy
 msgid "Attn"
-msgstr "Attnn"
+msgstr "Attn"
 
 #: src/keycode.cpp:247
+#, fuzzy
 msgid "CrSel"
-msgstr "CrSell"
+msgstr "CrSel"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "Erase OEF"
-msgstr "Erase OEFF"
+msgstr "Erase OEF"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "ExSel"
-msgstr "ExSell"
+msgstr "ExSel"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "OEM Clear"
-msgstr "OEM Clearr"
+msgstr "OEM Clear"
 
 #: src/keycode.cpp:248
+#, fuzzy
 msgid "PA1"
-msgstr "PA11"
+msgstr "PA1"
 
 #: src/keycode.cpp:248
 msgid "Zoom"
