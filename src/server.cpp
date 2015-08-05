@@ -680,10 +680,9 @@ void Server::AsyncRunStep(bool initial_step)
 		radius *= MAP_BLOCKSIZE;
 		player_radius *= MAP_BLOCKSIZE;
 
-		for(std::map<u16, RemoteClient*>::iterator
+		for (std::map<u16, RemoteClient*>::iterator
 			i = clients.begin();
-			i != clients.end(); ++i)
-		{
+			i != clients.end(); ++i) {
 			RemoteClient *client = i->second;
 
 			// If definitions and textures have not been sent, don't
@@ -692,27 +691,23 @@ void Server::AsyncRunStep(bool initial_step)
 				continue;
 
 			Player *player = m_env->getPlayer(client->peer_id);
-			if(player==NULL)
-			{
+			if(player == NULL) {
 				// This can happen if the client timeouts somehow
 				/*infostream<<"WARNING: "<<__FUNCTION_NAME<<": Client "
 						<<client->peer_id
 						<<" has no associated player"<<std::endl;*/
 				continue;
 			}
-			v3s16 pos = floatToInt(player->getPosition(), BS);
 
-			std::set<u16> removed_objects;
-			std::set<u16> added_objects;
-			m_env->getRemovedActiveObjects(pos, radius, player_radius,
+			std::queue<u16> removed_objects;
+			std::queue<u16> added_objects;
+			m_env->getRemovedActiveObjects(player, radius, player_radius,
 					client->m_known_objects, removed_objects);
-			m_env->getAddedActiveObjects(pos, radius, player_radius,
+			m_env->getAddedActiveObjects(player, radius, player_radius,
 					client->m_known_objects, added_objects);
 
 			// Ignore if nothing happened
-			if(removed_objects.empty() && added_objects.empty())
-			{
-				//infostream<<"active objects: none changed"<<std::endl;
+			if (removed_objects.empty() && added_objects.empty()) {
 				continue;
 			}
 
@@ -723,12 +718,9 @@ void Server::AsyncRunStep(bool initial_step)
 			// Handle removed objects
 			writeU16((u8*)buf, removed_objects.size());
 			data_buffer.append(buf, 2);
-			for(std::set<u16>::iterator
-					i = removed_objects.begin();
-					i != removed_objects.end(); ++i)
-			{
+			while (!removed_objects.empty()) {
 				// Get object
-				u16 id = *i;
+				u16 id = removed_objects.front();
 				ServerActiveObject* obj = m_env->getActiveObject(id);
 
 				// Add to data buffer for sending
@@ -740,17 +732,15 @@ void Server::AsyncRunStep(bool initial_step)
 
 				if(obj && obj->m_known_by_count > 0)
 					obj->m_known_by_count--;
+				removed_objects.pop();
 			}
 
 			// Handle added objects
 			writeU16((u8*)buf, added_objects.size());
 			data_buffer.append(buf, 2);
-			for(std::set<u16>::iterator
-					i = added_objects.begin();
-					i != added_objects.end(); ++i)
-			{
+			while (!added_objects.empty()) {
 				// Get object
-				u16 id = *i;
+				u16 id = added_objects.front();
 				ServerActiveObject* obj = m_env->getActiveObject(id);
 
 				// Get object type
@@ -778,6 +768,8 @@ void Server::AsyncRunStep(bool initial_step)
 
 				if(obj)
 					obj->m_known_by_count++;
+
+				added_objects.pop();
 			}
 
 			u32 pktSize = SendActiveObjectRemoveAdd(client->peer_id, data_buffer);

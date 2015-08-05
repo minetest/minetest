@@ -1318,12 +1318,11 @@ u16 ServerEnvironment::addActiveObject(ServerActiveObject *object)
 	Finds out what new objects have been added to
 	inside a radius around a position
 */
-void ServerEnvironment::getAddedActiveObjects(v3s16 pos, s16 radius,
+void ServerEnvironment::getAddedActiveObjects(Player *player, s16 radius,
 		s16 player_radius,
 		std::set<u16> &current_objects,
-		std::set<u16> &added_objects)
+		std::queue<u16> &added_objects)
 {
-	v3f pos_f = intToFloat(pos, BS);
 	f32 radius_f = radius * BS;
 	f32 player_radius_f = player_radius * BS;
 
@@ -1339,18 +1338,19 @@ void ServerEnvironment::getAddedActiveObjects(v3s16 pos, s16 radius,
 	*/
 	for(std::map<u16, ServerActiveObject*>::iterator
 			i = m_active_objects.begin();
-			i != m_active_objects.end(); ++i)
-	{
+			i != m_active_objects.end(); ++i) {
 		u16 id = i->first;
+
 		// Get object
 		ServerActiveObject *object = i->second;
 		if(object == NULL)
 			continue;
+
 		// Discard if removed or deactivating
 		if(object->m_removed || object->m_pending_deactivation)
 			continue;
 
-		f32 distance_f = object->getBasePosition().getDistanceFrom(pos_f);
+		f32 distance_f = object->getBasePosition().getDistanceFrom(player->getPosition());
 		if (object->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			// Discard if too far
 			if (distance_f > player_radius_f && player_radius_f != 0)
@@ -1364,7 +1364,7 @@ void ServerEnvironment::getAddedActiveObjects(v3s16 pos, s16 radius,
 		if(n != current_objects.end())
 			continue;
 		// Add to added_objects
-		added_objects.insert(id);
+		added_objects.push(id);
 	}
 }
 
@@ -1372,12 +1372,11 @@ void ServerEnvironment::getAddedActiveObjects(v3s16 pos, s16 radius,
 	Finds out what objects have been removed from
 	inside a radius around a position
 */
-void ServerEnvironment::getRemovedActiveObjects(v3s16 pos, s16 radius,
+void ServerEnvironment::getRemovedActiveObjects(Player *player, s16 radius,
 		s16 player_radius,
 		std::set<u16> &current_objects,
-		std::set<u16> &removed_objects)
+		std::queue<u16> &removed_objects)
 {
-	v3f pos_f = intToFloat(pos, BS);
 	f32 radius_f = radius * BS;
 	f32 player_radius_f = player_radius * BS;
 
@@ -1399,20 +1398,19 @@ void ServerEnvironment::getRemovedActiveObjects(v3s16 pos, s16 radius,
 		u16 id = *i;
 		ServerActiveObject *object = getActiveObject(id);
 
-		if(object == NULL){
-			infostream<<"ServerEnvironment::getRemovedActiveObjects():"
-					<<" object in current_objects is NULL"<<std::endl;
-			removed_objects.insert(id);
+		if (object == NULL) {
+			infostream << "ServerEnvironment::getRemovedActiveObjects():"
+				<< " object in current_objects is NULL" << std::endl;
+			removed_objects.push(id);
 			continue;
 		}
 
-		if(object->m_removed || object->m_pending_deactivation)
-		{
-			removed_objects.insert(id);
+		if (object->m_removed || object->m_pending_deactivation) {
+			removed_objects.push(id);
 			continue;
 		}
 
-		f32 distance_f = object->getBasePosition().getDistanceFrom(pos_f);
+		f32 distance_f = object->getBasePosition().getDistanceFrom(player->getPosition());
 		if (object->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			if (distance_f <= player_radius_f || player_radius_f == 0)
 				continue;
@@ -1420,7 +1418,7 @@ void ServerEnvironment::getRemovedActiveObjects(v3s16 pos, s16 radius,
 			continue;
 
 		// Object is no longer visible
-		removed_objects.insert(id);
+		removed_objects.push(id);
 	}
 }
 
