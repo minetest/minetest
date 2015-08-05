@@ -92,8 +92,7 @@ void ScriptApiEntity::luaentity_Activate(u16 id,
 		lua_pushlstring(L, staticdata.c_str(), staticdata.size());
 		lua_pushinteger(L, dtime_s);
 		// Call with 3 arguments, 0 results
-		if (lua_pcall(L, 3, 0, m_errorhandler))
-			scriptError();
+		PCALL_RES(lua_pcall(L, 3, 0, m_errorhandler));
 	} else {
 		lua_pop(L, 1);
 	}
@@ -140,8 +139,7 @@ std::string ScriptApiEntity::luaentity_GetStaticdata(u16 id)
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_pushvalue(L, object); // self
 	// Call with 1 arguments, 1 results
-	if (lua_pcall(L, 1, 1, m_errorhandler))
-		scriptError();
+	PCALL_RES(lua_pcall(L, 1, 1, m_errorhandler));
 	lua_remove(L, object); // Remove object
 
 	size_t len = 0;
@@ -210,8 +208,7 @@ void ScriptApiEntity::luaentity_Step(u16 id, float dtime)
 	lua_pushvalue(L, object); // self
 	lua_pushnumber(L, dtime); // dtime
 	// Call with 2 arguments, 0 results
-	if (lua_pcall(L, 2, 0, m_errorhandler))
-		scriptError();
+	PCALL_RES(lua_pcall(L, 2, 0, m_errorhandler));
 	lua_pop(L, 1); // Pop object
 }
 
@@ -242,8 +239,7 @@ void ScriptApiEntity::luaentity_Punch(u16 id,
 	push_tool_capabilities(L, *toolcap);
 	push_v3f(L, dir);
 	// Call with 5 arguments, 0 results
-	if (lua_pcall(L, 5, 0, m_errorhandler))
-		scriptError();
+	PCALL_RES(lua_pcall(L, 5, 0, m_errorhandler));
 	lua_pop(L, 1); // Pop object
 }
 
@@ -269,8 +265,7 @@ void ScriptApiEntity::luaentity_Rightclick(u16 id,
 	lua_pushvalue(L, object); // self
 	objectrefGetOrCreate(L, clicker); // Clicker reference
 	// Call with 2 arguments, 0 results
-	if (lua_pcall(L, 2, 0, m_errorhandler))
-		scriptError();
+	PCALL_RES(lua_pcall(L, 2, 0, m_errorhandler));
 	lua_pop(L, 1); // Pop object
 }
 

@@ -81,8 +81,7 @@ s16 ScriptApiPlayer::on_player_hpchange(ServerActiveObject *player,
 
 	objectrefGetOrCreate(L, player);
 	lua_pushnumber(L, hp_change);
-	if (lua_pcall(L, 2, 1, m_errorhandler))
-		scriptError();
+	PCALL_RES(lua_pcall(L, 2, 1, m_errorhandler));
 	hp_change = lua_tointeger(L, -1);
 	lua_pop(L, -1);
 	return hp_change;

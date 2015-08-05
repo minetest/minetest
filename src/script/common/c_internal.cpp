@@ -69,11 +69,51 @@ int script_exception_wrapper(lua_State *L, lua_CFunction f)
 	return lua_error(L);  // Rethrow as a Lua error.
 }
 
-void script_error(lua_State *L)
+/*
+ * Note that we can't get tracebacks for LUA_ERRMEM or LUA_ERRERR (without
+ * hacking Lua internals).  For LUA_ERRMEM, this is because memory errors will
+ * not execute the the error handler, and by the time lua_pcall returns the
+ * execution stack will have already been unwound.  For LUA_ERRERR, there was
+ * another error while trying to generate a backtrace from a LUA_ERRRUN.  It is
+ * presumed there is an error with the internal Lua state and thus not possible
+ * to gather a coherent backtrace.  Realistically, the best we can do here is
+ * print which C function performed the failing pcall.
+ */
+void script_error(lua_State *L, int pcall_result, const char *fxn)
 {
-	const char *s = lua_tostring(L, -1);
-	std::string str(s ? s : "");
-	throw LuaError(str);
+	if (pcall_result == 0)
+		return;
+
+	const char *err_type;
+	switch (pcall_result) {
+	case LUA_ERRRUN:
+		err_type = "Runtime";
+		break;
+	case LUA_ERRMEM:
+		err_type = "OOM";
+		break;
+	case LUA_ERRERR:
+		err_type = "Double fault";
+		break;
+	default:
+		err_type = "Unknown";
+	}
+
+	const char *err_descr = lua_tostring(L, -1);
+	if (!err_descr)
+		err_descr = "<no description>";
+
+	std::string err_msg(err_type);
+	if (fxn) {
+		err_msg += " error in ";
+		err_msg += fxn;
+		err_msg += "(): ";
+	} else {
+		err_msg += " error: ";
+	}
+	err_msg += err_descr;
+
+	throw LuaError(err_msg);
 }
 
 // Push the list of callbacks (a lua table).
@@ -82,7 +122,8 @@ void script_error(lua_State *L)
 // - runs the callbacks
 // - replaces the table and arguments with the return value,
 //     computed depending on mode
-void script_run_callbacks(lua_State *L, int nargs, RunCallbacksMode mode)
+void script_run_callbacks_f(lua_State *L, int nargs,
+	RunCallbacksMode mode, const char *fxn)
 {
 	FATAL_ERROR_IF(lua_gettop(L) < nargs + 1, "Not enough arguments");
 
@@ -104,14 +145,12 @@ void script_run_callbacks(lua_State *L, int nargs, RunCallbacksMode mode)
 	// Stack now looks like this:
 	// ... <error handler> <run_callbacks> <table> <mode> <arg#1> <arg#2> ... <arg#n>
 
-	if (lua_pcall(L, nargs + 2, 1, errorhandler)) {
-		script_error(L);
-	}
+	script_error(L, lua_pcall(L, nargs + 2, 1, errorhandler), fxn);
 
 	lua_remove(L, -2); // Remove error handler
 }
 
-void log_deprecated(lua_State *L, std::string message)
+void log_deprecated(lua_State *L, const std::string &message)
 {
 	static bool configured = false;
 	static bool dolog      = false;
@@ -131,9 +170,10 @@ void log_deprecated(lua_State *L, std::string message)
 
 	if (doerror) {
 		if (L != NULL) {
-			script_error(L);
+			script_error(L, LUA_ERRRUN, NULL);
 		} else {
-			FATAL_ERROR("Can't do a scripterror for this deprecated message, so exit completely!");
+			FATAL_ERROR("Can't do a scripterror for this deprecated message, "
+				"so exit completely!");
 		}
 	}
 

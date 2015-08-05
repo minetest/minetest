@@ -54,8 +54,7 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowMove(v3s16 p,
 	lua_pushinteger(L, to_index + 1);     // to_index
 	lua_pushinteger(L, count);            // count
 	objectrefGetOrCreate(L, player);      // player
-	if (lua_pcall(L, 7, 1, m_errorhandler))
-		scriptError();
+	PCALL_RES(lua_pcall(L, 7, 1, m_errorhandler));
 	if (!lua_isnumber(L, -1))
 		throw LuaError("allow_metadata_inventory_move should"
 				" return a number, guilty node: " + nodename);
@@ -89,8 +88,7 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowPut(v3s16 p,
 	lua_pushinteger(L, index + 1);       // index
 	LuaItemStack::create(L, stack);      // stack
 	objectrefGetOrCreate(L, player);     // player
-	if (lua_pcall(L, 5, 1, m_errorhandler))
-		scriptError();
+	PCALL_RES(lua_pcall(L, 5, 1, m_errorhandler));
 	if(!lua_isnumber(L, -1))
 		throw LuaError("allow_metadata_inventory_put should"
 				" return a number, guilty node: " + nodename);
@@ -124,8 +122,7 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowTake(v3s16 p,
 	lua_pushinteger(L, index + 1);       // index
 	LuaItemStack::create(L, stack);      // stack
 	objectrefGetOrCreate(L, player);     // player
-	if (lua_pcall(L, 5, 1, m_errorhandler))
-		scriptError();
+	PCALL_RES(lua_pcall(L, 5, 1, m_errorhandler));
 	if (!lua_isnumber(L, -1))
 		throw LuaError("allow_metadata_inventory_take should"
 				" return a number, guilty node: " + nodename);
@@ -162,8 +159,7 @@ void ScriptApiNodemeta::nodemeta_inventory_OnMove(v3s16 p,
 	lua_pushinteger(L, to_index + 1);     // to_index
 	lua_pushinteger(L, count);            // count
 	objectrefGetOrCreate(L, player);      // player
-	if (lua_pcall(L, 7, 0, m_errorhandler))
-		scriptError();
+	PCALL_RES(lua_pcall(L, 7, 0, m_errorhandler));
 }
 
 // Report put items
@@ -191,8 +187,7 @@ void ScriptApiNodemeta::nodemeta_inventory_OnPut(v3s16 p,
 	lua_pushinteger(L, index + 1);       // index
 	LuaItemStack::create(L, stack);      // stack
 	objectrefGetOrCreate(L, player);     // player
-	if (lua_pcall(L, 5, 0, m_errorhandler))
-		scriptError();
+	PCALL_RES(lua_pcall(L, 5, 0, m_errorhandler));
 }
 
 // Report taken items
@@ -220,13 +215,14 @@ void ScriptApiNodemeta::nodemeta_inventory_OnTake(v3s16 p,
 	lua_pushinteger(L, index + 1);       // index
 	LuaItemStack::create(L, stack);      // stack
 	objectrefGetOrCreate(L, player);     // player
-	if (lua_pcall(L, 5, 0, m_errorhandler))
-		scriptError();
+	PCALL_RES(lua_pcall(L, 5, 0, m_errorhandler));
 }
 
-ScriptApiNodemeta::ScriptApiNodemeta() {
+ScriptApiNodemeta::ScriptApiNodemeta()
+{
 }
 
-ScriptApiNodemeta::~ScriptApiNodemeta() {
+ScriptApiNodemeta::~ScriptApiNodemeta()
+{
 }
 

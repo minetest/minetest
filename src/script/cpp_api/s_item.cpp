@@ -42,8 +42,7 @@ bool ScriptApiItem::item_OnDrop(ItemStack &item,
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(L, dropper);
 	pushFloatPos(L, pos);
-	if (lua_pcall(L, 3, 1, m_errorhandler))
-		scriptError();
+	PCALL_RES(lua_pcall(L, 3, 1, m_errorhandler));
 	if (!lua_isnil(L, -1)) {
 		try {
 			item = read_item(L,-1, getServer());
@@ -68,8 +67,7 @@ bool ScriptApiItem::item_OnPlace(ItemStack &item,
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(L, placer);
 	pushPointedThing(pointed);
-	if (lua_pcall(L, 3, 1, m_errorhandler))
-		scriptError();
+	PCALL_RES(lua_pcall(L, 3, 1, m_errorhandler));
 	if (!lua_isnil(L, -1)) {
 		try {
 			item = read_item(L,-1, getServer());
@@ -94,8 +92,7 @@ bool ScriptApiItem::item_OnUse(ItemStack &item,
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(L, user);
 	pushPointedThing(pointed);
-	if (lua_pcall(L, 3, 1, m_errorhandler))
-		scriptError();
+	PCALL_RES(lua_pcall(L, 3, 1, m_errorhandler));
 	if(!lua_isnil(L, -1)) {
 		try {
 			item = read_item(L,-1, getServer());
@@ -116,7 +113,7 @@ bool ScriptApiItem::item_OnCraft(ItemStack &item, ServerActiveObject *user,
 	lua_getfield(L, -1, "on_craft");
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(L, user);
-	
+
 	// Push inventory list
 	std::vector<ItemStack> items;
 	for (u32 i = 0; i < old_craft_grid->getSize(); i++) {
@@ -125,8 +122,7 @@ bool ScriptApiItem::item_OnCraft(ItemStack &item, ServerActiveObject *user,
 	push_items(L, items);
 
 	InvRef::create(L, craft_inv);
-	if (lua_pcall(L, 4, 1, m_errorhandler))
-		scriptError();
+	PCALL_RES(lua_pcall(L, 4, 1, m_errorhandler));
 	if (!lua_isnil(L, -1)) {
 		try {
 			item = read_item(L,-1, getServer());
@@ -156,8 +152,7 @@ bool ScriptApiItem::item_CraftPredict(ItemStack &item, ServerActiveObject *user,
 	push_items(L, items);
 
 	InvRef::create(L, craft_inv);
-	if (lua_pcall(L, 4, 1, m_errorhandler))
-		scriptError();
+	PCALL_RES(lua_pcall(L, 4, 1, m_errorhandler));
 	if (!lua_isnil(L, -1)) {
 		try {
 			item = read_item(L,-1, getServer());

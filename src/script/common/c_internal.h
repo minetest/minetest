@@ -34,6 +34,16 @@ extern "C" {
 
 #include "common/c_types.h"
 
+#define PCALL_RESL(L, RES) do {                   \
+	int result_ = (RES);                          \
+	if (result_ != 0) {                           \
+		script_error((L), result_, __FUNCTION__); \
+	}                                             \
+} while (0)
+
+#define script_run_callbacks(L, nargs, mode) \
+	script_run_callbacks_f((L), (nargs), (mode), __FUNCTION__)
+
 // What script_run_callbacks does with the return values of callbacks.
 // Regardless of the mode, if only one callback is defined,
 // its return value is the total return value.
@@ -67,8 +77,9 @@ enum RunCallbacksMode
 std::string script_get_backtrace(lua_State *L);
 int script_error_handler(lua_State *L);
 int script_exception_wrapper(lua_State *L, lua_CFunction f);
-void script_error(lua_State *L);
-void script_run_callbacks(lua_State *L, int nargs, RunCallbacksMode mode);
-void log_deprecated(lua_State *L, std::string message);
+void script_error(lua_State *L, int pcall_result, const char *fxn);
+void script_run_callbacks_f(lua_State *L, int nargs,
+	RunCallbacksMode mode, const char *fxn);
+void log_deprecated(lua_State *L, const std::string &message);
 
 #endif /* C_INTERNAL_H_ */

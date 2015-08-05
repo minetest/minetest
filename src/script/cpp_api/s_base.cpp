@@ -165,9 +165,9 @@ void ScriptApiBase::realityCheck()
 	}
 }
 
-void ScriptApiBase::scriptError()
+void ScriptApiBase::scriptError(int result, const char *fxn)
 {
-	throw LuaError(lua_tostring(m_luastack, -1));
+	script_error(getStack(), result, fxn);
 }
 
 void ScriptApiBase::stackDump(std::ostream &o)

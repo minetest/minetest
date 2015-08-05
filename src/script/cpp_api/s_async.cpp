@@ -164,9 +164,7 @@ void AsyncEngine::step(lua_State *L, int errorhandler)
 		lua_pushlstring(L, jobDone.serializedResult.data(),
 				jobDone.serializedResult.size());
 
-		if (lua_pcall(L, 2, 0, errorhandler)) {
-			script_error(L);
-		}
+		PCALL_RESL(L, lua_pcall(L, 2, 0, errorhandler));
 	}
 	resultQueueMutex.Unlock();
 	lua_pop(L, 1); // Pop core
@@ -293,8 +291,9 @@ void* AsyncWorkerThread::Thread()
 				toProcess.serializedParams.data(),
 				toProcess.serializedParams.size());
 
-		if (lua_pcall(L, 2, 1, m_errorhandler)) {
-			scriptError();
+		int result = lua_pcall(L, 2, 1, m_errorhandler);
+		if (result) {
+			PCALL_RES(result);
 			toProcess.serializedResult = "";
 		} else {
 			// Fetch result

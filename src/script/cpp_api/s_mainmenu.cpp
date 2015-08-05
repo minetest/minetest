@@ -55,8 +55,7 @@ void ScriptApiMainMenu::handleMainMenuEvent(std::string text)
 
 	// Call it
 	lua_pushstring(L, text.c_str());
-	if (lua_pcall(L, 1, 0, m_errorhandler))
-		scriptError();
+	PCALL_RES(lua_pcall(L, 1, 0, m_errorhandler));
 }
 
 void ScriptApiMainMenu::handleMainMenuButtons(const StringMap &fields)
@@ -85,7 +84,6 @@ void ScriptApiMainMenu::handleMainMenuButtons(const StringMap &fields)
 	}
 
 	// Call it
-	if (lua_pcall(L, 1, 0, m_errorhandler))
-		scriptError();
+	PCALL_RES(lua_pcall(L, 1, 0, m_errorhandler));
 }
 

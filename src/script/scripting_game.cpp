@@ -105,7 +105,7 @@ void GameScripting::InitializeModApi(lua_State *L, int top)
 	LuaSettings::Register(L);
 }
 
-void log_deprecated(std::string message)
+void log_deprecated(const std::string &message)
 {
-	log_deprecated(NULL,message);
+	log_deprecated(NULL, message);
 }

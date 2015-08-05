@@ -40,6 +40,12 @@ extern "C" {
 // use that name to bypass security!
 #define BUILTIN_MOD_NAME "*builtin*"
 
+#define PCALL_RES(RES) do {                 \
+	int result_ = (RES);                    \
+	if (result_ != 0) {                     \
+		scriptError(result_, __FUNCTION__); \
+	}                                       \
+} while (0)
 
 class Server;
 class Environment;
@@ -74,7 +80,7 @@ protected:
 		{ return m_luastack; }
 
 	void realityCheck();
-	void scriptError();
+	void scriptError(int result, const char *fxn);
 	void stackDump(std::ostream &o);
 
 	void setServer(Server* server) { m_server = server; }

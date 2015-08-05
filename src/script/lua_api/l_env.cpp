@@ -77,8 +77,9 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 	pushnode(L, n, env->getGameDef()->ndef());
 	lua_pushnumber(L, active_object_count);
 	lua_pushnumber(L, active_object_count_wider);
-	if(lua_pcall(L, 4, 0, errorhandler))
-		script_error(L);
+
+	PCALL_RESL(L, lua_pcall(L, 4, 0, errorhandler));
+
 	lua_pop(L, 1); // Pop error handler
 }
 
@@ -418,8 +419,9 @@ int ModApiEnvMod::l_add_item(lua_State *L)
 		return 0;
 	lua_pushvalue(L, 1);
 	lua_pushstring(L, item.getItemString().c_str());
-	if(lua_pcall(L, 2, 1, errorhandler))
-		script_error(L);
+
+	PCALL_RESL(L, lua_pcall(L, 2, 1, errorhandler));
+
 	lua_remove(L, errorhandler); // Remove error handler
 	return 1;
 }
