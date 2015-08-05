@@ -258,17 +258,20 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 }
 
 /******************************************************************************/
-TileDef read_tiledef(lua_State *L, int index)
+TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
 
 	TileDef tiledef;
-
+	bool default_tiling = (drawtype == NDT_PLANTLIKE || drawtype == NDT_FIRELIKE)
+		? false : true;
 	// key at index -2 and value at index
 	if(lua_isstring(L, index)){
 		// "default_lava.png"
 		tiledef.name = lua_tostring(L, index);
+		tiledef.tileable_vertical = default_tiling;
+		tiledef.tileable_horizontal = default_tiling;
 	}
 	else if(lua_istable(L, index))
 	{
@@ -279,9 +282,9 @@ TileDef read_tiledef(lua_State *L, int index)
 		tiledef.backface_culling = getboolfield_default(
 			L, index, "backface_culling", true);
 		tiledef.tileable_horizontal = getboolfield_default(
-			L, index, "tileable_horizontal", true);
+			L, index, "tileable_horizontal", default_tiling);
 		tiledef.tileable_vertical = getboolfield_default(
-			L, index, "tileable_vertical", true);
+			L, index, "tileable_vertical", default_tiling);
 		// animation = {}
 		lua_getfield(L, index, "animation");
 		if(lua_istable(L, -1)){
@@ -357,7 +360,7 @@ ContentFeatures read_content_features(lua_State *L, int index)
 		int i = 0;
 		while(lua_next(L, table) != 0){
 			// Read tiledef from value
-			f.tiledef[i] = read_tiledef(L, -1);
+			f.tiledef[i] = read_tiledef(L, -1, f.drawtype);
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 			i++;
@@ -392,7 +395,7 @@ ContentFeatures read_content_features(lua_State *L, int index)
 		int i = 0;
 		while(lua_next(L, table) != 0){
 			// Read tiledef from value
-			f.tiledef_special[i] = read_tiledef(L, -1);
+			f.tiledef_special[i] = read_tiledef(L, -1, f.drawtype);
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 			i++;
