@@ -178,6 +178,14 @@ private:
 	unsigned int m_size;
 };
 
+/************************************************
+ *           !!!  W A R N I N G  !!!            *
+ *           !!!  A C H T U N G  !!!            *
+ *                                              *
+ * This smart pointer class is NOT thread safe. *
+ * ONLY use in a single-threaded context!       *
+ *                                              *
+ ************************************************/
 template <typename T>
 class SharedBuffer
 {
