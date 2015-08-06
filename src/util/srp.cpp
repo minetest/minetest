@@ -593,6 +593,8 @@ void srp_create_salted_verification_key( SRP_HashAlgorithm alg,
 	if(!ng)
 		goto cleanup_and_exit;
 
+	init_random(); /* Only happens once */
+
 	if (*bytes_s == NULL) {
 		*len_s = 16;
 		if (RAND_BUFF_MAX - g_rand_idx < 16)
