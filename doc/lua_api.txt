@@ -2765,6 +2765,15 @@ It can be created via `PcgRandom(seed)` or `PcgRandom(seed, sequence)`.
     * This is only a rough approximation of a normal distribution with mean=(max-min)/2 and variance=1
     * Increasing num_trials improves accuracy of the approximation
 
+### `SecureRandom`
+Interface for the operating system's crypto-secure PRNG.
+
+It can be created via `SecureRandom()`.  The constructor returns nil if a secure random device cannot be
+be found on the system.
+
+#### Methods
+* `next_bytes([count])`: return next `count` (default 1, capped at 2048) many random bytes, as a string.
+
 ### `PerlinNoise`
 A perlin noise generator.
 It can be created via `PerlinNoise(seed, octaves, persistence, scale)`

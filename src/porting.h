@@ -343,6 +343,7 @@ void setXorgClassHint(const video::SExposedVideoData &video_data,
 // threads in the process inherit this exception handler
 void setWin32ExceptionHandler();
 
+bool secure_rand_fill_buf(void *buf, size_t len);
 } // namespace porting
 
 #ifdef __ANDROID__
