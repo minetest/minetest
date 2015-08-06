@@ -111,19 +111,14 @@ public:
 		// Temp, we remove SharedBuffer when migration finished
 		Buffer<u8> oldForgePacket();
 private:
-		void checkReadOffset(u32 from_offset);
+		void checkReadOffset(u32 from_offset, u32 field_size);
 
-		template<typename T> void checkDataSize()
+		inline void checkDataSize(u32 field_size)
 		{
-			if (m_read_offset + sizeof(T) > m_datasize) {
-				m_datasize = m_read_offset + sizeof(T);
+			if (m_read_offset + field_size > m_datasize) {
+				m_datasize = m_read_offset + field_size;
 				m_data.resize(m_datasize);
 			}
-		}
-
-		template<typename T> void incrOffset()
-		{
-			m_read_offset += sizeof(T);
 		}
 
 		std::vector<u8> m_data;
