@@ -28,6 +28,77 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iomanip>
 #include <vector>
 
+SerializationError eof_ser_err("Attempted read past end of data");
+
+////
+//// BufReader
+////
+
+bool BufReader::getStringNoEx(std::string *val)
+{
+	u16 num_chars;
+	if (!getU16NoEx(&num_chars))
+		return false;
+
+	if (pos + num_chars > size) {
+		pos -= sizeof(num_chars);
+		return false;
+	}
+
+	val->assign((const char *)data + pos, num_chars);
+	pos += num_chars;
+
+	return true;
+}
+
+bool BufReader::getWideStringNoEx(std::wstring *val)
+{
+	u16 num_chars;
+	if (!getU16NoEx(&num_chars))
+		return false;
+
+	if (pos + num_chars * 2 > size) {
+		pos -= sizeof(num_chars);
+		return false;
+	}
+
+	for (size_t i = 0; i != num_chars; i++) {
+		val->push_back(readU16(data + pos));
+		pos += 2;
+	}
+
+	return true;
+}
+
+bool BufReader::getLongStringNoEx(std::string *val)
+{
+	u32 num_chars;
+	if (!getU32NoEx(&num_chars))
+		return false;
+
+	if (pos + num_chars > size) {
+		pos -= sizeof(num_chars);
+		return false;
+	}
+
+	val->assign((const char *)data + pos, num_chars);
+	pos += num_chars;
+
+	return true;
+}
+
+bool BufReader::getRawDataNoEx(void *val, size_t len)
+{
+	if (pos + len > size)
+		return false;
+
+	memcpy(val, data + pos, len);
+	pos += len;
+
+	return true;
+}
+
+
 ////
 //// String
 ////
