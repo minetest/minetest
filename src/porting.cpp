@@ -29,6 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <sys/types.h>
 	#include <sys/sysctl.h>
 #elif defined(_WIN32)
+	#include <windows.h>
+	#include <wincrypt.h>
 	#include <algorithm>
 #endif
 #if !defined(_WIN32)
@@ -797,6 +799,37 @@ v2u32 getDisplaySize()
 }
 #	endif // __ANDROID__
 #endif // SERVER
+
+
+#ifdef WIN32
+
+bool secure_rand_fill_buff(unsigned char *buf, size_t buf_size)
+{
+	HCRYPTPROV wctx;
+
+	CryptAcquireContext(&wctx, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT);
+	CryptGenRandom(wctx, buf_size, (BYTE *)buf);
+	CryptReleaseContext(wctx, 0);
+	return true;
+}
+
+#else
+
+bool secure_rand_fill_buff(unsigned char *buf, size_t buf_size)
+{
+
+	FILE *fp = fopen("/dev/urandom", "r");
+
+	if (fp) {
+		fread(buf, buf_size, 1, fp);
+		fclose(fp);
+		return true;
+	} else {
+		return false;
+	}
+}
+
+#endif
 
 } //namespace porting
 

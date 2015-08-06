@@ -22,6 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "log.h"
+#include "porting.h"
+#include "util/numeric.h"
+
+
 
 ///////////////////////////////////////
 /*
@@ -593,5 +597,116 @@ const char LuaPcgRandom::className[] = "PcgRandom";
 const luaL_reg LuaPcgRandom::methods[] = {
 	luamethod(LuaPcgRandom, next),
 	luamethod(LuaPcgRandom, rand_normal_dist),
+	{0,0}
+};
+
+///////////////////////////////////////
+/*
+	LuaSecureRandom
+*/
+
+void LuaSecureRandom::fill_buff()
+{
+	if (!porting::secure_rand_fill_buff(m_rand_buff, sizeof(m_rand_buff))) {
+		m_rnd.seed(time(NULL) ^ clock(), 0xda3e39cb94b95bdbULL);
+		size_t i = 0;
+		for (i = 0; i < sizeof(m_rand_buff); i++) {
+			m_rand_buff[i] = m_rnd.next();
+		}
+	}
+}
+
+int LuaSecureRandom::l_next_bytes(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaSecureRandom *o = checkobject(L, 1);
+	u32 count = lua_isnumber(L, 2) ? lua_tointeger(L, 2) : 1;
+
+	// Limit count
+	count = MYMIN(2048, count);
+
+	// Find out whether we can pass directly from our array, or have to do some glueing
+	if (sizeof(o->m_rand_buff) - o->m_rand_idx >= count) {
+		lua_pushlstring(L, (const char *)&o->m_rand_buff[o->m_rand_idx], count);
+		o->m_rand_idx += count;
+	} else {
+		char *output_buf = new char[count];
+		u32 count_remaining = count;
+		while (count_remaining > 0) {
+			u32 copy_cnt = MYMIN(sizeof(o->m_rand_buff), count_remaining);
+			memcpy(&output_buf[o->m_rand_idx], &(o->m_rand_buff), copy_cnt);
+			count_remaining -= copy_cnt;
+			o->m_rand_idx += copy_cnt;
+			if (o->m_rand_idx >= sizeof(o->m_rand_buff)) {
+				o->fill_buff();
+			}
+		}
+		lua_pushlstring(L, output_buf, count);
+		delete [] output_buf;
+	}
+
+	return 1;
+}
+
+
+int LuaSecureRandom::create_object(lua_State *L)
+{
+	LuaSecureRandom *o = new LuaSecureRandom();
+	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+	luaL_getmetatable(L, className);
+	lua_setmetatable(L, -2);
+	return 1;
+}
+
+
+int LuaSecureRandom::gc_object(lua_State *L)
+{
+	LuaSecureRandom *o = *(LuaSecureRandom **)(lua_touserdata(L, 1));
+	delete o;
+	return 0;
+}
+
+
+LuaSecureRandom *LuaSecureRandom::checkobject(lua_State *L, int narg)
+{
+	luaL_checktype(L, narg, LUA_TUSERDATA);
+	void *ud = luaL_checkudata(L, narg, className);
+	if (!ud)
+		luaL_typerror(L, narg, className);
+	return *(LuaSecureRandom **)ud;
+}
+
+
+void LuaSecureRandom::Register(lua_State *L)
+{
+	lua_newtable(L);
+	int methodtable = lua_gettop(L);
+	luaL_newmetatable(L, className);
+	int metatable = lua_gettop(L);
+
+	lua_pushliteral(L, "__metatable");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);
+
+	lua_pushliteral(L, "__index");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);
+
+	lua_pushliteral(L, "__gc");
+	lua_pushcfunction(L, gc_object);
+	lua_settable(L, metatable);
+
+	lua_pop(L, 1);
+
+	luaL_openlib(L, 0, methods, 0);
+	lua_pop(L, 1);
+
+	lua_register(L, className, create_object);
+}
+
+const char LuaSecureRandom::className[] = "SecureRandom";
+const luaL_reg LuaSecureRandom::methods[] = {
+	luamethod(LuaSecureRandom, next_bytes),
 	{0,0}
 };
