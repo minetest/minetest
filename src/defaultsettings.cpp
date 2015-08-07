@@ -58,7 +58,7 @@ void set_default_settings(Settings *settings)
 #if DEBUG
 			"KEY_F4");
 #else
-			"none");
+			"");
 #endif
 	settings->setDefault("keymap_toggle_debug", "KEY_F5");
 	settings->setDefault("keymap_toggle_profiler", "KEY_F6");

@@ -256,7 +256,11 @@ KeyPress::KeyPress() :
 
 KeyPress::KeyPress(const char *name)
 {
-	if (strlen(name) > 4) {
+	if (name[0] == 0) {
+		Key = irr::KEY_KEY_CODES_COUNT;
+		Char = L'\0';
+		return;
+	} else if (strlen(name) > 4) {
 		try {
 			Key = keyname_to_keycode(name);
 			m_name = name;
