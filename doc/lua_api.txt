@@ -2192,7 +2192,7 @@ These functions return the leftover itemstack.
 
 * `minetest.add_particlespawner(particlespawner definition)`
     * Add a `ParticleSpawner`, an object that spawns an amount of particles over `time` seconds
-    * Returns an `id`
+    * Returns an `id`, and -1 if adding didn't succeed
     * `Deprecated: minetest.add_particlespawner(amount, time,
       minpos, maxpos,
       minvel, maxvel,

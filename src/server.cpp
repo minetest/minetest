@@ -2857,6 +2857,10 @@ std::string Server::getBanDescription(const std::string &ip_or_name)
 
 void Server::notifyPlayer(const char *name, const std::wstring &msg)
 {
+	// m_env will be NULL if the server is initializing
+	if (!m_env)
+		return;
+
 	Player *player = m_env->getPlayer(name);
 	if (!player)
 		return;
@@ -2870,6 +2874,10 @@ void Server::notifyPlayer(const char *name, const std::wstring &msg)
 bool Server::showFormspec(const char *playername, const std::string &formspec,
 	const std::string &formname)
 {
+	// m_env will be NULL if the server is initializing
+	if (!m_env)
+		return false;
+
 	Player *player = m_env->getPlayer(playername);
 	if (!player)
 		return false;
@@ -3039,6 +3047,10 @@ void Server::spawnParticle(const std::string &playername, v3f pos,
 	float expirationtime, float size, bool
 	collisiondetection, bool vertical, const std::string &texture)
 {
+	// m_env will be NULL if the server is initializing
+	if (!m_env)
+		return;
+
 	u16 peer_id = PEER_ID_INEXISTENT;
 	if (playername != "") {
 		Player* player = m_env->getPlayer(playername.c_str());
@@ -3057,6 +3069,10 @@ u32 Server::addParticleSpawner(u16 amount, float spawntime,
 	bool collisiondetection, bool vertical, const std::string &texture,
 	const std::string &playername)
 {
+	// m_env will be NULL if the server is initializing
+	if (!m_env)
+		return -1;
+
 	u16 peer_id = PEER_ID_INEXISTENT;
 	if (playername != "") {
 		Player* player = m_env->getPlayer(playername.c_str());
@@ -3088,6 +3104,10 @@ u32 Server::addParticleSpawner(u16 amount, float spawntime,
 
 void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 {
+	// m_env will be NULL if the server is initializing
+	if (!m_env)
+		throw ServerError("Can't delete particle spawners during initialisation!");
+
 	u16 peer_id = PEER_ID_INEXISTENT;
 	if (playername != "") {
 		Player* player = m_env->getPlayer(playername.c_str());
