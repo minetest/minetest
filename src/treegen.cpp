@@ -755,7 +755,7 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, int seed)
 		and in games that have saplings; both are deprecated but not
 		replaced yet
 	*/
-	content_t c_tree   = ndef->getId("mapgen_pinetree");
+	content_t c_tree   = ndef->getId("mapgen_pine_tree");
 	content_t c_leaves = ndef->getId("mapgen_pine_needles");
 	content_t c_snow = ndef->getId("mapgen_snow");
 	if (c_tree == CONTENT_IGNORE)
