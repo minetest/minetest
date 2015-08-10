@@ -224,12 +224,13 @@ Mapper::Mapper(IrrlichtDevice *device, Client *client)
 
 	// Initialize minimap data
 	data = new MinimapData;
-	data->mode            = MINIMAP_MODE_OFF;
-	data->is_radar        = false;
-	data->map_invalidated = true;
-	data->heightmap_image = NULL;
-	data->minimap_image   = NULL;
-	data->texture         = NULL;
+	data->mode              = MINIMAP_MODE_OFF;
+	data->is_radar          = false;
+	data->map_invalidated   = true;
+	data->heightmap_image   = NULL;
+	data->minimap_image     = NULL;
+	data->texture           = NULL;
+	data->heightmap_texture = NULL;
 	data->minimap_shape_round = g_settings->getBool("minimap_shape_round");
 
 	// Get round minimap textures

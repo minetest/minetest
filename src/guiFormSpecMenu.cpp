@@ -1020,6 +1020,7 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 		if (g_settings->getBool("freetype")) {
 			e = (gui::IGUIElement *) new gui::intlGUIEditBox(spec.fdefault.c_str(),
 				true, Environment, this, spec.fid, rect);
+			e->drop();
 		} else {
 #else
 		{
@@ -1119,6 +1120,7 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 		if (g_settings->getBool("freetype")) {
 			e = (gui::IGUIEditBox *) new gui::intlGUIEditBox(spec.fdefault.c_str(),
 				true, Environment, this, spec.fid, rect);
+			e->drop();
 		} else {
 #else
 		{
