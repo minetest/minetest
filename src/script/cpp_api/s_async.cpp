@@ -255,7 +255,7 @@ void* AsyncWorkerThread::Thread()
 	std::string script = getServer()->getBuiltinLuaPath() + DIR_DELIM + "init.lua";
 	if (!loadScript(script)) {
 		errorstream
-			<< "AsyncWorkderThread execution of async base environment failed!"
+			<< "AsyncWorkerThread execution of async base environment failed!"
 			<< std::endl;
 		abort();
 	}

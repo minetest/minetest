@@ -113,6 +113,11 @@ void script_error(lua_State *L, int pcall_result, const char *fxn)
 	}
 	err_msg += err_descr;
 
+	if (pcall_result == LUA_ERRMEM) {
+		err_msg += "\nCurrent Lua memory usage: "
+			+ itos(lua_gc(L, LUA_GCCOUNT, 0) >> 10) + " MB";
+	}
+
 	throw LuaError(err_msg);
 }
 
@@ -145,7 +150,9 @@ void script_run_callbacks_f(lua_State *L, int nargs,
 	// Stack now looks like this:
 	// ... <error handler> <run_callbacks> <table> <mode> <arg#1> <arg#2> ... <arg#n>
 
-	script_error(L, lua_pcall(L, nargs + 2, 1, errorhandler), fxn);
+	int result = lua_pcall(L, nargs + 2, 1, errorhandler);
+	if (result != 0)
+		script_error(L, result, fxn);
 
 	lua_remove(L, -2); // Remove error handler
 }
@@ -161,8 +168,7 @@ void log_deprecated(lua_State *L, const std::string &message)
 		std::string value = g_settings->get("deprecated_lua_api_handling");
 		if (value == "log") {
 			dolog = true;
-		}
-		if (value == "error") {
+		} else if (value == "error") {
 			dolog = true;
 			doerror = true;
 		}
