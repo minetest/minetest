@@ -421,8 +421,9 @@ void Client::step(float dtime)
 		ScopeProfiler sp(g_profiler, "Client: map timer and unload");
 		std::vector<v3s16> deleted_blocks;
 		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
-				g_settings->getFloat("client_unload_unused_data_timeout"),
-				&deleted_blocks);
+			g_settings->getFloat("client_unload_unused_data_timeout"),
+			g_settings->getFloat("client_mapblock_limit"),
+			&deleted_blocks);
 
 		/*
 			Send info to server
