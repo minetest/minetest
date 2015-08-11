@@ -18,7 +18,7 @@
 --------------------------------------------------------------------------------
 function get_mods(path,retval,modpack)
 	local mods = core.get_dir_list(path, true)
-	
+
 	for i=1, #mods, 1 do
 		if mods[i]:sub(1,1) ~= "." then
 			local toadd = {}
@@ -283,28 +283,41 @@ function modmgr.render_modlist(render_list)
 end
 
 --------------------------------------------------------------------------------
-function modmgr.get_dependencies(modfolder)
-	local toadd = ""
-	if modfolder ~= nil then
-		local filename = modfolder ..
-					DIR_DELIM .. "depends.txt"
-
-		local dependencyfile = io.open(filename,"r")
-
-		if dependencyfile then
-			local dependency = dependencyfile:read("*l")
-			while dependency do
-				if toadd ~= "" then
-					toadd = toadd .. ","
-				end
-				toadd = toadd .. dependency
-				dependency = dependencyfile:read()
-			end
-			dependencyfile:close()
-		end
+local function get_dependencies_list(modfolder)
+	if not modfolder then
+		return
 	end
 
-	return toadd
+	local dependencyfile = io.open(modfolder .. DIR_DELIM .. "depends.txt", "r")
+	if not dependencyfile then
+		return
+	end
+
+	local dependency = dependencyfile:read("*l")
+	if not dependency then
+		return
+	end
+
+	local depends,n = {dependency},2
+	while dependency do
+		dependency = dependencyfile:read()
+		depends[n] = dependency
+		n = n+1
+	end
+	dependencyfile:close()
+
+	return depends
+end
+
+function modmgr.get_dependencies(modfolder, get_table)
+	local depends = get_dependencies_list(modfolder)
+	if get_table then
+		return depends
+	end
+	if not depends then
+		return ""
+	end
+	return table.concat(depends, ",")
 end
 
 --------------------------------------------------------------------------------
