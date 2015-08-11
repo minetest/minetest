@@ -285,8 +285,8 @@ function pkgmgr.identify_modname(modpath,filename)
 end
 --------------------------------------------------------------------------------
 function pkgmgr.render_packagelist(render_list)
-	if render_list == nil then
-		if pkgmgr.global_mods == nil then
+	if not render_list then
+		if not pkgmgr.global_mods then
 			pkgmgr.refresh_globals()
 		end
 		render_list = pkgmgr.global_mods
@@ -347,33 +347,89 @@ function pkgmgr.is_modpack_entirely_enabled(data, name)
 	return true
 end
 
----------- toggles or en/disables a mod or modpack -----------------------------
+---------- toggles or en/disables a mod or modpack and its dependencies --------
 function pkgmgr.enable_mod(this, toset)
-	local mod = this.data.list:get_list()[this.data.selected_mod]
+	local list = this.data.list:get_list()
+	local mod = list[this.data.selected_mod]
 
-	-- game mods can't be enabled or disabled
+	-- Game mods can't be enabled or disabled
 	if mod.is_game_content then
 		return
 	end
 
-	-- toggle or en/disable the mod
+	local enabled_mods = {}
 	if not mod.is_modpack then
+		-- Toggle or en/disable the mod
 		if toset == nil then
-			mod.enabled = not mod.enabled
-		else
-			mod.enabled = toset
+			toset = not mod.enabled
 		end
+		mod.enabled = toset
+		if toset then
+			enabled_mods[mod.name] = true
+		end
+	else
+		-- Toggle or en/disable every mod in the modpack,
+		-- interleaved unsupported
+		for i = 1, #list do
+			if list[i].modpack == mod.name then
+				if toset == nil then
+					toset = not list[i].enabled
+				end
+				list[i].enabled = toset
+				if toset then
+					enabled_mods[list[i].name] = true
+				end
+			end
+		end
+	end
+	if not toset then
+		-- Mod(s) were disabled
 		return
 	end
 
-	-- toggle or en/disable every mod in the modpack, interleaved unsupported
-	local list = this.data.list:get_raw_list()
-	for i = 1, #list do
-		if list[i].modpack == mod.name then
-			if toset == nil then
-				toset = not list[i].enabled
+	-- Enable mods' depends after activation
+
+	-- Make a list of mod ids indexed by their names
+	local mod_ids = {}
+	for id, mod in pairs(list) do
+		if mod.type == "mod" and not mod.is_modpack then
+			mod_ids[mod.name] = id
+		end
+	end
+
+	-- to_enable is used as a DFS stack with sp as stack pointer
+	local to_enable = {}
+	local sp = 0
+	for name in pairs(enabled_mods) do
+		local depends = pkgmgr.get_dependencies(list[mod_ids[name]].path)
+		for i = 1, #depends do
+			local name = depends[i]
+			if not enabled_mods[name] then
+				sp = sp+1
+				to_enable[sp] = name
 			end
-			list[i].enabled = toset
+		end
+	end
+	-- If sp is 0, every dependency is already activated
+	while sp > 0 do
+		local name = to_enable[sp]
+		sp = sp-1
+
+		if not enabled_mods[name] then
+			enabled_mods[name] = true
+			local mod = list[mod_ids[name]]
+			if not mod then
+				minetest.log("warning", "Mod dependency \"" .. name ..
+					"\" not found!")
+			else
+				mod.enabled = true
+				-- push the dependencies of the dependency onto the stack
+				local depends = pkgmgr.get_dependencies(mod.path)
+				for i = 1, #depends do
+					sp = sp+1
+					to_enable[sp] = depends[i]
+				end
+			end
 		end
 	end
 end
