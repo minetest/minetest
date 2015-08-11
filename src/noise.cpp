@@ -90,6 +90,9 @@ u32 PcgRandom::next()
 
 u32 PcgRandom::range(u32 bound)
 {
+	// If the bound is 0, we cover the whole RNG's range
+	if (bound == 0)
+		return next();
 	/*
 	If the bound is not a multiple of the RNG's range, it may cause bias,
 	e.g. a RNG has a range from 0 to 3 and we take want a number 0 to 2.

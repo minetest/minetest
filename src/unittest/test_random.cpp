@@ -101,6 +101,9 @@ void TestRandom::testPcgRandomRange()
 
 	EXCEPTION_CHECK(PrngException, pr.range(5, 1));
 
+	// Regression test for bug 3027
+	pr.range(pr.RANDOM_MIN, pr.RANDOM_MAX);
+
 	for (u32 i = 0; i != 32768; i++) {
 		int min = (pr.next() % 3000) - 500;
 		int max = (pr.next() % 3000) - 500;
