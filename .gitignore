@@ -18,7 +18,7 @@ tags
 /cache/
 /textures/*
 !/textures/base/
-/sounds/
+!/sounds/*
 /mods/*
 !/mods/minetest/
 /mods/minetest/*
