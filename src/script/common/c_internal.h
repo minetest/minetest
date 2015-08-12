@@ -34,11 +34,11 @@ extern "C" {
 
 #include "common/c_types.h"
 
-#define PCALL_RESL(L, RES) do {                   \
-	int result_ = (RES);                          \
-	if (result_ != 0) {                           \
-		script_error((L), result_, __FUNCTION__); \
-	}                                             \
+#define PCALL_RESL(L, RES) do {                         \
+	int result_ = (RES);                                \
+	if (result_ != 0) {                                 \
+		script_error((L), result_, NULL, __FUNCTION__); \
+	}                                                   \
 } while (0)
 
 #define script_run_callbacks(L, nargs, mode) \
@@ -77,7 +77,7 @@ enum RunCallbacksMode
 std::string script_get_backtrace(lua_State *L);
 int script_error_handler(lua_State *L);
 int script_exception_wrapper(lua_State *L, lua_CFunction f);
-void script_error(lua_State *L, int pcall_result, const char *fxn);
+void script_error(lua_State *L, int pcall_result, const char *mod, const char *fxn);
 void script_run_callbacks_f(lua_State *L, int nargs,
 	RunCallbacksMode mode, const char *fxn);
 void log_deprecated(lua_State *L, const std::string &message);

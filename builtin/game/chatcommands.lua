@@ -10,6 +10,7 @@ function core.register_chatcommand(cmd, def)
 	def.params = def.params or ""
 	def.description = def.description or ""
 	def.privs = def.privs or {}
+	def.mod_origin = core.get_current_modname() or "??"
 	core.chatcommands[cmd] = def
 end
 
@@ -37,6 +38,7 @@ core.register_on_chat_message(function(name, message)
 	end
 	local has_privs, missing_privs = core.check_player_privs(name, cmd_def.privs)
 	if has_privs then
+		core.set_last_run_mod(cmd_def.mod_origin)
 		local success, message = cmd_def.func(name, param)
 		if message then
 			core.chat_send_player(name, message)

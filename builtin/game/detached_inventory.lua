@@ -13,6 +13,7 @@ function core.create_detached_inventory(name, callbacks)
 		stuff.on_put = callbacks.on_put
 		stuff.on_take = callbacks.on_take
 	end
+	stuff.mod_origin = core.get_current_modname() or "??"
 	core.detached_inventories[name] = stuff
 	return core.create_detached_inventory_raw(name)
 end

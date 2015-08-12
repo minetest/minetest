@@ -479,6 +479,15 @@ function core.node_dig(pos, node, digger)
 	-- Run script hook
 	local _, callback
 	for _, callback in ipairs(core.registered_on_dignodes) do
+		local origin = core.callback_origins[callback]
+		if origin then
+			core.set_last_run_mod(origin.mod)
+			--print("Running " .. tostring(callback) ..
+			--	" (a " .. origin.name .. " callback in " .. origin.mod .. ")")
+		else
+			--print("No data associated with callback")
+		end
+
 		-- Copy pos and node because callback can modify them
 		local pos_copy = {x=pos.x, y=pos.y, z=pos.z}
 		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}

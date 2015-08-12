@@ -72,6 +72,7 @@ end
 function core.register_abm(spec)
 	-- Add to core.registered_abms
 	core.registered_abms[#core.registered_abms+1] = spec
+	spec.mod_origin = core.get_current_modname() or "??"
 end
 
 function core.register_entity(name, prototype)
@@ -86,6 +87,7 @@ function core.register_entity(name, prototype)
 
 	-- Add to core.registered_entities
 	core.registered_entities[name] = prototype
+	prototype.mod_origin = core.get_current_modname() or "??"
 end
 
 function core.register_item(name, itemdef)
@@ -146,6 +148,8 @@ function core.register_item(name, itemdef)
 		})
 	end
 	-- END Legacy stuff
+
+	itemdef.mod_origin = core.get_current_modname() or "??"
 
 	-- Disable all further modifications
 	getmetatable(itemdef).__newindex = {}
@@ -326,6 +330,8 @@ function core.override_item(name, redefinition)
 end
 
 
+core.callback_origins = {}
+
 function core.run_callbacks(callbacks, mode, ...)
 	assert(type(callbacks) == "table")
 	local cb_len = #callbacks
@@ -338,6 +344,14 @@ function core.run_callbacks(callbacks, mode, ...)
 	end
 	local ret = nil
 	for i = 1, cb_len do
+		local origin = core.callback_origins[callbacks[i]]
+		if origin then
+			core.set_last_run_mod(origin.mod)
+			--print("Running " .. tostring(callbacks[i]) ..
+			--	" (a " .. origin.name .. " callback in " .. origin.mod .. ")")
+		else
+			--print("No data associated with callback")
+		end
 		local cb_ret = callbacks[i](...)
 
 		if mode == 0 and i == 1 then
@@ -370,13 +384,29 @@ end
 
 local function make_registration()
 	local t = {}
-	local registerfunc = function(func) table.insert(t, func) end
+	local registerfunc = function(func)
+		table.insert(t, func)
+		core.callback_origins[func] = {
+			mod = core.get_current_modname() or "??",
+			name = debug.getinfo(1, "n").name or "??"
+		}
+		--local origin = core.callback_origins[func]
+		--print(origin.name .. ": " .. origin.mod .. " registering cbk " .. tostring(func))
+	end
 	return t, registerfunc
 end
 
 local function make_registration_reverse()
 	local t = {}
-	local registerfunc = function(func) table.insert(t, 1, func) end
+	local registerfunc = function(func)
+		table.insert(t, 1, func)
+		core.callback_origins[func] = {
+			mod = core.get_current_modname() or "??",
+			name = debug.getinfo(1, "n").name or "??"
+		}
+		--local origin = core.callback_origins[func]
+		--print(origin.name .. ": " .. origin.mod .. " registering cbk " .. tostring(func))
+	end
 	return t, registerfunc
 end
 
@@ -408,6 +438,7 @@ local function make_registration_wrap(reg_fn_name, clear_fn_name)
 end
 
 core.registered_on_player_hpchanges = { modifiers = { }, loggers = { } }
+
 function core.registered_on_player_hpchange(player, hp_change)
 	local last = false
 	for i = #core.registered_on_player_hpchanges.modifiers, 1, -1 do
@@ -427,12 +458,17 @@ function core.registered_on_player_hpchange(player, hp_change)
 	end
 	return hp_change
 end
+
 function core.register_on_player_hpchange(func, modifier)
 	if modifier then
 		table.insert(core.registered_on_player_hpchanges.modifiers, func)
 	else
 		table.insert(core.registered_on_player_hpchanges.loggers, func)
 	end
+	core.callback_origins[func] = {
+		mod = core.get_current_modname() or "??",
+		name = debug.getinfo(1, "n").name or "??"
+	}
 end
 
 core.registered_biomes      = make_registration_wrap("register_biome",      "clear_registered_biomes")

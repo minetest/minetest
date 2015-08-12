@@ -14,6 +14,7 @@ local function update_timers(delay)
 		local timer = timers[index]
 		timer.time = timer.time - delay
 		if timer.time <= 0 then
+			core.set_last_run_mod(timer.mod_origin)
 			timer.func(unpack(timer.args or {}))
 			table.remove(timers, index)
 			sub = sub + 1
@@ -55,12 +56,22 @@ function core.after(time, func, ...)
 			"Invalid core.after invocation")
 	if not mintime then
 		mintime = time
-		timers_to_add = {{time=time+delay, func=func, args={...}}}
+		timers_to_add = {{
+			time   = time+delay,
+			func   = func,
+			args   = {...},
+			mod_origin = core.get_last_run_mod(),
+		}}
 		return
 	end
 	mintime = math.min(mintime, time)
 	timers_to_add = timers_to_add or {}
-	timers_to_add[#timers_to_add+1] = {time=time+delay, func=func, args={...}}
+	timers_to_add[#timers_to_add+1] = {
+		time   = time+delay,
+		func   = func,
+		args   = {...},
+		mod_origin = core.get_last_run_mod(),
+	}
 end
 
 function core.check_player_privs(name, privs)

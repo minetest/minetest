@@ -209,6 +209,9 @@ bool ScriptApiDetached::getDetachedInventoryCallback(
 		lua_pop(L, 1);
 		return false;
 	}
+
+	setOriginFromTable(-1);
+
 	lua_getfield(L, -1, callbackname);
 	lua_remove(L, -2);
 	// Should be a function or nil
