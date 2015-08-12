@@ -85,12 +85,15 @@ private:
 	v3s16 m_sneak_node;
 	// Whether the player is allowed to sneak
 	bool m_sneak_node_exists;
+	// Whether recalculation of the sneak node is needed
+	bool m_need_to_get_new_sneak_node;
+	// Stores the max player uplift by m_sneak_node and is updated
+	// when m_need_to_get_new_sneak_node == true
+	f32 m_sneak_node_bb_ymax;
 	// Node below player, used to determine whether it has been removed,
 	// and its old type
 	v3s16 m_old_node_below;
 	std::string m_old_node_below_type;
-	// Whether recalculation of the sneak node is needed
-	bool m_need_to_get_new_sneak_node;
 	bool m_can_jump;
 
 	GenericCAO* m_cao;

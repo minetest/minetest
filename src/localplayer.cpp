@@ -48,9 +48,10 @@ LocalPlayer::LocalPlayer(IGameDef *gamedef, const char *name):
 	light_color(255,255,255,255),
 	m_sneak_node(32767,32767,32767),
 	m_sneak_node_exists(false),
+	m_need_to_get_new_sneak_node(true),
+	m_sneak_node_bb_ymax(0),
 	m_old_node_below(32767,32767,32767),
 	m_old_node_below_type("air"),
-	m_need_to_get_new_sneak_node(true),
 	m_can_jump(false),
 	m_cao(NULL)
 {
@@ -179,25 +180,26 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		If sneaking, keep in range from the last walked node and don't
 		fall off from it
 	*/
-	if(control.sneak && m_sneak_node_exists &&
+	if (control.sneak && m_sneak_node_exists &&
 			!(fly_allowed && g_settings->getBool("free_move")) && !in_liquid &&
-			physics_override_sneak)
-	{
-		f32 maxd = 0.5*BS + sneak_max;
+			physics_override_sneak) {
+		f32 maxd = 0.5 * BS + sneak_max;
 		v3f lwn_f = intToFloat(m_sneak_node, BS);
 		position.X = rangelim(position.X, lwn_f.X-maxd, lwn_f.X+maxd);
 		position.Z = rangelim(position.Z, lwn_f.Z-maxd, lwn_f.Z+maxd);
 
-		if(!is_climbing)
-		{
-			f32 min_y = lwn_f.Y + 0.5*BS;
-			if(position.Y < min_y)
-			{
-				position.Y = min_y;
-
-				if(m_speed.Y < 0)
-					m_speed.Y = 0;
-			}
+		if (!is_climbing) {
+			// Move up if necessary
+			f32 new_y = (lwn_f.Y - 0.5 * BS) + m_sneak_node_bb_ymax;
+			if (position.Y < new_y)
+				position.Y = new_y;
+			/*
+				Collision seems broken, since player is sinking when
+				sneaking over the edges of current sneaking_node.
+				TODO (when fixed): Set Y-speed only to 0 when position.Y < new_y.
+			*/
+			if (m_speed.Y < 0)
+				m_speed.Y = 0;
 		}
 	}
 
@@ -230,27 +232,28 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		player is sneaking from, if any.  If the node from under
 		the player has been removed, the player falls.
 	*/
-	v3s16 current_node = floatToInt(position - v3f(0, 0.05 * BS, 0), BS);
-	if(m_sneak_node_exists &&
-	   nodemgr->get(map->getNodeNoEx(m_old_node_below)).name == "air" &&
-	   m_old_node_below_type != "air")
-	{
+	f32 position_y_mod = 0.05 * BS;
+	if (m_sneak_node_bb_ymax > 0)
+		position_y_mod = m_sneak_node_bb_ymax - position_y_mod;
+	v3s16 current_node = floatToInt(position - v3f(0, position_y_mod, 0), BS);
+	if (m_sneak_node_exists &&
+			nodemgr->get(map->getNodeNoEx(m_old_node_below)).name == "air" &&
+			m_old_node_below_type != "air") {
 		// Old node appears to have been removed; that is,
 		// it wasn't air before but now it is
 		m_need_to_get_new_sneak_node = false;
 		m_sneak_node_exists = false;
-	}
-	else if(nodemgr->get(map->getNodeNoEx(current_node)).name != "air")
-	{
+	} else if (nodemgr->get(map->getNodeNoEx(current_node)).name != "air") {
 		// We are on something, so make sure to recalculate the sneak
 		// node.
 		m_need_to_get_new_sneak_node = true;
 	}
-	if(m_need_to_get_new_sneak_node && physics_override_sneak)
-	{
-		v3s16 pos_i_bottom = floatToInt(position - v3f(0, 0.05 * BS ,0), BS);
+
+	if (m_need_to_get_new_sneak_node && physics_override_sneak) {
+		m_sneak_node_bb_ymax = 0;
+		v3s16 pos_i_bottom = floatToInt(position - v3f(0, position_y_mod, 0), BS);
 		v2f player_p2df(position.X, position.Z);
-		f32 min_distance_f = 100000.0*BS;
+		f32 min_distance_f = 100000.0 * BS;
 		// If already seeking from some node, compare to it.
 		/*if(m_sneak_node_exists)
 		{
@@ -298,10 +301,23 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 			new_sneak_node = p;
 		}
 
-		bool sneak_node_found = (min_distance_f < 100000.0*BS*0.9);
+		bool sneak_node_found = (min_distance_f < 100000.0 * BS * 0.9);
 
 		m_sneak_node = new_sneak_node;
 		m_sneak_node_exists = sneak_node_found;
+
+		if (sneak_node_found) {
+			f32 cb_max = 0;
+			MapNode n = map->getNodeNoEx(m_sneak_node);
+			std::vector<aabb3f> nodeboxes = n.getCollisionBoxes(nodemgr);
+			for (std::vector<aabb3f>::iterator it = nodeboxes.begin();
+					it != nodeboxes.end(); ++it) {
+				aabb3f box = *it;
+				if (box.MaxEdge.Y > cb_max)
+					cb_max = box.MaxEdge.Y;
+			}
+			m_sneak_node_bb_ymax = cb_max;
+		}
 
 		/*
 			If sneaking, the player's collision box can be in air, so
