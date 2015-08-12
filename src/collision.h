@@ -57,13 +57,15 @@ struct collisionMoveResult
 	bool collides;
 	bool collides_xz;
 	bool standing_on_unloaded;
+	bool standing_on_object;
 	std::vector<CollisionInfo> collisions;
 
 	collisionMoveResult():
 		touching_ground(false),
 		collides(false),
 		collides_xz(false),
-		standing_on_unloaded(false)
+		standing_on_unloaded(false),
+		standing_on_object(false)
 	{}
 };
 
