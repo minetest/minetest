@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_internal.h"
 #include "cpp_api/s_security.h"
 #include "lua_api/l_object.h"
+#include "common/c_converter.h"
 #include "serverobject.h"
 #include "debug.h"
 #include "filesys.h"
@@ -68,9 +69,9 @@ public:
 
 ScriptApiBase::ScriptApiBase()
 {
-	#ifdef SCRIPTAPI_LOCK_DEBUG
+#ifdef SCRIPTAPI_LOCK_DEBUG
 	m_locked = false;
-	#endif
+#endif
 
 	m_luastack = luaL_newstate();
 	FATAL_ERROR_IF(!m_luastack, "luaL_newstate() failed");
@@ -154,6 +155,43 @@ bool ScriptApiBase::loadScript(const std::string &script_path, std::string *erro
 	return true;
 }
 
+// Push the list of callbacks (a lua table).
+// Then push nargs arguments.
+// Then call this function, which
+// - runs the callbacks
+// - replaces the table and arguments with the return value,
+//     computed depending on mode
+void ScriptApiBase::runCallbacksRaw(int nargs,
+		RunCallbacksMode mode, const char *fxn)
+{
+	lua_State *L = getStack();
+	FATAL_ERROR_IF(lua_gettop(L) < nargs + 1, "Not enough arguments");
+
+	// Insert error handler
+	lua_pushcfunction(L, script_error_handler);
+	int errorhandler = lua_gettop(L) - nargs - 1;
+	lua_insert(L, errorhandler);
+
+	// Insert run_callbacks between error handler and table
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "run_callbacks");
+	lua_remove(L, -2);
+	lua_insert(L, errorhandler + 1);
+
+	// Insert mode after table
+	lua_pushnumber(L, (int)mode);
+	lua_insert(L, errorhandler + 3);
+
+	// Stack now looks like this:
+	// ... <error handler> <run_callbacks> <table> <mode> <arg#1> <arg#2> ... <arg#n>
+
+	int result = lua_pcall(L, nargs + 2, 1, errorhandler);
+	if (result != 0)
+		scriptError(result, fxn);
+
+	lua_remove(L, -2); // Remove error handler
+}
+
 void ScriptApiBase::realityCheck()
 {
 	int top = lua_gettop(m_luastack);
@@ -167,7 +205,7 @@ void ScriptApiBase::realityCheck()
 
 void ScriptApiBase::scriptError(int result, const char *fxn)
 {
-	script_error(getStack(), result, fxn);
+	script_error(getStack(), result, m_last_run_mod.c_str(), fxn);
 }
 
 void ScriptApiBase::stackDump(std::ostream &o)
@@ -195,6 +233,25 @@ void ScriptApiBase::stackDump(std::ostream &o)
 		o << " ";
 	}
 	o << std::endl;
+}
+
+void ScriptApiBase::setOriginDirect(const char *origin)
+{
+	m_last_run_mod = origin ? origin : "??";
+}
+
+void ScriptApiBase::setOriginFromTableRaw(int index, const char *fxn)
+{
+#ifdef SCRIPTAPI_DEBUG
+	lua_State *L = getStack();
+
+	if (index < 0)
+		index = lua_gettop(L) + 1 + index;
+
+	m_last_run_mod = lua_istable(L, index) ?
+		getstringfield_default(L, index, "origin", "") : "";
+	//printf(">>>> running %s for mod: %s\n", fxn, m_last_run_mod.c_str());
+#endif
 }
 
 void ScriptApiBase::addObjectReference(ServerActiveObject *cobj)

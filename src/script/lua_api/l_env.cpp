@@ -68,6 +68,8 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 		FATAL_ERROR("");
 	lua_remove(L, -2); // Remove registered_abms
 
+	scriptIface->setOriginFromTable(-1);
+
 	// Call action
 	luaL_checktype(L, -1, LUA_TTABLE);
 	lua_getfield(L, -1, "action");
@@ -78,7 +80,9 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 	lua_pushnumber(L, active_object_count);
 	lua_pushnumber(L, active_object_count_wider);
 
-	PCALL_RESL(L, lua_pcall(L, 4, 0, errorhandler));
+	int result = lua_pcall(L, 4, 0, errorhandler);
+	if (result)
+		scriptIface->scriptError(result, "LuaABM::trigger");
 
 	lua_pop(L, 1); // Pop error handler
 }

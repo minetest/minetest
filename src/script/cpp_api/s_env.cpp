@@ -38,7 +38,7 @@ void ScriptApiEnv::environment_OnGenerated(v3s16 minp, v3s16 maxp,
 	push_v3s16(L, minp);
 	push_v3s16(L, maxp);
 	lua_pushnumber(L, blockseed);
-	script_run_callbacks(L, 3, RUN_CALLBACKS_MODE_FIRST);
+	runCallbacks(3, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiEnv::environment_Step(float dtime)
@@ -52,7 +52,7 @@ void ScriptApiEnv::environment_Step(float dtime)
 	// Call callbacks
 	lua_pushnumber(L, dtime);
 	try {
-		script_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
+		runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
 	} catch (LuaError &e) {
 		getServer()->setAsyncFatalError(e.what());
 	}
@@ -73,7 +73,7 @@ void ScriptApiEnv::player_event(ServerActiveObject* player, std::string type)
 	objectrefGetOrCreate(L, player);   // player
 	lua_pushstring(L,type.c_str()); // event type
 	try {
-		script_run_callbacks(L, 2, RUN_CALLBACKS_MODE_FIRST);
+		runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
 	} catch (LuaError &e) {
 		getServer()->setAsyncFatalError(e.what());
 	}

@@ -171,6 +171,7 @@ function core.register_authentication_handler(handler)
 	end
 	core.registered_auth_handler = handler
 	core.registered_auth_handler_modname = core.get_current_modname()
+	core.origin = core.registered_auth_handler_modname
 end
 
 function core.get_auth_handler()

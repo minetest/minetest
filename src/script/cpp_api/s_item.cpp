@@ -193,6 +193,9 @@ bool ScriptApiItem::getItemCallback(const char *name, const char *callbackname)
 		lua_remove(L, -2);
 		luaL_checktype(L, -1, LUA_TTABLE);
 	}
+
+	setOriginFromTable(-1);
+
 	lua_getfield(L, -1, callbackname);
 	lua_remove(L, -2); // Remove item def
 	// Should be a function or nil
