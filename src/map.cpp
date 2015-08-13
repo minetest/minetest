@@ -1499,8 +1499,8 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 		}
 		block_count_all = mapblock_queue.size();
 		// Delete old blocks, and blocks over the limit from the memory
-		while (mapblock_queue.size() > max_loaded_blocks
-				|| mapblock_queue.top().block->getUsageTimer() > unload_timeout) {
+		while (!mapblock_queue.empty() && (mapblock_queue.size() > max_loaded_blocks
+				|| mapblock_queue.top().block->getUsageTimer() > unload_timeout)) {
 			TimeOrderedMapBlock b = mapblock_queue.top();
 			mapblock_queue.pop();
 
