@@ -153,7 +153,12 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("gui_scaling", "1.0");
 	settings->setDefault("gui_scaling_filter", "false");
 	settings->setDefault("gui_scaling_filter_txr2img", "true");
+// Better touch sensitivity for Android	
+#ifdef __ANDROID__
+	settings->setDefault("mouse_sensitivity", "0.05");
+#else
 	settings->setDefault("mouse_sensitivity", "0.2");
+#endif
 	settings->setDefault("enable_sound", "true");
 // Full sound on Android
 	#ifdef __ANDROID__
@@ -171,7 +176,12 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("bilinear_filter", "false");
 	settings->setDefault("trilinear_filter", "false");
 	settings->setDefault("texture_clean_transparent", "false");
+// Better performance on Android
+#ifdef __ANDROID__
 	settings->setDefault("texture_min_size", "64");
+#else
+	settings->setDefault("texture_min_size", "32");
+#endif
 	settings->setDefault("preload_item_visuals", "false");
 	settings->setDefault("enable_bumpmapping", "false");
 	settings->setDefault("enable_parallax_occlusion", "false");
