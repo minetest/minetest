@@ -1545,6 +1545,9 @@ protected:
 	void showOverlayMessage(const wchar_t *msg, float dtime, int percent,
 			bool draw_clouds = true);
 
+	static void settingChangedCallback(const std::string &setting_name, void *data);
+	void readSettings();
+
 private:
 	InputHandler *input;
 
@@ -1616,10 +1619,7 @@ private:
 
 	IntervalLimiter profiler_interval;
 
-	/* TODO: Add a callback function so these can be updated when a setting
-	 *       changes.  At this point in time it doesn't matter (e.g. /set
-	 *       is documented to change server settings only)
-	 *
+	/*
 	 * TODO: Local caching of settings is not optimal and should at some stage
 	 *       be updated to use a global settings object for getting thse values
 	 *       (as opposed to the this local caching). This can be addressed in
@@ -1662,15 +1662,22 @@ Game::Game() :
 	hud(NULL),
 	mapper(NULL)
 {
-	m_cache_doubletap_jump            = g_settings->getBool("doubletap_jump");
-	m_cache_enable_node_highlighting  = g_settings->getBool("enable_node_highlighting");
-	m_cache_enable_clouds             = g_settings->getBool("enable_clouds");
-	m_cache_enable_particles          = g_settings->getBool("enable_particles");
-	m_cache_enable_fog                = g_settings->getBool("enable_fog");
-	m_cache_mouse_sensitivity         = g_settings->getFloat("mouse_sensitivity");
-	m_repeat_right_click_time         = g_settings->getFloat("repeat_rightclick_time");
+	g_settings->registerChangedCallback("doubletap_jump",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("enable_node_highlighting",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("enable_clouds",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("enable_particles",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("enable_fog",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("mouse_sensitivity",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("repeat_rightclick_time",
+		&settingChangedCallback, this);
 
-	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001, 100.0);
+	readSettings();
 
 #ifdef __ANDROID__
 	m_cache_hold_aux1 = false;	// This is initialised properly later
@@ -1705,6 +1712,21 @@ Game::~Game()
 	delete draw_control;
 
 	extendedResourceCleanup();
+
+	g_settings->deregisterChangedCallback("doubletap_jump",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("enable_node_highlighting",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("enable_clouds",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("enable_particles",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("enable_fog",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("mouse_sensitivity",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("repeat_rightclick_time",
+		&settingChangedCallback, this);
 }
 
 bool Game::startup(bool *kill,
@@ -4287,6 +4309,23 @@ void Game::showOverlayMessage(const wchar_t *msg, float dtime,
 	delete[] msg;
 }
 
+void Game::settingChangedCallback(const std::string &setting_name, void *data)
+{
+	((Game *)data)->readSettings();
+}
+
+void Game::readSettings()
+{
+	m_cache_doubletap_jump            = g_settings->getBool("doubletap_jump");
+	m_cache_enable_node_highlighting  = g_settings->getBool("enable_node_highlighting");
+	m_cache_enable_clouds             = g_settings->getBool("enable_clouds");
+	m_cache_enable_particles          = g_settings->getBool("enable_particles");
+	m_cache_enable_fog                = g_settings->getBool("enable_fog");
+	m_cache_mouse_sensitivity         = g_settings->getFloat("mouse_sensitivity");
+	m_repeat_right_click_time         = g_settings->getFloat("repeat_rightclick_time");
+
+	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001, 100.0);
+}
 
 /****************************************************************************/
 /****************************************************************************
