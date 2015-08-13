@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-07-17 14:33+0200\n"
+"PO-Revision-Date: 2015-08-13 19:32+0200\n"
 "Last-Translator: Rui <mrrst0914@gmail.com>\n"
 "Language-Team: Japanese "
 "<https://hosted.weblate.org/projects/minetest/minetest/ja/>\n"
@@ -482,7 +482,7 @@ msgstr "メニューの大きさ"
 
 #: builtin/mainmenu/tab_settings.lua:244
 msgid "Scaling factor applied to menu elements: "
-msgstr "メニューの大きさとして設定する数値: "
+msgstr "メニューの大きさとして設定されている数値: "
 
 #: builtin/mainmenu/tab_settings.lua:250
 msgid "Touch free target"
@@ -554,7 +554,7 @@ msgstr "情報がありません"
 
 #: builtin/mainmenu/tab_texturepacks.lua:114
 msgid "Texturepacks"
-msgstr "テクスチャパック"
+msgstr "テクスチャ"
 
 #: src/client.cpp:1721
 msgid "Loading textures..."
@@ -760,11 +760,11 @@ msgstr "決定"
 
 #: src/guiKeyChangeMenu.cpp:125
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr "操作の設定です。（変更に失敗した場合、minetest.confから該当する設定を削除してください）"
+msgstr "操作設定です。（変更に失敗した場合、minetest.confから該当する設定を削除してください）"
 
 #: src/guiKeyChangeMenu.cpp:165
 msgid "\"Use\" = climb down"
-msgstr "「使用」で降りる"
+msgstr "「使用」キーで降りる"
 
 #: src/guiKeyChangeMenu.cpp:180
 msgid "Double tap \"jump\" to toggle fly"
