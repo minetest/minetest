@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-08-13 19:32+0200\n"
+"PO-Revision-Date: 2015-08-13 20:18+0200\n"
 "Last-Translator: Rui <mrrst0914@gmail.com>\n"
 "Language-Team: Japanese "
 "<https://hosted.weblate.org/projects/minetest/minetest/ja/>\n"
@@ -768,7 +768,7 @@ msgstr "「使用」キーで降りる"
 
 #: src/guiKeyChangeMenu.cpp:180
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "「ジャンプ」二回押しで飛行モード"
+msgstr "「ジャンプ」キー二回押しで飛行モード"
 
 #: src/guiKeyChangeMenu.cpp:295
 msgid "Key already in use"
