@@ -68,6 +68,7 @@ struct EnumString es_HudBuiltinElement[] =
 	{HUD_FLAG_CROSSHAIR_VISIBLE, "crosshair"},
 	{HUD_FLAG_WIELDITEM_VISIBLE, "wielditem"},
 	{HUD_FLAG_BREATHBAR_VISIBLE, "breathbar"},
+	{HUD_FLAG_MINIMAP_VISIBLE,   "minimap"},
 	{0, NULL},
 };
 
@@ -1384,6 +1385,8 @@ int ObjectRef::l_hud_get_flags(lua_State *L)
 	lua_setfield(L, -2, "wielditem");
 	lua_pushboolean(L, player->hud_flags & HUD_FLAG_BREATHBAR_VISIBLE);
 	lua_setfield(L, -2, "breathbar");
+	lua_pushboolean(L, player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE);
+	lua_setfield(L, -2, "minimap");
 
 	return 1;
 }

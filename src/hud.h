@@ -32,11 +32,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HUD_CORNER_LOWER  1
 #define HUD_CORNER_CENTER 2
 
+// Note that these visibility flags do not determine if the hud items are
+// actually drawn, but rather, allows the item to be drawn should the rest of
+// the game state permit it.
 #define HUD_FLAG_HOTBAR_VISIBLE    (1 << 0)
 #define HUD_FLAG_HEALTHBAR_VISIBLE (1 << 1)
 #define HUD_FLAG_CROSSHAIR_VISIBLE (1 << 2)
 #define HUD_FLAG_WIELDITEM_VISIBLE (1 << 3)
 #define HUD_FLAG_BREATHBAR_VISIBLE (1 << 4)
+#define HUD_FLAG_MINIMAP_VISIBLE   (1 << 5)
 
 #define HUD_PARAM_HOTBAR_ITEMCOUNT 1
 #define HUD_PARAM_HOTBAR_IMAGE 2
@@ -116,11 +120,11 @@ public:
 	std::string hotbar_selected_image;
 	bool use_hotbar_selected_image;
 	v3s16 camera_offset;
-	
+
 	Hud(video::IVideoDriver *driver,scene::ISceneManager* smgr,
 		gui::IGUIEnvironment* guienv, IGameDef *gamedef, LocalPlayer *player,
 		Inventory *inventory);
-	
+
 	void drawHotbar(u16 playeritem);
 	void resizeHotbar();
 	void drawCrosshair();
@@ -129,12 +133,12 @@ public:
 private:
 	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
 			s32 count, v2s32 offset, v2s32 size=v2s32());
-	
+
 	void drawItems(v2s32 upperleftpos, s32 itemcount, s32 offset,
 		InventoryList *mainlist, u16 selectitem, u16 direction);
 
 	void drawItem(const ItemStack &item, const core::rect<s32>& rect, bool selected);
-	
+
 	v2u32 m_screensize;
 	v2s32 m_displaycenter;
 	s32 m_hotbar_imagesize;

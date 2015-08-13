@@ -75,7 +75,8 @@ Player::Player(IGameDef *gamedef, const char *name):
 		"listring[]"
 		"list[current_player;craftpreview;7,1;1,1;]";
 
-	// Initialize movement settings at default values, so movement can work if the server fails to send them
+	// Initialize movement settings at default values, so movement can work
+	// if the server fails to send them
 	movement_acceleration_default   = 3    * BS;
 	movement_acceleration_air       = 2    * BS;
 	movement_acceleration_fast      = 10   * BS;
@@ -97,9 +98,10 @@ Player::Player(IGameDef *gamedef, const char *name):
 	physics_override_sneak        = true;
 	physics_override_sneak_glitch = true;
 
-	hud_flags = HUD_FLAG_HOTBAR_VISIBLE | HUD_FLAG_HEALTHBAR_VISIBLE |
-			 HUD_FLAG_CROSSHAIR_VISIBLE | HUD_FLAG_WIELDITEM_VISIBLE |
-			 HUD_FLAG_BREATHBAR_VISIBLE;
+	hud_flags =
+		HUD_FLAG_HOTBAR_VISIBLE    | HUD_FLAG_HEALTHBAR_VISIBLE |
+		HUD_FLAG_CROSSHAIR_VISIBLE | HUD_FLAG_WIELDITEM_VISIBLE |
+		HUD_FLAG_BREATHBAR_VISIBLE | HUD_FLAG_MINIMAP_VISIBLE;
 
 	hud_hotbar_itemcount = HUD_HOTBAR_ITEMCOUNT_DEFAULT;
 }
