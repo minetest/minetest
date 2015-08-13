@@ -59,7 +59,7 @@ MapBlock * MapSector::getBlockBuffered(s16 y)
 	if(m_block_cache != NULL && y == m_block_cache_y){
 		return m_block_cache;
 	}
-	
+
 	// If block doesn't exist, return NULL
 	std::map<s16, MapBlock*>::iterator n = m_blocks.find(y);
 	if(n == m_blocks.end())
@@ -70,11 +70,11 @@ MapBlock * MapSector::getBlockBuffered(s16 y)
 	else{
 		block = n->second;
 	}
-	
+
 	// Cache the last result
 	m_block_cache_y = y;
 	m_block_cache = block;
-	
+
 	return block;
 }
 
@@ -88,16 +88,16 @@ MapBlock * MapSector::createBlankBlockNoInsert(s16 y)
 	assert(getBlockBuffered(y) == NULL);	// Pre-condition
 
 	v3s16 blockpos_map(m_pos.X, y, m_pos.Y);
-	
+
 	MapBlock *block = new MapBlock(m_parent, blockpos_map, m_gamedef);
-	
+
 	return block;
 }
 
 MapBlock * MapSector::createBlankBlock(s16 y)
 {
 	MapBlock *block = createBlankBlockNoInsert(y);
-	
+
 	m_blocks[y] = block;
 
 	return block;
@@ -114,7 +114,7 @@ void MapSector::insertBlock(MapBlock *block)
 
 	v2s16 p2d(block->getPos().X, block->getPos().Z);
 	assert(p2d == m_pos);
-	
+
 	// Insert into container
 	m_blocks[block_y] = block;
 }
@@ -125,7 +125,7 @@ void MapSector::deleteBlock(MapBlock *block)
 
 	// Clear from cache
 	m_block_cache = NULL;
-	
+
 	// Remove from container
 	m_blocks.erase(block_y);
 
@@ -140,6 +140,11 @@ void MapSector::getBlocks(MapBlockVect &dest)
 	{
 		dest.push_back(bi->second);
 	}
+}
+
+bool MapSector::empty()
+{
+	return m_blocks.empty();
 }
 
 /*
@@ -159,18 +164,18 @@ void ServerMapSector::serialize(std::ostream &os, u8 version)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapSector format not supported");
-	
+
 	/*
 		[0] u8 serialization version
 		+ heightmap data
 	*/
-	
+
 	// Server has both of these, no need to support not having them.
 	//assert(m_objects != NULL);
 
 	// Write version
 	os.write((char*)&version, 1);
-	
+
 	/*
 		Add stuff here, if needed
 	*/
@@ -193,18 +198,18 @@ ServerMapSector* ServerMapSector::deSerialize(
 	/*
 		Read stuff
 	*/
-	
+
 	// Read version
 	u8 version = SER_FMT_VER_INVALID;
 	is.read((char*)&version, 1);
-	
+
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapSector format not supported");
-	
+
 	/*
 		Add necessary reading stuff here
 	*/
-	
+
 	/*
 		Get or create sector
 	*/
