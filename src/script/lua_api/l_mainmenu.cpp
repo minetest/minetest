@@ -318,20 +318,17 @@ int ModApiMainMenu::l_get_modstore_details(lua_State *L)
 
 	if (modid != 0) {
 		Json::Value details;
-		std::string url = "";
-		try{
-			url = g_settings->get("modstore_details_url");
-		}
-		catch(SettingNotFoundException &e) {
-			lua_pushnil(L);
-			return 1;
-		}
+		std::string url = g_settings->get("modstore_details_url");
 
 		size_t idpos = url.find("*");
 		url.erase(idpos,1);
 		url.insert(idpos,modid);
 
-		details = getModstoreUrl(url);
+		try {
+			details = getModstoreUrl(url);
+		} catch (JsonFetchException &e) {
+			return 0;
+		}
 
 		ModStoreModDetails current_mod = readModStoreModDetails(details);
 
@@ -408,16 +405,15 @@ int ModApiMainMenu::l_get_modstore_details(lua_State *L)
 int ModApiMainMenu::l_get_modstore_list(lua_State *L)
 {
 	Json::Value mods;
-	std::string url = "";
-	try{
-		url = g_settings->get("modstore_listmods_url");
-	}
-	catch(SettingNotFoundException &e) {
-		lua_pushnil(L);
+	std::string url = g_settings->get("modstore_listmods_url");
+
+
+	try {
+		mods = getModstoreUrl(url);
+	} catch (JsonFetchException &e) {
+		lua_pushstring(L, e.what());
 		return 1;
 	}
-
-	mods = getModstoreUrl(url);
 
 	std::vector<ModStoreMod> moddata = readModStoreList(mods);
 

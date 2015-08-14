@@ -21,9 +21,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define __CONVERT_JSON_H__
 
 #include "json/json.h"
+#include "exceptions.h"
 
 struct ModStoreMod;
 struct ModStoreModDetails;
+
+class JsonFetchException : public BaseException {
+public:
+	JsonFetchException(const char *s):
+		BaseException(s)
+	{
+	}
+};
 
 std::vector<ModStoreMod>    readModStoreList(Json::Value& modlist);
 ModStoreModDetails          readModStoreModDetails(Json::Value& details);
