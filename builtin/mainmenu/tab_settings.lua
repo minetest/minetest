@@ -287,12 +287,12 @@ end
 
 --------------------------------------------------------------------------------
 local function handle_settings_buttons(this, fields, tabname, tabdata)
-	if fields["cb_fancy_trees"] then
-		core.setting_set("new_style_leaves", fields["cb_fancy_trees"])
-		return true
-	end
 	if fields["cb_smooth_lighting"] then
 		core.setting_set("smooth_lighting", fields["cb_smooth_lighting"])
+		return true
+	end
+	if fields["cb_particles"] then
+		core.setting_set("enable_particles", fields["cb_particles"])
 		return true
 	end
 	if fields["cb_3d_clouds"] then
@@ -303,15 +303,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.setting_set("opaque_water", fields["cb_opaque_water"])
 		return true
 	end
-	if fields["cb_shaders"] then
-		if (core.setting_get("video_driver") == "direct3d8" or core.setting_get("video_driver") == "direct3d9") then
-			core.setting_set("enable_shaders", "false")
-			gamedata.errormessage = fgettext("To enable shaders the OpenGL driver needs to be used.")
-		else
-			core.setting_set("enable_shaders", fields["cb_shaders"])
-		end
-		return true
-	end
 	if fields["cb_connected_glass"] then
 		core.setting_set("connected_glass", fields["cb_connected_glass"])
 		return true
@@ -320,8 +311,15 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.setting_set("enable_node_highlighting", fields["cb_node_highlighting"])
 		return true
 	end
-	if fields["cb_particles"] then
-		core.setting_set("enable_particles", fields["cb_particles"])
+
+	if fields["cb_shaders"] then
+		if (core.setting_get("video_driver") == "direct3d8"
+				or core.setting_get("video_driver") == "direct3d9") then
+			core.setting_set("enable_shaders", "false")
+			gamedata.errormessage = fgettext("To enable shaders the OpenGL driver needs to be used.")
+		else
+			core.setting_set("enable_shaders", fields["cb_shaders"])
+		end
 		return true
 	end
 	if fields["cb_bumpmapping"] then
@@ -345,10 +343,6 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.setting_set("enable_waving_plants", fields["cb_waving_plants"])
 		return true
 	end
-	if fields["btn_change_keys"] ~= nil then
-		core.show_keys_menu()
-		return true
-	end
 
 	if fields["sb_gui_scaling"] then
 		local event = core.explode_scrollbar_event(fields["sb_gui_scaling"])
@@ -358,6 +352,10 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 			core.setting_set("gui_scaling",tosave)
 			return true
 		end
+	end
+	if fields["btn_change_keys"] then
+		core.show_keys_menu()
+		return true
 	end
 	if fields["cb_touchscreen_target"] then
 		core.setting_set("touchtarget", fields["cb_touchscreen_target"])
@@ -371,33 +369,25 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	--Note dropdowns have to be handled LAST!
 	local ddhandled = false
 
-	if fields["dd_touchthreshold"] then
-		core.setting_set("touchscreen_threshold",fields["dd_touchthreshold"])
-		ddhandled = true
-	end
-	if fields["dd_leaves_style"] == leaves_style_labels[3] then
-		core.setting_set("leaves_style", leaves_style[2][3])
-		ddhandled = true
-	end
-	if fields["dd_leaves_style"] == leaves_style_labels[2] then
-		core.setting_set("leaves_style", leaves_style[2][2])
-		ddhandled = true
-	end
 	if fields["dd_leaves_style"] == leaves_style_labels[1] then
 		core.setting_set("leaves_style", leaves_style[2][1])
+		ddhandled = true
+	elseif fields["dd_leaves_style"] == leaves_style_labels[2] then
+		core.setting_set("leaves_style", leaves_style[2][2])
+		ddhandled = true
+	elseif fields["dd_leaves_style"] == leaves_style_labels[3] then
+		core.setting_set("leaves_style", leaves_style[2][3])
 		ddhandled = true
 	end
 	if fields["dd_filters"] == dd_filter_labels[1] then
 		core.setting_set("bilinear_filter", "false")
 		core.setting_set("trilinear_filter", "false")
 		ddhandled = true
-	end
-	if fields["dd_filters"] == dd_filter_labels[2] then
+	elseif fields["dd_filters"] == dd_filter_labels[2] then
 		core.setting_set("bilinear_filter", "true")
 		core.setting_set("trilinear_filter", "false")
 		ddhandled = true
-	end
-	if fields["dd_filters"] == dd_filter_labels[3] then
+	elseif fields["dd_filters"] == dd_filter_labels[3] then
 		core.setting_set("bilinear_filter", "false")
 		core.setting_set("trilinear_filter", "true")
 		ddhandled = true
@@ -406,13 +396,11 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.setting_set("mip_map", "false")
 		core.setting_set("anisotropic_filter", "false")
 		ddhandled = true
-	end
-	if fields["dd_mipmap"] == dd_mipmap_labels[2] then
+	elseif fields["dd_mipmap"] == dd_mipmap_labels[2] then
 		core.setting_set("mip_map", "true")
 		core.setting_set("anisotropic_filter", "false")
 		ddhandled = true
-	end
-	if fields["dd_mipmap"] == dd_mipmap_labels[3] then
+	elseif fields["dd_mipmap"] == dd_mipmap_labels[3] then
 		core.setting_set("mip_map", "true")
 		core.setting_set("anisotropic_filter", "true")
 		ddhandled = true
@@ -420,6 +408,10 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	if fields["dd_antialiasing"] then
 		core.setting_set("fsaa",
 			antialiasing_fname_to_name(fields["dd_antialiasing"]))
+		ddhandled = true
+	end
+	if fields["dd_touchthreshold"] then
+		core.setting_set("touchscreen_threshold",fields["dd_touchthreshold"])
 		ddhandled = true
 	end
 
