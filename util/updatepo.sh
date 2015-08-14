@@ -54,6 +54,7 @@ xgettext --package-name=minetest \
 	--keyword=N_ \
 	--keyword=wgettext \
 	--keyword=fgettext \
+	--keyword=fgettext_ne \
 	--keyword=strgettext \
 	--keyword=wstrgettext \
 	--output $potfile \
