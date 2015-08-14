@@ -43,8 +43,7 @@ local function get_formspec(data)
 		"button[9.25,6.35;2,0.5;btn_config_world_save;" .. fgettext("Save") .. "]" ..
 		"button[7.4,6.35;2,0.5;btn_config_world_cancel;" .. fgettext("Cancel") .. "]"
 
-	if mod.name ~= ""
-	and mod.typ ~= "game_mod" then
+	if mod.name ~= "" and mod.typ ~= "game_mod" then
 		if mod.is_modpack then
 			local rawlist = data.list:get_raw_list()
 
@@ -86,9 +85,7 @@ local mod_ids
 local function get_mod_ids(list)
 	mod_ids = {}
 	for id,mod in pairs(list) do
-		if mod.typ == "global_mod"
-		and not mod.is_modpack
-		and mod.name then
+		if mod.typ == "global_mod" and not mod.is_modpack and mod.name then
 			mod_ids[mod.name] = id
 		end
 	end
@@ -136,13 +133,14 @@ local function enable_mod(this, toset)
 		get_mod_ids(list)
 	end
 
-	local to_enable = {}
+	local to_enable,n = {},1
 	for name in pairs(enabled_mods) do
 		local depends = modmgr.get_dependencies(list[mod_ids[name]].path, true)
 		if depends then
 			for _,name in pairs(depends) do
 				if not enabled_mods[name] then
-					table.insert(to_enable, name)
+					to_enable[n] = name
+					n = n+1
 				end
 			end
 		end
@@ -204,7 +202,7 @@ local function handle_buttons(this, fields)
 	end
 
 	if fields["cb_hide_gamemods"] ~= nil
-	or fields["cb_hide_mpcontent"] ~= nil then
+		or fields["cb_hide_mpcontent"] ~= nil then
 		local current = this.data.list:get_filtercriteria()
 
 		if current == nil then
