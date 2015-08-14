@@ -2817,16 +2817,6 @@ bool Connection::deletePeer(u16 peer_id, bool timeout)
 
 /* Interface */
 
-ConnectionEvent Connection::getEvent()
-{
-	if (m_event_queue.empty()) {
-		ConnectionEvent e;
-		e.type = CONNEVENT_NONE;
-		return e;
-	}
-	return m_event_queue.pop_frontNoEx();
-}
-
 ConnectionEvent Connection::waitEvent(u32 timeout_ms)
 {
 	try {

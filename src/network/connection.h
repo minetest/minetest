@@ -1018,7 +1018,6 @@ public:
 	~Connection();
 
 	/* Interface */
-	ConnectionEvent getEvent();
 	ConnectionEvent waitEvent(u32 timeout_ms);
 	void putCommand(ConnectionCommand &c);
 
