@@ -37,8 +37,5 @@ void content_mapnode_get_name_id_mapping(NameIdMapping *nimap);
 // Convert "CONTENT_STONE"-style names to dynamic ids
 std::string content_mapnode_get_new_name(const std::string &oldname);
 class INodeDefManager;
-content_t legacy_get_id(const std::string &oldname, INodeDefManager *ndef);
-#define LEGN(ndef, oldname) legacy_get_id(oldname, ndef)
 
 #endif
-

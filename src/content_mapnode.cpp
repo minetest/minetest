@@ -233,16 +233,3 @@ std::string content_mapnode_get_new_name(const std::string &oldname)
 {
 	return newnamegetter.get(oldname);
 }
-
-content_t legacy_get_id(const std::string &oldname, INodeDefManager *ndef)
-{
-	std::string newname = content_mapnode_get_new_name(oldname);
-	if(newname == "")
-		return CONTENT_IGNORE;
-	content_t id;
-	bool found = ndef->getId(newname, id);
-	if(!found)
-		return CONTENT_IGNORE;
-	return id;
-}
-

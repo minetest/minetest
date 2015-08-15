@@ -53,6 +53,4 @@ void TestMapNode::testNodeProperties(INodeDefManager *nodedef)
 	// Transparency
 	n.setContent(CONTENT_AIR);
 	UASSERT(nodedef->get(n).light_propagates == true);
-	n.setContent(LEGN(nodedef, "CONTENT_STONE"));
-	UASSERT(nodedef->get(n).light_propagates == false);
 }

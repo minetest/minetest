@@ -179,8 +179,6 @@ public:
 	void propagateSunlight(v3s16 nmin, v3s16 nmax);
 	void spreadLight(v3s16 nmin, v3s16 nmax);
 
-	void calcLightingOld(v3s16 nmin, v3s16 nmax);
-
 	virtual void makeChunk(BlockMakeData *data) {}
 	virtual int getGroundLevelAtPoint(v2s16 p) { return 0; }
 };
