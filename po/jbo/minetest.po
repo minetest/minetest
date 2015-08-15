@@ -8,13 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-07-17 07:23+0200\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2015-08-15 16:30+0200\n"
+"Last-Translator: Wuzzy <almikes@aol.com>\n"
+"Language-Team: Lojban "
+"<https://hosted.weblate.org/projects/minetest/minetest/jbo/>\n"
 "Language: jbo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 2.4-dev\n"
 
 #: builtin/fstk/ui.lua:82
 msgid "An error occured in a Lua script, such as a mod:"
@@ -26,11 +29,11 @@ msgstr ""
 
 #: builtin/fstk/ui.lua:89 builtin/mainmenu/store.lua:165
 msgid "Ok"
-msgstr ""
+msgstr "je'e"
 
 #: builtin/mainmenu/common.lua:239 src/game.cpp:1891
 msgid "Loading..."
-msgstr ""
+msgstr ".i ca'o samymo'i"
 
 #: builtin/mainmenu/common.lua:240
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -55,19 +58,20 @@ msgid "Mod:"
 msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua:51 builtin/mainmenu/tab_mods.lua:99
+#, fuzzy
 msgid "Depends:"
-msgstr ""
+msgstr "nitcu"
 
 #: builtin/mainmenu/dlg_config_world.lua:54 src/guiKeyChangeMenu.cpp:191
 msgid "Save"
-msgstr ""
+msgstr "rejgau"
 
 #: builtin/mainmenu/dlg_config_world.lua:55
 #: builtin/mainmenu/dlg_create_world.lua:64
 #: builtin/mainmenu/dlg_rename_modpack.lua:33 src/guiKeyChangeMenu.cpp:199
 #: src/keycode.cpp:223
 msgid "Cancel"
-msgstr ""
+msgstr "fitytoltu'i"
 
 #: builtin/mainmenu/dlg_config_world.lua:71
 msgid "Enable MP"
@@ -80,7 +84,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_config_world.lua:77
 #: builtin/mainmenu/dlg_config_world.lua:79
 msgid "enabled"
-msgstr ""
+msgstr "selpli"
 
 #: builtin/mainmenu/dlg_config_world.lua:85
 msgid "Enable all"
@@ -88,11 +92,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua:50
 msgid "World name"
-msgstr ""
+msgstr "munje cmene"
 
 #: builtin/mainmenu/dlg_create_world.lua:53
 msgid "Seed"
-msgstr ""
+msgstr "le munje ke cunso namcu"
 
 #: builtin/mainmenu/dlg_create_world.lua:56
 msgid "Mapgen"
@@ -104,7 +108,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua:63
 msgid "Create"
-msgstr ""
+msgstr "zbasu"
 
 #: builtin/mainmenu/dlg_create_world.lua:68
 msgid "You have no subgames installed."
@@ -116,7 +120,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua:72
 msgid "Warning: The minimal development test is meant for developers."
-msgstr ""
+msgstr ".i .e'unai la'o gy.Minimal Development Test.gy. cu tutci le finti"
 
 #: builtin/mainmenu/dlg_create_world.lua:73
 msgid "Download a subgame, such as minetest_game, from minetest.net"
@@ -124,7 +128,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua:99
 msgid "A world named \"$1\" already exists"
-msgstr ""
+msgstr ".i lo munje me'e la'o gy.$1.gy. cu zasti"
 
 #: builtin/mainmenu/dlg_create_world.lua:116
 msgid "No worldname given or no game selected"
@@ -132,17 +136,17 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_delete_mod.lua:26
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr ".i xu do je'u djica lo nu vimcu la'o gy.$1.gy."
 
 #: builtin/mainmenu/dlg_delete_mod.lua:27
 #: builtin/mainmenu/dlg_delete_world.lua:25
 #: builtin/mainmenu/tab_settings.lua:100
 msgid "Yes"
-msgstr ""
+msgstr "go'i"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:28
 msgid "No of course not!"
-msgstr ""
+msgstr "nasai go'i"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:41
 msgid "Modmgr: failed to delete \"$1\""
@@ -154,11 +158,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_delete_world.lua:24
 msgid "Delete World \"$1\"?"
-msgstr ""
+msgstr ".i xu do djica lo nu vimcu lo munje be me'e zoi gy.$1.gy."
 
 #: builtin/mainmenu/dlg_delete_world.lua:26
 msgid "No"
-msgstr ""
+msgstr "na go'i"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua:26
 msgid "Rename Modpack:"
@@ -166,7 +170,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_rename_modpack.lua:31 src/keycode.cpp:227
 msgid "Accept"
-msgstr ""
+msgstr "fitytu'i"
 
 #: builtin/mainmenu/modmgr.lua:344
 msgid "Install Mod: file: \"$1\""
@@ -192,11 +196,11 @@ msgstr ""
 
 #: builtin/mainmenu/store.lua:88
 msgid "Unsorted"
-msgstr ""
+msgstr "kalsa"
 
 #: builtin/mainmenu/store.lua:99 builtin/mainmenu/store.lua:580
 msgid "Search"
-msgstr ""
+msgstr "sisku"
 
 #: builtin/mainmenu/store.lua:126
 msgid "Downloading $1, please wait..."
@@ -207,8 +211,9 @@ msgid "Successfully installed:"
 msgstr ""
 
 #: builtin/mainmenu/store.lua:162
+#, fuzzy
 msgid "Shortname:"
-msgstr ""
+msgstr "tordu cmene"
 
 #: builtin/mainmenu/store.lua:472
 msgid "Rating"
@@ -228,11 +233,11 @@ msgstr ""
 
 #: builtin/mainmenu/store.lua:526
 msgid "Page $1 of $2"
-msgstr ""
+msgstr "$1 moi le'i papri poi ke'a $1 mei"
 
 #: builtin/mainmenu/tab_credits.lua:22
 msgid "Credits"
-msgstr ""
+msgstr "lo finti liste"
 
 #: builtin/mainmenu/tab_credits.lua:31
 msgid "Core Developers"
@@ -288,11 +293,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_multiplayer.lua:23
 msgid "Address / Port :"
-msgstr ""
+msgstr "lo samjudri jo'u judrnporte"
 
 #: builtin/mainmenu/tab_multiplayer.lua:24
 msgid "Name / Password :"
-msgstr ""
+msgstr "lo cmene .e lo lerpoijaspu"
 
 #: builtin/mainmenu/tab_multiplayer.lua:29
 #: builtin/mainmenu/tab_simple_main.lua:30
@@ -302,17 +307,17 @@ msgstr ""
 #: builtin/mainmenu/tab_multiplayer.lua:34 builtin/mainmenu/tab_server.lua:26
 #: builtin/mainmenu/tab_singleplayer.lua:96 src/keycode.cpp:229
 msgid "Delete"
-msgstr ""
+msgstr "vimcu"
 
 #: builtin/mainmenu/tab_multiplayer.lua:38
 #: builtin/mainmenu/tab_simple_main.lua:34
 msgid "Connect"
-msgstr ""
+msgstr "samjongau"
 
 #: builtin/mainmenu/tab_multiplayer.lua:62
 #: builtin/mainmenu/tab_simple_main.lua:45
 msgid "Creative mode"
-msgstr ""
+msgstr "le nu finti kelci"
 
 #: builtin/mainmenu/tab_multiplayer.lua:63
 #: builtin/mainmenu/tab_simple_main.lua:46
@@ -326,11 +331,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_multiplayer.lua:257
 msgid "Client"
-msgstr ""
+msgstr "lo samtciselse'u"
 
 #: builtin/mainmenu/tab_server.lua:27 builtin/mainmenu/tab_singleplayer.lua:97
 msgid "New"
-msgstr ""
+msgstr "cnino"
 
 #: builtin/mainmenu/tab_server.lua:28 builtin/mainmenu/tab_singleplayer.lua:98
 msgid "Configure"
@@ -338,16 +343,17 @@ msgstr ""
 
 #: builtin/mainmenu/tab_server.lua:29
 msgid "Start Game"
-msgstr ""
+msgstr "cfari fa lo nu kelci"
 
 #: builtin/mainmenu/tab_server.lua:30 builtin/mainmenu/tab_singleplayer.lua:100
+#, fuzzy
 msgid "Select World:"
-msgstr ""
+msgstr "cuxna lo munje"
 
 #: builtin/mainmenu/tab_server.lua:31 builtin/mainmenu/tab_simple_main.lua:76
 #: builtin/mainmenu/tab_singleplayer.lua:101
 msgid "Creative Mode"
-msgstr ""
+msgstr "le nu finti kelci"
 
 #: builtin/mainmenu/tab_server.lua:33 builtin/mainmenu/tab_simple_main.lua:78
 #: builtin/mainmenu/tab_singleplayer.lua:103
@@ -356,11 +362,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_server.lua:35
 msgid "Public"
-msgstr ""
+msgstr "gubni"
 
 #: builtin/mainmenu/tab_server.lua:37 builtin/mainmenu/tab_simple_main.lua:25
 msgid "Name/Password"
-msgstr ""
+msgstr "lo cmene .e lo lerpoijaspu"
 
 #: builtin/mainmenu/tab_server.lua:45
 msgid "Bind Address"
@@ -368,32 +374,32 @@ msgstr ""
 
 #: builtin/mainmenu/tab_server.lua:47
 msgid "Port"
-msgstr ""
+msgstr "lo judrnporte"
 
 #: builtin/mainmenu/tab_server.lua:51
 msgid "Server Port"
-msgstr ""
+msgstr "lo samtcise'u judrnporte"
 
 #: builtin/mainmenu/tab_server.lua:138
 #: builtin/mainmenu/tab_singleplayer.lua:165
 msgid "No world created or selected!"
-msgstr ""
+msgstr ".i lo no munje cu puzi zbasu gi'a cuxna"
 
 #: builtin/mainmenu/tab_server.lua:191
 msgid "Server"
-msgstr ""
+msgstr "lo samtcise'u"
 
 #: builtin/mainmenu/tab_settings.lua:21
 msgid "Opaque Leaves"
-msgstr ""
+msgstr "lo tolkli pezli"
 
 #: builtin/mainmenu/tab_settings.lua:22
 msgid "Simple Leaves"
-msgstr ""
+msgstr "lo sampu pezli"
 
 #: builtin/mainmenu/tab_settings.lua:23
 msgid "Fancy Leaves"
-msgstr ""
+msgstr "lo melbi pezli"
 
 #: builtin/mainmenu/tab_settings.lua:32
 msgid "No Filter"
@@ -401,11 +407,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:33
 msgid "Bilinear Filter"
-msgstr ""
+msgstr "lo puvyrelyli'iju'e"
 
 #: builtin/mainmenu/tab_settings.lua:34
 msgid "Trilinear Filter"
-msgstr ""
+msgstr "lo puvycibli'iju'e"
 
 #: builtin/mainmenu/tab_settings.lua:43
 msgid "No Mipmap"
@@ -413,39 +419,39 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:44
 msgid "Mipmap"
-msgstr ""
+msgstr "lo puvrmipmepi"
 
 #: builtin/mainmenu/tab_settings.lua:45
 msgid "Mipmap + Aniso. Filter"
-msgstr ""
+msgstr "lo puvrmipmepi .e lo puvytolmanfyju'e"
 
 #: builtin/mainmenu/tab_settings.lua:98
 msgid "Are you sure to reset your singleplayer world?"
-msgstr ""
+msgstr ".i xu do je'u djica lo nu kraga'igau le do za'e pavykelci munje"
 
 #: builtin/mainmenu/tab_settings.lua:102
 msgid "No!!!"
-msgstr ""
+msgstr "nasai go'i"
 
 #: builtin/mainmenu/tab_settings.lua:202
 msgid "Smooth Lighting"
-msgstr ""
+msgstr "lo xutla se gusni"
 
 #: builtin/mainmenu/tab_settings.lua:204
 msgid "Enable Particles"
-msgstr ""
+msgstr "lo kantu"
 
 #: builtin/mainmenu/tab_settings.lua:206
 msgid "3D Clouds"
-msgstr ""
+msgstr "le bliku dilnu"
 
 #: builtin/mainmenu/tab_settings.lua:208
 msgid "Opaque Water"
-msgstr ""
+msgstr "lo tolkli djacu"
 
 #: builtin/mainmenu/tab_settings.lua:210
 msgid "Connected Glass"
-msgstr ""
+msgstr "lo jorne blaci"
 
 #: builtin/mainmenu/tab_settings.lua:212
 msgid "Node Highlighting"
@@ -465,7 +471,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:228
 msgid "Shaders"
-msgstr ""
+msgstr "lo ti'orkemsamtci"
 
 #: builtin/mainmenu/tab_settings.lua:233
 msgid "Change keys"
@@ -473,7 +479,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:236
 msgid "Reset singleplayer world"
-msgstr ""
+msgstr "kraga'igau le za'e pavykelci munje"
 
 #: builtin/mainmenu/tab_settings.lua:240
 msgid "GUI scale factor"
@@ -533,7 +539,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_simple_main.lua:201
 msgid "Main"
-msgstr ""
+msgstr "lo ralju"
 
 #: builtin/mainmenu/tab_singleplayer.lua:99 src/keycode.cpp:248
 msgid "Play"
@@ -541,7 +547,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_singleplayer.lua:246
 msgid "Singleplayer"
-msgstr ""
+msgstr "pa kelci"
 
 #: builtin/mainmenu/tab_texturepacks.lua:49
 msgid "Select texture pack:"
@@ -557,7 +563,7 @@ msgstr ""
 
 #: src/client.cpp:1721
 msgid "Loading textures..."
-msgstr ""
+msgstr ".i ca'o samymo'i le tengu datnyvei"
 
 #: src/client.cpp:1736
 msgid "Rebuilding shaders..."
@@ -565,15 +571,15 @@ msgstr ""
 
 #: src/client.cpp:1743
 msgid "Initializing nodes..."
-msgstr ""
+msgstr ".i ca'o samymo'i lo me la'o gy.node.gy."
 
 #: src/client.cpp:1760
 msgid "Initializing nodes"
-msgstr ""
+msgstr ".i ca'o samymo'i lo me la'o gy.node.gy."
 
 #: src/client.cpp:1768
 msgid "Item textures..."
-msgstr ""
+msgstr ".i ca'o samymo'i le dacti ke tengu datnyvei"
 
 #: src/client.cpp:1793
 msgid "Done!"
@@ -609,7 +615,7 @@ msgstr ""
 
 #: src/fontengine.cpp:70 src/fontengine.cpp:226
 msgid "needs_fallback_font"
-msgstr ""
+msgstr "no"
 
 #: src/game.cpp:1052 src/guiFormSpecMenu.cpp:2065
 msgid "Proceed"
@@ -617,11 +623,11 @@ msgstr ""
 
 #: src/game.cpp:1072
 msgid "You died."
-msgstr ""
+msgstr ".i do pu morsi"
 
 #: src/game.cpp:1073
 msgid "Respawn"
-msgstr ""
+msgstr "gasnu lo nu mi tolcanci"
 
 #: src/game.cpp:1092
 msgid ""
@@ -656,11 +662,11 @@ msgstr ""
 
 #: src/game.cpp:1125
 msgid "Continue"
-msgstr ""
+msgstr "ranji"
 
 #: src/game.cpp:1129
 msgid "Change Password"
-msgstr ""
+msgstr "gafygau lo lerpoijaspu"
 
 #: src/game.cpp:1134
 msgid "Sound Volume"
@@ -676,7 +682,7 @@ msgstr ""
 
 #: src/game.cpp:1141
 msgid "Exit to OS"
-msgstr ""
+msgstr "tolcfagau"
 
 #: src/game.cpp:1841
 msgid "Shutting down..."
@@ -684,27 +690,29 @@ msgstr ""
 
 #: src/game.cpp:1948
 msgid "Creating server..."
-msgstr ""
+msgstr ".i lo samtcise'u cu se zbasu"
 
 #: src/game.cpp:1984
 msgid "Creating client..."
-msgstr ""
+msgstr ".i lo samtciselse'u cu se zbasu"
 
 #: src/game.cpp:2159
 msgid "Resolving address..."
-msgstr ""
+msgstr ".i ca'o troci lo nu facki lo samjudri"
 
 #: src/game.cpp:2261
 msgid "Connecting to server..."
-msgstr ""
+msgstr ".i ca'o troci lo za'i samjo'e lo samse'u"
 
 #: src/game.cpp:2317
+#, fuzzy
 msgid "Item definitions..."
-msgstr ""
+msgstr ".i ca'o samymo'i tu'a le dacti"
 
 #: src/game.cpp:2322
+#, fuzzy
 msgid "Node definitions..."
-msgstr ""
+msgstr ".i ca'o samymo'i tu'a lo me la'o gy.node.gy."
 
 #: src/game.cpp:2329
 msgid "Media..."
@@ -729,8 +737,9 @@ msgid "Enter "
 msgstr ""
 
 #: src/guiFormSpecMenu.cpp:2875
+#, fuzzy
 msgid "ok"
-msgstr ""
+msgstr "je'e"
 
 #: src/guiKeyChangeMenu.cpp:125
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -750,51 +759,51 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:373
 msgid "press key"
-msgstr ""
+msgstr "ko da'ergau le batke"
 
 #: src/guiKeyChangeMenu.cpp:399
 msgid "Forward"
-msgstr ""
+msgstr "za'i ca'u muvdu"
 
 #: src/guiKeyChangeMenu.cpp:400
 msgid "Backward"
-msgstr ""
+msgstr "za'i ti'a muvdu"
 
 #: src/guiKeyChangeMenu.cpp:401 src/keycode.cpp:228
 msgid "Left"
-msgstr ""
+msgstr "za'i zu'e muvdu"
 
 #: src/guiKeyChangeMenu.cpp:402 src/keycode.cpp:228
 msgid "Right"
-msgstr ""
+msgstr "za'i ri'u muvdu"
 
 #: src/guiKeyChangeMenu.cpp:403
 msgid "Use"
-msgstr ""
+msgstr "mu'e pilno"
 
 #: src/guiKeyChangeMenu.cpp:404
 msgid "Jump"
-msgstr ""
+msgstr "mu'e plipe"
 
 #: src/guiKeyChangeMenu.cpp:405
 msgid "Sneak"
-msgstr ""
+msgstr "za'i masno cadzu"
 
 #: src/guiKeyChangeMenu.cpp:406
 msgid "Drop"
-msgstr ""
+msgstr "mu'e falcru"
 
 #: src/guiKeyChangeMenu.cpp:407
 msgid "Inventory"
-msgstr ""
+msgstr "lo dacti uidje"
 
 #: src/guiKeyChangeMenu.cpp:408
 msgid "Chat"
-msgstr ""
+msgstr "samta'a"
 
 #: src/guiKeyChangeMenu.cpp:409
 msgid "Command"
-msgstr ""
+msgstr "minde"
 
 #: src/guiKeyChangeMenu.cpp:410
 msgid "Console"
@@ -802,11 +811,11 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:411
 msgid "Toggle fly"
-msgstr ""
+msgstr "mu'e co'a jonai mo'u vofli"
 
 #: src/guiKeyChangeMenu.cpp:412
 msgid "Toggle fast"
-msgstr ""
+msgstr "mu'e co'a jonai mo'u sutra"
 
 #: src/guiKeyChangeMenu.cpp:413
 msgid "Toggle Cinematic"
@@ -818,7 +827,7 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:415
 msgid "Range select"
-msgstr ""
+msgstr "mu'e cuxna fi le'i se kuspe"
 
 #: src/guiKeyChangeMenu.cpp:416
 msgid "Print stacks"
@@ -826,27 +835,27 @@ msgstr ""
 
 #: src/guiPasswordChange.cpp:108
 msgid "Old Password"
-msgstr ""
+msgstr "lo slabu lerpoijaspu"
 
 #: src/guiPasswordChange.cpp:124
 msgid "New Password"
-msgstr ""
+msgstr "lo cnino lerpoijaspu"
 
 #: src/guiPasswordChange.cpp:139
 msgid "Confirm Password"
-msgstr ""
+msgstr "le rapli lerpoijaspu"
 
 #: src/guiPasswordChange.cpp:155
 msgid "Change"
-msgstr ""
+msgstr "gafygau"
 
 #: src/guiPasswordChange.cpp:164
 msgid "Passwords do not match!"
-msgstr ""
+msgstr ".i lo lerpoijaspu na mintu"
 
 #: src/guiVolumeChange.cpp:105
 msgid "Sound Volume: "
-msgstr ""
+msgstr "lo ni sance "
 
 #: src/guiVolumeChange.cpp:119
 msgid "Exit"
@@ -854,19 +863,19 @@ msgstr ""
 
 #: src/keycode.cpp:223
 msgid "Left Button"
-msgstr ""
+msgstr "lo zulselpevysmacu"
 
 #: src/keycode.cpp:223
 msgid "Middle Button"
-msgstr ""
+msgstr "lo mijyselpevysmacu"
 
 #: src/keycode.cpp:223
 msgid "Right Button"
-msgstr ""
+msgstr "lo prityselpevysmacu"
 
 #: src/keycode.cpp:223
 msgid "X Button 1"
-msgstr ""
+msgstr "la'o gy.X Button 1.gy."
 
 #: src/keycode.cpp:224
 msgid "Back"
@@ -886,7 +895,7 @@ msgstr ""
 
 #: src/keycode.cpp:224
 msgid "X Button 2"
-msgstr ""
+msgstr "la'o gy.X Button 2.gy."
 
 #: src/keycode.cpp:225
 msgid "Capital"
@@ -946,7 +955,7 @@ msgstr ""
 
 #: src/keycode.cpp:227
 msgid "Mode Change"
-msgstr ""
+msgstr "la'o gy.Mode Change.gy."
 
 #: src/keycode.cpp:227
 msgid "Next"
@@ -1098,43 +1107,43 @@ msgstr ""
 
 #: src/keycode.cpp:243
 msgid "Comma"
-msgstr ""
+msgstr "slaka bu"
 
 #: src/keycode.cpp:243
 msgid "Minus"
-msgstr ""
+msgstr "vu'u bu"
 
 #: src/keycode.cpp:243
 msgid "Period"
-msgstr ""
+msgstr "denpa bu"
 
 #: src/keycode.cpp:243
 msgid "Plus"
-msgstr ""
+msgstr "su'i bu"
 
 #: src/keycode.cpp:247
 msgid "Attn"
-msgstr ""
+msgstr "la'o gy.Attn.gy."
 
 #: src/keycode.cpp:247
 msgid "CrSel"
-msgstr ""
+msgstr "la'o gy.CrSel.gy."
 
 #: src/keycode.cpp:248
 msgid "Erase OEF"
-msgstr ""
+msgstr "la'o gy.Erase OEF.gy."
 
 #: src/keycode.cpp:248
 msgid "ExSel"
-msgstr ""
+msgstr "la'o gy.ExSel.gy."
 
 #: src/keycode.cpp:248
 msgid "OEM Clear"
-msgstr ""
+msgstr "la'o gy.OEM Clear.gy."
 
 #: src/keycode.cpp:248
 msgid "PA1"
-msgstr ""
+msgstr "la'o gy.PA1.gy."
 
 #: src/keycode.cpp:248
 msgid "Zoom"
