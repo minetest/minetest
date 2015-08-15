@@ -773,10 +773,12 @@ int ModApiEnvMod::l_delete_area(lua_State *L)
 	for (s16 y = bpmin.Y; y <= bpmax.Y; y++)
 	for (s16 x = bpmin.X; x <= bpmax.X; x++) {
 		v3s16 bp(x, y, z);
-		if (map.deleteBlock(bp))
+		if (map.deleteBlock(bp)) {
+			env->setStaticForActiveObjectsInBlock(bp, false);
 			event.modified_blocks.insert(bp);
-		else
+		} else {
 			success = false;
+		}
 	}
 
 	map.dispatchEvent(&event);

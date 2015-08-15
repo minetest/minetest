@@ -1424,6 +1424,33 @@ void ServerEnvironment::getRemovedActiveObjects(v3s16 pos, s16 radius,
 	}
 }
 
+void ServerEnvironment::setStaticForActiveObjectsInBlock(
+	v3s16 blockpos, bool static_exists, v3s16 static_block)
+{
+	MapBlock *block = m_map->getBlockNoCreateNoEx(blockpos);
+	if (!block)
+		return;
+
+	for (std::map<u16, StaticObject>::iterator
+			so_it = block->m_static_objects.m_active.begin();
+			so_it != block->m_static_objects.m_active.end(); ++so_it) {
+		// Get the ServerActiveObject counterpart to this StaticObject
+		std::map<u16, ServerActiveObject *>::iterator ao_it;
+		ao_it = m_active_objects.find(so_it->first);
+		if (ao_it == m_active_objects.end()) {
+			// If this ever happens, there must be some kind of nasty bug.
+			errorstream << "ServerEnvironment::setStaticForObjectsInBlock(): "
+				"Object from MapBlock::m_static_objects::m_active not found "
+				"in m_active_objects";
+			continue;
+		}
+
+		ServerActiveObject *sao = ao_it->second;
+		sao->m_static_exists = static_exists;
+		sao->m_static_block  = static_block;
+	}
+}
+
 ActiveObjectMessage ServerEnvironment::getActiveObjectMessage()
 {
 	if(m_active_object_messages.empty())
@@ -1959,7 +1986,6 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 		m_active_objects.erase(*i);
 	}
 }
-
 
 #ifndef SERVER
 
