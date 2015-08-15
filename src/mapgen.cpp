@@ -342,30 +342,6 @@ void Mapgen::spreadLight(v3s16 nmin, v3s16 nmax)
 
 
 
-void Mapgen::calcLightingOld(v3s16 nmin, v3s16 nmax)
-{
-	enum LightBank banks[2] = {LIGHTBANK_DAY, LIGHTBANK_NIGHT};
-	VoxelArea a(nmin, nmax);
-	bool block_is_underground = (water_level > nmax.Y);
-	bool sunlight = !block_is_underground;
-
-	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update", SPT_AVG);
-
-	for (int i = 0; i < 2; i++) {
-		enum LightBank bank = banks[i];
-		std::set<v3s16> light_sources;
-		std::map<v3s16, u8> unlight_from;
-
-		voxalgo::clearLightAndCollectSources(*vm, a, bank, ndef,
-			light_sources, unlight_from);
-		voxalgo::propagateSunlight(*vm, a, sunlight, light_sources, ndef);
-
-		vm->unspreadLight(bank, unlight_from, light_sources, ndef);
-		vm->spreadLight(bank, light_sources, ndef);
-	}
-}
-
-
 ///////////////////////////////////////////////////////////////////////////////
 
 GenerateNotifier::GenerateNotifier()
