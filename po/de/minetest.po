@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-08-11 21:25+0200\n"
-"Last-Translator: hahoyer <hahoyer@gmail.com>\n"
+"PO-Revision-Date: 2015-08-15 15:34+0200\n"
+"Last-Translator: Wuzzy <almikes@aol.com>\n"
 "Language-Team: German "
 "<https://hosted.weblate.org/projects/minetest/minetest/de/>\n"
 "Language: de\n"
@@ -38,8 +38,8 @@ msgstr "Lädt ..."
 #: builtin/mainmenu/common.lua:240
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
-"Bitte versuchen Sie die Öffentliche Serverliste neu zu aktivieren, und "
-"prüfen Sie Ihre Internetverbindung."
+"Bitte versuchen Sie die öffentliche Serverliste neu zu aktivieren und prüfen "
+"Sie Ihre Internetverbindung."
 
 #: builtin/mainmenu/dlg_config_world.lua:29
 msgid "World:"
@@ -872,7 +872,7 @@ msgstr "Neues Passwort"
 
 #: src/guiPasswordChange.cpp:139
 msgid "Confirm Password"
-msgstr "Passwort wiederholen"
+msgstr "Passwort wiederh."
 
 #: src/guiPasswordChange.cpp:155
 msgid "Change"
