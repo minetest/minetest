@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-08-13 20:18+0200\n"
-"Last-Translator: Rui <mrrst0914@gmail.com>\n"
+"PO-Revision-Date: 2015-08-15 03:28+0200\n"
+"Last-Translator: Rui <rui914t@gmail.com>\n"
 "Language-Team: Japanese "
 "<https://hosted.weblate.org/projects/minetest/minetest/ja/>\n"
 "Language: ja\n"
@@ -1156,7 +1156,7 @@ msgstr "ExSel"
 
 #: src/keycode.cpp:248
 msgid "OEM Clear"
-msgstr "OEM Clear"
+msgstr "OEMクリア"
 
 #: src/keycode.cpp:248
 msgid "PA1"
