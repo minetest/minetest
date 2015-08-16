@@ -16,9 +16,6 @@ varying vec3 lightVec;
 varying vec3 tsLightVec;
 
 bool normalTexturePresent = false;
-bool texTileableHorizontal = false;
-bool texTileableVertical = false;
-bool texSeamless = false;
 
 const float e = 2.718281828459;
 const float BS = 10.0;
@@ -29,45 +26,6 @@ void get_texture_flags()
 	if (flags.r > 0.5) {
 		normalTexturePresent = true;
 	}
-	if (flags.g > 0.5) {
-		texTileableHorizontal = true;
-	}
-	if (flags.b > 0.5) {
-		texTileableVertical = true;
-	}
-	if (texTileableHorizontal && texTileableVertical) {
-		texSeamless = true;
-	}
-}
-
-vec2 validate_displacement(vec2 uv, vec2 ds, float dist)
-{
-	if (texSeamless) {
-		uv += dist * ds;
-	} else if (texTileableVertical == false) {
-		vec2 uv2 = uv + dist * ds;
-		// limit vertical texure displacement
-		if ((uv.y + uv2.y) < 0.0) {
-			uv.y = 0.0;
-		} else if ((uv.y + uv2.y) > 1.999) {
-			uv.y = 0.999;
-		} else {
-			uv.y = uv2.y;
-		}
-		uv.x = uv2.x;
-	} else {
-		vec2 uv2 = uv + dist * ds;
-		// limit horizontal texure displacement 
-		if ((uv.x + uv2.x) < 0.0) {
-			uv.x = 0.0;
-		} else if ((uv.x + uv2.x) > 1.999) {
-			uv.x = 0.999;
-		} else {
-			uv.x = uv2.x;
-		}
-		uv.y = uv2.y;
-	}
-	return uv;
 }
 
 float intensity(vec3 color)
@@ -77,11 +35,7 @@ float intensity(vec3 color)
 
 float get_rgb_height(vec2 uv)
 {
-	if (texSeamless) {
-		return intensity(texture2D(baseTexture, uv).rgb);
-	} else {
-		return intensity(texture2D(baseTexture, clamp(uv, 0.0, 0.999)).rgb);
-	}
+	return intensity(texture2D(baseTexture, uv).rgb);
 }
 
 vec4 get_normal_map(vec2 uv)
@@ -144,18 +98,13 @@ void main(void)
 	// Relief mapping
 	if (normalTexturePresent && area_enable_parallax > 0.0) {
 		vec2 ds = eyeRay * PARALLAX_OCCLUSION_SCALE;
-		// offset the texture by maximum possible displacement,
-		// this will help align seamless and non seamless textures
-		uv -= ds;
 		float dist = find_intersection(uv, ds);
-		uv = validate_displacement(uv, ds, dist);
-
+		uv += dist * ds;
 #endif
 	} else if (GENERATE_NORMALMAPS == 1 && area_enable_parallax > 0.0) {
 		vec2 ds = eyeRay * PARALLAX_OCCLUSION_SCALE;
-		uv -= ds;
 		float dist = find_intersectionRGB(uv, ds);
-		uv = validate_displacement(uv, ds, dist);
+		uv += dist * ds;
 	}
 #endif
 
