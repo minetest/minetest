@@ -1012,9 +1012,7 @@ void CNodeDefManager::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 	if (use_normal_texture) {
 		tile->normal_texture = tsrc->getNormalTexture(tiledef->name);
 	}
-	tile->flags_texture = tsrc->getShaderFlagsTexture(
-		tile->normal_texture ? true : false,
-		tiledef->tileable_vertical, tiledef->tileable_horizontal);
+	tile->flags_texture = tsrc->getShaderFlagsTexture(tile->normal_texture ? true : false);
 
 	// Material flags
 	tile->material_flags = 0;
