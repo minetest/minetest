@@ -245,6 +245,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	s16 max_y = MYMAX(oldpos_i.Y, newpos_i.Y) + (box_0.MaxEdge.Y / BS) + 1;
 	s16 max_z = MYMAX(oldpos_i.Z, newpos_i.Z) + (box_0.MaxEdge.Z / BS) + 1;
 
+	bool any_position_valid = false;
+
 	for(s16 x = min_x; x <= max_x; x++)
 	for(s16 y = min_y; y <= max_y; y++)
 	for(s16 z = min_z; z <= max_z; z++)
@@ -257,6 +259,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		if (is_position_valid) {
 			// Object collides into walkable nodes
 
+			any_position_valid = true;
 			const ContentFeatures &f = gamedef->getNodeDefManager()->get(n);
 			if(f.walkable == false)
 				continue;
@@ -289,6 +292,12 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			is_object.push_back(false);
 		}
 	}
+
+	// Do not move if world has not loaded yet, since custom node boxes
+	// are not available for collision detection.
+	if (!any_position_valid)
+		return result;
+
 	} // tt2
 
 	if(collideWithObjects)
@@ -297,7 +306,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		//TimeTaker tt3("collisionMoveSimple collect object boxes");
 
 		/* add object boxes to cboxes */
-
 
 		std::vector<ActiveObject*> objects;
 #ifndef SERVER
