@@ -587,8 +587,8 @@ ColorContainer::ColorContainer()
 	colors["greenyellow"]            = 0xadff2f;
 	colors["honeydew"]               = 0xf0fff0;
 	colors["hotpink"]                = 0xff69b4;
-	colors["indianred "]             = 0xcd5c5c;
-	colors["indigo "]                = 0x4b0082;
+	colors["indianred"]              = 0xcd5c5c;
+	colors["indigo"]                 = 0x4b0082;
 	colors["ivory"]                  = 0xfffff0;
 	colors["khaki"]                  = 0xf0e68c;
 	colors["lavender"]               = 0xe6e6fa;
