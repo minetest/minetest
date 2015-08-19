@@ -375,8 +375,9 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		If something is wrong (source item is empty, destination is the
 		same as source), nothing happens
 	*/
+	bool did_swap = false;
 	move_count = list_from->moveItem(from_i,
-		list_to, to_i, count, !caused_by_move_somewhere);
+		list_to, to_i, count, !caused_by_move_somewhere, &did_swap);
 
 	// If source is infinite, reset it's stack
 	if (src_can_take_count == -1) {
@@ -397,7 +398,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 				}
 			}
 		}
-		if (move_count > 0) {
+		if (move_count > 0 || did_swap) {
 			list_from->deleteItem(from_i);
 			list_from->addItem(from_i, from_stack_was);
 		}

@@ -246,7 +246,7 @@ public:
 	// count is the maximum number of items to move (0 for everything)
 	// returns number of moved items
 	u32 moveItem(u32 i, InventoryList *dest, u32 dest_i,
-		u32 count = 0, bool swap_if_needed = true);
+		u32 count = 0, bool swap_if_needed = true, bool *did_swap = NULL);
 
 	// like moveItem, but without a fixed destination index
 	// also with optional rollback recording
