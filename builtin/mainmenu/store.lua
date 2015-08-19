@@ -330,7 +330,7 @@ function modstore.update_modlist()
 		end,
 		nil,
 		function(result)
-			if result ~= nil then
+			if type(result) == "table" then
 				modstore.modlist_unsorted = {}
 				modstore.modlist_unsorted.data = result
 
@@ -343,6 +343,13 @@ function modstore.update_modlist()
 				end
 				modstore.modlist_unsorted.page = 0
 				modstore.fetchdetails()
+				core.event_handler("Refresh")
+			else
+				local err_msg = fgettext_ne("Oooops! Seems that mod list download failed. It might be that it has been decided to take the mod store offline, or this is a problem with the website, or a bug in the game.")
+				gamedata.errormessage = result
+					and err_msg .. fgettext_ne(" The technical code is: ") .. result
+					or err_msg
+				modstore.tv_store:hide()
 				core.event_handler("Refresh")
 			end
 		end

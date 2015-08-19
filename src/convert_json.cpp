@@ -43,17 +43,21 @@ Json::Value fetchJsonValue(const std::string &url,
 	httpfetch_sync(fetch_request, fetch_result);
 
 	if (!fetch_result.succeeded) {
-		return Json::Value();
+		std::string err_msg = "HTTP request failed with code ";
+		err_msg += itos(fetch_result.response_code);
+		throw JsonFetchException(err_msg.c_str());
 	}
 	Json::Value root;
 	Json::Reader reader;
 	std::istringstream stream(fetch_result.data);
 
 	if (!reader.parse(stream, root)) {
-		errorstream << "URL: " << url << std::endl;
-		errorstream << "Failed to parse json data " << reader.getFormattedErrorMessages();
-		errorstream << "data: \"" << fetch_result.data << "\"" << std::endl;
-		return Json::Value();
+		std::string err_msg;
+		err_msg += "URL '" + url + "': ";
+		err_msg += "Failed to parse json data " + reader.getFormattedErrorMessages();
+		err_msg += "data: \"" + fetch_result.data + "\"";
+		errorstream << err_msg << std::endl;
+		throw JsonFetchException(err_msg.c_str());
 	}
 
 	return root;

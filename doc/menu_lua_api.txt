@@ -54,7 +54,7 @@ core.get_modstore_list() (possible in async calls)
 		title	 = <human readable title>,
 		basename = <basename for mod>
 	}
-}
+}, or, on error, the error message or nil
 core.get_gamepath() (possible in async calls)
 ^ returns path to global gamepath
 core.get_texturepath() (possible in async calls)
@@ -228,7 +228,7 @@ Limitations of Async operations
  -Limited set of available functions
 	e.g. No access to functions modifying menu like core.start,core.close,
 	core.file_open_dialog
-			
+
 
 Class reference
 ----------------
