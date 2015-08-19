@@ -32,26 +32,29 @@ tab_credits = {
 				",Perttu Ahola (celeron55) <celeron55@gmail.com>,"..
 				",Ryan Kwolek (kwolekr) <kwolekr@minetest.net>,"..
 				",PilzAdam <pilzadam@minetest.net>," ..
-				",Maciej Kasatkin (RealBadAngel) <mk@realbadangel.pl>,"..
 				",sfan5 <sfan5@live.de>,"..
 				",kahrl <kahrl@gmx.net>,"..
-				",sapier,"..
+				",sapier <Sapier at GMX dot net>,"..
 				",ShadowNinja <shadowninja@minetest.net>,"..
 				",Nathanael Courant (Nore/Ekdohibs) <nore@mesecons.net>,"..
-				",BlockMen,"..
+				",BlockMen <nmuelll@web.de>,"..
 				",Craig Robbins (Zeno),"..
-				",Loic Blot (nerzhul/nrz),"..
-				",paramat,"..
+				",Loic Blot (nerzhul/nrz) <loic.blot@unix-experience.fr>,"..
+				",Mat Gregory (paramat) <mat.gregory@virginmedia.com>,"..
 				",est31 <MTest31@outlook.com>," ..
 				",,"..
 				"#FFFF00," .. fgettext("Active Contributors") .. "," ..
 				",SmallJoker <mk939@ymail.com>," ..
-				",gregorycu," ..
 				",Andrew Ward (rubenwardy) <rubenwardy@gmail.com>," ..
 				",Aaron Suen <warr1024@gmail.com>," ..
-				",TeTpaAka," ..
+				",Sokomine <wegwerf@anarres.dyndns.org>," ..
+				",Břetislav Štec (TeTpaAka) <valsiterb@gmail.com>," ..
+				",Jean-Patrick G (kilbith) <jeanpatrick.guerrero@gmail.com>," ..
+				",Rui <mrrst0914@gmail.com>," ..
+				",Diego Martinez (kaeza) <kaeza@users.sf.net>," ..
 				",," ..
 				"#FFFF00," .. fgettext("Previous Core Developers") .."," ..
+				",Maciej Kasatkin (RealBadAngel) <mk@realbadangel.pl>,"..
 				",Lisa Milne (darkrose) <lisa@ltmnet.com>," ..
 				",proller <proler@gmail.com>," ..
 				",Ilya Zhuravlev (xyz) <xyz@minetest.net>," ..
@@ -59,6 +62,7 @@ tab_credits = {
 				"#FFFF00," .. fgettext("Previous Contributors") .. "," ..
 				",Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>,"..
 				",Jurgen Doser (doserj) <jurgen.doser@gmail.com>,"..
+				",Gregory Currie (gregorycu) <gregory.currie@gmail.com>," ..
 				",Jeija <jeija@mesecons.net>,"..
 				",MirceaKitsune <mirceakitsune@gmail.com>,"..
 				",dannydark <the_skeleton_of_a_child@yahoo.co.uk>,"..
