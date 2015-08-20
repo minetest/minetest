@@ -250,6 +250,12 @@ struct TileSpec
 		}
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING)
 			? true : false;
+		if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
+			material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+		}
+		if (!(material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
+			material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+		}
 	}
 
 	void applyMaterialOptionsWithShaders(video::SMaterial &material) const
