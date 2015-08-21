@@ -174,7 +174,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	sanity_check(d > pos_max_d);
 
 	// Maximum distance over border for sneaking
-	f32 sneak_max = BS*0.4;
+	f32 sneak_max = BS * 0.4;
 
 	/*
 		If sneaking, keep in range from the last walked node and don't
@@ -190,7 +190,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 
 		if (!is_climbing) {
 			// Move up if necessary
-			f32 new_y = (lwn_f.Y - 0.5 * BS) + m_sneak_node_bb_ymax;
+			f32 new_y = (lwn_f.Y - maxd) + m_sneak_node_bb_ymax;
 			if (position.Y < new_y)
 				position.Y = new_y;
 			/*
@@ -232,10 +232,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		player is sneaking from, if any.  If the node from under
 		the player has been removed, the player falls.
 	*/
-	f32 position_y_mod = 0.05 * BS;
-	if (m_sneak_node_bb_ymax > 0)
-		position_y_mod = m_sneak_node_bb_ymax - position_y_mod;
-	v3s16 current_node = floatToInt(position - v3f(0, position_y_mod, 0), BS);
+	
+	v3s16 current_node = floatToInt(position - v3f(0, 0.05 * BS, 0), BS);
 	if (m_sneak_node_exists &&
 			nodemgr->get(map->getNodeNoEx(m_old_node_below)).name == "air" &&
 			m_old_node_below_type != "air") {
@@ -251,7 +249,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 
 	if (m_need_to_get_new_sneak_node && physics_override_sneak) {
 		m_sneak_node_bb_ymax = 0;
-		v3s16 pos_i_bottom = floatToInt(position - v3f(0, position_y_mod, 0), BS);
+		v3s16 pos_i_bottom = floatToInt(position - v3f(0, 0.05 * BS, 0), BS);
 		v2f player_p2df(position.X, position.Z);
 		f32 min_distance_f = 100000.0 * BS;
 		// If already seeking from some node, compare to it.
@@ -619,4 +617,3 @@ v3s16 LocalPlayer::getStandingNodePos()
 		return m_sneak_node;
 	return floatToInt(getPosition() - v3f(0, BS, 0), BS);
 }
-
