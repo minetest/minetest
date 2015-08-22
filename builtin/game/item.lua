@@ -393,9 +393,9 @@ function core.item_drop(itemstack, dropper, pos)
 	-- environment failed
 end
 
-function core.do_item_eat(hunger_change, replace_with_item, itemstack, user, pointed_thing, hp_change)
+function core.do_item_eat(hunger_change, replace_with_item, itemstack, user, pointed_thing, hp_change, eat_sound)
 	for _, callback in pairs(core.registered_on_item_eats) do
-		local result = callback(hunger_change, replace_with_item, itemstack, user, pointed_thing, hp_change)
+		local result = callback(hunger_change, replace_with_item, itemstack, user, pointed_thing, hp_change, eat_sound)
 		if result then
 			return result
 		end
@@ -405,6 +405,12 @@ function core.do_item_eat(hunger_change, replace_with_item, itemstack, user, poi
 		if hp_change then
 			user:set_hp(user:get_hp() + hp_change)
 		end
+
+		-- eating sound
+		if not eat_sound then
+			eat_sound = "item_eat"
+		end
+		core.sound_play(eat_sound, {to_player = user:get_player_name(), gain = 0.7})
 
 		if replace_with_item then
 			if itemstack:is_empty() then
@@ -424,14 +430,14 @@ function core.do_item_eat(hunger_change, replace_with_item, itemstack, user, poi
 	return itemstack
 end
 
-function core.item_eat(hunger_change, replace_with_item, hp_change)
+function core.item_eat(hunger_change, replace_with_item, hp_change, eat_sound)
 	-- With hunger disabled food has to heal (fallback to old behavior)
 	if core.is_yes(core.setting_getbool("enable_hunger") == false and not hp_change then
 		hp_change = hunger_change
 	end
 	return function(itemstack, user, pointed_thing)  -- closure
 		return core.do_item_eat(hunger_change, replace_with_item, itemstack,
-				user, pointed_thing, hp_change)
+				user, pointed_thing, hp_change, eat_sound)
 	end
 end
 
