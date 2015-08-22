@@ -395,7 +395,7 @@ end
 
 function core.do_item_eat(hunger_change, replace_with_item, itemstack, user, pointed_thing, hp_change, eat_sound)
 	for _, callback in pairs(core.registered_on_item_eats) do
-		local result = callback(hunger_change, replace_with_item, itemstack, user, pointed_thing, hp_change, eat_sound)
+		local result = callback(hunger_change, replace_with_item, itemstack, user, pointed_thing, hp_change)
 		if result then
 			return result
 		end
