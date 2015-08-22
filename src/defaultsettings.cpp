@@ -240,6 +240,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("strict_protocol_version_checking", "false");
 	settings->setDefault("creative_mode", "false");
 	settings->setDefault("enable_damage", "true");
+	settings->setDefault("enable_hunger", "true");
 	settings->setDefault("fixed_map_seed", "");
 	settings->setDefault("give_initial_stuff", "false");
 	settings->setDefault("default_password", "");
