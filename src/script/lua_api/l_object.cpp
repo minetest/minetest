@@ -1064,6 +1064,9 @@ int ObjectRef::l_set_hunger(lua_State *L)
 	u16 hunger = luaL_checknumber(L, 2);
 	co->setHunger(hunger);
 
+	// report to script interface
+	getServer(L)->getScriptIface()->player_event(co, "hunger_changed");
+
 	return 0;
 }
 
@@ -1077,7 +1080,7 @@ int ObjectRef::l_get_hunger(lua_State *L)
 		return 0;
 
 	u16 hunger = co->getHunger();
-	lua_pushinteger (L, hunger);
+	lua_pushinteger(L, hunger);
 
 	return 1;
 }
