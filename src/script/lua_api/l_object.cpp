@@ -1061,11 +1061,13 @@ int ObjectRef::l_set_hunger(lua_State *L)
 	if (co == NULL)
 		return 0;
 
-	u16 hunger = luaL_checknumber(L, 2);
+	u16 hunger = rangelim(luaL_checknumber(L, 2), 0, PLAYER_MAX_HUNGER);
+	u16 old_hunger = co->getHunger();
 	co->setHunger(hunger);
 
 	// report to script interface
-	getServer(L)->getScriptIface()->player_event(co, "hunger_changed");
+	if (hunger != old_hunger)
+		getServer(L)->getScriptIface()->player_event(co, "hunger_changed");
 
 	return 0;
 }
