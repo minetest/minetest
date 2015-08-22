@@ -50,6 +50,7 @@ Player::Player(IGameDef *gamedef, const char *name):
 // protected
 	m_gamedef(gamedef),
 	m_breath(PLAYER_MAX_BREATH),
+	m_hunger(PLAYER_MAX_HUNGER),
 	m_pitch(0),
 	m_yaw(0),
 	m_speed(0,0,0),
@@ -101,7 +102,8 @@ Player::Player(IGameDef *gamedef, const char *name):
 	hud_flags =
 		HUD_FLAG_HOTBAR_VISIBLE    | HUD_FLAG_HEALTHBAR_VISIBLE |
 		HUD_FLAG_CROSSHAIR_VISIBLE | HUD_FLAG_WIELDITEM_VISIBLE |
-		HUD_FLAG_BREATHBAR_VISIBLE | HUD_FLAG_MINIMAP_VISIBLE;
+		HUD_FLAG_BREATHBAR_VISIBLE | HUD_FLAG_MINIMAP_VISIBLE |
+		HUD_FLAG_HUNGERBAR_VISIBLE;
 
 	hud_hotbar_itemcount = HUD_HOTBAR_ITEMCOUNT_DEFAULT;
 }
@@ -163,10 +165,11 @@ void Player::serialize(std::ostream &os)
 	args.setV3F("position", m_position);
 	args.setS32("hp", hp);
 	args.setS32("breath", m_breath);
+	args.setS32("hunger", m_hunger);
 
 	args.writeLines(os);
 
-	os<<"PlayerArgsEnd\n";
+	os << "PlayerArgsEnd\n";
 
 	inventory.serialize(os);
 }
@@ -187,15 +190,20 @@ void Player::deSerialize(std::istream &is, std::string playername)
 	setPitch(args.getFloat("pitch"));
 	setYaw(args.getFloat("yaw"));
 	setPosition(args.getV3F("position"));
-	try{
+	try {
 		hp = args.getS32("hp");
 	}catch(SettingNotFoundException &e) {
 		hp = PLAYER_MAX_HP;
 	}
-	try{
+	try {
 		m_breath = args.getS32("breath");
-	}catch(SettingNotFoundException &e) {
+	} catch(SettingNotFoundException &e) {
 		m_breath = PLAYER_MAX_BREATH;
+	}
+	try {
+		m_hunger = args.getS32("hunger");
+	} catch(SettingNotFoundException &e) {
+		m_hunger = PLAYER_MAX_HUNGER;
 	}
 
 	inventory.deSerialize(is);

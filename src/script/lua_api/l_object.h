@@ -204,8 +204,14 @@ private:
 	// set_breath(self, breath)
 	static int l_set_breath(lua_State *L);
 
-	// get_breath(self, breath)
+	// get_breath(self)
 	static int l_get_breath(lua_State *L);
+
+	// set_hunger(self, hunger)
+	static int l_set_hunger(lua_State *L);
+
+	// get_hunger(self)
+	static int l_get_hunger(lua_State *L);
 
 	// set_inventory_formspec(self, formspec)
 	static int l_set_inventory_formspec(lua_State *L);

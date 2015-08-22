@@ -200,6 +200,8 @@ public:
 	s16 readDamage();
 	u16 getBreath() const;
 	void setBreath(u16 breath);
+	u16 getHunger() const;
+	void setHunger(u16 hunger);
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	ItemGroupList getArmorGroups();
 	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);

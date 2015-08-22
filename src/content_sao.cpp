@@ -1177,6 +1177,16 @@ void PlayerSAO::setBreath(u16 breath)
 	m_player->setBreath(breath);
 }
 
+u16 PlayerSAO::getHunger() const
+{
+	return m_player->getHunger();
+}
+
+void PlayerSAO::setHunger(u16 hunger)
+{
+	m_player->setHunger(hunger);
+}
+
 void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)
 {
 	m_armor_groups = armor_groups;

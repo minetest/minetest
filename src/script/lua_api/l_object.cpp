@@ -65,6 +65,7 @@ struct EnumString es_HudBuiltinElement[] =
 	{HUD_FLAG_WIELDITEM_VISIBLE, "wielditem"},
 	{HUD_FLAG_BREATHBAR_VISIBLE, "breathbar"},
 	{HUD_FLAG_MINIMAP_VISIBLE,   "minimap"},
+	{HUD_FLAG_HUNGERBAR_VISIBLE, "hungerbar"},
 	{0, NULL},
 };
 
@@ -1051,6 +1052,36 @@ int ObjectRef::l_get_breath(lua_State *L)
 	return 1;
 }
 
+// set_hunger(self, hunger)
+int ObjectRef::l_set_hunger(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	PlayerSAO* co = getplayersao(ref);
+	if (co == NULL)
+		return 0;
+
+	u16 hunger = luaL_checknumber(L, 2);
+	co->setHunger(hunger);
+
+	return 0;
+}
+
+// get_hunger(self)
+int ObjectRef::l_get_hunger(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	PlayerSAO* co = getplayersao(ref);
+	if (co == NULL)
+		return 0;
+
+	u16 hunger = co->getHunger();
+	lua_pushinteger (L, hunger);
+
+	return 1;
+}
+
 // set_inventory_formspec(self, formspec)
 int ObjectRef::l_set_inventory_formspec(lua_State *L)
 {
@@ -1770,5 +1801,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_eye_offset),
 	luamethod(ObjectRef, set_nametag_attributes),
 	luamethod(ObjectRef, get_nametag_attributes),
+	luamethod(ObjectRef, get_hunger),
+	luamethod(ObjectRef, set_hunger),
 	{0,0}
 };
