@@ -3150,9 +3150,13 @@ Definition tables
         ^ Block contains level in param2. Value is default level, used for snow.
         ^ Don't forget to use "leveled" type nodebox. ]]
         liquid_range = 8, -- number of flowing nodes around source (max. 8)
-        drowning = 0, -- Player will take this amount of damage if no bubbles are left
+        drowning = 0, -- Amount of breath player loses every 2 seconds when inside [[
+		^ drowning damage can be defined via "damage_per_second"
+		]]
         light_source = 0, -- Amount of light emitted by node
-        damage_per_second = 0, -- If player is inside node, this damage is caused
+        damage_per_second = 0, -- If player is inside node, this damage is caused [[ 
+		^ If drowning > 0 and head inside only applied when breath == 0
+		]]
         node_box = {type="regular"}, -- See "Node boxes"
         mesh = "model",
         selection_box = {type="regular"}, -- See "Node boxes" --[[
