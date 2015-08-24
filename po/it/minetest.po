@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Minetest 0.4.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-08-24 20:35+0200\n"
+"PO-Revision-Date: 2015-08-24 20:44+0200\n"
 "Last-Translator: betacentury <betacentury89@gmail.com>\n"
 "Language-Team: Italian "
 "<https://hosted.weblate.org/projects/minetest/minetest/it/>\n"
@@ -595,12 +595,14 @@ msgid "Rebuilding shaders..."
 msgstr "Risoluzione dell'indirizzo..."
 
 #: src/client.cpp:1743
+#, fuzzy
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "Inizializzazione nodi..."
 
 #: src/client.cpp:1760
+#, fuzzy
 msgid "Initializing nodes"
-msgstr ""
+msgstr "Inizializzazione nodi"
 
 #: src/client.cpp:1768
 msgid "Item textures..."
@@ -608,7 +610,7 @@ msgstr "Immagini degli oggetti..."
 
 #: src/client.cpp:1793
 msgid "Done!"
-msgstr ""
+msgstr "Fatto!"
 
 #: src/client/clientlauncher.cpp:185
 msgid "Main Menu"
@@ -616,7 +618,7 @@ msgstr "Menù principale"
 
 #: src/client/clientlauncher.cpp:223
 msgid "Player name too long."
-msgstr ""
+msgstr "Nome del giocatore troppo lungo."
 
 #: src/client/clientlauncher.cpp:261
 msgid "Connection error (timed out?)"
@@ -630,7 +632,7 @@ msgstr ""
 
 #: src/client/clientlauncher.cpp:432
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "Il percorso del mondo fornito non esiste: "
 
 #: src/client/clientlauncher.cpp:441
 msgid "Could not find or load game \""
@@ -759,11 +761,11 @@ msgstr "Media..."
 
 #: src/game.cpp:2334
 msgid "KiB/s"
-msgstr ""
+msgstr "KiB/s"
 
 #: src/game.cpp:2338
 msgid "MiB/s"
-msgstr ""
+msgstr "MiB/s"
 
 #: src/game.cpp:4363
 msgid ""
@@ -774,12 +776,13 @@ msgstr ""
 "Controllare debug.txt per i dettagli."
 
 #: src/guiFormSpecMenu.cpp:2855
+#, fuzzy
 msgid "Enter "
-msgstr ""
+msgstr "Invio "
 
 #: src/guiFormSpecMenu.cpp:2875
 msgid "ok"
-msgstr ""
+msgstr "ok"
 
 #: src/guiKeyChangeMenu.cpp:125
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
