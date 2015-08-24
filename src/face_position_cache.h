@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2015 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,42 +17,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef LOGOUTPUTBUFFER_HEADER
-#define LOGOUTPUTBUFFER_HEADER
+#ifndef FACE_POSITION_CACHE_HEADER
+#define FACE_POSITION_CACHE_HEADER
 
-#include "log.h"
-#include <queue>
+#include "irr_v3d.h"
+#include "threading/mutex.h"
 
-class LogOutputBuffer : public ILogOutput
-{
+#include <map>
+#include <vector>
+
+/*
+ * This class permits caching getFacePosition call results.
+ * This reduces CPU usage and vector calls.
+ */
+class FacePositionCache {
 public:
-	LogOutputBuffer(LogMessageLevel maxlev)
-	{
-		log_add_output(this, maxlev);
-	}
-	~LogOutputBuffer()
-	{
-		log_remove_output(this);
-	}
-	virtual void printLog(const std::string &line)
-	{
-		m_buf.push(line);
-	}
-	std::string get()
-	{
-		if(empty())
-			return "";
-		std::string s = m_buf.front();
-		m_buf.pop();
-		return s;
-	}
-	bool empty()
-	{
-		return m_buf.empty();
-	}
+	static const std::vector<v3s16> &getFacePositions(u16 d);
 private:
-	std::queue<std::string> m_buf;
+	static const std::vector<v3s16> &generateFacePosition(u16 d);
+	static std::map<u16, std::vector<v3s16> > cache;
+	static Mutex cache_mutex;
 };
 
 #endif
-

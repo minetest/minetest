@@ -221,7 +221,7 @@ function core.register_alias(name, convert_to)
 		error("Unable to register alias: Name is forbidden: " .. name)
 	end
 	if core.registered_items[name] ~= nil then
-		core.log("WARNING: Not registering alias, item with same name" ..
+		core.log("warning", "Not registering alias, item with same name" ..
 			" is already defined: " .. name .. " -> " .. convert_to)
 	else
 		--core.log("Registering alias: " .. name .. " -> " .. convert_to)

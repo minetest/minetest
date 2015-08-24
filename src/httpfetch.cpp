@@ -616,7 +616,7 @@ protected:
 
 	void *run()
 	{
-		DSTACK(__FUNCTION_NAME);
+		DSTACK(FUNCTION_NAME);
 
 		CurlHandlePool pool;
 
@@ -677,7 +677,7 @@ protected:
 			else
 				waitForIO(100);
 
-			END_DEBUG_EXCEPTION_HANDLER(errorstream)
+			END_DEBUG_EXCEPTION_HANDLER
 		}
 
 		// Call curl_multi_remove_handle and cleanup easy handles

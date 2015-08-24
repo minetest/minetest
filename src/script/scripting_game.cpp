@@ -109,3 +109,4 @@ void log_deprecated(const std::string &message)
 {
 	log_deprecated(NULL, message);
 }
+

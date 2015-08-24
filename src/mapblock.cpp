@@ -709,7 +709,7 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 	}
 	catch(SerializationError &e)
 	{
-		errorstream<<"WARNING: MapBlock::deSerialize(): Ignoring an error"
+		warningstream<<"MapBlock::deSerialize(): Ignoring an error"
 				<<" while deserializing node metadata at ("
 				<<PP(getPos())<<": "<<e.what()<<std::endl;
 	}
@@ -772,7 +772,7 @@ void MapBlock::deSerializeNetworkSpecific(std::istream &is)
 	}
 	catch(SerializationError &e)
 	{
-		errorstream<<"WARNING: MapBlock::deSerializeNetworkSpecific(): Ignoring an error"
+		warningstream<<"MapBlock::deSerializeNetworkSpecific(): Ignoring an error"
 				<<": "<<e.what()<<std::endl;
 	}
 }
@@ -911,7 +911,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 			}
 			catch(SerializationError &e)
 			{
-				errorstream<<"WARNING: MapBlock::deSerialize(): Ignoring an error"
+				warningstream<<"MapBlock::deSerialize(): Ignoring an error"
 						<<" while deserializing node metadata"<<std::endl;
 			}
 		}
@@ -932,7 +932,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 			u16 count = readU16(is);
 			// Not supported and length not known if count is not 0
 			if(count != 0){
-				errorstream<<"WARNING: MapBlock::deSerialize_pre22(): "
+				warningstream<<"MapBlock::deSerialize_pre22(): "
 						<<"Ignoring stuff coming at and after MBOs"<<std::endl;
 				return;
 			}

@@ -200,7 +200,8 @@ void sendAnnounce(const std::string &action,
 		const float lag,
 		const std::string &gameid,
 		const std::string &mg_name,
-		const std::vector<ModSpec> &mods)
+		const std::vector<ModSpec> &mods,
+		bool dedicated)
 {
 	Json::Value server;
 	server["action"] = action;
@@ -234,7 +235,7 @@ void sendAnnounce(const std::string &action,
 	}
 
 	if (action == "start") {
-		server["dedicated"]         = g_settings->getBool("server_dedicated");
+		server["dedicated"]         = dedicated;
 		server["rollback"]          = g_settings->getBool("enable_rollback_recording");
 		server["mapgen"]            = mg_name;
 		server["privs"]             = g_settings->get("default_privs");

@@ -21,6 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GETTIME_HEADER
 
 #include "irrlichttypes.h"
+#include <ctime>
+#include <string>
+
 
 /*
 	Get a millisecond counter value.
@@ -41,22 +44,16 @@ enum TimePrecision {
 extern u32 getTimeMs();
 extern u32 getTime(TimePrecision prec);
 
-/*
-	Timestamp stuff
-*/
-
-#include <time.h>
-#include <string>
 
 inline std::string getTimestamp()
 {
 	time_t t = time(NULL);
 	// This is not really thread-safe but it won't break anything
 	// except its own output, so just go with it.
-	struct tm *tm = localtime(&t);
-	char cs[20]; //YYYY-MM-DD HH:MM:SS + '\0'
-	strftime(cs, 20, "%Y-%m-%d %H:%M:%S", tm);
-	return cs;
+	struct tm *time_struct = localtime(&t);
+	char c_str[sizeof("YYYY-MM-DD HH:MM:SS")];
+	strftime(c_str, sizeof(c_str), "%Y-%m-%d %H:%M:%S", time_struct);
+	return c_str;
 }
 
 

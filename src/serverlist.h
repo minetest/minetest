@@ -43,7 +43,8 @@ namespace ServerList
 			const double uptime = 0, const u32 game_time = 0,
 			const float lag = 0, const std::string &gameid = "",
 			const std::string &mg_name = "",
-			const std::vector<ModSpec> &mods = std::vector<ModSpec>());
+			const std::vector<ModSpec> &mods = std::vector<ModSpec>(),
+			bool dedicated = false);
 	#endif
 } // ServerList namespace
 

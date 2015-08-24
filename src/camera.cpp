@@ -79,7 +79,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 
 	m_camera_mode(CAMERA_MODE_FIRST)
 {
-	//dstream<<__FUNCTION_NAME<<std::endl;
+	//dstream<<FUNCTION_NAME<<std::endl;
 
 	// note: making the camera node a child of the player node
 	// would lead to unexpected behaviour, so we don't do that.
@@ -494,7 +494,7 @@ void Camera::updateViewingRange(f32 frametime_in, f32 busytime_in)
 		return;
 	m_frametime_counter = 0.2; // Same as ClientMap::updateDrawList interval
 
-	/*dstream<<__FUNCTION_NAME
+	/*dstream<<FUNCTION_NAME
 			<<": Collected "<<m_added_frames<<" frames, total of "
 			<<m_added_busytime<<"s."<<std::endl;
 

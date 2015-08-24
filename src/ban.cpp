@@ -36,7 +36,7 @@ BanManager::BanManager(const std::string &banfilepath):
 	}
 	catch(SerializationError &e)
 	{
-		infostream<<"WARNING: BanManager: creating "
+		warningstream<<"BanManager: creating "
 				<<m_banfilepath<<std::endl;
 	}
 }

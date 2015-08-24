@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hex.h"
 #include "../porting.h"
 
+#include <algorithm>
 #include <sstream>
 #include <iomanip>
 #include <map>

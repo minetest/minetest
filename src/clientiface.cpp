@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 
 #include "clientiface.h"
-#include "util/numeric.h"
 #include "util/mathconstants.h"
 #include "player.h"
 #include "settings.h"
@@ -32,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverobject.h"              // TODO this is used for cleanup of only
 #include "log.h"
 #include "util/srp.h"
+#include "face_position_cache.h"
 
 const char *ClientInterface::statenames[] = {
 	"Invalid",
@@ -65,7 +65,7 @@ void RemoteClient::GetNextBlocks (
 		float dtime,
 		std::vector<PrioritySortedBlockTransfer> &dest)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 
 
 	// Increment timers

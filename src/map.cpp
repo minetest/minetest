@@ -673,7 +673,7 @@ void Map::updateLighting(enum LightBank bank,
 {
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 
-	/*m_dout<<DTIME<<"Map::updateLighting(): "
+	/*m_dout<<"Map::updateLighting(): "
 			<<a_blocks.size()<<" blocks."<<std::endl;*/
 
 	//TimeTaker timer("updateLighting");
@@ -928,7 +928,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	INodeDefManager *ndef = m_gamedef->ndef();
 
 	/*PrintInfo(m_dout);
-	m_dout<<DTIME<<"Map::addNodeAndUpdate(): p=("
+	m_dout<<"Map::addNodeAndUpdate(): p=("
 			<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
 
 	/*
@@ -1028,7 +1028,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	{
 		s16 y = p.Y - 1;
 		for(;; y--){
-			//m_dout<<DTIME<<"y="<<y<<std::endl;
+			//m_dout<<"y="<<y<<std::endl;
 			v3s16 n2pos(p.X, y, p.Z);
 
 			MapNode n2;
@@ -1115,7 +1115,7 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	INodeDefManager *ndef = m_gamedef->ndef();
 
 	/*PrintInfo(m_dout);
-	m_dout<<DTIME<<"Map::removeNodeAndUpdate(): p=("
+	m_dout<<"Map::removeNodeAndUpdate(): p=("
 			<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;*/
 
 	bool node_under_sunlight = true;
@@ -1197,14 +1197,14 @@ void Map::removeNodeAndUpdate(v3s16 p,
 	if(node_under_sunlight)
 	{
 		s16 ybottom = propagateSunlight(p, modified_blocks);
-		/*m_dout<<DTIME<<"Node was under sunlight. "
+		/*m_dout<<"Node was under sunlight. "
 				"Propagating sunlight";
-		m_dout<<DTIME<<" -> ybottom="<<ybottom<<std::endl;*/
+		m_dout<<" -> ybottom="<<ybottom<<std::endl;*/
 		s16 y = p.Y;
 		for(; y >= ybottom; y--)
 		{
 			v3s16 p2(p.X, y, p.Z);
-			/*m_dout<<DTIME<<"lighting neighbors of node ("
+			/*m_dout<<"lighting neighbors of node ("
 					<<p2.X<<","<<p2.Y<<","<<p2.Z<<")"
 					<<std::endl;*/
 			lightNeighbors(LIGHTBANK_DAY, p2, modified_blocks);
@@ -1619,7 +1619,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 	//TimeTaker timer("transformLiquids()");
 
 	u32 loopcount = 0;
@@ -2018,7 +2018,7 @@ NodeMetadata *Map::getNodeMetadata(v3s16 p)
 		block = emergeBlock(blockpos, false);
 	}
 	if(!block){
-		infostream<<"WARNING: Map::getNodeMetadata(): Block not found"
+		warningstream<<"Map::getNodeMetadata(): Block not found"
 				<<std::endl;
 		return NULL;
 	}
@@ -2037,7 +2037,7 @@ bool Map::setNodeMetadata(v3s16 p, NodeMetadata *meta)
 		block = emergeBlock(blockpos, false);
 	}
 	if(!block){
-		infostream<<"WARNING: Map::setNodeMetadata(): Block not found"
+		warningstream<<"Map::setNodeMetadata(): Block not found"
 				<<std::endl;
 		return false;
 	}
@@ -2052,7 +2052,7 @@ void Map::removeNodeMetadata(v3s16 p)
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(block == NULL)
 	{
-		infostream<<"WARNING: Map::removeNodeMetadata(): Block not found"
+		warningstream<<"Map::removeNodeMetadata(): Block not found"
 				<<std::endl;
 		return;
 	}
@@ -2070,7 +2070,7 @@ NodeTimer Map::getNodeTimer(v3s16 p)
 		block = emergeBlock(blockpos, false);
 	}
 	if(!block){
-		infostream<<"WARNING: Map::getNodeTimer(): Block not found"
+		warningstream<<"Map::getNodeTimer(): Block not found"
 				<<std::endl;
 		return NodeTimer();
 	}
@@ -2089,7 +2089,7 @@ void Map::setNodeTimer(v3s16 p, NodeTimer t)
 		block = emergeBlock(blockpos, false);
 	}
 	if(!block){
-		infostream<<"WARNING: Map::setNodeTimer(): Block not found"
+		warningstream<<"Map::setNodeTimer(): Block not found"
 				<<std::endl;
 		return;
 	}
@@ -2103,7 +2103,7 @@ void Map::removeNodeTimer(v3s16 p)
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(block == NULL)
 	{
-		infostream<<"WARNING: Map::removeNodeTimer(): Block not found"
+		warningstream<<"Map::removeNodeTimer(): Block not found"
 				<<std::endl;
 		return;
 	}
@@ -2118,7 +2118,7 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 	m_emerge(emerge),
 	m_map_metadata_changed(true)
 {
-	verbosestream<<__FUNCTION_NAME<<std::endl;
+	verbosestream<<FUNCTION_NAME<<std::endl;
 
 	/*
 		Try to load map; if not found, create a new one.
@@ -2164,7 +2164,7 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 							  <<" Using default settings."<<std::endl;
 				}
 				catch(FileNotGoodException &e){
-					infostream<<"WARNING: Could not load map metadata"
+					warningstream<<"Could not load map metadata"
 							//<<" Disabling chunk-based generator."
 							<<std::endl;
 					//m_chunksize = 0;
@@ -2188,10 +2188,10 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 	}
 	catch(std::exception &e)
 	{
-		infostream<<"WARNING: ServerMap: Failed to load map from "<<savedir
+		warningstream<<"ServerMap: Failed to load map from "<<savedir
 				<<", exception: "<<e.what()<<std::endl;
 		infostream<<"Please remove the map or fix it."<<std::endl;
-		infostream<<"WARNING: Map saving will be disabled."<<std::endl;
+		warningstream<<"Map saving will be disabled."<<std::endl;
 	}
 
 	infostream<<"Initializing new map."<<std::endl;
@@ -2205,7 +2205,7 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 
 ServerMap::~ServerMap()
 {
-	verbosestream<<__FUNCTION_NAME<<std::endl;
+	verbosestream<<FUNCTION_NAME<<std::endl;
 
 	try
 	{
@@ -2545,7 +2545,7 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 ServerMapSector * ServerMap::createSector(v2s16 p2d)
 {
 	DSTACKF("%s: p2d=(%d,%d)",
-			__FUNCTION_NAME,
+			FUNCTION_NAME,
 			p2d.X, p2d.Y);
 
 	/*
@@ -2612,7 +2612,7 @@ MapBlock * ServerMap::generateBlock(
 		std::map<v3s16, MapBlock*> &modified_blocks
 )
 {
-	DSTACKF("%s: p=(%d,%d,%d)", __FUNCTION_NAME, p.X, p.Y, p.Z);
+	DSTACKF("%s: p=(%d,%d,%d)", FUNCTION_NAME, p.X, p.Y, p.Z);
 
 	/*infostream<<"generateBlock(): "
 			<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
@@ -2632,7 +2632,7 @@ MapBlock * ServerMap::generateBlock(
 	*/
 	if(blockpos_over_limit(p))
 	{
-		infostream<<__FUNCTION_NAME<<": Block position over limit"<<std::endl;
+		infostream<<FUNCTION_NAME<<": Block position over limit"<<std::endl;
 		throw InvalidPositionException("generateBlock(): pos. over limit");
 	}
 
@@ -2722,7 +2722,7 @@ MapBlock * ServerMap::generateBlock(
 MapBlock * ServerMap::createBlock(v3s16 p)
 {
 	DSTACKF("%s: p=(%d,%d,%d)",
-			__FUNCTION_NAME, p.X, p.Y, p.Z);
+			FUNCTION_NAME, p.X, p.Y, p.Z);
 
 	/*
 		Do not create over-limit
@@ -2781,7 +2781,7 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 {
 	DSTACKF("%s: p=(%d,%d,%d), create_blank=%d",
-			__FUNCTION_NAME,
+			FUNCTION_NAME,
 			p.X, p.Y, p.Z, create_blank);
 
 	{
@@ -2922,7 +2922,7 @@ void ServerMap::createDirs(std::string path)
 {
 	if(fs::CreateAllDirs(path) == false)
 	{
-		m_dout<<DTIME<<"ServerMap: Failed to create directory "
+		m_dout<<"ServerMap: Failed to create directory "
 				<<"\""<<path<<"\""<<std::endl;
 		throw BaseException("ServerMap failed to create directory");
 	}
@@ -3004,9 +3004,9 @@ std::string ServerMap::getBlockFilename(v3s16 p)
 
 void ServerMap::save(ModifiedState save_level)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 	if(m_map_saving_enabled == false) {
-		infostream<<"WARNING: Not saving map, saving disabled."<<std::endl;
+		warningstream<<"Not saving map, saving disabled."<<std::endl;
 		return;
 	}
 
@@ -3116,7 +3116,7 @@ void ServerMap::listAllLoadedBlocks(std::vector<v3s16> &dst)
 
 void ServerMap::saveMapMeta()
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 
 	createDirs(m_savedir);
 
@@ -3140,7 +3140,7 @@ void ServerMap::saveMapMeta()
 
 void ServerMap::loadMapMeta()
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 
 	Settings conf;
 	std::string fullpath = m_savedir + DIR_DELIM + "map_meta.txt";
@@ -3165,7 +3165,7 @@ void ServerMap::loadMapMeta()
 
 void ServerMap::saveSectorMeta(ServerMapSector *sector)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 	// Format used for writing
 	u8 version = SER_FMT_VER_HIGHEST_WRITE;
 	// Get destination
@@ -3186,7 +3186,7 @@ void ServerMap::saveSectorMeta(ServerMapSector *sector)
 
 MapSector* ServerMap::loadSectorMeta(std::string sectordir, bool save_after_load)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 	// Get destination
 	v2s16 p2d = getSectorPos(sectordir);
 
@@ -3227,7 +3227,7 @@ MapSector* ServerMap::loadSectorMeta(std::string sectordir, bool save_after_load
 
 bool ServerMap::loadSectorMeta(v2s16 p2d)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 
 	// The directory layout we're going to load from.
 	//  1 - original sectors/xxxxzzzz/
@@ -3269,7 +3269,7 @@ bool ServerMap::loadSectorMeta(v2s16 p2d)
 #if 0
 bool ServerMap::loadSectorFull(v2s16 p2d)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 
 	MapSector *sector = NULL;
 
@@ -3377,7 +3377,7 @@ bool ServerMap::saveBlock(MapBlock *block, Database *db)
 
 	// Dummy blocks are not written
 	if (block->isDummy()) {
-		errorstream << "WARNING: saveBlock: Not writing dummy block "
+		warningstream << "saveBlock: Not writing dummy block "
 			<< PP(p3d) << std::endl;
 		return true;
 	}
@@ -3405,7 +3405,7 @@ bool ServerMap::saveBlock(MapBlock *block, Database *db)
 void ServerMap::loadBlock(std::string sectordir, std::string blockfile,
 		MapSector *sector, bool save_after_load)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 
 	std::string fullpath = sectordir + DIR_DELIM + blockfile;
 	try {
@@ -3467,7 +3467,7 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile,
 	}
 	catch(SerializationError &e)
 	{
-		infostream<<"WARNING: Invalid block data on disk "
+		warningstream<<"Invalid block data on disk "
 				<<"fullpath="<<fullpath
 				<<" (SerializationError). "
 				<<"what()="<<e.what()
@@ -3481,7 +3481,7 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile,
 
 void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 
 	try {
 		std::istringstream is(*blob, std::ios_base::binary);
@@ -3549,7 +3549,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 
 MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 
 	v2s16 p2d(blockpos.X, blockpos.Z);
 

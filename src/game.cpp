@@ -40,7 +40,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiPasswordChange.h"
 #include "guiVolumeChange.h"
 #include "hud.h"
-#include "logoutputbuffer.h"
 #include "mainmenumanager.h"
 #include "mapblock.h"
 #include "nodedef.h"         // Needed for determining pointing to nodes
@@ -1163,7 +1162,7 @@ static void updateChat(Client &client, f32 dtime, bool show_debug,
 		ChatBackend &chat_backend, gui::IGUIStaticText *guitext_chat)
 {
 	// Add chat log output for errors to be shown in chat
-	static LogOutputBuffer chat_log_error_buf(LMT_ERROR);
+	static logging::LogOutputBuffer chat_log_error_buf(g_logger, logging::LL_ERROR);
 
 	// Get new messages from error log buffer
 	while (!chat_log_error_buf.empty()) {
@@ -1996,7 +1995,7 @@ bool Game::createSingleplayerServer(const std::string map_dir,
 	}
 
 	server = new Server(map_dir, gamespec, simple_singleplayer_mode,
-			    bind_addr.isIPv6());
+			    bind_addr.isIPv6(), false);
 
 	server->start(bind_addr);
 
@@ -2672,7 +2671,7 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 		// Print debug stacks
 		dstream << "-----------------------------------------"
 		        << std::endl;
-		dstream << DTIME << "Printing debug stacks:" << std::endl;
+		dstream << "Printing debug stacks:" << std::endl;
 		dstream << "-----------------------------------------"
 		        << std::endl;
 		debug_stacks_print();

@@ -457,8 +457,9 @@
 #    Files that are not present would be fetched the usual way.
 #remote_media =
 #    Level of logging to be written to debug.txt:
-#    0 = none, 1 = errors and debug, 2 = action, 3 = info, 4 = verbose.
-#debug_log_level = 2
+#      <nothing> (no logging), none (messages with no level), error,
+#      warning, action, info, or verbose.
+#debug_log_level = action
 #    Maximum number of blocks that can be queued for loading
 #emergequeue_limit_total = 256
 #    Maximum number of blocks to be queued that are to be loaded from file.
