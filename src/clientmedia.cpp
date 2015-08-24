@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 static std::string getMediaCacheDir()
 {
-	return porting::path_user + DIR_DELIM + "cache" + DIR_DELIM + "media";
+	return porting::path_cache + DIR_DELIM + "media";
 }
 
 /*

@@ -115,6 +115,8 @@ const char *GetFilenameFromPath(const char *path);
 
 bool safeWriteToFile(const std::string &path, const std::string &content);
 
+bool Rename(const std::string &from, const std::string &to);
+
 } // namespace fs
 
 #endif

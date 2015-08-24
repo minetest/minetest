@@ -164,7 +164,13 @@ int main(int argc, char *argv[])
 	setup_log_params(cmd_args);
 
 	porting::signal_handler_init();
+
+#ifdef __ANDROID__
+	porting::initAndroid();
+	porting::initializePathsAndroid();
+#else
 	porting::initializePaths();
+#endif
 
 	if (!create_userdata_path()) {
 		errorstream << "Cannot create user data directory" << std::endl;
@@ -422,9 +428,6 @@ static bool create_userdata_path()
 	bool success;
 
 #ifdef __ANDROID__
-	porting::initAndroid();
-
-	porting::setExternalStorageDir(porting::jnienv);
 	if (!fs::PathExists(porting::path_user)) {
 		success = fs::CreateDir(porting::path_user);
 	} else {
@@ -435,9 +438,6 @@ static bool create_userdata_path()
 	// Create user data directory
 	success = fs::CreateDir(porting::path_user);
 #endif
-
-	infostream << "path_share = " << porting::path_share << std::endl;
-	infostream << "path_user  = " << porting::path_user << std::endl;
 
 	return success;
 }

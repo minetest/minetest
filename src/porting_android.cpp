@@ -164,29 +164,63 @@ void cleanupAndroid()
 	jvm->DetachCurrentThread();
 }
 
-void setExternalStorageDir(JNIEnv* lJNIEnv)
+static std::string javaStringToUTF8(jstring js)
 {
-	// Android: Retrieve ablsolute path to external storage device (sdcard)
-	jclass ClassEnv      = lJNIEnv->FindClass("android/os/Environment");
-	jmethodID MethodDir  =
-			lJNIEnv->GetStaticMethodID(ClassEnv,
-					"getExternalStorageDirectory","()Ljava/io/File;");
-	jobject ObjectFile   = lJNIEnv->CallStaticObjectMethod(ClassEnv, MethodDir);
-	jclass ClassFile     = lJNIEnv->FindClass("java/io/File");
+	std::string str;
+	// Get string as a UTF-8 c-string
+	const char *c_str = jnienv->GetStringUTFChars(js, NULL);
+	// Save it
+	str = c_str;
+	// And free the c-string
+	jnienv->ReleaseStringUTFChars(js, c_str);
+	return str;
+}
 
-	jmethodID MethodPath =
-			lJNIEnv->GetMethodID(ClassFile, "getAbsolutePath",
-					"()Ljava/lang/String;");
-	jstring StringPath   =
-			(jstring) lJNIEnv->CallObjectMethod(ObjectFile, MethodPath);
+// Calls static method if obj is NULL
+static std::string getAndroidPath(jclass cls, jobject obj, jclass cls_File,
+		jmethodID mt_getAbsPath, const char *getter)
+{
+	// Get getter method
+	jmethodID mt_getter;
+	if (obj)
+		mt_getter = jnienv->GetMethodID(cls, getter,
+				"()Ljava/io/File;");
+	else
+		mt_getter = jnienv->GetStaticMethodID(cls, getter,
+				"()Ljava/io/File;");
 
-	const char *externalPath = lJNIEnv->GetStringUTFChars(StringPath, NULL);
-	std::string userPath(externalPath);
-	lJNIEnv->ReleaseStringUTFChars(StringPath, externalPath);
+	// Call getter
+	jobject ob_file;
+	if (obj)
+		ob_file = jnienv->CallObjectMethod(obj, mt_getter);
+	else
+		ob_file = jnienv->CallStaticObjectMethod(cls, mt_getter);
 
-	path_storage             = userPath;
-	path_user                = userPath + DIR_DELIM + PROJECT_NAME_C;
-	path_share               = userPath + DIR_DELIM + PROJECT_NAME_C;
+	// Call getAbsolutePath
+	jstring js_path = (jstring) jnienv->CallObjectMethod(ob_file,
+			mt_getAbsPath);
+
+	return javaStringToUTF8(js_path);
+}
+
+void initializePathsAndroid()
+{
+	// Get Environment class
+	jclass cls_Env = jnienv->FindClass("android/os/Environment");
+	// Get File class
+	jclass cls_File = jnienv->FindClass("java/io/File");
+	// Get getAbsolutePath method
+	jmethodID mt_getAbsPath = jnienv->GetMethodID(cls_File,
+				"getAbsolutePath", "()Ljava/lang/String;");
+
+	path_cache   = getAndroidPath(nativeActivity, app_global->activity->clazz,
+			cls_File, mt_getAbsPath, "getCacheDir");
+	path_storage = getAndroidPath(cls_Env, NULL, cls_File, mt_getAbsPath,
+			"getExternalStorageDirectory");
+	path_user    = path_storage + DIR_DELIM + PROJECT_NAME_C;
+	path_share   = path_storage + DIR_DELIM + PROJECT_NAME_C;
+
+	migrateCachePath();
 }
 
 void showInputDialog(const std::string& acceptButton, const  std::string& hint,

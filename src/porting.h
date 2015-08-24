@@ -148,10 +148,21 @@ extern std::string path_user;
 extern std::string path_locale;
 
 /*
+	Path to directory for storing caches.
+*/
+extern std::string path_cache;
+
+/*
 	Get full path of stuff in data directory.
 	Example: "stone.png" -> "../data/stone.png"
 */
 std::string getDataPath(const char *subpath);
+
+/*
+	Move cache folder from path_user to the
+	system cache location if possible.
+*/
+void migrateCachePath();
 
 /*
 	Initialize path_*.

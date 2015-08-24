@@ -707,5 +707,10 @@ bool safeWriteToFile(const std::string &path, const std::string &content)
 	}
 }
 
+bool Rename(const std::string &from, const std::string &to)
+{
+	return rename(from.c_str(), to.c_str()) == 0;
+}
+
 } // namespace fs
 

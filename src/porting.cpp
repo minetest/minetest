@@ -139,6 +139,7 @@ void signal_handler_init(void)
 std::string path_share = "..";
 std::string path_user = "..";
 std::string path_locale = path_share + DIR_DELIM + "locale";
+std::string path_cache = path_user + DIR_DELIM + "cache";
 
 
 std::string getDataPath(const char *subpath)
@@ -463,6 +464,25 @@ bool setSystemPaths()
 
 #endif
 
+void migrateCachePath()
+{
+	const std::string local_cache_path = path_user + DIR_DELIM + "cache";
+
+	// Delete tmp folder if it exists (it only ever contained
+	// a temporary ogg file, which is no longer used).
+	if (fs::PathExists(local_cache_path + DIR_DELIM + "tmp"))
+		fs::RecursiveDelete(local_cache_path + DIR_DELIM + "tmp");
+
+	// Bail if migration impossible
+	if (path_cache == local_cache_path || !fs::PathExists(local_cache_path)
+			|| fs::PathExists(path_cache)) {
+		return;
+	}
+	if (!fs::Rename(local_cache_path, path_cache)) {
+		errorstream << "Failed to migrate local cache path "
+			"to system path!" << std::endl;
+	}
+}
 
 void initializePaths()
 {
@@ -513,10 +533,27 @@ void initializePaths()
 	if (!setSystemPaths())
 		errorstream << "Failed to get one or more system-wide path" << std::endl;
 
+	// Initialize path_cache
+	// First try $XDG_CACHE_HOME/PROJECT_NAME
+	const char *cache_dir = getenv("XDG_CACHE_HOME");
+	if (cache_dir) {
+		path_cache = std::string(cache_dir) + DIR_DELIM + PROJECT_NAME;
+	} else {
+		// Then try $HOME/.cache/PROJECT_NAME
+		const char *home_dir = getenv("HOME");
+		if (home_dir) {
+			path_cache = std::string(home_dir) + DIR_DELIM + ".cache"
+				+ DIR_DELIM + PROJECT_NAME;
+		}
+		// If neither works, leave it at $PATH_USER/cache
+	}
+	// Migrate cache folder to new location if possible
+	migrateCachePath();
 #endif
 
 	infostream << "Detected share path: " << path_share << std::endl;
 	infostream << "Detected user path: " << path_user << std::endl;
+	infostream << "Detected cache path: " << path_cache << std::endl;
 
 	bool found_localedir = false;
 #ifdef STATIC_LOCALEDIR
@@ -542,7 +579,6 @@ void initializePaths()
 	if (!found_localedir) {
 		errorstream << "Couldn't find a locale directory!" << std::endl;
 	}
-
 }
 
 
