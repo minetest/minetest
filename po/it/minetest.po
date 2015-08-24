@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: Minetest 0.4.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-07-07 14:43+0200\n"
-"Last-Translator: Michal Čihař <michal@cihar.com>\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
-"minetest/it/>\n"
+"PO-Revision-Date: 2015-08-24 20:35+0200\n"
+"Last-Translator: betacentury <betacentury89@gmail.com>\n"
+"Language-Team: Italian "
+"<https://hosted.weblate.org/projects/minetest/minetest/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,11 +21,11 @@ msgstr ""
 
 #: builtin/fstk/ui.lua:82
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
+msgstr "Si è verificato un errore in uno script Lua, come ad esempio un modulo:"
 
 #: builtin/fstk/ui.lua:84
 msgid "An error occured:"
-msgstr ""
+msgstr "Si è verificato un errore:"
 
 #: builtin/fstk/ui.lua:89 builtin/mainmenu/store.lua:165
 msgid "Ok"
@@ -111,11 +111,11 @@ msgstr "Creare"
 
 #: builtin/mainmenu/dlg_create_world.lua:68
 msgid "You have no subgames installed."
-msgstr ""
+msgstr "Non hai installato nessun sottogioco."
 
 #: builtin/mainmenu/dlg_create_world.lua:69
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "Scaricane uno da minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua:72
 msgid "Warning: The minimal development test is meant for developers."
@@ -123,7 +123,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua:73
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr ""
+msgstr "Scarica un sottogioco, come minetest_game, da minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua:99
 msgid "A world named \"$1\" already exists"
@@ -175,16 +175,15 @@ msgstr "Accettare"
 
 #: builtin/mainmenu/modmgr.lua:344
 msgid "Install Mod: file: \"$1\""
-msgstr "Installare un modulo: file: \"$1\""
+msgstr "Installazione modulo: file: \"$1\""
 
 #: builtin/mainmenu/modmgr.lua:345
-#, fuzzy
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"Installare un modulo: tipo di file non supportato \"$1\""
+"Installazione modulo: tipo di file non supportato \"$1\""
 
 #: builtin/mainmenu/modmgr.lua:365
 msgid "Failed to install $1 to $2"
@@ -203,11 +202,11 @@ msgstr ""
 
 #: builtin/mainmenu/store.lua:88
 msgid "Unsorted"
-msgstr ""
+msgstr "Non categorizzato"
 
 #: builtin/mainmenu/store.lua:99 builtin/mainmenu/store.lua:580
 msgid "Search"
-msgstr ""
+msgstr "Cerca"
 
 #: builtin/mainmenu/store.lua:126
 msgid "Downloading $1, please wait..."
@@ -215,7 +214,7 @@ msgstr ""
 
 #: builtin/mainmenu/store.lua:160
 msgid "Successfully installed:"
-msgstr ""
+msgstr "Installato con successo:"
 
 #: builtin/mainmenu/store.lua:162
 #, fuzzy
@@ -332,9 +331,8 @@ msgstr "Modalità creativa"
 
 #: builtin/mainmenu/tab_multiplayer.lua:63
 #: builtin/mainmenu/tab_simple_main.lua:46
-#, fuzzy
 msgid "Damage enabled"
-msgstr "attivata"
+msgstr "Danni abilitati"
 
 #: builtin/mainmenu/tab_multiplayer.lua:64
 #: builtin/mainmenu/tab_simple_main.lua:47
@@ -387,7 +385,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_server.lua:47
 msgid "Port"
-msgstr ""
+msgstr "Porta"
 
 #: builtin/mainmenu/tab_server.lua:51
 msgid "Server Port"
@@ -406,13 +404,12 @@ msgid "Server"
 msgstr "Server"
 
 #: builtin/mainmenu/tab_settings.lua:21
-#, fuzzy
 msgid "Opaque Leaves"
-msgstr "Acqua opaca"
+msgstr "Foglie opache"
 
 #: builtin/mainmenu/tab_settings.lua:22
 msgid "Simple Leaves"
-msgstr ""
+msgstr "Foglie semplici"
 
 #: builtin/mainmenu/tab_settings.lua:23
 #, fuzzy
@@ -421,15 +418,13 @@ msgstr "Alberi migliori"
 
 #: builtin/mainmenu/tab_settings.lua:32
 msgid "No Filter"
-msgstr ""
+msgstr "Nessun Filtro"
 
 #: builtin/mainmenu/tab_settings.lua:33
-#, fuzzy
 msgid "Bilinear Filter"
 msgstr "Filtro Bi-Lineare"
 
 #: builtin/mainmenu/tab_settings.lua:34
-#, fuzzy
 msgid "Trilinear Filter"
 msgstr "Filtro Tri-Lineare"
 
@@ -451,7 +446,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:102
 msgid "No!!!"
-msgstr ""
+msgstr "No!!!"
 
 #: builtin/mainmenu/tab_settings.lua:202
 msgid "Smooth Lighting"
@@ -475,8 +470,9 @@ msgid "Connected Glass"
 msgstr "Connettere"
 
 #: builtin/mainmenu/tab_settings.lua:212
+#, fuzzy
 msgid "Node Highlighting"
-msgstr ""
+msgstr "Evidenziamento Nodi"
 
 #: builtin/mainmenu/tab_settings.lua:217
 msgid "Texturing:"
@@ -487,8 +483,9 @@ msgid "Rendering:"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:226
+#, fuzzy
 msgid "Restart minetest for driver change to take effect"
-msgstr ""
+msgstr "Riavviare minetest per rendere effettive le modifiche"
 
 #: builtin/mainmenu/tab_settings.lua:228
 msgid "Shaders"
@@ -558,9 +555,8 @@ msgid "Start Singleplayer"
 msgstr "Giocatore singolo"
 
 #: builtin/mainmenu/tab_simple_main.lua:83
-#, fuzzy
 msgid "Config mods"
-msgstr "Configurare"
+msgstr "Config. moduli"
 
 #: builtin/mainmenu/tab_simple_main.lua:201
 #, fuzzy
