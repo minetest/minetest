@@ -275,9 +275,11 @@ int ObjectRef::l_set_hp(lua_State *L)
 	/*infostream<<"ObjectRef::l_set_hp(): id="<<co->getId()
 			<<" hp="<<hp<<std::endl;*/
 	// Do it
-	co->setHP(hp);
-	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
-		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co);
+	if (co->getHP() > 0) {
+		co->setHP(hp);
+		if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
+			getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co);
+	}
 
 	// Return
 	return 0;
