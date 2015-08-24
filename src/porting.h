@@ -134,13 +134,18 @@ extern std::string path_share;
 extern std::string path_user;
 
 /*
+	Path to gettext locale files
+*/
+extern std::string path_locale;
+
+/*
 	Get full path of stuff in data directory.
 	Example: "stone.png" -> "../data/stone.png"
 */
 std::string getDataPath(const char *subpath);
 
 /*
-	Initialize path_share and path_user.
+	Initialize path_*.
 */
 void initializePaths();
 

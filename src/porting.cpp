@@ -136,6 +136,8 @@ void signal_handler_init(void)
 // Default to RUN_IN_PLACE style relative paths
 std::string path_share = "..";
 std::string path_user = "..";
+std::string path_locale = path_share + DIR_DELIM + "locale";
+
 
 std::string getDataPath(const char *subpath)
 {
@@ -503,13 +505,17 @@ void initializePaths()
 		path_share = execpath;
 		path_user  = execpath;
 	}
-
 #else
 	infostream << "Using system-wide paths (NOT RUN_IN_PLACE)" << std::endl;
 
 	if (!setSystemPaths())
 		errorstream << "Failed to get one or more system-wide path" << std::endl;
 
+#endif
+#ifdef STATIC_LOCALEDIR
+	path_locale = STATIC_LOCALEDIR[0] ? STATIC_LOCALEDIR : getDataPath("locale");
+#else
+	path_locale = getDataPath("locale");
 #endif
 
 	infostream << "Detected share path: " << path_share << std::endl;
