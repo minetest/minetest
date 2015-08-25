@@ -43,6 +43,8 @@ void ScriptApiMainMenu::handleMainMenuEvent(std::string text)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
 	// Get handler function
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "event_handler");
@@ -55,12 +57,15 @@ void ScriptApiMainMenu::handleMainMenuEvent(std::string text)
 
 	// Call it
 	lua_pushstring(L, text.c_str());
-	PCALL_RES(lua_pcall(L, 1, 0, m_errorhandler));
+	PCALL_RES(lua_pcall(L, 1, 0, error_handler));
+	lua_pop(L, 1);  // Pop error handler
 }
 
 void ScriptApiMainMenu::handleMainMenuButtons(const StringMap &fields)
 {
 	SCRIPTAPI_PRECHECKHEADER
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	// Get handler function
 	lua_getglobal(L, "core");
@@ -84,6 +89,7 @@ void ScriptApiMainMenu::handleMainMenuButtons(const StringMap &fields)
 	}
 
 	// Call it
-	PCALL_RES(lua_pcall(L, 1, 0, m_errorhandler));
+	PCALL_RES(lua_pcall(L, 1, 0, error_handler));
+	lua_pop(L, 1);  // Pop error handler
 }
 

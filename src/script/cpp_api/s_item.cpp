@@ -34,6 +34,8 @@ bool ScriptApiItem::item_OnDrop(ItemStack &item,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
 	// Push callback function on stack
 	if (!getItemCallback(item.name.c_str(), "on_drop"))
 		return false;
@@ -42,7 +44,7 @@ bool ScriptApiItem::item_OnDrop(ItemStack &item,
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(L, dropper);
 	pushFloatPos(L, pos);
-	PCALL_RES(lua_pcall(L, 3, 1, m_errorhandler));
+	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	if (!lua_isnil(L, -1)) {
 		try {
 			item = read_item(L,-1, getServer());
@@ -50,7 +52,7 @@ bool ScriptApiItem::item_OnDrop(ItemStack &item,
 			throw LuaError(std::string(e.what()) + ". item=" + item.name);
 		}
 	}
-	lua_pop(L, 1);  // Pop item
+	lua_pop(L, 2);  // Pop item and error handler
 	return true;
 }
 
@@ -58,6 +60,8 @@ bool ScriptApiItem::item_OnPlace(ItemStack &item,
 		ServerActiveObject *placer, const PointedThing &pointed)
 {
 	SCRIPTAPI_PRECHECKHEADER
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	// Push callback function on stack
 	if (!getItemCallback(item.name.c_str(), "on_place"))
@@ -67,7 +71,7 @@ bool ScriptApiItem::item_OnPlace(ItemStack &item,
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(L, placer);
 	pushPointedThing(pointed);
-	PCALL_RES(lua_pcall(L, 3, 1, m_errorhandler));
+	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	if (!lua_isnil(L, -1)) {
 		try {
 			item = read_item(L,-1, getServer());
@@ -75,7 +79,7 @@ bool ScriptApiItem::item_OnPlace(ItemStack &item,
 			throw LuaError(std::string(e.what()) + ". item=" + item.name);
 		}
 	}
-	lua_pop(L, 1);  // Pop item
+	lua_pop(L, 2);  // Pop item and error handler
 	return true;
 }
 
@@ -83,6 +87,8 @@ bool ScriptApiItem::item_OnUse(ItemStack &item,
 		ServerActiveObject *user, const PointedThing &pointed)
 {
 	SCRIPTAPI_PRECHECKHEADER
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	// Push callback function on stack
 	if (!getItemCallback(item.name.c_str(), "on_use"))
@@ -92,7 +98,7 @@ bool ScriptApiItem::item_OnUse(ItemStack &item,
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(L, user);
 	pushPointedThing(pointed);
-	PCALL_RES(lua_pcall(L, 3, 1, m_errorhandler));
+	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	if(!lua_isnil(L, -1)) {
 		try {
 			item = read_item(L,-1, getServer());
@@ -100,7 +106,7 @@ bool ScriptApiItem::item_OnUse(ItemStack &item,
 			throw LuaError(std::string(e.what()) + ". item=" + item.name);
 		}
 	}
-	lua_pop(L, 1);  // Pop item
+	lua_pop(L, 2);  // Pop item and error handler
 	return true;
 }
 
@@ -108,6 +114,8 @@ bool ScriptApiItem::item_OnCraft(ItemStack &item, ServerActiveObject *user,
 		const InventoryList *old_craft_grid, const InventoryLocation &craft_inv)
 {
 	SCRIPTAPI_PRECHECKHEADER
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "on_craft");
@@ -122,7 +130,7 @@ bool ScriptApiItem::item_OnCraft(ItemStack &item, ServerActiveObject *user,
 	push_items(L, items);
 
 	InvRef::create(L, craft_inv);
-	PCALL_RES(lua_pcall(L, 4, 1, m_errorhandler));
+	PCALL_RES(lua_pcall(L, 4, 1, error_handler));
 	if (!lua_isnil(L, -1)) {
 		try {
 			item = read_item(L,-1, getServer());
@@ -130,7 +138,7 @@ bool ScriptApiItem::item_OnCraft(ItemStack &item, ServerActiveObject *user,
 			throw LuaError(std::string(e.what()) + ". item=" + item.name);
 		}
 	}
-	lua_pop(L, 1);  // Pop item
+	lua_pop(L, 2);  // Pop item and error handler
 	return true;
 }
 
@@ -138,6 +146,8 @@ bool ScriptApiItem::item_CraftPredict(ItemStack &item, ServerActiveObject *user,
 		const InventoryList *old_craft_grid, const InventoryLocation &craft_inv)
 {
 	SCRIPTAPI_PRECHECKHEADER
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "craft_predict");
@@ -152,7 +162,7 @@ bool ScriptApiItem::item_CraftPredict(ItemStack &item, ServerActiveObject *user,
 	push_items(L, items);
 
 	InvRef::create(L, craft_inv);
-	PCALL_RES(lua_pcall(L, 4, 1, m_errorhandler));
+	PCALL_RES(lua_pcall(L, 4, 1, error_handler));
 	if (!lua_isnil(L, -1)) {
 		try {
 			item = read_item(L,-1, getServer());
@@ -160,7 +170,7 @@ bool ScriptApiItem::item_CraftPredict(ItemStack &item, ServerActiveObject *user,
 			throw LuaError(std::string(e.what()) + ". item=" + item.name);
 		}
 	}
-	lua_pop(L, 1);  // Pop item
+	lua_pop(L, 2);  // Pop item and error handler
 	return true;
 }
 

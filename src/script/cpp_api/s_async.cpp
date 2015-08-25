@@ -144,8 +144,9 @@ void AsyncEngine::putJobResult(LuaJobInfo result)
 }
 
 /******************************************************************************/
-void AsyncEngine::step(lua_State *L, int errorhandler)
+void AsyncEngine::step(lua_State *L)
 {
+	int error_handler = PUSH_ERROR_HANDLER(L);
 	lua_getglobal(L, "core");
 	resultQueueMutex.lock();
 	while (!resultQueue.empty()) {
@@ -164,10 +165,10 @@ void AsyncEngine::step(lua_State *L, int errorhandler)
 		lua_pushlstring(L, jobDone.serializedResult.data(),
 				jobDone.serializedResult.size());
 
-		PCALL_RESL(L, lua_pcall(L, 2, 0, errorhandler));
+		PCALL_RESL(L, lua_pcall(L, 2, 0, error_handler));
 	}
 	resultQueueMutex.unlock();
-	lua_pop(L, 1); // Pop core
+	lua_pop(L, 2); // Pop core and error handler
 }
 
 /******************************************************************************/
@@ -248,6 +249,8 @@ void* AsyncWorkerThread::run()
 		abort();
 	}
 
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
 	lua_getglobal(L, "core");
 	if (lua_isnil(L, -1)) {
 		errorstream << "Unable to find core within async environment!";
@@ -279,7 +282,7 @@ void* AsyncWorkerThread::run()
 				toProcess.serializedParams.data(),
 				toProcess.serializedParams.size());
 
-		int result = lua_pcall(L, 2, 1, m_errorhandler);
+		int result = lua_pcall(L, 2, 1, error_handler);
 		if (result) {
 			PCALL_RES(result);
 			toProcess.serializedResult = "";
@@ -296,7 +299,7 @@ void* AsyncWorkerThread::run()
 		jobDispatcher->putJobResult(toProcess);
 	}
 
-	lua_pop(L, 1);  // Pop core
+	lua_pop(L, 2);  // Pop core and error handler
 
 	return 0;
 }

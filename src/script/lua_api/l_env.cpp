@@ -52,8 +52,7 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 	sanity_check(lua_checkstack(L, 20));
 	StackUnroller stack_unroller(L);
 
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L);
+	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	// Get registered_abms
 	lua_getglobal(L, "core");
@@ -80,7 +79,7 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 	lua_pushnumber(L, active_object_count);
 	lua_pushnumber(L, active_object_count_wider);
 
-	int result = lua_pcall(L, 4, 0, errorhandler);
+	int result = lua_pcall(L, 4, 0, error_handler);
 	if (result)
 		scriptIface->scriptError(result, "LuaABM::trigger");
 
@@ -412,8 +411,7 @@ int ModApiEnvMod::l_add_item(lua_State *L)
 	if(item.empty() || !item.isKnown(getServer(L)->idef()))
 		return 0;
 
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L);
+	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	// Use spawn_item to spawn a __builtin:item
 	lua_getglobal(L, "core");
@@ -424,9 +422,9 @@ int ModApiEnvMod::l_add_item(lua_State *L)
 	lua_pushvalue(L, 1);
 	lua_pushstring(L, item.getItemString().c_str());
 
-	PCALL_RESL(L, lua_pcall(L, 2, 1, errorhandler));
+	PCALL_RESL(L, lua_pcall(L, 2, 1, error_handler));
 
-	lua_remove(L, errorhandler); // Remove error handler
+	lua_remove(L, error_handler);
 	return 1;
 }
 
