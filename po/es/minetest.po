@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-08-26 01:25+0200\n"
+"PO-Revision-Date: 2015-08-26 01:29+0200\n"
 "Last-Translator: shadowninja <owenptorres@gmail.com>\n"
 "Language-Team: Spanish "
 "<https://hosted.weblate.org/projects/minetest/minetest/es/>\n"
@@ -910,7 +910,7 @@ msgstr "Botón derecho"
 
 #: src/keycode.cpp:223
 msgid "X Button 1"
-msgstr "X Button 1"
+msgstr "X Botón 1"
 
 #: src/keycode.cpp:224
 msgid "Back"
@@ -930,7 +930,7 @@ msgstr "Tabulador"
 
 #: src/keycode.cpp:224
 msgid "X Button 2"
-msgstr "X Button 2"
+msgstr "X Botón 2"
 
 #: src/keycode.cpp:225
 msgid "Capital"
