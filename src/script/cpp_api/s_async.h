@@ -95,9 +95,8 @@ public:
 	 * Engine step to process finished jobs
 	 *   the engine step is one way to pass events back, PushFinishedJobs another
 	 * @param L The Lua stack
-	 * @param errorhandler Stack index of the Lua error handler
 	 */
-	void step(lua_State *L, int errorhandler);
+	void step(lua_State *L);
 
 	/**
 	 * Push a list of finished jobs onto the stack

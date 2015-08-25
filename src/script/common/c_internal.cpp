@@ -136,28 +136,28 @@ void script_run_callbacks_f(lua_State *L, int nargs,
 	FATAL_ERROR_IF(lua_gettop(L) < nargs + 1, "Not enough arguments");
 
 	// Insert error handler
-	lua_pushcfunction(L, script_error_handler);
-	int errorhandler = lua_gettop(L) - nargs - 1;
-	lua_insert(L, errorhandler);
+	PUSH_ERROR_HANDLER(L);
+	int error_handler = lua_gettop(L) - nargs - 1;
+	lua_insert(L, error_handler);
 
 	// Insert run_callbacks between error handler and table
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "run_callbacks");
 	lua_remove(L, -2);
-	lua_insert(L, errorhandler + 1);
+	lua_insert(L, error_handler + 1);
 
 	// Insert mode after table
 	lua_pushnumber(L, (int) mode);
-	lua_insert(L, errorhandler + 3);
+	lua_insert(L, error_handler + 3);
 
 	// Stack now looks like this:
 	// ... <error handler> <run_callbacks> <table> <mode> <arg#1> <arg#2> ... <arg#n>
 
-	int result = lua_pcall(L, nargs + 2, 1, errorhandler);
+	int result = lua_pcall(L, nargs + 2, 1, error_handler);
 	if (result != 0)
 		script_error(L, result, NULL, fxn);
 
-	lua_remove(L, -2); // Remove error handler
+	lua_remove(L, error_handler);
 }
 
 void log_deprecated(lua_State *L, const std::string &message)

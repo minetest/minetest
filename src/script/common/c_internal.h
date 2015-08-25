@@ -34,6 +34,31 @@ extern "C" {
 
 #include "common/c_types.h"
 
+
+/*
+	Define our custom indices into the Lua registry table.
+
+	Lua 5.2 and above define the LUA_RIDX_LAST macro. Only numbers above that
+	may be used for custom indices, anything else is reserved.
+
+	Lua 5.1 / LuaJIT do not use any numeric indices (only string indices),
+	so we can use numeric indices freely.
+*/
+#ifdef LUA_RIDX_LAST
+#define CUSTOM_RIDX_BASE ((LUA_RIDX_LAST)+1)
+#else
+#define CUSTOM_RIDX_BASE 1
+#endif
+
+#define CUSTOM_RIDX_SCRIPTAPI           (CUSTOM_RIDX_BASE)
+#define CUSTOM_RIDX_GLOBALS_BACKUP      (CUSTOM_RIDX_BASE + 1)
+#define CUSTOM_RIDX_CURRENT_MOD_NAME    (CUSTOM_RIDX_BASE + 2)
+#define CUSTOM_RIDX_ERROR_HANDLER       (CUSTOM_RIDX_BASE + 3)
+
+// Pushes the error handler onto the stack and returns its index
+#define PUSH_ERROR_HANDLER(L) \
+	(lua_rawgeti((L), LUA_REGISTRYINDEX, CUSTOM_RIDX_ERROR_HANDLER), lua_gettop((L)))
+
 #define PCALL_RESL(L, RES) do {                         \
 	int result_ = (RES);                                \
 	if (result_ != 0) {                                 \

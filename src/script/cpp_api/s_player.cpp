@@ -74,6 +74,8 @@ s16 ScriptApiPlayer::on_player_hpchange(ServerActiveObject *player,
 {
 	SCRIPTAPI_PRECHECKHEADER
 
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
 	// Get core.registered_on_player_hpchange
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_on_player_hpchange");
@@ -81,9 +83,9 @@ s16 ScriptApiPlayer::on_player_hpchange(ServerActiveObject *player,
 
 	objectrefGetOrCreate(L, player);
 	lua_pushnumber(L, hp_change);
-	PCALL_RES(lua_pcall(L, 2, 1, m_errorhandler));
+	PCALL_RES(lua_pcall(L, 2, 1, error_handler));
 	hp_change = lua_tointeger(L, -1);
-	lua_pop(L, -1);
+	lua_pop(L, 2); // Pop result and error handler
 	return hp_change;
 }
 
