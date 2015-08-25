@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-02-12 16:16+0100\n"
+"POT-Creation-Date: 2015-08-25 18:52+0200\n"
+"PO-Revision-Date: 2015-08-25 18:58+0100\n"
 "Last-Translator: Jakub Vanek <vanek.jakub4@seznam.cz>\n"
 "Language-Team: Czech <>\n"
 "Language: cs\n"
@@ -17,25 +17,77 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#: builtin/fstk/ui.lua:82
+#: builtin/fstk/ui.lua:87
+msgid "The server has requested a reconnect:"
+msgstr "Server požádal o opětovné připojení:"
+
+#: builtin/fstk/ui.lua:89
+msgid "Main menu"
+msgstr "Hlavní nabídka"
+
+#: builtin/fstk/ui.lua:90
+msgid "Reconnect"
+msgstr "Znovu připojit"
+
+#: builtin/fstk/ui.lua:95
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
+msgstr "Nastala chyba v Lua skriptu, což může být např. mod:"
 
-#: builtin/fstk/ui.lua:84
+#: builtin/fstk/ui.lua:97
 msgid "An error occured:"
-msgstr ""
+msgstr "Nastala chyba:"
 
-#: builtin/fstk/ui.lua:89 builtin/mainmenu/store.lua:165
+#: builtin/fstk/ui.lua:102 builtin/mainmenu/store.lua:165
 msgid "Ok"
 msgstr "OK"
 
-#: builtin/mainmenu/common.lua:239 src/game.cpp:1891
+#: builtin/mainmenu/common.lua:239 src/game.cpp:1916
 msgid "Loading..."
 msgstr "Nahrávám..."
 
 #: builtin/mainmenu/common.lua:240
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
+"Zkuste znovu povolit seznam veřejných serverů a zkontrolujte své internetové "
+"připojení."
+
+#: builtin/mainmenu/common.lua:293
+msgid "Protocol version mismatch, server "
+msgstr "Nesouhlasí verze protokolu, server "
+
+# -- manual edit (builtin/mainmenu/common.lua:293-296) --
+
+# after fix
+msgid "supports protocols between $1 and $2"
+msgstr "podporuje verze protokolu $1 až $2"
+
+
+msgid "enforces protocol version $1"
+msgstr "nabízí pouze protokol verze $1"
+
+msgid "support protocols between version $3 and $4."
+msgstr "podporuje pouze verze protokolu $3 až $4."
+
+msgid "only support protocol version $3"
+msgstr "podporuje pouze protokol verze $3."
+
+msgid ", we "
+msgstr ", ale tento klient "
+
+# temporary fix
+msgid "Protocol version mismatch, server supports protocols between $1 and $2, we support protocols between version $3 and $4."
+msgstr "Nesouhlasí verze protokolu, server podporuje verze protokolu $1 až $2, ale tento klient podporuje pouze verze protokolu $3 až $4."
+
+msgid "Protocol version mismatch, server supports protocols between $1 and $2, we only support protocol version $3"
+msgstr "Nesouhlasí verze protokolu, server podporuje verze protokolu $1 až $2, ale tento klient podporuje pouze protokol verze $3."
+
+msgid "Protocol version mismatch, server enforces protocol version $1, we support protocols between version $3 and $4."
+msgstr "Nesouhlasí verze protokolu, server nabízí pouze protokol verze $1, ale tento klient podporuje pouze verze protokolu $3 až $4."
+
+msgid "Protocol version mismatch, server enforces protocol version $1, we only support protocol version $3"
+msgstr "Nesouhlasí verze protokolu, server nabízí pouze protokol verze $1, ale tento klient podporuje pouze protokol verze $3."
+
+# -- end of manual edit --
 
 #: builtin/mainmenu/dlg_config_world.lua:29
 msgid "World:"
@@ -55,7 +107,7 @@ msgstr "Skrýt obsahy balíčků"
 msgid "Mod:"
 msgstr "Mod:"
 
-#: builtin/mainmenu/dlg_config_world.lua:51 builtin/mainmenu/tab_mods.lua:99
+#: builtin/mainmenu/dlg_config_world.lua:51 builtin/mainmenu/tab_mods.lua:102
 msgid "Depends:"
 msgstr "Závislosti:"
 
@@ -86,6 +138,14 @@ msgstr "povoleno"
 #: builtin/mainmenu/dlg_config_world.lua:85
 msgid "Enable all"
 msgstr "Povolit vše"
+
+#: builtin/mainmenu/dlg_config_world.lua:205
+msgid ""
+"Failed to enable mod \"$1\" as it contains disallowed characters. Only "
+"chararacters [a-z0-9_] are allowed."
+msgstr ""
+"Nepodařilo se povolit mod \"$1\", protože jeho jméno obsahuje nepovolené "
+"znaky. Přípustné jsou pouze znaky [a-z0-9_]"
 
 #: builtin/mainmenu/dlg_create_world.lua:50
 msgid "World name"
@@ -137,7 +197,7 @@ msgstr "Skutečně chcete odstranit \"$1\"?"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:27
 #: builtin/mainmenu/dlg_delete_world.lua:25
-#: builtin/mainmenu/tab_settings.lua:100
+#: builtin/mainmenu/tab_settings.lua:120
 msgid "Yes"
 msgstr "Ano"
 
@@ -240,18 +300,17 @@ msgstr "Autoři"
 
 #: builtin/mainmenu/tab_credits.lua:31
 msgid "Core Developers"
-msgstr "Vývojáři jádra"
+msgstr "Klíčoví vývojáři"
 
-#: builtin/mainmenu/tab_credits.lua:47
+#: builtin/mainmenu/tab_credits.lua:46
 msgid "Active Contributors"
 msgstr "Aktivní přispěvatelé"
 
-#: builtin/mainmenu/tab_credits.lua:54
-#, fuzzy
+#: builtin/mainmenu/tab_credits.lua:56
 msgid "Previous Core Developers"
-msgstr "Vývojáři jádra"
+msgstr "Bývalí klíčoví vývojáři"
 
-#: builtin/mainmenu/tab_credits.lua:59
+#: builtin/mainmenu/tab_credits.lua:62
 msgid "Previous Contributors"
 msgstr "Bývalí přispěvatelé"
 
@@ -259,35 +318,31 @@ msgstr "Bývalí přispěvatelé"
 msgid "Installed Mods:"
 msgstr "Nainstalované mody:"
 
-#: builtin/mainmenu/tab_mods.lua:39
-msgid "Online mod repository"
-msgstr "Online repozitář modů"
-
-#: builtin/mainmenu/tab_mods.lua:78
+#: builtin/mainmenu/tab_mods.lua:81
 msgid "No mod description available"
 msgstr "Popis modu není dostupný"
 
-#: builtin/mainmenu/tab_mods.lua:82
+#: builtin/mainmenu/tab_mods.lua:85
 msgid "Mod information:"
 msgstr "Informace o modu:"
 
-#: builtin/mainmenu/tab_mods.lua:93
+#: builtin/mainmenu/tab_mods.lua:96
 msgid "Rename"
 msgstr "Přejmenovat"
 
-#: builtin/mainmenu/tab_mods.lua:95
+#: builtin/mainmenu/tab_mods.lua:98
 msgid "Uninstall selected modpack"
 msgstr "Odinstalovat označený balíček"
 
-#: builtin/mainmenu/tab_mods.lua:106
+#: builtin/mainmenu/tab_mods.lua:109
 msgid "Uninstall selected mod"
 msgstr "Odinstalovat vybraný mod"
 
-#: builtin/mainmenu/tab_mods.lua:121
+#: builtin/mainmenu/tab_mods.lua:124
 msgid "Select Mod File:"
 msgstr "Vybrat soubor s modem:"
 
-#: builtin/mainmenu/tab_mods.lua:165
+#: builtin/mainmenu/tab_mods.lua:168
 msgid "Mods"
 msgstr "Mody"
 
@@ -382,28 +437,24 @@ msgstr "Port serveru"
 
 #: builtin/mainmenu/tab_server.lua:138
 #: builtin/mainmenu/tab_singleplayer.lua:165
-#, fuzzy
 msgid "No world created or selected!"
-msgstr "Nebyla vybrána podhra nebo název"
+msgstr "Nevybrali jste žádný svět!"
 
 #: builtin/mainmenu/tab_server.lua:191
 msgid "Server"
 msgstr "Server"
 
 #: builtin/mainmenu/tab_settings.lua:21
-#, fuzzy
 msgid "Opaque Leaves"
-msgstr "Neprůhledná voda"
+msgstr "Neprůhledné listí"
 
 #: builtin/mainmenu/tab_settings.lua:22
-#, fuzzy
 msgid "Simple Leaves"
-msgstr "Vlnění listů"
+msgstr "Jednoduché listí"
 
 #: builtin/mainmenu/tab_settings.lua:23
-#, fuzzy
 msgid "Fancy Leaves"
-msgstr "Ozdobné stromy"
+msgstr "Vícevrstevné listí"
 
 #: builtin/mainmenu/tab_settings.lua:32
 msgid "No Filter"
@@ -429,107 +480,121 @@ msgstr "Mipmapa"
 msgid "Mipmap + Aniso. Filter"
 msgstr "Mipmapa + Anizo. filtr"
 
-#: builtin/mainmenu/tab_settings.lua:98
+#: builtin/mainmenu/tab_settings.lua:64
+#: builtin/mainmenu/tab_texturepacks.lua:20
+#: builtin/mainmenu/tab_texturepacks.lua:109
+msgid "None"
+msgstr "Žádné"
+
+#: builtin/mainmenu/tab_settings.lua:65
+msgid "2x"
+msgstr "2x"
+
+#: builtin/mainmenu/tab_settings.lua:66
+msgid "4x"
+msgstr "4x"
+
+#: builtin/mainmenu/tab_settings.lua:67
+msgid "8x"
+msgstr "8x"
+
+#: builtin/mainmenu/tab_settings.lua:118
 msgid "Are you sure to reset your singleplayer world?"
 msgstr "Jste si jisti, že chcete resetovat místní svět?"
 
-#: builtin/mainmenu/tab_settings.lua:102
+#: builtin/mainmenu/tab_settings.lua:122
 msgid "No!!!"
 msgstr "Ne!!!"
 
-#: builtin/mainmenu/tab_settings.lua:202
+#: builtin/mainmenu/tab_settings.lua:205
 msgid "Smooth Lighting"
 msgstr "Plynulé osvětlení"
 
-#: builtin/mainmenu/tab_settings.lua:204
+#: builtin/mainmenu/tab_settings.lua:207
 msgid "Enable Particles"
 msgstr "Povolit částice"
 
-#: builtin/mainmenu/tab_settings.lua:206
+#: builtin/mainmenu/tab_settings.lua:209
 msgid "3D Clouds"
 msgstr "3D mraky"
 
-#: builtin/mainmenu/tab_settings.lua:208
+#: builtin/mainmenu/tab_settings.lua:211
 msgid "Opaque Water"
 msgstr "Neprůhledná voda"
 
-#: builtin/mainmenu/tab_settings.lua:210
+#: builtin/mainmenu/tab_settings.lua:213
 msgid "Connected Glass"
 msgstr "Propojené sklo"
 
-#: builtin/mainmenu/tab_settings.lua:212
+#: builtin/mainmenu/tab_settings.lua:215
 msgid "Node Highlighting"
 msgstr "Zvýraznění bloků"
 
-#: builtin/mainmenu/tab_settings.lua:217
+#: builtin/mainmenu/tab_settings.lua:220
 msgid "Texturing:"
 msgstr "Texturování:"
 
-#: builtin/mainmenu/tab_settings.lua:222
-msgid "Rendering:"
-msgstr "Renderování:"
+#: builtin/mainmenu/tab_settings.lua:225
+msgid "Antialiasing:"
+msgstr "Vyhlazování:"
 
-#: builtin/mainmenu/tab_settings.lua:226
-msgid "Restart minetest for driver change to take effect"
-msgstr "Aby se změna ovladače projevila, restartujte Minetest."
-
-#: builtin/mainmenu/tab_settings.lua:228
+#: builtin/mainmenu/tab_settings.lua:229
 msgid "Shaders"
 msgstr "Shadery"
 
-#: builtin/mainmenu/tab_settings.lua:233
+#: builtin/mainmenu/tab_settings.lua:234
 msgid "Change keys"
 msgstr "Změnit nastavení kláves"
 
-#: builtin/mainmenu/tab_settings.lua:236
+#: builtin/mainmenu/tab_settings.lua:237
 msgid "Reset singleplayer world"
 msgstr "Reset místního světa"
 
-#: builtin/mainmenu/tab_settings.lua:240
+#: builtin/mainmenu/tab_settings.lua:241
 msgid "GUI scale factor"
 msgstr "Měřítko GUI"
 
-#: builtin/mainmenu/tab_settings.lua:244
+#: builtin/mainmenu/tab_settings.lua:245
 msgid "Scaling factor applied to menu elements: "
 msgstr "Měřítko aplikované na prvky menu: "
 
-#: builtin/mainmenu/tab_settings.lua:250
+#: builtin/mainmenu/tab_settings.lua:251
 msgid "Touch free target"
 msgstr "Středový kurzor"
 
-#: builtin/mainmenu/tab_settings.lua:256
+#: builtin/mainmenu/tab_settings.lua:257
 msgid "Touchthreshold (px)"
 msgstr "Dosah dotyku (px)"
 
-#: builtin/mainmenu/tab_settings.lua:263 builtin/mainmenu/tab_settings.lua:277
+#: builtin/mainmenu/tab_settings.lua:264 builtin/mainmenu/tab_settings.lua:278
 msgid "Bumpmapping"
 msgstr "Bump mapování"
 
-#: builtin/mainmenu/tab_settings.lua:265 builtin/mainmenu/tab_settings.lua:278
+#: builtin/mainmenu/tab_settings.lua:266 builtin/mainmenu/tab_settings.lua:279
 msgid "Generate Normalmaps"
 msgstr "Generovat normálové mapy"
 
-#: builtin/mainmenu/tab_settings.lua:267 builtin/mainmenu/tab_settings.lua:279
+#: builtin/mainmenu/tab_settings.lua:268 builtin/mainmenu/tab_settings.lua:280
 msgid "Parallax Occlusion"
 msgstr "Parallax Occlusion"
 
-#: builtin/mainmenu/tab_settings.lua:269 builtin/mainmenu/tab_settings.lua:280
+#: builtin/mainmenu/tab_settings.lua:270 builtin/mainmenu/tab_settings.lua:281
 msgid "Waving Water"
 msgstr "Vlnění vody"
 
-#: builtin/mainmenu/tab_settings.lua:271 builtin/mainmenu/tab_settings.lua:281
+#: builtin/mainmenu/tab_settings.lua:272 builtin/mainmenu/tab_settings.lua:282
 msgid "Waving Leaves"
 msgstr "Vlnění listů"
 
-#: builtin/mainmenu/tab_settings.lua:273 builtin/mainmenu/tab_settings.lua:282
+#: builtin/mainmenu/tab_settings.lua:274 builtin/mainmenu/tab_settings.lua:283
 msgid "Waving Plants"
 msgstr "Vlnění rostlin"
 
-#: builtin/mainmenu/tab_settings.lua:308
+#: builtin/mainmenu/tab_settings.lua:309
 msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr "Pro povolení shaderů musíte používat OpenGL ovladač."
 
-#: builtin/mainmenu/tab_settings.lua:430
+#: builtin/mainmenu/tab_settings.lua:431
 msgid "Settings"
 msgstr "Nastavení"
 
@@ -557,65 +622,68 @@ msgstr "Místní hra"
 msgid "Select texture pack:"
 msgstr "Vyberte balíček textur:"
 
-#: builtin/mainmenu/tab_texturepacks.lua:69
+#: builtin/mainmenu/tab_texturepacks.lua:77
 msgid "No information available"
 msgstr "Informace nejsou dostupné"
 
-#: builtin/mainmenu/tab_texturepacks.lua:114
+#: builtin/mainmenu/tab_texturepacks.lua:122
 msgid "Texturepacks"
 msgstr "Balíčky textur"
 
-#: src/client.cpp:1721
+#: src/client.cpp:760
+msgid "Connection timed out."
+msgstr "Vypršel čas připojení."
+
+#: src/client.cpp:1729
 msgid "Loading textures..."
 msgstr "Načítám textury..."
 
-#: src/client.cpp:1736
+#: src/client.cpp:1744
 msgid "Rebuilding shaders..."
 msgstr "Sestavuji shadery..."
 
-#: src/client.cpp:1743
+#: src/client.cpp:1751
 msgid "Initializing nodes..."
-msgstr "Inicializuji bloky..."
-
-#: src/client.cpp:1760
-#, fuzzy
-msgid "Initializing nodes"
-msgstr "Inicializuji bloky..."
+msgstr "Vytvářím bloky..."
 
 #: src/client.cpp:1768
+msgid "Initializing nodes"
+msgstr "Vytvářím bloky"
+
+#: src/client.cpp:1776
 msgid "Item textures..."
 msgstr "Textury věcí..."
 
-#: src/client.cpp:1793
+#: src/client.cpp:1801
 msgid "Done!"
 msgstr "Hotovo!"
 
-#: src/client/clientlauncher.cpp:185
+#: src/client/clientlauncher.cpp:186
 msgid "Main Menu"
 msgstr "Hlavní nabídka"
 
-#: src/client/clientlauncher.cpp:223
+#: src/client/clientlauncher.cpp:225
 msgid "Player name too long."
 msgstr "Jméno hráče je příliš dlouhé."
 
-#: src/client/clientlauncher.cpp:261
+#: src/client/clientlauncher.cpp:265
 msgid "Connection error (timed out?)"
 msgstr "Chyba spojení (vypršel čas?)"
 
-#: src/client/clientlauncher.cpp:425
+#: src/client/clientlauncher.cpp:431
 msgid "No world selected and no address provided. Nothing to do."
 msgstr ""
 "Nebyl vybrán žádný svět a nebyla poskytnuta žádná adresa. Nemám co dělat."
 
-#: src/client/clientlauncher.cpp:432
+#: src/client/clientlauncher.cpp:438
 msgid "Provided world path doesn't exist: "
 msgstr "Uvedená cesta ke světu neexistuje: "
 
-#: src/client/clientlauncher.cpp:441
+#: src/client/clientlauncher.cpp:447
 msgid "Could not find or load game \""
 msgstr "Hru nebylo možné nahrát nebo najít \""
 
-#: src/client/clientlauncher.cpp:459
+#: src/client/clientlauncher.cpp:465
 msgid "Invalid gamespec."
 msgstr "Neplatná specifikace hry."
 
@@ -623,7 +691,7 @@ msgstr "Neplatná specifikace hry."
 msgid "needs_fallback_font"
 msgstr "no"
 
-#: src/game.cpp:1052 src/guiFormSpecMenu.cpp:2065
+#: src/game.cpp:1052 src/guiFormSpecMenu.cpp:2067
 msgid "Proceed"
 msgstr "Pokračovat"
 
@@ -713,47 +781,47 @@ msgstr "Odejít do nabídky"
 msgid "Exit to OS"
 msgstr "Ukončit hru"
 
-#: src/game.cpp:1841
+#: src/game.cpp:1866
 msgid "Shutting down..."
 msgstr "Vypínání..."
 
-#: src/game.cpp:1948
+#: src/game.cpp:1973
 msgid "Creating server..."
 msgstr "Vytvářím server..."
 
-#: src/game.cpp:1984
+#: src/game.cpp:2009
 msgid "Creating client..."
 msgstr "Vytvářím klienta..."
 
-#: src/game.cpp:2159
+#: src/game.cpp:2184
 msgid "Resolving address..."
 msgstr "Překládám adresu..."
 
-#: src/game.cpp:2261
+#: src/game.cpp:2287
 msgid "Connecting to server..."
 msgstr "Připojuji se k serveru..."
 
-#: src/game.cpp:2317
+#: src/game.cpp:2343
 msgid "Item definitions..."
 msgstr "Definice věcí..."
 
-#: src/game.cpp:2322
+#: src/game.cpp:2348
 msgid "Node definitions..."
 msgstr "Definice bloků..."
 
-#: src/game.cpp:2329
+#: src/game.cpp:2355
 msgid "Media..."
 msgstr "Média..."
 
-#: src/game.cpp:2334
+#: src/game.cpp:2360
 msgid "KiB/s"
-msgstr ""
+msgstr "KiB/s"
 
-#: src/game.cpp:2338
+#: src/game.cpp:2364
 msgid "MiB/s"
-msgstr ""
+msgstr "MiB/s"
 
-#: src/game.cpp:4363
+#: src/game.cpp:4419
 msgid ""
 "\n"
 "Check debug.txt for details."
@@ -761,11 +829,11 @@ msgstr ""
 "\n"
 "Pro detaily se podívejte do debug.txt."
 
-#: src/guiFormSpecMenu.cpp:2855
+#: src/guiFormSpecMenu.cpp:2857
 msgid "Enter "
 msgstr "Zadejte "
 
-#: src/guiFormSpecMenu.cpp:2875
+#: src/guiFormSpecMenu.cpp:2877
 msgid "ok"
 msgstr "OK"
 
@@ -848,9 +916,8 @@ msgid "Toggle fast"
 msgstr "Turbo"
 
 #: src/guiKeyChangeMenu.cpp:413
-#, fuzzy
 msgid "Toggle Cinematic"
-msgstr "Turbo"
+msgstr "Režim pohybu kamery"
 
 #: src/guiKeyChangeMenu.cpp:414
 msgid "Toggle noclip"
@@ -1179,6 +1246,15 @@ msgstr "PA1"
 #: src/keycode.cpp:248
 msgid "Zoom"
 msgstr "Přiblížení"
+
+#~ msgid "Online mod repository"
+#~ msgstr "Online repozitář modů"
+
+#~ msgid "Rendering:"
+#~ msgstr "Renderování:"
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "Aby se změna ovladače projevila, restartujte Minetest."
 
 #~ msgid "Mip-Mapping"
 #~ msgstr "Mip-Mapování"
