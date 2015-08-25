@@ -176,7 +176,7 @@ bool wouldCollideWithCeiling(
 
 	for(std::vector<aabb3f>::const_iterator
 			i = staticboxes.begin();
-			i != staticboxes.end(); i++)
+			i != staticboxes.end(); ++i)
 	{
 		const aabb3f& staticbox = *i;
 		if((movingbox.MaxEdge.Y - d <= staticbox.MinEdge.Y) &&
@@ -265,7 +265,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			std::vector<aabb3f> nodeboxes = n.getCollisionBoxes(gamedef->ndef());
 			for(std::vector<aabb3f>::iterator
 					i = nodeboxes.begin();
-					i != nodeboxes.end(); i++)
+					i != nodeboxes.end(); ++i)
 			{
 				aabb3f box = *i;
 				box.MinEdge += v3f(x, y, z)*BS;
@@ -320,7 +320,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				f32 distance = speed_f.getLength();
 				std::vector<u16> s_objects;
 				s_env->getObjectsInsideRadius(s_objects, pos_f, distance * 1.5);
-				for (std::vector<u16>::iterator iter = s_objects.begin(); iter != s_objects.end(); iter++) {
+				for (std::vector<u16>::iterator iter = s_objects.begin(); iter != s_objects.end(); ++iter) {
 					ServerActiveObject *current = s_env->getActiveObject(*iter);
 					if ((self == 0) || (self != current)) {
 						objects.push_back((ActiveObject*)current);

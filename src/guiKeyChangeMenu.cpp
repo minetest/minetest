@@ -81,7 +81,7 @@ GUIKeyChangeMenu::~GUIKeyChangeMenu()
 	removeChildren();
 
 	for (std::vector<key_setting*>::iterator iter = key_settings.begin();
-			iter != key_settings.end(); iter ++) {
+			iter != key_settings.end(); ++iter) {
 		delete[] (*iter)->button_name;
 		delete (*iter);
 	}

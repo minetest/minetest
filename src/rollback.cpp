@@ -858,7 +858,7 @@ std::string RollbackManager::getSuspect(v3s16 p, float nearness_shortcut,
 	float likely_suspect_nearness = 0;
 	for (std::list<RollbackAction>::const_reverse_iterator
 	     i = action_latest_buffer.rbegin();
-	     i != action_latest_buffer.rend(); i++) {
+	     i != action_latest_buffer.rend(); ++i) {
 		if (i->unix_time < first_time) {
 			break;
 		}
@@ -897,7 +897,7 @@ void RollbackManager::flush()
 
 	for (iter  = action_todisk_buffer.begin();
 			iter != action_todisk_buffer.end();
-			iter++) {
+			++iter) {
 		if (iter->actor == "") {
 			continue;
 		}

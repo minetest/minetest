@@ -96,7 +96,7 @@ void NodeMetadataList::serialize(std::ostream &os) const
 
 	for(std::map<v3s16, NodeMetadata*>::const_iterator
 			i = m_data.begin();
-			i != m_data.end(); i++)
+			i != m_data.end(); ++i)
 	{
 		v3s16 p = i->first;
 		NodeMetadata *data = i->second;

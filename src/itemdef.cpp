@@ -145,7 +145,7 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	os<<serializeString(tool_capabilities_s);
 	writeU16(os, groups.size());
 	for(std::map<std::string, int>::const_iterator
-			i = groups.begin(); i != groups.end(); i++){
+			i = groups.begin(); i != groups.end(); ++i){
 		os<<serializeString(i->first);
 		writeS16(os, i->second);
 	}
@@ -261,7 +261,7 @@ public:
 #endif
 		for (std::map<std::string, ItemDefinition*>::iterator iter =
 				m_item_definitions.begin(); iter != m_item_definitions.end();
-				iter ++) {
+				++iter) {
 			delete iter->second;
 		}
 		m_item_definitions.clear();
@@ -500,7 +500,7 @@ public:
 	{
 		for(std::map<std::string, ItemDefinition*>::const_iterator
 				i = m_item_definitions.begin();
-				i != m_item_definitions.end(); i++)
+				i != m_item_definitions.end(); ++i)
 		{
 			delete i->second;
 		}

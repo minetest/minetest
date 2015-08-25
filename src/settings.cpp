@@ -1009,7 +1009,7 @@ void Settings::doCallbacks(const std::string name)
 	if (iterToVector != m_callbacks.end())
 	{
 		std::vector<std::pair<setting_changed_callback, void*> >::iterator iter;
-		for (iter = iterToVector->second.begin(); iter != iterToVector->second.end(); iter++)
+		for (iter = iterToVector->second.begin(); iter != iterToVector->second.end(); ++iter)
 		{
 			(iter->first)(name, iter->second);
 		}

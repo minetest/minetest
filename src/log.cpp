@@ -141,7 +141,7 @@ void log_printline(enum LogMessageLevel lev, const std::string &text)
 	os << getTimestamp() << ": " << levelname << "["<<threadname<<"]: " << text;
 
 	for(std::vector<ILogOutput*>::iterator i = log_outputs[lev].begin();
-			i != log_outputs[lev].end(); i++) {
+			i != log_outputs[lev].end(); ++i) {
 		ILogOutput *out = *i;
 		if (out->silence)
 			continue;

@@ -273,9 +273,9 @@ public:
 		m_device = NULL;
 
 		for (std::map<std::string, std::vector<SoundBuffer*> >::iterator i = m_buffers.begin();
-				i != m_buffers.end(); i++) {
+				i != m_buffers.end(); ++i) {
 			for (std::vector<SoundBuffer*>::iterator iter = (*i).second.begin();
-					iter != (*i).second.end(); iter++) {
+					iter != (*i).second.end(); ++iter) {
 				delete *iter;
 			}
 			(*i).second.clear();
@@ -402,11 +402,11 @@ public:
 		std::set<std::string> datas;
 		m_fetcher->fetchSounds(name, paths, datas);
 		for(std::set<std::string>::iterator i = paths.begin();
-				i != paths.end(); i++){
+				i != paths.end(); ++i){
 			loadSoundFile(name, *i);
 		}
 		for(std::set<std::string>::iterator i = datas.begin();
-				i != datas.end(); i++){
+				i != datas.end(); ++i){
 			loadSoundData(name, *i);
 		}
 		return getBuffer(name);
@@ -421,7 +421,7 @@ public:
 		std::set<int> del_list;
 		for(std::map<int, PlayingSound*>::iterator
 				i = m_sounds_playing.begin();
-				i != m_sounds_playing.end(); i++)
+				i != m_sounds_playing.end(); ++i)
 		{
 			int id = i->first;
 			PlayingSound *sound = i->second;
@@ -438,7 +438,7 @@ public:
 			verbosestream<<"OpenALSoundManager::maintain(): deleting "
 					<<del_list.size()<<" playing sounds"<<std::endl;
 		for(std::set<int>::iterator i = del_list.begin();
-				i != del_list.end(); i++)
+				i != del_list.end(); ++i)
 		{
 			deleteSound(*i);
 		}

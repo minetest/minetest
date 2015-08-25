@@ -730,7 +730,7 @@ bool InventoryList::containsItem(const ItemStack &item) const
 		return true;
 	for(std::vector<ItemStack>::const_reverse_iterator
 			i = m_items.rbegin();
-			i != m_items.rend(); i++)
+			i != m_items.rend(); ++i)
 	{
 		if(count == 0)
 			break;
@@ -750,7 +750,7 @@ ItemStack InventoryList::removeItem(const ItemStack &item)
 	ItemStack removed;
 	for(std::vector<ItemStack>::reverse_iterator
 			i = m_items.rbegin();
-			i != m_items.rend(); i++)
+			i != m_items.rend(); ++i)
 	{
 		if(i->name == item.name)
 		{

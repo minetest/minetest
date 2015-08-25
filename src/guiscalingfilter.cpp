@@ -51,13 +51,13 @@ void guiScalingCache(io::path key, video::IVideoDriver *driver, video::IImage *v
 void guiScalingCacheClear(video::IVideoDriver *driver)
 {
 	for (std::map<io::path, video::IImage *>::iterator it = g_imgCache.begin();
-			it != g_imgCache.end(); it++) {
+			it != g_imgCache.end(); ++it) {
 		if (it->second != NULL)
 			it->second->drop();
 	}
 	g_imgCache.clear();
 	for (std::map<io::path, video::ITexture *>::iterator it = g_txrCache.begin();
-			it != g_txrCache.end(); it++) {
+			it != g_txrCache.end(); ++it) {
 		if (it->second != NULL)
 			driver->removeTexture(it->second);
 	}

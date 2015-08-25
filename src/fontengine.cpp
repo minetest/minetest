@@ -122,7 +122,7 @@ void FontEngine::cleanCache()
 
 		for (std::map<unsigned int, irr::gui::IGUIFont*>::iterator iter
 				= m_font_cache[i].begin();
-				iter != m_font_cache[i].end(); iter++) {
+				iter != m_font_cache[i].end(); ++iter) {
 			iter->second->drop();
 			iter->second = NULL;
 		}
