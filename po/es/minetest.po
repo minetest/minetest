@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-02-14 13:35+0100\n"
-"Last-Translator: Diego Martínez <lkaezadl3@yahoo.com>\n"
-"Language-Team: \n"
+"PO-Revision-Date: 2015-08-26 01:25+0200\n"
+"Last-Translator: shadowninja <owenptorres@gmail.com>\n"
+"Language-Team: Spanish "
+"<https://hosted.weblate.org/projects/minetest/minetest/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 1.7.4\n"
+"X-Generator: Weblate 2.4-dev\n"
 
 #: builtin/fstk/ui.lua:82
 msgid "An error occured in a Lua script, such as a mod:"
@@ -404,9 +405,8 @@ msgid "Simple Leaves"
 msgstr "Hojas simples"
 
 #: builtin/mainmenu/tab_settings.lua:23
-#, fuzzy
 msgid "Fancy Leaves"
-msgstr "Árboles detallados"
+msgstr "Hojas elegantes"
 
 #: builtin/mainmenu/tab_settings.lua:32
 msgid "No Filter"
@@ -751,11 +751,11 @@ msgstr "Media..."
 
 #: src/game.cpp:2334
 msgid "KiB/s"
-msgstr ""
+msgstr "KiB/s"
 
 #: src/game.cpp:2338
 msgid "MiB/s"
-msgstr ""
+msgstr "MiB/s"
 
 #: src/game.cpp:4363
 msgid ""
