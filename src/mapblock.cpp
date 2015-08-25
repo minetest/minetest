@@ -501,7 +501,7 @@ static void getBlockNodeIdMapping(NameIdMapping *nimap, MapNode *nodes,
 	}
 	for(std::set<content_t>::const_iterator
 			i = unknown_contents.begin();
-			i != unknown_contents.end(); i++){
+			i != unknown_contents.end(); ++i){
 		errorstream<<"getBlockNodeIdMapping(): IGNORING ERROR: "
 				<<"Name for node id "<<(*i)<<" not known"<<std::endl;
 	}
@@ -540,14 +540,14 @@ static void correctBlockNodeIds(const NameIdMapping *nimap, MapNode *nodes,
 	}
 	for(std::set<content_t>::const_iterator
 			i = unnamed_contents.begin();
-			i != unnamed_contents.end(); i++){
+			i != unnamed_contents.end(); ++i){
 		errorstream<<"correctBlockNodeIds(): IGNORING ERROR: "
 				<<"Block contains id "<<(*i)
 				<<" with no name mapping"<<std::endl;
 	}
 	for(std::set<std::string>::const_iterator
 			i = unallocatable_contents.begin();
-			i != unallocatable_contents.end(); i++){
+			i != unallocatable_contents.end(); ++i){
 		errorstream<<"correctBlockNodeIds(): IGNORING ERROR: "
 				<<"Could not allocate global id for node name \""
 				<<(*i)<<"\""<<std::endl;

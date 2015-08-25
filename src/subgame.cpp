@@ -163,7 +163,7 @@ std::set<std::string> getAvailableGameIds()
 	}
 
 	for(std::set<std::string>::const_iterator i = gamespaths.begin();
-			i != gamespaths.end(); i++){
+			i != gamespaths.end(); ++i){
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(*i);
 		for(u32 j=0; j<dirlist.size(); j++){
 			if(!dirlist[j].dir)
@@ -189,7 +189,7 @@ std::vector<SubgameSpec> getAvailableGames()
 	std::vector<SubgameSpec> specs;
 	std::set<std::string> gameids = getAvailableGameIds();
 	for(std::set<std::string>::const_iterator i = gameids.begin();
-			i != gameids.end(); i++)
+			i != gameids.end(); ++i)
 		specs.push_back(findSubgame(*i));
 	return specs;
 }
@@ -230,7 +230,7 @@ std::vector<WorldSpec> getAvailableWorlds()
 	worldspaths.insert(porting::path_user + DIR_DELIM + "worlds");
 	infostream<<"Searching worlds..."<<std::endl;
 	for(std::set<std::string>::const_iterator i = worldspaths.begin();
-			i != worldspaths.end(); i++){
+			i != worldspaths.end(); ++i){
 		infostream<<"  In "<<(*i)<<": "<<std::endl;
 		std::vector<fs::DirListNode> dirvector = fs::GetDirListing(*i);
 		for(u32 j=0; j<dirvector.size(); j++){

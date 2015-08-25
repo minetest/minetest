@@ -165,7 +165,7 @@ const std::string serialize(const std::vector<ServerListSpec> &serverlist)
 	std::string liststring;
 	for (std::vector<ServerListSpec>::const_iterator it = serverlist.begin();
 			it != serverlist.end();
-			it++) {
+			++it) {
 		liststring += "[server]\n";
 		liststring += (*it)["name"].asString() + '\n';
 		liststring += (*it)["address"].asString() + '\n';
@@ -182,7 +182,7 @@ const std::string serializeJson(const std::vector<ServerListSpec> &serverlist)
 	Json::Value list(Json::arrayValue);
 	for (std::vector<ServerListSpec>::const_iterator it = serverlist.begin();
 			it != serverlist.end();
-			it++) {
+			++it) {
 		list.append(*it);
 	}
 	root["list"] = list;

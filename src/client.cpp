@@ -86,7 +86,7 @@ MeshUpdateQueue::~MeshUpdateQueue()
 
 	for(std::vector<QueuedMeshUpdate*>::iterator
 			i = m_queue.begin();
-			i != m_queue.end(); i++)
+			i != m_queue.end(); ++i)
 	{
 		QueuedMeshUpdate *q = *i;
 		delete q;
@@ -113,7 +113,7 @@ void MeshUpdateQueue::addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_se
 	*/
 	for(std::vector<QueuedMeshUpdate*>::iterator
 			i = m_queue.begin();
-			i != m_queue.end(); i++)
+			i != m_queue.end(); ++i)
 	{
 		QueuedMeshUpdate *q = *i;
 		if(q->p == p)
@@ -146,7 +146,7 @@ QueuedMeshUpdate *MeshUpdateQueue::pop()
 	bool must_be_urgent = !m_urgents.empty();
 	for(std::vector<QueuedMeshUpdate*>::iterator
 			i = m_queue.begin();
-			i != m_queue.end(); i++)
+			i != m_queue.end(); ++i)
 	{
 		QueuedMeshUpdate *q = *i;
 		if(must_be_urgent && m_urgents.count(q->p) == 0)
@@ -617,7 +617,7 @@ void Client::step(float dtime)
 	{
 		for(std::map<int, u16>::iterator
 				i = m_sounds_to_objects.begin();
-				i != m_sounds_to_objects.end(); i++)
+				i != m_sounds_to_objects.end(); ++i)
 		{
 			int client_id = i->first;
 			u16 object_id = i->second;
@@ -642,7 +642,7 @@ void Client::step(float dtime)
 				i != m_sounds_server_to_client.end();) {
 			s32 server_id = i->first;
 			int client_id = i->second;
-			i++;
+			++i;
 			if(!m_sound->soundExists(client_id)) {
 				m_sounds_server_to_client.erase(server_id);
 				m_sounds_client_to_server.erase(client_id);
@@ -1105,7 +1105,7 @@ void Client::sendRemovedSounds(std::vector<s32> &soundList)
 	pkt << (u16) (server_ids & 0xFFFF);
 
 	for(std::vector<s32>::iterator i = soundList.begin();
-			i != soundList.end(); i++)
+			i != soundList.end(); ++i)
 		pkt << *i;
 
 	Send(&pkt);

@@ -285,14 +285,14 @@ Server::Server(
 	// Print mods
 	infostream << "Server: Loading mods: ";
 	for(std::vector<ModSpec>::iterator i = m_mods.begin();
-			i != m_mods.end(); i++) {
+			i != m_mods.end(); ++i) {
 		const ModSpec &mod = *i;
 		infostream << mod.name << " ";
 	}
 	infostream << std::endl;
 	// Load and run "mod" scripts
 	for (std::vector<ModSpec>::iterator i = m_mods.begin();
-			i != m_mods.end(); i++) {
+			i != m_mods.end(); ++i) {
 		const ModSpec &mod = *i;
 		if (!string_allowed(mod.name, MODNAME_ALLOWED_CHARS)) {
 			std::ostringstream err;
@@ -426,7 +426,7 @@ Server::~Server()
 	// Delete detached inventories
 	for (std::map<std::string, Inventory*>::iterator
 			i = m_detached_inventories.begin();
-			i != m_detached_inventories.end(); i++) {
+			i != m_detached_inventories.end(); ++i) {
 		delete i->second;
 	}
 }
@@ -1149,7 +1149,7 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 		actionstream<<player->getName() <<" joins game. List of players: ";
 
 		for (std::vector<std::string>::iterator i = names.begin();
-				i != names.end(); i++) {
+				i != names.end(); ++i) {
 			actionstream << *i << " ";
 		}
 
@@ -1912,7 +1912,7 @@ void Server::SendPlayerPrivileges(u16 peer_id)
 	pkt << (u16) privs.size();
 
 	for(std::set<std::string>::const_iterator i = privs.begin();
-			i != privs.end(); i++) {
+			i != privs.end(); ++i) {
 		pkt << (*i);
 	}
 
@@ -2012,7 +2012,7 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 			<< (u8) params.type << pos << params.object << params.loop;
 
 	for(std::vector<u16>::iterator i = dst_clients.begin();
-			i != dst_clients.end(); i++) {
+			i != dst_clients.end(); ++i) {
 		psound.clients.insert(*i);
 		m_clients.send(*i, 0, &pkt, true);
 	}
@@ -2031,7 +2031,7 @@ void Server::stopSound(s32 handle)
 	pkt << handle;
 
 	for(std::set<u16>::iterator i = psound.clients.begin();
-			i != psound.clients.end(); i++) {
+			i != psound.clients.end(); ++i) {
 		// Send as reliable
 		m_clients.send(*i, 0, &pkt, true);
 	}
@@ -2227,7 +2227,7 @@ void Server::fillMediaCache()
 	// Collect all media file paths
 	std::vector<std::string> paths;
 	for(std::vector<ModSpec>::iterator i = m_mods.begin();
-			i != m_mods.end(); i++) {
+			i != m_mods.end(); ++i) {
 		const ModSpec &mod = *i;
 		paths.push_back(mod.path + DIR_DELIM + "textures");
 		paths.push_back(mod.path + DIR_DELIM + "sounds");
@@ -2238,7 +2238,7 @@ void Server::fillMediaCache()
 
 	// Collect media file information from paths into cache
 	for(std::vector<std::string>::iterator i = paths.begin();
-			i != paths.end(); i++) {
+			i != paths.end(); ++i) {
 		std::string mediapath = *i;
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(mediapath);
 		for (u32 j = 0; j < dirlist.size(); j++) {
@@ -2489,7 +2489,7 @@ void Server::sendDetachedInventories(u16 peer_id)
 
 	for(std::map<std::string, Inventory*>::iterator
 			i = m_detached_inventories.begin();
-			i != m_detached_inventories.end(); i++) {
+			i != m_detached_inventories.end(); ++i) {
 		const std::string &name = i->first;
 		//Inventory *inv = i->second;
 		sendDetachedInventory(name, peer_id);
@@ -2640,7 +2640,7 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 			if(psound.clients.empty())
 				m_playing_sounds.erase(i++);
 			else
-				i++;
+				++i;
 		}
 
 		Player *player = m_env->getPlayer(peer_id);
@@ -3153,7 +3153,7 @@ bool Server::rollbackRevertActions(const std::list<RollbackAction> &actions,
 
 	for(std::list<RollbackAction>::const_iterator
 			i = actions.begin();
-			i != actions.end(); i++)
+			i != actions.end(); ++i)
 	{
 		const RollbackAction &action = *i;
 		num_tried++;

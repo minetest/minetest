@@ -468,7 +468,7 @@ void Hud::drawCrosshair() {
 void Hud::drawSelectionBoxes(std::vector<aabb3f> &hilightboxes) {
 	for (std::vector<aabb3f>::const_iterator
 			i = hilightboxes.begin();
-			i != hilightboxes.end(); i++) {
+			i != hilightboxes.end(); ++i) {
 		driver->draw3DBox(*i, selectionbox_argb);
 	}
 }

@@ -194,7 +194,7 @@ class SourceImageCache
 public:
 	~SourceImageCache() {
 		for (std::map<std::string, video::IImage*>::iterator iter = m_images.begin();
-				iter != m_images.end(); iter++) {
+				iter != m_images.end(); ++iter) {
 			iter->second->drop();
 		}
 		m_images.clear();
@@ -461,7 +461,7 @@ TextureSource::~TextureSource()
 
 	for (std::vector<TextureInfo>::iterator iter =
 			m_textureinfo_cache.begin();
-			iter != m_textureinfo_cache.end(); iter++)
+			iter != m_textureinfo_cache.end(); ++iter)
 	{
 		//cleanup texture
 		if (iter->texture)
@@ -471,7 +471,7 @@ TextureSource::~TextureSource()
 
 	for (std::vector<video::ITexture*>::iterator iter =
 			m_texture_trash.begin(); iter != m_texture_trash.end();
-			iter++) {
+			++iter) {
 		video::ITexture *t = *iter;
 
 		//cleanup trashed texture

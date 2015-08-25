@@ -1548,7 +1548,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			std::vector<aabb3f> boxes = n.getNodeBoxes(nodedef);
 			for(std::vector<aabb3f>::iterator
 					i = boxes.begin();
-					i != boxes.end(); i++)
+					i != boxes.end(); ++i)
 			{
 			for(int j = 0; j < 6; j++)
 				{
@@ -1689,7 +1689,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			v3f pos = intToFloat(p, BS);
 			f32 d = 0.05 * BS;
 			for (std::vector<aabb3f>::iterator i = boxes.begin();
-					i != boxes.end(); i++) {
+					i != boxes.end(); ++i) {
 				aabb3f box = *i;
 				box.MinEdge += v3f(-d, -d, -d) + pos;
 				box.MaxEdge += v3f(d, d, d) + pos;

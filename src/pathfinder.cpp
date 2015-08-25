@@ -313,7 +313,7 @@ std::vector<v3s16> pathfinder::get_Path(ServerEnvironment* env,
 		//finalize path
 		std::vector<v3s16> full_path;
 		for (std::vector<v3s16>::iterator i = path.begin();
-					i != path.end(); i++) {
+					i != path.end(); ++i) {
 			full_path.push_back(getIndexElement(*i).pos);
 		}
 
@@ -724,7 +724,7 @@ v3s16 pathfinder::get_dir_heuristic(std::vector<v3s16>& directions,path_gridnode
 
 	for (std::vector<v3s16>::iterator iter = directions.begin();
 			iter != directions.end();
-			iter ++) {
+			++iter) {
 
 		v3s16 pos1 =  v3s16(srcpos.X + iter->X,0,srcpos.Z+iter->Z);
 
@@ -749,7 +749,7 @@ v3s16 pathfinder::get_dir_heuristic(std::vector<v3s16>& directions,path_gridnode
 	if (retdir != v3s16(0,0,0)) {
 		for (std::vector<v3s16>::iterator iter = directions.begin();
 					iter != directions.end();
-					iter ++) {
+					++iter) {
 			if(*iter == retdir) {
 				DEBUG_OUT("Pathfinder: removing return direction" << std::endl);
 				directions.erase(iter);
@@ -1064,7 +1064,7 @@ void pathfinder::print_path(std::vector<v3s16> path) {
 
 	unsigned int current = 0;
 	for (std::vector<v3s16>::iterator i = path.begin();
-			i != path.end(); i++) {
+			i != path.end(); ++i) {
 		std::cout << std::setw(3) << current << ":" << PPOS((*i)) << std::endl;
 		current++;
 	}

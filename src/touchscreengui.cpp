@@ -331,7 +331,7 @@ bool TouchScreenGUI::isHUDButton(const SEvent &event)
 {
 	// check if hud item is pressed
 	for (std::map<int,rect<s32> >::iterator iter = m_hud_rects.begin();
-			iter != m_hud_rects.end(); iter++) {
+			iter != m_hud_rects.end(); ++iter) {
 		if (iter->second.isPointInside(
 				v2s32(event.TouchInput.X,
 						event.TouchInput.Y)
@@ -510,7 +510,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 		}
 
 		for (std::vector<id_status>::iterator iter = m_known_ids.begin();
-				iter != m_known_ids.end(); iter++) {
+				iter != m_known_ids.end(); ++iter) {
 			if (iter->id == event.TouchInput.ID) {
 				m_known_ids.erase(iter);
 				break;
@@ -591,7 +591,7 @@ void TouchScreenGUI::handleChangedButton(const SEvent &event)
 			continue;
 		}
 		for(std::vector<int>::iterator iter = m_buttons[i].ids.begin();
-				iter != m_buttons[i].ids.end(); iter++) {
+				iter != m_buttons[i].ids.end(); ++iter) {
 
 			if (event.TouchInput.ID == *iter) {
 

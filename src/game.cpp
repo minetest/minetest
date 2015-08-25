@@ -375,7 +375,7 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 
 				for (std::vector<aabb3f>::const_iterator
 						i = boxes.begin();
-						i != boxes.end(); i++) {
+						i != boxes.end(); ++i) {
 					aabb3f box = *i;
 					box.MinEdge += npf;
 					box.MaxEdge += npf;
@@ -420,7 +420,7 @@ PointedThing getPointedThing(Client *client, v3f player_position,
 						if (!g_settings->getBool("enable_node_highlighting")) {
 							for (std::vector<aabb3f>::const_iterator
 									i2 = boxes.begin();
-									i2 != boxes.end(); i2++) {
+									i2 != boxes.end(); ++i2) {
 								aabb3f box = *i2;
 								box.MinEdge += npf + v3f(-d, -d, -d) - intToFloat(camera_offset, BS);
 								box.MaxEdge += npf + v3f(d, d, d) - intToFloat(camera_offset, BS);
@@ -514,11 +514,11 @@ public:
 		std::map<std::string, Meta> m_meta;
 
 		for (std::vector<Piece>::const_iterator k = m_log.begin();
-				k != m_log.end(); k++) {
+				k != m_log.end(); ++k) {
 			const Piece &piece = *k;
 
 			for (Profiler::GraphValues::const_iterator i = piece.values.begin();
-					i != piece.values.end(); i++) {
+					i != piece.values.end(); ++i) {
 				const std::string &id = i->first;
 				const float &value = i->second;
 				std::map<std::string, Meta>::iterator j =
@@ -550,7 +550,7 @@ public:
 		u32 next_color_i = 0;
 
 		for (std::map<std::string, Meta>::iterator i = m_meta.begin();
-				i != m_meta.end(); i++) {
+				i != m_meta.end(); ++i) {
 			Meta &meta = i->second;
 			video::SColor color(255, 200, 200, 200);
 
@@ -566,7 +566,7 @@ public:
 		s32 meta_i = 0;
 
 		for (std::map<std::string, Meta>::const_iterator i = m_meta.begin();
-				i != m_meta.end(); i++) {
+				i != m_meta.end(); ++i) {
 			const std::string &id = i->first;
 			const Meta &meta = i->second;
 			s32 x = x_left;
@@ -602,7 +602,7 @@ public:
 			bool lastscaledvalue_exists = false;
 
 			for (std::vector<Piece>::const_iterator j = m_log.begin();
-					j != m_log.end(); j++) {
+					j != m_log.end(); ++j) {
 				const Piece &piece = *j;
 				float value = 0;
 				bool value_exists = false;

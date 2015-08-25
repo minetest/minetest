@@ -228,7 +228,7 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 		u32 sector_blocks_drawn = 0;
 
 		for(MapBlockVect::iterator i = sectorblocks.begin();
-				i != sectorblocks.end(); i++)
+				i != sectorblocks.end(); ++i)
 		{
 			MapBlock *block = *i;
 

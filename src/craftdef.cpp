@@ -964,10 +964,10 @@ public:
 	{
 		std::ostringstream os(std::ios::binary);
 		os << "Crafting definitions:\n";
-		for (int type = 0; type <= craft_hash_type_max; type++) {
+		for (int type = 0; type <= craft_hash_type_max; ++type) {
 			for (std::map<u64, std::vector<CraftDefinition*> >::const_iterator
 					it = (m_craft_defs[type]).begin();
-					it != (m_craft_defs[type]).end(); it++) {
+					it != (m_craft_defs[type]).end(); ++it) {
 				for (std::vector<CraftDefinition*>::size_type i = 0;
 						i < it->second.size(); i++) {
 					os << "type " << type
@@ -992,10 +992,10 @@ public:
 	}
 	virtual void clear()
 	{
-		for (int type = 0; type <= craft_hash_type_max; type++) {
+		for (int type = 0; type <= craft_hash_type_max; ++type) {
 			for (std::map<u64, std::vector<CraftDefinition*> >::iterator
 					it = m_craft_defs[type].begin();
-					it != m_craft_defs[type].end(); it++) {
+					it != m_craft_defs[type].end(); ++it) {
 				for (std::vector<CraftDefinition*>::iterator
 						iit = it->second.begin();
 						iit != it->second.end(); ++iit) {

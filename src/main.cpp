@@ -357,7 +357,7 @@ static void list_game_ids()
 {
 	std::set<std::string> gameids = getAvailableGameIds();
 	for (std::set<std::string>::const_iterator i = gameids.begin();
-			i != gameids.end(); i++)
+			i != gameids.end(); ++i)
 		dstream << (*i) <<std::endl;
 }
 

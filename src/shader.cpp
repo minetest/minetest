@@ -379,7 +379,7 @@ ShaderSource::ShaderSource(IrrlichtDevice *device):
 ShaderSource::~ShaderSource()
 {
 	for (std::vector<IShaderConstantSetter*>::iterator iter = m_global_setters.begin();
-			iter != m_global_setters.end(); iter++) {
+			iter != m_global_setters.end(); ++iter) {
 		delete *iter;
 	}
 	m_global_setters.clear();

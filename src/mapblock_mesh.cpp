@@ -1296,7 +1296,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 	{
 		for(std::map<u32, std::string>::iterator
 				i = m_crack_materials.begin();
-				i != m_crack_materials.end(); i++)
+				i != m_crack_materials.end(); ++i)
 		{
 			scene::IMeshBuffer *buf = m_mesh->getMeshBuffer(i->first);
 			std::string basename = i->second;
@@ -1328,7 +1328,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 	// Texture animation
 	for(std::map<u32, TileSpec>::iterator
 			i = m_animation_tiles.begin();
-			i != m_animation_tiles.end(); i++)
+			i != m_animation_tiles.end(); ++i)
 	{
 		const TileSpec &tile = i->second;
 		// Figure out current frame
@@ -1358,13 +1358,13 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 	{
 		for(std::map<u32, std::map<u32, std::pair<u8, u8> > >::iterator
 				i = m_daynight_diffs.begin();
-				i != m_daynight_diffs.end(); i++)
+				i != m_daynight_diffs.end(); ++i)
 		{
 			scene::IMeshBuffer *buf = m_mesh->getMeshBuffer(i->first);
 			video::S3DVertexTangents *vertices = (video::S3DVertexTangents *)buf->getVertices();
 			for(std::map<u32, std::pair<u8, u8 > >::iterator
 					j = i->second.begin();
-					j != i->second.end(); j++)
+					j != i->second.end(); ++j)
 			{
 				u8 day = j->second.first;
 				u8 night = j->second.second;
@@ -1389,7 +1389,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 
 		for(std::list<u32>::iterator
 			i = m_highlighted_materials.begin();
-			i != m_highlighted_materials.end(); i++)
+			i != m_highlighted_materials.end(); ++i)
 		{
 			scene::IMeshBuffer *buf = m_mesh->getMeshBuffer(*i);
 			video::S3DVertexTangents *vertices = (video::S3DVertexTangents*)buf->getVertices();

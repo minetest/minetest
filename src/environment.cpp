@@ -613,19 +613,19 @@ public:
 					= abm->getRequiredNeighbors();
 			for(std::set<std::string>::iterator
 					i = required_neighbors_s.begin();
-					i != required_neighbors_s.end(); i++)
+					i != required_neighbors_s.end(); ++i)
 			{
 				ndef->getIds(*i, aabm.required_neighbors);
 			}
 			// Trigger contents
 			std::set<std::string> contents_s = abm->getTriggerContents();
 			for(std::set<std::string>::iterator
-					i = contents_s.begin(); i != contents_s.end(); i++)
+					i = contents_s.begin(); i != contents_s.end(); ++i)
 			{
 				std::set<content_t> ids;
 				ndef->getIds(*i, ids);
 				for(std::set<content_t>::const_iterator k = ids.begin();
-						k != ids.end(); k++)
+						k != ids.end(); ++k)
 				{
 					content_t c = *k;
 					std::map<content_t, std::vector<ActiveABM> >::iterator j;
@@ -694,7 +694,7 @@ public:
 				continue;
 
 			for(std::vector<ActiveABM>::iterator
-					i = j->second.begin(); i != j->second.end(); i++) {
+					i = j->second.begin(); i != j->second.end(); ++i) {
 				if(myrand() % i->chance != 0)
 					continue;
 
@@ -772,7 +772,7 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 		MapNode n;
 		for(std::map<v3s16, NodeTimer>::iterator
 				i = elapsed_timers.begin();
-				i != elapsed_timers.end(); i++){
+				i != elapsed_timers.end(); ++i){
 			n = block->getNodeNoEx(i->first);
 			v3s16 p = i->first + block->getPosRelative();
 			if(m_script->node_on_timer(p,n,i->second.elapsed))
@@ -1161,7 +1161,7 @@ void ServerEnvironment::step(float dtime)
 				MapNode n;
 				for(std::map<v3s16, NodeTimer>::iterator
 						i = elapsed_timers.begin();
-						i != elapsed_timers.end(); i++){
+						i != elapsed_timers.end(); ++i){
 					n = block->getNodeNoEx(i->first);
 					p = i->first + block->getPosRelative();
 					if(m_script->node_on_timer(p,n,i->second.elapsed))

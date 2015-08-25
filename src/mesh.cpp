@@ -402,7 +402,7 @@ scene::IMesh* convertNodeboxNodeToMesh(ContentFeatures *f)
 		
 	for(std::vector<aabb3f>::iterator
 			i = boxes.begin();
-			i != boxes.end(); i++)
+			i != boxes.end(); ++i)
 	{
 		aabb3f box = *i;
 

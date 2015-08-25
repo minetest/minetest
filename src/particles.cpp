@@ -288,7 +288,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 			}
 			else
 			{
-				i++;
+				++i;
 			}
 		}
 	}
@@ -360,7 +360,7 @@ void ParticleManager::stepSpawners (float dtime)
 		else
 		{
 			i->second->step(dtime, m_env);
-			i++;
+			++i;
 		}
 	}
 }
@@ -380,7 +380,7 @@ void ParticleManager::stepParticles (float dtime)
 		else
 		{
 			(*i)->step(dtime);
-			i++;
+			++i;
 		}
 	}
 }

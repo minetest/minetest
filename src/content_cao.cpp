@@ -1820,7 +1820,7 @@ std::string GenericCAO::debugInfoText()
 	os<<"GenericCAO hp="<<m_hp<<"\n";
 	os<<"armor={";
 	for(ItemGroupList::const_iterator i = m_armor_groups.begin();
-			i != m_armor_groups.end(); i++)
+			i != m_armor_groups.end(); ++i)
 	{
 		os<<i->first<<"="<<i->second<<", ";
 	}

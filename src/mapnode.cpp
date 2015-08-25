@@ -192,7 +192,7 @@ static std::vector<aabb3f> transformNodeBox(const MapNode &n,
 		facedir&=0x03;
 		for(std::vector<aabb3f>::const_iterator
 				i = fixed.begin();
-				i != fixed.end(); i++)
+				i != fixed.end(); ++i)
 		{
 			aabb3f box = *i;
 
