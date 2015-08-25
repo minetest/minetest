@@ -52,13 +52,13 @@ public:
 	{
 		// Store current mod name in registry
 		lua_pushstring(L, mod_name.c_str());
-		lua_setfield(L, LUA_REGISTRYINDEX, SCRIPT_MOD_NAME_FIELD);
+		lua_rawseti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
 	}
 	~ModNameStorer()
 	{
 		// Clear current mod name from registry
 		lua_pushnil(L);
-		lua_setfield(L, LUA_REGISTRYINDEX, SCRIPT_MOD_NAME_FIELD);
+		lua_rawseti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
 	}
 };
 
@@ -84,7 +84,7 @@ ScriptApiBase::ScriptApiBase()
 
 	// Make the ScriptApiBase* accessible to ModApiBase
 	lua_pushlightuserdata(m_luastack, this);
-	lua_setfield(m_luastack, LUA_REGISTRYINDEX, "scriptapi");
+	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
 
 	// If we are using LuaJIT add a C++ wrapper function to catch
 	// exceptions thrown in Lua -> C++ calls

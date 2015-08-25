@@ -371,7 +371,7 @@ int ModApiUtil::l_request_insecure_environment(lua_State *L)
 		lua_getglobal(L, "_G");
 		return 1;
 	}
-	lua_getfield(L, LUA_REGISTRYINDEX, SCRIPT_MOD_NAME_FIELD);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
 	if (!lua_isstring(L, -1)) {
 		lua_pushnil(L);
 		return 1;
@@ -383,7 +383,7 @@ int ModApiUtil::l_request_insecure_environment(lua_State *L)
 		lua_pushnil(L);
 		return 1;
 	}
-	lua_getfield(L, LUA_REGISTRYINDEX, "globals_backup");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
 	return 1;
 }
 
