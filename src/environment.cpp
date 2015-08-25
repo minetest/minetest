@@ -2229,15 +2229,12 @@ void ClientEnvironment::step(float dtime)
 		MapNode n_head = m_map->getNodeNoEx(p3);
 
 		/*
-			Damage by drowning
+			Damage by drowning / suffocation (damage via damage_per_second)
 		*/
 		const ContentFeatures &f = m_gamedef->ndef()->get(n_head);
-		if (f.drowning > 0) {
-			// Use damage_per_second damage if specified
-			u32 drowning_damage = f.damage_per_second > 0 ? f.damage_per_second : 1;
-			if (lplayer->getBreath() == 0) {
-				damageLocalPlayer(drowning_damage, true);
-			}
+		if (f.drowning > 0 && f.damage_per_second > 0) {
+			if (lplayer->getBreath() == 0)
+				damageLocalPlayer(f.damage_per_second, true);
 		}
 
 		/*
@@ -2267,9 +2264,9 @@ void ClientEnvironment::step(float dtime)
 		v3s16 p = floatToInt(pf + v3f(0, BS * 1.6, 0), BS);
 		MapNode n = m_map->getNodeNoEx(p);
 		const ContentFeatures &f = m_gamedef->ndef()->get(n);
-		u8 breath_loss = f.drowning;
+		u8 breath_loss = f.damage_per_second > 0 ? f.drowning : 1;
 
-		if (breath_loss > 0 && lplayer->hp > 0) {
+		if (f.drowning > 0 && lplayer->hp > 0) {
 			u16 breath = lplayer->getBreath();
 			if(breath > 10) {
 				breath = 11;
@@ -2282,6 +2279,11 @@ void ClientEnvironment::step(float dtime)
 			}
 			lplayer->setBreath(breath);
 			updateLocalPlayerBreath(breath);
+
+			// Fallback to "old" drowning
+			if (breath == 0 && f.damage_per_second < 1) {
+				damageLocalPlayer(f.drowning, true);
+			}
 		}
 	}
 
@@ -2619,5 +2621,3 @@ ClientEnvEvent ClientEnvironment::getClientEvent()
 }
 
 #endif // #ifndef SERVER
-
-
