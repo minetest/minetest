@@ -47,7 +47,7 @@ static inline void copy_safe(lua_State *L, const char *list[], unsigned len, int
 // Pushes the original version of a library function on the stack, from the old version
 static inline void push_original(lua_State *L, const char *lib, const char *func)
 {
-	lua_getfield(L, LUA_REGISTRYINDEX, "globals_backup");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
 	lua_getfield(L, -1, lib);
 	lua_remove(L, -2);  // Remove globals_backup
 	lua_getfield(L, -1, func);
@@ -143,7 +143,7 @@ void ScriptApiSecurity::initializeSecurity()
 
 	// Backup globals to the registry
 	lua_getglobal(L, "_G");
-	lua_setfield(L, LUA_REGISTRYINDEX, "globals_backup");
+	lua_rawseti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
 
 	// Replace the global environment with an empty one
 #if LUA_VERSION_NUM <= 501
@@ -165,7 +165,7 @@ void ScriptApiSecurity::initializeSecurity()
 #endif
 
 	// Get old globals
-	lua_getfield(L, LUA_REGISTRYINDEX, "globals_backup");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
 	int old_globals = lua_gettop(L);
 
 
@@ -241,7 +241,7 @@ void ScriptApiSecurity::initializeSecurity()
 
 bool ScriptApiSecurity::isSecure(lua_State *L)
 {
-	lua_getfield(L, LUA_REGISTRYINDEX, "globals_backup");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
 	bool secure = !lua_isnil(L, -1);
 	lua_pop(L, 1);
 	return secure;
@@ -356,7 +356,7 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path)
 	if (!removed.empty()) abs_path += DIR_DELIM + removed;
 
 	// Get server from registry
-	lua_getfield(L, LUA_REGISTRYINDEX, "scriptapi");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
 	ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
 	lua_pop(L, 1);
 	const Server *server = script->getServer();
@@ -364,7 +364,7 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path)
 	if (!server) return false;
 
 	// Get mod name
-	lua_getfield(L, LUA_REGISTRYINDEX, SCRIPT_MOD_NAME_FIELD);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
 	if (lua_isstring(L, -1)) {
 		std::string mod_name = lua_tostring(L, -1);
 

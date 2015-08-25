@@ -345,7 +345,7 @@ int ModApiServer::l_show_formspec(lua_State *L)
 int ModApiServer::l_get_current_modname(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	lua_getfield(L, LUA_REGISTRYINDEX, SCRIPT_MOD_NAME_FIELD);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
 	return 1;
 }
 
@@ -442,7 +442,7 @@ int ModApiServer::l_notify_authentication_modified(lua_State *L)
 int ModApiServer::l_get_last_run_mod(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	lua_getfield(L, LUA_REGISTRYINDEX, SCRIPT_MOD_NAME_FIELD);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
 	const char *current_mod = lua_tostring(L, -1);
 	if (current_mod == NULL || current_mod[0] == '\0') {
 		lua_pop(L, 1);
