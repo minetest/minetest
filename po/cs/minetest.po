@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-08-25 18:58+0100\n"
-"Last-Translator: Jakub Vanek <vanek.jakub4@seznam.cz>\n"
-"Language-Team: Czech <>\n"
+"PO-Revision-Date: 2015-08-25 19:54+0200\n"
+"Last-Translator: Jakub Vaněk <vanek.jakub4@seznam.cz>\n"
+"Language-Team: Czech "
+"<https://hosted.weblate.org/projects/minetest/minetest/cs/>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Weblate 2.4-dev\n"
 
 #: builtin/fstk/ui.lua:82
 msgid "An error occured in a Lua script, such as a mod:"
@@ -123,7 +125,7 @@ msgstr "Varování: \"Minimal development test\" je zamýšlen pouze pro vývoj�
 
 #: builtin/mainmenu/dlg_create_world.lua:73
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr "Stáhněte si z minetest.net podhru, například minetest_game."
+msgstr "Stáhněte si z minetest.net podhru, například minetest_game"
 
 #: builtin/mainmenu/dlg_create_world.lua:99
 msgid "A world named \"$1\" already exists"
@@ -468,7 +470,7 @@ msgstr "Renderování:"
 
 #: builtin/mainmenu/tab_settings.lua:226
 msgid "Restart minetest for driver change to take effect"
-msgstr "Aby se změna ovladače projevila, restartujte Minetest."
+msgstr "Aby se změna ovladače projevila, restartujte Minetest"
 
 #: builtin/mainmenu/tab_settings.lua:228
 msgid "Shaders"
@@ -845,7 +847,7 @@ msgstr "Turbo"
 
 #: src/guiKeyChangeMenu.cpp:413
 msgid "Toggle Cinematic"
-msgstr "Režim pohybu kamery"
+msgstr "Plynulý pohyb kamery"
 
 #: src/guiKeyChangeMenu.cpp:414
 msgid "Toggle noclip"
