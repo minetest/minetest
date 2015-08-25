@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-02-12 16:16+0100\n"
+"PO-Revision-Date: 2015-08-25 18:58+0100\n"
 "Last-Translator: Jakub Vanek <vanek.jakub4@seznam.cz>\n"
 "Language-Team: Czech <>\n"
 "Language: cs\n"
@@ -19,11 +19,11 @@ msgstr ""
 
 #: builtin/fstk/ui.lua:82
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
+msgstr "Nastala chyba v Lua skriptu, což může být např. mod:"
 
 #: builtin/fstk/ui.lua:84
 msgid "An error occured:"
-msgstr ""
+msgstr "Nastala chyba:"
 
 #: builtin/fstk/ui.lua:89 builtin/mainmenu/store.lua:165
 msgid "Ok"
@@ -36,6 +36,8 @@ msgstr "Nahrávám..."
 #: builtin/mainmenu/common.lua:240
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
+"Zkuste znovu povolit seznam veřejných serverů a zkontrolujte své internetové "
+"připojení."
 
 #: builtin/mainmenu/dlg_config_world.lua:29
 msgid "World:"
@@ -240,16 +242,15 @@ msgstr "Autoři"
 
 #: builtin/mainmenu/tab_credits.lua:31
 msgid "Core Developers"
-msgstr "Vývojáři jádra"
+msgstr "Klíčoví vývojáři"
 
 #: builtin/mainmenu/tab_credits.lua:47
 msgid "Active Contributors"
 msgstr "Aktivní přispěvatelé"
 
 #: builtin/mainmenu/tab_credits.lua:54
-#, fuzzy
 msgid "Previous Core Developers"
-msgstr "Vývojáři jádra"
+msgstr "Bývalí klíčoví vývojáři"
 
 #: builtin/mainmenu/tab_credits.lua:59
 msgid "Previous Contributors"
@@ -382,28 +383,24 @@ msgstr "Port serveru"
 
 #: builtin/mainmenu/tab_server.lua:138
 #: builtin/mainmenu/tab_singleplayer.lua:165
-#, fuzzy
 msgid "No world created or selected!"
-msgstr "Nebyla vybrána podhra nebo název"
+msgstr "Nevybrali jste žádný svět!"
 
 #: builtin/mainmenu/tab_server.lua:191
 msgid "Server"
 msgstr "Server"
 
 #: builtin/mainmenu/tab_settings.lua:21
-#, fuzzy
 msgid "Opaque Leaves"
-msgstr "Neprůhledná voda"
+msgstr "Neprůhledné listí"
 
 #: builtin/mainmenu/tab_settings.lua:22
-#, fuzzy
 msgid "Simple Leaves"
-msgstr "Vlnění listů"
+msgstr "Jednoduché listí"
 
 #: builtin/mainmenu/tab_settings.lua:23
-#, fuzzy
 msgid "Fancy Leaves"
-msgstr "Ozdobné stromy"
+msgstr "Vícevrstevné listí"
 
 #: builtin/mainmenu/tab_settings.lua:32
 msgid "No Filter"
@@ -575,12 +572,11 @@ msgstr "Sestavuji shadery..."
 
 #: src/client.cpp:1743
 msgid "Initializing nodes..."
-msgstr "Inicializuji bloky..."
+msgstr "Vytvářím bloky..."
 
 #: src/client.cpp:1760
-#, fuzzy
 msgid "Initializing nodes"
-msgstr "Inicializuji bloky..."
+msgstr "Vytvářím bloky"
 
 #: src/client.cpp:1768
 msgid "Item textures..."
@@ -747,11 +743,11 @@ msgstr "Média..."
 
 #: src/game.cpp:2334
 msgid "KiB/s"
-msgstr ""
+msgstr "KiB/s"
 
 #: src/game.cpp:2338
 msgid "MiB/s"
-msgstr ""
+msgstr "MiB/s"
 
 #: src/game.cpp:4363
 msgid ""
@@ -848,9 +844,8 @@ msgid "Toggle fast"
 msgstr "Turbo"
 
 #: src/guiKeyChangeMenu.cpp:413
-#, fuzzy
 msgid "Toggle Cinematic"
-msgstr "Turbo"
+msgstr "Režim pohybu kamery"
 
 #: src/guiKeyChangeMenu.cpp:414
 msgid "Toggle noclip"
