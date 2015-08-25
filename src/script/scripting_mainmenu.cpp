@@ -78,7 +78,7 @@ void MainMenuScripting::initializeModApi(lua_State *L, int top)
 
 /******************************************************************************/
 void MainMenuScripting::step() {
-	asyncEngine.step(getStack(), m_errorhandler);
+	asyncEngine.step(getStack());
 }
 
 /******************************************************************************/

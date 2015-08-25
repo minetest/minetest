@@ -109,8 +109,6 @@ protected:
 
 	Mutex           m_luastackmutex;
 	std::string     m_last_run_mod;
-	// Stack index of Lua error handler
-	int             m_errorhandler;
 	bool            m_secure;
 #ifdef SCRIPTAPI_LOCK_DEBUG
 	bool            m_locked;
