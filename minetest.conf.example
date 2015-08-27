@@ -516,18 +516,19 @@
 #    Mapgen stuff
 #
 
-#    Name of map generator to be used.  Currently supported: v5, v6, v7, singlenode.
+#    Name of map generator to be used.
+#    Currently supported: v5, v6, v7, singlenode.
 #mg_name = v6
 #    Water surface level of map
 #water_level = 1
 #    Size of chunks to be generated, stated in mapblocks (16 nodes)
 #chunksize = 5
-#    Global map generation attributes.  Currently supported: trees, caves, flat, dungeons, light.
+#    Global map generation attributes.
+#    Currently supported: trees, caves, flat, dungeons, light.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    To explicitly turn off a flag, prepend "no" to the beginning, e.g. nolight.
+#    'trees' and 'flat' flags only have effect in mgv6.
 #mg_flags = trees, caves, dungeons, light
-#    Enable/disable floating dungeons and dungeon slices
-#enable_floating_dungeons = true
 
 #    Map generation attributes specific to Mapgen V6.
 #    Currently supported: jungles, biomeblend, mudflow, snowbiomes.
@@ -540,11 +541,13 @@
 
 #    Map generation attributes specific to Mapgen V7.
 #    Currently supported: mountains, ridges.
+#    'ridges' are the rivers.
 #mgv7_spflags = mountains, ridges
 
 #    Perlin noise attributes for different map generation parameters.
 #    Noise parameters can be specified as a set of positional values:
 #    Offset, scale, (spread factors), seed offset, number of octaves, persistence, lacunarity.
+#    For example:
 #mgv6_np_terrain_base = -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0
 #    Or the new group format can be used instead, for example:
 #mgv6_np_terrain_base = {

@@ -80,17 +80,14 @@ void DungeonGen::generate(u32 bseed, v3s16 nmin, v3s16 nmax)
 	// Dungeon generator doesn't modify places which have this set
 	vm->clearFlag(VMANIP_FLAG_DUNGEON_INSIDE | VMANIP_FLAG_DUNGEON_PRESERVE);
 
-	bool no_float = !g_settings->getBool("enable_floating_dungeons");
-
-	// Set all air and water (and optionally ignore) to be untouchable
+	// Set all air and water to be untouchable
 	// to make dungeons open to caves and open air
 	for (s16 z = nmin.Z; z <= nmax.Z; z++) {
 		for (s16 y = nmin.Y; y <= nmax.Y; y++) {
 			u32 i = vm->m_area.index(nmin.X, y, z);
 			for (s16 x = nmin.X; x <= nmax.X; x++) {
 				content_t c = vm->m_data[i].getContent();
-				if (c == CONTENT_AIR || c == dp.c_water ||
-						(no_float && c == CONTENT_IGNORE))
+				if (c == CONTENT_AIR || c == dp.c_water)
 					vm->m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
 				i++;
 			}
@@ -141,21 +138,21 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 		// start_padding is used to disallow starting the generation of
 		// a dungeon in a neighboring generation chunk
 		roomplace = vm->m_area.MinEdge + start_padding + v3s16(
-			random.range(0, areasize.X - roomsize.X - 1 - start_padding.X),
-			random.range(0, areasize.Y - roomsize.Y - 1 - start_padding.Y),
-			random.range(0, areasize.Z - roomsize.Z - 1 - start_padding.Z));
+			random.range(0, areasize.X - roomsize.X - start_padding.X),
+			random.range(0, areasize.Y - roomsize.Y - start_padding.Y),
+			random.range(0, areasize.Z - roomsize.Z - start_padding.Z));
 
 		/*
 			Check that we're not putting the room to an unknown place,
 			otherwise it might end up floating in the air
 		*/
 		fits = true;
-		for (s16 z = 1; z < roomsize.Z - 1; z++)
-		for (s16 y = 1; y < roomsize.Y - 1; y++)
-		for (s16 x = 1; x < roomsize.X - 1; x++) {
+		for (s16 z = 0; z < roomsize.Z; z++)
+		for (s16 y = 0; y < roomsize.Y; y++)
+		for (s16 x = 0; x < roomsize.X; x++) {
 			v3s16 p = roomplace + v3s16(x, y, z);
 			u32 vi = vm->m_area.index(p);
-			if ((vm->m_flags[vi] & VMANIP_FLAG_DUNGEON_INSIDE) ||
+			if ((vm->m_flags[vi] & VMANIP_FLAG_DUNGEON_UNTOUCHABLE) ||
 					vm->m_data[vi].getContent() == CONTENT_IGNORE) {
 				fits = false;
 				break;
