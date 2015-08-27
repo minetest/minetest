@@ -312,7 +312,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("chunksize", "5");
 	settings->setDefault("mg_flags", "dungeons");
 	settings->setDefault("mgv6_spflags", "jungles, snowbiomes");
-	settings->setDefault("enable_floating_dungeons", "true");
 
 	// IPv6
 	settings->setDefault("enable_ipv6", "true");
