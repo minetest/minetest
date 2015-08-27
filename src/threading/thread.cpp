@@ -80,7 +80,7 @@ DEALINGS IN THE SOFTWARE.
 	#include <sys/processor.h>
 #elif defined(__APPLE__)
 	#include <mach/mach_init.h>
-	#include <mach/thread_policy.h>
+	#include <mach/thread_act.h>
 #endif
 
 

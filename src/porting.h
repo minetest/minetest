@@ -108,6 +108,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <CoreFoundation/CoreFoundation.h>
 #endif
 
+#ifndef _WIN32 // Posix
+	#include <sys/time.h>
+	#include <time.h>
+	#if defined(__MACH__) && defined(__APPLE__)
+		#include <mach/clock.h>
+		#include <mach/mach.h>
+	#endif
+#endif
+
 namespace porting
 {
 
@@ -158,10 +167,6 @@ void initIrrlicht(irr::IrrlichtDevice * );
 	Overflow can occur at any value higher than 10000000.
 */
 #ifdef _WIN32 // Windows
-#ifndef _WIN32_WINNT
-	#define _WIN32_WINNT 0x0501
-#endif
-	#include <windows.h>
 
 	inline u32 getTimeS()
 	{
@@ -190,12 +195,6 @@ void initIrrlicht(irr::IrrlichtDevice * );
 	}
 
 #else // Posix
-#include <sys/time.h>
-#include <time.h>
-#if defined(__MACH__) && defined(__APPLE__)
-#include <mach/clock.h>
-#include <mach/mach.h>
-#endif
 
 	inline u32 getTimeS()
 	{
