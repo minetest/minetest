@@ -132,7 +132,7 @@ void OreScatter::generate(MMVManip *vm, int mapseed, u32 blockseed,
 				 (nmax.Y - nmin.Y + 1) *
 				 (nmax.Z - nmin.Z + 1);
 	u32 csize     = clust_size;
-	u32 orechance = (csize * csize * csize) / clust_num_ores;
+	u32 cvolume    = csize * csize * csize;
 	u32 nclusters = volume / clust_scarcity;
 
 	for (u32 i = 0; i != nclusters; i++) {
@@ -154,7 +154,7 @@ void OreScatter::generate(MMVManip *vm, int mapseed, u32 blockseed,
 		for (u32 z1 = 0; z1 != csize; z1++)
 		for (u32 y1 = 0; y1 != csize; y1++)
 		for (u32 x1 = 0; x1 != csize; x1++) {
-			if (pr.range(1, orechance) != 1)
+			if (pr.range(1, cvolume) > clust_num_ores)
 				continue;
 
 			u32 i = vm->m_area.index(x0 + x1, y0 + y1, z0 + z1);
