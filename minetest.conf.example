@@ -194,6 +194,15 @@
 #    propery support downloading textures back from hardware.
 #gui_scaling_filter = false
 #gui_scaling_filter_txr2img = true
+#    colors, used in world config dialog
+#    color 1 (usually grey)
+#color_1 = #AAAAAA
+#    color 2 (usually blue)
+#color_2 = #0000DD
+#    color 3 (usually green)
+#color_3 = #00DD00
+#    color 4 (usually dark green)
+#color_4 = #003300
 #    Sensitivity multiplier
 #mouse_sensitivity = 0.2
 #    Sound settings
