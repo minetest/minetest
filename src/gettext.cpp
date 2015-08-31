@@ -202,14 +202,14 @@ void init_gettext(const char *path, const std::string &configured_language) {
 			else {
 				exit(0);
 			}
+		}
 #else
-			errorstream << "*******************************************************" << std::endl;
-			errorstream << "Can't apply locale workaround for server!" << std::endl;
-			errorstream << "Expect language to be broken!" << std::endl;
-			errorstream << "*******************************************************" << std::endl;
+		errorstream << "*******************************************************" << std::endl;
+		errorstream << "Can't apply locale workaround for server!" << std::endl;
+		errorstream << "Expect language to be broken!" << std::endl;
+		errorstream << "*******************************************************" << std::endl;
 
 #endif
-		}
 
 		setlocale(LC_ALL,configured_language.c_str());
 #else // Mingw
