@@ -1857,6 +1857,9 @@ void Game::run()
 		updateFrame(highlight_boxes, &graph, &stats, &runData, dtime,
 				flags, cam_view);
 		updateProfilerGraphs(&graph);
+
+		// Update if minimap has been disabled by the server
+		flags.show_minimap &= !client->isMinimapDisabledByServer();
 	}
 }
 

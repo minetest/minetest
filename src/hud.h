@@ -33,8 +33,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HUD_CORNER_CENTER 2
 
 // Note that these visibility flags do not determine if the hud items are
-// actually drawn, but rather, allows the item to be drawn should the rest of
-// the game state permit it.
+// actually drawn, but rather, whether to draw the item should the rest
+// of the game state permit it.
 #define HUD_FLAG_HOTBAR_VISIBLE    (1 << 0)
 #define HUD_FLAG_HEALTHBAR_VISIBLE (1 << 1)
 #define HUD_FLAG_CROSSHAIR_VISIBLE (1 << 2)
