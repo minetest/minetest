@@ -46,6 +46,15 @@ else()
 	mark_as_advanced(CLEAR CURL_LIBRARY CURL_INCLUDE_DIR)
 endif()
 
+if(NOT USE_CURL)
+	if(BUILD_CLIENT)
+		message(WARNING "cURL is required to load the server list")
+	endif()
+	if(BUILD_SERVER)
+		message(WARNING "cURL is required to announce to the server list")
+	endif()
+endif()
+
 
 option(ENABLE_GETTEXT "Use GetText for internationalization" FALSE)
 set(USE_GETTEXT FALSE)
