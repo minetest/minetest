@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-08-25 19:54+0200\n"
+"PO-Revision-Date: 2015-09-01 18:04+0200\n"
 "Last-Translator: Jakub Vaněk <vanek.jakub4@seznam.cz>\n"
 "Language-Team: Czech "
 "<https://hosted.weblate.org/projects/minetest/minetest/cs/>\n"
@@ -578,7 +578,7 @@ msgstr "Vytvářím bloky..."
 
 #: src/client.cpp:1760
 msgid "Initializing nodes"
-msgstr "Vytvářím bloky"
+msgstr "Inicializuji bloky"
 
 #: src/client.cpp:1768
 msgid "Item textures..."
