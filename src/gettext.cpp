@@ -167,7 +167,7 @@ void init_gettext(const char *path, const std::string &configured_language) {
 			if (parameters != "") {
 				ptr_parameters = parameters.c_str();
 			}
-			
+
 			/** users may start by short name in commandline without extention **/
 			std::string appname = argv[0];
 			if (appname.substr(appname.length() - 4) != ".exe") {
@@ -184,7 +184,7 @@ void init_gettext(const char *path, const std::string &configured_language) {
 					NULL,
 					&startupinfo,
 					&processinfo)) {
-				char buffer[1024];		
+				char buffer[1024];
 				FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,
 					NULL,
 					GetLastError(),
