@@ -228,6 +228,7 @@ Client::Client(
 	m_particle_manager(&m_env),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this),
 	m_device(device),
+	m_minimap_disabled_by_server(false),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_proto_ver(0),
 	m_playeritem(0),
