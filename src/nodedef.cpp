@@ -795,6 +795,7 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 	bool connected_glass           = g_settings->getBool("connected_glass");
 	bool opaque_water              = g_settings->getBool("opaque_water");
 	bool enable_shaders            = g_settings->getBool("enable_shaders");
+	bool enable_waving_water       = g_settings->getBool("enable_waving_water");
 	bool enable_bumpmapping        = g_settings->getBool("enable_bumpmapping");
 	bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
 	bool enable_mesh_cache         = g_settings->getBool("enable_mesh_cache");
@@ -839,7 +840,7 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 			assert(f->liquid_type == LIQUID_SOURCE);
 			if (opaque_water)
 				f->alpha = 255;
-			if (new_style_water){
+			if (new_style_water || enable_waving_water){
 				f->solidness = 0;
 			} else {
 				f->solidness = 1;
