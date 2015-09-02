@@ -1029,7 +1029,8 @@ void ServerEnvironment::step(float dtime)
 	// Update this one
 	// NOTE: This is kind of funny on a singleplayer game, but doesn't
 	// really matter that much.
-	m_recommended_send_interval = g_settings->getFloat("dedicated_server_step");
+	static const float server_step = g_settings->getFloat("dedicated_server_step");
+	m_recommended_send_interval = server_step;
 
 	/*
 		Increment game time
@@ -1086,7 +1087,7 @@ void ServerEnvironment::step(float dtime)
 		/*
 			Update list of active blocks, collecting changes
 		*/
-		const s16 active_block_range = g_settings->getS16("active_block_range");
+		static const s16 active_block_range = g_settings->getS16("active_block_range");
 		std::set<v3s16> blocks_removed;
 		std::set<v3s16> blocks_added;
 		m_active_blocks.update(players_blockpos, active_block_range,
@@ -1101,8 +1102,7 @@ void ServerEnvironment::step(float dtime)
 
 		for(std::set<v3s16>::iterator
 				i = blocks_removed.begin();
-				i != blocks_removed.end(); ++i)
-		{
+				i != blocks_removed.end(); ++i) {
 			v3s16 p = *i;
 
 			/* infostream<<"Server: Block " << PP(p)
@@ -2636,5 +2636,3 @@ ClientEnvEvent ClientEnvironment::getClientEvent()
 }
 
 #endif // #ifndef SERVER
-
-

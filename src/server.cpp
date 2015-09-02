@@ -671,15 +671,17 @@ void Server::AsyncRunStep(bool initial_step)
 		ScopeProfiler sp(g_profiler, "Server: checking added and deleted objs");
 
 		// Radius inside which objects are active
-		s16 radius = g_settings->getS16("active_object_send_range_blocks");
-		s16 player_radius = g_settings->getS16("player_transfer_distance");
+		static const s16 radius =
+			g_settings->getS16("active_object_send_range_blocks") * MAP_BLOCKSIZE;
 
-		if (player_radius == 0 && g_settings->exists("unlimited_player_transfer_distance") &&
-				!g_settings->getBool("unlimited_player_transfer_distance"))
+		// Radius inside which players are active
+		static const bool is_transfer_limited =
+			g_settings->exists("unlimited_player_transfer_distance") &&
+			!g_settings->getBool("unlimited_player_transfer_distance");
+		static const s16 player_transfer_dist = g_settings->getS16("player_transfer_distance") * MAP_BLOCKSIZE;
+		s16 player_radius = player_transfer_dist;
+		if (player_radius == 0 && is_transfer_limited)
 			player_radius = radius;
-
-		radius *= MAP_BLOCKSIZE;
-		player_radius *= MAP_BLOCKSIZE;
 
 		for (std::map<u16, RemoteClient*>::iterator
 			i = clients.begin();
@@ -984,8 +986,7 @@ void Server::AsyncRunStep(bool initial_step)
 	{
 		float &counter = m_emergethread_trigger_timer;
 		counter += dtime;
-		if(counter >= 2.0)
-		{
+		if (counter >= 2.0) {
 			counter = 0.0;
 
 			m_emerge->startThreads();
@@ -996,8 +997,9 @@ void Server::AsyncRunStep(bool initial_step)
 	{
 		float &counter = m_savemap_timer;
 		counter += dtime;
-		if(counter >= g_settings->getFloat("server_map_save_interval"))
-		{
+		static const float save_interval =
+			g_settings->getFloat("server_map_save_interval");
+		if (counter >= save_interval) {
 			counter = 0.0;
 			MutexAutoLock lock(m_env_mutex);
 
@@ -3512,9 +3514,11 @@ void dedicated_server_loop(Server &server, bool &kill)
 
 	IntervalLimiter m_profiler_interval;
 
-	for(;;)
-	{
-		float steplen = g_settings->getFloat("dedicated_server_step");
+	static const float steplen = g_settings->getFloat("dedicated_server_step");
+	static const float profiler_print_interval =
+			g_settings->getFloat("profiler_print_interval");
+
+	for(;;) {
 		// This is kind of a hack but can be done like this
 		// because server.step() is very light
 		{
@@ -3536,10 +3540,7 @@ void dedicated_server_loop(Server &server, bool &kill)
 		/*
 			Profiler
 		*/
-		float profiler_print_interval =
-				g_settings->getFloat("profiler_print_interval");
-		if(profiler_print_interval != 0)
-		{
+		if (profiler_print_interval != 0) {
 			if(m_profiler_interval.step(steplen, profiler_print_interval))
 			{
 				infostream<<"Profiler:"<<std::endl;
