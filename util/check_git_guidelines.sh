@@ -5,7 +5,7 @@ git diff master --check || exit 1
 fail=false
 
 print_commit_err() {
-	echo "$1: commit message: $2"
+	echo "$1: commit message: $2" >&2
 }
 
 git rev-list master..HEAD | while read -r commitid; do
