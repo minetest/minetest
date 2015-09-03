@@ -59,6 +59,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #else
 	#include <unistd.h>
 	#include <stdint.h> //for uintptr_t
+	#include <sys/time.h>
+	#include <time.h>
+	#if defined(__MACH__) && defined(__APPLE__)
+		#include <mach/clock.h>
+		#include <mach/mach.h>
+	#endif
 
 	#if (defined(linux) || defined(__linux) || defined(__GNU__)) && !defined(_GNU_SOURCE)
 		#define _GNU_SOURCE
@@ -161,8 +167,6 @@ void initIrrlicht(irr::IrrlichtDevice * );
 #ifndef _WIN32_WINNT
 	#define _WIN32_WINNT 0x0501
 #endif
-	#include <windows.h>
-
 	inline u32 getTimeS()
 	{
 		return GetTickCount() / 1000;
@@ -190,13 +194,6 @@ void initIrrlicht(irr::IrrlichtDevice * );
 	}
 
 #else // Posix
-#include <sys/time.h>
-#include <time.h>
-#if defined(__MACH__) && defined(__APPLE__)
-#include <mach/clock.h>
-#include <mach/mach.h>
-#endif
-
 	inline u32 getTimeS()
 	{
 		struct timeval tv;
