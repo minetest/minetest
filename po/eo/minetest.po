@@ -8,124 +8,131 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-07-17 07:23+0200\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2015-09-03 22:38+0200\n"
+"Last-Translator: Tim <t4im@openmailbox.org>\n"
+"Language-Team: Esperanto "
+"<https://hosted.weblate.org/projects/minetest/minetest/eo/>\n"
 "Language: eo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2.4-dev\n"
 
 #: builtin/fstk/ui.lua:82
+#, fuzzy
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
+msgstr "Eraro okazis en Lua skripto (Ekzemple de modifo):"
 
 #: builtin/fstk/ui.lua:84
 msgid "An error occured:"
-msgstr ""
+msgstr "Eraro okazis:"
 
 #: builtin/fstk/ui.lua:89 builtin/mainmenu/store.lua:165
 msgid "Ok"
-msgstr ""
+msgstr "Bone"
 
 #: builtin/mainmenu/common.lua:239 src/game.cpp:1891
 msgid "Loading..."
-msgstr ""
+msgstr "Ŝargas…"
 
 #: builtin/mainmenu/common.lua:240
 msgid "Try reenabling public serverlist and check your internet connection."
-msgstr ""
+msgstr "Provu reŝalti la publikan serviloliston kaj kontrolu vian retkonekton."
 
 #: builtin/mainmenu/dlg_config_world.lua:29
 msgid "World:"
-msgstr ""
+msgstr "Mondo:"
 
 #: builtin/mainmenu/dlg_config_world.lua:33
 #: builtin/mainmenu/dlg_config_world.lua:35
 msgid "Hide Game"
-msgstr ""
+msgstr "Kaŝu ludon"
 
 #: builtin/mainmenu/dlg_config_world.lua:39
 #: builtin/mainmenu/dlg_config_world.lua:41
 msgid "Hide mp content"
-msgstr ""
+msgstr "Kaŝu modifarojn"
 
 #: builtin/mainmenu/dlg_config_world.lua:49
 msgid "Mod:"
-msgstr ""
+msgstr "Modifo:"
 
 #: builtin/mainmenu/dlg_config_world.lua:51 builtin/mainmenu/tab_mods.lua:99
 msgid "Depends:"
-msgstr ""
+msgstr "Dependas:"
 
 #: builtin/mainmenu/dlg_config_world.lua:54 src/guiKeyChangeMenu.cpp:191
 msgid "Save"
-msgstr ""
+msgstr "Konservi"
 
 #: builtin/mainmenu/dlg_config_world.lua:55
 #: builtin/mainmenu/dlg_create_world.lua:64
 #: builtin/mainmenu/dlg_rename_modpack.lua:33 src/guiKeyChangeMenu.cpp:199
 #: src/keycode.cpp:223
 msgid "Cancel"
-msgstr ""
+msgstr "Nuligi"
 
 #: builtin/mainmenu/dlg_config_world.lua:71
 msgid "Enable MP"
-msgstr ""
+msgstr "Ŝaltu modifaron"
 
 #: builtin/mainmenu/dlg_config_world.lua:73
 msgid "Disable MP"
-msgstr ""
+msgstr "Malŝaltu modifaron"
 
 #: builtin/mainmenu/dlg_config_world.lua:77
 #: builtin/mainmenu/dlg_config_world.lua:79
 msgid "enabled"
-msgstr ""
+msgstr "ŝaltita"
 
 #: builtin/mainmenu/dlg_config_world.lua:85
 msgid "Enable all"
-msgstr ""
+msgstr "Ŝaltu ĉiujn"
 
 #: builtin/mainmenu/dlg_create_world.lua:50
 msgid "World name"
-msgstr ""
+msgstr "Monda nomo"
 
 #: builtin/mainmenu/dlg_create_world.lua:53
+#, fuzzy
 msgid "Seed"
-msgstr ""
+msgstr "Fonta nombro"
 
 #: builtin/mainmenu/dlg_create_world.lua:56
 msgid "Mapgen"
-msgstr ""
+msgstr "Mondogenerilo"
 
 #: builtin/mainmenu/dlg_create_world.lua:59
 msgid "Game"
-msgstr ""
+msgstr "Ludo"
 
 #: builtin/mainmenu/dlg_create_world.lua:63
 msgid "Create"
-msgstr ""
+msgstr "Krei"
 
 #: builtin/mainmenu/dlg_create_world.lua:68
 msgid "You have no subgames installed."
-msgstr ""
+msgstr "Neniu instalantaj subludoj."
 
 #: builtin/mainmenu/dlg_create_world.lua:69
+#, fuzzy
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "Elŝutu ludon el minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua:72
+#, fuzzy
 msgid "Warning: The minimal development test is meant for developers."
-msgstr ""
+msgstr "Averto: La minimuma programista testo estas intencita por programistoj"
 
 #: builtin/mainmenu/dlg_create_world.lua:73
 msgid "Download a subgame, such as minetest_game, from minetest.net"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua:99
+#, fuzzy
 msgid "A world named \"$1\" already exists"
-msgstr ""
+msgstr "Mondo nomata \"$1\" jam ekzistas."
 
 #: builtin/mainmenu/dlg_create_world.lua:116
 msgid "No worldname given or no game selected"
@@ -133,17 +140,17 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_delete_mod.lua:26
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "Ĉu vi certas forigi \"$1\"?"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:27
 #: builtin/mainmenu/dlg_delete_world.lua:25
 #: builtin/mainmenu/tab_settings.lua:100
 msgid "Yes"
-msgstr ""
+msgstr "Jes"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:28
 msgid "No of course not!"
-msgstr ""
+msgstr "Ne, memkompreneble!"
 
 #: builtin/mainmenu/dlg_delete_mod.lua:41
 msgid "Modmgr: failed to delete \"$1\""
@@ -154,24 +161,25 @@ msgid "Modmgr: invalid modpath \"$1\""
 msgstr ""
 
 #: builtin/mainmenu/dlg_delete_world.lua:24
+#, fuzzy
 msgid "Delete World \"$1\"?"
-msgstr ""
+msgstr "Ĉu forigi mondon \"$1\"?"
 
 #: builtin/mainmenu/dlg_delete_world.lua:26
 msgid "No"
-msgstr ""
+msgstr "Ne"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua:26
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "Alinomi modifaron:"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua:31 src/keycode.cpp:227
 msgid "Accept"
-msgstr ""
+msgstr "Akcepti"
 
 #: builtin/mainmenu/modmgr.lua:344
 msgid "Install Mod: file: \"$1\""
-msgstr ""
+msgstr "Instali modifon: dosiero \"$1\""
 
 #: builtin/mainmenu/modmgr.lua:345
 msgid ""
@@ -193,11 +201,11 @@ msgstr ""
 
 #: builtin/mainmenu/store.lua:88
 msgid "Unsorted"
-msgstr ""
+msgstr "Neordigita"
 
 #: builtin/mainmenu/store.lua:99 builtin/mainmenu/store.lua:580
 msgid "Search"
-msgstr ""
+msgstr "Serĉi"
 
 #: builtin/mainmenu/store.lua:126
 msgid "Downloading $1, please wait..."
@@ -213,23 +221,24 @@ msgstr ""
 
 #: builtin/mainmenu/store.lua:472
 msgid "Rating"
-msgstr ""
+msgstr "Takso"
 
 #: builtin/mainmenu/store.lua:497
 msgid "re-Install"
-msgstr ""
+msgstr "Instali denove"
 
 #: builtin/mainmenu/store.lua:499
 msgid "Install"
-msgstr ""
+msgstr "Instali"
 
 #: builtin/mainmenu/store.lua:518
 msgid "Close store"
-msgstr ""
+msgstr "Fermi"
 
 #: builtin/mainmenu/store.lua:526
+#, fuzzy
 msgid "Page $1 of $2"
-msgstr ""
+msgstr "Paĝo $1 el $2"
 
 #: builtin/mainmenu/tab_credits.lua:22
 msgid "Credits"
@@ -237,23 +246,23 @@ msgstr ""
 
 #: builtin/mainmenu/tab_credits.lua:31
 msgid "Core Developers"
-msgstr ""
+msgstr "Kernprogramistoj"
 
 #: builtin/mainmenu/tab_credits.lua:47
 msgid "Active Contributors"
-msgstr ""
+msgstr "Aktivaj kontribuistoj"
 
 #: builtin/mainmenu/tab_credits.lua:54
 msgid "Previous Core Developers"
-msgstr ""
+msgstr "Eksaj kernprogramistoj"
 
 #: builtin/mainmenu/tab_credits.lua:59
 msgid "Previous Contributors"
-msgstr ""
+msgstr "Eksaj kontribuistoj"
 
 #: builtin/mainmenu/tab_mods.lua:30
 msgid "Installed Mods:"
-msgstr ""
+msgstr "Instalantaj modifoj:"
 
 #: builtin/mainmenu/tab_mods.lua:39
 msgid "Online mod repository"
@@ -265,11 +274,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_mods.lua:82
 msgid "Mod information:"
-msgstr ""
+msgstr "Modifaj informoj:"
 
 #: builtin/mainmenu/tab_mods.lua:93
 msgid "Rename"
-msgstr ""
+msgstr "Alinomi"
 
 #: builtin/mainmenu/tab_mods.lua:95
 msgid "Uninstall selected modpack"
@@ -285,35 +294,35 @@ msgstr ""
 
 #: builtin/mainmenu/tab_mods.lua:165
 msgid "Mods"
-msgstr ""
+msgstr "Modifoj"
 
 #: builtin/mainmenu/tab_multiplayer.lua:23
 msgid "Address / Port :"
-msgstr ""
+msgstr "Adreso / Pordo:"
 
 #: builtin/mainmenu/tab_multiplayer.lua:24
 msgid "Name / Password :"
-msgstr ""
+msgstr "Nomo / Pasvorto:"
 
 #: builtin/mainmenu/tab_multiplayer.lua:29
 #: builtin/mainmenu/tab_simple_main.lua:30
 msgid "Public Serverlist"
-msgstr ""
+msgstr "Publika servilolisto"
 
 #: builtin/mainmenu/tab_multiplayer.lua:34 builtin/mainmenu/tab_server.lua:26
 #: builtin/mainmenu/tab_singleplayer.lua:96 src/keycode.cpp:229
 msgid "Delete"
-msgstr ""
+msgstr "Forigi"
 
 #: builtin/mainmenu/tab_multiplayer.lua:38
 #: builtin/mainmenu/tab_simple_main.lua:34
 msgid "Connect"
-msgstr ""
+msgstr "Konekti"
 
 #: builtin/mainmenu/tab_multiplayer.lua:62
 #: builtin/mainmenu/tab_simple_main.lua:45
 msgid "Creative mode"
-msgstr ""
+msgstr "Kreiva reĝimo"
 
 #: builtin/mainmenu/tab_multiplayer.lua:63
 #: builtin/mainmenu/tab_simple_main.lua:46
@@ -327,28 +336,28 @@ msgstr ""
 
 #: builtin/mainmenu/tab_multiplayer.lua:257
 msgid "Client"
-msgstr ""
+msgstr "Kliento"
 
 #: builtin/mainmenu/tab_server.lua:27 builtin/mainmenu/tab_singleplayer.lua:97
 msgid "New"
-msgstr ""
+msgstr "Nova"
 
 #: builtin/mainmenu/tab_server.lua:28 builtin/mainmenu/tab_singleplayer.lua:98
 msgid "Configure"
-msgstr ""
+msgstr "Agordi"
 
 #: builtin/mainmenu/tab_server.lua:29
 msgid "Start Game"
-msgstr ""
+msgstr "Startigi ludon"
 
 #: builtin/mainmenu/tab_server.lua:30 builtin/mainmenu/tab_singleplayer.lua:100
 msgid "Select World:"
-msgstr ""
+msgstr "Elektu mondon:"
 
 #: builtin/mainmenu/tab_server.lua:31 builtin/mainmenu/tab_simple_main.lua:76
 #: builtin/mainmenu/tab_singleplayer.lua:101
 msgid "Creative Mode"
-msgstr ""
+msgstr "Kreiva reĝimo"
 
 #: builtin/mainmenu/tab_server.lua:33 builtin/mainmenu/tab_simple_main.lua:78
 #: builtin/mainmenu/tab_singleplayer.lua:103
@@ -357,11 +366,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_server.lua:35
 msgid "Public"
-msgstr ""
+msgstr "Publika"
 
 #: builtin/mainmenu/tab_server.lua:37 builtin/mainmenu/tab_simple_main.lua:25
 msgid "Name/Password"
-msgstr ""
+msgstr "Nomo/Pasvorto"
 
 #: builtin/mainmenu/tab_server.lua:45
 msgid "Bind Address"
@@ -369,11 +378,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_server.lua:47
 msgid "Port"
-msgstr ""
+msgstr "Pordo"
 
 #: builtin/mainmenu/tab_server.lua:51
 msgid "Server Port"
-msgstr ""
+msgstr "Servila pordo"
 
 #: builtin/mainmenu/tab_server.lua:138
 #: builtin/mainmenu/tab_singleplayer.lua:165
@@ -382,7 +391,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_server.lua:191
 msgid "Server"
-msgstr ""
+msgstr "Servilo"
 
 #: builtin/mainmenu/tab_settings.lua:21
 msgid "Opaque Leaves"
@@ -390,35 +399,36 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:22
 msgid "Simple Leaves"
-msgstr ""
+msgstr "Simplaj foliaĵoj"
 
 #: builtin/mainmenu/tab_settings.lua:23
+#, fuzzy
 msgid "Fancy Leaves"
-msgstr ""
+msgstr "Ŝikaj foliaĵoj"
 
 #: builtin/mainmenu/tab_settings.lua:32
 msgid "No Filter"
-msgstr ""
+msgstr "Neniu filtrilo"
 
 #: builtin/mainmenu/tab_settings.lua:33
 msgid "Bilinear Filter"
-msgstr ""
+msgstr "Bilineara filtrilo"
 
 #: builtin/mainmenu/tab_settings.lua:34
 msgid "Trilinear Filter"
-msgstr ""
+msgstr "Triineara filtrilo"
 
 #: builtin/mainmenu/tab_settings.lua:43
 msgid "No Mipmap"
-msgstr ""
+msgstr "Neniu Mipmapo"
 
 #: builtin/mainmenu/tab_settings.lua:44
 msgid "Mipmap"
-msgstr ""
+msgstr "Mipmapo"
 
 #: builtin/mainmenu/tab_settings.lua:45
 msgid "Mipmap + Aniso. Filter"
-msgstr ""
+msgstr "Mipmapo + Malizotropa filtrilo"
 
 #: builtin/mainmenu/tab_settings.lua:98
 msgid "Are you sure to reset your singleplayer world?"
@@ -426,7 +436,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:102
 msgid "No!!!"
-msgstr ""
+msgstr "Ne!!!"
 
 #: builtin/mainmenu/tab_settings.lua:202
 msgid "Smooth Lighting"
@@ -438,7 +448,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:206
 msgid "3D Clouds"
-msgstr ""
+msgstr "3D nuboj"
 
 #: builtin/mainmenu/tab_settings.lua:208
 msgid "Opaque Water"
@@ -458,7 +468,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:222
 msgid "Rendering:"
-msgstr ""
+msgstr "Bildigo:"
 
 #: builtin/mainmenu/tab_settings.lua:226
 msgid "Restart minetest for driver change to take effect"
@@ -466,11 +476,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:228
 msgid "Shaders"
-msgstr ""
+msgstr "Ombrigiloj"
 
 #: builtin/mainmenu/tab_settings.lua:233
 msgid "Change keys"
-msgstr ""
+msgstr "Ŝanĝi klavojn"
 
 #: builtin/mainmenu/tab_settings.lua:236
 msgid "Reset singleplayer world"
@@ -522,11 +532,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:430
 msgid "Settings"
-msgstr ""
+msgstr "Agordoj"
 
 #: builtin/mainmenu/tab_simple_main.lua:82
 msgid "Start Singleplayer"
-msgstr ""
+msgstr "Startigi solludanton"
 
 #: builtin/mainmenu/tab_simple_main.lua:83
 msgid "Config mods"
@@ -534,15 +544,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_simple_main.lua:201
 msgid "Main"
-msgstr ""
+msgstr "Ĉefmenuo"
 
 #: builtin/mainmenu/tab_singleplayer.lua:99 src/keycode.cpp:248
 msgid "Play"
-msgstr ""
+msgstr "Ludi"
 
 #: builtin/mainmenu/tab_singleplayer.lua:246
 msgid "Singleplayer"
-msgstr ""
+msgstr "Solludanto"
 
 #: builtin/mainmenu/tab_texturepacks.lua:49
 msgid "Select texture pack:"
@@ -578,15 +588,15 @@ msgstr ""
 
 #: src/client.cpp:1793
 msgid "Done!"
-msgstr ""
+msgstr "Finita!"
 
 #: src/client/clientlauncher.cpp:185
 msgid "Main Menu"
-msgstr ""
+msgstr "Ĉefmenuo"
 
 #: src/client/clientlauncher.cpp:223
 msgid "Player name too long."
-msgstr ""
+msgstr "Ludanta nomo trolongas."
 
 #: src/client/clientlauncher.cpp:261
 msgid "Connection error (timed out?)"
@@ -618,7 +628,7 @@ msgstr ""
 
 #: src/game.cpp:1072
 msgid "You died."
-msgstr ""
+msgstr "Vi mortis."
 
 #: src/game.cpp:1073
 msgid "Respawn"
@@ -654,6 +664,17 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
+"Defaŭltaj Klavoj:\n"
+"- WASD: movi\n"
+"- Spacetklavo: salti/klimi\n"
+"- Majuskliga Klavo: lanti/malsupreniri\n"
+"- Q: lasi aĵon\n"
+"- I: inventaro\n"
+"- Muso: turni/rigardi\n"
+"- Muso maldekstra: fosi/bati\n"
+"- Muso dekstra: lokigi/uzi\n"
+"- Musrado: elekti aĵon\n"
+"- T: babili\n"
 
 #: src/game.cpp:1125
 msgid "Continue"
@@ -669,19 +690,19 @@ msgstr ""
 
 #: src/game.cpp:1136
 msgid "Change Keys"
-msgstr ""
+msgstr "Ŝanĝi klavojn"
 
 #: src/game.cpp:1139
 msgid "Exit to Menu"
-msgstr ""
+msgstr "Foriri al menuo"
 
 #: src/game.cpp:1141
 msgid "Exit to OS"
-msgstr ""
+msgstr "Foriri al operaciumo"
 
 #: src/game.cpp:1841
 msgid "Shutting down..."
-msgstr ""
+msgstr "Malŝaltiĝi…"
 
 #: src/game.cpp:1948
 msgid "Creating server..."
@@ -727,11 +748,11 @@ msgstr ""
 
 #: src/guiFormSpecMenu.cpp:2855
 msgid "Enter "
-msgstr ""
+msgstr "Enen "
 
 #: src/guiFormSpecMenu.cpp:2875
 msgid "ok"
-msgstr ""
+msgstr "bone"
 
 #: src/guiKeyChangeMenu.cpp:125
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
@@ -751,71 +772,72 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp:373
 msgid "press key"
-msgstr ""
+msgstr "premi klavon"
 
 #: src/guiKeyChangeMenu.cpp:399
 msgid "Forward"
-msgstr ""
+msgstr "Antaŭen"
 
 #: src/guiKeyChangeMenu.cpp:400
 msgid "Backward"
-msgstr ""
+msgstr "Malantaŭen"
 
 #: src/guiKeyChangeMenu.cpp:401 src/keycode.cpp:228
 msgid "Left"
-msgstr ""
+msgstr "Maldekstren"
 
 #: src/guiKeyChangeMenu.cpp:402 src/keycode.cpp:228
 msgid "Right"
-msgstr ""
+msgstr "Dekstren"
 
 #: src/guiKeyChangeMenu.cpp:403
 msgid "Use"
-msgstr ""
+msgstr "Uzi"
 
 #: src/guiKeyChangeMenu.cpp:404
 msgid "Jump"
-msgstr ""
+msgstr "Salti"
 
 #: src/guiKeyChangeMenu.cpp:405
 msgid "Sneak"
-msgstr ""
+msgstr "Lanti"
 
 #: src/guiKeyChangeMenu.cpp:406
 msgid "Drop"
-msgstr ""
+msgstr "Lasi"
 
 #: src/guiKeyChangeMenu.cpp:407
 msgid "Inventory"
-msgstr ""
+msgstr "Inventaro"
 
 #: src/guiKeyChangeMenu.cpp:408
 msgid "Chat"
-msgstr ""
+msgstr "Babili"
 
 #: src/guiKeyChangeMenu.cpp:409
 msgid "Command"
-msgstr ""
+msgstr "Komando"
 
 #: src/guiKeyChangeMenu.cpp:410
 msgid "Console"
-msgstr ""
+msgstr "Konzolo"
 
 #: src/guiKeyChangeMenu.cpp:411
 msgid "Toggle fly"
-msgstr ""
+msgstr "Baskuli flugreĝimon"
 
 #: src/guiKeyChangeMenu.cpp:412
 msgid "Toggle fast"
-msgstr ""
+msgstr "Baskuli rapidreĝimon"
 
 #: src/guiKeyChangeMenu.cpp:413
 msgid "Toggle Cinematic"
-msgstr ""
+msgstr "Baskuli filmreĝimon"
 
 #: src/guiKeyChangeMenu.cpp:414
+#, fuzzy
 msgid "Toggle noclip"
-msgstr ""
+msgstr "Baskuli tondadon"
 
 #: src/guiKeyChangeMenu.cpp:415
 msgid "Range select"
@@ -827,23 +849,24 @@ msgstr ""
 
 #: src/guiPasswordChange.cpp:108
 msgid "Old Password"
-msgstr ""
+msgstr "Malnova pasvorto"
 
 #: src/guiPasswordChange.cpp:124
 msgid "New Password"
-msgstr ""
+msgstr "Nova pasvorto"
 
 #: src/guiPasswordChange.cpp:139
 msgid "Confirm Password"
-msgstr ""
+msgstr "Certigi pasvorton"
 
 #: src/guiPasswordChange.cpp:155
 msgid "Change"
-msgstr ""
+msgstr "Ŝanĝi"
 
 #: src/guiPasswordChange.cpp:164
+#, fuzzy
 msgid "Passwords do not match!"
-msgstr ""
+msgstr "Pasvortoj ne kongruas!"
 
 #: src/guiVolumeChange.cpp:105
 msgid "Sound Volume: "
@@ -851,7 +874,7 @@ msgstr ""
 
 #: src/guiVolumeChange.cpp:119
 msgid "Exit"
-msgstr ""
+msgstr "Foriri"
 
 #: src/keycode.cpp:223
 msgid "Left Button"
@@ -959,7 +982,7 @@ msgstr ""
 
 #: src/keycode.cpp:227
 msgid "Space"
-msgstr ""
+msgstr "Spacetklavo"
 
 #: src/keycode.cpp:228
 msgid "Down"
@@ -1019,51 +1042,51 @@ msgstr ""
 
 #: src/keycode.cpp:234
 msgid "Numpad 2"
-msgstr ""
+msgstr "Klavareto 2"
 
 #: src/keycode.cpp:234
 msgid "Numpad 3"
-msgstr ""
+msgstr "Klavareto 3"
 
 #: src/keycode.cpp:234
 msgid "Numpad 4"
-msgstr ""
+msgstr "Klavareto 4"
 
 #: src/keycode.cpp:234
 msgid "Numpad 5"
-msgstr ""
+msgstr "Klavareto 5"
 
 #: src/keycode.cpp:234
 msgid "Numpad 6"
-msgstr ""
+msgstr "Klavareto 6"
 
 #: src/keycode.cpp:234
 msgid "Numpad 7"
-msgstr ""
+msgstr "Klavareto 7"
 
 #: src/keycode.cpp:235
 msgid "Numpad *"
-msgstr ""
+msgstr "Klavareto *"
 
 #: src/keycode.cpp:235
 msgid "Numpad +"
-msgstr ""
+msgstr "Klavareto +"
 
 #: src/keycode.cpp:235
 msgid "Numpad -"
-msgstr ""
+msgstr "Klavareto -"
 
 #: src/keycode.cpp:235
 msgid "Numpad /"
-msgstr ""
+msgstr "Klavareto /"
 
 #: src/keycode.cpp:235
 msgid "Numpad 8"
-msgstr ""
+msgstr "Klavareto 8"
 
 #: src/keycode.cpp:235
 msgid "Numpad 9"
-msgstr ""
+msgstr "Klavareto 9"
 
 #: src/keycode.cpp:239
 msgid "Num Lock"
@@ -1139,4 +1162,4 @@ msgstr ""
 
 #: src/keycode.cpp:248
 msgid "Zoom"
-msgstr ""
+msgstr "Zomo"
