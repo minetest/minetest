@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-08-15 15:34+0200\n"
-"Last-Translator: Wuzzy <almikes@aol.com>\n"
+"PO-Revision-Date: 2015-09-03 21:35+0200\n"
+"Last-Translator: Tim <t4im@openmailbox.org>\n"
 "Language-Team: German "
 "<https://hosted.weblate.org/projects/minetest/minetest/de/>\n"
 "Language: de\n"
@@ -678,14 +678,14 @@ msgid ""
 "- T: chat\n"
 msgstr ""
 "Standard-Tastenbelegung:\n"
-"- WASD: Bewegen\n"
-"- Leertaste: Springen/Klettern\n"
-"- Umschalt: Kriechen/herunterklettern\n"
+"- WASD: bewegen\n"
+"- Leertaste: springen/klettern\n"
+"- Umschalt: kriechen/herunterklettern\n"
 "- Q: Item fallen lassen\n"
 "- I: Inventar\n"
 "- Maus: drehen/umschauen\n"
-"- Maus links: Abbauen/Schlagen\n"
-"- Maus rechts: Platzieren/Benutzen\n"
+"- Maus links: graben/schlagen\n"
+"- Maus rechts: platzieren/benutzen\n"
 "- Mausrad: Gegenstand auswählen\n"
 "- T: Chat\n"
 
@@ -872,7 +872,7 @@ msgstr "Neues Passwort"
 
 #: src/guiPasswordChange.cpp:139
 msgid "Confirm Password"
-msgstr "Passwort wiederh."
+msgstr "Passwort bestätigen"
 
 #: src/guiPasswordChange.cpp:155
 msgid "Change"
@@ -880,7 +880,7 @@ msgstr "Ändern"
 
 #: src/guiPasswordChange.cpp:164
 msgid "Passwords do not match!"
-msgstr "Passwörter passen nicht zusammen!"
+msgstr "Passwörter stimmen nicht überein!"
 
 #: src/guiVolumeChange.cpp:105
 msgid "Sound Volume: "
