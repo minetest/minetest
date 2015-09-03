@@ -13,7 +13,9 @@ if [[ $PLATFORM == "Linux" ]]; then
 	cmake $CMAKE_FLAGS ..
 	make -j2
 	echo "Running unit tests."
-	../bin/minetest --run-unittests && exit 0
+	../bin/minetest --run-unittests || exit 1
+	echo "Checking commits."
+	../util/check_git_guidelines.sh && exit 0
 elif [[ $PLATFORM == Win* ]]; then
 	[[ $CC == "clang" ]] && exit 1 # Not supposed to happen
 	# We need to have our build directory outside of the minetest directory because
