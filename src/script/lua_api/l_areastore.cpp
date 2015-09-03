@@ -45,6 +45,7 @@ static void push_area(lua_State *L, const Area *a,
 {
 	if (!include_borders && !include_data) {
 		lua_pushboolean(L, true);
+		return;
 	}
 	lua_newtable(L);
 	if (include_borders) {
