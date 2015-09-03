@@ -74,18 +74,37 @@ function core.after(time, func, ...)
 	}
 end
 
-function core.check_player_privs(name, privs)
+function core.check_player_privs(player_or_name, ...)
+	local name = player_or_name
+	-- Check if we have been provided with a Player object.
+	if type(name) ~= "string" then
+		name = name:get_player_name()
+	end
+	
+	local requested_privs = {...}
 	local player_privs = core.get_player_privs(name)
 	local missing_privileges = {}
-	for priv, val in pairs(privs) do
-		if val
-		and not player_privs[priv] then
-			table.insert(missing_privileges, priv)
+	
+	if type(requested_privs[1]) == "table" then
+		-- We were provided with a table like { privA = true, privB = true }.
+		for priv, value in pairs(requested_privs[1]) do
+			if value and not player_privs[priv] then
+				table.insert(missing_privileges, priv)
+			end
+		end
+	else
+		-- Only a list, we can process it directly.
+		for key, priv in pairs(requested_privs) do
+			if not player_privs[priv] then
+				table.insert(missing_privileges, priv)
+			end
 		end
 	end
+	
 	if #missing_privileges > 0 then
 		return false, missing_privileges
 	end
+	
 	return true, ""
 end
 
