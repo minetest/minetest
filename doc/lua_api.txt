@@ -1924,8 +1924,11 @@ Call these functions only at load time!
 * `minetest.set_player_privs(name, {priv1=true,...})`
 * `minetest.get_player_privs(name) -> {priv1=true,...}`
 * `minetest.auth_reload()`
-* `minetest.check_player_privs(name, {priv1=true,...})`: returns `bool, missing_privs`
-    * A quickhand for checking privileges
+* `minetest.check_player_privs(player_or_name, ...)`: returns `bool, missing_privs`
+    * A quickhand for checking privileges.
+	* `player_or_name`: Either a Player object or the name of a player.
+	* `...` is either a list of strings, e.g. `"priva", "privb"` or
+	  a table, e.g. `{ priva = true, privb = true }`.
 * `minetest.get_player_ip(name)`: returns an IP address string
 
 `minetest.set_player_password`, `minetest_set_player_privs`, `minetest_get_player_privs`
