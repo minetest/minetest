@@ -8,23 +8,24 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2014-01-05 11:31+0200\n"
-"Last-Translator: b p <bp.atlarge@gmail.com>\n"
-"Language-Team: \n"
+"PO-Revision-Date: 2015-09-05 08:38+0200\n"
+"Last-Translator: E. Kastelijn <weblate.org@kastelijn.nu>\n"
+"Language-Team: Dutch "
+"<https://hosted.weblate.org/projects/minetest/minetest/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 1.7-dev\n"
+"X-Generator: Weblate 2.4-dev\n"
 
 #: builtin/fstk/ui.lua:82
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
+msgstr "Er is een fout opgetreden in een Lua script, zoals een mod:"
 
 #: builtin/fstk/ui.lua:84
 msgid "An error occured:"
-msgstr ""
+msgstr "Er is een fout opgetreden:"
 
 #: builtin/fstk/ui.lua:89 builtin/mainmenu/store.lua:165
 msgid "Ok"
@@ -37,6 +38,8 @@ msgstr "Bezig met laden..."
 #: builtin/mainmenu/common.lua:240
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
+"Probeer de publieke serverlijst opnieuw in te schakelen en controleer de "
+"internet verbinding."
 
 #: builtin/mainmenu/dlg_config_world.lua:29
 msgid "World:"
@@ -110,19 +113,19 @@ msgstr "Maak aan"
 
 #: builtin/mainmenu/dlg_create_world.lua:68
 msgid "You have no subgames installed."
-msgstr ""
+msgstr "Je heb geen sub-spellen geïnstalleerd."
 
 #: builtin/mainmenu/dlg_create_world.lua:69
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "Download er een van minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua:72
 msgid "Warning: The minimal development test is meant for developers."
-msgstr ""
+msgstr "Waarschuwing: De minimale ontwikkel test is bedoeld voor ontwikkelaars."
 
 #: builtin/mainmenu/dlg_create_world.lua:73
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr ""
+msgstr "Download een sub-game, zoals minetest_game, van minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua:99
 msgid "A world named \"$1\" already exists"
@@ -197,19 +200,19 @@ msgstr "Mod installeren: kan geen echte modnaam vinden voor: $1"
 
 #: builtin/mainmenu/store.lua:88
 msgid "Unsorted"
-msgstr ""
+msgstr "Ongesorteerd"
 
 #: builtin/mainmenu/store.lua:99 builtin/mainmenu/store.lua:580
 msgid "Search"
-msgstr ""
+msgstr "Zoeken"
 
 #: builtin/mainmenu/store.lua:126
 msgid "Downloading $1, please wait..."
-msgstr ""
+msgstr "$1 aan het downloaden, even wachten..."
 
 #: builtin/mainmenu/store.lua:160
 msgid "Successfully installed:"
-msgstr ""
+msgstr "Succesvol geïnstalleerd:"
 
 #: builtin/mainmenu/store.lua:162
 #, fuzzy
@@ -229,8 +232,9 @@ msgid "Install"
 msgstr "Installeren"
 
 #: builtin/mainmenu/store.lua:518
+#, fuzzy
 msgid "Close store"
-msgstr ""
+msgstr "winkel sluiten"
 
 #: builtin/mainmenu/store.lua:526
 msgid "Page $1 of $2"
@@ -249,9 +253,8 @@ msgid "Active Contributors"
 msgstr "Actieve bijdragers"
 
 #: builtin/mainmenu/tab_credits.lua:54
-#, fuzzy
 msgid "Previous Core Developers"
-msgstr "Hoofdontwikkelaars"
+msgstr "Eerdere hoofdontwikkelaars"
 
 #: builtin/mainmenu/tab_credits.lua:59
 msgid "Previous Contributors"
@@ -294,14 +297,12 @@ msgid "Mods"
 msgstr "Mods"
 
 #: builtin/mainmenu/tab_multiplayer.lua:23
-#, fuzzy
 msgid "Address / Port :"
-msgstr "IP-Adres/Poort"
+msgstr "IP-Adres / Poort :"
 
 #: builtin/mainmenu/tab_multiplayer.lua:24
-#, fuzzy
 msgid "Name / Password :"
-msgstr "Naam/Wachtwoord"
+msgstr "Naam / Wachtwoord :"
 
 #: builtin/mainmenu/tab_multiplayer.lua:29
 #: builtin/mainmenu/tab_simple_main.lua:30
@@ -320,7 +321,6 @@ msgstr "Verbinden"
 
 #: builtin/mainmenu/tab_multiplayer.lua:62
 #: builtin/mainmenu/tab_simple_main.lua:45
-#, fuzzy
 msgid "Creative mode"
 msgstr "Creatieve Modus"
 
@@ -332,9 +332,8 @@ msgstr "ingeschakeld"
 
 #: builtin/mainmenu/tab_multiplayer.lua:64
 #: builtin/mainmenu/tab_simple_main.lua:47
-#, fuzzy
 msgid "PvP enabled"
-msgstr "ingeschakeld"
+msgstr "PvP ingeschakeld"
 
 #: builtin/mainmenu/tab_multiplayer.lua:257
 msgid "Client"
@@ -381,7 +380,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_server.lua:47
 msgid "Port"
-msgstr ""
+msgstr "Poort"
 
 #: builtin/mainmenu/tab_server.lua:51
 msgid "Server Port"
@@ -389,31 +388,28 @@ msgstr "Serverpoort"
 
 #: builtin/mainmenu/tab_server.lua:138
 #: builtin/mainmenu/tab_singleplayer.lua:165
-#, fuzzy
 msgid "No world created or selected!"
-msgstr "Geen wereldnaam opgegeven of geen spel geselecteerd"
+msgstr "Geen wereldnaam opgegeven of geen spel geselecteerd!"
 
 #: builtin/mainmenu/tab_server.lua:191
 msgid "Server"
 msgstr "Server"
 
 #: builtin/mainmenu/tab_settings.lua:21
-#, fuzzy
 msgid "Opaque Leaves"
-msgstr "Ondoorzichtig water"
+msgstr "Ondoorzichtige bladeren"
 
 #: builtin/mainmenu/tab_settings.lua:22
 msgid "Simple Leaves"
-msgstr ""
+msgstr "Eenvoudige bladeren"
 
 #: builtin/mainmenu/tab_settings.lua:23
-#, fuzzy
 msgid "Fancy Leaves"
-msgstr "Mooie bomen"
+msgstr "Mooie bladeren"
 
 #: builtin/mainmenu/tab_settings.lua:32
 msgid "No Filter"
-msgstr ""
+msgstr "Geen filter"
 
 #: builtin/mainmenu/tab_settings.lua:33
 #, fuzzy
@@ -427,11 +423,11 @@ msgstr "Tri-Lineare Filtering"
 
 #: builtin/mainmenu/tab_settings.lua:43
 msgid "No Mipmap"
-msgstr ""
+msgstr "Geen Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua:44
 msgid "Mipmap"
-msgstr ""
+msgstr "Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua:45
 msgid "Mipmap + Aniso. Filter"
@@ -439,11 +435,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:98
 msgid "Are you sure to reset your singleplayer world?"
-msgstr ""
+msgstr "Weet je zeker dat je je wereld wilt resetten?"
 
 #: builtin/mainmenu/tab_settings.lua:102
 msgid "No!!!"
-msgstr ""
+msgstr "Nee!!!"
 
 #: builtin/mainmenu/tab_settings.lua:202
 msgid "Smooth Lighting"
@@ -462,9 +458,8 @@ msgid "Opaque Water"
 msgstr "Ondoorzichtig water"
 
 #: builtin/mainmenu/tab_settings.lua:210
-#, fuzzy
 msgid "Connected Glass"
-msgstr "Verbinden"
+msgstr "Verbonden glas"
 
 #: builtin/mainmenu/tab_settings.lua:212
 msgid "Node Highlighting"
@@ -480,7 +475,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:226
 msgid "Restart minetest for driver change to take effect"
-msgstr ""
+msgstr "Herstart minetest om de driver te activeren"
 
 #: builtin/mainmenu/tab_settings.lua:228
 msgid "Shaders"
@@ -491,17 +486,16 @@ msgid "Change keys"
 msgstr "Toetsen"
 
 #: builtin/mainmenu/tab_settings.lua:236
-#, fuzzy
 msgid "Reset singleplayer world"
-msgstr "Singleplayer"
+msgstr "Reset Singleplayer wereld"
 
 #: builtin/mainmenu/tab_settings.lua:240
 msgid "GUI scale factor"
-msgstr ""
+msgstr "GUI schaal-factor"
 
 #: builtin/mainmenu/tab_settings.lua:244
 msgid "Scaling factor applied to menu elements: "
-msgstr ""
+msgstr "Schaal-factor toegepast op menu elementen: "
 
 #: builtin/mainmenu/tab_settings.lua:250
 msgid "Touch free target"
@@ -526,15 +520,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:269 builtin/mainmenu/tab_settings.lua:280
 msgid "Waving Water"
-msgstr ""
+msgstr "Golvend water"
 
 #: builtin/mainmenu/tab_settings.lua:271 builtin/mainmenu/tab_settings.lua:281
 msgid "Waving Leaves"
-msgstr ""
+msgstr "Bewegende bladeren"
 
 #: builtin/mainmenu/tab_settings.lua:273 builtin/mainmenu/tab_settings.lua:282
 msgid "Waving Plants"
-msgstr ""
+msgstr "Bewegende planten"
 
 #: builtin/mainmenu/tab_settings.lua:308
 msgid "To enable shaders the OpenGL driver needs to be used."
@@ -545,9 +539,8 @@ msgid "Settings"
 msgstr "Instellingen"
 
 #: builtin/mainmenu/tab_simple_main.lua:82
-#, fuzzy
 msgid "Start Singleplayer"
-msgstr "Singleplayer"
+msgstr "Start Singleplayer"
 
 #: builtin/mainmenu/tab_simple_main.lua:83
 #, fuzzy
@@ -592,11 +585,11 @@ msgstr "IP-adres opzoeken..."
 
 #: src/client.cpp:1743
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "Nodes initialiseren..."
 
 #: src/client.cpp:1760
 msgid "Initializing nodes"
-msgstr ""
+msgstr "Nodes initialiseren"
 
 #: src/client.cpp:1768
 msgid "Item textures..."
@@ -604,7 +597,7 @@ msgstr "Voorwerp texturen..."
 
 #: src/client.cpp:1793
 msgid "Done!"
-msgstr ""
+msgstr "Klaar!"
 
 #: src/client/clientlauncher.cpp:185
 msgid "Main Menu"
@@ -612,7 +605,7 @@ msgstr "Hoofdmenu"
 
 #: src/client/clientlauncher.cpp:223
 msgid "Player name too long."
-msgstr ""
+msgstr "Spelernaam te lang."
 
 #: src/client/clientlauncher.cpp:261
 msgid "Connection error (timed out?)"
@@ -624,7 +617,7 @@ msgstr "Geen wereld en adres geselecteerd. Niks te doen."
 
 #: src/client/clientlauncher.cpp:432
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "Het gespecificeerde wereld-pad bestaat niet: "
 
 #: src/client/clientlauncher.cpp:441
 msgid "Could not find or load game \""
@@ -705,9 +698,8 @@ msgid "Sound Volume"
 msgstr "Volume"
 
 #: src/game.cpp:1136
-#, fuzzy
 msgid "Change Keys"
-msgstr "Toetsen"
+msgstr "Toetsen aanpassen"
 
 #: src/game.cpp:1139
 msgid "Exit to Menu"
@@ -718,9 +710,8 @@ msgid "Exit to OS"
 msgstr "Afsluiten"
 
 #: src/game.cpp:1841
-#, fuzzy
 msgid "Shutting down..."
-msgstr "Stopzetten..."
+msgstr "Uitschakelen..."
 
 #: src/game.cpp:1948
 #, fuzzy
@@ -753,11 +744,11 @@ msgstr "Media..."
 
 #: src/game.cpp:2334
 msgid "KiB/s"
-msgstr ""
+msgstr "KiB/s"
 
 #: src/game.cpp:2338
 msgid "MiB/s"
-msgstr ""
+msgstr "MiB/s"
 
 #: src/game.cpp:4363
 msgid ""
@@ -773,7 +764,7 @@ msgstr ""
 
 #: src/guiFormSpecMenu.cpp:2875
 msgid "ok"
-msgstr ""
+msgstr "ok"
 
 #: src/guiKeyChangeMenu.cpp:125
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
