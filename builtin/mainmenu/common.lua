@@ -290,11 +290,12 @@ end
 --------------------------------------------------------------------------------
 function is_server_protocol_compat_or_error(proto_min, proto_max)
 	if not is_server_protocol_compat(proto_min, proto_max) then
-		gamedata.errormessage = fgettext_ne("Protocol version mismatch, server " ..
-			((proto_min ~= proto_max) and "supports protocols between $1 and $2" or "enforces protocol version $1") ..
-			", we " ..
-			((min_supp_proto ~= max_supp_proto) and "support protocols between version $3 and $4." or "only support protocol version $3"),
-			proto_min or 13, proto_max or 24, min_supp_proto, max_supp_proto)
+		gamedata.errormessage = fgettext("Protocol version mismatch: ") .. ((proto_min ~= proto_max) and
+				fgettext_ne("Server supports protocols between $1 and $2, ", proto_min or 13, proto_max or 24) or
+				fgettext_ne("Server enforces protocol version $1, ", proto_min or 13)) ..
+			((min_supp_proto ~= max_supp_proto) and
+			fgettext_ne("but we support protocols between version $1 and $2.", min_supp_proto, max_supp_proto) or
+			fgettext_ne("but we only support protocol version $1.", min_supp_proto))
 		return false
 	end
 
