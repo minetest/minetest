@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-09-06 08:49+0200\n"
+"PO-Revision-Date: 2015-09-06 08:59+0200\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
 "Language-Team: Indonesian "
@@ -694,7 +694,7 @@ msgstr ""
 
 #: src/game.cpp:1125
 msgid "Continue"
-msgstr ""
+msgstr "Lanjutkan"
 
 #: src/game.cpp:1129
 msgid "Change Password"
