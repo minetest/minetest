@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-09-05 08:38+0200\n"
+"PO-Revision-Date: 2015-09-06 07:40+0200\n"
 "Last-Translator: E. Kastelijn <weblate.org@kastelijn.nu>\n"
 "Language-Team: Dutch "
 "<https://hosted.weblate.org/projects/minetest/minetest/nl/>\n"
@@ -178,13 +178,12 @@ msgid "Install Mod: file: \"$1\""
 msgstr "Mod installeren: bestand: \"$1\""
 
 #: builtin/mainmenu/modmgr.lua:345
-#, fuzzy
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"Mod installeren: niet ondersteund bestandstype \"$1\""
+"Mod installeren: niet ondersteund bestandstype \"$1\" of defect archief"
 
 #: builtin/mainmenu/modmgr.lua:365
 msgid "Failed to install $1 to $2"
@@ -215,9 +214,8 @@ msgid "Successfully installed:"
 msgstr "Succesvol geïnstalleerd:"
 
 #: builtin/mainmenu/store.lua:162
-#, fuzzy
 msgid "Shortname:"
-msgstr "Naam wereld"
+msgstr "Korte naam:"
 
 #: builtin/mainmenu/store.lua:472
 msgid "Rating"
@@ -232,9 +230,8 @@ msgid "Install"
 msgstr "Installeren"
 
 #: builtin/mainmenu/store.lua:518
-#, fuzzy
 msgid "Close store"
-msgstr "winkel sluiten"
+msgstr "Winkel sluiten"
 
 #: builtin/mainmenu/store.lua:526
 msgid "Page $1 of $2"
@@ -326,9 +323,8 @@ msgstr "Creatieve Modus"
 
 #: builtin/mainmenu/tab_multiplayer.lua:63
 #: builtin/mainmenu/tab_simple_main.lua:46
-#, fuzzy
 msgid "Damage enabled"
-msgstr "ingeschakeld"
+msgstr "Schade ingeschakeld"
 
 #: builtin/mainmenu/tab_multiplayer.lua:64
 #: builtin/mainmenu/tab_simple_main.lua:47
@@ -376,7 +372,7 @@ msgstr "Naam/Wachtwoord"
 
 #: builtin/mainmenu/tab_server.lua:45
 msgid "Bind Address"
-msgstr ""
+msgstr "Adres"
 
 #: builtin/mainmenu/tab_server.lua:47
 msgid "Port"
@@ -412,12 +408,10 @@ msgid "No Filter"
 msgstr "Geen filter"
 
 #: builtin/mainmenu/tab_settings.lua:33
-#, fuzzy
 msgid "Bilinear Filter"
 msgstr "Bi-Lineaire Filtering"
 
 #: builtin/mainmenu/tab_settings.lua:34
-#, fuzzy
 msgid "Trilinear Filter"
 msgstr "Tri-Lineare Filtering"
 
@@ -431,7 +425,7 @@ msgstr "Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua:45
 msgid "Mipmap + Aniso. Filter"
-msgstr ""
+msgstr "Mipmap + Anisotropisch filteren"
 
 #: builtin/mainmenu/tab_settings.lua:98
 msgid "Are you sure to reset your singleplayer world?"
@@ -463,15 +457,15 @@ msgstr "Verbonden glas"
 
 #: builtin/mainmenu/tab_settings.lua:212
 msgid "Node Highlighting"
-msgstr ""
+msgstr "Node markering"
 
 #: builtin/mainmenu/tab_settings.lua:217
 msgid "Texturing:"
-msgstr ""
+msgstr "Textuur:"
 
 #: builtin/mainmenu/tab_settings.lua:222
 msgid "Rendering:"
-msgstr ""
+msgstr "Rendering:"
 
 #: builtin/mainmenu/tab_settings.lua:226
 msgid "Restart minetest for driver change to take effect"
@@ -506,9 +500,8 @@ msgid "Touchthreshold (px)"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:263 builtin/mainmenu/tab_settings.lua:277
-#, fuzzy
 msgid "Bumpmapping"
-msgstr "Mip-Mapping"
+msgstr "Bumpmapping"
 
 #: builtin/mainmenu/tab_settings.lua:265 builtin/mainmenu/tab_settings.lua:278
 msgid "Generate Normalmaps"
@@ -516,7 +509,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:267 builtin/mainmenu/tab_settings.lua:279
 msgid "Parallax Occlusion"
-msgstr ""
+msgstr "Parallax occlusie"
 
 #: builtin/mainmenu/tab_settings.lua:269 builtin/mainmenu/tab_settings.lua:280
 msgid "Waving Water"
@@ -543,9 +536,8 @@ msgid "Start Singleplayer"
 msgstr "Start Singleplayer"
 
 #: builtin/mainmenu/tab_simple_main.lua:83
-#, fuzzy
 msgid "Config mods"
-msgstr "Instellingen"
+msgstr "Mods configureren"
 
 #: builtin/mainmenu/tab_simple_main.lua:201
 #, fuzzy
@@ -574,14 +566,12 @@ msgid "Texturepacks"
 msgstr "Texturen"
 
 #: src/client.cpp:1721
-#, fuzzy
 msgid "Loading textures..."
-msgstr "Bezig met laden..."
+msgstr "Bezig met laden van texturen..."
 
 #: src/client.cpp:1736
-#, fuzzy
 msgid "Rebuilding shaders..."
-msgstr "IP-adres opzoeken..."
+msgstr "Herbouwen van shaders..."
 
 #: src/client.cpp:1743
 msgid "Initializing nodes..."
@@ -714,9 +704,8 @@ msgid "Shutting down..."
 msgstr "Uitschakelen..."
 
 #: src/game.cpp:1948
-#, fuzzy
 msgid "Creating server..."
-msgstr "Bezig server te maken..."
+msgstr "Aanmaken van server..."
 
 #: src/game.cpp:1984
 msgid "Creating client..."
@@ -959,7 +948,7 @@ msgstr "Escape"
 
 #: src/keycode.cpp:226
 msgid "Final"
-msgstr "Final"
+msgstr "Laatste"
 
 #: src/keycode.cpp:226
 msgid "Junja"
@@ -975,7 +964,7 @@ msgstr "Nonconvert"
 
 #: src/keycode.cpp:227
 msgid "End"
-msgstr "End"
+msgstr "Einde"
 
 #: src/keycode.cpp:227
 msgid "Home"
