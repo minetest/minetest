@@ -3,20 +3,22 @@
 # This file is distributed under the same license as the PACKAGE package.
 # Muhammad Rifqi Priyo Susanto <muhammadrifqipriyosusanto@gmail.com>, 2014.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-03-02 00:21+0700\n"
+"PO-Revision-Date: 2015-09-06 08:49+0200\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
-"Language-Team: Bahasa Indonesia <>\n"
+"Language-Team: Indonesian "
+"<https://hosted.weblate.org/projects/minetest/minetest/id/>\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 2.4-dev\n"
 
 #: builtin/fstk/ui.lua:82
 msgid "An error occured in a Lua script, such as a mod:"
@@ -24,7 +26,7 @@ msgstr ""
 
 #: builtin/fstk/ui.lua:84
 msgid "An error occured:"
-msgstr ""
+msgstr "Kesalahan muncul:"
 
 #: builtin/fstk/ui.lua:89 builtin/mainmenu/store.lua:165
 msgid "Ok"
@@ -32,11 +34,13 @@ msgstr "Oke"
 
 #: builtin/mainmenu/common.lua:239 src/game.cpp:1891
 msgid "Loading..."
-msgstr ""
+msgstr "Memuat..."
 
 #: builtin/mainmenu/common.lua:240
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
+"Cobalah mengaktifkan ulang daftar server publik dan cek koneksi internet "
+"Anda."
 
 #: builtin/mainmenu/dlg_config_world.lua:29
 msgid "World:"
@@ -114,7 +118,7 @@ msgstr "Buat"
 
 #: builtin/mainmenu/dlg_create_world.lua:68
 msgid "You have no subgames installed."
-msgstr "Kamu tidak punya sub-permainan terpasang"
+msgstr "Kamu tidak punya sub-permainan terpasang."
 
 #: builtin/mainmenu/dlg_create_world.lua:69
 msgid "Download one from minetest.net"
@@ -179,7 +183,6 @@ msgid "Install Mod: file: \"$1\""
 msgstr "Pemasangan Mod: berkas: \"$1\""
 
 #: builtin/mainmenu/modmgr.lua:345
-#, fuzzy
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\" or broken archive"
@@ -210,16 +213,14 @@ msgid "Search"
 msgstr "Cari"
 
 #: builtin/mainmenu/store.lua:126
-#, fuzzy
 msgid "Downloading $1, please wait..."
-msgstr "mohon tunggu..."
+msgstr "Mengunduh $1, mohon tunggu..."
 
 #: builtin/mainmenu/store.lua:160
 msgid "Successfully installed:"
 msgstr "Berhasil dipasang:"
 
 #: builtin/mainmenu/store.lua:162
-#, fuzzy
 msgid "Shortname:"
 msgstr "Nama pendek:"
 
@@ -256,9 +257,8 @@ msgid "Active Contributors"
 msgstr "Kontributor Aktif"
 
 #: builtin/mainmenu/tab_credits.lua:54
-#, fuzzy
 msgid "Previous Core Developers"
-msgstr "Pengembang Inti"
+msgstr "Pengembang Inti Sebelumnya"
 
 #: builtin/mainmenu/tab_credits.lua:59
 msgid "Previous Contributors"
@@ -301,14 +301,12 @@ msgid "Mods"
 msgstr "Mod"
 
 #: builtin/mainmenu/tab_multiplayer.lua:23
-#, fuzzy
 msgid "Address / Port :"
-msgstr "Alamat/Port"
+msgstr "Alamat / Port:"
 
 #: builtin/mainmenu/tab_multiplayer.lua:24
-#, fuzzy
 msgid "Name / Password :"
-msgstr "Nama/Kata sandi"
+msgstr "Nama / Kata sandi:"
 
 #: builtin/mainmenu/tab_multiplayer.lua:29
 #: builtin/mainmenu/tab_simple_main.lua:30
@@ -327,21 +325,18 @@ msgstr "Sambung"
 
 #: builtin/mainmenu/tab_multiplayer.lua:62
 #: builtin/mainmenu/tab_simple_main.lua:45
-#, fuzzy
 msgid "Creative mode"
-msgstr "Mode Kreatif"
+msgstr "Mode kreatif"
 
 #: builtin/mainmenu/tab_multiplayer.lua:63
 #: builtin/mainmenu/tab_simple_main.lua:46
-#, fuzzy
 msgid "Damage enabled"
-msgstr "diaktifkan"
+msgstr "Kerusakan diaktifkan"
 
 #: builtin/mainmenu/tab_multiplayer.lua:64
 #: builtin/mainmenu/tab_simple_main.lua:47
-#, fuzzy
 msgid "PvP enabled"
-msgstr "diaktifkan"
+msgstr "PvP diaktifkan"
 
 #: builtin/mainmenu/tab_multiplayer.lua:257
 msgid "Client"
@@ -384,7 +379,7 @@ msgstr "Nama/Kata sandi"
 
 #: builtin/mainmenu/tab_server.lua:45
 msgid "Bind Address"
-msgstr ""
+msgstr "Alamat Sambungan"
 
 #: builtin/mainmenu/tab_server.lua:47
 msgid "Port"
@@ -396,54 +391,48 @@ msgstr "Port Server"
 
 #: builtin/mainmenu/tab_server.lua:138
 #: builtin/mainmenu/tab_singleplayer.lua:165
-#, fuzzy
 msgid "No world created or selected!"
-msgstr "Tidak ada nama atau permainan yang dipilih"
+msgstr "Tidak ada dunia atau permainan yang dipilih!"
 
 #: builtin/mainmenu/tab_server.lua:191
 msgid "Server"
 msgstr "Server"
 
 #: builtin/mainmenu/tab_settings.lua:21
-#, fuzzy
 msgid "Opaque Leaves"
-msgstr "Air Buram"
+msgstr "Daun Opak"
 
 #: builtin/mainmenu/tab_settings.lua:22
-#, fuzzy
 msgid "Simple Leaves"
-msgstr "Daun Melambai"
+msgstr "Daun Sederhana"
 
 #: builtin/mainmenu/tab_settings.lua:23
-#, fuzzy
 msgid "Fancy Leaves"
-msgstr "Pohon Indah"
+msgstr "Daun Megah"
 
 #: builtin/mainmenu/tab_settings.lua:32
 msgid "No Filter"
-msgstr ""
+msgstr "Tanpa Filter"
 
 #: builtin/mainmenu/tab_settings.lua:33
-#, fuzzy
 msgid "Bilinear Filter"
-msgstr "Bi-Linear Filtering"
+msgstr "Bilinear Filter"
 
 #: builtin/mainmenu/tab_settings.lua:34
-#, fuzzy
 msgid "Trilinear Filter"
-msgstr "Tri-Linear Filtering"
+msgstr "Trilinear Filter"
 
 #: builtin/mainmenu/tab_settings.lua:43
 msgid "No Mipmap"
-msgstr ""
+msgstr "Tanpa Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua:44
 msgid "Mipmap"
-msgstr ""
+msgstr "Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua:45
 msgid "Mipmap + Aniso. Filter"
-msgstr ""
+msgstr "Mipmap + Aniso. Filter"
 
 #: builtin/mainmenu/tab_settings.lua:98
 msgid "Are you sure to reset your singleplayer world?"
@@ -470,7 +459,6 @@ msgid "Opaque Water"
 msgstr "Air Buram"
 
 #: builtin/mainmenu/tab_settings.lua:210
-#, fuzzy
 msgid "Connected Glass"
 msgstr "Kaca Tersambung"
 
@@ -480,11 +468,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua:217
 msgid "Texturing:"
-msgstr ""
+msgstr "Penteksturan:"
 
 #: builtin/mainmenu/tab_settings.lua:222
 msgid "Rendering:"
-msgstr ""
+msgstr "Rendering:"
 
 #: builtin/mainmenu/tab_settings.lua:226
 msgid "Restart minetest for driver change to take effect"
@@ -499,7 +487,6 @@ msgid "Change keys"
 msgstr "Ubah tombol"
 
 #: builtin/mainmenu/tab_settings.lua:236
-#, fuzzy
 msgid "Reset singleplayer world"
 msgstr "Atur ulang dunia pemain tunggal"
 
@@ -520,7 +507,6 @@ msgid "Touchthreshold (px)"
 msgstr "Batas sentuhan (px)"
 
 #: builtin/mainmenu/tab_settings.lua:263 builtin/mainmenu/tab_settings.lua:277
-#, fuzzy
 msgid "Bumpmapping"
 msgstr "Bumpmapping"
 
@@ -553,17 +539,14 @@ msgid "Settings"
 msgstr "Pengaturan"
 
 #: builtin/mainmenu/tab_simple_main.lua:82
-#, fuzzy
 msgid "Start Singleplayer"
 msgstr "Mulai Pemain Tunggal"
 
 #: builtin/mainmenu/tab_simple_main.lua:83
-#, fuzzy
 msgid "Config mods"
 msgstr "Konfigurasi mod"
 
 #: builtin/mainmenu/tab_simple_main.lua:201
-#, fuzzy
 msgid "Main"
 msgstr "Beranda"
 
@@ -584,18 +567,16 @@ msgid "No information available"
 msgstr "Tidak ada informasi tersedia"
 
 #: builtin/mainmenu/tab_texturepacks.lua:114
-#, fuzzy
 msgid "Texturepacks"
 msgstr "Paket Tekstur"
 
 #: src/client.cpp:1721
-#, fuzzy
 msgid "Loading textures..."
-msgstr "Tekstur barang..."
+msgstr "Memuat tekstur..."
 
 #: src/client.cpp:1736
 msgid "Rebuilding shaders..."
-msgstr ""
+msgstr "Membangun ulang shaders..."
 
 #: src/client.cpp:1743
 msgid "Initializing nodes..."
@@ -611,7 +592,7 @@ msgstr "Tekstur barang..."
 
 #: src/client.cpp:1793
 msgid "Done!"
-msgstr ""
+msgstr "Selesai!"
 
 #: src/client/clientlauncher.cpp:185
 msgid "Main Menu"
@@ -651,7 +632,7 @@ msgstr "Lanjut"
 
 #: src/game.cpp:1072
 msgid "You died."
-msgstr ""
+msgstr "Anda mati."
 
 #: src/game.cpp:1073
 msgid "Respawn"
@@ -672,6 +653,18 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
+"Kontrol Bawaan:\n"
+"Tanpa menu yang tampak:\n"
+"- ketuk sekali: tekan tombol\n"
+"- ketuk ganda: taruh/pakai\n"
+"- geser: melihat sekitar\n"
+"Menu/Inventaris tampak:\n"
+"- ketuk ganda (di luar):\n"
+" -->tutup\n"
+"- tekan tumpukan, tekan wadah:\n"
+" --> pindah tumpukan\n"
+"- tekan&geser, ketuk jari kedua\n"
+" --> taruh barang tunggal ke wadah\n"
 
 #: src/game.cpp:1106
 msgid ""
@@ -687,54 +680,61 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
+"Kontrol Bawaan:\n"
+"- WASD: bergerak\n"
+"- Space: lompat/panjat\n"
+"- Shift: merayap/turun\n"
+"- Q: jatuhkan barang\n"
+"- I: inventaris\n"
+"- Mouse: belok/melihat\n"
+"- Mouse kiri: gali/pukul\n"
+"- Mouse kanan: taruh/pakai\n"
+"- Roda mouse: pilih barang\n"
+"- T: obrolan\n"
 
 #: src/game.cpp:1125
 msgid "Continue"
 msgstr ""
 
 #: src/game.cpp:1129
-#, fuzzy
 msgid "Change Password"
-msgstr "Kata Sandi Baru"
+msgstr "Ganti Kata Sandi"
 
 #: src/game.cpp:1134
-#, fuzzy
 msgid "Sound Volume"
-msgstr "Volume Suara: "
+msgstr "Volume Suara"
 
 #: src/game.cpp:1136
-#, fuzzy
 msgid "Change Keys"
-msgstr "Ubah tombol"
+msgstr "Ubah Tombol"
 
 #: src/game.cpp:1139
-#, fuzzy
 msgid "Exit to Menu"
-msgstr "Right Menu"
+msgstr "Kembali ke Menu Utama"
 
 #: src/game.cpp:1141
 msgid "Exit to OS"
-msgstr ""
+msgstr "Tutup Aplikasi"
 
 #: src/game.cpp:1841
 msgid "Shutting down..."
-msgstr ""
+msgstr "Mematikan..."
 
 #: src/game.cpp:1948
 msgid "Creating server..."
-msgstr ""
+msgstr "Membuat server..."
 
 #: src/game.cpp:1984
 msgid "Creating client..."
-msgstr ""
+msgstr "Membuat klien..."
 
 #: src/game.cpp:2159
 msgid "Resolving address..."
-msgstr ""
+msgstr "Mencari alamat..."
 
 #: src/game.cpp:2261
 msgid "Connecting to server..."
-msgstr ""
+msgstr "Menghubungkan ke server..."
 
 #: src/game.cpp:2317
 msgid "Item definitions..."
@@ -750,11 +750,11 @@ msgstr "Media..."
 
 #: src/game.cpp:2334
 msgid "KiB/s"
-msgstr ""
+msgstr "KiB/s"
 
 #: src/game.cpp:2338
 msgid "MiB/s"
-msgstr ""
+msgstr "MiB/s"
 
 #: src/game.cpp:4363
 msgid ""
