@@ -1763,6 +1763,12 @@ Call these functions only at load time!
     * Overrides fields of an item registered with register_node/tool/craftitem.
     * Note: Item must already be defined, (opt)depend on the mod defining it.
     * Example: `minetest.override_item("default:mese", {light_source=LIGHT_MAX})`
+* `minetest.override_item_groups(name, groups)`
+    * Overrides individual groups of an item registered with
+      register_node/tool/craftitem.
+    * Use to add groups to/modify the groups of an item without deleting old groups.
+    * Note: Item must already be defined, (opt)depend on the mod defining it.
+    * Example: `minetest.override_item_groups("default:mese", {cracky=56})`
 
 * `minetest.clear_registered_ores()`
 * `minetest.clear_registered_decorations()`

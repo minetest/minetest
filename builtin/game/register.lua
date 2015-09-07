@@ -329,6 +329,18 @@ function core.override_item(name, redefinition)
 	register_item_raw(item)
 end
 
+function core.override_item_groups(name, groups)
+	local item = core.registered_items[name]
+	if not item then
+		error("Attempt to override non-existent item "..name, 2)
+	end
+	item.groups = item.groups or {}
+	for k, v in pairs(groups) do
+		rawset(item.groups, k, v)
+	end
+	register_item_raw(item)
+end
+
 
 core.callback_origins = {}
 
@@ -502,4 +514,3 @@ core.registered_on_punchplayers, core.register_on_punchplayer = make_registratio
 --
 
 core.register_on_mapgen_init = function(func) func(core.get_mapgen_params()) end
-
