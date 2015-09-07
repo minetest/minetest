@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-09-07 11:31+0200\n"
+"PO-Revision-Date: 2015-09-07 11:49+0200\n"
 "Last-Translator: Alex “XShell” Schekoldin <sa1904sa@gmail.com>\n"
 "Language-Team: Russian "
 "<https://hosted.weblate.org/projects/minetest/minetest/ru/>\n"
@@ -97,7 +97,7 @@ msgstr "Название мира"
 
 #: builtin/mainmenu/dlg_create_world.lua:53
 msgid "Seed"
-msgstr "Зерно"
+msgstr "Сид"
 
 #: builtin/mainmenu/dlg_create_world.lua:56
 msgid "Mapgen"
@@ -187,7 +187,7 @@ msgstr ""
 
 #: builtin/mainmenu/modmgr.lua:365
 msgid "Failed to install $1 to $2"
-msgstr "Ошибка при установке $1 в $2"
+msgstr "Невозможно установить $1 в $2"
 
 #: builtin/mainmenu/modmgr.lua:368
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
@@ -462,11 +462,11 @@ msgstr "Подсветка нод"
 
 #: builtin/mainmenu/tab_settings.lua:217
 msgid "Texturing:"
-msgstr "Текстуирование:"
+msgstr "Текстурирование:"
 
 #: builtin/mainmenu/tab_settings.lua:222
 msgid "Rendering:"
-msgstr "Отрисовка:"
+msgstr "Рендеринг:"
 
 #: builtin/mainmenu/tab_settings.lua:226
 msgid "Restart minetest for driver change to take effect"
@@ -602,7 +602,7 @@ msgstr "Ошибка соединения (таймаут?)"
 
 #: src/client/clientlauncher.cpp:425
 msgid "No world selected and no address provided. Nothing to do."
-msgstr "Не выбран мир и не введен адрес."
+msgstr "Не выбран мир и не введен адрес. Нечего делать."
 
 #: src/client/clientlauncher.cpp:432
 msgid "Provided world path doesn't exist: "
