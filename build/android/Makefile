@@ -89,7 +89,7 @@ LEVELDB_DIR = $(ROOT)/deps/leveldb/
 LEVELDB_LIB = $(LEVELDB_DIR)libleveldb.a
 LEVELDB_TIMESTAMP = $(LEVELDB_DIR)/timestamp
 LEVELDB_TIMESTAMP_INT = $(ROOT)/deps/leveldb_timestamp
-LEVELDB_URL_GIT = https://code.google.com/p/leveldb/
+LEVELDB_URL_GIT = https://github.com/google/leveldb
 
 OPENAL_DIR = $(ROOT)/deps/openal-soft/
 OPENAL_LIB = $(OPENAL_DIR)libs/$(TARGET_ABI)/libopenal.so
