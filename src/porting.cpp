@@ -512,14 +512,35 @@ void initializePaths()
 		errorstream << "Failed to get one or more system-wide path" << std::endl;
 
 #endif
-#ifdef STATIC_LOCALEDIR
-	path_locale = STATIC_LOCALEDIR[0] ? STATIC_LOCALEDIR : getDataPath("locale");
-#else
-	path_locale = getDataPath("locale");
-#endif
 
 	infostream << "Detected share path: " << path_share << std::endl;
 	infostream << "Detected user path: " << path_user << std::endl;
+
+	bool found_localedir = false;
+#ifdef STATIC_LOCALEDIR
+	if (STATIC_LOCALEDIR[0] && fs::PathExists(STATIC_LOCALEDIR)) {
+		found_localedir = true;
+		path_locale = STATIC_LOCALEDIR;
+		infostream << "Using locale directory " << STATIC_LOCALEDIR << std::endl;
+	} else {
+		path_locale = getDataPath("locale");
+		if (fs::PathExists(path_locale)) {
+			found_localedir = true;
+			infostream << "Using in-place locale directory " << path_locale
+				<< " even though a static one was provided "
+				<< "(RUN_IN_PLACE or CUSTOM_LOCALEDIR)." << std::endl;
+		}
+	}
+#else
+	path_locale = getDataPath("locale");
+	if (fs::PathExists(path_locale)) {
+		found_localedir = true;
+	}
+#endif
+	if (!found_localedir) {
+		errorstream << "Couldn't find a locale directory!" << std::endl;
+	}
+
 }
 
 
