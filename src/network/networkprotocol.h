@@ -132,9 +132,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Rename GENERIC_CMD_SET_ATTACHMENT to GENERIC_CMD_ATTACH_TO
 	PROTOCOL_VERSION 26:
 		Add TileDef tileable_horizontal, tileable_vertical flags
+	PROTOCOL_VERSION 27:
+		Add TOCLIENT_NODEMETA_CHANGED 
 */
 
-#define LATEST_PROTOCOL_VERSION 26
+#define LATEST_PROTOCOL_VERSION 27
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13
@@ -620,6 +622,11 @@ enum ToClientCommand
 		u32 id
 	*/
 
+	TOCLIENT_NODEMETA_CHANGED = 0x54,
+	/*
+		serialized and compressed node metadata
+	*/
+	
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
 	/*
 		Belonging to AUTH_MECHANISM_LEGACY_PASSWORD and AUTH_MECHANISM_SRP.

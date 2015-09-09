@@ -926,7 +926,8 @@ void Server::AsyncRunStep(bool initial_step)
 			case MEET_BLOCK_NODE_METADATA_CHANGED:
 				infostream << "Server: MEET_BLOCK_NODE_METADATA_CHANGED" << std::endl;
 						prof.add("MEET_BLOCK_NODE_METADATA_CHANGED", 1);
-						setBlockNotSent(event->p);
+				sendMetadataChanged(event->p, &far_players,
+						disable_single_change_sending ? 5 : 30);		
 				break;
 			case MEET_OTHER:
 				infostream << "Server: MEET_OTHER" << std::endl;
@@ -1327,13 +1328,7 @@ void Server::setInventoryModified(const InventoryLocation &loc, bool playerSend)
 		break;
 	case InventoryLocation::NODEMETA:
 	{
-		v3s16 blockpos = getNodeBlockPos(loc.p);
-
-		MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(blockpos);
-		if(block)
-			block->raiseModified(MOD_STATE_WRITE_NEEDED);
-
-		setBlockNotSent(blockpos);
+		sendMetadataChanged(loc.p);
 	}
 		break;
 	case InventoryLocation::DETACHED:
@@ -2111,6 +2106,58 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 		// Send as reliable
 		if (pkt.getSize() > 0)
 			m_clients.send(*i, 0, &pkt, true);
+	}
+}
+
+void Server::sendMetadataChanged(v3s16 p, std::vector<u16> *far_players,
+	float far_d_nodes)
+{
+	v3s16 blockpos = getNodeBlockPos(p);
+	float maxd = far_d_nodes * BS;
+	v3f p_f = intToFloat(p, BS);
+	MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(blockpos);
+	if (block)
+		block->raiseModified(MOD_STATE_WRITE_NEEDED,
+			MOD_REASON_REPORT_META_CHANGE);
+
+	NetworkPacket pkt(TOCLIENT_NODEMETA_CHANGED, 0);
+	std::vector<u16> clients = m_clients.getClientIDs();
+
+	if (clients.size() > 0) {
+		NodeMetadata *meta = m_env->getMap().getNodeMetadata(p);
+		std::ostringstream os(std::ios::binary);
+		meta->serialize(os);
+		std::ostringstream oss(std::ios::binary);
+		compressZlib(os.str(), oss);
+		pkt << p;
+		pkt.putLongString(oss.str());
+	}
+
+	for (std::vector<u16>::iterator i = clients.begin();
+			i != clients.end(); ++i) {
+		if (far_players) {
+			// Get player
+			if (Player *player = m_env->getPlayer(*i)) {
+				// If player is far away, only set modified blocks not sent
+				v3f player_pos = player->getPosition();
+				if (player_pos.getDistanceFrom(p_f) > maxd) {
+					far_players->push_back(*i);
+					continue;
+				}
+			}
+		}
+
+		m_clients.lock();
+		RemoteClient* client = m_clients.lockedGetClientNoEx(*i);
+		if (client != 0) {
+			// pre 27 clients expect whole mapblock
+			if (client->net_proto_version < 27) {
+				client->SetBlockNotSent(blockpos);
+			} else {
+				m_clients.send(*i, 0, &pkt, true);
+			}
+		}
+		m_clients.unlock();
 	}
 }
 

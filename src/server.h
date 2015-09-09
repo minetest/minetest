@@ -424,6 +424,9 @@ private:
 	void sendAddNode(v3s16 p, MapNode n, u16 ignore_id=0,
 			std::vector<u16> *far_players=NULL, float far_d_nodes=100,
 			bool remove_metadata=true);
+	void sendMetadataChanged(v3s16 p, std::vector<u16> *far_players=NULL,
+			float far_d_nodes=100);
+
 	void setBlockNotSent(v3s16 p);
 
 	// Environment and Connection must be locked when called
