@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-08-05 13:29+0200\n"
+"PO-Revision-Date: 2015-09-09 16:11+0200\n"
 "Last-Translator: Kisbenedek Márton <martonkisbenedek@gmail.com>\n"
 "Language-Team: Hungarian "
 "<https://hosted.weblate.org/projects/minetest/minetest/hu/>\n"
@@ -62,7 +62,7 @@ msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua:51 builtin/mainmenu/tab_mods.lua:99
 msgid "Depends:"
-msgstr "Függ ettől:"
+msgstr "Függőségek:"
 
 #: builtin/mainmenu/dlg_config_world.lua:54 src/guiKeyChangeMenu.cpp:191
 msgid "Save"
@@ -77,16 +77,16 @@ msgstr "Mégse"
 
 #: builtin/mainmenu/dlg_config_world.lua:71
 msgid "Enable MP"
-msgstr "Modpakk engedélyezése"
+msgstr "Csomag engedélyez"
 
 #: builtin/mainmenu/dlg_config_world.lua:73
 msgid "Disable MP"
-msgstr "Modpakk letiltása"
+msgstr "Csomag letiltás"
 
 #: builtin/mainmenu/dlg_config_world.lua:77
 #: builtin/mainmenu/dlg_config_world.lua:79
 msgid "enabled"
-msgstr "Engedélyezve"
+msgstr "Engedélyez"
 
 #: builtin/mainmenu/dlg_config_world.lua:85
 msgid "Enable all"
@@ -115,7 +115,7 @@ msgstr "Létrehozás"
 
 #: builtin/mainmenu/dlg_create_world.lua:68
 msgid "You have no subgames installed."
-msgstr "Nincsenek al-játékok telepítve."
+msgstr "Nincsenek aljátékok telepítve."
 
 #: builtin/mainmenu/dlg_create_world.lua:69
 msgid "Download one from minetest.net"
@@ -566,7 +566,7 @@ msgstr "Egyjátékos mód"
 
 #: builtin/mainmenu/tab_texturepacks.lua:49
 msgid "Select texture pack:"
-msgstr "Textúra pakk kiválasztása:"
+msgstr "Textúracsomag kiválasztása:"
 
 #: builtin/mainmenu/tab_texturepacks.lua:69
 msgid "No information available"
