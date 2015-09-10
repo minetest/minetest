@@ -208,7 +208,6 @@ enum ToClientCommand
 	TOCLIENT_BLOCKDATA = 0x20, //TODO: Multiple blocks
 	TOCLIENT_ADDNODE = 0x21,
 	/*
-		u16 command
 		v3s16 position
 		serialized mapnode
 		u8 keep_metadata // Added in protocol version 22
@@ -255,7 +254,6 @@ enum ToClientCommand
 	/*
 		Sent as unreliable.
 
-		u16 command
 		u16 number of player positions
 		for each player:
 			u16 peer_id
@@ -271,7 +269,6 @@ enum ToClientCommand
 
 	TOCLIENT_TIME_OF_DAY = 0x29,
 	/*
-		u16 command
 		u16 time (0-23999)
 		Added in a later version:
 		f1000 time_speed
@@ -281,14 +278,12 @@ enum ToClientCommand
 
 	TOCLIENT_CHAT_MESSAGE = 0x30,
 	/*
-		u16 command
 		u16 length
 		wstring message
 	*/
 
 	TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD = 0x31,
 	/*
-		u16 command
 		u16 count of removed objects
 		for all removed objects {
 			u16 id
@@ -304,7 +299,6 @@ enum ToClientCommand
 
 	TOCLIENT_ACTIVE_OBJECT_MESSAGES = 0x32,
 	/*
-		u16 command
 		for all objects
 		{
 			u16 id
@@ -315,13 +309,11 @@ enum ToClientCommand
 
 	TOCLIENT_HP = 0x33,
 	/*
-		u16 command
 		u8 hp
 	*/
 
 	TOCLIENT_MOVE_PLAYER = 0x34,
 	/*
-		u16 command
 		v3f1000 player position
 		f1000 player pitch
 		f1000 player yaw
@@ -329,14 +321,12 @@ enum ToClientCommand
 
 	TOCLIENT_ACCESS_DENIED_LEGACY = 0x35,
 	/*
-		u16 command
 		u16 reason_length
 		wstring reason
 	*/
 
 	TOCLIENT_PLAYERITEM = 0x36, // Obsolete
 	/*
-		u16 command
 		u16 count of player items
 		for all player items {
 			u16 peer id
@@ -347,14 +337,12 @@ enum ToClientCommand
 
 	TOCLIENT_DEATHSCREEN = 0x37,
 	/*
-		u16 command
 		u8 bool set camera point target
 		v3f1000 camera point target (to point the death cause or whatever)
 	*/
 
 	TOCLIENT_MEDIA = 0x38,
 	/*
-		u16 command
 		u16 total number of texture bunches
 		u16 index of this bunch
 		u32 number of files in this bunch
@@ -370,21 +358,18 @@ enum ToClientCommand
 
 	TOCLIENT_TOOLDEF = 0x39,
 	/*
-		u16 command
 		u32 length of the next item
 		serialized ToolDefManager
 	*/
 
 	TOCLIENT_NODEDEF = 0x3a,
 	/*
-		u16 command
 		u32 length of the next item
 		serialized NodeDefManager
 	*/
 
 	TOCLIENT_CRAFTITEMDEF = 0x3b,
 	/*
-		u16 command
 		u32 length of the next item
 		serialized CraftiItemDefManager
 	*/
@@ -392,7 +377,6 @@ enum ToClientCommand
 	TOCLIENT_ANNOUNCE_MEDIA = 0x3c,
 
 	/*
-		u16 command
 		u32 number of files
 		for each texture {
 			u16 length of name
@@ -404,14 +388,12 @@ enum ToClientCommand
 
 	TOCLIENT_ITEMDEF = 0x3d,
 	/*
-		u16 command
 		u32 length of next item
 		serialized ItemDefManager
 	*/
 
 	TOCLIENT_PLAY_SOUND = 0x3f,
 	/*
-		u16 command
 		s32 sound_id
 		u16 len
 		u8[len] sound name
@@ -424,13 +406,11 @@ enum ToClientCommand
 
 	TOCLIENT_STOP_SOUND = 0x40,
 	/*
-		u16 command
 		s32 sound_id
 	*/
 
 	TOCLIENT_PRIVILEGES = 0x41,
 	/*
-		u16 command
 		u16 number of privileges
 		for each privilege
 			u16 len
@@ -439,7 +419,6 @@ enum ToClientCommand
 
 	TOCLIENT_INVENTORY_FORMSPEC = 0x42,
 	/*
-		u16 command
 		u32 len
 		u8[len] formspec
 	*/
@@ -463,7 +442,6 @@ enum ToClientCommand
 
 	TOCLIENT_MOVEMENT = 0x45,
 	/*
-		u16 command
 		f1000 movement_acceleration_default
 		f1000 movement_acceleration_air
 		f1000 movement_acceleration_fast
@@ -480,7 +458,6 @@ enum ToClientCommand
 
 	TOCLIENT_SPAWN_PARTICLE = 0x46,
 	/*
-		u16 command
 		v3f1000 pos
 		v3f1000 velocity
 		v3f1000 acceleration
@@ -494,7 +471,6 @@ enum ToClientCommand
 
 	TOCLIENT_ADD_PARTICLESPAWNER = 0x47,
 	/*
-		u16 command
 		u16 amount
 		f1000 spawntime
 		v3f1000 minpos
@@ -516,13 +492,11 @@ enum ToClientCommand
 
 	TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY = 0x48,
 	/*
-		u16 command
 		u16 id
 	*/
 
 	TOCLIENT_HUDADD = 0x49,
 	/*
-		u16 command
 		u32 id
 		u8 type
 		v2f1000 pos
@@ -542,13 +516,11 @@ enum ToClientCommand
 
 	TOCLIENT_HUDRM = 0x4a,
 	/*
-		u16 command
 		u32 id
 	*/
 
 	TOCLIENT_HUDCHANGE = 0x4b,
 	/*
-		u16 command
 		u32 id
 		u8 stat
 		[v2f1000 data |
@@ -559,14 +531,12 @@ enum ToClientCommand
 
 	TOCLIENT_HUD_SET_FLAGS = 0x4c,
 	/*
-		u16 command
 		u32 flags
 		u32 mask
 	*/
 
 	TOCLIENT_HUD_SET_PARAM = 0x4d,
 	/*
-		u16 command
 		u16 param
 		u16 len
 		u8[len] value
@@ -574,13 +544,11 @@ enum ToClientCommand
 
 	TOCLIENT_BREATH = 0x4e,
 	/*
-		u16 command
 		u16 breath
 	*/
 
 	TOCLIENT_SET_SKY = 0x4f,
 	/*
-		u16 command
 		u8[4] color (ARGB)
 		u8 len
 		u8[len] type
@@ -592,14 +560,12 @@ enum ToClientCommand
 
 	TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO = 0x50,
 	/*
-		u16 command
 		u8 do_override (boolean)
 		u16 day-night ratio 0...65535
 	*/
 
 	TOCLIENT_LOCAL_PLAYER_ANIMATIONS = 0x51,
 	/*
-		u16 command
 		v2s32 stand/idle
 		v2s32 walk
 		v2s32 dig
@@ -609,14 +575,12 @@ enum ToClientCommand
 
 	TOCLIENT_EYE_OFFSET = 0x52,
 	/*
-		u16 command
 		v3f1000 first
 		v3f1000 third
 	*/
 
 	TOCLIENT_DELETE_PARTICLESPAWNER = 0x53,
 	/*
-		u16 command
 		u32 id
 	*/
 
@@ -624,7 +588,6 @@ enum ToClientCommand
 	/*
 		Belonging to AUTH_MECHANISM_LEGACY_PASSWORD and AUTH_MECHANISM_SRP.
 
-		u16 command
 		std::string bytes_s
 		std::string bytes_B
 	*/
@@ -735,7 +698,6 @@ enum ToServerCommand
 
 	TOSERVER_SIGNTEXT = 0x30, // Old signs, obsolete
 	/*
-		u16 command
 		v3s16 blockpos
 		s16 id
 		u16 textlen
@@ -749,14 +711,12 @@ enum ToServerCommand
 
 	TOSERVER_CHAT_MESSAGE = 0x32,
 	/*
-		u16 command
 		u16 length
 		wstring message
 	*/
 
 	TOSERVER_SIGNNODETEXT = 0x33, // obsolete
 	/*
-		u16 command
 		v3s16 p
 		u16 textlen
 		textdata
@@ -773,7 +733,6 @@ enum ToServerCommand
 
 	TOSERVER_DAMAGE = 0x35,
 	/*
-		u16 command
 		u8 amount
 	*/
 
@@ -818,14 +777,12 @@ enum ToServerCommand
 
 	TOSERVER_REMOVED_SOUNDS = 0x3a,
 	/*
-		u16 command
 		u16 len
 		s32[len] sound_id
 	*/
 
 	TOSERVER_NODEMETA_FIELDS = 0x3b,
 	/*
-		u16 command
 		v3s16 p
 		u16 len
 		u8[len] form name (reserved for future use)
@@ -839,7 +796,6 @@ enum ToServerCommand
 
 	TOSERVER_INVENTORY_FIELDS = 0x3c,
 	/*
-		u16 command
 		u16 len
 		u8[len] form name (reserved for future use)
 		u16 number of fields
@@ -852,7 +808,6 @@ enum ToServerCommand
 
 	TOSERVER_REQUEST_MEDIA = 0x40,
 	/*
-		u16 command
 		u16 number of files requested
 		for each file {
 			u16 length of name
@@ -862,12 +817,11 @@ enum ToServerCommand
 
 	TOSERVER_RECEIVED_MEDIA = 0x41,
 	/*
-		u16 command
+		<no payload data>
 	*/
 
 	TOSERVER_BREATH = 0x42,
 	/*
-		u16 command
 		u16 breath
 	*/
 
