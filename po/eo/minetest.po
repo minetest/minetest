@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
-"PO-Revision-Date: 2015-09-04 15:07+0200\n"
+"PO-Revision-Date: 2015-09-10 17:14+0200\n"
 "Last-Translator: Tim <t4im@openmailbox.org>\n"
 "Language-Team: Esperanto "
 "<https://hosted.weblate.org/projects/minetest/minetest/eo/>\n"
@@ -94,9 +94,8 @@ msgid "World name"
 msgstr "Monda nomo"
 
 #: builtin/mainmenu/dlg_create_world.lua:53
-#, fuzzy
 msgid "Seed"
-msgstr "Fonta nombro"
+msgstr "Fontnombro"
 
 #: builtin/mainmenu/dlg_create_world.lua:56
 msgid "Mapgen"
@@ -233,9 +232,8 @@ msgid "Close store"
 msgstr "Fermi"
 
 #: builtin/mainmenu/store.lua:526
-#, fuzzy
 msgid "Page $1 of $2"
-msgstr "Paĝo $1 el $2"
+msgstr "Paĝo $1 de $2"
 
 #: builtin/mainmenu/tab_credits.lua:22
 msgid "Credits"
@@ -460,7 +458,7 @@ msgstr "Marki nodaĵojn"
 
 #: builtin/mainmenu/tab_settings.lua:217
 msgid "Texturing:"
-msgstr ""
+msgstr "Teksturado:"
 
 #: builtin/mainmenu/tab_settings.lua:222
 msgid "Rendering:"
@@ -468,7 +466,7 @@ msgstr "Bildigo:"
 
 #: builtin/mainmenu/tab_settings.lua:226
 msgid "Restart minetest for driver change to take effect"
-msgstr ""
+msgstr "Restartigu Minetest-on por efikigi pelilan ŝanĝon"
 
 #: builtin/mainmenu/tab_settings.lua:228
 msgid "Shaders"
@@ -484,23 +482,23 @@ msgstr "Nuligi solludantan mondon"
 
 #: builtin/mainmenu/tab_settings.lua:240
 msgid "GUI scale factor"
-msgstr ""
+msgstr "GUI skala faktoro"
 
 #: builtin/mainmenu/tab_settings.lua:244
 msgid "Scaling factor applied to menu elements: "
-msgstr ""
+msgstr "Skala faktoro por menuoj "
 
 #: builtin/mainmenu/tab_settings.lua:250
 msgid "Touch free target"
-msgstr ""
+msgstr "Sentuŝa celo"
 
 #: builtin/mainmenu/tab_settings.lua:256
 msgid "Touchthreshold (px)"
-msgstr ""
+msgstr "Tuŝa sojlo (px)"
 
 #: builtin/mainmenu/tab_settings.lua:263 builtin/mainmenu/tab_settings.lua:277
 msgid "Bumpmapping"
-msgstr ""
+msgstr "Protuberancmapado"
 
 #: builtin/mainmenu/tab_settings.lua:265 builtin/mainmenu/tab_settings.lua:278
 msgid "Generate Normalmaps"
@@ -508,7 +506,7 @@ msgstr "Generi Normalmapojn"
 
 #: builtin/mainmenu/tab_settings.lua:267 builtin/mainmenu/tab_settings.lua:279
 msgid "Parallax Occlusion"
-msgstr ""
+msgstr "Paralaksa Okludo"
 
 #: builtin/mainmenu/tab_settings.lua:269 builtin/mainmenu/tab_settings.lua:280
 msgid "Waving Water"
@@ -524,7 +522,7 @@ msgstr "Ondantaj plantoj"
 
 #: builtin/mainmenu/tab_settings.lua:308
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr ""
+msgstr "Por uzi ombrigilojn, OpenGL-a pelilo estas necesa."
 
 #: builtin/mainmenu/tab_settings.lua:430
 msgid "Settings"
@@ -552,7 +550,7 @@ msgstr "Solludanto"
 
 #: builtin/mainmenu/tab_texturepacks.lua:49
 msgid "Select texture pack:"
-msgstr ""
+msgstr "Selekti teksturaron:"
 
 #: builtin/mainmenu/tab_texturepacks.lua:69
 msgid "No information available"
@@ -560,27 +558,27 @@ msgstr "Neniu informoj disponeblas"
 
 #: builtin/mainmenu/tab_texturepacks.lua:114
 msgid "Texturepacks"
-msgstr ""
+msgstr "Teksturaroj"
 
 #: src/client.cpp:1721
 msgid "Loading textures..."
-msgstr ""
+msgstr "Ŝargi teksturojn…"
 
 #: src/client.cpp:1736
 msgid "Rebuilding shaders..."
-msgstr ""
+msgstr "Refaru ombrigilojn…"
 
 #: src/client.cpp:1743
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "Pravalorizi nodaĵojn…"
 
 #: src/client.cpp:1760
 msgid "Initializing nodes"
-msgstr ""
+msgstr "Pravalorizi nodaĵojn"
 
 #: src/client.cpp:1768
 msgid "Item textures..."
-msgstr ""
+msgstr "Aĵaj teksturoj…"
 
 #: src/client.cpp:1793
 msgid "Done!"
@@ -600,27 +598,27 @@ msgstr "Konekteraro (ĉu eltempiĝo?)"
 
 #: src/client/clientlauncher.cpp:425
 msgid "No world selected and no address provided. Nothing to do."
-msgstr ""
+msgstr "Ne mondo selektas kaj ne adreso provizatas. Nenion fari."
 
 #: src/client/clientlauncher.cpp:432
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "Donita monda dosierindiko ne ekzistas. "
 
 #: src/client/clientlauncher.cpp:441
 msgid "Could not find or load game \""
-msgstr ""
+msgstr "Ne povas trovi aŭ ŝuti ludon \""
 
 #: src/client/clientlauncher.cpp:459
 msgid "Invalid gamespec."
-msgstr ""
+msgstr "Nevalida ludspecifo."
 
 #: src/fontengine.cpp:70 src/fontengine.cpp:226
 msgid "needs_fallback_font"
-msgstr ""
+msgstr "no"
 
 #: src/game.cpp:1052 src/guiFormSpecMenu.cpp:2065
 msgid "Proceed"
-msgstr ""
+msgstr "Daŭrigi"
 
 #: src/game.cpp:1072
 msgid "You died."
@@ -628,7 +626,7 @@ msgstr "Vi mortis."
 
 #: src/game.cpp:1073
 msgid "Respawn"
-msgstr ""
+msgstr "Renaskiĝi"
 
 #: src/game.cpp:1092
 msgid ""
@@ -645,6 +643,18 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
+"Defaŭltaj Klavoj:\n"
+"Nevidebla menuo :\n"
+"- unufoja tuŝeto: aktivigi butonon\n"
+"- dufoja tuŝeto: lokigi/uzi\n"
+"- ŝova fingro: rigardi\n"
+"Videbla menuo/inventaro:\n"
+"- dufoja tuŝeto (ekstere):\n"
+" -->fermi\n"
+"- tuŝi stakon, tuŝi inventaran spacon:\n"
+" --> movi stakon\n"
+"- tuŝi kaj treni, tuŝeti duan fingron\n"
+" --> lokigi unun aĵon al inventara spaco\n"
 
 #: src/game.cpp:1106
 msgid ""
@@ -674,7 +684,7 @@ msgstr ""
 
 #: src/game.cpp:1125
 msgid "Continue"
-msgstr ""
+msgstr "Daŭrigi"
 
 #: src/game.cpp:1129
 msgid "Change Password"
@@ -682,7 +692,7 @@ msgstr "Ŝanĝi pasvorton"
 
 #: src/game.cpp:1134
 msgid "Sound Volume"
-msgstr ""
+msgstr "Sonintenso"
 
 #: src/game.cpp:1136
 msgid "Change Keys"
@@ -726,7 +736,7 @@ msgstr "Nodaĵaj difinoj…"
 
 #: src/game.cpp:2329
 msgid "Media..."
-msgstr ""
+msgstr "Medioj…"
 
 #: src/game.cpp:2334
 msgid "KiB/s"
@@ -741,6 +751,8 @@ msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
+"\n"
+"Reviziu debug.txt por detaloj."
 
 #: src/guiFormSpecMenu.cpp:2855
 msgid "Enter "
@@ -753,18 +765,19 @@ msgstr "bone"
 #: src/guiKeyChangeMenu.cpp:125
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
+"Klavagordoj (Se tiu menuo misfunkcias, forigu agordojn el minetest.conf)"
 
 #: src/guiKeyChangeMenu.cpp:165
 msgid "\"Use\" = climb down"
-msgstr ""
+msgstr "\"Uzi\" = malsupreniri"
 
 #: src/guiKeyChangeMenu.cpp:180
 msgid "Double tap \"jump\" to toggle fly"
-msgstr ""
+msgstr "Dufoja tuŝeto \"salti\" por baskuli flugreĝimon"
 
 #: src/guiKeyChangeMenu.cpp:295
 msgid "Key already in use"
-msgstr ""
+msgstr "Klavo jam uzatas"
 
 #: src/guiKeyChangeMenu.cpp:373
 msgid "press key"
@@ -831,17 +844,16 @@ msgid "Toggle Cinematic"
 msgstr "Baskuli filmreĝimon"
 
 #: src/guiKeyChangeMenu.cpp:414
-#, fuzzy
 msgid "Toggle noclip"
-msgstr "Baskuli tondadon"
+msgstr "Baskuli nekolizian reĝimon"
 
 #: src/guiKeyChangeMenu.cpp:415
 msgid "Range select"
-msgstr ""
+msgstr "Ŝanĝi vidodistancon"
 
 #: src/guiKeyChangeMenu.cpp:416
 msgid "Print stacks"
-msgstr ""
+msgstr "Presi stakojn"
 
 #: src/guiPasswordChange.cpp:108
 msgid "Old Password"
@@ -865,7 +877,7 @@ msgstr "Pasvortoj ne kongruas!"
 
 #: src/guiVolumeChange.cpp:105
 msgid "Sound Volume: "
-msgstr ""
+msgstr "Sonintenso: "
 
 #: src/guiVolumeChange.cpp:119
 msgid "Exit"
@@ -885,7 +897,7 @@ msgstr "Dekstra butono"
 
 #: src/keycode.cpp:223
 msgid "X Button 1"
-msgstr ""
+msgstr "X-Butono 1"
 
 #: src/keycode.cpp:224
 msgid "Back"
@@ -905,12 +917,11 @@ msgstr "Tabo"
 
 #: src/keycode.cpp:224
 msgid "X Button 2"
-msgstr ""
+msgstr "X-Butono 2"
 
 #: src/keycode.cpp:225
-#, fuzzy
 msgid "Capital"
-msgstr "Fiksiĝema reĝimo"
+msgstr "Fiksiĝema klavo"
 
 #: src/keycode.cpp:225
 msgid "Control"
@@ -918,7 +929,7 @@ msgstr "Stiro"
 
 #: src/keycode.cpp:225
 msgid "Kana"
-msgstr ""
+msgstr "Kana"
 
 #: src/keycode.cpp:225
 msgid "Menu"
@@ -934,7 +945,7 @@ msgstr "Majuskligo"
 
 #: src/keycode.cpp:226
 msgid "Convert"
-msgstr ""
+msgstr "Konverto"
 
 #: src/keycode.cpp:226
 msgid "Escape"
@@ -942,19 +953,19 @@ msgstr "Eskapo"
 
 #: src/keycode.cpp:226
 msgid "Final"
-msgstr ""
+msgstr "Finalo"
 
 #: src/keycode.cpp:226
 msgid "Junja"
-msgstr ""
+msgstr "Junja"
 
 #: src/keycode.cpp:226
 msgid "Kanji"
-msgstr ""
+msgstr "Kanji"
 
 #: src/keycode.cpp:226
 msgid "Nonconvert"
-msgstr ""
+msgstr "Nekonverto"
 
 #: src/keycode.cpp:227
 msgid "End"
@@ -974,7 +985,7 @@ msgstr "Sekvanto"
 
 #: src/keycode.cpp:227
 msgid "Prior"
-msgstr ""
+msgstr "Antaŭe"
 
 #: src/keycode.cpp:227
 msgid "Space"
@@ -986,11 +997,11 @@ msgstr "Malsupren"
 
 #: src/keycode.cpp:228
 msgid "Execute"
-msgstr ""
+msgstr "Ruli"
 
 #: src/keycode.cpp:228
 msgid "Print"
-msgstr ""
+msgstr "Presi"
 
 #: src/keycode.cpp:228
 msgid "Select"
@@ -1006,19 +1017,19 @@ msgstr "Helpo"
 
 #: src/keycode.cpp:229
 msgid "Insert"
-msgstr ""
+msgstr "Enmeti"
 
 #: src/keycode.cpp:229
 msgid "Snapshot"
-msgstr ""
+msgstr "Ekrankopio"
 
 #: src/keycode.cpp:232
 msgid "Left Windows"
-msgstr ""
+msgstr "Maldekstra fenestro"
 
 #: src/keycode.cpp:233
 msgid "Apps"
-msgstr ""
+msgstr "Aplikaĵoj"
 
 #: src/keycode.cpp:233
 msgid "Numpad 0"
@@ -1030,7 +1041,7 @@ msgstr "Klavareto 1"
 
 #: src/keycode.cpp:233
 msgid "Right Windows"
-msgstr ""
+msgstr "Dekstra fenestro"
 
 #: src/keycode.cpp:233
 msgid "Sleep"
@@ -1086,19 +1097,19 @@ msgstr "Klavareto 9"
 
 #: src/keycode.cpp:239
 msgid "Num Lock"
-msgstr ""
+msgstr "Nombra Baskulo"
 
 #: src/keycode.cpp:239
 msgid "Scroll Lock"
-msgstr ""
+msgstr "Ruluma Baskulo"
 
 #: src/keycode.cpp:240
 msgid "Left Shift"
-msgstr ""
+msgstr "Maldekstra Majuskligo"
 
 #: src/keycode.cpp:240
 msgid "Right Shift"
-msgstr ""
+msgstr "Dekstra Majuskligo"
 
 #: src/keycode.cpp:241
 msgid "Left Control"
@@ -1106,7 +1117,7 @@ msgstr "Maldekstra Stiro"
 
 #: src/keycode.cpp:241
 msgid "Left Menu"
-msgstr ""
+msgstr "Maldekstra Menuo"
 
 #: src/keycode.cpp:241
 msgid "Right Control"
@@ -1114,47 +1125,47 @@ msgstr "Dekstra Stiro"
 
 #: src/keycode.cpp:241
 msgid "Right Menu"
-msgstr ""
+msgstr "Dekstra Menuo"
 
 #: src/keycode.cpp:243
 msgid "Comma"
-msgstr ""
+msgstr "Komo"
 
 #: src/keycode.cpp:243
 msgid "Minus"
-msgstr ""
+msgstr "Minuso"
 
 #: src/keycode.cpp:243
 msgid "Period"
-msgstr ""
+msgstr "Punkto"
 
 #: src/keycode.cpp:243
 msgid "Plus"
-msgstr ""
+msgstr "Pluso"
 
 #: src/keycode.cpp:247
 msgid "Attn"
-msgstr ""
+msgstr "Attn"
 
 #: src/keycode.cpp:247
 msgid "CrSel"
-msgstr ""
+msgstr "CrSel"
 
 #: src/keycode.cpp:248
 msgid "Erase OEF"
-msgstr ""
+msgstr "Viŝi OEF"
 
 #: src/keycode.cpp:248
 msgid "ExSel"
-msgstr ""
+msgstr "ExSel"
 
 #: src/keycode.cpp:248
 msgid "OEM Clear"
-msgstr ""
+msgstr "OEM Vakigi"
 
 #: src/keycode.cpp:248
 msgid "PA1"
-msgstr ""
+msgstr "PA1"
 
 #: src/keycode.cpp:248
 msgid "Zoom"
