@@ -11,10 +11,7 @@ end
 -- If item_entity_ttl is not set, enity will have default life time 
 -- Setting it to -1 disables the feature
 
-local time_to_live = tonumber(core.setting_get("item_entity_ttl"))
-if not time_to_live then
-	time_to_live = 900
-end
+local time_to_live = tonumber(core.setting_get("item_entity_ttl")) or 900
 
 core.register_entity(":__builtin:item", {
 	initial_properties = {
@@ -30,7 +27,7 @@ core.register_entity(":__builtin:item", {
 		is_visible = false,
 	},
 
-	itemstring = '',
+	itemstring = "",
 	physical_state = true,
 	age = 0,
 
@@ -46,16 +43,7 @@ core.register_entity(":__builtin:item", {
 		local s = 0.2 + 0.1 * (count / max_count)
 		local c = s
 		local itemtable = stack:to_table()
-		local itemname = nil
-		if itemtable then
-			itemname = stack:to_table().name
-		end
-		local item_texture = nil
-		local item_type = ""
-		if core.registered_items[itemname] then
-			item_texture = core.registered_items[itemname].inventory_image
-			item_type = core.registered_items[itemname].type
-		end
+		local itemname = itemtable and itemtable.name
 		local prop = {
 			is_visible = true,
 			visual = "wielditem",
@@ -70,7 +58,6 @@ core.register_entity(":__builtin:item", {
 	get_staticdata = function(self)
 		return core.serialize({
 			itemstring = self.itemstring,
-			always_collect = self.always_collect,
 			age = self.age
 		})
 	end,
@@ -80,7 +67,6 @@ core.register_entity(":__builtin:item", {
 			local data = core.deserialize(staticdata)
 			if data and type(data) == "table" then
 				self.itemstring = data.itemstring
-				self.always_collect = data.always_collect
 				if data.age then 
 					self.age = data.age + dtime_s
 				else
@@ -106,7 +92,7 @@ core.register_entity(":__builtin:item", {
 				overflow = true
 				count = count - max_count
 			else
-				self.itemstring = ''
+				self.itemstring = ""
 			end
 			local pos = object:getpos()
 			pos.y = pos.y + (count - stack:get_count()) / max_count * 0.15
@@ -149,18 +135,17 @@ core.register_entity(":__builtin:item", {
 	on_step = function(self, dtime)
 		self.age = self.age + dtime
 		if time_to_live > 0 and self.age > time_to_live then
-			self.itemstring = ''
+			self.itemstring = ""
 			self.object:remove()
 			return
 		end
 		local p = self.object:getpos()
 		p.y = p.y - 0.5
 		local node = core.get_node_or_nil(p)
-		local in_unloaded = (node == nil)
-		if in_unloaded then
+		if not node then
 			-- Don't infinetly fall into unloaded map
-			self.object:setvelocity({x = 0, y = 0, z = 0})
-			self.object:setacceleration({x = 0, y = 0, z = 0})
+			self.object:setvelocity({x=0, y=0, z=0})
+			self.object:setacceleration({x=0, y=0, z=0})
 			self.physical_state = false
 			self.object:set_properties({physical = false})
 			return
@@ -181,30 +166,31 @@ core.register_entity(":__builtin:item", {
 						end
 					end
 				end
-				self.object:setvelocity({x = 0, y = 0, z = 0})
-				self.object:setacceleration({x = 0, y = 0, z = 0})
+				self.object:setvelocity({x=0, y=0, z=0})
+				self.object:setacceleration({x=0, y=0, z=0})
 				self.physical_state = false
 				self.object:set_properties({physical = false})
 			end
 		else
 			if not self.physical_state then
-				self.object:setvelocity({x = 0, y = 0, z = 0})
-				self.object:setacceleration({x = 0, y = -10, z = 0})
+				self.object:setvelocity({x=0, y=0, z=0})
+				self.object:setacceleration({x=0, y=-10, z=0})
 				self.physical_state = true
 				self.object:set_properties({physical = true})
 			end
 		end
 	end,
 
-	on_punch = function(self, hitter)
-		if self.itemstring ~= '' then
-			local left = hitter:get_inventory():add_item("main", self.itemstring)
+	on_punch = function(self, puncher)
+		if self.itemstring ~= "" then
+			local left = puncher:get_inventory():add_item("main", self.itemstring)
 			if not left:is_empty() then
 				self.itemstring = left:to_string()
 				return
 			end
 		end
-		self.itemstring = ''
+		-- Create ghost stack after the object is picked up
+		self.itemstring = ""
 		self.object:remove()
 	end,
 })
