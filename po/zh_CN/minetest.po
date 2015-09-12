@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-17 07:23+0200\n"
+"POT-Creation-Date: 2015-09-12 23:20+0200\n"
 "PO-Revision-Date: 2015-04-19 02:00+0800\n"
 "Last-Translator: Ang Weijie <fishyWET@hotmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,163 +18,178 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 1.7-dev\n"
 
-#: builtin/fstk/ui.lua:82
+#: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
 msgstr ""
 
-#: builtin/fstk/ui.lua:84
+#: builtin/fstk/ui.lua
 msgid "An error occured:"
 msgstr ""
 
-#: builtin/fstk/ui.lua:89 builtin/mainmenu/store.lua:165
+#: builtin/fstk/ui.lua
+#, fuzzy
+msgid "Main menu"
+msgstr "主菜单"
+
+#: builtin/fstk/ui.lua builtin/mainmenu/store.lua
 msgid "Ok"
 msgstr "确定"
 
-#: builtin/mainmenu/common.lua:239 src/game.cpp:1891
+#: builtin/fstk/ui.lua
+#, fuzzy
+msgid "Reconnect"
+msgstr "连接"
+
+#: builtin/fstk/ui.lua
+msgid "The server has requested a reconnect:"
+msgstr ""
+
+#: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
 msgstr "载入中..."
 
-#: builtin/mainmenu/common.lua:240
+#: builtin/mainmenu/common.lua
+msgid "Protocol version mismatch, server "
+msgstr ""
+
+#: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
 
-#: builtin/mainmenu/dlg_config_world.lua:29
-msgid "World:"
-msgstr "世界："
-
-#: builtin/mainmenu/dlg_config_world.lua:33
-#: builtin/mainmenu/dlg_config_world.lua:35
-msgid "Hide Game"
-msgstr "隐藏游戏"
-
-#: builtin/mainmenu/dlg_config_world.lua:39
-#: builtin/mainmenu/dlg_config_world.lua:41
-msgid "Hide mp content"
-msgstr "隐藏MOD包内容"
-
-#: builtin/mainmenu/dlg_config_world.lua:49
-msgid "Mod:"
-msgstr "MOD："
-
-#: builtin/mainmenu/dlg_config_world.lua:51 builtin/mainmenu/tab_mods.lua:99
-msgid "Depends:"
-msgstr "依赖于:"
-
-#: builtin/mainmenu/dlg_config_world.lua:54 src/guiKeyChangeMenu.cpp:191
-msgid "Save"
-msgstr "保存"
-
-#: builtin/mainmenu/dlg_config_world.lua:55
-#: builtin/mainmenu/dlg_create_world.lua:64
-#: builtin/mainmenu/dlg_rename_modpack.lua:33 src/guiKeyChangeMenu.cpp:199
-#: src/keycode.cpp:223
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_rename_modpack.lua src/guiKeyChangeMenu.cpp
+#: src/keycode.cpp
 msgid "Cancel"
 msgstr "取消"
 
-#: builtin/mainmenu/dlg_config_world.lua:71
-msgid "Enable MP"
-msgstr "启用MOD包"
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_mods.lua
+msgid "Depends:"
+msgstr "依赖于:"
 
-#: builtin/mainmenu/dlg_config_world.lua:73
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable MP"
 msgstr "禁用MOD包"
 
-#: builtin/mainmenu/dlg_config_world.lua:77
-#: builtin/mainmenu/dlg_config_world.lua:79
-msgid "enabled"
-msgstr "启用"
+#: builtin/mainmenu/dlg_config_world.lua
+msgid "Enable MP"
+msgstr "启用MOD包"
 
-#: builtin/mainmenu/dlg_config_world.lua:85
+#: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
 msgstr "全部启用"
 
-#: builtin/mainmenu/dlg_create_world.lua:50
-msgid "World name"
-msgstr "世界名称"
+#: builtin/mainmenu/dlg_config_world.lua
+msgid ""
+"Failed to enable mod \"$1\" as it contains disallowed characters. Only "
+"chararacters [a-z0-9_] are allowed."
+msgstr ""
 
-#: builtin/mainmenu/dlg_create_world.lua:53
-msgid "Seed"
-msgstr "种子"
+#: builtin/mainmenu/dlg_config_world.lua
+msgid "Hide Game"
+msgstr "隐藏游戏"
 
-#: builtin/mainmenu/dlg_create_world.lua:56
-msgid "Mapgen"
-msgstr "地图生成器"
+#: builtin/mainmenu/dlg_config_world.lua
+msgid "Hide mp content"
+msgstr "隐藏MOD包内容"
 
-#: builtin/mainmenu/dlg_create_world.lua:59
-msgid "Game"
-msgstr "游戏"
+#: builtin/mainmenu/dlg_config_world.lua
+msgid "Mod:"
+msgstr "MOD："
 
-#: builtin/mainmenu/dlg_create_world.lua:63
-msgid "Create"
-msgstr "创建"
+#: builtin/mainmenu/dlg_config_world.lua src/guiKeyChangeMenu.cpp
+msgid "Save"
+msgstr "保存"
 
-#: builtin/mainmenu/dlg_create_world.lua:68
-msgid "You have no subgames installed."
-msgstr "你没有安装任何游戏"
+#: builtin/mainmenu/dlg_config_world.lua
+msgid "World:"
+msgstr "世界："
 
-#: builtin/mainmenu/dlg_create_world.lua:69
-msgid "Download one from minetest.net"
-msgstr "从minetest.net下载一个"
+#: builtin/mainmenu/dlg_config_world.lua
+msgid "enabled"
+msgstr "启用"
 
-#: builtin/mainmenu/dlg_create_world.lua:72
-msgid "Warning: The minimal development test is meant for developers."
-msgstr "警告: 最小化开发测试为开发人员所使用。"
-
-#: builtin/mainmenu/dlg_create_world.lua:73
-msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr "从minetest.net下载一个游戏，例如:minetest_game"
-
-#: builtin/mainmenu/dlg_create_world.lua:99
+#: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
 msgstr "名为 \"$1\" 的世界已经存在"
 
-#: builtin/mainmenu/dlg_create_world.lua:116
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Create"
+msgstr "创建"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Download a subgame, such as minetest_game, from minetest.net"
+msgstr "从minetest.net下载一个游戏，例如:minetest_game"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Download one from minetest.net"
+msgstr "从minetest.net下载一个"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Game"
+msgstr "游戏"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Mapgen"
+msgstr "地图生成器"
+
+#: builtin/mainmenu/dlg_create_world.lua
 msgid "No worldname given or no game selected"
 msgstr "未给定世界名或未选择游戏"
 
-#: builtin/mainmenu/dlg_delete_mod.lua:26
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Seed"
+msgstr "种子"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "Warning: The minimal development test is meant for developers."
+msgstr "警告: 最小化开发测试为开发人员所使用。"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "World name"
+msgstr "世界名称"
+
+#: builtin/mainmenu/dlg_create_world.lua
+msgid "You have no subgames installed."
+msgstr "你没有安装任何游戏"
+
+#: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Are you sure you want to delete \"$1\"?"
 msgstr "你确认要删除\"$1\"?"
 
-#: builtin/mainmenu/dlg_delete_mod.lua:27
-#: builtin/mainmenu/dlg_delete_world.lua:25
-#: builtin/mainmenu/tab_settings.lua:100
-msgid "Yes"
-msgstr "是"
-
-#: builtin/mainmenu/dlg_delete_mod.lua:28
-msgid "No of course not!"
-msgstr "当然不！"
-
-#: builtin/mainmenu/dlg_delete_mod.lua:41
+#: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: failed to delete \"$1\""
 msgstr "MOD管理器：无法删除“$1“"
 
-#: builtin/mainmenu/dlg_delete_mod.lua:45
+#: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: invalid modpath \"$1\""
 msgstr "MOD管理器：MOD“$1“路径非法"
 
-#: builtin/mainmenu/dlg_delete_world.lua:24
+#: builtin/mainmenu/dlg_delete_mod.lua
+msgid "No of course not!"
+msgstr "当然不！"
+
+#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
+#: builtin/mainmenu/tab_settings.lua
+msgid "Yes"
+msgstr "是"
+
+#: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
 msgstr "删除世界“$1”?"
 
-#: builtin/mainmenu/dlg_delete_world.lua:26
+#: builtin/mainmenu/dlg_delete_world.lua
 msgid "No"
 msgstr "否"
 
-#: builtin/mainmenu/dlg_rename_modpack.lua:26
-msgid "Rename Modpack:"
-msgstr "重命名MOD包："
-
-#: builtin/mainmenu/dlg_rename_modpack.lua:31 src/keycode.cpp:227
+#: builtin/mainmenu/dlg_rename_modpack.lua src/keycode.cpp
 msgid "Accept"
 msgstr "接受"
 
-#: builtin/mainmenu/modmgr.lua:344
-msgid "Install Mod: file: \"$1\""
-msgstr "安装MOD：文件：”$1“"
+#: builtin/mainmenu/dlg_rename_modpack.lua
+msgid "Rename Modpack:"
+msgstr "重命名MOD包："
 
-#: builtin/mainmenu/modmgr.lua:345
+#: builtin/mainmenu/modmgr.lua
 #, fuzzy
 msgid ""
 "\n"
@@ -183,492 +198,508 @@ msgstr ""
 "\n"
 "安装MOD：不支持的文件类型“$1“"
 
-#: builtin/mainmenu/modmgr.lua:365
+#: builtin/mainmenu/modmgr.lua
 msgid "Failed to install $1 to $2"
 msgstr "无法安装$1到$2"
 
-#: builtin/mainmenu/modmgr.lua:368
-msgid "Install Mod: unable to find suitable foldername for modpack $1"
-msgstr "安装MOD：找不到MOD包$1的合适文件夹名"
+#: builtin/mainmenu/modmgr.lua
+msgid "Install Mod: file: \"$1\""
+msgstr "安装MOD：文件：”$1“"
 
-#: builtin/mainmenu/modmgr.lua:388
+#: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find real modname for: $1"
 msgstr "安装MOD：找不到$1的真正MOD名"
 
-#: builtin/mainmenu/store.lua:88
-msgid "Unsorted"
-msgstr "未分类"
+#: builtin/mainmenu/modmgr.lua
+msgid "Install Mod: unable to find suitable foldername for modpack $1"
+msgstr "安装MOD：找不到MOD包$1的合适文件夹名"
 
-#: builtin/mainmenu/store.lua:99 builtin/mainmenu/store.lua:580
-msgid "Search"
-msgstr "搜索"
+#: builtin/mainmenu/store.lua
+msgid "Close store"
+msgstr "关闭商店"
 
-#: builtin/mainmenu/store.lua:126
+#: builtin/mainmenu/store.lua
 #, fuzzy
 msgid "Downloading $1, please wait..."
 msgstr "请稍候..."
 
-#: builtin/mainmenu/store.lua:160
-msgid "Successfully installed:"
-msgstr "成功的安装："
+#: builtin/mainmenu/store.lua
+msgid "Install"
+msgstr "安装"
 
-#: builtin/mainmenu/store.lua:162
+#: builtin/mainmenu/store.lua
+msgid "Page $1 of $2"
+msgstr "第$1页,共$2页"
+
+#: builtin/mainmenu/store.lua
+msgid "Rating"
+msgstr "评级"
+
+#: builtin/mainmenu/store.lua
+msgid "Search"
+msgstr "搜索"
+
+#: builtin/mainmenu/store.lua
 #, fuzzy
 msgid "Shortname:"
 msgstr "短名称"
 
-#: builtin/mainmenu/store.lua:472
-msgid "Rating"
-msgstr "评级"
+#: builtin/mainmenu/store.lua
+msgid "Successfully installed:"
+msgstr "成功的安装："
 
-#: builtin/mainmenu/store.lua:497
+#: builtin/mainmenu/store.lua
+msgid "Unsorted"
+msgstr "未分类"
+
+#: builtin/mainmenu/store.lua
 msgid "re-Install"
 msgstr "重新安装"
 
-#: builtin/mainmenu/store.lua:499
-msgid "Install"
-msgstr "安装"
-
-#: builtin/mainmenu/store.lua:518
-msgid "Close store"
-msgstr "关闭商店"
-
-#: builtin/mainmenu/store.lua:526
-msgid "Page $1 of $2"
-msgstr "第$1页,共$2页"
-
-#: builtin/mainmenu/tab_credits.lua:22
-msgid "Credits"
-msgstr "归功"
-
-#: builtin/mainmenu/tab_credits.lua:31
-msgid "Core Developers"
-msgstr "内部开发人员"
-
-#: builtin/mainmenu/tab_credits.lua:47
+#: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
 msgstr "积极贡献者"
 
-#: builtin/mainmenu/tab_credits.lua:54
+#: builtin/mainmenu/tab_credits.lua
+msgid "Core Developers"
+msgstr "内部开发人员"
+
+#: builtin/mainmenu/tab_credits.lua
+msgid "Credits"
+msgstr "归功"
+
+#: builtin/mainmenu/tab_credits.lua
+msgid "Previous Contributors"
+msgstr "前贡献者"
+
+#: builtin/mainmenu/tab_credits.lua
 #, fuzzy
 msgid "Previous Core Developers"
 msgstr "内部开发人员"
 
-#: builtin/mainmenu/tab_credits.lua:59
-msgid "Previous Contributors"
-msgstr "前贡献者"
-
-#: builtin/mainmenu/tab_mods.lua:30
+#: builtin/mainmenu/tab_mods.lua
 msgid "Installed Mods:"
 msgstr "已安装的MOD："
 
-#: builtin/mainmenu/tab_mods.lua:39
-msgid "Online mod repository"
-msgstr "网上MOD库"
-
-#: builtin/mainmenu/tab_mods.lua:78
-msgid "No mod description available"
-msgstr "无MOD资料可得"
-
-#: builtin/mainmenu/tab_mods.lua:82
+#: builtin/mainmenu/tab_mods.lua
 msgid "Mod information:"
 msgstr "MOD资料："
 
-#: builtin/mainmenu/tab_mods.lua:93
-msgid "Rename"
-msgstr "改名"
-
-#: builtin/mainmenu/tab_mods.lua:95
-msgid "Uninstall selected modpack"
-msgstr "删除选中的MOD包"
-
-#: builtin/mainmenu/tab_mods.lua:106
-msgid "Uninstall selected mod"
-msgstr "删除选中的MOD"
-
-#: builtin/mainmenu/tab_mods.lua:121
-msgid "Select Mod File:"
-msgstr "选择MOD文件："
-
-#: builtin/mainmenu/tab_mods.lua:165
+#: builtin/mainmenu/tab_mods.lua
 msgid "Mods"
 msgstr "MODS"
 
-#: builtin/mainmenu/tab_multiplayer.lua:23
+#: builtin/mainmenu/tab_mods.lua
+msgid "No mod description available"
+msgstr "无MOD资料可得"
+
+#: builtin/mainmenu/tab_mods.lua
+msgid "Rename"
+msgstr "改名"
+
+#: builtin/mainmenu/tab_mods.lua
+msgid "Select Mod File:"
+msgstr "选择MOD文件："
+
+#: builtin/mainmenu/tab_mods.lua
+msgid "Uninstall selected mod"
+msgstr "删除选中的MOD"
+
+#: builtin/mainmenu/tab_mods.lua
+msgid "Uninstall selected modpack"
+msgstr "删除选中的MOD包"
+
+#: builtin/mainmenu/tab_multiplayer.lua
 #, fuzzy
 msgid "Address / Port :"
 msgstr "地址/端口"
 
-#: builtin/mainmenu/tab_multiplayer.lua:24
-#, fuzzy
-msgid "Name / Password :"
-msgstr "名字/密码"
+#: builtin/mainmenu/tab_multiplayer.lua
+msgid "Client"
+msgstr "客户端"
 
-#: builtin/mainmenu/tab_multiplayer.lua:29
-#: builtin/mainmenu/tab_simple_main.lua:30
-msgid "Public Serverlist"
-msgstr "公共服务器列表"
-
-#: builtin/mainmenu/tab_multiplayer.lua:34 builtin/mainmenu/tab_server.lua:26
-#: builtin/mainmenu/tab_singleplayer.lua:96 src/keycode.cpp:229
-msgid "Delete"
-msgstr "删除"
-
-#: builtin/mainmenu/tab_multiplayer.lua:38
-#: builtin/mainmenu/tab_simple_main.lua:34
+#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Connect"
 msgstr "连接"
 
-#: builtin/mainmenu/tab_multiplayer.lua:62
-#: builtin/mainmenu/tab_simple_main.lua:45
+#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 #, fuzzy
 msgid "Creative mode"
 msgstr "创造模式"
 
-#: builtin/mainmenu/tab_multiplayer.lua:63
-#: builtin/mainmenu/tab_simple_main.lua:46
+#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 #, fuzzy
 msgid "Damage enabled"
 msgstr "启用"
 
-#: builtin/mainmenu/tab_multiplayer.lua:64
-#: builtin/mainmenu/tab_simple_main.lua:47
+#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_server.lua
+#: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
+msgid "Delete"
+msgstr "删除"
+
+#: builtin/mainmenu/tab_multiplayer.lua
+#, fuzzy
+msgid "Name / Password :"
+msgstr "名字/密码"
+
+#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+msgid "Public Serverlist"
+msgstr "公共服务器列表"
+
+#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 #, fuzzy
 msgid "PvP enabled"
 msgstr "启用"
 
-#: builtin/mainmenu/tab_multiplayer.lua:257
-msgid "Client"
-msgstr "客户端"
-
-#: builtin/mainmenu/tab_server.lua:27 builtin/mainmenu/tab_singleplayer.lua:97
-msgid "New"
-msgstr "新建"
-
-#: builtin/mainmenu/tab_server.lua:28 builtin/mainmenu/tab_singleplayer.lua:98
-msgid "Configure"
-msgstr "配置"
-
-#: builtin/mainmenu/tab_server.lua:29
-msgid "Start Game"
-msgstr "启动游戏"
-
-#: builtin/mainmenu/tab_server.lua:30
-#: builtin/mainmenu/tab_singleplayer.lua:100
-msgid "Select World:"
-msgstr "选择世界："
-
-#: builtin/mainmenu/tab_server.lua:31 builtin/mainmenu/tab_simple_main.lua:76
-#: builtin/mainmenu/tab_singleplayer.lua:101
-msgid "Creative Mode"
-msgstr "创造模式"
-
-#: builtin/mainmenu/tab_server.lua:33 builtin/mainmenu/tab_simple_main.lua:78
-#: builtin/mainmenu/tab_singleplayer.lua:103
-msgid "Enable Damage"
-msgstr "开启伤害风险"
-
-#: builtin/mainmenu/tab_server.lua:35
-msgid "Public"
-msgstr "公共服务器"
-
-#: builtin/mainmenu/tab_server.lua:37 builtin/mainmenu/tab_simple_main.lua:25
-msgid "Name/Password"
-msgstr "名字/密码"
-
-#: builtin/mainmenu/tab_server.lua:45
+#: builtin/mainmenu/tab_server.lua
 msgid "Bind Address"
 msgstr "绑定地址"
 
-#: builtin/mainmenu/tab_server.lua:47
-msgid "Port"
-msgstr "端口"
+#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
+msgid "Configure"
+msgstr "配置"
 
-#: builtin/mainmenu/tab_server.lua:51
-msgid "Server Port"
-msgstr "服务器端口"
+#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_singleplayer.lua
+msgid "Creative Mode"
+msgstr "创造模式"
 
-#: builtin/mainmenu/tab_server.lua:138
-#: builtin/mainmenu/tab_singleplayer.lua:165
+#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_singleplayer.lua
+msgid "Enable Damage"
+msgstr "开启伤害风险"
+
+#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
+msgid "Name/Password"
+msgstr "名字/密码"
+
+#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
+msgid "New"
+msgstr "新建"
+
+#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 #, fuzzy
 msgid "No world created or selected!"
 msgstr "未给定世界名或未选择游戏"
 
-#: builtin/mainmenu/tab_server.lua:191
+#: builtin/mainmenu/tab_server.lua
+msgid "Port"
+msgstr "端口"
+
+#: builtin/mainmenu/tab_server.lua
+msgid "Public"
+msgstr "公共服务器"
+
+#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
+msgid "Select World:"
+msgstr "选择世界："
+
+#: builtin/mainmenu/tab_server.lua
 msgid "Server"
 msgstr "服务器"
 
-#: builtin/mainmenu/tab_settings.lua:21
-#, fuzzy
-msgid "Opaque Leaves"
-msgstr "不透明的水"
+#: builtin/mainmenu/tab_server.lua
+msgid "Server Port"
+msgstr "服务器端口"
 
-#: builtin/mainmenu/tab_settings.lua:22
-#, fuzzy
-msgid "Simple Leaves"
-msgstr "摇动的叶子"
+#: builtin/mainmenu/tab_server.lua
+msgid "Start Game"
+msgstr "启动游戏"
 
-#: builtin/mainmenu/tab_settings.lua:23
-#, fuzzy
-msgid "Fancy Leaves"
-msgstr "花式树"
-
-#: builtin/mainmenu/tab_settings.lua:32
-msgid "No Filter"
+#: builtin/mainmenu/tab_settings.lua
+msgid "2x"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua:33
+#: builtin/mainmenu/tab_settings.lua
+msgid "3D Clouds"
+msgstr "三维云彩"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "4x"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "8x"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Antialiasing:"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Are you sure to reset your singleplayer world?"
+msgstr "你确定要重置您的单人世界吗？"
+
+#: builtin/mainmenu/tab_settings.lua
 #, fuzzy
 msgid "Bilinear Filter"
 msgstr "双线性过滤"
 
-#: builtin/mainmenu/tab_settings.lua:34
-#, fuzzy
-msgid "Trilinear Filter"
-msgstr "三线性过滤"
-
-#: builtin/mainmenu/tab_settings.lua:43
-msgid "No Mipmap"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua:44
-msgid "Mipmap"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua:45
-msgid "Mipmap + Aniso. Filter"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua:98
-msgid "Are you sure to reset your singleplayer world?"
-msgstr "你确定要重置您的单人世界吗？"
-
-#: builtin/mainmenu/tab_settings.lua:102
-msgid "No!!!"
-msgstr "不!!!"
-
-#: builtin/mainmenu/tab_settings.lua:202
-msgid "Smooth Lighting"
-msgstr "平滑光照"
-
-#: builtin/mainmenu/tab_settings.lua:204
-msgid "Enable Particles"
-msgstr "启用粒子效果"
-
-#: builtin/mainmenu/tab_settings.lua:206
-msgid "3D Clouds"
-msgstr "三维云彩"
-
-#: builtin/mainmenu/tab_settings.lua:208
-msgid "Opaque Water"
-msgstr "不透明的水"
-
-#: builtin/mainmenu/tab_settings.lua:210
-#, fuzzy
-msgid "Connected Glass"
-msgstr "连接的玻璃"
-
-#: builtin/mainmenu/tab_settings.lua:212
-msgid "Node Highlighting"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua:217
-msgid "Texturing:"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua:222
-msgid "Rendering:"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua:226
-msgid "Restart minetest for driver change to take effect"
-msgstr "重启minetest让驱动变化生效"
-
-#: builtin/mainmenu/tab_settings.lua:228
-msgid "Shaders"
-msgstr "着色器"
-
-#: builtin/mainmenu/tab_settings.lua:233
-msgid "Change keys"
-msgstr "改变键位设置"
-
-#: builtin/mainmenu/tab_settings.lua:236
-#, fuzzy
-msgid "Reset singleplayer world"
-msgstr "重置单人游戏"
-
-#: builtin/mainmenu/tab_settings.lua:240
-msgid "GUI scale factor"
-msgstr "GUI缩放因子"
-
-#: builtin/mainmenu/tab_settings.lua:244
-msgid "Scaling factor applied to menu elements: "
-msgstr "菜单元素应用缩放因子"
-
-#: builtin/mainmenu/tab_settings.lua:250
-msgid "Touch free target"
-msgstr "自由触摸目标"
-
-#: builtin/mainmenu/tab_settings.lua:256
-msgid "Touchthreshold (px)"
-msgstr "触控阈值（像素）"
-
-#: builtin/mainmenu/tab_settings.lua:263 builtin/mainmenu/tab_settings.lua:277
+#: builtin/mainmenu/tab_settings.lua
 #, fuzzy
 msgid "Bumpmapping"
 msgstr "贴图处理"
 
-#: builtin/mainmenu/tab_settings.lua:265 builtin/mainmenu/tab_settings.lua:278
+#: builtin/mainmenu/tab_settings.lua
+msgid "Change keys"
+msgstr "改变键位设置"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Connected Glass"
+msgstr "连接的玻璃"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Enable Particles"
+msgstr "启用粒子效果"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Fancy Leaves"
+msgstr "花式树"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "GUI scale factor"
+msgstr "GUI缩放因子"
+
+#: builtin/mainmenu/tab_settings.lua
 msgid "Generate Normalmaps"
 msgstr "产生法线贴图"
 
-#: builtin/mainmenu/tab_settings.lua:267 builtin/mainmenu/tab_settings.lua:279
+#: builtin/mainmenu/tab_settings.lua
+msgid "Mipmap"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Mipmap + Aniso. Filter"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "No Filter"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "No Mipmap"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "No!!!"
+msgstr "不!!!"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Node Highlighting"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
+msgid "None"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Opaque Leaves"
+msgstr "不透明的水"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Opaque Water"
+msgstr "不透明的水"
+
+#: builtin/mainmenu/tab_settings.lua
 msgid "Parallax Occlusion"
 msgstr "视差贴图"
 
-#: builtin/mainmenu/tab_settings.lua:269 builtin/mainmenu/tab_settings.lua:280
-msgid "Waving Water"
-msgstr "摇动的水"
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Reset singleplayer world"
+msgstr "重置单人游戏"
 
-#: builtin/mainmenu/tab_settings.lua:271 builtin/mainmenu/tab_settings.lua:281
-msgid "Waving Leaves"
-msgstr "摇动的叶子"
+#: builtin/mainmenu/tab_settings.lua
+msgid "Scaling factor applied to menu elements: "
+msgstr "菜单元素应用缩放因子"
 
-#: builtin/mainmenu/tab_settings.lua:273 builtin/mainmenu/tab_settings.lua:282
-msgid "Waving Plants"
-msgstr "摇动的植物"
-
-#: builtin/mainmenu/tab_settings.lua:308
-msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr "启用着色器需要使用OpenGL驱动。"
-
-#: builtin/mainmenu/tab_settings.lua:430
+#: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
 msgstr "设置"
 
-#: builtin/mainmenu/tab_simple_main.lua:82
-#, fuzzy
-msgid "Start Singleplayer"
-msgstr "单人游戏"
+#: builtin/mainmenu/tab_settings.lua
+msgid "Shaders"
+msgstr "着色器"
 
-#: builtin/mainmenu/tab_simple_main.lua:83
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Simple Leaves"
+msgstr "摇动的叶子"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Smooth Lighting"
+msgstr "平滑光照"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Texturing:"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "To enable shaders the OpenGL driver needs to be used."
+msgstr "启用着色器需要使用OpenGL驱动。"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Touch free target"
+msgstr "自由触摸目标"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Touchthreshold (px)"
+msgstr "触控阈值（像素）"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Trilinear Filter"
+msgstr "三线性过滤"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Waving Leaves"
+msgstr "摇动的叶子"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Waving Plants"
+msgstr "摇动的植物"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Waving Water"
+msgstr "摇动的水"
+
+#: builtin/mainmenu/tab_simple_main.lua
 #, fuzzy
 msgid "Config mods"
 msgstr "配置MOD"
 
-#: builtin/mainmenu/tab_simple_main.lua:201
+#: builtin/mainmenu/tab_simple_main.lua
 #, fuzzy
 msgid "Main"
 msgstr "主菜单"
 
-#: builtin/mainmenu/tab_singleplayer.lua:99 src/keycode.cpp:248
+#: builtin/mainmenu/tab_simple_main.lua
+#, fuzzy
+msgid "Start Singleplayer"
+msgstr "单人游戏"
+
+#: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
 msgid "Play"
 msgstr "开始游戏"
 
-#: builtin/mainmenu/tab_singleplayer.lua:246
+#: builtin/mainmenu/tab_singleplayer.lua
 msgid "Singleplayer"
 msgstr "单人游戏"
 
-#: builtin/mainmenu/tab_texturepacks.lua:49
-msgid "Select texture pack:"
-msgstr "选择材质包："
-
-#: builtin/mainmenu/tab_texturepacks.lua:69
+#: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
 msgstr "无资料可得"
 
-#: builtin/mainmenu/tab_texturepacks.lua:114
+#: builtin/mainmenu/tab_texturepacks.lua
+msgid "Select texture pack:"
+msgstr "选择材质包："
+
+#: builtin/mainmenu/tab_texturepacks.lua
 #, fuzzy
 msgid "Texturepacks"
 msgstr "材质包"
 
-#: src/client.cpp:1721
+#: src/client.cpp
+#, fuzzy
+msgid "Connection timed out."
+msgstr "连接出错（超时？）"
+
+#: src/client.cpp
+msgid "Done!"
+msgstr ""
+
+#: src/client.cpp
+msgid "Initializing nodes"
+msgstr ""
+
+#: src/client.cpp
+msgid "Initializing nodes..."
+msgstr ""
+
+#: src/client.cpp
+msgid "Item textures..."
+msgstr "物品材质..."
+
+#: src/client.cpp
 #, fuzzy
 msgid "Loading textures..."
 msgstr "载入中..."
 
-#: src/client.cpp:1736
+#: src/client.cpp
 #, fuzzy
 msgid "Rebuilding shaders..."
 msgstr "正在解析地址..."
 
-#: src/client.cpp:1743
-msgid "Initializing nodes..."
-msgstr ""
-
-#: src/client.cpp:1760
-msgid "Initializing nodes"
-msgstr ""
-
-#: src/client.cpp:1768
-msgid "Item textures..."
-msgstr "物品材质..."
-
-#: src/client.cpp:1793
-msgid "Done!"
-msgstr ""
-
-#: src/client/clientlauncher.cpp:185
-msgid "Main Menu"
-msgstr "主菜单"
-
-#: src/client/clientlauncher.cpp:223
-msgid "Player name too long."
-msgstr "玩家的名字太长了"
-
-#: src/client/clientlauncher.cpp:261
+#: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
 msgstr "连接出错（超时？）"
 
-#: src/client/clientlauncher.cpp:425
-msgid "No world selected and no address provided. Nothing to do."
-msgstr "没有选择世界或提供地址。未执行操作。"
-
-#: src/client/clientlauncher.cpp:432
-msgid "Provided world path doesn't exist: "
-msgstr "提供世界地址不存在"
-
-#: src/client/clientlauncher.cpp:441
+#: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
 msgstr "无法找到或载入游戏模式"
 
-#: src/client/clientlauncher.cpp:459
+#: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
 msgstr "非法游戏模式规格。"
 
-#: src/fontengine.cpp:70 src/fontengine.cpp:226
+#: src/client/clientlauncher.cpp
+msgid "Main Menu"
+msgstr "主菜单"
+
+#: src/client/clientlauncher.cpp
+msgid "No world selected and no address provided. Nothing to do."
+msgstr "没有选择世界或提供地址。未执行操作。"
+
+#: src/client/clientlauncher.cpp
+msgid "Player name too long."
+msgstr "玩家的名字太长了"
+
+#: src/client/clientlauncher.cpp
+msgid "Provided world path doesn't exist: "
+msgstr "提供世界地址不存在"
+
+#: src/fontengine.cpp
 msgid "needs_fallback_font"
 msgstr "yes"
 
-#: src/game.cpp:1052 src/guiFormSpecMenu.cpp:2065
-msgid "Proceed"
+#: src/game.cpp
+msgid ""
+"\n"
+"Check debug.txt for details."
+msgstr ""
+"\n"
+"查看 debug.txt 以获得详细信息。"
+
+#: src/game.cpp
+#, fuzzy
+msgid "Change Keys"
+msgstr "改变键位设置"
+
+#: src/game.cpp
+msgid "Change Password"
+msgstr "更改密码"
+
+#: src/game.cpp
+msgid "Connecting to server..."
+msgstr "正在连接服务器..."
+
+#: src/game.cpp
+msgid "Continue"
 msgstr "继续"
 
-#: src/game.cpp:1072
-msgid "You died."
-msgstr "你死了。"
+#: src/game.cpp
+msgid "Creating client..."
+msgstr "正在建立客户端..."
 
-#: src/game.cpp:1073
-msgid "Respawn"
-msgstr "重生"
+#: src/game.cpp
+#, fuzzy
+msgid "Creating server..."
+msgstr "正在建立服务器...."
 
-#: src/game.cpp:1092
-msgid ""
-"Default Controls:\n"
-"No menu visible:\n"
-"- single tap: button activate\n"
-"- double tap: place/use\n"
-"- slide finger: look around\n"
-"Menu/Inventory visible:\n"
-"- double tap (outside):\n"
-" -->close\n"
-"- touch stack, touch slot:\n"
-" --> move stack\n"
-"- touch&drag, tap 2nd finger\n"
-" --> place single item to slot\n"
-msgstr ""
-
-#: src/game.cpp:1106
+#: src/game.cpp
 msgid ""
 "Default Controls:\n"
 "- WASD: move\n"
@@ -694,580 +725,561 @@ msgstr ""
 "鼠标滚轮: 选择物品\n"
 "T: 聊天\n"
 
-#: src/game.cpp:1125
-msgid "Continue"
-msgstr "继续"
+#: src/game.cpp
+msgid ""
+"Default Controls:\n"
+"No menu visible:\n"
+"- single tap: button activate\n"
+"- double tap: place/use\n"
+"- slide finger: look around\n"
+"Menu/Inventory visible:\n"
+"- double tap (outside):\n"
+" -->close\n"
+"- touch stack, touch slot:\n"
+" --> move stack\n"
+"- touch&drag, tap 2nd finger\n"
+" --> place single item to slot\n"
+msgstr ""
 
-#: src/game.cpp:1129
-msgid "Change Password"
-msgstr "更改密码"
-
-#: src/game.cpp:1134
-msgid "Sound Volume"
-msgstr "音量"
-
-#: src/game.cpp:1136
-#, fuzzy
-msgid "Change Keys"
-msgstr "改变键位设置"
-
-#: src/game.cpp:1139
+#: src/game.cpp
 msgid "Exit to Menu"
 msgstr "退出至菜单"
 
-#: src/game.cpp:1141
+#: src/game.cpp
 msgid "Exit to OS"
 msgstr "退出至操作系统"
 
-#: src/game.cpp:1841
+#: src/game.cpp
+msgid "Item definitions..."
+msgstr "物品定义..."
+
+#: src/game.cpp
+msgid "KiB/s"
+msgstr ""
+
+#: src/game.cpp
+msgid "Media..."
+msgstr "媒体..."
+
+#: src/game.cpp
+msgid "MiB/s"
+msgstr ""
+
+#: src/game.cpp
+msgid "Node definitions..."
+msgstr "方块定义..."
+
+#: src/game.cpp src/guiFormSpecMenu.cpp
+msgid "Proceed"
+msgstr "继续"
+
+#: src/game.cpp
+msgid "Resolving address..."
+msgstr "正在解析地址..."
+
+#: src/game.cpp
+msgid "Respawn"
+msgstr "重生"
+
+#: src/game.cpp
 #, fuzzy
 msgid "Shutting down..."
 msgstr "关闭中......"
 
-#: src/game.cpp:1948
-#, fuzzy
-msgid "Creating server..."
-msgstr "正在建立服务器...."
+#: src/game.cpp
+msgid "Sound Volume"
+msgstr "音量"
 
-#: src/game.cpp:1984
-msgid "Creating client..."
-msgstr "正在建立客户端..."
+#: src/game.cpp
+msgid "You died."
+msgstr "你死了。"
 
-#: src/game.cpp:2159
-msgid "Resolving address..."
-msgstr "正在解析地址..."
-
-#: src/game.cpp:2261
-msgid "Connecting to server..."
-msgstr "正在连接服务器..."
-
-#: src/game.cpp:2317
-msgid "Item definitions..."
-msgstr "物品定义..."
-
-#: src/game.cpp:2322
-msgid "Node definitions..."
-msgstr "方块定义..."
-
-#: src/game.cpp:2329
-msgid "Media..."
-msgstr "媒体..."
-
-#: src/game.cpp:2334
-msgid "KiB/s"
-msgstr ""
-
-#: src/game.cpp:2338
-msgid "MiB/s"
-msgstr ""
-
-#: src/game.cpp:4363
-msgid ""
-"\n"
-"Check debug.txt for details."
-msgstr ""
-"\n"
-"查看 debug.txt 以获得详细信息。"
-
-#: src/guiFormSpecMenu.cpp:2855
+#: src/guiFormSpecMenu.cpp
 msgid "Enter "
 msgstr "输入"
 
-#: src/guiFormSpecMenu.cpp:2875
+#: src/guiFormSpecMenu.cpp
 msgid "ok"
 msgstr "确定"
 
-#: src/guiKeyChangeMenu.cpp:125
-msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr "键位配置。（如果这个菜单被弄乱，从minetest.conf中删掉点东西）"
-
-#: src/guiKeyChangeMenu.cpp:165
+#: src/guiKeyChangeMenu.cpp
 msgid "\"Use\" = climb down"
 msgstr "“使用” = 向下爬"
 
-#: src/guiKeyChangeMenu.cpp:180
-msgid "Double tap \"jump\" to toggle fly"
-msgstr "连按两次“跳”切换飞行模式"
-
-#: src/guiKeyChangeMenu.cpp:295
-msgid "Key already in use"
-msgstr "按键已被占用"
-
-#: src/guiKeyChangeMenu.cpp:373
-msgid "press key"
-msgstr "按键"
-
-#: src/guiKeyChangeMenu.cpp:399
-msgid "Forward"
-msgstr "向前"
-
-#: src/guiKeyChangeMenu.cpp:400
+#: src/guiKeyChangeMenu.cpp
 msgid "Backward"
 msgstr "向后"
 
-#: src/guiKeyChangeMenu.cpp:401 src/keycode.cpp:228
-msgid "Left"
-msgstr "向左"
-
-#: src/guiKeyChangeMenu.cpp:402 src/keycode.cpp:228
-msgid "Right"
-msgstr "向右"
-
-#: src/guiKeyChangeMenu.cpp:403
-msgid "Use"
-msgstr "使用"
-
-#: src/guiKeyChangeMenu.cpp:404
-msgid "Jump"
-msgstr "跳"
-
-#: src/guiKeyChangeMenu.cpp:405
-msgid "Sneak"
-msgstr "潜行"
-
-#: src/guiKeyChangeMenu.cpp:406
-msgid "Drop"
-msgstr "丢出"
-
-#: src/guiKeyChangeMenu.cpp:407
-msgid "Inventory"
-msgstr "物品栏"
-
-#: src/guiKeyChangeMenu.cpp:408
+#: src/guiKeyChangeMenu.cpp
 msgid "Chat"
 msgstr "聊天"
 
-#: src/guiKeyChangeMenu.cpp:409
+#: src/guiKeyChangeMenu.cpp
 msgid "Command"
 msgstr "命令"
 
-#: src/guiKeyChangeMenu.cpp:410
+#: src/guiKeyChangeMenu.cpp
 msgid "Console"
 msgstr "控制台"
 
-#: src/guiKeyChangeMenu.cpp:411
-msgid "Toggle fly"
-msgstr "切换飞行模式"
+#: src/guiKeyChangeMenu.cpp
+msgid "Double tap \"jump\" to toggle fly"
+msgstr "连按两次“跳”切换飞行模式"
 
-#: src/guiKeyChangeMenu.cpp:412
-msgid "Toggle fast"
-msgstr "切换快速移动模式"
+#: src/guiKeyChangeMenu.cpp
+msgid "Drop"
+msgstr "丢出"
 
-#: src/guiKeyChangeMenu.cpp:413
+#: src/guiKeyChangeMenu.cpp
+msgid "Forward"
+msgstr "向前"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Inventory"
+msgstr "物品栏"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Jump"
+msgstr "跳"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Key already in use"
+msgstr "按键已被占用"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
+msgstr "键位配置。（如果这个菜单被弄乱，从minetest.conf中删掉点东西）"
+
+#: src/guiKeyChangeMenu.cpp src/keycode.cpp
+msgid "Left"
+msgstr "向左"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Print stacks"
+msgstr "打印栈"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Range select"
+msgstr "选择范围"
+
+#: src/guiKeyChangeMenu.cpp src/keycode.cpp
+msgid "Right"
+msgstr "向右"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Sneak"
+msgstr "潜行"
+
+#: src/guiKeyChangeMenu.cpp
 #, fuzzy
 msgid "Toggle Cinematic"
 msgstr "切换快速移动模式"
 
-#: src/guiKeyChangeMenu.cpp:414
+#: src/guiKeyChangeMenu.cpp
+msgid "Toggle fast"
+msgstr "切换快速移动模式"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Toggle fly"
+msgstr "切换飞行模式"
+
+#: src/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
 msgstr "切换穿墙模式"
 
-#: src/guiKeyChangeMenu.cpp:415
-msgid "Range select"
-msgstr "选择范围"
+#: src/guiKeyChangeMenu.cpp
+msgid "Use"
+msgstr "使用"
 
-#: src/guiKeyChangeMenu.cpp:416
-msgid "Print stacks"
-msgstr "打印栈"
+#: src/guiKeyChangeMenu.cpp
+msgid "press key"
+msgstr "按键"
 
-#: src/guiPasswordChange.cpp:108
-msgid "Old Password"
-msgstr "旧密码"
-
-#: src/guiPasswordChange.cpp:124
-msgid "New Password"
-msgstr "新密码"
-
-#: src/guiPasswordChange.cpp:139
-msgid "Confirm Password"
-msgstr "确认密码"
-
-#: src/guiPasswordChange.cpp:155
+#: src/guiPasswordChange.cpp
 msgid "Change"
 msgstr "更改"
 
-#: src/guiPasswordChange.cpp:164
+#: src/guiPasswordChange.cpp
+msgid "Confirm Password"
+msgstr "确认密码"
+
+#: src/guiPasswordChange.cpp
+msgid "New Password"
+msgstr "新密码"
+
+#: src/guiPasswordChange.cpp
+msgid "Old Password"
+msgstr "旧密码"
+
+#: src/guiPasswordChange.cpp
 msgid "Passwords do not match!"
 msgstr "密码不匹配！"
 
-#: src/guiVolumeChange.cpp:105
-msgid "Sound Volume: "
-msgstr "音量： "
-
-#: src/guiVolumeChange.cpp:119
+#: src/guiVolumeChange.cpp
 msgid "Exit"
 msgstr "退出"
 
-#: src/keycode.cpp:223
-msgid "Left Button"
-msgstr "左键"
+#: src/guiVolumeChange.cpp
+msgid "Sound Volume: "
+msgstr "音量： "
 
-#: src/keycode.cpp:223
-msgid "Middle Button"
-msgstr "中键"
-
-#: src/keycode.cpp:223
-msgid "Right Button"
-msgstr "右键"
-
-#: src/keycode.cpp:223
-msgid "X Button 1"
-msgstr "X键1"
-
-#: src/keycode.cpp:224
-msgid "Back"
-msgstr "退格"
-
-#: src/keycode.cpp:224
-msgid "Clear"
-msgstr "Clear键"
-
-#: src/keycode.cpp:224
-msgid "Return"
-msgstr "回车"
-
-#: src/keycode.cpp:224
-msgid "Tab"
-msgstr "Tab键"
-
-#: src/keycode.cpp:224
-msgid "X Button 2"
-msgstr "X键2"
-
-#: src/keycode.cpp:225
-msgid "Capital"
-msgstr "大写"
-
-#: src/keycode.cpp:225
-msgid "Control"
-msgstr "Ctrl键"
-
-#: src/keycode.cpp:225
-msgid "Kana"
-msgstr "假名"
-
-#: src/keycode.cpp:225
-msgid "Menu"
-msgstr "菜单"
-
-#: src/keycode.cpp:225
-msgid "Pause"
-msgstr "暂停"
-
-#: src/keycode.cpp:225
-msgid "Shift"
-msgstr "Shift键"
-
-#: src/keycode.cpp:226
-msgid "Convert"
-msgstr "转换"
-
-#: src/keycode.cpp:226
-msgid "Escape"
-msgstr "Escape键"
-
-#: src/keycode.cpp:226
-msgid "Final"
-msgstr "Final键"
-
-#: src/keycode.cpp:226
-msgid "Junja"
-msgstr "Junja键"
-
-#: src/keycode.cpp:226
-msgid "Kanji"
-msgstr "Kanji键"
-
-#: src/keycode.cpp:226
-msgid "Nonconvert"
-msgstr "无变换"
-
-#: src/keycode.cpp:227
-msgid "End"
-msgstr "End键"
-
-#: src/keycode.cpp:227
-msgid "Home"
-msgstr "Home键"
-
-#: src/keycode.cpp:227
-msgid "Mode Change"
-msgstr "改变模式"
-
-#: src/keycode.cpp:227
-msgid "Next"
-msgstr "下一个"
-
-#: src/keycode.cpp:227
-msgid "Prior"
-msgstr "Prior键"
-
-#: src/keycode.cpp:227
-msgid "Space"
-msgstr "空格"
-
-#: src/keycode.cpp:228
-msgid "Down"
-msgstr "向下"
-
-#: src/keycode.cpp:228
-msgid "Execute"
-msgstr "执行"
-
-#: src/keycode.cpp:228
-msgid "Print"
-msgstr "打印"
-
-#: src/keycode.cpp:228
-msgid "Select"
-msgstr "选择"
-
-#: src/keycode.cpp:228
-msgid "Up"
-msgstr "向上"
-
-#: src/keycode.cpp:229
-msgid "Help"
-msgstr "帮助"
-
-#: src/keycode.cpp:229
-msgid "Insert"
-msgstr "插入"
-
-#: src/keycode.cpp:229
-msgid "Snapshot"
-msgstr "快照"
-
-#: src/keycode.cpp:232
-msgid "Left Windows"
-msgstr "左窗口"
-
-#: src/keycode.cpp:233
+#: src/keycode.cpp
 msgid "Apps"
 msgstr "应用"
 
-#: src/keycode.cpp:233
-msgid "Numpad 0"
-msgstr "小键盘0"
-
-#: src/keycode.cpp:233
-msgid "Numpad 1"
-msgstr "小键盘1"
-
-#: src/keycode.cpp:233
-msgid "Right Windows"
-msgstr "右窗口"
-
-#: src/keycode.cpp:233
-msgid "Sleep"
-msgstr "睡眠"
-
-#: src/keycode.cpp:234
-msgid "Numpad 2"
-msgstr "小键盘2"
-
-#: src/keycode.cpp:234
-msgid "Numpad 3"
-msgstr "小键盘3"
-
-#: src/keycode.cpp:234
-msgid "Numpad 4"
-msgstr "小键盘4"
-
-#: src/keycode.cpp:234
-msgid "Numpad 5"
-msgstr "小键盘5"
-
-#: src/keycode.cpp:234
-msgid "Numpad 6"
-msgstr "小键盘6"
-
-#: src/keycode.cpp:234
-msgid "Numpad 7"
-msgstr "小键盘7"
-
-#: src/keycode.cpp:235
-msgid "Numpad *"
-msgstr "小键盘*"
-
-#: src/keycode.cpp:235
-msgid "Numpad +"
-msgstr "小键盘+"
-
-#: src/keycode.cpp:235
-msgid "Numpad -"
-msgstr "小键盘-"
-
-#: src/keycode.cpp:235
-msgid "Numpad /"
-msgstr "小键盘/"
-
-#: src/keycode.cpp:235
-msgid "Numpad 8"
-msgstr "小键盘8"
-
-#: src/keycode.cpp:235
-msgid "Numpad 9"
-msgstr "小键盘9"
-
-#: src/keycode.cpp:239
-msgid "Num Lock"
-msgstr "小键盘锁"
-
-#: src/keycode.cpp:239
-msgid "Scroll Lock"
-msgstr "Scroll Lock键"
-
-#: src/keycode.cpp:240
-msgid "Left Shift"
-msgstr "左Shift键"
-
-#: src/keycode.cpp:240
-msgid "Right Shift"
-msgstr "右Shift键"
-
-#: src/keycode.cpp:241
-msgid "Left Control"
-msgstr "左Control键"
-
-#: src/keycode.cpp:241
-msgid "Left Menu"
-msgstr "左菜单"
-
-#: src/keycode.cpp:241
-msgid "Right Control"
-msgstr "右Control键"
-
-#: src/keycode.cpp:241
-msgid "Right Menu"
-msgstr "右菜单"
-
-#: src/keycode.cpp:243
-msgid "Comma"
-msgstr "逗号"
-
-#: src/keycode.cpp:243
-msgid "Minus"
-msgstr "减号"
-
-#: src/keycode.cpp:243
-msgid "Period"
-msgstr "句号"
-
-#: src/keycode.cpp:243
-msgid "Plus"
-msgstr "加号"
-
-#: src/keycode.cpp:247
+#: src/keycode.cpp
 msgid "Attn"
 msgstr "Attn键"
 
-#: src/keycode.cpp:247
+#: src/keycode.cpp
+msgid "Back"
+msgstr "退格"
+
+#: src/keycode.cpp
+msgid "Capital"
+msgstr "大写"
+
+#: src/keycode.cpp
+msgid "Clear"
+msgstr "Clear键"
+
+#: src/keycode.cpp
+msgid "Comma"
+msgstr "逗号"
+
+#: src/keycode.cpp
+msgid "Control"
+msgstr "Ctrl键"
+
+#: src/keycode.cpp
+msgid "Convert"
+msgstr "转换"
+
+#: src/keycode.cpp
 msgid "CrSel"
 msgstr "CrSel键"
 
-#: src/keycode.cpp:248
+#: src/keycode.cpp
+msgid "Down"
+msgstr "向下"
+
+#: src/keycode.cpp
+msgid "End"
+msgstr "End键"
+
+#: src/keycode.cpp
 msgid "Erase OEF"
 msgstr "Erase OEF键"
 
-#: src/keycode.cpp:248
+#: src/keycode.cpp
+msgid "Escape"
+msgstr "Escape键"
+
+#: src/keycode.cpp
 msgid "ExSel"
 msgstr "ExSel键"
 
-#: src/keycode.cpp:248
+#: src/keycode.cpp
+msgid "Execute"
+msgstr "执行"
+
+#: src/keycode.cpp
+msgid "Final"
+msgstr "Final键"
+
+#: src/keycode.cpp
+msgid "Help"
+msgstr "帮助"
+
+#: src/keycode.cpp
+msgid "Home"
+msgstr "Home键"
+
+#: src/keycode.cpp
+msgid "Insert"
+msgstr "插入"
+
+#: src/keycode.cpp
+msgid "Junja"
+msgstr "Junja键"
+
+#: src/keycode.cpp
+msgid "Kana"
+msgstr "假名"
+
+#: src/keycode.cpp
+msgid "Kanji"
+msgstr "Kanji键"
+
+#: src/keycode.cpp
+msgid "Left Button"
+msgstr "左键"
+
+#: src/keycode.cpp
+msgid "Left Control"
+msgstr "左Control键"
+
+#: src/keycode.cpp
+msgid "Left Menu"
+msgstr "左菜单"
+
+#: src/keycode.cpp
+msgid "Left Shift"
+msgstr "左Shift键"
+
+#: src/keycode.cpp
+msgid "Left Windows"
+msgstr "左窗口"
+
+#: src/keycode.cpp
+msgid "Menu"
+msgstr "菜单"
+
+#: src/keycode.cpp
+msgid "Middle Button"
+msgstr "中键"
+
+#: src/keycode.cpp
+msgid "Minus"
+msgstr "减号"
+
+#: src/keycode.cpp
+msgid "Mode Change"
+msgstr "改变模式"
+
+#: src/keycode.cpp
+msgid "Next"
+msgstr "下一个"
+
+#: src/keycode.cpp
+msgid "Nonconvert"
+msgstr "无变换"
+
+#: src/keycode.cpp
+msgid "Num Lock"
+msgstr "小键盘锁"
+
+#: src/keycode.cpp
+msgid "Numpad *"
+msgstr "小键盘*"
+
+#: src/keycode.cpp
+msgid "Numpad +"
+msgstr "小键盘+"
+
+#: src/keycode.cpp
+msgid "Numpad -"
+msgstr "小键盘-"
+
+#: src/keycode.cpp
+msgid "Numpad /"
+msgstr "小键盘/"
+
+#: src/keycode.cpp
+msgid "Numpad 0"
+msgstr "小键盘0"
+
+#: src/keycode.cpp
+msgid "Numpad 1"
+msgstr "小键盘1"
+
+#: src/keycode.cpp
+msgid "Numpad 2"
+msgstr "小键盘2"
+
+#: src/keycode.cpp
+msgid "Numpad 3"
+msgstr "小键盘3"
+
+#: src/keycode.cpp
+msgid "Numpad 4"
+msgstr "小键盘4"
+
+#: src/keycode.cpp
+msgid "Numpad 5"
+msgstr "小键盘5"
+
+#: src/keycode.cpp
+msgid "Numpad 6"
+msgstr "小键盘6"
+
+#: src/keycode.cpp
+msgid "Numpad 7"
+msgstr "小键盘7"
+
+#: src/keycode.cpp
+msgid "Numpad 8"
+msgstr "小键盘8"
+
+#: src/keycode.cpp
+msgid "Numpad 9"
+msgstr "小键盘9"
+
+#: src/keycode.cpp
 msgid "OEM Clear"
 msgstr "OEM Clear键"
 
-#: src/keycode.cpp:248
+#: src/keycode.cpp
 msgid "PA1"
 msgstr "PA1键"
 
-#: src/keycode.cpp:248
+#: src/keycode.cpp
+msgid "Pause"
+msgstr "暂停"
+
+#: src/keycode.cpp
+msgid "Period"
+msgstr "句号"
+
+#: src/keycode.cpp
+msgid "Plus"
+msgstr "加号"
+
+#: src/keycode.cpp
+msgid "Print"
+msgstr "打印"
+
+#: src/keycode.cpp
+msgid "Prior"
+msgstr "Prior键"
+
+#: src/keycode.cpp
+msgid "Return"
+msgstr "回车"
+
+#: src/keycode.cpp
+msgid "Right Button"
+msgstr "右键"
+
+#: src/keycode.cpp
+msgid "Right Control"
+msgstr "右Control键"
+
+#: src/keycode.cpp
+msgid "Right Menu"
+msgstr "右菜单"
+
+#: src/keycode.cpp
+msgid "Right Shift"
+msgstr "右Shift键"
+
+#: src/keycode.cpp
+msgid "Right Windows"
+msgstr "右窗口"
+
+#: src/keycode.cpp
+msgid "Scroll Lock"
+msgstr "Scroll Lock键"
+
+#: src/keycode.cpp
+msgid "Select"
+msgstr "选择"
+
+#: src/keycode.cpp
+msgid "Shift"
+msgstr "Shift键"
+
+#: src/keycode.cpp
+msgid "Sleep"
+msgstr "睡眠"
+
+#: src/keycode.cpp
+msgid "Snapshot"
+msgstr "快照"
+
+#: src/keycode.cpp
+msgid "Space"
+msgstr "空格"
+
+#: src/keycode.cpp
+msgid "Tab"
+msgstr "Tab键"
+
+#: src/keycode.cpp
+msgid "Up"
+msgstr "向上"
+
+#: src/keycode.cpp
+msgid "X Button 1"
+msgstr "X键1"
+
+#: src/keycode.cpp
+msgid "X Button 2"
+msgstr "X键2"
+
+#: src/keycode.cpp
 msgid "Zoom"
 msgstr "缩放"
 
-#~ msgid "Game Name"
-#~ msgstr "游戏名"
+#, fuzzy
+#~ msgid "Downloading"
+#~ msgstr "下载中"
 
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "游戏管理: 无法复制MOD“$1”到游戏“$2”"
+#~ msgid "Mip-Mapping"
+#~ msgstr "贴图处理"
 
-#~ msgid "GAMES"
-#~ msgstr "游戏"
+#~ msgid "Anisotropic Filtering"
+#~ msgstr "各向异性过滤"
 
-#~ msgid "Games"
-#~ msgstr "游戏"
+#~ msgid "Fly mode"
+#~ msgstr "飞行模式"
 
-#~ msgid "Mods:"
-#~ msgstr "MODS："
+#~ msgid " KB/s"
+#~ msgstr "千字节/秒"
 
-#~ msgid "edit game"
-#~ msgstr "编辑游戏"
+#~ msgid " MB/s"
+#~ msgstr "兆字节/秒"
 
-#~ msgid "new game"
-#~ msgstr "新建游戏"
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr "左键：移动所有物品，右键：移动单个物品"
 
-#~ msgid "EDIT GAME"
-#~ msgstr "编辑游戏"
+#~ msgid "is required by:"
+#~ msgstr "被需要："
 
-#~ msgid "Remove selected mod"
-#~ msgstr "删除选中MOD"
+#~ msgid "Configuration saved.  "
+#~ msgstr "配置已保存。  "
 
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- 添加MOD"
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "警告：配置不一致。  "
 
-#~ msgid "CLIENT"
-#~ msgstr "客户端"
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "无法创建世界：名字包含非法字符"
 
-#~ msgid "Favorites:"
-#~ msgstr "最爱的服务器："
+#~ msgid "Multiplayer"
+#~ msgstr "多人游戏"
 
-#~ msgid "START SERVER"
-#~ msgstr "启动服务器"
+#~ msgid "Advanced"
+#~ msgstr "高级联机设置"
 
-#~ msgid "Name"
-#~ msgstr "名字"
+#~ msgid "Show Public"
+#~ msgstr "显示公共"
 
-#~ msgid "Password"
-#~ msgstr "密码"
+#~ msgid "Show Favorites"
+#~ msgstr "显示最爱"
 
-#~ msgid "SETTINGS"
-#~ msgstr "设置"
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "地址栏留空可启动本地服务器。"
 
-#~ msgid "Preload item visuals"
-#~ msgstr "预先加载物品图像"
+#~ msgid "Create world"
+#~ msgstr "创造世界"
 
-#~ msgid "Finite Liquid"
-#~ msgstr "液体有限延伸"
+#~ msgid "Address required."
+#~ msgstr "需要地址。"
 
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "单人游戏"
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "无法删除世界：没有选择世界"
 
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "材质包"
+#~ msgid "Files to be deleted"
+#~ msgstr "将被删除的文件"
 
-#~ msgid "MODS"
-#~ msgstr "MODS"
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "无法创造世界：未找到游戏模式"
 
-#~ msgid "Add mod:"
-#~ msgstr "添加MOD："
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "无法配置世界：没有选择世界"
 
-#~ msgid "Local install"
-#~ msgstr "本地安装"
-
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
-#~ msgstr ""
-#~ "警告：一些MOD仍未设定。\n"
-#~ "它们会在你保存配置的时候自动启用。  "
-
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
-#~ msgstr ""
-#~ "警告：缺少一些设定了的MOD。\n"
-#~ "它们的设置会在你保存配置的时候被移除。  "
+#~ msgid "Failed to delete all world files"
+#~ msgstr "无法删除所有该世界的文件"
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -1295,72 +1307,91 @@ msgstr "缩放"
 #~ "ESC：菜单\n"
 #~ "T：聊天\n"
 
-#~ msgid "Failed to delete all world files"
-#~ msgstr "无法删除所有该世界的文件"
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
+#~ msgstr ""
+#~ "警告：缺少一些设定了的MOD。\n"
+#~ "它们的设置会在你保存配置的时候被移除。  "
 
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "无法配置世界：没有选择世界"
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "警告：一些MOD仍未设定。\n"
+#~ "它们会在你保存配置的时候自动启用。  "
 
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "无法创造世界：未找到游戏模式"
+#~ msgid "Local install"
+#~ msgstr "本地安装"
 
-#~ msgid "Files to be deleted"
-#~ msgstr "将被删除的文件"
+#~ msgid "Add mod:"
+#~ msgstr "添加MOD："
 
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "无法删除世界：没有选择世界"
+#~ msgid "MODS"
+#~ msgstr "MODS"
 
-#~ msgid "Address required."
-#~ msgstr "需要地址。"
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "材质包"
 
-#~ msgid "Create world"
-#~ msgstr "创造世界"
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "单人游戏"
 
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "地址栏留空可启动本地服务器。"
+#~ msgid "Finite Liquid"
+#~ msgstr "液体有限延伸"
 
-#~ msgid "Show Favorites"
-#~ msgstr "显示最爱"
+#~ msgid "Preload item visuals"
+#~ msgstr "预先加载物品图像"
 
-#~ msgid "Show Public"
-#~ msgstr "显示公共"
+#~ msgid "SETTINGS"
+#~ msgstr "设置"
 
-#~ msgid "Advanced"
-#~ msgstr "高级联机设置"
+#~ msgid "Password"
+#~ msgstr "密码"
 
-#~ msgid "Multiplayer"
-#~ msgstr "多人游戏"
+#~ msgid "Name"
+#~ msgstr "名字"
 
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "无法创建世界：名字包含非法字符"
+#~ msgid "START SERVER"
+#~ msgstr "启动服务器"
 
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "警告：配置不一致。  "
+#~ msgid "Favorites:"
+#~ msgstr "最爱的服务器："
 
-#~ msgid "Configuration saved.  "
-#~ msgstr "配置已保存。  "
+#~ msgid "CLIENT"
+#~ msgstr "客户端"
 
-#~ msgid "is required by:"
-#~ msgstr "被需要："
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- 添加MOD"
 
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr "左键：移动所有物品，右键：移动单个物品"
+#~ msgid "Remove selected mod"
+#~ msgstr "删除选中MOD"
 
-#~ msgid " MB/s"
-#~ msgstr "兆字节/秒"
+#~ msgid "EDIT GAME"
+#~ msgstr "编辑游戏"
 
-#~ msgid " KB/s"
-#~ msgstr "千字节/秒"
+#~ msgid "new game"
+#~ msgstr "新建游戏"
 
-#~ msgid "Fly mode"
-#~ msgstr "飞行模式"
+#~ msgid "edit game"
+#~ msgstr "编辑游戏"
 
-#~ msgid "Anisotropic Filtering"
-#~ msgstr "各向异性过滤"
+#~ msgid "Mods:"
+#~ msgstr "MODS："
 
-#~ msgid "Mip-Mapping"
-#~ msgstr "贴图处理"
+#~ msgid "Games"
+#~ msgstr "游戏"
 
-#, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "下载中"
+#~ msgid "GAMES"
+#~ msgstr "游戏"
+
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "游戏管理: 无法复制MOD“$1”到游戏“$2”"
+
+#~ msgid "Game Name"
+#~ msgstr "游戏名"
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "重启minetest让驱动变化生效"
+
+#~ msgid "Online mod repository"
+#~ msgstr "网上MOD库"
