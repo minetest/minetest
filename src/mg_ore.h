@@ -87,6 +87,10 @@ class OreSheet : public Ore {
 public:
 	static const bool NEEDS_NOISE = true;
 
+	u16 column_height_min;
+	u16 column_height_max;
+	float column_midpoint_factor;
+
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
 		v3s16 nmin, v3s16 nmax, u8 *biomemap);
 };
