@@ -283,7 +283,7 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 
 	// Customize material
 	video::SMaterial &material = m_meshnode->getMaterial(0);
-	material.setTexture(0, tsrc->getTexture(imagename));
+	material.setTexture(0, tsrc->getTextureForMesh(imagename));
 	material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 	material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE; 
 	material.MaterialType = m_material_type;
