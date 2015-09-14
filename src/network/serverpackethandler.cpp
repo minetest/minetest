@@ -103,7 +103,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	// Use the highest version supported by both
 	u8 depl_serial_v = std::min(client_max, our_max);
 	// If it's lower than the lowest supported, give up.
-	if (depl_serial_v < SER_FMT_VER_LOWEST)
+	if (depl_serial_v < SER_FMT_VER_LOWEST_READ)
 		depl_serial_v = SER_FMT_VER_INVALID;
 
 	if (depl_serial_v == SER_FMT_VER_INVALID) {
@@ -347,7 +347,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 	// Use the highest version supported by both
 	int deployed = std::min(client_max, our_max);
 	// If it's lower than the lowest supported, give up.
-	if (deployed < SER_FMT_VER_LOWEST)
+	if (deployed < SER_FMT_VER_LOWEST_READ)
 		deployed = SER_FMT_VER_INVALID;
 
 	if (deployed == SER_FMT_VER_INVALID) {
