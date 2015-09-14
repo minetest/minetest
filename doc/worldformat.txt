@@ -45,7 +45,8 @@ Contains authentication data, player per line.
 Legacy format (until 0.4.12) of password hash is <name><password> SHA1'd,
 in the base64 encoding.
 
-Format (since 0.4.13) of password hash is #1#<salt>#<verifier>, with the parts inside <> encoded in the base64 encoding.
+Format (since 0.4.13) of password hash is #1#<salt>#<verifier>, with the
+parts inside <> encoded in the base64 encoding.
 <verifier> is an RFC 5054 compatible SRP-2048-SHA1 verifier
 of the given salt, password, and the player's name lowercased.
 
@@ -54,7 +55,7 @@ Example lines:
     celeron55::interact,shout
 - Player "Foo", password "bar", privilege "shout", with a legacy password hash:
     foo:iEPX+SQWIR3p67lj/0zigSWTKHg:shout
-- Player "Foo", password "bar", privilege "shout", with an up to date pw hash (yes it is THAT long):
+- Player "Foo", password "bar", privilege "shout", with a 0.4.13 pw hash:
     foo:#1#hPpy4O3IAn1hsNK00A6wNw#Kpu6rj7McsrPCt4euTb5RA5ltF7wdcWGoYMcRngwDi11cZhPuuR9i5Bo7o6A877TgcEwoc//HNrj9EjR/CGjdyTFmNhiermZOADvd8eu32FYK1kf7RMC0rXWxCenYuOQCG4WF9mMGiyTPxC63VAjAMuc1nCZzmy6D9zt0SIKxOmteI75pAEAIee2hx4OkSXRIiU4Zrxo1Xf7QFxkMY4x77vgaPcvfmuzom0y/fU1EdSnZeopGPvzMpFx80ODFx1P34R52nmVl0W8h4GNo0k8ZiWtRCdrJxs8xIg7z5P1h3Th/BJ0lwexpdK8sQZWng8xaO5ElthNuhO8UQx1l6FgEA:shout
 - Player "bar", no password, no privileges:
     bar::
@@ -316,6 +317,8 @@ if map format version == 24: (NOTE: Not released as stable)
       u16 timer position (z*16*16 + y*16 + x)
       s32 timeout*1000
       s32 elapsed*1000
+if map format version >= 25:
+  -- Nothing right here, node timers are serialized later
 
 u8 static object version:
 - Always 0
