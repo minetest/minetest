@@ -1493,6 +1493,15 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 			delete object;
 		return 0;
 	}
+
+	if (objectpos_over_limit(object->getBasePosition())) {
+		errorstream << "ServerEnvironment::addActiveObjectRaw(): "
+			<< "object position outside maximum range" << std::endl;
+		if (object->environmentDeletes())
+			delete object;
+		return 0;
+	}
+
 	/*infostream<<"ServerEnvironment::addActiveObjectRaw(): "
 			<<"added (id="<<object->getId()<<")"<<std::endl;*/
 
