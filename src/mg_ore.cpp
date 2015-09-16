@@ -25,8 +25,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 
 FlagDesc flagdesc_ore[] = {
-	{"absheight", OREFLAG_ABSHEIGHT},
-	{NULL,        0}
+	{"absheight",                 OREFLAG_ABSHEIGHT},
+	{"puff_cliffs",               OREFLAG_PUFF_CLIFFS},
+	{"puff_additive_composition", OREFLAG_PUFF_ADDITIVE},
+	{NULL,                        0}
 };
 
 
@@ -220,6 +222,94 @@ void OreSheet::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 ///////////////////////////////////////////////////////////////////////////////
 
+OrePuff::OrePuff() :
+	Ore()
+{
+	noise_puff_top    = NULL;
+	noise_puff_bottom = NULL;
+}
+
+
+OrePuff::~OrePuff()
+{
+	delete noise_puff_top;
+	delete noise_puff_bottom;
+}
+
+
+void OrePuff::generate(MMVManip *vm, int mapseed, u32 blockseed,
+	v3s16 nmin, v3s16 nmax, u8 *biomemap)
+{
+	PseudoRandom pr(blockseed + 4234);
+	MapNode n_ore(c_ore, 0, ore_param2);
+
+	int y_start = pr.range(nmin.Y, nmax.Y);
+
+	if (!noise) {
+		int sx = nmax.X - nmin.X + 1;
+		int sz = nmax.Z - nmin.Z + 1;
+		noise = new Noise(&np, 0, sx, sz);
+		noise_puff_top = new Noise(&np_puff_top, 0, sx, sz);
+		noise_puff_bottom = new Noise(&np_puff_bottom, 0, sx, sz);
+	}
+
+	noise->seed = mapseed + y_start;
+	noise->perlinMap2D(nmin.X, nmin.Z);
+	bool noise_generated = false;
+
+	size_t index = 0;
+	for (int z = nmin.Z; z <= nmax.Z; z++)
+	for (int x = nmin.X; x <= nmax.X; x++, index++) {
+		float noiseval = noise->result[index];
+		if (noiseval < nthresh)
+			continue;
+
+		if (biomemap && !biomes.empty()) {
+			std::set<u8>::iterator it = biomes.find(biomemap[index]);
+			if (it == biomes.end())
+				continue;
+		}
+
+		if (!noise_generated) {
+			noise_generated = true;
+			noise_puff_top->perlinMap2D(nmin.X, nmin.Z);
+			noise_puff_bottom->perlinMap2D(nmin.X, nmin.Z);
+		}
+
+		float ntop    = noise_puff_top->result[index];
+		float nbottom = noise_puff_bottom->result[index];
+
+		if (!(flags & OREFLAG_PUFF_CLIFFS)) {
+			float ndiff = noiseval - nthresh;
+			if (ndiff < 1.0f) {
+				ntop *= ndiff;
+				nbottom *= ndiff;
+			}
+		}
+
+		int ymid = y_start;
+		int y0 = ymid - nbottom;
+		int y1 = ymid + ntop;
+
+		if ((flags & OREFLAG_PUFF_ADDITIVE) && (y0 > y1))
+			SWAP(int, y0, y1);
+
+		for (int y = y0; y <= y1; y++) {
+			u32 i = vm->m_area.index(x, y, z);
+			if (!vm->m_area.contains(i))
+				continue;
+			if (!CONTAINS(c_wherein, vm->m_data[i].getContent()))
+				continue;
+
+			vm->m_data[i] = n_ore;
+		}
+	}
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+
 void OreBlob::generate(MMVManip *vm, int mapseed, u32 blockseed,
 	v3s16 nmin, v3s16 nmax, u8 *biomemap)
 {
@@ -285,7 +375,8 @@ void OreBlob::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 ///////////////////////////////////////////////////////////////////////////////
 
-OreVein::OreVein()
+OreVein::OreVein() :
+	Ore()
 {
 	noise2 = NULL;
 }

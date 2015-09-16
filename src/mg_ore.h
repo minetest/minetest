@@ -30,17 +30,18 @@ class MMVManip;
 
 /////////////////// Ore generation flags
 
-// Use absolute value of height to determine ore placement
-#define OREFLAG_ABSHEIGHT 0x01
-#define OREFLAG_USE_NOISE 0x08
+#define OREFLAG_ABSHEIGHT     0x01
+#define OREFLAG_PUFF_CLIFFS   0x02
+#define OREFLAG_PUFF_ADDITIVE 0x04
+#define OREFLAG_USE_NOISE     0x08
 
 #define ORE_RANGE_ACTUAL 1
 #define ORE_RANGE_MIRROR 2
 
-
 enum OreType {
 	ORE_SCATTER,
 	ORE_SHEET,
+	ORE_PUFF,
 	ORE_BLOB,
 	ORE_VEIN,
 };
@@ -95,6 +96,22 @@ public:
 		v3s16 nmin, v3s16 nmax, u8 *biomemap);
 };
 
+class OrePuff : public Ore {
+public:
+	static const bool NEEDS_NOISE = true;
+
+	NoiseParams np_puff_top;
+	NoiseParams np_puff_bottom;
+	Noise *noise_puff_top;
+	Noise *noise_puff_bottom;
+
+	OrePuff();
+	virtual ~OrePuff();
+
+	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
+		v3s16 nmin, v3s16 nmax, u8 *biomemap);
+};
+
 class OreBlob : public Ore {
 public:
 	static const bool NEEDS_NOISE = true;
@@ -134,6 +151,8 @@ public:
 			return new OreScatter;
 		case ORE_SHEET:
 			return new OreSheet;
+		case ORE_PUFF:
+			return new OrePuff;
 		case ORE_BLOB:
 			return new OreBlob;
 		case ORE_VEIN:

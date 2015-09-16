@@ -70,6 +70,7 @@ struct EnumString ModApiMapgen::es_OreType[] =
 {
 	{ORE_SCATTER, "scatter"},
 	{ORE_SHEET,   "sheet"},
+	{ORE_PUFF,    "puff"},
 	{ORE_BLOB,    "blob"},
 	{ORE_VEIN,    "vein"},
 	{0, NULL},
@@ -880,7 +881,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 				"ore_type", es_OreType, ORE_SCATTER);
 	Ore *ore = oremgr->create(oretype);
 	if (!ore) {
-		errorstream << "register_ore: ore_type " << oretype << " not implemented";
+		errorstream << "register_ore: ore_type " << oretype << " not implemented\n";
 		return 0;
 	}
 
@@ -938,20 +939,42 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	lua_pop(L, 1);
 
 	//// Get type-specific parameters
-	if (oretype == ORE_SHEET) {
-		OreSheet *oresheet = (OreSheet *)ore;
+	switch (oretype) {
+		case ORE_SHEET: {
+			OreSheet *oresheet = (OreSheet *)ore;
 
-		oresheet->column_height_min = getintfield_default(L, index,
-			"column_height_min", 1);
-		oresheet->column_height_max = getintfield_default(L, index,
-			"column_height_max", ore->clust_size);
-		oresheet->column_midpoint_factor = getfloatfield_default(L, index,
-			"column_midpoint_factor", 0.5f);
-	} else if (oretype == ORE_VEIN) {
-		OreVein *orevein = (OreVein *)ore;
+			oresheet->column_height_min = getintfield_default(L, index,
+				"column_height_min", 1);
+			oresheet->column_height_max = getintfield_default(L, index,
+				"column_height_max", ore->clust_size);
+			oresheet->column_midpoint_factor = getfloatfield_default(L, index,
+				"column_midpoint_factor", 0.5f);
 
-		orevein->random_factor = getfloatfield_default(L, index,
-			"random_factor", 1.f);
+			break;
+		}
+		case ORE_PUFF: {
+			OrePuff *orepuff = (OrePuff *)ore;
+
+			lua_getfield(L, index, "np_puff_top");
+			read_noiseparams(L, -1, &orepuff->np_puff_top);
+			lua_pop(L, 1);
+
+			lua_getfield(L, index, "np_puff_bottom");
+			read_noiseparams(L, -1, &orepuff->np_puff_bottom);
+			lua_pop(L, 1);
+
+			break;
+		}
+		case ORE_VEIN: {
+			OreVein *orevein = (OreVein *)ore;
+
+			orevein->random_factor = getfloatfield_default(L, index,
+				"random_factor", 1.f);
+
+			break;
+		}
+		default:
+			break;
 	}
 
 	ObjDefHandle handle = oremgr->add(ore);
