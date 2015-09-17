@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-12 23:20+0200\n"
-"PO-Revision-Date: 2015-09-17 21:56+0200\n"
+"PO-Revision-Date: 2015-09-17 22:38+0200\n"
 "Last-Translator: Olexandr <me.olexandr.kovalchuk@gmail.com>\n"
 "Language-Team: Ukrainian "
 "<https://hosted.weblate.org/projects/minetest/minetest/uk/>\n"
@@ -26,21 +26,19 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
-msgstr ""
+msgstr "Трапилася помилка:"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Main menu"
-msgstr "Головне Меню"
+msgstr "Головне меню"
 
 #: builtin/fstk/ui.lua builtin/mainmenu/store.lua
 msgid "Ok"
 msgstr "Гаразд"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Reconnect"
-msgstr "Підключитися"
+msgstr "Повторне підключення"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
@@ -65,9 +63,8 @@ msgid "Cancel"
 msgstr "Скасувати"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_mods.lua
-#, fuzzy
 msgid "Depends:"
-msgstr "залежить від:"
+msgstr "Залежить від:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #, fuzzy
@@ -80,20 +77,20 @@ msgid "Enable MP"
 msgstr "Увімкнути Все"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable all"
-msgstr "Увімкнути Все"
+msgstr "Увімкнути все"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
+"Не вдалося ввімкнути mod \"$1\", бо він містить заборонені символи. "
+"Дозволяється використання таких символів: [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Hide Game"
-msgstr "Гра"
+msgstr "Приховати гру"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide mp content"
@@ -139,7 +136,7 @@ msgstr "Гра"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mapgen"
-msgstr ""
+msgstr "Генератор карти"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No worldname given or no game selected"
@@ -147,11 +144,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
-msgstr ""
+msgstr "Зерно"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
-msgstr ""
+msgstr "Увага: мінімальна тестова версія призначена для розробників."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -159,23 +156,23 @@ msgstr "Назва Світу"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no subgames installed."
-msgstr ""
+msgstr "Ви не маєте встановлених ігор."
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "Ви впевнені, що бажаєте видалити \"$1\"?"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: failed to delete \"$1\""
-msgstr ""
+msgstr "Modmgr: не вдалося видалити \"$1\""
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr ""
+msgstr "Modmgr: недійсний шлях модифікації \"$1\""
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "No of course not!"
-msgstr ""
+msgstr "Ні, звісно ні!"
 
 #: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/tab_settings.lua
@@ -183,18 +180,16 @@ msgid "Yes"
 msgstr "Так"
 
 #: builtin/mainmenu/dlg_delete_world.lua
-#, fuzzy
 msgid "Delete World \"$1\"?"
-msgstr "Видалити світ"
+msgstr "Видалити світ \"$1\"?"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "No"
 msgstr "Ні"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua src/keycode.cpp
-#, fuzzy
 msgid "Accept"
-msgstr "Підтвердити"
+msgstr "Прийняти"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
@@ -205,6 +200,9 @@ msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
+"\n"
+"Встановлення модифікації: тип файлу \"$1\" не підтримується або архів "
+"пошкоджено"
 
 #: builtin/mainmenu/modmgr.lua
 #, fuzzy
@@ -213,11 +211,12 @@ msgstr "Не вдалося ініціалізувати світ"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: file: \"$1\""
-msgstr ""
+msgstr "Встановлення модифікації: файл \"$1\""
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find real modname for: $1"
 msgstr ""
+"Встановлення модифікації: не вдається знайти дійсну назву модифікації $1"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
@@ -229,15 +228,15 @@ msgstr ""
 
 #: builtin/mainmenu/store.lua
 msgid "Downloading $1, please wait..."
-msgstr ""
+msgstr "Завантаження $1, зачекайте..."
 
 #: builtin/mainmenu/store.lua
 msgid "Install"
-msgstr ""
+msgstr "Встановити"
 
 #: builtin/mainmenu/store.lua
 msgid "Page $1 of $2"
-msgstr ""
+msgstr "Сторінка $1 із $2"
 
 #: builtin/mainmenu/store.lua
 msgid "Rating"
@@ -245,7 +244,7 @@ msgstr ""
 
 #: builtin/mainmenu/store.lua
 msgid "Search"
-msgstr ""
+msgstr "Пошук"
 
 #: builtin/mainmenu/store.lua
 #, fuzzy
@@ -254,7 +253,7 @@ msgstr "Назва Світу"
 
 #: builtin/mainmenu/store.lua
 msgid "Successfully installed:"
-msgstr ""
+msgstr "Успішно встановлено:"
 
 #: builtin/mainmenu/store.lua
 msgid "Unsorted"
@@ -286,32 +285,31 @@ msgstr ""
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Installed Mods:"
-msgstr ""
+msgstr "Встановлені модифікації:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Mod information:"
-msgstr ""
+msgstr "Інформація модифікації:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Mods"
-msgstr ""
+msgstr "Модифікації"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "No mod description available"
-msgstr ""
+msgstr "Опис модифікації відсутній"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Rename"
-msgstr ""
+msgstr "Перейменувати"
 
 #: builtin/mainmenu/tab_mods.lua
-#, fuzzy
 msgid "Select Mod File:"
-msgstr "Виберіть світ:"
+msgstr "Оберіть файл модифікації:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected mod"
-msgstr ""
+msgstr "Видалити обрану модифікацію"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected modpack"
@@ -328,7 +326,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Connect"
-msgstr "Підключитися"
+msgstr "Під'єднатися"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 #, fuzzy
@@ -336,9 +334,8 @@ msgid "Creative mode"
 msgstr "Режим Створення"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Damage enabled"
-msgstr "Увімкнено"
+msgstr "Ушкодження увімкнено"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_server.lua
 #: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
@@ -346,9 +343,8 @@ msgid "Delete"
 msgstr "Видалити"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Name / Password :"
-msgstr "Ім'я/Пароль"
+msgstr "Ім'я / Пароль :"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 #, fuzzy
@@ -356,9 +352,8 @@ msgid "Public Serverlist"
 msgstr "Список публічних серверів:"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "PvP enabled"
-msgstr "Увімкнено"
+msgstr "PvP увімкнено"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Bind Address"
@@ -376,7 +371,7 @@ msgstr "Режим Створення"
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Enable Damage"
-msgstr "Ввімкнути урон"
+msgstr "Увімкнути ушкодження"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name/Password"
@@ -388,15 +383,15 @@ msgstr "Новий"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "No world created or selected!"
-msgstr ""
+msgstr "Світ не створено або не обрано!"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Port"
-msgstr ""
+msgstr "Порт"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Public"
-msgstr "Публичний"
+msgstr "Публічний"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "Select World:"
@@ -404,16 +399,15 @@ msgstr "Виберіть світ:"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Server"
-msgstr ""
+msgstr "Сервер"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Server Port"
 msgstr ""
 
 #: builtin/mainmenu/tab_server.lua
-#, fuzzy
 msgid "Start Game"
-msgstr "Почати гру / Підключитися"
+msgstr "Почати гру"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -469,7 +463,7 @@ msgstr "Гарні дерева"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "GUI scale factor"
-msgstr ""
+msgstr "Масштаб інтерфейсу"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Generate Normalmaps"
@@ -493,7 +487,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No!!!"
-msgstr ""
+msgstr "Ні!!!"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
@@ -504,12 +498,10 @@ msgid "None"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Opaque Leaves"
-msgstr "Непрозора вода"
+msgstr "Непрозоре листя"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Opaque Water"
 msgstr "Непрозора вода"
 
@@ -524,7 +516,7 @@ msgstr "Одиночна гра"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Scaling factor applied to menu elements: "
-msgstr ""
+msgstr "Масштабування елементів меню: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -543,12 +535,15 @@ msgid "Smooth Lighting"
 msgstr "Рівне освітлення"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Texturing:"
-msgstr ""
+msgstr "Текстурування:"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr ""
+"Для того, щоб увімкнути шейдери, потрібно використовувати двайвер OpenGL"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touch free target"
@@ -600,15 +595,15 @@ msgstr "Одиночна гра"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
-msgstr ""
+msgstr "Інформація відсутня"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Select texture pack:"
-msgstr ""
+msgstr "Оберіть набір текстур:"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Texturepacks"
-msgstr ""
+msgstr "Набори текстур"
 
 #: src/client.cpp
 #, fuzzy
@@ -617,7 +612,7 @@ msgstr "Помилка з'єднання (час вийшов?)"
 
 #: src/client.cpp
 msgid "Done!"
-msgstr ""
+msgstr "Виконано!"
 
 #: src/client.cpp
 msgid "Initializing nodes"
@@ -632,14 +627,12 @@ msgid "Item textures..."
 msgstr "Текстура предметів..."
 
 #: src/client.cpp
-#, fuzzy
 msgid "Loading textures..."
-msgstr "Завантаження..."
+msgstr "Завантаження текстур..."
 
 #: src/client.cpp
-#, fuzzy
 msgid "Rebuilding shaders..."
-msgstr "Отримання адреси..."
+msgstr "Побудова шейдерів..."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
@@ -647,7 +640,7 @@ msgstr "Помилка з'єднання (час вийшов?)"
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
-msgstr "Неможливо знайти, або завантажити гру \""
+msgstr "Неможливо знайти або завантажити гру \""
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -659,11 +652,11 @@ msgstr "Головне Меню"
 
 #: src/client/clientlauncher.cpp
 msgid "No world selected and no address provided. Nothing to do."
-msgstr "Жоден світ не вибрано та не надано адреси. Нічого не робити."
+msgstr "Жоден світ не вибрано та не надано адреси. Нічого робити."
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr ""
+msgstr "Ім'я гравця надто довге."
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
@@ -682,9 +675,8 @@ msgstr ""
 "Деталі у файлі debug.txt."
 
 #: src/game.cpp
-#, fuzzy
 msgid "Change Keys"
-msgstr "Змінити клавіши"
+msgstr "Змінити клавіші"
 
 #: src/game.cpp
 msgid "Change Password"
@@ -708,7 +700,6 @@ msgid "Creating server..."
 msgstr "Створення сервера..."
 
 #: src/game.cpp
-#, fuzzy
 msgid ""
 "Default Controls:\n"
 "- WASD: move\n"
@@ -722,7 +713,7 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
-"Управління за замовчанню:\n"
+"Управління за замовчанням:\n"
 "- WASD: рух\n"
 "- Space: стрибок/лізти в гору\n"
 "- Shift: крастися/лізти в низ\n"
@@ -980,7 +971,7 @@ msgstr "Вниз"
 
 #: src/keycode.cpp
 msgid "End"
-msgstr "End"
+msgstr "Кінець"
 
 #: src/keycode.cpp
 #, fuzzy
@@ -997,14 +988,12 @@ msgid "ExSel"
 msgstr "ExSel"
 
 #: src/keycode.cpp
-#, fuzzy
 msgid "Execute"
 msgstr "Виконати"
 
 #: src/keycode.cpp
-#, fuzzy
 msgid "Final"
-msgstr "Кинець"
+msgstr "Кінець"
 
 #: src/keycode.cpp
 msgid "Help"
@@ -1064,9 +1053,8 @@ msgid "Minus"
 msgstr "Мінус"
 
 #: src/keycode.cpp
-#, fuzzy
 msgid "Mode Change"
-msgstr "Mode"
+msgstr "Змінити режим"
 
 #: src/keycode.cpp
 msgid "Next"
@@ -1198,7 +1186,7 @@ msgstr "Scroll Lock"
 
 #: src/keycode.cpp
 msgid "Select"
-msgstr "Select"
+msgstr "Обрати"
 
 #: src/keycode.cpp
 msgid "Shift"
