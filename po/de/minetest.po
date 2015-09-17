@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-12 23:20+0200\n"
-"PO-Revision-Date: 2015-09-03 21:35+0200\n"
-"Last-Translator: Tim <t4im@openmailbox.org>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
-"de/>\n"
+"PO-Revision-Date: 2015-09-17 15:10+0200\n"
+"Last-Translator: pilino1234 <mhilgendrf@aol.com>\n"
+"Language-Team: German "
+"<https://hosted.weblate.org/projects/minetest/minetest/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,14 +21,13 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr "Ein Fehler ist in Lua aufgetreten (z.B. aufgrund eines Mods):"
+msgstr "Es ist ein Fehler in einem Lua-Skript wie einer Mod aufgetreten:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
-msgstr "Ein Fehler ist aufgetreten:"
+msgstr "Es ist ein Fehler aufgetreten:"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Main menu"
 msgstr "Hauptmenü"
 
@@ -37,9 +36,8 @@ msgid "Ok"
 msgstr "OK"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Reconnect"
-msgstr "Verbinden"
+msgstr "Wiederverbinden"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
@@ -47,7 +45,7 @@ msgstr ""
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
-msgstr "Lädt ..."
+msgstr "Lädt…"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch, server "
@@ -56,8 +54,8 @@ msgstr ""
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
-"Bitte versuchen Sie die öffentliche Serverliste neu zu aktivieren und prüfen "
-"Sie Ihre Internetverbindung."
+"Bitte versuchen Sie die \"puiblic serverlist\" Einstellung zu aktivieren und "
+"überprüfen Sie Ihre Internetverbindung."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua src/guiKeyChangeMenu.cpp
@@ -86,6 +84,8 @@ msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
+"Fehler beim aktivieren der Mod \"$1\": Ungültiger Name. Nur folgende Zeichen "
+"sind erlaubt: [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -405,7 +405,7 @@ msgstr "Spiel starten"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "3D Clouds"
@@ -413,15 +413,15 @@ msgstr "3D-Wolken"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "4x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr ""
+msgstr "Kantenglättung:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
@@ -485,7 +485,7 @@ msgstr "Blöcke hervorheben"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
-msgstr ""
+msgstr "Keine"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
