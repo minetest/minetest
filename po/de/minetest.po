@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-12 23:20+0200\n"
 "PO-Revision-Date: 2015-09-17 15:10+0200\n"
-"Last-Translator: pilino1234 <mhilgendrf@aol.com>\n"
+"Last-Translator: Tim <t4im@openmailbox.org>\n"
 "Language-Team: German "
 "<https://hosted.weblate.org/projects/minetest/minetest/de/>\n"
 "Language: de\n"
@@ -93,7 +93,7 @@ msgstr "Spiel ausblenden"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide mp content"
-msgstr "MP-Mods verstecken"
+msgstr "Modpacks verstecken"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
