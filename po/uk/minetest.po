@@ -8,16 +8,17 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-12 23:20+0200\n"
-"PO-Revision-Date: 2013-06-27 01:22+0200\n"
-"Last-Translator: Vladimir a <c-vld@ya.ru>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2015-09-17 21:56+0200\n"
+"Last-Translator: Olexandr <me.olexandr.kovalchuk@gmail.com>\n"
+"Language-Team: Ukrainian "
+"<https://hosted.weblate.org/projects/minetest/minetest/uk/>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 1.4-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 2.4-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -34,7 +35,7 @@ msgstr "Головне Меню"
 
 #: builtin/fstk/ui.lua builtin/mainmenu/store.lua
 msgid "Ok"
-msgstr ""
+msgstr "Гаразд"
 
 #: builtin/fstk/ui.lua
 #, fuzzy
@@ -61,7 +62,7 @@ msgstr ""
 #: builtin/mainmenu/dlg_rename_modpack.lua src/guiKeyChangeMenu.cpp
 #: src/keycode.cpp
 msgid "Cancel"
-msgstr "Відміна"
+msgstr "Скасувати"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_mods.lua
 #, fuzzy
