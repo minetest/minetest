@@ -8,13 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-12 23:20+0200\n"
-"PO-Revision-Date: 2015-09-17 08:14+0800\n"
+"PO-Revision-Date: 2015-09-17 12:48+0200\n"
 "Last-Translator: Jeff Huang <s8321414@gmail.com>\n"
-"Language-Team: Chinese Traditional <kde-i18n-doc@kde.org>\n"
+"Language-Team: Chinese (Taiwan) "
+"<https://hosted.weblate.org/projects/minetest/minetest/zh_TW/>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 2.4-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
@@ -171,7 +174,7 @@ msgstr "Mod 管理員：無效的 mod 路徑「$1」"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr "刪除世界「$1」？ "
+msgstr "刪除世界「$1」？"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "No"
@@ -478,7 +481,7 @@ msgstr "突顯節點"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
-msgstr "紋理"
+msgstr "紋理："
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -896,7 +899,7 @@ msgstr "密碼不符合！"
 
 #: src/guiVolumeChange.cpp
 msgid "Sound Volume: "
-msgstr "音量  "
+msgstr "音量： "
 
 #: src/guiVolumeChange.cpp
 msgid "Exit"
