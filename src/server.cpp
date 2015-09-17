@@ -2102,7 +2102,7 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 				if (client->net_proto_version <= 21) {
 					// Old clients always clear metadata; fix it
 					// by sending the full block again.
-					client->SetBlockNotSent(p);
+					client->SetBlockNotSent(getNodeBlockPos(p));
 				}
 			}
 		}
