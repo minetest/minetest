@@ -34,8 +34,4 @@ MapNode mapnode_translate_to_internal(MapNode n_from, u8 version);
 class NameIdMapping;
 void content_mapnode_get_name_id_mapping(NameIdMapping *nimap);
 
-// Convert "CONTENT_STONE"-style names to dynamic ids
-std::string content_mapnode_get_new_name(const std::string &oldname);
-class INodeDefManager;
-
 #endif

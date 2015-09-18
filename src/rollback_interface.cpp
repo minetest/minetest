@@ -155,7 +155,7 @@ bool RollbackAction::applyRevert(Map *map, InventoryManager *imgr, IGameDef *gam
 				} else {
 					NodeMetadata *meta = map->getNodeMetadata(p);
 					if (!meta) {
-						meta = new NodeMetadata(gamedef);
+						meta = new NodeMetadata(gamedef->idef());
 						if (!map->setNodeMetadata(p, meta)) {
 							delete meta;
 							infostream << "RollbackAction::applyRevert(): "

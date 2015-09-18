@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_content.h"
 #include "environment.h"
 #include "map.h"
+#include "gamedef.h"
 #include "nodemetadata.h"
 
 
@@ -43,7 +44,7 @@ NodeMetadata* NodeMetaRef::getmeta(NodeMetaRef *ref, bool auto_create)
 {
 	NodeMetadata *meta = ref->m_env->getMap().getNodeMetadata(ref->m_p);
 	if(meta == NULL && auto_create)	{
-		meta = new NodeMetadata(ref->m_env->getGameDef());
+		meta = new NodeMetadata(ref->m_env->getGameDef()->idef());
 		if(!ref->m_env->getMap().setNodeMetadata(ref->m_p, meta)) {
 			delete meta;
 			return NULL;

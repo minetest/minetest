@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class NodeMetadataList;
 class NodeTimerList;
-class IGameDef;
+class IItemDefManager;
 
 /*
 	Legacy nodemeta definitions
@@ -32,7 +32,7 @@ class IGameDef;
 
 void content_nodemeta_deserialize_legacy(std::istream &is,
 		NodeMetadataList *meta, NodeTimerList *timers,
-		IGameDef *gamedef);
+		IItemDefManager *item_def_mgr);
 
 void content_nodemeta_serialize_legacy(std::ostream &os, NodeMetadataList *meta);
 
