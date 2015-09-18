@@ -250,7 +250,7 @@ NOTE: Zlib data is in such a format that Python's zlib at least can
       directly decompress.
 
 u8 version
-- map format version number, this one is version 22
+- map format version number, see serialisation.h for the latest number
 
 u8 flags
 - Flag bitmasks:
@@ -296,13 +296,26 @@ if content_width == 2:
 
 zlib-compressed node metadata list
 - content:
+if map format version <= 22:
   u16 version (=1)
   u16 count of metadata
   foreach count:
     u16 position (p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X)
     u16 type_id
     u16 content_size
-    u8[content_size] (content of metadata)
+    u8[content_size] content of metadata. Format depends on type_id, see below.
+if map format version >= 23:
+  u8 version (=1) -- Note the type is u8, while for map format version <= 22 it's u16
+  u16 count of metadata
+  foreach count:
+    u16 position (p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X)
+    u32 num_vars
+    foreach num_vars:
+      u16 key_len
+      u8[name_len] key
+      u32 val_len
+      u8[val_len] value
+      serialized inventory
 
 - Node timers
 if map format version == 23:
@@ -378,8 +391,9 @@ The name-id-mapping
 --------------------
 The mapping maps node content ids to node names.
 
-Node metadata format
----------------------
+Node metadata format for map format versions <= 22
+---------------------------------------------------
+The node metadata are serialized depending on the type_id field.
 
 1: Generic metadata
   serialized inventory
