@@ -30,9 +30,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	NodeMetadata
 */
 
-NodeMetadata::NodeMetadata(IGameDef *gamedef):
+NodeMetadata::NodeMetadata(IItemDefManager *item_def_mgr):
 	m_stringvars(),
-	m_inventory(new Inventory(gamedef->idef()))
+	m_inventory(new Inventory(item_def_mgr))
 {
 }
 
@@ -101,34 +101,34 @@ void NodeMetadataList::serialize(std::ostream &os) const
 		v3s16 p = i->first;
 		NodeMetadata *data = i->second;
 
-		u16 p16 = p.Z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + p.Y*MAP_BLOCKSIZE + p.X;
+		u16 p16 = p.Z * MAP_BLOCKSIZE * MAP_BLOCKSIZE + p.Y * MAP_BLOCKSIZE + p.X;
 		writeU16(os, p16);
 
 		data->serialize(os);
 	}
 }
 
-void NodeMetadataList::deSerialize(std::istream &is, IGameDef *gamedef)
+void NodeMetadataList::deSerialize(std::istream &is, IItemDefManager *item_def_mgr)
 {
 	clear();
 
 	u8 version = readU8(is);
 
-	if(version == 0){
+	if (version == 0) {
 		// Nothing
 		return;
 	}
 
-	if(version != 1){
-		infostream<<__FUNCTION_NAME<<": version "<<version<<" not supported"
-				<<std::endl;
-		throw SerializationError("NodeMetadataList::deSerialize");
+	if (version != 1) {
+		std::string err_str = std::string(__FUNCTION_NAME)
+			+ ": version " + itos(version) + " not supported";
+		infostream << err_str << std::endl;
+		throw SerializationError(err_str);
 	}
 
 	u16 count = readU16(is);
 
-	for(u16 i=0; i<count; i++)
-	{
+	for (u16 i=0; i < count; i++) {
 		u16 p16 = readU16(is);
 
 		v3s16 p;
@@ -138,8 +138,7 @@ void NodeMetadataList::deSerialize(std::istream &is, IGameDef *gamedef)
 		p16 &= MAP_BLOCKSIZE - 1;
 		p.X = p16;
 
-		if(m_data.find(p) != m_data.end())
-		{
+		if (m_data.find(p) != m_data.end()) {
 			infostream<<"WARNING: NodeMetadataList::deSerialize(): "
 					<<"already set data at position"
 					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<"): Ignoring."
@@ -147,7 +146,7 @@ void NodeMetadataList::deSerialize(std::istream &is, IGameDef *gamedef)
 			continue;
 		}
 
-		NodeMetadata *data = new NodeMetadata(gamedef);
+		NodeMetadata *data = new NodeMetadata(item_def_mgr);
 		data->deSerialize(is);
 		m_data[p] = data;
 	}

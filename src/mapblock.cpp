@@ -696,19 +696,17 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 	TRACESTREAM(<<"MapBlock::deSerialize "<<PP(getPos())
 			<<": Node metadata"<<std::endl);
 	// Ignore errors
-	try{
+	try {
 		std::ostringstream oss(std::ios_base::binary);
 		decompressZlib(is, oss);
 		std::istringstream iss(oss.str(), std::ios_base::binary);
-		if(version >= 23)
-			m_node_metadata.deSerialize(iss, m_gamedef);
+		if (version >= 23)
+			m_node_metadata.deSerialize(iss, m_gamedef->idef());
 		else
 			content_nodemeta_deserialize_legacy(iss,
-					&m_node_metadata, &m_node_timers,
-					m_gamedef);
-	}
-	catch(SerializationError &e)
-	{
+				&m_node_metadata, &m_node_timers,
+				m_gamedef->idef());
+	} catch(SerializationError &e) {
 		errorstream<<"WARNING: MapBlock::deSerialize(): Ignoring an error"
 				<<" while deserializing node metadata at ("
 				<<PP(getPos())<<": "<<e.what()<<std::endl;
@@ -794,23 +792,20 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 	SharedBuffer<u8> databuf_nodelist(nodecount * ser_length);
 
 	// These have no compression
-	if(version <= 3 || version == 5 || version == 6)
-	{
+	if (version <= 3 || version == 5 || version == 6) {
 		char tmp;
 		is.read(&tmp, 1);
-		if(is.gcount() != 1)
-			throw SerializationError
-					("MapBlock::deSerialize: no enough input data");
+		if (is.gcount() != 1)
+			throw SerializationError(std::string(__FUNCTION_NAME)
+				+ ": no enough input data");
 		is_underground = tmp;
-		is.read((char*)*databuf_nodelist, nodecount * ser_length);
-		if((u32)is.gcount() != nodecount * ser_length)
-			throw SerializationError
-					("MapBlock::deSerialize: no enough input data");
-	}
-	else if(version <= 10)
-	{
+		is.read((char *)*databuf_nodelist, nodecount * ser_length);
+		if ((u32)is.gcount() != nodecount * ser_length)
+			throw SerializationError(std::string(__FUNCTION_NAME)
+				+ ": no enough input data");
+	} else if (version <= 10) {
 		u8 t8;
-		is.read((char*)&t8, 1);
+		is.read((char *)&t8, 1);
 		is_underground = t8;
 
 		{
@@ -818,11 +813,10 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 			std::ostringstream os(std::ios_base::binary);
 			decompress(is, os, version);
 			std::string s = os.str();
-			if(s.size() != nodecount)
-				throw SerializationError
-						("MapBlock::deSerialize: invalid format");
-			for(u32 i=0; i<s.size(); i++)
-			{
+			if (s.size() != nodecount)
+				throw SerializationError(std::string(__FUNCTION_NAME)
+					+ ": no enough input data");
+			for (u32 i = 0; i < s.size(); i++) {
 				databuf_nodelist[i*ser_length] = s[i];
 			}
 		}
@@ -831,33 +825,27 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 			std::ostringstream os(std::ios_base::binary);
 			decompress(is, os, version);
 			std::string s = os.str();
-			if(s.size() != nodecount)
-				throw SerializationError
-						("MapBlock::deSerialize: invalid format");
-			for(u32 i=0; i<s.size(); i++)
-			{
+			if (s.size() != nodecount)
+				throw SerializationError(std::string(__FUNCTION_NAME)
+					+ ": no enough input data");
+			for (u32 i = 0; i < s.size(); i++) {
 				databuf_nodelist[i*ser_length + 1] = s[i];
 			}
 		}
 
-		if(version >= 10)
-		{
+		if (version >= 10) {
 			// Uncompress and set param2 data
 			std::ostringstream os(std::ios_base::binary);
 			decompress(is, os, version);
 			std::string s = os.str();
-			if(s.size() != nodecount)
-				throw SerializationError
-						("MapBlock::deSerialize: invalid format");
-			for(u32 i=0; i<s.size(); i++)
-			{
+			if (s.size() != nodecount)
+				throw SerializationError(std::string(__FUNCTION_NAME)
+					+ ": no enough input data");
+			for (u32 i = 0; i < s.size(); i++) {
 				databuf_nodelist[i*ser_length + 2] = s[i];
 			}
 		}
-	}
-	// All other versions (newest)
-	else
-	{
+	} else { // All other versions (10 to 21)
 		u8 flags;
 		is.read((char*)&flags, 1);
 		is_underground = (flags & 0x01) ? true : false;
@@ -870,14 +858,12 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 		std::ostringstream os(std::ios_base::binary);
 		decompress(is, os, version);
 		std::string s = os.str();
-		if(s.size() != nodecount*3)
-			throw SerializationError
-					("MapBlock::deSerialize: decompress resulted in size"
-					" other than nodecount*3");
+		if (s.size() != nodecount * 3)
+			throw SerializationError(std::string(__FUNCTION_NAME)
+				+ ": decompress resulted in size other than nodecount*3");
 
 		// deserialize nodes from buffer
-		for(u32 i=0; i<nodecount; i++)
-		{
+		for (u32 i = 0; i < nodecount; i++) {
 			databuf_nodelist[i*ser_length] = s[i];
 			databuf_nodelist[i*ser_length + 1] = s[i+nodecount];
 			databuf_nodelist[i*ser_length + 2] = s[i+nodecount*2];
@@ -886,31 +872,25 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 		/*
 			NodeMetadata
 		*/
-		if(version >= 14)
-		{
+		if (version >= 14) {
 			// Ignore errors
-			try{
-				if(version <= 15)
-				{
+			try {
+				if (version <= 15) {
 					std::string data = deSerializeString(is);
 					std::istringstream iss(data, std::ios_base::binary);
 					content_nodemeta_deserialize_legacy(iss,
-							&m_node_metadata, &m_node_timers,
-							m_gamedef);
-				}
-				else
-				{
+						&m_node_metadata, &m_node_timers,
+						m_gamedef->idef());
+				} else {
 					//std::string data = deSerializeLongString(is);
 					std::ostringstream oss(std::ios_base::binary);
 					decompressZlib(is, oss);
 					std::istringstream iss(oss.str(), std::ios_base::binary);
 					content_nodemeta_deserialize_legacy(iss,
-							&m_node_metadata, &m_node_timers,
-							m_gamedef);
+						&m_node_metadata, &m_node_timers,
+						m_gamedef->idef());
 				}
-			}
-			catch(SerializationError &e)
-			{
+			} catch(SerializationError &e) {
 				errorstream<<"WARNING: MapBlock::deSerialize(): Ignoring an error"
 						<<" while deserializing node metadata"<<std::endl;
 			}
@@ -918,17 +898,15 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 	}
 
 	// Deserialize node data
-	for(u32 i=0; i<nodecount; i++)
-	{
-		data[i].deSerialize(&databuf_nodelist[i*ser_length], version);
+	for (u32 i = 0; i < nodecount; i++) {
+		data[i].deSerialize(&databuf_nodelist[i * ser_length], version);
 	}
 
-	if(disk)
-	{
+	if (disk) {
 		/*
 			Versions up from 9 have block objects. (DEPRECATED)
 		*/
-		if(version >= 9){
+		if (version >= 9) {
 			u16 count = readU16(is);
 			// Not supported and length not known if count is not 0
 			if(count != 0){
@@ -941,11 +919,11 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 		/*
 			Versions up from 15 have static objects.
 		*/
-		if(version >= 15)
+		if (version >= 15)
 			m_static_objects.deSerialize(is);
 
 		// Timestamp
-		if(version >= 17){
+		if (version >= 17) {
 			setTimestamp(readU32(is));
 			m_disk_timestamp = m_timestamp;
 		} else {
@@ -955,7 +933,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 		// Dynamically re-set ids based on node names
 		NameIdMapping nimap;
 		// If supported, read node definition id mapping
-		if(version >= 21){
+		if (version >= 21) {
 			nimap.deSerialize(is);
 		// Else set the legacy mapping
 		} else {

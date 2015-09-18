@@ -35,12 +35,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 class Inventory;
-class IGameDef;
+class IItemDefManager;
 
 class NodeMetadata
 {
 public:
-	NodeMetadata(IGameDef *gamedef);
+	NodeMetadata(IItemDefManager *item_def_mgr);
 	~NodeMetadata();
 
 	void serialize(std::ostream &os) const;
@@ -80,7 +80,7 @@ public:
 	~NodeMetadataList();
 
 	void serialize(std::ostream &os) const;
-	void deSerialize(std::istream &is, IGameDef *gamedef);
+	void deSerialize(std::istream &is, IItemDefManager *item_def_mgr);
 
 	// Add all keys in this list to the vector keys
 	std::vector<v3s16> getAllKeys();
