@@ -265,19 +265,19 @@ public:
 		Find out what new objects have been added to
 		inside a radius around a position
 	*/
-	void getAddedActiveObjects(v3s16 pos, s16 radius,
+	void getAddedActiveObjects(Player *player, s16 radius,
 			s16 player_radius,
 			std::set<u16> &current_objects,
-			std::set<u16> &added_objects);
+			std::queue<u16> &added_objects);
 
 	/*
 		Find out what new objects have been removed from
 		inside a radius around a position
 	*/
-	void getRemovedActiveObjects(v3s16 pos, s16 radius,
+	void getRemovedActiveObjects(Player* player, s16 radius,
 			s16 player_radius,
 			std::set<u16> &current_objects,
-			std::set<u16> &removed_objects);
+			std::queue<u16> &removed_objects);
 
 	/*
 		Get the next message emitted by some active object.
