@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-12 23:20+0200\n"
-"PO-Revision-Date: 2015-09-17 22:38+0200\n"
+"PO-Revision-Date: 2015-09-19 23:15+0200\n"
 "Last-Translator: Olexandr <me.olexandr.kovalchuk@gmail.com>\n"
 "Language-Team: Ukrainian "
 "<https://hosted.weblate.org/projects/minetest/minetest/uk/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
+msgstr "Трапилася помилка у Lua-скрипті модифікації:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
@@ -50,11 +50,13 @@ msgstr "Завантаження..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch, server "
-msgstr ""
+msgstr "Неспівпадіння версій протоколу, сервер: "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
+"Спробуйте оновити список публічних серверів та перевірте своє "
+"Інтернет-з'єднання."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua src/guiKeyChangeMenu.cpp
@@ -67,14 +69,12 @@ msgid "Depends:"
 msgstr "Залежить від:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable MP"
-msgstr "Вимкнути Усе"
+msgstr "Вимкнути багатокористувацьку гру"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable MP"
-msgstr "Увімкнути Все"
+msgstr "Увімкнути багатокористувацьку гру"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -94,20 +94,19 @@ msgstr "Приховати гру"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide mp content"
-msgstr ""
+msgstr "Приховати контент багатокористувацької гри"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr ""
+msgstr "Модифікація:"
 
 #: builtin/mainmenu/dlg_config_world.lua src/guiKeyChangeMenu.cpp
 msgid "Save"
 msgstr "Зберегти"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "World:"
-msgstr "Виберіть світ:"
+msgstr "Світ:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
@@ -124,11 +123,11 @@ msgstr "Створити"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr ""
+msgstr "Завантажте гру, наприклад, minetest_game з minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "Завантажте з minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Game"
@@ -140,7 +139,7 @@ msgstr "Генератор карти"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No worldname given or no game selected"
-msgstr ""
+msgstr "Назву світу не задано або не обрано гру"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
@@ -205,9 +204,8 @@ msgstr ""
 "пошкоджено"
 
 #: builtin/mainmenu/modmgr.lua
-#, fuzzy
 msgid "Failed to install $1 to $2"
-msgstr "Не вдалося ініціалізувати світ"
+msgstr "Не вдалося встановити $1 у $2"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: file: \"$1\""
@@ -224,7 +222,7 @@ msgstr ""
 
 #: builtin/mainmenu/store.lua
 msgid "Close store"
-msgstr ""
+msgstr "Вийти з крамнички"
 
 #: builtin/mainmenu/store.lua
 msgid "Downloading $1, please wait..."
@@ -240,16 +238,15 @@ msgstr "Сторінка $1 із $2"
 
 #: builtin/mainmenu/store.lua
 msgid "Rating"
-msgstr ""
+msgstr "Оцінка"
 
 #: builtin/mainmenu/store.lua
 msgid "Search"
 msgstr "Пошук"
 
 #: builtin/mainmenu/store.lua
-#, fuzzy
 msgid "Shortname:"
-msgstr "Назва Світу"
+msgstr "Коротке ім'я:"
 
 #: builtin/mainmenu/store.lua
 msgid "Successfully installed:"
@@ -316,22 +313,20 @@ msgid "Uninstall selected modpack"
 msgstr ""
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Address / Port :"
-msgstr "Адреса/Порт"
+msgstr "Адреса / Порт :"
 
 #: builtin/mainmenu/tab_multiplayer.lua
 msgid "Client"
-msgstr ""
+msgstr "Клієнт"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Connect"
 msgstr "Під'єднатися"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Creative mode"
-msgstr "Режим Створення"
+msgstr "Режим творчості"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Damage enabled"
@@ -347,9 +342,8 @@ msgid "Name / Password :"
 msgstr "Ім'я / Пароль :"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Public Serverlist"
-msgstr "Список публічних серверів:"
+msgstr "Список публічних серверів"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -431,7 +425,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
-msgstr ""
+msgstr "Ви впевнені, що бажаєте скинути свій світ однокористувацької гри?"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -457,9 +451,8 @@ msgid "Enable Particles"
 msgstr "Ввімкнути частки"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Fancy Leaves"
-msgstr "Гарні дерева"
+msgstr "Гарне листя"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "GUI scale factor"
@@ -510,9 +503,8 @@ msgid "Parallax Occlusion"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Reset singleplayer world"
-msgstr "Одиночна гра"
+msgstr "Скинути світ однокористувацької гри"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Scaling factor applied to menu elements: "
@@ -528,22 +520,20 @@ msgstr "Шейдери"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Simple Leaves"
-msgstr ""
+msgstr "Просте листя"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Smooth Lighting"
 msgstr "Рівне освітлення"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Texturing:"
 msgstr "Текстурування:"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr ""
-"Для того, щоб увімкнути шейдери, потрібно використовувати двайвер OpenGL"
+"Для того, щоб увімкнути шейдери, потрібно використовувати двайвер OpenGL."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touch free target"
@@ -571,9 +561,8 @@ msgid "Waving Water"
 msgstr ""
 
 #: builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Config mods"
-msgstr "Налаштувати"
+msgstr "Налаштувати модифікації"
 
 #: builtin/mainmenu/tab_simple_main.lua
 #, fuzzy
@@ -581,9 +570,8 @@ msgid "Main"
 msgstr "Головне Меню"
 
 #: builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Start Singleplayer"
-msgstr "Одиночна гра"
+msgstr "Почати однокористувацьку гру"
 
 #: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
 msgid "Play"
@@ -606,9 +594,8 @@ msgid "Texturepacks"
 msgstr "Набори текстур"
 
 #: src/client.cpp
-#, fuzzy
 msgid "Connection timed out."
-msgstr "Помилка з'єднання (час вийшов?)"
+msgstr "Час очікування вийшов."
 
 #: src/client.cpp
 msgid "Done!"
@@ -616,11 +603,11 @@ msgstr "Виконано!"
 
 #: src/client.cpp
 msgid "Initializing nodes"
-msgstr ""
+msgstr "Ініціалізація вузлів"
 
 #: src/client.cpp
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "Ініціалізація вузлів..."
 
 #: src/client.cpp
 msgid "Item textures..."
@@ -660,7 +647,7 @@ msgstr "Ім'я гравця надто довге."
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "Вказаний шлях до світу не існує: "
 
 #: src/fontengine.cpp
 msgid "needs_fallback_font"
@@ -695,7 +682,6 @@ msgid "Creating client..."
 msgstr "Створення клієнта..."
 
 #: src/game.cpp
-#, fuzzy
 msgid "Creating server..."
 msgstr "Створення сервера..."
 
@@ -751,7 +737,7 @@ msgstr "Вихід з гри"
 
 #: src/game.cpp
 msgid "Item definitions..."
-msgstr ""
+msgstr "Визначення предметів..."
 
 #: src/game.cpp
 msgid "KiB/s"
@@ -944,9 +930,8 @@ msgid "Capital"
 msgstr "Caps Lock"
 
 #: src/keycode.cpp
-#, fuzzy
 msgid "Clear"
-msgstr "Clear"
+msgstr "Очистити"
 
 #: src/keycode.cpp
 msgid "Comma"
@@ -963,7 +948,7 @@ msgstr "Конвертувати"
 
 #: src/keycode.cpp
 msgid "CrSel"
-msgstr "CrSel"
+msgstr ""
 
 #: src/keycode.cpp
 msgid "Down"
@@ -1010,15 +995,15 @@ msgstr "Insert"
 
 #: src/keycode.cpp
 msgid "Junja"
-msgstr "Junja"
+msgstr ""
 
 #: src/keycode.cpp
 msgid "Kana"
-msgstr "Kana"
+msgstr ""
 
 #: src/keycode.cpp
 msgid "Kanji"
-msgstr "Kanji"
+msgstr ""
 
 #: src/keycode.cpp
 msgid "Left Button"
@@ -1126,9 +1111,8 @@ msgid "Numpad 9"
 msgstr "Num 9"
 
 #: src/keycode.cpp
-#, fuzzy
 msgid "OEM Clear"
-msgstr "OEM Очистити"
+msgstr "Очистити OEM"
 
 #: src/keycode.cpp
 msgid "PA1"
@@ -1139,9 +1123,8 @@ msgid "Pause"
 msgstr "Пауза"
 
 #: src/keycode.cpp
-#, fuzzy
 msgid "Period"
-msgstr "Період"
+msgstr "Крапка"
 
 #: src/keycode.cpp
 msgid "Plus"
