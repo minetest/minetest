@@ -1,4 +1,3 @@
-
 core.async_jobs = {}
 
 local function handle_job(jobid, serialized_retval)
@@ -22,7 +21,7 @@ function core.handle_async(func, parameter, callback)
 	-- Serialize function
 	local serialized_func = string.dump(func)
 
-	assert(serialized_func ~= nil)
+	assert(serialized_func)
 
 	-- Serialize parameters
 	local serialized_param = core.serialize(parameter)
@@ -37,4 +36,3 @@ function core.handle_async(func, parameter, callback)
 
 	return true
 end
-
