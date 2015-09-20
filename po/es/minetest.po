@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-12 23:20+0200\n"
-"PO-Revision-Date: 2015-09-20 17:49+0200\n"
+"PO-Revision-Date: 2015-09-20 17:54+0200\n"
 "Last-Translator: Laura Arjona Reina <larjona@larjona.net>\n"
 "Language-Team: Spanish "
 "<https://hosted.weblate.org/projects/minetest/minetest/es/>\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr "Ha ocurrido un error en una script de Lua, como en un mod:"
+msgstr "Ha ocurrido un error en un script de Lua, como en un mod:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
@@ -312,7 +312,7 @@ msgstr "Desinstalar el mod seleccionado"
 # El nombre completo no cabe.
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected modpack"
-msgstr "Desinstalar el paquete selecc."
+msgstr "Desinstalar el paquete seleccionado"
 
 #: builtin/mainmenu/tab_multiplayer.lua
 msgid "Address / Port :"
