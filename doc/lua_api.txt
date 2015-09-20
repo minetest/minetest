@@ -393,13 +393,13 @@ Examples of sound parameter tables:
     {
         pos = {x=1,y=2,z=3},
         gain = 1.0, -- default
-        max_hear_distance = 32, -- default
+        max_hear_distance = 32, -- default, uses an euclidean metric
     }
     -- Play connected to an object, looped
     {
         object = <an ObjectRef>,
         gain = 1.0, -- default
-        max_hear_distance = 32, -- default
+        max_hear_distance = 32, -- default, uses an euclidean metric
         loop = true, -- only sounds connected to objects can be looped
     }
 
@@ -1664,7 +1664,7 @@ numerical form, the raw integer value of an ARGB8 quad:
 or string form, a ColorString (defined above):
     `colorspec = "green"`
 
-Vector helpers
+Spatial Vectors
 --------------
 
 * `vector.new([x[, y, z]])`: returns a vector.
@@ -1682,8 +1682,8 @@ For the following functions `x` can be either a vector or a number:
 
 * `vector.add(v, x)`: returns a vector
 * `vector.subtract(v, x)`: returns a vector
-* `vector.multiply(v, x)`: returns a vector
-* `vector.divide(v, x)`: returns a vector
+* `vector.multiply(v, x)`: returns a scaled vector or Schur product
+* `vector.divide(v, x)`: returns a scaled vector or Schur quotient
 
 Helper functions
 -----------------
@@ -1971,11 +1971,13 @@ and `minetest.auth_reload` call the authetification handler.
     * Returns `ObjectRef`, or `nil` if failed
 * `minetest.get_player_by_name(name)`: Get an `ObjectRef` to a player
 * `minetest.get_objects_inside_radius(pos, radius)`
+    * `radius`: using an euclidean metric
 * `minetest.set_timeofday(val)`
     * `val` is between `0` and `1`; `0` for midnight, `0.5` for midday
 * `minetest.get_timeofday()`
 * `minetest.get_gametime()`: returns the time, in seconds, since the world was created
 * `minetest.find_node_near(pos, radius, nodenames)`: returns pos or `nil`
+    * `radius`: using a maximum metric
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
 * `minetest.find_nodes_in_area(minp, maxp, nodenames)`: returns a list of positions
     * returns as second value a table with the count of the individual nodes found
@@ -2039,7 +2041,7 @@ and `minetest.auth_reload` call the authetification handler.
     * returns a table of 3D points representing a path from `pos1` to `pos2` or `nil`
     * `pos1`: start position
     * `pos2`: end position
-    * `searchdistance`: number of blocks to search in each direction
+    * `searchdistance`: number of blocks to search in each direction using a maximum metric
     * `max_jump`: maximum height difference to consider walkable
     * `max_drop`: maximum height difference to consider droppable
     * `algorithm`: One of `"A*_noprefetch"` (default), `"A*"`, `"Dijkstra"`
