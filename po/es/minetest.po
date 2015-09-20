@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-12 23:20+0200\n"
-"PO-Revision-Date: 2015-09-20 17:54+0200\n"
+"PO-Revision-Date: 2015-09-20 18:00+0200\n"
 "Last-Translator: Laura Arjona Reina <larjona@larjona.net>\n"
 "Language-Team: Spanish "
 "<https://hosted.weblate.org/projects/minetest/minetest/es/>\n"
@@ -372,7 +372,7 @@ msgstr "Permitir daños"
 # Los dos puntos son intencionados.
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name/Password"
-msgstr "Nombre / contraseña:"
+msgstr "Nombre / contraseña"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "New"
@@ -380,7 +380,7 @@ msgstr "Nuevo"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "No world created or selected!"
-msgstr "No se ha dado un nombre al mundo o no se ha seleccionado uno"
+msgstr "¡No se ha dado un nombre al mundo o no se ha seleccionado uno!"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Port"
@@ -400,7 +400,7 @@ msgstr "Servidor"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Server Port"
-msgstr "Puerto del servidor:"
+msgstr "Puerto del servidor"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Start Game"
