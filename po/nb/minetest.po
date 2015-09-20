@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-12 23:20+0200\n"
-"PO-Revision-Date: 2013-06-21 15:48+0200\n"
-"Last-Translator: sfan5 <sfan5@live.de>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2015-09-20 17:15+0200\n"
+"Last-Translator: Christian Haug <christian@metaboks.org>\n"
+"Language-Team: Norwegian Bokmål "
+"<https://hosted.weblate.org/projects/minetest/minetest/nb/>\n"
 "Language: nb\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Weblate 1.4-dev\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2.4-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -32,7 +33,7 @@ msgstr ""
 
 #: builtin/fstk/ui.lua builtin/mainmenu/store.lua
 msgid "Ok"
-msgstr ""
+msgstr "Ok"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
