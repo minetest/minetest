@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-12 23:20+0200\n"
-"PO-Revision-Date: 2015-09-19 23:15+0200\n"
+"PO-Revision-Date: 2015-09-21 23:18+0200\n"
 "Last-Translator: Olexandr <me.olexandr.kovalchuk@gmail.com>\n"
 "Language-Team: Ukrainian "
 "<https://hosted.weblate.org/projects/minetest/minetest/uk/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
 "4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 2.4-dev\n"
+"X-Generator: Weblate 2.4\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -113,9 +113,8 @@ msgid "enabled"
 msgstr "Увімкнено"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "A world named \"$1\" already exists"
-msgstr "Неможливо створити світ: Світ з таким ім'ям вже існує"
+msgstr "Світ з такою назвою ( \"$1\") вже існує"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
@@ -254,15 +253,15 @@ msgstr "Успішно встановлено:"
 
 #: builtin/mainmenu/store.lua
 msgid "Unsorted"
-msgstr ""
+msgstr "Невідсортоване"
 
 #: builtin/mainmenu/store.lua
 msgid "re-Install"
-msgstr ""
+msgstr "Перевстановити"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
-msgstr ""
+msgstr "Активні учасники"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Core Developers"
@@ -460,7 +459,7 @@ msgstr "Масштаб інтерфейсу"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Generate Normalmaps"
-msgstr ""
+msgstr "Генерувати карти нормалей"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -488,7 +487,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
-msgstr ""
+msgstr "Нічого"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -500,7 +499,7 @@ msgstr "Непрозора вода"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Parallax Occlusion"
-msgstr ""
+msgstr "Оклюзія паралакса"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Reset singleplayer world"
@@ -726,6 +725,18 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
+"Керування за замовчуванням:\n"
+"Коли меню не відображається:\n"
+"- один дотик: активувати кнопку\n"
+"- дотикнутися двічі: встановити/використати\n"
+"- провести пальцем: роззирнутися\n"
+"Коли відображається меню або інвертар:\n"
+"- дотикнутися двічі (поза межами):\n"
+" --> закрити\n"
+"- Торкнутися купи, торкнутися комірки:\n"
+" --> перемістити купу\n"
+"- Торкнутися і тягнути, дотикнутися лругим пальцем\n"
+" --> помістити один предмет у комірку\n"
 
 #: src/game.cpp
 msgid "Exit to Menu"
@@ -769,7 +780,7 @@ msgstr "Народитися"
 
 #: src/game.cpp
 msgid "Shutting down..."
-msgstr ""
+msgstr "Вимкнення..."
 
 #: src/game.cpp
 msgid "Sound Volume"
@@ -1180,7 +1191,6 @@ msgid "Sleep"
 msgstr "Сон"
 
 #: src/keycode.cpp
-#, fuzzy
 msgid "Snapshot"
 msgstr "Знімок"
 
