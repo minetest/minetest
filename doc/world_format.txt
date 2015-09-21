@@ -312,7 +312,7 @@ if map format version >= 23:
     u32 num_vars
     foreach num_vars:
       u16 key_len
-      u8[name_len] key
+      u8[key_len] key
       u32 val_len
       u8[val_len] value
       serialized inventory
