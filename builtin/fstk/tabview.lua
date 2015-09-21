@@ -1,18 +1,18 @@
 --Minetest
 --Copyright (C) 2014 sapier
 --
---self program is free software; you can redistribute it and/or modify
+--This program is free software; you can redistribute it and/or modify
 --it under the terms of the GNU Lesser General Public License as published by
 --the Free Software Foundation; either version 2.1 of the License, or
 --(at your option) any later version.
 --
---self program is distributed in the hope that it will be useful,
+--This program is distributed in the hope that it will be useful,
 --but WITHOUT ANY WARRANTY; without even the implied warranty of
 --MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 --GNU Lesser General Public License for more details.
 --
 --You should have received a copy of the GNU Lesser General Public License along
---with self program; if not, write to the Free Software Foundation, Inc.,
+--with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
@@ -61,7 +61,7 @@ local function get_formspec(self)
 	local formspec = ""
 
 	if not self.hidden and (self.parent == nil or not self.parent.hidden) then
-	
+
 		if self.parent == nil then
 			local tsize = self.tablist[self.last_tab_index].tabsize or
 					{width=self.width, height=self.height}
@@ -87,11 +87,11 @@ local function handle_buttons(self,fields)
 	if self.hidden then
 		return false
 	end
-	
+
 	if self:handle_tab_buttons(fields) then
 		return true
 	end
-	
+
 	if self.glb_btn_handler ~= nil and
 		self.glb_btn_handler(self,fields) then
 		return true
@@ -112,16 +112,16 @@ end
 
 --------------------------------------------------------------------------------
 local function handle_events(self,event)
-	
+
 	if self.hidden then
 		return false
 	end
-	
+
 	if self.glb_evt_handler ~= nil and
 		self.glb_evt_handler(self,event) then
 		return true
 	end
-	
+
 	if self.tablist[self.last_tab_index].evt_handler ~= nil then
 		return
 			self.tablist[self.last_tab_index].evt_handler(
@@ -131,7 +131,7 @@ local function handle_events(self,event)
 					self.tablist[self.last_tab_index].tabdata
 					)
 	end
-	
+
 	return false
 end
 
@@ -160,16 +160,16 @@ local function switch_to_tab(self, index)
 		self.tablist[self.last_tab_index].on_change("LEAVE",
 				self.current_tab, self.tablist[index].name)
 	end
-	
+
 	--update tabview data
 	self.last_tab_index = index
 	local old_tab = self.current_tab
 	self.current_tab = self.tablist[index].name
-	
+
 	if (self.autosave_tab) then
 		core.setting_set(self.name .. "_LAST",self.current_tab)
 	end
-	
+
 	-- call for tab to enter
 	if self.tablist[index].on_change ~= nil then
 		self.tablist[index].on_change("ENTER",
@@ -197,14 +197,14 @@ local function set_tab_by_name(self, name)
 			return true
 		end
 	end
-	
+
 	return false
 end
 
 --------------------------------------------------------------------------------
 local function hide_tabview(self)
 	self.hidden=true
-	
+
 	--call on_change as we're not gonna show self tab any longer
 	if self.tablist[self.last_tab_index].on_change ~= nil then
 		self.tablist[self.last_tab_index].on_change("LEAVE",
@@ -215,7 +215,7 @@ end
 --------------------------------------------------------------------------------
 local function show_tabview(self)
 	self.hidden=false
-	
+
 	-- call for tab to enter
 	if self.tablist[self.last_tab_index].on_change ~= nil then
 		self.tablist[self.last_tab_index].on_change("ENTER",
@@ -265,7 +265,7 @@ function tabview_create(name, size, tabheaderpos)
 	self.current_tab    = nil
 	self.last_tab_index = 1
 	self.tablist        = {}
-	
+
 	self.autosave_tab   = false
 
 	ui.add(self)
