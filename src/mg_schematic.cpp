@@ -167,7 +167,7 @@ void Schematic::blitToVManip(v3s16 p, MMVManip *vm, Rotation rot, bool force_pla
 				vm->m_data[vi].param1 = 0;
 
 				if (rot)
-					vm->m_data[vi].rotateAlongYAxis(m_ndef, rot);
+					vm->m_data[vi].rotateAlongYAxisFull(m_ndef, rot);
 			}
 		}
 		y_map++;

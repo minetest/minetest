@@ -236,6 +236,7 @@ struct MapNode
 	v3s16 getWallMountedDir(INodeDefManager *nodemgr) const;
 
 	void rotateAlongYAxis(INodeDefManager *nodemgr, Rotation rot);
+	void rotateAlongYAxisFull(INodeDefManager *nodemgr, Rotation rot);
 
 	/*
 		Gets list of node boxes (used for rendering (NDT_NODEBOX))
