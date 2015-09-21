@@ -2434,7 +2434,7 @@ Can be gotten via `minetest.get_meta(pos)`.
 * `from_table(nil or {})`
     * See "Node Metadata"
 
-### `NoteTimerRef`
+### `NodeTimerRef`
 Node Timers: a high resolution persistent per-node timer.
 Can be gotten via `minetest.get_node_timer(pos)`.
 
