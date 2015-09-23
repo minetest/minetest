@@ -235,11 +235,13 @@ void EmergeManager::stopThreads()
 }
 
 
-bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate)
+bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p,
+	bool allow_generate, bool force_queue_block)
 {
 	std::map<v3s16, BlockEmergeData *>::const_iterator iter;
 	BlockEmergeData *bedata;
-	u16 count;
+	u16 count_global = 0;
+	u16 count_peer = 0;
 	u8 flags = 0;
 	int idx = 0;
 
@@ -249,14 +251,17 @@ bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate
 	{
 		MutexAutoLock queuelock(queuemutex);
 
-		count = blocks_enqueued.size();
-		if (count >= qlimit_total)
-			return false;
+		count_global = blocks_enqueued.size();
+		count_peer   = peer_queue_count[peer_id];
 
-		count = peer_queue_count[peer_id];
-		u16 qlimit_peer = allow_generate ? qlimit_generate : qlimit_diskonly;
-		if (count >= qlimit_peer)
-			return false;
+		if (!force_queue_block) {
+			if (count_global >= qlimit_total)
+				return false;
+
+			u16 qlimit_peer = allow_generate ? qlimit_generate : qlimit_diskonly;
+			if (count_peer >= qlimit_peer)
+				return false;
+		}
 
 		iter = blocks_enqueued.find(p);
 		if (iter != blocks_enqueued.end()) {
@@ -270,7 +275,7 @@ bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate
 		bedata->peer_requested = peer_id;
 		blocks_enqueued.insert(std::make_pair(p, bedata));
 
-		peer_queue_count[peer_id] = count + 1;
+		peer_queue_count[peer_id] = count_peer + 1;
 
 		// insert into the EmergeThread queue with the least items
 		int lowestitems = emergethread[0]->blockqueue.size();
@@ -287,6 +292,21 @@ bool EmergeManager::enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate
 	emergethread[idx]->qevent.signal();
 
 	return true;
+}
+
+v3s16 EmergeManager::getContainingChunk(v3s16 blockpos)
+{
+	return getContainingChunk(blockpos, params.chunksize);
+}
+
+
+v3s16 EmergeManager::getContainingChunk(v3s16 blockpos, s16 chunksize)
+{
+	s16 coff = -chunksize / 2;
+	v3s16 chunk_offset(coff, coff, coff);
+
+	return getContainerPos(blockpos - chunk_offset, chunksize)
+		* chunksize + chunk_offset;
 }
 
 

@@ -555,6 +555,36 @@ assert(core.string_to_pos("( 10.0, 5, -2)").z == -2)
 assert(core.string_to_pos("asd, 5, -2)") == nil)
 
 --------------------------------------------------------------------------------
+function core.string_to_area(value)
+	local p1, p2 = unpack(value:split(") ("))
+	if p1 == nil or p2 == nil then
+		return nil
+	end
+
+	p1 = core.string_to_pos(p1 .. ")")
+	p2 = core.string_to_pos("(" .. p2)
+	if p1 == nil or p2 == nil then
+		return nil
+	end
+
+	return p1, p2
+end
+
+local function test_string_to_area()
+	local p1, p2 = core.string_to_area("(10.0, 5, -2) (  30.2,   4, -12.53)")
+	assert(p1.x == 10.0 and p1.y == 5 and p1.z == -2)
+	assert(p2.x == 30.2 and p2.y == 4 and p2.z == -12.53)
+
+	p1, p2 = core.string_to_area("(10.0, 5, -2  30.2,   4, -12.53")
+	assert(p1 == nil and p2 == nil)
+
+	p1, p2 = core.string_to_area("(10.0, 5,) -2  fgdf2,   4, -12.53")
+	assert(p1 == nil and p2 == nil)
+end
+
+test_string_to_area()
+
+--------------------------------------------------------------------------------
 function table.copy(t, seen)
 	local n = {}
 	seen = seen or {}

@@ -2259,14 +2259,9 @@ bool ServerMap::initBlockMake(BlockMakeData *data, v3s16 blockpos)
 	bool enable_mapgen_debug_info = m_emerge->mapgen_debug_info;
 	EMERGE_DBG_OUT("initBlockMake(): " PP(blockpos) " - " PP(blockpos));
 
-	s16 chunksize = m_emerge->params.chunksize;
-	s16 coffset = -chunksize / 2;
-	v3s16 chunk_offset(coffset, coffset, coffset);
-	v3s16 blockpos_div = getContainerPos(blockpos - chunk_offset, chunksize);
-	v3s16 blockpos_min = blockpos_div * chunksize;
-	v3s16 blockpos_max = blockpos_div * chunksize + v3s16(1,1,1)*(chunksize-1);
-	blockpos_min += chunk_offset;
-	blockpos_max += chunk_offset;
+	s16 csize = m_emerge->params.chunksize;
+	v3s16 blockpos_min = EmergeManager::getContainingChunk(blockpos, csize);
+	v3s16 blockpos_max = blockpos_min + v3s16(1, 1, 1) * (csize - 1);
 
 	v3s16 extra_borders(1,1,1);
 

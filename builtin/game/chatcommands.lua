@@ -51,6 +51,27 @@ core.register_on_chat_message(function(name, message)
 	return true  -- Handled chat message
 end)
 
+-- Parses a "range" string in the format of "here (number)" or
+-- "(x1, y1, z1) (x2, y2, z2)", returning two position vectors
+local function parse_range_str(player_name, str)
+	local p1, p2
+	local args = str:split(" ")
+
+	if args[1] == "here" then
+		p1, p2 = core.get_player_radius_area(player_name, tonumber(args[2]))
+		if p1 == nil then
+			return false, "Unable to get player " .. player_name .. " position"
+		end
+	else
+		p1, p2 = core.string_to_area(str)
+		if p1 == nil then
+			return false, "Incorrect area format. Expected: (x1,y1,z1) (x2,y2,z2)"
+		end
+	end
+
+	return p1, p2
+end
+
 --
 -- Chat commands
 --
@@ -415,40 +436,31 @@ core.register_chatcommand("set", {
 	end,
 })
 
+core.register_chatcommand("emergeblocks", {
+	params = "(here [radius]) | (<pos1> <pos2>)",
+	description = "starts loading (or generating, if inexistent) map blocks "
+		.. "contained in area pos1 to pos2",
+	privs = {server=true},
+	func = function(name, param)
+		local p1, p2 = parse_range_str(name, param)
+		if p1 == false then
+			return false, p2
+		end
+
+		core.emerge_area(p1, p2)
+		return true, "Started emerge of area ranging from " ..
+			core.pos_to_string(p1, 1) .. " to " .. core.pos_to_string(p2, 1)
+	end,
+})
+
 core.register_chatcommand("deleteblocks", {
 	params = "(here [radius]) | (<pos1> <pos2>)",
 	description = "delete map blocks contained in area pos1 to pos2",
 	privs = {server=true},
 	func = function(name, param)
-		local p1 = {}
-		local p2 = {}
-		local args = param:split(" ")
-		if args[1] == "here" then
-			local player = core.get_player_by_name(name)
-			if player == nil then
-				core.log("error", "player is nil")
-				return false, "Unable to get current position; player is nil"
-			end
-			p1 = player:getpos()
-			p2 = p1
-
-			if #args >= 2 then
-				local radius = tonumber(args[2]) or 0
-				p1 = vector.add(p1, radius)
-				p2 = vector.subtract(p2, radius)
-			end
-		else
-			local pos1, pos2 = unpack(param:split(") ("))
-			if pos1 == nil or pos2 == nil then
-				return false, "Incorrect area format. Expected: (x1,y1,z1) (x2,y2,z2)"
-			end
-
-			p1 = core.string_to_pos(pos1 .. ")")
-			p2 = core.string_to_pos("(" .. pos2)
-
-			if p1 == nil or p2 == nil then
-				return false, "Incorrect area format. Expected: (x1,y1,z1) (x2,y2,z2)"
-			end
+		local p1, p2 = parse_range_str(name, param)
+		if p1 == false then
+			return false, p2
 		end
 
 		if core.delete_area(p1, p2) then

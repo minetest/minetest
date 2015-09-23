@@ -1708,6 +1708,8 @@ Helper functions
     * Convert position to a printable string
 * `minetest.string_to_pos(string)`: returns a position
     * Same but in reverse. Returns `nil` if the string can't be parsed to a position.
+* `minetest.string_to_area("(X1, Y1, Z1) (X2, Y2, Z2)")`: returns two positions
+    * Converts a string representing an area box into two positions
 * `minetest.formspec_escape(string)`: returns a string
     * escapes the characters "[", "]", "\", "," and ";", which can not be used in formspecs
 * `minetest.is_yes(arg)`
@@ -2020,6 +2022,9 @@ and `minetest.auth_reload` call the authetification handler.
     * `pos1` and `pos2` are optional and default to mapchunk minp and maxp.
 * `minetest.clear_objects()`
     * clear all objects in the environments
+* `minetest.emerge_area(pos1, pos2)`
+    * queues all mapblocks in the area from pos1 to pos2, inclusive, for emerge
+    * i.e. asynchronously loads blocks from disk, or if inexistent, generates them
 * `minetest.delete_area(pos1, pos2)`
     * delete all mapblocks in the area from pos1 to pos2, inclusive
 * `minetest.line_of_sight(pos1, pos2, stepsize)`: returns `boolean, pos`

@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 #include "content_sao.h"
 #include "treegen.h"
+#include "emerge.h"
 #include "pathfinder.h"
 
 #define GET_ENV_PTR ServerEnvironment* env =                                   \
@@ -751,6 +752,29 @@ int ModApiEnvMod::l_line_of_sight(lua_State *L)
 	return 1;
 }
 
+
+// emerge_area(p1, p2)
+// emerge mapblocks in area p1..p2
+int ModApiEnvMod::l_emerge_area(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	EmergeManager *emerge = getServer(L)->getEmergeManager();
+
+	v3s16 bpmin = getNodeBlockPos(read_v3s16(L, 1));
+	v3s16 bpmax = getNodeBlockPos(read_v3s16(L, 2));
+	sortBoxVerticies(bpmin, bpmax);
+
+	for (s16 z = bpmin.Z; z <= bpmax.Z; z++)
+	for (s16 y = bpmin.Y; y <= bpmax.Y; y++)
+	for (s16 x = bpmin.X; x <= bpmax.X; x++) {
+		v3s16 chunkpos(x, y, z);
+		emerge->enqueueBlockEmerge(PEER_ID_INEXISTENT, chunkpos, false, true);
+	}
+
+	return 0;
+}
+
 // delete_area(p1, p2)
 // delete mapblocks in area p1..p2
 int ModApiEnvMod::l_delete_area(lua_State *L)
@@ -954,6 +978,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(find_node_near);
 	API_FCT(find_nodes_in_area);
 	API_FCT(find_nodes_in_area_under_air);
+	API_FCT(emerge_area);
 	API_FCT(delete_area);
 	API_FCT(get_perlin);
 	API_FCT(get_perlin_map);

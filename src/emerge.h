@@ -109,9 +109,13 @@ public:
 	static void getMapgenNames(std::list<const char *> &mgnames);
 	void startThreads();
 	void stopThreads();
-	bool enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate);
+	bool enqueueBlockEmerge(u16 peer_id, v3s16 p, bool allow_generate,
+		bool force_queue_block=false);
 
-	//mapgen helper methods
+	v3s16 getContainingChunk(v3s16 blockpos);
+	static v3s16 getContainingChunk(v3s16 blockpos, s16 chunksize);
+
+	// mapgen helper methods
 	Biome *getBiomeAtPoint(v3s16 p);
 	int getGroundLevelAtPoint(v2s16 p);
 	bool isBlockUnderground(v3s16 blockpos);
