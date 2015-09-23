@@ -85,28 +85,11 @@ void Environment::addPlayer(Player *player)
 	m_players.push_back(player);
 }
 
-void Environment::removePlayer(u16 peer_id)
-{
-	DSTACK(__FUNCTION_NAME);
-
-	for(std::vector<Player*>::iterator i = m_players.begin();
-			i != m_players.end();)
-	{
-		Player *player = *i;
-		if(player->peer_id == peer_id) {
-			delete player;
-			i = m_players.erase(i);
-		} else {
-			++i;
-		}
-	}
-}
-
-void Environment::removePlayer(const char *name)
+void Environment::removePlayer(Player* player)
 {
 	for (std::vector<Player*>::iterator it = m_players.begin();
 			it != m_players.end(); ++it) {
-		if (strcmp((*it)->getName(), name) == 0) {
+		if ((*it) == player) {
 			delete *it;
 			m_players.erase(it);
 			return;
@@ -453,15 +436,12 @@ void ServerEnvironment::saveLoadedPlayers()
 	}
 }
 
-void ServerEnvironment::savePlayer(const std::string &playername)
+void ServerEnvironment::savePlayer(RemotePlayer *player)
 {
 	std::string players_path = m_path_world + DIR_DELIM "players";
 	fs::CreateDir(players_path);
 
-	RemotePlayer *player = static_cast<RemotePlayer*>(getPlayer(playername.c_str()));
-	if (player) {
-		player->save(players_path);
-	}
+	player->save(players_path);
 }
 
 Player *ServerEnvironment::loadPlayer(const std::string &playername)

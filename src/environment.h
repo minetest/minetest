@@ -52,6 +52,7 @@ class ServerMap;
 class ClientMap;
 class GameScripting;
 class Player;
+class RemotePlayer;
 
 class Environment
 {
@@ -71,8 +72,7 @@ public:
 	virtual Map & getMap() = 0;
 
 	virtual void addPlayer(Player *player);
-	void removePlayer(u16 peer_id);
-	void removePlayer(const char *name);
+	void removePlayer(Player *player);
 	Player * getPlayer(u16 peer_id);
 	Player * getPlayer(const char *name);
 	Player * getRandomConnectedPlayer();
@@ -226,7 +226,7 @@ public:
 		const std::string &str_reason, bool reconnect);
 	// Save players
 	void saveLoadedPlayers();
-	void savePlayer(const std::string &playername);
+	void savePlayer(RemotePlayer *player);
 	Player *loadPlayer(const std::string &playername);
 
 	/*
