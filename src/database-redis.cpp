@@ -121,6 +121,8 @@ std::string Database_Redis::loadBlock(const v3s16 &pos)
 	case REDIS_REPLY_ERROR:
 		errorstream << "WARNING: loadBlock: loading block " << PP(pos)
 			<< " failed: " << reply->str << std::endl;
+		throw FileNotGoodException(std::string(
+			"Redis command 'HGET %s %s' failed: ") + ctx->errstr);
 	}
 	freeReplyObject(reply);
 	return "";
