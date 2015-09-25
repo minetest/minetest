@@ -90,11 +90,9 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 	int carea_size = nmax.X - nmin.X + 1;
 
 	// Divide area into parts
-	if (carea_size % sidelen) {
-		errorstream << "Decoration::placeDeco: chunk size is not divisible by "
-			"sidelen; setting sidelen to " << carea_size << std::endl;
+	// If chunksize is changed it may no longer be divisable by sidelen
+	if (carea_size % sidelen)
 		sidelen = carea_size;
-	}
 
 	s16 divlen = carea_size / sidelen;
 	int area = sidelen * sidelen;
