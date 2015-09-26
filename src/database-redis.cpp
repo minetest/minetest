@@ -127,12 +127,13 @@ std::string Database_Redis::loadBlock(const v3s16 &pos)
 			"Redis command 'HGET %s %s' errored: ") + errstr);
 	}
 	}
-	errorstream << "loadBlock: loading block " << PP(pos)
-		<< " returned invalid reply type " << reply->type
-		<< ": " << reply->str << std::endl;
+	//errorstream << "loadBlock: loading block " << PP(pos)
+	//	<< " returned invalid reply type " << reply->type
+	//	<< ": " << reply->str << std::endl;
 	freeReplyObject(reply);
-	throw FileNotGoodException(std::string(
-		"Redis command 'HGET %s %s' gave invalid reply."));
+	return "";
+	//throw FileNotGoodException(std::string(
+	//	"Redis command 'HGET %s %s' gave invalid reply."));
 }
 
 bool Database_Redis::deleteBlock(const v3s16 &pos)
