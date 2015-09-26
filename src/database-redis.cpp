@@ -126,6 +126,11 @@ std::string Database_Redis::loadBlock(const v3s16 &pos)
 		throw FileNotGoodException(std::string(
 			"Redis command 'HGET %s %s' errored: ") + errstr);
 	}
+	case REDIS_REPLY_NIL: {
+		// block not found in database
+		freeReplyObject(reply);
+		return "";
+	}
 	}
 	errorstream << "loadBlock: loading block " << PP(pos)
 		<< " returned invalid reply type " << reply->type
