@@ -63,15 +63,10 @@ struct GameFindPath
 	{}
 };
 
-Strfnd getSubgamePathEnv() {
-	std::string sp;
+std::string getSubgamePathEnv()
+{
 	char *subgame_path = getenv("MINETEST_SUBGAME_PATH");
-
-	if(subgame_path) {
-		sp = std::string(subgame_path);
-	}
-
-	return Strfnd(sp);
+	return subgame_path ? std::string(subgame_path) : "";
 }
 
 SubgameSpec findSubgame(const std::string &id)
@@ -82,10 +77,10 @@ SubgameSpec findSubgame(const std::string &id)
 	std::string user = porting::path_user;
 	std::vector<GameFindPath> find_paths;
 
-	Strfnd search_paths = getSubgamePathEnv();
+	Strfnd search_paths(getSubgamePathEnv());
 
-	while(!search_paths.atend()) {
-		std::string path = search_paths.next(":");
+	while (!search_paths.atend()) {
+		std::string path = search_paths.next(PATH_DELIM);
 		find_paths.push_back(GameFindPath(
 				path + DIR_DELIM + id, false));
 		find_paths.push_back(GameFindPath(
@@ -156,13 +151,12 @@ std::set<std::string> getAvailableGameIds()
 	gamespaths.insert(porting::path_share + DIR_DELIM + "games");
 	gamespaths.insert(porting::path_user + DIR_DELIM + "games");
 
-	Strfnd search_paths = getSubgamePathEnv();
+	Strfnd search_paths(getSubgamePathEnv());
 
-	while(!search_paths.atend()) {
-		gamespaths.insert(search_paths.next(":"));
-	}
+	while (!search_paths.atend())
+		gamespaths.insert(search_paths.next(PATH_DELIM));
 
-	for(std::set<std::string>::const_iterator i = gamespaths.begin();
+	for (std::set<std::string>::const_iterator i = gamespaths.begin();
 			i != gamespaths.end(); ++i){
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(*i);
 		for(u32 j=0; j<dirlist.size(); j++){
@@ -223,15 +217,27 @@ std::string getWorldGameId(const std::string &world_path, bool can_be_legacy)
 	return conf.get("gameid");
 }
 
+std::string getWorldPathEnv()
+{
+	char *world_path = getenv("MINETEST_WORLD_PATH");
+	return world_path ? std::string(world_path) : "";
+}
+
 std::vector<WorldSpec> getAvailableWorlds()
 {
 	std::vector<WorldSpec> worlds;
 	std::set<std::string> worldspaths;
+
+	Strfnd search_paths(getWorldPathEnv());
+
+	while (!search_paths.atend())
+		worldspaths.insert(search_paths.next(PATH_DELIM));
+
 	worldspaths.insert(porting::path_user + DIR_DELIM + "worlds");
-	infostream<<"Searching worlds..."<<std::endl;
-	for(std::set<std::string>::const_iterator i = worldspaths.begin();
-			i != worldspaths.end(); ++i){
-		infostream<<"  In "<<(*i)<<": "<<std::endl;
+	infostream << "Searching worlds..." << std::endl;
+	for (std::set<std::string>::const_iterator i = worldspaths.begin();
+			i != worldspaths.end(); ++i) {
+		infostream << "  In " << (*i) << ": " <<std::endl;
 		std::vector<fs::DirListNode> dirvector = fs::GetDirListing(*i);
 		for(u32 j=0; j<dirvector.size(); j++){
 			if(!dirvector[j].dir)
