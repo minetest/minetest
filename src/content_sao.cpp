@@ -652,6 +652,11 @@ void LuaEntitySAO::setVelocity(v3f velocity)
 	m_velocity = velocity;
 }
 
+void LuaEntitySAO::addVelocity(v3f velocity)
+{
+	m_velocity += velocity;
+}
+
 v3f LuaEntitySAO::getVelocity()
 {
 	return m_velocity;

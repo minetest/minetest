@@ -4029,6 +4029,10 @@ This is basically a reference to a C++ `ServerActiveObject`
 ##### LuaEntitySAO-only (no-op for other objects)
 * `set_velocity(vel)`
     * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
+* `add_velocity(vel)`
+    * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
+    * In comparison to using get_velocity, adding the velocity and then using
+      set_velocity, add_velocity is supposed to avoid synchronization problems.
 * `get_velocity()`: returns the velocity, a vector
 * `set_acceleration(acc)`
     * `acc` is a vector
