@@ -934,10 +934,15 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 			u8 li = m_last_light;
 			setMeshColor(m_animated_meshnode->getMesh(), video::SColor(255,li,li,li));
 
+			bool backface_culling = m_prop.backface_culling;
+			if (m_is_player)
+				backface_culling = false;
+
 			m_animated_meshnode->setMaterialFlag(video::EMF_LIGHTING, false);
 			m_animated_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
 			m_animated_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
 			m_animated_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+			m_animated_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, backface_culling);
 		}
 		else
 			errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;

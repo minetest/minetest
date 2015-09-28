@@ -3045,6 +3045,7 @@ Definition tables
         stepheight = 0,
         automatic_face_movement_dir = 0.0,
     --  ^ automatically set yaw to movement direction; offset in degrees; false to disable
+        backface_culling = true, -- false to disable backface_culling for model
     }
 
 ### Entity definition (`register_entity`)
