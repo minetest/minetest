@@ -1235,6 +1235,7 @@ struct KeyCache {
 		KEYMAP_ID_JUMP,
 		KEYMAP_ID_SPECIAL1,
 		KEYMAP_ID_SNEAK,
+		KEYMAP_ID_AUTORUN,
 
 		// Other
 		KEYMAP_ID_DROP,
@@ -1286,6 +1287,8 @@ void KeyCache::populate()
 	key[KEYMAP_ID_JUMP]         = getKeySetting("keymap_jump");
 	key[KEYMAP_ID_SPECIAL1]     = getKeySetting("keymap_special1");
 	key[KEYMAP_ID_SNEAK]        = getKeySetting("keymap_sneak");
+
+	key[KEYMAP_ID_AUTORUN]      = getKeySetting("keymap_autorun");
 
 	key[KEYMAP_ID_DROP]         = getKeySetting("keymap_drop");
 	key[KEYMAP_ID_INVENTORY]    = getKeySetting("keymap_inventory");
@@ -1630,6 +1633,7 @@ private:
 	bool m_cache_enable_clouds;
 	bool m_cache_enable_particles;
 	bool m_cache_enable_fog;
+	bool m_disable_mouse_wheel;
 	f32  m_cache_mouse_sensitivity;
 	f32  m_repeat_right_click_time;
 
@@ -2616,6 +2620,10 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 
 	if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_DROP])) {
 		dropSelectedItem();
+	// Adds WoW-style autorun by toggling continuous forward.
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_AUTORUN])) {
+		bool autorun_setting = g_settings->getBool("continuous_forward");
+		g_settings->setBool("continuous_forward", !autorun_setting);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_INVENTORY])) {
 		openInventory();
 	} else if (input->wasKeyDown(EscapeKey) || input->wasKeyDown(CancelKey)) {
@@ -2704,7 +2712,10 @@ void Game::processItemSelection(u16 *new_playeritem)
 	 */
 	*new_playeritem = client->getPlayerItem();
 
-	s32 wheel = input->getMouseWheel();
+	// Allows you to disable mouse-wheel selection of ready items.
+	s32 wheel = 0;
+	if (!m_disable_mouse_wheel)
+		wheel = input->getMouseWheel();
 	u16 max_item = MYMIN(PLAYER_INVENTORY_SIZE - 1,
 		                 player->hud_hotbar_itemcount - 1);
 
@@ -4337,6 +4348,7 @@ void Game::readSettings()
 	m_cache_enable_fog                = g_settings->getBool("enable_fog");
 	m_cache_mouse_sensitivity         = g_settings->getFloat("mouse_sensitivity");
 	m_repeat_right_click_time         = g_settings->getFloat("repeat_rightclick_time");
+	m_disable_mouse_wheel             = g_settings->getFlag("disable_mouse_wheel");
 
 	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001, 100.0);
 }
