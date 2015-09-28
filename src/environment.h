@@ -536,7 +536,7 @@ private:
 	std::vector<ClientSimpleObject*> m_simple_objects;
 	std::queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;
-	IntervalLimiter m_lava_hurt_interval;
+	IntervalLimiter m_node_damage_interval;
 	IntervalLimiter m_drowning_interval;
 	IntervalLimiter m_breathing_interval;
 	std::list<std::string> m_player_names;
