@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "staticobject.h"
 #include "util/serialize.h"
+#include "log.h"
 
 void StaticObject::serialize(std::ostream &os)
 {
@@ -44,9 +45,20 @@ void StaticObjectList::serialize(std::ostream &os)
 	// version
 	u8 version = 0;
 	writeU8(os, version);
+
 	// count
-	u16 count = m_stored.size() + m_active.size();
+	size_t count = m_stored.size() + m_active.size();
+	// Make sure it fits into u16, else it would get truncated and cause e.g.
+	// issue #2610 (Invalid block data in database: unsupported NameIdMapping version).
+	if (count > (u16)-1) {
+		errorstream << "StaticObjectList::serialize(): "
+			<< "too many objects (" << count << ") in list, "
+			<< "not writing them to disk." << std::endl;
+		writeU16(os, 0);  // count = 0
+		return;
+	}
 	writeU16(os, count);
+
 	for(std::vector<StaticObject>::iterator
 			i = m_stored.begin();
 			i != m_stored.end(); ++i) {
