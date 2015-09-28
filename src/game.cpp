@@ -1234,6 +1234,7 @@ struct KeyCache {
 		KEYMAP_ID_JUMP,
 		KEYMAP_ID_SPECIAL1,
 		KEYMAP_ID_SNEAK,
+		KEYMAP_ID_AUTORUN,
 
 		// Other
 		KEYMAP_ID_DROP,
@@ -1285,6 +1286,8 @@ void KeyCache::populate()
 	key[KEYMAP_ID_JUMP]         = getKeySetting("keymap_jump");
 	key[KEYMAP_ID_SPECIAL1]     = getKeySetting("keymap_special1");
 	key[KEYMAP_ID_SNEAK]        = getKeySetting("keymap_sneak");
+
+	key[KEYMAP_ID_AUTORUN]      = getKeySetting("keymap_autorun");
 
 	key[KEYMAP_ID_DROP]         = getKeySetting("keymap_drop");
 	key[KEYMAP_ID_INVENTORY]    = getKeySetting("keymap_inventory");
@@ -2615,6 +2618,10 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 
 	if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_DROP])) {
 		dropSelectedItem();
+	// Add WoW-style autorun by toggling continuous forward.
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_AUTORUN])) {
+		bool autorun_setting = g_settings->getBool("continuous_forward");
+		g_settings->setBool("continuous_forward", !autorun_setting);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_INVENTORY])) {
 		openInventory();
 	} else if (input->wasKeyDown(EscapeKey) || input->wasKeyDown(CancelKey)) {
