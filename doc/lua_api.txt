@@ -1999,6 +1999,9 @@ and `minetest.auth_reload` call the authetification handler.
 * `get_gen_notify()`: returns a flagstring and a table with the deco_ids
 * `minetest.get_mapgen_object(objectname)`
     * Return requested mapgen object if available (see "Mapgen objects")
+* `minetest.get_biome_id(biome_name)`
+    * Returns the biome id, as used in the biomemap Mapgen object, for a
+      given biome_name string.
 * `minetest.get_mapgen_params()` Returns mapgen parameters, a table containing
   `mgname`, `seed`, `chunksize`, `water_level`, and `flags`.
 * `minetest.set_mapgen_params(MapgenParams)`

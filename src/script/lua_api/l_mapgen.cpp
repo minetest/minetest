@@ -450,6 +450,30 @@ size_t get_biome_list(lua_State *L, int index,
 
 ///////////////////////////////////////////////////////////////////////////////
 
+// get_biome_id(biomename)
+// returns the biome id used in biomemap
+int ModApiMapgen::l_get_biome_id(lua_State *L)
+{
+	const char *biome_str = lua_tostring(L, 1);
+	if (!biome_str)
+		return 0;
+
+	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+
+	if (!bmgr)
+		return 0;
+
+	Biome *biome = (Biome *) bmgr->getByName(biome_str);
+
+	if (!biome || biome->index == OBJDEF_INVALID_INDEX)
+		return 0;
+
+	lua_pushinteger(L, biome->index);
+
+	return 1;
+}
+
+
 // get_mapgen_object(objectname)
 // returns the requested object used during map generation
 int ModApiMapgen::l_get_mapgen_object(lua_State *L)
@@ -1257,6 +1281,7 @@ int ModApiMapgen::l_serialize_schematic(lua_State *L)
 
 void ModApiMapgen::Initialize(lua_State *L, int top)
 {
+	API_FCT(get_biome_id);
 	API_FCT(get_mapgen_object);
 
 	API_FCT(get_mapgen_params);
