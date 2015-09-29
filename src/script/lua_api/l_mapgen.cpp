@@ -457,6 +457,11 @@ int ModApiMapgen::l_get_biome_id(lua_State *L)
 {
 	//std::string val("new biome function test");
 	const char *biome_str = lua_tostring(L, 1);
+	if (!biome_str) {
+		lua_pushnil(L);
+		return 1;
+	}
+
 	BiomeManager *bmgr    = getServer(L)->getEmergeManager()->biomemgr;
 
 	if (!bmgr)
