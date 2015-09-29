@@ -2395,6 +2395,10 @@ These functions return the leftover itemstack.
 * `minetest.global_exists(name)`
     * Checks if a global variable has been set, without triggering a warning.
 
+* `minetest.get_biome_id(biome_name)`
+    * Returns the biome id, as used in the biomemap Mapgen object, for a
+      given biome_name string.
+
 ### Global objects
 * `minetest.env`: `EnvRef` of the server environment and world.
     * Any function in the minetest namespace can be called using the syntax
