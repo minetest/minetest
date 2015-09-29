@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sha1.h"
 #include "srp.h"
 #include "string.h"
+#include "debug.h"
 
 // Get an sha-1 hash of the player's name combined with
 // the password entered. That's what the server uses as
@@ -50,10 +51,11 @@ void getSRPVerifier(const std::string &name,
 	char **bytes_v, size_t *len_v)
 {
 	std::string n_name = lowercase(name);
-	srp_create_salted_verification_key(SRP_SHA256, SRP_NG_2048,
+	SRP_Result res = srp_create_salted_verification_key(SRP_SHA256, SRP_NG_2048,
 		n_name.c_str(), (const unsigned char *)password.c_str(),
 		password.size(), (unsigned char **)salt, salt_len,
 		(unsigned char **)bytes_v, len_v, NULL, NULL);
+	FATAL_ERROR_IF(res != SRP_OK, "Couldn't create salted SRP verifier");
 }
 
 // Get a db-ready SRP verifier
@@ -67,6 +69,7 @@ inline static std::string getSRPVerifier(const std::string &name,
 	size_t len_v;
 	getSRPVerifier(name, password, salt, &salt_len,
 		&bytes_v, &len_v);
+	assert(*salt); // usually, srp_create_salted_verification_key promises us to return SRP_ERR when *salt == NULL
 	std::string ret_val = encodeSRPVerifier(std::string(bytes_v, len_v),
 		std::string(*salt, salt_len));
 	free(bytes_v);
