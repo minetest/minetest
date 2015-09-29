@@ -335,6 +335,10 @@ function core.item_place(itemstack, placer, pointed_thing, param2)
 end
 
 function core.item_drop(itemstack, dropper, pos)
+	if math.abs(pos.x) > 30910 or math.abs(pos.y) > 30910 or math.abs(pos.z) > 30910 then
+		core.log("error", "itemdrop called outside of safe map bounds! @"..core.pos_to_string(pos))
+		return 
+	end
 	if dropper.is_player then
 		local v = dropper:get_look_dir()
 		local p = {x=pos.x, y=pos.y+1.2, z=pos.z}
@@ -385,6 +389,10 @@ function core.node_punch(pos, node, puncher, pointed_thing)
 end
 
 function core.handle_node_drops(pos, drops, digger)
+	if math.abs(pos.x) > 30910 or math.abs(pos.y) > 30910 or math.abs(pos.z) > 30910 then
+		core.log("error", "itemdrop called outside of safe map bounds! @"..core.pos_to_string(pos))
+		return 
+	end
 	-- Add dropped items to object's inventory
 	if digger:get_inventory() then
 		local _, dropped_item
