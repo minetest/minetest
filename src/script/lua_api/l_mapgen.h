@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class ModApiMapgen : public ModApiBase {
 private:
+	static int l_get_biome_id(lua_State *L);
+
 	// get_mapgen_object(objectname)
 	// returns the requested object used during map generation
 	static int l_get_mapgen_object(lua_State *L);
