@@ -349,12 +349,16 @@ function core.item_drop(itemstack, dropper, pos)
 			v.y = v.y*2 + 2
 			v.z = v.z*2
 			obj:setvelocity(v)
+			return itemstack
 		end
 
 	else
-		core.add_item(pos, itemstack)
+		if core.add_item(pos, itemstack) then
+			return itemstack
+		end
 	end
-	return itemstack
+	-- If we reach this, adding the object to the
+	-- environment failed
 end
 
 function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)

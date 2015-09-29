@@ -3263,10 +3263,6 @@ v3f Server::findSpawnPos()
 		return nodeposf * BS;
 	}
 
-	// Default position is static_spawnpoint
-	// We will return it if we don't found a good place
-	v3s16 nodepos(nodeposf.X, nodeposf.Y, nodeposf.Z);
-
 	s16 water_level = map.getWaterLevel();
 
 	bool is_good = false;
@@ -3286,7 +3282,7 @@ v3f Server::findSpawnPos()
 		if (groundheight > water_level + 6) // Don't go to high places
 			continue;
 
-		nodepos = v3s16(nodepos2d.X, groundheight, nodepos2d.Y);
+		v3s16 nodepos(nodepos2d.X, groundheight, nodepos2d.Y);
 
 		s32 air_count = 0;
 		for (s32 i = 0; i < 10; i++) {
@@ -3295,7 +3291,11 @@ v3f Server::findSpawnPos()
 			content_t c = map.getNodeNoEx(nodepos).getContent();
 			if (c == CONTENT_AIR || c == CONTENT_IGNORE) {
 				air_count++;
-				if (air_count >= 2){
+				if (air_count >= 2) {
+					nodeposf = intToFloat(nodepos, BS);
+					// Don't spawn the player outside map boundaries
+					if (objectpos_over_limit(nodeposf))
+						continue;
 					is_good = true;
 					break;
 				}
@@ -3304,7 +3304,7 @@ v3f Server::findSpawnPos()
 		}
 	}
 
-	return intToFloat(nodepos, BS);
+	return nodeposf;
 }
 
 PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id, u16 proto_version)
@@ -3353,6 +3353,16 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id, u16 proto_version
 
 		// Add player to environment
 		m_env->addPlayer(player);
+	} else {
+		// If the player exists, ensure that they respawn inside legal bounds
+		// This fixes an assert crash when the player can't be added
+		// to the environment
+		if (objectpos_over_limit(player->getPosition())) {
+			actionstream << "Respawn position for player \""
+				<< name << "\" outside limits, resetting" << std::endl;
+			v3f pos = findSpawnPos();
+			player->setPosition(pos);
+		}
 	}
 
 	// Create a new player active object
