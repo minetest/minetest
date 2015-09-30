@@ -455,9 +455,8 @@ size_t get_biome_list(lua_State *L, int index,
 int ModApiMapgen::l_get_biome_id(lua_State *L)
 {
 	const char *biome_str = lua_tostring(L, 1);
-	if (!biome_str) {
+	if (!biome_str)
 		return 0;
-	}
 
 	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
 
