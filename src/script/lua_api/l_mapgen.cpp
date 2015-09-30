@@ -135,7 +135,6 @@ ObjDef *get_objdef(lua_State *L, int index, ObjDefManager *objmgr)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
 Schematic *get_or_load_schematic(lua_State *L, int index,
 	SchematicManager *schemmgr, StringMap *replace_names)
 {
@@ -455,14 +454,12 @@ size_t get_biome_list(lua_State *L, int index,
 // returns the biome id used in biomemap
 int ModApiMapgen::l_get_biome_id(lua_State *L)
 {
-	//std::string val("new biome function test");
 	const char *biome_str = lua_tostring(L, 1);
 	if (!biome_str) {
-		lua_pushnil(L);
-		return 1;
+		return 0;
 	}
 
-	BiomeManager *bmgr    = getServer(L)->getEmergeManager()->biomemgr;
+	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
 
 	if (!bmgr)
 		return 0;
@@ -471,7 +468,7 @@ int ModApiMapgen::l_get_biome_id(lua_State *L)
 	if (biome && biome->index != OBJDEF_INVALID_INDEX)
 		lua_pushinteger(L, biome->index);
 	else
-		lua_pushnil(L);
+		return 0;
 
 	return 1;
 }
