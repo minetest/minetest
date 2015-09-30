@@ -464,10 +464,11 @@ int ModApiMapgen::l_get_biome_id(lua_State *L)
 		return 0;
 
 	Biome *biome = (Biome *) bmgr->getByName(biome_str);
-	if (biome && biome->index != OBJDEF_INVALID_INDEX)
-		lua_pushinteger(L, biome->index);
-	else
+
+	if (!biome || biome->index == OBJDEF_INVALID_INDEX)
 		return 0;
+
+	lua_pushinteger(L, biome->index);
 
 	return 1;
 }
