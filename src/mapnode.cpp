@@ -164,29 +164,7 @@ void MapNode::rotateAlongYAxis(INodeDefManager *nodemgr, Rotation rot)
 	ContentParamType2 cpt2 = nodemgr->get(*this).param_type_2;
 
 	if (cpt2 == CPT2_FACEDIR) {
-		if (param2 >= 4)
-			return;
-
-		u8 newrot = param2 & 3;
-		param2 &= ~3;
-		param2 |= (newrot + rot) & 3;
-	} else if (cpt2 == CPT2_WALLMOUNTED) {
-		u8 wmountface = (param2 & 7);
-		if (wmountface <= 1)
-			return;
-
-		Rotation oldrot = wallmounted_to_rot[wmountface - 2];
-		param2 &= ~7;
-		param2 |= rot_to_wallmounted[(oldrot - rot) & 3];
-	}
-}
-
-void MapNode::rotateAlongYAxisFull(INodeDefManager *nodemgr, Rotation rot)
-{
-	ContentParamType2 cpt2 = nodemgr->get(*this).param_type_2;
-
-	if (cpt2 == CPT2_FACEDIR) {
-		static const u16 rotate_facedir[24 * 4] = {
+		static const u8 rotate_facedir[24 * 4] = {
 			// Table value = rotated facedir
 			// Columns: 0, 90, 180, 270 degrees rotation around vertical axis
 			// Rotation is anticlockwise as seen from above (+Y)
@@ -221,8 +199,10 @@ void MapNode::rotateAlongYAxisFull(INodeDefManager *nodemgr, Rotation rot)
 			22, 21, 20, 23,
 			23, 22, 21, 20
 		};
-		u16 index = param2 * 4 + rot;
-		param2 = rotate_facedir[index];
+		u8 facedir = (param2 & 31) % 24;
+		u8 index = facedir * 4 + rot;
+		param2 &= ~31;
+		param2 |= rotate_facedir[index];
 	} else if (cpt2 == CPT2_WALLMOUNTED) {
 		u8 wmountface = (param2 & 7);
 		if (wmountface <= 1)
