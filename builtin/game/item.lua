@@ -139,6 +139,19 @@ function core.dir_to_wallmounted(dir)
 	end
 end
 
+function core.wallmounted_to_dir(wallmounted)
+	-- table of dirs in wallmounted order
+	return ({[0] = {x = 0, y = 1, z = 0},
+		{x = 0,  y = -1, z = 0},
+		{x = 1,  y = 0,  z = 0},
+		{x = -1, y = 0,  z = 0},
+		{x = 0,  y = 0,  z = 1},
+		{x = 0,  y = 0,  z = -1}})
+
+		--indexed into by the wallmounted in question
+		[wallmounted]
+end
+
 function core.get_node_drops(nodename, toolname)
 	local drop = ItemStack({name=nodename}):get_definition().drop
 	if drop == nil then
