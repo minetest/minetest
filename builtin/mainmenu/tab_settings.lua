@@ -192,11 +192,38 @@ local function scrollbar_to_gui_scale(value)
 	if (value <= 700) then
 		return ((value / 700) * 1.0) + 0.25
 	end
-	if (value <=1000) then
+	if (value <= 1000) then
 		return ((value - 700) / 100) + 1.25
 	end
 
 	return 1
+end
+
+local function viewing_range_min_to_scrollbar()
+	local current_value_min = tonumber(core.setting_get("viewing_range_nodes_min"))
+
+	if (current_value_min == nil) then
+		return 0
+	end
+	return current_value_min * 2
+end
+
+local function viewing_range_max_to_scrollbar()
+	local current_value_max = tonumber(core.setting_get("viewing_range_nodes_max"))
+
+	if (current_value_max == nil) then
+		return 0
+	end
+	return current_value_max * 2
+end
+
+local function scrollbar_to_viewing_range(value)
+	value = tonumber(value)
+
+	if (value <= 1000) then
+		return value / 2
+	end
+	return 35
 end
 
 local function formspec(tabview, name, tabdata)
@@ -224,7 +251,7 @@ local function formspec(tabview, name, tabdata)
 				.. getMipmapSettingIndex() .. "]" ..
 		"label[3.85,2.15;".. fgettext("Antialiasing:") .. "]"..
 		"dropdown[3.85,2.6;3.85;dd_antialiasing;" .. antialiasing[1][1] .. ";"
-		.. getAntialiasingSettingIndex() .. "]" ..
+				.. getAntialiasingSettingIndex() .. "]" ..
 		"box[7.75,0;4,4;#999999]" ..
 		"checkbox[8,0;cb_shaders;".. fgettext("Shaders") .. ";"
 				.. dump(core.setting_getbool("enable_shaders")) .. "]"
@@ -240,7 +267,7 @@ local function formspec(tabview, name, tabdata)
 		"box[0,4.25;3.5,1.1;#999999]" ..
 		"label[0.25,4.25;" .. fgettext("GUI scale factor") .. "]" ..
 		"scrollbar[0.25,4.75;3,0.4;sb_gui_scaling;horizontal;" ..
-		 gui_scale_to_scrollbar() .. "]" ..
+		 		gui_scale_to_scrollbar() .. "]" ..
 		"tooltip[sb_gui_scaling;" ..
 			fgettext("Scaling factor applied to menu elements: ") ..
 			dump(core.setting_get("gui_scaling")) .. "]"
@@ -281,7 +308,45 @@ local function formspec(tabview, name, tabdata)
 				"textlist[8.33,2.2;4,1;;#888888" .. fgettext("Waving Water") .. ";0;true]" ..
 				"textlist[8.33,2.7;4,1;;#888888" .. fgettext("Waving Leaves") .. ";0;true]" ..
 				"textlist[8.33,3.2;4,1;;#888888" .. fgettext("Waving Plants") .. ";0;true]"
+	end
+
+	local get_vrange_min = core.setting_get("viewing_range_nodes_min")
+	local get_vrange_max = core.setting_get("viewing_range_nodes_max")
+
+	if core.setting_getbool("viewing_range_auto") then
+		tab_string = tab_string ..
+			"box[3.75,3.5;3.75,2;#999999]" ..
+			"label[3.85,3.5;" .. fgettext("Viewing Range :") .. "]" ..
+			"label[3.85,4;" .. fgettext("Min.") .. "]" ..
+			"scrollbar[4.65,4.05;2.75,0.4;sb_viewing_range_min;horizontal;" ..
+		 		viewing_range_min_to_scrollbar() .. "]" ..
+			"tooltip[sb_viewing_range_min;" .. fgettext("Minimal Viewing Range: $1 nodes",
+				get_vrange_min) .. "]" ..
+			"checkbox[3.85,4.8;cb_vrange_auto_adjust;" .. fgettext("Auto-adjust") .. ";" ..
+				dump(core.setting_getbool("viewing_range_auto")) .. "]"..
+			"label[3.85,4.5;" .. fgettext("Max.") .. "]" ..
+			"scrollbar[4.65,4.55;2.75,0.4;sb_viewing_range_max;horizontal;" ..
+		 		viewing_range_max_to_scrollbar() .. "]" ..
+		 	"tooltip[sb_viewing_range_max;" .. fgettext("Maximal Viewing Range: $1 nodes",
+				get_vrange_max) .. "]"
+
+		if (get_vrange_min == nil and get_vrange_min > get_vrange_max) then
+			core.setting_set("viewing_range_nodes_min", get_vrange_max)
 		end
+	elseif (core.setting_getbool("viewing_range_auto") == nil or
+			core.setting_getbool("viewing_range_auto") == false) then
+		tab_string = tab_string ..
+			"box[3.75,3.5;3.75,1.5;#999999]" ..
+			"label[3.85,3.5;" .. fgettext("Viewing Range :") .. "]" ..
+			"label[3.85,4;" .. fgettext("Fixed") .. "]" ..
+			"scrollbar[4.65,4.05;2.75,0.4;sb_viewing_range_fixed;horizontal;" ..
+		 		viewing_range_min_to_scrollbar() .. "]" ..
+			"tooltip[sb_viewing_range_fixed;" .. fgettext("Fixed Viewing Range: $1 nodes",
+				get_vrange_min) .. "]" ..
+			"checkbox[3.85,4.3;cb_vrange_auto_adjust;" .. fgettext("Auto-adjust") .. ";" ..
+				dump(core.setting_getbool("viewing_range_auto")) .. "]"
+	end
+
 	return tab_string
 end
 
@@ -311,7 +376,10 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		core.setting_set("enable_node_highlighting", fields["cb_node_highlighting"])
 		return true
 	end
-
+	if fields["cb_vrange_auto_adjust"] then
+		core.setting_set("viewing_range_auto", fields["cb_vrange_auto_adjust"])
+		return true
+	end
 	if fields["cb_shaders"] then
 		if (core.setting_get("video_driver") == "direct3d8"
 				or core.setting_get("video_driver") == "direct3d9") then
@@ -353,6 +421,23 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 			return true
 		end
 	end
+
+	for k, range in pairs({"min", "max", "fixed"}) do
+		if fields["sb_viewing_range_"..range] then
+			local event = core.explode_scrollbar_event(fields["sb_viewing_range_"..range])
+			local tosave = string.format("%d", scrollbar_to_viewing_range(event.value))
+
+			if event.type == "CHG" and k < 3 then
+				core.setting_set("viewing_range_nodes_"..range, tosave)
+				return true
+			elseif event.type == "CHG" and k == 3 then
+				core.setting_set("viewing_range_nodes_min", tosave)
+				core.setting_set("viewing_range_nodes_max", tosave)
+				return true
+			end
+		end
+	end
+
 	if fields["btn_change_keys"] then
 		core.show_keys_menu()
 		return true
