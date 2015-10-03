@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define UNUSED(expr) do { (void)(expr); } while (0)
 
 #ifdef _WIN32
+	#include <climits>
 	#define MAX_SEMAPHORE_COUNT LONG_MAX - 1
 #else
 	#include <cerrno>
