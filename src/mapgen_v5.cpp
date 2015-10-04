@@ -182,23 +182,24 @@ int MapgenV5::getGroundLevelAtPoint(v2s16 p)
 		f *= 1.6;
 	float h = NoisePerlin2D(&noise_height->np, p.X, p.Y, seed);
 
-	s16 search_top = water_level + 15;
-	s16 search_base = water_level;
+	s16 search_start = 128; // Only bother searching this range, actual
+	s16 search_end = -128;  // ground level is rarely higher or lower.
 
-	s16 level = -31000;
-	for (s16 y = search_top; y >= search_base; y--) {
+	for (s16 y = search_start; y >= search_end; y--) {
 		float n_ground = NoisePerlin3D(&noise_ground->np, p.X, y, p.Y, seed);
+		// If solid
 		if (n_ground * f > y - h) {
-			if (y >= search_top - 7)
-				break;
+			// If either top 2 nodes of search are solid this is inside a
+			// mountain or floatland with no space for the player to spawn.
+			if (y >= search_start - 1)
+				return MAX_MAP_GENERATION_LIMIT;
 			else
-				level = y;
-				break;
+				return y; // Ground below at least 2 nodes of space
 		}
 	}
 
 	//printf("getGroundLevelAtPoint: %dus\n", t.stop());
-	return level;
+	return -MAX_MAP_GENERATION_LIMIT;
 }
 
 
