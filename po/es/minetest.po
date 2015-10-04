@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-12 23:20+0200\n"
-"PO-Revision-Date: 2015-09-24 15:52+0200\n"
-"Last-Translator: andrewgigena <andrew_ultimate@hotmail.com>\n"
+"PO-Revision-Date: 2015-10-04 12:36+0200\n"
+"Last-Translator: OdnetninI <odnetnininds@gmail.com>\n"
 "Language-Team: Spanish "
 "<https://hosted.weblate.org/projects/minetest/minetest/es/>\n"
 "Language: es\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.5\n"
+"X-Generator: Weblate 2.5-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -654,12 +654,13 @@ msgid "needs_fallback_font"
 msgstr "needs_fallback_font"
 
 #: src/game.cpp
+#, fuzzy
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
 "\n"
-"Consulta debug.txt para obtener más detalles."
+"Revisa el archivo debug.txt para más detalles."
 
 #: src/game.cpp
 msgid "Change Keys"
