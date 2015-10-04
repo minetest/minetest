@@ -2271,7 +2271,8 @@ These functions return the leftover itemstack.
     * If the `rotation` parameter is omitted, the schematic is not rotated.
     * `replacements` = `{["old_name"] = "convert_to", ...}`
     * `force_placement` is a boolean indicating whether nodes other than `air` and
-      `ignore` are replaced by the schematic
+      `ignore` are replaced by the schematic.
+      Node destructors `on_destruct` and `after_destruct` of the replaced node will **not** be called.
 
 * `minetest.serialize_schematic(schematic, format, options)`
     * Return the serialized schematic specified by schematic (see: Schematic specifier)
@@ -3224,9 +3225,11 @@ Definition tables
         ^ default: nil ]]
         on_destruct = func(pos), --[[
         ^ Node destructor; always called before removing node
+        ^ unless specified otherwise by the removing function
         ^ default: nil ]]
         after_destruct = func(pos, oldnode), --[[
         ^ Node destructor; always called after removing node
+        ^ unless specified otherwise by the removing function
         ^ default: nil ]]
 
         after_place_node = func(pos, placer, itemstack, pointed_thing) --[[
