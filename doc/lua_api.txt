@@ -2316,6 +2316,7 @@ These functions return the leftover itemstack.
     * will use that number of spaces as indentation instead of a tab character.
 
 ### Misc.
+* `minetest.get_player_list()`: returns player_list (table of `ObjectRefs` indexed by playernames)
 * `minetest.get_connected_players()`: returns list of `ObjectRefs`
 * `minetest.hash_node_position({x=,y=,z=})`: returns an 48-bit integer
     * Gives a unique hash number for a node position (16+16+16=48bit)
@@ -2329,6 +2330,10 @@ These functions return the leftover itemstack.
     * Returns rating of the connect_to_raillike group corresponding to name
     * If name is not yet the name of a connect_to_raillike group, a new group id
     * is created, with that name
+* `minetest.on_place(name, func)`: overwrites the on_place of `name`
+    * if func doesn't return true, the previous on_place isn't executed
+* `minetest.on_punch(name, func)`: overwrites the on_punch of `name`
+    * if func doesn't return true, the previous on_punch isn't executed
 * `minetest.get_content_id(name)`: returns an integer
     * Gets the internal content ID of `name`
 * `minetest.get_name_from_content_id(content_id)`: returns a string
@@ -3303,6 +3308,10 @@ Definition tables
         --[[
         ^ Shall place item and return the leftover itemstack
         ^ default: minetest.item_place ]]
+        can_place = func(itemstack, placer, pointed_thing),
+        --[[
+        ^ if it exists and returns true, the on_place^ is executed
+        ^ default: nil ]]
         on_drop = func(itemstack, dropper, pos),
         --[[
         ^ Shall drop item and return the leftover itemstack
@@ -3444,6 +3453,10 @@ Definition tables
         on_punch = func(pos, node, puncher, pointed_thing), --[[
         ^ default: minetest.node_punch
         ^ By default: Calls minetest.register_on_punchnode callbacks ]]
+         can_punch = func(pos, node, puncher, pointed_thing),
+        --[[
+        ^ if it exists and returns true, the on_punch^ is executed
+        ^ default: nil ]]
         on_rightclick = func(pos, node, clicker, itemstack, pointed_thing), --[[
         ^ default: nil
         ^ if defined, itemstack will hold clicker's wielded item

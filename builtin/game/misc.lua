@@ -74,38 +74,42 @@ function core.after(time, func, ...)
 	}
 end
 
-function core.check_player_privs(player_or_name, ...)
-	local name = player_or_name
+-- name can also be a player
+function core.check_player_privs(name, ...)
+	if not name then
+		error("core.check_player_privs: missing player/name")
+	end
+
 	-- Check if we have been provided with a Player object.
 	if type(name) ~= "string" then
 		name = name:get_player_name()
 	end
-	
+
 	local requested_privs = {...}
 	local player_privs = core.get_player_privs(name)
-	local missing_privileges = {}
-	
+	local missing_privileges,n = {},1
+
 	if type(requested_privs[1]) == "table" then
 		-- We were provided with a table like { privA = true, privB = true }.
 		for priv, value in pairs(requested_privs[1]) do
 			if value and not player_privs[priv] then
-				table.insert(missing_privileges, priv)
+				missing_privileges[n] = priv
+				n = n+1
 			end
 		end
 	else
 		-- Only a list, we can process it directly.
 		for key, priv in pairs(requested_privs) do
 			if not player_privs[priv] then
-				table.insert(missing_privileges, priv)
+				missing_privileges[n] = priv
+				n = n+1
 			end
 		end
 	end
-	
-	if #missing_privileges > 0 then
-		return false, missing_privileges
+	if n == 1 then
+		return true
 	end
-	
-	return true, ""
+	return false, missing_privileges
 end
 
 local player_list = {}
@@ -118,33 +122,39 @@ core.register_on_leaveplayer(function(player)
 	player_list[player:get_player_name()] = nil
 end)
 
+-- works faster than get_connected_players but doesn't test if it's connected
+function core.get_player_list()
+	return player_list
+end
+
 function core.get_connected_players()
-	local temp_table = {}
+	local temp_table,n = {},1
 	for index, value in pairs(player_list) do
 		if value:is_player_connected() then
-			table.insert(temp_table, value)
+			temp_table[n] = value
+			n = n+1
 		end
 	end
 	return temp_table
 end
 
--- Returns two position vectors representing a box of `radius` in each
+-- Returns two position vectors representing a cubic box of `range` in each
 -- direction centered around the player corresponding to `player_name`
-function core.get_player_radius_area(player_name, radius)
+function core.get_player_radius_area(player_name, range)
+	assert(tostring(player_name),
+			"core.get_player_radius_area: missing player name")
+
 	local player = core.get_player_by_name(player_name)
-	if player == nil then
-		return nil
+	if not player then
+		return
 	end
 
-	local p1 = player:getpos()
-	local p2 = p1
-
-	if radius then
-		p1 = vector.subtract(p1, radius)
-		p2 = vector.add(p2, radius)
+	local pos = player:getpos()
+	if not range then
+		return pos, pos
 	end
 
-	return p1, p2
+	return vector.subtract(pos, range), vector.add(pos, range)
 end
 
 function core.hash_node_position(pos)
@@ -162,11 +172,9 @@ function core.get_position_from_hash(hash)
 end
 
 function core.get_item_group(name, group)
-	if not core.registered_items[name] or not
-			core.registered_items[name].groups[group] then
-		return 0
-	end
-	return core.registered_items[name].groups[group]
+	return (core.registered_items[name] and
+			core.registered_items[name].groups[group]) or
+			0
 end
 
 function core.get_node_group(name, group)
@@ -176,10 +184,7 @@ end
 
 function core.setting_get_pos(name)
 	local value = core.setting_get(name)
-	if not value then
-		return nil
-	end
-	return core.string_to_pos(value)
+	return value and core.string_to_pos(value)
 end
 
 -- To be overriden by protection mods
