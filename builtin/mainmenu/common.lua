@@ -284,17 +284,30 @@ function text2textlist(xpos,ypos,width,height,tl_name,textlen,text,transparency)
 end
 
 --------------------------------------------------------------------------------
-function is_server_protocol_compat(proto_min, proto_max)
-	return not ((min_supp_proto > (proto_max or 24)) or (max_supp_proto < (proto_min or 13)))
+function is_server_protocol_compat(server_proto_min, server_proto_max)
+	return not ((min_supp_proto > (server_proto_max or 24)) or (max_supp_proto < (server_proto_min or 13)))
 end
 --------------------------------------------------------------------------------
-function is_server_protocol_compat_or_error(proto_min, proto_max)
-	if not is_server_protocol_compat(proto_min, proto_max) then
-		gamedata.errormessage = fgettext_ne("Protocol version mismatch, server " ..
-			((proto_min ~= proto_max) and "supports protocols between $1 and $2" or "enforces protocol version $1") ..
-			", we " ..
-			((min_supp_proto ~= max_supp_proto) and "support protocols between version $3 and $4." or "only support protocol version $3"),
-			proto_min or 13, proto_max or 24, min_supp_proto, max_supp_proto)
+function is_server_protocol_compat_or_error(server_proto_min, server_proto_max)
+	if not is_server_protocol_compat(server_proto_min, server_proto_max) then
+		local server_prot_ver_info
+		local client_prot_ver_info
+		if server_proto_min ~= server_proto_max then
+			server_prot_ver_info = fgettext_ne("Server supports protocol versions between $1 and $2. ",
+				server_proto_min or 13, server_proto_max or 24)
+		else
+			server_prot_ver_info = fgettext_ne("Server enforces protocol version $1. ",
+				server_proto_min or 13)
+		end
+		if min_supp_proto ~= max_supp_proto then
+			client_prot_ver_info= fgettext_ne("We support protocol versions between version $1 and $2.",
+				min_supp_proto, max_supp_proto)
+		else
+			client_prot_ver_info = fgettext_ne("We only support protocol version $1.", min_supp_proto)
+		end
+		gamedata.errormessage = fgettext_ne("Protocol version mismatch. ")
+			.. server_prot_ver_info
+			.. client_prot_ver_info
 		return false
 	end
 
