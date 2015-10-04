@@ -61,8 +61,9 @@ FlagDesc flagdesc_gennotify[] = {
 };
 
 
-///////////////////////////////////////////////////////////////////////////////
-
+////
+//// Mapgen
+////
 
 Mapgen::Mapgen()
 {
@@ -340,8 +341,9 @@ void Mapgen::spreadLight(v3s16 nmin, v3s16 nmax)
 }
 
 
-
-///////////////////////////////////////////////////////////////////////////////
+////
+//// GenerateNotifier
+////
 
 GenerateNotifier::GenerateNotifier()
 {
@@ -407,7 +409,10 @@ void GenerateNotifier::getEvents(
 		m_notify_events.clear();
 }
 
-///////////////////////////////////////////////////////////////////////////////
+
+////
+//// MapgenParams
+////
 
 void MapgenParams::load(const Settings &settings)
 {
@@ -429,9 +434,11 @@ void MapgenParams::load(const Settings &settings)
 	settings.getNoiseParams("mg_biome_np_humidity_blend", np_biome_humidity_blend);
 
 	delete sparams;
-	sparams = EmergeManager::createMapgenParams(mg_name);
-	if (sparams)
+	MapgenFactory *mgfactory = EmergeManager::getMapgenFactory(mg_name);
+	if (mgfactory) {
+		sparams = mgfactory->createMapgenParams();
 		sparams->readParams(&settings);
+	}
 }
 
 

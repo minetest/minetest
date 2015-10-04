@@ -706,16 +706,13 @@ int ModApiMainMenu::l_set_topleft_text(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_mapgen_names(lua_State *L)
 {
+	std::vector<const char *> names;
+	EmergeManager::getMapgenNames(&names);
+
 	lua_newtable(L);
-
-	std::list<const char *> names;
-	EmergeManager::getMapgenNames(names);
-
-	int i = 1;
-	for (std::list<const char *>::const_iterator
-			it = names.begin(); it != names.end(); ++it) {
-		lua_pushstring(L, *it);
-		lua_rawseti(L, -2, i++);
+	for (size_t i = 0; i != names.size(); i++) {
+		lua_pushstring(L, names[i]);
+		lua_rawseti(L, -2, i + 1);
 	}
 
 	return 1;
@@ -725,8 +722,8 @@ int ModApiMainMenu::l_get_mapgen_names(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_modpath(lua_State *L)
 {
-	std::string modpath
-			= fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM + "mods" + DIR_DELIM);
+	std::string modpath = fs::RemoveRelativePathComponents(
+		porting::path_user + DIR_DELIM + "mods" + DIR_DELIM);
 	lua_pushstring(L, modpath.c_str());
 	return 1;
 }
@@ -734,8 +731,8 @@ int ModApiMainMenu::l_get_modpath(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_gamepath(lua_State *L)
 {
-	std::string gamepath
-			= fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM + "games" + DIR_DELIM);
+	std::string gamepath = fs::RemoveRelativePathComponents(
+		porting::path_user + DIR_DELIM + "games" + DIR_DELIM);
 	lua_pushstring(L, gamepath.c_str());
 	return 1;
 }
@@ -743,44 +740,46 @@ int ModApiMainMenu::l_get_gamepath(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_texturepath(lua_State *L)
 {
-	std::string gamepath
-			= fs::RemoveRelativePathComponents(porting::path_user + DIR_DELIM + "textures");
+	std::string gamepath = fs::RemoveRelativePathComponents(
+		porting::path_user + DIR_DELIM + "textures");
 	lua_pushstring(L, gamepath.c_str());
 	return 1;
 }
 
 int ModApiMainMenu::l_get_texturepath_share(lua_State *L)
 {
-	std::string gamepath
-			= fs::RemoveRelativePathComponents(porting::path_share + DIR_DELIM + "textures");
+	std::string gamepath = fs::RemoveRelativePathComponents(
+		porting::path_share + DIR_DELIM + "textures");
 	lua_pushstring(L, gamepath.c_str());
 	return 1;
 }
 
 /******************************************************************************/
 int ModApiMainMenu::l_create_dir(lua_State *L) {
-	const char *path	= luaL_checkstring(L, 1);
+	const char *path = luaL_checkstring(L, 1);
 
 	if (ModApiMainMenu::isMinetestPath(path)) {
-		lua_pushboolean(L,fs::CreateAllDirs(path));
+		lua_pushboolean(L, fs::CreateAllDirs(path));
 		return 1;
 	}
-	lua_pushboolean(L,false);
+
+	lua_pushboolean(L, false);
 	return 1;
 }
 
 /******************************************************************************/
 int ModApiMainMenu::l_delete_dir(lua_State *L)
 {
-	const char *path	= luaL_checkstring(L, 1);
+	const char *path = luaL_checkstring(L, 1);
 
 	std::string absolute_path = fs::RemoveRelativePathComponents(path);
 
 	if (ModApiMainMenu::isMinetestPath(absolute_path)) {
-		lua_pushboolean(L,fs::RecursiveDelete(absolute_path));
+		lua_pushboolean(L, fs::RecursiveDelete(absolute_path));
 		return 1;
 	}
-	lua_pushboolean(L,false);
+
+	lua_pushboolean(L, false);
 	return 1;
 }
 
