@@ -442,7 +442,7 @@ end
 
 local function make_registration()
 	local t = {}
-	local function registerfunc(func)
+	local registerfunc = function(func)
 		table.insert(t, func)
 		core.callback_origins[func] = {
 			mod = core.get_current_modname() or "??",
@@ -456,7 +456,7 @@ end
 
 local function make_registration_reverse()
 	local t = {}
-	local function registerfunc(func)
+	local registerfunc = function(func)
 		table.insert(t, 1, func)
 		core.callback_origins[func] = {
 			mod = core.get_current_modname() or "??",
@@ -559,6 +559,4 @@ core.registered_on_punchplayers, core.register_on_punchplayer = make_registratio
 -- Compatibility for on_mapgen_init()
 --
 
-function core.register_on_mapgen_init(func)
-	func(core.get_mapgen_params())
-end
+core.register_on_mapgen_init = function(func) func(core.get_mapgen_params()) end
