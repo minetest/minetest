@@ -94,10 +94,11 @@ end
 function core.override_on_place(name, func)
 	local previous_on_place = core.registered_nodes[name].on_place
 	core.override_item(name, {
-		on_place = function(...)
-			if func(...) then
-				return previous_on_place(...)
+		on_place = function(itemstack, ...)
+			if func(itemstack, ...) then
+				return previous_on_place(itemstack, ...)
 			end
+			return itemstack
 		end
 	})
 end
