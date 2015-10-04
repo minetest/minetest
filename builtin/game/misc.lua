@@ -52,8 +52,9 @@ core.register_globalstep(function(dtime)
 end)
 
 function core.after(time, func, ...)
-	assert(tonumber(time) and type(func) == "function",
-			"Invalid core.after invocation")
+	if not tonumber(time) or type(func) ~= "function" then
+		error("Invalid core.after invocation")
+	end
 	if not mintime then
 		mintime = time
 		timers_to_add = {{
@@ -141,8 +142,9 @@ end
 -- Returns two position vectors representing a cubic box of `range` in each
 -- direction centered around the player corresponding to `player_name`
 function core.get_player_radius_area(player_name, range)
-	assert(tostring(player_name),
-			"core.get_player_radius_area: missing player name")
+	if not tostring(player_name) then
+		error("core.get_player_radius_area: missing player name")
+	end
 
 	local player = core.get_player_by_name(player_name)
 	if not player then

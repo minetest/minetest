@@ -77,7 +77,9 @@ end
 
 function core.register_entity(name, prototype)
 	-- Check name
-	assert(name, "Unable to register entity: Name is missing")
+	if not name then
+		error("Unable to register entity: Name is missing")
+	end
 	name = check_modname_prefix(tostring(name))
 
 	prototype.name = name
@@ -114,7 +116,9 @@ end
 
 function core.register_item(name, itemdef)
 	-- Check name
-	assert(name, "Unable to register item: Name is missing")
+	if not name then
+		error("Unable to register item: Name is missing")
+	end
 	name = check_modname_prefix(tostring(name))
 	if forbidden_item_names[name] then
 		error("Unable to register item: Name is forbidden: " .. name)
@@ -375,7 +379,9 @@ function core.override_item(name, redefinition)
 		error("Attempt to redefine type of "..name.." to "..dump(redefinition.type), 2)
 	end
 	local item = core.registered_items[name]
-	assert(item, "Attempt to override non-existent item "..name, 2)
+	if not item then
+		error("Attempt to override non-existent item "..name, 2)
+	end
 	for k, v in pairs(redefinition) do
 		rawset(item, k, v)
 	end
