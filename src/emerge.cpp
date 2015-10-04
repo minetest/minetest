@@ -256,6 +256,12 @@ void EmergeManager::stopThreads()
 }
 
 
+bool EmergeManager::isRunning()
+{
+	return m_threads_active;
+}
+
+
 bool EmergeManager::enqueueBlockEmerge(
 	u16 peer_id,
 	v3s16 blockpos,

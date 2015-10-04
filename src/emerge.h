@@ -115,6 +115,7 @@ public:
 
 	void startThreads();
 	void stopThreads();
+	bool isRunning();
 
 	bool enqueueBlockEmerge(
 		u16 peer_id,
