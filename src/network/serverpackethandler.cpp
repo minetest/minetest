@@ -1467,21 +1467,22 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 				NOTE: This can be used in the future to check if
 				somebody is cheating, by checking the timing.
 			*/
+
 			MapNode n(CONTENT_IGNORE);
 			bool pos_ok;
-			n = m_env->getMap().getNodeNoEx(p_under, &pos_ok);
-			if (pos_ok)
-				n = m_env->getMap().getNodeNoEx(p_under, &pos_ok);
 
+			n = m_env->getMap().getNodeNoEx(p_under, &pos_ok);
 			if (!pos_ok) {
 				infostream << "Server: Not punching: Node not found."
 						<< " Adding block to emerge queue."
 						<< std::endl;
-				m_emerge->enqueueBlockEmerge(pkt->getPeerId(), getNodeBlockPos(p_above), false);
+				m_emerge->enqueueBlockEmerge(pkt->getPeerId(),
+					getNodeBlockPos(p_above), false);
 			}
 
 			if (n.getContent() != CONTENT_IGNORE)
 				m_script->node_on_punch(p_under, n, playersao, pointed);
+
 			// Cheat prevention
 			playersao->noCheatDigStart(p_under);
 		}
@@ -1538,9 +1539,10 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 			MapNode n = m_env->getMap().getNodeNoEx(p_under, &pos_ok);
 			if (!pos_ok) {
 				infostream << "Server: Not finishing digging: Node not found."
-						   << " Adding block to emerge queue."
-						   << std::endl;
-				m_emerge->enqueueBlockEmerge(pkt->getPeerId(), getNodeBlockPos(p_above), false);
+						<< " Adding block to emerge queue."
+						<< std::endl;
+				m_emerge->enqueueBlockEmerge(pkt->getPeerId(),
+					getNodeBlockPos(p_above), false);
 			}
 
 			/* Cheat prevention */
