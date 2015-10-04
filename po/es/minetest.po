@@ -452,7 +452,7 @@ msgstr "Habilitar partículas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
-msgstr "Hojas elegantes"
+msgstr "Hojas detalladas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "GUI scale factor"
@@ -660,7 +660,7 @@ msgid ""
 "Check debug.txt for details."
 msgstr ""
 "\n"
-"Consulta debug.txt para obtener más detalles."
+"Revisa el archivo debug.txt para más detalles."
 
 #: src/game.cpp
 msgid "Change Keys"
