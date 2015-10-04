@@ -707,7 +707,7 @@ int ModApiMainMenu::l_set_topleft_text(lua_State *L)
 int ModApiMainMenu::l_get_mapgen_names(lua_State *L)
 {
 	std::vector<const char *> names;
-	EmergeManager::getMapgenNames(&names);
+	EmergeManager::getMapgenNames(&names, lua_toboolean(L, 1));
 
 	lua_newtable(L);
 	for (size_t i = 0; i != names.size(); i++) {

@@ -139,7 +139,8 @@ public:
 	bool isBlockUnderground(v3s16 blockpos);
 
 	static MapgenFactory *getMapgenFactory(const std::string &mgname);
-	static void getMapgenNames(std::vector<const char *> *mgnames);
+	static void getMapgenNames(
+		std::vector<const char *> *mgnames, bool include_hidden);
 	static v3s16 getContainingChunk(v3s16 blockpos, s16 chunksize);
 
 private:
