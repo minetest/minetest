@@ -282,7 +282,7 @@ void TestUtilities::testIsPowerOfTwo()
 		UASSERT(is_power_of_two((1 << exponent)) == true);
 		UASSERT(is_power_of_two((1 << exponent) + 1) == false);
 	}
-	UASSERT(is_power_of_two((u32)-1) == false);
+	UASSERT(is_power_of_two(U32_MAX) == false);
 }
 
 void TestUtilities::testMyround()

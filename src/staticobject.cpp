@@ -50,7 +50,7 @@ void StaticObjectList::serialize(std::ostream &os)
 	size_t count = m_stored.size() + m_active.size();
 	// Make sure it fits into u16, else it would get truncated and cause e.g.
 	// issue #2610 (Invalid block data in database: unsupported NameIdMapping version).
-	if (count > (u16)-1) {
+	if (count > U16_MAX) {
 		errorstream << "StaticObjectList::serialize(): "
 			<< "too many objects (" << count << ") in list, "
 			<< "not writing them to disk." << std::endl;

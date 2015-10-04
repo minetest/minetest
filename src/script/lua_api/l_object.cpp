@@ -1187,7 +1187,7 @@ int ObjectRef::l_hud_add(lua_State *L)
 	}
 
 	u32 id = getServer(L)->hudAdd(player, elem);
-	if (id == (u32)-1) {
+	if (id == U32_MAX) {
 		delete elem;
 		return 0;
 	}
