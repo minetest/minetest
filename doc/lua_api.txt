@@ -2330,9 +2330,9 @@ These functions return the leftover itemstack.
     * Returns rating of the connect_to_raillike group corresponding to name
     * If name is not yet the name of a connect_to_raillike group, a new group id
     * is created, with that name
-* `minetest.on_place(name, func)`: overwrites the on_place of `name`
+* `minetest.override_on_place(name, func)`: overwrites the on_place of `name`
     * if func doesn't return true, the previous on_place isn't executed
-* `minetest.on_punch(name, func)`: overwrites the on_punch of `name`
+* `minetest.override_on_punch(name, func)`: overwrites the on_punch of `name`
     * if func doesn't return true, the previous on_punch isn't executed
 * `minetest.get_content_id(name)`: returns an integer
     * Gets the internal content ID of `name`
@@ -3308,7 +3308,7 @@ Definition tables
         --[[
         ^ Shall place item and return the leftover itemstack
         ^ default: minetest.item_place ]]
-        can_place = func(itemstack, placer, pointed_thing),
+        can_place = func(pos, node, itemstack, placer, pointed_thing),
         --[[
         ^ if it exists and returns true, the on_place^ is executed
         ^ default: nil ]]

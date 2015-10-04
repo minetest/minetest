@@ -89,7 +89,7 @@ function core.register_entity(name, prototype)
 end
 
 
-function core.on_place(name, func)
+function core.override_on_place(name, func)
 	local previous_on_place = core.registered_nodes[name].on_place
 	core.override_item(name, {
 		on_place = function(...)
@@ -100,7 +100,7 @@ function core.on_place(name, func)
 	})
 end
 
-function core.on_punch(name, func)
+function core.override_on_punch(name, func)
 	local previous_on_punch = core.registered_nodes[name].on_punch
 	core.override_item(name, {
 		on_punch = function(...)
@@ -197,10 +197,22 @@ function core.register_item(name, itemdef)
 	register_item_raw(itemdef)
 
 	if itemdef.can_place then
-		core.on_place(name, itemdef.can_place)
+		core.override_on_place(name, function(itemstack, placer, pt)
+			local pos = pt.under
+			local node = minetest.get_node(pos)
+			local def = minetest.registered_nodes[node.name]
+			if not def then
+				return
+			end
+			if not def.buildable_to then
+				pos = pt.above
+				node = minetest.get_node(pos)
+			end
+			itemdef.can_place(vector.new(pos), node, itemstack, placer, pt)
+		end)
 	end
 	if itemdef.can_punch then
-		core.on_punch(name, itemdef.can_punch)
+		core.override_on_punch(name, itemdef.can_punch)
 	end
 end
 
