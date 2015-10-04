@@ -3219,14 +3219,17 @@ Definition tables
         },
 
         on_construct = func(pos), --[[
-        ^ Node constructor; always called after adding node
+        ^ Node constructor; called after adding node
         ^ Can set up metadata and stuff like that
+        ^ Not called for bulk node placement (i.e. schematics and VoxelManip)
         ^ default: nil ]]
         on_destruct = func(pos), --[[
-        ^ Node destructor; always called before removing node
+        ^ Node destructor; called before removing node
+        ^ Not called for bulk node placement (i.e. schematics and VoxelManip)
         ^ default: nil ]]
         after_destruct = func(pos, oldnode), --[[
-        ^ Node destructor; always called after removing node
+        ^ Node destructor; called after removing node
+        ^ Not called for bulk node placement (i.e. schematics and VoxelManip)
         ^ default: nil ]]
 
         after_place_node = func(pos, placer, itemstack, pointed_thing) --[[
