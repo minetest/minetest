@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-12 23:20+0200\n"
-"PO-Revision-Date: 2015-10-02 20:11+0200\n"
-"Last-Translator: pilino1234 <mhilgendrf@aol.com>\n"
+"PO-Revision-Date: 2015-10-05 02:00+0200\n"
+"Last-Translator: est31 <MTest31@outlook.com>\n"
 "Language-Team: German "
 "<https://hosted.weblate.org/projects/minetest/minetest/de/>\n"
 "Language: de\n"
@@ -290,7 +290,7 @@ msgstr "Modinformation:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Mods"
-msgstr "Modifikationen"
+msgstr "Mods"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "No mod description available"
