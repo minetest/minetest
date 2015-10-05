@@ -3,16 +3,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-12 23:20+0200\n"
-"PO-Revision-Date: 2015-08-15 03:28+0200\n"
+"PO-Revision-Date: 2015-10-05 08:20+0200\n"
 "Last-Translator: Rui <rui914t@gmail.com>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
-"minetest/ja/>\n"
+"Language-Team: Japanese "
+"<https://hosted.weblate.org/projects/minetest/minetest/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.4-dev\n"
+"X-Generator: Weblate 2.5-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -23,7 +23,6 @@ msgid "An error occured:"
 msgstr "エラーが発生しました:"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Main menu"
 msgstr "メインメニュー"
 
@@ -32,13 +31,12 @@ msgid "Ok"
 msgstr "決定"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Reconnect"
-msgstr "接続"
+msgstr "再接続"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "サーバが再接続を要求しました："
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
@@ -46,7 +44,7 @@ msgstr "読み込み中..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch, server "
-msgstr ""
+msgstr "プロトコルバージョンの不一致、サーバー "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -78,7 +76,7 @@ msgstr "すべて有効化"
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
-msgstr ""
+msgstr "許可されていない文字が使用されているためMod \"$1\"を有効化できませんでした。文字は[a-z0-9_]のみ使用できます。"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -396,7 +394,7 @@ msgstr "ゲームスタート"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "2倍"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "3D Clouds"
@@ -404,15 +402,15 @@ msgstr "3Dの雲"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "4倍"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "8倍"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr ""
+msgstr "アンチエイリアス:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
@@ -476,7 +474,7 @@ msgstr "ノードをハイライト"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
-msgstr ""
+msgstr "無し"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -579,9 +577,8 @@ msgid "Texturepacks"
 msgstr "テクスチャ"
 
 #: src/client.cpp
-#, fuzzy
 msgid "Connection timed out."
-msgstr "接続失敗（またはタイムアウト）"
+msgstr "接続がタイムアウトしました。"
 
 #: src/client.cpp
 msgid "Done!"
