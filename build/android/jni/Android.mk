@@ -173,6 +173,7 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/mapblock.cpp                      \
 		jni/src/mapblock_mesh.cpp                 \
 		jni/src/mapgen.cpp                        \
+		jni/src/mapgen_fractal.cpp                \
 		jni/src/mapgen_singlenode.cpp             \
 		jni/src/mapgen_v5.cpp                     \
 		jni/src/mapgen_v6.cpp                     \
