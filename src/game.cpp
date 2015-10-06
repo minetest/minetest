@@ -1633,7 +1633,6 @@ private:
 	bool m_cache_enable_clouds;
 	bool m_cache_enable_particles;
 	bool m_cache_enable_fog;
-	bool m_disable_mouse_wheel;
 	f32  m_cache_mouse_sensitivity;
 	f32  m_repeat_right_click_time;
 
@@ -2712,10 +2711,7 @@ void Game::processItemSelection(u16 *new_playeritem)
 	 */
 	*new_playeritem = client->getPlayerItem();
 
-	// Allows you to disable mouse-wheel selection of ready items.
-	s32 wheel = 0;
-	if (!m_disable_mouse_wheel)
-		wheel = input->getMouseWheel();
+	s32 wheel = input->getMouseWheel();
 	u16 max_item = MYMIN(PLAYER_INVENTORY_SIZE - 1,
 		                 player->hud_hotbar_itemcount - 1);
 
@@ -4348,7 +4344,6 @@ void Game::readSettings()
 	m_cache_enable_fog                = g_settings->getBool("enable_fog");
 	m_cache_mouse_sensitivity         = g_settings->getFloat("mouse_sensitivity");
 	m_repeat_right_click_time         = g_settings->getFloat("repeat_rightclick_time");
-	m_disable_mouse_wheel             = g_settings->getFlag("disable_mouse_wheel");
 
 	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001, 100.0);
 }
