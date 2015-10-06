@@ -2619,7 +2619,7 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 
 	if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_DROP])) {
 		dropSelectedItem();
-	// Adds WoW-style autorun by toggling continuous forward.
+	// Add WoW-style autorun by toggling continuous forward.
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_AUTORUN])) {
 		bool autorun_setting = g_settings->getBool("continuous_forward");
 		g_settings->setBool("continuous_forward", !autorun_setting);
