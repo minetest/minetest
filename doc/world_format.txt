@@ -47,8 +47,9 @@ in the base64 encoding.
 
 Format (since 0.4.13) of password hash is #1#<salt>#<verifier>, with the
 parts inside <> encoded in the base64 encoding.
-<verifier> is an RFC 5054 compatible SRP-2048-SHA1 verifier
-of the given salt, password, and the player's name lowercased.
+<verifier> is an RFC 2945 compatible SRP verifier,
+of the given salt, password, and the player's name lowercased,
+using the 2048-bit group specified in RFC 5054 and the SHA-256 hash function.
 
 Example lines:
 - Player "celeron55", no password, privileges "interact" and "shout":
