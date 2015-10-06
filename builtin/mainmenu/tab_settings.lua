@@ -329,12 +329,7 @@ local function formspec(tabview, name, tabdata)
 		 		viewing_range_max_to_scrollbar() .. "]" ..
 		 	"tooltip[sb_viewing_range_max;" .. fgettext("Maximal Viewing Range: $1 nodes",
 				get_vrange_max) .. "]"
-
-		if (get_vrange_min == nil and get_vrange_min > get_vrange_max) then
-			core.setting_set("viewing_range_nodes_min", get_vrange_max)
-		end
-	elseif (core.setting_getbool("viewing_range_auto") == nil or
-			core.setting_getbool("viewing_range_auto") == false) then
+	else
 		tab_string = tab_string ..
 			"box[3.75,3.5;3.75,1.5;#999999]" ..
 			"label[3.85,3.5;" .. fgettext("Viewing Range :") .. "]" ..
@@ -345,6 +340,9 @@ local function formspec(tabview, name, tabdata)
 				get_vrange_min) .. "]" ..
 			"checkbox[3.85,4.3;cb_vrange_auto_adjust;" .. fgettext("Auto-adjust") .. ";" ..
 				dump(core.setting_getbool("viewing_range_auto")) .. "]"
+	end
+	if get_vrange_min > get_vrange_max then
+		core.setting_set("viewing_range_nodes_min", get_vrange_max)
 	end
 
 	return tab_string
@@ -509,3 +507,4 @@ tab_settings = {
 	cbf_formspec = formspec,
 	cbf_button_handler = handle_settings_buttons
 }
+
