@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2013 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Additional development and fractal code by paramat
+Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2010-2015 paramat, Matt Gregory
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -73,9 +73,12 @@ MapgenFractal::MapgenFractal(int mapgenid, MapgenParams *params, EmergeManager *
 	this->offset_y = sp->offset_y;
 	this->offset_z = sp->offset_z;
 
-	//// 3d terrain noise
-	noise_cave1    = new Noise(&sp->np_cave1,    seed, csize.X, csize.Y + 2, csize.Z);
-	noise_cave2    = new Noise(&sp->np_cave2,    seed, csize.X, csize.Y + 2, csize.Z);
+	//// 2D terrain noise
+	noise_seabed = new Noise(&sp->np_seabed, seed, csize.X, csize.Z);
+
+	//// 3D terrain noise
+	noise_cave1 = new Noise(&sp->np_cave1, seed, csize.X, csize.Y + 2, csize.Z);
+	noise_cave2 = new Noise(&sp->np_cave2, seed, csize.X, csize.Y + 2, csize.Z);
 
 	//// Biome noise
 	noise_heat           = new Noise(&params->np_biome_heat,           seed, csize.X, csize.Z);
@@ -114,6 +117,8 @@ MapgenFractal::MapgenFractal(int mapgenid, MapgenParams *params, EmergeManager *
 
 MapgenFractal::~MapgenFractal()
 {
+	delete noise_seabed;
+
 	delete noise_cave1;
 	delete noise_cave2;
 
@@ -132,20 +137,21 @@ MapgenFractalParams::MapgenFractalParams()
 	spflags = 0;
 
 	iterations = 9;
-	scale_x = 1024;
-	scale_y = 256;
-	scale_z = 1024;
+	scale_x = 1024.0;
+	scale_y = 256.0;
+	scale_z = 1024.0;
 	offset_x = -1.75;
-	offset_y = 0;
-	offset_z = 0;
+	offset_y = 0.0;
+	offset_z = 0.0;
 	slice_w = 0.5;
 	julia_x = 0.33;
 	julia_y = 0.33;
 	julia_z = 0.33;
 	julia_w = 0.33;
 
-	np_cave1 = NoiseParams(0, 12, v3f(128, 128, 128), 52534, 4, 0.5, 2.0);
-	np_cave2 = NoiseParams(0, 12, v3f(128, 128, 128), 10325, 4, 0.5, 2.0);
+	np_seabed = NoiseParams(-14, 9,  v3f(600, 600, 600), 41900, 5, 0.6, 2.0);
+	np_cave1  = NoiseParams(0,   12, v3f(128, 128, 128), 52534, 4, 0.5, 2.0);
+	np_cave2  = NoiseParams(0,   12, v3f(128, 128, 128), 10325, 4, 0.5, 2.0);
 }
 
 
@@ -166,6 +172,7 @@ void MapgenFractalParams::readParams(const Settings *settings)
 	settings->getFloatNoEx("mgfractal_julia_z", julia_z);
 	settings->getFloatNoEx("mgfractal_julia_w", julia_w);
 
+	settings->getNoiseParams("mgfractal_np_seabed", np_seabed);
 	settings->getNoiseParams("mgfractal_np_cave1", np_cave1);
 	settings->getNoiseParams("mgfractal_np_cave2", np_cave2);
 }
@@ -188,6 +195,7 @@ void MapgenFractalParams::writeParams(Settings *settings) const
 	settings->setFloat("mgfractal_julia_z", julia_z);
 	settings->setFloat("mgfractal_julia_w", julia_w);
 
+	settings->setNoiseParams("mgfractal_np_seabed", np_seabed);
 	settings->setNoiseParams("mgfractal_np_cave1", np_cave1);
 	settings->setNoiseParams("mgfractal_np_cave2", np_cave2);
 }
@@ -198,15 +206,15 @@ void MapgenFractalParams::writeParams(Settings *settings) const
 
 int MapgenFractal::getGroundLevelAtPoint(v2s16 p)
 {
-	s16 search_top = water_level + 128;
-	s16 search_base = water_level;
-	s16 level = -MAX_MAP_GENERATION_LIMIT;
-	for (s16 y = search_top; y >= search_base; y--) {
-		if (getTerrainAtPoint(p.X, y, p.Y))
+	s16 search_start = 128;
+	s16 search_end = -128;
+
+	for (s16 y = search_start; y >= search_end; y--) {
+		if (getFractalAtPoint(p.X, y, p.Y))
 			return y;
 	}
 
-	return level;
+	return -MAX_MAP_GENERATION_LIMIT;
 }
 
 
@@ -329,6 +337,8 @@ void MapgenFractal::calculateNoise()
 	int y = node_min.Y - 1;
 	int z = node_min.Z;
 
+	noise_seabed->perlinMap2D(x, z);
+
 	if (flags & MG_CAVES) {
 		noise_cave1->perlinMap3D(x, y, z);
 		noise_cave2->perlinMap3D(x, y, z);
@@ -350,7 +360,7 @@ void MapgenFractal::calculateNoise()
 }
 
 
-bool MapgenFractal::getTerrainAtPoint(s16 x, s16 y, s16 z)
+bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 {
 	float cx, cy, cz, cw, ox, oy, oz, ow;
 
@@ -368,22 +378,21 @@ bool MapgenFractal::getTerrainAtPoint(s16 x, s16 y, s16 z)
 		cy = (float)y / scale_y + offset_y;
 		cz = (float)z / scale_z + offset_z;
 		cw = slice_w;
-		ox = 0.0;
-		oy = 0.0;
-		oz = 0.0;
-		ow = 0.0;
+		ox = 0.0f;
+		oy = 0.0f;
+		oz = 0.0f;
+		ow = 0.0f;
 	}
 
 	for (u16 iter = 0; iter < iterations; iter++) {
 		// 4D "Roundy" Mandelbrot set
 		float nx = ox * ox - oy * oy - oz * oz - ow * ow + cx;
-		float ny = 2.0 * (ox * oy + oz * ow) + cy;
-		float nz = 2.0 * (ox * oz + oy * ow) + cz;
-		float nw = 2.0 * (ox * ow + oy * oz) + cw;
+		float ny = 2.0f * (ox * oy + oz * ow) + cy;
+		float nz = 2.0f * (ox * oz + oy * ow) + cz;
+		float nw = 2.0f * (ox * ow + oy * oz) + cw;
 
-		if (nx * nx + ny * ny + nz * nz + nw * nw > 4.0) {
+		if (nx * nx + ny * ny + nz * nz + nw * nw > 4.0f)
 			return false;
-		}
 
 		ox = nx;
 		oy = ny;
@@ -402,23 +411,29 @@ s16 MapgenFractal::generateTerrain()
 	MapNode n_water(c_water_source);
 
 	s16 stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
+	u32 index2d = 0;
 
-	for (s16 z = node_min.Z; z <= node_max.Z; z++)
-	for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
-		u32 i = vm->m_area.index(node_min.X, y, z);
-		for (s16 x = node_min.X; x <= node_max.X; x++, i++) {
-			if (vm->m_data[i].getContent() == CONTENT_IGNORE) {
-				if (getTerrainAtPoint(x, y, z)) {
-					vm->m_data[i] = n_stone;
-					if (y > stone_surface_max_y)
-						stone_surface_max_y = y;
-				} else if (y <= water_level) {
-					vm->m_data[i] = n_water;
-				} else {
-					vm->m_data[i] = n_air;
+	for (s16 z = node_min.Z; z <= node_max.Z; z++) {
+		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
+			u32 vi = vm->m_area.index(node_min.X, y, z);
+			for (s16 x = node_min.X; x <= node_max.X; x++, vi++, index2d++) {
+				if (vm->m_data[vi].getContent() == CONTENT_IGNORE) {
+					s16 seabed_height = noise_seabed->result[index2d];
+
+					if (y <= seabed_height || getFractalAtPoint(x, y, z)) {
+						vm->m_data[vi] = n_stone;
+						if (y > stone_surface_max_y)
+							stone_surface_max_y = y;
+					} else if (y <= water_level) {
+						vm->m_data[vi] = n_water;
+					} else {
+						vm->m_data[vi] = n_air;
+					}
 				}
 			}
+			index2d -= ystride;
 		}
+		index2d += ystride;
 	}
 
 	return stone_surface_max_y;
@@ -575,23 +590,32 @@ void MapgenFractal::dustTopNodes()
 void MapgenFractal::generateCaves(s16 max_stone_y)
 {
 	if (max_stone_y >= node_min.Y) {
-		u32 index   = 0;
+		u32 index = 0;
 
 		for (s16 z = node_min.Z; z <= node_max.Z; z++)
 		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
-			u32 i = vm->m_area.index(node_min.X, y, z);
-			for (s16 x = node_min.X; x <= node_max.X; x++, i++, index++) {
+			u32 vi = vm->m_area.index(node_min.X, y, z);
+			for (s16 x = node_min.X; x <= node_max.X; x++, vi++, index++) {
 				float d1 = contour(noise_cave1->result[index]);
 				float d2 = contour(noise_cave2->result[index]);
 				if (d1 * d2 > 0.3) {
-					content_t c = vm->m_data[i].getContent();
+					content_t c = vm->m_data[vi].getContent();
 					if (!ndef->get(c).is_ground_content || c == CONTENT_AIR)
 						continue;
 
-					vm->m_data[i] = MapNode(CONTENT_AIR);
+					vm->m_data[vi] = MapNode(CONTENT_AIR);
 				}
 			}
 		}
 	}
-}
 
+	if (node_max.Y > MGFRACTAL_LARGE_CAVE_DEPTH)
+		return;
+
+	PseudoRandom ps(blockseed + 21343);
+	u32 bruises_count = (ps.range(1, 4) == 1) ? ps.range(1, 2) : 0;
+	for (u32 i = 0; i < bruises_count; i++) {
+		CaveFractal cave(this, &ps);
+		cave.makeCave(node_min, node_max, max_stone_y);
+	}
+}
