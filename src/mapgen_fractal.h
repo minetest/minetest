@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2013 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Additional development and fractal code by paramat
+Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2010-2015 paramat, Matt Gregory
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPGEN_FRACTAL_HEADER
 
 #include "mapgen.h"
+
+#define MGFRACTAL_LARGE_CAVE_DEPTH -32
 
 /////////////////// Mapgen Fractal flags
 #define MGFRACTAL_JULIA 0x01
@@ -47,6 +49,7 @@ struct MapgenFractalParams : public MapgenSpecificParams {
 	float julia_z;
 	float julia_w;
 
+	NoiseParams np_seabed;
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
 
@@ -84,6 +87,8 @@ public:
 	float julia_z;
 	float julia_w;
 
+	Noise *noise_seabed;
+
 	Noise *noise_cave1;
 	Noise *noise_cave2;
 
@@ -111,7 +116,7 @@ public:
 	virtual void makeChunk(BlockMakeData *data);
 	int getGroundLevelAtPoint(v2s16 p);
 	void calculateNoise();
-	bool getTerrainAtPoint(s16 x, s16 y, s16 z);
+	bool getFractalAtPoint(s16 x, s16 y, s16 z);
 	s16 generateTerrain();
 	MgStoneType generateBiomes(float *heat_map, float *humidity_map);
 	void dustTopNodes();
