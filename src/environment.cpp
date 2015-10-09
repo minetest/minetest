@@ -1891,15 +1891,15 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 				//       actually returning NULL
 			}
 
-			if(block)
-			{
-				if(block->m_static_objects.m_stored.size() >= g_settings->getU16("max_objects_per_block")){
-					errorstream<<"ServerEnv: Trying to store id="<<obj->getId()
-							<<" statically but block "<<PP(blockpos)
-							<<" already contains "
-							<<block->m_static_objects.m_stored.size()
-							<<" objects."
-							<<" Forcing delete."<<std::endl;
+			if (block) {
+				if (block->m_static_objects.m_stored.size() >= g_settings->getU16("max_objects_per_block") &&
+					obj->getType() != ACTIVEOBJECT_TYPE_PLAYER) {
+					errorstream << "ServerEnv: Trying to store id=" << obj->getId()
+							<< " statically but block " << PP(blockpos)
+							<< " already contains "
+							<< block->m_static_objects.m_stored.size()
+							<< " objects."
+							<< " Forcing delete." << std::endl;
 					force_delete = true;
 				} else {
 					// If static counterpart already exists in target block,
