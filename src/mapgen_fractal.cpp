@@ -72,6 +72,11 @@ MapgenFractal::MapgenFractal(int mapgenid, MapgenParams *params, EmergeManager *
 	this->offset_x = sp->offset_x;
 	this->offset_y = sp->offset_y;
 	this->offset_z = sp->offset_z;
+	this->slice_w = sp->slice_w;
+	this->julia_x = sp->julia_x;
+	this->julia_y = sp->julia_y;
+	this->julia_z = sp->julia_z;
+	this->julia_w = sp->julia_w;
 
 	//// 2D terrain noise
 	noise_seabed = new Noise(&sp->np_seabed, seed, csize.X, csize.Z);
@@ -143,7 +148,7 @@ MapgenFractalParams::MapgenFractalParams()
 	offset_x = -1.75;
 	offset_y = 0.0;
 	offset_z = 0.0;
-	slice_w = 0.5;
+	slice_w = 0.0;
 	julia_x = 0.33;
 	julia_y = 0.33;
 	julia_z = 0.33;
