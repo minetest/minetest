@@ -3,7 +3,7 @@
 --
 -- Default material types
 --
-function digprop_err()
+local function digprop_err()
 	core.log("info", debug.traceback())
 	core.log("info", "WARNING: The core.digprop_* functions are obsolete and need to be replaced by item groups.")
 end
@@ -50,4 +50,3 @@ setmetatable(core.env, {
 function core.rollback_get_last_node_actor(pos, range, seconds)
 	return core.rollback_get_node_actions(pos, range, seconds, 1)[1]
 end
-
