@@ -213,7 +213,7 @@ function core.register_item(name, itemdef)
 
 			local def = minetest.registered_nodes[node.name]
 			if not def then
-				minetest.log("error", node.name .." isn't registered")
+				minetest.log("error", node.name .." is not registered")
 				return
 			end
 

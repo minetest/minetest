@@ -2331,9 +2331,9 @@ These functions return the leftover itemstack.
     * If name is not yet the name of a connect_to_raillike group, a new group id
     * is created, with that name
 * `minetest.override_on_place(name, func)`: overwrites the on_place of `name`
-    * if func doesn't return true, the previous on_place isn't executed
+    * if func doesn't return true, the previous on_place is not executed
 * `minetest.override_on_punch(name, func)`: overwrites the on_punch of `name`
-    * if func doesn't return true, the previous on_punch isn't executed
+    * if func doesn't return true, the previous on_punch is not executed
 * `minetest.get_content_id(name)`: returns an integer
     * Gets the internal content ID of `name`
 * `minetest.get_name_from_content_id(content_id)`: returns a string
