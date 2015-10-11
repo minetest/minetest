@@ -204,15 +204,25 @@ function core.register_item(name, itemdef)
 	if itemdef.can_place then
 		core.override_on_place(name, function(itemstack, placer, pt)
 			local pos = pt.under
-			local node = minetest.get_node(pos)
-			local def = minetest.registered_nodes[node.name]
-			if not def then
+
+			-- abort if it happens in an unloaded area
+			local node = minetest.get_node_or_nil(pos)
+			if not node then
 				return
 			end
+
+			local def = minetest.registered_nodes[node.name]
+			if not def then
+				minetest.log("error", node.name .." isn't registered")
+				return
+			end
+
+			-- often the pointed node is not buildable_to
 			if not def.buildable_to then
 				pos = pt.above
 				node = minetest.get_node(pos)
 			end
+
 			itemdef.can_place(vector.new(pos), node, itemstack, placer, pt)
 		end)
 	end
