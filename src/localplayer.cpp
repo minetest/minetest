@@ -176,6 +176,12 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	// Maximum distance over border for sneaking
 	f32 sneak_max = BS*0.4;
 
+	// If not touching_ground then we cannot let player sneak
+	if (!touching_ground)
+	{
+		control.sneak = false;
+	}
+
 	/*
 		If sneaking, keep in range from the last walked node and don't
 		fall off from it
