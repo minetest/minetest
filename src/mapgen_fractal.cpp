@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_sao.h"
 #include "nodedef.h"
 #include "voxelalgorithms.h"
+//#include "profiler.h" // For TimeTaker
 #include "settings.h" // For g_settings
 #include "emerge.h"
 #include "dungeongen.h"
@@ -65,14 +66,15 @@ MapgenFractal::MapgenFractal(int mapgenid, MapgenParams *params, EmergeManager *
 
 	MapgenFractalParams *sp = (MapgenFractalParams *)params->sparams;
 	this->spflags = sp->spflags;
+
 	this->iterations = sp->iterations;
-	this->scale_x = sp->scale_x;
-	this->scale_y = sp->scale_y;
-	this->scale_z = sp->scale_z;
-	this->offset_x = sp->offset_x;
-	this->offset_y = sp->offset_y;
-	this->offset_z = sp->offset_z;
-	this->slice_w = sp->slice_w;
+	this->scale = sp->scale;
+
+	this->moffset = sp->moffset;
+	this->mslice_w = sp->mslice_w;
+
+	this->joffset = sp->joffset;
+	this->jslice_w = sp->jslice_w;
 	this->julia_x = sp->julia_x;
 	this->julia_y = sp->julia_y;
 	this->julia_z = sp->julia_z;
@@ -142,13 +144,13 @@ MapgenFractalParams::MapgenFractalParams()
 	spflags = 0;
 
 	iterations = 9;
-	scale_x = 1024.0;
-	scale_y = 256.0;
-	scale_z = 1024.0;
-	offset_x = -1.75;
-	offset_y = 0.0;
-	offset_z = 0.0;
-	slice_w = 0.0;
+	scale = v3f(1024.0, 256.0, 1024.0);
+
+	moffset = v3f(1.75, 0.0, 0.0);  // Mandelbrot set only
+	mslice_w = 0.0;
+
+	joffset = v3f(0.0, 1.0, 0.0);  // Julia set only
+	jslice_w = 0.0;
 	julia_x = 0.33;
 	julia_y = 0.33;
 	julia_z = 0.33;
@@ -165,13 +167,13 @@ void MapgenFractalParams::readParams(const Settings *settings)
 	settings->getFlagStrNoEx("mgfractal_spflags", spflags, flagdesc_mapgen_fractal);
 
 	settings->getU16NoEx("mgfractal_iterations", iterations);
-	settings->getFloatNoEx("mgfractal_scale_x", scale_x);
-	settings->getFloatNoEx("mgfractal_scale_y", scale_y);
-	settings->getFloatNoEx("mgfractal_scale_z", scale_z);
-	settings->getFloatNoEx("mgfractal_offset_x", offset_x);
-	settings->getFloatNoEx("mgfractal_offset_y", offset_y);
-	settings->getFloatNoEx("mgfractal_offset_z", offset_z);
-	settings->getFloatNoEx("mgfractal_slice_w", slice_w);
+	settings->getV3FNoEx("mgfractal_scale", scale);
+
+	settings->getV3FNoEx("mgfractal_moffset", moffset);
+	settings->getFloatNoEx("mgfractal_mslice_w", mslice_w);
+
+	settings->getV3FNoEx("mgfractal_joffset", joffset);
+	settings->getFloatNoEx("mgfractal_jslice_w", jslice_w);
 	settings->getFloatNoEx("mgfractal_julia_x", julia_x);
 	settings->getFloatNoEx("mgfractal_julia_y", julia_y);
 	settings->getFloatNoEx("mgfractal_julia_z", julia_z);
@@ -188,13 +190,13 @@ void MapgenFractalParams::writeParams(Settings *settings) const
 	settings->setFlagStr("mgfractal_spflags", spflags, flagdesc_mapgen_fractal, U32_MAX);
 
 	settings->setU16("mgfractal_iterations", iterations);
-	settings->setFloat("mgfractal_scale_x", scale_x);
-	settings->setFloat("mgfractal_scale_y", scale_y);
-	settings->setFloat("mgfractal_scale_z", scale_z);
-	settings->setFloat("mgfractal_offset_x", offset_x);
-	settings->setFloat("mgfractal_offset_y", offset_y);
-	settings->setFloat("mgfractal_offset_z", offset_z);
-	settings->setFloat("mgfractal_slice_w", slice_w);
+	settings->setV3F("mgfractal_scale", scale);
+
+	settings->setV3F("mgfractal_moffset", moffset);
+	settings->setFloat("mgfractal_mslice_w", mslice_w);
+
+	settings->setV3F("mgfractal_joffset", joffset);
+	settings->setFloat("mgfractal_jslice_w", jslice_w);
 	settings->setFloat("mgfractal_julia_x", julia_x);
 	settings->setFloat("mgfractal_julia_y", julia_y);
 	settings->setFloat("mgfractal_julia_z", julia_z);
@@ -374,15 +376,15 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 		cy = julia_y;
 		cz = julia_z;
 		cw = julia_w;
-		ox = (float)x / scale_x + offset_x;
-		oy = (float)y / scale_y + offset_y;
-		oz = (float)z / scale_z + offset_z;
-		ow = slice_w;
+		ox = (float)x / scale.X - joffset.X;
+		oy = (float)y / scale.Y - joffset.Y;
+		oz = (float)z / scale.Z - joffset.Z;
+		ow = jslice_w;
 	} else {  // Mandelbrot set
-		cx = (float)x / scale_x + offset_x;
-		cy = (float)y / scale_y + offset_y;
-		cz = (float)z / scale_z + offset_z;
-		cw = slice_w;
+		cx = (float)x / scale.X - moffset.X;
+		cy = (float)y / scale.Y - moffset.Y;
+		cz = (float)z / scale.Z - moffset.Z;
+		cw = mslice_w;
 		ox = 0.0f;
 		oy = 0.0f;
 		oz = 0.0f;
@@ -603,7 +605,7 @@ void MapgenFractal::generateCaves(s16 max_stone_y)
 			for (s16 x = node_min.X; x <= node_max.X; x++, vi++, index++) {
 				float d1 = contour(noise_cave1->result[index]);
 				float d2 = contour(noise_cave2->result[index]);
-				if (d1 * d2 > 0.3) {
+				if (d1 * d2 > 0.4f) {
 					content_t c = vm->m_data[vi].getContent();
 					if (!ndef->get(c).is_ground_content || c == CONTENT_AIR)
 						continue;
