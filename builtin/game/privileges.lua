@@ -6,15 +6,16 @@
 
 core.registered_privileges = {}
 
-function core.register_privilege(name, param)
-	local function fill_defaults(def)
-		if def.give_to_singleplayer == nil then
-			def.give_to_singleplayer = true
-		end
-		if def.description == nil then
-			def.description = "(no description)"
-		end
+local function fill_defaults(def)
+	if def.give_to_singleplayer == nil then
+		def.give_to_singleplayer = true
 	end
+	if def.description == nil then
+		def.description = "(no description)"
+	end
+end
+
+function core.register_privilege(name, param)
 	local def = {}
 	if type(param) == "table" then
 		def = param
@@ -37,6 +38,7 @@ core.register_privilege("ban", "Can ban and unban players")
 core.register_privilege("kick", "Can kick players")
 core.register_privilege("give", "Can use /give and /giveme")
 core.register_privilege("password", "Can use /setpassword and /clearpassword")
+core.register_privilege("rollback", "Can use the rollback functionality")
 core.register_privilege("fly", {
 	description = "Can fly using the free_move mode",
 	give_to_singleplayer = false,
@@ -49,5 +51,3 @@ core.register_privilege("noclip", {
 	description = "Can fly through walls",
 	give_to_singleplayer = false,
 })
-core.register_privilege("rollback", "Can use the rollback functionality")
-
