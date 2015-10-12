@@ -568,8 +568,10 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 	}
 
 	if (given_password != checkpwd) {
-		actionstream << "Server: " << playername << " supplied wrong password"
-				<< std::endl;
+		actionstream << "Server: User " << playername
+			<< " at " << addr_s
+			<< " supplied wrong password (auth mechanism: legacy)."
+			<< std::endl;
 		DenyAccess_Legacy(pkt->getPeerId(), L"Wrong password");
 		return;
 	}
@@ -2062,9 +2064,8 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 		} else {
 			actionstream << "Server: User " << client->getName()
 				<< " at " << getPeerAddress(pkt->getPeerId()).serializeString()
-				<< " supplied wrong (SRP) password from address "
-				<< getPeerAddress(pkt->getPeerId()).serializeString()
-				<< "." << std::endl;
+				<< " supplied wrong password (auth mechanism: SRP)."
+				<< std::endl;
 			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_PASSWORD);
 			return;
 		}
