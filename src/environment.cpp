@@ -577,17 +577,21 @@ public:
 				i->timer -= trigger_interval;
 				actual_interval = trigger_interval;
 			}
-			float intervals = actual_interval / trigger_interval;
-			if(intervals == 0)
-				continue;
 			float chance = abm->getTriggerChance();
 			if(chance == 0)
 				chance = 1;
 			ActiveABM aabm;
 			aabm.abm = abm;
-			aabm.chance = chance / intervals;
-			if(aabm.chance == 0)
-				aabm.chance = 1;
+			if(abm->getSimpleCatchUp()) {
+				float intervals = actual_interval / trigger_interval;
+				if(intervals == 0)
+					continue;
+				aabm.chance = chance / intervals;
+				if(aabm.chance == 0)
+					aabm.chance = 1;
+			} else {
+				aabm.chance = chance;
+			}
 			// Trigger neighbors
 			std::set<std::string> required_neighbors_s
 					= abm->getRequiredNeighbors();

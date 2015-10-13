@@ -3063,10 +3063,14 @@ Definition tables
     {
     --  In the following two fields, also group:groupname will work.
         nodenames = {"default:lava_source"},
-        neighbors = {"default:water_source", "default:water_flowing"}, -- (any of these)
-    --  ^ If left out or empty, any neighbor will do
-        interval = 1.0, -- (operation interval)
-        chance = 1, -- (chance of trigger is 1.0/this)
+        neighbors = {"default:water_source", "default:water_flowing"}, -- Any of these --[[
+        ^ If left out or empty, any neighbor will do ]]
+        interval = 1.0, -- Operation interval in seconds
+        chance = 1, -- Chance of trigger per-node per-interval is 1.0 / this
+        catch_up = true, -- If true, catch-up behaviour is enabled --[[
+        ^ The chance value is temporarily reduced when returning to
+          an area to simulate time lost by the area being unattended.
+        ^ Note chance value can often be reduced to 1 ]]
         action = func(pos, node, active_object_count, active_object_count_wider),
     }
 
