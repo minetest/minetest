@@ -222,11 +222,11 @@ void *Thread::theThread(void *param)
 	th->running = true;
 
 	th->setName();
-	log_register_thread(th->name);
+	g_logger.registerThread(th->name);
 
 	th->retval = th->run();
 
-	log_deregister_thread();
+	g_logger.deregisterThread();
 
 	th->running = false;
 #if __cplusplus < 201103L

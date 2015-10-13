@@ -19,19 +19,91 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "log.h"
 
-#include <map>
-#include <list>
-#include <sstream>
-#include <algorithm>
-#include "threads.h"
 #include "threading/mutex_auto_lock.h"
 #include "debug.h"
 #include "gettime.h"
 #include "porting.h"
 #include "config.h"
+#include "exceptions.h"
+#include "util/numeric.h"
+#include "log.h"
+
+#include <sstream>
+#include <iostream>
+#include <algorithm>
+#include <cerrno>
+#include <cstring>
+
+class StringBuffer : public std::streambuf {
+public:
+	StringBuffer() {}
+
+	int overflow(int c);
+	virtual void flush(const std::string &buf) = 0;
+	std::streamsize xsputn(const char *s, std::streamsize n);
+	void push_back(char c);
+
+private:
+	std::string buffer;
+};
+
+
+class LogBuffer : public StringBuffer {
+public:
+	LogBuffer(Logger &logger, LogLevel lev) :
+		logger(logger),
+		level(lev)
+	{}
+
+	void flush(const std::string &buffer);
+
+private:
+	Logger &logger;
+	LogLevel level;
+};
+
+
+class RawLogBuffer : public StringBuffer {
+public:
+	void flush(const std::string &buffer);
+};
+
+
+#ifdef __ANDROID__
+static unsigned int level_to_android[] = {
+	ANDROID_LOG_INFO,     // LL_NONE
+	//ANDROID_LOG_FATAL,
+	ANDROID_LOG_ERROR,    // LL_ERROR
+	ANDROID_LOG_WARN,     // LL_WARNING
+	ANDROID_LOG_WARN,     // LL_ACTION
+	//ANDROID_LOG_INFO,
+	ANDROID_LOG_DEBUG,    // LL_INFO
+	ANDROID_LOG_VERBOSE,  // LL_VERBOSE
+
+};
+#endif
+
+////
+//// Globals
+////
+
+Logger g_logger;
+
+StreamLogOutput stdout_output(std::cout);
+StreamLogOutput stderr_output(std::cerr);
+std::ostream null_stream(NULL);
+
+RawLogBuffer raw_buf;
+
+LogBuffer none_buf(g_logger, LL_NONE);
+LogBuffer error_buf(g_logger, LL_ERROR);
+LogBuffer warning_buf(g_logger, LL_WARNING);
+LogBuffer action_buf(g_logger, LL_ACTION);
+LogBuffer info_buf(g_logger, LL_INFO);
+LogBuffer verbose_buf(g_logger, LL_VERBOSE);
 
 // Connection
-std::ostream *dout_con_ptr = &dummyout;
+std::ostream *dout_con_ptr = &null_stream;
 std::ostream *derr_con_ptr = &verbosestream;
 
 // Server
@@ -44,170 +116,211 @@ std::ostream *dout_client_ptr = &infostream;
 std::ostream *derr_client_ptr = &errorstream;
 #endif
 
-#ifdef __ANDROID__
-unsigned int android_log_level_mapping[] = {
-		/* LMT_ERROR */   ANDROID_LOG_ERROR,
-		/* LMT_ACTION */  ANDROID_LOG_WARN,
-		/* LMT_INFO */    ANDROID_LOG_INFO,
-		/* LMT_VERBOSE */ ANDROID_LOG_VERBOSE
+std::ostream rawstream(&raw_buf);
+std::ostream dstream(&none_buf);
+std::ostream errorstream(&error_buf);
+std::ostream warningstream(&warning_buf);
+std::ostream actionstream(&action_buf);
+std::ostream infostream(&info_buf);
+std::ostream verbosestream(&verbose_buf);
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+
+////
+//// Logger
+////
+
+LogLevel Logger::stringToLevel(const std::string &name)
+{
+	if (name == "none")
+		return LL_NONE;
+	else if (name == "error")
+		return LL_ERROR;
+	else if (name == "warning")
+		return LL_WARNING;
+	else if (name == "action")
+		return LL_ACTION;
+	else if (name == "info")
+		return LL_INFO;
+	else if (name == "verbose")
+		return LL_VERBOSE;
+	else
+		return LL_MAX;
+}
+
+void Logger::addOutput(ILogOutput *out)
+{
+	addOutputMaxLevel(out, LL_MAX);
+}
+
+void Logger::addOutput(ILogOutput *out, LogLevel lev)
+{
+	m_outputs[lev].push_back(out);
+}
+
+void Logger::addOutputMaxLevel(ILogOutput *out, LogLevel lev)
+{
+	for (size_t i = 0; i <= lev; i++)
+		m_outputs[i].push_back(out);
+}
+
+void Logger::removeOutput(ILogOutput *out)
+{
+	for (size_t i = 0; i < LL_MAX; i++) {
+		std::vector<ILogOutput *>::iterator it;
+
+		it = std::find(m_outputs[i].begin(), m_outputs[i].end(), out);
+		if (it != m_outputs[i].end())
+			m_outputs[i].erase(it);
+	}
+}
+
+void Logger::setLevelSilenced(LogLevel lev, bool silenced)
+{
+	m_silenced_levels[lev] = silenced;
+}
+
+void Logger::registerThread(const std::string &name)
+{
+	threadid_t id = get_current_thread_id();
+	MutexAutoLock lock(m_mutex);
+	m_thread_names[id] = name;
+}
+
+void Logger::deregisterThread()
+{
+	threadid_t id = get_current_thread_id();
+	MutexAutoLock lock(m_mutex);
+	m_thread_names.erase(id);
+}
+
+const std::string Logger::getLevelLabel(LogLevel lev)
+{
+	static const std::string names[] = {
+		"",
+		"ERROR",
+		"WARNING",
+		"ACTION",
+		"INFO",
+		"VERBOSE",
 	};
-#endif
-
-std::vector<ILogOutput*> log_outputs[LMT_NUM_VALUES];
-std::map<threadid_t, std::string> log_thread_names;
-Mutex log_thread_name_mutex;
-
-void log_add_output(ILogOutput *out, enum LogMessageLevel lev)
-{
-	log_outputs[lev].push_back(out);
+	assert(lev < LL_MAX && lev >= 0);
+	assert(ARRLEN(names) == LL_MAX);
+	return names[lev];
 }
 
-void log_add_output_maxlev(ILogOutput *out, enum LogMessageLevel lev)
+const std::string Logger::getThreadName()
 {
-	for(int i=0; i<=lev; i++)
-		log_outputs[i].push_back(out);
-}
+	std::map<threadid_t, std::string>::const_iterator it;
 
-void log_add_output_all_levs(ILogOutput *out)
-{
-	for(int i=0; i<LMT_NUM_VALUES; i++)
-		log_outputs[i].push_back(out);
-}
-
-void log_remove_output(ILogOutput *out)
-{
-	for(int i=0; i<LMT_NUM_VALUES; i++){
-		std::vector<ILogOutput*>::iterator it =
-				std::find(log_outputs[i].begin(), log_outputs[i].end(), out);
-		if(it != log_outputs[i].end())
-			log_outputs[i].erase(it);
-	}
-}
-
-void log_set_lev_silence(enum LogMessageLevel lev, bool silence)
-{
-	MutexAutoLock lock(log_thread_name_mutex);
-
-	for (std::vector<ILogOutput *>::iterator it = log_outputs[lev].begin();
-			it != log_outputs[lev].end(); ++it) {
-		ILogOutput *out = *it;
-		out->silence = silence;
-	}
-}
-
-void log_register_thread(const std::string &name)
-{
 	threadid_t id = get_current_thread_id();
-	MutexAutoLock lock(log_thread_name_mutex);
+	it = m_thread_names.find(id);
+	if (it != m_thread_names.end())
+		return it->second;
 
-	log_thread_names[id] = name;
+	std::ostringstream os;
+	os << "#0x" << std::hex << id;
+	return os.str();
 }
 
-void log_deregister_thread()
+void Logger::log(LogLevel lev, const std::string &text)
 {
-	threadid_t id = get_current_thread_id();
-	MutexAutoLock lock(log_thread_name_mutex);
+	if (m_silenced_levels[lev])
+		return;
 
-	log_thread_names.erase(id);
-}
-
-static std::string get_lev_string(enum LogMessageLevel lev)
-{
-	switch(lev){
-	case LMT_ERROR:
-		return "ERROR";
-	case LMT_ACTION:
-		return "ACTION";
-	case LMT_INFO:
-		return "INFO";
-	case LMT_VERBOSE:
-		return "VERBOSE";
-	case LMT_NUM_VALUES:
-		break;
-	}
-	return "(unknown level)";
-}
-
-void log_printline(enum LogMessageLevel lev, const std::string &text)
-{
-	MutexAutoLock lock(log_thread_name_mutex);
-	std::string threadname = "(unknown thread)";
-	std::map<threadid_t, std::string>::const_iterator i;
-	i = log_thread_names.find(get_current_thread_id());
-	if(i != log_thread_names.end())
-		threadname = i->second;
-	std::string levelname = get_lev_string(lev);
+	const std::string thread_name = getThreadName();
+	const std::string label = getLevelLabel(lev);
 	std::ostringstream os(std::ios_base::binary);
-	os << getTimestamp() << ": " << levelname << "["<<threadname<<"]: " << text;
+	os << getTimestamp() << ": " << label << "[" << thread_name << "]: " << text;
 
-	for(std::vector<ILogOutput*>::iterator i = log_outputs[lev].begin();
-			i != log_outputs[lev].end(); ++i) {
-		ILogOutput *out = *i;
-		if (out->silence)
-			continue;
+	logToSystem(lev, text);
+	logToOutputs(lev, os.str());
+}
 
-		out->printLog(os.str());
-		out->printLog(os.str(), lev);
-		out->printLog(lev, text);
+void Logger::logRaw(LogLevel lev, const std::string &text)
+{
+	if (m_silenced_levels[lev])
+		return;
+
+	logToSystem(lev, text);
+	logToOutputs(lev, text);
+}
+
+void Logger::logToSystem(LogLevel lev, const std::string &text)
+{
+#ifdef __ANDROID__
+	assert(ARRLEN(level_to_android) == LL_MAX);
+	__android_log_print(level_to_android[lev],
+		PROJECT_NAME_C, "%s", text.c_str());
+#endif
+}
+
+void Logger::logToOutputs(LogLevel lev, const std::string &text)
+{
+	MutexAutoLock lock(m_mutex);
+	for (size_t i = 0; i != m_outputs[lev].size(); i++)
+		m_outputs[lev][i]->log(text);
+}
+
+
+////
+//// *LogOutput methods
+////
+
+void FileLogOutput::open(const std::string &filename)
+{
+	stream.open(filename.c_str(), std::ios::app | std::ios::ate);
+	if (!stream.good())
+		throw FileNotGoodException("Failed to open log file " +
+			filename + ": " + strerror(errno));
+	stream << "\n\n"
+		   "-------------" << std::endl
+		<< "  Separator" << std::endl
+		<< "-------------\n" << std::endl;
+}
+
+
+
+////
+//// *Buffer methods
+////
+
+int StringBuffer::overflow(int c)
+{
+	push_back(c);
+	return c;
+}
+
+
+std::streamsize StringBuffer::xsputn(const char *s, std::streamsize n)
+{
+	for (int i = 0; i < n; ++i)
+		push_back(s[i]);
+	return n;
+}
+
+void StringBuffer::push_back(char c)
+{
+	if (c == '\n' || c == '\r') {
+		if (!buffer.empty())
+			flush(buffer);
+		buffer.clear();
+	} else {
+		buffer.push_back(c);
 	}
 }
 
-class Logbuf : public std::streambuf
+
+
+
+void LogBuffer::flush(const std::string &buffer)
 {
-public:
-	Logbuf(enum LogMessageLevel lev):
-		m_lev(lev)
-	{
-	}
+	logger.log(level, buffer);
+}
 
-	~Logbuf()
-	{
-	}
-
-	int overflow(int c)
-	{
-		bufchar(c);
-		return c;
-	}
-	std::streamsize xsputn(const char *s, std::streamsize n)
-	{
-		for(int i=0; i<n; i++)
-			bufchar(s[i]);
-		return n;
-	}
-
-	void printbuf()
-	{
-		log_printline(m_lev, m_buf);
-#ifdef __ANDROID__
-		__android_log_print(android_log_level_mapping[m_lev], PROJECT_NAME, "%s", m_buf.c_str());
-#endif
-	}
-
-	void bufchar(char c)
-	{
-		if(c == '\n' || c == '\r'){
-			if(m_buf != "")
-				printbuf();
-			m_buf = "";
-			return;
-		}
-		m_buf += c;
-	}
-
-private:
-	enum LogMessageLevel m_lev;
-	std::string m_buf;
-};
-
-Logbuf errorbuf(LMT_ERROR);
-Logbuf actionbuf(LMT_ACTION);
-Logbuf infobuf(LMT_INFO);
-Logbuf verbosebuf(LMT_VERBOSE);
-std::ostream errorstream(&errorbuf);
-std::ostream actionstream(&actionbuf);
-std::ostream infostream(&infobuf);
-std::ostream verbosestream(&verbosebuf);
-
-bool log_trace_level_enabled = false;
-
+void RawLogBuffer::flush(const std::string &buffer)
+{
+	g_logger.logRaw(LL_NONE, buffer);
+}

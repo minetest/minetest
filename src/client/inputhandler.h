@@ -17,8 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef __INPUT_HANDLER_H__
-#define __INPUT_HANDLER_H__
+#ifndef INPUT_HANDLER_H
+#define INPUT_HANDLER_H
 
 #include "irrlichttypes_extrabloated.h"
 
@@ -86,16 +86,16 @@ public:
 				}
 			}
 		} else if (event.EventType == irr::EET_LOG_TEXT_EVENT) {
-			static const enum LogMessageLevel irr_loglev_conv[] = {
-				LMT_VERBOSE, // ELL_DEBUG
-				LMT_INFO,    // ELL_INFORMATION
-				LMT_ACTION,  // ELL_WARNING
-				LMT_ERROR,   // ELL_ERROR
-				LMT_ERROR,   // ELL_NONE
+			static const LogLevel irr_loglev_conv[] = {
+				LL_VERBOSE, // ELL_DEBUG
+				LL_INFO,    // ELL_INFORMATION
+				LL_WARNING, // ELL_WARNING
+				LL_ERROR,   // ELL_ERROR
+				LL_NONE,    // ELL_NONE
 			};
 			assert(event.LogEvent.Level < ARRLEN(irr_loglev_conv));
-			log_printline(irr_loglev_conv[event.LogEvent.Level],
-				std::string("Irrlicht: ") + (const char *)event.LogEvent.Text);
+			g_logger.log(irr_loglev_conv[event.LogEvent.Level],
+				std::string("Irrlicht: ") + (const char*) event.LogEvent.Text);
 			return true;
 		}
 		/* always return false in order to continue processing events */

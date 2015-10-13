@@ -32,60 +32,61 @@ class TestFailedException : public std::exception {
 };
 
 // Runs a unit test and reports results
-#define TEST(fxn, ...) do {                                                 \
-	u32 t1 = porting::getTime(PRECISION_MILLI);                             \
-	try {                                                                   \
-		fxn(__VA_ARGS__);                                                   \
-		dstream << "[PASS] ";                                               \
-	} catch (TestFailedException &e) {                                      \
-		dstream << "[FAIL] ";                                               \
-		num_tests_failed++;                                                 \
-	} catch (std::exception &e) {                                           \
-		dstream << "Caught unhandled exception: " << e.what() << std::endl; \
-		dstream << "[FAIL] ";                                               \
-		num_tests_failed++;                                                 \
-	}                                                                       \
-	num_tests_run++;                                                        \
-	u32 tdiff = porting::getTime(PRECISION_MILLI) - t1;                     \
-	dstream << #fxn << " - " << tdiff << "ms" << std::endl;                 \
+#define TEST(fxn, ...) do {                                                   \
+	u32 t1 = porting::getTime(PRECISION_MILLI);                               \
+	try {                                                                     \
+		fxn(__VA_ARGS__);                                                     \
+		rawstream << "[PASS] ";                                               \
+	} catch (TestFailedException &e) {                                        \
+		rawstream << "[FAIL] ";                                               \
+		num_tests_failed++;                                                   \
+	} catch (std::exception &e) {                                             \
+		rawstream << "Caught unhandled exception: " << e.what() << std::endl; \
+		rawstream << "[FAIL] ";                                               \
+		num_tests_failed++;                                                   \
+	}                                                                         \
+	num_tests_run++;                                                          \
+	u32 tdiff = porting::getTime(PRECISION_MILLI) - t1;                       \
+	rawstream << #fxn << " - " << tdiff << "ms" << std::endl;                 \
 } while (0)
 
 // Asserts the specified condition is true, or fails the current unit test
-#define UASSERT(x) do {                                       \
-	if (!(x)) {                                               \
-		dstream << "Test assertion failed: " #x << std::endl  \
-			<< "    at " << fs::GetFilenameFromPath(__FILE__) \
-			<< ":" << __LINE__ << std::endl;                  \
-		throw TestFailedException();                          \
-	}                                                         \
+#define UASSERT(x) do {                                         \
+	if (!(x)) {                                                 \
+		rawstream << "Test assertion failed: " #x << std::endl  \
+			<< "    at " << fs::GetFilenameFromPath(__FILE__)   \
+			<< ":" << __LINE__ << std::endl;                    \
+		throw TestFailedException();                            \
+	}                                                           \
 } while (0)
 
 // Asserts the specified condition is true, or fails the current unit test
 // and prints the format specifier fmt
-#define UTEST(x, fmt, ...) do {                                        \
-	if (!(x)) {                                                        \
-		char utest_buf[1024];                                          \
-		snprintf(utest_buf, sizeof(utest_buf), fmt, __VA_ARGS__);      \
-		dstream << "Test assertion failed: " << utest_buf << std::endl \
-			<< "    at " << fs::GetFilenameFromPath(__FILE__)          \
-			<< ":" << __LINE__ << std::endl;                           \
-		throw TestFailedException();                                   \
-	}                                                                  \
+#define UTEST(x, fmt, ...) do {                                          \
+	if (!(x)) {                                                          \
+		char utest_buf[1024];                                            \
+		snprintf(utest_buf, sizeof(utest_buf), fmt, __VA_ARGS__);        \
+		rawstream << "Test assertion failed: " << utest_buf << std::endl \
+			<< "    at " << fs::GetFilenameFromPath(__FILE__)            \
+			<< ":" << __LINE__ << std::endl;                             \
+		throw TestFailedException();                                     \
+	}                                                                    \
 } while (0)
 
 // Asserts the comparison specified by CMP is true, or fails the current unit test
-#define UASSERTCMP(T, CMP, actual, expected) do {                             \
-	T a = (actual);                                                           \
-	T e = (expected);                                                         \
-	if (!(a CMP e)) {                                                         \
-		dstream << "Test assertion failed: " << #actual << " " << #CMP << " " \
-			<< #expected << std::endl                                         \
-			<< "    at " << fs::GetFilenameFromPath(__FILE__) << ":"          \
-			<< __LINE__ << std::endl                                          \
-			<< "    actual:   " << a << std::endl << "    expected: "         \
-			<< e << std::endl;                                                \
-		throw TestFailedException();                                          \
-	}                                                                         \
+#define UASSERTCMP(T, CMP, actual, expected) do {                         \
+	T a = (actual);                                                       \
+	T e = (expected);                                                     \
+	if (!(a CMP e)) {                                                     \
+		rawstream                                                         \
+			<< "Test assertion failed: " << #actual << " " << #CMP << " " \
+			<< #expected << std::endl                                     \
+			<< "    at " << fs::GetFilenameFromPath(__FILE__) << ":"      \
+			<< __LINE__ << std::endl                                      \
+			<< "    actual:   " << a << std::endl << "    expected: "     \
+			<< e << std::endl;                                            \
+		throw TestFailedException();                                      \
+	}                                                                     \
 } while (0)
 
 #define UASSERTEQ(T, actual, expected) UASSERTCMP(T, ==, actual, expected)

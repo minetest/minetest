@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <stdlib.h>
 #include <cstring>
 #include <map>
+#include <sstream>
 #include "threading/mutex.h"
 #include "threading/mutex_auto_lock.h"
 #include "config.h"
@@ -37,114 +38,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 /*
-	Debug output
-*/
-
-#define DEBUGSTREAM_COUNT 2
-
-FILE *g_debugstreams[DEBUGSTREAM_COUNT] = {stderr, NULL};
-
-#define DEBUGPRINT(...)\
-{\
-	for(int i=0; i<DEBUGSTREAM_COUNT; i++)\
-	{\
-		if(g_debugstreams[i] != NULL){\
-			fprintf(g_debugstreams[i], __VA_ARGS__);\
-			fflush(g_debugstreams[i]);\
-		}\
-	}\
-}
-
-void debugstreams_init(bool disable_stderr, const char *filename)
-{
-	if(disable_stderr)
-		g_debugstreams[0] = NULL;
-	else
-		g_debugstreams[0] = stderr;
-
-	if(filename)
-		g_debugstreams[1] = fopen(filename, "a");
-
-	if(g_debugstreams[1])
-	{
-		fprintf(g_debugstreams[1], "\n\n-------------\n");
-		fprintf(g_debugstreams[1],     "  Separator  \n");
-		fprintf(g_debugstreams[1],     "-------------\n\n");
-	}
-}
-
-void debugstreams_deinit()
-{
-	if(g_debugstreams[1] != NULL)
-		fclose(g_debugstreams[1]);
-}
-
-class Debugbuf : public std::streambuf
-{
-public:
-	Debugbuf(bool disable_stderr)
-	{
-		m_disable_stderr = disable_stderr;
-	}
-
-	int overflow(int c)
-	{
-		for(int i=0; i<DEBUGSTREAM_COUNT; i++)
-		{
-			if(g_debugstreams[i] == stderr && m_disable_stderr)
-				continue;
-			if(g_debugstreams[i] != NULL)
-				(void)fwrite(&c, 1, 1, g_debugstreams[i]);
-			//TODO: Is this slow?
-			fflush(g_debugstreams[i]);
-		}
-
-		return c;
-	}
-	std::streamsize xsputn(const char *s, std::streamsize n)
-	{
-#ifdef __ANDROID__
-		__android_log_print(ANDROID_LOG_VERBOSE, PROJECT_NAME, "%s", s);
-#endif
-		for(int i=0; i<DEBUGSTREAM_COUNT; i++)
-		{
-			if(g_debugstreams[i] == stderr && m_disable_stderr)
-				continue;
-			if(g_debugstreams[i] != NULL)
-				(void)fwrite(s, 1, n, g_debugstreams[i]);
-			//TODO: Is this slow?
-			fflush(g_debugstreams[i]);
-		}
-
-		return n;
-	}
-
-private:
-	bool m_disable_stderr;
-};
-
-Debugbuf debugbuf(false);
-std::ostream dstream(&debugbuf);
-Debugbuf debugbuf_no_stderr(true);
-std::ostream dstream_no_stderr(&debugbuf_no_stderr);
-Nullstream dummyout;
-
-/*
 	Assert
 */
 
 void sanity_check_fn(const char *assertion, const char *file,
 		unsigned int line, const char *function)
 {
-	DEBUGPRINT("\nIn thread %lx:\n"
-			"%s:%u: %s: An engine assumption '%s' failed.\n",
-			(unsigned long)get_current_thread_id(),
-			file, line, function, assertion);
+	errorstream << std::endl << "In thread " << std::hex
+		<< (unsigned long)get_current_thread_id() << ":" << std::endl;
+	errorstream << file << ":" << line << ": " << function
+		<< ": An engine assumption '" << assertion << "' failed." << std::endl;
 
-	debug_stacks_print();
-
-	if(g_debugstreams[1])
-		fclose(g_debugstreams[1]);
+	debug_stacks_print_to(errorstream);
 
 	abort();
 }
@@ -152,15 +57,12 @@ void sanity_check_fn(const char *assertion, const char *file,
 void fatal_error_fn(const char *msg, const char *file,
 		unsigned int line, const char *function)
 {
-	DEBUGPRINT("\nIn thread %lx:\n"
-			"%s:%u: %s: A fatal error occurred: %s\n",
-			(unsigned long)get_current_thread_id(),
-			file, line, function, msg);
+	errorstream << std::endl << "In thread " << std::hex
+		<< (unsigned long)get_current_thread_id() << ":" << std::endl;
+	errorstream << file << ":" << line << ": " << function
+		<< ": A fatal error occured: " << msg << std::endl;
 
-	debug_stacks_print();
-
-	if(g_debugstreams[1])
-		fclose(g_debugstreams[1]);
+	debug_stacks_print_to(errorstream);
 
 	abort();
 }
@@ -251,22 +153,7 @@ void debug_stacks_print_to(std::ostream &os)
 
 void debug_stacks_print()
 {
-	MutexAutoLock lock(g_debug_stacks_mutex);
-
-	DEBUGPRINT("Debug stacks:\n");
-
-	for(std::map<threadid_t, DebugStack*>::iterator
-			i = g_debug_stacks.begin();
-			i != g_debug_stacks.end(); ++i)
-	{
-		DebugStack *stack = i->second;
-
-		for(int i=0; i<DEBUGSTREAM_COUNT; i++)
-		{
-			if(g_debugstreams[i] != NULL)
-				stack->print(g_debugstreams[i], true);
-		}
-	}
+	debug_stacks_print_to(errorstream);
 }
 
 DebugStacker::DebugStacker(const char *text)

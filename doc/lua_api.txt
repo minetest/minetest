@@ -1774,11 +1774,11 @@ Helper functions
       * false: return only file names.
 
 ### Logging
-* `minetest.debug(line)`
-    * Always printed to `stderr` and logfile (`print()` is redirected here)
-* `minetest.log(line)`
-* `minetest.log(loglevel, line)`
-    * `loglevel` is one of `"error"`, `"action"`, `"info"`, `"verbose"`
+* `minetest.debug(...)`
+    * Equivalent to `minetest.log(table.concat({...}, "\t"))`
+* `minetest.log([level,] text)`
+    * `level` is one of `"none"`, `"error"`, `"warning"`, `"action"`,
+      `"info"`, or `"verbose"`.  Default is `"none"`.
 
 ### Registration functions
 Call these functions only at load time!

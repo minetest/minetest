@@ -127,11 +127,13 @@ function ui.update()
 		end
 
 		if (active_toplevel_ui_elements > 1) then
-			print("WARNING: ui manager detected more then one active ui element, self most likely isn't intended")
+			core.log("warning", "more than one active ui "..
+				"element, self most likely isn't intended")
 		end
 
 		if (active_toplevel_ui_elements == 0) then
-			print("WARNING: not a single toplevel ui element active switching to default")
+			core.log("warning", "no toplevel ui element "..
+					"active; switching to default")
 			ui.childlist[ui.default]:show()
 			formspec = ui.childlist[ui.default]:get_formspec()
 		end

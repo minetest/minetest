@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "test.h"
 
-#include "debug.h"
 #include "log.h"
 #include "nodedef.h"
 #include "itemdef.h"
@@ -223,7 +222,7 @@ void run_tests()
 	u32 t1 = porting::getTime(PRECISION_MILLI);
 	TestGameDef gamedef;
 
-	log_set_lev_silence(LMT_ERROR, true);
+	g_logger.setLevelSilenced(LL_ERROR, true);
 
 	u32 num_modules_failed     = 0;
 	u32 num_total_tests_failed = 0;
@@ -239,11 +238,11 @@ void run_tests()
 
 	u32 tdiff = porting::getTime(PRECISION_MILLI) - t1;
 
-	log_set_lev_silence(LMT_ERROR, false);
+	g_logger.setLevelSilenced(LL_ERROR, false);
 
 	const char *overall_status = (num_modules_failed == 0) ? "PASSED" : "FAILED";
 
-	dstream
+	rawstream
 		<< "++++++++++++++++++++++++++++++++++++++++"
 		<< "++++++++++++++++++++++++++++++++++++++++" << std::endl
 		<< "Unit Test Results: " << overall_status << std::endl
@@ -264,14 +263,14 @@ void run_tests()
 
 bool TestBase::testModule(IGameDef *gamedef)
 {
-	dstream << "======== Testing module " << getName() << std::endl;
+	rawstream << "======== Testing module " << getName() << std::endl;
 	u32 t1 = porting::getTime(PRECISION_MILLI);
 
 
 	runTests(gamedef);
 
 	u32 tdiff = porting::getTime(PRECISION_MILLI) - t1;
-	dstream << "======== Module " << getName() << " "
+	rawstream << "======== Module " << getName() << " "
 		<< (num_tests_failed ? "failed" : "passed") << " (" << num_tests_failed
 		<< " failures / " << num_tests_run << " tests) - " << tdiff
 		<< "ms" << std::endl;

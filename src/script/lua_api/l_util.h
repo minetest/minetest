@@ -35,10 +35,6 @@ private:
 		GUIEngine instance should be in here.
 	*/
 
-	// debug(text)
-	// Writes a line to dstream
-	static int l_debug(lua_State *L);
-
 	// log([level,] text)
 	// Writes a line to the logger.
 	// The one-argument version logs to infostream.
