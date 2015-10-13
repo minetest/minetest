@@ -2573,12 +2573,14 @@ ServerMapSector * ServerMap::createSector(v2s16 p2d)
 	/*
 		Do not create over-limit
 	*/
-	const static u16 map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
-		g_settings->getU16("map_generation_limit"));
-	if(p2d.X < -map_gen_limit / MAP_BLOCKSIZE
-			|| p2d.X >  map_gen_limit / MAP_BLOCKSIZE
-			|| p2d.Y < -map_gen_limit / MAP_BLOCKSIZE
-			|| p2d.Y >  map_gen_limit / MAP_BLOCKSIZE)
+	const static v3s16 map_gen_limit = g_settings->getMapGenerationLimit();
+
+	const static s16 map_gen_limit_x = MYMIN(MAX_MAP_GENERATION_LIMIT, map_gen_limit.X);
+	const static s16 map_gen_limit_z = MYMIN(MAX_MAP_GENERATION_LIMIT, map_gen_limit.Z);
+	if (p2d.X < -map_gen_limit_x / MAP_BLOCKSIZE
+			|| p2d.X >  map_gen_limit_x / MAP_BLOCKSIZE
+			|| p2d.Y < -map_gen_limit_z / MAP_BLOCKSIZE
+			|| p2d.Y >  map_gen_limit_z / MAP_BLOCKSIZE)
 		throw InvalidPositionException("createSector(): pos. over limit");
 
 	/*

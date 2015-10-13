@@ -559,13 +559,15 @@
 #    From how far blocks are generated for clients, stated in mapblocks (16 nodes)
 #max_block_generate_distance = 6
 
-#    Where the map generator stops.
+#    Where the map generator stops, in node distance from zero (per axis, in each direction)
 #    Please note:
 #      * Limited to 31000 (setting above has no effect)
-#      * The map generator works in groups of 80x80x80 nodes (5x5x5 MapBlocks).
-#      * Those groups have an offset of -32, -32 nodes from the origin.
-#      * Only groups which are within the map_generation_limit are generated
-#map_generation_limit = 31000
+#      * The map generator works in groups of chunksize mapblocks, default 5 (80x80x80 nodes)
+#      * Only chunks which are entirely within the map_generation_limit are generated
+#map_generation_limit = (31000,31000,31000)
+#    Can also be set with a single value, which will be generalized to all six axis directions
+#      * The example setting below is the same as the one above;
+#map_generation_limit =  31000
 
 #    Number of extra blocks that can be loaded by /clearobjects at once.
 #    This is a trade-off between sqlite transaction overhead and

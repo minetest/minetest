@@ -134,6 +134,8 @@ public:
 	bool getBool(const std::string &name) const;
 	u16 getU16(const std::string &name) const;
 	s16 getS16(const std::string &name) const;
+	v3s16 getV3S16(const std::string &name) const;
+	v3s16 getMapGenerationLimit() const;
 	s32 getS32(const std::string &name) const;
 	u64 getU64(const std::string &name) const;
 	float getFloat(const std::string &name) const;
@@ -164,6 +166,7 @@ public:
 	bool getFlag(const std::string &name) const;
 	bool getU16NoEx(const std::string &name, u16 &val) const;
 	bool getS16NoEx(const std::string &name, s16 &val) const;
+	bool getV3S16NoEx(const std::string &name, v3s16 &val) const;
 	bool getS32NoEx(const std::string &name, s32 &val) const;
 	bool getU64NoEx(const std::string &name, u64 &val) const;
 	bool getFloatNoEx(const std::string &name, float &val) const;
@@ -189,6 +192,7 @@ public:
 	bool setGroupDefault(const std::string &name, Settings *group);
 	bool setBool(const std::string &name, bool value);
 	bool setS16(const std::string &name, s16 value);
+	bool setV3S16(const std::string &name, v3s16 value);
 	bool setU16(const std::string &name, u16 value);
 	bool setS32(const std::string &name, s32 value);
 	bool setU64(const std::string &name, u64 value);
