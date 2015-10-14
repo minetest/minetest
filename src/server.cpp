@@ -148,8 +148,8 @@ Server::Server(
 		const std::string &path_world,
 		const SubgameSpec &gamespec,
 		bool simple_singleplayer_mode,
-		bool ipv6
-	):
+		bool ipv6,
+		bool dedicated) :
 	m_path_world(path_world),
 	m_gamespec(gamespec),
 	m_simple_singleplayer_mode(simple_singleplayer_mode),
@@ -177,8 +177,8 @@ Server::Server(
 	m_shutdown_ask_reconnect(false),
 	m_ignore_map_edit_events(false),
 	m_ignore_map_edit_events_peer_id(0),
-	m_next_sound_id(0)
-
+	m_next_sound_id(0),
+	m_dedicated(dedicated)
 {
 	m_liquid_transform_timer = 0.0;
 	m_liquid_transform_every = 1.0;
@@ -651,7 +651,8 @@ void Server::AsyncRunStep(bool initial_step)
 					m_lag,
 					m_gamespec.id,
 					m_emerge->params.mg_name,
-					m_mods);
+					m_mods,
+					m_dedicated);
 			counter = 0.01;
 		}
 		counter += dtime;

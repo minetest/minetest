@@ -824,7 +824,7 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 
 	// Create server
 	Server server(game_params.world_path, game_params.game_spec, false,
-		bind_addr.isIPv6());
+		bind_addr.isIPv6(), game_params.is_dedicated_server);
 	server.start(bind_addr);
 
 	// Run server
