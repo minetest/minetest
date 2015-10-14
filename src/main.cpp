@@ -226,7 +226,7 @@ int main(int argc, char *argv[])
 	// Stop httpfetch thread (if started)
 	httpfetch_cleanup();
 
-	END_DEBUG_EXCEPTION_HANDLER(errorstream);
+	END_DEBUG_EXCEPTION_HANDLER
 
 	return retval;
 }

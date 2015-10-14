@@ -700,6 +700,6 @@ void *EmergeThread::run()
 		m_server->setAsyncFatalError(err.str());
 	}
 
-	END_DEBUG_EXCEPTION_HANDLER(errorstream)
+	END_DEBUG_EXCEPTION_HANDLER
 	return NULL;
 }

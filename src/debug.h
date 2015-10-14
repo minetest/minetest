@@ -126,16 +126,16 @@ private:
 
 #if CATCH_UNHANDLED_EXCEPTIONS == 1
 	#define BEGIN_DEBUG_EXCEPTION_HANDLER try {
-	#define END_DEBUG_EXCEPTION_HANDLER(logstream)           \
-		} catch (std::exception &e) {                        \
-			logstream << "An unhandled exception occurred: " \
-				<< e.what() << std::endl;                    \
-			FATAL_ERROR(e.what());                           \
+	#define END_DEBUG_EXCEPTION_HANDLER                        \
+		} catch (std::exception &e) {                          \
+			errorstream << "An unhandled exception occurred: " \
+				<< e.what() << std::endl;                      \
+			FATAL_ERROR(e.what());                             \
 		}
 #else
 	// Dummy ones
 	#define BEGIN_DEBUG_EXCEPTION_HANDLER
-	#define END_DEBUG_EXCEPTION_HANDLER(logstream)
+	#define END_DEBUG_EXCEPTION_HANDLER
 #endif
 
 #endif // DEBUG_HEADER

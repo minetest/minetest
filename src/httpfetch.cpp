@@ -677,7 +677,7 @@ protected:
 			else
 				waitForIO(100);
 
-			END_DEBUG_EXCEPTION_HANDLER(errorstream)
+			END_DEBUG_EXCEPTION_HANDLER
 		}
 
 		// Call curl_multi_remove_handle and cleanup easy handles
