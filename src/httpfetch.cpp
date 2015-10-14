@@ -616,7 +616,7 @@ protected:
 
 	void *run()
 	{
-		DSTACK(__FUNCTION_NAME);
+		DSTACK(FUNCTION_NAME);
 
 		CurlHandlePool pool;
 

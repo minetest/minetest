@@ -81,7 +81,7 @@ ClientMap::~ClientMap()
 
 MapSector * ClientMap::emergeSector(v2s16 p2d)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 	// Check that it doesn't exist already
 	try{
 		return getSectorNoGenerate(p2d);
@@ -400,7 +400,7 @@ struct MeshBufListList
 
 void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 
 	bool is_transparent_pass = pass == scene::ESNRP_TRANSPARENT;
 

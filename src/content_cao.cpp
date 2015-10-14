@@ -465,7 +465,7 @@ void ItemCAO::updateTexture()
 	}
 	catch(SerializationError &e)
 	{
-		warningstream<<__FUNCTION_NAME
+		warningstream<<FUNCTION_NAME
 				<<": error deSerializing itemstring \""
 				<<m_itemstring<<std::endl;
 	}

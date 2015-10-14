@@ -210,7 +210,7 @@ public:
 
 	void *run()
 	{
-		DSTACK(__FUNCTION_NAME);
+		DSTACK(FUNCTION_NAME);
 		BEGIN_DEBUG_EXCEPTION_HANDLER
 
 		while (!stopRequested()) {

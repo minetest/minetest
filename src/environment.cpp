@@ -70,7 +70,7 @@ Environment::~Environment()
 
 void Environment::addPlayer(Player *player)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 	/*
 		Check that peer_ids are unique.
 		Also check that names are unique.
@@ -982,7 +982,7 @@ void ServerEnvironment::clearAllObjects()
 
 void ServerEnvironment::step(float dtime)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 
 	//TimeTaker timer("ServerEnv step");
 
@@ -2028,7 +2028,7 @@ ClientMap & ClientEnvironment::getClientMap()
 
 void ClientEnvironment::addPlayer(Player *player)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 	/*
 		It is a failure if player is local and there already is a local
 		player
@@ -2052,7 +2052,7 @@ LocalPlayer * ClientEnvironment::getLocalPlayer()
 
 void ClientEnvironment::step(float dtime)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 
 	/* Step time of day */
 	stepTimeOfDay(dtime);

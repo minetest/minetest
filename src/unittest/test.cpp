@@ -217,7 +217,7 @@ void TestGameDef::defineSomeNodes()
 
 void run_tests()
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 
 	u32 t1 = porting::getTime(PRECISION_MILLI);
 	TestGameDef gamedef;

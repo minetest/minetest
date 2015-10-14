@@ -35,13 +35,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#ifdef _MSC_VER
 		#include <eh.h>
 	#endif
-	#define __NORETURN __declspec(noreturn)
-	#define __FUNCTION_NAME __FUNCTION__
 	#define NORETURN __declspec(noreturn)
 	#define FUNCTION_NAME __FUNCTION__
 #else
-	#define __NORETURN __attribute__ ((__noreturn__))
-	#define __FUNCTION_NAME __PRETTY_FUNCTION__
 	#define NORETURN __attribute__ ((__noreturn__))
 	#define FUNCTION_NAME __PRETTY_FUNCTION__
 #endif
@@ -57,16 +53,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /* Abort program execution immediately
  */
-__NORETURN extern void fatal_error_fn(
+NORETURN extern void fatal_error_fn(
 		const char *msg, const char *file,
 		unsigned int line, const char *function);
 
 #define FATAL_ERROR(msg) \
-	fatal_error_fn((msg), __FILE__, __LINE__, __FUNCTION_NAME)
+	fatal_error_fn((msg), __FILE__, __LINE__, FUNCTION_NAME)
 
 #define FATAL_ERROR_IF(expr, msg) \
 	((expr) \
-	? fatal_error_fn((msg), __FILE__, __LINE__, __FUNCTION_NAME) \
+	? fatal_error_fn((msg), __FILE__, __LINE__, FUNCTION_NAME) \
 	: (void)(0))
 
 /*
@@ -75,14 +71,14 @@ __NORETURN extern void fatal_error_fn(
 	defined)
 */
 
-__NORETURN extern void sanity_check_fn(
+NORETURN extern void sanity_check_fn(
 		const char *assertion, const char *file,
 		unsigned int line, const char *function);
 
 #define SANITY_CHECK(expr) \
 	((expr) \
 	? (void)(0) \
-	: sanity_check_fn(#expr, __FILE__, __LINE__, __FUNCTION_NAME))
+	: sanity_check_fn(#expr, __FILE__, __LINE__, FUNCTION_NAME))
 
 #define sanity_check(expr) SANITY_CHECK(expr)
 

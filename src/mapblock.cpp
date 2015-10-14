@@ -796,12 +796,12 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 		char tmp;
 		is.read(&tmp, 1);
 		if (is.gcount() != 1)
-			throw SerializationError(std::string(__FUNCTION_NAME)
+			throw SerializationError(std::string(FUNCTION_NAME)
 				+ ": not enough input data");
 		is_underground = tmp;
 		is.read((char *)*databuf_nodelist, nodecount * ser_length);
 		if ((u32)is.gcount() != nodecount * ser_length)
-			throw SerializationError(std::string(__FUNCTION_NAME)
+			throw SerializationError(std::string(FUNCTION_NAME)
 				+ ": not enough input data");
 	} else if (version <= 10) {
 		u8 t8;
@@ -814,7 +814,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 			decompress(is, os, version);
 			std::string s = os.str();
 			if (s.size() != nodecount)
-				throw SerializationError(std::string(__FUNCTION_NAME)
+				throw SerializationError(std::string(FUNCTION_NAME)
 					+ ": not enough input data");
 			for (u32 i = 0; i < s.size(); i++) {
 				databuf_nodelist[i*ser_length] = s[i];
@@ -826,7 +826,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 			decompress(is, os, version);
 			std::string s = os.str();
 			if (s.size() != nodecount)
-				throw SerializationError(std::string(__FUNCTION_NAME)
+				throw SerializationError(std::string(FUNCTION_NAME)
 					+ ": not enough input data");
 			for (u32 i = 0; i < s.size(); i++) {
 				databuf_nodelist[i*ser_length + 1] = s[i];
@@ -839,7 +839,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 			decompress(is, os, version);
 			std::string s = os.str();
 			if (s.size() != nodecount)
-				throw SerializationError(std::string(__FUNCTION_NAME)
+				throw SerializationError(std::string(FUNCTION_NAME)
 					+ ": not enough input data");
 			for (u32 i = 0; i < s.size(); i++) {
 				databuf_nodelist[i*ser_length + 2] = s[i];
@@ -859,7 +859,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 		decompress(is, os, version);
 		std::string s = os.str();
 		if (s.size() != nodecount * 3)
-			throw SerializationError(std::string(__FUNCTION_NAME)
+			throw SerializationError(std::string(FUNCTION_NAME)
 				+ ": decompress resulted in size other than nodecount*3");
 
 		// deserialize nodes from buffer

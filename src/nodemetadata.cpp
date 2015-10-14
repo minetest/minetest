@@ -120,7 +120,7 @@ void NodeMetadataList::deSerialize(std::istream &is, IItemDefManager *item_def_m
 	}
 
 	if (version != 1) {
-		std::string err_str = std::string(__FUNCTION_NAME)
+		std::string err_str = std::string(FUNCTION_NAME)
 			+ ": version " + itos(version) + " not supported";
 		infostream << err_str << std::endl;
 		throw SerializationError(err_str);
