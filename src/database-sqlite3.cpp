@@ -153,7 +153,7 @@ bool Database_SQLite3::deleteBlock(const v3s16 &pos)
 	sqlite3_reset(m_stmt_delete);
 
 	if (!good) {
-		errorstream << "WARNING: deleteBlock: Block failed to delete "
+		warningstream << "deleteBlock: Block failed to delete "
 			<< PP(pos) << ": " << sqlite3_errmsg(m_database) << std::endl;
 	}
 	return good;

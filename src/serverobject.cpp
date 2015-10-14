@@ -52,7 +52,7 @@ ServerActiveObject* ServerActiveObject::create(ActiveObjectType type,
 		}
 
 		// If factory is not found, just return.
-		dstream<<"WARNING: ServerActiveObject: No factory for type="
+		warningstream<<"ServerActiveObject: No factory for type="
 				<<type<<std::endl;
 		return NULL;
 	}

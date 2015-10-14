@@ -300,7 +300,7 @@ void GUIFormSpecMenu::parseSize(parserData* data,std::string element)
 void GUIFormSpecMenu::parseList(parserData* data,std::string element)
 {
 	if (m_gamedef == 0) {
-		errorstream<<"WARNING: invalid use of 'list' with m_gamedef==0"<<std::endl;
+		warningstream<<"invalid use of 'list' with m_gamedef==0"<<std::endl;
 		return;
 	}
 
@@ -345,7 +345,7 @@ void GUIFormSpecMenu::parseList(parserData* data,std::string element)
 		}
 
 		if(!data->explicit_size)
-			errorstream<<"WARNING: invalid use of list without a size[] element"<<std::endl;
+			warningstream<<"invalid use of list without a size[] element"<<std::endl;
 		m_inventorylists.push_back(ListDrawSpec(loc, listname, pos, geom, start_i));
 		return;
 	}
@@ -525,7 +525,7 @@ void GUIFormSpecMenu::parseImage(parserData* data,std::string element)
 		geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
 
 		if(!data->explicit_size)
-			errorstream<<"WARNING: invalid use of image without a size[] element"<<std::endl;
+			warningstream<<"invalid use of image without a size[] element"<<std::endl;
 		m_images.push_back(ImageDrawSpec(name, pos, geom));
 		return;
 	}
@@ -541,7 +541,7 @@ void GUIFormSpecMenu::parseImage(parserData* data,std::string element)
 		pos.Y += stof(v_pos[1]) * (float) spacing.Y;
 
 		if(!data->explicit_size)
-			errorstream<<"WARNING: invalid use of image without a size[] element"<<std::endl;
+			warningstream<<"invalid use of image without a size[] element"<<std::endl;
 		m_images.push_back(ImageDrawSpec(name, pos));
 		return;
 	}
@@ -571,7 +571,7 @@ void GUIFormSpecMenu::parseItemImage(parserData* data,std::string element)
 		geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
 
 		if(!data->explicit_size)
-			errorstream<<"WARNING: invalid use of item_image without a size[] element"<<std::endl;
+			warningstream<<"invalid use of item_image without a size[] element"<<std::endl;
 		m_itemimages.push_back(ImageDrawSpec(name, pos, geom));
 		return;
 	}
@@ -607,7 +607,7 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
 						pos.X + geom.X, pos.Y + m_btn_height);
 
 		if(!data->explicit_size)
-			errorstream<<"WARNING: invalid use of button without a size[] element"<<std::endl;
+			warningstream<<"invalid use of button without a size[] element"<<std::endl;
 
 		label = unescape_string(label);
 
@@ -666,7 +666,7 @@ void GUIFormSpecMenu::parseBackground(parserData* data,std::string element)
 		}
 
 		if(!data->explicit_size)
-			errorstream<<"WARNING: invalid use of background without a size[] element"<<std::endl;
+			warningstream<<"invalid use of background without a size[] element"<<std::endl;
 		m_backgrounds.push_back(ImageDrawSpec(name, pos, geom));
 		return;
 	}
@@ -982,7 +982,7 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 	core::rect<s32> rect;
 
 	if(data->explicit_size)
-		errorstream<<"WARNING: invalid use of unpositioned \"field\" in inventory"<<std::endl;
+		warningstream<<"invalid use of unpositioned \"field\" in inventory"<<std::endl;
 
 	v2s32 pos = padding + AbsoluteRect.UpperLeftCorner;
 	pos.Y = ((m_fields.size()+2)*60);
@@ -1088,7 +1088,7 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 	core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
 	if(!data->explicit_size)
-		errorstream<<"WARNING: invalid use of positioned "<<type<<" without a size[] element"<<std::endl;
+		warningstream<<"invalid use of positioned "<<type<<" without a size[] element"<<std::endl;
 
 	if(m_form_src)
 		default_val = m_form_src->resolveText(default_val);
@@ -1195,7 +1195,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data,std::string element)
 		pos.Y += (stof(v_pos[1]) + 7.0/30.0) * (float)spacing.Y;
 
 		if(!data->explicit_size)
-			errorstream<<"WARNING: invalid use of label without a size[] element"<<std::endl;
+			warningstream<<"invalid use of label without a size[] element"<<std::endl;
 
 		text = unescape_string(text);
 		std::vector<std::string> lines = split(text, '\n');
@@ -1260,7 +1260,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element)
 		//actually text.length() would be correct but adding +1 avoids to break all mods
 
 		if(!data->explicit_size)
-			errorstream<<"WARNING: invalid use of label without a size[] element"<<std::endl;
+			warningstream<<"invalid use of label without a size[] element"<<std::endl;
 
 		std::wstring label = L"";
 
@@ -1326,7 +1326,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
 		if(!data->explicit_size)
-			errorstream<<"WARNING: invalid use of image_button without a size[] element"<<std::endl;
+			warningstream<<"invalid use of image_button without a size[] element"<<std::endl;
 
 		image_name = unescape_string(image_name);
 		pressed_image_name = unescape_string(pressed_image_name);
@@ -1449,9 +1449,8 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 {
 
 	if (m_gamedef == 0) {
-		errorstream <<
-				"WARNING: invalid use of item_image_button with m_gamedef==0"
-				<< std::endl;
+		warningstream << "invalid use of item_image_button with m_gamedef==0"
+			<< std::endl;
 		return;
 	}
 
@@ -1479,7 +1478,7 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
 		if(!data->explicit_size)
-			errorstream<<"WARNING: invalid use of item_image_button without a size[] element"<<std::endl;
+			warningstream<<"invalid use of item_image_button without a size[] element"<<std::endl;
 
 		IItemDefManager *idef = m_gamedef->idef();
 		ItemStack item;
@@ -2158,7 +2157,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 
 	Inventory *inv = m_invmgr->getInventory(s.inventoryloc);
 	if(!inv){
-		infostream<<"GUIFormSpecMenu::drawList(): WARNING: "
+		warningstream<<"GUIFormSpecMenu::drawList(): "
 				<<"The inventory location "
 				<<"\""<<s.inventoryloc.dump()<<"\" doesn't exist"
 				<<std::endl;
@@ -2166,7 +2165,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 	}
 	InventoryList *ilist = inv->getList(s.listname);
 	if(!ilist){
-		infostream<<"GUIFormSpecMenu::drawList(): WARNING: "
+		warningstream<<"GUIFormSpecMenu::drawList(): "
 				<<"The inventory list \""<<s.listname<<"\" @ \""
 				<<s.inventoryloc.dump()<<"\" doesn't exist"
 				<<std::endl;

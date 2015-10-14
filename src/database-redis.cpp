@@ -84,14 +84,14 @@ bool Database_Redis::saveBlock(const v3s16 &pos, const std::string &data)
 	redisReply *reply = static_cast<redisReply *>(redisCommand(ctx, "HSET %s %s %b",
 			hash.c_str(), tmp.c_str(), data.c_str(), data.size()));
 	if (!reply) {
-		errorstream << "WARNING: saveBlock: redis command 'HSET' failed on "
+		warningstream << "saveBlock: redis command 'HSET' failed on "
 			"block " << PP(pos) << ": " << ctx->errstr << std::endl;
 		freeReplyObject(reply);
 		return false;
 	}
 
 	if (reply->type == REDIS_REPLY_ERROR) {
-		errorstream << "WARNING: saveBlock: saving block " << PP(pos)
+		warningstream << "saveBlock: saving block " << PP(pos)
 			<< " failed: " << reply->str << std::endl;
 		freeReplyObject(reply);
 		return false;
@@ -150,7 +150,7 @@ bool Database_Redis::deleteBlock(const v3s16 &pos)
 		throw FileNotGoodException(std::string(
 			"Redis command 'HDEL %s %s' failed: ") + ctx->errstr);
 	} else if (reply->type == REDIS_REPLY_ERROR) {
-		errorstream << "WARNING: deleteBlock: deleting block " << PP(pos)
+		warningstream << "deleteBlock: deleting block " << PP(pos)
 			<< " failed: " << reply->str << std::endl;
 		freeReplyObject(reply);
 		return false;

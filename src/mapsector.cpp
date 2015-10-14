@@ -220,7 +220,7 @@ ServerMapSector* ServerMapSector::deSerialize(
 
 	if(n != sectors.end())
 	{
-		dstream<<"WARNING: deSerializing existent sectors not supported "
+		warningstream<<"deSerializing existent sectors not supported "
 				"at the moment, because code hasn't been tested."
 				<<std::endl;
 

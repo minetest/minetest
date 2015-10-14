@@ -1188,7 +1188,7 @@ void ServerEnvironment::step(float dtime)
 		u32 time_ms = timer.stop(true);
 		u32 max_time_ms = 200;
 		if(time_ms > max_time_ms){
-			infostream<<"WARNING: active block modifiers took "
+			warningstream<<"active block modifiers took "
 					<<time_ms<<"ms (longer than "
 					<<max_time_ms<<"ms)"<<std::endl;
 			m_active_block_interval_overload_skip = (time_ms / max_time_ms) + 1;
@@ -1910,7 +1910,7 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 					// reason. Unsuccessful attempts have been made to find
 					// said reason.
 					if(id && block->m_static_objects.m_active.find(id) != block->m_static_objects.m_active.end()){
-						infostream<<"ServerEnv: WARNING: Performing hack #83274"
+						warningstream<<"ServerEnv: Performing hack #83274"
 								<<std::endl;
 						block->m_static_objects.remove(id);
 					}

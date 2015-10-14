@@ -47,7 +47,7 @@ ClientActiveObject* ClientActiveObject::create(ActiveObjectType type,
 	n = m_types.find(type);
 	if(n == m_types.end()) {
 		// If factory is not found, just return.
-		dstream<<"WARNING: ClientActiveObject: No factory for type="
+		warningstream<<"ClientActiveObject: No factory for type="
 				<<(int)type<<std::endl;
 		return NULL;
 	}

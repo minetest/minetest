@@ -139,7 +139,7 @@ void NodeMetadataList::deSerialize(std::istream &is, IItemDefManager *item_def_m
 		p.X = p16;
 
 		if (m_data.find(p) != m_data.end()) {
-			infostream<<"WARNING: NodeMetadataList::deSerialize(): "
+			warningstream<<"NodeMetadataList::deSerialize(): "
 					<<"already set data at position"
 					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<"): Ignoring."
 					<<std::endl;

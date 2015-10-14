@@ -57,7 +57,7 @@ bool Database_LevelDB::saveBlock(const v3s16 &pos, const std::string &data)
 	leveldb::Status status = m_database->Put(leveldb::WriteOptions(),
 			i64tos(getBlockAsInteger(pos)), data);
 	if (!status.ok()) {
-		errorstream << "WARNING: saveBlock: LevelDB error saving block "
+		warningstream << "saveBlock: LevelDB error saving block "
 			<< PP(pos) << ": " << status.ToString() << std::endl;
 		return false;
 	}
@@ -82,7 +82,7 @@ bool Database_LevelDB::deleteBlock(const v3s16 &pos)
 	leveldb::Status status = m_database->Delete(leveldb::WriteOptions(),
 			i64tos(getBlockAsInteger(pos)));
 	if (!status.ok()) {
-		errorstream << "WARNING: deleteBlock: LevelDB error deleting block "
+		warningstream << "deleteBlock: LevelDB error deleting block "
 			<< PP(pos) << ": " << status.ToString() << std::endl;
 		return false;
 	}

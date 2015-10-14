@@ -108,7 +108,7 @@ void NodeTimerList::deSerialize(std::istream &is, u8 map_format_version)
 
 		if(t.timeout <= 0)
 		{
-			infostream<<"WARNING: NodeTimerList::deSerialize(): "
+			warningstream<<"NodeTimerList::deSerialize(): "
 					<<"invalid data at position"
 					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<"): Ignoring."
 					<<std::endl;
@@ -117,7 +117,7 @@ void NodeTimerList::deSerialize(std::istream &is, u8 map_format_version)
 
 		if(m_data.find(p) != m_data.end())
 		{
-			infostream<<"WARNING: NodeTimerList::deSerialize(): "
+			warningstream<<"NodeTimerList::deSerialize(): "
 					<<"already set data at position"
 					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<"): Ignoring."
 					<<std::endl;

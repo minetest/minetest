@@ -89,8 +89,6 @@ __NORETURN extern void sanity_check_fn(
 
 void debug_set_exception_handler();
 
-#define DTIME ""
-
 /*
 	DebugStack
 */

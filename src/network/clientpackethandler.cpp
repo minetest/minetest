@@ -579,7 +579,7 @@ void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 
 void Client::handleCommand_PlayerItem(NetworkPacket* pkt)
 {
-	infostream << "Client: WARNING: Ignoring TOCLIENT_PLAYERITEM" << std::endl;
+	warningstream << "Client: Ignoring TOCLIENT_PLAYERITEM" << std::endl;
 }
 
 void Client::handleCommand_DeathScreen(NetworkPacket* pkt)
@@ -711,7 +711,7 @@ void Client::handleCommand_Media(NetworkPacket* pkt)
 
 void Client::handleCommand_ToolDef(NetworkPacket* pkt)
 {
-	infostream << "Client: WARNING: Ignoring TOCLIENT_TOOLDEF" << std::endl;
+	warningstream << "Client: Ignoring TOCLIENT_TOOLDEF" << std::endl;
 }
 
 void Client::handleCommand_NodeDef(NetworkPacket* pkt)
@@ -738,7 +738,7 @@ void Client::handleCommand_NodeDef(NetworkPacket* pkt)
 
 void Client::handleCommand_CraftItemDef(NetworkPacket* pkt)
 {
-	infostream << "Client: WARNING: Ignoring TOCLIENT_CRAFTITEMDEF" << std::endl;
+	warningstream << "Client: Ignoring TOCLIENT_CRAFTITEMDEF" << std::endl;
 }
 
 void Client::handleCommand_ItemDef(NetworkPacket* pkt)

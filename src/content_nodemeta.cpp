@@ -174,7 +174,7 @@ void content_nodemeta_deserialize_legacy(std::istream &is,
 
 		if(meta->get(p) != NULL)
 		{
-			infostream<<"WARNING: "<<__FUNCTION_NAME<<": "
+			warningstream<<__FUNCTION_NAME<<": "
 					<<"already set data at position"
 					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<"): Ignoring."
 					<<std::endl;

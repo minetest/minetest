@@ -79,7 +79,7 @@ public:
 		assert(id != 0); // Pre-condition
 		if(m_active.find(id) == m_active.end())
 		{
-			dstream<<"WARNING: StaticObjectList::remove(): id="<<id
+			warningstream<<"StaticObjectList::remove(): id="<<id
 					<<" not found"<<std::endl;
 			return;
 		}

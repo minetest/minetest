@@ -693,7 +693,7 @@ void Server::AsyncRunStep(bool initial_step)
 			Player *player = m_env->getPlayer(client->peer_id);
 			if(player == NULL) {
 				// This can happen if the client timeouts somehow
-				/*infostream<<"WARNING: "<<__FUNCTION_NAME<<": Client "
+				/*warningstream<<__FUNCTION_NAME<<": Client "
 						<<client->peer_id
 						<<" has no associated player"<<std::endl;*/
 				continue;
@@ -746,7 +746,7 @@ void Server::AsyncRunStep(bool initial_step)
 				// Get object type
 				u8 type = ACTIVEOBJECT_TYPE_INVALID;
 				if(obj == NULL)
-					infostream<<"WARNING: "<<__FUNCTION_NAME
+					warningstream<<__FUNCTION_NAME
 							<<": NULL object"<<std::endl;
 				else
 					type = obj->getSendType();
@@ -931,7 +931,7 @@ void Server::AsyncRunStep(bool initial_step)
 				break;
 			default:
 				prof.add("unknown", 1);
-				infostream << "WARNING: Server: Unknown MapEditEvent "
+				warningstream << "Server: Unknown MapEditEvent "
 						<< ((u32)event->type) << std::endl;
 				break;
 			}
