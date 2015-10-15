@@ -148,6 +148,7 @@ public:
 		const SubgameSpec &gamespec,
 		bool simple_singleplayer_mode,
 		bool ipv6,
+		bool dedicated,
 		ChatInterface *iface = NULL
 	);
 	~Server();
@@ -510,6 +511,8 @@ private:
 	// functionality
 	bool m_simple_singleplayer_mode;
 	u16 m_max_chatmessage_length;
+	// For "dedicated" server list flag
+	bool m_dedicated;
 
 	// Thread can set; step() will throw as ServerError
 	MutexedVariable<std::string> m_async_fatal_error;

@@ -148,11 +148,13 @@ Server::Server(
 		const SubgameSpec &gamespec,
 		bool simple_singleplayer_mode,
 		bool ipv6,
+		bool dedicated,
 		ChatInterface *iface
 	):
 	m_path_world(path_world),
 	m_gamespec(gamespec),
 	m_simple_singleplayer_mode(simple_singleplayer_mode),
+	m_dedicated(dedicated),
 	m_async_fatal_error(""),
 	m_env(NULL),
 	m_con(PROTOCOL_ID,
@@ -629,10 +631,10 @@ void Server::AsyncRunStep(bool initial_step)
 	// send masterserver announce
 	{
 		float &counter = m_masterserver_timer;
-		if(!isSingleplayer() && (!counter || counter >= 300.0) &&
-				g_settings->getBool("server_announce"))
-		{
-			ServerList::sendAnnounce(counter ? "update" : "start",
+		if (!isSingleplayer() && (!counter || counter >= 300.0) &&
+				g_settings->getBool("server_announce")) {
+			ServerList::sendAnnounce(counter ? ServerList::AA_UPDATE :
+						ServerList::AA_START,
 					m_bind_addr.getPort(),
 					m_clients.getPlayerNames(),
 					m_uptime.get(),
@@ -640,7 +642,8 @@ void Server::AsyncRunStep(bool initial_step)
 					m_lag,
 					m_gamespec.id,
 					Mapgen::getMapgenName(m_emerge->mgparams->mgtype),
-					m_mods);
+					m_mods,
+					m_dedicated);
 			counter = 0.01;
 		}
 		counter += dtime;
@@ -3574,16 +3577,6 @@ void dedicated_server_loop(Server &server, bool &kill)
 		}
 		server.step(steplen);
 
-		if(server.getShutdownRequested() || kill)
-		{
-			infostream<<"Dedicated server quitting"<<std::endl;
-#if USE_CURL
-			if(g_settings->getBool("server_announce"))
-				ServerList::sendAnnounce("delete", server.m_bind_addr.getPort());
-#endif
-			break;
-		}
-
 		/*
 			Profiler
 		*/
@@ -3596,4 +3589,11 @@ void dedicated_server_loop(Server &server, bool &kill)
 			}
 		}
 	}
+
+	infostream << "Dedicated server quitting" << std::endl;
+#if USE_CURL
+	if (g_settings->getBool("server_announce"))
+		ServerList::sendAnnounce(ServerList::AA_DELETE,
+			server.m_bind_addr.getPort());
+#endif
 }
