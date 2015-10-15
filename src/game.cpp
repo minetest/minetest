@@ -1998,7 +1998,7 @@ bool Game::createSingleplayerServer(const std::string map_dir,
 	}
 
 	server = new Server(map_dir, gamespec, simple_singleplayer_mode,
-			    bind_addr.isIPv6());
+			    bind_addr.isIPv6(), false);
 
 	server->start(bind_addr);
 
