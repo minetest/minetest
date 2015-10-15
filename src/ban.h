@@ -44,6 +44,7 @@ public:
 
 private:
 	std::string normalizeIp(const std::string &ip);
+	std::string normalizeIpOrName(const std::string &ip_or_name);
 
 	Mutex m_mutex;
 	std::string m_banfilepath;
