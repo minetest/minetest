@@ -50,7 +50,7 @@ cd ..
 potfile=po/minetest.pot
 xgettext --package-name=minetest \
 	--sort-by-file \
-	--add-location=file \
+	--add-location \
 	--keyword=N_ \
 	--keyword=wgettext \
 	--keyword=fgettext \

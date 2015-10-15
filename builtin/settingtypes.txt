@@ -1,0 +1,832 @@
+# This file contains all settings displayed in the settings menu.
+#
+# General format:
+#    name (Readable name) type type_args
+#
+# `type` can be:
+#    - int
+#    - string
+#    - bool
+#    - float
+#    - enum
+#    - path
+#    - key (will be ignored in GUI, since a special key change dialog exists)
+#
+# `type_args` can be:
+#   * int:
+#            - default
+#            - default min max
+#   * string:
+#            - default (if default is not specified then "" is set)
+#   * bool:
+#            - default
+#   * float:
+#            - default
+#            - default min max
+#   * enum:
+#            - default value1,value2,...
+#   * path:
+#            - default (if default is not specified then "" is set)
+#   * key:
+#            - default
+#
+# Comments directly above a setting are bound to this setting.
+# All other comments are ignored.
+#
+# Comments and (Readable name) are handled by gettext.
+# Comments should be complete sentences that describe the setting and possibly
+#  give the user additional useful insight.
+# Sections are marked by a single line in the format: [Section Name]
+# Sub-section are marked by adding * in front of the section name: [*Sub-section]
+# Sub-sub-sections have two * etc.
+# There shouldn't be too much settings per category; settings that shouldn't be
+#  modified by the "average user" should be in (sub-)categories called "Advanced".
+
+[Client]
+
+[*Controls]
+#    If enabled, you can place blocks at the position (feet + eye level) where you stand.
+#    This is helpful when working with nodeboxes in small areas.
+enable_build_where_you_stand (Build inside player) bool false
+
+#    Unobstructed movement without physics, downwards key is keymap_special1.
+free_move (Free movement) bool false
+
+#    Fast movement (keymap_special1).
+fast_move (Fast movement) bool false
+
+#    Smooths camera when moving and looking arround.
+#    Useful for recording videos.
+cinematic (Cinematic mode) bool false
+
+#    Smooths rotation of camera. 0 to disable.
+camera_smoothing (Camera smoothing) float 0.0 0.0 0.99
+
+#    Smooths rotation of camera in cinematic mode. 0 to disable.
+cinematic_camera_smoothing (Camera smoothing in cinematic mode) float 0.7 0.0 0.99
+
+#    Invert vertical mouse movement.
+invert_mouse (Invert mouse) bool false
+
+#    Mouse sensitivity multiplier.
+mouse_sensitivity (Mouse sensitivity) float 0.2
+
+#    If enabled, keymap_special1 instead of keymap_sneak is used for climbing down and descending.
+aux1_descends (Key use for climbing/descending) bool false
+
+#    Double-tapping the jump key toggles fly mode.
+doubletap_jump (Double tap jump for fly) bool false
+
+#    If false aux1 is used to fly fast.
+always_fly_fast (Always fly and fast) bool true
+
+#    The time in seconds it takes between repeated right clicks when holding the right mouse button.
+repeat_rightclick_time (Rightclick repetition interval) float 0.25
+
+#    Enable random user input, for testing.
+random_input (Random input) bool false
+
+#    Continuous forward movement (for testing).
+continuous_forward (Continuous forward) bool false
+
+#    Key mappings.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_forward (Forward) key KEY_KEY_W
+keymap_backward (Backward) key KEY_KEY_S
+keymap_left (Left) key KEY_KEY_A
+keymap_right (Right) key KEY_KEY_D
+keymap_jump (Jump) key KEY_SPACE
+keymap_sneak (Sneak) key KEY_LSHIFT
+keymap_inventory (Inventory) key KEY_KEY_I
+keymap_special1 (Use) key KEY_KEY_E
+keymap_chat (Chat) key KEY_KEY_T
+keymap_cmd (Command) key /
+keyman_console (Console) key KEY_F10
+keymap_rangeselect (Range select) key KEY_KEY_R
+keymap_freemove (Fly) key KEY_KEY_K
+keymap_fastmove (Fast) key KEY_KEY_J
+keymap_cinematic (Cinematic mode) key KEY_F8
+keymap_minimap (Minimap) key KEY_F9
+keymap_screenshot (Screenshot) key KEY_F12
+keymap_print_debug_stacks (Print stacks) key KEY_KEY_P
+
+[*Network]
+
+#    Address to connect to (blank = start local server).
+address (Server address) string
+
+#    Port to connect to (UDP).
+remote_port (Remote port) int 30000
+
+#    Save the map received by the client on disk.
+enable_local_map_saving (Saving map received by server) bool false
+
+#    Enable usage of remote media server (if provided by server).
+enable_remote_media_server (Connect to external media server) bool true
+
+#    URL to the server list displayed in the Multiplayer Tab.
+serverlist_url (Serverlist URL) string servers.minetest.net
+
+#    File in client/serverlist/ that contains your favorite servers displayed in the Multiplayer Tab.
+serverlist_file (Serverlist file) string favoriteservers.txt
+
+[*Graphics]
+
+[**In-Game]
+
+#    Minimum wanted FPS.
+#    The amount of rendered stuff is dynamically set according to this.
+wanted_fps (Wanted FPS) int 30
+
+#    If FPS would go higher than this, limit it by sleeping.
+#    to not waste CPU power for no benefit.
+fps_max (Maximum FPS) int 60
+
+#    Maximum FPS when game is paused.
+pause_fps_max (FPS in pause menu) int 20
+
+#    The allowed adjustment range for the automatic rendering range adjustment.
+viewing_range_nodes_max (Viewing range maximum) int 160
+
+#    The allowed adjustment range for the automatic rendering range adjustment.
+viewing_range_nodes_min (View range minimum) int 35
+
+#    Vertical initial window size.
+screenW (Screen width) int 800
+
+#    Horizontal initial window size.
+screenH (Screen height) int 600
+
+#    Fullscreen mode.
+fullscreen (Full screen) bool false
+
+fullscreen_bpp (Full screen BPP) int 24
+
+#    Experimental option, might cause visible spaces between blocks
+#    when set to higher number than 0.
+fsaa (FSAA) enum 0 0,1,2,4,8,16
+
+#    Vertical screen synchronization.
+vsync (V-Sync) bool false
+
+#    Field of view in degrees.
+fov (Field of view) int 72 30 160
+
+#    Whether to fog out the end of the visible area.
+enable_fog (Fog) bool true
+
+#    Enable a bit lower water surface; disable for speed (not quite optimized).
+new_style_water (New style water) bool false
+
+#    Leaves style:
+#         - Fancy  -> all faces visible
+#         - Simple -> only outer faces, if defined special_tiles are used
+#         - Opaque -> disable transparency
+leaves_style (Leaves style) enum fancy fancy,simple,opaque
+
+#    Connects glass if supported by node.
+connected_glass (Connect glass) bool false
+
+#    Enable smooth lighting with simple ambient occlusion.
+#    Disable for speed or for different looks.
+smooth_lighting (Smooth lighting) bool true
+
+#    Adjust the gamma encoding for the light tables. Lower numbers are brighter.
+#    This setting is for the client only and is ignored by the server.
+display_gamma (Gamma) float 1.8 1.0 3.0
+
+#    Path to texture directory. All textures are first searched from here.
+texture_path (Texture path) path
+
+#    Video back-end.
+#    Possible values: null, software, burningsvideo, direct3d8, direct3d9, opengl.
+video_driver (Video driver) enum opengl null,software,burningsvideo,direct3d8,direct3d9,opengl
+
+#    Enable/disable clouds.
+enable_clouds (Clouds) bool true
+
+#    Height on which clouds are appearing.
+cloud_height (Cloud height) int 120
+
+#    Radius of cloud area stated in number of 64 node cloud squares.
+#    Values larger than 26 will start to produce sharp cutoffs at cloud area corners.
+cloud_radius (Cloud radius) int 12
+
+#    Use 3D cloud look instead of flat.
+enable_3d_clouds (3D clouds) bool true
+
+#    Amount of view bobbing (0 = no view bobbing, 1.0 = normal, 2.0 = double).
+view_bobbing_amount (View bobbing) float 1.0
+
+#    Amount of fall bobbing (0 = no fall bobbing, 1.0 = normal, 2.0 = double).
+fall_bobbing_amount (Fall bobbing) float 0.0
+
+#    3D support.
+#    Currently:
+#         - "none"       = no 3d output.
+#         - "anaglyph"   = cyan/magenta color 3d.
+#         - "interlaced" = odd/even line based polarisation screen support.
+#         - "topbottom"  = split screen top/bottom.
+#         - "sidebyside" = split screen side by side.
+3d_mode (3D mode) enum none none,anaglyph,interlaced,topbottom,sidebyside
+
+#    In-game chat console background color (R,G,B).
+console_color (Console color) string (0,0,0)
+
+#    In-game chat console background alpha (opaqueness, between 0 and 255).
+console_alpha (Console alpha) int 200 0 255
+
+#    Selection box border color (R,G,B).
+selectionbox_color (Selection box color) string (0,0,0)
+
+#    Width of the selectionbox's lines.
+selectionbox_width (Selection box width) int 2 1 5
+
+#    Crosshair color (R,G,B).
+crosshair_color (Crosshair color) string (255,255,255)
+
+#    Cross alpha (opaqueness, between 0 and 255).
+crosshair_alpha (Crosshair alpha) int 255 0 255
+
+#    Path for screenshots.
+screenshot_path (Screenshot folder) path
+
+#    Whether node texture animations should be desynchronized per mapblock.
+desynchronize_mapblock_texture_animation (Desynchronize block animation) bool true
+
+#    Maximum proportion of current window to be used for hotbar.
+#    Useful if there's something to be displayed right or left of hotbar.
+hud_hotbar_max_width (Maximum hotbar width) float 1.0
+
+#    Enable selection highlighting for nodes (disables selectionbox).
+enable_node_highlighting (Node highlighting) bool false
+
+mip_map (Mipmapping) bool false
+anisotropic_filter (Anisotropic filtering) bool false
+bilinear_filter (Bilinear filtering) bool false
+trilinear_filter (Trilinear filtering) bool false
+
+#    Filtered textures can blend RGB values with fully-transparent neighbors,
+#    which PNG optimizers usually discard, sometimes resulting in a dark or
+#    light edge to transparent textures.  Apply this filter to clean that up
+#    at texture load time.
+texture_clean_transparent (Clean transparent textures) bool false
+
+#    When using bilinear/trilinear/anisotropic filters, low-resolution textures
+#    can be blurred, so automatically upscale them with nearest-neighbor
+#    interpolation to preserve crisp pixels.  This sets the minimum texture size
+#    for the upscaled textures; higher values look sharper, but require more
+#    memory.  Powers of 2 are recommended.  Setting this higher than 1 may not
+#    have a visible effect unless bilinear/trilinear/anisotropic filtering is
+#    enabled.
+texture_min_size (Minimum texture size for filters) int 64
+
+#    Set to true to pre-generate all item visuals.
+preload_item_visuals (Preload inventory textures) bool false
+
+#    Set to true to enable shaders. Disable them if video_driver = direct3d9/8.
+enable_shaders (Shaders) bool true
+
+#    Set to true to enable textures bumpmapping. Requires shaders enabled.
+enable_bumpmapping (Bumpmapping) bool false
+
+#    Set to true enables on the fly normalmap generation (Emboss effect).
+#    Requires bumpmapping enabled.
+generate_normalmaps (Generate normalmaps) bool false
+
+#    Strength of generated normalmaps.
+normalmaps_strength (Normalmaps strength) float 0.6
+
+#    Defines sampling step of texture (0 - 2).
+#    A higher value results in smoother normal maps.
+normalmaps_smooth (Normalmaps sampling) int 0 0 2
+
+#    Set to true enables parallax occlusion mapping. Requires shaders enabled.
+enable_parallax_occlusion (Parralax occlusion) bool false
+
+#    0 = parallax occlusion with slope information (faster).
+#    1 = relief mapping (slower, more accurate).
+parallax_occlusion_mode (Parralax occlusion mode) int 1 0 1
+
+#    Strength of parallax.
+3d_parallax_strength (Parralax occlusion strength) float 0.025
+
+#    Number of parallax occlusion iterations.
+parallax_occlusion_iterations (Parralax occlusion iterations) int 4
+
+#    Overall scale of parallax occlusion effect.
+parallax_occlusion_scale (Parralax occlusion Scale) float 0.08
+
+#    Overall bias of parallax occlusion effect, usually scale/2.
+parallax_occlusion_bias (Parralax occlusion bias) float 0.04
+
+#    Set to true enables waving water. Requires shaders enabled.
+enable_waving_water (Waving water) bool false
+
+water_wave_height (Waving water height) float 1.0
+water_wave_length (Waving water length) float 20.0
+water_wave_speed (Waving water speed) float 5.0
+
+#    Set to true enables waving leaves. Requires shaders enabled.
+enable_waving_leaves (Waving leaves) bool false
+
+#    Set to true enables waving plants. Requires shaders enabled.
+enable_waving_plants (Waving plants) bool false
+
+#    The strength (darkness) of node ambient-occlusion shading.
+#    Lower is darker, Higher is lighter. The valid range of values for this
+#    setting is 0.25 to 4.0 inclusive. If the value is out of range it will be
+#    set to the nearest valid value.
+ambient_occlusion_gamma (Ambient occlusion gamma) float 2.2 0.25 4.0
+
+#    Enables caching of facedir rotated meshes.
+enable_mesh_cache (Mesh cache) bool false
+
+#    Enables minimap.
+enable_minimap (Minimap) bool true
+
+#    Shape of the minimap. Enabled = round, disabled = square.
+minimap_shape_round (Round minimap) bool true
+
+#    True = 256
+#    False = 128
+#    Useable to make minimap smoother on slower machines.
+minimap_double_scan_height (Minimap scan height) bool true
+
+#    Make fog and sky colors depend on daytime (dawn/sunset) and view direction.
+directional_colored_fog (Colored fog) bool true
+
+[**Menus]
+
+#    Use a cloud animation for the main menu background.
+menu_clouds (Clouds in menu) bool true
+
+#    Scale gui by a user specified value.
+#    Use a nearest-neighbor-anti-alias filter to scale the GUI.
+#    This will smooth over some of the rough edges, and blend
+#    pixels when scaling down, at the cost of blurring some
+#    edge pixels when images are scaled by non-integer sizes.
+gui_scaling (GUI scaling) float 1.0
+
+#    When gui_scaling_filter is true, all GUI images need to be
+#    filtered in software, but some images are generated directly
+#    to hardware (e.g. render-to-texture for nodes in inventory).
+gui_scaling_filter (GUI scaling filter) bool false
+
+#    When gui_scaling_filter_txr2img is true, copy those images
+#    from hardware to software for scaling.  When false, fall back
+#    to the old scaling method, for video drivers that don't
+#    propery support downloading textures back from hardware.
+gui_scaling_filter_txr2img (GUI scaling filter txr2img) bool true
+
+#    Delay showing tooltips, stated in milliseconds.
+tooltip_show_delay (Tooltip delay) int 400
+
+#    Whether freetype fonts are used, requires freetype support to be compiled in.
+freetype (Freetype fonts) bool true
+
+#    Path to TrueTypeFont or bitmap.
+font_path (Font path) path fonts/liberationsans.ttf
+
+#    Font size.
+font_size (Font size) int 15
+
+#    Font shadow offset, if 0 then shadow will not be drawn.
+font_shadow (Font shadow) int 1
+
+#    Font shadow alpha (opaqueness, between 0 and 255).
+font_shadow_alpha (Font shadow alpha) int 128 0 255
+
+mono_font_path (Monospace font path) path fonts/liberationmono.ttf
+
+mono_font_size (Monospace font size) int 15
+
+#    This font will be used for certain languages.
+fallback_font_path (Fallback font) path fonts/DroidSansFallbackFull.ttf
+fallback_font_size (Fallback font size) int 15
+fallback_font_shadow (Fallback font shadow) int 1
+fallback_font_shadow_alpha (Fallback font shadow alpha) int 128 0 255
+
+[**Advanced]
+
+#    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.
+screen_dpi (DPI) int 72
+
+[*Sound]
+enable_sound (Sound) bool true
+sound_volume (Volume) float 0.7 0.0 1.0
+
+[*Advanced]
+
+#    Timeout for client to remove unused map data from memory.
+client_unload_unused_data_timeout (Mapblock unload timeout) int 600
+
+#    Maximum number of mapblocks for client to be kept in memory.
+#    Set to -1 for unlimited amount.
+client_mapblock_limit (Mapblock limit) int 5000
+
+#    Whether to show the client debug info (has the same effect as hitting F5).
+show_debug (Show debug info) bool false
+
+[Server / Singleplayer]
+
+#    Name of the server.
+server_name (Server name) string Minetest server
+
+#    Description of server.
+server_description (Server description) string mine here
+
+#    Domain name of server.
+server_address (Server address) string game.minetest.net
+
+#    Homepage of server.
+server_url (Server URL) string http://minetest.net
+
+#    Automaticaly report to masterserver.
+server_announce (Announce server) bool false
+
+#    Announce to this masterserver.
+#    If you want to announce your ipv6 address - use  serverlist_url = v6.servers.minetest.net.
+serverlist_url (Serverlist URL) string servers.minetest.net
+
+[*Network]
+
+#    Network port to listen (UDP).
+port (Server port) int 30000
+
+#    The network interface that the server listens on.
+bind_address (Bind address) string
+
+#    Set to true to disallow old clients from connecting.
+strict_protocol_version_checking (Strict protocol checking) bool false
+
+#    Specifies URL from which client fetches media instead of using UDP.
+#    $filename should be accessible from $remote_media$filename via cURL
+#    (obviously, remote_media should end with a slash).
+#    Files that are not present would be fetched the usual way.
+remote_media (Remote media) string
+
+#    Enable/disable running an IPv6 server.  An IPv6 server may be restricted
+#    to IPv6 clients, depending on system configuration.
+#    Ignored if bind_address is set.
+ipv6_server (IPv6 server) bool false
+
+[**Advanced]
+
+#    How many blocks are flying in the wire simultaneously per client.
+max_simultaneous_block_sends_per_client (Maximum simultaneously blocks send per client) int 10
+
+#    How many blocks are flying in the wire simultaneously per server.
+max_simultaneous_block_sends_server_total (Maximum simultaneously bocks send total) int 40
+
+#    To reduce lag, block transfers are slowed down when a player is building something.
+#    This determines how long they are slowed down after placing or removing a node.
+full_block_send_enable_min_time_from_building () float 2.0
+
+#    Maximum number of packets sent per send step, if you have a slow connection
+#    try reducing it, but don't reduce it to a number below double of targeted
+#    client number.
+max_packets_per_iteration (Max. packets per iteration) int 1024
+
+[*Game]
+
+#    Default game (default when creating a new world).
+default_game (Default game) string minetest
+
+#    Message of the Day.
+motd (Message of the day) string Welcome to this awesome Minetest server!
+
+#    Maximum number of players connected simultaneously.
+max_users (Maximum users) int 15
+
+#    World directory (everything in the world is stored here).
+map-dir (Map directory) path
+
+#    Time in seconds for item entity to live.
+#    Setting it to -1 disables the feature.
+item_entity_ttl (Item entity TTL) int 900
+
+#    Set to true to enable creative mode (unlimited inventory).
+creative_mode (Creative mode) bool false
+
+#    Enable players getting damage and dying.
+enable_damage (Damage) bool false
+
+#    A chosen map seed for a new map, leave empty for random.
+fixed_map_seed (Fixed map seed) string
+
+#    Gives some stuff to players at the beginning.
+give_initial_stuff (Give initial stuff) bool false
+
+#    New users need to input this password.
+default_password (Default password) string
+
+#    Available privileges: interact, shout, teleport, settime, privs, ...
+#    See /privs in game for a full list on your server and mod configuration.
+default_privs (Default privileges) string interact, shout
+
+#    Whether players are shown to clients without any range limit.
+#    Deprecated, use the setting player_transfer_distance instead.
+unlimited_player_transfer_distance (Unlimited player transfer distance) bool true
+
+#    Defines the maximal player transfer distance in blocks (0 = unlimited).
+player_transfer_distance (Player transfer distance) int 0
+
+#    Whether to enable players killing each other.
+enable_pvp (Player versus Player) bool true
+
+#    If this is set, players will always (re)spawn at the given position.
+static_spawnpoint (Static spawnpoint) string 0, 10, 0
+
+#    If true, new players cannot join with an empty password.
+disallow_empty_password (Disallow empty passwords) bool false
+
+#    If true, disable cheat prevention in multiplayer.
+disable_anticheat (Disable anticheat) bool false
+
+#    If true, actions are recorded for rollback.
+#    This option is only read when server starts.
+enable_rollback_recording (Rollback recording) bool false
+
+#    A message to be displayed to all clients when the server shuts down.
+kick_msg_shutdown (Shutdown message) string Server shutting down.
+
+#    A message to be displayed to all clients when the server crashes.
+kick_msg_crash (Crash message) string This server has experienced an internal error. You will now be disconnected.
+
+#    Whether to ask clients to reconnect after a (Lua) crash.
+#    Set this to true if your server is set up to restart automatically.
+ask_reconnect_on_crash (Ask to reconnect after crash) bool false
+
+#    From how far client knows about objects.
+active_object_send_range_blocks (Active object send range) int 3
+
+#    How large area of blocks are subject to the active block stuff.
+#    Active = objects are loaded and ABMs run.
+active_block_range (Active block range) int 2
+
+#    From how far blocks are sent to clients, stated in mapblocks (16 nodes).
+max_block_send_distance (Max block send distance) int 10
+
+#    Maximum number of forceloaded blocks.
+max_forceloaded_blocks (Maximum forceloaded blocks) int 16
+
+#    Interval of sending time of day to clients.
+time_send_interval (Time send interval) int 5
+
+#    Controls length of day/night cycle.
+#    72=20min, 360=4min, 1=24hour, 0=day/night/whatever stays unchanged.
+time_speed (Time speed) int 72
+
+#    Interval of saving important changes in the world, stated in seconds.
+server_map_save_interval (Map save interval) float 5.3
+
+[**Physics]
+
+movement_acceleration_default (Default acceleration) float 3
+movement_acceleration_air (Acceleration in air) float 2
+movement_acceleration_fast (Fast mode acceleration) float 10
+movement_speed_walk (Walking speed) float 4
+movement_speed_crouch (Crouch speed) float 1.35
+movement_speed_fast (Fast mode speed) float 20
+movement_speed_climb (Climbing speed) float 2
+movement_speed_jump (Jumping speed) float 6.5
+movement_speed_descend (Descending speed) float 6
+movement_liquid_fluidity (Liquid fluidity) float 1
+movement_liquid_fluidity_smooth (Liquid fluidity smoothing) float 0.5
+movement_liquid_sink (Liquid sink) float 10
+movement_gravity (Gravity) float 9.81
+
+[**Advanced]
+
+#    Handling for deprecated lua api calls:
+#         - "legacy" = (try to) mimic old behaviour (default for release).
+#         - "log"    = mimic and log backtrace of deprecated call (default for debug).
+#         - "error"  = abort on usage of deprecated call (suggested for mod developers).
+deprecated_lua_api_handling (Deprecated Lua API handling) enum legacy legacy,log,error
+
+#    Mod profiler.
+mod_profiling (Mod profiling) bool false
+
+#    Detailed mod profile data.
+detailed_profiling (Detailed mod profiling) bool false
+
+#    Profiler data print interval. 0 = disable.
+profiler_print_interval (Profiling print interval) int 0
+
+#    Number of extra blocks that can be loaded by /clearobjects at once.
+#    This is a trade-off between sqlite transaction overhead and
+#    memory consumption (4096=100MB, as a rule of thumb).
+max_clearobjects_extra_loaded_blocks (Max. clearobjects extra blocks) int 4096
+
+#    How much the server will wait before unloading unused MapBlocks.
+#    Higher value is smoother, but will use more RAM.
+server_unload_unused_data_timeout (Unload unused server data) int 29
+
+#    Maximum number of statically stored objects in a block.
+max_objects_per_block (Maxmimum objects per block) int 49
+
+#    http://www.sqlite.org/pragma.html#pragma_synchronous only numeric values: 0 1 2
+sqlite_synchronous (Synchronous SQLite) int 2 0 2
+
+#    Length of a server tick and the interval at which objects are generally updated over network.
+dedicated_server_step (Dedicated server step) float 0.1
+
+#    Can be set to true to disable shutting down on invalid world data.
+ignore_world_load_errors (Ignore world errors) bool false
+
+#    Max liquids processed per step.
+liquid_loop_max (Liquid loop max) int 100000
+
+#    The time (in seconds) that the liquids queue may grow beyond processing
+#    capacity until an attempt is made to decrease its size by dumping old queue
+#    items.  A value of 0 disables the functionality.
+liquid_queue_purge_time (Liquid queue purge time) int 0
+
+#    Liquid update interval in seconds.
+liquid_update (Liquid update tick) float 1.0
+
+[*Mapgen]
+
+#    Name of map generator to be used when creating a new world.
+#    Currently supported: v5, v6, v7, singlenode.
+mg_name (Mapgen name) enum v6 v5,v6,v7,singlenode
+
+#    Water surface level of map
+water_level (Water level) int 1
+
+#    From how far blocks are generated for clients, stated in mapblocks (16 nodes).
+max_block_generate_distance (Max block generate distance) int 6
+
+#    Where the map generator stops.
+#    Please note:
+#        * Limited to 31000 (setting above has no effect)
+#        * The map generator works in groups of 80x80x80 nodes (5x5x5 MapBlocks).
+#        * Those groups have an offset of -32, -32 nodes from the origin.
+#        * Only groups which are within the map_generation_limit are generated
+map_generation_limit (Map generation limit) int 31000 0 31000
+
+#    Global map generation attributes.
+#    Currently supported: trees, caves, flat, dungeons, light.
+#    Flags that are not specified in the flag string are not modified from the default.
+#    To explicitly turn off a flag, prepend "no" to the beginning, e.g. nolight.
+#    'trees' and 'flat' flags only have effect in mgv6.
+mg_flags (Mapgen flags) flags trees, caves, dungeons, light
+
+[**Advanced]
+
+#    Size of chunks to be generated, stated in mapblocks (16 nodes).
+chunksize (Chunk size) int 5
+
+#    Dump the mapgen debug infos.
+enable_mapgen_debug_info (Mapgen debug) bool false
+
+#    Maximum number of blocks that can be queued for loading.
+emergequeue_limit_total (Absolute limit of emerge queues) int 256
+
+#    Maximum number of blocks to be queued that are to be loaded from file.
+#    Set to blank for an appropriate amount to be chosen automatically.
+emergequeue_limit_diskonly (Limit of emerge queues on disk) int 32
+
+#    Maximum number of blocks to be queued that are to be generated.
+#    Set to blank for an appropriate amount to be chosen automatically.
+emergequeue_limit_generate (Limit of emerge queues to generate) int 32
+
+#    Number of emerge threads to use. Make this field blank, or increase this number
+#    to use multiple threads. On multiprocessor systems, this will improve mapgen speed greatly
+#    at the cost of slightly buggy caves.
+num_emerge_threads (Number of emerge threads) int 1
+
+#    Noise parameters for biome API temperature, humidity and biome blend.
+mg_biome_np_heat (Mapgen biome heat) noise_params 50, 50, (750, 750, 750), 5349, 3, 0.5, 2.0
+mg_biome_np_heat_blend (Mapgen heat blend) noise_params 0, 1.5, (8, 8, 8), 13, 2, 1.0, 2.0
+mg_biome_np_humidity (Mapgen biome humidity) noise_params 50, 50, (750, 750, 750), 842, 3, 0.5, 2.0
+mg_biome_np_humidity_blend (Mapgen biome humidity blend) noise_params 0, 1.5, (8, 8, 8), 90003, 2, 1.0, 2.0
+
+[***Mapgen v5]
+
+mgv5_np_filler_depth (Mapgen v5 filler depth) noise_params 0, 1, (150, 150, 150), 261, 4, 0.7, 2.0
+mgv5_np_factor (Mapgen v5 factor) noise_params 0, 1, (250, 250, 250), 920381, 3, 0.45, 2.0
+mgv5_np_height (Mapgen v5 height) noise_params 0, 10, (250, 250, 250), 84174, 4, 0.5, 2.0
+mgv5_np_cave1 (Mapgen v5 cave1) noise_params 0, 12, (50, 50, 50), 52534, 4, 0.5, 2.0
+mgv5_np_cave2 (Mapgen v5 cave2) noise_params 0, 12, (50, 50, 50), 10325, 4, 0.5, 2.0
+#    TODO
+#mgv5_np_ground = {
+#    offset      = 0
+#    scale       = 40
+#    spread      = (80, 80, 80)
+#    seed        = 983240
+#    octaves     = 4
+#    persistence = 0.55
+#    lacunarity  = 2.0
+#    flags       = "eased"
+#}
+
+[***Mapgen v6]
+
+#    Map generation attributes specific to Mapgen V6.
+#    Currently supported: jungles, biomeblend, mudflow, snowbiomes.
+#    When snowbiomes are enabled jungles are enabled and the jungles flag is ignored.
+mgv6_spflags (Mapgen v6 flags) flags jungles, biomeblend, mudflow, snowbiomes
+
+#    Controls size of deserts and beaches in Mapgen V6.
+#    When snowbiomes are enabled 'mgv6_freq_desert' is ignored.
+mgv6_freq_desert (Mapgen v6 desert frequency) float 0.45
+mgv6_freq_beach (Mapgen v6 beach frequency) float 0.15
+
+#    Perlin noise attributes for different map generation parameters.
+#    Noise parameters can be specified as a set of positional values:
+#    Offset, scale, (spread factors), seed offset, number of octaves, persistence, lacunarity.
+#    For example:
+mgv6_np_terrain_base (Mapgen v6 terrain base) noise_params -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0
+
+mgv6_np_terrain_base (Mapgen v6 terrain base) noise_params -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0
+mgv6_np_terrain_higher (Mapgen v6 terrain altitude) noise_params 20, 16, (500, 500, 500), 85039, 5, 0.6, 2.0
+mgv6_np_steepness (Mapgen v6 steepness) noise_params 0.85, 0.5, (125, 125, 125), -932, 5, 0.7, 2.0
+mgv6_np_height_select (Mapgen v6 height select) noise_params 0.5, 1, (250, 250, 250), 4213, 5, 0.69, 2.0
+mgv6_np_mud (Mapgen v6 mud) noise_params 4, 2, (200, 200, 200), 91013, 3, 0.55, 2.0
+mgv6_np_beach (Mapgen v6 beach) noise_params 0, 1, (250, 250, 250), 59420, 3, 0.50, 2.0
+mgv6_np_biome (Mapgen v6 biome) noise_params 0, 1, (500, 500, 500), 9130, 3, 0.50, 2.0
+mgv6_np_cave (Mapgen v6 cave) noise_params 6, 6, (250, 250, 250), 34329, 3, 0.50, 2.0
+mgv6_np_humidity (Mapgen v6 humidity) noise_params 0.5, 0.5, (500, 500, 500), 72384, 3, 0.50, 2.0
+mgv6_np_trees (Mapgen v6 trees) noise_params 0, 1, (125, 125, 125), 2, 4, 0.66, 2.0
+mgv6_np_apple_trees (Mapgen v6 apple trees) noise_params 0, 1, (100, 100, 100), 342902, 3, 0.45, 2.0
+
+[***Mapgen v7]
+#    Map generation attributes specific to Mapgen V7.
+#    Currently supported: mountains, ridges.
+#    'ridges' are the rivers.
+mgv7_spflags (Mapgen v7 flags) flags mountains, ridges
+
+mgv7_np_terrain_base (Mapgen v7 terrain base) noise_params 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0
+mgv7_np_terrain_alt (Mapgen v7 terrain altitude) noise_params 4, 25, (600, 600, 600), 5934, 5, 0.6, 2.0
+mgv7_np_terrain_persist (Mapgen v7 terrain persistation) noise_params 0.6, 0.1, (2000, 2000, 2000), 539, 3, 0.6, 2.0
+mgv7_np_height_select (Mapgen v7 height select) noise_params -12, 24, (500, 500, 500), 4213, 6, 0.7, 2.0
+mgv7_np_filler_depth (Mapgen v7 filler depth) noise_params 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
+mgv7_np_mount_height (Mapgen v7 mount height) noise_params 256, 112, (1000, 1000, 1000), 72449, 3, 0.6, 2.0
+mgv7_np_ridge_uwater (Mapgen v7 ridge water) noise_params 0, 1, (1000, 1000, 1000), 85039, 5, 0.6, 2.0
+mgv7_np_mountain (Mapgen v7 mountain) noise_params -0.6, 1, (250, 350, 250), 5333, 5, 0.63, 2.0
+mgv7_np_ridge (Mapgen v7 ridge) noise_params 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
+mgv7_np_cave1 (Mapgen v7 cave1) noise_params 0, 12, (100, 100, 100), 52534, 4, 0.5, 2.0
+mgv7_np_cave2 (Mapgen v7 cave2) noise_params 0, 12, (100, 100, 100), 10325, 4, 0.5, 2.0
+
+[*Security]
+
+#    Prevent mods from doing insecure things like running shell commands.
+secure.enable_security (Enable mod security) bool false
+
+#    Comma-separated list of trusted mods that are allowed to access insecure
+#    functions even when mod security is on (via request_insecure_environment()).
+secure.trusted_mods (Trusted mods) string
+
+[Client and Server]
+#    Name of the player.
+#    When running a server, clients connecting with this name are admins.
+name (Player name) string
+
+#    Override language. When no value is provided (default) system language is used.
+#    Check "locale" directory for the list of available translations.
+language (Language) string
+
+#    Level of logging to be written to debug.txt:
+#         - <nothing> (no logging)
+#         - none (messages with no level)
+#         - error
+#         - warning
+#         - action
+#         - info
+#         - verbose
+debug_log_level (Debug log level) enum action warning,action,info,verbose
+
+#    IPv6 support.
+enable_ipv6 (IPv6) bool true
+
+[*Advanced]
+#    Default timeout for cURL, stated in milliseconds.
+#    Only has an effect if compiled with cURL.
+curl_timeout (cURL timeout) int 5000
+
+#    Limits number of parallel HTTP requests. Affects:
+#         - Media fetch if server uses remote_media setting.
+#         - Serverlist download and server announcement.
+#         - Downloads performed by main menu (e.g. mod manager).
+#    Only has an effect if compiled with cURL.
+curl_parallel_limit (cURL parallel limit) int 8
+
+#    Maximum time in ms a file download (e.g. a mod download) may take
+curl_file_download_timeout (cURL file download timeout) int 300000
+
+#    Makes DirectX work with LuaJIT. Disable if it causes troubles.
+high_precision_fpu (High-precision FPU) bool true
+
+main_menu_script (Main menu script) string
+
+main_menu_game_mgr (Main menu game manager) int 0
+
+main_menu_mod_mgr (Main menu mod manager) int 1
+
+modstore_download_url (Modstore download URL) string https://forum.minetest.net/media/
+
+modstore_listmods_url (Modstore mods list URL) string https://forum.minetest.net/mmdb/mods/
+
+modstore_details_url (Modstore details URL) string https://forum.minetest.net/mmdb/mod/*/
