@@ -21,13 +21,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #error This file may only be compiled for android!
 #endif
 
+#include "util/numeric.h"
 #include "porting.h"
 #include "porting_android.h"
 #include "threading/thread.h"
 #include "config.h"
 #include "filesys.h"
 #include "log.h"
+
 #include <sstream>
+#include <exception>
+#include <stdlib.h>
 
 #ifdef GPROF
 #include "prof.h"
@@ -40,28 +44,23 @@ void android_main(android_app *app)
 	int retval = 0;
 	porting::app_global = app;
 
-	Thread::setName("MainThread");
+	Thread::setName("Main");
 
 	try {
 		app_dummy();
-		char *argv[] = {(char*) "minetest"};
-		main(sizeof(argv) / sizeof(argv[0]), argv);
-	} catch (BaseException &e) {
-		std::stringstream msg;
-		msg << "Exception handled by main: " << e.what();
-		const char *message = msg.str().c_str();
-		__android_log_print(ANDROID_LOG_ERROR, PROJECT_NAME, "%s", message);
-		errorstream << msg << std::endl;
+		char *argv[] = {strdup(PROJECT_NAME), NULL};
+		main(ARRLEN(argv) - 1, argv);
+		free(argv[0]);
+	} catch (std::exception &e) {
+		errorstream << "Uncaught exception in main thread: " << e.what() << std::endl;
 		retval = -1;
 	} catch (...) {
-		__android_log_print(ANDROID_LOG_ERROR, PROJECT_NAME,
-				"An unknown exception occured!");
 		errorstream << "Uncaught exception in main thread!" << std::endl;
 		retval = -1;
 	}
 
 	porting::cleanupAndroid();
-	errorstream << "Shutting down." << std::endl;
+	infostream << "Shutting down." << std::endl;
 	exit(retval);
 }
 
@@ -125,7 +124,7 @@ void initAndroid()
 	JavaVM *jvm = app_global->activity->vm;
 	JavaVMAttachArgs lJavaVMAttachArgs;
 	lJavaVMAttachArgs.version = JNI_VERSION_1_6;
-	lJavaVMAttachArgs.name = "MinetestNativeThread";
+	lJavaVMAttachArgs.name = PROJECT_NAME_C "NativeThread";
 	lJavaVMAttachArgs.group = NULL;
 #ifdef NDEBUG
 	// This is a ugly hack as arm v7a non debuggable builds crash without this
@@ -146,7 +145,7 @@ void initAndroid()
 
 #ifdef GPROF
 	/* in the start-up code */
-	__android_log_print(ANDROID_LOG_ERROR, PROJECT_NAME,
+	__android_log_print(ANDROID_LOG_ERROR, PROJECT_NAME_C,
 			"Initializing GPROF profiler");
 	monstartup("libminetest.so");
 #endif
@@ -186,8 +185,8 @@ void setExternalStorageDir(JNIEnv* lJNIEnv)
 	lJNIEnv->ReleaseStringUTFChars(StringPath, externalPath);
 
 	path_storage             = userPath;
-	path_user                = userPath + DIR_DELIM + PROJECT_NAME;
-	path_share               = userPath + DIR_DELIM + PROJECT_NAME;
+	path_user                = userPath + DIR_DELIM + PROJECT_NAME_C;
+	path_share               = userPath + DIR_DELIM + PROJECT_NAME_C;
 }
 
 void showInputDialog(const std::string& acceptButton, const  std::string& hint,
@@ -240,7 +239,7 @@ std::string getInputDialogValue()
 	return text;
 }
 
-#if not defined(SERVER)
+#ifndef SERVER
 float getDisplayDensity()
 {
 	static bool firstrun = true;
@@ -290,5 +289,5 @@ v2u32 getDisplaySize()
 	}
 	return retval;
 }
-#endif //SERVER
+#endif // ndef SERVER
 }
