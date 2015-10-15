@@ -4,353 +4,275 @@ local mod_statistics = {}
 mod_statistics.step_total = 0
 mod_statistics.data = {}
 mod_statistics.stats = {}
-mod_statistics.stats["total"] = {
-	min_us = math.huge,
-	max_us = 0,
-	avg_us = 0,
-	min_per = 100,
-	max_per = 100,
-	avg_per = 100
-}
 
-local replacement_table = {
-	"register_globalstep",
-	"register_on_placenode",
-	"register_on_dignode",
-	"register_on_punchnode",
-	"register_on_generated",
-	"register_on_newplayer",
-	"register_on_dieplayer",
-	"register_on_respawnplayer",
-	"register_on_prejoinplayer",
-	"register_on_joinplayer",
-	"register_on_leaveplayer",
-	"register_on_cheat",
-	"register_on_chat_message",
-	"register_on_player_receive_fields",
-	"register_on_mapgen_init",
-	"register_on_craft",
-	"register_craft_predict",
-	"register_on_item_eat"
-}
+local function new_stat_tbl()
+	return {
+		avg_count = 0,
 
---------------------------------------------------------------------------------
-function mod_statistics.log_time(type, modname, time_in_us)
+		min_us = math.huge,
+		max_us = 0,
+		avg_us = 0,
+		total_us = 0,
 
-	if modname == nil then
-		modname = "builtin"
-	end
-	
-	if mod_statistics.data[modname] == nil then
-		mod_statistics.data[modname] = {}
-	end
-	
-	if mod_statistics.data[modname][type] == nil then
-		mod_statistics.data[modname][type] = 0
-	end
-	
-	mod_statistics.data[modname][type] =
-		mod_statistics.data[modname][type] + time_in_us
-	mod_statistics.step_total = mod_statistics.step_total + time_in_us
+		min_factor = 1,
+		max_factor = 0,
+		avg_factor = 0,
+		total_factor = 0,
+	}
 end
 
---------------------------------------------------------------------------------
-function mod_statistics.update_statistics(dtime)
-	for modname,types in pairs(mod_statistics.data) do
-		
-		if mod_statistics.stats[modname] == nil then
-			mod_statistics.stats[modname] = {
-				min_us = math.huge,
-				max_us = 0,
-				avg_us = 0,
-				min_per = 100,
-				max_per = 0,
-				avg_per = 0
-			}
-		end
-		
-		local modtime = 0
-		for type,time in pairs(types) do
-			modtime = modtime + time
-			if mod_statistics.stats[modname].types == nil then
-				mod_statistics.stats[modname].types = {}
-			end
-			if mod_statistics.stats[modname].types[type] == nil then
-				mod_statistics.stats[modname].types[type] = {
-					min_us = math.huge,
-					max_us = 0,
-					avg_us = 0,
-					min_per = 100,
-					max_per = 0,
-					avg_per = 0
-				}
-			end
-			
-			local toupdate = mod_statistics.stats[modname].types[type]
-			
-			--update us values
-			toupdate.min_us = math.min(time, toupdate.min_us)
-			toupdate.max_us = math.max(time, toupdate.max_us)
-			--TODO find better algorithm
-			toupdate.avg_us = toupdate.avg_us * 0.99 + modtime * 0.01
-				
-			--update percentage values
-			local cur_per = (time/mod_statistics.step_total) * 100
-			toupdate.min_per = math.min(toupdate.min_per, cur_per)
-				
-			toupdate.max_per = math.max(toupdate.max_per, cur_per)
-				
-			--TODO find better algorithm
-			toupdate.avg_per = toupdate.avg_per * 0.99 + cur_per * 0.01
-			
-			mod_statistics.data[modname][type] = 0
-		end
-		
-		--per mod statistics
-		--update us values
-		mod_statistics.stats[modname].min_us =
-			math.min(modtime, mod_statistics.stats[modname].min_us)
-		mod_statistics.stats[modname].max_us =
-			math.max(modtime, mod_statistics.stats[modname].max_us)
-		--TODO find better algorithm
-		mod_statistics.stats[modname].avg_us =
-			mod_statistics.stats[modname].avg_us * 0.99 + modtime * 0.01
-			
-		--update percentage values
-		local cur_per = (modtime/mod_statistics.step_total) * 100
-		mod_statistics.stats[modname].min_per =
-			math.min(mod_statistics.stats[modname].min_per, cur_per)
-			
-		mod_statistics.stats[modname].max_per =
-			math.max(mod_statistics.stats[modname].max_per, cur_per)
-			
-		--TODO find better algorithm
-		mod_statistics.stats[modname].avg_per =
-			mod_statistics.stats[modname].avg_per * 0.99 + cur_per * 0.01
+mod_statistics.stats["*total*"] = new_stat_tbl()
+
+
+function mod_statistics.log_time(tp, mod_name, time_us)
+	mod_name = mod_name or "*builtin*"
+	local entry = mod_statistics.data[mod_name]
+	if not entry then
+		entry = {}
+		mod_statistics.data[mod_name] = entry
 	end
-	
-	--update "total"
-	mod_statistics.stats["total"].min_us =
-		math.min(mod_statistics.step_total, mod_statistics.stats["total"].min_us)
-	mod_statistics.stats["total"].max_us =
-		math.max(mod_statistics.step_total, mod_statistics.stats["total"].max_us)
-	--TODO find better algorithm
-	mod_statistics.stats["total"].avg_us =
-		mod_statistics.stats["total"].avg_us * 0.99 +
-		mod_statistics.step_total * 0.01
-	
+	if not entry[tp] then
+		entry[tp] = 0
+	end
+
+	entry[tp] = entry[tp] + time_us
+	mod_statistics.step_total = mod_statistics.step_total + time_us
+end
+
+
+function mod_statistics.update_statistics(dtime)
+	local function update(t, time, no_update_factor)
+		t.avg_count = t.avg_count + 1
+
+		-- Update microsecond values
+		t.min_us = math.min(time, t.min_us)
+		t.max_us = math.max(time, t.max_us)
+		t.total_us = t.total_us + time
+		t.avg_us = t.total_us / t.avg_count
+
+		-- Update factors
+		if no_update_factor then return end
+		local cur_f = 0
+		if mod_statistics.step_total ~= 0 then
+			cur_f = time / mod_statistics.step_total
+		end
+		t.min_factor = math.min(t.min_factor, cur_f)
+		t.max_factor = math.max(t.max_factor, cur_f)
+		t.total_factor = t.total_factor + cur_f
+		t.avg_factor = t.total_factor / t.avg_count
+	end
+	for name, types in pairs(mod_statistics.data) do
+		local stats = mod_statistics.stats[name]
+		if not stats then
+			stats = new_stat_tbl()
+			mod_statistics.stats[name] = stats
+		end
+		
+		local mod_time = 0
+		for tp, time in pairs(types) do
+			mod_time = mod_time + time
+			if not stats.types then
+				stats.types = {}
+			end
+			local type_tbl = stats.types[tp]
+			if not type_tbl then
+				type_tbl = new_stat_tbl()
+				stats.types[tp] = type_tbl
+			end
+
+			update(type_tbl, time)
+
+			types[tp] = 0
+		end
+
+		-- Per mod statistics
+		update(stats, mod_time)
+	end
+
+	-- Update total
+	update(mod_statistics.stats["*total*"], mod_statistics.step_total, true)
+
 	mod_statistics.step_total = 0
 end
 
---------------------------------------------------------------------------------
-local function build_callback(log_id, fct)
-	return function( toregister )
-		local modname = core.get_current_modname()
-		
-		fct(function(...)
-			local starttime = core.get_us_time()
-			-- note maximum 10 return values are supported unless someone finds
-			-- a way to store a variable lenght return value list
-			local r0, r1, r2, r3, r4, r5, r6, r7, r8, r9 = toregister(...)
-			local delta = core.get_us_time() - starttime
-			mod_statistics.log_time(log_id, modname, delta)
-			return r0, r1, r2, r3, r4, r5, r6, r7, r8, r9
-			end
-		)
+
+local function elipsize(str, len)
+	if #str > len then
+		return "…"..str:sub(-len + 1)
 	end
+	return str
 end
 
---------------------------------------------------------------------------------
-function profiling_print_log(cmd, filter)
 
-	print("Filter:" .. dump(filter))
+function profiling_print_log(player_name, filter)
+	local detailed_profiling = core.setting_getbool("detailed_profiling")
+	local title_line = " Mod Name        |"..
+		(detailed_profiling and " Type                      |" or "")..
+		" Min µs    | Max µs    | Avg µs    | Min %     | Max %     | Avg %"
+	local sep_line = "-----------------+"..
+		(detailed_profiling and "---------------------------+" or "")..
+		"-----------+-----------+-----------+-----------+-----------+-----------"
+	local fmt_line = "%16s |"..
+			(detailed_profiling and " %-25s |" or "")..
+			" %9d | %9d | %9.2f | %8.4f%% | %8.4f%% | %8.4f%%"
 
-	core.log("action", "Values below show times/percentages per server step.")
-	core.log("action", "Following suffixes are used for entities:")
-	core.log("action", "\t#oa := on_activate, #os := on_step, #op := on_punch, #or := on_rightclick, #gs := get_staticdata")
-	core.log("action",
-		string.format("%16s | %25s | %10s | %10s | %10s | %9s | %9s | %9s",
-		"modname", "type" , "min µs", "max µs", "avg µs", "min %", "max %", "avg %")
-	)
-	core.log("action",
-		"-----------------+---------------------------+-----------+" ..
-		"-----------+-----------+-----------+-----------+-----------")
-	for modname,statistics in pairs(mod_statistics.stats) do
-		if modname ~= "total" then
-		
-			if (filter == "") or (modname == filter) then
-				if modname:len() > 16 then
-					modname = "..." .. modname:sub(-13)
-				end
-			
-				core.log("action",
-					string.format("%16s | %25s | %9d | %9d | %9d | %9d | %9d | %9d",
-					modname,
-					" ",
-					statistics.min_us,
-					statistics.max_us,
-					statistics.avg_us,
-					statistics.min_per,
-					statistics.max_per,
-					statistics.avg_per)
-				)
-				if core.setting_getbool("detailed_profiling") then
-					if statistics.types ~= nil then
-						for type,typestats in pairs(statistics.types) do
-						
-							if type:len() > 25 then
-								type = "..." .. type:sub(-22)
-							end
-						
-							core.log("action",
-								string.format(
-								"%16s | %25s | %9d | %9d | %9d | %9d | %9d | %9d",
-								" ",
-								type,
-								typestats.min_us,
-								typestats.max_us,
-								typestats.avg_us,
-								typestats.min_per,
-								typestats.max_per,
-								typestats.avg_per)
-							)
-						end
-					end
-				end
+	local need_sep = true
+	local function log_line(...)
+		local args = {...}
+		if not detailed_profiling then
+			table.remove(args, 2)
+		end
+		core.debug(string.format(fmt_line, unpack(args)))
+		need_sep = true
+	end
+
+	local function log_sep_opt()
+		if need_sep then
+			core.debug(sep_line)
+		end
+		need_sep = false
+	end
+
+	local function log_stat_line(name, tp, stats)
+		log_line(elipsize(name, 16), elipsize(tp, 25),
+			stats.min_us,
+			stats.max_us,
+			stats.avg_us,
+			stats.min_factor * 100,
+			stats.max_factor * 100,
+			stats.avg_factor * 100)
+	end
+
+	local function log_mod(name, stats)
+		local log_name = name
+		local types_logged = 0
+		if stats.types and detailed_profiling then
+			for tp, tp_stats in pairs(stats.types) do
+				log_stat_line(log_name, tp, tp_stats)
+				log_name = ""
+				types_logged = types_logged + 1
+			end
+		end
+		if types_logged ~= 1 then
+			log_stat_line(log_name, "Total", stats)
+		end
+	end
+
+	core.debug("Mod profile list filter: "..dump(filter))
+	core.debug("Values below are per server step.")
+	if detailed_profiling then
+		core.debug("The following suffixes are used for entities:")
+		core.debug("\t#oa := on_activate, #os := on_step, #op := on_punch, "..
+				"#or := on_rightclick, #gs := get_staticdata")
+	end
+	core.debug(title_line)
+	log_sep_opt()
+
+	if filter == "" or filter == "*builtin*" then
+		log_mod("Built-in", mod_statistics.stats["*builtin*"])
+		log_sep_opt()
+	end
+
+	for name, stats in pairs(mod_statistics.stats) do
+		if name:sub(1, 1) ~= "*" and filter == "" or name == filter then
+			log_mod(name, stats)
+			if detailed_profiling then
+				log_sep_opt()
 			end
 		end
 	end
-		core.log("action",
-			"-----------------+---------------------------+-----------+" ..
-			"-----------+-----------+-----------+-----------+-----------")
-			
+
 	if filter == "" then
-		core.log("action",
-			string.format("%16s | %25s | %9d | %9d | %9d | %9d | %9d | %9d",
-			"total",
-			" ",
-			mod_statistics.stats["total"].min_us,
-			mod_statistics.stats["total"].max_us,
-			mod_statistics.stats["total"].avg_us,
-			mod_statistics.stats["total"].min_per,
-			mod_statistics.stats["total"].max_per,
-			mod_statistics.stats["total"].avg_per)
-		)
+		log_sep_opt()
+		local stats_t = mod_statistics.stats["*total*"]
+		log_line("Total", "",
+			stats_t.min_us,
+			stats_t.max_us,
+			stats_t.avg_us,
+			100, 100, 100)
 	end
-	core.log("action", " ")
-	
+	log_sep_opt()
 	return true
 end
 
---------------------------------------------------------------------------------
-local function initialize_profiling()
-	core.log("action", "Initialize tracing")
-	
-	mod_statistics.entity_callbacks = {}
-	
-	-- first register our own globalstep handler
+
+local function init_profiling()
+	core.log("info", "Initializing mod profiling")
+
+	local function wrap_callback(cb, log_id, mod_name)
+		return function(...)
+			local start = core.get_us_time()
+			local rets = {cb(...)}
+			local delta = core.get_us_time() - start
+			mod_statistics.log_time(log_id, mod_name, delta)
+			return unpack(rets)
+		end
+	end
+
+	local function wrap_callback_registrator(registrator, log_id)
+		return function(to_register)
+			local mod_name = core.get_current_modname()
+			registrator(wrap_callback(to_register, log_id, mod_name))
+		end
+	end
+
+	-- First register our own globalstep handler
 	core.register_globalstep(mod_statistics.update_statistics)
-	
-	local rp_register_entity = core.register_entity
-	core.register_entity = function(name, prototype)
-		local modname = core.get_current_modname()
-		local new_on_activate = nil
-		local new_on_step = nil
-		local new_on_punch = nil
-		local new_rightclick = nil
-		local new_get_staticdata = nil
-		
-		if prototype.on_activate ~= nil then
-			local cbid = name .. "#oa"
-			mod_statistics.entity_callbacks[cbid] = prototype.on_activate
-			new_on_activate = function(self, staticdata, dtime_s)
-				local starttime = core.get_us_time()
-				mod_statistics.entity_callbacks[cbid](self, staticdata, dtime_s)
-				local delta = core.get_us_time() -starttime
-				mod_statistics.log_time(cbid, modname, delta)
-			end
+
+	local old_register_entity = core.register_entity
+	function core.register_entity(name, prototype)
+		local mod_name = core.get_current_modname()
+
+		local function wrap(fname, short_fname)
+			if not prototype[fname] then return end
+			prototype[fname] = wrap_callback(prototype[fname],
+					name.."#"..short_fname, mod_name)
 		end
-		
-		if prototype.on_step ~= nil then
-			local cbid = name .. "#os"
-			mod_statistics.entity_callbacks[cbid] = prototype.on_step
-			new_on_step = function(self, dtime)
-				local starttime = core.get_us_time()
-				mod_statistics.entity_callbacks[cbid](self, dtime)
-				local delta = core.get_us_time() -starttime
-				mod_statistics.log_time(cbid, modname, delta)
-			end
-		end
-	
-		if prototype.on_punch ~= nil then
-			local cbid = name .. "#op"
-			mod_statistics.entity_callbacks[cbid] = prototype.on_punch
-			new_on_punch = function(self, hitter)
-				local starttime = core.get_us_time()
-				mod_statistics.entity_callbacks[cbid](self, hitter)
-				local delta = core.get_us_time() -starttime
-				mod_statistics.log_time(cbid, modname, delta)
-			end
-		end
-		
-		if prototype.rightclick ~= nil then
-			local cbid = name .. "#rc"
-			mod_statistics.entity_callbacks[cbid] = prototype.rightclick
-			new_rightclick = function(self, clicker)
-				local starttime = core.get_us_time()
-				mod_statistics.entity_callbacks[cbid](self, clicker)
-				local delta = core.get_us_time() -starttime
-				mod_statistics.log_time(cbid, modname, delta)
-			end
-		end
-		
-		if prototype.get_staticdata ~= nil then
-			local cbid = name .. "#gs"
-			mod_statistics.entity_callbacks[cbid] = prototype.get_staticdata
-			new_get_staticdata = function(self)
-				local starttime = core.get_us_time()
-				local retval = mod_statistics.entity_callbacks[cbid](self)
-				local delta = core.get_us_time() -starttime
-				mod_statistics.log_time(cbid, modname, delta)
-				return retval
-			end
-		end
-	
-		prototype.on_activate = new_on_activate
-		prototype.on_step = new_on_step
-		prototype.on_punch = new_on_punch
-		prototype.rightclick = new_rightclick
-		prototype.get_staticdata = new_get_staticdata
-		
-		rp_register_entity(name,prototype)
+
+		wrap("on_activate", "oa")
+		wrap("on_step", "os")
+		wrap("on_punch", "op")
+		wrap("rightclick", "rc")
+		wrap("get_staticdata", "gs")
+
+		old_register_entity(name, prototype)
 	end
-	
-	for i,v in ipairs(replacement_table) do
-		local to_replace = core[v]
-		core[v] = build_callback(v, to_replace)
+
+	local to_replace = {
+		"register_globalstep",
+		"register_on_placenode",
+		"register_on_dignode",
+		"register_on_punchnode",
+		"register_on_generated",
+		"register_on_newplayer",
+		"register_on_dieplayer",
+		"register_on_respawnplayer",
+		"register_on_prejoinplayer",
+		"register_on_joinplayer",
+		"register_on_leaveplayer",
+		"register_on_cheat",
+		"register_on_chat_message",
+		"register_on_player_receive_fields",
+		"register_on_mapgen_init",
+		"register_on_craft",
+		"register_craft_predict",
+		"register_on_item_eat"
+	}
+
+	for _, name in ipairs(to_replace) do
+		core[name] = wrap_callback_registrator(core[name], name)
 	end
-	
+
 	local rp_register_abm = core.register_abm
-	core.register_abm = function(spec)
-	
-		local modname = core.get_current_modname()
-	
-		local replacement_spec = {
-			nodenames = spec.nodenames,
-			neighbors = spec.neighbors,
-			interval  = spec.interval,
-			chance    = spec.chance,
-			action = function(pos, node, active_object_count, active_object_count_wider)
-				local starttime = core.get_us_time()
-				spec.action(pos, node, active_object_count, active_object_count_wider)
-				local delta = core.get_us_time() - starttime
-				mod_statistics.log_time("abm", modname, delta)
-			end
-		}
-		rp_register_abm(replacement_spec)
+	function core.register_abm(spec)
+		local mod_name = core.get_current_modname()
+		spec.label = spec.label or "Unknown ABM"
+		spec.action = wrap_callback(spec.action, spec.label, mod_name)
+		rp_register_abm(spec)
 	end
-	
-	core.log("action", "Mod profiling initialized")
+
+	core.log("info", "Mod profiling initialized")
 end
 
-initialize_profiling()
+init_profiling()
+
