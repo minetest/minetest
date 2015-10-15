@@ -213,10 +213,6 @@ int main(int argc, char *argv[])
 	infostream << "Using commanded world path ["
 	           << game_params.world_path << "]" << std::endl;
 
-	//Run dedicated server if asked to or no other option
-	g_settings->set("server_dedicated",
-			game_params.is_dedicated_server ? "true" : "false");
-
 	if (game_params.is_dedicated_server)
 		return run_dedicated_server(game_params, cmd_args) ? 0 : 1;
 
@@ -852,8 +848,8 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 
 		try {
 			// Create server
-			Server server(game_params.world_path,
-				game_params.game_spec, false, bind_addr.isIPv6(), &iface);
+			Server server(game_params.world_path, game_params.game_spec,
+					false, bind_addr.isIPv6(), true, &iface);
 
 			g_term_console.setup(&iface, &kill, admin_nick);
 
@@ -887,7 +883,7 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 		try {
 			// Create server
 			Server server(game_params.world_path, game_params.game_spec, false,
-				bind_addr.isIPv6());
+				bind_addr.isIPv6(), true);
 			server.start(bind_addr);
 
 			// Run server
