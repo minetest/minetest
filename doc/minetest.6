@@ -55,8 +55,11 @@ Set world path or list worlds
 .B \-\-map\-dir <value>
 Same as \-\-world (deprecated)
 .TP
+.B \-\-listen <value>
+Set network addresses (UDP) to listen on.  Overrides \fB\-\-port\fR.
+.TP
 .B \-\-port <value>
-Set network port (UDP) to use
+Set network port (UDP) to use.  Overridden by \fB\-\-listen\fR.
 .TP
 .B \-\-run\-unittests
 Run unit tests and exit

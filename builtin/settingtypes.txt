@@ -643,11 +643,13 @@ disable_escape_sequences (Disable escape sequences) bool false
 
 [*Network]
 
-#    Network port to listen (UDP).
-#    This value will be overridden when starting from the main menu.
-port (Server port) int 30000
+#    Network addresses and ports to listen on.
+#    IPV6_V6ONLY is set on all IPv6 addresses.
+listen (Listen addresses) string 0.0.0.0:30000 [::]:30000
 
-#    The network interface that the server listens on.
+#    Network address to bind to when making outgoing connections.
+#    If you're running a server and have announcing enabled the
+#    server should also listen on this address.
 bind_address (Bind address) string
 
 #    Enable to disallow old clients from connecting.
@@ -660,11 +662,6 @@ strict_protocol_version_checking (Strict protocol checking) bool false
 #    (obviously, remote_media should end with a slash).
 #    Files that are not present will be fetched the usual way.
 remote_media (Remote media) string
-
-#    Enable/disable running an IPv6 server.  An IPv6 server may be restricted
-#    to IPv6 clients, depending on system configuration.
-#    Ignored if bind_address is set.
-ipv6_server (IPv6 server) bool false
 
 [**Advanced]
 

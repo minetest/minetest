@@ -20,9 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "test.h"
 
 #include "log.h"
-#include "socket.h"
 #include "settings.h"
 #include "util/serialize.h"
+#include "network/socket.h"
 #include "network/connection.h"
 
 class TestConnection : public TestBase {
@@ -140,41 +140,22 @@ void TestConnection::testConnectSendReceive()
 	Handler hand_server("server");
 	Handler hand_client("client");
 
-	Address address(0, 0, 0, 0, 30001);
-	Address bind_addr(0, 0, 0, 0, 30001);
-	/*
-	 * Try to use the bind_address for servers with no localhost address
-	 * For example: FreeBSD jails
-	 */
-	std::string bind_str = g_settings->get("bind_address");
-	try {
-		bind_addr.Resolve(bind_str.c_str());
-
-		if (!bind_addr.isIPv6()) {
-			address = bind_addr;
-		}
-	} catch (ResolveError &e) {
-	}
+	Address address;
+	address.setLoopback(AF_INET);
 
 	infostream << "** Creating server Connection" << std::endl;
-	con::Connection server(proto_id, 512, 5.0, false, &hand_server);
+	con::Connection server(proto_id, 512, 5.0, &hand_server);
 	server.Serve(address);
-
-	infostream << "** Creating client Connection" << std::endl;
-	con::Connection client(proto_id, 512, 5.0, false, &hand_client);
-
-	UASSERT(hand_server.count == 0);
-	UASSERT(hand_client.count == 0);
+	server.start();
 
 	sleep_ms(50);
 
-	Address server_address(127, 0, 0, 1, 30001);
-	if (address != Address(0, 0, 0, 0, 30001)) {
-		server_address = bind_addr;
-	}
-
-	infostream << "** running client.Connect()" << std::endl;
-	client.Connect(server_address);
+	infostream << "** Creating client Connection" << std::endl;
+	con::Connection client(proto_id, 512, 5.0, &hand_client);
+	UASSERT(hand_server.count == 0);
+	UASSERT(hand_client.count == 0);
+	client.Connect(server.getFirstListenAddress());
+	client.start();
 
 	sleep_ms(50);
 
@@ -219,7 +200,7 @@ void TestConnection::testConnectSendReceive()
 
 	//sleep_ms(50);
 
-	while (client.Connected() == false) {
+	while (!client.Connected()) {
 		try {
 			NetworkPacket pkt;
 			infostream << "** running client.Receive()" << std::endl;
@@ -275,7 +256,7 @@ void TestConnection::testConnectSendReceive()
 		Send a large packet
 	*/
 	{
-		const int datasize = 30000;
+		const int datasize = 10000;
 		NetworkPacket pkt(0, datasize);
 		for (u16 i=0; i<datasize; i++) {
 			pkt << (u8) i/4;
@@ -298,17 +279,13 @@ void TestConnection::testConnectSendReceive()
 
 		server.Send(peer_id_client, 0, &pkt, true);
 
-		//sleep_ms(3000);
-
 		Buffer<u8> recvdata;
 		infostream << "** running client.Receive()" << std::endl;
 		u16 peer_id = 132;
 		u16 size = 0;
 		bool received = false;
 		u32 timems0 = porting::getTimeMs();
-		for (;;) {
-			if (porting::getTimeMs() - timems0 > 5000 || received)
-				break;
+		while (porting::getTimeMs() - timems0 < 5000 && !received) {
 			try {
 				NetworkPacket pkt;
 				client.Receive(&pkt);
@@ -317,8 +294,8 @@ void TestConnection::testConnectSendReceive()
 				recvdata = pkt.oldForgePacket();
 				received = true;
 			} catch (con::NoIncomingDataException &e) {
+				sleep_ms(10);
 			}
-			sleep_ms(10);
 		}
 		UASSERT(received);
 		infostream << "** Client received: peer_id=" << peer_id
@@ -346,3 +323,4 @@ void TestConnection::testConnectSendReceive()
 	UASSERT(hand_server.count == 1);
 	UASSERT(hand_server.last_id == 2);
 }
+

@@ -317,9 +317,7 @@ public:
 			IWritableItemDefManager *itemdef,
 			IWritableNodeDefManager *nodedef,
 			ISoundManager *sound,
-			MtEventManager *event,
-			bool ipv6
-	);
+			MtEventManager *event);
 
 	~Client();
 

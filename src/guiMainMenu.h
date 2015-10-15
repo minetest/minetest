@@ -39,12 +39,13 @@ struct MainMenuDataForScript {
 
 struct MainMenuData {
 	// Client options
+	std::string name;
+	std::string password;
 	std::string servername;
 	std::string serverdescription;
 	std::string address;
 	std::string port;
-	std::string name;
-	std::string password;
+	std::string listen;
 	// Whether to reconnect
 	bool do_reconnect;
 

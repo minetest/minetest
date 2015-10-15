@@ -25,7 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct SubgameSpec;
 
 struct GameParams {
-	u16 socket_port;
+	u16 port;
+	std::string listen;
 	std::string world_path;
 	SubgameSpec game_spec;
 	bool is_dedicated_server;

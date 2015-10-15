@@ -1302,11 +1302,12 @@ public:
 			InputHandler *input,
 			IrrlichtDevice *device,
 			const std::string &map_dir,
-			const std::string &playername,
+			const std::string &player_name,
 			const std::string &password,
 			// If address is "", local server is used and address is updated
 			std::string *address,
 			u16 port,
+			const std::string &listen,
 			std::string &error_message,
 			bool *reconnect,
 			ChatBackend *chat_backend,
@@ -1322,19 +1323,21 @@ protected:
 
 	// Basic initialisation
 	bool init(const std::string &map_dir, std::string *address,
-			u16 port,
+			const std::string &listen,
 			const SubgameSpec &gamespec);
 	bool initSound();
-	bool createSingleplayerServer(const std::string map_dir,
-			const SubgameSpec &gamespec, u16 port, std::string *address);
+	bool createServer(const std::string map_dir,
+			const SubgameSpec &gamespec,
+			const std::string &listen);
 
 	// Client creation
-	bool createClient(const std::string &playername,
-			const std::string &password, std::string *address, u16 port);
+	bool createClient(const std::string &player_name,
+			const std::string &password,
+			std::string *address, u16 port);
 	bool initGui();
 
 	// Client connection
-	bool connectToServer(const std::string &playername,
+	bool connectToServer(const std::string &player_name,
 			const std::string &password, std::string *address, u16 port,
 			bool *connect_ok, bool *aborted);
 	bool getServerContent(bool *aborted);
@@ -1697,10 +1700,11 @@ bool Game::startup(bool *kill,
 		InputHandler *input,
 		IrrlichtDevice *device,
 		const std::string &map_dir,
-		const std::string &playername,
+		const std::string &player_name,
 		const std::string &password,
 		std::string *address,     // can change if simple_singleplayer_mode
 		u16 port,
+		const std::string &listen,
 		std::string &error_message,
 		bool *reconnect,
 		ChatBackend *chat_backend,
@@ -1737,10 +1741,10 @@ bool Game::startup(bool *kill,
 	flags.invert_mouse = g_settings->getBool("invert_mouse");
 	flags.first_loop_after_window_activation = true;
 
-	if (!init(map_dir, address, port, gamespec))
+	if (!init(map_dir, address, listen, gamespec))
 		return false;
 
-	if (!createClient(playername, password, address, port))
+	if (!createClient(player_name, password, address, port))
 		return false;
 
 	return true;
@@ -1871,7 +1875,7 @@ void Game::shutdown()
 bool Game::init(
 		const std::string &map_dir,
 		std::string *address,
-		u16 port,
+		const std::string &listen,
 		const SubgameSpec &gamespec)
 {
 	showOverlayMessage(wgettext("Loading..."), 0, 0);
@@ -1893,8 +1897,8 @@ bool Game::init(
 		return false;
 
 	// Create a server if not connecting to an existing one
-	if (*address == "") {
-		if (!createSingleplayerServer(map_dir, gamespec, port, address))
+	if (address->empty()) {
+		if (!createServer(map_dir, gamespec, listen))
 			return false;
 	}
 
@@ -1928,44 +1932,21 @@ bool Game::initSound()
 	return true;
 }
 
-bool Game::createSingleplayerServer(const std::string map_dir,
-		const SubgameSpec &gamespec, u16 port, std::string *address)
+bool Game::createServer(const std::string map_dir,
+		const SubgameSpec &gamespec,
+		const std::string &listen)
 {
 	showOverlayMessage(wgettext("Creating server..."), 0, 5);
 
-	std::string bind_str = g_settings->get("bind_address");
-	Address bind_addr(0, 0, 0, 0, port);
-
-	if (g_settings->getBool("ipv6_server")) {
-		bind_addr.setAddress((IPv6AddressBytes *) NULL);
-	}
-
-	try {
-		bind_addr.Resolve(bind_str.c_str());
-	} catch (ResolveError &e) {
-		infostream << "Resolving bind address \"" << bind_str
-			   << "\" failed: " << e.what()
-			   << " -- Listening on all addresses." << std::endl;
-	}
-
-	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
-		*error_message = "Unable to listen on " +
-				bind_addr.serializeString() +
-				" because IPv6 is disabled";
-		errorstream << *error_message << std::endl;
-		return false;
-	}
-
-	server = new Server(map_dir, gamespec, simple_singleplayer_mode,
-			    bind_addr.isIPv6());
-
-	server->start(bind_addr);
+	server = new Server(map_dir, gamespec, simple_singleplayer_mode);
+	server->start(&listen);
 
 	return true;
 }
 
-bool Game::createClient(const std::string &playername,
-		const std::string &password, std::string *address, u16 port)
+bool Game::createClient(const std::string &player_name,
+		const std::string &password,
+		std::string *address, u16 port)
 {
 	showOverlayMessage(wgettext("Creating client..."), 0, 10);
 
@@ -1975,7 +1956,7 @@ bool Game::createClient(const std::string &playername,
 
 	bool could_connect, connect_aborted;
 
-	if (!connectToServer(playername, password, address, port,
+	if (!connectToServer(player_name, password, address, port,
 			&could_connect, &connect_aborted))
 		return false;
 
@@ -2144,7 +2125,7 @@ bool Game::initGui()
 	return true;
 }
 
-bool Game::connectToServer(const std::string &playername,
+bool Game::connectToServer(const std::string &player_name,
 		const std::string &password, std::string *address, u16 port,
 		bool *connect_ok, bool *aborted)
 {
@@ -2154,47 +2135,42 @@ bool Game::connectToServer(const std::string &playername,
 
 	showOverlayMessage(wgettext("Resolving address..."), 0, 15);
 
-	Address connect_address(0, 0, 0, 0, port);
+	Address connect_address;
+	if (server) {
+		connect_address = server->getConnectAddress();
+	} else {
+		connect_address.setPort(port);
 
-	try {
-		connect_address.Resolve(address->c_str());
-
-		if (connect_address.isZero()) { // i.e. INADDR_ANY, IN6ADDR_ANY
-			//connect_address.Resolve("localhost");
-			if (connect_address.isIPv6()) {
-				IPv6AddressBytes addr_bytes;
-				addr_bytes.bytes[15] = 1;
-				connect_address.setAddress(&addr_bytes);
-			} else {
-				connect_address.setAddress(127, 0, 0, 1);
-			}
-			local_server_mode = true;
+		try {
+			connect_address.resolve(*address);
+		} catch (ResolveError &e) {
+			*error_message = std::string("Couldn't resolve address: ") + e.what();
+			errorstream << *error_message << std::endl;
+			return false;
 		}
-	} catch (ResolveError &e) {
-		*error_message = std::string("Couldn't resolve address: ") + e.what();
-		errorstream << *error_message << std::endl;
-		return false;
+	}
+	if (connect_address.isZero()) { // i.e. INADDR_ANY, IN6ADDR_ANY
+		connect_address.setLoopback();
+		local_server_mode = true;
 	}
 
 	if (connect_address.isIPv6() && !g_settings->getBool("enable_ipv6")) {
 		*error_message = "Unable to connect to " +
-				connect_address.serializeString() +
+				connect_address.serialize() +
 				" because IPv6 is disabled";
 		errorstream << *error_message << std::endl;
 		return false;
 	}
 
-	client = new Client(device,
-			playername.c_str(), password,
+	client = new Client(device, player_name.c_str(), password,
 			*draw_control, texture_src, shader_src,
-			itemdef_manager, nodedef_manager, sound, eventmgr,
-			connect_address.isIPv6());
+			itemdef_manager, nodedef_manager, sound, eventmgr);
 
 	if (!client)
 		return false;
 
 	infostream << "Connecting to server at ";
-	connect_address.print(&infostream);
+	connect_address.serialize(infostream);
 	infostream << std::endl;
 
 	client->connect(connect_address, *address,
@@ -4569,10 +4545,11 @@ void the_game(bool *kill,
 		IrrlichtDevice *device,
 
 		const std::string &map_dir,
-		const std::string &playername,
+		const std::string &player_name,
 		const std::string &password,
 		const std::string &address,         // If empty local server is created
 		u16 port,
+		const std::string &listen,
 
 		std::string &error_message,
 		ChatBackend &chat_backend,
@@ -4591,8 +4568,8 @@ void the_game(bool *kill,
 	try {
 
 		if (game.startup(kill, random_input, input, device, map_dir,
-				playername, password, &server_address, port, error_message,
-				reconnect_requested, &chat_backend, gamespec,
+				player_name, password, &server_address, port, listen,
+				error_message, reconnect_requested, &chat_backend, gamespec,
 				simple_singleplayer_mode)) {
 			game.run();
 			game.shutdown();

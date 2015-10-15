@@ -29,37 +29,13 @@ class ModApiMainMenu : public ModApiBase {
 
 private:
 	/**
-	 * read a text variable from gamedata table within lua stack
-	 * @param L stack to read variable from
-	 * @param name name of variable to read
-	 * @return string value of requested variable
-	 */
-	static std::string getTextData(lua_State *L, std::string name);
-
-	/**
-	 * read a integer variable from gamedata table within lua stack
-	 * @param L stack to read variable from
-	 * @param name name of variable to read
-	 * @return integer value of requested variable
-	 */
-	static int getIntegerData(lua_State *L, std::string name,bool& valid);
-
-	/**
-	 * read a bool variable from gamedata table within lua stack
-	 * @param L stack to read variable from
-	 * @param name name of variable to read
-	 * @return bool value of requested variable
-	 */
-	static int getBoolData(lua_State *L, std::string name,bool& valid);
-
-	/**
 	 * check if a path is within some of minetests folders
 	 * @param path path to check
 	 * @return true/false
 	 */
 	static bool isMinetestPath(std::string path);
 
-	//api calls
+	// Api calls
 
 	static int l_start(lua_State *L);
 
