@@ -667,4 +667,4 @@ end
 -- The documentation of mapgen noise parameter formats (title plus 16 lines)
 -- Noise parameter 'mgv5_np_ground' in group format (13 lines)
 
---assert(loadfile(core.get_mainmenu_path()..DIR_DELIM.."generate_from_settingtypes.lua"))(parse_config_file(true, false))
+--assert(loadfile(core.get_builtin_path()..DIR_DELIM.."mainmenu"..DIR_DELIM.."generate_from_settingtypes.lua"))(parse_config_file(true, false))

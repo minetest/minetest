@@ -213,13 +213,13 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 		m_data->script_data.errormessage = "";
 
 		if (!loadMainMenuScript()) {
-			errorstream << "No future without mainmenu" << std::endl;
+			errorstream << "No future without main menu!" << std::endl;
 			abort();
 		}
 
 		run();
 	} catch (LuaError &e) {
-		errorstream << "MAINMENU ERROR: " << e.what() << std::endl;
+		errorstream << "Main menu error: " << e.what() << std::endl;
 		m_data->script_data.errormessage = e.what();
 	}
 
@@ -231,13 +231,13 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 /******************************************************************************/
 bool GUIEngine::loadMainMenuScript()
 {
-	// Try custom menu script (main_menu_path)
-
+	// Set main menu path (for core.get_mainmenu_path())
 	m_scriptdir = g_settings->get("main_menu_path");
 	if (m_scriptdir.empty()) {
-		m_scriptdir = porting::path_share + DIR_DELIM "builtin" + DIR_DELIM "mainmenu";
+		m_scriptdir = porting::path_share + DIR_DELIM + "builtin" + DIR_DELIM + "mainmenu";
 	}
 
+	// Load builtin (which will load the main menu script)
 	std::string script = porting::path_share + DIR_DELIM "builtin" + DIR_DELIM "init.lua";
 	try {
 		m_script->loadScript(script);
