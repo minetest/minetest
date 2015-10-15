@@ -1326,7 +1326,7 @@ protected:
 			const std::string &listen,
 			const SubgameSpec &gamespec);
 	bool initSound();
-	bool createServer(const std::string map_dir,
+	bool createServer(const std::string &map_dir,
 			const SubgameSpec &gamespec,
 			const std::string &listen);
 
@@ -1932,7 +1932,7 @@ bool Game::initSound()
 	return true;
 }
 
-bool Game::createServer(const std::string map_dir,
+bool Game::createServer(const std::string &map_dir,
 		const SubgameSpec &gamespec,
 		const std::string &listen)
 {
