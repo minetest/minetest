@@ -163,35 +163,26 @@ void script_run_callbacks_f(lua_State *L, int nargs,
 void log_deprecated(lua_State *L, const std::string &message)
 {
 	static bool configured = false;
-	static bool dolog      = false;
-	static bool doerror    = false;
+	static bool do_log     = false;
+	static bool do_error   = false;
 
-	// performance optimization to not have to read and compare setting for every logline
+	// Only read settings on first call
 	if (!configured) {
 		std::string value = g_settings->get("deprecated_lua_api_handling");
 		if (value == "log") {
-			dolog = true;
+			do_log = true;
 		} else if (value == "error") {
-			dolog = true;
-			doerror = true;
+			do_log   = true;
+			do_error = true;
 		}
 	}
 
-	if (doerror) {
-		if (L != NULL) {
+	if (do_log) {
+		warningstream << message << std::endl;
+		if (do_error)
 			script_error(L, LUA_ERRRUN, NULL, NULL);
-		} else {
-			FATAL_ERROR("Can't do a scripterror for this deprecated message, "
-				"so exit completely!");
-		}
-	}
-
-	if (dolog) {
-		/* abusing actionstream because of lack of file-only-logged loglevel */
-		actionstream << message << std::endl;
-		if (L != NULL) {
-			actionstream << script_get_backtrace(L) << std::endl;
-		}
+		else
+			infostream << script_get_backtrace(L) << std::endl;
 	}
 }
 
