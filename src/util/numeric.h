@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../threading/mutex.h"
 
 #define rangelim(d, min, max) ((d) < (min) ? (min) : ((d) > (max) ? (max) : (d)))
-#define myfloor(x) ((x) > 0.0 ? (int)(x) : (int)(x) - 1)
+#define myfloor(x) ((x) < 0.0 ? (int)(x) - 1 : (int)(x))
 // The naive swap performs better than the xor version
 #define SWAP(t, x, y) do { \
 	t temp = x; \
