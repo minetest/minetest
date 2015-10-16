@@ -179,10 +179,14 @@ void log_deprecated(lua_State *L, const std::string &message)
 
 	if (do_log) {
 		warningstream << message << std::endl;
-		if (do_error)
-			script_error(L, LUA_ERRRUN, NULL, NULL);
-		else
-			infostream << script_get_backtrace(L) << std::endl;
+		// L can be NULL if we get called by log_deprecated(const std::string &msg)
+		// from scripting_game.cpp.
+		if (L) {
+			if (do_error)
+				script_error(L, LUA_ERRRUN, NULL, NULL);
+			else
+				infostream << script_get_backtrace(L) << std::endl;
+		}
 	}
 }
 
