@@ -426,6 +426,32 @@ s16 Settings::getS16(const std::string &name) const
 }
 
 
+v3s16 Settings::getV3S16(const std::string &name) const
+{
+	v3s16 value;
+	Strfnd f(get(name));
+	f.next("(");
+	value.X = stoi(f.next(","), -32768, 32767);
+	value.Y = stoi(f.next(","), -32768, 32767);
+	value.Z = stoi(f.next(")"), -32768, 32767);
+	return value;
+}
+
+
+v3s16 Settings::getMapGenerationLimit() const
+{
+	v3s16 mgl;
+	if (get("map_generation_limit").find("(")==std::string::npos){
+			mgl.X = getS16("map_generation_limit");
+			mgl.Y = mgl.X;
+			mgl.Z = mgl.X;
+			return mgl;
+	}
+	mgl = getV3S16("map_generation_limit");
+	return mgl;
+}
+
+
 s32 Settings::getS32(const std::string &name) const
 {
 	return stoi(get(name));
@@ -662,6 +688,17 @@ bool Settings::getS16NoEx(const std::string &name, s16 &val) const
 }
 
 
+bool Settings::getV3S16NoEx(const std::string &name, v3s16 &val) const
+{
+	try {
+		val = getV3S16(name);
+		return true;
+	} catch (SettingNotFoundException &e) {
+		return false;
+	}
+}
+
+
 bool Settings::getS32NoEx(const std::string &name, s32 &val) const
 {
 	try {
@@ -795,6 +832,14 @@ bool Settings::setBool(const std::string &name, bool value)
 bool Settings::setS16(const std::string &name, s16 value)
 {
 	return set(name, itos(value));
+}
+
+
+bool Settings::setV3S16(const std::string &name, v3s16 value)
+{
+	std::ostringstream os;
+	os << "(" << value.X << "," << value.Y << "," << value.Z << ")";
+	return set(name, os.str());
 }
 
 
