@@ -167,7 +167,7 @@ void Thread::wait()
 
 #elif USE_WIN_THREADS
 
-	int ret == WaitForSingleObject(m_thread_handle, INFINITE);
+	int ret = WaitForSingleObject(m_thread_handle, INFINITE);
 	assert(ret == WAIT_OBJECT_0);
 	UNUSED(ret);
 
