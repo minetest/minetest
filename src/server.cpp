@@ -3277,9 +3277,8 @@ v3f Server::findSpawnPos()
 
 		// Get ground height at point
 		s16 groundheight = map.findGroundLevel(nodepos2d);
-		if (groundheight <= water_level) // Don't go underwater
-			continue;
-		if (groundheight > water_level + 6) // Don't go to high places
+		// Don't go underwater or to high places
+		if (groundheight <= water_level || groundheight > water_level + 16)
 			continue;
 
 		v3s16 nodepos(nodepos2d.X, groundheight, nodepos2d.Y);
