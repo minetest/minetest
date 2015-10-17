@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <queue>
 #include <string>
 #include <fstream>
-#include "threads.h"
+#include "threading/thread.h"
 
 class ILogOutput;
 
@@ -71,7 +71,7 @@ private:
 	// written to when one thread has access currently).
 	// Works on all known architectures (x86, ARM, MIPS).
 	volatile bool m_silenced_levels[LL_MAX];
-	std::map<threadid_t, std::string> m_thread_names;
+	std::map<Thread::Id, std::string> m_thread_names;
 	mutable Mutex m_mutex;
 	bool m_trace_enabled;
 };

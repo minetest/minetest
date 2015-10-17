@@ -21,12 +21,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "debug.h"
 #include "exceptions.h"
-#include "threads.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstring>
 #include <map>
 #include <sstream>
+#include "threading/thread.h"
 #include "threading/mutex.h"
 #include "threading/mutex_auto_lock.h"
 #include "config.h"
@@ -45,7 +45,7 @@ void sanity_check_fn(const char *assertion, const char *file,
 		unsigned int line, const char *function)
 {
 	errorstream << std::endl << "In thread " << std::hex
-		<< (unsigned long)thr_get_current_thread_id() << ":" << std::endl;
+		<< (unsigned long)Thread::getCurrentThreadId() << ":" << std::endl;
 	errorstream << file << ":" << line << ": " << function
 		<< ": An engine assumption '" << assertion << "' failed." << std::endl;
 
@@ -58,7 +58,7 @@ void fatal_error_fn(const char *msg, const char *file,
 		unsigned int line, const char *function)
 {
 	errorstream << std::endl << "In thread " << std::hex
-		<< (unsigned long)thr_get_current_thread_id() << ":" << std::endl;
+		<< (unsigned long)Thread::getCurrentThreadId() << ":" << std::endl;
 	errorstream << file << ":" << line << ": " << function
 		<< ": A fatal error occured: " << msg << std::endl;
 
@@ -73,17 +73,17 @@ void fatal_error_fn(const char *msg, const char *file,
 
 struct DebugStack
 {
-	DebugStack(threadid_t id);
+	DebugStack(Thread::Id id);
 	void print(FILE *file, bool everything);
 	void print(std::ostream &os, bool everything);
 
-	threadid_t threadid;
+	Thread::Id threadid;
 	char stack[DEBUG_STACK_SIZE][DEBUG_STACK_TEXT_SIZE];
 	int stack_i; // Points to the lowest empty position
 	int stack_max_i; // Highest i that was seen
 };
 
-DebugStack::DebugStack(threadid_t id)
+DebugStack::DebugStack(Thread::Id id)
 {
 	threadid = id;
 	stack_i = 0;
@@ -130,14 +130,14 @@ void DebugStack::print(std::ostream &os, bool everything)
 		os<<"Probably overflown."<<std::endl;
 }
 
-// Note:  Using pthread_t (that is, threadid_t on POSIX platforms) as the key to
+// Note:  Using pthread_t (that is, Thread::Id on POSIX platforms) as the key to
 // a std::map is naughty.  Formally, a pthread_t may only be compared using
 // pthread_equal() - pthread_t lacks the well-ordered property needed for
 // comparisons in binary searches.  This should be fixed at some point by
 // defining a custom comparator with an arbitrary but stable ordering of
 // pthread_t, but it isn't too important since none of our supported platforms
 // implement pthread_t as a non-ordinal type.
-std::map<threadid_t, DebugStack*> g_debug_stacks;
+std::map<Thread::Id, DebugStack*> g_debug_stacks;
 Mutex g_debug_stacks_mutex;
 
 void debug_stacks_init()
@@ -150,7 +150,7 @@ void debug_stacks_print_to(std::ostream &os)
 
 	os<<"Debug stacks:"<<std::endl;
 
-	for(std::map<threadid_t, DebugStack*>::iterator
+	for(std::map<Thread::Id, DebugStack*>::iterator
 			i = g_debug_stacks.begin();
 			i != g_debug_stacks.end(); ++i)
 	{
@@ -165,11 +165,11 @@ void debug_stacks_print()
 
 DebugStacker::DebugStacker(const char *text)
 {
-	threadid_t threadid = thr_get_current_thread_id();
+	Thread::Id threadid = Thread::getCurrentThreadId();
 
 	MutexAutoLock lock(g_debug_stacks_mutex);
 
-	std::map<threadid_t, DebugStack*>::iterator n;
+	std::map<Thread::Id, DebugStack*>::iterator n;
 	n = g_debug_stacks.find(threadid);
 	if(n != g_debug_stacks.end())
 	{
@@ -210,7 +210,7 @@ DebugStacker::~DebugStacker()
 
 	if(m_stack->stack_i == 0)
 	{
-		threadid_t threadid = m_stack->threadid;
+		Thread::Id threadid = m_stack->threadid;
 		/*DEBUGPRINT("Deleting debug stack for thread %x\n",
 				(unsigned int)threadid);*/
 		delete m_stack;

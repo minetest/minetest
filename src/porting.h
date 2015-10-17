@@ -40,7 +40,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "constants.h"
 #include "gettime.h"
-#include "threads.h"
 
 #ifdef _MSC_VER
 	#define SWPRINTF_CHARSTRING L"%S"
