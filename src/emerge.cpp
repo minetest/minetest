@@ -219,7 +219,7 @@ void EmergeManager::initMapgens()
 Mapgen *EmergeManager::getCurrentMapgen()
 {
 	for (u32 i = 0; i != m_threads.size(); i++) {
-		if (m_threads[i]->isSameThread())
+		if (m_threads[i]->isCurrentThread())
 			return m_threads[i]->m_mapgen;
 	}
 
@@ -476,7 +476,7 @@ EmergeThread::EmergeThread(Server *server, int ethreadid) :
 	m_emerge(NULL),
 	m_mapgen(NULL)
 {
-	name = "Emerge-" + itos(ethreadid);
+	m_name = "Emerge-" + itos(ethreadid);
 }
 
 
