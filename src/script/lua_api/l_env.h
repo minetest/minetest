@@ -180,14 +180,14 @@ class LuaABM : public ActiveBlockModifier
 private:
 	int m_id;
 
-	std::set<std::string> m_trigger_contents;
-	std::set<std::string> m_required_neighbors;
+	std::vector<content_t> m_trigger_contents;
+	std::set<content_t> m_required_neighbors;
 	float m_trigger_interval;
 	u32 m_trigger_chance;
 public:
 	LuaABM(lua_State *L, int id,
-			const std::set<std::string> &trigger_contents,
-			const std::set<std::string> &required_neighbors,
+			const std::vector<content_t> &trigger_contents,
+			const std::set<content_t> &required_neighbors,
 			float trigger_interval, u32 trigger_chance):
 		m_id(id),
 		m_trigger_contents(trigger_contents),
@@ -196,11 +196,11 @@ public:
 		m_trigger_chance(trigger_chance)
 	{
 	}
-	virtual std::set<std::string> getTriggerContents()
+	virtual std::vector<content_t> getTriggerContents()
 	{
 		return m_trigger_contents;
 	}
-	virtual std::set<std::string> getRequiredNeighbors()
+	virtual std::set<content_t> getRequiredNeighbors()
 	{
 		return m_required_neighbors;
 	}

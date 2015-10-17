@@ -589,34 +589,20 @@ public:
 			if(aabm.chance == 0)
 				aabm.chance = 1;
 			// Trigger neighbors
-			std::set<std::string> required_neighbors_s
-					= abm->getRequiredNeighbors();
-			for(std::set<std::string>::iterator
-					i = required_neighbors_s.begin();
-					i != required_neighbors_s.end(); ++i)
-			{
-				ndef->getIds(*i, aabm.required_neighbors);
-			}
+			aabm.required_neighbors	= abm->getRequiredNeighbors();
 			// Trigger contents
-			std::set<std::string> contents_s = abm->getTriggerContents();
-			for(std::set<std::string>::iterator
-					i = contents_s.begin(); i != contents_s.end(); ++i)
-			{
-				std::set<content_t> ids;
-				ndef->getIds(*i, ids);
-				for(std::set<content_t>::const_iterator k = ids.begin();
-						k != ids.end(); ++k)
-				{
-					content_t c = *k;
-					std::map<content_t, std::vector<ActiveABM> >::iterator j;
+			std::vector<content_t> ids = abm->getTriggerContents();
+			for(std::vector<content_t>::const_iterator k = ids.begin();
+					k != ids.end(); ++k) {
+				content_t c = *k;
+				std::map<content_t, std::vector<ActiveABM> >::iterator j;
+				j = m_aabms.find(c);
+				if(j == m_aabms.end()) {
+					std::vector<ActiveABM> aabmlist;
+					m_aabms[c] = aabmlist;
 					j = m_aabms.find(c);
-					if(j == m_aabms.end()){
-						std::vector<ActiveABM> aabmlist;
-						m_aabms[c] = aabmlist;
-						j = m_aabms.find(c);
-					}
-					j->second.push_back(aabm);
 				}
+				j->second.push_back(aabm);
 			}
 		}
 	}
