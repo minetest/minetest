@@ -439,7 +439,7 @@ TextureSource::TextureSource(IrrlichtDevice *device):
 {
 	assert(m_device); // Pre-condition
 
-	m_main_thread = get_current_thread_id();
+	m_main_thread = thr_get_current_thread_id();
 
 	// Add a NULL TextureInfo as the first index, named ""
 	m_textureinfo_cache.push_back(TextureInfo(""));
@@ -502,7 +502,7 @@ u32 TextureSource::getTextureId(const std::string &name)
 	/*
 		Get texture
 	*/
-	if (get_current_thread_id() == m_main_thread)
+	if (thr_is_current_thread(m_main_thread))
 	{
 		return generateTexture(name);
 	}
@@ -604,7 +604,7 @@ u32 TextureSource::generateTexture(const std::string &name)
 	/*
 		Calling only allowed from main thread
 	*/
-	if (get_current_thread_id() != m_main_thread) {
+	if (!thr_is_current_thread(m_main_thread)) {
 		errorstream<<"TextureSource::generateTexture() "
 				"called not from main thread"<<std::endl;
 		return 0;
@@ -704,7 +704,7 @@ void TextureSource::insertSourceImage(const std::string &name, video::IImage *im
 {
 	//infostream<<"TextureSource::insertSourceImage(): name="<<name<<std::endl;
 
-	sanity_check(get_current_thread_id() == m_main_thread);
+	sanity_check(thr_is_current_thread(m_main_thread));
 
 	m_sourcecache.insert(name, img, true, m_device->getVideoDriver());
 	m_source_image_existence.set(name, true);
@@ -2057,7 +2057,7 @@ video::ITexture *TextureSource::getShaderFlagsTexture(bool normalmap_present)
 {
 	std::string tname = "__shaderFlagsTexture";
 	tname += normalmap_present ? "1" : "0";
-	
+
 	if (isKnownSourceImage(tname)) {
 		return getTexture(tname);
 	} else {

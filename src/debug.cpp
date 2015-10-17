@@ -45,7 +45,7 @@ void sanity_check_fn(const char *assertion, const char *file,
 		unsigned int line, const char *function)
 {
 	errorstream << std::endl << "In thread " << std::hex
-		<< (unsigned long)get_current_thread_id() << ":" << std::endl;
+		<< (unsigned long)thr_get_current_thread_id() << ":" << std::endl;
 	errorstream << file << ":" << line << ": " << function
 		<< ": An engine assumption '" << assertion << "' failed." << std::endl;
 
@@ -58,7 +58,7 @@ void fatal_error_fn(const char *msg, const char *file,
 		unsigned int line, const char *function)
 {
 	errorstream << std::endl << "In thread " << std::hex
-		<< (unsigned long)get_current_thread_id() << ":" << std::endl;
+		<< (unsigned long)thr_get_current_thread_id() << ":" << std::endl;
 	errorstream << file << ":" << line << ": " << function
 		<< ": A fatal error occured: " << msg << std::endl;
 
@@ -130,6 +130,13 @@ void DebugStack::print(std::ostream &os, bool everything)
 		os<<"Probably overflown."<<std::endl;
 }
 
+// Note:  Using pthread_t (that is, threadid_t on POSIX platforms) as the key to
+// a std::map is naughty.  Formally, a pthread_t may only be compared using
+// pthread_equal() - pthread_t lacks the well-ordered property needed for
+// comparisons in binary searches.  This should be fixed at some point by
+// defining a custom comparator with an arbitrary but stable ordering of
+// pthread_t, but it isn't too important since none of our supported platforms
+// implement pthread_t as a non-ordinal type.
 std::map<threadid_t, DebugStack*> g_debug_stacks;
 Mutex g_debug_stacks_mutex;
 
@@ -158,7 +165,7 @@ void debug_stacks_print()
 
 DebugStacker::DebugStacker(const char *text)
 {
-	threadid_t threadid = get_current_thread_id();
+	threadid_t threadid = thr_get_current_thread_id();
 
 	MutexAutoLock lock(g_debug_stacks_mutex);
 

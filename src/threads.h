@@ -20,22 +20,75 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef THREADS_HEADER
 #define THREADS_HEADER
 
-#include "threading/mutex.h"
-
-#if defined(WIN32) || defined(_WIN32_WCE)
-typedef DWORD threadid_t;
+//
+// Determine which threading API we will use
+//
+#if __cplusplus >= 201103L
+	#define USE_CPP11_THREADS 1
+#elif defined(_WIN32)
+	#define USE_WIN_THREADS 1
 #else
-typedef pthread_t threadid_t;
+	#define USE_POSIX_THREADS 1
 #endif
 
-inline threadid_t get_current_thread_id()
+///////////////
+
+
+#if USE_CPP11_THREADS
+	#include <thread>
+#endif
+
+#include "threading/mutex.h"
+
+//
+// threadid_t, threadhandle_t
+//
+#if USE_CPP11_THREADS
+	typedef std::thread::id threadid_t;
+	typedef std::thread::native_handle_type threadhandle_t;
+#elif USE_WIN_THREADS
+	typedef DWORD threadid_t;
+	typedef HANDLE threadhandle_t;
+#elif USE_POSIX_THREADS
+	typedef pthread_t threadid_t;
+	typedef pthread_t threadhandle_t;
+#endif
+
+//
+// ThreadStartFunc
+//
+#if USE_CPP11_THREADS || USE_POSIX_THREADS
+	typedef void *(ThreadStartFunc)(void *param);
+#elif defined(_WIN32_WCE)
+	typedef DWORD (ThreadStartFunc)(LPVOID param);
+#elif defined(_WIN32)
+	typedef DWORD WINAPI (ThreadStartFunc)(LPVOID param);
+#endif
+
+
+inline threadid_t thr_get_current_thread_id()
 {
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if USE_CPP11_THREADS
+	return std::this_thread::get_id();
+#elif USE_WIN_THREADS
 	return GetCurrentThreadId();
-#else
+#elif USE_POSIX_THREADS
 	return pthread_self();
 #endif
 }
 
+inline bool thr_compare_thread_id(threadid_t thr1, threadid_t thr2)
+{
+#if USE_POSIX_THREADS
+	return pthread_equal(thr1, thr2);
+#else
+	return thr1 == thr2;
 #endif
+}
 
+inline bool thr_is_current_thread(threadid_t thr)
+{
+	return thr_compare_thread_id(thr_get_current_thread_id(), thr);
+}
+
+#endif
