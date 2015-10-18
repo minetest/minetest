@@ -48,14 +48,6 @@ inline const wchar_t *wgettext(const char *str)
 	return utf8_to_wide_c(gettext(str));
 }
 
-inline std::wstring wstrgettext(const std::string &text)
-{
-	const wchar_t *tmp = wgettext(text.c_str());
-	std::wstring retval = (std::wstring)tmp;
-	delete[] tmp;
-	return retval;
-}
-
 inline std::string strgettext(const std::string &text)
 {
 	return gettext(text.c_str());

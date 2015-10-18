@@ -1048,7 +1048,7 @@ static void show_chat_menu(GUIFormSpecMenu **cur_formspec,
 		FORMSPEC_VERSION_STRING
 		SIZE_TAG
 		"field[3,2.35;6,0.5;f_text;;" + text + "]"
-		"button_exit[4,3;3,0.5;btn_send;" + wide_to_utf8(wstrgettext("Proceed")) + "]"
+		"button_exit[4,3;3,0.5;btn_send;" + strgettext("Proceed") + "]"
 		;
 
 	/* Create menu */
@@ -1088,32 +1088,32 @@ static void show_pause_menu(GUIFormSpecMenu **cur_formspec,
 		bool singleplayermode)
 {
 #ifdef __ANDROID__
-	std::string control_text = wide_to_utf8(wstrgettext("Default Controls:\n"
-				   "No menu visible:\n"
-				   "- single tap: button activate\n"
-				   "- double tap: place/use\n"
-				   "- slide finger: look around\n"
-				   "Menu/Inventory visible:\n"
-				   "- double tap (outside):\n"
-				   " -->close\n"
-				   "- touch stack, touch slot:\n"
-				   " --> move stack\n"
-				   "- touch&drag, tap 2nd finger\n"
-				   " --> place single item to slot\n"
-							     ));
+	std::string control_text = strgettext("Default Controls:\n"
+		"No menu visible:\n"
+		"- single tap: button activate\n"
+		"- double tap: place/use\n"
+		"- slide finger: look around\n"
+		"Menu/Inventory visible:\n"
+		"- double tap (outside):\n"
+		" -->close\n"
+		"- touch stack, touch slot:\n"
+		" --> move stack\n"
+		"- touch&drag, tap 2nd finger\n"
+		" --> place single item to slot\n"
+		);
 #else
-	std::string control_text = wide_to_utf8(wstrgettext("Default Controls:\n"
-				   "- WASD: move\n"
-				   "- Space: jump/climb\n"
-				   "- Shift: sneak/go down\n"
-				   "- Q: drop item\n"
-				   "- I: inventory\n"
-				   "- Mouse: turn/look\n"
-				   "- Mouse left: dig/punch\n"
-				   "- Mouse right: place/use\n"
-				   "- Mouse wheel: select item\n"
-				   "- T: chat\n"
-							     ));
+	std::string control_text = strgettext("Default Controls:\n"
+		"- WASD: move\n"
+		"- Space: jump/climb\n"
+		"- Shift: sneak/go down\n"
+		"- Q: drop item\n"
+		"- I: inventory\n"
+		"- Mouse: turn/look\n"
+		"- Mouse left: dig/punch\n"
+		"- Mouse right: place/use\n"
+		"- Mouse wheel: select item\n"
+		"- T: chat\n"
+		);
 #endif
 
 	float ypos = singleplayermode ? 0.5 : 0.1;
@@ -1121,23 +1121,23 @@ static void show_pause_menu(GUIFormSpecMenu **cur_formspec,
 
 	os << FORMSPEC_VERSION_STRING  << SIZE_TAG
 	   << "button_exit[4," << (ypos++) << ";3,0.5;btn_continue;"
-	   << wide_to_utf8(wstrgettext("Continue"))     << "]";
+	   << strgettext("Continue") << "]";
 
 	if (!singleplayermode) {
 		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_change_password;"
-		   << wide_to_utf8(wstrgettext("Change Password")) << "]";
+		   << strgettext("Change Password") << "]";
 	}
 
 #ifndef __ANDROID__
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
-			<< wide_to_utf8(wstrgettext("Sound Volume")) << "]";
+			<< strgettext("Sound Volume") << "]";
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_key_config;"
-			<< wide_to_utf8(wstrgettext("Change Keys"))  << "]";
+			<< strgettext("Change Keys")  << "]";
 #endif
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_menu;"
-			<< wide_to_utf8(wstrgettext("Exit to Menu")) << "]";
+			<< strgettext("Exit to Menu") << "]";
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"
-			<< wide_to_utf8(wstrgettext("Exit to OS"))   << "]"
+			<< strgettext("Exit to OS")   << "]"
 			<< "textarea[7.5,0.25;3.9,6.25;;" << control_text << ";]"
 			<< "textarea[0.4,0.25;3.5,6;;" << PROJECT_NAME_C "\n"
 			<< g_build_info << "\n"
