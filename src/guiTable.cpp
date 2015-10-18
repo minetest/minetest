@@ -556,6 +556,8 @@ s32 GUITable::getSelected() const
 
 void GUITable::setSelected(s32 index)
 {
+	s32 old_selected = m_selected;
+
 	m_selected = -1;
 	m_sel_column = 0;
 	m_sel_doubleclick = false;
@@ -572,7 +574,8 @@ void GUITable::setSelected(s32 index)
 	}
 
 	// If the selected row is not visible, open its ancestors to make it visible
-	if (m_rows[index].visible_index < 0) {
+	bool selection_invisible = m_rows[index].visible_index < 0;
+	if (selection_invisible) {
 		std::set<s32> opened_trees;
 		getOpenedTrees(opened_trees);
 		s32 indent = m_rows[index].indent;
@@ -590,7 +593,9 @@ void GUITable::setSelected(s32 index)
 		assert(m_selected >= 0 && m_selected < (s32) m_visible_rows.size());
 	}
 
-	autoScroll();
+	if (m_selected != old_selected || selection_invisible) {
+		autoScroll();
+	}
 }
 
 GUITable::DynamicData GUITable::getDynamicData() const
