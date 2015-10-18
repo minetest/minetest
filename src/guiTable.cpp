@@ -928,6 +928,11 @@ bool GUITable::OnEvent(const SEvent &event)
 						sel_doubleclick) {
 					sendTableEvent(sel_column, sel_doubleclick);
 				}
+
+				// Treeview: double click opens/closes trees
+				if (m_has_tree_column && sel_doubleclick) {
+					toggleVisibleTree(m_selected, 0, false);
+				}
 			}
 		}
 		return true;
