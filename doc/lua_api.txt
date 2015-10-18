@@ -64,6 +64,8 @@ e.g.
 
 The game directory can contain the file minetest.conf, which will be used
 to set default settings when running the particular game.
+It can also contain a settingtypes.txt in the same format as the one in builtin.
+This settingtypes.txt will be parsed by the menu and the settings will be displayed in the "Games" category in the settings tab.
 
 ### Menu images
 
@@ -125,6 +127,7 @@ Mod directory structure
     |   |-- depends.txt
     |   |-- screenshot.png
     |   |-- description.txt
+    |   |-- settingtypes.txt
     |   |-- init.lua
     |   |-- models
     |   |-- textures
@@ -154,6 +157,10 @@ A screenshot shown in modmanager within mainmenu.
 
 ### `description.txt`
 A File containing description to be shown within mainmenu.
+
+### `settingtypes.txt`
+A file in the same format as the one in builtin. It will be parsed by the
+settings menu and the settings will be displayed in the "Mods" category.
 
 ### `init.lua`
 The main Lua script. Running this script should register everything it
