@@ -234,7 +234,15 @@ local function create_change_setting_formspec(dialogdata)
 
 	formspec = formspec .. ",,"
 
-	for _, comment_line in ipairs(fgettext_ne(setting.comment):split("\n")) do
+	local comment_text = ""
+
+	-- fgettext_ne("") doesn't have to return "", according to specification of gettext(3)
+	if setting.comment == "" then
+		comment_text = fgettext_ne("(No description of setting given)")
+	else
+		comment_text = fgettext_ne(setting.comment)
+	end
+	for _, comment_line in ipairs(comment_text:split("\n")) do
 		formspec = formspec .. "," .. core.formspec_escape(comment_line) .. ","
 	end
 
@@ -334,7 +342,7 @@ local function create_settings_formspec(tabview, name, tabdata)
 		else
 			name = entry.name
 		end
-		
+
 		if entry.type == "category" then
 			current_level = entry.level
 			formspec = formspec .. "#FFFF00," .. current_level .. "," .. core.formspec_escape(name) .. ",,"
@@ -385,7 +393,7 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 			return true
 		end
 	end
-	
+
 	if fields["btn_edit"] or list_enter then
 		local setting = settings[selected_setting]
 		if setting.type ~= "category" then
