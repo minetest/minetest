@@ -81,9 +81,9 @@ public:
 	/*
 	 * Waits for thread to finish.
 	 * Note:  This does not stop a thread, you have to do this on your own.
-	 * Returns immediately if the thread is not started.
+	 * Returns immediately if the thread is not started or has already finished.
 	 */
-	void wait();
+	bool wait();
 
 	/*
 	 * Returns true if the calling thread is this Thread object.
@@ -140,14 +140,13 @@ protected:
 
 private:
 	void *m_retval;
+	bool m_joinable;
 	Atomic<bool> m_request_stop;
 	Atomic<bool> m_running;
-	Mutex m_continue_mutex;
+	Mutex m_mutex;
 
 	threadid_t m_thread_id;
 	threadhandle_t m_thread_handle;
-
-	void cleanup();
 
 	static ThreadStartFunc threadProc;
 
