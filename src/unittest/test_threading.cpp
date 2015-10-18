@@ -28,26 +28,122 @@ class TestThreading : public TestBase {
 public:
 	TestThreading() { TestManager::registerTestModule(this); }
 	const char *getName() { return "TestThreading"; }
-	void runTests(IGameDef *);
+	void runTests(IGameDef *gamedef);
+
+	void testStartStopWait();
+	void testThreadKill();
 	void testAtomicSemaphoreThread();
 };
 
 static TestThreading g_test_instance;
 
-void TestThreading::runTests(IGameDef *)
+void TestThreading::runTests(IGameDef *gamedef)
 {
+	TEST(testStartStopWait);
+	TEST(testThreadKill);
 	TEST(testAtomicSemaphoreThread);
 }
 
+class SimpleTestThread : public Thread {
+public:
+	SimpleTestThread(unsigned int interval) :
+		Thread("SimpleTest"),
+		m_interval(interval)
+	{
+	}
 
-class AtomicTestThread : public Thread
+private:
+	void *run()
+	{
+		void *retval = this;
+
+		if (isCurrentThread() == false)
+			retval = (void *)0xBAD;
+
+		while (!stopRequested())
+			sleep_ms(m_interval);
+
+		return retval;
+	}
+
+	unsigned int m_interval;
+};
+
+void TestThreading::testStartStopWait()
 {
+	void *thread_retval;
+	SimpleTestThread *thread = new SimpleTestThread(25);
+
+	// Try this a couple times, since a Thread should be reusable after waiting
+	for (size_t i = 0; i != 5; i++) {
+		// Can't wait() on a joined, stopped thread
+		UASSERT(thread->wait() == false);
+
+		// start() should work the first time, but not the second.
+		UASSERT(thread->start() == true);
+		UASSERT(thread->start() == false);
+
+		UASSERT(thread->isRunning() == true);
+		UASSERT(thread->isCurrentThread() == false);
+
+		// Let it loop a few times...
+		sleep_ms(70);
+
+		// It's still running, so the return value shouldn't be available to us.
+		UASSERT(thread->getReturnValue(&thread_retval) == false);
+
+		// stop() should always succeed
+		UASSERT(thread->stop() == true);
+
+		// wait() only needs to wait the first time - the other two are no-ops.
+		UASSERT(thread->wait() == true);
+		UASSERT(thread->wait() == false);
+		UASSERT(thread->wait() == false);
+
+		// Now that the thread is stopped, we should be able to get the
+		// return value, and it should be the object itself.
+		thread_retval = NULL;
+		UASSERT(thread->getReturnValue(&thread_retval) == true);
+		UASSERT(thread_retval == thread);
+	}
+
+	delete thread;
+}
+
+
+void TestThreading::testThreadKill()
+{
+	SimpleTestThread *thread = new SimpleTestThread(300);
+
+	UASSERT(thread->start() == true);
+
+	// kill()ing is quite violent, so let's make sure our victim is sleeping
+	// before we do this... so we don't corrupt the rest of the program's state
+	sleep_ms(100);
+	UASSERT(thread->kill() == true);
+
+	// The state of the thread object should be reset if all went well
+	UASSERT(thread->isRunning() == false);
+	UASSERT(thread->start() == true);
+	UASSERT(thread->stop() == true);
+	UASSERT(thread->wait() == true);
+
+	// kill() after already waiting should fail.
+	UASSERT(thread->kill() == false);
+
+	delete thread;
+}
+
+
+class AtomicTestThread : public Thread {
 public:
 	AtomicTestThread(Atomic<u32> &v, Semaphore &trigger) :
 		Thread("AtomicTest"),
 		val(v),
 		trigger(trigger)
-	{}
+	{
+	}
+
 private:
 	void *run()
 	{
@@ -56,6 +152,7 @@ private:
 			++val;
 		return NULL;
 	}
+
 	Atomic<u32> &val;
 	Semaphore &trigger;
 };

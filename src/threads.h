@@ -58,11 +58,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // ThreadStartFunc
 //
 #if USE_CPP11_THREADS || USE_POSIX_THREADS
-	typedef void *(ThreadStartFunc)(void *param);
+	typedef void *ThreadStartFunc(void *param);
 #elif defined(_WIN32_WCE)
-	typedef DWORD (ThreadStartFunc)(LPVOID param);
+	typedef DWORD ThreadStartFunc(LPVOID param);
 #elif defined(_WIN32)
-	typedef DWORD WINAPI (ThreadStartFunc)(LPVOID param);
+	typedef DWORD WINAPI ThreadStartFunc(LPVOID param);
 #endif
 
 
