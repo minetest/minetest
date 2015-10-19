@@ -540,7 +540,7 @@ static void init_log_streams(const Settings &cmd_args)
 		conf_loglev = lev_name[lev_i];
 	}
 
-	if (conf_loglev.empty())  // No logging
+	if (log_filename.empty() || conf_loglev.empty())  // No logging
 		return;
 
 	LogLevel log_level = Logger::stringToLevel(conf_loglev);
