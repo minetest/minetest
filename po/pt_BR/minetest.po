@@ -24,7 +24,7 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
-msgstr ""
+msgstr "Houve um erro:"
 
 #: builtin/fstk/ui.lua
 #, fuzzy
@@ -42,7 +42,7 @@ msgstr "Conectar"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "O servidor pediu uma reconexão:"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
@@ -50,11 +50,11 @@ msgstr "Carregando..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch, server "
-msgstr ""
+msgstr "Versão de protocolo diferente, o servidor "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
-msgstr ""
+msgstr "Tente rehabilitar a lista pública de servidores e verifique sua conexão com a Internet."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua src/guiKeyChangeMenu.cpp
@@ -118,11 +118,11 @@ msgstr "Criar"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr ""
+msgstr "Baixar um subjogo, por exemplo o jo_go_minetest, em minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "Baixar um de minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Game"
@@ -130,20 +130,20 @@ msgstr "Jogo"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Mapgen"
-msgstr "Mapgen"
+msgstr "GerarMapas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No worldname given or no game selected"
 msgstr ""
-"Não foi fornecido nenhum nome para o mundo ou não foi selecionado nenhum jogo"
+"Não foi dado nome para o mundo ou não foi selecionado um jogo"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
-msgstr "Seed"
+msgstr "Semente"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
-msgstr ""
+msgstr "Aviso: O teste mínimo de desenvolvimento é feito para programadores."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -151,7 +151,7 @@ msgstr "Nome do mundo"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no subgames installed."
-msgstr ""
+msgstr "Você não tem subjogos instalados."
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Are you sure you want to delete \"$1\"?"
