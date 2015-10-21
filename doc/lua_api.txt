@@ -801,15 +801,13 @@ Decoration types
 ----------------
 The varying types of decorations that can be placed.
 
-The default value is `simple`, and is currently the only type supported.
-
 ### `simple`
 Creates a 1 times `H` times 1 column of a specified node (or a random node from
 a list, if a decoration list is specified). Can specify a certain node it must
 spawn next to, such as water or lava, for example. Can also generate a
 decoration of random height between a specified lower and upper bound.
 This type of decoration is intended for placement of grass, flowers, cacti,
-papyri, and so on.
+papyri, waterlilies and so on.
 
 ### `schematic`
 Copies a box of `MapNodes` from a specified schematic file (or raw description).
@@ -848,8 +846,8 @@ Schematic attributes
 --------------------
 See section "Flag Specifier Format".
 
-Currently supported flags: `place_center_x`, `place_center_y`,
-			   `place_center_z`, `force_placement`.
+Currently supported flags: `place_center_x`, `place_center_y`, `place_center_z`,
+                           `force_placement`.
 
 * `place_center_x`: Placement of this decoration is centered along the X axis.
 * `place_center_y`: Placement of this decoration is centered along the Y axis.
@@ -3418,6 +3416,11 @@ Definition tables
     -- ^ Minimum and maximum `y` positions these decorations can be generated at.
     -- ^ This parameter refers to the `y` position of the decoration base, so
     --   the actual maximum height would be `height_max + size.Y`.
+        flags = "liquid_surface",
+    --  ^ Flags for all decoration types.
+    --  ^ "liquid_surface": Instead of placement on the highest solid surface
+    --  ^ in a mapchunk column, placement is on the highest liquid surface.
+    --  ^ Placement is disabled if solid nodes are found above the liquid surface.
 
         ----- Simple-type parameters
         decoration = "default:grass",

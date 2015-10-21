@@ -161,6 +161,26 @@ s16 Mapgen::findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax)
 }
 
 
+// Returns -MAX_MAP_GENERATION_LIMIT if not found or if ground is found first
+s16 Mapgen::findLiquidSurface(v2s16 p2d, s16 ymin, s16 ymax)
+{
+	v3s16 em = vm->m_area.getExtent();
+	u32 i = vm->m_area.index(p2d.X, ymax, p2d.Y);
+	s16 y;
+
+	for (y = ymax; y >= ymin; y--) {
+		MapNode &n = vm->m_data[i];
+		if (ndef->get(n).walkable)
+			return -MAX_MAP_GENERATION_LIMIT;
+		else if (ndef->get(n).isLiquid())
+			break;
+
+		vm->m_area.add_y(em, i, -1);
+	}
+	return (y >= ymin) ? y : -MAX_MAP_GENERATION_LIMIT;
+}
+
+
 void Mapgen::updateHeightmap(v3s16 nmin, v3s16 nmax)
 {
 	if (!heightmap)

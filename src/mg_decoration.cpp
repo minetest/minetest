@@ -30,6 +30,7 @@ FlagDesc flagdesc_deco[] = {
 	{"place_center_y", DECO_PLACE_CENTER_Y},
 	{"place_center_z", DECO_PLACE_CENTER_Z},
 	{"force_placement", DECO_FORCE_PLACEMENT},
+	{"liquid_surface", DECO_LIQUID_SURFACE},
 	{NULL,             0}
 };
 
@@ -124,9 +125,13 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 
 			int mapindex = carea_size * (z - nmin.Z) + (x - nmin.X);
 
-			s16 y = mg->heightmap ?
-					mg->heightmap[mapindex] :
-					mg->findGroundLevel(v2s16(x, z), nmin.Y, nmax.Y);
+			s16 y = -MAX_MAP_GENERATION_LIMIT;
+			if (flags & DECO_LIQUID_SURFACE)
+				y = mg->findLiquidSurface(v2s16(x, z), nmin.Y, nmax.Y);
+			else if (mg->heightmap)
+				y = mg->heightmap[mapindex];
+			else
+				y = mg->findGroundLevel(v2s16(x, z), nmin.Y, nmax.Y);
 
 			if (y < nmin.Y || y > nmax.Y ||
 				y < y_min  || y > y_max)
