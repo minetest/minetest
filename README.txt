@@ -375,8 +375,8 @@ Authors of media files
 Everything not listed in here:
 Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
 
-BlockMen:
-  textures/base/pack/menuheader.png
+paramat:
+  textures/base/pack/menu_header.png
 
 erlehmann:
   misc/minetest-icon-24x24.png
