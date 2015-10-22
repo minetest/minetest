@@ -26,93 +26,106 @@ DEALINGS IN THE SOFTWARE.
 #ifndef THREADING_THREAD_H
 #define THREADING_THREAD_H
 
-#include "threading/atomic.h"
-#include "threading/mutex.h"
-#include "threads.h"
+// Determine which threading API we will use
+#if __cplusplus >= 201103L
+	#define USE_CPP11_THREADS 1
+#elif defined(_WIN32)
+	#define USE_WIN_THREADS 1
+#else
+	#define USE_POSIX_THREADS 1
+#endif
 
-#include <string>
+
 #if USE_CPP11_THREADS
-	#include <thread> // for std::thread
+	#include <thread>
 #endif
 #ifdef _AIX
-	#include <sys/thread.h> // for tid_t
+	#include <sys/thread.h>
 #endif
 
-/*
- * On platforms using pthreads, these five priority classes correlate to
- * even divisions between the minimum and maximum reported thread priority.
- */
-#if !defined(_WIN32)
-	#define THREAD_PRIORITY_LOWEST       0
+#include "threading/atomic.h"
+#include "threading/mutex.h"
+
+#include <string>
+
+
+#ifndef _WIN32
+	#define THREAD_PRIORITY_LOWEST 0
 	#define THREAD_PRIORITY_BELOW_NORMAL 1
-	#define THREAD_PRIORITY_NORMAL       2
+	#define THREAD_PRIORITY_NORMAL 2
 	#define THREAD_PRIORITY_ABOVE_NORMAL 3
-	#define THREAD_PRIORITY_HIGHEST      4
+	#define THREAD_PRIORITY_HIGHEST 4
 #endif
 
 
-class Thread {
+class Thread
+{
 public:
-	Thread(const std::string &name="");
-	virtual ~Thread();
+	Thread(const std::string &name);
+	virtual ~Thread() { kill(); }
 
-	/*
-	 * Begins execution of a new thread at the pure virtual method Thread::run().
+	// Id and Handle
+#if USE_CPP11_THREADS
+	typedef std::thread::id Id;
+	typedef std::thread::native_handle_type Handle;
+#elif USE_WIN_THREADS
+	typedef DWORD Id;
+	typedef HANDLE Handle;
+#elif USE_POSIX_THREADS
+	typedef pthread_t Id;
+	typedef pthread_t Handle;
+#endif
+
+	/** Begins execution of a new thread at the pure virtual method Thread::run().
 	 * Execution of the thread is guaranteed to have started after this function
 	 * returns.
 	 */
 	bool start();
 
-	/*
-	 * Requests that the thread exit gracefully.
-	 * Returns immediately; thread execution is guaranteed to be complete after
-	 * a subsequent call to Thread::wait.
+	/** Requests that the thread exit gracefully.
+	 * Returns in constant time.  The thread should poll stopRequested()
+	 * often, but this is not guaranteed.  If you need a thread to stop
+	 * immediately consider kill().
 	 */
-	bool stop();
+	void stop() { m_request_stop = true; }
 
-	/*
-	 * Immediately terminates the thread.
+	/** Returns whether this thread has been requested
+	 * to stop through a call to stop().
+	 */
+	bool stopRequested() { return m_request_stop; }
+
+	/** Returns whether this thread is currently running.
+	 */
+	bool isRunning() { return m_running; }
+
+	/** Immediately terminates the thread.
 	 * This should be used with extreme caution, as the thread will not have
 	 * any opportunity to release resources it may be holding (such as memory
 	 * or locks).
 	 */
 	bool kill();
 
-	/*
-	 * Waits for thread to finish.
-	 * Note:  This does not stop a thread, you have to do this on your own.
-	 * Returns immediately if the thread is not started.
+	/** Wait for thread to finish.
+	 * Note: this does not stop the thread.
+	 * Returns immediately if the thread is not running.
 	 */
 	void wait();
 
-	/*
-	 * Returns true if the calling thread is this Thread object.
-	 */
-	bool isCurrentThread();
-
-	inline bool isRunning() { return m_running; }
-	inline bool stopRequested() { return m_request_stop; }
-	inline threadid_t getThreadId() { return m_thread_id; }
-	inline threadhandle_t getThreadHandle() { return m_thread_handle; }
-
-	/*
-	 * Gets the thread return value.
-	 * Returns true if the thread has exited and the return value was available,
+	/** Gets the thread return value.
+	 * Returns true if the thread has exited and the return value is available,
 	 * or false if the thread has yet to finish.
 	 */
 	bool getReturnValue(void **ret);
 
-	/*
-	 * Binds (if possible, otherwise sets the affinity of) the thread to the
-	 * specific processor specified by proc_number.
+	/** Binds (if possible, otherwise sets the affinity of) the thread to the
+	 * specific processor specified by proc_num.
 	 */
-	bool bindToProcessor(unsigned int proc_number);
+	bool bindToProcessor(unsigned int proc_num);
 
-	/*
-	 * Sets the thread priority to the specified priority.
+	/** Sets the thread's priority to the specified priority.
 	 *
-	 * prio can be one of: THREAD_PRIORITY_LOWEST, THREAD_PRIORITY_BELOW_NORMAL,
-	 * THREAD_PRIORITY_NORMAL, THREAD_PRIORITY_ABOVE_NORMAL, THREAD_PRIORITY_HIGHEST.
+	 * @p prio can be one of: THREAD_PRIORITY_{LOWEST,BELOW_NORMAL,NORMAL,
+	 * ABOVE_NORMAL,HIGHEST}.
 	 * On Windows, any of the other priorites as defined by SetThreadPriority
 	 * are supported as well.
 	 *
@@ -122,45 +135,79 @@ public:
 	 */
 	bool setPriority(int prio);
 
-	/*
-	 * Sets the currently executing thread's name to where supported; useful
-	 * for debugging.
+	/** Sets the currently executing thread's name to where supported;
+	 * useful for debugging and auditing processor usage.
 	 */
-	static void setName(const std::string &name);
+	static void setNativeThreadName(const std::string &name);
 
-	/*
-	 * Returns the number of processors/cores configured and active on this machine.
+	/** Returns the number of processors/cores/threads
+	 * available on this machine.
 	 */
 	static unsigned int getNumberOfProcessors();
 
-protected:
-	std::string m_name;
+	/** Returns whether the thread that this object represents
+	 * is the currently running thread.
+	 */
+	bool isCurrentThread() const
+		{ return isCurrentThread(m_thread_id); }
 
+	/** Returns whether the thread identified by the passed
+	 * identifier is the currently running thread.
+	 */
+	static bool isCurrentThread(Id id)
+		{ return compareThreadIds(getCurrentThreadId(), id); }
+
+	/** Returns the identifier of the currently running thread.
+	 */
+	static Id getCurrentThreadId()
+	{
+#if USE_CPP11_THREADS
+		return std::this_thread::get_id();
+#elif USE_WIN_THREADS
+		return GetCurrentThreadId();
+#elif USE_POSIX_THREADS
+		return pthread_self();
+#endif
+	}
+
+protected:
 	virtual void *run() = 0;
 
 private:
+	static bool compareThreadIds(Id id1, Id id2)
+	{
+#if USE_POSIX_THREADS
+		return pthread_equal(id1, id2);
+#else
+		return id1 == id2;
+#endif
+	}
+
+	std::string m_name;
 	void *m_retval;
 	Atomic<bool> m_request_stop;
 	Atomic<bool> m_running;
 	Mutex m_continue_mutex;
-
-	threadid_t m_thread_id;
-	threadhandle_t m_thread_handle;
+	Handle m_handle;
+	Id m_thread_id;
 
 	void cleanup();
 
-	static ThreadStartFunc threadProc;
+#if USE_WIN_THREADS
+	static DWORD WINAPI threadFunc(void *param);
+#else
+	static void *threadFunc(void *param);
+#endif
 
-#ifdef _AIX
+#if _AIX
 	// For AIX, there does not exist any mapping from pthread_t to tid_t
 	// available to us, so we maintain one ourselves.  This is set on thread start.
 	tid_t m_kernel_thread_id;
 #endif
 
 #if USE_CPP11_THREADS
-	std::thread *m_thread_obj;
+	std::thread *m_thread;
 #endif
-
 };
 
 #endif

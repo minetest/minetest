@@ -37,13 +37,14 @@ DEALINGS IN THE SOFTWARE.
 	#ifndef _WIN32_WCE
 		#include <process.h>
 	#endif
-#elif USE_POSIX_THREADS
-	#include <time.h>
-	#include <assert.h>
-	#include <stdlib.h>
-	#include <unistd.h>
+#else
+	#include <ctime>
+	#include <cassert>
+	#include <cstdlib>
 	#include <sys/time.h>
 
+	// For getNumberOfProcessors
+	#include <unistd.h>
 	#if defined(__FreeBSD__) || defined(__APPLE__)
 		#include <sys/types.h>
 		#include <sys/sysctl.h>
@@ -53,7 +54,7 @@ DEALINGS IN THE SOFTWARE.
 #endif
 
 
-// for setName
+// For setName
 #if defined(linux) || defined(__linux)
 	#include <sys/prctl.h>
 #elif defined(__FreeBSD__) || defined(__OpenBSD__)
@@ -62,12 +63,12 @@ DEALINGS IN THE SOFTWARE.
 	struct THREADNAME_INFO {
 		DWORD dwType;     // Must be 0x1000
 		LPCSTR szName;    // Pointer to name (in user addr space)
-		DWORD dwThreadID; // Thread ID (-1=caller thread)
+		DWORD dwThreadID; // Thread ID (-1 means caller thread)
 		DWORD dwFlags;    // Reserved for future use, must be zero
 	};
 #endif
 
-// for bindToProcessor
+// For bindToProcessor
 #if __FreeBSD_version >= 702106
 	typedef cpuset_t cpu_set_t;
 #elif defined(__linux) || defined(linux)
@@ -90,125 +91,87 @@ Thread::Thread(const std::string &name) :
 	m_retval(NULL),
 	m_request_stop(false),
 	m_running(false)
-{
-#ifdef _AIX
-	m_kernel_thread_id = -1;
-#endif
-
 #if USE_CPP11_THREADS
-	m_thread_obj = NULL;
+	, m_thread(NULL)
 #endif
-}
-
-
-Thread::~Thread()
-{
-	kill();
-}
-
-
-bool Thread::start()
-{
-	MutexAutoLock lock(m_continue_mutex);
-
-	if (m_running)
-		return false;
-
-	cleanup();
-
-#if USE_CPP11_THREADS
-
-	try {
-		m_thread_obj    = new std::thread(threadProc, this);
-		m_thread_id     = m_thread->get_id();
-		m_thread_handle = m_thread->native_handle();
-	} except (const std::system_error &e) {
-		return false;
-	}
-
-#elif USE_WIN_THREADS
-
-	m_thread_handle = CreateThread(NULL, 0, threadProc, this, 0, &m_thread_id);
-	if (!m_thread_handle)
-		return false;
-
-#elif USE_POSIX_THREADS
-
-	int status = pthread_create(&m_thread_handle, NULL, threadProc, this);
-	if (status)
-		return false;
-
-	m_thread_id = m_thread_handle;
-
+#if _AIX
+	, m_kernel_thread_id(-1)
 #endif
-
-	while (!m_running)
-		sleep_ms(1);
-
-	return true;
-}
-
-
-bool Thread::stop()
-{
-	m_request_stop = true;
-	return true;
-}
+{}
 
 
 void Thread::wait()
 {
 	if (!m_running)
 		return;
+#if USE_CPP11_THREADS
+	if (m_thread->joinable())
+		m_thread->join();
+#elif defined(_WIN32)
+	int ret = WaitForSingleObject(m_handle, INFINITE);
+	assert(ret == WAIT_OBJECT_O);
+	UNUSED(ret);
+#else  // pthread
+	void *status;
+	int ret = pthread_join(m_handle, &status);
+	assert(!ret);
+	UNUSED(ret);
+#endif
+}
+
+
+bool Thread::start()
+{
+	if (m_running)
+		return false;
+	cleanup();
+	m_retval = NULL;
+
+	MutexAutoLock lock(m_continue_mutex);
 
 #if USE_CPP11_THREADS
-
-	m_thread_obj->join();
-
-#elif USE_WIN_THREADS
-
-	int ret = WaitForSingleObject(m_thread_handle, INFINITE);
-	assert(ret == WAIT_OBJECT_0);
-	UNUSED(ret);
-
-#elif USE_POSIX_THREADS
-
-	int ret = pthread_join(m_thread_handle, NULL);
-	assert(ret == 0);
-	UNUSED(ret);
-
+	try {
+		m_thread    = new std::thread(threadFunc, this);
+		m_thread_id = m_thread->get_id();
+		m_handle    = m_thread->native_handle();
+	} catch (const std::system_error &e) {
+		return false;
+	}
+#elif defined(_WIN32)
+	m_handle = CreateThread(NULL, 0, threadFunc, this, 0, &m_thread_id);
+	if (!m_handle)
+		return false;
+#else
+	if (pthread_create(&m_handle, NULL, threadFunc, this))
+		return false;
+	m_thread_id = m_handle;
 #endif
 
-	assert(m_running == false);
-
-	return;
+#if !USE_CPP11_THREADS
+	// Wait until running
+	while (!m_running)
+		sleep_ms(1);
+#endif
+	return true;
 }
 
 
 bool Thread::kill()
 {
-	if (!m_running) {
-		wait();
+	if (!m_running)
 		return false;
-	}
-
 #ifdef _WIN32
-	TerminateThread(m_thread_handle, 0);
+	TerminateThread(m_handle, 0);
+	CloseHandle(m_handle);
 #else
-
-	// We need to pthread_kill instead on Android since NDKv5's pthread
-	// implementation is incomplete.
 # ifdef __ANDROID__
-	pthread_kill(m_thread_handle, SIGKILL);
+	pthread_kill(m_handle, SIGKILL);
 # else
-	pthread_cancel(m_thread_handle);
+	pthread_cancel(m_handle);
 # endif
-
 	wait();
 #endif
-
 	cleanup();
-
 	return true;
 }
 
@@ -216,24 +179,13 @@ bool Thread::kill()
 void Thread::cleanup()
 {
 #if USE_CPP11_THREADS
-
-	delete m_thread_obj;
-	m_thread_obj = NULL;
-
+	delete m_thread;
+	m_thread = NULL;
 #elif USE_WIN_THREADS
-
-	CloseHandle(m_thread_handle);
-	m_thread_handle = NULL;
+	CloseHandle(m_handle);
+	m_handle = NULL;
 	m_thread_id = -1;
-
-#elif USE_POSIX_THREADS
-
-	// Can't do any cleanup for pthreads
-
 #endif
-
-	m_name         = "";
-	m_retval       = NULL;
 	m_running      = false;
 	m_request_stop = false;
 }
@@ -243,89 +195,66 @@ bool Thread::getReturnValue(void **ret)
 {
 	if (m_running)
 		return false;
-
 	*ret = m_retval;
 	return true;
 }
 
 
-bool Thread::isCurrentThread()
-{
-	return thr_is_current_thread(m_thread_id);
-}
-
-
-#if USE_CPP11_THREADS || USE_POSIX_THREADS
-	void *(Thread::threadProc)(void *param)
-#elif defined(_WIN32_WCE)
-	DWORD (Thread::threadProc)(LPVOID param)
-#elif defined(_WIN32)
-	DWORD WINAPI (Thread::threadProc)(LPVOID param)
+#if USE_CPP11_THREADS
+void *Thread::threadFunc(Thread *param)
+#elif USE_WIN_THREADS
+DWORD WINAPI Thread::threadFunc(void *param)
+#else  // pthreads
+void *Thread::threadFunc(void *param)
 #endif
 {
-	Thread *thr = (Thread *)param;
-
+	Thread *th = static_cast<Thread *>(param);
 #ifdef _AIX
-	m_kernel_thread_id = thread_self();
+	th->m_kernel_thread_id = thread_self();
 #endif
+	th->m_running = true;
 
-	thr->setName(thr->m_name);
+	setNativeThreadName(th->m_name);
+	g_logger.registerThread(th->m_name);
 
-	g_logger.registerThread(thr->m_name);
-	thr->m_running = true;
+	th->m_retval = th->run();
 
-	thr->m_retval = thr->run();
-
-	thr->m_running = false;
 	g_logger.deregisterThread();
 
+	th->cleanup();
 	return NULL;
 }
 
 
-void Thread::setName(const std::string &name)
+void Thread::setNativeThreadName(const std::string &name)
 {
 #if defined(linux) || defined(__linux)
-
 	// It would be cleaner to do this with pthread_setname_np,
 	// which was added to glibc in version 2.12, but some major
 	// distributions are still runing 2.11 and previous versions.
 	prctl(PR_SET_NAME, name.c_str());
-
 #elif defined(__FreeBSD__) || defined(__OpenBSD__)
-
 	pthread_set_name_np(pthread_self(), name.c_str());
-
 #elif defined(__NetBSD__)
-
 	pthread_setname_np(pthread_self(), name.c_str());
-
 #elif defined(__APPLE__)
-
 	pthread_setname_np(name.c_str());
-
 #elif defined(_MSC_VER)
-
 	// Windows itself doesn't support thread names,
 	// but the MSVC debugger does...
 	THREADNAME_INFO info;
-
 	info.dwType = 0x1000;
 	info.szName = name.c_str();
 	info.dwThreadID = -1;
 	info.dwFlags = 0;
-
 	__try {
-		RaiseException(0x406D1388, 0,
-			sizeof(info) / sizeof(DWORD), (ULONG_PTR *)&info);
+		RaiseException(0x406D1388, 0, sizeof(info) / sizeof(DWORD),
+				static_cast<ULONG_PTR *>(&info));
 	} __except (EXCEPTION_CONTINUE_EXECUTION) {
 	}
-
-#elif defined(_WIN32) || defined(__GNU__)
-
+#elif USE_WIN_THREADS || defined(__GNU__)
 	// These platforms are known to not support thread names.
 	// Silently ignore the request.
-
 #else
 	#warning "Unrecognized platform, thread names will not be available."
 #endif
@@ -334,121 +263,80 @@ void Thread::setName(const std::string &name)
 
 unsigned int Thread::getNumberOfProcessors()
 {
-#if __cplusplus >= 201103L
-
+#if USE_CPP11_THREADS
 	return std::thread::hardware_concurrency();
-
-#elif defined(_SC_NPROCESSORS_ONLN)
-
-	return sysconf(_SC_NPROCESSORS_ONLN);
-
-#elif defined(__FreeBSD__) || defined(__NetBSD__) || \
-	defined(__DragonFly__) || defined(__APPLE__)
-
-	unsigned int num_cpus = 1;
-	size_t len = sizeof(num_cpus);
-
-	int mib[2];
-	mib[0] = CTL_HW;
-	mib[1] = HW_NCPU;
-
-	sysctl(mib, 2, &num_cpus, &len, NULL, 0);
-	return num_cpus;
-
-#elif defined(_GNU_SOURCE)
-
-	return get_nprocs();
-
-#elif defined(_WIN32)
-
+#elif USE_WIN_THREADS
 	SYSTEM_INFO sysinfo;
 	GetSystemInfo(&sysinfo);
 	return sysinfo.dwNumberOfProcessors;
-
+#elif defined(_SC_NPROCESSORS_ONLN)
+	return sysconf(_SC_NPROCESSORS_ONLN);
+#elif defined(__FreeBSD__) || defined(__NetBSD__) || \
+	defined(__DragonFly__) || defined(__APPLE__)
+	unsigned int len, count;
+	len = sizeof(count);
+	return sysctlbyname("hw.ncpu", &count, &len, NULL, 0);
+#elif defined(_GNU_SOURCE)
+	return get_nprocs();
 #elif defined(PTW32_VERSION) || defined(__hpux)
-
 	return pthread_num_processors_np();
-
 #else
-
 	return 1;
-
 #endif
 }
 
 
-bool Thread::bindToProcessor(unsigned int proc_number)
+bool Thread::bindToProcessor(unsigned int proc_num)
 {
 #if defined(__ANDROID__)
-
 	return false;
-
-#elif defined(_WIN32)
-
-	return SetThreadAffinityMask(m_thread_handle, 1 << proc_number);
-
+#elif USE_WIN_THREADS
+	return SetThreadAffinityMask(m_handle, 1 << proc_num);
 #elif __FreeBSD_version >= 702106 || defined(__linux) || defined(linux)
-
 	cpu_set_t cpuset;
-
 	CPU_ZERO(&cpuset);
-	CPU_SET(proc_number, &cpuset);
-
-	return pthread_setaffinity_np(m_thread_handle, sizeof(cpuset), &cpuset) == 0;
-
+	CPU_SET(proc_num, &cpuset);
+	return pthread_setaffinity_np(m_handle, sizeof(cpuset),
+		&cpuset) == 0;
 #elif defined(__sun) || defined(sun)
-
-	return processor_bind(P_LWPID, P_MYID, proc_number, NULL) == 0
-
+	return processor_bind(P_LWPID, P_MYID, proc_num, NULL) == 0
 #elif defined(_AIX)
-
-	return bindprocessor(BINDTHREAD, m_kernel_thread_id, proc_number) == 0;
-
+	return bindprocessor(BINDTHREAD, m_kernel_thread_id, proc_num) == 0;
 #elif defined(__hpux) || defined(hpux)
-
 	pthread_spu_t answer;
 
 	return pthread_processor_bind_np(PTHREAD_BIND_ADVISORY_NP,
-			&answer, proc_number, m_thread_handle) == 0;
-
+			&answer, proc_num, m_handle) == 0;
 #elif defined(__APPLE__)
-
 	struct thread_affinity_policy tapol;
 
-	thread_port_t threadport = pthread_mach_thread_np(m_thread_handle);
-	tapol.affinity_tag = proc_number + 1;
-	return thread_policy_set(threadport, THREAD_AFFINITY_POLICY,
+	thread_port_t thread_port = pthread_mach_thread_np(m_handle);
+	tapol.affinity_tag = proc_num + 1;
+	return thread_policy_set(thread_port, THREAD_AFFINITY_POLICY,
 			(thread_policy_t)&tapol,
 			THREAD_AFFINITY_POLICY_COUNT) == KERN_SUCCESS;
-
 #else
-
 	return false;
-
 #endif
 }
 
 
 bool Thread::setPriority(int prio)
 {
-#if defined(_WIN32)
-
-	return SetThreadPriority(m_thread_handle, prio);
-
+#if USE_WIN_THREADS
+	return SetThreadPriority(m_handle, prio);
 #else
-
 	struct sched_param sparam;
 	int policy;
 
-	if (pthread_getschedparam(m_thread_handle, &policy, &sparam) != 0)
+	if (pthread_getschedparam(m_handle, &policy, &sparam) != 0)
 		return false;
 
 	int min = sched_get_priority_min(policy);
 	int max = sched_get_priority_max(policy);
 
 	sparam.sched_priority = min + prio * (max - min) / THREAD_PRIORITY_HIGHEST;
-	return pthread_setschedparam(m_thread_handle, policy, &sparam) == 0;
-
+	return pthread_setschedparam(m_handle, policy, &sparam) == 0;
 #endif
 }
 

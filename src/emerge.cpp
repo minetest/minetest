@@ -469,15 +469,14 @@ EmergeThread *EmergeManager::getOptimalThread()
 ////
 
 EmergeThread::EmergeThread(Server *server, int ethreadid) :
+	Thread("Emerge-" + itos(ethreadid)),
 	enable_mapgen_debug_info(false),
 	id(ethreadid),
 	m_server(server),
 	m_map(NULL),
 	m_emerge(NULL),
 	m_mapgen(NULL)
-{
-	m_name = "Emerge-" + itos(ethreadid);
-}
+{}
 
 
 EmergeThread::~EmergeThread()
