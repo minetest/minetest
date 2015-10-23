@@ -3673,11 +3673,11 @@ void Game::handlePointingAtNode(GameRunData *runData,
 			} else {
 				soundmaker->m_player_rightpunch_sound =
 						SimpleSoundSpec();
-			}
 
-			if (playeritem_def.node_placement_prediction == "" ||
-					nodedef_manager->get(map.getNodeNoEx(nodepos)).rightclickable)
-				client->interact(3, pointed); // Report to server
+				if (playeritem_def.node_placement_prediction == "" ||
+						nodedef_manager->get(map.getNodeNoEx(nodepos)).rightclickable)
+					client->interact(3, pointed); // Report to server
+			}
 		}
 	}
 }
@@ -4422,4 +4422,3 @@ void the_game(bool *kill,
 		errorstream << "ModError: " << error_message << std::endl;
 	}
 }
-
