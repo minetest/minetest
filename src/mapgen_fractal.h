@@ -36,14 +36,15 @@ extern FlagDesc flagdesc_mapgen_fractal[];
 struct MapgenFractalParams : public MapgenSpecificParams {
 	u32 spflags;
 
-	u16 iterations;
-	v3f scale;
+	u16 m_iterations;
+	v3f m_scale;
+	v3f m_offset;
+	float m_slice_w;
 
-	v3f moffset;
-	float mslice_w;
-
-	v3f joffset;
-	float jslice_w;
+	u16 j_iterations;
+	v3f j_scale;
+	v3f j_offset;
+	float j_slice_w;
 	float julia_x;
 	float julia_y;
 	float julia_z;
@@ -74,14 +75,15 @@ public:
 	v3s16 full_node_min;
 	v3s16 full_node_max;
 
-	u16 iterations;
-	v3f scale;
+	u16 m_iterations;
+	v3f m_scale;
+	v3f m_offset;
+	float m_slice_w;
 
-	v3f moffset;
-	float mslice_w;
-
-	v3f joffset;
-	float jslice_w;
+	u16 j_iterations;
+	v3f j_scale;
+	v3f j_offset;
+	float j_slice_w;
 	float julia_x;
 	float julia_y;
 	float julia_z;

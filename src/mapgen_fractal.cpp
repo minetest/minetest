@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_sao.h"
 #include "nodedef.h"
 #include "voxelalgorithms.h"
-//#include "profiler.h" // For TimeTaker
+#include "profiler.h" // For TimeTaker
 #include "settings.h" // For g_settings
 #include "emerge.h"
 #include "dungeongen.h"
@@ -67,14 +67,15 @@ MapgenFractal::MapgenFractal(int mapgenid, MapgenParams *params, EmergeManager *
 	MapgenFractalParams *sp = (MapgenFractalParams *)params->sparams;
 	this->spflags = sp->spflags;
 
-	this->iterations = sp->iterations;
-	this->scale = sp->scale;
+	this->m_iterations = sp->m_iterations;
+	this->m_scale = sp->m_scale;
+	this->m_offset = sp->m_offset;
+	this->m_slice_w = sp->m_slice_w;
 
-	this->moffset = sp->moffset;
-	this->mslice_w = sp->mslice_w;
-
-	this->joffset = sp->joffset;
-	this->jslice_w = sp->jslice_w;
+	this->j_iterations = sp->j_iterations;
+	this->j_scale = sp->j_scale;
+	this->j_offset = sp->j_offset;
+	this->j_slice_w = sp->j_slice_w;
 	this->julia_x = sp->julia_x;
 	this->julia_y = sp->julia_y;
 	this->julia_z = sp->julia_z;
@@ -143,14 +144,15 @@ MapgenFractalParams::MapgenFractalParams()
 {
 	spflags = 0;
 
-	iterations = 9;
-	scale = v3f(1024.0, 256.0, 1024.0);
+	m_iterations = 9;  // Mandelbrot set only
+	m_scale = v3f(1024.0, 256.0, 1024.0);
+	m_offset = v3f(1.75, 0.0, 0.0);
+	m_slice_w = 0.0;
 
-	moffset = v3f(1.75, 0.0, 0.0);  // Mandelbrot set only
-	mslice_w = 0.0;
-
-	joffset = v3f(0.0, 1.0, 0.0);  // Julia set only
-	jslice_w = 0.0;
+	j_iterations = 9;  // Julia set only
+	j_scale = v3f(2048.0, 512.0, 2048.0);
+	j_offset = v3f(0.0, 1.0, 0.0);
+	j_slice_w = 0.0;
 	julia_x = 0.33;
 	julia_y = 0.33;
 	julia_z = 0.33;
@@ -166,14 +168,15 @@ void MapgenFractalParams::readParams(const Settings *settings)
 {
 	settings->getFlagStrNoEx("mgfractal_spflags", spflags, flagdesc_mapgen_fractal);
 
-	settings->getU16NoEx("mgfractal_iterations", iterations);
-	settings->getV3FNoEx("mgfractal_scale", scale);
+	settings->getU16NoEx("mgfractal_m_iterations", m_iterations);
+	settings->getV3FNoEx("mgfractal_m_scale", m_scale);
+	settings->getV3FNoEx("mgfractal_m_offset", m_offset);
+	settings->getFloatNoEx("mgfractal_m_slice_w", m_slice_w);
 
-	settings->getV3FNoEx("mgfractal_moffset", moffset);
-	settings->getFloatNoEx("mgfractal_mslice_w", mslice_w);
-
-	settings->getV3FNoEx("mgfractal_joffset", joffset);
-	settings->getFloatNoEx("mgfractal_jslice_w", jslice_w);
+	settings->getU16NoEx("mgfractal_j_iterations", j_iterations);
+	settings->getV3FNoEx("mgfractal_j_scale", j_scale);
+	settings->getV3FNoEx("mgfractal_j_offset", j_offset);
+	settings->getFloatNoEx("mgfractal_j_slice_w", j_slice_w);
 	settings->getFloatNoEx("mgfractal_julia_x", julia_x);
 	settings->getFloatNoEx("mgfractal_julia_y", julia_y);
 	settings->getFloatNoEx("mgfractal_julia_z", julia_z);
@@ -189,14 +192,15 @@ void MapgenFractalParams::writeParams(Settings *settings) const
 {
 	settings->setFlagStr("mgfractal_spflags", spflags, flagdesc_mapgen_fractal, U32_MAX);
 
-	settings->setU16("mgfractal_iterations", iterations);
-	settings->setV3F("mgfractal_scale", scale);
+	settings->setU16("mgfractal_m_iterations", m_iterations);
+	settings->setV3F("mgfractal_m_scale", m_scale);
+	settings->setV3F("mgfractal_m_offset", m_offset);
+	settings->setFloat("mgfractal_m_slice_w", m_slice_w);
 
-	settings->setV3F("mgfractal_moffset", moffset);
-	settings->setFloat("mgfractal_mslice_w", mslice_w);
-
-	settings->setV3F("mgfractal_joffset", joffset);
-	settings->setFloat("mgfractal_jslice_w", jslice_w);
+	settings->setU16("mgfractal_j_iterations", j_iterations);
+	settings->setV3F("mgfractal_j_scale", j_scale);
+	settings->setV3F("mgfractal_j_offset", j_offset);
+	settings->setFloat("mgfractal_j_slice_w", j_slice_w);
 	settings->setFloat("mgfractal_julia_x", julia_x);
 	settings->setFloat("mgfractal_julia_y", julia_y);
 	settings->setFloat("mgfractal_julia_z", julia_z);
@@ -240,7 +244,7 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 	this->generating = true;
 	this->vm   = data->vmanip;
 	this->ndef = data->nodedef;
-	//TimeTaker t("makeChunk");
+	TimeTaker t("makeChunk");
 
 	v3s16 blockpos_min = data->blockpos_min;
 	v3s16 blockpos_max = data->blockpos_max;
@@ -322,7 +326,7 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 	// Sprinkle some dust on top after everything else was generated
 	dustTopNodes();
 
-	//printf("makeChunk: %dms\n", t.stop());
+	printf("makeChunk: %dms\n", t.stop());
 
 	updateLiquid(&data->transforming_liquid, full_node_min, full_node_max);
 
@@ -376,20 +380,22 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 		cy = julia_y;
 		cz = julia_z;
 		cw = julia_w;
-		ox = (float)x / scale.X - joffset.X;
-		oy = (float)y / scale.Y - joffset.Y;
-		oz = (float)z / scale.Z - joffset.Z;
-		ow = jslice_w;
+		ox = (float)x / j_scale.X - j_offset.X;
+		oy = (float)y / j_scale.Y - j_offset.Y;
+		oz = (float)z / j_scale.Z - j_offset.Z;
+		ow = j_slice_w;
 	} else {  // Mandelbrot set
-		cx = (float)x / scale.X - moffset.X;
-		cy = (float)y / scale.Y - moffset.Y;
-		cz = (float)z / scale.Z - moffset.Z;
-		cw = mslice_w;
+		cx = (float)x / m_scale.X - m_offset.X;
+		cy = (float)y / m_scale.Y - m_offset.Y;
+		cz = (float)z / m_scale.Z - m_offset.Z;
+		cw = m_slice_w;
 		ox = 0.0f;
 		oy = 0.0f;
 		oz = 0.0f;
 		ow = 0.0f;
 	}
+
+	u16 iterations = spflags & MGFRACTAL_JULIA ? j_iterations : m_iterations;
 
 	for (u16 iter = 0; iter < iterations; iter++) {
 		// 4D "Roundy" Mandelbrot set
