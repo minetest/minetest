@@ -172,7 +172,7 @@ LogLevel Logger::stringToLevel(const std::string &name)
 
 void Logger::addOutput(ILogOutput *out)
 {
-	addOutputMaxLevel(out, LL_MAX);
+	addOutputMaxLevel(out, (LogLevel)(LL_MAX - 1));
 }
 
 void Logger::addOutput(ILogOutput *out, LogLevel lev)
@@ -182,6 +182,7 @@ void Logger::addOutput(ILogOutput *out, LogLevel lev)
 
 void Logger::addOutputMaxLevel(ILogOutput *out, LogLevel lev)
 {
+	assert(lev < LL_MAX);
 	for (size_t i = 0; i <= lev; i++)
 		m_outputs[i].push_back(out);
 }
