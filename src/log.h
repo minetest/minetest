@@ -57,12 +57,14 @@ public:
 	bool getTraceEnabled() { return m_trace_enabled; }
 
 	static LogLevel stringToLevel(const std::string &name);
+	static const std::string getLevelLabel(LogLevel lev);
 
 private:
-	void logToSystem(LogLevel, const std::string &text);
-	void logToOutputs(LogLevel, const std::string &text);
+	void logToOutputsRaw(LogLevel, const std::string &line);
+	void logToOutputs(LogLevel, const std::string &combined,
+		const std::string &time, const std::string &thread_name,
+		const std::string &payload_text);
 
-	const std::string getLevelLabel(LogLevel lev);
 	const std::string getThreadName();
 
 	std::vector<ILogOutput *> m_outputs[LL_MAX];
@@ -78,73 +80,86 @@ private:
 
 class ILogOutput {
 public:
-	virtual void log(const std::string &line) = 0;
+	virtual void logRaw(LogLevel, const std::string &line) = 0;
+	virtual void log(LogLevel, const std::string &combined,
+		const std::string &time, const std::string &thread_name,
+		const std::string &payload_text) = 0;
 };
 
-class StreamLogOutput : public ILogOutput {
+class ICombinedLogOutput : public ILogOutput {
+public:
+	void log(LogLevel lev, const std::string &combined,
+		const std::string &time, const std::string &thread_name,
+		const std::string &payload_text)
+	{
+		logRaw(lev, combined);
+	}
+};
+
+class StreamLogOutput : public ICombinedLogOutput {
 public:
 	StreamLogOutput(std::ostream &stream) :
-		stream(stream)
+		m_stream(stream)
 	{
 	}
 
-	void log(const std::string &line)
+	void logRaw(LogLevel lev, const std::string &line)
 	{
-		stream << line << std::endl;
+		m_stream << line << std::endl;
 	}
 
 private:
-	std::ostream &stream;
+	std::ostream &m_stream;
 };
 
-class FileLogOutput : public ILogOutput {
+class FileLogOutput : public ICombinedLogOutput {
 public:
 	void open(const std::string &filename);
 
-	void log(const std::string &line)
+	void logRaw(LogLevel lev, const std::string &line)
 	{
-		stream << line << std::endl;
+		m_stream << line << std::endl;
 	}
 
 private:
-	std::ofstream stream;
+	std::ofstream m_stream;
 };
 
-class LogOutputBuffer : public ILogOutput {
+class LogOutputBuffer : public ICombinedLogOutput {
 public:
 	LogOutputBuffer(Logger &logger, LogLevel lev) :
-		logger(logger)
+		m_logger(logger)
 	{
-		logger.addOutput(this, lev);
+		m_logger.addOutput(this, lev);
 	}
 
 	~LogOutputBuffer()
 	{
-		logger.removeOutput(this);
+		m_logger.removeOutput(this);
 	}
 
-	virtual void log(const std::string &line)
+	void logRaw(LogLevel lev, const std::string &line)
 	{
-		buffer.push(line);
+		m_buffer.push(line);
 	}
 
 	bool empty()
 	{
-		return buffer.empty();
+		return m_buffer.empty();
 	}
 
 	std::string get()
 	{
 		if (empty())
 			return "";
-		std::string s = buffer.front();
-		buffer.pop();
+		std::string s = m_buffer.front();
+		m_buffer.pop();
 		return s;
 	}
 
 private:
-	std::queue<std::string> buffer;
-	Logger &logger;
+	std::queue<std::string> m_buffer;
+	Logger &m_logger;
 };
 
 
