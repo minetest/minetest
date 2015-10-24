@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-07-17 22:49+0200\n"
+"PO-Revision-Date: 2015-10-24 21:58+0200\n"
 "Last-Translator: Jean-Patrick G. <jeanpatrick.guerrero@gmail.com>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
-"fr/>\n"
+"Language-Team: French "
+"<https://hosted.weblate.org/projects/minetest/minetest/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2.4-dev\n"
+"X-Generator: Weblate 2.5-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -43,7 +43,7 @@ msgstr "Rejoindre"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "Le serveur a demandé une re-connexion :"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
@@ -51,15 +51,15 @@ msgstr "Chargement..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "La version du protocole ne correspond pas. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "Le serveur requiert une version du protocole $1 "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "Le serveur supporte les versions du protocole entre $1 et $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -68,11 +68,11 @@ msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "Nous supportons seulement la version du procotole $1."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "Nous supportons seulement les versions du protocole entre $1 et $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua builtin/mainmenu/tab_settings.lua
@@ -101,6 +101,8 @@ msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
+"Échec du chargement du mod \"$1\" car il contient des caractères non-"
+"autorisés. Seulement les caractères [a-z0-9_] sont autorisés."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -418,72 +420,72 @@ msgstr "Démarrer"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "\""
-msgstr ""
+msgstr "\""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(No description of setting given)"
-msgstr ""
+msgstr "(Aucune description du paramètre)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Browse"
-msgstr ""
+msgstr "Naviguer"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
 msgstr "Changer les touches"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Disabled"
-msgstr "Désactiver le pack de mods"
+msgstr "Désactivé"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Edit"
-msgstr ""
+msgstr "Modifier"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Enabled"
-msgstr "activé"
+msgstr "Activé"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 msgstr ""
+"Format : <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+"<octaves>, <persistence>"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Games"
 msgstr "Jeux"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr ""
+msgstr "Éventuellement, la lacunarité peut être jointe par une virgule leader."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a comma seperated list of flags."
-msgstr ""
+msgstr "Veuillez séparer les drapeaux par des virgules."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "Veuillez entrer un nombre entier valide."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "Veuillez entrer un nombre valide."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Possible values are: "
-msgstr ""
+msgstr "Les valeurs possibles sont : "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "Réinitialiser"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Select path"
-msgstr "Sélectionner"
+msgstr "Sélectionner un chemin"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -491,15 +493,15 @@ msgstr "Réglages"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "Montrer les noms techniques"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be greater than $1."
-msgstr ""
+msgstr "La valeur doit être plus grande que $1."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be lower than $1."
-msgstr ""
+msgstr "La valeur doit être inférieure à $1."
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
@@ -527,7 +529,7 @@ msgstr "Pas d'information disponible"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
-msgstr ""
+msgstr "Aucun"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Select texture pack:"
@@ -538,9 +540,8 @@ msgid "Texturepacks"
 msgstr "Packs de textures"
 
 #: src/client.cpp
-#, fuzzy
 msgid "Connection timed out."
-msgstr "Erreur de connexion (perte de connexion ?)"
+msgstr "Connexion perdue."
 
 #: src/client.cpp
 msgid "Done!"
@@ -1183,10 +1184,12 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
 msgstr ""
+"Un message qui sera affiché à tous les joueurs quand le serveur s'arrête."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server shuts down."
 msgstr ""
+"Un message qui sera affiché à tous les joueurs quand le serveur s'arrête."
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
@@ -1194,7 +1197,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
-msgstr ""
+msgstr "Accélération en l'air"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
@@ -1210,12 +1213,15 @@ msgid ""
 "Leave this blank to start a local server.\n"
 "Note that the address field in the main menu overrides this setting."
 msgstr ""
+"Adresse où se connecter.\n"
+"Laisser vide pour démarrer un serveur local.\n"
+"Le champ de l'adresse dans le menu peut réécrire ce paramètre."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
-msgstr ""
+msgstr "Ajuster le DPI de votre écran (non-X11 / Android seulement)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1229,7 +1235,7 @@ msgstr "Avancé"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
-msgstr ""
+msgstr "Toujours voler et être rapide"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
@@ -1242,7 +1248,7 @@ msgstr "Filtrage anisotrope"
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
-msgstr ""
+msgstr "Annoncer le serveur"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1250,10 +1256,13 @@ msgid ""
 "If you want to announce your ipv6 address, use  serverlist_url = v6.servers."
 "minetest.net."
 msgstr ""
+"Annoncer à la liste des serveurs.\n"
+"Si vous voulez annoncer votre adresse IPv6, utilisez serverlist_url = "
+"v6.servers.minetest.net."
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
-msgstr ""
+msgstr "Demander de se reconnecter après coupure de connexion"
 
 #: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
