@@ -26,11 +26,25 @@ local CHAR_CLASSES = {
 }
 
 -- returns error message, or nil
-local function parse_setting_line(settings, line, read_all, base_level)
+local function parse_setting_line(settings, line, read_all, base_level, allow_secure)
+	-- comment
+	local comment = line:match("^#" .. CHAR_CLASSES.SPACE .. "*(.*)$")
+	if comment then
+		if settings.current_comment == "" then
+			settings.current_comment = comment
+		else
+			settings.current_comment = settings.current_comment .. "\n" .. comment
+		end
+		return
+	end
+
+	-- clear current_comment so only comments directly above a setting are bound to it
+	-- but keep a local reference to it for variables in the current line
+	local current_comment = settings.current_comment
+	settings.current_comment = ""
+
 	-- empty lines
 	if line:match("^" .. CHAR_CLASSES.SPACE .. "*$") then
-		-- clear current_comment so only comments directly above a setting are bound to it
-		settings.current_comment = ""
 		return
 	end
 
@@ -45,19 +59,6 @@ local function parse_setting_line(settings, line, read_all, base_level)
 		return
 	end
 
-	-- comment
-	local comment = line:match("^#" .. CHAR_CLASSES.SPACE .. "*(.*)$")
-	if comment then
-		if settings.current_comment == "" then
-			settings.current_comment = comment
-		else
-			settings.current_comment = settings.current_comment .. "\n" .. comment
-		end
-		return
-	end
-
-	local error_msg
-
 	-- settings
 	local first_part, name, readable_name, setting_type = line:match("^"
 			-- this first capture group matches the whole first part,
@@ -71,158 +72,174 @@ local function parse_setting_line(settings, line, read_all, base_level)
 				.. CHAR_CLASSES.SPACE .. "?"
 			.. ")")
 
-	if first_part then
-		if readable_name == "" then
-			readable_name = nil
-		end
-		local remaining_line = line:sub(first_part:len() + 1)
-
-		if setting_type == "int" then
-			local default, min, max = remaining_line:match("^"
-					-- first int is required, the last 2 are optional
-					.. "(" .. CHAR_CLASSES.INTEGER .. "+)" .. CHAR_CLASSES.SPACE .. "?"
-					.. "(" .. CHAR_CLASSES.INTEGER .. "*)" .. CHAR_CLASSES.SPACE .. "?"
-					.. "(" .. CHAR_CLASSES.INTEGER .. "*)"
-					.. "$")
-			if default and tonumber(default) then
-				min = tonumber(min)
-				max = tonumber(max)
-				table.insert(settings, {
-					name = name,
-					readable_name = readable_name,
-					type = "int",
-					default = default,
-					min = min,
-					max = max,
-					comment = settings.current_comment,
-				})
-			else
-				error_msg = "Invalid integer setting"
-			end
-
-		elseif setting_type == "string" or setting_type == "noise_params"
-				or setting_type == "key" then
-			local default = remaining_line:match("^(.*)$")
-			if default then
-				if setting_type ~= "key" or read_all then -- ignore key type if read_all is false
-					table.insert(settings, {
-						name = name,
-						readable_name = readable_name,
-						type = setting_type,
-						default = default,
-						comment = settings.current_comment,
-					})
-				end
-			else
-				error_msg =  "Invalid string setting"
-			end
-
-		elseif setting_type == "bool" then
-			if remaining_line == "false" or remaining_line == "true" then
-				table.insert(settings, {
-					name = name,
-					readable_name = readable_name,
-					type = "bool",
-					default = remaining_line,
-					comment = settings.current_comment,
-				})
-			else
-				error_msg =  "Invalid boolean setting"
-			end
-
-		elseif setting_type == "float" then
-			local default, min, max = remaining_line:match("^"
-					-- first float is required, the last 2 are optional
-					.. "(" .. CHAR_CLASSES.FLOAT .. "+)" .. CHAR_CLASSES.SPACE .. "?"
-					.. "(" .. CHAR_CLASSES.FLOAT .. "*)" .. CHAR_CLASSES.SPACE .. "?"
-					.. "(" .. CHAR_CLASSES.FLOAT .. "*)"
-					.."$")
-			if default and tonumber(default) then
-				min = tonumber(min)
-				max = tonumber(max)
-				table.insert(settings, {
-					name = name,
-					readable_name = readable_name,
-					type = "float",
-					default = default,
-					min = min,
-					max = max,
-					comment = settings.current_comment,
-				})
-			else
-				error_msg =  "Invalid float setting"
-			end
-
-		elseif setting_type == "enum" then
-			local default, values = remaining_line:match("^(.+)" .. CHAR_CLASSES.SPACE .. "(.+)$")
-			if default and values ~= "" then
-				table.insert(settings, {
-					name = name,
-					readable_name = readable_name,
-					type = "enum",
-					default = default,
-					values = values:split(",", true),
-					comment = settings.current_comment,
-				})
-			else
-				error_msg =  "Invalid enum setting"
-			end
-
-		elseif setting_type == "path" then
-			local default = remaining_line:match("^(.*)$")
-			if default then
-				table.insert(settings, {
-					name = name,
-					readable_name = readable_name,
-					type = "path",
-					default = default,
-					comment = settings.current_comment,
-				})
-			else
-				error_msg =  "Invalid path setting"
-			end
-
-		elseif setting_type == "flags" then
-			local default, possible = remaining_line:match("^"
-					.. "(" .. CHAR_CLASSES.FLAGS .. "+)" .. CHAR_CLASSES.SPACE .. ""
-					.. "(" .. CHAR_CLASSES.FLAGS .. "+)"
-					.. "$")
-			if default and possible then
-				table.insert(settings, {
-					name = name,
-					readable_name = readable_name,
-					type = "flags",
-					default = default,
-					possible = possible,
-					comment = settings.current_comment,
-				})
-			else
-				error_msg =  "Invalid flags setting"
-			end
-
-		-- TODO: flags, noise_params (, struct)
-
-		else
-			error_msg =  "Invalid setting type \"" .. type .. "\""
-		end
-	else
-		error_msg =  "Invalid line"
+	if not first_part then
+		return "Invalid line"
 	end
-	-- clear current_comment since we just used it
-	-- if we not just used it, then clear it since we only want comments
-	--  directly above the setting to be bound to it
-	settings.current_comment = ""
 
-	return error_msg
+	if name:match("secure%.[.]*") and not allow_secure then
+		return "Tried to add \"secure.\" setting"
+	end
+
+	if readable_name == "" then
+		readable_name = nil
+	end
+	local remaining_line = line:sub(first_part:len() + 1)
+
+	if setting_type == "int" then
+		local default, min, max = remaining_line:match("^"
+				-- first int is required, the last 2 are optional
+				.. "(" .. CHAR_CLASSES.INTEGER .. "+)" .. CHAR_CLASSES.SPACE .. "?"
+				.. "(" .. CHAR_CLASSES.INTEGER .. "*)" .. CHAR_CLASSES.SPACE .. "?"
+				.. "(" .. CHAR_CLASSES.INTEGER .. "*)"
+				.. "$")
+
+		if not default or not tonumber(default) then
+			return "Invalid integer setting"
+		end
+
+		min = tonumber(min)
+		max = tonumber(max)
+		table.insert(settings, {
+			name = name,
+			readable_name = readable_name,
+			type = "int",
+			default = default,
+			min = min,
+			max = max,
+			comment = settings.current_comment,
+		})
+		return
+	end
+
+	if setting_type == "string" or setting_type == "noise_params"
+			or setting_type == "key" then
+		local default = remaining_line:match("^(.*)$")
+
+		if not default then
+			return "Invalid string setting"
+		end
+		if setting_type == "key" and not read_all then
+			-- ignore key type if read_all is false
+			return
+		end
+
+		table.insert(settings, {
+			name = name,
+			readable_name = readable_name,
+			type = setting_type,
+			default = default,
+			comment = settings.current_comment,
+		})
+		return
+	end
+
+	if setting_type == "bool" then
+		if remaining_line ~= "false" and remaining_line ~= "true" then
+			return "Invalid boolean setting"
+		end
+
+		table.insert(settings, {
+			name = name,
+			readable_name = readable_name,
+			type = "bool",
+			default = remaining_line,
+			comment = settings.current_comment,
+		})
+		return
+	end
+
+	if setting_type == "float" then
+		local default, min, max = remaining_line:match("^"
+				-- first float is required, the last 2 are optional
+				.. "(" .. CHAR_CLASSES.FLOAT .. "+)" .. CHAR_CLASSES.SPACE .. "?"
+				.. "(" .. CHAR_CLASSES.FLOAT .. "*)" .. CHAR_CLASSES.SPACE .. "?"
+				.. "(" .. CHAR_CLASSES.FLOAT .. "*)"
+				.."$")
+
+		if not default or not tonumber(default) then
+			return "Invalid float setting"
+		end
+
+		min = tonumber(min)
+		max = tonumber(max)
+		table.insert(settings, {
+			name = name,
+			readable_name = readable_name,
+			type = "float",
+			default = default,
+			min = min,
+			max = max,
+			comment = settings.current_comment,
+		})
+		return
+	end
+
+	if setting_type == "enum" then
+		local default, values = remaining_line:match("^(.+)" .. CHAR_CLASSES.SPACE .. "(.+)$")
+
+		if not default or values == "" then
+			return "Invalid enum setting"
+		end
+
+		table.insert(settings, {
+			name = name,
+			readable_name = readable_name,
+			type = "enum",
+			default = default,
+			values = values:split(",", true),
+			comment = settings.current_comment,
+		})
+		return
+	end
+
+	if setting_type == "path" then
+		local default = remaining_line:match("^(.*)$")
+
+		if not default then
+			return "Invalid path setting"
+		end
+
+		table.insert(settings, {
+			name = name,
+			readable_name = readable_name,
+			type = "path",
+			default = default,
+			comment = settings.current_comment,
+		})
+		return
+	end
+
+	if setting_type == "flags" then
+		local default, possible = remaining_line:match("^"
+				.. "(" .. CHAR_CLASSES.FLAGS .. "+)" .. CHAR_CLASSES.SPACE .. ""
+				.. "(" .. CHAR_CLASSES.FLAGS .. "+)"
+				.. "$")
+
+		if not default or not possible then
+			return "Invalid flags setting"
+		end
+
+		table.insert(settings, {
+			name = name,
+			readable_name = readable_name,
+			type = "flags",
+			default = default,
+			possible = possible,
+			comment = settings.current_comment,
+		})
+		return
+	end
+
+	return "Invalid setting type \"" .. setting_type .. "\""
 end
 
-local function parse_single_file(file, filepath, read_all, result, base_level)
+local function parse_single_file(file, filepath, read_all, result, base_level, allow_secure)
 	-- store this helper variable in the table so it's easier to pass to parse_setting_line()
 	result.current_comment = ""
 
 	local line = file:read("*line")
 	while line do
-		local error_msg = parse_setting_line(result, line, read_all, base_level)
+		local error_msg = parse_setting_line(result, line, read_all, base_level, allow_secure)
 		if error_msg then
 			core.log("error", error_msg .. " in " .. filepath .. " \"" .. line .. "\"")
 		end
@@ -243,7 +260,7 @@ local function parse_config_file(read_all, parse_mods)
 		return settings
 	end
 
-	parse_single_file(file, builtin_path, read_all, settings, 0)
+	parse_single_file(file, builtin_path, read_all, settings, 0, true)
 
 	file:close()
 
@@ -272,7 +289,7 @@ local function parse_config_file(read_all, parse_mods)
 					type = "category",
 				})
 
-				parse_single_file(file, path, read_all, settings, 2)
+				parse_single_file(file, path, read_all, settings, 2, false)
 
 				file:close()
 			end
@@ -305,7 +322,7 @@ local function parse_config_file(read_all, parse_mods)
 					type = "category",
 				})
 
-				parse_single_file(file, path, read_all, settings, 2)
+				parse_single_file(file, path, read_all, settings, 2, false)
 
 				file:close()
 			end
