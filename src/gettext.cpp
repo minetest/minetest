@@ -119,7 +119,7 @@ const char* MSVC_LocaleLookup(const char* raw_shortname) {
 /******************************************************************************/
 #ifdef _MSC_VER
 void init_gettext(const char *path, const std::string &configured_language,
-	int argc, const char *argv[])
+	int argc, char *argv[])
 #else
 void init_gettext(const char *path, const std::string &configured_language)
 #endif
@@ -164,7 +164,7 @@ void init_gettext(const char *path, const std::string &configured_language)
 
 			// Allow calling without an extension
 			std::string app_name = argv[0];
-			if (app_name.compare(appname.size() - 4, 4, ".exe") != 0)
+			if (app_name.compare(app_name.size() - 4, 4, ".exe") != 0)
 				app_name += ".exe";
 
 			STARTUPINFO startup_info = {0};
