@@ -3682,8 +3682,12 @@ void Game::handlePointingAtNode(GameRunData *runData,
 						SimpleSoundSpec();
 
 				if (playeritem_def.node_placement_prediction == "" ||
-						nodedef_manager->get(map.getNodeNoEx(nodepos)).rightclickable)
+						nodedef_manager->get(map.getNodeNoEx(nodepos)).rightclickable) {
 					client->interact(3, pointed); // Report to server
+				} else {
+					soundmaker->m_player_rightpunch_sound =
+						playeritem_def.sound_place_failed;
+				}
 			}
 		}
 	}

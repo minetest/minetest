@@ -100,6 +100,9 @@ ItemDefinition read_item_definition(lua_State* L,int index,
 		lua_getfield(L, -1, "place");
 		read_soundspec(L, -1, def.sound_place);
 		lua_pop(L, 1);
+		lua_getfield(L, -1, "place_failed");
+		read_soundspec(L, -1, def.sound_place_failed);
+		lua_pop(L, 1);
 	}
 	lua_pop(L, 1);
 

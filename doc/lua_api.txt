@@ -3241,6 +3241,7 @@ Definition tables
             dig = <SimpleSoundSpec>, -- "__group" = group-based sound (default)
             dug = <SimpleSoundSpec>,
             place = <SimpleSoundSpec>,
+            place_failed = <SimpleSoundSpec>,
         },
         drop = "",  -- Name of dropped node when dug. Default is the node itself.
         -- Alternatively:
