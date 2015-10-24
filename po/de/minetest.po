@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-10-24 23:09+0200\n"
+"PO-Revision-Date: 2015-10-25 00:01+0200\n"
 "Last-Translator: PilzAdam <PilzAdam@minetest.net>\n"
 "Language-Team: German "
 "<https://hosted.weblate.org/projects/minetest/minetest/de/>\n"
@@ -1495,7 +1495,7 @@ msgstr "Taktung dedizierter Server"
 
 #: src/settings_translation_file.cpp
 msgid "Default acceleration"
-msgstr ""
+msgstr "Standardbeschleunigung"
 
 #: src/settings_translation_file.cpp
 msgid "Default game"
@@ -1532,6 +1532,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
+"Setzt die maximale Distanz, in der Spieler übertragen werden, in Blöcken (0 ="
+" unbegrenzt)."
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
@@ -1550,6 +1552,8 @@ msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
 msgstr ""
+"Die Beschreibung des Servers. Wird neuen Klienten und in der Serverlist "
+"angezeigt."
 
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
@@ -1569,11 +1573,11 @@ msgstr "Anti-cheat deaktivieren"
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
-msgstr ""
+msgstr "Verbiete leere Passwörter"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
-msgstr ""
+msgstr "Domainname des Servers. Wird in der Serverliste angezeigt."
 
 #: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
@@ -1677,11 +1681,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
-msgstr ""
+msgstr "FPS im Pausenmenü"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
-msgstr ""
+msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
 msgid "Fall bobbing"
@@ -1727,17 +1731,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Field of view"
-msgstr ""
+msgstr "Gesichtsfeld"
 
 #: src/settings_translation_file.cpp
 msgid "Field of view in degrees."
-msgstr ""
+msgstr "Gesichtsfeld in Grad."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "File in client/serverlist/ that contains your favorite servers displayed in "
 "the Multiplayer Tab."
 msgstr ""
+"Datei in client/serverlist/, die Ihre Serverfavoriten aus dem "
+"Mehrspielermenü beinhaltet."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1765,7 +1771,7 @@ msgstr "Fliegen"
 
 #: src/settings_translation_file.cpp
 msgid "Fog"
-msgstr ""
+msgstr "Nebel"
 
 #: src/settings_translation_file.cpp
 msgid "Fog toggle key"
@@ -1773,11 +1779,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Font path"
-msgstr ""
+msgstr "Schriftpfad"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow"
-msgstr ""
+msgstr "Schriftschatten"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow alpha"
@@ -1793,7 +1799,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Font size"
-msgstr ""
+msgstr "Schriftgröße"
 
 #: src/settings_translation_file.cpp
 msgid "Forward key"
@@ -1801,7 +1807,7 @@ msgstr "Vorwärtstaste"
 
 #: src/settings_translation_file.cpp
 msgid "Freetype fonts"
-msgstr ""
+msgstr "Freetype Schriften"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1821,15 +1827,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
-msgstr ""
+msgstr "Vollbild"
 
 #: src/settings_translation_file.cpp
 msgid "Full screen BPP"
-msgstr ""
+msgstr "Vollbild BPP"
 
 #: src/settings_translation_file.cpp
 msgid "Fullscreen mode."
-msgstr ""
+msgstr "Vollbildmodus."
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
@@ -1845,7 +1851,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Gamma"
-msgstr ""
+msgstr "Gamma"
 
 #: src/settings_translation_file.cpp
 msgid "Generate normalmaps"
@@ -1865,7 +1871,7 @@ msgstr "Grafik"
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
-msgstr ""
+msgstr "Gravitation"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
@@ -1881,7 +1887,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Height on which clouds are appearing."
-msgstr ""
+msgstr "Höhe, in der Wolken auftauchen."
 
 #: src/settings_translation_file.cpp
 msgid "High-precision FPU"
@@ -1889,7 +1895,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
-msgstr ""
+msgstr "Homepage des Servers. Wird in der Serverliste angezeigt."
 
 #: src/settings_translation_file.cpp
 msgid "Horizontal initial window size."
@@ -1927,7 +1933,7 @@ msgstr "IPv6 Server"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 support."
-msgstr ""
+msgstr "IPv6 Unterstützung."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1959,6 +1965,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "If enabled, disable cheat prevention in multiplayer."
 msgstr ""
+"Wenn diese Einstellung aktiviert ist, werden die Anti-Cheat Maßnahmen "
+"deaktiviert."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1983,7 +1991,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Ignore world errors"
-msgstr ""
+msgstr "Ignoriere Weltfehler"
 
 #: src/settings_translation_file.cpp
 msgid "In-Game"
@@ -2244,7 +2252,7 @@ msgstr "Sprache"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
-msgstr ""
+msgstr "Blätterart"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2253,6 +2261,10 @@ msgid ""
 "-   Simple: only outer faces, if defined special_tiles are used\n"
 "-   Opaque: disable transparency"
 msgstr ""
+"Blätterart:\n"
+"-   Fancy: Alle Seiten sind sichtbar\n"
+"-   Simple: Nur die äußeren Seiten sind sichtbar, oder special_tiles\n"
+"-   Opaque: Blätter sind nicht durchsichtig"
 
 #: src/settings_translation_file.cpp
 msgid "Left key"
@@ -2344,7 +2356,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
-msgstr ""
+msgstr "Weltordner"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2371,7 +2383,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map save interval"
-msgstr ""
+msgstr "Speicherintervall der Welt"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
@@ -2567,11 +2579,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS"
-msgstr ""
+msgstr "Maximale FPS"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when game is paused."
-msgstr ""
+msgstr "Maximale FPS wenn das Spiel pausiert ist."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -2915,6 +2927,8 @@ msgstr "Texturen vorgenerieren"
 #: src/settings_translation_file.cpp
 msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr ""
+"Verhindert, dass Mods unsichere Funktionen, wie das Ausführen Shell-"
+"Kommandos, benutzen können."
 
 #: src/settings_translation_file.cpp
 msgid "Profiler data print interval. 0 = disable. Useful for developers."
@@ -2945,7 +2959,7 @@ msgstr "Sichtweitentaste"
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
-msgstr ""
+msgstr "Externer Medienserver"
 
 #: src/settings_translation_file.cpp
 msgid "Remote port"
@@ -2953,7 +2967,7 @@ msgstr "Serverport"
 
 #: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
-msgstr ""
+msgstr "Ersetzt das Standardhauptmenü."
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
@@ -2961,7 +2975,7 @@ msgstr "Rechtstaste"
 
 #: src/settings_translation_file.cpp
 msgid "Rightclick repetition interval"
-msgstr ""
+msgstr "Rechtsklick Wiederholungsrate"
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
@@ -2969,11 +2983,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Round minimap"
-msgstr ""
+msgstr "Runde Minimap"
 
 #: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
-msgstr ""
+msgstr "Speichert die Welt vom Server im lokalen Speicher."
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
@@ -2990,11 +3004,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
-msgstr ""
+msgstr "Bildschirmhöhe"
 
 #: src/settings_translation_file.cpp
 msgid "Screen width"
-msgstr ""
+msgstr "Bildschirmbreite"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot"
@@ -3002,7 +3016,7 @@ msgstr "Bildschirmfoto"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
-msgstr ""
+msgstr "Bildschirmfotoordner"
 
 #: src/settings_translation_file.cpp
 msgid "Security"
@@ -3010,7 +3024,7 @@ msgstr "Sicherheit"
 
 #: src/settings_translation_file.cpp
 msgid "See http://www.sqlite.org/pragma.html#pragma_synchronous"
-msgstr ""
+msgstr "Siehe http://www.sqlite.org/pragma.html#pragma_synchronous"
 
 #: src/settings_translation_file.cpp
 msgid "Selection box border color (R,G,B)."
@@ -3061,6 +3075,8 @@ msgid ""
 "Set the language. Leave empty to use the system language.\n"
 "A restart is required after changing this."
 msgstr ""
+"Setzt die Sprache. Leer lassen, um Systemsprache zu verwenden.\n"
+"Nach Änderung ist ein Neustart erforderlich."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3090,10 +3106,13 @@ msgid ""
 "video cards.\n"
 "Thy only work with the OpenGL video backend."
 msgstr ""
+"Shader werden für fortgeschrittene visuelle Effekte benötigt und können die "
+"Performanz erhöhen.\n"
+"Funktioniert nur mit dem OpenGL Backend."
 
 #: src/settings_translation_file.cpp
 msgid "Shape of the minimap. Enabled = round, disabled = square."
-msgstr ""
+msgstr "Form der Minimap. Aktiviert = rund, Deaktiviert = rechteckig."
 
 #: src/settings_translation_file.cpp
 msgid "Show debug info"
@@ -3101,7 +3120,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
-msgstr ""
+msgstr "Herunterfahrnachricht"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3118,14 +3137,16 @@ msgid ""
 "Smooths camera when moving and looking arround.\n"
 "Useful for recording videos."
 msgstr ""
+"Glättet Kamerabewegungen beim umsehen.\n"
+"Nützlich zum aufnehmen von Videos."
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera in cinematic mode. 0 to disable."
-msgstr ""
+msgstr "Glättet Kamerabewegung im Filmmodus. 0 zum ausschalten."
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera. 0 to disable."
-msgstr ""
+msgstr "Glättet Kamerabewegungen. 0 zum ausschalten."
 
 #: src/settings_translation_file.cpp
 msgid "Sneak key"
@@ -3142,10 +3163,16 @@ msgid ""
 "(obviously, remote_media should end with a slash).\n"
 "Files that are not present will be fetched the usual way."
 msgstr ""
+"Spezifiziert die URL von der die Klienten die Medien (Texturen, Sounds, ...) "
+"herunterladen.\n"
+"$dateiname sollte von $remote_media$dateiname erreichbar sein\n"
+"(diese Einstellung sollte also mit einem Schrägstrich enden).\n"
+"Dateien, die nicht über diesen Server erreichbar sind, werden auf dem "
+"üblichen Weg heruntergeladen (UDP)."
 
 #: src/settings_translation_file.cpp
 msgid "Static spawnpoint"
-msgstr ""
+msgstr "Statischer Startpunkt"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3177,13 +3204,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
-msgstr ""
+msgstr "Netzwerkinterface an dem der Server horchen wird."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The privileges that new users automatically get.\n"
 "See /privs in game for a full list on your server and mod configuration."
 msgstr ""
+"Die Privilegien, die neue Benutzer automatisch bekommen.\n"
+"Siehe /privs im Spiel, für eine Liste aller möglichen Privilegien."
 
 #: src/settings_translation_file.cpp
 msgid "The rendering back-end for Irrlicht."
@@ -3209,10 +3238,12 @@ msgid ""
 "The time in seconds it takes between repeated right clicks when holding the "
 "right mouse button."
 msgstr ""
+"Das Intervall in Sekunden, in dem Rechteklicks wiederholt werden, wenn die "
+"rechte Maustaste gedrückt gehalten wird."
 
 #: src/settings_translation_file.cpp
 msgid "This font will be used for certain languages."
-msgstr ""
+msgstr "Diese Schriftart wird von bestimmten Sprachen benutzt."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3222,11 +3253,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Time send interval"
-msgstr ""
+msgstr "Zeit Sendeintervall"
 
 #: src/settings_translation_file.cpp
 msgid "Time speed"
-msgstr ""
+msgstr "Zeitgeschwindigkeit"
 
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory."
