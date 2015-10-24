@@ -117,12 +117,8 @@ const char* MSVC_LocaleLookup(const char* raw_shortname) {
 #endif
 
 /******************************************************************************/
-#ifdef _MSC_VER
 void init_gettext(const char *path, const std::string &configured_language,
-	int argc, const char *argv[])
-#else
-void init_gettext(const char *path, const std::string &configured_language)
-#endif
+	int argc, char *argv[])
 {
 #if USE_GETTEXT
 	// First, try to set user override environment

@@ -450,13 +450,8 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 	// Initialize HTTP fetcher
 	httpfetch_init(g_settings->getS32("curl_parallel_limit"));
 
-#ifdef _MSC_VER
 	init_gettext(porting::path_locale.c_str(),
 		g_settings->get("language"), argc, argv);
-#else
-	init_gettext(porting::path_locale.c_str(),
-		g_settings->get("language"));
-#endif
 
 	return true;
 }
