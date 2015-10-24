@@ -106,7 +106,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			default = default,
 			min = min,
 			max = max,
-			comment = settings.current_comment,
+			comment = current_comment,
 		})
 		return
 	end
@@ -128,7 +128,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			readable_name = readable_name,
 			type = setting_type,
 			default = default,
-			comment = settings.current_comment,
+			comment = current_comment,
 		})
 		return
 	end
@@ -143,7 +143,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			readable_name = readable_name,
 			type = "bool",
 			default = remaining_line,
-			comment = settings.current_comment,
+			comment = current_comment,
 		})
 		return
 	end
@@ -169,7 +169,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			default = default,
 			min = min,
 			max = max,
-			comment = settings.current_comment,
+			comment = current_comment,
 		})
 		return
 	end
@@ -187,7 +187,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			type = "enum",
 			default = default,
 			values = values:split(",", true),
-			comment = settings.current_comment,
+			comment = current_comment,
 		})
 		return
 	end
@@ -204,7 +204,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			readable_name = readable_name,
 			type = "path",
 			default = default,
-			comment = settings.current_comment,
+			comment = current_comment,
 		})
 		return
 	end
@@ -225,7 +225,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			type = "flags",
 			default = default,
 			possible = possible,
-			comment = settings.current_comment,
+			comment = current_comment,
 		})
 		return
 	end
