@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-10-24 21:36+0200\n"
-"Last-Translator: pilzadam <PilzAdam@minetest.net>\n"
+"PO-Revision-Date: 2015-10-24 23:09+0200\n"
+"Last-Translator: PilzAdam <PilzAdam@minetest.net>\n"
 "Language-Team: German "
 "<https://hosted.weblate.org/projects/minetest/minetest/de/>\n"
 "Language: de\n"
@@ -815,7 +815,7 @@ msgstr "Schleichen"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
-msgstr "Kinomodus"
+msgstr "Filmmodus umschalten"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1605,7 +1605,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
-msgstr ""
+msgstr "Schaltet zufällige Steuerung ein (nur zum Testen verwendet)."
 
 #: src/settings_translation_file.cpp
 msgid "Enable selection highlighting for nodes (disables selectionbox)."
@@ -1717,7 +1717,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fast movement"
-msgstr ""
+msgstr "Schnell bewegen"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1761,7 +1761,7 @@ msgstr "Flugtaste"
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
-msgstr ""
+msgstr "Fliegen"
 
 #: src/settings_translation_file.cpp
 msgid "Fog"
@@ -1919,11 +1919,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "IPv6"
-msgstr ""
+msgstr "IPv6"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 server"
-msgstr ""
+msgstr "IPv6 Server"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 support."
@@ -2011,11 +2011,11 @@ msgstr "Inventartaste"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
-msgstr ""
+msgstr "Maus umkehren"
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
-msgstr ""
+msgstr "Kehrt die vertikale Mausbewegung um."
 
 #: src/settings_translation_file.cpp
 msgid "Item entity TTL"
@@ -2240,7 +2240,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Language"
-msgstr ""
+msgstr "Sprache"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -2717,11 +2717,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "Maussensitivität"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
-msgstr ""
+msgstr "Faktor für die Maussensitivität."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2937,7 +2937,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Random input"
-msgstr ""
+msgstr "Zufällige Steuerung"
 
 #: src/settings_translation_file.cpp
 msgid "Range select key"
@@ -2949,7 +2949,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Remote port"
-msgstr ""
+msgstr "Serverport"
 
 #: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
@@ -2977,7 +2977,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
-msgstr ""
+msgstr "Speichere Welt vom Server"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3158,7 +3158,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
-msgstr ""
+msgstr "Strikte Protokollversionsprüfung"
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
