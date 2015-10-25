@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-10-25 16:11+0200\n"
+"PO-Revision-Date: 2015-10-25 17:23+0200\n"
 "Last-Translator: Wuzzy <almikes@aol.com>\n"
 "Language-Team: German "
 "<https://hosted.weblate.org/projects/minetest/minetest/de/>\n"
@@ -453,7 +453,8 @@ msgid ""
 "<octaves>, <persistence>"
 msgstr ""
 "Format: <Offset>, <Skalierung>, (<AusbreitungX>, <AusbreitungY>, "
-"<AusbreitungZ>), <Seed>, <Oktaven>, <Persistenz>"
+"<AusbreitungZ>), <Seed>,\n"
+"<Oktaven>, <Persistenz>"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Games"
@@ -818,7 +819,7 @@ msgstr "Schleichen"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
-msgstr "Kinomodus umschalten"
+msgstr "Filmmodus umschalten"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1278,7 +1279,7 @@ msgid ""
 "minetest.net."
 msgstr ""
 "Meldet den Server in der Serverliste.\n"
-"Wenn ein IPv6-Server angemeldet werden soll, muss serverlist_url auf "
+"Wenn ein IPv6-Server angemeldet werden soll, muss serverlist_url auf\n"
 "v6.servers.minetest.net gesetzt werden."
 
 #: src/settings_translation_file.cpp
@@ -1323,7 +1324,7 @@ msgstr "Kameraglättung"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
-msgstr "Kameraglättung im Kinomodus"
+msgstr "Kameraglättung im Filmmodus"
 
 #: src/settings_translation_file.cpp
 msgid "Camera update toggle key"
@@ -1343,11 +1344,11 @@ msgstr "Chunk-Größe"
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
-msgstr "Kinomodus"
+msgstr "Filmmodus"
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode key"
-msgstr "Kinomodustaste"
+msgstr "Filmmodustaste"
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
@@ -1451,7 +1452,7 @@ msgid ""
 "Controls size of deserts and beaches in Mapgen V6.\n"
 "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
 msgstr ""
-"Verändert die Größe der Wüsten und Strände in Kartenerzeuger V6.\n"
+"Verändert die Größe der Wüsten und Strände in Weltgenerator V6.\n"
 "Wenn Schneebiome aktiviert sind, wird diese Einstellung ignoriert."
 
 #: src/settings_translation_file.cpp
@@ -1721,7 +1722,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
-msgstr "FPS im Pausenmenü"
+msgstr "Bildwiederholrate im Pausenmenü"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
@@ -1729,7 +1730,7 @@ msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
 msgid "Fall bobbing"
-msgstr ""
+msgstr "Auf- und Abbewegung beim Sturz"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font"
@@ -1967,15 +1968,22 @@ msgid ""
 "mapblocks (16 nodes).\n"
 "In active blocks objects are loaded and ABMs run."
 msgstr ""
+"Wie groß das Gebiet ist, in dem Blöcke der Sachen bezüglich des aktiven "
+"Blocks unterliegen.\n"
+"In Mapblocks (16 Blöcke [nodes]) angegeben.\n"
+"In aktiven Blöcken werden Objekte geladen und ABMs ausgeführt."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "How many blocks are flying in the wire simultaneously for the whole server."
 msgstr ""
+"Wie viele Blöcke gleichzeitig für den gesamten Server auf der Leitung "
+"unterwegs sind."
 
 #: src/settings_translation_file.cpp
 msgid "How many blocks are flying in the wire simultaneously per client."
 msgstr ""
+"Wie viele Blöcke gleichzeitig pro Client auf der Leitung unterwegs sind."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2299,7 +2307,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Taste zum Umschalten des Kinomodus.\n"
+"Taste zum Umschalten des Filmmodus.\n"
 "Siehe http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
 "35e3da1b0edf72e"
 
@@ -2448,7 +2456,7 @@ msgid ""
 "Length of a server tick and the interval at which objects are generally "
 "updated over network."
 msgstr ""
-"Länge eines Serverticks und dem Zeitintervall, in dem Objekte über das "
+"Länge eines Servertakts und dem Zeitintervall, in dem Objekte über das "
 "Netzwerk üblicherweise\n"
 "aktualisiert werden."
 
@@ -2474,7 +2482,6 @@ msgstr ""
 "-    verbose (geschwätzig)"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Limit of emerge queues on disk"
 msgstr "Grenze der Erzeugungswarteschlangen auf dem Festspeicher"
 
@@ -2524,7 +2531,7 @@ msgstr "Flüssigkeitsaktualisierungsintervall in Sekunden."
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update tick"
-msgstr "Flüssigkeitsaktualisierungs-Tick"
+msgstr "Flüssigkeitsaktualisierungstakt"
 
 #: src/settings_translation_file.cpp
 msgid "Main menu game manager"
@@ -2592,167 +2599,167 @@ msgstr "Timeout zum Entladen von Mapblocks"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome heat noise parameters"
-msgstr "Kartenerzeugerbiomhitzenrauschparameter"
+msgstr "Weltgeneratorbiomhitzenrauschparameter"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome humidity blend noise parameters"
-msgstr "Kartenerzeugerbiomluftfeuchtigkeitsübergangsrauschparameter"
+msgstr "Weltgeneratorbiomluftfeuchtigkeitsübergangsrauschparameter"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome humidity noise parameters"
-msgstr "Kartenerzeugerbiomluftfeuchtigkeitsrauschparameter"
+msgstr "Weltgeneratorbiomluftfeuchtigkeitsrauschparameter"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen debug"
-msgstr "Kartenerzeuger-Debugging"
+msgstr "Weltgenerator-Debugging"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr "Kartenerzeuger-Flags"
+msgstr "Weltgenerator-Flags"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen heat blend noise parameters"
-msgstr "Kartenerzeugerhitzenübergangsrauschparameter"
+msgstr "Weltgeneratorhitzenübergangsrauschparameter"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen name"
-msgstr "Kartenerzeugername"
+msgstr "Weltgeneratorname"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5"
-msgstr "Kartenerzeuger v5"
+msgstr "Weltgenerator v5"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 cave1 noise parameters"
-msgstr "cave1-Rauschparameter für v5-Kartenerzeuger"
+msgstr "cave1-Rauschparameter für v5-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 cave2 noise parameters"
-msgstr "cave2-Rauschparameter für v5-Kartenerzeuger"
+msgstr "cave2-Rauschparameter für v5-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 factor noise parameters"
-msgstr "Faktorrauschparameter für v5-Kartenerzeuger"
+msgstr "Faktorrauschparameter für v5-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 filler depth noise parameters"
-msgstr "Tiefenrauschparameter für v5-Kartenerzeuger"
+msgstr "Tiefenrauschparameter für v5-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 height noise parameters"
-msgstr "Höhenrauschparameter für v5-Kartenerzeuger"
+msgstr "Höhenrauschparameter für v5-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6"
-msgstr "Kartenerzeuger v6"
+msgstr "Weltgenerator v6"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 apple trees noise parameters"
-msgstr "Apfelbaumrauschparameter für v6-Kartenerzeuger"
+msgstr "Apfelbaumrauschparameter für v6-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 beach frequency"
-msgstr "Strandfrequenz für v6-Kartenerzeuger"
+msgstr "Strandfrequenz für v6-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 beach noise parameters"
-msgstr "Strandrauschparameter für v6-Kartenerzeuger"
+msgstr "Strandrauschparameter für v6-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 biome noise parameters"
-msgstr "Biomrauschparameter für v6-Kartenerzeuger"
+msgstr "Biomrauschparameter für v6-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 cave noise parameters"
-msgstr "Höhlenrauschparameter für v6-Kartenerzeuger"
+msgstr "Höhlenrauschparameter für v6-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 desert frequency"
-msgstr "Wüstenrauschparameter für v6-Kartenerzeuger"
+msgstr "Wüstenrauschparameter für v6-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 flags"
-msgstr "Flags für v6-Kartenerzeuger"
+msgstr "Flags für v6-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 height select noise parameters"
-msgstr "Höhenauswahlrauschparameter für v6-Kartenerzeuger"
+msgstr "Höhenauswahlrauschparameter für v6-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 humidity noise parameters"
-msgstr "Luftfeuchtigkeitsrauschparameter für v6-Kartenerzeuger"
+msgstr "Luftfeuchtigkeitsrauschparameter für v6-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 mud noise parameters"
-msgstr "Schlammrauschparameter für v6-Kartenerzeuger"
+msgstr "Schlammrauschparameter für v6-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 steepness noise parameters"
-msgstr "Steilheitsrauschparameter für v6-Kartenerzeuger"
+msgstr "Steilheitsrauschparameter für v6-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 terrain altitude noise parameters"
-msgstr "Geländehöhenrauschparameter für v6-Kartenerzeuger"
+msgstr "Geländehöhenrauschparameter für v6-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 terrain base noise parameters"
-msgstr "Basisgeländerauschparameter für v6-Kartenerzeuger"
+msgstr "Basisgeländerauschparameter für v6-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 trees noise parameters"
-msgstr "Baumrauschparameter für v6-Kartenerzeuger"
+msgstr "Baumrauschparameter für v6-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7"
-msgstr "Kartenerzeuger v7"
+msgstr "Weltgenerator v7"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 cave1 noise parameters"
-msgstr "cave1-Rauschparameter für v7-Kartenerzeuger"
+msgstr "cave1-Rauschparameter für v7-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 cave2 noise parameters"
-msgstr "cave2-Rauschparameter für v7-Kartenerzeuger"
+msgstr "cave2-Rauschparameter für v7-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 filler depth noise parameters"
-msgstr "Ausfülltiefenrauschen für v7-Kartenerzeuger"
+msgstr "Ausfülltiefenrauschen für v7-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 flags"
-msgstr "Flags für v7-Kartenerzeuger"
+msgstr "Flags für v7-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 height select noise parameters"
-msgstr "Höhenauswahlrauschparameter für v7-Kartenerzeuger"
+msgstr "Höhenauswahlrauschparameter für v7-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 mount height noise parameters"
-msgstr "Berghöhenrauschenparameter für v7-Kartenerzeuger"
+msgstr "Berghöhenrauschenparameter für v7-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 mountain noise parameters"
-msgstr "Bergrauschparameter für v7-Kartenerzeuger"
+msgstr "Bergrauschparameter für v7-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 ridge noise parameters"
-msgstr "Gratrauschparameter für v7-Kartenerzeuger"
+msgstr "Gratrauschparameter für v7-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 ridge water noise parameters"
-msgstr "Wassergratrauschparameter für v7-Kartenerzeuger"
+msgstr "Wassergratrauschparameter für v7-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 terrain altitude noise parameters"
-msgstr "Geländehöhenrauschparameter für v7-Kartenerzeuger"
+msgstr "Geländehöhenrauschparameter für v7-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 terrain base noise parameters"
-msgstr "Basisgeländerauschparameter für v7-Kartenerzeuger"
+msgstr "Basisgeländerauschparameter für v7-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 terrain persistation noise parameters"
-msgstr ""
+msgstr "Geländepersistenzrauschparameter für v7-Weltgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Max block generate distance"
@@ -2776,11 +2783,11 @@ msgstr "Max. Pakete pro Iteration"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS"
-msgstr "Maximale FPS"
+msgstr "Maximale Bildwiederholrate"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when game is paused."
-msgstr "Maximale FPS, wenn das Spiel pausiert ist."
+msgstr "Maximale Bildwiederholrate, wenn das Spiel pausiert ist."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -2841,8 +2848,9 @@ msgstr ""
 "anstreben."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Maximum number of players that can connect simultaneously."
-msgstr ""
+msgstr "Anzahl der Spieler, die sich gleichzeitig verbinden können."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of statically stored objects in a block."
@@ -2896,7 +2904,7 @@ msgid "Message of the day displayed to players connecting."
 msgstr ""
 "Die Meldung des Tages, die frisch verbundenen Spielern angezeigt werden soll."
 "\n"
-"Auf Englisch bekannt als »message of the day« oder »MOTD«."
+"Auf Englisch bekannt als „message of the day“ oder „MOTD“."
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
@@ -2935,15 +2943,15 @@ msgstr "Mod-Profiling"
 
 #: src/settings_translation_file.cpp
 msgid "Modstore details URL"
-msgstr ""
+msgstr "Modspeicher: Details-URL"
 
 #: src/settings_translation_file.cpp
 msgid "Modstore download URL"
-msgstr ""
+msgstr "Modspeicher: Download-URL"
 
 #: src/settings_translation_file.cpp
 msgid "Modstore mods list URL"
-msgstr ""
+msgstr "Modspeicher: Listen-URL"
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font path"
@@ -2966,12 +2974,18 @@ msgid ""
 "Multiplier for fall bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
 msgstr ""
+"Faktor für Auf- und Abbewegung beim Sturz.\n"
+"Zum Beispiel: 0 für keine Auf- und Abbewegung, 1.0 für den Standardwert, 2.0 "
+"für doppelte Geschwindigkeit."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Multiplier for view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
 msgstr ""
+"Faktor für Auf- und Abbewegung (grafischer Effekt).\n"
+"Zum Beispiel: 0 für keine Auf- und Abbewegung, 1.0 für den Standardwert, 2.0 "
+"für doppelte Geschwindigkeit."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3023,11 +3037,11 @@ msgstr "Neue Benutzer müssen dieses Passwort eingeben."
 
 #: src/settings_translation_file.cpp
 msgid "Noclip"
-msgstr ""
+msgstr "Geistmodus"
 
 #: src/settings_translation_file.cpp
 msgid "Noclip key"
-msgstr ""
+msgstr "Geistmodustaste"
 
 #: src/settings_translation_file.cpp
 msgid "Node highlighting"
@@ -3049,7 +3063,7 @@ msgstr "Normalmaps-Stärke"
 
 #: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
-msgstr ""
+msgstr "Anzahl der Erzeugerthreads"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3059,6 +3073,13 @@ msgid ""
 "speed greatly\n"
 "at the cost of slightly buggy caves."
 msgstr ""
+"Anzahl der zu benutzenden Erzeugerthreads. Lassen Sie dieses Feld frei, oder "
+"erhöhen Sie\n"
+"diese Zahl, um mehrere Threads zu verwenden. Auf Mehrprozessorsystemen wird "
+"dies die\n"
+"Geschwindigkeit der Kartenerzeugung stark erhöhen auf Kosten von leicht "
+"fehlerhaften\n"
+"Höhlen."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3066,6 +3087,9 @@ msgid ""
 "This is a trade-off between sqlite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
 msgstr ""
+"Anzahl der zusätzlichen Blöcke, welche mit /clearobjects gleichzeitig\n"
+"geladen werden können. Dies ist ein Kompromiss zwischen SQLite-\n"
+"Transaktions-Overhead und Speicherverbrauch (Faustregel: 4096=100MB)."
 
 #: src/settings_translation_file.cpp
 msgid "Number of parallax occlusion iterations."
@@ -3172,8 +3196,8 @@ msgstr "Texturen vorgenerieren"
 #: src/settings_translation_file.cpp
 msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr ""
-"Verhindert, dass Mods unsichere Funktionen, wie das Ausführen von Shell-"
-"Kommandos, benutzen können."
+"Verhindert, dass Mods unsichere Funktionen, wie das Ausführen von\n"
+"Shell-Kommandos, benutzen können."
 
 #: src/settings_translation_file.cpp
 msgid "Profiler data print interval. 0 = disable. Useful for developers."
@@ -3240,7 +3264,7 @@ msgstr "Speichert die Welt vom Server im lokalen Speicher."
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
-msgstr "Speichere Welt vom Server"
+msgstr "Welt vom Server speichern"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3250,6 +3274,12 @@ msgid ""
 "pixels when scaling down, at the cost of blurring some\n"
 "edge pixels when images are scaled by non-integer sizes."
 msgstr ""
+"GUI mit einem benutzerdefinierten Wert skalieren.\n"
+"Benutzt einen Pixelwiederholungs-Anti-Aliasing-Filter, um\n"
+"die GUI zu skalieren. Dies wird einige der harten Kanten\n"
+"abglätten und Pixel beim Verkleinern mischen, wobei einige\n"
+"Kantenpixel verschwommen werden, wenn sie mit nicht-\n"
+"ganzzahligen Größen skaliert werden."
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
@@ -3383,7 +3413,7 @@ msgid ""
 "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
 "nodes)."
 msgstr ""
-"Größe der Chunks, die gleichzeitig vom Kartenerzeuger angegeben werden,\n"
+"Größe der Chunks, die gleichzeitig vom Weltgenerator angegeben werden,\n"
 "in Mapblocks (16 Blöcke [nodes]) angegeben."
 
 #: src/settings_translation_file.cpp
@@ -3400,7 +3430,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera in cinematic mode. 0 to disable."
-msgstr "Glättet die Rotation der Kamera im Kinomodus. 0 zum Ausschalten."
+msgstr "Glättet die Rotation der Kamera im Filmmodus. 0 zum Ausschalten."
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera. 0 to disable."
@@ -3426,7 +3456,8 @@ msgstr ""
 "$Dateiname sollte von $remote_media$Dateiname mittels cURL erreichbar sein\n"
 "(diese Einstellung sollte also mit einem Schrägstrich enden).\n"
 "Dateien, die nicht über diesen Server erreichbar sind, werden auf dem "
-"üblichen Weg heruntergeladen (UDP)."
+"üblichen\n"
+"Weg heruntergeladen (UDP)."
 
 #: src/settings_translation_file.cpp
 msgid "Static spawnpoint"
@@ -3569,14 +3600,13 @@ msgid "Trilinear filtering"
 msgstr "Trilinearer Filter"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "True = 256\n"
 "False = 128\n"
 "Useable to make minimap smoother on slower machines."
 msgstr ""
-"True = 256\n"
-"False = 128\n"
+"Wahr = 256\n"
+"Falsch = 128\n"
 "Nützlich, um die Kleinkarte performanter auf langsamen Maschinen zu machen."
 
 #: src/settings_translation_file.cpp
@@ -3630,7 +3660,7 @@ msgstr "Trilineare Filterung bei der Skalierung von Texturen benutzen."
 
 #: src/settings_translation_file.cpp
 msgid "Useful for mod developers."
-msgstr "Nützlich für Entwickler."
+msgstr "Nützlich für Mod-Entwickler."
 
 #: src/settings_translation_file.cpp
 msgid "V-Sync"
@@ -3646,19 +3676,19 @@ msgstr "Vertikale Bildschirmsynchronisation."
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
-msgstr "Videotreiber"
+msgstr "Grafiktreiber"
 
 #: src/settings_translation_file.cpp
 msgid "View bobbing"
-msgstr ""
+msgstr "Auf- und Abbewegung der Ansicht"
 
 #: src/settings_translation_file.cpp
 msgid "View range decrease key"
-msgstr "Taste »Sichtweite reduzieren«"
+msgstr "Taste „Sichtweite reduzieren“"
 
 #: src/settings_translation_file.cpp
 msgid "View range increase key"
-msgstr "Taste »Sichtweite erhöhen«"
+msgstr "Taste „Sichtweite erhöhen“"
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range maximum"
@@ -3734,9 +3764,9 @@ msgid ""
 "to the old scaling method, for video drivers that don't\n"
 "propery support downloading textures back from hardware."
 msgstr ""
-"Falls gui_scaling_filter_txr2img auf »wahr« gesetzt ist, werden\n"
+"Falls gui_scaling_filter_txr2img auf „wahr“ gesetzt ist, werden\n"
 "diese Bilder von der Hardware zur Software für die Skalierung\n"
-"kopiert. Falls es auf »falsch« gesetzt ist, wird für alte Videotreiber,\n"
+"kopiert. Falls es auf „falsch“ gesetzt ist, wird für alte Videotreiber,\n"
 "die das Herunterladen von Texturen zurück von der Hardware\n"
 "nicht vernünftig unterstützen."
 
@@ -3771,12 +3801,12 @@ msgid ""
 "-    Those groups have an offset of -32, -32 nodes from the origin.\n"
 "-    Only groups which are within the map_generation_limit are generated"
 msgstr ""
-"Wo der Kartenerzeuger aufhört.\n"
+"Wo der Weltgenerator aufhört.\n"
 "Bitte beachten Sie:\n"
-"-    Begrenzt auf 31000 (größere Werte sind Wirkungslos).\n"
-"-    Der Kartenerzeuger arbeitet in Gruppen von 80×80×80 Blöcken (5×5×5 "
+"-    Begrenzt auf 31000 (größere Werte sind wirkungslos).\n"
+"-    Der Weltgenerator arbeitet in Gruppen von 80×80×80 Blöcken (5×5×5 "
 "MapBlocks).\n"
-"-    Diese Gruppen haben einen Abstand von (-32, -32) Blöcken vom Ursprung.\n"
+"-    Diese Gruppen haben einen Abstand von [-32, -32] Blöcken vom Ursprung.\n"
 "-    Nur Gruppen, welche innerhalb der von map_generation_limit definierten "
 "Grenze liegen, werden erzeugt."
 
@@ -3797,22 +3827,20 @@ msgid ""
 "Deprecated, use the setting player_transfer_distance instead."
 msgstr ""
 "Ob Spieler an Clients ohne Distanzbegrenzung angezeit werden.\n"
-"Missbilligt, benutzen Sie die Einstellung »player_transfer_distance« "
+"Missbilligt, benutzen Sie die Einstellung „player_transfer_distance“ "
 "stattdessen."
 
 #: src/settings_translation_file.cpp
 msgid "Whether to allow players to damage and kill each other."
-msgstr ""
-"Ob es möglich ist, dass sich Spieler gegenseitig Schaden zufügen\n"
-"und töten."
+msgstr "Ob sich Spieler gegenseitig Schaden zufügen und töten können."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether to ask clients to reconnect after a (Lua) crash.\n"
 "Set this to true if your server is set up to restart automatically."
 msgstr ""
-"Ob Clients gefragt werden solle, sich nach einem (Lua-)Absturz\n"
-"neu zu verbinden. Auf »wahr« setzen, falls Ihr Server für auto-\n"
+"Ob Clients gefragt werden sollen, sich nach einem (Lua-)Absturz\n"
+"neu zu verbinden. Auf „wahr“ setzen, falls Ihr Server für auto-\n"
 "matische Neustarts eingerichtet ist."
 
 #: src/settings_translation_file.cpp
