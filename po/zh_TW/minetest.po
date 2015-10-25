@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-09-17 12:48+0200\n"
+"PO-Revision-Date: 2015-10-25 11:08+0200\n"
 "Last-Translator: Jeff Huang <s8321414@gmail.com>\n"
-"Language-Team: Chinese (Taiwan) <https://hosted.weblate.org/projects/"
-"minetest/minetest/zh_TW/>\n"
+"Language-Team: Chinese (Taiwan) "
+"<https://hosted.weblate.org/projects/minetest/minetest/zh_TW/>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.4-dev\n"
+"X-Generator: Weblate 2.5-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -48,9 +48,8 @@ msgid "Loading..."
 msgstr "正在載入..."
 
 #: builtin/mainmenu/common.lua
-#, fuzzy
 msgid "Protocol version mismatch. "
-msgstr "協定版本不符合，伺服器 "
+msgstr "協定版本不符合。 "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
@@ -431,16 +430,14 @@ msgid "Change keys"
 msgstr "變更按鍵"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Disabled"
-msgstr "停用 MP"
+msgstr "已停用"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Edit"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Enabled"
 msgstr "已啟用"
 
@@ -451,7 +448,6 @@ msgid ""
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Games"
 msgstr "遊戲"
 
@@ -480,9 +476,8 @@ msgid "Restore Default"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Select path"
-msgstr "選擇"
+msgstr "選取路徑"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -1157,7 +1152,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D clouds"
 msgstr "3D 雲朵"
 
@@ -1261,21 +1255,18 @@ msgid "Automaticaly report to the serverlist."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Backward key"
-msgstr "後退"
+msgstr "後退鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bilinear filtering"
 msgstr "雙線性過濾器"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bind address"
 msgstr "綁定地址"
 
@@ -1304,28 +1295,24 @@ msgid "Camera update toggle key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat key"
-msgstr "變更按鍵"
+msgstr "聊天按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat toggle key"
-msgstr "變更按鍵"
+msgstr "聊天切換按鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cinematic mode"
-msgstr "創造模式"
+msgstr "電影模式"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cinematic mode key"
-msgstr "創造模式"
+msgstr "電影模式按鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
@@ -1348,18 +1335,16 @@ msgid "Cloud radius"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds"
-msgstr "3D 雲朵"
+msgstr "雲朵"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds in menu"
-msgstr "主選單"
+msgstr "選單中的雲朵"
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
@@ -1372,38 +1357,32 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Command key"
-msgstr "指令"
+msgstr "指令按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Connect glass"
-msgstr "連貫的玻璃"
+msgstr "連接玻璃"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Connect to external media server"
-msgstr "正在連線至伺服器..."
+msgstr "連線至外部媒體伺服器"
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console alpha"
-msgstr "終端機"
+msgstr "終端機 alpha 值"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console color"
-msgstr "終端機"
+msgstr "終端機顏色"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console key"
-msgstr "終端機"
+msgstr "終端機按鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
@@ -1414,9 +1393,8 @@ msgid "Continuous forward movement (only used for testing)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Controls"
-msgstr "Control"
+msgstr "控制"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1460,9 +1438,8 @@ msgid "DPI"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Damage"
-msgstr "啟用傷害"
+msgstr "傷害"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
@@ -1491,9 +1468,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Default password"
-msgstr "舊密碼"
+msgstr "預設密碼"
 
 #: src/settings_translation_file.cpp
 msgid "Default privileges"
@@ -1546,9 +1522,8 @@ msgid "Detailed mod profiling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Disable anticheat"
-msgstr "啟用粒子"
+msgstr "停用反作弊"
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
@@ -1559,14 +1534,12 @@ msgid "Domain name of server, to be displayed in the serverlist."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Double tap jump for fly"
-msgstr "輕擊兩次「跳躍」以切換成飛行"
+msgstr "輕擊兩次跳躍以飛行"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Double-tapping the jump key toggles fly mode."
-msgstr "輕擊兩次「跳躍」以切換成飛行"
+msgstr "輕擊兩次跳躍鍵以切換成飛行模式。"
 
 #: src/settings_translation_file.cpp
 msgid "Drop item key"
@@ -1639,9 +1612,8 @@ msgid "Enables caching of facedir rotated meshes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enables minimap."
-msgstr "啟用傷害"
+msgstr "啟用小地圖。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1674,9 +1646,8 @@ msgid "Fall bobbing"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fallback font"
-msgstr "needs_fallback_font"
+msgstr "備用字型"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font shadow"
@@ -1735,9 +1706,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Filtering"
-msgstr "無過濾器"
+msgstr "過濾器"
 
 #: src/settings_translation_file.cpp
 msgid "Fixed map seed"
@@ -1784,9 +1754,8 @@ msgid "Font size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Forward key"
-msgstr "前進"
+msgstr "前進鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Freetype fonts"
@@ -1825,9 +1794,8 @@ msgid "GUI scaling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "GUI scaling filter"
-msgstr "圖形使用者介面縮放係數"
+msgstr "圖形使用者介面縮放過濾器"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter txr2img"
@@ -1838,7 +1806,6 @@ msgid "Gamma"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Generate normalmaps"
 msgstr "生成一般地圖"
 
