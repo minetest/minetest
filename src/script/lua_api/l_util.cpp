@@ -260,6 +260,8 @@ int ModApiUtil::l_is_yes(lua_State *L)
 
 int ModApiUtil::l_get_builtin_path(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
+
 	std::string path = porting::path_share + DIR_DELIM + "builtin";
 	lua_pushstring(L, path.c_str());
 	return 1;
@@ -268,6 +270,8 @@ int ModApiUtil::l_get_builtin_path(lua_State *L)
 // compress(data, method, level)
 int ModApiUtil::l_compress(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
+
 	size_t size;
 	const char *data = luaL_checklstring(L, 1, &size);
 
@@ -287,6 +291,8 @@ int ModApiUtil::l_compress(lua_State *L)
 // decompress(data, method)
 int ModApiUtil::l_decompress(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
+
 	size_t size;
 	const char *data = luaL_checklstring(L, 1, &size);
 

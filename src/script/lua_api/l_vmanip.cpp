@@ -28,10 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "mapgen.h"
 
-#define GET_ENV_PTR ServerEnvironment* env =                                   \
-				dynamic_cast<ServerEnvironment*>(getEnv(L));                   \
-				if (env == NULL) return 0
-
 // garbage collector
 int LuaVoxelManip::gc_object(lua_State *L)
 {
@@ -43,6 +39,8 @@ int LuaVoxelManip::gc_object(lua_State *L)
 
 int LuaVoxelManip::l_read_from_map(lua_State *L)
 {
+	MAP_LOCK_REQUIRED;
+
 	LuaVoxelManip *o = checkobject(L, 1);
 	MMVManip *vm = o->vm;
 
@@ -108,6 +106,8 @@ int LuaVoxelManip::l_set_data(lua_State *L)
 
 int LuaVoxelManip::l_write_to_map(lua_State *L)
 {
+	MAP_LOCK_REQUIRED;
+
 	LuaVoxelManip *o = checkobject(L, 1);
 	MMVManip *vm = o->vm;
 
@@ -119,23 +119,25 @@ int LuaVoxelManip::l_write_to_map(lua_State *L)
 int LuaVoxelManip::l_get_node_at(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	GET_ENV_PTR;
+
+	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
 
 	LuaVoxelManip *o = checkobject(L, 1);
 	v3s16 pos        = check_v3s16(L, 2);
 
-	pushnode(L, o->vm->getNodeNoExNoEmerge(pos), env->getGameDef()->ndef());
+	pushnode(L, o->vm->getNodeNoExNoEmerge(pos), ndef);
 	return 1;
 }
 
 int LuaVoxelManip::l_set_node_at(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	GET_ENV_PTR;
+
+	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
 
 	LuaVoxelManip *o = checkobject(L, 1);
 	v3s16 pos        = check_v3s16(L, 2);
-	MapNode n        = readnode(L, 3, env->getGameDef()->ndef());
+	MapNode n        = readnode(L, 3, ndef);
 
 	o->vm->setNodeNoEmerge(pos, n);
 
@@ -313,12 +315,10 @@ int LuaVoxelManip::l_set_param2_data(lua_State *L)
 
 int LuaVoxelManip::l_update_map(lua_State *L)
 {
+	GET_ENV_PTR;
+
 	LuaVoxelManip *o = checkobject(L, 1);
 	if (o->is_mapgen_vm)
-		return 0;
-
-	Environment *env = getEnv(L);
-	if (!env)
 		return 0;
 
 	Map *map = &(env->getMap());
@@ -359,6 +359,8 @@ int LuaVoxelManip::l_was_modified(lua_State *L)
 
 int LuaVoxelManip::l_get_emerged_area(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
+
 	LuaVoxelManip *o = checkobject(L, 1);
 
 	push_v3s16(L, o->vm->m_area.MinEdge);
@@ -400,11 +402,7 @@ LuaVoxelManip::~LuaVoxelManip()
 // Creates an LuaVoxelManip and leaves it on top of stack
 int LuaVoxelManip::create_object(lua_State *L)
 {
-	NO_MAP_LOCK_REQUIRED;
-
-	Environment *env = getEnv(L);
-	if (!env)
-		return 0;
+	GET_ENV_PTR;
 
 	Map *map = &(env->getMap());
 	LuaVoxelManip *o = (lua_istable(L, 1) && lua_istable(L, 2)) ?

@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define API_FCT(name) registerFunction(L, #name, l_##name,top)
 #define ASYNC_API_FCT(name) engine.registerFunction(#name, l_##name)
 
+#define MAP_LOCK_REQUIRED
 #define NO_MAP_LOCK_REQUIRED
 
 /*
@@ -44,5 +45,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		ScopeProfiler nolocktime(g_profiler,"Scriptapi: unlockable time",SPT_ADD)
 #endif
 */
+
+#define GET_ENV_PTR_NO_MAP_LOCK                              \
+	ServerEnvironment *env = (ServerEnvironment *)getEnv(L); \
+	if (env == NULL)                                         \
+		return 0
+
+#define GET_ENV_PTR         \
+	MAP_LOCK_REQUIRED;      \
+	GET_ENV_PTR_NO_MAP_LOCK
 
 #endif /* L_INTERNAL_H_ */

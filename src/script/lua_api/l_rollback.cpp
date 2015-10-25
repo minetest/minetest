@@ -38,6 +38,8 @@ void push_RollbackNode(lua_State *L, RollbackNode &node)
 // rollback_get_node_actions(pos, range, seconds, limit) -> {{actor, pos, time, oldnode, newnode}, ...}
 int ModApiRollback::l_rollback_get_node_actions(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
+
 	v3s16 pos = read_v3s16(L, 1);
 	int range = luaL_checknumber(L, 2);
 	time_t seconds = (time_t) luaL_checknumber(L, 3);
@@ -79,6 +81,8 @@ int ModApiRollback::l_rollback_get_node_actions(lua_State *L)
 // rollback_revert_actions_by(actor, seconds) -> bool, log messages
 int ModApiRollback::l_rollback_revert_actions_by(lua_State *L)
 {
+	MAP_LOCK_REQUIRED;
+
 	std::string actor = luaL_checkstring(L, 1);
 	int seconds = luaL_checknumber(L, 2);
 	Server *server = getServer(L);

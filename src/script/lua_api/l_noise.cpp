@@ -410,6 +410,7 @@ const luaL_reg LuaPerlinNoiseMap::methods[] = {
 int LuaPseudoRandom::l_next(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
+
 	LuaPseudoRandom *o = checkobject(L, 1);
 	int min = 0;
 	int max = 32767;
@@ -437,6 +438,8 @@ int LuaPseudoRandom::l_next(lua_State *L)
 
 int LuaPseudoRandom::create_object(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
+
 	int seed = luaL_checknumber(L, 1);
 	LuaPseudoRandom *o = new LuaPseudoRandom(seed);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
@@ -532,6 +535,8 @@ int LuaPcgRandom::l_rand_normal_dist(lua_State *L)
 
 int LuaPcgRandom::create_object(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
+
 	lua_Integer seed = luaL_checknumber(L, 1);
 	LuaPcgRandom *o  = lua_isnumber(L, 2) ?
 		new LuaPcgRandom(seed, lua_tointeger(L, 2)) :

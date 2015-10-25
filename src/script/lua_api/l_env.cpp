@@ -36,10 +36,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "pathfinder.h"
 
-#define GET_ENV_PTR ServerEnvironment* env =                                   \
-				dynamic_cast<ServerEnvironment*>(getEnv(L));                   \
-				if (env == NULL) return 0
-
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -658,7 +654,7 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 // returns world-specific PerlinNoise
 int ModApiEnvMod::l_get_perlin(lua_State *L)
 {
-	GET_ENV_PTR;
+	GET_ENV_PTR_NO_MAP_LOCK;
 
 	NoiseParams params;
 
@@ -684,7 +680,7 @@ int ModApiEnvMod::l_get_perlin(lua_State *L)
 // returns world-specific PerlinNoiseMap
 int ModApiEnvMod::l_get_perlin_map(lua_State *L)
 {
-	GET_ENV_PTR;
+	GET_ENV_PTR_NO_MAP_LOCK;
 
 	NoiseParams np;
 	if (!read_noiseparams(L, 1, &np))
@@ -945,6 +941,7 @@ int ModApiEnvMod::l_forceload_free_block(lua_State *L)
 // get_us_time()
 int ModApiEnvMod::l_get_us_time(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	lua_pushnumber(L, porting::getTimeUs());
 	return 1;
 }
