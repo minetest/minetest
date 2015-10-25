@@ -37,7 +37,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // log([level,] text)
 // Writes a line to the logger.
 // The one-argument version logs to infostream.
-// The two-argument version accept a log level: error, action, info, or verbose.
+// The two-argument version accepts a log level.
+// Either the special case "deprecated" for deprecation notices, or any specified in
+// Logger::stringToLevel(name).
 int ModApiUtil::l_log(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
