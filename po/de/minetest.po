@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-10-25 18:19+0200\n"
+"PO-Revision-Date: 2015-10-25 19:11+0200\n"
 "Last-Translator: PilzAdam <PilzAdam@minetest.net>\n"
 "Language-Team: German "
 "<https://hosted.weblate.org/projects/minetest/minetest/de/>\n"
@@ -45,7 +45,7 @@ msgstr "Der Server hat um eine Wiederverbindung gebeten:"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
-msgstr "Lädt …"
+msgstr "Lädt…"
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
@@ -330,7 +330,7 @@ msgstr "Ausgewähltes Modpack deinstallieren"
 
 #: builtin/mainmenu/tab_multiplayer.lua
 msgid "Address / Port :"
-msgstr "Adresse/Port:"
+msgstr "Adresse / Port:"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
@@ -355,7 +355,7 @@ msgstr "Entfernen"
 
 #: builtin/mainmenu/tab_multiplayer.lua
 msgid "Name / Password :"
-msgstr "Name/Passwort:"
+msgstr "Name / Passwort:"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Public Serverlist"
@@ -393,7 +393,7 @@ msgstr "Neu"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "No world created or selected!"
-msgstr "Kein Weltname angegeben oder ausgewählt!"
+msgstr "Keine Welt angegeben oder ausgewählt!"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Port"
@@ -552,11 +552,11 @@ msgstr "Fertig!"
 
 #: src/client.cpp
 msgid "Initializing nodes"
-msgstr "Blöcke initialisieren"
+msgstr "Initialisiere Blöcke"
 
 #: src/client.cpp
 msgid "Initializing nodes..."
-msgstr "Blöcke initialisieren ..."
+msgstr "Initialisiere Blöcke..."
 
 #: src/client.cpp
 msgid "Item textures..."
@@ -714,7 +714,7 @@ msgstr "MiB/s"
 
 #: src/game.cpp
 msgid "Node definitions..."
-msgstr "Node-Definitionen ..."
+msgstr "Blockdefinitionen..."
 
 #: src/game.cpp src/guiFormSpecMenu.cpp
 msgid "Proceed"
@@ -1222,7 +1222,7 @@ msgstr "Beschleunigung in der Luft"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
-msgstr "Reichweite aktiver Blöcke"
+msgstr "Reichweite aktiver Kartenblöcke"
 
 #: src/settings_translation_file.cpp
 msgid "Active object send range"
@@ -1543,8 +1543,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
-"Setzt die maximale Distanz, in der die Spieler übertragen werden, in Blöcken "
-"(0 = unbegrenzt)."
+"Setzt die maximale Distanz, in der die Spieler übertragen werden, in "
+"Kartenblöcken (0 = unbegrenzt)."
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
@@ -1624,8 +1624,7 @@ msgstr "Schaltet zufällige Steuerung ein (nur zum Testen verwendet)."
 
 #: src/settings_translation_file.cpp
 msgid "Enable selection highlighting for nodes (disables selectionbox)."
-msgstr ""
-"Blöcke (nodes) bei Auswahl aufleuchten lassen (Deaktiviert die Auswahlbox)."
+msgstr "Blöcke bei Auswahl aufleuchten lassen (Deaktiviert die Auswahlbox)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1862,22 +1861,22 @@ msgid ""
 "From how far blocks are generated for clients, stated in mapblocks (16 "
 "nodes)."
 msgstr ""
-"Von wie weit weg Blöcke für Klienten erzeugt werden,\n"
-"in Mapblocks (16 Blöcke [nodes]) angegeben."
+"Von wie weit weg Kartenblöcke für Klienten erzeugt werden.\n"
+"1 Kartenblock = 16×16×16 Blöcke."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
 msgstr ""
-"Von wie weit weg Blöcke zu Klienten gesendet werden,\n"
-"in Mapblocks (16 Blöcke [nodes]) angegeben."
+"Von wie weit weg Kartenblöcke zu Klienten gesendet werden.\n"
+"1 Kartenblock = 16×16×16 Blöcke."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far clients know about objects, stated in mapblocks (16 nodes)."
 msgstr ""
 "Von wie weit weg Klienten über Objekte bescheid wissen,\n"
-"in Mapblocks (16 Blöcke [nodes]) angegeben."
+"in Kartenblöcken (16 Blöcke) angegeben."
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
@@ -1968,29 +1967,29 @@ msgid ""
 "mapblocks (16 nodes).\n"
 "In active blocks objects are loaded and ABMs run."
 msgstr ""
-"Wie groß das Gebiet ist, in dem Blöcke der Sachen bezüglich des aktiven "
-"Blocks unterliegen.\n"
-"In Mapblocks (16 Blöcke [nodes]) angegeben.\n"
-"In aktiven Blöcken werden Objekte geladen und ABMs ausgeführt."
+"Wie groß das Gebiet ist, in dem Kartenblöcke aktiv sind.\n"
+"In aktiven Blöcken werden Objekte geladen und ABMs ausgeführt.\n"
+"1 Kartenblock = 16×16×16 Blöcke."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "How many blocks are flying in the wire simultaneously for the whole server."
 msgstr ""
-"Wie viele Blöcke gleichzeitig für den gesamten Server auf der Leitung "
+"Wie viele Kartenblöcke gleichzeitig für den gesamten Server auf der Leitung "
 "unterwegs sind."
 
 #: src/settings_translation_file.cpp
 msgid "How many blocks are flying in the wire simultaneously per client."
 msgstr ""
-"Wie viele Blöcke gleichzeitig pro Klient auf der Leitung unterwegs sind."
+"Wie viele Kartenblöcke gleichzeitig pro Klient auf der Leitung unterwegs "
+"sind."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "How much the server will wait before unloading unused mapblocks.\n"
 "Higher value is smoother, but will use more RAM."
 msgstr ""
-"Wie lange der Server warten wird, bevor nicht mehr verwendete Mapblocks\n"
+"Wie lange der Server warten wird, bevor nicht mehr verwendete Kartenblöcke\n"
 "entladen werden. Ein höher Wert führt zu besserer Performanz, aber auch\n"
 "zur Benutzung von mehr Arbeitsspeicher."
 
@@ -2591,11 +2590,11 @@ msgstr "Speicherintervall der Welt"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
-msgstr "Mapblock-Grenze"
+msgstr "Kartenblock-Grenze"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock unload timeout"
-msgstr "Timeout zum Entladen von Mapblocks"
+msgstr "Timeout zum Entladen von Kartenblöcken"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome heat noise parameters"
@@ -2763,11 +2762,11 @@ msgstr "Geländepersistenzrauschparameter für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Max block generate distance"
-msgstr "Max. Distanz für Blockerzeugung"
+msgstr "Max. Distanz für Kartenblockerzeugung"
 
 #: src/settings_translation_file.cpp
 msgid "Max block send distance"
-msgstr "Max. Distanz für Blockübertragung"
+msgstr "Max. Distanz für Kartenblockübertragung"
 
 #: src/settings_translation_file.cpp
 msgid "Max liquids processed per step."
@@ -2775,7 +2774,7 @@ msgstr "Max. Flüssigkeiten, die pro Step verarbeitet werden."
 
 #: src/settings_translation_file.cpp
 msgid "Max. clearobjects extra blocks"
-msgstr "Max. clearobjects-Zusatzblöcke"
+msgstr "Max. clearobjects-Zusatz-Kartenblöcke"
 
 #: src/settings_translation_file.cpp
 msgid "Max. packets per iteration"
@@ -2791,7 +2790,7 @@ msgstr "Maximale Bildwiederholrate, wenn das Spiel pausiert ist."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
-msgstr "Maximal zwangsgeladene Blöcke"
+msgstr "Maximal zwangsgeladene Kartenblöcke"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
@@ -2800,16 +2799,16 @@ msgstr "Max. Breite der Schnellzugriffsleiste"
 #: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that can be queued for loading."
 msgstr ""
-"Maximale Anzahl der Blöcke, welche in die Ladewarteschlange gesetzt werden "
-"können."
+"Maximale Anzahl der Kartenblöcke, welche in die Ladewarteschlange gesetzt "
+"werden können."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of blocks to be queued that are to be generated.\n"
 "Set to blank for an appropriate amount to be chosen automatically."
 msgstr ""
-"Maximale Anzahl der Blöcke, die in die Erzeugungswarteschlage gesetzt werden."
-"\n"
+"Maximale Anzahl der Kartenblöcke, die in die Erzeugungswarteschlage gesetzt "
+"werden.\n"
 "Feld frei lassen, um automatisch einen geeigneten Wert zu bestimmen."
 
 #: src/settings_translation_file.cpp
@@ -2817,20 +2816,21 @@ msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
 "Set to blank for an appropriate amount to be chosen automatically."
 msgstr ""
-"Maximale Anzahl der Blöcke, die in die Warteschlange zum Laden aus\n"
+"Maximale Anzahl der Kartenblöcke, die in die Warteschlange zum Laden aus\n"
 "einer Datei gesetzt werden können.\n"
 "Feld frei lassen, um automatisch einen geeigneten Wert zu bestimmen."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
-msgstr "Maximale Anzahl der zwangsgeladenen Mapblocks."
+msgstr "Maximale Anzahl der zwangsgeladenen Kartenblöcke."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
 msgstr ""
-"Maximale Anzahl der Mapblocks, die der Klient im Speicher vorhalten soll.\n"
+"Maximale Anzahl der Kartenblöcke, die der Klient im Speicher vorhalten soll."
+"\n"
 "Auf -1 setzen, um keine Obergrenze zu verwenden."
 
 #: src/settings_translation_file.cpp
@@ -2854,7 +2854,8 @@ msgstr "Anzahl der Spieler, die sich gleichzeitig verbinden können."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of statically stored objects in a block."
-msgstr "Maximale Anzahl der statisch gespeicherten Objekte in einem Block."
+msgstr ""
+"Maximale Anzahl der statisch gespeicherten Objekte in einem Kartenblock."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2867,11 +2868,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum simultaneously blocks send per client"
-msgstr "Maximale Anzahl der Blöcke, die gleichzeitig pro Klient gesendet werden"
+msgstr ""
+"Maximale Anzahl der Kartenblöcke, die gleichzeitig pro Klient gesendet werden"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum simultaneously bocks send total"
-msgstr "Maximale Gesamtzahl der gleichzeitig gesendeten Blöcke"
+msgstr "Maximale Gesamtzahl der gleichzeitig gesendeten Kartenblöcke"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
@@ -2885,7 +2887,7 @@ msgstr "Maximale Benutzerzahl"
 
 #: src/settings_translation_file.cpp
 msgid "Maxmimum objects per block"
-msgstr "Maximale Objekte pro Block"
+msgstr "Maximale Objekte pro Kartenblock"
 
 #: src/settings_translation_file.cpp
 msgid "Menus"
@@ -3087,7 +3089,7 @@ msgid ""
 "This is a trade-off between sqlite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
 msgstr ""
-"Anzahl der zusätzlichen Blöcke, welche mit /clearobjects gleichzeitig\n"
+"Anzahl der zusätzlichen Kartenblöcke, welche mit /clearobjects gleichzeitig\n"
 "geladen werden können. Dies ist ein Kompromiss zwischen SQLite-\n"
 "Transaktions-Overhead und Speicherverbrauch (Faustregel: 4096=100MB)."
 
@@ -3413,8 +3415,8 @@ msgid ""
 "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
 "nodes)."
 msgstr ""
-"Größe der Chunks, die gleichzeitig vom Kartengenerator angegeben werden,\n"
-"in Mapblocks (16 Blöcke [nodes]) angegeben."
+"Größe der Stücke, die gleichzeitig vom Kartengenerator angegeben werden,\n"
+"in Kartenblöcken (16×16×16 Blöcke) angegeben."
 
 #: src/settings_translation_file.cpp
 msgid "Smooth lighting"
@@ -3581,11 +3583,11 @@ msgid ""
 "This determines how long they are slowed down after placing or removing a "
 "node."
 msgstr ""
-"Um Verzögerungen zu reduzieren, werden Blockübertragungen verlangsamt, "
+"Um Verzögerungen zu reduzieren, werden Kartenblockübertragungen verlangsamt, "
 "während\n"
 "ein Spieler etwas baut. Dies bestimmt, wie lange sie verlangsamt sind, "
 "nachdem ein\n"
-"Block (node) platziert oder entfernt wurde."
+"Block platziert oder entfernt wurde."
 
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
@@ -3806,7 +3808,7 @@ msgstr ""
 "Bitte beachten Sie:\n"
 "-    Begrenzt auf 31000 (größere Werte sind wirkungslos).\n"
 "-    Der Kartengenerator arbeitet in Gruppen von 80×80×80 Blöcken (5×5×5 "
-"MapBlocks).\n"
+"Kartenblöcke).\n"
 "-    Diese Gruppen haben einen Abstand von [-32, -32] Blöcken vom Ursprung.\n"
 "-    Nur Gruppen, welche innerhalb der von map_generation_limit definierten "
 "Grenze liegen, werden erzeugt."
@@ -3820,7 +3822,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
-msgstr "Ob Blocktexturanimationen pro Mapblock desynchronisiert sein sollten."
+msgstr ""
+"Ob Blocktexturanimationen pro Kartenblock desynchronisiert sein sollten."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3857,7 +3860,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selectionbox's lines around nodes."
-msgstr "Breite der Linien der Auswahlbox um Blöcke (nodes)."
+msgstr "Breite der Linien der Auswahlbox um Blöcke."
 
 #: src/settings_translation_file.cpp
 msgid ""
