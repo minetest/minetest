@@ -8,17 +8,17 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-09-06 08:59+0200\n"
+"PO-Revision-Date: 2015-10-25 10:46+0200\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
-"Language-Team: Indonesian <https://hosted.weblate.org/projects/minetest/"
-"minetest/id/>\n"
+"Language-Team: Indonesian "
+"<https://hosted.weblate.org/projects/minetest/minetest/id/>\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.4-dev\n"
+"X-Generator: Weblate 2.5-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -29,7 +29,6 @@ msgid "An error occured:"
 msgstr "Kesalahan muncul:"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Main menu"
 msgstr "Menu Utama"
 
@@ -38,13 +37,12 @@ msgid "Ok"
 msgstr "Oke"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Reconnect"
-msgstr "Sambung"
+msgstr "Menyambung ulang"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "Server ini meminta penyambungan ulang:"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
@@ -56,11 +54,11 @@ msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "Server memberlakukan protokol versi $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "Server mendukung protokol antara versi $1 dan versi $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -70,11 +68,11 @@ msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "Kami hanya mendukung protokol versi $1."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "Kami mendukung protokol antara versi $1 dan versi $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua builtin/mainmenu/tab_settings.lua
@@ -103,6 +101,8 @@ msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
+"Gagal mengaktifkan mod \"$1\" karena terdapat karakter terlarang. Hanya "
+"karakter [a-z0-9_] yang dibolehkan."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -424,15 +424,15 @@ msgstr "Mulai Permainan"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "\""
-msgstr ""
+msgstr "\""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(No description of setting given)"
-msgstr ""
+msgstr "(Tidak ada keterangan dari pengaturan yang diberikan)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Browse"
-msgstr ""
+msgstr "Jelajahi"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
@@ -445,18 +445,20 @@ msgstr "Nonaktifkan PM"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Edit"
-msgstr ""
+msgstr "Sunting"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Enabled"
+msgstr "Diaktifkan"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
-msgid "Enabled"
-msgstr "diaktifkan"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 msgstr ""
+"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+"<octaves>, <persistence>"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -473,19 +475,19 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "Mohon masukkan sebuah bilangan bulat yang sah."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "Mohon masukkan sebuah angka yang sah."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Possible values are: "
-msgstr ""
+msgstr "Nilai yang mungkin adalah: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "Kembalikan ke Bawaan"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -502,11 +504,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be greater than $1."
-msgstr ""
+msgstr "Nilai harus lebih besar dari $1."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be lower than $1."
-msgstr ""
+msgstr "Nilai harus lebih kecil dari $1."
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
@@ -534,7 +536,7 @@ msgstr "Tidak ada informasi tersedia"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
-msgstr ""
+msgstr "Tidak ada"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Select texture pack:"
@@ -545,9 +547,8 @@ msgid "Texturepacks"
 msgstr "Paket Tekstur"
 
 #: src/client.cpp
-#, fuzzy
 msgid "Connection timed out."
-msgstr "Koneksi rusak (terlalu lama?)"
+msgstr "Koneksi kehabisan waktu."
 
 #: src/client.cpp
 msgid "Done!"
@@ -555,11 +556,11 @@ msgstr "Selesai!"
 
 #: src/client.cpp
 msgid "Initializing nodes"
-msgstr ""
+msgstr "Menginisialisasi node"
 
 #: src/client.cpp
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "Menginisialisasi node..."
 
 #: src/client.cpp
 msgid "Item textures..."
@@ -1171,14 +1172,12 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D clouds"
 msgstr "Awan 3D"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D mode"
-msgstr "Mode terbang"
+msgstr "Mode 3D"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1190,20 +1189,30 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side."
 msgstr ""
+"Dukungan 3D.\n"
+"Didukung saat ini:\n"
+"-    none: tidak ada keluaran 3d.\n"
+"-    anaglyph: 3d berwarna cyan/magenta.\n"
+"-    interlaced: garis ganjil/genap berdasarkan polarisasi dukungan layar.\n"
+"-    topbottom: pisahkan layar atas/bawah.\n"
+"-    sidebyside: pisahkan layar berdampingan."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
+"Seed peta terpilih untuk peta baru, kosongkan untuk nilai acak.\n"
+"Akan diganti ketika menciptakan dunia baru dalam menu utama."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
-msgstr ""
+msgstr "Sebuah pesan yang akan ditampilkan ke semua klien ketika server crash."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server shuts down."
 msgstr ""
+"Sebuah pesan yang akan ditampilkan ke semua klien ketika server dimatikan."
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
@@ -1211,15 +1220,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
-msgstr ""
+msgstr "Percepatan di udara"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
-msgstr ""
+msgstr "Batas blok aktif"
 
 #: src/settings_translation_file.cpp
 msgid "Active object send range"
-msgstr ""
+msgstr "Batas pengiriman objek aktif"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1227,39 +1236,48 @@ msgid ""
 "Leave this blank to start a local server.\n"
 "Note that the address field in the main menu overrides this setting."
 msgstr ""
+"Alamat untuk menghubungkan.\n"
+"Biarkan kosong untuk memulai sebuah server lokal.\n"
+"Perhatikan bahwa bidang alamat dalam menu utama menimpa pengaturan ini."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr ""
+"Atur konfigurasi dpi ke layar Anda (non X11/Android saja) misalkan untuk "
+"layar 4K."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Adjust the gamma encoding for the light tables. Lower numbers are brighter.\n"
 "This setting is for the client only and is ignored by the server."
 msgstr ""
+"Sesuaikan encoding gamma untuk tabel cahaya. Angka yang lebih rendah lebih "
+"terang.\n"
+"Pengaturan ini untuk klien saja dan diabaikan oleh server."
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
-msgstr ""
+msgstr "Lanjutan"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
-msgstr ""
+msgstr "Selalu terbang dan bergerak cepat"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Ambient occlusion gamma"
-msgstr ""
+msgstr "Ambient occlusion gamma"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Anisotropic filtering"
-msgstr "Anisotropic Filtering"
+msgstr "Anisotropic filtering"
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
-msgstr ""
+msgstr "Umumkan server"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1267,14 +1285,17 @@ msgid ""
 "If you want to announce your ipv6 address, use  serverlist_url = v6.servers."
 "minetest.net."
 msgstr ""
+"Mengumumkan kepada daftar server ini.\n"
+"Jika Anda ingin mengumumkan alamat IPv6 Anda, gunakan serverlist_url = "
+"v6.servers.minetest.net."
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
-msgstr ""
+msgstr "Minta untuk menyambung ulang setelah crash"
 
 #: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
-msgstr ""
+msgstr "Secara otomatis melaporkan ke daftar server."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1283,21 +1304,20 @@ msgstr "Mundur"
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
-msgstr ""
+msgstr "Dasar"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Bilinear filtering"
-msgstr "Bilinear Filter"
+msgstr "Bilinear filtering"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bind address"
-msgstr "Alamat Sambungan"
+msgstr "Alamat sambungan"
 
 #: src/settings_translation_file.cpp
 msgid "Bits per pixel (aka color depth) in fullscreen mode."
-msgstr ""
+msgstr "Bits per pixel (aka color depth) dalam mode layar penuh."
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
@@ -1309,117 +1329,109 @@ msgstr "Bumpmapping"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
-msgstr ""
+msgstr "Penghalusan kamera"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
-msgstr ""
+msgstr "Penghalusan kamera dalam mode sinema"
 
 #: src/settings_translation_file.cpp
 msgid "Camera update toggle key"
-msgstr ""
+msgstr "Tombol beralih pembaruan kamera"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat key"
-msgstr "Ubah tombol"
+msgstr "Tombol obrolan"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat toggle key"
-msgstr "Ubah tombol"
+msgstr "Tombol beralih obrolan"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
-msgstr ""
+msgstr "Besar chunk"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cinematic mode"
-msgstr "Mode kreatif"
+msgstr "Mode sinema"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cinematic mode key"
-msgstr "Mode kreatif"
+msgstr "Tombol mode sinema"
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
-msgstr ""
+msgstr "Bersihkan tekstur transparan"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
-msgstr ""
+msgstr "Klien dan Server"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
-msgstr ""
+msgstr "Kecepatan memanjat"
 
 #: src/settings_translation_file.cpp
 msgid "Cloud height"
-msgstr ""
+msgstr "Tinggi awan"
 
 #: src/settings_translation_file.cpp
 msgid "Cloud radius"
-msgstr ""
+msgstr "Jari-jari awan"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds"
-msgstr "Awan 3D"
+msgstr "Awan"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
-msgstr ""
+msgstr "Awan adalah efek tiap klien."
+
+#: src/settings_translation_file.cpp
+msgid "Clouds in menu"
+msgstr "Awan dalam menu"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Clouds in menu"
-msgstr "Menu Utama"
-
-#: src/settings_translation_file.cpp
 msgid "Colored fog"
-msgstr ""
+msgstr "Berwarna kabut"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
+"Daftar yang dengan dipisahkan koma dari mod terpercaya yang diperbolehkan\n"
+"untuk mengakses fungsi yang tidak aman bahkan ketika mod security aktif\n"
+"(melalui request_insecure_environment())."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Command key"
-msgstr "Perintah"
+msgstr "Tombol perintah"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Connect glass"
-msgstr "Kaca Tersambung"
+msgstr "Sambungkan kaca"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Connect to external media server"
-msgstr "Menghubungkan ke server..."
+msgstr "Menyambungkan ke server media eksternal"
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
-msgstr ""
+msgstr "Sambungkan kaca jika didukung oleh node."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console alpha"
-msgstr "Konsol"
+msgstr "Alpha konsol"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console color"
-msgstr "Konsol"
+msgstr "Warna konsol"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console key"
-msgstr "Konsol"
+msgstr "Tombol konsol"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
