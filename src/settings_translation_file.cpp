@@ -8,13 +8,13 @@ fake_function() {
 	gettext("Build inside player");
 	gettext("If enabled, you can place blocks at the position (feet + eye level) where you stand.\nThis is helpful when working with nodeboxes in small areas.");
 	gettext("Flying");
-	gettext("Player is able to fly without being affected by gravity.\nThis requires the "fly" privilege on the server.");
+	gettext("Player is able to fly without being affected by gravity.\nThis requires the \"fly\" privilege on the server.");
 	gettext("Fast movement");
-	gettext("Fast movement (via use key).\nThis requires the "fast" privilege on the server.");
+	gettext("Fast movement (via use key).\nThis requires the \"fast\" privilege on the server.");
 	gettext("Noclip");
-	gettext("If enabled together with fly mode, player is able to fly through solid nodes.\nThis requires the "noclip" privilege on the server.");
+	gettext("If enabled together with fly mode, player is able to fly through solid nodes.\nThis requires the \"noclip\" privilege on the server.");
 	gettext("Cinematic mode");
-	gettext("Smooths camera when moving and looking arround.\nUseful for recording videos.");
+	gettext("Smooths camera when moving and looking around.\nUseful for recording videos.");
 	gettext("Camera smoothing");
 	gettext("Smooths rotation of camera. 0 to disable.");
 	gettext("Camera smoothing in cinematic mode");
@@ -24,11 +24,11 @@ fake_function() {
 	gettext("Mouse sensitivity");
 	gettext("Mouse sensitivity multiplier.");
 	gettext("Key use for climbing/descending");
-	gettext("If enabled, "use" key instead of "sneak" key is used for climbing down and descending.");
+	gettext("If enabled, \"use\" key instead of \"sneak\" key is used for climbing down and descending.");
 	gettext("Double tap jump for fly");
 	gettext("Double-tapping the jump key toggles fly mode.");
 	gettext("Always fly and fast");
-	gettext("If disabled "use" key is used to fly fast if both fly and fast mode are enabled.");
+	gettext("If disabled \"use\" key is used to fly fast if both fly and fast mode are enabled.");
 	gettext("Rightclick repetition interval");
 	gettext("The time in seconds it takes between repeated right clicks when holding the right mouse button.");
 	gettext("Random input");
@@ -112,7 +112,7 @@ fake_function() {
 	gettext("Fog");
 	gettext("Whether to fog out the end of the visible area.");
 	gettext("New style water");
-	gettext("Enable a bit lower water surface, so it doesn't "fill" the node completely.\nNote that this is not quite optimized and that smooth lighting on the\nwater surface doesn't work with this.");
+	gettext("Enable a bit lower water surface, so it doesn't \"fill\" the node completely.\nNote that this is not quite optimized and that smooth lighting on the\nwater surface doesn't work with this.");
 	gettext("Leaves style");
 	gettext("Leaves style:\n-   Fancy:  all faces visible\n-   Simple: only outer faces, if defined special_tiles are used\n-   Opaque: disable transparency");
 	gettext("Connect glass");
@@ -422,7 +422,7 @@ fake_function() {
 	gettext("Map generation limit");
 	gettext("Where the map generator stops.\nPlease note:\n-    Limited to 31000 (setting above has no effect)\n-    The map generator works in groups of 80x80x80 nodes (5x5x5 MapBlocks).\n-    Those groups have an offset of -32, -32 nodes from the origin.\n-    Only groups which are within the map_generation_limit are generated");
 	gettext("Mapgen flags");
-	gettext("Global map generation attributes.\nFlags that are not specified in the flag string are not modified from the default.\nFlags starting with "no" are used to explicitly disable them.\n'trees' and 'flat' flags only have effect in mgv6.");
+	gettext("Global map generation attributes.\nFlags that are not specified in the flag string are not modified from the default.\nFlags starting with \"no\" are used to explicitly disable them.\n'trees' and 'flat' flags only have effect in mgv6.");
 	gettext("Advanced");
 	gettext("Chunk size");
 	gettext("Size of chunks to be generated at once by mapgen, stated in mapblocks (16 nodes).");
@@ -449,7 +449,7 @@ fake_function() {
 	gettext("Mapgen v5 cave2 noise parameters");
 	gettext("Mapgen v6");
 	gettext("Mapgen v6 flags");
-	gettext("Map generation attributes specific to Mapgen V6.\nWhen snowbiomes are enabled jungles are enabled and the jungles flag is ignored.\nFlags that are not specified in the flag string are not modified from the default.\nFlags starting with "no" are used to explicitly disable them.");
+	gettext("Map generation attributes specific to Mapgen V6.\nWhen snowbiomes are enabled jungles are enabled and the jungles flag is ignored.\nFlags that are not specified in the flag string are not modified from the default.\nFlags starting with \"no\" are used to explicitly disable them.");
 	gettext("Mapgen v6 desert frequency");
 	gettext("Controls size of deserts and beaches in Mapgen V6.\nWhen snowbiomes are enabled 'mgv6_freq_desert' is ignored.");
 	gettext("Mapgen v6 beach frequency");
@@ -466,7 +466,7 @@ fake_function() {
 	gettext("Mapgen v6 apple trees noise parameters");
 	gettext("Mapgen v7");
 	gettext("Mapgen v7 flags");
-	gettext("Map generation attributes specific to Mapgen V7.\n'ridges' are the rivers.\nFlags that are not specified in the flag string are not modified from the default.\nFlags starting with "no" are used to explicitly disable them.");
+	gettext("Map generation attributes specific to Mapgen V7.\n'ridges' are the rivers.\nFlags that are not specified in the flag string are not modified from the default.\nFlags starting with \"no\" are used to explicitly disable them.");
 	gettext("Mapgen v7 terrain base noise parameters");
 	gettext("Mapgen v7 terrain altitude noise parameters");
 	gettext("Mapgen v7 terrain persistation noise parameters");

@@ -38,7 +38,7 @@
 #    type: bool
 # noclip = false
 
-#    Smooths camera when moving and looking arround.
+#    Smooths camera when moving and looking around.
 #    Useful for recording videos.
 #    type: bool
 # cinematic = false

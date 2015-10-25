@@ -703,14 +703,17 @@ local function create_translation_file()
 	local settings = parse_config_file(true, false)
 	for _, entry in ipairs(settings) do
 		if entry.type == "category" then
-			result = result .. "\tgettext(\"" .. entry.name .. "\");\n"
+			local name_escaped = entry.name:gsub("\"", "\\\"")
+			result = result .. "\tgettext(\"" .. name_escaped .. "\");\n"
 		else
 			if entry.readable_name then
-				result = result .. "\tgettext(\"" .. entry.readable_name .. "\");\n"
+				local readable_name_escaped = entry.readable_name:gsub("\"", "\\\"")
+				result = result .. "\tgettext(\"" .. readable_name_escaped .. "\");\n"
 			end
 			if entry.comment ~= "" then
-				local comment = entry.comment:gsub("\n", "\\n")
-				result = result .. "\tgettext(\"" .. comment .. "\");\n"
+				local comment_escaped = entry.comment:gsub("\n", "\\n")
+				comment_escaped = comment_escaped:gsub("\"", "\\\"")
+				result = result .. "\tgettext(\"" .. comment_escaped .. "\");\n"
 			end
 		end
 	end
