@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-10-25 11:08+0200\n"
+"PO-Revision-Date: 2015-10-25 14:01+0200\n"
 "Last-Translator: Jeff Huang <s8321414@gmail.com>\n"
 "Language-Team: Chinese (Taiwan) "
 "<https://hosted.weblate.org/projects/minetest/minetest/zh_TW/>\n"
@@ -1894,9 +1894,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "If disabled "
-msgstr "停用 MP"
+msgstr "若停用 "
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1906,9 +1905,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "If enabled, "
-msgstr "已啟用"
+msgstr "若啟用， "
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1946,9 +1944,8 @@ msgid "Ignore world errors"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "In-Game"
-msgstr "遊戲"
+msgstr "遊戲中"
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background alpha (opaqueness, between 0 and 255)."
@@ -1967,9 +1964,8 @@ msgid "Interval of sending time of day to clients."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Inventory key"
-msgstr "物品欄"
+msgstr "物品欄按鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
@@ -1984,9 +1980,8 @@ msgid "Item entity TTL"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Jump key"
-msgstr "跳躍"
+msgstr "跳躍鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Jumping speed"
@@ -2218,9 +2213,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Left key"
-msgstr "左邊選單鍵"
+msgstr "左鍵"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2290,14 +2284,12 @@ msgid "Main menu game manager"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Main menu mod manager"
-msgstr "主選單"
+msgstr "主選單 mod 管理員"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Main menu script"
-msgstr "主選單"
+msgstr "主選單指令稿"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2360,28 +2352,24 @@ msgid "Mapgen biome humidity noise parameters"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen debug"
-msgstr "地圖產生器"
+msgstr "地圖產生器除錯"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flags"
-msgstr "地圖產生器"
+msgstr "地圖產生器旗標"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen heat blend noise parameters"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen name"
-msgstr "地圖產生器"
+msgstr "地圖產生器名稱"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen v5"
-msgstr "地圖產生器"
+msgstr "地圖產生器 v5"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 cave1 noise parameters"
@@ -2404,9 +2392,8 @@ msgid "Mapgen v5 height noise parameters"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen v6"
-msgstr "地圖產生器"
+msgstr "地圖產生器 v6"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 apple trees noise parameters"
@@ -2465,9 +2452,8 @@ msgid "Mapgen v6 trees noise parameters"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen v7"
-msgstr "地圖產生器"
+msgstr "地圖產生器 v7"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 cave1 noise parameters"
@@ -2621,7 +2607,6 @@ msgid "Maxmimum objects per block"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Menus"
 msgstr "選單"
 
@@ -2661,7 +2646,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mipmapping"
 msgstr "映射貼圖"
 
@@ -2754,7 +2738,6 @@ msgid "Noclip key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Node highlighting"
 msgstr "突顯節點"
 
@@ -2807,34 +2790,28 @@ msgid "Parallax Occlusion"
 msgstr "視差遮蔽"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Parallax occlusion"
 msgstr "視差遮蔽"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Parallax occlusion Scale"
-msgstr "視差遮蔽"
+msgstr "視差遮蔽係數"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Parallax occlusion bias"
-msgstr "視差遮蔽"
+msgstr "視差遮蔽偏差"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Parallax occlusion iterations"
-msgstr "視差遮蔽"
+msgstr "視差遮蔽迭代"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Parallax occlusion mode"
-msgstr "視差遮蔽"
+msgstr "視差遮蔽模式"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Parallax occlusion strength"
-msgstr "視差遮蔽"
+msgstr "視差遮蔽強度"
 
 #: src/settings_translation_file.cpp
 msgid "Path to TrueTypeFont or bitmap."
@@ -2859,9 +2836,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Player name"
-msgstr "玩家名稱太長。"
+msgstr "玩家名稱"
 
 #: src/settings_translation_file.cpp
 msgid "Player transfer distance"
@@ -2886,9 +2862,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Preload inventory textures"
-msgstr "正在載入材質..."
+msgstr "預先載入物品欄材質"
 
 #: src/settings_translation_file.cpp
 msgid "Prevent mods from doing insecure things like running shell commands."
@@ -2918,9 +2893,8 @@ msgid "Random input"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Range select key"
-msgstr "選擇範圍"
+msgstr "範圍選擇鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
@@ -2935,9 +2909,8 @@ msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Right key"
-msgstr "右邊選單鍵"
+msgstr "右鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Rightclick repetition interval"
@@ -2977,7 +2950,6 @@ msgid "Screen width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot"
 msgstr "螢幕截圖"
 
@@ -3006,44 +2978,36 @@ msgid "Selection box width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server / Singleplayer"
-msgstr "開始單人遊戲"
+msgstr "伺服器／單人遊戲"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server URL"
-msgstr "伺服器"
+msgstr "伺服器 URL"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server address"
-msgstr "伺服器埠"
+msgstr "伺服器地址"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server description"
-msgstr "伺服器埠"
+msgstr "伺服器描述"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server name"
-msgstr "伺服器"
+msgstr "伺服器名稱"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server port"
 msgstr "伺服器埠"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Serverlist URL"
-msgstr "公共伺服器清單"
+msgstr "伺服器清單 URL"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Serverlist file"
-msgstr "公共伺服器清單"
+msgstr "伺服器清單檔"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3099,9 +3063,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Smooth lighting"
-msgstr "平滑光線"
+msgstr "平滑光"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3118,9 +3081,8 @@ msgid "Smooths rotation of camera. 0 to disable."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Sneak key"
-msgstr "潛行"
+msgstr "潛行按鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
@@ -3139,9 +3101,8 @@ msgid "Static spawnpoint"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Strength of generated normalmaps."
-msgstr "生成一般地圖"
+msgstr "生成之一般地圖的強度。"
 
 #: src/settings_translation_file.cpp
 msgid "Strength of parallax."
@@ -3156,9 +3117,8 @@ msgid "Synchronous SQLite"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Texture path"
-msgstr "材質包"
+msgstr "材質路徑"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3241,7 +3201,6 @@ msgid "Tooltip delay"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Trilinear filtering"
 msgstr "三線性過濾器"
 
@@ -3285,9 +3244,8 @@ msgid "Use bilinear filtering when scaling textures."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use key"
-msgstr "按下按鍵"
+msgstr "使用按鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Use mip mapping to scale textures. May slightly increase performance."
@@ -3298,9 +3256,8 @@ msgid "Use trilinear filtering when scaling textures."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Useful for mod developers."
-msgstr "先前的核心開發者"
+msgstr "對 mod 開發者很有用。"
 
 #: src/settings_translation_file.cpp
 msgid "V-Sync"
@@ -3339,14 +3296,12 @@ msgid "Viewing range minimum"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volume"
 msgstr "音量"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Walking speed"
-msgstr "葉子擺動"
+msgstr "走路速度"
 
 #: src/settings_translation_file.cpp
 msgid "Wanted FPS"
@@ -3361,39 +3316,32 @@ msgid "Water surface level of the world."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving Nodes"
-msgstr "葉子擺動"
+msgstr "擺動節點"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving leaves"
 msgstr "葉子擺動"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving plants"
 msgstr "植物擺動"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water"
 msgstr "波動的水"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water height"
-msgstr "波動的水"
+msgstr "波動的水高度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water length"
-msgstr "波動的水"
+msgstr "波動的水長度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water speed"
-msgstr "波動的水"
+msgstr "波動的水速度"
 
 #: src/settings_translation_file.cpp
 msgid ""
