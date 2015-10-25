@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-10-25 17:23+0200\n"
-"Last-Translator: Wuzzy <almikes@aol.com>\n"
+"PO-Revision-Date: 2015-10-25 18:19+0200\n"
+"Last-Translator: PilzAdam <PilzAdam@minetest.net>\n"
 "Language-Team: German "
 "<https://hosted.weblate.org/projects/minetest/minetest/de/>\n"
 "Language: de\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr "Es ist ein Fehler in einem Lua-Skript aufgetreten, z.B. in einem Mod:"
+msgstr "Es ist ein Fehler in einem Lua-Skript aufgetreten, z.B. in einer Mod:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
@@ -152,7 +152,7 @@ msgstr "Spiel"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr "Weltgenerator"
+msgstr "Kartengenerator"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No worldname given or no game selected"
@@ -334,7 +334,7 @@ msgstr "Adresse/Port:"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
-msgstr "Client"
+msgstr "Klient"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Connect"
@@ -393,7 +393,7 @@ msgstr "Neu"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "No world created or selected!"
-msgstr "Kein Weltname angegeben oder kein Spiel ausgewählt!"
+msgstr "Kein Weltname angegeben oder ausgewählt!"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Port"
@@ -461,10 +461,10 @@ msgid "Games"
 msgstr "Spiele"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Optionally the lacunarity can be appended with a leading comma."
 msgstr ""
-"Optional kann zur lacunarity mit einem führendem Komma angehängt werden."
+"Optional kann die Lacunarity, mit einem weiteren Komma abgetrennt, angehängt "
+"werden."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a comma seperated list of flags."
@@ -628,7 +628,7 @@ msgstr "Weiter"
 
 #: src/game.cpp
 msgid "Creating client..."
-msgstr "Client erstellen ..."
+msgstr "Klienten erstellen..."
 
 #: src/game.cpp
 msgid "Creating server..."
@@ -1196,20 +1196,20 @@ msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
-"Ein festgelegter Weltgenerator-Seed für neue Welten. Leer lassen für "
+"Ein festgelegter Kartengenerator-Seed für neue Welten. Leer lassen für "
 "zufällige Erzeugung.\n"
 "Wird überschrieben, wenn die Welt im Menü erstellt wird."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
 msgstr ""
-"Eine Nachricht, die an alle verbundenen Clients versendet wird, wenn der "
+"Eine Nachricht, die an alle verbundenen Klienten versendet wird, wenn der "
 "Server abstürzt."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server shuts down."
 msgstr ""
-"Eine Nachricht, die an alle verbundene Clients gesendet wird, wenn der "
+"Eine Nachricht, die an alle verbundene Klienten gesendet wird, wenn der "
 "Server herunterfährt."
 
 #: src/settings_translation_file.cpp
@@ -1250,7 +1250,7 @@ msgid ""
 "This setting is for the client only and is ignored by the server."
 msgstr ""
 "Ändert die Gammakodierung der Lichttabellen. Kleinere Werte sind heller.\n"
-"Diese Einstellung ist clientseitig und wird vom Server ignoriert."
+"Diese Einstellung ist klientenseitig und wird vom Server ignoriert."
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -1356,7 +1356,7 @@ msgstr "Transparente Texturen säubern"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
-msgstr "Client und Server"
+msgstr "Klient und Server"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -1376,7 +1376,7 @@ msgstr "Wolken"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
-msgstr "Wolken sind ein clientseitiger Effekt."
+msgstr "Wolken sind ein klientenseitiger Effekt."
 
 #: src/settings_translation_file.cpp
 msgid "Clouds in menu"
@@ -1452,7 +1452,7 @@ msgid ""
 "Controls size of deserts and beaches in Mapgen V6.\n"
 "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
 msgstr ""
-"Verändert die Größe der Wüsten und Strände in Weltgenerator V6.\n"
+"Verändert die Größe der Wüsten und Strände in Kartengenerator V6.\n"
 "Wenn Schneebiome aktiviert sind, wird diese Einstellung ignoriert."
 
 #: src/settings_translation_file.cpp
@@ -1563,7 +1563,7 @@ msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
 msgstr ""
-"Die Beschreibung des Servers. Wird neuen Clients und in der Serverliste "
+"Die Beschreibung des Servers. Wird neuen Klienten und in der Serverliste "
 "angezeigt."
 
 #: src/settings_translation_file.cpp
@@ -1643,8 +1643,8 @@ msgid ""
 "to new servers, but they may not support all new features that you are "
 "expecting."
 msgstr ""
-"Aktivieren, um alten Clients die Verbindung zu verwehren.\n"
-"Ältere Clients sind kompatibel in der Hinsicht, dass sie beim Verbinden zu "
+"Aktivieren, um alten Klienten die Verbindung zu verwehren.\n"
+"Ältere Klienten sind kompatibel in der Hinsicht, dass sie beim Verbinden zu "
 "neuen\n"
 "Servern nicht abstürzen, aber sie könnten nicht alle neuen Funktionen, die "
 "Sie\n"
@@ -1670,7 +1670,7 @@ msgid ""
 "Ignored if bind_address is set."
 msgstr ""
 "Server als IPv6 laufen lassen (oder nicht). Ein IPv6-Server könnte,\n"
-"abhängig von der Systemkonfiguration, auf IPv6-Clients eingeschränkt sein.\n"
+"abhängig von der Systemkonfiguration, auf IPv6-Klienten eingeschränkt sein.\n"
 "Wird ignoriert, wenn bind_address gesetzt ist."
 
 #: src/settings_translation_file.cpp
@@ -1694,7 +1694,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
-msgstr "Aktiviert die Kleinkarte."
+msgstr "Aktiviert die Übersichtskarte."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1862,21 +1862,21 @@ msgid ""
 "From how far blocks are generated for clients, stated in mapblocks (16 "
 "nodes)."
 msgstr ""
-"Von wie weit weg Blöcke für Clients erzeugt werden,\n"
+"Von wie weit weg Blöcke für Klienten erzeugt werden,\n"
 "in Mapblocks (16 Blöcke [nodes]) angegeben."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
 msgstr ""
-"Von wie weit weg Blöcke zu Clients gesendet werden,\n"
+"Von wie weit weg Blöcke zu Klienten gesendet werden,\n"
 "in Mapblocks (16 Blöcke [nodes]) angegeben."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far clients know about objects, stated in mapblocks (16 nodes)."
 msgstr ""
-"Von wie weit weg Clients über Objekte bescheid wissen,\n"
+"Von wie weit weg Klienten über Objekte bescheid wissen,\n"
 "in Mapblocks (16 Blöcke [nodes]) angegeben."
 
 #: src/settings_translation_file.cpp
@@ -1983,7 +1983,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "How many blocks are flying in the wire simultaneously per client."
 msgstr ""
-"Wie viele Blöcke gleichzeitig pro Client auf der Leitung unterwegs sind."
+"Wie viele Blöcke gleichzeitig pro Klient auf der Leitung unterwegs sind."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2102,7 +2102,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Interval of sending time of day to clients."
-msgstr "Zeitintervall, in der die Tageszeit an Clients gesendet wird."
+msgstr "Zeitintervall, in der die Tageszeit an Klienten gesendet wird."
 
 #: src/settings_translation_file.cpp
 msgid "Inventory key"
@@ -2317,7 +2317,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Taste zum Wechseln der Anzeige der Kleinkarte.\n"
+"Taste zum Wechseln der Anzeige der Übersichtskarte.\n"
 "Siehe http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
 "35e3da1b0edf72e"
 
@@ -2599,167 +2599,167 @@ msgstr "Timeout zum Entladen von Mapblocks"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome heat noise parameters"
-msgstr "Weltgeneratorbiomhitzenrauschparameter"
+msgstr "Kartengeneratorbiomhitzenrauschparameter"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome humidity blend noise parameters"
-msgstr "Weltgeneratorbiomluftfeuchtigkeitsübergangsrauschparameter"
+msgstr "Kartengeneratorbiomluftfeuchtigkeitsübergangsrauschparameter"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome humidity noise parameters"
-msgstr "Weltgeneratorbiomluftfeuchtigkeitsrauschparameter"
+msgstr "Kartengeneratorbiomluftfeuchtigkeitsrauschparameter"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen debug"
-msgstr "Weltgenerator-Debugging"
+msgstr "Kartengenerator-Debugging"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr "Weltgenerator-Flags"
+msgstr "Kartengenerator-Flags"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen heat blend noise parameters"
-msgstr "Weltgeneratorhitzenübergangsrauschparameter"
+msgstr "Kartengeneratorhitzenübergangsrauschparameter"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen name"
-msgstr "Weltgeneratorname"
+msgstr "Kartengeneratorname"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5"
-msgstr "Weltgenerator v5"
+msgstr "Kartengenerator v5"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 cave1 noise parameters"
-msgstr "cave1-Rauschparameter für v5-Weltgenerator"
+msgstr "cave1-Rauschparameter für v5-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 cave2 noise parameters"
-msgstr "cave2-Rauschparameter für v5-Weltgenerator"
+msgstr "cave2-Rauschparameter für v5-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 factor noise parameters"
-msgstr "Faktorrauschparameter für v5-Weltgenerator"
+msgstr "Faktorrauschparameter für v5-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 filler depth noise parameters"
-msgstr "Tiefenrauschparameter für v5-Weltgenerator"
+msgstr "Tiefenrauschparameter für v5-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 height noise parameters"
-msgstr "Höhenrauschparameter für v5-Weltgenerator"
+msgstr "Höhenrauschparameter für v5-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6"
-msgstr "Weltgenerator v6"
+msgstr "Kartengenerator v6"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 apple trees noise parameters"
-msgstr "Apfelbaumrauschparameter für v6-Weltgenerator"
+msgstr "Apfelbaumrauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 beach frequency"
-msgstr "Strandfrequenz für v6-Weltgenerator"
+msgstr "Strandfrequenz für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 beach noise parameters"
-msgstr "Strandrauschparameter für v6-Weltgenerator"
+msgstr "Strandrauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 biome noise parameters"
-msgstr "Biomrauschparameter für v6-Weltgenerator"
+msgstr "Biomrauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 cave noise parameters"
-msgstr "Höhlenrauschparameter für v6-Weltgenerator"
+msgstr "Höhlenrauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 desert frequency"
-msgstr "Wüstenrauschparameter für v6-Weltgenerator"
+msgstr "Wüstenrauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 flags"
-msgstr "Flags für v6-Weltgenerator"
+msgstr "Flags für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 height select noise parameters"
-msgstr "Höhenauswahlrauschparameter für v6-Weltgenerator"
+msgstr "Höhenauswahlrauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 humidity noise parameters"
-msgstr "Luftfeuchtigkeitsrauschparameter für v6-Weltgenerator"
+msgstr "Luftfeuchtigkeitsrauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 mud noise parameters"
-msgstr "Schlammrauschparameter für v6-Weltgenerator"
+msgstr "Schlammrauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 steepness noise parameters"
-msgstr "Steilheitsrauschparameter für v6-Weltgenerator"
+msgstr "Steilheitsrauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 terrain altitude noise parameters"
-msgstr "Geländehöhenrauschparameter für v6-Weltgenerator"
+msgstr "Geländehöhenrauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 terrain base noise parameters"
-msgstr "Basisgeländerauschparameter für v6-Weltgenerator"
+msgstr "Basisgeländerauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 trees noise parameters"
-msgstr "Baumrauschparameter für v6-Weltgenerator"
+msgstr "Baumrauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7"
-msgstr "Weltgenerator v7"
+msgstr "Kartengenerator v7"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 cave1 noise parameters"
-msgstr "cave1-Rauschparameter für v7-Weltgenerator"
+msgstr "cave1-Rauschparameter für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 cave2 noise parameters"
-msgstr "cave2-Rauschparameter für v7-Weltgenerator"
+msgstr "cave2-Rauschparameter für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 filler depth noise parameters"
-msgstr "Ausfülltiefenrauschen für v7-Weltgenerator"
+msgstr "Ausfülltiefenrauschen für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 flags"
-msgstr "Flags für v7-Weltgenerator"
+msgstr "Flags für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 height select noise parameters"
-msgstr "Höhenauswahlrauschparameter für v7-Weltgenerator"
+msgstr "Höhenauswahlrauschparameter für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 mount height noise parameters"
-msgstr "Berghöhenrauschenparameter für v7-Weltgenerator"
+msgstr "Berghöhenrauschenparameter für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 mountain noise parameters"
-msgstr "Bergrauschparameter für v7-Weltgenerator"
+msgstr "Bergrauschparameter für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 ridge noise parameters"
-msgstr "Gratrauschparameter für v7-Weltgenerator"
+msgstr "Gratrauschparameter für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 ridge water noise parameters"
-msgstr "Wassergratrauschparameter für v7-Weltgenerator"
+msgstr "Wassergratrauschparameter für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 terrain altitude noise parameters"
-msgstr "Geländehöhenrauschparameter für v7-Weltgenerator"
+msgstr "Geländehöhenrauschparameter für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 terrain base noise parameters"
-msgstr "Basisgeländerauschparameter für v7-Weltgenerator"
+msgstr "Basisgeländerauschparameter für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 terrain persistation noise parameters"
-msgstr "Geländepersistenzrauschparameter für v7-Weltgenerator"
+msgstr "Geländepersistenzrauschparameter für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Max block generate distance"
@@ -2830,7 +2830,7 @@ msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
 msgstr ""
-"Maximale Anzahl der Mapblocks, die der Client im Speicher vorhalten soll.\n"
+"Maximale Anzahl der Mapblocks, die der Klient im Speicher vorhalten soll.\n"
 "Auf -1 setzen, um keine Obergrenze zu verwenden."
 
 #: src/settings_translation_file.cpp
@@ -2843,7 +2843,7 @@ msgstr ""
 "eine\n"
 "langsame Verbindung haben, probieren Sie es damit, diesen Wert zu reduzieren,"
 "\n"
-"aber reduzieren Sie ihn nicht unter der doppelten Anzahl der Clients, die "
+"aber reduzieren Sie ihn nicht unter der doppelten Anzahl der Klienten, die "
 "Sie\n"
 "anstreben."
 
@@ -2867,7 +2867,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum simultaneously blocks send per client"
-msgstr "Maximale Anzahl der Blöcke, die gleichzeitig pro Client gesendet werden"
+msgstr "Maximale Anzahl der Blöcke, die gleichzeitig pro Klient gesendet werden"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum simultaneously bocks send total"
@@ -2908,15 +2908,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
-msgstr "Kleinkarte"
+msgstr "Übersichtskarte"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap key"
-msgstr "Kleinkartentaste"
+msgstr "Übersichtskartentaste"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap scan height"
-msgstr "Abtasthöhe der Kleinkarte"
+msgstr "Abtasthöhe der Übersichtskarte"
 
 #: src/settings_translation_file.cpp
 msgid "Minimum texture size for filters"
@@ -3003,7 +3003,7 @@ msgid ""
 "When starting from the main menu, this is overridden."
 msgstr ""
 "Name des Spielers.\n"
-"Wenn ein Server gestartet wird, werden Clients mit diesem Namen zu Admins.\n"
+"Wenn ein Server gestartet wird, werden Klienten mit diesem Namen zu Admins.\n"
 "Wird vom Hauptmenü aus gestartet, wird diese Einstellung überschrieben."
 
 #: src/settings_translation_file.cpp
@@ -3256,15 +3256,15 @@ msgstr "Rollback-Aufzeichnung"
 
 #: src/settings_translation_file.cpp
 msgid "Round minimap"
-msgstr "Runde Kleinkarte"
+msgstr "Runde Übersichtskarte"
 
 #: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
-msgstr "Speichert die Welt vom Server im lokalen Speicher."
+msgstr "Speichert die Karte vom Server im lokalen Speicher."
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
-msgstr "Welt vom Server speichern"
+msgstr "Karte vom Server speichern"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3398,7 +3398,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Shape of the minimap. Enabled = round, disabled = square."
-msgstr "Form der Kleinkarte. Aktiviert = rund, Deaktiviert = rechteckig."
+msgstr "Form der Übersichtskarte. Aktiviert = rund, Deaktiviert = rechteckig."
 
 #: src/settings_translation_file.cpp
 msgid "Show debug info"
@@ -3413,7 +3413,7 @@ msgid ""
 "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
 "nodes)."
 msgstr ""
-"Größe der Chunks, die gleichzeitig vom Weltgenerator angegeben werden,\n"
+"Größe der Chunks, die gleichzeitig vom Kartengenerator angegeben werden,\n"
 "in Mapblocks (16 Blöcke [nodes]) angegeben."
 
 #: src/settings_translation_file.cpp
@@ -3451,7 +3451,7 @@ msgid ""
 "(obviously, remote_media should end with a slash).\n"
 "Files that are not present will be fetched the usual way."
 msgstr ""
-"Spezifiziert die URL, von der die Clients die Medien (Texturen, Sounds, …) "
+"Spezifiziert die URL, von der die Klienten die Medien (Texturen, Sounds, …) "
 "herunterladen.\n"
 "$Dateiname sollte von $remote_media$Dateiname mittels cURL erreichbar sein\n"
 "(diese Einstellung sollte also mit einem Schrägstrich enden).\n"
@@ -3571,7 +3571,7 @@ msgstr "Zeitgeschwindigkeit"
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory."
 msgstr ""
-"Zeit, nach der der Client nicht benutzte Kartendaten aus\n"
+"Zeit, nach der der Klient nicht benutzte Kartendaten aus\n"
 "dem Speicher löscht."
 
 #: src/settings_translation_file.cpp
@@ -3607,7 +3607,8 @@ msgid ""
 msgstr ""
 "Wahr = 256\n"
 "Falsch = 128\n"
-"Nützlich, um die Kleinkarte performanter auf langsamen Maschinen zu machen."
+"Nützlich, um die Übersichtskarte performanter auf langsamen Maschinen zu "
+"machen."
 
 #: src/settings_translation_file.cpp
 msgid "Trusted mods"
@@ -3801,10 +3802,10 @@ msgid ""
 "-    Those groups have an offset of -32, -32 nodes from the origin.\n"
 "-    Only groups which are within the map_generation_limit are generated"
 msgstr ""
-"Wo der Weltgenerator aufhört.\n"
+"Wo der Kartengenerator aufhört.\n"
 "Bitte beachten Sie:\n"
 "-    Begrenzt auf 31000 (größere Werte sind wirkungslos).\n"
-"-    Der Weltgenerator arbeitet in Gruppen von 80×80×80 Blöcken (5×5×5 "
+"-    Der Kartengenerator arbeitet in Gruppen von 80×80×80 Blöcken (5×5×5 "
 "MapBlocks).\n"
 "-    Diese Gruppen haben einen Abstand von [-32, -32] Blöcken vom Ursprung.\n"
 "-    Nur Gruppen, welche innerhalb der von map_generation_limit definierten "
@@ -3826,8 +3827,8 @@ msgid ""
 "Whether players are shown to clients without any range limit.\n"
 "Deprecated, use the setting player_transfer_distance instead."
 msgstr ""
-"Ob Spieler an Clients ohne Distanzbegrenzung angezeit werden.\n"
-"Missbilligt, benutzen Sie die Einstellung „player_transfer_distance“ "
+"Ob Spieler an Klienten ohne Distanzbegrenzung angezeit werden.\n"
+"Veraltet, benutzen Sie die Einstellung „player_transfer_distance“ "
 "stattdessen."
 
 #: src/settings_translation_file.cpp
@@ -3839,7 +3840,7 @@ msgid ""
 "Whether to ask clients to reconnect after a (Lua) crash.\n"
 "Set this to true if your server is set up to restart automatically."
 msgstr ""
-"Ob Clients gefragt werden sollen, sich nach einem (Lua-)Absturz\n"
+"Ob Klienten gefragt werden sollen, sich nach einem (Lua-)Absturz\n"
 "neu zu verbinden. Auf „wahr“ setzen, falls Ihr Server für auto-\n"
 "matische Neustarts eingerichtet ist."
 
@@ -3851,7 +3852,7 @@ msgstr "Ob das Ende des sichtbaren Gebietes im Nebel verschwinden soll."
 msgid ""
 "Whether to show the client debug info (has the same effect as hitting F5)."
 msgstr ""
-"Ob der Client Debug-Informationen zeigen soll (hat die selbe Wirkung\n"
+"Ob der Klienten Debug-Informationen zeigen soll (hat die selbe Wirkung\n"
 "wie das Drücken von F5)."
 
 #: src/settings_translation_file.cpp
