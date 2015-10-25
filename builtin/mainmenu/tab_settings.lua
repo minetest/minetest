@@ -493,7 +493,7 @@ local function handle_change_setting_buttons(this, fields)
 				value = value:trim()
 				if not value:match(CHAR_CLASSES.FLAGS .. "+")
 						or not setting.possible:match("[,]?" .. value .. "[,]?") then
-					this.data.error_message = fgettext_ne("\"" .. value .. "\" is not a valid flag.")
+					this.data.error_message = fgettext_ne("\"$1\" is not a valid flag.", value)
 					this.data.entered_text = fields["te_setting_value"]
 					core.update_formspec(this:get_formspec())
 					return true
