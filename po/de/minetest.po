@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-10-25 19:11+0200\n"
+"PO-Revision-Date: 2015-10-25 21:15+0200\n"
 "Last-Translator: PilzAdam <PilzAdam@minetest.net>\n"
 "Language-Team: German "
 "<https://hosted.weblate.org/projects/minetest/minetest/de/>\n"
@@ -532,15 +532,15 @@ msgstr "Keine Informationen vorhanden"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
-msgstr "Keine"
+msgstr "Keines"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Select texture pack:"
-msgstr "Texturpaket auswählen:"
+msgstr "Texturenpaket auswählen:"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Texturepacks"
-msgstr "Texturpakete"
+msgstr "Texturenpakete"
 
 #: src/client.cpp
 msgid "Connection timed out."
@@ -564,11 +564,11 @@ msgstr "Inventarbilder ..."
 
 #: src/client.cpp
 msgid "Loading textures..."
-msgstr "Texturen laden ..."
+msgstr "Lade Texturen..."
 
 #: src/client.cpp
 msgid "Rebuilding shaders..."
-msgstr "Shader wiederherstellen ..."
+msgstr "Shader wiederherstellen..."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
@@ -576,7 +576,7 @@ msgstr "Verbindungsfehler (Zeitüberschreitung?)"
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
-msgstr "Kann Spiel nicht finden/laden \""
+msgstr "Kann Spiel nicht finden oder laden \""
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -620,7 +620,7 @@ msgstr "Passwort ändern"
 
 #: src/game.cpp
 msgid "Connecting to server..."
-msgstr "Zum Server verbinden ..."
+msgstr "Verbinde mit Server..."
 
 #: src/game.cpp
 msgid "Continue"
@@ -628,11 +628,11 @@ msgstr "Weiter"
 
 #: src/game.cpp
 msgid "Creating client..."
-msgstr "Klienten erstellen..."
+msgstr "Erstelle Klienten..."
 
 #: src/game.cpp
 msgid "Creating server..."
-msgstr "Server erstellen ..."
+msgstr "Erstelle Server..."
 
 #: src/game.cpp
 msgid ""
@@ -648,7 +648,7 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
-"Standard-Tastenbelegung:\n"
+"Standardsteuerung:\n"
 "- WASD: bewegen\n"
 "- Leertaste: springen/klettern\n"
 "- Umschalt: kriechen/herunterklettern\n"
@@ -698,7 +698,7 @@ msgstr "Programm beenden"
 
 #: src/game.cpp
 msgid "Item definitions..."
-msgstr "Item-Definitionen ..."
+msgstr "Item-Definitionen..."
 
 #: src/game.cpp
 msgid "KiB/s"
@@ -706,7 +706,7 @@ msgstr "KiB/s"
 
 #: src/game.cpp
 msgid "Media..."
-msgstr "Medien ..."
+msgstr "Medien..."
 
 #: src/game.cpp
 msgid "MiB/s"
@@ -722,7 +722,7 @@ msgstr "Fortsetzen"
 
 #: src/game.cpp
 msgid "Resolving address..."
-msgstr "Adresse auflösen ..."
+msgstr "Löse Adresse auf..."
 
 #: src/game.cpp
 msgid "Respawn"
@@ -730,7 +730,7 @@ msgstr "Wiederbeleben"
 
 #: src/game.cpp
 msgid "Shutting down..."
-msgstr "Herunterfahren ..."
+msgstr "Herunterfahren..."
 
 #: src/game.cpp
 msgid "Sound Volume"
@@ -795,7 +795,8 @@ msgstr "Taste bereits in Benutzung"
 #: src/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
-"Steuerung (Falls dieses Menü versagt, entfernen Sie Sachen aus minetest.conf)"
+"Steuerung (Falls dieses Menü fehlerhaft formatiert ist, entfernen Sie "
+"Einstellungen aus minetest.conf)"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Left"
@@ -1552,7 +1553,7 @@ msgstr "Verzögerung beim Zeigen von Tooltipps, in Millisekunden."
 
 #: src/settings_translation_file.cpp
 msgid "Deprecated Lua API handling"
-msgstr "Missbilligte Lua-API-Handhabung"
+msgstr "Veraltete Lua-API-Handhabung"
 
 #: src/settings_translation_file.cpp
 msgid "Descending speed"
@@ -1600,7 +1601,7 @@ msgstr "Doppelttippen der Sprungtaste schaltet Flugmodus um."
 
 #: src/settings_translation_file.cpp
 msgid "Drop item key"
-msgstr "Fallenlassen-Taste"
+msgstr "Wegwerfen-Taste"
 
 #: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug infos."
@@ -1660,7 +1661,7 @@ msgstr ""
 "angeboten).\n"
 "Entfernte Server bieten eine deutlich schnellere Methode, um Medien (z.B. "
 "Texturen)\n"
-"während des Verbindugsaufbaus zum Server herunterzuladen."
+"während des Verbindungsaufbaus zum Server herunterzuladen."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1668,7 +1669,7 @@ msgid ""
 "to IPv6 clients, depending on system configuration.\n"
 "Ignored if bind_address is set."
 msgstr ""
-"Server als IPv6 laufen lassen (oder nicht). Ein IPv6-Server könnte,\n"
+"Server als IPv6 laufen lassen. Ein IPv6-Server könnte,\n"
 "abhängig von der Systemkonfiguration, auf IPv6-Klienten eingeschränkt sein.\n"
 "Wird ignoriert, wenn bind_address gesetzt ist."
 
@@ -1679,16 +1680,16 @@ msgid ""
 "or need to be auto-generated.\n"
 "Requires shaders to be enabled."
 msgstr ""
-"Aktiviert das Bump-Mapping für Texturen. Normal-Maps müssen vom "
+"Aktiviert das Bump-Mapping für Texturen. Normal-Maps müssen im "
 "Texturenpaket\n"
-"angeboten werden oder müssen automatisch erzeugt werden.\n"
+"vorhanden sein oder müssen automatisch erzeugt werden.\n"
 "Shader müssen aktiviert werden, bevor diese Einstellung aktiviert werden "
 "kann."
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
 msgstr ""
-"Aktiviert das Zwischenspeichern von 3D-Modellen, dir mittels facedir rotiert "
+"Aktiviert das Zwischenspeichern von 3D-Modellen, die mittels facedir rotiert "
 "werden."
 
 #: src/settings_translation_file.cpp
@@ -1729,23 +1730,23 @@ msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
 msgid "Fall bobbing"
-msgstr "Auf- und Abbewegung beim Sturz"
+msgstr "Kameraschütteln beim Aufprallen"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font"
-msgstr "Rückgriffschrift"
+msgstr "Ersatzschriftart"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font shadow"
-msgstr "Rückgriff-Schattenschrift"
+msgstr "Ersatzschriftschatten"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font shadow alpha"
-msgstr "Undurchsichtigkeit der Rückgriff-Schattenschrift"
+msgstr "Undurchsichtigkeit des Ersatzschriftschattens"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font size"
-msgstr "Größe der Rückgriffschrift"
+msgstr "Ersatzschriftgröße"
 
 #: src/settings_translation_file.cpp
 msgid "Fast key"
@@ -1892,7 +1893,7 @@ msgstr "Vollbildmodus."
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
-msgstr "GUI-Größenfaktor"
+msgstr "GUI-Skalierung"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter"
@@ -1928,7 +1929,7 @@ msgstr "Gravitation"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
-msgstr "Taste zur Umschaltung der HUD"
+msgstr "Taste zum Umschalten des HUD"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1937,12 +1938,12 @@ msgid ""
 "-    log: mimic and log backtrace of deprecated call (default for debug).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
-"Handhabung für missbilligte Lua-API-Aufrufe:\n"
+"Handhabung für veraltete Lua-API-Aufrufe:\n"
 "-    legacy: Versuchen, altes Verhalten zu imitieren (Standard für Release)."
 "\n"
-"-    log: Imitieren, und den Backtrace des missbilligten Funktionsaufrufs "
+"-    log: Imitieren, und den Backtrace des veralteten Funktionsaufrufs "
 "protokollieren (Standard für Debug).\n"
-"-    error: Bei Verwendung eines missbilligten Funktionsaufrufs abbrechen ("
+"-    error: Bei Verwendung eines veralteten Funktionsaufrufs abbrechen ("
 "empfohlen für Mod-Entwickler)."
 
 #: src/settings_translation_file.cpp
@@ -2012,7 +2013,7 @@ msgid ""
 msgstr ""
 "Falls die Bildwiederholrate diesen Wert überschreitet,\n"
 "wird sie durch Nichtstun begrenzt, um die CPU nicht\n"
-"unnötig auszulasten."
+"unnötig zu belasten."
 
 #: src/settings_translation_file.cpp
 msgid "If disabled "
@@ -2101,7 +2102,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Interval of sending time of day to clients."
-msgstr "Zeitintervall, in der die Tageszeit an Klienten gesendet wird."
+msgstr "Zeitintervall, in dem die Tageszeit an Klienten gesendet wird."
 
 #: src/settings_translation_file.cpp
 msgid "Inventory key"
@@ -2285,8 +2286,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Taste zum Wechseln der Kamera (Ego-Perspektive oder Dritte-Person-"
-"Perspektive).\n"
+"Taste zum Wechseln der Kamera (Ego- oder Dritte-Person-Perspektive).\n"
 "Siehe http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
 "35e3da1b0edf72eb3"
 
@@ -2296,7 +2296,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Taste zur Erzeugung von Screenshots.\n"
+"Taste zur Erzeugung von Bildschirmfotos.\n"
 "Siehe http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
 "35e3da1b0edf72e"
 
@@ -2377,7 +2377,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Taste, um die HUD zu verbergen oder wieder anzuzeigen.\n"
+"Taste, um das HUD zu verbergen oder wieder anzuzeigen.\n"
 "Siehe http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
 "35e3da1b0edf72e"
 
@@ -2475,16 +2475,18 @@ msgstr ""
 "-    <nichts> (keine Protokollierung)\n"
 "-    none (Meldungen ohne Einstufung)\n"
 "-    error (Fehler)\n"
-"-    warning (Warnung)\n"
-"-    action (Aktion)\n"
-"-    info (Information)\n"
-"-    verbose (geschwätzig)"
+"-    warning (Warnungen)\n"
+"-    action (Aktionen)\n"
+"-    info (Informationen)\n"
+"-    verbose (Ausführlich)"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Limit of emerge queues on disk"
 msgstr "Grenze der Erzeugungswarteschlangen auf dem Festspeicher"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Limit of emerge queues to generate"
 msgstr "Max. Anzahl der Erzeugungswarteschlangen, die erzeugt werden sollen"
 
@@ -2500,8 +2502,8 @@ msgstr ""
 "-    Medienabholung, falls der Server die remote_media-Einstellung verwendet."
 "\n"
 "-    Herunterladen der Serverliste und Server-Ankündigungsdaten.\n"
-"-    Downloads, die vom Hauptmenü aus getätigt wurden (z.B. Mod-Manager).\n"
-"Hat nur eine Wirkung, wenn mit cURL kompiliert."
+"-    Downloads, die vom Hauptmenü aus getätigt werden (z.B. Mod-Manager).\n"
+"Hat nur eine Wirkung, wenn mit cURL-Unterstützung kompiliert wurde."
 
 #: src/settings_translation_file.cpp
 msgid "Liquid fluidity"
@@ -2597,14 +2599,17 @@ msgid "Mapblock unload timeout"
 msgstr "Timeout zum Entladen von Kartenblöcken"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen biome heat noise parameters"
 msgstr "Kartengeneratorbiomhitzenrauschparameter"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen biome humidity blend noise parameters"
 msgstr "Kartengeneratorbiomluftfeuchtigkeitsübergangsrauschparameter"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen biome humidity noise parameters"
 msgstr "Kartengeneratorbiomluftfeuchtigkeitsrauschparameter"
 
@@ -2653,6 +2658,7 @@ msgid "Mapgen v6"
 msgstr "Kartengenerator v6"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v6 apple trees noise parameters"
 msgstr "Apfelbaumrauschparameter für v6-Kartengenerator"
 
@@ -2661,18 +2667,22 @@ msgid "Mapgen v6 beach frequency"
 msgstr "Strandfrequenz für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v6 beach noise parameters"
 msgstr "Strandrauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v6 biome noise parameters"
 msgstr "Biomrauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v6 cave noise parameters"
 msgstr "Höhlenrauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v6 desert frequency"
 msgstr "Wüstenrauschparameter für v6-Kartengenerator"
 
@@ -2681,30 +2691,37 @@ msgid "Mapgen v6 flags"
 msgstr "Flags für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v6 height select noise parameters"
 msgstr "Höhenauswahlrauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v6 humidity noise parameters"
 msgstr "Luftfeuchtigkeitsrauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v6 mud noise parameters"
 msgstr "Schlammrauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v6 steepness noise parameters"
 msgstr "Steilheitsrauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v6 terrain altitude noise parameters"
 msgstr "Geländehöhenrauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v6 terrain base noise parameters"
 msgstr "Basisgeländerauschparameter für v6-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v6 trees noise parameters"
 msgstr "Baumrauschparameter für v6-Kartengenerator"
 
@@ -2713,14 +2730,17 @@ msgid "Mapgen v7"
 msgstr "Kartengenerator v7"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v7 cave1 noise parameters"
 msgstr "cave1-Rauschparameter für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v7 cave2 noise parameters"
 msgstr "cave2-Rauschparameter für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v7 filler depth noise parameters"
 msgstr "Ausfülltiefenrauschen für v7-Kartengenerator"
 
@@ -2729,34 +2749,42 @@ msgid "Mapgen v7 flags"
 msgstr "Flags für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v7 height select noise parameters"
 msgstr "Höhenauswahlrauschparameter für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v7 mount height noise parameters"
 msgstr "Berghöhenrauschenparameter für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v7 mountain noise parameters"
 msgstr "Bergrauschparameter für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v7 ridge noise parameters"
 msgstr "Gratrauschparameter für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v7 ridge water noise parameters"
 msgstr "Wassergratrauschparameter für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v7 terrain altitude noise parameters"
 msgstr "Geländehöhenrauschparameter für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v7 terrain base noise parameters"
 msgstr "Basisgeländerauschparameter für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen v7 terrain persistation noise parameters"
 msgstr "Geländepersistenzrauschparameter für v7-Kartengenerator"
 
@@ -2770,7 +2798,7 @@ msgstr "Max. Distanz für Kartenblockübertragung"
 
 #: src/settings_translation_file.cpp
 msgid "Max liquids processed per step."
-msgstr "Max. Flüssigkeiten, die pro Step verarbeitet werden."
+msgstr "Max. Flüssigkeitsblöcke, die pro Schritt verarbeitet werden."
 
 #: src/settings_translation_file.cpp
 msgid "Max. clearobjects extra blocks"
@@ -2797,6 +2825,7 @@ msgid "Maximum hotbar width"
 msgstr "Max. Breite der Schnellzugriffsleiste"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Maximum number of blocks that can be queued for loading."
 msgstr ""
 "Maximale Anzahl der Kartenblöcke, welche in die Ladewarteschlange gesetzt "
@@ -2839,10 +2868,9 @@ msgid ""
 "try reducing it, but don't reduce it to a number below double of targeted\n"
 "client number."
 msgstr ""
-"Maximale Anzahl der Pakete, die pro Sende-Step gesendet werden. Falls Sie "
+"Maximale Anzahl der Pakete, die pro Sende-Schritt gesendet werden. Falls Sie "
 "eine\n"
-"langsame Verbindung haben, probieren Sie es damit, diesen Wert zu reduzieren,"
-"\n"
+"langsame Verbindung haben, probieren Sie, diesen Wert zu reduzieren,\n"
 "aber reduzieren Sie ihn nicht unter der doppelten Anzahl der Klienten, die "
 "Sie\n"
 "anstreben."
@@ -2867,11 +2895,13 @@ msgstr ""
 "etwas gibt, was links oder rechts von ihr angezeigt werden soll."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Maximum simultaneously blocks send per client"
 msgstr ""
 "Maximale Anzahl der Kartenblöcke, die gleichzeitig pro Klient gesendet werden"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Maximum simultaneously bocks send total"
 msgstr "Maximale Gesamtzahl der gleichzeitig gesendeten Kartenblöcke"
 
@@ -2976,9 +3006,9 @@ msgid ""
 "Multiplier for fall bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
 msgstr ""
-"Faktor für Auf- und Abbewegung beim Sturz.\n"
-"Zum Beispiel: 0 für keine Auf- und Abbewegung, 1.0 für den Standardwert, 2.0 "
-"für doppelte Geschwindigkeit."
+"Faktor für Kameraschütteln beim Sturz.\n"
+"Zum Beispiel: 0 für kein Schütteln, 1.0 für den Standardwert, 2.0 für "
+"doppelte Geschwindigkeit."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3005,7 +3035,8 @@ msgid ""
 "When starting from the main menu, this is overridden."
 msgstr ""
 "Name des Spielers.\n"
-"Wenn ein Server gestartet wird, werden Klienten mit diesem Namen zu Admins.\n"
+"Wenn ein Server gestartet wird, werden Klienten mit diesem Namen zu "
+"Administratoren.\n"
 "Wird vom Hauptmenü aus gestartet, wird diese Einstellung überschrieben."
 
 #: src/settings_translation_file.cpp
@@ -3139,7 +3170,7 @@ msgstr "Pfad zu einer TrueType- oder Bitmap-Schrift."
 
 #: src/settings_translation_file.cpp
 msgid "Path to save screenshots at."
-msgstr "Pfad, in dem Screenshots abgespeichert werden."
+msgstr "Pfad, in dem Bildschirmfotos abgespeichert werden."
 
 #: src/settings_translation_file.cpp
 msgid "Path to texture directory. All textures are first searched from here."
@@ -3293,11 +3324,11 @@ msgstr "Bildschirmbreite"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot"
-msgstr "Screenshot"
+msgstr "Bildschirmfoto"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
-msgstr "Screenshot-Verzeichnis"
+msgstr "Bildschirmfotoordner"
 
 #: src/settings_translation_file.cpp
 msgid "Security"
@@ -3415,7 +3446,7 @@ msgid ""
 "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
 "nodes)."
 msgstr ""
-"Größe der Stücke, die gleichzeitig vom Kartengenerator angegeben werden,\n"
+"Größe der Stücke, die gleichzeitig vom Kartengenerator erzeugt werden,\n"
 "in Kartenblöcken (16×16×16 Blöcke) angegeben."
 
 #: src/settings_translation_file.cpp
@@ -3463,7 +3494,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Static spawnpoint"
-msgstr "Statischer Startpunkt"
+msgstr "Statische Einstiegsposition"
 
 #: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
@@ -3585,9 +3616,9 @@ msgid ""
 msgstr ""
 "Um Verzögerungen zu reduzieren, werden Kartenblockübertragungen verlangsamt, "
 "während\n"
-"ein Spieler etwas baut. Dies bestimmt, wie lange sie verlangsamt sind, "
-"nachdem ein\n"
-"Block platziert oder entfernt wurde."
+"ein Spieler etwas baut. Diese Einstellung bestimmt, wie lange sie "
+"verlangsamt sind,\n"
+"nachdem ein Block platziert oder entfernt wurde."
 
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
@@ -3614,7 +3645,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Trusted mods"
-msgstr "Vertrauten Mods"
+msgstr "Vertrauenswürdige Mods"
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
@@ -3623,7 +3654,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
-msgstr "Unbegrenze Spielerübertragungsdistanz"
+msgstr "Unbegrenzte Spielerübertragungsdistanz"
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
@@ -3640,7 +3671,7 @@ msgstr "Eine Wolkenanimation für den Hintergrund im Hauptmenü benutzen."
 #: src/settings_translation_file.cpp
 msgid "Use anisotropic filtering when viewing at textures from an angle."
 msgstr ""
-"Anisotropische Filterung verwenden, wenn auf Texturen aus einem\n"
+"Anisotrope Filterung verwenden, wenn auf Texturen aus einem\n"
 "gewissen Blickwinkel heraus geschaut wird."
 
 #: src/settings_translation_file.cpp
@@ -3783,8 +3814,7 @@ msgid ""
 "have a visible effect unless bilinear/trilinear/anisotropic filtering is\n"
 "enabled."
 msgstr ""
-"Wenn bilineare, trilineare oder anisotropische Filter benutzt werden, "
-"können\n"
+"Wenn bilineare, trilineare oder anisotrope Filter benutzt werden, können\n"
 "niedrigauflösende Texturen verschwommen sein, also werden sie automatisch\n"
 "mit Pixelwiederholung vergrößert, um scharfe Pixel zu behalten. Dies setzt "
 "die\n"
