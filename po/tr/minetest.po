@@ -7,26 +7,26 @@ msgstr ""
 "Project-Id-Version: 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-07-14 16:48+0200\n"
-"Last-Translator: Michal Čihař <michal@cihar.com>\n"
-"Language-Team: Turkish <https://hosted.weblate.org/projects/minetest/"
-"minetest/tr/>\n"
+"PO-Revision-Date: 2015-10-26 21:06+0200\n"
+"Last-Translator: Mahmut Elmas <mahmutelmas06@hotmail.com>\n"
+"Language-Team: Turkish "
+"<https://hosted.weblate.org/projects/minetest/minetest/tr/>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2.4-dev\n"
+"X-Generator: Weblate 2.5-dev\n"
 "X-Poedit-Language: Turkish\n"
 "X-Poedit-Basepath: \n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
+msgstr "Lua scriptte bir hata meydana geldi:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
-msgstr ""
+msgstr "Bir hata oluştu:"
 
 #: builtin/fstk/ui.lua
 #, fuzzy
@@ -38,13 +38,12 @@ msgid "Ok"
 msgstr "Tamam"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Reconnect"
 msgstr "Bağlan"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "Bu sunucu yeniden bağlanma isteğinde bulundu:"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
@@ -52,27 +51,29 @@ msgstr "Yükleniyor..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "Protokol sürümü uyumsuz. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "Sunucu protokol sürümü $1 istiyor. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "Bu sunucu $1 ve $2 arası tüm protokol sürümlerini destekler. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
+"Sunucu listesini tekrar etkinleştirmeyi deneyin ve internet bağlantınızı "
+"kontrol edin."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "Yalnızca  $1 protokol sürümü desteklenmektedir."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "Yalnızca $1 ve $2 arası protokol sürümleri desteklenmektedir."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua builtin/mainmenu/tab_settings.lua
@@ -101,6 +102,8 @@ msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
+"Geçersiz karakterler içerdiği için \"$1\" modu etkinleştirilemiyor. İzin "
+"verilen karakterler [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -288,9 +291,8 @@ msgid "Previous Contributors"
 msgstr "Katkı sağlayanlar"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Previous Core Developers"
-msgstr "Ana geliştiriciler"
+msgstr "İlk geliştiriciler"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Installed Mods:"
@@ -418,31 +420,29 @@ msgstr "Oyunu Başlat"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "\""
-msgstr ""
+msgstr "\""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(No description of setting given)"
-msgstr ""
+msgstr "(Açıklama bilgisi verilmedi)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Browse"
-msgstr ""
+msgstr "Seç"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
 msgstr "Tuşları değiştir"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Disabled"
 msgstr "Paketi Kapat"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Edit"
-msgstr ""
+msgstr "Düzenle"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Enabled"
 msgstr "Etkinleştirildi"
 
@@ -453,7 +453,6 @@ msgid ""
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Games"
 msgstr "Oyun"
 
