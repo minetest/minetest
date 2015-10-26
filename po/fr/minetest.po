@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-10-26 20:03+0200\n"
+"PO-Revision-Date: 2015-10-26 21:18+0200\n"
 "Last-Translator: Jean-Patrick G. <jeanpatrick.guerrero@gmail.com>\n"
 "Language-Team: French "
 "<https://hosted.weblate.org/projects/minetest/minetest/fr/>\n"
@@ -1319,7 +1319,7 @@ msgstr "Chatter"
 
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
-msgstr "Touche de chat"
+msgstr "Afficher le chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
@@ -1331,7 +1331,7 @@ msgstr "Mode cinématique"
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode key"
-msgstr "Touche du mode cinématique"
+msgstr "Mode cinématique"
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
@@ -1380,7 +1380,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
-msgstr "Touche de commande"
+msgstr "Commande"
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
@@ -1404,7 +1404,7 @@ msgstr "Couleur de la console de jeu"
 
 #: src/settings_translation_file.cpp
 msgid "Console key"
-msgstr "Touche de console de jeu"
+msgstr "Console du jeu"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
@@ -1471,7 +1471,7 @@ msgstr "Activer les dommages"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
-msgstr "Touche d'infos de débogage"
+msgstr "Infos de débogage"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
@@ -1578,7 +1578,7 @@ msgstr "Double-appui sur \"saut\" pour voler."
 
 #: src/settings_translation_file.cpp
 msgid "Drop item key"
-msgstr "Touche pour jeter"
+msgstr "Jeter"
 
 #: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug infos."
@@ -1726,7 +1726,7 @@ msgstr "Taille de la police alternative"
 
 #: src/settings_translation_file.cpp
 msgid "Fast key"
-msgstr "Touche mode rapide"
+msgstr "Mode rapide"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode acceleration"
@@ -1785,7 +1785,7 @@ msgstr "Graine de génération de terrain déterminée"
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
-msgstr "Touche pour voler"
+msgstr "Voler"
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
@@ -1797,7 +1797,7 @@ msgstr "Brume"
 
 #: src/settings_translation_file.cpp
 msgid "Fog toggle key"
-msgstr "Touche pour activer/désactiver la brume"
+msgstr "Brume"
 
 #: src/settings_translation_file.cpp
 msgid "Font path"
@@ -1827,7 +1827,7 @@ msgstr "Taille de la police"
 
 #: src/settings_translation_file.cpp
 msgid "Forward key"
-msgstr "Touche pour avancer"
+msgstr "Avancer"
 
 #: src/settings_translation_file.cpp
 msgid "Freetype fonts"
@@ -1908,7 +1908,7 @@ msgstr "Gravité"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
-msgstr "Touche pour afficher/cacher le HUD"
+msgstr "HUD"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2041,8 +2041,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
 msgstr ""
-"Si paramétré, les joueurs vont toujours réapparaître aux coordonnées "
-"indiquées."
+"Si établi, les joueurs vont toujours réapparaître aux coordonnées indiquées."
 
 #: src/settings_translation_file.cpp
 msgid "Ignore world errors"
@@ -2072,7 +2071,7 @@ msgstr "Intervalle d'envoi de l'heure de jeu aux clients."
 
 #: src/settings_translation_file.cpp
 msgid "Inventory key"
-msgstr "Touche pour l'inventaire"
+msgstr "Inventaire"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
@@ -2088,7 +2087,7 @@ msgstr "Durée d'apparition des items jetés"
 
 #: src/settings_translation_file.cpp
 msgid "Jump key"
-msgstr "Touche pour sauter"
+msgstr "Sauter"
 
 #: src/settings_translation_file.cpp
 msgid "Jumping speed"
@@ -2244,7 +2243,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Touche pour se faufiler.\n"
+"Touche pour se déplacer lentement.\n"
 "Utilisé pour descendre si aux1_descends est désactivé.\n"
 "Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
 "5e3da1b0edf72eb3"
@@ -2362,7 +2361,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Touche pour afficher/cacher la brume.\n"
+"Touche pour afficher/enlever la brume.\n"
 "Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
 "5e3da1b0edf72eb3"
 
@@ -2383,7 +2382,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Touche pour activer/désactiver la distance de vue infinie.\n"
+"Touche pour activer/désactiver la distance de vue illimitée.\n"
 "Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
 "5e3da1b0edf72eb3"
 
@@ -2413,7 +2412,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Left key"
-msgstr "Touche gauche"
+msgstr "Gauche"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2848,7 +2847,7 @@ msgstr "Mini-carte"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap key"
-msgstr "Touche de la mini-carte"
+msgstr "Mini-carte"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap scan height"
@@ -2970,7 +2969,7 @@ msgstr "Sans collision"
 
 #: src/settings_translation_file.cpp
 msgid "Noclip key"
-msgstr "Touche mode sans collision"
+msgstr "Mode sans collision"
 
 #: src/settings_translation_file.cpp
 msgid "Node highlighting"
@@ -3129,16 +3128,17 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Profiler data print interval. 0 = disable. Useful for developers."
 msgstr ""
-"Délais d'affichage des données de profilage. 0 = désactivation.\n"
+"Délais d’intervalle d'affichage du profilage des données. 0 = désactivation."
+"\n"
 "Utile pour les développeurs."
 
 #: src/settings_translation_file.cpp
 msgid "Profiler toggle key"
-msgstr "Touche pour le profilage"
+msgstr "Profilage"
 
 #: src/settings_translation_file.cpp
 msgid "Profiling print interval"
-msgstr ""
+msgstr "Délais d'intervale du profilage"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3146,52 +3146,53 @@ msgid ""
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
 "corners."
 msgstr ""
+"Rayon de l'aire des nuages où se trouve 64 blocs de nuage.\n"
+"Les valeurs plus grandes que 26 entraînent une \"coupure\" nette des nuages "
+"aux coins de l'aire."
 
 #: src/settings_translation_file.cpp
 msgid "Random input"
-msgstr ""
+msgstr "Entrée aléatoire"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Range select key"
-msgstr "Distance d'affichage"
+msgstr "Distance d'affichage illimitée"
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
-msgstr ""
+msgstr "Média distant"
 
 #: src/settings_translation_file.cpp
 msgid "Remote port"
-msgstr ""
+msgstr "Port distant"
 
 #: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
-msgstr ""
+msgstr "Remplace le menu par défaut par un menu personnalisé."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Right key"
-msgstr "Menu droite"
+msgstr "Droite"
 
 #: src/settings_translation_file.cpp
 msgid "Rightclick repetition interval"
-msgstr ""
+msgstr "Intervalle de répétition du clic droit"
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
-msgstr ""
+msgstr "Enregistrement des actions"
 
 #: src/settings_translation_file.cpp
 msgid "Round minimap"
-msgstr ""
+msgstr "Mini-carte circulaire"
 
 #: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
-msgstr ""
+msgstr "Sauvegarde le monde du serveur sur le disque-dur du client."
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
-msgstr ""
+msgstr "Sauvegarder le monde du serveur"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3204,104 +3205,103 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
-msgstr ""
+msgstr "Hauteur de la fenêtre"
 
 #: src/settings_translation_file.cpp
 msgid "Screen width"
-msgstr ""
+msgstr "Largeur de la fenêtre"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot"
 msgstr "Capture d'écran"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
-msgstr ""
+msgstr "Dossier des captures d'écran"
 
 #: src/settings_translation_file.cpp
 msgid "Security"
-msgstr ""
+msgstr "Sécurité"
 
 #: src/settings_translation_file.cpp
 msgid "See http://www.sqlite.org/pragma.html#pragma_synchronous"
-msgstr ""
+msgstr "Voir http://www.sqlite.org/pragma.html#pragma_synchronous"
 
 #: src/settings_translation_file.cpp
 msgid "Selection box border color (R,G,B)."
-msgstr ""
+msgstr "Couleur des bords de sélection (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid "Selection box color"
-msgstr ""
+msgstr "Couleur des bords de sélection"
 
 #: src/settings_translation_file.cpp
 msgid "Selection box width"
-msgstr ""
+msgstr "Epaisseur des bords de sélection"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server / Singleplayer"
-msgstr "Démarrer la partie solo"
+msgstr "Serveur / Partie solo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server URL"
-msgstr "Serveur"
+msgstr "URL du serveur"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server address"
-msgstr "Port du serveur"
+msgstr "Adresse du serveur"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server description"
-msgstr "Port du serveur"
+msgstr "Description du serveur"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server name"
-msgstr "Serveur"
+msgstr "Nom du serveur"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server port"
 msgstr "Port du serveur"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Serverlist URL"
-msgstr "Liste de serveurs publics"
+msgstr "URL de la liste des serveurs publics"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Serverlist file"
-msgstr "Liste de serveurs publics"
+msgstr "Fichier des serveurs publics"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Set the language. Leave empty to use the system language.\n"
 "A restart is required after changing this."
 msgstr ""
+"Défini la langue. Laisser vide pour utiliser celui de votre système.\n"
+"Un redémarrage du jeu est nécessaire pour prendre effet."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true enables waving leaves.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"Défini sur \"true\" active les feuilles d'arbres mouvantes.\n"
+"Nécessite les shaders pour être activé."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true enables waving plants.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"Défini sur \"true\" active les plantes mouvantes.\n"
+"Nécessite les shaders pour être activé."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true enables waving water.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"Défini sur \"true\" active les liquides mouvants.\n"
+"Nécessite les shaders pour être activé."
 
 #: src/settings_translation_file.cpp
 msgid "Shaders"
@@ -3313,27 +3313,29 @@ msgid ""
 "video cards.\n"
 "Thy only work with the OpenGL video backend."
 msgstr ""
+"Les shaders permettent des effets visuels avancés et peut améliorer les "
+"performances sur certaines cartes graphiques.\n"
+"Fonctionne seulement avec OpenGL."
 
 #: src/settings_translation_file.cpp
 msgid "Shape of the minimap. Enabled = round, disabled = square."
-msgstr ""
+msgstr "Forme de la mini-carte. Activé = ronde, désactivé = carré."
 
 #: src/settings_translation_file.cpp
 msgid "Show debug info"
-msgstr ""
+msgstr "Afficher les infos de débogage"
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
-msgstr ""
+msgstr "Message d'arrêt du serveur"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
 "nodes)."
-msgstr ""
+msgstr "Taille des chunks à générer, établie en mapblocks (16^3 blocs)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Smooth lighting"
 msgstr "Lumière douce"
 
@@ -3342,23 +3344,24 @@ msgid ""
 "Smooths camera when moving and looking arround.\n"
 "Useful for recording videos."
 msgstr ""
+"Lisse les mouvement de la caméra en se déplaçant et en regardant autour.\n"
+"Utile pour enregistrer des vidéos."
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera in cinematic mode. 0 to disable."
-msgstr ""
+msgstr "Lisse la rotation de la caméra en mode cinématique. 0 pour désactiver."
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera. 0 to disable."
-msgstr ""
+msgstr "Lisse la rotation de la caméra. 0 pour désactiver."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Sneak key"
-msgstr "Marcher"
+msgstr "Déplacement lent"
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
-msgstr ""
+msgstr "Audio"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3367,32 +3370,36 @@ msgid ""
 "(obviously, remote_media should end with a slash).\n"
 "Files that are not present will be fetched the usual way."
 msgstr ""
+"Spécifie l'URL à laquelle les clients obtiennent les fichiers média au lieu "
+"d'utiliser le port UDP.\n"
+"$filename doit être accessible depuis $remote_media$filename via cURL ("
+"évidemment, remote_media devrait\n"
+"se terminer avec un slash).\n"
+"Les fichiers qui ne sont pas présents seront obtenus avec le moyen usuel."
 
 #: src/settings_translation_file.cpp
 msgid "Static spawnpoint"
-msgstr ""
+msgstr "Emplacement du spawn"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Strength of generated normalmaps."
-msgstr "Normal mapping"
+msgstr "Force des normalmaps autogénérés."
 
 #: src/settings_translation_file.cpp
 msgid "Strength of parallax."
-msgstr ""
+msgstr "Force de l'occlusion parallaxe."
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
-msgstr ""
+msgstr "Vérification stricte du protocole"
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
-msgstr ""
+msgstr "SQLite synchronisé"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Texture path"
-msgstr "Packs de textures"
+msgstr "Chemin des textures"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3400,20 +3407,25 @@ msgid ""
 "Set this to be equal to viewing range minimum to disable the auto-adjustment "
 "algorithm."
 msgstr ""
+"Distance d'affichage maximum.\n"
+"Définir cette valeur égale à la distance de vue minimum pour désactiver\n"
+"l'auto-ajustement dynamique de la distance d'affichage."
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
-msgstr ""
+msgstr "L'interface réseau que le serveur écoute."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The privileges that new users automatically get.\n"
 "See /privs in game for a full list on your server and mod configuration."
 msgstr ""
+"Les privilèges que les nouveaux joueurs obtiennent automatiquement.\n"
+"Entrer /privs dans le jeu pour voir une liste complète des privilèges."
 
 #: src/settings_translation_file.cpp
 msgid "The rendering back-end for Irrlicht."
-msgstr ""
+msgstr "Le pilote vidéo pour Irrlicht."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3435,24 +3447,28 @@ msgid ""
 "The time in seconds it takes between repeated right clicks when holding the "
 "right mouse button."
 msgstr ""
+"L'intervalle en secondes entre des clics droits répétés lors de l'appui sur "
+"le bouton droit de la souris."
 
 #: src/settings_translation_file.cpp
 msgid "This font will be used for certain languages."
-msgstr ""
+msgstr "Cette police sera utilisée pour certaines langues."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
 msgstr ""
+"Durée d'apparition des objets jetés.\n"
+"Définir ceci à -1 pour désactiver cette fonctionnalité."
 
 #: src/settings_translation_file.cpp
 msgid "Time send interval"
-msgstr ""
+msgstr "Intervalle d'envoi du temps"
 
 #: src/settings_translation_file.cpp
 msgid "Time speed"
-msgstr ""
+msgstr "Vitesse du temps"
 
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory."
@@ -3468,7 +3484,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
-msgstr ""
+msgstr "Changer de caméra"
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
@@ -3519,9 +3535,8 @@ msgid "Use bilinear filtering when scaling textures."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use key"
-msgstr "appuyez sur une touche"
+msgstr "Utiliser"
 
 #: src/settings_translation_file.cpp
 msgid "Use mip mapping to scale textures. May slightly increase performance."
@@ -3558,11 +3573,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "View range decrease key"
-msgstr ""
+msgstr "Réduire la distance d'affichage"
 
 #: src/settings_translation_file.cpp
 msgid "View range increase key"
-msgstr ""
+msgstr "Augmenter la distance d'affichage"
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range maximum"
