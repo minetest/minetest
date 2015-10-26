@@ -183,8 +183,7 @@ int main(int argc, char *argv[])
 #ifndef __ANDROID__
 	// Run unit tests
 	if (cmd_args.getFlag("run-unittests")) {
-		run_tests();
-		return 0;
+		return run_tests();
 	}
 #endif
 

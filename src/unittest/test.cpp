@@ -215,7 +215,7 @@ void TestGameDef::defineSomeNodes()
 //// run_tests
 ////
 
-void run_tests()
+bool run_tests()
 {
 	DSTACK(FUNCTION_NAME);
 
@@ -253,8 +253,7 @@ void run_tests()
 		<< "++++++++++++++++++++++++++++++++++++++++"
 		<< "++++++++++++++++++++++++++++++++++++++++" << std::endl;
 
-	if (num_modules_failed)
-		abort();
+	return num_modules_failed;
 }
 
 ////

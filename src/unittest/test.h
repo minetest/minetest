@@ -142,6 +142,6 @@ extern content_t t_CONTENT_WATER;
 extern content_t t_CONTENT_LAVA;
 extern content_t t_CONTENT_BRICK;
 
-void run_tests();
+bool run_tests();
 
 #endif
