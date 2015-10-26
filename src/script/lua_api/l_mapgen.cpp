@@ -493,7 +493,7 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
 	Mapgen *mg = emerge->getCurrentMapgen();
 	if (!mg)
-		return 0;
+		throw LuaError("Must only be called in a mapgen thread!");
 
 	size_t maplen = mg->csize.X * mg->csize.Z;
 
