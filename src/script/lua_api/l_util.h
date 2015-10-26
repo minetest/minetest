@@ -41,6 +41,9 @@ private:
 	// The two-argument version accept a log level: error, action, info, or verbose.
 	static int l_log(lua_State *L);
 
+	// get us precision time
+	static int l_get_us_time(lua_State *L);
+
 	// setting_set(name, value)
 	static int l_setting_set(lua_State *L);
 

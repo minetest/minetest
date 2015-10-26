@@ -938,14 +938,6 @@ int ModApiEnvMod::l_forceload_free_block(lua_State *L)
 	return 0;
 }
 
-// get_us_time()
-int ModApiEnvMod::l_get_us_time(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	lua_pushnumber(L, porting::getTimeUs());
-	return 1;
-}
-
 void ModApiEnvMod::Initialize(lua_State *L, int top)
 {
 	API_FCT(set_node);
@@ -987,5 +979,4 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(transforming_liquid_add);
 	API_FCT(forceload_block);
 	API_FCT(forceload_free_block);
-	API_FCT(get_us_time);
 }
