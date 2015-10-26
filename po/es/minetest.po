@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-10-04 12:36+0200\n"
-"Last-Translator: OdnetninI <odnetnininds@gmail.com>\n"
-"Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
-"minetest/es/>\n"
+"PO-Revision-Date: 2015-10-26 07:09+0200\n"
+"Last-Translator: Jordi Fornaguera <furniman@terra.com>\n"
+"Language-Team: Spanish "
+"<https://hosted.weblate.org/projects/minetest/minetest/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -68,7 +68,7 @@ msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "Sólo soportamos protocolos versión $1"
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
