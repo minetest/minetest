@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-10-24 20:28+0200\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2015-10-26 16:22+0200\n"
+"Last-Translator: ChaosWormz <chaoswormz@openmailbox.org>\n"
+"Language-Team: Hebrew "
+"<https://hosted.weblate.org/projects/minetest/minetest/he/>\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2.5-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
@@ -23,11 +25,11 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr ""
+msgstr "תפריט ראשי"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr ""
+msgstr "התחבר מחדש"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -35,15 +37,15 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
-msgstr ""
+msgstr "התרחשה שגיאה:"
 
 #: builtin/fstk/ui.lua builtin/mainmenu/store.lua
 msgid "Ok"
-msgstr ""
+msgstr "אישור"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
-msgstr ""
+msgstr "טוען..."
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -71,34 +73,36 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
-msgstr ""
+msgstr "עולם:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
-msgstr ""
+msgstr "הסתר משחק"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide mp content"
 msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid "Mod:"
-msgstr ""
+msgstr "מוד:"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_mods.lua
+#, fuzzy
 msgid "Depends:"
-msgstr ""
+msgstr "תלוי ב:"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_settings.lua
 #: src/guiKeyChangeMenu.cpp
 msgid "Save"
-msgstr ""
+msgstr "שמור"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua builtin/mainmenu/tab_settings.lua
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Cancel"
-msgstr ""
+msgstr "ביטול"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable MP"
@@ -109,12 +113,14 @@ msgid "Disable MP"
 msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid "enabled"
-msgstr ""
+msgstr "מופעל"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid "Enable all"
-msgstr ""
+msgstr "אפשר בכל"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -124,7 +130,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
-msgstr ""
+msgstr "שם העולם"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
@@ -136,11 +142,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
-msgstr ""
+msgstr "משחק"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr ""
+msgstr "ליצור"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no subgames installed."
@@ -168,15 +174,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "האם ברצונך למחוק את  \"$1\"?"
 
 #: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
 msgid "Yes"
-msgstr ""
+msgstr "כן"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "No of course not!"
-msgstr ""
+msgstr "לא ברור שלא!"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: failed to delete \"$1\""
@@ -188,19 +194,20 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr ""
+msgstr "למחוק עולם \"$1\"?"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "No"
-msgstr ""
+msgstr "לא"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
 msgstr ""
 
 #: builtin/mainmenu/dlg_rename_modpack.lua src/keycode.cpp
+#, fuzzy
 msgid "Accept"
-msgstr ""
+msgstr "קבל"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: file: \"$1\""
@@ -230,7 +237,7 @@ msgstr ""
 
 #: builtin/mainmenu/store.lua
 msgid "Search"
-msgstr ""
+msgstr "חפש"
 
 #: builtin/mainmenu/store.lua
 msgid "Downloading $1, please wait..."
@@ -238,23 +245,23 @@ msgstr ""
 
 #: builtin/mainmenu/store.lua
 msgid "Successfully installed:"
-msgstr ""
+msgstr "הותקן בהצלחה:"
 
 #: builtin/mainmenu/store.lua
 msgid "Shortname:"
-msgstr ""
+msgstr "שם קצר:"
 
 #: builtin/mainmenu/store.lua
 msgid "Rating"
-msgstr ""
+msgstr "דירוג"
 
 #: builtin/mainmenu/store.lua
 msgid "re-Install"
-msgstr ""
+msgstr "התקן מחדש"
 
 #: builtin/mainmenu/store.lua
 msgid "Install"
-msgstr ""
+msgstr "החקן"
 
 #: builtin/mainmenu/store.lua
 msgid "Close store"
@@ -350,8 +357,9 @@ msgid "PvP enabled"
 msgstr ""
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
+#, fuzzy
 msgid "Client"
-msgstr ""
+msgstr "קלינט"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "New"
@@ -487,7 +495,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
-msgstr ""
+msgstr "הגדרות"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Start Singleplayer"
@@ -507,7 +515,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Singleplayer"
-msgstr ""
+msgstr "שחקן יחיד"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
