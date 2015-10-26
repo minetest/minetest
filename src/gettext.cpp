@@ -160,7 +160,7 @@ void init_gettext(const char *path, const std::string &configured_language,
 
 			// Allow calling without an extension
 			std::string app_name = argv[0];
-			if (app_name.compare(appname.size() - 4, 4, ".exe") != 0)
+			if (app_name.compare(app_name.size() - 4, 4, ".exe") != 0)
 				app_name += ".exe";
 
 			STARTUPINFO startup_info = {0};
@@ -246,4 +246,3 @@ void init_gettext(const char *path, const std::string &configured_language,
 	infostream << "Message locale is now set to: "
 			<< setlocale(LC_ALL, 0) << std::endl;
 }
-
