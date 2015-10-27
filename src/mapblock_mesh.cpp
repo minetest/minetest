@@ -335,12 +335,17 @@ u16 getSmoothLight(v3s16 p, v3s16 corner, MeshMakeData *data)
 void finalColorBlend(video::SColor& result,
 		u8 day, u8 night, u32 daynight_ratio)
 {
-	s32 rg = (day * daynight_ratio + night * (1000-daynight_ratio)) / 1000;
-	s32 b = rg;
+	s32 r = (day * daynight_ratio + night * (1000-daynight_ratio)) / 1000;
+	s32 g = r;
+	s32 b = r;
 
 	// Moonlight is blue
 	b += (day - night) / 13;
-	rg -= (day - night) / 23;
+	r -= (day - night) / 23;
+
+	// Morning/Afternoon is red
+	g -= MYMAX(0, 100 - abs(daynight_ratio - 500)) / 4;
+	b -= MYMAX(0, 100 - abs(daynight_ratio - 500)) / 4;
 
 	// Emphase blue a bit in darker places
 	// Each entry of this array represents a range of 8 blue levels
@@ -355,11 +360,14 @@ void finalColorBlend(video::SColor& result,
 	static const u8 emphase_yellow_when_artificial[16] = {
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 10, 15, 15, 15
 	};
-	rg += emphase_yellow_when_artificial[night/16];
-	rg = irr::core::clamp(rg, 0, 255);
 
-	result.setRed(rg);
-	result.setGreen(rg);
+	r += emphase_yellow_when_artificial[night/16];
+	r = irr::core::clamp(r, 0, 255);
+	g += emphase_yellow_when_artificial[night/16];
+	g = irr::core::clamp(g, 0, 255);
+
+	result.setRed(r);
+	result.setGreen(g);
 	result.setBlue(b);
 }
 
