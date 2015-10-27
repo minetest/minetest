@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef BASICMACROS_HEADER
 #define BASICMACROS_HEADER
 
+#include <algorithm>
+
 #define ARRLEN(x) (sizeof(x) / sizeof((x)[0]))
 
 #define MYMIN(a, b) ((a) < (b) ? (a) : (b))
