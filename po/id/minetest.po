@@ -8,9 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-10-25 10:46+0200\n"
-"Last-Translator: Muhammad Rifqi Priyo Susanto "
-"<muhammadrifqipriyosusanto@gmail.com>\n"
+"PO-Revision-Date: 2015-10-27 16:45+0200\n"
+"Last-Translator: PilzAdam <PilzAdam@minetest.net>\n"
 "Language-Team: Indonesian "
 "<https://hosted.weblate.org/projects/minetest/minetest/id/>\n"
 "Language: id\n"
@@ -604,7 +603,7 @@ msgstr "Jalur dunia yang diberikan tidak ada: "
 
 #: src/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr "needs_fallback_font"
+msgstr "no"
 
 #: src/game.cpp
 msgid ""
