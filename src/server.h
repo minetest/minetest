@@ -220,8 +220,10 @@ public:
 
 	void Send(NetworkPacket* pkt);
 
-	// Environment must be locked when called
+	// Both setter and getter need no envlock,
+	// can be called freely from threads
 	void setTimeOfDay(u32 time);
+	inline u32 getTimeOfDay();
 
 	/*
 		Shall be called with the environment locked.
