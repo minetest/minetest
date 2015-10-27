@@ -649,6 +649,8 @@ private:
 		Particles
 	*/
 	std::vector<u32> m_particlespawner_ids;
+
+	DISABLE_CLASS_COPY(Server);
 };
 
 /*

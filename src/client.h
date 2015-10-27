@@ -682,6 +682,8 @@ private:
 	// TODO: Add callback to update these when g_settings changes
 	bool m_cache_smooth_lighting;
 	bool m_cache_enable_shaders;
+
+	DISABLE_CLASS_COPY(Client);
 };
 
 #endif // !CLIENT_HEADER

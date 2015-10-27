@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <semaphore.h>
 #endif
 
+#include "basicmacros.h"
 
 class Semaphore {
 public:
@@ -46,6 +47,8 @@ private:
 #else
 	sem_t semaphore;
 #endif
+
+	DISABLE_CLASS_COPY(Semaphore);
 };
 
 #endif

@@ -90,6 +90,9 @@ protected:
 	INodeDefManager *m_ndef;
 	std::vector<ObjDef *> m_objects;
 	ObjDefType m_objtype;
+
+private:
+	DISABLE_CLASS_COPY(ObjDefManager);
 };
 
 #endif

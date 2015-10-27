@@ -137,6 +137,7 @@ protected:
 private:
 	Mutex m_time_lock;
 
+	DISABLE_CLASS_COPY(Environment);
 };
 
 /*

@@ -44,6 +44,7 @@ DEALINGS IN THE SOFTWARE.
 	#include <pthread.h>
 #endif
 
+#include "basicmacros.h"
 
 class Mutex
 {
@@ -59,6 +60,8 @@ private:
 #else // pthread
 	pthread_mutex_t mutex;
 #endif
+
+	DISABLE_CLASS_COPY(Mutex);
 };
 
 #endif  // C++11

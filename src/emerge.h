@@ -164,6 +164,8 @@ private:
 	bool popBlockEmergeData(v3s16 pos, BlockEmergeData *bedata);
 
 	friend class EmergeThread;
+
+	DISABLE_CLASS_COPY(EmergeManager);
 };
 
 #endif

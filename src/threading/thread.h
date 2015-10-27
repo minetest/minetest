@@ -161,6 +161,7 @@ private:
 	std::thread *m_thread_obj;
 #endif
 
+	DISABLE_CLASS_COPY(Thread);
 };
 
 #endif
