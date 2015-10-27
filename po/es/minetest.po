@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-10-27 16:46+0200\n"
-"Last-Translator: PilzAdam <PilzAdam@minetest.net>\n"
+"PO-Revision-Date: 2015-10-27 19:39+0200\n"
+"Last-Translator: ShadowNinja <shadowninja@minetest.net>\n"
 "Language-Team: Spanish "
 "<https://hosted.weblate.org/projects/minetest/minetest/es/>\n"
 "Language: es\n"
@@ -433,7 +433,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Browse"
-msgstr ""
+msgstr "Navegar"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
@@ -446,7 +446,7 @@ msgstr "Desactivar paquete"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Edit"
-msgstr ""
+msgstr "Editar"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -460,9 +460,8 @@ msgid ""
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Games"
-msgstr "Juego"
+msgstr "Juegos"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
