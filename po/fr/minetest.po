@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-10-26 21:18+0200\n"
+"PO-Revision-Date: 2015-10-27 15:21+0200\n"
 "Last-Translator: Jean-Patrick G. <jeanpatrick.guerrero@gmail.com>\n"
 "Language-Team: French "
 "<https://hosted.weblate.org/projects/minetest/minetest/fr/>\n"
@@ -672,6 +672,15 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
+"Touches par défaut :\n"
+"Sans menu visible :\n"
+"- un seul appui : touche d'activation\n"
+"- double-appui : placement / utilisation\n"
+"- Glissement du doigt : regarder autour\n"
+"Menu visible :\n"
+"- double-appui (en dehors) : fermeture\n"
+"- objet(s) dans l'inventaire : déplacement\n"
+"- appui et glissement : placement d'un seul item par slot\n"
 
 #: src/game.cpp
 msgid "Exit to Menu"
@@ -1522,7 +1531,7 @@ msgstr "Niveau de lissage des normal maps."
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
-"Définit la distance maximale de transfert du joueur en mapblocks (0 = "
+"Défini la distance maximale de transfert du joueur en mapblocks (0 = "
 "illimité)."
 
 #: src/settings_translation_file.cpp
@@ -1597,9 +1606,8 @@ msgid "Enable players getting damage and dying."
 msgstr "Activer les dommages et la mort des joueurs."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable random user input (only used for testing)."
-msgstr ""
+msgstr "Active l'entrée aléatoire du joueur (seulement utilisé pour des tests)."
 
 #: src/settings_translation_file.cpp
 msgid "Enable selection highlighting for nodes (disables selectionbox)."
@@ -1945,6 +1953,9 @@ msgid ""
 "mapblocks (16 nodes).\n"
 "In active blocks objects are loaded and ABMs run."
 msgstr ""
+"Largeur des aires de mapblocks qui sont sujets à être gardé actifs, établie "
+"en mapblocks (16^3 blocs).\n"
+"Les mapblocks actifs sont chargés et les ABMs y sont actifs."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2324,6 +2335,10 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Touche de mise à jour de la caméra. Seulement utilisé pour le développement."
+"\n"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
+"5e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2442,7 +2457,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Limit of emerge queues on disk"
-msgstr "Limite de files émergentes sur le disque-dur."
+msgstr "Limite de files émergentes sur le disque"
 
 #: src/settings_translation_file.cpp
 msgid "Limit of emerge queues to generate"
@@ -2476,11 +2491,11 @@ msgstr "Itérations maximum sur la transformation des liquides"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid queue purge time"
-msgstr ""
+msgstr "Délais de nettoyage d'une file"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid sink"
-msgstr ""
+msgstr "Facteur d'écoulement des liquides"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update interval in seconds."
@@ -2556,15 +2571,15 @@ msgstr "Délais d'interruption du déchargement des mapblocks"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome heat noise parameters"
-msgstr ""
+msgstr "Mapgen : paramètres de dispersion de la température"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome humidity blend noise parameters"
-msgstr ""
+msgstr "Mapgen : paramètres de mélange de l'humidité"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome humidity noise parameters"
-msgstr ""
+msgstr "Mapgen : paramètres de dispersion de l'humidité"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen debug"
@@ -2576,7 +2591,7 @@ msgstr "Drapeaux de génération de terrain"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen heat blend noise parameters"
-msgstr ""
+msgstr "Mapgen : paramètres de mélange de la température"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen name"
@@ -2612,31 +2627,31 @@ msgstr "Mapgen V6"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 apple trees noise parameters"
-msgstr ""
+msgstr "Mapgen V6 : paramètres de dispersion des arbres à pommes"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 beach frequency"
-msgstr ""
+msgstr "Mapgen V6 : fréquence des plages"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 beach noise parameters"
-msgstr ""
+msgstr "Mapgen V6 : paramètres de dispersion des plages"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 biome noise parameters"
-msgstr ""
+msgstr "Mapgen V6 : paramètres de dispersion des biomes"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 cave noise parameters"
-msgstr ""
+msgstr "Mapgen V6 : paramètres de dispersion des caves"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 desert frequency"
-msgstr ""
+msgstr "Mapgen V6 : fréquence des déserts"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 flags"
-msgstr ""
+msgstr "Mapgen V6 : drapeaux"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 height select noise parameters"
@@ -2644,11 +2659,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 humidity noise parameters"
-msgstr ""
+msgstr "Mapgen V6 : paramètres de dispersion de l'humidité"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 mud noise parameters"
-msgstr ""
+msgstr "Mapgen V6 : paramètres de dispersion de la vase"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 steepness noise parameters"
@@ -2656,7 +2671,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 terrain altitude noise parameters"
-msgstr ""
+msgstr "Mapgen V6 : paramètres de dispersion de l'altitude du terrain"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 terrain base noise parameters"
@@ -2664,7 +2679,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 trees noise parameters"
-msgstr ""
+msgstr "Mapgen V6 : paramètres de dispersion des arbres"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7"
@@ -2684,7 +2699,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 flags"
-msgstr ""
+msgstr "Mapgen V7 : drapeaux"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 height select noise parameters"
@@ -2696,19 +2711,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 mountain noise parameters"
-msgstr ""
+msgstr "Mapgen V7 : paramètres de dispersion des montagnes"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 ridge noise parameters"
-msgstr ""
+msgstr "Mapgen V7 : paramètres de dispersion des crêtes"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 ridge water noise parameters"
-msgstr ""
+msgstr "Mapgen V7 : paramètres de dispersion des crêtes de rivières"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 terrain altitude noise parameters"
-msgstr ""
+msgstr "Mapgen V7 : paramètres de dispersion de l'altitude de terrain"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 terrain base noise parameters"
@@ -2732,7 +2747,7 @@ msgstr "Maximum de liquides traités par étape de serveur."
 
 #: src/settings_translation_file.cpp
 msgid "Max. clearobjects extra blocks"
-msgstr ""
+msgstr "Maximum d'extra-mapblocks par clearobjects"
 
 #: src/settings_translation_file.cpp
 msgid "Max. packets per iteration"
@@ -2748,7 +2763,7 @@ msgstr "FPS maximum quand le jeu est en pause."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
-msgstr ""
+msgstr "Maximum de mapblocks chargés de force"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
@@ -2756,29 +2771,36 @@ msgstr "Largeur maximale de la barre d'inventaire"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that can be queued for loading."
-msgstr ""
+msgstr "Nombre maximum de mapblocks qui peuvent être listés pour chargement."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of blocks to be queued that are to be generated.\n"
 "Set to blank for an appropriate amount to be chosen automatically."
 msgstr ""
+"Nombre maximum de mapblocks à lister qui doivent être générés.\n"
+"Laisser ce champ vide pour un montant approprié défini automatiquement."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
 "Set to blank for an appropriate amount to be chosen automatically."
 msgstr ""
+"Nombre maximum de mapblocks à lister qui doivent être générés depuis un "
+"fichier.\n"
+"Laisser ce champ vide pour un montant approprié défini automatiquement."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
-msgstr ""
+msgstr "Nombre maximum de mapblocks chargés de force."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
 msgstr ""
+"Nombre maximum de mapblocks gardés dans la mémoire du client.\n"
+"Définir à -1 pour un montant illimité."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2786,14 +2808,19 @@ msgid ""
 "try reducing it, but don't reduce it to a number below double of targeted\n"
 "client number."
 msgstr ""
+"Nombre maximum de paquets envoyés par étape d'envoi. Si vous avez une "
+"connexion lente,\n"
+"essayez de réduire cette valeur, mais réduisez pas cette valeur en-dessous "
+"du double du nombre\n"
+"de clients maximum sur le serveur."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of players that can connect simultaneously."
-msgstr ""
+msgstr "Nombre maximum de joueurs qui peuvent être connectés en même temps."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of statically stored objects in a block."
-msgstr ""
+msgstr "Nombre maximum d'objets sauvegardés dans un mapblock (= 16^3 blocs)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2908,6 +2935,8 @@ msgid ""
 "Multiplier for fall bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
 msgstr ""
+"Facteur de mouvement de bras en tombant.\n"
+"Exemples : 0 = aucun mouvement, 1 = normal, 2 = double."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2978,14 +3007,15 @@ msgstr "Eclairage des blocs"
 #: src/settings_translation_file.cpp
 msgid "Noise parameters for biome API temperature, humidity and biome blend."
 msgstr ""
+"Paramètres de mélange pour la température, humidité et mélange de biomes."
 
 #: src/settings_translation_file.cpp
 msgid "Normalmaps sampling"
-msgstr ""
+msgstr "Échantillonnage de normalmaps"
 
 #: src/settings_translation_file.cpp
 msgid "Normalmaps strength"
-msgstr ""
+msgstr "Force des normalmaps"
 
 #: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
@@ -3202,6 +3232,12 @@ msgid ""
 "pixels when scaling down, at the cost of blurring some\n"
 "edge pixels when images are scaled by non-integer sizes."
 msgstr ""
+"Mise à l'échelle du GUI par une valeur spécifique de l'utilisateur.\n"
+"Cela va lisser certains bords grossiers, et mélanger les pixels en réduisant "
+"l'échelle\n"
+"au détriment d'un effet de flou sur des pixels en bordure quand les images "
+"sont\n"
+"misent à l'échelle par des valeurs non-entières."
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
@@ -3276,7 +3312,7 @@ msgid ""
 "Set the language. Leave empty to use the system language.\n"
 "A restart is required after changing this."
 msgstr ""
-"Défini la langue. Laisser vide pour utiliser celui de votre système.\n"
+"Détermine la langue. Laisser vide pour utiliser celui de votre système.\n"
 "Un redémarrage du jeu est nécessaire pour prendre effet."
 
 #: src/settings_translation_file.cpp
@@ -3284,7 +3320,7 @@ msgid ""
 "Set to true enables waving leaves.\n"
 "Requires shaders to be enabled."
 msgstr ""
-"Défini sur \"true\" active les feuilles d'arbres mouvantes.\n"
+"Mettre sur \"true\" active les feuilles d'arbres mouvantes.\n"
 "Nécessite les shaders pour être activé."
 
 #: src/settings_translation_file.cpp
@@ -3292,7 +3328,7 @@ msgid ""
 "Set to true enables waving plants.\n"
 "Requires shaders to be enabled."
 msgstr ""
-"Défini sur \"true\" active les plantes mouvantes.\n"
+"Mettre sur \"true\" active les plantes mouvantes.\n"
 "Nécessite les shaders pour être activé."
 
 #: src/settings_translation_file.cpp
@@ -3300,7 +3336,7 @@ msgid ""
 "Set to true enables waving water.\n"
 "Requires shaders to be enabled."
 msgstr ""
-"Défini sur \"true\" active les liquides mouvants.\n"
+"Mettre sur \"true\" active les liquides mouvants.\n"
 "Nécessite les shaders pour être activé."
 
 #: src/settings_translation_file.cpp
@@ -3434,6 +3470,12 @@ msgid ""
 "setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
 "set to the nearest valid value."
 msgstr ""
+"Force (obscurité) de l'ombrage des blocs avec l'occlusion ambiante.\n"
+"Les valeurs plus basses sont plus sombres, les valeurs plus hautes sont plus "
+"claires.\n"
+"Une gamme valide de valeurs pour ceci se situe entre 0.25 et 4.0. Si la "
+"valeur est en dehors\n"
+"de cette gamme alors elle sera définie à la plus proche des valeurs valides."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3441,6 +3483,11 @@ msgid ""
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
 msgstr ""
+"Le temps (en secondes) où la file des liquides peut s'agrandir au-delà de "
+"sa\n"
+"capacité de traitement jusqu'à ce qu'une tentative est faite pour réduire sa "
+"taille en vidant\n"
+"l'ancienne file d'items. Une valeur de 0 désactive cette fonctionnalité."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3459,7 +3506,7 @@ msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
 msgstr ""
-"Durée d'apparition des objets jetés.\n"
+"Durée de visibilité des objets jetés.\n"
 "Définir ceci à -1 pour désactiver cette fonctionnalité."
 
 #: src/settings_translation_file.cpp
@@ -3473,6 +3520,8 @@ msgstr "Vitesse du temps"
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory."
 msgstr ""
+"Temps de délais pour le client pour supprimer les données de la carte de sa "
+"mémoire."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3481,6 +3530,11 @@ msgid ""
 "This determines how long they are slowed down after placing or removing a "
 "node."
 msgstr ""
+"Pour réduire le lag, le transfert des mapblocks sont ralentis quand un "
+"joueur\n"
+"est en train de construire quelque chose.\n"
+"Cela détermine la durée du ralentissement après placement ou destruction "
+"d'un bloc."
 
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
@@ -3488,10 +3542,9 @@ msgstr "Changer de caméra"
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
-msgstr ""
+msgstr "Délais d'apparition des infobulles"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Trilinear filtering"
 msgstr "Filtrage trilinéaire"
 
@@ -3501,38 +3554,42 @@ msgid ""
 "False = 128\n"
 "Useable to make minimap smoother on slower machines."
 msgstr ""
+"True = 256\n"
+"False = 128\n"
+"Utile pour rendre la mini-carte plus fluide sur des ordinateurs peu "
+"performants."
 
 #: src/settings_translation_file.cpp
 msgid "Trusted mods"
-msgstr ""
+msgstr "Mods sécurisés"
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
-msgstr ""
+msgstr "URL de la liste des serveurs affichée dans l'onglet multijoueur."
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
-msgstr ""
+msgstr "Distance de transfert du joueur illimitée"
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
-msgstr ""
+msgstr "Décharger les données de serveur inutiles"
 
 #: src/settings_translation_file.cpp
 msgid "Use 3D cloud look instead of flat."
-msgstr ""
+msgstr "Activation des nuages 3D au lieu des nuages 2D (plats)."
 
 #: src/settings_translation_file.cpp
 msgid "Use a cloud animation for the main menu background."
-msgstr ""
+msgstr "Mouvement des nuages dans le menu."
 
 #: src/settings_translation_file.cpp
 msgid "Use anisotropic filtering when viewing at textures from an angle."
-msgstr ""
+msgstr "Utilisation du filtrage anisotrope."
 
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
-msgstr ""
+msgstr "Utilisation du filtrage bilinéaire."
 
 #: src/settings_translation_file.cpp
 msgid "Use key"
@@ -3540,36 +3597,35 @@ msgstr "Utiliser"
 
 #: src/settings_translation_file.cpp
 msgid "Use mip mapping to scale textures. May slightly increase performance."
-msgstr ""
+msgstr "Utilisation du mip-mapping. Peut impacter les performances."
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
-msgstr ""
+msgstr "Utilisation du filtrage trilinéaire."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Useful for mod developers."
-msgstr "Anciens développeurs"
+msgstr "Utile pour les développeurs de mods."
 
 #: src/settings_translation_file.cpp
 msgid "V-Sync"
-msgstr ""
+msgstr "Synchronisation verticale"
 
 #: src/settings_translation_file.cpp
 msgid "Vertical initial window size."
-msgstr ""
+msgstr "Largeur initiale de la fenêtre de jeu."
 
 #: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
-msgstr ""
+msgstr "Synchronisation verticale de la fenêtre de jeu."
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
-msgstr ""
+msgstr "Pilote vidéo"
 
 #: src/settings_translation_file.cpp
 msgid "View bobbing"
-msgstr ""
+msgstr "Mouvement du bras"
 
 #: src/settings_translation_file.cpp
 msgid "View range decrease key"
@@ -3581,68 +3637,59 @@ msgstr "Augmenter la distance d'affichage"
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range maximum"
-msgstr ""
+msgstr "Distance de vue maximum"
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range minimum"
-msgstr ""
+msgstr "Distance de vue minimum"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volume"
 msgstr "Volume du son"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Walking speed"
-msgstr "Feuilles mouvantes"
+msgstr "Vitesse de marche"
 
 #: src/settings_translation_file.cpp
 msgid "Wanted FPS"
-msgstr ""
+msgstr "FPS minimum"
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
-msgstr ""
+msgstr "Niveau de l'eau"
 
 #: src/settings_translation_file.cpp
 msgid "Water surface level of the world."
-msgstr ""
+msgstr "Niveau de la surface de l'eau dans le monde."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving Nodes"
-msgstr "Feuilles mouvantes"
+msgstr "Environnement mouvant"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving leaves"
-msgstr "Feuilles mouvantes"
+msgstr "Feuilles d'arbres mouvantes"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving plants"
 msgstr "Plantes mouvantes"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water"
 msgstr "Liquides mouvants"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water height"
-msgstr "Liquides mouvants"
+msgstr "Hauteur des liquides mouvants"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water length"
-msgstr "Liquides mouvants"
+msgstr "Durée du mouvement des liquides"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water speed"
-msgstr "Liquides mouvants"
+msgstr "Vitesse de mouvement des liquides"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3650,6 +3697,9 @@ msgid ""
 "filtered in software, but some images are generated directly\n"
 "to hardware (e.g. render-to-texture for nodes in inventory)."
 msgstr ""
+"Quand gui_scaling_filter est activé, tous les images du GUI sont\n"
+"filtrées dans Minetest, mais quelques images sont générées directement\n"
+"par le matériel (ex.: textures des blocs dans l'inventaire)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3658,6 +3708,11 @@ msgid ""
 "to the old scaling method, for video drivers that don't\n"
 "propery support downloading textures back from hardware."
 msgstr ""
+"Quand gui_scaling_filter_txr2img est activé, cela copie les images depuis\n"
+"votre matériel vers Minetest pour mise à l'échelle. Si désactivé, retour à "
+"la méthode par défaut\n"
+"pour les pilotes vidéo qui ne supportent pas le chargement des textures "
+"depuis le matériel."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3669,6 +3724,19 @@ msgid ""
 "have a visible effect unless bilinear/trilinear/anisotropic filtering is\n"
 "enabled."
 msgstr ""
+"En utilisant le filtrage bilinéaire / trilinéaire / anisotrope, les textures "
+"de basse résolution\n"
+"peuvent être floues en agrandissat automatiquement les textures avec une "
+"interpolation précise\n"
+"pour préserver les pixels hasardeux.\n"
+"\n"
+"Ceci détermine la taille de la texture minimale pour les textures agrandie. "
+"Les valeurs plus hautes rendent\n"
+"les textures plus détaillées, mais nécessitent plus de mémoire.\n"
+"Les valeurs en puissance de 2 sont recommandées. Définir une valeur "
+"supérieure à 1 peut ne pas\n"
+"avoir un effet visible sauf le filtrage bilinéaire / trilinéaire / "
+"anisotrope est activé."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3679,50 +3747,69 @@ msgid ""
 "-    Those groups have an offset of -32, -32 nodes from the origin.\n"
 "-    Only groups which are within the map_generation_limit are generated"
 msgstr ""
+"Limite de la génération de terrain.\n"
+"Notes :\n"
+"-  Limite absolue à 31000 (une valeur supérieure n'a aucun effet).\n"
+"-  La génération de terrain fonctionne par groupes de 80^3 blocs (= 5^3 "
+"mapblocks).\n"
+"-  Ces groupes ont un décalage de -32, -32 blocs depuis leur origine.\n"
+"-  Seuls les groupes intégrant les limites définies par map_generation_limit "
+"sont générées"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether freetype fonts are used, requires freetype support to be compiled in."
 msgstr ""
+"Détermine l'utilisation des polices Freetype. Nécessite une compilation avec "
+"le support Freetype."
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
-msgstr ""
+msgstr "Détermine la désynchronisation des textures animées par mapblock."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether players are shown to clients without any range limit.\n"
 "Deprecated, use the setting player_transfer_distance instead."
 msgstr ""
+"Détermine l'exposition illimitée des noms de joueurs aux autres clients.\n"
+"Obsolète : utiliser l'option player_transfer_distance à la place."
 
 #: src/settings_translation_file.cpp
 msgid "Whether to allow players to damage and kill each other."
-msgstr ""
+msgstr "Détermine la possibilité des joueurs de tuer d'autres joueurs."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether to ask clients to reconnect after a (Lua) crash.\n"
 "Set this to true if your server is set up to restart automatically."
 msgstr ""
+"Détermine la possibilité des clients de se re-connecter après une "
+"interruption de serveur.\n"
+"Activé-le si votre serveur est paramétré pour redémarrer automatiquement."
 
 #: src/settings_translation_file.cpp
 msgid "Whether to fog out the end of the visible area."
-msgstr ""
+msgstr "Détermine la visibilité de la brume au bout de l'aire visible."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether to show the client debug info (has the same effect as hitting F5)."
 msgstr ""
+"Détermine la visibilité des infos de débogage du client (même effet que "
+"taper F5)."
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selectionbox's lines around nodes."
-msgstr ""
+msgstr "Épaisseur des bordures de sélection autour des blocs."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "World directory (everything in the world is stored here).\n"
 "Not needed if starting from the main menu."
 msgstr ""
+"Chemin du monde (tout ce qui relatif au monde est enregistré ici).\n"
+"Inutile si démarré depuis le menu."
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
@@ -3730,7 +3817,7 @@ msgstr "Délais d'interruption de cURL lors d'un téléchargement de fichier"
 
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
-msgstr ""
+msgstr "Limite parallèle de cURL"
 
 #: src/settings_translation_file.cpp
 msgid "cURL timeout"
