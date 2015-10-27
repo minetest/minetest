@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: Minetest 0.4.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-08-24 20:44+0200\n"
-"Last-Translator: betacentury <betacentury89@gmail.com>\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
-"minetest/it/>\n"
+"PO-Revision-Date: 2015-10-27 16:45+0200\n"
+"Last-Translator: PilzAdam <PilzAdam@minetest.net>\n"
+"Language-Team: Italian "
+"<https://hosted.weblate.org/projects/minetest/minetest/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.4-dev\n"
+"X-Generator: Weblate 2.5-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -617,7 +617,7 @@ msgstr "Il percorso del mondo fornito non esiste: "
 
 #: src/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr "needs_fallback_font"
+msgstr "no"
 
 #: src/game.cpp
 msgid ""
