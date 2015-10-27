@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-10-27 00:27+0200\n"
-"Last-Translator: Jan Zabel <joz@spline.de>\n"
+"PO-Revision-Date: 2015-10-27 20:56+0200\n"
+"Last-Translator: Wuzzy <almikes@aol.com>\n"
 "Language-Team: German "
 "<https://hosted.weblate.org/projects/minetest/minetest/de/>\n"
 "Language: de\n"
@@ -903,9 +903,8 @@ msgid "Convert"
 msgstr "Convert"
 
 #: src/keycode.cpp
-#, fuzzy
 msgid "CrSel"
-msgstr "Cursorauswahl"
+msgstr "CrSel"
 
 #: src/keycode.cpp
 msgid "Down"
