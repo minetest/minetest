@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-10-28 00:08+0200\n"
+"PO-Revision-Date: 2015-10-28 12:51+0200\n"
 "Last-Translator: Jean-Patrick G. <jeanpatrick.guerrero@gmail.com>\n"
 "Language-Team: French "
 "<https://hosted.weblate.org/projects/minetest/minetest/fr/>\n"
@@ -37,11 +37,11 @@ msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr "Rejoindre"
+msgstr "Se reconnecter"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "Le serveur a demandé une re-connexion :"
+msgstr "Le serveur souhaite rétablir une connexion :"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
@@ -101,7 +101,7 @@ msgid ""
 msgstr ""
 "Échec du chargement du mod \"$1\" car il contient des caractères non-"
 "autorisés.\n"
-"Seulement les caractères [a-z0-9_] sont autorisés."
+"Seulement les caractères alphanumériques [a-z0-9_] sont autorisés."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -1157,8 +1157,8 @@ msgid ""
 "0 = parallax occlusion with slope information (faster).\n"
 "1 = relief mapping (slower, more accurate)."
 msgstr ""
-"0 = occlusion parallaxe (plus rapide, mais moins détaillé).\n"
-"1 = relief mapping (plus lent, mais plus détaillé)."
+"0 = occlusion parallaxe avec des informations de pente (plus rapide).\n"
+"1 = cartographie en relief (plus lent, plus précis)."
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -1981,8 +1981,8 @@ msgid ""
 "How much the server will wait before unloading unused mapblocks.\n"
 "Higher value is smoother, but will use more RAM."
 msgstr ""
-"Délais maximum jusqu'où le serveur va attendre avant de décharger les "
-"mapblocks inactifs.\n"
+"Délais maximum jusqu'où le serveur va attendre avant de purger les mapblocks "
+"inactifs.\n"
 "Une valeur plus grande est plus confortable, mais utilise davantage de "
 "mémoire."
 
@@ -2605,7 +2605,7 @@ msgstr "Mapgen : paramètres de dispersion de l'humidité"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen debug"
-msgstr "Débogage de génération de terrain"
+msgstr "Débogage de la génération du terrain"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flags"
@@ -2625,11 +2625,11 @@ msgstr "Mapgen V5"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 cave1 noise parameters"
-msgstr ""
+msgstr "Mapgen V5 : paramètres de dispersion cave1"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 cave2 noise parameters"
-msgstr ""
+msgstr "Mapgen V5 : paramètre de dispersion cave2"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 factor noise parameters"
@@ -2637,7 +2637,7 @@ msgstr "Mapgen V5 : paramètres de facteur de dispersion"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 filler depth noise parameters"
-msgstr ""
+msgstr "Mapgen V5 : paramètres de bruit sur la profondeur"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 height noise parameters"
@@ -2677,7 +2677,7 @@ msgstr "Mapgen V6 : drapeaux"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 height select noise parameters"
-msgstr ""
+msgstr "Mapgen V6 : paramètres de sélection de la hauteur de dispersion"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 humidity noise parameters"
@@ -2689,7 +2689,7 @@ msgstr "Mapgen V6 : paramètres de dispersion de la vase"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 steepness noise parameters"
-msgstr ""
+msgstr "Mapgen V6 : paramètres de dispersion des pentes"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 terrain altitude noise parameters"
@@ -2697,7 +2697,7 @@ msgstr "Mapgen V6 : paramètres de dispersion de l'altitude"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 terrain base noise parameters"
-msgstr ""
+msgstr "Mapgen V6 : paramètres de dispersion du terrain de base"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 trees noise parameters"
@@ -2709,15 +2709,15 @@ msgstr "Mapgen V7"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 cave1 noise parameters"
-msgstr ""
+msgstr "Mapgen V7 : paramètres de dispersion cave1"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 cave2 noise parameters"
-msgstr ""
+msgstr "Mapgen V7 : paramètres de dispersion cave2"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 filler depth noise parameters"
-msgstr ""
+msgstr "Mapgen V7 : paramètres de bruit sur la profondeur"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 flags"
@@ -2725,11 +2725,11 @@ msgstr "Mapgen V7 : drapeaux"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 height select noise parameters"
-msgstr ""
+msgstr "Mapgen V7 : paramètres de sélection de la hauteur du bruit"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 mount height noise parameters"
-msgstr ""
+msgstr "Mapgen V7 : paramètres de hauteur du bruit des montagnes"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 mountain noise parameters"
@@ -2749,11 +2749,11 @@ msgstr "Mapgen V7 : paramètres de dispersion de l'altitude"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 terrain base noise parameters"
-msgstr ""
+msgstr "Mapgen V7 : paramètres du bruit du terrain de base"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 terrain persistation noise parameters"
-msgstr ""
+msgstr "Mapgen V7 : paramètres du bruit de la persistance du terrain"
 
 #: src/settings_translation_file.cpp
 msgid "Max block generate distance"
@@ -3597,7 +3597,7 @@ msgstr "Distance de transfert du joueur illimitée"
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
-msgstr "Décharger les données de serveur inutiles"
+msgstr "Purger les données de serveur inutiles"
 
 #: src/settings_translation_file.cpp
 msgid "Use 3D cloud look instead of flat."
