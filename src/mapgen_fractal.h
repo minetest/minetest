@@ -51,6 +51,7 @@ struct MapgenFractalParams : public MapgenSpecificParams {
 	float julia_w;
 
 	NoiseParams np_seabed;
+	NoiseParams np_filler_depth;
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
 
@@ -90,7 +91,7 @@ public:
 	float julia_w;
 
 	Noise *noise_seabed;
-
+	Noise *noise_filler_depth;
 	Noise *noise_cave1;
 	Noise *noise_cave2;
 
