@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-10-28 12:51+0200\n"
+"PO-Revision-Date: 2015-10-28 12:55+0200\n"
 "Last-Translator: Jean-Patrick G. <jeanpatrick.guerrero@gmail.com>\n"
 "Language-Team: French "
 "<https://hosted.weblate.org/projects/minetest/minetest/fr/>\n"
@@ -2593,7 +2593,7 @@ msgstr "Délais d'interruption du déchargement des mapblocks"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome heat noise parameters"
-msgstr "Mapgen : paramètres de dispersion de la température"
+msgstr "Mapgen : paramètres de bruit de la température"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome humidity blend noise parameters"
@@ -2601,7 +2601,7 @@ msgstr "Mapgen : paramètres de mélange de l'humidité"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome humidity noise parameters"
-msgstr "Mapgen : paramètres de dispersion de l'humidité"
+msgstr "Mapgen : paramètres de bruit de l'humidité"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen debug"
@@ -2625,11 +2625,11 @@ msgstr "Mapgen V5"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 cave1 noise parameters"
-msgstr "Mapgen V5 : paramètres de dispersion cave1"
+msgstr "Mapgen V5 : paramètres de bruit cave1"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 cave2 noise parameters"
-msgstr "Mapgen V5 : paramètre de dispersion cave2"
+msgstr "Mapgen V5 : paramètre de bruit cave2"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 factor noise parameters"
@@ -2641,7 +2641,7 @@ msgstr "Mapgen V5 : paramètres de bruit sur la profondeur"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 height noise parameters"
-msgstr "Mapgen V5 : paramètres de dispersion de hauteur"
+msgstr "Mapgen V5 : paramètres de bruit de la hauteur"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6"
@@ -2649,7 +2649,7 @@ msgstr "Mapgen V6"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 apple trees noise parameters"
-msgstr "Mapgen V6 : paramètres de dispersion des pommiers"
+msgstr "Mapgen V6 : paramètres de bruit des pommiers"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 beach frequency"
@@ -2657,15 +2657,15 @@ msgstr "Mapgen V6 : fréquence des plages"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 beach noise parameters"
-msgstr "Mapgen V6 : paramètres de dispersion des plages"
+msgstr "Mapgen V6 : paramètres de bruit des plages"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 biome noise parameters"
-msgstr "Mapgen V6 : paramètres de dispersion des biomes"
+msgstr "Mapgen V6 : paramètres de bruit des biomes"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 cave noise parameters"
-msgstr "Mapgen V6 : paramètres de dispersion des caves"
+msgstr "Mapgen V6 : paramètres de bruit des caves"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 desert frequency"
@@ -2677,31 +2677,31 @@ msgstr "Mapgen V6 : drapeaux"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 height select noise parameters"
-msgstr "Mapgen V6 : paramètres de sélection de la hauteur de dispersion"
+msgstr "Mapgen V6 : paramètres de sélection de la hauteur de bruit"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 humidity noise parameters"
-msgstr "Mapgen V6 : paramètres de dispersion de l'humidité"
+msgstr "Mapgen V6 : paramètres de bruit de l'humidité"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 mud noise parameters"
-msgstr "Mapgen V6 : paramètres de dispersion de la vase"
+msgstr "Mapgen V6 : paramètres de bruit de la vase"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 steepness noise parameters"
-msgstr "Mapgen V6 : paramètres de dispersion des pentes"
+msgstr "Mapgen V6 : paramètres de bruit des pentes"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 terrain altitude noise parameters"
-msgstr "Mapgen V6 : paramètres de dispersion de l'altitude"
+msgstr "Mapgen V6 : paramètres de bruit de l'altitude du terrain"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 terrain base noise parameters"
-msgstr "Mapgen V6 : paramètres de dispersion du terrain de base"
+msgstr "Mapgen V6 : paramètres de bruit du terrain de base"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 trees noise parameters"
-msgstr "Mapgen V6 : paramètres de dispersion des arbres"
+msgstr "Mapgen V6 : paramètres de bruit des arbres"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7"
@@ -2709,11 +2709,11 @@ msgstr "Mapgen V7"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 cave1 noise parameters"
-msgstr "Mapgen V7 : paramètres de dispersion cave1"
+msgstr "Mapgen V7 : paramètres de bruit cave1"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 cave2 noise parameters"
-msgstr "Mapgen V7 : paramètres de dispersion cave2"
+msgstr "Mapgen V7 : paramètres de bruit cave2"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 filler depth noise parameters"
@@ -2733,19 +2733,19 @@ msgstr "Mapgen V7 : paramètres de hauteur du bruit des montagnes"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 mountain noise parameters"
-msgstr "Mapgen V7 : paramètres de dispersion des montagnes"
+msgstr "Mapgen V7 : paramètres de bruit des montagnes"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 ridge noise parameters"
-msgstr "Mapgen V7 : paramètres de dispersion des rivières"
+msgstr "Mapgen V7 : paramètres de bruit des rivières"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 ridge water noise parameters"
-msgstr "Mapgen V7 : paramètres de dispersion de l'eau des rivières"
+msgstr "Mapgen V7 : paramètres de bruit de l'eau des rivières"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 terrain altitude noise parameters"
-msgstr "Mapgen V7 : paramètres de dispersion de l'altitude"
+msgstr "Mapgen V7 : paramètres de bruit de l'altitude du terrain"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 terrain base noise parameters"
