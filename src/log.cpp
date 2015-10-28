@@ -135,7 +135,8 @@ class AndroidSystemLogOutput : public ICombinedLogOutput {
 		}
 		void logRaw(LogLevel lev, const std::string &line)
 		{
-			assert(ARRLEN(g_level_to_android) == LL_MAX);
+			STATIC_ASSERT(ARRLEN(g_level_to_android) == LL_MAX,
+				mismatch_between_android_and_internal_loglevels);
 			__android_log_print(g_level_to_android[lev],
 				PROJECT_NAME_C, "%s", line.c_str());
 		}
@@ -228,7 +229,8 @@ const std::string Logger::getLevelLabel(LogLevel lev)
 		"VERBOSE",
 	};
 	assert(lev < LL_MAX && lev >= 0);
-	assert(ARRLEN(names) == LL_MAX);
+	STATIC_ASSERT(ARRLEN(names) == LL_MAX,
+		mismatch_between_loglevel_names_and_enum);
 	return names[lev];
 }
 
