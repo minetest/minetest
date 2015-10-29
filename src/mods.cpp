@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "strfnd.h"
 #include "convert_json.h"
+#include "exceptions.h"
 
 static bool parseDependsLine(std::istream &is,
 		std::string &dep, std::set<char> &symbols)

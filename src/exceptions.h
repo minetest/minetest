@@ -125,6 +125,12 @@ public:
 	PrngException(std::string s): BaseException(s) {}
 };
 
+class ModError : public BaseException {
+public:
+	ModError(const std::string &s): BaseException(s) {}
+};
+
+
 /*
 	Some "old-style" interrupts:
 */

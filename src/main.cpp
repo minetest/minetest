@@ -816,14 +816,22 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 	if (cmd_args.exists("migrate"))
 		return migrate_database(game_params, cmd_args);
 
-	// Create server
-	Server server(game_params.world_path, game_params.game_spec, false,
-		bind_addr.isIPv6());
-	server.start(bind_addr);
+	try {
+		// Create server
+		Server server(game_params.world_path, game_params.game_spec, false,
+			bind_addr.isIPv6());
+		server.start(bind_addr);
 
-	// Run server
-	bool &kill = *porting::signal_handler_killstatus();
-	dedicated_server_loop(server, kill);
+		// Run server
+		bool &kill = *porting::signal_handler_killstatus();
+		dedicated_server_loop(server, kill);
+	} catch (const ModError &e) {
+		errorstream << "ModError: " << e.what() << std::endl;
+		return false;
+	} catch (const ServerError &e) {
+		errorstream << "ServerError: " << e.what() << std::endl;
+		return false;
+	}
 
 	return true;
 }
