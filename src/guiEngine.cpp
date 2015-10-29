@@ -238,13 +238,13 @@ bool GUIEngine::loadMainMenuScript()
 	}
 
 	std::string script = porting::path_share + DIR_DELIM "builtin" + DIR_DELIM "init.lua";
-	if (m_script->loadScript(script)) {
+	try {
+		m_script->loadScript(script);
 		// Menu script loaded
 		return true;
-	} else {
-		infostream
-			<< "GUIEngine: execution of menu script in: \""
-			<< m_scriptdir << "\" failed!" << std::endl;
+	} catch (const ModError &e) {
+		errorstream << "GUIEngine: execution of menu script failed: "
+			<< e.what() << std::endl;
 	}
 
 	return false;

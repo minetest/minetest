@@ -276,11 +276,8 @@ Server::Server(
 	m_script = new GameScripting(this);
 
 	std::string script_path = getBuiltinLuaPath() + DIR_DELIM "init.lua";
-	std::string error_msg;
 
-	if (!m_script->loadMod(script_path, BUILTIN_MOD_NAME, &error_msg))
-		throw ModError("Failed to load and run " + script_path
-				+ "\nError from Lua:\n" + error_msg);
+	m_script->loadMod(script_path, BUILTIN_MOD_NAME);
 
 	// Print mods
 	infostream << "Server: Loading mods: ";
@@ -291,26 +288,18 @@ Server::Server(
 	}
 	infostream << std::endl;
 	// Load and run "mod" scripts
-	for (std::vector<ModSpec>::iterator i = m_mods.begin();
-			i != m_mods.end(); ++i) {
-		const ModSpec &mod = *i;
+	for (std::vector<ModSpec>::iterator it = m_mods.begin();
+			it != m_mods.end(); ++it) {
+		const ModSpec &mod = *it;
 		if (!string_allowed(mod.name, MODNAME_ALLOWED_CHARS)) {
-			std::ostringstream err;
-			err << "Error loading mod \"" << mod.name
-					<< "\": mod_name does not follow naming conventions: "
-					<< "Only chararacters [a-z0-9_] are allowed." << std::endl;
-			errorstream << err.str().c_str();
-			throw ModError(err.str());
+			throw ModError("Error loading mod \"" + mod.name +
+				"\": Mod name does not follow naming conventions: "
+				"Only chararacters [a-z0-9_] are allowed.");
 		}
-		std::string script_path = mod.path + DIR_DELIM "init.lua";
+		std::string script_path = mod.path + DIR_DELIM + "init.lua";
 		infostream << "  [" << padStringRight(mod.name, 12) << "] [\""
 				<< script_path << "\"]" << std::endl;
-		if (!m_script->loadMod(script_path, mod.name, &error_msg)) {
-			errorstream << "Server: Failed to load and run "
-					<< script_path << std::endl;
-			throw ModError("Failed to load and run " + script_path
-					+ "\nError from Lua:\n" + error_msg);
-		}
+		m_script->loadMod(script_path, mod.name);
 	}
 
 	// Read Textures and calculate sha1 sums
@@ -483,7 +472,7 @@ void Server::step(float dtime)
 {
 	DSTACK(FUNCTION_NAME);
 	// Limit a bit
-	if(dtime > 2.0)
+	if (dtime > 2.0)
 		dtime = 2.0;
 	{
 		MutexAutoLock lock(m_step_dtime_mutex);
@@ -491,19 +480,13 @@ void Server::step(float dtime)
 	}
 	// Throw if fatal error occurred in thread
 	std::string async_err = m_async_fatal_error.get();
-	if(async_err != "") {
-		if (m_simple_singleplayer_mode) {
-			throw ServerError(async_err);
-		}
-		else {
+	if (!async_err.empty()) {
+		if (!m_simple_singleplayer_mode) {
 			m_env->kickAllPlayers(SERVER_ACCESSDENIED_CRASH,
 				g_settings->get("kick_msg_crash"),
 				g_settings->getBool("ask_reconnect_on_crash"));
-			errorstream << "UNRECOVERABLE error occurred. Stopping server. "
-					<< "Please fix the following error:" << std::endl
-					<< async_err << std::endl;
-			FATAL_ERROR(async_err.c_str());
 		}
+		throw ServerError(async_err);
 	}
 }
 

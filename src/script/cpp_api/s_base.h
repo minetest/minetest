@@ -63,9 +63,9 @@ public:
 	ScriptApiBase();
 	virtual ~ScriptApiBase();
 
-	bool loadMod(const std::string &script_path, const std::string &mod_name,
-		std::string *error=NULL);
-	bool loadScript(const std::string &script_path, std::string *error=NULL);
+	// These throw a ModError on failure
+	void loadMod(const std::string &script_path, const std::string &mod_name);
+	void loadScript(const std::string &script_path);
 
 	void runCallbacksRaw(int nargs,
 		RunCallbacksMode mode, const char *fxn);
