@@ -112,14 +112,14 @@ void AreaStore::serialize(std::ostream &os) const
 
 void AreaStore::invalidateCache()
 {
-	if (cache_enabled) {
+	if (m_cache_enabled) {
 		m_res_cache.invalidate();
 	}
 }
 
 void AreaStore::setCacheParams(bool enabled, u8 block_radius, size_t limit)
 {
-	cache_enabled = enabled;
+	m_cache_enabled = enabled;
 	m_cacheblock_radius = MYMAX(block_radius, 16);
 	m_res_cache.setLimit(MYMAX(limit, 20));
 	invalidateCache();
@@ -148,7 +148,7 @@ void AreaStore::cacheMiss(void *data, const v3s16 &mpos, std::vector<Area *> *de
 
 void AreaStore::getAreasForPos(std::vector<Area *> *result, v3s16 pos)
 {
-	if (cache_enabled) {
+	if (m_cache_enabled) {
 		v3s16 mblock = getContainerPos(pos, m_cacheblock_radius);
 		const std::vector<Area *> *pre_list = m_res_cache.lookupCache(mblock);
 
