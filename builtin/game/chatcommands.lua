@@ -710,7 +710,7 @@ core.register_chatcommand("time", {
 			local hour = (current_time - minutes) / 60
 			return true, ("Current time is %d:%02d"):format(hour, minutes)
 		end
-		local player_privs = minetest.get_player_privs(name)
+		local player_privs = core.get_player_privs(name)
 		if not player_privs.settime then
 			return false, "You don't have permission to run this command " ..
 				"(missing privilege: settime)."
