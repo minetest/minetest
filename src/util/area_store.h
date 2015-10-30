@@ -59,8 +59,10 @@ protected:
 	virtual void getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos) = 0;
 	u32 getNextId() { return m_next_id++; }
 
-	// TODO change to unordered_map when we can
-	std::map<u32, Area> areas_map;
+	// Note: This can't be an unordered_map, since all
+	// references would be invalidated on rehash.
+	typedef std::map<u32, Area> AreaMap;
+	AreaMap areas_map;
 public:
 	// Updates the area's ID
 	virtual bool insertArea(Area *a) = 0;
@@ -111,8 +113,8 @@ class VectorAreaStore : public AreaStore {
 protected:
 	virtual void getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos);
 public:
+	virtual void reserve(size_t count) { m_areas.reserve(count); }
 	virtual bool insertArea(Area *a);
-	virtual void reserve(size_t count);
 	virtual bool removeArea(u32 id);
 	virtual void getAreasInArea(std::vector<Area *> *result,
 		v3s16 minedge, v3s16 maxedge, bool accept_overlap);
