@@ -112,7 +112,6 @@ LOCAL_C_INCLUDES :=                               \
 		deps/sqlite/
 
 LOCAL_SRC_FILES :=                                \
-		jni/src/areastore.cpp                     \
 		jni/src/ban.cpp                           \
 		jni/src/camera.cpp                        \
 		jni/src/cavegen.cpp                       \
@@ -221,6 +220,7 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/version.cpp                       \
 		jni/src/voxel.cpp                         \
 		jni/src/voxelalgorithms.cpp               \
+		jni/src/util/areastore.cpp                \
 		jni/src/util/auth.cpp                     \
 		jni/src/util/base64.cpp                   \
 		jni/src/util/directiontables.cpp          \

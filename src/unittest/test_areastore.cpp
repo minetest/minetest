@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "test.h"
 
-#include "areastore.h"
+#include "util/areastore.h"
 
 class TestAreaStore : public TestBase {
 public:

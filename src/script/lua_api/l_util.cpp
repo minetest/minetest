@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include "json/json.h"
 #include "cpp_api/s_security.h"
-#include "areastore.h"
 #include "porting.h"
 #include "debug.h"
 #include "log.h"
