@@ -2719,8 +2719,7 @@ An `InvRef` is a reference to an inventory.
 ### `AreaStore`
 A fast access data structure to store areas, and find areas near a given position or area.
 Every area has a `data` string attribute to store additional information.
-You can create an empty `AreaStore` by calling `AreaStore()`, or `AreaStore(type_name)`.
-If you chose the parameter-less constructor, a fast implementation will be automatically chosen for you.
+You can create an empty `AreaStore` by calling `AreaStore()`.
 
 #### Methods
 * `get_area(id, include_borders, include_data)`: returns the area with the id `id`. (optional) Boolean values `include_borders` and `include_data` control what's copied.

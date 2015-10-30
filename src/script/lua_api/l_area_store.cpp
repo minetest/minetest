@@ -301,32 +301,18 @@ LuaAreaStore::LuaAreaStore()
 #endif
 }
 
-LuaAreaStore::LuaAreaStore(const std::string &type)
-{
-#if USE_SPATIAL
-	if (type == "LibSpatial") {
-		this->as = new SpatialAreaStore();
-	} else
-#endif
-	{
-		this->as = new VectorAreaStore();
-	}
-}
-
 LuaAreaStore::~LuaAreaStore()
 {
 	delete as;
 }
 
 // LuaAreaStore()
-// Creates an LuaAreaStore and leaves it on top of stack
+// Creates a LuaAreaStore and leaves it on top of stack
 int LuaAreaStore::create_object(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	LuaAreaStore *o = (lua_isstring(L, 1)) ?
-		new LuaAreaStore(lua_tostring(L, 1)) :
-		new LuaAreaStore();
+	LuaAreaStore *o = new LuaAreaStore();
 
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
