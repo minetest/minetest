@@ -43,11 +43,11 @@ private:
 
 	static int l_set_cache_params(lua_State *L);
 
-	/* static int l_to_string(lua_State *L);
+	static int l_to_string(lua_State *L);
 	static int l_to_file(lua_State *L);
 
 	static int l_from_string(lua_State *L);
-	static int l_from_file(lua_State *L); */
+	static int l_from_file(lua_State *L);
 
 public:
 	AreaStore *as;

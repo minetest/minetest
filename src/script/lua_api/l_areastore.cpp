@@ -70,6 +70,22 @@ static inline void push_areas(lua_State *L, const std::vector<Area *> &areas,
 	}
 }
 
+// Deserializes value and handles errors
+static int deserialization_helper(lua_State *L, AreaStore *as,
+		std::istream &is)
+{
+	try {	
+		as->deserialize(is);
+	} catch (const SerializationError &e) {
+		lua_pushboolean(L, false);
+		lua_pushstring(L, e.what());
+		return 2;
+	}
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 // garbage collector
 int LuaAreaStore::gc_object(lua_State *L)
 {
@@ -217,17 +233,15 @@ int LuaAreaStore::l_set_cache_params(lua_State *L)
 	return 0;
 }
 
-#if 0
 // to_string()
 int LuaAreaStore::l_to_string(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaAreaStore *o = checkobject(L, 1);
-	AreaStore *ast = o->as;
 
 	std::ostringstream os(std::ios_base::binary);
-	ast->serialize(os);
+	o->as->serialize(os);
 	std::string str = os.str();
 
 	lua_pushlstring(L, str.c_str(), str.length());
@@ -258,16 +272,12 @@ int LuaAreaStore::l_from_string(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaAreaStore *o = checkobject(L, 1);
-	AreaStore *ast = o->as;
 
 	size_t len;
 	const char *str = luaL_checklstring(L, 2, &len);
 
 	std::istringstream is(std::string(str, len), std::ios::binary);
-	bool success = ast->deserialize(is);
-
-	lua_pushboolean(L, success);
-	return 1;
+	return deserialization_helper(L, o->as, is);
 }
 
 // from_file(filename)
@@ -276,18 +286,13 @@ int LuaAreaStore::l_from_file(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaAreaStore *o = checkobject(L, 1);
-	AreaStore *ast = o->as;
 
 	const char *filename = luaL_checkstring(L, 2);
 	CHECK_SECURE_PATH_OPTIONAL(L, filename);
 
 	std::ifstream is(filename, std::ios::binary);
-	bool success = ast->deserialize(is);
-
-	lua_pushboolean(L, success);
-	return 1;
+	return deserialization_helper(L, o->as, is);
 }
-#endif
 
 LuaAreaStore::LuaAreaStore()
 {
@@ -377,9 +382,9 @@ const luaL_reg LuaAreaStore::methods[] = {
 	luamethod(LuaAreaStore, reserve),
 	luamethod(LuaAreaStore, remove_area),
 	luamethod(LuaAreaStore, set_cache_params),
-	/* luamethod(LuaAreaStore, to_string),
+	luamethod(LuaAreaStore, to_string),
 	luamethod(LuaAreaStore, to_file),
 	luamethod(LuaAreaStore, from_string),
-	luamethod(LuaAreaStore, from_file),*/
+	luamethod(LuaAreaStore, from_file),
 	{0,0}
 };

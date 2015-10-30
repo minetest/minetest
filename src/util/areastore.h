@@ -92,16 +92,14 @@ public:
 	/// or NULL if it doesn't exist.
 	const Area *getArea(u32 id) const;
 
-#if 0
-	typedef bool (*ForEachCallback)(const Area *a, void *arg);
-	/// Calls a passed function for every stored area, until the
-	/// callback returns true.  If that happens, it returns true,
-	/// if the search is exhausted, it returns false.
-	virtual bool forEach(ForEachCallback, void *arg=NULL) const = 0;
-
+	/// Serializes the store's areas to a binary ostream.
 	void serialize(std::ostream &is) const;
-	bool deserialize(std::istream &is);
-#endif
+
+	/// Deserializes the Areas from a binary istream.
+	/// This does not currently clear the AreaStore before adding the
+	/// areas, making it possible to deserialize multiple serialized
+	/// AreaStores.
+	void deserialize(std::istream &is);
 
 protected:
 	/// Invalidates the getAreasForPos cache.
@@ -141,7 +139,6 @@ public:
 	virtual bool removeArea(u32 id);
 	virtual void getAreasInArea(std::vector<Area *> *result,
 		v3s16 minedge, v3s16 maxedge, bool accept_overlap);
-	//virtual bool forEach(ForEachCallback, void *arg) const;
 
 protected:
 	virtual void getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos);
@@ -162,7 +159,6 @@ public:
 	virtual bool removeArea(u32 id);
 	virtual void getAreasInArea(std::vector<Area *> *result,
 		v3s16 minedge, v3s16 maxedge, bool accept_overlap);
-	//virtual bool forEach(ForEachCallback, void *arg) const;
 
 protected:
 	virtual void getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos);

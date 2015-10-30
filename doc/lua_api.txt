@@ -2737,6 +2737,10 @@ If you chose the parameter-less constructor, a fast implementation will be autom
         block_radius = number, -- the radius (in nodes) of the areas the cache generates prefiltered lists for, minimum 16, default 64
         limit = number, -- the cache's size, minimum 20, default 1000
       }
+* `to_string()`: Experimental. Returns area store serialized as a (binary) string.
+* `to_file(filename)`: Experimental. Like `to_string()`, but writes the data to a file.
+* `from_string(str)`: Experimental. Deserializes string and loads it into the AreaStore.  Returns success and, optionally, an error message.
+* `from_file(filename)`: Experimental. Like `from_string()`, but reads the data from a file.
 
 ### `ItemStack`
 An `ItemStack` is a stack of items.

@@ -62,56 +62,41 @@ const Area *AreaStore::getArea(u32 id) const
 	return &it->second;
 }
 
-#if 0
-Currently, serialisation is commented out. This is because of multiple reasons:
-1. Why do we store the areastore into a file, why not into the database?
-2. We don't use libspatial's serialisation, but we should, or perhaps not, because
-	it would remove the ability to switch. Perhaps write migration routines?
-3. Various things need fixing, e.g. the size is serialized as
-	c++ implementation defined size_t
-bool AreaStore::deserialize(std::istream &is)
-{
-	u8 ver = readU8(is);
-	if (ver != 1)
-		return false;
-	u16 count_areas = readU16(is);
-	for (u16 i = 0; i < count_areas; i++) {
-		// deserialize an area
-		Area a;
-		a.id = readU32(is);
-		a.minedge = readV3S16(is);
-		a.maxedge = readV3S16(is);
-		a.datalen = readU16(is);
-		a.data = new char[a.datalen];
-		is.read((char *) a.data, a.datalen);
-		insertArea(a);
-	}
-	return true;
-}
-
-
-static bool serialize_area(void *ostr, Area *a)
-{
-	std::ostream &os = *((std::ostream *) ostr);
-	writeU32(os, a->id);
-	writeV3S16(os, a->minedge);
-	writeV3S16(os, a->maxedge);
-	writeU16(os, a->datalen);
-	os.write(a->data, a->datalen);
-
-	return false;
-}
-
-
 void AreaStore::serialize(std::ostream &os) const
 {
-	// write initial data
-	writeU8(os, 1); // serialisation version
-	writeU16(os, areas_map.size()); //DANGER: not platform independent
-	forEach(&serialize_area, &os);
+	writeU8(os, 0); // Serialisation version
+
+	// TODO: Compression?
+	writeU16(os, areas_map.size());
+	for (AreaMap::const_iterator it = areas_map.begin();
+			it != areas_map.end(); ++it) {
+		const Area &a = it->second;
+		writeV3S16(os, a.minedge);
+		writeV3S16(os, a.maxedge);
+		writeU16(os, a.data.size());
+		os.write(a.data.data(), a.data.size());
+	}
 }
 
-#endif
+void AreaStore::deserialize(std::istream &is)
+{
+	u8 ver = readU8(is);
+	if (ver != 0)
+		throw SerializationError("Unknown AreaStore "
+				"serialization version!");
+
+	u16 num_areas = readU16(is);
+	for (u32 i = 0; i < num_areas; ++i) {
+		Area a;
+		a.minedge = readV3S16(is);
+		a.maxedge = readV3S16(is);
+		u16 data_len = readU16(is);
+		char *data = new char[data_len];
+		is.read(data, data_len);
+		a.data = std::string(data, data_len);
+		insertArea(&a);
+	}
+}
 
 void AreaStore::invalidateCache()
 {
@@ -226,18 +211,6 @@ void VectorAreaStore::getAreasInArea(std::vector<Area *> *result,
 	}
 }
 
-#if 0
-bool SimpleAreaStore::forEach(ForEachCallback callback, void *arg) const
-{
-	for (size_t i = 0; i < m_areas.size(); ++i) {
-		if (callback(m_areas[i], arg)) {
-			return true;
-		}
-	}
-	return false;
-}
-#endif
-
 #if USE_SPATIAL
 
 static inline SpatialIndex::Region get_spatial_region(const v3s16 minedge,
@@ -300,14 +273,6 @@ void SpatialAreaStore::getAreasInArea(std::vector<Area *> *result,
 		m_tree->containsWhatQuery(get_spatial_region(minedge, maxedge), visitor);
 	}
 }
-
-#if 0
-bool SpatialAreaStore::forEach(ForEachCallback callback, void *arg) const
-{
-	// TODO ?? (this is only needed for serialisation, but libspatial has its own serialisation)
-	return false;
-}
-#endif
 
 SpatialAreaStore::~SpatialAreaStore()
 {
