@@ -812,7 +812,7 @@ liquid_update (Liquid update tick) float 1.0
 
 #    Name of map generator to be used when creating a new world.
 #    Creating a world in the main menu will override this.
-mg_name (Mapgen name) enum v6 v5,v6,v7,fractal,singlenode
+mg_name (Mapgen name) enum v6 v5,v6,v7,flat,fractal,singlenode
 
 #    Water surface level of the world.
 water_level (Water level) int 1
@@ -927,6 +927,45 @@ mgv7_np_mountain (Mapgen v7 mountain noise parameters) noise_params -0.6, 1, (25
 mgv7_np_ridge (Mapgen v7 ridge noise parameters) noise_params 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
 mgv7_np_cave1 (Mapgen v7 cave1 noise parameters) noise_params 0, 12, (100, 100, 100), 52534, 4, 0.5, 2.0
 mgv7_np_cave2 (Mapgen v7 cave2 noise parameters) noise_params 0, 12, (100, 100, 100), 10325, 4, 0.5, 2.0
+
+[***Mapgen flat]
+
+#    Map generation attributes specific to Mapgen flat.
+#    Occasional lakes and hills added to the flat world.
+#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags starting with "no" are used to explicitly disable them.
+mgflat_spflags (Mapgen flat flags) flags nolakes,nohills lakes,hills,nolakes,nohills
+
+#    Y of flat ground.
+mgflat_ground_level (Mapgen flat ground level) int 8
+
+#    Y of upper limit of large pseudorandom caves.
+mgflat_large_cave_depth (Mapgen flat large cave depth) int -33
+
+#    Terrain noise threshold for lakes.
+#    Controls proportion of world area covered by lakes.
+#    Adjust towards 0.0 for a larger proportion.
+mgflat_lake_threshold (Mapgen flat lake threshold) float -0.45
+
+#    Controls steepness/depth of lake depressions.
+mgflat_lake_steepness (Mapgen flat lake steepness) float 48.0
+
+#    Terrain noise threshold for hills.
+#    Controls proportion of world area covered by hills.
+#    Adjust towards 0.0 for a larger proportion.
+mgflat_hill_threshold (Mapgen flat hill threshold) float 0.45
+
+#    Controls steepness/height of hills.
+mgflat_hill_steepness (Mapgen flat hill steepness) float 64.0
+
+#    Determines terrain shape.
+#    The 3 numbers in brackets control the scale of the
+#    terrain, the 3 numbers should be identical.
+mgflat_np_terrain (Mapgen flat terrain noise parameters) noise_params 0, 1, (600, 600, 600), 7244, 5, 0.6, 2.0
+
+mgflat_np_filler_depth (Mapgen flat filler depth noise parameters) noise_params 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
+mgflat_np_cave1 (Mapgen flat cave1 noise parameters) noise_params 0, 12, (128, 128, 128), 52534, 4, 0.5, 2.0
+mgflat_np_cave2 (Mapgen flat cave2 noise parameters) noise_params 0, 12, (128, 128, 128), 10325, 4, 0.5, 2.0
 
 [***Mapgen fractal]
 
