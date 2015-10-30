@@ -17,11 +17,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef L_AREASTORE_H_
-#define L_AREASTORE_H_
+#ifndef L_AREA_STORE_H_
+#define L_AREA_STORE_H_
 
 #include "lua_api/l_base.h"
-#include "areastore.h"
+#include "util/area_store.h"
 
 /*
   AreaStore
@@ -66,4 +66,4 @@ public:
 	static void Register(lua_State *L);
 };
 
-#endif /* L_AREASTORE_H_ */
+#endif // L_AREA_STORE_H_
