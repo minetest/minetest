@@ -36,34 +36,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include "util/serialize.h"
 #endif
 
-#define AST_EXTREMIFY(min, max, pa, pb) \
-	(min).X = MYMIN((pa).X, (pb).X);    \
-	(min).Y = MYMIN((pa).Y, (pb).Y);    \
-	(min).Z = MYMIN((pa).Z, (pb).Z);    \
-	(max).X = MYMAX((pa).X, (pb).X);    \
-	(max).Y = MYMAX((pa).Y, (pb).Y);    \
-	(max).Z = MYMAX((pa).Z, (pb).Z);
-
-#define AREA_ID_INVALID 0
 
 struct Area {
-	Area(const v3s16 &minedge, const v3s16 &maxedge)
-	{
-		this->minedge = minedge;
-		this->maxedge = maxedge;
-	}
-
 	Area() {}
-
-	void extremifyEdges()
+	Area(const v3s16 &mine, const v3s16 &maxe)
 	{
-		v3s16 nminedge;
-		v3s16 nmaxedge;
-
-		AST_EXTREMIFY(nminedge, nmaxedge, minedge, maxedge)
-
-		maxedge = nmaxedge;
-		minedge = nminedge;
+		minedge = mine;
+		maxedge = maxe;
+		sortBoxVerticies(minedge, maxedge);
 	}
 
 	u32 id;
@@ -76,13 +56,16 @@ std::vector<std::string> get_areastore_typenames();
 
 class AreaStore {
 protected:
-	// TODO change to unordered_map when we can
-	std::map<u32, Area> areas_map;
 	void invalidateCache();
 	virtual void getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos) = 0;
+	u32 getNextId() { return m_next_id++; }
+
+	// TODO change to unordered_map when we can
+	std::map<u32, Area> areas_map;
 	bool cache_enabled; // don't write to this from subclasses, only read.
 public:
-	virtual void insertArea(const Area &a) = 0;
+	// Updates the area's ID
+	virtual bool insertArea(Area *a) = 0;
 	virtual void reserve(size_t count) {};
 	virtual bool removeArea(u32 id) = 0;
 	void getAreasForPos(std::vector<Area *> *result, v3s16 pos);
@@ -103,13 +86,12 @@ public:
 		cache_enabled(true),
 		m_cacheblock_radius(64),
 		m_res_cache(1000, &cacheMiss, this),
-		m_highest_id(0)
+		m_next_id(0)
 	{
 	}
 
 	void setCacheParams(bool enabled, u8 block_radius, size_t limit);
 
-	u32 getFreeId(v3s16 minedge, v3s16 maxedge);
 	const Area *getArea(u32 id) const;
 	u16 size() const;
 #if 0
@@ -120,7 +102,7 @@ private:
 	static void cacheMiss(void *data, const v3s16 &mpos, std::vector<Area *> *dest);
 	u8 m_cacheblock_radius; // if you modify this, call invalidateCache()
 	LRUCache<v3s16, std::vector<Area *> > m_res_cache;
-	u32 m_highest_id;
+	u32 m_next_id;
 
 };
 
@@ -129,7 +111,7 @@ class VectorAreaStore : public AreaStore {
 protected:
 	virtual void getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos);
 public:
-	virtual void insertArea(const Area &a);
+	virtual bool insertArea(Area *a);
 	virtual void reserve(size_t count);
 	virtual bool removeArea(u32 id);
 	virtual void getAreasInArea(std::vector<Area *> *result,
@@ -146,7 +128,7 @@ protected:
 	virtual void getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos);
 public:
 	SpatialAreaStore();
-	virtual void insertArea(const Area &a);
+	virtual bool insertArea(Area *a);
 	virtual bool removeArea(u32 id);
 	virtual void getAreasInArea(std::vector<Area *> *result,
 		v3s16 minedge, v3s16 maxedge, bool accept_overlap);

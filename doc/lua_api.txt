@@ -2727,8 +2727,7 @@ If you chose the parameter-less constructor, a fast implementation will be autom
 * `get_area(id, include_borders, include_data)`: returns the area with the id `id`. (optional) Boolean values `include_borders` and `include_data` control what's copied.
 * `get_areas_for_pos(pos, include_borders, include_data)`: returns all areas that contain the position `pos`. (optional) Boolean values `include_borders` and `include_data` control what's copied.
 * `get_areas_in_area(edge1, edge2, accept_overlap, include_borders, include_data)`: returns all areas that contain all nodes inside the area specified by `edge1` and `edge2` (inclusive). If `accept_overlap` is true, also areas are returned that have nodes in common with the specified area. (optional) Boolean values `include_borders` and `include_data` control what's copied.
-* `insert_area(edge1, edge2, data)`: inserts an area into the store. Returns the id if successful, nil otherwise. The (inclusive) positions `edge1` and `edge2` describe the area, `data`
-is a string stored with the area.
+* `insert_area(edge1, edge2, data)`: inserts an area into the store. Returns the new area's ID, or nil if the insertion failed. The (inclusive) positions `edge1` and `edge2` describe the area, `data` is a string stored with the area.
 * `reserve(count)`: reserves resources for at most `count` many contained areas. Only needed for efficiency, and only some implementations profit.
 * `remove_area(id)`: removes the area with the given id from the store, returns success.
 * `set_cache_params(params)`: sets params for the included prefiltering cache. Calling invalidates the cache, so that its elements have to be newly generated.

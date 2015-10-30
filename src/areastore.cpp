@@ -49,21 +49,6 @@ u16 AreaStore::size() const
 	return areas_map.size();
 }
 
-u32 AreaStore::getFreeId(v3s16 minedge, v3s16 maxedge)
-{
-	int keep_on = 100;
-	while (keep_on--) {
-		m_highest_id++;
-		// Handle overflows, we dont want to return 0
-		if (m_highest_id == AREA_ID_INVALID)
-			m_highest_id++;
-		if (areas_map.find(m_highest_id) == areas_map.end())
-			return m_highest_id;
-	}
-	// search failed
-	return AREA_ID_INVALID;
-}
-
 const Area *AreaStore::getArea(u32 id) const
 {
 	const Area *res = NULL;
@@ -185,11 +170,17 @@ void AreaStore::getAreasForPos(std::vector<Area *> *result, v3s16 pos)
 ////
 
 
-void VectorAreaStore::insertArea(const Area &a)
+bool VectorAreaStore::insertArea(Area *a)
 {
-	areas_map[a.id] = a;
-	m_areas.push_back(&(areas_map[a.id]));
+	a->id = getNextId();
+	std::pair<std::map<u32, Area>::iterator, bool> res =
+			areas_map.insert(std::make_pair(a->id, *a));
+	if (!res.second)
+		// ID is not unique
+		return false;
+	m_areas.push_back(&res.first->second);
 	invalidateCache();
+	return true;
 }
 
 void VectorAreaStore::reserve(size_t count)
@@ -273,11 +264,15 @@ static inline SpatialIndex::Point get_spatial_point(const v3s16 pos)
 }
 
 
-void SpatialAreaStore::insertArea(const Area &a)
+bool SpatialAreaStore::insertArea(Area *a)
 {
-	areas_map[a.id] = a;
-	m_tree->insertData(0, NULL, get_spatial_region(a.minedge, a.maxedge), a.id);
+	a->id = getNextId();
+	if (!areas_map.insert(std::make_pair(a->id, *a)).second)
+		// ID is not unique
+		return false;
+	m_tree->insertData(0, NULL, get_spatial_region(a->minedge, a->maxedge), a->id);
 	invalidateCache();
+	return true;
 }
 
 bool SpatialAreaStore::removeArea(u32 id)
