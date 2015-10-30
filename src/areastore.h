@@ -62,7 +62,6 @@ protected:
 
 	// TODO change to unordered_map when we can
 	std::map<u32, Area> areas_map;
-	bool cache_enabled; // don't write to this from subclasses, only read.
 public:
 	// Updates the area's ID
 	virtual bool insertArea(Area *a) = 0;
@@ -83,10 +82,10 @@ public:
 	{}
 
 	AreaStore() :
-		cache_enabled(true),
 		m_cacheblock_radius(64),
 		m_res_cache(1000, &cacheMiss, this),
-		m_next_id(0)
+		m_next_id(0),
+		m_cache_enabled(true)
 	{
 	}
 
@@ -103,7 +102,7 @@ private:
 	u8 m_cacheblock_radius; // if you modify this, call invalidateCache()
 	LRUCache<v3s16, std::vector<Area *> > m_res_cache;
 	u32 m_next_id;
-
+	bool m_cache_enabled;
 };
 
 
