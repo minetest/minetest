@@ -54,19 +54,12 @@ AreaStore *AreaStore::getOptimalImplementation()
 #endif
 }
 
-u16 AreaStore::size() const
-{
-	return areas_map.size();
-}
-
 const Area *AreaStore::getArea(u32 id) const
 {
-	const Area *res = NULL;
-	std::map<u32, Area>::const_iterator itr = areas_map.find(id);
-	if (itr != areas_map.end()) {
-		res = &itr->second;
-	}
-	return res;
+	AreaMap::const_iterator it = areas_map.find(id);
+	if (it == areas_map.end())
+		return NULL;
+	return &it->second;
 }
 
 #if 0
@@ -234,7 +227,7 @@ void VectorAreaStore::getAreasInArea(std::vector<Area *> *result,
 }
 
 #if 0
-bool SimpleAreaStore::forEach(bool (*callback)(void *args, Area *a), void *args) const
+bool SimpleAreaStore::forEach(ForEachCallback callback, void *arg) const
 {
 	for (size_t i = 0; i < m_areas.size(); ++i) {
 		if (callback(m_areas[i], arg)) {
@@ -308,7 +301,7 @@ void SpatialAreaStore::getAreasInArea(std::vector<Area *> *result,
 }
 
 #if 0
-bool SpatialAreaStore::forEach(bool (*callback)(void *args, Area *a), void *args) const
+bool SpatialAreaStore::forEach(ForEachCallback callback, void *arg) const
 {
 	// TODO ?? (this is only needed for serialisation, but libspatial has its own serialisation)
 	return false;
