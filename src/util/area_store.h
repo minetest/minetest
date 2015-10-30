@@ -52,7 +52,6 @@ struct Area {
 	std::string data;
 };
 
-std::vector<std::string> get_areastore_typenames();
 
 class AreaStore {
 protected:
@@ -93,6 +92,8 @@ public:
 
 	const Area *getArea(u32 id) const;
 	u16 size() const;
+
+	static AreaStore *getOptimalImplementation();
 #if 0
 	bool deserialize(std::istream &is);
 	void serialize(std::ostream &is) const;
