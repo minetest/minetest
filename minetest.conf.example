@@ -1000,7 +1000,7 @@
 
 #    Name of map generator to be used when creating a new world.
 #    Creating a world in the main menu will override this.
-#    type: enum values: v5, v6, v7, fractal, singlenode
+#    type: enum values: v5, v6, v7, flat, fractal, singlenode
 # mg_name = v6
 
 #    Water surface level of the world.
@@ -1178,6 +1178,58 @@
 
 #    type: noise_params
 # mgv7_np_cave2 = 0, 12, (100, 100, 100), 10325, 4, 0.5, 2.0
+
+#### Mapgen flat
+
+#    Map generation attributes specific to Mapgen flat.
+#    Occasional lakes and hills added to the flat world.
+#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags starting with "no" are used to explicitly disable them.
+#    type: flags possible values: lakes, hills, nolakes, nohills
+# mgflat_spflags = nolakes,nohills
+
+#    Y of flat ground.
+#    type: int
+# mgflat_ground_level = 8
+
+#    Y of upper limit of large pseudorandom caves.
+#    type: int
+# mgflat_large_cave_depth = -33
+
+#    Terrain noise threshold for lakes.
+#    Controls proportion of world area covered by lakes.
+#    Adjust towards 0.0 for a larger proportion.
+#    type: float
+# mgflat_lake_threshold = -0.45
+
+#    Controls steepness/depth of lake depressions.
+#    type: float
+# mgflat_lake_steepness = 48.0
+
+#    Terrain noise threshold for hills.
+#    Controls proportion of world area covered by hills.
+#    Adjust towards 0.0 for a larger proportion.
+#    type: float
+# mgflat_hill_threshold = 0.45
+
+#    Controls steepness/height of hills.
+#    type: float
+# mgflat_hill_steepness = 64.0
+
+#    Determines terrain shape.
+#    The 3 numbers in brackets control the scale of the
+#    terrain, the 3 numbers should be identical.
+#    type: noise_params
+# mgflat_np_terrain = 0, 1, (600, 600, 600), 7244, 5, 0.6, 2.0
+
+#    type: noise_params
+# mgflat_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
+
+#    type: noise_params
+# mgflat_np_cave1 = 0, 12, (128, 128, 128), 52534, 4, 0.5, 2.0
+
+#    type: noise_params
+# mgflat_np_cave2 = 0, 12, (128, 128, 128), 10325, 4, 0.5, 2.0
 
 #### Mapgen fractal
 
