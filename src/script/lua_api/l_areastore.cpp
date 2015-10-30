@@ -25,9 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 #include "util/areastore.h"
 #include "filesys.h"
-#ifndef ANDROID
-	#include "cmake_config.h"
-#endif
 #include <fstream>
 
 static inline void get_data_and_border_flags(lua_State *L, u8 start_i,
@@ -294,11 +291,7 @@ int LuaAreaStore::l_from_file(lua_State *L)
 
 LuaAreaStore::LuaAreaStore()
 {
-#if USE_SPATIAL
-	this->as = new SpatialAreaStore();
-#else
-	this->as = new VectorAreaStore();
-#endif
+	this->as = AreaStore::getOptimalImplementation();
 }
 
 LuaAreaStore::LuaAreaStore(const std::string &type)

@@ -44,6 +44,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	AST_OVERLAPS_IN_DIMENSION((amine), (amaxe), (b), Y) &&  \
 	AST_OVERLAPS_IN_DIMENSION((amine), (amaxe), (b), Z))
 
+
+AreaStore *AreaStore::getOptimalImplementation()
+{
+#if USE_SPATIAL
+	return new SpatialAreaStore();
+#else
+	return new VectorAreaStore();
+#endif
+}
+
 u16 AreaStore::size() const
 {
 	return areas_map.size();
