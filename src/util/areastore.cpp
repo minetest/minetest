@@ -275,6 +275,7 @@ bool SpatialAreaStore::removeArea(u32 id)
 		Area *a = &itr->second;
 		bool result = m_tree->deleteData(get_spatial_region(a->minedge,
 			a->maxedge), id);
+		areas_map.erase(itr);
 		invalidateCache();
 		return result;
 	} else {
