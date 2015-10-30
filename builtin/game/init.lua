@@ -1,5 +1,5 @@
 
-local scriptpath = minetest.get_builtin_path()..DIR_DELIM
+local scriptpath = core.get_builtin_path()..DIR_DELIM
 local commonpath = scriptpath.."common"..DIR_DELIM
 local gamepath = scriptpath.."game"..DIR_DELIM
 
