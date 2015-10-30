@@ -183,7 +183,7 @@ void AreaStore::getAreasForPos(std::vector<Area *> *result, v3s16 pos)
 bool VectorAreaStore::insertArea(Area *a)
 {
 	a->id = getNextId();
-	std::pair<std::map<u32, Area>::iterator, bool> res =
+	std::pair<AreaMap::iterator, bool> res =
 			areas_map.insert(std::make_pair(a->id, *a));
 	if (!res.second)
 		// ID is not unique
@@ -193,35 +193,27 @@ bool VectorAreaStore::insertArea(Area *a)
 	return true;
 }
 
-void VectorAreaStore::reserve(size_t count)
-{
-	m_areas.reserve(count);
-}
-
 bool VectorAreaStore::removeArea(u32 id)
 {
-	std::map<u32, Area>::iterator itr = areas_map.find(id);
-	if (itr != areas_map.end()) {
-		size_t msiz = m_areas.size();
-		for (size_t i = 0; i < msiz; i++) {
-			Area * b = m_areas[i];
-			if (b->id == id) {
-				areas_map.erase(itr);
-				m_areas.erase(m_areas.begin() + i);
-				invalidateCache();
-				return true;
-			}
+	AreaMap::iterator it = areas_map.find(id);
+	if (it == areas_map.end())
+		return false;
+	Area *a = &it->second;
+	for (std::vector<Area *>::iterator v_it = m_areas.begin();
+			v_it != m_areas.end(); ++v_it) {
+		if (*v_it == a) {
+			m_areas.erase(v_it);
+			break;
 		}
-		// we should never get here, it means we did find it in map,
-		// but not in the vector
 	}
-	return false;
+	areas_map.erase(it);
+	invalidateCache();
+	return true;
 }
 
 void VectorAreaStore::getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos)
 {
-	size_t msiz = m_areas.size();
-	for (size_t i = 0; i < msiz; i++) {
+	for (size_t i = 0; i < m_areas.size(); ++i) {
 		Area *b = m_areas[i];
 		if (AST_CONTAINS_PT(b, pos)) {
 			result->push_back(b);
@@ -232,9 +224,8 @@ void VectorAreaStore::getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos)
 void VectorAreaStore::getAreasInArea(std::vector<Area *> *result,
 		v3s16 minedge, v3s16 maxedge, bool accept_overlap)
 {
-	size_t msiz = m_areas.size();
-	for (size_t i = 0; i < msiz; i++) {
-		Area * b = m_areas[i];
+	for (size_t i = 0; i < m_areas.size(); ++i) {
+		Area *b = m_areas[i];
 		if (accept_overlap ? AST_AREAS_OVERLAP(minedge, maxedge, b) :
 				AST_CONTAINS_AREA(minedge, maxedge, b)) {
 			result->push_back(b);
@@ -243,11 +234,10 @@ void VectorAreaStore::getAreasInArea(std::vector<Area *> *result,
 }
 
 #if 0
-bool VectorAreaStore::forEach(bool (*callback)(void *args, Area *a), void *args) const
+bool SimpleAreaStore::forEach(bool (*callback)(void *args, Area *a), void *args) const
 {
-	size_t msiz = m_areas.size();
-	for (size_t i = 0; i < msiz; i++) {
-		if (callback(args, m_areas[i])) {
+	for (size_t i = 0; i < m_areas.size(); ++i) {
+		if (callback(m_areas[i], arg)) {
 			return true;
 		}
 	}
