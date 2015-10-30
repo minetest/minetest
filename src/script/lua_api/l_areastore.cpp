@@ -159,26 +159,15 @@ int LuaAreaStore::l_insert_area(lua_State *L)
 	LuaAreaStore *o = checkobject(L, 1);
 	AreaStore *ast = o->as;
 
-	Area a;
-
-	a.minedge = check_v3s16(L, 2);
-	a.maxedge = check_v3s16(L, 3);
-
-	a.extremifyEdges();
-	a.id = ast->getFreeId(a.minedge, a.maxedge);
-
-	if (a.id == AREA_ID_INVALID) {
-		// couldn't get free id
-		lua_pushnil(L);
-		return 1;
-	}
+	Area a(check_v3s16(L, 2), check_v3s16(L, 3));
 
 	size_t d_len;
 	const char *data = luaL_checklstring(L, 4, &d_len);
 
 	a.data = std::string(data, d_len);
 
-	ast->insertArea(a);
+	if (!ast->insertArea(&a))
+		return 0;
 
 	lua_pushnumber(L, a.id);
 	return 1;
