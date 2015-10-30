@@ -5,6 +5,7 @@ local gamepath = scriptpath.."game"..DIR_DELIM
 
 dofile(commonpath.."vector.lua")
 
+dofile(gamepath.."constants.lua")
 dofile(gamepath.."item.lua")
 dofile(gamepath.."register.lua")
 
@@ -25,4 +26,3 @@ dofile(gamepath.."features.lua")
 dofile(gamepath.."voxelarea.lua")
 dofile(gamepath.."forceloading.lua")
 dofile(gamepath.."statbars.lua")
-

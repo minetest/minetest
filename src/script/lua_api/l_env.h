@@ -172,8 +172,7 @@ public:
 	static void Initialize(lua_State *L, int top);
 };
 
-class LuaABM : public ActiveBlockModifier
-{
+class LuaABM : public ActiveBlockModifier {
 private:
 	int m_id;
 
@@ -217,6 +216,14 @@ public:
 	}
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 			u32 active_object_count, u32 active_object_count_wider);
+};
+
+struct ScriptCallbackState {
+	GameScripting *script;
+	int callback_ref;
+	int args_ref;
+	unsigned int refcount;
+	std::string origin;
 };
 
 #endif /* L_ENV_H_ */
