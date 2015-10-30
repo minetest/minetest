@@ -460,7 +460,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	// start (or continue) the view bobbing animation.
 	v3f speed = player->getSpeed();
 	const bool movement_XZ = hypot(speed.X, speed.Z) > BS;
-	const bool movement_Y = abs(speed.Y) > BS;
+	const bool movement_Y = fabs(speed.Y) > BS;
 
 	const bool walking = movement_XZ && player->touching_ground;
 	const bool swimming = (movement_XZ || player->swimming_vertical) && player->in_liquid;
