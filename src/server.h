@@ -171,8 +171,8 @@ public:
 		const std::string &path_world,
 		const SubgameSpec &gamespec,
 		bool simple_singleplayer_mode,
-		bool ipv6
-	);
+		bool ipv6,
+		bool dedicated);
 	~Server();
 	void start(Address bind_addr);
 	void stop();
@@ -502,6 +502,8 @@ private:
 	// If true, do not allow multiple players and hide some multiplayer
 	// functionality
 	bool m_simple_singleplayer_mode;
+
+	bool m_dedicated;
 
 	// Thread can set; step() will throw as ServerError
 	MutexedVariable<std::string> m_async_fatal_error;
