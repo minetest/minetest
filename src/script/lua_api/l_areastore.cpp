@@ -164,7 +164,7 @@ int LuaAreaStore::l_get_areas_in_area(lua_State *L)
 	return 1;
 }
 
-// insert_area(edge1, edge2, data)
+// insert_area(edge1, edge2, data, id)
 int LuaAreaStore::l_insert_area(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -178,6 +178,9 @@ int LuaAreaStore::l_insert_area(lua_State *L)
 	const char *data = luaL_checklstring(L, 4, &d_len);
 
 	a.data = std::string(data, d_len);
+
+	if (lua_isnumber(L, 5))
+		a.id = lua_tonumber(L, 5);
 
 	if (!ast->insertArea(&a))
 		return 0;

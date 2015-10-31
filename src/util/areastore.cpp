@@ -160,7 +160,8 @@ void AreaStore::getAreasForPos(std::vector<Area *> *result, v3s16 pos)
 
 bool VectorAreaStore::insertArea(Area *a)
 {
-	a->id = getNextId();
+	if (a->id == U32_MAX)
+		a->id = getNextId();
 	std::pair<AreaMap::iterator, bool> res =
 			areas_map.insert(std::make_pair(a->id, *a));
 	if (!res.second)
@@ -232,7 +233,8 @@ static inline SpatialIndex::Point get_spatial_point(const v3s16 pos)
 
 bool SpatialAreaStore::insertArea(Area *a)
 {
-	a->id = getNextId();
+	if (a->id == U32_MAX)
+		a->id = getNextId();
 	if (!areas_map.insert(std::make_pair(a->id, *a)).second)
 		// ID is not unique
 		return false;
