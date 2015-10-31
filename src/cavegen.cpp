@@ -215,7 +215,8 @@ void CaveV5::carveRoute(v3f vec, float f, bool randomize_xz)
 
 	float nval = NoisePerlin3D(np_caveliquids, startp.X,
 		startp.Y, startp.Z, mg->seed);
-	MapNode liquidnode = nval < 0.40 ? lavanode : waternode;
+	MapNode liquidnode = (nval < 0.40 && node_max.Y < MGV5_LAVA_DEPTH) ?
+		lavanode : waternode;
 
 	v3f fp = orp + vec * f;
 	fp.X += 0.1 * ps->range(-10, 10);
