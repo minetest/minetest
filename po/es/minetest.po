@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-07-17 07:23+0200\n"
 "PO-Revision-Date: 2015-02-14 13:35+0100\n"
-"Last-Translator: Diego de las Heras <diegodelasheras@gmail.com>\n"
+"Last-Translator: Diego Martínez <lkaezadl3@yahoo.com>\n"
 "Language-Team: \n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -20,11 +20,11 @@ msgstr ""
 
 #: builtin/fstk/ui.lua:82
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
+msgstr "Ha ocurrido un error en una script de Lua, como en un mod:"
 
 #: builtin/fstk/ui.lua:84
 msgid "An error occured:"
-msgstr ""
+msgstr "Ha ocurrido un error:"
 
 #: builtin/fstk/ui.lua:89 builtin/mainmenu/store.lua:165
 msgid "Ok"
@@ -36,7 +36,7 @@ msgstr "Cargando..."
 
 #: builtin/mainmenu/common.lua:240
 msgid "Try reenabling public serverlist and check your internet connection."
-msgstr ""
+msgstr "Intenta re-habilitar la lista de servidores públicos y verifica tu conexión a Internet."
 
 #: builtin/mainmenu/dlg_config_world.lua:29
 msgid "World:"
@@ -252,9 +252,8 @@ msgid "Active Contributors"
 msgstr "Colaboradores activos"
 
 #: builtin/mainmenu/tab_credits.lua:54
-#, fuzzy
 msgid "Previous Core Developers"
-msgstr "Desarrolladores principales"
+msgstr "Antiguos desarrolladores"
 
 #: builtin/mainmenu/tab_credits.lua:59
 msgid "Previous Contributors"
@@ -389,7 +388,6 @@ msgstr "Puerto del servidor:"
 
 #: builtin/mainmenu/tab_server.lua:138
 #: builtin/mainmenu/tab_singleplayer.lua:165
-#, fuzzy
 msgid "No world created or selected!"
 msgstr "No se ha dado un nombre al mundo o no se ha seleccionado uno"
 
@@ -398,14 +396,12 @@ msgid "Server"
 msgstr "Servidor"
 
 #: builtin/mainmenu/tab_settings.lua:21
-#, fuzzy
 msgid "Opaque Leaves"
-msgstr "Agua opaca"
+msgstr "Hojas opacas"
 
 #: builtin/mainmenu/tab_settings.lua:22
-#, fuzzy
 msgid "Simple Leaves"
-msgstr "Movimiento de hojas"
+msgstr "Hojas simples"
 
 #: builtin/mainmenu/tab_settings.lua:23
 #, fuzzy
@@ -586,9 +582,8 @@ msgid "Initializing nodes..."
 msgstr "Inicializando nodos..."
 
 #: src/client.cpp:1760
-#, fuzzy
 msgid "Initializing nodes"
-msgstr "Inicializando nodos..."
+msgstr "Inicializando nodos"
 
 #: src/client.cpp:1768
 msgid "Item textures..."
@@ -857,9 +852,8 @@ msgid "Toggle fast"
 msgstr "Activar rápido"
 
 #: src/guiKeyChangeMenu.cpp:413
-#, fuzzy
 msgid "Toggle Cinematic"
-msgstr "Activar rápido"
+msgstr "Activar cinemático"
 
 #: src/guiKeyChangeMenu.cpp:414
 msgid "Toggle noclip"
