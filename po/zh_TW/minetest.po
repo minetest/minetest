@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-10-27 16:45+0200\n"
-"Last-Translator: PilzAdam <PilzAdam@minetest.net>\n"
+"PO-Revision-Date: 2015-10-31 14:59+0200\n"
+"Last-Translator: Jeff Huang <s8321414@gmail.com>\n"
 "Language-Team: Chinese (Taiwan) "
 "<https://hosted.weblate.org/projects/minetest/minetest/zh_TW/>\n"
 "Language: zh_TW\n"
@@ -53,11 +53,11 @@ msgstr "協定版本不符合。 "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "伺服器強制協定版本 $1。 "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "伺服器支援協定版本 $1 到 $2 "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -65,11 +65,11 @@ msgstr "嘗試重新啟用公共伺服器清單並檢查您的網際網路連線
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "我們只支援協定版本 $1。"
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "我們支援協定版本 $1 到 $2。"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua builtin/mainmenu/tab_settings.lua
@@ -415,15 +415,15 @@ msgstr "開始遊戲"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "\""
-msgstr ""
+msgstr "\""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(No description of setting given)"
-msgstr ""
+msgstr "（這個設定沒有描述可用）"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Browse"
-msgstr ""
+msgstr "瀏覽"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
@@ -435,7 +435,7 @@ msgstr "已停用"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Edit"
-msgstr ""
+msgstr "編輯"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Enabled"
@@ -445,7 +445,7 @@ msgstr "已啟用"
 msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
-msgstr ""
+msgstr "格式：<偏移>, <尺寸>, (<寬度 X>, <寬度 Y>, <寬度 Z>), <種子>, <八進位>, <持續性>"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Games"
@@ -453,27 +453,27 @@ msgstr "遊戲"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr ""
+msgstr "選擇性的空隙度可以以一個逗號開頭附加。"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a comma seperated list of flags."
-msgstr ""
+msgstr "請輸入逗號以分離各項旗標。"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "請輸入有效的整數。"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "請輸入有效的數字。"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Possible values are: "
-msgstr ""
+msgstr "可能的值為： "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "恢復預設值"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Select path"
@@ -485,15 +485,15 @@ msgstr "設定"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "顯示技術名稱"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be greater than $1."
-msgstr ""
+msgstr "值必須大於 $1。"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be lower than $1."
-msgstr ""
+msgstr "值必須低於 $1。"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
@@ -1150,6 +1150,8 @@ msgid ""
 "0 = parallax occlusion with slope information (faster).\n"
 "1 = relief mapping (slower, more accurate)."
 msgstr ""
+"0 = 包含斜率資訊的視差遮蔽（較快）。\n"
+"1 = 替換貼圖（較慢，較準確）。"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -1157,7 +1159,7 @@ msgstr "3D 雲朵"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
-msgstr ""
+msgstr "3D 模式"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1169,12 +1171,21 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side."
 msgstr ""
+"3D 支援。\n"
+"目前已支援：\n"
+"-    無：無 3D 輸出。\n"
+"-    浮雕：青色／品紅色彩色 3D。\n"
+"-    交錯的：基於偏振螢幕的奇／偶行支援。\n"
+"-    頂底：將螢幕分離為頂部／底部。\n"
+"-    一邊一個：將螢幕分離為一邊一個。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
+"新地圖的已選取種子，留空則為隨機。\n"
+"當在主選單中建立新世界的時候將會被覆寫。"
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
