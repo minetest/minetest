@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef OBJDEF_HEADER
 #define OBJDEF_HEADER
 
-#include "basicmacros.h"
+#include "util/basic_macros.h"
 #include "porting.h"
 
 class IGameDef;

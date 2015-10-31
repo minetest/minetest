@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef UTIL_NUMERIC_HEADER
 #define UTIL_NUMERIC_HEADER
 
-#include "../basicmacros.h"
+#include "basic_macros.h"
 #include "../irrlichttypes.h"
 #include "../irr_v2d.h"
 #include "../irr_v3d.h"
