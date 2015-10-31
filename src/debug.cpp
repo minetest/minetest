@@ -45,7 +45,7 @@ void sanity_check_fn(const char *assertion, const char *file,
 		unsigned int line, const char *function)
 {
 	errorstream << std::endl << "In thread " << std::hex
-		<< (unsigned long)thr_get_current_thread_id() << ":" << std::endl;
+		<< thr_get_current_thread_id() << ":" << std::endl;
 	errorstream << file << ":" << line << ": " << function
 		<< ": An engine assumption '" << assertion << "' failed." << std::endl;
 
@@ -58,7 +58,7 @@ void fatal_error_fn(const char *msg, const char *file,
 		unsigned int line, const char *function)
 {
 	errorstream << std::endl << "In thread " << std::hex
-		<< (unsigned long)thr_get_current_thread_id() << ":" << std::endl;
+		<< thr_get_current_thread_id() << ":" << std::endl;
 	errorstream << file << ":" << line << ": " << function
 		<< ": A fatal error occured: " << msg << std::endl;
 
@@ -93,8 +93,10 @@ DebugStack::DebugStack(threadid_t id)
 
 void DebugStack::print(FILE *file, bool everything)
 {
-	fprintf(file, "DEBUG STACK FOR THREAD %lx:\n",
-			(unsigned long)threadid);
+	std::ostringstream os;
+	os << threadid;
+	fprintf(file, "DEBUG STACK FOR THREAD %s:\n",
+		os.str().c_str());
 
 	for(int i=0; i<stack_max_i; i++)
 	{
@@ -113,7 +115,7 @@ void DebugStack::print(FILE *file, bool everything)
 
 void DebugStack::print(std::ostream &os, bool everything)
 {
-	os<<"DEBUG STACK FOR THREAD "<<(unsigned long)threadid<<": "<<std::endl;
+	os<<"DEBUG STACK FOR THREAD "<<threadid<<": "<<std::endl;
 
 	for(int i=0; i<stack_max_i; i++)
 	{
