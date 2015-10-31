@@ -34,15 +34,25 @@ DEALINGS IN THE SOFTWARE.
 
 #define UNUSED(expr) do { (void)(expr); } while (0)
 
-
-Mutex::Mutex()
+Mutex::Mutex(bool recursive)
 {
 #ifdef _WIN32
+	// Windows critical sections are recursive by default
+	UNUSED(recursive);
+
 	InitializeCriticalSection(&mutex);
 #else
-	int ret = pthread_mutex_init(&mutex, NULL);
+	pthread_mutexattr_t attr;
+	pthread_mutexattr_init(&attr);
+
+	if (recursive)
+		pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+
+	int ret = pthread_mutex_init(&mutex, &attr);
 	assert(!ret);
 	UNUSED(ret);
+
+	pthread_mutexattr_destroy(&attr);
 #endif
 }
 

@@ -67,10 +67,11 @@ public:
 	ScriptApiBase
 */
 
-ScriptApiBase::ScriptApiBase()
+ScriptApiBase::ScriptApiBase() :
+	m_luastackmutex(true)
 {
 #ifdef SCRIPTAPI_LOCK_DEBUG
-	m_locked = false;
+	m_lock_recursion_count = 0;
 #endif
 
 	m_luastack = luaL_newstate();
@@ -157,9 +158,14 @@ void ScriptApiBase::loadScript(const std::string &script_path)
 // - runs the callbacks
 // - replaces the table and arguments with the return value,
 //     computed depending on mode
+// This function must only be called with scriptlock held (i.e. inside of a
+// code block with SCRIPTAPI_PRECHECKHEADER declared)
 void ScriptApiBase::runCallbacksRaw(int nargs,
 		RunCallbacksMode mode, const char *fxn)
 {
+#ifdef SCRIPTAPI_LOCK_DEBUG
+	assert(m_lock_recursion_count > 0);
+#endif
 	lua_State *L = getStack();
 	FATAL_ERROR_IF(lua_gettop(L) < nargs + 1, "Not enough arguments");
 
