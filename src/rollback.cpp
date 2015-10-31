@@ -110,14 +110,14 @@ RollbackManager::~RollbackManager()
 	flush();
 
 	SQLOK(sqlite3_finalize(stmt_insert));
+	SQLOK(sqlite3_finalize(stmt_insert_pos));
 	SQLOK(sqlite3_finalize(stmt_replace));
+	SQLOK(sqlite3_finalize(stmt_replace_pos));
 	SQLOK(sqlite3_finalize(stmt_select));
 	SQLOK(sqlite3_finalize(stmt_select_range));
-	SQLOK(sqlite3_finalize(stmt_select_withActor));
-	SQLOK(sqlite3_finalize(stmt_knownActor_select));
-	SQLOK(sqlite3_finalize(stmt_knownActor_insert));
-	SQLOK(sqlite3_finalize(stmt_knownNode_select));
-	SQLOK(sqlite3_finalize(stmt_knownNode_insert));
+	SQLOK(sqlite3_finalize(stmt_select_with_actor));
+	SQLOK(sqlite3_finalize(stmt_insert_actor));
+	SQLOK(sqlite3_finalize(stmt_insert_node));
 
 	SQLOK(sqlite3_close(db));
 }
@@ -146,9 +146,9 @@ int RollbackManager::getActorId(const std::string &name)
 		}
 	}
 
-	SQLOK(sqlite3_bind_text(stmt_knownActor_insert, 1, name.c_str(), name.size(), NULL));
-	SQLRES(sqlite3_step(stmt_knownActor_insert), SQLITE_DONE);
-	SQLOK(sqlite3_reset(stmt_knownActor_insert));
+	SQLOK(sqlite3_bind_text(stmt_insert_actor, 1, name.c_str(), name.size(), NULL));
+	SQLRES(sqlite3_step(stmt_insert_actor), SQLITE_DONE);
+	SQLOK(sqlite3_reset(stmt_insert_actor));
 
 	int id = sqlite3_last_insert_rowid(db);
 	registerNewActor(id, name);
@@ -166,9 +166,9 @@ int RollbackManager::getNodeId(const std::string &name)
 		}
 	}
 
-	SQLOK(sqlite3_bind_text(stmt_knownNode_insert, 1, name.c_str(), name.size(), NULL));
-	SQLRES(sqlite3_step(stmt_knownNode_insert), SQLITE_DONE);
-	SQLOK(sqlite3_reset(stmt_knownNode_insert));
+	SQLOK(sqlite3_bind_text(stmt_insert_node, 1, name.c_str(), name.size(), NULL));
+	SQLRES(sqlite3_step(stmt_insert_node), SQLITE_DONE);
+	SQLOK(sqlite3_reset(stmt_insert_node));
 
 	int id = sqlite3_last_insert_rowid(db);
 	registerNewNode(id, name);
@@ -206,15 +206,17 @@ const char * RollbackManager::getNodeName(const int id)
 bool RollbackManager::createTables()
 {
 	SQLOK(sqlite3_exec(db,
-		"CREATE TABLE IF NOT EXISTS `actor` (\n"
-		"	`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n"
+		"BEGIN;\n"
+		"PRAGMA user_version = 1;\n"
+		"CREATE TABLE `actor` (\n"
+		"	`id` INTEGER PRIMARY KEY AUTOINCREMENT,\n"
 		"	`name` TEXT NOT NULL\n"
 		");\n"
-		"CREATE TABLE IF NOT EXISTS `node` (\n"
-		"	`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n"
+		"CREATE TABLE `node` (\n"
+		"	`id` INTEGER PRIMARY KEY AUTOINCREMENT,\n"
 		"	`name` TEXT NOT NULL\n"
 		");\n"
-		"CREATE TABLE IF NOT EXISTS `action` (\n"
+		"CREATE TABLE `action` (\n"
 		"	`id` INTEGER PRIMARY KEY AUTOINCREMENT,\n"
 		"	`actor` INTEGER NOT NULL,\n"
 		"	`timestamp` TIMESTAMP NOT NULL,\n"
@@ -225,9 +227,6 @@ bool RollbackManager::createTables()
 		"	`stackNode` INTEGER,\n"
 		"	`stackQuantity` INTEGER,\n"
 		"	`nodeMeta` INTEGER,\n"
-		"	`x` INT,\n"
-		"	`y` INT,\n"
-		"	`z` INT,\n"
 		"	`oldNode` INTEGER,\n"
 		"	`oldParam1` INTEGER,\n"
 		"	`oldParam2` INTEGER,\n"
@@ -237,12 +236,18 @@ bool RollbackManager::createTables()
 		"	`newParam2` INTEGER,\n"
 		"	`newMeta` TEXT,\n"
 		"	`guessedActor` INTEGER,\n"
-		"	FOREIGN KEY (`actor`) REFERENCES `actor`(`id`),\n"
-		"	FOREIGN KEY (`stackNode`) REFERENCES `node`(`id`),\n"
-		"	FOREIGN KEY (`oldNode`)   REFERENCES `node`(`id`),\n"
-		"	FOREIGN KEY (`newNode`)   REFERENCES `node`(`id`)\n"
+		"	FOREIGN KEY (`actor`)     REFERENCES `actor` (`id`),\n"
+		"	FOREIGN KEY (`stackNode`) REFERENCES `node` (`id`),\n"
+		"	FOREIGN KEY (`oldNode`)   REFERENCES `node` (`id`),\n"
+		"	FOREIGN KEY (`newNode`)   REFERENCES `node` (`id`)\n"
 		");\n"
-		"CREATE INDEX IF NOT EXISTS `actionIndex` ON `action`(`x`,`y`,`z`,`timestamp`,`actor`);\n",
+		"CREATE INDEX `actionTimeActor` ON `action` (`timestamp`, `actor`);\n"
+		"-- SQLite3's R*Tree implementation only supports position \n"
+		"-- ranges, not points, so we simply set both edges of the \n"
+		"-- range to the same value, creating a 1x1x1 area. \n"
+		"CREATE VIRTUAL TABLE `actionPos` USING `rtree_i32`\n"
+		"	(`id`, `x1`, `x2`, `y1`, `y2`, `z1`, `z2`);\n"
+		"COMMIT;\n",
 		NULL, NULL, NULL));
 	verbosestream << "SQL Rollback: SQLite3 database structure was created" << std::endl;
 
@@ -250,9 +255,105 @@ bool RollbackManager::createTables()
 }
 
 
+void RollbackManager::updateDatabase()
+{
+	sqlite3_stmt *stmt_get_version;
+	SQLOK(sqlite3_prepare_v2(db, "PRAGMA user_version",
+			-1, &stmt_get_version, NULL));
+
+	if (sqlite3_step(stmt_get_version) != SQLITE_ROW) {
+		throw FileNotGoodException("RollbackManager: "
+			"Fetching database version failed!");
+	}
+
+	int version = sqlite3_column_int(stmt_get_version, 0);
+	SQLOK(sqlite3_finalize(stmt_get_version));
+
+	switch (version) {
+	case 0:
+		dstream << "========================================" << std::endl
+			<< "Detected old rollback log, converting it." << std::endl
+			<< "This will take a while if your rollback log is large!" << std::endl
+			<< "========================================" << std::endl;
+		SQLOK(sqlite3_exec(db,
+			"BEGIN;\n"
+
+			"-- Update DB version \n"
+			"PRAGMA user_version = 1;\n"
+
+			"-- Create new tables and indexes \n"
+			"CREATE VIRTUAL TABLE `actionPos` USING `rtree_i32`\n"
+			"	(`id`, `x1`, `x2`, `y1`, `y2`, `z1`, `z2`);\n"
+			"CREATE TABLE `action_new` (\n"
+			"	`id` INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+			"	`actor` INTEGER NOT NULL,\n"
+			"	`timestamp` TIMESTAMP NOT NULL,\n"
+			"	`type` INTEGER NOT NULL,\n"
+			"	`list` TEXT,\n"
+			"	`index` INTEGER,\n"
+			"	`add` INTEGER,\n"
+			"	`stackNode` INTEGER,\n"
+			"	`stackQuantity` INTEGER,\n"
+			"	`nodeMeta` INTEGER,\n"
+			"	`oldNode` INTEGER,\n"
+			"	`oldParam1` INTEGER,\n"
+			"	`oldParam2` INTEGER,\n"
+			"	`oldMeta` TEXT,\n"
+			"	`newNode` INTEGER,\n"
+			"	`newParam1` INTEGER,\n"
+			"	`newParam2` INTEGER,\n"
+			"	`newMeta` TEXT,\n"
+			"	`guessedActor` INTEGER,\n"
+			"	FOREIGN KEY (`actor`) REFERENCES `actor`(`id`),\n"
+			"	FOREIGN KEY (`stackNode`) REFERENCES `node`(`id`),\n"
+			"	FOREIGN KEY (`oldNode`)   REFERENCES `node`(`id`),\n"
+			"	FOREIGN KEY (`newNode`)   REFERENCES `node`(`id`)\n"
+			");\n"
+			"CREATE INDEX `actionTimeActor` ON `action_new` (`timestamp`, `actor`);\n"
+
+			"-- Transfer data to new tables \n"
+			"INSERT INTO `action_new` (\n"
+			"	`id`, `actor`, `timestamp`, `type`,\n"
+			"	`list`, `index`, `add`, `stackNode`, `stackQuantity`, `nodeMeta`,\n"
+			"	`oldNode`, `oldParam1`, `oldParam2`, `oldMeta`,\n"
+			"	`newNode`, `newParam1`, `newParam2`, `newMeta`, `guessedActor`\n"
+			") SELECT\n"
+			"	`id`, `actor`, `timestamp`, `type`,\n"
+			"	`list`, `index`, `add`, `stackNode`, `stackQuantity`, `nodeMeta`,\n"
+			"	`oldNode`, `oldParam1`, `oldParam2`, `oldMeta`,\n"
+			"	`newNode`, `newParam1`, `newParam2`, `newMeta`, `guessedActor`\n"
+			"FROM `action`;\n"
+			"-- This is the slowest part of the conversion process \n"
+			"INSERT INTO `actionPos` (`id`, `x1`, `x2`, `y1`, `y2`, `z1`, `z2`)\n"
+			"	SELECT `id`, `x`, `x`, `y`, `y`, `z`, `z` FROM `action`\n"
+			"	WHERE `x` IS NOT NULL;\n"
+
+			"-- Replace old table with new one \n"
+			"DROP TABLE `action`;  -- Also drops all old indexes \n"
+			"ALTER TABLE `action_new` RENAME TO `action`;\n"
+
+			"COMMIT;\n",
+			NULL, NULL, NULL));
+		dstream << "Finished converting rollback log!" << std::endl
+			<< "You will likely want to VACUUM your database to "
+			   "reduce its size." << std::endl
+			<< "You can do this with the sqlite3 utility "
+			   "(run `sqlite3 rollback.sqlite VACUUM`)." << std::endl;
+		break;
+	case 1:
+		// Latest version
+		break;
+	default:
+		throw FileNotGoodException("RollbackManager: "
+				"Unsupported rollback log version " +
+				to_string(version) + "!");
+	}
+}
+
+
 bool RollbackManager::initDatabase()
 {
-	verbosestream << "RollbackManager: Database connection setup" << std::endl;
+	verbosestream << "RollbackManager: Setting up database." << std::endl;
 
 	bool needs_create = !fs::PathExists(database_path);
 	SQLOK(sqlite3_open_v2(database_path.c_str(), &db,
@@ -260,20 +361,20 @@ bool RollbackManager::initDatabase()
 
 	if (needs_create) {
 		createTables();
+	} else {
+		updateDatabase();
 	}
 
 	SQLOK(sqlite3_prepare_v2(db,
 		"INSERT INTO `action` (\n"
 		"	`actor`, `timestamp`, `type`,\n"
 		"	`list`, `index`, `add`, `stackNode`, `stackQuantity`, `nodeMeta`,\n"
-		"	`x`, `y`, `z`,\n"
 		"	`oldNode`, `oldParam1`, `oldParam2`, `oldMeta`,\n"
 		"	`newNode`, `newParam1`, `newParam2`, `newMeta`,\n"
 		"	`guessedActor`\n"
 		") VALUES (\n"
 		"	?, ?, ?,\n"
 		"	?, ?, ?, ?, ?, ?,\n"
-		"	?, ?, ?,\n"
 		"	?, ?, ?, ?,\n"
 		"	?, ?, ?, ?,\n"
 		"	?"
@@ -284,14 +385,12 @@ bool RollbackManager::initDatabase()
 		"REPLACE INTO `action` (\n"
 		"	`actor`, `timestamp`, `type`,\n"
 		"	`list`, `index`, `add`, `stackNode`, `stackQuantity`, `nodeMeta`,\n"
-		"	`x`, `y`, `z`,\n"
 		"	`oldNode`, `oldParam1`, `oldParam2`, `oldMeta`,\n"
 		"	`newNode`, `newParam1`, `newParam2`, `newMeta`,\n"
 		"	`guessedActor`, `id`\n"
 		") VALUES (\n"
 		"	?, ?, ?,\n"
 		"	?, ?, ?, ?, ?, ?,\n"
-		"	?, ?, ?,\n"
 		"	?, ?, ?, ?,\n"
 		"	?, ?, ?, ?,\n"
 		"	?, ?\n"
@@ -299,34 +398,42 @@ bool RollbackManager::initDatabase()
 		-1, &stmt_replace, NULL));
 
 	SQLOK(sqlite3_prepare_v2(db,
+		"INSERT INTO `actionPos` (`id`, `x1`, `x2`, `y1`, `y2`, `z1`, `z2`)\n"
+		"	VALUES (?1, ?2, ?2, ?3, ?3, ?4, ?4)",
+		-1, &stmt_insert_pos, NULL));
+
+	SQLOK(sqlite3_prepare_v2(db,
+		"REPLACE INTO `actionPos` (`id`, `x1`, `x2`, `y1`, `y2`, `z1`, `z2`)\n"
+		"	VALUES (?1, ?2, ?2, ?3, ?3, ?4, ?4)",
+		-1, &stmt_replace_pos, NULL));
+
+	SQLOK(sqlite3_prepare_v2(db,
 		"SELECT\n"
 		"	`actor`, `timestamp`, `type`,\n"
 		"	`list`, `index`, `add`, `stackNode`, `stackQuantity`, `nodemeta`,\n"
-		"	`x`, `y`, `z`,\n"
+		"	`x1`, `y1`, `z1`,\n"
 		"	`oldNode`, `oldParam1`, `oldParam2`, `oldMeta`,\n"
 		"	`newNode`, `newParam1`, `newParam2`, `newMeta`,\n"
 		"	`guessedActor`\n"
-		" FROM `action`\n"
-		" WHERE `timestamp` >= ?\n"
-		" ORDER BY `timestamp` DESC, `id` DESC",
+		"FROM `action`, `actionPos`\n"
+		"WHERE `action`.`id` = `actionPos`.`id` AND\n"
+		"	`timestamp` >= ?\n"
+		"ORDER BY `timestamp` DESC, `action`.`id` DESC",
 		-1, &stmt_select, NULL));
 
 	SQLOK(sqlite3_prepare_v2(db,
 		"SELECT\n"
 		"	`actor`, `timestamp`, `type`,\n"
 		"	`list`, `index`, `add`, `stackNode`, `stackQuantity`, `nodemeta`,\n"
-		"	`x`, `y`, `z`,\n"
+		"	`x1`, `y1`, `z1`,\n"
 		"	`oldNode`, `oldParam1`, `oldParam2`, `oldMeta`,\n"
 		"	`newNode`, `newParam1`, `newParam2`, `newMeta`,\n"
 		"	`guessedActor`\n"
-		"FROM `action`\n"
-		"WHERE `timestamp` >= ?\n"
-		"	AND `x` IS NOT NULL\n"
-		"	AND `y` IS NOT NULL\n"
-		"	AND `z` IS NOT NULL\n"
-		"	AND `x` BETWEEN ? AND ?\n"
-		"	AND `y` BETWEEN ? AND ?\n"
-		"	AND `z` BETWEEN ? AND ?\n"
+		"FROM `action` INNER JOIN `actionPos` USING (`id`)\n"
+		"WHERE `timestamp` >= ? AND\n"
+		"	`x1` BETWEEN ? AND ? AND\n"
+		"	`y1` BETWEEN ? AND ? AND\n"
+		"	`z1` BETWEEN ? AND ?\n"
 		"ORDER BY `timestamp` DESC, `id` DESC\n"
 		"LIMIT 0,?",
 		-1, &stmt_select_range, NULL));
@@ -335,54 +442,66 @@ bool RollbackManager::initDatabase()
 		"SELECT\n"
 		"	`actor`, `timestamp`, `type`,\n"
 		"	`list`, `index`, `add`, `stackNode`, `stackQuantity`, `nodemeta`,\n"
-		"	`x`, `y`, `z`,\n"
+		"	`x1`, `y1`, `z1`,\n"
 		"	`oldNode`, `oldParam1`, `oldParam2`, `oldMeta`,\n"
 		"	`newNode`, `newParam1`, `newParam2`, `newMeta`,\n"
 		"	`guessedActor`\n"
-		"FROM `action`\n"
-		"WHERE `timestamp` >= ?\n"
-		"	AND `actor` = ?\n"
+		"FROM `action` LEFT OUTER JOIN `actionPos` USING (`id`)\n"
+		"WHERE `timestamp` >= ? AND `actor` = ?\n"
 		"ORDER BY `timestamp` DESC, `id` DESC\n",
-		-1, &stmt_select_withActor, NULL));
-
-	SQLOK(sqlite3_prepare_v2(db, "SELECT `id`, `name` FROM `actor`",
-			-1, &stmt_knownActor_select, NULL));
+		-1, &stmt_select_with_actor, NULL));
 
 	SQLOK(sqlite3_prepare_v2(db, "INSERT INTO `actor` (`name`) VALUES (?)",
-			-1, &stmt_knownActor_insert, NULL));
-
-	SQLOK(sqlite3_prepare_v2(db, "SELECT `id`, `name` FROM `node`",
-			-1, &stmt_knownNode_select, NULL));
+			-1, &stmt_insert_actor, NULL));
 
 	SQLOK(sqlite3_prepare_v2(db, "INSERT INTO `node` (`name`) VALUES (?)",
-			-1, &stmt_knownNode_insert, NULL));
+			-1, &stmt_insert_node, NULL));
 
-	verbosestream << "SQL prepared statements setup correctly" << std::endl;
 
-	while (sqlite3_step(stmt_knownActor_select) == SQLITE_ROW) {
+	// Load actor id->name mapping
+	sqlite3_stmt *stmt_load_actors;
+	SQLOK(sqlite3_prepare_v2(db, "SELECT `id`, `name` FROM `actor`",
+			-1, &stmt_load_actors, NULL));
+	while (sqlite3_step(stmt_load_actors) == SQLITE_ROW) {
 		registerNewActor(
-		        sqlite3_column_int(stmt_knownActor_select, 0),
-		        reinterpret_cast<const char *>(sqlite3_column_text(stmt_knownActor_select, 1))
+		        sqlite3_column_int(stmt_load_actors, 0),
+		        reinterpret_cast<const char *>(sqlite3_column_text(stmt_load_actors, 1))
 		);
 	}
-	SQLOK(sqlite3_reset(stmt_knownActor_select));
+	SQLOK(sqlite3_finalize(stmt_load_actors));
 
-	while (sqlite3_step(stmt_knownNode_select) == SQLITE_ROW) {
+
+	// Load node id->name mapping
+	sqlite3_stmt *stmt_load_nodes;
+	SQLOK(sqlite3_prepare_v2(db, "SELECT `id`, `name` FROM `node`",
+			-1, &stmt_load_nodes, NULL));
+	while (sqlite3_step(stmt_load_nodes) == SQLITE_ROW) {
 		registerNewNode(
-		        sqlite3_column_int(stmt_knownNode_select, 0),
-		        reinterpret_cast<const char *>(sqlite3_column_text(stmt_knownNode_select, 1))
+		        sqlite3_column_int(stmt_load_nodes, 0),
+		        reinterpret_cast<const char *>(sqlite3_column_text(stmt_load_nodes, 1))
 		);
 	}
-	SQLOK(sqlite3_reset(stmt_knownNode_select));
+	SQLOK(sqlite3_finalize(stmt_load_nodes));
 
+	verbosestream << "RollbackManager: Database setup completed." << std::endl;
 	return needs_create;
+}
+
+
+void RollbackManager::bindPos(sqlite3_stmt *stmt, int x, int y, int z)
+{
+	SQLOK(sqlite3_bind_int(stmt, 2, x));
+	SQLOK(sqlite3_bind_int(stmt, 3, y));
+	SQLOK(sqlite3_bind_int(stmt, 4, z));
 }
 
 
 bool RollbackManager::registerRow(const ActionRow & row)
 {
 	sqlite3_stmt * stmt_do = (row.id) ? stmt_replace : stmt_insert;
+	sqlite3_stmt * stmt_do_pos = (row.id) ? stmt_replace_pos : stmt_insert_pos;
 
+	bool pos = false;
 	bool nodeMeta = false;
 
 	SQLOK(sqlite3_bind_int  (stmt_do, 1, row.actor));
@@ -401,6 +520,7 @@ bool RollbackManager::registerRow(const ActionRow & row)
 		SQLOK(sqlite3_bind_int (stmt_do, 9, (int) nodeMeta));
 
 		if (nodeMeta) {
+			pos = true;
 			std::string::size_type p1, p2;
 			p1 = loc.find(':') + 1;
 			p2 = loc.find(',');
@@ -409,9 +529,7 @@ bool RollbackManager::registerRow(const ActionRow & row)
 			p2 = loc.find(',', p1);
 			std::string y = loc.substr(p1, p2 - p1);
 			std::string z = loc.substr(p2 + 1);
-			SQLOK(sqlite3_bind_int(stmt_do, 10, atoi(x.c_str())));
-			SQLOK(sqlite3_bind_int(stmt_do, 11, atoi(y.c_str())));
-			SQLOK(sqlite3_bind_int(stmt_do, 12, atoi(z.c_str())));
+			bindPos(stmt_do_pos, atoi(x.c_str()), atoi(y.c_str()), atoi(z.c_str()));
 		}
 	} else {
 		SQLOK(sqlite3_bind_null(stmt_do, 4));
@@ -423,44 +541,44 @@ bool RollbackManager::registerRow(const ActionRow & row)
 	}
 
 	if (row.type == RollbackAction::TYPE_SET_NODE) {
-		SQLOK(sqlite3_bind_int (stmt_do, 10, row.x));
-		SQLOK(sqlite3_bind_int (stmt_do, 11, row.y));
-		SQLOK(sqlite3_bind_int (stmt_do, 12, row.z));
-		SQLOK(sqlite3_bind_int (stmt_do, 13, row.oldNode));
-		SQLOK(sqlite3_bind_int (stmt_do, 14, row.oldParam1));
-		SQLOK(sqlite3_bind_int (stmt_do, 15, row.oldParam2));
-		SQLOK(sqlite3_bind_text(stmt_do, 16, row.oldMeta.c_str(), row.oldMeta.size(), NULL));
-		SQLOK(sqlite3_bind_int (stmt_do, 17, row.newNode));
-		SQLOK(sqlite3_bind_int (stmt_do, 18, row.newParam1));
-		SQLOK(sqlite3_bind_int (stmt_do, 19, row.newParam2));
-		SQLOK(sqlite3_bind_text(stmt_do, 20, row.newMeta.c_str(), row.newMeta.size(), NULL));
-		SQLOK(sqlite3_bind_int (stmt_do, 21, row.guessed ? 1 : 0));
+		pos = true;
+		bindPos(stmt_do_pos, row.x, row.y, row.z);
+		SQLOK(sqlite3_bind_int (stmt_do, 10, row.oldNode));
+		SQLOK(sqlite3_bind_int (stmt_do, 11, row.oldParam1));
+		SQLOK(sqlite3_bind_int (stmt_do, 12, row.oldParam2));
+		SQLOK(sqlite3_bind_text(stmt_do, 13, row.oldMeta.c_str(), row.oldMeta.size(), NULL));
+		SQLOK(sqlite3_bind_int (stmt_do, 14, row.newNode));
+		SQLOK(sqlite3_bind_int (stmt_do, 15, row.newParam1));
+		SQLOK(sqlite3_bind_int (stmt_do, 16, row.newParam2));
+		SQLOK(sqlite3_bind_text(stmt_do, 17, row.newMeta.c_str(), row.newMeta.size(), NULL));
+		SQLOK(sqlite3_bind_int (stmt_do, 18, row.guessed ? 1 : 0));
 	} else {
-		if (!nodeMeta) {
-			SQLOK(sqlite3_bind_null(stmt_do, 10));
-			SQLOK(sqlite3_bind_null(stmt_do, 11));
-			SQLOK(sqlite3_bind_null(stmt_do, 12));
-		}
+		SQLOK(sqlite3_bind_null(stmt_do, 10));
+		SQLOK(sqlite3_bind_null(stmt_do, 11));
+		SQLOK(sqlite3_bind_null(stmt_do, 12));
 		SQLOK(sqlite3_bind_null(stmt_do, 13));
 		SQLOK(sqlite3_bind_null(stmt_do, 14));
 		SQLOK(sqlite3_bind_null(stmt_do, 15));
 		SQLOK(sqlite3_bind_null(stmt_do, 16));
 		SQLOK(sqlite3_bind_null(stmt_do, 17));
 		SQLOK(sqlite3_bind_null(stmt_do, 18));
-		SQLOK(sqlite3_bind_null(stmt_do, 19));
-		SQLOK(sqlite3_bind_null(stmt_do, 20));
-		SQLOK(sqlite3_bind_null(stmt_do, 21));
 	}
 
 	if (row.id) {
-		SQLOK(sqlite3_bind_int(stmt_do, 22, row.id));
+		SQLOK(sqlite3_bind_int(stmt_do, 19, row.id));
 	}
 
-	int written = sqlite3_step(stmt_do);
-
+	bool ok = sqlite3_step(stmt_do) == SQLITE_DONE;
 	SQLOK(sqlite3_reset(stmt_do));
 
-	return written == SQLITE_DONE;
+	if (pos && ok) {
+		int id = row.id ? row.id : sqlite3_last_insert_rowid(db);
+		SQLOK(sqlite3_bind_int(stmt_do_pos, 1, id));
+		ok = ok && sqlite3_step(stmt_do_pos) == SQLITE_DONE;
+		SQLOK(sqlite3_reset(stmt_do_pos));
+	}
+
+	return ok;
 }
 
 
@@ -615,7 +733,7 @@ const std::list<RollbackAction> RollbackManager::rollbackActionsFromActionRows(
 
 const std::list<ActionRow> RollbackManager::getRowsSince(time_t firstTime, const std::string & actor)
 {
-	sqlite3_stmt *stmt_stmt = actor.empty() ? stmt_select : stmt_select_withActor;
+	sqlite3_stmt *stmt_stmt = actor.empty() ? stmt_select : stmt_select_with_actor;
 	sqlite3_bind_int64(stmt_stmt, 1, firstTime);
 
 	if (!actor.empty()) {
@@ -844,21 +962,25 @@ void RollbackManager::reportAction(const RollbackAction &action_)
 	addAction(action);
 }
 
+
 std::string RollbackManager::getActor()
 {
 	return current_actor;
 }
+
 
 bool RollbackManager::isActorGuess()
 {
 	return current_actor_is_guess;
 }
 
+
 void RollbackManager::setActor(const std::string & actor, bool is_guess)
 {
 	current_actor = actor;
 	current_actor_is_guess = is_guess;
 }
+
 
 std::string RollbackManager::getSuspect(v3s16 p, float nearness_shortcut,
 		float min_nearness)
@@ -935,11 +1057,13 @@ void RollbackManager::addAction(const RollbackAction & action)
 	}
 }
 
+
 std::list<RollbackAction> RollbackManager::getEntriesSince(time_t first_time)
 {
 	flush();
 	return getActionsSince(first_time);
 }
+
 
 std::list<RollbackAction> RollbackManager::getNodeActors(v3s16 pos, int range,
 		time_t seconds, int limit)
@@ -950,6 +1074,7 @@ std::list<RollbackAction> RollbackManager::getNodeActors(v3s16 pos, int range,
 
 	return getActionsSince_range(first_time, pos, range, limit);
 }
+
 
 std::list<RollbackAction> RollbackManager::getRevertActions(
 		const std::string &actor_filter,

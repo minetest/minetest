@@ -61,6 +61,7 @@ private:
 	const char * getActorName(const int id);
 	const char * getNodeName(const int id);
 	bool createTables();
+	void updateDatabase();
 	bool initDatabase();
 	bool registerRow(const ActionRow & row);
 	const std::list<ActionRow> actionRowsFromSelect(sqlite3_stmt * stmt);
@@ -78,6 +79,7 @@ private:
 	void migrate(const std::string & filepath);
 	static float getSuspectNearness(bool is_guess, v3s16 suspect_p,
 		time_t suspect_t, v3s16 action_p, time_t action_t);
+	void bindPos(sqlite3_stmt *stmt, int x, int y, int z);
 
 
 	IGameDef * gamedef;
@@ -92,13 +94,13 @@ private:
 	sqlite3 * db;
 	sqlite3_stmt * stmt_insert;
 	sqlite3_stmt * stmt_replace;
+	sqlite3_stmt * stmt_insert_pos;
+	sqlite3_stmt * stmt_replace_pos;
 	sqlite3_stmt * stmt_select;
 	sqlite3_stmt * stmt_select_range;
-	sqlite3_stmt * stmt_select_withActor;
-	sqlite3_stmt * stmt_knownActor_select;
-	sqlite3_stmt * stmt_knownActor_insert;
-	sqlite3_stmt * stmt_knownNode_select;
-	sqlite3_stmt * stmt_knownNode_insert;
+	sqlite3_stmt * stmt_select_with_actor;
+	sqlite3_stmt * stmt_insert_actor;
+	sqlite3_stmt * stmt_insert_node;
 
 	std::vector<Entity> knownActors;
 	std::vector<Entity> knownNodes;
