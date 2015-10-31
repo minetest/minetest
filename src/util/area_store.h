@@ -38,9 +38,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 struct Area {
-	Area() {}
+	Area() : id(U32_MAX) {}
 	Area(const v3s16 &mine, const v3s16 &maxe) :
-		minedge(mine), maxedge(maxe)
+		id(U32_MAX), minedge(mine), maxedge(maxe)
 	{
 		sortBoxVerticies(minedge, maxedge);
 	}
@@ -68,7 +68,8 @@ public:
 	size_t size() const { return areas_map.size(); }
 
 	/// Add an area to the store.
-	/// Updates the area's ID.
+	/// Updates the area's ID if it hasn't already been set.
+	/// @return Whether the area insertion was successful.
 	virtual bool insertArea(Area *a) = 0;
 
 	/// Removes an area from the store by ID.
