@@ -217,8 +217,12 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 		}
 
 		run();
-	} catch (LuaError &e) {
+	} catch (ProcessedLuaError &e) {
 		errorstream << "MAINMENU ERROR: " << e.what() << std::endl;
+		m_data->script_data.errormessage = e.what();
+	} catch (LuaError &e) {
+		errorstream << "MAINMENU ERROR: " << e.what() << std::endl
+				<< m_script->getBacktrace() << std::endl;
 		m_data->script_data.errormessage = e.what();
 	}
 

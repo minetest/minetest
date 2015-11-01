@@ -53,8 +53,10 @@ void ScriptApiEnv::environment_Step(float dtime)
 	lua_pushnumber(L, dtime);
 	try {
 		runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+	} catch (ProcessedLuaError &e) {
+		getServer()->setAsyncFatalProcessedLuaError(e.what());
 	} catch (LuaError &e) {
-		getServer()->setAsyncFatalError(e.what());
+		getServer()->setAsyncFatalLuaError(e.what());
 	}
 }
 
@@ -74,8 +76,10 @@ void ScriptApiEnv::player_event(ServerActiveObject* player, std::string type)
 	lua_pushstring(L,type.c_str()); // event type
 	try {
 		runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+	} catch (ProcessedLuaError &e) {
+		getServer()->setAsyncFatalProcessedLuaError(e.what());
 	} catch (LuaError &e) {
-		getServer()->setAsyncFatalError(e.what());
+		getServer()->setAsyncFatalLuaError(e.what());
 	}
 }
 

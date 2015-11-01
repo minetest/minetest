@@ -107,8 +107,10 @@ void *ServerThread::run()
 		} catch (ClientNotFoundException &e) {
 		} catch (con::ConnectionBindFailed &e) {
 			m_server->setAsyncFatalError(e.what());
+		} catch (ProcessedLuaError &e) {
+			m_server->setAsyncFatalProcessedLuaError(e.what());
 		} catch (LuaError &e) {
-			m_server->setAsyncFatalError("Lua: " + std::string(e.what()));
+			m_server->setAsyncFatalLuaError(e.what());
 		}
 	}
 
@@ -2844,6 +2846,32 @@ void Server::notifyPlayer(const char *name, const std::wstring &msg)
 		return;
 
 	SendChatMessage(player->peer_id, msg);
+}
+
+void Server::setAsyncFatalProcessedLuaError(const std::string &error)
+{
+	// ProcessedLuaErrors already contain a backtrace and other information.
+
+	setAsyncFatalError(std::string("Lua: ") + error);
+}
+
+void Server::setAsyncFatalLuaError(const std::string &error)
+{
+	// Regular Lua passes exceptions directly into here, requiring a backtrace
+	// to be appended at this point.
+
+	// LuaJIT provides a way to catch exceptions directly at the C++->Lua
+	// interface and we invoke regular Lua error handling in there, which
+	// appends a backtrace to the error and converts it to a ProcessedLuaError.
+
+	std::ostringstream os(std::ios::binary);
+	os << "Lua: " << error;
+	{
+		MutexAutoLock lock(m_env_mutex);
+		os << std::endl << m_script->getBacktrace();
+	}
+
+	setAsyncFatalError(os.str());
 }
 
 bool Server::showFormspec(const char *playername, const std::string &formspec,

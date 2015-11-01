@@ -75,6 +75,7 @@ public:
 	void removeObjectReference(ServerActiveObject *cobj);
 
 	Server* getServer() { return m_server; }
+	std::string getBacktrace();
 
 	std::string getOrigin() { return m_last_run_mod; }
 	void setOriginDirect(const char *origin);

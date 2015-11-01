@@ -231,6 +231,11 @@ void ScriptApiBase::stackDump(std::ostream &o)
 	o << std::endl;
 }
 
+std::string ScriptApiBase::getBacktrace()
+{
+	return script_get_backtrace(getStack());
+}
+
 void ScriptApiBase::setOriginDirect(const char *origin)
 {
 	m_last_run_mod = origin ? origin : "??";

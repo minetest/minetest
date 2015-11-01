@@ -610,8 +610,10 @@ MapBlock *EmergeThread::finishGen(v3s16 pos, BlockMakeData *bmdata,
 	try {
 		m_server->getScriptIface()->environment_OnGenerated(
 			minp, maxp, m_mapgen->blockseed);
+	} catch (ProcessedLuaError &e) {
+		m_server->setAsyncFatalProcessedLuaError(e.what());
 	} catch (LuaError &e) {
-		m_server->setAsyncFatalError("Lua: " + std::string(e.what()));
+		m_server->setAsyncFatalLuaError(e.what());
 	}
 
 	EMERGE_DBG_OUT("ended up with: " << analyze_block(block));
