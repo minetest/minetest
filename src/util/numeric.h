@@ -416,4 +416,9 @@ inline u32 npot2(u32 orig) {
 	return orig + 1;
 }
 
+// http://stackoverflow.com/questions/2249110/how-do-i-make-a-portable-isnan-isinf-function
+// Let's just use our own macro like Lua does internally. At least it works
+// reliably and is portable...
+#define util_isnan(a) (!((a)==(a)))
+
 #endif
