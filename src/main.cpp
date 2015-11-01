@@ -300,7 +300,7 @@ static void set_allowed_options(OptionList *allowed_options)
 
 static void print_help(const OptionList &allowed_options)
 {
-	dstream << _("Allowed options:") << std::endl;
+	std::cout << _("Allowed options:") << std::endl;
 	print_allowed_options(allowed_options);
 }
 
@@ -313,22 +313,22 @@ static void print_allowed_options(const OptionList &allowed_options)
 		if (i->second.type != VALUETYPE_FLAG)
 			os1 << _(" <value>");
 
-		dstream << padStringRight(os1.str(), 24);
+		std::cout << padStringRight(os1.str(), 24);
 
 		if (i->second.help != NULL)
-			dstream << i->second.help;
+			std::cout << i->second.help;
 
-		dstream << std::endl;
+		std::cout << std::endl;
 	}
 }
 
 static void print_version()
 {
-	dstream << PROJECT_NAME_C " " << g_version_hash << std::endl;
+	std::cout << PROJECT_NAME_C " " << g_version_hash << std::endl;
 #ifndef SERVER
-	dstream << "Using Irrlicht " << IRRLICHT_SDK_VERSION << std::endl;
+	std::cout << "Using Irrlicht " << IRRLICHT_SDK_VERSION << std::endl;
 #endif
-	dstream << "Build info: " << g_build_info << std::endl;
+	std::cout << "Build info: " << g_build_info << std::endl;
 }
 
 static void list_game_ids()
@@ -336,14 +336,14 @@ static void list_game_ids()
 	std::set<std::string> gameids = getAvailableGameIds();
 	for (std::set<std::string>::const_iterator i = gameids.begin();
 			i != gameids.end(); ++i)
-		dstream << (*i) <<std::endl;
+		std::cout << (*i) <<std::endl;
 }
 
 static void list_worlds()
 {
-	dstream << _("Available worlds:") << std::endl;
+	std::cout << _("Available worlds:") << std::endl;
 	std::vector<WorldSpec> worldspecs = getAvailableWorlds();
-	print_worldspecs(worldspecs, dstream);
+	print_worldspecs(worldspecs, std::cout);
 }
 
 static void print_worldspecs(const std::vector<WorldSpec> &worldspecs,
