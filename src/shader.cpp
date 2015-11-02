@@ -622,6 +622,12 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 		geometry_program = "";
 	}
 
+	/*infostream<<"Shader "<<name
+			<<": vertex_program.size()="<<vertex_program.size()
+			<<", pixel_program.size()="<<pixel_program.size()
+			<<", geometry_program.size()="<<geometry_program.size()
+			<<std::endl;*/
+
 	// If no shaders are used, don't make a separate material type
 	if(vertex_program == "" && pixel_program == "" && geometry_program == "")
 		return shaderinfo;

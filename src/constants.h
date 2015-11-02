@@ -80,6 +80,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // the main loop (related to TempMods and day/night)
 //#define MAP_BLOCKSIZE 32
 
+// FarBlock size in MapBlocks in every dimension. This is hardcoded too so that
+// caching and networking can be done efficiently as no conversions are needed.
+#define FMP_SCALE 8
+
 /*
     Old stuff that shouldn't be hardcoded
 */

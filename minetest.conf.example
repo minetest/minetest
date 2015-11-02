@@ -224,10 +224,19 @@
 #    type: key
 # keymap_decrease_viewing_range_min = -
 
+#    Modifier key for altering the far map range instead of viewing range
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#keymap_far_range_modifier = KEY_LCONTROL
+
 #    Key for printing debug stacks. Used for development.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
 # keymap_print_debug_stacks = KEY_KEY_P
+
+#    Toggle far map visibility
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_toggle_far_map_visibility =
 
 ## Network
 
@@ -301,6 +310,27 @@
 #    Method used to highlight selected object.
 #    type: enum values: box, halo
 # node_highlighting = box
+
+#### Far Map
+
+#    Enable low level-of-detail rendering at large distances
+# enable_far_map = true
+
+#    Far map rendering range in nodes
+# far_map_range = 500
+
+#    Far map far/near priorization factor
+#    A priorization factor for far map transfers is created by dividing distance
+#    of FarBlocks by this and then comparing it to distance to regular
+#    MapBlocks. The one having the smaller value is sent first.
+# far_map_far_weight = 4.0
+
+#    Resolution of nodes in far map's texture atlas
+#    If you have a gigabyte of RAM to spare or play a game with less than a
+#    thousand nodes, setting this to 16 doesn't hurt.
+#    Otherwise 8 looks reasonable and doesn't take a lot of resources.
+#    Setting this down to 1 is supported.
+# far_map_atlas_node_resolution = 8
 
 #### Filtering
 
@@ -1025,6 +1055,9 @@
 #    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: caves, dungeons, light, decorations, nocaves, nodungeons, nolight, nodecorations
 # mg_flags = caves,dungeons,light,decorations
+
+#    Allow far map to use the map generator
+# far_map_allow_generate = false
 
 ### Advanced
 

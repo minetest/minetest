@@ -66,6 +66,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_camera_mode", "KEY_F7");
 	settings->setDefault("keymap_increase_viewing_range_min", "+");
 	settings->setDefault("keymap_decrease_viewing_range_min", "-");
+	settings->setDefault("keymap_far_range_modifier", "KEY_LCONTROL");
+	settings->setDefault("keymap_toggle_far_map_visibility", "");
 	settings->setDefault("enable_build_where_you_stand", "false" );
 	settings->setDefault("3d_mode", "none");
 	settings->setDefault("3d_paralax_strength", "0.025");
@@ -183,6 +185,12 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_minimap", "true");
 	settings->setDefault("minimap_shape_round", "true");
 	settings->setDefault("minimap_double_scan_height", "true");
+
+	settings->setDefault("enable_far_map", "true");
+	settings->setDefault("far_map_range", "500");
+	settings->setDefault("far_map_allow_generate", "false");
+	settings->setDefault("far_map_far_weight", "4.0");
+	settings->setDefault("far_map_atlas_node_resolution", "8");
 
 	settings->setDefault("curl_timeout", "5000");
 	settings->setDefault("curl_parallel_limit", "8");

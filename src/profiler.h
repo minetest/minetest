@@ -205,7 +205,7 @@ public:
 		m_type(type)
 	{
 		if(m_profiler)
-			m_timer = new TimeTaker(m_name.c_str());
+			m_timer = new TimeTaker(m_name.c_str(), NULL, PRECISION_MICRO);
 	}
 	// name is copied
 	ScopeProfiler(Profiler *profiler, const char *name,
@@ -216,14 +216,14 @@ public:
 		m_type(type)
 	{
 		if(m_profiler)
-			m_timer = new TimeTaker(m_name.c_str());
+			m_timer = new TimeTaker(m_name.c_str(), NULL, PRECISION_MICRO);
 	}
 	~ScopeProfiler()
 	{
 		if(m_timer)
 		{
-			float duration_ms = m_timer->stop(true);
-			float duration = duration_ms / 1000.0;
+			float duration_us = m_timer->stop(true);
+			float duration = duration_us / 1000000.0;
 			if(m_profiler){
 				switch(m_type){
 				case SPT_ADD:

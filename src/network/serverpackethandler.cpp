@@ -750,27 +750,31 @@ void Server::handleCommand_GotBlocks(NetworkPacket* pkt)
 		return;
 
 	/*
-		[0] u16 command
-		[2] u8 count
-		[3] v3s16 pos_0
-		[3+6] v3s16 pos_1
-		...
+		u8 count_mb
+		for count_mb:
+			v3s16 mapblock_p
+		# Following added mid of version 26
+		u8 count_fb
+		for count_fb
+			v3s16 farblock_p
 	*/
 
-	u8 count;
-	*pkt >> count;
+	u8 count = pkt->read<u8>();
 
 	RemoteClient *client = getClient(pkt->getPeerId());
 
-	if ((s16)pkt->getSize() < 1 + (int)count * 6) {
-		throw con::InvalidIncomingDataException
-				("GOTBLOCKS length is too short");
-	}
-
 	for (u16 i = 0; i < count; i++) {
-		v3s16 p;
-		*pkt >> p;
-		client->GotBlock(p);
+		v3s16 p = pkt->read<v3s16>();
+		client->GotBlock(WantedMapSend(WMST_MAPBLOCK, p));
+	}
+	try {
+		u8 farblock_count = pkt->read<u8>();
+		for (u16 i = 0; i < farblock_count; i++) {
+			v3s16 p = pkt->read<v3s16>();
+			client->GotBlock(WantedMapSend(WMST_FARBLOCK, p));
+		}
+	} catch(PacketError &e) {
+		// It's the old packet without the farblock list
 	}
 }
 
@@ -873,7 +877,7 @@ void Server::handleCommand_DeletedBlocks(NetworkPacket* pkt)
 	for (u16 i = 0; i < count; i++) {
 		v3s16 p;
 		*pkt >> p;
-		client->SetBlockNotSent(p);
+		client->SetMapBlockUpdated(p);
 	}
 }
 
@@ -1373,7 +1377,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 			// Re-send block to revert change on client-side
 			RemoteClient *client = getClient(pkt->getPeerId());
 			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
-			client->SetBlockNotSent(blockpos);
+			client->SetMapBlockUpdated(blockpos);
 			// Call callbacks
 			m_script->on_cheat(playersao, "interacted_too_far");
 			// Do nothing else
@@ -1393,12 +1397,12 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		// Digging completed -> under
 		if (action == 2) {
 			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
-			client->SetBlockNotSent(blockpos);
+			client->SetMapBlockUpdated(blockpos);
 		}
 		// Placement -> above
 		if (action == 3) {
 			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_above, BS));
-			client->SetBlockNotSent(blockpos);
+			client->SetMapBlockUpdated(blockpos);
 		}
 		return;
 	}
@@ -1576,10 +1580,10 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 			// Send unusual result (that is, node not being removed)
 			if (m_env->getMap().getNodeNoEx(p_under).getContent() != CONTENT_AIR) {
 				// Re-send block to revert change on client-side
-				client->SetBlockNotSent(blockpos);
+				client->SetMapBlockUpdated(blockpos);
 			}
 			else {
-				client->ResendBlockIfOnWire(blockpos);
+				client->ResendMapBlockIfOnWire(blockpos);
 			}
 		}
 	} // action == 2
@@ -1625,15 +1629,15 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_above, BS));
 		v3s16 blockpos2 = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
 		if (item.getDefinition(m_itemdef).node_placement_prediction != "") {
-			client->SetBlockNotSent(blockpos);
+			client->SetMapBlockUpdated(blockpos);
 			if (blockpos2 != blockpos) {
-				client->SetBlockNotSent(blockpos2);
+				client->SetMapBlockUpdated(blockpos2);
 			}
 		}
 		else {
-			client->ResendBlockIfOnWire(blockpos);
+			client->ResendMapBlockIfOnWire(blockpos);
 			if (blockpos2 != blockpos) {
-				client->ResendBlockIfOnWire(blockpos2);
+				client->ResendMapBlockIfOnWire(blockpos2);
 			}
 		}
 	} // action == 3
@@ -1977,7 +1981,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 
 	bool wantSudo = (cstate == CS_Active);
 
-	verbosestream << "Server: Recieved TOCLIENT_SRP_BYTES_M." << std::endl;
+	verbosestream << "Server: Received TOCLIENT_SRP_BYTES_M." << std::endl;
 
 	if (!((cstate == CS_HelloSent) || (cstate == CS_Active))) {
 		actionstream << "Server: got SRP _M packet in wrong state "
@@ -2053,3 +2057,53 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 
 	acceptAuth(pkt->getPeerId(), wantSudo);
 }
+
+void Server::handleCommand_SetWantedMapSendQueue(NetworkPacket* pkt_in)
+{
+	infostream << "Server: Received SET_WANTED_MAP_SEND_QUEUE" << std::endl;
+
+	/*
+		Autosend parameters:
+		s16 radius_map
+		s16 radius_far
+		f1000 far_weight
+		f1000 fov
+		Manual requests:
+		u32 len
+		for len:
+			u8 type // 1=MapBlock, 2=FarBlock
+			v3s16 p
+	*/
+
+	s16 autosend_radius_map = pkt_in->read<s16>();
+	s16 autosend_radius_far = pkt_in->read<s16>();
+	float autosend_far_weight = pkt_in->read<float>();
+	float autosend_fov = pkt_in->read<float>();
+	u32 wanted_map_send_queue_len = pkt_in->read<u32>();
+
+	/*dstream << "Client " << pkt_in->getPeerId()
+			<< ": radius_map=" << autosend_radius_map
+			<< ", radius_far=" << autosend_radius_far
+			<< ", far_weight=" << autosend_far_weight
+			<< ", fov=" << autosend_fov
+			<< ", wanted_map_send_queue_len=" << wanted_map_send_queue_len
+			<< std::endl;*/
+
+	// Use a vector, because this is not really strictly a queue. It's more like
+	// a pre-prioritized list.
+	std::vector<WantedMapSend> wanted_map_send_queue;
+	wanted_map_send_queue.reserve(wanted_map_send_queue_len);
+	for (u32 i=0; i<wanted_map_send_queue_len; i++) {
+		WantedMapSend wms;
+		wms.type = (WantedMapSendType)pkt_in->read<u8>();
+		wms.p = pkt_in->read<v3s16>();
+		wanted_map_send_queue.push_back(wms);
+	}
+
+	// Set the values in RemoteClient; data transfer is handled elsewhere.
+	RemoteClient* client = getClient(pkt_in->getPeerId(), CS_Created);
+	client->setAutosendParameters(autosend_radius_map, autosend_radius_far,
+			autosend_far_weight, autosend_fov);
+	client->setMapSendQueue(wanted_map_send_queue);
+}
+

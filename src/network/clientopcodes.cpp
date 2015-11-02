@@ -108,7 +108,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_LOCAL_PLAYER_ANIMATIONS",  TOCLIENT_STATE_CONNECTED, &Client::handleCommand_LocalPlayerAnimations }, // 0x51
 	{ "TOCLIENT_EYE_OFFSET",               TOCLIENT_STATE_CONNECTED, &Client::handleCommand_EyeOffset }, // 0x52
 	{ "TOCLIENT_DELETE_PARTICLESPAWNER",   TOCLIENT_STATE_CONNECTED, &Client::handleCommand_DeleteParticleSpawner }, // 0x53
-	null_command_handler,
+	{ "TOCLIENT_FAR_BLOCKS_RESULT",        TOCLIENT_STATE_CONNECTED, &Client::handleCommand_FarBlocksResult }, // 0x54
 	null_command_handler,
 	null_command_handler,
 	null_command_handler,
@@ -210,4 +210,6 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	{ "TOSERVER_FIRST_SRP",          1, true }, // 0x50
 	{ "TOSERVER_SRP_BYTES_A",        1, true }, // 0x51
 	{ "TOSERVER_SRP_BYTES_M",        1, true }, // 0x52
+	null_command_factory, // 0x53
+	{ "TOSERVER_SET_WANTED_MAP_SEND_QUEUE", 2, true }, // 0x54
 };

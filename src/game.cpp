@@ -840,6 +840,7 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	Sky *m_sky;
 	bool *m_force_fog_off;
 	f32 *m_fog_range;
+	f32 *m_fog_range_start;
 	Client *m_client;
 	bool m_fogEnabled;
 
@@ -856,10 +857,11 @@ public:
 	}
 
 	GameGlobalShaderConstantSetter(Sky *sky, bool *force_fog_off,
-			f32 *fog_range, Client *client) :
+			f32 *fog_range, f32 *fog_range_start, Client *client) :
 		m_sky(sky),
 		m_force_fog_off(force_fog_off),
 		m_fog_range(fog_range),
+		m_fog_range_start(fog_range_start),
 		m_client(client)
 	{
 		g_settings->registerChangedCallback("enable_fog", SettingsCallback, this);
@@ -890,11 +892,15 @@ public:
 
 		// Fog distance
 		float fog_distance = 10000 * BS;
+		float fog_distance_start = 1000 * BS;
 
-		if (m_fogEnabled && !*m_force_fog_off)
+		if (m_fogEnabled && !*m_force_fog_off) {
 			fog_distance = *m_fog_range;
+			fog_distance_start = *m_fog_range_start;
+		}
 
 		services->setPixelShaderConstant("fogDistance", &fog_distance, 1);
+		services->setPixelShaderConstant("fogDistanceStart", &fog_distance_start, 1);
 
 		// Day-night ratio
 		u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
@@ -1284,7 +1290,9 @@ struct KeyCache {
 		KEYMAP_ID_CAMERA_MODE,
 		KEYMAP_ID_INCREASE_VIEWING_RANGE,
 		KEYMAP_ID_DECREASE_VIEWING_RANGE,
+		KEYMAP_ID_FAR_RANGE_MODIFIER,
 		KEYMAP_ID_RANGESELECT,
+		KEYMAP_ID_TOGGLE_FAR_MAP_VISIBILITY,
 
 		KEYMAP_ID_QUICKTUNE_NEXT,
 		KEYMAP_ID_QUICKTUNE_PREV,
@@ -1343,8 +1351,12 @@ void KeyCache::populate()
 			= getKeySetting("keymap_increase_viewing_range_min");
 	key[KEYMAP_ID_DECREASE_VIEWING_RANGE]
 			= getKeySetting("keymap_decrease_viewing_range_min");
+	key[KEYMAP_ID_FAR_RANGE_MODIFIER]
+			= getKeySetting("keymap_far_range_modifier");
 	key[KEYMAP_ID_RANGESELECT]
 			= getKeySetting("keymap_rangeselect");
+	key[KEYMAP_ID_TOGGLE_FAR_MAP_VISIBILITY]
+			= getKeySetting("keymap_toggle_far_map_visibility");
 
 	key[KEYMAP_ID_QUICKTUNE_NEXT] = getKeySetting("keymap_quicktune_next");
 	key[KEYMAP_ID_QUICKTUNE_PREV] = getKeySetting("keymap_quicktune_prev");
@@ -1399,6 +1411,7 @@ struct GameRunData {
 	float statustext_time;
 
 	f32 fog_range;
+	f32 fog_range_start;
 
 	v3f update_draw_list_last_cam_dir;
 
@@ -1538,7 +1551,10 @@ protected:
 
 	void increaseViewRange(float *statustext_time);
 	void decreaseViewRange(float *statustext_time);
+	void increaseFarRange(float *statustext_time);
+	void decreaseFarRange(float *statustext_time);
 	void toggleFullViewRange(float *statustext_time);
+	void toggleFarMapVisible(float *statustext_time);
 
 	void updateCameraDirection(CameraOrientation *cam, VolatileRunFlags *flags);
 	void updateCameraOrientation(CameraOrientation *cam,
@@ -1829,6 +1845,7 @@ void Game::run()
 			sky,
 			&flags.force_fog_off,
 			&runData.fog_range,
+			&runData.fog_range_start,
 			client));
 
 	set_light_table(g_settings->getFloat("display_gamma"));
@@ -2695,11 +2712,19 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_PROFILER])) {
 		toggleProfiler(statustext_time, profiler_current_page, profiler_max_page);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_INCREASE_VIEWING_RANGE])) {
-		increaseViewRange(statustext_time);
+		if (input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_FAR_RANGE_MODIFIER]))
+			increaseFarRange(statustext_time);
+		else
+			increaseViewRange(statustext_time);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_DECREASE_VIEWING_RANGE])) {
-		decreaseViewRange(statustext_time);
+		if (input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_FAR_RANGE_MODIFIER]))
+			decreaseFarRange(statustext_time);
+		else
+			decreaseViewRange(statustext_time);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_RANGESELECT])) {
 		toggleFullViewRange(statustext_time);
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_FAR_MAP_VISIBILITY])) {
+		toggleFarMapVisible(statustext_time);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_NEXT])) {
 		quicktune->next();
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_PREV])) {
@@ -3071,6 +3096,30 @@ void Game::decreaseViewRange(float *statustext_time)
 }
 
 
+void Game::increaseFarRange(float *statustext_time)
+{
+	s16 range = g_settings->getS16("far_map_range");
+	s16 range_new = range + 100;
+	g_settings->set("far_map_range", itos(range_new));
+	statustext = utf8_to_wide("Far map range changed to " + itos(range_new));
+	*statustext_time = 0;
+}
+
+
+void Game::decreaseFarRange(float *statustext_time)
+{
+	s16 range = g_settings->getS16("far_map_range");
+	s16 range_new = range - 100;
+
+	if (range_new < 100)
+		range_new = range;
+
+	g_settings->set("far_map_range", itos(range_new));
+	statustext = utf8_to_wide("Far map range changed to " + itos(range_new));
+	*statustext_time = 0;
+}
+
+
 void Game::toggleFullViewRange(float *statustext_time)
 {
 	static const wchar_t *msg[] = {
@@ -3082,6 +3131,18 @@ void Game::toggleFullViewRange(float *statustext_time)
 	infostream << msg[draw_control->range_all] << std::endl;
 	statustext = msg[draw_control->range_all];
 	*statustext_time = 0;
+}
+
+void Game::toggleFarMapVisible(float *statustext_time)
+{
+	static const wchar_t *msg[] = {
+		L"Far map hidden",
+		L"Far map visible"
+	};
+
+	client->setFarMapVisible(!client->getFarMapVisible());
+	*statustext_time = 0;
+	statustext = msg[client->getFarMapVisible()];
 }
 
 
@@ -3942,8 +4003,25 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
 
 	if (draw_control->range_all) {
 		runData->fog_range = 100000 * BS;
+		runData->fog_range_start = runData->fog_range * 0.4;
 	} else {
-		runData->fog_range = 0.9 * draw_control->wanted_range * BS;
+		if (client->getFarMapVisible()) {
+			runData->fog_range = client->getFarMapFogDistance();
+			// Fog starts at halfway where normal rendering ends; this makes a
+			// good effect
+			runData->fog_range_start = draw_control->wanted_range * BS / 2;
+			// But 60 nodes at maximum
+			if (runData->fog_range_start > BS * 60)
+				runData->fog_range_start = BS * 60;
+		} else {
+			runData->fog_range = draw_control->wanted_range * BS
+					+ 0.0 * MAP_BLOCKSIZE * BS;
+			runData->fog_range = MYMIN(
+					runData->fog_range,
+					(draw_control->farthest_drawn + 20) * BS);
+			runData->fog_range *= 0.9;
+			runData->fog_range_start = runData->fog_range * 0.4;
+		}
 	}
 
 	/*
@@ -4021,8 +4099,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
 		driver->setFog(
 				sky->getBgColor(),
 				video::EFT_FOG_LINEAR,
-				runData->fog_range * 0.4,
-				runData->fog_range * 1.0,
+				runData->fog_range_start,
+				runData->fog_range,
 				0.01,
 				false, // pixel fog
 				false // range fog

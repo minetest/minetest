@@ -30,6 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "strfnd.h"
 #include "network/clientopcodes.h"
+#include "far_map.h"
+#include "profiler.h"
 #include "util/serialize.h"
 #include "util/srp.h"
 
@@ -1221,3 +1223,33 @@ void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 	resp_pkt << std::string(bytes_M, len_M);
 	Send(&resp_pkt);
 }
+
+void Client::handleCommand_FarBlocksResult(NetworkPacket* pkt_in)
+{
+	infostream << "Client: Received FAR_BLOCKS_RESULT" << std::endl;
+
+	/*
+		v3s16 p (position in farblocks)
+		u8 status
+		u8 flags
+		v3s16 divs_per_mb (amount of divisions per mapblock)
+		u32 data_len
+		Zlib-compressed:
+			for each FarNode (indexed by VoxelArea):
+				u16 node_id
+				u8 light (both lightbanks; raw value)
+	*/
+	CompressedFarBlock block;
+	block.fbp         = pkt_in->read<v3s16>();
+	block.status      = (FarBlocksResultStatus)pkt_in->read<u8>();
+	block.flags       = pkt_in->read<u8>();
+	block.divs_per_mb = pkt_in->read<v3s16>();
+	block.compressed_data = pkt_in->readLongString();
+
+	// Shove the data into FarMap to be rendered efficiently
+	m_far_map->insertCompressedFarBlock(block);
+
+	// Report to server that the FarBlock was received
+	sendGotFarBlock(block.fbp);
+}
+

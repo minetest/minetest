@@ -128,6 +128,8 @@ public:
 
 	void enqueueUpdate(v3s16 p, MeshMakeData *data,
 			bool ack_block_to_server, bool urgent);
+	u32 queueSize() { return m_queue_in.size(); }
+
 	MutexedQueue<MeshUpdateResult> m_queue_out;
 
 	v3s16 m_camera_offset;
@@ -396,6 +398,7 @@ public:
 	void handleCommand_LocalPlayerAnimations(NetworkPacket* pkt);
 	void handleCommand_EyeOffset(NetworkPacket* pkt);
 	void handleCommand_SrpBytesSandB(NetworkPacket* pkt);
+	void handleCommand_FarBlocksResult(NetworkPacket* pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -421,6 +424,9 @@ public:
 
 	ClientEnvironment& getEnv()
 	{ return m_env; }
+
+	FarMap* getFarMap()
+	{ return m_far_map; }
 
 	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
 	void removeNode(v3s16 p);
@@ -473,8 +479,7 @@ public:
 	void addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server=false, bool urgent=false);
 	void addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server=false, bool urgent=false);
 
-	void updateCameraOffset(v3s16 camera_offset)
-	{ m_mesh_update_thread.m_camera_offset = camera_offset; }
+	void updateCameraOffset(v3s16 camera_offset);
 
 	// Get event from queue. CE_NONE is returned if queue is empty.
 	ClientEvent getClientEvent();
@@ -516,6 +521,10 @@ public:
 
 	bool isMinimapDisabledByServer()
 	{ return m_minimap_disabled_by_server; }
+
+	bool getFarMapVisible();
+	void setFarMapVisible(bool b);
+	float getFarMapFogDistance();
 
 	// IGameDef interface
 	virtual IItemDefManager* getItemDefManager();
@@ -569,7 +578,8 @@ private:
 	void sendInit(const std::string &playerName);
 	void startAuth(AuthMechanism chosen_auth_mechanism);
 	void sendDeletedBlocks(std::vector<v3s16> &blocks);
-	void sendGotBlocks(v3s16 block);
+	void sendGotMapBlock(v3s16 block);
+	void sendGotFarBlock(v3s16 block);
 	void sendRemovedSounds(std::vector<s32> &soundList);
 
 	// Helper function
@@ -599,6 +609,7 @@ private:
 	Camera *m_camera;
 	Mapper *m_mapper;
 	bool m_minimap_disabled_by_server;
+	FarMap *m_far_map;
 	// Server serialization version
 	u8 m_server_ser_ver;
 
@@ -686,6 +697,8 @@ private:
 	bool m_cache_smooth_lighting;
 	bool m_cache_enable_shaders;
 	bool m_cache_use_tangent_vertices;
+
+	IntervalLimiter m_far_blocks_request_interval;
 
 	DISABLE_CLASS_COPY(Client);
 };

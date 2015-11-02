@@ -52,6 +52,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverobject.h"
 #include "settings.h"
 #include "voxel.h"
+#include "far_map_server.h"
 
 
 struct MapgenDesc {
@@ -95,6 +96,8 @@ private:
 		v3s16 pos, bool allow_gen, MapBlock **block, BlockMakeData *data);
 	MapBlock *finishGen(v3s16 pos, BlockMakeData *bmdata,
 		std::map<v3s16, MapBlock *> *modified_blocks);
+	void updateFarMap(v3s16 bp, MapBlock *block,
+			const std::map<v3s16, MapBlock*> &modified_blocks);
 
 	friend class EmergeManager;
 };
@@ -444,6 +447,8 @@ bool EmergeManager::popBlockEmergeData(
 	std::map<v3s16, BlockEmergeData>::iterator it;
 	std::map<u16, u16>::iterator it2;
 
+	g_profiler->avg("Emerge: Queue size", m_blocks_enqueued.size());
+
 	it = m_blocks_enqueued.find(pos);
 	if (it == m_blocks_enqueued.end())
 		return false;
@@ -582,6 +587,7 @@ EmergeAction EmergeThread::getBlockOrStartGen(
 		return EMERGE_FROM_MEMORY;
 
 	// 2). Attempt to load block from disk
+	g_profiler->add("Emerge: Attempted MapBlock loads", 1);
 	*block = m_map->loadBlock(pos);
 	if (*block && (*block)->isGenerated())
 		return EMERGE_FROM_DISK;
@@ -637,6 +643,8 @@ MapBlock *EmergeThread::finishGen(v3s16 pos, BlockMakeData *bmdata,
 
 	EMERGE_DBG_OUT("ended up with: " << analyze_block(block));
 
+	g_profiler->add("Emerge: Chunks generated", 1);
+
 	/*
 		Activate the block
 	*/
@@ -645,6 +653,88 @@ MapBlock *EmergeThread::finishGen(v3s16 pos, BlockMakeData *bmdata,
 	return block;
 }
 
+// Should be called for every loaded and generated block, so that even if
+// nothing in the whole FarBlock area has succeeded to load, every piece has
+// still been reported to FarMap.
+void EmergeThread::updateFarMap(v3s16 bp, MapBlock *block,
+		const std::map<v3s16, MapBlock*> &modified_blocks)
+{
+	if (block == NULL) {
+		// This happens if the MapBlock couldn't be loaded and generating was
+		// disabled. In this case the block will not be found in modified_blocks
+		// and has to be reported separately in addition to everything in
+		// modified_blocks.
+		// TODO: Or is that when this happens?
+
+		// Create a dummy VoxelArea of the right size and feed it into
+		// ServerFarMap::updateFrom().
+		VoxelArea block_area_nodes(
+				(bp+0) * MAP_BLOCKSIZE,
+				(bp+1) * MAP_BLOCKSIZE - v3s16(1,1,1));
+		ServerFarMapPiece piece;
+		piece.generateEmpty(block_area_nodes);
+		/*dstream<<"updateFarMap: ("<<bp.X<<","<<bp.Y<<","<<bp.Z<<") is NULL"
+				<<std::endl;*/
+
+		// TODO: Is this the correct state?
+		ServerFarBlock::LoadState load_state = ServerFarBlock::LS_NOT_GENERATED;
+
+		{
+			MutexAutoLock envlock(m_server->m_env_mutex);
+			m_server->m_far_map->updateFrom(piece, load_state);
+		}
+	}
+
+	for (std::map<v3s16, MapBlock*>::const_iterator
+			it = modified_blocks.begin();
+			it != modified_blocks.end(); ++it)
+	{
+		VoxelManipulator vm;
+		ServerFarBlock::LoadState load_state = ServerFarBlock::LS_UNKNOWN;
+
+		// Get block data
+		{
+			MutexAutoLock envlock(m_server->m_env_mutex);
+
+			// We can't trust this block to still exist. Re-fetch it from Map.
+			MapBlock *block = m_map->getBlockNoCreateNoEx(it->first);
+			if (!block) {
+				// Briefly tell to FarMap about the inexisting block and
+				// continue to the next one
+				ServerFarMapPiece piece;
+				piece.generateEmpty(VoxelArea(
+						(bp+0) * MAP_BLOCKSIZE,
+						(bp+1) * MAP_BLOCKSIZE - v3s16(1,1,1)));
+				m_server->m_far_map->updateFrom(
+						piece, ServerFarBlock::LS_NOT_LOADED);
+				continue;
+			}
+
+			//dstream<<"updateFarMap: "<<analyze_block(block)<<std::endl;
+
+			if (block->isGenerated())
+				load_state = ServerFarBlock::LS_GENERATED;
+			else
+				load_state = ServerFarBlock::LS_NOT_GENERATED;
+
+			VoxelArea block_area_nodes(
+					block->getPos() * MAP_BLOCKSIZE,
+					(block->getPos()+1)*MAP_BLOCKSIZE - v3s16(1,1,1));
+			vm.addArea(block_area_nodes);
+			block->copyTo(vm);
+		}
+
+		// Generate FarMap data without locking anything
+		ServerFarMapPiece piece;
+		piece.generateFrom(vm, m_server->m_nodedef);
+
+		// Insert FarMap data into ServerFarMap
+		{
+			MutexAutoLock envlock(m_server->m_env_mutex);
+			m_server->m_far_map->updateFrom(piece, load_state);
+		}
+	}
+}
 
 void *EmergeThread::run()
 {
@@ -698,8 +788,13 @@ void *EmergeThread::run()
 		if (block)
 			modified_blocks[pos] = block;
 
+		// This is kind of a vague number but it still tells something
+		g_profiler->add("Emerge: Blocks modified", modified_blocks.size());
+
+		updateFarMap(pos, block, modified_blocks);
+
 		if (modified_blocks.size() > 0)
-			m_server->SetBlocksNotSent(modified_blocks);
+			m_server->SetMapBlocksUpdated(modified_blocks);
 	}
 	} catch (VersionMismatchException &e) {
 		std::ostringstream err;

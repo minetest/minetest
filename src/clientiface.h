@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "constants.h"
 #include "serialization.h"             // for SER_FMT_VER_INVALID
+#include "voxel.h"                     // for VoxelArea
 #include "threading/mutex.h"
 #include "network/networkpacket.h"
 
@@ -198,26 +199,73 @@ enum ClientStateEvent
 	CSE_Disconnect
 };
 
-/*
-	Used for queueing and sorting block transfers in containers
+class RemoteClient;
+struct AutosendCycle;
+class ServerFarMap;
 
-	Lower priority number means higher priority.
-*/
-struct PrioritySortedBlockTransfer
+struct WMSSuggestion {
+	WantedMapSend wms;
+	bool is_fully_loaded; // Can be false for FarBlocks
+	//bool is_fully_generated; // TODO
+	// TODO: Using enum ServerFarBlock::LoadState would be more suitable
+
+	WMSSuggestion():
+		is_fully_loaded(true)
+	{}
+	WMSSuggestion(WantedMapSend wms):
+		wms(wms),
+		is_fully_loaded(true)
+	{}
+	std::string describe() const {
+		if (wms.type == WMST_FARBLOCK) {
+			return wms.describe()+
+					": is_fully_loaded="+(is_fully_loaded?"1":"0");
+		} else {
+			return wms.describe();
+		}
+	}
+};
+
+class AutosendAlgorithm
 {
-	PrioritySortedBlockTransfer(float a_priority, v3s16 a_pos, u16 a_peer_id)
-	{
-		priority = a_priority;
-		pos = a_pos;
-		peer_id = a_peer_id;
+public:
+	AutosendAlgorithm(RemoteClient *client);
+	~AutosendAlgorithm();
+
+	// Shall be called every time before starting to ask a bunch of blocks by
+	// calling getNextBlock()
+	void cycle(float dtime, ServerEnvironment *env);
+
+	// Finds a block that should be sent next to the client.
+	// Environment should be locked when this is called.
+	WMSSuggestion getNextBlock(EmergeManager *emerge, ServerFarMap *far_map);
+
+	void setParameters(s16 radius_map, s16 radius_far, float far_weight,
+			float fov) {
+		m_radius_map = radius_map;
+		m_radius_far = radius_far;
+		m_far_weight = far_weight;
+		m_fov = fov;
 	}
-	bool operator < (const PrioritySortedBlockTransfer &other) const
-	{
-		return priority < other.priority;
-	}
-	float priority;
-	v3s16 pos;
-	u16 peer_id;
+
+	// If something is modified near a player, this should probably be called so
+	// that it gets sent as quickly as possible while being prioritized
+	// correctly
+	void resetMapblockSearchRadius();
+
+	std::string describeStatus();
+
+private:
+	RemoteClient *m_client;
+	AutosendCycle *m_cycle;
+	s16 m_radius_map; // Updated by the client; 0 disables autosend.
+	s16 m_radius_far; // Updated by the client; 0 disables autosend.
+	float m_far_weight; // Updated by the client; 0 is invalid.
+	float m_fov; // Updated by the client; 0 disables FOV limit.
+	v3s16 m_last_focus_point;
+	float m_nearest_unsent_reset_timer;
+
+	friend struct AutosendCycle;
 };
 
 class RemoteClient
@@ -246,7 +294,7 @@ public:
 	bool isMechAllowed(AuthMechanism mech)
 	{ return allowed_auth_mechs & mech; }
 
-	RemoteClient():
+	RemoteClient(ServerEnvironment *env):
 		peer_id(PEER_ID_INEXISTENT),
 		serialization_version(SER_FMT_VER_INVALID),
 		net_proto_version(0),
@@ -254,12 +302,12 @@ public:
 		chosen_mech(AUTH_MECHANISM_NONE),
 		auth_data(NULL),
 		m_time_from_building(9999),
+		m_env(env),
 		m_pending_serialization_version(SER_FMT_VER_INVALID),
 		m_state(CS_Created),
-		m_nearest_unsent_d(0),
-		m_nearest_unsent_reset_timer(0.0),
+		m_autosend(this),
+		m_fallback_autosend_active(true),
 		m_excess_gotblocks(0),
-		m_nothing_to_send_pause_timer(0.0),
 		m_name(""),
 		m_version_major(0),
 		m_version_minor(0),
@@ -273,46 +321,62 @@ public:
 	{
 	}
 
-	/*
-		Finds block that should be sent next to the client.
-		Environment should be locked when this is called.
-		dtime is used for resetting send radius at slow interval
-	*/
-	void GetNextBlocks(ServerEnvironment *env, EmergeManager* emerge,
-			float dtime, std::vector<PrioritySortedBlockTransfer> &dest);
+	// Finds a block that should be sent next to the client.
+	// Environment should be locked when this is called.
+	WMSSuggestion getNextBlock(EmergeManager *emerge, ServerFarMap *far_map);
 
-	void GotBlock(v3s16 p);
+	// Shall be called every time before starting to ask a bunch of blocks by
+	// calling getNextBlock()
+	void cycleAutosendAlgorithm(float dtime);
 
-	void SentBlock(v3s16 p);
+	void GotBlock(const WantedMapSend &wms);
+	void SendingBlock(const WantedMapSend &wms);
 
-	void SetBlockNotSent(v3s16 p);
-	void SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks);
+	void SetBlockUpdated(const WantedMapSend &wms);
+	// Also sets the corresponding FarBlock
+	void SetMapBlockUpdated(v3s16 p);
+	void SetMapBlocksUpdated(std::map<v3s16, MapBlock*> &blocks);
 
 	/**
 	 * tell client about this block being modified right now.
 	 * this information is required to requeue the block in case it's "on wire"
 	 * while modification is processed by server
-	 * @param p position of modified block
+	 * @param wms position of modified block
 	 */
-	void ResendBlockIfOnWire(v3s16 p);
+	void ResendBlockIfOnWire(const WantedMapSend &wms);
+	void ResendMapBlockIfOnWire(v3s16 p){
+			return ResendBlockIfOnWire(WantedMapSend(WMST_MAPBLOCK, p)); }
 
+	// Total number of MapBlocks and FarBlocks on the wire
 	s32 SendingCount()
 	{
 		return m_blocks_sending.size();
 	}
 
-	// Increments timeouts and removes timed-out blocks from list
-	// NOTE: This doesn't fix the server-not-sending-block bug
-	//       because it is related to emerging, not sending.
-	//void RunSendingTimeouts(float dtime, float timeout);
+	void setAutosendParameters(s16 radius_map, s16 radius_far, float far_weight,
+			float fov)
+	{
+		m_autosend.setParameters(radius_map, radius_far, far_weight, fov);
+
+		// Disable fallback algorithm
+		m_fallback_autosend_active = false;
+	}
+
+	void setMapSendQueue(const std::vector<WantedMapSend> &map_send_queue)
+	{
+		m_map_send_queue = map_send_queue;
+
+		// Disable fallback algorithm
+		m_fallback_autosend_active = false;
+	}
 
 	void PrintInfo(std::ostream &o)
 	{
 		o<<"RemoteClient "<<peer_id<<": "
 				<<"m_blocks_sent.size()="<<m_blocks_sent.size()
 				<<", m_blocks_sending.size()="<<m_blocks_sending.size()
-				<<", m_nearest_unsent_d="<<m_nearest_unsent_d
 				<<", m_excess_gotblocks="<<m_excess_gotblocks
+				<<", m_autosend.describeStatus()="<<m_autosend.describeStatus()
 				<<std::endl;
 		m_excess_gotblocks = 0;
 	}
@@ -321,7 +385,7 @@ public:
 	float m_time_from_building;
 
 	/*
-		List of active objects that the client knows of.
+		Set of active objects that the client knows of.
 	*/
 	std::set<u16> m_known_objects;
 
@@ -347,62 +411,81 @@ public:
 	void confirmSerializationVersion()
 		{ serialization_version = m_pending_serialization_version; }
 
-	/* get uptime */
+	/* uptime */
 	u32 uptime();
 
-	/* set version information */
+	/* version information */
 	void setVersionInfo(u8 major, u8 minor, u8 patch, std::string full) {
 		m_version_major = major;
 		m_version_minor = minor;
 		m_version_patch = patch;
 		m_full_version = full;
 	}
-
-	/* read version information */
 	u8 getMajor() { return m_version_major; }
 	u8 getMinor() { return m_version_minor; }
 	u8 getPatch() { return m_version_patch; }
 	std::string getVersion() { return m_full_version; }
+
 private:
+	ServerEnvironment *m_env;
+
 	// Version is stored in here after INIT before INIT2
 	u8 m_pending_serialization_version;
 
-	/* current state of client */
 	ClientState m_state;
+
+	/*
+		Autosend Algorithm
+
+		Normally this is used to select blocks for sending and emerging. The
+		client can disable this and set m_map_send_queue instead.
+	*/
+	AutosendAlgorithm m_autosend;
+	// If the client has not given us autosend parameters, this is true and
+	// autosend parameters are automatically set by us in order to implement old
+	// server behavior.
+	bool m_fallback_autosend_active;
+
+	/*
+		Client can periodically update this queue to do custom map transfers.
+
+		Autosend always takes priority over this.
+	*/
+	std::vector<WantedMapSend> m_map_send_queue;
 
 	/*
 		Blocks that have been sent to client.
 		- These don't have to be sent again.
 		- A block is cleared from here when client says it has
-		  deleted it from it's memory
-
-		List of block positions.
-		No MapBlock* is stored here because the blocks can get deleted.
+		  deleted it from its memory
+		- Value is timestamp when block was sent. It is used for rate-limiting
+		  updates.
 	*/
-	std::set<v3s16> m_blocks_sent;
-	s16 m_nearest_unsent_d;
-	v3s16 m_last_center;
-	float m_nearest_unsent_reset_timer;
+	std::map<WantedMapSend, time_t> m_blocks_sent;
 
 	/*
 		Blocks that are currently on the line.
-		This is used for throttling the sending of blocks.
+		- This is used for throttling the sending of blocks.
 		- The size of this list is limited to some value
-		Block is added when it is sent with BLOCKDATA.
-		Block is removed when GOTBLOCKS is received.
-		Value is time from sending. (not used at the moment)
+		- Block is added when it is sent with BLOCKDATA.
+		- Block is removed when GOTBLOCKS is received.
+		- Value is timestamp when block was sent. It is used for rate-limiting
+		  updates.
 	*/
-	std::map<v3s16, float> m_blocks_sending;
+	std::map<WantedMapSend, time_t> m_blocks_sending;
 
 	/*
-		Blocks that have been modified since last sending them.
-		These blocks will not be marked as sent, even if the
-		client reports it has received them to account for blocks
-		that are being modified while on the line.
-
-		List of block positions.
+		Blocks that have been updated since they were last sent to the client.
+		The autosend algorithm re-sends these based on some priority.
 	*/
-	std::set<v3s16> m_blocks_modified;
+	std::set<WantedMapSend> m_blocks_updated_since_last_send;
+
+	/*
+		Blocks that have been updated while they are still being sent. Subset of
+		m_blocks_sending. This is not strictly needed, but allows for this
+		complex system to validate the correctness of itself.
+	*/
+	std::set<WantedMapSend> m_blocks_updated_while_sending;
 
 	/*
 		Count of excess GotBlocks().
@@ -412,9 +495,6 @@ private:
 		This is resetted by PrintInfo()
 	*/
 	u32 m_excess_gotblocks;
-
-	// CPU usage optimization
-	float m_nothing_to_send_pause_timer;
 
 	/*
 		name of player using this client
@@ -436,6 +516,9 @@ private:
 		time this client was created
 	 */
 	const u32 m_connection_time;
+
+	friend class AutosendAlgorithm;
+	friend struct AutosendCycle;
 };
 
 class ClientInterface {

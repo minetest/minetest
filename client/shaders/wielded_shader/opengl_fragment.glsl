@@ -4,6 +4,7 @@ uniform sampler2D textureFlags;
 
 uniform vec4 skyBgColor;
 uniform float fogDistance;
+uniform float fogDistanceStart;
 uniform vec3 eyePosition;
 
 varying vec3 vPosition;
@@ -94,7 +95,7 @@ void main(void)
 	if (use_normalmap) {
 		vec3 L = normalize(lightVec);
 		vec3 E = normalize(eyeVec);
-		float specular = pow(clamp(dot(reflect(L, bump.xyz), E), 0.0, 1.0), 1.0);
+		float d = max(0.0, min((vPosition.z - fogDistanceStart) / fogDistance, 1.0));
 		float diffuse = dot(-E,bump.xyz);
 		color = (diffuse + 0.1 * specular) * base.rgb;
 	} else {
@@ -107,7 +108,7 @@ void main(void)
 	vec4 col = vec4(color.rgb, base.a);
 	col *= gl_Color;
 	if (fogDistance != 0.0) {
-		float d = max(0.0, min(vPosition.z / fogDistance * 1.5 - 0.6, 1.0));
+		float d = max(0.0, min((vPosition.z - fogDistanceStart) / fogDistance, 1.0));
 		col = mix(col, skyBgColor, d);
 	}
 	gl_FragColor = vec4(col.rgb, base.a);

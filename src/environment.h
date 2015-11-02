@@ -50,6 +50,7 @@ class ITextureSource;
 class IGameDef;
 class Map;
 class ServerMap;
+class FarMap;
 class ClientMap;
 class GameScripting;
 class Player;

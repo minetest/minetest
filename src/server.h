@@ -57,6 +57,7 @@ class GameScripting;
 class ServerEnvironment;
 struct SimpleSoundSpec;
 class ServerThread;
+class ServerFarMap;
 
 enum ClientDeletionReason {
 	CDR_LEAVE,
@@ -217,6 +218,7 @@ public:
 	void handleCommand_FirstSrp(NetworkPacket* pkt);
 	void handleCommand_SrpBytesA(NetworkPacket* pkt);
 	void handleCommand_SrpBytesM(NetworkPacket* pkt);
+	void handleCommand_SetWantedMapSendQueue(NetworkPacket* pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -400,7 +402,7 @@ private:
 	void SendNodeDef(u16 peer_id,INodeDefManager *nodedef, u16 protocol_version);
 
 	/* mark blocks not sent for all clients */
-	void SetBlocksNotSent(std::map<v3s16, MapBlock *>& block);
+	void SetMapBlocksUpdated(std::map<v3s16, MapBlock *>& blocks);
 
 
 	void SendChatMessage(u16 peer_id, const std::wstring &message);
@@ -565,6 +567,9 @@ private:
 
 	// Mods
 	std::vector<ModSpec> m_mods;
+
+	// Server-side far map
+	ServerFarMap *m_far_map;
 
 	/*
 		Threads

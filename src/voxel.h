@@ -164,6 +164,18 @@ public:
 			a.MinEdge.Z >= MinEdge.Z && a.MaxEdge.Z <= MaxEdge.Z
 		);
 	}
+	bool touches(const VoxelArea &a) const
+	{
+		// No area touches an empty area
+		if(a.hasEmptyExtent())
+			return false;
+
+		return(
+			a.MaxEdge.X >= MinEdge.X && a.MinEdge.X <= MaxEdge.X &&
+			a.MaxEdge.Y >= MinEdge.Y && a.MinEdge.Y <= MaxEdge.Y &&
+			a.MaxEdge.Z >= MinEdge.Z && a.MinEdge.Z <= MaxEdge.Z
+		);
+	}
 	bool contains(v3s16 p) const
 	{
 		return(
@@ -288,24 +300,45 @@ public:
 	}
 
 	// Translate index in the X coordinate
-	void add_x(const v3s16 &extent, u32 &i, s16 a)
+	void add_x(const v3s16 &extent, u32 &i, s16 a) const
 	{
 		i += a;
 	}
 	// Translate index in the Y coordinate
-	void add_y(const v3s16 &extent, u32 &i, s16 a)
+	void add_y(const v3s16 &extent, u32 &i, s16 a) const
 	{
 		i += a * extent.X;
 	}
 	// Translate index in the Z coordinate
-	void add_z(const v3s16 &extent, u32 &i, s16 a)
+	void add_z(const v3s16 &extent, u32 &i, s16 a) const
 	{
 		i += a * extent.X*extent.Y;
 	}
 	// Translate index in space
-	void add_p(const v3s16 &extent, u32 &i, v3s16 a)
+	void add_p(const v3s16 &extent, u32 &i, v3s16 a) const
 	{
 		i += a.Z*extent.X*extent.Y + a.Y*extent.X + a.X;
+	}
+
+	// Translate index in the X coordinate
+	u32 added_x(const v3s16 &extent, u32 i, s16 a) const
+	{
+		return i + a;
+	}
+	// Translate index in the Y coordinate
+	u32 added_y(const v3s16 &extent, u32 i, s16 a) const
+	{
+		return i + a * extent.X;
+	}
+	// Translate index in the Z coordinate
+	u32 added_z(const v3s16 &extent, u32 i, s16 a) const
+	{
+		return i + a * extent.X*extent.Y;
+	}
+	// Translate index in space
+	u32 added_p(const v3s16 &extent, u32 i, v3s16 a) const
+	{
+		return i + a.Z*extent.X*extent.Y + a.Y*extent.X + a.X;
 	}
 
 	/*
@@ -593,6 +626,41 @@ public:
 	//bool m_disable_water_climb;
 
 private:
+};
+
+template<typename T>
+struct BlockAreaBitmap
+{
+	VoxelArea blocks_area;
+	std::vector<T> blocks;
+
+	void reset(const VoxelArea &new_blocks_area,
+			T initial_value=T()) {
+		blocks_area = new_blocks_area;
+		blocks.clear();
+		blocks.resize(new_blocks_area.getVolume(), initial_value);
+	}
+	void set(v3s16 bp, T v) {
+		if(!blocks_area.contains(bp))
+			return;
+		blocks[blocks_area.index(bp)] = v;
+	}
+	T get(v3s16 bp) const {
+		if(!blocks_area.contains(bp))
+			return T();
+		return blocks[blocks_area.index(bp)];
+	}
+	size_t size() const {
+		return blocks.size();
+	}
+	size_t count(T v) const {
+		size_t n = 0;
+		for (size_t i=0; i<blocks.size(); i++) {
+			if (blocks[i] == v)
+				n++;
+		}
+		return n;
+	}
 };
 
 #endif

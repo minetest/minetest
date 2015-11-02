@@ -117,12 +117,14 @@ public:
 	void stopThreads();
 	bool isRunning();
 
+	// Returns false if queue is full
 	bool enqueueBlockEmerge(
 		u16 peer_id,
 		v3s16 blockpos,
 		bool allow_generate,
 		bool ignore_queue_limits=false);
 
+	// Returns false if queue is full
 	bool enqueueBlockEmergeEx(
 		v3s16 blockpos,
 		u16 peer_id,
@@ -160,7 +162,7 @@ private:
 
 	// Requires m_queue_mutex held
 	EmergeThread *getOptimalThread();
-
+	// Returns false if queue is full
 	bool pushBlockEmergeData(
 		v3s16 pos,
 		u16 peer_requested,

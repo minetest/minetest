@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2015 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -588,6 +588,19 @@ enum ToClientCommand
 		u32 id
 	*/
 
+	TOCLIENT_FAR_BLOCKS_RESULT = 0x54,
+	/*
+		v3s16 p (position in farblocks)
+		u8 status
+		u8 flags
+		v3s16 divs_per_mb (amount of divisions (FarNodes) per mapblock)
+		u32 data_len
+		Zlib-compressed:
+			for each FarNode (indexed by VoxelArea):
+				u16 node_id
+				u8 light (both lightbanks; raw value)
+	*/
+
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
 	/*
 		Belonging to AUTH_MECHANISM_LEGACY_PASSWORD and AUTH_MECHANISM_SRP.
@@ -648,11 +661,13 @@ enum ToServerCommand
 
 	TOSERVER_GOTBLOCKS = 0x24,
 	/*
-		[0] u16 command
-		[2] u8 count
-		[3] v3s16 pos_0
-		[3+6] v3s16 pos_1
-		...
+		u8 count_mb
+		for count_mb:
+			v3s16 mapblock_p
+		# Following added mid of version 26
+		u8 count_fb
+		for count_fb
+			v3s16 farblock_p
 	*/
 
 	TOSERVER_DELETEDBLOCKS = 0x25,
@@ -866,7 +881,21 @@ enum ToServerCommand
 		std::string bytes_M
 	*/
 
-	TOSERVER_NUM_MSG_TYPES = 0x53,
+	TOSERVER_SET_WANTED_MAP_SEND_QUEUE = 0x54,
+	/*
+		Autosend parameters:
+		s16 radius_map
+		s16 radius_far
+		f1000 far_weight
+		f1000 fov (radians)
+		Manual requests:
+		u32 len
+		for len:
+			u8 type // 1=MapBlock, 2=FarBlock
+			v3s16 p
+	*/
+
+	TOSERVER_NUM_MSG_TYPES = 0x55,
 };
 
 enum AuthMechanism
@@ -919,6 +948,53 @@ const static std::string accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
 	"",
 	"Server shutting down.",
 	"This server has experienced an internal error. You will now be disconnected."
+};
+
+enum WantedMapSendType {
+	WMST_INVALID = 0,
+	WMST_MAPBLOCK = 1,
+	WMST_FARBLOCK = 2,
+};
+
+struct WantedMapSend
+{
+	WantedMapSendType type; // Sent as u8
+	v3s16 p;
+
+	WantedMapSend(WantedMapSendType type=WMST_INVALID, v3s16 p=v3s16(0,0,0)):
+		type(type), p(p) {}
+
+	// This is for insertion in an std::map or std::set
+	bool operator < (const WantedMapSend &other) const
+	{
+		if (type < other.type) return true;
+		if (type > other.type) return false;
+		if (p < other.p) return true;
+		return false;
+	}
+
+	std::string describe() const {
+		if (type == WMST_INVALID)
+			return "INVALID";
+		else if(type == WMST_MAPBLOCK)
+			return "MAPBLOCK("+itos(p.X)+","+itos(p.Y)+","+itos(p.Z)+")";
+		else if(type == WMST_FARBLOCK)
+			return "FARBLOCK("+itos(p.X)+","+itos(p.Y)+","+itos(p.Z)+")";
+		else
+			return "?("+itos(p.X)+","+itos(p.Y)+","+itos(p.Z)+")";
+	}
+};
+
+enum FarBlocksResultStatus {
+	FBRS_FULLY_LOADED = 0,
+	FBRS_PARTLY_LOADED = 1,
+	FBRS_EMPTY = 2,
+	FBRS_CULLED = 3,
+	FBRS_LOAD_IN_PROGRESS = 4,
+};
+
+enum FarBlocksResultFlag {
+	// Nothing for now
 };
 
 #endif

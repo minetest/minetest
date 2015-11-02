@@ -62,6 +62,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/base64.h"
 #include "util/sha1.h"
 #include "util/hex.h"
+#include "far_map_server.h"
 
 class ClientNotFoundException : public BaseException
 {
@@ -170,6 +171,7 @@ Server::Server(
 	m_nodedef(createNodeDefManager()),
 	m_craftdef(createCraftDefManager()),
 	m_event(new EventManager()),
+	m_far_map(new ServerFarMap()),
 	m_thread(NULL),
 	m_time_of_day_send_timer(0),
 	m_uptime(0),
@@ -409,6 +411,7 @@ Server::~Server()
 	delete m_emerge;
 	delete m_rollback;
 	delete m_banmanager;
+	delete m_far_map;
 	delete m_event;
 	delete m_itemdef;
 	delete m_nodedef;
@@ -635,7 +638,7 @@ void Server::AsyncRunStep(bool initial_step)
 		*/
 		if(!modified_blocks.empty())
 		{
-			SetBlocksNotSent(modified_blocks);
+			SetMapBlocksUpdated(modified_blocks);
 		}
 	}
 	m_clients.step(dtime);
@@ -947,7 +950,7 @@ void Server::AsyncRunStep(bool initial_step)
 				Set blocks not sent to far players
 			*/
 			if(!far_players.empty()) {
-				// Convert list format to that wanted by SetBlocksNotSent
+				// Convert list format to that wanted by SetMapBlocksUpdated
 				std::map<v3s16, MapBlock*> modified_blocks2;
 				for(std::set<v3s16>::iterator
 						i = event->modified_blocks.begin();
@@ -961,7 +964,7 @@ void Server::AsyncRunStep(bool initial_step)
 						i = far_players.begin();
 						i != far_players.end(); ++i) {
 					if(RemoteClient *client = getClient(*i))
-						client->SetBlocksNotSent(modified_blocks2);
+						client->SetMapBlocksUpdated(modified_blocks2);
 				}
 			}
 
@@ -1349,15 +1352,15 @@ void Server::setInventoryModified(const InventoryLocation &loc, bool playerSend)
 	}
 }
 
-void Server::SetBlocksNotSent(std::map<v3s16, MapBlock *>& block)
+void Server::SetMapBlocksUpdated(std::map<v3s16, MapBlock *>& block)
 {
 	std::vector<u16> clients = m_clients.getClientIDs();
 	m_clients.lock();
 	// Set the modified blocks unsent for all the clients
 	for (std::vector<u16>::iterator i = clients.begin();
-		 i != clients.end(); ++i) {
-			if (RemoteClient *client = m_clients.lockedGetClientNoEx(*i))
-				client->SetBlocksNotSent(block);
+			 i != clients.end(); ++i) {
+		if (RemoteClient *client = m_clients.lockedGetClientNoEx(*i))
+			client->SetMapBlocksUpdated(block);
 	}
 	m_clients.unlock();
 }
@@ -2114,7 +2117,7 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 				if (client->net_proto_version <= 21) {
 					// Old clients always clear metadata; fix it
 					// by sending the full block again.
-					client->SetBlockNotSent(getNodeBlockPos(p));
+					client->SetMapBlockUpdated(getNodeBlockPos(p));
 				}
 			}
 		}
@@ -2133,7 +2136,7 @@ void Server::setBlockNotSent(v3s16 p)
 	for(std::vector<u16>::iterator i = clients.begin();
 		i != clients.end(); ++i) {
 		RemoteClient *client = m_clients.lockedGetClientNoEx(*i);
-		client->SetBlockNotSent(p);
+		client->SetMapBlockUpdated(p);
 	}
 	m_clients.unlock();
 }
@@ -2160,73 +2163,176 @@ void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver, u16 net_proto
 	Send(&pkt);
 }
 
+struct WantedMapSendQueue
+{
+	std::vector<WantedMapSend> wms;
+	size_t i;
+
+	WantedMapSendQueue(): i(0) {}
+};
+
 void Server::SendBlocks(float dtime)
 {
 	DSTACK(FUNCTION_NAME);
 
 	MutexAutoLock envlock(m_env_mutex);
 	//TODO check if one big lock could be faster then multiple small ones
+	//     ^ is this referring to m_clients.lock/unlock()? -celeron55
 
 	ScopeProfiler sp(g_profiler, "Server: sel and send blocks to clients");
 
-	std::vector<PrioritySortedBlockTransfer> queue;
+	bool max_simultaneous_block_sends_server_total =
+			g_settings->getS32("max_simultaneous_block_sends_server_total");
+
+	std::vector<u16> clients = m_clients.getClientIDs();
+	// Create a random order in which to handle clients in order to treat each
+	// of them fairly no matter how tight the budget
+	std::random_shuffle(clients.begin(), clients.end());
+
+	m_clients.lock();
 
 	s32 total_sending = 0;
 
-	{
-		ScopeProfiler sp(g_profiler, "Server: selecting blocks for sending");
+	// First pass through clients
+	// - Calculate initial value for total_sending
+	// - Autosend cycle
+	for (size_t i=0; i<clients.size(); i++) {
+		u16 peer_id = clients[i];
 
-		std::vector<u16> clients = m_clients.getClientIDs();
+		RemoteClient *client = m_clients.lockedGetClientNoEx(peer_id, CS_Active);
+		if (!client)
+			continue;
 
-		m_clients.lock();
-		for(std::vector<u16>::iterator i = clients.begin();
-			i != clients.end(); ++i) {
-			RemoteClient *client = m_clients.lockedGetClientNoEx(*i, CS_Active);
+		total_sending += client->SendingCount();
 
-			if (client == NULL)
-				continue;
-
-			total_sending += client->SendingCount();
-			client->GetNextBlocks(m_env,m_emerge, dtime, queue);
-		}
-		m_clients.unlock();
+		client->cycleAutosendAlgorithm(dtime);
 	}
 
-	// Sort.
-	// Lowest priority number comes first.
-	// Lowest is most important.
-	std::sort(queue.begin(), queue.end());
-
-	m_clients.lock();
-	for(u32 i=0; i<queue.size(); i++)
-	{
-		//TODO: Calculate limit dynamically
-		if(total_sending >= g_settings->getS32
-				("max_simultaneous_block_sends_server_total"))
+	// Second pass through clients
+	// - Ask RemoteClients what they want to have sent
+	// - Send the things possibly if they are available
+	// - Go multiple times through the clients table until total_sending >=
+	//   max_simultaneous_block_sends_server_total or there is nothing to send
+	//   anymore
+	for (;;) {
+		if (total_sending >= max_simultaneous_block_sends_server_total)
 			break;
 
-		PrioritySortedBlockTransfer q = queue[i];
+		bool sent_something = false;
 
-		MapBlock *block = NULL;
-		try
-		{
-			block = m_env->getMap().getBlockNoCreate(q.pos);
+		for (size_t i=0; i<clients.size(); i++) {
+			u16 peer_id = clients[i];
+
+			if (total_sending >= max_simultaneous_block_sends_server_total)
+				break;
+
+			RemoteClient *client = m_clients.lockedGetClientNoEx(peer_id, CS_Active);
+			if(!client)
+				continue;
+
+			WMSSuggestion wmss = client->getNextBlock(m_emerge, m_far_map);
+			WantedMapSend wms = wmss.wms;
+
+			/*dstream << "Client " << peer_id << ": "
+					<< "wms.type=" << wms.type
+					<< std::endl;*/
+
+			if (wms.type == WMST_INVALID) {
+				continue;
+			}
+
+			if (wms.type == WMST_MAPBLOCK) {
+				/*dstream << "Server: Sending to "<<peer_id<<": "
+						<<wmss.describe()<<std::endl;*/
+
+				MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(wms.p);
+				if (!block) {
+					// client->getNextBlock() is technically allowed to reuturn an
+					// inexisting MapBlock, but it shouldn't generally happen. Warn
+					// about it so we can see where it happens.
+					warningstream<<"client->getNextBlock() returned inexisting "
+							"MapBlock"<<std::endl;
+					continue;
+				}
+
+				SendBlockNoLock(peer_id, block, client->serialization_version,
+						client->net_proto_version);
+				client->SendingBlock(wms);
+				total_sending++;
+				sent_something = true;
+			}
+			if (wms.type == WMST_FARBLOCK) {
+				/*dstream << "Server: Sending to "<<peer_id<<": "
+						<<wmss.describe()<<std::endl;*/
+
+				ServerFarBlock *fb = m_far_map->getBlock(wms.p);
+
+				FarBlocksResultStatus status;
+
+				if (fb) {
+					if (wmss.is_fully_loaded) {
+						/*dstream<<"ServerFarBlock "<<PP(wms.p)<<" fully loaded"
+								<<std::endl;*/
+						status = FBRS_FULLY_LOADED;
+					} else {
+						/*dstream<<"ServerFarBlock "<<PP(wms.p)<<" partly loaded"
+								<<std::endl;*/
+						status = FBRS_PARTLY_LOADED;
+					}
+				} else {
+					/*dstream<<"ServerFarBlock "<<PP(wms.p)<<" not found"
+							<<std::endl;*/
+					status = FBRS_LOAD_IN_PROGRESS;
+				}
+
+				static const v3s16 divs_per_mb(
+						SERVER_FB_MB_DIV, SERVER_FB_MB_DIV, SERVER_FB_MB_DIV);
+
+				NetworkPacket pkt(TOCLIENT_FAR_BLOCKS_RESULT, 0, peer_id);
+				/*
+					v3s16 p (position in farblocks)
+					u8 status
+					u8 flags
+					v3s16 divs_per_mb (amount of divisions per mapblock)
+					u32 data_len
+					Zlib-compressed:
+						for each FarNode (indexed by VoxelArea):
+							u16 node_id
+							u8 light (both lightbanks; raw value)
+				*/
+
+				pkt << wms.p;
+
+				pkt << (u8) status;
+				pkt << (u8) 0; // flags
+				pkt << divs_per_mb;
+				if (status == FBRS_FULLY_LOADED || status == FBRS_PARTLY_LOADED) {
+					std::ostringstream os(std::ios::binary);
+					for (size_t i=0; i<fb->content.size(); i++) {
+						writeU16(os, fb->content[i].id);
+						writeU8(os, fb->content[i].light);
+					}
+					std::ostringstream os2(std::ios::binary);
+					compressZlib(os.str(), os2);
+					pkt.putLongString(os2.str());
+				} else {
+					pkt << (u32) 0;
+				}
+
+				infostream << "FAR_BLOCKS_RESULT packet size: " << pkt.getSize()
+						<< std::endl;
+
+				Send(&pkt);
+				client->SendingBlock(wms);
+				total_sending++;
+				sent_something = true;
+			}
 		}
-		catch(InvalidPositionException &e)
-		{
-			continue;
-		}
 
-		RemoteClient *client = m_clients.lockedGetClientNoEx(q.peer_id, CS_Active);
-
-		if(!client)
-			continue;
-
-		SendBlockNoLock(q.peer_id, block, client->serialization_version, client->net_proto_version);
-
-		client->SentBlock(q.pos);
-		total_sending++;
+		if (!sent_something)
+			break;
 	}
+
 	m_clients.unlock();
 }
 

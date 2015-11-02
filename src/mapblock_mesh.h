@@ -32,6 +32,8 @@ class IShaderSource;
 	Mesh making stuff
 */
 
+void applyFacesShading(video::SColor& color, float factor);
+void getNodeVertexDirs(v3s16 dir, v3s16 *vertex_dirs);
 
 class MapBlock;
 struct MinimapMapblock;

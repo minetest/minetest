@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "settings.h"
 #include "camera.h"               // CameraModes
+#include "far_map.h"              // For reporting what is being rendered by us
 #include "util/mathconstants.h"
 #include <algorithm>
 
@@ -48,7 +49,9 @@ ClientMap::ClientMap(
 	m_control(control),
 	m_camera_position(0,0,0),
 	m_camera_direction(0,0,1),
-	m_camera_fov(M_PI)
+	m_camera_fov(M_PI),
+	m_mapblocks_exist_up_to_d(0),
+	m_mapblocks_exist_up_to_d_reset_counter(0)
 {
 	m_box = aabb3f(-BS*1000000,-BS*1000000,-BS*1000000,
 			BS*1000000,BS*1000000,BS*1000000);
@@ -196,6 +199,11 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 	v3s16 p_blocks_max;
 	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max);
 
+	// Set up a BlockAreaBitmap<bool> for reporting to Map
+	VoxelArea nrb_area(p_blocks_min, p_blocks_max);
+	BlockAreaBitmap<bool> normally_rendered_blocks;
+	normally_rendered_blocks.reset(nrb_area);
+
 	// Number of blocks in rendering range
 	u32 blocks_in_range = 0;
 	// Number of blocks occlusion culled
@@ -270,6 +278,7 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 
 				if (block->mesh == NULL) {
 					blocks_in_range_without_mesh++;
+					normally_rendered_blocks.set(block->getPos(), true);
 					continue;
 				}
 			}
@@ -339,10 +348,14 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 			if (d / BS > farthest_drawn)
 				farthest_drawn = d / BS;
 
-		} // foreach sectorblocks
+			normally_rendered_blocks.set(block->getPos(), true);
 
-		if (sector_blocks_drawn != 0)
-			m_last_drawn_sectors.insert(sp);
+		} // foreach sectorblocks
+	}
+
+	FarMap *fm = m_client->getFarMap();
+	if (fm) {
+		fm->reportNormallyRenderedBlocks(normally_rendered_blocks);
 	}
 
 	m_control.blocks_would_have_drawn = blocks_would_have_drawn;
@@ -409,12 +422,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		prefix = "CM: solid: ";
 	else
 		prefix = "CM: transparent: ";
-
-	/*
-		This is called two times per frame, reset on the non-transparent one
-	*/
-	if (pass == scene::ESNRP_SOLID)
-		m_last_drawn_sectors.clear();
 
 	/*
 		Get time for measuring timeout.
@@ -797,4 +804,86 @@ void ClientMap::PrintInfo(std::ostream &out)
 	out<<"ClientMap: ";
 }
 
+
+std::vector<v3s16> ClientMap::suggestMapBlocksToFetch(v3s16 camera_p,
+		size_t wanted_num_results)
+{
+	std::vector<v3s16> suggested_mbs;
+
+	// TODO: Add some prediction based on player's current speed so that we are
+	//       getting stuff from the correct location compared to where the
+	//       player will be after a while?
+
+	v3s16 center_mb = getContainerPos(camera_p, MAP_BLOCKSIZE);
+
+	s16 fetch_distance_nodes = m_control.wanted_range;
+	s16 fetch_distance_mapblocks =
+			roundf((float)fetch_distance_nodes / MAP_BLOCKSIZE);
+
+	// Avoid running the algorithm through all the close MapBlocks that probably
+	// have already been fetched, except once in a while to catch up with
+	// possible missed MapBlocks due to player movement or whatever.
+	// TODO: Lower this according to the distance the player has moved since
+	//       last time this was called
+	s16 start_d = m_mapblocks_exist_up_to_d; // Start one lower than have to
+	if (++m_mapblocks_exist_up_to_d_reset_counter >= 10) {
+		m_mapblocks_exist_up_to_d_reset_counter = 0;
+		start_d = 0;
+	}
+	m_mapblocks_exist_up_to_d = -1; // Reset and recalculate
+	if (start_d < 0)
+		start_d = 0;
+
+	for (s16 d = start_d; d <= fetch_distance_mapblocks; d++) {
+		std::vector<v3s16> ps = FacePositionCache::getFacePositions(d);
+		for (size_t i=0; i<ps.size(); i++) {
+			v3s16 p = center_mb + ps[i];
+
+			v3s16 blockpos_nodes = p * MAP_BLOCKSIZE;
+			v3s16 blockpos_center(
+					blockpos_nodes.X + MAP_BLOCKSIZE/2,
+					blockpos_nodes.Y + MAP_BLOCKSIZE/2,
+					blockpos_nodes.Z + MAP_BLOCKSIZE/2
+			);
+			v3s16 blockpos_relative = blockpos_center - camera_p;
+			f32 distance = blockpos_relative.getLength();
+			// Limit fetched MapBlocks to a ball radius instead of a square
+			// because that is how they are limited when drawing too
+			if (distance > fetch_distance_nodes)
+				continue; // Not in range
+
+			MapBlock *b = getBlockNoCreateNoEx(p);
+
+			// TODO: Not sure if this conditional is exactly correct
+			if (b != NULL && !b->isDummy())
+				continue; // Exists
+
+			if (m_mapblocks_exist_up_to_d == -1)
+				m_mapblocks_exist_up_to_d = d - 1;
+
+			// TODO: Frustum culling?
+			// TODO: Occlusion culling?
+
+			suggested_mbs.push_back(p);
+			if (suggested_mbs.size() >= wanted_num_results)
+				goto done;
+		}
+	}
+done:
+
+	infostream << "suggested_mbs.size()=" << suggested_mbs.size() << std::endl;
+	return suggested_mbs;
+}
+
+s16 ClientMap::suggestAutosendMapblocksRadius()
+{
+	s16 radius_nodes = m_control.wanted_range;
+	s16 radius_mapblocks = roundf((float)radius_nodes / MAP_BLOCKSIZE);
+	return radius_mapblocks;
+}
+
+float ClientMap::suggestAutosendFov()
+{
+	return m_camera_fov;
+}
 

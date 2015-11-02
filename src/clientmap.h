@@ -130,12 +130,11 @@ public:
 	// For debug printing
 	virtual void PrintInfo(std::ostream &out);
 	
-	// Check if sector was drawn on last render()
-	bool sectorWasDrawn(v2s16 p)
-	{
-		return (m_last_drawn_sectors.find(p) != m_last_drawn_sectors.end());
-	}
-	
+	std::vector<v3s16> suggestMapBlocksToFetch(v3s16 camera_p,
+			size_t wanted_num_results);
+	s16 suggestAutosendMapblocksRadius(); // Result in MapBlocks
+	float suggestAutosendFov();
+
 private:
 	Client *m_client;
 	
@@ -150,11 +149,13 @@ private:
 
 	std::map<v3s16, MapBlock*> m_drawlist;
 	
-	std::set<v2s16> m_last_drawn_sectors;
-
 	bool m_cache_trilinear_filter;
 	bool m_cache_bilinear_filter;
 	bool m_cache_anistropic_filter;
+
+	// Fetch suggestion algorithm
+	s16 m_mapblocks_exist_up_to_d;
+	s16 m_mapblocks_exist_up_to_d_reset_counter;
 };
 
 #endif

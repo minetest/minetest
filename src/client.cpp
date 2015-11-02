@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2013-2015 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -43,6 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemdef.h"
 #include "shader.h"
 #include "clientmap.h"
+#include "far_map.h"
 #include "clientmedia.h"
 #include "sound.h"
 #include "IMeshCache.h"
@@ -52,6 +53,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database-sqlite3.h"
 #include "serialization.h"
 #include "guiscalingfilter.h"
+#include "network/wms_priority.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -230,6 +232,7 @@ Client::Client(
 	m_device(device),
 	m_camera(NULL),
 	m_minimap_disabled_by_server(false),
+	m_far_map(NULL),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_proto_ver(0),
 	m_playeritem(0),
@@ -267,6 +270,12 @@ Client::Client(
 	m_cache_use_tangent_vertices = m_cache_enable_shaders && (
 		g_settings->getBool("enable_bumpmapping") || 
 		g_settings->getBool("enable_parallax_occlusion"));
+
+	if (g_settings->getBool("enable_far_map")) {
+		m_far_map = new FarMap(this,
+				device->getSceneManager()->getRootSceneNode(),
+				device->getSceneManager(), 667);
+	}
 }
 
 void Client::Stop()
@@ -319,6 +328,9 @@ Client::~Client()
 	}
 
 	delete m_mapper;
+
+	if (m_far_map)
+		m_far_map->drop();
 }
 
 void Client::connect(Address address,
@@ -565,12 +577,9 @@ void Client::step(float dtime)
 				m_mapper->addBlock(r.p, minimap_mapblock);
 
 			if (r.ack_block_to_server) {
-				/*
-					Acknowledge block
-					[0] u8 count
-					[1] v3s16 pos_0
-				*/
-				sendGotBlocks(r.p);
+				// Acknowledgement is done after mesh generation in order to
+				// optimally throttle the transfer rate of MapBlocks.
+				sendGotMapBlock(r.p);
 			}
 		}
 
@@ -665,6 +674,111 @@ void Client::step(float dtime)
 			m_cache_save_interval)) {
 		m_localdb->endSave();
 		m_localdb->beginSave();
+	}
+
+	/*
+		Request blocks
+	*/
+	static const float fmr_interval_s = 2.0f; // TODO: Configurable
+	if(m_far_blocks_request_interval.step(dtime, fmr_interval_s))
+	{
+		infostream<<"Client: Requesting far blocks"<<std::endl;
+
+		ClientMap *map = &m_env.getClientMap();
+		static const float far_weight = g_settings->getFloat("far_map_far_weight");
+
+		std::vector<WantedMapSend> wanted_map_send_queue;
+
+#if 0
+		// Get player position (used for prioritizing requests)
+		v3s16 player_p;
+		Player *player = m_env.getLocalPlayer();
+		if(player)
+			player_p = floatToInt(player->getPosition(), BS);
+
+		// Add FarBlock requests to wanted_map_send_queue
+		if (m_far_map && getFarMapVisible()) {
+			// Get suggested FarBlock positions
+			std::vector<v3s16> suggested_fbs =
+					m_far_map->suggestFarBlocksToFetch(player_p);
+			for (size_t i=0; i<suggested_fbs.size(); i++) {
+				v3s16 fb = suggested_fbs[i];
+				wanted_map_send_queue.push_back(WantedMapSend(WMST_FARBLOCK, fb));
+			}
+		}
+
+#if 0
+		// Figure out maximum number for queued MapBlocks
+		static const s32 max_mut_queue_size = 20;
+		static const s32 max_suggested_mbs = 50;
+		s32 num_suggested_mbs = max_suggested_mbs;
+		s32 mesh_queue_size = m_mesh_update_thread.queueSize();
+		if (mesh_queue_size > max_mut_queue_size) {
+			float mesh_queue_fill = (float)mesh_queue_size / max_mut_queue_size;
+			num_suggested_mbs = max_suggested_mbs * mesh_queue_fill;
+		}
+
+		// Get suggested MapBlock positions
+		std::vector<v3s16> suggested_mbs = map->suggestMapBlocksToFetch(
+				player_p, num_suggested_mbs);
+		for (size_t i=0; i<suggested_mbs.size(); i++) {
+			v3s16 mb = suggested_mbs[i];
+			wanted_map_send_queue.push_back(WantedMapSend(WMST_MAPBLOCK, mb));
+		}
+#endif
+
+		// Prioritize
+		std::sort(wanted_map_send_queue.begin(), wanted_map_send_queue.end(),
+				WMSPriority(player_p, far_weight));
+#endif
+
+		// Autosend parameters
+		s16 autosend_radius_map = map->suggestAutosendMapblocksRadius();
+		s16 autosend_radius_far = !m_far_map ? 0 :
+				m_far_map->suggestAutosendFarblocksRadius();
+		float autosend_far_weight = far_weight;
+		float autosend_fov = map->suggestAutosendFov();
+
+#if 0
+		// Periodically disable autosending MapBlocks from far away in order to
+		// get some FarBlocks at all times for now as autosend doesn't send
+		// FarBlocks yet.
+		static size_t temporary_trick = 0;
+		if ((temporary_trick++) % 5 == 0) {
+			if (autosend_radius_map > 2)
+				autosend_radius_map = 2;
+		}
+#endif
+
+		NetworkPacket pkt(TOSERVER_SET_WANTED_MAP_SEND_QUEUE, 0);
+		/*
+			Autosend parameters:
+			s16 radius_map
+			s16 radius_far
+			f1000 far_weight
+			f1000 fov
+			Manual requests:
+			u32 len
+			for len:
+				u8 type // 1=MapBlock, 2=FarBlock
+				v3s16 p
+		*/
+		pkt << (s16) autosend_radius_map;
+		pkt << (s16) autosend_radius_far;
+		pkt << (float) autosend_far_weight;
+		pkt << (float) autosend_fov;
+		pkt << (u32) wanted_map_send_queue.size();
+		for (size_t i=0; i<wanted_map_send_queue.size(); i++) {
+			const WantedMapSend &wms = wanted_map_send_queue[i];
+			pkt << (u8) wms.type;
+			pkt << (v3s16) wms.p;
+		}
+		Send(&pkt);
+	}
+
+	if (m_far_map) {
+		// Update FarMap
+		m_far_map->update();
 	}
 }
 
@@ -1094,10 +1208,21 @@ void Client::sendDeletedBlocks(std::vector<v3s16> &blocks)
 	Send(&pkt);
 }
 
-void Client::sendGotBlocks(v3s16 block)
+void Client::sendGotMapBlock(v3s16 block)
 {
-	NetworkPacket pkt(TOSERVER_GOTBLOCKS, 1 + 6);
-	pkt << (u8) 1 << block;
+	NetworkPacket pkt(TOSERVER_GOTBLOCKS, 1 + 6 + 1);
+	pkt << (u8) 1;
+	pkt << block;
+	pkt << (u8) 0;
+	Send(&pkt);
+}
+
+void Client::sendGotFarBlock(v3s16 block)
+{
+	NetworkPacket pkt(TOSERVER_GOTBLOCKS, 1 + 1 + 6);
+	pkt << (u8) 0;
+	pkt << (u8) 1;
+	pkt << block;
 	Send(&pkt);
 }
 
@@ -1663,6 +1788,15 @@ void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool ur
 	}
 }
 
+void Client::updateCameraOffset(v3s16 camera_offset)
+{
+	m_mesh_update_thread.m_camera_offset = camera_offset;
+
+	if (m_far_map) {
+		m_far_map->updateCameraOffset(camera_offset);
+	}
+}
+
 ClientEvent Client::getClientEvent()
 {
 	ClientEvent event;
@@ -1766,6 +1900,17 @@ void Client::afterContentReceived(IrrlichtDevice *device)
 	m_nodedef->updateTextures(this, texture_update_progress, &tu_args);
 	delete[] tu_args.text_base;
 
+	if (m_far_map) {
+		// Create FarMap atlas
+		if (m_far_map) {
+			infostream<<"- Creating FarMap atlas"<<std::endl;
+			text = wgettext("Creating FarMap atlas...");
+			draw_load_screen(text, device, guienv, 0, 100);
+			m_far_map->createAtlas();
+			delete[] text;
+		}
+	}
+
 	// Start mesh update thread after setting up content definitions
 	infostream<<"- Starting mesh update thread"<<std::endl;
 	m_mesh_update_thread.start();
@@ -1793,6 +1938,21 @@ float Client::getAvgRate(void)
 {
 	return ( m_con.getLocalStat(con::AVG_INC_RATE) +
 			m_con.getLocalStat(con::AVG_DL_RATE));
+}
+
+bool Client::getFarMapVisible()
+{
+	return !m_far_map ? false : m_far_map->isVisible();
+}
+
+void Client::setFarMapVisible(bool b)
+{
+	if (m_far_map) m_far_map->setVisible(b);
+}
+
+float Client::getFarMapFogDistance()
+{
+	return !m_far_map ? 500.0 : m_far_map->suggestFogDistance();
 }
 
 void Client::makeScreenshot(IrrlichtDevice *device)
