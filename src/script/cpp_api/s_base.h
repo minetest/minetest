@@ -27,6 +27,7 @@ extern "C" {
 #include <lua.h>
 }
 
+#include "int_types.h"
 #include "irrlichttypes.h"
 #include "threads.h"
 #include "threading/mutex.h"

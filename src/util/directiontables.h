@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef UTIL_DIRECTIONTABLES_HEADER
 #define UTIL_DIRECTIONTABLES_HEADER
 
-#include "../irrlichttypes.h"
+#include "../int_types.h"
 #include "../irr_v3d.h"
 
 extern const v3s16 g_6dirs[6];

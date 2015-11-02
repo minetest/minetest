@@ -65,7 +65,7 @@ private:
 	//
 	scene::ISceneManager *m_smgr;
 	IrrlichtDevice *m_irr;
-	core::aabbox3d<f32> m_selection_box;
+	aabb3f m_selection_box;
 	scene::IMeshSceneNode *m_meshnode;
 	scene::IAnimatedMeshSceneNode *m_animated_meshnode;
 	WieldMeshSceneNode *m_wield_meshnode;
@@ -128,7 +128,7 @@ public:
 
 	bool collideWithObjects();
 
-	core::aabbox3d<f32>* getSelectionBox();
+	aabb3f* getSelectionBox();
 
 	v3f getPosition();
 

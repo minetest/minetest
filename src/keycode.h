@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef KEYCODE_HEADER
 #define KEYCODE_HEADER
 
-#include "irrlichttypes.h"
+#include "int_types.h"
 #include "Keycodes.h"
 #include <IEventReceiver.h>
 #include <string>

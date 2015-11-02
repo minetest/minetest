@@ -381,7 +381,7 @@ void GUIChatConsole::drawPrompt()
 
 bool GUIChatConsole::OnEvent(const SEvent& event)
 {
-	if(event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
+	if(event.EventType == irr::EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
 	{
 		// Key input
 		if(KeyPress(event.KeyInput) == getKeySetting("keymap_console"))
@@ -393,44 +393,44 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			m_open_inhibited = 50;
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_ESCAPE)
+		else if(event.KeyInput.Key == irr::KEY_ESCAPE)
 		{
 			closeConsoleAtOnce();
 			Environment->removeFocus(this);
 			// the_game will open the pause menu
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_PRIOR)
+		else if(event.KeyInput.Key == irr::KEY_PRIOR)
 		{
 			m_chat_backend->scrollPageUp();
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_NEXT)
+		else if(event.KeyInput.Key == irr::KEY_NEXT)
 		{
 			m_chat_backend->scrollPageDown();
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_RETURN)
+		else if(event.KeyInput.Key == irr::KEY_RETURN)
 		{
 			std::wstring text = m_chat_backend->getPrompt().submit();
 			m_client->typeChatMessage(text);
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_UP)
+		else if(event.KeyInput.Key == irr::KEY_UP)
 		{
 			// Up pressed
 			// Move back in history
 			m_chat_backend->getPrompt().historyPrev();
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_DOWN)
+		else if(event.KeyInput.Key == irr::KEY_DOWN)
 		{
 			// Down pressed
 			// Move forward in history
 			m_chat_backend->getPrompt().historyNext();
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_LEFT)
+		else if(event.KeyInput.Key == irr::KEY_LEFT)
 		{
 			// Left or Ctrl-Left pressed
 			// move character / word to the left
@@ -444,7 +444,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				scope);
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_RIGHT)
+		else if(event.KeyInput.Key == irr::KEY_RIGHT)
 		{
 			// Right or Ctrl-Right pressed
 			// move character / word to the right
@@ -458,7 +458,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				scope);
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_HOME)
+		else if(event.KeyInput.Key == irr::KEY_HOME)
 		{
 			// Home pressed
 			// move to beginning of line
@@ -468,7 +468,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				ChatPrompt::CURSOROP_SCOPE_LINE);
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_END)
+		else if(event.KeyInput.Key == irr::KEY_END)
 		{
 			// End pressed
 			// move to end of line
@@ -478,7 +478,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				ChatPrompt::CURSOROP_SCOPE_LINE);
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_BACK)
+		else if(event.KeyInput.Key == irr::KEY_BACK)
 		{
 			// Backspace or Ctrl-Backspace pressed
 			// delete character / word to the left
@@ -492,7 +492,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				scope);
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_DELETE)
+		else if(event.KeyInput.Key == irr::KEY_DELETE)
 		{
 			// Delete or Ctrl-Delete pressed
 			// delete character / word to the right
@@ -506,12 +506,12 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				scope);
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_KEY_V && event.KeyInput.Control)
+		else if(event.KeyInput.Key == irr::KEY_KEY_V && event.KeyInput.Control)
 		{
 			// Ctrl-V pressed
 			// paste text from clipboard
-			IOSOperator *os_operator = Environment->getOSOperator();
-			const c8 *text = os_operator->getTextFromClipboard();
+			irr::IOSOperator *os_operator = Environment->getOSOperator();
+			const irr::c8 *text = os_operator->getTextFromClipboard();
 			if (text)
 			{
 				std::wstring wtext = narrow_to_wide(text);
@@ -519,7 +519,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			}
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_KEY_U && event.KeyInput.Control)
+		else if(event.KeyInput.Key == irr::KEY_KEY_U && event.KeyInput.Control)
 		{
 			// Ctrl-U pressed
 			// kill line to left end
@@ -529,7 +529,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				ChatPrompt::CURSOROP_SCOPE_LINE);
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_KEY_K && event.KeyInput.Control)
+		else if(event.KeyInput.Key == irr::KEY_KEY_K && event.KeyInput.Control)
 		{
 			// Ctrl-K pressed
 			// kill line to right end
@@ -539,7 +539,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				ChatPrompt::CURSOROP_SCOPE_LINE);
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_TAB)
+		else if(event.KeyInput.Key == irr::KEY_TAB)
 		{
 			// Tab or Shift-Tab pressed
 			// Nick completion
@@ -560,9 +560,9 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			return true;
 		}
 	}
-	else if(event.EventType == EET_MOUSE_INPUT_EVENT)
+	else if(event.EventType == irr::EET_MOUSE_INPUT_EVENT)
 	{
-		if(event.MouseInput.Event == EMIE_MOUSE_WHEEL)
+		if(event.MouseInput.Event == irr::EMIE_MOUSE_WHEEL)
 		{
 			s32 rows = myround(-3.0 * event.MouseInput.Wheel);
 			m_chat_backend->scroll(rows);

@@ -1434,7 +1434,7 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 	beginSave();
 
 	// If there is no practical limit, we spare creation of mapblock_queue
-	if (max_loaded_blocks == U32_MAX) {
+	if (max_loaded_blocks == UINT32_MAX) {
 		for (std::map<v2s16, MapSector*>::iterator si = m_sectors.begin();
 				si != m_sectors.end(); ++si) {
 			MapSector *sector = si->second;

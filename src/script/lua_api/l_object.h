@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define L_OBJECT_H_
 
 #include "lua_api/l_base.h"
-#include "irrlichttypes.h"
+#include "int_types.h"
 
 class ServerActiveObject;
 class LuaEntitySAO;

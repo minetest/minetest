@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GAMEDEF_HEADER
 
 #include <string>
-#include "irrlichttypes.h"
+#include "int_types.h"
 
 class IItemDefManager;
 class INodeDefManager;
@@ -63,9 +63,9 @@ public:
 	// Only usable on the client
 	virtual ISoundManager* getSoundManager()=0;
 	virtual MtEventManager* getEventManager()=0;
-	virtual scene::IAnimatedMesh* getMesh(const std::string &filename)
+	virtual irr::scene::IAnimatedMesh* getMesh(const std::string &filename)
 	{ return NULL; }
-	virtual scene::ISceneManager* getSceneManager()=0;
+	virtual irr::scene::ISceneManager* getSceneManager()=0;
 
 	// Only usable on the server, and NOT thread-safe. It is usable from the
 	// environment thread.

@@ -20,11 +20,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef IRR_AABB3D_HEADER
 #define IRR_AABB3D_HEADER
 
-#include "irrlichttypes.h"
+#include "int_types.h"
 
 #include <aabbox3d.h>
 
-typedef core::aabbox3d<f32> aabb3f;
+typedef irr::core::aabbox3d<float> aabb3f;
 
 #endif
 

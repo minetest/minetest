@@ -468,7 +468,7 @@ void MapgenParams::save(Settings &settings) const
 	settings.setU64("seed", seed);
 	settings.setS16("water_level", water_level);
 	settings.setS16("chunksize", chunksize);
-	settings.setFlagStr("mg_flags", flags, flagdesc_mapgen, U32_MAX);
+	settings.setFlagStr("mg_flags", flags, flagdesc_mapgen, UINT32_MAX);
 	settings.setNoiseParams("mg_biome_np_heat", np_biome_heat);
 	settings.setNoiseParams("mg_biome_np_heat_blend", np_biome_heat_blend);
 	settings.setNoiseParams("mg_biome_np_humidity", np_biome_humidity);

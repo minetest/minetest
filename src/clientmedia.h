@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLIENTMEDIA_HEADER
 #define CLIENTMEDIA_HEADER
 
-#include "irrlichttypes.h"
+#include "int_types.h"
 #include "filecache.h"
 #include <ostream>
 #include <map>

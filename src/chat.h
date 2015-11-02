@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CHAT_HEADER
 #define CHAT_HEADER
 
-#include "irrlichttypes.h"
+#include "int_types.h"
 #include <string>
 #include <vector>
 #include <list>

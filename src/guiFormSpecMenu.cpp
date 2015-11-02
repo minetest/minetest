@@ -959,8 +959,8 @@ void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element)
 		e->setPasswordBox(true,L'*');
 
 		irr::SEvent evt;
-		evt.EventType            = EET_KEY_INPUT_EVENT;
-		evt.KeyInput.Key         = KEY_END;
+		evt.EventType            = irr::EET_KEY_INPUT_EVENT;
+		evt.KeyInput.Key         = irr::KEY_END;
 		evt.KeyInput.Char        = 0;
 		evt.KeyInput.Control     = 0;
 		evt.KeyInput.Shift       = 0;
@@ -1032,8 +1032,8 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 		}
 
 		irr::SEvent evt;
-		evt.EventType            = EET_KEY_INPUT_EVENT;
-		evt.KeyInput.Key         = KEY_END;
+		evt.EventType            = irr::EET_KEY_INPUT_EVENT;
+		evt.KeyInput.Key         = irr::KEY_END;
 		evt.KeyInput.Char        = 0;
 		evt.KeyInput.Control     = 0;
 		evt.KeyInput.Shift       = 0;
@@ -1139,8 +1139,8 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 			e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_UPPERLEFT);
 		} else {
 			irr::SEvent evt;
-			evt.EventType            = EET_KEY_INPUT_EVENT;
-			evt.KeyInput.Key         = KEY_END;
+			evt.EventType            = irr::EET_KEY_INPUT_EVENT;
+			evt.KeyInput.Key         = irr::KEY_END;
 			evt.KeyInput.Char        = 0;
 			evt.KeyInput.Control     = 0;
 			evt.KeyInput.Shift       = 0;
@@ -2776,8 +2776,8 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 	// using the font that is selected at the time of button release.
 	// To make these two consistent, temporarily override the skin's
 	// font while the IGUITabControl is processing the event.
-	if (event.EventType == EET_MOUSE_INPUT_EVENT &&
-			event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
+	if (event.EventType == irr::EET_MOUSE_INPUT_EVENT &&
+			event.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
 		s32 x = event.MouseInput.X;
 		s32 y = event.MouseInput.Y;
 		gui::IGUIElement *hovered =
@@ -2796,11 +2796,11 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 	}
 
 	// Fix Esc/Return key being eaten by checkboxen and tables
-	if(event.EventType==EET_KEY_INPUT_EVENT) {
+	if(event.EventType == irr::EET_KEY_INPUT_EVENT) {
 		KeyPress kp(event.KeyInput);
-		if (kp == EscapeKey || kp == CancelKey
-				|| kp == getKeySetting("keymap_inventory")
-				|| event.KeyInput.Key==KEY_RETURN) {
+		if (kp == EscapeKey || kp == CancelKey ||
+				kp == getKeySetting("keymap_inventory") ||
+				event.KeyInput.Key == irr::KEY_RETURN) {
 			gui::IGUIElement *focused = Environment->getFocus();
 			if (focused && isMyChild(focused) &&
 					(focused->getType() == gui::EGUIET_LIST_BOX ||
@@ -2811,8 +2811,8 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		}
 	}
 	// Mouse wheel events: send to hovered element instead of focused
-	if(event.EventType==EET_MOUSE_INPUT_EVENT
-			&& event.MouseInput.Event == EMIE_MOUSE_WHEEL) {
+	if(event.EventType == irr::EET_MOUSE_INPUT_EVENT &&
+			event.MouseInput.Event == irr::EMIE_MOUSE_WHEEL) {
 		s32 x = event.MouseInput.X;
 		s32 y = event.MouseInput.Y;
 		gui::IGUIElement *hovered =
@@ -2824,13 +2824,13 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		}
 	}
 
-	if (event.EventType == EET_MOUSE_INPUT_EVENT) {
+	if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
 		s32 x = event.MouseInput.X;
 		s32 y = event.MouseInput.Y;
 		gui::IGUIElement *hovered =
 			Environment->getRootGUIElement()->getElementFromPoint(
 				core::position2d<s32>(x, y));
-		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
+		if (event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
 			m_old_tooltip_id = -1;
 			m_old_tooltip = "";
 		}
@@ -2843,8 +2843,8 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 
 	#ifdef __ANDROID__
 	// display software keyboard when clicking edit boxes
-	if (event.EventType == EET_MOUSE_INPUT_EVENT
-			&& event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
+	if (event.EventType == irr::EET_MOUSE_INPUT_EVENT &&
+			event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
 		gui::IGUIElement *hovered =
 			Environment->getRootGUIElement()->getElementFromPoint(
 				core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y));
@@ -2881,11 +2881,11 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		}
 	}
 
-	if (event.EventType == EET_TOUCH_INPUT_EVENT)
+	if (event.EventType == irr::EET_TOUCH_INPUT_EVENT)
 	{
 		SEvent translated;
 		memset(&translated, 0, sizeof(SEvent));
-		translated.EventType   = EET_MOUSE_INPUT_EVENT;
+		translated.EventType   = irr::EET_MOUSE_INPUT_EVENT;
 		gui::IGUIElement* root = Environment->getRootGUIElement();
 
 		if (!root) {
@@ -2909,17 +2909,17 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 			switch (event.TouchInput.Event) {
 				case ETIE_PRESSED_DOWN:
 					m_pointer = v2s32(event.TouchInput.X,event.TouchInput.Y);
-					translated.MouseInput.Event = EMIE_LMOUSE_PRESSED_DOWN;
+					translated.MouseInput.Event = irr::EMIE_LMOUSE_PRESSED_DOWN;
 					translated.MouseInput.ButtonStates = EMBSM_LEFT;
 					m_down_pos = m_pointer;
 					break;
 				case ETIE_MOVED:
 					m_pointer = v2s32(event.TouchInput.X,event.TouchInput.Y);
-					translated.MouseInput.Event = EMIE_MOUSE_MOVED;
+					translated.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
 					translated.MouseInput.ButtonStates = EMBSM_LEFT;
 					break;
 				case ETIE_LEFT_UP:
-					translated.MouseInput.Event = EMIE_LMOUSE_LEFT_UP;
+					translated.MouseInput.Event = irr::EMIE_LMOUSE_LEFT_UP;
 					translated.MouseInput.ButtonStates = 0;
 					hovered = root->getElementFromPoint(m_down_pos);
 					/* we don't have a valid pointer element use last
@@ -2941,7 +2941,7 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 				(event.TouchInput.Event == ETIE_PRESSED_DOWN) ) {
 			hovered = root->getElementFromPoint(m_down_pos);
 
-			translated.MouseInput.Event = EMIE_RMOUSE_PRESSED_DOWN;
+			translated.MouseInput.Event = irr::EMIE_RMOUSE_PRESSED_DOWN;
 			translated.MouseInput.ButtonStates = EMBSM_LEFT | EMBSM_RIGHT;
 			translated.MouseInput.X = m_pointer.X;
 			translated.MouseInput.Y = m_pointer.Y;
@@ -2950,7 +2950,7 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 				hovered->OnEvent(translated);
 			}
 
-			translated.MouseInput.Event = EMIE_RMOUSE_LEFT_UP;
+			translated.MouseInput.Event = irr::EMIE_RMOUSE_LEFT_UP;
 			translated.MouseInput.ButtonStates = EMBSM_LEFT;
 
 
@@ -3010,14 +3010,14 @@ bool GUIFormSpecMenu::DoubleClickDetection(const SEvent event)
 	if (!m_remap_dbl_click)
 		return false;
 
-	if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
+	if (event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
 		m_doubleclickdetect[0].pos  = m_doubleclickdetect[1].pos;
 		m_doubleclickdetect[0].time = m_doubleclickdetect[1].time;
 
 		m_doubleclickdetect[1].pos  = m_pointer;
 		m_doubleclickdetect[1].time = getTimeMs();
 	}
-	else if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
+	else if (event.MouseInput.Event == irr::EMIE_LMOUSE_LEFT_UP) {
 		u32 delta = porting::getDeltaMs(m_doubleclickdetect[0].time, getTimeMs());
 		if (delta > 400) {
 			return false;
@@ -3036,7 +3036,7 @@ bool GUIFormSpecMenu::DoubleClickDetection(const SEvent event)
 		//translate doubleclick to escape
 		memset(translated, 0, sizeof(SEvent));
 		translated->EventType = irr::EET_KEY_INPUT_EVENT;
-		translated->KeyInput.Key         = KEY_ESCAPE;
+		translated->KeyInput.Key         = irr::KEY_ESCAPE;
 		translated->KeyInput.Control     = false;
 		translated->KeyInput.Shift       = false;
 		translated->KeyInput.PressedDown = true;
@@ -3054,7 +3054,7 @@ bool GUIFormSpecMenu::DoubleClickDetection(const SEvent event)
 
 bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 {
-	if (event.EventType==EET_KEY_INPUT_EVENT) {
+	if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
 		KeyPress kp(event.KeyInput);
 		if (event.KeyInput.PressedDown && ( (kp == EscapeKey) ||
 				(kp == getKeySetting("keymap_inventory")) || (kp == CancelKey))) {
@@ -3071,25 +3071,22 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			m_client->makeScreenshot(m_device);
 		}
 		if (event.KeyInput.PressedDown &&
-			(event.KeyInput.Key==KEY_RETURN ||
-			 event.KeyInput.Key==KEY_UP ||
-			 event.KeyInput.Key==KEY_DOWN)
-			) {
+				(event.KeyInput.Key == irr::KEY_RETURN ||
+				 event.KeyInput.Key == irr::KEY_UP ||
+				 event.KeyInput.Key == irr::KEY_DOWN)
+				) {
 			switch (event.KeyInput.Key) {
-				case KEY_RETURN:
-					current_keys_pending.key_enter = true;
-					break;
-				case KEY_UP:
-					current_keys_pending.key_up = true;
-					break;
-				case KEY_DOWN:
-					current_keys_pending.key_down = true;
-					break;
+			case irr::KEY_RETURN:
+				current_keys_pending.key_enter = true;
 				break;
-				default:
-					//can't happen at all!
-					FATAL_ERROR("Reached a source line that can't ever been reached");
-					break;
+			case irr::KEY_UP:
+				current_keys_pending.key_up = true;
+				break;
+			case irr::KEY_DOWN:
+				current_keys_pending.key_down = true;
+				break;
+			default:
+				FATAL_ERROR("Reached code that should be unreachable!");
 			}
 			if (current_keys_pending.key_enter && m_allowclose) {
 				acceptInput(quit_mode_accept);
@@ -3105,9 +3102,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 	/* Mouse event other than movement, or crossing the border of inventory
 	  field while holding right mouse button
 	 */
-	if (event.EventType == EET_MOUSE_INPUT_EVENT &&
-			(event.MouseInput.Event != EMIE_MOUSE_MOVED ||
-			 (event.MouseInput.Event == EMIE_MOUSE_MOVED &&
+	if (event.EventType == irr::EET_MOUSE_INPUT_EVENT &&
+			(event.MouseInput.Event != irr::EMIE_MOUSE_MOVED ||
+			 (event.MouseInput.Event == irr::EMIE_MOUSE_MOVED &&
 			  event.MouseInput.isRightPressed() &&
 			  getItemAtPos(m_pointer).i != getItemAtPos(m_old_pointer).i))) {
 
@@ -3169,20 +3166,16 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		// up/down: 0 = down (press), 1 = up (release), 2 = unknown event, -1 movement
 		int button = 0;
 		int updown = 2;
-		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
-			{ button = 0; updown = 0; }
-		else if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN)
-			{ button = 1; updown = 0; }
-		else if (event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN)
-			{ button = 2; updown = 0; }
-		else if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
-			{ button = 0; updown = 1; }
-		else if (event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP)
-			{ button = 1; updown = 1; }
-		else if (event.MouseInput.Event == EMIE_MMOUSE_LEFT_UP)
-			{ button = 2; updown = 1; }
-		else if (event.MouseInput.Event == EMIE_MOUSE_MOVED)
-			{ updown = -1;}
+		switch (event.MouseInput.Event) {
+		case irr::EMIE_LMOUSE_PRESSED_DOWN: button = 0; updown = 0; break;
+		case irr::EMIE_RMOUSE_PRESSED_DOWN: button = 1; updown = 0; break;
+		case irr::EMIE_MMOUSE_PRESSED_DOWN: button = 2; updown = 0; break;
+		case irr::EMIE_LMOUSE_LEFT_UP: button = 0; updown = 1; break;
+		case irr::EMIE_RMOUSE_LEFT_UP: button = 1; updown = 1; break;
+		case irr::EMIE_MMOUSE_LEFT_UP: button = 2; updown = 1; break;
+		case irr::EMIE_MOUSE_MOVED: updown = -1; break;
+		default: break;
+		}
 
 		// Set this number to a positive value to generate a move action
 		// from m_selected_item to s.
@@ -3470,7 +3463,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		}
 		m_old_pointer = m_pointer;
 	}
-	if (event.EventType == EET_GUI_EVENT) {
+	if (event.EventType == irr::EET_GUI_EVENT) {
 
 		if (event.GUIEvent.EventType == gui::EGET_TAB_CHANGED
 				&& isVisible()) {

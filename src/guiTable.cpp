@@ -625,7 +625,7 @@ void GUITable::setDynamicData(const DynamicData &dyndata)
 	m_scrollbar->setPos(dyndata.scrollpos);
 }
 
-const c8* GUITable::getTypeName() const
+const irr::c8* GUITable::getTypeName() const
 {
 	return "GUITable";
 }
@@ -765,32 +765,32 @@ bool GUITable::OnEvent(const SEvent &event)
 	if (!isEnabled())
 		return IGUIElement::OnEvent(event);
 
-	if (event.EventType == EET_KEY_INPUT_EVENT) {
+	if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
 		if (event.KeyInput.PressedDown && (
-				event.KeyInput.Key == KEY_DOWN ||
-				event.KeyInput.Key == KEY_UP   ||
-				event.KeyInput.Key == KEY_HOME ||
-				event.KeyInput.Key == KEY_END  ||
-				event.KeyInput.Key == KEY_NEXT ||
-				event.KeyInput.Key == KEY_PRIOR)) {
+				event.KeyInput.Key == irr::KEY_DOWN ||
+				event.KeyInput.Key == irr::KEY_UP   ||
+				event.KeyInput.Key == irr::KEY_HOME ||
+				event.KeyInput.Key == irr::KEY_END  ||
+				event.KeyInput.Key == irr::KEY_NEXT ||
+				event.KeyInput.Key == irr::KEY_PRIOR)) {
 			s32 offset = 0;
 			switch (event.KeyInput.Key) {
-				case KEY_DOWN:
+				case irr::KEY_DOWN:
 					offset = 1;
 					break;
-				case KEY_UP:
+				case irr::KEY_UP:
 					offset = -1;
 					break;
-				case KEY_HOME:
+				case irr::KEY_HOME:
 					offset = - (s32) m_visible_rows.size();
 					break;
-				case KEY_END:
+				case irr::KEY_END:
 					offset = m_visible_rows.size();
 					break;
-				case KEY_NEXT:
+				case irr::KEY_NEXT:
 					offset = AbsoluteRect.getHeight() / m_rowheight;
 					break;
-				case KEY_PRIOR:
+				case irr::KEY_PRIOR:
 					offset = - (s32) (AbsoluteRect.getHeight() / m_rowheight);
 					break;
 				default:
@@ -809,23 +809,23 @@ bool GUITable::OnEvent(const SEvent &event)
 			return true;
 		}
 		else if (event.KeyInput.PressedDown && (
-				event.KeyInput.Key == KEY_LEFT ||
-				event.KeyInput.Key == KEY_RIGHT)) {
+				event.KeyInput.Key == irr::KEY_LEFT ||
+				event.KeyInput.Key == irr::KEY_RIGHT)) {
 			// Open/close subtree via keyboard
 			if (m_selected >= 0) {
-				int dir = event.KeyInput.Key == KEY_LEFT ? -1 : 1;
+				int dir = event.KeyInput.Key == irr::KEY_LEFT ? -1 : 1;
 				toggleVisibleTree(m_selected, dir, true);
 			}
 			return true;
 		}
 		else if (!event.KeyInput.PressedDown && (
-				event.KeyInput.Key == KEY_RETURN ||
-				event.KeyInput.Key == KEY_SPACE)) {
+				event.KeyInput.Key == irr::KEY_RETURN ||
+				event.KeyInput.Key == irr::KEY_SPACE)) {
 			sendTableEvent(0, true);
 			return true;
 		}
-		else if (event.KeyInput.Key == KEY_ESCAPE ||
-				event.KeyInput.Key == KEY_SPACE) {
+		else if (event.KeyInput.Key == irr::KEY_ESCAPE ||
+				event.KeyInput.Key == irr::KEY_SPACE) {
 			// pass to parent
 		}
 		else if (event.KeyInput.PressedDown && event.KeyInput.Char) {
@@ -862,10 +862,10 @@ bool GUITable::OnEvent(const SEvent &event)
 			return true;
 		}
 	}
-	if (event.EventType == EET_MOUSE_INPUT_EVENT) {
+	if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
 		core::position2d<s32> p(event.MouseInput.X, event.MouseInput.Y);
 
-		if (event.MouseInput.Event == EMIE_MOUSE_WHEEL) {
+		if (event.MouseInput.Event == irr::EMIE_MOUSE_WHEEL) {
 			m_scrollbar->setPos(m_scrollbar->getPos() +
 					(event.MouseInput.Wheel < 0 ? -3 : 3) *
 					- (s32) m_rowheight / 2);
@@ -888,32 +888,32 @@ bool GUITable::OnEvent(const SEvent &event)
 		// Fix for #1567/#1806:
 		// IGUIScrollBar passes double click events to its parent,
 		// which we don't want. Detect this case and discard the event
-		if (event.MouseInput.Event != EMIE_MOUSE_MOVED &&
+		if (event.MouseInput.Event != irr::EMIE_MOUSE_MOVED &&
 				m_scrollbar->isVisible() &&
 				m_scrollbar->isPointInside(p))
 			return true;
 
 		if (event.MouseInput.isLeftPressed() &&
 				(isPointInside(p) ||
-				 event.MouseInput.Event == EMIE_MOUSE_MOVED)) {
+				 event.MouseInput.Event == irr::EMIE_MOUSE_MOVED)) {
 			s32 sel_column = 0;
 			bool sel_doubleclick = (event.MouseInput.Event
-					== EMIE_LMOUSE_DOUBLE_CLICK);
+					== irr::EMIE_LMOUSE_DOUBLE_CLICK);
 			bool plusminus_clicked = false;
 
 			// For certain events (left click), report column
 			// Also open/close subtrees when the +/- is clicked
 			if (cell && (
-					event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN ||
-					event.MouseInput.Event == EMIE_LMOUSE_DOUBLE_CLICK ||
-					event.MouseInput.Event == EMIE_LMOUSE_TRIPLE_CLICK)) {
+					event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN ||
+					event.MouseInput.Event == irr::EMIE_LMOUSE_DOUBLE_CLICK ||
+					event.MouseInput.Event == irr::EMIE_LMOUSE_TRIPLE_CLICK)) {
 				sel_column = cell->reported_column;
 				if (cell->content_type == COLUMN_TYPE_TREE)
 					plusminus_clicked = true;
 			}
 
 			if (plusminus_clicked) {
-				if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
+				if (event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN) {
 					toggleVisibleTree(row_i, 0, false);
 				}
 			}
@@ -937,7 +937,7 @@ bool GUITable::OnEvent(const SEvent &event)
 		}
 		return true;
 	}
-	if (event.EventType == EET_GUI_EVENT &&
+	if (event.EventType == irr::EET_GUI_EVENT &&
 			event.GUIEvent.EventType == gui::EGET_SCROLL_BAR_CHANGED &&
 			event.GUIEvent.Caller == m_scrollbar) {
 		// Don't pass events from our scrollbar to the parent
@@ -1097,7 +1097,7 @@ void GUITable::sendTableEvent(s32 column, bool doubleclick)
 	if (Parent) {
 		SEvent e;
 		memset(&e, 0, sizeof e);
-		e.EventType = EET_GUI_EVENT;
+		e.EventType = irr::EET_GUI_EVENT;
 		e.GUIEvent.Caller = this;
 		e.GUIEvent.Element = 0;
 		e.GUIEvent.EventType = gui::EGET_TABLE_CHANGED;

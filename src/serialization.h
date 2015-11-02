@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERIALIZATION_HEADER
 #define SERIALIZATION_HEADER
 
-#include "irrlichttypes.h"
+#include "int_types.h"
 #include "exceptions.h"
 #include <iostream>
 #include "util/pointer.h"

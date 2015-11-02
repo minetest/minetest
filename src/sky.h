@@ -42,7 +42,7 @@ public:
 	//! renders the node.
 	virtual void render();
 
-	virtual const core::aabbox3d<f32>& getBoundingBox() const;
+	virtual const aabb3f& getBoundingBox() const;
 
 	// Used by Irrlicht for optimizing rendering
 	virtual video::SMaterial& getMaterial(u32 i)
@@ -74,7 +74,7 @@ public:
 	}
 
 private:
-	core::aabbox3d<f32> Box;
+	aabb3f Box;
 	video::SMaterial m_materials[SKY_MATERIAL_COUNT];
 
 	// How much sun & moon transition should affect horizon color

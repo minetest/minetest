@@ -104,7 +104,7 @@ void scaleMesh(scene::IMesh *mesh, v3f scale)
 	if (mesh == NULL)
 		return;
 
-	core::aabbox3d<f32> bbox;
+	aabb3f bbox;
 	bbox.reset(0, 0, 0);
 
 	u32 mc = mesh->getMeshBufferCount();
@@ -132,7 +132,7 @@ void translateMesh(scene::IMesh *mesh, v3f vec)
 	if (mesh == NULL)
 		return;
 
-	core::aabbox3d<f32> bbox;
+	aabb3f bbox;
 	bbox.reset(0, 0, 0);
 
 	u32 mc = mesh->getMeshBufferCount();
@@ -231,7 +231,7 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 	}
 }
 
-void rotateMeshXYby (scene::IMesh *mesh, f64 degrees) 
+void rotateMeshXYby (scene::IMesh *mesh, irr::f64 degrees) 
 {	
 	u16 mc = mesh->getMeshBufferCount();
 	for(u16 j = 0; j < mc; j++)
@@ -246,7 +246,7 @@ void rotateMeshXYby (scene::IMesh *mesh, f64 degrees)
 	}
 }
 
-void rotateMeshXZby (scene::IMesh *mesh, f64 degrees) 
+void rotateMeshXZby (scene::IMesh *mesh, irr::f64 degrees) 
 {	
 	u16 mc = mesh->getMeshBufferCount();
 	for(u16 j = 0; j < mc; j++)
@@ -261,7 +261,7 @@ void rotateMeshXZby (scene::IMesh *mesh, f64 degrees)
 	}
 }
 
-void rotateMeshYZby (scene::IMesh *mesh, f64 degrees) 
+void rotateMeshYZby (scene::IMesh *mesh, irr::f64 degrees) 
 {	
 	u16 mc = mesh->getMeshBufferCount();
 	for(u16 j = 0; j < mc; j++)
@@ -353,7 +353,7 @@ void rotateMeshBy6dFacedir(scene::IMesh *mesh, int facedir)
 
 void recalculateBoundingBox(scene::IMesh *src_mesh)
 {
-	core::aabbox3d<f32> bbox;
+	aabb3f bbox;
 	bbox.reset(0,0,0);
 	for(u16 j = 0; j < src_mesh->getMeshBufferCount(); j++)
 	{
