@@ -83,6 +83,21 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 	lua_pop(L, 1); // Pop error handler
 }
 
+void LuaEmergeAreaCallback(v3s16 blockpos, EmergeAction action, void *param)
+{
+	ScriptCallbackState *state = (ScriptCallbackState *)param;
+	assert(state != NULL);
+	assert(state->script != NULL);
+	assert(state->refcount > 0);
+
+	state->refcount--;
+
+	state->script->on_emerge_area_completion(blockpos, action, state);
+
+	if (state->refcount == 0)
+		delete state;
+}
+
 // Exported functions
 
 // set_node(pos, node)
@@ -748,12 +763,14 @@ int ModApiEnvMod::l_line_of_sight(lua_State *L)
 	return 1;
 }
 
-
-// emerge_area(p1, p2)
-// emerge mapblocks in area p1..p2
+// emerge_area(p1, p2, [callback, context])
+// emerge mapblocks in area p1..p2, calls callback with context upon completion
 int ModApiEnvMod::l_emerge_area(lua_State *L)
 {
 	GET_ENV_PTR;
+
+	EmergeCompletionCallback callback = NULL;
+	ScriptCallbackState *state = NULL;
 
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
 
@@ -761,11 +778,31 @@ int ModApiEnvMod::l_emerge_area(lua_State *L)
 	v3s16 bpmax = getNodeBlockPos(read_v3s16(L, 2));
 	sortBoxVerticies(bpmin, bpmax);
 
+	size_t num_blocks = VoxelArea(bpmin, bpmax).getVolume();
+	assert(num_blocks != 0);
+
+	if (lua_isfunction(L, 3)) {
+		callback = LuaEmergeAreaCallback;
+
+		lua_pushvalue(L, 3);
+		int callback_ref = luaL_ref(L, LUA_REGISTRYINDEX);
+
+		lua_pushvalue(L, 4);
+		int args_ref = luaL_ref(L, LUA_REGISTRYINDEX);
+
+		state = new ScriptCallbackState;
+		state->script       = getServer(L)->getScriptIface();
+		state->callback_ref = callback_ref;
+		state->args_ref     = args_ref;
+		state->refcount     = num_blocks;
+		state->origin       = getScriptApiBase(L)->getOrigin();
+	}
+
 	for (s16 z = bpmin.Z; z <= bpmax.Z; z++)
 	for (s16 y = bpmin.Y; y <= bpmax.Y; y++)
 	for (s16 x = bpmin.X; x <= bpmax.X; x++) {
-		v3s16 chunkpos(x, y, z);
-		emerge->enqueueBlockEmerge(PEER_ID_INEXISTENT, chunkpos, false, true);
+		emerge->enqueueBlockEmergeEx(v3s16(x, y, z), PEER_ID_INEXISTENT,
+			BLOCK_EMERGE_ALLOW_GEN | BLOCK_EMERGE_FORCE_QUEUE, callback, state);
 	}
 
 	return 0;

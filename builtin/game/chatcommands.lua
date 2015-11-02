@@ -436,6 +436,31 @@ core.register_chatcommand("set", {
 	end,
 })
 
+local function emergeblocks_callback(pos, action, num_calls_remaining, ctx)
+	if ctx.total_blocks == 0 then
+		ctx.total_blocks   = num_calls_remaining + 1
+		ctx.current_blocks = 0
+	end
+	ctx.current_blocks = ctx.current_blocks + 1
+
+	if ctx.current_blocks == ctx.total_blocks then
+		core.chat_send_player(ctx.requestor_name,
+			string.format("Finished emerging %d blocks in %.2fms.",
+			ctx.total_blocks, (os.clock() - ctx.start_time) * 1000))
+	end
+end
+
+local function emergeblocks_progress_update(ctx)
+	if ctx.current_blocks ~= ctx.total_blocks then
+		core.chat_send_player(ctx.requestor_name,
+			string.format("emergeblocks update: %d/%d blocks emerged (%.1f%%)",
+			ctx.current_blocks, ctx.total_blocks,
+			(ctx.current_blocks / ctx.total_blocks) * 100))
+
+		core.after(2, emergeblocks_progress_update, ctx)
+	end
+end
+
 core.register_chatcommand("emergeblocks", {
 	params = "(here [radius]) | (<pos1> <pos2>)",
 	description = "starts loading (or generating, if inexistent) map blocks "
@@ -447,7 +472,16 @@ core.register_chatcommand("emergeblocks", {
 			return false, p2
 		end
 
-		core.emerge_area(p1, p2)
+		local context = {
+			current_blocks = 0,
+			total_blocks   = 0,
+			start_time     = os.clock(),
+			requestor_name = name
+		}
+
+		core.emerge_area(p1, p2, emergeblocks_callback, context)
+		core.after(2, emergeblocks_progress_update, context)
+
 		return true, "Started emerge of area ranging from " ..
 			core.pos_to_string(p1, 1) .. " to " .. core.pos_to_string(p2, 1)
 	end,
