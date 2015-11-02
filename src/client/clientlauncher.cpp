@@ -680,7 +680,7 @@ bool ClientLauncher::print_video_modes()
 		return false;
 	}
 
-	dstream << _("Available video modes (WxHxD):") << std::endl;
+	std::cout << _("Available video modes (WxHxD):") << std::endl;
 
 	video::IVideoModeList *videomode_list = nulldevice->getVideoModeList();
 
@@ -691,14 +691,14 @@ bool ClientLauncher::print_video_modes()
 		for (s32 i = 0; i < videomode_count; ++i) {
 			videomode_res = videomode_list->getVideoModeResolution(i);
 			videomode_depth = videomode_list->getVideoModeDepth(i);
-			dstream << videomode_res.Width << "x" << videomode_res.Height
+			std::cout << videomode_res.Width << "x" << videomode_res.Height
 			        << "x" << videomode_depth << std::endl;
 		}
 
-		dstream << _("Active video mode (WxHxD):") << std::endl;
+		std::cout << _("Active video mode (WxHxD):") << std::endl;
 		videomode_res = videomode_list->getDesktopResolution();
 		videomode_depth = videomode_list->getDesktopDepth();
-		dstream << videomode_res.Width << "x" << videomode_res.Height
+		std::cout << videomode_res.Width << "x" << videomode_res.Height
 		        << "x" << videomode_depth << std::endl;
 
 	}
