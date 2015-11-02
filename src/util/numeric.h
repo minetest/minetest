@@ -80,6 +80,20 @@ inline v3s16 getContainerPos(v3s16 p, v3s16 d)
 	);
 }
 
+inline s32 getContainerPos32(s32 p, s32 d)
+{
+	return (p>=0 ? p : p-d+1) / d;
+}
+
+inline v3s16 getContainerPos32to16(v3s32 p, s32 d)
+{
+	return v3s16(
+		getContainerPos32(p.X, d),
+		getContainerPos32(p.Y, d),
+		getContainerPos32(p.Z, d)
+	);
+}
+
 inline void getContainerPosWithOffset(s16 p, s16 d, s16 &container, s16 &offset)
 {
 	container = (p >= 0 ? p : p - d + 1) / d;

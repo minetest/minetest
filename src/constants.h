@@ -82,6 +82,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Player step height in nodes
 #define PLAYER_DEFAULT_STEPHEIGHT 0.6f
 
+// FarBlock size in MapBlocks in every dimension. This is hardcoded too so that
+// caching and networking can be done efficiently as no conversions are needed.
+#define FMP_SCALE 8
+
 /*
     Old stuff that shouldn't be hardcoded
 */

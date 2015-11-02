@@ -6,4 +6,5 @@ set(server_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/serveractiveobject.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/serverinventorymgr.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/unit_sao.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/autosend.cpp
 	PARENT_SCOPE)

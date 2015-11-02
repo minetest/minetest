@@ -412,8 +412,8 @@ void set_default_settings()
 	settings->setDefault("debug_log_size_max", "50");
 	settings->setDefault("chat_log_level", "error");
 	settings->setDefault("emergequeue_limit_total", "1024");
-	settings->setDefault("emergequeue_limit_diskonly", "128");
-	settings->setDefault("emergequeue_limit_generate", "128");
+	settings->setDefault("emergequeue_limit_diskonly", "50");
+	settings->setDefault("emergequeue_limit_generate", "10");
 	settings->setDefault("num_emerge_threads", "1");
 	settings->setDefault("secure.enable_security", "true");
 	settings->setDefault("secure.trusted_mods", "");

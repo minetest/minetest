@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/basic_macros.h"
 #include <algorithm>
 #include "client/renderingengine.h"
+#include "face_position_cache.h"
 
 // struct MeshBufListList
 void MeshBufListList::clear()
@@ -218,6 +219,20 @@ void ClientMap::updateDrawList()
 	u32 blocks_in_range_with_mesh = 0;
 	// Number of blocks occlusion culled
 	u32 blocks_occlusion_culled = 0;
+	// Distance to farthest drawn block
+	float farthest_drawn = 0;
+
+	// BlockAreaBitmap<bool> for calculating
+	// num_blocks_dont_exist_but_probably_should_be_requested_from_server
+	// TODO: Probably slightly smaller area would work better; scraping the
+	//       absolute edges probably causes unnecessary processing
+	v3s16 p_blocks_crit_min;
+	v3s16 p_blocks_crit_max;
+	getBlocksInViewRange(cam_pos_nodes, &p_blocks_crit_min, &p_blocks_crit_max,
+			m_control.wanted_range / 2);
+	VoxelArea missing_b_area = VoxelArea(p_blocks_crit_min, p_blocks_crit_max);
+	BlockAreaBitmap<bool> missing_blocks;
+	missing_blocks.reset(missing_b_area, true);
 
 	// No occlusion culling when free_move is on and camera is inside ground
 	bool occlusion_culling_enabled = true;
@@ -256,6 +271,9 @@ void ClientMap::updateDrawList()
 		u32 sector_blocks_drawn = 0;
 
 		for (MapBlock *block : sectorblocks) {
+			// This block is clearly not missing because we have it here now.
+			missing_blocks.set(block->getPos(), false);
+
 			/*
 				Compare block position to camera position, skip
 				if not seen on display
@@ -296,6 +314,9 @@ void ClientMap::updateDrawList()
 			m_drawlist[block_coord] = block;
 
 			sector_blocks_drawn++;
+
+			if (d / BS > farthest_drawn)
+				farthest_drawn = d / BS;
 		} // foreach sectorblocks
 
 		if (sector_blocks_drawn != 0)
@@ -306,6 +327,11 @@ void ClientMap::updateDrawList()
 	g_profiler->avg("MapBlocks occlusion culled [#]", blocks_occlusion_culled);
 	g_profiler->avg("MapBlocks drawn [#]", m_drawlist.size());
 	g_profiler->avg("MapBlocks loaded [#]", blocks_loaded);
+
+	m_control.blocks_drawn = m_drawlist.size();
+	m_control.farthest_drawn = farthest_drawn;
+	m_control.num_blocks_dont_exist_but_probably_should_be_requested_from_server =
+			missing_blocks.count(true);
 }
 
 void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
@@ -947,4 +973,95 @@ void ClientMap::DrawDescriptor::draw(video::IVideoDriver* driver)
 	} else {
 		driver->drawMeshBuffer(m_buffer);
 	}
+}
+
+
+// This is example code of how to manually fetch MapBlocks from the
+// server. However, this isn't used because we prefer the Server's
+// Autosend Algorithm which will basically do the same thing on server
+// side, but can work smarter as it knows more. And besides, that way we
+// don't need to flood the network with requested block positions as the
+// server will generate the list internally.
+std::vector<v3s16> ClientMap::suggestMapBlocksToFetch(v3s16 camera_p,
+		size_t wanted_num_results)
+{
+	std::vector<v3s16> suggested_mbs;
+
+	// TODO: Add some prediction based on player's current speed so that we are
+	//       getting stuff from the correct location compared to where the
+	//       player will be after a while?
+
+	v3s16 center_mb = getContainerPos(camera_p, MAP_BLOCKSIZE);
+
+	s16 fetch_distance_nodes = m_control.wanted_range;
+	s16 fetch_distance_mapblocks =
+			roundf((float)fetch_distance_nodes / MAP_BLOCKSIZE);
+
+	// Avoid running the algorithm through all the close MapBlocks that probably
+	// have already been fetched, except once in a while to catch up with
+	// possible missed MapBlocks due to player movement or whatever.
+	// TODO: Lower this according to the distance the player has moved since
+	//       last time this was called
+	s16 start_d = m_mapblocks_exist_up_to_d; // Start one lower than have to
+	if (++m_mapblocks_exist_up_to_d_reset_counter >= 10) {
+		m_mapblocks_exist_up_to_d_reset_counter = 0;
+		start_d = 0;
+	}
+	m_mapblocks_exist_up_to_d = -1; // Reset and recalculate
+	if (start_d < 0)
+		start_d = 0;
+
+	for (s16 d = start_d; d <= fetch_distance_mapblocks; d++) {
+		std::vector<v3s16> ps = FacePositionCache::getFacePositions(d);
+		for (size_t i=0; i<ps.size(); i++) {
+			v3s16 p = center_mb + ps[i];
+
+			v3s16 blockpos_nodes = p * MAP_BLOCKSIZE;
+			v3s16 blockpos_center(
+					blockpos_nodes.X + MAP_BLOCKSIZE/2,
+					blockpos_nodes.Y + MAP_BLOCKSIZE/2,
+					blockpos_nodes.Z + MAP_BLOCKSIZE/2
+			);
+			v3s16 blockpos_relative = blockpos_center - camera_p;
+			f32 distance = blockpos_relative.getLength();
+			// Limit fetched MapBlocks to a ball radius instead of a square
+			// because that is how they are limited when drawing too
+			if (distance > fetch_distance_nodes)
+				continue; // Not in range
+
+			MapBlock *b = getBlockNoCreateNoEx(p);
+
+			// TODO: Not sure if this conditional is exactly correct
+			if (b != NULL && !b->isDummy())
+				continue; // Exists
+
+			if (m_mapblocks_exist_up_to_d == -1)
+				m_mapblocks_exist_up_to_d = d - 1;
+
+			// TODO: Frustum culling?
+			// TODO: Occlusion culling?
+
+			suggested_mbs.push_back(p);
+			if (suggested_mbs.size() >= wanted_num_results)
+				goto done;
+		}
+	}
+done:
+
+	infostream << "suggested_mbs.size()=" << suggested_mbs.size() << std::endl;
+	return suggested_mbs;
+}
+
+// This is used when requesting MapBlocks from the server's autosend algorithm
+s16 ClientMap::suggestAutosendMapblocksRadius()
+{
+	s16 radius_nodes = m_control.wanted_range;
+	s16 radius_mapblocks = roundf((float)radius_nodes / MAP_BLOCKSIZE);
+	return radius_mapblocks;
+}
+
+// This is used when requesting MapBlocks from the server's autosend algorithm
+float ClientMap::suggestAutosendFov()
+{
+	return m_camera_fov;
 }

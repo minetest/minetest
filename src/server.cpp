@@ -655,7 +655,7 @@ void Server::AsyncRunStep(bool initial_step)
 		ScopeProfiler sp(g_profiler, "Server: map timer and unload");
 		m_env->getMap().timerUpdate(map_timer_and_unload_dtime,
 			std::max(g_settings->getFloat("server_unload_unused_data_timeout"), 0.0f),
-			-1);
+			U32_MAX, v3f(), -1.0f);
 	}
 
 	/*
@@ -695,7 +695,7 @@ void Server::AsyncRunStep(bool initial_step)
 			Set the modified blocks unsent for all the clients
 		*/
 		if (!modified_blocks.empty()) {
-			SetBlocksNotSent(modified_blocks);
+			SetMapBlocksUpdated(modified_blocks);
 		}
 	}
 	m_clients.step(dtime);
@@ -953,7 +953,7 @@ void Server::AsyncRunStep(bool initial_step)
 				Set blocks not sent to far players
 			*/
 			if (!far_players.empty()) {
-				// Convert list format to that wanted by SetBlocksNotSent
+				// Convert list format to that wanted by SetMapBlocksUpdated
 				std::map<v3s16, MapBlock*> modified_blocks2;
 				for (const v3s16 &modified_block : event->modified_blocks) {
 					modified_blocks2[modified_block] =
@@ -963,7 +963,7 @@ void Server::AsyncRunStep(bool initial_step)
 				// Set blocks not sent
 				for (const u16 far_player : far_players) {
 					if (RemoteClient *client = getClient(far_player))
-						client->SetBlocksNotSent(modified_blocks2);
+						client->SetMapBlocksUpdated(modified_blocks2);
 				}
 			}
 
@@ -1248,14 +1248,14 @@ void Server::onMapEditEvent(const MapEditEvent &event)
 	m_unsent_map_edit_queue.push(new MapEditEvent(event));
 }
 
-void Server::SetBlocksNotSent(std::map<v3s16, MapBlock *>& block)
+void Server::SetMapBlocksUpdated(std::map<v3s16, MapBlock *>& block)
 {
 	std::vector<session_t> clients = m_clients.getClientIDs();
 	ClientInterface::AutoLock clientlock(m_clients);
 	// Set the modified blocks unsent for all the clients
 	for (const session_t client_id : clients) {
-			if (RemoteClient *client = m_clients.lockedGetClientNoEx(client_id))
-				client->SetBlocksNotSent(block);
+		if (RemoteClient *client = m_clients.lockedGetClientNoEx(client_id))
+			client->SetMapBlocksUpdated(block);
 	}
 }
 
@@ -2275,7 +2275,7 @@ void Server::sendRemoveNode(v3s16 p, std::unordered_set<u16> *far_players,
 			if (far_players)
 				far_players->emplace(client_id);
 			else
-				client->SetBlockNotSent(block_pos);
+				client->SetMapBlockUpdated(block_pos);
 			continue;
 		}
 
@@ -2312,7 +2312,7 @@ void Server::sendAddNode(v3s16 p, MapNode n, std::unordered_set<u16> *far_player
 			if (far_players)
 				far_players->emplace(client_id);
 			else
-				client->SetBlockNotSent(block_pos);
+				client->SetMapBlockUpdated(block_pos);
 			continue;
 		}
 
@@ -2348,7 +2348,7 @@ void Server::sendMetadataChanged(const std::unordered_set<v3s16> &positions, flo
 			v3s16 block_pos = getNodeBlockPos(pos);
 			if (!client->isBlockSent(block_pos) ||
 					player_pos.getDistanceFrom(pos) > far_d_nodes) {
-				client->SetBlockNotSent(block_pos);
+				client->SetMapBlockUpdated(block_pos);
 				continue;
 			}
 
@@ -2404,73 +2404,113 @@ void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
 		(*cache)[{block->getPos(), ver}] = std::move(s);
 }
 
+struct WantedMapSendQueue
+{
+	std::vector<WantedMapSend> wms;
+	size_t i;
+
+	WantedMapSendQueue(): i(0) {}
+};
+
 void Server::SendBlocks(float dtime)
 {
 	MutexAutoLock envlock(m_env_mutex);
 	//TODO check if one big lock could be faster then multiple small ones
+	//     ^ is this referring to m_clients.lock/unlock()? -celeron55
 
-	std::vector<PrioritySortedBlockTransfer> queue;
-
-	u32 total_sending = 0, unique_clients = 0;
-
-	{
-		ScopeProfiler sp2(g_profiler, "Server::SendBlocks(): Collect list");
-
-		std::vector<session_t> clients = m_clients.getClientIDs();
-
-		ClientInterface::AutoLock clientlock(m_clients);
-		for (const session_t client_id : clients) {
-			RemoteClient *client = m_clients.lockedGetClientNoEx(client_id, CS_Active);
-
-			if (!client)
-				continue;
-
-			total_sending += client->getSendingCount();
-			const auto old_count = queue.size();
-			client->GetNextBlocks(m_env,m_emerge, dtime, queue);
-			unique_clients += queue.size() > old_count ? 1 : 0;
-		}
-	}
-
-	// Sort.
-	// Lowest priority number comes first.
-	// Lowest is most important.
-	std::sort(queue.begin(), queue.end());
-
-	ClientInterface::AutoLock clientlock(m_clients);
+	ScopeProfiler sp(g_profiler, "Server: sel and send blocks to clients");
 
 	// Maximal total count calculation
 	// The per-client block sends is halved with the maximal online users
-	u32 max_blocks_to_send = (m_env->getPlayerCount() + g_settings->getU32("max_users")) *
+	s32 max_simultaneous_block_sends_server_total =
+		(m_env->getPlayerCount() + g_settings->getU32("max_users")) *
 		g_settings->getU32("max_simultaneous_block_sends_per_client") / 4 + 1;
 
-	ScopeProfiler sp(g_profiler, "Server::SendBlocks(): Send to clients");
-	Map &map = m_env->getMap();
+	std::vector<u16> clients = m_clients.getClientIDs();
+	// Create a random order in which to handle clients in order to treat each
+	// of them fairly no matter how tight the budget
+	std::random_shuffle(clients.begin(), clients.end());
 
-	SerializedBlockCache cache, *cache_ptr = nullptr;
-	if (unique_clients > 1) {
-		// caching is pointless with a single client
-		cache_ptr = &cache;
-	}
+	ClientInterface::AutoLock clientlock(m_clients);
 
-	for (const PrioritySortedBlockTransfer &block_to_send : queue) {
-		if (total_sending >= max_blocks_to_send)
-			break;
+	s32 total_sending = 0;
 
-		MapBlock *block = map.getBlockNoCreateNoEx(block_to_send.pos);
-		if (!block)
-			continue;
+	// First pass through clients
+	// - Calculate initial value for total_sending
+	// - Autosend cycle
+	for (size_t i=0; i<clients.size(); i++) {
+		u16 peer_id = clients[i];
 
-		RemoteClient *client = m_clients.lockedGetClientNoEx(block_to_send.peer_id,
-				CS_Active);
+		RemoteClient *client = m_clients.lockedGetClientNoEx(peer_id, CS_Active);
 		if (!client)
 			continue;
 
-		SendBlockNoLock(block_to_send.peer_id, block, client->serialization_version,
-				client->net_proto_version, cache_ptr);
+		total_sending += client->getSendingCount();
 
-		client->SentBlock(block_to_send.pos);
-		total_sending++;
+		client->cycleAutosendAlgorithm(dtime);
+	}
+
+	// Second pass through clients
+	// - Ask RemoteClients what they want to have sent
+	// - Send the things possibly if they are available
+	// - Go multiple times through the clients table until total_sending >=
+	//   max_simultaneous_block_sends_server_total or there is nothing to send
+	//   anymore
+	for (;;) {
+		if (total_sending >= max_simultaneous_block_sends_server_total)
+			break;
+
+		bool sent_something = false;
+
+		for (size_t i=0; i<clients.size(); i++) {
+			u16 peer_id = clients[i];
+
+			if (total_sending >= max_simultaneous_block_sends_server_total)
+				break;
+
+			RemoteClient *client = m_clients.lockedGetClientNoEx(peer_id, CS_Active);
+			if(!client)
+				continue;
+
+			WMSSuggestion wmss = client->getNextBlock(m_emerge);
+			WantedMapSend wms = wmss.wms;
+
+			/*dstream << "Client " << peer_id << ": "
+					<< "wms.type=" << wms.type
+					<< std::endl;*/
+
+			if (wms.type == WMST_INVALID) {
+				continue;
+			}
+
+			if (wms.type == WMST_MAPBLOCK) {
+				/*dstream << "Server: Sending to "<<peer_id<<": "
+						<<wmss.describe()<<std::endl;*/
+
+				MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(wms.p);
+				if (!block) {
+					// client->getNextBlock() is technically allowed to reuturn an
+					// inexisting MapBlock, but it shouldn't generally happen. Warn
+					// about it so we can see where it happens.
+					warningstream<<"client->getNextBlock() returned inexisting "
+							"MapBlock"<<std::endl;
+					continue;
+				}
+
+				SendBlockNoLock(peer_id, block, client->serialization_version,
+						client->net_proto_version);
+				client->SendingBlock(wms);
+				total_sending++;
+				sent_something = true;
+			}
+			if (wms.type == WMST_FARBLOCK) {
+				// Not supported
+				continue;
+			}
+		}
+
+		if (!sent_something)
+			break;
 	}
 }
 

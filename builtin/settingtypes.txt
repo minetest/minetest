@@ -1900,11 +1900,11 @@ emergequeue_limit_total (Absolute limit of queued blocks to emerge) int 1024 1 1
 
 #    Maximum number of blocks to be queued that are to be loaded from file.
 #    This limit is enforced per player.
-emergequeue_limit_diskonly (Per-player limit of queued blocks load from disk) int 128 1 1000000
+emergequeue_limit_diskonly (Per-player limit of queued blocks load from disk) int 50 1 1000000
 
 #    Maximum number of blocks to be queued that are to be generated.
 #    This limit is enforced per player.
-emergequeue_limit_generate (Per-player limit of queued blocks to generate) int 128 1 1000000
+emergequeue_limit_generate (Per-player limit of queued blocks to generate) int 10 1 1000000
 
 #    Number of emerge threads to use.
 #    Value 0:

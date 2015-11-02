@@ -35,6 +35,17 @@ struct MapDrawControl
 	bool allow_noclip = false;
 	// show a wire frame for debugging
 	bool show_wireframe = false;
+
+	// These are updated by ClientMap::updateDrawList
+	// Number of blocks rendered
+	u32 blocks_drawn = 0;
+	// Distance to the farthest block drawn
+	float farthest_drawn = 0;
+	// The maximum-number-of-blocks value told to the server is increased by
+	// this value so that new areas can be received while keeping the old ones
+	// in memory until they time out (so that if the player moves back and
+	// forth, stuff isn't constantly being dropped and re-downloaded)
+	u32 num_blocks_dont_exist_but_probably_should_be_requested_from_server;
 };
 
 struct MeshBufList
@@ -135,6 +146,11 @@ public:
 	const MapDrawControl & getControl() const { return m_control; }
 	f32 getWantedRange() const { return m_control.wanted_range; }
 	f32 getCameraFov() const { return m_camera_fov; }
+	
+	std::vector<v3s16> suggestMapBlocksToFetch(v3s16 camera_p,
+			size_t wanted_num_results);
+	s16 suggestAutosendMapblocksRadius(); // Result in MapBlocks
+	float suggestAutosendFov();
 
 private:
 
@@ -206,4 +222,8 @@ private:
 	bool m_cache_anistropic_filter;
 	bool m_added_to_shadow_renderer{false};
 	u16 m_cache_transparency_sorting_distance;
+
+	// Fetch suggestion algorithm
+	s16 m_mapblocks_exist_up_to_d;
+	s16 m_mapblocks_exist_up_to_d_reset_counter;
 };

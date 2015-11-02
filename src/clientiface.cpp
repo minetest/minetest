@@ -27,11 +27,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 #include "map.h"
 #include "emerge.h"
-#include "server/luaentity_sao.h"
 #include "server/player_sao.h"
 #include "log.h"
+#include "network/serveropcodes.h"
 #include "util/srp.h"
-#include "face_position_cache.h"
 
 const char *ClientInterface::statenames[] = {
 	"Invalid",
@@ -46,396 +45,245 @@ const char *ClientInterface::statenames[] = {
 	"SudoMode",
 };
 
-
-
 std::string ClientInterface::state2Name(ClientState state)
 {
 	return statenames[state];
 }
 
-RemoteClient::RemoteClient() :
-	m_max_simul_sends(g_settings->getU16("max_simultaneous_block_sends_per_client")),
-	m_min_time_from_building(
-		g_settings->getFloat("full_block_send_enable_min_time_from_building")),
-	m_max_send_distance(g_settings->getS16("max_block_send_distance")),
-	m_block_optimize_distance(g_settings->getS16("block_send_optimize_distance")),
-	m_max_gen_distance(g_settings->getS16("max_block_generate_distance")),
-	m_occ_cull(g_settings->getBool("server_side_occlusion_culling"))
+/*WMSSuggestion RemoteClient::getNextBlock(
+		EmergeManager *emerge, ServerFarMap *far_map)*/
+WMSSuggestion RemoteClient::getNextBlock(EmergeManager *emerge)
 {
-}
+	// If the client has not indicated it supports the new algorithm, fill in
+	// autosend parameters and things should work fine
+	if (m_fallback_autosend_active)
+	{
+		s16 radius_map = g_settings->getS16("max_block_send_distance");
+		s16 radius_far = 0; // Old client does not understand FarBlocks
+		float far_weight = 3.0f; // Whatever non-zero
+		float fov = 1.72f; // Assume something (radians)
+		u32 max_total_mapblocks = 5000; // 5000 is the default client-side setting
+		u32 max_total_farblocks = 0;
 
-void RemoteClient::ResendBlockIfOnWire(v3s16 p)
-{
-	// if this block is on wire, mark it for sending again as soon as possible
-	if (m_blocks_sending.find(p) != m_blocks_sending.end()) {
-		SetBlockNotSent(p);
-	}
-}
+		// One version of Minetest supports wanted_range and camera_fov via
+		// PlayerSAO. Try to use them.
+		RemotePlayer *player = m_env->getPlayer(peer_id);
+		PlayerSAO *sao = player ? player->getPlayerSAO() : NULL;
+		if (sao) {
+			// Get view range and camera fov from the client
+			s16 wanted_range = sao->getWantedRange();
+			float camera_fov = sao->getFov();
 
-LuaEntitySAO *getAttachedObject(PlayerSAO *sao, ServerEnvironment *env)
-{
-	if (!sao->isAttached())
-		return nullptr;
-
-	int id;
-	std::string bone;
-	v3f dummy;
-	bool force_visible;
-	sao->getAttachment(&id, &bone, &dummy, &dummy, &force_visible);
-	ServerActiveObject *ao = env->getActiveObject(id);
-	while (id && ao) {
-		ao->getAttachment(&id, &bone, &dummy, &dummy, &force_visible);
-		if (id)
-			ao = env->getActiveObject(id);
-	}
-	return dynamic_cast<LuaEntitySAO *>(ao);
-}
-
-void RemoteClient::GetNextBlocks (
-		ServerEnvironment *env,
-		EmergeManager * emerge,
-		float dtime,
-		std::vector<PrioritySortedBlockTransfer> &dest)
-{
-	// Increment timers
-	m_nothing_to_send_pause_timer -= dtime;
-
-	if (m_nothing_to_send_pause_timer >= 0)
-		return;
-
-	RemotePlayer *player = env->getPlayer(peer_id);
-	// This can happen sometimes; clients and players are not in perfect sync.
-	if (!player)
-		return;
-
-	PlayerSAO *sao = player->getPlayerSAO();
-	if (!sao)
-		return;
-
-	// Won't send anything if already sending
-	if (m_blocks_sending.size() >= m_max_simul_sends) {
-		//infostream<<"Not sending any blocks, Queue full."<<std::endl;
-		return;
-	}
-
-	v3f playerpos = sao->getBasePosition();
-	// if the player is attached, get the velocity from the attached object
-	LuaEntitySAO *lsao = getAttachedObject(sao, env);
-	const v3f &playerspeed = lsao? lsao->getVelocity() : player->getSpeed();
-	v3f playerspeeddir(0,0,0);
-	if (playerspeed.getLength() > 1.0f * BS)
-		playerspeeddir = playerspeed / playerspeed.getLength();
-	// Predict to next block
-	v3f playerpos_predicted = playerpos + playerspeeddir * (MAP_BLOCKSIZE * BS);
-
-	v3s16 center_nodepos = floatToInt(playerpos_predicted, BS);
-
-	v3s16 center = getNodeBlockPos(center_nodepos);
-
-	// Camera position and direction
-	v3f camera_pos = sao->getEyePosition();
-	v3f camera_dir = v3f(0,0,1);
-	camera_dir.rotateYZBy(sao->getLookPitch());
-	camera_dir.rotateXZBy(sao->getRotation().Y);
-
-	u16 max_simul_sends_usually = m_max_simul_sends;
-
-	/*
-		Check the time from last addNode/removeNode.
-
-		Decrease send rate if player is building stuff.
-	*/
-	m_time_from_building += dtime;
-	if (m_time_from_building < m_min_time_from_building) {
-		max_simul_sends_usually
-			= LIMITED_MAX_SIMULTANEOUS_BLOCK_SENDS;
-	}
-
-	/*
-		Number of blocks sending + number of blocks selected for sending
-	*/
-	u32 num_blocks_selected = m_blocks_sending.size();
-
-	/*
-		next time d will be continued from the d from which the nearest
-		unsent block was found this time.
-
-		This is because not necessarily any of the blocks found this
-		time are actually sent.
-	*/
-	s32 new_nearest_unsent_d = -1;
-
-	// Get view range and camera fov (radians) from the client
-	s16 wanted_range = sao->getWantedRange() + 1;
-	float camera_fov = sao->getFov();
-
-	/*
-		Get the starting value of the block finder radius.
-	*/
-	if (m_last_center != center) {
-		m_nearest_unsent_d = 0;
-		m_last_center = center;
-	}
-	// reset the unsent distance if the view angle has changed more that 10% of the fov
-	// (this matches isBlockInSight which allows for an extra 10%)
-	if (camera_dir.dotProduct(m_last_camera_dir) < std::cos(camera_fov * 0.1f)) {
-		m_nearest_unsent_d = 0;
-		m_last_camera_dir = camera_dir;
-	}
-	if (m_nearest_unsent_d > 0) {
-		// make sure any blocks modified since the last time we sent blocks are resent
-		for (const v3s16 &p : m_blocks_modified) {
-			m_nearest_unsent_d = std::min(m_nearest_unsent_d, center.getDistanceFrom(p));
-		}
-	}
-	m_blocks_modified.clear();
-
-	s16 d_start = m_nearest_unsent_d;
-
-	// Distrust client-sent FOV and get server-set player object property
-	// zoom FOV (degrees) as a check to avoid hacked clients using FOV to load
-	// distant world.
-	// (zoom is disabled by value 0)
-	float prop_zoom_fov = sao->getZoomFOV() < 0.001f ?
-		0.0f :
-		std::max(camera_fov, sao->getZoomFOV() * core::DEGTORAD);
-
-	const s16 full_d_max = std::min(adjustDist(m_max_send_distance, prop_zoom_fov),
-		wanted_range);
-	const s16 d_opt = std::min(adjustDist(m_block_optimize_distance, prop_zoom_fov),
-		wanted_range);
-	const s16 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
-
-	s16 d_max_gen = std::min(adjustDist(m_max_gen_distance, prop_zoom_fov),
-		wanted_range);
-
-	s16 d_max = full_d_max;
-
-	// Don't loop very much at a time
-	s16 max_d_increment_at_time = 2;
-	if (d_max > d_start + max_d_increment_at_time)
-		d_max = d_start + max_d_increment_at_time;
-
-	// cos(angle between velocity and camera) * |velocity|
-	// Limit to 0.0f in case player moves backwards.
-	f32 dot = rangelim(camera_dir.dotProduct(playerspeed), 0.0f, 300.0f);
-
-	// Reduce the field of view when a player moves and looks forward.
-	// limit max fov effect to 50%, 60% at 20n/s fly speed
-	camera_fov = camera_fov / (1 + dot / 300.0f);
-
-	s32 nearest_emerged_d = -1;
-	s32 nearest_emergefull_d = -1;
-	s32 nearest_sent_d = -1;
-	//bool queue_is_full = false;
-
-	const v3s16 cam_pos_nodes = floatToInt(camera_pos, BS);
-
-	s16 d;
-	for (d = d_start; d <= d_max; d++) {
-		/*
-			Get the border/face dot coordinates of a "d-radiused"
-			box
-		*/
-		std::vector<v3s16> list = FacePositionCache::getFacePositions(d);
-
-		std::vector<v3s16>::iterator li;
-		for (li = list.begin(); li != list.end(); ++li) {
-			v3s16 p = *li + center;
-
-			/*
-				Send throttling
-				- Don't allow too many simultaneous transfers
-				- EXCEPT when the blocks are very close
-
-				Also, don't send blocks that are already flying.
-			*/
-
-			// Start with the usual maximum
-			u16 max_simul_dynamic = max_simul_sends_usually;
-
-			// If block is very close, allow full maximum
-			if (d <= BLOCK_SEND_DISABLE_LIMITS_MAX_D)
-				max_simul_dynamic = m_max_simul_sends;
-
-			// Don't select too many blocks for sending
-			if (num_blocks_selected >= max_simul_dynamic) {
-				//queue_is_full = true;
-				goto queue_full_break;
+			// Update our values to these ones, if they are set
+			if (wanted_range > 0 && camera_fov > 0) {
+				radius_map = wanted_range;
+				fov = camera_fov;
 			}
+		}
+
+		m_autosend.setParameters(radius_map, radius_far, far_weight, fov,
+				max_total_mapblocks, max_total_farblocks);
+
+		// Continue normally.
+	}
+
+	/*
+		Autosend
+
+		NOTE: All auto-sent stuff is considered higher priority than custom
+		transfers. If the client wants to get custom stuff quickly, it has to
+		disable autosend.
+	*/
+	WMSSuggestion wmss = m_autosend.getNextBlock(emerge);
+	WantedMapSend wms = wmss.wms;
+	if (wms.type != WMST_INVALID)
+		return wmss;
+
+	/*
+		Handle map send queue as set by the client for custom map transfers
+
+		// TODO: This needs rework
+	*/
+	for (size_t i=0; i<m_map_send_queue.size(); i++) {
+		const WantedMapSend &wms = m_map_send_queue[i];
+		if (wms.type == WMST_MAPBLOCK) {
+			/*verbosestream << "Server: Client "<<peer_id<<" wants MapBlock ("
+					<<wms.p.X<<","<<wms.p.Y<<","<<wms.p.Z<<")"
+					<< std::endl;*/
+
+			// Do not go over-limit
+			if (blockpos_over_max_limit(wms.p))
+				continue;
 
 			// Don't send blocks that are currently being transferred
-			if (m_blocks_sending.find(p) != m_blocks_sending.end())
+			if (m_blocks_sending.find(wms) != m_blocks_sending.end())
 				continue;
 
-			/*
-				Do not go over max mapgen limit
-			*/
-			if (blockpos_over_max_limit(p))
-				continue;
-
-			// If this is true, inexistent block will be made from scratch
-			bool generate = d <= d_max_gen;
-
-			/*
-				Don't generate or send if not in sight
-				FIXME This only works if the client uses a small enough
-				FOV setting. The default of 72 degrees is fine.
-				Also retrieve a smaller view cone in the direction of the player's
-				movement.
-				(0.1 is about 4 degrees)
-			*/
-			f32 dist;
-			if (!(isBlockInSight(p, camera_pos, camera_dir, camera_fov,
-						d_blocks_in_sight, &dist) ||
-					(playerspeed.getLength() > 1.0f * BS &&
-					isBlockInSight(p, camera_pos, playerspeeddir, 0.1f,
-						d_blocks_in_sight)))) {
-				continue;
+			// Don't send blocks that have already been sent, unless it has been
+			// updated
+			if (m_mapblocks_sent.find(wms.p) != m_mapblocks_sent.end()) {
+				if (m_blocks_updated_since_last_send.count(wms) == 0)
+					continue;
 			}
 
-			/*
-				Don't send already sent blocks
-			*/
-			if (m_blocks_sent.find(p) != m_blocks_sent.end())
-				continue;
+			// If the MapBlock is not loaded, it will be queued to be loaded or
+			// generated. Otherwise it will be added to 'dest'.
 
-			/*
-				Check if map has this block
-			*/
-			MapBlock *block = env->getMap().getBlockNoCreateNoEx(p);
+			const bool allow_generate = true;
 
-			bool block_not_found = false;
-			if (block) {
+			MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(wms.p);
+
+			bool surely_not_found_on_disk = false;
+			bool emerge_required = false;
+			if(block != NULL)
+			{
 				// Reset usage timer, this block will be of use in the future.
 				block->resetUsageTimer();
 
-				// Check whether the block exists (with data)
-				if (block->isDummy() || !block->isGenerated())
-					block_not_found = true;
+				// Block is dummy if data doesn't exist.
+				// It means it has been not found from disk and not generated
+				if(block->isDummy())
+					surely_not_found_on_disk = true;
 
-				/*
-					If block is not close, don't send it unless it is near
-					ground level.
+				if(block->isGenerated() == false && allow_generate)
+					emerge_required = true;
 
-					Block is near ground level if night-time mesh
-					differs from day-time mesh.
-				*/
-				if (d >= d_opt) {
-					if (!block->getIsUnderground() && !block->getDayNightDiff())
-						continue;
-				}
+				// This check is disabled because it mis-guesses sea floors to
+				// not be worth transferring to the client, while they are.
+				/*if (d >= 4 && block->getDayNightDiff() == false)
+					continue;*/
+			}
 
-				if (m_occ_cull && !block_not_found &&
-						env->getMap().isBlockOccluded(block, cam_pos_nodes)) {
-					continue;
-				}
+			if(allow_generate == false && surely_not_found_on_disk == true) {
+				// NOTE: If we wanted to avoid generating new blocks based on
+				// some criterion, that check woould go here and we would call
+				// 'continue' if the block should not be generated.
+
+				// TODO: There needs to be some new way or limiting which
+				// positions are allowed to be generated, because we aren't
+				// going to look up the player's position and compare it with
+				// max_mapblock_generate_distance anymore. Maybe a configured set
+				// of allowed areas, or maybe a callback to Lua.
+
+				// NOTE: There may need to be a way to tell the client that this
+				// block will not be transferred to it no matter how nicely it
+				// asks. Otherwise the requested send queue is going to get
+				// filled up by these and less important blocks further away
+				// that happen to have been already generated will not transfer.
 			}
 
 			/*
-				If block has been marked to not exist on disk (dummy) or is
-				not generated and generating new ones is not wanted, skip block.
+				If block does not exist, add it to the emerge queue.
 			*/
-			if (!generate && block_not_found) {
-				// get next one.
+			if(block == NULL || surely_not_found_on_disk || emerge_required)
+			{
+				bool allow_generate = true;
+				if (!emerge->enqueueBlockEmerge(peer_id, wms.p, allow_generate)) {
+					// EmergeThread's queue is full; maybe it's not full on the
+					// next time this is called.
+				}
+
+				// This block is not available now; hopefully it appears on some
+				// next call to this function.
 				continue;
 			}
 
-			/*
-				Add inexistent block to emerge queue.
-			*/
-			if (block == NULL || block_not_found) {
-				if (emerge->enqueueBlockEmerge(peer_id, p, generate)) {
-					if (nearest_emerged_d == -1)
-						nearest_emerged_d = d;
-				} else {
-					if (nearest_emergefull_d == -1)
-						nearest_emergefull_d = d;
-					goto queue_full_break;
-				}
-
-				// get next one.
-				continue;
-			}
-
-			if (nearest_sent_d == -1)
-				nearest_sent_d = d;
-
-			/*
-				Add block to send queue
-			*/
-			PrioritySortedBlockTransfer q((float)dist, p, peer_id);
-
-			dest.push_back(q);
-
-			num_blocks_selected += 1;
+			// The block is available
+			return wms;
 		}
-	}
-queue_full_break:
-
-	// If nothing was found for sending and nothing was queued for
-	// emerging, continue next time browsing from here
-	if (nearest_emerged_d != -1) {
-		new_nearest_unsent_d = nearest_emerged_d;
-	} else if (nearest_emergefull_d != -1) {
-		new_nearest_unsent_d = nearest_emergefull_d;
-	} else {
-		if (d > full_d_max) {
-			new_nearest_unsent_d = 0;
-			m_nothing_to_send_pause_timer = 2.0f;
-		} else {
-			if (nearest_sent_d != -1)
-				new_nearest_unsent_d = nearest_sent_d;
-			else
-				new_nearest_unsent_d = d;
+		if (wms.type == WMST_FARBLOCK) {
+			// Not supported; always discard
+			continue;
 		}
 	}
 
-	if (new_nearest_unsent_d != -1)
-		m_nearest_unsent_d = new_nearest_unsent_d;
+	return WantedMapSend();
 }
 
-void RemoteClient::GotBlock(v3s16 p)
+void RemoteClient::cycleAutosendAlgorithm(float dtime)
 {
-	if (m_blocks_sending.find(p) != m_blocks_sending.end()) {
-		m_blocks_sending.erase(p);
-		// only add to sent blocks if it actually was sending
-		// (it might have been modified since)
-		m_blocks_sent.insert(p);
+	m_time_from_building += dtime;
+	m_autosend.cycle(dtime, m_env);
+}
+
+void RemoteClient::GotBlock(const WantedMapSend &wms)
+{
+	if (m_blocks_sending.find(wms) != m_blocks_sending.end()) {
+		if (wms.type == WMST_MAPBLOCK)
+			m_mapblocks_sent[wms.p] = m_blocks_sending[wms];
+		else if (wms.type == WMST_MAPBLOCK)
+			m_farblocks_sent[wms.p] = m_blocks_sending[wms];
+		m_blocks_sending.erase(wms);
 	} else {
 		m_excess_gotblocks++;
 	}
 }
 
-void RemoteClient::SentBlock(v3s16 p)
+void RemoteClient::SendingBlock(const WantedMapSend &wms)
 {
-	if (m_blocks_sending.find(p) == m_blocks_sending.end())
-		m_blocks_sending[p] = 0.0f;
-	else
-		infostream<<"RemoteClient::SentBlock(): Sent block"
-				" already in m_blocks_sending"<<std::endl;
+	assert(!m_blocks_sending.count(wms) ||
+			m_blocks_updated_while_sending.count(wms) &&
+			"Block shouldn't be re-sent if it is being sent and was not"
+			" updated while being sent");
+
+	m_blocks_sending[wms] = time(NULL);
+	m_blocks_updated_since_last_send.erase(wms);
+	m_blocks_updated_while_sending.erase(wms);
 }
 
-void RemoteClient::SetBlockNotSent(v3s16 p)
+void RemoteClient::SetBlockUpdated(const WantedMapSend &wms)
 {
-	m_nothing_to_send_pause_timer = 0;
+	//dstream<<"SetBlockUpdated: "<<wms.describe()<<std::endl;
 
-	// remove the block from sending and sent sets,
-	// and mark as modified if found
-	if (m_blocks_sending.erase(p) + m_blocks_sent.erase(p) > 0)
-		m_blocks_modified.insert(p);
+	// The client does not have a recent version of this block so it has to be
+	// considered "not sent". This function is also called when the client
+	// deletes the block from memory.
+	if (wms.type == WMST_MAPBLOCK)
+		m_mapblocks_sent.erase(wms.p);
+	else if (wms.type == WMST_FARBLOCK)
+		m_farblocks_sent.erase(wms.p);
+
+	// Reset autosend's search radius if it's a MapBlock
+	if (wms.type == WMST_MAPBLOCK) {
+		m_autosend.resetMapblockSearchRadius(wms.p);
+	}
+
+	m_blocks_updated_since_last_send.insert(wms);
+
+	if (m_blocks_sending.count(wms)) {
+		m_blocks_updated_while_sending.insert(wms);
+	}
 }
 
-void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks)
+void RemoteClient::SetMapBlockUpdated(v3s16 p)
 {
-	m_nothing_to_send_pause_timer = 0;
+	SetBlockUpdated(WantedMapSend(WMST_MAPBLOCK, p));
 
-	for (auto &block : blocks) {
-		v3s16 p = block.first;
-		// remove the block from sending and sent sets,
-		// and mark as modified if found
-		if (m_blocks_sending.erase(p) + m_blocks_sent.erase(p) > 0)
-			m_blocks_modified.insert(p);
+	// Also set the corresponding FarBlock not sent
+	v3s16 farblock_p = getContainerPos(p, FMP_SCALE);
+	SetBlockUpdated(WantedMapSend(WMST_FARBLOCK, farblock_p));
+
+	/*dstream<<"RemoteClient: now not sent: MB"<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
+			<<" FB"<<"("<<farblock_p.X<<","<<farblock_p.Y<<","<<farblock_p.Z<<")"
+			<<std::endl;*/
+}
+
+void RemoteClient::SetMapBlocksUpdated(std::map<v3s16, MapBlock*> &blocks)
+{
+	for(std::map<v3s16, MapBlock*>::iterator
+			i = blocks.begin();
+			i != blocks.end(); ++i)
+	{
+		v3s16 p = i->first;
+		SetMapBlockUpdated(p);
+	}
+}
+
+void RemoteClient::ResendBlockIfOnWire(const WantedMapSend &wms)
+{
+	// if this block is on wire, mark it for sending again as soon as possible
+	if (m_blocks_sending.find(wms) != m_blocks_sending.end()) {
+		SetBlockUpdated(wms);
 	}
 }
 
@@ -643,7 +491,7 @@ void ClientInterface::markBlockposAsNotSent(const v3s16 &pos)
 	RecursiveMutexAutoLock clientslock(m_clients_mutex);
 	for (const auto &client : m_clients) {
 		if (client.second->getState() >= CS_Active)
-			client.second->SetBlockNotSent(pos);
+			client.second->SetMapBlockUpdated(pos);
 	}
 }
 
@@ -806,7 +654,7 @@ void ClientInterface::CreateClient(session_t peer_id)
 	if (n != m_clients.end()) return;
 
 	// Create client
-	RemoteClient *client = new RemoteClient();
+	RemoteClient *client = new RemoteClient(m_env);
 	client->peer_id = peer_id;
 	m_clients[client->peer_id] = client;
 }

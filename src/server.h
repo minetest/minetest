@@ -195,6 +195,7 @@ public:
 	void handleCommand_SrpBytesA(NetworkPacket* pkt);
 	void handleCommand_SrpBytesM(NetworkPacket* pkt);
 	void handleCommand_HaveMedia(NetworkPacket *pkt);
+	void handleCommand_SetWantedMapSendQueue(NetworkPacket* pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -442,7 +443,7 @@ private:
 		u16 protocol_version);
 
 	/* mark blocks not sent for all clients */
-	void SetBlocksNotSent(std::map<v3s16, MapBlock *>& block);
+	void SetMapBlocksUpdated(std::map<v3s16, MapBlock *>& blocks);
 
 
 	virtual void SendChatMessage(session_t peer_id, const ChatMessage &message);

@@ -2963,12 +2963,12 @@
 #    Maximum number of blocks to be queued that are to be loaded from file.
 #    This limit is enforced per player.
 #    type: int min: 1 max: 1000000
-# emergequeue_limit_diskonly = 128
+# emergequeue_limit_diskonly = 50
 
 #    Maximum number of blocks to be queued that are to be generated.
 #    This limit is enforced per player.
 #    type: int min: 1 max: 1000000
-# emergequeue_limit_generate = 128
+# emergequeue_limit_generate = 10
 
 #    Number of emerge threads to use.
 #    Value 0:

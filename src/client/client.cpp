@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2013-2015 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -59,6 +59,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "chatmessage.h"
 #include "translation.h"
 #include "content/mod_configuration.h"
+#include "network/wms_priority.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -439,10 +440,15 @@ void Client::step(float dtime)
 	const float map_timer_and_unload_dtime = 5.25;
 	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime)) {
 		std::vector<v3s16> deleted_blocks;
+		LocalPlayer *player = m_env.getLocalPlayer();
 		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
 			std::max(g_settings->getFloat("client_unload_unused_data_timeout"), 0.0f),
-			g_settings->getS32("client_mapblock_limit"),
+			calculateReasonableMapblockLimit(),
+			player->getEyePosition() / BS,
+			getEnv().getClientMap().getControl().wanted_range,
 			&deleted_blocks);
+
+		g_profiler->add("Client: Blocks: Unloaded (avg #)", deleted_blocks.size());
 
 		/*
 			Send info to server
@@ -587,6 +593,8 @@ void Client::step(float dtime)
 				m_minimap->addBlock(r.p, minimap_mapblock);
 
 			if (r.ack_block_to_server) {
+				// Acknowledgement is done after mesh generation in order to
+				// optimally throttle the transfer rate of MapBlocks.
 				if (blocks_to_ack.size() == 255) {
 					sendGotBlocks(blocks_to_ack);
 					blocks_to_ack.clear();
@@ -596,8 +604,8 @@ void Client::step(float dtime)
 			}
 		}
 		if (blocks_to_ack.size() > 0) {
-				// Acknowledge block(s)
-				sendGotBlocks(blocks_to_ack);
+			// Acknowledge block(s)
+			sendGotBlocks(blocks_to_ack);
 		}
 
 		if (num_processed_meshes > 0)
@@ -717,6 +725,115 @@ void Client::step(float dtime)
 			m_cache_save_interval)) {
 		m_localdb->endSave();
 		m_localdb->beginSave();
+	}
+
+	/*
+		Request blocks
+	*/
+	static const float fmr_interval_s = 2.0f; // TODO: Configurable
+	if(m_blocks_request_interval.step(dtime, fmr_interval_s))
+	{
+		//infostream<<"Client: Requesting blocks"<<std::endl;
+
+		ClientMap *map = &m_env.getClientMap();
+
+		std::vector<WantedMapSend> wanted_map_send_queue;
+
+#if 0
+		// This is example code of how to manually fetch MapBlocks from the
+		// server. However, this isn't used because we prefer the Server's
+		// Autosend Algorithm which will basically do the same thing on server
+		// side, but can work smarter as it knows more. And besides, that way we
+		// don't need to flood the network with requested block positions as the
+		// server will generate the list internally.
+
+		// Get player position (used for prioritizing requests)
+		v3s16 player_p;
+		Player *player = m_env.getLocalPlayer();
+		if(player)
+			player_p = floatToInt(player->getPosition(), BS);
+
+		// Figure out maximum number for queued MapBlocks
+		static const s32 max_mut_queue_size = 20;
+		static const s32 max_suggested_mbs = 50;
+		s32 num_suggested_mbs = max_suggested_mbs;
+		s32 mesh_queue_size = m_mesh_update_thread.queueSize();
+		if (mesh_queue_size > max_mut_queue_size) {
+			float mesh_queue_fill = (float)mesh_queue_size / max_mut_queue_size;
+			num_suggested_mbs = max_suggested_mbs * mesh_queue_fill;
+		}
+
+		// Get suggested MapBlock positions
+		std::vector<v3s16> suggested_mbs = map->suggestMapBlocksToFetch(
+				player_p, num_suggested_mbs);
+		for (size_t i=0; i<suggested_mbs.size(); i++) {
+			v3s16 mb = suggested_mbs[i];
+			wanted_map_send_queue.push_back(WantedMapSend(WMST_MAPBLOCK, mb));
+		}
+
+		// Prioritize
+		std::sort(wanted_map_send_queue.begin(), wanted_map_send_queue.end(),
+				WMSPriority(player_p, far_weight));
+#endif
+
+		s32 client_mapblock_limit = calculateReasonableMapblockLimit();
+		g_profiler->avg("Client: Blocks: Actual limit (#)", client_mapblock_limit);
+
+		// Parameters for autosend
+		s16 autosend_radius_map = map->suggestAutosendMapblocksRadius();
+		s16 autosend_radius_far = 0;
+		float autosend_far_weight = 0;
+		float autosend_fov = map->suggestAutosendFov();
+		u32 autosend_max_total_mapblocks =
+				client_mapblock_limit != -1 ? client_mapblock_limit : U32_MAX;
+		u32 autosend_max_total_farblocks = 0;
+
+		if (autosend_max_total_mapblocks != U32_MAX) {
+			// The maximum-number-of-blocks value told to the server is floated
+			// up by this value so that the server can send required blocks
+			// regardless of how filled up this client is. Once the server sends
+			// them, the client will hopefully delete less relevant blocks and
+			// not the ones the server just sent.
+			autosend_max_total_mapblocks += getEnv().getClientMap().getControl().
+					num_blocks_dont_exist_but_probably_should_be_requested_from_server;
+		}
+
+		g_profiler->avg("Client: Autosend: radius_map", autosend_radius_map);
+		g_profiler->avg("Client: Autosend: radius_far", autosend_radius_far);
+		g_profiler->avg("Client: Autosend: far_weight", autosend_far_weight);
+		g_profiler->avg("Client: Autosend: fov", autosend_fov);
+		g_profiler->avg("Client: Autosend: max_total_mapblocks", autosend_max_total_mapblocks);
+		g_profiler->avg("Client: Autosend: max_total_farblocks", autosend_max_total_farblocks);
+		g_profiler->avg("Client: Autosend: wanted_map_send_queue.size()", wanted_map_send_queue.size());
+
+		NetworkPacket pkt(TOSERVER_SET_WANTED_MAP_SEND_QUEUE, 0);
+		/*
+			Autosend parameters:
+			s16 radius_map
+			s16 radius_far
+			f32 far_weight
+			f32 fov
+			u32 max_total_mapblocks
+			u32 max_total_farblocks
+			Manual requests:
+			u32 len
+			for len:
+				u8 type // 1=MapBlock, 2=FarBlock
+				v3s16 p
+		*/
+		pkt << (s16) autosend_radius_map;
+		pkt << (s16) autosend_radius_far;
+		pkt << (float) autosend_far_weight;
+		pkt << (float) autosend_fov;
+		pkt << (u32) autosend_max_total_mapblocks;
+		pkt << (u32) autosend_max_total_farblocks;
+		pkt << (u32) wanted_map_send_queue.size();
+		for (size_t i=0; i<wanted_map_send_queue.size(); i++) {
+			const WantedMapSend &wms = wanted_map_send_queue[i];
+			pkt << (u8) wms.type;
+			pkt << (v3s16) wms.p;
+		}
+		Send(&pkt);
 	}
 }
 
@@ -1162,7 +1279,6 @@ void Client::sendGotBlocks(const std::vector<v3s16> &blocks)
 	pkt << (u8) blocks.size();
 	for (const v3s16 &block : blocks)
 		pkt << block;
-
 	Send(&pkt);
 }
 
@@ -1815,6 +1931,28 @@ float Client::getCurRate()
 {
 	return (m_con->getLocalStat(con::CUR_INC_RATE) +
 			m_con->getLocalStat(con::CUR_DL_RATE));
+}
+
+s32 Client::calculateReasonableMapblockLimit()
+{
+	// client_mapblock_limit is used as a minimum value
+	s32 mapblock_limit = g_settings->getS32("client_mapblock_limit");
+
+	// Calculate how many MapBlocks are required for rendering the current
+	// wanted range (corresponds to the viewing_range setting)
+	s32 render_range_nodes = getEnv().getClientMap().getControl().wanted_range;
+	s32 render_range_mapblocks_1d = render_range_nodes / MAP_BLOCKSIZE + 1;
+	// Use volume of sphere
+	s32 render_range_mapblocks_3d = 4.0 / 3.0 * M_PI * render_range_mapblocks_1d *
+			render_range_mapblocks_1d * render_range_mapblocks_1d;
+	s32 limit_required_for_rendering = render_range_mapblocks_3d * 1;
+
+	// Increase mapblock_limit to a large enough value to allow rendering that
+	// far
+	if (mapblock_limit < limit_required_for_rendering)
+		mapblock_limit = limit_required_for_rendering;
+
+	return mapblock_limit;
 }
 
 void Client::makeScreenshot()

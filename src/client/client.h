@@ -230,6 +230,7 @@ public:
 	void handleCommand_MediaPush(NetworkPacket *pkt);
 	void handleCommand_MinimapModes(NetworkPacket *pkt);
 	void handleCommand_SetLighting(NetworkPacket *pkt);
+	void handleCommand_FarBlocksResult(NetworkPacket* pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -366,6 +367,8 @@ public:
 	scene::ISceneManager *getSceneManager();
 
 	bool shouldShowMinimap() const;
+
+	s32 calculateReasonableMapblockLimit();
 
 	// IGameDef interface
 	IItemDefManager* getItemDefManager() override;
@@ -606,4 +609,6 @@ private:
 	u32 m_csm_restriction_noderange = 8;
 
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
+
+	IntervalLimiter m_blocks_request_interval;
 };

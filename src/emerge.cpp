@@ -426,14 +426,20 @@ bool EmergeManager::pushBlockEmergeData(
 			return false;
 
 		if (peer_requested != PEER_ID_INEXISTENT) {
-			u32 qlimit_peer = (flags & BLOCK_EMERGE_ALLOW_GEN) ?
-				m_qlimit_generate : m_qlimit_diskonly;
-			if (count_peer >= qlimit_peer)
+			// If we are over the limit for from-disk loading, we can't do
+			// anything in any case.
+			if (count_peer >= m_qlimit_diskonly)
 				return false;
-		} else {
-			// limit block enqueue requests for active blocks to 1/2 of total
-			if (count_peer * 2 >= m_qlimit_total)
-				return false;
+
+			// Otherwise we might do something.
+			if (count_peer < m_qlimit_generate) {
+				// We are under the queue limit for generation or we will not be
+				// gneerating anything; pass
+			} else {
+				// We want to generate something but we are over queue limit for
+				// that; don't generate but try just loading instead.
+				flags &= ~BLOCK_EMERGE_ALLOW_GEN;
+			}
 		}
 	}
 
@@ -461,6 +467,9 @@ bool EmergeManager::pushBlockEmergeData(
 
 bool EmergeManager::popBlockEmergeData(v3s16 pos, BlockEmergeData *bedata)
 {
+	g_profiler->avg("Emerge: Queue avg size", m_blocks_enqueued.size());
+	//dstream<<"emerge queue size: "<<m_blocks_enqueued.size()<<std::endl;
+
 	auto it = m_blocks_enqueued.find(pos);
 	if (it == m_blocks_enqueued.end())
 		return false;
@@ -596,15 +605,14 @@ EmergeAction EmergeThread::getBlockOrStartGen(
 
 	// 1). Attempt to fetch block from memory
 	*block = m_map->getBlockNoCreateNoEx(pos);
-	if (*block && !(*block)->isDummy()) {
-		if ((*block)->isGenerated())
-			return EMERGE_FROM_MEMORY;
-	} else {
-		// 2). Attempt to load block from disk if it was not in the memory
-		*block = m_map->loadBlock(pos);
-		if (*block && (*block)->isGenerated())
-			return EMERGE_FROM_DISK;
-	}
+	if (*block && !(*block)->isDummy() && (*block)->isGenerated())
+		return EMERGE_FROM_MEMORY;
+
+	// 2). Attempt to load block from disk
+	g_profiler->add("Emerge: Attempted MapBlock loads", 1);
+	*block = m_map->loadBlock(pos);
+	if (*block && (*block)->isGenerated())
+		return EMERGE_FROM_DISK;
 
 	// 3). Attempt to start generation
 	if (allow_gen && m_map->initBlockMake(pos, bmdata))
@@ -657,6 +665,8 @@ MapBlock *EmergeThread::finishGen(v3s16 pos, BlockMakeData *bmdata,
 
 	EMERGE_DBG_OUT("ended up with: " << analyze_block(block));
 
+	g_profiler->add("Emerge: Chunks generated", 1);
+
 	/*
 		Clear mapgen state
 	*/
@@ -671,7 +681,6 @@ MapBlock *EmergeThread::finishGen(v3s16 pos, BlockMakeData *bmdata,
 
 	return block;
 }
-
 
 void *EmergeThread::run()
 {
@@ -693,6 +702,8 @@ void *EmergeThread::run()
 		MapBlock *block = nullptr;
 
 		if (!popBlockEmerge(&pos, &bedata)) {
+			ScopeProfiler sp(g_profiler,
+					"Emerge: Queue empty time", SPT_ADD);
 			m_queue_event.wait();
 			continue;
 		}
@@ -722,8 +733,11 @@ void *EmergeThread::run()
 		if (block)
 			modified_blocks[pos] = block;
 
+		// This is kind of a vague number but it still tells something
+		g_profiler->add("Emerge: Blocks modified", modified_blocks.size());
+
 		if (!modified_blocks.empty())
-			m_server->SetBlocksNotSent(modified_blocks);
+			m_server->SetMapBlocksUpdated(modified_blocks);
 		modified_blocks.clear();
 	}
 	} catch (VersionMismatchException &e) {

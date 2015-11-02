@@ -107,6 +107,8 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	{ "TOSERVER_FIRST_SRP",                TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_FirstSrp }, // 0x50
 	{ "TOSERVER_SRP_BYTES_A",              TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_SrpBytesA }, // 0x51
 	{ "TOSERVER_SRP_BYTES_M",              TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_SrpBytesM }, // 0x52
+	null_command_handler, // 0x53
+	{ "TOSERVER_SET_WANTED_MAP_SEND_QUEUE", TOSERVER_STATE_INGAME, &Server::handleCommand_SetWantedMapSendQueue }, // 0x54
 };
 
 const static ClientCommandFactory null_command_factory = { "TOCLIENT_NULL", 0, false };
@@ -216,7 +218,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_SET_SUN",                  0, true }, // 0x5a
 	{ "TOCLIENT_SET_MOON",                 0, true }, // 0x5b
 	{ "TOCLIENT_SET_STARS",                0, true }, // 0x5c
-	null_command_factory, // 0x5d
+	{ "TOCLIENT_FAR_BLOCKS_RESULT",        2, true }, // 0x5d
 	null_command_factory, // 0x5e
 	null_command_factory, // 0x5f
 	{ "TOSERVER_SRP_BYTES_S_B",            0, true }, // 0x60

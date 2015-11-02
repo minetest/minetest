@@ -104,6 +104,7 @@ public:
 	 */
 	virtual Palette* getPalette(const std::string &name) = 0;
 	virtual bool isKnownSourceImage(const std::string &name)=0;
+	virtual video::IImage* generateImage(const std::string &name)=0;
 	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
 	virtual video::SColor getTextureAverageColor(const std::string &name)=0;
 	virtual video::ITexture *getShaderFlagsTexture(bool normalmap_present)=0;
