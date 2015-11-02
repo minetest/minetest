@@ -2857,6 +2857,13 @@ void Server::setAsyncFatalProcessedLuaError(const std::string &error)
 
 void Server::setAsyncFatalLuaError(const std::string &error)
 {
+	MutexAutoLock lock(m_env_mutex);
+	setAsyncFatalLuaErrorFromEnvironment(error);
+}
+
+// Environment (Lua) must be locked when calling this
+void Server::setAsyncFatalLuaErrorFromEnvironment(const std::string &error)
+{
 	// Regular Lua passes exceptions directly into here, requiring a backtrace
 	// to be appended at this point.
 
@@ -2866,10 +2873,7 @@ void Server::setAsyncFatalLuaError(const std::string &error)
 
 	std::ostringstream os(std::ios::binary);
 	os << "Lua: " << error;
-	{
-		MutexAutoLock lock(m_env_mutex);
-		os << std::endl << m_script->getBacktrace();
-	}
+	os << std::endl << m_script->getBacktrace();
 
 	setAsyncFatalError(os.str());
 }

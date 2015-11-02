@@ -330,6 +330,8 @@ public:
 
 	void setAsyncFatalProcessedLuaError(const std::string &error);
 	void setAsyncFatalLuaError(const std::string &error);
+	// Environment (Lua) must be locked when calling this
+	void setAsyncFatalLuaErrorFromEnvironment(const std::string &error);
 
 	bool showFormspec(const char *name, const std::string &formspec, const std::string &formname);
 	Map & getMap() { return m_env->getMap(); }

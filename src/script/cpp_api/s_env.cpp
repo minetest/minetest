@@ -56,7 +56,7 @@ void ScriptApiEnv::environment_Step(float dtime)
 	} catch (ProcessedLuaError &e) {
 		getServer()->setAsyncFatalProcessedLuaError(e.what());
 	} catch (LuaError &e) {
-		getServer()->setAsyncFatalLuaError(e.what());
+		getServer()->setAsyncFatalLuaErrorFromEnvironment(e.what());
 	}
 }
 
@@ -79,7 +79,7 @@ void ScriptApiEnv::player_event(ServerActiveObject* player, std::string type)
 	} catch (ProcessedLuaError &e) {
 		getServer()->setAsyncFatalProcessedLuaError(e.what());
 	} catch (LuaError &e) {
-		getServer()->setAsyncFatalLuaError(e.what());
+		getServer()->setAsyncFatalLuaErrorFromEnvironment(e.what());
 	}
 }
 
