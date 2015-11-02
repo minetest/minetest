@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-11-02 13:23+0200\n"
-"Last-Translator: Jeff Huang <s8321414@gmail.com>\n"
+"PO-Revision-Date: 2015-11-02 15:04+0200\n"
+"Last-Translator: Jeff Huang <s8321414@chakraos.org>\n"
 "Language-Team: Chinese (Taiwan) "
 "<https://hosted.weblate.org/projects/minetest/minetest/zh_TW/>\n"
 "Language: zh_TW\n"
@@ -1241,19 +1241,19 @@ msgstr "進階"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
-msgstr ""
+msgstr "總是啟用飛行與快速"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
-msgstr ""
+msgstr "環境遮蔽光"
 
 #: src/settings_translation_file.cpp
 msgid "Anisotropic filtering"
-msgstr ""
+msgstr "各向異性過濾"
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
-msgstr ""
+msgstr "公佈伺服器"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1261,14 +1261,16 @@ msgid ""
 "If you want to announce your ipv6 address, use  serverlist_url = v6.servers."
 "minetest.net."
 msgstr ""
+"公佈到這個伺服器列表。\n"
+"若您想要公佈您的 IPv6 地址，使用 serverlist_url = v6.servers.minetest.net。"
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
-msgstr ""
+msgstr "詢問是否在當機後重新連線"
 
 #: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
-msgstr ""
+msgstr "自動回報到伺服器列表。"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -1276,7 +1278,7 @@ msgstr "後退鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
-msgstr ""
+msgstr "基礎"
 
 #: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
@@ -1288,11 +1290,11 @@ msgstr "綁定地址"
 
 #: src/settings_translation_file.cpp
 msgid "Bits per pixel (aka color depth) in fullscreen mode."
-msgstr ""
+msgstr "全螢幕模式中的位元／像素（又稱色彩深度）。"
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
-msgstr ""
+msgstr "在玩家內構建"
 
 #: src/settings_translation_file.cpp
 msgid "Bumpmapping"
@@ -1300,15 +1302,15 @@ msgstr "映射貼圖"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
-msgstr ""
+msgstr "攝影機平滑"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
-msgstr ""
+msgstr "在電影模式中攝影機平滑"
 
 #: src/settings_translation_file.cpp
 msgid "Camera update toggle key"
-msgstr ""
+msgstr "攝影機切換更新按鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
@@ -1320,7 +1322,7 @@ msgstr "聊天切換按鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
-msgstr ""
+msgstr "方塊大小"
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
@@ -1332,23 +1334,23 @@ msgstr "電影模式按鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
-msgstr ""
+msgstr "清除透明材質"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
-msgstr ""
+msgstr "客戶端與伺服器"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
-msgstr ""
+msgstr "攀爬速度"
 
 #: src/settings_translation_file.cpp
 msgid "Cloud height"
-msgstr ""
+msgstr "雲朵高度"
 
 #: src/settings_translation_file.cpp
 msgid "Cloud radius"
-msgstr ""
+msgstr "雲朵範圍"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds"
@@ -1356,7 +1358,7 @@ msgstr "雲朵"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
-msgstr ""
+msgstr "雲朵是客戶端的特效。"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds in menu"
@@ -1364,13 +1366,15 @@ msgstr "選單中的雲朵"
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
-msgstr ""
+msgstr "彩色迷霧"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
+"受信任的 Mod 列表，以逗號分隔，其可存取不安全的\n"
+"功能，即便 mod 安全性是（經由 request_insecure_environment()）。"
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
@@ -1386,7 +1390,7 @@ msgstr "連線至外部媒體伺服器"
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
-msgstr ""
+msgstr "若節點支援則連接玻璃。"
 
 #: src/settings_translation_file.cpp
 msgid "Console alpha"
@@ -1402,11 +1406,11 @@ msgstr "終端機按鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
-msgstr ""
+msgstr "連續前進"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward movement (only used for testing)."
-msgstr ""
+msgstr "連續前進移動（僅供測試使用）。"
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
@@ -1418,40 +1422,44 @@ msgid ""
 "Examples: 72 = 20min, 360 = 4min, 1 = 24hour, 0 = day/night/whatever stays "
 "unchanged."
 msgstr ""
+"控制日／夜循環的長度。\n"
+"範例：72 = 20分鐘，360 = 4分鐘，1 = 24小時，0 = 日／夜／一切保持不變。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Controls size of deserts and beaches in Mapgen V6.\n"
 "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
 msgstr ""
+"控制在 Mapgen V6 中的沙漠與沙灘大小。\n"
+"當 snowbiomes 啟用時「mgv6_freq_desert」會被忽略。"
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
-msgstr ""
+msgstr "當機訊息"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
-msgstr ""
+msgstr "十字 alpha 值"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha (opaqueness, between 0 and 255)."
-msgstr ""
+msgstr "十字 alpha 值（不透明，0 至 255間）。"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
-msgstr ""
+msgstr "十字色彩"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color (R,G,B)."
-msgstr ""
+msgstr "十字色彩 (R,G,B)。"
 
 #: src/settings_translation_file.cpp
 msgid "Crouch speed"
-msgstr ""
+msgstr "蹲伏速度"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
-msgstr ""
+msgstr "DPI"
 
 #: src/settings_translation_file.cpp
 msgid "Damage"
@@ -1459,29 +1467,31 @@ msgstr "傷害"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
-msgstr ""
+msgstr "除錯資訊切換按鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
-msgstr ""
+msgstr "除錯記錄等級"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
-msgstr ""
+msgstr "專用伺服器步驟"
 
 #: src/settings_translation_file.cpp
 msgid "Default acceleration"
-msgstr ""
+msgstr "預設加速"
 
 #: src/settings_translation_file.cpp
 msgid "Default game"
-msgstr ""
+msgstr "預設遊戲"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Default game when creating a new world.\n"
 "This will be overridden when creating a world from the main menu."
 msgstr ""
+"當建立新世界時的預設遊戲。\n"
+"當從主選單建立世界時將會被覆寫。"
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -1489,53 +1499,57 @@ msgstr "預設密碼"
 
 #: src/settings_translation_file.cpp
 msgid "Default privileges"
-msgstr ""
+msgstr "預設特權"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Default timeout for cURL, stated in milliseconds.\n"
 "Only has an effect if compiled with cURL."
 msgstr ""
+"cURL 的預設逾時，以毫秒計算。\n"
+"只會在與 cURL 一同編譯的情況下才會有影響。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Defines sampling step of texture.\n"
 "A higher value results in smoother normal maps."
 msgstr ""
+"定義材質的採樣步驟。\n"
+"較高的值會有較平滑的一般地圖。"
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
-msgstr ""
+msgstr "定義玩家最大可傳送的距離，以方塊計（0 = 不限制）。"
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
-msgstr ""
+msgstr "顯示工具提示前的延遲，以毫秒計算。"
 
 #: src/settings_translation_file.cpp
 msgid "Deprecated Lua API handling"
-msgstr ""
+msgstr "不推薦使用 Lua API 處理"
 
 #: src/settings_translation_file.cpp
 msgid "Descending speed"
-msgstr ""
+msgstr "遞減速度"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
-msgstr ""
+msgstr "伺服器的描述，會在玩家加入時顯示，也會顯示在伺服器列表上。"
 
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
-msgstr ""
+msgstr "異步化方塊動畫"
 
 #: src/settings_translation_file.cpp
 msgid "Detailed mod profile data. Useful for mod developers."
-msgstr ""
+msgstr "詳細的 mod 檔案資料。對 mod 開發者很有用。"
 
 #: src/settings_translation_file.cpp
 msgid "Detailed mod profiling"
-msgstr ""
+msgstr "詳細的 mod 檔案"
 
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
@@ -1543,11 +1557,11 @@ msgstr "停用反作弊"
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
-msgstr ""
+msgstr "不允許空密碼"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
-msgstr ""
+msgstr "伺服器的域名，將會在伺服器列表中顯示。"
 
 #: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
@@ -1559,37 +1573,39 @@ msgstr "輕擊兩次跳躍鍵以切換成飛行模式。"
 
 #: src/settings_translation_file.cpp
 msgid "Drop item key"
-msgstr ""
+msgstr "丟棄物品鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug infos."
-msgstr ""
+msgstr "轉儲 mapgen 的除錯資訊。"
 
 #: src/settings_translation_file.cpp
 msgid "Enable a bit lower water surface, so it doesn't "
-msgstr ""
+msgstr "啟用較低的水面，所以它不會 "
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
-msgstr ""
+msgstr "啟用 mod 安全性"
 
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
-msgstr ""
+msgstr "啟用玩家傷害及瀕死。"
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
-msgstr ""
+msgstr "啟用隨機使用者輸入（僅供測試使用）。"
 
 #: src/settings_translation_file.cpp
 msgid "Enable selection highlighting for nodes (disables selectionbox)."
-msgstr ""
+msgstr "啟用節點選擇突顯（停用選取框）。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enable smooth lighting with simple ambient occlusion.\n"
 "Disable for speed or for different looks."
 msgstr ""
+"啟用包含簡易環境光遮蔽的平滑光。\n"
+"停用以取得速度或不同的外觀。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1599,6 +1615,9 @@ msgid ""
 "to new servers, but they may not support all new features that you are "
 "expecting."
 msgstr ""
+"啟用以讓舊的客戶端無法連線。\n"
+"較舊的客戶端在這個意義上相容，它們不會在連線至\n"
+"新伺服器時當掉，但它們可能會不支援一些您預期會有的新功能。"
 
 #: src/settings_translation_file.cpp
 msgid ""
