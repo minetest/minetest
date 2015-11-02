@@ -489,7 +489,7 @@ private:
 			color(color)
 		{}
 	};
-	std::vector<Piece> m_log;
+	std::deque<Piece> m_log;
 public:
 	u32 m_log_max_size;
 
@@ -512,7 +512,7 @@ public:
 	{
 		std::map<std::string, Meta> m_meta;
 
-		for (std::vector<Piece>::const_iterator k = m_log.begin();
+		for (std::deque<Piece>::const_iterator k = m_log.begin();
 				k != m_log.end(); ++k) {
 			const Piece &piece = *k;
 
@@ -600,7 +600,7 @@ public:
 			float lastscaledvalue = 0.0;
 			bool lastscaledvalue_exists = false;
 
-			for (std::vector<Piece>::const_iterator j = m_log.begin();
+			for (std::deque<Piece>::const_iterator j = m_log.begin();
 					j != m_log.end(); ++j) {
 				const Piece &piece = *j;
 				float value = 0;
