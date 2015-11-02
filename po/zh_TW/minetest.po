@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-10-31 14:59+0200\n"
+"PO-Revision-Date: 2015-11-02 13:23+0200\n"
 "Last-Translator: Jeff Huang <s8321414@gmail.com>\n"
 "Language-Team: Chinese (Taiwan) "
 "<https://hosted.weblate.org/projects/minetest/minetest/zh_TW/>\n"
@@ -1189,27 +1189,27 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
-msgstr ""
+msgstr "當伺服器當機時要顯示在所有客戶端上的訊息。"
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server shuts down."
-msgstr ""
+msgstr "當伺服器關機時要顯示在所有客戶端上的訊息。"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
-msgstr ""
+msgstr "發生佇列的絕對限制"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
-msgstr ""
+msgstr "在空氣中的加速"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
-msgstr ""
+msgstr "活動區塊範圍"
 
 #: src/settings_translation_file.cpp
 msgid "Active object send range"
-msgstr ""
+msgstr "活動目標發送範圍"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1217,22 +1217,27 @@ msgid ""
 "Leave this blank to start a local server.\n"
 "Note that the address field in the main menu overrides this setting."
 msgstr ""
+"要連線到的地址。\n"
+"把這個留空以啟動本機伺服器。\n"
+"注意在主選單中的地址欄會覆寫這個設定。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
-msgstr ""
+msgstr "調整您螢幕的 DPI 設定（並不只有 X11/Android）例如 4K 螢幕。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Adjust the gamma encoding for the light tables. Lower numbers are brighter.\n"
 "This setting is for the client only and is ignored by the server."
 msgstr ""
+"調整亮度表的伽瑪編碼。較低的數值會較亮。\n"
+"這個設定是給客戶端使用的，會被伺服器忽略。"
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
-msgstr ""
+msgstr "進階"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
