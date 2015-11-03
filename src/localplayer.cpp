@@ -512,15 +512,16 @@ void LocalPlayer::applyControl(float dtime)
 		}
 	}
 
-	if(continuous_forward)
+	if (continuous_forward)
 		speedH += move_direction;
 
-	if(control.up)
-	{
-		if(continuous_forward)
-			superspeed = true;
-		else
+	if (control.up) {
+		if (continuous_forward) {
+			if (fast_move)
+				superspeed = true;
+		} else {
 			speedH += move_direction;
+		}
 	}
 	if(control.down)
 	{
