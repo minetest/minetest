@@ -52,9 +52,8 @@ Environment::Environment():
 	m_time_of_day(9000),
 	m_time_of_day_f(9000./24000),
 	m_time_of_day_speed(0),
-	m_time_counter(0),
-	m_enable_day_night_ratio_override(false),
-	m_day_night_ratio_override(0.0f)
+	m_time_conversion_skew(0),
+	m_day_night_ratio_override_storage(0)
 {
 	m_cache_enable_shaders = g_settings->getBool("enable_shaders");
 }
@@ -180,53 +179,46 @@ std::vector<Player*> Environment::getPlayers(bool ignore_disconnected)
 
 u32 Environment::getDayNightRatio()
 {
-	MutexAutoLock(this->m_time_lock);
-	if (m_enable_day_night_ratio_override)
-		return m_day_night_ratio_override;
+	u64 day_night_st = m_day_night_ratio_override_storage;
+	if (day_night_st & (1 >> 63))
+		return day_night_st & U32_MAX;
+	MutexAutoLock lock(this->m_time_floats_lock);
 	return time_to_daynight_ratio(m_time_of_day_f * 24000, m_cache_enable_shaders);
 }
 
 void Environment::setTimeOfDaySpeed(float speed)
 {
-	MutexAutoLock(this->m_time_lock);
 	m_time_of_day_speed = speed;
 }
 
 float Environment::getTimeOfDaySpeed()
 {
-	MutexAutoLock(this->m_time_lock);
-	float retval = m_time_of_day_speed;
-	return retval;
+	return m_time_of_day_speed;
 }
 
 void Environment::setTimeOfDay(u32 time)
 {
-	MutexAutoLock(this->m_time_lock);
+	MutexAutoLock lock(this->m_time_floats_lock);
 	m_time_of_day = time;
 	m_time_of_day_f = (float)time / 24000.0;
 }
 
 u32 Environment::getTimeOfDay()
 {
-	MutexAutoLock(this->m_time_lock);
-	u32 retval = m_time_of_day;
-	return retval;
+	return m_time_of_day;
 }
 
 float Environment::getTimeOfDayF()
 {
-	MutexAutoLock(this->m_time_lock);
-	float retval = m_time_of_day_f;
-	return retval;
+	MutexAutoLock lock(this->m_time_floats_lock);
+	return m_time_of_day_f;
 }
 
 void Environment::stepTimeOfDay(float dtime)
 {
-	MutexAutoLock(this->m_time_lock);
-
-	m_time_counter += dtime;
+	MutexAutoLock lock(this->m_time_floats_lock);
 	f32 speed = m_time_of_day_speed * 24000. / (24. * 3600);
-	u32 units = (u32)(m_time_counter * speed);
+	u32 units = (u32)((dtime + m_time_conversion_skew) * speed);
 	bool sync_f = false;
 	if (units > 0) {
 		// Sync at overflow
@@ -237,10 +229,10 @@ void Environment::stepTimeOfDay(float dtime)
 			m_time_of_day_f = (float)m_time_of_day / 24000.0;
 	}
 	if (speed > 0) {
-		m_time_counter -= (f32)units / speed;
+		m_time_conversion_skew -= (f32)units / speed;
 	}
 	if (!sync_f) {
-		m_time_of_day_f += m_time_of_day_speed / 24 / 3600 * dtime;
+		m_time_of_day_f += m_time_of_day_speed / (24. * 3600.) * dtime;
 		if (m_time_of_day_f > 1.0)
 			m_time_of_day_f -= 1.0;
 		if (m_time_of_day_f < 0.0)
