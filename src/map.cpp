@@ -429,7 +429,7 @@ void Map::unLightNeighbors(enum LightBank bank,
 	goes on recursively.
 */
 void Map::spreadLight(enum LightBank bank,
-		std::set<v3s16> & from_nodes,
+		std::vector<v3s16> & from_nodes,
 		std::map<v3s16, MapBlock*> & modified_blocks)
 {
 	INodeDefManager *nodemgr = m_gamedef->ndef();
@@ -448,7 +448,8 @@ void Map::spreadLight(enum LightBank bank,
 
 	u32 blockchangecount = 0;
 
-	std::set<v3s16> lighted_nodes;
+	std::vector<v3s16> lighted_nodes;
+	lighted_nodes.reserve(100);
 
 	/*
 		Initialize block cache
@@ -458,7 +459,7 @@ void Map::spreadLight(enum LightBank bank,
 		// Cache this a bit, too
 	bool block_checked_in_modified = false;
 
-	for(std::set<v3s16>::iterator j = from_nodes.begin();
+	for(std::vector<v3s16>::iterator j = from_nodes.begin();
 		j != from_nodes.end(); ++j)
 	{
 		v3s16 pos = *j;
@@ -525,7 +526,7 @@ void Map::spreadLight(enum LightBank bank,
 			*/
 			if(n2.getLight(bank, nodemgr) > undiminish_light(oldlight))
 			{
-				lighted_nodes.insert(n2pos);
+				lighted_nodes.push_back(n2pos);
 				changed = true;
 			}
 			/*
@@ -538,7 +539,7 @@ void Map::spreadLight(enum LightBank bank,
 				{
 					n2.setLight(bank, newlight, nodemgr);
 					block->setNode(relpos, n2);
-					lighted_nodes.insert(n2pos);
+					lighted_nodes.push_back(n2pos);
 					changed = true;
 				}
 			}
@@ -561,6 +562,9 @@ void Map::spreadLight(enum LightBank bank,
 			<<" for "<<from_nodes.size()<<" nodes"
 			<<std::endl;*/
 
+	std::sort(lighted_nodes.begin(), lighted_nodes.end());
+	lighted_nodes.erase(std::unique(lighted_nodes.begin(), lighted_nodes.end()), lighted_nodes.end());
+
 	if(!lighted_nodes.empty())
 		spreadLight(bank, lighted_nodes, modified_blocks);
 }
@@ -572,8 +576,8 @@ void Map::lightNeighbors(enum LightBank bank,
 		v3s16 pos,
 		std::map<v3s16, MapBlock*> & modified_blocks)
 {
-	std::set<v3s16> from_nodes;
-	from_nodes.insert(pos);
+	std::vector<v3s16> from_nodes;
+	from_nodes.push_back(pos);
 	spreadLight(bank, from_nodes, modified_blocks);
 }
 
@@ -824,7 +828,8 @@ void Map::updateLighting(enum LightBank bank,
 
 	{
 		//TimeTaker timer("spreadLight");
-		spreadLight(bank, light_sources, modified_blocks);
+		std::vector<v3s16> light_sources_vec(light_sources.begin(), light_sources.end());
+		spreadLight(bank, light_sources_vec, modified_blocks);
 	}
 
 	/*if(debug)
@@ -1057,7 +1062,8 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		/*
 			Spread light from all nodes that might be capable of doing so
 		*/
-		spreadLight(bank, light_sources, modified_blocks);
+		std::vector<v3s16> light_sources_vec(light_sources.begin(), light_sources.end());
+		spreadLight(bank, light_sources_vec, modified_blocks);
 	}
 
 	/*
@@ -1180,7 +1186,8 @@ void Map::removeNodeAndUpdate(v3s16 p,
 		/*
 			Recalculate lighting
 		*/
-		spreadLight(bank, light_sources, modified_blocks);
+		std::vector<v3s16> light_sources_vec(light_sources.begin(), light_sources.end());
+		spreadLight(bank, light_sources_vec, modified_blocks);
 	}
 
 	// Add the block of the removed node to modified_blocks
@@ -1616,7 +1623,6 @@ s32 Map::transforming_liquid_size() {
 
 void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 {
-
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 
 	DSTACK(FUNCTION_NAME);
