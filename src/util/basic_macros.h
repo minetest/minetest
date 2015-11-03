@@ -38,9 +38,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	C(const C &);             \
 	C &operator=(const C &)
 
+#ifndef _MSC_VER
+	#define UNUSED_ATTRIBUTE __attribute__ ((unused))
+#else
+	#define UNUSED_ATTRIBUTE
+#endif
+
 // Fail compilation if condition expr is not met.
 // Note that 'msg' must follow the format of a valid identifier, e.g.
 // STATIC_ASSERT(sizeof(foobar_t) == 40), foobar_t_is_wrong_size);
-#define STATIC_ASSERT(expr, msg) typedef char msg[!!(expr) * 2 - 1]
+#define STATIC_ASSERT(expr, msg) \
+	UNUSED_ATTRIBUTE typedef char msg[!!(expr) * 2 - 1]
 
 #endif
