@@ -357,6 +357,7 @@ set(common_SRCS
 	mapgen_v5.cpp
 	mapgen_v6.cpp
 	mapgen_v7.cpp
+	mapgen_watershed.cpp
 	mapnode.cpp
 	mapsector.cpp
 	mg_biome.cpp
