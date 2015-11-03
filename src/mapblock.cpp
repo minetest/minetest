@@ -176,7 +176,7 @@ std::string MapBlock::getModifiedReasonString()
 	if black_air_left!=NULL, it is set to true if non-sunlighted
 	air is left in block.
 */
-bool MapBlock::propagateSunlight(std::set<v3s16> & light_sources,
+bool MapBlock::propagateSunlight(std::vector<v3s16> & light_sources,
 		bool remove_light, bool *black_air_left)
 {
 	INodeDefManager *nodemgr = m_gamedef->ndef();
@@ -300,7 +300,7 @@ bool MapBlock::propagateSunlight(std::set<v3s16> & light_sources,
 
 				if(diminish_light(current_light) != 0)
 				{
-					light_sources.insert(pos_relative + pos);
+					light_sources.push_back(pos_relative + pos);
 				}
 
 				if(current_light == 0 && stopped_to_solid_object)

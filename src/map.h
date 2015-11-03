@@ -207,17 +207,17 @@ public:
 	MapNode getNodeNoEx(v3s16 p, bool *is_valid_position = NULL);
 
 	void unspreadLight(enum LightBank bank,
-			std::map<v3s16, u8> & from_nodes,
-			std::set<v3s16> & light_sources,
+			std::vector<std::pair<v3s16, u8> > & from_nodes,
+			std::vector<v3s16> & light_sources,
 			std::map<v3s16, MapBlock*> & modified_blocks);
 
 	void unLightNeighbors(enum LightBank bank,
 			v3s16 pos, u8 lightwas,
-			std::set<v3s16> & light_sources,
+			std::vector<v3s16> & light_sources,
 			std::map<v3s16, MapBlock*> & modified_blocks);
 
 	void spreadLight(enum LightBank bank,
-			std::set<v3s16> & from_nodes,
+			std::vector<v3s16> & from_nodes,
 			std::map<v3s16, MapBlock*> & modified_blocks);
 
 	void lightNeighbors(enum LightBank bank,

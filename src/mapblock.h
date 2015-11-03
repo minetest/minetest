@@ -370,7 +370,7 @@ public:
 	}
 
 	// See comments in mapblock.cpp
-	bool propagateSunlight(std::set<v3s16> &light_sources,
+	bool propagateSunlight(std::vector<v3s16> &light_sources,
 		bool remove_light=false, bool *black_air_left=NULL);
 
 	// Copies data to VoxelManipulator to getPosRelative()
