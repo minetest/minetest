@@ -2294,6 +2294,15 @@ These functions return the leftover itemstack.
     * `replacements` = `{["old_name"] = "convert_to", ...}`
     * `force_placement` is a boolean indicating whether nodes other than `air` and
       `ignore` are replaced by the schematic
+    * Returns nil if the schematic could not be loaded.
+
+* `minetest.place_schematic_on_vmanip(vmanip, pos, schematic, rotation, replacement, force_placement)`:
+    * This function is analagous to minetest.place_schematic, but places a schematic onto the
+      specified VoxelManip object `vmanip` instead of the whole map.
+    * Returns false if any part of the schematic was cut-off due to the VoxelManip not
+      containing the full area required, and true if the whole schematic was able to fit.
+    * Returns nil if the schematic could not be loaded.
+    * After execution, any external copies of the VoxelManip contents are invalidated.
 
 * `minetest.serialize_schematic(schematic, format, options)`
     * Return the serialized schematic specified by schematic (see: Schematic specifier)
