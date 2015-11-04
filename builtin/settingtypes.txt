@@ -939,14 +939,17 @@ mgfractal_spflags (Mapgen fractal flags) flags nojulia julia,nojulia
 #    Mandelbrot set: iterations of recursive function.
 #    Controls scale of finest detail.
 mgfractal_m_iterations (Mapgen fractal mandelbrot iterations) int 9
-#
-#    TODO
+
 #    Mandelbrot set: Approximate scale in nodes.
-#mgfractal_m_scale (Mapgen fractal mandelbrot scale) v3f (1024.0, 256.0, 1024.0)
-#
+#    Format is 3 numbers separated by commas, inside brackets.
+mgfractal_m_scale (Mapgen fractal mandelbrot scale) string (1024.0, 256.0, 1024.0)
+#    'string' is currently used for a v3f argument.
+
 #    Mandelbrot set: Offsets the fractal from world centre.
+#    Format is 3 numbers separated by commas, inside brackets.
 #    Range -2 to 2, multiply by m_scale for actual offset in nodes.
-#mgfractal_m_offset (Mapgen fractal mandelbrot offset) v3f (1.75, 0.0, 0.0)
+mgfractal_m_offset (Mapgen fractal mandelbrot offset) string (1.75, 0.0, 0.0)
+#    'string' is currently used for a v3f argument.
 
 #    Mandelbrot set: W co-ordinate of the generated 3D slice of the 4D shape.
 mgfractal_m_slice_w (Mapgen fractal mandelbrot slice w) float 0.0
@@ -954,14 +957,17 @@ mgfractal_m_slice_w (Mapgen fractal mandelbrot slice w) float 0.0
 #    Julia set: iterations of recursive function.
 #    Controls scale of finest detail.
 mgfractal_j_iterations (Mapgen fractal julia iterations) int 9
-#
-#    TODO
+
 #    Julia set: Approximate scale in nodes.
-#mgfractal_j_scale (Mapgen fractal julia scale) v3f (2048.0, 512.0, 2048.0)
-#
+#    Format is 3 numbers separated by commas, inside brackets.
+mgfractal_j_scale (Mapgen fractal julia scale) string (2048.0, 512.0, 2048.0)
+#    'string' is currently used for a v3f argument.
+
 #    Julia set: Offsets the fractal from world centre.
+#    Format is 3 numbers separated by commas, inside brackets.
 #    Range -2 to 2, multiply by j_scale for actual offset in nodes.
-#mgfractal_j_offset (Mapgen fractal julia offset) v3f (0.0, 1.0, 0.0)
+mgfractal_j_offset (Mapgen fractal julia offset) string (0.0, 1.0, 0.0)
+#    'string' is currently used for a v3f argument.
 
 #    Julia set: W co-ordinate of the generated 3D slice of the 4D shape.
 mgfractal_j_slice_w (Mapgen fractal julia slice w) float 0.0
