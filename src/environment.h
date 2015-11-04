@@ -105,21 +105,19 @@ protected:
 	// peer_ids in here should be unique, except that there may be many 0s
 	std::vector<Player*> m_players;
 
+	// Encodes the time of day in a thread safe manner.
+	// First 4 bytes:
 	// Time of day in milli-hours (0-23999); determines day and night
-	Atomic<u32> m_time_of_day;
+	// The remaining 4 bytes:
+	// Time of day in 0...1 formatted as f32.
+	Atomic<u64> m_time_of_day_storage;
 
-	/*
-	 * Below: values managed by m_time_floats_lock
-	*/
-	// Time of day in 0...1
-	float m_time_of_day_f;
-	float m_time_of_day_speed;
+	GenericAtomic<float> m_time_of_day_speed;
+
 	// Stores the skew created by the float -> u32 conversion
 	// to be applied at next conversion, so that there is no real skew.
+	// Make sure to aquire m_time_skew_lock when you access this
 	float m_time_conversion_skew;
-	/*
-	 * Above: values managed by m_time_floats_lock
-	*/
 
 	// Overriding the day-night ratio is useful for custom sky visuals
 	// lowest 32 bits store the overriden ratio, highest bit stores whether its enabled
@@ -137,7 +135,7 @@ protected:
 	bool m_cache_enable_shaders;
 
 private:
-	Mutex m_time_floats_lock;
+	Mutex m_time_skew_lock;
 
 	DISABLE_CLASS_COPY(Environment);
 };
