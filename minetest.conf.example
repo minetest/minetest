@@ -1000,7 +1000,7 @@
 
 #    Name of map generator to be used when creating a new world.
 #    Creating a world in the main menu will override this.
-#    type: enum values: v5, v6, v7, singlenode
+#    type: enum values: v5, v6, v7, fractal, singlenode
 # mg_name = v6
 
 #    Water surface level of the world.
@@ -1089,7 +1089,7 @@
 
 #### Mapgen v6
 
-#    Map generation attributes specific to Mapgen V6.
+#    Map generation attributes specific to Mapgen v6.
 #    When snowbiomes are enabled jungles are enabled and the jungles flag is ignored.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with "no" are used to explicitly disable them.
@@ -1139,7 +1139,7 @@
 
 #### Mapgen v7
 
-#    Map generation attributes specific to Mapgen V7.
+#    Map generation attributes specific to Mapgen v7.
 #    'ridges' are the rivers.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with "no" are used to explicitly disable them.
@@ -1178,6 +1178,77 @@
 
 #    type: noise_params
 # mgv7_np_cave2 = 0, 12, (100, 100, 100), 10325, 4, 0.5, 2.0
+
+#### Mapgen fractal
+
+#    Map generation attributes specific to Mapgen fractal.
+#    'julia' selects a julia set to be generated instead of a mandelbrot set.
+#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags starting with "no" are used to explicitly disable them.
+#    type: flags possible values: julia, nojulia
+# mgfractal_spflags = nojulia
+
+#    Mandelbrot set: iterations of recursive function.
+#    Controls scale of finest detail.
+#    type: int
+# mgfractal_m_iterations = 9
+
+#    Mandelbrot set: Approximate scale in nodes.
+#    type: v3f
+# mgfractal_m_scale = (1024.0, 256.0, 1024.0)
+
+#    Mandelbrot set: Offsets the fractal from world centre.
+#    Range -2 to 2, multiply by m_scale for actual offset in nodes.
+#    type: v3f
+# mgfractal_m_offset = (1.75, 0.0, 0.0)
+
+#    Mandelbrot set: W co-ordinate of the generated 3D slice of the 4D shape.
+#    type: float
+# mgfractal_m_slice_w = 0.0
+
+#    Julia set: iterations of recursive function.
+#    Controls scale of finest detail.
+#    type: int
+# mgfractal_j_iterations = 9
+
+#    Julia set: Approximate scale in nodes.
+#    type: v3f
+# mgfractal_j_scale = (2048.0, 512.0, 2048.0)
+
+#    Julia set: Offsets the fractal from world centre.
+#    Range -2 to 2, multiply by j_scale for actual offset in nodes.
+#    type: v3f
+# mgfractal_j_offset = (0.0, 1.0, 0.0)
+
+#    Julia set: W co-ordinate of the generated 3D slice of the 4D shape.
+#    type: float
+# mgfractal_j_slice_w = 0.0
+
+#    Julia set: The following 4 values determine the 4D shape.
+#    Range -2 to 2.
+#    type: float
+# mgfractal_julia_x = 0.33
+
+#    type: float
+# mgfractal_julia_y = 0.33
+
+#    type: float
+# mgfractal_julia_z = 0.33
+
+#    type: float
+# mgfractal_julia_w = 0.33
+
+#    type: noise_params
+# mgfractal_np_seabed = -14, 9, (600, 600, 600), 41900, 5, 0.6, 2.0
+
+#    type: noise_params
+# mgfractal_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
+
+#    type: noise_params
+# mgfractal_np_cave1 = 0, 12, (128, 128, 128), 52534, 4, 0.5, 2.0
+
+#    type: noise_params
+# mgfractal_np_cave2 = 0, 12, (128, 128, 128), 10325, 4, 0.5, 2.0
 
 ## Security
 
