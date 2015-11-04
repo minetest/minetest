@@ -225,7 +225,12 @@ float Environment::getTimeOfDayF()
 void Environment::stepTimeOfDay(float dtime)
 {
 	MutexAutoLock lock(this->m_time_lock);
-	f32 speed = m_time_of_day_speed * 24000. / (24. * 3600);
+
+	// Cached in order to prevent the two reads we do to give
+	// different results (can be written by code not under the lock)
+	f32 cached_time_of_day_speed = m_time_of_day_speed;
+
+	f32 speed = cached_time_of_day_speed * 24000. / (24. * 3600);
 	m_time_conversion_skew += dtime;
 	u32 units = (u32)(m_time_conversion_skew * speed);
 	bool sync_f = false;
@@ -241,7 +246,7 @@ void Environment::stepTimeOfDay(float dtime)
 		m_time_conversion_skew -= (f32)units / speed;
 	}
 	if (!sync_f) {
-		m_time_of_day_f += speed * dtime;
+		m_time_of_day_f += cached_time_of_day_speed / 24 / 3600 * dtime;
 		if (m_time_of_day_f > 1.0)
 			m_time_of_day_f -= 1.0;
 		if (m_time_of_day_f < 0.0)
