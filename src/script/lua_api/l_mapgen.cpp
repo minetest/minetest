@@ -1271,9 +1271,49 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 		return 0;
 	}
 
-	schem->placeStructure(map, p, 0, (Rotation)rot, force_placement);
+	schem->placeOnMap(map, p, 0, (Rotation)rot, force_placement);
 
 	lua_pushboolean(L, true);
+	return 1;
+}
+
+int ModApiMapgen::l_place_schematic_on_vmanip(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
+	MMVManip *vm = LuaVoxelManip::checkobject(L, 1)->vm;
+
+	//// Read position
+	v3s16 p = check_v3s16(L, 2);
+
+	//// Read rotation
+	int rot = ROTATE_0;
+	const char *enumstr = lua_tostring(L, 4);
+	if (enumstr)
+		string_to_enum(es_Rotation, rot, std::string(enumstr));
+
+	//// Read force placement
+	bool force_placement = true;
+	if (lua_isboolean(L, 5))
+		force_placement = lua_toboolean(L, 6);
+
+	//// Read node replacements
+	StringMap replace_names;
+	if (lua_istable(L, 4))
+		read_schematic_replacements(L, 5, &replace_names);
+
+	//// Read schematic
+	Schematic *schem = get_or_load_schematic(L, 3, schemmgr, &replace_names);
+	if (!schem) {
+		errorstream << "place_schematic: failed to get schematic" << std::endl;
+		return 0;
+	}
+
+	bool schematic_did_fit = schem->placeOnVManip(
+		vm, p, 0, (Rotation)rot, force_placement);
+
+	lua_pushboolean(L, schematic_did_fit);
 	return 1;
 }
 
@@ -1355,5 +1395,6 @@ void ModApiMapgen::Initialize(lua_State *L, int top)
 	API_FCT(generate_decorations);
 	API_FCT(create_schematic);
 	API_FCT(place_schematic);
+	API_FCT(place_schematic_on_vmanip);
 	API_FCT(serialize_schematic);
 }

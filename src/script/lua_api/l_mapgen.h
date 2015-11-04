@@ -85,8 +85,12 @@ private:
 	// create_schematic(p1, p2, probability_list, filename)
 	static int l_create_schematic(lua_State *L);
 
-	// place_schematic(p, schematic, rotation, replacement)
+	// place_schematic(p, schematic, rotation, replacements, force_placement)
 	static int l_place_schematic(lua_State *L);
+
+	// place_schematic_on_vmanip(vm, p, schematic,
+	//     rotation, replacements, force_placement)
+	static int l_place_schematic_on_vmanip(lua_State *L);
 
 	// serialize_schematic(schematic, format, options={...})
 	static int l_serialize_schematic(lua_State *L);
