@@ -93,10 +93,7 @@ public:
 	void setTimeOfDaySpeed(float speed);
 	float getTimeOfDaySpeed();
 
-	void setDayNightRatioOverride(bool enable, u32 value)
-	{
-		m_day_night_ratio_override_storage = value | ((u64)enable << 63);
-	}
+	void setDayNightRatioOverride(bool enable, u32 value);
 
 	// counter used internally when triggering ABMs
 	u32 m_added_objects;
@@ -105,25 +102,24 @@ protected:
 	// peer_ids in here should be unique, except that there may be many 0s
 	std::vector<Player*> m_players;
 
-	// Time of day in milli-hours (0-23999); determines day and night
-	Atomic<u32> m_time_of_day;
+	GenericAtomic<float> m_time_of_day_speed;
 
 	/*
-	 * Below: values managed by m_time_floats_lock
+	 * Below: values managed by m_time_lock
 	*/
+	// Time of day in milli-hours (0-23999); determines day and night
+	u32 m_time_of_day;
 	// Time of day in 0...1
 	float m_time_of_day_f;
-	float m_time_of_day_speed;
 	// Stores the skew created by the float -> u32 conversion
 	// to be applied at next conversion, so that there is no real skew.
 	float m_time_conversion_skew;
-	/*
-	 * Above: values managed by m_time_floats_lock
-	*/
-
 	// Overriding the day-night ratio is useful for custom sky visuals
-	// lowest 32 bits store the overriden ratio, highest bit stores whether its enabled
-	Atomic<u64> m_day_night_ratio_override_storage;
+	bool m_enable_day_night_ratio_override;
+	u32 m_day_night_ratio_override;
+	/*
+	 * Above: values managed by m_time_lock
+	*/
 
 	/* TODO: Add a callback function so these can be updated when a setting
 	 *       changes.  At this point in time it doesn't matter (e.g. /set
@@ -137,7 +133,7 @@ protected:
 	bool m_cache_enable_shaders;
 
 private:
-	Mutex m_time_floats_lock;
+	Mutex m_time_lock;
 
 	DISABLE_CLASS_COPY(Environment);
 };
