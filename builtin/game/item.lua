@@ -348,7 +348,7 @@ function core.item_place(itemstack, placer, pointed_thing, param2)
 end
 
 function core.item_drop(itemstack, dropper, pos)
-	if dropper.is_player then
+	if dropper and dropper:is_player() then
 		local v = dropper:get_look_dir()
 		local p = {x=pos.x, y=pos.y+1.2, z=pos.z}
 		local cs = itemstack:get_count()
@@ -362,6 +362,7 @@ function core.item_drop(itemstack, dropper, pos)
 			v.y = v.y*2 + 2
 			v.z = v.z*2
 			obj:setvelocity(v)
+			obj:get_luaentity().dropped_by = dropper:get_player_name()
 			return itemstack
 		end
 

@@ -74,7 +74,8 @@ core.register_entity(":__builtin:item", {
 		return core.serialize({
 			itemstring = self.itemstring,
 			always_collect = self.always_collect,
-			age = self.age
+			age = self.age,
+			dropped_by = self.dropped_by
 		})
 	end,
 
@@ -89,6 +90,7 @@ core.register_entity(":__builtin:item", {
 				else
 					self.age = dtime_s
 				end
+				self.dropped_by = data.dropped_by
 			end
 		else
 			self.itemstring = staticdata
