@@ -1188,54 +1188,50 @@
 #    type: flags possible values: julia, nojulia
 # mgfractal_spflags = nojulia
 
-#    Mandelbrot set: iterations of recursive function.
+#    Mandelbrot set: Iterations of the recursive function.
 #    Controls scale of finest detail.
 #    type: int
 # mgfractal_m_iterations = 9
 
-#    Mandelbrot set: Approximate scale in nodes.
+#    Mandelbrot set: Approximate (X,Y,Z) scales in nodes.
 #    type: v3f
 # mgfractal_m_scale = (1024.0, 256.0, 1024.0)
 
-#    Mandelbrot set: Offsets the fractal from world centre.
-#    Range -2 to 2, multiply by m_scale for actual offset in nodes.
+#    Mandelbrot set: (X,Y,Z) offsets from world centre.
+#    Range roughly -2 to 2, multiply by m_scale for offsets in nodes.
 #    type: v3f
 # mgfractal_m_offset = (1.75, 0.0, 0.0)
 
 #    Mandelbrot set: W co-ordinate of the generated 3D slice of the 4D shape.
+#    Range roughly -2 to 2.
 #    type: float
 # mgfractal_m_slice_w = 0.0
 
-#    Julia set: iterations of recursive function.
+#    Julia set: Iterations of the recursive function.
 #    Controls scale of finest detail.
 #    type: int
 # mgfractal_j_iterations = 9
 
-#    Julia set: Approximate scale in nodes.
+#    Julia set: Approximate (X,Y,Z) scales in nodes.
 #    type: v3f
 # mgfractal_j_scale = (2048.0, 512.0, 2048.0)
 
-#    Julia set: Offsets the fractal from world centre.
-#    Range -2 to 2, multiply by j_scale for actual offset in nodes.
+#    Julia set: (X,Y,Z) offsets from world centre.
+#    Range roughly -2 to 2, multiply by j_scale for offsets in nodes.
 #    type: v3f
 # mgfractal_j_offset = (0.0, 1.0, 0.0)
 
 #    Julia set: W co-ordinate of the generated 3D slice of the 4D shape.
+#    Range roughly -2 to 2.
 #    type: float
 # mgfractal_j_slice_w = 0.0
 
 #    Julia set: The following 4 values determine the 4D shape.
-#    Range -2 to 2.
+#    Range roughly -2 to 2.
 #    type: float
 # mgfractal_julia_x = 0.33
-
-#    type: float
 # mgfractal_julia_y = 0.33
-
-#    type: float
 # mgfractal_julia_z = 0.33
-
-#    type: float
 # mgfractal_julia_w = 0.33
 
 #    type: noise_params
