@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Minetest 0.4.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-10-27 16:45+0200\n"
-"Last-Translator: PilzAdam <PilzAdam@minetest.net>\n"
+"PO-Revision-Date: 2015-11-06 16:37+0000\n"
+"Last-Translator: Elia Argentieri <elia.argentieri@openmailbox.org>\n"
 "Language-Team: Italian "
 "<https://hosted.weblate.org/projects/minetest/minetest/it/>\n"
 "Language: it\n"
@@ -29,7 +29,6 @@ msgid "An error occured:"
 msgstr "Si è verificato un errore:"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Main menu"
 msgstr "Menù principale"
 
@@ -38,13 +37,12 @@ msgid "Ok"
 msgstr "Ok"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Reconnect"
-msgstr "Connettere"
+msgstr "Riconnettiti"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "Il server ha richiesto una riconnessione:"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
@@ -52,27 +50,29 @@ msgstr "Caricamento..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "La versione dei protocolli non coincide. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "Il server richiede la versione $1 del protocollo. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "Il server supporta versioni del protocollo comprese fra $1 e $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
+"Prova a riabilitare la lista dei server pubblici e controlla la tua "
+"connessione ad Internet."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "Supportiamo soltanto la versione $1 del protocollo."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "Supportiamo soltanto versioni del protocollo comprese tra $1 e $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua builtin/mainmenu/tab_settings.lua
@@ -101,6 +101,8 @@ msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
+"Impossibile abilitare il modulo \"$1\" perché contiene caratteri non "
+"permessi. Soltanto i caratteri [a-z0-9_] sono permessi."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -137,7 +139,7 @@ msgstr "Creare"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr "Scarica un sottogioco, come minetest_game, da minetest.net"
+msgstr "Scaricare un sottogioco, ad esempio minetest_game, da minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
@@ -164,6 +166,7 @@ msgstr "Seme casuale"
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
 msgstr ""
+"Attenzione: il test di sviluppo minimale è pensato per gli sviluppatori."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -3247,10 +3250,12 @@ msgid ""
 "The time in seconds it takes between repeated right clicks when holding the "
 "right mouse button."
 msgstr ""
+"Il tempo in secondi che intercorre tra pressioni ripetute del tasto destro "
+"quando viene trattenuto il pulsante destro del mouse."
 
 #: src/settings_translation_file.cpp
 msgid "This font will be used for certain languages."
-msgstr ""
+msgstr "Questo font verrà utilizzato per alcune lingue."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3264,11 +3269,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Time speed"
-msgstr ""
+msgstr "Velocità del tempo"
 
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory."
 msgstr ""
+"Tempo impiegato dai client per rimuovere dati della mappa non utilizzati "
+"dalla memoria."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3277,19 +3284,22 @@ msgid ""
 "This determines how long they are slowed down after placing or removing a "
 "node."
 msgstr ""
+"Per ridurre il ritardo, i trasferimenti dei blocchi vengono rallentati "
+"quando un giocatore sta costruendo qualcosa.\n"
+"Questo determina per quanto vengono rallentati dopo aver posizionato o "
+"rimosso un nodo."
 
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
-msgstr ""
+msgstr "Tasto per variare la visuale"
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Trilinear filtering"
-msgstr "Filtro Tri-Lineare"
+msgstr "Filtro trilineare"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3300,15 +3310,17 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Trusted mods"
-msgstr ""
+msgstr "Moduli fidati"
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
 msgstr ""
+"URL che punta alla lista di server mostrata nella scheda Multigiocatore."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Unlimited player transfer distance"
-msgstr ""
+msgstr "Distanza illimitata di visualizzazione dei giocatori"
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
@@ -3316,32 +3328,34 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Use 3D cloud look instead of flat."
-msgstr ""
+msgstr "Dai alle nuvole un aspetto 3D invece che piatto."
 
 #: src/settings_translation_file.cpp
 msgid "Use a cloud animation for the main menu background."
-msgstr ""
+msgstr "Usa un'animazione di nuvole come sfondo del menù principale."
 
 #: src/settings_translation_file.cpp
 msgid "Use anisotropic filtering when viewing at textures from an angle."
 msgstr ""
+"Usa un filtro anisotropico per migliorare le texture viste da un angolo."
 
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
-msgstr ""
+msgstr "Usa un filtro bilineare quando si scalano le texture."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use key"
-msgstr "premere il tasto"
+msgstr "Tasto Usa"
 
 #: src/settings_translation_file.cpp
 msgid "Use mip mapping to scale textures. May slightly increase performance."
 msgstr ""
+"Usa il mip mapping per ridurre le texture. Potrebbe decrementare leggermente "
+"le prestazioni."
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
-msgstr ""
+msgstr "Usa un filtro trilineare quando si scalano le texture."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3350,19 +3364,19 @@ msgstr "Sviluppatori principali"
 
 #: src/settings_translation_file.cpp
 msgid "V-Sync"
-msgstr ""
+msgstr "Sincronia verticale"
 
 #: src/settings_translation_file.cpp
 msgid "Vertical initial window size."
-msgstr ""
+msgstr "Dimensione iniziale verticale della finestra."
 
 #: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
-msgstr ""
+msgstr "Dimensione iniziale orizzontale della finestra."
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
-msgstr ""
+msgstr "Driver del video"
 
 #: src/settings_translation_file.cpp
 msgid "View bobbing"
@@ -3370,19 +3384,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "View range decrease key"
-msgstr ""
+msgstr "Tasto per decrementare la visibilità"
 
 #: src/settings_translation_file.cpp
 msgid "View range increase key"
-msgstr ""
+msgstr "Tasto per incrementare la visibilità"
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range maximum"
-msgstr ""
+msgstr "Distanza massima di visibilità"
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range minimum"
-msgstr ""
+msgstr "Distanza minima di visibilità"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3391,19 +3405,19 @@ msgstr "Volume del suono"
 
 #: src/settings_translation_file.cpp
 msgid "Walking speed"
-msgstr ""
+msgstr "Velocità di movimento"
 
 #: src/settings_translation_file.cpp
 msgid "Wanted FPS"
-msgstr ""
+msgstr "FPS desiderati"
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
-msgstr ""
+msgstr "Livello dell'acqua"
 
 #: src/settings_translation_file.cpp
 msgid "Water surface level of the world."
-msgstr ""
+msgstr "Livello della superficie dell'acqua del mondo."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3411,29 +3425,28 @@ msgid "Waving Nodes"
 msgstr "Inizializzazione nodi"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving leaves"
-msgstr "Alberi migliori"
+msgstr "Foglie ondeggianti"
 
 #: src/settings_translation_file.cpp
 msgid "Waving plants"
-msgstr ""
+msgstr "Piante ondeggianti"
 
 #: src/settings_translation_file.cpp
 msgid "Waving water"
-msgstr ""
+msgstr "Acqua ondeggiante"
 
 #: src/settings_translation_file.cpp
 msgid "Waving water height"
-msgstr ""
+msgstr "Altezza delle onde dell'acqua"
 
 #: src/settings_translation_file.cpp
 msgid "Waving water length"
-msgstr ""
+msgstr "Lunghezza delle onde dell'acqua"
 
 #: src/settings_translation_file.cpp
 msgid "Waving water speed"
-msgstr ""
+msgstr "Velocità dell'ondeggiamento dell'acqua"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3451,6 +3464,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
 "can be blurred, so automatically upscale them with nearest-neighbor\n"
@@ -3460,6 +3474,17 @@ msgid ""
 "have a visible effect unless bilinear/trilinear/anisotropic filtering is\n"
 "enabled."
 msgstr ""
+"Quando si usano filtri bilineari/trilineari/anisotropici, le superfici a "
+"bassa\n"
+"risoluzione possono apparire sfocate, quindi ingrandiscile automaticamente\n"
+"con l'interpolazione nearest-neighbor per preservare pixel nitidi. Questo\n"
+"imposta la minima dimensione delle texture per le texture ingrandite; "
+"valori\n"
+"più elevati appaiono più nitidi, ma richiedono più memoria. Sono\n"
+"raccomandate potenze di 2. Impostare questo più alto di 1 potrebbe non\n"
+"avere un effetto visibile a meno che un filtro bilineari/trilineari/"
+"anisotropici\n"
+"sia abilitato."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3470,6 +3495,14 @@ msgid ""
 "-    Those groups have an offset of -32, -32 nodes from the origin.\n"
 "-    Only groups which are within the map_generation_limit are generated"
 msgstr ""
+"Dove fermare il generatore di mappe.\n"
+"Nota bene:\n"
+"-    limitato a 31000 (valori più alti non hanno effetto).\n"
+"-    il generatore di mappe funziona con gruppi di nodi da 80x80x80 (5x5x5 "
+"MapBlocks).\n"
+"-    questi gruppi hanno uno scostamento di -32, -32 nodi dall'origine.\n"
+"-    solo i gruppi che si trovano all'interno di map_generation_limit "
+"vengono generati"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3485,35 +3518,45 @@ msgid ""
 "Whether players are shown to clients without any range limit.\n"
 "Deprecated, use the setting player_transfer_distance instead."
 msgstr ""
+"Se i giocatori vengono mostrati ai client senza alcun limite di distanza.\n"
+"Deprecato, usare l'impostazione player_transfer_distance invece."
 
 #: src/settings_translation_file.cpp
 msgid "Whether to allow players to damage and kill each other."
-msgstr ""
+msgstr "Permettere ai giocatori di danneggiarsi e uccidersi a vicenda."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether to ask clients to reconnect after a (Lua) crash.\n"
 "Set this to true if your server is set up to restart automatically."
 msgstr ""
+"Se chiedere ai client di ricollegarsi dopo un crash (Lua).\n"
+"Imposta questo su true se il tuo server è impostato per riavviarsi "
+"automaticamente."
 
 #: src/settings_translation_file.cpp
 msgid "Whether to fog out the end of the visible area."
-msgstr ""
+msgstr "Se annebbiare la fine dell'area visibile."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether to show the client debug info (has the same effect as hitting F5)."
 msgstr ""
+"Se mostrare al client le informazioni di debug (ha lo stesso effetto di "
+"premere F5)."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Width of the selectionbox's lines around nodes."
-msgstr ""
+msgstr "Larghezza dei riquadri attorno ai nodi."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "World directory (everything in the world is stored here).\n"
 "Not needed if starting from the main menu."
 msgstr ""
+"Cartella del mondo (tutto il mondo si trova qui).\n"
+"Non è necessario se si inizia dal menù principale."
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
