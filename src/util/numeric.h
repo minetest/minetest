@@ -407,6 +407,12 @@ inline u32 npot2(u32 orig) {
 	return orig + 1;
 }
 
+// NOTE: Irrlicht only provides something like this for v3s32
+inline v3s16 v3s16_div(const v3s16 &a, s16 b)
+{
+	return v3s16(a.X/b, a.Y/b, a.Z/b);
+}
+
 // Gradual steps towards the target value in a wrapped (circular) system
 // using the shorter of both ways
 template<typename T>
