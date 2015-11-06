@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Minetest 0.4.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-11-06 16:37+0000\n"
-"Last-Translator: Elia Argentieri <elia.argentieri@openmailbox.org>\n"
+"PO-Revision-Date: 2015-11-06 16:40+0000\n"
+"Last-Translator: betacentury <betacentury89@gmail.com>\n"
 "Language-Team: Italian "
 "<https://hosted.weblate.org/projects/minetest/minetest/it/>\n"
 "Language: it\n"
@@ -231,12 +231,12 @@ msgstr "Installazione modulo: file: \"$1\""
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find real modname for: $1"
 msgstr ""
-"Installare un modulo: impossibile trovare il vero nome del modulo per: $1"
+"Installazione modulo: impossibile trovare il vero nome del modulo per: $1"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
 msgstr ""
-"Installare un modulo: impossibile trovare un nome di cartella appropriato "
+"Installazione modulo: impossibile trovare un nome di cartella appropriato "
 "per il pacchetto moduli $1"
 
 #: builtin/mainmenu/store.lua
