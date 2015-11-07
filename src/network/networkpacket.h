@@ -108,6 +108,22 @@ public:
 		NetworkPacket& operator>>(video::SColor& dst);
 		NetworkPacket& operator<<(video::SColor src);
 
+		// With this function you can control the format you are reading from
+		// vs. the type you are putting your result into. Use for enums and
+		// stuff. Also allows nicer-looking code when you don't have to split
+		// reads into two statements.
+		template<typename T> T read() {
+			T buf;
+			*this >> buf;
+			return buf;
+		}
+
+		// Same thing for writing. Create a copy of the parameter just so that
+		// it can be implicitly or non-implicitly cast.
+		template<typename T> void write(T v) {
+			*this << v;
+		}
+
 		// Temp, we remove SharedBuffer when migration finished
 		Buffer<u8> oldForgePacket();
 private:
