@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-04-19 02:00+0800\n"
-"Last-Translator: Ang Weijie <fishyWET@hotmail.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2015-11-07 08:04+0000\n"
+"Last-Translator: Jun Zhang <zhangjunphy@gmail.com>\n"
+"Language-Team: Chinese (China) "
+"<https://hosted.weblate.org/projects/minetest/minetest/zh_CN/>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 1.7-dev\n"
+"X-Generator: Weblate 2.5-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -24,7 +25,7 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
-msgstr ""
+msgstr "错误:"
 
 #: builtin/fstk/ui.lua
 #, fuzzy
@@ -36,13 +37,12 @@ msgid "Ok"
 msgstr "确定"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Reconnect"
-msgstr "连接"
+msgstr "重新连接"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "服务器请求重新连接:"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
@@ -50,27 +50,27 @@ msgstr "载入中..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "协议版本不匹配. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "服务器要求协议版本为 $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "服务器支持的协议版本为 $1 至 $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
-msgstr ""
+msgstr "请尝试重新启用公共服务器列表并检查您的网络连接."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "我们只支持协议版本 $1."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "我们支持的协议版本为 $1 至 $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua builtin/mainmenu/tab_settings.lua
@@ -98,7 +98,7 @@ msgstr "全部启用"
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
-msgstr ""
+msgstr "无法启用 MOD \"$1\": 含有不支持的字符. 允许的字符为 [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -206,13 +206,12 @@ msgid "Rename Modpack:"
 msgstr "重命名MOD包："
 
 #: builtin/mainmenu/modmgr.lua
-#, fuzzy
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"安装MOD：不支持的文件类型“$1“"
+"安装MOD：不支持的文件类型“$1“或文件损坏"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Failed to install $1 to $2"
@@ -235,9 +234,8 @@ msgid "Close store"
 msgstr "关闭商店"
 
 #: builtin/mainmenu/store.lua
-#, fuzzy
 msgid "Downloading $1, please wait..."
-msgstr "请稍候..."
+msgstr "正在下载 $1, 请稍候..."
 
 #: builtin/mainmenu/store.lua
 msgid "Install"
@@ -428,11 +426,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(No description of setting given)"
-msgstr ""
+msgstr "(没有关于此设置的信息)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Browse"
-msgstr ""
+msgstr "浏览"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
@@ -445,7 +443,7 @@ msgstr "禁用MOD包"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Edit"
-msgstr ""
+msgstr "设置"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
