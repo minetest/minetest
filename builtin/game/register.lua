@@ -51,20 +51,24 @@ local forbidden_item_names = {
 
 local function check_modname_prefix(name)
 	if name:sub(1,1) == ":" then
-		-- Escape the modname prefix enforcement mechanism
+		-- If the name starts with a colon, we can skip the modname prefix
+		-- mechanism.
 		return name:sub(2)
 	else
-		-- Modname prefix enforcement
+		-- Enforce that the name starts with the correct mod name.
 		local expected_prefix = core.get_current_modname() .. ":"
 		if name:sub(1, #expected_prefix) ~= expected_prefix then
 			error("Name " .. name .. " does not follow naming conventions: " ..
-				"\"modname:\" or \":\" prefix required")
+				"\"" .. expected_prefix .. "\" or \":\" prefix required")
 		end
+		
+		-- Enforce that the name only contains letters, numbers and underscores.
 		local subname = name:sub(#expected_prefix+1)
-		if subname:find("[^abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_]") then
+		if subname:find("[^%w_]") then
 			error("Name " .. name .. " does not follow naming conventions: " ..
 				"contains unallowed characters")
 		end
+		
 		return name
 	end
 end
