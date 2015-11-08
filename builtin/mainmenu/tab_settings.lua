@@ -112,7 +112,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 	end
 
 	if setting_type == "string" or setting_type == "noise_params"
-			or setting_type == "key" then
+			or setting_type == "key" or setting_type == "v3f" then
 		local default = remaining_line:match("^(.*)$")
 
 		if not default then
@@ -381,6 +381,9 @@ local function create_change_setting_formspec(dialogdata)
 		formspec = formspec .. ",,"
 				.. "," .. fgettext("Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistence>") .. ","
 				.. "," .. fgettext("Optionally the lacunarity can be appended with a leading comma.") .. ","
+	elseif setting.type == "v3f" then
+		formspec = formspec .. ",,"
+				.. "," .. fgettext_ne("Format is 3 numbers separated by commas and inside brackets.") .. ","
 	end
 
 	formspec = formspec:sub(1, -2) -- remove trailing comma
@@ -424,7 +427,7 @@ local function create_change_setting_formspec(dialogdata)
 				.. "button[8,3.75;2,1;btn_browser_path;" .. fgettext("Browse") .. "]"
 
 	else
-		-- TODO: fancy input for float, int, flags, noise_params
+		-- TODO: fancy input for float, int, flags, noise_params, v3f
 		local width = 10
 		local text = get_current_value(setting)
 		if dialogdata.error_message then

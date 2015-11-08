@@ -941,15 +941,11 @@ mgfractal_spflags (Mapgen fractal flags) flags nojulia julia,nojulia
 mgfractal_m_iterations (Mapgen fractal mandelbrot iterations) int 9
 
 #    Mandelbrot set: Approximate (X,Y,Z) scales in nodes.
-#    Format is 3 numbers separated by commas and inside brackets.
-mgfractal_m_scale (Mapgen fractal mandelbrot scale) string (1024.0, 256.0, 1024.0)
-#    Type 'string' is currently used for a v3f.
+mgfractal_m_scale (Mapgen fractal mandelbrot scale) v3f (1024.0, 256.0, 1024.0)
 
 #    Mandelbrot set: (X,Y,Z) offsets from world centre.
-#    Format is 3 numbers separated by commas and inside brackets.
 #    Range roughly -2 to 2, multiply by m_scale for offsets in nodes.
-mgfractal_m_offset (Mapgen fractal mandelbrot offset) string (1.75, 0.0, 0.0)
-#    Type 'string' is currently used for a v3f.
+mgfractal_m_offset (Mapgen fractal mandelbrot offset) v3f (1.75, 0.0, 0.0)
 
 #    Mandelbrot set: W co-ordinate of the generated 3D slice of the 4D shape.
 #    Range roughly -2 to 2.
@@ -960,15 +956,11 @@ mgfractal_m_slice_w (Mapgen fractal mandelbrot slice w) float 0.0
 mgfractal_j_iterations (Mapgen fractal julia iterations) int 9
 
 #    Julia set: Approximate (X,Y,Z) scales in nodes.
-#    Format is 3 numbers separated by commas and inside brackets.
-mgfractal_j_scale (Mapgen fractal julia scale) string (2048.0, 512.0, 2048.0)
-#    Type 'string' is currently used for a v3f.
+mgfractal_j_scale (Mapgen fractal julia scale) v3f (2048.0, 512.0, 2048.0)
 
 #    Julia set: (X,Y,Z) offsets from world centre.
-#    Format is 3 numbers separated by commas and inside brackets.
 #    Range roughly -2 to 2, multiply by j_scale for offsets in nodes.
-mgfractal_j_offset (Mapgen fractal julia offset) string (0.0, 1.0, 0.0)
-#    Type 'string' is currently used for a v3f.
+mgfractal_j_offset (Mapgen fractal julia offset) v3f (0.0, 1.0, 0.0)
 
 #    Julia set: W co-ordinate of the generated 3D slice of the 4D shape.
 #    Range roughly -2 to 2.
