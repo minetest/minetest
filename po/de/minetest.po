@@ -1531,7 +1531,7 @@ msgid ""
 "Default timeout for cURL, stated in milliseconds.\n"
 "Only has an effect if compiled with cURL."
 msgstr ""
-"Standard-Timeout für cURL, in Millisekunden angegeben.\n"
+"Standardzeitlimit für cURL, in Millisekunden.\n"
 "Hat nur eine Wirkung, wenn mit cURL kompiliert wurde."
 
 #: src/settings_translation_file.cpp
@@ -1880,7 +1880,7 @@ msgid ""
 "From how far clients know about objects, stated in mapblocks (16 nodes)."
 msgstr ""
 "Von wie weit weg Klienten über Objekte bescheid wissen,\n"
-"in Kartenblöcken (16 Blöcke) angegeben."
+"in Kartenblöcken (16 Blöcke)."
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
@@ -2105,7 +2105,7 @@ msgstr "Hintergrundfarbe (R,G,B) der Chat-Konsole im Spiel."
 msgid "Interval of saving important changes in the world, stated in seconds."
 msgstr ""
 "Zeitintervall des Abspeicherns wichtiger Änderungen in der Welt,\n"
-"in Sekunden angegeben."
+"in Sekunden."
 
 #: src/settings_translation_file.cpp
 msgid "Interval of sending time of day to clients."
@@ -3230,8 +3230,8 @@ msgid ""
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
 "corners."
 msgstr ""
-"Radius des Wolkenbereichs; angegeben in Einheiten von 64 Blöcken.\n"
-"Werter größer als 26 werden scharfe Schnittkanten an den Ecken des Wolken-\n"
+"Radius des Wolkenbereichs; In Einheiten von 64 Blöcken.\n"
+"Werte größer als 26 werden scharfe Schnittkanten an den Ecken des Wolken-\n"
 "bereichs erzeugen."
 
 #: src/settings_translation_file.cpp
@@ -3426,7 +3426,7 @@ msgid ""
 "nodes)."
 msgstr ""
 "Größe der Stücke, die gleichzeitig vom Kartengenerator erzeugt werden,\n"
-"in Kartenblöcken (16×16×16 Blöcke) angegeben."
+"in Kartenblöcken (16×16×16 Blöcke)."
 
 #: src/settings_translation_file.cpp
 msgid "Smooth lighting"
