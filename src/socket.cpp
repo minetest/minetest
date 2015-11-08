@@ -44,8 +44,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <windows.h>
 	#include <winsock2.h>
 	#include <ws2tcpip.h>
-typedef SOCKET socket_t;
-typedef int socklen_t;
+	#define LAST_SOCKET_ERR() WSAGetLastError()
+	typedef SOCKET socket_t;
+	typedef int socklen_t;
 #else
 	#include <sys/types.h>
 	#include <sys/socket.h>
@@ -54,7 +55,8 @@ typedef int socklen_t;
 	#include <netdb.h>
 	#include <unistd.h>
 	#include <arpa/inet.h>
-typedef int socket_t;
+	#define LAST_SOCKET_ERR() (errno)
+	typedef int socket_t;
 #endif
 
 // Set to true to enable verbose debug output
@@ -339,7 +341,8 @@ bool UDPSocket::init(bool ipv6, bool noExceptions)
 		if (noExceptions) {
 			return false;
 		} else {
-			throw SocketException("Failed to create socket");
+			throw SocketException(std::string("Failed to create socket: error ")
+				+ itos(LAST_SOCKET_ERR()));
 		}
 	}
 

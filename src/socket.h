@@ -45,7 +45,7 @@ extern bool socket_enable_debug_output;
 class SocketException : public BaseException
 {
 public:
-	SocketException(const char *s):
+	SocketException(const std::string &s):
 		BaseException(s)
 	{
 	}
@@ -54,7 +54,7 @@ public:
 class ResolveError : public BaseException
 {
 public:
-	ResolveError(const char *s):
+	ResolveError(const std::string &s):
 		BaseException(s)
 	{
 	}
@@ -63,7 +63,7 @@ public:
 class SendFailedException : public BaseException
 {
 public:
-	SendFailedException(const char *s):
+	SendFailedException(const std::string &s):
 		BaseException(s)
 	{
 	}
