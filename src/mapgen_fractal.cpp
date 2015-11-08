@@ -634,7 +634,7 @@ void MapgenFractal::generateCaves(s16 max_stone_y)
 	PseudoRandom ps(blockseed + 21343);
 	u32 bruises_count = (ps.range(1, 4) == 1) ? ps.range(1, 2) : 0;
 	for (u32 i = 0; i < bruises_count; i++) {
-		CaveFractal cave(this, &ps);
+		CaveV5 cave(this, &ps);
 		cave.makeCave(node_min, node_max, max_stone_y);
 	}
 }
