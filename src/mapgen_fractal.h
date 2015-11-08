@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapgen.h"
 
-#define MGFRACTAL_LARGE_CAVE_DEPTH -32
+#define MGFRACTAL_LARGE_CAVE_DEPTH -33
 
 /////////////////// Mapgen Fractal flags
 #define MGFRACTAL_JULIA 0x01
