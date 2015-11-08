@@ -148,11 +148,11 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 
 	INodeDefManager *nodemgr = m_gamedef->ndef();
 
-	for(std::map<v3s16, MapBlock*>::iterator
+	for (std::vector<MapBlock*>::iterator
 			i = m_drawlist.begin();
 			i != m_drawlist.end(); ++i)
 	{
-		MapBlock *block = i->second;
+		MapBlock *block = *i;
 		block->refDrop();
 	}
 	m_drawlist.clear();
@@ -201,6 +201,8 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 	//u32 blocks_without_stuff = 0;
 	// Distance to farthest drawn block
 	float farthest_drawn = 0;
+
+	bool free_move = g_settings->getBool("free_move");
 
 	for(std::map<v2s16, MapSector*>::iterator
 			si = m_sectors.begin();
@@ -278,7 +280,7 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 			// No occlusion culling when free_move is on and camera is
 			// inside ground
 			bool occlusion_culling_enabled = true;
-			if(g_settings->getBool("free_move")){
+			if (free_move){
 				MapNode n = getNodeNoEx(cam_pos_nodes);
 				if(n.getContent() == CONTENT_IGNORE ||
 						nodemgr->get(n).solidness == 2)
@@ -332,7 +334,7 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 
 			// Add to set
 			block->refGrab();
-			m_drawlist[block->getPos()] = block;
+			m_drawlist.push_back(block);
 
 			sector_blocks_drawn++;
 			blocks_drawn++;
@@ -340,9 +342,6 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 				farthest_drawn = d/BS;
 
 		} // foreach sectorblocks
-
-		if(sector_blocks_drawn != 0)
-			m_last_drawn_sectors.insert(sp);
 	}
 
 	m_control.blocks_would_have_drawn = blocks_would_have_drawn;
@@ -411,14 +410,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		prefix = "CM: transparent: ";
 
 	/*
-		This is called two times per frame, reset on the non-transparent one
-	*/
-	if(pass == scene::ESNRP_SOLID)
-	{
-		m_last_drawn_sectors.clear();
-	}
-
-	/*
 		Get time for measuring timeout.
 
 		Measuring time is very useful for long delays when the
@@ -484,11 +475,11 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	MeshBufListList drawbufs;
 
-	for(std::map<v3s16, MapBlock*>::iterator
+	for(std::vector<MapBlock*>::iterator
 			i = m_drawlist.begin();
 			i != m_drawlist.end(); ++i)
 	{
-		MapBlock *block = i->second;
+		MapBlock *block = *i;
 
 		// If the mesh of the block happened to get deleted, ignore it
 		if(block->mesh == NULL)
