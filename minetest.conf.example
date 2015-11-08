@@ -1096,7 +1096,7 @@
 #    type: flags possible values: jungles, biomeblend, mudflow, snowbiomes, nojungles, nobiomeblend, nomudflow, nosnowbiomes
 # mgv6_spflags = jungles,biomeblend,mudflow,snowbiomes
 
-#    Controls size of deserts and beaches in Mapgen V6.
+#    Controls size of deserts and beaches in Mapgen v6.
 #    When snowbiomes are enabled 'mgv6_freq_desert' is ignored.
 #    type: float
 # mgv6_freq_desert = 0.45
@@ -1226,12 +1226,24 @@
 #    type: float
 # mgfractal_j_slice_w = 0.0
 
-#    Julia set: The following 4 values determine the 4D shape.
+#    Julia set: X value determining the 4D shape.
 #    Range roughly -2 to 2.
 #    type: float
 # mgfractal_julia_x = 0.33
+
+#    Julia set: Y value determining the 4D shape.
+#    Range roughly -2 to 2.
+#    type: float
 # mgfractal_julia_y = 0.33
+
+#    Julia set: Z value determining the 4D shape.
+#    Range roughly -2 to 2.
+#    type: float
 # mgfractal_julia_z = 0.33
+
+#    Julia set: W value determining the 4D shape.
+#    Range roughly -2 to 2.
+#    type: float
 # mgfractal_julia_w = 0.33
 
 #    type: noise_params
