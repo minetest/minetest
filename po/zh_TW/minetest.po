@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-11-02 15:04+0200\n"
+"PO-Revision-Date: 2015-11-08 10:49+0000\n"
 "Last-Translator: Jeff Huang <s8321414@chakraos.org>\n"
 "Language-Team: Chinese (Taiwan) "
 "<https://hosted.weblate.org/projects/minetest/minetest/zh_TW/>\n"
@@ -1626,6 +1626,9 @@ msgid ""
 "textures)\n"
 "when connecting to the server."
 msgstr ""
+"啟用遠端媒體伺服器的使用（若由伺服器提供的話）。\n"
+"當連線到伺服器時，遠端伺服器提供了一個\n"
+"顯著較快的下載媒體（如材質）的方式。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1633,6 +1636,9 @@ msgid ""
 "to IPv6 clients, depending on system configuration.\n"
 "Ignored if bind_address is set."
 msgstr ""
+"啟用／停用執行 IPv6 伺服器。IPv6 伺服器可能會限制只有\n"
+"IPv6 客戶端才能連線，取決於系統設定。\n"
+"當 bind_address 被設定時將會被忽略。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1641,10 +1647,13 @@ msgid ""
 "or need to be auto-generated.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"為材質啟用貼圖轉儲。普通地圖需要材質包的支援\n"
+"或是自動生成。\n"
+"必須啟用著色器。"
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
-msgstr ""
+msgstr "啟用面旋轉方向的網格快取。"
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
@@ -1655,30 +1664,36 @@ msgid ""
 "Enables on the fly normalmap generation (Emboss effect).\n"
 "Requires bumpmapping to be enabled."
 msgstr ""
+"啟用忙碌的一般地圖生成（浮雕效果）。\n"
+"必須啟用貼圖轉儲。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enables parallax occlusion mapping.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"啟用視差遮蔽貼圖。\n"
+"必須啟用著色器。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Experimental option, might cause visible spaces between blocks\n"
 "when set to higher number than 0."
 msgstr ""
+"實驗性選項，當設定到大於零的值時\n"
+"也許會造成在方塊間有視覺空隙。"
 
 #: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
-msgstr ""
+msgstr "在暫停選單中的 FPS"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
-msgstr ""
+msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
 msgid "Fall bobbing"
-msgstr ""
+msgstr "墜落上下移動"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font"
@@ -1686,15 +1701,15 @@ msgstr "備用字型"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font shadow"
-msgstr ""
+msgstr "後備字型陰影"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font shadow alpha"
-msgstr ""
+msgstr "後備字型陰影 alpha 值"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font size"
-msgstr ""
+msgstr "後備字型大小"
 
 #: src/settings_translation_file.cpp
 msgid "Fast key"
