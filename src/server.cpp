@@ -1473,7 +1473,7 @@ void Server::printToConsoleOnly(const std::string &text)
 		m_admin_chat->outgoing_queue.push_back(
 			new ChatEventChat("", utf8_to_wide(text)));
 	} else {
-		std::cout << text;
+		std::cout << text << std::endl;
 	}
 }
 
