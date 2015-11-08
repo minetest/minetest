@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-24 20:28+0200\n"
+"POT-Creation-Date: 2015-11-08 21:23+0100\n"
 "PO-Revision-Date: 2015-09-21 14:55+0200\n"
 "Last-Translator: way-hu <gabor.w.varnagy@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
@@ -419,7 +419,7 @@ msgid "Start Game"
 msgstr "Játék indítása"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "\""
+msgid "\"$1\" is not a valid flag."
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
@@ -447,6 +447,10 @@ msgstr ""
 #, fuzzy
 msgid "Enabled"
 msgstr "Engedélyez"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Format is 3 numbers separated by commas and inside brackets."
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid ""
@@ -1449,7 +1453,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Controls size of deserts and beaches in Mapgen V6.\n"
+"Controls size of deserts and beaches in Mapgen v6.\n"
 "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
 msgstr ""
 
@@ -1599,7 +1603,11 @@ msgid "Dump the mapgen debug infos."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enable a bit lower water surface, so it doesn't "
+msgid ""
+"Enable a bit lower water surface, so it doesn't \"fill\" the node "
+"completely.\n"
+"Note that this is not quite optimized and that smooth lighting on the\n"
+"water surface doesn't work with this."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1732,7 +1740,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Fast movement (via use key).\n"
-"This requires the "
+"This requires the \"fast\" privilege on the server."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1870,7 +1878,8 @@ msgid ""
 "Global map generation attributes.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with "
+"Flags starting with \"no\" are used to explicitly disable them.\n"
+"'trees' and 'flat' flags only have effect in mgv6."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1950,21 +1959,23 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "If disabled "
-msgstr "Csomag letiltás"
+msgid ""
+"If disabled \"use\" key is used to fly fast if both fly and fast mode are "
+"enabled."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled together with fly mode, player is able to fly through solid "
 "nodes.\n"
-"This requires the "
+"This requires the \"noclip\" privilege on the server."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "If enabled, "
-msgstr "Engedélyez"
+msgid ""
+"If enabled, \"use\" key instead of \"sneak\" key is used for climbing down "
+"and descending."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2037,6 +2048,52 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Item entity TTL"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: (X,Y,Z) offsets from world centre.\n"
+"Range roughly -2 to 2, multiply by j_scale for offsets in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Julia set: Approximate (X,Y,Z) scales in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: Iterations of the recursive function.\n"
+"Controls scale of finest detail."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: W co-ordinate of the generated 3D slice of the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: W value determining the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: X value determining the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: Y value determining the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: Z value determining the 4D shape.\n"
+"Range roughly -2 to 2."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2365,26 +2422,57 @@ msgid "Makes DirectX work with LuaJIT. Disable if it causes troubles."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Mandelbrot set: (X,Y,Z) offsets from world centre.\n"
+"Range roughly -2 to 2, multiply by m_scale for offsets in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mandelbrot set: Approximate (X,Y,Z) scales in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Mandelbrot set: Iterations of the recursive function.\n"
+"Controls scale of finest detail."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Mandelbrot set: W co-ordinate of the generated 3D slice of the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Map directory"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Map generation attributes specific to Mapgen V6.\n"
-"When snowbiomes are enabled jungles are enabled and the jungles flag is "
-"ignored.\n"
+"Map generation attributes specific to Mapgen fractal.\n"
+"'julia' selects a julia set to be generated instead of a mandelbrot set.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with "
+"Flags starting with \"no\" are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Map generation attributes specific to Mapgen V7.\n"
+"Map generation attributes specific to Mapgen v6.\n"
+"When snowbiomes are enabled jungles are enabled and the jungles flag is "
+"ignored.\n"
+"Flags that are not specified in the flag string are not modified from the "
+"default.\n"
+"Flags starting with \"no\" are used to explicitly disable them."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Map generation attributes specific to Mapgen v7.\n"
 "'ridges' are the rivers.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with "
+"Flags starting with \"no\" are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2424,6 +2512,81 @@ msgstr "Térkép generátor"
 #, fuzzy
 msgid "Mapgen flags"
 msgstr "Térkép generátor"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal"
+msgstr "Térkép generátor"
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal cave1 noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal cave2 noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal filler depth noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal flags"
+msgstr "Térkép generátor"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal julia iterations"
+msgstr "Parallax Occlusion"
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia offset"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia scale"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia slice w"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia w"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia x"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia y"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia z"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal mandelbrot iterations"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal mandelbrot offset"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal mandelbrot scale"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal mandelbrot slice w"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal seabed noise parameters"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen heat blend noise parameters"
@@ -2599,6 +2762,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when game is paused."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum distance above water level for player spawn.\n"
+"Larger values result in spawn points closer to (x = 0, z = 0).\n"
+"Smaller values may result in a suitable spawn point not being found,\n"
+"resulting in a spawn at (0, 0, 0) possibly buried underground."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2912,7 +3083,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Player is able to fly without being affected by gravity.\n"
-"This requires the "
+"This requires the \"fly\" privilege on the server."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3162,7 +3333,7 @@ msgstr "Simított megvilágítás"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Smooths camera when moving and looking arround.\n"
+"Smooths camera when moving and looking around.\n"
 "Useful for recording videos."
 msgstr ""
 
@@ -3372,6 +3543,10 @@ msgid "Vertical screen synchronization."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Vertical spawn range"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Video driver"
 msgstr ""
 
@@ -3544,137 +3719,145 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Rendering:"
-#~ msgstr "Renderelés:"
+#~ msgid "2x"
+#~ msgstr "2x"
 
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "A driver változások életbe lépéséhez indítsd újra a Minetestet"
+#~ msgid "4x"
+#~ msgstr "4x"
 
-#, fuzzy
-#~ msgid "Game Name"
-#~ msgstr "Játék"
+#~ msgid "8x"
+#~ msgstr "8x"
 
-#~ msgid "Favorites:"
-#~ msgstr "Kedvencek:"
+#~ msgid "Antialiasing:"
+#~ msgstr "Élsimítás:"
 
-#, fuzzy
-#~ msgid "Password"
-#~ msgstr "Régi jelszó"
+#~ msgid "Are you sure to reset your singleplayer world?"
+#~ msgstr "Biztosan visszaállítod az egyjátékos világod?"
 
-#~ msgid "Preload item visuals"
-#~ msgstr "Előretöltött tárgy láthatóság"
+#~ msgid "Fancy Leaves"
+#~ msgstr "Szép levelek"
 
 #, fuzzy
-#~ msgid "Finite Liquid"
-#~ msgstr "Végtelen folyadék"
-
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Hiba az összes világ törlése közben"
-
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Nem sikerült a világ beállítása: Nincs kiválasztva"
-
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Nem sikerült a világot létrehozni: Nem található a játék"
-
-#~ msgid "Files to be deleted"
-#~ msgstr "A fájl törölve lett"
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Nem törölhető a világ: Nincs kiválasztva"
-
-#~ msgid "Address required."
-#~ msgstr "Cím szükséges."
-
-#~ msgid "Create world"
-#~ msgstr "Világ létrehozása"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Hagyd el a nevét, hogy helyi szervert indíts."
-
-#~ msgid "Show Favorites"
-#~ msgstr "Kedvencek mutatása"
-
-#~ msgid "Show Public"
-#~ msgstr "Publikus mutatása"
-
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Nem sikerült a világ létrehozása: A névben nem jó karakterek vannak"
-
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Figyelem: A beállítások nem egyformák.  "
-
-#~ msgid "Configuration saved.  "
-#~ msgstr "Beállítások mentve.  "
-
-#~ msgid "is required by:"
-#~ msgstr "kell neki:"
-
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr "Ball gomb: Tárgyak mozgatása, Jobb gomb: egy tárgyat mozgat"
-
-#, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Le"
-
-#, fuzzy
-#~ msgid "Touchthreshold (px)"
-#~ msgstr "Touchthreshold (px)"
-
-#, fuzzy
-#~ msgid "Touch free target"
-#~ msgstr "Touch free target"
-
-#~ msgid "To enable shaders the OpenGL driver needs to be used."
-#~ msgstr "A shaderek engedélyezéséhez OpenGL driver használata szükséges."
-
-#~ msgid "Texturing:"
-#~ msgstr "Textúrázás:"
-
-#~ msgid "Simple Leaves"
-#~ msgstr "Egyszerű levelek"
-
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "A méretarány alkalmazva a menü elemekre: "
-
-#~ msgid "Reset singleplayer world"
-#~ msgstr "Egyjátékos világ visszaállítása"
-
-#~ msgid "Opaque Water"
-#~ msgstr "Áttetsző víz"
-
-#~ msgid "Opaque Leaves"
-#~ msgstr "Áttetsző levelek"
-
-#~ msgid "No!!!"
-#~ msgstr "Nem!!!"
-
-#, fuzzy
-#~ msgid "No Mipmap"
-#~ msgstr "No Mipmap"
+#~ msgid "Mipmap"
+#~ msgstr "Mipmap"
 
 #, fuzzy
 #~ msgid "Mipmap + Aniso. Filter"
 #~ msgstr "Mipmap + Aniso. Filter"
 
 #, fuzzy
-#~ msgid "Mipmap"
-#~ msgstr "Mipmap"
+#~ msgid "No Mipmap"
+#~ msgstr "No Mipmap"
 
-#~ msgid "Fancy Leaves"
-#~ msgstr "Szép levelek"
+#~ msgid "No!!!"
+#~ msgstr "Nem!!!"
 
-#~ msgid "Are you sure to reset your singleplayer world?"
-#~ msgstr "Biztosan visszaállítod az egyjátékos világod?"
+#~ msgid "Opaque Leaves"
+#~ msgstr "Áttetsző levelek"
 
-#~ msgid "Antialiasing:"
-#~ msgstr "Élsimítás:"
+#~ msgid "Opaque Water"
+#~ msgstr "Áttetsző víz"
 
-#~ msgid "8x"
-#~ msgstr "8x"
+#~ msgid "Reset singleplayer world"
+#~ msgstr "Egyjátékos világ visszaállítása"
 
-#~ msgid "4x"
-#~ msgstr "4x"
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "A méretarány alkalmazva a menü elemekre: "
 
-#~ msgid "2x"
-#~ msgstr "2x"
+#~ msgid "Simple Leaves"
+#~ msgstr "Egyszerű levelek"
+
+#~ msgid "Texturing:"
+#~ msgstr "Textúrázás:"
+
+#~ msgid "To enable shaders the OpenGL driver needs to be used."
+#~ msgstr "A shaderek engedélyezéséhez OpenGL driver használata szükséges."
+
+#, fuzzy
+#~ msgid "Touch free target"
+#~ msgstr "Touch free target"
+
+#, fuzzy
+#~ msgid "Touchthreshold (px)"
+#~ msgstr "Touchthreshold (px)"
+
+#, fuzzy
+#~ msgid "Downloading"
+#~ msgstr "Le"
+
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr "Ball gomb: Tárgyak mozgatása, Jobb gomb: egy tárgyat mozgat"
+
+#~ msgid "is required by:"
+#~ msgstr "kell neki:"
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "Beállítások mentve.  "
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Figyelem: A beállítások nem egyformák.  "
+
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Nem sikerült a világ létrehozása: A névben nem jó karakterek vannak"
+
+#~ msgid "Show Public"
+#~ msgstr "Publikus mutatása"
+
+#~ msgid "Show Favorites"
+#~ msgstr "Kedvencek mutatása"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Hagyd el a nevét, hogy helyi szervert indíts."
+
+#~ msgid "Create world"
+#~ msgstr "Világ létrehozása"
+
+#~ msgid "Address required."
+#~ msgstr "Cím szükséges."
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Nem törölhető a világ: Nincs kiválasztva"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "A fájl törölve lett"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Nem sikerült a világot létrehozni: Nem található a játék"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Nem sikerült a világ beállítása: Nincs kiválasztva"
+
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Hiba az összes világ törlése közben"
+
+#, fuzzy
+#~ msgid "Finite Liquid"
+#~ msgstr "Végtelen folyadék"
+
+#~ msgid "Preload item visuals"
+#~ msgstr "Előretöltött tárgy láthatóság"
+
+#, fuzzy
+#~ msgid "Password"
+#~ msgstr "Régi jelszó"
+
+#~ msgid "Favorites:"
+#~ msgstr "Kedvencek:"
+
+#, fuzzy
+#~ msgid "Game Name"
+#~ msgstr "Játék"
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "A driver változások életbe lépéséhez indítsd újra a Minetestet"
+
+#~ msgid "Rendering:"
+#~ msgstr "Renderelés:"
+
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "Engedélyez"
+
+#, fuzzy
+#~ msgid "If disabled "
+#~ msgstr "Csomag letiltás"

@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-24 20:28+0200\n"
+"POT-Creation-Date: 2015-11-08 21:23+0100\n"
 "PO-Revision-Date: 2015-11-08 10:10+0000\n"
 "Last-Translator: Vasily Pavlov <halmet94@gmail.com>\n"
-"Language-Team: Russian "
-"<https://hosted.weblate.org/projects/minetest/minetest/ru/>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
+"minetest/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
-"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 2.5-dev\n"
 
 #: builtin/fstk/ui.lua
@@ -417,8 +417,8 @@ msgid "Start Game"
 msgstr "Начать игру"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "\""
-msgstr "\""
+msgid "\"$1\" is not a valid flag."
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(No description of setting given)"
@@ -443,6 +443,10 @@ msgstr "Редактировать"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Enabled"
 msgstr "Включено"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Format is 3 numbers separated by commas and inside brackets."
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid ""
@@ -1434,7 +1438,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Controls size of deserts and beaches in Mapgen V6.\n"
+"Controls size of deserts and beaches in Mapgen v6.\n"
 "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
 msgstr ""
 
@@ -1579,7 +1583,11 @@ msgid "Dump the mapgen debug infos."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enable a bit lower water surface, so it doesn't "
+msgid ""
+"Enable a bit lower water surface, so it doesn't \"fill\" the node "
+"completely.\n"
+"Note that this is not quite optimized and that smooth lighting on the\n"
+"water surface doesn't work with this."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1709,7 +1717,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Fast movement (via use key).\n"
-"This requires the "
+"This requires the \"fast\" privilege on the server."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1843,7 +1851,8 @@ msgid ""
 "Global map generation attributes.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with "
+"Flags starting with \"no\" are used to explicitly disable them.\n"
+"'trees' and 'flat' flags only have effect in mgv6."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1923,19 +1932,23 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "If disabled "
-msgstr "Если выключено "
+msgid ""
+"If disabled \"use\" key is used to fly fast if both fly and fast mode are "
+"enabled."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled together with fly mode, player is able to fly through solid "
 "nodes.\n"
-"This requires the "
+"This requires the \"noclip\" privilege on the server."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "If enabled, "
-msgstr "Если включено "
+msgid ""
+"If enabled, \"use\" key instead of \"sneak\" key is used for climbing down "
+"and descending."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2006,6 +2019,52 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Item entity TTL"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: (X,Y,Z) offsets from world centre.\n"
+"Range roughly -2 to 2, multiply by j_scale for offsets in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Julia set: Approximate (X,Y,Z) scales in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: Iterations of the recursive function.\n"
+"Controls scale of finest detail."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: W co-ordinate of the generated 3D slice of the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: W value determining the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: X value determining the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: Y value determining the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: Z value determining the 4D shape.\n"
+"Range roughly -2 to 2."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2330,26 +2389,57 @@ msgid "Makes DirectX work with LuaJIT. Disable if it causes troubles."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Mandelbrot set: (X,Y,Z) offsets from world centre.\n"
+"Range roughly -2 to 2, multiply by m_scale for offsets in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mandelbrot set: Approximate (X,Y,Z) scales in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Mandelbrot set: Iterations of the recursive function.\n"
+"Controls scale of finest detail."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Mandelbrot set: W co-ordinate of the generated 3D slice of the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Map directory"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Map generation attributes specific to Mapgen V6.\n"
-"When snowbiomes are enabled jungles are enabled and the jungles flag is "
-"ignored.\n"
+"Map generation attributes specific to Mapgen fractal.\n"
+"'julia' selects a julia set to be generated instead of a mandelbrot set.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with "
+"Flags starting with \"no\" are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Map generation attributes specific to Mapgen V7.\n"
+"Map generation attributes specific to Mapgen v6.\n"
+"When snowbiomes are enabled jungles are enabled and the jungles flag is "
+"ignored.\n"
+"Flags that are not specified in the flag string are not modified from the "
+"default.\n"
+"Flags starting with \"no\" are used to explicitly disable them."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Map generation attributes specific to Mapgen v7.\n"
 "'ridges' are the rivers.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with "
+"Flags starting with \"no\" are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2387,6 +2477,81 @@ msgstr "Дебаггинг генератора карты"
 #: src/settings_translation_file.cpp
 msgid "Mapgen flags"
 msgstr "Флаги генератора карты"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal"
+msgstr "Флаги генератора карты"
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal cave1 noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal cave2 noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal filler depth noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal flags"
+msgstr "Флаги генератора карты"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal julia iterations"
+msgstr "Повторение параллакса"
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia offset"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia scale"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia slice w"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia w"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia x"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia y"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia z"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal mandelbrot iterations"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal mandelbrot offset"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal mandelbrot scale"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal mandelbrot slice w"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal seabed noise parameters"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen heat blend noise parameters"
@@ -2558,6 +2723,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when game is paused."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum distance above water level for player spawn.\n"
+"Larger values result in spawn points closer to (x = 0, z = 0).\n"
+"Smaller values may result in a suitable spawn point not being found,\n"
+"resulting in a spawn at (0, 0, 0) possibly buried underground."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2861,7 +3034,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Player is able to fly without being affected by gravity.\n"
-"This requires the "
+"This requires the \"fly\" privilege on the server."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3099,7 +3272,7 @@ msgstr "Мягкое освещение"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Smooths camera when moving and looking arround.\n"
+"Smooths camera when moving and looking around.\n"
 "Useful for recording videos."
 msgstr ""
 
@@ -3309,6 +3482,10 @@ msgid "Vertical screen synchronization."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Vertical spawn range"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Video driver"
 msgstr ""
 
@@ -3481,89 +3658,99 @@ msgstr ""
 msgid "cURL timeout"
 msgstr "cURL тайм-аут"
 
-#~ msgid "Rendering:"
-#~ msgstr "Рендеринг:"
+#~ msgid "Are you sure to reset your singleplayer world?"
+#~ msgstr "Уверены, что хотите сбросить мир одиночной игры?"
 
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "Перезапустите Minetest для принятия изменений"
+#~ msgid "Fancy Leaves"
+#~ msgstr "Красивая листва"
 
-#~ msgid "Game Name"
-#~ msgstr "Название"
+#~ msgid "Mipmap"
+#~ msgstr "Мипмаппинг"
 
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "Gamemgr: Не могу скопировать мод \"$1\" в игру \"$2\""
+#~ msgid "Mipmap + Aniso. Filter"
+#~ msgstr "Мипмаппинг с анизотр. фильтром"
 
-#~ msgid "GAMES"
-#~ msgstr "ИГРЫ"
+#~ msgid "No Mipmap"
+#~ msgstr "Без Мипмаппинга"
 
-#~ msgid "Mods:"
-#~ msgstr "Моды:"
+#~ msgid "No!!!"
+#~ msgstr "Нет!"
 
-#~ msgid "new game"
-#~ msgstr "Создать игру"
+#~ msgid "Opaque Leaves"
+#~ msgstr "Непрозрачная листва"
 
-#~ msgid "EDIT GAME"
-#~ msgstr "РЕДАКТИРОВАНИЕ"
+#~ msgid "Opaque Water"
+#~ msgstr "Непрозрачная вода"
 
-#~ msgid "Remove selected mod"
-#~ msgstr "Удалить мод"
+#~ msgid "Reset singleplayer world"
+#~ msgstr "Сброс одиночной игры"
 
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Добавить мод"
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Коэффициент масштаба интерфейса: "
 
-#~ msgid "CLIENT"
-#~ msgstr "КЛИЕНТ"
+#~ msgid "Simple Leaves"
+#~ msgstr "Упрощённая листва"
 
-#~ msgid "Favorites:"
-#~ msgstr "Избранное:"
+#~ msgid "Texturing:"
+#~ msgstr "Текстурирование:"
 
-#~ msgid "START SERVER"
-#~ msgstr "СЕРВЕР"
+#~ msgid "To enable shaders the OpenGL driver needs to be used."
+#~ msgstr "Для включения шейдеров необходим драйвер OpenGL."
 
-#~ msgid "Name"
-#~ msgstr "Имя"
+#~ msgid "Touch free target"
+#~ msgstr "Свободный выбор цели"
 
-#~ msgid "Password"
-#~ msgstr "Пароль"
+#~ msgid "Touchthreshold (px)"
+#~ msgstr "Чувствительность (пк)"
 
-#~ msgid "SETTINGS"
-#~ msgstr "НАСТРОЙКИ"
+#, fuzzy
+#~ msgid "Downloading"
+#~ msgstr "Загрузить"
 
-#~ msgid "Preload item visuals"
-#~ msgstr "Предзагрузка изображений"
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr "ЛКМ: Переместить все предметы, ПКМ: Переместить один предмет"
 
-#~ msgid "Finite Liquid"
-#~ msgstr "Конечные жидкости"
+#~ msgid "is required by:"
+#~ msgstr "требуется для:"
 
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "ОДИНОЧНАЯ ИГРА"
+#~ msgid "Configuration saved.  "
+#~ msgstr "Настройки сохранены.  "
 
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "ПАКЕТЫ ТЕКСТУР"
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Предупреждение: Неверная конфигурация.  "
 
-#~ msgid "MODS"
-#~ msgstr "МОДЫ"
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Невозможно создать мир: Имя содержит недопустимые символы"
 
-#~ msgid "Add mod:"
-#~ msgstr "Добавить мод:"
+#~ msgid "Show Public"
+#~ msgstr "Публичные"
 
-#~ msgid "Local install"
-#~ msgstr "Локальная установка"
+#~ msgid "Show Favorites"
+#~ msgstr "Избранные"
 
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
-#~ msgstr ""
-#~ "Предупреждение: Некоторые моды еще не настроены.\n"
-#~ "Их стандартные настройки будут установлены, когда вы сохраните "
-#~ "конфигурацию.  "
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Оставьте адрес пустым для запуска локального сервера."
 
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
-#~ msgstr ""
-#~ "Предупреждение: Некоторые моды не найдены.\n"
-#~ "Их настройки будут удалены, когда вы сохраните конфигурацию.  "
+#~ msgid "Create world"
+#~ msgstr "Создать мир"
+
+#~ msgid "Address required."
+#~ msgstr "Нужно ввести адрес."
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Невозможно удалить мир: Ничего не выбрано"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "Следующие файлы будут удалены"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Невозможно создать мир: Ни одной игры не найдено"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Невозможно настроить мир: ничего не выбрано"
+
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Ошибка при удалении файлов мира"
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -3590,96 +3777,95 @@ msgstr "cURL тайм-аут"
 #~ "- ESC: это меню\n"
 #~ "- T: чат\n"
 
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Ошибка при удалении файлов мира"
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
+#~ msgstr ""
+#~ "Предупреждение: Некоторые моды не найдены.\n"
+#~ "Их настройки будут удалены, когда вы сохраните конфигурацию.  "
 
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Невозможно настроить мир: ничего не выбрано"
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "Предупреждение: Некоторые моды еще не настроены.\n"
+#~ "Их стандартные настройки будут установлены, когда вы сохраните "
+#~ "конфигурацию.  "
 
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Невозможно создать мир: Ни одной игры не найдено"
+#~ msgid "Local install"
+#~ msgstr "Локальная установка"
 
-#~ msgid "Files to be deleted"
-#~ msgstr "Следующие файлы будут удалены"
+#~ msgid "Add mod:"
+#~ msgstr "Добавить мод:"
 
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Невозможно удалить мир: Ничего не выбрано"
+#~ msgid "MODS"
+#~ msgstr "МОДЫ"
 
-#~ msgid "Address required."
-#~ msgstr "Нужно ввести адрес."
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "ПАКЕТЫ ТЕКСТУР"
 
-#~ msgid "Create world"
-#~ msgstr "Создать мир"
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "ОДИНОЧНАЯ ИГРА"
 
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Оставьте адрес пустым для запуска локального сервера."
+#~ msgid "Finite Liquid"
+#~ msgstr "Конечные жидкости"
 
-#~ msgid "Show Favorites"
-#~ msgstr "Избранные"
+#~ msgid "Preload item visuals"
+#~ msgstr "Предзагрузка изображений"
 
-#~ msgid "Show Public"
-#~ msgstr "Публичные"
+#~ msgid "SETTINGS"
+#~ msgstr "НАСТРОЙКИ"
 
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Невозможно создать мир: Имя содержит недопустимые символы"
+#~ msgid "Password"
+#~ msgstr "Пароль"
 
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Предупреждение: Неверная конфигурация.  "
+#~ msgid "Name"
+#~ msgstr "Имя"
 
-#~ msgid "Configuration saved.  "
-#~ msgstr "Настройки сохранены.  "
+#~ msgid "START SERVER"
+#~ msgstr "СЕРВЕР"
 
-#~ msgid "is required by:"
-#~ msgstr "требуется для:"
+#~ msgid "Favorites:"
+#~ msgstr "Избранное:"
 
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr "ЛКМ: Переместить все предметы, ПКМ: Переместить один предмет"
+#~ msgid "CLIENT"
+#~ msgstr "КЛИЕНТ"
 
-#, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Загрузить"
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Добавить мод"
 
-#~ msgid "Touchthreshold (px)"
-#~ msgstr "Чувствительность (пк)"
+#~ msgid "Remove selected mod"
+#~ msgstr "Удалить мод"
 
-#~ msgid "Touch free target"
-#~ msgstr "Свободный выбор цели"
+#~ msgid "EDIT GAME"
+#~ msgstr "РЕДАКТИРОВАНИЕ"
 
-#~ msgid "To enable shaders the OpenGL driver needs to be used."
-#~ msgstr "Для включения шейдеров необходим драйвер OpenGL."
+#~ msgid "new game"
+#~ msgstr "Создать игру"
 
-#~ msgid "Texturing:"
-#~ msgstr "Текстурирование:"
+#~ msgid "Mods:"
+#~ msgstr "Моды:"
 
-#~ msgid "Simple Leaves"
-#~ msgstr "Упрощённая листва"
+#~ msgid "GAMES"
+#~ msgstr "ИГРЫ"
 
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Коэффициент масштаба интерфейса: "
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "Gamemgr: Не могу скопировать мод \"$1\" в игру \"$2\""
 
-#~ msgid "Reset singleplayer world"
-#~ msgstr "Сброс одиночной игры"
+#~ msgid "Game Name"
+#~ msgstr "Название"
 
-#~ msgid "Opaque Water"
-#~ msgstr "Непрозрачная вода"
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "Перезапустите Minetest для принятия изменений"
 
-#~ msgid "Opaque Leaves"
-#~ msgstr "Непрозрачная листва"
+#~ msgid "Rendering:"
+#~ msgstr "Рендеринг:"
 
-#~ msgid "No!!!"
-#~ msgstr "Нет!"
+#~ msgid "If enabled, "
+#~ msgstr "Если включено "
 
-#~ msgid "No Mipmap"
-#~ msgstr "Без Мипмаппинга"
+#~ msgid "If disabled "
+#~ msgstr "Если выключено "
 
-#~ msgid "Mipmap + Aniso. Filter"
-#~ msgstr "Мипмаппинг с анизотр. фильтром"
-
-#~ msgid "Mipmap"
-#~ msgstr "Мипмаппинг"
-
-#~ msgid "Fancy Leaves"
-#~ msgstr "Красивая листва"
-
-#~ msgid "Are you sure to reset your singleplayer world?"
-#~ msgstr "Уверены, что хотите сбросить мир одиночной игры?"
+#~ msgid "\""
+#~ msgstr "\""

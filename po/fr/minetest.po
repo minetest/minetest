@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-24 20:28+0200\n"
+"POT-Creation-Date: 2015-11-08 21:23+0100\n"
 "PO-Revision-Date: 2015-10-28 12:55+0200\n"
 "Last-Translator: Jean-Patrick G. <jeanpatrick.guerrero@gmail.com>\n"
-"Language-Team: French "
-"<https://hosted.weblate.org/projects/minetest/minetest/fr/>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
+"fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -420,8 +420,8 @@ msgid "Start Game"
 msgstr "Démarrer"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "\""
-msgstr "\""
+msgid "\"$1\" is not a valid flag."
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(No description of setting given)"
@@ -448,6 +448,10 @@ msgid "Enabled"
 msgstr "Activé"
 
 #: builtin/mainmenu/tab_settings.lua
+msgid "Format is 3 numbers separated by commas and inside brackets."
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
 msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
@@ -462,8 +466,8 @@ msgstr "Jeux"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
 msgstr ""
-"Éventuellement, l'option \"lacunarity\" peut être jointe par une virgule d"
-"'en-tête."
+"Éventuellement, l'option \"lacunarity\" peut être jointe par une virgule "
+"d'en-tête."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a comma seperated list of flags."
@@ -1272,8 +1276,8 @@ msgid ""
 "minetest.net."
 msgstr ""
 "Annoncer à la liste des serveurs publics.\n"
-"Si vous voulez annoncer votre adresse IPv6, utilisez serverlist_url = "
-"v6.servers.minetest.net."
+"Si vous voulez annoncer votre adresse IPv6, utilisez serverlist_url = v6."
+"servers.minetest.net."
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
@@ -1281,7 +1285,8 @@ msgstr "Demander de se reconnecter après une coupure de connexion"
 
 #: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
-msgstr "Déclarer automatiquement votre serveur à la liste des serveurs publics."
+msgstr ""
+"Déclarer automatiquement votre serveur à la liste des serveurs publics."
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -1439,8 +1444,9 @@ msgstr ""
 "reste figé(e)."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Controls size of deserts and beaches in Mapgen V6.\n"
+"Controls size of deserts and beaches in Mapgen v6.\n"
 "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
 msgstr ""
 "Taille des déserts et plages dans Mapgen V6.\n"
@@ -1597,12 +1603,12 @@ msgid "Dump the mapgen debug infos."
 msgstr "Afficher les infos de débogage de la génération de terrain."
 
 #: src/settings_translation_file.cpp
-msgid "Enable a bit lower water surface, so it doesn't "
+msgid ""
+"Enable a bit lower water surface, so it doesn't \"fill\" the node "
+"completely.\n"
+"Note that this is not quite optimized and that smooth lighting on the\n"
+"water surface doesn't work with this."
 msgstr ""
-"Rend l'eau légèrement plus basse, de façon à ce qu'elle ne submerge pas le "
-"bloc complètement.\n"
-"Note : cette fonctionnalité est assez expérimentale et l'éclairage doux ne "
-"fonctionne pas dessus. "
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
@@ -1614,7 +1620,8 @@ msgstr "Active les dégâts et la mort des joueurs."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
-msgstr "Active l'entrée aléatoire du joueur (seulement utilisé pour des tests)."
+msgstr ""
+"Active l'entrée aléatoire du joueur (seulement utilisé pour des tests)."
 
 #: src/settings_translation_file.cpp
 msgid "Enable selection highlighting for nodes (disables selectionbox)."
@@ -1757,9 +1764,10 @@ msgid "Fast movement"
 msgstr "Mouvement rapide"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Fast movement (via use key).\n"
-"This requires the "
+"This requires the \"fast\" privilege on the server."
 msgstr ""
 "Mouvement rapide (via la touche utiliser).\n"
 "Nécessite le privilège \"fast\" sur un serveur. "
@@ -1906,11 +1914,13 @@ msgid "Generate normalmaps"
 msgstr "Normal mapping"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with "
+"Flags starting with \"no\" are used to explicitly disable them.\n"
+"'trees' and 'flat' flags only have effect in mgv6."
 msgstr ""
 "Attributs généraux de la génération de terrain.\n"
 "Les drapeaux qui ne sont spécifiés dans leur champ respectif gardent leurs "
@@ -2008,21 +2018,26 @@ msgstr ""
 "pour ne pas gaspiller inutilement les ressources du processeur."
 
 #: src/settings_translation_file.cpp
-msgid "If disabled "
-msgstr "Si désactivé "
+msgid ""
+"If disabled \"use\" key is used to fly fast if both fly and fast mode are "
+"enabled."
+msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "If enabled together with fly mode, player is able to fly through solid "
 "nodes.\n"
-"This requires the "
+"This requires the \"noclip\" privilege on the server."
 msgstr ""
 "Si activé avec le mode vol, le joueur sera capable de traverser les blocs "
 "solides. "
 
 #: src/settings_translation_file.cpp
-msgid "If enabled, "
-msgstr "Si activé, "
+msgid ""
+"If enabled, \"use\" key instead of \"sneak\" key is used for climbing down "
+"and descending."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2108,6 +2123,52 @@ msgid "Item entity TTL"
 msgstr "Durée de vie des items abandonnés"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Julia set: (X,Y,Z) offsets from world centre.\n"
+"Range roughly -2 to 2, multiply by j_scale for offsets in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Julia set: Approximate (X,Y,Z) scales in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: Iterations of the recursive function.\n"
+"Controls scale of finest detail."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: W co-ordinate of the generated 3D slice of the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: W value determining the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: X value determining the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: Y value determining the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: Z value determining the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Jump key"
 msgstr "Sauter"
 
@@ -2121,10 +2182,10 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Touche pour réduire la distance de vue. Modifie la distance de vue minimale."
-"\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Touche pour réduire la distance de vue. Modifie la distance de vue "
+"minimale.\n"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2133,8 +2194,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour jeter l'objet sélectionné.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2144,8 +2205,8 @@ msgid ""
 msgstr ""
 "Touche pour augmenter la distance de vue. Modifie la distance de vue "
 "minimale.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2154,8 +2215,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour sauter.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2164,8 +2225,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour se déplacer rapidement en mode rapide.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2174,8 +2235,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour reculer.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2184,8 +2245,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour avancer.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2194,8 +2255,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour se déplacer à gauche.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2204,8 +2265,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour se déplacer à droite.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2214,8 +2275,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour ouvrir la console de jeu.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2224,8 +2285,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour ouvrir la fenêtre de chat pour entrer des commandes.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2234,8 +2295,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour ouvrir la fenêtre de chat.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2244,8 +2305,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour ouvrir l'inventaire.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2254,8 +2315,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour afficher les infos de débogage. Utilisé pour le développement.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2267,8 +2328,8 @@ msgid ""
 msgstr ""
 "Touche pour se déplacer lentement.\n"
 "Utilisé pour descendre si aux1_descends est désactivé.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2277,8 +2338,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour changer de vue entre la 1ère et 3ème personne.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2287,8 +2348,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour prendre des captures d'écran.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2297,8 +2358,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour passer en mode cinématique.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2307,8 +2368,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour afficher/cacher la mini-carte.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2317,8 +2378,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour passer en mode rapide.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2327,8 +2388,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour voler.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2337,8 +2398,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour passer en mode \"sans-collision\".\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2346,10 +2407,10 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Touche de mise à jour de la caméra. Seulement utilisé pour le développement."
-"\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Touche de mise à jour de la caméra. Seulement utilisé pour le "
+"développement.\n"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2358,8 +2419,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour afficher/cacher les infos de débogage.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2368,8 +2429,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour afficher/cacher le HUD.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2378,8 +2439,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour afficher/cacher la zone de chat.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2388,8 +2449,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour afficher/cacher la brume.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2399,8 +2460,8 @@ msgid ""
 msgstr ""
 "Touche pour afficher/cacher la zone de profilage. Utilisé pour le "
 "développement.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2409,8 +2470,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Touche pour activer/désactiver la distance de vue illimitée.\n"
-"Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
-"5e3da1b0edf72eb3"
+"Voir http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
@@ -2542,17 +2603,55 @@ msgstr ""
 "problèmes."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Mandelbrot set: (X,Y,Z) offsets from world centre.\n"
+"Range roughly -2 to 2, multiply by m_scale for offsets in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mandelbrot set: Approximate (X,Y,Z) scales in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Mandelbrot set: Iterations of the recursive function.\n"
+"Controls scale of finest detail."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Mandelbrot set: W co-ordinate of the generated 3D slice of the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Map directory"
 msgstr "Chemin du monde"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Map generation attributes specific to Mapgen V6.\n"
+"Map generation attributes specific to Mapgen fractal.\n"
+"'julia' selects a julia set to be generated instead of a mandelbrot set.\n"
+"Flags that are not specified in the flag string are not modified from the "
+"default.\n"
+"Flags starting with \"no\" are used to explicitly disable them."
+msgstr ""
+"Attributs de terrain spécifiques à Mapgen V7.\n"
+"'ridges' sont les rivières.\n"
+"Les drapeaux qui ne sont spécifiés dans le champ gardent leurs valeurs par "
+"défaut.\n"
+"Les drapeaux commençant par \"non\" sont désactivés. "
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Map generation attributes specific to Mapgen v6.\n"
 "When snowbiomes are enabled jungles are enabled and the jungles flag is "
 "ignored.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with "
+"Flags starting with \"no\" are used to explicitly disable them."
 msgstr ""
 "Attributs spécifiques à Mapgen V6.\n"
 "Quand les terrains neigeux sont activés, les jungles sont activés et les "
@@ -2562,12 +2661,13 @@ msgstr ""
 "Les drapeaux commençant par \"non\" sont désactivés. "
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Map generation attributes specific to Mapgen V7.\n"
+"Map generation attributes specific to Mapgen v7.\n"
 "'ridges' are the rivers.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with "
+"Flags starting with \"no\" are used to explicitly disable them."
 msgstr ""
 "Attributs de terrain spécifiques à Mapgen V7.\n"
 "'ridges' sont les rivières.\n"
@@ -2610,6 +2710,86 @@ msgstr "Débogage de la génération du terrain"
 #: src/settings_translation_file.cpp
 msgid "Mapgen flags"
 msgstr "Drapeaux de génération de terrain"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal"
+msgstr "Drapeaux de génération de terrain"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal cave1 noise parameters"
+msgstr "Mapgen V5 : paramètres de bruit cave1"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal cave2 noise parameters"
+msgstr "Mapgen V5 : paramètre de bruit cave2"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal filler depth noise parameters"
+msgstr "Mapgen V5 : paramètres de bruit sur la profondeur"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal flags"
+msgstr "Drapeaux de génération de terrain"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal julia iterations"
+msgstr "Nombre d'itérations sur l'occlusion parallaxe"
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia offset"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia scale"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia slice w"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia w"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia x"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia y"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia z"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal mandelbrot iterations"
+msgstr "Paquets maximum par itération"
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal mandelbrot offset"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal mandelbrot scale"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal mandelbrot slice w"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal seabed noise parameters"
+msgstr "Mapgen : paramètres de mélange de la température"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen heat blend noise parameters"
@@ -2782,6 +2962,14 @@ msgstr "FPS maximum"
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when game is paused."
 msgstr "FPS maximum quand le jeu est en pause."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum distance above water level for player spawn.\n"
+"Larger values result in spawn points closer to (x = 0, z = 0).\n"
+"Smaller values may result in a suitable spawn point not being found,\n"
+"resulting in a spawn at (0, 0, 0) possibly buried underground."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -3129,9 +3317,10 @@ msgid "Physics"
 msgstr "Physique"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Player is able to fly without being affected by gravity.\n"
-"This requires the "
+"This requires the \"fly\" privilege on the server."
 msgstr ""
 "Le joueur est capable de voler sans être affecté par la gravité.\n"
 "Nécessite le privilège \"fly\" sur un serveur. "
@@ -3164,8 +3353,8 @@ msgid ""
 "inventory."
 msgstr ""
 "Pré-générer tous les visuels d'items utilisés dans l'inventaire.\n"
-"Cela augmente le temps de démarrage, mais rend les inventaires plus fluides."
-"\n"
+"Cela augmente le temps de démarrage, mais rend les inventaires plus "
+"fluides.\n"
 "Les textures générées peuvent facilement déborder votre VRAM, causant des "
 "bugs dans votre inventaire."
 
@@ -3182,8 +3371,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Profiler data print interval. 0 = disable. Useful for developers."
 msgstr ""
-"Délais d’intervalle d'affichage du profilage des données. 0 = désactivation."
-"\n"
+"Délais d’intervalle d'affichage du profilage des données. 0 = "
+"désactivation.\n"
 "Utile pour les développeurs."
 
 #: src/settings_translation_file.cpp
@@ -3400,8 +3589,9 @@ msgid "Smooth lighting"
 msgstr "Lumière douce"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Smooths camera when moving and looking arround.\n"
+"Smooths camera when moving and looking around.\n"
 "Useful for recording videos."
 msgstr ""
 "Lisse les mouvement de la caméra en se déplaçant et en regardant autour.\n"
@@ -3432,8 +3622,8 @@ msgid ""
 msgstr ""
 "Spécifie l'URL à laquelle les clients obtiennent les fichiers média au lieu "
 "d'utiliser le port UDP.\n"
-"$filename doit être accessible depuis $remote_media$filename via cURL ("
-"évidemment, remote_media devrait\n"
+"$filename doit être accessible depuis $remote_media$filename via cURL "
+"(évidemment, remote_media devrait\n"
 "se terminer avec un slash).\n"
 "Les fichiers qui ne sont pas présents seront obtenus avec le moyen usuel."
 
@@ -3644,6 +3834,10 @@ msgid "Vertical screen synchronization."
 msgstr "Synchronisation verticale de la fenêtre de jeu."
 
 #: src/settings_translation_file.cpp
+msgid "Vertical spawn range"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Video driver"
 msgstr "Pilote vidéo"
 
@@ -3847,91 +4041,100 @@ msgstr "Limite parallèle de cURL"
 msgid "cURL timeout"
 msgstr "Délais d'interruption de cURL"
 
-#~ msgid "Rendering:"
-#~ msgstr "Affichage :"
+#~ msgid "Are you sure to reset your singleplayer world?"
+#~ msgstr "Êtes-vous sûr de vouloir réinitialiser votre monde ?"
 
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "Redémarrez Minetest pour que le changement du pilote prenne effet"
+#~ msgid "Fancy Leaves"
+#~ msgstr "Arbres détaillés"
 
-#~ msgid "Game Name"
-#~ msgstr "Nom du jeu"
+#~ msgid "Mipmap"
+#~ msgstr "MIP mapping"
 
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "Gamemgr : Impossible de copier le mod \"$1\" dans le jeu \"$2\""
+#~ msgid "Mipmap + Aniso. Filter"
+#~ msgstr "MIP map + anisotropie"
 
-#~ msgid "GAMES"
-#~ msgstr "JEUX"
+#~ msgid "No Mipmap"
+#~ msgstr "Sans MIP map"
 
-#~ msgid "Mods:"
-#~ msgstr "Mods :"
+#~ msgid "No!!!"
+#~ msgstr "Non !"
 
-#~ msgid "new game"
-#~ msgstr "nouveau jeu"
+#~ msgid "Opaque Leaves"
+#~ msgstr "Arbres minimaux"
 
-#~ msgid "EDIT GAME"
-#~ msgstr "MODIFIER LE JEU"
+#~ msgid "Opaque Water"
+#~ msgstr "Eau opaque"
 
-#~ msgid "Remove selected mod"
-#~ msgstr "Supprimer le mod sélectionné"
+#~ msgid "Reset singleplayer world"
+#~ msgstr "Réinitialiser le monde"
 
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Ajouter un mod"
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Taille appliquée aux menus : "
 
-#~ msgid "CLIENT"
-#~ msgstr "CLIENT"
+#~ msgid "Simple Leaves"
+#~ msgstr "Arbres simples"
 
-#~ msgid "Favorites:"
-#~ msgstr "Favoris :"
+#~ msgid "Texturing:"
+#~ msgstr "Textures :"
 
-#~ msgid "START SERVER"
-#~ msgstr "DÉMARRER LE SERVEUR"
+#~ msgid "To enable shaders the OpenGL driver needs to be used."
+#~ msgstr "Pour activer les shaders, le pilote OpenGL doit être utilisé."
 
-#~ msgid "Name"
-#~ msgstr "Nom"
+#~ msgid "Downloading"
+#~ msgstr "Téléchargement"
 
-#~ msgid "Password"
-#~ msgstr "Mot de passe"
+#~ msgid " KB/s"
+#~ msgstr " Ko/s"
 
-#~ msgid "SETTINGS"
-#~ msgstr "PARAMÈTRES"
+#~ msgid " MB/s"
+#~ msgstr " Mo/s"
 
-#~ msgid "Preload item visuals"
-#~ msgstr "Précharger les objets"
-
-#~ msgid "Finite Liquid"
-#~ msgstr "Liquides limités"
-
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "PARTIE SOLO"
-
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "PACKS DE TEXTURES"
-
-#~ msgid "MODS"
-#~ msgstr "MODS"
-
-#~ msgid "Add mod:"
-#~ msgstr "Ajouter un mod :"
-
-#~ msgid "Local install"
-#~ msgstr "Installation locale"
-
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
+#~ msgid "Left click: Move all items, Right click: Move single item"
 #~ msgstr ""
-#~ "Attention : certains mods ne sont pas encore configurés.\n"
-#~ "Ils seront activés par défaut quand vous enregistrerez la configuration. "
+#~ "Clic gauche : déplacer tous les objets -- Clic droit : déplacer un objet"
 
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
+#~ msgid "is required by:"
+#~ msgstr "est requis par :"
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "Configuration enregistrée. "
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Attention : configuration incorrecte. "
+
+#~ msgid "Cannot create world: Name contains invalid characters"
 #~ msgstr ""
-#~ "Attention : certains mods configurés sont introuvables.\n"
-#~ "Leurs réglages seront effacés quand vous enregistrerez la configuration. "
+#~ "Impossible de créer le monde : le nom contient des caractères invalides"
 
-#~ msgid "Delete map"
-#~ msgstr "Supprimer la carte"
+#~ msgid "Show Public"
+#~ msgstr "Voir les serveurs publics"
+
+#~ msgid "Show Favorites"
+#~ msgstr "Voir les serveurs favoris"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Laisser l'adresse vide pour lancer un serveur local."
+
+#~ msgid "Create world"
+#~ msgstr "Créer un monde"
+
+#~ msgid "Address required."
+#~ msgstr "Adresse requise."
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Impossible de supprimer le monde : rien n'est sélectionné"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "Fichiers à supprimer"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Impossible de créer le monde : aucun jeu n'est présent"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Impossible de configurer ce monde : aucune sélection active"
+
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Tous les fichiers du monde n'ont pu être supprimés"
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -3958,97 +4161,104 @@ msgstr "Délais d'interruption de cURL"
 #~ "- Échap : ce menu\n"
 #~ "- T : discuter\n"
 
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Tous les fichiers du monde n'ont pu être supprimés"
+#~ msgid "Delete map"
+#~ msgstr "Supprimer la carte"
 
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Impossible de configurer ce monde : aucune sélection active"
-
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Impossible de créer le monde : aucun jeu n'est présent"
-
-#~ msgid "Files to be deleted"
-#~ msgstr "Fichiers à supprimer"
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Impossible de supprimer le monde : rien n'est sélectionné"
-
-#~ msgid "Address required."
-#~ msgstr "Adresse requise."
-
-#~ msgid "Create world"
-#~ msgstr "Créer un monde"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Laisser l'adresse vide pour lancer un serveur local."
-
-#~ msgid "Show Favorites"
-#~ msgstr "Voir les serveurs favoris"
-
-#~ msgid "Show Public"
-#~ msgstr "Voir les serveurs publics"
-
-#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
 #~ msgstr ""
-#~ "Impossible de créer le monde : le nom contient des caractères invalides"
+#~ "Attention : certains mods configurés sont introuvables.\n"
+#~ "Leurs réglages seront effacés quand vous enregistrerez la configuration. "
 
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Attention : configuration incorrecte. "
-
-#~ msgid "Configuration saved.  "
-#~ msgstr "Configuration enregistrée. "
-
-#~ msgid "is required by:"
-#~ msgstr "est requis par :"
-
-#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
 #~ msgstr ""
-#~ "Clic gauche : déplacer tous les objets -- Clic droit : déplacer un objet"
+#~ "Attention : certains mods ne sont pas encore configurés.\n"
+#~ "Ils seront activés par défaut quand vous enregistrerez la configuration. "
 
-#~ msgid " MB/s"
-#~ msgstr " Mo/s"
+#~ msgid "Local install"
+#~ msgstr "Installation locale"
 
-#~ msgid " KB/s"
-#~ msgstr " Ko/s"
+#~ msgid "Add mod:"
+#~ msgstr "Ajouter un mod :"
 
-#~ msgid "Downloading"
-#~ msgstr "Téléchargement"
+#~ msgid "MODS"
+#~ msgstr "MODS"
 
-#~ msgid "To enable shaders the OpenGL driver needs to be used."
-#~ msgstr "Pour activer les shaders, le pilote OpenGL doit être utilisé."
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "PACKS DE TEXTURES"
 
-#~ msgid "Texturing:"
-#~ msgstr "Textures :"
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "PARTIE SOLO"
 
-#~ msgid "Simple Leaves"
-#~ msgstr "Arbres simples"
+#~ msgid "Finite Liquid"
+#~ msgstr "Liquides limités"
 
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Taille appliquée aux menus : "
+#~ msgid "Preload item visuals"
+#~ msgstr "Précharger les objets"
 
-#~ msgid "Reset singleplayer world"
-#~ msgstr "Réinitialiser le monde"
+#~ msgid "SETTINGS"
+#~ msgstr "PARAMÈTRES"
 
-#~ msgid "Opaque Water"
-#~ msgstr "Eau opaque"
+#~ msgid "Password"
+#~ msgstr "Mot de passe"
 
-#~ msgid "Opaque Leaves"
-#~ msgstr "Arbres minimaux"
+#~ msgid "Name"
+#~ msgstr "Nom"
 
-#~ msgid "No!!!"
-#~ msgstr "Non !"
+#~ msgid "START SERVER"
+#~ msgstr "DÉMARRER LE SERVEUR"
 
-#~ msgid "No Mipmap"
-#~ msgstr "Sans MIP map"
+#~ msgid "Favorites:"
+#~ msgstr "Favoris :"
 
-#~ msgid "Mipmap + Aniso. Filter"
-#~ msgstr "MIP map + anisotropie"
+#~ msgid "CLIENT"
+#~ msgstr "CLIENT"
 
-#~ msgid "Mipmap"
-#~ msgstr "MIP mapping"
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Ajouter un mod"
 
-#~ msgid "Fancy Leaves"
-#~ msgstr "Arbres détaillés"
+#~ msgid "Remove selected mod"
+#~ msgstr "Supprimer le mod sélectionné"
 
-#~ msgid "Are you sure to reset your singleplayer world?"
-#~ msgstr "Êtes-vous sûr de vouloir réinitialiser votre monde ?"
+#~ msgid "EDIT GAME"
+#~ msgstr "MODIFIER LE JEU"
+
+#~ msgid "new game"
+#~ msgstr "nouveau jeu"
+
+#~ msgid "Mods:"
+#~ msgstr "Mods :"
+
+#~ msgid "GAMES"
+#~ msgstr "JEUX"
+
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "Gamemgr : Impossible de copier le mod \"$1\" dans le jeu \"$2\""
+
+#~ msgid "Game Name"
+#~ msgstr "Nom du jeu"
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "Redémarrez Minetest pour que le changement du pilote prenne effet"
+
+#~ msgid "Rendering:"
+#~ msgstr "Affichage :"
+
+#~ msgid "If enabled, "
+#~ msgstr "Si activé, "
+
+#~ msgid "If disabled "
+#~ msgstr "Si désactivé "
+
+#~ msgid "Enable a bit lower water surface, so it doesn't "
+#~ msgstr ""
+#~ "Rend l'eau légèrement plus basse, de façon à ce qu'elle ne submerge pas "
+#~ "le bloc complètement.\n"
+#~ "Note : cette fonctionnalité est assez expérimentale et l'éclairage doux "
+#~ "ne fonctionne pas dessus. "
+
+#~ msgid "\""
+#~ msgstr "\""

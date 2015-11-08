@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-24 20:28+0200\n"
+"POT-Creation-Date: 2015-11-08 21:23+0100\n"
 "PO-Revision-Date: 2015-11-07 08:04+0000\n"
 "Last-Translator: Jun Zhang <zhangjunphy@gmail.com>\n"
-"Language-Team: Chinese (China) "
-"<https://hosted.weblate.org/projects/minetest/minetest/zh_CN/>\n"
+"Language-Team: Chinese (China) <https://hosted.weblate.org/projects/minetest/"
+"minetest/zh_CN/>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -421,7 +421,7 @@ msgid "Start Game"
 msgstr "启动游戏"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "\""
+msgid "\"$1\" is not a valid flag."
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
@@ -449,6 +449,10 @@ msgstr "设置"
 #, fuzzy
 msgid "Enabled"
 msgstr "启用"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Format is 3 numbers separated by commas and inside brackets."
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid ""
@@ -1435,7 +1439,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Controls size of deserts and beaches in Mapgen V6.\n"
+"Controls size of deserts and beaches in Mapgen v6.\n"
 "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
 msgstr ""
 
@@ -1586,7 +1590,11 @@ msgid "Dump the mapgen debug infos."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enable a bit lower water surface, so it doesn't "
+msgid ""
+"Enable a bit lower water surface, so it doesn't \"fill\" the node "
+"completely.\n"
+"Note that this is not quite optimized and that smooth lighting on the\n"
+"water surface doesn't work with this."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1719,7 +1727,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Fast movement (via use key).\n"
-"This requires the "
+"This requires the \"fast\" privilege on the server."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1858,7 +1866,8 @@ msgid ""
 "Global map generation attributes.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with "
+"Flags starting with \"no\" are used to explicitly disable them.\n"
+"'trees' and 'flat' flags only have effect in mgv6."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1938,21 +1947,23 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "If disabled "
-msgstr "禁用MOD包"
+msgid ""
+"If disabled \"use\" key is used to fly fast if both fly and fast mode are "
+"enabled."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled together with fly mode, player is able to fly through solid "
 "nodes.\n"
-"This requires the "
+"This requires the \"noclip\" privilege on the server."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "If enabled, "
-msgstr "启用"
+msgid ""
+"If enabled, \"use\" key instead of \"sneak\" key is used for climbing down "
+"and descending."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2025,6 +2036,52 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Item entity TTL"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: (X,Y,Z) offsets from world centre.\n"
+"Range roughly -2 to 2, multiply by j_scale for offsets in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Julia set: Approximate (X,Y,Z) scales in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: Iterations of the recursive function.\n"
+"Controls scale of finest detail."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: W co-ordinate of the generated 3D slice of the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: W value determining the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: X value determining the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: Y value determining the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: Z value determining the 4D shape.\n"
+"Range roughly -2 to 2."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2353,26 +2410,57 @@ msgid "Makes DirectX work with LuaJIT. Disable if it causes troubles."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Mandelbrot set: (X,Y,Z) offsets from world centre.\n"
+"Range roughly -2 to 2, multiply by m_scale for offsets in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mandelbrot set: Approximate (X,Y,Z) scales in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Mandelbrot set: Iterations of the recursive function.\n"
+"Controls scale of finest detail."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Mandelbrot set: W co-ordinate of the generated 3D slice of the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Map directory"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Map generation attributes specific to Mapgen V6.\n"
-"When snowbiomes are enabled jungles are enabled and the jungles flag is "
-"ignored.\n"
+"Map generation attributes specific to Mapgen fractal.\n"
+"'julia' selects a julia set to be generated instead of a mandelbrot set.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with "
+"Flags starting with \"no\" are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Map generation attributes specific to Mapgen V7.\n"
+"Map generation attributes specific to Mapgen v6.\n"
+"When snowbiomes are enabled jungles are enabled and the jungles flag is "
+"ignored.\n"
+"Flags that are not specified in the flag string are not modified from the "
+"default.\n"
+"Flags starting with \"no\" are used to explicitly disable them."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Map generation attributes specific to Mapgen v7.\n"
 "'ridges' are the rivers.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with "
+"Flags starting with \"no\" are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2412,6 +2500,81 @@ msgstr "地图生成器"
 #, fuzzy
 msgid "Mapgen flags"
 msgstr "地图生成器"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal"
+msgstr "地图生成器"
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal cave1 noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal cave2 noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal filler depth noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal flags"
+msgstr "地图生成器"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal julia iterations"
+msgstr "视差贴图"
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia offset"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia scale"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia slice w"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia w"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia x"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia y"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia z"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal mandelbrot iterations"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal mandelbrot offset"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal mandelbrot scale"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal mandelbrot slice w"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal seabed noise parameters"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen heat blend noise parameters"
@@ -2587,6 +2750,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when game is paused."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum distance above water level for player spawn.\n"
+"Larger values result in spawn points closer to (x = 0, z = 0).\n"
+"Smaller values may result in a suitable spawn point not being found,\n"
+"resulting in a spawn at (0, 0, 0) possibly buried underground."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2898,7 +3069,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Player is able to fly without being affected by gravity.\n"
-"This requires the "
+"This requires the \"fly\" privilege on the server."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3148,7 +3319,7 @@ msgstr "平滑光照"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Smooths camera when moving and looking arround.\n"
+"Smooths camera when moving and looking around.\n"
 "Useful for recording videos."
 msgstr ""
 
@@ -3358,6 +3529,10 @@ msgid "Vertical screen synchronization."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Vertical spawn range"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Video driver"
 msgstr ""
 
@@ -3530,85 +3705,97 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "重启minetest让驱动变化生效"
+#~ msgid "Are you sure to reset your singleplayer world?"
+#~ msgstr "你确定要重置您的单人世界吗？"
 
-#~ msgid "Game Name"
-#~ msgstr "游戏名"
+#, fuzzy
+#~ msgid "Fancy Leaves"
+#~ msgstr "花式树"
 
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "游戏管理: 无法复制MOD“$1”到游戏“$2”"
+#~ msgid "No!!!"
+#~ msgstr "不!!!"
 
-#~ msgid "GAMES"
-#~ msgstr "游戏"
+#, fuzzy
+#~ msgid "Opaque Leaves"
+#~ msgstr "不透明的水"
 
-#~ msgid "Mods:"
-#~ msgstr "MODS："
+#~ msgid "Opaque Water"
+#~ msgstr "不透明的水"
 
-#~ msgid "new game"
-#~ msgstr "新建游戏"
+#, fuzzy
+#~ msgid "Reset singleplayer world"
+#~ msgstr "重置单人游戏"
 
-#~ msgid "EDIT GAME"
-#~ msgstr "编辑游戏"
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "菜单元素应用缩放因子"
 
-#~ msgid "Remove selected mod"
-#~ msgstr "删除选中MOD"
+#, fuzzy
+#~ msgid "Simple Leaves"
+#~ msgstr "摇动的叶子"
 
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- 添加MOD"
+#~ msgid "To enable shaders the OpenGL driver needs to be used."
+#~ msgstr "启用着色器需要使用OpenGL驱动。"
 
-#~ msgid "CLIENT"
-#~ msgstr "客户端"
+#~ msgid "Touch free target"
+#~ msgstr "自由触摸目标"
 
-#~ msgid "Favorites:"
-#~ msgstr "最爱的服务器："
+#~ msgid "Touchthreshold (px)"
+#~ msgstr "触控阈值（像素）"
 
-#~ msgid "START SERVER"
-#~ msgstr "启动服务器"
+#, fuzzy
+#~ msgid "Downloading"
+#~ msgstr "下载中"
 
-#~ msgid "Name"
-#~ msgstr "名字"
+#~ msgid " KB/s"
+#~ msgstr "千字节/秒"
 
-#~ msgid "Password"
-#~ msgstr "密码"
+#~ msgid " MB/s"
+#~ msgstr "兆字节/秒"
 
-#~ msgid "SETTINGS"
-#~ msgstr "设置"
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr "左键：移动所有物品，右键：移动单个物品"
 
-#~ msgid "Preload item visuals"
-#~ msgstr "预先加载物品图像"
+#~ msgid "is required by:"
+#~ msgstr "被需要："
 
-#~ msgid "Finite Liquid"
-#~ msgstr "液体有限延伸"
+#~ msgid "Configuration saved.  "
+#~ msgstr "配置已保存。  "
 
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "单人游戏"
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "警告：配置不一致。  "
 
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "材质包"
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "无法创建世界：名字包含非法字符"
 
-#~ msgid "MODS"
-#~ msgstr "MODS"
+#~ msgid "Show Public"
+#~ msgstr "显示公共"
 
-#~ msgid "Add mod:"
-#~ msgstr "添加MOD："
+#~ msgid "Show Favorites"
+#~ msgstr "显示最爱"
 
-#~ msgid "Local install"
-#~ msgstr "本地安装"
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "地址栏留空可启动本地服务器。"
 
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
-#~ msgstr ""
-#~ "警告：一些MOD仍未设定。\n"
-#~ "它们会在你保存配置的时候自动启用。  "
+#~ msgid "Create world"
+#~ msgstr "创造世界"
 
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
-#~ msgstr ""
-#~ "警告：缺少一些设定了的MOD。\n"
-#~ "它们的设置会在你保存配置的时候被移除。  "
+#~ msgid "Address required."
+#~ msgstr "需要地址。"
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "无法删除世界：没有选择世界"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "将被删除的文件"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "无法创造世界：未找到游戏模式"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "无法配置世界：没有选择世界"
+
+#~ msgid "Failed to delete all world files"
+#~ msgstr "无法删除所有该世界的文件"
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -3636,94 +3823,90 @@ msgstr ""
 #~ "ESC：菜单\n"
 #~ "T：聊天\n"
 
-#~ msgid "Failed to delete all world files"
-#~ msgstr "无法删除所有该世界的文件"
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
+#~ msgstr ""
+#~ "警告：缺少一些设定了的MOD。\n"
+#~ "它们的设置会在你保存配置的时候被移除。  "
 
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "无法配置世界：没有选择世界"
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "警告：一些MOD仍未设定。\n"
+#~ "它们会在你保存配置的时候自动启用。  "
 
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "无法创造世界：未找到游戏模式"
+#~ msgid "Local install"
+#~ msgstr "本地安装"
 
-#~ msgid "Files to be deleted"
-#~ msgstr "将被删除的文件"
+#~ msgid "Add mod:"
+#~ msgstr "添加MOD："
 
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "无法删除世界：没有选择世界"
+#~ msgid "MODS"
+#~ msgstr "MODS"
 
-#~ msgid "Address required."
-#~ msgstr "需要地址。"
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "材质包"
 
-#~ msgid "Create world"
-#~ msgstr "创造世界"
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "单人游戏"
 
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "地址栏留空可启动本地服务器。"
+#~ msgid "Finite Liquid"
+#~ msgstr "液体有限延伸"
 
-#~ msgid "Show Favorites"
-#~ msgstr "显示最爱"
+#~ msgid "Preload item visuals"
+#~ msgstr "预先加载物品图像"
 
-#~ msgid "Show Public"
-#~ msgstr "显示公共"
+#~ msgid "SETTINGS"
+#~ msgstr "设置"
 
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "无法创建世界：名字包含非法字符"
+#~ msgid "Password"
+#~ msgstr "密码"
 
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "警告：配置不一致。  "
+#~ msgid "Name"
+#~ msgstr "名字"
 
-#~ msgid "Configuration saved.  "
-#~ msgstr "配置已保存。  "
+#~ msgid "START SERVER"
+#~ msgstr "启动服务器"
 
-#~ msgid "is required by:"
-#~ msgstr "被需要："
+#~ msgid "Favorites:"
+#~ msgstr "最爱的服务器："
 
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr "左键：移动所有物品，右键：移动单个物品"
+#~ msgid "CLIENT"
+#~ msgstr "客户端"
 
-#~ msgid " MB/s"
-#~ msgstr "兆字节/秒"
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- 添加MOD"
 
-#~ msgid " KB/s"
-#~ msgstr "千字节/秒"
+#~ msgid "Remove selected mod"
+#~ msgstr "删除选中MOD"
 
-#, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "下载中"
+#~ msgid "EDIT GAME"
+#~ msgstr "编辑游戏"
 
-#~ msgid "Touchthreshold (px)"
-#~ msgstr "触控阈值（像素）"
+#~ msgid "new game"
+#~ msgstr "新建游戏"
 
-#~ msgid "Touch free target"
-#~ msgstr "自由触摸目标"
+#~ msgid "Mods:"
+#~ msgstr "MODS："
 
-#~ msgid "To enable shaders the OpenGL driver needs to be used."
-#~ msgstr "启用着色器需要使用OpenGL驱动。"
+#~ msgid "GAMES"
+#~ msgstr "游戏"
 
-#, fuzzy
-#~ msgid "Simple Leaves"
-#~ msgstr "摇动的叶子"
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "游戏管理: 无法复制MOD“$1”到游戏“$2”"
 
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "菜单元素应用缩放因子"
+#~ msgid "Game Name"
+#~ msgstr "游戏名"
 
-#, fuzzy
-#~ msgid "Reset singleplayer world"
-#~ msgstr "重置单人游戏"
-
-#~ msgid "Opaque Water"
-#~ msgstr "不透明的水"
-
-#, fuzzy
-#~ msgid "Opaque Leaves"
-#~ msgstr "不透明的水"
-
-#~ msgid "No!!!"
-#~ msgstr "不!!!"
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "重启minetest让驱动变化生效"
 
 #, fuzzy
-#~ msgid "Fancy Leaves"
-#~ msgstr "花式树"
+#~ msgid "If enabled, "
+#~ msgstr "启用"
 
-#~ msgid "Are you sure to reset your singleplayer world?"
-#~ msgstr "你确定要重置您的单人世界吗？"
+#, fuzzy
+#~ msgid "If disabled "
+#~ msgstr "禁用MOD包"

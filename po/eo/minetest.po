@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-24 20:28+0200\n"
+"POT-Creation-Date: 2015-11-08 21:23+0100\n"
 "PO-Revision-Date: 2015-09-13 12:36+0200\n"
 "Last-Translator: Tim <t4im@openmailbox.org>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
@@ -416,7 +416,7 @@ msgid "Start Game"
 msgstr "Startigi ludon"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "\""
+msgid "\"$1\" is not a valid flag."
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
@@ -444,6 +444,10 @@ msgstr ""
 #, fuzzy
 msgid "Enabled"
 msgstr "ŝaltita"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Format is 3 numbers separated by commas and inside brackets."
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid ""
@@ -1429,7 +1433,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Controls size of deserts and beaches in Mapgen V6.\n"
+"Controls size of deserts and beaches in Mapgen v6.\n"
 "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
 msgstr ""
 
@@ -1579,7 +1583,11 @@ msgid "Dump the mapgen debug infos."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enable a bit lower water surface, so it doesn't "
+msgid ""
+"Enable a bit lower water surface, so it doesn't \"fill\" the node "
+"completely.\n"
+"Note that this is not quite optimized and that smooth lighting on the\n"
+"water surface doesn't work with this."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1712,7 +1720,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Fast movement (via use key).\n"
-"This requires the "
+"This requires the \"fast\" privilege on the server."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1850,7 +1858,8 @@ msgid ""
 "Global map generation attributes.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with "
+"Flags starting with \"no\" are used to explicitly disable them.\n"
+"'trees' and 'flat' flags only have effect in mgv6."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1930,21 +1939,23 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "If disabled "
-msgstr "Malŝaltu modifaron"
+msgid ""
+"If disabled \"use\" key is used to fly fast if both fly and fast mode are "
+"enabled."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled together with fly mode, player is able to fly through solid "
 "nodes.\n"
-"This requires the "
+"This requires the \"noclip\" privilege on the server."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "If enabled, "
-msgstr "ŝaltita"
+msgid ""
+"If enabled, \"use\" key instead of \"sneak\" key is used for climbing down "
+"and descending."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2017,6 +2028,52 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Item entity TTL"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: (X,Y,Z) offsets from world centre.\n"
+"Range roughly -2 to 2, multiply by j_scale for offsets in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Julia set: Approximate (X,Y,Z) scales in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: Iterations of the recursive function.\n"
+"Controls scale of finest detail."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: W co-ordinate of the generated 3D slice of the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: W value determining the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: X value determining the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: Y value determining the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Julia set: Z value determining the 4D shape.\n"
+"Range roughly -2 to 2."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2345,26 +2402,57 @@ msgid "Makes DirectX work with LuaJIT. Disable if it causes troubles."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Mandelbrot set: (X,Y,Z) offsets from world centre.\n"
+"Range roughly -2 to 2, multiply by m_scale for offsets in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mandelbrot set: Approximate (X,Y,Z) scales in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Mandelbrot set: Iterations of the recursive function.\n"
+"Controls scale of finest detail."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Mandelbrot set: W co-ordinate of the generated 3D slice of the 4D shape.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Map directory"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Map generation attributes specific to Mapgen V6.\n"
-"When snowbiomes are enabled jungles are enabled and the jungles flag is "
-"ignored.\n"
+"Map generation attributes specific to Mapgen fractal.\n"
+"'julia' selects a julia set to be generated instead of a mandelbrot set.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with "
+"Flags starting with \"no\" are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Map generation attributes specific to Mapgen V7.\n"
+"Map generation attributes specific to Mapgen v6.\n"
+"When snowbiomes are enabled jungles are enabled and the jungles flag is "
+"ignored.\n"
+"Flags that are not specified in the flag string are not modified from the "
+"default.\n"
+"Flags starting with \"no\" are used to explicitly disable them."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Map generation attributes specific to Mapgen v7.\n"
 "'ridges' are the rivers.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with "
+"Flags starting with \"no\" are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2404,6 +2492,81 @@ msgstr "Mondogenerilo"
 #, fuzzy
 msgid "Mapgen flags"
 msgstr "Mondogenerilo"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal"
+msgstr "Mondogenerilo"
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal cave1 noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal cave2 noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal filler depth noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal flags"
+msgstr "Mondogenerilo"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal julia iterations"
+msgstr "Paralaksa Okludo"
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia offset"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia scale"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia slice w"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia w"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia x"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia y"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal julia z"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal mandelbrot iterations"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal mandelbrot offset"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal mandelbrot scale"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal mandelbrot slice w"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal seabed noise parameters"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen heat blend noise parameters"
@@ -2579,6 +2742,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when game is paused."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum distance above water level for player spawn.\n"
+"Larger values result in spawn points closer to (x = 0, z = 0).\n"
+"Smaller values may result in a suitable spawn point not being found,\n"
+"resulting in a spawn at (0, 0, 0) possibly buried underground."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2891,7 +3062,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Player is able to fly without being affected by gravity.\n"
-"This requires the "
+"This requires the \"fly\" privilege on the server."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3141,7 +3312,7 @@ msgstr "Glatiga lumo"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Smooths camera when moving and looking arround.\n"
+"Smooths camera when moving and looking around.\n"
 "Useful for recording videos."
 msgstr ""
 
@@ -3351,6 +3522,10 @@ msgid "Vertical screen synchronization."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Vertical spawn range"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Video driver"
 msgstr ""
 
@@ -3523,65 +3698,73 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Rendering:"
-#~ msgstr "Bildigo:"
-
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "Restartigu Minetest-on por efikigi pelilan ŝanĝon"
-
-#~ msgid "Touchthreshold (px)"
-#~ msgstr "Tuŝa sojlo (px)"
-
-#~ msgid "Touch free target"
-#~ msgstr "Sentuŝa celo"
-
-#~ msgid "To enable shaders the OpenGL driver needs to be used."
-#~ msgstr "Por uzi ombrigilojn, OpenGL-a pelilo estas necesa."
-
-#~ msgid "Texturing:"
-#~ msgstr "Teksturado:"
-
-#~ msgid "Simple Leaves"
-#~ msgstr "Simplaj foliaĵoj"
-
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Skala faktoro por menuoj "
-
-#~ msgid "Reset singleplayer world"
-#~ msgstr "Nuligi solludantan mondon"
-
-#~ msgid "Opaque Water"
-#~ msgstr "Opaka akvo"
-
-#~ msgid "Opaque Leaves"
-#~ msgstr "Opakaj foliaĵoj"
-
-#~ msgid "No!!!"
-#~ msgstr "Ne!!!"
-
-#~ msgid "No Mipmap"
-#~ msgstr "Neniu Mipmapo"
-
-#~ msgid "Mipmap + Aniso. Filter"
-#~ msgstr "Mipmapo + Malizotropa filtrilo"
-
-#~ msgid "Mipmap"
-#~ msgstr "Mipmapo"
-
-#~ msgid "Fancy Leaves"
-#~ msgstr "Ŝikaj foliaĵoj"
-
-#~ msgid "Are you sure to reset your singleplayer world?"
-#~ msgstr "Ĉu vi certas, ke vi volas nuligi vian solludantan mondon?"
-
-#~ msgid "Antialiasing:"
-#~ msgstr "Glatigo:"
-
-#~ msgid "8x"
-#~ msgstr "8x"
+#~ msgid "2x"
+#~ msgstr "2x"
 
 #~ msgid "4x"
 #~ msgstr "4x"
 
-#~ msgid "2x"
-#~ msgstr "2x"
+#~ msgid "8x"
+#~ msgstr "8x"
+
+#~ msgid "Antialiasing:"
+#~ msgstr "Glatigo:"
+
+#~ msgid "Are you sure to reset your singleplayer world?"
+#~ msgstr "Ĉu vi certas, ke vi volas nuligi vian solludantan mondon?"
+
+#~ msgid "Fancy Leaves"
+#~ msgstr "Ŝikaj foliaĵoj"
+
+#~ msgid "Mipmap"
+#~ msgstr "Mipmapo"
+
+#~ msgid "Mipmap + Aniso. Filter"
+#~ msgstr "Mipmapo + Malizotropa filtrilo"
+
+#~ msgid "No Mipmap"
+#~ msgstr "Neniu Mipmapo"
+
+#~ msgid "No!!!"
+#~ msgstr "Ne!!!"
+
+#~ msgid "Opaque Leaves"
+#~ msgstr "Opakaj foliaĵoj"
+
+#~ msgid "Opaque Water"
+#~ msgstr "Opaka akvo"
+
+#~ msgid "Reset singleplayer world"
+#~ msgstr "Nuligi solludantan mondon"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Skala faktoro por menuoj "
+
+#~ msgid "Simple Leaves"
+#~ msgstr "Simplaj foliaĵoj"
+
+#~ msgid "Texturing:"
+#~ msgstr "Teksturado:"
+
+#~ msgid "To enable shaders the OpenGL driver needs to be used."
+#~ msgstr "Por uzi ombrigilojn, OpenGL-a pelilo estas necesa."
+
+#~ msgid "Touch free target"
+#~ msgstr "Sentuŝa celo"
+
+#~ msgid "Touchthreshold (px)"
+#~ msgstr "Tuŝa sojlo (px)"
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "Restartigu Minetest-on por efikigi pelilan ŝanĝon"
+
+#~ msgid "Rendering:"
+#~ msgstr "Bildigo:"
+
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "ŝaltita"
+
+#, fuzzy
+#~ msgid "If disabled "
+#~ msgstr "Malŝaltu modifaron"
