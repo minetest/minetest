@@ -229,7 +229,7 @@ std::string deSerializeLongString(std::istream &is)
 
 	Buffer<char> buf2(s_size);
 	is.read(&buf2[0], s_size);
-	if (is.gcount() != s_size)
+	if ((u32)is.gcount() != s_size)
 		throw SerializationError("deSerializeLongString: couldn't read all chars");
 
 	s.reserve(s_size);

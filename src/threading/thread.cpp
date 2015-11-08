@@ -264,7 +264,8 @@ DWORD WINAPI Thread::threadProc(LPVOID param)
 	thr->m_running = false;
 	g_logger.deregisterThread();
 
-	return NULL;
+	// 0 is returned here to avoid an unnecessary ifdef clause
+	return 0;
 }
 
 

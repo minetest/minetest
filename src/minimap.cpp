@@ -216,6 +216,8 @@ Mapper::Mapper(IrrlichtDevice *device, Client *client)
 	this->m_shdrsrc = client->getShaderSource();
 	this->m_ndef    = client->getNodeDefManager();
 
+	m_angle = 0.f;
+
 	// Initialize static settings
 	m_enable_shaders = g_settings->getBool("enable_shaders");
 	m_surface_mode_scan_height =
