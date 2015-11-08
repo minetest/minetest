@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-24 20:28+0200\n"
-"PO-Revision-Date: 2015-11-08 09:57+0000\n"
-"Last-Translator: Pavel Sokolov <pavel.sokolov28@gmail.com>\n"
+"PO-Revision-Date: 2015-11-08 10:10+0000\n"
+"Last-Translator: Vasily Pavlov <halmet94@gmail.com>\n"
 "Language-Team: Russian "
 "<https://hosted.weblate.org/projects/minetest/minetest/ru/>\n"
 "Language: ru\n"
@@ -426,7 +426,7 @@ msgstr "(Отсутствует описание настройки)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Browse"
-msgstr ""
+msgstr "Выбрать..."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
@@ -462,7 +462,7 @@ msgstr "Опционально лакунарностью могут быть д
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a comma seperated list of flags."
-msgstr ""
+msgstr "Пожалуйста, вводите запятые для разделения списка флагов."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid integer."
@@ -1158,6 +1158,8 @@ msgid ""
 "0 = parallax occlusion with slope information (faster).\n"
 "1 = relief mapping (slower, more accurate)."
 msgstr ""
+"0 = Параллакс с информацией о наклоне (Быстрее)\n"
+"1 = Рельефный маппинг (Медленнее, качественнее)"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -1177,12 +1179,21 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side."
 msgstr ""
+"Поддержка 3D\n"
+"Нет: нет выходного сигнала.\n"
+"Анаглиф: голубой\\пурпурный цвет в 3D\n"
+"Чересстрочно: четное / нечетное линия поддержки процесса поляризации экрана\n"
+"Верх\\низ: Разделение экрана низ/верх\n"
+"Двестороны: Разделение экрана пополам (право/лево)"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
+"Выбранный сид для новой карты, оставьте значение пустым для случайной "
+"генерации.\n"
+"Будет отменено при создании нового мира, в главном меню."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
@@ -1194,19 +1205,19 @@ msgstr "Сообщение, которое будет показано всем 
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
-msgstr ""
+msgstr "Абсолютный лимит появляющихся запросов."
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
-msgstr ""
+msgstr "Ускорение в воздухе"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
-msgstr ""
+msgstr "Дальность взаимодействия с блоками"
 
 #: src/settings_translation_file.cpp
 msgid "Active object send range"
-msgstr ""
+msgstr "Дальность отправляемого активного объекта"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1214,18 +1225,26 @@ msgid ""
 "Leave this blank to start a local server.\n"
 "Note that the address field in the main menu overrides this setting."
 msgstr ""
+"Адрес, к которому присоединиться.\n"
+"Оставьте это поле, чтобы запустить локальный сервер.\n"
+"ПРИМЕЧАНИЕ: это поле адреса перезапишет эту настройку в главном меню."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr ""
+"Настройте конфигурацию точек на дюйм для вашего экрана (Не 11/Только для "
+"Android) Напр. для мониторов с разрешением в 4k"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Adjust the gamma encoding for the light tables. Lower numbers are brighter.\n"
 "This setting is for the client only and is ignored by the server."
 msgstr ""
+"Отрегулируйте гамма кодировку для таблиц освещения. Более низкие значения "
+"ярче.\n"
+"Этот параметр предназначен только для клиента и игнорируется сервером."
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -1237,12 +1256,11 @@ msgstr "Всегда включен полёт и ускорение"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
-msgstr ""
+msgstr "Гамма Ambient occlusion"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Anisotropic filtering"
-msgstr "Анизотропная фильтрация"
+msgstr "Анизантропная фильтрация"
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
