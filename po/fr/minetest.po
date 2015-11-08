@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-11-08 21:55+0000\n"
+"PO-Revision-Date: 2015-11-08 22:26+0000\n"
 "Last-Translator: Jean-Patrick G. <jeanpatrick.guerrero@gmail.com>\n"
 "Language-Team: French "
 "<https://hosted.weblate.org/projects/minetest/minetest/fr/>\n"
@@ -2134,46 +2134,61 @@ msgid ""
 "Julia set: (X,Y,Z) offsets from world centre.\n"
 "Range roughly -2 to 2, multiply by j_scale for offsets in nodes."
 msgstr ""
+"Série Julia : décalages (X,Y,Z) à partir du centre du monde.\n"
+"La portée est environ entre -2 et 2. Multiplier par j_scale pour décaler en "
+"nombre de blocs."
 
 #: src/settings_translation_file.cpp
 msgid "Julia set: Approximate (X,Y,Z) scales in nodes."
-msgstr ""
+msgstr "Série Julia : échelles (X,Y,Z) en blocs."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Julia set: Iterations of the recursive function.\n"
 "Controls scale of finest detail."
 msgstr ""
+"Série Julia : itérations de la fonction récursive.\n"
+"Contrôle l'échelle du détail le plus subtil."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Julia set: W co-ordinate of the generated 3D slice of the 4D shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Série Julia : coordonnée W de la couche 3D de la forme 4D.\n"
+"La portée est environ entre -2 et 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Julia set: W value determining the 4D shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Série Julia : valeur W déterminant la forme 4D.\n"
+"La portée est environ entre -2 et 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Julia set: X value determining the 4D shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Série Julia : valeur X déterminant la forme 4D.\n"
+"La portée est environ entre -2 et 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Julia set: Y value determining the 4D shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Série Julia : valeur Y déterminant la forme 4D.\n"
+"La portée est environ entre -2 et 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Julia set: Z value determining the 4D shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Série Julia : valeur Z déterminant la forme 4D.\n"
+"La portée est environ entre -2 et 2."
 
 #: src/settings_translation_file.cpp
 msgid "Jump key"
@@ -2614,22 +2629,29 @@ msgid ""
 "Mandelbrot set: (X,Y,Z) offsets from world centre.\n"
 "Range roughly -2 to 2, multiply by m_scale for offsets in nodes."
 msgstr ""
+"Série Mandelbrot : décalages (X,Y,Z) à partir du centre du monde.\n"
+"La portée est environ entre -2 et 2. Multiplier par m_scale pour décaler en "
+"nombre de blocs."
 
 #: src/settings_translation_file.cpp
 msgid "Mandelbrot set: Approximate (X,Y,Z) scales in nodes."
-msgstr ""
+msgstr "Série Mandelbrot : échelles (X,Y,Z) en blocs."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Mandelbrot set: Iterations of the recursive function.\n"
 "Controls scale of finest detail."
 msgstr ""
+"Série Mandelbrot : itérations de la fonction récursive.\n"
+"Contrôle l'échelle du détail le plus subtil."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Mandelbrot set: W co-ordinate of the generated 3D slice of the 4D shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Série Mandelbrot : coordonnée W de la couche 3D de la forme 4D.\n"
+"La portée est environ entre -2 et 2."
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
@@ -2737,55 +2759,55 @@ msgstr "Drapeaux des fractales de la génération de terrain"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia iterations"
-msgstr ""
+msgstr "Mapgen Julia : itérations fractales"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia offset"
-msgstr ""
+msgstr "Mapgen Julia : décalages fractals"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia scale"
-msgstr ""
+msgstr "Mapgen Julia : échelles fractales"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia slice w"
-msgstr ""
+msgstr "Mapgen Julia : couche fractale W"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia w"
-msgstr ""
+msgstr "Mapgen Julia : fractale W"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia x"
-msgstr ""
+msgstr "Mapgen Julia : fractale X"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia y"
-msgstr ""
+msgstr "Mapgen Julia : fractale Y"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia z"
-msgstr ""
+msgstr "Mapgen Julia : fractale Z"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal mandelbrot iterations"
-msgstr ""
+msgstr "Mapgen Mandelbrot : itérations fractales"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal mandelbrot offset"
-msgstr ""
+msgstr "Mapgen Mandelbrot : décalages fractals"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal mandelbrot scale"
-msgstr ""
+msgstr "Mapgen Mandelbrot : échelles fractales"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal mandelbrot slice w"
-msgstr ""
+msgstr "Mapgen Mandelbrot : couche fractale W"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal seabed noise parameters"
-msgstr ""
+msgstr "Mapgen : paramètres de bruit du fond de l'eau"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen heat blend noise parameters"
