@@ -1924,7 +1924,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "If disabled "
-msgstr "Если выключено_"
+msgstr "Если выключено "
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1935,7 +1935,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, "
-msgstr "Если включено_"
+msgstr "Если включено "
 
 #: src/settings_translation_file.cpp
 msgid ""
