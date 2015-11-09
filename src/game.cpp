@@ -1496,6 +1496,7 @@ protected:
 	void toggleFast(float *statustext_time);
 	void toggleNoClip(float *statustext_time);
 	void toggleCinematic(float *statustext_time);
+	void toggleAutorun(float *statustext_time);
 
 	void toggleChat(float *statustext_time, bool *flag);
 	void toggleHud(float *statustext_time, bool *flag);
@@ -2618,10 +2619,8 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 
 	if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_DROP])) {
 		dropSelectedItem();
-	// Add WoW-style autorun by toggling continuous forward.
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_AUTORUN])) {
-		bool autorun_setting = g_settings->getBool("continuous_forward");
-		g_settings->setBool("continuous_forward", !autorun_setting);
+		toggleAutorun(statustext_time);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_INVENTORY])) {
 		openInventory();
 	} else if (input->wasKeyDown(EscapeKey) || input->wasKeyDown(CancelKey)) {
@@ -2851,6 +2850,16 @@ void Game::toggleCinematic(float *statustext_time)
 	statustext = msg[cinematic];
 }
 
+// Add WoW-style autorun by toggling continuous forward.
+void Game::toggleAutorun(float *statustext_time)
+{
+	static const wchar_t *msg[] = { L"autorun disabled", L"autorun enabled" };
+	bool autorun_enabled = !g_settings->getBool("continuous_forward");
+	g_settings->set("continuous_forward", bool_to_cstr(autorun_enabled));
+
+	*statustext_time = 0;
+	statustext = msg[autorun_enabled ? 1 : 0];
+}
 
 void Game::toggleChat(float *statustext_time, bool *flag)
 {
