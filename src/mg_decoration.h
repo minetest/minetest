@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class Mapgen;
 class MMVManip;
-class PseudoRandom;
+class PcgRandom;
 class Schematic;
 
 enum DecorationType {
@@ -71,7 +71,7 @@ public:
 	size_t placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	//size_t placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 
-	virtual size_t generate(MMVManip *vm, PseudoRandom *pr, v3s16 p) = 0;
+	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p) = 0;
 	virtual int getHeight() = 0;
 
 	u32 flags;
@@ -90,7 +90,7 @@ public:
 
 class DecoSimple : public Decoration {
 public:
-	virtual size_t generate(MMVManip *vm, PseudoRandom *pr, v3s16 p);
+	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p);
 	bool canPlaceDecoration(MMVManip *vm, v3s16 p);
 	virtual int getHeight();
 
@@ -107,7 +107,7 @@ class DecoSchematic : public Decoration {
 public:
 	DecoSchematic();
 
-	virtual size_t generate(MMVManip *vm, PseudoRandom *pr, v3s16 p);
+	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p);
 	virtual int getHeight();
 
 	Rotation rotation;
