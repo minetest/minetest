@@ -8,16 +8,17 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2013-10-08 21:22+0200\n"
-"Last-Translator: Maciej Kasatkin <maciej.kasatkin@yahoo.com>\n"
-"Language-Team: Polish <>\n"
+"PO-Revision-Date: 2015-11-09 19:10+0000\n"
+"Last-Translator: Jarosław Maciejewski <nitro.bystrzyca@gmail.com>\n"
+"Language-Team: Polish "
+"<https://hosted.weblate.org/projects/minetest/minetest/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 1.7-dev\n"
+"X-Generator: Weblate 2.5-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -25,10 +26,9 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
-msgstr ""
+msgstr "Wystąpił błąd:"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Main menu"
 msgstr "Menu główne"
 
@@ -37,9 +37,8 @@ msgid "Ok"
 msgstr "OK"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Reconnect"
-msgstr "Połącz"
+msgstr "Połącz ponownie"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
@@ -59,7 +58,7 @@ msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "Serwer wspiera wersje protokołu od $1 do $2."
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -67,11 +66,11 @@ msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "Wspieramy tylko protokół w wersji $1."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "Wspieramy protokół w wersji od $1 do $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua builtin/mainmenu/tab_settings.lua
@@ -84,14 +83,12 @@ msgid "Depends:"
 msgstr "Zależy od:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable MP"
-msgstr "Wyłącz wszystkie"
+msgstr "Wyłącz MP"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable MP"
-msgstr "Włącz wszystkie"
+msgstr "Włącz MP"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -109,7 +106,7 @@ msgstr "Ukryj Grę"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide mp content"
-msgstr ""
+msgstr "Ukryj zawartość MP"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -138,7 +135,7 @@ msgstr "Utwórz"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr ""
+msgstr "Ściągnij podgrę, taką jak minetest_game, z minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
@@ -158,7 +155,7 @@ msgstr "Nie podano nazwy świata lub nie wybrano gry"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
-msgstr ""
+msgstr "Ziarno"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
@@ -170,7 +167,7 @@ msgstr "Nazwa świata"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no subgames installed."
-msgstr ""
+msgstr "Nie masz zainstalowanych żadnych podgier."
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Are you sure you want to delete \"$1\"?"
@@ -209,13 +206,12 @@ msgid "Rename Modpack:"
 msgstr "Zmień nazwe Paczki Modów:"
 
 #: builtin/mainmenu/modmgr.lua
-#, fuzzy
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"Instalacja moda: nieznany typ pliku \"$1\""
+"Instalacja moda: nieznany typ pliku \"$1\" lub archiwum uszkodzone"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Failed to install $1 to $2"
@@ -3690,8 +3686,9 @@ msgid "cURL parallel limit"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "cURL timeout"
-msgstr ""
+msgstr "Limit czasu cURL"
 
 #, fuzzy
 #~ msgid "Opaque Leaves"
