@@ -829,10 +829,10 @@ max_block_generate_distance (Max block generate distance) int 6
 map_generation_limit (Map generation limit) int 31000 0 31000
 
 #    Global map generation attributes.
+#    The 'trees' flag only has effect in mgv6.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with "no" are used to explicitly disable them.
-#    'trees' and 'flat' flags only have effect in mgv6.
-mg_flags (Mapgen flags) flags trees,caves,dungeons,light trees,caves,dungeons,light,flat,notrees,nocaves,nodungeons,nolight,noflat
+mg_flags (Mapgen flags) flags trees,caves,dungeons,light trees,caves,dungeons,light,notrees,nocaves,nodungeons,nolight
 
 [**Advanced]
 
@@ -889,7 +889,7 @@ mgv5_np_cave2 (Mapgen v5 cave2 noise parameters) noise_params 0, 12, (50, 50, 50
 #    When snowbiomes are enabled jungles are enabled and the jungles flag is ignored.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with "no" are used to explicitly disable them.
-mgv6_spflags (Mapgen v6 flags) flags jungles,biomeblend,mudflow,snowbiomes jungles,biomeblend,mudflow,snowbiomes,nojungles,nobiomeblend,nomudflow,nosnowbiomes
+mgv6_spflags (Mapgen v6 flags) flags jungles,biomeblend,mudflow,snowbiomes jungles,biomeblend,mudflow,snowbiomes,flat,nojungles,nobiomeblend,nomudflow,nosnowbiomes,noflat
 
 #    Controls size of deserts and beaches in Mapgen v6.
 #    When snowbiomes are enabled 'mgv6_freq_desert' is ignored.
