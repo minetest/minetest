@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MGV6_BIOMEBLEND 0x02
 #define MGV6_MUDFLOW    0x04
 #define MGV6_SNOWBIOMES 0x08
+#define MGV6_FLAT       0x10
 
 
 extern FlagDesc flagdesc_mapgen_v6[];
