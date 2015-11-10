@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <set>
 #include <queue>
+#include <cstddef> // size_t
 
 /*
 Queue with unique values with fast checking of value existence
@@ -301,6 +302,77 @@ private:
 	cache_type m_map;
 	// we can't use std::deque here, because its iterators get invalidated
 	std::list<K> m_queue;
+};
+
+template <typename T, size_t N>
+class RingBufferIter;
+
+template <typename T, size_t N>
+class RingBuffer {
+public:
+	typedef RingBufferIter<T, N> iterator;
+	RingBuffer() : m_offset(0) {
+		for (size_t i = 0; i < N; ++i)
+			m_data[i] = T(); // buffer is always full
+	}
+	void push(const T& t) {
+		m_data[m_offset] = t;
+		if (++m_offset == N) m_offset = 0; // loops around
+	}
+	iterator begin() {
+		return iterator(*this, m_offset);
+	}
+	iterator end() {
+		return iterator(*this, N); // N is past-the-end
+	}
+	bool operator==(const RingBuffer& other) const {
+		for (size_t i = 0; i < N; ++i)
+			if (m_data[i] != other.m_data[i])
+				return false;
+		return true;
+	}
+	bool operator!=(const RingBuffer& other) const {
+		return !(*this == other);
+	}
+private:
+	size_t m_offset;
+	T m_data[N];
+friend class RingBufferIter<T, N>;
+};
+
+template <typename T, size_t N>
+class RingBufferIter { // TODO: random access iteration (if needed)
+public:
+	RingBufferIter(RingBuffer<T, N>& cont, size_t pos) : m_cont(cont), m_pos(pos) {}
+	// forward iterators can be compared for equality
+	bool operator==(const RingBufferIter& other) const {
+		return (m_cont == other.m_cont) && (m_pos == other.m_pos);
+	}
+	bool operator!=(const RingBufferIter& other) const {
+		return !(*this == other);
+	}
+	// forward iterators can be dereferenced
+	T& operator*() const {
+		return m_cont.m_data[m_pos];
+	}
+	T* operator->() const {
+		return &m_cont.m_data[m_pos];
+	}
+	// forward iterators can be incremented
+	RingBufferIter& operator++() {
+		++m_pos;
+		if (m_pos == N) m_pos = 0;
+		if (m_pos == m_cont.m_offset) m_pos = N;
+		return (*this);
+	}
+	RingBufferIter operator++(int) {
+		RingBufferIter copy(*this);
+		++(*this);
+		return copy;
+	}
+private:
+	size_t m_pos;
+	RingBuffer<T, N>& m_cont;
 };
 
 #endif
