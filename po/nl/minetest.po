@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-10-27 16:44+0200\n"
-"Last-Translator: PilzAdam <PilzAdam@minetest.net>\n"
-"Language-Team: Dutch <https://hosted.weblate.org/projects/minetest/minetest/"
-"nl/>\n"
+"PO-Revision-Date: 2015-11-11 20:55+0000\n"
+"Last-Translator: Rogier <rogier777@gmail.com>\n"
+"Language-Team: Dutch "
+"<https://hosted.weblate.org/projects/minetest/minetest/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,22 +28,20 @@ msgid "An error occured:"
 msgstr "Er is een fout opgetreden:"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Main menu"
-msgstr "Hoofdmenu"
+msgstr "Naar hoofdmenu"
 
 #: builtin/fstk/ui.lua builtin/mainmenu/store.lua
 msgid "Ok"
 msgstr "Ok"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Reconnect"
-msgstr "Verbinden"
+msgstr "Opnieuw verbinding maken"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "De server heeft verzocht opnieuw verbinding te maken:"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
@@ -51,15 +49,15 @@ msgstr "Bezig met laden..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "Protocol versie stemt niet overeen. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "De server vereist protocol versie $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "De server ondersteunt protocol versies $1 tot en met $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -69,11 +67,11 @@ msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "Wij ondersteunen enkel protocol versie $1."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "Wij ondersteunen protocol versies $1 tot en met $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua builtin/mainmenu/tab_settings.lua
@@ -102,6 +100,8 @@ msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
+"Mod \"$1\" kan niet gebruikt worden: de naam bevat ongeldige karakters. "
+"Enkel [a-z0-9_] zijn toegestaan."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -418,37 +418,37 @@ msgstr "Start Server"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "\"$1\" is not a valid flag."
-msgstr ""
+msgstr "\"$1\" is geen geldige vlag."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(No description of setting given)"
-msgstr ""
+msgstr "(Geen beschrijving beschikbaar)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Browse"
-msgstr ""
+msgstr "Bladeren"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
 msgstr "Toetsen"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Disabled"
-msgstr "MP uitschakelen"
+msgstr "uitgeschakeld"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Edit"
-msgstr ""
+msgstr "Bewerken"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Enabled"
 msgstr "ingeschakeld"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
 msgstr ""
+"Formaat is 3 getallen, gescheiden door komma's en tussen vierkante haken "
+"(bijvoorbeeld: [4,-34,138])."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid ""
@@ -461,33 +461,36 @@ msgid "Games"
 msgstr "Spellen"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Optionally the lacunarity can be appended with a leading comma."
 msgstr ""
+"Optioneel: de lacunaritie (uit de fractal-meetkunde: een maat voor "
+"hoeveelheid en grootte van 'gaten') kan aan het einde toegevoegd worden, "
+"voorafgegaan door een komma."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a comma seperated list of flags."
-msgstr ""
+msgstr "Geef een lijst van vlaggen, door komma's gescheiden."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "Voer een geldig geheel getal in."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "Voer een geldig getal in."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Possible values are: "
-msgstr ""
+msgstr "Mogelijke waarden zijn: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "Standaardwaarde herstellen"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Select path"
-msgstr "Selecteren"
+msgstr "Pad selecteren"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -495,15 +498,15 @@ msgstr "Instellingen"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "Technische namen weergeven"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be greater than $1."
-msgstr ""
+msgstr "De waarde moet groter zijn dan $1."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be lower than $1."
-msgstr ""
+msgstr "De waarde moet lager zijn dan $1."
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
@@ -532,7 +535,7 @@ msgstr "Geen informatie aanwezig"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
-msgstr ""
+msgstr "Geen"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Select texture pack:"
@@ -544,9 +547,8 @@ msgid "Texturepacks"
 msgstr "Texturen"
 
 #: src/client.cpp
-#, fuzzy
 msgid "Connection timed out."
-msgstr "Fout bij verbinden (time out?)"
+msgstr "Time-out bij opzetten verbinding."
 
 #: src/client.cpp
 msgid "Done!"
@@ -677,6 +679,18 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
+"Standaardbesturing:\n"
+"Geen menu getoond:\n"
+"- enkele tik: activeren\n"
+"- dubbele tik: plaats / gebruik\n"
+"- vinger schuiven: rondkijken\n"
+"Menu of inventaris getoond:\n"
+"- dubbele tik buiten menu:\n"
+" --> sluiten\n"
+"- aanraken stapel of slot:\n"
+" --> stapel verplaatsen\n"
+"- aanraken & slepen, tik met tweede vinger\n"
+"  --> plaats enkel object in slot\n"
 
 #: src/game.cpp
 msgid "Exit to Menu"
@@ -786,7 +800,7 @@ msgstr "Toets is al in gebruik"
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
 "Sneltoetsen. (Als dit menu stuk gaat, verwijder dan instellingen uit "
-"minetest.conf)."
+"minetest.conf)"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Left"
@@ -794,7 +808,7 @@ msgstr "Links"
 
 #: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Print stacks"
-msgstr "Print stacks"
+msgstr "Print debug-stacks"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Range select"
@@ -1150,19 +1164,21 @@ msgid "Zoom"
 msgstr "Zoom"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "0 = parallax occlusion with slope information (faster).\n"
 "1 = relief mapping (slower, more accurate)."
 msgstr ""
+"0 = parallax occlusie met helling-informatie (sneller).\n"
+"1 = 'relief mapping' (lanzamer, nauwkeuriger)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D clouds"
 msgstr "3D wolken"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
-msgstr ""
+msgstr "3D modus"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1174,36 +1190,51 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side."
 msgstr ""
+"3D ondersteuning.\n"
+"Op dit moment beschikbaar:\n"
+"-    none: geen 3D.\n"
+"-    anaglyph: 3D met de kleuren cyaan en magenta.\n"
+"-    interlaced: 3D voor polariserend scherm (even/oneven beeldlijnen).\n"
+"-    topbottom: 3D met horizontaal gedeeld scherm (boven/onder).\n"
+"-    sidebyside: 3D met vertikaal gedeeld scherm (links/rechts)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
+"Vooringestelde zaadwaarde voor de wereld. Indien leeg, wordt een "
+"willekeurige waarde gekozen.\n"
+"Wanneer in het hoofdmenu een nieuwe wereld gecreëerd wordt, kan een andere "
+"waarde gekozen worden."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
 msgstr ""
+"Een bericht dat wordt getoond aan alle verbonden spelers als de server "
+"crasht."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server shuts down."
 msgstr ""
+"Een bericht dat wordt getoond aan alle verbonden spelers als de server "
+"afgesloten wordt."
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
-msgstr ""
+msgstr "Maximaal aantal 'emerge' blokken in de wachtrij"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
-msgstr ""
+msgstr "Versnelling in lucht"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
-msgstr ""
+msgstr "Bereik waarbinnen blokken actief zijn"
 
 #: src/settings_translation_file.cpp
 msgid "Active object send range"
-msgstr ""
+msgstr "Bereik waarbinnen actieve objecten gestuurd worden"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1211,18 +1242,27 @@ msgid ""
 "Leave this blank to start a local server.\n"
 "Note that the address field in the main menu overrides this setting."
 msgstr ""
+"Standaard serveradres waarmee verbinding gemaakt moet worden.\n"
+"Indien leeg, wordt een lokale server gestart.\n"
+"In het hoofdmenu kan een ander adres opgegeven worden."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr ""
+"Aangepaste DPI (dots per inch) instelling voor het scherm, bijv. voor 4k "
+"schermen (niet voor X11 of Android)."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Adjust the gamma encoding for the light tables. Lower numbers are brighter.\n"
 "This setting is for the client only and is ignored by the server."
 msgstr ""
+"Aangepaste gamma voor de licht-tabellen. Lagere waardes zijn helderder.\n"
+"Deze instelling wordt enkel gebruikt door de cliënt, en wordt genegeerd door "
+"de server."
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -1230,7 +1270,7 @@ msgstr "Geavanceerd"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
-msgstr ""
+msgstr "Zet 'snel' altijd aan bij vliegen"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
@@ -1243,7 +1283,7 @@ msgstr "Anisotrope Filtering"
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
-msgstr ""
+msgstr "Meldt server aan bij de server-lijst"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1251,23 +1291,25 @@ msgid ""
 "If you want to announce your ipv6 address, use  serverlist_url = v6.servers."
 "minetest.net."
 msgstr ""
+"URL van de serverlijst.\n"
+"Voor het aanmelden van een ipv6 adres bij de minetest serverlijst, "
+"configureer 'serverlist_url = v6.servers.minetest.net'."
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
-msgstr ""
+msgstr "Vraag om de verbinding te herstellen na een server-crash"
 
 #: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
-msgstr ""
+msgstr "Meldt de server automatisch aan bij de serverlijst."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Backward key"
 msgstr "Achteruit"
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
-msgstr ""
+msgstr "Basis"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1275,18 +1317,17 @@ msgid "Bilinear filtering"
 msgstr "Bi-Lineaire Filtering"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bind address"
-msgstr "Adres"
-
-#: src/settings_translation_file.cpp
-msgid "Bits per pixel (aka color depth) in fullscreen mode."
-msgstr ""
+msgstr "Adres te gebruiken door lokale server"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
+msgid "Bits per pixel (aka color depth) in fullscreen mode."
+msgstr "Aantal bits per pixel (oftewel: kleurdiepte) in full-screen modus."
+
+#: src/settings_translation_file.cpp
 msgid "Build inside player"
-msgstr "Multiplayer"
+msgstr "Bouwen op de plaats van de speler"
 
 #: src/settings_translation_file.cpp
 msgid "Bumpmapping"
@@ -1294,39 +1335,35 @@ msgstr "Bumpmapping"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
-msgstr ""
+msgstr "Vloeiender maken van de camerabeweging"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
-msgstr ""
+msgstr "Vloeiender maken van de camerabeweging (in cinematic modus)"
 
 #: src/settings_translation_file.cpp
 msgid "Camera update toggle key"
-msgstr ""
+msgstr "Toets voor cameraverversing aan/uit"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat key"
-msgstr "Toetsen"
+msgstr "Chat-toets"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat toggle key"
-msgstr "Toetsen"
+msgstr "Toets voor tonen/verbergen chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
-msgstr ""
+msgstr "Chunk-grootte"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cinematic mode"
-msgstr "Creatieve Modus"
+msgstr "Cinematic modus"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cinematic mode key"
-msgstr "Creatieve Modus"
+msgstr "Cinematic modus aan/uit toets"
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
@@ -1338,44 +1375,44 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
-msgstr ""
+msgstr "Klimsnelheid"
 
 #: src/settings_translation_file.cpp
 msgid "Cloud height"
-msgstr ""
+msgstr "Hoogte van de wolken"
 
 #: src/settings_translation_file.cpp
 msgid "Cloud radius"
-msgstr ""
+msgstr "Diameter van de wolken"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds"
-msgstr "3D wolken"
+msgstr "Wolken"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
-msgstr ""
+msgstr "Wolken bestaan enkel aan de kant van de cliënt."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds in menu"
-msgstr "Hoofdmenu"
+msgstr "Wolken in het menu"
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
-msgstr ""
+msgstr "Gekleurde mist"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
+"Lijst (met komma's gescheiden) van vertrouwde mods die onveilige functies "
+"mogen gebruiken,\n"
+"zelfs als mod-beveiliging aan staat (via request_insecure_environment())."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Command key"
-msgstr "Opdracht"
+msgstr "Opdracht-toets"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1383,41 +1420,36 @@ msgid "Connect glass"
 msgstr "Verbonden glas"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Connect to external media server"
-msgstr "Verbinding met de server wordt gemaakt..."
+msgstr "Gebruik van externe media-server toestaan"
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
-msgstr ""
+msgstr "Verbind glas-nodes met elkaar (indien ondersteund door het type node)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console alpha"
-msgstr "Console"
+msgstr "Console-alpha"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console color"
-msgstr "Console"
+msgstr "Console-kleur"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console key"
-msgstr "Console"
+msgstr "Console-toets"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
-msgstr ""
+msgstr "Continu vooruit lopen"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward movement (only used for testing)."
-msgstr ""
+msgstr "Speler loopt continu vooruit (enkel gebruikt voor testen)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Controls"
-msgstr "Control"
+msgstr "Besturing"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1425,87 +1457,96 @@ msgid ""
 "Examples: 72 = 20min, 360 = 4min, 1 = 24hour, 0 = day/night/whatever stays "
 "unchanged."
 msgstr ""
+"Bepaalt de lengte van de dag/nacht cyclus\n"
+"Voorbeeld: 72 = 20min, 360 = 4min, 1 = 24 uur, 0 = de kloktijd (dag, nacht, "
+"schemering) verandert niet."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Controls size of deserts and beaches in Mapgen v6.\n"
 "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
 msgstr ""
+"Bepaalt de grootte van woestijnen en stranden in de wereld-generator (mapgen)"
+" v6.\n"
+"Als 'snowbiomes' aan staat, wordt deze instelling genegeerd."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
-msgstr ""
+msgstr "Crash boodschap"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
-msgstr ""
+msgstr "Draadkruis-alpha"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha (opaqueness, between 0 and 255)."
-msgstr ""
+msgstr "Draadkruis-alphawaarde. (ondoorzichtigheid; tussen 0 en 255)."
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
-msgstr ""
+msgstr "Draadkruis-kleur"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color (R,G,B)."
-msgstr ""
+msgstr "Draadkruis-kleur (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid "Crouch speed"
-msgstr ""
+msgstr "Snelheid bij hurken"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
-msgstr ""
+msgstr "Scherm DPI"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Damage"
-msgstr "Schade inschakelen"
+msgstr "Verwondingen"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
-msgstr ""
+msgstr "Toets voor aan/uitzetten debug informatie"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Dedicated server step"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Default acceleration"
-msgstr ""
+msgstr "Debug logniveau"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
+msgid "Dedicated server step"
+msgstr "Tijdsstaplengte van de server"
+
+#: src/settings_translation_file.cpp
+msgid "Default acceleration"
+msgstr "Standaardversnelling"
+
+#: src/settings_translation_file.cpp
 msgid "Default game"
-msgstr "spel aanpassen"
+msgstr "Standaardwereld"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Default game when creating a new world.\n"
 "This will be overridden when creating a world from the main menu."
 msgstr ""
+"Standaardnaam voor een nieuwe wereld.\n"
+"In het hoofdmenu kan een andere naam opgegeven worden."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Default password"
-msgstr "Nieuw wachtwoord"
+msgstr "Standaardwachtwoord"
 
 #: src/settings_translation_file.cpp
 msgid "Default privileges"
-msgstr ""
+msgstr "Standaardrechten"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Default timeout for cURL, stated in milliseconds.\n"
 "Only has an effect if compiled with cURL."
 msgstr ""
+"Standaard time-out voor cURL, in milliseconden.\n"
+"Wordt alleen gebruikt indien gecompileerd met cURL ingebouwd."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1516,49 +1557,54 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
+"Maximale afstand (in blokken van 16 nodes) waarbinnen andere spelers "
+"zichtbaar zijn (0 = oneindig ver)."
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
-msgstr ""
+msgstr "Vertraging bij het tonen van tooltips, in milliseconden."
 
 #: src/settings_translation_file.cpp
 msgid "Deprecated Lua API handling"
-msgstr ""
+msgstr "Actie bij gebruik van verouderde Lua API functies"
 
 #: src/settings_translation_file.cpp
 msgid "Descending speed"
-msgstr ""
+msgstr "Daalsnelheid"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Desynchronize block animation"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Detailed mod profile data. Useful for mod developers."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Detailed mod profiling"
-msgstr ""
+"Beschrijving van de server. Wordt getoond in de server-lijst, en wanneer "
+"spelers inloggen."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
+msgid "Desynchronize block animation"
+msgstr "Textuur-animaties niet synchroniseren"
+
+#: src/settings_translation_file.cpp
+msgid "Detailed mod profile data. Useful for mod developers."
+msgstr "Gedetailleerde profiling-data voor mods. Nuttig voor mod-ontwikkelaars."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Detailed mod profiling"
+msgstr "Gedetailleerde profiling van mods"
+
+#: src/settings_translation_file.cpp
 msgid "Disable anticheat"
-msgstr "Deeltjes aanzetten"
+msgstr "Valsspeelbescherming uitschakelen"
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
-msgstr ""
+msgstr "Lege wachtwoorden niet toestaan"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
-msgstr ""
+msgstr "Domeinnaam van de server, wordt getoond in de serverlijst."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1572,24 +1618,28 @@ msgstr "2x \"springen\" om te vliegen"
 
 #: src/settings_translation_file.cpp
 msgid "Drop item key"
-msgstr ""
+msgstr "Weggooi-toets"
 
 #: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug infos."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Enable a bit lower water surface, so it doesn't \"fill\" the node "
 "completely.\n"
 "Note that this is not quite optimized and that smooth lighting on the\n"
 "water surface doesn't work with this."
 msgstr ""
+"Maak de wateroppervlakte iets lager, zodat het niet de hele node vult.\n"
+"Dit is niet echt geoptimaliseerd, en vloeiende belichting van de\n"
+"wateroppervlakte werkt niet als dit is ingeschakeld."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Enable mod security"
-msgstr "Online mod opslagplaats"
+msgstr "Veilige modus voor mods aanzetten"
 
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
@@ -1957,20 +2007,26 @@ msgid ""
 "If enabled, actions are recorded for rollback.\n"
 "This option is only read when server starts."
 msgstr ""
+"Indien aangeschakeld worden speleracties opgeslagen zodat ze teruggerold "
+"kunnen worden.\n"
+"Deze instelling wordt alleen bij het starten van de server gelezen."
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, disable cheat prevention in multiplayer."
-msgstr ""
+msgstr "Valsspeelbescherming uitschakelen multiplayer modus."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, invalid world data won't cause the server to shut down.\n"
 "Only enable this if you know what you are doing."
 msgstr ""
+"Zorg dat de server niet stopt in geval van ongeldige wereld-data.\n"
+"Alleen aan te schakelen door mensen die weten wat de consequenties zijn."
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, new players cannot join with an empty password."
 msgstr ""
+"Spelers kunnen zich niet aanmelden zonder wachtwoord indien ingeschakeld."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1978,14 +2034,17 @@ msgid ""
 "you stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
+"Indien ingeschakeld, kan een speler blokken plaatsen op de eigen positie ("
+"niveau van de voeten en van de ogen).\n"
+"Dit vergemakkelijkt het werken in nauwe ruimtes."
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
-msgstr ""
+msgstr "Indien ingeschakeld, dan spawnen spelers altijd op deze coördinaten."
 
 #: src/settings_translation_file.cpp
 msgid "Ignore world errors"
-msgstr ""
+msgstr "Wereldfouten negeren"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2952,8 +3011,9 @@ msgid "Noclip"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Noclip key"
-msgstr ""
+msgstr "Noclip-toets"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2974,7 +3034,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
-msgstr ""
+msgstr "Aantal 'emerge' threads"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2984,6 +3044,10 @@ msgid ""
 "speed greatly\n"
 "at the cost of slightly buggy caves."
 msgstr ""
+"Aantal 'emerge' threads. Standaardwaarde hangt af van het aantal processoren."
+"\n"
+"Op multiprocessor systemen kan dit de generatie van de wereld versnellen.\n"
+"Het kan echter vreemde grotten veroorzaken."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2991,6 +3055,12 @@ msgid ""
 "This is a trade-off between sqlite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
 msgstr ""
+"Aantal extra blokken (van 16x16x16 nodes) dat door het commando '/"
+"clearobjects' tegelijk\n"
+"geladen mag worden.\n"
+"Dit aantal is een compromis tussen snelheid enerzijds (vanwege de overhead "
+"van een sqlite\n"
+"transactie), en geheugengebruik anderzijds (4096 = ca. 100MB)."
 
 #: src/settings_translation_file.cpp
 msgid "Number of parallax occlusion iterations."
