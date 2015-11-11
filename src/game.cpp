@@ -1809,7 +1809,7 @@ void Game::run()
 	f32 dtime; // in seconds
 
 	runData.time_from_last_punch  = 10.0;
-	runData.profiler_max_page = 3;
+	runData.profiler_max_page = 4;
 	runData.update_wielded_item_trigger = true;
 
 	flags.show_chat = true;
