@@ -36,6 +36,8 @@ extern FlagDesc flagdesc_mapgen_fractal[];
 struct MapgenFractalParams : public MapgenSpecificParams {
 	u32 spflags;
 
+	u16 formula;
+
 	u16 m_iterations;
 	v3f m_scale;
 	v3f m_offset;
@@ -75,6 +77,8 @@ public:
 	v3s16 node_max;
 	v3s16 full_node_min;
 	v3s16 full_node_max;
+
+	u16 formula;
 
 	u16 m_iterations;
 	v3f m_scale;
