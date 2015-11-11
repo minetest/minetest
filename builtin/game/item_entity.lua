@@ -36,6 +36,9 @@ core.register_entity(":__builtin:item", {
 	itemstring = '',
 	physical_state = true,
 	age = 0,
+	-- The items are mergeable as long as this property is not false,
+	-- so we use nil to save a few bytes unless it will be set.
+	mergeable = nil,
 
 	set_item = function(self, itemstring)
 		self.itemstring = itemstring
@@ -75,7 +78,8 @@ core.register_entity(":__builtin:item", {
 			itemstring = self.itemstring,
 			always_collect = self.always_collect,
 			age = self.age,
-			dropped_by = self.dropped_by
+			dropped_by = self.dropped_by,
+			mergeable = self.mergeable,
 		})
 	end,
 
@@ -91,6 +95,7 @@ core.register_entity(":__builtin:item", {
 					self.age = dtime_s
 				end
 				self.dropped_by = data.dropped_by
+				self.mergeable = data.mergeable
 			end
 		else
 			self.itemstring = staticdata
@@ -175,17 +180,24 @@ core.register_entity(":__builtin:item", {
 		local v = self.object:getvelocity()
 		if not core.registered_nodes[nn] or core.registered_nodes[nn].walkable and v.y == 0 then
 			if self.physical_state then
-				local own_stack = ItemStack(self.object:get_luaentity().itemstring)
-				-- Merge with close entities of the same item
-				for _, object in ipairs(core.get_objects_inside_radius(p, 0.8)) do
-					local obj = object:get_luaentity()
-					if obj and obj.name == "__builtin:item"
-							and obj.physical_state == false then
-						if self:try_merge_with(own_stack, object, obj) then
-							return
+				-- By default items are mergeable, we only do not merge if
+				-- the mergeable property has been set to false.
+				if self.mergeable ~= false then
+					local own_stack = ItemStack(self.object:get_luaentity().itemstring)
+					
+					-- Merge with close entities of the same item
+					for _, object in ipairs(core.get_objects_inside_radius(p, 0.8)) do
+						local obj = object:get_luaentity()
+						if obj and obj.name == "__builtin:item"
+								and obj.physical_state == false
+								and obj.mergeable ~= false then
+							if self:try_merge_with(own_stack, object, obj) then
+								return
+							end
 						end
 					end
 				end
+				
 				self.object:setvelocity({x = 0, y = 0, z = 0})
 				self.object:setacceleration({x = 0, y = 0, z = 0})
 				self.physical_state = false
