@@ -970,10 +970,15 @@ mgflat_np_cave2 (Mapgen flat cave2 noise parameters) noise_params 0, 12, (128, 1
 [***Mapgen fractal]
 
 #    Map generation attributes specific to Mapgen fractal.
-#    'julia' selects a julia set to be generated instead of a mandelbrot set.
+#    The 'julia' flag results in the corresponding julia set being generated.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with "no" are used to explicitly disable them.
 mgfractal_spflags (Mapgen fractal flags) flags nojulia julia,nojulia
+
+#    Choice of 4 mandelbrot set variations.
+#    1 = 4D "Roundy" mandelbrot set, 2 = 4D "Squarry" mandelbrot set,
+#    3 = 4D "Mandy Cousin" mandelbrot set, 4 = 4D mandelbrot set variation.
+mgfractal_formula (Mapgen fractal formula) int 1 1 4
 
 #    Mandelbrot set: Iterations of the recursive function.
 #    Controls scale of finest detail.

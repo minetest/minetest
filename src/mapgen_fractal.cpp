@@ -67,6 +67,8 @@ MapgenFractal::MapgenFractal(int mapgenid, MapgenParams *params, EmergeManager *
 	MapgenFractalParams *sp = (MapgenFractalParams *)params->sparams;
 	this->spflags = sp->spflags;
 
+	this->formula = sp->formula;
+
 	this->m_iterations = sp->m_iterations;
 	this->m_scale = sp->m_scale;
 	this->m_offset = sp->m_offset;
@@ -145,6 +147,8 @@ MapgenFractalParams::MapgenFractalParams()
 {
 	spflags = 0;
 
+	formula = 1;
+
 	m_iterations = 9;  // Mandelbrot set only
 	m_scale = v3f(1024.0, 256.0, 1024.0);
 	m_offset = v3f(1.75, 0.0, 0.0);
@@ -170,6 +174,8 @@ void MapgenFractalParams::readParams(const Settings *settings)
 {
 	settings->getFlagStrNoEx("mgfractal_spflags", spflags, flagdesc_mapgen_fractal);
 
+	settings->getU16NoEx("mgfractal_formula", formula);
+
 	settings->getU16NoEx("mgfractal_m_iterations", m_iterations);
 	settings->getV3FNoEx("mgfractal_m_scale", m_scale);
 	settings->getV3FNoEx("mgfractal_m_offset", m_offset);
@@ -194,6 +200,8 @@ void MapgenFractalParams::readParams(const Settings *settings)
 void MapgenFractalParams::writeParams(Settings *settings) const
 {
 	settings->setFlagStr("mgfractal_spflags", spflags, flagdesc_mapgen_fractal, U32_MAX);
+
+	settings->setU16("mgfractal_formula", formula);
 
 	settings->setU16("mgfractal_m_iterations", m_iterations);
 	settings->setV3F("mgfractal_m_scale", m_scale);
@@ -403,11 +411,32 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 	u16 iterations = spflags & MGFRACTAL_JULIA ? j_iterations : m_iterations;
 
 	for (u16 iter = 0; iter < iterations; iter++) {
-		// 4D "Roundy" Mandelbrot set
-		float nx = ox * ox - oy * oy - oz * oz - ow * ow + cx;
-		float ny = 2.0f * (ox * oy + oz * ow) + cy;
-		float nz = 2.0f * (ox * oz + oy * ow) + cz;
-		float nw = 2.0f * (ox * ow + oy * oz) + cw;
+		float nx = 0.0f;
+		float ny = 0.0f;
+		float nz = 0.0f;
+		float nw = 0.0f;
+
+		if (formula == 1) {  // 4D "Roundy" Mandelbrot Set
+			nx = ox * ox - oy * oy - oz * oz - ow * ow + cx;
+			ny = 2.0f * (ox * oy + oz * ow) + cy;
+			nz = 2.0f * (ox * oz + oy * ow) + cz;
+			nw = 2.0f * (ox * ow + oy * oz) + cw;
+		} else if (formula == 2) {  // 4D "Squarry" Mandelbrot Set
+			nx = ox * ox - oy * oy - oz * oz - ow * ow + cx;
+			ny = 2.0f * (ox * oy + oz * ow) + cy;
+			nz = 2.0f * (ox * oz + oy * ow) + cz;
+			nw = 2.0f * (ox * ow - oy * oz) + cw;
+		} else if (formula == 3) {  // 4D "Mandy Cousin" Mandelbrot Set
+			nx = ox * ox - oy * oy - oz * oz + ow * ow + cx;
+			ny = 2.0f * (ox * oy + oz * ow) + cy;
+			nz = 2.0f * (ox * oz + oy * ow) + cz;
+			nw = 2.0f * (ox * ow + oy * oz) + cw;
+		} else if (formula == 4) {  // 4D Mandelbrot Set Variation
+			nx = ox * ox - oy * oy - oz * oz - ow * ow + cx;
+			ny = 2.0f * (ox * oy + oz * ow) + cy;
+			nz = 2.0f * (ox * oz - oy * ow) + cz;
+			nw = 2.0f * (ox * ow + oy * oz) + cw;
+		}
 
 		if (nx * nx + ny * ny + nz * nz + nw * nw > 4.0f)
 			return false;
