@@ -313,6 +313,7 @@ public:
 		for (size_t i = 0; i < N; ++i)
 			m_data[i] = T(); // buffer is always full
 	}
+	
 	T& at(size_t n)
 	{
 		if (n >= N)
@@ -322,16 +323,19 @@ public:
 		else
 			return m_data[n + m_offset - N];
 	}
+	
 	size_t size()
 	{
 		return N;
 	}
+	
 	void push(const T& t)
 	{
 		m_data[m_offset] = t;
 		if (++m_offset == N)
 			m_offset = 0; // loops around
 	}
+	
 	bool operator==(const RingBuffer& other) const
 	{
 		for (size_t i = 0; i < N; ++i)
@@ -339,6 +343,7 @@ public:
 				return false;
 		return true;
 	}
+	
 	bool operator!=(const RingBuffer& other) const
 	{
 		return !(*this == other);
