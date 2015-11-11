@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2013-12-18 21:28+0200\n"
-"Last-Translator: Jabo Babo <bb7b@gmx.de>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2015-11-11 12:12+0000\n"
+"Last-Translator: Kristjan Räts <kristjanrats@gmail.com>\n"
+"Language-Team: Estonian "
+"<https://hosted.weblate.org/projects/minetest/minetest/et/>\n"
 "Language: et\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 1.7-dev\n"
+"X-Generator: Weblate 2.5-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -27,18 +28,16 @@ msgid "An error occured:"
 msgstr ""
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Main menu"
-msgstr "Menüü"
+msgstr "Peamenüü"
 
 #: builtin/fstk/ui.lua builtin/mainmenu/store.lua
 msgid "Ok"
 msgstr "kinnitama"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Reconnect"
-msgstr "Liitu"
+msgstr "Taasta ühendus"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
@@ -79,24 +78,20 @@ msgid "Cancel"
 msgstr "Tühista"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_mods.lua
-#, fuzzy
 msgid "Depends:"
-msgstr "Vajab:"
+msgstr "Sõltub:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable MP"
-msgstr "Lülita kõik välja"
+msgstr "Keela MP"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable MP"
-msgstr "Lülita kõik sisse"
+msgstr "Luba MP"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable all"
-msgstr "Lülita kõik sisse"
+msgstr "Luba kõik"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -105,9 +100,8 @@ msgid ""
 msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Hide Game"
-msgstr "Mäng"
+msgstr "Peida mäng"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide mp content"
@@ -123,18 +117,16 @@ msgid "Save"
 msgstr "Salvesta"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "World:"
-msgstr "Vali maailm:"
+msgstr "Maailm:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
 msgstr "Sisse lülitatud"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "A world named \"$1\" already exists"
-msgstr "Maailma loomine ebaõnnestus: Samanimeline maailm on juba olemas"
+msgstr "Maailm nimega \"$1\" on juba olemas"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
@@ -153,9 +145,8 @@ msgid "Game"
 msgstr "Mäng"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen"
-msgstr "Põlvkonna kaardid"
+msgstr "Kaardi generaator"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No worldname given or no game selected"
@@ -198,9 +189,8 @@ msgid "Yes"
 msgstr "Jah"
 
 #: builtin/mainmenu/dlg_delete_world.lua
-#, fuzzy
 msgid "Delete World \"$1\"?"
-msgstr "Kustuta maailm: \"$1\"?"
+msgstr "Kas kustutada maailm \"$1\"?"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "No"
@@ -221,9 +211,8 @@ msgid ""
 msgstr ""
 
 #: builtin/mainmenu/modmgr.lua
-#, fuzzy
 msgid "Failed to install $1 to $2"
-msgstr "Maailma initsialiseerimine ebaõnnestus"
+msgstr "$1 paigaldamine $2 nurjus"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: file: \"$1\""
@@ -262,9 +251,8 @@ msgid "Search"
 msgstr ""
 
 #: builtin/mainmenu/store.lua
-#, fuzzy
 msgid "Shortname:"
-msgstr "Maailma nimi"
+msgstr "Lühike nimi:"
 
 #: builtin/mainmenu/store.lua
 msgid "Successfully installed:"
@@ -295,9 +283,8 @@ msgid "Previous Contributors"
 msgstr "Early arendajad"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Previous Core Developers"
-msgstr "Põhiline arendaja"
+msgstr "Eelmised põhilised arendajad"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Installed Mods:"
@@ -320,9 +307,8 @@ msgid "Rename"
 msgstr ""
 
 #: builtin/mainmenu/tab_mods.lua
-#, fuzzy
 msgid "Select Mod File:"
-msgstr "Vali maailm:"
+msgstr "Vali modifikatsiooni fail:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected mod"
@@ -333,9 +319,8 @@ msgid "Uninstall selected modpack"
 msgstr ""
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Address / Port :"
-msgstr "IP/Port"
+msgstr "Aadress / Port:"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
@@ -346,14 +331,12 @@ msgid "Connect"
 msgstr "Liitu"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Creative mode"
-msgstr "Kujunduslik mängumood"
+msgstr "Loov režiim"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Damage enabled"
-msgstr "Sisse lülitatud"
+msgstr "Kahjustamine lubatud"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_server.lua
 #: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
@@ -361,14 +344,12 @@ msgid "Delete"
 msgstr "Kustuta"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Name / Password :"
-msgstr "Nimi/Parool"
+msgstr "Nimi / Parool:"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Public Serverlist"
-msgstr "Avatud serverite nimekiri:"
+msgstr "Avalikud serverid"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 #, fuzzy
