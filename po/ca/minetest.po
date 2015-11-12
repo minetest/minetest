@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-11-12 18:07+0000\n"
+"PO-Revision-Date: 2015-11-12 22:13+0000\n"
 "Last-Translator: Joan Ciprià Moreno <joancipria@gmail.com>\n"
 "Language-Team: Catalan "
 "<https://hosted.weblate.org/projects/minetest/minetest/ca/>\n"
@@ -419,11 +419,11 @@ msgstr "No s'ha creat ningun món o no s'ha seleccionat!"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Server"
-msgstr ""
+msgstr "Servidor"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Games"
-msgstr ""
+msgstr "Jocs"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(No description of setting given)"
@@ -435,7 +435,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Possible values are: "
-msgstr ""
+msgstr "Els possibles valors són: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid ""
@@ -449,151 +449,151 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr ""
+msgstr "El format és 3 números separats per comes i aquests dins de parèntesis."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Disabled"
-msgstr ""
+msgstr "Desactivat"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Enabled"
-msgstr ""
+msgstr "Activat"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Browse"
-msgstr ""
+msgstr "Navegar"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "Si us plau, introduïu un enter vàlid."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be greater than $1."
-msgstr ""
+msgstr "El valor ha de ser major que $1."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be lower than $1."
-msgstr ""
+msgstr "El valor ha de ser menor que $1."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "Si us plau, introduïu un nombre vàlid."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "\"$1\" is not a valid flag."
-msgstr ""
+msgstr "\"$1\" no és un indicador vàlid."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Select path"
-msgstr ""
+msgstr "Seleccioneu la ruta"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
-msgstr ""
+msgstr "Configurar controls"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Edit"
-msgstr ""
+msgstr "Editar"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "Restablir per defecte"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "Mostrar els noms tècnics"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
-msgstr ""
+msgstr "Configuració"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Start Singleplayer"
-msgstr ""
+msgstr "Començar Un Jugador"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
-msgstr ""
+msgstr "Configurar mods"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Main"
-msgstr ""
+msgstr "Principal"
 
 #: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
 msgid "Play"
-msgstr ""
+msgstr "Jugar"
 
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Singleplayer"
-msgstr ""
+msgstr "Un jugador"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
-msgstr ""
+msgstr "Ningun"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Select texture pack:"
-msgstr ""
+msgstr "Selecciona un paquet de textures:"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
-msgstr ""
+msgstr "Sense informació disponible"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Texturepacks"
-msgstr ""
+msgstr "Textures"
 
 #: src/client.cpp
 msgid "Connection timed out."
-msgstr ""
+msgstr "Temps d'espera de la connexió esgotat."
 
 #: src/client.cpp
 msgid "Loading textures..."
-msgstr ""
+msgstr "Carregant textures ..."
 
 #: src/client.cpp
 msgid "Rebuilding shaders..."
-msgstr ""
+msgstr "Reconstruint ombreig ..."
 
 #: src/client.cpp
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "Inicialitzant nodes ..."
 
 #: src/client.cpp
 msgid "Initializing nodes"
-msgstr ""
+msgstr "Inicialitzant nodes"
 
 #: src/client.cpp
 msgid "Item textures..."
-msgstr ""
+msgstr "Textures de objectes ..."
 
 #: src/client.cpp
 msgid "Done!"
-msgstr ""
+msgstr "Completat!"
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
-msgstr ""
+msgstr "Menú principal"
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr ""
+msgstr "Nom del jugador massa llarg."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
-msgstr ""
+msgstr "Error de connexió (¿temps esgotat?)"
 
 #: src/client/clientlauncher.cpp
 msgid "No world selected and no address provided. Nothing to do."
-msgstr ""
+msgstr "Cap món seleccionat i cap adreça facilitada. Res a fer."
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "La ruta del món especificat no existeix: "
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
-msgstr ""
+msgstr "No es pot trobar o carregar el joc \""
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -601,19 +601,19 @@ msgstr ""
 
 #: src/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr ""
+msgstr "no"
 
 #: src/game.cpp src/guiFormSpecMenu.cpp
 msgid "Proceed"
-msgstr ""
+msgstr "Continuar"
 
 #: src/game.cpp
 msgid "You died."
-msgstr ""
+msgstr "Has mort."
 
 #: src/game.cpp
 msgid "Respawn"
-msgstr ""
+msgstr "Reaparèixer"
 
 #: src/game.cpp
 msgid ""
@@ -630,6 +630,18 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
+"Controls predeterminats:\n"
+"Amb el menú ocult:\n"
+"- Toc simple: botó activar\n"
+"- Toc doble: posar / utilitzar\n"
+"- Lliscar dit: mirar al voltant\n"
+"Amb el menú / inventari visible:\n"
+"- Toc doble (fora):\n"
+"  -> tancar\n"
+"- Toc a la pila d'objectes:\n"
+"  -> moure la pila\n"
+"- Toc i arrossegar, toc amb 2 dits:\n"
+"  -> col·locar només un objecte\n"
 
 #: src/game.cpp
 msgid ""
@@ -645,248 +657,263 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
+"Controls predeterminats:\n"
+"- WASD: moure\n"
+"- Espai: botar / pujar\n"
+"- Maj .: puntetes / baixar\n"
+"- Q: deixar anar objecte\n"
+"- I: inventari\n"
+"- Ratolí: girar / mirar\n"
+"- Ratolí esq .: excavar / colpejar\n"
+"- Ratolí dre .: col·locar / utilitzar\n"
+"- Roda ratolí: triar objecte\n"
+"- T: xat\n"
 
 #: src/game.cpp
 msgid "Continue"
-msgstr ""
+msgstr "Continuar"
 
 #: src/game.cpp
 msgid "Change Password"
-msgstr ""
+msgstr "Canviar contrasenya"
 
 #: src/game.cpp
 msgid "Sound Volume"
-msgstr ""
+msgstr "Volum del so"
 
 #: src/game.cpp
 msgid "Change Keys"
-msgstr ""
+msgstr "Configurar Controls"
 
 #: src/game.cpp
 msgid "Exit to Menu"
-msgstr ""
+msgstr "Eixir al menú"
 
 #: src/game.cpp
 msgid "Exit to OS"
-msgstr ""
+msgstr "Eixir al S.O"
 
 #: src/game.cpp
 msgid "Shutting down..."
-msgstr ""
+msgstr "Tancant ..."
 
 #: src/game.cpp
 msgid "Creating server..."
-msgstr ""
+msgstr "Creant servidor ..."
 
 #: src/game.cpp
 msgid "Creating client..."
-msgstr ""
+msgstr "Creant client ..."
 
 #: src/game.cpp
 msgid "Resolving address..."
-msgstr ""
+msgstr "Resolent adreça ..."
 
 #: src/game.cpp
 msgid "Connecting to server..."
-msgstr ""
+msgstr "Connectant al servidor ..."
 
 #: src/game.cpp
 msgid "Item definitions..."
-msgstr ""
+msgstr "Definicions d'objectes ..."
 
 #: src/game.cpp
 msgid "Node definitions..."
-msgstr ""
+msgstr "Definicions dels nodes ..."
 
 #: src/game.cpp
 msgid "Media..."
-msgstr ""
+msgstr "Media ..."
 
 #: src/game.cpp
 msgid "KiB/s"
-msgstr ""
+msgstr "KiB/s"
 
 #: src/game.cpp
 msgid "MiB/s"
-msgstr ""
+msgstr "MiB/s"
 
 #: src/game.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
+"\n"
+"Comprovi debug.txt per a detalls."
 
 #: src/guiFormSpecMenu.cpp
 msgid "Enter "
-msgstr ""
+msgstr "Introdueix "
 
 #: src/guiFormSpecMenu.cpp
 msgid "ok"
-msgstr ""
+msgstr "Acceptar"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
+"Combinacions de tecles. (Si aquest menú espatlla, esborrar coses de "
+"minetest.conf)"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "\"Use\" = climb down"
-msgstr ""
+msgstr "\"Utilitzar\" = Descendir"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
-msgstr ""
+msgstr "Dos tocs \"botar\" per volar"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Key already in use"
-msgstr ""
+msgstr "La tecla s'està utilitzant"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "press key"
-msgstr ""
+msgstr "Premsa una tecla"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Forward"
-msgstr ""
+msgstr "Avant"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Backward"
-msgstr ""
+msgstr "Arrere"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Left"
-msgstr ""
+msgstr "Esquerra"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Right"
-msgstr ""
+msgstr "Dreta"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Use"
-msgstr ""
+msgstr "Utilitzar"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Jump"
-msgstr ""
+msgstr "Botar"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Sneak"
-msgstr ""
+msgstr "Discreció"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Drop"
-msgstr ""
+msgstr "Amollar"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Inventory"
-msgstr ""
+msgstr "Inventari"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Chat"
-msgstr ""
+msgstr "Xat"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Command"
-msgstr ""
+msgstr "Comandament"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Console"
-msgstr ""
+msgstr "Consola"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fly"
-msgstr ""
+msgstr "Activar volar"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
-msgstr ""
+msgstr "Activar ràpid"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
-msgstr ""
+msgstr "Activar Cinematogràfic"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
-msgstr ""
+msgstr "Activar noclip"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Range select"
-msgstr ""
+msgstr "Seleccionar distancia"
 
 #: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Print stacks"
-msgstr ""
+msgstr "Imprimir piles"
 
 #: src/guiPasswordChange.cpp
 msgid "Old Password"
-msgstr ""
+msgstr "Contrasenya vella"
 
 #: src/guiPasswordChange.cpp
 msgid "New Password"
-msgstr ""
+msgstr "Nova contrasenya"
 
 #: src/guiPasswordChange.cpp
 msgid "Confirm Password"
-msgstr ""
+msgstr "Confirma contrasenya"
 
 #: src/guiPasswordChange.cpp
 msgid "Change"
-msgstr ""
+msgstr "Canviar"
 
 #: src/guiPasswordChange.cpp
 msgid "Passwords do not match!"
-msgstr ""
+msgstr "Les contrasenyes no coincideixen!"
 
 #: src/guiVolumeChange.cpp
 msgid "Sound Volume: "
-msgstr ""
+msgstr "Volum de so: "
 
 #: src/guiVolumeChange.cpp
 msgid "Exit"
-msgstr ""
+msgstr "Tancar"
 
 #: src/keycode.cpp
 msgid "Left Button"
-msgstr ""
+msgstr "Botó esquerre"
 
 #: src/keycode.cpp
 msgid "Middle Button"
-msgstr ""
+msgstr "Botó del mig"
 
 #: src/keycode.cpp
 msgid "Right Button"
-msgstr ""
+msgstr "Botó dret"
 
 #: src/keycode.cpp
 msgid "X Button 1"
-msgstr ""
+msgstr "X Botó 1"
 
 #: src/keycode.cpp
 msgid "Back"
-msgstr ""
+msgstr "Enrere"
 
 #: src/keycode.cpp
 msgid "Clear"
-msgstr ""
+msgstr "Netejar"
 
 #: src/keycode.cpp
 msgid "Return"
-msgstr ""
+msgstr "Tornar"
 
 #: src/keycode.cpp
 msgid "Tab"
-msgstr ""
+msgstr "Tabulador"
 
 #: src/keycode.cpp
 msgid "X Button 2"
-msgstr ""
+msgstr "X Botó 2"
 
 #: src/keycode.cpp
 msgid "Capital"
-msgstr ""
+msgstr "Bloq Maj"
 
 #: src/keycode.cpp
 msgid "Control"
-msgstr ""
+msgstr "Control"
 
 #: src/keycode.cpp
 msgid "Kana"
@@ -894,27 +921,27 @@ msgstr ""
 
 #: src/keycode.cpp
 msgid "Menu"
-msgstr ""
+msgstr "Menú"
 
 #: src/keycode.cpp
 msgid "Pause"
-msgstr ""
+msgstr "Pausa"
 
 #: src/keycode.cpp
 msgid "Shift"
-msgstr ""
+msgstr "Shift"
 
 #: src/keycode.cpp
 msgid "Convert"
-msgstr ""
+msgstr "Convertir"
 
 #: src/keycode.cpp
 msgid "Escape"
-msgstr ""
+msgstr "Esc"
 
 #: src/keycode.cpp
 msgid "Final"
-msgstr ""
+msgstr "Final"
 
 #: src/keycode.cpp
 msgid "Junja"
@@ -1222,7 +1249,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
-msgstr ""
+msgstr "Utilitzar la tecla \"utilitzar\" per escalar/descendir"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3578,7 +3605,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Main menu mod manager"
-msgstr ""
+msgstr "Menú principal del gestor de mods"
 
 #: src/settings_translation_file.cpp
 msgid "Modstore download URL"
