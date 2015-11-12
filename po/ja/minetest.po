@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-11-09 10:38+0000\n"
-"Last-Translator: Rui <rui914t@gmail.com>\n"
+"PO-Revision-Date: 2015-11-12 02:44+0000\n"
+"Last-Translator: nobb <nobb.hero+weblate@gmail.com>\n"
 "Language-Team: Japanese "
 "<https://hosted.weblate.org/projects/minetest/minetest/ja/>\n"
 "Language: ja\n"
@@ -439,12 +439,10 @@ msgid "Enabled"
 msgstr "有効"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr "書式はカンマと内側の括弧で区切られた3つの数字です。"
+msgstr "書式は、コンマとかっこで区切られた 3 つの数字です。"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
@@ -462,17 +460,14 @@ msgid "Optionally the lacunarity can be appended with a leading comma."
 msgstr "空隙性随意大手カンマを付加することができます。"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Please enter a comma seperated list of flags."
 msgstr "フラグのリストはカンマで区切って入力してください。"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Please enter a valid integer."
 msgstr "有効な整数を入力してください。"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Please enter a valid number."
 msgstr "有効な数字を入力してください。"
 
@@ -499,12 +494,10 @@ msgid "Show technical names"
 msgstr "技術名称を表示"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "The value must be greater than $1."
 msgstr "$1より大きな値でなければいけません。"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "The value must be lower than $1."
 msgstr "$1より小さい値でなければいけません。"
 
@@ -1193,27 +1186,30 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
-msgstr ""
+msgstr "サーバークラッシュ時に全てのクライアントへ表示するメッセージ。"
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server shuts down."
-msgstr ""
+msgstr "サーバー終了時に全てのクライアントへ表示するメッセージ。"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Acceleration in air"
-msgstr ""
+msgstr "空中での加速"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Active block range"
-msgstr ""
+msgstr "アクティブなブロックの範囲"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Active object send range"
-msgstr ""
+msgstr "アクティブなオブジェクトの送信の範囲"
 
 #: src/settings_translation_file.cpp
 msgid ""
