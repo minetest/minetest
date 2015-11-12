@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-11-09 19:10+0000\n"
-"Last-Translator: Jarosław Maciejewski <nitro.bystrzyca@gmail.com>\n"
+"PO-Revision-Date: 2015-11-12 13:08+0000\n"
+"Last-Translator: Maciej Kasatkin <maciej.kasatkin@o2.pl>\n"
 "Language-Team: Polish "
 "<https://hosted.weblate.org/projects/minetest/minetest/pl/>\n"
 "Language: pl\n"
@@ -42,7 +42,7 @@ msgstr "Połącz ponownie"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "Serwer zażądał ponownego połączenia:"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
@@ -50,19 +50,19 @@ msgstr "Ładowanie..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "Wesje protokołu niezgodne. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "Serwer narzuca wersję protokołu $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr "Serwer wspiera wersje protokołu od $1 do $2."
+msgstr "Serwer wspiera wersje protokołu od $1 do $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
-msgstr ""
+msgstr "Spróbuj włączyć ponownie publiczną listę serwerów i sprawdź połączenie."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -99,6 +99,8 @@ msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
+"Nie można włączyć moda \"$1\" gdyż nazwa zawiera niedozwolone znaki. "
+"Dozwolone są znaki  [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -139,7 +141,7 @@ msgstr "Ściągnij podgrę, taką jak minetest_game, z minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "Ściągninj z minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -159,7 +161,7 @@ msgstr "Ziarno"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
-msgstr ""
+msgstr "Ostrzeżenie: Gra minimalna jest przeznaczona dla dewelperów."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -232,11 +234,11 @@ msgstr ""
 
 #: builtin/mainmenu/store.lua
 msgid "Close store"
-msgstr ""
+msgstr "Zamknij sklep"
 
 #: builtin/mainmenu/store.lua
 msgid "Downloading $1, please wait..."
-msgstr ""
+msgstr "Ściąganie $1, czekaj..."
 
 #: builtin/mainmenu/store.lua
 msgid "Install"
@@ -252,20 +254,19 @@ msgstr "Ocena"
 
 #: builtin/mainmenu/store.lua
 msgid "Search"
-msgstr ""
+msgstr "Szukaj"
 
 #: builtin/mainmenu/store.lua
-#, fuzzy
 msgid "Shortname:"
-msgstr "Nazwa świata"
+msgstr "Nazwa świata:"
 
 #: builtin/mainmenu/store.lua
 msgid "Successfully installed:"
-msgstr ""
+msgstr "Udana instalacja:"
 
 #: builtin/mainmenu/store.lua
 msgid "Unsorted"
-msgstr ""
+msgstr "Nieposortowane"
 
 #: builtin/mainmenu/store.lua
 msgid "re-Install"
@@ -297,18 +298,16 @@ msgid "Installed Mods:"
 msgstr "Zainstalowane Mody:"
 
 #: builtin/mainmenu/tab_mods.lua
-#, fuzzy
 msgid "Mod information:"
-msgstr "Brak informacjii"
+msgstr "Informacje o modzie:"
 
 #: builtin/mainmenu/tab_mods.lua builtin/mainmenu/tab_settings.lua
 msgid "Mods"
 msgstr "Mody"
 
 #: builtin/mainmenu/tab_mods.lua
-#, fuzzy
 msgid "No mod description available"
-msgstr "Brak informacjii"
+msgstr "Brak informacji o modzie"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Rename"
@@ -325,12 +324,11 @@ msgstr "Usuń zaznaczony mod"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected modpack"
-msgstr ""
+msgstr "Usuń zaznaczony modpack"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Address / Port :"
-msgstr "Adres/Port"
+msgstr "Adres / Port :"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
@@ -346,9 +344,8 @@ msgid "Creative mode"
 msgstr "Tryb kreatywny"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Damage enabled"
-msgstr "włączone"
+msgstr "Obrażenia włączone"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_server.lua
 #: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
@@ -356,18 +353,16 @@ msgid "Delete"
 msgstr "Usuń"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Name / Password :"
-msgstr "Nazwa gracza/Hasło"
+msgstr "Nazwa gracza / Hasło :"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Public Serverlist"
 msgstr "Lista publicznych serwerów"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "PvP enabled"
-msgstr "włączone"
+msgstr "PvP włączone"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Bind Address"
@@ -396,13 +391,12 @@ msgid "New"
 msgstr "Nowy"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
-#, fuzzy
 msgid "No world created or selected!"
-msgstr "Nie podano nazwy świata lub nie wybrano gry"
+msgstr "Nie stworzono lub nie wybrano świata!"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Public"
@@ -426,43 +420,43 @@ msgstr "Rozpocznij grę/Połącz"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "\"$1\" is not a valid flag."
-msgstr ""
+msgstr "\"$1\" nie jest poprawną flagą."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(No description of setting given)"
-msgstr ""
+msgstr "(Brak opisu ustawienia)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Browse"
-msgstr ""
+msgstr "Przeglądaj"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
 msgstr "Zmień klawisze"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Disabled"
-msgstr "Wyłącz wszystkie"
+msgstr "Wyłączone"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Edit"
-msgstr ""
+msgstr "Edytuj"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Enabled"
-msgstr "włączone"
+msgstr "Włączone"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr ""
+msgstr "Składnia to 3 liczby oddzielone przecinkami i w nawiasach."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 msgstr ""
+"Składnia: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+"<octaves>, <persistence>"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Games"
@@ -474,28 +468,27 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a comma seperated list of flags."
-msgstr ""
+msgstr "Wprowadź listę flag oddzielonych przecinkami."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "Wprowadź poprawną liczbę całkowitą."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "Wprowadź poprawną liczbę."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Possible values are: "
-msgstr ""
+msgstr "Możliwe wartości: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "Przywróć domyślne"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Select path"
-msgstr "Select"
+msgstr "Wybierz ścieżkę"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -503,20 +496,19 @@ msgstr "Ustawienia"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "Pokaż nazwy ustawień"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be greater than $1."
-msgstr ""
+msgstr "Wartość musi być większa od $1."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be lower than $1."
-msgstr ""
+msgstr "Wartość musi być mniejsza od $1."
 
 #: builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Config mods"
-msgstr "Ustaw"
+msgstr "Skonfiguruj mody"
 
 #: builtin/mainmenu/tab_simple_main.lua
 #, fuzzy
@@ -542,7 +534,7 @@ msgstr "Brak informacjii"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
-msgstr ""
+msgstr "Brak"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Select texture pack:"
@@ -560,29 +552,27 @@ msgstr "Błąd połączenia (brak odpowiedzi?)"
 
 #: src/client.cpp
 msgid "Done!"
-msgstr ""
+msgstr "Zrobione!"
 
 #: src/client.cpp
 msgid "Initializing nodes"
-msgstr ""
+msgstr "Initializownie nod"
 
 #: src/client.cpp
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "Initializowanie nod..."
 
 #: src/client.cpp
 msgid "Item textures..."
 msgstr "Tekstury przedmiotów..."
 
 #: src/client.cpp
-#, fuzzy
 msgid "Loading textures..."
-msgstr "Ładowanie..."
+msgstr "Ładowanie tekstur..."
 
 #: src/client.cpp
-#, fuzzy
 msgid "Rebuilding shaders..."
-msgstr "Sprawdzanie adresu..."
+msgstr "Kompilowanie shaderów..."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
@@ -606,15 +596,15 @@ msgstr "Nie wybrano świata ani adresu."
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr ""
+msgstr "Nazwa gracza zbyt długa."
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "Podana ścieżka do świata nie istnieje: "
 
 #: src/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr ""
+msgstr "yes"
 
 #: src/game.cpp
 msgid ""
