@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-11-12 17:52+0000\n"
+"PO-Revision-Date: 2015-11-12 18:10+0000\n"
 "Last-Translator: Wuzzy <almikes@aol.com>\n"
 "Language-Team: German "
 "<https://hosted.weblate.org/projects/minetest/minetest/de/>\n"
@@ -1365,7 +1365,7 @@ msgstr "Transparente Texturen säubern"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
-msgstr "Klient und Server"
+msgstr "Client und Server"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -2010,7 +2010,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "How many blocks are flying in the wire simultaneously per client."
 msgstr ""
-"Wie viele Kartenblöcke gleichzeitig pro Klient auf der Leitung unterwegs "
+"Wie viele Kartenblöcke gleichzeitig pro Client auf der Leitung unterwegs "
 "sind."
 
 #: src/settings_translation_file.cpp
@@ -2524,7 +2524,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
-msgstr "\"Benutzen\"-Taste zum runterklettern"
+msgstr "„Benutzen“-Taste zum Runterklettern"
 
 #: src/settings_translation_file.cpp
 msgid "Language"
@@ -2889,7 +2889,7 @@ msgstr "Apfelbaum-Rauschparameter"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 beach frequency"
-msgstr "Standhäufigkeit"
+msgstr "Strandhäufigkeit"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 beach noise parameters"
@@ -3072,8 +3072,8 @@ msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
 msgstr ""
-"Maximale Anzahl der Kartenblöcke, die der Klient im Speicher vorhalten "
-"soll.\n"
+"Maximale Anzahl der Kartenblöcke, die der Client im Speicher vorhalten soll."
+"\n"
 "Auf -1 setzen, um keine Obergrenze zu verwenden."
 
 #: src/settings_translation_file.cpp
@@ -3109,7 +3109,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum simultaneously blocks send per client"
-msgstr "Max. gleichzeitig versendete Kartenblöcke pro Klient"
+msgstr "Max. gleichzeitig versendete Kartenblöcke pro Client"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum simultaneously bocks send total"
@@ -3816,7 +3816,7 @@ msgstr "Zeitgeschwindigkeit"
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory."
 msgstr ""
-"Zeit, nach der der Klient nicht benutzte Kartendaten aus\n"
+"Zeit, nach der der Client nicht benutzte Kartendaten aus\n"
 "dem Speicher löscht."
 
 #: src/settings_translation_file.cpp
