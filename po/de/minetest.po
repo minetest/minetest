@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-10-30 19:48+0200\n"
-"Last-Translator: hybriddog <ovvv@web.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
-"de/>\n"
+"PO-Revision-Date: 2015-11-12 16:56+0000\n"
+"Last-Translator: Wuzzy <almikes@aol.com>\n"
+"Language-Team: German "
+"<https://hosted.weblate.org/projects/minetest/minetest/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -421,7 +421,7 @@ msgstr "Spiel starten"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "\"$1\" is not a valid flag."
-msgstr ""
+msgstr "„$1“ ist kein gültiger Bitschalter."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(No description of setting given)"
@@ -450,6 +450,8 @@ msgstr "Aktiviert"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
 msgstr ""
+"Das Format besteht aus 3 mit Komma getrennten Zahlen, die sich\n"
+"in Klammern befinden."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid ""
@@ -1453,13 +1455,13 @@ msgstr ""
 "Veränderung."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Controls size of deserts and beaches in Mapgen v6.\n"
 "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
 msgstr ""
-"Verändert die Größe der Wüsten und Strände in Kartengenerator V6.\n"
-"Wenn Schneebiome aktiviert sind, wird diese Einstellung ignoriert."
+"Verändert die Größe der Wüsten und Strände im\n"
+"Kartengenerator v6. Wenn Schneebiome aktiviert sind, wird\n"
+"diese Einstellung ignoriert."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -1619,6 +1621,10 @@ msgid ""
 "Note that this is not quite optimized and that smooth lighting on the\n"
 "water surface doesn't work with this."
 msgstr ""
+"Eine etwas niedrigere Wasseroberfläche aktivieren, damit der Node\n"
+"nicht vollständig „gefüllt“ wird. Beachten Sie, dass dies nicht wirklich\n"
+"optimiert wurde, und dass weiches Licht auf der Wasseroberfläche\n"
+"nicht mit dieser Einstellung funktioniert."
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
@@ -1774,13 +1780,12 @@ msgid "Fast movement"
 msgstr "Schnell bewegen"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Fast movement (via use key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
-"Schnelles Laufen (aux1 Taste).\n"
-"Das benötigt das "
+"Schnelle Bewegung (mittels Benutzen-Taste).\n"
+"Dazu wird das „fast“-Privileg auf dem Server benötigt."
 
 #: src/settings_translation_file.cpp
 msgid "Field of view"
@@ -1925,7 +1930,6 @@ msgid "Generate normalmaps"
 msgstr "Normalmaps generieren"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "Flags that are not specified in the flag string are not modified from the "
@@ -1933,11 +1937,13 @@ msgid ""
 "Flags starting with \"no\" are used to explicitly disable them.\n"
 "'trees' and 'flat' flags only have effect in mgv6."
 msgstr ""
-"Kartengenerierungsattribute speziell für Kartengenerator V7.\n"
-"'ridges' sind die Flüsse.\n"
-"Flags, die nicht im flag text angegeben wurden, werden ihre Standartwerte "
-"zugewiesen.\n"
-"Flags, die mit starten "
+"Globale Kartengenerierungsattribute.\n"
+"Bitschalter, welche nicht in der Bitschalterzeichenkette festgelegt sind, "
+"werden\n"
+"nicht von der Standardeinstellung abweichen.\n"
+"Bitschalter, die mit „no“ beginnen, werden benutzt, um sie explizit zu "
+"deaktivieren.\n"
+"Die Bitschalter „trees“ und „flat“ haben nur mit mgv6 eine Wirkung."
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
@@ -2040,23 +2046,27 @@ msgid ""
 "If disabled \"use\" key is used to fly fast if both fly and fast mode are "
 "enabled."
 msgstr ""
+"Falls deaktiviert, wird die „Benutzen“-Taste benutzt, um schnell zu fliegen,"
+"\n"
+"wenn sowohl der Flug- als auch der Schnellmodus aktiviert ist."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled together with fly mode, player is able to fly through solid "
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
-"Falls es aktiviert ist, kann der Spieler im Flugmodus durch solide Blöcke "
+"Falls es aktiviert ist, kann der Spieler im Flugmodus durch feste Blöcke "
 "fliegen.\n"
-"Es benötigt den "
+"Dafür wird das „noclip“-Privileg auf dem Server benötigt."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, \"use\" key instead of \"sneak\" key is used for climbing down "
 "and descending."
 msgstr ""
+"Falls aktiviert, wird die „Benutzen“-Taste statt der „Schleichen“-Taste zum\n"
+"Herunterklettern und Sinken benutzt."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2153,46 +2163,61 @@ msgid ""
 "Julia set: (X,Y,Z) offsets from world centre.\n"
 "Range roughly -2 to 2, multiply by j_scale for offsets in nodes."
 msgstr ""
+"Julia-Menge: (X,Y,Z)-Versatz vom Mittelpunkt der Welt.\n"
+"Reichweite liegt grob von -2 bis 2, wird mit j_scale für Versätze in\n"
+"Nodes multipliziert."
 
 #: src/settings_translation_file.cpp
 msgid "Julia set: Approximate (X,Y,Z) scales in nodes."
-msgstr ""
+msgstr "Julia-Menge: Approximative (X,Y,Z)-Skalierungen in Nodes."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Julia set: Iterations of the recursive function.\n"
 "Controls scale of finest detail."
 msgstr ""
+"Julia-Menge: Iterationen der rekursiven Funktion.\n"
+"Steuert die Skalierung mit einem sehr hohem Detailgrad."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Julia set: W co-ordinate of the generated 3D slice of the 4D shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Julia-Menge: W-Koordinate des generierten 3D-Ausschnitts der 4D-Form.\n"
+"Die Weite liegt grob zwischen -2 und 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Julia set: W value determining the 4D shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Julia-Menge: W-Wert, der die 4D-Form festlegt.\n"
+"Weite liegt grob zwischen -2 und 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Julia set: X value determining the 4D shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Julia-Menge: X-Wert, der die 4D-Form festlegt.\n"
+"Weite liegt grob zwischen -2 und 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Julia set: Y value determining the 4D shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Julia-Menge: Y-Wert, der die 4D-Form festlegt.\n"
+"Weite liegt grob zwischen -2 und 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Julia set: Z value determining the 4D shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Julia-Menge: Z-Wert, der die 4D-Form festlegt.\n"
+"Weite liegt grob zwischen -2 und 2."
 
 #: src/settings_translation_file.cpp
 msgid "Jump key"
@@ -2635,29 +2660,35 @@ msgid ""
 "Mandelbrot set: (X,Y,Z) offsets from world centre.\n"
 "Range roughly -2 to 2, multiply by m_scale for offsets in nodes."
 msgstr ""
+"Mandelbrotmenge: (X,Y,Z)-Versatz vom Mittelpunkt der Welt.\n"
+"Reichweite liegt grob von -2 bis 2, wird mit m_scale für\n"
+"Versätze in Nodes multipliziert."
 
 #: src/settings_translation_file.cpp
 msgid "Mandelbrot set: Approximate (X,Y,Z) scales in nodes."
-msgstr ""
+msgstr "Mandelbrotmenge: Approximative (X,Y,Z)-Skalierungen in Nodes."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Mandelbrot set: Iterations of the recursive function.\n"
 "Controls scale of finest detail."
 msgstr ""
+"Mandelbrotmenge: Iterationen der rekursiven Funktion.\n"
+"Steuert die Skalierung mit einem sehr hohem Detailgrad."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Mandelbrot set: W co-ordinate of the generated 3D slice of the 4D shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Madnelbrotmenge: W-Koordinate des generierten 3D-Ausschnitts der 4D-Form.\n"
+"Die Weite liegt grob zwischen -2 und 2."
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
 msgstr "Weltordner"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen fractal.\n"
 "'julia' selects a julia set to be generated instead of a mandelbrot set.\n"
@@ -2665,14 +2696,16 @@ msgid ""
 "default.\n"
 "Flags starting with \"no\" are used to explicitly disable them."
 msgstr ""
-"Kartengenerierungsattribute speziell für Kartengenerator V7.\n"
-"'ridges' sind die Flüsse.\n"
-"Flags, die nicht im flag text angegeben wurden, werden ihre Standartwerte "
-"zugewiesen.\n"
-"Flags, die mit starten "
+"Kartengenerierungsattribute, die für den Kartengenertor „fractal“\n"
+"spezifisch sind.\n"
+"„julia“ wählt für die Erzeugung eine Julia-Menge statt einer\n"
+"Mandelbrotmenge aus.\n"
+"Bitschalter, welche in der Bitschalterzeichenkette nicht angegeben sind,\n"
+"werden von der Standardeinstellung unverändert gelassen.\n"
+"Bitschalter, welche mit „no“ beginnen, werden benutzt, um sie explizit\n"
+"zu deaktivieren."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "When snowbiomes are enabled jungles are enabled and the jungles flag is "
@@ -2681,14 +2714,15 @@ msgid ""
 "default.\n"
 "Flags starting with \"no\" are used to explicitly disable them."
 msgstr ""
-"Kartengenerierungsattribute speziell für Kartengenerator V7.\n"
-"'ridges' sind die Flüsse.\n"
-"Flags, die nicht im flag text angegeben wurden, werden ihre Standartwerte "
-"zugewiesen.\n"
-"Flags, die mit starten "
+"Kartengenerierungsattribute speziell für den Kartengenerator v6.\n"
+"Falls Schneebiome aktiviert sind, werden Dschungel aktiviert und der\n"
+"„jungles“-Bitschalter wird ignoriert.\n"
+"Bitschalter, welche in der Bitschalterzeichenkette nicht angegeben sind,\n"
+"werden von der Standardeinstellung unverändert gelassen.\n"
+"Bitschalter, welche mit „no“ beginnen, werden benutzt, um sie explizit\n"
+"zu deaktivieren."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
 "'ridges' are the rivers.\n"
@@ -2696,11 +2730,12 @@ msgid ""
 "default.\n"
 "Flags starting with \"no\" are used to explicitly disable them."
 msgstr ""
-"Kartengenerierungsattribute speziell für Kartengenerator V7.\n"
-"'ridges' sind die Flüsse.\n"
-"Flags, die nicht im flag text angegeben wurden, werden ihre Standartwerte "
-"zugewiesen.\n"
-"Flags, die mit starten "
+"Kartengenerierungsattribute speziell für Kartengenerator v7.\n"
+"„ridges“ sind die Flüsse.\n"
+"Bitschalter, welche in der Bitschalterzeichenkette nicht angegeben sind,\n"
+"werden von der Standardeinstellung unverändert gelassen.\n"
+"Bitschalter, welche mit „no“ beginnen, werden benutzt, um sie explizit\n"
+"zu deaktivieren."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
@@ -2739,84 +2774,76 @@ msgid "Mapgen flags"
 msgstr "Kartengenerator-Flags"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen fractal"
-msgstr "Kartengenerator-Flags"
+msgstr "Fraktale-Kartenerzeuger"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen fractal cave1 noise parameters"
-msgstr "Höhlen-Rauschparameter 1"
+msgstr "cave1-Rauschparameter für Fraktale-Kartenerzeuger"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen fractal cave2 noise parameters"
-msgstr "Höhlen-Rauschparameter 2"
+msgstr "cave2-Rauschparameter für Fraktale-Kartenerzeuger"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen fractal filler depth noise parameters"
-msgstr "Fülltiefen-Rauschparameter"
+msgstr "Fülltiefenrauschparameter für Fraktale-Kartenerzeuger"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen fractal flags"
-msgstr "Kartengenerator-Flags"
+msgstr "Bitschalter für Fraktale-Kartenerzeuger"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen fractal julia iterations"
-msgstr "Parallax-Occlusion-Iterationen"
+msgstr "Julia-Iterationen für Fraktale-Kartenerzeuger"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia offset"
-msgstr ""
+msgstr "Julia-Versatz für Fraktale-Kartenerzeuger"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia scale"
-msgstr ""
+msgstr "Julia-Skalierung für Fraktale-Kartenerzeuger"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia slice w"
-msgstr ""
+msgstr "w-Ausschnitt für Fraktale-Kartenerzeuger"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia w"
-msgstr ""
+msgstr "w-Parameter für Fraktale-Kartenerzeuger"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia x"
-msgstr ""
+msgstr "x-Parameter für Fraktale-Kartenerzeuger"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia y"
-msgstr ""
+msgstr "y-Parameter für Fraktale-Kartenerzeuger"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia z"
-msgstr ""
+msgstr "z-Parameter für Fraktale-Kartenerzeuger"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen fractal mandelbrot iterations"
-msgstr "Max. Pakete pro Iteration"
+msgstr "Mandelbrotiterationen für Fraktale-Kartenerzeuger"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal mandelbrot offset"
-msgstr ""
+msgstr "Mandelbrotversatz für Fraktale-Kartenerzeuger"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal mandelbrot scale"
-msgstr ""
+msgstr "Mandelbrotskalierung für Fraktale-Kartenerzeuger"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal mandelbrot slice w"
-msgstr ""
+msgstr "Mandelbrot-w-Ausschnitt für Fraktale-Kartenerzeuger"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen fractal seabed noise parameters"
-msgstr "Hitzenübergangs-Rauschparameter"
+msgstr "Meeresgrundrauschparameter für Fraktale-Kartenerzeuger"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen heat blend noise parameters"
@@ -2997,6 +3024,12 @@ msgid ""
 "Smaller values may result in a suitable spawn point not being found,\n"
 "resulting in a spawn at (0, 0, 0) possibly buried underground."
 msgstr ""
+"Höchstabstand über dem Meeresspiegel für den Spieler-\n"
+"startpunkt. Größere Werte führen zu Startpunkten näher an\n"
+"(x = 0, z = 0). Kleinere Werte können dazu führen, dass kein\n"
+"brauchbarer Startpunkt gefunden wird, was wiederum zu einem\n"
+"Startpunkt bei (0, 0, 0) führt, der möglicherweise im Untergrund\n"
+"eingegraben ist."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -3357,13 +3390,12 @@ msgid "Physics"
 msgstr "Physik"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Player is able to fly without being affected by gravity.\n"
 "This requires the \"fly\" privilege on the server."
 msgstr ""
 "Der Spieler kann unabhängig von der Schwerkraft fliegen.\n"
-"Das benötigt die "
+"Dafür wird das „fly“-Privileg auf dem Server benötigt."
 
 #: src/settings_translation_file.cpp
 msgid "Player name"
@@ -3632,13 +3664,12 @@ msgid "Smooth lighting"
 msgstr "Geglättetes Licht"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Smooths camera when moving and looking around.\n"
 "Useful for recording videos."
 msgstr ""
-"Glättet Kamerabewegungen beim Umsehen.\n"
-"Nützlich zum Aufnehmen von Videos."
+"Glättet Kamerabewegungen bei der Fortbewegung und\n"
+"beim Umsehen. Nützlich zum Aufnehmen von Videos."
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera in cinematic mode. 0 to disable."
@@ -3889,7 +3920,7 @@ msgstr "Vertikale Bildschirmsynchronisation."
 
 #: src/settings_translation_file.cpp
 msgid "Vertical spawn range"
-msgstr ""
+msgstr "Vertikaler Startpunktbereich"
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
