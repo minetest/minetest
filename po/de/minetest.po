@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-11-12 16:56+0000\n"
+"PO-Revision-Date: 2015-11-12 17:52+0000\n"
 "Last-Translator: Wuzzy <almikes@aol.com>\n"
 "Language-Team: German "
 "<https://hosted.weblate.org/projects/minetest/minetest/de/>\n"
@@ -334,7 +334,7 @@ msgstr "Adresse / Port:"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
-msgstr "Klient"
+msgstr "Client"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Connect"
@@ -474,7 +474,9 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a comma seperated list of flags."
-msgstr "Bitte geben Sie eine mit Kommata getrennte Liste von Flags an."
+msgstr ""
+"Bitte geben Sie eine mit Kommata getrennte Liste von\n"
+"Bitschaltern an."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid integer."
@@ -2696,8 +2698,8 @@ msgid ""
 "default.\n"
 "Flags starting with \"no\" are used to explicitly disable them."
 msgstr ""
-"Kartengenerierungsattribute, die für den Kartengenertor „fractal“\n"
-"spezifisch sind.\n"
+"Kartengenerierungsattribute, die speziell für den Fraktale-\n"
+"Kartenerzeuger sind.\n"
 "„julia“ wählt für die Erzeugung eine Julia-Menge statt einer\n"
 "Mandelbrotmenge aus.\n"
 "Bitschalter, welche in der Bitschalterzeichenkette nicht angegeben sind,\n"
@@ -2771,7 +2773,7 @@ msgstr "Kartengenerator-Debugging"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr "Kartengenerator-Flags"
+msgstr "Kartenerzeuger-Bitschalter"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal"
@@ -2907,7 +2909,7 @@ msgstr "Wüsten-Rauschparameter"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 flags"
-msgstr "Flags"
+msgstr "v6-Kartengenerator-Bitschalter"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 height select noise parameters"
@@ -2955,7 +2957,7 @@ msgstr "Fülltiefen-Rauschparameter"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 flags"
-msgstr "Flags"
+msgstr "v7-Kartengenerator-Bitschalter"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 height select noise parameters"
@@ -3116,7 +3118,7 @@ msgstr "Max. gleichzeitig versendete Kartenblöcke"
 #: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
 msgstr ""
-"Maximale Zeit in ms, die das Herunterladen einer Datei (z.B. eine Mod) "
+"Maximale Zeit in ms, die das Herunterladen einer Datei (z.B. einer Mod) "
 "dauern darf."
 
 #: src/settings_translation_file.cpp
