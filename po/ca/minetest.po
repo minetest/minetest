@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-11-12 17:52+0000\n"
+"PO-Revision-Date: 2015-11-12 18:07+0000\n"
 "Last-Translator: Joan Ciprià Moreno <joancipria@gmail.com>\n"
 "Language-Team: Catalan "
 "<https://hosted.weblate.org/projects/minetest/minetest/ca/>\n"
@@ -206,7 +206,7 @@ msgstr "No"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr "Reanomenar el ModPack:"
+msgstr "Reanomenar el paquet de mods:"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua src/keycode.cpp
 msgid "Accept"
@@ -231,8 +231,8 @@ msgstr "Error al instal·lar $1 en $2"
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
 msgstr ""
-"Instal·lar mod: Impossible de trobar el nom de la carpeta adequat  per al "
-"modpack $1"
+"Instal·lar mod: Impossible de trobar el nom de la carpeta adequat per al "
+"paquet de mods $1"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find real modname for: $1"
@@ -336,86 +336,86 @@ msgstr "Adreça / Port:"
 
 #: builtin/mainmenu/tab_multiplayer.lua
 msgid "Name / Password :"
-msgstr ""
+msgstr "Nom / Contrasenya:"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Public Serverlist"
-msgstr ""
+msgstr "Llista de servidors públics"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_server.lua
 #: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
 msgid "Delete"
-msgstr ""
+msgstr "Esborrar"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Connect"
-msgstr ""
+msgstr "Connectar"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative mode"
-msgstr ""
+msgstr "Mode creatiu"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Damage enabled"
-msgstr ""
+msgstr "Dany activat"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
-msgstr ""
+msgstr "PvP activat"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
-msgstr ""
+msgstr "Client"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "New"
-msgstr ""
+msgstr "Nou"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "Configure"
-msgstr ""
+msgstr "Configurar"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Start Game"
-msgstr ""
+msgstr "Començar Joc"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "Select World:"
-msgstr ""
+msgstr "Seleccionar un món:"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Creative Mode"
-msgstr ""
+msgstr "Mode Creatiu"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Enable Damage"
-msgstr ""
+msgstr "Permetre Danys"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Public"
-msgstr ""
+msgstr "Públic"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name/Password"
-msgstr ""
+msgstr "Nom/Contrasenya"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Bind Address"
-msgstr ""
+msgstr "Adreça BIND"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Server Port"
-msgstr ""
+msgstr "Port del Servidor"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "No world created or selected!"
-msgstr ""
+msgstr "No s'ha creat ningun món o no s'ha seleccionat!"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Server"
