@@ -117,7 +117,15 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 		float nval = (flags & DECO_USE_NOISE) ?
 			NoisePerlin2D(&np, p2d_center.X, p2d_center.Y, mapseed) :
 			fill_ratio;
-		u32 deco_count = area * MYMAX(nval, 0.f);
+		u32 deco_count = 0;
+		float deco_count_f = (float)area * nval;
+		if (deco_count_f >= 1.f) {
+			deco_count = deco_count_f;
+		} else if (deco_count_f > 0.f) {
+			// For low density decorations calculate a chance for 1 decoration
+			if (ps.range(1000) <= deco_count_f * 1000.f)
+				deco_count = 1;
+		}
 
 		for (u32 i = 0; i < deco_count; i++) {
 			s16 x = ps.range(p2d_min.X, p2d_max.X);
