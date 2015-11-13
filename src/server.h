@@ -481,6 +481,7 @@ private:
 	// This returns the answer to the sender of wmessage, or "" if there is none
 	std::wstring handleChat(const std::string &name, const std::wstring &wname,
 		const std::wstring &wmessage,
+		bool check_shout_priv = false,
 		u16 peer_id_to_avoid_sending = PEER_ID_INEXISTENT);
 	void handleAdminChat(const ChatEventChat *evt);
 

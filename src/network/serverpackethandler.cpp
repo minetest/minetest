@@ -1063,7 +1063,8 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 	std::string name = player->getName();
 	std::wstring wname = narrow_to_wide(name);
 
-	std::wstring answer_to_sender = handleChat(name, wname, message, pkt->getPeerId());
+	std::wstring answer_to_sender = handleChat(name, wname, message,
+		true, pkt->getPeerId());
 	if (!answer_to_sender.empty()) {
 		// Send the answer to sender
 		SendChatMessage(pkt->getPeerId(), answer_to_sender);
