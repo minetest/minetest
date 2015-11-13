@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-11-12 22:13+0000\n"
+"PO-Revision-Date: 2015-11-13 22:39+0000\n"
 "Last-Translator: Joan Ciprià Moreno <joancipria@gmail.com>\n"
 "Language-Team: Catalan "
 "<https://hosted.weblate.org/projects/minetest/minetest/ca/>\n"
@@ -941,7 +941,7 @@ msgstr "Esc"
 
 #: src/keycode.cpp
 msgid "Final"
-msgstr "Final"
+msgstr "Fi"
 
 #: src/keycode.cpp
 msgid "Junja"
@@ -957,183 +957,183 @@ msgstr ""
 
 #: src/keycode.cpp
 msgid "End"
-msgstr ""
+msgstr "Fi"
 
 #: src/keycode.cpp
 msgid "Home"
-msgstr ""
+msgstr "Inici"
 
 #: src/keycode.cpp
 msgid "Mode Change"
-msgstr ""
+msgstr "Canvi de mode"
 
 #: src/keycode.cpp
 msgid "Next"
-msgstr ""
+msgstr "Següent"
 
 #: src/keycode.cpp
 msgid "Prior"
-msgstr ""
+msgstr "Anterior"
 
 #: src/keycode.cpp
 msgid "Space"
-msgstr ""
+msgstr "Espai"
 
 #: src/keycode.cpp
 msgid "Down"
-msgstr ""
+msgstr "Avall"
 
 #: src/keycode.cpp
 msgid "Execute"
-msgstr ""
+msgstr "Executar"
 
 #: src/keycode.cpp
 msgid "Print"
-msgstr ""
+msgstr "Imprimir"
 
 #: src/keycode.cpp
 msgid "Select"
-msgstr ""
+msgstr "Seleccionar"
 
 #: src/keycode.cpp
 msgid "Up"
-msgstr ""
+msgstr "Amunt"
 
 #: src/keycode.cpp
 msgid "Help"
-msgstr ""
+msgstr "Ajuda"
 
 #: src/keycode.cpp
 msgid "Insert"
-msgstr ""
+msgstr "Introduir"
 
 #: src/keycode.cpp
 msgid "Snapshot"
-msgstr ""
+msgstr "Captura de pantalla"
 
 #: src/keycode.cpp
 msgid "Left Windows"
-msgstr ""
+msgstr "Windows esquerre"
 
 #: src/keycode.cpp
 msgid "Apps"
-msgstr ""
+msgstr "Aplicacions"
 
 #: src/keycode.cpp
 msgid "Numpad 0"
-msgstr ""
+msgstr "Teclat Num. 0"
 
 #: src/keycode.cpp
 msgid "Numpad 1"
-msgstr ""
+msgstr "Teclat Num. 1"
 
 #: src/keycode.cpp
 msgid "Right Windows"
-msgstr ""
+msgstr "Windows dret"
 
 #: src/keycode.cpp
 msgid "Sleep"
-msgstr ""
+msgstr "Dormir"
 
 #: src/keycode.cpp
 msgid "Numpad 2"
-msgstr ""
+msgstr "Teclat Num. 2"
 
 #: src/keycode.cpp
 msgid "Numpad 3"
-msgstr ""
+msgstr "Teclat Num. 3"
 
 #: src/keycode.cpp
 msgid "Numpad 4"
-msgstr ""
+msgstr "Teclat Num. 4"
 
 #: src/keycode.cpp
 msgid "Numpad 5"
-msgstr ""
+msgstr "Teclat Num. 5"
 
 #: src/keycode.cpp
 msgid "Numpad 6"
-msgstr ""
+msgstr "Teclat Num. 6"
 
 #: src/keycode.cpp
 msgid "Numpad 7"
-msgstr ""
+msgstr "Teclat Num. 7"
 
 #: src/keycode.cpp
 msgid "Numpad *"
-msgstr ""
+msgstr "Teclat Num. *"
 
 #: src/keycode.cpp
 msgid "Numpad +"
-msgstr ""
+msgstr "Teclat Num. +"
 
 #: src/keycode.cpp
 msgid "Numpad -"
-msgstr ""
+msgstr "Teclat Num. -"
 
 #: src/keycode.cpp
 msgid "Numpad /"
-msgstr ""
+msgstr "Teclat Num. /"
 
 #: src/keycode.cpp
 msgid "Numpad 8"
-msgstr ""
+msgstr "Teclat Num. 8"
 
 #: src/keycode.cpp
 msgid "Numpad 9"
-msgstr ""
+msgstr "Teclat Num. 9"
 
 #: src/keycode.cpp
 msgid "Num Lock"
-msgstr ""
+msgstr "Bloq Num"
 
 #: src/keycode.cpp
 msgid "Scroll Lock"
-msgstr ""
+msgstr "Bloq Despl"
 
 #: src/keycode.cpp
 msgid "Left Shift"
-msgstr ""
+msgstr "Shift esq"
 
 #: src/keycode.cpp
 msgid "Right Shift"
-msgstr ""
+msgstr "Shift Dta"
 
 #: src/keycode.cpp
 msgid "Left Control"
-msgstr ""
+msgstr "Control esq"
 
 #: src/keycode.cpp
 msgid "Left Menu"
-msgstr ""
+msgstr "Menú esq"
 
 #: src/keycode.cpp
 msgid "Right Control"
-msgstr ""
+msgstr "Control dta"
 
 #: src/keycode.cpp
 msgid "Right Menu"
-msgstr ""
+msgstr "Menú dta"
 
 #: src/keycode.cpp
 msgid "Comma"
-msgstr ""
+msgstr "Coma"
 
 #: src/keycode.cpp
 msgid "Minus"
-msgstr ""
+msgstr "Menys"
 
 #: src/keycode.cpp
 msgid "Period"
-msgstr ""
+msgstr "Període"
 
 #: src/keycode.cpp
 msgid "Plus"
-msgstr ""
+msgstr "Més"
 
 #: src/keycode.cpp
 msgid "Attn"
-msgstr ""
+msgstr "Atentament"
 
 #: src/keycode.cpp
 msgid "CrSel"
@@ -1141,15 +1141,15 @@ msgstr ""
 
 #: src/keycode.cpp
 msgid "Erase OEF"
-msgstr ""
+msgstr "Esborrar OEF"
 
 #: src/keycode.cpp
 msgid "ExSel"
-msgstr ""
+msgstr "ExSel"
 
 #: src/keycode.cpp
 msgid "OEM Clear"
-msgstr ""
+msgstr "Netejar OEM"
 
 #: src/keycode.cpp
 msgid "PA1"
