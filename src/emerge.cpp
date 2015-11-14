@@ -292,13 +292,17 @@ bool EmergeManager::enqueueBlockEmergeEx(
 	void *callback_param)
 {
 	EmergeThread *thread = NULL;
+	bool entry_already_exists = false;
 
 	{
 		MutexAutoLock queuelock(m_queue_mutex);
 
 		if (!pushBlockEmergeData(blockpos, peer_id, flags,
-				callback, callback_param))
+				callback, callback_param, &entry_already_exists))
 			return false;
+
+		if (entry_already_exists)
+			return true;
 
 		thread = getOptimalThread();
 		thread->pushBlock(blockpos);
@@ -382,7 +386,8 @@ bool EmergeManager::pushBlockEmergeData(
 	u16 peer_requested,
 	u16 flags,
 	EmergeCompletionCallback callback,
-	void *callback_param)
+	void *callback_param,
+	bool *entry_already_exists)
 {
 	u16 &count_peer = m_peer_queue_count[peer_requested];
 
@@ -402,12 +407,12 @@ bool EmergeManager::pushBlockEmergeData(
 	findres = m_blocks_enqueued.insert(std::make_pair(pos, BlockEmergeData()));
 
 	BlockEmergeData &bedata = findres.first->second;
-	bool update_existing    = !findres.second;
+	*entry_already_exists   = !findres.second;
 
 	if (callback)
 		bedata.callbacks.push_back(std::make_pair(callback, callback_param));
 
-	if (update_existing) {
+	if (*entry_already_exists) {
 		bedata.flags |= flags;
 	} else {
 		bedata.flags = flags;

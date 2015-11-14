@@ -159,8 +159,15 @@ private:
 
 	// Requires m_queue_mutex held
 	EmergeThread *getOptimalThread();
-	bool pushBlockEmergeData(v3s16 pos, u16 peer_requested, u16 flags,
-		EmergeCompletionCallback callback, void *callback_param);
+
+	bool pushBlockEmergeData(
+		v3s16 pos,
+		u16 peer_requested,
+		u16 flags,
+		EmergeCompletionCallback callback,
+		void *callback_param,
+		bool *entry_already_exists);
+
 	bool popBlockEmergeData(v3s16 pos, BlockEmergeData *bedata);
 
 	friend class EmergeThread;
