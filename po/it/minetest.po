@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: Minetest 0.4.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-11-06 17:28+0000\n"
-"Last-Translator: Elia Argentieri <elia.argentieri@openmailbox.org>\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
-"minetest/it/>\n"
+"PO-Revision-Date: 2015-11-14 22:10+0000\n"
+"Last-Translator: LelixSuperHD <lele98super@gmail.com>\n"
+"Language-Team: Italian "
+"<https://hosted.weblate.org/projects/minetest/minetest/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,7 +22,7 @@ msgstr ""
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
 msgstr ""
-"Si è verificato un errore in uno script Lua, come ad esempio un modulo:"
+"Si è verificato un errore in uno script in Lua, come ad esempio una mod:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
@@ -427,7 +427,7 @@ msgstr "Avviare il gioco"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "\"$1\" is not a valid flag."
-msgstr ""
+msgstr "\"$1\" non è una bandiera valida."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(No description of setting given)"
@@ -442,18 +442,16 @@ msgid "Change keys"
 msgstr "Cambiare i tasti"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Disabled"
-msgstr "Disatt. pacch."
+msgstr "Disabilitato"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Edit"
 msgstr "Modifica"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Enabled"
-msgstr "attivata"
+msgstr "Attivato"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
@@ -464,6 +462,8 @@ msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 msgstr ""
+"Formato: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+"<octaves>, <persistence>"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Games"
@@ -494,9 +494,8 @@ msgid "Restore Default"
 msgstr "Ripristina predefiniti"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Select path"
-msgstr "Selezionare"
+msgstr "Selezionare il percorso"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -541,14 +540,13 @@ msgstr "Nessuna informazione disponibile"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
-msgstr ""
+msgstr "Niente"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Select texture pack:"
 msgstr "Selezionare un pacchetto di immagini:"
 
 #: builtin/mainmenu/tab_texturepacks.lua
-#, fuzzy
 msgid "Texturepacks"
 msgstr "Pacch. Texture"
 
