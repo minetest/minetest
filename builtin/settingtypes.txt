@@ -980,49 +980,34 @@ mgfractal_spflags (Mapgen fractal flags) flags nojulia julia,nojulia
 #    3 = 4D "Mandy Cousin" mandelbrot set, 4 = 4D mandelbrot set variation.
 mgfractal_formula (Mapgen fractal formula) int 1 1 4
 
-#    Mandelbrot set: Iterations of the recursive function.
+#    Iterations of the recursive function.
 #    Controls scale of finest detail.
-mgfractal_m_iterations (Mapgen fractal mandelbrot iterations) int 9
+mgfractal_iterations (Mapgen fractal iterations) int 9
 
-#    Mandelbrot set: Approximate (X,Y,Z) scales in nodes.
-mgfractal_m_scale (Mapgen fractal mandelbrot scale) v3f (1024.0, 256.0, 1024.0)
+#    Approximate (X,Y,Z) scales in nodes.
+mgfractal_scale (Mapgen fractal scale) v3f (1024.0, 256.0, 1024.0)
 
-#    Mandelbrot set: (X,Y,Z) offsets from world centre.
-#    Range roughly -2 to 2, multiply by m_scale for offsets in nodes.
-mgfractal_m_offset (Mapgen fractal mandelbrot offset) v3f (1.75, 0.0, 0.0)
+#    (X,Y,Z) offsets from world centre.
+#    Range roughly -2 to 2, multiply by 'scale' for offsets in nodes.
+mgfractal_offset (Mapgen fractal offset) v3f (1.75, 0.0, 0.0)
 
-#    Mandelbrot set: W co-ordinate of the generated 3D slice of the 4D shape.
+#    W co-ordinate of the generated 3D slice of the 4D shape.
 #    Range roughly -2 to 2.
-mgfractal_m_slice_w (Mapgen fractal mandelbrot slice w) float 0.0
+mgfractal_slice_w (Mapgen fractal slice w) float 0.0
 
-#    Julia set: Iterations of the recursive function.
-#    Controls scale of finest detail.
-mgfractal_j_iterations (Mapgen fractal julia iterations) int 9
-
-#    Julia set: Approximate (X,Y,Z) scales in nodes.
-mgfractal_j_scale (Mapgen fractal julia scale) v3f (2048.0, 512.0, 2048.0)
-
-#    Julia set: (X,Y,Z) offsets from world centre.
-#    Range roughly -2 to 2, multiply by j_scale for offsets in nodes.
-mgfractal_j_offset (Mapgen fractal julia offset) v3f (0.0, 1.0, 0.0)
-
-#    Julia set: W co-ordinate of the generated 3D slice of the 4D shape.
-#    Range roughly -2 to 2.
-mgfractal_j_slice_w (Mapgen fractal julia slice w) float 0.0
-
-#    Julia set: X value determining the 4D shape.
+#    Julia set only: X value determining the 4D shape.
 #    Range roughly -2 to 2.
 mgfractal_julia_x (Mapgen fractal julia x) float 0.33
 
-#    Julia set: Y value determining the 4D shape.
+#    Julia set only: Y value determining the 4D shape.
 #    Range roughly -2 to 2.
 mgfractal_julia_y (Mapgen fractal julia y) float 0.33
 
-#    Julia set: Z value determining the 4D shape.
+#    Julia set only: Z value determining the 4D shape.
 #    Range roughly -2 to 2.
 mgfractal_julia_z (Mapgen fractal julia z) float 0.33
 
-#    Julia set: W value determining the 4D shape.
+#    Julia set only: W value determining the 4D shape.
 #    Range roughly -2 to 2.
 mgfractal_julia_w (Mapgen fractal julia w) float 0.33
 

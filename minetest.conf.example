@@ -1246,62 +1246,31 @@
 #    type: int
 # mgfractal_formula = 1
 
-#    Mandelbrot set: Iterations of the recursive function.
+#    Iterations of the recursive function.
 #    Controls scale of finest detail.
 #    type: int
-# mgfractal_m_iterations = 9
+# mgfractal_iterations = 9
 
-#    Mandelbrot set: Approximate (X,Y,Z) scales in nodes.
+#    Approximate (X,Y,Z) scales in nodes.
 #    type: v3f
-# mgfractal_m_scale = (1024.0, 256.0, 1024.0)
+# mgfractal_scale = (1024.0, 256.0, 1024.0)
 
-#    Mandelbrot set: (X,Y,Z) offsets from world centre.
-#    Range roughly -2 to 2, multiply by m_scale for offsets in nodes.
+#    (X,Y,Z) offsets from world centre.
+#    Range roughly -2 to 2, multiply by 'scale' for offsets in nodes.
 #    type: v3f
-# mgfractal_m_offset = (1.75, 0.0, 0.0)
+# mgfractal_offset = (1.75, 0.0, 0.0)
 
-#    Mandelbrot set: W co-ordinate of the generated 3D slice of the 4D shape.
+#    W co-ordinate of the generated 3D slice of the 4D shape.
 #    Range roughly -2 to 2.
 #    type: float
-# mgfractal_m_slice_w = 0.0
+# mgfractal_slice_w = 0.0
 
-#    Julia set: Iterations of the recursive function.
-#    Controls scale of finest detail.
-#    type: int
-# mgfractal_j_iterations = 9
-
-#    Julia set: Approximate (X,Y,Z) scales in nodes.
-#    type: v3f
-# mgfractal_j_scale = (2048.0, 512.0, 2048.0)
-
-#    Julia set: (X,Y,Z) offsets from world centre.
-#    Range roughly -2 to 2, multiply by j_scale for offsets in nodes.
-#    type: v3f
-# mgfractal_j_offset = (0.0, 1.0, 0.0)
-
-#    Julia set: W co-ordinate of the generated 3D slice of the 4D shape.
-#    Range roughly -2 to 2.
-#    type: float
-# mgfractal_j_slice_w = 0.0
-
-#    Julia set: X value determining the 4D shape.
+#    Julia set only: 4 values determining the 4D shape.
 #    Range roughly -2 to 2.
 #    type: float
 # mgfractal_julia_x = 0.33
-
-#    Julia set: Y value determining the 4D shape.
-#    Range roughly -2 to 2.
-#    type: float
 # mgfractal_julia_y = 0.33
-
-#    Julia set: Z value determining the 4D shape.
-#    Range roughly -2 to 2.
-#    type: float
 # mgfractal_julia_z = 0.33
-
-#    Julia set: W value determining the 4D shape.
-#    Range roughly -2 to 2.
-#    type: float
 # mgfractal_julia_w = 0.33
 
 #    type: noise_params
