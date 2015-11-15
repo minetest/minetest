@@ -317,7 +317,8 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 	}
 
 	// Generate the registered decorations
-	m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
+	if (flags & MG_DECORATIONS)
+		m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
 
 	// Generate the registered ores
 	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
