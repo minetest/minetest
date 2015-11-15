@@ -39,7 +39,6 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include <vorbis/vorbisfile.h>
 #include <assert.h>
 #include "log.h"
-#include "filesys.h"
 #include "util/numeric.h" // myrand()
 #include "porting.h"
 #include <map>
