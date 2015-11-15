@@ -1021,11 +1021,12 @@
 # map_generation_limit = 31000
 
 #    Global map generation attributes.
-#    The 'trees' flag only has effect in mgv6.
+#    In Mapgen v6 the 'decorations' flag controls all decorations except trees
+#    and junglegrass, in all other mapgens this flag controls all decorations.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with "no" are used to explicitly disable them.
-#    type: flags possible values: trees, caves, dungeons, light, notrees, nocaves, nodungeons, nolight
-# mg_flags = trees,caves,dungeons,light
+#    type: flags possible values: caves, dungeons, light, decorations, nocaves, nodungeons, nolight, nodecorations
+# mg_flags = caves,dungeons,light,decorations
 
 ### Advanced
 
@@ -1093,8 +1094,8 @@
 #    When snowbiomes are enabled jungles are enabled and the jungles flag is ignored.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with "no" are used to explicitly disable them.
-#    type: flags possible values: jungles, biomeblend, mudflow, snowbiomes, flat, nojungles, nobiomeblend, nomudflow, nosnowbiomes, noflat
-# mgv6_spflags = jungles,biomeblend,mudflow,snowbiomes
+#    type: flags possible values: jungles, biomeblend, mudflow, snowbiomes, flat, trees, nojungles, nobiomeblend, nomudflow, nosnowbiomes, noflat, notrees
+# mgv6_spflags = jungles,biomeblend,mudflow,snowbiomes,trees
 
 #    Controls size of deserts and beaches in Mapgen v6.
 #    When snowbiomes are enabled 'mgv6_freq_desert' is ignored.

@@ -43,6 +43,7 @@ FlagDesc flagdesc_mapgen_v6[] = {
 	{"mudflow",    MGV6_MUDFLOW},
 	{"snowbiomes", MGV6_SNOWBIOMES},
 	{"flat",       MGV6_FLAT},
+	{"trees",      MGV6_TREES},
 	{NULL,         0}
 };
 
@@ -580,11 +581,12 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 	growGrass();
 
 	// Generate some trees, and add grass, if a jungle
-	if (flags & MG_TREES)
+	if ((spflags & MGV6_TREES) || (flags & MG_TREES))
 		placeTreesAndJungleGrass();
 
 	// Generate the registered decorations
-	m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
+	if (flags & MG_DECORATIONS)
+		m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
 
 	// Generate the registered ores
 	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);

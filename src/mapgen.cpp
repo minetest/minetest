@@ -41,11 +41,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 
 FlagDesc flagdesc_mapgen[] = {
-	{"trees",    MG_TREES},
-	{"caves",    MG_CAVES},
-	{"dungeons", MG_DUNGEONS},
-	{"flat",     MG_FLAT},
-	{"light",    MG_LIGHT},
+	{"trees",       MG_TREES},
+	{"caves",       MG_CAVES},
+	{"dungeons",    MG_DUNGEONS},
+	{"flat",        MG_FLAT},
+	{"light",       MG_LIGHT},
+	{"decorations", MG_DECORATIONS},
 	{NULL,       0}
 };
 

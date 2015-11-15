@@ -29,11 +29,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define DEFAULT_MAPGEN "v6"
 
 /////////////////// Mapgen flags
-#define MG_TREES         0x01
-#define MG_CAVES         0x02
-#define MG_DUNGEONS      0x04
-#define MG_FLAT          0x08
-#define MG_LIGHT         0x10
+#define MG_TREES       0x01
+#define MG_CAVES       0x02
+#define MG_DUNGEONS    0x04
+#define MG_FLAT        0x08
+#define MG_LIGHT       0x10
+#define MG_DECORATIONS 0x20
 
 class Settings;
 class MMVManip;
@@ -126,7 +127,7 @@ struct MapgenParams {
 		chunksize(5),
 		seed(0),
 		water_level(1),
-		flags(MG_TREES | MG_CAVES | MG_LIGHT),
+		flags(MG_CAVES | MG_LIGHT | MG_DECORATIONS),
 		np_biome_heat(NoiseParams(50, 50, v3f(750.0, 750.0, 750.0), 5349, 3, 0.5, 2.0)),
 		np_biome_heat_blend(NoiseParams(0, 1.5, v3f(8.0, 8.0, 8.0), 13, 2, 1.0, 2.0)),
 		np_biome_humidity(NoiseParams(50, 50, v3f(750.0, 750.0, 750.0), 842, 3, 0.5, 2.0)),
