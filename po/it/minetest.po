@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Minetest 0.4.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-11-14 22:10+0000\n"
-"Last-Translator: LelixSuperHD <lele98super@gmail.com>\n"
+"PO-Revision-Date: 2015-11-15 15:37+0000\n"
+"Last-Translator: Andrea Di Pietro Ulla <poetafuso34@yahoo.it>\n"
 "Language-Team: Italian "
 "<https://hosted.weblate.org/projects/minetest/minetest/it/>\n"
 "Language: it\n"
@@ -38,7 +38,7 @@ msgstr "Ok"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr "Riconnettiti"
+msgstr "Riconnettersi"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
