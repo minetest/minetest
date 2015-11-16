@@ -77,8 +77,8 @@ end
 
 function core.register_entity(name, prototype)
 	-- Check name
-	if name == nil then
-		error("Unable to register entity: Name is nil")
+	if not name then
+		error("Unable to register entity: Name is missing")
 	end
 	name = check_modname_prefix(tostring(name))
 
@@ -90,10 +90,35 @@ function core.register_entity(name, prototype)
 	prototype.mod_origin = core.get_current_modname() or "??"
 end
 
+
+function core.override_on_place(name, func)
+	local previous_on_place = core.registered_nodes[name].on_place
+	core.override_item(name, {
+		on_place = function(itemstack, ...)
+			if func(itemstack, ...) then
+				return previous_on_place(itemstack, ...)
+			end
+			return itemstack
+		end
+	})
+end
+
+function core.override_on_punch(name, func)
+	local previous_on_punch = core.registered_nodes[name].on_punch
+	core.override_item(name, {
+		on_punch = function(...)
+			if func(...) then
+				return previous_on_punch(...)
+			end
+		end
+	})
+end
+
+
 function core.register_item(name, itemdef)
 	-- Check name
-	if name == nil then
-		error("Unable to register item: Name is nil")
+	if not name then
+		error("Unable to register item: Name is missing")
 	end
 	name = check_modname_prefix(tostring(name))
 	if forbidden_item_names[name] then
@@ -103,23 +128,40 @@ function core.register_item(name, itemdef)
 
 	-- Apply defaults and add to registered_* table
 	if itemdef.type == "node" then
-		-- Use the nodebox as selection box if it's not set manually
-		if itemdef.drawtype == "nodebox" and not itemdef.selection_box then
-			itemdef.selection_box = itemdef.node_box
-		elseif itemdef.drawtype == "fencelike" and not itemdef.selection_box then
-			itemdef.selection_box = {
-				type = "fixed",
-				fixed = {-1/8, -1/2, -1/8, 1/8, 1/2, 1/8},
-			}
+		-- tile_images is deprecated
+		if not itemdef.tiles and itemdef.tile_images then
+			itemdef.tiles = itemdef.tile_images
+			itemdef.tile_images = nil
 		end
+
+		local is_nodebox = itemdef.drawtype == "nodebox"
+
+		-- plantlike, nodebox and others need paramtype light
+		if (is_nodebox or itemdef.drawtype == "plantlike")
+				and not itemdef.paramtype then
+			itemdef.paramtype = "light"
+		end
+
+		-- Use the nodebox as selection box if it's not set manually
+		if not itemdef.selection_box then
+			if is_nodebox then
+				itemdef.selection_box = itemdef.node_box
+			elseif itemdef.drawtype == "fencelike" then
+				itemdef.selection_box = {
+					type = "fixed",
+					fixed = {-1/8, -1/2, -1/8, 1/8, 1/2, 1/8},
+				}
+			end
+		end
+
 		setmetatable(itemdef, {__index = core.nodedef_default})
-		core.registered_nodes[itemdef.name] = itemdef
+		core.registered_nodes[name] = itemdef
 	elseif itemdef.type == "craft" then
 		setmetatable(itemdef, {__index = core.craftitemdef_default})
-		core.registered_craftitems[itemdef.name] = itemdef
+		core.registered_craftitems[name] = itemdef
 	elseif itemdef.type == "tool" then
 		setmetatable(itemdef, {__index = core.tooldef_default})
-		core.registered_tools[itemdef.name] = itemdef
+		core.registered_tools[name] = itemdef
 	elseif itemdef.type == "none" then
 		setmetatable(itemdef, {__index = core.noneitemdef_default})
 	else
@@ -132,18 +174,18 @@ function core.register_item(name, itemdef)
 	end
 
 	-- BEGIN Legacy stuff
-	if itemdef.cookresult_itemstring ~= nil and itemdef.cookresult_itemstring ~= "" then
+	if itemdef.cookresult_itemstring and itemdef.cookresult_itemstring ~= "" then
 		core.register_craft({
 			type="cooking",
 			output=itemdef.cookresult_itemstring,
-			recipe=itemdef.name,
+			recipe=name,
 			cooktime=itemdef.furnace_cooktime
 		})
 	end
-	if itemdef.furnace_burntime ~= nil and itemdef.furnace_burntime >= 0 then
+	if itemdef.furnace_burntime and itemdef.furnace_burntime >= 0 then
 		core.register_craft({
 			type="fuel",
-			recipe=itemdef.name,
+			recipe=name,
 			burntime=itemdef.furnace_burntime
 		})
 	end
@@ -155,9 +197,38 @@ function core.register_item(name, itemdef)
 	getmetatable(itemdef).__newindex = {}
 
 	--core.log("Registering item: " .. itemdef.name)
-	core.registered_items[itemdef.name] = itemdef
-	core.registered_aliases[itemdef.name] = nil
+	core.registered_items[name] = itemdef
+	core.registered_aliases[name] = nil
 	register_item_raw(itemdef)
+
+	if itemdef.can_place then
+		core.override_on_place(name, function(itemstack, placer, pt)
+			local pos = pt.under
+
+			-- abort if it happens in an unloaded area
+			local node = minetest.get_node_or_nil(pos)
+			if not node then
+				return
+			end
+
+			local def = minetest.registered_nodes[node.name]
+			if not def then
+				minetest.log("error", node.name .." is not registered")
+				return
+			end
+
+			-- often the pointed node is not buildable_to
+			if not def.buildable_to then
+				pos = pt.above
+				node = minetest.get_node(pos)
+			end
+
+			itemdef.can_place(vector.new(pos), node, itemstack, placer, pt)
+		end)
+	end
+	if itemdef.can_punch then
+		core.override_on_punch(name, itemdef.can_punch)
+	end
 end
 
 function core.register_node(name, nodedef)
@@ -220,7 +291,7 @@ function core.register_alias(name, convert_to)
 	if forbidden_item_names[name] then
 		error("Unable to register alias: Name is forbidden: " .. name)
 	end
-	if core.registered_items[name] ~= nil then
+	if core.registered_items[name] then
 		core.log("warning", "Not registering alias, item with same name" ..
 			" is already defined: " .. name .. " -> " .. convert_to)
 	else
@@ -246,7 +317,6 @@ end
 
 -- Alias the forbidden item names to "" so they can't be
 -- created via itemstrings (e.g. /give)
-local name
 for name in pairs(forbidden_item_names) do
 	core.registered_aliases[name] = ""
 	register_alias_raw(name, "")
@@ -338,25 +408,25 @@ function core.run_callbacks(callbacks, mode, ...)
 	if cb_len == 0 then
 		if mode == 2 or mode == 3 then
 			return true
-		elseif mode == 4 or mode == 5 then
+		end
+		if mode == 4 or mode == 5 then
 			return false
 		end
 	end
-	local ret = nil
+	local ret
 	for i = 1, cb_len do
 		local origin = core.callback_origins[callbacks[i]]
 		if origin then
 			core.set_last_run_mod(origin.mod)
-			--print("Running " .. tostring(callbacks[i]) ..
-			--	" (a " .. origin.name .. " callback in " .. origin.mod .. ")")
+			--[[
+			print("Running " .. tostring(callbacks[i]) ..
+				" (a " .. origin.name .. " callback in " .. origin.mod .. ")")
 		else
-			--print("No data associated with callback")
+			print("No data associated with callback")--]]
 		end
 		local cb_ret = callbacks[i](...)
 
-		if mode == 0 and i == 1 then
-			ret = cb_ret
-		elseif mode == 1 and i == cb_len then
+		if (mode == 0 and i == 1) or (mode == 1 and i == cb_len) then
 			ret = cb_ret
 		elseif mode == 2 then
 			if not cb_ret or i == 1 then
@@ -417,7 +487,7 @@ local function make_registration_wrap(reg_fn_name, clear_fn_name)
 	core[reg_fn_name] = function(def)
 		local retval = orig_reg_fn(def)
 		if retval ~= nil then
-			if def.name ~= nil then
+			if def.name then
 				list[def.name] = def
 			else
 				list[retval] = def
@@ -502,4 +572,3 @@ core.registered_on_punchplayers, core.register_on_punchplayer = make_registratio
 --
 
 core.register_on_mapgen_init = function(func) func(core.get_mapgen_params()) end
-
