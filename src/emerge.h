@@ -136,6 +136,7 @@ public:
 
 	// Mapgen helpers methods
 	Biome *getBiomeAtPoint(v3s16 p);
+	v2s16 getSpawnSearchCentre();
 	int getGroundLevelAtPoint(v2s16 p);
 	bool isBlockUnderground(v3s16 blockpos);
 

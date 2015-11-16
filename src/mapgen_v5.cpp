@@ -172,6 +172,12 @@ void MapgenV5Params::writeParams(Settings *settings) const
 }
 
 
+v2s16 MapgenV5::getSpawnSearchCentre()
+{
+	return v2s16(0, 0);
+}
+
+
 int MapgenV5::getGroundLevelAtPoint(v2s16 p)
 {
 	//TimeTaker t("getGroundLevelAtPoint", NULL, PRECISION_MICRO);

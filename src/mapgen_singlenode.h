@@ -40,6 +40,7 @@ public:
 	~MapgenSinglenode();
 	
 	void makeChunk(BlockMakeData *data);
+	v2s16 getSpawnSearchCentre();
 	int getGroundLevelAtPoint(v2s16 p);
 };
 

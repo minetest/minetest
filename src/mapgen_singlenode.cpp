@@ -45,7 +45,9 @@ MapgenSinglenode::~MapgenSinglenode()
 {
 }
 
+
 //////////////////////// Map generator
+
 
 void MapgenSinglenode::makeChunk(BlockMakeData *data)
 {
@@ -93,6 +95,13 @@ void MapgenSinglenode::makeChunk(BlockMakeData *data)
 
 	this->generating = false;
 }
+
+
+v2s16 MapgenSinglenode::getSpawnSearchCentre()
+{
+	return v2s16(0, 0);
+}
+
 
 int MapgenSinglenode::getGroundLevelAtPoint(v2s16 p)
 {

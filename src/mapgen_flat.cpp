@@ -192,6 +192,12 @@ void MapgenFlatParams::writeParams(Settings *settings) const
 /////////////////////////////////////////////////////////////////
 
 
+v2s16 MapgenFlat::getSpawnSearchCentre()
+{
+	return v2s16(0, 0);
+}
+
+
 int MapgenFlat::getGroundLevelAtPoint(v2s16 p)
 {
 	float n_terrain = NoisePerlin2D(&noise_terrain->np, p.X, p.Y, seed);

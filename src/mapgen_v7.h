@@ -103,6 +103,7 @@ public:
 	~MapgenV7();
 
 	virtual void makeChunk(BlockMakeData *data);
+	v2s16 getSpawnSearchCentre();
 	int getGroundLevelAtPoint(v2s16 p);
 	Biome *getBiomeAtPoint(v3s16 p);
 
