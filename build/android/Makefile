@@ -104,13 +104,14 @@ OGG_TIMESTAMP = $(OGG_DIR)timestamp
 OGG_TIMESTAMP_INT = $(ROOT)/deps/ogg_timestamp
 OGG_URL_GIT = https://github.com/vincentjames501/libvorbis-libogg-android
 
+IRRLICHT_REVISION = 5122
 IRRLICHT_DIR = $(ROOT)/deps/irrlicht/
 IRRLICHT_LIB = $(IRRLICHT_DIR)lib/Android/libIrrlicht.a
 IRRLICHT_TIMESTAMP = $(IRRLICHT_DIR)timestamp
 IRRLICHT_TIMESTAMP_INT = $(ROOT)/deps/irrlicht_timestamp
-IRRLICHT_URL_SVN = http://svn.code.sf.net/p/irrlicht/code/branches/ogl-es/
+IRRLICHT_URL_SVN = http://svn.code.sf.net/p/irrlicht/code/branches/ogl-es@$(IRRLICHT_REVISION)
 
-OPENSSL_VERSION = 1.0.1l
+OPENSSL_VERSION = 1.0.1p
 OPENSSL_BASEDIR = openssl-$(OPENSSL_VERSION)
 OPENSSL_DIR = $(ROOT)/deps/$(OPENSSL_BASEDIR)/
 OPENSSL_LIB = $(OPENSSL_DIR)/libssl.so.1.0.0
@@ -118,14 +119,14 @@ OPENSSL_TIMESTAMP = $(OPENSSL_DIR)timestamp
 OPENSSL_TIMESTAMP_INT = $(ROOT)/deps/openssl_timestamp
 OPENSSL_URL = http://www.openssl.org/source/openssl-$(OPENSSL_VERSION).tar.gz
 
-CURL_VERSION = 7.41.0
+CURL_VERSION = 7.45.0
 CURL_DIR = $(ROOT)/deps/curl-$(CURL_VERSION)
 CURL_LIB = $(CURL_DIR)/lib/.libs/libcurl.a
 CURL_TIMESTAMP = $(CURL_DIR)/timestamp
 CURL_TIMESTAMP_INT = $(ROOT)/deps/curl_timestamp
 CURL_URL_HTTP = http://curl.haxx.se/download/curl-${CURL_VERSION}.tar.bz2
 
-GMP_VERSION = 6.0.0
+GMP_VERSION = 6.1.0
 GMP_DIR = $(ROOT)/deps/gmp-$(GMP_VERSION)
 GMP_LIB = $(GMP_DIR)/usr/lib/libgmp.so
 GMP_TIMESTAMP = $(GMP_DIR)/timestamp
@@ -145,8 +146,8 @@ ICONV_TIMESTAMP = $(ICONV_DIR)timestamp
 ICONV_TIMESTAMP_INT = $(ROOT)/deps/iconv_timestamp
 ICONV_URL_HTTP = http://ftp.gnu.org/pub/gnu/libiconv/libiconv-$(ICONV_VERSION).tar.gz
 
-SQLITE3_FOLDER = sqlite-amalgamation-3080704
-SQLITE3_URL = http://www.sqlite.org/2014/$(SQLITE3_FOLDER).zip
+SQLITE3_FOLDER = sqlite-amalgamation-3090200
+SQLITE3_URL = http://www.sqlite.org/2015/$(SQLITE3_FOLDER).zip
 
 -include $(PATHCFGFILE)
 
