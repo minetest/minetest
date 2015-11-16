@@ -47,8 +47,11 @@ core.register_globalstep(function(dtime)
 	if delay < mintime then
 		return
 	end
-	update_timers(delay)
+	-- delay must be 0 before running update_timers because
+	-- function(s) in timers may execute a minetest.after, which uses delay
+	local olddelay = delay
 	delay = 0
+	update_timers(olddelay)
 end)
 
 function core.after(time, func, ...)
