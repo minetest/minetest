@@ -198,7 +198,13 @@ void MapgenV7Params::writeParams(Settings *settings) const
 }
 
 
-///////////////////////////////////////
+////////////////////////////////////////
+
+
+v2s16 MapgenV7::getSpawnSearchCentre()
+{
+	return v2s16(0, 0);
+}
 
 
 int MapgenV7::getGroundLevelAtPoint(v2s16 p)

@@ -111,6 +111,7 @@ public:
 	~MapgenFractal();
 
 	virtual void makeChunk(BlockMakeData *data);
+	v2s16 getSpawnSearchCentre();
 	int getGroundLevelAtPoint(v2s16 p);
 	void calculateNoise();
 	bool getFractalAtPoint(s16 x, s16 y, s16 z);

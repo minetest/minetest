@@ -207,6 +207,12 @@ void MapgenFractalParams::writeParams(Settings *settings) const
 /////////////////////////////////////////////////////////////////
 
 
+v2s16 MapgenFractal::getSpawnSearchCentre()
+{
+	return v2s16(0, 0);
+}
+
+
 int MapgenFractal::getGroundLevelAtPoint(v2s16 p)
 {
 	s16 search_start = 128;

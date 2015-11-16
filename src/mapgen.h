@@ -181,6 +181,7 @@ public:
 	void spreadLight(v3s16 nmin, v3s16 nmax);
 
 	virtual void makeChunk(BlockMakeData *data) {}
+	virtual v2s16 getSpawnSearchCentre() { return v2s16(0, 0); }
 	virtual int getGroundLevelAtPoint(v2s16 p) { return 0; }
 
 private:

@@ -459,7 +459,14 @@ u32 MapgenV6::get_blockseed(u64 seed, v3s16 p)
 }
 
 
-//////////////////////// Map generator
+////////////////////////////////////////
+
+
+v2s16 MapgenV6::getSpawnSearchCentre()
+{
+	return v2s16(0, 0);
+}
+
 
 void MapgenV6::makeChunk(BlockMakeData *data)
 {

@@ -328,6 +328,18 @@ v3s16 EmergeManager::getContainingChunk(v3s16 blockpos, s16 chunksize)
 }
 
 
+v2s16 EmergeManager::getSpawnSearchCentre()
+{
+	if (m_mapgens.size() == 0 || !m_mapgens[0]) {
+		errorstream << "EmergeManager: getSpawnSearchCentre() called"
+			" before mapgen init" << std::endl;
+		return v2s16(0, 0);
+	}
+
+	return m_mapgens[0]->getSpawnSearchCentre();
+}
+
+
 int EmergeManager::getGroundLevelAtPoint(v2s16 p)
 {
 	if (m_mapgens.size() == 0 || !m_mapgens[0]) {

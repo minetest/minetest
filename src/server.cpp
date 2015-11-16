@@ -3385,17 +3385,18 @@ v3f Server::findSpawnPos()
 	s16 water_level = map.getWaterLevel();
 	s16 vertical_spawn_range = g_settings->getS16("vertical_spawn_range");
 	bool is_good = false;
+	v2s16 search_centre = m_emerge->getSpawnSearchCentre();
 
 	// Try to find a good place a few times
 	for(s32 i = 0; i < 1000 && !is_good; i++) {
 		s32 range = 1 + i;
 		// We're going to try to throw the player to this position
-		v2s16 nodepos2d = v2s16(
+		v2s16 nodepos2d = search_centre + v2s16(
 				-range + (myrand() % (range * 2)),
 				-range + (myrand() % (range * 2)));
 
 		// Get ground height at point
-		s16 groundheight = map.findGroundLevel(nodepos2d);
+		s16 groundheight = m_emerge->getGroundLevelAtPoint(nodepos2d);
 		// Don't go underwater or to high places
 		if (groundheight <= water_level ||
 				groundheight > water_level + vertical_spawn_range)
