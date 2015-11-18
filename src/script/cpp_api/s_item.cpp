@@ -110,6 +110,32 @@ bool ScriptApiItem::item_OnUse(ItemStack &item,
 	return true;
 }
 
+bool ScriptApiItem::item_OnSecondaryUse(ItemStack &item, ServerActiveObject *user)
+{
+	SCRIPTAPI_PRECHECKHEADER
+	
+	int error_handler = PUSH_ERROR_HANDLER(L);
+	
+	if (!getItemCallback(item.name.c_str(), "on_secondary_use"))
+		return false;
+	
+	LuaItemStack::create(L, item);
+	objectrefGetOrCreate(L, user);
+	PointedThing pointed;
+	pointed.type = POINTEDTHING_NOTHING;
+	pushPointedThing(pointed);
+	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
+	if (!lua_isnil(L, -1)) {
+		try {
+			item = read_item(L, -1, getServer());
+		} catch (LuaError &e) {
+			throw LuaError(std::string(e.what()) + ". item=" + item.name);
+		}
+	}
+	lua_pop(L, 2);  // Pop item and error handler
+	return true;
+}
+
 bool ScriptApiItem::item_OnCraft(ItemStack &item, ServerActiveObject *user,
 		const InventoryList *old_craft_grid, const InventoryLocation &craft_inv)
 {

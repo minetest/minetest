@@ -3303,6 +3303,11 @@ Definition tables
         --[[
         ^ Shall place item and return the leftover itemstack
         ^ default: minetest.item_place ]]
+        on_secondary_use = func(itemstack, user, pointed_thing),
+        --[[
+        ^ Same as on_place but called when pointing at nothing.
+        ^ pointed_thing : always { type = "nothing" }
+        ]]
         on_drop = func(itemstack, dropper, pos),
         --[[
         ^ Shall drop item and return the leftover itemstack

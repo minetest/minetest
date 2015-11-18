@@ -1653,6 +1653,23 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		}
 
 	} // action == 4
+	
+	/*
+		5: rightclick air
+	*/
+	else if (action == 5) {
+		ItemStack item = playersao->getWieldedItem();
+		
+		actionstream << player->getName() << " activates " 
+				<< item.name << std::endl;
+		
+		if (m_script->item_OnSecondaryUse(
+				item, playersao)) {
+			if( playersao->setWieldedItem(item)) {
+				SendInventory(playersao);
+			}
+		}
+	}
 
 
 	/*
