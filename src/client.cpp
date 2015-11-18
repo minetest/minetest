@@ -946,6 +946,7 @@ void Client::interact(u8 action, const PointedThing& pointed)
 		2: digging completed
 		3: place block or item (to abovesurface)
 		4: use item
+		5: perform secondary action of item
 	*/
 
 	NetworkPacket pkt(TOSERVER_INTERACT, 1 + 2 + 0);

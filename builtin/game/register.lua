@@ -272,6 +272,7 @@ core.register_item(":unknown", {
 	description = "Unknown Item",
 	inventory_image = "unknown_item.png",
 	on_place = core.item_place,
+	on_secondary_use = core.item_secondary_use,
 	on_drop = core.item_drop,
 	groups = {not_in_creative_inventory=1},
 	diggable = true,
