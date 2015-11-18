@@ -798,6 +798,11 @@
 #    type: bool
 # enable_damage = false
 
+#    Enable hunger mechanics and starving.
+#    Has no effect when enable_damage = false
+#    type: bool
+# enable_hunger = false
+
 #    A chosen map seed for a new map, leave empty for random.
 #    Will be overridden when creating a new world in the main menu.
 #    type: string
@@ -1243,7 +1248,7 @@
 #    Choice of 4 mandelbrot set variations.
 #    1 = 4D "Roundy" mandelbrot set, 2 = 4D "Squarry" mandelbrot set,
 #    3 = 4D "Mandy Cousin" mandelbrot set, 4 = 4D mandelbrot set variation.
-#    type: int
+#    type: int min: 1 max: 4
 # mgfractal_formula = 1
 
 #    Iterations of the recursive function.
@@ -1265,12 +1270,24 @@
 #    type: float
 # mgfractal_slice_w = 0.0
 
-#    Julia set only: 4 values determining the 4D shape.
+#    Julia set only: X value determining the 4D shape.
 #    Range roughly -2 to 2.
 #    type: float
 # mgfractal_julia_x = 0.33
+
+#    Julia set only: Y value determining the 4D shape.
+#    Range roughly -2 to 2.
+#    type: float
 # mgfractal_julia_y = 0.33
+
+#    Julia set only: Z value determining the 4D shape.
+#    Range roughly -2 to 2.
+#    type: float
 # mgfractal_julia_z = 0.33
+
+#    Julia set only: W value determining the 4D shape.
+#    Range roughly -2 to 2.
+#    type: float
 # mgfractal_julia_w = 0.33
 
 #    type: noise_params
