@@ -3,31 +3,24 @@
 local function warn_invalid_static_spawnpoint()
 	if core.setting_get("static_spawnpoint") and
 			not core.setting_get_pos("static_spawnpoint") then
-		core.log('error', "The static_spawnpoint setting is invalid: \""..
+		core.log("error", "The static_spawnpoint setting is invalid: \""..
 				core.setting_get("static_spawnpoint").."\"")
 	end
 end
 
 warn_invalid_static_spawnpoint()
 
-local function put_player_in_spawn(obj)
-	warn_invalid_static_spawnpoint()
+local function put_player_in_spawn(player)
 	local static_spawnpoint = core.setting_get_pos("static_spawnpoint")
 	if not static_spawnpoint then
 		return false
 	end
-	core.log('action', "Moving "..obj:get_player_name()..
+	core.log("action", "Moving "..player:get_player_name()..
 			" to static spawnpoint at "..
 			core.pos_to_string(static_spawnpoint))
-	obj:setpos(static_spawnpoint)
+	player:setpos(static_spawnpoint)
 	return true
 end
 
-core.register_on_newplayer(function(obj)
-	put_player_in_spawn(obj)
-end)
-
-core.register_on_respawnplayer(function(obj)
-	return put_player_in_spawn(obj)
-end)
-
+core.register_on_newplayer(put_player_in_spawn)
+core.register_on_respawnplayer(put_player_in_spawn)
