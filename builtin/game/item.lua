@@ -432,7 +432,7 @@ end
 
 function core.item_eat(hunger_change, replace_with_item, hp_change, eat_sound)
 	-- With hunger disabled food has to heal (fallback to old behavior)
-	if core.is_yes(core.setting_getbool("enable_hunger") == false and not hp_change then
+	if core.is_yes(core.setting_getbool("enable_hunger")) == false and not hp_change then
 		hp_change = hunger_change
 	end
 	return function(itemstack, user, pointed_thing)  -- closure

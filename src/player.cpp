@@ -169,7 +169,7 @@ void Player::serialize(std::ostream &os)
 
 	args.writeLines(os);
 
-	os << "PlayerArgsEnd\n";
+	os<<"PlayerArgsEnd\n";
 
 	inventory.serialize(os);
 }
@@ -190,20 +190,20 @@ void Player::deSerialize(std::istream &is, std::string playername)
 	setPitch(args.getFloat("pitch"));
 	setYaw(args.getFloat("yaw"));
 	setPosition(args.getV3F("position"));
-	try {
+	try{
 		hp = args.getS32("hp");
-	}catch(SettingNotFoundException &e) {
+	}catch(SettingNotFoundException &e){
 		hp = PLAYER_MAX_HP;
 	}
-	try {
+	try{
 		m_breath = args.getS32("breath");
-	} catch(SettingNotFoundException &e) {
+	}catch(SettingNotFoundException &e){
 		m_breath = PLAYER_MAX_BREATH;
 	}
 	try {
 		m_hunger = args.getS32("hunger");
 	} catch(SettingNotFoundException &e) {
-		m_hunger = PLAYER_MAX_HUNGER;
+		m_hunger = 20; // PLAYER_MAX_HUNGER might be too high for init?
 	}
 
 	inventory.deSerialize(is);
