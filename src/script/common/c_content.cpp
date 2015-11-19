@@ -285,6 +285,13 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 		tiledef.name = "";
 		getstringfield(L, index, "name", tiledef.name);
 		getstringfield(L, index, "image", tiledef.name); // MaterialSpec compat.
+		// Special material textures
+		getstringfield(L, index, "normal_texture", tiledef.normal_texture);
+		getstringfield(L, index, "special_texture", tiledef.special_texture);
+		tiledef.force_bilinear_filtering = getboolfield_default(
+			L, index, "force_bilinear_filtering", false);
+		tiledef.force_trilinear_filtering = getboolfield_default(
+			L, index, "force_trilinear_filtering", false);
 		tiledef.backface_culling = getboolfield_default(
 			L, index, "backface_culling", true);
 		tiledef.tileable_horizontal = getboolfield_default(
@@ -347,6 +354,9 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	f.drawtype = (NodeDrawType)getenumfield(L, index, "drawtype",
 			ScriptApiNode::es_DrawType,NDT_NORMAL);
 	getfloatfield(L, index, "visual_scale", f.visual_scale);
+
+	/* Shader name */
+	getstringfield(L, index, "shader", f.shader_name);
 
 	/* Meshnode model filename */
 	getstringfield(L, index, "mesh", f.mesh);
