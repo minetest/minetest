@@ -551,7 +551,6 @@ GenericCAO::GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
 		m_animated_meshnode(NULL),
 		m_wield_meshnode(NULL),
 		m_spritenode(NULL),
-		m_nametag_color(video::SColor(255, 255, 255, 255)),
 		m_textnode(NULL),
 		m_position(v3f(0,10*BS,0)),
 		m_velocity(v3f(0,0,0)),
@@ -972,19 +971,19 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 	updateTextures("");
 
 	scene::ISceneNode *node = getSceneNode();
-	if (node && m_is_player && !m_is_local_player) {
+	if (node && m_prop.nametag != "" && !m_is_local_player) {
 		// Add a text node for showing the name
 		gui::IGUIEnvironment* gui = irr->getGUIEnvironment();
-		std::wstring wname = utf8_to_wide(m_name);
+		std::wstring nametag_text = utf8_to_wide(m_prop.nametag);
 		m_textnode = smgr->addTextSceneNode(gui->getSkin()->getFont(),
-				wname.c_str(), m_nametag_color, node);
+				nametag_text.c_str(), m_prop.nametag_color, node);
 		m_textnode->grab();
 		m_textnode->setPosition(v3f(0, BS*1.1, 0));
 
 		// Enforce hiding nametag,
 		// because if freetype is enabled, a grey
 		// shadow can remain.
-		m_textnode->setVisible(m_nametag_color.getAlpha() > 0);
+		m_textnode->setVisible(m_prop.nametag_color.getAlpha() > 0);
 	}
 
 	updateNodePos();
@@ -1594,6 +1593,9 @@ void GenericCAO::processMessage(const std::string &data)
 			m_tx_basepos = m_prop.initial_sprite_basepos;
 		}
 
+		if ((m_is_player && !m_is_local_player) && m_prop.nametag == "")
+			m_prop.nametag = m_name;
+
 		expireVisuals();
 	}
 	else if(cmd == GENERIC_CMD_UPDATE_POSITION)
@@ -1772,15 +1774,15 @@ void GenericCAO::processMessage(const std::string &data)
 			m_armor_groups[name] = rating;
 		}
 	} else if (cmd == GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES) {
+		// Deprecated, for backwards compatibility only.
 		readU8(is); // version
-		m_nametag_color = readARGB8(is);
+		m_prop.nametag_color = readARGB8(is);
 		if (m_textnode != NULL) {
-			m_textnode->setTextColor(m_nametag_color);
+			m_textnode->setTextColor(m_prop.nametag_color);
 
 			// Enforce hiding nametag,
-			// because if freetype is enabled, a grey
-			// shadow can remain.
-			m_textnode->setVisible(m_nametag_color.getAlpha() > 0);
+			// because if freetype is enabled, a grey shadow can remain.
+			m_textnode->setVisible(m_prop.nametag_color.getAlpha() > 0);
 		}
 	}
 }

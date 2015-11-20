@@ -91,13 +91,13 @@ private:
 	std::string m_init_state;
 	bool m_registered;
 	struct ObjectProperties m_prop;
-	
+
 	s16 m_hp;
 	v3f m_velocity;
 	v3f m_acceleration;
 	float m_yaw;
 	ItemGroupList m_armor_groups;
-	
+
 	bool m_properties_sent;
 	float m_last_sent_yaw;
 	v3f m_last_sent_position;
@@ -213,8 +213,6 @@ public:
 	std::set<int> getAttachmentChildIds();
 	ObjectProperties* accessObjectProperties();
 	void notifyObjectPropertiesModified();
-	void setNametagColor(video::SColor color);
-	video::SColor getNametagColor();
 
 	/*
 		Inventory interface
@@ -292,7 +290,7 @@ public:
 
 private:
 	std::string getPropertyPacket();
-	
+
 	Player *m_player;
 	u16 m_peer_id;
 	Inventory *m_inventory;
@@ -333,8 +331,6 @@ private:
 	v3f m_attachment_rotation;
 	bool m_attachment_sent;
 
-	video::SColor m_nametag_color;
-	bool m_nametag_sent;
 
 public:
 	float m_physics_override_speed;
@@ -346,4 +342,3 @@ public:
 };
 
 #endif
-

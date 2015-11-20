@@ -201,6 +201,14 @@ void read_object_properties(lua_State *L, int index,
 	}
 	lua_pop(L, 1);
 	getboolfield(L, -1, "backface_culling", prop->backface_culling);
+	getstringfield(L, -1, "nametag", prop->nametag);
+	lua_getfield(L, -1, "nametag_color");
+	if (!lua_isnil(L, -1)) {
+		video::SColor color = prop->nametag_color;
+		if (read_color(L, -1, &color))
+			prop->nametag_color = color;
+	}
+	lua_pop(L, 1);
 }
 
 /******************************************************************************/
@@ -261,6 +269,11 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "automatic_face_movement_dir");
 	lua_pushboolean(L, prop->backface_culling);
 	lua_setfield(L, -2, "backface_culling");
+	lua_pushlstring(L, prop->nametag.c_str(), prop->nametag.size());
+	lua_setfield(L, -2, "nametag");
+	lua_newtable(L);
+	push_ARGB8(L, prop->nametag_color);
+	lua_setfield(L, -2, "nametag_color");
 }
 
 /******************************************************************************/
