@@ -286,24 +286,83 @@ end
 function modmgr.get_dependencies(modfolder)
 	local toadd = ""
 	if modfolder ~= nil then
-		local filename = modfolder ..
-					DIR_DELIM .. "depends.txt"
-
-		local dependencyfile = io.open(filename,"r")
-
-		if dependencyfile then
-			local dependency = dependencyfile:read("*l")
-			while dependency do
+		local mod_conf = Settings(modfolder .. DIR_DELIM .. "mod.conf")
+		local dependencies = nil
+		if mod_conf then
+			dependencies = mod_conf:get("depends");
+		end
+		if dependencies then
+			local list = dependencies:split()
+			for i, element in ipairs(list) do
 				if toadd ~= "" then
 					toadd = toadd .. ","
 				end
-				toadd = toadd .. dependency
-				dependency = dependencyfile:read()
+				toadd = toadd .. element:trim()
 			end
-			dependencyfile:close()
+		else
+			local filename = modfolder ..
+						DIR_DELIM .. "depends.txt"
+
+			local dependencyfile = io.open(filename,"r")
+
+			if dependencyfile then
+				local dependency = dependencyfile:read("*l")
+				while dependency do
+					if toadd ~= "" then
+						toadd = toadd .. ","
+					end
+					toadd = toadd .. dependency
+					dependency = dependencyfile:read()
+				end
+				dependencyfile:close()
+			end
 		end
 	end
 
+	return toadd
+end
+
+--------------------------------------------------------------------------------
+function modmgr.get_provides(modfolder)
+	local toadd = ""
+	if modfolder ~= nil then
+		local mod_conf = Settings(modfolder .. DIR_DELIM .. "mod.conf")
+		local provides = nil
+		if mod_conf then
+			provides = mod_conf:get("provides");
+		end
+		if provides then
+			local list = provides:split()
+			for i, element in ipairs(list) do
+				if toadd ~= "" then
+					toadd = toadd .. ","
+				end
+				toadd = toadd .. element:trim()
+			end
+		end
+	end
+	return toadd
+end
+
+--------------------------------------------------------------------------------
+function modmgr.get_conflicts(modfolder)
+	local toadd = ""
+	if modfolder ~= nil then
+		local mod_conf = Settings(modfolder .. DIR_DELIM .. "mod.conf")
+		local conflicts = nil
+		if mod_conf then
+			conflicts = mod_conf:get("conflicts");
+		end
+		if conflicts then
+			local list = conflicts:split()
+			for i, element in ipairs(list) do
+				if toadd ~= "" then
+					toadd = toadd .. ","
+				end
+				toadd = toadd .. element:trim()
+			end
+		end
+	end
 	return toadd
 end
 

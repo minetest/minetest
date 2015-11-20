@@ -68,17 +68,26 @@ local function get_formspec(tabview, name, tabdata)
 				.. "label[8.25,0.6;" .. selected_mod.name .. "]"
 
 		local descriptionlines = nil
-		error = nil
-		local descriptionfilename = selected_mod.path .. "description.txt"
-		local descriptionfile,error = io.open(descriptionfilename,"r")
-		if error == nil then
-			local descriptiontext = descriptionfile:read("*all")
-
-			descriptionlines = core.splittext(descriptiontext,42)
-			descriptionfile:close()
+		local mod_conf = Settings(selected_mod.path .. "mod.conf")
+		local descriptiontext
+		if (mod_conf) then
+			descriptiontext = mod_conf:get("description")
+		end
+		if descriptiontext then
+			descriptionlines = core.splittext(descriptiontext, 42)
 		else
-			descriptionlines = {}
-			table.insert(descriptionlines,fgettext("No mod description available"))
+			error = nil
+			local descriptionfilename = selected_mod.path .. "description.txt"
+			local descriptionfile,error = io.open(descriptionfilename, "r")
+			if error == nil then
+				local descriptiontext = descriptionfile:read("*all")
+
+				descriptionlines = core.splittext(descriptiontext, 42)
+				descriptionfile:close()
+			else
+				descriptionlines = {}
+				table.insert(descriptionlines,fgettext("No mod description available"))
+			end
 		end
 
 		retval = retval ..
@@ -102,6 +111,14 @@ local function get_formspec(tabview, name, tabdata)
 			retval = retval .. "," .. fgettext("Depends:") .. ","
 
 			local toadd = modmgr.get_dependencies(selected_mod.path)
+
+			retval = retval .. toadd .. ",," .. fgettext("Provides:") .. ","
+
+			toadd = modmgr.get_provides(selected_mod.path)
+
+			retval = retval .. toadd .. ",," .. fgettext("Conflicts with:") .. ","
+
+			toadd = modmgr.get_conflicts(selected_mod.path)
 
 			retval = retval .. toadd .. ";0]"
 

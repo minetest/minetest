@@ -39,6 +39,8 @@ struct ModSpec
 	std::set<std::string> depends;
 	std::set<std::string> optdepends;
 	std::set<std::string> unsatisfied_depends;
+	std::set<std::string> conflicts;
+	std::set<std::string> provides;
 
 	bool part_of_modpack;
 	bool is_modpack;
@@ -88,7 +90,7 @@ public:
 	// checks if all dependencies are fullfilled.
 	bool isConsistent()
 	{
-		return m_unsatisfied_mods.empty();
+		return m_unsatisfied_mods.empty() && m_mod_conflicts.empty();
 	}
 
 	std::vector<ModSpec> getMods()
@@ -99,6 +101,11 @@ public:
 	std::vector<ModSpec> getUnsatisfiedMods()
 	{
 		return m_unsatisfied_mods;
+	}
+
+	std::map<std::string, std::string> getModConflicts()
+	{
+		return m_mod_conflicts;
 	}
 
 private:
@@ -133,6 +140,9 @@ private:
 	// 5. addon mod in modpack; 6. addon mod.
 	std::set<std::string> m_name_conflicts;
 
+	// map of mod names and error messages for mods that don't work well
+	// together
+	std::map<std::string, std::string> m_mod_conflicts;
 };
 
 #if USE_CURL

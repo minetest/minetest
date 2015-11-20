@@ -29,14 +29,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "convert_json.h"
 #include "exceptions.h"
 
-static bool parseDependsLine(std::istream &is,
-		std::string &dep, std::set<char> &symbols)
+static bool parseDependsString(std::string &dep,
+		std::set<char> &symbols)
 {
-	std::getline(is, dep);
 	dep = trim(dep);
 	symbols.clear();
 	size_t pos = dep.size();
-	while(pos > 0 && !string_allowed(dep.substr(pos-1, 1), MODNAME_ALLOWED_CHARS)){
+	while (pos > 0 && !string_allowed(dep.substr(pos-1, 1), MODNAME_ALLOWED_CHARS)) {
 		// last character is a symbol, not part of the modname
 		symbols.insert(dep[pos-1]);
 		--pos;
@@ -61,26 +60,63 @@ void parseModContents(ModSpec &spec)
 
 	// Handle modpacks (defined by containing modpack.txt)
 	std::ifstream modpack_is((spec.path+DIR_DELIM+"modpack.txt").c_str());
-	if(modpack_is.good()){ //a modpack, recursively get the mods in it
+	if (modpack_is.good()) { //a modpack, recursively get the mods in it
 		modpack_is.close(); // We don't actually need the file
 		spec.is_modpack = true;
 		spec.modpack_content = getModsInPath(spec.path, true);
 
 		// modpacks have no dependencies; they are defined and
 		// tracked separately for each mod in the modpack
-	}
-	else{ // not a modpack, parse the dependencies
-		std::ifstream is((spec.path+DIR_DELIM+"depends.txt").c_str());
-		while(is.good()){
-			std::string dep;
+	} else { // not a modpack, parse the dependencies
+		std::vector<std::string> dependencies;
+		if (info.exists("depends")) {
+			std::string dep = info.get("depends");
+			dependencies = str_split(dep, ',');
+		} else {
+			std::ifstream is((spec.path + DIR_DELIM + "depends.txt").c_str());
+			while (is.good()) {
+				std::string dep;
+				std::getline(is, dep);
+				dependencies.push_back(dep);
+			}
+		}
+		for (std::vector<std::string>::iterator it = dependencies.begin();
+				it != dependencies.end(); ++it) {
 			std::set<char> symbols;
-			if(parseDependsLine(is, dep, symbols)){
-				if(symbols.count('?') != 0){
-					spec.optdepends.insert(dep);
+			if (parseDependsString(*it, symbols)) {
+				if (symbols.count('?') != 0) {
+					spec.optdepends.insert(*it);
+				} else {
+					spec.depends.insert(*it);
 				}
-				else{
-					spec.depends.insert(dep);
-				}
+			}
+		}
+
+		// parse conflicting mods
+		std::vector<std::string> conflicts;
+		if (info.exists("conflicts")) {
+			std::string dep = info.get("conflicts");
+			conflicts = str_split(dep, ',');
+		}
+		for (std::vector<std::string>::iterator it = conflicts.begin();
+				it != conflicts.end(); ++it) {
+			std::set<char> symbols;
+			if (parseDependsString(*it, symbols)) {
+				spec.conflicts.insert(*it);
+			}
+		}
+
+		// parse provides
+		std::vector<std::string> provides;
+		if (info.exists("provides")) {
+			std::string dep = info.get("provides");
+			provides = str_split(dep, ',');
+		}
+		for (std::vector<std::string>::iterator it = provides.begin();
+				it != provides.end(); ++it) {
+			std::set<char> symbols;
+			if (parseDependsString(*it, symbols)) {
+				spec.provides.insert(*it);
 			}
 		}
 	}
@@ -216,6 +252,40 @@ ModConfiguration::ModConfiguration(std::string worldpath)
 		throw ModError(s);
 	}
 
+	// resolve mod conflicts
+	for (std::vector<ModSpec>::iterator it = m_unsatisfied_mods.begin();
+			it != m_unsatisfied_mods.end(); ++it) {
+		// skip mods that have no conflicts.
+		if (it->conflicts.empty())
+			continue;
+		std::string error_msg = "";
+		for (std::vector<ModSpec>::iterator jt = m_unsatisfied_mods.begin();
+				jt != m_unsatisfied_mods.end(); ++jt) {
+			if (it->conflicts.count(jt->name)) {
+				error_msg += " \"" + jt->name + "\"";
+			}
+			for (std::set<std::string>::iterator kt = jt->provides.begin();
+					kt != jt->provides.end(); ++kt) {
+				if (it->conflicts.count(*kt)) {
+					error_msg += " \"" + *kt + "\" (provided by "
+						+ jt->name + ")";
+				}
+			}
+		}
+		if (error_msg.size() > 0) {
+			m_mod_conflicts[it->name] = error_msg;
+		}
+	}
+	// remove conflicting mods
+	for (std::vector<ModSpec>::iterator it = m_unsatisfied_mods.begin();
+			it != m_unsatisfied_mods.end(); ) {
+		if (m_mod_conflicts.find(it->name) != m_mod_conflicts.end()) {
+			m_unsatisfied_mods.erase(it);
+		} else {
+			++it;
+		}
+	}
+
 	// get the mods in order
 	resolveDependencies();
 }
@@ -287,28 +357,34 @@ void ModConfiguration::resolveDependencies()
 {
 	// Step 1: Compile a list of the mod names we're working with
 	std::set<std::string> modnames;
-	for(std::vector<ModSpec>::iterator it = m_unsatisfied_mods.begin();
-		it != m_unsatisfied_mods.end(); ++it){
+	for (std::vector<ModSpec>::iterator it = m_unsatisfied_mods.begin();
+		it != m_unsatisfied_mods.end(); ++it) {
 		modnames.insert((*it).name);
+
+		// also include provides
+		for (std::set<std::string>::iterator jt = it->provides.begin();
+				jt != it->provides.end(); ++jt) {
+			modnames.insert(*jt);
+		}
 	}
 
 	// Step 2: get dependencies (including optional dependencies)
 	// of each mod, split mods into satisfied and unsatisfied
 	std::list<ModSpec> satisfied;
 	std::list<ModSpec> unsatisfied;
-	for(std::vector<ModSpec>::iterator it = m_unsatisfied_mods.begin();
-			it != m_unsatisfied_mods.end(); ++it){
+	for (std::vector<ModSpec>::iterator it = m_unsatisfied_mods.begin();
+			it != m_unsatisfied_mods.end(); ++it) {
 		ModSpec mod = *it;
 		mod.unsatisfied_depends = mod.depends;
 		// check which optional dependencies actually exist
-		for(std::set<std::string>::iterator it_optdep = mod.optdepends.begin();
-				it_optdep != mod.optdepends.end(); ++it_optdep){
+		for (std::set<std::string>::iterator it_optdep = mod.optdepends.begin();
+				it_optdep != mod.optdepends.end(); ++it_optdep) {
 			std::string optdep = *it_optdep;
-			if(modnames.count(optdep) != 0)
+			if (modnames.count(optdep) != 0)
 				mod.unsatisfied_depends.insert(optdep);
 		}
 		// if a mod has no depends it is initially satisfied
-		if(mod.unsatisfied_depends.empty())
+		if (mod.unsatisfied_depends.empty())
 			satisfied.push_back(mod);
 		else
 			unsatisfied.push_back(mod);
@@ -316,19 +392,22 @@ void ModConfiguration::resolveDependencies()
 
 	// Step 3: mods without unmet dependencies can be appended to
 	// the sorted list.
-	while(!satisfied.empty()){
+	while (!satisfied.empty()) {
 		ModSpec mod = satisfied.back();
 		m_sorted_mods.push_back(mod);
 		satisfied.pop_back();
-		for(std::list<ModSpec>::iterator it = unsatisfied.begin();
-				it != unsatisfied.end(); ){
+		for (std::list<ModSpec>::iterator it = unsatisfied.begin();
+				it != unsatisfied.end(); ) {
 			ModSpec& mod2 = *it;
 			mod2.unsatisfied_depends.erase(mod.name);
-			if(mod2.unsatisfied_depends.empty()){
+			for (std::set<std::string>::iterator jt = mod.provides.begin();
+					jt != mod.provides.end(); ++jt) {
+				mod2.unsatisfied_depends.erase(*jt);
+			}
+			if (mod2.unsatisfied_depends.empty()) {
 				satisfied.push_back(mod2);
 				it = unsatisfied.erase(it);
-			}
-			else{
+			} else {
 				++it;
 			}
 		}
