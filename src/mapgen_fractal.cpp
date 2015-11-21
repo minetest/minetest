@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_sao.h"
 #include "nodedef.h"
 #include "voxelalgorithms.h"
-#include "profiler.h" // For TimeTaker
+//#include "profiler.h" // For TimeTaker
 #include "settings.h" // For g_settings
 #include "emerge.h"
 #include "dungeongen.h"
@@ -41,7 +41,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 FlagDesc flagdesc_mapgen_fractal[] = {
-	{"julia", MGFRACTAL_JULIA},
 	{NULL,    0}
 };
 
@@ -143,9 +142,9 @@ MapgenFractalParams::MapgenFractalParams()
 	spflags = 0;
 
 	formula = 1;
-	iterations = 9;
-	scale = v3f(1024.0, 256.0, 1024.0);
-	offset = v3f(1.75, 0.0, 0.0);
+	iterations = 11;
+	scale = v3f(4096.0, 1024.0, 4096.0);
+	offset = v3f(1.79, 0.0, 0.0);
 	slice_w = 0.0;
 
 	julia_x = 0.33;
@@ -236,7 +235,7 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 	this->generating = true;
 	this->vm   = data->vmanip;
 	this->ndef = data->nodedef;
-	TimeTaker t("makeChunk");
+	//TimeTaker t("makeChunk");
 
 	v3s16 blockpos_min = data->blockpos_min;
 	v3s16 blockpos_max = data->blockpos_max;
@@ -319,7 +318,7 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 	// Sprinkle some dust on top after everything else was generated
 	dustTopNodes();
 
-	printf("makeChunk: %dms\n", t.stop());
+	//printf("makeChunk: %dms\n", t.stop());
 
 	updateLiquid(&data->transforming_liquid, full_node_min, full_node_max);
 
@@ -369,7 +368,7 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 {
 	float cx, cy, cz, cw, ox, oy, oz, ow;
 
-	if (spflags & MGFRACTAL_JULIA) {  // Julia set
+	if (formula % 2 == 0) {  // Julia sets, formula = 2, 4, 6, 8
 		cx = julia_x;
 		cy = julia_y;
 		cz = julia_z;
@@ -378,7 +377,7 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 		oy = (float)y / scale.Y - offset.Y;
 		oz = (float)z / scale.Z - offset.Z;
 		ow = slice_w;
-	} else {  // Mandelbrot set
+	} else {  // Mandelbrot sets, formula = 1, 3, 5, 7
 		cx = (float)x / scale.X - offset.X;
 		cy = (float)y / scale.Y - offset.Y;
 		cz = (float)z / scale.Z - offset.Z;
@@ -395,22 +394,22 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 		float nz = 0.0f;
 		float nw = 0.0f;
 
-		if (formula == 1) {  // 4D "Roundy" Mandelbrot Set
+		if (formula == 1 || formula == 2) {  // 4D "Roundy" Mandelbrot/Julia Set
 			nx = ox * ox - oy * oy - oz * oz - ow * ow + cx;
 			ny = 2.0f * (ox * oy + oz * ow) + cy;
 			nz = 2.0f * (ox * oz + oy * ow) + cz;
 			nw = 2.0f * (ox * ow + oy * oz) + cw;
-		} else if (formula == 2) {  // 4D "Squarry" Mandelbrot Set
+		} else if (formula == 3 || formula == 4) {  // 4D "Squarry" Mandelbrot/Julia Set
 			nx = ox * ox - oy * oy - oz * oz - ow * ow + cx;
 			ny = 2.0f * (ox * oy + oz * ow) + cy;
 			nz = 2.0f * (ox * oz + oy * ow) + cz;
 			nw = 2.0f * (ox * ow - oy * oz) + cw;
-		} else if (formula == 3) {  // 4D "Mandy Cousin" Mandelbrot Set
+		} else if (formula == 5 || formula == 6) {  // 4D "Mandy Cousin" Mandelbrot/Julia Set
 			nx = ox * ox - oy * oy - oz * oz + ow * ow + cx;
 			ny = 2.0f * (ox * oy + oz * ow) + cy;
 			nz = 2.0f * (ox * oz + oy * ow) + cz;
 			nw = 2.0f * (ox * ow + oy * oz) + cw;
-		} else if (formula == 4) {  // 4D Mandelbrot Set Variation
+		} else if (formula == 7 || formula == 8) {  // 4D "Variation" Mandelbrot/Julia Set
 			nx = ox * ox - oy * oy - oz * oz - ow * ow + cx;
 			ny = 2.0f * (ox * oy + oz * ow) + cy;
 			nz = 2.0f * (ox * oz - oy * ow) + cz;
