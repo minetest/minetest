@@ -25,9 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define MGFRACTAL_LARGE_CAVE_DEPTH -33
 
-/////////////////// Mapgen Fractal flags
-#define MGFRACTAL_JULIA 0x01
-
 class BiomeManager;
 
 extern FlagDesc flagdesc_mapgen_fractal[];

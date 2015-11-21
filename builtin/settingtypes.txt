@@ -970,29 +970,33 @@ mgflat_np_cave2 (Mapgen flat cave2 noise parameters) noise_params 0, 12, (128, 1
 
 [***Mapgen fractal]
 
-#    Map generation attributes specific to Mapgen fractal.
-#    The 'julia' flag results in the corresponding julia set being generated.
-#    Flags that are not specified in the flag string are not modified from the default.
-#    Flags starting with "no" are used to explicitly disable them.
-mgfractal_spflags (Mapgen fractal flags) flags nojulia julia,nojulia
-
-#    Choice of 4 mandelbrot set variations.
-#    1 = 4D "Roundy" mandelbrot set, 2 = 4D "Squarry" mandelbrot set,
-#    3 = 4D "Mandy Cousin" mandelbrot set, 4 = 4D mandelbrot set variation.
-mgfractal_formula (Mapgen fractal formula) int 1 1 4
+#    Choice of 8 4-dimensional fractals.
+#    1 = "Roundy" mandelbrot set.
+#    2 = "Roundy" julia set.
+#    3 = "Squarry" mandelbrot set.
+#    4 = "Squarry" julia set.
+#    5 = "Mandy Cousin" mandelbrot set.
+#    6 = "Mandy Cousin" julia set.
+#    7 = "Variation" mandelbrot set.
+#    8 = "Variation" julia set.
+mgfractal_formula (Mapgen fractal formula) int 1 1 8
 
 #    Iterations of the recursive function.
 #    Controls scale of finest detail.
-mgfractal_iterations (Mapgen fractal iterations) int 9
+mgfractal_iterations (Mapgen fractal iterations) int 11
 
-#    Approximate (X,Y,Z) scales in nodes.
-mgfractal_scale (Mapgen fractal scale) v3f (1024.0, 256.0, 1024.0)
+#    Approximate (X,Y,Z) scale of fractal in nodes.
+mgfractal_scale (Mapgen fractal scale) v3f (4096.0, 1024.0, 4096.0)
 
-#    (X,Y,Z) offsets from world centre.
-#    Range roughly -2 to 2, multiply by 'scale' for offsets in nodes.
-mgfractal_offset (Mapgen fractal offset) v3f (1.75, 0.0, 0.0)
+#    (X,Y,Z) offset of fractal from world centre.
+#    Used to move a suitable spawn area of low land close to (0, 0).
+#    The default is suitable for mandelbrot sets, it needs to be edited for julia sets,
+#    do this by greatly reducing 'scale' and setting 'offset' initially to (0, 0, 0).
+#    Range roughly -2 to 2. Multiply by 'scale' for offset in nodes.
+mgfractal_offset (Mapgen fractal offset) v3f (1.79, 0.0, 0.0)
 
 #    W co-ordinate of the generated 3D slice of the 4D shape.
+#    Alters the generated 3D shape.
 #    Range roughly -2 to 2.
 mgfractal_slice_w (Mapgen fractal slice w) float 0.0
 
