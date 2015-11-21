@@ -94,7 +94,9 @@ public:
 	const Area *getArea(u32 id) const;
 
 	/// Serializes the store's areas to a binary ostream.
-	void serialize(std::ostream &is) const;
+	/// @param include_ids Whether to include the area's IDs in the file
+	///                    or generate new ones when loading.
+	void serialize(std::ostream &is, bool include_ids) const;
 
 	/// Deserializes the Areas from a binary istream.
 	/// This does not currently clear the AreaStore before adding the

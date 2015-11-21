@@ -136,7 +136,7 @@ void TestAreaStore::testSerialization()
 	store.insertArea(&b);
 
 	std::ostringstream os;
-	store.serialize(os);
+	store.serialize(os, false);
 	std::string str = os.str();
 
 	std::string str_wanted("\x00"  // Version

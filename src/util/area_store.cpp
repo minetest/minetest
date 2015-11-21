@@ -62,15 +62,17 @@ const Area *AreaStore::getArea(u32 id) const
 	return &it->second;
 }
 
-void AreaStore::serialize(std::ostream &os) const
+void AreaStore::serialize(std::ostream &os, bool include_ids) const
 {
-	writeU8(os, 0); // Serialisation version
+	writeU8(os, include_ids ? 1 : 0); // Serialisation version
 
 	// TODO: Compression?
 	writeU16(os, areas_map.size());
 	for (AreaMap::const_iterator it = areas_map.begin();
 			it != areas_map.end(); ++it) {
 		const Area &a = it->second;
+		if (include_ids)
+			writeU16(os, a.id);
 		writeV3S16(os, a.minedge);
 		writeV3S16(os, a.maxedge);
 		writeU16(os, a.data.size());
@@ -81,13 +83,18 @@ void AreaStore::serialize(std::ostream &os) const
 void AreaStore::deserialize(std::istream &is)
 {
 	u8 ver = readU8(is);
-	if (ver != 0)
+	if (ver > 1)
 		throw SerializationError("Unknown AreaStore "
 				"serialization version!");
-
+	bool include_ids = ver == 1;
+	u16 max_id = 0;
 	u16 num_areas = readU16(is);
 	for (u32 i = 0; i < num_areas; ++i) {
 		Area a;
+		if (include_ids) {
+			a.id = readU16(is);
+			max_id = MYMAX(max_id, a.id);
+		}
 		a.minedge = readV3S16(is);
 		a.maxedge = readV3S16(is);
 		u16 data_len = readU16(is);
@@ -96,6 +103,8 @@ void AreaStore::deserialize(std::istream &is)
 		a.data = std::string(data, data_len);
 		insertArea(&a);
 	}
+	if (include_ids)
+		m_next_id = max_id;
 }
 
 void AreaStore::invalidateCache()

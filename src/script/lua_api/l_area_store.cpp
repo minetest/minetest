@@ -236,22 +236,23 @@ int LuaAreaStore::l_set_cache_params(lua_State *L)
 	return 0;
 }
 
-// to_string()
+// to_string(include_ids)
 int LuaAreaStore::l_to_string(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaAreaStore *o = checkobject(L, 1);
+	bool include_ids = lua_toboolean(L, 2);
 
 	std::ostringstream os(std::ios_base::binary);
-	o->as->serialize(os);
+	o->as->serialize(os, include_ids);
 	std::string str = os.str();
 
 	lua_pushlstring(L, str.c_str(), str.length());
 	return 1;
 }
 
-// to_file(filename)
+// to_file(filename, include_ids)
 int LuaAreaStore::l_to_file(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -261,9 +262,10 @@ int LuaAreaStore::l_to_file(lua_State *L)
 
 	const char *filename = luaL_checkstring(L, 2);
 	CHECK_SECURE_PATH_OPTIONAL(L, filename);
+	bool include_ids = lua_toboolean(L, 3);
 
 	std::ostringstream os(std::ios_base::binary);
-	ast->serialize(os);
+	ast->serialize(os, include_ids);
 
 	lua_pushboolean(L, fs::safeWriteToFile(filename, os.str()));
 	return 1;
