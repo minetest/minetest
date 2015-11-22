@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-08-15 16:30+0200\n"
-"Last-Translator: Wuzzy <almikes@aol.com>\n"
-"Language-Team: Lojban <https://hosted.weblate.org/projects/minetest/minetest/"
-"jbo/>\n"
+"PO-Revision-Date: 2015-11-22 06:05+0000\n"
+"Last-Translator: senpi <saikos@openmailbox.org>\n"
+"Language-Team: Lojban "
+"<https://hosted.weblate.org/projects/minetest/minetest/jbo/>\n"
 "Language: jbo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.4-dev\n"
+"X-Generator: Weblate 2.5-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -43,7 +43,7 @@ msgstr "samjongau"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "le samse'u cu pu cpedu lo nu samjongau"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
