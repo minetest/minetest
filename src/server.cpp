@@ -3034,7 +3034,8 @@ bool Server::hudSetFlags(Player *player, u32 flags, u32 mask)
 		return false;
 
 	SendHUDSetFlags(player->peer_id, flags, mask);
-	player->hud_flags = flags;
+	player->hud_flags &= ~mask;
+	player->hud_flags |= flags;
 
 	PlayerSAO* playersao = player->getPlayerSAO();
 
