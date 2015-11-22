@@ -669,6 +669,10 @@ item_entity_ttl (Item entity TTL) int 900
 #    Enable players getting damage and dying.
 enable_damage (Damage) bool false
 
+#    Enable hunger mechanics and starving.
+#    Has no effect when enable_damage = false
+enable_hunger (Hunger) bool false
+
 #    A chosen map seed for a new map, leave empty for random.
 #    Will be overridden when creating a new world in the main menu.
 fixed_map_seed (Fixed map seed) string

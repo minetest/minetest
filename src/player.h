@@ -183,6 +183,18 @@ public:
 		m_breath = breath;
 	}
 
+	u16 getHunger()
+	{
+		return m_hunger;
+	}
+
+	virtual void setHunger(u16 hunger)
+	{
+		if (hunger != m_hunger)
+			m_dirty = true;
+		m_hunger = hunger;
+	}
+
 	f32 getRadPitch()
 	{
 		return -1.0 * m_pitch * core::DEGTORAD;
@@ -359,6 +371,8 @@ public:
 	float local_animation_speed;
 
 	u16 hp;
+	u16 m_breath;
+	u16 m_hunger;
 
 	float hurt_tilt_timer;
 	float hurt_tilt_strength;
@@ -393,7 +407,6 @@ protected:
 	IGameDef *m_gamedef;
 
 	char m_name[PLAYERNAME_SIZE];
-	u16 m_breath;
 	f32 m_pitch;
 	f32 m_yaw;
 	v3f m_speed;

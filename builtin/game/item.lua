@@ -1,4 +1,22 @@
--- Minetest: builtin/item.lua
+---------------------------------------------------------------------------------
+-- Minetest
+-- Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+--
+-- This program is free software; you can redistribute it and/or modify
+-- it under the terms of the GNU Lesser General Public License as published by
+-- the Free Software Foundation; either version 2.1 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU Lesser General Public License for more details.
+--
+-- You should have received a copy of the GNU Lesser General Public License along
+-- with this program; if not, write to the Free Software Foundation, Inc.,
+-- 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+---------------------------------------------------------------------------------
+
 
 local function copy_pointed_thing(pointed_thing)
 	return {
@@ -375,22 +393,31 @@ function core.item_drop(itemstack, dropper, pos)
 	-- environment failed
 end
 
-function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
+function core.do_item_eat(hunger_change, replace_with_item, itemstack, user, pointed_thing, hp_change, eat_sound)
 	for _, callback in pairs(core.registered_on_item_eats) do
-		local result = callback(hp_change, replace_with_item, itemstack, user, pointed_thing)
+		local result = callback(hunger_change, replace_with_item, itemstack, user, pointed_thing, hp_change)
 		if result then
 			return result
 		end
 	end
 	if itemstack:take_item() ~= nil then
-		user:set_hp(user:get_hp() + hp_change)
+		user:set_hunger(user:get_hunger() + hunger_change)
+		if hp_change then
+			user:set_hp(user:get_hp() + hp_change)
+		end
+
+		-- eating sound
+		if not eat_sound then
+			eat_sound = "item_eat"
+		end
+		core.sound_play(eat_sound, {to_player = user:get_player_name(), gain = 0.7})
 
 		if replace_with_item then
 			if itemstack:is_empty() then
 				itemstack:add_item(replace_with_item)
 			else
 				local inv = user:get_inventory()
-				if inv:room_for_item("main", {name=replace_with_item}) then
+				if inv:room_for_item("main", {name = replace_with_item}) then
 					inv:add_item("main", replace_with_item)
 				else
 					local pos = user:getpos()
@@ -403,9 +430,14 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 	return itemstack
 end
 
-function core.item_eat(hp_change, replace_with_item)
+function core.item_eat(hunger_change, replace_with_item, hp_change, eat_sound)
+	-- With hunger disabled food has to heal (fallback to old behavior)
+	if core.is_yes(core.setting_getbool("enable_hunger")) == false and not hp_change then
+		hp_change = hunger_change
+	end
 	return function(itemstack, user, pointed_thing)  -- closure
-		return core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
+		return core.do_item_eat(hunger_change, replace_with_item, itemstack,
+				user, pointed_thing, hp_change, eat_sound)
 	end
 end
 
