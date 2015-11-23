@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-11-12 02:44+0000\n"
-"Last-Translator: nobb <nobb.hero+weblate@gmail.com>\n"
+"PO-Revision-Date: 2015-11-23 07:16+0000\n"
+"Last-Translator: Rui <rui914t@gmail.com>\n"
 "Language-Team: Japanese "
 "<https://hosted.weblate.org/projects/minetest/minetest/ja/>\n"
 "Language: ja\n"
@@ -36,7 +36,7 @@ msgstr "再接続"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "サーバが再接続を要求しました："
+msgstr "サーバーが再接続を要求しました:"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
@@ -86,7 +86,7 @@ msgstr "有効化"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr "すべて有効化"
+msgstr "全て有効化"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -123,7 +123,7 @@ msgstr "有効化"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "ワールド名\"$1\"はすでに使用されています"
+msgstr "ワールド名\"$1\"は既に使用されています"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
@@ -131,9 +131,10 @@ msgstr "作成"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr "minetest.netからminetest_gameのゲームをダウンロードしてください"
+msgstr "minetest.netからminetest_gameなどのサブゲームをダウンロードしてください"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Download one from minetest.net"
 msgstr "minetest.netから再ダウンロードしてください"
 
@@ -155,7 +156,7 @@ msgstr "Seed値"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
-msgstr "警告: Minimal development testは開発者のためのゲームです。"
+msgstr "警告: Minimal development testは開発者用です。"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -163,7 +164,7 @@ msgstr "ワールド名"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no subgames installed."
-msgstr "ゲームがインストールされていません。"
+msgstr "サブゲームがインストールされていません。"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Are you sure you want to delete \"$1\"?"
@@ -171,11 +172,11 @@ msgstr "本当に\"$1\"を削除してよろしいですか？"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: failed to delete \"$1\""
-msgstr "Modマネージャ: \"$1\"の削除に失敗しました"
+msgstr "Modマネージャー: \"$1\"の削除に失敗しました"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr "Modマネージャ: Mod\"$1\"の場所が不明です"
+msgstr "Modマネージャー: Mod\"$1\"の場所が不明です"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "No of course not!"
@@ -199,7 +200,7 @@ msgstr "決定"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr "名前を変更:"
+msgstr "Modパック名を変更:"
 
 #: builtin/mainmenu/modmgr.lua
 msgid ""
@@ -229,7 +230,7 @@ msgstr ""
 
 #: builtin/mainmenu/store.lua
 msgid "Close store"
-msgstr "閉じる"
+msgstr "ストアを閉じる"
 
 #: builtin/mainmenu/store.lua
 msgid "Downloading $1, please wait..."
@@ -269,7 +270,7 @@ msgstr "再インストール"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
-msgstr "開発協力者"
+msgstr "活動中の開発協力者"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Core Developers"
@@ -357,6 +358,7 @@ msgid "PvP enabled"
 msgstr "PvP有効"
 
 #: builtin/mainmenu/tab_server.lua
+#, fuzzy
 msgid "Bind Address"
 msgstr "バインドアドレス"
 
@@ -411,6 +413,7 @@ msgid "Start Game"
 msgstr "ゲームスタート"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "\"$1\" is not a valid flag."
 msgstr "\"$1\"は有効なフラグではありません。"
 
@@ -439,10 +442,12 @@ msgid "Enabled"
 msgstr "有効"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Format is 3 numbers separated by commas and inside brackets."
 msgstr "書式は、コンマとかっこで区切られた 3 つの数字です。"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
@@ -460,6 +465,7 @@ msgid "Optionally the lacunarity can be appended with a leading comma."
 msgstr "空隙性随意大手カンマを付加することができます。"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Please enter a comma seperated list of flags."
 msgstr "フラグのリストはカンマで区切って入力してください。"
 
@@ -481,6 +487,7 @@ msgid "Restore Default"
 msgstr "初期設定に戻す"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Select path"
 msgstr "ファイルパスを選択"
 
@@ -495,7 +502,7 @@ msgstr "技術名称を表示"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be greater than $1."
-msgstr "$1より大きな値でなければいけません。"
+msgstr "$1より大きい値でなければいけません。"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be lower than $1."
@@ -547,11 +554,11 @@ msgstr "完了！"
 
 #: src/client.cpp
 msgid "Initializing nodes"
-msgstr "ノードを設定中"
+msgstr "ノードを初期化中"
 
 #: src/client.cpp
 msgid "Initializing nodes..."
-msgstr "ノードの設定中..."
+msgstr "ノードを初期化中..."
 
 #: src/client.cpp
 msgid "Item textures..."
@@ -559,21 +566,23 @@ msgstr "テクスチャを設定中..."
 
 #: src/client.cpp
 msgid "Loading textures..."
-msgstr "テクスチャ読み込み中..."
+msgstr "テクスチャを読み込み中..."
 
 #: src/client.cpp
 msgid "Rebuilding shaders..."
-msgstr "シェーダー構築中..."
+msgstr "シェーダーを再構築中..."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
-msgstr "接続失敗（またはタイムアウト）"
+msgstr "接続エラー (タイムアウト？)"
 
 #: src/client/clientlauncher.cpp
+#, fuzzy
 msgid "Could not find or load game \""
-msgstr "ゲーム\"の読み込みができません"
+msgstr "以下のゲームの読み込みができません\""
 
 #: src/client/clientlauncher.cpp
+#, fuzzy
 msgid "Invalid gamespec."
 msgstr "無効なgamespecです。"
 
@@ -582,14 +591,16 @@ msgid "Main Menu"
 msgstr "メインメニュー"
 
 #: src/client/clientlauncher.cpp
+#, fuzzy
 msgid "No world selected and no address provided. Nothing to do."
 msgstr "ワールドが選択されていないアドレスです。続行できません。"
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr "名前が長過ぎます。"
+msgstr "プレイヤー名が長過ぎます。"
 
 #: src/client/clientlauncher.cpp
+#, fuzzy
 msgid "Provided world path doesn't exist: "
 msgstr "ワールドが存在しません: "
 
@@ -603,7 +614,7 @@ msgid ""
 "Check debug.txt for details."
 msgstr ""
 "\n"
-"詳細はdebug.txtをご覧ください。"
+"詳細はdebug.txtを確認してください。"
 
 #: src/game.cpp
 msgid "Change Keys"
@@ -615,7 +626,7 @@ msgstr "パスワード変更"
 
 #: src/game.cpp
 msgid "Connecting to server..."
-msgstr "サーバー接続中..."
+msgstr "サーバーに接続中..."
 
 #: src/game.cpp
 msgid "Continue"
@@ -623,11 +634,11 @@ msgstr "再開"
 
 #: src/game.cpp
 msgid "Creating client..."
-msgstr "クライアント起動中..."
+msgstr "クライアントを起動中..."
 
 #: src/game.cpp
 msgid "Creating server..."
-msgstr "サーバー起動中..."
+msgstr "サーバーを起動中..."
 
 #: src/game.cpp
 msgid ""
@@ -643,19 +654,20 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
-"基本操作:\n"
+"デフォルトの操作:\n"
 "- WASD: 移動\n"
-"- スペース: ジャンプ､登る\n"
-"- Shift:　スニーク､降りる\n"
+"- スペース: ジャンプ/登る\n"
+"- Shift: スニーク/降りる\n"
 "- Q: アイテムを落とす\n"
 "- I: インベントリ\n"
 "- マウス: 見回す\n"
-"- 左クリック: 破壊、パンチ\n"
-"- 右クリック: 設置、使用\n"
-"- ホイール: アイテム選択\n"
-"- T: チャット画面\n"
+"- 左クリック: 破壊/パンチ\n"
+"- 右クリック: 設置/使用\n"
+"- マウスホイール: アイテム選択\n"
+"- T: チャット\n"
 
 #: src/game.cpp
+#, fuzzy
 msgid ""
 "Default Controls:\n"
 "No menu visible:\n"
@@ -670,7 +682,7 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
-"基本操作:\n"
+"デフォルトの操作:\n"
 "タッチ操作:\n"
 "- シングルタップ: ブロックの破壊\n"
 "- ダブルタップ: 設置、使用\n"
@@ -693,7 +705,7 @@ msgstr "終了"
 
 #: src/game.cpp
 msgid "Item definitions..."
-msgstr "アイテム定義中..."
+msgstr "アイテムを定義中..."
 
 #: src/game.cpp
 msgid "KiB/s"
@@ -709,7 +721,7 @@ msgstr "MB/秒"
 
 #: src/game.cpp
 msgid "Node definitions..."
-msgstr "ノード定義中..."
+msgstr "ノードを定義中..."
 
 #: src/game.cpp src/guiFormSpecMenu.cpp
 msgid "Proceed"
@@ -717,7 +729,7 @@ msgstr "決定"
 
 #: src/game.cpp
 msgid "Resolving address..."
-msgstr "アドレス解決中..."
+msgstr "アドレスを解決中..."
 
 #: src/game.cpp
 msgid "Respawn"
@@ -789,9 +801,7 @@ msgstr "キーが重複しています"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr ""
-"操作設定です。（変更に失敗した場合、minetest.confから該当する設定を削除してく"
-"ださい）"
+msgstr "操作設定です。 (変更に失敗した場合、minetest.confから該当する設定を削除してください)"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Left"
@@ -883,15 +893,15 @@ msgstr "Caps Lock"
 
 #: src/keycode.cpp
 msgid "Clear"
-msgstr "消す"
+msgstr "クリア"
 
 #: src/keycode.cpp
 msgid "Comma"
-msgstr "読点"
+msgstr ","
 
 #: src/keycode.cpp
 msgid "Control"
-msgstr "コントロール"
+msgstr "Ctrl"
 
 #: src/keycode.cpp
 msgid "Convert"
@@ -907,7 +917,7 @@ msgstr "下"
 
 #: src/keycode.cpp
 msgid "End"
-msgstr "終了"
+msgstr "エンド"
 
 #: src/keycode.cpp
 msgid "Erase OEF"
@@ -1161,13 +1171,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
-msgstr "立体雲"
+msgstr "立体な雲"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
 msgstr "3Dモード"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -1177,6 +1188,13 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side."
 msgstr ""
+"3Dサポート\n"
+"現在サポートしている:\n"
+"-    none: 3D出力なし\n"
+"-    anaglyph: cyan/magenta color 3d.\n"
+"-    interlaced: odd/even line based polarisation screen support.\n"
+"-    topbottom: split screen top/bottom.\n"
+"-    sidebyside: split screen side by side."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3507,7 +3525,7 @@ msgstr "音量"
 
 #: src/settings_translation_file.cpp
 msgid "Walking speed"
-msgstr "歩き速度"
+msgstr "歩く速度"
 
 #: src/settings_translation_file.cpp
 msgid "Wanted FPS"
