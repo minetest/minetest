@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-10-26 16:53+0200\n"
-"Last-Translator: Honza Borovička <boruvka.lesicek@gmail.com>\n"
-"Language-Team: Czech <https://hosted.weblate.org/projects/minetest/minetest/"
-"cs/>\n"
+"PO-Revision-Date: 2015-11-23 17:09+0000\n"
+"Last-Translator: Jakub Vaněk <vanek.jakub4@seznam.cz>\n"
+"Language-Team: Czech "
+"<https://hosted.weblate.org/projects/minetest/minetest/cs/>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -53,7 +53,7 @@ msgstr "Neshoda verze protokolu. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "Server vyžaduje protokol verze $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
@@ -418,7 +418,7 @@ msgstr "Spustit hru"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "\"$1\" is not a valid flag."
-msgstr ""
+msgstr "\"$1\" není platný příznak."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(No description of setting given)"
@@ -434,7 +434,7 @@ msgstr "Změnit nastavení kláves"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Disabled"
-msgstr "Zakázaný"
+msgstr "Zakázáno"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Edit"
@@ -442,11 +442,11 @@ msgstr "Upravit"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Enabled"
-msgstr "Povolený"
+msgstr "Povoleno"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr ""
+msgstr "Formát jsou tři čísla uvnitř závorek oddělená čárkami."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid ""
@@ -462,7 +462,7 @@ msgstr "Hry"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr ""
+msgstr "Lakunarita může být specifikována spolu s předcházející čárkou."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a comma seperated list of flags."
@@ -1162,6 +1162,8 @@ msgid ""
 "0 = parallax occlusion with slope information (faster).\n"
 "1 = relief mapping (slower, more accurate)."
 msgstr ""
+"0 = paralaxní okluze s informacemi o sklonu (rychlejší).\n"
+"1 = mapování reliéfu (pomalejší, ale přesnější)."
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -1169,7 +1171,7 @@ msgstr "3D mraky"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
-msgstr "Režim 3D"
+msgstr "Režim 3D zobrazení"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1181,27 +1183,30 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side."
 msgstr ""
-"Podpora 3D.\n"
+"Podpora 3D zobrazení.\n"
 "V současné době podporovány:\n"
-"-none: žádné 3d výstup.\n"
-"-anaglyf: azurová/purpurová barva 3d.\n"
-"-prokládaný: lichá/sudá linie založené polarizace displejem.\n"
-"-nahoře a dole: rozdělení obrazovky prvních či posledních položek.\n"
-"-vedle sebe: rozdělené obrazovce vedle sebe."
+"-    none: žádný 3D výstup.\n"
+"-    anaglyph: azurová/purpurová barva 3D.\n"
+"-    interlaced: pro polarizaci ve stylu lichý/sudý řádek.\n"
+"-    topbottom: rozdělení obrazovky na horní a dolní část.\n"
+"-    sidebyside: rozdělené obrazovky na levou a pravou část."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
+"Zvolený seed pro novou mapu, nechte prázdné pro vygenerování náhodného seedu."
+"\n"
+"Toto bude přepsáno při vytváření nové mapy přes hlavní menu."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
-msgstr ""
+msgstr "Zpráva, která se zobrazí všem klientům, když server spadne."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server shuts down."
-msgstr ""
+msgstr "Zpráva, která se zobrazí všem klientům, když se server vypne."
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
@@ -1209,7 +1214,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
-msgstr ""
+msgstr "Zrychlení ve vzduchu"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
@@ -1240,11 +1245,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
-msgstr ""
+msgstr "Pokročilé"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
-msgstr ""
+msgstr "Vždy mít zapnuté létání a turbo"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
@@ -1279,7 +1284,7 @@ msgstr "Vzad"
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
-msgstr ""
+msgstr "Základní"
 
 #: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
@@ -1291,7 +1296,7 @@ msgstr "Svázat adresu"
 
 #: src/settings_translation_file.cpp
 msgid "Bits per pixel (aka color depth) in fullscreen mode."
-msgstr ""
+msgstr "Bitová hloubka (bity na pixel) v celoobrazovkovém režimu."
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
@@ -1339,19 +1344,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
-msgstr ""
+msgstr "Klient a Server"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
-msgstr ""
+msgstr "Rychlost šplhání"
 
 #: src/settings_translation_file.cpp
 msgid "Cloud height"
-msgstr ""
+msgstr "Výška mraků"
 
 #: src/settings_translation_file.cpp
 msgid "Cloud radius"
-msgstr ""
+msgstr "Poloměr mraků"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds"
@@ -1367,7 +1372,7 @@ msgstr "Mraky v menu"
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
-msgstr ""
+msgstr "Barevná mlha"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1454,7 +1459,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
-msgstr ""
+msgstr "DPI"
 
 #: src/settings_translation_file.cpp
 msgid "Damage"
@@ -1662,7 +1667,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
-msgstr ""
+msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
 msgid "Fall bobbing"
@@ -1746,7 +1751,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fog"
-msgstr ""
+msgstr "Mlha"
 
 #: src/settings_translation_file.cpp
 msgid "Fog toggle key"
@@ -1754,15 +1759,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Font path"
-msgstr ""
+msgstr "Cesta k písmu"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow"
-msgstr ""
+msgstr "Stín písma"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow alpha"
-msgstr ""
+msgstr "Průhlednost stínu písma"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow alpha (opaqueness, between 0 and 255)."
@@ -1774,7 +1779,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Font size"
-msgstr ""
+msgstr "Velikost písma"
 
 #: src/settings_translation_file.cpp
 msgid "Forward key"
@@ -1782,7 +1787,7 @@ msgstr "Vpřed"
 
 #: src/settings_translation_file.cpp
 msgid "Freetype fonts"
-msgstr ""
+msgstr "Písma Freetype"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1802,15 +1807,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
-msgstr ""
+msgstr "Celá obrazovka"
 
 #: src/settings_translation_file.cpp
 msgid "Full screen BPP"
-msgstr ""
+msgstr "Bitová hloubka v celoobrazovkovém režimu"
 
 #: src/settings_translation_file.cpp
 msgid "Fullscreen mode."
-msgstr ""
+msgstr "Celoobrazovkový režim."
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
@@ -1826,7 +1831,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Gamma"
-msgstr ""
+msgstr "Gamma"
 
 #: src/settings_translation_file.cpp
 msgid "Generate normalmaps"
@@ -1847,7 +1852,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
-msgstr ""
+msgstr "Gravitace"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
@@ -1901,15 +1906,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "IPv6"
-msgstr ""
+msgstr "IPv6"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 server"
-msgstr ""
+msgstr "IPv6 server"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 support."
-msgstr ""
+msgstr "Podpora IPv6."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2272,7 +2277,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Language"
-msgstr ""
+msgstr "Jazyk"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -2547,14 +2552,12 @@ msgid "Mapgen heat blend noise parameters"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen name"
-msgstr "Generátor mapy"
+msgstr "Jméno generátoru mapy"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen v5"
-msgstr "Generátor mapy"
+msgstr "Mapgen v5"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 cave1 noise parameters"
@@ -2577,9 +2580,8 @@ msgid "Mapgen v5 height noise parameters"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen v6"
-msgstr "Generátor mapy"
+msgstr "Mapgen v6"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 apple trees noise parameters"
@@ -2638,9 +2640,8 @@ msgid "Mapgen v6 trees noise parameters"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen v7"
-msgstr "Generátor mapy"
+msgstr "Mapgen v7"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 cave1 noise parameters"
@@ -2802,9 +2803,8 @@ msgid "Maxmimum objects per block"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Menus"
-msgstr "Nabídka"
+msgstr "Nabídky"
 
 #: src/settings_translation_file.cpp
 msgid "Mesh cache"
@@ -2842,9 +2842,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mipmapping"
-msgstr "Mip-Mapování"
+msgstr "Mip-mapování"
 
 #: src/settings_translation_file.cpp
 msgid "Mod profiling"
@@ -2935,9 +2934,8 @@ msgid "Noclip key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Node highlighting"
-msgstr "Zvýraznění bloků"
+msgstr "Zvýraznění označených bloků"
 
 #: src/settings_translation_file.cpp
 msgid "Noise parameters for biome API temperature, humidity and biome blend."
@@ -3031,7 +3029,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
-msgstr ""
+msgstr "Fyzika"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3040,9 +3038,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Player name"
-msgstr "Jméno hráče je příliš dlouhé."
+msgstr "Jméno hráče"
 
 #: src/settings_translation_file.cpp
 msgid "Player transfer distance"
@@ -3050,7 +3047,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Player versus Player"
-msgstr ""
+msgstr "Hráč proti hráči (PvP)"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3067,9 +3064,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Preload inventory textures"
-msgstr "Načítám textury..."
+msgstr "Přednačíst inventářové textury"
 
 #: src/settings_translation_file.cpp
 msgid "Prevent mods from doing insecure things like running shell commands."
@@ -3096,29 +3092,27 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Random input"
-msgstr ""
+msgstr "Náhodný vstup"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Range select key"
-msgstr "Změna dohledu"
+msgstr "Klávesa pro označení většího počtu věcí"
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
-msgstr ""
+msgstr "Vzdálená média"
 
 #: src/settings_translation_file.cpp
 msgid "Remote port"
-msgstr ""
+msgstr "Vzdálený port"
 
 #: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Right key"
-msgstr "Pravá klávesa Menu"
+msgstr "Klávesa doprava"
 
 #: src/settings_translation_file.cpp
 msgid "Rightclick repetition interval"
@@ -3130,7 +3124,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Round minimap"
-msgstr ""
+msgstr "Kulatá minimapa"
 
 #: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
@@ -3151,24 +3145,23 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
-msgstr ""
+msgstr "Výška obrazovky"
 
 #: src/settings_translation_file.cpp
 msgid "Screen width"
-msgstr ""
+msgstr "Šířka obrazovky"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot"
-msgstr "Snapshot"
+msgstr "Snímek obrazovky"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
-msgstr ""
+msgstr "Složka se snímky obrazovky"
 
 #: src/settings_translation_file.cpp
 msgid "Security"
-msgstr ""
+msgstr "Zabezpečení"
 
 #: src/settings_translation_file.cpp
 msgid "See http://www.sqlite.org/pragma.html#pragma_synchronous"
@@ -3192,39 +3185,32 @@ msgid "Server / Singleplayer"
 msgstr "Start místní hry"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server URL"
-msgstr "Server"
+msgstr "URL serveru"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server address"
-msgstr "Port serveru"
+msgstr "Adresa serveru"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server description"
-msgstr "Port serveru"
+msgstr "Popis serveru"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server name"
-msgstr "Server"
+msgstr "Jméno serveru"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server port"
 msgstr "Port serveru"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Serverlist URL"
-msgstr "Seznam veřejných serverů"
+msgstr "Adresa seznamu veřejných serverů"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Serverlist file"
-msgstr "Seznam veřejných serverů"
+msgstr "Soubor se seznamem veřejných serverů"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3267,7 +3253,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Show debug info"
-msgstr ""
+msgstr "Zobrazit ladící informace"
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
@@ -3280,7 +3266,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Smooth lighting"
 msgstr "Plynulé osvětlení"
 
@@ -3299,13 +3284,12 @@ msgid "Smooths rotation of camera. 0 to disable."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Sneak key"
-msgstr "Plížit se"
+msgstr "Klávesa plížení"
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
-msgstr ""
+msgstr "Zvuk"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3422,9 +3406,8 @@ msgid "Tooltip delay"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Trilinear filtering"
-msgstr "Trilineární filtr"
+msgstr "Trilineární filtrování"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3466,9 +3449,8 @@ msgid "Use bilinear filtering when scaling textures."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use key"
-msgstr "stiskni klávesu"
+msgstr "Klávesa použít"
 
 #: src/settings_translation_file.cpp
 msgid "Use mip mapping to scale textures. May slightly increase performance."
@@ -3479,13 +3461,12 @@ msgid "Use trilinear filtering when scaling textures."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Useful for mod developers."
-msgstr "Bývalí klíčoví vývojáři"
+msgstr "Užitečné pro vývojáře modů."
 
 #: src/settings_translation_file.cpp
 msgid "V-Sync"
-msgstr ""
+msgstr "Vertikální synchronizace"
 
 #: src/settings_translation_file.cpp
 msgid "Vertical initial window size."
@@ -3501,7 +3482,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
-msgstr ""
+msgstr "Ovladač grafiky"
 
 #: src/settings_translation_file.cpp
 msgid "View bobbing"
@@ -3524,14 +3505,12 @@ msgid "Viewing range minimum"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volume"
 msgstr "Hlasitost"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Walking speed"
-msgstr "Vlnění listů"
+msgstr "Rychlost chůze"
 
 #: src/settings_translation_file.cpp
 msgid "Wanted FPS"
@@ -3546,39 +3525,32 @@ msgid "Water surface level of the world."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving Nodes"
-msgstr "Vlnění listů"
+msgstr "Vlnění bloků"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving leaves"
 msgstr "Vlnění listů"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving plants"
 msgstr "Vlnění rostlin"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water"
 msgstr "Vlnění vody"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water height"
-msgstr "Vlnění vody"
+msgstr "Výška vodních vln"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water length"
-msgstr "Vlnění vody"
+msgstr "Délka vodních vln"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water speed"
-msgstr "Vlnění vody"
+msgstr "Rychlost vodních vln"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3666,11 +3638,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
-msgstr ""
+msgstr "cURL limit paralelních stahování"
 
 #: src/settings_translation_file.cpp
 msgid "cURL timeout"
-msgstr ""
+msgstr "cURL timeout"
 
 #~ msgid "Are you sure to reset your singleplayer world?"
 #~ msgstr "Jste si jisti, že chcete resetovat místní svět?"
