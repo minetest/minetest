@@ -10,8 +10,8 @@ msgstr ""
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
 "PO-Revision-Date: 2015-10-26 16:22+0200\n"
 "Last-Translator: ChaosWormz <chaoswormz@openmailbox.org>\n"
-"Language-Team: Hebrew <https://hosted.weblate.org/projects/minetest/minetest/"
-"he/>\n"
+"Language-Team: Hebrew "
+"<https://hosted.weblate.org/projects/minetest/minetest/he/>\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -78,7 +78,6 @@ msgid "Cancel"
 msgstr "ביטול"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_mods.lua
-#, fuzzy
 msgid "Depends:"
 msgstr "תלוי ב:"
 
@@ -91,7 +90,6 @@ msgid "Enable MP"
 msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable all"
 msgstr "אפשר בכל"
 
@@ -110,7 +108,6 @@ msgid "Hide mp content"
 msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Mod:"
 msgstr "מוד:"
 
@@ -124,7 +121,6 @@ msgid "World:"
 msgstr "עולם:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "enabled"
 msgstr "מופעל"
 
@@ -201,7 +197,6 @@ msgid "No"
 msgstr "לא"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua src/keycode.cpp
-#, fuzzy
 msgid "Accept"
 msgstr "קבל"
 
@@ -281,7 +276,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Credits"
-msgstr ""
+msgstr "קרדיטים"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
@@ -301,7 +296,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_mods.lua builtin/mainmenu/tab_settings.lua
 msgid "Mods"
-msgstr ""
+msgstr "מודים"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "No mod description available"
@@ -325,16 +320,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_multiplayer.lua
 msgid "Address / Port :"
-msgstr ""
+msgstr "כתובת / פורט :"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Client"
 msgstr "קלינט"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Connect"
-msgstr ""
+msgstr "התחבר"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative mode"
@@ -347,19 +341,19 @@ msgstr ""
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_server.lua
 #: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
 msgid "Delete"
-msgstr ""
+msgstr "מחק"
 
 #: builtin/mainmenu/tab_multiplayer.lua
 msgid "Name / Password :"
-msgstr ""
+msgstr "שם/סיסמה :"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Public Serverlist"
-msgstr ""
+msgstr "רשימת שרתים פומבי"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
-msgstr ""
+msgstr "PvP אפשר"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Bind Address"
@@ -367,45 +361,45 @@ msgstr ""
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "Configure"
-msgstr ""
+msgstr "קביעת תצורה"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Creative Mode"
-msgstr ""
+msgstr "משחק יצירתי"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Enable Damage"
-msgstr ""
+msgstr "אפשר נזק"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name/Password"
-msgstr ""
+msgstr "שם/סיסמה"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "New"
-msgstr ""
+msgstr "חדש"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "No world created or selected!"
-msgstr ""
+msgstr "אין עולם נוצר או נבחר!"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Port"
-msgstr ""
+msgstr "פורט"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Public"
-msgstr ""
+msgstr "ציבורי"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "Select World:"
-msgstr ""
+msgstr "בחר עולם:"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Server"
-msgstr ""
+msgstr "שרת"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Server Port"
@@ -413,7 +407,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Start Game"
-msgstr ""
+msgstr "התחל משחק"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "\"$1\" is not a valid flag."
@@ -455,7 +449,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Games"
-msgstr ""
+msgstr "משחקים"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
@@ -515,7 +509,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
 msgid "Play"
-msgstr ""
+msgstr "שחק"
 
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Singleplayer"
@@ -535,7 +529,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Texturepacks"
-msgstr ""
+msgstr "חבילות מרקם"
 
 #: src/client.cpp
 msgid "Connection timed out."
@@ -3126,7 +3120,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Server / Singleplayer"
-msgstr ""
+msgstr "שרת"
 
 #: src/settings_translation_file.cpp
 msgid "Server URL"
