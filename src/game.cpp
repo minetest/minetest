@@ -3001,7 +3001,13 @@ void Game::toggleProfiler(float *statustext_time, u32 *profiler_current_page,
 void Game::increaseViewRange(float *statustext_time)
 {
 	s16 range = g_settings->getS16("viewing_range_nodes_min");
-	s16 range_new = range + 10;
+	s16 range_new = range * 2;
+
+	// it's < 0 if it's outside the range of s16
+	// and increase it directly from 1 to 5 for less key pressing
+	if (range_new < 5)
+		range_new = 5;
+
 	g_settings->set("viewing_range_nodes_min", itos(range_new));
 	statustext = utf8_to_wide("Minimum viewing range changed to "
 			+ itos(range_new));
@@ -3012,10 +3018,10 @@ void Game::increaseViewRange(float *statustext_time)
 void Game::decreaseViewRange(float *statustext_time)
 {
 	s16 range = g_settings->getS16("viewing_range_nodes_min");
-	s16 range_new = range - 10;
+	s16 range_new = range / 2;
 
-	if (range_new < 0)
-		range_new = range;
+	if (range_new == 0)
+		range_new = 1;
 
 	g_settings->set("viewing_range_nodes_min", itos(range_new));
 	statustext = utf8_to_wide("Minimum viewing range changed to "
