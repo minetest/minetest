@@ -40,6 +40,7 @@ int dir_to_facedir(v3s16 d);
 
 struct DungeonParams {
 	content_t c_water;
+	content_t c_river_water;
 	content_t c_cobble;
 	content_t c_moss;
 	content_t c_stair;

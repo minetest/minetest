@@ -65,6 +65,9 @@ DungeonGen::DungeonGen(Mapgen *mapgen, DungeonParams *dparams)
 		dp.np_wetness = nparams_dungeon_wetness;
 		dp.np_density = nparams_dungeon_density;
 	}
+
+	// For mapgens using river water
+	dp.c_river_water = mg->ndef->getId("mapgen_river_water_source");
 }
 
 
@@ -87,7 +90,7 @@ void DungeonGen::generate(u32 bseed, v3s16 nmin, v3s16 nmax)
 			u32 i = vm->m_area.index(nmin.X, y, z);
 			for (s16 x = nmin.X; x <= nmax.X; x++) {
 				content_t c = vm->m_data[i].getContent();
-				if (c == CONTENT_AIR || c == dp.c_water)
+				if (c == CONTENT_AIR || c == dp.c_water || c == dp.c_river_water)
 					vm->m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
 				i++;
 			}
