@@ -3578,6 +3578,51 @@ Definition tables
     --  ^ Can be a list of (or a single) biome names, IDs, or definitions.
     }
 
+### Biome definition (`register_biome`)
+
+    {
+        name = "tundra",
+        node_dust = "default:snow",
+    --  ^ Node dropped onto upper surface after all else is generated.
+        node_top = "default:dirt_with_snow",
+        depth_top = 1,
+    --  ^ Node forming surface layer of biome and thickness of this layer.
+        node_filler = "default:permafrost",
+        depth_filler = 3,
+    --  ^ Node forming lower layer of biome and thickness of this layer.
+        node_stone = "default:bluestone",
+    --  ^ Node that replaces all stone nodes between roughly y_min and y_max.
+        node_water_top = "default:ice",
+        depth_water_top = 10,
+    --  ^ Node forming a surface layer in seawater with the defined thickness.
+        node_water = "",
+    --  ^ Node that replaces all seawater nodes not in the defined surface layer.
+        node_river_water = "default:ice",
+    --  ^ Node that replaces river water in mapgens that use default:river_water.
+        y_min = 1,
+        y_max = 31000,
+    --  ^ Lower and upper limits for biome.
+    --  ^ Because biome is not recalculated for every node in a node column
+    --  ^ some biome materials can exceed their limits, especially stone.
+    --  ^ For each node column in a mapchunk, biome is only recalculated at column
+    --  ^ top and at each of these surfaces:
+    --  ^ Ground below air, water below air, ground below water.
+    --  ^ The selected biome then stays in effect for all nodes below until
+    --  ^ column base or the next biome recalculation.
+        heat_point = 0,
+        humidity_point = 50,
+    --  ^ Characteristic average temperature and humidity for the biome.
+    --  ^ These values create 'biome points' on a voronoi diagram that has heat
+    --  ^ and humidity as axes. The resulting voronoi cells determine which
+    --  ^ heat/humidity points belong to which biome, and therefore determine
+    --  ^ the area and location of each biome in the world.
+    --  ^ The biome points need to be carefully and evenly spaced on the voronoi
+    --  ^ diagram to result in roughly equal size biomes.
+    --  ^ Heat and humidity have average values of 50, vary mostly between
+    --  ^ 0 and 100 but also often exceed these values.
+    --  ^ Heat is not in degrees celcius, both values are abstract.
+    }
+
 ### Decoration definition (`register_decoration`)
 
     {
