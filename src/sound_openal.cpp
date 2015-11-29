@@ -269,7 +269,6 @@ private:
 	OnDemandSoundFetcher *m_fetcher;
 	ALCdevice *m_device;
 	ALCcontext *m_context;
-	bool m_can_vorbis;
 	int m_next_id;
 	std::map<std::string, std::vector<SoundBuffer*> > m_buffers;
 	std::map<int, PlayingSound*> m_sounds_playing;
@@ -280,7 +279,6 @@ public:
 		m_fetcher(fetcher),
 		m_device(NULL),
 		m_context(NULL),
-		m_can_vorbis(false),
 		m_next_id(1),
 		m_is_initialized(false)
 	{
@@ -293,14 +291,6 @@ public:
 			infostream<<"Audio: No audio device available, audio system "
 				<<"not initialized"<<std::endl;
 			return;
-		}
-
-		if(alcIsExtensionPresent(m_device, "EXT_vorbis")){
-			infostream<<"Audio: Vorbis extension present"<<std::endl;
-			m_can_vorbis = true;
-		} else{
-			infostream<<"Audio: Vorbis extension NOT present"<<std::endl;
-			m_can_vorbis = false;
 		}
 
 		m_context = alcCreateContext(m_device, NULL);
