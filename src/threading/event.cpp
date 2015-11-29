@@ -23,47 +23,73 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef THREADING_EVENT_H
-#define THREADING_EVENT_H
+#include "threading/event.h"
 
-#if __cplusplus >= 201103L
-	#include <condition_variable>
-	#include "threading/mutex.h"
-#elif defined(_WIN32)
-	#include <windef.h>
-#else
-	#include <pthread.h>
+#if defined(_WIN32)
+	#ifndef WIN32_LEAN_AND_MEAN
+		#define WIN32_LEAN_AND_MEAN
+	#endif
+	#include <windows.h>
 #endif
 
 
-/** A syncronization primitive that will wake up one waiting thread when signaled.
- * Calling @c signal() multiple times before a waiting thread has had a chance
- * to notice the signal will wake only one thread.  Additionally, if no threads
- * are waiting on the event when it is signaled, the next call to @c wait()
- * will return (almost) immediately.
- */
-class Event {
-public:
 #if __cplusplus < 201103L
-	Event();
-	~Event();
-#endif
-	void wait();
-	void signal();
-
-private:
-#if __cplusplus >= 201103L
-	std::condition_variable cv;
-	Mutex mutex;
-	bool notified;
-#elif defined(_WIN32)
-	HANDLE event;
+Event::Event()
+{
+#ifdef _WIN32
+	event = CreateEvent(NULL, false, false, NULL);
 #else
-	pthread_cond_t cv;
-	pthread_mutex_t mutex;
-	bool notified;
+	pthread_cond_init(&cv, NULL);
+	pthread_mutex_init(&mutex, NULL);
 #endif
-};
+}
 
+Event::~Event()
+{
+#ifdef _WIN32
+	CloseHandle(event);
+#else
+	pthread_cond_destroy(&cv);
+	pthread_mutex_destroy(&mutex);
 #endif
+}
+#endif
+
+
+void Event::wait()
+{
+#if __cplusplus >= 201103L
+	MutexAutoLock lock(mutex);
+	while (!notified) {
+		cv.wait(lock);
+	}
+	notified = false;
+#elif defined(_WIN32)
+	WaitForSingleObject(event, INFINITE);
+#else
+	pthread_mutex_lock(&mutex);
+	while (!notified) {
+		pthread_cond_wait(&cv, &mutex);
+	}
+	notified = false;
+	pthread_mutex_unlock(&mutex);
+#endif
+}
+
+
+void Event::signal()
+{
+#if __cplusplus >= 201103L
+	MutexAutoLock lock(mutex);
+	notified = true;
+	cv.notify_one();
+#elif defined(_WIN32)
+	SetEvent(event);
+#else
+	pthread_mutex_lock(&mutex);
+	notified = true;
+	pthread_cond_signal(&cv);
+	pthread_mutex_unlock(&mutex);
+#endif
+}
 
