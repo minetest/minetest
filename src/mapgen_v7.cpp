@@ -157,8 +157,8 @@ MapgenV7Params::MapgenV7Params()
 	np_ridge_uwater    = NoiseParams(0,    1,   v3f(1000, 1000, 1000), 85039, 5, 0.6,  2.0);
 	np_mountain        = NoiseParams(-0.6, 1,   v3f(250,  350,  250),  5333,  5, 0.63, 2.0);
 	np_ridge           = NoiseParams(0,    1,   v3f(100,  100,  100),  6467,  4, 0.75, 2.0);
-	np_cave1           = NoiseParams(0,    12,  v3f(100,  100,  100),  52534, 4, 0.5,  2.0);
-	np_cave2           = NoiseParams(0,    12,  v3f(100,  100,  100),  10325, 4, 0.5,  2.0);
+	np_cave1           = NoiseParams(0,    12,  v3f(96,   96,   96),   52534, 4, 0.5,  2.0);
+	np_cave2           = NoiseParams(0,    12,  v3f(96,   96,   96),   10325, 4, 0.5,  2.0);
 }
 
 
@@ -870,7 +870,7 @@ void MapgenV7::generateCaves(s16 max_stone_y)
 			for (s16 x = node_min.X; x <= node_max.X; x++, i++, index++) {
 				float d1 = contour(noise_cave1->result[index]);
 				float d2 = contour(noise_cave2->result[index]);
-				if (d1 * d2 > 0.3) {
+				if (d1 * d2 > 0.3f) {
 					content_t c = vm->m_data[i].getContent();
 					if (!ndef->get(c).is_ground_content || c == CONTENT_AIR)
 						continue;
@@ -882,7 +882,7 @@ void MapgenV7::generateCaves(s16 max_stone_y)
 	}
 
 	PseudoRandom ps(blockseed + 21343);
-	u32 bruises_count = (ps.range(1, 4) == 1) ? ps.range(1, 2) : 0;
+	u32 bruises_count = ps.range(0, 2);
 	for (u32 i = 0; i < bruises_count; i++) {
 		CaveV7 cave(this, &ps);
 		cave.makeCave(node_min, node_max, max_stone_y);

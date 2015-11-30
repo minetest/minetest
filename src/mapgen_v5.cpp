@@ -518,7 +518,7 @@ void MapgenV5::generateCaves(int max_stone_y)
 			for (s16 x = node_min.X; x <= node_max.X; x++, i++, index++) {
 				float d1 = contour(noise_cave1->result[index]);
 				float d2 = contour(noise_cave2->result[index]);
-				if (d1*d2 > 0.125) {
+				if (d1 * d2 > 0.125f) {
 					content_t c = vm->m_data[i].getContent();
 					if (!ndef->get(c).is_ground_content || c == CONTENT_AIR)
 						continue;
@@ -533,7 +533,7 @@ void MapgenV5::generateCaves(int max_stone_y)
 		return;
 
 	PseudoRandom ps(blockseed + 21343);
-	u32 bruises_count = (ps.range(1, 4) == 1) ? ps.range(1, 2) : 0;
+	u32 bruises_count = ps.range(0, 2);
 	for (u32 i = 0; i < bruises_count; i++) {
 		CaveV5 cave(this, &ps);
 		cave.makeCave(node_min, node_max, max_stone_y);
