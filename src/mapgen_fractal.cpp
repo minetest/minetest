@@ -154,8 +154,8 @@ MapgenFractalParams::MapgenFractalParams()
 
 	np_seabed       = NoiseParams(-14, 9,   v3f(600, 600, 600), 41900, 5, 0.6, 2.0);
 	np_filler_depth = NoiseParams(0,   1.2, v3f(150, 150, 150), 261,   3, 0.7, 2.0);
-	np_cave1        = NoiseParams(0,   12,  v3f(128, 128, 128), 52534, 4, 0.5, 2.0);
-	np_cave2        = NoiseParams(0,   12,  v3f(128, 128, 128), 10325, 4, 0.5, 2.0);
+	np_cave1        = NoiseParams(0,   12,  v3f(96,  96,  96),  52534, 4, 0.5, 2.0);
+	np_cave2        = NoiseParams(0,   12,  v3f(96,  96,  96),  10325, 4, 0.5, 2.0);
 }
 
 
@@ -624,7 +624,7 @@ void MapgenFractal::generateCaves(s16 max_stone_y)
 			for (s16 x = node_min.X; x <= node_max.X; x++, vi++, index++) {
 				float d1 = contour(noise_cave1->result[index]);
 				float d2 = contour(noise_cave2->result[index]);
-				if (d1 * d2 > 0.4f) {
+				if (d1 * d2 > 0.3f) {
 					content_t c = vm->m_data[vi].getContent();
 					if (!ndef->get(c).is_ground_content || c == CONTENT_AIR)
 						continue;
@@ -639,7 +639,7 @@ void MapgenFractal::generateCaves(s16 max_stone_y)
 		return;
 
 	PseudoRandom ps(blockseed + 21343);
-	u32 bruises_count = (ps.range(1, 4) == 1) ? ps.range(1, 2) : 0;
+	u32 bruises_count = ps.range(0, 2);
 	for (u32 i = 0; i < bruises_count; i++) {
 		CaveV5 cave(this, &ps);
 		cave.makeCave(node_min, node_max, max_stone_y);
