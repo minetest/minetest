@@ -392,7 +392,8 @@ void DungeonGen::makeCorridor(v3s16 doorplace, v3s16 doordir,
 		if (partcount != 0)
 			p.Y += make_stairs;
 
-		if (vm->m_area.contains(p) && vm->m_area.contains(p + v3s16(0, 1, 0))) {
+		if (vm->m_area.contains(p) && vm->m_area.contains(p + v3s16(0, 1, 0)) &&
+				vm->m_area.contains(v3s16(p.X - dir.X, p.Y - 1, p.Z - dir.Z))) {
 			if (make_stairs) {
 				makeFill(p + v3s16(-1, -1, -1),
 					dp.holesize + v3s16(2, 3, 2),
