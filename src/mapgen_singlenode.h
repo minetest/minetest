@@ -35,6 +35,7 @@ class MapgenSinglenode : public Mapgen {
 public:
 	u32 flags;
 	content_t c_node;
+	u8 set_light;
 
 	MapgenSinglenode(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	~MapgenSinglenode();
