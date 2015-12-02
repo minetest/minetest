@@ -2996,7 +2996,7 @@ will place the schematic inside of the VoxelManip.
 * `update_map()`: Update map after writing chunk back to map.
     * To be used only by `VoxelManip` objects created by the mod itself;
       not a `VoxelManip` that was retrieved from `minetest.get_mapgen_object`
-* `set_lighting(light, p1, p2)`: Set the lighting within the `VoxelManip` to a uniform value
+* `set_lighting(light, [p1, p2])`: Set the lighting within the `VoxelManip` to a uniform value
     * `light` is a table, `{day=<0...15>, night=<0...15>}`
     * To be used only by a `VoxelManip` object from `minetest.get_mapgen_object`
     * (`p1`, `p2`) is the area in which lighting is set;
@@ -3010,10 +3010,12 @@ will place the schematic inside of the VoxelManip.
     * expects lighting data in the same format that `get_light_data()` returns
 * `get_param2_data()`: Gets the raw `param2` data read into the `VoxelManip` object
 * `set_param2_data(param2_data)`: Sets the `param2` contents of each node in the `VoxelManip`
-* `calc_lighting(p1, p2)`:  Calculate lighting within the `VoxelManip`
+* `calc_lighting([p1, p2], [propagate_shadow])`:  Calculate lighting within the `VoxelManip`
     * To be used only by a `VoxelManip` object from `minetest.get_mapgen_object`
     * (`p1`, `p2`) is the area in which lighting is set; defaults to the whole area
-      if left out
+      if left out or nil
+    * `propagate_shadow` is an optional boolean deciding whether shadows in a generated
+      mapchunk above are propagated down into the mapchunk; defaults to `true` if left out
 * `update_liquids()`: Update liquid flow
 * `was_modified()`: Returns `true` or `false` if the data in the voxel manipulator
   had been modified since the last read from map, due to a call to

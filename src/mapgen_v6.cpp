@@ -593,7 +593,9 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 
 	// Calculate lighting
 	if (flags & MG_LIGHT)
-		calcLighting(node_min, node_max);
+		calcLighting(node_min - v3s16(1, 1, 1) * MAP_BLOCKSIZE,
+			node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE,
+			full_node_min, full_node_max);
 
 	this->generating = false;
 }

@@ -264,37 +264,20 @@ void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light)
 }
 
 
-void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax, v3s16 full_nmin, v3s16 full_nmax)
+void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax, v3s16 full_nmin, v3s16 full_nmax,
+	bool propagate_shadow)
 {
 	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update", SPT_AVG);
 	//TimeTaker t("updateLighting");
 
-	propagateSunlight(nmin, nmax);
+	propagateSunlight(nmin, nmax, propagate_shadow);
 	spreadLight(full_nmin, full_nmax);
 
 	//printf("updateLighting: %dms\n", t.stop());
 }
 
 
-
-void Mapgen::calcLighting(v3s16 nmin, v3s16 nmax)
-{
-	ScopeProfiler sp(g_profiler, "EmergeThread: mapgen lighting update", SPT_AVG);
-	//TimeTaker t("updateLighting");
-
-	propagateSunlight(
-		nmin - v3s16(1, 1, 1) * MAP_BLOCKSIZE,
-		nmax + v3s16(1, 0, 1) * MAP_BLOCKSIZE);
-
-	spreadLight(
-		nmin - v3s16(1, 1, 1) * MAP_BLOCKSIZE,
-		nmax + v3s16(1, 1, 1) * MAP_BLOCKSIZE);
-
-	//printf("updateLighting: %dms\n", t.stop());
-}
-
-
-void Mapgen::propagateSunlight(v3s16 nmin, v3s16 nmax)
+void Mapgen::propagateSunlight(v3s16 nmin, v3s16 nmax, bool propagate_shadow)
 {
 	//TimeTaker t("propagateSunlight");
 	VoxelArea a(nmin, nmax);
@@ -308,7 +291,8 @@ void Mapgen::propagateSunlight(v3s16 nmin, v3s16 nmax)
 			if (vm->m_data[i].getContent() == CONTENT_IGNORE) {
 				if (block_is_underground)
 					continue;
-			} else if ((vm->m_data[i].param1 & 0x0F) != LIGHT_SUN) {
+			} else if ((vm->m_data[i].param1 & 0x0F) != LIGHT_SUN &&
+					propagate_shadow) {
 				continue;
 			}
 			vm->m_area.add_y(em, i, -1);
@@ -324,7 +308,6 @@ void Mapgen::propagateSunlight(v3s16 nmin, v3s16 nmax)
 	}
 	//printf("propagateSunlight: %dms\n", t.stop());
 }
-
 
 
 void Mapgen::spreadLight(v3s16 nmin, v3s16 nmax)

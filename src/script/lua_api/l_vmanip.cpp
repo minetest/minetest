@@ -181,6 +181,7 @@ int LuaVoxelManip::l_calc_lighting(lua_State *L)
 	v3s16 fpmax  = vm->m_area.MaxEdge;
 	v3s16 pmin   = lua_istable(L, 2) ? check_v3s16(L, 2) : fpmin + yblock;
 	v3s16 pmax   = lua_istable(L, 3) ? check_v3s16(L, 3) : fpmax - yblock;
+	bool propagate_shadow = lua_isboolean(L, 4) ? lua_toboolean(L, 4) : true;
 
 	sortBoxVerticies(pmin, pmax);
 	if (!vm->m_area.contains(VoxelArea(pmin, pmax)))
@@ -191,7 +192,7 @@ int LuaVoxelManip::l_calc_lighting(lua_State *L)
 	mg.ndef        = ndef;
 	mg.water_level = emerge->params.water_level;
 
-	mg.calcLighting(pmin, pmax, fpmin, fpmax);
+	mg.calcLighting(pmin, pmax, fpmin, fpmax, propagate_shadow);
 
 	return 0;
 }
