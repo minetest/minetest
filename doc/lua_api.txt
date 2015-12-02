@@ -1921,7 +1921,11 @@ Call these functions only at load time!
     * Should be called by the authentication handler if privileges changes.
     * To report everybody, set `name=nil`.
 * `minetest.get_password_hash(name, raw_password)`
-    * Convert a name-password pair to a password hash that Minetest can use
+    * Convert a name-password pair to a password hash that Minetest can use.
+    * The returned value alone is not a good basis for password checks based
+    * on comparing the password hash in the database with the password hash
+    * from the function, with an externally provided password, as the hash
+    * in the db might use the new SRP verifier format.
 * `minetest.string_to_privs(str)`: returns `{priv1=true,...}`
 * `minetest.privs_to_string(privs)`: returns `"priv1,priv2,..."`
     * Convert between two privilege representations
