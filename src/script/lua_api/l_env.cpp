@@ -676,8 +676,8 @@ int ModApiEnvMod::l_get_perlin(lua_State *L)
 	if (lua_istable(L, 1)) {
 		read_noiseparams(L, 1, &params);
 	} else {
-		params.seed    = luaL_checkint(L, 1);
-		params.octaves = luaL_checkint(L, 2);
+		params.seed    = luaL_checkinteger(L, 1);
+		params.octaves = luaL_checkinteger(L, 2);
 		params.persist = luaL_checknumber(L, 3);
 		params.spread  = v3f(1, 1, 1) * luaL_checknumber(L, 4);
 	}
@@ -849,9 +849,9 @@ int ModApiEnvMod::l_find_path(lua_State *L)
 
 	v3s16 pos1                  = read_v3s16(L, 1);
 	v3s16 pos2                  = read_v3s16(L, 2);
-	unsigned int searchdistance = luaL_checkint(L, 3);
-	unsigned int max_jump       = luaL_checkint(L, 4);
-	unsigned int max_drop       = luaL_checkint(L, 5);
+	unsigned int searchdistance = luaL_checkinteger(L, 3);
+	unsigned int max_jump       = luaL_checkinteger(L, 4);
+	unsigned int max_drop       = luaL_checkinteger(L, 5);
 	algorithm algo              = A_PLAIN_NP;
 	if (!lua_isnil(L, 6)) {
 		std::string algorithm = luaL_checkstring(L,6);

@@ -176,7 +176,12 @@ void LuaSettings::Register(lua_State* L)
 
 	lua_pop(L, 1);  // drop metatable
 
+#if LUA_VERSION_NUM < 502
 	luaL_openlib(L, 0, methods, 0);  // fill methodtable
+#else
+	lua_newtable(L);
+	luaL_setfuncs(L, methods, 0);
+#endif
 	lua_pop(L, 1);  // drop methodtable
 
 	// Can be created from Lua (Settings(filename))

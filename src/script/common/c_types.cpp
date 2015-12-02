@@ -32,3 +32,19 @@ struct EnumString es_ItemType[] =
 		{ITEM_TOOL, "tool"},
 		{0, NULL},
 	};
+
+#if LUA_VERSION_NUM >= 502
+LUALIB_API int luaL_pushtype (lua_State *L, int narg) {
+	if (!luaL_callmeta(L, narg, "__type"))
+		lua_pushstring(L, luaL_typename(L, narg));
+	return 1;
+}
+
+LUALIB_API int luaL_typerror (lua_State *L, int narg, const char *tname) {
+	const char *msg;
+	luaL_pushtype(L, narg);
+	msg = lua_pushfstring(L, "%s expected, got %s",
+			tname, lua_tostring(L, -1));
+	return luaL_argerror(L, narg, msg);
+}
+#endif

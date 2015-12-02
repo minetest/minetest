@@ -72,8 +72,8 @@ int LuaPerlinNoise::create_object(lua_State *L)
 	if (lua_istable(L, 1)) {
 		read_noiseparams(L, 1, &params);
 	} else {
-		params.seed    = luaL_checkint(L, 1);
-		params.octaves = luaL_checkint(L, 2);
+		params.seed    = luaL_checkinteger(L, 1);
+		params.octaves = luaL_checkinteger(L, 2);
 		params.persist = luaL_checknumber(L, 3);
 		params.spread  = v3f(1, 1, 1) * luaL_checknumber(L, 4);
 	}
@@ -127,7 +127,12 @@ void LuaPerlinNoise::Register(lua_State *L)
 
 	lua_pop(L, 1);
 
-	luaL_openlib(L, 0, methods, 0);
+#if LUA_VERSION_NUM < 502
+	luaL_openlib(L, 0, methods, 0);  // fill methodtable
+#else
+	lua_newtable(L);
+	luaL_setfuncs(L, methods, 0);
+#endif
 	lua_pop(L, 1);
 
 	lua_register(L, className, create_object);
@@ -359,7 +364,6 @@ LuaPerlinNoiseMap *LuaPerlinNoiseMap::checkobject(lua_State *L, int narg)
 	void *ud = luaL_checkudata(L, narg, className);
 	if (!ud)
 		luaL_typerror(L, narg, className);
-
 	return *(LuaPerlinNoiseMap **)ud;
 }
 
@@ -385,7 +389,12 @@ void LuaPerlinNoiseMap::Register(lua_State *L)
 
 	lua_pop(L, 1);
 
-	luaL_openlib(L, 0, methods, 0);
+#if LUA_VERSION_NUM < 502
+	luaL_openlib(L, 0, methods, 0);  // fill methodtable
+#else
+	lua_newtable(L);
+	luaL_setfuncs(L, methods, 0);
+#endif
 	lua_pop(L, 1);
 
 	lua_register(L, className, create_object);
@@ -490,7 +499,12 @@ void LuaPseudoRandom::Register(lua_State *L)
 
 	lua_pop(L, 1);
 
-	luaL_openlib(L, 0, methods, 0);
+#if LUA_VERSION_NUM < 502
+	luaL_openlib(L, 0, methods, 0);  // fill methodtable
+#else
+	lua_newtable(L);
+	luaL_setfuncs(L, methods, 0);
+#endif
 	lua_pop(L, 1);
 
 	lua_register(L, className, create_object);
@@ -589,7 +603,12 @@ void LuaPcgRandom::Register(lua_State *L)
 
 	lua_pop(L, 1);
 
-	luaL_openlib(L, 0, methods, 0);
+#if LUA_VERSION_NUM < 502
+	luaL_openlib(L, 0, methods, 0);  // fill methodtable
+#else
+	lua_newtable(L);
+	luaL_setfuncs(L, methods, 0);
+#endif
 	lua_pop(L, 1);
 
 	lua_register(L, className, create_object);
@@ -704,7 +723,12 @@ void LuaSecureRandom::Register(lua_State *L)
 
 	lua_pop(L, 1);
 
-	luaL_openlib(L, 0, methods, 0);
+#if LUA_VERSION_NUM < 502
+	luaL_openlib(L, 0, methods, 0);  // fill methodtable
+#else
+	lua_newtable(L);
+	luaL_setfuncs(L, methods, 0);
+#endif
 	lua_pop(L, 1);
 
 	lua_register(L, className, create_object);
