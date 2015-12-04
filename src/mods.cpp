@@ -45,7 +45,7 @@ static bool parseDependsLine(std::istream &is,
 	return dep != "";
 }
 
-void parseModContents(ModSpec &spec)
+void parseModContents(ModSpec &spec, const Settings &worldmt_settings)
 {
 	// NOTE: this function works in mutual recursion with getModsInPath
 	Settings info;
@@ -64,7 +64,7 @@ void parseModContents(ModSpec &spec)
 	if(modpack_is.good()){ //a modpack, recursively get the mods in it
 		modpack_is.close(); // We don't actually need the file
 		spec.is_modpack = true;
-		spec.modpack_content = getModsInPath(spec.path, true);
+		spec.modpack_content = getModsInPath(spec.path, worldmt_settings, true);
 
 		// modpacks have no dependencies; they are defined and
 		// tracked separately for each mod in the modpack
@@ -86,7 +86,8 @@ void parseModContents(ModSpec &spec)
 	}
 }
 
-std::map<std::string, ModSpec> getModsInPath(std::string path, bool part_of_modpack)
+std::map<std::string, ModSpec> getModsInPath(std::string path,
+		const Settings &worldmt_settings, bool part_of_modpack)
 {
 	// NOTE: this function works in mutual recursion with parseModContents
 
@@ -100,11 +101,23 @@ std::map<std::string, ModSpec> getModsInPath(std::string path, bool part_of_modp
 		// VCS directories like ".git" or ".svn"
 		if(modname[0] == '.')
 			continue;
+
+		std::string disable = std::string("load_mod_") + modname;
+		// for backwards compatibility: exclude only mods which are
+		// explicitly excluded. if mod is not mentioned at all, it is
+		// enabled. So by default, all installed mods are enabled.
+		if(worldmt_settings.exists(disable) &&
+		   !worldmt_settings.getBool(disable)){
+			actionstream <<  "Mod " << modname
+				<< " is explicitly disabled in world.mt" << std::endl;
+			continue;
+		}
+
 		std::string modpath = path + DIR_DELIM + modname;
 
 		ModSpec spec(modname, modpath);
 		spec.part_of_modpack = part_of_modpack;
-		parseModContents(spec);
+		parseModContents(spec, worldmt_settings);
 		result.insert(std::make_pair(modname, spec));
 	}
 	return result;
@@ -157,16 +170,16 @@ std::vector<ModSpec> flattenMods(std::map<std::string, ModSpec> mods)
 ModConfiguration::ModConfiguration(std::string worldpath)
 {
 	SubgameSpec gamespec = findWorldSubgame(worldpath);
-
-	// Add all game mods and all world mods
-	addModsInPath(gamespec.gamemods_path);
-	addModsInPath(worldpath + DIR_DELIM + "worldmods");
-
-	// check world.mt file for mods explicitely declared to be
-	// loaded or not by a load_mod_<modname> = ... line.
 	std::string worldmt = worldpath+DIR_DELIM+"world.mt";
 	Settings worldmt_settings;
 	worldmt_settings.readConfigFile(worldmt.c_str());
+
+	// Add all game mods and all world mods
+	addModsInPath(gamespec.gamemods_path, worldmt_settings);
+	addModsInPath(worldpath + DIR_DELIM + "worldmods", worldmt_settings);
+
+	// check world.mt file for mods explicitely declared to be
+	// loaded or not by a load_mod_<modname> = ... line.
 	std::vector<std::string> names = worldmt_settings.getNames();
 	std::set<std::string> include_mod_names;
 	for(std::vector<std::string>::iterator it = names.begin();
@@ -188,7 +201,7 @@ ModConfiguration::ModConfiguration(std::string worldpath)
 	for(std::set<std::string>::const_iterator it_path = gamespec.addon_mods_paths.begin();
 			it_path != gamespec.addon_mods_paths.end(); ++it_path)
 	{
-		std::vector<ModSpec> addon_mods_in_path = flattenMods(getModsInPath(*it_path));
+		std::vector<ModSpec> addon_mods_in_path = flattenMods(getModsInPath(*it_path, worldmt_settings));
 		for(std::vector<ModSpec>::iterator it = addon_mods_in_path.begin();
 			it != addon_mods_in_path.end(); ++it)
 		{
@@ -220,9 +233,9 @@ ModConfiguration::ModConfiguration(std::string worldpath)
 	resolveDependencies();
 }
 
-void ModConfiguration::addModsInPath(std::string path)
+void ModConfiguration::addModsInPath(std::string path, const Settings &worldmt_settings)
 {
-	addMods(flattenMods(getModsInPath(path)));
+	addMods(flattenMods(getModsInPath(path, worldmt_settings, false)));
 }
 
 void ModConfiguration::addMods(std::vector<ModSpec> new_mods)

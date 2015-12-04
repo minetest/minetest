@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include "json/json.h"
 #include "config.h"
+#include "settings.h"
 
 #define MODNAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_"
 
@@ -57,9 +58,10 @@ struct ModSpec
 };
 
 // Retrieves depends, optdepends, is_modpack and modpack_content
-void parseModContents(ModSpec &mod);
+void parseModContents(ModSpec &mod, const Settings &worldmt_settings);
 
-std::map<std::string,ModSpec> getModsInPath(std::string path, bool part_of_modpack = false);
+std::map<std::string,ModSpec> getModsInPath(std::string path,
+		const Settings &worldmt_settings, bool part_of_modpack = false);
 
 // If failed, returned modspec has name==""
 ModSpec findCommonMod(const std::string &modname);
@@ -104,7 +106,7 @@ public:
 private:
 	// adds all mods in the given path. used for games, modpacks
 	// and world-specific mods (worldmods-folders)
-	void addModsInPath(std::string path);
+	void addModsInPath(std::string path, const Settings &worldmt_settings);
 
 	// adds all mods in the set.
 	void addMods(std::vector<ModSpec> new_mods);
