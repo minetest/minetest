@@ -944,9 +944,18 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	ore->clust_scarcity = getintfield_default(L, index, "clust_scarcity", 1);
 	ore->clust_num_ores = getintfield_default(L, index, "clust_num_ores", 1);
 	ore->clust_size     = getintfield_default(L, index, "clust_size", 0);
-	ore->nthresh        = getfloatfield_default(L, index, "noise_threshhold", 0);
 	ore->noise          = NULL;
 	ore->flags          = 0;
+
+	//// Get noise_threshold
+	warn_if_field_exists(L, index, "noise_threshhold",
+		"Deprecated: new name is \"noise_threshold\".");
+
+	int nthresh;
+	if (!getintfield(L, index, "noise_threshold", nthresh) &&
+		!getintfield(L, index, "noise_threshhold", nthresh))
+		nthresh = 0;
+	ore->nthresh = nthresh;
 
 	//// Get y_min/y_max
 	warn_if_field_exists(L, index, "height_min",
