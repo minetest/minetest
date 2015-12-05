@@ -8,6 +8,7 @@ if [[ $CC == "clang" ]]; then
 	sudo apt-get install llvm-3.1
 	sudo apt-get install clang
 fi
+sudo apt-get update
 sudo apt-get install p7zip-full
 if [[ $PLATFORM == "Linux" ]]; then
 	sudo apt-get install libirrlicht-dev cmake libbz2-dev libpng12-dev \
