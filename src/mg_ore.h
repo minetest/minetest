@@ -61,7 +61,7 @@ public:
 	s16 y_max;
 	u8 ore_param2;		// to set node-specific attributes
 	u32 flags;          // attributes for this ore
-	float nthresh;      // threshhold for noise at which an ore is placed
+	float nthresh;      // threshold for noise at which an ore is placed
 	NoiseParams np;     // noise for distribution of clusters (NULL for uniform scattering)
 	Noise *noise;
 	std::set<u8> biomes;
