@@ -1251,7 +1251,7 @@ protected:
 	void processKeyInput();
 	void processItemSelection(u16 *new_playeritem);
 
-	void dropSelectedItem();
+	void dropSelectedItem(bool single_item = false);
 	void openInventory();
 	void openConsole(float scale, const wchar_t *line=NULL);
 	void toggleFreeMove();
@@ -2499,7 +2499,7 @@ void Game::processUserInput(f32 dtime)
 void Game::processKeyInput()
 {
 	if (wasKeyDown(KeyType::DROP)) {
-		dropSelectedItem();
+		dropSelectedItem(isKeyDown(KeyType::SNEAK));
 	} else if (wasKeyDown(KeyType::AUTOFORWARD)) {
 		toggleAutoforward();
 	} else if (wasKeyDown(KeyType::INVENTORY)) {
@@ -2645,10 +2645,10 @@ void Game::processItemSelection(u16 *new_playeritem)
 }
 
 
-void Game::dropSelectedItem()
+void Game::dropSelectedItem(bool single_item)
 {
 	IDropAction *a = new IDropAction();
-	a->count = 0;
+	a->count = single_item ? 1 : 0;
 	a->from_inv.setCurrentPlayer();
 	a->from_list = "main";
 	a->from_i = client->getPlayerItem();
