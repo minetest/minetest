@@ -1488,7 +1488,7 @@ protected:
 			u32 profiler_max_page);
 	void processItemSelection(u16 *new_playeritem);
 
-	void dropSelectedItem();
+	void dropSelectedItem(bool single_item = false);
 	void openInventory();
 	void openConsole();
 	void toggleFreeMove(float *statustext_time);
@@ -2624,7 +2624,7 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 	//TimeTaker tt("process kybd input", NULL, PRECISION_NANO);
 
 	if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_DROP])) {
-		dropSelectedItem();
+		dropSelectedItem(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SNEAK]));
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_AUTORUN])) {
 		toggleAutorun(statustext_time);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_INVENTORY])) {
@@ -2746,10 +2746,12 @@ void Game::processItemSelection(u16 *new_playeritem)
 }
 
 
-void Game::dropSelectedItem()
+void Game::dropSelectedItem(bool single_item)
 {
 	IDropAction *a = new IDropAction();
 	a->count = 0;
+	if (single_item)
+		a->count = 1;
 	a->from_inv.setCurrentPlayer();
 	a->from_list = "main";
 	a->from_i = client->getPlayerItem();
