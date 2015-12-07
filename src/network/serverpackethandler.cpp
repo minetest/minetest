@@ -1358,7 +1358,9 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		Check that target is reasonably close
 		(only when digging or placing things)
 	*/
-	if (action == 0 || action == 2 || action == 3) {
+	static const bool enable_anticheat = !g_settings->getBool("disable_anticheat");
+	if ((action == 0 || action == 2 || action == 3) &&
+			(enable_anticheat && !isSingleplayer())) {
 		float d = player_pos.getDistanceFrom(pointed_pos_under);
 		float max_d = BS * 14; // Just some large enough value
 		if (d > max_d) {
@@ -1495,7 +1497,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 
 			/* Cheat prevention */
 			bool is_valid_dig = true;
-			if (!isSingleplayer() && !g_settings->getBool("disable_anticheat")) {
+			if (enable_anticheat && !isSingleplayer()) {
 				v3s16 nocheat_p = playersao->getNoCheatDigPos();
 				float nocheat_t = playersao->getNoCheatDigTime();
 				playersao->noCheatDigEnd();
