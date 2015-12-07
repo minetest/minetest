@@ -19,29 +19,29 @@
 function get_mods(path,retval,modpack)
 	local mods = core.get_dir_list(path, true)
 	
-	for i=1, #mods, 1 do
-		if mods[i]:sub(1,1) ~= "." then
+	for _, name in ipairs(mods) do
+		if name:sub(1, 1) ~= "." then
+			local prefix = path .. DIR_DELIM .. name .. DIR_DELIM
 			local toadd = {}
-			local modpackfile = nil
+			table.insert(retval, toadd)
 
-			toadd.name = mods[i]
-			toadd.path = path .. DIR_DELIM .. mods[i] .. DIR_DELIM
-			if modpack ~= nil and
-				modpack ~= "" then
-				toadd.modpack = modpack
-			else
-				local filename = path .. DIR_DELIM .. mods[i] .. DIR_DELIM .. "modpack.txt"
-				local error = nil
-				modpackfile,error = io.open(filename,"r")
+			local mod_conf = Settings(prefix .. "mod.conf"):to_table()
+			if mod_conf.name then
+				name = mod_conf.name
 			end
 
-			if modpackfile ~= nil then
-				modpackfile:close()
-				toadd.is_modpack = true
-				table.insert(retval,toadd)
-				get_mods(path .. DIR_DELIM .. mods[i],retval,mods[i])
+			toadd.name = name
+			toadd.path = prefix
+
+			if modpack ~= nil and modpack ~= "" then
+				toadd.modpack = modpack
 			else
-				table.insert(retval,toadd)
+				local modpackfile = io.open(prefix .. "modpack.txt")
+				if modpackfile then
+					modpackfile:close()
+					toadd.is_modpack = true
+					get_mods(prefix, retval, name)
+				end
 			end
 		end
 	end
