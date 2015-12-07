@@ -1305,10 +1305,12 @@ mentioned in "Nodes". However, it is possible to insert extra data into a
 node. It is called "node metadata"; See "`NodeMetaRef`".
 
 Metadata contains two things:
+
 * A key-value store
 * An inventory
 
 Some of the values in the key-value store are handled specially:
+
 * `formspec`: Defines a right-click inventory menu. See "Formspec".
 * `infotext`: Text shown on the screen when the node is pointed at
 
@@ -2938,6 +2940,7 @@ core.CONTENT_IGNORE  (ID for "ignore" nodes)
 Inside of `on_generated()` callbacks, it is possible to retrieve the same VoxelManip object used by the
 core's Map Generator (commonly abbreviated Mapgen).  Most of the rules previously described still apply
 but with a few differences:
+
 * The Mapgen VoxelManip object is retrieved using: `minetest.get_mapgen_object("voxelmanip")`
 * This VoxelManip object already has the region of map just generated loaded into it; it's not necessary
   to call `VoxelManip:read_from_map()` before using a Mapgen VoxelManip.
