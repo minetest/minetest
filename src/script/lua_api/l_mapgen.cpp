@@ -951,9 +951,9 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	warn_if_field_exists(L, index, "noise_threshhold",
 		"Deprecated: new name is \"noise_threshold\".");
 
-	int nthresh;
-	if (!getintfield(L, index, "noise_threshold", nthresh) &&
-		!getintfield(L, index, "noise_threshhold", nthresh))
+	float nthresh;
+	if (!getfloatfield(L, index, "noise_threshold", nthresh) &&
+			!getfloatfield(L, index, "noise_threshhold", nthresh))
 		nthresh = 0;
 	ore->nthresh = nthresh;
 
