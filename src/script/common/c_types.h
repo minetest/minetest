@@ -21,8 +21,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define C_TYPES_H_
 
 extern "C" {
-#include "lua.h"
+#include <lua.h>
+#include <lauxlib.h>
 }
+
+#if LUA_VERSION_NUM >= 502
+#define luaL_reg luaL_Reg
+#define LUA_LENGTH(L, I) lua_rawlen((L), (I))
+LUALIB_API int (luaL_typerror) (lua_State *L, int narg, const char *tname);
+LUALIB_API int (luaL_pushtype) (lua_State *L, int idx);
+#else
+#define LUA_LENGTH(L, I) lua_objlen((L), (I))
+#endif
 
 #include <iostream>
 

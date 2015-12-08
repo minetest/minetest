@@ -427,7 +427,12 @@ void LuaItemStack::Register(lua_State *L)
 
 	lua_pop(L, 1);  // drop metatable
 
+#if LUA_VERSION_NUM < 502
 	luaL_openlib(L, 0, methods, 0);  // fill methodtable
+#else
+	lua_newtable(L);
+	luaL_setfuncs(L, methods, 0);
+#endif
 	lua_pop(L, 1);  // drop methodtable
 
 	// Can be created from Lua (LuaItemStack(itemstack or itemstring or table or nil))
@@ -558,7 +563,7 @@ int ModApiItemMod::l_get_content_id(lua_State *L)
 int ModApiItemMod::l_get_name_from_content_id(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	content_t c = luaL_checkint(L, 1);
+	content_t c = luaL_checkinteger(L, 1);
 
 	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
 	const char *name = ndef->get(c).name.c_str();
