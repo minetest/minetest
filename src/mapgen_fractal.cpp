@@ -66,7 +66,7 @@ MapgenFractal::MapgenFractal(int mapgenid, MapgenParams *params, EmergeManager *
 	MapgenFractalParams *sp = (MapgenFractalParams *)params->sparams;
 	this->spflags = sp->spflags;
 
-	this->formula    = sp->formula;
+	this->fractal    = sp->fractal;
 	this->iterations = sp->iterations;
 	this->scale      = sp->scale;
 	this->offset     = sp->offset;
@@ -76,6 +76,9 @@ MapgenFractal::MapgenFractal(int mapgenid, MapgenParams *params, EmergeManager *
 	this->julia_y = sp->julia_y;
 	this->julia_z = sp->julia_z;
 	this->julia_w = sp->julia_w;
+
+	this->formula = fractal / 2 + fractal % 2;
+	this->julia   = fractal % 2 == 0;
 
 	//// 2D terrain noise
 	noise_seabed       = new Noise(&sp->np_seabed, seed, csize.X, csize.Z);
@@ -141,7 +144,7 @@ MapgenFractalParams::MapgenFractalParams()
 {
 	spflags = 0;
 
-	formula = 1;
+	fractal = 1;
 	iterations = 11;
 	scale = v3f(4096.0, 1024.0, 4096.0);
 	offset = v3f(1.79, 0.0, 0.0);
@@ -163,7 +166,7 @@ void MapgenFractalParams::readParams(const Settings *settings)
 {
 	settings->getFlagStrNoEx("mgfractal_spflags", spflags, flagdesc_mapgen_fractal);
 
-	settings->getU16NoEx("mgfractal_formula", formula);
+	settings->getU16NoEx("mgfractal_fractal", fractal);
 	settings->getU16NoEx("mgfractal_iterations", iterations);
 	settings->getV3FNoEx("mgfractal_scale", scale);
 	settings->getV3FNoEx("mgfractal_offset", offset);
@@ -185,7 +188,7 @@ void MapgenFractalParams::writeParams(Settings *settings) const
 {
 	settings->setFlagStr("mgfractal_spflags", spflags, flagdesc_mapgen_fractal, U32_MAX);
 
-	settings->setU16("mgfractal_formula", formula);
+	settings->setU16("mgfractal_fractal", fractal);
 	settings->setU16("mgfractal_iterations", iterations);
 	settings->setV3F("mgfractal_scale", scale);
 	settings->setV3F("mgfractal_offset", offset);
@@ -368,7 +371,7 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 {
 	float cx, cy, cz, cw, ox, oy, oz, ow;
 
-	if (formula % 2 == 0) {  // Julia sets, formula = 2, 4, 6, 8
+	if (julia) {  // Julia set
 		cx = julia_x;
 		cy = julia_y;
 		cz = julia_z;
@@ -377,7 +380,7 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 		oy = (float)y / scale.Y - offset.Y;
 		oz = (float)z / scale.Z - offset.Z;
 		ow = slice_w;
-	} else {  // Mandelbrot sets, formula = 1, 3, 5, 7
+	} else {  // Mandelbrot set
 		cx = (float)x / scale.X - offset.X;
 		cy = (float)y / scale.Y - offset.Y;
 		cz = (float)z / scale.Z - offset.Z;
@@ -388,32 +391,87 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 		ow = 0.0f;
 	}
 
-	for (u16 iter = 0; iter < iterations; iter++) {
-		float nx = 0.0f;
-		float ny = 0.0f;
-		float nz = 0.0f;
-		float nw = 0.0f;
+	float nx = 0.0f;
+	float ny = 0.0f;
+	float nz = 0.0f;
+	float nw = 0.0f;
 
-		if (formula == 1 || formula == 2) {  // 4D "Roundy" Mandelbrot/Julia Set
+	for (u16 iter = 0; iter < iterations; iter++) {
+
+		if (formula == 1) {  // 4D "Roundy"
 			nx = ox * ox - oy * oy - oz * oz - ow * ow + cx;
 			ny = 2.0f * (ox * oy + oz * ow) + cy;
 			nz = 2.0f * (ox * oz + oy * ow) + cz;
 			nw = 2.0f * (ox * ow + oy * oz) + cw;
-		} else if (formula == 3 || formula == 4) {  // 4D "Squarry" Mandelbrot/Julia Set
+		} else if (formula == 2) {  // 4D "Squarry"
 			nx = ox * ox - oy * oy - oz * oz - ow * ow + cx;
 			ny = 2.0f * (ox * oy + oz * ow) + cy;
 			nz = 2.0f * (ox * oz + oy * ow) + cz;
 			nw = 2.0f * (ox * ow - oy * oz) + cw;
-		} else if (formula == 5 || formula == 6) {  // 4D "Mandy Cousin" Mandelbrot/Julia Set
+		} else if (formula == 3) {  // 4D "Mandy Cousin"
 			nx = ox * ox - oy * oy - oz * oz + ow * ow + cx;
 			ny = 2.0f * (ox * oy + oz * ow) + cy;
 			nz = 2.0f * (ox * oz + oy * ow) + cz;
 			nw = 2.0f * (ox * ow + oy * oz) + cw;
-		} else if (formula == 7 || formula == 8) {  // 4D "Variation" Mandelbrot/Julia Set
+		} else if (formula == 4) {  // 4D "Variation"
 			nx = ox * ox - oy * oy - oz * oz - ow * ow + cx;
 			ny = 2.0f * (ox * oy + oz * ow) + cy;
 			nz = 2.0f * (ox * oz - oy * ow) + cz;
 			nw = 2.0f * (ox * ow + oy * oz) + cw;
+		} else if (formula == 5) {  // 3D "Mandelbrot/Mandelbar"
+			nx = ox * ox - oy * oy - oz * oz + cx;
+			ny = 2.0f * ox * oy + cy;
+			nz = -2.0f * ox * oz + cz;
+		} else if (formula == 6) {  // 3D "Christmas Tree"
+			// Altering the formula here is necessary to avoid division by zero
+			if (fabs(oz) < 0.000000001f) {
+				nx = ox * ox - oy * oy - oz * oz + cx;
+				ny = 2.0f * oy * ox + cy;
+				nz = 4.0f * oz * ox + cz;
+			} else {
+				float a = (2.0f * ox) / (sqrt(oy * oy + oz * oz));
+				nx = ox * ox - oy * oy - oz * oz + cx;
+				ny = a * (oy * oy - oz * oz) + cy;
+				nz = a * 2.0f * oy * oz + cz;
+			}
+		} else if (formula == 7) {  // 3D "Mandelbulb"
+			if (fabs(oy) < 0.000000001f) {
+				nx = ox * ox - oz * oz + cx;
+				ny = cy;
+				nz = -2.0f * oz * sqrt(ox * ox) + cz;
+			} else {
+				float a = 1.0f - (oz * oz) / (ox * ox + oy * oy);
+				nx = (ox * ox - oy * oy) * a + cx;
+				ny = 2.0f * ox * oy * a + cy;
+				nz = -2.0f * oz * sqrt(ox * ox + oy * oy) + cz;
+			}
+		} else if (formula == 8) {  // 3D "Cosine Mandelbulb"
+			if (fabs(oy) < 0.000000001f) {
+				nx = 2.0f * ox * oz + cx;
+				ny = 4.0f * oy * oz + cy;
+				nz = oz * oz - ox * ox - oy * oy + cz;
+			} else {
+				float a = (2.0f * oz) / sqrt(ox * ox + oy * oy);
+				nx = (ox * ox - oy * oy) * a + cx;
+				ny = 2.0f * ox * oy * a + cy;
+				nz = oz * oz - ox * ox - oy * oy + cz;
+			}
+		} else if (formula == 9) {  // 4D "Mandelbulb"
+			float rxy = sqrt(ox * ox + oy * oy);
+			float rxyz = sqrt(ox * ox + oy * oy + oz * oz);
+			if (fabs(ow) < 0.000000001f && fabs(oz) < 0.000000001f) {
+				nx = (ox * ox - oy * oy) + cx;
+				ny = 2.0f * ox * oy + cy;
+				nz = -2.0f * rxy * oz + cz;
+				nw = 2.0f * rxyz * ow + cw;
+			} else {
+				float a = 1.0f - (ow * ow) / (rxyz * rxyz);
+				float b = a * (1.0f - (oz * oz) / (rxy * rxy));
+				nx = (ox * ox - oy * oy) * b + cx;
+				ny = 2.0f * ox * oy * b + cy;
+				nz = -2.0f * rxy * oz * a + cz;
+				nw = 2.0f * rxyz * ow + cw;
+			}
 		}
 
 		if (nx * nx + ny * ny + nz * nz + nw * nw > 4.0f)
