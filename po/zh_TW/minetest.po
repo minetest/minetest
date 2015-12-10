@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-11-08 10:49+0000\n"
+"PO-Revision-Date: 2015-12-10 08:13+0000\n"
 "Last-Translator: Jeff Huang <s8321414@chakraos.org>\n"
-"Language-Team: Chinese (Taiwan) <https://hosted.weblate.org/projects/"
-"minetest/minetest/zh_TW/>\n"
+"Language-Team: Chinese (Taiwan) "
+"<https://hosted.weblate.org/projects/minetest/minetest/zh_TW/>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -415,7 +415,7 @@ msgstr "開始遊戲"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "\"$1\" is not a valid flag."
-msgstr ""
+msgstr "「$1」不是一個有效的旗標。"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(No description of setting given)"
@@ -443,7 +443,7 @@ msgstr "已啟用"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr ""
+msgstr "格式為 3 個在括號內的以逗號分離的數字。"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid ""
@@ -1432,12 +1432,11 @@ msgstr ""
 "範例：72 = 20分鐘，360 = 4分鐘，1 = 24小時，0 = 日／夜／一切保持不變。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Controls size of deserts and beaches in Mapgen v6.\n"
 "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
 msgstr ""
-"控制在 Mapgen V6 中的沙漠與沙灘大小。\n"
+"控制在 Mapgen v6 中的沙漠與沙灘大小。\n"
 "當 snowbiomes 啟用時「mgv6_freq_desert」會被忽略。"
 
 #: src/settings_translation_file.cpp
@@ -1593,6 +1592,9 @@ msgid ""
 "Note that this is not quite optimized and that smooth lighting on the\n"
 "water surface doesn't work with this."
 msgstr ""
+"啟用略低的的水面，所以它就不會完全「填滿」節點。\n"
+"注意，這個功能並未最佳化完成，水面的\n"
+"柔和光功能無法與此功能一同運作。"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
@@ -1724,39 +1726,41 @@ msgstr "後備字型大小"
 
 #: src/settings_translation_file.cpp
 msgid "Fast key"
-msgstr ""
+msgstr "快速按鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode acceleration"
-msgstr ""
+msgstr "快速模式加速"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode speed"
-msgstr ""
+msgstr "快速模式速度"
 
 #: src/settings_translation_file.cpp
 msgid "Fast movement"
-msgstr ""
+msgstr "快速移動"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Fast movement (via use key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
+"快速移動（透過使用鍵）。\n"
+"這需要伺服器上的「快速」特權。"
 
 #: src/settings_translation_file.cpp
 msgid "Field of view"
-msgstr ""
+msgstr "視野"
 
 #: src/settings_translation_file.cpp
 msgid "Field of view in degrees."
-msgstr ""
+msgstr "以度計算的視野。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "File in client/serverlist/ that contains your favorite servers displayed in "
 "the Multiplayer Tab."
-msgstr ""
+msgstr "在 客戶端/伺服器清單/ 中的檔案包含了顯示在多人遊戲分頁中您最愛的伺服器。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1765,6 +1769,10 @@ msgid ""
 "light edge to transparent textures.  Apply this filter to clean that up\n"
 "at texture load time."
 msgstr ""
+"已過濾的材質會與完全透明的鄰居混合 RGB 值，\n"
+"PNG 最佳化器通常會丟棄，有時候會導致透明材質\n"
+"會有黑邊或亮邊。套用這個過濾器以在材質載入時\n"
+"清理這些東西。"
 
 #: src/settings_translation_file.cpp
 msgid "Filtering"
@@ -1772,47 +1780,47 @@ msgstr "過濾器"
 
 #: src/settings_translation_file.cpp
 msgid "Fixed map seed"
-msgstr ""
+msgstr "固定的地圖種子"
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
-msgstr ""
+msgstr "飛行按鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
-msgstr ""
+msgstr "飛行"
 
 #: src/settings_translation_file.cpp
 msgid "Fog"
-msgstr ""
+msgstr "霧"
 
 #: src/settings_translation_file.cpp
 msgid "Fog toggle key"
-msgstr ""
+msgstr "霧切換鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Font path"
-msgstr ""
+msgstr "字型路徑"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow"
-msgstr ""
+msgstr "字型陰影"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow alpha"
-msgstr ""
+msgstr "字型陰影 alpha 值"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-msgstr ""
+msgstr "字型陰影 alpha（不透明度，介於 0 到 255）。"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow offset, if 0 then shadow will not be drawn."
-msgstr ""
+msgstr "字型陰影偏移，若為 0 則陰影將不會被繪製。"
 
 #: src/settings_translation_file.cpp
 msgid "Font size"
-msgstr ""
+msgstr "字型大小"
 
 #: src/settings_translation_file.cpp
 msgid "Forward key"
@@ -1820,39 +1828,39 @@ msgstr "前進鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Freetype fonts"
-msgstr ""
+msgstr "Freetype 字型"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far blocks are generated for clients, stated in mapblocks (16 "
 "nodes)."
-msgstr ""
+msgstr "要在客戶端上從多遠的區塊開始生成，以地圖區塊計算（16 個節點）。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
-msgstr ""
+msgstr "要把多遠的區塊送到客戶端，以地圖區塊計算（16 個節點）。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far clients know about objects, stated in mapblocks (16 nodes)."
-msgstr ""
+msgstr "客戶端上知道多遠的區塊上的物件，以地圖區塊計算（16 個節點）。"
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
-msgstr ""
+msgstr "全螢幕"
 
 #: src/settings_translation_file.cpp
 msgid "Full screen BPP"
-msgstr ""
+msgstr "全螢幕 BPP"
 
 #: src/settings_translation_file.cpp
 msgid "Fullscreen mode."
-msgstr ""
+msgstr "全螢幕模式。"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
-msgstr ""
+msgstr "圖形使用者介面縮放比例"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter"
@@ -1860,11 +1868,11 @@ msgstr "圖形使用者介面縮放過濾器"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter txr2img"
-msgstr ""
+msgstr "圖形使用者介面縮放比例過濾器 txr2img"
 
 #: src/settings_translation_file.cpp
 msgid "Gamma"
-msgstr ""
+msgstr "Gamma"
 
 #: src/settings_translation_file.cpp
 msgid "Generate normalmaps"
@@ -1878,6 +1886,10 @@ msgid ""
 "Flags starting with \"no\" are used to explicitly disable them.\n"
 "'trees' and 'flat' flags only have effect in mgv6."
 msgstr ""
+"全域地圖產生屬性。\n"
+"未在旗標字串中指定的旗標將不會自預設值修改。\n"
+"以「no」開頭的旗標字串將會用於明確的停用它們。\n"
+"「trees」與「flat」旗標只在 mgv6 有效。"
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
@@ -2503,9 +2515,8 @@ msgid "Mapgen flags"
 msgstr "地圖產生器旗標"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen fractal"
-msgstr "地圖產生器旗標"
+msgstr "地圖產生器分形"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal cave1 noise parameters"
@@ -2520,14 +2531,12 @@ msgid "Mapgen fractal filler depth noise parameters"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen fractal flags"
-msgstr "地圖產生器旗標"
+msgstr "地圖產生器分形旗標"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen fractal julia iterations"
-msgstr "視差遮蔽迭代"
+msgstr "地圖產生器分形朱麗亞迭代"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia offset"
