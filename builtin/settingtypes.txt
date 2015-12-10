@@ -401,13 +401,13 @@ pause_fps_max (FPS in pause menu) int 20
 viewing_range_nodes_max (Viewing range maximum) int 160
 
 #    The allowed adjustment range for the automatic rendering range adjustment.
-#    Set this to be equal to viewing range minimum to disable the auto-adjustment algorithm.
+#    Set this to be equal to viewing range maximum to disable the auto-adjustment algorithm.
 viewing_range_nodes_min (Viewing range minimum) int 35
 
-#    Vertical initial window size.
+#    Width component of the initial window size.
 screenW (Screen width) int 800
 
-#    Horizontal initial window size.
+#    Height component of the initial window size.
 screenH (Screen height) int 600
 
 #    Fullscreen mode.

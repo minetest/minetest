@@ -451,15 +451,15 @@
 # viewing_range_nodes_max = 160
 
 #    The allowed adjustment range for the automatic rendering range adjustment.
-#    Set this to be equal to viewing range minimum to disable the auto-adjustment algorithm.
+#    Set this to be equal to viewing range maximum to disable the auto-adjustment algorithm.
 #    type: int
 # viewing_range_nodes_min = 35
 
-#    Vertical initial window size.
+#    Width component of the initial window size.
 #    type: int
 # screenW = 800
 
-#    Horizontal initial window size.
+#    Height component of the initial window size.
 #    type: int
 # screenH = 600
 
@@ -1243,7 +1243,7 @@
 #    6 = "Mandy Cousin" julia set.
 #    7 = "Variation" mandelbrot set.
 #    8 = "Variation" julia set.
-#    type: int
+#    type: int min: 1 max: 8
 # mgfractal_formula = 1
 
 #    Iterations of the recursive function.
