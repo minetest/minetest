@@ -578,6 +578,22 @@ node definition:
     ^ The rotation of this node is stored in param2. Plants are rotated this way.
       Values range 0 - 179. The value stored in param2 is multiplied by two to
       get the actual rotation of the node.
+    paramtype2 == "meshoptions"
+    ^ Only valid for "plantlike". The value of param2 becomes a bitfield which can
+      be used to change how the client draws plantlike nodes. Bits 0, 1 and 2 form
+      a mesh selector. Currently the following meshes are choosable:
+        0 = a "x" shaped plant (ordinary plant)
+        1 = a "+" shaped plant (just rotated 45 degrees)
+        2 = a "*" shaped plant with 3 faces instead of 2
+        3 = a "#" shaped plant with 4 faces instead of 2
+        4 = a "#" shaped plant with 4 faces that lean outwards
+        5-7 are unused and reserved for future meshes.
+      Bits 3 through 7 are optional flags that can be combined and give these
+      effects:
+        bit 3 (0x08) - Makes the plant slightly vary placement horizontally
+        bit 4 (0x10) - Makes the plant mesh 1.4x larger
+        bit 5 (0x20) - Moves each face randomly a small bit down (1/8 max)
+        bits 6-7 are reserved for future use.
     collision_box = {
       type = "fixed",
       fixed = {
