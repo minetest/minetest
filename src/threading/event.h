@@ -30,7 +30,10 @@ DEALINGS IN THE SOFTWARE.
 	#include <condition_variable>
 	#include "threading/mutex.h"
 #elif defined(_WIN32)
-	#include <windef.h>
+	#ifndef WIN32_LEAN_AND_MEAN
+		#define WIN32_LEAN_AND_MEAN
+	#endif
+	#include <windows.h>
 #else
 	#include <pthread.h>
 #endif
@@ -66,4 +69,3 @@ private:
 };
 
 #endif
-

@@ -25,14 +25,6 @@ DEALINGS IN THE SOFTWARE.
 
 #include "threading/event.h"
 
-#if defined(_WIN32)
-	#ifndef WIN32_LEAN_AND_MEAN
-		#define WIN32_LEAN_AND_MEAN
-	#endif
-	#include <windows.h>
-#endif
-
-
 #if __cplusplus < 201103L
 Event::Event()
 {
@@ -92,4 +84,3 @@ void Event::signal()
 	pthread_mutex_unlock(&mutex);
 #endif
 }
-
