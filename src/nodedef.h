@@ -65,6 +65,8 @@ enum ContentParamType2
 	CPT2_LEVELED,
 	// 2D rotation for things like plants
 	CPT2_DEGROTATE,
+	// Mesh options for plants
+	CPT2_MESHOPTIONS
 };
 
 enum LiquidType

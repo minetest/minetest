@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IMeshManipulator.h>
 #include "gamedef.h"
 #include "log.h"
+#include "noise.h"
 
 
 // Create a cuboid.
@@ -1104,6 +1105,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		break;}
 		case NDT_PLANTLIKE:
 		{
+			PseudoRandom rng(x<<8 | z | y<<16);
+
 			TileSpec tile = getNodeTileN(n, p, 0, data);
 			tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
 
@@ -1111,9 +1114,18 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			video::SColor c = MapBlock_LightColor(255, l, f.light_source);
 
 			float s = BS / 2 * f.visual_scale;
+			// add sqrt(2) visual scale
+			if ((f.param_type_2 == CPT2_MESHOPTIONS) && ((n.param2 & 0x10) != 0))
+				s *= 1.41421;
 
-			for (int j = 0; j < 2; j++)
-			{
+			float random_offset_X = .0;
+			float random_offset_Z = .0;
+			if ((f.param_type_2 == CPT2_MESHOPTIONS) && ((n.param2 & 0x8) != 0)) {
+				random_offset_X = BS * ((rng.next() % 16 / 16.0) * 0.29 - 0.145);
+				random_offset_Z = BS * ((rng.next() % 16 / 16.0) * 0.29 - 0.145);
+			}
+
+			for (int j = 0; j < 4; j++) {
 				video::S3DVertex vertices[4] =
 				{
 					video::S3DVertex(-s,-BS/2, 0, 0,0,0, c, 0,1),
@@ -1121,28 +1133,146 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					video::S3DVertex( s,-BS/2 + s*2,0, 0,0,0, c, 1,0),
 					video::S3DVertex(-s,-BS/2 + s*2,0, 0,0,0, c, 0,0),
 				};
+
 				float rotate_degree = 0;
+				u8 p2mesh = 0;
 				if (f.param_type_2 == CPT2_DEGROTATE)
 					rotate_degree = n.param2 * 2;
-
-				if (j == 0) {
-					for(u16 i = 0; i < 4; i++)
-						vertices[i].Pos.rotateXZBy(46 + rotate_degree);
-				} else if (j == 1) {
-					for(u16 i = 0; i < 4; i++)
-						vertices[i].Pos.rotateXZBy(-44 + rotate_degree);
+				else if (f.param_type_2 != CPT2_MESHOPTIONS) {
+					if (j == 0) {
+						for (u16 i = 0; i < 4; i++)
+							vertices[i].Pos.rotateXZBy(46 + rotate_degree);
+					} else if (j == 1) {
+						for (u16 i = 0; i < 4; i++)
+							vertices[i].Pos.rotateXZBy(-44 + rotate_degree);
+					}
+				} else {
+					p2mesh = n.param2 & 0x7;
+					switch (p2mesh) {
+					case 0:
+						// x
+						if (j == 0) {
+							for (u16 i = 0; i < 4; i++)
+								vertices[i].Pos.rotateXZBy(46);
+						} else if (j == 1) {
+							for (u16 i = 0; i < 4; i++)
+								vertices[i].Pos.rotateXZBy(-44);
+						}
+						break;
+					case 1:
+						// +
+						if (j == 0) {
+							for (u16 i = 0; i < 4; i++)
+								vertices[i].Pos.rotateXZBy(91);
+						} else if (j == 1) {
+							for (u16 i = 0; i < 4; i++)
+								vertices[i].Pos.rotateXZBy(1);
+						}
+						break;
+					case 2:
+						// *
+						if (j == 0) {
+							for (u16 i = 0; i < 4; i++)
+								vertices[i].Pos.rotateXZBy(121);
+						} else if (j == 1) {
+							for (u16 i = 0; i < 4; i++)
+								vertices[i].Pos.rotateXZBy(241);
+						} else { // (j == 2)
+							for (u16 i = 0; i < 4; i++)
+								vertices[i].Pos.rotateXZBy(1);
+						}
+						break;
+					case 3:
+						// #
+						switch (j) {
+						case 0:
+							for (u16 i = 0; i < 4; i++) {
+								vertices[i].Pos.rotateXZBy(1);
+								vertices[i].Pos.Z += BS / 4;
+							}
+							break;
+						case 1:
+							for (u16 i = 0; i < 4; i++) {
+								vertices[i].Pos.rotateXZBy(91);
+								vertices[i].Pos.X += BS / 4;
+							}
+							break;
+						case 2:
+							for (u16 i = 0; i < 4; i++) {
+								vertices[i].Pos.rotateXZBy(181);
+								vertices[i].Pos.Z -= BS / 4;
+							}
+							break;
+						case 3:
+							for (u16 i = 0; i < 4; i++) {
+								vertices[i].Pos.rotateXZBy(271);
+								vertices[i].Pos.X -= BS / 4;
+							}
+							break;
+						}
+						break;
+					case 4:
+						// outward leaning #-like
+						switch (j) {
+						case 0:
+							for (u16 i = 2; i < 4; i++)
+								vertices[i].Pos.Z -= BS / 2;
+							for (u16 i = 0; i < 4; i++)
+								vertices[i].Pos.rotateXZBy(1);
+							break;
+						case 1:
+							for (u16 i = 2; i < 4; i++)
+								vertices[i].Pos.Z -= BS / 2;
+							for (u16 i = 0; i < 4; i++)
+								vertices[i].Pos.rotateXZBy(91);
+							break;
+						case 2:
+							for (u16 i = 2; i < 4; i++)
+								vertices[i].Pos.Z -= BS / 2;
+							for (u16 i = 0; i < 4; i++)
+								vertices[i].Pos.rotateXZBy(181);
+							break;
+						case 3:
+							for (u16 i = 2; i < 4; i++)
+								vertices[i].Pos.Z -= BS / 2;
+							for (u16 i = 0; i < 4; i++)
+								vertices[i].Pos.rotateXZBy(271);
+							break;
+						}
+						break;
+					}
 				}
 
-				for (int i = 0; i < 4; i++)
-				{
+				for (int i = 0; i < 4; i++) {
 					vertices[i].Pos *= f.visual_scale;
 					vertices[i].Pos.Y += BS/2 * (f.visual_scale - 1);
 					vertices[i].Pos += intToFloat(p, BS);
+					// move to a random spot to avoid moire
+					if ((f.param_type_2 == CPT2_MESHOPTIONS) && ((n.param2 & 0x8) != 0)) {
+						vertices[i].Pos.X += random_offset_X;
+						vertices[i].Pos.Z += random_offset_Z;
+					}
+					// randomly move each face up/down
+					if ((f.param_type_2 == CPT2_MESHOPTIONS) && ((n.param2 & 0x20) != 0)) {
+						PseudoRandom yrng(j | x<<16 | z<<8 | y<<24 );
+						vertices[i].Pos.Y -= BS * ((yrng.next() % 16 / 16.0) * 0.125);
+					}
 				}
 
 				u16 indices[] = {0, 1, 2, 2, 3, 0};
 				// Add to mesh collector
 				collector.append(tile, vertices, 4, indices, 6);
+
+				// stop adding faces for meshes with less than 4 faces
+				if (f.param_type_2 == CPT2_MESHOPTIONS) {
+					if (((p2mesh == 0) || (p2mesh == 1)) && (j == 1))
+						break;
+					else if ((p2mesh == 2) && (j == 2))
+						break;
+				} else if (j == 1) {
+					break;
+				}
+
 			}
 		break;}
 		case NDT_FIRELIKE:
