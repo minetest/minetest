@@ -349,6 +349,7 @@ LOCAL_SRC_FILES += deps/sqlite/sqlite3.c
 
 # Threading
 LOCAL_SRC_FILES += \
+		jni/src/threading/event.cpp \
 		jni/src/threading/mutex.cpp \
 		jni/src/threading/semaphore.cpp \
 		jni/src/threading/thread.cpp
