@@ -248,6 +248,7 @@ void ContentFeatures::reset()
 	selection_box = NodeBox();
 	collision_box = NodeBox();
 	waving = 0;
+	random_xz = false;
 	legacy_facedir_simple = false;
 	legacy_wallmounted = false;
 	sound_footstep = SimpleSoundSpec();
@@ -318,6 +319,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	// the protocol version
 	os<<serializeString(mesh);
 	collision_box.serialize(os, protocol_version);
+	writeU8(os, random_xz);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -388,6 +390,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 		// otherwise changes the protocol version
 	mesh = deSerializeString(is);
 	collision_box.deSerialize(is);
+	random_xz = readU8(is);
 	}catch(SerializationError &e) {};
 }
 
@@ -1257,6 +1260,7 @@ void ContentFeatures::serializeOld(std::ostream &os, u16 protocol_version) const
 		writeU8(os, drowning);
 		writeU8(os, leveled);
 		writeU8(os, liquid_range);
+		writeU8(os, random_xz);
 	} else
 		throw SerializationError("ContentFeatures::serialize(): "
 			"Unsupported version requested");
@@ -1368,6 +1372,7 @@ void ContentFeatures::deSerializeOld(std::istream &is, int version)
 		drowning = readU8(is);
 		leveled = readU8(is);
 		liquid_range = readU8(is);
+		random_xz = readU8(is);
 	} else {
 		throw SerializationError("unsupported ContentFeatures version");
 	}

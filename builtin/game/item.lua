@@ -592,6 +592,7 @@ core.nodedef_default = {
 	selection_box = {type="regular"},
 	legacy_facedir_simple = false,
 	legacy_wallmounted = false,
+	random_xz = false,
 }
 
 core.craftitemdef_default = {

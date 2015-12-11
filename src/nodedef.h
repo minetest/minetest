@@ -256,6 +256,8 @@ struct ContentFeatures
 	NodeBox collision_box;
 	// Used for waving leaves/plants
 	u8 waving;
+	// for wild plants - offset random x,z
+	bool random_xz;
 	// Compatibility with old maps
 	// Set to true if paramtype used to be 'facedir_simple'
 	bool legacy_facedir_simple;
