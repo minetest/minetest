@@ -2237,8 +2237,13 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 
 			// Draw tooltip
 			std::string tooltip_text = "";
-			if (hovering && !m_selected_item)
-				tooltip_text = item.getDefinition(m_gamedef->idef()).description;
+			if (hovering && !m_selected_item) {
+				std::string d = item.getMetadataDescription();
+				if (!d.empty())
+					tooltip_text = d;
+				else
+					tooltip_text = item.getDefinition(m_gamedef->idef()).description;
+			}
 			if (tooltip_text != "") {
 				std::vector<std::string> tt_rows = str_split(tooltip_text, '\n');
 				m_tooltip_element->setBackgroundColor(m_default_tooltip_bgcolor);
