@@ -38,25 +38,104 @@ typedef enum {
 	backward_id,
 	left_id,
 	right_id,
-	inventory_id,
-	drop_id,
 	jump_id,
 	crunch_id,
+	after_last_element_id,
+	settings_starter_id,
+	rare_controls_starter_id,
 	fly_id,
 	noclip_id,
 	fast_id,
 	debug_id,
-	chat_id,
 	camera_id,
 	range_id,
-	after_last_element_id
+	chat_id,
+	inventory_id,
+	drop_id
 } touch_gui_button_id;
+
+typedef enum {
+	AHBB_Dir_Top_Bottom,
+	AHBB_Dir_Bottom_Top,
+	AHBB_Dir_Left_Right,
+	AHBB_Dir_Right_Left
+} autohide_button_bar_dir;
 
 #define MIN_DIG_TIME_MS 500
 #define MAX_TOUCH_COUNT 64
 #define BUTTON_REPEAT_DELAY 0.2f
 
+#define SETTINGS_BAR_Y_OFFSET 6.5
+#define RARE_CONTROLS_BAR_Y_OFFSET 4
+
 extern const char** touchgui_button_imagenames;
+
+struct button_info {
+	float            repeatcounter;
+	float            repeatdelay;
+	irr::EKEY_CODE   keycode;
+	std::vector<int> ids;
+	IGUIButton*      guibutton;
+	bool             immediate_release;
+};
+
+class AutoHideButtonBar
+{
+public:
+
+	AutoHideButtonBar( IrrlichtDevice *device, IEventReceiver* receiver );
+
+	void init(ISimpleTextureSource* tsrc, const char* starter_img,
+			int button_id, v2s32 UpperLeft, v2s32 LowerRight,
+			autohide_button_bar_dir dir, float timeout);
+
+	~AutoHideButtonBar();
+
+	/* add button to be shown */
+	void addButton(touch_gui_button_id id, const wchar_t* caption,
+			const char* btn_image);
+
+	/* detect settings bar button events */
+	bool isButton(const SEvent &event);
+
+	/* handle released hud buttons */
+	bool isReleaseButton(int eventID);
+
+	/* step handler */
+	void step(float dtime);
+
+	/* deactivate button bar */
+	void deactivate();
+
+	/* hide the whole buttonbar */
+	void hide();
+
+	/* unhide the buttonbar */
+	void show();
+
+private:
+	ISimpleTextureSource*     m_texturesource;
+	irr::video::IVideoDriver* m_driver;
+	IGUIEnvironment*          m_guienv;
+	IEventReceiver*           m_receiver;
+	v2u32                     m_screensize;
+	button_info               m_starter;
+	std::vector<button_info*> m_buttons;
+
+	v2s32                     m_upper_left;
+	v2s32                     m_lower_right;
+
+	/* show settings bar */
+	bool                      m_active;
+
+	bool                      m_visible;
+
+	/* settings bar timeout */
+	float                     m_timeout;
+	float                     m_timeout_value;
+	bool                      m_initialized;
+	autohide_button_bar_dir   m_dir;
+};
 
 class TouchScreenGUI
 {
@@ -66,7 +145,7 @@ public:
 
 	void translateEvent(const SEvent &event);
 
-	void init(ISimpleTextureSource* tsrc,float density);
+	void init(ISimpleTextureSource* tsrc);
 
 	double getYaw() { return m_camera_yaw; }
 	double getPitch() { return m_camera_pitch; }
@@ -77,8 +156,8 @@ public:
 	void registerHudItem(int index, const rect<s32> &rect);
 	void Toggle(bool visible);
 
-	void Hide();
-	void Show();
+	void hide();
+	void show();
 
 private:
 	IrrlichtDevice*         m_device;
@@ -103,15 +182,6 @@ private:
 	s32                     m_move_downtime;
 	bool                    m_move_sent_as_mouse_event;
 	v2s32                   m_move_downlocation;
-
-	struct button_info {
-		float            repeatcounter;
-		float            repeatdelay;
-		irr::EKEY_CODE   keycode;
-		std::vector<int> ids;
-		IGUIButton*      guibutton;
-		bool             immediate_release;
-	};
 
 	button_info m_buttons[after_last_element_id];
 
@@ -142,7 +212,7 @@ private:
 	std::vector<id_status> m_known_ids;
 
 	/* handle a button event */
-	void ButtonEvent(touch_gui_button_id bID, int eventID, bool action);
+	void handleButtonEvent(touch_gui_button_id bID, int eventID, bool action);
 
 	/* handle pressed hud buttons */
 	bool isHUDButton(const SEvent &event);
@@ -156,6 +226,9 @@ private:
 	/* handle release event */
 	void handleReleaseEvent(int evt_id);
 
+	/* get size of regular gui control button */
+	int getGuiButtonSize();
+
 	/* doubleclick detection variables */
 	struct key_event {
 		unsigned int down_time;
@@ -168,6 +241,12 @@ private:
 
 	/* array for doubletap detection */
 	key_event m_key_events[2];
+
+	/* settings bar */
+	AutoHideButtonBar m_settingsbar;
+
+	/* rare controls bar */
+	AutoHideButtonBar m_rarecontrolsbar;
 };
 extern TouchScreenGUI *g_touchscreengui;
 #endif

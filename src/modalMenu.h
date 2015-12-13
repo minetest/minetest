@@ -108,7 +108,7 @@ public:
 		this->remove();
 #ifdef HAVE_TOUCHSCREENGUI
 		if (g_touchscreengui)
-			g_touchscreengui->Show();
+			g_touchscreengui->show();
 #endif
 	}
 
