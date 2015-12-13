@@ -1,0 +1,26 @@
+--- irrlicht.orig/source/Irrlicht/COGLESDriver.h	2015-12-13 17:46:54.541872125 +0100
++++ irrlicht/source/Irrlicht/COGLESDriver.h	2015-12-13 17:49:40.477866266 +0100
+@@ -39,8 +39,8 @@
+ 
+ 	class COGLES1Driver : public CNullDriver, public IMaterialRendererServices, public COGLES1ExtensionHandler
+ 	{
+-		friend COGLES1CacheHandler;
+-		friend COGLES1Texture;
++		friend class COGLCoreCacheHandler<COGLES1Driver, COGLES1Texture>;
++		friend class COGLCoreTexture<COGLES1Driver>;
+ 
+ 	public:
+ 		//! constructor
+--- irrlicht.orig/source/Irrlicht/COGLES2Driver.h	2015-12-13 17:46:54.537872126 +0100
++++ irrlicht/source/Irrlicht/COGLES2Driver.h	2015-12-13 17:48:38.993868437 +0100
+@@ -45,8 +45,8 @@
+ 
+ 	class COGLES2Driver : public CNullDriver, public IMaterialRendererServices, public COGLES2ExtensionHandler
+ 	{
+-		friend COGLES2CacheHandler;
+-		friend COGLES2Texture;
++		friend class COGLCoreCacheHandler<COGLES2Driver, COGLES2Texture>;
++		friend class COGLCoreTexture<COGLES2Driver>;
+ 
+ 	public:
+ 		//! constructor

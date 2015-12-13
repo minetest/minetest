@@ -104,7 +104,7 @@ OGG_TIMESTAMP = $(OGG_DIR)timestamp
 OGG_TIMESTAMP_INT = $(ROOT)/deps/ogg_timestamp
 OGG_URL_GIT = https://github.com/vincentjames501/libvorbis-libogg-android
 
-IRRLICHT_REVISION = 5122
+IRRLICHT_REVISION = 5224
 IRRLICHT_DIR = $(ROOT)/deps/irrlicht/
 IRRLICHT_LIB = $(IRRLICHT_DIR)lib/Android/libIrrlicht.a
 IRRLICHT_TIMESTAMP = $(IRRLICHT_DIR)timestamp
@@ -510,11 +510,6 @@ $(ICONV_LIB) : $(ICONV_TIMESTAMP)
 clean_iconv :
 	$(RM) -rf ${ICONV_DIR}
 
-#Note: Texturehack patch is required for gpu's not supporting color format
-#      correctly. Known bad GPU:
-#      -geforce on emulator
-#      -Vivante Corporation GC1000 core (e.g. Galaxy Tab 3)
-
 irrlicht_download :
 	@if [ ! -d "deps/irrlicht" ] ; then                                        \
 		echo "irrlicht sources missing, downloading...";                       \
@@ -522,9 +517,9 @@ irrlicht_download :
 		cd deps;                                                               \
 		svn co ${IRRLICHT_URL_SVN} irrlicht || exit 1;                         \
 		cd irrlicht;                                                           \
+		patch -p1 < ../../irrlicht-friend_class_fix.patch || exit 1;           \
 		patch -p1 < ../../irrlicht-touchcount.patch || exit 1;                 \
 		patch -p1 < ../../irrlicht-back_button.patch || exit 1;                \
-		patch -p1 < ../../irrlicht-texturehack.patch || exit 1;                \
 	fi
 
 $(IRRLICHT_TIMESTAMP) : irrlicht_download
