@@ -2240,6 +2240,10 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 			if (hovering && !m_selected_item)
 				tooltip_text = item.getDefinition(m_gamedef->idef()).description;
 			if (tooltip_text != "") {
+
+				if (item.metadata.substr(0,7) == "tooltip") 
+					tooltip_text += item.metadata.substr(7);
+
 				std::vector<std::string> tt_rows = str_split(tooltip_text, '\n');
 				m_tooltip_element->setBackgroundColor(m_default_tooltip_bgcolor);
 				m_tooltip_element->setOverrideColor(m_default_tooltip_color);
