@@ -213,7 +213,7 @@ fake_function() {
 	gettext("Fall bobbing");
 	gettext("Multiplier for fall bobbing.\nFor example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.");
 	gettext("3D mode");
-	gettext("3D support.\nCurrently supported:\n-    none: no 3d output.\n-    anaglyph: cyan/magenta color 3d.\n-    interlaced: odd/even line based polarisation screen support.\n-    topbottom: split screen top/bottom.\n-    sidebyside: split screen side by side.");
+	gettext("3D support.\nCurrently supported:\n-    none: no 3d output.\n-    anaglyph: cyan/magenta color 3d.\n-    interlaced: odd/even line based polarisation screen support.\n-    topbottom: split screen top/bottom.\n-    sidebyside: split screen side by side.\n-    pageflip: quadbuffer based 3d.");
 	gettext("Console color");
 	gettext("In-game chat console background color (R,G,B).");
 	gettext("Console alpha");
