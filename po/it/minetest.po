@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Minetest 0.4.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-11-15 15:37+0000\n"
-"Last-Translator: Andrea Di Pietro Ulla <poetafuso34@yahoo.it>\n"
+"PO-Revision-Date: 2015-12-14 23:08+0000\n"
+"Last-Translator: Luca Argentieri <luca.argentieri@openmailbox.org>\n"
 "Language-Team: Italian "
 "<https://hosted.weblate.org/projects/minetest/minetest/it/>\n"
 "Language: it\n"
@@ -240,7 +240,6 @@ msgstr ""
 "per il pacchetto moduli $1"
 
 #: builtin/mainmenu/store.lua
-#, fuzzy
 msgid "Close store"
 msgstr "Chiudi deposito"
 
@@ -265,9 +264,8 @@ msgid "Search"
 msgstr "Cerca"
 
 #: builtin/mainmenu/store.lua
-#, fuzzy
 msgid "Shortname:"
-msgstr "Nome del mondo"
+msgstr "Nome corto:"
 
 #: builtin/mainmenu/store.lua
 msgid "Successfully installed:"
@@ -298,9 +296,8 @@ msgid "Previous Contributors"
 msgstr "Contributori precedenti"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Previous Core Developers"
-msgstr "Sviluppatori del motore precedenti"
+msgstr "Precedente Nucleo sviluppatori"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Installed Mods:"
@@ -454,8 +451,9 @@ msgid "Enabled"
 msgstr "Attivato"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr ""
+msgstr "Il formato è da 3 numeri separati da virgole e dentro parentesi"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid ""
@@ -642,7 +640,6 @@ msgid "Creating client..."
 msgstr "Creazione del client..."
 
 #: src/game.cpp
-#, fuzzy
 msgid "Creating server..."
 msgstr "Creazione del server..."
 
@@ -673,7 +670,6 @@ msgstr ""
 "- T: chat\n"
 
 #: src/game.cpp
-#, fuzzy
 msgid ""
 "Default Controls:\n"
 "No menu visible:\n"
@@ -755,7 +751,6 @@ msgid "You died."
 msgstr "Siete morti."
 
 #: src/guiFormSpecMenu.cpp
-#, fuzzy
 msgid "Enter "
 msgstr "Invio "
 
@@ -1188,7 +1183,6 @@ msgid "3D mode"
 msgstr "Modalità 3D"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -1255,11 +1249,11 @@ msgstr ""
 "impostazione."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
-msgstr "dpi del tuo schermo (no X11/solo Android) per esempio schermi 4K."
+msgstr ""
+"Regola i dpi del tuo schermo (no X11/solo Android) per esempio schermi 4K."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1268,7 +1262,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Advanced"
 msgstr "Avanzato"
 
@@ -1277,16 +1270,18 @@ msgid "Always fly and fast"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Ambient occlusion gamma"
-msgstr ""
+msgstr "Ambient occlusion gamma"
 
 #: src/settings_translation_file.cpp
 msgid "Anisotropic filtering"
 msgstr "Filtro anisotropico"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Announce server"
-msgstr ""
+msgstr "Server annunciato"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1309,7 +1304,7 @@ msgstr "Tasto Indietro"
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
-msgstr ""
+msgstr "Base"
 
 #: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
@@ -1322,7 +1317,7 @@ msgstr "Risoluzione dell'indirizzo..."
 
 #: src/settings_translation_file.cpp
 msgid "Bits per pixel (aka color depth) in fullscreen mode."
-msgstr ""
+msgstr "Bit per pixel (profondita del colore) in schermo intero."
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
@@ -1330,7 +1325,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bumpmapping"
-msgstr ""
+msgstr "Bumpmapping"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -1342,7 +1337,7 @@ msgstr "Ammorbidisci la visuale in modalità cinematica"
 
 #: src/settings_translation_file.cpp
 msgid "Camera update toggle key"
-msgstr ""
+msgstr "Tasto Attiva/Disattiva aggiornamento della camera."
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
@@ -1355,7 +1350,7 @@ msgstr "Tasto mostra/nascondi chat"
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
-msgstr ""
+msgstr "dimensione del blocco"
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
