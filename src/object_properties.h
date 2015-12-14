@@ -50,7 +50,7 @@ struct ObjectProperties
 	bool backface_culling;
 	std::string nametag;
 	video::SColor nametag_color;
-
+	f32 automatic_face_movement_max_rotation_per_sec;
 
 	ObjectProperties();
 	std::string dump();

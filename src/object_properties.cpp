@@ -45,7 +45,8 @@ ObjectProperties::ObjectProperties():
 	automatic_face_movement_dir_offset(0.0),
 	backface_culling(true),
 	nametag(""),
-	nametag_color(255, 255, 255, 255)
+	nametag_color(255, 255, 255, 255),
+	automatic_face_movement_max_rotation_per_sec(-1)
 {
 	textures.push_back("unknown_object.png");
 	colors.push_back(video::SColor(255,255,255,255));
@@ -116,6 +117,8 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeU8(os, backface_culling);
 	os << serializeString(nametag);
 	writeARGB8(os, nametag_color);
+	writeF1000(os, automatic_face_movement_max_rotation_per_sec);
+
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
 }
@@ -155,6 +158,7 @@ void ObjectProperties::deSerialize(std::istream &is)
 			backface_culling = readU8(is);
 			nametag = deSerializeString(is);
 			nametag_color = readARGB8(is);
+			automatic_face_movement_max_rotation_per_sec = readF1000(is);
 		}catch(SerializationError &e){}
 	}
 	else
