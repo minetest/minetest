@@ -1497,7 +1497,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 
 			/* Cheat prevention */
 			bool is_valid_dig = true;
-			if (!isSingleplayer() && !g_settings->getBool("disable_anticheat")) {
+			if (enable_anticheat && !isSingleplayer()) {
 				v3s16 nocheat_p = playersao->getNoCheatDigPos();
 				float nocheat_t = playersao->getNoCheatDigTime();
 				playersao->noCheatDigEnd();
