@@ -753,6 +753,7 @@ assets : $(ASSETS_TIMESTAMP)
 	cp -r ${ROOT}/../../builtin ${ROOT}/assets/Minetest;                       \
 	cp -r ${ROOT}/../../client ${ROOT}/assets/Minetest;                        \
 	cp -r ${ROOT}/../../doc ${ROOT}/assets/Minetest;                           \
+	rm -rf ${ROOT}/assets/Minetest/doc/html;                                   \
 	mkdir ${ROOT}/assets/Minetest/fonts;                                       \
 	cp -r ${ROOT}/../../fonts/*.ttf ${ROOT}/assets/Minetest/fonts/;            \
 	mkdir ${ROOT}/assets/Minetest/games;                                       \
