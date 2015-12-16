@@ -153,6 +153,9 @@ private:
 	/* handle double taps */
 	bool doubleTapDetection();
 
+	/* handle release event */
+	void handleReleaseEvent(int evt_id);
+
 	/* doubleclick detection variables */
 	struct key_event {
 		unsigned int down_time;
