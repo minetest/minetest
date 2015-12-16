@@ -1315,7 +1315,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			p2.X++;
 			MapNode n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
 			const ContentFeatures *f2 = &nodedef->get(n2);
-			if(f2->drawtype == NDT_FENCELIKE)
+			if(f2->drawtype == NDT_FENCELIKE || f2->drawtype == NDT_NORMAL)
 			{
 				aabb3f bar(post_rad, -bar_rad+BS/4, -bar_rad,
 						BS/2, bar_rad+BS/4, bar_rad);
@@ -1341,7 +1341,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			p2.X--;
 			n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
 			f2 = &nodedef->get(n2);
-			if(f2->drawtype == NDT_FENCELIKE)
+			if(f2->drawtype == NDT_FENCELIKE || f2->drawtype == NDT_NORMAL)
 			{
 				aabb3f bar(-BS/2, -bar_rad+BS/4, -bar_rad,
 						-post_rad, bar_rad+BS/4, bar_rad);
@@ -1367,7 +1367,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			p2.Z++;
 			n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
 			f2 = &nodedef->get(n2);
-			if(f2->drawtype == NDT_FENCELIKE)
+			if(f2->drawtype == NDT_FENCELIKE || f2->drawtype == NDT_NORMAL)
 			{
 				aabb3f bar(-bar_rad,-bar_rad+BS/4,post_rad,
 						bar_rad,bar_rad+BS/4,BS/2);
@@ -1392,7 +1392,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			p2.Z--;
 			n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
 			f2 = &nodedef->get(n2);
-			if(f2->drawtype == NDT_FENCELIKE)
+			if(f2->drawtype == NDT_FENCELIKE || f2->drawtype == NDT_NORMAL)
 			{
 				aabb3f bar(-bar_rad,-bar_rad+BS/4,-BS/2,
 						bar_rad,bar_rad+BS/4,-post_rad);
