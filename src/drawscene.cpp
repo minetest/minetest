@@ -408,7 +408,7 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 		Hud& hud, std::vector<aabb3f> hilightboxes, video::IVideoDriver* driver,
 		scene::ISceneManager* smgr, const v2u32& screensize,
 		bool draw_wield_tool, Client& client, gui::IGUIEnvironment* guienv,
-		video::SColor skycolor )
+		video::SColor skycolor)
 {
 	/* preserve old setup*/
 	irr::core::vector3df oldPosition = camera.getCameraNode()->getPosition();
@@ -421,7 +421,7 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 			+ camera.getCameraNode()->getAbsolutePosition();
 
 	//Left eye...
-	driver->setRenderTarget( irr::video::ERT_STEREO_LEFT_BUFFER);
+	driver->setRenderTarget(irr::video::ERT_STEREO_LEFT_BUFFER);
 
 	irr::core::vector3df leftEye;
 	irr::core::matrix4 leftMove;
@@ -431,7 +431,7 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 	leftEye = (startMatrix * leftMove).getTranslation();
 
 	//clear the depth buffer, and color
-	driver->beginScene( true, true, irr::video::SColor(200, 200, 200, 255));
+	driver->beginScene(true, true, irr::video::SColor(200, 200, 200, 255));
 	camera.getCameraNode()->setPosition(leftEye);
 	camera.getCameraNode()->setTarget(focusPoint);
 	smgr->drawAll();
@@ -450,7 +450,7 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 	guienv->drawAll();
 
 	//Right eye...
-	driver->setRenderTarget( irr::video::ERT_STEREO_RIGHT_BUFFER);
+	driver->setRenderTarget(irr::video::ERT_STEREO_RIGHT_BUFFER);
 
 	irr::core::vector3df rightEye;
 	irr::core::matrix4 rightMove;
@@ -460,7 +460,7 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 	rightEye = (startMatrix * rightMove).getTranslation();
 
 	//clear the depth buffer, and color
-	driver->beginScene( true, true, irr::video::SColor(200, 200, 200, 255));
+	driver->beginScene(true, true, irr::video::SColor(200, 200, 200, 255));
 	camera.getCameraNode()->setPosition(rightEye);
 	camera.getCameraNode()->setTarget(focusPoint);
 	smgr->drawAll();
