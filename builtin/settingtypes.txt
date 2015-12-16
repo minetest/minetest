@@ -454,7 +454,8 @@ fall_bobbing_amount (Fall bobbing) float 0.0
 #    -    interlaced: odd/even line based polarisation screen support.
 #    -    topbottom: split screen top/bottom.
 #    -    sidebyside: split screen side by side.
-3d_mode (3D mode) enum none none,anaglyph,interlaced,topbottom,sidebyside
+#    -    pageflip: quadbuffer based 3d.
+3d_mode (3D mode) enum none none,anaglyph,interlaced,topbottom,sidebyside,pageflip
 
 #    In-game chat console background color (R,G,B).
 console_color (Console color) string (0,0,0)

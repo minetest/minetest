@@ -518,7 +518,8 @@
 #    -    interlaced: odd/even line based polarisation screen support.
 #    -    topbottom: split screen top/bottom.
 #    -    sidebyside: split screen side by side.
-#    type: enum values: none, anaglyph, interlaced, topbottom, sidebyside
+#    -    pageflip: quadbuffer based 3d.
+#    type: enum values: none, anaglyph, interlaced, topbottom, sidebyside, pageflip
 # 3d_mode = none
 
 #    In-game chat console background color (R,G,B).
