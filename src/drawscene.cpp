@@ -420,7 +420,6 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 			- camera.getCameraNode()->getAbsolutePosition()).setLength(1)
 			+ camera.getCameraNode()->getAbsolutePosition();
 
-
 	//Left eye...
 	driver->setRenderTarget( irr::video::ERT_STEREO_LEFT_BUFFER);
 
@@ -438,8 +437,7 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 	smgr->drawAll();
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 
-	if (show_hud)
-	{
+	if (show_hud) {
 		draw_selectionbox(driver, hud, hilightboxes, show_hud);
 
 		if (draw_wield_tool)
@@ -468,8 +466,7 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 	smgr->drawAll();
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 
-	if (show_hud)
-	{
+	if (show_hud) {
 		draw_selectionbox(driver, hud, hilightboxes, show_hud);
 
 		if (draw_wield_tool)
