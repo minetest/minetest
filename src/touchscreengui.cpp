@@ -470,7 +470,6 @@ void TouchScreenGUI::handleReleaseEvent(int evt_id)
 
 void TouchScreenGUI::translateEvent(const SEvent &event)
 {
-	/* handle release events even if gui ain't visible */
 	if (!m_visible) {
 		infostream << "TouchScreenGUI::translateEvent got event but not visible?!" << std::endl;
 		return;
@@ -775,7 +774,7 @@ void TouchScreenGUI::Toggle(bool visible)
 
 	/* clear all active buttons */
 	if (!visible) {
-		while(m_known_ids.size() > 0) {
+		while (m_known_ids.size() > 0) {
 			handleReleaseEvent(m_known_ids.begin()->id);
 		}
 	}
