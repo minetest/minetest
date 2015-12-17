@@ -2569,7 +2569,17 @@ void Game::processUserInput(VolatileRunFlags *flags,
 			|| noMenuActive() == false
 			|| guienv->hasFocus(gui_chat_console)) {
 		input->clear();
+#ifdef HAVE_TOUCHSCREENGUI
+		g_touchscreengui->Hide();
+#endif
 	}
+#ifdef HAVE_TOUCHSCREENGUI
+	else if (g_touchscreengui) {
+		/* on touchscreengui step may generate own input events which ain't
+		 * what we want in case we just did clear them */
+		g_touchscreengui->step(dtime);
+	}
+#endif
 
 	if (!guienv->hasFocus(gui_chat_console) && gui_chat_console->isOpen()) {
 		gui_chat_console->closeConsoleAtOnce();
@@ -2578,13 +2588,6 @@ void Game::processUserInput(VolatileRunFlags *flags,
 	// Input handler step() (used by the random input generator)
 	input->step(dtime);
 
-#ifdef HAVE_TOUCHSCREENGUI
-
-	if (g_touchscreengui) {
-		g_touchscreengui->step(dtime);
-	}
-
-#endif
 #ifdef __ANDROID__
 
 	if (current_formspec != 0)
