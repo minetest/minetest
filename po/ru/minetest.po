@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-11-08 10:10+0000\n"
-"Last-Translator: Vasily Pavlov <halmet94@gmail.com>\n"
-"Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
-"minetest/ru/>\n"
+"PO-Revision-Date: 2015-12-18 09:44+0000\n"
+"Last-Translator: Anton Tsyganenko <anton-tsyganenko@yandex.ru>\n"
+"Language-Team: Russian "
+"<https://hosted.weblate.org/projects/minetest/minetest/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 2.5-dev\n"
 
 #: builtin/fstk/ui.lua
@@ -446,7 +446,7 @@ msgstr "Включено"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr ""
+msgstr "Формат  -- это 3 числа в скобках, разделенные точками."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid ""
@@ -1292,7 +1292,7 @@ msgstr "Назад"
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
-msgstr ""
+msgstr "Базовый"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1305,7 +1305,7 @@ msgstr "Адрес бинда"
 
 #: src/settings_translation_file.cpp
 msgid "Bits per pixel (aka color depth) in fullscreen mode."
-msgstr ""
+msgstr "Биты на пиксель (глубина цвета) в полноэкранном режиме."
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
@@ -1325,7 +1325,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Camera update toggle key"
-msgstr ""
+msgstr "Клавиша переключения обновления камеры"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
@@ -1357,7 +1357,7 @@ msgstr "Клиент и Сервер"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
-msgstr ""
+msgstr "Скорость подъема"
 
 #: src/settings_translation_file.cpp
 msgid "Cloud height"
@@ -1373,7 +1373,7 @@ msgstr "Облака"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
-msgstr ""
+msgstr "Облака являются эффектом на стороне клиента."
 
 #: src/settings_translation_file.cpp
 msgid "Clouds in menu"
@@ -1403,7 +1403,7 @@ msgstr "Подключение к внешнему серверу..."
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
-msgstr ""
+msgstr "Соединяет стекло, если поддерживается нодой."
 
 #: src/settings_translation_file.cpp
 msgid "Console alpha"
@@ -1435,12 +1435,17 @@ msgid ""
 "Examples: 72 = 20min, 360 = 4min, 1 = 24hour, 0 = day/night/whatever stays "
 "unchanged."
 msgstr ""
+"Задает длину цикла дня/ночи.\n"
+"Примеры: 72 = 20 минут, 360 = 4 минуты, 1 = 24 часа, 0 = время суток не "
+"меняется."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Controls size of deserts and beaches in Mapgen v6.\n"
 "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
 msgstr ""
+"Задает размеры пустыней и пляжей.\n"
+"Когда включены снежные биомы, 'mgv6_freq_desert' игнорируется."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -1448,23 +1453,24 @@ msgstr "Сообщение при падении"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
-msgstr ""
+msgstr "Прозрачность перекрестия"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Crosshair alpha (opaqueness, between 0 and 255)."
-msgstr ""
+msgstr "Прозрачность перекрестия (от 0 (прозрачно) до 255 (непрозрачно))."
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
-msgstr ""
+msgstr "Цвет перекрестия"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color (R,G,B)."
-msgstr ""
+msgstr "Цвет перекрестия (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid "Crouch speed"
-msgstr ""
+msgstr "Скорость спуска"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -1472,11 +1478,12 @@ msgstr "DPI"
 
 #: src/settings_translation_file.cpp
 msgid "Damage"
-msgstr "Увечья"
+msgstr "Урон"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Debug info toggle key"
-msgstr ""
+msgstr "Клавиша переключения показа debug-информации"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
@@ -1488,7 +1495,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Default acceleration"
-msgstr ""
+msgstr "Ускорение по умолчанию"
 
 #: src/settings_translation_file.cpp
 msgid "Default game"
