@@ -254,54 +254,14 @@ public class MinetestAssetCopy extends Activity
 				boolean shortened = false;
 				String todisplay = m_tocopy.get(progress[0]);
 				m_ProgressBar.setProgress(progress[0]);
-				
-				// make sure our text doesn't exceed our layout width
-				Rect bounds = new Rect();
-				Paint textPaint = m_Filename.getPaint();
-				textPaint.getTextBounds(todisplay, 0, todisplay.length(), bounds);
-				
-				while (bounds.width() > getResources().getDisplayMetrics().widthPixels * 0.7) {
-					if (todisplay.length() < 2) {
-						break;
-					}
-					todisplay = todisplay.substring(1);
-					textPaint.getTextBounds(todisplay, 0, todisplay.length(), bounds);
-					shortened = true;
-				}
-				
-				if (! shortened) {
-					m_Filename.setText(todisplay);
-				}
-				else {
-					m_Filename.setText(".." + todisplay);
-				}
+				m_Filename.setText(todisplay);
 			}
 			else
 			{
 				boolean shortened = false;
 				String todisplay = m_Foldername;
 				String full_text = "scanning " + todisplay + " ...";
-				// make sure our text doesn't exceed our layout width
-				Rect bounds = new Rect();
-				Paint textPaint = m_Filename.getPaint();
-				textPaint.getTextBounds(full_text, 0, full_text.length(), bounds);
-				
-				while (bounds.width() > getResources().getDisplayMetrics().widthPixels * 0.7) {
-					if (todisplay.length() < 2) {
-						break;
-					}
-					todisplay = todisplay.substring(1);
-					full_text = "scanning " + todisplay + " ...";
-					textPaint.getTextBounds(full_text, 0, full_text.length(), bounds);
-					shortened = true;
-				}
-				
-				if (! shortened) {
-					m_Filename.setText(full_text);
-				}
-				else {
-					m_Filename.setText("scanning .." + todisplay + " ...");
-				}
+				m_Filename.setText(full_text);
 			}
 		}
 		
