@@ -27,19 +27,11 @@ function core.get_pointed_thing_position(pointed_thing, above)
 		if above then
 			-- The position where a node would be placed
 			return pointed_thing.above
-		else
-			-- The position where a node would be dug
-			return pointed_thing.under
 		end
+		-- The position where a node would be dug
+		return pointed_thing.under
 	elseif pointed_thing.type == "object" then
-		obj = pointed_thing.ref
-		if obj ~= nil then
-			return obj:getpos()
-		else
-			return nil
-		end
-	else
-		return nil
+		return pointed_thing.ref and pointed_thing.ref:getpos()
 	end
 end
 
