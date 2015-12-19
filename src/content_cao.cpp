@@ -972,7 +972,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 				m_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
 				m_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 			}
-			else if (item.getDefinition(idef).meshname != "")
+			else if (!item.getDefinition(idef).meshname.empty())
 			{
 				scene::IAnimatedMesh *mesh = m_gamedef->getMesh(item.getDefinition(idef).meshname);
 				if(mesh)
@@ -1442,7 +1442,7 @@ void GenericCAO::updateTextures(const std::string &mod)
 			IItemDefManager *idef = m_gamedef->idef();
 			ItemStack item(m_prop.textures[0], 1, 0, "", idef);
 
-			if (item.getDefinition(idef).meshname != "") {
+			if (!item.getDefinition(idef).meshname.empty()) {
 
 				unsigned int materialcount = m_animated_meshnode->getMaterialCount();
 

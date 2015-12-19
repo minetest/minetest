@@ -351,7 +351,7 @@ CItemDefManager::ClientCached* CItemDefManager::createClientCachedDirect(const s
 
 	// Create an inventory texture
 	cc->inventory_texture = NULL;
-	if (def.inventory_image != "")
+	if (!def.inventory_image.empty())
 		cc->inventory_texture = tsrc->getTexture(def.inventory_image);
 
 	// Additional processing for nodes:
