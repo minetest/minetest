@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-11-23 07:16+0000\n"
+"PO-Revision-Date: 2015-12-19 11:07+0000\n"
 "Last-Translator: Rui <rui914t@gmail.com>\n"
 "Language-Team: Japanese "
 "<https://hosted.weblate.org/projects/minetest/minetest/ja/>\n"
@@ -136,7 +136,7 @@ msgstr "minetest.netからminetest_gameなどのサブゲームをダウンロ�
 #: builtin/mainmenu/dlg_create_world.lua
 #, fuzzy
 msgid "Download one from minetest.net"
-msgstr "minetest.netから再ダウンロードしてください"
+msgstr "minetest.netからダウンロードしてください"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -3661,7 +3661,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "cURL timeout"
-msgstr ""
+msgstr "cURLタイムアウト"
 
 #~ msgid "2x"
 #~ msgstr "2倍"
