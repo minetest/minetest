@@ -40,6 +40,65 @@ static void applyFacesShading(video::SColor& color, float factor)
 	color.setBlue(core::clamp(core::round32(color.getBlue()*factor), 0, 255));
 }
 
+scene::IAnimatedMesh* createIngotMesh(v3f scale)
+{
+	video::SColor c(255,255,255,255);
+	video::S3DVertex vertices[24] =
+	{
+		// Up
+		video::S3DVertex(-0.2,+0.15,-0.6, 0,1,0, c, 0,1),
+		video::S3DVertex(-0.2,+0.15,+0.6, 0,1,0, c, 0,0),
+		video::S3DVertex(+0.2,+0.15,+0.6, 0,1,0, c, 1,0),
+		video::S3DVertex(+0.2,+0.15,-0.6, 0,1,0, c, 1,1),
+		// Down
+		video::S3DVertex(-0.3,-0.15,-0.65, 0,-1,0, c, 0,0),
+		video::S3DVertex(+0.3,-0.15,-0.65, 0,-1,0, c, 1,0),
+		video::S3DVertex(+0.3,-0.15,+0.65, 0,-1,0, c, 1,1),
+		video::S3DVertex(-0.3,-0.15,+0.65, 0,-1,0, c, 0,1),
+		// Right
+		video::S3DVertex(+0.3,-0.15,-0.65, 1,0,0, c, 0,1),
+		video::S3DVertex(+0.2,+0.15,-0.6, 1,0,0, c, 0,0),
+		video::S3DVertex(+0.2,+0.15,+0.6, 1,0,0, c, 1,0),
+		video::S3DVertex(+0.3,-0.15,+0.65, 1,0,0, c, 1,1),
+		// Left
+		video::S3DVertex(-0.3,-0.15,-0.65, -1,0,0, c, 1,1),
+		video::S3DVertex(-0.3,-0.15,+0.65, -1,0,0, c, 0,1),
+		video::S3DVertex(-0.2,+0.15,+0.6, -1,0,0, c, 0,0),
+		video::S3DVertex(-0.2,+0.15,-0.6, -1,0,0, c, 1,0),
+		// Back
+		video::S3DVertex(-0.3,-0.15,+0.65, 0,0,1, c, 1,1),
+		video::S3DVertex(+0.3,-0.15,+0.65, 0,0,1, c, 0,1),
+		video::S3DVertex(+0.2,+0.15,+0.6, 0,0,1, c, 0,0),
+		video::S3DVertex(-0.2,+0.15,+0.6, 0,0,1, c, 1,0),
+		// Front
+		video::S3DVertex(-0.3,-0.15,-0.65, 0,0,-1, c, 0,1),
+		video::S3DVertex(-0.2,+0.15,-0.6, 0,0,-1, c, 0,0),
+		video::S3DVertex(+0.2,+0.15,-0.6, 0,0,-1, c, 1,0),
+		video::S3DVertex(+0.3,-0.15,-0.65, 0,0,-1, c, 1,1),
+	};
+
+	u16 indices[6] = {0,1,2,2,3,0};
+
+	scene::SMesh *mesh = new scene::SMesh();
+	for (u32 i=0; i<6; ++i)
+	{
+		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+		buf->append(vertices + 4 * i, 4, indices, 6);
+		// Set default material
+		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		// Add mesh buffer to mesh
+		mesh->addMeshBuffer(buf);
+		buf->drop();
+	}
+
+	scene::SAnimatedMesh *anim_mesh = new scene::SAnimatedMesh(mesh);
+	mesh->drop();
+	scaleMesh(anim_mesh, scale);  // also recalculates bounding box
+	return anim_mesh;
+}
+
 scene::IAnimatedMesh* createCubeMesh(v3f scale)
 {
 	video::SColor c(255,255,255,255);

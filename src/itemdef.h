@@ -66,6 +66,8 @@ struct ItemDefinition
 	std::string inventory_image; // Optional for nodes, mandatory for tools/craftitems
 	std::string wield_image; // If empty, inventory_image or mesh (only nodes) is used
 	v3f wield_scale;
+	std::string meshname;    // name of internal mesh (or meshfile to use TBD)
+	std::string meshtexture; // meshtexture
 
 	/*
 		Item stack and interaction properties
@@ -208,6 +210,10 @@ private:
 	};
 
 	void createNodeItemTexture(const std::string& name,
+			const ItemDefinition& def, INodeDefManager* nodedef,
+			ClientCached* cc, IGameDef* gamedef, ITextureSource* tsrc) const;
+
+	void createIngotItemTexture(const std::string& name,
 			const ItemDefinition& def, INodeDefManager* nodedef,
 			ClientCached* cc, IGameDef* gamedef, ITextureSource* tsrc) const;
 

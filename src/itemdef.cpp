@@ -77,6 +77,8 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	sound_place = def.sound_place;
 	sound_place_failed = def.sound_place_failed;
 	range = def.range;
+	meshname = def.meshname;
+	meshtexture = def.meshtexture;
 	return *this;
 }
 
@@ -157,6 +159,10 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 		os << serializeString(sound_place_failed.name);
 		writeF1000(os, sound_place_failed.gain);
 	}
+
+	//TODO check for protocol version?
+	os<<serializeString(meshname);
+	os<<serializeString(meshtexture);
 }
 
 void ItemDefinition::deSerialize(std::istream &is)
@@ -214,6 +220,10 @@ void ItemDefinition::deSerialize(std::istream &is)
 		sound_place_failed.name = deSerializeString(is);
 		sound_place_failed.gain = readF1000(is);
 	} catch(SerializationError &e) {};
+
+	//TODO check for protocol?
+	meshname = deSerializeString(is);
+	meshtexture = deSerializeString(is);
 }
 
 /*
@@ -351,6 +361,9 @@ CItemDefManager::ClientCached* CItemDefManager::createClientCachedDirect(const s
 	//   render-to-texture.
 	if (def.type == ITEM_NODE) {
 		createNodeItemTexture(name, def, nodedef, cc, gamedef, tsrc);
+	}
+	else if (def.type == ITEM_CRAFT) {
+		createIngotItemTexture(name, def, nodedef, cc, gamedef, tsrc);
 	}
 
 	// Put in cache
@@ -650,6 +663,77 @@ void CItemDefManager::createNodeItemTexture(const std::string& name,
 	if (node_mesh)
 		node_mesh->drop();
 }
+
+void CItemDefManager::createIngotItemTexture(const std::string& name,
+		const ItemDefinition& def, INodeDefManager* nodedef,
+		ClientCached* cc, IGameDef* gamedef, ITextureSource* tsrc) const
+{
+	// Get node properties
+	content_t id = nodedef->getId(name);
+	const ContentFeatures& f = nodedef->get(id);
+
+	if (def.meshname != "ingot")
+		return;
+
+	video::ITexture *itemimage = cc->inventory_texture;
+	video::ITexture *texture = tsrc->getTexture(def.meshtexture);
+	scene::IMesh* ingot_mesh = createIngotMesh(v3f(BS,BS,BS));
+
+	video::SColor c(255, 255, 255, 255);
+	setMeshColor(ingot_mesh, c);
+
+	// scale and translate the mesh so it's a
+	// unit cube centered on the origin
+	scaleMesh(ingot_mesh, v3f(1.0 / BS, 1.0 / BS, 1.0 / BS));
+
+	// Customize materials
+	for (u32 i = 0; i < ingot_mesh->getMeshBufferCount(); ++i) {
+
+		video::SMaterial &material = ingot_mesh->getMeshBuffer(i)->getMaterial();
+		material.setTexture(0, texture);
+	}
+
+	/*
+	 Draw node mesh into a render target texture
+	 */
+
+	TextureFromMeshParams params;
+	params.mesh = ingot_mesh;
+	params.dim.set(64, 64);
+	params.rtt_texture_name = "INVENTORY_" + def.name + "_RTT";
+	params.delete_texture_on_shutdown = true;
+	params.camera_position.set(0, 1.0, -1.5);
+	params.camera_position.rotateXZBy(45);
+	params.camera_lookat.set(0, 0, 0);
+	// Set orthogonal projection
+	params.camera_projection_matrix.buildProjectionMatrixOrthoLH(1.65,
+			1.65, 0, 100);
+	params.ambient_light.set(1.0, 0.2, 0.2, 0.2);
+	params.light_position.set(10, 100, -50);
+	params.light_color.set(1.0, 0.5, 0.5, 0.5);
+	params.light_radius = 1000;
+	cc->inventory_texture = tsrc->generateTextureFromMesh(params);
+	// render-to-target didn't work
+	if (cc->inventory_texture == NULL) {
+
+		cc->inventory_texture = itemimage;
+	}
+
+	/*
+	 Use the ingot mesh as the wield mesh
+	 */
+
+	cc->wield_mesh = ingot_mesh;
+	rotateMeshXYby(ingot_mesh, -90);
+	rotateMeshYZby(ingot_mesh, 90);
+	cc->wield_mesh->grab();
+	// no way reference count can be smaller than 2 in this place!
+	assert(cc->wield_mesh->getReferenceCount() >= 2);
+
+	if (ingot_mesh)
+		ingot_mesh->drop();
+}
+
 #endif
 
 /******************************************************************************/

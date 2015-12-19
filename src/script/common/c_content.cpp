@@ -58,6 +58,8 @@ ItemDefinition read_item_definition(lua_State* L,int index,
 	getstringfield(L, index, "description", def.description);
 	getstringfield(L, index, "inventory_image", def.inventory_image);
 	getstringfield(L, index, "wield_image", def.wield_image);
+	getstringfield(L, index, "mesh", def.meshname);
+	getstringfield(L, index, "meshtexture", def.meshtexture);
 
 	lua_getfield(L, index, "wield_scale");
 	if(lua_istable(L, -1)){
