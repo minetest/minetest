@@ -154,6 +154,12 @@ public:
 
 	scene::IBillboardSceneNode *getSpriteSceneNode();
 
+
+	inline f32 getStepheight() const
+	{
+		return m_prop.stepheight;
+	}
+
 	inline bool isPlayer() const
 	{
 		return m_is_player;

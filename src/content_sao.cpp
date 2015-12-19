@@ -797,7 +797,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id
 
 	m_prop.hp_max = PLAYER_MAX_HP;
 	m_prop.physical = false;
-	m_prop.weight = 75;
+	m_prop.weight = PLAYER_DEFAULT_WEIGHT;
 	m_prop.collisionbox = aabb3f(-1/3.,-1.0,-1/3., 1/3.,1.0,1/3.);
 	// start of default appearance, this should be overwritten by LUA
 	m_prop.visual = "upright_sprite";
@@ -811,6 +811,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id
 	// end of default appearance
 	m_prop.is_visible = true;
 	m_prop.makes_footstep_sound = true;
+	m_prop.stepheight = PLAYER_DEFAULT_STEPHEIGHT;
 	m_hp = PLAYER_MAX_HP;
 }
 
