@@ -739,9 +739,9 @@ assets : $(ASSETS_TIMESTAMP)
 	cp ${ROOT}/../../minetest.conf.example ${ROOT}/assets/Minetest;            \
 	cp ${ROOT}/../../README.txt ${ROOT}/assets/Minetest;                       \
 	cp -r ${ROOT}/../../builtin ${ROOT}/assets/Minetest;                       \
-	cp -r ${ROOT}/../../client ${ROOT}/assets/Minetest;                        \
-	cp -r ${ROOT}/../../doc ${ROOT}/assets/Minetest;                           \
-	rm -rf ${ROOT}/assets/Minetest/doc/html;                                   \
+	mkdir ${ROOT}/assets/Minetest/client;                                      \
+	cp -r ${ROOT}/../../client/shaders ${ROOT}/assets/Minetest/client;         \
+	cp ${ROOT}/../../doc/lgpl-2.1.txt ${ROOT}/assets/Minetest/LICENSE.txt;     \
 	mkdir ${ROOT}/assets/Minetest/fonts;                                       \
 	cp -r ${ROOT}/../../fonts/*.ttf ${ROOT}/assets/Minetest/fonts/;            \
 	mkdir ${ROOT}/assets/Minetest/games;                                       \
