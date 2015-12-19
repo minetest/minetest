@@ -830,8 +830,18 @@ int ObjectRef::l_setvelocity(lua_State *L)
 	LuaEntitySAO *co = getluaobject(ref);
 	if (co == NULL) return 0;
 	v3f pos = checkFloatPos(L, 2);
+
+	float application_time = -1;
+	v3f reset_value = v3f(0,0,0);
+
+	if(!lua_isnoneornil(L, 3))
+		application_time = lua_tonumber(L, 3);
+
+	if(!lua_isnoneornil(L, 4))
+		reset_value = checkFloatPos(L, 4);
+
 	// Do it
-	co->setVelocity(pos);
+	co->setVelocity(pos, application_time, reset_value);
 	return 0;
 }
 
@@ -857,8 +867,18 @@ int ObjectRef::l_setacceleration(lua_State *L)
 	if (co == NULL) return 0;
 	// pos
 	v3f pos = checkFloatPos(L, 2);
+
+	float application_time = -1;
+	v3f reset_value = v3f(0,0,0);
+
+	if(!lua_isnoneornil(L, 3))
+		application_time = lua_tonumber(L, 3);
+
+	if(!lua_isnoneornil(L, 4))
+		reset_value = checkFloatPos(L, 4);
+
 	// Do it
-	co->setAcceleration(pos);
+	co->setAcceleration(pos, application_time, reset_value);
 	return 0;
 }
 

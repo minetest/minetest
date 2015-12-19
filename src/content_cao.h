@@ -102,6 +102,12 @@ private:
 	u8 m_last_light;
 	bool m_is_visible;
 
+
+	float m_accel_time_left;
+	float m_vel_time_left;
+	v3f m_accel_reset_value;
+	v3f m_vel_reset_value;
+
 	std::vector<u16> m_children;
 
 public:

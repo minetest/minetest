@@ -133,6 +133,10 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_last_sent_position_timer(0),
 	m_last_sent_move_precision(0),
 	m_armor_groups_sent(false),
+	m_accel_time_left(-1),
+	m_accel_reset_value(v3f(0,0,0)),
+	m_vel_time_left(-1),
+	m_vel_reset_value(v3f(0,0,0)),
 	m_animation_speed(0),
 	m_animation_blend(0),
 	m_animation_loop(true),
@@ -282,11 +286,27 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 			m_velocity += dtime * m_acceleration;
 		}
 
+		if ((m_vel_time_left > 0) && ((m_vel_time_left - dtime) < 0)) {
+			m_velocity = m_vel_reset_value;
+		}
+
+		if ((m_accel_time_left > 0) && ((m_accel_time_left - dtime) < 0)) {
+			m_acceleration = m_accel_reset_value;
+		}
+
 		if((m_prop.automatic_face_movement_dir) &&
 				(fabs(m_velocity.Z) > 0.001 || fabs(m_velocity.X) > 0.001)){
 			m_yaw = atan2(m_velocity.Z,m_velocity.X) * 180 / M_PI + m_prop.automatic_face_movement_dir_offset;
 		}
 	}
+
+	if (m_accel_time_left > 0) {
+		m_accel_time_left -= dtime;
+	}
+
+	if (m_vel_time_left > 0) {
+		m_vel_time_left -= dtime;
+		}
 
 	if(m_registered){
 		m_env->getScriptIface()->luaentity_Step(m_id, dtime);
@@ -615,9 +635,12 @@ void LuaEntitySAO::notifyObjectPropertiesModified()
 	m_properties_sent = false;
 }
 
-void LuaEntitySAO::setVelocity(v3f velocity)
+void LuaEntitySAO::setVelocity(v3f velocity, float application_time,
+		v3f reset_value)
 {
 	m_velocity = velocity;
+	m_vel_time_left = application_time;
+	m_vel_reset_value = reset_value;
 }
 
 v3f LuaEntitySAO::getVelocity()
@@ -625,9 +648,12 @@ v3f LuaEntitySAO::getVelocity()
 	return m_velocity;
 }
 
-void LuaEntitySAO::setAcceleration(v3f acceleration)
+void LuaEntitySAO::setAcceleration(v3f acceleration, float application_time,
+		v3f reset_value)
 {
 	m_acceleration = acceleration;
+	m_accel_time_left = application_time;
+	m_accel_reset_value = reset_value;
 }
 
 v3f LuaEntitySAO::getAcceleration()
@@ -700,7 +726,11 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 		m_yaw,
 		do_interpolate,
 		is_movement_end,
-		update_interval
+		update_interval,
+		m_accel_time_left,
+		m_accel_reset_value,
+		m_vel_time_left,
+		m_vel_reset_value
 	);
 	// create message and add to list
 	ActiveObjectMessage aom(getId(), false, str);
