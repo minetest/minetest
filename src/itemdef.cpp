@@ -77,6 +77,8 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	sound_place = def.sound_place;
 	sound_place_failed = def.sound_place_failed;
 	range = def.range;
+	meshname = def.meshname;
+	meshtexture = def.meshtexture;
 	return *this;
 }
 
@@ -157,6 +159,10 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 		os << serializeString(sound_place_failed.name);
 		writeF1000(os, sound_place_failed.gain);
 	}
+
+	//TODO check for protocol version?
+	os<<serializeString(meshname);
+	os<<serializeString(meshtexture);
 }
 
 void ItemDefinition::deSerialize(std::istream &is)
@@ -214,6 +220,10 @@ void ItemDefinition::deSerialize(std::istream &is)
 		sound_place_failed.name = deSerializeString(is);
 		sound_place_failed.gain = readF1000(is);
 	} catch(SerializationError &e) {};
+
+	//TODO check for protocol?
+	meshname = deSerializeString(is);
+	meshtexture = deSerializeString(is);
 }
 
 /*
@@ -341,7 +351,7 @@ CItemDefManager::ClientCached* CItemDefManager::createClientCachedDirect(const s
 
 	// Create an inventory texture
 	cc->inventory_texture = NULL;
-	if (def.inventory_image != "")
+	if (!def.inventory_image.empty())
 		cc->inventory_texture = tsrc->getTexture(def.inventory_image);
 
 	// Additional processing for nodes:
@@ -351,6 +361,10 @@ CItemDefManager::ClientCached* CItemDefManager::createClientCachedDirect(const s
 	//   render-to-texture.
 	if (def.type == ITEM_NODE) {
 		createNodeItemTexture(name, def, nodedef, cc, gamedef, tsrc);
+	}
+	else if (def.type == ITEM_CRAFT) {
+		if ( !def.meshname.empty())
+			createMeshItemTexture(name, def, nodedef, cc, gamedef, tsrc);
 	}
 
 	// Put in cache
@@ -649,6 +663,100 @@ void CItemDefManager::createNodeItemTexture(const std::string& name,
 	}
 	if (node_mesh)
 		node_mesh->drop();
+}
+
+/******************************************************************************/
+void CItemDefManager::renderMeshToTexture(const ItemDefinition& def, scene::IMesh* mesh,
+		ClientCached* cc, ITextureSource* tsrc) const
+{
+	video::ITexture *itemimage = cc->inventory_texture;
+
+	/*
+	 Draw node mesh into a render target texture
+	 */
+	TextureFromMeshParams params;
+	params.mesh = mesh;
+	params.dim.set(64, 64);
+	params.rtt_texture_name = "INVENTORY_" + def.name + "_RTT";
+	params.delete_texture_on_shutdown = true;
+	params.camera_position.set(0, 1.0, -1.5);
+	params.camera_position.rotateXZBy(45);
+	params.camera_lookat.set(0, 0, 0);
+	// Set orthogonal projection
+	params.camera_projection_matrix.buildProjectionMatrixOrthoLH(1.65, 1.65, 0,
+			100);
+	params.ambient_light.set(1.0, 0.9, 0.9, 0.9);
+	params.light_position.set(10, 100, -50);
+	params.light_color.set(1.0, 0.5, 0.5, 0.5);
+	params.light_radius = 1000;
+	cc->inventory_texture = tsrc->generateTextureFromMesh(params);
+
+	// render-to-target didn't work
+	if (cc->inventory_texture == NULL) {
+
+		cc->inventory_texture = itemimage;
+	}
+}
+
+/******************************************************************************/
+void CItemDefManager::createMeshItemTexture(const std::string& name,
+		const ItemDefinition& def, INodeDefManager* nodedef,
+		ClientCached* cc, IGameDef* gamedef, ITextureSource* tsrc) const
+{
+	// Get node properties
+	content_t id = nodedef->getId(name);
+	const ContentFeatures& f = nodedef->get(id);
+
+	if (def.meshname == "")
+		return;
+
+	video::ITexture *texture = tsrc->getTexture(def.meshtexture);
+
+	infostream<<"CItemDefManager::createMeshItemTexture(): mesh"<<std::endl;
+
+	scene::IAnimatedMesh *mesh = gamedef->getMesh(def.meshname);
+	if(mesh)
+	{
+
+		video::SColor c(255, 255, 255, 255);
+		setMeshColor(mesh, c);
+
+		rotateMeshXZby(mesh, 180);
+
+		// scale and translate the mesh so it's a
+		// unit cube centered on the origin
+		scaleMesh(mesh, v3f(1.0 / BS, 1.0 / BS, 1.0 / BS));
+
+		// Customize materials
+		for (u32 i = 0; i < mesh->getMeshBufferCount(); ++i) {
+
+			video::SMaterial &material = mesh->getMeshBuffer(i)->getMaterial();
+			material.setTexture(0, texture);
+			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+			material.setFlag(video::EMF_BILINEAR_FILTER, false);
+			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		}
+
+		/*
+		 Draw node mesh into a render target texture
+		 */
+		renderMeshToTexture(def, mesh, cc, tsrc);
+
+		/*
+		 Use the ingot mesh as the wield mesh
+		 */
+
+		cc->wield_mesh = mesh;
+		cc->wield_mesh->grab();
+		// no way reference count can be smaller than 2 in this place!
+		assert(cc->wield_mesh->getReferenceCount() >= 2);
+
+		if (mesh)
+			mesh->drop();
+
+	}
+	else
+		errorstream<<"CItemDefManager::createMeshItemTexture(): Could not load mesh "<<def.meshname<<std::endl;
 }
 #endif
 
