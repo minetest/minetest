@@ -363,7 +363,10 @@ CItemDefManager::ClientCached* CItemDefManager::createClientCachedDirect(const s
 		createNodeItemTexture(name, def, nodedef, cc, gamedef, tsrc);
 	}
 	else if (def.type == ITEM_CRAFT) {
-		createIngotItemTexture(name, def, nodedef, cc, gamedef, tsrc);
+		if ( def.meshname == "ingot")
+			createIngotItemTexture(name, def, nodedef, cc, gamedef, tsrc);
+		else
+			createMeshItemTexture(name, def, nodedef, cc, gamedef, tsrc);
 	}
 
 	// Put in cache
@@ -734,6 +737,87 @@ void CItemDefManager::createIngotItemTexture(const std::string& name,
 		ingot_mesh->drop();
 }
 
+void CItemDefManager::createMeshItemTexture(const std::string& name,
+		const ItemDefinition& def, INodeDefManager* nodedef,
+		ClientCached* cc, IGameDef* gamedef, ITextureSource* tsrc) const
+{
+	// Get node properties
+	content_t id = nodedef->getId(name);
+	const ContentFeatures& f = nodedef->get(id);
+
+	if (def.meshname == "")
+		return;
+
+	video::ITexture *itemimage = cc->inventory_texture;
+	video::ITexture *texture = tsrc->getTexture(def.meshtexture);
+
+	infostream<<"CItemDefManager::createMeshItemTexture(): mesh"<<std::endl;
+
+	scene::IAnimatedMesh *mesh = gamedef->getMesh(def.meshname);
+	if(mesh)
+	{
+
+		video::SColor c(255, 255, 255, 255);
+		setMeshColor(mesh, c);
+
+		rotateMeshXZby(mesh, 180);
+		// scale and translate the mesh so it's a
+		// unit cube centered on the origin
+		scaleMesh(mesh, v3f(1.0 / BS, 1.0 / BS, 1.0 / BS));
+
+		// Customize materials
+		for (u32 i = 0; i < mesh->getMeshBufferCount(); ++i) {
+
+			video::SMaterial &material = mesh->getMeshBuffer(i)->getMaterial();
+			material.setTexture(0, texture);
+			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+			material.setFlag(video::EMF_BILINEAR_FILTER, false);
+			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+		}
+
+		/*
+		 Draw node mesh into a render target texture
+		 */
+
+		TextureFromMeshParams params;
+		params.mesh = mesh;
+		params.dim.set(64, 64);
+		params.rtt_texture_name = "INVENTORY_" + def.name + "_RTT";
+		params.delete_texture_on_shutdown = true;
+		params.camera_position.set(0, 1.0, -1.5);
+		params.camera_position.rotateXZBy(45);
+		params.camera_lookat.set(0, 0, 0);
+		// Set orthogonal projection
+		params.camera_projection_matrix.buildProjectionMatrixOrthoLH(1.65,
+				1.65, 0, 100);
+		params.ambient_light.set(1.0, 0.9, 0.9, 0.9);
+		params.light_position.set(10, 100, -50);
+		params.light_color.set(1.0, 0.5, 0.5, 0.5);
+		params.light_radius = 1000;
+		cc->inventory_texture = tsrc->generateTextureFromMesh(params);
+
+		// render-to-target didn't work
+		if (cc->inventory_texture == NULL) {
+
+			cc->inventory_texture = itemimage;
+		}
+
+		/*
+		 Use the ingot mesh as the wield mesh
+		 */
+
+		cc->wield_mesh = mesh;
+		cc->wield_mesh->grab();
+		// no way reference count can be smaller than 2 in this place!
+		assert(cc->wield_mesh->getReferenceCount() >= 2);
+
+		if (mesh)
+			mesh->drop();
+
+	}
+	else
+		errorstream<<"CItemDefManager::createMeshItemTexture(): Could not load mesh "<<def.meshname<<std::endl;
+}
 #endif
 
 /******************************************************************************/
