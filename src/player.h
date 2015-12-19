@@ -417,27 +417,4 @@ private:
 	Mutex m_mutex;
 };
 
-
-/*
-	Player on the server
-*/
-class RemotePlayer : public Player
-{
-public:
-	RemotePlayer(IGameDef *gamedef, const char *name);
-	virtual ~RemotePlayer() {}
-
-	void save(std::string savedir);
-
-	PlayerSAO *getPlayerSAO()
-	{ return m_sao; }
-	void setPlayerSAO(PlayerSAO *sao)
-	{ m_sao = sao; }
-	void setPosition(const v3f &position);
-
-private:
-	PlayerSAO *m_sao;
-};
-
 #endif
-

@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "player.h"
 
-#include <fstream>
 #include "threading/mutex_auto_lock.h"
 #include "util/numeric.h"
 #include "hud.h"
@@ -27,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "settings.h"
 #include "content_sao.h"
-#include "filesys.h"
 #include "log.h"
 #include "porting.h"  // strlcpy
 
@@ -260,81 +258,3 @@ void Player::clearHud()
 		hud.pop_back();
 	}
 }
-
-RemotePlayer::RemotePlayer(IGameDef *gamedef, const char *name):
-	Player(gamedef, name),
-	m_sao(NULL)
-{
-	movement_acceleration_default   = g_settings->getFloat("movement_acceleration_default")   * BS;
-	movement_acceleration_air       = g_settings->getFloat("movement_acceleration_air")       * BS;
-	movement_acceleration_fast      = g_settings->getFloat("movement_acceleration_fast")      * BS;
-	movement_speed_walk             = g_settings->getFloat("movement_speed_walk")             * BS;
-	movement_speed_crouch           = g_settings->getFloat("movement_speed_crouch")           * BS;
-	movement_speed_fast             = g_settings->getFloat("movement_speed_fast")             * BS;
-	movement_speed_climb            = g_settings->getFloat("movement_speed_climb")            * BS;
-	movement_speed_jump             = g_settings->getFloat("movement_speed_jump")             * BS;
-	movement_liquid_fluidity        = g_settings->getFloat("movement_liquid_fluidity")        * BS;
-	movement_liquid_fluidity_smooth = g_settings->getFloat("movement_liquid_fluidity_smooth") * BS;
-	movement_liquid_sink            = g_settings->getFloat("movement_liquid_sink")            * BS;
-	movement_gravity                = g_settings->getFloat("movement_gravity")                * BS;
-}
-
-void RemotePlayer::save(std::string savedir)
-{
-	/*
-	 * We have to open all possible player files in the players directory
-	 * and check their player names because some file systems are not
-	 * case-sensitive and player names are case-sensitive.
-	 */
-
-	// A player to deserialize files into to check their names
-	RemotePlayer testplayer(m_gamedef, "");
-
-	savedir += DIR_DELIM;
-	std::string path = savedir + m_name;
-	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES; i++) {
-		if (!fs::PathExists(path)) {
-			// Open file and serialize
-			std::ostringstream ss(std::ios_base::binary);
-			serialize(ss);
-			if (!fs::safeWriteToFile(path, ss.str())) {
-				infostream << "Failed to write " << path << std::endl;
-			}
-			setModified(false);
-			return;
-		}
-		// Open file and deserialize
-		std::ifstream is(path.c_str(), std::ios_base::binary);
-		if (!is.good()) {
-			infostream << "Failed to open " << path << std::endl;
-			return;
-		}
-		testplayer.deSerialize(is, path);
-		is.close();
-		if (strcmp(testplayer.getName(), m_name) == 0) {
-			// Open file and serialize
-			std::ostringstream ss(std::ios_base::binary);
-			serialize(ss);
-			if (!fs::safeWriteToFile(path, ss.str())) {
-				infostream << "Failed to write " << path << std::endl;
-			}
-			setModified(false);
-			return;
-		}
-		path = savedir + m_name + itos(i);
-	}
-
-	infostream << "Didn't find free file for player " << m_name << std::endl;
-	return;
-}
-
-/*
-	RemotePlayer
-*/
-void RemotePlayer::setPosition(const v3f &position)
-{
-	Player::setPosition(position);
-	if(m_sao)
-		m_sao->setBasePosition(position);
-}
-
