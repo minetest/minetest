@@ -221,6 +221,9 @@ private:
 			const ItemDefinition& def, INodeDefManager* nodedef,
 			ClientCached* cc, IGameDef* gamedef, ITextureSource* tsrc) const;
 
+	void renderMeshToTexture(const ItemDefinition& def, scene::IMesh* mesh,
+			ClientCached* cc, ITextureSource* tsrc) const;
+
 	ClientCached* createClientCachedDirect(const std::string &name,
 			IGameDef *gamedef) const;
 

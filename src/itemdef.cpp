@@ -667,6 +667,7 @@ void CItemDefManager::createNodeItemTexture(const std::string& name,
 		node_mesh->drop();
 }
 
+/******************************************************************************/
 void CItemDefManager::createIngotItemTexture(const std::string& name,
 		const ItemDefinition& def, INodeDefManager* nodedef,
 		ClientCached* cc, IGameDef* gamedef, ITextureSource* tsrc) const
@@ -678,7 +679,6 @@ void CItemDefManager::createIngotItemTexture(const std::string& name,
 	if (def.meshname != "ingot")
 		return;
 
-	video::ITexture *itemimage = cc->inventory_texture;
 	video::ITexture *texture = tsrc->getTexture(def.meshtexture);
 	scene::IMesh* ingot_mesh = createIngotMesh(v3f(BS,BS,BS));
 
@@ -699,28 +699,7 @@ void CItemDefManager::createIngotItemTexture(const std::string& name,
 	/*
 	 Draw node mesh into a render target texture
 	 */
-
-	TextureFromMeshParams params;
-	params.mesh = ingot_mesh;
-	params.dim.set(64, 64);
-	params.rtt_texture_name = "INVENTORY_" + def.name + "_RTT";
-	params.delete_texture_on_shutdown = true;
-	params.camera_position.set(0, 1.0, -1.5);
-	params.camera_position.rotateXZBy(45);
-	params.camera_lookat.set(0, 0, 0);
-	// Set orthogonal projection
-	params.camera_projection_matrix.buildProjectionMatrixOrthoLH(1.65,
-			1.65, 0, 100);
-	params.ambient_light.set(1.0, 0.2, 0.2, 0.2);
-	params.light_position.set(10, 100, -50);
-	params.light_color.set(1.0, 0.5, 0.5, 0.5);
-	params.light_radius = 1000;
-	cc->inventory_texture = tsrc->generateTextureFromMesh(params);
-	// render-to-target didn't work
-	if (cc->inventory_texture == NULL) {
-
-		cc->inventory_texture = itemimage;
-	}
+	renderMeshToTexture(def, ingot_mesh, cc, tsrc);
 
 	/*
 	 Use the ingot mesh as the wield mesh
@@ -737,6 +716,40 @@ void CItemDefManager::createIngotItemTexture(const std::string& name,
 		ingot_mesh->drop();
 }
 
+/******************************************************************************/
+void CItemDefManager::renderMeshToTexture(const ItemDefinition& def, scene::IMesh* mesh,
+		ClientCached* cc, ITextureSource* tsrc) const
+{
+	video::ITexture *itemimage = cc->inventory_texture;
+
+	/*
+	 Draw node mesh into a render target texture
+	 */
+	TextureFromMeshParams params;
+	params.mesh = mesh;
+	params.dim.set(64, 64);
+	params.rtt_texture_name = "INVENTORY_" + def.name + "_RTT";
+	params.delete_texture_on_shutdown = true;
+	params.camera_position.set(0, 1.0, -1.5);
+	params.camera_position.rotateXZBy(45);
+	params.camera_lookat.set(0, 0, 0);
+	// Set orthogonal projection
+	params.camera_projection_matrix.buildProjectionMatrixOrthoLH(1.65, 1.65, 0,
+			100);
+	params.ambient_light.set(1.0, 0.9, 0.9, 0.9);
+	params.light_position.set(10, 100, -50);
+	params.light_color.set(1.0, 0.5, 0.5, 0.5);
+	params.light_radius = 1000;
+	cc->inventory_texture = tsrc->generateTextureFromMesh(params);
+
+	// render-to-target didn't work
+	if (cc->inventory_texture == NULL) {
+
+		cc->inventory_texture = itemimage;
+	}
+}
+
+/******************************************************************************/
 void CItemDefManager::createMeshItemTexture(const std::string& name,
 		const ItemDefinition& def, INodeDefManager* nodedef,
 		ClientCached* cc, IGameDef* gamedef, ITextureSource* tsrc) const
@@ -748,7 +761,6 @@ void CItemDefManager::createMeshItemTexture(const std::string& name,
 	if (def.meshname == "")
 		return;
 
-	video::ITexture *itemimage = cc->inventory_texture;
 	video::ITexture *texture = tsrc->getTexture(def.meshtexture);
 
 	infostream<<"CItemDefManager::createMeshItemTexture(): mesh"<<std::endl;
@@ -761,6 +773,7 @@ void CItemDefManager::createMeshItemTexture(const std::string& name,
 		setMeshColor(mesh, c);
 
 		rotateMeshXZby(mesh, 180);
+
 		// scale and translate the mesh so it's a
 		// unit cube centered on the origin
 		scaleMesh(mesh, v3f(1.0 / BS, 1.0 / BS, 1.0 / BS));
@@ -778,29 +791,7 @@ void CItemDefManager::createMeshItemTexture(const std::string& name,
 		/*
 		 Draw node mesh into a render target texture
 		 */
-
-		TextureFromMeshParams params;
-		params.mesh = mesh;
-		params.dim.set(64, 64);
-		params.rtt_texture_name = "INVENTORY_" + def.name + "_RTT";
-		params.delete_texture_on_shutdown = true;
-		params.camera_position.set(0, 1.0, -1.5);
-		params.camera_position.rotateXZBy(45);
-		params.camera_lookat.set(0, 0, 0);
-		// Set orthogonal projection
-		params.camera_projection_matrix.buildProjectionMatrixOrthoLH(1.65,
-				1.65, 0, 100);
-		params.ambient_light.set(1.0, 0.9, 0.9, 0.9);
-		params.light_position.set(10, 100, -50);
-		params.light_color.set(1.0, 0.5, 0.5, 0.5);
-		params.light_radius = 1000;
-		cc->inventory_texture = tsrc->generateTextureFromMesh(params);
-
-		// render-to-target didn't work
-		if (cc->inventory_texture == NULL) {
-
-			cc->inventory_texture = itemimage;
-		}
+		renderMeshToTexture(def, mesh, cc, tsrc);
 
 		/*
 		 Use the ingot mesh as the wield mesh
