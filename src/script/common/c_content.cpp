@@ -209,6 +209,7 @@ void read_object_properties(lua_State *L, int index,
 		if (read_color(L, -1, &color))
 			prop->nametag_color = color;
 	}
+	lua_pop(L, 1);
 
 	lua_getfield(L, -1, "automatic_face_movement_max_rotation_per_sec");
 	if (lua_isnumber(L, -1)) {
