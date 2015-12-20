@@ -954,25 +954,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 			IItemDefManager *idef = m_gamedef->idef();
 			ItemStack item(m_prop.textures[0], 1, 0, "", idef);
 
-			if (item.getDefinition(idef).meshname == "ingot") {
-				infostream<<"GenericCAO::addToScene(): ingot"<<std::endl;
-				scene::IMesh *mesh = createIngotMesh(v3f(BS,BS,BS));
-				m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
-				m_meshnode->grab();
-				mesh->drop();
-
-				m_meshnode->setScale(v3f(m_prop.visual_size.X,
-						m_prop.visual_size.Y,
-						m_prop.visual_size.X));
-				u8 li = m_last_light;
-				setMeshColor(m_meshnode->getMesh(), video::SColor(255,li,li,li));
-
-				m_meshnode->setMaterialFlag(video::EMF_LIGHTING, false);
-				m_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-				m_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
-				m_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-			}
-			else if (!item.getDefinition(idef).meshname.empty())
+			if (!item.getDefinition(idef).meshname.empty())
 			{
 				scene::IAnimatedMesh *mesh = m_gamedef->getMesh(item.getDefinition(idef).meshname);
 				if(mesh)
@@ -1545,21 +1527,6 @@ void GenericCAO::updateTextures(const std::string &mod)
 				buf->getMaterial().setFlag(video::EMF_TRILINEAR_FILTER, use_trilinear_filter);
 				buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
 				buf->getMaterial().setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
-			}
-		}
-		else if (m_prop.visual == "wielditem") {
-			IItemDefManager *idef = m_gamedef->idef();
-			ItemStack item(m_prop.textures[0], 1, 0, "", idef);
-
-			if (item.getDefinition(idef).meshname == "ingot") {
-
-				unsigned int materialcount = m_meshnode->getMaterialCount();
-
-				for (unsigned int i = 0; i < materialcount; i++) {
-					m_meshnode->getMaterial(i)
-							.setTexture(0, tsrc->getTexture(item
-									.getDefinition(idef).meshtexture));
-				}
 			}
 		}
 	}

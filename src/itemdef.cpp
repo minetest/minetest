@@ -363,9 +363,7 @@ CItemDefManager::ClientCached* CItemDefManager::createClientCachedDirect(const s
 		createNodeItemTexture(name, def, nodedef, cc, gamedef, tsrc);
 	}
 	else if (def.type == ITEM_CRAFT) {
-		if ( def.meshname == "ingot")
-			createIngotItemTexture(name, def, nodedef, cc, gamedef, tsrc);
-		else
+		if ( !def.meshname.empty())
 			createMeshItemTexture(name, def, nodedef, cc, gamedef, tsrc);
 	}
 
@@ -665,55 +663,6 @@ void CItemDefManager::createNodeItemTexture(const std::string& name,
 	}
 	if (node_mesh)
 		node_mesh->drop();
-}
-
-/******************************************************************************/
-void CItemDefManager::createIngotItemTexture(const std::string& name,
-		const ItemDefinition& def, INodeDefManager* nodedef,
-		ClientCached* cc, IGameDef* gamedef, ITextureSource* tsrc) const
-{
-	// Get node properties
-	content_t id = nodedef->getId(name);
-	const ContentFeatures& f = nodedef->get(id);
-
-	if (def.meshname != "ingot")
-		return;
-
-	video::ITexture *texture = tsrc->getTexture(def.meshtexture);
-	scene::IMesh* ingot_mesh = createIngotMesh(v3f(BS,BS,BS));
-
-	video::SColor c(255, 255, 255, 255);
-	setMeshColor(ingot_mesh, c);
-
-	// scale and translate the mesh so it's a
-	// unit cube centered on the origin
-	scaleMesh(ingot_mesh, v3f(1.0 / BS, 1.0 / BS, 1.0 / BS));
-
-	// Customize materials
-	for (u32 i = 0; i < ingot_mesh->getMeshBufferCount(); ++i) {
-
-		video::SMaterial &material = ingot_mesh->getMeshBuffer(i)->getMaterial();
-		material.setTexture(0, texture);
-	}
-
-	/*
-	 Draw node mesh into a render target texture
-	 */
-	renderMeshToTexture(def, ingot_mesh, cc, tsrc);
-
-	/*
-	 Use the ingot mesh as the wield mesh
-	 */
-
-	cc->wield_mesh = ingot_mesh;
-	rotateMeshXYby(ingot_mesh, -90);
-	rotateMeshYZby(ingot_mesh, 90);
-	cc->wield_mesh->grab();
-	// no way reference count can be smaller than 2 in this place!
-	assert(cc->wield_mesh->getReferenceCount() >= 2);
-
-	if (ingot_mesh)
-		ingot_mesh->drop();
 }
 
 /******************************************************************************/
