@@ -278,9 +278,10 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "backface_culling");
 	lua_pushlstring(L, prop->nametag.c_str(), prop->nametag.size());
 	lua_setfield(L, -2, "nametag");
-	lua_newtable(L);
 	push_ARGB8(L, prop->nametag_color);
 	lua_setfield(L, -2, "nametag_color");
+	lua_pushnumber(L, prop->automatic_face_movement_max_rotation_per_sec);
+	lua_setfield(L, -2, "automatic_face_movement_max_rotation_per_sec");
 }
 
 /******************************************************************************/
