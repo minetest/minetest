@@ -26,11 +26,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "config.h"
 #if HAVE_ENDIAN_H
-    #if defined(__MACH__) && defined(__APPLE__)
-        #include <machine/endian.h>
-    #else
-	    #include <endian.h>
-    #endif
+	#if defined(__MACH__) && defined(__APPLE__)
+		#include <machine/endian.h>
+	#else
+		#include <endian.h>
+	#endif
 #endif
 #include <string.h> // for memcpy
 #include <iostream>
