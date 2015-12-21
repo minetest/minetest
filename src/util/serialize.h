@@ -26,7 +26,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "config.h"
 #if HAVE_ENDIAN_H
-	#include <endian.h>
+	#ifdef _WIN32
+		#define __BYTE_ORDER 0
+		#define __LITTLE_ENDIAN 0
+		#define __BIG_ENDIAN 1
+	#elif defined(__MACH__) && defined(__APPLE__)
+		#include <machine/endian.h>
+	#elif defined(__FreeBSD__)
+		#include <sys/endian.h>
+	#else
+		#include <endian.h>
+	#endif
 #endif
 #include <string.h> // for memcpy
 #include <iostream>
