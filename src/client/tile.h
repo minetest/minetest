@@ -168,6 +168,8 @@ enum MaterialType{
 #define MATERIAL_FLAG_HIGHLIGHTED 0x10
 #define MATERIAL_FLAG_TILEABLE_HORIZONTAL 0x20
 #define MATERIAL_FLAG_TILEABLE_VERTICAL 0x40
+#define MATERIAL_FLAG_BILINEAR_FILTER 0x80
+#define MATERIAL_FLAG_TRILINEAR_FILTER 0x100
 
 /*
 	This fully defines the looks of a tile.
@@ -179,13 +181,15 @@ struct FrameSpec
 		texture_id(0),
 		texture(NULL),
 		normal_texture(NULL),
-		flags_texture(NULL)
+		flags_texture(NULL),
+		special_texture(NULL)
 	{
 	}
 	u32 texture_id;
 	video::ITexture *texture;
 	video::ITexture *normal_texture;
 	video::ITexture *flags_texture;
+	video::ITexture *special_texture;
 };
 
 struct TileSpec
@@ -195,6 +199,7 @@ struct TileSpec
 		texture(NULL),
 		normal_texture(NULL),
 		flags_texture(NULL),
+		special_texture(NULL),
 		alpha(255),
 		material_type(TILE_MATERIAL_BASIC),
 		material_flags(
@@ -248,6 +253,10 @@ struct TileSpec
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 			break;
 		}
+		material.setFlag(video::EMF_BILINEAR_FILTER,
+			(material_flags & MATERIAL_FLAG_BILINEAR_FILTER) ? true : false);
+		material.setFlag(video::EMF_TRILINEAR_FILTER,
+			(material_flags & MATERIAL_FLAG_TRILINEAR_FILTER) ? true : false);
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING)
 			? true : false;
 		if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
@@ -260,6 +269,10 @@ struct TileSpec
 
 	void applyMaterialOptionsWithShaders(video::SMaterial &material) const
 	{
+		material.setFlag(video::EMF_BILINEAR_FILTER,
+			(material_flags & MATERIAL_FLAG_BILINEAR_FILTER) ? true : false);
+		material.setFlag(video::EMF_TRILINEAR_FILTER,
+			(material_flags & MATERIAL_FLAG_TRILINEAR_FILTER) ? true : false);
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING)
 			? true : false;
 		if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
@@ -276,7 +289,8 @@ struct TileSpec
 	video::ITexture *texture;
 	video::ITexture *normal_texture;
 	video::ITexture *flags_texture;
-	
+	video::ITexture *special_texture;
+
 	// Vertex alpha (when MATERIAL_ALPHA_VERTEX is used)
 	u8 alpha;
 	// Material parameters

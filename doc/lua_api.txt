@@ -3350,15 +3350,23 @@ Definition tables
 ### Tile definition
 * `"image.png"`
 * `{name="image.png", animation={Tile Animation definition}}`
-* `{name="image.png", backface_culling=bool, tileable_vertical=bool,
-    tileable_horizontal=bool}`
+* `{name="image.png", normal_texture="image.png",
+    special_texture="image.png",
+    backface_culling=bool, tileable_vertical=bool,
+    tileable_horizontal=bool, force_bilinear_filtering= bool,
+    force_trilinear_filtering=bool}`
     * backface culling only supported in special tiles.
     * tileable flags are info for shaders, how they should treat texture
-	  when displacement mapping is used
-	  Directions are from the point of view of the tile texture,
-	  not the node it's on
+      when displacement mapping is used
+    * filter flags are used to force filtering for tile no matter client
+      settings
+    * normal_texure - normalmap with height in alpha channel
+    * special_texture - an extra texture to be used in shaders, set as
+      irrlicht material 4th texture layer
+    Directions are from the point of view of the tile texture,
+   not the node it's on
 * deprecated, yet still supported field names:
-    * `image` (name)
+* `image` (name)
 
 ### Tile animation definition
 * `{type="vertical_frames", aspect_w=16, aspect_h=16, length=3.0}`
@@ -3408,6 +3416,8 @@ Definition tables
         damage_per_second = 0, -- If player is inside node, this damage is caused
         node_box = {type="regular"}, -- See "Node boxes"
         mesh = "model",
+        shader = "shader_name", 
+        ^ shader to be used for this node, default is "nodes_shader"        
         selection_box = {type="regular"}, -- See "Node boxes" --[[
         ^ If drawtype "nodebox" is used and selection_box is nil, then node_box is used. ]]
         legacy_facedir_simple = false, -- Support maps made in and before January 2012

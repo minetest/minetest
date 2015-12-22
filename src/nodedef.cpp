@@ -120,7 +120,9 @@ void NodeBox::deSerialize(std::istream &is)
 
 void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 {
-	if (protocol_version >= 26)
+	if (protocol_version >= 27)
+		writeU8(os, 3);
+	else if (protocol_version >= 26)
 		writeU8(os, 2);
 	else if (protocol_version >= 17)
 		writeU8(os, 1);
@@ -136,6 +138,12 @@ void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 	if (protocol_version >= 26) {
 		writeU8(os, tileable_horizontal);
 		writeU8(os, tileable_vertical);
+	}
+	if (protocol_version >= 27) {
+		os<<serializeString(normal_texture);
+		os<<serializeString(special_texture);
+		writeU8(os, force_bilinear_filtering);
+		writeU8(os, force_trilinear_filtering);
 	}
 }
 
@@ -153,8 +161,13 @@ void TileDef::deSerialize(std::istream &is)
 		tileable_horizontal = readU8(is);
 		tileable_vertical = readU8(is);
 	}
+	if (version >= 3) {
+		normal_texture = deSerializeString(is);
+		special_texture = deSerializeString(is);
+		force_bilinear_filtering = readU8(is);
+		force_trilinear_filtering = readU8(is);
+	}
 }
-
 
 /*
 	SimpleSoundSpec serialization
@@ -211,6 +224,7 @@ void ContentFeatures::reset()
 	groups["dig_immediate"] = 2;
 	drawtype = NDT_NORMAL;
 	mesh = "";
+	shader_name = "";
 #ifndef SERVER
 	for(u32 i = 0; i < 24; i++)
 		mesh_ptr[i] = NULL;
@@ -318,6 +332,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	// the protocol version
 	os<<serializeString(mesh);
 	collision_box.serialize(os, protocol_version);
+	os<<serializeString(shader_name);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -388,6 +403,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 		// otherwise changes the protocol version
 	mesh = deSerializeString(is);
 	collision_box.deSerialize(is);
+	shader_name = deSerializeString(is);
 	}catch(SerializationError &e) {};
 }
 
@@ -431,7 +447,8 @@ private:
 #ifndef SERVER
 	void fillTileAttribs(ITextureSource *tsrc, TileSpec *tile, TileDef *tiledef,
 		u32 shader_id, bool use_normal_texture, bool backface_culling,
-		u8 alpha, u8 material_type);
+		bool bilinear_filter, bool trilinear_filter, u8 alpha,
+		u8 material_type);
 #endif
 
 	// Features indexed by id
@@ -799,7 +816,11 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 	bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
 	bool enable_mesh_cache         = g_settings->getBool("enable_mesh_cache");
 	bool enable_minimap            = g_settings->getBool("enable_minimap");
+	bool bilinear_filter           = g_settings->getBool("bilinear_filter");
+	bool trilinear_filter          = g_settings->getBool("trilinear_filter");
+	
 	std::string leaves_style       = g_settings->get("leaves_style");
+	std::string default_shader_name = "nodes_shader";
 
 	bool use_normal_texture = enable_shaders &&
 		(enable_bumpmapping || enable_parallax_occlusion);
@@ -822,7 +843,6 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 		}
 
 		bool is_liquid = false;
-		bool is_water_surface = false;
 
 		u8 material_type = (f->alpha == 255) ?
 			TILE_MATERIAL_BASIC : TILE_MATERIAL_ALPHA;
@@ -919,32 +939,34 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 		if (is_liquid) {
 			material_type = (f->alpha == 255) ?
 				TILE_MATERIAL_LIQUID_OPAQUE : TILE_MATERIAL_LIQUID_TRANSPARENT;
-			if (f->name == "default:water_source")
-				is_water_surface = true;
 		}
 
 		u32 tile_shader[6];
-		for (u16 j = 0; j < 6; j++) {
-			tile_shader[j] = shdsrc->getShader("nodes_shader",
+		if (f->shader_name == "") {
+			for (u16 j = 0; j < 6; j++) {
+				tile_shader[j] = shdsrc->getShader(default_shader_name,
 				material_type, f->drawtype);
-		}
-
-		if (is_water_surface) {
-			tile_shader[0] = shdsrc->getShader("water_surface_shader",
+			}
+		} else {
+			for (u16 j = 0; j < 6; j++) {
+				tile_shader[j] = shdsrc->getShader(f->shader_name,
 				material_type, f->drawtype);
-		}
+			}
+		}	
 
 		// Tiles (fill in f->tiles[])
 		for (u16 j = 0; j < 6; j++) {
 			fillTileAttribs(tsrc, &f->tiles[j], &tiledef[j], tile_shader[j],
-				use_normal_texture, f->backface_culling, f->alpha, material_type);
+				use_normal_texture, f->backface_culling,
+				bilinear_filter, trilinear_filter, f->alpha, material_type);
 		}
 
 		// Special tiles (fill in f->special_tiles[])
 		for (u16 j = 0; j < CF_SPECIAL_COUNT; j++) {
 			fillTileAttribs(tsrc, &f->special_tiles[j], &f->tiledef_special[j],
 				tile_shader[j], use_normal_texture,
-				f->tiledef_special[j].backface_culling, f->alpha, material_type);
+				f->tiledef_special[j].backface_culling,
+				bilinear_filter, trilinear_filter, f->alpha, material_type);
 		}
 
 		if ((f->drawtype == NDT_MESH) && (f->mesh != "")) {
@@ -1001,7 +1023,8 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 #ifndef SERVER
 void CNodeDefManager::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 		TileDef *tiledef, u32 shader_id, bool use_normal_texture,
-		bool backface_culling, u8 alpha, u8 material_type)
+		bool backface_culling, bool bilinear_filter, bool trilinear_filter,
+		u8 alpha, u8 material_type)
 {
 	tile->shader_id     = shader_id;
 	tile->texture       = tsrc->getTextureForMesh(tiledef->name, &tile->texture_id);
@@ -1010,8 +1033,15 @@ void CNodeDefManager::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 
 	// Normal texture and shader flags texture
 	if (use_normal_texture) {
-		tile->normal_texture = tsrc->getNormalTexture(tiledef->name);
+		if (tiledef->normal_texture == "")
+			tile->normal_texture = tsrc->getNormalTexture(tiledef->name);
+		else 
+			tile->normal_texture = tsrc->getTextureForMesh(tiledef->normal_texture);
 	}
+
+	if (tiledef->special_texture != "")	
+		tile->special_texture = tsrc->getTextureForMesh(tiledef->special_texture);
+
 	tile->flags_texture = tsrc->getShaderFlagsTexture(tile->normal_texture ? true : false);
 
 	// Material flags
@@ -1024,6 +1054,10 @@ void CNodeDefManager::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 		tile->material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
 	if (tiledef->tileable_vertical)
 		tile->material_flags |= MATERIAL_FLAG_TILEABLE_VERTICAL;
+	if (tiledef->force_bilinear_filtering || bilinear_filter)
+		tile->material_flags |= MATERIAL_FLAG_BILINEAR_FILTER;
+	if (tiledef->force_trilinear_filtering || trilinear_filter)
+		tile->material_flags |= MATERIAL_FLAG_TRILINEAR_FILTER;
 
 	// Animation parameters
 	int frame_count = 1;
@@ -1057,6 +1091,7 @@ void CNodeDefManager::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 			if (tile->normal_texture)
 				frame.normal_texture = tsrc->getNormalTexture(os.str());
 			frame.flags_texture = tile->flags_texture;
+			frame.special_texture = tile->special_texture;
 			tile->frames[i] = frame;
 		}
 	}

@@ -1201,7 +1201,6 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		video::SMaterial material;
 		material.setFlag(video::EMF_LIGHTING, false);
 		material.setFlag(video::EMF_BACK_FACE_CULLING, true);
-		material.setFlag(video::EMF_BILINEAR_FILTER, false);
 		material.setFlag(video::EMF_FOG_ENABLE, true);
 		material.setTexture(0, p.tile.texture);
 
@@ -1215,6 +1214,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 					material.setTexture(1, p.tile.normal_texture);
 				}
 				material.setTexture(2, p.tile.flags_texture);
+				if (p.tile.special_texture)
+					material.setTexture(3, p.tile.special_texture);
 			} else {
 				p.tile.applyMaterialOptions(material);
 			}
