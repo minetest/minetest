@@ -49,7 +49,6 @@ the Free Software Foundation; either version 3.0 of the License, or
 //#undef NDEBUG
 //#include "assert.h"
 
-#define VALLEYS_C_PROFILING false
 #if VALLEYS_C_PROFILING
 #include "util/timetaker.h"
 #include "profiler.h"

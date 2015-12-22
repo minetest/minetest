@@ -32,6 +32,8 @@ the Free Software Foundation; either version 3.0 of the License, or
 
 #include "mapgen.h"
 
+#define VALLEYS_C_PROFILING false
+
 /////////////////// Mapgen Valleys flags
 #define MG_VALLEYS_CLIFFS 0x02
 #define MG_VALLEYS_RUGGED 0x04
