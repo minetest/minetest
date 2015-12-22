@@ -1314,6 +1314,26 @@
 
 ## Security
 
+#mg_valleys_spflags = cliffs,rugged  # whether to make cliffs or rugged terrain
+#mg_valleys_altitude_chill = 90  # the altitude at which temperature drops by 20C
+#mg_valleys_humidity = 50        # the average humidity as a percentage
+#mg_valleys_lava_max_height = 0  # maximum altitude of lava
+#mg_valleys_cave_water_max_height = 31000   # max altitude of water in caves
+#mg_valleys_river_depth = 4      # how deep to make rivers
+#mg_valleys_river_size = 5       # how wide to make rivers
+#mg_valleys_temperature = 50     # the average temperature in degrees Fahrenheit
+#mg_valleys_np_cliffs = 0, 1, (750, 750, 750), 8445, 5, 1.0, 2.0
+#mg_valleys_np_corr = 0, 1, (40, 40, 40), -3536, 4, 1.0, 2.0
+#mg_valleys_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
+#mg_valleys_np_rivers = 0, 1, (256, 256, 256), -6050, 5, 0.6, 2.0
+#mg_valleys_np_simple_caves_1 = 0, 1, v3f(64, 64, 64), -8402, 3, 0.5, 2.0
+#mg_valleys_np_simple_caves_2 = 0, 1, v3f(64, 64, 64), 3944, 3, 0.5, 2.0
+#mg_valleys_np_terrain_height = -10, 50, (1024, 1024, 1024), 5202, 6, 0.4, 2.0
+#mg_valleys_np_valley_depth = 5, 4, (512, 512, 512), -1914, 1, 1.0, 2.0
+#mg_valleys_np_inter_valley_fill = 0, 1, (768, 768, 768), 1993, 6, 0.8, 2.0
+#mg_valleys_np_valley_profile = 0.6, 0.5, (512, 512, 512), 777, 1, 1.0, 2.0
+#mg_valleys_np_inter_valley_slope = 0.5, 0.5, (128, 128, 128), 746, 1, 1.0, 2.0
+
 #    Prevent mods from doing insecure things like running shell commands.
 #    type: bool
 # secure.enable_security = false
