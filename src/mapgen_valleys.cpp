@@ -84,14 +84,14 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 	MapgenValleysParams *sp = (MapgenValleysParams *)params->sparams;
 	this->spflags = sp->spflags;
 
-	river_size = (float)(sp->river_size) / 100;
-	river_depth = sp->river_depth + 1;
-	water_level = params->water_level;
-	altitude_chill = sp->altitude_chill;
-	lava_max_height = sp->lava_max_height;
+	this->river_size = (float)(sp->river_size) / 100;
+	this->river_depth = sp->river_depth + 1;
+	this->water_level = params->water_level;
+	this->altitude_chill = sp->altitude_chill;
+	this->lava_max_height = sp->lava_max_height;
 
-	humidity_adjust = sp->humidity - 50;
-	temperature_adjust = sp->temperature - 50;
+	this->humidity_adjust = sp->humidity - 50;
+	this->temperature_adjust = sp->temperature - 50;
 
 	//// Terrain noise
 	noise_filler_depth = new Noise(&sp->np_filler_depth,    seed, csize.X, csize.Z);
