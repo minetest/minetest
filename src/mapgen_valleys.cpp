@@ -57,9 +57,9 @@ the Free Software Foundation; either version 3.0 of the License, or
 //Profiler *mapgen_profiler = &mapgen_prof;
 
 FlagDesc flagdesc_mapgen_valleys[] = {
-	{"cliffs", MG_VALLEYS_CLIFFS},
-	{"rugged", MG_VALLEYS_RUGGED},
-	{NULL,        0}
+	{"cliffs",  MG_VALLEYS_CLIFFS},
+	{"rugged",  MG_VALLEYS_RUGGED},
+	{NULL,      0}
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -84,36 +84,36 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 	MapgenValleysParams *sp = (MapgenValleysParams *)params->sparams;
 	this->spflags = sp->spflags;
 
-	this->river_size = (float)(sp->river_size) / 100;
-	this->river_depth = sp->river_depth + 1;
-	this->altitude_chill = sp->altitude_chill;
-	this->lava_max_height = sp->lava_max_height;
-	this->cave_water_max_height = sp->cave_water_max_height;
+	this->river_size             =  (float)(sp->river_size) / 100;
+	this->river_depth            =  sp->river_depth + 1;
+	this->altitude_chill         =  sp->altitude_chill;
+	this->lava_max_height        =  sp->lava_max_height;
+	this->cave_water_max_height  =  sp->cave_water_max_height;
 
-	this->humidity_adjust = sp->humidity - 50;
-	this->temperature_adjust = sp->temperature - 50;
+	this->humidity_adjust     =  sp->humidity - 50;
+	this->temperature_adjust  =  sp->temperature - 50;
 
 	//// 2D Terrain noise
-	noise_filler_depth = new Noise(&sp->np_filler_depth,    seed, csize.X, csize.Z);
-	noise_cliffs = new Noise(&sp->np_cliffs, seed, csize.X, csize.Z);
-	noise_corr = new Noise(&sp->np_corr, seed, csize.X, csize.Z);
-	noise_terrain_height = new Noise(&sp->np_terrain_height, seed, csize.X, csize.Z);
-	noise_rivers = new Noise(&sp->np_rivers, seed, csize.X, csize.Z);
-	noise_valley_depth = new Noise(&sp->np_valley_depth, seed, csize.X, csize.Z);
-	noise_valley_profile = new Noise(&sp->np_valley_profile, seed, csize.X, csize.Z);
-	noise_inter_valley_slope = new Noise(&sp->np_inter_valley_slope, seed, csize.X, csize.Z);
-	noise_inter_valley_fill = new Noise(&sp->np_inter_valley_fill, seed, csize.X, csize.Z);
+	noise_filler_depth        =  new  Noise(&sp->np_filler_depth,        seed,  csize.X,  csize.Z);
+	noise_cliffs              =  new  Noise(&sp->np_cliffs,              seed,  csize.X,  csize.Z);
+	noise_corr                =  new  Noise(&sp->np_corr,                seed,  csize.X,  csize.Z);
+	noise_terrain_height      =  new  Noise(&sp->np_terrain_height,      seed,  csize.X,  csize.Z);
+	noise_rivers              =  new  Noise(&sp->np_rivers,              seed,  csize.X,  csize.Z);
+	noise_valley_depth        =  new  Noise(&sp->np_valley_depth,        seed,  csize.X,  csize.Z);
+	noise_valley_profile      =  new  Noise(&sp->np_valley_profile,      seed,  csize.X,  csize.Z);
+	noise_inter_valley_slope  =  new  Noise(&sp->np_inter_valley_slope,  seed,  csize.X,  csize.Z);
+	noise_inter_valley_fill   =  new  Noise(&sp->np_inter_valley_fill,   seed,  csize.X,  csize.Z);
 
 	//// 3D Terrain noise
-	//noise_inter_valley_fill = new Noise(&sp->np_inter_valley_fill, seed, csize.X, csize.Y + 2, csize.Z);
-	noise_simple_caves_1 = new Noise(&sp->np_simple_caves_1, seed, csize.X, csize.Y + 2, csize.Z);
-	noise_simple_caves_2 = new Noise(&sp->np_simple_caves_2, seed, csize.X, csize.Y + 2, csize.Z);
+	//noise_inter_valley_fill  = new Noise(&sp->np_inter_valley_fill, seed, csize.X, csize.Y + 2, csize.Z);
+	noise_simple_caves_1  =  new  Noise(&sp->np_simple_caves_1,  seed,  csize.X,  csize.Y  +  2,  csize.Z);
+	noise_simple_caves_2  =  new  Noise(&sp->np_simple_caves_2,  seed,  csize.X,  csize.Y  +  2,  csize.Z);
 
 	//// Biome noise
-	noise_heat           = new Noise(&params->np_biome_heat,           seed, csize.X, csize.Z);
-	noise_humidity       = new Noise(&params->np_biome_humidity,       seed, csize.X, csize.Z);
-	noise_heat_blend     = new Noise(&params->np_biome_heat_blend,     seed, csize.X, csize.Z);
-	noise_humidity_blend = new Noise(&params->np_biome_humidity_blend, seed, csize.X, csize.Z);
+noise_heat            =  new  Noise(&params->np_biome_heat,            seed,  csize.X,  csize.Z);
+noise_humidity        =  new  Noise(&params->np_biome_humidity,        seed,  csize.X,  csize.Z);
+noise_heat_blend      =  new  Noise(&params->np_biome_heat_blend,      seed,  csize.X,  csize.Z);
+noise_humidity_blend  =  new  Noise(&params->np_biome_humidity_blend,  seed,  csize.X,  csize.Z);
 
 	//// Resolve nodes to be used
 	INodeDefManager *ndef = emerge->ndef;
@@ -178,77 +178,73 @@ MapgenValleysParams::MapgenValleysParams()
 {
 	spflags = MG_VALLEYS_CLIFFS | MG_VALLEYS_RUGGED;
 
-	temperature = 50;  // in Fahrenheit, unfortunately
-	humidity = 50;  // as a percentage
-	river_size = 5;  // How wide to make rivers.
-	river_depth = 4;  // How deep to carve river channels.
-	altitude_chill = 90;  // The altitude at which temperature drops by 20C.
-	lava_max_height = 0;  // Lava will never be higher than this.
-	cave_water_max_height = MAX_MAP_GENERATION_LIMIT;  // Water in caves will never be higher than this.
+temperature            =  50; // in Fahrenheit, unfortunately
+humidity               =  50; // as a percentage
+river_size             =  5;  // How wide to make rivers.
+river_depth            =  4;  // How deep to carve river channels.
+altitude_chill         =  90; // The altitude at which temperature drops by 20C.
+lava_max_height        =  0;  // Lava will never be higher than this.
+cave_water_max_height  =  MAX_MAP_GENERATION_LIMIT; // Water in caves will never be higher than this.
 
-	np_filler_depth = NoiseParams(0, 1.2, v3f(150, 150, 150), 261, 3, 0.7, 2.0);
-	np_simple_caves_1 = NoiseParams(0, 1, v3f(64, 64, 64), -8402, 3, 0.5, 2.0);
-	np_simple_caves_2 = NoiseParams(0, 1, v3f(64, 64, 64), 3944, 3, 0.5, 2.0);
-	np_cliffs = NoiseParams(0, 1, v3f(750, 750, 750), 8445, 5, 1.0, 2.0);
-	np_corr = NoiseParams(0, 1, v3f(40, 40, 40), -3536, 4, 1.0, 2.0);
-	np_terrain_height = NoiseParams(-10, 50, v3f(1024, 1024, 1024), 5202, 6, 0.4, 2.0);
-	np_rivers = NoiseParams(0, 1, v3f(256, 256, 256), -6050, 5, 0.6, 2.0);
-	np_valley_depth = NoiseParams(5, 4, v3f(512, 512, 512), -1914, 1, 1.0, 2.0);
-	np_valley_profile = NoiseParams(0.6, 0.5, v3f(512, 512, 512), 777, 1, 1.0, 2.0);
-	np_inter_valley_slope = NoiseParams(0.5, 0.5, v3f(128, 128, 128), 746, 1, 1.0, 2.0);
-	np_inter_valley_fill = NoiseParams(0, 1, v3f(256, 256, 256), 1993, 6, 0.8, 2.0);
+	np_filler_depth        =  NoiseParams(0,    1.2,  v3f(150,   150,   150),   261,    3,  0.7,  2.0);
+	np_simple_caves_1      =  NoiseParams(0,    1,    v3f(64,    64,    64),    -8402,  3,  0.5,  2.0);
+	np_simple_caves_2      =  NoiseParams(0,    1,    v3f(64,    64,    64),    3944,   3,  0.5,  2.0);
+	np_cliffs              =  NoiseParams(0,    1,    v3f(750,   750,   750),   8445,   5,  1.0,  2.0);
+	np_corr                =  NoiseParams(0,    1,    v3f(40,    40,    40),    -3536,  4,  1.0,  2.0);
+	np_terrain_height      =  NoiseParams(-10,  50,   v3f(1024,  1024,  1024),  5202,   6,  0.4,  2.0);
+	np_rivers              =  NoiseParams(0,    1,    v3f(256,   256,   256),   -6050,  5,  0.6,  2.0);
+	np_valley_depth        =  NoiseParams(5,    4,    v3f(512,   512,   512),   -1914,  1,  1.0,  2.0);
+	np_valley_profile      =  NoiseParams(0.6,  0.5,  v3f(512,   512,   512),   777,    1,  1.0,  2.0);
+	np_inter_valley_slope  =  NoiseParams(0.5,  0.5,  v3f(128,   128,   128),   746,    1,  1.0,  2.0);
+	np_inter_valley_fill   =  NoiseParams(0,    1,    v3f(256,   256,   256),   1993,   6,  0.8,  2.0);
 }
 
 
 void MapgenValleysParams::readParams(const Settings *settings)
 {
-	settings->getS16NoEx("mg_valleys_temperature", temperature);
-	settings->getS16NoEx("mg_valleys_humidity", humidity);
-	settings->getS16NoEx("mg_valleys_river_size", river_size);
-	settings->getS16NoEx("mg_valleys_river_depth", river_depth);
-	settings->getS16NoEx("mg_valleys_altitude_chill", altitude_chill);
-	settings->getS16NoEx("mg_valleys_lava_max_height", lava_max_height);
-	settings->getS16NoEx("mg_valleys_cave_water_max_height", cave_water_max_height);
-
-	settings->getFlagStrNoEx("mg_valleys_spflags", spflags, flagdesc_mapgen_valleys);
-
-	settings->getNoiseParams("mg_valleys_np_filler_depth",    np_filler_depth);
-	settings->getNoiseParams("mg_valleys_np_simple_caves_1",    np_simple_caves_1);
-	settings->getNoiseParams("mg_valleys_np_simple_caves_2",    np_simple_caves_2);
-	settings->getNoiseParams("mg_valleys_np_terrain_height",    np_terrain_height);
-	settings->getNoiseParams("mg_valleys_np_cliffs",    np_cliffs);
-	settings->getNoiseParams("mg_valleys_np_corr",    np_corr);
-	settings->getNoiseParams("mg_valleys_np_rivers",    np_rivers);
-	settings->getNoiseParams("mg_valleys_np_valley_depth",    np_valley_depth);
-	settings->getNoiseParams("mg_valleys_np_valley_profile",    np_valley_profile);
-	settings->getNoiseParams("mg_valleys_np_inter_valley_slope",    np_inter_valley_slope);
-	settings->getNoiseParams("mg_valleys_np_inter_valley_fill",    np_inter_valley_fill);
+	settings->getS16NoEx("mg_valleys_temperature",                temperature);
+	settings->getS16NoEx("mg_valleys_humidity",                   humidity);
+	settings->getS16NoEx("mg_valleys_river_size",                 river_size);
+	settings->getS16NoEx("mg_valleys_river_depth",                river_depth);
+	settings->getS16NoEx("mg_valleys_altitude_chill",             altitude_chill);
+	settings->getS16NoEx("mg_valleys_lava_max_height",            lava_max_height);
+	settings->getS16NoEx("mg_valleys_cave_water_max_height",      cave_water_max_height);
+	settings->getFlagStrNoEx("mg_valleys_spflags",                spflags,                 flagdesc_mapgen_valleys);
+	settings->getNoiseParams("mg_valleys_np_filler_depth",        np_filler_depth);
+	settings->getNoiseParams("mg_valleys_np_simple_caves_1",      np_simple_caves_1);
+	settings->getNoiseParams("mg_valleys_np_simple_caves_2",      np_simple_caves_2);
+	settings->getNoiseParams("mg_valleys_np_terrain_height",      np_terrain_height);
+	settings->getNoiseParams("mg_valleys_np_cliffs",              np_cliffs);
+	settings->getNoiseParams("mg_valleys_np_corr",                np_corr);
+	settings->getNoiseParams("mg_valleys_np_rivers",              np_rivers);
+	settings->getNoiseParams("mg_valleys_np_valley_depth",        np_valley_depth);
+	settings->getNoiseParams("mg_valleys_np_valley_profile",      np_valley_profile);
+	settings->getNoiseParams("mg_valleys_np_inter_valley_slope",  np_inter_valley_slope);
+	settings->getNoiseParams("mg_valleys_np_inter_valley_fill",   np_inter_valley_fill);
 }
 
 
 void MapgenValleysParams::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mg_valleys_spflags", spflags, flagdesc_mapgen_valleys, U32_MAX);
-
-	settings->setS16("mg_valleys_temperature", temperature);
-	settings->setS16("mg_valleys_humidity", humidity);
-	settings->setS16("mg_valleys_river_size", river_size);
-	settings->setS16("mg_valleys_river_depth", river_depth);
-	settings->setS16("mg_valleys_altitude_chill", altitude_chill);
-	settings->setS16("mg_valleys_lava_max_height", lava_max_height);
-	settings->setS16("mg_valleys_cave_water_max_height", cave_water_max_height);
-
-	settings->setNoiseParams("mg_valleys_np_filler_depth",    np_filler_depth);
-	settings->setNoiseParams("mg_valleys_np_simple_caves_1",    np_simple_caves_1);
-	settings->setNoiseParams("mg_valleys_np_simple_caves_2",    np_simple_caves_2);
-	settings->setNoiseParams("mg_valleys_np_terrain_height",    np_terrain_height);
-	settings->setNoiseParams("mg_valleys_np_cliffs",    np_cliffs);
-	settings->setNoiseParams("mg_valleys_np_corr",    np_corr);
-	settings->setNoiseParams("mg_valleys_np_rivers",    np_rivers);
-	settings->setNoiseParams("mg_valleys_np_valley_depth",    np_valley_depth);
-	settings->setNoiseParams("mg_valleys_np_valley_profile",    np_valley_profile);
-	settings->setNoiseParams("mg_valleys_np_inter_valley_slope",    np_inter_valley_slope);
-	settings->setNoiseParams("mg_valleys_np_inter_valley_fill",    np_inter_valley_fill);
+	settings->setFlagStr("mg_valleys_spflags",                    spflags,                 flagdesc_mapgen_valleys,  U32_MAX);
+	settings->setS16("mg_valleys_temperature",                    temperature);
+	settings->setS16("mg_valleys_humidity",                       humidity);
+	settings->setS16("mg_valleys_river_size",                     river_size);
+	settings->setS16("mg_valleys_river_depth",                    river_depth);
+	settings->setS16("mg_valleys_altitude_chill",                 altitude_chill);
+	settings->setS16("mg_valleys_lava_max_height",                lava_max_height);
+	settings->setS16("mg_valleys_cave_water_max_height",          cave_water_max_height);
+	settings->setNoiseParams("mg_valleys_np_filler_depth",        np_filler_depth);
+	settings->setNoiseParams("mg_valleys_np_simple_caves_1",      np_simple_caves_1);
+	settings->setNoiseParams("mg_valleys_np_simple_caves_2",      np_simple_caves_2);
+	settings->setNoiseParams("mg_valleys_np_terrain_height",      np_terrain_height);
+	settings->setNoiseParams("mg_valleys_np_cliffs",              np_cliffs);
+	settings->setNoiseParams("mg_valleys_np_corr",                np_corr);
+	settings->setNoiseParams("mg_valleys_np_rivers",              np_rivers);
+	settings->setNoiseParams("mg_valleys_np_valley_depth",        np_valley_depth);
+	settings->setNoiseParams("mg_valleys_np_valley_profile",      np_valley_profile);
+	settings->setNoiseParams("mg_valleys_np_inter_valley_slope",  np_inter_valley_slope);
+	settings->setNoiseParams("mg_valleys_np_inter_valley_fill",   np_inter_valley_fill);
 }
 
 
