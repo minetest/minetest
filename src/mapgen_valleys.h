@@ -33,8 +33,8 @@ the Free Software Foundation; either version 3.0 of the License, or
 #include "mapgen.h"
 
 /////////////////// Mapgen Valleys flags
-#define MG_VALLEYS_CLIFFS 0x02
-#define MG_VALLEYS_RUGGED 0x04
+#define MG_VALLEYS_CLIFFS 0x01
+#define MG_VALLEYS_RUGGED 0x02
 
 class BiomeManager;
 
