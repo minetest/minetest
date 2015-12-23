@@ -30,27 +30,27 @@ mkdir -p $libdir
 cd $builddir
 
 # Get stuff
-[ -e $packagedir/irrlicht-$irrlicht_version.zip ] || wget http://sfan5.pf-control.de/irrlicht-$irrlicht_version-win64.zip \
+[ -e $packagedir/irrlicht-$irrlicht_version.zip ] || wget http://minetest.kitsunemimi.pw/irrlicht-$irrlicht_version-win64.zip \
 	-c -O $packagedir/irrlicht-$irrlicht_version.zip
-[ -e $packagedir/zlib-$zlib_version.zip ] || wget http://sfan5.pf-control.de/zlib-$zlib_version-win64.zip \
+[ -e $packagedir/zlib-$zlib_version.zip ] || wget http://minetest.kitsunemimi.pw/zlib-$zlib_version-win64.zip \
 	-c -O $packagedir/zlib-$zlib_version.zip
-[ -e $packagedir/libogg-$ogg_version.zip ] || wget http://sfan5.pf-control.de/libogg-$ogg_version-win64.zip \
+[ -e $packagedir/libogg-$ogg_version.zip ] || wget http://minetest.kitsunemimi.pw/libogg-$ogg_version-win64.zip \
 	-c -O $packagedir/libogg-$ogg_version.zip
-[ -e $packagedir/libvorbis-$vorbis_version.zip ] || wget http://sfan5.pf-control.de/libvorbis-$vorbis_version-win64.zip \
+[ -e $packagedir/libvorbis-$vorbis_version.zip ] || wget http://minetest.kitsunemimi.pw/libvorbis-$vorbis_version-win64.zip \
 	-c -O $packagedir/libvorbis-$vorbis_version.zip
-[ -e $packagedir/libcurl-$curl_version.zip ] || wget http://sfan5.pf-control.de/libcurl-$curl_version-win64.zip \
+[ -e $packagedir/libcurl-$curl_version.zip ] || wget http://minetest.kitsunemimi.pw/libcurl-$curl_version-win64.zip \
 	-c -O $packagedir/libcurl-$curl_version.zip
-[ -e $packagedir/gettext-$gettext_version.zip ] || wget http://sfan5.pf-control.de/gettext-$gettext_version-win64.zip \
+[ -e $packagedir/gettext-$gettext_version.zip ] || wget http://minetest.kitsunemimi.pw/gettext-$gettext_version-win64.zip \
 	-c -O $packagedir/gettext-$gettext_version.zip
-[ -e $packagedir/freetype-$freetype_version.zip ] || wget http://sfan5.pf-control.de/libfreetype-$freetype_version-win64.zip \
+[ -e $packagedir/freetype-$freetype_version.zip ] || wget http://minetest.kitsunemimi.pw/libfreetype-$freetype_version-win64.zip \
 	-c -O $packagedir/freetype-$freetype_version.zip
-[ -e $packagedir/sqlite3-$sqlite3_version.zip ] || wget http://sfan5.pf-control.de/sqlite3-$sqlite3_version-win64.zip \
+[ -e $packagedir/sqlite3-$sqlite3_version.zip ] || wget http://minetest.kitsunemimi.pw/sqlite3-$sqlite3_version-win64.zip \
 	-c -O $packagedir/sqlite3-$sqlite3_version.zip
-[ -e $packagedir/luajit-$luajit_version.zip ] || wget http://sfan5.pf-control.de/luajit-$luajit_version-static-win64.zip \
+[ -e $packagedir/luajit-$luajit_version.zip ] || wget http://minetest.kitsunemimi.pw/luajit-$luajit_version-static-win64.zip \
 	-c -O $packagedir/luajit-$luajit_version.zip
-[ -e $packagedir/libleveldb-$leveldb_version.zip ] || wget http://sfan5.pf-control.de/libleveldb-$leveldb_version-win64.zip \
+[ -e $packagedir/libleveldb-$leveldb_version.zip ] || wget http://minetest.kitsunemimi.pw/libleveldb-$leveldb_version-win64.zip \
 	-c -O $packagedir/libleveldb-$leveldb_version.zip
-[ -e $packagedir/openal_stripped.zip ] || wget http://sfan5.pf-control.de/openal_stripped64.zip \
+[ -e $packagedir/openal_stripped.zip ] || wget http://minetest.kitsunemimi.pw/openal_stripped64.zip \
 	-c -O $packagedir/openal_stripped.zip
 
 

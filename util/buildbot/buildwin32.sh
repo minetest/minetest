@@ -30,31 +30,31 @@ mkdir -p $libdir
 cd $builddir
 
 # Get stuff
-[ -e $packagedir/irrlicht-$irrlicht_version.zip ] || wget http://sfan5.pf-control.de/irrlicht-$irrlicht_version-win32.zip \
+[ -e $packagedir/irrlicht-$irrlicht_version.zip ] || wget http://minetest.kitsunemimi.pw/irrlicht-$irrlicht_version-win32.zip \
 	-c -O $packagedir/irrlicht-$irrlicht_version.zip
-[ -e $packagedir/zlib-$zlib_version.zip ] || wget http://sfan5.pf-control.de/zlib-$zlib_version-win32.zip \
+[ -e $packagedir/zlib-$zlib_version.zip ] || wget http://minetest.kitsunemimi.pw/zlib-$zlib_version-win32.zip \
 	-c -O $packagedir/zlib-$zlib_version.zip
-[ -e $packagedir/libogg-$ogg_version-dev.7z ] || wget http://sfan5.pf-control.de/libogg-$ogg_version-dev.7z \
+[ -e $packagedir/libogg-$ogg_version-dev.7z ] || wget http://minetest.kitsunemimi.pw/libogg-$ogg_version-dev.7z \
 	-c -O $packagedir/libogg-$ogg_version-dev.7z
-[ -e $packagedir/libogg-$ogg_version-dll.7z ] || wget http://sfan5.pf-control.de/libogg-$ogg_version-dll.7z \
+[ -e $packagedir/libogg-$ogg_version-dll.7z ] || wget http://minetest.kitsunemimi.pw/libogg-$ogg_version-dll.7z \
 	-c -O $packagedir/libogg-$ogg_version-dll.7z
-[ -e $packagedir/libvorbis-$vorbis_version-dev.7z ] || wget http://sfan5.pf-control.de/libvorbis-$vorbis_version-dev.7z \
+[ -e $packagedir/libvorbis-$vorbis_version-dev.7z ] || wget http://minetest.kitsunemimi.pw/libvorbis-$vorbis_version-dev.7z \
 	-c -O $packagedir/libvorbis-$vorbis_version-dev.7z
-[ -e $packagedir/libvorbis-$vorbis_version-dll.7z ] || wget http://sfan5.pf-control.de/libvorbis-$vorbis_version-dll.7z \
+[ -e $packagedir/libvorbis-$vorbis_version-dll.7z ] || wget http://minetest.kitsunemimi.pw/libvorbis-$vorbis_version-dll.7z \
 	-c -O $packagedir/libvorbis-$vorbis_version-dll.7z
-[ -e $packagedir/libcurl-$curl_version.zip ] || wget http://sfan5.pf-control.de/libcurl-$curl_version-win32.zip \
+[ -e $packagedir/libcurl-$curl_version.zip ] || wget http://minetest.kitsunemimi.pw/libcurl-$curl_version-win32.zip \
 	-c -O $packagedir/libcurl-$curl_version.zip
-[ -e $packagedir/gettext-$gettext_version.zip ] || wget http://sfan5.pf-control.de/gettext-$gettext_version.zip \
+[ -e $packagedir/gettext-$gettext_version.zip ] || wget http://minetest.kitsunemimi.pw/gettext-$gettext_version.zip \
 	-c -O $packagedir/gettext-$gettext_version.zip
-[ -e $packagedir/libfreetype-$freetype_version.zip ] || wget http://sfan5.pf-control.de/libfreetype-$freetype_version-win32.zip \
+[ -e $packagedir/libfreetype-$freetype_version.zip ] || wget http://minetest.kitsunemimi.pw/libfreetype-$freetype_version-win32.zip \
 	-c -O $packagedir/libfreetype-$freetype_version.zip
-[ -e $packagedir/sqlite3-$sqlite3_version.zip ] || wget http://sfan5.pf-control.de/sqlite3-$sqlite3_version-win32.zip \
+[ -e $packagedir/sqlite3-$sqlite3_version.zip ] || wget http://minetest.kitsunemimi.pw/sqlite3-$sqlite3_version-win32.zip \
 	-c -O $packagedir/sqlite3-$sqlite3_version.zip
-[ -e $packagedir/luajit-$luajit_version-static-win32.zip ] || wget http://sfan5.pf-control.de/luajit-$luajit_version-static-win32.zip \
+[ -e $packagedir/luajit-$luajit_version-static-win32.zip ] || wget http://minetest.kitsunemimi.pw/luajit-$luajit_version-static-win32.zip \
 	-c -O $packagedir/luajit-$luajit_version-static-win32.zip
-[ -e $packagedir/libleveldb-$leveldb_version-win32.zip ] || wget http://sfan5.pf-control.de/libleveldb-$leveldb_version-win32.zip \
+[ -e $packagedir/libleveldb-$leveldb_version-win32.zip ] || wget http://minetest.kitsunemimi.pw/libleveldb-$leveldb_version-win32.zip \
 	-c -O $packagedir/libleveldb-$leveldb_version-win32.zip
-[ -e $packagedir/openal_stripped.zip ] || wget http://sfan5.pf-control.de/openal_stripped.zip \
+[ -e $packagedir/openal_stripped.zip ] || wget http://minetest.kitsunemimi.pw/openal_stripped.zip \
 	-c -O $packagedir/openal_stripped.zip
 
 # Extract stuff
