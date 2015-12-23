@@ -76,32 +76,27 @@ static int sqlite3BusyHandler(void *data, int count)
 
 	if (cur_time - first_time < BUSY_INFO_TRESHOLD_1) {
 		; // do nothing
-	}
-	else if (cur_time - first_time >= BUSY_INFO_TRESHOLD_1 &&
-		    prev_time - first_time < BUSY_INFO_TRESHOLD_1) {
+	} else if (cur_time - first_time >= BUSY_INFO_TRESHOLD_1 &&
+			prev_time - first_time < BUSY_INFO_TRESHOLD_1) {
 		infostream << "NOTE: sqlite3 database has been locked for "
-			   << cur_time - first_time << " ms." << std::endl;
-	}
-	else if (cur_time - first_time >= BUSY_INFO_TRESHOLD_2 &&
+			<< cur_time - first_time << " ms." << std::endl;
+	} else if (cur_time - first_time >= BUSY_INFO_TRESHOLD_2 &&
 			prev_time - first_time < BUSY_INFO_TRESHOLD_2) {
 		infostream << "NOTE: sqlite3 database has been locked for "
-			   << cur_time - first_time << " ms." << std::endl;
-	}
-	else if (cur_time - first_time >= BUSY_ERROR_TRESHOLD &&
+			<< cur_time - first_time << " ms." << std::endl;
+	} else if (cur_time - first_time >= BUSY_ERROR_TRESHOLD &&
 			prev_time - first_time < BUSY_ERROR_TRESHOLD) {
 		errorstream << "WARNING: sqlite3 database has been locked for "
-			    << cur_time - first_time << " ms; this causes lag." << std::endl;
-	}
-	else if (cur_time - first_time >= BUSY_FATAL_TRESHOLD &&
+			<< cur_time - first_time << " ms; this causes lag." << std::endl;
+	} else if (cur_time - first_time >= BUSY_FATAL_TRESHOLD &&
 			prev_time - first_time < BUSY_FATAL_TRESHOLD) {
 		errorstream << "ERROR: sqlite3 database has been locked for "
-			    << cur_time - first_time << " ms - giving up!" << std::endl;
-	// Safety net: keep reporting every BUSY_ERROR_INTERVAL
-	}
-	else if ((cur_time - first_time) / BUSY_ERROR_INTERVAL !=
+			<< cur_time - first_time << " ms - giving up!" << std::endl;
+	} else if ((cur_time - first_time) / BUSY_ERROR_INTERVAL !=
 			(prev_time - first_time) / BUSY_ERROR_INTERVAL) {
+		// Safety net: keep reporting every BUSY_ERROR_INTERVAL
 		errorstream << "ERROR: sqlite3 database has been locked for "
-			    << (cur_time - first_time) / 1000 << " seconds!" << std::endl;
+			<< (cur_time - first_time) / 1000 << " seconds!" << std::endl;
 	}
 
 	prev_time = cur_time;
@@ -164,7 +159,7 @@ void Database_SQLite3::openDatabase()
 	if (sqlite3_busy_handler(m_database, sqlite3BusyHandler, NULL) != SQLITE_OK) {
 		errorstream << "SQLite3 database failed to set busy handler: "
 			<< sqlite3_errmsg(m_database) << std::endl;
-		throw FileNotGoodException("Cannot open database file");
+		throw FileNotGoodException("Failed to set busy handler for sqlite connection");
 	}
 
 	if (needs_create) {
