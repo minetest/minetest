@@ -55,7 +55,7 @@ struct MapgenValleysParams : public MapgenSpecificParams {
 	s16 humidity;
 	s16 temperature;
 	s16 lava_max_height;
-	s16 cave_water_height;
+	s16 cave_water_max_height;
 
 	NoiseParams np_filler_depth;
 	NoiseParams np_biome_heat;
@@ -96,8 +96,6 @@ public:
 	v3s16 full_node_min;
 	v3s16 full_node_max;
 
-	//s16 *ridge_heightmap;
-
 	Noise *noise_filler_depth;
 
 	Noise *noise_heat;
@@ -124,7 +122,7 @@ public:
 	float humidity_adjust;
 	float temperature_adjust;
 	float lava_max_height;
-	float cave_water_height;
+	float cave_water_max_height;
 
 	content_t c_stone;
 	content_t c_water_source;
