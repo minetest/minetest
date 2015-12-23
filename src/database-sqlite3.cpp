@@ -73,6 +73,10 @@ static int sqlite3BusyHandler(void *data, int count)
 
 	if (count == 0)
 		first_time = cur_time;
+	else {
+		while (cur_time < prev_time)
+			cur_time += 1000;
+	}
 
 	if (cur_time - first_time < BUSY_INFO_TRESHOLD_1) {
 		; // do nothing
