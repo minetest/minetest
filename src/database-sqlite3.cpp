@@ -67,9 +67,9 @@ SQLite format specification:
 
 static int sqlite3BusyHandler(void *data, int count)
 {
-	static long first_time;
-	static long prev_time;
-	long cur_time = getTimeMs();
+	s64 &first_time = reinterpret_cast<s64 *>(data)[0];
+	s64 &prev_time = reinterpret_cast<s64 *>(data)[1];
+	s64 cur_time = getTimeMs();
 
 	if (count == 0)
 		first_time = cur_time;
@@ -156,7 +156,7 @@ void Database_SQLite3::openDatabase()
 		throw FileNotGoodException("Cannot open database file");
 	}
 
-	if (sqlite3_busy_handler(m_database, sqlite3BusyHandler, NULL) != SQLITE_OK) {
+	if (sqlite3_busy_handler(m_database, sqlite3BusyHandler, busy_handler_data) != SQLITE_OK) {
 		errorstream << "SQLite3 database failed to set busy handler: "
 			<< sqlite3_errmsg(m_database) << std::endl;
 		throw FileNotGoodException("Failed to set busy handler for sqlite connection");

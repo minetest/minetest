@@ -63,6 +63,8 @@ private:
 	sqlite3_stmt *m_stmt_delete;
 	sqlite3_stmt *m_stmt_begin;
 	sqlite3_stmt *m_stmt_end;
+
+	u32 busy_handler_data[2];
 };
 
 #endif
