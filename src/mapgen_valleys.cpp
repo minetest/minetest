@@ -93,7 +93,7 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 	this->humidity_adjust = sp->humidity - 50;
 	this->temperature_adjust = sp->temperature - 50;
 
-	//// Terrain noise
+	//// 2D Terrain noise
 	noise_filler_depth = new Noise(&sp->np_filler_depth,    seed, csize.X, csize.Z);
 	noise_cliffs = new Noise(&sp->np_cliffs, seed, csize.X, csize.Z);
 	noise_corr = new Noise(&sp->np_corr, seed, csize.X, csize.Z);
@@ -102,8 +102,10 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 	noise_valley_depth = new Noise(&sp->np_valley_depth, seed, csize.X, csize.Z);
 	noise_valley_profile = new Noise(&sp->np_valley_profile, seed, csize.X, csize.Z);
 	noise_inter_valley_slope = new Noise(&sp->np_inter_valley_slope, seed, csize.X, csize.Z);
+	noise_inter_valley_fill = new Noise(&sp->np_inter_valley_fill, seed, csize.X, csize.Z);
 
-	noise_inter_valley_fill = new Noise(&sp->np_inter_valley_fill, seed, csize.X, csize.Y + 2, csize.Z);
+	//// 3D Terrain noise
+	//noise_inter_valley_fill = new Noise(&sp->np_inter_valley_fill, seed, csize.X, csize.Y + 2, csize.Z);
 	noise_simple_caves_1 = new Noise(&sp->np_simple_caves_1, seed, csize.X, csize.Y + 2, csize.Z);
 	noise_simple_caves_2 = new Noise(&sp->np_simple_caves_2, seed, csize.X, csize.Y + 2, csize.Z);
 
