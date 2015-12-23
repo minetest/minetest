@@ -174,8 +174,8 @@ MapgenValleysParams::MapgenValleysParams()
 {
 	spflags = MG_VALLEYS_CLIFFS | MG_VALLEYS_RUGGED;
 
-temperature            =  50; // in Fahrenheit, unfortunately
-humidity               =  50; // as a percentage
+temperature            =  50;
+humidity               =  50;
 river_size             =  5;  // How wide to make rivers.
 river_depth            =  4;  // How deep to carve river channels.
 altitude_chill         =  90; // The altitude at which temperature drops by 20C.

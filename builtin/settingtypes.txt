@@ -1046,7 +1046,7 @@ mg_valleys_spflags (Valleys C Flags) flags cliffs,rugged cliffs,nocliffs,rugged,
 # The altitude at which temperature drops by 20C
 mg_valleys_altitude_chill (Altitude Chill) int 90
 
-# Average humidity as a percentage.
+# Average humidity
 mg_valleys_humidity (Humidity) int 50
 
 # Maximum altitude where lava can emerge
@@ -1061,7 +1061,7 @@ mg_valleys_river_depth (River Depth) int 4
 # How wide to make rivers
 mg_valleys_river_size (River Size) int 5
 
-# Average temperature in degrees Fahrenheit.
+# Average temperature
 mg_valleys_temperature (Temperature) int 50
 
 # Noise parameters
