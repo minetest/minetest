@@ -86,7 +86,6 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 
 	this->river_size = (float)(sp->river_size) / 100;
 	this->river_depth = sp->river_depth + 1;
-	this->water_level = params->water_level;
 	this->altitude_chill = sp->altitude_chill;
 	this->lava_max_height = sp->lava_max_height;
 
@@ -95,24 +94,23 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 
 	//// Terrain noise
 	noise_filler_depth = new Noise(&sp->np_filler_depth,    seed, csize.X, csize.Z);
-	noise_simple_caves_1 = new Noise(&sp->np_simple_caves_1, seed, csize.X, csize.Y + 2, csize.Z);
-	noise_simple_caves_2 = new Noise(&sp->np_simple_caves_2, seed, csize.X, csize.Y + 2, csize.Z);
 	noise_cliffs = new Noise(&sp->np_cliffs, seed, csize.X, csize.Z);
 	noise_corr = new Noise(&sp->np_corr, seed, csize.X, csize.Z);
+	noise_terrain_height = new Noise(&sp->np_terrain_height, seed, csize.X, csize.Z);
+	noise_rivers = new Noise(&sp->np_rivers, seed, csize.X, csize.Z);
+	noise_valley_depth = new Noise(&sp->np_valley_depth, seed, csize.X, csize.Z);
+	noise_valley_profile = new Noise(&sp->np_valley_profile, seed, csize.X, csize.Z);
+	noise_inter_valley_slope = new Noise(&sp->np_inter_valley_slope, seed, csize.X, csize.Z);
+
+	noise_inter_valley_fill = new Noise(&sp->np_inter_valley_fill, seed, csize.X, csize.Y + 2, csize.Z);
+	noise_simple_caves_1 = new Noise(&sp->np_simple_caves_1, seed, csize.X, csize.Y + 2, csize.Z);
+	noise_simple_caves_2 = new Noise(&sp->np_simple_caves_2, seed, csize.X, csize.Y + 2, csize.Z);
 
 	//// Biome noise
 	noise_heat           = new Noise(&params->np_biome_heat,           seed, csize.X, csize.Z);
 	noise_humidity       = new Noise(&params->np_biome_humidity,       seed, csize.X, csize.Z);
 	noise_heat_blend     = new Noise(&params->np_biome_heat_blend,     seed, csize.X, csize.Z);
 	noise_humidity_blend = new Noise(&params->np_biome_humidity_blend, seed, csize.X, csize.Z);
-
-	// VMG noises
-	noise_terrain_height = new Noise(&sp->np_terrain_height, seed, csize.X, csize.Z);
-	noise_rivers = new Noise(&sp->np_rivers, seed, csize.X, csize.Z);
-	noise_valley_depth = new Noise(&sp->np_valley_depth, seed, csize.X, csize.Z);
-	noise_valley_profile = new Noise(&sp->np_valley_profile, seed, csize.X, csize.Z);
-	noise_inter_valley_slope = new Noise(&sp->np_inter_valley_slope, seed, csize.X, csize.Z);
-	noise_inter_valley_fill = new Noise(&sp->np_inter_valley_fill, seed, csize.X, csize.Z);
 
 	//// Resolve nodes to be used
 	INodeDefManager *ndef = emerge->ndef;
@@ -213,8 +211,8 @@ void MapgenValleysParams::readParams(const Settings *settings)
 		altitude_chill = 90;  // The altitude at which temperature drops by 20C.
 	if (!settings->getS16NoEx("mg_valleys_lava_max_height", lava_max_height))
 		lava_max_height = 0;  // Lava will never be higher than this.
-	if (!settings->getS16NoEx("mg_valleys_cave_water_max_height", cave_water_height))
-		 cave_water_height = MAX_MAP_GENERATION_LIMIT;  // Water in caves will never be higher than this.
+	if (!settings->getS16NoEx("mg_valleys_cave_water_max_height", cave_water_max_height))
+		 cave_water_max_height = MAX_MAP_GENERATION_LIMIT;  // Water in caves will never be higher than this.
 
 	// vmg noises
 	settings->getNoiseParams("mg_valleys_np_terrain_height",    np_terrain_height);
@@ -242,7 +240,7 @@ void MapgenValleysParams::writeParams(Settings *settings) const
 	settings->setS16("mg_valleys_river_depth", river_depth);
 	settings->setS16("mg_valleys_altitude_chill", altitude_chill);
 	settings->setS16("mg_valleys_lava_max_height", lava_max_height);
-	settings->setS16("mg_valleys_cave_water_max_height", cave_water_height);
+	settings->setS16("mg_valleys_cave_water_max_height", cave_water_max_height);
 
 	// vmg noises
 	settings->setNoiseParams("mg_valleys_np_terrain_height",    np_terrain_height);
@@ -847,7 +845,7 @@ void MapgenValleys::generateSimpleCaves(s16 max_stone_y)
 							underground = true;
 						} else if (sr < 3) {
 							// Waterfalls may get out of control above ground.
-							if (y < cave_water_height)
+							if (y < cave_water_max_height)
 								vm->m_data[j] = n_water;
 						} else if (sr < 1000 && 999 - sr < ceil(-y / 10000.f)) {
 							if (y < lava_max_height)
