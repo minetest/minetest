@@ -50,7 +50,6 @@ struct MapgenValleysParams : public MapgenSpecificParams {
 
 	s16 river_size;
 	s16 river_depth;
-	s16 water_level;
 	s16 altitude_chill;
 	s16 humidity;
 	s16 temperature;
@@ -118,7 +117,6 @@ public:
 	float altitude_chill;
 	float river_size;
 	float river_depth;
-	float water_level;
 	float humidity_adjust;
 	float temperature_adjust;
 	float lava_max_height;
