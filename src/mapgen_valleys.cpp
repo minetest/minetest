@@ -54,6 +54,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 FlagDesc flagdesc_mapgen_valleys[] = {
 	{"cliffs",  MG_VALLEYS_CLIFFS},
+	{"fast",    MG_VALLEYS_FAST},
 	{"rugged",  MG_VALLEYS_RUGGED},
 	{NULL,      0}
 };
@@ -98,12 +99,15 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 	noise_valley_depth        =  new  Noise(&sp->np_valley_depth,        seed,  csize.X,  csize.Z);
 	noise_valley_profile      =  new  Noise(&sp->np_valley_profile,      seed,  csize.X,  csize.Z);
 	noise_inter_valley_slope  =  new  Noise(&sp->np_inter_valley_slope,  seed,  csize.X,  csize.Z);
+
+if (spflags & MG_VALLEYS_FAST)
 	noise_inter_valley_fill   =  new  Noise(&sp->np_inter_valley_fill,   seed,  csize.X,  csize.Z);
 
 	//// 3D Terrain noise
-	//noise_inter_valley_fill  = new Noise(&sp->np_inter_valley_fill, seed, csize.X, csize.Y + 2, csize.Z);
-	noise_simple_caves_1  =  new  Noise(&sp->np_simple_caves_1,  seed,  csize.X,  csize.Y  +  2,  csize.Z);
-	noise_simple_caves_2  =  new  Noise(&sp->np_simple_caves_2,  seed,  csize.X,  csize.Y  +  2,  csize.Z);
+if ((spflags & MG_VALLEYS_FAST) == 0)
+	noise_inter_valley_fill  =  new  Noise(&sp->np_inter_valley_fill,  seed,  csize.X + 2,  csize.Y + 4,       csize.Z + 2);
+	noise_simple_caves_1     =  new  Noise(&sp->np_simple_caves_1,     seed,  csize.X,  csize.Y + 2,       csize.Z);
+	noise_simple_caves_2     =  new  Noise(&sp->np_simple_caves_2,     seed,  csize.X,  csize.Y + 2,       csize.Z);
 
 	//// Biome noise
 noise_heat            =  new  Noise(&params->np_biome_heat,            seed,  csize.X,  csize.Z);
@@ -388,7 +392,12 @@ void MapgenValleys::calculateNoise()
 	noise_valley_depth->perlinMap2D(x, z);
 	noise_valley_profile->perlinMap2D(x, z);
 	noise_inter_valley_slope->perlinMap2D(x, z);
-	noise_inter_valley_fill->perlinMap2D(x, z);
+
+	if (spflags & MG_VALLEYS_FAST)
+		noise_inter_valley_fill->perlinMap2D(x, z);
+	else
+		noise_inter_valley_fill->perlinMap3D(x - 1, y - 1, z - 1);
+
 	if (spflags & MG_VALLEYS_CLIFFS)
 		noise_cliffs->perlinMap2D(x, z);
 	if (spflags & MG_VALLEYS_RUGGED)
@@ -477,7 +486,10 @@ float MapgenValleys::baseGroundFromNoise(s16 x, s16 z, float valley_depth, float
 
 		// base - depth : height of the bottom of the river
 		// water_level - 2 : don't make rivers below 2 nodes under the surface
-		mount = fmin(fmax(base - depth, water_level - 2), mount);
+		u16 min_bottom = 2;
+		if ((spflags & MG_VALLEYS_FAST) == 0)
+			min_bottom = 6;
+		mount = fmin(fmax(base - depth, water_level - min_bottom), mount);
 
 		// Slope has no influence on rivers.
 		slope = 0;
@@ -486,15 +498,27 @@ float MapgenValleys::baseGroundFromNoise(s16 x, s16 z, float valley_depth, float
 	// The penultimate step builds up the heights, but we reduce it 
 	//  occasionally to create cliffs.
 	float delta = sin(inter_valley_fill) * slope;
-	if (delta != 0) {
-		if ((spflags & MG_VALLEYS_CLIFFS) && cliffs < 0.2)
-			mount += delta;
-		else
-			mount += delta * 0.66;
+	if (spflags & MG_VALLEYS_FAST) {
+		if (delta != 0) {
+			if ((spflags & MG_VALLEYS_CLIFFS) && cliffs < 0.2)
+				//djr
+				mount += delta;
+			else
+				mount += delta * 0.66;
 
-		// Use yet another noise to make the heights look more rugged.
-		if ((spflags & MG_VALLEYS_RUGGED) && mount > water_level && fabs(inter_valley_slope * inter_valley_fill) < 0.3)
-			mount += (delta / fabs(delta)) * pow(fabs(delta), 0.5) * fabs(sin(corr));
+			// Use yet another noise to make the heights look more rugged.
+			if ((spflags & MG_VALLEYS_RUGGED) && mount > water_level && fabs(inter_valley_slope * inter_valley_fill) < 0.3)
+				mount += (delta / fabs(delta)) * pow(fabs(delta), 0.5) * fabs(sin(corr));
+		}
+	} else if (x >= node_min.X - 1 && z >= node_min.Z - 1 && x <= node_max.X + 1 && z <= node_max.Z + 1) {
+		u32 index_3d = (z - node_min.Z + 1) * (csize.X + 2) * (csize.Y + 4) + (x - node_min.X + 1);
+		for (s16 y = node_min.Y-2; y <= node_max.Y+2; y++, index_3d += csize.X + 2) {
+			float fill = noise_inter_valley_fill->result[index_3d];
+			if (fill * slope < y - mount) {
+				mount = y;
+				break;
+			}
+		}
 	}
 
 	return mount;
@@ -528,7 +552,16 @@ Biome *MapgenValleys::getBiomeAtPoint(v3s16 p)
 	float valley_profile = NoisePerlin2D(&noise_valley_profile->np, p.X, p.Z, seed);
 	float inter_valley_slope = NoisePerlin2D(&noise_inter_valley_slope->np, p.X, p.Z, seed);
 	float valley = 0.0;
-	float inter_valley_fill = NoisePerlin2D(&noise_inter_valley_fill->np, p.X, p.Z, seed);
+
+	float inter_valley_fill = 0.0;
+	if (spflags & MG_VALLEYS_FAST)
+		inter_valley_fill = NoisePerlin2D(&noise_inter_valley_fill->np, p.X, p.Z, seed);
+	else {
+		int x = node_min.X - 1;
+		int y = node_min.Y - 2;
+		int z = node_min.Z - 1;
+		noise_inter_valley_fill->perlinMap3D(x, y, z);
+	}
 
 	float cliffs = 0.0;
 	if (spflags & MG_VALLEYS_CLIFFS)
@@ -564,7 +597,17 @@ float MapgenValleys::baseTerrainLevelAtPoint(s16 x, s16 z)
 	float valley_depth = NoisePerlin2D(&noise_valley_depth->np, x, z, seed);
 	float valley_profile = NoisePerlin2D(&noise_valley_profile->np, x, z, seed);
 	float inter_valley_slope = NoisePerlin2D(&noise_inter_valley_slope->np, x, z, seed);
-	float inter_valley_fill = NoisePerlin2D(&noise_inter_valley_fill->np, x, z, seed);
+
+	float inter_valley_fill = 0.0;
+	if (spflags & MG_VALLEYS_FAST)
+		inter_valley_fill = NoisePerlin2D(&noise_inter_valley_fill->np, x, z, seed);
+	else {
+		int x = node_min.X - 1;
+		int y = node_min.Y - 2;
+		int z = node_min.Z - 1;
+		noise_inter_valley_fill->perlinMap3D(x, y, z);
+	}
+
 	float valley = 0.0;
 
 	float cliffs = 0.0;

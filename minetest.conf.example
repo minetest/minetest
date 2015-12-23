@@ -1314,7 +1314,7 @@
 
 #### Mapgen Valleys
 
-#mg_valleys_spflags = cliffs,rugged  # whether to make cliffs or rugged terrain
+#mg_valleys_spflags = cliffs,nofast,rugged  # whether to make cliffs or rugged terrain
 #mg_valleys_altitude_chill = 90  # the altitude at which temperature drops by 20C
 #mg_valleys_humidity = 50        # the average humidity
 #mg_valleys_lava_max_height = 0  # maximum altitude of lava

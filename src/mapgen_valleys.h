@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /////////////////// Mapgen Valleys flags
 #define MG_VALLEYS_CLIFFS 0x01
 #define MG_VALLEYS_RUGGED 0x02
+#define MG_VALLEYS_FAST   0x04
 
 class BiomeManager;
 
