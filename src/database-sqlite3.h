@@ -43,6 +43,19 @@ public:
 	~Database_SQLite3();
 
 private:
+	struct BusyHandlerData
+	{
+		u32 busy_info_treshold;
+		u32 busy_warning_treshold;
+		u32 busy_error_treshold;
+		u32 busy_fatal_treshold;
+		u32 busy_error_interval;
+		s64 first_time;
+		s64 prev_time;
+	};
+
+	// Get global settings for sqlite busy hander
+	void getBusyHandlerSettings();
 	// Open the database
 	void openDatabase();
 	// Create the database structure
@@ -64,7 +77,7 @@ private:
 	sqlite3_stmt *m_stmt_begin;
 	sqlite3_stmt *m_stmt_end;
 
-	s64 m_busy_handler_data[2];
+	BusyHandlerData m_busy_handler_data;
 
 	static int busyHandler(void *data, int count);
 };

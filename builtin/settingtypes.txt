@@ -790,6 +790,57 @@ max_objects_per_block (Maxmimum objects per block) int 49
 #    See http://www.sqlite.org/pragma.html#pragma_synchronous
 sqlite_synchronous (Synchronous SQLite) enum 2 0,1,2
 
+#    If sqlite finds the database locked because another application
+#    is accessing it, it will wait for the lock to be released.
+#    This is the waiting time in milliseconds after which it will log
+#    an informational message.
+sqlite_busy_info_treshold (SQLite busy: info treshold) int 100 0 1000
+
+#    If sqlite finds the database locked because another application
+#    is accessing it, it will wait for the lock to be released.
+#    This is the waiting time in milliseconds after which it will log
+#    a warning message.
+#
+#    Must be larger than sqlite_busy_info_treshold, else it will
+#    will be readjusted to 2 * sqlite_busy_info_treshold.
+sqlite_busy_warning_treshold (SQLite busy: warning treshold) int 250 0 2000
+
+#    If sqlite finds the database locked because another application
+#    is accessing it, it will wait for the lock to be released.
+#    This is the waiting time in milliseconds after which it will log
+#    an error message. This message will be seen by all clients.
+#
+#    The default value of 1000 is reasonable. Don't set this too low.
+#    If minetestmapper is mapping the world for instance, occasional
+#    isolated spikes exceeding 250ms waiting time have been observed.
+#
+#    Must be larger than sqlite_busy_warning_treshold, else it will
+#    will be readjusted to 2 * sqlite_busy_warning_treshold.
+sqlite_busy_error_treshold (SQLite busy: error treshold) int 1000 100 10000
+
+#    If sqlite finds the database locked because another application
+#    is accessing it, it will wait for the lock to be released.
+#    This is the waiting time in milliseconds after which it will
+#    finally give up. As a result, minetest will abort.
+#
+#    Must be larger than sqlite_busy_error_treshold, else it will
+#    will be readjusted to 2 * sqlite_busy_error_treshold.
+#
+#    Set to 0 to allow minetest to wait indefinitely. Note that the
+#    game will be frozen for as long as the situation lasts.
+sqlite_busy_fatal_treshold (SQLite busy: fatal treshold) int 15000 0
+
+#    If sqlite finds the database locked because another application
+#    is accessing it, it will wait for the lock to be released.
+#    This is the interval in milliseconds with which it will log
+#    an error message while waiting. Hopefully, this ensures that the
+#    condition does not escape attention. Setting this too low will
+#    spam the players and the log!
+#
+#    Must be not be smaller than sqlite_busy_error_treshold, else it
+#    will be readjusted to sqlite_busy_error_treshold.
+sqlite_busy_error_interval (SQLite busy: error interval) int 4000 1000 3600000
+
 #    Length of a server tick and the interval at which objects are generally updated over network.
 dedicated_server_step (Dedicated server step) float 0.1
 
