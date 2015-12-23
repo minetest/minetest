@@ -49,16 +49,12 @@ the Free Software Foundation; either version 3.0 of the License, or
 //#undef NDEBUG
 //#include "assert.h"
 
-#if VALLEYS_C_PROFILING
-#include "util/timetaker.h"
-#include "profiler.h"
-#endif
+//#include "util/timetaker.h"
+//#include "profiler.h"
 
 
-#if VALLEYS_C_PROFILING
-static Profiler mapgen_prof;
-Profiler *mapgen_profiler = &mapgen_prof;
-#endif
+//static Profiler mapgen_prof;
+//Profiler *mapgen_profiler = &mapgen_prof;
 
 FlagDesc flagdesc_mapgen_valleys[] = {
 	{"cliffs", MG_VALLEYS_CLIFFS},
@@ -279,9 +275,7 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	this->vm   = data->vmanip;
 	this->ndef = data->nodedef;
 
-#if VALLEYS_C_PROFILING
-	TimeTaker t("makeChunk");
-#endif
+	//TimeTaker t("makeChunk");
 
 	v3s16 blockpos_min = data->blockpos_min;
 	v3s16 blockpos_max = data->blockpos_max;
@@ -360,19 +354,15 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	// Sprinkle some dust on top after everything else was generated
 	dustTopNodes();
 
-#if VALLEYS_C_PROFILING
-	TimeTaker tll("liquid_lighting");
-#endif
+	//TimeTaker tll("liquid_lighting");
 
 	updateLiquid(&data->transforming_liquid, full_node_min, full_node_max);
 
 	if (flags & MG_LIGHT)
 		calcLighting(node_min - v3s16(0, 1, 0), node_max + v3s16(0, 1, 0), full_node_min, full_node_max);
 
-#if VALLEYS_C_PROFILING
-	mapgen_profiler->avg("liquid_lighting", tll.stop() / 1000.f);
-	mapgen_profiler->avg("makeChunk", t.stop() / 1000.f);
-#endif
+	//mapgen_profiler->avg("liquid_lighting", tll.stop() / 1000.f);
+	//mapgen_profiler->avg("makeChunk", t.stop() / 1000.f);
 
 	this->generating = false;
 }
@@ -390,17 +380,13 @@ void MapgenValleys::calcBiomes(s16 sx, s16 sy, float *heat_map, float *humidity_
 
 void MapgenValleys::calculateNoise()
 {
-#if VALLEYS_C_PROFILING
-	TimeTaker t("calculateNoise", NULL, PRECISION_MICRO);
-#endif
+	//TimeTaker t("calculateNoise", NULL, PRECISION_MICRO);
 
 	int x = node_min.X;
 	int y = node_min.Y - 1;
 	int z = node_min.Z;
 
-#if VALLEYS_C_PROFILING
-	TimeTaker tcn("actualNoise");
-#endif
+	//TimeTaker tcn("actualNoise");
 
 	noise_filler_depth->perlinMap2D(x, z);
 	noise_heat->perlinMap2D(x, z);
@@ -425,9 +411,7 @@ void MapgenValleys::calculateNoise()
 		noise_simple_caves_2->perlinMap3D(x, y, z);
 	}
 
-#if VALLEYS_C_PROFILING
-	mapgen_profiler->avg("noisemaps", tcn.stop() / 1000.f);
-#endif
+	//mapgen_profiler->avg("noisemaps", tcn.stop() / 1000.f);
 
 	for (s32 index = 0; index < csize.X * csize.Z; index++) {
 		noise_heat->result[index] += noise_heat_blend->result[index];
