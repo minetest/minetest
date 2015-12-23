@@ -88,6 +88,7 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 	this->river_depth = sp->river_depth + 1;
 	this->altitude_chill = sp->altitude_chill;
 	this->lava_max_height = sp->lava_max_height;
+	this->cave_water_max_height = sp->cave_water_max_height;
 
 	this->humidity_adjust = sp->humidity - 50;
 	this->temperature_adjust = sp->temperature - 50;
