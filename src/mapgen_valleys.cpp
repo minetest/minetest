@@ -175,13 +175,19 @@ MapgenValleysParams::MapgenValleysParams()
 {
 	spflags = MG_VALLEYS_CLIFFS | MG_VALLEYS_RUGGED;
 
+	temperature = 50;  // in Fahrenheit, unfortunately
+	humidity = 50;  // as a percentage
+	river_size = 5;  // How wide to make rivers.
+	river_depth = 4;  // How deep to carve river channels.
+	altitude_chill = 90;  // The altitude at which temperature drops by 20C.
+	lava_max_height = 0;  // Lava will never be higher than this.
+	cave_water_max_height = MAX_MAP_GENERATION_LIMIT;  // Water in caves will never be higher than this.
+
 	np_filler_depth = NoiseParams(0, 1.2, v3f(150, 150, 150), 261, 3, 0.7, 2.0);
 	np_simple_caves_1 = NoiseParams(0, 1, v3f(64, 64, 64), -8402, 3, 0.5, 2.0);
 	np_simple_caves_2 = NoiseParams(0, 1, v3f(64, 64, 64), 3944, 3, 0.5, 2.0);
 	np_cliffs = NoiseParams(0, 1, v3f(750, 750, 750), 8445, 5, 1.0, 2.0);
 	np_corr = NoiseParams(0, 1, v3f(40, 40, 40), -3536, 4, 1.0, 2.0);
-
-	// vmg noises
 	np_terrain_height = NoiseParams(-10, 50, v3f(1024, 1024, 1024), 5202, 6, 0.4, 2.0);
 	np_rivers = NoiseParams(0, 1, v3f(256, 256, 256), -6050, 5, 0.6, 2.0);
 	np_valley_depth = NoiseParams(5, 4, v3f(512, 512, 512), -1914, 1, 1.0, 2.0);
@@ -193,28 +199,19 @@ MapgenValleysParams::MapgenValleysParams()
 
 void MapgenValleysParams::readParams(const Settings *settings)
 {
+	settings->getS16NoEx("mg_valleys_temperature", temperature);
+	settings->getS16NoEx("mg_valleys_humidity", humidity);
+	settings->getS16NoEx("mg_valleys_river_size", river_size);
+	settings->getS16NoEx("mg_valleys_river_depth", river_depth);
+	settings->getS16NoEx("mg_valleys_altitude_chill", altitude_chill);
+	settings->getS16NoEx("mg_valleys_lava_max_height", lava_max_height);
+	settings->getS16NoEx("mg_valleys_cave_water_max_height", cave_water_max_height);
+
 	settings->getFlagStrNoEx("mg_valleys_spflags", spflags, flagdesc_mapgen_valleys);
 
 	settings->getNoiseParams("mg_valleys_np_filler_depth",    np_filler_depth);
 	settings->getNoiseParams("mg_valleys_np_simple_caves_1",    np_simple_caves_1);
 	settings->getNoiseParams("mg_valleys_np_simple_caves_2",    np_simple_caves_2);
-	
-	if (!settings->getS16NoEx("mg_valleys_temperature", temperature))
-		temperature = 50;  // in Fahrenheit, unfortunately
-	if (!settings->getS16NoEx("mg_valleys_humidity", humidity))
-		humidity = 50;  // as a percentage
-	if (!settings->getS16NoEx("mg_valleys_river_size", river_size))
-		river_size = 5;  // How wide to make rivers.
-	if (!settings->getS16NoEx("mg_valleys_river_depth", river_depth))
-		river_depth = 4;  // How deep to carve river channels.
-	if (!settings->getS16NoEx("mg_valleys_altitude_chill", altitude_chill))
-		altitude_chill = 90;  // The altitude at which temperature drops by 20C.
-	if (!settings->getS16NoEx("mg_valleys_lava_max_height", lava_max_height))
-		lava_max_height = 0;  // Lava will never be higher than this.
-	if (!settings->getS16NoEx("mg_valleys_cave_water_max_height", cave_water_max_height))
-		 cave_water_max_height = MAX_MAP_GENERATION_LIMIT;  // Water in caves will never be higher than this.
-
-	// vmg noises
 	settings->getNoiseParams("mg_valleys_np_terrain_height",    np_terrain_height);
 	settings->getNoiseParams("mg_valleys_np_cliffs",    np_cliffs);
 	settings->getNoiseParams("mg_valleys_np_corr",    np_corr);
@@ -230,10 +227,6 @@ void MapgenValleysParams::writeParams(Settings *settings) const
 {
 	settings->setFlagStr("mg_valleys_spflags", spflags, flagdesc_mapgen_valleys, U32_MAX);
 
-	settings->setNoiseParams("mg_valleys_np_filler_depth",    np_filler_depth);
-	settings->setNoiseParams("mg_valleys_np_simple_caves_1",    np_simple_caves_1);
-	settings->setNoiseParams("mg_valleys_np_simple_caves_2",    np_simple_caves_2);
-	
 	settings->setS16("mg_valleys_temperature", temperature);
 	settings->setS16("mg_valleys_humidity", humidity);
 	settings->setS16("mg_valleys_river_size", river_size);
@@ -242,7 +235,9 @@ void MapgenValleysParams::writeParams(Settings *settings) const
 	settings->setS16("mg_valleys_lava_max_height", lava_max_height);
 	settings->setS16("mg_valleys_cave_water_max_height", cave_water_max_height);
 
-	// vmg noises
+	settings->setNoiseParams("mg_valleys_np_filler_depth",    np_filler_depth);
+	settings->setNoiseParams("mg_valleys_np_simple_caves_1",    np_simple_caves_1);
+	settings->setNoiseParams("mg_valleys_np_simple_caves_2",    np_simple_caves_2);
 	settings->setNoiseParams("mg_valleys_np_terrain_height",    np_terrain_height);
 	settings->setNoiseParams("mg_valleys_np_cliffs",    np_cliffs);
 	settings->setNoiseParams("mg_valleys_np_corr",    np_corr);
