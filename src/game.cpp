@@ -1816,7 +1816,9 @@ void Game::run()
 			&& client->checkPrivilege("fast");
 #endif
 
-	while (device->run() && !(*kill || g_gamecallback->shutdown_requested)) {
+	while (device->run()
+			&& !(*kill || g_gamecallback->shutdown_requested
+			|| server->getShutdownRequested())) {
 
 		/* Must be called immediately after a device->run() call because it
 		 * uses device->getTimer()->getTime()
