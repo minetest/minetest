@@ -169,10 +169,12 @@ void Database_Redis::listAllLoadableBlocks(std::vector<v3s16> &dst)
 	}
 	switch (reply->type) {
 	case REDIS_REPLY_ARRAY:
+		dst.reserve(reply->elements);
 		for (size_t i = 0; i < reply->elements; i++) {
 			assert(reply->element[i]->type == REDIS_REPLY_STRING);
 			dst.push_back(getIntegerAsBlock(stoi64(reply->element[i]->str)));
 		}
+		break;
 	case REDIS_REPLY_ERROR:
 		throw FileNotGoodException(std::string(
 			"Failed to get keys from database: ") + reply->str);
