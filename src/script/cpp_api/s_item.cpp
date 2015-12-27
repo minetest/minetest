@@ -89,6 +89,7 @@ bool ScriptApiItem::item_OnUse(ItemStack &item,
 	SCRIPTAPI_PRECHECKHEADER
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
+	bool retval = true;
 
 	// Push callback function on stack
 	if (!getItemCallback(item.name.c_str(), "on_use"))
@@ -106,8 +107,11 @@ bool ScriptApiItem::item_OnUse(ItemStack &item,
 			throw LuaError(std::string(e.what()) + ". item=" + item.name);
 		}
 	}
+	else {
+		retval = false;
+	}
 	lua_pop(L, 2);  // Pop item and error handler
-	return true;
+	return retval;
 }
 
 bool ScriptApiItem::item_OnSecondaryUse(ItemStack &item, ServerActiveObject *user)
