@@ -645,10 +645,13 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 		"NDT_NODEBOX",
 		"NDT_GLASSLIKE_FRAMED",
 		"NDT_FIRELIKE",
-		"NDT_GLASSLIKE_FRAMED_OPTIONAL"
+		"NDT_GLASSLIKE_FRAMED_OPTIONAL",
+		"NDT_MESH",
+		"NDT_3D_PLANTLIKE_OPTIONAL",
+		"NDT_3D_PLANTLIKE"
 	};
 
-	for (int i = 0; i < 14; i++){
+	for (int i = 0; i < 19; i++) {
 		shaders_header += "#define ";
 		shaders_header += drawTypes[i];
 		shaders_header += " ";

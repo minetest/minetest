@@ -269,6 +269,10 @@ leaves_style (Leaves style) enum fancy fancy,simple,opaque
 #    Connects glass if supported by node.
 connected_glass (Connect glass) bool false
 
+#    Makes plants 3D if supported by node.
+#    Requires 16px textures.
+3d_plants (3D Plants) bool false
+
 #    Enable smooth lighting with simple ambient occlusion.
 #    Disable for speed or for different looks.
 smooth_lighting (Smooth lighting) bool true

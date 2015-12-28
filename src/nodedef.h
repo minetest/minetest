@@ -162,6 +162,8 @@ enum NodeDrawType
 	NDT_GLASSLIKE_FRAMED_OPTIONAL,	// enabled -> connected, disabled -> Glass-like
 									// uses 2 textures, one for frames, second for faces
 	NDT_MESH, // Uses static meshes
+	NDT_3D_PLANTLIKE_OPTIONAL, // enabled -> 3d plants, disabled -> regular plantlike
+	NDT_3D_PLANTLIKE, // plantlike using 3D pixels, only useable with 16px textures
 };
 
 #define CF_SPECIAL_COUNT 6

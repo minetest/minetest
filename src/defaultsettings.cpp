@@ -112,6 +112,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("new_style_water", "false");
 	settings->setDefault("leaves_style", "fancy");
 	settings->setDefault("connected_glass", "false");
+	settings->setDefault("3d_plants", "false");
 	settings->setDefault("smooth_lighting", "true");
 	settings->setDefault("display_gamma", "1.8");
 	settings->setDefault("texture_path", "");

@@ -23,6 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "nodedef.h"
 
+scene::IMesh* createExtrudedPlantlikeMesh(ITextureSource *tsrc,
+		video::ITexture *texture);
+
 /*
 	Create a new cube mesh.
 	Vertices are at (+-scale.X/2, +-scale.Y/2, +-scale.Z/2).

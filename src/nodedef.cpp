@@ -793,6 +793,7 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 
 	bool new_style_water           = g_settings->getBool("new_style_water");
 	bool connected_glass           = g_settings->getBool("connected_glass");
+	bool plants_3d                 = g_settings->getBool("3d_plants");
 	bool opaque_water              = g_settings->getBool("opaque_water");
 	bool enable_shaders            = g_settings->getBool("enable_shaders");
 	bool enable_bumpmapping        = g_settings->getBool("enable_bumpmapping");
@@ -899,6 +900,22 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 			if (f->waving == 1)
 				material_type = TILE_MATERIAL_WAVING_PLANTS;
 			break;
+		case NDT_3D_PLANTLIKE:
+			f->solidness = 0;
+			if (f->waving == 1)
+				material_type = TILE_MATERIAL_WAVING_PLANTS;
+			break;
+		case NDT_3D_PLANTLIKE_OPTIONAL:
+			f->solidness = 0;
+			if (f->waving == 1)
+				material_type = TILE_MATERIAL_WAVING_PLANTS;
+			if (plants_3d) {
+				f->drawtype = NDT_3D_PLANTLIKE;
+			} else {
+				f->drawtype = NDT_PLANTLIKE;
+				f->backface_culling = false;
+			}	
+			break;
 		case NDT_FIRELIKE:
 			f->backface_culling = false;
 			f->solidness = 0;
@@ -945,6 +962,27 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 			fillTileAttribs(tsrc, &f->special_tiles[j], &f->tiledef_special[j],
 				tile_shader[j], use_normal_texture,
 				f->tiledef_special[j].backface_culling, f->alpha, material_type);
+		}
+
+		if (f->drawtype == NDT_3D_PLANTLIKE_OPTIONAL) {
+			scene::IMesh *mesh = createExtrudedPlantlikeMesh(tsrc,
+				tsrc->getTexture(tiledef[0].name)); 
+			if (mesh) {
+				f->mesh_ptr[0] = mesh;
+				f->drawtype = NDT_3D_PLANTLIKE;
+			}
+		}
+
+		if (f->drawtype == NDT_3D_PLANTLIKE) {
+			if (!f->mesh_ptr[0]) {
+				f->mesh_ptr[0] = createExtrudedPlantlikeMesh(tsrc,
+					tsrc->getTexture(tiledef[0].name));
+			}
+			if (f->mesh_ptr[0]) {
+				v3f scale = v3f(1.0, 1.0, 1.0) * BS * f->visual_scale;
+				scaleMesh(f->mesh_ptr[0], scale);		
+			}
+			
 		}
 
 		if ((f->drawtype == NDT_MESH) && (f->mesh != "")) {

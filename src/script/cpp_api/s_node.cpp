@@ -46,6 +46,8 @@ struct EnumString ScriptApiNode::es_DrawType[] =
 		{NDT_RAILLIKE, "raillike"},
 		{NDT_NODEBOX, "nodebox"},
 		{NDT_MESH, "mesh"},
+		{NDT_3D_PLANTLIKE_OPTIONAL, "3d_plantlike_optional"},
+		{NDT_3D_PLANTLIKE, "3d_plantlike"},
 		{0, NULL},
 	};
 
