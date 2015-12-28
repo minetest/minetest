@@ -287,6 +287,11 @@
 #    type: bool
 # connected_glass = false
 
+#    Makes plants 3D if supported by node.
+#    Requires 16px textures.		
+#    type: bool
+# 3d_plants = false
+
 #    Enable smooth lighting with simple ambient occlusion.
 #    Disable for speed or for different looks.
 #    type: bool

@@ -15,11 +15,10 @@ varying vec3 lightVec;
 varying vec3 tsEyeVec;
 varying vec3 tsLightVec;
 varying float area_enable_parallax;
-varying float disp;
 
+float disp;
 const float e = 2.718281828459;
 const float BS = 10.0;
-
 
 float smoothCurve(float x)
 {
@@ -76,16 +75,20 @@ void main(void)
 	pos.y += disp * 0.1;
 	pos.z += disp;
 	gl_Position = mWorldViewProj * pos;
-#elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS
+#elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS && DRAW_TYPE == NDT_PLANTLIKE
 	vec4 pos = gl_Vertex;
 	if (gl_TexCoord[0].y < 0.05) {
 		pos.z += disp;
 	}
 	gl_Position = mWorldViewProj * pos;
+#elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS && DRAW_TYPE == NDT_3D_PLANTLIKE
+	vec4 pos = gl_Vertex;
+	float d = floor((1.0 - gl_TexCoord[0].y) * 16.0) / 16.0;
+	pos.z += d * disp;
+	gl_Position = mWorldViewProj * pos;
 #else
 	gl_Position = mWorldViewProj * gl_Vertex;
 #endif
-
 
 	vPosition = gl_Position.xyz;
 	worldPosition = (mWorld * gl_Vertex).xyz;

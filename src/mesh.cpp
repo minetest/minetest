@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "log.h"
 #include "irrMap.h"
+#include "client/tile.h"
 #include <iostream>
 #include <IAnimatedMesh.h>
 #include <SAnimatedMesh.h>
@@ -38,6 +39,88 @@ static void applyFacesShading(video::SColor& color, float factor)
 	color.setRed(core::clamp(core::round32(color.getRed()*factor), 0, 255));
 	color.setGreen(core::clamp(core::round32(color.getGreen()*factor), 0, 255));
 	color.setBlue(core::clamp(core::round32(color.getBlue()*factor), 0, 255));
+}
+
+scene::IMesh* createExtrudedPlantlikeMesh(ITextureSource *tsrc,
+		video::ITexture *texture)
+{
+	video::IVideoDriver *driver = tsrc->getDevice()->getVideoDriver();
+	core::dimension2d<u32> dim = texture->getOriginalSize();
+	if (dim.Width != 16 || dim.Height != 16)
+		return NULL;
+
+	video::IImage *image = driver->createImage(texture,
+		core::position2d<s32>(0, 0), dim);
+	sanity_check(image != NULL);
+
+	video::SColor c(255,255,255,255);
+	// micro cuboid size
+	const float cs = (1.0 / 32.0) - 0.002;
+	scene::SMesh *mesh = new scene::SMesh();
+	scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+
+	u16 indices[36] = {
+		0,1,2,2,3,0,
+		4,5,6,6,7,4,
+		8,9,10,10,11,8,
+		12,13,14,14,15,12,
+		16,17,18,18,19,16,
+		20,21,22,22,23,20
+	};
+
+	for (int x = 0; x < 16; x++) {
+		for (int y = 0; y < 16; y++) {
+			float ps = 1.0 / 16.0;
+			float dx = (x - 7) * ps;
+			float dy = (y - 7) * ps;
+			video::SColor pc = image->getPixel(x, 15 - y);
+			f32 u0 = x * ps + 0.001;
+			f32 u1 = (x + 1) * ps - 0.001;
+			f32 v0 = (15 - y) * ps + 0.001;
+			f32 v1 = (16 - y) * ps - 0.001;
+			
+			
+			if (pc.getAlpha() > 0) {
+				video::S3DVertex vertices[24] =	{
+					// Up
+					video::S3DVertex(-cs+dx,+cs+dy,-cs, 0,1,0, c, u1,v0),
+					video::S3DVertex(-cs+dx,+cs+dy,+cs, 0,1,0, c, u0,v0),
+					video::S3DVertex(+cs+dx,+cs+dy,+cs, 0,1,0, c, u0,v1),
+					video::S3DVertex(+cs+dx,+cs+dy,-cs, 0,1,0, c, u1,v1),
+					// Down
+					video::S3DVertex(-cs+dx,-cs+dy,-cs, 0,-1,0, c, u1,v0),
+					video::S3DVertex(+cs+dx,-cs+dy,-cs, 0,-1,0, c, u0,v0),
+					video::S3DVertex(+cs+dx,-cs+dy,+cs, 0,-1,0, c, u0,v1),
+					video::S3DVertex(-cs+dx,-cs+dy,+cs, 0,-1,0, c, u1,v1),
+					// Right
+					video::S3DVertex(+cs+dx,-cs+dy,-cs, 1,0,0, c, u1,v0),
+					video::S3DVertex(+cs+dx,+cs+dy,-cs, 1,0,0, c, u0,v0),
+					video::S3DVertex(+cs+dx,+cs+dy,+cs, 1,0,0, c, u0,v1),
+					video::S3DVertex(+cs+dx,-cs+dy,+cs, 1,0,0, c, u1,v1),
+					// Left
+					video::S3DVertex(-cs+dx,-cs+dy,-cs, -1,0,0, c, u1,v0),
+					video::S3DVertex(-cs+dx,-cs+dy,+cs, -1,0,0, c, u0,v0),
+					video::S3DVertex(-cs+dx,+cs+dy,+cs, -1,0,0, c, u0,v1),
+					video::S3DVertex(-cs+dx,+cs+dy,-cs, -1,0,0, c, u1,v1),
+					// Back
+					video::S3DVertex(-cs+dx,-cs+dy,+cs, 0,0,1, c, u1,v0),
+					video::S3DVertex(+cs+dx,-cs+dy,+cs, 0,0,1, c, u0,v0),
+					video::S3DVertex(+cs+dx,+cs+dy,+cs, 0,0,1, c, u0,v1),
+					video::S3DVertex(-cs+dx,+cs+dy,+cs, 0,0,1, c, u1,v1),
+					// Front
+					video::S3DVertex(-cs+dx,-cs+dy,-cs, 0,0,-1, c, u1,v0),
+					video::S3DVertex(-cs+dx,+cs+dy,-cs, 0,0,-1, c, u0,v0),
+					video::S3DVertex(+cs+dx,+cs+dy,-cs, 0,0,-1, c, u0,v1),
+					video::S3DVertex(+cs+dx,-cs+dy,-cs, 0,0,-1, c, u1,v1),
+				};
+				buf->append(vertices, 24, indices, 36);
+			}
+		}
+	}
+	mesh->addMeshBuffer(buf);
+	buf->drop();
+	image->drop();
+	return mesh;
 }
 
 scene::IAnimatedMesh* createCubeMesh(v3f scale)

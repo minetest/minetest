@@ -1613,6 +1613,39 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				mesh->drop();
 			}
 		break;}
+		case NDT_3D_PLANTLIKE:
+		{
+			v3f pos = intToFloat(p, BS);
+			u16 l = getInteriorLight(n, 1, nodedef);
+			video::SColor c = MapBlock_LightColor(255, l, f.light_source);
+			float rotate_degree = 0;
+			if (f.param_type_2 == CPT2_DEGROTATE)
+				rotate_degree = n.param2 * 2;
+
+			scene::IMesh* mesh = cloneMesh(f.mesh_ptr[0]);
+			rotateMeshXZby (mesh, 46 + rotate_degree);
+			recalculateBoundingBox(mesh);
+			meshmanip->recalculateNormals(mesh, true, false);
+			for(u16 j = 0; j < mesh->getMeshBufferCount(); j++) {
+				scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+				collector.append(getNodeTileN(n, p, j, data),
+					(video::S3DVertex *)buf->getVertices(), buf->getVertexCount(),
+					buf->getIndices(), buf->getIndexCount(), pos, c);
+			}
+			mesh->drop();
+
+			mesh = cloneMesh(f.mesh_ptr[0]);
+			rotateMeshXZby (mesh, -44 + rotate_degree);
+			recalculateBoundingBox(mesh);
+			meshmanip->recalculateNormals(mesh, true, false);
+			for(u16 j = 0; j < mesh->getMeshBufferCount(); j++) {
+				scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+				collector.append(getNodeTileN(n, p, j, data),
+					(video::S3DVertex *)buf->getVertices(), buf->getVertexCount(),
+					buf->getIndices(), buf->getIndexCount(), pos, c);
+			}
+			mesh->drop();
+		break;}
 		}
 	}
 
