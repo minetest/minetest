@@ -616,7 +616,8 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	v3s16 p = floatToInt(getPosition() - v3f(0,BS/2,0), BS);
 	ContentFeatures node = nodemgr->get(map->getNodeNoEx(p));
 	int slippery = itemgroup_get(node.groups, "slippery");
-	if (slippery==0 && (node.name=="air" || itemgroup_get(node.groups, "liquid")) && !free_move && !is_climbing && !control.sneak)
+	// Sliding onto a non-walkable node, set a default to allow sliding off edges
+	if (slippery==0 && node.walkable==false && !free_move && !is_climbing && !control.sneak)
 	{
 		slippery = 10;
 	}
