@@ -38,8 +38,8 @@ SQLite format specification:
 
 // When to print messages when the database is being held locked by another process
 // Note: I've seen occasional delays of over 250ms while running minetestmapper.
-#define BUSY_INFO_TRESHOLD_1	100	// Print first informational message after 100ms.
-#define BUSY_INFO_TRESHOLD_2	250	// Print second informational message after 250ms. Lag is increased.
+#define BUSY_INFO_TRESHOLD	100	// Print first informational message after 100ms.
+#define BUSY_WARNING_TRESHOLD	250	// Print warning message after 250ms. Lag is increased.
 #define BUSY_ERROR_TRESHOLD	1000	// Print error message after 1000ms. Significant lag.
 #define BUSY_FATAL_TRESHOLD	3000	// Allow SQLITE_BUSY to be returned, which will cause a minetest crash.
 #define BUSY_ERROR_INTERVAL	10000	// Safety net: report again every 10 seconds
@@ -65,41 +65,43 @@ SQLite format specification:
 			 sqlite3_errmsg(m_database)); \
 	}
 
-static int sqlite3BusyHandler(void *data, int count)
+int Database_SQLite3::busyHandler(void *data, int count)
 {
 	s64 &first_time = reinterpret_cast<s64 *>(data)[0];
 	s64 &prev_time = reinterpret_cast<s64 *>(data)[1];
 	s64 cur_time = getTimeMs();
 
-	if (count == 0)
+	if (count == 0) {
 		first_time = cur_time;
+		prev_time = first_time;
+	}
 	else {
 		while (cur_time < prev_time)
 			cur_time += s64(1)<<32;
 	}
 
-	if (cur_time - first_time < BUSY_INFO_TRESHOLD_1) {
+	if (cur_time - first_time < BUSY_INFO_TRESHOLD) {
 		; // do nothing
-	} else if (cur_time - first_time >= BUSY_INFO_TRESHOLD_1 &&
-			prev_time - first_time < BUSY_INFO_TRESHOLD_1) {
-		infostream << "NOTE: sqlite3 database has been locked for "
+	} else if (cur_time - first_time >= BUSY_INFO_TRESHOLD &&
+			prev_time - first_time < BUSY_INFO_TRESHOLD) {
+		infostream << "SQLite3 database has been locked for "
 			<< cur_time - first_time << " ms." << std::endl;
-	} else if (cur_time - first_time >= BUSY_INFO_TRESHOLD_2 &&
-			prev_time - first_time < BUSY_INFO_TRESHOLD_2) {
-		infostream << "NOTE: sqlite3 database has been locked for "
+	} else if (cur_time - first_time >= BUSY_WARNING_TRESHOLD &&
+			prev_time - first_time < BUSY_WARNING_TRESHOLD) {
+		warningstream << "Sqlite3 database has been locked for "
 			<< cur_time - first_time << " ms." << std::endl;
 	} else if (cur_time - first_time >= BUSY_ERROR_TRESHOLD &&
 			prev_time - first_time < BUSY_ERROR_TRESHOLD) {
-		errorstream << "WARNING: sqlite3 database has been locked for "
+		errorstream << "SQLite3 database has been locked for "
 			<< cur_time - first_time << " ms; this causes lag." << std::endl;
 	} else if (cur_time - first_time >= BUSY_FATAL_TRESHOLD &&
 			prev_time - first_time < BUSY_FATAL_TRESHOLD) {
-		errorstream << "ERROR: sqlite3 database has been locked for "
+		errorstream << "Sqlite3 database has been locked for "
 			<< cur_time - first_time << " ms - giving up!" << std::endl;
 	} else if ((cur_time - first_time) / BUSY_ERROR_INTERVAL !=
 			(prev_time - first_time) / BUSY_ERROR_INTERVAL) {
 		// Safety net: keep reporting every BUSY_ERROR_INTERVAL
-		errorstream << "ERROR: sqlite3 database has been locked for "
+		errorstream << "SQLite3 database has been locked for "
 			<< (cur_time - first_time) / 1000 << " seconds!" << std::endl;
 	}
 
