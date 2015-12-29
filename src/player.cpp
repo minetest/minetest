@@ -95,7 +95,7 @@ Player::Player(IGameDef *gamedef, const char *name):
 	physics_override_speed        = 1;
 	physics_override_jump         = 1;
 	physics_override_gravity      = 1;
-	physics_override_slip		  = 1;
+	physics_override_slip         = 1;
 	physics_override_sneak        = true;
 	physics_override_sneak_glitch = true;
 
