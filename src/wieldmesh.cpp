@@ -386,20 +386,6 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 		}
 		return;
 	}
-	else if (idef->getWieldMesh(def.name, gamedef) != 0) {
-		irr::scene::IMesh * mesh = idef->getWieldMesh(def.name, gamedef);
-		m_meshnode->setMesh(mesh);
-		u32 material_count = m_meshnode->getMaterialCount();
-		for (u32 i = 0; i < material_count; ++i) {
-			video::SMaterial &material = m_meshnode->getMaterial(i);
-			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
-			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
-			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
-			material.MaterialType = m_material_type;
-			material.setTexture(0, tsrc->getTexture(def.meshtexture));
-		}
-		return;
-	}
 	else if (def.inventory_image != "") {
 		setExtruded(def.inventory_image, def.wield_scale, tsrc, 1);
 		return;

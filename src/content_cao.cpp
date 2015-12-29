@@ -954,43 +954,15 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 			IItemDefManager *idef = m_gamedef->idef();
 			ItemStack item(m_prop.textures[0], 1, 0, "", idef);
 
-			if (!item.getDefinition(idef).meshname.empty())
-			{
-				scene::IAnimatedMesh *mesh = m_gamedef->getMesh(item.getDefinition(idef).meshname);
-				if(mesh)
-				{
-					m_animated_meshnode = smgr->addAnimatedMeshSceneNode(mesh, NULL);
+			m_wield_meshnode = new WieldMeshSceneNode(
+					smgr->getRootSceneNode(), smgr, -1);
+			m_wield_meshnode->setItem(item, m_gamedef);
 
-					m_animated_meshnode->grab();
-					mesh->drop(); // The scene node took hold of it
-					m_animated_meshnode->animateJoints(); // Needed for some animations
-					m_animated_meshnode->setScale(v3f(m_prop.visual_size.X,
-							m_prop.visual_size.Y,
-							m_prop.visual_size.X));
-					u8 li = m_last_light;
-					setMeshColor(m_animated_meshnode->getMesh(), video::SColor(255,li,li,li));
-
-					bool backface_culling = m_prop.backface_culling;
-					if (m_is_player)
-						backface_culling = false;
-
-					m_animated_meshnode->setMaterialFlag(video::EMF_LIGHTING, false);
-					m_animated_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-					m_animated_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
-					m_animated_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-					m_animated_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, backface_culling);
-				}
-			}
-			else {
-				m_wield_meshnode = new WieldMeshSceneNode(
-						smgr->getRootSceneNode(), smgr, -1);
-				m_wield_meshnode->setItem(item, m_gamedef);
-				m_wield_meshnode->setScale(v3f(m_prop.visual_size.X/2,
-						m_prop.visual_size.Y/2,
-						m_prop.visual_size.X/2));
-				u8 li = m_last_light;
-				m_wield_meshnode->setColor(video::SColor(255,li,li,li));
-			}
+			m_wield_meshnode->setScale(v3f(m_prop.visual_size.X/2,
+					m_prop.visual_size.Y/2,
+					m_prop.visual_size.X/2));
+			u8 li = m_last_light;
+			m_wield_meshnode->setColor(video::SColor(255,li,li,li));
 		}
 	} else {
 		infostream<<"GenericCAO::addToScene(): \""<<m_prop.visual
@@ -1428,21 +1400,6 @@ void GenericCAO::updateTextures(const std::string &mod)
 				m_animated_meshnode->getMaterial(i).AmbientColor = m_prop.colors[i];
 				m_animated_meshnode->getMaterial(i).DiffuseColor = m_prop.colors[i];
 				m_animated_meshnode->getMaterial(i).SpecularColor = m_prop.colors[i];
-			}
-		}
-		else if (m_prop.visual == "wielditem") {
-			IItemDefManager *idef = m_gamedef->idef();
-			ItemStack item(m_prop.textures[0], 1, 0, "", idef);
-
-			if (!item.getDefinition(idef).meshname.empty()) {
-
-				unsigned int materialcount = m_animated_meshnode->getMaterialCount();
-
-				for (unsigned int i = 0; i < materialcount; i++) {
-					m_animated_meshnode->getMaterial(i)
-							.setTexture(0, tsrc->getTexture(item
-									.getDefinition(idef).meshtexture));
-				}
 			}
 		}
 	}
