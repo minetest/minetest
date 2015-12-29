@@ -401,7 +401,7 @@ int ObjectRef::l_get_armor_groups(lua_State *L)
 }
 
 // set_physics_override(self, physics_override_speed, physics_override_jump,
-//                      physics_override_gravity, sneak, sneak_glitch)
+//                      physics_override_gravity, physics_override_slip, sneak, sneak_glitch)
 int ObjectRef::l_set_physics_override(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -413,6 +413,7 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 		co->m_physics_override_speed = getfloatfield_default(L, 2, "speed", co->m_physics_override_speed);
 		co->m_physics_override_jump = getfloatfield_default(L, 2, "jump", co->m_physics_override_jump);
 		co->m_physics_override_gravity = getfloatfield_default(L, 2, "gravity", co->m_physics_override_gravity);
+		co->m_physics_override_slip = getfloatfield_default(L, 2, "slip", co->m_physics_override_slip);
 		co->m_physics_override_sneak = getboolfield_default(L, 2, "sneak", co->m_physics_override_sneak);
 		co->m_physics_override_sneak_glitch = getboolfield_default(L, 2, "sneak_glitch", co->m_physics_override_sneak_glitch);
 		co->m_physics_override_sent = false;
@@ -450,6 +451,8 @@ int ObjectRef::l_get_physics_override(lua_State *L)
 	lua_setfield(L, -2, "jump");
 	lua_pushnumber(L, co->m_physics_override_gravity);
 	lua_setfield(L, -2, "gravity");
+	lua_pushnumber(L, co->m_physics_override_slip);
+	lua_setfield(L, -2, "slip");
 	lua_pushboolean(L, co->m_physics_override_sneak);
 	lua_setfield(L, -2, "sneak");
 	lua_pushboolean(L, co->m_physics_override_sneak_glitch);

@@ -352,6 +352,7 @@ public:
 	float physics_override_speed;
 	float physics_override_jump;
 	float physics_override_gravity;
+	float physics_override_slip;
 	bool physics_override_sneak;
 	bool physics_override_sneak_glitch;
 

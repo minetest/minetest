@@ -95,6 +95,7 @@ Player::Player(IGameDef *gamedef, const char *name):
 	physics_override_speed        = 1;
 	physics_override_jump         = 1;
 	physics_override_gravity      = 1;
+	physics_override_slip		  = 1;
 	physics_override_sneak        = true;
 	physics_override_sneak_glitch = true;
 
@@ -121,9 +122,9 @@ void Player::accelerateHorizontal(v3f target_speed, f32 max_increase, int slippe
 	if (slippery)
 	{
 		if (target_speed == v3f(0))
-			d_wanted = -m_speed*.5/slippery;
+			d_wanted = -m_speed * 5 / slippery;
 		else
-			d_wanted = target_speed*.1 - m_speed*.1;
+			d_wanted = target_speed * .1 - m_speed * .1;
 	}
 	d_wanted.Y = 0;
 	f32 dl = d_wanted.getLength();

@@ -149,7 +149,7 @@ public:
 	{}
 	virtual ItemGroupList getArmorGroups()
 	{ return ItemGroupList(); }
-	virtual void setPhysicsOverride(float physics_override_speed, float physics_override_jump, float physics_override_gravity)
+	virtual void setPhysicsOverride(float physics_override_speed, float physics_override_jump, float physics_override_gravity, float physics_override_slip)
 	{}
 	virtual void setAnimation(v2f frames, float frame_speed, float frame_blend, bool frame_loop)
 	{}
