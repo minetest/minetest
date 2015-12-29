@@ -25,18 +25,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <iostream>
 #include <set>
-#include <map>
 #include "itemgroup.h"
 #include "sound.h"
-#include "util/container.h"
-#include "util/thread.h"
-
-#ifndef SERVER
-#include "client/tile.h"
-#endif
-
 class IGameDef;
-class INodeDefManager;
 struct ToolCapabilities;
 
 /*
@@ -48,7 +39,7 @@ enum ItemType
 	ITEM_NONE,
 	ITEM_NODE,
 	ITEM_CRAFT,
-	ITEM_TOOL
+	ITEM_TOOL,
 };
 
 struct ItemDefinition
@@ -164,77 +155,6 @@ public:
 
 	// Do stuff asked by threads that can only be done in the main thread
 	virtual void processQueue(IGameDef *gamedef)=0;
-};
-
-
-class CItemDefManager: public IWritableItemDefManager
-{
-public:
-	CItemDefManager();
-	virtual ~CItemDefManager();
-	virtual const ItemDefinition& get(const std::string &name_) const;
-	virtual std::string getAlias(const std::string &name) const;
-	virtual std::set<std::string> getAll() const;
-	virtual bool isKnown(const std::string &name_) const;
-
-#ifndef SERVER
-	// Get item inventory texture
-	virtual video::ITexture* getInventoryTexture(const std::string &name,
-			IGameDef *gamedef) const;
-
-	// Get item wield mesh
-	virtual scene::IMesh* getWieldMesh(const std::string &name,
-			IGameDef *gamedef) const;
-#endif
-	void clear();
-
-	virtual void registerItem(const ItemDefinition &def);
-	virtual void registerAlias(const std::string &name,
-			const std::string &convert_to);
-	void serialize(std::ostream &os, u16 protocol_version);
-	void deSerialize(std::istream &is);
-
-	void processQueue(IGameDef *gamedef);
-
-private:
-
-#ifndef SERVER
-	struct ClientCached
-	{
-		video::ITexture *inventory_texture;
-		scene::IMesh *wield_mesh;
-
-		ClientCached();
-	};
-
-	void createNodeItemTexture(const std::string& name,
-			const ItemDefinition& def, INodeDefManager* nodedef,
-			ClientCached* cc, IGameDef* gamedef, ITextureSource* tsrc) const;
-
-	ClientCached* createClientCachedDirect(const std::string &name,
-			IGameDef *gamedef) const;
-
-	ClientCached* getClientCached(const std::string &name,
-			IGameDef *gamedef) const;
-
-	// The id of the thread that is allowed to use irrlicht directly
-	threadid_t m_main_thread;
-
-	// A reference to this can be returned when nothing is found, to avoid NULLs
-	mutable ClientCached m_dummy_clientcached;
-
-	// Cached textures and meshes
-	mutable MutexedMap<std::string, ClientCached*> m_clientcached;
-
-	// Queued clientcached fetches (to be processed by the main thread)
-	mutable RequestQueue<std::string, ClientCached*, u8, u8> m_get_clientcached_queue;
-#endif
-
-	// Key is name
-	std::map<std::string, ItemDefinition*> m_item_definitions;
-
-	// Aliases
-	std::map<std::string, std::string> m_aliases;
 };
 
 IWritableItemDefManager* createItemDefManager();
