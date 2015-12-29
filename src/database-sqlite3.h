@@ -63,6 +63,10 @@ private:
 	sqlite3_stmt *m_stmt_delete;
 	sqlite3_stmt *m_stmt_begin;
 	sqlite3_stmt *m_stmt_end;
+
+	s64 m_busy_handler_data[2];
+
+	static int busyHandler(void *data, int count);
 };
 
 #endif

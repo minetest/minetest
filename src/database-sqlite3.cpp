@@ -31,30 +31,79 @@ SQLite format specification:
 #include "filesys.h"
 #include "exceptions.h"
 #include "settings.h"
+#include "porting.h"
 #include "util/string.h"
 
 #include <cassert>
 
+// When to print messages when the database is being held locked by another process
+// Note: I've seen occasional delays of over 250ms while running minetestmapper.
+#define BUSY_INFO_TRESHOLD	100	// Print first informational message after 100ms.
+#define BUSY_WARNING_TRESHOLD	250	// Print warning message after 250ms. Lag is increased.
+#define BUSY_ERROR_TRESHOLD	1000	// Print error message after 1000ms. Significant lag.
+#define BUSY_FATAL_TRESHOLD	3000	// Allow SQLITE_BUSY to be returned, which will cause a minetest crash.
+#define BUSY_ERROR_INTERVAL	10000	// Safety net: report again every 10 seconds
 
-#define SQLRES(s, r) \
+
+#define SQLRES(s, r, m) \
 	if ((s) != (r)) { \
-		throw FileNotGoodException(std::string(\
-					"SQLite3 database error (" \
-					__FILE__ ":" TOSTRING(__LINE__) \
-					"): ") +\
+		throw FileNotGoodException(std::string(m) + ": " +\
 				sqlite3_errmsg(m_database)); \
 	}
-#define SQLOK(s) SQLRES(s, SQLITE_OK)
+#define SQLOK(s, m) SQLRES(s, SQLITE_OK, m)
 
 #define PREPARE_STATEMENT(name, query) \
-	SQLOK(sqlite3_prepare_v2(m_database, query, -1, &m_stmt_##name, NULL))
+	SQLOK(sqlite3_prepare_v2(m_database, query, -1, &m_stmt_##name, NULL),\
+		"Failed to prepare query '" query "'")
 
 #define FINALIZE_STATEMENT(statement) \
-	if (sqlite3_finalize(statement) != SQLITE_OK) { \
-		throw FileNotGoodException(std::string( \
-			"SQLite3: Failed to finalize " #statement ": ") + \
-			 sqlite3_errmsg(m_database)); \
+	SQLOK(sqlite3_finalize(statement), "Failed to finalize " #statement)
+
+int Database_SQLite3::busyHandler(void *data, int count)
+{
+	s64 &first_time = reinterpret_cast<s64 *>(data)[0];
+	s64 &prev_time = reinterpret_cast<s64 *>(data)[1];
+	s64 cur_time = getTimeMs();
+
+	if (count == 0) {
+		first_time = cur_time;
+		prev_time = first_time;
 	}
+	else {
+		while (cur_time < prev_time)
+			cur_time += s64(1)<<32;
+	}
+
+	if (cur_time - first_time < BUSY_INFO_TRESHOLD) {
+		; // do nothing
+	} else if (cur_time - first_time >= BUSY_INFO_TRESHOLD &&
+			prev_time - first_time < BUSY_INFO_TRESHOLD) {
+		infostream << "SQLite3 database has been locked for "
+			<< cur_time - first_time << " ms." << std::endl;
+	} else if (cur_time - first_time >= BUSY_WARNING_TRESHOLD &&
+			prev_time - first_time < BUSY_WARNING_TRESHOLD) {
+		warningstream << "SQLite3 database has been locked for "
+			<< cur_time - first_time << " ms." << std::endl;
+	} else if (cur_time - first_time >= BUSY_ERROR_TRESHOLD &&
+			prev_time - first_time < BUSY_ERROR_TRESHOLD) {
+		errorstream << "SQLite3 database has been locked for "
+			<< cur_time - first_time << " ms; this causes lag." << std::endl;
+	} else if (cur_time - first_time >= BUSY_FATAL_TRESHOLD &&
+			prev_time - first_time < BUSY_FATAL_TRESHOLD) {
+		errorstream << "SQLite3 database has been locked for "
+			<< cur_time - first_time << " ms - giving up!" << std::endl;
+	} else if ((cur_time - first_time) / BUSY_ERROR_INTERVAL !=
+			(prev_time - first_time) / BUSY_ERROR_INTERVAL) {
+		// Safety net: keep reporting every BUSY_ERROR_INTERVAL
+		errorstream << "SQLite3 database has been locked for "
+			<< (cur_time - first_time) / 1000 << " seconds!" << std::endl;
+	}
+
+	prev_time = cur_time;
+
+	// Make sqlite transaction fail if delay exceeds BUSY_FATAL_TRESHOLD
+	return cur_time - first_time < BUSY_FATAL_TRESHOLD;
+}
 
 
 Database_SQLite3::Database_SQLite3(const std::string &savedir) :
@@ -72,13 +121,15 @@ Database_SQLite3::Database_SQLite3(const std::string &savedir) :
 
 void Database_SQLite3::beginSave() {
 	verifyDatabase();
-	SQLRES(sqlite3_step(m_stmt_begin), SQLITE_DONE);
+	SQLRES(sqlite3_step(m_stmt_begin), SQLITE_DONE,
+		"Failed to start SQLite3 transaction");
 	sqlite3_reset(m_stmt_begin);
 }
 
 void Database_SQLite3::endSave() {
 	verifyDatabase();
-	SQLRES(sqlite3_step(m_stmt_end), SQLITE_DONE);
+	SQLRES(sqlite3_step(m_stmt_end), SQLITE_DONE,
+		"Failed to commit SQLite3 transaction");
 	sqlite3_reset(m_stmt_end);
 }
 
@@ -99,13 +150,12 @@ void Database_SQLite3::openDatabase()
 
 	bool needs_create = !fs::PathExists(dbp);
 
-	if (sqlite3_open_v2(dbp.c_str(), &m_database,
-			SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
-			NULL) != SQLITE_OK) {
-		errorstream << "SQLite3 database failed to open: "
-			<< sqlite3_errmsg(m_database) << std::endl;
-		throw FileNotGoodException("Cannot open database file");
-	}
+	SQLOK(sqlite3_open_v2(dbp.c_str(), &m_database,
+			SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL),
+		std::string("Failed to open SQLite3 database file ") + dbp);
+
+	SQLOK(sqlite3_busy_handler(m_database, Database_SQLite3::busyHandler,
+		m_busy_handler_data), "Failed to set SQLite3 busy handler");
 
 	if (needs_create) {
 		createDatabase();
@@ -113,7 +163,8 @@ void Database_SQLite3::openDatabase()
 
 	std::string query_str = std::string("PRAGMA synchronous = ")
 			 + itos(g_settings->getU16("sqlite_synchronous"));
-	SQLOK(sqlite3_exec(m_database, query_str.c_str(), NULL, NULL, NULL));
+	SQLOK(sqlite3_exec(m_database, query_str.c_str(), NULL, NULL, NULL),
+		"Failed to modify sqlite3 synchronous mode");
 }
 
 void Database_SQLite3::verifyDatabase()
@@ -140,7 +191,8 @@ void Database_SQLite3::verifyDatabase()
 
 inline void Database_SQLite3::bindPos(sqlite3_stmt *stmt, const v3s16 &pos, int index)
 {
-	SQLOK(sqlite3_bind_int64(stmt, index, getBlockAsInteger(pos)));
+	SQLOK(sqlite3_bind_int64(stmt, index, getBlockAsInteger(pos)),
+		"Internal error: failed to bind query at " __FILE__ ":" TOSTRING(__LINE__));
 }
 
 bool Database_SQLite3::deleteBlock(const v3s16 &pos)
@@ -177,9 +229,10 @@ bool Database_SQLite3::saveBlock(const v3s16 &pos, const std::string &data)
 #endif
 
 	bindPos(m_stmt_write, pos);
-	SQLOK(sqlite3_bind_blob(m_stmt_write, 2, data.data(), data.size(), NULL));
+	SQLOK(sqlite3_bind_blob(m_stmt_write, 2, data.data(), data.size(), NULL),
+		"Internal error: failed to bind query at " __FILE__ ":" TOSTRING(__LINE__));
 
-	SQLRES(sqlite3_step(m_stmt_write), SQLITE_DONE)
+	SQLRES(sqlite3_step(m_stmt_write), SQLITE_DONE, "Failed to save block")
 	sqlite3_reset(m_stmt_write);
 
 	return true;
@@ -217,7 +270,8 @@ void Database_SQLite3::createDatabase()
 		"	`pos` INT PRIMARY KEY,\n"
 		"	`data` BLOB\n"
 		");\n",
-		NULL, NULL, NULL));
+		NULL, NULL, NULL),
+		"Failed to create database table");
 }
 
 void Database_SQLite3::listAllLoadableBlocks(std::vector<v3s16> &dst)
@@ -239,10 +293,6 @@ Database_SQLite3::~Database_SQLite3()
 	FINALIZE_STATEMENT(m_stmt_end)
 	FINALIZE_STATEMENT(m_stmt_delete)
 
-	if (sqlite3_close(m_database) != SQLITE_OK) {
-		errorstream << "Database_SQLite3::~Database_SQLite3(): "
-				<< "Failed to close database: "
-				<< sqlite3_errmsg(m_database) << std::endl;
-	}
+	SQLOK(sqlite3_close(m_database), "Failed to close database");
 }
 
