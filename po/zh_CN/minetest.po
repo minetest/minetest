@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-11-07 08:04+0000\n"
+"PO-Revision-Date: 2015-12-30 16:01+0000\n"
 "Last-Translator: Jun Zhang <zhangjunphy@gmail.com>\n"
-"Language-Team: Chinese (China) <https://hosted.weblate.org/projects/minetest/"
-"minetest/zh_CN/>\n"
+"Language-Team: Chinese (China) "
+"<https://hosted.weblate.org/projects/minetest/minetest/zh_CN/>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,14 +21,13 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
+msgstr "Lua 脚本错误:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
 msgstr "错误:"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Main menu"
 msgstr "主菜单"
 
@@ -167,7 +166,7 @@ msgstr "世界名称"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no subgames installed."
-msgstr "你没有安装任何游戏"
+msgstr "你没有安装任何游戏."
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Are you sure you want to delete \"$1\"?"
@@ -254,9 +253,8 @@ msgid "Search"
 msgstr "搜索"
 
 #: builtin/mainmenu/store.lua
-#, fuzzy
 msgid "Shortname:"
-msgstr "短名称"
+msgstr "短名称:"
 
 #: builtin/mainmenu/store.lua
 msgid "Successfully installed:"
@@ -287,9 +285,8 @@ msgid "Previous Contributors"
 msgstr "前贡献者"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Previous Core Developers"
-msgstr "内部开发人员"
+msgstr "前核心开发人员"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Installed Mods:"
@@ -324,9 +321,8 @@ msgid "Uninstall selected modpack"
 msgstr "删除选中的MOD包"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Address / Port :"
-msgstr "地址/端口"
+msgstr "地址/端口:"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
@@ -337,14 +333,12 @@ msgid "Connect"
 msgstr "连接"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Creative mode"
 msgstr "创造模式"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Damage enabled"
-msgstr "启用"
+msgstr "启用伤害"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_server.lua
 #: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
@@ -352,18 +346,16 @@ msgid "Delete"
 msgstr "删除"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Name / Password :"
-msgstr "名字/密码"
+msgstr "用户名/密码:"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Public Serverlist"
 msgstr "公共服务器列表"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "PvP enabled"
-msgstr "启用"
+msgstr "启用 PvP"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Bind Address"
@@ -392,9 +384,8 @@ msgid "New"
 msgstr "新建"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
-#, fuzzy
 msgid "No world created or selected!"
-msgstr "未给定世界名或未选择游戏"
+msgstr "未创建或选择世界!"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Port"
@@ -422,7 +413,7 @@ msgstr "启动游戏"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "\"$1\" is not a valid flag."
-msgstr ""
+msgstr "\"$1\" 不是合法的 flag."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(No description of setting given)"
@@ -437,28 +428,28 @@ msgid "Change keys"
 msgstr "改变键位设置"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Disabled"
-msgstr "禁用MOD包"
+msgstr "已禁用"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Edit"
 msgstr "设置"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Enabled"
-msgstr "启用"
+msgstr "已启用"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr ""
+msgstr "格式: (X, Y, Z)."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 msgstr ""
+"格式: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, "
+"<persistence>"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Games"
@@ -470,28 +461,27 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a comma seperated list of flags."
-msgstr ""
+msgstr "请输入 flag, 多个 flag 以半角逗号分隔."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "请输入一个整数类型."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "请输入一个合法的数字."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Possible values are: "
-msgstr ""
+msgstr "可设置的 flag: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "回复初始设置"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Select path"
-msgstr "选择"
+msgstr "选择路径"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -499,20 +489,19 @@ msgstr "设置"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "显示高级设置"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be greater than $1."
-msgstr ""
+msgstr "这个值必须大于 $1."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be lower than $1."
-msgstr ""
+msgstr "这个值必须小于 $1."
 
 #: builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Config mods"
-msgstr "配置MOD"
+msgstr "配置 MOD"
 
 #: builtin/mainmenu/tab_simple_main.lua
 #, fuzzy
@@ -520,7 +509,6 @@ msgid "Main"
 msgstr "主菜单"
 
 #: builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Start Singleplayer"
 msgstr "单人游戏"
 
@@ -538,47 +526,43 @@ msgstr "无资料可得"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
-msgstr ""
+msgstr "无"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Select texture pack:"
 msgstr "选择材质包："
 
 #: builtin/mainmenu/tab_texturepacks.lua
-#, fuzzy
 msgid "Texturepacks"
 msgstr "材质包"
 
 #: src/client.cpp
-#, fuzzy
 msgid "Connection timed out."
-msgstr "连接出错（超时？）"
+msgstr "连接超时."
 
 #: src/client.cpp
 msgid "Done!"
-msgstr ""
+msgstr "完成!"
 
 #: src/client.cpp
 msgid "Initializing nodes"
-msgstr ""
+msgstr "初始化节点中"
 
 #: src/client.cpp
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "初始化节点..."
 
 #: src/client.cpp
 msgid "Item textures..."
 msgstr "物品材质..."
 
 #: src/client.cpp
-#, fuzzy
 msgid "Loading textures..."
-msgstr "载入中..."
+msgstr "载入材质..."
 
 #: src/client.cpp
-#, fuzzy
 msgid "Rebuilding shaders..."
-msgstr "正在解析地址..."
+msgstr "重建渲染器..."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
@@ -602,11 +586,11 @@ msgstr "没有选择世界或提供地址。未执行操作。"
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr "玩家的名字太长了"
+msgstr "玩家的名字太长了."
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
-msgstr "提供世界地址不存在"
+msgstr "提供的世界路径不存在: "
 
 #: src/fontengine.cpp
 msgid "needs_fallback_font"
@@ -621,9 +605,8 @@ msgstr ""
 "查看 debug.txt 以获得详细信息。"
 
 #: src/game.cpp
-#, fuzzy
 msgid "Change Keys"
-msgstr "改变键位设置"
+msgstr "更改键位设置"
 
 #: src/game.cpp
 msgid "Change Password"
@@ -642,9 +625,8 @@ msgid "Creating client..."
 msgstr "正在建立客户端..."
 
 #: src/game.cpp
-#, fuzzy
 msgid "Creating server..."
-msgstr "正在建立服务器...."
+msgstr "建立服务器...."
 
 #: src/game.cpp
 msgid ""
@@ -687,6 +669,18 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
+"默认按键:\n"
+"菜单界面外:\n"
+"- 单击: 激活按钮\n"
+"- 双击: 放置/使用\n"
+"- 滑动手指: 改变视角\n"
+"菜单/物品栏:\n"
+"- 双击 (界面区域外):\n"
+" --> 关闭\n"
+"- 点击物品, 然后点击栏位:\n"
+" --> 移动一组物品\n"
+"- 点击物品并拖动, 然后另一手指点击\n"
+" --> 移动一个物品\n"
 
 #: src/game.cpp
 msgid "Exit to Menu"
@@ -702,7 +696,7 @@ msgstr "物品定义..."
 
 #: src/game.cpp
 msgid "KiB/s"
-msgstr ""
+msgstr "KiB/s"
 
 #: src/game.cpp
 msgid "Media..."
@@ -710,7 +704,7 @@ msgstr "媒体..."
 
 #: src/game.cpp
 msgid "MiB/s"
-msgstr ""
+msgstr "MiB/s"
 
 #: src/game.cpp
 msgid "Node definitions..."
@@ -729,9 +723,8 @@ msgid "Respawn"
 msgstr "重生"
 
 #: src/game.cpp
-#, fuzzy
 msgid "Shutting down..."
-msgstr "关闭中......"
+msgstr "关闭..."
 
 #: src/game.cpp
 msgid "Sound Volume"
@@ -743,7 +736,7 @@ msgstr "你死了。"
 
 #: src/guiFormSpecMenu.cpp
 msgid "Enter "
-msgstr "输入"
+msgstr "输入 "
 
 #: src/guiFormSpecMenu.cpp
 msgid "ok"
@@ -818,9 +811,8 @@ msgid "Sneak"
 msgstr "潜行"
 
 #: src/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle Cinematic"
-msgstr "切换快速移动模式"
+msgstr "切换电影模式"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1163,16 +1155,16 @@ msgid ""
 "0 = parallax occlusion with slope information (faster).\n"
 "1 = relief mapping (slower, more accurate)."
 msgstr ""
+"0 = 利用梯度信息进行视差遮蔽 (较快).\n"
+"1 = 浮雕映射 (较慢, 但准确)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D clouds"
-msgstr "三维云彩"
+msgstr "3D 云彩"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D mode"
-msgstr "飞行模式"
+msgstr "3D 模式"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1247,7 +1239,6 @@ msgid "Ambient occlusion gamma"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Anisotropic filtering"
 msgstr "各向异性过滤"
 
@@ -1280,7 +1271,6 @@ msgid "Basic"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bilinear filtering"
 msgstr "双线性过滤"
 
@@ -1360,18 +1350,16 @@ msgid "Cloud radius"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds"
-msgstr "三维云彩"
+msgstr "云彩"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds in menu"
-msgstr "主菜单"
+msgstr "主菜单显示云彩"
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
