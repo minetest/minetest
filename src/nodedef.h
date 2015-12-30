@@ -229,6 +229,8 @@ struct ContentFeatures
 	bool climbable;
 	// Player can build on these
 	bool buildable_to;
+	// Liquids flow into and replace node
+	bool floodable;
 	// Player cannot build to these (placement prediction disabled)
 	bool rightclickable;
 	// Flowing liquid or snow, value = default level

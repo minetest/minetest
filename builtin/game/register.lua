@@ -289,6 +289,7 @@ core.register_node(":air", {
 	pointable = false,
 	diggable = false,
 	buildable_to = true,
+	floodable = true,
 	air_equivalent = true,
 	drop = "",
 	groups = {not_in_creative_inventory=1},
