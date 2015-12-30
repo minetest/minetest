@@ -233,6 +233,7 @@ void ContentFeatures::reset()
 	diggable = true;
 	climbable = false;
 	buildable_to = false;
+	floodable = false;
 	rightclickable = true;
 	leveled = 0;
 	liquid_type = LIQUID_NONE;
@@ -318,6 +319,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	// the protocol version
 	os<<serializeString(mesh);
 	collision_box.serialize(os, protocol_version);
+	writeU8(os, floodable);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -388,6 +390,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 		// otherwise changes the protocol version
 	mesh = deSerializeString(is);
 	collision_box.deSerialize(is);
+	floodable = readU8(is);
 	}catch(SerializationError &e) {};
 }
 
@@ -520,6 +523,7 @@ void CNodeDefManager::clear()
 		f.pointable           = false;
 		f.diggable            = false;
 		f.buildable_to        = true;
+		f.floodable           = true;
 		f.is_ground_content   = true;
 		// Insert directly into containers
 		content_t c = CONTENT_AIR;
