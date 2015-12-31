@@ -1661,7 +1661,6 @@ void GenericCAO::processMessage(const std::string &data)
 		float override_speed = readF1000(is);
 		float override_jump = readF1000(is);
 		float override_gravity = readF1000(is);
-///TODO: detect protocol VERSION!
 		float override_slip = readF1000(is);
 		// these are sent inverted so we get true when the server sends nothing
 		bool sneak = !readU8(is);

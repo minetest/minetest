@@ -163,7 +163,7 @@ core.register_entity(":__builtin:item", {
 		local node = core.get_node_or_nil(p)
 		local in_unloaded = (node == nil)
 		if in_unloaded then
-			-- Don't infinetly fall into unloaded map
+			-- Don't infinitely fall into unloaded map
 			self.object:setvelocity({x = 0, y = 0, z = 0})
 			self.object:setacceleration({x = 0, y = 0, z = 0})
 			self.physical_state = false
@@ -174,30 +174,38 @@ core.register_entity(":__builtin:item", {
 		-- If node is not registered or node is walkably solid and resting on nodebox
 		local v = self.object:getvelocity()
 		if not core.registered_nodes[nn] or core.registered_nodes[nn].walkable and v.y == 0 then
+
+			-- Must check (above) first, if sitting on node to prevent flipping physical_state continuously!
 			if self.physical_state then
-				local own_stack = ItemStack(self.object:get_luaentity().itemstring)
-				-- Merge with close entities of the same item
-				for _, object in ipairs(core.get_objects_inside_radius(p, 0.8)) do
-					local obj = object:get_luaentity()
-					if obj and obj.name == "__builtin:item"
-							and obj.physical_state == false then
-						if self:try_merge_with(own_stack, object, obj) then
-							return
+				local total_velocity = math.abs(v.x) + math.abs(v.z)
+				local slip = core.get_item_group(nn, "slip")
+				if slip == 0 or total_velocity < .5 then
+					local own_stack = ItemStack(self.object:get_luaentity().itemstring)
+					-- Merge with close entities of the same item
+					for _, object in ipairs(core.get_objects_inside_radius(p, 0.8)) do
+						local obj = object:get_luaentity()
+						if obj and obj.name == "__builtin:item"
+								and obj.physical_state == false then
+							if self:try_merge_with(own_stack, object, obj) then
+								return
+							end
 						end
 					end
+
+					self.object:setvelocity({x = 0, y = 0, z = 0})
+					self.object:setacceleration({x = 0, y = 0, z = 0})
+					self.physical_state = false
+					self.object:set_properties({physical = false})
+				elseif slip ~= 0 then
+					self.object:setacceleration({x = v.x * -120 / slip, y = -10, z = v.z * -120 / slip})
 				end
-				self.object:setvelocity({x = 0, y = 0, z = 0})
-				self.object:setacceleration({x = 0, y = 0, z = 0})
-				self.physical_state = false
-				self.object:set_properties({physical = false})
 			end
-		else
-			if not self.physical_state then
-				self.object:setvelocity({x = 0, y = 0, z = 0})
-				self.object:setacceleration({x = 0, y = -10, z = 0})
-				self.physical_state = true
-				self.object:set_properties({physical = true})
-			end
+		elseif not self.physical_state then
+			-- Re-activate & apply gravity if not resting on a walkable nodebox
+			self.object:setvelocity({x = 0, y = 0, z = 0})
+			self.object:setacceleration({x = 0, y = -10, z = 0})
+			self.physical_state = true
+			self.object:set_properties({physical = true})
 		end
 	end,
 

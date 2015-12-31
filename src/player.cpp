@@ -113,29 +113,26 @@ Player::~Player()
 }
 
 // Horizontal acceleration (X and Z), Y direction is ignored
-void Player::accelerateHorizontal(v3f target_speed, f32 max_increase, int slippery)
+void Player::accelerateHorizontal(v3f target_speed, f32 max_increase, int slip)
 {
 	if(max_increase == 0)
 		return;
 
 	v3f d_wanted = target_speed - m_speed;
-	if (slippery)
+	if(slip)
 	{
-		if (target_speed == v3f(0))
-			d_wanted = -m_speed * 5 / slippery;
+		if(target_speed == v3f(0))
+			d_wanted = -m_speed * 5 / slip;
 		else
 			d_wanted = target_speed * .1 - m_speed * .1;
 	}
 	d_wanted.Y = 0;
-	f32 dl = d_wanted.getLength();
-	if(dl > max_increase)
-		dl = max_increase;
+	f32 wanted_speed = d_wanted.getLength();
+	if(wanted_speed > max_increase)
+		d_wanted = d_wanted * (max_increase / wanted_speed);
 
-	v3f d = d_wanted.normalize() * dl;
-
-	m_speed.X += d.X;
-	m_speed.Z += d.Z;
-
+	m_speed.X += d_wanted.X;
+	m_speed.Z += d_wanted.Z;
 }
 
 // Vertical acceleration (Y), X and Z directions are ignored
