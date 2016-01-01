@@ -398,7 +398,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
 	move(dtime, env, pos_max_d, NULL);
 }
 
-void LocalPlayer::applyControl(float dtime)
+void LocalPlayer::applyControl(float dtime, Environment *env)
 {
 	// Clear stuff
 	swimming_vertical = false;
@@ -610,8 +610,25 @@ void LocalPlayer::applyControl(float dtime)
 	else
 		incH = incV = movement_acceleration_default * BS * dtime;
 
+	int slip;
+	if (!free_move && !control.sneak && !is_climbing)
+	{
+	INodeDefManager *nodemgr = m_gamedef->ndef();
+	Map *map = &env->getMap();
+		v3s16 position = floatToInt(getPosition() - v3f(0,BS/2,0), BS);
+		ContentFeatures node = nodemgr->get(map->getNodeNoEx(position));
+
+		slip = itemgroup_get(node.groups, "slip");
+
+		// Sliding onto a non-walkable node that you should fall through?
+		if (slip==0 && !node.walkable)
+			slip = 100; // override to allow sliding off edges into
+	}
+	else
+		slip = 0;
+
 	// Accelerate to target speed with maximum increment
-	accelerateHorizontal(speedH * physics_override_speed, incH * physics_override_speed);
+	accelerateHorizontal(speedH * physics_override_speed, incH * physics_override_speed, slip * physics_override_slip);
 	accelerateVertical(speedV * physics_override_speed, incV * physics_override_speed);
 }
 

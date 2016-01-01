@@ -1661,6 +1661,7 @@ void GenericCAO::processMessage(const std::string &data)
 		float override_speed = readF1000(is);
 		float override_jump = readF1000(is);
 		float override_gravity = readF1000(is);
+		float override_slip = readF1000(is);
 		// these are sent inverted so we get true when the server sends nothing
 		bool sneak = !readU8(is);
 		bool sneak_glitch = !readU8(is);
@@ -1672,6 +1673,7 @@ void GenericCAO::processMessage(const std::string &data)
 			player->physics_override_speed = override_speed;
 			player->physics_override_jump = override_jump;
 			player->physics_override_gravity = override_gravity;
+			player->physics_override_slip = override_slip;
 			player->physics_override_sneak = sneak;
 			player->physics_override_sneak_glitch = sneak_glitch;
 		}

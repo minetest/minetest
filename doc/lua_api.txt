@@ -1118,6 +1118,10 @@ Another example: Make red wool from white wool and red dye:
 * `soil`: saplings will grow on nodes in this group
 * `connect_to_raillike`: makes nodes of raillike drawtype with same group value
   connect to each other
+* `slip`: players and items will slide on the node. A value of 100 produces
+  medium slip. Positive values slow to stop, negative values continue speeding up!
+  Larger positive & negative values produce more gradual change in speed.  Small
+  negative values cause rapid acceleration!
 
 ### Known damage and digging time defining groups
 * `crumbly`: dirt, sand
@@ -2600,6 +2604,7 @@ This is basically a reference to a C++ `ServerActiveObject`
         * `speed`: multiplier to default walking speed value (default: `1`)
         * `jump`: multiplier to default jump value (default: `1`)
         * `gravity`: multiplier to default gravity value (default: `1`)
+        * `slip` : multiplier to current walkable node groups slip value (default: `1`)
         * `sneak`: whether player can sneak (default: `true`)
         * `sneak_glitch`: whether player can use the sneak glitch (default: `true`)
 * `get_physics_override()`: returns the table given to set_physics_override

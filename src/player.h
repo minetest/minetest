@@ -119,7 +119,7 @@ public:
 		m_speed = speed;
 	}
 
-	void accelerateHorizontal(v3f target_speed, f32 max_increase);
+	void accelerateHorizontal(v3f target_speed, f32 max_increase, int slip);
 	void accelerateVertical(v3f target_speed, f32 max_increase);
 
 	v3f getPosition()
@@ -352,6 +352,7 @@ public:
 	float physics_override_speed;
 	float physics_override_jump;
 	float physics_override_gravity;
+	float physics_override_slip;
 	bool physics_override_sneak;
 	bool physics_override_sneak_glitch;
 
