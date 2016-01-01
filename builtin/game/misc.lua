@@ -80,11 +80,11 @@ function core.check_player_privs(player_or_name, ...)
 	if type(name) ~= "string" then
 		name = name:get_player_name()
 	end
-	
+
 	local requested_privs = {...}
 	local player_privs = core.get_player_privs(name)
 	local missing_privileges = {}
-	
+
 	if type(requested_privs[1]) == "table" then
 		-- We were provided with a table like { privA = true, privB = true }.
 		for priv, value in pairs(requested_privs[1]) do
@@ -100,11 +100,11 @@ function core.check_player_privs(player_or_name, ...)
 			end
 		end
 	end
-	
+
 	if #missing_privileges > 0 then
 		return false, missing_privileges
 	end
-	
+
 	return true, ""
 end
 
@@ -203,4 +203,9 @@ function core.raillike_group(name)
 		id = raillike_cur_id
 	end
 	return id
+end
+
+local waving_groups = {leaves = 1, plants = 2}
+function core.get_waving_value(name)
+	return waving_groups[name] or 0
 end
