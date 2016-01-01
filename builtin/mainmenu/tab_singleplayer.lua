@@ -18,7 +18,7 @@
 local function current_game()
 	local last_game_id = core.setting_get("menu_last_game")
 	local game, index = gamemgr.find_by_gameid(last_game_id)
-	
+
 	return game
 end
 
@@ -55,33 +55,42 @@ local function singleplayer_refresh_gamebar()
 		end
 	end
 
-	local btnbar = buttonbar_create("game_button_bar",
-		game_buttonbar_button_handler,
-		{x=-0.3,y=5.65}, "horizontal", {x=12.4,y=1.15})
+	if #gamemgr.games > 1 then
+		local btnbar = buttonbar_create("game_button_bar",
+			game_buttonbar_button_handler,
+			{x=-0.3,y=5.65}, "horizontal", {x=12.4,y=1.15})
 
-	for i=1,#gamemgr.games,1 do
-		local btn_name = "game_btnbar_" .. gamemgr.games[i].id
-		
-		local image = nil
-		local text = nil
-		local tooltip = core.formspec_escape(gamemgr.games[i].name)
-		
-		if gamemgr.games[i].menuicon_path ~= nil and
-			gamemgr.games[i].menuicon_path ~= "" then
-			image = core.formspec_escape(gamemgr.games[i].menuicon_path)
-		else
-		
-			local part1 = gamemgr.games[i].id:sub(1,5)
-			local part2 = gamemgr.games[i].id:sub(6,10)
-			local part3 = gamemgr.games[i].id:sub(11)
-			
-			text = part1 .. "\n" .. part2
-			if part3 ~= nil and
-				part3 ~= "" then
-				text = text .. "\n" .. part3
+		for i=1,#gamemgr.games,1 do
+			local btn_name = "game_btnbar_" .. gamemgr.games[i].id
+
+			local image = nil
+			local text = nil
+			local tooltip = core.formspec_escape(gamemgr.games[i].name)
+
+			if gamemgr.games[i].menuicon_path ~= nil and
+				gamemgr.games[i].menuicon_path ~= "" then
+				image = core.formspec_escape(gamemgr.games[i].menuicon_path)
+			else
+
+				local part1 = gamemgr.games[i].id:sub(1,5)
+				local part2 = gamemgr.games[i].id:sub(6,10)
+				local part3 = gamemgr.games[i].id:sub(11)
+
+				text = part1 .. "\n" .. part2
+				if part3 ~= nil and
+					part3 ~= "" then
+					text = text .. "\n" .. part3
+				end
 			end
+			btnbar:add_button(btn_name, text, image, tooltip)
 		end
-		btnbar:add_button(btn_name, text, image, tooltip)
+
+	else
+		local current_game = gamemgr.games[1]
+		mm_texture.update("singleplayer", current_game)
+		core.set_topleft_text(current_game.name)
+		core.setting_set("menu_last_game", current_game.id)
+		menudata.worldlist:set_filtercriteria(current_game.id)
 	end
 end
 
@@ -156,7 +165,7 @@ local function main_button_handler(this, fields, name, tabdata)
 		fields["key_enter"] then
 		local selected = core.get_textlist_index("sp_worlds")
 		gamedata.selected_world = menudata.worldlist:get_raw_index(selected)
-		
+
 		if selected ~= nil and gamedata.selected_world ~= 0 then
 			gamedata.singleplayer = true
 			core.start()
@@ -192,7 +201,7 @@ local function main_button_handler(this, fields, name, tabdata)
 				mm_texture.update("singleplayer",current_game())
 			end
 		end
-		
+
 		return true
 	end
 
@@ -202,7 +211,7 @@ local function main_button_handler(this, fields, name, tabdata)
 			local configdialog =
 				create_configure_world_dlg(
 						menudata.worldlist:get_raw_index(selected))
-			
+
 			if (configdialog ~= nil) then
 				configdialog:set_parent(this)
 				this:hide()
@@ -210,31 +219,35 @@ local function main_button_handler(this, fields, name, tabdata)
 				mm_texture.update("singleplayer",current_game())
 			end
 		end
-		
+
 		return true
 	end
 end
 
 local function on_change(type, old_tab, new_tab)
-	local buttonbar = ui.find_by_name("game_button_bar")
-	
-	if ( buttonbar == nil ) then
+	local buttonbar
+
+	if (buttonbar == nil) then
 		singleplayer_refresh_gamebar()
 		buttonbar = ui.find_by_name("game_button_bar")
 	end
-	
+
 	if (type == "ENTER") then
 		local game = current_game()
-		
+
 		if game then
 			menudata.worldlist:set_filtercriteria(game.id)
 			core.set_topleft_text(game.name)
 			mm_texture.update("singleplayer",game)
 		end
-		buttonbar:show()
+		if buttonbar then
+			buttonbar:show()
+		end
 	else
 		menudata.worldlist:set_filtercriteria(nil)
-		buttonbar:hide()
+		if buttonbar then
+			buttonbar:hide()
+		end
 		core.set_topleft_text("")
 		mm_texture.update(new_tab,nil)
 	end
