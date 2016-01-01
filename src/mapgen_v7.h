@@ -104,6 +104,7 @@ public:
 
 	virtual void makeChunk(BlockMakeData *data);
 	int getGroundLevelAtPoint(v2s16 p);
+	v3s16 getSpawnPos();
 	Biome *getBiomeAtPoint(v3s16 p);
 
 	float baseTerrainLevelAtPoint(s16 x, s16 z);

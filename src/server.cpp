@@ -3378,31 +3378,15 @@ std::string Server::getBuiltinLuaPath()
 v3f Server::findSpawnPos()
 {
 	ServerMap &map = m_env->getServerMap();
-	v3f nodeposf;
+	v3f nodeposf = v3f(0.0f, 0.0f, 0.0f);
 	if (g_settings->getV3FNoEx("static_spawnpoint", nodeposf)) {
 		return nodeposf * BS;
 	}
 
-	s16 water_level = map.getWaterLevel();
-	s16 vertical_spawn_range = g_settings->getS16("vertical_spawn_range");
 	bool is_good = false;
-
 	// Try to find a good place a few times
-	for(s32 i = 0; i < 1000 && !is_good; i++) {
-		s32 range = 1 + i;
-		// We're going to try to throw the player to this position
-		v2s16 nodepos2d = v2s16(
-				-range + (myrand() % (range * 2)),
-				-range + (myrand() % (range * 2)));
-
-		// Get ground height at point
-		s16 groundheight = map.findGroundLevel(nodepos2d);
-		// Don't go underwater or to high places
-		if (groundheight <= water_level ||
-				groundheight > water_level + vertical_spawn_range)
-			continue;
-
-		v3s16 nodepos(nodepos2d.X, groundheight, nodepos2d.Y);
+	for (s32 i = 0; i < 10 && !is_good; i++) {
+		v3s16 nodepos = m_emerge->getSpawnPos();
 
 		s32 air_count = 0;
 		for (s32 i = 0; i < 10; i++) {
@@ -3415,7 +3399,8 @@ v3f Server::findSpawnPos()
 					nodeposf = intToFloat(nodepos, BS);
 					// Don't spawn the player outside map boundaries
 					if (objectpos_over_limit(nodeposf))
-						continue;
+						break;
+
 					is_good = true;
 					break;
 				}

@@ -137,6 +137,7 @@ public:
 	// Mapgen helpers methods
 	Biome *getBiomeAtPoint(v3s16 p);
 	int getGroundLevelAtPoint(v2s16 p);
+	v3s16 getSpawnPos();
 	bool isBlockUnderground(v3s16 blockpos);
 
 	static MapgenFactory *getMapgenFactory(const std::string &mgname);
