@@ -117,6 +117,11 @@ private:
 	// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 	static int l_find_node_near(lua_State *L);
 
+	// find_total_nodes_in_area(minp, maxp, nodenames, limit) -> total
+	// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
+	// limit: optional, stops after this many found
+	static int l_find_total_nodes_in_area(lua_State *L);
+
 	// find_nodes_in_area(minp, maxp, nodenames) -> list of positions
 	// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 	static int l_find_nodes_in_area(lua_State *L);
