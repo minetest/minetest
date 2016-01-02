@@ -531,7 +531,8 @@ local function handle_change_setting_buttons(this, fields)
 end
 
 local function create_settings_formspec(tabview, name, tabdata)
-	local formspec = "tablecolumns[color;tree;text;text]" ..
+	local formspec = "size[12,6.5;true]" ..
+					"tablecolumns[color;tree;text;text]" ..
 					"tableoptions[background=#00000000;border=false]" ..
 					"table[0,0;12,4.5;list_settings;"
 
@@ -571,7 +572,7 @@ local function create_settings_formspec(tabview, name, tabdata)
 		formspec = formspec:sub(1, -2) -- remove trailing comma
 	end
 	formspec = formspec .. ";" .. selected_setting .. "]" ..
-			"button[4,4.5;3,1;btn_change_keys;".. fgettext("Change keys") .. "]" ..
+			"button[0,5.5;5,1;btn_back;".. fgettext("Back to Settings page") .. "]" ..
 			"button[10,4.5;2,1;btn_edit;" .. fgettext("Edit") .. "]" ..
 			"button[7,4.5;3,1;btn_restore;" .. fgettext("Restore Default") .. "]" ..
 			"checkbox[0,4.5;cb_tech_settings;" .. fgettext("Show technical names") .. ";"
@@ -622,8 +623,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		return true
 	end
 
-	if fields["btn_change_keys"] then
-		core.show_keys_menu()
+	if fields["btn_back"] then
+		this:delete()
 		return true
 	end
 
@@ -637,12 +638,14 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	return false
 end
 
-tab_settings = {
-	name = "settings",
-	caption = fgettext("Settings"),
-	cbf_formspec = create_settings_formspec,
-	cbf_button_handler = handle_settings_buttons,
-}
+function create_adv_settings_dlg()
+	local dlg = dialog_create("settings_advanced",
+				create_settings_formspec,
+				handle_settings_buttons,
+				nil)
+
+				return dlg
+end
 
 local function create_minetest_conf_example()
 	local result = "#    This file contains a list of all available settings and their default value for minetest.conf\n" ..
