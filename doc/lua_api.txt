@@ -264,15 +264,15 @@ Example:
 
     default_cobble.png^[crack:10:1
 
-#### `[combine:<w>x<h>:<x1>,<y1>=<file1>:<x2>,<y2>=<file2>`
+#### `[combine:<w>x<h>:<x1>,<y1>=<file1>:<x2>,<y2>=<file2>:...`
 * `<w>` = width
 * `<h>` = height
-* `<x1>`/`<x2>` = x positions
-* `<y1>`/`<y1>` = y positions
-* `<file1>`/`<file2>` = textures to combine
+* `<x>` = x position
+* `<y>` = y position
+* `<file>` = texture to combine
 
-Create a texture of size `<w>` times `<h>` and blit `<file1>` to (`<x1>`,`<y1>`)
-and blit `<file2>` to (`<x2>`,`<y2>`).
+Creates a texture of size `<w>` times `<h>` and blits the listed files to their
+specified coordinates.
 
 Example:
 
