@@ -1997,6 +1997,9 @@ and `minetest.auth_reload` call the authetification handler.
 * `minetest.find_node_near(pos, radius, nodenames)`: returns pos or `nil`
     * `radius`: using a maximum metric
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
+* `minetest.find_total_nodes_in_area(minp, maxp, nodenames, limit)`: returns number found up to limit
+    * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
+    * `limit`: optional, returns early if it finds more than (major performance benefit!)
 * `minetest.find_nodes_in_area(minp, maxp, nodenames)`: returns a list of positions
     * returns as second value a table with the count of the individual nodes found
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
