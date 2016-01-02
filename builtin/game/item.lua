@@ -179,7 +179,7 @@ function core.get_node_drops(nodename, toolname)
 					break
 				end
 			end
-        	end
+			end
 		if good_rarity and good_tool then
 			got_count = got_count + 1
 			for _, add_item in ipairs(item.items) do

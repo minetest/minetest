@@ -41,6 +41,7 @@ dofile(menupath .. DIR_DELIM .. "dlg_config_world.lua")
 dofile(menupath .. DIR_DELIM .. "tab_credits.lua")
 dofile(menupath .. DIR_DELIM .. "tab_mods.lua")
 dofile(menupath .. DIR_DELIM .. "tab_settings.lua")
+dofile(menupath .. DIR_DELIM .. "tab_simple_settings.lua")
 if PLATFORM ~= "Android" then
 	dofile(menupath .. DIR_DELIM .. "dlg_create_world.lua")
 	dofile(menupath .. DIR_DELIM .. "dlg_delete_mod.lua")
@@ -120,7 +121,15 @@ local function init_globals()
 	end
 
 	-- Create main tabview
-	local tv_main = tabview_create("maintab",{x=12,y=5.2},{x=0,y=0})
+	
+	create_tv_main()
+	ui.update()
+
+	core.sound_play("main_menu", true)
+end
+
+function create_tv_main()
+	tv_main = tabview_create("maintab",{x=12,y=5.2},{x=0,y=0})
 	if PLATFORM ~= "Android" then
 		tv_main:set_autosave_tab(true)
 	end
@@ -131,7 +140,10 @@ local function init_globals()
 	else
 		tv_main:add(tab_simple_main)
 	end
-	tv_main:add(tab_settings)
+	tv_main:add(tab_simple_settings)
+	if core.setting_getbool("show_advanced_settings_menu") then
+		tv_main:add(tab_settings)
+	end
 	if PLATFORM ~= "Android" then
 		tv_main:add(tab_texturepacks)
 	end
@@ -154,11 +166,6 @@ local function init_globals()
 	else
 		modstore.init({x=12, y=8}, 4, 3)
 	end
-
-	ui.update()
-
-	core.sound_play("main_menu", true)
 end
 
 init_globals()
-

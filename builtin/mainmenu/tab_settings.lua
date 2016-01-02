@@ -638,8 +638,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 end
 
 tab_settings = {
-	name = "settings",
-	caption = fgettext("Settings"),
+	name = "Advanced settings",
+	caption = fgettext("Advanced Settings"),
 	cbf_formspec = create_settings_formspec,
 	cbf_button_handler = handle_settings_buttons,
 }
