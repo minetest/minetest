@@ -2636,8 +2636,6 @@ This is basically a reference to a C++ `ServerActiveObject`
         * `"regular"`: Uses 0 textures, `bgcolor` ignored
         * `"skybox"`: Uses 6 textures, `bgcolor` used
         * `"plain"`: Uses 0 textures, `bgcolor` used
-    * **Note**: currently does not work directly in `on_joinplayer`; use
-      `minetest.after(0)` in there.
 * `get_sky()`: returns bgcolor, type and a table with the textures
 * `override_day_night_ratio(ratio or nil)`
     * `0`...`1`: Overrides day-night ratio, controlling sunlight to a specific amount
