@@ -162,6 +162,8 @@ bool detectMSVCBuildDir(const std::string &path)
 {
 	const char *ends[] = {
 		"bin\\Release",
+		"bin\\MinSizeRel",
+		"bin\\RelWithDebInfo",
 		"bin\\Debug",
 		"bin\\Build",
 		NULL
