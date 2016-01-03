@@ -217,7 +217,7 @@ public:
 			std::map<v3s16, MapBlock*> & modified_blocks);
 
 	void spreadLight(enum LightBank bank,
-			std::set<v3s16> & from_nodes,
+			std::vector<v3s16> & from_nodes,
 			std::map<v3s16, MapBlock*> & modified_blocks);
 
 	void lightNeighbors(enum LightBank bank,
