@@ -15,7 +15,6 @@ varying vec3 lightVec;
 varying vec3 tsEyeVec;
 varying vec3 tsLightVec;
 varying float area_enable_parallax;
-varying float disp;
 
 const float e = 2.718281828459;
 const float BS = 10.0;
@@ -55,6 +54,7 @@ void main(void)
 #endif
 
 
+float disp;
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES) || (MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS)
 	vec4 pos2 = mWorld * gl_Vertex;
 	float tOffset = (pos2.x + pos2.y) * 0.001 + pos2.z * 0.002;
@@ -74,12 +74,12 @@ void main(void)
 	vec4 pos = gl_Vertex;
 	pos.x += disp * 0.1;
 	pos.y += disp * 0.1;
-	pos.z += disp;
+	pos.z += disp * 0.7;
 	gl_Position = mWorldViewProj * pos;
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS
 	vec4 pos = gl_Vertex;
 	if (gl_TexCoord[0].y < 0.05) {
-		pos.z += disp;
+		pos.z += disp * 0.5;
 	}
 	gl_Position = mWorldViewProj * pos;
 #else
