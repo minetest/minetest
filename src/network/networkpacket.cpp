@@ -77,7 +77,7 @@ void NetworkPacket::putRawString(const char* src, u32 len)
 		m_data.resize(m_datasize);
 	}
 
-	if (m_datasize == 0)
+	if (len == 0)
 		return;
 
 	memcpy(&m_data[m_read_offset], src, len);
