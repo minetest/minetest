@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 Player::Player(IGameDef *gamedef, const char *name):
+	got_teleported(false),
 	touching_ground(false),
 	in_liquid(false),
 	in_liquid_stable(false),
