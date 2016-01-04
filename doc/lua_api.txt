@@ -3391,6 +3391,7 @@ Definition tables
         paramtype2 = "none", -- See "Nodes"
         is_ground_content = true, -- If false, the cave generator will not carve through this
         sunlight_propagates = false, -- If true, sunlight will go infinitely through this
+        random_xz = false, -- If true, plantlike objects will be planted with a slight random x/z offset
         walkable = true, -- If true, objects collide with node
         pointable = true, -- If true, can be pointed at
         diggable = true, -- If false, can never be dug

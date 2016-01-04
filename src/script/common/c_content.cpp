@@ -369,6 +369,8 @@ ContentFeatures read_content_features(lua_State *L, int index)
 			ScriptApiNode::es_DrawType,NDT_NORMAL);
 	getfloatfield(L, index, "visual_scale", f.visual_scale);
 
+	getboolfield(L, index, "random_xz", f.random_xz);
+
 	/* Meshnode model filename */
 	getstringfield(L, index, "mesh", f.mesh);
 
