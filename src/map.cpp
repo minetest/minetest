@@ -1705,6 +1705,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 		int num_airs = 0;
 		NodeNeighbor neutrals[6]; // nodes that are solid or another kind of liquid
 		int num_neutrals = 0;
+		bool ignore_detected = false;
 		bool flowing_down = false;
 		for (u16 i = 0; i < 6; i++) {
 			NeighborType nt = NEIGHBOR_SAME_LEVEL;
@@ -1731,7 +1732,11 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 						if (nb.t == NEIGHBOR_LOWER) {
 							flowing_down = true;
 						}
-					} else {
+					}
+					else if (nb.n.getContent() == CONTENT_IGNORE){
+						ignore_detected = true;
+					}
+					else {
 						neutrals[num_neutrals++] = nb;
 					}
 					break;
@@ -1772,6 +1777,10 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 		u8 range = nodemgr->get(liquid_kind).liquid_range;
 		if (range > LIQUID_LEVEL_MAX+1)
 			range = LIQUID_LEVEL_MAX+1;
+		if (ignore_detected) {
+			transforming_liquid_add(p0);
+			continue;
+		}
 
 		if ((num_sources >= 2 && nodemgr->get(liquid_kind).liquid_renewable) || liquid_type == LIQUID_SOURCE) {
 			// liquid_kind will be set to either the flowing alternative of the node (if it's a liquid)
