@@ -133,7 +133,8 @@ void decompressZlib(std::istream &is, std::ostream &os)
 		if(z.avail_in == 0)
 		{
 			z.next_in = (Bytef*)input_buffer;
-			input_buffer_len = is.readsome(input_buffer, bufsize);
+			is.read(input_buffer, bufsize);
+			input_buffer_len = is.gcount();
 			z.avail_in = input_buffer_len;
 			//dstream<<"read fail="<<is.fail()<<" bad="<<is.bad()<<std::endl;
 		}
@@ -166,6 +167,7 @@ void decompressZlib(std::istream &is, std::ostream &os)
 			//dstream<<"z.avail_in="<<z.avail_in<<std::endl;
 			//dstream<<"fail="<<is.fail()<<" bad="<<is.bad()<<std::endl;
 			// Unget all the data that inflate didn't take
+			is.clear(); // Just in case EOF is set
 			for(u32 i=0; i < z.avail_in; i++)
 			{
 				is.unget();
