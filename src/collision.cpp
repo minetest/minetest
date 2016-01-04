@@ -234,9 +234,9 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		Collect node boxes in movement range
 	*/
 	std::vector<aabb3f> cboxes;
-	std::vector<bool> is_unloaded;
-	std::vector<bool> is_step_up;
-	std::vector<bool> is_object;
+	std::vector<char> is_unloaded;
+	std::vector<char> is_step_up;
+	std::vector<char> is_object;
 	std::vector<int> bouncy_values;
 	std::vector<v3s16> node_positions;
 	{
