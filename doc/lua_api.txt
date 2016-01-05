@@ -1912,8 +1912,9 @@ Call these functions only at load time!
      * If it returns a string, the player is disconnected with that string as reason
 * `minetest.register_on_joinplayer(func(ObjectRef))`
     * Called when a player joins the game
-* `minetest.register_on_leaveplayer(func(ObjectRef))`
+* `minetest.register_on_leaveplayer(func(ObjectRef, timed_out))`
     * Called when a player leaves the game
+    * `timed_out`: True for timeout, false for other reasons.
 * `minetest.register_on_cheat(func(ObjectRef, cheat))`
     * Called when a player cheats
     * `cheat`: `{type=<cheat_type>}`, where `<cheat_type>` is one of:
