@@ -31,6 +31,73 @@ typedef enum {
 	EYECOUNT = 2
 } paralax_sign;
 
+/* analog to D3DXMatrixPerspectiveOffCenterLH, not glFrustum*/
+void getProjectionFrustum(
+        const float left,
+        const float right,
+        const float bottom,
+        const float top,
+        const float cnear,
+        const float cfar,
+        irr::core::matrix4& matrix)
+{
+	matrix[0] = 2.0f * cnear / (right - left);
+	matrix[1] = 0.0f;
+	matrix[2] = 0.0f;
+	matrix[3] = 0.0f;
+
+	matrix[4] = 0.0f;
+	matrix[5] = 2.0f * cnear / (top - bottom);
+	matrix[6] = 0.0f;
+	matrix[7] = 0.0f;
+
+	matrix[8] = (left + right) / (left - right);
+	matrix[9] = (top + bottom) / (bottom - top);
+	matrix[10] = cfar / (cfar - cnear);
+	matrix[11] = 1.0f;
+
+	matrix[12] = 0.0f;
+	matrix[13] = 0.0f;
+	matrix[14] = cnear * cfar / (cnear - cfar);
+	matrix[15] = 0.0f;
+}
+
+void calculate_3d_matrices(
+        paralax_sign psign,
+        Camera& camera,
+        const float halfInterocularDistance,
+        const float convergenceDistance,
+        irr::core::matrix4& projectionMatrix,
+        v3f& eyePosition,
+        v3f& target,
+        irr::core::matrix4& movement
+        )
+{
+	scene::ICameraSceneNode* cameraNode = camera.getCameraNode();
+	irr::core::matrix4 startMatrix = cameraNode->getAbsoluteTransformation();
+
+	movement.setTranslation(irr::core::vector3df((int) psign * halfInterocularDistance, 0.0f, 0.0f));
+
+	eyePosition = (startMatrix * movement).getTranslation();
+	target = eyePosition + camera.getDirection();
+
+	float cnear, cfar, fov;
+	cnear = cameraNode->getNearValue();
+	cfar = cameraNode->getFarValue();
+	fov = cameraNode->getFOV();
+
+	float left, right, bottom, top, offset;
+	float aspectRatio = cameraNode->getAspectRatio();
+
+	top = cnear * tan(fov * 0.5f);
+	bottom = -top;
+	right = aspectRatio * top;
+	left = -right;
+
+	offset = (int) -psign * halfInterocularDistance * cnear / convergenceDistance;
+	getProjectionFrustum(left + offset, right + offset, bottom, top, cnear, cfar, projectionMatrix);
+}
+
 void draw_anaglyph_3d_mode(Camera& camera, bool show_hud, Hud& hud,
 		video::IVideoDriver* driver, scene::ISceneManager* smgr,
 		bool draw_wield_tool, Client& client,
@@ -383,41 +450,42 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 		bool draw_wield_tool, Client& client, gui::IGUIEnvironment* guienv,
 		video::SColor skycolor)
 {
-#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
-	errorstream << "Pageflip 3D mode is not supported"
-		<< " with your Irrlicht version!" << std::endl;
-#else
-	/* preserve old setup*/
-	irr::core::vector3df oldPosition = camera.getCameraNode()->getPosition();
-	irr::core::vector3df oldTarget   = camera.getCameraNode()->getTarget();
+	scene::ICameraSceneNode *cameraNode = camera.getCameraNode();
 
-	irr::core::matrix4 startMatrix =
-			camera.getCameraNode()->getAbsoluteTransformation();
-	irr::core::vector3df focusPoint = (camera.getCameraNode()->getTarget()
-			- camera.getCameraNode()->getAbsolutePosition()).setLength(1)
-			+ camera.getCameraNode()->getAbsolutePosition();
+	/* preserve old setup*/
+	irr::core::vector3df oldPosition = cameraNode->getPosition();
+	irr::core::vector3df oldTarget   = cameraNode->getTarget();
+
+	float halfInterocularDistance = g_settings->getFloat("3d_paralax_strength");
+	float convergenceDistance = g_settings->getFloat("3d_convergence_distance");
+
+	irr::core::matrix4 projectionMatrix, movement;
+	v3f eyePosition, target;
 
 	//Left eye...
 	driver->setRenderTarget(irr::video::ERT_STEREO_LEFT_BUFFER);
-
-	irr::core::vector3df leftEye;
-	irr::core::matrix4 leftMove;
-	leftMove.setTranslation(
-			irr::core::vector3df(-g_settings->getFloat("3d_paralax_strength"),
-					0.0f, 0.0f));
-	leftEye = (startMatrix * leftMove).getTranslation();
+	calculate_3d_matrices(LEFT,
+	                      camera,
+	                      halfInterocularDistance,
+	                      convergenceDistance,
+	                      projectionMatrix,
+	                      eyePosition,
+	                      target,
+	                      movement);
 
 	//clear the depth buffer, and color
 	driver->beginScene(true, true, irr::video::SColor(200, 200, 200, 255));
-	camera.getCameraNode()->setPosition(leftEye);
-	camera.getCameraNode()->setTarget(focusPoint);
+	cameraNode->setPosition(eyePosition);
+	cameraNode->setTarget(target);
+	driver->setTransform(video::ETS_PROJECTION, projectionMatrix);
 	smgr->drawAll();
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 
 	if (show_hud) {
 		hud.drawSelectionMesh();
 		if (draw_wield_tool)
-			camera.drawWieldedTool(&leftMove);
+			camera.drawWieldedTool(&movement);
+
 		hud.drawHotbar(client.getPlayerItem());
 		hud.drawLuaElements(camera.getOffset());
 		camera.drawNametags();
@@ -427,25 +495,28 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 
 	//Right eye...
 	driver->setRenderTarget(irr::video::ERT_STEREO_RIGHT_BUFFER);
-
-	irr::core::vector3df rightEye;
-	irr::core::matrix4 rightMove;
-	rightMove.setTranslation(
-			irr::core::vector3df(g_settings->getFloat("3d_paralax_strength"),
-					0.0f, 0.0f));
-	rightEye = (startMatrix * rightMove).getTranslation();
+	calculate_3d_matrices(RIGHT,
+	                      camera,
+	                      halfInterocularDistance,
+	                      convergenceDistance,
+	                      projectionMatrix,
+	                      eyePosition,
+	                      target,
+	                      movement);
 
 	//clear the depth buffer, and color
 	driver->beginScene(true, true, irr::video::SColor(200, 200, 200, 255));
-	camera.getCameraNode()->setPosition(rightEye);
-	camera.getCameraNode()->setTarget(focusPoint);
+	cameraNode->setPosition(eyePosition);
+	cameraNode->setTarget(target);
+	driver->setTransform(video::ETS_PROJECTION, projectionMatrix);
 	smgr->drawAll();
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 
 	if (show_hud) {
 		hud.drawSelectionMesh();
 		if (draw_wield_tool)
-			camera.drawWieldedTool(&rightMove);
+			camera.drawWieldedTool(&movement);
+
 		hud.drawHotbar(client.getPlayerItem());
 		hud.drawLuaElements(camera.getOffset());
 		camera.drawNametags();
@@ -453,9 +524,9 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 
 	guienv->drawAll();
 
-	camera.getCameraNode()->setPosition(oldPosition);
-	camera.getCameraNode()->setTarget(oldTarget);
-#endif
+	cameraNode->setPosition(oldPosition);
+	cameraNode->setTarget(oldTarget);
+
 }
 
 void draw_plain(Camera &camera, bool show_hud, Hud &hud,
