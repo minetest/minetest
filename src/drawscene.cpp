@@ -103,25 +103,27 @@ void draw_anaglyph_3d_mode(Camera& camera, bool show_hud, Hud& hud,
 		bool draw_wield_tool, Client& client,
 		gui::IGUIEnvironment* guienv )
 {
+	scene::ICameraSceneNode *cameraNode = camera.getCameraNode();
 
 	/* preserve old setup*/
-	irr::core::vector3df oldPosition = camera.getCameraNode()->getPosition();
-	irr::core::vector3df oldTarget   = camera.getCameraNode()->getTarget();
+	irr::core::vector3df oldPosition = cameraNode->getPosition();
+	irr::core::vector3df oldTarget   = cameraNode->getTarget();
 
-	irr::core::matrix4 startMatrix =
-			camera.getCameraNode()->getAbsoluteTransformation();
-	irr::core::vector3df focusPoint = (camera.getCameraNode()->getTarget()
-			- camera.getCameraNode()->getAbsolutePosition()).setLength(1)
-			+ camera.getCameraNode()->getAbsolutePosition();
+	float halfInterocularDistance = g_settings->getFloat("3d_paralax_strength");
+	float convergenceDistance = g_settings->getFloat("3d_convergence_distance");
 
+	irr::core::matrix4 projectionMatrix, movement;
+	v3f eyePosition, target;
 
 	//Left eye...
-	irr::core::vector3df leftEye;
-	irr::core::matrix4 leftMove;
-	leftMove.setTranslation(
-			irr::core::vector3df(-g_settings->getFloat("3d_paralax_strength"),
-					0.0f, 0.0f));
-	leftEye = (startMatrix * leftMove).getTranslation();
+	calculate_3d_matrices(LEFT,
+	                      camera,
+	                      halfInterocularDistance,
+	                      convergenceDistance,
+	                      projectionMatrix,
+	                      eyePosition,
+	                      target,
+	                      movement);
 
 	//clear the depth buffer, and color
 	driver->beginScene( true, true, irr::video::SColor(0, 200, 200, 255));
@@ -130,25 +132,28 @@ void draw_anaglyph_3d_mode(Camera& camera, bool show_hud, Hud& hud,
 	driver->getOverrideMaterial().EnablePasses = irr::scene::ESNRP_SKY_BOX
 			+ irr::scene::ESNRP_SOLID + irr::scene::ESNRP_TRANSPARENT
 			+ irr::scene::ESNRP_TRANSPARENT_EFFECT + irr::scene::ESNRP_SHADOW;
-	camera.getCameraNode()->setPosition(leftEye);
-	camera.getCameraNode()->setTarget(focusPoint);
+	cameraNode->setPosition(eyePosition);
+	cameraNode->setTarget(target);
+	driver->setTransform(video::ETS_PROJECTION, projectionMatrix);
 	smgr->drawAll();
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 	if (show_hud) {
 		hud.drawSelectionMesh();
 		if (draw_wield_tool)
-			camera.drawWieldedTool(&leftMove);
+			camera.drawWieldedTool(&movement);
 	}
 
 	guienv->drawAll();
 
 	//Right eye...
-	irr::core::vector3df rightEye;
-	irr::core::matrix4 rightMove;
-	rightMove.setTranslation(
-			irr::core::vector3df(g_settings->getFloat("3d_paralax_strength"),
-					0.0f, 0.0f));
-	rightEye = (startMatrix * rightMove).getTranslation();
+	calculate_3d_matrices(RIGHT,
+	                      camera,
+	                      halfInterocularDistance,
+	                      convergenceDistance,
+	                      projectionMatrix,
+	                      eyePosition,
+	                      target,
+	                      movement);
 
 	//clear the depth buffer
 	driver->clearZBuffer();
@@ -158,14 +163,15 @@ void draw_anaglyph_3d_mode(Camera& camera, bool show_hud, Hud& hud,
 	driver->getOverrideMaterial().EnablePasses = irr::scene::ESNRP_SKY_BOX
 			+ irr::scene::ESNRP_SOLID + irr::scene::ESNRP_TRANSPARENT
 			+ irr::scene::ESNRP_TRANSPARENT_EFFECT + irr::scene::ESNRP_SHADOW;
-	camera.getCameraNode()->setPosition(rightEye);
-	camera.getCameraNode()->setTarget(focusPoint);
+	cameraNode->setPosition(eyePosition);
+	cameraNode->setTarget(target);
+	driver->setTransform(video::ETS_PROJECTION, projectionMatrix);
 	smgr->drawAll();
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 	if (show_hud) {
 		hud.drawSelectionMesh();
 		if (draw_wield_tool)
-			camera.drawWieldedTool(&rightMove);
+			camera.drawWieldedTool(&movement);
 	}
 
 	guienv->drawAll();
@@ -173,8 +179,8 @@ void draw_anaglyph_3d_mode(Camera& camera, bool show_hud, Hud& hud,
 	driver->getOverrideMaterial().Material.ColorMask = irr::video::ECP_ALL;
 	driver->getOverrideMaterial().EnableFlags = 0;
 	driver->getOverrideMaterial().EnablePasses = 0;
-	camera.getCameraNode()->setPosition(oldPosition);
-	camera.getCameraNode()->setTarget(oldTarget);
+	cameraNode->setPosition(oldPosition);
+	cameraNode->setTarget(oldTarget);
 }
 
 void init_texture(video::IVideoDriver* driver, const v2u32& screensize,
