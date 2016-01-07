@@ -20,8 +20,8 @@ local FILENAME = "settingtypes.txt"
 local CHAR_CLASSES = {
 	SPACE = "[%s]",
 	VARIABLE = "[%w_%-%.]",
-	INTEGER = "[-]?[%d]",
-	FLOAT = "[-]?[%d%.]",
+	INTEGER = "[+-]?[%d]",
+	FLOAT = "[+-]?[%d%.]",
 	FLAGS = "[%w_%-%.,]",
 }
 
@@ -65,11 +65,11 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			--  so we can later strip it from the rest of the line
 			.. "("
 				.. "([" .. CHAR_CLASSES.VARIABLE .. "+)" -- variable name
-				.. CHAR_CLASSES.SPACE
+				.. CHAR_CLASSES.SPACE .. "*"
 				.. "%(([^%)]*)%)"  -- readable name
-				.. CHAR_CLASSES.SPACE
+				.. CHAR_CLASSES.SPACE .. "*"
 				.. "(" .. CHAR_CLASSES.VARIABLE .. "+)" -- type
-				.. CHAR_CLASSES.SPACE .. "?"
+				.. CHAR_CLASSES.SPACE .. "*"
 			.. ")")
 
 	if not first_part then
@@ -88,8 +88,8 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 	if setting_type == "int" then
 		local default, min, max = remaining_line:match("^"
 				-- first int is required, the last 2 are optional
-				.. "(" .. CHAR_CLASSES.INTEGER .. "+)" .. CHAR_CLASSES.SPACE .. "?"
-				.. "(" .. CHAR_CLASSES.INTEGER .. "*)" .. CHAR_CLASSES.SPACE .. "?"
+				.. "(" .. CHAR_CLASSES.INTEGER .. "+)" .. CHAR_CLASSES.SPACE .. "*"
+				.. "(" .. CHAR_CLASSES.INTEGER .. "*)" .. CHAR_CLASSES.SPACE .. "*"
 				.. "(" .. CHAR_CLASSES.INTEGER .. "*)"
 				.. "$")
 
@@ -151,8 +151,8 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 	if setting_type == "float" then
 		local default, min, max = remaining_line:match("^"
 				-- first float is required, the last 2 are optional
-				.. "(" .. CHAR_CLASSES.FLOAT .. "+)" .. CHAR_CLASSES.SPACE .. "?"
-				.. "(" .. CHAR_CLASSES.FLOAT .. "*)" .. CHAR_CLASSES.SPACE .. "?"
+				.. "(" .. CHAR_CLASSES.FLOAT .. "+)" .. CHAR_CLASSES.SPACE .. "*"
+				.. "(" .. CHAR_CLASSES.FLOAT .. "*)" .. CHAR_CLASSES.SPACE .. "*"
 				.. "(" .. CHAR_CLASSES.FLOAT .. "*)"
 				.."$")
 
@@ -175,7 +175,11 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 	end
 
 	if setting_type == "enum" then
-		local default, values = remaining_line:match("^(.+)" .. CHAR_CLASSES.SPACE .. "(.+)$")
+		local default, values = remaining_line:match("^"
+				-- first value (default) may be empty (i.e. is optional)
+				.. "(" .. CHAR_CLASSES.VARIABLE .. "*)" .. CHAR_CLASSES.SPACE .. "*"
+				.. "(" .. CHAR_CLASSES.FLAGS .. "+)"
+				.. "$")
 
 		if not default or values == "" then
 			return "Invalid enum setting"
@@ -211,12 +215,20 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 
 	if setting_type == "flags" then
 		local default, possible = remaining_line:match("^"
-				.. "(" .. CHAR_CLASSES.FLAGS .. "+)" .. CHAR_CLASSES.SPACE .. ""
-				.. "(" .. CHAR_CLASSES.FLAGS .. "+)"
+				-- first value (default) may be empty (i.e. is optional)
+				-- this is implemented by making the last value optional, and
+				-- swapping them around if it turns out empty.
+				.. "(" .. CHAR_CLASSES.FLAGS .. "+)" .. CHAR_CLASSES.SPACE .. "*"
+				.. "(" .. CHAR_CLASSES.FLAGS .. "*)"
 				.. "$")
 
 		if not default or not possible then
 			return "Invalid flags setting"
+		end
+
+		if possible == "" then
+			possible = default
+			default = ""
 		end
 
 		table.insert(settings, {
