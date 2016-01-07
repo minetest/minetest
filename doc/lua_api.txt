@@ -1958,9 +1958,11 @@ and `minetest.auth_reload` call the authetification handler.
 * `minetest.remove_node(pos)`
     * Equivalent to `set_node(pos, "air")`
 * `minetest.get_node(pos)`
-    * Returns `{name="ignore", ...}` for unloaded area
+    * Returns the node at the given position as table in the format
+      `{name="node_name", param1=0, param2=0}`, returns `{name="ignore", param1=0, param2=0}`
+      for unloaded areas.
 * `minetest.get_node_or_nil(pos)`
-    * Returns `nil` for unloaded area
+    * Same as `get_node` but returns `nil` for unloaded areas.
 * `minetest.get_node_light(pos, timeofday)`
     * Gets the light value at the given position. Note that the light value
       "inside" the node at the given position is returned, so you usually want
