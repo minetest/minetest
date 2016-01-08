@@ -201,6 +201,11 @@ public:
 			float time_from_last_punch=1000000);
 
 	std::string debugInfoText();
+	
+	std::string infoText()
+	{
+		return m_prop.infotext;
+	}
 };
 
 

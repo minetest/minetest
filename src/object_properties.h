@@ -51,6 +51,7 @@ struct ObjectProperties
 	std::string nametag;
 	video::SColor nametag_color;
 	f32 automatic_face_movement_max_rotation_per_sec;
+	std::string infotext;
 
 	ObjectProperties();
 	std::string dump();
