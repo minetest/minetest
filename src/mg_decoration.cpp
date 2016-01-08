@@ -47,6 +47,10 @@ DecorationManager::DecorationManager(IGameDef *gamedef) :
 size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed,
 	v3s16 nmin, v3s16 nmax)
 {
+	c_air = mg->ndef->getId("mapgen_air");
+	if (c_air == CONTENT_IGNORE)
+		c_air = CONTENT_AIR;
+
 	size_t nplaced = 0;
 
 	for (size_t i = 0; i != m_objects.size(); i++) {
@@ -54,7 +58,7 @@ size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed,
 		if (!deco)
 			continue;
 
-		nplaced += deco->placeDeco(mg, blockseed, nmin, nmax);
+		nplaced += deco->placeDeco(mg, blockseed, nmin, nmax, c_air);
 		blockseed++;
 	}
 
@@ -85,7 +89,7 @@ void Decoration::resolveNodeNames()
 }
 
 
-size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
+size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax, content_t c_air)
 {
 	PcgRandom ps(blockseed + 53);
 	int carea_size = nmax.X - nmin.X + 1;
@@ -166,7 +170,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 			}
 
 			v3s16 pos(x, y, z);
-			if (generate(mg->vm, &ps, pos))
+			if (generate(mg->vm, &ps, pos, c_air))
 				mg->gennotify.addEvent(GENNOTIFY_DECORATION, pos, index);
 		}
 	}
@@ -294,7 +298,7 @@ bool DecoSimple::canPlaceDecoration(MMVManip *vm, v3s16 p)
 }
 
 
-size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
+size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, content_t c_air)
 {
 	if (!canPlaceDecoration(vm, p))
 		return 0;
@@ -310,7 +314,7 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 		vm->m_area.add_y(em, vi, 1);
 
 		content_t c = vm->m_data[vi].getContent();
-		if (c != CONTENT_AIR && c != CONTENT_IGNORE)
+		if (c != c_air && c != CONTENT_IGNORE)
 			break;
 
 		vm->m_data[vi] = MapNode(c_place);
@@ -335,7 +339,7 @@ DecoSchematic::DecoSchematic()
 }
 
 
-size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
+size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, content_t c_air)
 {
 	// Schematic could have been unloaded but not the decoration
 	// In this case generate() does nothing (but doesn't *fail*)

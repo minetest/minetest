@@ -106,6 +106,7 @@ public:
 	float freq_desert;
 	float freq_beach;
 
+	content_t c_air;
 	content_t c_stone;
 	content_t c_dirt;
 	content_t c_dirt_with_grass;

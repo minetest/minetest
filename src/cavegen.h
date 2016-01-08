@@ -60,6 +60,7 @@ public:
 
 	PseudoRandom *ps;
 
+	content_t c_air;
 	content_t c_water_source;
 	content_t c_lava_source;
 	content_t c_ice;
@@ -106,6 +107,7 @@ public:
 	PseudoRandom *ps;
 	PseudoRandom *ps2;
 
+	content_t c_air;
 	content_t c_water_source;
 	content_t c_lava_source;
 
@@ -150,6 +152,7 @@ public:
 
 	PseudoRandom *ps;
 
+	content_t c_air;
 	content_t c_water_source;
 	content_t c_lava_source;
 	content_t c_ice;

@@ -65,6 +65,7 @@ public:
 	v3s16 csize;
 
 	content_t c_torch;
+	content_t c_air;
 	DungeonParams dp;
 
 	//RoomWalker

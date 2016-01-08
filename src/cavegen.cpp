@@ -38,11 +38,17 @@ CaveV5::CaveV5(Mapgen *mg, PseudoRandom *ps)
 	this->ndef           = mg->ndef;
 	this->water_level    = mg->water_level;
 	this->ps             = ps;
+	c_air                = ndef->getId("mapgen_air");
 	c_water_source       = ndef->getId("mapgen_water_source");
 	c_lava_source        = ndef->getId("mapgen_lava_source");
 	c_ice                = ndef->getId("mapgen_ice");
 	this->np_caveliquids = &nparams_caveliquids;
 	this->ystride        = mg->csize.X;
+
+	if (c_ice == CONTENT_IGNORE)
+		c_ice = CONTENT_AIR;
+	if (c_air == CONTENT_IGNORE)
+		c_air = CONTENT_AIR;
 
 	dswitchint = ps->range(1, 14);
 	flooded    = ps->range(1, 2) == 2;
@@ -206,7 +212,7 @@ void CaveV5::makeTunnel(bool dirswitch)
 
 void CaveV5::carveRoute(v3f vec, float f, bool randomize_xz) 
 {
-	MapNode airnode(CONTENT_AIR);
+	MapNode airnode(c_air);
 	MapNode waternode(c_water_source);
 	MapNode lavanode(c_lava_source);
 
@@ -285,6 +291,7 @@ CaveV6::CaveV6(MapgenV6 *mg, PseudoRandom *ps, PseudoRandom *ps2, bool is_large_
 	this->large_cave     = is_large_cave;
 	this->ps             = ps;
 	this->ps2            = ps2;
+	this->c_air          = mg->c_air;
 	this->c_water_source = mg->c_water_source;
 	this->c_lava_source  = mg->c_lava_source;
 
@@ -494,7 +501,7 @@ void CaveV6::makeTunnel(bool dirswitch)
 
 void CaveV6::carveRoute(v3f vec, float f, bool randomize_xz, bool tunnel_above_ground)
 {
-	MapNode airnode(CONTENT_AIR);
+	MapNode airnode(c_air);
 	MapNode waternode(c_water_source);
 	MapNode lavanode(c_lava_source);
 
@@ -554,7 +561,7 @@ void CaveV6::carveRoute(v3f vec, float f, bool randomize_xz, bool tunnel_above_g
 						vm->m_data[i] = airnode;
 					}
 				} else {
-					if (c == CONTENT_IGNORE || c == CONTENT_AIR)
+					if (c == CONTENT_IGNORE || c == c_air)
 						continue;
 
 					vm->m_data[i] = airnode;
@@ -576,6 +583,7 @@ CaveV7::CaveV7(MapgenV7 *mg, PseudoRandom *ps)
 	this->ndef           = mg->ndef;
 	this->water_level    = mg->water_level;
 	this->ps             = ps;
+	this->c_air          = mg->c_air;
 	this->c_water_source = mg->c_water_source;
 	this->c_lava_source  = mg->c_lava_source;
 	this->c_ice          = mg->c_ice;
@@ -744,7 +752,7 @@ void CaveV7::makeTunnel(bool dirswitch)
 
 void CaveV7::carveRoute(v3f vec, float f, bool randomize_xz)
 {
-	MapNode airnode(CONTENT_AIR);
+	MapNode airnode(c_air);
 	MapNode waternode(c_water_source);
 	MapNode lavanode(c_lava_source);
 
