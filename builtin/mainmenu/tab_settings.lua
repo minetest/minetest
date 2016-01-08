@@ -211,7 +211,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 
 	if setting_type == "flags" then
 		local default, possible = remaining_line:match("^"
-				.. "(" .. CHAR_CLASSES.FLAGS .. "+)" .. CHAR_CLASSES.SPACE .. ""
+				.. "(" .. CHAR_CLASSES.FLAGS .. "*)" .. CHAR_CLASSES.SPACE .. ""
 				.. "(" .. CHAR_CLASSES.FLAGS .. "+)"
 				.. "$")
 
