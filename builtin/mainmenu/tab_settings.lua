@@ -445,7 +445,7 @@ local function create_change_setting_formspec(dialogdata)
 		if dialogdata.error_message then
 			formspec = formspec .. "tablecolumns[color;text]" ..
 			"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
-			"table[5,4;5,1;error_message;#FF0000,"
+			"table[5,3.9;5,0.6;error_message;#FF0000,"
 					.. core.formspec_escape(dialogdata.error_message) .. ";0]"
 			width = 5
 			if dialogdata.entered_text then
