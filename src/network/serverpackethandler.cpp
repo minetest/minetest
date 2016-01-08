@@ -1271,6 +1271,43 @@ void Server::handleCommand_Respawn(NetworkPacket* pkt)
 	// the previous addition has been successfully removed
 }
 
+void Server::punch_object(const PointedThing& pointed, Player* player,
+		ServerActiveObject* pointed_object, PlayerSAO* playersao)
+{
+	// Skip if object has been removed
+	if (pointed_object->m_removed)
+		return;
+
+	actionstream<<player->getName()<<" punches object "
+			<<pointed.object_id<<": "
+			<<pointed_object->getDescription()<<std::endl;
+
+	ItemStack punchitem = playersao->getWieldedItem();
+	ToolCapabilities toolcap =
+			punchitem.getToolCapabilities(m_itemdef);
+	v3f dir = (pointed_object->getBasePosition() -
+			(player->getPosition() + player->getEyeOffset())
+				).normalize();
+	float time_from_last_punch =
+		playersao->resetTimeFromLastPunch();
+
+	s16 src_original_hp = pointed_object->getHP();
+	s16 dst_origin_hp = playersao->getHP();
+
+	pointed_object->punch(dir, &toolcap, playersao,
+			time_from_last_punch);
+
+	// If the object is a player and its HP changed
+	if (src_original_hp != pointed_object->getHP() &&
+			pointed_object->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		SendPlayerHPOrDie((PlayerSAO *)pointed_object);
+	}
+
+	// If the puncher is a player and its HP changed
+	if (dst_origin_hp != playersao->getHP())
+		SendPlayerHPOrDie(playersao);
+}
+
 void Server::handleCommand_Interact(NetworkPacket* pkt)
 {
 	std::string datastring(pkt->getString(0), pkt->getSize());
@@ -1358,10 +1395,13 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		Check that target is reasonably close
 		(only when digging or placing things)
 	*/
-	if (action == 0 || action == 2 || action == 3) {
-		float d = player_pos.getDistanceFrom(pointed_pos_under);
-		float max_d = BS * 14; // Just some large enough value
-		if (d > max_d) {
+	float d = player_pos.getDistanceFrom(pointed_pos_under);
+	float max_d = BS * 14; // Just some large enough value
+	bool too_far = false;
+
+	if (d > max_d) {
+		too_far = true;
+		if (action == 0 || action == 2 || action == 3) {
 			actionstream << "Player " << player->getName()
 					<< " tried to access " << pointed.dump()
 					<< " from too far: "
@@ -1435,38 +1475,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 			playersao->noCheatDigStart(p_under);
 		}
 		else if (pointed.type == POINTEDTHING_OBJECT) {
-			// Skip if object has been removed
-			if (pointed_object->m_removed)
-				return;
-
-			actionstream<<player->getName()<<" punches object "
-					<<pointed.object_id<<": "
-					<<pointed_object->getDescription()<<std::endl;
-
-			ItemStack punchitem = playersao->getWieldedItem();
-			ToolCapabilities toolcap =
-					punchitem.getToolCapabilities(m_itemdef);
-			v3f dir = (pointed_object->getBasePosition() -
-					(player->getPosition() + player->getEyeOffset())
-						).normalize();
-			float time_from_last_punch =
-				playersao->resetTimeFromLastPunch();
-
-			s16 src_original_hp = pointed_object->getHP();
-			s16 dst_origin_hp = playersao->getHP();
-
-			pointed_object->punch(dir, &toolcap, playersao,
-					time_from_last_punch);
-
-			// If the object is a player and its HP changed
-			if (src_original_hp != pointed_object->getHP() &&
-					pointed_object->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-				SendPlayerHPOrDie((PlayerSAO *)pointed_object);
-			}
-
-			// If the puncher is a player and its HP changed
-			if (dst_origin_hp != playersao->getHP())
-				SendPlayerHPOrDie(playersao);
+			punch_object(pointed, player, pointed_object, playersao);
 		}
 
 	} // action == 0
@@ -1650,6 +1659,8 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 			if (playersao->setWieldedItem(item)) {
 				SendInventory(playersao);
 			}
+		} else if ((pointed.type == POINTEDTHING_OBJECT) && (!too_far)) {
+			punch_object(pointed, player, pointed_object, playersao);
 		}
 
 	} // action == 4

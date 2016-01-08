@@ -57,6 +57,7 @@ class GameScripting;
 class ServerEnvironment;
 struct SimpleSoundSpec;
 class ServerThread;
+struct PointedThing;
 
 enum ClientDeletionReason {
 	CDR_LEAVE,
@@ -667,7 +668,12 @@ private:
 	*/
 	std::vector<u32> m_particlespawner_ids;
 
+	void punch_object(const PointedThing& pointed, Player* player,
+			ServerActiveObject* pointed_object, PlayerSAO* playersao);
+
 	DISABLE_CLASS_COPY(Server);
+
+
 };
 
 /*
