@@ -216,6 +216,7 @@ void read_object_properties(lua_State *L, int index,
 		prop->automatic_face_movement_max_rotation_per_sec = luaL_checknumber(L, -1);
 	}
 	lua_pop(L, 1);
+	getstringfield(L, -1, "infotext", prop->infotext);
 }
 
 /******************************************************************************/
@@ -282,6 +283,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "nametag_color");
 	lua_pushnumber(L, prop->automatic_face_movement_max_rotation_per_sec);
 	lua_setfield(L, -2, "automatic_face_movement_max_rotation_per_sec");
+	lua_pushlstring(L, prop->infotext.c_str(), prop->infotext.size());
+	lua_setfield(L, -2, "infotext");
 }
 
 /******************************************************************************/

@@ -3238,6 +3238,7 @@ Definition tables
         backface_culling = true, -- false to disable backface_culling for model
         nametag = "", -- by default empty, for players their name is shown if empty
         nametag_color = <color>, -- sets color of nametag as ColorSpec
+        infotext = "", -- by default empty, text to be shown when pointed at object
     }
 
 ### Entity definition (`register_entity`)

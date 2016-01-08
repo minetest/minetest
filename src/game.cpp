@@ -3728,8 +3728,11 @@ void Game::handlePointingAtObject(GameRunData *runData,
 {
 	infotext = utf8_to_wide(runData->selected_object->infoText());
 
-	if (infotext == L"" && show_debug) {
-		infotext = utf8_to_wide(runData->selected_object->debugInfoText());
+	if (show_debug) {
+		if (infotext != L"") {
+			infotext += L"\n";
+		}
+		infotext += utf8_to_wide(runData->selected_object->debugInfoText());
 	}
 
 	if (input->getLeftState()) {
