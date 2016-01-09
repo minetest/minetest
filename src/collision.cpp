@@ -34,6 +34,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //#define COLL_ZERO 0.032 // broken unit tests
 #define COLL_ZERO 0
 
+
+struct NearbyCollisionInfo {
+	NearbyCollisionInfo(bool is_ul, bool is_obj, int bouncy,
+			const v3s16 &pos, const aabb3f &box) :
+		is_unloaded(is_ul),
+		is_step_up(false),
+		is_object(is_obj),
+		bouncy(bouncy),
+		position(pos),
+		box(box)
+	{}
+
+	bool is_unloaded;
+	bool is_step_up;
+	bool is_object;
+	int bouncy;
+	v3s16 position;
+	aabb3f box;
+};
+
+
 // Helper function:
 // Checks for collision of a moving aabbox with a static aabbox
 // Returns -1 if no collision, 0 if X collision, 1 if Y collision, 2 if Z collision
@@ -160,7 +181,7 @@ int axisAlignedCollision(
 // Helper function:
 // Checks if moving the movingbox up by the given distance would hit a ceiling.
 bool wouldCollideWithCeiling(
-		const std::vector<aabb3f> &staticboxes,
+		const std::vector<NearbyCollisionInfo> &cinfo,
 		const aabb3f &movingbox,
 		f32 y_increase, f32 d)
 {
@@ -168,12 +189,10 @@ bool wouldCollideWithCeiling(
 
 	assert(y_increase >= 0);	// pre-condition
 
-	for(std::vector<aabb3f>::const_iterator
-			i = staticboxes.begin();
-			i != staticboxes.end(); ++i)
-	{
-		const aabb3f& staticbox = *i;
-		if((movingbox.MaxEdge.Y - d <= staticbox.MinEdge.Y) &&
+	for (std::vector<NearbyCollisionInfo>::const_iterator it = cinfo.begin();
+			it != cinfo.end(); ++it) {
+		const aabb3f &staticbox = it->box;
+		if ((movingbox.MaxEdge.Y - d <= staticbox.MinEdge.Y) &&
 				(movingbox.MaxEdge.Y + y_increase > staticbox.MinEdge.Y) &&
 				(movingbox.MinEdge.X < staticbox.MaxEdge.X) &&
 				(movingbox.MaxEdge.X > staticbox.MinEdge.X) &&
@@ -234,12 +253,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	/*
 		Collect node boxes in movement range
 	*/
-	std::vector<aabb3f> cboxes;
-	std::vector<bool> is_unloaded;
-	std::vector<bool> is_step_up;
-	std::vector<bool> is_object;
-	std::vector<int> bouncy_values;
-	std::vector<v3s16> node_positions;
+	std::vector<NearbyCollisionInfo> cinfo;
 	{
 	//TimeTaker tt2("collisionMoveSimple collect boxes");
 	ScopeProfiler sp(g_profiler, "collisionMoveSimple collect boxes avg", SPT_AVG);
@@ -310,23 +324,13 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				aabb3f box = *i;
 				box.MinEdge += v3f(x, y, z)*BS;
 				box.MaxEdge += v3f(x, y, z)*BS;
-				cboxes.push_back(box);
-				is_unloaded.push_back(false);
-				is_step_up.push_back(false);
-				bouncy_values.push_back(n_bouncy_value);
-				node_positions.push_back(p);
-				is_object.push_back(false);
+				cinfo.push_back(NearbyCollisionInfo(false,
+					false, n_bouncy_value, p, box));
 			}
-		}
-		else {
+		} else {
 			// Collide with unloaded nodes
 			aabb3f box = getNodeBox(p, BS);
-			cboxes.push_back(box);
-			is_unloaded.push_back(true);
-			is_step_up.push_back(false);
-			bouncy_values.push_back(0);
-			node_positions.push_back(p);
-			is_object.push_back(false);
+			cinfo.push_back(NearbyCollisionInfo(true, false, 0, p, box));
 		}
 	}
 
@@ -344,7 +348,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		ScopeProfiler sp(g_profiler, "collisionMoveSimple objects avg", SPT_AVG);
 		//TimeTaker tt3("collisionMoveSimple collect object boxes");
 
-		/* add object boxes to cboxes */
+		/* add object boxes to cinfo */
 
 		std::vector<ActiveObject*> objects;
 #ifndef SERVER
@@ -384,22 +388,11 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				aabb3f object_collisionbox;
 				if (object->getCollisionBox(&object_collisionbox) &&
 						object->collideWithObjects()) {
-					cboxes.push_back(object_collisionbox);
-					is_unloaded.push_back(false);
-					is_step_up.push_back(false);
-					bouncy_values.push_back(0);
-					node_positions.push_back(v3s16(0,0,0));
-					is_object.push_back(true);
+					cinfo.push_back(NearbyCollisionInfo(false, true, 0, v3s16(), object_collisionbox));
 				}
 			}
 		}
 	} //tt3
-
-	assert(cboxes.size() == is_unloaded.size());    // post-condition
-	assert(cboxes.size() == is_step_up.size());     // post-condition
-	assert(cboxes.size() == bouncy_values.size());  // post-condition
-	assert(cboxes.size() == node_positions.size()); // post-condition
-	assert(cboxes.size() == is_object.size());      // post-condition
 
 	/*
 		Collision detection
@@ -440,15 +433,16 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		/*
 			Go through every nodebox, find nearest collision
 		*/
-		for (u32 boxindex = 0; boxindex < cboxes.size(); boxindex++) {
+		for (u32 boxindex = 0; boxindex < cinfo.size(); boxindex++) {
+			NearbyCollisionInfo box_info = cinfo[boxindex];
 			// Ignore if already stepped up this nodebox.
-			if(is_step_up[boxindex])
+			if (box_info.is_step_up)
 				continue;
 
 			// Find nearest collision of the two boxes (raytracing-like)
 			f32 dtime_tmp;
-			int collided = axisAlignedCollision(
-					cboxes[boxindex], movingbox, *speed_f, d, &dtime_tmp);
+			int collided = axisAlignedCollision(box_info.box,
+					movingbox, *speed_f, d, &dtime_tmp);
 
 			if (collided == -1 || dtime_tmp >= nearest_dtime)
 				continue;
@@ -464,19 +458,19 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			dtime = 0;  // Set to 0 to avoid "infinite" loop due to small FP numbers
 		} else {
 			// Otherwise, a collision occurred.
-
-			const aabb3f& cbox = cboxes[nearest_boxindex];
+			NearbyCollisionInfo &nearest_info = cinfo[nearest_boxindex];
+			const aabb3f& cbox = nearest_info.box;
 			// Check for stairs.
 			bool step_up = (nearest_collided != 1) && // must not be Y direction
 					(movingbox.MinEdge.Y < cbox.MaxEdge.Y) &&
 					(movingbox.MinEdge.Y + stepheight > cbox.MaxEdge.Y) &&
-					(!wouldCollideWithCeiling(cboxes, movingbox,
+					(!wouldCollideWithCeiling(cinfo, movingbox,
 							cbox.MaxEdge.Y - movingbox.MinEdge.Y,
 							d));
 
 			// Get bounce multiplier
-			bool bouncy = (bouncy_values[nearest_boxindex] >= 1);
-			float bounce = -(float)bouncy_values[nearest_boxindex] / 100.0;
+			bool bouncy = (nearest_info.bouncy >= 1);
+			float bounce = -(float)nearest_info.bouncy / 100.0;
 
 			// Move to the point of collision and reduce dtime by nearest_dtime
 			if (nearest_dtime < 0) {
@@ -495,39 +489,38 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			}
 
 			bool is_collision = true;
-			if (is_unloaded[nearest_boxindex])
+			if (nearest_info.is_unloaded)
 				is_collision = false;
 
 			CollisionInfo info;
-			if (is_object[nearest_boxindex])
+			if (nearest_info.is_object)
 				info.type = COLLISION_OBJECT;
 			else
 				info.type = COLLISION_NODE;
 
-			info.node_p = node_positions[nearest_boxindex];
+			info.node_p = nearest_info.position;
 			info.bouncy = bouncy;
 			info.old_speed = *speed_f;
 
 			// Set the speed component that caused the collision to zero
 			if (step_up) {
 				// Special case: Handle stairs
-				is_step_up[nearest_boxindex] = true;
+				nearest_info.is_step_up = true;
 				is_collision = false;
-			} else if(nearest_collided == 0) { // X
+			} else if (nearest_collided == 0) { // X
 				if (fabs(speed_f->X) > BS * 3)
 					speed_f->X *= bounce;
 				else
 					speed_f->X = 0;
 				result.collides = true;
 				result.collides_xz = true;
-			}
-			else if(nearest_collided == 1) { // Y
-				if (fabs(speed_f->Y) > BS * 3)
+			} else if (nearest_collided == 1) { // Y
+				if(fabs(speed_f->Y) > BS * 3)
 					speed_f->Y *= bounce;
 				else
 					speed_f->Y = 0;
 				result.collides = true;
-			} else if(nearest_collided == 2) { // Z
+			} else if (nearest_collided == 2) { // Z
 				if (fabs(speed_f->Z) > BS * 3)
 					speed_f->Z *= bounce;
 				else
@@ -552,8 +545,9 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	aabb3f box = box_0;
 	box.MinEdge += *pos_f;
 	box.MaxEdge += *pos_f;
-	for (u32 boxindex = 0; boxindex < cboxes.size(); boxindex++) {
-		const aabb3f& cbox = cboxes[boxindex];
+	for (u32 boxindex = 0; boxindex < cinfo.size(); boxindex++) {
+		NearbyCollisionInfo &box_info = cinfo[boxindex];
+		const aabb3f &cbox = box_info.box;
 
 		/*
 			See if the object is touching ground.
@@ -567,8 +561,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		if (cbox.MaxEdge.X - d > box.MinEdge.X && cbox.MinEdge.X + d < box.MaxEdge.X &&
 				cbox.MaxEdge.Z - d > box.MinEdge.Z &&
 				cbox.MinEdge.Z + d < box.MaxEdge.Z) {
-			if (is_step_up[boxindex]) {
-				pos_f->Y += (cbox.MaxEdge.Y - box.MinEdge.Y);
+			if (box_info.is_step_up) {
+				pos_f->Y += cbox.MaxEdge.Y - box.MinEdge.Y;
 				box = box_0;
 				box.MinEdge += *pos_f;
 				box.MaxEdge += *pos_f;
@@ -576,9 +570,9 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			if (fabs(cbox.MaxEdge.Y - box.MinEdge.Y) < 0.15 * BS) {
 				result.touching_ground = true;
 
-				if (is_object[boxindex])
+				if (box_info.is_object)
 					result.standing_on_object = true;
-				if (is_unloaded[boxindex])
+				if (box_info.is_unloaded)
 					result.standing_on_unloaded = true;
 			}
 		}
