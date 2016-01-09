@@ -91,6 +91,7 @@ public:
 
 	virtual void makeChunk(BlockMakeData *data);
 	int getGroundLevelAtPoint(v2s16 p);
+	v3s16 getSpawnPos();
 	void calculateNoise();
 	int generateBaseTerrain();
 	MgStoneType generateBiomes(float *heat_map, float *humidity_map);

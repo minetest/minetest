@@ -223,6 +223,12 @@ int MapgenFractal::getGroundLevelAtPoint(v2s16 p)
 }
 
 
+v3s16 MapgenFractal::getSpawnPos()
+{
+	return v3s16(0, 128, 0);
+}
+
+
 void MapgenFractal::makeChunk(BlockMakeData *data)
 {
 	// Pre-conditions

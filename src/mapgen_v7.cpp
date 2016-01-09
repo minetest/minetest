@@ -228,6 +228,12 @@ int MapgenV7::getGroundLevelAtPoint(v2s16 p)
 }
 
 
+v3s16 MapgenV7::getSpawnPos()
+{
+	return v3s16(0, 128, 0);
+}
+
+
 void MapgenV7::makeChunk(BlockMakeData *data)
 {
 	// Pre-conditions

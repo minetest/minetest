@@ -340,6 +340,18 @@ int EmergeManager::getGroundLevelAtPoint(v2s16 p)
 }
 
 
+v3s16 EmergeManager::getSpawnPos()
+{
+	if (m_mapgens.size() == 0 || !m_mapgens[0]) {
+		errorstream << "EmergeManager: getSpawnPos() called"
+			" before mapgen init" << std::endl;
+		return v3s16(0, 0, 0);
+	}
+
+	return m_mapgens[0]->getSpawnPos();
+}
+
+
 bool EmergeManager::isBlockUnderground(v3s16 blockpos)
 {
 #if 0

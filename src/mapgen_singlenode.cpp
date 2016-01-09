@@ -103,3 +103,9 @@ int MapgenSinglenode::getGroundLevelAtPoint(v2s16 p)
 {
 	return 0;
 }
+
+
+v3s16 MapgenSinglenode::getSpawnPos()
+{
+	return v3s16(0, 128, 0);
+}

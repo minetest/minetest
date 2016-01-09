@@ -42,6 +42,7 @@ public:
 	
 	void makeChunk(BlockMakeData *data);
 	int getGroundLevelAtPoint(v2s16 p);
+	v3s16 getSpawnPos();
 };
 
 struct MapgenFactorySinglenode : public MapgenFactory {

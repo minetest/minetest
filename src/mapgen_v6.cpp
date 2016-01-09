@@ -316,6 +316,32 @@ int MapgenV6::getGroundLevelAtPoint(v2s16 p)
 }
 
 
+v3s16 MapgenV6::getSpawnPos()
+{
+	s16 vertical_spawn_range = g_settings->getS16("vertical_spawn_range");
+
+	// Try to find a good place a few times
+	for (s32 i = 0; i < 1000; i++) {
+		s32 range = 1 + i;
+		// We're going to try to throw the player to this position
+		v2s16 nodepos2d = v2s16(
+				-range + (myrand() % (range * 2)),
+				-range + (myrand() % (range * 2)));
+
+		// Get ground height at point
+		s16 groundheight = getGroundLevelAtPoint(nodepos2d);
+		// Don't go underwater or to high places
+		if (groundheight <= water_level ||
+				groundheight > water_level + vertical_spawn_range)
+			continue;
+
+		return v3s16(nodepos2d.X, groundheight, nodepos2d.Y);
+	}
+
+	return v3s16(0, 0, 0);
+}
+
+
 //////////////////////// Noise functions
 
 float MapgenV6::getMudAmount(v2s16 p)
