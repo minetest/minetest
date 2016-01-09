@@ -1616,7 +1616,7 @@ examples.
 * types: `text`, `image`, `color`, `indent`, `tree`
     * `text`:   show cell contents as text
     * `image`:  cell contents are an image index, use column options to define images
-    * `colo`:   cell contents are a ColorString and define color of following cell
+    * `color`:   cell contents are a ColorString and define color of following cell
     * `indent`: cell contents are a number and define indentation of following cell
     * `tree`:   same as indent, but user can open and close subtrees (treeview-like)
 * column options:
