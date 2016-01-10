@@ -1187,8 +1187,8 @@
 #    Occasional lakes and hills added to the flat world.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with "no" are used to explicitly disable them.
-#    type: flags possible values: lakes, hills, nolakes, nohills
-# mgflat_spflags = nolakes,nohills
+#    type: flags possible values: lakes, hills, , nolakes, nohills
+# mgflat_spflags = 
 
 #    Y of flat ground.
 #    type: int
