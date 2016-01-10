@@ -68,6 +68,12 @@ DungeonGen::DungeonGen(Mapgen *mapgen, DungeonParams *dparams)
 
 	// For mapgens using river water
 	dp.c_river_water = mg->ndef->getId("mapgen_river_water_source");
+	if (dp.c_river_water == CONTENT_IGNORE)
+		dp.c_river_water = mg->ndef->getId("mapgen_water_source");
+
+	c_air = mg->ndef->getId("mapgen_air");
+	if (c_air == CONTENT_IGNORE)
+		c_air = CONTENT_AIR;
 }
 
 
@@ -90,7 +96,7 @@ void DungeonGen::generate(u32 bseed, v3s16 nmin, v3s16 nmax)
 			u32 i = vm->m_area.index(nmin.X, y, z);
 			for (s16 x = nmin.X; x <= nmax.X; x++) {
 				content_t c = vm->m_data[i].getContent();
-				if (c == CONTENT_AIR || c == dp.c_water || c == dp.c_river_water)
+				if (c == c_air || c == dp.c_water || c == dp.c_river_water)
 					vm->m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
 				i++;
 			}
@@ -247,7 +253,7 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 void DungeonGen::makeRoom(v3s16 roomsize, v3s16 roomplace)
 {
 	MapNode n_cobble(dp.c_cobble);
-	MapNode n_air(CONTENT_AIR);
+	MapNode n_air(c_air);
 
 	// Make +-X walls
 	for (s16 z = 0; z < roomsize.Z; z++)
@@ -352,7 +358,7 @@ void DungeonGen::makeFill(v3s16 place, v3s16 size,
 
 void DungeonGen::makeHole(v3s16 place)
 {
-	makeFill(place, dp.holesize, 0, MapNode(CONTENT_AIR),
+	makeFill(place, dp.holesize, 0, MapNode(c_air),
 		VMANIP_FLAG_DUNGEON_INSIDE);
 }
 
@@ -485,22 +491,22 @@ bool DungeonGen::findPlaceForDoor(v3s16 &result_place, v3s16 &result_dir)
 		if (vm->getNodeNoExNoEmerge(p +
 				v3s16(0, 0, 0)).getContent() == dp.c_cobble &&
 				vm->getNodeNoExNoEmerge(p +
-				v3s16(0, 1, 0)).getContent() == CONTENT_AIR &&
+				v3s16(0, 1, 0)).getContent() == c_air &&
 				vm->getNodeNoExNoEmerge(p +
-				v3s16(0, 2, 0)).getContent() == CONTENT_AIR)
+				v3s16(0, 2, 0)).getContent() == c_air)
 			p += v3s16(0,1,0);
 		// Jump one down if the actual space is there
 		if (vm->getNodeNoExNoEmerge(p +
 				v3s16(0, 1, 0)).getContent() == dp.c_cobble &&
 				vm->getNodeNoExNoEmerge(p +
-				v3s16(0, 0, 0)).getContent() == CONTENT_AIR &&
+				v3s16(0, 0, 0)).getContent() == c_air &&
 				vm->getNodeNoExNoEmerge(p +
-				v3s16(0, -1, 0)).getContent() == CONTENT_AIR)
+				v3s16(0, -1, 0)).getContent() == c_air)
 			p += v3s16(0, -1, 0);
 		// Check if walking is now possible
-		if (vm->getNodeNoExNoEmerge(p).getContent() != CONTENT_AIR ||
+		if (vm->getNodeNoExNoEmerge(p).getContent() != c_air ||
 				vm->getNodeNoExNoEmerge(p +
-				v3s16(0, 1, 0)).getContent() != CONTENT_AIR) {
+				v3s16(0, 1, 0)).getContent() != c_air) {
 			// Cannot continue walking here
 			randomizeDir();
 			continue;

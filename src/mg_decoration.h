@@ -68,10 +68,10 @@ public:
 
 	virtual void resolveNodeNames();
 
-	size_t placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+	size_t placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax, content_t c_air);
 	//size_t placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 
-	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p) = 0;
+	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, content_t c_air) = 0;
 	virtual int getHeight() = 0;
 
 	u32 flags;
@@ -90,7 +90,7 @@ public:
 
 class DecoSimple : public Decoration {
 public:
-	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p);
+	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, content_t c_air);
 	bool canPlaceDecoration(MMVManip *vm, v3s16 p);
 	virtual int getHeight();
 
@@ -107,7 +107,7 @@ class DecoSchematic : public Decoration {
 public:
 	DecoSchematic();
 
-	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p);
+	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p, content_t c_air);
 	virtual int getHeight();
 
 	Rotation rotation;
@@ -147,6 +147,8 @@ public:
 	}
 
 	size_t placeAllDecos(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
+
+	content_t c_air;
 };
 
 #endif

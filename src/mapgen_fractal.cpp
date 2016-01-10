@@ -97,6 +97,7 @@ MapgenFractal::MapgenFractal(int mapgenid, MapgenParams *params, EmergeManager *
 	//// Resolve nodes to be used
 	INodeDefManager *ndef = emerge->ndef;
 
+	c_air                  = ndef->getId("mapgen_air");
 	c_stone                = ndef->getId("mapgen_stone");
 	c_water_source         = ndef->getId("mapgen_water_source");
 	c_lava_source          = ndef->getId("mapgen_lava_source");
@@ -120,6 +121,8 @@ MapgenFractal::MapgenFractal(int mapgenid, MapgenParams *params, EmergeManager *
 		c_sandstonebrick = c_sandstone;
 	if (c_stair_sandstonebrick == CONTENT_IGNORE)
 		c_stair_sandstonebrick = c_sandstone;
+	if (c_air == CONTENT_IGNORE)
+		c_air = CONTENT_AIR;
 }
 
 
@@ -489,7 +492,7 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 
 s16 MapgenFractal::generateTerrain()
 {
-	MapNode n_air(CONTENT_AIR);
+	MapNode n_air(c_air);
 	MapNode n_stone(c_stone);
 	MapNode n_water(c_water_source);
 
@@ -540,7 +543,7 @@ MgStoneType MapgenFractal::generateBiomes(float *heat_map, float *humidity_map)
 		// Check node at base of mapchunk above, either a node of a previously
 		// generated mapchunk or if not, a node of overgenerated base terrain.
 		content_t c_above = vm->m_data[vi + em.X].getContent();
-		bool air_above = c_above == CONTENT_AIR;
+		bool air_above = c_above == c_air;
 		bool water_above = c_above == c_water_source;
 
 		// If there is air or water above enable top/filler placement, otherwise force
@@ -582,7 +585,7 @@ MgStoneType MapgenFractal::generateBiomes(float *heat_map, float *humidity_map)
 				// any top/filler nodes above are structurally supported.
 				// This is done by aborting the cycle of top/filler placement
 				// immediately by forcing nplaced to stone level.
-				if (c_below == CONTENT_AIR || c_below == c_water_source)
+				if (c_below == c_air || c_below == c_water_source)
 					nplaced = U16_MAX;
 
 				if (nplaced < depth_top) {
@@ -603,7 +606,7 @@ MgStoneType MapgenFractal::generateBiomes(float *heat_map, float *humidity_map)
 				nplaced = 0;  // Enable top/filler placement for next surface
 				air_above = false;
 				water_above = true;
-			} else if (c == CONTENT_AIR) {
+			} else if (c == c_air) {
 				nplaced = 0;  // Enable top/filler placement for next surface
 				air_above = true;
 				water_above = false;
@@ -640,13 +643,13 @@ void MapgenFractal::dustTopNodes()
 		content_t c_full_max = vm->m_data[vi].getContent();
 		s16 y_start;
 
-		if (c_full_max == CONTENT_AIR) {
+		if (c_full_max == c_air) {
 			y_start = full_node_max.Y - 1;
 		} else if (c_full_max == CONTENT_IGNORE) {
 			vi = vm->m_area.index(x, node_max.Y + 1, z);
 			content_t c_max = vm->m_data[vi].getContent();
 
-			if (c_max == CONTENT_AIR)
+			if (c_max == c_air)
 				y_start = node_max.Y;
 			else
 				continue;
@@ -656,7 +659,7 @@ void MapgenFractal::dustTopNodes()
 
 		vi = vm->m_area.index(x, y_start, z);
 		for (s16 y = y_start; y >= node_min.Y - 1; y--) {
-			if (vm->m_data[vi].getContent() != CONTENT_AIR)
+			if (vm->m_data[vi].getContent() != c_air)
 				break;
 
 			vm->m_area.add_y(em, vi, -1);
@@ -684,10 +687,10 @@ void MapgenFractal::generateCaves(s16 max_stone_y)
 				float d2 = contour(noise_cave2->result[index]);
 				if (d1 * d2 > 0.3f) {
 					content_t c = vm->m_data[vi].getContent();
-					if (!ndef->get(c).is_ground_content || c == CONTENT_AIR)
+					if (!ndef->get(c).is_ground_content || c == c_air)
 						continue;
 
-					vm->m_data[vi] = MapNode(CONTENT_AIR);
+					vm->m_data[vi] = MapNode(c_air);
 				}
 			}
 		}

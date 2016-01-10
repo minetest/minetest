@@ -83,6 +83,7 @@ MapgenV6::MapgenV6(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	//// Resolve nodes to be used
 	INodeDefManager *ndef = emerge->ndef;
 
+	c_air                  = ndef->getId("mapgen_air");
 	c_stone           = ndef->getId("mapgen_stone");
 	c_dirt            = ndef->getId("mapgen_dirt");
 	c_dirt_with_grass = ndef->getId("mapgen_dirt_with_grass");
@@ -117,6 +118,8 @@ MapgenV6::MapgenV6(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 		c_snowblock = c_dirt_with_grass;
 	if (c_ice == CONTENT_IGNORE)
 		c_ice = c_water_source;
+	if (c_air == CONTENT_IGNORE)
+		c_air = CONTENT_AIR;
 }
 
 
@@ -628,7 +631,7 @@ void MapgenV6::calculateNoise()
 int MapgenV6::generateGround()
 {
 	//TimeTaker timer1("Generating ground level");
-	MapNode n_air(CONTENT_AIR), n_water_source(c_water_source);
+	MapNode n_air(c_air), n_water_source(c_water_source);
 	MapNode n_stone(c_stone), n_desert_stone(c_desert_stone);
 	MapNode n_ice(c_ice);
 	int stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
@@ -808,7 +811,7 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 					continue;
 
 				// Drop mud on side
-				for(u32 di = 0; di < 4; di++) {
+				for (u32 di = 0; di < 4; di++) {
 					v3s16 dirp = dirs4[di];
 					u32 i2 = i;
 					// Move to side
@@ -833,7 +836,7 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 						vm->m_area.add_y(em, i2, -1);
 						n2 = &vm->m_data[i2];
 						// if out of known area
-						if(vm->m_area.contains(i2) == false ||
+						if (vm->m_area.contains(i2) == false ||
 								n2->getContent() == CONTENT_IGNORE) {
 							dropped_to_unknown = true;
 							break;
@@ -848,10 +851,10 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 					if (!dropped_to_unknown) {
 						*n2 = *n;
 						// Set old place to be air (or water)
-						if(old_is_water)
+						if (old_is_water)
 							*n = MapNode(c_water_source);
 						else
-							*n = MapNode(CONTENT_AIR);
+							*n = MapNode(c_air);
 					}
 
 					// Done
@@ -874,7 +877,7 @@ void MapgenV6::placeTreesAndJungleGrass()
 	content_t c_junglegrass = ndef->getId("mapgen_junglegrass");
 	// if we don't have junglegrass, don't place cignore... that's bad
 	if (c_junglegrass == CONTENT_IGNORE)
-		c_junglegrass = CONTENT_AIR;
+		c_junglegrass = c_air;
 	MapNode n_junglegrass(c_junglegrass);
 	v3s16 em = vm->m_area.getExtent();
 
