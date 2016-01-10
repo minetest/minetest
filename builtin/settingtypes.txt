@@ -936,7 +936,7 @@ mgv7_np_cave2 (Mapgen v7 cave2 noise parameters) noise_params 0, 12, (100, 100, 
 #    Occasional lakes and hills added to the flat world.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with "no" are used to explicitly disable them.
-mgflat_spflags (Mapgen flat flags) flags nolakes,nohills lakes,hills,nolakes,nohills
+mgflat_spflags (Mapgen flat flags) flags  lakes,hills,,nolakes,nohills
 
 #    Y of flat ground.
 mgflat_ground_level (Mapgen flat ground level) int 8
