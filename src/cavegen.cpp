@@ -43,6 +43,9 @@ CaveV5::CaveV5(Mapgen *mg, PseudoRandom *ps)
 	c_ice                = ndef->getId("mapgen_ice");
 	this->np_caveliquids = &nparams_caveliquids;
 	this->ystride        = mg->csize.X;
+ 
+	if (c_ice == CONTENT_IGNORE)
+		c_ice = CONTENT_AIR;
 
 	dswitchint = ps->range(1, 14);
 	flooded    = ps->range(1, 2) == 2;

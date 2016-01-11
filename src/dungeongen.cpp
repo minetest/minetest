@@ -68,6 +68,8 @@ DungeonGen::DungeonGen(Mapgen *mapgen, DungeonParams *dparams)
 
 	// For mapgens using river water
 	dp.c_river_water = mg->ndef->getId("mapgen_river_water_source");
+	if (dp.c_river_water == CONTENT_IGNORE)
+		dp.c_river_water = mg->ndef->getId("mapgen_water_source");
 }
 
 
