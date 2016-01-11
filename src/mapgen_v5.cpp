@@ -38,7 +38,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mg_ore.h"
 #include "mg_decoration.h"
 #include "mapgen_v5.h"
-#include "util/directiontables.h"
 
 
 FlagDesc flagdesc_mapgen_v5[] = {
@@ -216,9 +215,9 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 		data->blockpos_requested.Y <= data->blockpos_max.Y &&
 		data->blockpos_requested.Z <= data->blockpos_max.Z);
 
-	generating = true;
-	vm   = data->vmanip;
-	ndef = data->nodedef;
+	this->generating = true;
+	this->vm   = data->vmanip;
+	this->ndef = data->nodedef;
 	//TimeTaker t("makeChunk");
 
 	v3s16 blockpos_min = data->blockpos_min;

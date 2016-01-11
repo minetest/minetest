@@ -3,7 +3,6 @@
 --
 
 
-minetest.register_alias("mapgen_air", "air")
 minetest.register_alias("mapgen_stone", "default:stone")
 minetest.register_alias("mapgen_dirt", "default:dirt")
 minetest.register_alias("mapgen_dirt_with_grass", "default:dirt_with_grass")

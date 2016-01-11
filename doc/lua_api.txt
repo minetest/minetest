@@ -2461,6 +2461,8 @@ These functions return the leftover itemstack.
     * Map of Lua entities, indexed by active object id
 * `minetest.registered_ores`
     * List of registered ore definitions.
+* `minetest.registered_biomes`
+    * List of registered biome definitions.
 * `minetest.registered_decorations`
     * List of registered decoration definitions.
 
