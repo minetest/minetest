@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-12-19 11:07+0000\n"
+"PO-Revision-Date: 2016-01-13 08:54+0000\n"
 "Last-Translator: Rui <rui914t@gmail.com>\n"
 "Language-Team: Japanese "
 "<https://hosted.weblate.org/projects/minetest/minetest/ja/>\n"
@@ -134,7 +134,6 @@ msgid "Download a subgame, such as minetest_game, from minetest.net"
 msgstr "minetest.netからminetest_gameなどのサブゲームをダウンロードしてください"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Download one from minetest.net"
 msgstr "minetest.netからダウンロードしてください"
 
@@ -358,7 +357,6 @@ msgid "PvP enabled"
 msgstr "PvP有効"
 
 #: builtin/mainmenu/tab_server.lua
-#, fuzzy
 msgid "Bind Address"
 msgstr "バインドアドレス"
 
@@ -413,7 +411,6 @@ msgid "Start Game"
 msgstr "ゲームスタート"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "\"$1\" is not a valid flag."
 msgstr "\"$1\"は有効なフラグではありません。"
 
@@ -442,9 +439,8 @@ msgid "Enabled"
 msgstr "有効"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr "書式は、コンマとかっこで区切られた 3 つの数字です。"
+msgstr "括弧内に3つの数字をカンマで区切って入力してください。"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -460,14 +456,12 @@ msgid "Games"
 msgstr "ゲーム"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr "空隙性随意大手カンマを付加することができます。"
+msgstr "空隙性の値には、任意でカンマを付けて読みやすくすることができます。"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Please enter a comma seperated list of flags."
-msgstr "フラグのリストはカンマで区切って入力してください。"
+msgstr "フラグはカンマで区切られた一覧で入力してください。"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid integer."
@@ -478,27 +472,24 @@ msgid "Please enter a valid number."
 msgstr "有効な数字を入力してください。"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Possible values are: "
-msgstr "可能な値: "
+msgstr "使用可能な値: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Restore Default"
 msgstr "初期設定に戻す"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Select path"
-msgstr "ファイルパスを選択"
+msgstr "ファイルの場所を選択"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
 msgstr "設定"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Show technical names"
-msgstr "技術名称を表示"
+msgstr "パラメータ名を表示"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be greater than $1."
@@ -577,30 +568,26 @@ msgid "Connection error (timed out?)"
 msgstr "接続エラー (タイムアウト？)"
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Could not find or load game \""
-msgstr "以下のゲームの読み込みができません\""
+msgstr "以下のゲームが見つからないか読み込めません \""
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Invalid gamespec."
-msgstr "無効なgamespecです。"
+msgstr "無効なゲーム情報です。"
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
 msgstr "メインメニュー"
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "No world selected and no address provided. Nothing to do."
-msgstr "ワールドが選択されていないアドレスです。続行できません。"
+msgstr "ワールドが選択されていないか存在しないアドレスです。続行できません。"
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
 msgstr "プレイヤー名が長過ぎます。"
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Provided world path doesn't exist: "
 msgstr "ワールドが存在しません: "
 
@@ -667,7 +654,6 @@ msgstr ""
 "- T: チャット\n"
 
 #: src/game.cpp
-#, fuzzy
 msgid ""
 "Default Controls:\n"
 "No menu visible:\n"
@@ -685,9 +671,9 @@ msgstr ""
 "デフォルトの操作:\n"
 "タッチ操作:\n"
 "- シングルタップ: ブロックの破壊\n"
-"- ダブルタップ: 設置、使用\n"
+"- ダブルタップ: 設置/使用\n"
 "- スライド: 見回す\n"
-"メニュー、インベントリの操作:\n"
+"メニュー/インベントリの操作:\n"
 "- メニューの外をダブルタップ:\n"
 " --> 閉じる\n"
 "- アイテムをタッチ:\n"
@@ -1168,6 +1154,8 @@ msgid ""
 "0 = parallax occlusion with slope information (faster).\n"
 "1 = relief mapping (slower, more accurate)."
 msgstr ""
+"0 = 斜面情報付きの視差遮蔽マッピング(高速)。\n"
+"1 = リリーフマッピング(正確だが低速)。"
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -1178,7 +1166,6 @@ msgid "3D mode"
 msgstr "3Dモード"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -1189,9 +1176,9 @@ msgid ""
 "-    sidebyside: split screen side by side."
 msgstr ""
 "3Dサポート\n"
-"現在サポートしている:\n"
-"-    none: 3D出力なし\n"
-"-    anaglyph: cyan/magenta color 3d.\n"
+"サポートしている出力:\n"
+"-    none: 3D出力なし。\n"
+"-    anaglyph: 赤/青の色による3D。\n"
 "-    interlaced: odd/even line based polarisation screen support.\n"
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side."
