@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen_v5.h"
 #include "mapgen_v6.h"
 #include "mapgen_v7.h"
+#include "mapgen_valleys.h"
 #include "mapgen_singlenode.h"
 #include "mg_biome.h"
 #include "mg_ore.h"
@@ -108,6 +109,7 @@ MapgenDesc g_reg_mapgens[] = {
 	{"v7",         new MapgenFactoryV7,         true},
 	{"flat",       new MapgenFactoryFlat,       true},
 	{"fractal",    new MapgenFactoryFractal,    true},
+	{"valleys",    new MapgenFactoryValleys,    true},
 	{"singlenode", new MapgenFactorySinglenode, false},
 };
 
