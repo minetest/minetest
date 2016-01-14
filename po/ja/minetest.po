@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2016-01-13 08:54+0000\n"
+"PO-Revision-Date: 2016-01-14 08:53+0000\n"
 "Last-Translator: Rui <rui914t@gmail.com>\n"
 "Language-Team: Japanese "
 "<https://hosted.weblate.org/projects/minetest/minetest/ja/>\n"
@@ -1177,17 +1177,20 @@ msgid ""
 msgstr ""
 "3Dサポート\n"
 "サポートしている出力:\n"
-"-    none: 3D出力なし。\n"
-"-    anaglyph: 赤/青の色による3D。\n"
-"-    interlaced: odd/even line based polarisation screen support.\n"
-"-    topbottom: split screen top/bottom.\n"
-"-    sidebyside: split screen side by side."
+"-    none: 3D出力を行いません。\n"
+"-    anaglyph: 赤/青の色による3Dです。\n"
+"-    interlaced: 偶数/奇数のラインをベースで偏光式スクリーンに対応しています。\n"
+"-    topbottom: 画面を上下で分割します。\n"
+"-    sidebyside: 画面を左右で分割します。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
+"新規マップを作成する際の初期シード値です。空にするとランダムに設定されます。\n"
+"メインメニューから新規ワールドを作成する際に上書きされることがあります。"
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
@@ -1198,8 +1201,9 @@ msgid "A message to be displayed to all clients when the server shuts down."
 msgstr "サーバー終了時に全てのクライアントへ表示するメッセージ。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Absolute limit of emerge queues"
-msgstr ""
+msgstr "エマージキューの絶対的な制限値"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3535,7 +3539,6 @@ msgid "Waving leaves"
 msgstr "揺れる葉"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving plants"
 msgstr "揺れる草花"
 
@@ -3544,19 +3547,16 @@ msgid "Waving water"
 msgstr "揺れる水"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water height"
-msgstr "揺れる水"
+msgstr "水が揺れる高さ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water length"
-msgstr "揺れる水"
+msgstr "水が揺れる丈"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water speed"
-msgstr "揺れる水"
+msgstr "水が揺れる速度"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3585,6 +3585,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Where the map generator stops.\n"
 "Please note:\n"
@@ -3593,58 +3594,74 @@ msgid ""
 "-    Those groups have an offset of -32, -32 nodes from the origin.\n"
 "-    Only groups which are within the map_generation_limit are generated"
 msgstr ""
+"どこでマップ生成を停止するかの設定です。\n"
+"注意:\n"
+"-    最大で31000です(これ以上に設定しても効果はありません)。\n"
+"-    マップ生成は80x80x80ノードのグループで動作します (5x5x5マップブロック)。\n"
+"-    このグループは原点から-32、-32ノードのオフセットがあります。\n"
+"-    グループはmap_generation_limit内で生成されたものに限ります。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether freetype fonts are used, requires freetype support to be compiled in."
-msgstr ""
+msgstr "Freetypeフォントを利用するかどうかの設定です。Freetypeをサポートするビルドである必要があります。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Whether node texture animations should be desynchronized per mapblock."
-msgstr ""
+msgstr "ノードのテクスチャのアニメーションをマップブロックごとに非同期にするかどうかの設定です。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether players are shown to clients without any range limit.\n"
 "Deprecated, use the setting player_transfer_distance instead."
 msgstr ""
+"視界の範囲に関わらずクライアントにプレイヤーを表示するかどうかの設定です。\n"
+"非推奨です。player_transfer_distance instead設定を利用してください。"
 
 #: src/settings_translation_file.cpp
 msgid "Whether to allow players to damage and kill each other."
-msgstr ""
+msgstr "他のプレイヤーを殺すことができるかどうかの設定です。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether to ask clients to reconnect after a (Lua) crash.\n"
 "Set this to true if your server is set up to restart automatically."
 msgstr ""
+"(Luaが)クラッシュした際にクライアントに再接続を要求するかどうかの設定です。\n"
+"サーバーが自動で再起動されるように設定されているならばtrueに設定してください。"
 
 #: src/settings_translation_file.cpp
 msgid "Whether to fog out the end of the visible area."
-msgstr ""
+msgstr "可視領域の端に霧を表示するかどうかの設定です。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether to show the client debug info (has the same effect as hitting F5)."
-msgstr ""
+msgstr "クライアントのデバッグ情報を表示するかどうかの設定です(F5を押すのと同じ効果)。"
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selectionbox's lines around nodes."
-msgstr ""
+msgstr "ノードを選択した際に表示される線の幅です。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "World directory (everything in the world is stored here).\n"
 "Not needed if starting from the main menu."
 msgstr ""
+"ワールドを保存するディレクトリです(全てのワールドはここに保存されます)。\n"
+"メインメニューから開始する場合必要ありません。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "cURL file download timeout"
-msgstr ""
+msgstr "cURLファイルダウンロードタイムアウト"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "cURL parallel limit"
-msgstr ""
+msgstr "cURLパラレル制限"
 
 #: src/settings_translation_file.cpp
 msgid "cURL timeout"
