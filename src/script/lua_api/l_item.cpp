@@ -94,7 +94,7 @@ int LuaItemStack::l_set_count(lua_State *L)
 
 	bool status;
 	lua_Integer count = luaL_checkinteger(L, 2);
-	if (count <= 65535) {
+	if (count > 0 && count <= 65535) {
 		item.count = count;
 		status = true;
 	} else {
