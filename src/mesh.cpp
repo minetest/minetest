@@ -210,8 +210,7 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 		return;
 	
 	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j=0; j<mc; j++)
-	{
+	for (u16 j = 0; j < mc; j++) {
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		const u32 stride = getVertexPitchFromType(buf->getVertexType());
 		u32 vertex_count = buf->getVertexCount();
@@ -233,10 +232,9 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 }
 
 void rotateMeshXYby (scene::IMesh *mesh, f64 degrees) 
-{	
+{
 	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j = 0; j < mc; j++)
-	{
+	for (u16 j = 0; j < mc; j++) {
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		const u32 stride = getVertexPitchFromType(buf->getVertexType());
 		u32 vertex_count = buf->getVertexCount();
@@ -247,10 +245,9 @@ void rotateMeshXYby (scene::IMesh *mesh, f64 degrees)
 }
 
 void rotateMeshXZby (scene::IMesh *mesh, f64 degrees) 
-{	
+{
 	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j = 0; j < mc; j++)
-	{
+	for (u16 j = 0; j < mc; j++) {
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		const u32 stride = getVertexPitchFromType(buf->getVertexType());
 		u32 vertex_count = buf->getVertexCount();
@@ -261,10 +258,9 @@ void rotateMeshXZby (scene::IMesh *mesh, f64 degrees)
 }
 
 void rotateMeshYZby (scene::IMesh *mesh, f64 degrees) 
-{	
+{
 	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j = 0; j < mc; j++)
-	{
+	for (u16 j = 0; j < mc; j++) {
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		const u32 stride = getVertexPitchFromType(buf->getVertexType());
 		u32 vertex_count = buf->getVertexCount();
@@ -275,13 +271,12 @@ void rotateMeshYZby (scene::IMesh *mesh, f64 degrees)
 }
 
 void rotateMeshBy6dFacedir(scene::IMesh *mesh, int facedir)
-{		
+{
 	int axisdir = facedir>>2;
 	facedir &= 0x03;
 
 	u16 mc = mesh->getMeshBufferCount();
-	for(u16 j = 0; j < mc; j++)
-	{
+	for (u16 j = 0; j < mc; j++) {
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		const u32 stride = getVertexPitchFromType(buf->getVertexType());
 		u32 vertex_count = buf->getVertexCount();
@@ -369,7 +364,7 @@ void recalculateBoundingBox(scene::IMesh *src_mesh)
 scene::IMesh* cloneMesh(scene::IMesh *src_mesh)
 {
 	scene::SMesh* dst_mesh = new scene::SMesh();
-	for (u16 j = 0; j < src_mesh->getMeshBufferCount(); j++)	{
+	for (u16 j = 0; j < src_mesh->getMeshBufferCount(); j++) {
 		scene::IMeshBuffer *buf = src_mesh->getMeshBuffer(j);
 		switch (buf->getVertexType()) {
 			case video::EVT_STANDARD: {
@@ -409,7 +404,7 @@ scene::IMesh* cloneMesh(scene::IMesh *src_mesh)
 			}
 		}
 	}
-	return dst_mesh;					
+	return dst_mesh;
 }
 
 scene::IMesh* convertNodeboxNodeToMesh(ContentFeatures *f)
