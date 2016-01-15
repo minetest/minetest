@@ -206,9 +206,9 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 		const video::SColor &colorY,
 		const video::SColor &colorZ)
 {
-	if(mesh == NULL)
+	if (mesh == NULL)
 		return;
-	
+
 	u16 mc = mesh->getMeshBufferCount();
 	for (u16 j = 0; j < mc; j++) {
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
@@ -220,9 +220,9 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 			f32 x = fabs(vertex->Normal.X);
 			f32 y = fabs(vertex->Normal.Y);
 			f32 z = fabs(vertex->Normal.Z);
-			if(x >= y && x >= z)
+			if (x >= y && x >= z)
 				vertex->Color = colorX;
-			else if(y >= z)
+			else if (y >= z)
 				vertex->Color = colorY;
 			else
 				vertex->Color = colorZ;
@@ -231,7 +231,7 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 	}
 }
 
-void rotateMeshXYby (scene::IMesh *mesh, f64 degrees) 
+void rotateMeshXYby(scene::IMesh *mesh, f64 degrees) 
 {
 	u16 mc = mesh->getMeshBufferCount();
 	for (u16 j = 0; j < mc; j++) {
@@ -244,7 +244,7 @@ void rotateMeshXYby (scene::IMesh *mesh, f64 degrees)
 	}
 }
 
-void rotateMeshXZby (scene::IMesh *mesh, f64 degrees) 
+void rotateMeshXZby(scene::IMesh *mesh, f64 degrees) 
 {
 	u16 mc = mesh->getMeshBufferCount();
 	for (u16 j = 0; j < mc; j++) {
@@ -257,7 +257,7 @@ void rotateMeshXZby (scene::IMesh *mesh, f64 degrees)
 	}
 }
 
-void rotateMeshYZby (scene::IMesh *mesh, f64 degrees) 
+void rotateMeshYZby(scene::IMesh *mesh, f64 degrees) 
 {
 	u16 mc = mesh->getMeshBufferCount();
 	for (u16 j = 0; j < mc; j++) {
@@ -272,7 +272,7 @@ void rotateMeshYZby (scene::IMesh *mesh, f64 degrees)
 
 void rotateMeshBy6dFacedir(scene::IMesh *mesh, int facedir)
 {
-	int axisdir = facedir>>2;
+	int axisdir = facedir >> 2;
 	facedir &= 0x03;
 
 	u16 mc = mesh->getMeshBufferCount();
@@ -283,63 +283,62 @@ void rotateMeshBy6dFacedir(scene::IMesh *mesh, int facedir)
 		u8 *vertices = (u8 *)buf->getVertices();
 		for (u32 i = 0; i < vertex_count; i++) {
 			video::S3DVertex *vertex = (video::S3DVertex *)(vertices + i * stride);
-			switch (axisdir)
-			{
-			case 0:
-				if(facedir == 1)
-					vertex->Pos.rotateXZBy(-90);
-				else if(facedir == 2)
-					vertex->Pos.rotateXZBy(180);
-				else if(facedir == 3)
-					vertex->Pos.rotateXZBy(90);
-				break;
-			case 1: // z+
-				vertex->Pos.rotateYZBy(90);
-				if(facedir == 1)
-					vertex->Pos.rotateXYBy(90);
-				else if(facedir == 2)
-					vertex->Pos.rotateXYBy(180);
-				else if(facedir == 3)
-					vertex->Pos.rotateXYBy(-90);
-				break;
-			case 2: //z-
-				vertex->Pos.rotateYZBy(-90);
-				if(facedir == 1)
-					vertex->Pos.rotateXYBy(-90);
-				else if(facedir == 2)
-					vertex->Pos.rotateXYBy(180);
-				else if(facedir == 3)
-					vertex->Pos.rotateXYBy(90);
-				break;
-			case 3:  //x+
-				vertex->Pos.rotateXYBy(-90);
-				if(facedir == 1)
+			switch (axisdir) {
+				case 0:
+					if (facedir == 1)
+						vertex->Pos.rotateXZBy(-90);
+					else if (facedir == 2)
+						vertex->Pos.rotateXZBy(180);
+					else if (facedir == 3)
+						vertex->Pos.rotateXZBy(90);
+					break;
+				case 1: // z+
 					vertex->Pos.rotateYZBy(90);
-				else if(facedir == 2)
-					vertex->Pos.rotateYZBy(180);
-				else if(facedir == 3)
+					if (facedir == 1)
+						vertex->Pos.rotateXYBy(90);
+					else if (facedir == 2)
+						vertex->Pos.rotateXYBy(180);
+					else if (facedir == 3)
+						vertex->Pos.rotateXYBy(-90);
+					break;
+				case 2: //z-
 					vertex->Pos.rotateYZBy(-90);
-				break;
-			case 4:  //x-
-				vertex->Pos.rotateXYBy(90);
-				if(facedir == 1)
-					vertex->Pos.rotateYZBy(-90);
-				else if(facedir == 2)
-					vertex->Pos.rotateYZBy(180);
-				else if(facedir == 3)
-					vertex->Pos.rotateYZBy(90);
-				break;
-			case 5:
-				vertex->Pos.rotateXYBy(-180);
-				if(facedir == 1)
-					vertex->Pos.rotateXZBy(90);
-				else if(facedir == 2)
-					vertex->Pos.rotateXZBy(180);
-				else if(facedir == 3)
-					vertex->Pos.rotateXZBy(-90);
-				break;
-			default:
-				break;
+					if (facedir == 1)
+						vertex->Pos.rotateXYBy(-90);
+					else if (facedir == 2)
+						vertex->Pos.rotateXYBy(180);
+					else if (facedir == 3)
+						vertex->Pos.rotateXYBy(90);
+					break;
+				case 3:  //x+
+					vertex->Pos.rotateXYBy(-90);
+					if (facedir == 1)
+						vertex->Pos.rotateYZBy(90);
+					else if (facedir == 2)
+						vertex->Pos.rotateYZBy(180);
+					else if (facedir == 3)
+						vertex->Pos.rotateYZBy(-90);
+					break;
+				case 4:  //x-
+					vertex->Pos.rotateXYBy(90);
+					if (facedir == 1)
+						vertex->Pos.rotateYZBy(-90);
+					else if (facedir == 2)
+						vertex->Pos.rotateYZBy(180);
+					else if (facedir == 3)
+						vertex->Pos.rotateYZBy(90);
+					break;
+				case 5:
+					vertex->Pos.rotateXYBy(-180);
+					if (facedir == 1)
+						vertex->Pos.rotateXZBy(90);
+					else if (facedir == 2)
+						vertex->Pos.rotateXZBy(180);
+					else if (facedir == 3)
+						vertex->Pos.rotateXZBy(-90);
+					break;
+				default:
+					break;
 			}
 		}
 	}
@@ -349,11 +348,10 @@ void recalculateBoundingBox(scene::IMesh *src_mesh)
 {
 	core::aabbox3d<f32> bbox;
 	bbox.reset(0,0,0);
-	for(u16 j = 0; j < src_mesh->getMeshBufferCount(); j++)
-	{
+	for (u16 j = 0; j < src_mesh->getMeshBufferCount(); j++) {
 		scene::IMeshBuffer *buf = src_mesh->getMeshBuffer(j);
 		buf->recalculateBoundingBox();
-		if(j == 0)
+		if (j == 0)
 			bbox = buf->getBoundingBox();
 		else
 			bbox.addInternalBox(buf->getBoundingBox());
