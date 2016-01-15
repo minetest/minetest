@@ -213,19 +213,20 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 	for(u16 j=0; j<mc; j++)
 	{
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-		u16 vc = buf->getVertexCount();
-		for(u16 i=0; i<vc; i++)
-		{
-			f32 x = fabs(vertices[i].Normal.X);
-			f32 y = fabs(vertices[i].Normal.Y);
-			f32 z = fabs(vertices[i].Normal.Z);
+		const u32 stride = getVertexPitchFromType(buf->getVertexType());
+		u32 vertex_count = buf->getVertexCount();
+		u8 *vertices = (u8 *)buf->getVertices();
+		for (u32 i = 0; i < vertex_count; i++) {
+			video::S3DVertex *vertex = (video::S3DVertex *)(vertices + i * stride);
+			f32 x = fabs(vertex->Normal.X);
+			f32 y = fabs(vertex->Normal.Y);
+			f32 z = fabs(vertex->Normal.Z);
 			if(x >= y && x >= z)
-				vertices[i].Color = colorX;
+				vertex->Color = colorX;
 			else if(y >= z)
-				vertices[i].Color = colorY;
+				vertex->Color = colorY;
 			else
-				vertices[i].Color = colorZ;
+				vertex->Color = colorZ;
 
 		}
 	}
@@ -237,12 +238,11 @@ void rotateMeshXYby (scene::IMesh *mesh, f64 degrees)
 	for(u16 j = 0; j < mc; j++)
 	{
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-		u16 vc = buf->getVertexCount();
-		for(u16 i = 0; i < vc; i++)
-		{
-			vertices[i].Pos.rotateXYBy(degrees);
-		}
+		const u32 stride = getVertexPitchFromType(buf->getVertexType());
+		u32 vertex_count = buf->getVertexCount();
+		u8 *vertices = (u8 *)buf->getVertices();
+		for (u32 i = 0; i < vertex_count; i++)
+			((video::S3DVertex *)(vertices + i * stride))->Pos.rotateXYBy(degrees);
 	}
 }
 
@@ -252,12 +252,11 @@ void rotateMeshXZby (scene::IMesh *mesh, f64 degrees)
 	for(u16 j = 0; j < mc; j++)
 	{
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-		u16 vc = buf->getVertexCount();
-		for(u16 i = 0; i < vc; i++)
-		{
-			vertices[i].Pos.rotateXZBy(degrees);
-		}
+		const u32 stride = getVertexPitchFromType(buf->getVertexType());
+		u32 vertex_count = buf->getVertexCount();
+		u8 *vertices = (u8 *)buf->getVertices();
+		for (u32 i = 0; i < vertex_count; i++)
+			((video::S3DVertex *)(vertices + i * stride))->Pos.rotateXZBy(degrees);
 	}
 }
 
@@ -267,12 +266,11 @@ void rotateMeshYZby (scene::IMesh *mesh, f64 degrees)
 	for(u16 j = 0; j < mc; j++)
 	{
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-		u16 vc = buf->getVertexCount();
-		for(u16 i = 0; i < vc; i++)
-		{
-			vertices[i].Pos.rotateYZBy(degrees);
-		}
+		const u32 stride = getVertexPitchFromType(buf->getVertexType());
+		u32 vertex_count = buf->getVertexCount();
+		u8 *vertices = (u8 *)buf->getVertices();
+		for (u32 i = 0; i < vertex_count; i++)
+			((video::S3DVertex *)(vertices + i * stride))->Pos.rotateYZBy(degrees);
 	}
 }
 
@@ -285,64 +283,65 @@ void rotateMeshBy6dFacedir(scene::IMesh *mesh, int facedir)
 	for(u16 j = 0; j < mc; j++)
 	{
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-		u16 vc = buf->getVertexCount();
-		for(u16 i=0; i<vc; i++)
-		{
+		const u32 stride = getVertexPitchFromType(buf->getVertexType());
+		u32 vertex_count = buf->getVertexCount();
+		u8 *vertices = (u8 *)buf->getVertices();
+		for (u32 i = 0; i < vertex_count; i++) {
+			video::S3DVertex *vertex = (video::S3DVertex *)(vertices + i * stride);
 			switch (axisdir)
 			{
 			case 0:
 				if(facedir == 1)
-					vertices[i].Pos.rotateXZBy(-90);
+					vertex->Pos.rotateXZBy(-90);
 				else if(facedir == 2)
-					vertices[i].Pos.rotateXZBy(180);
+					vertex->Pos.rotateXZBy(180);
 				else if(facedir == 3)
-					vertices[i].Pos.rotateXZBy(90);
+					vertex->Pos.rotateXZBy(90);
 				break;
 			case 1: // z+
-				vertices[i].Pos.rotateYZBy(90);
+				vertex->Pos.rotateYZBy(90);
 				if(facedir == 1)
-					vertices[i].Pos.rotateXYBy(90);
+					vertex->Pos.rotateXYBy(90);
 				else if(facedir == 2)
-					vertices[i].Pos.rotateXYBy(180);
+					vertex->Pos.rotateXYBy(180);
 				else if(facedir == 3)
-					vertices[i].Pos.rotateXYBy(-90);
+					vertex->Pos.rotateXYBy(-90);
 				break;
 			case 2: //z-
-				vertices[i].Pos.rotateYZBy(-90);
+				vertex->Pos.rotateYZBy(-90);
 				if(facedir == 1)
-					vertices[i].Pos.rotateXYBy(-90);
+					vertex->Pos.rotateXYBy(-90);
 				else if(facedir == 2)
-					vertices[i].Pos.rotateXYBy(180);
+					vertex->Pos.rotateXYBy(180);
 				else if(facedir == 3)
-					vertices[i].Pos.rotateXYBy(90);
+					vertex->Pos.rotateXYBy(90);
 				break;
 			case 3:  //x+
-				vertices[i].Pos.rotateXYBy(-90);
+				vertex->Pos.rotateXYBy(-90);
 				if(facedir == 1)
-					vertices[i].Pos.rotateYZBy(90);
+					vertex->Pos.rotateYZBy(90);
 				else if(facedir == 2)
-					vertices[i].Pos.rotateYZBy(180);
+					vertex->Pos.rotateYZBy(180);
 				else if(facedir == 3)
-					vertices[i].Pos.rotateYZBy(-90);
+					vertex->Pos.rotateYZBy(-90);
 				break;
 			case 4:  //x-
-				vertices[i].Pos.rotateXYBy(90);
+				vertex->Pos.rotateXYBy(90);
 				if(facedir == 1)
-					vertices[i].Pos.rotateYZBy(-90);
+					vertex->Pos.rotateYZBy(-90);
 				else if(facedir == 2)
-					vertices[i].Pos.rotateYZBy(180);
+					vertex->Pos.rotateYZBy(180);
 				else if(facedir == 3)
-					vertices[i].Pos.rotateYZBy(90);
+					vertex->Pos.rotateYZBy(90);
 				break;
 			case 5:
-				vertices[i].Pos.rotateXYBy(-180);
+				vertex->Pos.rotateXYBy(-180);
 				if(facedir == 1)
-					vertices[i].Pos.rotateXZBy(90);
+					vertex->Pos.rotateXZBy(90);
 				else if(facedir == 2)
-					vertices[i].Pos.rotateXZBy(180);
+					vertex->Pos.rotateXZBy(180);
 				else if(facedir == 3)
-					vertices[i].Pos.rotateXZBy(-90);
+					vertex->Pos.rotateXZBy(-90);
 				break;
 			default:
 				break;
@@ -370,16 +369,45 @@ void recalculateBoundingBox(scene::IMesh *src_mesh)
 scene::IMesh* cloneMesh(scene::IMesh *src_mesh)
 {
 	scene::SMesh* dst_mesh = new scene::SMesh();
-	for(u16 j = 0; j < src_mesh->getMeshBufferCount(); j++)
-	{
+	for (u16 j = 0; j < src_mesh->getMeshBufferCount(); j++)	{
 		scene::IMeshBuffer *buf = src_mesh->getMeshBuffer(j);
-		video::S3DVertex *vertices = (video::S3DVertex*)buf->getVertices();
-		u16 *indices = (u16*)buf->getIndices();
-		scene::SMeshBuffer *temp_buf = new scene::SMeshBuffer();
-		temp_buf->append(vertices, buf->getVertexCount(),
-			indices, buf->getIndexCount());
-		dst_mesh->addMeshBuffer(temp_buf);
-		temp_buf->drop();
+		switch (buf->getVertexType()) {
+			case video::EVT_STANDARD: {
+				video::S3DVertex *v =
+					(video::S3DVertex *) buf->getVertices();
+				u16 *indices = (u16*)buf->getIndices();
+				scene::SMeshBuffer *temp_buf = new scene::SMeshBuffer();
+				temp_buf->append(v, buf->getVertexCount(),
+					indices, buf->getIndexCount());
+				dst_mesh->addMeshBuffer(temp_buf);
+				temp_buf->drop();
+				break;
+			}
+			case video::EVT_2TCOORDS: {
+				video::S3DVertex2TCoords *v =
+					(video::S3DVertex2TCoords *) buf->getVertices();
+				u16 *indices = (u16*)buf->getIndices();
+				scene::SMeshBufferTangents *temp_buf =
+					new scene::SMeshBufferTangents();
+				temp_buf->append(v, buf->getVertexCount(),
+					indices, buf->getIndexCount());
+				dst_mesh->addMeshBuffer(temp_buf);
+				temp_buf->drop();
+				break;
+			}
+			case video::EVT_TANGENTS: {
+				video::S3DVertexTangents *v =
+					(video::S3DVertexTangents *) buf->getVertices();
+				u16 *indices = (u16*)buf->getIndices();
+				scene::SMeshBufferTangents *temp_buf =
+					new scene::SMeshBufferTangents();
+				temp_buf->append(v, buf->getVertexCount(),
+					indices, buf->getIndexCount());
+				dst_mesh->addMeshBuffer(temp_buf);
+				temp_buf->drop();
+				break;
+			}
+		}
 	}
 	return dst_mesh;					
 }
