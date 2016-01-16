@@ -81,15 +81,15 @@ struct MapgenValleysParams : public MapgenSpecificParams {
 };
 
 struct TerrainNoise {
-	s16 x; 
-	s16 z; 
-	float terrain_height; 
-	float *rivers; 
-	float *valley; 
-	float valley_profile; 
-	float *slope; 
-	float inter_valley_fill; 
-	float cliffs; 
+	s16 x;
+	s16 z;
+	float terrain_height;
+	float *rivers;
+	float *valley;
+	float valley_profile;
+	float *slope;
+	float inter_valley_fill;
+	float cliffs;
 	float corr;
 };
 
@@ -100,7 +100,7 @@ public:
 	~MapgenValleys();
 
 	virtual void makeChunk(BlockMakeData *data);
-	inline int getGroundLevelAtPoint(v2s16 p);
+	int getGroundLevelAtPoint(v2s16 p);
 
 private:
 	EmergeManager *m_emerge;
