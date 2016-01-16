@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <iostream>
 #include <map>
-#include <list>
 #include "util/numeric.h"
 #include "mapnode.h"
 #ifndef SERVER
@@ -41,8 +40,6 @@ class ITextureSource;
 class IShaderSource;
 class IGameDef;
 class NodeResolver;
-
-typedef std::list<std::pair<content_t, int> > GroupItems;
 
 enum ContentParamType
 {
@@ -303,7 +300,7 @@ public:
 	virtual bool getId(const std::string &name, content_t &result) const=0;
 	virtual content_t getId(const std::string &name) const=0;
 	// Allows "group:name" in addition to regular node names
-	virtual void getIds(const std::string &name, std::set<content_t> &result)
+	virtual void getIds(const std::string &name, std::vector<content_t> &result)
 			const=0;
 	virtual const ContentFeatures &get(const std::string &name) const=0;
 
@@ -327,7 +324,7 @@ public:
 	// If not found, returns CONTENT_IGNORE
 	virtual content_t getId(const std::string &name) const=0;
 	// Allows "group:name" in addition to regular node names
-	virtual void getIds(const std::string &name, std::set<content_t> &result)
+	virtual void getIds(const std::string &name, std::vector<content_t> &result)
 		const=0;
 	// If not found, returns the features of CONTENT_UNKNOWN
 	virtual const ContentFeatures &get(const std::string &name) const=0;

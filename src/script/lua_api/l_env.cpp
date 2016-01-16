@@ -534,28 +534,28 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 	INodeDefManager *ndef = getServer(L)->ndef();
 	v3s16 pos = read_v3s16(L, 1);
 	int radius = luaL_checkinteger(L, 2);
-	std::set<content_t> filter;
-	if(lua_istable(L, 3)){
+	std::vector<content_t> filter;
+	if (lua_istable(L, 3)) {
 		int table = 3;
 		lua_pushnil(L);
-		while(lua_next(L, table) != 0){
+		while (lua_next(L, table) != 0){
 			// key at index -2 and value at index -1
 			luaL_checktype(L, -1, LUA_TSTRING);
 			ndef->getIds(lua_tostring(L, -1), filter);
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
-	} else if(lua_isstring(L, 3)){
+	} else if (lua_isstring(L, 3)) {
 		ndef->getIds(lua_tostring(L, 3), filter);
 	}
 
-	for(int d=1; d<=radius; d++){
+	for (int d = 1; d <= radius; d++) {
 		std::vector<v3s16> list = FacePositionCache::getFacePositions(d);
-		for(std::vector<v3s16>::iterator i = list.begin();
-				i != list.end(); ++i){
+		for (std::vector<v3s16>::iterator i = list.begin();
+				i != list.end(); ++i) {
 			v3s16 p = pos + (*i);
 			content_t c = env->getMap().getNodeNoEx(p).getContent();
-			if(filter.count(c) != 0){
+			if (CONTAINS(filter, c)) {
 				push_v3s16(L, p);
 				return 1;
 			}
@@ -573,41 +573,45 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 	INodeDefManager *ndef = getServer(L)->ndef();
 	v3s16 minp = read_v3s16(L, 1);
 	v3s16 maxp = read_v3s16(L, 2);
-	std::set<content_t> filter;
-	if(lua_istable(L, 3)) {
+	std::vector<content_t> filter;
+	if (lua_istable(L, 3)) {
 		int table = 3;
 		lua_pushnil(L);
-		while(lua_next(L, table) != 0) {
+		while (lua_next(L, table) != 0) {
 			// key at index -2 and value at index -1
 			luaL_checktype(L, -1, LUA_TSTRING);
 			ndef->getIds(lua_tostring(L, -1), filter);
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
-	} else if(lua_isstring(L, 3)) {
+	} else if (lua_isstring(L, 3)) {
 		ndef->getIds(lua_tostring(L, 3), filter);
 	}
 
-	std::map<content_t, u16> individual_count;
+	std::vector<u32> individual_count;
+	individual_count.resize(filter.size());
 
 	lua_newtable(L);
 	u64 i = 0;
 	for (s16 x = minp.X; x <= maxp.X; x++)
-		for (s16 y = minp.Y; y <= maxp.Y; y++)
-			for (s16 z = minp.Z; z <= maxp.Z; z++) {
-				v3s16 p(x, y, z);
-				content_t c = env->getMap().getNodeNoEx(p).getContent();
-				if (filter.count(c) != 0) {
-					push_v3s16(L, p);
-					lua_rawseti(L, -2, ++i);
-					individual_count[c]++;
-				}
+	for (s16 y = minp.Y; y <= maxp.Y; y++)
+	for (s16 z = minp.Z; z <= maxp.Z; z++) {
+		v3s16 p(x, y, z);
+		content_t c = env->getMap().getNodeNoEx(p).getContent();
+
+		std::vector<content_t>::iterator it = std::find(filter.begin(), filter.end(), c);
+		if (it != filter.end()) {
+			push_v3s16(L, p);
+			lua_rawseti(L, -2, ++i);
+
+			u32 index_in_filter = it - filter.begin();
+			individual_count[index_in_filter]++;
+		}
 	}
 	lua_newtable(L);
-	for (std::set<content_t>::iterator it = filter.begin();
-			it != filter.end(); ++it) {
-		lua_pushnumber(L, individual_count[*it]);
-		lua_setfield(L, -2, ndef->get(*it).name.c_str());
+	for (u32 i = 0; i < filter.size(); ++i) {
+		lua_pushnumber(L, individual_count[i]);
+		lua_setfield(L, -2, ndef->get(filter[i]).name.c_str());
 	}
 	return 2;
 }
@@ -628,7 +632,7 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 	INodeDefManager *ndef = getServer(L)->ndef();
 	v3s16 minp = read_v3s16(L, 1);
 	v3s16 maxp = read_v3s16(L, 2);
-	std::set<content_t> filter;
+	std::vector<content_t> filter;
 
 	if (lua_istable(L, 3)) {
 		int table = 3;
@@ -654,8 +658,8 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 		for (; y <= maxp.Y; y++) {
 			v3s16 psurf(x, y + 1, z);
 			content_t csurf = env->getMap().getNodeNoEx(psurf).getContent();
-			if(c != CONTENT_AIR && csurf == CONTENT_AIR &&
-					filter.count(c) != 0) {
+			if (c != CONTENT_AIR && csurf == CONTENT_AIR &&
+					CONTAINS(filter, c)) {
 				push_v3s16(L, v3s16(x, y, z));
 				lua_rawseti(L, -2, ++i);
 			}
