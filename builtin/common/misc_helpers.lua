@@ -397,10 +397,11 @@ if INIT == "game" then
 		end
 		local pos = pointed_thing.above
 		local node = anode
+		local second_node = unode
 
 		if undef and undef.buildable_to then
 			pos = pointed_thing.under
-			node = unode
+			node, second_node = second_node, node
 			iswall = false
 		end
 
@@ -428,26 +429,24 @@ if INIT == "game" then
 			iswall = not iswall
 		end
 
-		if iswall then
-			core.set_node(pos, {name = wield_name,
-					param2 = dirs1[fdir+1]})
+		local param2
+		if orient_flags.copy_param2 then
+			param2 = second_node.param2
+		elseif iswall then
+			param2 = dirs1[fdir+1]
 		elseif isceiling then
 			if orient_flags.force_facedir then
-				core.set_node(pos, {name = wield_name,
-						param2 = 20})
+				param2 = 20
 			else
-				core.set_node(pos, {name = wield_name,
-						param2 = dirs2[fdir+1]})
+				param2 = dirs2[fdir+1]
 			end
-		else -- place right side up
-			if orient_flags.force_facedir then
-				core.set_node(pos, {name = wield_name,
-						param2 = 0})
-			else
-				core.set_node(pos, {name = wield_name,
-						param2 = fdir})
-			end
+		 -- place right side up
+		elseif orient_flags.force_facedir then
+			param2 = 0
+		else
+			param2 = fdir
 		end
+		core.set_node(pos, {name = wield_name, param2 = param2})
 
 		if not infinitestacks then
 			itemstack:take_item()
@@ -463,9 +462,10 @@ if INIT == "game" then
 
 
 	core.rotate_node = function(itemstack, placer, pointed_thing)
+		local ctrl = placer:get_player_control()
 		core.rotate_and_place(itemstack, placer, pointed_thing,
 				core.setting_getbool("creative_mode"),
-				{invert_wall = placer:get_player_control().sneak})
+				{invert_wall = ctrl.sneak, copy_param2 = ctrl.aux1})
 		return itemstack
 	end
 end
