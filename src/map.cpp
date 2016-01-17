@@ -1732,11 +1732,14 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 						if (nb.t != NEIGHBOR_UPPER && liquid_type != LIQUID_NONE)
 							m_transforming_liquid.push_back(npos);
 						// if the current node happens to be a flowing node, it will start to flow down here.
-						if (nb.t == NEIGHBOR_LOWER) {
+						if (nb.t == NEIGHBOR_LOWER)
 							flowing_down = true;
-						}
 					} else {
 						neutrals[num_neutrals++] = nb;
+						// If neutral below is ignore prevent water spreading outwards
+						if (nb.t == NEIGHBOR_LOWER &&
+								nb.n.getContent() == CONTENT_IGNORE)
+							flowing_down = true;
 					}
 					break;
 				case LIQUID_SOURCE:
