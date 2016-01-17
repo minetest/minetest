@@ -670,15 +670,23 @@ content_t CNodeDefManager::set(const std::string &name, const ContentFeatures &d
 		assert(id != CONTENT_IGNORE);
 		addNameIdMapping(id, name);
 	}
+
+	// Remove this content to the list of all groups it previously belonged to
+	for (ItemGroupList::const_iterator i = m_content_features[id].groups.begin();
+			i != m_content_features[id].groups.end(); ++i) {
+		const std::string &group_name = i->first;
+		std::vector<content_t> &ids = m_group_to_items[group_name];
+		ids.erase(std::remove(ids.begin(), ids.end(), id), ids.end());
+	}
+
+	// Update ContentFeatures
 	m_content_features[id] = def;
 	verbosestream << "NodeDefManager: registering content id \"" << id
 		<< "\": name=\"" << def.name << "\""<<std::endl;
 
 	// Add this content to the list of all groups it belongs to
-	// FIXME: This should remove a node from groups it no longer
-	// belongs to when a node is re-registered
 	for (ItemGroupList::const_iterator i = def.groups.begin();
-		i != def.groups.end(); ++i) {
+			i != def.groups.end(); ++i) {
 		const std::string &group_name = i->first;
 		m_group_to_items[group_name].push_back(id);
 	}
