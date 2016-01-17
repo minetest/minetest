@@ -784,12 +784,12 @@ core.register_chatcommand("shutdown", {
 				core.log("action", name .. " shuts down server, delayed "..param.." seconds.")
 				core.chat_send_all("*** Server will be shutting down in "..param.." seconds (operator request).")
 				core.after(param, function()
-				core.chat_send_all("*** Server shutting down (operator request).")
-				core.request_shutdown()
+					core.chat_send_all("*** Server shutting down (operator request).")
+					core.request_shutdown()
 				end)
-				return true, "shutdowning server down in "..time.." seconds!!!"
+				return true, "shutting server down in "..time.." seconds"
 			else
-				return false, "Delay time must be between 1 and 3600"
+				return false, "Delay time must be between 1 and 360"
 			end
 		else
 			core.log("action", name.." shuts down server")
