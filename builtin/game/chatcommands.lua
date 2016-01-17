@@ -774,12 +774,28 @@ core.register_chatcommand("time", {
 })
 
 core.register_chatcommand("shutdown", {
+	params = "<delay_in_seconds(0..360)> | Leave blank for normal shutdown",
 	description = "shutdown server",
 	privs = {server=true},
 	func = function(name, param)
-		core.log("action", name .. " shuts down server")
-		core.request_shutdown()
-		core.chat_send_all("*** Server shutting down (operator request).")
+		if param ~= "" then
+			param = tonumber(param) or 0
+			if param > 0 or param < 360 then
+				minetest.log("action", name .. " shuts down server, delayed "..param.." seconds.")
+				minetest.chat_send_all("*** Server will be shutting down in "..param.." seconds (operator request).")
+				minetest.after(param, function()
+					minetest.chat_send_all("*** Server shutting down (operator request).")
+					minetest.request_shutdown()
+				end)
+				return true, "shutdowning server down in "..time.." seconds!!!"
+			else
+				return false, "Delay time must be between 1 and 3600"
+			end
+		else
+			minetest.log("action", name.." shuts down server")
+			minetest.chat_send_all("*** Server shutting down (operator request).")
+			minetest.request_shutdown()
+		end
 	end,
 })
 
