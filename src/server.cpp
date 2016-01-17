@@ -366,9 +366,6 @@ Server::~Server()
 	{
 		MutexAutoLock envlock(m_env_mutex);
 
-		// Execute script shutdown hooks
-		m_script->on_shutdown();
-
 		infostream << "Server: Saving players" << std::endl;
 		m_env->saveLoadedPlayers();
 
@@ -384,6 +381,9 @@ Server::~Server()
 		}
 		m_env->kickAllPlayers(SERVER_ACCESSDENIED_SHUTDOWN,
 			kick_msg, reconnect);
+
+		// Execute script shutdown hooks
+		m_script->on_shutdown();
 
 		infostream << "Server: Saving environment metadata" << std::endl;
 		m_env->saveMeta();
