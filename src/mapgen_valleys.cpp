@@ -670,8 +670,8 @@ int MapgenValleys::generateTerrain()
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index_2d++) {
-		s16 river_y = round(noise_rivers->result[index_2d]);
-		s16 surface_y = round(noise_terrain_height->result[index_2d]);
+		s16 river_y = floor(noise_rivers->result[index_2d]);
+		s16 surface_y = floor(noise_terrain_height->result[index_2d]);
 		float slope = noise_inter_valley_slope->result[index_2d];
 
 		heightmap[index_2d] = surface_y;
@@ -703,7 +703,7 @@ int MapgenValleys::generateTerrain()
 				} else if (river && y < river_y) {
 					// river
 					vm->m_data[index_data] = n_river_water;
-				} else if ((!fast_terrain) && (!river) && fill * slope > y - surface_y) {
+				} else if ((!fast_terrain) && (!river) && round(fill * slope) >= y - surface_y) {
 					// ground (slow method)
 					vm->m_data[index_data] = n_stone;
 					heightmap[index_2d] = surface_max_y = y;
