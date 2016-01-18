@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define  MG_VALLEYS_FAST          0x04
 #define  MG_VALLEYS_HUMID_RIVERS  0x08
 #define  MG_VALLEYS_RUGGED        0x10
+#define  MG_VALLEYS_V7_CAVES      0x20
 
 class BiomeManager;
 
@@ -61,6 +62,8 @@ struct MapgenValleysParams : public MapgenSpecificParams {
 	NoiseParams np_biome_heat_blend;
 	NoiseParams np_biome_humidity;
 	NoiseParams np_biome_humidity_blend;
+	NoiseParams np_cave1;
+	NoiseParams np_cave2;
 	NoiseParams np_cliffs;
 	NoiseParams np_corr;
 	NoiseParams np_filler_depth;
@@ -102,11 +105,18 @@ public:
 	virtual void makeChunk(BlockMakeData *data);
 	int getGroundLevelAtPoint(v2s16 p);
 
+	// Required by cavegen
+	content_t c_water_source;
+	content_t c_lava_source;
+	content_t c_ice;
+
+	int ystride;
+	s16 *ridge_heightmap;
+
 private:
 	EmergeManager *m_emerge;
 	BiomeManager *bmgr;
 
-	int ystride;
 	int zstride;
 
 	u32 spflags;
@@ -115,6 +125,7 @@ private:
 	bool rugged_terrain;
 	bool humid_rivers;
 	bool use_altitude_chill;
+	bool v7_caves;
 
 	v3s16 node_min;
 	v3s16 node_max;
@@ -123,6 +134,8 @@ private:
 
 	Noise *noise_filler_depth;
 
+	Noise *noise_cave1;
+	Noise *noise_cave2;
 	Noise *noise_cliffs;
 	Noise *noise_corr;
 	Noise *noise_heat;
@@ -151,8 +164,6 @@ private:
 	content_t c_cobble;
 	content_t c_desert_stone;
 	content_t c_dirt;
-	content_t c_ice;
-	content_t c_lava_source;
 	content_t c_mossycobble;
 	content_t c_river_water_source;
 	content_t c_sand;
@@ -161,7 +172,6 @@ private:
 	content_t c_stair_cobble;
 	content_t c_stair_sandstonebrick;
 	content_t c_stone;
-	content_t c_water_source;
 
 	float terrainLevelAtPoint(s16 x, s16 z);
 
@@ -177,6 +187,7 @@ private:
 	void dustTopNodes();
 
 	void generateSimpleCaves(s16 max_stone_y);
+	void generateV7Caves(s16 max_stone_y);
 };
 
 struct MapgenFactoryValleys : public MapgenFactory {

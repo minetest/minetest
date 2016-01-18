@@ -1046,7 +1046,8 @@ mgfractal_np_cave2 (Mapgen fractal cave2 noise parameters) noise_params 0, 12, (
 #    "fast" produces softer terrain, more quickly
 #    "humid_rivers" modifies the humidity around rivers and in areas where water would tend to pool. It may interfere with delicately adjusted biomes.
 #    "rugged" and "cliffs" do nothing unless "fast" is enabled
-mg_valleys_spflags (Valleys C Flags) flags altitude_chill,cliffs,humid_rivers,nofast,rugged altitude_chill,noaltitude_chill,cliffs,nocliffs,fast,nofast,humid_rivers,nohumid_rivers,rugged,norugged
+#    "v7_caves" uses the v7 cave generator
+mg_valleys_spflags (Valleys C Flags) flags altitude_chill,cliffs,humid_rivers,nofast,rugged,nov7_caves altitude_chill,noaltitude_chill,cliffs,nocliffs,fast,nofast,humid_rivers,nohumid_rivers,rugged,norugged,v7_caves,nov7_caves
 
 # The altitude at which temperature drops by 20C
 mg_valleys_altitude_chill (Altitude Chill) int 90
@@ -1110,6 +1111,10 @@ mg_valleys_np_valley_profile (Valley Profile) noise_params 0.6, 0.5, (512, 512, 
 
 # Slope and fill work together to modify the heights
 mg_valleys_np_inter_valley_slope (Valley Slope) noise_params 0.5, 0.5, (128, 128, 128), 746, 1, 1.0, 2.0
+
+# These are the noises for v7 caves.
+mg_valleys_np_v7_cave1 (V7 cave1 noise) noise_params 0, 12, (100, 100, 100), 52534, 4, 0.5, 2.0
+mg_valleys_np_v7_cave2 (V7 cave2 noise) noise_params 0, 12, (100, 100, 100), 10325, 4, 0.5, 2.0
 
 [*Security]
 
