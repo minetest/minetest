@@ -880,8 +880,14 @@ bool Settings::remove(const std::string &name)
 {
 	MutexAutoLock lock(m_mutex);
 
-	delete m_settings[name].group;
-	return m_settings.erase(name);
+	std::map<std::string, SettingsEntry>::iterator it = m_settings.find(name);
+	if (it != m_settings.end()) {
+		delete it->second.group;
+		m_settings.erase(it);
+		return true;
+	} else {
+		return false;
+	}
 }
 
 
