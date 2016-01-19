@@ -3358,7 +3358,7 @@ Definition tables
 * `{name="image.png", animation={Tile Animation definition}}`
 * `{name="image.png", backface_culling=bool, tileable_vertical=bool,
     tileable_horizontal=bool}`
-    * backface culling only supported in special tiles.
+    * backface culling enabled by default for most nodes
     * tileable flags are info for shaders, how they should treat texture
 	  when displacement mapping is used
 	  Directions are from the point of view of the tile texture,

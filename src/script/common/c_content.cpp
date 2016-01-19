@@ -294,14 +294,31 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 		index = lua_gettop(L) + 1 + index;
 
 	TileDef tiledef;
-	bool default_tiling = (drawtype == NDT_PLANTLIKE || drawtype == NDT_FIRELIKE)
-		? false : true;
+
+	bool default_tiling = true;
+	bool default_culling = true;
+	switch (drawtype) {
+		case NDT_PLANTLIKE:
+		case NDT_FIRELIKE:
+			default_tiling = false;
+			// "break" is omitted here intentionaly, as PLANTLIKE
+			// FIRELIKE drawtype both should default to having
+			// backface_culling to false.
+		case NDT_MESH:
+		case NDT_LIQUID:
+			default_culling = false;
+			break;
+		default:
+			break;
+	}
+
 	// key at index -2 and value at index
 	if(lua_isstring(L, index)){
 		// "default_lava.png"
 		tiledef.name = lua_tostring(L, index);
 		tiledef.tileable_vertical = default_tiling;
 		tiledef.tileable_horizontal = default_tiling;
+		tiledef.backface_culling = default_culling;
 	}
 	else if(lua_istable(L, index))
 	{
@@ -310,7 +327,7 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 		getstringfield(L, index, "name", tiledef.name);
 		getstringfield(L, index, "image", tiledef.name); // MaterialSpec compat.
 		tiledef.backface_culling = getboolfield_default(
-			L, index, "backface_culling", true);
+			L, index, "backface_culling", default_culling);
 		tiledef.tileable_horizontal = getboolfield_default(
 			L, index, "tileable_horizontal", default_tiling);
 		tiledef.tileable_vertical = getboolfield_default(
