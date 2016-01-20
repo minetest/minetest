@@ -59,11 +59,12 @@ local function get_formspec(data)
 			local rawlist = data.list:get_raw_list()
 
 			local all_enabled = true
-			for j=1,#rawlist,1 do
-				if rawlist[j].modpack == mod.name and
-					rawlist[j].enabled ~= true then
-						all_enabled = false
-						break
+			for _, x in ipairs(rawlist) do
+				if not x.is_modpack and
+						modmgr.is_modpack_of(mod, x) and
+						x.enabled ~= true then
+					all_enabled = false
+					break
 				end
 			end
 
@@ -104,12 +105,13 @@ local function enable_mod(this, toset)
 		end
 	else
 		local list = this.data.list:get_raw_list()
-		for i=1,#list,1 do
-			if list[i].modpack == mod.name then
+		for _, x in ipairs(list) do
+			if not x.is_modpack and
+					modmgr.is_modpack_of(mod, x) then
 				if toset == nil then
-					toset = not list[i].enabled
+					toset = not x.enabled
 				end
-				list[i].enabled = toset
+				x.enabled = toset
 			end
 		end
 	end

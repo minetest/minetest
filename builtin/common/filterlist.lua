@@ -291,27 +291,32 @@ function sort_mod_list(self)
 		if a.typ ~= b.typ then
 			return b.typ == "game_mod"
 		end
-		-- If in same or no modpack, sort by name
-		if a.modpack == b.modpack then
-			if a.name:lower() == b.name:lower() then
-				return a.name < b.name
-			end
-			return a.name:lower() < b.name:lower()
-		-- Else compare name to modpack name
-		else
-			-- Always show modpack pseudo-mod on top of modpack mod list
-			if a.name == b.modpack then
+		local a_parents = {}
+		local b_parents = {}
+		local tmp = a
+		while tmp do
+			table.insert(a_parents, 1, tmp.name)
+			tmp = tmp.modpack
+		end
+		tmp = b
+		while tmp do
+			table.insert(b_parents, 1, tmp.name)
+			tmp = tmp.modpack
+		end
+		-- Sort lexicographically
+		for i, b_val in ipairs(b_parents) do
+			local a_val = a_parents[i]
+			if not a_val then return true end
+			if a_val:lower() < b_val:lower() then
 				return true
-			elseif b.name == a.modpack then
+			elseif a_val:lower() > b_val:lower() then
+				return false
+			elseif a_val < b_val then
+				return true
+			elseif a_val > b_val then
 				return false
 			end
-			
-			local name_a = a.modpack or a.name
-			local name_b = b.modpack or b.name
-			if name_a:lower() == name_b:lower() then
-				return  name_a < name_b
-			end
-			return name_a:lower() < name_b:lower()
 		end
+		return false
 	end)
 end

@@ -26,20 +26,17 @@ function get_mods(path,retval,modpack)
 
 			toadd.name = mods[i]
 			toadd.path = path .. DIR_DELIM .. mods[i] .. DIR_DELIM
-			if modpack ~= nil and
-				modpack ~= "" then
-				toadd.modpack = modpack
-			else
-				local filename = path .. DIR_DELIM .. mods[i] .. DIR_DELIM .. "modpack.txt"
-				local error = nil
-				modpackfile,error = io.open(filename,"r")
-			end
+			toadd.modpack = modpack
+
+			local filename = path .. DIR_DELIM .. mods[i] .. DIR_DELIM .. "modpack.txt"
+			local error = nil
+			modpackfile, error = io.open(filename, "r")
 
 			if modpackfile ~= nil then
 				modpackfile:close()
 				toadd.is_modpack = true
 				table.insert(retval,toadd)
-				get_mods(path .. DIR_DELIM .. mods[i],retval,mods[i])
+				get_mods(path .. DIR_DELIM .. mods[i],retval,toadd)
 			else
 				table.insert(retval,toadd)
 			end
@@ -49,6 +46,16 @@ end
 
 --modmanager implementation
 modmgr = {}
+
+--------------------------------------------------------------------------------
+function modmgr.is_modpack_of(a, b)
+	if not a.is_modpack then return false end
+	while b.modpack do
+		if b.modpack == a then return true end
+		b = b.modpack
+	end
+	return false
+end
 
 --------------------------------------------------------------------------------
 function modmgr.extract(modfile)
@@ -236,7 +243,7 @@ function modmgr.render_modlist(render_list)
 	end
 
 	local list = render_list:get_list()
-	local last_modpack = nil
+	local indent_level = -1
 
 	for i,v in ipairs(list) do
 		if retval ~= "" then
@@ -249,11 +256,12 @@ function modmgr.render_modlist(render_list)
 			local rawlist = render_list:get_raw_list()
 
 			local all_enabled = true
-			for j=1,#rawlist,1 do
-				if rawlist[j].modpack == list[i].name and
-					rawlist[j].enabled ~= true then
-						all_enabled = false
-						break
+			for _, x in ipairs(rawlist) do
+				if not x.is_modpack and
+						modmgr.is_modpack_of(v, x) and
+						x.enabled ~= true then
+					all_enabled = false
+					break
 				end
 			end
 
@@ -272,10 +280,15 @@ function modmgr.render_modlist(render_list)
 			end
 		end
 
-		retval = retval .. color
-		if v.modpack  ~= nil then
-			retval = retval .. "    "
+		local last_mod = list[i - 1]
+		while last_mod ~= v.modpack do
+			last_mod = last_mod.modpack
+			indent_level = indent_level - 1
 		end
+		indent_level = indent_level + 1
+
+		retval = retval .. color
+		retval = retval .. string.rep("    ", indent_level)
 		retval = retval .. v.name
 	end
 
