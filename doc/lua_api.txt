@@ -2338,6 +2338,9 @@ These functions return the leftover itemstack.
     * Returns rating of the connect_to_raillike group corresponding to name
     * If name is not yet the name of a connect_to_raillike group, a new group id
     * is created, with that name
+* `minetest.get_waving_value(name)`: returns a numeric value
+    * name can be "leaves" or "plants"
+    * returned value defines which kind of waving is used by shaders
 * `minetest.get_content_id(name)`: returns an integer
     * Gets the internal content ID of `name`
 * `minetest.get_name_from_content_id(content_id)`: returns a string
