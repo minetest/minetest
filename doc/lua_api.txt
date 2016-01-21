@@ -2242,7 +2242,7 @@ These functions return the leftover itemstack.
 
 ### Timing
 * `minetest.after(time, func, ...)`
-    * Call the function `func` after `time` seconds
+    * Call the function `func` after `time` seconds, may be fractional
     * Optional: Variable number of arguments that are passed to `func`
 
 ### Server
