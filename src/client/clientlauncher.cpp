@@ -544,6 +544,7 @@ bool ClientLauncher::create_engine_device()
 	params.Vsync         = vsync;
 	params.EventReceiver = receiver;
 	params.HighPrecisionFPU = g_settings->getBool("high_precision_fpu");
+	params.ZBufferBits   = 24;
 #ifdef __ANDROID__
 	params.PrivateData = porting::app_global;
 	params.OGLES2ShaderPath = std::string(porting::path_user + DIR_DELIM +
