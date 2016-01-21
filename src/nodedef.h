@@ -137,7 +137,7 @@ struct TileDef
 	}
 
 	void serialize(std::ostream &os, u16 protocol_version) const;
-	void deSerialize(std::istream &is);
+	void deSerialize(std::istream &is, bool culling_ignore);
 };
 
 enum NodeDrawType
