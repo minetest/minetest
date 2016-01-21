@@ -64,7 +64,6 @@ void NodeMetadata::deSerialize(std::istream &is)
 		std::string var = deSerializeLongString(is);
 		m_stringvars[name] = var;
 	}
-
 	m_inventory->deSerialize(is);
 }
 
