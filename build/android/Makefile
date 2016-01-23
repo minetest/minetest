@@ -849,8 +849,8 @@ $(ROOT)/jni/src/android_version.h : prep_srcdir
 	echo "#define VERSION_MAJOR ${VERSION_MAJOR}";                             \
 	echo "#define VERSION_MINOR ${VERSION_MINOR}";                             \
 	echo "#define VERSION_PATCH ${VERSION_PATCH}";                             \
-	echo "#define VERSION_STRING STR(VERSION_MAJOR)\".\"STR(VERSION_MINOR)\
-	\".\"STR(VERSION_PATCH)";                                                  \
+	echo "#define VERSION_STRING STR(VERSION_MAJOR) \".\" STR(VERSION_MINOR) \
+	\".\" STR(VERSION_PATCH)";                                                 \
 	echo "#endif";                                                             \
 	} > $${VERSION_FILE_NEW};                                                  \
 	if ! cmp -s $${VERSION_FILE} $${VERSION_FILE_NEW}; then                    \
