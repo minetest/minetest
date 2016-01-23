@@ -34,7 +34,18 @@ DEALINGS IN THE SOFTWARE.
 
 #define UNUSED(expr) do { (void)(expr); } while (0)
 
+Mutex::Mutex()
+{
+	init_mutex(false);
+}
+
+
 Mutex::Mutex(bool recursive)
+{
+	init_mutex(recursive);
+}
+
+void Mutex::init_mutex(bool recursive)
 {
 #ifdef _WIN32
 	// Windows critical sections are recursive by default
@@ -88,6 +99,10 @@ void Mutex::unlock()
 	UNUSED(ret);
 #endif
 }
+
+RecursiveMutex::RecursiveMutex()
+	: Mutex(true)
+{}
 
 #endif
 

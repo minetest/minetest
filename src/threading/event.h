@@ -29,6 +29,7 @@ DEALINGS IN THE SOFTWARE.
 #if __cplusplus >= 201103L
 	#include <condition_variable>
 	#include "threading/mutex.h"
+	#include "threading/mutex_auto_lock.h"
 #elif defined(_WIN32)
 	#ifndef WIN32_LEAN_AND_MEAN
 		#define WIN32_LEAN_AND_MEAN
