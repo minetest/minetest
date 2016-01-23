@@ -3606,6 +3606,7 @@ Definition tables
           actual result to client in a short moment.
         ]]
         sound = {
+            breaks = "default_tool_break", -- tools only
             place = --[[<SimpleSoundSpec>]],
         },
 
