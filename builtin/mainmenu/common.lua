@@ -243,7 +243,12 @@ function asyncOnlineFavourites()
 	menudata.favorites = menudata.public_known
 	core.handle_async(
 		function(param)
-			return core.get_favorites("online")
+			local listsort = function(a, b)
+				return b.clients < a.clients
+			end
+			local list = core.get_favorites("online")
+			table.sort(list, listsort)
+			return list
 		end,
 		nil,
 		function(result)
