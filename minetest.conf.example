@@ -588,6 +588,9 @@
 #    type: float min: 0.25 max: 4
 # ambient_occlusion_gamma = 2.2
 
+#    Enable animation of inventory items.
+# inventory_items_animations = false
+
 ### Menus
 
 #    Use a cloud animation for the main menu background.

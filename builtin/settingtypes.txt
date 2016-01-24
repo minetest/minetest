@@ -508,6 +508,9 @@ directional_colored_fog (Colored fog) bool true
 #    set to the nearest valid value.
 ambient_occlusion_gamma (Ambient occlusion gamma) float 2.2 0.25 4.0
 
+#    Enables animation of inventory items.
+inventory_items_animations (Inventory items animations) bool false
+
 [**Menus]
 
 #    Use a cloud animation for the main menu background.

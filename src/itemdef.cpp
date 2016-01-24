@@ -332,7 +332,6 @@ public:
 			return cc;
 
 		ITextureSource *tsrc = gamedef->getTextureSource();
-		INodeDefManager *nodedef = gamedef->getNodeDefManager();
 		const ItemDefinition &def = get(name);
 
 		// Create new ClientCached
@@ -343,103 +342,11 @@ public:
 		if(def.inventory_image != "")
 			cc->inventory_texture = tsrc->getTexture(def.inventory_image);
 
-		// Additional processing for nodes:
-		// - Create a wield mesh if WieldMeshSceneNode can't render
-		//   the node on its own.
-		// - If inventory_texture isn't set yet, create one using
-		//   render-to-texture.
-		if (def.type == ITEM_NODE) {
-			// Get node properties
-			content_t id = nodedef->getId(name);
-			const ContentFeatures &f = nodedef->get(id);
+		ItemStack item = ItemStack();
+		item.name = def.name;
 
-			bool need_rtt_mesh = cc->inventory_texture == NULL;
-
-			// Keep this in sync with WieldMeshSceneNode::setItem()
-			bool need_wield_mesh =
-				!(f.mesh_ptr[0] ||
-				  f.drawtype == NDT_NORMAL ||
-				  f.drawtype == NDT_ALLFACES ||
-				  f.drawtype == NDT_AIRLIKE);
-
-			scene::IMesh *node_mesh = NULL;
-
-			if (need_rtt_mesh || need_wield_mesh) {
-				u8 param1 = 0;
-				if (f.param_type == CPT_LIGHT)
-					param1 = 0xee;
-
-				/*
-					Make a mesh from the node
-				*/
-				MeshMakeData mesh_make_data(gamedef, false);
-				u8 param2 = 0;
-				if (f.param_type_2 == CPT2_WALLMOUNTED)
-					param2 = 1;
-				MapNode mesh_make_node(id, param1, param2);
-				mesh_make_data.fillSingleNode(&mesh_make_node);
-				MapBlockMesh mapblock_mesh(&mesh_make_data, v3s16(0, 0, 0));
-				node_mesh = mapblock_mesh.getMesh();
-				node_mesh->grab();
-				video::SColor c(255, 255, 255, 255);
-				setMeshColor(node_mesh, c);
-
-				// scale and translate the mesh so it's a
-				// unit cube centered on the origin
-				scaleMesh(node_mesh, v3f(1.0/BS, 1.0/BS, 1.0/BS));
-				translateMesh(node_mesh, v3f(-1.0, -1.0, -1.0));
-			}
-
-			/*
-				Draw node mesh into a render target texture
-			*/
-			if (need_rtt_mesh) {
-				TextureFromMeshParams params;
-				params.mesh = node_mesh;
-				params.dim.set(64, 64);
-				params.rtt_texture_name = "INVENTORY_"
-					+ def.name + "_RTT";
-				params.delete_texture_on_shutdown = true;
-				params.camera_position.set(0, 1.0, -1.5);
-				params.camera_position.rotateXZBy(45);
-				params.camera_lookat.set(0, 0, 0);
-				// Set orthogonal projection
-				params.camera_projection_matrix.buildProjectionMatrixOrthoLH(
-						1.65, 1.65, 0, 100);
-				params.ambient_light.set(1.0, 0.2, 0.2, 0.2);
-				params.light_position.set(10, 100, -50);
-				params.light_color.set(1.0, 0.5, 0.5, 0.5);
-				params.light_radius = 1000;
-
-#ifdef __ANDROID__
-				params.camera_position.set(0, -1.0, -1.5);
-				params.camera_position.rotateXZBy(45);
-				params.light_position.set(10, -100, -50);
-#endif
-				cc->inventory_texture =
-					tsrc->generateTextureFromMesh(params);
-
-				// render-to-target didn't work
-				if (cc->inventory_texture == NULL) {
-					cc->inventory_texture =
-						tsrc->getTexture(f.tiledef[0].name);
-				}
-			}
-
-			/*
-				Use the node mesh as the wield mesh
-			*/
-			if (need_wield_mesh) {
-				cc->wield_mesh = node_mesh;
-				cc->wield_mesh->grab();
-
-				// no way reference count can be smaller than 2 in this place!
-				assert(cc->wield_mesh->getReferenceCount() >= 2);
-			}
-
-			if (node_mesh)
-				node_mesh->drop();
-		}
+		scene::IMesh *mesh = getItemMesh(gamedef, item);
+		cc->wield_mesh = mesh;
 
 		// Put in cache
 		m_clientcached.set(name, cc);

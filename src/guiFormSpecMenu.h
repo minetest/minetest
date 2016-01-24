@@ -143,7 +143,17 @@ class GUIFormSpecMenu : public GUIModalMenu
 		{
 		}
 		ImageDrawSpec(const std::string &a_name,
-				v2s32 a_pos, v2s32 a_geom):
+				const std::string &a_item_name,
+				const v2s32 &a_pos, const v2s32 &a_geom):
+			name(a_name),
+			item_name (a_item_name),
+			pos(a_pos),
+			geom(a_geom)
+		{
+			scale = true;
+		}
+		ImageDrawSpec(const std::string &a_name,
+				const v2s32 &a_pos, const v2s32 &a_geom):
 			name(a_name),
 			pos(a_pos),
 			geom(a_geom)
@@ -151,13 +161,14 @@ class GUIFormSpecMenu : public GUIModalMenu
 			scale = true;
 		}
 		ImageDrawSpec(const std::string &a_name,
-				v2s32 a_pos):
+				const v2s32 &a_pos):
 			name(a_name),
 			pos(a_pos)
 		{
 			scale = false;
 		}
 		std::string name;
+		std::string item_name;
 		v2s32 pos;
 		v2s32 geom;
 		bool scale;
@@ -282,7 +293,7 @@ public:
 	void regenerateGui(v2u32 screensize);
 
 	ItemSpec getItemAtPos(v2s32 p) const;
-	void drawList(const ListDrawSpec &s, int phase);
+	void drawList(const ListDrawSpec &s, int phase,	bool &item_hovered);
 	void drawSelectedItem();
 	void drawMenu();
 	void updateSelectedItem();
@@ -334,6 +345,8 @@ protected:
 	std::vector<std::pair<FieldSpec,gui::IGUIScrollBar*> > m_scrollbars;
 
 	ItemSpec *m_selected_item;
+	f32 m_timer1;
+	f32 m_timer2;
 	u32 m_selected_amount;
 	bool m_selected_dragging;
 
@@ -373,6 +386,7 @@ private:
 	TextDest         *m_text_dst;
 	unsigned int      m_formspec_version;
 	std::string       m_focused_element;
+	bool              m_selection_active;
 
 	typedef struct {
 		bool explicit_size;
