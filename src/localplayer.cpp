@@ -214,8 +214,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	v3f accel_f = v3f(0,0,0);
 
 	collisionMoveResult result = collisionMoveSimple(env, m_gamedef,
-			pos_max_d, m_collisionbox, player_stepheight, dtime,
-			position, m_speed, accel_f);
+		pos_max_d, m_collisionbox, player_stepheight, dtime,
+		&position, &m_speed, accel_f);
 
 	/*
 		If the player's feet touch the topside of any node, this is
