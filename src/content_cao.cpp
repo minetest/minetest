@@ -1192,15 +1192,13 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			f32 pos_max_d = BS*0.125; // Distance per iteration
 			v3f p_pos = m_position;
 			v3f p_velocity = m_velocity;
-			v3f p_acceleration = m_acceleration;
 			moveresult = collisionMoveSimple(env,env->getGameDef(),
 					pos_max_d, box, m_prop.stepheight, dtime,
-					p_pos, p_velocity, p_acceleration,
+					&p_pos, &p_velocity, m_acceleration,
 					this, m_prop.collideWithObjects);
 			// Apply results
 			m_position = p_pos;
 			m_velocity = p_velocity;
-			m_acceleration = p_acceleration;
 
 			bool is_end_position = moveresult.collides;
 			pos_translator.update(m_position, is_end_position, dtime);
