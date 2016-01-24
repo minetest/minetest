@@ -114,9 +114,7 @@ static scene::IMesh *createExtrusionMesh(int resolution_x, int resolution_y)
 	mesh->addMeshBuffer(buf);
 	buf->drop();
 	scaleMesh(mesh, scale);  // also recalculates bounding box
-	scene::IMesh *newmesh = createForsythOptimizedMesh(mesh);
-	mesh->drop();
-	return newmesh;
+	return mesh;
 }
 
 /*
@@ -435,4 +433,117 @@ void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 	// need to normalize normals when lighting is enabled (because of setScale())
 	m_meshnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, m_lighting);
 	m_meshnode->setVisible(true);
+}
+
+scene::IMesh *getItemMesh(IGameDef *gamedef, const ItemStack &item)
+{
+	ITextureSource *tsrc = gamedef->getTextureSource();
+	IItemDefManager *idef = gamedef->getItemDefManager();
+	INodeDefManager *ndef = gamedef->getNodeDefManager();
+	const ItemDefinition &def = item.getDefinition(idef);
+	const ContentFeatures &f = ndef->get(def.name);
+	content_t id = ndef->getId(def.name);
+
+	if (!g_extrusion_mesh_cache) {
+		g_extrusion_mesh_cache = new ExtrusionMeshCache();
+	} else {
+		g_extrusion_mesh_cache->grab();
+	}
+
+	scene::IMesh *mesh;
+
+	// If wield_image is defined, it overrides everything else
+	if (def.wield_image != "") {
+		mesh = getExtrudedMesh(tsrc, def.wield_image);
+		return mesh;
+	} else if (def.inventory_image != "") {
+		mesh = getExtrudedMesh(tsrc, def.inventory_image);
+		return mesh;
+	} else if (def.type == ITEM_NODE) {
+		if (f.mesh_ptr[0]) {
+			mesh = cloneMesh(f.mesh_ptr[0]);
+			scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
+			setMeshColor(mesh, video::SColor (255, 255, 255, 255));
+		} else if (f.drawtype == NDT_PLANTLIKE) {
+			mesh = getExtrudedMesh(tsrc,
+				tsrc->getTextureName(f.tiles[0].texture_id));
+			return mesh;
+		} else if (f.drawtype == NDT_NORMAL || f.drawtype == NDT_ALLFACES
+			|| f.drawtype == NDT_LIQUID || f.drawtype == NDT_FLOWINGLIQUID) {
+			mesh = cloneMesh(g_extrusion_mesh_cache->createCube());
+			scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
+		} else {
+			MeshMakeData mesh_make_data(gamedef, false);
+			MapNode mesh_make_node(id, 255, 0);
+			mesh_make_data.fillSingleNode(&mesh_make_node);
+			MapBlockMesh mapblock_mesh(&mesh_make_data, v3s16(0, 0, 0));
+			mesh = cloneMesh(mapblock_mesh.getMesh());
+			translateMesh(mesh, v3f(-BS, -BS, -BS));
+			scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
+			rotateMeshXZby(mesh, -45);
+			rotateMeshYZby(mesh, -30);
+
+			u32 mc = mesh->getMeshBufferCount();		
+			for (u32 i = 0; i < mc; ++i) {
+				video::SMaterial &material1 =
+					mesh->getMeshBuffer(i)->getMaterial();
+				video::SMaterial &material2 =
+					mapblock_mesh.getMesh()->getMeshBuffer(i)->getMaterial();
+				material1.setTexture(0, material2.getTexture(0));
+				material1.setTexture(1, material2.getTexture(1));
+				material1.setTexture(2, material2.getTexture(2));
+				material1.setTexture(3, material2.getTexture(3));
+				material1.MaterialType = material2.MaterialType;
+			}
+			return mesh;
+		}
+
+		shadeMeshFaces(mesh);
+		rotateMeshXZby(mesh, -45);
+		rotateMeshYZby(mesh, -30);
+
+		u32 mc = mesh->getMeshBufferCount();
+		for (u32 i = 0; i < mc; ++i) {
+			video::SMaterial &material = mesh->getMeshBuffer(i)->getMaterial();
+			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			material.setFlag(video::EMF_BILINEAR_FILTER, false);
+			material.setFlag(video::EMF_TRILINEAR_FILTER, false);		
+			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+			material.setFlag(video::EMF_LIGHTING, false);
+			if (f.tiles[i].animation_frame_count > 1) {
+				FrameSpec animation_frame = f.tiles[i].frames[0];
+				material.setTexture(0, animation_frame.texture);
+			} else {
+				material.setTexture(0, f.tiles[i].texture);
+			}
+		}
+		return mesh;
+	}
+	return NULL;
+}
+
+scene::IMesh * getExtrudedMesh(ITextureSource *tsrc,
+		const std::string &imagename)
+{
+	video::ITexture *texture = tsrc->getTextureForMesh(imagename);
+	if (!texture) {
+		return NULL;
+	}
+
+	core::dimension2d<u32> dim = texture->getSize();
+	scene::IMesh *mesh = cloneMesh(g_extrusion_mesh_cache->create(dim));
+
+	// Customize material
+	video::SMaterial &material = mesh->getMeshBuffer(0)->getMaterial();
+	material.setTexture(0, tsrc->getTexture(imagename));
+	material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+	material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE; 
+	material.setFlag(video::EMF_BILINEAR_FILTER, false);
+	material.setFlag(video::EMF_TRILINEAR_FILTER, false);		
+	material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+	material.setFlag(video::EMF_LIGHTING, false);
+	material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	scaleMesh(mesh, v3f(2.0, 2.0, 2.0));
+
+	return mesh;
 }

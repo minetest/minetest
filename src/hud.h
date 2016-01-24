@@ -137,7 +137,8 @@ private:
 	void drawItems(v2s32 upperleftpos, s32 itemcount, s32 offset,
 		InventoryList *mainlist, u16 selectitem, u16 direction);
 
-	void drawItem(const ItemStack &item, const core::rect<s32>& rect, bool selected);
+	void drawItem(const ItemStack &item, const core::rect<s32>& rect,
+		bool selected);
 
 	v2u32 m_screensize;
 	v2s32 m_displaycenter;
@@ -151,8 +152,10 @@ void drawItemStack(video::IVideoDriver *driver,
 		const ItemStack &item,
 		const core::rect<s32> &rect,
 		const core::rect<s32> *clip,
-		IGameDef *gamedef);
-
+		IGameDef *gamedef,
+		bool selected,
+		bool hovered,
+		bool dragged);
 
 #endif
 
