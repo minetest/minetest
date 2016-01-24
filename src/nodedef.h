@@ -104,6 +104,30 @@ struct NodeBox
 struct MapNode;
 class NodeMetadata;
 
+enum NodeDrawType
+{
+	NDT_NORMAL, // A basic solid block
+	NDT_AIRLIKE, // Nothing is drawn
+	NDT_LIQUID, // Do not draw face towards same kind of flowing/source liquid
+	NDT_FLOWINGLIQUID, // A very special kind of thing
+	NDT_GLASSLIKE, // Glass-like, don't draw faces towards other glass
+	NDT_ALLFACES, // Leaves-like, draw all faces no matter what
+	NDT_ALLFACES_OPTIONAL, // Fancy -> allfaces, fast -> normal
+	NDT_TORCHLIKE,
+	NDT_SIGNLIKE,
+	NDT_PLANTLIKE,
+	NDT_FENCELIKE,
+	NDT_RAILLIKE,
+	NDT_NODEBOX,
+	NDT_GLASSLIKE_FRAMED, // Glass-like, draw connected frames and all all
+	                      // visible faces
+						  // uses 2 textures, one for frames, second for faces
+	NDT_FIRELIKE, // Draw faces slightly rotated and only on connecting nodes,
+	NDT_GLASSLIKE_FRAMED_OPTIONAL,	// enabled -> connected, disabled -> Glass-like
+									// uses 2 textures, one for frames, second for faces
+	NDT_MESH, // Uses static meshes
+};
+
 /*
 	Stand-alone definition of a TileSpec (basically a server-side TileSpec)
 */
@@ -137,31 +161,7 @@ struct TileDef
 	}
 
 	void serialize(std::ostream &os, u16 protocol_version) const;
-	void deSerialize(std::istream &is, bool culling_ignore);
-};
-
-enum NodeDrawType
-{
-	NDT_NORMAL, // A basic solid block
-	NDT_AIRLIKE, // Nothing is drawn
-	NDT_LIQUID, // Do not draw face towards same kind of flowing/source liquid
-	NDT_FLOWINGLIQUID, // A very special kind of thing
-	NDT_GLASSLIKE, // Glass-like, don't draw faces towards other glass
-	NDT_ALLFACES, // Leaves-like, draw all faces no matter what
-	NDT_ALLFACES_OPTIONAL, // Fancy -> allfaces, fast -> normal
-	NDT_TORCHLIKE,
-	NDT_SIGNLIKE,
-	NDT_PLANTLIKE,
-	NDT_FENCELIKE,
-	NDT_RAILLIKE,
-	NDT_NODEBOX,
-	NDT_GLASSLIKE_FRAMED, // Glass-like, draw connected frames and all all
-	                      // visible faces
-						  // uses 2 textures, one for frames, second for faces
-	NDT_FIRELIKE, // Draw faces slightly rotated and only on connecting nodes,
-	NDT_GLASSLIKE_FRAMED_OPTIONAL,	// enabled -> connected, disabled -> Glass-like
-									// uses 2 textures, one for frames, second for faces
-	NDT_MESH, // Uses static meshes
+	void deSerialize(std::istream &is, const u8 contentfeatures_version, const NodeDrawType drawtype);
 };
 
 #define CF_SPECIAL_COUNT 6
