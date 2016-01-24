@@ -77,4 +77,8 @@ private:
 	core::aabbox3d<f32> m_bounding_box;
 };
 
+scene::IMesh * getItemMesh(IGameDef *gamedef, const ItemStack &item);
+
+scene::IMesh * getExtrudedMesh(ITextureSource *tsrc,
+		const std::string &imagename);
 #endif
