@@ -139,7 +139,7 @@ void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 	}
 }
 
-void TileDef::deSerialize(std::istream &is, bool culling_ignore)
+void TileDef::deSerialize(std::istream &is, const u8 contenfeatures_version, const NodeDrawType drawtype)
 {
 	int version = readU8(is);
 	name = deSerializeString(is);
@@ -153,10 +153,12 @@ void TileDef::deSerialize(std::istream &is, bool culling_ignore)
 		tileable_horizontal = readU8(is);
 		tileable_vertical = readU8(is);
 	}
-	// when connecting to old servers - do not use
-	// provided values here since culling needs to be
-	// disabled by default for these drawtypes
-	if (culling_ignore)
+
+	if ((contenfeatures_version < 8) &&
+		((drawtype == NDT_MESH) ||
+		 (drawtype == NDT_FIRELIKE) ||
+		 (drawtype == NDT_LIQUID) ||
+		 (drawtype == NDT_PLANTLIKE)))
 		backface_culling = false;
 }
 
@@ -268,7 +270,8 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 		return;
 	}
 
-	writeU8(os, 7); // version
+	writeU8(os, protocol_version < 27 ? 7 : 8);
+
 	os<<serializeString(name);
 	writeU16(os, groups.size());
 	for(ItemGroupList::const_iterator
@@ -330,9 +333,11 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 void ContentFeatures::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if(version != 7){
+	if (version < 7) {
 		deSerializeOld(is, version);
 		return;
+	} else if (version > 8) {
+		throw SerializationError("unsupported ContentFeatures version");
 	}
 
 	name = deSerializeString(is);
@@ -345,21 +350,15 @@ void ContentFeatures::deSerialize(std::istream &is)
 	}
 	drawtype = (enum NodeDrawType)readU8(is);
 
-	bool ignore_culling = ((version <= 26) &&
-			((drawtype == NDT_MESH) ||
-			 (drawtype == NDT_PLANTLIKE) ||
-			 (drawtype == NDT_FIRELIKE) ||
-			 (drawtype == NDT_LIQUID)));
-
 	visual_scale = readF1000(is);
 	if(readU8(is) != 6)
 		throw SerializationError("unsupported tile count");
 	for(u32 i = 0; i < 6; i++)
-		tiledef[i].deSerialize(is, ignore_culling);
+		tiledef[i].deSerialize(is, version, drawtype);
 	if(readU8(is) != CF_SPECIAL_COUNT)
 		throw SerializationError("unsupported CF_SPECIAL_COUNT");
 	for(u32 i = 0; i < CF_SPECIAL_COUNT; i++)
-		tiledef_special[i].deSerialize(is, ignore_culling);
+		tiledef_special[i].deSerialize(is, version, drawtype);
 	alpha = readU8(is);
 	post_effect_color.setAlpha(readU8(is));
 	post_effect_color.setRed(readU8(is));
@@ -1284,21 +1283,15 @@ void ContentFeatures::deSerializeOld(std::istream &is, int version)
 		}
 		drawtype = (enum NodeDrawType)readU8(is);
 
-		bool ignore_culling = ((version <= 26) &&
-				((drawtype == NDT_MESH) ||
-				(drawtype == NDT_PLANTLIKE) ||
-				(drawtype == NDT_FIRELIKE) ||
-				(drawtype == NDT_LIQUID)));
-
 		visual_scale = readF1000(is);
 		if (readU8(is) != 6)
 			throw SerializationError("unsupported tile count");
 		for (u32 i = 0; i < 6; i++)
-			tiledef[i].deSerialize(is, ignore_culling);
+			tiledef[i].deSerialize(is, version, drawtype);
 		if (readU8(is) != CF_SPECIAL_COUNT)
 			throw SerializationError("unsupported CF_SPECIAL_COUNT");
 		for (u32 i = 0; i < CF_SPECIAL_COUNT; i++)
-			tiledef_special[i].deSerialize(is, ignore_culling);
+			tiledef_special[i].deSerialize(is, version, drawtype);
 		alpha = readU8(is);
 		post_effect_color.setAlpha(readU8(is));
 		post_effect_color.setRed(readU8(is));
@@ -1342,12 +1335,12 @@ void ContentFeatures::deSerializeOld(std::istream &is, int version)
 		if (readU8(is) != 6)
 			throw SerializationError("unsupported tile count");
 		for (u32 i = 0; i < 6; i++)
-			tiledef[i].deSerialize(is, drawtype);
+			tiledef[i].deSerialize(is, version, drawtype);
 		// CF_SPECIAL_COUNT in version 6 = 2
 		if (readU8(is) != 2)
 			throw SerializationError("unsupported CF_SPECIAL_COUNT");
 		for (u32 i = 0; i < 2; i++)
-			tiledef_special[i].deSerialize(is, drawtype);
+			tiledef_special[i].deSerialize(is, version, drawtype);
 		alpha = readU8(is);
 		post_effect_color.setAlpha(readU8(is));
 		post_effect_color.setRed(readU8(is));
