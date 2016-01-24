@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-09-21 14:55+0200\n"
-"Last-Translator: way-hu <gabor.w.varnagy@gmail.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
-"minetest/hu/>\n"
+"PO-Revision-Date: 2016-01-25 00:59+0000\n"
+"Last-Translator: Kisbenedek Márton <martonkisbenedek@gmail.com>\n"
+"Language-Team: Hungarian "
+"<https://hosted.weblate.org/projects/minetest/minetest/hu/>\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.4\n"
+"X-Generator: Weblate 2.5-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -48,9 +48,8 @@ msgid "Loading..."
 msgstr "Betöltés..."
 
 #: builtin/mainmenu/common.lua
-#, fuzzy
 msgid "Protocol version mismatch. "
-msgstr "Protokol verzió eltérés, szerver "
+msgstr "Protokoll verzió eltérés. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
@@ -58,7 +57,7 @@ msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "A szerver $1 és $2 protokoll verzió közötti verziókat támogat. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -68,11 +67,11 @@ msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "Csak $1 protokoll verziót támogatjuk."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "$1 és $2 közötti protokoll verziókat támogatunk."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua builtin/mainmenu/tab_settings.lua
@@ -82,7 +81,7 @@ msgstr "Mégse"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_mods.lua
 msgid "Depends:"
-msgstr "Függőségek:"
+msgstr "Függ:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable MP"
@@ -94,7 +93,7 @@ msgstr "Csomag engedélyez"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr "Összes engedélyezése"
+msgstr "Mind engedélyez"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -106,11 +105,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
-msgstr "Játék elrejtése"
+msgstr "Játék elrejtés"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide mp content"
-msgstr "Modpakk tartalom elrejtése"
+msgstr "Modpakk tartalom elrejtés"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -135,7 +134,7 @@ msgstr "\"$1\" nevű világ már létezik"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr "Létrehozás"
+msgstr "Létrehoz"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a subgame, such as minetest_game, from minetest.net"
@@ -208,7 +207,7 @@ msgstr "Elfogad"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr "Modpakk átnevezése:"
+msgstr "Modpakk átnevezés:"
 
 #: builtin/mainmenu/modmgr.lua
 msgid ""
@@ -370,7 +369,7 @@ msgstr "Bind Address"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "Configure"
-msgstr "Beállítás"
+msgstr "Beállít"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 #: builtin/mainmenu/tab_singleplayer.lua
@@ -428,20 +427,19 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Browse"
-msgstr ""
+msgstr "Keres"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
 msgstr "Gombok változtatása"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Disabled"
-msgstr "Csomag letiltás"
+msgstr "Letiltva"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Edit"
-msgstr ""
+msgstr "Szerkeszt"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -450,7 +448,7 @@ msgstr "Engedélyez"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr ""
+msgstr "A formátum 3 szám vesszőkkel elválasztva zárójelek között."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid ""
@@ -459,9 +457,8 @@ msgid ""
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Games"
-msgstr "Játék"
+msgstr "Játékok"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
@@ -473,24 +470,23 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "Írj be egy érvényes egész számot."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "Írj be egy érvényes számot."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Possible values are: "
-msgstr ""
+msgstr "Lehetséges értékek: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "Alapértelmezett visszaállítás"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Select path"
-msgstr "Kiválaszt"
+msgstr "Útvonal kiválasztás"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -498,15 +494,15 @@ msgstr "Beállítások"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "Technikai nevek mutatása"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be greater than $1."
-msgstr ""
+msgstr "Az értéknek nagyobbnak kell lennie ennél: $1."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be lower than $1."
-msgstr ""
+msgstr "Az értéknek kisebbnek kell lennie ennél: $1."
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
@@ -526,7 +522,7 @@ msgstr "Játék"
 
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Singleplayer"
-msgstr "Egyjátékos mód"
+msgstr "Egyjátékos"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
@@ -538,7 +534,7 @@ msgstr "Semmi"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Select texture pack:"
-msgstr "Textúracsomag kiválasztása:"
+msgstr "Textúrapakk kiválasztása:"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Texturepacks"
@@ -655,13 +651,13 @@ msgstr ""
 "Alapértelmezett irányítás:\n"
 "- WASD: Mozgás\n"
 "- Space: Ugrás/Mászás\n"
-"- Shift: Lopakodás/Lefele menés\n"
+"- Shift: Lopakodás/Lefelé\n"
 "- Q: Tárgyak eldobása\n"
-"- I: Invertory\n"
+"- I: Eszköztár\n"
 "- Egér: Forgás/Nézelődés\n"
-"- Egér Bal-gomb: Ásás/Ütés\n"
-"- Egér jobb-gomb: Helyezés/Használat\n"
-"- Egér görgő: Tárgyak kiválasztása\n"
+"- Bal-egér: Ásás/Ütés\n"
+"- Jobb-egér: Helyez/Használ\n"
+"- Egér görgő: Tárgy kiválaszt\n"
 "- T: Beszélgetés\n"
 
 #: src/game.cpp
@@ -684,7 +680,7 @@ msgstr ""
 "- egy érintés: gomb aktiválás\n"
 "- dupla érintés: helyez/használat\n"
 "- ujj csúsztatás: körbenéz\n"
-"Menü/Inventory látható:\n"
+"Menü/Eszköztár látható:\n"
 "- dupla érintés (külső):\n"
 " -->bezár\n"
 "- stack, vagy slot érintése:\n"
@@ -698,7 +694,7 @@ msgstr "Kilépés a menübe"
 
 #: src/game.cpp
 msgid "Exit to OS"
-msgstr "Kilépés az OP-rendszerbe"
+msgstr "Bezárás"
 
 #: src/game.cpp
 msgid "Item definitions..."
@@ -785,9 +781,8 @@ msgid "Forward"
 msgstr "Előre"
 
 #: src/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Inventory"
-msgstr "Inventory"
+msgstr "Eszköztár"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Jump"
@@ -800,7 +795,7 @@ msgstr "A gomb már használatban van"
 #: src/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
-"Gombkiosztás. (Ha elfuserálod ezt a menüt, távolíts el néhány cuccot a "
+"Gombkiosztás. (Ha elfuserálod ezt a menüt, távolíts el néhány dolgot a "
 "minetest.conf-ból)"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
@@ -809,7 +804,7 @@ msgstr "Bal"
 
 #: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Print stacks"
-msgstr "Stacks nyomtatása"
+msgstr "Halmok nyomtatása"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Range select"
@@ -976,7 +971,7 @@ msgstr "Bal gomb"
 
 #: src/keycode.cpp
 msgid "Left Control"
-msgstr "Bal Controll"
+msgstr "Bal Control"
 
 #: src/keycode.cpp
 msgid "Left Menu"
@@ -1020,59 +1015,59 @@ msgstr "Numlock"
 
 #: src/keycode.cpp
 msgid "Numpad *"
-msgstr "Numerikus billentyű *"
+msgstr "Numerikus bill. *"
 
 #: src/keycode.cpp
 msgid "Numpad +"
-msgstr "Numerikus billentyű +"
+msgstr "Numerikus bill. +"
 
 #: src/keycode.cpp
 msgid "Numpad -"
-msgstr "Numerikus billentyű -"
+msgstr "Numerikus bill. -"
 
 #: src/keycode.cpp
 msgid "Numpad /"
-msgstr "Numerikus billentyű /"
+msgstr "Numerikus bill. /"
 
 #: src/keycode.cpp
 msgid "Numpad 0"
-msgstr "Numerikus billentyű 0"
+msgstr "Numerikus bill. 0"
 
 #: src/keycode.cpp
 msgid "Numpad 1"
-msgstr "Numerikus billentyű 1"
+msgstr "Numerikus bill. 1"
 
 #: src/keycode.cpp
 msgid "Numpad 2"
-msgstr "Numerikus billentyű 2"
+msgstr "Numerikus bill. 2"
 
 #: src/keycode.cpp
 msgid "Numpad 3"
-msgstr "Numerikus billentyű 3"
+msgstr "Numerikus bill. 3"
 
 #: src/keycode.cpp
 msgid "Numpad 4"
-msgstr "Numerikus billentyű 4"
+msgstr "Numerikus bill. 4"
 
 #: src/keycode.cpp
 msgid "Numpad 5"
-msgstr "Numerikus billentyű 5"
+msgstr "Numerikus bill. 5"
 
 #: src/keycode.cpp
 msgid "Numpad 6"
-msgstr "Numerikus billentyű 6"
+msgstr "Numerikus bill. 6"
 
 #: src/keycode.cpp
 msgid "Numpad 7"
-msgstr "Numerikus billentyű 7"
+msgstr "Numerikus bill. 7"
 
 #: src/keycode.cpp
 msgid "Numpad 8"
-msgstr "Numerikus billentyű 8"
+msgstr "Numerikus bill. 8"
 
 #: src/keycode.cpp
 msgid "Numpad 9"
-msgstr "Numerikus billentyű 9"
+msgstr "Numerikus bill. 9"
 
 #: src/keycode.cpp
 #, fuzzy
@@ -1174,10 +1169,13 @@ msgid "Zoom"
 msgstr "Nagyítás"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "0 = parallax occlusion with slope information (faster).\n"
 "1 = relief mapping (slower, more accurate)."
 msgstr ""
+"0 = parallax occlusion with slope information (gyorsabb).\n"
+"1 = relief mapping (lassabb, pontosabb)."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1186,9 +1184,10 @@ msgstr "3D felhők"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
-msgstr ""
+msgstr "3D mód"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -1198,20 +1197,29 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side."
 msgstr ""
+"3D támogatás.\n"
+"Jelenleg támogatott:\n"
+"- none: nincs 3d kimenet.\n"
+"- anaglyph: cián/magenta színű 3d.\n"
+"- interlaced: odd/even line based polarisation screen support.\n"
+"- topbottom: split screen top/bottom.\n"
+"- sidebyside: split screen side by side."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
+"Egy választott map seed az új térképhez, véletlenszerűhöz hagyd üresen.\n"
+"Felül lesz írva új világ létrehozásánál a főmenüben."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
-msgstr ""
+msgstr "Az összes kliensen megjelenített üzenet a szerver összeomlásakor."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server shuts down."
-msgstr ""
+msgstr "Az összes kliensen megjelenített üzenet a szerver leállításakor."
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
@@ -1219,11 +1227,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
-msgstr ""
+msgstr "Gyorsulás levegőben"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
-msgstr ""
+msgstr "Aktív blokk kiterjedési terület"
 
 #: src/settings_translation_file.cpp
 msgid "Active object send range"
