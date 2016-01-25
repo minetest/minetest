@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Minetest 0.4.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2016-01-24 15:00+0000\n"
+"PO-Revision-Date: 2016-01-25 18:13+0000\n"
 "Last-Translator: Paolo DGZ <pikinor24@yahoo.it>\n"
 "Language-Team: Italian "
 "<https://hosted.weblate.org/projects/minetest/minetest/it/>\n"
@@ -1277,9 +1277,8 @@ msgid "Anisotropic filtering"
 msgstr "Filtro anisotropico"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Announce server"
-msgstr "Server annunciato"
+msgstr "Annuncia il server"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3118,9 +3117,8 @@ msgid "Random input"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Range select key"
-msgstr "Selez. ad area"
+msgstr "Comando della selezione ad area"
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
@@ -3228,14 +3226,12 @@ msgid "Server port"
 msgstr "Porta del server"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Serverlist URL"
-msgstr "Elenco dei server pubblici"
+msgstr "URL della lista server"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Serverlist file"
-msgstr "Elenco dei server pubblici"
+msgstr "File della lista server"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3345,9 +3341,8 @@ msgid "Synchronous SQLite"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Texture path"
-msgstr "Pacch. immagini"
+msgstr "Trama delle texture"
 
 #: src/settings_translation_file.cpp
 msgid ""
