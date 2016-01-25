@@ -353,6 +353,12 @@
 #    type: bool
 # enable_shaders = true
 
+##### Tone mapping
+#    Enables filmic tone mapping.
+#    Requires shaders to be enabled.
+#    type: bool
+# tone_mapping = false
+
 ##### Bumpmapping
 
 #    Enables bumpmapping for textures. Normalmaps need to be supplied by the texture pack
