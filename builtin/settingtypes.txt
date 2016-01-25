@@ -326,6 +326,11 @@ fsaa (FSAA) enum 0 0,1,2,4,8,16
 #    Thy only work with the OpenGL video backend.
 enable_shaders (Shaders) bool true
 
+[****Tone Mapping]
+
+#    Enables filmic tone mapping
+tone_mapping (Filmic tone mapping) bool false
+
 [****Bumpmapping]
 
 #    Enables bumpmapping for textures. Normalmaps need to be supplied by the texture pack
