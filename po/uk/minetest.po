@@ -8,17 +8,17 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-09-21 23:18+0200\n"
-"Last-Translator: Olexandr <me.olexandr.kovalchuk@gmail.com>\n"
-"Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
-"minetest/uk/>\n"
+"PO-Revision-Date: 2016-01-25 23:23+0000\n"
+"Last-Translator: Fixer <artem.brz@gmail.com>\n"
+"Language-Team: Ukrainian "
+"<https://hosted.weblate.org/projects/minetest/minetest/uk/>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 2.4\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 2.5-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -42,24 +42,23 @@ msgstr "Повторне підключення"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "Сервер запросив перез'єднання:"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
 msgstr "Завантаження..."
 
 #: builtin/mainmenu/common.lua
-#, fuzzy
 msgid "Protocol version mismatch. "
-msgstr "Неспівпадіння версій протоколу, сервер: "
+msgstr "Версія протоколу не співпадає. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "Сервер працює за протоколом версії $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "Сервер підтримує версії протоколу між $1 і $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -69,11 +68,11 @@ msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "Ми підтримуємо тільки протокол версії $1."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "Ми підтримуємо протокол між версіями $1 і $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua builtin/mainmenu/tab_settings.lua
@@ -102,8 +101,8 @@ msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
-"Не вдалося ввімкнути mod \"$1\", бо він містить заборонені символи. "
-"Дозволяється використання таких символів: [a-z0-9_]."
+"Не вдалося ввімкнути модифікацію \"$1\", тому що вона містить заборонені "
+"символи. Дозволяється використання таких символів: [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -152,7 +151,7 @@ msgstr "Гра"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr "Генератор карти"
+msgstr "Генератор світу"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No worldname given or no game selected"
@@ -168,7 +167,7 @@ msgstr "Увага: мінімальна тестова версія призн�
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
-msgstr "Назва Світу"
+msgstr "Назва світу"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no subgames installed."
@@ -208,7 +207,7 @@ msgstr "Прийняти"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "Перейменувати Збірку модифікацій:"
 
 #: builtin/mainmenu/modmgr.lua
 msgid ""
@@ -235,6 +234,8 @@ msgstr ""
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
 msgstr ""
+"Встановлення модифікації: неможливо знайти відповідну назву папки для збірки "
+"модифікацій $1"
 
 #: builtin/mainmenu/store.lua
 msgid "Close store"
@@ -250,7 +251,7 @@ msgstr "Встановити"
 
 #: builtin/mainmenu/store.lua
 msgid "Page $1 of $2"
-msgstr "Сторінка $1 із $2"
+msgstr "Сторінка $1 з $2"
 
 #: builtin/mainmenu/store.lua
 msgid "Rating"
@@ -282,7 +283,7 @@ msgstr "Активні учасники"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Core Developers"
-msgstr ""
+msgstr "Основні розробники"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Credits"
@@ -290,11 +291,11 @@ msgstr "Подяка"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
-msgstr ""
+msgstr "Попередні помічники"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Core Developers"
-msgstr ""
+msgstr "Попередні основні розробники"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Installed Mods:"
@@ -326,7 +327,7 @@ msgstr "Видалити обрану модифікацію"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected modpack"
-msgstr ""
+msgstr "Видалити обрану збірку модифікацій"
 
 #: builtin/mainmenu/tab_multiplayer.lua
 msgid "Address / Port :"
@@ -342,7 +343,7 @@ msgstr "Під'єднатися"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative mode"
-msgstr "Режим творчості"
+msgstr "Творчий режим"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Damage enabled"
@@ -363,11 +364,12 @@ msgstr "Список публічних серверів"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
-msgstr "PvP увімкнено"
+msgstr "Бої увімкнено"
 
 #: builtin/mainmenu/tab_server.lua
+#, fuzzy
 msgid "Bind Address"
-msgstr ""
+msgstr "Закріпити адресу"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "Configure"
@@ -381,7 +383,7 @@ msgstr "Режим Створення"
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Enable Damage"
-msgstr "Увімкнути ушкодження"
+msgstr "Увімкнути травмування"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name/Password"
@@ -413,7 +415,7 @@ msgstr "Сервер"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Server Port"
-msgstr ""
+msgstr "Порт сервера"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Start Game"
@@ -421,19 +423,19 @@ msgstr "Почати гру"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "\"$1\" is not a valid flag."
-msgstr ""
+msgstr "\"$1\" не є правильним параметром."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(No description of setting given)"
-msgstr ""
+msgstr "(пояснення відсутнє)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Browse"
-msgstr ""
+msgstr "Проглянути"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
-msgstr "Змінити клавіши"
+msgstr "Змінити клавіші"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -442,27 +444,28 @@ msgstr "Вимкнути багатокористувацьку гру"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Edit"
-msgstr ""
+msgstr "Правити"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Enabled"
 msgstr "Увімкнено"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr ""
+msgstr "Формат: 3 номера, відокремлених комами і всередині дужок."
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 msgstr ""
+"Формат: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+"<octaves>, <persistence>"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Games"
-msgstr "Гра"
+msgstr "Ігри"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
@@ -470,28 +473,27 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a comma seperated list of flags."
-msgstr ""
+msgstr "Будь-ласка введіть перелік параметрів через кому."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "Будь-ласка введіть дійсне ціле число."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "Будь-ласка введіть дійсний номер."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Possible values are: "
-msgstr ""
+msgstr "Можливі значення: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "Відновити як було"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Select path"
-msgstr "Обрати"
+msgstr "Вибрати шлях"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -499,15 +501,15 @@ msgstr "Налаштування"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "Показувати технічні назви"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be greater than $1."
-msgstr ""
+msgstr "Значення має бути більше за $1."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be lower than $1."
-msgstr ""
+msgstr "Значення має бути менше ніж $1."
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
@@ -520,7 +522,7 @@ msgstr "Головне Меню"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Start Singleplayer"
-msgstr "Почати однокористувацьку гру"
+msgstr "Почати одиночну гру"
 
 #: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
 msgid "Play"
@@ -556,15 +558,15 @@ msgstr "Виконано!"
 
 #: src/client.cpp
 msgid "Initializing nodes"
-msgstr "Ініціалізація вузлів"
+msgstr "Ініціалізація блоків"
 
 #: src/client.cpp
 msgid "Initializing nodes..."
-msgstr "Ініціалізація вузлів..."
+msgstr "Ініціалізація блоків..."
 
 #: src/client.cpp
 msgid "Item textures..."
-msgstr "Текстура предметів..."
+msgstr "Текстури предметів..."
 
 #: src/client.cpp
 msgid "Loading textures..."
@@ -596,7 +598,7 @@ msgstr "Жоден світ не вибрано та не надано адре�
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr "Ім'я гравця надто довге."
+msgstr "Ім'я гравця занадто довге."
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
@@ -652,10 +654,10 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
-"Управління за замовчанням:\n"
+"Стандартне керування клавішами:\n"
 "- WASD: рух\n"
-"- Space: стрибок/лізти в гору\n"
-"- Shift: крастися/лізти в низ\n"
+"- Space: стрибок/лізти вгору\n"
+"- Shift: крастися/лізти вниз\n"
 "- Q: кинути предмет\n"
 "- I: інвентар\n"
 "- Мишка: поворот/дивитися\n"
@@ -679,7 +681,7 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
-"Керування за замовчуванням:\n"
+"Стандартне керування дотиком:\n"
 "Коли меню не відображається:\n"
 "- один дотик: активувати кнопку\n"
 "- дотикнутися двічі: встановити/використати\n"
@@ -706,19 +708,20 @@ msgstr "Визначення предметів..."
 
 #: src/game.cpp
 msgid "KiB/s"
-msgstr ""
+msgstr "КіБ/сек"
 
 #: src/game.cpp
+#, fuzzy
 msgid "Media..."
-msgstr ""
+msgstr "Ресурси..."
 
 #: src/game.cpp
 msgid "MiB/s"
-msgstr ""
+msgstr "МіБ/сек"
 
 #: src/game.cpp
 msgid "Node definitions..."
-msgstr ""
+msgstr "Визначення блоків..."
 
 #: src/game.cpp src/guiFormSpecMenu.cpp
 msgid "Proceed"
@@ -746,14 +749,13 @@ msgstr "Ви загинули."
 
 #: src/guiFormSpecMenu.cpp
 msgid "Enter "
-msgstr ""
+msgstr "Ввід "
 
 #: src/guiFormSpecMenu.cpp
 msgid "ok"
-msgstr ""
+msgstr "гаразд"
 
 #: src/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "\"Use\" = climb down"
 msgstr "\"Використовувати\" = підніматися в гору"
 
@@ -767,7 +769,7 @@ msgstr "Чат"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Command"
-msgstr "Комманда"
+msgstr "Команда"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Console"
@@ -775,7 +777,7 @@ msgstr "Консоль"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Подвійний \"Стрибок\" щоб полетіти"
+msgstr "Двічі доторкніться до \"стрибок\" щоб полетіти"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Drop"
@@ -808,8 +810,9 @@ msgid "Left"
 msgstr "Ліворуч"
 
 #: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+#, fuzzy
 msgid "Print stacks"
-msgstr "Надрукувати стек"
+msgstr "Надрукувати купи"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Range select"
@@ -824,9 +827,8 @@ msgid "Sneak"
 msgstr "Крастися"
 
 #: src/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle Cinematic"
-msgstr "Переключити швидкий режим"
+msgstr "Переключити кінематографічний режим"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -838,7 +840,7 @@ msgstr "Переключити режим польоту"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
-msgstr "Переключити режим проходження скрізь стін"
+msgstr "Переключити режим проходження крізь стіни"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Use"
@@ -920,8 +922,9 @@ msgid "Down"
 msgstr "Вниз"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "End"
-msgstr "Кінець"
+msgstr "End"
 
 #: src/keycode.cpp
 #, fuzzy
@@ -976,7 +979,7 @@ msgstr "Ліва кнопка"
 
 #: src/keycode.cpp
 msgid "Left Control"
-msgstr "Ліва клавіша Control"
+msgstr "Ліва клавіша Ctrl"
 
 #: src/keycode.cpp
 msgid "Left Menu"
@@ -988,7 +991,7 @@ msgstr "Ліва клавіша Shift"
 
 #: src/keycode.cpp
 msgid "Left Windows"
-msgstr "Ліва клавіша Win (Command)"
+msgstr "Ліва клавіша Win"
 
 #: src/keycode.cpp
 msgid "Menu"
@@ -1007,27 +1010,31 @@ msgid "Mode Change"
 msgstr "Змінити режим"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Next"
-msgstr "Page Up"
+msgstr "Наступний"
 
 #: src/keycode.cpp
 #, fuzzy
 msgid "Nonconvert"
-msgstr "Не конвертуванно"
+msgstr "Не обернено"
 
 #: src/keycode.cpp
 msgid "Num Lock"
 msgstr "Num Lock"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Numpad *"
 msgstr "Num *"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Numpad +"
 msgstr "Num +"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Numpad -"
 msgstr "Num -"
 
@@ -1076,6 +1083,7 @@ msgid "Numpad 9"
 msgstr "Num 9"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "OEM Clear"
 msgstr "Очистити OEM"
 
@@ -1100,6 +1108,7 @@ msgid "Print"
 msgstr "Print Screen"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Prior"
 msgstr "Page Down"
 
@@ -1109,12 +1118,13 @@ msgid "Return"
 msgstr "Enter"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Right Button"
 msgstr "Права кнопка"
 
 #: src/keycode.cpp
 msgid "Right Control"
-msgstr "Права клавіша Control"
+msgstr "Права клавіша Ctrl"
 
 #: src/keycode.cpp
 msgid "Right Menu"
@@ -1126,7 +1136,7 @@ msgstr "Права клавіша Shift"
 
 #: src/keycode.cpp
 msgid "Right Windows"
-msgstr "Права клавіша Win (Command)"
+msgstr "Права клавіша Win"
 
 #: src/keycode.cpp
 msgid "Scroll Lock"
@@ -1175,19 +1185,21 @@ msgid "Zoom"
 msgstr "Збільшити"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "0 = parallax occlusion with slope information (faster).\n"
 "1 = relief mapping (slower, more accurate)."
 msgstr ""
+"0 = технологія \"parallax occlusion\" з інформацією про криві (швидше)\n"
+"1 = технологія \"relief mapping\" (повільніше, більш акуратніше)"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D clouds"
-msgstr "3D Хмари"
+msgstr "Об'ємні хмари"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
-msgstr ""
+msgstr "3D режим"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3028,8 +3040,9 @@ msgid "Overall scale of parallax occlusion effect."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Parallax Occlusion"
-msgstr "Оклюзія паралакса"
+msgstr "Parallax Occlusion"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
