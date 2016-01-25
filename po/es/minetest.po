@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-11-13 21:07+0000\n"
-"Last-Translator: Joan Ciprià Moreno <joancipria@gmail.com>\n"
+"PO-Revision-Date: 2016-01-25 08:35+0000\n"
+"Last-Translator: Diego Martínez <lkaezadl3@gmail.com>\n"
 "Language-Team: Spanish "
 "<https://hosted.weblate.org/projects/minetest/minetest/es/>\n"
 "Language: es\n"
@@ -469,7 +469,7 @@ msgstr "Juegos"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr ""
+msgstr "Opcionalmente, la lagunaridad puede ser agregada con una coma anterior."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a comma seperated list of flags."
