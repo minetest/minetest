@@ -1215,6 +1215,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 					material.setTexture(1, p.tile.normal_texture);
 				}
 				material.setTexture(2, p.tile.flags_texture);
+				if (p.tile.special_texture)
+					material.setTexture(3, p.tile.special_texture);
 			} else {
 				p.tile.applyMaterialOptions(material);
 			}
