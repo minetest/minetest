@@ -8,10 +8,11 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-10-27 16:45+0200\n"
-"Last-Translator: PilzAdam <PilzAdam@minetest.net>\n"
-"Language-Team: Indonesian <https://hosted.weblate.org/projects/minetest/"
-"minetest/id/>\n"
+"PO-Revision-Date: 2016-01-26 16:32+0000\n"
+"Last-Translator: Muhammad Rifqi Priyo Susanto "
+"<muhammadrifqipriyosusanto@gmail.com>\n"
+"Language-Team: Indonesian "
+"<https://hosted.weblate.org/projects/minetest/minetest/id/>\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,7 +22,7 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
+msgstr "Sebuah kesalahan muncul pada skrip Lua, seperti pada mod:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
@@ -49,7 +50,7 @@ msgstr "Memuat..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "Versi protokol tidak cocok. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
@@ -423,7 +424,7 @@ msgstr "Mulai Permainan"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "\"$1\" is not a valid flag."
-msgstr ""
+msgstr "\"$1\" bukan sebuah flag yang sah."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(No description of setting given)"
@@ -438,9 +439,8 @@ msgid "Change keys"
 msgstr "Ubah tombol"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Disabled"
-msgstr "Nonaktifkan PM"
+msgstr "Nonaktif"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Edit"
@@ -453,6 +453,7 @@ msgstr "Diaktifkan"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
 msgstr ""
+"Format adalah 3 angka yang dipisahkan oleh koma dan di dalam tanda kurung."
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -464,7 +465,6 @@ msgstr ""
 "<octaves>, <persistence>"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Games"
 msgstr "Permainan"
 
@@ -474,7 +474,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a comma seperated list of flags."
-msgstr ""
+msgstr "Silakan masukan daftar flag yang dipisahkan dengan tanda koma."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a valid integer."
@@ -493,9 +493,8 @@ msgid "Restore Default"
 msgstr "Kembalikan ke Bawaan"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Select path"
-msgstr "Select"
+msgstr "Pilih jalur"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -503,7 +502,7 @@ msgstr "Pengaturan"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "Tampilkan nama teknis"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "The value must be greater than $1."
@@ -842,7 +841,7 @@ msgstr "Terbang"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
-msgstr "Tembus blok"
+msgstr "Beralih tembus blok"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Use"
@@ -1002,7 +1001,7 @@ msgstr "Kurang"
 
 #: src/keycode.cpp
 msgid "Mode Change"
-msgstr "Mode Change"
+msgstr "Pergantian Mode"
 
 #: src/keycode.cpp
 msgid "Next"
@@ -1173,6 +1172,8 @@ msgid ""
 "0 = parallax occlusion with slope information (faster).\n"
 "1 = relief mapping (slower, more accurate)."
 msgstr ""
+"0 = parallax occlusion with slope information (cepat).\n"
+"1 = relief mapping (pelan, lebih akurat)."
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -1218,8 +1219,9 @@ msgstr ""
 "Sebuah pesan yang akan ditampilkan ke semua klien ketika server dimatikan."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Absolute limit of emerge queues"
-msgstr ""
+msgstr "Batas absolut dari antrian muncul"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
@@ -1320,11 +1322,11 @@ msgstr "Alamat sambungan"
 
 #: src/settings_translation_file.cpp
 msgid "Bits per pixel (aka color depth) in fullscreen mode."
-msgstr "Bits per pixel (aka color depth) dalam mode layar penuh."
+msgstr "Bit per piksel (alias kedalaman warna) dalam mode layar penuh."
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
-msgstr ""
+msgstr "Bangun di dalam pemain"
 
 #: src/settings_translation_file.cpp
 msgid "Bumpmapping"
@@ -1395,9 +1397,8 @@ msgid "Clouds in menu"
 msgstr "Awan dalam menu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Colored fog"
-msgstr "Berwarna kabut"
+msgstr "Kabut berwarna"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1455,12 +1456,17 @@ msgid ""
 "Examples: 72 = 20min, 360 = 4min, 1 = 24hour, 0 = day/night/whatever stays "
 "unchanged."
 msgstr ""
+"Mengatur panjang siklus pagi/malam.\n"
+"Contoh: 72 = 20 menit, 360 = 4 menit, 1 = 24 jam, 0 = pagi/malam/lainnya "
+"tidak berubah."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Controls size of deserts and beaches in Mapgen v6.\n"
 "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
 msgstr ""
+"Mengatur ukuran padang gurun dan pantai dalam Mapgen v6.\n"
+"Jika snowbiomes di aktifkan 'mgv6_freq_desert' akan dihiraukan."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -1736,11 +1742,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode acceleration"
-msgstr ""
+msgstr "Mode akselerasi cepat"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode speed"
-msgstr ""
+msgstr "Mode cepat"
 
 #: src/settings_translation_file.cpp
 msgid "Fast movement"
@@ -1784,9 +1790,8 @@ msgid "Fixed map seed"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fly key"
-msgstr "Mode terbang"
+msgstr "Tombol terbang"
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
@@ -1851,7 +1856,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
-msgstr ""
+msgstr "Layar penuh"
 
 #: src/settings_translation_file.cpp
 msgid "Full screen BPP"
@@ -1859,16 +1864,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fullscreen mode."
-msgstr ""
+msgstr "Mode layar penuh."
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
-msgstr ""
+msgstr "Skala antarmuka"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "GUI scaling filter"
-msgstr "Skala antarmuka"
+msgstr "Filter skala antarmuka"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter txr2img"
@@ -1973,6 +1977,8 @@ msgid ""
 "If disabled \"use\" key is used to fly fast if both fly and fast mode are "
 "enabled."
 msgstr ""
+"Jika dinonaktifkan tombol \"gunakan\" digunakan untuk terbang cepat jika "
+"mode terbang dan cepat diaktifkan."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1980,6 +1986,9 @@ msgid ""
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
+"Jika diaktifkan dengan mode terbang, pemain mampu terbang melalui node padat."
+"\n"
+"Hal ini memerlukan hak istimewa \"noclip\" pada server."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2149,6 +2158,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tombol untuk bergerak cepat dalam mode cepat.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2242,6 +2254,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tombol untuk beralih mode sinema.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2256,6 +2271,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tombol untuk beralih mode cepat.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2265,11 +2283,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Key for toggling noclip mode.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tombol untuk beralih mode tembus blok.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2659,7 +2681,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 desert frequency"
-msgstr ""
+msgstr "Frekuensi padang gurun pada generator peta v6"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 flags"
@@ -2984,11 +3006,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Noclip"
-msgstr ""
+msgstr "Tembus blok"
 
 #: src/settings_translation_file.cpp
 msgid "Noclip key"
-msgstr ""
+msgstr "Tombol tembus blok"
 
 #: src/settings_translation_file.cpp
 msgid "Node highlighting"
@@ -3063,9 +3085,8 @@ msgid "Parallax occlusion iterations"
 msgstr "Parallax Occlusion"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Parallax occlusion mode"
-msgstr "Parallax Occlusion"
+msgstr "Mode parallax occlusion"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3347,7 +3368,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera in cinematic mode. 0 to disable."
-msgstr ""
+msgstr "Menghaluskan rotasi kamera dalam modus sinema. 0 untuk menonaktifkan."
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera. 0 to disable."
@@ -3470,7 +3491,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
-msgstr ""
+msgstr "Tombol beralih mode kamera"
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
