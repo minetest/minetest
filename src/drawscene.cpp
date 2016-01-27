@@ -152,7 +152,7 @@ void draw_anaglyph_3d_mode(Camera& camera, bool show_hud, Hud& hud,
 			+ irr::scene::ESNRP_TRANSPARENT_EFFECT + irr::scene::ESNRP_SHADOW;
 	cameraNode->setPosition(eyePosition);
 	cameraNode->setTarget(target);
-	driver->setTransform(video::ETS_PROJECTION, projectionMatrix);
+	cameraNode->setProjectionMatrix(projectionMatrix);
 	smgr->drawAll();
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 	if (show_hud)
@@ -185,7 +185,7 @@ void draw_anaglyph_3d_mode(Camera& camera, bool show_hud, Hud& hud,
 			+ irr::scene::ESNRP_TRANSPARENT_EFFECT + irr::scene::ESNRP_SHADOW;
 	cameraNode->setPosition(eyePosition);
 	cameraNode->setTarget(target);
-	driver->setTransform(video::ETS_PROJECTION, projectionMatrix);
+	cameraNode->setProjectionMatrix(projectionMatrix);
 	smgr->drawAll();
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 	if (show_hud)
@@ -226,6 +226,7 @@ video::ITexture* draw_image(const v2u32& screensize,
 {
 	static video::ITexture* images[2] = { NULL, NULL };
 	static v2u32 last_screensize = v2u32(0,0);
+	scene::ICameraSceneNode *cameraNode = camera.getCameraNode();
 
 	video::ITexture* image = NULL;
 
@@ -256,9 +257,9 @@ video::ITexture* draw_image(const v2u32& screensize,
 
 	//clear the depth buffer
 	driver->clearZBuffer();
-	camera.getCameraNode()->setPosition(eyePosition);
-	camera.getCameraNode()->setTarget(target);
-	driver->setTransform(video::ETS_PROJECTION, projectionMatrix);
+	cameraNode->setPosition(eyePosition);
+	cameraNode->setTarget(target);
+	cameraNode->setProjectionMatrix(projectionMatrix);
 	smgr->drawAll();
 
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
@@ -344,7 +345,7 @@ void draw_interlaced_3d_mode(Camera& camera, bool show_hud,
 	driver->clearZBuffer();
 	camera.getCameraNode()->setPosition(eyePosition);
 	camera.getCameraNode()->setTarget(target);
-	driver->setTransform(video::ETS_PROJECTION, projectionMatrix);
+	cameraNode->setProjectionMatrix(projectionMatrix);
 	smgr->drawAll();
 
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
@@ -511,7 +512,7 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 	driver->beginScene(true, true, irr::video::SColor(200, 200, 200, 255));
 	cameraNode->setPosition(eyePosition);
 	cameraNode->setTarget(target);
-	driver->setTransform(video::ETS_PROJECTION, projectionMatrix);
+	cameraNode->setProjectionMatrix(projectionMatrix);
 	smgr->drawAll();
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 
@@ -542,7 +543,7 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 	driver->beginScene(true, true, irr::video::SColor(200, 200, 200, 255));
 	cameraNode->setPosition(eyePosition);
 	cameraNode->setTarget(target);
-	driver->setTransform(video::ETS_PROJECTION, projectionMatrix);
+	cameraNode->setProjectionMatrix(projectionMatrix);
 	smgr->drawAll();
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 
