@@ -3513,7 +3513,7 @@ Definition tables
         ^ No return value ]]
 
         on_blast = func(pos, intensity), --[[
-        ^ intensity: 1.0 = mid range of regular TNT
+        ^ intensity: 1.0 = Right next to regular TNT. Is calculated as an inverse-square of distance form TNT.
         ^ If defined, called when an explosion touches the node, instead of
           removing the node ]]
     }
