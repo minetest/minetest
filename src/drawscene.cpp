@@ -49,7 +49,7 @@ void draw_selectionbox(video::IVideoDriver* driver, Hud& hud,
 	driver->setMaterial(oldmaterial);
 }
 
-/* analog to glFrustum*/
+/* analog to D3DXMatrixPerspectiveOffCenterLH, not glFrustum*/
 void getProjectionFrustum(
         const float left,
         const float right,
@@ -61,22 +61,22 @@ void getProjectionFrustum(
 {
 	matrix[0] = 2.0f * near / (right - left);
 	matrix[1] = 0.0f;
-	matrix[2] = (right + left) / (right - left);
+	matrix[2] = 0.0f;
 	matrix[3] = 0.0f;
 
 	matrix[4] = 0.0f;
 	matrix[5] = 2.0f * near / (top - bottom);
-	matrix[6] = (top + bottom) / (top - bottom);
+	matrix[6] = 0.0f;
 	matrix[7] = 0.0f;
 
-	matrix[8] = 0.0f;
-	matrix[9] = 0.0f;
-	matrix[10] = - (far + near) / (far - near);
-	matrix[11] = -2.0f * far * near / (far - near);
+	matrix[8] = (left + right) / (left - right);
+	matrix[9] = (top + bottom) / (bottom - top);
+	matrix[10] = far / (far - near);
+	matrix[11] = 1.0f;
 
 	matrix[12] = 0.0f;
 	matrix[13] = 0.0f;
-	matrix[14] = -1.0f;
+	matrix[14] = near * far / (near - far);
 	matrix[15] = 0.0f;
 }
 
