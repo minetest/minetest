@@ -388,7 +388,6 @@ set(common_SRCS
 	mapgen_v5.cpp
 	mapgen_v6.cpp
 	mapgen_v7.cpp
-	mapgen_valleys.cpp
 	mapnode.cpp
 	mapsector.cpp
 	mg_biome.cpp
@@ -456,6 +455,7 @@ endif()
 # Client sources
 if (BUILD_CLIENT)
 	add_subdirectory(client)
+	add_subdirectory(irrpp)
 endif(BUILD_CLIENT)
 
 set(client_SRCS
@@ -463,6 +463,7 @@ set(client_SRCS
 	${common_SRCS}
 	${sound_SRCS}
 	${client_network_SRCS}
+	${irrPP_SRCS}
 	camera.cpp
 	client.cpp
 	clientmap.cpp
