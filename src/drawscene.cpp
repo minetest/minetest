@@ -55,28 +55,28 @@ void getProjectionFrustum(
         const float right,
         const float bottom,
         const float top,
-        const float near,
-        const float far,
+        const float cnear,
+        const float cfar,
         irr::core::matrix4& matrix)
 {
-	matrix[0] = 2.0f * near / (right - left);
+	matrix[0] = 2.0f * cnear / (right - left);
 	matrix[1] = 0.0f;
 	matrix[2] = 0.0f;
 	matrix[3] = 0.0f;
 
 	matrix[4] = 0.0f;
-	matrix[5] = 2.0f * near / (top - bottom);
+	matrix[5] = 2.0f * cnear / (top - bottom);
 	matrix[6] = 0.0f;
 	matrix[7] = 0.0f;
 
 	matrix[8] = (left + right) / (left - right);
 	matrix[9] = (top + bottom) / (bottom - top);
-	matrix[10] = far / (far - near);
+	matrix[10] = cfar / (cfar - cnear);
 	matrix[11] = 1.0f;
 
 	matrix[12] = 0.0f;
 	matrix[13] = 0.0f;
-	matrix[14] = near * far / (near - far);
+	matrix[14] = cnear * cfar / (cnear - cfar);
 	matrix[15] = 0.0f;
 }
 
@@ -99,21 +99,21 @@ void calculate_3d_matrices(
 	eyePosition = (startMatrix * movement).getTranslation();
 	target = eyePosition + camera.getDirection();
 
-	float near, far, fov;
-	near = cameraNode->getNearValue();
-	far = cameraNode->getFarValue();
+	float cnear, cfar, fov;
+	cnear = cameraNode->getNearValue();
+	cfar = cameraNode->getFarValue();
 	fov = cameraNode->getFOV();
 
 	float left, right, bottom, top, offset;
 	float aspectRatio = cameraNode->getAspectRatio();
 
-	top = near * tan(fov * 0.5f);
+	top = cnear * tan(fov * 0.5f);
 	bottom = -top;
 	right = aspectRatio * top;
 	left = -right;
 
-	offset = (int) -psign * halfInterocularDistance * near / convergenceDistance;
-	getProjectionFrustum(left + offset, right + offset, bottom, top, near, far, projectionMatrix);
+	offset = (int) -psign * halfInterocularDistance * cnear / convergenceDistance;
+	getProjectionFrustum(left + offset, right + offset, bottom, top, cnear, cfar, projectionMatrix);
 }
 
 void draw_anaglyph_3d_mode(Camera& camera, bool show_hud, Hud& hud,
