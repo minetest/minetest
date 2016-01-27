@@ -456,6 +456,7 @@ endif()
 # Client sources
 if (BUILD_CLIENT)
 	add_subdirectory(client)
+	add_subdirectory(irrpp)
 endif(BUILD_CLIENT)
 
 set(client_SRCS
@@ -463,6 +464,7 @@ set(client_SRCS
 	${common_SRCS}
 	${sound_SRCS}
 	${client_network_SRCS}
+	${irrPP_SRCS}
 	camera.cpp
 	client.cpp
 	clientmap.cpp
