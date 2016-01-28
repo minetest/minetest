@@ -161,8 +161,14 @@ int ModApiUtil::l_parse_json(lua_State *L)
 		if (!reader.parse(stream, root)) {
 			errorstream << "Failed to parse json data "
 				<< reader.getFormattedErrorMessages();
-			errorstream << "data: \"" << jsonstr << "\""
-				<< std::endl;
+			size_t jlen = strlen(jsonstr);
+			if (jlen > 100) {
+				errorstream << "Data (" << jlen
+					<< " bytes) printed to warningstream." << std::endl;
+				warningstream << "data: \"" << jsonstr << "\"" << std::endl;
+			} else {
+				errorstream << "data: \"" << jsonstr << "\"" << std::endl;
+			}
 			lua_pushnil(L);
 			return 1;
 		}
