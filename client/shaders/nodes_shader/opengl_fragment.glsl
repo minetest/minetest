@@ -8,12 +8,18 @@ uniform vec3 eyePosition;
 
 varying vec3 vPosition;
 varying vec3 worldPosition;
+varying vec3 sunPosition;
 varying float area_enable_parallax;
 
 varying vec3 eyeVec;
 varying vec3 tsEyeVec;
 varying vec3 lightVec;
 varying vec3 tsLightVec;
+varying vec3 normal;
+varying vec3 tangent;
+varying vec3 binormal;
+varying float sDepth;
+
 
 bool normalTexturePresent = false;
 
@@ -92,7 +98,9 @@ void main(void)
 	vec2 uv = gl_TexCoord[0].st;
 	bool use_normalmap = false;
 	get_texture_flags();
+	mat3 tangentToView = mat3(tangent, binormal, normal);
 
+    vec3 screenNormal = vec3(1.0);
 #ifdef ENABLE_PARALLAX_OCCLUSION
 	vec2 eyeRay = vec2 (tsEyeVec.x, -tsEyeVec.y);
 	const float scale = PARALLAX_OCCLUSION_SCALE / PARALLAX_OCCLUSION_ITERATIONS;
@@ -148,11 +156,11 @@ void main(void)
 
 #ifdef ENABLE_BUMPMAPPING
 	if (use_normalmap) {
-		vec3 L = normalize(lightVec);
+		vec3 L = normalize(tsLightVec);
 		vec3 E = normalize(eyeVec);
 		float specular = pow(clamp(dot(reflect(L, bump.xyz), E), 0.0, 1.0), 1.0);
 		float diffuse = dot(-E,bump.xyz);
-		color = (diffuse + 0.1 * specular) * base.rgb;
+		color = (diffuse + 0.0 * specular) * base.rgb;
 	} else {
 		color = base.rgb;
 	}
@@ -168,7 +176,7 @@ void main(void)
 		float d = max(0.0, min(vPosition.z / fogDistance * 1.5 - 0.6, 1.0));
 		alpha = mix(alpha, 0.0, d);
 	}
-	gl_FragColor = vec4(col.rgb, alpha);
+	gl_FragData[0] = vec4(col.rgb, alpha);
 #else
 	vec4 col = vec4(color.rgb, base.a);
 	col *= gl_Color;
@@ -176,6 +184,8 @@ void main(void)
 		float d = max(0.0, min(vPosition.z / fogDistance * 1.5 - 0.6, 1.0));
 		col = mix(col, skyBgColor, d);
 	}
-	gl_FragColor = vec4(col.rgb, base.a);
+	gl_FragData[0] = vec4(col.rgb, base.a);
 #endif
+	gl_FragData[1] = vec4(sDepth, sDepth, sDepth, 1.0);
+	gl_FragData[2] = vec4(normal, 1.0);
 }
