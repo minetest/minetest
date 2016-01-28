@@ -141,6 +141,11 @@ irr::video::CPostProcessingEffect* irr::video::CPostProcessingEffectChain::creat
             effectName = "warmcolors";
             break;
 
+		case EPE_DOF:
+			shaderSource = readShader("dof.frag");
+			effectName = "DOF";
+			break;
+
         default: return 0; //this should never happen
     }
 

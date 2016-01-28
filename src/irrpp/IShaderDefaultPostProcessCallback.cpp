@@ -20,6 +20,9 @@ void irr::video::IShaderDefaultPostProcessCallback::OnSetConstants(
 	services->setPixelShaderConstant("Tex2", &tex2, 1);   
 
     services->setPixelShaderConstant("PixelSize", (irr::f32*)&PixelSize, 2);
+
+	services->setPixelShaderConstant("width", (irr::f32*)&ScreenWidth, 1);
+	services->setPixelShaderConstant("height", (irr::f32*)&ScreenHeight, 1);
 }
 
 void irr::video::IShaderDefaultPostProcessCallback::OnSetMaterial (
@@ -27,6 +30,9 @@ void irr::video::IShaderDefaultPostProcessCallback::OnSetMaterial (
 {
     irr::core::dimension2du tSize = material.getTexture(0)->getSize();
     PixelSize = irr::core::vector2df(1.0 / tSize.Width, 1.0 / tSize.Height);
+	ScreenWidth = tSize.Width;
+	ScreenHeight = tSize.Height;
+
 	NumTextures = 0;
     for (u32 i = 1; i <= 4; i++)
     {

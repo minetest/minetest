@@ -20,7 +20,8 @@ class IShaderDefaultPostProcessCallback : public irr::video::IShaderConstantSetC
     private:
         irr::u32 NumTextures;
         irr::core::vector2df PixelSize;
-
+		irr::f32 ScreenWidth;
+		irr::f32 ScreenHeight;
         irr::u32 RenderID;
         irr::u32 TexIDs[3];
         irr::u32 PixelSizeID;
