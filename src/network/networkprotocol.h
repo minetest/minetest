@@ -135,6 +135,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 27:
 		backface_culling: backwards compatibility for playing with
 		newer client on pre-27 servers.
+		TileDef version 3:
+			Add TileDef normal_texture and special_texture fields
+		ContenFeatures:	Add shader_name field
 */
 
 #define LATEST_PROTOCOL_VERSION 27
