@@ -40,8 +40,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiPasswordChange.h"
 #include "guiVolumeChange.h"
 #include "hud.h"
+#include "irrpp/irrPP.h"
 #include "mainmenumanager.h"
 #include "mapblock.h"
+#include "minimap.h"
+#include "mrt.h"
 #include "nodedef.h"         // Needed for determining pointing to nodes
 #include "nodemetadata.h"
 #include "particles.h"
@@ -51,14 +54,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "shader.h"          // For ShaderSource
 #include "sky.h"
+#include "sound.h"
 #include "subgame.h"
 #include "tool.h"
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
 #include "version.h"
-#include "minimap.h"
-
-#include "sound.h"
 
 #if USE_SOUND
 	#include "sound_openal.h"
@@ -1586,6 +1587,9 @@ private:
 	Hud *hud;
 	Mapper *mapper;
 
+	video::irrPP *irrPP;
+	Mrt *mrt;
+
 	/* 'cache'
 	   This class does take ownership/responsibily for cleaning up etc of any of
 	   these items (e.g. device)
@@ -1794,6 +1798,13 @@ void Game::run()
 	flags.show_debug = g_settings->getBool("show_debug");
 	flags.invert_mouse = g_settings->getBool("invert_mouse");
 	flags.first_loop_after_window_activation = true;
+
+	std::string pp_shaders_path = std::string("client") + DIR_DELIM
+				+ "shaders" + DIR_DELIM
+				+ "postprocess" + DIR_DELIM;
+
+	irrPP = createIrrPP(device, video::EPQ_FULL, pp_shaders_path.c_str());
+	mrt = new Mrt(device);
 
 	/* Clear the profiler */
 	Profiler::GraphValues dummyvalues;
@@ -4093,7 +4104,7 @@ void Game::updateFrame(std::vector<aabb3f> &highlight_boxes,
 		stats->beginscenetime = timer.stop(true);
 	}
 
-	draw_scene(driver, smgr, *camera, *client, player, *hud, *mapper,
+	draw_scene(driver, smgr, *camera, *client, player, *hud, *mapper, *mrt, *irrPP,
 			guienv,	highlight_boxes, screensize, skycolor, flags.show_hud,
 			flags.show_minimap);
 
