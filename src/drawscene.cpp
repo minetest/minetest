@@ -465,11 +465,13 @@ void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
 	
 	mrt.updateMRT();
 	mrt.setRenderTarget(irr::video::SColor(255, skycolor.getRed(), skycolor.getGreen(), skycolor.getBlue()));
-	//driver->setRenderTarget(irrPP.getRTT2(), true, true,
-			//irr::video::SColor(0, skycolor.getRed(), skycolor.getGreen(), skycolor.getBlue()));
+
 	draw_plain(camera, show_hud, hud, hilightboxes, driver,
 				draw_wield_tool, client, guienv);
+
 	smgr->drawAll();
+	
+	/*
 	driver->setRenderTarget(0);
 	driver->draw2DImage(mrt.getColorRTT(), irr::core::position2d<s32>(0,0),
                 irr::core::rect<s32>(0,0,screensize.X,screensize.Y), 0,
@@ -480,11 +482,12 @@ void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
 	draw2DImageFilterScaled(driver, mrt.getDepthRTT(),
 			irr::core::rect<s32>(0, 250, 320, 240+250),
 			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0, false);
-		
+	*/	
+
+	irrPP.render(mrt.getColorRTT());
+	
 	if(draw_wield_tool)
 		camera.drawWieldedTool();
-	//irrPP.render(irrPP.getRTT2());
-
 	}
 
 	/*

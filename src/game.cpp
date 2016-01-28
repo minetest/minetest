@@ -1810,6 +1810,9 @@ void Game::run()
 	irrPP = createIrrPP(device, video::EPQ_FULL, pp_shaders_path.c_str());
 	mrt = new Mrt(device);
 
+	irr::video::CPostProcessingEffectChain* pp = irrPP->createEffectChain();
+    pp->createEffect(video::EPE_DOF)->addTextureToShader(mrt->getDepthRTT());
+    
 	/* Clear the profiler */
 	Profiler::GraphValues dummyvalues;
 	g_profiler->graphGet(dummyvalues);

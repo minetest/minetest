@@ -186,6 +186,6 @@ void main(void)
 	}
 	gl_FragData[0] = vec4(col.rgb, base.a);
 #endif
-	gl_FragData[1] = vec4(sDepth, sDepth, sDepth, 1.0);
+	gl_FragData[1] = vec4(1.0 - sDepth, 1.0 - sDepth, 1.0 - sDepth, 1.0);
 	gl_FragData[2] = vec4(normal, 1.0);
 }
