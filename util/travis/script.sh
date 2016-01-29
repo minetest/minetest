@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-if [[ $PLATFORM == "Linux" ]]; then
+if [[ $PLATFORM == "Unix" ]]; then
 	mkdir -p travisbuild
 	cd travisbuild
 	CMAKE_FLAGS='-DCMAKE_BUILD_TYPE=Debug \
@@ -9,6 +9,9 @@ if [[ $PLATFORM == "Linux" ]]; then
 	# Clang builds with FreeType fail on Travis
 	if [[ $CC == "clang" ]]; then
 		CMAKE_FLAGS+=' -DENABLE_FREETYPE=FALSE'
+	fi
+	if [[ $TRAVIS_OS_NAME == "osx" ]]; then
+		CMAKE_FLAGS+=' -DCUSTOM_GETTEXT_PATH=/usr/local/opt/gettext'
 	fi
 	cmake $CMAKE_FLAGS ..
 	make -j2
