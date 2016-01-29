@@ -2,10 +2,13 @@ language: cpp
 compiler:
   - gcc
   - clang
+os:
+  - osx
+  - linux
 env:
   - PLATFORM=Win32
   - PLATFORM=Win64
-  - PLATFORM=Linux
+  - PLATFORM=Unix
 before_install: ./util/travis/before_install.sh
 script: ./util/travis/script.sh
 sudo: required
@@ -18,3 +21,9 @@ matrix:
       compiler: clang
     - env: PLATFORM=Win64
       compiler: clang
+    - env: PLATFORM=Win32
+      os: osx
+    - env: PLATFORM=Win64
+      os: osx
+    - compiler: gcc
+      os: osx
