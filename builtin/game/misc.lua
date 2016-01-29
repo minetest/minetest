@@ -6,22 +6,32 @@
 
 local timers = {}
 local mintime
-local function update_timers(delay)
+
+local function update_timer_times(delay)
 	mintime = false
-	local sub = 0
 	for index = 1, #timers do
-		index = index - sub
 		local timer = timers[index]
 		timer.time = timer.time - delay
+		if mintime then
+			mintime = math.min(mintime, timer.time)
+		else
+			mintime = timer.time
+		end
+	end
+end
+
+local function call_timer_functions()
+	local index = 1
+	local num_timers = #timers
+	while index <= num_timers do
+		local timer = timers[index]
 		if timer.time <= 0 then
 			core.set_last_run_mod(timer.mod_origin)
 			timer.func(unpack(timer.args or {}))
 			table.remove(timers, index)
-			sub = sub + 1
-		elseif mintime then
-			mintime = math.min(mintime, timer.time)
+			num_timers = num_timers - 1
 		else
-			mintime = timer.time
+			index = index + 1
 		end
 	end
 end
@@ -47,8 +57,15 @@ core.register_globalstep(function(dtime)
 	if delay < mintime then
 		return
 	end
-	update_timers(delay)
+
+	--[[
+	It is necessary for delay to equal 0 before timer functions are called
+	as if one of the timer functions happens to call minetest.after, the
+	resulting entry in the timers table may have an incorrect time value.
+	--]]
+	update_timer_times(delay)
 	delay = 0
+	call_timer_functions()
 end)
 
 function core.after(time, func, ...)
@@ -80,11 +97,11 @@ function core.check_player_privs(player_or_name, ...)
 	if type(name) ~= "string" then
 		name = name:get_player_name()
 	end
-	
+
 	local requested_privs = {...}
 	local player_privs = core.get_player_privs(name)
 	local missing_privileges = {}
-	
+
 	if type(requested_privs[1]) == "table" then
 		-- We were provided with a table like { privA = true, privB = true }.
 		for priv, value in pairs(requested_privs[1]) do
@@ -100,11 +117,11 @@ function core.check_player_privs(player_or_name, ...)
 			end
 		end
 	end
-	
+
 	if #missing_privileges > 0 then
 		return false, missing_privileges
 	end
-	
+
 	return true, ""
 end
 
