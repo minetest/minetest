@@ -25,24 +25,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-
-#include "mapgen.h"
-#include "voxel.h"
-#include "noise.h"
-#include "mapblock.h"
-#include "mapnode.h"
-#include "map.h"
 #include "content_sao.h"
-#include "nodedef.h"
-#include "voxelalgorithms.h"
-#include "settings.h" // For g_settings
-#include "emerge.h"
 #include "dungeongen.h"
-#include "treegen.h"
-#include "mg_biome.h"
-#include "mg_ore.h"
-#include "mg_decoration.h"
+#include "emerge.h"
+#include "mapblock.h"
 #include "mapgen_valleys.h"
+#include "mg_biome.h"
+#include "mg_decoration.h"
+#include "mg_ore.h"
+#include "treegen.h"
+#include "voxel.h"
+#include "voxelalgorithms.h"
 
 //#undef NDEBUG
 //#include "assert.h"
@@ -528,7 +521,7 @@ float MapgenValleys::terrainLevelFromNoise(TerrainNoise *tn)
 		u16 min_bottom = 2;
 		if (!fast_terrain)
 			min_bottom = 6;
-		mount = fmin(fmax(base - depth, (float) (water_level - min_bottom)), mount);
+		mount = MYMIN(MYMAX(base - depth, (float) (water_level - min_bottom)), mount);
 
 		// Slope has no influence on rivers.
 		*tn->slope = 0.f;
@@ -561,11 +554,11 @@ float MapgenValleys::adjustedTerrainLevelFromNoise(TerrainNoise *tn)
 	float mount = terrainLevelFromNoise(tn);
 
 	if (!fast_terrain) {
-		for (s16 y = round(mount); y <= round(mount) + 1000; y++) {
+		for (s16 y = myround(mount); y <= myround(mount) + 1000; y++) {
 			float fill = NoisePerlin3D(&noise_inter_valley_fill->np, tn->x, y, tn->z, seed);
 
 			if (fill * *tn->slope <= y - mount) {
-				mount = fmax(y - 1, mount);
+				mount = MYMAX(y - 1, mount);
 				break;
 			}
 		}
@@ -591,12 +584,12 @@ float MapgenValleys::humidityByTerrain(
 		humidity -= (humidity_break_point - humidity_adjust) / 3.f;
 
 		// This method is from the original lua.
-		float water_table = pow(0.5f, fmax(rivers / 3.f, 0.f));
+		float water_table = pow(0.5f, MYMAX(rivers / 3.f, 0.f));
 		// This adds humidity next to rivers and lakes.
-		float river_water = pow(0.5f, fmax(valley / 12.f, 0.f));
+		float river_water = pow(0.5f, MYMAX(valley / 12.f, 0.f));
 		// Combine the two.
 		float water = water_table + (1.f - water_table) * river_water;
-		humidity = fmax(humidity, (humidity_break_point * water));
+		humidity = MYMAX(humidity, (humidity_break_point * water));
 	}
 
 	return humidity;
@@ -703,7 +696,7 @@ int MapgenValleys::generateTerrain()
 				} else if (river && y < river_y) {
 					// river
 					vm->m_data[index_data] = n_river_water;
-				} else if ((!fast_terrain) && (!river) && round(fill * slope) >= y - surface_y) {
+				} else if ((!fast_terrain) && (!river) && myround(fill * slope) >= y - surface_y) {
 					// ground (slow method)
 					vm->m_data[index_data] = n_stone;
 					heightmap[index_2d] = surface_max_y = y;
@@ -910,7 +903,7 @@ void MapgenValleys::generateSimpleCaves(s16 max_stone_y)
 
 	s16 base_water_chance = 0;
 	if (water_features < 11)
-		base_water_chance = ceil(MAX_MAP_GENERATION_LIMIT / (water_features * 1000));
+		base_water_chance = ceil(MAX_MAP_GENERATION_LIMIT / (double)(water_features * 1000));
 
 	if (max_stone_y >= node_min.Y) {
 		u32 index_2d = 0;
