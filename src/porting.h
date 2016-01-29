@@ -221,8 +221,8 @@ void initIrrlicht(irr::IrrlichtDevice * );
 		host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
 		clock_get_time(cclock, &mts);
 		mach_port_deallocate(mach_task_self(), cclock);
-		ts.tv_sec = mts.tv_sec;
-		ts.tv_nsec = mts.tv_nsec;
+		ts->tv_sec = mts.tv_sec;
+		ts->tv_nsec = mts.tv_nsec;
 #elif defined(CLOCK_MONOTONIC_RAW)
 		clock_gettime(CLOCK_MONOTONIC_RAW, ts);
 #elif defined(_POSIX_MONOTONIC_CLOCK)
