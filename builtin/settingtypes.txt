@@ -1043,25 +1043,21 @@ mgfractal_np_cave2 (Mapgen fractal cave2 noise parameters) noise_params 0, 12, (
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with "no" are used to explicitly disable them.
 #    "altitude_chill" makes higher elevations colder, which may cause biome issues.
-#    "fast" produces softer terrain, more quickly
 #    "humid_rivers" modifies the humidity around rivers and in areas where water would tend to pool. It may interfere with delicately adjusted biomes.
-#    "rugged" and "cliffs" do nothing unless "fast" is enabled
-mg_valleys_spflags (Valleys C Flags) flags altitude_chill,cliffs,humid_rivers,nofast,rugged altitude_chill,noaltitude_chill,cliffs,nocliffs,fast,nofast,humid_rivers,nohumid_rivers,rugged,norugged
+mg_valleys_spflags (Valleys C Flags) flags altitude_chill,humid_rivers altitude_chill,noaltitude_chill,humid_rivers,nohumid_rivers
 
 # The altitude at which temperature drops by 20C
 mg_valleys_altitude_chill (Altitude Chill) int 90
 
-# Average humidity
-mg_valleys_humidity (Humidity) int 50
+# Depth below which you'll find large caves.
+mg_valleys_large_cave_depth (Large cave depth) int -33
 
-# The highest humidity around rivers in otherwise dry areas
-mg_valleys_humidity_break_point (Humidity Break) int 65
+# Creates unpredictable lava features in caves.
+# These can make mining difficult. Zero disables them. (0-10)
+mg_valleys_lava_features (Lava Features) int 0
 
-# Maximum altitude where lava can emerge
-mg_valleys_lava_max_height (Lava Height) int 0
-
-# Maximum altitude where water occurs in caves (and tends to fall out)
-mg_valleys_cave_water_max_height (Cave Water Height) int 31000
+# Depth below which you'll find massive caves.
+mg_valleys_massive_cave_depth (Massive cave depth) int -256
 
 # How deep to make rivers
 mg_valleys_river_depth (River Depth) int 4
@@ -1069,32 +1065,27 @@ mg_valleys_river_depth (River Depth) int 4
 # How wide to make rivers
 mg_valleys_river_size (River Size) int 5
 
-# Average temperature
-mg_valleys_temperature (Temperature) int 50
-
-# How often water occurs in caves (0-10)
-mg_valleys_water_features (Water Features) int 3
+# Creates unpredictable water features in caves.
+# These can make mining difficult. Zero disables them. (0-10)
+mg_valleys_water_features (Water Features) int 0
 
 # Noise parameters
 [****Noises]
 
-# Cliff noise
-mg_valleys_np_cliffs (Cliffs) noise_params 0, 1, (750, 750, 750), 8445, 5, 1.0, 2.0
+# Caves and tunnels form at the intersection of the two noises
+mg_valleys_np_cave1 (Cave noise #1) noise_params 0, 12, (100, 100, 100), 52534, 4, 0.5, 2.0
 
-# Mountain corrugation
-mg_valleys_np_corr (Corrugation) noise_params 0, 1, (40, 40, 40), -3536, 4, 1.0, 2.0
+# Caves and tunnels form at the intersection of the two noises
+mg_valleys_np_cave2 (Cave noise #2) noise_params 0, 12, (100, 100, 100), 10325, 4, 0.5, 2.0
 
 # The depth of dirt or other filler
 mg_valleys_np_filler_depth (Filler Depth) noise_params 0, 1.2, (256, 256, 256), 1605, 3, 0.5, 2.0
 
+# Massive caves form here.
+mg_valleys_np_massive_caves (Massive cave noise) noise_params 0, 1, (768, 256, 768), 59033, 6, 0.63, 2.0
+
 # River noise -- rivers occur close to zero
 mg_valleys_np_rivers (River Noise) noise_params 0, 1, (256, 256, 256), -6050, 5, 0.6, 2.0
-
-# Caves and tunnels form at the intersection of the two noises
-mg_valleys_np_simple_caves_1 (Simple Caves #1) noise_params 0, 1, v3f(64, 64, 64), -8402, 3, 0.5, 2.0
-
-# Caves and tunnels form at the intersection of the two noises
-mg_valleys_np_simple_caves_2 (Simple Caves #2) noise_params 0, 1, v3f(64, 64, 64), 3944, 3, 0.5, 2.0
 
 # Base terrain height
 mg_valleys_np_terrain_height (Terrain Height) noise_params -10, 50, (1024, 1024, 1024), 5202, 6, 0.4, 2.0
