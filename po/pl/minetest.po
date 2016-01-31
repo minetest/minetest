@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-11-12 13:08+0000\n"
-"Last-Translator: Maciej Kasatkin <maciej.kasatkin@o2.pl>\n"
+"PO-Revision-Date: 2016-01-31 17:19+0000\n"
+"Last-Translator: Amadeo <amadeoras+weblate@gmail.com>\n"
 "Language-Team: Polish "
 "<https://hosted.weblate.org/projects/minetest/minetest/pl/>\n"
 "Language: pl\n"
@@ -289,9 +289,8 @@ msgid "Previous Contributors"
 msgstr "Byli współautorzy"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Previous Core Developers"
-msgstr "Twórcy"
+msgstr "Poprzedni Główni Twórcy"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Installed Mods:"
@@ -339,7 +338,6 @@ msgid "Connect"
 msgstr "Połącz"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Creative mode"
 msgstr "Tryb kreatywny"
 
@@ -366,7 +364,7 @@ msgstr "PvP włączone"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Bind Address"
-msgstr ""
+msgstr "Przypisz Adres"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "Configure"
@@ -511,14 +509,12 @@ msgid "Config mods"
 msgstr "Skonfiguruj mody"
 
 #: builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Main"
 msgstr "Menu główne"
 
 #: builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Start Singleplayer"
-msgstr "Pojedynczy gracz"
+msgstr "Tryb jednoosobowy"
 
 #: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
 msgid "Play"
@@ -541,14 +537,12 @@ msgid "Select texture pack:"
 msgstr "Wybierz paczkę tekstur:"
 
 #: builtin/mainmenu/tab_texturepacks.lua
-#, fuzzy
 msgid "Texturepacks"
 msgstr "Paczki tekstur"
 
 #: src/client.cpp
-#, fuzzy
 msgid "Connection timed out."
-msgstr "Błąd połączenia (brak odpowiedzi?)"
+msgstr "Przekroczono limit czasu połączenia."
 
 #: src/client.cpp
 msgid "Done!"
@@ -615,7 +609,6 @@ msgstr ""
 "Sprawdź plik debug.txt by uzyskać więcej informacji."
 
 #: src/game.cpp
-#, fuzzy
 msgid "Change Keys"
 msgstr "Zmień klawisze"
 
@@ -636,7 +629,6 @@ msgid "Creating client..."
 msgstr "Tworzenie klienta..."
 
 #: src/game.cpp
-#, fuzzy
 msgid "Creating server..."
 msgstr "Tworzenie serwera...."
 
@@ -681,6 +673,18 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
+"Domyślne sterowanie:\n"
+"Brak widocznego menu:\n"
+"- pojedyncze dotknięcie: aktywacja\n"
+"- podwójne dotknięcie: postaw/użyj\n"
+"- przejechanie palcem: rozglądanie się\n"
+"Menu/Ekwipunek widoczny:\n"
+"- potwójne dotknięcie poza menu:\n"
+" -->zamknij\n"
+"- dotknięcie stacka, dotknięcie slota:\n"
+" --> przenieś stack\n"
+"- dotknięcie i przeciągnięcie, dotknięcie drugim palcem\n"
+" --> umieść pojedynczy item w slocie\n"
 
 #: src/game.cpp
 msgid "Exit to Menu"
@@ -696,7 +700,7 @@ msgstr "Definicje przedmiotów..."
 
 #: src/game.cpp
 msgid "KiB/s"
-msgstr ""
+msgstr "KiB/s"
 
 #: src/game.cpp
 msgid "Media..."
@@ -704,7 +708,7 @@ msgstr "Media..."
 
 #: src/game.cpp
 msgid "MiB/s"
-msgstr ""
+msgstr "MiB/s"
 
 #: src/game.cpp
 msgid "Node definitions..."
@@ -723,7 +727,6 @@ msgid "Respawn"
 msgstr "Wróć do gry"
 
 #: src/game.cpp
-#, fuzzy
 msgid "Shutting down..."
 msgstr "Wyłączanie..."
 
@@ -737,11 +740,11 @@ msgstr "Zginąłeś."
 
 #: src/guiFormSpecMenu.cpp
 msgid "Enter "
-msgstr ""
+msgstr "Enter "
 
 #: src/guiFormSpecMenu.cpp
 msgid "ok"
-msgstr ""
+msgstr "ok"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "\"Use\" = climb down"
@@ -814,9 +817,8 @@ msgid "Sneak"
 msgstr "Skradanie"
 
 #: src/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle Cinematic"
-msgstr "Przełącz tryb szybki"
+msgstr "Włącz/Wyłącz tryb Cinematic"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1161,13 +1163,12 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D clouds"
 msgstr "Chmury 3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
-msgstr ""
+msgstr "Modele 3D"
 
 #: src/settings_translation_file.cpp
 msgid ""
