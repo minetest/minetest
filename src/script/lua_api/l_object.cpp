@@ -188,6 +188,7 @@ int ObjectRef::l_punch(lua_State *L)
 
 	// Do it
 	co->punch(dir, &toolcap, puncher, time_from_last_punch);
+	//FIXME punch() returns a wear value, we should apply this to a wielditem()
 
 	// If the punched is a player, and its HP changed
 	if (src_original_hp != co->getHP() &&
