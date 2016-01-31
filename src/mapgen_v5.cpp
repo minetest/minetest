@@ -322,18 +322,16 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 void MapgenV5::calculateNoise()
 {
 	//TimeTaker t("calculateNoise", NULL, PRECISION_MICRO);
-	int x = node_min.X;
-	int y = node_min.Y - 1;
-	int z = node_min.Z;
+	s16 x = node_min.X;
+	s16 y = node_min.Y - 1;
+	s16 z = node_min.Z;
 
 	noise_factor->perlinMap2D(x, z);
 	noise_height->perlinMap2D(x, z);
 	noise_ground->perlinMap3D(x, y, z);
 
-	if (flags & MG_CAVES) {
-		noise_cave1->perlinMap3D(x, y, z);
-		noise_cave2->perlinMap3D(x, y, z);
-	}
+	// Cave noises are calculated in generateCaves()
+	// only if solid terrain is present in mapchunk
 
 	noise_filler_depth->perlinMap2D(x, z);
 	noise_heat->perlinMap2D(x, z);
@@ -377,9 +375,9 @@ int MapgenV5::generateBaseTerrain()
 
 	for (s16 z=node_min.Z; z<=node_max.Z; z++) {
 		for (s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {
-			u32 i = vm->m_area.index(node_min.X, y, z);
-			for (s16 x=node_min.X; x<=node_max.X; x++, i++, index++, index2d++) {
-				if (vm->m_data[i].getContent() != CONTENT_IGNORE)
+			u32 vi = vm->m_area.index(node_min.X, y, z);
+			for (s16 x=node_min.X; x<=node_max.X; x++, vi++, index++, index2d++) {
+				if (vm->m_data[vi].getContent() != CONTENT_IGNORE)
 					continue;
 
 				float f = 0.55 + noise_factor->result[index2d];
@@ -391,11 +389,11 @@ int MapgenV5::generateBaseTerrain()
 
 				if (noise_ground->result[index] * f < y - h) {
 					if (y <= water_level)
-						vm->m_data[i] = MapNode(c_water_source);
+						vm->m_data[vi] = MapNode(c_water_source);
 					else
-						vm->m_data[i] = MapNode(CONTENT_AIR);
+						vm->m_data[vi] = MapNode(CONTENT_AIR);
 				} else {
-					vm->m_data[i] = MapNode(c_stone);
+					vm->m_data[vi] = MapNode(c_stone);
 					if (y > stone_surface_max_y)
 						stone_surface_max_y = y;
 				}
@@ -508,22 +506,26 @@ MgStoneType MapgenV5::generateBiomes(float *heat_map, float *humidity_map)
 
 void MapgenV5::generateCaves(int max_stone_y)
 {
-	if (max_stone_y >= node_min.Y) {
-		u32 index = 0;
+	if (max_stone_y < node_min.Y)
+		return;
 
-		for (s16 z = node_min.Z; z <= node_max.Z; z++)
-		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
-			u32 i = vm->m_area.index(node_min.X, y, z);
-			for (s16 x = node_min.X; x <= node_max.X; x++, i++, index++) {
-				float d1 = contour(noise_cave1->result[index]);
-				float d2 = contour(noise_cave2->result[index]);
-				if (d1 * d2 > 0.125f) {
-					content_t c = vm->m_data[i].getContent();
-					if (!ndef->get(c).is_ground_content || c == CONTENT_AIR)
-						continue;
+	noise_cave1->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
+	noise_cave2->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
 
-					vm->m_data[i] = MapNode(CONTENT_AIR);
-				}
+	u32 index = 0;
+
+	for (s16 z = node_min.Z; z <= node_max.Z; z++)
+	for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
+		u32 vi = vm->m_area.index(node_min.X, y, z);
+		for (s16 x = node_min.X; x <= node_max.X; x++, vi++, index++) {
+			float d1 = contour(noise_cave1->result[index]);
+			float d2 = contour(noise_cave2->result[index]);
+			if (d1 * d2 > 0.125f) {
+				content_t c = vm->m_data[vi].getContent();
+				if (!ndef->get(c).is_ground_content || c == CONTENT_AIR)
+					continue;
+
+				vm->m_data[vi] = MapNode(CONTENT_AIR);
 			}
 		}
 	}
