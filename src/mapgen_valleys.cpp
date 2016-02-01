@@ -99,8 +99,8 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 	this->water_features_lim = rangelim(sp->water_features, 0, 10);
 
 	// a small chance of overflows if the settings are very high
-	this->cave_water_max_height = water_level + MYMAX(0, water_features_lim - 6) * 50;
-	this->lava_max_height       = water_level + MYMAX(0, lava_features_lim - 6) * 50;
+	this->cave_water_max_height = water_level + MYMAX(0, water_features_lim - 4) * 50;
+	this->lava_max_height       = water_level + MYMAX(0, lava_features_lim - 4) * 50;
 
 	tcave_cache = new float[csize.Y + 2];
 
@@ -482,7 +482,8 @@ float MapgenValleys::terrainLevelFromNoise(TerrainNoise *tn)
 
 		// base - depth : height of the bottom of the river
 		// water_level - 6 : don't make rivers below 6 nodes under the surface
-		mount = rangelim(base - depth, (float) (water_level - 6), mount);
+		// There is no logical equivalent to this using rangelim.
+		mount = MYMIN(MYMAX(base - depth, (float) (water_level - 6)), mount);
 
 		// Slope has no influence on rivers.
 		*tn->slope = 0.f;
@@ -846,8 +847,8 @@ void MapgenValleys::generateCaves(s16 max_stone_y)
 
 	// Reduce the odds of overflows even further.
 	if (node_max.Y > water_level) {
-		lava_chance /= 5;
-		water_chance /= 5;
+		lava_chance /= 3;
+		water_chance /= 3;
 	}
 
 	u32 index_2d = 0;
