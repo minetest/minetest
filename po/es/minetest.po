@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2016-01-25 08:35+0000\n"
-"Last-Translator: Diego Martínez <lkaezadl3@gmail.com>\n"
+"PO-Revision-Date: 2016-02-02 19:22+0000\n"
+"Last-Translator: Laura Arjona Reina <larjona@larjona.net>\n"
 "Language-Team: Spanish "
 "<https://hosted.weblate.org/projects/minetest/minetest/es/>\n"
 "Language: es\n"
@@ -1231,18 +1231,27 @@ msgid ""
 "Leave this blank to start a local server.\n"
 "Note that the address field in the main menu overrides this setting."
 msgstr ""
+"Dirección a la cual conectarse.\n"
+"Dejar en blanco para iniciar un servidor local.\n"
+"A tener en cuenta: el campo de dirección en el menú principal sobreescribe "
+"esta opción."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr ""
+"Ajustar la configuración de puntos por pulgada a la pantalla (no X11/solo "
+"Android) p.ej. para pantallas 4K."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Adjust the gamma encoding for the light tables. Lower numbers are brighter.\n"
 "This setting is for the client only and is ignored by the server."
 msgstr ""
+"Ajustar la codificación de gamma para las tablas de luz. Números bajos para "
+"más brillante.\n"
+"Esta opción es solamente para el cliente y es ignorada por el servidor."
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -1254,7 +1263,7 @@ msgstr "Siempre volar y rápido"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
-msgstr ""
+msgstr "Gamma de oclusión de ambiente"
 
 #: src/settings_translation_file.cpp
 msgid "Anisotropic filtering"
@@ -1398,7 +1407,7 @@ msgstr "Conectar a un servidor media externo"
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
-msgstr ""
+msgstr "Conectar gafas si el nodo lo soporta."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
