@@ -764,6 +764,8 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 	else
 		shaders_header += "0\n";
 
+	if (g_settings->getBool("far_contrast"))
+		shaders_header += "#define ENABLE_FAR_CONTRAST\n";
 	if (g_settings->getBool("tone_mapping"))
 		shaders_header += "#define ENABLE_TONE_MAPPING\n";
 

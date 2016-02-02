@@ -331,6 +331,11 @@ enable_shaders (Shaders) bool true
 #    Enables filmic tone mapping
 tone_mapping (Filmic tone mapping) bool false
 
+[****Far Contrast]
+
+#    Increases contrast of nodes by distance
+far_contrast (Contrast increased by distance) bool false
+
 [****Bumpmapping]
 
 #    Enables bumpmapping for textures. Normalmaps need to be supplied by the texture pack
