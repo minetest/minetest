@@ -11,6 +11,7 @@ uniform float cameraFar;
 
 varying vec3 vPosition;
 varying vec3 worldPosition;
+varying vec3 FragPos;
 
 varying vec3 eyeVec;
 varying vec3 lightVec;
@@ -42,6 +43,14 @@ float triangleWave(float x)
 float smoothTriangleWave(float x)
 {
 	return smoothCurve(triangleWave(x)) * 2.0 - 1.0;
+}
+
+const float NEAR = 0.1; // projection matrix's near plane
+const float FAR = 2450.0f; // projection matrix's far plane
+float linearizeDepth(float depth)
+{
+    float z = depth * 2.0 - 1.0; // Back to NDC 
+    return (2.0 * NEAR * FAR) / (FAR + NEAR - z * (FAR - NEAR));	
 }
 
 void main(void)
@@ -88,6 +97,7 @@ void main(void)
 	gl_Position = mWorldViewProj * gl_Vertex;
 #endif
 
+	FragPos = gl_Position.xyz;
 	vPosition = gl_Position.xyz;
 	worldPosition = (mWorld * gl_Vertex).xyz;
 
@@ -123,7 +133,7 @@ void main(void)
 	v.z = dot(eyeVec, normal);
 	tsEyeVec = normalize (v);
 
-	sDepth = (mWorldViewProj * gl_Vertex).z / 2400.0; // cameraFar;
+	sDepth = -(mWorldViewProj * gl_Vertex).z; // cameraFar;
 
 	vec4 color;
 	float day = gl_Color.r;

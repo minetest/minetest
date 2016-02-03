@@ -12,12 +12,13 @@ class IShaderDefaultPostProcessCallback : public irr::video::IShaderConstantSetC
 {
     public:
         IShaderDefaultPostProcessCallback();
-
-        virtual void OnSetConstants(irr::video::IMaterialRendererServices* services, irr::s32 userData);
+		virtual void OnSetConstants(irr::video::IMaterialRendererServices* services, irr::s32 userData);
 
         virtual void OnSetMaterial (const SMaterial &material);
 
     private:
+        IrrlichtDevice *m_device;
+        irr::core::vector3df ssaoKernel[32];
         irr::u32 NumTextures;
         irr::core::vector2df PixelSize;
 		irr::f32 ScreenWidth;
@@ -25,6 +26,7 @@ class IShaderDefaultPostProcessCallback : public irr::video::IShaderConstantSetC
         irr::u32 RenderID;
         irr::u32 TexIDs[3];
         irr::u32 PixelSizeID;
+        
 };
 
 }

@@ -1,16 +1,18 @@
 #include "irrPP.h"
 
 irr::video::irrPP* createIrrPP(irr::IrrlichtDevice* device,
+		Camera *camera,
 		irr::video::E_POSTPROCESSING_EFFECT_QUALITY quality,
 		const irr::io::path shaderDir)
 {
-	return new irr::video::irrPP(device, quality, shaderDir);
+	return new irr::video::irrPP(device, camera,  quality, shaderDir);
 }
 
-irr::video::irrPP::irrPP(irr::IrrlichtDevice* device,
+irr::video::irrPP::irrPP(irr::IrrlichtDevice* device, Camera *camera,
 		irr::video::E_POSTPROCESSING_EFFECT_QUALITY quality,
 		const irr::io::path shaderDir)
 	:Device(device),
+	camera(camera),
 	Quality(quality),
 	ShaderDir(shaderDir),
 	RTT1(0), RTT2(0)
@@ -18,7 +20,6 @@ irr::video::irrPP::irrPP(irr::IrrlichtDevice* device,
 	Quad = new irr::scene::IQuadSceneNode(0, Device->getSceneManager());
 	// create the root chain
 	createEffectChain();
-
 	setQuality(quality);
 }
 
@@ -107,9 +108,6 @@ void irr::video::irrPP::render(irr::video::ITexture* input,
 }
 
 
-
-
-
 irr::video::CPostProcessingEffectChain* irr::video::irrPP::createEffectChain()
 {
 	irr::video::CPostProcessingEffectChain* chain =
@@ -120,10 +118,9 @@ irr::video::CPostProcessingEffectChain* irr::video::irrPP::createEffectChain()
 }
 
 irr::video::CPostProcessingEffect* irr::video::irrPP::createEffect(
-		irr::core::stringc sourceFrag,
-		irr::video::IShaderConstantSetCallBack* callback)
+		irr::core::stringc sourceFrag)
 {
-	return getRootEffectChain()->createEffect(sourceFrag, callback);
+	return getRootEffectChain()->createEffect(sourceFrag);
 }
 
 irr::video::CPostProcessingEffect* irr::video::irrPP::createEffect(
@@ -149,20 +146,6 @@ void irr::video::irrPP::setQuality(
 	RTT2 = Device->getVideoDriver()->addRenderTargetTexture(qRes, "irrPP-RTT2");
 
 	Quality = quality;
-}
-
-void irr::video::irrPP::setQuality(irr::core::dimension2d<irr::u32> resolution)
-{
-	if (RTT1)
-		Device->getVideoDriver()->removeTexture(RTT1);
-
-	if (RTT2)
-		Device->getVideoDriver()->removeTexture(RTT2);
-
-	RTT1 = Device->getVideoDriver()->addRenderTargetTexture(resolution, "irrPP-RTT1");
-	RTT2 = Device->getVideoDriver()->addRenderTargetTexture(resolution, "irrPP-RTT2");
-
-	Quality = EPQ_CUSTOM;
 }
 
 irr::video::ITexture* irr::video::irrPP::getRTT1() const

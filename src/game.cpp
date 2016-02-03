@@ -1807,12 +1807,65 @@ void Game::run()
 				+ "shaders" + DIR_DELIM
 				+ "postprocess" + DIR_DELIM;
 
-	irrPP = createIrrPP(device, video::EPQ_FULL, pp_shaders_path.c_str());
+	//if (g_settings->getBool("enable_shaders")
+
+
+	irrPP = createIrrPP(device, camera, video::EPQ_FULL, pp_shaders_path.c_str());
 	mrt = new Mrt(device);
 
+	bool enable_fxaa = g_settings->getBool("enable_fxaa");
+	bool enable_bloom = g_settings->getBool("enable_bloom");
+	bool enable_cel = g_settings->getBool("enable_cel");
+	bool enable_tonemapping = g_settings->getBool("enable_tonemapping");
+	bool enable_dof = g_settings->getBool("enable_dof");
+
 	irr::video::CPostProcessingEffectChain* pp = irrPP->createEffectChain();
-    pp->createEffect(video::EPE_DOF)->addTextureToShader(mrt->getDepthRTT());
-    
+
+	if (enable_cel) {
+		irr::video::CPostProcessingEffect* cel =
+			irrPP->createEffect(video::EPE_CEL);
+		cel->addTextureToShader(mrt->getDepthRTT());
+		cel->addTextureToShader(mrt->getNormalRTT());
+		pp->attachEffect(cel);
+		pp->createEffect(video::EPE_MUL2)->addTextureToShader(mrt->getColorRTT());
+	}
+
+	if (enable_dof) {
+		irr::video::CPostProcessingEffectChain* dof =
+			irrPP->createEffectChain();
+		dof->setKeepOriginalRender(true);
+		dof->createEffect(video::EPE_BLUR_V_MEDIUM);
+		dof->createEffect(video::EPE_BLUR_H_MEDIUM);
+		irr::video::CPostProcessingEffect* dofEff =
+			irrPP->createEffect(video::EPE_DOF);	
+		dofEff->addTextureToShader(dof->getOriginalRender());
+		dofEff->addTextureToShader(mrt->getDepthRTT());
+		dof->attachEffect(dofEff);		
+	}
+
+    if (enable_bloom) {
+    irr::video::CPostProcessingEffectChain* bloom = irrPP->createEffectChain();
+    bloom->setKeepOriginalRender(true);
+    bloom->createEffect(video::EPE_BLOOM_PREPASS)->setQuality(video::EPQ_HALF);
+    bloom->createEffect(video::EPE_BLUR_V_HIGH)->setQuality(video::EPQ_HALF);
+    bloom->createEffect(video::EPE_BLUR_H_HIGH)->setQuality(video::EPQ_HALF);
+    bloom->createEffect(video::EPE_ADD2)->addTextureToShader(bloom->getOriginalRender());
+	}
+
+	if (enable_fxaa) {
+		pp->createEffect(video::EPE_FXAA);
+	}
+
+	if (enable_tonemapping) {
+		pp->createEffect(video::EPE_UC2_TONEMAP);
+	}
+
+	u32 effect_count = pp->getActiveEffectCount();
+	if (effect_count == 0)
+		pp->createEffect(video::EPE_ALBEDO);
+	
+	//ssao->addTextureToShader(texture_src->getTexture("ssao_random_normal.png")); 
+	
 	/* Clear the profiler */
 	Profiler::GraphValues dummyvalues;
 	g_profiler->graphGet(dummyvalues);

@@ -152,6 +152,12 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("hud_hotbar_max_width","1.0");
 	settings->setDefault("enable_local_map_saving", "false");
 
+	settings->setDefault("enable_fxaa", "false");
+	settings->setDefault("enable_bloom", "false");
+	settings->setDefault("enable_cel", "false");
+	settings->setDefault("enable_tonemapping", "false");
+	settings->setDefault("enable_dof", "false");
+
 	settings->setDefault("mip_map", "false");
 	settings->setDefault("anisotropic_filter", "false");
 	settings->setDefault("bilinear_filter", "false");
