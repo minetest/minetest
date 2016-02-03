@@ -19,21 +19,11 @@ vec3 uncharted2Tonemap(vec3 x)
 	return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
 }
 
-vec4 burgess (vec4 color,vec2 uv)
-{
-	color = vec4(pow(color.rgb, vec3(2.2)), color.a);
-	vec4 bloom = texture2D(Render, uv);
-	color+= 0.0*bloom;
-	vec3 x = max(0,color-0.004);
-	vec3 retColor = (x*(6.2*x+.5))/(x*(6.2*x+1.7)+0.06);
-	return vec4(pow(color.rgb, vec3(1.0 / 1.9)), color.a);
-}
-
 vec4 applyToneMapping(vec4 color, vec2 uv)
 {
 	color = vec4(pow(color.rgb, vec3(2.2)), color.a);
 	vec4 bloom = texture2D(Render, uv);
-	color+= 0.5*bloom;
+	color.rgb += 0.5 * bloom.rgb;
 	const float gamma = 1.8;
 	float exposureBias = 4.0;
 	color.rgb = uncharted2Tonemap(exposureBias * color.rgb);
@@ -47,6 +37,4 @@ void main()
 	vec2 uv = gl_TexCoord[0].st;
 	vec4 color = texture2D(Tex0, uv);
 	gl_FragColor = applyToneMapping(color, uv);
-	//gl_FragColor = burgess(color, uv);
-	//gl_FragColor = color;
 }
