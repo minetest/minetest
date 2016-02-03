@@ -166,7 +166,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 			}
 
 			v3s16 pos(x, y, z);
-			if (generate(mg->vm, &ps, pos))
+			if (generate(mg, mg->vm, &ps, pos))
 				mg->gennotify.addEvent(GENNOTIFY_DECORATION, pos, index);
 		}
 	}
@@ -294,7 +294,7 @@ bool DecoSimple::canPlaceDecoration(MMVManip *vm, v3s16 p)
 }
 
 
-size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
+size_t DecoSimple::generate(Mapgen *mg, MMVManip *vm, PcgRandom *pr, v3s16 p)
 {
 	if (!canPlaceDecoration(vm, p))
 		return 0;
@@ -335,7 +335,7 @@ DecoSchematic::DecoSchematic()
 }
 
 
-size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
+size_t DecoSchematic::generate(Mapgen *mg, MMVManip *vm, PcgRandom *pr, v3s16 p)
 {
 	// Schematic could have been unloaded but not the decoration
 	// In this case generate() does nothing (but doesn't *fail*)
@@ -345,6 +345,16 @@ size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 	u32 vi = vm->m_area.index(p);
 	content_t c = vm->m_data[vi].getContent();
 	if (!CONTAINS(c_place_on, c))
+		return 0;
+
+	// Check for a non-walkable node above, to be consistent with the
+	// behaviour of findGroundLevel and findLiquidSurface, which are
+	// used if the heightmap is not present. This avoids, for example,
+	// multiple tree trunks placed at the same position.
+	v3s16 em = vm->m_area.getExtent();
+	vm->m_area.add_y(em, vi, 1);
+	MapNode &n = vm->m_data[vi];
+	if (mg->ndef->get(n).walkable)
 		return 0;
 
 	if (flags & DECO_PLACE_CENTER_X)
