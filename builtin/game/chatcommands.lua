@@ -225,6 +225,23 @@ core.register_chatcommand("revoke", {
 			end
 		end
 		core.set_player_privs(revoke_name, privs)
+
+		-- Check if we succeeded.
+		privs = core.get_player_privs(revoke_name)
+		local check_privs = revoke_privs
+		if revoke_priv_str == "all" then
+			check_privs = privs
+		end
+		for priv, _ in pairs(check_privs) do
+			if privs[priv] == true then
+				core.log("action", name..' failed to revoke ('
+					..core.privs_to_string(revoke_privs, ', ')
+					..') privileges from '..revoke_name)
+				return false, "Privileges of " .. revoke_name 
+				.. " could not be revoked.. are they admin?"
+			end
+		end
+
 		core.log("action", name..' revoked ('
 				..core.privs_to_string(revoke_privs, ', ')
 				..') privileges from '..revoke_name)
