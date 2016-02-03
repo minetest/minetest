@@ -523,21 +523,22 @@ void ServerEnvironment::loadMeta()
 	if (!is.good()) {
 		infostream << "ServerEnvironment::loadMeta(): Failed to open "
 				<< path << std::endl;
-		throw SerializationError("Couldn't load env meta");
 	}
 
 	Settings args;
 
 	if (!args.parseConfigLines(is, "EnvArgsEnd")) {
-		throw SerializationError("ServerEnvironment::loadMeta(): "
-				"EnvArgsEnd not found!");
+		// This is not good, the file could be blank or corrupted!
+		infostream << "ServerEnvironment::loadMeta(): EnvArgsEnd not found!";
 	}
 
 	try {
 		m_game_time = args.getU64("game_time");
 	} catch (SettingNotFoundException &e) {
 		// Getting this is crucial, otherwise timestamps are useless
-		throw SerializationError("Couldn't load env meta game_time");
+		// But we won't crash the server completely.
+		infostream << "Couldn't load env meta game_time, timestamps are now useless";
+		m_game_time = 0;
 	}
 
 	try {
