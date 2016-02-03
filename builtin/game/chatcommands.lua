@@ -84,6 +84,18 @@ core.register_chatcommand("me", {
 	end,
 })
 
+core.register_chatcommand("admin", {
+	description = "Show the name of the server owner",
+	func = function(name)
+		local admin = minetest.setting_get("name")
+		if admin then
+			return true, "The administrator of this server is "..admin.."."
+		else
+			return false, "There's no administrator named in the config file."
+		end
+	end,
+})
+
 core.register_chatcommand("help", {
 	privs = {},
 	params = "[all/privs/<cmd>]",
