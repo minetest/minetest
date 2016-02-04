@@ -192,18 +192,25 @@ void MapgenFlatParams::writeParams(Settings *settings) const
 /////////////////////////////////////////////////////////////////
 
 
-int MapgenFlat::getGroundLevelAtPoint(v2s16 p)
+int MapgenFlat::getSpawnLevelAtPoint(v2s16 p)
 {
+	s16 level_at_point = ground_level;
 	float n_terrain = NoisePerlin2D(&noise_terrain->np, p.X, p.Y, seed);
+
 	if ((spflags & MGFLAT_LAKES) && n_terrain < lake_threshold) {
-		s16 depress = (lake_threshold - n_terrain) * lake_steepness;
-		return ground_level - depress;
+		level_at_point = ground_level -
+			(lake_threshold - n_terrain) * lake_steepness;
 	} else if ((spflags & MGFLAT_HILLS) && n_terrain > hill_threshold) {
-		s16 rise = (n_terrain - hill_threshold) * hill_steepness;
-		return ground_level + rise;
-	} else {
-		return ground_level;
+		level_at_point = ground_level +
+			(n_terrain - hill_threshold) * hill_steepness;
 	}
+
+	if (ground_level < water_level)  // Ocean world, allow spawn in water
+		return MYMAX(level_at_point, water_level);
+	else if (level_at_point > water_level)
+		return level_at_point;  // Spawn on land
+	else
+		return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
 }
 
 

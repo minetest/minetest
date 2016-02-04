@@ -30,9 +30,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapgen.h"
 
-/////////////////// Mapgen Valleys flags
-#define MG_VALLEYS_ALT_CHILL    0x01
-#define MG_VALLEYS_HUMID_RIVERS 0x02
+////////////// Mapgen Valleys flags
+#define MGVALLEYS_ALT_CHILL    0x01
+#define MGVALLEYS_HUMID_RIVERS 0x02
 
 // Feed only one variable into these.
 #define MYSQUARE(x) (x) * (x)
@@ -96,7 +96,7 @@ public:
 	~MapgenValleys();
 
 	virtual void makeChunk(BlockMakeData *data);
-	int getGroundLevelAtPoint(v2s16 p);
+	int getSpawnLevelAtPoint(v2s16 p);
 
 	s16 large_cave_depth;
 

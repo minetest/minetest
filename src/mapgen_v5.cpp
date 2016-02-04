@@ -171,7 +171,7 @@ void MapgenV5Params::writeParams(Settings *settings) const
 }
 
 
-int MapgenV5::getGroundLevelAtPoint(v2s16 p)
+int MapgenV5::getSpawnLevelAtPoint(v2s16 p)
 {
 	//TimeTaker t("getGroundLevelAtPoint", NULL, PRECISION_MICRO);
 
@@ -182,24 +182,25 @@ int MapgenV5::getGroundLevelAtPoint(v2s16 p)
 		f *= 1.6;
 	float h = NoisePerlin2D(&noise_height->np, p.X, p.Y, seed);
 
-	s16 search_start = 128; // Only bother searching this range, actual
-	s16 search_end = -128;  // ground level is rarely higher or lower.
-
-	for (s16 y = search_start; y >= search_end; y--) {
+	for (s16 y = 128; y >= -128; y--) {
 		float n_ground = NoisePerlin3D(&noise_ground->np, p.X, y, p.Y, seed);
-		// If solid
-		if (n_ground * f > y - h) {
+
+		if (n_ground * f > y - h) {  // If solid
 			// If either top 2 nodes of search are solid this is inside a
-			// mountain or floatland with no space for the player to spawn.
-			if (y >= search_start - 1)
-				return MAX_MAP_GENERATION_LIMIT;
-			else
-				return y; // Ground below at least 2 nodes of space
+			// mountain or floatland with possibly no space for the player to spawn.
+			if (y >= 127) {
+				return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
+			} else {  // Ground below at least 2 nodes of empty space
+				if (y <= water_level || y > water_level + 16)
+					return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
+				else
+					return y;
+			}
 		}
 	}
 
 	//printf("getGroundLevelAtPoint: %dus\n", t.stop());
-	return -MAX_MAP_GENERATION_LIMIT;
+	return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn position, no ground found
 }
 
 

@@ -129,6 +129,7 @@ public:
 
 	void makeChunk(BlockMakeData *data);
 	int getGroundLevelAtPoint(v2s16 p);
+	int getSpawnLevelAtPoint(v2s16 p);
 
 	float baseTerrainLevel(float terrain_base, float terrain_higher,
 		float steepness, float height_select);

@@ -202,7 +202,7 @@ void MapgenV7Params::writeParams(Settings *settings) const
 ///////////////////////////////////////
 
 
-int MapgenV7::getGroundLevelAtPoint(v2s16 p)
+int MapgenV7::getSpawnLevelAtPoint(v2s16 p)
 {
 	// Base terrain calculation
 	s16 y = baseTerrainLevelAtPoint(p.X, p.Y);
@@ -210,22 +210,24 @@ int MapgenV7::getGroundLevelAtPoint(v2s16 p)
 	// Ridge/river terrain calculation
 	float width = 0.2;
 	float uwatern = NoisePerlin2D(&noise_ridge_uwater->np, p.X, p.Y, seed) * 2;
-	// actually computing the depth of the ridge is much more expensive;
-	// if inside a river, simply guess
+	// if inside a river this is an unsuitable spawn point
 	if (fabs(uwatern) <= width)
-		return water_level - 10;
+		return MAX_MAP_GENERATION_LIMIT;
 
 	// Mountain terrain calculation
-	int iters = 128; // don't even bother iterating more than 128 times..
+	int iters = 128;
 	while (iters--) {
-		//current point would have been air
-		if (!getMountainTerrainAtPoint(p.X, y, p.Y))
-			return y;
-
+		if (!getMountainTerrainAtPoint(p.X, y + 1, p.Y)) {  // Air, y is ground level
+			if (y <= water_level || y > water_level + 16)
+				return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
+			else
+				return y;
+		}
 		y++;
 	}
 
-	return y;
+	// Unsuitable spawn point, no ground surface found
+	return MAX_MAP_GENERATION_LIMIT;
 }
 
 
