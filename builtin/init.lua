@@ -12,7 +12,11 @@ if core.print then
 	-- Override native print and use
 	-- terminal if that's turned on
 	function print(...)
-		core_print(table.concat({...}, "\t"))
+		local n, t = select("#", ...), { ... }
+		for i = 1, n do
+			t[i] = tostring(t[i])
+		end
+		core_print(table.concat(t, "\t"))
 	end
 	core.print = nil -- don't pollute our namespace
 end
