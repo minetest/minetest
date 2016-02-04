@@ -56,8 +56,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //Profiler *mapgen_profiler = &mapgen_prof;
 
 static FlagDesc flagdesc_mapgen_valleys[] = {
-	{"altitude_chill", MG_VALLEYS_ALT_CHILL},
-	{"humid_rivers",   MG_VALLEYS_HUMID_RIVERS},
+	{"altitude_chill", MGVALLEYS_ALT_CHILL},
+	{"humid_rivers",   MGVALLEYS_HUMID_RIVERS},
 	{NULL,             0}
 };
 
@@ -86,8 +86,8 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 	MapgenValleysParams *sp = (MapgenValleysParams *)params->sparams;
 	this->spflags = sp->spflags;
 
-	this->humid_rivers       = (spflags & MG_VALLEYS_HUMID_RIVERS);
-	this->use_altitude_chill = (spflags & MG_VALLEYS_ALT_CHILL);
+	this->humid_rivers       = (spflags & MGVALLEYS_HUMID_RIVERS);
+	this->use_altitude_chill = (spflags & MGVALLEYS_ALT_CHILL);
 
 	this->altitude_chill     = sp->altitude_chill;
 	this->humidity_adjust    = params->np_biome_humidity.offset - 50.f;
@@ -181,7 +181,7 @@ MapgenValleys::~MapgenValleys()
 
 MapgenValleysParams::MapgenValleysParams()
 {
-	spflags = MG_VALLEYS_HUMID_RIVERS | MG_VALLEYS_ALT_CHILL;
+	spflags = MGVALLEYS_HUMID_RIVERS | MGVALLEYS_ALT_CHILL;
 
 	altitude_chill     = 90; // The altitude at which temperature drops by 20C.
 	large_cave_depth   = -33;
@@ -513,24 +513,19 @@ float MapgenValleys::adjustedTerrainLevelFromNoise(TerrainNoise *tn)
 }
 
 
-int MapgenValleys::getGroundLevelAtPoint(v2s16 p)
+int MapgenValleys::getSpawnLevelAtPoint(v2s16 p)
 {
-	// ***********************************
-	// This method (deliberately) does not
-	// return correct terrain values.
-	// ***********************************
-
-	// Since MT doesn't normally deal with rivers, check
-	// to make sure this isn't a request for a location
-	// in a river.
+	// Check to make sure this isn't a request for a location in a river.
 	float rivers = NoisePerlin2D(&noise_rivers->np, p.X, p.Y, seed);
-
-	// If it's wet, return an unusable number.
 	if (fabs(rivers) < river_size_factor)
-		return MAX_MAP_GENERATION_LIMIT;
+		return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
 
-	// Otherwise, return the real result.
-	return terrainLevelAtPoint(p.X, p.Y);
+	s16 level_at_point = terrainLevelAtPoint(p.X, p.Y);
+	if (level_at_point <= water_level ||
+			level_at_point > water_level + 16)
+		return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
+	else
+		return level_at_point;
 }
 
 

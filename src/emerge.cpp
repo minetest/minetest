@@ -334,6 +334,18 @@ v3s16 EmergeManager::getContainingChunk(v3s16 blockpos, s16 chunksize)
 }
 
 
+int EmergeManager::getSpawnLevelAtPoint(v2s16 p)
+{
+	if (m_mapgens.size() == 0 || !m_mapgens[0]) {
+		errorstream << "EmergeManager: getSpawnLevelAtPoint() called"
+			" before mapgen init" << std::endl;
+		return 0;
+	}
+
+	return m_mapgens[0]->getSpawnLevelAtPoint(p);
+}
+
+
 int EmergeManager::getGroundLevelAtPoint(v2s16 p)
 {
 	if (m_mapgens.size() == 0 || !m_mapgens[0]) {

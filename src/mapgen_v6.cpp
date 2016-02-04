@@ -318,6 +318,17 @@ int MapgenV6::getGroundLevelAtPoint(v2s16 p)
 }
 
 
+int MapgenV6::getSpawnLevelAtPoint(v2s16 p)
+{
+	s16 level_at_point = baseTerrainLevelFromNoise(p) + MGV6_AVERAGE_MUD_AMOUNT;
+	if (level_at_point <= water_level ||
+			level_at_point > water_level + 16)
+		return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
+	else
+		return level_at_point;
+}
+
+
 //////////////////////// Noise functions
 
 float MapgenV6::getMudAmount(v2s16 p)

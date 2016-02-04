@@ -209,17 +209,28 @@ void MapgenFractalParams::writeParams(Settings *settings) const
 /////////////////////////////////////////////////////////////////
 
 
-int MapgenFractal::getGroundLevelAtPoint(v2s16 p)
+int MapgenFractal::getSpawnLevelAtPoint(v2s16 p)
 {
-	s16 search_start = 128;
-	s16 search_end = -128;
-
-	for (s16 y = search_start; y >= search_end; y--) {
-		if (getFractalAtPoint(p.X, y, p.Y))
-			return y;
+	bool solid_below = false;  // Dry solid node is present below to spawn on
+	u8 air_count = 0;  // Consecutive air nodes above the dry solid node
+	s16 seabed_level = NoisePerlin2D(&noise_seabed->np, p.X, p.Y, seed);
+	// Seabed can rise above water_level or might be raised to create dry land
+	s16 search_start = MYMAX(seabed_level, water_level + 1);
+	if (seabed_level > water_level)
+		solid_below = true;
+		
+	for (s16 y = search_start; y <= search_start + 128; y++) {
+		if (getFractalAtPoint(p.X, y, p.Y)) {  // Fractal node
+			solid_below = true;
+			air_count = 0;
+		} else if (solid_below) {  // Air above solid node
+			air_count++;
+			if (air_count == 2)
+				return y - 2;
+		}
 	}
 
-	return -MAX_MAP_GENERATION_LIMIT;
+	return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
 }
 
 
