@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "fontengine.h"
 #include "guiscalingfilter.h"
+#include "mesh.h"
 #include <IGUIStaticText.h>
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -68,18 +69,38 @@ Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 	u32 cross_a = rangelim(g_settings->getS32("crosshair_alpha"), 0, 255);
 	crosshair_argb = video::SColor(cross_a, cross_r, cross_g, cross_b);
 
-	v3f selectionbox_color = g_settings->getV3F("selectionbox_color");
-	u32 sbox_r = rangelim(myround(selectionbox_color.X), 0, 255);
-	u32 sbox_g = rangelim(myround(selectionbox_color.Y), 0, 255);
-	u32 sbox_b = rangelim(myround(selectionbox_color.Z), 0, 255);
-	selectionbox_argb = video::SColor(255, sbox_r, sbox_g, sbox_b);
-
 	use_crosshair_image = tsrc->isKnownSourceImage("crosshair.png");
 
 	hotbar_image = "";
 	use_hotbar_image = false;
 	hotbar_selected_image = "";
 	use_hotbar_selected_image = false;
+
+	m_selectionmesh = NULL;
+	m_selectionboxes.clear();
+	m_highlighted_pos = v3f(0.0, 0.0, 0.0);
+	std::string mode = g_settings->get("node_highlighting");
+	if (mode == "box") {
+		m_selectiontexture = tsrc->getTextureForMesh("selectionbox.png");
+		m_selectionmaterialtype = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+		m_selectionbfculling = false;
+		m_overallselectionmeshscale = v3f(1.0, 1.0, 1.0);
+	} else if (mode == "halo") {
+		m_selectiontexture = tsrc->getTextureForMesh("halo.png");
+		m_selectionmaterialtype = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+		m_selectionbfculling = true;
+		m_overallselectionmeshscale = v3f(1.08, 1.08,1.08);
+	} else {
+		m_selectionmaterialtype = video::EMT_SOLID;
+		m_selectiontexture = NULL;
+		m_selectionbfculling = false;
+	}
+}
+
+Hud::~Hud()
+{
+	if (m_selectionmesh)
+		m_selectionmesh->drop();
 }
 
 void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect, bool selected) {
@@ -465,14 +486,54 @@ void Hud::drawCrosshair() {
 }
 
 
-void Hud::drawSelectionBoxes(std::vector<aabb3f> &hilightboxes) {
-	for (std::vector<aabb3f>::const_iterator
-			i = hilightboxes.begin();
-			i != hilightboxes.end(); ++i) {
-		driver->draw3DBox(*i, selectionbox_argb);
+void Hud::drawSelectionMesh()
+{	
+	if (!m_selectionmesh || !m_selectiontexture)
+		return;
+	setMeshColor(m_selectionmesh, m_highlightedmeshcolor);
+	u32 mc = m_selectionmesh->getMeshBufferCount();
+	for (u32 i = 0; i < mc; i++) {
+		scene::IMeshBuffer *buf = m_selectionmesh->getMeshBuffer(i);
+		video::SMaterial &material = buf->getMaterial();
+		driver->setMaterial(material);
+		driver->drawMeshBuffer(buf);
 	}
 }
 
+void Hud::updateSelectionMesh(v3s16 camera_offset)
+{
+	if (m_selectionboxes.size() == 0 || !m_selectiontexture) {
+		if (m_selectionmesh) {
+			m_selectionmesh->drop();
+			m_selectionmesh = NULL;
+		}
+		return;
+	} else {
+		if (m_selectionmesh) {
+			m_selectionmesh->drop();
+			m_selectionmesh = NULL;
+		}
+		static f32 txc[24] = {
+			0,0,1,1,
+			0,0,1,1,
+			0,0,1,1,
+			0,0,1,1,
+			0,0,1,1,
+			0,0,1,1
+		};
+		m_selectionmesh = convertNodeboxesToMesh(m_selectionboxes, txc);
+		scaleMesh(m_selectionmesh, m_selectionmeshscale * m_overallselectionmeshscale);
+		translateMesh(m_selectionmesh, m_highlighted_pos - intToFloat(camera_offset, BS));
+		u32 mc = m_selectionmesh->getMeshBufferCount();
+		for (u32 i = 0; i < mc; i++) {
+			scene::IMeshBuffer *buf = m_selectionmesh->getMeshBuffer(i);
+			video::SMaterial &material = buf->getMaterial();
+			material.setTexture(0, m_selectiontexture);
+			material.MaterialType = m_selectionmaterialtype;
+			material.setFlag(video::EMF_BACK_FACE_CULLING, m_selectionbfculling);
+		}
+	}
+}
 
 void Hud::resizeHotbar() {
 	if (m_screensize != porting::getWindowSize()) {

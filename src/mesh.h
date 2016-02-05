@@ -83,9 +83,15 @@ void rotateMeshYZby (scene::IMesh *mesh, f64 degrees);
 scene::IMesh* cloneMesh(scene::IMesh *src_mesh);
 
 /*
-	Convert nodebox drawtype node to mesh.
+	Convert nodebox node to mesh.
 */
 scene::IMesh* convertNodeboxNodeToMesh(ContentFeatures *f);
+
+/*
+	Convert nodeboxes to mesh.
+*/
+scene::IMesh* convertNodeboxesToMesh(std::vector<aabb3f> boxes,
+		f32* txc);
 
 /*
 	Update bounding box for a mesh.

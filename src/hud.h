@@ -124,12 +124,31 @@ public:
 	Hud(video::IVideoDriver *driver,scene::ISceneManager* smgr,
 		gui::IGUIEnvironment* guienv, IGameDef *gamedef, LocalPlayer *player,
 		Inventory *inventory);
+	~Hud();
 
 	void drawHotbar(u16 playeritem);
 	void resizeHotbar();
 	void drawCrosshair();
-	void drawSelectionBoxes(std::vector<aabb3f> &hilightboxes);
+	void drawSelectionMesh();
+	void updateSelectionMesh(v3s16 camera_offset);
+	
+	std::vector<aabb3f> *getSelectionBoxes()
+	{ return &m_selectionboxes; }
+
+	void setHighlightedPos(v3f pos)
+	{ m_highlighted_pos = pos; }
+	
+	v3f getHighlightedPos()
+	{ return m_highlighted_pos; }
+
+	void setHighlightedMeshColor(video::SColor c)
+	{ m_highlightedmeshcolor = c; }
+
+	void setSelectionMeshScale(v3f scale)
+	{ m_selectionmeshscale = scale; }
+	
 	void drawLuaElements(v3s16 camera_offset);
+
 private:
 	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
 			s32 count, v2s32 offset, v2s32 size=v2s32());
@@ -144,6 +163,15 @@ private:
 	s32 m_hotbar_imagesize;
 	s32 m_padding;
 	video::SColor hbar_colors[4];
+	std::vector<aabb3f> m_selectionboxes;
+	v3f m_highlighted_pos;
+	scene::IMesh* m_selectionmesh;
+	video::ITexture* m_selectiontexture;
+	video::E_MATERIAL_TYPE m_selectionmaterialtype;
+	bool m_selectionbfculling;
+	video::SColor m_highlightedmeshcolor;
+	v3f m_selectionmeshscale;
+	v3f m_overallselectionmeshscale;
 };
 
 void drawItemStack(video::IVideoDriver *driver,
