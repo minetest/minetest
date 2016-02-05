@@ -42,7 +42,7 @@ ANDROID_VERSION_CODE = 13
 #TARGET_ARCH = arm
 #CROSS_PREFIX = arm-linux-androideabi-
 #COMPILER_VERSION = 4.8
-#HAVE_LEVELDB = 1
+#HAVE_LEVELDB = 0
 
 ################################################################################
 # toolchain config for arm new processors
@@ -56,7 +56,7 @@ TARGET_CXXFLAGS_ADDON = $(TARGET_CFLAGS_ADDON)
 TARGET_ARCH = armv7
 CROSS_PREFIX = arm-linux-androideabi-
 COMPILER_VERSION = 4.8
-HAVE_LEVELDB = 1
+HAVE_LEVELDB = 0
 
 ################################################################################
 # toolchain config for little endian mips
@@ -80,7 +80,7 @@ HAVE_LEVELDB = 1
 #CROSS_PREFIX = i686-linux-android-
 #TARGET_ARCH = x86
 #COMPILER_VERSION = 4.8
-#HAVE_LEVELDB = 1
+#HAVE_LEVELDB = 0
 
 ################################################################################
 ASSETS_TIMESTAMP = deps/assets_timestamp
@@ -366,7 +366,7 @@ leveldb_download :
 	fi
 
 leveldb : $(LEVELDB_LIB)
-
+ifeq ($(HAVE_LEVELDB),1)
 $(LEVELDB_LIB): $(LEVELDB_TIMESTAMP)
 	@REFRESH=0;                                                                \
 	if [ ! -e ${LEVELDB_TIMESTAMP_INT} ] ; then                                \
@@ -398,6 +398,7 @@ $(LEVELDB_LIB): $(LEVELDB_TIMESTAMP)
 	else                                                                       \
 		echo "nothing to be done for leveldb";                                 \
 	fi
+endif
 
 clean_leveldb :
 	$(RM) -rf deps/leveldb
