@@ -345,9 +345,9 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 void MapgenV7::calculateNoise()
 {
 	//TimeTaker t("calculateNoise", NULL, PRECISION_MICRO);
-	int x = node_min.X;
-	int y = node_min.Y - 1;
-	int z = node_min.Z;
+	s16 x = node_min.X;
+	s16 y = node_min.Y - 1;
+	s16 z = node_min.Z;
 
 	noise_terrain_persist->perlinMap2D(x, z);
 	float *persistmap = noise_terrain_persist->result;
@@ -356,17 +356,16 @@ void MapgenV7::calculateNoise()
 	noise_terrain_alt->perlinMap2D(x, z, persistmap);
 	noise_height_select->perlinMap2D(x, z);
 
-	if (flags & MG_CAVES) {
-		noise_cave1->perlinMap3D(x, y, z);
-		noise_cave2->perlinMap3D(x, y, z);
-	}
-
 	if ((spflags & MGV7_RIDGES) && node_max.Y >= water_level) {
 		noise_ridge->perlinMap3D(x, y, z);
 		noise_ridge_uwater->perlinMap2D(x, z);
 	}
 
+	// Cave noises are calculated in generateCaves()
+	// only if solid terrain is present in mapchunk
+
 	// Mountain noises are calculated in generateMountainTerrain()
+	// only if solid terrain surface dips into mapchunk
 
 	noise_filler_depth->perlinMap2D(x, z);
 	noise_heat->perlinMap2D(x, z);
@@ -527,17 +526,17 @@ void MapgenV7::generateBaseTerrain(s16 *stone_surface_min_y, s16 *stone_surface_
 		if (surface_y > surface_max_y)
 			surface_max_y = surface_y;
 
-		u32 i = vm->m_area.index(x, node_min.Y - 1, z);
+		u32 vi = vm->m_area.index(x, node_min.Y - 1, z);
 		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
-			if (vm->m_data[i].getContent() == CONTENT_IGNORE) {
+			if (vm->m_data[vi].getContent() == CONTENT_IGNORE) {
 				if (y <= surface_y)
-					vm->m_data[i] = n_stone;
+					vm->m_data[vi] = n_stone;
 				else if (y <= water_level)
-					vm->m_data[i] = n_water;
+					vm->m_data[vi] = n_water;
 				else
-					vm->m_data[i] = n_air;
+					vm->m_data[vi] = n_air;
 			}
-			vm->m_area.add_y(em, i, 1);
+			vm->m_area.add_y(em, vi, 1);
 		}
 	}
 
@@ -585,7 +584,7 @@ void MapgenV7::generateRidgeTerrain()
 	MapNode n_water(c_water_source);
 	MapNode n_air(CONTENT_AIR);
 	u32 index = 0;
-	float width = 0.2; // TODO: figure out acceptable perlin noise values
+	float width = 0.2;
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
@@ -862,41 +861,45 @@ void MapgenV7::addTopNodes()
 
 void MapgenV7::generateCaves(s16 max_stone_y)
 {
-	if (max_stone_y >= node_min.Y) {
-		v3s16 em = vm->m_area.getExtent();
-		u32 index2d = 0;
-		u32 index3d;
+	if (max_stone_y < node_min.Y)
+		return;
 
-		for (s16 z = node_min.Z; z <= node_max.Z; z++)
-		for (s16 x = node_min.X; x <= node_max.X; x++, index2d++) {
-			bool open = false;  // Is column open to overground
-			u32 vi = vm->m_area.index(x, node_max.Y + 1, z);
-			index3d = (z - node_min.Z) * zstride + (csize.Y + 1) * ystride +
-				(x - node_min.X);
-			// Biome of column
-			Biome *biome = (Biome *)bmgr->getRaw(biomemap[index2d]);
+	noise_cave1->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
+	noise_cave2->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
 
-			for (s16 y = node_max.Y + 1; y >= node_min.Y - 1;
-					y--, index3d -= ystride, vm->m_area.add_y(em, vi, -1)) {
-				content_t c = vm->m_data[vi].getContent();
-				if (c == CONTENT_AIR || c == biome->c_water_top ||
-						c == biome->c_water) {
-					open = true;
-					continue;
-				}
-				// Ground
-				float d1 = contour(noise_cave1->result[index3d]);
-				float d2 = contour(noise_cave2->result[index3d]);
-				if (d1 * d2 > 0.3f && ndef->get(c).is_ground_content) {
-					// In tunnel and ground content, excavate
-					vm->m_data[vi] = MapNode(CONTENT_AIR);
-				} else if (open && (c == biome->c_filler || c == biome->c_stone)) {
-					// Tunnel entrance floor
-					vm->m_data[vi] = MapNode(biome->c_top);
-					open = false;
-				} else {
-					open = false;
-				}
+	v3s16 em = vm->m_area.getExtent();
+	u32 index2d = 0;
+
+	for (s16 z = node_min.Z; z <= node_max.Z; z++)
+	for (s16 x = node_min.X; x <= node_max.X; x++, index2d++) {
+		bool column_is_open = false;  // Is column open to overground
+		u32 vi = vm->m_area.index(x, node_max.Y + 1, z);
+		u32 index3d = (z - node_min.Z) * zstride + (csize.Y + 1) * ystride +
+			(x - node_min.X);
+		// Biome of column
+		Biome *biome = (Biome *)bmgr->getRaw(biomemap[index2d]);
+
+		for (s16 y = node_max.Y + 1; y >= node_min.Y - 1;
+				y--, index3d -= ystride, vm->m_area.add_y(em, vi, -1)) {
+			content_t c = vm->m_data[vi].getContent();
+			if (c == CONTENT_AIR || c == biome->c_water_top ||
+					c == biome->c_water) {
+				column_is_open = true;
+				continue;
+			}
+			// Ground
+			float d1 = contour(noise_cave1->result[index3d]);
+			float d2 = contour(noise_cave2->result[index3d]);
+			if (d1 * d2 > 0.3f && ndef->get(c).is_ground_content) {
+				// In tunnel and ground content, excavate
+				vm->m_data[vi] = MapNode(CONTENT_AIR);
+			} else if (column_is_open &&
+					(c == biome->c_filler || c == biome->c_stone)) {
+				// Tunnel entrance floor
+				vm->m_data[vi] = MapNode(biome->c_top);
+				column_is_open = false;
+			} else {
+				column_is_open = false;
 			}
 		}
 	}
