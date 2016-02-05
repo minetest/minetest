@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "network/networkprotocol.h"
 #include "log.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include <string>
 #include <iostream>
 #include <fstream>

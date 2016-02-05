@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cctype>
 #include <fstream>
 #include "mods.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "strfnd.h"
 #include "log.h"
 #include "subgame.h"
@@ -91,11 +91,11 @@ std::map<std::string, ModSpec> getModsInPath(std::string path, bool part_of_modp
 	// NOTE: this function works in mutual recursion with parseModContents
 
 	std::map<std::string, ModSpec> result;
-	std::vector<fs::DirListNode> dirlist = fs::GetDirListing(path);
-	for(u32 j=0; j<dirlist.size(); j++){
-		if(!dirlist[j].dir)
+	for (fs::DirectoryIterator it(path);
+			it != fs::DirectoryIterator(); ++it) {
+		if (it->type != fs::FT_DIRECTORY)
 			continue;
-		std::string modname = dirlist[j].name;
+		std::string modname = it->name;
 		// Ignore all directories beginning with a ".", especially
 		// VCS directories like ".git" or ".svn"
 		if(modname[0] == '.')

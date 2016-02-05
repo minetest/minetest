@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "strfnd.h"
 #include "util/string.h"
 #include "log.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 
 BanManager::BanManager(const std::string &banfilepath):
 		m_banfilepath(banfilepath),
@@ -75,12 +75,12 @@ void BanManager::save()
 {
 	MutexAutoLock lock(m_mutex);
 	infostream << "BanManager: saving to " << m_banfilepath << std::endl;
-	std::ostringstream ss(std::ios_base::binary);
+	fs::SafeWriteStream os(m_banfilepath);
 
 	for (StringMap::iterator it = m_ips.begin(); it != m_ips.end(); ++it)
-		ss << it->first << "|" << it->second << "\n";
+		os << it->first << "|" << it->second << "\n";
 
-	if (!fs::safeWriteToFile(m_banfilepath, ss.str())) {
+	if (!os.save()) {
 		infostream << "BanManager: failed saving to " << m_banfilepath << std::endl;
 		throw SerializationError("BanManager::save(): Couldn't write file");
 	}

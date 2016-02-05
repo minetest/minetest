@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "settings.h"
 #include "mesh.h"
 #include "log.h"
@@ -103,7 +103,7 @@ std::string getImagePath(std::string path)
 		bool r = replace_ext(path, *ext);
 		if (r == false)
 			return "";
-		if (fs::PathExists(path))
+		if (fs::exists(path))
 			return path;
 	}
 	while((++ext) != NULL);

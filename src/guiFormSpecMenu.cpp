@@ -39,7 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "client/tile.h" // ITextureSource
 #include "hud.h" // drawItemStack
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "gettime.h"
 #include "gettext.h"
 #include "scripting_game.h"

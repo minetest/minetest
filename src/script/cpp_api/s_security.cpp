@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_security.h"
 
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "porting.h"
 #include "server.h"
 #include "settings.h"
@@ -330,12 +330,12 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path)
 {
 	std::string str;  // Transient
 
-	std::string norel_path = fs::RemoveRelativePathComponents(path);
-	std::string abs_path = fs::AbsolutePath(norel_path);
+	std::string norel_path = fs::remove_relative_path_components(path);
+	std::string abs_path = fs::canonical(norel_path);
 
 	if (!abs_path.empty()) {
 		// Don't allow accessing the settings file
-		str = fs::AbsolutePath(g_settings_path);
+		str = fs::canonical(g_settings_path);
 		if (str == abs_path) return false;
 	}
 
@@ -346,9 +346,9 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path)
 	std::string removed;
 	while (abs_path.empty() && !cur_path.empty()) {
 		std::string tmp_rmed;
-		cur_path = fs::RemoveLastPathComponent(cur_path, &tmp_rmed);
+		cur_path = fs::remove_path_components(cur_path, &tmp_rmed);
 		removed = tmp_rmed + (removed.empty() ? "" : DIR_DELIM + removed);
-		abs_path = fs::AbsolutePath(cur_path);
+		abs_path = fs::canonical(cur_path);
 	}
 	if (abs_path.empty()) return false;
 	// Add the removed parts back so that you can't, eg, create a
@@ -376,25 +376,25 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path)
 		// Allow paths in mod path
 		const ModSpec *mod = server->getModSpec(mod_name);
 		if (mod) {
-			str = fs::AbsolutePath(mod->path);
-			if (!str.empty() && fs::PathStartsWith(abs_path, str)) {
+			str = fs::canonical(mod->path);
+			if (!str.empty() && fs::path_starts_with(abs_path, str)) {
 				return true;
 			}
 		}
 	}
 	lua_pop(L, 1);  // Pop mod name
 
-	str = fs::AbsolutePath(server->getWorldPath());
+	str = fs::canonical(server->getWorldPath());
 	if (str.empty()) return false;
 	// Don't allow access to world mods.  We add to the absolute path
 	// of the world instead of getting the absolute paths directly
 	// because that won't work if they don't exist.
-	if (fs::PathStartsWith(abs_path, str + DIR_DELIM + "worldmods") ||
-			fs::PathStartsWith(abs_path, str + DIR_DELIM + "game")) {
+	if (fs::path_starts_with(abs_path, str + DIR_DELIM + "worldmods") ||
+			fs::path_starts_with(abs_path, str + DIR_DELIM + "game")) {
 		return false;
 	}
 	// Allow all other paths in world path
-	if (fs::PathStartsWith(abs_path, str)) {
+	if (fs::path_starts_with(abs_path, str)) {
 		return true;
 	}
 

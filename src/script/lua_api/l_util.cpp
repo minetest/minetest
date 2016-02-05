@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "log.h"
 #include "tool.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "settings.h"
 #include "util/auth.h"
 #include <algorithm>
@@ -326,7 +326,7 @@ int ModApiUtil::l_mkdir(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	const char *path = luaL_checkstring(L, 1);
 	CHECK_SECURE_PATH_OPTIONAL(L, path);
-	lua_pushboolean(L, fs::CreateAllDirs(path));
+	lua_pushboolean(L, fs::create_directories(path));
 	return 1;
 }
 
@@ -339,14 +339,13 @@ int ModApiUtil::l_get_dir_list(lua_State *L)
 
 	CHECK_SECURE_PATH_OPTIONAL(L, path);
 
-	std::vector<fs::DirListNode> list = fs::GetDirListing(path);
-
 	int index = 0;
 	lua_newtable(L);
 
-	for (size_t i = 0; i < list.size(); i++) {
-		if (is_dir == -1 || is_dir == list[i].dir) {
-			lua_pushstring(L, list[i].name.c_str());
+	for (fs::DirectoryIterator it(path);
+			it != fs::DirectoryIterator(); ++it) {
+		if (is_dir == -1 || is_dir == (it->type == fs::FT_DIRECTORY)) {
+			lua_pushstring(L, it->name.c_str());
 			lua_rawseti(L, -2, ++index);
 		}
 	}

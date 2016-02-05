@@ -37,7 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include "util/serialize.h"
 #include "util/numeric.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "log.h"
 
 FlagDesc flagdesc_mapgen[] = {

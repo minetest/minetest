@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "serverobject.h"
 #include "debug.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "log.h"
 #include "mods.h"
 #include "porting.h"

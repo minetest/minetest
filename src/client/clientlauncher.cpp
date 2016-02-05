@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "clouds.h"
 #include "server.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "guiMainMenu.h"
 #include "game.h"
 #include "chat.h"
@@ -215,11 +215,8 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 			}
 
 			// Break out of menu-game loop to shut down cleanly
-			if (!device->run() || *kill) {
-				if (g_settings_path != "")
-					g_settings->updateConfigFile(g_settings_path.c_str());
+			if (!device->run() || *kill)
 				break;
-			}
 
 			if (current_playername.length() > PLAYERNAME_SIZE-1) {
 				error_message = gettext("Player name too long.");
@@ -434,7 +431,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 			return false;
 		}
 
-		if (!fs::PathExists(worldspec.path)) {
+		if (!fs::exists(worldspec.path)) {
 			error_message = gettext("Provided world path doesn't exist: ")
 					+ worldspec.path;
 			errorstream << error_message << std::endl;

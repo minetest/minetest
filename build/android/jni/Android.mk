@@ -143,7 +143,6 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/emerge.cpp                        \
 		jni/src/environment.cpp                   \
 		jni/src/filecache.cpp                     \
-		jni/src/filesys.cpp                       \
 		jni/src/fontengine.cpp                    \
 		jni/src/game.cpp                          \
 		jni/src/genericobject.cpp                 \
@@ -224,6 +223,7 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/util/auth.cpp                     \
 		jni/src/util/base64.cpp                   \
 		jni/src/util/directiontables.cpp          \
+		jni/src/util/filesystem.cpp               \
 		jni/src/util/numeric.cpp                  \
 		jni/src/util/pointedthing.cpp             \
 		jni/src/util/serialize.cpp                \

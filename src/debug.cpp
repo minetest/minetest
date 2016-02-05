@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifdef _MSC_VER
 	#include <dbghelp.h>
 	#include "version.h"
-	#include "filesys.h"
+	#include "util/filesystem.h"
 #endif
 
 #if USE_CURSES
@@ -294,12 +294,12 @@ long WINAPI Win32ExceptionHandler(struct _EXCEPTION_POINTERS *pExceptInfo)
 	MINIDUMP_USER_STREAM mdus;
 	bool minidump_created = false;
 
-	std::string dumpfile = porting::path_user + DIR_DELIM PROJECT_NAME ".dmp";
+	std::wstring dumpfile = narrow_to_wide(porting::path_user + DIR_DELIM PROJECT_NAME ".dmp");
 
 	std::string version_str(PROJECT_NAME " ");
 	version_str += g_version_hash;
 
-	HANDLE hFile = CreateFileA(dumpfile.c_str(), GENERIC_WRITE,
+	HANDLE hFile = CreateFileW(dumpfile.c_str(), GENERIC_WRITE,
 		FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)
 		goto minidump_failed;

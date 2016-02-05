@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "httpfetch.h"
 #include "client.h"
 #include "filecache.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "debug.h"
 #include "log.h"
 #include "porting.h"
@@ -200,7 +200,7 @@ void ClientMediaDownloader::initialStep(Client *client)
 
 	// Create the media cache dir if we are likely to write to it
 	if (m_uncached_count != 0) {
-		bool did = fs::CreateAllDirs(getMediaCacheDir());
+		bool did = fs::create_directories(getMediaCacheDir());
 		if (!did) {
 			errorstream << "Client: "
 				<< "Could not create media cache directory: "

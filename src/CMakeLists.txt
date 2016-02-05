@@ -370,7 +370,6 @@ set(common_SRCS
 	dungeongen.cpp
 	emerge.cpp
 	environment.cpp
-	filesys.cpp
 	genericobject.cpp
 	gettext.cpp
 	httpfetch.cpp

@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "fontengine.h"
 #include "itemdef.h"
 #include "log.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "gettext.h"
 #include "guiChatConsole.h"
 #include "guiFormSpecMenu.h"

@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <windows.h>
 #include <map>
 #include <direct.h>
-#include "filesys.h"
+#include "util/filesystem.h"
 
 #define setlocale(category, localename) \
 	setlocale(category, MSVC_LocaleLookup(localename))

@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "subgame.h"
 #include "porting.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "settings.h"
 #include "log.h"
 #include "strfnd.h"
@@ -100,7 +100,7 @@ SubgameSpec findSubgame(const std::string &id)
 	bool user_game = true; // Game is in user's directory
 	for(u32 i=0; i<find_paths.size(); i++){
 		const std::string &try_path = find_paths[i].path;
-		if(fs::PathExists(try_path)){
+		if(fs::exists(try_path)){
 			game_path = try_path;
 			user_game = find_paths[i].user_specific;
 			break;
@@ -131,7 +131,7 @@ SubgameSpec findWorldSubgame(const std::string &world_path)
 	std::string world_gameid = getWorldGameId(world_path, true);
 	// See if world contains an embedded game; if so, use it.
 	std::string world_gamepath = world_path + DIR_DELIM + "game";
-	if(fs::PathExists(world_gamepath)){
+	if(fs::exists(world_gamepath)){
 		SubgameSpec gamespec;
 		gamespec.id = world_gameid;
 		gamespec.path = world_gamepath;
@@ -158,21 +158,21 @@ std::set<std::string> getAvailableGameIds()
 
 	for (std::set<std::string>::const_iterator i = gamespaths.begin();
 			i != gamespaths.end(); ++i){
-		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(*i);
-		for(u32 j=0; j<dirlist.size(); j++){
-			if(!dirlist[j].dir)
+		for (fs::DirectoryIterator it(*i);
+				it != fs::DirectoryIterator(); ++it) {
+			if (it->type != fs::FT_DIRECTORY)
 				continue;
 			// If configuration file is not found or broken, ignore game
 			Settings conf;
-			if(!getGameConfig(*i + DIR_DELIM + dirlist[j].name, conf))
+			if (!getGameConfig(*i + DIR_DELIM + it->name, conf))
 				continue;
 			// Add it to result
 			const char *ends[] = {"_game", NULL};
-			std::string shorter = removeStringEnd(dirlist[j].name, ends);
-			if(shorter != "")
+			std::string shorter = removeStringEnd(it->name, ends);
+			if (shorter != "")
 				gameids.insert(shorter);
 			else
-				gameids.insert(dirlist[j].name);
+				gameids.insert(it->name);
 		}
 	}
 	return gameids;
@@ -192,8 +192,8 @@ std::vector<SubgameSpec> getAvailableGames()
 
 bool getWorldExists(const std::string &world_path)
 {
-	return (fs::PathExists(world_path + DIR_DELIM + "map_meta.txt") ||
-			fs::PathExists(world_path + DIR_DELIM + "world.mt"));
+	return (fs::exists(world_path + DIR_DELIM + "map_meta.txt") ||
+			fs::exists(world_path + DIR_DELIM + "world.mt"));
 }
 
 std::string getWorldGameId(const std::string &world_path, bool can_be_legacy)
@@ -204,7 +204,7 @@ std::string getWorldGameId(const std::string &world_path, bool can_be_legacy)
 	if(!succeeded){
 		if(can_be_legacy){
 			// If map_meta.txt exists, it is probably an old minetest world
-			if(fs::PathExists(world_path + DIR_DELIM + "map_meta.txt"))
+			if(fs::exists(world_path + DIR_DELIM + "map_meta.txt"))
 				return LEGACY_GAMEID;
 		}
 		return "";
@@ -237,30 +237,29 @@ std::vector<WorldSpec> getAvailableWorlds()
 	infostream << "Searching worlds..." << std::endl;
 	for (std::set<std::string>::const_iterator i = worldspaths.begin();
 			i != worldspaths.end(); ++i) {
-		infostream << "  In " << (*i) << ": " <<std::endl;
-		std::vector<fs::DirListNode> dirvector = fs::GetDirListing(*i);
-		for(u32 j=0; j<dirvector.size(); j++){
-			if(!dirvector[j].dir)
+		infostream << "  In " << (*i) << ": " << std::endl;
+		for (fs::DirectoryIterator it(*i);
+				it != fs::DirectoryIterator(); ++it) {
+			if (it->type != fs::FT_DIRECTORY)
 				continue;
-			std::string fullpath = *i + DIR_DELIM + dirvector[j].name;
-			std::string name = dirvector[j].name;
+			std::string fullpath = *i + DIR_DELIM + it->name;
 			// Just allow filling in the gameid always for now
 			bool can_be_legacy = true;
 			std::string gameid = getWorldGameId(fullpath, can_be_legacy);
-			WorldSpec spec(fullpath, name, gameid);
-			if(!spec.isValid()){
-				infostream<<"(invalid: "<<name<<") ";
+			WorldSpec spec(fullpath, it->name, gameid);
+			if (!spec.isValid()) {
+				infostream << "(invalid: " << it->name << ") ";
 			} else {
-				infostream<<name<<" ";
+				infostream << it->name << " ";
 				worlds.push_back(spec);
 			}
 		}
-		infostream<<std::endl;
+		infostream << std::endl;
 	}
 	// Check old world location
 	do{
 		std::string fullpath = porting::path_user + DIR_DELIM + "world";
-		if(!fs::PathExists(fullpath))
+		if(!fs::exists(fullpath))
 			break;
 		std::string name = "Old World";
 		std::string gameid = getWorldGameId(fullpath, true);
@@ -286,18 +285,18 @@ bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamesp
 
 	infostream << "Initializing world at " << path << std::endl;
 
-	fs::CreateAllDirs(path);
+	fs::create_directories(path);
 
 	// Create world.mt if does not already exist
 	std::string worldmt_path = path + DIR_DELIM "world.mt";
-	if (!fs::PathExists(worldmt_path)) {
-		std::ostringstream ss(std::ios_base::binary);
-		ss << "gameid = " << gamespec.id
+	if (!fs::exists(worldmt_path)) {
+		fs::SafeWriteStream os(worldmt_path);
+		os << "gameid = " << gamespec.id
 			<< "\nbackend = sqlite3"
 			<< "\ncreative_mode = " << g_settings->get("creative_mode")
 			<< "\nenable_damage = " << g_settings->get("enable_damage")
 			<< "\n";
-		if (!fs::safeWriteToFile(worldmt_path, ss.str()))
+		if (!os.save())
 			return false;
 
 		infostream << "Wrote world.mt (" << worldmt_path << ")" << std::endl;
@@ -305,20 +304,21 @@ bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamesp
 
 	// Create map_meta.txt if does not already exist
 	std::string map_meta_path = path + DIR_DELIM + "map_meta.txt";
-	if (!fs::PathExists(map_meta_path)){
+	if (!fs::exists(map_meta_path)){
 		verbosestream << "Creating map_meta.txt (" << map_meta_path << ")" << std::endl;
-		fs::CreateAllDirs(path);
-		std::ostringstream oss(std::ios_base::binary);
+		fs::create_directories(path);
 
 		Settings conf;
 		MapgenParams params;
 
 		params.load(*g_settings);
 		params.save(conf);
-		conf.writeLines(oss);
-		oss << "[end_of_params]\n";
 
-		fs::safeWriteToFile(map_meta_path, oss.str());
+		fs::SafeWriteStream os(map_meta_path);
+		conf.writeLines(os);
+		os << "[end_of_params]\n";
+
+		os.save();
 	}
 	return true;
 }

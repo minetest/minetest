@@ -28,9 +28,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/string.h"
 #include "util/numeric.h"
+#include "util/filesystem.h"
 #include "inventorymanager.h" // deserializing InventoryLocations
 #include "sqlite3.h"
-#include "filesys.h"
 
 #define POINTS_PER_NODE (16.0)
 
@@ -95,12 +95,12 @@ RollbackManager::RollbackManager(const std::string & world_path,
 
 	initDatabase();
 
-	if (fs::PathExists(txt_filename) && (fs::PathExists(migrating_flag) ||
-			!fs::PathExists(database_path))) {
+	if (fs::exists(txt_filename) && (fs::exists(migrating_flag) ||
+			!fs::exists(database_path))) {
 		std::ofstream of(migrating_flag.c_str());
 		of.close();
 		migrate(txt_filename);
-		fs::DeleteSingleFileOrEmptyDirectory(migrating_flag);
+		fs::remove(migrating_flag);
 	}
 }
 
@@ -254,7 +254,7 @@ void RollbackManager::initDatabase()
 {
 	verbosestream << "RollbackManager: Database connection setup" << std::endl;
 
-	bool needsCreate = !fs::PathExists(database_path);
+	bool needsCreate = !fs::exists(database_path);
 	SQLOK(sqlite3_open_v2(database_path.c_str(), &db,
 			SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL));
 
