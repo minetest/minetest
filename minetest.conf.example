@@ -530,14 +530,6 @@
 #    type: int min: 0 max: 255
 # console_alpha = 200
 
-#    Selection box border color (R,G,B).
-#    type: string
-# selectionbox_color = (0,0,0)
-
-#    Width of the selectionbox's lines around nodes.
-#    type: int min: 1 max: 5
-# selectionbox_width = 2
-
 #    Crosshair color (R,G,B).
 #    type: string
 # crosshair_color = (255,255,255)
@@ -555,9 +547,9 @@
 #    type: float
 # hud_hotbar_max_width = 1.0
 
-#    Enable selection highlighting for nodes (disables selectionbox).
-#    type: bool
-# enable_node_highlighting = false
+#    Selection highlighting method (box or halo)
+#    type: string
+# node_highlighting = box
 
 #    Enables caching of facedir rotated meshes.
 #    type: bool

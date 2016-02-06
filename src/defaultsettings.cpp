@@ -136,8 +136,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("opaque_water", "false");
 	settings->setDefault("console_color", "(0,0,0)");
 	settings->setDefault("console_alpha", "200");
-	settings->setDefault("selectionbox_color", "(0,0,0)");
-	settings->setDefault("enable_node_highlighting", "false");
+	settings->setDefault("node_highlighting", "box");
 	settings->setDefault("crosshair_color", "(255,255,255)");
 	settings->setDefault("crosshair_alpha", "255");
 	settings->setDefault("hud_scaling", "1.0");
@@ -148,7 +147,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_sound", "true");
 	settings->setDefault("sound_volume", "0.8");
 	settings->setDefault("desynchronize_mapblock_texture_animation", "true");
-	settings->setDefault("selectionbox_width","2");
 	settings->setDefault("hud_hotbar_max_width","1.0");
 	settings->setDefault("enable_local_map_saving", "false");
 

@@ -456,9 +456,6 @@ public:
 	int getCrackLevel();
 	void setCrack(int level, v3s16 pos);
 
-	void setHighlighted(v3s16 pos, bool show_higlighted);
-	v3s16 getHighlighted(){ return m_highlighted_pos; }
-
 	u16 getHP();
 	u16 getBreath();
 
@@ -609,12 +606,10 @@ private:
 	Inventory *m_inventory_from_server;
 	float m_inventory_from_server_age;
 	PacketCounter m_packetcounter;
-	bool m_show_highlighted;
 	// Block mesh animation parameters
 	float m_animation_time;
 	int m_crack_level;
 	v3s16 m_crack_pos;
-	v3s16 m_highlighted_pos;
 	// 0 <= m_daynight_i < DAYNIGHT_CACHE_COUNT
 	//s32 m_daynight_i;
 	//u32 m_daynight_ratio;

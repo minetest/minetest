@@ -407,6 +407,13 @@ scene::IMesh* cloneMesh(scene::IMesh *src_mesh)
 
 scene::IMesh* convertNodeboxNodeToMesh(ContentFeatures *f)
 {
+	std::vector<aabb3f> boxes = f->node_box.fixed;
+	return convertNodeboxesToMesh (boxes, NULL);
+}
+
+scene::IMesh* convertNodeboxesToMesh(std::vector<aabb3f> boxes, f32* txc)
+{
+	bool use_default_txc = (txc != NULL)? false:true;
 	scene::SMesh* dst_mesh = new scene::SMesh();
 	for (u16 j = 0; j < 6; j++)
 	{
@@ -418,9 +425,7 @@ scene::IMesh* convertNodeboxNodeToMesh(ContentFeatures *f)
 	}
 	
 	video::SColor c(255,255,255,255);	
-
-	std::vector<aabb3f> boxes = f->node_box.fixed;
-		
+	
 	for(std::vector<aabb3f>::iterator
 			i = boxes.begin();
 			i != boxes.end(); ++i)
@@ -446,6 +451,7 @@ scene::IMesh* convertNodeboxNodeToMesh(ContentFeatures *f)
 				box.MinEdge.Z=box.MaxEdge.Z;
 				box.MaxEdge.Z=temp;
 			}
+
 		// Compute texture coords
 		f32 tx1 = (box.MinEdge.X/BS)+0.5;
 		f32 ty1 = (box.MinEdge.Y/BS)+0.5;
@@ -453,7 +459,8 @@ scene::IMesh* convertNodeboxNodeToMesh(ContentFeatures *f)
 		f32 tx2 = (box.MaxEdge.X/BS)+0.5;
 		f32 ty2 = (box.MaxEdge.Y/BS)+0.5;
 		f32 tz2 = (box.MaxEdge.Z/BS)+0.5;
-		f32 txc[24] = {
+
+		f32 txc_default[24] = {
 			// up
 			tx1, 1-tz2, tx2, 1-tz1,
 			// down
@@ -467,6 +474,10 @@ scene::IMesh* convertNodeboxNodeToMesh(ContentFeatures *f)
 			// front
 			tx1, 1-ty2, tx2, 1-ty1,
 		};
+
+		if (use_default_txc)
+			txc = txc_default;
+
 		v3f min = box.MinEdge;
 		v3f max = box.MaxEdge;
 
