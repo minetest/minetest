@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2015-11-13 22:39+0000\n"
+"PO-Revision-Date: 2016-02-06 01:25+0000\n"
 "Last-Translator: Joan Ciprià Moreno <joancipria@gmail.com>\n"
 "Language-Team: Catalan "
 "<https://hosted.weblate.org/projects/minetest/minetest/ca/>\n"
@@ -256,7 +256,7 @@ msgstr "Instal·lat amb èxit:"
 
 #: builtin/mainmenu/store.lua
 msgid "Shortname:"
-msgstr ""
+msgstr "Nom curt:"
 
 #: builtin/mainmenu/store.lua
 msgid "Rating"
@@ -427,11 +427,11 @@ msgstr "Jocs"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "(No description of setting given)"
-msgstr ""
+msgstr "(Cap descripció d'ajustament donada)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Please enter a comma seperated list of flags."
-msgstr ""
+msgstr "Si us plau, introduïu una llista d'indicadors separada per comes."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Possible values are: "
@@ -916,8 +916,9 @@ msgid "Control"
 msgstr "Control"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Kana"
-msgstr ""
+msgstr "Kana"
 
 #: src/keycode.cpp
 msgid "Menu"
@@ -944,12 +945,14 @@ msgid "Final"
 msgstr "Fi"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Junja"
-msgstr ""
+msgstr "Junja"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Kanji"
-msgstr ""
+msgstr "Kanji"
 
 #: src/keycode.cpp
 msgid "Nonconvert"
@@ -1136,8 +1139,9 @@ msgid "Attn"
 msgstr "Atentament"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "CrSel"
-msgstr ""
+msgstr "CrSel"
 
 #: src/keycode.cpp
 msgid "Erase OEF"
@@ -1152,16 +1156,18 @@ msgid "OEM Clear"
 msgstr "Netejar OEM"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "PA1"
-msgstr ""
+msgstr "PA1"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Zoom"
-msgstr ""
+msgstr "Zoom"
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
-msgstr ""
+msgstr "Controls"
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
@@ -1186,13 +1192,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fast movement"
-msgstr ""
+msgstr "Moviment ràpid"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Fast movement (via use key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
+"Moviment ràpid (via utilitzar clau).\n"
+"Això requereix el \"privilegi\" ràpid en el servidor."
 
 #: src/settings_translation_file.cpp
 msgid "Noclip"
@@ -1207,45 +1215,48 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
-msgstr ""
+msgstr "Mode cinematogràfic"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Smooths camera when moving and looking around.\n"
 "Useful for recording videos."
 msgstr ""
+"Suavitza la càmera quan estiga movent-se i mirant al seu voltant.\n"
+"Útil per a la gravació de vídeos."
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
-msgstr ""
+msgstr "Suavitzat de la càmera"
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera. 0 to disable."
-msgstr ""
+msgstr "Suavitza la rotació de la càmera. 0 per deshabilitar."
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
-msgstr ""
+msgstr "Suavitzat de la càmera en mode cinematogràfic"
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera in cinematic mode. 0 to disable."
 msgstr ""
+"Suavitza la rotació de la càmera en mode cinematogràfic. 0 per deshabilitar."
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
-msgstr ""
+msgstr "Invertir ratolí"
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
-msgstr ""
+msgstr "Invertir moviment vertical del ratolí."
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "Sensibilitat del ratolí"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
-msgstr ""
+msgstr "Multiplicador de sensibilitat del ratolí."
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
@@ -1259,15 +1270,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
-msgstr ""
+msgstr "Polsar dues vegades \"botar\" per volar"
 
 #: src/settings_translation_file.cpp
 msgid "Double-tapping the jump key toggles fly mode."
-msgstr ""
+msgstr "Polsar dues vegades \"botar\" per alternar el mode de vol."
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
-msgstr ""
+msgstr "Sempre volar y ràpid"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1277,33 +1288,35 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Rightclick repetition interval"
-msgstr ""
+msgstr "Interval de repetició del click dret"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The time in seconds it takes between repeated right clicks when holding the "
 "right mouse button."
 msgstr ""
+"El temps en segons que es pren entre la repetició de clicks drets quan "
+"s'està mantenint el botó dret del ratolí."
 
 #: src/settings_translation_file.cpp
 msgid "Random input"
-msgstr ""
+msgstr "Entrada aleatòria"
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
-msgstr ""
+msgstr "Habilitar l'entrada aleatòria d'usuari (només utilitzat per testing)."
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
-msgstr ""
+msgstr "Avanç continu"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward movement (only used for testing)."
-msgstr ""
+msgstr "Avanç continu (sols utilitzat per a testing)."
 
 #: src/settings_translation_file.cpp
 msgid "Forward key"
-msgstr ""
+msgstr "Tecla Avançar"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1311,10 +1324,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tecla per moure avant al jugador.\n"
+"Veure http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
-msgstr ""
+msgstr "Tecla de retrocés"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1322,10 +1338,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tecla per moure el jugador cap arrere.\n"
+"Veure http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Left key"
-msgstr ""
+msgstr "Tecla esquerra"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1333,10 +1352,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tecla per moure el jugador cap a l'esquerra.\n"
+"Veure http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
-msgstr ""
+msgstr "Tecla dreta"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1344,10 +1366,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tecla per moure el jugador cap a la dreta.\n"
+"Veure http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Jump key"
-msgstr ""
+msgstr "Tecla botar"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1355,10 +1380,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tecla per botar.\n"
+"Veure http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Sneak key"
-msgstr ""
+msgstr "Tecla sigil"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1371,7 +1399,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Inventory key"
-msgstr ""
+msgstr "Tecla Inventari"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1379,10 +1407,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tecla per obrir el inventari.\n"
+"Veure http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Use key"
-msgstr ""
+msgstr "Utilitza la tecla"
 
 #: src/settings_translation_file.cpp
 msgid ""
