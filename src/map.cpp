@@ -1744,6 +1744,9 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 					break;
 				case LIQUID_SOURCE:
 					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter
+					if (nb.t == NEIGHBOR_LOWER){
+						flowing_down = true;
+					}
 					if (liquid_kind == CONTENT_AIR)
 						liquid_kind = nodemgr->getId(cfnb.liquid_alternative_flowing);
 					if (nodemgr->getId(cfnb.liquid_alternative_flowing) != liquid_kind) {
