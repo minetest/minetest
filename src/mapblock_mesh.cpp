@@ -1167,7 +1167,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 		for(u32 j = 0; j < p.vertices.size(); j++)
 		{
-			video::S3DVertexTangents *vertex = &p.vertices[j];
+			video::S3DVertex *vertex = &p.vertices[j];
 			// Note applyFacesShading second parameter is precalculated sqrt
 			// value for speed improvement
 			// Skip it for lightsources and top faces.
@@ -1221,11 +1221,12 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		}
 
 	// Create meshbuffer
-	scene::SMeshBufferTangents *buf = new scene::SMeshBufferTangents();
+	scene::SMeshBuffer *buf = new scene::SMeshBuffer();
 	// Set material
 	buf->Material = material;
 	// Add to mesh
-	m_mesh->addMeshBuffer(buf);
+	scene::SMesh *mesh = (scene::SMesh *)m_mesh;
+	mesh->addMeshBuffer(buf);
 	// Mesh grabbed it
 	buf->drop();
 	buf->append(&p.vertices[0], p.vertices.size(),
@@ -1241,7 +1242,9 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 	if (m_enable_shaders) {
 		scene::IMeshManipulator* meshmanip = m_gamedef->getSceneManager()->getMeshManipulator();
-		meshmanip->recalculateTangents(m_mesh, true, false, false);
+		scene::IMesh* tangentMesh = meshmanip->createMeshWithTangents(m_mesh);
+		m_mesh->drop();
+		m_mesh = tangentMesh;
 	}
 
 	if(m_mesh)
@@ -1361,7 +1364,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 				i != m_daynight_diffs.end(); ++i)
 		{
 			scene::IMeshBuffer *buf = m_mesh->getMeshBuffer(i->first);
-			video::S3DVertexTangents *vertices = (video::S3DVertexTangents *)buf->getVertices();
+			video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
 			for(std::map<u32, std::pair<u8, u8 > >::iterator
 					j = i->second.begin();
 					j != i->second.end(); ++j)
@@ -1392,7 +1395,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 			i != m_highlighted_materials.end(); ++i)
 		{
 			scene::IMeshBuffer *buf = m_mesh->getMeshBuffer(*i);
-			video::S3DVertexTangents *vertices = (video::S3DVertexTangents*)buf->getVertices();
+			video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
 			for (u32 j = 0; j < buf->getVertexCount() ;j++)
 				vertices[j].Color = hc;
 		}
@@ -1448,7 +1451,7 @@ void MeshCollector::append(const TileSpec &tile,
 	}
 
 	for (u32 i = 0; i < numVertices; i++) {
-		video::S3DVertexTangents vert(vertices[i].Pos, vertices[i].Normal,
+		video::S3DVertex vert(vertices[i].Pos, vertices[i].Normal,
 			vertices[i].Color, vertices[i].TCoords);
 		p->vertices.push_back(vert);
 	}
@@ -1494,7 +1497,7 @@ void MeshCollector::append(const TileSpec &tile,
 	}
 
 	for (u32 i = 0; i < numVertices; i++) {
-		video::S3DVertexTangents vert(vertices[i].Pos + pos, vertices[i].Normal,
+		video::S3DVertex vert(vertices[i].Pos + pos, vertices[i].Normal,
 			c, vertices[i].TCoords);
 		p->vertices.push_back(vert);
 	}
