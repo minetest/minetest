@@ -27,7 +27,7 @@ core.register_entity(":__builtin:item", {
 		collisionbox = {-0.3, -0.3, -0.3, 0.3, 0.3, 0.3},
 		visual = "wielditem",
 		visual_size = {x = 0.4, y = 0.4},
-		textures = {""},
+		textures = {"unknown_item.png"},
 		spritediv = {x = 1, y = 1},
 		initial_sprite_basepos = {x = 0, y = 0},
 		is_visible = false,

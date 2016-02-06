@@ -43,6 +43,7 @@ struct EnumString ModApiEnvMod::es_ClearObjectsMode[] =
 	{0, NULL},
 };
 
+#include "settings.h"
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -427,8 +428,12 @@ int ModApiEnvMod::l_add_item(lua_State *L)
 	//v3f pos = checkFloatPos(L, 1);
 	// item
 	ItemStack item = read_item(L, 2,getServer(L));
-	if(item.empty() || !item.isKnown(getServer(L)->idef()))
+	if (item.empty())
 		return 0;
+
+	if (!item.isKnown(getServer(L)->idef()) && g_settings->getBool("remove_unknown_items_on_drop")) {
+		return 0;
+	}
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
