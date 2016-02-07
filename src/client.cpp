@@ -235,11 +235,9 @@ Client::Client(
 	m_inventory_updated(false),
 	m_inventory_from_server(NULL),
 	m_inventory_from_server_age(0.0),
-	m_show_highlighted(false),
 	m_animation_time(0),
 	m_crack_level(-1),
 	m_crack_pos(0,0,0),
-	m_highlighted_pos(0,0,0),
 	m_map_seed(0),
 	m_password(password),
 	m_chosen_auth_mech(AUTH_MECHANISM_NONE),
@@ -1508,15 +1506,6 @@ int Client::getCrackLevel()
 	return m_crack_level;
 }
 
-void Client::setHighlighted(v3s16 pos, bool show_highlighted)
-{
-	m_show_highlighted = show_highlighted;
-	v3s16 old_highlighted_pos = m_highlighted_pos;
-	m_highlighted_pos = pos;
-	addUpdateMeshTaskForNode(old_highlighted_pos, false, true);
-	addUpdateMeshTaskForNode(m_highlighted_pos, false, true);
-}
-
 void Client::setCrack(int level, v3s16 pos)
 {
 	int old_crack_level = m_crack_level;
@@ -1601,7 +1590,6 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server, bool urgent)
 		// Debug: 1-6ms, avg=2ms
 		data->fill(b);
 		data->setCrack(m_crack_level, m_crack_pos);
-		data->setHighlighted(m_highlighted_pos, m_show_highlighted);
 		data->setSmoothLighting(m_cache_smooth_lighting);
 	}
 
