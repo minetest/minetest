@@ -83,9 +83,12 @@ void rotateMeshYZby (scene::IMesh *mesh, f64 degrees);
 scene::IMesh* cloneMesh(scene::IMesh *src_mesh);
 
 /*
-	Convert nodebox drawtype node to mesh.
+	Convert nodeboxes to mesh.
+	boxes - set of nodeboxes to be converted into cuboids
+	uv_coords[24] - table of texture uv coords for each cuboid face
 */
-scene::IMesh* convertNodeboxNodeToMesh(ContentFeatures *f);
+scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
+		const f32 *uv_coords = NULL);
 
 /*
 	Update bounding box for a mesh.

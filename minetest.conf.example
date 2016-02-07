@@ -555,9 +555,9 @@
 #    type: float
 # hud_hotbar_max_width = 1.0
 
-#    Enable selection highlighting for nodes (disables selectionbox).
-#    type: bool
-# enable_node_highlighting = false
+#    Selection highlighting method (box or halo)
+#    type: string
+# node_highlighting = box
 
 #    Enables caching of facedir rotated meshes.
 #    type: bool

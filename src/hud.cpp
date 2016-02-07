@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "fontengine.h"
 #include "guiscalingfilter.h"
+#include "mesh.h"
 #include <IGUIStaticText.h>
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -80,6 +81,39 @@ Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 	use_hotbar_image = false;
 	hotbar_selected_image = "";
 	use_hotbar_selected_image = false;
+
+	m_selection_mesh = NULL;
+	m_selection_boxes.clear();
+	m_selection_pos = v3f(0.0, 0.0, 0.0);
+	std::string mode = g_settings->get("node_highlighting");
+	m_selection_material.Lighting = false;
+
+	if (g_settings->getBool("enable_shaders")) {
+		IShaderSource *shdrsrc = gamedef->getShaderSource();
+		u16 shader_id = shdrsrc->getShader(
+			mode == "halo" ? "selection_shader" : "default_shader", 1, 1);
+		m_selection_material.MaterialType = shdrsrc->getShaderInfo(shader_id).material;
+	} else {
+		m_selection_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	}
+
+	if (mode == "box") {
+		m_use_selection_mesh = false;
+		m_selection_material.Thickness =
+			rangelim(g_settings->getS16("selectionbox_width"), 1, 5);	
+	} else if (mode == "halo") {
+		m_use_selection_mesh = true;
+		m_selection_material.setTexture(0, tsrc->getTextureForMesh("halo.png"));
+		m_selection_material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+	} else {
+		m_selection_material.MaterialType = video::EMT_SOLID;
+	}
+}
+
+Hud::~Hud()
+{
+	if (m_selection_mesh)
+		m_selection_mesh->drop();
 }
 
 void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
@@ -239,7 +273,7 @@ void Hud::drawItems(v2s32 upperleftpos, s32 itemcount, s32 offset,
 }
 
 
-void Hud::drawLuaElements(v3s16 camera_offset) {
+void Hud::drawLuaElements(const v3s16 &camera_offset) {
 	u32 text_height = g_fontengine->getTextHeight();
 	irr::gui::IGUIFont* font = g_fontengine->getFont();
 	for (size_t i = 0; i != player->maxHudId(); i++) {
@@ -466,15 +500,85 @@ void Hud::drawCrosshair() {
 	}
 }
 
-
-void Hud::drawSelectionBoxes(std::vector<aabb3f> &hilightboxes) {
-	for (std::vector<aabb3f>::const_iterator
-			i = hilightboxes.begin();
-			i != hilightboxes.end(); ++i) {
-		driver->draw3DBox(*i, selectionbox_argb);
+void Hud::setSelectionPos(const v3f &pos, const v3s16 &camera_offset)
+{
+	m_camera_offset = camera_offset;
+	m_selection_pos = pos;
+	m_selection_pos_with_offset = pos - intToFloat(camera_offset, BS);
+}
+	
+void Hud::drawSelectionMesh()
+{	
+	if (!m_use_selection_mesh) {
+		// Draw 3D selection boxes
+		video::SMaterial oldmaterial = driver->getMaterial2D();
+		driver->setMaterial(m_selection_material);
+		for (std::vector<aabb3f>::const_iterator
+				i = m_selection_boxes.begin();
+				i != m_selection_boxes.end(); ++i) {
+			aabb3f box = aabb3f(
+				i->MinEdge + m_selection_pos_with_offset,
+				i->MaxEdge + m_selection_pos_with_offset);
+			
+			u32 r = (selectionbox_argb.getRed() *
+					m_selection_mesh_color.getRed() / 255);		
+			u32 g = (selectionbox_argb.getGreen() *
+					m_selection_mesh_color.getGreen() / 255);
+			u32 b = (selectionbox_argb.getBlue() *
+					m_selection_mesh_color.getBlue() / 255);
+			driver->draw3DBox(box, video::SColor(255, r, g, b));
+		}
+		driver->setMaterial(oldmaterial);
+	} else if (m_selection_mesh) {
+		// Draw selection mesh
+		video::SMaterial oldmaterial = driver->getMaterial2D();
+		driver->setMaterial(m_selection_material);
+		setMeshColor(m_selection_mesh, m_selection_mesh_color);
+		scene::IMesh* mesh = cloneMesh(m_selection_mesh);
+		translateMesh(mesh, m_selection_pos_with_offset);
+		u32 mc = m_selection_mesh->getMeshBufferCount();
+		for (u32 i = 0; i < mc; i++) {
+			scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+			driver->drawMeshBuffer(buf);
+		}
+		mesh->drop();
+		driver->setMaterial(oldmaterial);
 	}
 }
 
+void Hud::updateSelectionMesh(const v3s16 &camera_offset)
+{
+	m_camera_offset = camera_offset;
+	if (!m_use_selection_mesh)
+		return;
+
+	if (m_selection_mesh) {
+		m_selection_mesh->drop();
+		m_selection_mesh = NULL;
+	}
+
+	if (!m_selection_boxes.size()) {
+		// No pointed object
+		return;
+	}
+
+	// New pointed object, create new mesh.
+
+	// Texture UV coordinates for selection boxes
+	static f32 texture_uv[24] = {
+		0,0,1,1,
+		0,0,1,1,
+		0,0,1,1,
+		0,0,1,1,
+		0,0,1,1,
+		0,0,1,1
+	};
+
+	m_selection_mesh = convertNodeboxesToMesh(m_selection_boxes, texture_uv);
+
+	// scale final halo mesh
+	scaleMesh(m_selection_mesh, v3f(1.08, 1.08, 1.08));
+}
 
 void Hud::resizeHotbar() {
 	if (m_screensize != porting::getWindowSize()) {

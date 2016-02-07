@@ -972,7 +972,7 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 			//Convert regular nodebox nodes to meshnodes
 			//Change the drawtype and apply scale
 			f->drawtype = NDT_MESH;
-			f->mesh_ptr[0] = convertNodeboxNodeToMesh(f);
+			f->mesh_ptr[0] = convertNodeboxesToMesh(f->node_box.fixed);
 			v3f scale = v3f(1.0, 1.0, 1.0) * f->visual_scale;
 			scaleMesh(f->mesh_ptr[0], scale);
 			recalculateBoundingBox(f->mesh_ptr[0]);

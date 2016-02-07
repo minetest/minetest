@@ -279,6 +279,9 @@ enable_clouds (Clouds) bool true
 #    Use 3D cloud look instead of flat.
 enable_3d_clouds (3D clouds) bool true
 
+#    Method used to highlight selected object.
+node_highlighting (Node highlighting) enum box box,halo
+
 [***Filtering]
 
 #    Use mip mapping to scale textures. May slightly increase performance.
@@ -481,9 +484,6 @@ desynchronize_mapblock_texture_animation (Desynchronize block animation) bool tr
 #    Maximum proportion of current window to be used for hotbar.
 #    Useful if there's something to be displayed right or left of hotbar.
 hud_hotbar_max_width (Maximum hotbar width) float 1.0
-
-#    Enable selection highlighting for nodes (disables selectionbox).
-enable_node_highlighting (Node highlighting) bool false
 
 #    Enables caching of facedir rotated meshes.
 enable_mesh_cache (Mesh cache) bool false
