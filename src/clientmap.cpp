@@ -157,12 +157,9 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 	}
 	m_drawlist.clear();
 
-	m_camera_mutex.lock();
 	v3f camera_position = m_camera_position;
 	v3f camera_direction = m_camera_direction;
 	f32 camera_fov = m_camera_fov;
-	//v3s16 camera_offset = m_camera_offset;
-	m_camera_mutex.unlock();
 
 	// Use a higher fov to accomodate faster camera movements.
 	// Blocks are cropped better when they are drawn.
@@ -433,11 +430,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	int crack = m_client->getCrackLevel();
 	u32 daynight_ratio = m_client->getEnv().getDayNightRatio();
 
-	m_camera_mutex.lock();
 	v3f camera_position = m_camera_position;
 	v3f camera_direction = m_camera_direction;
 	f32 camera_fov = m_camera_fov;
-	m_camera_mutex.unlock();
 
 	/*
 		Get all blocks and draw all visible ones
@@ -799,11 +794,7 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 	// Sadly ISceneManager has no "post effects" render pass, in that case we
 	// could just register for that and handle it in renderMap().
 
-	m_camera_mutex.lock();
-	v3f camera_position = m_camera_position;
-	m_camera_mutex.unlock();
-
-	MapNode n = getNodeNoEx(floatToInt(camera_position, BS));
+	MapNode n = getNodeNoEx(floatToInt(m_camera_position, BS));
 
 	// - If the player is in a solid node, make everything black.
 	// - If the player is in liquid, draw a semi-transparent overlay.
