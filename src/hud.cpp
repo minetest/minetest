@@ -156,7 +156,7 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
 		if (!use_hotbar_image)
 			driver->draw2DRectangle(bgcolor2, rect, NULL);
 		drawItemStack(driver, g_fontengine->getFont(), item, rect, NULL,
-			gamedef, selected, false, false);
+			gamedef, selected ? IT_ROT_SELECTED : IT_ROT_NONE);
 	}
 
 //NOTE: selectitem = 0 -> no selected; selectitem 1-based
@@ -486,32 +486,26 @@ void Hud::resizeHotbar() {
 	}
 }
 
+struct MeshTimeInfo {
+	s32 time;
+	scene::IMesh *mesh;
+};
+
 void drawItemStack(video::IVideoDriver *driver,
 		gui::IGUIFont *font,
 		const ItemStack &item,
 		const core::rect<s32> &rect,
 		const core::rect<s32> *clip,
 		IGameDef *gamedef,
-		bool selected,
-		bool hovered,
-		bool dragged)
+		ItemRotationKind rotation_kind)
 {
-	static s32 hovered_time;
-	static s32 selected_time;
-	static s32 dragged_time;
-	static scene::IMesh *hovered_mesh;
-	static scene::IMesh *selected_mesh;
-	static scene::IMesh *dragged_mesh;
-	bool enable_animations =
+	static MeshTimeInfo rotation_time_infos[IT_ROT_NONE];
+	static bool enable_animations =
 		g_settings->getBool("inventory_items_animations");
 
 	if (item.empty()) {
-		if (selected) {
-			selected_mesh = NULL;
-		} else if (hovered) {
-			hovered_mesh = NULL;
-		} else if (dragged) {
-			dragged_mesh = NULL;
+		if (rotation_kind < IT_ROT_NONE) {
+			rotation_time_infos[rotation_kind].mesh = NULL;
 		}
 		return;
 	}
@@ -522,26 +516,13 @@ void drawItemStack(video::IVideoDriver *driver,
 	if (mesh) {
 		driver->clearZBuffer();
 		s32 delta = 0;
-		if (selected) {
-			if (mesh != selected_mesh) {
-				selected_mesh = mesh;
-				selected_time = getTimeMs();
+		if (rotation_kind < IT_ROT_NONE) {
+			MeshTimeInfo &ti = rotation_time_infos[rotation_kind];
+			if (mesh != ti.mesh) {
+				ti.mesh = mesh;
+				ti.time = getTimeMs();
 			} else {
-				delta = porting::getDeltaMs(selected_time, getTimeMs()) % 100000;
-			}
-		} else if (hovered) {
-			if (mesh != hovered_mesh) {
-				hovered_mesh = mesh;
-				hovered_time = getTimeMs();
-			} else {
-				delta = porting::getDeltaMs(hovered_time, getTimeMs()) % 100000;
-			}
-		} else if (dragged) {
-			if (mesh != dragged_mesh) {
-				dragged_mesh = mesh;
-				dragged_time = getTimeMs();
-			} else {
-				delta = porting::getDeltaMs(dragged_time, getTimeMs()) % 100000;
+				delta = porting::getDeltaMs(ti.time, getTimeMs()) % 100000;
 			}
 		}
 		core::rect<s32> oldViewPort = driver->getViewPort();
