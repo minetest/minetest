@@ -30,7 +30,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "camera.h"               // CameraModes
 #include "util/mathconstants.h"
+
 #include <algorithm>
+#include <cmath>
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -171,6 +173,16 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 
 	v3s16 cam_pos_nodes = floatToInt(camera_position, BS);
 	v3s16 box_nodes_d = m_control.wanted_range * v3s16(1,1,1);
+
+// OldCoder: This block is an attempt to prevent  16-bit overflows re-
+// lated  to high viewing ranges while  at the same time not  limiting
+// them more than necessary. This should help to prevent a "disappear-
+// ing world" problem that occurred previously.
+
+	box_nodes_d.X = MYMIN (box_nodes_d.X, 32650 - abs (cam_pos_nodes.X));
+	box_nodes_d.Y = MYMIN (box_nodes_d.Y, 32650 - abs (cam_pos_nodes.Y));
+	box_nodes_d.Z = MYMIN (box_nodes_d.Z, 32650 - abs (cam_pos_nodes.Z));
+
 	v3s16 p_nodes_min = cam_pos_nodes - box_nodes_d;
 	v3s16 p_nodes_max = cam_pos_nodes + box_nodes_d;
 	// Take a fair amount as we will be dropping more out later
@@ -446,6 +458,15 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	v3s16 cam_pos_nodes = floatToInt(camera_position, BS);
 
 	v3s16 box_nodes_d = m_control.wanted_range * v3s16(1,1,1);
+
+// OldCoder: This block is an attempt to prevent  16-bit overflows re-
+// lated  to high viewing ranges while  at the same time not  limiting
+// them more than necessary. This should help to prevent a "disappear-
+// ing world" problem that occurred previously.
+
+	box_nodes_d.X = MYMIN (box_nodes_d.X, 32650 - abs (cam_pos_nodes.X));
+	box_nodes_d.Y = MYMIN (box_nodes_d.Y, 32650 - abs (cam_pos_nodes.Y));
+	box_nodes_d.Z = MYMIN (box_nodes_d.Z, 32650 - abs (cam_pos_nodes.Z));
 
 	v3s16 p_nodes_min = cam_pos_nodes - box_nodes_d;
 	v3s16 p_nodes_max = cam_pos_nodes + box_nodes_d;

@@ -3012,6 +3012,7 @@ void Game::increaseViewRange(float *statustext_time)
 {
 	s16 range = g_settings->getS16("viewing_range_nodes_min");
 	s16 range_new = range + 10;
+	if (range_new > MAXMINVRANGE) range_new = MAXMINVRANGE;
 	g_settings->set("viewing_range_nodes_min", itos(range_new));
 	statustext = utf8_to_wide("Minimum viewing range changed to "
 			+ itos(range_new));

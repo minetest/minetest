@@ -506,6 +506,7 @@ void Camera::updateViewingRange(f32 frametime_in, f32 busytime_in)
 
 	// Get current viewing range and FPS settings
 	f32 viewing_range_min = g_settings->getFloat("viewing_range_nodes_min");
+	viewing_range_min = MYMIN(MAXMINVRANGE, viewing_range_min);
 	viewing_range_min = MYMAX(15.0, viewing_range_min);
 
 	f32 viewing_range_max = g_settings->getFloat("viewing_range_nodes_max");

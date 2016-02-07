@@ -29,6 +29,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "client.h"
 
+// OldCoder:  If minimum viewing range (MIVR) is  above about 900 node
+// units, a confusing problem  may occur. Specifically,  if the player
+// travels to a point that is too far away from the origin at (0,0,0),
+// the screen may go blank abruptly except for mobs.  The cutoff point
+// is located at about 32,767 node units minus ( MIVR plus 100 ) along
+// any axis.
+
+// As one part of the solution,  MIVR is clipped to a maximum value of
+// MAXMINVRANGE.  There are related changes elsewhere in the code that
+// clip  the current,  as  opposed to  the minimum,  viewing range  as
+// well.
+
+#define MAXMINVRANGE 900
+
 class LocalPlayer;
 struct MapDrawControl;
 class IGameDef;
