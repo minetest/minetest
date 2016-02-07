@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "fontengine.h"
 #include "guiscalingfilter.h"
+#include "mesh.h"
 #include <IGUIStaticText.h>
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -80,6 +81,43 @@ Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 	use_hotbar_image = false;
 	hotbar_selected_image = "";
 	use_hotbar_selected_image = false;
+
+	m_selectionmesh = NULL;
+	m_selectionboxes.clear();
+	m_highlighted_pos = v3f(0.0, 0.0, 0.0);
+	std::string mode = g_settings->get("node_highlighting");
+	m_selection_material.Lighting = false;
+	if (g_settings->getBool("enable_shaders")) {
+		IShaderSource *shdrsrc = gamedef->getShaderSource();
+		u16 sid;
+		if (mode == "halo") {
+			sid = shdrsrc->getShader("selection_shader", 1, 1);
+		} else { 
+			sid = shdrsrc->getShader("default_shader", 1, 1);
+		}
+		m_selection_material.MaterialType = shdrsrc->getShaderInfo(sid).material;
+	} else {
+		m_selection_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	}
+	if (mode == "box") {
+		m_use_selectionmesh = false;
+		m_selection_material.Thickness =
+			rangelim(g_settings->getS16("selectionbox_width"), 1, 5);	
+	} else if (mode == "halo") {
+		m_use_selectionmesh = true;
+		m_selection_material.setTexture(0, tsrc->getTextureForMesh("halo.png"));
+		m_selection_material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+		m_overallselectionmeshscale = v3f(1.08, 1.08, 1.08);
+	} else {
+		m_selection_material.MaterialType = video::EMT_SOLID;
+	}
+	
+}
+
+Hud::~Hud()
+{
+	if (m_selectionmesh)
+		m_selectionmesh->drop();
 }
 
 void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect, bool selected) {
@@ -237,7 +275,8 @@ void Hud::drawItems(v2s32 upperleftpos, s32 itemcount, s32 offset,
 }
 
 
-void Hud::drawLuaElements(v3s16 camera_offset) {
+void Hud::drawLuaElements(const v3s16 &camera_offset) {
+	m_camera_offset = camera_offset;
 	u32 text_height = g_fontengine->getTextHeight();
 	irr::gui::IGUIFont* font = g_fontengine->getFont();
 	for (size_t i = 0; i != player->maxHudId(); i++) {
@@ -295,7 +334,7 @@ void Hud::drawLuaElements(v3s16 camera_offset) {
 				v3f w_pos = e->world_pos * BS;
 				float distance = floor(10 * p_pos.getDistanceFrom(e->world_pos)) / 10;
 				scene::ICameraSceneNode* camera = smgr->getActiveCamera();
-				w_pos -= intToFloat(camera_offset, BS);
+				w_pos -= intToFloat(m_camera_offset, BS);
 				core::matrix4 trans = camera->getProjectionMatrix();
 				trans *= camera->getViewMatrix();
 				f32 transformed_pos[4] = { w_pos.X, w_pos.Y, w_pos.Z, 1.0f };
@@ -464,15 +503,71 @@ void Hud::drawCrosshair() {
 	}
 }
 
-
-void Hud::drawSelectionBoxes(std::vector<aabb3f> &hilightboxes) {
-	for (std::vector<aabb3f>::const_iterator
-			i = hilightboxes.begin();
-			i != hilightboxes.end(); ++i) {
-		driver->draw3DBox(*i, selectionbox_argb);
+void Hud::setHighlightedPos(const v3f &pos, const v3s16 &camera_offset)
+{
+	m_camera_offset = camera_offset;
+	m_highlighted_pos = pos;
+	m_highlighted_pos_with_offset = pos - intToFloat(camera_offset, BS);
+}
+	
+void Hud::drawSelectionMesh()
+{	
+	if (!m_use_selectionmesh) {
+		video::SMaterial oldmaterial = driver->getMaterial2D();
+		driver->setMaterial(m_selection_material);
+		for (std::vector<aabb3f>::const_iterator
+				i = m_selectionboxes.begin();
+				i != m_selectionboxes.end(); ++i) {
+			aabb3f box = aabb3f(
+				i->MinEdge + m_highlighted_pos_with_offset,
+				i->MaxEdge + m_highlighted_pos_with_offset);
+			driver->draw3DBox(box, selectionbox_argb);
+		}
+		driver->setMaterial(oldmaterial);
+	} else if (m_selectionmesh) {
+		video::SMaterial oldmaterial = driver->getMaterial2D();
+		driver->setMaterial(m_selection_material);
+		setMeshColor(m_selectionmesh, m_highlightedmeshcolor);
+		scene::IMesh* mesh = cloneMesh(m_selectionmesh);
+		translateMesh(mesh, m_highlighted_pos_with_offset);
+		u32 mc = m_selectionmesh->getMeshBufferCount();
+		for (u32 i = 0; i < mc; i++) {
+			scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+			driver->drawMeshBuffer(buf);
+		}
+		mesh->drop();
+		driver->setMaterial(oldmaterial);
 	}
 }
 
+void Hud::updateSelectionMesh(const v3s16 &camera_offset)
+{
+	m_camera_offset = camera_offset;
+	if (!m_use_selectionmesh)
+		return;
+	if (!m_selectionboxes.size()) {
+		if (m_selectionmesh) {
+			m_selectionmesh->drop();
+			m_selectionmesh = NULL;
+		}
+		return;
+	} else {
+		if (m_selectionmesh) {
+			m_selectionmesh->drop();
+			m_selectionmesh = NULL;
+		}
+		static f32 txc[24] = {
+			0,0,1,1,
+			0,0,1,1,
+			0,0,1,1,
+			0,0,1,1,
+			0,0,1,1,
+			0,0,1,1
+		};
+		m_selectionmesh = convertNodeboxesToMesh(m_selectionboxes, txc);
+		scaleMesh(m_selectionmesh, m_selectionmeshscale * m_overallselectionmeshscale);
+	}
+}
 
 void Hud::resizeHotbar() {
 	if (m_screensize != porting::getWindowSize()) {
