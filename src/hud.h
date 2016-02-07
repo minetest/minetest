@@ -119,17 +119,34 @@ public:
 	bool use_hotbar_image;
 	std::string hotbar_selected_image;
 	bool use_hotbar_selected_image;
-	v3s16 camera_offset;
 
 	Hud(video::IVideoDriver *driver,scene::ISceneManager* smgr,
 		gui::IGUIEnvironment* guienv, IGameDef *gamedef, LocalPlayer *player,
 		Inventory *inventory);
+	~Hud();
 
 	void drawHotbar(u16 playeritem);
 	void resizeHotbar();
 	void drawCrosshair();
-	void drawSelectionBoxes(std::vector<aabb3f> &hilightboxes);
-	void drawLuaElements(v3s16 camera_offset);
+	void drawSelectionMesh();
+	void updateSelectionMesh(const v3s16 &camera_offset);
+	
+	std::vector<aabb3f> *getSelectionBoxes()
+	{ return &m_selectionboxes; }
+
+	void setHighlightedPos(const v3f &pos, const v3s16 &camera_offset);
+
+	v3f getHighlightedPos() const
+	{ return m_highlighted_pos; }
+
+	void setHighlightedMeshColor(const video::SColor &c)
+	{ m_highlightedmeshcolor = c; }
+
+	void setSelectionMeshScale(const v3f &scale)
+	{ m_selectionmeshscale = scale; }
+
+	void drawLuaElements(const v3s16 &camera_offset);
+
 private:
 	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
 			s32 count, v2s32 offset, v2s32 size=v2s32());
@@ -139,11 +156,23 @@ private:
 
 	void drawItem(const ItemStack &item, const core::rect<s32>& rect, bool selected);
 
+	v3s16 m_camera_offset;
 	v2u32 m_screensize;
 	v2s32 m_displaycenter;
 	s32 m_hotbar_imagesize;
 	s32 m_padding;
 	video::SColor hbar_colors[4];
+
+	std::vector<aabb3f> m_selectionboxes;
+	v3f m_highlighted_pos;
+	v3f m_highlighted_pos_with_offset;
+
+	scene::IMesh* m_selectionmesh;
+	video::SColor m_highlightedmeshcolor;
+	v3f m_selectionmeshscale;
+	v3f m_overallselectionmeshscale;
+	video::SMaterial m_selection_material;
+	bool m_use_selectionmesh;
 };
 
 void drawItemStack(video::IVideoDriver *driver,
@@ -152,7 +181,6 @@ void drawItemStack(video::IVideoDriver *driver,
 		const core::rect<s32> &rect,
 		const core::rect<s32> *clip,
 		IGameDef *gamedef);
-
 
 #endif
 
