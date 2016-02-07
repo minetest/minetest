@@ -82,8 +82,9 @@ Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 	use_hotbar_selected_image = false;
 }
 
-void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect, bool selected) {
-
+void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
+		bool selected)
+{
 	if (selected) {
 			/* draw hihlighting around selected item */
 			if (use_hotbar_selected_image) {
@@ -154,7 +155,8 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect, bool sele
 		video::SColor bgcolor2(128, 0, 0, 0);
 		if (!use_hotbar_image)
 			driver->draw2DRectangle(bgcolor2, rect, NULL);
-		drawItemStack(driver, g_fontengine->getFont(), item, rect, NULL, gamedef);
+		drawItemStack(driver, g_fontengine->getFont(), item, rect, NULL,
+			gamedef, selected, false, false);
 	}
 
 //NOTE: selectitem = 0 -> no selected; selectitem 1-based
@@ -489,23 +491,90 @@ void drawItemStack(video::IVideoDriver *driver,
 		const ItemStack &item,
 		const core::rect<s32> &rect,
 		const core::rect<s32> *clip,
-		IGameDef *gamedef)
+		IGameDef *gamedef,
+		bool selected,
+		bool hovered,
+		bool dragged)
 {
-	if(item.empty())
+	static s32 hovered_time;
+	static s32 selected_time;
+	static s32 dragged_time;
+	static scene::IMesh *hovered_mesh;
+	static scene::IMesh *selected_mesh;
+	static scene::IMesh *dragged_mesh;
+	bool enable_animations = 
+		g_settings->getBool("inventory_items_animations");	
+
+	if (item.empty()) {
+		if (selected) {
+			selected_mesh = NULL;
+		} else if (hovered) {
+			hovered_mesh = NULL;
+		} else if (dragged) {
+			dragged_mesh = NULL;
+		}
 		return;
+	}
 
 	const ItemDefinition &def = item.getDefinition(gamedef->idef());
-	video::ITexture *texture = gamedef->idef()->getInventoryTexture(def.name, gamedef);
+	scene::IMesh* mesh = gamedef->idef()->getWieldMesh(def.name, gamedef);
 
-	// Draw the inventory texture
-	if(texture != NULL)
-	{
-		const video::SColor color(255,255,255,255);
-		const video::SColor colors[] = {color,color,color,color};
-		draw2DImageFilterScaled(driver, texture, rect,
-			core::rect<s32>(core::position2d<s32>(0,0),
-			core::dimension2di(texture->getOriginalSize())),
-			clip, colors, true);
+	if (mesh) {
+		driver->clearZBuffer();
+		s32 delta = 0;
+		if (selected) {
+			if (mesh != selected_mesh) {
+				selected_mesh = mesh;
+				selected_time = getTimeMs();
+			} else {
+				delta = porting::getDeltaMs(selected_time, getTimeMs()) % 100000;
+			}
+		} else if (hovered) {
+			if (mesh != hovered_mesh) {
+				hovered_mesh = mesh;
+				hovered_time = getTimeMs();
+			} else {
+				delta = porting::getDeltaMs(hovered_time, getTimeMs()) % 100000;
+			}
+		} else if (dragged) {
+			if (mesh != dragged_mesh) {
+				dragged_mesh = mesh;
+				dragged_time = getTimeMs();
+			} else {
+				delta = porting::getDeltaMs(dragged_time, getTimeMs()) % 100000;
+			}
+		}
+		core::rect<s32> oldViewPort = driver->getViewPort();
+		core::matrix4 oldProjMat = driver->getTransform(video::ETS_PROJECTION);
+		core::matrix4 oldViewMat = driver->getTransform(video::ETS_VIEW);
+		core::matrix4 ProjMatrix;
+		ProjMatrix.buildProjectionMatrixOrthoLH(2, 2, -1, 100); 
+		driver->setTransform(video::ETS_PROJECTION, ProjMatrix);
+		driver->setTransform(video::ETS_VIEW, ProjMatrix);
+		core::matrix4 matrix;
+		matrix.makeIdentity();
+
+		if (enable_animations) {
+			float timer_f = (float)delta / 5000.0;
+			matrix.setRotationDegrees(core::vector3df(0, 360 * timer_f, 0));
+		}
+
+		driver->setTransform(video::ETS_WORLD, matrix);
+		driver->setViewPort(rect);
+
+		u32 mc = mesh->getMeshBufferCount();
+		for (u32 j = 0; j < mc; ++j) {
+			scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+			video::SMaterial &material = buf->getMaterial();
+			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+			material.Lighting = false;
+			driver->setMaterial(material);
+			driver->drawMeshBuffer(buf);
+		}
+
+		driver->setTransform(video::ETS_VIEW, oldViewMat);
+		driver->setTransform(video::ETS_PROJECTION, oldProjMat);
+		driver->setViewPort(oldViewPort);
 	}
 
 	if(def.type == ITEM_TOOL && item.wear != 0)

@@ -572,7 +572,7 @@ void GUIFormSpecMenu::parseItemImage(parserData* data,std::string element)
 
 		if(!data->explicit_size)
 			warningstream<<"invalid use of item_image without a size[] element"<<std::endl;
-		m_itemimages.push_back(ImageDrawSpec(name, pos, geom));
+		m_itemimages.push_back(ImageDrawSpec("", name, pos, geom));
 		return;
 	}
 	errorstream<< "Invalid ItemImage element(" << parts.size() << "): '" << element << "'"  << std::endl;
@@ -1483,7 +1483,6 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 		IItemDefManager *idef = m_gamedef->idef();
 		ItemStack item;
 		item.deSerialize(item_name, idef);
-		video::ITexture *texture = idef->getInventoryTexture(item.getDefinition(idef).name, m_gamedef);
 
 		m_tooltips[name] =
 			TooltipSpec(item.getDefinition(idef).description,
@@ -1505,13 +1504,17 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 		}
 
 		e->setUseAlphaChannel(true);
-		e->setImage(guiScalingImageButton(Environment->getVideoDriver(), texture, geom.X, geom.Y));
-		e->setPressedImage(guiScalingImageButton(Environment->getVideoDriver(), texture, geom.X, geom.Y));
+		e->setImage(guiScalingImageButton(Environment->getVideoDriver(), NULL, geom.X, geom.Y));
+		e->setPressedImage(guiScalingImageButton(Environment->getVideoDriver(), NULL, geom.X, geom.Y));
 		e->setScaleImage(true);
 		spec.ftype = f_Button;
 		rect+=data->basepos-padding;
 		spec.rect=rect;
 		m_fields.push_back(spec);
+		pos = padding + AbsoluteRect.UpperLeftCorner;
+		pos.X += stof(v_pos[0]) * (float) spacing.X;
+		pos.Y += stof(v_pos[1]) * (float) spacing.Y;
+		m_itemimages.push_back(ImageDrawSpec("", item_name, pos, geom));
 		return;
 	}
 	errorstream<< "Invalid ItemImagebutton element(" << parts.size() << "): '" << element << "'"  << std::endl;
@@ -2151,7 +2154,8 @@ GUIFormSpecMenu::ItemSpec GUIFormSpecMenu::getItemAtPos(v2s32 p) const
 	return ItemSpec(InventoryLocation(), "", -1);
 }
 
-void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
+void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
+		bool &item_hovered)
 {
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 
@@ -2193,12 +2197,13 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 			&& m_selected_item->i == item_i;
 		bool hovering = rect.isPointInside(m_pointer);
 
-		if(phase == 0)
-		{
-			if(hovering)
+		if (phase == 0) {
+			if (hovering) {
+				item_hovered = true;
 				driver->draw2DRectangle(m_slotbg_h, rect, &AbsoluteClippingRect);
-			else
+			} else {
 				driver->draw2DRectangle(m_slotbg_n, rect, &AbsoluteClippingRect);
+			}
 		}
 
 		//Draw inv slot borders
@@ -2232,7 +2237,8 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 			if(!item.empty())
 			{
 				drawItemStack(driver, m_font, item,
-						rect, &AbsoluteClippingRect, m_gamedef);
+					rect, &AbsoluteClippingRect, m_gamedef,
+					selected, hovering, false);
 			}
 
 			// Draw tooltip
@@ -2273,10 +2279,14 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase)
 
 void GUIFormSpecMenu::drawSelectedItem()
 {
-	if(!m_selected_item)
-		return;
-
 	video::IVideoDriver* driver = Environment->getVideoDriver();
+
+	if (!m_selected_item) {
+		drawItemStack(driver, m_font, ItemStack(),
+			core::rect<s32>(v2s32(0, 0), v2s32(0, 0)),
+			NULL, m_gamedef, false, false, true);
+		return;
+	}
 
 	Inventory *inv = m_invmgr->getInventory(m_selected_item->inventoryloc);
 	sanity_check(inv);
@@ -2287,7 +2297,7 @@ void GUIFormSpecMenu::drawSelectedItem()
 
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
 	core::rect<s32> rect = imgrect + (m_pointer - imgrect.getCenter());
-	drawItemStack(driver, m_font, stack, rect, NULL, m_gamedef);
+	drawItemStack(driver, m_font, stack, rect, NULL, m_gamedef, false, false, true);
 }
 
 void GUIFormSpecMenu::drawMenu()
@@ -2369,6 +2379,12 @@ void GUIFormSpecMenu::drawMenu()
 
 		driver->draw2DRectangle(todraw, rect, 0);
 	}
+
+	/*
+		Call base class
+	*/
+	gui::IGUIElement::draw();
+
 	/*
 		Draw images
 	*/
@@ -2413,18 +2429,12 @@ void GUIFormSpecMenu::drawMenu()
 		const ImageDrawSpec &spec = m_itemimages[i];
 		IItemDefManager *idef = m_gamedef->idef();
 		ItemStack item;
-		item.deSerialize(spec.name, idef);
-		video::ITexture *texture = idef->getInventoryTexture(item.getDefinition(idef).name, m_gamedef);
-		// Image size on screen
+		item.deSerialize(spec.item_name, idef);
 		core::rect<s32> imgrect(0, 0, spec.geom.X, spec.geom.Y);
-		// Image rectangle on screen
+		// Viewport rectangle on screen
 		core::rect<s32> rect = imgrect + spec.pos;
-		const video::SColor color(255,255,255,255);
-		const video::SColor colors[] = {color,color,color,color};
-		draw2DImageFilterScaled(driver, texture, rect,
-			core::rect<s32>(core::position2d<s32>(0,0),
-					core::dimension2di(texture->getOriginalSize())),
-			NULL/*&AbsoluteClippingRect*/, colors, true);
+		drawItemStack(driver, m_font, item, rect, &AbsoluteClippingRect,
+				m_gamedef, false, false, false);
 	}
 
 	/*
@@ -2432,18 +2442,19 @@ void GUIFormSpecMenu::drawMenu()
 		Phase 0: Item slot rectangles
 		Phase 1: Item images; prepare tooltip
 	*/
-	int start_phase=0;
-	for(int phase=start_phase; phase<=1; phase++)
-	for(u32 i=0; i<m_inventorylists.size(); i++)
-	{
-		drawList(m_inventorylists[i], phase);
+	bool item_hovered = false;
+	int start_phase = 0;
+	for (int phase = start_phase; phase <= 1; phase++) {
+		for (u32 i = 0; i < m_inventorylists.size(); i++) {
+			drawList(m_inventorylists[i], phase, item_hovered);
+		}
 	}
-
-	/*
-		Call base class
-	*/
-	gui::IGUIElement::draw();
-
+	if (!item_hovered) {
+		drawItemStack(driver, m_font, ItemStack(),
+			core::rect<s32>(v2s32(0, 0), v2s32(0, 0)),
+			NULL, m_gamedef, false, true, false);
+	}	
+		
 /* TODO find way to show tooltips on touchscreen */
 #ifndef HAVE_TOUCHSCREENGUI
 	m_pointer = m_device->getCursorControl()->getPosition();
