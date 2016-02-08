@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER
 #include "clientmap.h"
 #include "localplayer.h"
+#include "remoteplayer.h"
 #include "mapblock_mesh.h"
 #include "event.h"
 #endif

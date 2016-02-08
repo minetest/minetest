@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 #include "util/serialize.h"
 #include "util/srp.h"
+#include "remoteplayer.h"
 
 void Server::handleCommand_Deprecated(NetworkPacket* pkt)
 {
