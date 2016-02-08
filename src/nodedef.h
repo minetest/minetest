@@ -114,6 +114,8 @@ enum TileAnimationType{
 struct TileDef
 {
 	std::string name;
+	std::string normal_texture;
+	std::string special_texture;
 	bool backface_culling; // Takes effect only in special cases
 	bool tileable_horizontal;
 	bool tileable_vertical;
@@ -127,6 +129,8 @@ struct TileDef
 	TileDef()
 	{
 		name = "";
+		normal_texture = "";
+		special_texture = "";
 		backface_culling = true;
 		tileable_horizontal = true;
 		tileable_vertical = true;
@@ -198,6 +202,7 @@ struct ContentFeatures
 	// Visual definition
 	enum NodeDrawType drawtype;
 	std::string mesh;
+	std::string shader_name;
 #ifndef SERVER
 	scene::IMesh *mesh_ptr[24];
 	video::SColor minimap_color;

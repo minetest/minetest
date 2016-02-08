@@ -6,45 +6,56 @@ uniform mat4 mWorld;
 uniform float dayNightRatio;
 uniform vec3 eyePosition;
 uniform float animationTimer;
+uniform float sunPosition;
+uniform float cameraFar;
 
 varying vec3 vPosition;
 varying vec3 worldPosition;
+varying vec3 FragPos;
 
 varying vec3 eyeVec;
 varying vec3 lightVec;
+
 varying vec3 tsEyeVec;
 varying vec3 tsLightVec;
+
 varying float area_enable_parallax;
-varying float disp;
+varying vec3 normal;
+varying vec3 tangent;
+varying vec3 binormal;
+varying float sDepth;
+
+varying vec3 v1;
 
 const float e = 2.718281828459;
 const float BS = 10.0;
-
 
 float smoothCurve(float x)
 {
 	return x * x * (3.0 - 2.0 * x);
 }
 
-
 float triangleWave(float x)
 {
 	return abs(fract(x + 0.5) * 2.0 - 1.0);
 }
-
 
 float smoothTriangleWave(float x)
 {
 	return smoothCurve(triangleWave(x)) * 2.0 - 1.0;
 }
 
+const float NEAR = 0.1; // projection matrix's near plane
+const float FAR = 2450.0f; // projection matrix's far plane
+float linearizeDepth(float depth)
+{
+    float z = depth * 2.0 - 1.0; // Back to NDC 
+    return (2.0 * NEAR * FAR) / (FAR + NEAR - z * (FAR - NEAR));	
+}
 
 void main(void)
 {
 	gl_TexCoord[0] = gl_MultiTexCoord0;
-	//TODO: make offset depending on view angle and parallax uv displacement
-	//thats for textures that doesnt align vertically, like dirt with grass
-	//gl_TexCoord[0].y += 0.008;
 
 	//Allow parallax/relief mapping only for certain kind of nodes
 	//Variable is also used to control area of the effect
@@ -54,6 +65,7 @@ void main(void)
 	area_enable_parallax = 0.0;
 #endif
 
+	float disp = 0.0;
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES) || (MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS)
 	vec4 pos2 = mWorld * gl_Vertex;
@@ -62,7 +74,6 @@ void main(void)
 		smoothTriangleWave(animationTimer * 29.0 + tOffset) +
 		smoothTriangleWave(animationTimer * 13.0 + tOffset)) - 0.9;
 #endif
-
 
 #if (MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_LIQUID_OPAQUE) && ENABLE_WAVING_WATER
 	vec4 pos = gl_Vertex;
@@ -86,7 +97,7 @@ void main(void)
 	gl_Position = mWorldViewProj * gl_Vertex;
 #endif
 
-
+	FragPos = gl_Position.xyz;
 	vPosition = gl_Position.xyz;
 	worldPosition = (mWorld * gl_Vertex).xyz;
 
@@ -96,9 +107,14 @@ void main(void)
 		area_enable_parallax = 0.0;
 	}
 
-	vec3 sunPosition = vec3 (0.0, eyePosition.y * BS + 900.0, 0.0);
+	normal = (gl_NormalMatrix * gl_Normal);
+	tangent = (gl_NormalMatrix * gl_MultiTexCoord1.xyz);
+	binormal = (gl_NormalMatrix * gl_MultiTexCoord2.xyz);
 
-	vec3 normal, tangent, binormal;
+	lightVec = vec3 (0.0, eyePosition.y * BS + 900.0, 0.0) - worldPosition;
+
+	eyeVec = -(gl_ModelViewMatrix * gl_Vertex).xyz;
+
 	normal = normalize(gl_NormalMatrix * gl_Normal);
 	tangent = normalize(gl_NormalMatrix * gl_MultiTexCoord1.xyz);
 	binormal = normalize(gl_NormalMatrix * gl_MultiTexCoord2.xyz);
@@ -116,6 +132,8 @@ void main(void)
 	v.y = dot(eyeVec, binormal);
 	v.z = dot(eyeVec, normal);
 	tsEyeVec = normalize (v);
+
+	sDepth = -(mWorldViewProj * gl_Vertex).z; // cameraFar;
 
 	vec4 color;
 	float day = gl_Color.r;
@@ -144,4 +162,5 @@ void main(void)
 
 	color.a = gl_Color.a;
 	gl_FrontColor = gl_BackColor = clamp(color,0.0,1.0);
+
 }

@@ -1,24 +1,41 @@
 uniform sampler2D baseTexture;
 uniform sampler2D normalTexture;
 uniform sampler2D textureFlags;
+uniform sampler2D specialTexture;
 
 uniform vec4 skyBgColor;
 uniform float fogDistance;
 uniform vec3 eyePosition;
 
 varying vec3 vPosition;
+varying vec3 FragPos;
+
 varying vec3 worldPosition;
+varying vec3 sunPosition;
 varying float area_enable_parallax;
 
 varying vec3 eyeVec;
 varying vec3 tsEyeVec;
 varying vec3 lightVec;
 varying vec3 tsLightVec;
+varying vec3 normal;
+varying vec3 tangent;
+varying vec3 binormal;
+varying float sDepth;
+
 
 bool normalTexturePresent = false;
 
 const float e = 2.718281828459;
 const float BS = 10.0;
+
+float linearizeDepth(float depth)
+{
+	float NEAR = 1.0;
+	float FAR = 20000.0;
+	depth = depth * 2.0 - 1.0;
+	return  (-NEAR * FAR) / (depth * (FAR - NEAR) -FAR);
+}
 
 void get_texture_flags()
 {
@@ -92,7 +109,9 @@ void main(void)
 	vec2 uv = gl_TexCoord[0].st;
 	bool use_normalmap = false;
 	get_texture_flags();
+	mat3 tangentToView = mat3(normalize(tangent), normalize(binormal), normalize(normal));
 
+    vec3 screenNormal = vec3(1.0);
 #ifdef ENABLE_PARALLAX_OCCLUSION
 	vec2 eyeRay = vec2 (tsEyeVec.x, -tsEyeVec.y);
 	const float scale = PARALLAX_OCCLUSION_SCALE / PARALLAX_OCCLUSION_ITERATIONS;
@@ -152,7 +171,7 @@ void main(void)
 		vec3 E = normalize(eyeVec);
 		float specular = pow(clamp(dot(reflect(L, bump.xyz), E), 0.0, 1.0), 1.0);
 		float diffuse = dot(-E,bump.xyz);
-		color = (diffuse + 0.1 * specular) * base.rgb;
+		color = (diffuse + 0.2 * specular) * base.rgb;
 	} else {
 		color = base.rgb;
 	}
@@ -168,7 +187,7 @@ void main(void)
 		float d = max(0.0, min(vPosition.z / fogDistance * 1.5 - 0.6, 1.0));
 		alpha = mix(alpha, 0.0, d);
 	}
-	gl_FragColor = vec4(col.rgb, alpha);
+	gl_FragData[0] = vec4(col.rgb, alpha);
 #else
 	vec4 col = vec4(color.rgb, base.a);
 	col *= gl_Color;
@@ -176,6 +195,11 @@ void main(void)
 		float d = max(0.0, min(vPosition.z / fogDistance * 1.5 - 0.6, 1.0));
 		col = mix(col, skyBgColor, d);
 	}
-	gl_FragColor = vec4(col.rgb, base.a);
+	gl_FragData[0] = vec4(col.rgb, base.a);
 #endif
+
+	float depth = linearizeDepth(gl_FragCoord.z);
+	gl_FragData[1] = vec4(depth / 2450.0);
+	//gl_FragData[1] = vec4(1.0 - sDepth,1.0 - sDepth,1.0 - sDepth, 1.0);
+	gl_FragData[2] = vec4(normal, 1.0);
 }

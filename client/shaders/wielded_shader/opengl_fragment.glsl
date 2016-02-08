@@ -10,7 +10,13 @@ varying vec3 vPosition;
 varying vec3 worldPosition;
 
 varying vec3 eyeVec;
+varying vec3 tsEyeVec;
 varying vec3 lightVec;
+varying vec3 tsLightVec;
+varying vec3 normal;
+varying vec3 tangent;
+varying vec3 binormal;
+varying float sDepth;
 
 bool normalTexturePresent = false;
 bool texTileableHorizontal = false;
@@ -110,5 +116,7 @@ void main(void)
 		float d = max(0.0, min(vPosition.z / fogDistance * 1.5 - 0.6, 1.0));
 		col = mix(col, skyBgColor, d);
 	}
-	gl_FragColor = vec4(col.rgb, base.a);
+	gl_FragData[0] = vec4(col.rgb, base.a);
+	gl_FragData[1] = vec4(sDepth, sDepth, sDepth, 1.0);
+	gl_FragData[2] = vec4(normal, 1.0);
 }

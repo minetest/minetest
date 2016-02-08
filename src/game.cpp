@@ -40,8 +40,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiPasswordChange.h"
 #include "guiVolumeChange.h"
 #include "hud.h"
+#include "irrpp/irrPP.h"
 #include "mainmenumanager.h"
 #include "mapblock.h"
+#include "minimap.h"
+#include "mrt.h"
 #include "nodedef.h"         // Needed for determining pointing to nodes
 #include "nodemetadata.h"
 #include "particles.h"
@@ -51,14 +54,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "shader.h"          // For ShaderSource
 #include "sky.h"
+#include "sound.h"
 #include "subgame.h"
 #include "tool.h"
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
 #include "version.h"
-#include "minimap.h"
-
-#include "sound.h"
 
 #if USE_SOUND
 	#include "sound_openal.h"
@@ -873,15 +874,19 @@ public:
 		int layer0 = 0;
 		int layer1 = 1;
 		int layer2 = 2;
+		int layer3 = 3;
+
 		// before 1.8 there isn't a "integer interface", only float
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
 		services->setPixelShaderConstant("baseTexture" , (irr::f32 *)&layer0, 1);
 		services->setPixelShaderConstant("normalTexture" , (irr::f32 *)&layer1, 1);
 		services->setPixelShaderConstant("textureFlags" , (irr::f32 *)&layer2, 1);
+		services->setPixelShaderConstant("specialTexture" , (irr::f32 *)&layer3, 1);
 #else
 		services->setPixelShaderConstant("baseTexture" , (irr::s32 *)&layer0, 1);
 		services->setPixelShaderConstant("normalTexture" , (irr::s32 *)&layer1, 1);
 		services->setPixelShaderConstant("textureFlags" , (irr::s32 *)&layer2, 1);
+		services->setPixelShaderConstant("specialTexture" , (irr::s32 *)&layer3, 1);
 #endif
 	}
 };
@@ -1586,6 +1591,9 @@ private:
 	Hud *hud;
 	Mapper *mapper;
 
+	video::irrPP *irrPP;
+	Mrt *mrt;
+
 	/* 'cache'
 	   This class does take ownership/responsibily for cleaning up etc of any of
 	   these items (e.g. device)
@@ -1795,6 +1803,69 @@ void Game::run()
 	flags.invert_mouse = g_settings->getBool("invert_mouse");
 	flags.first_loop_after_window_activation = true;
 
+	std::string pp_shaders_path = std::string("client") + DIR_DELIM
+				+ "shaders" + DIR_DELIM
+				+ "postprocess" + DIR_DELIM;
+
+	//if (g_settings->getBool("enable_shaders")
+
+
+	irrPP = createIrrPP(device, camera, video::EPQ_FULL, pp_shaders_path.c_str());
+	mrt = new Mrt(device);
+
+	bool enable_fxaa = g_settings->getBool("enable_fxaa");
+	bool enable_bloom = g_settings->getBool("enable_bloom");
+	bool enable_cel = g_settings->getBool("enable_cel");
+	bool enable_tonemapping = g_settings->getBool("enable_tonemapping");
+	bool enable_dof = g_settings->getBool("enable_dof");
+
+	irr::video::CPostProcessingEffectChain* pp = irrPP->createEffectChain();
+
+	if (enable_cel) {
+		irr::video::CPostProcessingEffect* cel =
+			irrPP->createEffect(video::EPE_CEL);
+		cel->addTextureToShader(mrt->getDepthRTT());
+		cel->addTextureToShader(mrt->getNormalRTT());
+		pp->attachEffect(cel);
+		pp->createEffect(video::EPE_MUL2)->addTextureToShader(mrt->getColorRTT());
+	}
+
+	if (enable_dof) {
+		irr::video::CPostProcessingEffectChain* dof =
+			irrPP->createEffectChain();
+		dof->setKeepOriginalRender(true);
+		dof->createEffect(video::EPE_BLUR_V_MEDIUM);
+		dof->createEffect(video::EPE_BLUR_H_MEDIUM);
+		irr::video::CPostProcessingEffect* dofEff =
+			irrPP->createEffect(video::EPE_DOF);	
+		dofEff->addTextureToShader(dof->getOriginalRender());
+		dofEff->addTextureToShader(mrt->getDepthRTT());
+		dof->attachEffect(dofEff);		
+	}
+
+    if (enable_bloom) {
+    irr::video::CPostProcessingEffectChain* bloom = irrPP->createEffectChain();
+    bloom->setKeepOriginalRender(true);
+    bloom->createEffect(video::EPE_BLOOM_PREPASS)->setQuality(video::EPQ_HALF);
+    bloom->createEffect(video::EPE_BLUR_V_HIGH)->setQuality(video::EPQ_HALF);
+    bloom->createEffect(video::EPE_BLUR_H_HIGH)->setQuality(video::EPQ_HALF);
+    bloom->createEffect(video::EPE_ADD2)->addTextureToShader(bloom->getOriginalRender());
+	}
+
+	if (enable_fxaa) {
+		pp->createEffect(video::EPE_FXAA);
+	}
+
+	if (enable_tonemapping) {
+		pp->createEffect(video::EPE_UC2_TONEMAP);
+	}
+
+	u32 effect_count = pp->getActiveEffectCount();
+	if (effect_count == 0)
+		pp->createEffect(video::EPE_ALBEDO);
+	
+	//ssao->addTextureToShader(texture_src->getTexture("ssao_random_normal.png")); 
+	
 	/* Clear the profiler */
 	Profiler::GraphValues dummyvalues;
 	g_profiler->graphGet(dummyvalues);
@@ -4093,7 +4164,7 @@ void Game::updateFrame(std::vector<aabb3f> &highlight_boxes,
 		stats->beginscenetime = timer.stop(true);
 	}
 
-	draw_scene(driver, smgr, *camera, *client, player, *hud, *mapper,
+	draw_scene(driver, smgr, *camera, *client, player, *hud, *mapper, *mrt, *irrPP,
 			guienv,	highlight_boxes, screensize, skycolor, flags.show_hud,
 			flags.show_minimap);
 

@@ -404,99 +404,17 @@ void draw_top_bottom_3d_mode(Camera& camera, bool show_hud,
 	camera.getCameraNode()->setTarget(oldTarget);
 }
 
-void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
-		Hud& hud, std::vector<aabb3f> hilightboxes, video::IVideoDriver* driver,
-		scene::ISceneManager* smgr, const v2u32& screensize,
-		bool draw_wield_tool, Client& client, gui::IGUIEnvironment* guienv,
-		video::SColor skycolor)
-{
-	/* preserve old setup*/
-	irr::core::vector3df oldPosition = camera.getCameraNode()->getPosition();
-	irr::core::vector3df oldTarget   = camera.getCameraNode()->getTarget();
-
-	irr::core::matrix4 startMatrix =
-			camera.getCameraNode()->getAbsoluteTransformation();
-	irr::core::vector3df focusPoint = (camera.getCameraNode()->getTarget()
-			- camera.getCameraNode()->getAbsolutePosition()).setLength(1)
-			+ camera.getCameraNode()->getAbsolutePosition();
-
-	//Left eye...
-	driver->setRenderTarget(irr::video::ERT_STEREO_LEFT_BUFFER);
-
-	irr::core::vector3df leftEye;
-	irr::core::matrix4 leftMove;
-	leftMove.setTranslation(
-			irr::core::vector3df(-g_settings->getFloat("3d_paralax_strength"),
-					0.0f, 0.0f));
-	leftEye = (startMatrix * leftMove).getTranslation();
-
-	//clear the depth buffer, and color
-	driver->beginScene(true, true, irr::video::SColor(200, 200, 200, 255));
-	camera.getCameraNode()->setPosition(leftEye);
-	camera.getCameraNode()->setTarget(focusPoint);
-	smgr->drawAll();
-	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-
-	if (show_hud) {
-		draw_selectionbox(driver, hud, hilightboxes, show_hud);
-
-		if (draw_wield_tool)
-			camera.drawWieldedTool(&leftMove);
-
-		hud.drawHotbar(client.getPlayerItem());
-		hud.drawLuaElements(camera.getOffset());
-	}
-
-	guienv->drawAll();
-
-	//Right eye...
-	driver->setRenderTarget(irr::video::ERT_STEREO_RIGHT_BUFFER);
-
-	irr::core::vector3df rightEye;
-	irr::core::matrix4 rightMove;
-	rightMove.setTranslation(
-			irr::core::vector3df(g_settings->getFloat("3d_paralax_strength"),
-					0.0f, 0.0f));
-	rightEye = (startMatrix * rightMove).getTranslation();
-
-	//clear the depth buffer, and color
-	driver->beginScene(true, true, irr::video::SColor(200, 200, 200, 255));
-	camera.getCameraNode()->setPosition(rightEye);
-	camera.getCameraNode()->setTarget(focusPoint);
-	smgr->drawAll();
-	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-
-	if (show_hud) {
-		draw_selectionbox(driver, hud, hilightboxes, show_hud);
-
-		if (draw_wield_tool)
-			camera.drawWieldedTool(&rightMove);
-
-		hud.drawHotbar(client.getPlayerItem());
-		hud.drawLuaElements(camera.getOffset());
-	}
-
-	guienv->drawAll();
-
-	camera.getCameraNode()->setPosition(oldPosition);
-	camera.getCameraNode()->setTarget(oldTarget);
-}
-
 void draw_plain(Camera& camera, bool show_hud, Hud& hud,
 		std::vector<aabb3f> hilightboxes, video::IVideoDriver* driver,
 		bool draw_wield_tool, Client& client, gui::IGUIEnvironment* guienv)
 {
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-
 	draw_selectionbox(driver, hud, hilightboxes, show_hud);
-
-	if(draw_wield_tool)
-		camera.drawWieldedTool();
 }
 
 void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
 		Camera &camera, Client& client, LocalPlayer *player, Hud &hud,
-		Mapper &mapper, gui::IGUIEnvironment *guienv,
+		Mapper &mapper, Mrt &mrt, video::irrPP &irrPP, gui::IGUIEnvironment *guienv,
 		std::vector<aabb3f> hilightboxes, const v2u32 &screensize,
 		video::SColor skycolor, bool show_hud, bool show_minimap)
 {
@@ -518,8 +436,7 @@ void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
 
 	std::string draw_mode = g_settings->get("3d_mode");
 
-	smgr->drawAll();
-
+	
 	if (draw_mode == "anaglyph")
 	{
 		draw_anaglyph_3d_mode(camera, show_hud, hud, hilightboxes, driver,
@@ -544,16 +461,33 @@ void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
 				smgr, screensize, draw_wield_tool, client, guienv, skycolor);
 		show_hud = false;
 	}
-	else if (draw_mode == "pageflip")
-	{
-		draw_pageflip_3d_mode(camera, show_hud, hud, hilightboxes, driver,
-				smgr, screensize, draw_wield_tool, client, guienv, skycolor);
-		draw_crosshair = false;
-		show_hud = false;
-	}
 	else {
-		draw_plain(camera, show_hud, hud, hilightboxes, driver,
+	
+	mrt.updateMRT();
+	mrt.setRenderTarget(irr::video::SColor(255, skycolor.getRed(), skycolor.getGreen(), skycolor.getBlue()));
+
+	draw_plain(camera, show_hud, hud, hilightboxes, driver,
 				draw_wield_tool, client, guienv);
+
+	smgr->drawAll();
+	
+	/*
+	driver->setRenderTarget(0);
+	driver->draw2DImage(mrt.getColorRTT(), irr::core::position2d<s32>(0,0),
+                irr::core::rect<s32>(0,0,screensize.X,screensize.Y), 0,
+                video::SColor(255,255,255,255), true);
+	draw2DImageFilterScaled(driver, mrt.getNormalRTT(),
+			irr::core::rect<s32>(0, 0, 320, 240),
+			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0, false);
+	draw2DImageFilterScaled(driver, mrt.getDepthRTT(),
+			irr::core::rect<s32>(0, 250, 320, 240+250),
+			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0, false);
+	*/	
+
+	irrPP.render(mrt.getColorRTT());
+	
+	if(draw_wield_tool)
+		camera.drawWieldedTool();
 	}
 
 	/*
@@ -562,7 +496,8 @@ void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
 	{
 		client.getEnv().getClientMap().renderPostFx(camera.getCameraMode());
 	}
-
+	
+	
 	//TODO how to make those 3d too
 	if (show_hud)
 	{

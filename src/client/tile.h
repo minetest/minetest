@@ -179,13 +179,15 @@ struct FrameSpec
 		texture_id(0),
 		texture(NULL),
 		normal_texture(NULL),
-		flags_texture(NULL)
+		flags_texture(NULL),
+		special_texture(NULL)
 	{
 	}
 	u32 texture_id;
 	video::ITexture *texture;
 	video::ITexture *normal_texture;
 	video::ITexture *flags_texture;
+	video::ITexture *special_texture;
 };
 
 struct TileSpec
@@ -195,6 +197,7 @@ struct TileSpec
 		texture(NULL),
 		normal_texture(NULL),
 		flags_texture(NULL),
+		special_texture(NULL),
 		alpha(255),
 		material_type(TILE_MATERIAL_BASIC),
 		material_flags(
@@ -276,6 +279,7 @@ struct TileSpec
 	video::ITexture *texture;
 	video::ITexture *normal_texture;
 	video::ITexture *flags_texture;
+	video::ITexture *special_texture;
 	
 	// Vertex alpha (when MATERIAL_ALPHA_VERTEX is used)
 	u8 alpha;
