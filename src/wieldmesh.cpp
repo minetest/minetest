@@ -452,11 +452,8 @@ scene::IMesh *getItemMesh(IGameDef *gamedef, const ItemStack &item)
 
 	scene::IMesh *mesh;
 
-	// If wield_image is defined, it overrides everything else
-	if (def.wield_image != "") {
-		mesh = getExtrudedMesh(tsrc, def.wield_image);
-		return mesh;
-	} else if (def.inventory_image != "") {
+	// If inventory_image is defined, it overrides everything else
+	if (def.inventory_image != "") {
 		mesh = getExtrudedMesh(tsrc, def.inventory_image);
 		return mesh;
 	} else if (def.type == ITEM_NODE) {
