@@ -354,6 +354,7 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	m_active_block_interval_overload_skip(0),
 	m_game_time(0),
 	m_game_time_fraction_counter(0),
+	m_last_clear_objects_time(0),
 	m_recommended_send_interval(0.1),
 	m_max_lag_estimate(0.1)
 {
@@ -503,6 +504,7 @@ void ServerEnvironment::saveMeta()
 	Settings args;
 	args.setU64("game_time", m_game_time);
 	args.setU64("time_of_day", getTimeOfDay());
+	args.setU64("last_clear_objects_time", m_last_clear_objects_time);
 	args.writeLines(ss);
 	ss<<"EnvArgsEnd\n";
 
@@ -545,6 +547,13 @@ void ServerEnvironment::loadMeta()
 	} catch (SettingNotFoundException &e) {
 		// This is not as important
 		setTimeOfDay(9000);
+	}
+
+	try {
+		m_last_clear_objects_time = args.getU64("last_clear_objects_time");
+	} catch (SettingNotFoundException &e) {
+		// If missing, do as if clearObjects was never called
+		m_last_clear_objects_time = 0;
 	}
 }
 
@@ -739,12 +748,18 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	// Get time difference
 	u32 dtime_s = 0;
 	u32 stamp = block->getTimestamp();
-	if(m_game_time > stamp && stamp != BLOCK_TIMESTAMP_UNDEFINED)
-		dtime_s = m_game_time - block->getTimestamp();
+	if (m_game_time > stamp && stamp != BLOCK_TIMESTAMP_UNDEFINED)
+		dtime_s = m_game_time - stamp;
 	dtime_s += additional_dtime;
 
 	/*infostream<<"ServerEnvironment::activateBlock(): block timestamp: "
 			<<stamp<<", game time: "<<m_game_time<<std::endl;*/
+
+	// Remove stored static objects if clearObjects was called since block's timestamp
+	if (stamp == BLOCK_TIMESTAMP_UNDEFINED || stamp < m_last_clear_objects_time) {
+		block->m_static_objects.m_stored.clear();
+		// do not set changed flag to avoid unnecessary mapblock writes
+	}
 
 	// Set current time as timestamp
 	block->setTimestampNoChangedFlag(m_game_time);
@@ -858,22 +873,22 @@ void ServerEnvironment::getObjectsInsideRadius(std::vector<u16> &objects, v3f po
 	}
 }
 
-void ServerEnvironment::clearAllObjects()
+void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 {
-	infostream<<"ServerEnvironment::clearAllObjects(): "
-			<<"Removing all active objects"<<std::endl;
+	infostream << "ServerEnvironment::clearObjects(): "
+		<< "Removing all active objects" << std::endl;
 	std::vector<u16> objects_to_remove;
-	for(std::map<u16, ServerActiveObject*>::iterator
+	for (std::map<u16, ServerActiveObject*>::iterator
 			i = m_active_objects.begin();
 			i != m_active_objects.end(); ++i) {
 		ServerActiveObject* obj = i->second;
-		if(obj->getType() == ACTIVEOBJECT_TYPE_PLAYER)
+		if (obj->getType() == ACTIVEOBJECT_TYPE_PLAYER)
 			continue;
 		u16 id = i->first;
 		// Delete static object if block is loaded
-		if(obj->m_static_exists){
+		if (obj->m_static_exists) {
 			MapBlock *block = m_map->getBlockNoCreateNoEx(obj->m_static_block);
-			if(block){
+			if (block) {
 				block->m_static_objects.remove(id);
 				block->raiseModified(MOD_STATE_WRITE_NEEDED,
 						MOD_REASON_CLEAR_ALL_OBJECTS);
@@ -881,7 +896,7 @@ void ServerEnvironment::clearAllObjects()
 			}
 		}
 		// If known by some client, don't delete immediately
-		if(obj->m_known_by_count > 0){
+		if (obj->m_known_by_count > 0) {
 			obj->m_pending_deactivation = true;
 			obj->m_removed = true;
 			continue;
@@ -893,39 +908,46 @@ void ServerEnvironment::clearAllObjects()
 		m_script->removeObjectReference(obj);
 
 		// Delete active object
-		if(obj->environmentDeletes())
+		if (obj->environmentDeletes())
 			delete obj;
 		// Id to be removed from m_active_objects
 		objects_to_remove.push_back(id);
 	}
 
 	// Remove references from m_active_objects
-	for(std::vector<u16>::iterator i = objects_to_remove.begin();
+	for (std::vector<u16>::iterator i = objects_to_remove.begin();
 			i != objects_to_remove.end(); ++i) {
 		m_active_objects.erase(*i);
 	}
 
 	// Get list of loaded blocks
 	std::vector<v3s16> loaded_blocks;
-	infostream<<"ServerEnvironment::clearAllObjects(): "
-			<<"Listing all loaded blocks"<<std::endl;
+	infostream << "ServerEnvironment::clearObjects(): "
+		<< "Listing all loaded blocks" << std::endl;
 	m_map->listAllLoadedBlocks(loaded_blocks);
-	infostream<<"ServerEnvironment::clearAllObjects(): "
-			<<"Done listing all loaded blocks: "
-			<<loaded_blocks.size()<<std::endl;
+	infostream << "ServerEnvironment::clearObjects(): "
+		<< "Done listing all loaded blocks: "
+		<< loaded_blocks.size()<<std::endl;
 
 	// Get list of loadable blocks
 	std::vector<v3s16> loadable_blocks;
-	infostream<<"ServerEnvironment::clearAllObjects(): "
-			<<"Listing all loadable blocks"<<std::endl;
-	m_map->listAllLoadableBlocks(loadable_blocks);
-	infostream<<"ServerEnvironment::clearAllObjects(): "
-			<<"Done listing all loadable blocks: "
-			<<loadable_blocks.size()
-			<<", now clearing"<<std::endl;
+	if (mode == CLEAR_OBJECTS_MODE_FULL) {
+		infostream << "ServerEnvironment::clearObjects(): "
+			<< "Listing all loadable blocks" << std::endl;
+		m_map->listAllLoadableBlocks(loadable_blocks);
+		infostream << "ServerEnvironment::clearObjects(): "
+			<< "Done listing all loadable blocks: "
+			<< loadable_blocks.size() << std::endl;
+	} else {
+		loadable_blocks = loaded_blocks;
+	}
+
+	infostream << "ServerEnvironment::clearObjects(): "
+		<< "Now clearing objects in " << loadable_blocks.size()
+		<< " blocks" << std::endl;
 
 	// Grab a reference on each loaded block to avoid unloading it
-	for(std::vector<v3s16>::iterator i = loaded_blocks.begin();
+	for (std::vector<v3s16>::iterator i = loaded_blocks.begin();
 			i != loaded_blocks.end(); ++i) {
 		v3s16 p = *i;
 		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
@@ -934,24 +956,27 @@ void ServerEnvironment::clearAllObjects()
 	}
 
 	// Remove objects in all loadable blocks
-	u32 unload_interval = g_settings->getS32("max_clearobjects_extra_loaded_blocks");
-	unload_interval = MYMAX(unload_interval, 1);
+	u32 unload_interval = U32_MAX;
+	if (mode == CLEAR_OBJECTS_MODE_FULL) {
+		unload_interval = g_settings->getS32("max_clearobjects_extra_loaded_blocks");
+		unload_interval = MYMAX(unload_interval, 1);
+	}
 	u32 report_interval = loadable_blocks.size() / 10;
 	u32 num_blocks_checked = 0;
 	u32 num_blocks_cleared = 0;
 	u32 num_objs_cleared = 0;
-	for(std::vector<v3s16>::iterator i = loadable_blocks.begin();
+	for (std::vector<v3s16>::iterator i = loadable_blocks.begin();
 			i != loadable_blocks.end(); ++i) {
 		v3s16 p = *i;
 		MapBlock *block = m_map->emergeBlock(p, false);
-		if(!block){
-			errorstream<<"ServerEnvironment::clearAllObjects(): "
-					<<"Failed to emerge block "<<PP(p)<<std::endl;
+		if (!block) {
+			errorstream << "ServerEnvironment::clearObjects(): "
+				<< "Failed to emerge block " << PP(p) << std::endl;
 			continue;
 		}
 		u32 num_stored = block->m_static_objects.m_stored.size();
 		u32 num_active = block->m_static_objects.m_active.size();
-		if(num_stored != 0 || num_active != 0){
+		if (num_stored != 0 || num_active != 0) {
 			block->m_static_objects.m_stored.clear();
 			block->m_static_objects.m_active.clear();
 			block->raiseModified(MOD_STATE_WRITE_NEEDED,
@@ -961,23 +986,23 @@ void ServerEnvironment::clearAllObjects()
 		}
 		num_blocks_checked++;
 
-		if(report_interval != 0 &&
-				num_blocks_checked % report_interval == 0){
+		if (report_interval != 0 &&
+				num_blocks_checked % report_interval == 0) {
 			float percent = 100.0 * (float)num_blocks_checked /
-					loadable_blocks.size();
-			infostream<<"ServerEnvironment::clearAllObjects(): "
-					<<"Cleared "<<num_objs_cleared<<" objects"
-					<<" in "<<num_blocks_cleared<<" blocks ("
-					<<percent<<"%)"<<std::endl;
+				loadable_blocks.size();
+			infostream << "ServerEnvironment::clearObjects(): "
+				<< "Cleared " << num_objs_cleared << " objects"
+				<< " in " << num_blocks_cleared << " blocks ("
+				<< percent << "%)" << std::endl;
 		}
-		if(num_blocks_checked % unload_interval == 0){
+		if (num_blocks_checked % unload_interval == 0) {
 			m_map->unloadUnreferencedBlocks();
 		}
 	}
 	m_map->unloadUnreferencedBlocks();
 
 	// Drop references that were added above
-	for(std::vector<v3s16>::iterator i = loaded_blocks.begin();
+	for (std::vector<v3s16>::iterator i = loaded_blocks.begin();
 			i != loaded_blocks.end(); ++i) {
 		v3s16 p = *i;
 		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
@@ -985,9 +1010,11 @@ void ServerEnvironment::clearAllObjects()
 		block->refDrop();
 	}
 
-	infostream<<"ServerEnvironment::clearAllObjects(): "
-			<<"Finished: Cleared "<<num_objs_cleared<<" objects"
-			<<" in "<<num_blocks_cleared<<" blocks"<<std::endl;
+	m_last_clear_objects_time = m_game_time;
+
+	infostream << "ServerEnvironment::clearObjects(): "
+		<< "Finished: Cleared " << num_objs_cleared << " objects"
+		<< " in " << num_blocks_cleared << " blocks" << std::endl;
 }
 
 void ServerEnvironment::step(float dtime)
