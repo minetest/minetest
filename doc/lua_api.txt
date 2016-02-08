@@ -2046,8 +2046,12 @@ and `minetest.auth_reload` call the authetification handler.
 * `minetest.generate_decorations(vm, pos1, pos2)`
     * Generate all registered decorations within the VoxelManip `vm` and in the area from `pos1` to `pos2`.
     * `pos1` and `pos2` are optional and default to mapchunk minp and maxp.
-* `minetest.clear_objects()`
-    * clear all objects in the environments
+* `minetest.clear_objects([options])`
+    * Clear all objects in the environment
+    * Takes an optional table as an argument with the field `mode`.
+        * mode = `"full"`: Load and go through every mapblock, clearing objects (default).
+        * mode = `"quick"`: Clear objects immediately in loaded mapblocks;
+          clear objects in unloaded mapblocks only when the mapblocks are next activated.
 * `minetest.emerge_area(pos1, pos2, [callback], [param])`
     * Queue all blocks in the area from `pos1` to `pos2`, inclusive, to be asynchronously
     * fetched from memory, loaded from disk, or if inexistent, generates them.
