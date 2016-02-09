@@ -139,36 +139,53 @@ class GUIFormSpecMenu : public GUIModalMenu
 
 	struct ImageDrawSpec
 	{
-		ImageDrawSpec()
+		ImageDrawSpec():
+			parent_button(NULL)
+		{
+		}
+		ImageDrawSpec(const std::string &a_name,
+				const std::string &a_item_name,
+				gui::IGUIButton *a_parent_button,
+				const v2s32 &a_pos, const v2s32 &a_geom):
+			name(a_name),
+			item_name(a_item_name),
+			parent_button(a_parent_button),
+			pos(a_pos),
+			geom(a_geom),
+			scale(true)
 		{
 		}
 		ImageDrawSpec(const std::string &a_name,
 				const std::string &a_item_name,
 				const v2s32 &a_pos, const v2s32 &a_geom):
 			name(a_name),
-			item_name (a_item_name),
+			item_name(a_item_name),
+			parent_button(NULL),
 			pos(a_pos),
-			geom(a_geom)
+			geom(a_geom),
+			scale(true)
 		{
-			scale = true;
 		}
 		ImageDrawSpec(const std::string &a_name,
 				const v2s32 &a_pos, const v2s32 &a_geom):
 			name(a_name),
+			parent_button(NULL),
 			pos(a_pos),
-			geom(a_geom)
+			geom(a_geom),
+			scale(true)
 		{
-			scale = true;
 		}
 		ImageDrawSpec(const std::string &a_name,
 				const v2s32 &a_pos):
 			name(a_name),
-			pos(a_pos)
+			parent_button(NULL),
+			pos(a_pos),
+			scale(false)
 		{
-			scale = false;
 		}
 		std::string name;
 		std::string item_name;
+		gui::IGUIButton *parent_button;
 		v2s32 pos;
 		v2s32 geom;
 		bool scale;
@@ -229,17 +246,28 @@ class GUIFormSpecMenu : public GUIModalMenu
 	};
 
 	struct StaticTextSpec {
-		StaticTextSpec()
+		StaticTextSpec():
+			parent_button(NULL)
 		{
 		}
 		StaticTextSpec(const std::wstring &a_text,
 				const core::rect<s32> &a_rect):
 			text(a_text),
-			rect(a_rect)
+			rect(a_rect),
+			parent_button(NULL)
+		{
+		}
+		StaticTextSpec(const std::wstring &a_text,
+				const core::rect<s32> &a_rect,
+				gui::IGUIButton *a_parent_button):
+			text(a_text),
+			rect(a_rect),
+			parent_button(a_parent_button)
 		{
 		}
 		std::wstring text;
 		core::rect<s32> rect;
+		gui::IGUIButton *parent_button;
 	};
 
 public:
