@@ -11,10 +11,11 @@ local register_alias_raw = core.register_alias_raw
 core.register_alias_raw = nil
 
 --
--- Item / entity / ABM registration functions
+-- Item / entity / ABM / LBM registration functions
 --
 
 core.registered_abms = {}
+core.registered_lbms = {}
 core.registered_entities = {}
 core.registered_items = {}
 core.registered_nodes = {}
@@ -76,6 +77,13 @@ end
 function core.register_abm(spec)
 	-- Add to core.registered_abms
 	core.registered_abms[#core.registered_abms + 1] = spec
+	spec.mod_origin = core.get_current_modname() or "??"
+end
+
+function core.register_lbm(spec)
+	-- Add to core.registered_lbms
+	check_modname_prefix(spec.name)
+	core.registered_lbms[#core.registered_lbms + 1] = spec
 	spec.mod_origin = core.get_current_modname() or "??"
 end
 

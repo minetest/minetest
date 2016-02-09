@@ -139,7 +139,7 @@ private:
 };
 
 /*
-	Active block modifier interface.
+	{Active, Loading} block modifier interface.
 
 	These are fed into ServerEnvironment at initialization time;
 	ServerEnvironment handles deleting them.
@@ -175,6 +175,77 @@ struct ABMWithState
 	float timer;
 
 	ABMWithState(ActiveBlockModifier *abm_);
+};
+
+struct LoadingBlockModifierDef
+{
+	// Set of contents to trigger on
+	std::set<std::string> trigger_contents;
+	std::string name;
+	bool run_at_every_load;
+
+	virtual ~LoadingBlockModifierDef() {}
+	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n){};
+};
+
+struct LBMContentMapping
+{
+	typedef std::map<content_t, std::vector<LoadingBlockModifierDef *> > container_map;
+	container_map map;
+
+	std::vector<LoadingBlockModifierDef *> lbm_list;
+
+	// Needs to be separate method (not inside destructor),
+	// because the LBMContentMapping may be copied and destructed
+	// many times during operation in the lbm_lookup_map.
+	void deleteContents();
+	void addLBM(LoadingBlockModifierDef *lbm_def, IGameDef *gamedef);
+	const std::vector<LoadingBlockModifierDef *> *lookup(content_t c) const;
+};
+
+class LBMManager
+{
+public:
+	LBMManager():
+		m_query_mode(false)
+	{}
+
+	~LBMManager();
+
+	// Don't call this after loadIntroductionTimes() ran.
+	void addLBMDef(LoadingBlockModifierDef *lbm_def);
+
+	void loadIntroductionTimes(const std::string &times,
+		IGameDef *gamedef, u32 now);
+
+	// Don't call this before loadIntroductionTimes() ran.
+	std::string createIntroductionTimesString();
+
+	// Don't call this before loadIntroductionTimes() ran.
+	void applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp);
+
+	// Warning: do not make this std::unordered_map, order is relevant here
+	typedef std::map<u32, LBMContentMapping> lbm_lookup_map;
+
+private:
+	// Once we set this to true, we can only query,
+	// not modify
+	bool m_query_mode;
+
+	// For m_query_mode == false:
+	// The key of the map is the LBM def's name.
+	// TODO make this std::unordered_map
+	std::map<std::string, LoadingBlockModifierDef *> m_lbm_defs;
+
+	// For m_query_mode == true:
+	// The key of the map is the LBM def's first introduction time.
+	lbm_lookup_map m_lbm_lookup;
+
+	// Returns an iterator to the LBMs that were introduced
+	// after the given time. This is guaranteed to return
+	// valid values for everything
+	lbm_lookup_map::const_iterator getLBMsIntroducedAfter(u32 time)
+	{ return m_lbm_lookup.lower_bound(time); }
 };
 
 /*
@@ -254,6 +325,9 @@ public:
 	*/
 	void saveMeta();
 	void loadMeta();
+	// to be called instead of loadMeta if
+	// env_meta.txt doesn't exist (e.g. new world)
+	void loadDefaultMeta();
 
 	/*
 		External ActiveObject interface
@@ -312,11 +386,12 @@ public:
 	void activateBlock(MapBlock *block, u32 additional_dtime=0);
 
 	/*
-		ActiveBlockModifiers
+		{Active,Loading}BlockModifiers
 		-------------------------------------------
 	*/
 
 	void addActiveBlockModifier(ActiveBlockModifier *abm);
+	void addLoadingBlockModifierDef(LoadingBlockModifierDef *lbm);
 
 	/*
 		Other stuff
@@ -427,6 +502,7 @@ private:
 	u32 m_last_clear_objects_time;
 	// Active block modifiers
 	std::vector<ABMWithState> m_abms;
+	LBMManager m_lbm_mgr;
 	// An interval for generally sending object positions and stuff
 	float m_recommended_send_interval;
 	// Estimate for general maximum lag as determined by server.

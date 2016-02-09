@@ -86,13 +86,12 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 	setEnv(env);
 
 	/*
-		Add ActiveBlockModifiers to environment
+		Add {Loading,Active}BlockModifiers to environment
 	*/
 
 	// Get core.registered_abms
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_abms");
-	luaL_checktype(L, -1, LUA_TTABLE);
 	int registered_abms = lua_gettop(L);
 
 	if(lua_istable(L, registered_abms)){
@@ -154,6 +153,58 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
+	} else {
+		lua_pop(L, 1);
+		throw LuaError("core.registered_abms was not a lua table, as expected.");
+	}
+	lua_pop(L, 1);
+
+	// Get core.registered_lbms
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_lbms");
+	int registered_lbms = lua_gettop(L);
+
+	if (!lua_istable(L, registered_lbms)) {
+		lua_pop(L, 1);
+		throw LuaError("core.registered_lbms was not a lua table, as expected.");
+	}
+
+	lua_pushnil(L);
+	while (lua_next(L, registered_lbms)) {
+		// key at index -2 and value at index -1
+		int id = lua_tonumber(L, -2);
+		int current_lbm = lua_gettop(L);
+
+		std::set<std::string> trigger_contents;
+		lua_getfield(L, current_lbm, "nodenames");
+		if (lua_istable(L, -1)) {
+			int table = lua_gettop(L);
+			lua_pushnil(L);
+			while (lua_next(L, table)) {
+				// key at index -2 and value at index -1
+				luaL_checktype(L, -1, LUA_TSTRING);
+				trigger_contents.insert(lua_tostring(L, -1));
+				// removes value, keeps key for next iteration
+				lua_pop(L, 1);
+			}
+		} else if (lua_isstring(L, -1)) {
+			trigger_contents.insert(lua_tostring(L, -1));
+		}
+		lua_pop(L, 1);
+
+		std::string name;
+		getstringfield(L, current_lbm, "name", name);
+
+		bool run_at_every_load = getboolfield_default(L, current_lbm,
+			"run_at_every_load", false);
+
+		LuaLBM *lbm = new LuaLBM(L, id, trigger_contents, name,
+			run_at_every_load);
+
+		env->addLoadingBlockModifierDef(lbm);
+
+		// removes value, keeps key for next iteration
+		lua_pop(L, 1);
 	}
 	lua_pop(L, 1);
 }

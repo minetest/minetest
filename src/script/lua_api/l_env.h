@@ -220,6 +220,24 @@ public:
 			u32 active_object_count, u32 active_object_count_wider);
 };
 
+class LuaLBM : public LoadingBlockModifierDef
+{
+private:
+	int m_id;
+public:
+	LuaLBM(lua_State *L, int id,
+			const std::set<std::string> &trigger_contents,
+			const std::string &name,
+			bool run_at_every_load):
+		m_id(id)
+	{
+		this->run_at_every_load = run_at_every_load;
+		this->trigger_contents = trigger_contents;
+		this->name = name;
+	}
+	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n);
+};
+
 struct ScriptCallbackState {
 	GameScripting *script;
 	int callback_ref;

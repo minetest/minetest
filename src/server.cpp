@@ -344,10 +344,11 @@ Server::Server(
 	servermap->addEventReceiver(this);
 
 	// If file exists, load environment metadata
-	if(fs::PathExists(m_path_world + DIR_DELIM "env_meta.txt"))
-	{
-		infostream<<"Server: Loading environment metadata"<<std::endl;
+	if (fs::PathExists(m_path_world + DIR_DELIM "env_meta.txt")) {
+		infostream << "Server: Loading environment metadata" << std::endl;
 		m_env->loadMeta();
+	} else {
+		m_env->loadDefaultMeta();
 	}
 
 	// Add some test ActiveBlockModifiers to environment

@@ -299,15 +299,6 @@ inline s32 mystoi(const std::string &str, s32 min, s32 max)
 }
 
 
-/// Returns a 64-bit value represented by the string \p str (decimal).
-inline s64 stoi64(const std::string &str)
-{
-	std::stringstream tmp(str);
-	s64 t;
-	tmp >> t;
-	return t;
-}
-
 // MSVC2010 includes it's own versions of these
 //#if !defined(_MSC_VER) || _MSC_VER < 1600
 
@@ -346,9 +337,22 @@ inline float mystof(const std::string &str)
 #define stoi mystoi
 #define stof mystof
 
+/// Returns a value represented by the string \p val.
+template <typename T>
+inline T from_string(const std::string &str)
+{
+	std::stringstream tmp(str);
+	T t;
+	tmp >> t;
+	return t;
+}
+
+/// Returns a 64-bit signed value represented by the string \p str (decimal).
+inline s64 stoi64(const std::string &str) { return from_string<s64>(str); }
+
 // TODO: Replace with C++11 std::to_string.
 
-/// Returns A string representing the value \p val.
+/// Returns a string representing the value \p val.
 template <typename T>
 inline std::string to_string(T val)
 {

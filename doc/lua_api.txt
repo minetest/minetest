@@ -1793,6 +1793,7 @@ Call these functions only at load time!
 
 * `minetest.register_entity(name, prototype table)`
 * `minetest.register_abm(abm definition)`
+* `minetest.register_lbm(lbm definition)`
 * `minetest.register_node(name, node definition)`
 * `minetest.register_tool(name, item definition)`
 * `minetest.register_craftitem(name, item definition)`
@@ -3303,6 +3304,21 @@ Definition tables
           an area to simulate time lost by the area being unattended.
         ^ Note chance value can often be reduced to 1 ]]
         action = func(pos, node, active_object_count, active_object_count_wider),
+    }
+
+### LBM (LoadingBlockModifier) definition (`register_lbm`)
+
+    {
+        name = "modname:replace_legacy_door",
+        nodenames = {"default:lava_source"},
+    --  ^ List of node names to trigger the LBM on.
+    --    Also non-registered nodes will work.
+    --    Groups (as of group:groupname) will work as well.
+        run_at_every_load = false,
+    --  ^ Whether to run the LBM's action every time a block gets loaded,
+    --    and not just for blocks that were saved last time before LBMs were
+    --    introduced to the world.
+        action = func(pos, node),
     }
 
 ### Item definition (`register_node`, `register_craftitem`, `register_tool`)
