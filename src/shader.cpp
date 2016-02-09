@@ -772,11 +772,11 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 	const c8* pixel_program_ptr = 0;
 	const c8* geometry_program_ptr = 0;
 	if (!vertex_program.empty()) {
-		pixel_program = shaders_header + pixel_program;
+		vertex_program = shaders_header + vertex_program;
 		vertex_program_ptr = vertex_program.c_str();
 	}
 	if (!pixel_program.empty()) {
-		vertex_program = shaders_header + vertex_program;
+		pixel_program = shaders_header + pixel_program;
 		pixel_program_ptr = pixel_program.c_str();
 	}
 	if (!geometry_program.empty()) {
