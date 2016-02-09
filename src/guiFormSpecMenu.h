@@ -228,6 +228,20 @@ class GUIFormSpecMenu : public GUIModalMenu
 		irr::video::SColor color;
 	};
 
+	struct StaticTextSpec {
+		StaticTextSpec()
+		{
+		}
+		StaticTextSpec(const std::wstring &a_text,
+				const core::rect<s32> &a_rect):
+			text(a_text),
+			rect(a_rect)
+		{
+		}
+		std::wstring text;
+		core::rect<s32> rect;
+	};
+
 public:
 	GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 			gui::IGUIElement* parent, s32 id,
@@ -339,6 +353,7 @@ protected:
 	std::vector<ImageDrawSpec> m_itemimages;
 	std::vector<BoxDrawSpec> m_boxes;
 	std::vector<FieldSpec> m_fields;
+	std::vector<StaticTextSpec> m_static_texts;
 	std::vector<std::pair<FieldSpec,GUITable*> > m_tables;
 	std::vector<std::pair<FieldSpec,gui::IGUICheckBox*> > m_checkboxes;
 	std::map<std::string, TooltipSpec> m_tooltips;
