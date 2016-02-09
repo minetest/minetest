@@ -1497,7 +1497,7 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 			258 + m_fields.size()
 		);
 
-		gui::IGUIButton *e = Environment->addButton(rect, this, spec.fid, spec.flabel.c_str());
+		gui::IGUIButton *e = Environment->addButton(rect, this, spec.fid, L"");
 
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
@@ -1515,6 +1515,12 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 		pos.X += stof(v_pos[0]) * (float) spacing.X;
 		pos.Y += stof(v_pos[1]) * (float) spacing.Y;
 		m_itemimages.push_back(ImageDrawSpec("", item_name, pos, geom));
+
+		StaticTextSpec label_spec(
+			utf8_to_wide(label),
+			rect
+		);
+		m_static_texts.push_back(label_spec);
 		return;
 	}
 	errorstream<< "Invalid ItemImagebutton element(" << parts.size() << "): '" << element << "'"  << std::endl;
@@ -1883,6 +1889,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_boxes.clear();
 	m_tooltips.clear();
 	m_inventory_rings.clear();
+	m_static_texts.clear();
 
 	// Set default values (fits old formspec values)
 	m_bgcolor = video::SColor(140,0,0,0);
@@ -2461,6 +2468,15 @@ void GUIFormSpecMenu::drawMenu()
 #ifndef HAVE_TOUCHSCREENGUI
 	m_pointer = m_device->getCursorControl()->getPosition();
 #endif
+
+	/*
+		Draw static text elements
+	*/
+	for (u32 i = 0; i < m_static_texts.size(); i++) {
+		const StaticTextSpec &spec = m_static_texts[i];	
+		video::SColor color(255, 255, 255, 255);
+		m_font->draw(spec.text.c_str(), spec.rect, color, true, true, &spec.rect);
+	}
 
 	/*
 		Draw fields/buttons tooltips
