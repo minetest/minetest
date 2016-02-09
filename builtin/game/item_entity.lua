@@ -14,16 +14,14 @@ end
 -- If item_entity_ttl is not set, enity will have default life time
 -- Setting it to -1 disables the feature
 
-local time_to_live = tonumber(core.setting_get("item_entity_ttl"))
-if not time_to_live then
-	time_to_live = 900
-end
+local time_to_live = tonumber(core.setting_get("item_entity_ttl")) or 900
 
 core.register_entity(":__builtin:item", {
 	initial_properties = {
 		hp_max = 1,
 		physical = true,
 		collide_with_objects = false,
+		makes_footstep_sound = true,
 		collisionbox = {-0.3, -0.3, -0.3, 0.3, 0.3, 0.3},
 		visual = "wielditem",
 		visual_size = {x = 0.4, y = 0.4},
