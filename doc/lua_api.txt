@@ -2153,6 +2153,8 @@ and `minetest.auth_reload` call the authetification handler.
     * Convert a facedir back into a vector aimed directly out the "back" of a node
 * `minetest.dir_to_wallmounted(dir)`
     * Convert a vector to a wallmounted value, used for `paramtype2="wallmounted"`
+* `minetest.wallmounted_to_dir(wallmounted)`
+    * Convert a wallmounted value back into a vector aimed directly out the "back" of a node
 * `minetest.get_node_drops(nodename, toolname)`
     * Returns list of item names.
     * **Note**: This will be removed or modified in a future version.
