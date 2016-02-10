@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/srp.h"
 #include "client.h"
 #include "network/clientopcodes.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "porting.h"
 #include "mapblock_mesh.h"
 #include "mapblock.h"
@@ -813,7 +813,7 @@ void Client::initLocalMapSaving(const Address &address,
 		+ DIR_DELIM + "server_"
 		+ hostname + "_" + to_string(address.getPort());
 
-	fs::CreateAllDirs(world_path);
+	fs::create_directories(world_path);
 
 	m_localdb = new Database_SQLite3(world_path);
 	m_localdb->beginSave();
@@ -1744,7 +1744,7 @@ void Client::afterContentReceived(IrrlichtDevice *device)
 	draw_load_screen(text, device, guienv, 0, 72);
 	m_nodedef->updateAliases(m_itemdef);
 	std::string texture_path = g_settings->get("texture_path");
-	if (texture_path != "" && fs::IsDir(texture_path))
+	if (texture_path != "" && fs::is_directory(texture_path))
 		m_nodedef->applyTextureOverrides(texture_path + DIR_DELIM + "override.txt");
 	m_nodedef->setNodeRegistrationStatus(true);
 	m_nodedef->runNodeResolveCallbacks();

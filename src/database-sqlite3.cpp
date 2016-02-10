@@ -28,7 +28,7 @@ SQLite format specification:
 #include "database-sqlite3.h"
 
 #include "log.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "exceptions.h"
 #include "settings.h"
 #include "porting.h"
@@ -140,14 +140,14 @@ void Database_SQLite3::openDatabase()
 
 	// Open the database connection
 
-	if (!fs::CreateAllDirs(m_savedir)) {
+	if (!fs::create_directories(m_savedir)) {
 		infostream << "Database_SQLite3: Failed to create directory \""
 			<< m_savedir << "\"" << std::endl;
 		throw FileNotGoodException("Failed to create database "
 				"save directory");
 	}
 
-	bool needs_create = !fs::PathExists(dbp);
+	bool needs_create = !fs::exists(dbp);
 
 	SQLOK(sqlite3_open_v2(dbp.c_str(), &m_database,
 			SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL),

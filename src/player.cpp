@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "settings.h"
 #include "content_sao.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "log.h"
 #include "porting.h"  // strlcpy
 
@@ -293,11 +293,11 @@ void RemotePlayer::save(std::string savedir)
 	savedir += DIR_DELIM;
 	std::string path = savedir + m_name;
 	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES; i++) {
-		if (!fs::PathExists(path)) {
+		if (!fs::exists(path)) {
 			// Open file and serialize
-			std::ostringstream ss(std::ios_base::binary);
-			serialize(ss);
-			if (!fs::safeWriteToFile(path, ss.str())) {
+			fs::SafeWriteStream os(path);
+			serialize(os);
+			if (!os.save()) {
 				infostream << "Failed to write " << path << std::endl;
 			}
 			setModified(false);
@@ -313,9 +313,9 @@ void RemotePlayer::save(std::string savedir)
 		is.close();
 		if (strcmp(testplayer.getName(), m_name) == 0) {
 			// Open file and serialize
-			std::ostringstream ss(std::ios_base::binary);
-			serialize(ss);
-			if (!fs::safeWriteToFile(path, ss.str())) {
+			fs::SafeWriteStream os(path);
+			serialize(os);
+			if (!os.save()) {
 				infostream << "Failed to write " << path << std::endl;
 			}
 			setModified(false);

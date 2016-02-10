@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "porting.h"
 #include "constants.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 
 #if USE_FREETYPE
 #include "gettext.h"
@@ -392,7 +392,7 @@ void FontEngine::initSimpleFont(unsigned int basesize, FontMode mode)
 		std::stringstream fontsize_plus_png;
 		fontsize_plus_png << basename << "_" << (size + offset) << ".png";
 
-		if (fs::PathExists(fontsize_plus_png.str())) {
+		if (fs::exists(fontsize_plus_png.str())) {
 			font = m_env->getFont(fontsize_plus_png.str().c_str());
 
 			if (font) {
@@ -404,7 +404,7 @@ void FontEngine::initSimpleFont(unsigned int basesize, FontMode mode)
 		std::stringstream fontsize_plus_xml;
 		fontsize_plus_xml << basename << "_" << (size + offset) << ".xml";
 
-		if (fs::PathExists(fontsize_plus_xml.str())) {
+		if (fs::exists(fontsize_plus_xml.str())) {
 			font = m_env->getFont(fontsize_plus_xml.str().c_str());
 
 			if (font) {
@@ -417,7 +417,7 @@ void FontEngine::initSimpleFont(unsigned int basesize, FontMode mode)
 		std::stringstream fontsize_minus_png;
 		fontsize_minus_png << basename << "_" << (size - offset) << ".png";
 
-		if (fs::PathExists(fontsize_minus_png.str())) {
+		if (fs::exists(fontsize_minus_png.str())) {
 			font = m_env->getFont(fontsize_minus_png.str().c_str());
 
 			if (font) {
@@ -429,7 +429,7 @@ void FontEngine::initSimpleFont(unsigned int basesize, FontMode mode)
 		std::stringstream fontsize_minus_xml;
 		fontsize_minus_xml << basename << "_" << (size - offset) << ".xml";
 
-		if (fs::PathExists(fontsize_minus_xml.str())) {
+		if (fs::exists(fontsize_minus_xml.str())) {
 			font = m_env->getFont(fontsize_minus_xml.str().c_str());
 
 			if (font) {
@@ -441,7 +441,7 @@ void FontEngine::initSimpleFont(unsigned int basesize, FontMode mode)
 
 	// try name direct
 	if (font == NULL) {
-		if (fs::PathExists(font_path)) {
+		if (fs::exists(font_path)) {
 			font = m_env->getFont(font_path.c_str());
 			if (font)
 				verbosestream << "FontEngine: found font: " << font_path << std::endl;

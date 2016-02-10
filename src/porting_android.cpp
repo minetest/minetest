@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting_android.h"
 #include "threading/thread.h"
 #include "config.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "log.h"
 
 #include <sstream>

@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "unittest/test.h"
 #include "server.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "version.h"
 #include "guiMainMenu.h"
 #include "game.h"
@@ -428,15 +428,15 @@ static bool create_userdata_path()
 	bool success;
 
 #ifdef __ANDROID__
-	if (!fs::PathExists(porting::path_user)) {
-		success = fs::CreateDir(porting::path_user);
+	if (!fs::exists(porting::path_user)) {
+		success = fs::create_directory(porting::path_user);
 	} else {
 		success = true;
 	}
 	porting::copyAssets();
 #else
 	// Create user data directory
-	success = fs::CreateDir(porting::path_user);
+	success = fs::create_directory(porting::path_user);
 #endif
 
 	return success;

@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "mapsector.h"
 #include "mapblock.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "voxel.h"
 #include "porting.h"
 #include "serialization.h"
@@ -2153,10 +2153,10 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 	try
 	{
 		// If directory exists, check contents and load if possible
-		if(fs::PathExists(m_savedir))
+		if(fs::exists(m_savedir))
 		{
 			// If directory is empty, it is safe to save into it.
-			if(fs::GetDirListing(m_savedir).size() == 0)
+			if(fs::DirectoryIterator(m_savedir) == fs::DirectoryIterator())
 			{
 				infostream<<"ServerMap: Empty save directory is valid."
 						<<std::endl;
@@ -2798,15 +2798,14 @@ plan_b:
 
 bool ServerMap::loadFromFolders() {
 	if (!dbase->initialized() &&
-			!fs::PathExists(m_savedir + DIR_DELIM + "map.sqlite"))
+			!fs::exists(m_savedir + DIR_DELIM + "map.sqlite"))
 		return true;
 	return false;
 }
 
 void ServerMap::createDirs(std::string path)
 {
-	if(fs::CreateAllDirs(path) == false)
-	{
+	if (!fs::create_directories(path)) {
 		m_dout<<"ServerMap: Failed to create directory "
 				<<"\""<<path<<"\""<<std::endl;
 		throw BaseException("ServerMap failed to create directory");
@@ -2841,7 +2840,7 @@ v2s16 ServerMap::getSectorPos(std::string dirname)
 	unsigned int x = 0, y = 0;
 	int r;
 	std::string component;
-	fs::RemoveLastPathComponent(dirname, &component, 1);
+	fs::remove_path_components(dirname, &component, 1);
 	if(component.size() == 8)
 	{
 		// Old layout
@@ -2850,7 +2849,7 @@ v2s16 ServerMap::getSectorPos(std::string dirname)
 	else if(component.size() == 3)
 	{
 		// New layout
-		fs::RemoveLastPathComponent(dirname, &component, 2);
+		fs::remove_path_components(dirname, &component, 2);
 		r = sscanf(component.c_str(), (std::string("%3x") + DIR_DELIM + "%3x").c_str(), &x, &y);
 		// Sign-extend the 12 bit values up to 16 bits...
 		if(x & 0x800) x |= 0xF000;
@@ -3006,15 +3005,17 @@ void ServerMap::saveMapMeta()
 	createDirs(m_savedir);
 
 	std::string fullpath = m_savedir + DIR_DELIM + "map_meta.txt";
-	std::ostringstream oss(std::ios_base::binary);
 	Settings conf;
 
 	m_emerge->params.save(conf);
-	conf.writeLines(oss);
 
-	oss << "[end_of_params]\n";
+	fs::SafeWriteStream os(fullpath);
 
-	if(!fs::safeWriteToFile(fullpath, oss.str())) {
+	conf.writeLines(os);
+
+	os << "[end_of_params]\n";
+
+	if (!os.save()) {
 		errorstream << "ServerMap::saveMapMeta(): "
 				<< "could not write " << fullpath << std::endl;
 		throw FileNotGoodException("Cannot save chunk metadata");
@@ -3059,11 +3060,11 @@ void ServerMap::saveSectorMeta(ServerMapSector *sector)
 	createDirs(dir);
 
 	std::string fullpath = dir + DIR_DELIM + "meta";
-	std::ostringstream ss(std::ios_base::binary);
+	fs::SafeWriteStream os(fullpath);
 
-	sector->serialize(ss, version);
+	sector->serialize(os, version);
 
-	if(!fs::safeWriteToFile(fullpath, ss.str()))
+	if (!os.save())
 		throw FileNotGoodException("Cannot write sector metafile");
 
 	sector->differs_from_disk = false;
@@ -3083,7 +3084,7 @@ MapSector* ServerMap::loadSectorMeta(std::string sectordir, bool save_after_load
 	{
 		// If the directory exists anyway, it probably is in some old
 		// format. Just go ahead and create the sector.
-		if(fs::PathExists(sectordir))
+		if(fs::exists(sectordir))
 		{
 			/*infostream<<"ServerMap::loadSectorMeta(): Sector metafile "
 					<<fullpath<<" doesn't exist but directory does."
@@ -3122,7 +3123,7 @@ bool ServerMap::loadSectorMeta(v2s16 p2d)
 	int loadlayout = 1;
 	std::string sectordir1 = getSectorDir(p2d, 1);
 	std::string sectordir;
-	if(fs::PathExists(sectordir1))
+	if(fs::exists(sectordir1))
 	{
 		sectordir = sectordir1;
 	}
@@ -3166,7 +3167,7 @@ bool ServerMap::loadSectorFull(v2s16 p2d)
 	int loadlayout = 1;
 	std::string sectordir1 = getSectorDir(p2d, 1);
 	std::string sectordir;
-	if(fs::PathExists(sectordir1))
+	if(fs::exists(sectordir1))
 	{
 		sectordir = sectordir1;
 	}
@@ -3195,16 +3196,14 @@ bool ServerMap::loadSectorFull(v2s16 p2d)
 	/*
 		Load blocks
 	*/
-	std::vector<fs::DirListNode> list2 = fs::GetDirListing
-			(sectordir);
-	std::vector<fs::DirListNode>::iterator i2;
-	for(i2=list2.begin(); i2!=list2.end(); i2++)
+	for(fs::DirectoryIterator it(sectordir);
+		it != fs::DirectoryIterator(); ++it)
 	{
-		// We want files
-		if(i2->dir)
+		// We want regular files
+		if (it->type != fs::FT_REGULAR)
 			continue;
 		try{
-			loadBlock(sectordir, i2->name, sector, loadlayout != 2);
+			loadBlock(sectordir, it->name, sector, loadlayout != 2);
 		}
 		catch(InvalidFilenameException &e)
 		{
@@ -3216,7 +3215,7 @@ bool ServerMap::loadSectorFull(v2s16 p2d)
 	{
 		infostream<<"Sector converted to new layout - deleting "<<
 			sectordir1<<std::endl;
-		fs::RecursiveDelete(sectordir1);
+		fs::remove_all(sectordir1);
 	}
 
 	return true;
@@ -3346,7 +3345,7 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile,
 			saveBlock(block);
 
 			// Should be in database now, so delete the old file
-			fs::RecursiveDelete(fullpath);
+			fs::remove_all(fullpath);
 		}
 
 		// We just loaded it from the disk, so it's up-to-date.
@@ -3458,7 +3457,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 	int loadlayout = 1;
 	std::string sectordir1 = getSectorDir(p2d, 1);
 	std::string sectordir;
-	if(fs::PathExists(sectordir1))
+	if(fs::exists(sectordir1))
 	{
 		sectordir = sectordir1;
 	}
@@ -3497,7 +3496,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 	*/
 
 	std::string blockfilename = getBlockFilename(blockpos);
-	if(fs::PathExists(sectordir + DIR_DELIM + blockfilename) == false)
+	if(fs::exists(sectordir + DIR_DELIM + blockfilename) == false)
 		return NULL;
 
 	/*

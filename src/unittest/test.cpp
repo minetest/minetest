@@ -275,7 +275,7 @@ bool TestBase::testModule(IGameDef *gamedef)
 		<< "ms" << std::endl;
 
 	if (!m_test_dir.empty())
-		fs::RecursiveDelete(m_test_dir);
+		fs::remove_all(m_test_dir);
 
 	return num_tests_failed == 0;
 }
@@ -288,8 +288,8 @@ std::string TestBase::getTestTempDirectory()
 	char buf[32];
 	snprintf(buf, sizeof(buf), "%08X", myrand());
 
-	m_test_dir = fs::TempPath() + DIR_DELIM "mttest_" + buf;
-	if (!fs::CreateDir(m_test_dir))
+	m_test_dir = fs::get_temp_path() + DIR_DELIM "mttest_" + buf;
+	if (!fs::create_directory(m_test_dir))
 		throw TestFailedException();
 
 	return m_test_dir;

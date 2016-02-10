@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "shader.h"
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "util/container.h"
 #include "util/thread.h"
 #include "settings.h"
@@ -71,7 +71,7 @@ std::string getShaderPath(const std::string &name_of_shader,
 	if(shader_path != "")
 	{
 		std::string testpath = shader_path + DIR_DELIM + combined;
-		if(fs::PathExists(testpath))
+		if(fs::exists(testpath))
 			fullpath = testpath;
 	}
 
@@ -85,7 +85,7 @@ std::string getShaderPath(const std::string &name_of_shader,
 				+ name_of_shader + DIR_DELIM
 				+ filename;
 		std::string testpath = porting::path_share + DIR_DELIM + rel_path;
-		if(fs::PathExists(testpath))
+		if(fs::exists(testpath))
 			fullpath = testpath;
 	}
 

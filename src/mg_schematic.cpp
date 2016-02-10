@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "util/serialize.h"
 #include "serialization.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -489,7 +489,7 @@ bool Schematic::saveSchematicToFile(const std::string &filename,
 		names = &m_nodenames;
 	}
 
-	std::ostringstream os(std::ios_base::binary);
+	fs::SafeWriteStream os(filename);
 	bool status = serializeToMts(&os, *names);
 
 	if (ndef) {
@@ -500,7 +500,7 @@ bool Schematic::saveSchematicToFile(const std::string &filename,
 	if (!status)
 		return false;
 
-	return fs::safeWriteToFile(filename, os.str());
+	return os.save();
 }
 
 

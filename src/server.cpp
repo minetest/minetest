@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxel.h"
 #include "config.h"
 #include "version.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "mapblock.h"
 #include "serverobject.h"
 #include "genericobject.h"
@@ -312,7 +312,7 @@ Server::Server(
 
 	// Apply texture overrides from texturepack/override.txt
 	std::string texture_path = g_settings->get("texture_path");
-	if (texture_path != "" && fs::IsDir(texture_path))
+	if (texture_path != "" && fs::is_directory(texture_path))
 		m_nodedef->applyTextureOverrides(texture_path + DIR_DELIM + "override.txt");
 
 	m_nodedef->setNodeRegistrationStatus(true);
@@ -344,7 +344,7 @@ Server::Server(
 	servermap->addEventReceiver(this);
 
 	// If file exists, load environment metadata
-	if(fs::PathExists(m_path_world + DIR_DELIM "env_meta.txt"))
+	if(fs::exists(m_path_world + DIR_DELIM "env_meta.txt"))
 	{
 		infostream<<"Server: Loading environment metadata"<<std::endl;
 		m_env->loadMeta();
@@ -2246,11 +2246,11 @@ void Server::fillMediaCache()
 	for(std::vector<std::string>::iterator i = paths.begin();
 			i != paths.end(); ++i) {
 		std::string mediapath = *i;
-		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(mediapath);
-		for (u32 j = 0; j < dirlist.size(); j++) {
-			if (dirlist[j].dir) // Ignode dirs
+		for (fs::DirectoryIterator it(mediapath);
+				it != fs::DirectoryIterator(); ++it) {
+			if (it->type != fs::FT_REGULAR)
 				continue;
-			std::string filename = dirlist[j].name;
+			std::string filename = it->name;
 			// If name contains illegal characters, ignore the file
 			if (!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)) {
 				infostream<<"Server: ignoring illegal file name: \""

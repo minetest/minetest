@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "cpp_api/s_security.h"
 #include "areastore.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #ifndef ANDROID
 	#include "cmake_config.h"
 #endif
@@ -258,10 +258,10 @@ int LuaAreaStore::l_to_file(lua_State *L)
 	const char *filename = luaL_checkstring(L, 2);
 	CHECK_SECURE_PATH_OPTIONAL(L, filename);
 
-	std::ostringstream os(std::ios_base::binary);
+	fs::SafeWriteStream os(filename);
 	ast->serialize(os);
 
-	lua_pushboolean(L, fs::safeWriteToFile(filename, os.str()));
+	lua_pushboolean(L, os.save());
 	return 1;
 }
 

@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "log.h"
 #include "util/serialize.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "noise.h"
 #include <cctype>
 #include <algorithm>
@@ -301,7 +301,7 @@ bool Settings::updateConfigFile(const char *filename)
 	MutexAutoLock lock(m_mutex);
 
 	std::ifstream is(filename);
-	std::ostringstream os(std::ios_base::binary);
+	fs::SafeWriteStream os(filename);
 
 	bool was_modified = updateConfigObject(is, os, "");
 	is.close();
@@ -309,7 +309,7 @@ bool Settings::updateConfigFile(const char *filename)
 	if (!was_modified)
 		return true;
 
-	if (!fs::safeWriteToFile(filename, os.str())) {
+	if (!os.save()) {
 		errorstream << "Error writing configuration file: \""
 			<< filename << "\"" << std::endl;
 		return false;

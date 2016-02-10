@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "porting.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "mapnode.h"
 
 class TestFailedException : public std::exception {
@@ -54,7 +54,7 @@ class TestFailedException : public std::exception {
 #define UASSERT(x) do {                                         \
 	if (!(x)) {                                                 \
 		rawstream << "Test assertion failed: " #x << std::endl  \
-			<< "    at " << fs::GetFilenameFromPath(__FILE__)   \
+			<< "    at " << fs::filename(__FILE__)              \
 			<< ":" << __LINE__ << std::endl;                    \
 		throw TestFailedException();                            \
 	}                                                           \
@@ -67,7 +67,7 @@ class TestFailedException : public std::exception {
 		char utest_buf[1024];                                            \
 		snprintf(utest_buf, sizeof(utest_buf), fmt, __VA_ARGS__);        \
 		rawstream << "Test assertion failed: " << utest_buf << std::endl \
-			<< "    at " << fs::GetFilenameFromPath(__FILE__)            \
+			<< "    at " << fs::filename(__FILE__)                       \
 			<< ":" << __LINE__ << std::endl;                             \
 		throw TestFailedException();                                     \
 	}                                                                    \
@@ -81,7 +81,7 @@ class TestFailedException : public std::exception {
 		rawstream                                                         \
 			<< "Test assertion failed: " << #actual << " " << #CMP << " " \
 			<< #expected << std::endl                                     \
-			<< "    at " << fs::GetFilenameFromPath(__FILE__) << ":"      \
+			<< "    at " << fs::filename(__FILE__) << ":"                 \
 			<< __LINE__ << std::endl                                      \
 			<< "    actual:   " << a << std::endl << "    expected: "     \
 			<< e << std::endl;                                            \

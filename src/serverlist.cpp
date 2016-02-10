@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "settings.h"
 #include "serverlist.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "porting.h"
 #include "log.h"
 #include "network/networkprotocol.h"
@@ -42,8 +42,8 @@ std::string getFilePath()
 	std::string serverlist_file = g_settings->get("serverlist_file");
 
 	std::string dir_path = "client" DIR_DELIM "serverlist" DIR_DELIM;
-	fs::CreateDir(porting::path_user + DIR_DELIM  "client");
-	fs::CreateDir(porting::path_user + DIR_DELIM + dir_path);
+	fs::create_directory(porting::path_user + DIR_DELIM  "client");
+	fs::create_directory(porting::path_user + DIR_DELIM + dir_path);
 	return porting::path_user + DIR_DELIM + dir_path + serverlist_file;
 }
 
@@ -52,7 +52,7 @@ std::vector<ServerListSpec> getLocal()
 {
 	std::string path = ServerList::getFilePath();
 	std::string liststring;
-	if (fs::PathExists(path)) {
+	if (fs::exists(path)) {
 		std::ifstream istream(path.c_str());
 		if (istream.is_open()) {
 			std::ostringstream ostream;
@@ -110,9 +110,9 @@ bool deleteEntry(const ServerListSpec &server)
 	}
 
 	std::string path = ServerList::getFilePath();
-	std::ostringstream ss(std::ios_base::binary);
-	ss << ServerList::serialize(serverlist);
-	if (!fs::safeWriteToFile(path, ss.str()))
+	fs::SafeWriteStream os(path);
+	os << ServerList::serialize(serverlist);
+	if (!os.save())
 		return false;
 	return true;
 }
@@ -129,9 +129,9 @@ bool insert(const ServerListSpec &server)
 	serverlist.insert(serverlist.begin(), server);
 
 	std::string path = ServerList::getFilePath();
-	std::ostringstream ss(std::ios_base::binary);
-	ss << ServerList::serialize(serverlist);
-	if (!fs::safeWriteToFile(path, ss.str()))
+	fs::SafeWriteStream os(path);
+	os << ServerList::serialize(serverlist);
+	if (!os.save())
 		return false;
 
 	return true;

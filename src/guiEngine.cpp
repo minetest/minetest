@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "version.h"
 #include "porting.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "settings.h"
 #include "guiMainMenu.h"
 #include "sound.h"
@@ -521,7 +521,7 @@ bool GUIEngine::setTexture(texture_layer layer, std::string texturepath,
 		m_textures[layer].texture = NULL;
 	}
 
-	if ((texturepath == "") || !fs::PathExists(texturepath))
+	if ((texturepath == "") || !fs::exists(texturepath))
 	{
 		return false;
 	}

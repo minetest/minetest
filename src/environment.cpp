@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <fstream>
 #include "environment.h"
-#include "filesys.h"
+#include "util/filesystem.h"
 #include "porting.h"
 #include "collision.h"
 #include "content_mapnode.h"
@@ -430,7 +430,7 @@ void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,
 void ServerEnvironment::saveLoadedPlayers()
 {
 	std::string players_path = m_path_world + DIR_DELIM "players";
-	fs::CreateDir(players_path);
+	fs::create_directory(players_path);
 
 	for (std::vector<Player*>::iterator it = m_players.begin();
 			it != m_players.end();
@@ -445,7 +445,7 @@ void ServerEnvironment::saveLoadedPlayers()
 void ServerEnvironment::savePlayer(RemotePlayer *player)
 {
 	std::string players_path = m_path_world + DIR_DELIM "players";
-	fs::CreateDir(players_path);
+	fs::create_directory(players_path);
 
 	player->save(players_path);
 }
@@ -497,17 +497,15 @@ void ServerEnvironment::saveMeta()
 {
 	std::string path = m_path_world + DIR_DELIM "env_meta.txt";
 
-	// Open file and serialize
-	std::ostringstream ss(std::ios_base::binary);
-
 	Settings args;
 	args.setU64("game_time", m_game_time);
 	args.setU64("time_of_day", getTimeOfDay());
-	args.writeLines(ss);
-	ss<<"EnvArgsEnd\n";
 
-	if(!fs::safeWriteToFile(path, ss.str()))
-	{
+	fs::SafeWriteStream os(path);
+	args.writeLines(os);
+	os << "EnvArgsEnd\n";
+
+	if (!os.save()) {
 		infostream<<"ServerEnvironment::saveMeta(): Failed to write "
 				<<path<<std::endl;
 		throw SerializationError("Couldn't save env meta");
