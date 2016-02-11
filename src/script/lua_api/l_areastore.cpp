@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "cpp_api/s_security.h"
+#include "irr_v3d.h"
 #include "areastore.h"
 #include "filesys.h"
 #ifndef ANDROID

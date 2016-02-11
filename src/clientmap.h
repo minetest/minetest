@@ -115,7 +115,7 @@ public:
 		renderMap(driver, SceneManager->getSceneNodeRenderPass());
 	}
 	
-	virtual const core::aabbox3d<f32>& getBoundingBox() const
+	virtual const aabb3f &getBoundingBox() const
 	{
 		return m_box;
 	}
@@ -140,7 +140,7 @@ public:
 private:
 	Client *m_client;
 	
-	core::aabbox3d<f32> m_box;
+	aabb3f m_box;
 	
 	MapDrawControl &m_control;
 

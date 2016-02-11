@@ -52,7 +52,7 @@ class Particle : public scene::ISceneNode
 	);
 	~Particle();
 
-	virtual const core::aabbox3d<f32>& getBoundingBox() const
+	virtual const aabb3f &getBoundingBox() const
 	{
 		return m_box;
 	}
@@ -85,8 +85,8 @@ private:
 
 	ClientEnvironment *m_env;
 	IGameDef *m_gamedef;
-	core::aabbox3d<f32> m_box;
-	core::aabbox3d<f32> m_collisionbox;
+	aabb3f m_box;
+	aabb3f m_collisionbox;
 	video::SMaterial m_material;
 	v2f m_texpos;
 	v2f m_texsize;

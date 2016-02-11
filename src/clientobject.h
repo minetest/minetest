@@ -56,7 +56,7 @@ public:
 	virtual void updateLight(u8 light_at_pos){}
 	virtual void updateLightNoCheck(u8 light_at_pos){}
 	virtual v3s16 getLightPosition(){return v3s16(0,0,0);}
-	virtual core::aabbox3d<f32>* getSelectionBox(){return NULL;}
+	virtual aabb3f *getSelectionBox() { return NULL; }
 	virtual bool getCollisionBox(aabb3f *toset){return false;}
 	virtual bool collideWithObjects(){return false;}
 	virtual v3f getPosition(){return v3f(0,0,0);}
