@@ -839,13 +839,6 @@
 #    type: string
 # static_spawnpoint = 
 
-#    Maximum distance above water level for player spawn.
-#    Larger values result in spawn points closer to (x = 0, z = 0).
-#    Smaller values may result in a suitable spawn point not being found,
-#    resulting in a spawn at (0, 0, 0) possibly buried underground.
-#    type: int
-# vertical_spawn_range = 16
-
 #    If enabled, new players cannot join with an empty password.
 #    type: bool
 # disallow_empty_password = false
