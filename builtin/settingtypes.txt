@@ -702,12 +702,6 @@ enable_pvp (Player versus Player) bool true
 #    If this is set, players will always (re)spawn at the given position.
 static_spawnpoint (Static spawnpoint) string
 
-#    Maximum distance above water level for player spawn.
-#    Larger values result in spawn points closer to (x = 0, z = 0).
-#    Smaller values may result in a suitable spawn point not being found,
-#    resulting in a spawn at (0, 0, 0) possibly buried underground.
-vertical_spawn_range (Vertical spawn range) int 16
-
 #    If enabled, new players cannot join with an empty password.
 disallow_empty_password (Disallow empty passwords) bool false
 
