@@ -162,6 +162,7 @@ private:
 	video::SColor hbar_colors[4];
 
 	std::vector<aabb3f> m_selection_boxes;
+	std::vector<aabb3f> m_halo_boxes;
 	v3f m_selection_pos;
 	v3f m_selection_pos_with_offset;
 
