@@ -792,7 +792,7 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 			video::EVST_VS_1_1,   // Vertex shader version
 			pixel_program_ptr,    // Pixel shader program
 			"pixelMain",          // Pixel shader entry point
-			video::EPST_PS_1_1,   // Pixel shader version
+			video::EPST_PS_1_2,   // Pixel shader version
 			geometry_program_ptr, // Geometry shader program
 			"geometryMain",       // Geometry shader entry point
 			video::EGST_GS_4_0,   // Geometry shader version
