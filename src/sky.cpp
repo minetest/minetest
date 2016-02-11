@@ -25,8 +25,8 @@ Sky::Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id,
 		m_cloudcolor_bright_f(1,1,1,1)
 {
 	setAutomaticCulling(scene::EAC_OFF);
-	Box.MaxEdge.set(0,0,0);
-	Box.MinEdge.set(0,0,0);
+	m_box.MaxEdge.set(0,0,0);
+	m_box.MinEdge.set(0,0,0);
 
 	// create material
 
@@ -92,11 +92,6 @@ void Sky::OnRegisterSceneNode()
 		SceneManager->registerNodeForRendering(this, scene::ESNRP_SKY_BOX);
 
 	scene::ISceneNode::OnRegisterSceneNode();
-}
-
-const core::aabbox3d<f32>& Sky::getBoundingBox() const
-{
-	return Box;
 }
 
 //! renders the node.

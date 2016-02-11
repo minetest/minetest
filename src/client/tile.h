@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define TILE_HEADER
 
 #include "irrlichttypes.h"
-#include "irr_v2d.h"
 #include "irr_v3d.h"
 #include <ITexture.h>
 #include <IrrlichtDevice.h>
