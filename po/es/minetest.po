@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2016-02-02 19:22+0000\n"
-"Last-Translator: Laura Arjona Reina <larjona@larjona.net>\n"
+"PO-Revision-Date: 2016-02-20 00:31+0000\n"
+"Last-Translator: Miguel Isaac <mikik@hotmail.es>\n"
 "Language-Team: Spanish "
 "<https://hosted.weblate.org/projects/minetest/minetest/es/>\n"
 "Language: es\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr "Ha ocurrido un error en un script Lua, por ejemplo un mod:"
+msgstr "Un error ha ocurrido en un script de Lua, Como un mod:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
@@ -49,7 +49,7 @@ msgstr "Cargando..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr "Desajuste con la versión del protocolo. "
+msgstr "Desajuste con la versión de protocolo. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
@@ -57,21 +57,21 @@ msgstr "El servidor hace cumplir la versión $1 del protocolo "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr "El servidor soporta versiones del protocolo entre $1 y $2."
+msgstr "El servidor soporta versiones del protocolo entre $1 y $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
-"Intente re-habilitar la lista de servidores públicos y verifique su conexión "
+"Intente rehabilitar la lista de servidores públicos y verifique su conexión "
 "a Internet."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr "Sólo soportamos protocolos versión $1"
+msgstr "Solo se soporta la version de protocolo $1"
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr "Nosotros soportamos versiones de protocolo entre la versíon $1 y $2."
+msgstr "Nosotros soportamos versiones de protocolo entre la versíon $1 y $2"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua builtin/mainmenu/tab_settings.lua
@@ -100,8 +100,8 @@ msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
-"Error al habilitar el mod \"$1\" por contener caracteres no permitidos. Solo "
-"se permiten los caracteres [a-z0-9_]."
+"Error al activar el mod \"$1\" por contener caracteres no permitidos. Solo "
+"los caracteres [a-z0-9_] estan permitidos."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -109,7 +109,7 @@ msgstr "Ocultar juego"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide mp content"
-msgstr "Ocultar contenido mp"
+msgstr "Ocultar contenido"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -142,7 +142,7 @@ msgstr "Descarga un sub-juego, como minetest_game, desde minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr "Descarga algunos desde minetest.net"
+msgstr "Descarga uno desde minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -188,7 +188,7 @@ msgstr "Modmgr: Ruta del mod \"$1\" inválida"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "No of course not!"
-msgstr "¡No, por su puesto que no!"
+msgstr "¡No, porque no!"
 
 #: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
 msgid "Yes"
@@ -295,7 +295,7 @@ msgstr "Antiguos colaboradores"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Core Developers"
-msgstr "Antiguos desarrolladores"
+msgstr "Antiguos desarrolladores principales"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Installed Mods:"
@@ -1168,10 +1168,13 @@ msgid "Zoom"
 msgstr "Zoom"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "0 = parallax occlusion with slope information (faster).\n"
 "1 = relief mapping (slower, more accurate)."
 msgstr ""
+"0 = Oclusion de paralaje cpn informacion pendiente (rapido).\n"
+"1 = Mapeo Aliviado (Lento, Mas Preciso)."
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -1191,12 +1194,23 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side."
 msgstr ""
+"Soporte 3D.\n"
+"Soportado Actualmente:\n"
+"-  Ninguno: No hay salida 3D.\n"
+"-  Anaglifo: Color cyan/magenta 3D.\n"
+"-  Entrelazado: Soporte de pantalla en polarizacion basado en line par e "
+"impar.\n"
+"-  Superior Inferior: Partir pantalla superior/inferior.\n"
+"-  Lado a lado: Partir pantalla lado a lado."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
+"Una semilla de mapa para un mapa nuevo, deja vacio para una semilla al azar."
+"\n"
+"Sera borrado creando un nuevo mundo en el menu principal."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
@@ -1211,7 +1225,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
-msgstr ""
+msgstr "Limite absoluto de colas emergentes"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
