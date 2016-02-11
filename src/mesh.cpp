@@ -406,7 +406,7 @@ scene::IMesh* cloneMesh(scene::IMesh *src_mesh)
 }
 
 scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
-		const f32 *uv_coords)
+		const f32 *uv_coords, float expand)
 {
 	scene::SMesh* dst_mesh = new scene::SMesh();
 
@@ -421,31 +421,19 @@ scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
 
 	video::SColor c(255,255,255,255);	
 
-	for(std::vector<aabb3f>::const_iterator
+	for (std::vector<aabb3f>::const_iterator
 			i = boxes.begin();
 			i != boxes.end(); ++i)
 	{
 		aabb3f box = *i;
+		box.repair();
 
-		f32 temp;
-		if (box.MinEdge.X > box.MaxEdge.X)
-			{
-				temp=box.MinEdge.X;
-				box.MinEdge.X=box.MaxEdge.X;
-				box.MaxEdge.X=temp;
-			}
-		if (box.MinEdge.Y > box.MaxEdge.Y)
-			{
-				temp=box.MinEdge.Y;
-				box.MinEdge.Y=box.MaxEdge.Y;
-				box.MaxEdge.Y=temp;
-			}
-		if (box.MinEdge.Z > box.MaxEdge.Z)
-			{
-				temp=box.MinEdge.Z;
-				box.MinEdge.Z=box.MaxEdge.Z;
-				box.MaxEdge.Z=temp;
-			}
+		box.MinEdge.X -= expand;
+		box.MinEdge.Y -= expand;
+		box.MinEdge.Z -= expand;
+		box.MaxEdge.X += expand;
+		box.MaxEdge.Y += expand;
+		box.MaxEdge.Z += expand;
 
 		// Compute texture UV coords
 		f32 tx1 = (box.MinEdge.X / BS) + 0.5;

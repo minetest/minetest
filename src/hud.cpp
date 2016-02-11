@@ -84,6 +84,8 @@ Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 
 	m_selection_mesh = NULL;
 	m_selection_boxes.clear();
+	m_halo_boxes.clear();
+
 	m_selection_pos = v3f(0.0, 0.0, 0.0);
 	std::string mode = g_settings->get("node_highlighting");
 	m_selection_material.Lighting = false;
@@ -574,10 +576,23 @@ void Hud::updateSelectionMesh(const v3s16 &camera_offset)
 		0,0,1,1
 	};
 
-	m_selection_mesh = convertNodeboxesToMesh(m_selection_boxes, texture_uv);
+	// Use single halo box instead of multiple overlapping boxes.
+	// Temporary solution - problem can be solved with multiple
+	// rendering targets, or some method to remove inner surfaces.
+	// Thats because of halo transparency.
 
-	// scale final halo mesh
-	scaleMesh(m_selection_mesh, v3f(1.08, 1.08, 1.08));
+	aabb3f halo_box(100.0, 100.0, 100.0, -100.0, -100.0, -100.0);
+	m_halo_boxes.clear();
+
+	for (std::vector<aabb3f>::iterator
+			i = m_selection_boxes.begin();
+			i != m_selection_boxes.end(); ++i) {
+		halo_box.addInternalBox(*i);
+	}
+
+	m_halo_boxes.push_back(halo_box);
+	m_selection_mesh = convertNodeboxesToMesh(
+		m_halo_boxes, texture_uv, 0.5);
 }
 
 void Hud::resizeHotbar() {
