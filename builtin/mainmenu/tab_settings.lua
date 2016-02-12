@@ -357,9 +357,13 @@ end
 
 local function create_change_setting_formspec(dialogdata)
 	local setting = settings[selected_setting]
-	local formspec = "size[10,5.2,true]" ..
-			"button[5,4.5;2,1;btn_done;" .. fgettext("Save") .. "]" ..
-			"button[3,4.5;2,1;btn_cancel;" .. fgettext("Cancel") .. "]" ..
+	local height = 5.2
+	if setting.type == "noise_params" then
+		height = 7.2
+	end
+	local formspec = "size[10," .. height .. ",true]" ..
+			"button[5," .. height-0.7 .. ";2,1;btn_done;" .. fgettext("Save") .. "]" ..
+			"button[3," .. height-0.7 .. ";2,1;btn_cancel;" .. fgettext("Cancel") .. "]" ..
 			"tablecolumns[color;text]" ..
 			"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
 			"table[0,0;10,3;info;"
@@ -389,13 +393,6 @@ local function create_change_setting_formspec(dialogdata)
 				.. "," .. fgettext("Please enter a comma seperated list of flags.") .. ","
 				.. "," .. fgettext("Possible values are: ")
 				.. core.formspec_escape(setting.possible:gsub(",", ", ")) .. ","
-	elseif setting.type == "noise_params" then
-		formspec = formspec .. ",,"
-				.. "," .. fgettext("Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistence>") .. ","
-				.. "," .. fgettext("Optionally the lacunarity can be appended with a leading comma.") .. ","
-	elseif setting.type == "v3f" then
-		formspec = formspec .. ",,"
-				.. "," .. fgettext_ne("Format is 3 numbers separated by commas and inside brackets.") .. ","
 	end
 
 	formspec = formspec:sub(1, -2) -- remove trailing comma
@@ -438,8 +435,50 @@ local function create_change_setting_formspec(dialogdata)
 				.. core.formspec_escape(current_value) .. "]"
 				.. "button[8,3.75;2,1;btn_browser_path;" .. fgettext("Browse") .. "]"
 
+	elseif setting.type == "noise_params" then
+		local np = get_current_value(setting)
+		local t = {}
+		for line in np:gmatch("[%d%.%-e]+") do -- All numeric characters: digits (%d), point (%.), minus(%-) and exponents (e).
+			table.insert(t, line)
+		end
+
+		formspec = formspec
+				.. "field[0.5,4;3.3,1;te_offset;Offset;" -- Offset
+				.. core.formspec_escape(t[1] or "") .. "]"
+				.. "field[3.8,4;3.3,1;te_scale;Scale;" -- Scale
+				.. core.formspec_escape(t[2] or "") .. "]"
+				.. "field[7.1,4;3.3,1;te_seed;Seed;" -- Seed
+				.. core.formspec_escape(t[6] or "") .. "]"
+				.. "label[0.5,4.7;Spread]" -- Spread
+				.. "field[2.0,5;2.8,1;te_spreadx;X;"
+				.. core.formspec_escape(t[3] or "") .. "]"
+				.. "field[4.8,5;2.8,1;te_spready;Y;"
+				.. core.formspec_escape(t[4] or "") .. "]"
+				.. "field[7.6,5;2.8,1;te_spreadz;Z;"
+				.. core.formspec_escape(t[5] or "") .. "]"
+				.. "field[0.5,6;3.3,1;te_octaves;Octaves;" -- Octaves
+				.. core.formspec_escape(t[7] or "") .. "]"
+				.. "field[3.8,6;3.3,1;te_persist;Persistance;" -- Persistance
+				.. core.formspec_escape(t[8] or "") .. "]"
+				.. "field[7.1,6;3.3,1;te_lacun;Lacunarity;" -- Lacunarity
+				.. core.formspec_escape(t[9] or "") .. "]"
+		
+	elseif setting.type == "v3f" then
+		local val = get_current_value(setting)
+		local v3f = {}
+		for line in val:gmatch("[%d%.%-e]+") do -- All numeric characters: digits (%d), point (%.), minus(%-) and exponents (e).
+			table.insert(v3f, line)
+		end
+
+		formspec = formspec
+				.. "field[0.5,4;3.3,1;te_x;X;" -- X
+				.. core.formspec_escape(v3f[1] or "") .. "]"
+				.. "field[3.8,4;3.3,1;te_y;Y;" -- Y
+				.. core.formspec_escape(v3f[2] or "") .. "]"
+				.. "field[7.1,4;3.3,1;te_z;Z;" -- Z
+				.. core.formspec_escape(v3f[3] or "") .. "]"
 	else
-		-- TODO: fancy input for float, int, flags, noise_params, v3f
+		-- TODO: fancy input for float, int, flags
 		local width = 10
 		local text = get_current_value(setting)
 		if dialogdata.error_message then
@@ -516,6 +555,23 @@ local function handle_change_setting_buttons(this, fields)
 			end
 			core.setting_set(setting.name, new_value)
 
+		elseif setting.type == "noise_params" then
+			local new_value = fields["te_offset"] .. ", "
+					.. fields["te_scale"] .. ", ("
+					.. fields["te_spreadx"] .. ", "
+					.. fields["te_spready"] .. ", "
+					.. fields["te_spreadz"] .. "), "
+					.. fields["te_seed"] .. ", "
+					.. fields["te_octaves"] .. ", "
+					.. fields["te_persist"] .. ", "
+					.. fields["te_lacun"]
+			core.setting_set(setting.name, new_value)
+		elseif setting.type == "v3f" then
+			local new_value = "("
+					.. fields["te_x"] .. ", "
+					.. fields["te_y"] .. ", "
+					.. fields["te_z"] .. ")"
+			core.setting_set(setting.name, new_value)
 		else
 			local new_value = fields["te_setting_value"]
 			core.setting_set(setting.name, new_value)
