@@ -55,8 +55,8 @@ vec4 applyToneMapping(vec4 color)
 #ifdef ENABLE_FAR_CONTRAST
 vec4 applyFarContrast(vec4 color)
 {
-	float cadist = vPosition.z/5000;
-	color.rgb = color.rgb*(cadist*9+1)-cadist*1.8;
+	float cadist = vPosition.z / 5000.0;
+	color.rgb = color.rgb * (cadist * 9.0 + 1.0) - cadist * 1.8;
 	return color;
 }
 #endif
@@ -219,11 +219,12 @@ void main(void)
 #endif
 
 #ifdef ENABLE_FAR_CONTRAST
-	gl_FragColor = applyFarContrast(col);
+	col = applyFarContrast(col);
 #endif
+
 #ifdef ENABLE_TONE_MAPPING
-	gl_FragColor = applyToneMapping(col);
-#elif ! defined ENABLE_FAR_CONTRAST
-	gl_FragColor = col;
+	col = applyToneMapping(col);
 #endif
+
+	gl_FragColor = col;
 }
