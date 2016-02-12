@@ -53,10 +53,10 @@ vec4 applyToneMapping(vec4 color)
 #endif
 
 #ifdef ENABLE_FAR_CONTRAST
-vec4 applyFarContrast(vec4 color)
+vec3 applyFarContrast(vec3 color)
 {
 	float cadist = vPosition.z / 5000.0;
-	color.rgb = color.rgb * (cadist * 9.0 + 1.0) - cadist * 1.8;
+	color = color * (cadist * 9.0 + 1.0) - cadist * 1.8;
 	return color;
 }
 #endif
@@ -219,7 +219,7 @@ void main(void)
 #endif
 
 #ifdef ENABLE_FAR_CONTRAST
-	col = applyFarContrast(col);
+	col.rgb = applyFarContrast(col.rgb);
 #endif
 
 #ifdef ENABLE_TONE_MAPPING
