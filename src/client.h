@@ -677,6 +677,7 @@ private:
 	// TODO: Add callback to update these when g_settings changes
 	bool m_cache_smooth_lighting;
 	bool m_cache_enable_shaders;
+	bool m_cache_use_tangent_vertices;
 
 	DISABLE_CLASS_COPY(Client);
 };
