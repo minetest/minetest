@@ -438,7 +438,7 @@ local function create_change_setting_formspec(dialogdata)
 	elseif setting.type == "noise_params" then
 		local np = get_current_value(setting)
 		local t = {}
-		for line in np:gmatch("[%d%.%-e]+") do -- All numeric characters: digits (%d), point (%.), minus(%-) and exponents (e).
+		for line in np:gmatch("[%d.-e]+") do -- All numeric characters: digits (%d), point (%.), minus(%-) and exponents (e).
 			table.insert(t, line)
 		end
 
@@ -466,7 +466,7 @@ local function create_change_setting_formspec(dialogdata)
 	elseif setting.type == "v3f" then
 		local val = get_current_value(setting)
 		local v3f = {}
-		for line in val:gmatch("[%d%.%-e]+") do -- All numeric characters: digits (%d), point (%.), minus(%-) and exponents (e).
+		for line in val:gmatch("[%d.-e]+") do -- All numeric characters: digits (%d), point (%.), minus(%-) and exponents (e).
 			table.insert(v3f, line)
 		end
 
