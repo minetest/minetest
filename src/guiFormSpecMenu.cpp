@@ -2434,9 +2434,14 @@ void GUIFormSpecMenu::drawMenu()
 		// Viewport rectangle on screen
 		core::rect<s32> rect = imgrect + spec.pos;
 		if (spec.parent_button && spec.parent_button->isPressed()) {
+#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
+			rect += core::dimension2d<s32>(
+				0.05 * (float)rect.getWidth(), 0.05 * (float)rect.getHeight());
+#else
 			rect += core::dimension2d<s32>(
 				skin->getSize(irr::gui::EGDS_BUTTON_PRESSED_IMAGE_OFFSET_X),
 				skin->getSize(irr::gui::EGDS_BUTTON_PRESSED_IMAGE_OFFSET_Y));
+#endif
 		}
 		drawItemStack(driver, m_font, item, rect, &AbsoluteClippingRect,
 				m_gamedef, IT_ROT_NONE);
@@ -2472,11 +2477,16 @@ void GUIFormSpecMenu::drawMenu()
 		const StaticTextSpec &spec = m_static_texts[i];	
 		core::rect<s32> rect = spec.rect;
 		if (spec.parent_button && spec.parent_button->isPressed()) {
+#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
+			rect += core::dimension2d<s32>(
+				0.05 * (float)rect.getWidth(), 0.05 * (float)rect.getHeight());
+#else
 			// Use image offset instead of text's because its a bit smaller
 			// and fits better, also TEXT_OFFSET_X is always 0
 			rect += core::dimension2d<s32>(
 				skin->getSize(irr::gui::EGDS_BUTTON_PRESSED_IMAGE_OFFSET_X),
 				skin->getSize(irr::gui::EGDS_BUTTON_PRESSED_IMAGE_OFFSET_Y));
+#endif
 		}
 		video::SColor color(255, 255, 255, 255);
 		m_font->draw(spec.text.c_str(), rect, color, true, true, &rect);
