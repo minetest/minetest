@@ -401,7 +401,6 @@ private:
 	TextDest         *m_text_dst;
 	unsigned int      m_formspec_version;
 	std::string       m_focused_element;
-	bool              m_selection_active;
 
 	typedef struct {
 		bool explicit_size;
