@@ -15,6 +15,7 @@
 #    - key (will be ignored in GUI, since a special key change dialog exists)
 #    - flags
 #    - noise_params
+#    - v3f
 #
 # `type_args` can be:
 #   * int:
@@ -37,7 +38,11 @@
 #            Flags are always separated by comma without spaces.
 #            - default possible_flags
 #   * noise_params:
-#            TODO: these are currently treated like strings
+#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistance>, <lacunarity>
+#            - default
+#   * v3f:
+#            Format is (<X>, <Y>, <Z>)
+#            - default
 #
 # Comments directly above a setting are bound to this setting.
 # All other comments are ignored.
