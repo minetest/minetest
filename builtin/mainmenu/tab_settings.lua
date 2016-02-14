@@ -25,6 +25,10 @@ local CHAR_CLASSES = {
 	FLAGS = "[%w_%-%.,]",
 }
 
+local function flags_to_table(flags)
+	return flags:gsub("%s+", ""):split(",", true) -- Remove all spaces and split
+end
+
 -- returns error message, or nil
 local function parse_setting_line(settings, line, read_all, base_level, allow_secure)
 	-- comment
@@ -236,7 +240,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			readable_name = readable_name,
 			type = "flags",
 			default = default,
-			possible = possible,
+			possible = flags_to_table(possible),
 			comment = current_comment,
 		})
 		return
@@ -355,11 +359,15 @@ local function get_current_value(setting)
 	return value
 end
 
+local checkboxes = {} -- handle checkboxes events
+
 local function create_change_setting_formspec(dialogdata)
 	local setting = settings[selected_setting]
 	local height = 5.2
 	if setting.type == "noise_params" then
 		height = 7.2
+	elseif setting.type == "flags" then
+		height = 5.2 + math.ceil(#setting.possible/2) /2 -- Checkboxes on 2 columns, with a vertical space of 1/2 unit
 	end
 	local formspec = "size[10," .. height .. ",true]" ..
 			"button[5," .. height-0.7 .. ";2,1;btn_done;" .. fgettext("Save") .. "]" ..
@@ -386,13 +394,6 @@ local function create_change_setting_formspec(dialogdata)
 	end
 	for _, comment_line in ipairs(comment_text:split("\n", true)) do
 		formspec = formspec .. "," .. core.formspec_escape(comment_line) .. ","
-	end
-
-	if setting.type == "flags" then
-		formspec = formspec .. ",,"
-				.. "," .. fgettext("Please enter a comma seperated list of flags.") .. ","
-				.. "," .. fgettext("Possible values are: ")
-				.. core.formspec_escape(setting.possible:gsub(",", ", ")) .. ","
 	end
 
 	formspec = formspec:sub(1, -2) -- remove trailing comma
@@ -438,7 +439,7 @@ local function create_change_setting_formspec(dialogdata)
 	elseif setting.type == "noise_params" then
 		local np = get_current_value(setting)
 		local t = {}
-		for line in np:gmatch("[%d.-e]+") do -- All numeric characters: digits (%d), point (%.), minus(%-) and exponents (e).
+		for line in np:gmatch("[%d.-e]+") do -- All numeric characters
 			table.insert(t, line)
 		end
 
@@ -466,7 +467,7 @@ local function create_change_setting_formspec(dialogdata)
 	elseif setting.type == "v3f" then
 		local val = get_current_value(setting)
 		local v3f = {}
-		for line in val:gmatch("[%d.-e]+") do -- All numeric characters: digits (%d), point (%.), minus(%-) and exponents (e).
+		for line in val:gmatch("[%d.-e]+") do -- All numeric characters
 			table.insert(v3f, line)
 		end
 
@@ -477,8 +478,30 @@ local function create_change_setting_formspec(dialogdata)
 				.. core.formspec_escape(v3f[2] or "") .. "]"
 				.. "field[7.1,4;3.3,1;te_z;Z;" -- Z
 				.. core.formspec_escape(v3f[3] or "") .. "]"
+	elseif setting.type == "flags" then
+		local enabled_flags = flags_to_table(get_current_value(setting))
+		local flags = {}
+		for _, name in ipairs(enabled_flags) do
+			flags[name] = true -- Index by name, to avoid iterating over all enabled_flags for every possible flag.
+		end
+		local flags_count = #setting.possible
+		for i, name in ipairs(setting.possible) do
+			local x = 0.5
+			local y = 3.5 + i/2
+			if i-1 >= flags_count/2 then -- 2nd column
+				x = 5
+				y = y - flags_count/4
+			end
+			local checkbox_name = "cb_" .. name
+			local is_enabled = flags[name] == true -- to get false if nil
+			checkboxes[checkbox_name] = is_enabled
+			formspec = formspec .. "checkbox["
+					.. x .. "," .. y
+					.. ";" .. checkbox_name .. ";"
+					.. name .. ";" .. tostring(is_enabled) .. "]"
+		end
 	else
-		-- TODO: fancy input for float, int, flags
+		-- TODO: fancy input for float, int
 		local width = 10
 		local text = get_current_value(setting)
 		if dialogdata.error_message then
@@ -498,8 +521,8 @@ local function create_change_setting_formspec(dialogdata)
 end
 
 local function handle_change_setting_buttons(this, fields)
+	local setting = settings[selected_setting]
 	if fields["btn_done"] or fields["key_enter"] then
-		local setting = settings[selected_setting]
 		if setting.type == "bool" then
 			local new_value = fields["dd_setting_value"]
 			-- Note: new_value is the actual (translated) value shown in the dropdown
@@ -542,17 +565,16 @@ local function handle_change_setting_buttons(this, fields)
 			core.setting_set(setting.name, new_value)
 
 		elseif setting.type == "flags" then
-			local new_value = fields["te_setting_value"]
-			for _,value in ipairs(new_value:split(",", true)) do
-				value = value:trim()
-				local possible = "," .. setting.possible .. ","
-				if not possible:find("," .. value .. ",", 0, true) then
-					this.data.error_message = fgettext_ne("\"$1\" is not a valid flag.", value)
-					this.data.entered_text = fields["te_setting_value"]
-					core.update_formspec(this:get_formspec())
-					return true
+			local values = {}
+			for _, name in ipairs(setting.possible) do
+				if checkboxes["cb_" .. name] then
+					table.insert(values, name)
 				end
 			end
+
+			checkboxes = {}
+
+			local new_value = table.concat(values, ", ")
 			core.setting_set(setting.name, new_value)
 
 		elseif setting.type == "noise_params" then
@@ -593,6 +615,14 @@ local function handle_change_setting_buttons(this, fields)
 	if fields["dlg_browse_path_accepted"] then
 		this.data.selected_path = fields["dlg_browse_path_accepted"]
 		core.update_formspec(this:get_formspec())
+	end
+
+	if setting.type == "flags" then
+		for name, value in pairs(fields) do
+			if name:sub(1, 3) == "cb_" then
+				checkboxes[name] = value == "true"
+			end
+		end
 	end
 
 	return false
@@ -756,7 +786,7 @@ local function create_minetest_conf_example()
 				result = result .. " values: " .. table.concat(entry.values, ", ")
 			end
 			if entry.possible then
-				result = result .. " possible values: " .. entry.possible:gsub(",", ", ")
+				result = result .. " possible values: " .. table.concat(entry.possible, ", ")
 			end
 			result = result .. "\n"
 			result = result .. "# " .. entry.name .. " = ".. entry.default .. "\n\n"
