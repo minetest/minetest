@@ -907,15 +907,18 @@ public:
 		services->setPixelShaderConstant("yawVec", (irr::f32 *)&minimap_yaw_vec, 3);
 
 		// Uniform sampler layers
-		int layer0 = 0;
-		int layer1 = 1;
-		int layer2 = 2;
 		// before 1.8 there isn't a "integer interface", only float
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
+		f32 layer0 = 0;
+		f32 layer1 = 1;
+		f32 layer2 = 2;
 		services->setPixelShaderConstant("baseTexture" , (irr::f32 *)&layer0, 1);
 		services->setPixelShaderConstant("normalTexture" , (irr::f32 *)&layer1, 1);
 		services->setPixelShaderConstant("textureFlags" , (irr::f32 *)&layer2, 1);
 #else
+		s32 layer0 = 0;
+		s32 layer1 = 1;
+		s32 layer2 = 2;
 		services->setPixelShaderConstant("baseTexture" , (irr::s32 *)&layer0, 1);
 		services->setPixelShaderConstant("normalTexture" , (irr::s32 *)&layer1, 1);
 		services->setPixelShaderConstant("textureFlags" , (irr::s32 *)&layer2, 1);
