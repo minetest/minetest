@@ -622,3 +622,36 @@ v3s16 LocalPlayer::getStandingNodePos()
 	return floatToInt(getPosition() - v3f(0, BS, 0), BS);
 }
 
+// Horizontal acceleration (X and Z), Y direction is ignored
+void LocalPlayer::accelerateHorizontal(const v3f &target_speed, const f32 max_increase)
+{
+        if (max_increase == 0)
+                return;
+
+        v3f d_wanted = target_speed - m_speed;
+        d_wanted.Y = 0;
+        f32 dl = d_wanted.getLength();
+        if (dl > max_increase)
+                dl = max_increase;
+
+        v3f d = d_wanted.normalize() * dl;
+
+        m_speed.X += d.X;
+        m_speed.Z += d.Z;
+}
+
+// Vertical acceleration (Y), X and Z directions are ignored
+void LocalPlayer::accelerateVertical(const v3f &target_speed, const f32 max_increase)
+{
+        if (max_increase == 0)
+                return;
+
+        f32 d_wanted = target_speed.Y - m_speed.Y;
+        if (d_wanted > max_increase)
+                d_wanted = max_increase;
+        else if (d_wanted < -max_increase)
+                d_wanted = -max_increase;
+
+        m_speed.Y += d_wanted;
+}
+

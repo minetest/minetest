@@ -119,9 +119,6 @@ public:
 		m_speed = speed;
 	}
 
-	void accelerateHorizontal(v3f target_speed, f32 max_increase);
-	void accelerateVertical(v3f target_speed, f32 max_increase);
-
 	v3f getPosition()
 	{
 		return m_position;
