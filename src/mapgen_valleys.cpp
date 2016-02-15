@@ -104,6 +104,10 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 
 	tcave_cache = new float[csize.Y + 2];
 
+	// River humidity tends to expand the scale.
+	if (humid_rivers)
+		params->np_biome_humidity.scale *= 0.8f;
+
 	//// 2D Terrain noise
 	noise_filler_depth       = new Noise(&sp->np_filler_depth,       seed, csize.X, csize.Z);
 	noise_inter_valley_slope = new Noise(&sp->np_inter_valley_slope, seed, csize.X, csize.Z);
@@ -552,6 +556,17 @@ float MapgenValleys::terrainLevelAtPoint(s16 x, s16 z)
 
 int MapgenValleys::generateTerrain()
 {
+	// When the temperature increases by this, water lowers by one block.
+	const float evaporation = 10.f;
+	// This increases heat at low altitudes to keep the average stable.
+	const float heat_offset = altitude_chill / 3.f;
+	// This similarly compensates for river humidity.
+	const float humidity_offset = 0.8f;
+	// from the lua
+	const float humidity_dropoff = 3.f;
+	// Heat must exceed humidity by this to lower rivers.
+	const float river_heat_offset = 10.f;
+
 	MapNode n_air(CONTENT_AIR);
 	MapNode n_river_water(c_river_water_source);
 	MapNode n_sand(c_sand);
@@ -567,23 +582,36 @@ int MapgenValleys::generateTerrain()
 		s16 river_y = floor(noise_rivers->result[index_2d]);
 		s16 surface_y = floor(noise_terrain_height->result[index_2d]);
 		float slope = noise_inter_valley_slope->result[index_2d];
+		float t_heat = noise_heat->result[index_2d];
 
 		heightmap[index_2d] = surface_y;
 
 		if (surface_y > surface_max_y)
 			surface_max_y = surface_y;
 
+		if (humid_rivers) {
+			// Derive heat from (base) altitude. This will be most correct
+			// at rivers, since other surface heights may vary below.
+			if (use_altitude_chill && surface_y > 0)
+				t_heat *= pow(0.5f, (MYMAX(surface_y, river_y) - heat_offset) / altitude_chill);
+			// This offset is not part of the "real" heat.
+			float t_heat_off = t_heat - river_heat_offset;
+
+			// If humidity is low or heat is high, lower the water table.
+			if (noise_humidity->result[index_2d] < t_heat_off)
+				river_y += floor((noise_humidity->result[index_2d] - t_heat_off) / evaporation);
+		}
+
+		bool river = (river_y > surface_y);
+
 		u32 index_3d = (z - node_min.Z) * zstride + (x - node_min.X);
 		u32 index_data = vm->m_area.index(x, node_min.Y - 1, z);
 
 		// Mapgens concern themselves with stone and water.
 		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
-			float fill = 0.f;
-			fill = noise_inter_valley_fill->result[index_3d];
+			float fill = noise_inter_valley_fill->result[index_3d];
 
 			if (vm->m_data[index_data].getContent() == CONTENT_IGNORE) {
-				bool river = (river_y > surface_y);
-
 				if (river && y == surface_y) {
 					// river bottom
 					vm->m_data[index_data] = n_sand;
@@ -596,7 +624,9 @@ int MapgenValleys::generateTerrain()
 				} else if ((!river) && myround(fill * slope) >= y - surface_y) {
 					// ground
 					vm->m_data[index_data] = n_stone;
-					heightmap[index_2d] = surface_max_y = y;
+					heightmap[index_2d] = y;
+					if (y > surface_max_y)
+						surface_max_y = y;
 				} else if (y <= water_level) {
 					// sea
 					vm->m_data[index_data] = n_water;
@@ -612,15 +642,24 @@ int MapgenValleys::generateTerrain()
 		// Although the original valleys adjusts humidity by distance
 		// from seawater, this causes problems with the default biomes.
 		// Adjust only by freshwater proximity.
-		const float humidity_offset = 0.8f;  // derived by testing
-		if (humid_rivers)
-			noise_humidity->result[index_2d] *= (1 + pow(0.5f, MYMAX((surface_max_y
-					- noise_rivers->result[index_2d]) / 3.f, 0.f))) * humidity_offset;
+		if (humid_rivers) {
+			float humid = MYMAX(noise_humidity->result[index_2d], 0.f);
+			float water_depth = (heightmap[index_2d] - river_y) / humidity_dropoff;
+			humid *= (1 + pow(0.5f, MYMAX(water_depth, 0.f)));
+			humid *= humidity_offset;
+			noise_humidity->result[index_2d] = humid;
+		}
 
-		// Assign the heat adjusted by altitude.
-		if (use_altitude_chill && surface_max_y > 0)
-			noise_heat->result[index_2d] *=
-				pow(0.5f, (surface_max_y - altitude_chill / 3.f) / altitude_chill);
+		// Assign the heat adjusted by any changed altitudes.
+		// The altitude will change about half the time.
+		if (use_altitude_chill && heightmap[index_2d] > 0) {
+			if (humid_rivers && heightmap[index_2d] == surface_y)
+				// The altitude hasn't changed. Use the first result.
+				noise_heat->result[index_2d] = t_heat;
+			else
+				noise_heat->result[index_2d] *=
+					pow(0.5f, (heightmap[index_2d] - heat_offset) / altitude_chill);
+		}
 	}
 
 	return surface_max_y;
