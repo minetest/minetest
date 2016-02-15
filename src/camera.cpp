@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "util/mathconstants.h"
 #include "constants.h"
+#include "fontengine.h"
 
 #define CAMERA_OFFSET_STEP 200
 
@@ -81,6 +82,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 {
 	//dstream<<FUNCTION_NAME<<std::endl;
 
+	m_driver = smgr->getVideoDriver();
 	// note: making the camera node a child of the player node
 	// would lead to unexpected behaviour, so we don't do that.
 	m_playernode = smgr->addEmptySceneNode(smgr->getRootSceneNode());
@@ -110,6 +112,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_cache_wanted_fps          = g_settings->getFloat("wanted_fps");
 	m_cache_fov                 = g_settings->getFloat("fov");
 	m_cache_view_bobbing        = g_settings->getBool("view_bobbing");
+	m_nametags.clear();
 }
 
 Camera::~Camera()
@@ -661,4 +664,50 @@ void Camera::drawWieldedTool(irr::core::matrix4* translation)
 		cam->setTarget(focusPoint);
 	}
 	m_wieldmgr->drawAll();
+}
+
+void Camera::drawNametags()
+{
+	core::matrix4 trans = m_cameranode->getProjectionMatrix();
+	trans *= m_cameranode->getViewMatrix();
+
+	for (std::list<Nametag *>::const_iterator
+			i = m_nametags.begin();
+			i != m_nametags.end(); ++i) {
+		Nametag *nametag = *i;
+		v3f pos = nametag->parent_node->getPosition() -
+			intToFloat(m_camera_offset, BS) + v3f(0.0, 1.1 * BS, 0.0);
+		f32 transformed_pos[4] = { pos.X, pos.Y, pos.Z, 1.0f };
+		trans.multiplyWith1x4Matrix(transformed_pos);
+		if (transformed_pos[3] > 0) {
+			core::dimension2d<u32> textsize =
+				g_fontengine->getFont()->getDimension(
+				utf8_to_wide(nametag->nametag_text).c_str());
+			f32 zDiv = transformed_pos[3] == 0.0f ? 1.0f :
+				core::reciprocal(transformed_pos[3]);
+			v2u32 screensize = m_driver->getScreenSize();
+			v2s32 screen_pos;
+			screen_pos.X = screensize.X *
+				(0.5 * transformed_pos[0] * zDiv + 0.5) - textsize.Width / 2;
+			screen_pos.Y = screensize.Y *
+				(0.5 - transformed_pos[1] * zDiv * 0.5) - textsize.Height / 2;
+			core::rect<s32> size(0, 0, textsize.Width, textsize.Height);
+			g_fontengine->getFont()->draw(utf8_to_wide(nametag->nametag_text).c_str(),
+					size + screen_pos, nametag->nametag_color);
+		}
+	}
+}
+
+Nametag *Camera::addNametag(scene::ISceneNode *parent_node,
+		std::string nametag_text, video::SColor nametag_color)
+{
+	Nametag *nametag = new Nametag(parent_node, nametag_text, nametag_color);
+	m_nametags.push_back(nametag);
+	return nametag;
+}
+
+void Camera::removeNametag(Nametag *nametag)
+{
+	m_nametags.remove(nametag);
+	delete nametag;
 }

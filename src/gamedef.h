@@ -32,6 +32,8 @@ class IShaderSource;
 class MtEventManager;
 class IRollbackManager;
 class EmergeManager;
+class Camera;
+
 namespace irr { namespace scene {
 	class IAnimatedMesh;
 	class ISceneManager;
@@ -66,6 +68,10 @@ public:
 	virtual scene::IAnimatedMesh* getMesh(const std::string &filename)
 	{ return NULL; }
 	virtual scene::ISceneManager* getSceneManager()=0;
+
+	virtual Camera* getCamera()
+	{ return NULL; }
+	virtual void setCamera(Camera *camera) {}
 
 	// Only usable on the server, and NOT thread-safe. It is usable from the
 	// environment thread.
