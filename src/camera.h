@@ -26,6 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h"
 #include "util/numeric.h"
 #include <ICameraSceneNode.h>
+#include <ISceneNode.h>
+#include <list>
 
 #include "client.h"
 
@@ -33,6 +35,20 @@ class LocalPlayer;
 struct MapDrawControl;
 class IGameDef;
 class WieldMeshSceneNode;
+
+struct Nametag {
+	Nametag(scene::ISceneNode *a_parent_node,
+			const std::string &a_nametag_text,
+			const video::SColor &a_nametag_color):
+		parent_node(a_parent_node),
+		nametag_text(a_nametag_text),
+		nametag_color(a_nametag_color)
+	{
+	}
+	scene::ISceneNode *parent_node;
+	std::string nametag_text;
+	video::SColor nametag_color;
+};
 
 enum CameraMode {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
 
@@ -84,7 +100,7 @@ public:
 	{
 		return m_camera_direction;
 	}
-	
+
 	// Get the camera offset
 	inline v3s16 getOffset() const
 	{
@@ -151,6 +167,13 @@ public:
 		return m_camera_mode;
 	}
 
+	Nametag *addNametag(scene::ISceneNode *parent_node,
+		std::string nametag_text, video::SColor nametag_color);
+
+	void removeNametag(Nametag *nametag);
+
+	void drawNametags();
+
 private:
 	// Nodes
 	scene::ISceneNode* m_playernode;
@@ -162,8 +185,9 @@ private:
 
 	// draw control
 	MapDrawControl& m_draw_control;
-	
+
 	IGameDef *m_gamedef;
+	video::IVideoDriver *m_driver;
 
 	// Absolute camera position
 	v3f m_camera_position;
@@ -214,6 +238,8 @@ private:
 	f32 m_cache_wanted_fps;
 	f32 m_cache_fov;
 	bool m_cache_view_bobbing;
+
+	std::list<Nametag *> m_nametags;
 };
 
 #endif

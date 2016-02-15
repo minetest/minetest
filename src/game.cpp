@@ -2087,6 +2087,7 @@ bool Game::createClient(const std::string &playername,
 	camera = new Camera(smgr, *draw_control, gamedef);
 	if (!camera || !camera->successfullyCreated(*error_message))
 		return false;
+	client->setCamera(camera);
 
 	/* Clouds
 	 */

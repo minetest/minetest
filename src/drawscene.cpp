@@ -195,7 +195,7 @@ video::ITexture*  draw_hud(video::IVideoDriver* driver, const v2u32& screensize,
 			hud.drawCrosshair();
 		hud.drawHotbar(client.getPlayerItem());
 		hud.drawLuaElements(camera.getOffset());
-
+		camera.drawNametags();
 		guienv->drawAll();
 	}
 
@@ -416,6 +416,7 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 			camera.drawWieldedTool(&leftMove);
 		hud.drawHotbar(client.getPlayerItem());
 		hud.drawLuaElements(camera.getOffset());
+		camera.drawNametags();
 	}
 
 	guienv->drawAll();
@@ -443,6 +444,7 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 			camera.drawWieldedTool(&rightMove);
 		hud.drawHotbar(client.getPlayerItem());
 		hud.drawLuaElements(camera.getOffset());
+		camera.drawNametags();
 	}
 
 	guienv->drawAll();
@@ -538,8 +540,11 @@ void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
 	{
 		if (draw_crosshair)
 			hud.drawCrosshair();
+
 		hud.drawHotbar(client.getPlayerItem());
 		hud.drawLuaElements(camera.getOffset());
+		camera.drawNametags();
+
 		if (show_minimap)
 			mapper.drawMinimap();
 	}
