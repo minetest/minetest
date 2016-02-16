@@ -264,7 +264,7 @@ Client::Client(
 	m_cache_smooth_lighting = g_settings->getBool("smooth_lighting");
 	m_cache_enable_shaders  = g_settings->getBool("enable_shaders");
 	m_cache_use_tangent_vertices = m_cache_enable_shaders && (
-		g_settings->getBool("enable_bumpmapping") || 
+		g_settings->getBool("enable_bumpmapping") ||
 		g_settings->getBool("enable_parallax_occlusion"));
 }
 
@@ -669,19 +669,15 @@ void Client::step(float dtime)
 
 bool Client::loadMedia(const std::string &data, const std::string &filename)
 {
-	// Silly irrlicht's const-incorrectness
-	Buffer<char> data_rw(data.c_str(), data.size());
-
 	std::string name;
 
-	const char *image_ext[] = {
+	static const char *image_ext[] = {
 		".png", ".jpg", ".bmp", ".tga",
 		".pcx", ".ppm", ".psd", ".wal", ".rgb",
 		NULL
 	};
 	name = removeStringEnd(filename, image_ext);
-	if(name != "")
-	{
+	if (!name.empty()) {
 		verbosestream<<"Client: Attempting to load image "
 		<<"file \""<<filename<<"\""<<std::endl;
 
@@ -690,7 +686,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 
 		// Create an irrlicht memory file
 		io::IReadFile *rfile = irrfs->createMemoryReadFile(
-				*data_rw, data_rw.getSize(), "_tempreadfile");
+				(void*)data.c_str(), data.size(), "_tempreadfile");
 
 		FATAL_ERROR_IF(!rfile, "Could not create irrlicht memory file.");
 
@@ -710,27 +706,25 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 		}
 	}
 
-	const char *sound_ext[] = {
+	static const char *sound_ext[] = {
 		".0.ogg", ".1.ogg", ".2.ogg", ".3.ogg", ".4.ogg",
 		".5.ogg", ".6.ogg", ".7.ogg", ".8.ogg", ".9.ogg",
 		".ogg", NULL
 	};
 	name = removeStringEnd(filename, sound_ext);
-	if(name != "")
-	{
+	if (!name.empty()) {
 		verbosestream<<"Client: Attempting to load sound "
 		<<"file \""<<filename<<"\""<<std::endl;
 		m_sound->loadSoundData(name, data);
 		return true;
 	}
 
-	const char *model_ext[] = {
+	static const char *model_ext[] = {
 		".x", ".b3d", ".md2", ".obj",
 		NULL
 	};
 	name = removeStringEnd(filename, model_ext);
-	if(name != "")
-	{
+	if (!name.empty()) {
 		verbosestream<<"Client: Storing model into memory: "
 				<<"\""<<filename<<"\""<<std::endl;
 		if(m_mesh_data.count(filename))
