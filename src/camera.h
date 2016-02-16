@@ -120,8 +120,8 @@ public:
 	void update(LocalPlayer* player, f32 frametime, f32 busytime,
 			f32 tool_reload_ratio, ClientEnvironment &c_env);
 
-	// Render distance feedback loop
-	void updateViewingRange(f32 frametime_in, f32 busytime_in);
+	// Update render distance
+	void updateViewingRange();
 
 	// Start digging animation
 	// Pass 0 for left click, 1 for right click
@@ -211,7 +211,6 @@ private:
 
 	f32 m_cache_fall_bobbing_amount;
 	f32 m_cache_view_bobbing_amount;
-	f32 m_cache_wanted_fps;
 	f32 m_cache_fov;
 	bool m_cache_view_bobbing;
 };

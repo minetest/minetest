@@ -62,8 +62,8 @@ Clouds::Clouds(
 	g_settings->registerChangedCallback("enable_3d_clouds",
 		&cloud_3d_setting_changed, this);
 
-	m_box = aabb3f(-BS*1000000,m_cloud_y-BS,-BS*1000000,
-			BS*1000000,m_cloud_y+BS,BS*1000000);
+	m_box = aabb3f(- BS * 1000000, - BS * 1000000, - BS * 1000000,
+			BS * 1000000, BS * 1000000, BS * 1000000);
 
 }
 
@@ -100,9 +100,16 @@ void Clouds::render()
 	
 	m_material.setFlag(video::EMF_BACK_FACE_CULLING, m_enable_3d);
 
+	core::matrix4 projection = driver->getTransform(video::ETS_PROJECTION);
+	core::matrix4 old_projection = projection;
+	//set clipping
+	projection[10] = 1.00001;
+	projection[14] = -1.00001;
+
+	driver->setTransform(video::ETS_PROJECTION, projection);
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 	driver->setMaterial(m_material);
-	
+
 	/*
 		Clouds move from Z+ towards Z-
 	*/
@@ -338,6 +345,7 @@ void Clouds::render()
 
 	delete[] grid;
 	
+	driver->setTransform(video::ETS_PROJECTION, old_projection);
 	// Restore fog settings
 	driver->setFog(fog_color, fog_type, fog_start, fog_end, fog_density,
 			fog_pixelfog, fog_rangefog);
