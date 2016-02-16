@@ -1425,7 +1425,6 @@ void MeshCollector::append(const TileSpec &tile,
 	u32 vertex_count;
 	if (m_use_tangent_vertices) {
 		vertex_count = p->tangent_vertices.size();
-		p->tangent_vertices.reserve(vertex_count + numVertices);
 		for (u32 i = 0; i < numVertices; i++) {
 			video::S3DVertexTangents vert(vertices[i].Pos, vertices[i].Normal,
 				vertices[i].Color, vertices[i].TCoords);
@@ -1433,7 +1432,6 @@ void MeshCollector::append(const TileSpec &tile,
 		}
 	} else {
 		vertex_count = p->vertices.size();
-		p->vertices.reserve(vertex_count + numVertices);
 		for (u32 i = 0; i < numVertices; i++) {
 			video::S3DVertex vert(vertices[i].Pos, vertices[i].Normal,
 				vertices[i].Color, vertices[i].TCoords);
@@ -1441,7 +1439,6 @@ void MeshCollector::append(const TileSpec &tile,
 		}
 	} 
 
-	p->indices.reserve(p->indices.size() + numIndices);
 	for (u32 i = 0; i < numIndices; i++) {
 		u32 j = indices[i] + vertex_count;
 		p->indices.push_back(j);
@@ -1484,7 +1481,6 @@ void MeshCollector::append(const TileSpec &tile,
 	u32 vertex_count;
 	if (m_use_tangent_vertices) {
 		vertex_count = p->tangent_vertices.size();
-		p->tangent_vertices.reserve(vertex_count + numVertices);
 		for (u32 i = 0; i < numVertices; i++) {
 			video::S3DVertexTangents vert(vertices[i].Pos + pos,
 				vertices[i].Normal, c, vertices[i].TCoords);
@@ -1492,7 +1488,6 @@ void MeshCollector::append(const TileSpec &tile,
 		}
 	} else {
 		vertex_count = p->vertices.size();
-		p->vertices.reserve(vertex_count + numVertices);
 		for (u32 i = 0; i < numVertices; i++) {
 			video::S3DVertex vert(vertices[i].Pos + pos,
 				vertices[i].Normal, c, vertices[i].TCoords);
@@ -1500,7 +1495,6 @@ void MeshCollector::append(const TileSpec &tile,
 		}
 	} 
 
-	p->indices.reserve(p->indices.size() + numIndices);
 	for (u32 i = 0; i < numIndices; i++) {
 		u32 j = indices[i] + vertex_count;
 		p->indices.push_back(j);
