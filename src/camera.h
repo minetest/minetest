@@ -172,6 +172,9 @@ public:
 
 	void removeNametag(Nametag *nametag);
 
+	std::list<Nametag *> *getNametags()
+	{ return &m_nametags; }
+
 	void drawNametags();
 
 private:
