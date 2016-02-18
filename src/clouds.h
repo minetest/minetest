@@ -76,11 +76,9 @@ public:
 
 	void update(v2f camera_p, video::SColorf color);
 	
-	void updateCameraOffset(v3s16 camera_offset)
+	void updateCameraOffset(const v3s16 &camera_offset)
 	{
 		m_camera_offset = camera_offset;
-		m_box = aabb3f(-BS * 1000000, m_cloud_y - BS - BS * camera_offset.Y, -BS * 1000000,
-			BS * 1000000, m_cloud_y + BS - BS * camera_offset.Y, BS * 1000000);
 	}
 
 	void readSettings();

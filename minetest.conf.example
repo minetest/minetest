@@ -437,11 +437,6 @@
 
 #### Advanced
 
-#    Minimum wanted FPS.
-#    The amount of rendered stuff is dynamically set according to this. and viewing range min and max.
-#    type: int
-# wanted_fps = 30
-
 #    If FPS would go higher than this, limit it by sleeping
 #    to not waste CPU power for no benefit.
 #    type: int
@@ -451,15 +446,9 @@
 #    type: int
 # pause_fps_max = 20
 
-#    The allowed adjustment range for the automatic rendering range adjustment.
-#    Set this to be equal to viewing range minimum to disable the auto-adjustment algorithm.
+#    View range in nodes.
 #    type: int
-# viewing_range_nodes_max = 160
-
-#    The allowed adjustment range for the automatic rendering range adjustment.
-#    Set this to be equal to viewing range maximum to disable the auto-adjustment algorithm.
-#    type: int
-# viewing_range_nodes_min = 35
+# viewing_range = 100
 
 #    Width component of the initial window size.
 #    type: int

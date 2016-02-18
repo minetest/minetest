@@ -393,10 +393,6 @@ enable_waving_plants (Waving plants) bool false
 
 [***Advanced]
 
-#    Minimum wanted FPS.
-#    The amount of rendered stuff is dynamically set according to this. and viewing range min and max.
-wanted_fps (Wanted FPS) int 30
-
 #    If FPS would go higher than this, limit it by sleeping
 #    to not waste CPU power for no benefit.
 fps_max (Maximum FPS) int 60
@@ -404,13 +400,8 @@ fps_max (Maximum FPS) int 60
 #    Maximum FPS when game is paused.
 pause_fps_max (FPS in pause menu) int 20
 
-#    The allowed adjustment range for the automatic rendering range adjustment.
-#    Set this to be equal to viewing range minimum to disable the auto-adjustment algorithm.
-viewing_range_nodes_max (Viewing range maximum) int 160
-
-#    The allowed adjustment range for the automatic rendering range adjustment.
-#    Set this to be equal to viewing range maximum to disable the auto-adjustment algorithm.
-viewing_range_nodes_min (Viewing range minimum) int 35
+#    View distance in nodes
+viewing_range (Viewing range) int 100
 
 #    Width component of the initial window size.
 screenW (Screen width) int 800
