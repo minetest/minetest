@@ -357,22 +357,44 @@ int ModApiUtil::l_get_dir_list(lua_State *L)
 int ModApiUtil::l_request_insecure_environment(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
+
+	// Just return _G if security is disabled
 	if (!ScriptApiSecurity::isSecure(L)) {
 		lua_getglobal(L, "_G");
 		return 1;
 	}
+
+	// We have to make sure that this function is being called directly by
+	// a mod, otherwise a malicious mod could override this function and
+	// steal its return value.
+	lua_Debug info;
+	// Make sure there's only one item below this function on the stack...
+	if (lua_getstack(L, 2, &info)) {
+		return 0;
+	}
+	assert(lua_getstack(L, 1, &info));
+	assert(lua_getinfo(L, "S", &info));
+	// ...and that that item is the main file scope.
+	if (strcmp(info.what, "main") != 0) {
+		return 0;
+	}
+
+	// Get mod name
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
 	if (!lua_isstring(L, -1)) {
-		lua_pushnil(L);
-		return 1;
+		return 0;
 	}
+
+	// Check secure.trusted_mods
 	const char *mod_name = lua_tostring(L, -1);
 	std::string trusted_mods = g_settings->get("secure.trusted_mods");
 	std::vector<std::string> mod_list = str_split(trusted_mods, ',');
-	if (std::find(mod_list.begin(), mod_list.end(), mod_name) == mod_list.end()) {
-		lua_pushnil(L);
-		return 1;
+	if (std::find(mod_list.begin(), mod_list.end(), mod_name) ==
+			mod_list.end()) {
+		return 0;
 	}
+
+	// Push insecure environment
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
 	return 1;
 }
