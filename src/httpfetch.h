@@ -116,6 +116,9 @@ bool httpfetch_async_get(unsigned long caller, HTTPFetchResult &fetch_result);
 // Not required if you want to set caller = HTTPFETCH_DISCARD
 unsigned long httpfetch_caller_alloc();
 
+// Allocates a non-predictable caller ID for httpfetch_async
+unsigned long httpfetch_caller_alloc_secure();
+
 // Frees a caller ID allocated with httpfetch_caller_alloc
 // Note: This can be expensive, because the httpfetch thread is told
 // to stop any ongoing fetches for the given caller.
