@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 
 #include <algorithm>
+#include <iomanip>
 #include <cctype>
 
 #define HTTP_API(name) \
@@ -38,7 +39,7 @@ void ModApiHttp::read_http_fetch_request(lua_State *L, HTTPFetchRequest &req)
 {
 	luaL_checktype(L, 1, LUA_TTABLE);
 
-	req.caller = httpfetch_caller_alloc();
+	req.caller = httpfetch_caller_alloc_secure();
 	getstringfield(L, 1, "url", req.url);
 	req.post_data = getstringfield_default(L, 1, "post_data", "");
 	lua_getfield(L, 1, "user_agent");
@@ -72,11 +73,12 @@ void ModApiHttp::read_http_fetch_request(lua_State *L, HTTPFetchRequest &req)
 	lua_pop(L, 1);
 }
 
-void ModApiHttp::push_http_fetch_result(lua_State *L, HTTPFetchResult &res)
+void ModApiHttp::push_http_fetch_result(lua_State *L, HTTPFetchResult &res, bool completed)
 {
 	lua_newtable(L);
 	setboolfield(L, -1, "succeeded", res.succeeded);
 	setboolfield(L, -1, "timeout", res.timeout);
+	setboolfield(L, -1, "completed", completed);
 	setintfield(L, -1, "code", res.response_code);
 	setstringfield(L, -1, "data", res.data.c_str());
 }
@@ -92,7 +94,12 @@ int ModApiHttp::l_http_fetch_async(lua_State *L)
 	actionstream << "Mod performs HTTP request with URL " << req.url << std::endl;
 	httpfetch_async(req);
 
-	lua_pushnumber(L, req.caller);
+	// Convert handle to hex string since lua can't handle 64-bit integers
+	std::stringstream handle_conversion_stream;
+	handle_conversion_stream << std::hex << req.caller;
+	std::string caller_handle(handle_conversion_stream.str());
+
+	lua_pushstring(L, caller_handle.c_str());
 	return 1;
 }
 
@@ -101,12 +108,19 @@ int ModApiHttp::l_http_fetch_async_get(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	int handle = luaL_checknumber(L, 1);
+	std::string handle_str = luaL_checkstring(L, 1);
+
+	// Convert hex string back to 64-bit handle
+	u64 handle;
+	std::stringstream handle_conversion_stream;
+	handle_conversion_stream << std::hex << handle_str;
+	handle_conversion_stream >> handle;
 
 	HTTPFetchResult res;
-	httpfetch_async_get(handle, res);
+	bool completed = httpfetch_async_get(handle, res);
 
-	push_http_fetch_result(L, res);
+	push_http_fetch_result(L, res, completed);
+
 	return 1;
 }
 

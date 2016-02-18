@@ -31,7 +31,7 @@ private:
 #if USE_CURL
 	// Helpers for HTTP fetch functions
 	static void read_http_fetch_request(lua_State *L, HTTPFetchRequest &req);
-	static void push_http_fetch_result(lua_State *L, HTTPFetchResult &res);
+	static void push_http_fetch_result(lua_State *L, HTTPFetchResult &res, bool completed = true);
 
 	// http_fetch_async({url=, timeout=, post_data=})
 	static int l_http_fetch_async(lua_State *L);

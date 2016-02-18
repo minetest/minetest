@@ -186,7 +186,7 @@ function core.http_add_fetch(httpenv)
 
 		local function update_http_status()
 			local res = httpenv.fetch_async_get(handle)
-			if res.code ~= 0 then
+			if res.completed then
 				callback(res)
 			else
 				core.after(0, update_http_status)
