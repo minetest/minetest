@@ -391,7 +391,7 @@ void RemoteClient::SentBlock(v3s16 p)
 void RemoteClient::SetBlockNotSent(v3s16 p)
 {
 	m_nearest_unsent_d = 0;
-	m_nothing_to_send_pause_timer=0.1;
+	m_nothing_to_send_pause_timer = 0.1;
 
 	if(m_blocks_sending.find(p) != m_blocks_sending.end())
 		m_blocks_sending.erase(p);
@@ -402,8 +402,8 @@ void RemoteClient::SetBlockNotSent(v3s16 p)
 void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks)
 {
 	m_nearest_unsent_d = 0;
-	m_nothing_to_send_pause_timer=0.1;
-	
+	m_nothing_to_send_pause_timer = 0.1;
+
 	for(std::map<v3s16, MapBlock*>::iterator
 			i = blocks.begin();
 			i != blocks.end(); ++i)
