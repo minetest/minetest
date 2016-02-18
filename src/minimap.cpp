@@ -211,6 +211,7 @@ void MinimapUpdateThread::getMap(v3s16 pos, s16 size, s16 height, bool is_radar)
 
 Mapper::Mapper(IrrlichtDevice *device, Client *client)
 {
+	this->client    = client;
 	this->driver    = device->getVideoDriver();
 	this->m_tsrc    = client->getTextureSource();
 	this->m_shdrsrc = client->getShaderSource();
@@ -250,6 +251,8 @@ Mapper::Mapper(IrrlichtDevice *device, Client *client)
 
 	// Create player marker texture
 	data->player_marker = m_tsrc->getTexture("player_marker.png");
+	// Create object marker texture
+	data->object_marker_red = m_tsrc->getTexture("object_marker_red.png");
 
 	// Create mesh buffer for minimap
 	m_meshbuffer = getMinimapMeshBuffer();
@@ -274,6 +277,7 @@ Mapper::~Mapper()
 	driver->removeTexture(data->heightmap_texture);
 	driver->removeTexture(data->minimap_overlay_round);
 	driver->removeTexture(data->minimap_overlay_square);
+	driver->removeTexture(data->object_marker_red);
 
 	delete data;
 	delete m_minimap_update_thread;
@@ -468,6 +472,7 @@ void Mapper::drawMinimap()
 	if (!minimap_texture)
 		return;
 
+	updateActiveMarkers();
 	v2u32 screensize = porting::getWindowSize();
 	const u32 size = 0.25 * screensize.Y;
 
@@ -527,6 +532,70 @@ void Mapper::drawMinimap()
 	driver->setTransform(video::ETS_VIEW, oldViewMat);
 	driver->setTransform(video::ETS_PROJECTION, oldProjMat);
 	driver->setViewPort(oldViewPort);
+
+	// Draw player markers
+	v2s32 s_pos(screensize.X - size - 10, 10);
+	core::dimension2di imgsize(data->object_marker_red->getOriginalSize());
+	core::rect<s32> img_rect(0, 0, imgsize.Width, imgsize.Height);
+	static const video::SColor col(255, 255, 255, 255);
+	static const video::SColor c[4] = {col, col, col, col};
+	f32 sin_angle = sin(m_angle * core::DEGTORAD);
+	f32 cos_angle = cos(m_angle * core::DEGTORAD);
+	s32 marker_size2 =  0.025 * (float)size;
+	for (std::list<v2f>::const_iterator
+			i = m_active_markers.begin();
+			i != m_active_markers.end(); ++i) {
+		v2f posf = *i;
+		if (data->minimap_shape_round) {
+			f32 t1 = posf.X * cos_angle - posf.Y * sin_angle;
+			f32 t2 = posf.X * sin_angle + posf.Y * cos_angle;
+			posf.X = t1;
+			posf.Y = t2;
+		}
+		posf.X = (posf.X + 0.5) * (float)size;
+		posf.Y = (posf.Y + 0.5) * (float)size;
+		core::rect<s32> dest_rect(
+			s_pos.X + posf.X - marker_size2,
+			s_pos.Y + posf.Y - marker_size2,
+			s_pos.X + posf.X + marker_size2,
+			s_pos.Y + posf.Y + marker_size2);
+		driver->draw2DImage(data->object_marker_red, dest_rect,
+			img_rect, &dest_rect, &c[0], true);
+	}
+}
+
+void Mapper::updateActiveMarkers ()
+{
+	video::IImage *minimap_mask = data->minimap_shape_round ?
+		data->minimap_mask_round : data->minimap_mask_square;
+
+	std::list<Nametag *> *nametags = client->getCamera()->getNametags();
+
+	m_active_markers.clear();
+
+	for (std::list<Nametag *>::const_iterator
+			i = nametags->begin();
+			i != nametags->end(); ++i) {
+		Nametag *nametag = *i;
+		v3s16 pos = floatToInt(nametag->parent_node->getPosition() +
+			intToFloat(client->getCamera()->getOffset(), BS), BS);
+		pos -= data->pos - v3s16(data->map_size / 2,
+				data->scan_height / 2,
+				data->map_size / 2);
+		if (pos.X < 0 || pos.X > data->map_size ||
+				pos.Y < 0 || pos.Y > data->scan_height ||
+				pos.Z < 0 || pos.Z > data->map_size) {
+			continue;
+		}
+		pos.X = ((float)pos.X / data->map_size) * MINIMAP_MAX_SX;
+		pos.Z = ((float)pos.Z / data->map_size) * MINIMAP_MAX_SY;
+		video::SColor mask_col = minimap_mask->getPixel(pos.X, pos.Z);
+		if (!mask_col.getAlpha()) {
+			continue;
+		}
+		m_active_markers.push_back(v2f(((float)pos.X / (float)MINIMAP_MAX_SX) - 0.5,
+			(1.0 - (float)pos.Z / (float)MINIMAP_MAX_SY) - 0.5));
+	}
 }
 
 ////

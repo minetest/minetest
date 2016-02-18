@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <string>
 #include <vector>
+#include "camera.h"
 
 #define MINIMAP_MAX_SX 512
 #define MINIMAP_MAX_SY 512
@@ -82,6 +83,7 @@ struct MinimapData {
 	video::ITexture *minimap_overlay_round;
 	video::ITexture *minimap_overlay_square;
 	video::ITexture *player_marker;
+	video::ITexture *object_marker_red;
 };
 
 struct QueuedMinimapUpdate {
@@ -138,9 +140,12 @@ public:
 		video::IImage *heightmap_image);
 
 	scene::SMeshBuffer *getMinimapMeshBuffer();
+
+	void updateActiveMarkers();
 	void drawMinimap();
 
 	video::IVideoDriver *driver;
+	Client* client;
 	MinimapData *data;
 
 private:
@@ -153,6 +158,7 @@ private:
 	u16 m_surface_mode_scan_height;
 	f32 m_angle;
 	Mutex m_mutex;
+	std::list<v2f> m_active_markers;
 };
 
 #endif
