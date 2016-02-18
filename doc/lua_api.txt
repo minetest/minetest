@@ -2330,6 +2330,30 @@ These functions return the leftover itemstack.
     * If `lua_num_indent_spaces` is a nonzero number and `format` is "lua", the Lua code generated
     * will use that number of spaces as indentation instead of a tab character.
 
+### HTTP Requests:
+* `minetest.request_http_api()`:
+    * returns `HTTPApiTable` containing http functions if the calling mod has been granted
+      access by being listed in the `secure.http_mods` setting or security is
+      disabled, otherwise returns `nil`.
+    * The returned table contains the functions `fetch`, `fetch_async`, `fetch_async_get`
+      and `fetch_sync` described below.
+    * Only works at init time.
+    * Function only exists if minetest server was built with cURL support.
+    * **DO NOT ALLOW ANY OTHER MODS TO ACCESS THE RETURNED TABLE, STORE IT IN
+      A LOCAL VARIABLE!**
+* `HTTPApiTable.fetch(HTTPRequest req, callback)`
+    * Performs given request asynchronously and calls callback upon completion
+    * callback: `function(HTTPRequestResult res)`
+    * Use this HTTP function if you are unsure, the others are for advanced use.
+* `HTTPApiTable.fetch_async(HTTPRequest req)`: returns handle
+    * Performs given request asynchronously and returns handle for `minetest.http_fetch_async_get`
+* `HTTPApiTable.fetch_async_get(handle)`: returns HTTPRequestResult
+    * Return response data for given asynchronous HTTP request
+* `HTTPApiTable.fetch_sync(HTTPRequest req)`: returns HTTPRequestResult
+    * Blocking. Returns HTTP response data for given request directly.
+
+If possible, do NOT use sychronous HTTP requests, they block the server thread.
+
 ### Misc.
 * `minetest.get_connected_players()`: returns list of `ObjectRefs`
 * `minetest.hash_node_position({x=,y=,z=})`: returns an 48-bit integer
@@ -3836,4 +3860,37 @@ Definition tables
     --  ^ Uses texture (string)
         playername = "singleplayer"
     --  ^ Playername is optional, if specified spawns particle only on the player's client
+    }
+
+### `HTTPRequest` definition (`http_fetch`, `http_fetch_async`, `http_fetch_sync`)
+
+    {
+        url = "http://example.org",
+        timeout = 10,
+     -- ^ Timeout for connection in seconds. Default is 1 second.
+        post_data = "Post request data",
+     -- ^ Optional, if specified a POST request with post_data is performed.
+        post_fields = { field1 = "data1", field2 = "data2" },
+     -- ^ Optional, if specified a POST request with given form post data is performed.
+     -- ^ If neither post_fields nor post_data are specified, a GET request is performed.
+     -- ^ In case both are specified post_data overrides post_fields.
+        user_agent = "ExampleUserAgent",
+     -- ^ Optional, if specified replaces the default minetest user agent with given string
+        extra_headers = { "Accept-Language: en-us", "Accept-Charset: utf-8" },
+     -- ^ Optional, if specified adds additional headers to the HTTP request. You must make sure
+     -- ^ that the header strings follow HTTP specification ("Key: Value").
+        multipart = boolean
+     -- ^ Optional, if true performs a multipart HTTP request. Default is false.
+    }
+
+### `HTTPRequestResult` definition (`http_fetch` callback, `http_fetch_async_get`)
+
+    {
+        succeeded = true,
+     -- ^ If true, the request was succesful
+        timeout = false,
+     -- ^ If true, the request timed out
+        code = 200,
+     -- ^ HTTP status code
+        data = "response"
     }
