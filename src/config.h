@@ -15,6 +15,9 @@
 #elif defined (__ANDROID__) || defined (ANDROID)
 	#define PROJECT_NAME "minetest"
 	#define PROJECT_NAME_C "Minetest"
+	#define PROJECT_NAME_W L"minetest"
+	#define PROJECT_NAME_WC L"Minetest"
+
 	#define STATIC_SHAREDIR ""
 	#include "android_version.h"
 	#ifdef NDEBUG

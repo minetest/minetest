@@ -1059,9 +1059,7 @@ int ModApiMainMenu::l_get_video_modes(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_gettext(lua_State *L)
 {
-	std::string text = strgettext(std::string(luaL_checkstring(L, 1)));
-	lua_pushstring(L, text.c_str());
-
+	lua_pushstring(L, gettext(luaL_checkstring(L, 1)));
 	return 1;
 }
 

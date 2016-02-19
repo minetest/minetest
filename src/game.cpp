@@ -58,6 +58,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "minimap.h"
 #include "mapblock_mesh.h"
+#include "client/mumble.h"
 
 #include "sound.h"
 
@@ -1645,6 +1646,9 @@ private:
 	ISoundManager *sound;
 	bool sound_is_dummy;
 	SoundMaker *soundmaker;
+#if USE_MUMBLE
+	MumbleManager mumble;
+#endif
 
 	ChatBackend *chat_backend;
 
@@ -1840,6 +1844,15 @@ bool Game::startup(bool *kill,
 	if (!createClient(playername, password, address, port))
 		return false;
 
+#if USE_MUMBLE
+	std::string context = *address;
+	if (context.empty())
+		context = g_settings->get("server_address");
+	if (mumble.start(context + '|' + to_string(port), playername)) {
+		infostream << "Mumble link initialized." << std::endl;
+	}
+#endif
+
 	return true;
 }
 
@@ -1931,6 +1944,14 @@ void Game::run()
 				flags.show_debug);
 		updateFrame(&graph, &stats, &runData, dtime, flags, cam_view);
 		updateProfilerGraphs(&graph);
+#if USE_MUMBLE
+		LocalPlayer *player = client->getEnv().getLocalPlayer();
+		v3f player_dir(0, 0, 1);
+		player_dir.rotateXZBy(player->getYaw());
+		player_dir.rotateXYBy(player->getPitch());
+		mumble.step(player->getEyePosition() / BS, player_dir,
+				camera->getPosition() / BS, camera->getDirection());
+#endif
 
 		// Update if minimap has been disabled by the server
 		flags.show_minimap &= !client->isMinimapDisabledByServer();
@@ -2166,7 +2187,7 @@ bool Game::createClient(const std::string &playername,
 
 	/* Set window caption
 	 */
-	std::wstring str = utf8_to_wide(PROJECT_NAME_C);
+	std::wstring str = PROJECT_NAME_CW;
 	str += L" [";
 	str += driver->getName();
 	str += L"]";
@@ -2193,8 +2214,7 @@ bool Game::createClient(const std::string &playername,
 bool Game::initGui()
 {
 	// First line of debug text
-	guitext = guienv->addStaticText(
-			utf8_to_wide(PROJECT_NAME_C).c_str(),
+	guitext = guienv->addStaticText(PROJECT_NAME_CW,
 			core::rect<s32>(0, 0, 0, 0),
 			false, false, guiroot);
 

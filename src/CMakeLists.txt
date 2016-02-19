@@ -221,9 +221,6 @@ if(ENABLE_REDIS)
 endif(ENABLE_REDIS)
 
 
-find_package(SQLite3 REQUIRED)
-find_package(Json REQUIRED)
-
 OPTION(ENABLE_SPATIAL "Enable SpatialIndex AreaStore backend" TRUE)
 set(USE_SPATIAL FALSE)
 
@@ -238,6 +235,14 @@ if(ENABLE_SPATIAL)
 		message(STATUS "SpatialIndex not found!")
 	endif(SPATIAL_LIBRARY AND SPATIAL_INCLUDE_DIR)
 endif(ENABLE_SPATIAL)
+
+
+OPTION(ENABLE_MUMBLE "Enable Mumble positional audio" TRUE)
+set(USE_MUMBLE ${ENABLE_MUMBLE})
+
+
+find_package(SQLite3 REQUIRED)
+find_package(Json REQUIRED)
 
 
 if(NOT MSVC)

@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GETTEXT_HEADER
 
 #include "config.h" // for USE_GETTEXT
+#include <string>
 
 #if USE_GETTEXT
 	#include <libintl.h>
@@ -35,7 +36,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 void init_gettext(const char *path, const std::string &configured_language,
 	int argc, char *argv[]);
 
+inline std::string strgettext(const char *str)
+{
+	return gettext(str);
+}
+
 extern wchar_t *utf8_to_wide_c(const char *str);
+extern std::wstring utf8_to_wide(const std::string &str);
 
 // You must free the returned string!
 // The returned string is allocated using new
@@ -44,9 +51,9 @@ inline const wchar_t *wgettext(const char *str)
 	return utf8_to_wide_c(gettext(str));
 }
 
-inline std::string strgettext(const std::string &text)
+inline std::wstring wstrgettext(const char *str)
 {
-	return gettext(text.c_str());
+	return utf8_to_wide(gettext(str));
 }
 
 #endif
