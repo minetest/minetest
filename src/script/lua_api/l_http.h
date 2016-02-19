@@ -39,9 +39,6 @@ private:
 	// http_fetch_async_get(handle)
 	static int l_http_fetch_async_get(lua_State *L);
 
-	// http_fetch_sync({url=, timeout=, post_data=})
-	static int l_http_fetch_sync(lua_State *L);
-
 	// request_http_api()
 	static int l_request_http_api(lua_State *L);
 #endif

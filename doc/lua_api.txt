@@ -2335,8 +2335,8 @@ These functions return the leftover itemstack.
     * returns `HTTPApiTable` containing http functions if the calling mod has been granted
       access by being listed in the `secure.http_mods` setting or security is
       disabled, otherwise returns `nil`.
-    * The returned table contains the functions `fetch`, `fetch_async`, `fetch_async_get`
-      and `fetch_sync` described below.
+    * The returned table contains the functions `fetch`, `fetch_async` and `fetch_async_get`
+      described below.
     * Only works at init time.
     * Function only exists if minetest server was built with cURL support.
     * **DO NOT ALLOW ANY OTHER MODS TO ACCESS THE RETURNED TABLE, STORE IT IN
@@ -2349,10 +2349,6 @@ These functions return the leftover itemstack.
     * Performs given request asynchronously and returns handle for `minetest.http_fetch_async_get`
 * `HTTPApiTable.fetch_async_get(handle)`: returns HTTPRequestResult
     * Return response data for given asynchronous HTTP request
-* `HTTPApiTable.fetch_sync(HTTPRequest req)`: returns HTTPRequestResult
-    * Blocking. Returns HTTP response data for given request directly.
-
-If possible, do NOT use sychronous HTTP requests, they block the server thread.
 
 ### Misc.
 * `minetest.get_connected_players()`: returns list of `ObjectRefs`
@@ -3862,7 +3858,7 @@ Definition tables
     --  ^ Playername is optional, if specified spawns particle only on the player's client
     }
 
-### `HTTPRequest` definition (`http_fetch`, `http_fetch_async`, `http_fetch_sync`)
+### `HTTPRequest` definition (`http_fetch`, `http_fetch_async`)
 
     {
         url = "http://example.org",

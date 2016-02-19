@@ -124,22 +124,6 @@ int ModApiHttp::l_http_fetch_async_get(lua_State *L)
 	return 1;
 }
 
-// http_api.fetch_sync({url=, timeout=, post_data=})
-int ModApiHttp::l_http_fetch_sync(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-
-	HTTPFetchRequest req;
-	HTTPFetchResult res;
-	read_http_fetch_request(L, req);
-
-	actionstream << "Mod performs HTTP request with URL " << req.url << std::endl;
-	httpfetch_sync(req, res);
-
-	push_http_fetch_result(L, res);
-	return 1;
-}
-
 int ModApiHttp::l_request_http_api(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -166,10 +150,9 @@ int ModApiHttp::l_request_http_api(lua_State *L)
 	lua_newtable(L);
 	HTTP_API(fetch_async);
 	HTTP_API(fetch_async_get);
-	HTTP_API(fetch_sync);
 
 	// Stack now looks like this:
-	// <core.http_add_fetch> <table with fetch_async, fetch_async_get, fetch_sync>
+	// <core.http_add_fetch> <table with fetch_async, fetch_async_get>
 	// Now call core.http_add_fetch to append .fetch(request, callback) to table
 	lua_call(L, 1, 1);
 
