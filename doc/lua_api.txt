@@ -2333,8 +2333,8 @@ These functions return the leftover itemstack.
 ### HTTP Requests:
 * `minetest.request_http_api()`:
     * returns `HTTPApiTable` containing http functions if the calling mod has been granted
-      access by being listed in the `secure.http_mods` setting or security is
-      disabled, otherwise returns `nil`.
+      access by being listed in the `secure.http_mods` or `secure.trusted_mods` setting,
+      otherwise returns `nil`.
     * The returned table contains the functions `fetch`, `fetch_async` and `fetch_async_get`
       described below.
     * Only works at init time.
@@ -3863,13 +3863,12 @@ Definition tables
     {
         url = "http://example.org",
         timeout = 10,
-     -- ^ Timeout for connection in seconds. Default is 1 second.
-        post_data = "Post request data",
+     -- ^ Timeout for connection in seconds. Default is 3 seconds.
+        post_data = "Raw POST request data string" OR { field1 = "data1", field2 = "data2" },
      -- ^ Optional, if specified a POST request with post_data is performed.
-        post_fields = { field1 = "data1", field2 = "data2" },
-     -- ^ Optional, if specified a POST request with given form post data is performed.
-     -- ^ If neither post_fields nor post_data are specified, a GET request is performed.
-     -- ^ In case both are specified post_data overrides post_fields.
+     -- ^ Accepts both a string and a table. If a table is specified, encodes table
+     -- ^ as x-www-form-urlencoded key-value pairs.
+     -- ^ If post_data ist not specified, a GET request is performed instead.
         user_agent = "ExampleUserAgent",
      -- ^ Optional, if specified replaces the default minetest user agent with given string
         extra_headers = { "Accept-Language: en-us", "Accept-Charset: utf-8" },
