@@ -15,6 +15,7 @@
 #    - key (will be ignored in GUI, since a special key change dialog exists)
 #    - flags
 #    - noise_params
+#    - v3f
 #
 # `type_args` can be:
 #   * int:
@@ -37,7 +38,11 @@
 #            Flags are always separated by comma without spaces.
 #            - default possible_flags
 #   * noise_params:
-#            TODO: these are currently treated like strings
+#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistance>, <lacunarity>
+#            - default
+#   * v3f:
+#            Format is (<X>, <Y>, <Z>)
+#            - default
 #
 # Comments directly above a setting are bound to this setting.
 # All other comments are ignored.
@@ -834,7 +839,7 @@ map_generation_limit (Map generation limit) int 31000 0 31000
 #    Global map generation attributes.
 #    In Mapgen v6 the 'decorations' flag controls all decorations except trees
 #    and junglegrass, in all other mapgens this flag controls all decorations.
-#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags that are not enabled are not modified from the default.
 #    Flags starting with "no" are used to explicitly disable them.
 mg_flags (Mapgen flags) flags caves,dungeons,light,decorations caves,dungeons,light,decorations,nocaves,nodungeons,nolight,nodecorations
 
@@ -891,7 +896,7 @@ mgv5_np_cave2 (Mapgen v5 cave2 noise parameters) noise_params 0, 12, (50, 50, 50
 
 #    Map generation attributes specific to Mapgen v6.
 #    When snowbiomes are enabled jungles are enabled and the jungles flag is ignored.
-#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags that are not enabled are not modified from the default.
 #    Flags starting with "no" are used to explicitly disable them.
 mgv6_spflags (Mapgen v6 flags) flags jungles,biomeblend,mudflow,snowbiomes,trees jungles,biomeblend,mudflow,snowbiomes,flat,trees,nojungles,nobiomeblend,nomudflow,nosnowbiomes,noflat,notrees
 
@@ -916,7 +921,7 @@ mgv6_np_apple_trees (Mapgen v6 apple trees noise parameters) noise_params 0, 1, 
 
 #    Map generation attributes specific to Mapgen v7.
 #    'ridges' are the rivers.
-#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags that are not enabled are not modified from the default.
 #    Flags starting with "no" are used to explicitly disable them.
 mgv7_spflags (Mapgen v7 flags) flags mountains,ridges mountains,ridges,nomountains,noridges
 
@@ -936,7 +941,7 @@ mgv7_np_cave2 (Mapgen v7 cave2 noise parameters) noise_params 0, 12, (100, 100, 
 
 #    Map generation attributes specific to Mapgen flat.
 #    Occasional lakes and hills added to the flat world.
-#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags that are not enabled are not modified from the default.
 #    Flags starting with "no" are used to explicitly disable them.
 mgflat_spflags (Mapgen flat flags) flags  lakes,hills,,nolakes,nohills
 
@@ -1042,7 +1047,7 @@ mgfractal_np_cave2 (Mapgen fractal cave2 noise parameters) noise_params 0, 12, (
 [****General]
 
 #    Map generation attributes specific to Mapgen Valleys.
-#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags that are not enabled are not modified from the default.
 #    Flags starting with "no" are used to explicitly disable them.
 #    "altitude_chill" makes higher elevations colder, which may cause biome issues.
 #    "humid_rivers" modifies the humidity around rivers and in areas where water would tend to pool. It may interfere with delicately adjusted biomes.
