@@ -86,6 +86,8 @@ public:
 	u32 range(u32 bound);
 	s32 range(s32 min, s32 max);
 	void bytes(void *out, size_t len);
+	void integers(u32 *out, size_t len)
+		{ for (size_t i = 0; i < len; ++i) out[i] = next(); }
 	s32 randNormalDist(s32 min, s32 max, int num_trials=6);
 
 private:
