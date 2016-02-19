@@ -368,6 +368,7 @@ int ModApiUtil::l_request_insecure_environment(lua_State *L)
 	}
 	const char *mod_name = lua_tostring(L, -1);
 	std::string trusted_mods = g_settings->get("secure.trusted_mods");
+	trusted_mods.erase(std::remove(trusted_mods.begin(), trusted_mods.end(), ' '), trusted_mods.end());
 	std::vector<std::string> mod_list = str_split(trusted_mods, ',');
 	if (std::find(mod_list.begin(), mod_list.end(), mod_name) == mod_list.end()) {
 		lua_pushnil(L);
