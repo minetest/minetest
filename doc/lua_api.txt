@@ -2015,7 +2015,7 @@ and `minetest.auth_reload` call the authetification handler.
 * `minetest.set_gen_notify(flags, {deco_ids})`
     * Set the types of on-generate notifications that should be collected
     * `flags` is a flag field with the available flags: `dungeon`, `temple`, `cave_begin`,
-   `cave_end`, `large_cave_begin`, `large_cave_end`, `decoration`
+   `cave_end`, `large_cave_begin`, `large_cave_end`, `alternative_cave`, `decoration`
    * The second parameter is a list of IDS of decorations which notification is requested for
 * `get_gen_notify()`: returns a flagstring and a table with the deco_ids
 * `minetest.get_mapgen_object(objectname)`
@@ -3116,6 +3116,7 @@ Possible fields of the table returned are:
 * `cave_end`
 * `large_cave_begin`
 * `large_cave_end`
+* `alternative_cave`
 * `decoration`
 
 Decorations have a key in the format of `"decoration#id"`, where `id` is the

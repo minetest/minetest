@@ -876,6 +876,7 @@ void MapgenValleys::generateCaves(s16 max_stone_y)
 					&& noise_massive_caves->result[index_3d]
 					> tcave_cache[y - node_min.Y + 1]) {
 				vm->m_data[index_data] = n_air;
+
 				made_a_big_one = true;
 			}
 
@@ -930,6 +931,11 @@ void MapgenValleys::generateCaves(s16 max_stone_y)
 				air_above = false;
 			}
 		}
+	}
+
+	if (made_a_big_one) {
+		GenNotifyType notifytype1 = GENNOTIFY_ALTERNATIVE_CAVE;
+		gennotify.addEvent(notifytype1, v3s16(0,0,0));
 	}
 
 	if (node_max.Y <= large_cave_depth && (!made_a_big_one)) {
