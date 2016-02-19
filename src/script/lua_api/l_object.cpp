@@ -1181,6 +1181,29 @@ int ObjectRef::l_get_player_control_bits(lua_State *L)
 	return 1;
 }
 
+
+// set_minimap_mode(self, id)
+int ObjectRef::l_set_minimap_mode(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+	// TODO
+}
+
+// set_minimap_modes(self, modes)
+int ObjectRef::l_set_minimap_modes(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+	// TODO
+}
+
 // hud_add(self, form)
 int ObjectRef::l_hud_add(lua_State *L)
 {
@@ -1762,6 +1785,8 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_inventory_formspec),
 	luamethod(ObjectRef, get_player_control),
 	luamethod(ObjectRef, get_player_control_bits),
+	luamethod(ObjectRef, set_minimap_mode),
+	luamethod(ObjectRef, set_minimap_modes),
 	luamethod(ObjectRef, set_physics_override),
 	luamethod(ObjectRef, get_physics_override),
 	luamethod(ObjectRef, hud_add),

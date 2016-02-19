@@ -343,6 +343,8 @@ public:
 	std::string hudGetHotbarImage(Player *player);
 	void hudSetHotbarSelectedImage(Player *player, std::string name);
 	std::string hudGetHotbarSelectedImage(Player *player);
+	void hudSetMinimapModeMachine(Player *player, MinimapModeMachine *machine);
+	void hudSetMinimapMode(Player *player, u16 mode);
 
 	inline Address getPeerAddress(u16 peer_id)
 			{ return m_con.GetPeerAddress(peer_id); }

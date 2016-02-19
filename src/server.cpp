@@ -3100,6 +3100,20 @@ std::string Server::hudGetHotbarSelectedImage(Player *player)
 	return player->getHotbarSelectedImage();
 }
 
+void Server::hudSetMinimapModeMachine(Player *player, MinimapModeMachine *machine)
+{
+	std::ostringstream os(std::ios::binary);
+	writeU16(os, machine->getModeCount());
+	machine->serialize(os);
+	SendHUDSetParam(player->peer_id, HUD_PARAM_SET_MINIMAP_MODE_MACHINE, os.str());
+}
+void Server::hudSetMinimapMode(Player *player, u16 mode)
+{
+	std::ostringstream os(std::ios::binary);
+	writeU16(os, mode);
+	SendHUDSetParam(player->peer_id, HUD_PARAM_SET_MINIMAP_MODE, os.str());
+}
+
 bool Server::setLocalPlayerAnimations(Player *player,
 	v2s32 animation_frames[4], f32 frame_speed)
 {

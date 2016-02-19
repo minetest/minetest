@@ -30,10 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include "camera.h"
 
-#define MINIMAP_MAX_SX 512
-#define MINIMAP_MAX_SY 512
-
-
 enum MinimapMode {
 	MINIMAP_MODE_OFF,
 	MINIMAP_MODE_SURFACEx1,
@@ -43,12 +39,6 @@ enum MinimapMode {
 	MINIMAP_MODE_RADARx2,
 	MINIMAP_MODE_RADARx4,
 	MINIMAP_MODE_COUNT,
-};
-
-struct MinimapModeDef {
-	bool is_radar;
-	u16 scan_height;
-	u16 map_size;
 };
 
 struct MinimapPixel {
@@ -65,25 +55,25 @@ struct MinimapMapblock {
 };
 
 struct MinimapData {
-	bool is_radar;
-	MinimapMode mode;
+	Mutex mutex;
+
+	MinimapModeDef *mode;
+
+	// Stuff provided by the mode
+	video::IImage *minimap_mask;
+	video::ITexture *minimap_overlay;
+	video::ITexture *player_marker;
+	video::ITexture *other_players_marker;
+
 	v3s16 pos;
 	v3s16 old_pos;
-	u16 scan_height;
-	u16 map_size;
 	MinimapPixel minimap_scan[MINIMAP_MAX_SX * MINIMAP_MAX_SY];
 	bool map_invalidated;
-	bool minimap_shape_round;
-	video::IImage *minimap_image;
-	video::IImage *heightmap_image;
-	video::IImage *minimap_mask_round;
-	video::IImage *minimap_mask_square;
+
 	video::ITexture *texture;
 	video::ITexture *heightmap_texture;
-	video::ITexture *minimap_overlay_round;
-	video::ITexture *minimap_overlay_square;
-	video::ITexture *player_marker;
-	video::ITexture *object_marker_red;
+	video::IImage *minimap_image;
+	video::IImage *heightmap_image;
 };
 
 struct QueuedMinimapUpdate {
@@ -93,9 +83,13 @@ struct QueuedMinimapUpdate {
 
 class MinimapUpdateThread : public UpdateThread {
 public:
-	MinimapUpdateThread() : UpdateThread("Minimap") {}
+	MinimapUpdateThread(MinimapData *data) :
+		UpdateThread("Minimap"),
+		m_data(data)
+	{}
 	virtual ~MinimapUpdateThread();
 
+	// requires m_data->mutex to be held
 	void getMap(v3s16 pos, s16 size, s16 height, bool radar);
 	MinimapPixel *getMinimapPixel(v3s16 pos, s16 height, s16 *pixel_height);
 	s16 getAirCount(v3s16 pos, s16 height);
@@ -106,12 +100,11 @@ public:
 	bool pushBlockUpdate(v3s16 pos, MinimapMapblock *data);
 	bool popBlockUpdate(QueuedMinimapUpdate *update);
 
-	MinimapData *data;
-
 protected:
 	virtual void doUpdate();
 
 private:
+	MinimapData *m_data;
 	Mutex m_queue_mutex;
 	std::deque<QueuedMinimapUpdate> m_update_queue;
 	std::map<v3s16, MinimapMapblock *> m_blocks_cache;
@@ -125,19 +118,15 @@ public:
 	void addBlock(v3s16 pos, MinimapMapblock *data);
 
 	v3f getYawVec();
-	MinimapMode getMinimapMode();
 
 	void setPos(v3s16 pos);
 	void setAngle(f32 angle);
-	void setMinimapMode(MinimapMode mode);
-	void toggleMinimapShape();
 
+	void setMinimapDisabled(bool disabled);
 
-	video::ITexture *getMinimapTexture();
-
-	void blitMinimapPixelsToImageRadar(video::IImage *map_image);
-	void blitMinimapPixelsToImageSurface(video::IImage *map_image,
-		video::IImage *heightmap_image);
+	void changeMode(bool shift_pressed, bool *flag_minimap_shown,
+		std::string *status_text);
+	void setModeMachine(ClientMinimapModeMachine *mach);
 
 	scene::SMeshBuffer *getMinimapMeshBuffer();
 
@@ -146,9 +135,10 @@ public:
 
 	video::IVideoDriver *driver;
 	Client* client;
-	MinimapData *data;
 
 private:
+	MinimapData *m_data;
+	ClientMinimapModeMachine *m_machine;
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;
 	INodeDefManager *m_ndef;
@@ -159,6 +149,17 @@ private:
 	f32 m_angle;
 	Mutex m_mutex;
 	std::list<v2f> m_active_markers;
+
+	// requires m_mutex to be held
+	void miniMapModeChanged();
+
+	// requires m_data->mutex to be held
+	video::ITexture *getMinimapTexture();
+
+	// both methods require m_data->mutex to be held
+	void blitMinimapPixelsToImageRadar(video::IImage *map_image);
+	void blitMinimapPixelsToImageSurface(video::IImage *map_image,
+		video::IImage *heightmap_image);
 };
 
 #endif

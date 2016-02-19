@@ -20,9 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "hud.h"
-#include "settings.h"
 #include "util/numeric.h"
 #include "log.h"
+#include "util/serialize.h"
+
+#ifndef SERVER
+
+#include "settings.h"
 #include "gamedef.h"
 #include "itemdef.h"
 #include "inventory.h"
@@ -38,6 +42,81 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifdef HAVE_TOUCHSCREENGUI
 #include "touchscreengui.h"
 #endif
+
+#endif // SERVER
+
+MinimapModeMachine::MinimapModeMachine(u16 mode_count)
+{
+	assert(mode_count > 0); // Precondition
+	m_mode_count = mode_count;
+	m_defs = new MinimapModeDef[mode_count];
+}
+
+MinimapModeMachine::~MinimapModeMachine()
+{
+	delete[] m_defs;
+}
+
+void MinimapModeMachine::serialize(std::ostream &os)
+{
+	for (u16 i; i < m_mode_count; i++) {
+		std::ostringstream oss(std::ios::binary);
+		MinimapModeDef &m = m_defs[i];
+		writeU8(oss, m.is_minimap_shown);
+		oss << serializeString(m.status_text);
+		oss << serializeString(m.overlay_texture_name);
+		oss << serializeString(m.mask_texture_name);
+		oss << serializeString(m.player_marker_name);
+		oss << serializeString(m.other_players_marker_name);
+		writeU8(oss, m.is_radar);
+		writeU8(oss, m.show_player_marker);
+		writeU8(oss, m.show_other_player_markers);
+		writeU8(oss, m.rotate_with_yaw);
+		writeU16(oss, m.scan_height);
+		writeU16(oss, m.map_size);
+		writeU16(oss, m.next_mode);
+		writeU16(oss, m.next_mode_shift);
+		// Add future fields here
+
+		os << serializeString(oss.str());
+	}
+}
+
+void MinimapModeMachine::deserialize(std::istream &is)
+{
+	for (u16 i; i < m_mode_count; i++) {
+		std::string str = deSerializeString(is);
+		std::istringstream iss(str, std::ios::binary);
+		MinimapModeDef &m = m_defs[i];
+		m.is_minimap_shown = readU8(is);
+		m.status_text = deSerializeString(is);
+		m.overlay_texture_name = deSerializeString(is);
+		m.mask_texture_name = deSerializeString(is);
+		m.player_marker_name = deSerializeString(is);
+		m.other_players_marker_name = deSerializeString(is);
+		m.is_radar = readU8(is);
+		m.show_player_marker = readU8(is);
+		m.show_other_player_markers = readU8(is);
+		m.rotate_with_yaw = readU8(is);
+		m.scan_height = readU16(is);
+		m.map_size = readU16(is);
+		m.next_mode = readU16(is);
+		m.next_mode_shift = readU16(is);
+		if (m.map_size > MYMIN(MINIMAP_MAX_SX, MINIMAP_MAX_SY)) {
+			throw SerializationError("ERROR: Too large minimap map size specified.");
+		}
+		if (m.next_mode > m_mode_count || m.next_mode_shift > m_mode_count) {
+			throw SerializationError("ERROR: Invalid next Minimap mode.");
+		}
+		try {
+			// Add future fields here
+		} catch (SerializationError &e) {
+			/* Nothing */
+		}
+	}
+}
+
+#ifndef SERVER
 
 Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 		gui::IGUIEnvironment* guienv, IGameDef *gamedef, LocalPlayer *player,
@@ -738,3 +817,32 @@ void drawItemStack(video::IVideoDriver *driver,
 		font->draw(text.c_str(), rect2, color, false, false, clip);
 	}
 }
+
+
+bool ClientMinimapModeMachine::modeChange(bool shift)
+{
+	MinimapModeDef &cur_m = m_defs[m_current_mode];
+	u16 new_mode = shift ? cur_m.next_mode_shift : cur_m.next_mode;
+	return (new_mode != m_current_mode);
+}
+
+void ClientMinimapModeMachine::initMasks(video::IVideoDriver *driver,
+	ITextureSource *tsrc, const core::dimension2d<u32> &siz)
+{
+	for (u16 i = 0; i < m_mode_count; i++) {
+		m_overlays[i] = driver->createImage(
+			tsrc->getTexture(m_defs[i].mask_texture_name),
+			core::position2d<s32>(0, 0),
+			siz);
+	}
+}
+
+ClientMinimapModeMachine::~ClientMinimapModeMachine()
+{
+	if (m_overlays) {
+		for (u16 i = 0; i < m_mode_count; i++) {
+			m_overlays[i]->drop();
+		}
+	}
+}
+#endif

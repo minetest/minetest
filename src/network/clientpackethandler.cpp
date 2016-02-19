@@ -1095,18 +1095,17 @@ void Client::handleCommand_HudSetFlags(NetworkPacket* pkt)
 	Player *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 
-	bool was_minimap_visible = player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE;
+	bool old_disabled_by_server = player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE;
 
 	player->hud_flags &= ~mask;
 	player->hud_flags |= flags;
 
-	m_minimap_disabled_by_server = !(player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE);
+	m_minimap_disabled_by_server = player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE;
 
-	// Hide minimap if it has been disabled by the server
-	if (m_minimap_disabled_by_server && was_minimap_visible) {
+	if (m_minimap_disabled_by_server != old_disabled_by_server) {
 		// defers a minimap update, therefore only call it if really
 		// needed, by checking that minimap was visible before
-		m_mapper->setMinimapMode(MINIMAP_MODE_OFF);
+		m_mapper->setMinimapDisabled(m_minimap_disabled_by_server);
 	}
 }
 
