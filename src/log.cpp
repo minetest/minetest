@@ -313,7 +313,7 @@ void FileLogOutput::open(const std::string &filename)
 	m_stream.open(filename.c_str(), std::ios::app | std::ios::ate);
 	if (!m_stream.good())
 		throw FileNotGoodException("Failed to open log file " +
-			filename + ": " + strerror(errno));
+			filename + ": " + porting::strerrno(errno));
 	m_stream << "\n\n"
 		   "-------------" << std::endl
 		<< "  Separator" << std::endl

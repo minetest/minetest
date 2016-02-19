@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "settings.h"
 #include "log.h"
+#include "porting.h"
 
 #ifdef _WIN32
 	#ifndef WIN32_LEAN_AND_MEAN
@@ -391,7 +392,7 @@ void UDPSocket::Bind(Address addr)
 		if(bind(m_handle, (const struct sockaddr *) &address,
 				sizeof(struct sockaddr_in6)) < 0) {
 			dstream << (int) m_handle << ": Bind failed: "
-			        << strerror(errno) << std::endl;
+			        << porting::strerrno(errno) << std::endl;
 			throw SocketException("Failed to bind socket");
 		}
 	} else {
@@ -405,7 +406,7 @@ void UDPSocket::Bind(Address addr)
 		if (bind(m_handle, (const struct sockaddr *) &address,
 				sizeof(struct sockaddr_in)) < 0) {
 			dstream << (int)m_handle << ": Bind failed: "
-			        << strerror(errno) << std::endl;
+			        << porting::strerrno(errno) << std::endl;
 			throw SocketException("Failed to bind socket");
 		}
 	}
@@ -568,7 +569,7 @@ bool UDPSocket::WaitData(int timeout_ms)
 		return false;
 	} else if (result < 0) {
 		dstream << (int) m_handle << ": Select failed: "
-		        << strerror(errno) << std::endl;
+		        << porting::strerrno(errno) << std::endl;
 
 #ifdef _WIN32
 		int e = WSAGetLastError();

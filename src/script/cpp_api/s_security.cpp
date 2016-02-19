@@ -250,7 +250,7 @@ bool ScriptApiSecurity::isSecure(lua_State *L)
 #define CHECK_FILE_ERR(ret, fp) \
 	if (ret) { \
 		if (fp) std::fclose(fp); \
-		lua_pushfstring(L, "%s: %s", path, strerror(errno)); \
+		lua_pushfstring(L, "%s: %s", path, porting::strerrno(errno).c_str()); \
 		return false; \
 	}
 
@@ -265,7 +265,7 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path)
 	} else {
 		fp = fopen(path, "rb");
 		if (!fp) {
-			lua_pushfstring(L, "%s: %s", path, strerror(errno));
+			lua_pushfstring(L, "%s: %s", path, porting::strerrno(errno).c_str());
 			return false;
 		}
 		chunk_name = new char[strlen(path) + 2];
@@ -293,7 +293,7 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path)
 	CHECK_FILE_ERR(ret, fp);
 	if (ret) {
 		std::fclose(fp);
-		lua_pushfstring(L, "%s: %s", path, strerror(errno));
+		lua_pushfstring(L, "%s: %s", path, porting::strerrno(errno).c_str());
 		return false;
 	}
 	size_t size = std::ftell(fp) - start;
@@ -302,7 +302,7 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path)
 	CHECK_FILE_ERR(ret, fp);
 	if (ret) {
 		std::fclose(fp);
-		lua_pushfstring(L, "%s: %s", path, strerror(errno));
+		lua_pushfstring(L, "%s: %s", path, porting::strerrno(errno).c_str());
 		return false;
 	}
 	size_t num_read = std::fread(code, 1, size, fp);
