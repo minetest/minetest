@@ -617,6 +617,9 @@
 #    type: bool
 # gui_scaling_filter = false
 
+#    When set to true will add a tab with advanced settings to main menu.
+#show_advanced_settings_menu = false
+
 #    When gui_scaling_filter_txr2img is true, copy those images
 #    from hardware to software for scaling.  When false, fall back
 #    to the old scaling method, for video drivers that don't
