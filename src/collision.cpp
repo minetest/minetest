@@ -235,7 +235,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	std::vector<v3s16> node_positions;
 	{
 	//TimeTaker tt2("collisionMoveSimple collect boxes");
-    ScopeProfiler sp(g_profiler, "collisionMoveSimple collect boxes avg", SPT_AVG);
+	ScopeProfiler sp(g_profiler, "collisionMoveSimple collect boxes avg", SPT_AVG);
 
 	v3s16 oldpos_i = floatToInt(*pos_f, BS);
 	v3s16 newpos_i = floatToInt(*pos_f + *speed_f * dtime, BS);
@@ -383,13 +383,12 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 	while(dtime > BS * 1e-10) {
 		//TimeTaker tt3("collisionMoveSimple dtime loop");
-        ScopeProfiler sp(g_profiler, "collisionMoveSimple dtime loop avg", SPT_AVG);
+        	ScopeProfiler sp(g_profiler, "collisionMoveSimple dtime loop avg", SPT_AVG);
 
 		// Avoid infinite loop
 		loopcount++;
 		if (loopcount >= 100) {
 			warningstream << "collisionMoveSimple: Loop count exceeded, aborting to avoid infiniite loop" << std::endl;
-			dtime = 0;
 			break;
 		}
 
@@ -399,7 +398,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 		int nearest_collided = -1;
 		f32 nearest_dtime = dtime;
-		u32 nearest_boxindex = -1;
+		int nearest_boxindex = -1;
 
 		/*
 			Go through every nodebox, find nearest collision
