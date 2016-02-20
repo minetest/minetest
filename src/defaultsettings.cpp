@@ -159,7 +159,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("trilinear_filter", "false");
 	settings->setDefault("texture_clean_transparent", "false");
 	settings->setDefault("texture_min_size", "64");
-	settings->setDefault("preload_item_visuals", "false");
 	settings->setDefault("tone_mapping", "false");
 	settings->setDefault("enable_bumpmapping", "false");
 	settings->setDefault("enable_parallax_occlusion", "false");
@@ -345,7 +344,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("max_simultaneous_block_sends_per_client", "3");
 	settings->setDefault("emergequeue_limit_diskonly", "8");
 	settings->setDefault("emergequeue_limit_generate", "8");
-	settings->setDefault("preload_item_visuals", "false");
 
 	settings->setDefault("viewing_range_nodes_max", "50");
 	settings->setDefault("viewing_range_nodes_min", "20");
