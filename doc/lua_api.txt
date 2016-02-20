@@ -3357,6 +3357,13 @@ Definition tables
               return itemstack
             end
         ]]
+        on_tool_break = func(itemstack, user, node, digparams),
+        --[[
+        ^  default: nil
+        ^ Will be called instead when tool breaks after wear out.
+          If returns nil, does nothing. If returns itemstack
+          wielded will be set this itemstack.
+        ]]
     }
 
 ### Tile definition

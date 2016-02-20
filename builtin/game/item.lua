@@ -468,6 +468,9 @@ function core.node_dig(pos, node, digger)
 		-- Wear out tool
 		if not core.setting_getbool("creative_mode") then
 			wielded:add_wear(dp.wear)
+			if wielded:get_count() == 0 and wdef and wdef.on_tool_break then
+				wielded = wdef.on_tool_break(wielded, digger, node, dp) or wielded
+			end
 		end
 	end
 	digger:set_wielded_item(wielded)
