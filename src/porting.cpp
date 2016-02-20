@@ -558,8 +558,9 @@ void initializePaths()
 	infostream << "Detected user path: " << path_user << std::endl;
 	infostream << "Detected cache path: " << path_cache << std::endl;
 
+#ifdef USE_GETTEXT
 	bool found_localedir = false;
-#ifdef STATIC_LOCALEDIR
+#  ifdef STATIC_LOCALEDIR
 	if (STATIC_LOCALEDIR[0] && fs::PathExists(STATIC_LOCALEDIR)) {
 		found_localedir = true;
 		path_locale = STATIC_LOCALEDIR;
@@ -573,15 +574,16 @@ void initializePaths()
 				<< "(RUN_IN_PLACE or CUSTOM_LOCALEDIR)." << std::endl;
 		}
 	}
-#else
+#  else
 	path_locale = getDataPath("locale");
 	if (fs::PathExists(path_locale)) {
 		found_localedir = true;
 	}
-#endif
+#  endif
 	if (!found_localedir) {
-		errorstream << "Couldn't find a locale directory!" << std::endl;
+		warningstream << "Couldn't find a locale directory!" << std::endl;
 	}
+#endif  // USE_GETTEXT
 }
 
 
