@@ -590,9 +590,6 @@ int MapgenValleys::generateTerrain()
 				} else if (river && y <= surface_y) {
 					// ground
 					vm->m_data[index_data] = n_stone;
-				} else if (river && y < river_y) {
-					// river
-					vm->m_data[index_data] = n_river_water;
 				} else if ((!river) && myround(fill * slope) >= y - surface_y) {
 					// ground
 					vm->m_data[index_data] = n_stone;
@@ -600,6 +597,9 @@ int MapgenValleys::generateTerrain()
 				} else if (y <= water_level) {
 					// sea
 					vm->m_data[index_data] = n_water;
+				} else if (river && y < river_y) {
+					// river
+					vm->m_data[index_data] = n_river_water;
 				} else {
 					vm->m_data[index_data] = n_air;
 				}
