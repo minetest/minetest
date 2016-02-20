@@ -136,8 +136,6 @@ fake_function() {
 	gettext("Filtered textures can blend RGB values with fully-transparent neighbors,\nwhich PNG optimizers usually discard, sometimes resulting in a dark or\nlight edge to transparent textures.  Apply this filter to clean that up\nat texture load time.");
 	gettext("Minimum texture size for filters");
 	gettext("When using bilinear/trilinear/anisotropic filters, low-resolution textures\ncan be blurred, so automatically upscale them with nearest-neighbor\ninterpolation to preserve crisp pixels.  This sets the minimum texture size\nfor the upscaled textures; higher values look sharper, but require more\nmemory.  Powers of 2 are recommended.  Setting this higher than 1 may not\nhave a visible effect unless bilinear/trilinear/anisotropic filtering is\nenabled.");
-	gettext("Preload inventory textures");
-	gettext("Pre-generate all item visuals used in the inventory.\nThis increases startup time, but runs smoother in-game.\nThe generated textures can easily exceed your VRAM, causing artifacts in the inventory.");
 	gettext("FSAA");
 	gettext("Experimental option, might cause visible spaces between blocks\nwhen set to higher number than 0.");
 	gettext("Shaders");

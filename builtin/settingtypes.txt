@@ -311,11 +311,6 @@ texture_clean_transparent (Clean transparent textures) bool false
 #    enabled.
 texture_min_size (Minimum texture size for filters) int 64
 
-#    Pre-generate all item visuals used in the inventory.
-#    This increases startup time, but runs smoother in-game.
-#    The generated textures can easily exceed your VRAM, causing artifacts in the inventory.
-preload_item_visuals (Preload inventory textures) bool false
-
 #    Experimental option, might cause visible spaces between blocks
 #    when set to higher number than 0.
 fsaa (FSAA) enum 0 0,1,2,4,8,16

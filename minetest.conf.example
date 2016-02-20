@@ -335,12 +335,6 @@
 #    type: int
 # texture_min_size = 64
 
-#    Pre-generate all item visuals used in the inventory.
-#    This increases startup time, but runs smoother in-game.
-#    The generated textures can easily exceed your VRAM, causing artifacts in the inventory.
-#    type: bool
-# preload_item_visuals = false
-
 #    Experimental option, might cause visible spaces between blocks
 #    when set to higher number than 0.
 #    type: enum values: 0, 1, 2, 4, 8, 16

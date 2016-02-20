@@ -1766,29 +1766,6 @@ void Client::afterContentReceived(IrrlichtDevice *device)
 	m_nodedef->updateTextures(this, texture_update_progress, &tu_args);
 	delete[] tu_args.text_base;
 
-	// Preload item textures and meshes if configured to
-	if(g_settings->getBool("preload_item_visuals"))
-	{
-		verbosestream<<"Updating item textures and meshes"<<std::endl;
-		text = wgettext("Item textures...");
-		draw_load_screen(text, device, guienv, 0, 0);
-		std::set<std::string> names = m_itemdef->getAll();
-		size_t size = names.size();
-		size_t count = 0;
-		int percent = 0;
-		for(std::set<std::string>::const_iterator
-				i = names.begin(); i != names.end(); ++i)
-		{
-			// Asking for these caches the result
-			m_itemdef->getInventoryTexture(*i, this);
-			m_itemdef->getWieldMesh(*i, this);
-			count++;
-			percent = (count * 100 / size * 0.2) + 80;
-			draw_load_screen(text, device, guienv, 0, percent);
-		}
-		delete[] text;
-	}
-
 	// Start mesh update thread after setting up content definitions
 	infostream<<"- Starting mesh update thread"<<std::endl;
 	m_mesh_update_thread.start();
