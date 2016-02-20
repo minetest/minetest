@@ -885,8 +885,9 @@ static void updateFastFaceRow(
 					&& next_lights[3] == lights[3]
 					&& next_tile == tile
 					&& tile.rotation == 0
-					&& next_light_source == light_source)
-			{
+					&& next_light_source == light_source
+					&& (tile.material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)
+					&& (tile.material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
 				next_is_different = false;
 			}
 			else{
