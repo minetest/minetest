@@ -30,9 +30,8 @@ struct MapDrawControl
 {
 	MapDrawControl():
 		range_all(false),
-		wanted_range(50),
+		wanted_range(0),
 		wanted_max_blocks(0),
-		wanted_min_range(0),
 		blocks_drawn(0),
 		blocks_would_have_drawn(0),
 		farthest_drawn(0)
@@ -44,8 +43,6 @@ struct MapDrawControl
 	float wanted_range;
 	// Maximum number of blocks to draw
 	u32 wanted_max_blocks;
-	// Blocks in this range are drawn regardless of number of blocks drawn
-	float wanted_min_range;
 	// Number of blocks rendered is written here by the renderer
 	u32 blocks_drawn;
 	// Number of blocks that would have been drawn in wanted_range

@@ -3039,10 +3039,10 @@ void Game::toggleProfiler(float *statustext_time, u32 *profiler_current_page,
 
 void Game::increaseViewRange(float *statustext_time)
 {
-	s16 range = g_settings->getS16("viewing_range_nodes_min");
+	s16 range = g_settings->getS16("viewing_range");
 	s16 range_new = range + 10;
-	g_settings->set("viewing_range_nodes_min", itos(range_new));
-	statustext = utf8_to_wide("Minimum viewing range changed to "
+	g_settings->set("viewing_range", itos(range_new));
+	statustext = utf8_to_wide("Viewing range changed to "
 			+ itos(range_new));
 	*statustext_time = 0;
 }
@@ -3050,14 +3050,14 @@ void Game::increaseViewRange(float *statustext_time)
 
 void Game::decreaseViewRange(float *statustext_time)
 {
-	s16 range = g_settings->getS16("viewing_range_nodes_min");
+	s16 range = g_settings->getS16("viewing_range");
 	s16 range_new = range - 10;
 
-	if (range_new < 0)
-		range_new = range;
+	if (range_new < 20)
+		range_new = 20;
 
-	g_settings->set("viewing_range_nodes_min", itos(range_new));
-	statustext = utf8_to_wide("Minimum viewing range changed to "
+	g_settings->set("viewing_range", itos(range_new));
+	statustext = utf8_to_wide("Viewing range changed to "
 			+ itos(range_new));
 	*statustext_time = 0;
 }
@@ -3935,12 +3935,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
 	if (draw_control->range_all) {
 		runData->fog_range = 100000 * BS;
 	} else {
-		runData->fog_range = draw_control->wanted_range * BS
-				+ 0.0 * MAP_BLOCKSIZE * BS;
-		runData->fog_range = MYMIN(
-				runData->fog_range,
-				(draw_control->farthest_drawn + 20) * BS);
-		runData->fog_range *= 0.9;
+		runData->fog_range = 0.9 * draw_control->wanted_range * BS;
 	}
 
 	/*

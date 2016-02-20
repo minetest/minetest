@@ -327,7 +327,7 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 			blocks_would_have_drawn++;
 			if (blocks_drawn >= m_control.wanted_max_blocks &&
 					!m_control.range_all &&
-					d > m_control.wanted_min_range * BS)
+					d > m_control.wanted_range * BS)
 				continue;
 
 			// Add to set
