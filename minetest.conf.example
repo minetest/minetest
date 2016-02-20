@@ -214,12 +214,12 @@
 #    type: key
 # keymap_camera_mode = KEY_F7
 
-#    Key for increasing the viewing range. Modifies the minimum viewing range.
+#    Key for increasing the viewing range.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
 # keymap_increase_viewing_range_min = +
 
-#    Key for decreasing the viewing range. Modifies the minimum viewing range.
+#    Key for decreasing the viewing range.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
 # keymap_decrease_viewing_range_min = -
@@ -431,11 +431,6 @@
 
 #### Advanced
 
-#    Minimum wanted FPS.
-#    The amount of rendered stuff is dynamically set according to this. and viewing range min and max.
-#    type: int
-# wanted_fps = 30
-
 #    If FPS would go higher than this, limit it by sleeping
 #    to not waste CPU power for no benefit.
 #    type: int
@@ -445,15 +440,10 @@
 #    type: int
 # pause_fps_max = 20
 
-#    The allowed adjustment range for the automatic rendering range adjustment.
-#    Set this to be equal to viewing range minimum to disable the auto-adjustment algorithm.
+#    View range in nodes.
+#    Min = 20.
 #    type: int
-# viewing_range_nodes_max = 160
-
-#    The allowed adjustment range for the automatic rendering range adjustment.
-#    Set this to be equal to viewing range maximum to disable the auto-adjustment algorithm.
-#    type: int
-# viewing_range_nodes_min = 35
+# viewing_range = 100
 
 #    Width component of the initial window size.
 #    type: int

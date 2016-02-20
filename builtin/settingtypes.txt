@@ -209,11 +209,11 @@ keymap_toggle_profiler (Profiler toggle key) key KEY_F6
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_camera_mode (Toggle camera mode key) key KEY_F7
 
-#    Key for increasing the viewing range. Modifies the minimum viewing range.
+#    Key for increasing the viewing range.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_increase_viewing_range_min (View range increase key) key +
 
-#    Key for decreasing the viewing range. Modifies the minimum viewing range.
+#    Key for decreasing the viewing range.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_decrease_viewing_range_min (View range decrease key) key -
 
@@ -388,10 +388,6 @@ enable_waving_plants (Waving plants) bool false
 
 [***Advanced]
 
-#    Minimum wanted FPS.
-#    The amount of rendered stuff is dynamically set according to this. and viewing range min and max.
-wanted_fps (Wanted FPS) int 30
-
 #    If FPS would go higher than this, limit it by sleeping
 #    to not waste CPU power for no benefit.
 fps_max (Maximum FPS) int 60
@@ -399,13 +395,9 @@ fps_max (Maximum FPS) int 60
 #    Maximum FPS when game is paused.
 pause_fps_max (FPS in pause menu) int 20
 
-#    The allowed adjustment range for the automatic rendering range adjustment.
-#    Set this to be equal to viewing range minimum to disable the auto-adjustment algorithm.
-viewing_range_nodes_max (Viewing range maximum) int 160
-
-#    The allowed adjustment range for the automatic rendering range adjustment.
-#    Set this to be equal to viewing range maximum to disable the auto-adjustment algorithm.
-viewing_range_nodes_min (Viewing range minimum) int 35
+#    View distance in nodes.
+#    Min = 20
+viewing_range (Viewing range) int 100
 
 #    Width component of the initial window size.
 screenW (Screen width) int 800
