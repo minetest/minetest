@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-11-08 21:23+0100\n"
-"PO-Revision-Date: 2016-02-21 09:49+0000\n"
-"Last-Translator: Vasily Pavlov <halmet94@gmail.com>\n"
+"PO-Revision-Date: 2016-02-21 12:34+0000\n"
+"Last-Translator: Dmitry Smirnov <sda97y@ya.ru>\n"
 "Language-Team: Russian "
 "<https://hosted.weblate.org/projects/minetest/minetest/ru/>\n"
 "Language: ru\n"
@@ -50,15 +50,15 @@ msgstr "Загрузка..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr "Несоответствие версии протокола."
+msgstr "Несоответствие версии протокола. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr "Сервер обеспечивает соблюдение версии протокола $ 1."
+msgstr "Сервер обеспечивает соблюдение версии протокола $ 1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr "Сервер поддерживает версии протокола между $1 и $2."
+msgstr "Сервер поддерживает версии протокола между $1 и $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -71,7 +71,7 @@ msgstr "Поддерживается только протокол версии 
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr "Мы поддерживаем версии протоколов между $1 и $2"
+msgstr "Мы поддерживаем версии протоколов между $1 и $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua builtin/mainmenu/tab_settings.lua
@@ -426,7 +426,7 @@ msgstr "(Отсутствует описание настройки)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Browse"
-msgstr "Выбрать..."
+msgstr "Выбрать"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
@@ -478,7 +478,7 @@ msgstr "Пожалуйста, введите корректное число."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Possible values are: "
-msgstr "Возможные значения:"
+msgstr "Возможные значения: "
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Restore Default"
@@ -1162,8 +1162,8 @@ msgid ""
 "0 = parallax occlusion with slope information (faster).\n"
 "1 = relief mapping (slower, more accurate)."
 msgstr ""
-"0 = Параллакс с информацией о наклоне (Быстрее)\n"
-"1 = Рельефный маппинг (Медленнее, качественнее)"
+"0 = Параллакс с информацией о наклоне (Быстрее).\n"
+"1 = Рельефный маппинг (Медленнее, качественнее)."
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
@@ -1183,12 +1183,14 @@ msgid ""
 "-    topbottom: split screen top/bottom.\n"
 "-    sidebyside: split screen side by side."
 msgstr ""
-"Поддержка 3D\n"
-"Нет: нет выходного сигнала.\n"
-"Анаглиф: голубой\\пурпурный цвет в 3D\n"
-"Чересстрочно: четное / нечетное линия поддержки процесса поляризации экрана\n"
-"Верх\\низ: Разделение экрана низ/верх\n"
-"Двестороны: Разделение экрана пополам (право/лево)"
+"Поддержка 3D.\n"
+"Сейчас поддерживаются:\n"
+"-    none: 3D отключен.\n"
+"-    anaglyph: голубой/пурпурный цвет в 3D.\n"
+"-    interlaced: четные/нечетные линии отображают два разных кадра для "
+"экранов поддерживающих поляризацию.\n"
+"-    topbottom: Разделение экрана низ/верх.\n"
+"-    sidebyside: Разделение экрана право/лево."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1209,7 +1211,7 @@ msgstr "Сообщение, которое будет показано всем 
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
-msgstr "Абсолютный лимит появляющихся запросов."
+msgstr "Абсолютный лимит появляющихся запросов"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
@@ -1238,8 +1240,8 @@ msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr ""
-"Настройте конфигурацию точек на дюйм для вашего экрана (Не 11/Только для "
-"Android) Напр. для мониторов с разрешением в 4k"
+"Настройка dpi (плотности точек на дюйм) для вашего экрана (не для X11, "
+"только для Android). Например для мониторов с разрешением в 4k."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1279,7 +1281,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
-msgstr ""
+msgstr "Запрос переподключения после дисконнекта"
 
 #: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
@@ -1295,7 +1297,6 @@ msgid "Basic"
 msgstr "Базовый"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bilinear filtering"
 msgstr "Билинейная фильтрация"
 
@@ -1309,7 +1310,7 @@ msgstr "Биты на пиксель (глубина цвета) в полноэ
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
-msgstr "Возможность строить внутри модели игрока."
+msgstr "Разрешить ставить блоки на месте игрока"
 
 #: src/settings_translation_file.cpp
 msgid "Bumpmapping"
@@ -1317,11 +1318,12 @@ msgstr "Бампмаппинг"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
-msgstr ""
+msgstr "Сглаживание камеры"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Camera smoothing in cinematic mode"
-msgstr ""
+msgstr "Сглаживание камеры в кинематографическом режиме"
 
 #: src/settings_translation_file.cpp
 msgid "Camera update toggle key"
@@ -1481,9 +1483,8 @@ msgid "Damage"
 msgstr "Урон"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Debug info toggle key"
-msgstr "Клавиша переключения показа debug-информации"
+msgstr "Клавиша переключения показа отладочной информации"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
@@ -1520,6 +1521,8 @@ msgid ""
 "Default timeout for cURL, stated in milliseconds.\n"
 "Only has an effect if compiled with cURL."
 msgstr ""
+"Стандартный тайм-аут для cURL, установленный в милисекундах.\n"
+"Работает только на сборках с cURL."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1536,22 +1539,24 @@ msgid "Delay showing tooltips, stated in milliseconds."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Deprecated Lua API handling"
-msgstr ""
+msgstr "Устаревшее Lua API управление"
 
 #: src/settings_translation_file.cpp
 msgid "Descending speed"
-msgstr ""
+msgstr "Скорость снижения"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
-msgstr ""
+msgstr "Описание сервера, показываемое при входе игрока и в списке серверов"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Desynchronize block animation"
-msgstr ""
+msgstr "Рассинхронизировать анимацию блоков"
 
 #: src/settings_translation_file.cpp
 msgid "Detailed mod profile data. Useful for mod developers."
@@ -1571,7 +1576,7 @@ msgstr "Запретить пустой пароль"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
-msgstr ""
+msgstr "Доменное имя сервера, отображаемое в списке серверов."
 
 #: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
@@ -1587,7 +1592,7 @@ msgstr "Кнопка выброса блока"
 
 #: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug infos."
-msgstr ""
+msgstr "Дамп отладочной информации генератора мира."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1596,6 +1601,9 @@ msgid ""
 "Note that this is not quite optimized and that smooth lighting on the\n"
 "water surface doesn't work with this."
 msgstr ""
+"Включите немного более низкую поверхность воды, чтобы она\n"
+"не заполняла блок полностью. Учтите, что это не совсем оптимизировано,\n"
+"и мягкое освещение на поверхности воды не работает с этим."
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
@@ -1603,7 +1611,7 @@ msgstr "Включить защиту модов"
 
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
-msgstr ""
+msgstr "Включает получение игроками урона и их смерть."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -1682,8 +1690,9 @@ msgid "FPS in pause menu"
 msgstr "FPS во время паузы"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "FSAA"
-msgstr ""
+msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
 msgid "Fall bobbing"
@@ -1711,21 +1720,24 @@ msgstr "Клавиша ускорения"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode acceleration"
-msgstr ""
+msgstr "Ускорение быстрого перемещения"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode speed"
-msgstr ""
+msgstr "Скорость быстрого перемещения"
 
 #: src/settings_translation_file.cpp
 msgid "Fast movement"
-msgstr ""
+msgstr "Быстрое перемещение"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Fast movement (via use key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
+"Быстрое перемещение (с использование клавиши).\n"
+"Это требует привилегию \"fast\" на сервере."
 
 #: src/settings_translation_file.cpp
 msgid "Field of view"
@@ -1736,10 +1748,12 @@ msgid "Field of view in degrees."
 msgstr "Поле зрения в градусах."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "File in client/serverlist/ that contains your favorite servers displayed in "
 "the Multiplayer Tab."
 msgstr ""
+"Файл, содержащий ваши любимые серверы, отображаемые на вкладке Multiplayer."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1771,11 +1785,11 @@ msgstr "Туман"
 
 #: src/settings_translation_file.cpp
 msgid "Fog toggle key"
-msgstr ""
+msgstr "Клавиша переключения тумана"
 
 #: src/settings_translation_file.cpp
 msgid "Font path"
-msgstr ""
+msgstr "Путь к шрифту"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow"
@@ -1783,19 +1797,20 @@ msgstr "Тень шрифта"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow alpha"
-msgstr ""
+msgstr "Прозрачность тени шрифта"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-msgstr ""
+msgstr "Прозрачность тени шрифта (непрозрачность от 0 до 255)."
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow offset, if 0 then shadow will not be drawn."
 msgstr ""
+"Смещение тени шрифта. Если установленно в 0, то тень не будет отрисовываться."
 
 #: src/settings_translation_file.cpp
 msgid "Font size"
-msgstr ""
+msgstr "Размер шрифта"
 
 #: src/settings_translation_file.cpp
 msgid "Forward key"
@@ -1803,7 +1818,7 @@ msgstr "Вперед"
 
 #: src/settings_translation_file.cpp
 msgid "Freetype fonts"
-msgstr ""
+msgstr "FreeType шрифты"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1823,7 +1838,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
-msgstr ""
+msgstr "Полный экран"
 
 #: src/settings_translation_file.cpp
 msgid "Full screen BPP"
@@ -1831,11 +1846,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fullscreen mode."
-msgstr ""
+msgstr "Полноэкранный режим."
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
-msgstr ""
+msgstr "Масштабирование интерфейса"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter"
@@ -1843,11 +1858,11 @@ msgstr "Фильтр масштабирования интерфейса"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter txr2img"
-msgstr ""
+msgstr "txr2img фильтр масштабирования интерфейса"
 
 #: src/settings_translation_file.cpp
 msgid "Gamma"
-msgstr ""
+msgstr "Гамма"
 
 #: src/settings_translation_file.cpp
 msgid "Generate normalmaps"
@@ -1864,15 +1879,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
-msgstr ""
+msgstr "Графика"
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
-msgstr ""
+msgstr "Гравитация"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
-msgstr ""
+msgstr "Клавиша переключения HUD"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1892,7 +1907,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
-msgstr ""
+msgstr "Домашняя страница сервера, отображаемая в списке серверов."
 
 #: src/settings_translation_file.cpp
 msgid "Horizontal initial window size."
@@ -1921,16 +1936,17 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "IPv6"
-msgstr ""
+msgstr "IPv6"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 server"
-msgstr ""
+msgstr "IPv6 сервер"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 support."
-msgstr ""
+msgstr "IPv6 поддержка."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1975,7 +1991,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, new players cannot join with an empty password."
-msgstr ""
+msgstr "Если включено, то новые игроки не смогут подключаться с пустым паролем."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1983,14 +1999,17 @@ msgid ""
 "you stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
+"Если включено, то вы можете размещать новые блоки на месте игрока.\n"
+"Это может быть полезно при строительстве в узких местах."
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
-msgstr ""
+msgstr "Если установлено, то игроки будут (ре)спавниться в указанной позиции."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Ignore world errors"
-msgstr ""
+msgstr "Игнорировать ошибки мира"
 
 #: src/settings_translation_file.cpp
 msgid "In-Game"
@@ -1998,19 +2017,19 @@ msgstr "В игре"
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background alpha (opaqueness, between 0 and 255)."
-msgstr ""
+msgstr "Прозрачность фона внутриигровой консоли (непрозрачность от 0 до 255)."
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background color (R,G,B)."
-msgstr ""
+msgstr "Цвет фона внутриигровой консоли (R, G, B)."
 
 #: src/settings_translation_file.cpp
 msgid "Interval of saving important changes in the world, stated in seconds."
-msgstr ""
+msgstr "Интервал сохранения важных изменений в мире, установленный в секундах."
 
 #: src/settings_translation_file.cpp
 msgid "Interval of sending time of day to clients."
-msgstr ""
+msgstr "Интервал отправки клиентам сведений о времени дня."
 
 #: src/settings_translation_file.cpp
 msgid "Inventory key"
@@ -2018,15 +2037,15 @@ msgstr "Кнопка открытия инвентаря"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
-msgstr ""
+msgstr "Инвертировать мышь"
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
-msgstr ""
+msgstr "Инвертировать мышь по вертикали."
 
 #: src/settings_translation_file.cpp
 msgid "Item entity TTL"
-msgstr ""
+msgstr "Время жизни выброшенной вещи"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2076,11 +2095,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Jump key"
-msgstr "Кнопка, отвечающая за прыжок"
+msgstr "Кнопка прыжка"
 
 #: src/settings_translation_file.cpp
 msgid "Jumping speed"
-msgstr ""
+msgstr "Скорость прыжков"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2088,6 +2107,10 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша уменьшения видимого диапазона. Изменяет минимальную дальность "
+"отображения.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2095,6 +2118,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша выкинуть выбранный предмет.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2102,6 +2128,10 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша Увеличения видимого диапазона. Изменяет минимальную дальность "
+"отображения.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2109,13 +2139,20 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша прыжка.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Key for moving fast in fast mode.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша для быстрого перемещения.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2123,6 +2160,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша движения назад.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2130,6 +2170,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша движения вперед.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2137,6 +2180,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша движения влево.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2144,6 +2190,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша движения вправо.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2151,6 +2200,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша открытия чат-консоли.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2158,6 +2210,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша открытия окна чата для ввода комманды.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2165,6 +2220,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша открытия окна чата.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2172,6 +2230,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша открытия инвентаря.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2188,6 +2249,11 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша красться.\n"
+"Также используется для спуска и погружения под воду, если aux1_descends "
+"отключена.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2195,6 +2261,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша переключения вида от первого и от третьего лица.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2202,6 +2271,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша снятия скриншота.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2209,6 +2281,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша переключения кинематографического режима.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2216,6 +2291,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша переключения отображения миникарты.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2223,6 +2301,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша переключения режима быстрого перемещения.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2230,6 +2311,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша переключения режима полета.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2237,6 +2321,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша переключения режима проверки столкновений.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2251,6 +2338,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша переключения показа отладочной информации.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2258,6 +2348,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша переключения отображения HUD.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2265,6 +2358,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша переключения отображения чата.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2272,6 +2368,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша переключения отображения тумана.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2286,6 +2385,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша отключения ограничения зоны видимости.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
@@ -2293,11 +2395,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Language"
-msgstr ""
+msgstr "Язык"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
-msgstr ""
+msgstr "Стиль листвы"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2306,6 +2408,11 @@ msgid ""
 "-   Simple: only outer faces, if defined special_tiles are used\n"
 "-   Opaque: disable transparency"
 msgstr ""
+"Стили листвы:\n"
+"-   Fancy:  включена прозрачность, все стороны видны\n"
+"-   Simple: прозрачность включена, видны только внешние стороны, если "
+"используются special_tiles\n"
+"-   Opaque: прозрачность отключена"
 
 #: src/settings_translation_file.cpp
 msgid "Left key"
@@ -2368,7 +2475,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update interval in seconds."
-msgstr ""
+msgstr "Интервал обновления жидкостей в секундах."
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update tick"
@@ -2390,6 +2497,7 @@ msgstr "Скрипт главного меню"
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr ""
+"Включить зависимость цвета тумана и облаков от времени суток (рассвет/закат)."
 
 #: src/settings_translation_file.cpp
 msgid "Makes DirectX work with LuaJIT. Disable if it causes troubles."
@@ -2419,7 +2527,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
-msgstr ""
+msgstr "Каталог сохранения карт"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2455,7 +2563,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map save interval"
-msgstr ""
+msgstr "Интервал сохранения карты"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
@@ -2726,11 +2834,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS"
-msgstr ""
+msgstr "Максимальный FPS"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when game is paused."
-msgstr ""
+msgstr "Максимальный FPS в режиме паузы."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2746,7 +2854,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
-msgstr ""
+msgstr "Максимальная ширина хотбара"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that can be queued for loading."
@@ -2809,7 +2917,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
-msgstr ""
+msgstr "Максимальное количество пользователей"
 
 #: src/settings_translation_file.cpp
 msgid "Maxmimum objects per block"
@@ -2824,24 +2932,27 @@ msgid "Mesh cache"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Message of the day"
-msgstr ""
+msgstr "Фраза дня"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Message of the day displayed to players connecting."
-msgstr ""
+msgstr "Фраза дня отображаемая подключившимся игрокам."
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
-msgstr ""
+msgstr "Миникарта"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap key"
-msgstr ""
+msgstr "Клавиша переключения миникарты"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Minimap scan height"
-msgstr ""
+msgstr "Высота сканирования миникарты"
 
 #: src/settings_translation_file.cpp
 msgid "Minimum texture size for filters"
@@ -2875,20 +2986,22 @@ msgid "Modstore mods list URL"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Monospace font path"
-msgstr ""
+msgstr "Путь моноширинного шрифта"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Monospace font size"
-msgstr ""
+msgstr "Размер моноширинного шрифта"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "Чувствительность мыши"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
-msgstr ""
+msgstr "Множитель чувствительности мыши."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2903,26 +3016,33 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this."
 msgstr ""
+"Название генератора карты, используемого при создании мира.\n"
+"Создание мира из главного меню переопределит это."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Name of the player.\n"
 "When running a server, clients connecting with this name are admins.\n"
 "When starting from the main menu, this is overridden."
 msgstr ""
+"Имя игрока.\n"
+"На сервере клиент с этим именем будет админом.\n"
+"Будет переопределено при запуске из главного меню."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Name of the server, to be displayed when players join and in the serverlist."
-msgstr ""
+msgstr "Имя сервера, отображаемое при входе и в списке серверов."
 
 #: src/settings_translation_file.cpp
 msgid "Network"
-msgstr ""
+msgstr "Сеть"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2931,20 +3051,24 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "New style water"
-msgstr ""
+msgstr "Новый стиль воды"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "New users need to input this password."
-msgstr ""
+msgstr "Новым пользователям нужно вводить этот пароль."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Noclip"
-msgstr ""
+msgstr "Отключить столкновения"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Noclip key"
-msgstr ""
+msgstr "Клавиша отключения столкновений"
 
 #: src/settings_translation_file.cpp
 msgid "Node highlighting"
@@ -3028,21 +3152,25 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Path to save screenshots at."
-msgstr ""
+msgstr "Путь для сохранения скриншотов."
 
 #: src/settings_translation_file.cpp
 msgid "Path to texture directory. All textures are first searched from here."
 msgstr ""
+"Путь до каталога с текстурами. Все текстуры в первую очередь берутся от сюда."
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
-msgstr ""
+msgstr "Физика"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Player is able to fly without being affected by gravity.\n"
 "This requires the \"fly\" privilege on the server."
 msgstr ""
+"Игрок может летать без влияния гравитации.\n"
+"Это требует привилегии fly на сервере."
 
 #: src/settings_translation_file.cpp
 msgid "Player name"
@@ -3054,7 +3182,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Player versus Player"
-msgstr ""
+msgstr "PvP"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3098,8 +3226,9 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Random input"
-msgstr ""
+msgstr "Случайный ввод"
 
 #: src/settings_translation_file.cpp
 msgid "Range select key"
@@ -3111,19 +3240,21 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Remote port"
-msgstr ""
+msgstr "Удаленный порт"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Replaces the default main menu with a custom one."
-msgstr ""
+msgstr "Заменять главное меню на пользовательское."
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
 msgstr "Правая клавиша меню"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Rightclick repetition interval"
-msgstr ""
+msgstr "Интервал повторного клика правой кнопкой."
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
@@ -3152,11 +3283,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
-msgstr ""
+msgstr "Высота экрана"
 
 #: src/settings_translation_file.cpp
 msgid "Screen width"
-msgstr ""
+msgstr "Ширина экрана"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot"
@@ -3164,27 +3295,31 @@ msgstr "Cкриншот"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
-msgstr ""
+msgstr "Каталог со скриншотами"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Security"
-msgstr ""
+msgstr "Безопасность"
 
 #: src/settings_translation_file.cpp
 msgid "See http://www.sqlite.org/pragma.html#pragma_synchronous"
-msgstr ""
+msgstr "Смотрите http://www.sqlite.org/pragma.html#pragma_synchronous"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Selection box border color (R,G,B)."
-msgstr ""
+msgstr "Цвет рамки выделения (R, G, B)."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Selection box color"
-msgstr ""
+msgstr "Цвет выделения"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Selection box width"
-msgstr ""
+msgstr "Ширина рамки выделения"
 
 #: src/settings_translation_file.cpp
 msgid "Server / Singleplayer"
@@ -3220,57 +3355,78 @@ msgid "Serverlist file"
 msgstr "Список публичных серверов"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Set the language. Leave empty to use the system language.\n"
 "A restart is required after changing this."
 msgstr ""
+"Установка языка. Оставьте пустым для использования системного языка.\n"
+"Требует перезапуска после установки."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Set to true enables waving leaves.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"Установка в true включает покачивание листвы.\n"
+"Это требует включение шейдеров."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Set to true enables waving plants.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"Установка в true включает покачивание растений.\n"
+"Это требует включение шейдеров."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Set to true enables waving water.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"Установка в true включает волны на воде.\n"
+"Это требует включение шейдеров."
 
 #: src/settings_translation_file.cpp
 msgid "Shaders"
 msgstr "Шейдеры"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Shaders allow advanced visul effects and may increase performance on some "
 "video cards.\n"
 "Thy only work with the OpenGL video backend."
 msgstr ""
+"Шейдеры позволяют использовать дополнительные визуальные эффекты и могут "
+"увеличить производительность на некоторых видеокартах.\n"
+"Они работают только с видео серверной OpenGL."
 
 #: src/settings_translation_file.cpp
 msgid "Shape of the minimap. Enabled = round, disabled = square."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Show debug info"
-msgstr ""
+msgstr "Показывать отладочную информацию."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Shutdown message"
-msgstr ""
+msgstr "Сообщение о выключении"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
 "nodes)."
 msgstr ""
+"Размер чанка, генерируемого за один раз, установленный в мапблоках (16 "
+"кубиков)."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3278,18 +3434,23 @@ msgid "Smooth lighting"
 msgstr "Мягкое освещение"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Smooths camera when moving and looking around.\n"
 "Useful for recording videos."
 msgstr ""
+"Сглаживать движения камеры при ходьбе и поворотах.\n"
+"Это может быть полезно при записи видео."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Smooths rotation of camera in cinematic mode. 0 to disable."
-msgstr ""
+msgstr "Плавное вращение камеры в кинематографическом режиме. 0 для отключения."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Smooths rotation of camera. 0 to disable."
-msgstr ""
+msgstr "Плавное вращение камеры. 0 для отключения."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3297,8 +3458,9 @@ msgid "Sneak key"
 msgstr "Красться"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Sound"
-msgstr ""
+msgstr "Звук"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3309,8 +3471,9 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Static spawnpoint"
-msgstr ""
+msgstr "Постоянное место спавна"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3346,10 +3509,13 @@ msgid "The network interface that the server listens on."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The privileges that new users automatically get.\n"
 "See /privs in game for a full list on your server and mod configuration."
 msgstr ""
+"Привилегии, автоматически получаемые новым пользователем.\n"
+"Смотрите /privs для получения полного списка привилегий."
 
 #: src/settings_translation_file.cpp
 msgid "The rendering back-end for Irrlicht."
@@ -3371,32 +3537,41 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "The time in seconds it takes between repeated right clicks when holding the "
 "right mouse button."
-msgstr ""
+msgstr "Задержка в секундах между кликами при зажатой правой кнопке мыши."
 
 #: src/settings_translation_file.cpp
 msgid "This font will be used for certain languages."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
 msgstr ""
+"Время жизни выброшенных предметов.\n"
+"Установите в -1 для отключения этой функции."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Time send interval"
-msgstr ""
+msgstr "Интервал отправки"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Time speed"
-msgstr ""
+msgstr "Скорость хода времени"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Timeout for client to remove unused map data from memory."
 msgstr ""
+"Время, после которого клиент удаляет из памяти неиспользуемую информацию о "
+"карте."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3407,12 +3582,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Toggle camera mode key"
-msgstr ""
+msgstr "Клавиша переключения режима камеры."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Tooltip delay"
-msgstr ""
+msgstr "Задержка подсказки."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3420,15 +3597,20 @@ msgid "Trilinear filtering"
 msgstr "Трилинейная фильтрация"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "True = 256\n"
 "False = 128\n"
 "Useable to make minimap smoother on slower machines."
 msgstr ""
+"True = 256\n"
+"False = 128\n"
+"Полезно для плавной миникарты на медленных машинах."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Trusted mods"
-msgstr ""
+msgstr "Доверенные моды"
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
@@ -3439,24 +3621,29 @@ msgid "Unlimited player transfer distance"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Unload unused server data"
-msgstr ""
+msgstr "Выгружать неиспользуемые сервером данные"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Use 3D cloud look instead of flat."
-msgstr ""
+msgstr "Объемные облака вместо плоских."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Use a cloud animation for the main menu background."
-msgstr ""
+msgstr "Анимированные облака в главном меню."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Use anisotropic filtering when viewing at textures from an angle."
-msgstr ""
+msgstr "Использовать анизатропную фильтрацию про взгляде под углом."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Use bilinear filtering when scaling textures."
-msgstr ""
+msgstr "Использовать билинейную фильтрацию для масштабирования текстур."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3464,12 +3651,16 @@ msgid "Use key"
 msgstr "нажмите клавишу"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Use mip mapping to scale textures. May slightly increase performance."
 msgstr ""
+"Использовать мип-маппинг для масштабирования текстур. Может немного "
+"увеличить производительность."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Use trilinear filtering when scaling textures."
-msgstr ""
+msgstr "Использовать трилинейную фильтрацию для масштабировании текстур."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3477,44 +3668,51 @@ msgid "Useful for mod developers."
 msgstr "Разработчики в отставке"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "V-Sync"
-msgstr ""
+msgstr "V-Sync"
 
 #: src/settings_translation_file.cpp
 msgid "Vertical initial window size."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Vertical screen synchronization."
-msgstr ""
+msgstr "Вертикальная синхронизация."
 
 #: src/settings_translation_file.cpp
 msgid "Vertical spawn range"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Video driver"
-msgstr ""
+msgstr "Видео драйвер."
 
 #: src/settings_translation_file.cpp
 msgid "View bobbing"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "View range decrease key"
-msgstr ""
+msgstr "Клавиша уменьшения видимого диапазона."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "View range increase key"
-msgstr ""
+msgstr "Клавиша увеличения видимого диапазона."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Viewing range maximum"
-msgstr ""
+msgstr "Максимальная граница дальности отрисовки."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Viewing range minimum"
-msgstr ""
+msgstr "Минимальная граница дальности отрисовки."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3526,8 +3724,9 @@ msgid "Walking speed"
 msgstr "Скорость ходьбы"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Wanted FPS"
-msgstr ""
+msgstr "Ожидаемый FPS"
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
@@ -3553,7 +3752,6 @@ msgid "Waving plants"
 msgstr "Покачивание растений"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water"
 msgstr "Волны на воде"
 
@@ -3563,7 +3761,7 @@ msgstr "Высота волн на воде"
 
 #: src/settings_translation_file.cpp
 msgid "Waving water length"
-msgstr "Длина волны на воде"
+msgstr "Длина волн на воде"
 
 #: src/settings_translation_file.cpp
 msgid "Waving water speed"
@@ -3621,27 +3819,34 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Whether to allow players to damage and kill each other."
-msgstr ""
+msgstr "Разрешить игрокам сражаться друг с другом."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Whether to ask clients to reconnect after a (Lua) crash.\n"
 "Set this to true if your server is set up to restart automatically."
 msgstr ""
+"Опрашивать клиентов для переподключения после падения.\n"
+"Установите это если ваш сервер настроен на автоматический перезапуск."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Whether to fog out the end of the visible area."
-msgstr ""
+msgstr "Туман на границе видимого пространства."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Whether to show the client debug info (has the same effect as hitting F5)."
-msgstr ""
+msgstr "Показывать данные отладки (аналогично нажатию F5)."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Width of the selectionbox's lines around nodes."
-msgstr ""
+msgstr "Ширина обводки выбранных блоков."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3650,8 +3855,9 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "cURL file download timeout"
-msgstr ""
+msgstr "cURL тайм-аут загрузки файла"
 
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
