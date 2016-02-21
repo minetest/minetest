@@ -806,7 +806,6 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 	scene::ISceneManager* smgr = gamedef->getSceneManager();
 	scene::IMeshManipulator* meshmanip = smgr->getMeshManipulator();
 
-	bool new_style_water           = g_settings->getBool("new_style_water");
 	bool connected_glass           = g_settings->getBool("connected_glass");
 	bool opaque_water              = g_settings->getBool("opaque_water");
 	bool enable_shaders            = g_settings->getBool("enable_shaders");
@@ -854,7 +853,7 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 			assert(f->liquid_type == LIQUID_SOURCE);
 			if (opaque_water)
 				f->alpha = 255;
-			f->solidness = new_style_water ? 0 : 1;
+			f->solidness = 0;
 			is_liquid = true;
 			break;
 		case NDT_FLOWINGLIQUID:
