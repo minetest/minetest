@@ -255,11 +255,6 @@ serverlist_file (Serverlist file) string favoriteservers.txt
 #    Whether to fog out the end of the visible area.
 enable_fog (Fog) bool true
 
-#    Enable a bit lower water surface, so it doesn't "fill" the node completely.
-#    Note that this is not quite optimized and that smooth lighting on the
-#    water surface doesn't work with this.
-new_style_water (New style water) bool false
-
 #    Leaves style:
 #    -   Fancy:  all faces visible
 #    -   Simple: only outer faces, if defined special_tiles are used
