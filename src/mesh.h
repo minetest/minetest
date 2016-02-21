@@ -64,6 +64,11 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 		const video::SColor &colorX,
 		const video::SColor &colorY,
 		const video::SColor &colorZ);
+		
+void setMeshColorByNormal(scene::IMesh *mesh,
+		const v3f &normal,
+		const video::SColor &color);	
+
 /*
 	Rotate the mesh by 6d facedir value.
 	Method only for meshnodes, not suitable for entities.
