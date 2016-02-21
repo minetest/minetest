@@ -226,7 +226,27 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 				vertex->Color = colorY;
 			else
 				vertex->Color = colorZ;
+		}
+	}
+}
 
+void setMeshColorByNormal(scene::IMesh *mesh, const v3f &normal,
+		const video::SColor &color)
+{
+	if (!mesh)
+		return;
+
+	u16 mc = mesh->getMeshBufferCount();
+	for (u16 j = 0; j < mc; j++) {
+		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+		const u32 stride = getVertexPitchFromType(buf->getVertexType());
+		u32 vertex_count = buf->getVertexCount();
+		u8 *vertices = (u8 *)buf->getVertices();
+		for (u32 i = 0; i < vertex_count; i++) {
+			video::S3DVertex *vertex = (video::S3DVertex *)(vertices + i * stride);
+			if (normal == vertex->Normal) {
+				vertex->Color = color;
+			}
 		}
 	}
 }
