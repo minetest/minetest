@@ -544,6 +544,12 @@ void Hud::drawSelectionMesh()
 		video::SMaterial oldmaterial = driver->getMaterial2D();
 		driver->setMaterial(m_selection_material);
 		setMeshColor(m_selection_mesh, m_selection_mesh_color);
+		video::SColor face_color(0,
+			MYMIN(255, m_selection_mesh_color.getRed() * 1.5),
+			MYMIN(255, m_selection_mesh_color.getGreen() * 1.5),
+			MYMIN(255, m_selection_mesh_color.getBlue() * 1.5));
+		setMeshColorByNormal(m_selection_mesh, m_selected_face_normal,
+			face_color);
 		scene::IMesh* mesh = cloneMesh(m_selection_mesh);
 		translateMesh(mesh, m_selection_pos_with_offset);
 		u32 mc = m_selection_mesh->getMeshBufferCount();

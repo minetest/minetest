@@ -362,6 +362,7 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 
 			min_distance = (selected_object->getPosition() - camera_position).getLength();
 
+			hud->setSelectedFaceNormal(v3f(0.0, 0.0, 0.0));
 			result.type = POINTEDTHING_OBJECT;
 			result.object_id = selected_object->getId();
 		}
@@ -473,6 +474,7 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 				if (!facebox.intersectsWithLine(shootline))
 					continue;
 				result.node_abovesurface = pointed_pos + facedir;
+				hud->setSelectedFaceNormal(v3f(facedir.X, facedir.Y, facedir.Z));
 				face_min_distance = distance;
 			}
 		}
