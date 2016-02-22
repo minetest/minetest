@@ -1026,6 +1026,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	m_mesh(new scene::SMesh()),
 	m_minimap_mapblock(NULL),
 	m_gamedef(data->m_gamedef),
+	m_driver(m_gamedef->tsrc()->getDevice()->getVideoDriver()),
 	m_tsrc(m_gamedef->getTextureSource()),
 	m_shdrsrc(m_gamedef->getShaderSource()),
 	m_animation_force_timer(0), // force initial animation
@@ -1036,7 +1037,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 {
 	m_enable_shaders = data->m_use_shaders;
 	m_use_tangent_vertices = data->m_use_tangent_vertices;
-
+	m_enable_vbo = g_settings->getBool("enable_vbo");
+	
 	if (g_settings->getBool("enable_minimap")) {
 		m_minimap_mapblock = new MinimapMapblock;
 		m_minimap_mapblock->getMinimapNodes(
@@ -1261,14 +1263,9 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 #endif
 
 		// Use VBO for mesh (this just would set this for ever buffer)
-		// This will lead to infinite memory usage because or irrlicht.
-		//m_mesh->setHardwareMappingHint(scene::EHM_STATIC);
-
-		/*
-			NOTE: If that is enabled, some kind of a queue to the main
-			thread should be made which would call irrlicht to delete
-			the hardware buffer and then delete the mesh
-		*/
+		if (m_enable_vbo) {
+			m_mesh->setHardwareMappingHint(scene::EHM_STATIC);
+		}
 	}
 
 	//std::cout<<"added "<<fastfaces.getSize()<<" faces."<<std::endl;
@@ -1282,6 +1279,12 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 MapBlockMesh::~MapBlockMesh()
 {
+	if (m_enable_vbo && m_mesh) {
+		for (u32 i = 0; i < m_mesh->getMeshBufferCount(); i++) {
+			scene::IMeshBuffer *buf = m_mesh->getMeshBuffer(i);
+			m_driver->removeHardwareBuffer(buf);
+		}
+	}
 	m_mesh->drop();
 	m_mesh = NULL;
 	delete m_minimap_mapblock;
@@ -1362,6 +1365,10 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 	// Day-night transition
 	if(!m_enable_shaders && (daynight_ratio != m_last_daynight_ratio))
 	{
+		// Force reload mesh to VBO
+		if (m_enable_vbo) {
+			m_mesh->setDirty();
+		}
 		for(std::map<u32, std::map<u32, std::pair<u8, u8> > >::iterator
 				i = m_daynight_diffs.begin();
 				i != m_daynight_diffs.end(); ++i)
@@ -1387,6 +1394,9 @@ void MapBlockMesh::updateCameraOffset(v3s16 camera_offset)
 {
 	if (camera_offset != m_camera_offset) {
 		translateMesh(m_mesh, intToFloat(m_camera_offset-camera_offset, BS));
+		if (m_enable_vbo) {
+			m_mesh->setDirty();
+		}
 		m_camera_offset = camera_offset;
 	}
 }

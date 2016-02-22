@@ -128,11 +128,13 @@ private:
 	scene::IMesh *m_mesh;
 	MinimapMapblock *m_minimap_mapblock;
 	IGameDef *m_gamedef;
+	video::IVideoDriver *m_driver;
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;
 
 	bool m_enable_shaders;
 	bool m_use_tangent_vertices;
+	bool m_enable_vbo;
 
 	// Must animate() be called before rendering?
 	bool m_has_animation;
