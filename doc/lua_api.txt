@@ -1727,7 +1727,7 @@ Helper functions
 * `minetest.is_yes(arg)`
     * returns whether `arg` can be interpreted as yes
 * `minetest.get_us_time()`
-    * returns time with microsecond precision
+    * returns time with microsecond precision. May not return wall time.
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
 
@@ -2046,8 +2046,12 @@ and `minetest.auth_reload` call the authetification handler.
 * `minetest.generate_decorations(vm, pos1, pos2)`
     * Generate all registered decorations within the VoxelManip `vm` and in the area from `pos1` to `pos2`.
     * `pos1` and `pos2` are optional and default to mapchunk minp and maxp.
-* `minetest.clear_objects()`
-    * clear all objects in the environments
+* `minetest.clear_objects([options])`
+    * Clear all objects in the environment
+    * Takes an optional table as an argument with the field `mode`.
+        * mode = `"full"`: Load and go through every mapblock, clearing objects (default).
+        * mode = `"quick"`: Clear objects immediately in loaded mapblocks;
+          clear objects in unloaded mapblocks only when the mapblocks are next activated.
 * `minetest.emerge_area(pos1, pos2, [callback], [param])`
     * Queue all blocks in the area from `pos1` to `pos2`, inclusive, to be asynchronously
     * fetched from memory, loaded from disk, or if inexistent, generates them.
@@ -2149,6 +2153,8 @@ and `minetest.auth_reload` call the authetification handler.
     * Convert a facedir back into a vector aimed directly out the "back" of a node
 * `minetest.dir_to_wallmounted(dir)`
     * Convert a vector to a wallmounted value, used for `paramtype2="wallmounted"`
+* `minetest.wallmounted_to_dir(wallmounted)`
+    * Convert a wallmounted value back into a vector aimed directly out the "back" of a node
 * `minetest.get_node_drops(nodename, toolname)`
     * Returns list of item names.
     * **Note**: This will be removed or modified in a future version.
@@ -2242,7 +2248,7 @@ These functions return the leftover itemstack.
 
 ### Timing
 * `minetest.after(time, func, ...)`
-    * Call the function `func` after `time` seconds
+    * Call the function `func` after `time` seconds, may be fractional
     * Optional: Variable number of arguments that are passed to `func`
 
 ### Server
@@ -2323,6 +2329,26 @@ These functions return the leftover itemstack.
     * position comments for every X row generated in the schematic data for easier reading.
     * If `lua_num_indent_spaces` is a nonzero number and `format` is "lua", the Lua code generated
     * will use that number of spaces as indentation instead of a tab character.
+
+### HTTP Requests:
+* `minetest.request_http_api()`:
+    * returns `HTTPApiTable` containing http functions if the calling mod has been granted
+      access by being listed in the `secure.http_mods` or `secure.trusted_mods` setting,
+      otherwise returns `nil`.
+    * The returned table contains the functions `fetch`, `fetch_async` and `fetch_async_get`
+      described below.
+    * Only works at init time.
+    * Function only exists if minetest server was built with cURL support.
+    * **DO NOT ALLOW ANY OTHER MODS TO ACCESS THE RETURNED TABLE, STORE IT IN
+      A LOCAL VARIABLE!**
+* `HTTPApiTable.fetch(HTTPRequest req, callback)`
+    * Performs given request asynchronously and calls callback upon completion
+    * callback: `function(HTTPRequestResult res)`
+    * Use this HTTP function if you are unsure, the others are for advanced use.
+* `HTTPApiTable.fetch_async(HTTPRequest req)`: returns handle
+    * Performs given request asynchronously and returns handle for `minetest.http_fetch_async_get`
+* `HTTPApiTable.fetch_async_get(handle)`: returns HTTPRequestResult
+    * Return response data for given asynchronous HTTP request
 
 ### Misc.
 * `minetest.get_connected_players()`: returns list of `ObjectRefs`
@@ -2431,7 +2457,7 @@ These functions return the leftover itemstack.
 * `minetest.request_insecure_environment()`: returns an environment containing
   insecure functions if the calling mod has been listed as trusted in the
   `secure.trusted_mods` setting or security is disabled, otherwise returns `nil`.
-    * Only works at init time.
+    * Only works at init time and must be called from the mod's main scope (not from a function).
     * **DO NOT ALLOW ANY OTHER MODS TO ACCESS THE RETURNED ENVIRONMENT, STORE IT IN
       A LOCAL VARIABLE!**
 
@@ -3830,4 +3856,38 @@ Definition tables
     --  ^ Uses texture (string)
         playername = "singleplayer"
     --  ^ Playername is optional, if specified spawns particle only on the player's client
+    }
+
+### `HTTPRequest` definition (`http_fetch`, `http_fetch_async`)
+
+    {
+        url = "http://example.org",
+        timeout = 10,
+     -- ^ Timeout for connection in seconds. Default is 3 seconds.
+        post_data = "Raw POST request data string" OR { field1 = "data1", field2 = "data2" },
+     -- ^ Optional, if specified a POST request with post_data is performed.
+     -- ^ Accepts both a string and a table. If a table is specified, encodes table
+     -- ^ as x-www-form-urlencoded key-value pairs.
+     -- ^ If post_data ist not specified, a GET request is performed instead.
+        user_agent = "ExampleUserAgent",
+     -- ^ Optional, if specified replaces the default minetest user agent with given string
+        extra_headers = { "Accept-Language: en-us", "Accept-Charset: utf-8" },
+     -- ^ Optional, if specified adds additional headers to the HTTP request. You must make sure
+     -- ^ that the header strings follow HTTP specification ("Key: Value").
+        multipart = boolean
+     -- ^ Optional, if true performs a multipart HTTP request. Default is false.
+    }
+
+### `HTTPRequestResult` definition (`http_fetch` callback, `http_fetch_async_get`)
+
+    {
+        completed = true,
+     -- ^ If true, the request has finished (either succeeded, failed or timed out)
+        succeeded = true,
+     -- ^ If true, the request was succesful
+        timeout = false,
+     -- ^ If true, the request timed out
+        code = 200,
+     -- ^ HTTP status code
+        data = "response"
     }

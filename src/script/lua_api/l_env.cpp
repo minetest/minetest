@@ -36,6 +36,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "pathfinder.h"
 
+struct EnumString ModApiEnvMod::es_ClearObjectsMode[] =
+{
+	{CLEAR_OBJECTS_MODE_FULL,  "full"},
+	{CLEAR_OBJECTS_MODE_QUICK, "quick"},
+	{0, NULL},
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -727,13 +734,20 @@ int ModApiEnvMod::l_get_voxel_manip(lua_State *L)
 	return 1;
 }
 
-// clear_objects()
+// clear_objects([options])
 // clear all objects in the environment
+// where options = {mode = "full" or "quick"}
 int ModApiEnvMod::l_clear_objects(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	env->clearAllObjects();
+	ClearObjectsMode mode = CLEAR_OBJECTS_MODE_FULL;
+	if (lua_istable(L, 1)) {
+		mode = (ClearObjectsMode)getenumfield(L, 1, "mode",
+			ModApiEnvMod::es_ClearObjectsMode, mode);
+	}
+
+	env->clearObjects(mode);
 	return 0;
 }
 

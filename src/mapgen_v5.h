@@ -90,7 +90,7 @@ public:
 	~MapgenV5();
 
 	virtual void makeChunk(BlockMakeData *data);
-	int getGroundLevelAtPoint(v2s16 p);
+	int getSpawnLevelAtPoint(v2s16 p);
 	void calculateNoise();
 	int generateBaseTerrain();
 	MgStoneType generateBiomes(float *heat_map, float *humidity_map);

@@ -50,6 +50,7 @@ struct PointedThing;
 class Database;
 class Mapper;
 struct MinimapMapblock;
+class Camera;
 
 struct QueuedMeshUpdate
 {
@@ -456,9 +457,6 @@ public:
 	int getCrackLevel();
 	void setCrack(int level, v3s16 pos);
 
-	void setHighlighted(v3s16 pos, bool show_higlighted);
-	v3s16 getHighlighted(){ return m_highlighted_pos; }
-
 	u16 getHP();
 	u16 getBreath();
 
@@ -509,6 +507,12 @@ public:
 
 	Mapper* getMapper ()
 	{ return m_mapper; }
+
+	void setCamera(Camera* camera)
+	{ m_camera = camera; }
+
+	Camera* getCamera ()
+	{ return m_camera; }
 
 	bool isMinimapDisabledByServer()
 	{ return m_minimap_disabled_by_server; }
@@ -592,6 +596,7 @@ private:
 	ParticleManager m_particle_manager;
 	con::Connection m_con;
 	IrrlichtDevice *m_device;
+	Camera *m_camera;
 	Mapper *m_mapper;
 	bool m_minimap_disabled_by_server;
 	// Server serialization version
@@ -609,12 +614,10 @@ private:
 	Inventory *m_inventory_from_server;
 	float m_inventory_from_server_age;
 	PacketCounter m_packetcounter;
-	bool m_show_highlighted;
 	// Block mesh animation parameters
 	float m_animation_time;
 	int m_crack_level;
 	v3s16 m_crack_pos;
-	v3s16 m_highlighted_pos;
 	// 0 <= m_daynight_i < DAYNIGHT_CACHE_COUNT
 	//s32 m_daynight_i;
 	//u32 m_daynight_ratio;
@@ -682,6 +685,7 @@ private:
 	// TODO: Add callback to update these when g_settings changes
 	bool m_cache_smooth_lighting;
 	bool m_cache_enable_shaders;
+	bool m_cache_use_tangent_vertices;
 
 	DISABLE_CLASS_COPY(Client);
 };

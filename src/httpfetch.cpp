@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "socket.h" // for select()
-#include "porting.h" // for sleep_ms(), get_sysinfo()
+#include "porting.h" // for sleep_ms(), get_sysinfo(), secure_rand_fill_buf()
 #include "httpfetch.h"
 #include <iostream>
 #include <sstream>
@@ -34,9 +34,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/thread.h"
 #include "version.h"
 #include "settings.h"
+#include "noise.h"
 
 Mutex g_httpfetch_mutex;
 std::map<unsigned long, std::queue<HTTPFetchResult> > g_httpfetch_results;
+PcgRandom g_callerid_randomness;
 
 HTTPFetchRequest::HTTPFetchRequest()
 {
@@ -82,6 +84,34 @@ unsigned long httpfetch_caller_alloc()
 
 	FATAL_ERROR("httpfetch_caller_alloc: ran out of caller IDs");
 	return discard;
+}
+
+unsigned long httpfetch_caller_alloc_secure()
+{
+	MutexAutoLock lock(g_httpfetch_mutex);
+
+	// Generate random caller IDs and make sure they're not
+	// already used or equal to HTTPFETCH_DISCARD
+	// Give up after 100 tries to prevent infinite loop
+	u8 tries = 100;
+	unsigned long caller;
+
+	do {
+		caller = (((u64) g_callerid_randomness.next()) << 32) |
+				g_callerid_randomness.next();
+
+		if (--tries < 1) {
+			FATAL_ERROR("httpfetch_caller_alloc_secure: ran out of caller IDs");
+			return HTTPFETCH_DISCARD;
+		}
+	} while (g_httpfetch_results.find(caller) != g_httpfetch_results.end());
+
+	verbosestream << "httpfetch_caller_alloc_secure: allocating "
+		<< caller << std::endl;
+
+	// Access element to create it
+	g_httpfetch_results[caller];
+	return caller;
 }
 
 void httpfetch_caller_free(unsigned long caller)
@@ -262,7 +292,7 @@ HTTPFetchOngoing::HTTPFetchOngoing(HTTPFetchRequest request_, CurlHandlePool *po
 	}
 
 	// Set POST (or GET) data
-	if (request.post_fields.empty()) {
+	if (request.post_fields.empty() && request.post_data.empty()) {
 		curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 	} else if (request.multipart) {
 		curl_httppost *last = NULL;
@@ -710,6 +740,11 @@ void httpfetch_init(int parallel_limit)
 	FATAL_ERROR_IF(res != CURLE_OK, "CURL init failed");
 
 	g_httpfetch_thread = new CurlFetchThread(parallel_limit);
+
+	// Initialize g_callerid_randomness for httpfetch_caller_alloc_secure
+	u64 randbuf[2];
+	porting::secure_rand_fill_buf(randbuf, sizeof(u64) * 2);
+	g_callerid_randomness = PcgRandom(randbuf[0], randbuf[1]);
 }
 
 void httpfetch_cleanup()

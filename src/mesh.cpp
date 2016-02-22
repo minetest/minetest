@@ -104,7 +104,7 @@ void scaleMesh(scene::IMesh *mesh, v3f scale)
 	if (mesh == NULL)
 		return;
 
-	core::aabbox3d<f32> bbox;
+	aabb3f bbox;
 	bbox.reset(0, 0, 0);
 
 	u32 mc = mesh->getMeshBufferCount();
@@ -132,7 +132,7 @@ void translateMesh(scene::IMesh *mesh, v3f vec)
 	if (mesh == NULL)
 		return;
 
-	core::aabbox3d<f32> bbox;
+	aabb3f bbox;
 	bbox.reset(0, 0, 0);
 
 	u32 mc = mesh->getMeshBufferCount();
@@ -346,7 +346,7 @@ void rotateMeshBy6dFacedir(scene::IMesh *mesh, int facedir)
 
 void recalculateBoundingBox(scene::IMesh *src_mesh)
 {
-	core::aabbox3d<f32> bbox;
+	aabb3f bbox;
 	bbox.reset(0,0,0);
 	for (u16 j = 0; j < src_mesh->getMeshBufferCount(); j++) {
 		scene::IMeshBuffer *buf = src_mesh->getMeshBuffer(j);
@@ -405,9 +405,11 @@ scene::IMesh* cloneMesh(scene::IMesh *src_mesh)
 	return dst_mesh;
 }
 
-scene::IMesh* convertNodeboxNodeToMesh(ContentFeatures *f)
+scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
+		const f32 *uv_coords, float expand)
 {
 	scene::SMesh* dst_mesh = new scene::SMesh();
+
 	for (u16 j = 0; j < 6; j++)
 	{
 		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
@@ -416,57 +418,49 @@ scene::IMesh* convertNodeboxNodeToMesh(ContentFeatures *f)
 		dst_mesh->addMeshBuffer(buf);
 		buf->drop();
 	}
-	
+
 	video::SColor c(255,255,255,255);	
 
-	std::vector<aabb3f> boxes = f->node_box.fixed;
-		
-	for(std::vector<aabb3f>::iterator
+	for (std::vector<aabb3f>::const_iterator
 			i = boxes.begin();
 			i != boxes.end(); ++i)
 	{
 		aabb3f box = *i;
+		box.repair();
 
-		f32 temp;
-		if (box.MinEdge.X > box.MaxEdge.X)
-			{
-				temp=box.MinEdge.X;
-				box.MinEdge.X=box.MaxEdge.X;
-				box.MaxEdge.X=temp;
-			}
-		if (box.MinEdge.Y > box.MaxEdge.Y)
-			{
-				temp=box.MinEdge.Y;
-				box.MinEdge.Y=box.MaxEdge.Y;
-				box.MaxEdge.Y=temp;
-			}
-		if (box.MinEdge.Z > box.MaxEdge.Z)
-			{
-				temp=box.MinEdge.Z;
-				box.MinEdge.Z=box.MaxEdge.Z;
-				box.MaxEdge.Z=temp;
-			}
-		// Compute texture coords
-		f32 tx1 = (box.MinEdge.X/BS)+0.5;
-		f32 ty1 = (box.MinEdge.Y/BS)+0.5;
-		f32 tz1 = (box.MinEdge.Z/BS)+0.5;
-		f32 tx2 = (box.MaxEdge.X/BS)+0.5;
-		f32 ty2 = (box.MaxEdge.Y/BS)+0.5;
-		f32 tz2 = (box.MaxEdge.Z/BS)+0.5;
-		f32 txc[24] = {
+		box.MinEdge.X -= expand;
+		box.MinEdge.Y -= expand;
+		box.MinEdge.Z -= expand;
+		box.MaxEdge.X += expand;
+		box.MaxEdge.Y += expand;
+		box.MaxEdge.Z += expand;
+
+		// Compute texture UV coords
+		f32 tx1 = (box.MinEdge.X / BS) + 0.5;
+		f32 ty1 = (box.MinEdge.Y / BS) + 0.5;
+		f32 tz1 = (box.MinEdge.Z / BS) + 0.5;
+		f32 tx2 = (box.MaxEdge.X / BS) + 0.5;
+		f32 ty2 = (box.MaxEdge.Y / BS) + 0.5;
+		f32 tz2 = (box.MaxEdge.Z / BS) + 0.5;
+
+		f32 txc_default[24] = {
 			// up
-			tx1, 1-tz2, tx2, 1-tz1,
+			tx1, 1 - tz2, tx2, 1 - tz1,
 			// down
 			tx1, tz1, tx2, tz2,
 			// right
-			tz1, 1-ty2, tz2, 1-ty1,
+			tz1, 1 - ty2, tz2, 1 - ty1,
 			// left
-			1-tz2, 1-ty2, 1-tz1, 1-ty1,
+			1 - tz2, 1 - ty2, 1 - tz1, 1 - ty1,
 			// back
-			1-tx2, 1-ty2, 1-tx1, 1-ty1,
+			1 - tx2, 1 - ty2, 1 - tx1, 1 - ty1,
 			// front
-			tx1, 1-ty2, tx2, 1-ty1,
+			tx1, 1 - ty2, tx2, 1 - ty1,
 		};
+
+		// use default texture UV mapping if not provided
+		const f32 *txc = uv_coords ? uv_coords : txc_default;
+
 		v3f min = box.MinEdge;
 		v3f max = box.MaxEdge;
 

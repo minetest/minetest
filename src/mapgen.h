@@ -181,6 +181,13 @@ public:
 	virtual void makeChunk(BlockMakeData *data) {}
 	virtual int getGroundLevelAtPoint(v2s16 p) { return 0; }
 
+	// getSpawnLevelAtPoint() is a function within each mapgen that returns a
+	// suitable y co-ordinate for player spawn ('suitable' usually meaning
+	// within 16 nodes of water_level). If a suitable spawn level cannot be
+	// found at the specified (X, Z) 'MAX_MAP_GENERATION_LIMIT' is returned to
+	// signify this and to cause Server::findSpawnPos() to try another (X, Z).
+	virtual int getSpawnLevelAtPoint(v2s16 p) { return 0; }
+
 private:
 	DISABLE_CLASS_COPY(Mapgen);
 };

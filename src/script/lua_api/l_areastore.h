@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define L_AREASTORE_H_
 
 #include "lua_api/l_base.h"
-#include "irr_v3d.h"
 #include "areastore.h"
 
 /*

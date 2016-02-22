@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "fontengine.h"
 #include "guiscalingfilter.h"
+#include "mesh.h"
 #include <IGUIStaticText.h>
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -80,10 +81,46 @@ Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 	use_hotbar_image = false;
 	hotbar_selected_image = "";
 	use_hotbar_selected_image = false;
+
+	m_selection_mesh = NULL;
+	m_selection_boxes.clear();
+	m_halo_boxes.clear();
+
+	m_selection_pos = v3f(0.0, 0.0, 0.0);
+	std::string mode = g_settings->get("node_highlighting");
+	m_selection_material.Lighting = false;
+
+	if (g_settings->getBool("enable_shaders")) {
+		IShaderSource *shdrsrc = gamedef->getShaderSource();
+		u16 shader_id = shdrsrc->getShader(
+			mode == "halo" ? "selection_shader" : "default_shader", 1, 1);
+		m_selection_material.MaterialType = shdrsrc->getShaderInfo(shader_id).material;
+	} else {
+		m_selection_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	}
+
+	if (mode == "box") {
+		m_use_selection_mesh = false;
+		m_selection_material.Thickness =
+			rangelim(g_settings->getS16("selectionbox_width"), 1, 5);	
+	} else if (mode == "halo") {
+		m_use_selection_mesh = true;
+		m_selection_material.setTexture(0, tsrc->getTextureForMesh("halo.png"));
+		m_selection_material.setFlag(video::EMF_BACK_FACE_CULLING, true);
+	} else {
+		m_selection_material.MaterialType = video::EMT_SOLID;
+	}
 }
 
-void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect, bool selected) {
+Hud::~Hud()
+{
+	if (m_selection_mesh)
+		m_selection_mesh->drop();
+}
 
+void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
+		bool selected)
+{
 	if (selected) {
 			/* draw hihlighting around selected item */
 			if (use_hotbar_selected_image) {
@@ -154,7 +191,8 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect, bool sele
 		video::SColor bgcolor2(128, 0, 0, 0);
 		if (!use_hotbar_image)
 			driver->draw2DRectangle(bgcolor2, rect, NULL);
-		drawItemStack(driver, g_fontengine->getFont(), item, rect, NULL, gamedef);
+		drawItemStack(driver, g_fontengine->getFont(), item, rect, NULL,
+			gamedef, selected ? IT_ROT_SELECTED : IT_ROT_NONE);
 	}
 
 //NOTE: selectitem = 0 -> no selected; selectitem 1-based
@@ -237,7 +275,7 @@ void Hud::drawItems(v2s32 upperleftpos, s32 itemcount, s32 offset,
 }
 
 
-void Hud::drawLuaElements(v3s16 camera_offset) {
+void Hud::drawLuaElements(const v3s16 &camera_offset) {
 	u32 text_height = g_fontengine->getTextHeight();
 	irr::gui::IGUIFont* font = g_fontengine->getFont();
 	for (size_t i = 0; i != player->maxHudId(); i++) {
@@ -464,15 +502,98 @@ void Hud::drawCrosshair() {
 	}
 }
 
-
-void Hud::drawSelectionBoxes(std::vector<aabb3f> &hilightboxes) {
-	for (std::vector<aabb3f>::const_iterator
-			i = hilightboxes.begin();
-			i != hilightboxes.end(); ++i) {
-		driver->draw3DBox(*i, selectionbox_argb);
+void Hud::setSelectionPos(const v3f &pos, const v3s16 &camera_offset)
+{
+	m_camera_offset = camera_offset;
+	m_selection_pos = pos;
+	m_selection_pos_with_offset = pos - intToFloat(camera_offset, BS);
+}
+	
+void Hud::drawSelectionMesh()
+{	
+	if (!m_use_selection_mesh) {
+		// Draw 3D selection boxes
+		video::SMaterial oldmaterial = driver->getMaterial2D();
+		driver->setMaterial(m_selection_material);
+		for (std::vector<aabb3f>::const_iterator
+				i = m_selection_boxes.begin();
+				i != m_selection_boxes.end(); ++i) {
+			aabb3f box = aabb3f(
+				i->MinEdge + m_selection_pos_with_offset,
+				i->MaxEdge + m_selection_pos_with_offset);
+			
+			u32 r = (selectionbox_argb.getRed() *
+					m_selection_mesh_color.getRed() / 255);		
+			u32 g = (selectionbox_argb.getGreen() *
+					m_selection_mesh_color.getGreen() / 255);
+			u32 b = (selectionbox_argb.getBlue() *
+					m_selection_mesh_color.getBlue() / 255);
+			driver->draw3DBox(box, video::SColor(255, r, g, b));
+		}
+		driver->setMaterial(oldmaterial);
+	} else if (m_selection_mesh) {
+		// Draw selection mesh
+		video::SMaterial oldmaterial = driver->getMaterial2D();
+		driver->setMaterial(m_selection_material);
+		setMeshColor(m_selection_mesh, m_selection_mesh_color);
+		scene::IMesh* mesh = cloneMesh(m_selection_mesh);
+		translateMesh(mesh, m_selection_pos_with_offset);
+		u32 mc = m_selection_mesh->getMeshBufferCount();
+		for (u32 i = 0; i < mc; i++) {
+			scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+			driver->drawMeshBuffer(buf);
+		}
+		mesh->drop();
+		driver->setMaterial(oldmaterial);
 	}
 }
 
+void Hud::updateSelectionMesh(const v3s16 &camera_offset)
+{
+	m_camera_offset = camera_offset;
+	if (!m_use_selection_mesh)
+		return;
+
+	if (m_selection_mesh) {
+		m_selection_mesh->drop();
+		m_selection_mesh = NULL;
+	}
+
+	if (!m_selection_boxes.size()) {
+		// No pointed object
+		return;
+	}
+
+	// New pointed object, create new mesh.
+
+	// Texture UV coordinates for selection boxes
+	static f32 texture_uv[24] = {
+		0,0,1,1,
+		0,0,1,1,
+		0,0,1,1,
+		0,0,1,1,
+		0,0,1,1,
+		0,0,1,1
+	};
+
+	// Use single halo box instead of multiple overlapping boxes.
+	// Temporary solution - problem can be solved with multiple
+	// rendering targets, or some method to remove inner surfaces.
+	// Thats because of halo transparency.
+
+	aabb3f halo_box(100.0, 100.0, 100.0, -100.0, -100.0, -100.0);
+	m_halo_boxes.clear();
+
+	for (std::vector<aabb3f>::iterator
+			i = m_selection_boxes.begin();
+			i != m_selection_boxes.end(); ++i) {
+		halo_box.addInternalBox(*i);
+	}
+
+	m_halo_boxes.push_back(halo_box);
+	m_selection_mesh = convertNodeboxesToMesh(
+		m_halo_boxes, texture_uv, 0.5);
+}
 
 void Hud::resizeHotbar() {
 	if (m_screensize != porting::getWindowSize()) {
@@ -484,28 +605,76 @@ void Hud::resizeHotbar() {
 	}
 }
 
+struct MeshTimeInfo {
+	s32 time;
+	scene::IMesh *mesh;
+};
+
 void drawItemStack(video::IVideoDriver *driver,
 		gui::IGUIFont *font,
 		const ItemStack &item,
 		const core::rect<s32> &rect,
 		const core::rect<s32> *clip,
-		IGameDef *gamedef)
+		IGameDef *gamedef,
+		ItemRotationKind rotation_kind)
 {
-	if(item.empty())
+	static MeshTimeInfo rotation_time_infos[IT_ROT_NONE];
+	static bool enable_animations =
+		g_settings->getBool("inventory_items_animations");
+
+	if (item.empty()) {
+		if (rotation_kind < IT_ROT_NONE) {
+			rotation_time_infos[rotation_kind].mesh = NULL;
+		}
 		return;
+	}
 
 	const ItemDefinition &def = item.getDefinition(gamedef->idef());
-	video::ITexture *texture = gamedef->idef()->getInventoryTexture(def.name, gamedef);
+	scene::IMesh* mesh = gamedef->idef()->getWieldMesh(def.name, gamedef);
 
-	// Draw the inventory texture
-	if(texture != NULL)
-	{
-		const video::SColor color(255,255,255,255);
-		const video::SColor colors[] = {color,color,color,color};
-		draw2DImageFilterScaled(driver, texture, rect,
-			core::rect<s32>(core::position2d<s32>(0,0),
-			core::dimension2di(texture->getOriginalSize())),
-			clip, colors, true);
+	if (mesh) {
+		driver->clearZBuffer();
+		s32 delta = 0;
+		if (rotation_kind < IT_ROT_NONE) {
+			MeshTimeInfo &ti = rotation_time_infos[rotation_kind];
+			if (mesh != ti.mesh) {
+				ti.mesh = mesh;
+				ti.time = getTimeMs();
+			} else {
+				delta = porting::getDeltaMs(ti.time, getTimeMs()) % 100000;
+			}
+		}
+		core::rect<s32> oldViewPort = driver->getViewPort();
+		core::matrix4 oldProjMat = driver->getTransform(video::ETS_PROJECTION);
+		core::matrix4 oldViewMat = driver->getTransform(video::ETS_VIEW);
+		core::matrix4 ProjMatrix;
+		ProjMatrix.buildProjectionMatrixOrthoLH(2, 2, -1, 100);
+		driver->setTransform(video::ETS_PROJECTION, ProjMatrix);
+		driver->setTransform(video::ETS_VIEW, ProjMatrix);
+		core::matrix4 matrix;
+		matrix.makeIdentity();
+
+		if (enable_animations) {
+			float timer_f = (float)delta / 5000.0;
+			matrix.setRotationDegrees(core::vector3df(0, 360 * timer_f, 0));
+		}
+
+		driver->setTransform(video::ETS_WORLD, matrix);
+		driver->setViewPort(rect);
+
+		u32 mc = mesh->getMeshBufferCount();
+		for (u32 j = 0; j < mc; ++j) {
+			scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+			video::SMaterial &material = buf->getMaterial();
+			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+			material.Lighting = false;
+			driver->setMaterial(material);
+			driver->drawMeshBuffer(buf);
+		}
+
+		driver->setTransform(video::ETS_VIEW, oldViewMat);
+		driver->setTransform(video::ETS_PROJECTION, oldProjMat);
+		driver->setViewPort(oldViewPort);
 	}
 
 	if(def.type == ITEM_TOOL && item.wear != 0)

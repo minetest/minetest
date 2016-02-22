@@ -45,7 +45,7 @@ public:
 	bool isAttached;
 
 	v3f overridePosition;
-	
+
 	void move(f32 dtime, Environment *env, f32 pos_max_d);
 	void move(f32 dtime, Environment *env, f32 pos_max_d,
 			std::vector<CollisionInfo> *collision_info);
@@ -81,6 +81,9 @@ public:
 	}
 
 private:
+	void accelerateHorizontal(const v3f &target_speed, const f32 max_increase);
+	void accelerateVertical(const v3f &target_speed, const f32 max_increase);
+
 	// This is used for determining the sneaking range
 	v3s16 m_sneak_node;
 	// Whether the player is allowed to sneak

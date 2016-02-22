@@ -764,22 +764,25 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 	else
 		shaders_header += "0\n";
 
-	if(pixel_program != "")
-		pixel_program = shaders_header + pixel_program;
-	if(vertex_program != "")
-		vertex_program = shaders_header + vertex_program;
-	if(geometry_program != "")
-		geometry_program = shaders_header + geometry_program;
+	if (g_settings->getBool("tone_mapping"))
+		shaders_header += "#define ENABLE_TONE_MAPPING\n";
+
 	// Call addHighLevelShaderMaterial() or addShaderMaterial()
 	const c8* vertex_program_ptr = 0;
 	const c8* pixel_program_ptr = 0;
 	const c8* geometry_program_ptr = 0;
-	if(vertex_program != "")
+	if (!vertex_program.empty()) {
+		vertex_program = shaders_header + vertex_program;
 		vertex_program_ptr = vertex_program.c_str();
-	if(pixel_program != "")
+	}
+	if (!pixel_program.empty()) {
+		pixel_program = shaders_header + pixel_program;
 		pixel_program_ptr = pixel_program.c_str();
-	if(geometry_program != "")
+	}
+	if (!geometry_program.empty()) {
+		geometry_program = shaders_header + geometry_program;
 		geometry_program_ptr = geometry_program.c_str();
+	}
 	s32 shadermat = -1;
 	if(is_highlevel){
 		infostream<<"Compiling high level shaders for "<<name<<std::endl;
@@ -789,7 +792,7 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 			video::EVST_VS_1_1,   // Vertex shader version
 			pixel_program_ptr,    // Pixel shader program
 			"pixelMain",          // Pixel shader entry point
-			video::EPST_PS_1_1,   // Pixel shader version
+			video::EPST_PS_1_2,   // Pixel shader version
 			geometry_program_ptr, // Geometry shader program
 			"geometryMain",       // Geometry shader entry point
 			video::EGST_GS_4_0,   // Geometry shader version
@@ -805,6 +808,9 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 					"failed to generate \""<<name<<"\", "
 					"addHighLevelShaderMaterial failed."
 					<<std::endl;
+			dumpShaderProgram(warningstream, "Vertex", vertex_program);
+			dumpShaderProgram(warningstream, "Pixel", pixel_program);
+			dumpShaderProgram(warningstream, "Geometry", geometry_program);
 			return shaderinfo;
 		}
 	}
@@ -823,6 +829,8 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 					"failed to generate \""<<name<<"\", "
 					"addShaderMaterial failed."
 					<<std::endl;
+			dumpShaderProgram(warningstream, "Vertex", vertex_program);
+			dumpShaderProgram(warningstream,"Pixel", pixel_program);
 			return shaderinfo;
 		}
 	}
@@ -867,4 +875,22 @@ void load_shaders(std::string name, SourceShaderCache *sourcecache,
 		}
 	}
 
+}
+
+void dumpShaderProgram(std::ostream &output_stream,
+		const std::string &program_type, const std::string &program)
+{
+	output_stream << program_type << " shader program:" << std::endl <<
+		"----------------------------------" << std::endl;
+	size_t pos = 0;
+	size_t prev = 0;
+	s16 line = 1;
+	while ((pos = program.find("\n", prev)) != std::string::npos) {
+		output_stream << line++ << ": "<< program.substr(prev, pos - prev) <<
+			std::endl;
+		prev = pos + 1;
+	}
+	output_stream << line << ": " << program.substr(prev) << std::endl <<
+		"End of " << program_type << " shader program." << std::endl <<
+		" " << std::endl;
 }

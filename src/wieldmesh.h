@@ -53,7 +53,7 @@ public:
 
 	virtual void render();
 
-	virtual const core::aabbox3d<f32>& getBoundingBox() const
+	virtual const aabb3f &getBoundingBox() const
 	{ return m_bounding_box; }
 
 private:
@@ -74,7 +74,11 @@ private:
 	// Bounding box culling is disabled for this type of scene node,
 	// so this variable is just required so we can implement
 	// getBoundingBox() and is set to an empty box.
-	core::aabbox3d<f32> m_bounding_box;
+	aabb3f m_bounding_box;
 };
 
+scene::IMesh *getItemMesh(IGameDef *gamedef, const ItemStack &item);
+
+scene::IMesh *getExtrudedMesh(ITextureSource *tsrc,
+		const std::string &imagename);
 #endif

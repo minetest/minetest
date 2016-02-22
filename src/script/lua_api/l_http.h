@@ -17,14 +17,34 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef LUAENTITY_COMMON_HEADER
-#define LUAENTITY_COMMON_HEADER
+#ifndef L_HTTP_H_
+#define L_HTTP_H_
 
-#define LUAENTITY_CMD_UPDATE_POSITION 0
-#define LUAENTITY_CMD_SET_TEXTURE_MOD 1
-#define LUAENTITY_CMD_SET_SPRITE 2
-#define LUAENTITY_CMD_PUNCHED 3
-#define LUAENTITY_CMD_UPDATE_ARMOR_GROUPS 4
+#include "lua_api/l_base.h"
+#include "config.h"
 
+struct HTTPFetchRequest;
+struct HTTPFetchResult;
+
+class ModApiHttp : public ModApiBase {
+private:
+#if USE_CURL
+	// Helpers for HTTP fetch functions
+	static void read_http_fetch_request(lua_State *L, HTTPFetchRequest &req);
+	static void push_http_fetch_result(lua_State *L, HTTPFetchResult &res, bool completed = true);
+
+	// http_fetch_async({url=, timeout=, post_data=})
+	static int l_http_fetch_async(lua_State *L);
+
+	// http_fetch_async_get(handle)
+	static int l_http_fetch_async_get(lua_State *L);
+
+	// request_http_api()
+	static int l_request_http_api(lua_State *L);
 #endif
 
+public:
+	static void Initialize(lua_State *L, int top);
+};
+
+#endif /* L_HTTP_H_ */
