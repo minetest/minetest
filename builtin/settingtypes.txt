@@ -252,6 +252,9 @@ serverlist_file (Serverlist file) string favoriteservers.txt
 
 [***Basic]
 
+#    Enable VBO
+enable_vbo (VBO) bool true
+
 #    Whether to fog out the end of the visible area.
 enable_fog (Fog) bool true
 
