@@ -194,7 +194,7 @@ void main(void)
 
 	vec4 col = vec4(color.rgb * gl_Color.rgb, 1.0); 
 	
-#if MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_LIQUID_OPAQUE
+#if MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT
 	float alpha = gl_Color.a;
 	if (fogDistance != 0.0) {
 		float d = max(0.0, min(vPosition.z / fogDistance * 1.5 - 0.6, 1.0));
