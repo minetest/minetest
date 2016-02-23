@@ -303,6 +303,7 @@ LOCAL_SRC_FILES +=                                \
 		jni/src/script/lua_api/l_rollback.cpp     \
 		jni/src/script/lua_api/l_server.cpp       \
 		jni/src/script/lua_api/l_settings.cpp     \
+		jni/src/script/lua_api/l_http.cpp         \
 		jni/src/script/lua_api/l_util.cpp         \
 		jni/src/script/lua_api/l_vmanip.cpp       \
 		jni/src/script/scripting_game.cpp         \
