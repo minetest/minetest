@@ -59,7 +59,7 @@ MinimapModeMachine::~MinimapModeMachine()
 
 void MinimapModeMachine::serialize(std::ostream &os)
 {
-	for (u16 i; i < m_mode_count; i++) {
+	for (u16 i = 0; i < m_mode_count; i++) {
 		std::ostringstream oss(std::ios::binary);
 		MinimapModeDef &m = m_defs[i];
 		writeU8(oss, m.is_minimap_shown);
@@ -84,7 +84,7 @@ void MinimapModeMachine::serialize(std::ostream &os)
 
 void MinimapModeMachine::deserialize(std::istream &is)
 {
-	for (u16 i; i < m_mode_count; i++) {
+	for (u16 i = 0; i < m_mode_count; i++) {
 		std::string str = deSerializeString(is);
 		std::istringstream iss(str, std::ios::binary);
 		MinimapModeDef &m = m_defs[i];
