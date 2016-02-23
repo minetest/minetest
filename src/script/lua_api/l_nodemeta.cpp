@@ -62,17 +62,10 @@ void NodeMetaRef::reportMetadataChange()
 {
 	// NOTE: This same code is in rollback_interface.cpp
 	// Inform other things that the metadata has changed
-	v3s16 blockpos = getNodeBlockPos(m_p);
 	MapEditEvent event;
 	event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
-	event.p = blockpos;
+	event.p = m_p;
 	m_env->getMap().dispatchEvent(&event);
-	// Set the block to be saved
-	MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(blockpos);
-	if (block) {
-		block->raiseModified(MOD_STATE_WRITE_NEEDED,
-			MOD_REASON_REPORT_META_CHANGE);
-	}
 }
 
 // Exported functions

@@ -243,6 +243,31 @@ void Client::handleCommand_AddNode(NetworkPacket* pkt)
 
 	addNode(p, n, remove_metadata);
 }
+
+void Client::handleCommand_NodemetaChanged(NetworkPacket *pkt)
+{
+	if (pkt->getSize() < 1)
+		return;
+
+	NodeMetadataList *meta_updates_list = new NodeMetadataList();
+	std::string datastring = pkt->readLongString();
+	std::istringstream is(datastring, std::ios::binary);
+	std::stringstream sstr;
+	decompressZlib(is, sstr);
+	meta_updates_list->deSerialize(sstr, m_itemdef, true);
+	std::vector<v3s16> meta_updates = meta_updates_list->getAllKeys();
+	for (std::vector<v3s16>::const_iterator i = meta_updates.begin();
+			i != meta_updates.end(); ++i) {
+		v3s16 pos = *i;
+		NodeMetadata *meta = meta_updates_list->get(pos);
+		try {
+			m_env.getMap().setNodeMetadata(pos, meta);
+		} catch (InvalidPositionException &e) {
+			delete meta;
+		}
+	}
+}
+
 void Client::handleCommand_BlockData(NetworkPacket* pkt)
 {
 	// Ignore too small packet

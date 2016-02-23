@@ -168,17 +168,10 @@ bool RollbackAction::applyRevert(Map *map, InventoryManager *imgr, IGameDef *gam
 					meta->deSerialize(is, 1); // FIXME: version bump??
 				}
 				// Inform other things that the meta data has changed
-				v3s16 blockpos = getContainerPos(p, MAP_BLOCKSIZE);
 				MapEditEvent event;
 				event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
-				event.p = blockpos;
+				event.p = p;
 				map->dispatchEvent(&event);
-				// Set the block to be saved
-				MapBlock *block = map->getBlockNoCreateNoEx(blockpos);
-				if (block) {
-					block->raiseModified(MOD_STATE_WRITE_NEEDED,
-						MOD_REASON_REPORT_META_CHANGE);
-				}
 			} catch (InvalidPositionException &e) {
 				infostream << "RollbackAction::applyRevert(): "
 					<< "InvalidPositionException: " << e.what()

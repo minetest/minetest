@@ -112,7 +112,8 @@ int NodeMetadata::countNonPrivate() const
 	NodeMetadataList
 */
 
-void NodeMetadataList::serialize(std::ostream &os, u8 blockver, bool disk) const
+void NodeMetadataList::serialize(std::ostream &os, u8 blockver, bool disk,
+	bool uncompressed_pos) const
 {
 	/*
 		Version 0 is a placeholder for "nothing to see here; go away."
@@ -134,14 +135,20 @@ void NodeMetadataList::serialize(std::ostream &os, u8 blockver, bool disk) const
 		if (data->empty())
 			continue;
 
-		u16 p16 = p.Z * MAP_BLOCKSIZE * MAP_BLOCKSIZE + p.Y * MAP_BLOCKSIZE + p.X;
-		writeU16(os, p16);
-
+		if (uncompressed_pos) {
+			writeU16(os, p.X);
+			writeU16(os, p.Y);
+			writeU16(os, p.Z);
+		} else {
+			u16 p16 = p.Z * MAP_BLOCKSIZE * MAP_BLOCKSIZE + p.Y * MAP_BLOCKSIZE + p.X;
+			writeU16(os, p16);
+		}
 		data->serialize(os, version, disk);
 	}
 }
 
-void NodeMetadataList::deSerialize(std::istream &is, IItemDefManager *item_def_mgr)
+void NodeMetadataList::deSerialize(std::istream &is,
+	IItemDefManager *item_def_mgr, bool uncompressed_pos)
 {
 	clear();
 
@@ -162,15 +169,19 @@ void NodeMetadataList::deSerialize(std::istream &is, IItemDefManager *item_def_m
 	u16 count = readU16(is);
 
 	for (u16 i = 0; i < count; i++) {
-		u16 p16 = readU16(is);
-
 		v3s16 p;
-		p.Z = p16 / MAP_BLOCKSIZE / MAP_BLOCKSIZE;
-		p16 &= MAP_BLOCKSIZE * MAP_BLOCKSIZE - 1;
-		p.Y = p16 / MAP_BLOCKSIZE;
-		p16 &= MAP_BLOCKSIZE - 1;
-		p.X = p16;
-
+		if (uncompressed_pos) {
+			p.X = readU16(is);
+			p.Y = readU16(is);
+			p.Z = readU16(is);
+		} else {
+			u16 p16 = readU16(is);
+			p.Z = p16 / MAP_BLOCKSIZE / MAP_BLOCKSIZE;
+			p16 &= MAP_BLOCKSIZE * MAP_BLOCKSIZE - 1;
+			p.Y = p16 / MAP_BLOCKSIZE;
+			p16 &= MAP_BLOCKSIZE - 1;
+			p.X = p16;
+		}
 		if (m_data.find(p) != m_data.end()) {
 			warningstream << "NodeMetadataList::deSerialize(): "
 					<< "already set data at position " << PP(p)

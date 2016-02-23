@@ -75,8 +75,10 @@ class NodeMetadataList
 public:
 	~NodeMetadataList();
 
-	void serialize(std::ostream &os, u8 blockver, bool disk=true) const;
-	void deSerialize(std::istream &is, IItemDefManager *item_def_mgr);
+	void serialize(std::ostream &os, u8 blockver, bool disk = true,
+		bool uncompressed_pos = false) const;
+	void deSerialize(std::istream &is, IItemDefManager *item_def_mgr,
+		bool uncompressed_pos = false);
 
 	// Add all keys in this list to the vector keys
 	std::vector<v3s16> getAllKeys();
