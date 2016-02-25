@@ -80,6 +80,7 @@ enum NodeBoxType
 	NODEBOX_FIXED, // Static separately defined box(es)
 	NODEBOX_WALLMOUNTED, // Box for wall mounted nodes; (top, bottom, side)
 	NODEBOX_LEVELED, // Same as fixed, but with dynamic height from param2. for snow, ...
+	NODEBOX_CONNECTED, // optionally draws nodeboxes if a neighbor node attaches
 };
 
 struct NodeBox
@@ -92,6 +93,13 @@ struct NodeBox
 	aabb3f wall_top;
 	aabb3f wall_bottom;
 	aabb3f wall_side; // being at the -X side
+	// NODEBOX_CONNECTED
+	std::vector<aabb3f> connect_top;
+	std::vector<aabb3f> connect_bottom;
+	std::vector<aabb3f> connect_front;
+	std::vector<aabb3f> connect_left;
+	std::vector<aabb3f> connect_back;
+	std::vector<aabb3f> connect_right;
 
 	NodeBox()
 	{ reset(); }
@@ -269,6 +277,9 @@ struct ContentFeatures
 	SimpleSoundSpec sound_dig;
 	SimpleSoundSpec sound_dug;
 
+	std::vector<std::string> connects_to;
+	std::set<content_t> connects_to_ids;
+
 	/*
 		Methods
 	*/
@@ -314,6 +325,7 @@ public:
 
 	virtual void pendNodeResolve(NodeResolver *nr)=0;
 	virtual bool cancelNodeResolveCallback(NodeResolver *nr)=0;
+	virtual bool nodeboxConnects(const MapNode from, const MapNode to)=0;
 };
 
 class IWritableNodeDefManager : public INodeDefManager {
@@ -368,6 +380,7 @@ public:
 	virtual bool cancelNodeResolveCallback(NodeResolver *nr)=0;
 	virtual void runNodeResolveCallbacks()=0;
 	virtual void resetNodeResolveState()=0;
+	virtual void mapNodeboxConnections()=0;
 };
 
 IWritableNodeDefManager *createNodeDefManager();

@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "exceptions.h"
 #include "debug.h"
 #include "gamedef.h"
+#include "mapnode.h"
 #include <fstream> // Used in applyTextureOverrides()
 
 /*
@@ -48,44 +49,91 @@ void NodeBox::reset()
 	wall_top = aabb3f(-BS/2, BS/2-BS/16., -BS/2, BS/2, BS/2, BS/2);
 	wall_bottom = aabb3f(-BS/2, -BS/2, -BS/2, BS/2, -BS/2+BS/16., BS/2);
 	wall_side = aabb3f(-BS/2, -BS/2, -BS/2, -BS/2+BS/16., BS/2, BS/2);
+	// no default for other parts
+	connect_top.clear();
+	connect_bottom.clear();
+	connect_front.clear();
+	connect_left.clear();
+	connect_back.clear();
+	connect_right.clear();
 }
 
 void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 {
-	int version = protocol_version >= 21 ? 2 : 1;
+	int version = 1;
+	if (protocol_version >= 27)
+		version = 3;
+	else if (protocol_version >= 21)
+		version = 2;
 	writeU8(os, version);
 
-	if (version == 1 && type == NODEBOX_LEVELED)
-		writeU8(os, NODEBOX_FIXED);
-	else
-		writeU8(os, type);
+	switch (type) {
+	case NODEBOX_LEVELED:
+	case NODEBOX_FIXED:
+		if (version == 1)
+			writeU8(os, NODEBOX_FIXED);
+		else
+			writeU8(os, type);
 
-	if(type == NODEBOX_FIXED || type == NODEBOX_LEVELED)
-	{
 		writeU16(os, fixed.size());
-		for(std::vector<aabb3f>::const_iterator
+		for (std::vector<aabb3f>::const_iterator
 				i = fixed.begin();
 				i != fixed.end(); ++i)
 		{
 			writeV3F1000(os, i->MinEdge);
 			writeV3F1000(os, i->MaxEdge);
 		}
-	}
-	else if(type == NODEBOX_WALLMOUNTED)
-	{
+		break;
+	case NODEBOX_WALLMOUNTED:
+		writeU8(os, type);
+
 		writeV3F1000(os, wall_top.MinEdge);
 		writeV3F1000(os, wall_top.MaxEdge);
 		writeV3F1000(os, wall_bottom.MinEdge);
 		writeV3F1000(os, wall_bottom.MaxEdge);
 		writeV3F1000(os, wall_side.MinEdge);
 		writeV3F1000(os, wall_side.MaxEdge);
+		break;
+	case NODEBOX_CONNECTED:
+		if (version <= 2) {
+			// send old clients nodes that can't be walked through
+			// to prevent abuse
+			writeU8(os, NODEBOX_FIXED);
+
+			writeU16(os, 1);
+			writeV3F1000(os, v3f(-BS/2, -BS/2, -BS/2));
+			writeV3F1000(os, v3f(BS/2, BS/2, BS/2));
+		} else {
+			writeU8(os, type);
+
+#define WRITEBOX(box) do { \
+		writeU16(os, (box).size()); \
+		for (std::vector<aabb3f>::const_iterator \
+				i = (box).begin(); \
+				i != (box).end(); ++i) { \
+			writeV3F1000(os, i->MinEdge); \
+			writeV3F1000(os, i->MaxEdge); \
+		}; } while (0)
+
+			WRITEBOX(fixed);
+			WRITEBOX(connect_top);
+			WRITEBOX(connect_bottom);
+			WRITEBOX(connect_front);
+			WRITEBOX(connect_left);
+			WRITEBOX(connect_back);
+			WRITEBOX(connect_right);
+		}
+		break;
+	default:
+		writeU8(os, type);
+		break;
 	}
 }
 
 void NodeBox::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if(version < 1 || version > 2)
+	if (version < 1 || version > 3)
 		throw SerializationError("unsupported NodeBox version");
 
 	reset();
@@ -111,6 +159,26 @@ void NodeBox::deSerialize(std::istream &is)
 		wall_bottom.MaxEdge = readV3F1000(is);
 		wall_side.MinEdge = readV3F1000(is);
 		wall_side.MaxEdge = readV3F1000(is);
+	}
+	else if (type == NODEBOX_CONNECTED)
+	{
+#define READBOXES(box) do { \
+		count = readU16(is); \
+		(box).reserve(count); \
+		while (count--) { \
+			v3f min = readV3F1000(is); \
+			v3f max = readV3F1000(is); \
+			(box).push_back(aabb3f(min, max)); }; } while (0)
+
+		u16 count;
+
+		READBOXES(fixed);
+		READBOXES(connect_top);
+		READBOXES(connect_bottom);
+		READBOXES(connect_front);
+		READBOXES(connect_left);
+		READBOXES(connect_back);
+		READBOXES(connect_right);
 	}
 }
 
@@ -261,6 +329,8 @@ void ContentFeatures::reset()
 	sound_footstep = SimpleSoundSpec();
 	sound_dig = SimpleSoundSpec("__group");
 	sound_dug = SimpleSoundSpec();
+	connects_to.clear();
+	connects_to_ids.clear();
 }
 
 void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
@@ -328,6 +398,10 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	os<<serializeString(mesh);
 	collision_box.serialize(os, protocol_version);
 	writeU8(os, floodable);
+	writeU16(os, connects_to_ids.size());
+	for (std::set<content_t>::const_iterator i = connects_to_ids.begin();
+			i != connects_to_ids.end(); ++i)
+		writeU16(os, *i);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -402,6 +476,9 @@ void ContentFeatures::deSerialize(std::istream &is)
 	mesh = deSerializeString(is);
 	collision_box.deSerialize(is);
 	floodable = readU8(is);
+	u16 connects_to_size = readU16(is);
+	for (u16 i = 0; i < connects_to_size; i++)
+		connects_to_ids.insert(readU16(is));
 	}catch(SerializationError &e) {};
 }
 
@@ -439,6 +516,8 @@ public:
 	virtual bool cancelNodeResolveCallback(NodeResolver *nr);
 	virtual void runNodeResolveCallbacks();
 	virtual void resetNodeResolveState();
+	virtual void mapNodeboxConnections();
+	virtual bool nodeboxConnects(MapNode from, MapNode to);
 
 private:
 	void addNameIdMapping(content_t i, std::string name);
@@ -1438,6 +1517,39 @@ void CNodeDefManager::resetNodeResolveState()
 	m_pending_resolve_callbacks.clear();
 }
 
+void CNodeDefManager::mapNodeboxConnections()
+{
+	for (u32 i = 0; i < m_content_features.size(); i++) {
+		ContentFeatures *f = &m_content_features[i];
+		if ((f->drawtype != NDT_NODEBOX) || (f->node_box.type != NODEBOX_CONNECTED))
+			continue;
+		for (std::vector<std::string>::iterator it = f->connects_to.begin();
+				it != f->connects_to.end(); ++it) {
+			getIds(*it, f->connects_to_ids);
+		}
+	}
+}
+
+bool CNodeDefManager::nodeboxConnects(MapNode from, MapNode to)
+{
+	const ContentFeatures &f1 = get(from);
+
+	if ((f1.drawtype != NDT_NODEBOX) || (f1.node_box.type != NODEBOX_CONNECTED))
+		return false;
+
+	// lookup target in connected set
+	if (f1.connects_to_ids.find(to.param0) == f1.connects_to_ids.end())
+		return false;
+
+	const ContentFeatures &f2 = get(to);
+
+	if ((f2.drawtype == NDT_NODEBOX) && (f1.node_box.type == NODEBOX_CONNECTED))
+		// ignores actually looking if back connection exists
+		return (f2.connects_to_ids.find(from.param0) != f2.connects_to_ids.end());
+
+	// the target is just a regular node, so connect no matter back connection
+	return true;
+}
 
 ////
 //// NodeResolver

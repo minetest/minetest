@@ -310,7 +310,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		if (sneak_node_found) {
 			f32 cb_max = 0;
 			MapNode n = map->getNodeNoEx(m_sneak_node);
-			std::vector<aabb3f> nodeboxes = n.getCollisionBoxes(nodemgr);
+			std::vector<aabb3f> nodeboxes;
+			n.getCollisionBoxes(nodemgr, &nodeboxes);
 			for (std::vector<aabb3f>::iterator it = nodeboxes.begin();
 					it != nodeboxes.end(); ++it) {
 				aabb3f box = *it;
