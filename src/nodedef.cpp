@@ -894,14 +894,23 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 				f->drawtype = NDT_GLASSLIKE;
 				f->solidness = 0;
 				f->visual_solidness = 1;
+			} else if (leaves_style == "plantlike") {
+					f->visual_scale = 1.1892f;
+					f->drawtype = NDT_PLANTLIKE;
+					f->solidness = 0;
+					f->backface_culling = false;
 			} else {
 				f->drawtype = NDT_NORMAL;
 				f->solidness = 2;
 				for (u32 i = 0; i < 6; i++)
 					tiledef[i].name += std::string("^[noalpha");
 			}
-			if (f->waving == 1)
-				material_type = TILE_MATERIAL_WAVING_LEAVES;
+			if (f->waving == 1) {
+				if (leaves_style == "plantlike")
+					material_type = TILE_MATERIAL_WAVING_PLANTS;
+				else
+					material_type = TILE_MATERIAL_WAVING_LEAVES;
+			}
 			break;
 		case NDT_PLANTLIKE:
 			f->solidness = 0;
