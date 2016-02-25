@@ -49,8 +49,14 @@ local function get_formspec(data)
 		"label[0,0.45;" .. fgettext("Mod:") .. "]" ..
 		"label[0.75,0.45;" .. mod.name .. "]" ..
 		"label[0,1;" .. fgettext("Depends:") .. "]" ..
-		"textlist[0,1.5;5,4.25;world_config_depends;" ..
+		"textlist[0,1.5;5,2;world_config_depends;" ..
 		modmgr.get_dependencies(mod.path) .. ";0]" ..
+		"label[0,3.5;" .. fgettext("Provides:") .. "]" ..
+		"textlist[0,4;2.25,1.75;world_config_provides;" ..
+		modmgr.get_provides(mod.path) .. ";0]" ..
+		"label[2.5,3.5;" .. fgettext("Conflicts:") .. "]" ..
+		"textlist[2.5,4;2.25,1.75;world_config_conflicts;" ..
+		modmgr.get_conflicts(mod.path) .. ";0]" ..
 		"button[9.25,6.35;2,0.5;btn_config_world_save;" .. fgettext("Save") .. "]" ..
 		"button[7.4,6.35;2,0.5;btn_config_world_cancel;" .. fgettext("Cancel") .. "]"
 

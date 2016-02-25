@@ -224,9 +224,10 @@ Server::Server(
 	ModConfiguration modconf(m_path_world);
 	m_mods = modconf.getMods();
 	std::vector<ModSpec> unsatisfied_mods = modconf.getUnsatisfiedMods();
+	std::map<std::string, std::string> mod_conflicts = modconf.getModConflicts();
 	// complain about mods with unsatisfied dependencies
-	if(!modconf.isConsistent()) {
-		for(std::vector<ModSpec>::iterator it = unsatisfied_mods.begin();
+	if (!modconf.isConsistent()) {
+		for (std::vector<ModSpec>::iterator it = unsatisfied_mods.begin();
 			it != unsatisfied_mods.end(); ++it) {
 			ModSpec mod = *it;
 			errorstream << "mod \"" << mod.name << "\" has unsatisfied dependencies: ";
@@ -234,6 +235,11 @@ Server::Server(
 				dep_it != mod.unsatisfied_depends.end(); ++dep_it)
 				errorstream << " \"" << *dep_it << "\"";
 			errorstream << std::endl;
+		}
+		for (std::map<std::string, std::string>::iterator it = mod_conflicts.begin();
+				it != mod_conflicts.end(); ++it) {
+			errorstream << "mod \"" << it->first << "\" conflicts with:"
+				<< it->second << std::endl;
 		}
 	}
 
@@ -255,6 +261,9 @@ Server::Server(
 	for(std::vector<ModSpec>::iterator it = unsatisfied_mods.begin();
 			it != unsatisfied_mods.end(); ++it)
 		load_mod_names.erase((*it).name);
+	for (std::map<std::string, std::string>::iterator it = mod_conflicts.begin();
+			it != mod_conflicts.end(); ++it)
+		load_mod_names.erase(it->first);
 	if(!load_mod_names.empty()) {
 		errorstream << "The following mods could not be found:";
 		for(std::set<std::string>::iterator it = load_mod_names.begin();
