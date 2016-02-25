@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_http.h"
 #include "httpfetch.h"
 #include "settings.h"
+#include "debug.h"
 #include "log.h"
 
 #include <algorithm>
@@ -130,11 +131,27 @@ int ModApiHttp::l_request_http_api(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
+	// We have to make sure that this function is being called directly by
+	// a mod, otherwise a malicious mod could override this function and
+	// steal its return value.
+	lua_Debug info;
+
+	// Make sure there's only one item below this function on the stack...
+	if (lua_getstack(L, 2, &info)) {
+		return 0;
+	}
+	FATAL_ERROR_IF(!lua_getstack(L, 1, &info), "lua_getstack() failed");
+	FATAL_ERROR_IF(!lua_getinfo(L, "S", &info), "lua_getinfo() failed");
+
+	// ...and that that item is the main file scope.
+	if (strcmp(info.what, "main") != 0) {
+		return 0;
+	}
+
 	// Mod must be listed in secure.http_mods or secure.trusted_mods
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
 	if (!lua_isstring(L, -1)) {
-		lua_pushnil(L);
-		return 1;
+		return 0;
 	}
 
 	const char *mod_name = lua_tostring(L, -1);

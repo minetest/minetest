@@ -2337,7 +2337,7 @@ These functions return the leftover itemstack.
       otherwise returns `nil`.
     * The returned table contains the functions `fetch`, `fetch_async` and `fetch_async_get`
       described below.
-    * Only works at init time.
+    * Only works at init time and must be called from the mod's main scope (not from a function).
     * Function only exists if minetest server was built with cURL support.
     * **DO NOT ALLOW ANY OTHER MODS TO ACCESS THE RETURNED TABLE, STORE IT IN
       A LOCAL VARIABLE!**
