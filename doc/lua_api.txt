@@ -617,6 +617,18 @@ A nodebox is defined as any of:
         wall_bottom = box,
         wall_side = box
     }
+    {
+        -- A node that has optional boxes depending on neighbouring nodes'
+        -- presence and type. See also `connects_to`.
+        type = "connected",
+        fixed = box OR {box1, box2, ...}
+        connect_top = box OR {box1, box2, ...}
+        connect_bottom = box OR {box1, box2, ...}
+        connect_front = box OR {box1, box2, ...}
+        connect_left = box OR {box1, box2, ...}
+        connect_back = box OR {box1, box2, ...}
+        connect_right = box OR {box1, box2, ...}
+    }
 
 A `box` is defined as:
 
@@ -3461,6 +3473,10 @@ Definition tables
         light_source = 0, -- Amount of light emitted by node
         damage_per_second = 0, -- If player is inside node, this damage is caused
         node_box = {type="regular"}, -- See "Node boxes"
+        connects_to = nodenames, --[[
+        * Used for nodebox nodes with the type == "connected"
+        * Specifies to what neighboring nodes connections will be drawn
+        * e.g. `{"group:fence", "default:wood"}` or `"default:stone"` ]]
         mesh = "model",
         selection_box = {type="regular"}, -- See "Node boxes" --[[
         ^ If drawtype "nodebox" is used and selection_box is nil, then node_box is used. ]]

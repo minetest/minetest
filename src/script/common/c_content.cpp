@@ -535,6 +535,18 @@ ContentFeatures read_content_features(lua_State *L, int index)
 		f.node_box = read_nodebox(L, -1);
 	lua_pop(L, 1);
 
+	lua_getfield(L, index, "connects_to");
+	if (lua_istable(L, -1)) {
+		int table = lua_gettop(L);
+		lua_pushnil(L);
+		while (lua_next(L, table) != 0) {
+			// Value at -1
+			f.connects_to.push_back(lua_tostring(L, -1));
+			lua_pop(L, 1);
+		}
+	}
+	lua_pop(L, 1);
+
 	lua_getfield(L, index, "selection_box");
 	if(lua_istable(L, -1))
 		f.selection_box = read_nodebox(L, -1);
@@ -627,25 +639,31 @@ NodeBox read_nodebox(lua_State *L, int index)
 		nodebox.type = (NodeBoxType)getenumfield(L, index, "type",
 				ScriptApiNode::es_NodeBoxType, NODEBOX_REGULAR);
 
-		lua_getfield(L, index, "fixed");
-		if(lua_istable(L, -1))
-			nodebox.fixed = read_aabb3f_vector(L, -1, BS);
-		lua_pop(L, 1);
+#define NODEBOXREAD(n, s) \
+	do { \
+		lua_getfield(L, index, (s)); \
+		if (lua_istable(L, -1)) \
+			(n) = read_aabb3f(L, -1, BS); \
+		lua_pop(L, 1); \
+	} while (0)
 
-		lua_getfield(L, index, "wall_top");
-		if(lua_istable(L, -1))
-			nodebox.wall_top = read_aabb3f(L, -1, BS);
-		lua_pop(L, 1);
-
-		lua_getfield(L, index, "wall_bottom");
-		if(lua_istable(L, -1))
-			nodebox.wall_bottom = read_aabb3f(L, -1, BS);
-		lua_pop(L, 1);
-
-		lua_getfield(L, index, "wall_side");
-		if(lua_istable(L, -1))
-			nodebox.wall_side = read_aabb3f(L, -1, BS);
-		lua_pop(L, 1);
+#define NODEBOXREADVEC(n, s) \
+	do { \
+		lua_getfield(L, index, (s)); \
+		if (lua_istable(L, -1)) \
+			(n) = read_aabb3f_vector(L, -1, BS); \
+		lua_pop(L, 1); \
+	} while (0)
+		NODEBOXREADVEC(nodebox.fixed, "fixed");
+		NODEBOXREAD(nodebox.wall_top, "wall_top");
+		NODEBOXREAD(nodebox.wall_bottom, "wall_bottom");
+		NODEBOXREAD(nodebox.wall_side, "wall_side");
+		NODEBOXREADVEC(nodebox.connect_top, "connect_top");
+		NODEBOXREADVEC(nodebox.connect_bottom, "connect_bottom");
+		NODEBOXREADVEC(nodebox.connect_front, "connect_front");
+		NODEBOXREADVEC(nodebox.connect_left, "connect_left");
+		NODEBOXREADVEC(nodebox.connect_back, "connect_back");
+		NODEBOXREADVEC(nodebox.connect_right, "connect_right");
 	}
 	return nodebox;
 }

@@ -135,6 +135,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 27:
 		backface_culling: backwards compatibility for playing with
 		newer client on pre-27 servers.
+		Add nodedef v3 - connected nodeboxes
 */
 
 #define LATEST_PROTOCOL_VERSION 27
