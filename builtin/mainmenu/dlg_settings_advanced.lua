@@ -706,7 +706,11 @@ local function create_minetest_conf_example()
 				result = result .. " possible values: " .. entry.possible:gsub(",", ", ")
 			end
 			result = result .. "\n"
-			result = result .. "# " .. entry.name .. " = ".. entry.default .. "\n\n"
+			local append = ""
+			if entry.default ~= "" then
+				append = " " .. entry.default
+			end
+			result = result .. "# " .. entry.name .. " =" .. append .. "\n\n"
 		end
 	end
 	return result
