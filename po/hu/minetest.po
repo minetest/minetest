@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-08 21:23+0100\n"
+"POT-Creation-Date: 2016-02-27 05:49+0100\n"
 "PO-Revision-Date: 2016-02-07 12:19+0000\n"
 "Last-Translator: Kisbenedek Márton <martonkisbenedek@gmail.com>\n"
-"Language-Team: Hungarian "
-"<https://hosted.weblate.org/projects/minetest/minetest/hu/>\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
+"minetest/hu/>\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -74,8 +74,9 @@ msgid "We support protocol versions between version $1 and $2."
 msgstr "$1 és $2 közötti protokoll verziókat támogatunk."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
-#: builtin/mainmenu/dlg_rename_modpack.lua builtin/mainmenu/tab_settings.lua
-#: src/guiKeyChangeMenu.cpp src/keycode.cpp
+#: builtin/mainmenu/dlg_rename_modpack.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
+#: src/keycode.cpp
 msgid "Cancel"
 msgstr "Mégse"
 
@@ -115,8 +116,8 @@ msgstr "Modpakk tartalom elrejtés"
 msgid "Mod:"
 msgstr "Mod:"
 
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_settings.lua
-#: src/guiKeyChangeMenu.cpp
+#: builtin/mainmenu/dlg_config_world.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
 msgid "Save"
 msgstr "Mentés"
 
@@ -190,6 +191,7 @@ msgid "No of course not!"
 msgstr "Persze, hogy nem!"
 
 #: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
+#: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
 msgstr "Igen"
 
@@ -208,6 +210,92 @@ msgstr "Elfogad"
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
 msgstr "Modpakk átnevezés:"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "\"$1\" is not a valid flag."
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "(No description of setting given)"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "< Back to Settings page"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Browse"
+msgstr "Keres"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Disabled"
+msgstr "Letiltva"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Edit"
+msgstr "Szerkeszt"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Enabled"
+msgstr "Engedélyezve"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Format is 3 numbers separated by commas and inside brackets."
+msgstr "A formátum 3 szám vesszőkkel elválasztva zárójelek között."
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid ""
+"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+"<octaves>, <persistence>"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Games"
+msgstr "Játékok"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
+msgid "Mods"
+msgstr "Modok"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Optionally the lacunarity can be appended with a leading comma."
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Please enter a comma seperated list of flags."
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Please enter a valid integer."
+msgstr "Írj be egy érvényes egész számot."
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Please enter a valid number."
+msgstr "Írj be egy érvényes számot."
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Possible values are: "
+msgstr "Lehetséges értékek: "
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Restore Default"
+msgstr "Alapértelmezett visszaállítás"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Select path"
+msgstr "Útvonal kiválasztás"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Show technical names"
+msgstr "Technikai nevek mutatása"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "The value must be greater than $1."
+msgstr "Az értéknek nagyobbnak kell lennie ennél: $1."
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "The value must be lower than $1."
+msgstr "Az értéknek kisebbnek kell lennie ennél: $1."
 
 #: builtin/mainmenu/modmgr.lua
 msgid ""
@@ -301,10 +389,6 @@ msgstr "Telepített modok:"
 #: builtin/mainmenu/tab_mods.lua
 msgid "Mod information:"
 msgstr "Mod ismertető:"
-
-#: builtin/mainmenu/tab_mods.lua builtin/mainmenu/tab_settings.lua
-msgid "Mods"
-msgstr "Modok"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "No mod description available"
@@ -418,90 +502,163 @@ msgid "Start Game"
 msgstr "Játék indítása"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "\"$1\" is not a valid flag."
-msgstr ""
+msgid "2x"
+msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "(No description of setting given)"
-msgstr ""
+#, fuzzy
+msgid "3D Clouds"
+msgstr "3D felhők"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Browse"
-msgstr "Keres"
+msgid "4x"
+msgstr "4x"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "8x"
+msgstr "8x"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Advanced Settings"
+msgstr "Beállítások"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Antialiasing:"
+msgstr "Élsimítás:"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Are you sure to reset your singleplayer world?"
+msgstr "Biztosan visszaállítod az egyjátékos világod?"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Bilinear Filter"
+msgstr "Bilineáris szűrés"
+
+#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
+#, fuzzy
+msgid "Bumpmapping"
+msgstr "Bumpmapping"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
 msgstr "Gombok változtatása"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Disabled"
-msgstr "Letiltva"
+#, fuzzy
+msgid "Connected Glass"
+msgstr "Üveg csatlakozása"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Edit"
-msgstr "Szerkeszt"
+#, fuzzy
+msgid "Enable Particles"
+msgstr "Mind engedélyez"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Enabled"
-msgstr "Engedélyezve"
+msgid "Fancy Leaves"
+msgstr "Szép levelek"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr "A formátum 3 szám vesszőkkel elválasztva zárójelek között."
+#, fuzzy
+msgid "Generate Normalmaps"
+msgstr "Normálfelületek generálása"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid ""
-"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
-msgstr ""
+#, fuzzy
+msgid "Mipmap"
+msgstr "Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Games"
-msgstr "Játékok"
+#, fuzzy
+msgid "Mipmap + Aniso. Filter"
+msgstr "Mipmap + Aniso. Filter"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr ""
+#, fuzzy
+msgid "No Filter"
+msgstr "Szűrés"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Please enter a comma seperated list of flags."
-msgstr ""
+#, fuzzy
+msgid "No Mipmap"
+msgstr "No Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Please enter a valid integer."
-msgstr "Írj be egy érvényes egész számot."
+msgid "No!!!"
+msgstr "Nem!!!"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Please enter a valid number."
-msgstr "Írj be egy érvényes számot."
+#, fuzzy
+msgid "Node Highlighting"
+msgstr "Blokk kiemelés"
+
+#: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
+msgid "None"
+msgstr "Semmi"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Possible values are: "
-msgstr "Lehetséges értékek: "
+msgid "Opaque Leaves"
+msgstr "Áttetsző levelek"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Restore Default"
-msgstr "Alapértelmezett visszaállítás"
+msgid "Opaque Water"
+msgstr "Áttetsző víz"
 
-#: builtin/mainmenu/tab_settings.lua
-msgid "Select path"
-msgstr "Útvonal kiválasztás"
+#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
+#, fuzzy
+msgid "Parallax Occlusion"
+msgstr "Parallax Occlusion"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
 msgstr "Beállítások"
 
-#: builtin/mainmenu/tab_settings.lua
-msgid "Show technical names"
-msgstr "Technikai nevek mutatása"
+#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
+msgid "Shaders"
+msgstr "Shaderek"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "The value must be greater than $1."
-msgstr "Az értéknek nagyobbnak kell lennie ennél: $1."
+msgid "Simple Leaves"
+msgstr "Egyszerű levelek"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "The value must be lower than $1."
-msgstr "Az értéknek kisebbnek kell lennie ennél: $1."
+#, fuzzy
+msgid "Smooth Lighting"
+msgstr "Simított megvilágítás"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Texturing:"
+msgstr "Textúrázás:"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "To enable shaders the OpenGL driver needs to be used."
+msgstr "A shaderek engedélyezéséhez OpenGL driver használata szükséges."
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Touchthreshold (px)"
+msgstr "Touchthreshold (px)"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Trilinear Filter"
+msgstr "Tri-lineáris szűrés"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Waving Leaves"
+msgstr "Hullámzó levelek"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Waving Plants"
+msgstr "Hullámzó növények"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Waving Water"
+msgstr "Hullámzó víz"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
@@ -528,10 +685,6 @@ msgid "No information available"
 msgstr "Nincs elérhető információ"
 
 #: builtin/mainmenu/tab_texturepacks.lua
-msgid "None"
-msgstr "Semmi"
-
-#: builtin/mainmenu/tab_texturepacks.lua
 msgid "Select texture pack:"
 msgstr "Textúrapakk kiválasztása:"
 
@@ -555,10 +708,6 @@ msgstr "Csomópontok inicializálása"
 #: src/client.cpp
 msgid "Initializing nodes..."
 msgstr "Csomópontok inicializálása..."
-
-#: src/client.cpp
-msgid "Item textures..."
-msgstr "Elem textúrák..."
 
 #: src/client.cpp
 msgid "Loading textures..."
@@ -1167,6 +1316,15 @@ msgid "Zoom"
 msgstr "Nagyítás"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
+"Used to move a suitable spawn area of low land close to (0, 0).\n"
+"The default is suitable for mandelbrot sets, it needs to be edited for julia "
+"sets.\n"
+"Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "0 = parallax occlusion with slope information (faster).\n"
@@ -1193,7 +1351,8 @@ msgid ""
 "-    anaglyph: cyan/magenta color 3d.\n"
 "-    interlaced: odd/even line based polarisation screen support.\n"
 "-    topbottom: split screen top/bottom.\n"
-"-    sidebyside: split screen side by side."
+"-    sidebyside: split screen side by side.\n"
+"-    pageflip: quadbuffer based 3d."
 msgstr ""
 "3D támogatás.\n"
 "Jelenleg támogatott:\n"
@@ -1266,11 +1425,19 @@ msgid "Advanced"
 msgstr "Haladó"
 
 #: src/settings_translation_file.cpp
+msgid "Altitude Chill"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Always fly and fast"
 msgstr "Repülés és gyorsaság mindig"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Amplifies the valleys"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1288,8 +1455,12 @@ msgid ""
 "minetest.net."
 msgstr ""
 "Bejelentés a szerverlistára.\n"
-"Ha be akarod jelenteni az ipv6 címedet, használd ezt: serverlist_url = "
-"v6.servers.minetest.net."
+"Ha be akarod jelenteni az ipv6 címedet, használd ezt: serverlist_url = v6."
+"servers.minetest.net."
+
+#: src/settings_translation_file.cpp
+msgid "Approximate (X,Y,Z) scale of fractal in nodes."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
@@ -1302,6 +1473,11 @@ msgstr "Automatikus bejelentés a szerverlistára."
 #: src/settings_translation_file.cpp
 msgid "Backward key"
 msgstr "Vissza gomb"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Base terrain height"
+msgstr "Hullámzó víz magassága"
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
@@ -1326,11 +1502,6 @@ msgid "Build inside player"
 msgstr "Építés játékosba"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Bumpmapping"
-msgstr "Bumpmapping"
-
-#: src/settings_translation_file.cpp
 msgid "Camera smoothing"
 msgstr "Kamera simítás"
 
@@ -1343,12 +1514,47 @@ msgid "Camera update toggle key"
 msgstr "Kamera frissítés váltás gomb"
 
 #: src/settings_translation_file.cpp
+msgid "Cave noise #1"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Cave noise #2"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Caves and tunnels form at the intersection of the two noises"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Chat key"
 msgstr "Csevegés gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
 msgstr "Csevegés váltás gomb"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Choice of 18 fractals from 9 formulas.\n"
+"1 = 4D \"Roundy\" mandelbrot set.\n"
+"2 = 4D \"Roundy\" julia set.\n"
+"3 = 4D \"Squarry\" mandelbrot set.\n"
+"4 = 4D \"Squarry\" julia set.\n"
+"5 = 4D \"Mandy Cousin\" mandelbrot set.\n"
+"6 = 4D \"Mandy Cousin\" julia set.\n"
+"7 = 4D \"Variation\" mandelbrot set.\n"
+"8 = 4D \"Variation\" julia set.\n"
+"9 = 3D \"Mandelbrot/Mandelbar\" mandelbrot set.\n"
+"10 = 3D \"Mandelbrot/Mandelbar\" julia set.\n"
+"11 = 3D \"Christmas Tree\" mandelbrot set.\n"
+"12 = 3D \"Christmas Tree\" julia set.\n"
+"13 = 3D \"Mandelbulb\" mandelbrot set.\n"
+"14 = 3D \"Mandelbulb\" julia set.\n"
+"15 = 3D \"Cosine Mandelbulb\" mandelbrot set.\n"
+"16 = 3D \"Cosine Mandelbulb\" julia set.\n"
+"17 = 4D \"Mandelbulb\" mandelbrot set.\n"
+"18 = 4D \"Mandelbulb\" julia set."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
@@ -1411,6 +1617,12 @@ msgstr ""
 "(request_insecure_environment())."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Comma-seperated list of mods that are allowed to access HTTP APIs, which\n"
+"allow them to upload and download data to/from the internet."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Command key"
 msgstr "Parancs gomb"
 
@@ -1470,8 +1682,28 @@ msgstr ""
 "kívül hagyva."
 
 #: src/settings_translation_file.cpp
+msgid "Controls steepness/depth of lake depressions."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Controls steepness/height of hills."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Crash message"
 msgstr "Üzenet összeomláskor"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Creates unpredictable lava features in caves.\n"
+"These can make mining difficult. Zero disables them. (0-10)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Creates unpredictable water features in caves.\n"
+"These can make mining difficult. Zero disables them. (0-10)"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
@@ -1562,6 +1794,14 @@ msgid "Deprecated Lua API handling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Depth below which you'll find large caves."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Depth below which you'll find massive caves."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Descending speed"
 msgstr "Ereszkedés sebessége"
 
@@ -1583,6 +1823,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Detailed mod profiling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Determines terrain shape.\n"
+"The 3 numbers in brackets control the scale of the\n"
+"terrain, the 3 numbers should be identical."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1614,16 +1861,9 @@ msgid "Dump the mapgen debug infos."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Enable a bit lower water surface, so it doesn't \"fill\" the node "
-"completely.\n"
-"Note that this is not quite optimized and that smooth lighting on the\n"
-"water surface doesn't work with this."
-msgstr ""
-"Kicsivel alacsonyabb víz felszín engedélyezése, hogy ne töltse meg teljesen "
-"a blokkot.\n"
-"Megjegyzés: ez nem teljesen optimalizált, és a simított megvilágítás\n"
-"így nem működik a víz felszínén."
+#, fuzzy
+msgid "Enable VBO"
+msgstr "Modpakk engedélyez"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
@@ -1636,12 +1876,6 @@ msgstr "Játékosok sérülésének és halálának engedélyezése."
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enable selection highlighting for nodes (disables selectionbox)."
-msgstr ""
-"Kijelölés kiemelés (kivilágítás) engedélyezése a blokkoknál (letiltja a "
-"kijelölődobozt)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1682,6 +1916,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Enables animation of inventory items."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Enables bumpmapping for textures. Normalmaps need to be supplied by the "
 "texture pack\n"
@@ -1692,6 +1930,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enables filmic tone mapping"
+msgstr "Minitérkép engedélyezése."
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
@@ -1784,6 +2027,14 @@ msgid ""
 msgstr ""
 "A client/serverlist/ mappában lévő fájl, ami tartalmazza a kedvenc "
 "szervereket, amik a Többjátékos fül alatt jelennek meg."
+
+#: src/settings_translation_file.cpp
+msgid "Filler Depth"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Filmic tone mapping"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1894,6 +2145,10 @@ msgid "Gamma"
 msgstr "Gamma"
 
 #: src/settings_translation_file.cpp
+msgid "General"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Generate normalmaps"
 msgstr "Normálfelületek generálása"
@@ -1901,10 +2156,11 @@ msgstr "Normálfelületek generálása"
 #: src/settings_translation_file.cpp
 msgid ""
 "Global map generation attributes.\n"
+"In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
+"and junglegrass, in all other mapgens this flag controls all decorations.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them.\n"
-"'trees' and 'flat' flags only have effect in mgv6."
+"Flags starting with \"no\" are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1914,6 +2170,11 @@ msgstr "Grafika"
 #: src/settings_translation_file.cpp
 msgid "Gravity"
 msgstr "Gravitáció"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "HTTP Mods"
+msgstr "Modok"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
@@ -1928,6 +2189,11 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Height component of the initial window size."
+msgstr "Kezdeti vízszintes ablak méret."
+
+#: src/settings_translation_file.cpp
 msgid "Height on which clouds are appearing."
 msgstr "A felhők megjelenésének magassága."
 
@@ -1940,8 +2206,8 @@ msgid "Homepage of server, to be displayed in the serverlist."
 msgstr "A szerver honlapja, ami a szerverlistában megjelenik."
 
 #: src/settings_translation_file.cpp
-msgid "Horizontal initial window size."
-msgstr "Kezdeti vízszintes ablak méret."
+msgid "How deep to make rivers"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1963,6 +2229,10 @@ msgstr ""
 msgid ""
 "How much the server will wait before unloading unused mapblocks.\n"
 "Higher value is smoother, but will use more RAM."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "How wide to make rivers"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2006,8 +2276,8 @@ msgid ""
 "If enabled, \"use\" key instead of \"sneak\" key is used for climbing down "
 "and descending."
 msgstr ""
-"Ha engedélyezve van, a \"használat\" (use) gomb lesz használatban a \""
-"lopakodás\" (sneak) helyett lefelé mászáskor, vagy ereszkedéskor."
+"Ha engedélyezve van, a \"használat\" (use) gomb lesz használatban a "
+"\"lopakodás\" (sneak) helyett lefelé mászáskor, vagy ereszkedéskor."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2025,8 +2295,8 @@ msgid ""
 "If enabled, invalid world data won't cause the server to shut down.\n"
 "Only enable this if you know what you are doing."
 msgstr ""
-"Ha engedélyezve van, érvénytelen világ adat nem okozza a szerver leállítását."
-"\n"
+"Ha engedélyezve van, érvénytelen világ adat nem okozza a szerver "
+"leállítását.\n"
 "Csak akkor engedélyezd, ha tudod, hogy mit csinálsz."
 
 #: src/settings_translation_file.cpp
@@ -2077,6 +2347,10 @@ msgid "Interval of sending time of day to clients."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Inventory items animations"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Inventory key"
 msgstr "Eszköztár gomb"
 
@@ -2094,47 +2368,36 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Julia set: (X,Y,Z) offsets from world centre.\n"
-"Range roughly -2 to 2, multiply by j_scale for offsets in nodes."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Julia set: Approximate (X,Y,Z) scales in nodes."
+"Iterations of the recursive function.\n"
+"Controls the amount of fine detail."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Julia set: Iterations of the recursive function.\n"
-"Controls scale of finest detail."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Julia set: W co-ordinate of the generated 3D slice of the 4D shape.\n"
+"Julia set only: W component of hypercomplex constant determining julia "
+"shape.\n"
+"Has no effect on 3D fractals.\n"
 "Range roughly -2 to 2."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Julia set: W value determining the 4D shape.\n"
+"Julia set only: X component of hypercomplex constant determining julia "
+"shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Julia set: X value determining the 4D shape.\n"
+"Julia set only: Y component of hypercomplex constant determining julia "
+"shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Julia set: Y value determining the 4D shape.\n"
-"Range roughly -2 to 2."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Julia set: Z value determining the 4D shape.\n"
+"Julia set only: Z component of hypercomplex constant determining julia "
+"shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
 
@@ -2147,14 +2410,15 @@ msgid "Jumping speed"
 msgstr "Ugrás sebessége"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Key for decreasing the viewing range. Modifies the minimum viewing range.\n"
+"Key for decreasing the viewing range.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"A látóterület csökkentésének gombja. A minimum látóterületet módosítja.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Gomb a végtelen látóterület bekapcsolásához.\n"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2163,18 +2427,19 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb az éppen kijelölt tárgy eldobásához.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Key for increasing the viewing range. Modifies the minimum viewing range.\n"
+"Key for increasing the viewing range.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"A látóterület növelésének gombja. A minimum látótávolságot módosítja.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Gomb a végtelen látóterület bekapcsolásához.\n"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2183,8 +2448,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Ugrás gombja.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2193,8 +2458,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb a gyors mozgáshoz gyors (fast) módban.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2203,8 +2468,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb a játékos hátrafelé mozgásához.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2213,8 +2478,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb a játékos előre mozgásához.\n"
-"Lásd:  http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
-"735e3da1b0edf72eb3"
+"Lásd:  http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2223,8 +2488,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb a játékos balra mozgatásához.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2233,8 +2498,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb a játékos jobbra mozgatásához.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2243,8 +2508,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb a csevegő konzol megnyitásához.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2253,8 +2518,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb a csevegő ablak megnyitásához, parancsok beírásához.\n"
-"Lásd: //irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3d"
-"a1b0edf72eb3"
+"Lásd: //irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2263,8 +2528,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb a csevegő ablak megnyitásához.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2273,8 +2538,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb az Eszköztár megnyitásához.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2294,8 +2559,8 @@ msgstr ""
 "Gomb a lopakodáshoz (sneak).\n"
 "A lefelé mászáshoz és vízben történő ereszkedéshez is használt, ha a "
 "aux1_descends le van tiltva.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2304,8 +2569,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb a belső és külső nézetű kamera váltáshoz.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2314,8 +2579,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb képernyőfelvétel készítéshez.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2324,8 +2589,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb a \"cinematic\" mód (filmkészítés) bekapcsolásához.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2334,8 +2599,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb a minitérkép megjelenítéséhez.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2344,8 +2609,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb a gyors (fast) módra váltáshoz.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2354,8 +2619,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb a repülés (fly) módra váltáshoz.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2364,8 +2629,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb a noclip módra váltáshoz.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2374,8 +2639,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb a kamerafrissítés bekapcsolásához. Csak fejlesztők számára.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2384,8 +2649,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb a hibakeresési infók megjelenítéséhez.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2394,8 +2659,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb a HUD megjelenítéséhez/kikapcsolásához.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2404,8 +2669,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb a csevegő megjelenítéséhez.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2414,8 +2679,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb a köd megjelenítésének ki/bekapcsolásához.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2431,8 +2696,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Gomb a végtelen látóterület bekapcsolásához.\n"
-"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
@@ -2441,6 +2706,14 @@ msgstr "Gomb használat a mászás/ereszkedéshez"
 #: src/settings_translation_file.cpp
 msgid "Language"
 msgstr "Nyelv"
+
+#: src/settings_translation_file.cpp
+msgid "Large cave depth"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Lava Features"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -2549,35 +2822,25 @@ msgid "Makes DirectX work with LuaJIT. Disable if it causes troubles."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Mandelbrot set: (X,Y,Z) offsets from world centre.\n"
-"Range roughly -2 to 2, multiply by m_scale for offsets in nodes."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mandelbrot set: Approximate (X,Y,Z) scales in nodes."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Mandelbrot set: Iterations of the recursive function.\n"
-"Controls scale of finest detail."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Mandelbrot set: W co-ordinate of the generated 3D slice of the 4D shape.\n"
-"Range roughly -2 to 2."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Map directory"
 msgstr "Térkép mappája"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Map generation attributes specific to Mapgen fractal.\n"
-"'julia' selects a julia set to be generated instead of a mandelbrot set.\n"
+"Map generation attributes specific to Mapgen Valleys.\n"
+"Flags that are not specified in the flag string are not modified from the "
+"default.\n"
+"Flags starting with \"no\" are used to explicitly disable them.\n"
+"\"altitude_chill\" makes higher elevations colder, which may cause biome "
+"issues.\n"
+"\"humid_rivers\" modifies the humidity around rivers and in areas where "
+"water would tend to pool. It may interfere with delicately adjusted biomes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Map generation attributes specific to Mapgen flat.\n"
+"Occasional lakes and hills added to the flat world.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
 "Flags starting with \"no\" are used to explicitly disable them."
@@ -2619,6 +2882,11 @@ msgid "Mapblock unload timeout"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen Valleys"
+msgstr "Térkép generátor neve"
+
+#: src/settings_translation_file.cpp
 msgid "Mapgen biome heat noise parameters"
 msgstr ""
 
@@ -2641,6 +2909,59 @@ msgstr "Térkép generátor"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
+msgid "Mapgen flat"
+msgstr "Térkép generátor"
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen flat cave1 noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen flat cave2 noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen flat filler depth noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen flat flags"
+msgstr "Térkép generátor"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen flat ground level"
+msgstr "Térkép generátor"
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen flat hill steepness"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen flat hill threshold"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen flat lake steepness"
+msgstr "Parallax Occlusion"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen flat lake threshold"
+msgstr "Térkép generátor"
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen flat large cave depth"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen flat terrain noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Mapgen fractal"
 msgstr "Térkép generátor"
 
@@ -2658,25 +2979,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Mapgen fractal flags"
+msgid "Mapgen fractal fractal"
 msgstr "Térkép generátor"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Mapgen fractal julia iterations"
+msgid "Mapgen fractal iterations"
 msgstr "Parallax Occlusion"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal julia offset"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal julia scale"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal julia slice w"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia w"
@@ -2695,24 +3004,23 @@ msgid "Mapgen fractal julia z"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Mapgen fractal mandelbrot iterations"
-msgstr ""
+#, fuzzy
+msgid "Mapgen fractal offset"
+msgstr "Térkép generátor"
 
 #: src/settings_translation_file.cpp
-msgid "Mapgen fractal mandelbrot offset"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal mandelbrot scale"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal mandelbrot slice w"
-msgstr ""
+#, fuzzy
+msgid "Mapgen fractal scale"
+msgstr "Térkép generátor"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal seabed noise parameters"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal slice w"
+msgstr "Térkép generátor"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen heat blend noise parameters"
@@ -2859,6 +3167,18 @@ msgid "Mapgen v7 terrain persistation noise parameters"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Massive cave depth"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Massive cave noise"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Massive caves form here."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Max block generate distance"
 msgstr ""
 
@@ -2885,20 +3205,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when game is paused."
 msgstr "Maximum FPS a játék szüneteltetésekor."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Maximum distance above water level for player spawn.\n"
-"Larger values result in spawn points closer to (x = 0, z = 0).\n"
-"Smaller values may result in a suitable spawn point not being found,\n"
-"resulting in a spawn at (0, 0, 0) possibly buried underground."
-msgstr ""
-"Maximum távolság a vízszinttől, ahol a játékosok újraéledhetnek/"
-"megjelenhetnek csatlakozáskor (spawn).\n"
-"Magasabb értékek közelebb visznek az (x = 0, z = 0)-hoz.\n"
-"Alacsonyabb értékek azt eredményezhetik, hogy nem lesz megfelelő pont a "
-"feléledéshez,\n"
-"(0,0,0) pozícióban történő feléledést, ami valószínűleg a föld alatt lesz."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -2992,6 +3298,10 @@ msgid "Message of the day displayed to players connecting."
 msgstr "Napi üzenet a csatlakozó játékosoknak."
 
 #: src/settings_translation_file.cpp
+msgid "Method used to highlight selected object."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Minimap"
 msgstr "Minitérkép"
 
@@ -3006,17 +3316,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Minimum texture size for filters"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Minimum wanted FPS.\n"
-"The amount of rendered stuff is dynamically set according to this. and "
-"viewing range min and max."
-msgstr ""
-"Minimum kívánt FPS.\n"
-"A renderelt cuccok mennyisége dinamikusan ez alapján állítódik be (és a "
-"látórerület min és max)."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3103,10 +3402,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "New style water"
-msgstr "Új stílusú víz"
-
-#: src/settings_translation_file.cpp
 msgid "New users need to input this password."
 msgstr "Az új felhasználóknak ezt a jelszót kell megadniuk."
 
@@ -3124,6 +3419,10 @@ msgstr "Blokk kiemelés"
 
 #: src/settings_translation_file.cpp
 msgid "Noise parameters for biome API temperature, humidity and biome blend."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Noises"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3165,11 +3464,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Overall scale of parallax occlusion effect."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Parallax Occlusion"
-msgstr "Parallax Occlusion"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3246,18 +3540,6 @@ msgstr ""
 "A főmenü port mezője ezt a beállítást felülírja."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Pre-generate all item visuals used in the inventory.\n"
-"This increases startup time, but runs smoother in-game.\n"
-"The generated textures can easily exceed your VRAM, causing artifacts in the "
-"inventory."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Preload inventory textures"
-msgstr "Eszköztár textúráinak előtöltése"
-
-#: src/settings_translation_file.cpp
 msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr ""
 "Annak megelőzése, hogy a modok nem biztonágos dolgokat futtassanak, pl. "
@@ -3280,6 +3562,10 @@ msgid ""
 "Radius of cloud area stated in number of 64 node cloud squares.\n"
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
 "corners."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Raises terrain to make valleys around the rivers"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3308,6 +3594,22 @@ msgstr "Jobb gomb"
 
 #: src/settings_translation_file.cpp
 msgid "Rightclick repetition interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "River Depth"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "River Noise"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "River Size"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "River noise -- rivers occur close to zero"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3442,10 +3744,6 @@ msgstr ""
 "A shaderek engedélyezése szükséges hozzá."
 
 #: src/settings_translation_file.cpp
-msgid "Shaders"
-msgstr "Shaderek"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Shaders allow advanced visul effects and may increase performance on some "
 "video cards.\n"
@@ -3470,6 +3768,10 @@ msgstr "Leállítási üzenet"
 msgid ""
 "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
 "nodes)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Slope and fill work together to modify the heights"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3530,14 +3832,33 @@ msgid "Synchronous SQLite"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Terrain Height"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Terrain noise threshold for hills.\n"
+"Controls proportion of world area covered by hills.\n"
+"Adjust towards 0.0 for a larger proportion."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Terrain noise threshold for lakes.\n"
+"Controls proportion of world area covered by lakes.\n"
+"Adjust towards 0.0 for a larger proportion."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Texture path"
 msgstr "Textúrák útvonala"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"The allowed adjustment range for the automatic rendering range adjustment.\n"
-"Set this to be equal to viewing range minimum to disable the auto-adjustment "
-"algorithm."
+msgid "The altitude at which temperature drops by 20C"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "The depth of dirt or other filler"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3619,6 +3940,11 @@ msgid "Toggle camera mode key"
 msgstr "Kamera mód váltó gomb"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Tone Mapping"
+msgstr "Mip-mapping"
+
+#: src/settings_translation_file.cpp
 msgid "Tooltip delay"
 msgstr "Eszköztipp késleltetés"
 
@@ -3689,16 +4015,32 @@ msgid "V-Sync"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Vertical initial window size."
-msgstr "Függőleges kezdeti ablak méret."
+msgid "VBO"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Valley Depth"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Valley Fill"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Valley Profile"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Valley Slope"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Valleys C Flags"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
 msgstr "Függőleges képernyő szinkronizálás."
-
-#: src/settings_translation_file.cpp
-msgid "Vertical spawn range"
-msgstr "Az (újra)éledés függőleges irányú területe"
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
@@ -3706,6 +4048,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "View bobbing"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"View distance in nodes.\n"
+"Min = 20"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3717,24 +4065,30 @@ msgid "View range increase key"
 msgstr "Látóterület növelés gomb"
 
 #: src/settings_translation_file.cpp
-msgid "Viewing range maximum"
+#, fuzzy
+msgid "Viewing range"
 msgstr "Maximum látóterület"
-
-#: src/settings_translation_file.cpp
-msgid "Viewing range minimum"
-msgstr "Minimum látóterület"
 
 #: src/settings_translation_file.cpp
 msgid "Volume"
 msgstr "Hangerő"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"W co-ordinate of the generated 3D slice of a 4D fractal.\n"
+"Determines which 3D slice of the 4D shape is generated.\n"
+"Has no effect on 3D fractals.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Walking speed"
 msgstr "Járás sebessége"
 
 #: src/settings_translation_file.cpp
-msgid "Wanted FPS"
-msgstr "Kívánt FPS"
+#, fuzzy
+msgid "Water Features"
+msgstr "Vízszint"
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
@@ -3853,6 +4207,11 @@ msgid ""
 msgstr "A hibakereső infó mutatása (ugyanaz a hatás, ha F5-öt nyomunk)."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Width component of the initial window size."
+msgstr "Kezdeti vízszintes ablak méret."
+
+#: src/settings_translation_file.cpp
 msgid "Width of the selectionbox's lines around nodes."
 msgstr "A kijelölődoboz vonalainak szélessége a blokkok körül."
 
@@ -3863,6 +4222,14 @@ msgid ""
 msgstr ""
 "Világ (world) mappa (minden itt tárolódik ami a világban van).\n"
 "Ez nem szükséges, ha a főmenüből indítunk."
+
+#: src/settings_translation_file.cpp
+msgid "Y of flat ground."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Y of upper limit of large pseudorandom caves."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
@@ -3876,145 +4243,173 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "2x"
-#~ msgstr "2x"
-
-#~ msgid "4x"
-#~ msgstr "4x"
-
-#~ msgid "8x"
-#~ msgstr "8x"
-
-#~ msgid "Antialiasing:"
-#~ msgstr "Élsimítás:"
-
-#~ msgid "Are you sure to reset your singleplayer world?"
-#~ msgstr "Biztosan visszaállítod az egyjátékos világod?"
-
-#~ msgid "Fancy Leaves"
-#~ msgstr "Szép levelek"
-
 #, fuzzy
-#~ msgid "Mipmap"
-#~ msgstr "Mipmap"
-
-#, fuzzy
-#~ msgid "Mipmap + Aniso. Filter"
-#~ msgstr "Mipmap + Aniso. Filter"
-
-#, fuzzy
-#~ msgid "No Mipmap"
-#~ msgstr "No Mipmap"
-
-#~ msgid "No!!!"
-#~ msgstr "Nem!!!"
-
-#~ msgid "Opaque Leaves"
-#~ msgstr "Áttetsző levelek"
-
-#~ msgid "Opaque Water"
-#~ msgstr "Áttetsző víz"
-
-#~ msgid "Reset singleplayer world"
-#~ msgstr "Egyjátékos világ visszaállítása"
-
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "A méretarány alkalmazva a menü elemekre: "
-
-#~ msgid "Simple Leaves"
-#~ msgstr "Egyszerű levelek"
-
-#~ msgid "Texturing:"
-#~ msgstr "Textúrázás:"
-
-#~ msgid "To enable shaders the OpenGL driver needs to be used."
-#~ msgstr "A shaderek engedélyezéséhez OpenGL driver használata szükséges."
-
-#, fuzzy
-#~ msgid "Touch free target"
-#~ msgstr "Touch free target"
-
-#, fuzzy
-#~ msgid "Touchthreshold (px)"
-#~ msgstr "Touchthreshold (px)"
-
-#, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Le"
-
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr "Ball gomb: Tárgyak mozgatása, Jobb gomb: egy tárgyat mozgat"
-
-#~ msgid "is required by:"
-#~ msgstr "kell neki:"
-
-#~ msgid "Configuration saved.  "
-#~ msgstr "Beállítások mentve.  "
-
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Figyelem: A beállítások nem egyformák.  "
-
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Nem sikerült a világ létrehozása: A névben nem jó karakterek vannak"
-
-#~ msgid "Show Public"
-#~ msgstr "Publikus mutatása"
-
-#~ msgid "Show Favorites"
-#~ msgstr "Kedvencek mutatása"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Hagyd el a nevét, hogy helyi szervert indíts."
-
-#~ msgid "Create world"
-#~ msgstr "Világ létrehozása"
-
-#~ msgid "Address required."
-#~ msgstr "Cím szükséges."
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Nem törölhető a világ: Nincs kiválasztva"
-
-#~ msgid "Files to be deleted"
-#~ msgstr "A fájl törölve lett"
-
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Nem sikerült a világot létrehozni: Nem található a játék"
-
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Nem sikerült a világ beállítása: Nincs kiválasztva"
-
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Hiba az összes világ törlése közben"
-
-#, fuzzy
-#~ msgid "Finite Liquid"
-#~ msgstr "Végtelen folyadék"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Előretöltött tárgy láthatóság"
-
-#, fuzzy
-#~ msgid "Password"
-#~ msgstr "Régi jelszó"
-
-#~ msgid "Favorites:"
-#~ msgstr "Kedvencek:"
-
-#, fuzzy
-#~ msgid "Game Name"
-#~ msgstr "Játék"
-
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "A driver változások életbe lépéséhez indítsd újra a Minetestet"
-
-#~ msgid "Rendering:"
-#~ msgstr "Renderelés:"
+#~ msgid "If disabled "
+#~ msgstr "Csomag letiltás"
 
 #, fuzzy
 #~ msgid "If enabled, "
 #~ msgstr "Engedélyez"
 
+#~ msgid "Rendering:"
+#~ msgstr "Renderelés:"
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "A driver változások életbe lépéséhez indítsd újra a Minetestet"
+
 #, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "Csomag letiltás"
+#~ msgid "Game Name"
+#~ msgstr "Játék"
+
+#~ msgid "Favorites:"
+#~ msgstr "Kedvencek:"
+
+#, fuzzy
+#~ msgid "Password"
+#~ msgstr "Régi jelszó"
+
+#~ msgid "Preload item visuals"
+#~ msgstr "Előretöltött tárgy láthatóság"
+
+#, fuzzy
+#~ msgid "Finite Liquid"
+#~ msgstr "Végtelen folyadék"
+
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Hiba az összes világ törlése közben"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Nem sikerült a világ beállítása: Nincs kiválasztva"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Nem sikerült a világot létrehozni: Nem található a játék"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "A fájl törölve lett"
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Nem törölhető a világ: Nincs kiválasztva"
+
+#~ msgid "Address required."
+#~ msgstr "Cím szükséges."
+
+#~ msgid "Create world"
+#~ msgstr "Világ létrehozása"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Hagyd el a nevét, hogy helyi szervert indíts."
+
+#~ msgid "Show Favorites"
+#~ msgstr "Kedvencek mutatása"
+
+#~ msgid "Show Public"
+#~ msgstr "Publikus mutatása"
+
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Nem sikerült a világ létrehozása: A névben nem jó karakterek vannak"
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Figyelem: A beállítások nem egyformák.  "
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "Beállítások mentve.  "
+
+#~ msgid "is required by:"
+#~ msgstr "kell neki:"
+
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr "Ball gomb: Tárgyak mozgatása, Jobb gomb: egy tárgyat mozgat"
+
+#, fuzzy
+#~ msgid "Downloading"
+#~ msgstr "Le"
+
+#, fuzzy
+#~ msgid "Touch free target"
+#~ msgstr "Touch free target"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "A méretarány alkalmazva a menü elemekre: "
+
+#~ msgid "Reset singleplayer world"
+#~ msgstr "Egyjátékos világ visszaállítása"
+
+#~ msgid "Wanted FPS"
+#~ msgstr "Kívánt FPS"
+
+#~ msgid "Viewing range minimum"
+#~ msgstr "Minimum látóterület"
+
+#~ msgid "Vertical spawn range"
+#~ msgstr "Az (újra)éledés függőleges irányú területe"
+
+#~ msgid "Vertical initial window size."
+#~ msgstr "Függőleges kezdeti ablak méret."
+
+#~ msgid "Preload inventory textures"
+#~ msgstr "Eszköztár textúráinak előtöltése"
+
+#~ msgid "New style water"
+#~ msgstr "Új stílusú víz"
+
+#, fuzzy
+#~ msgid ""
+#~ "Minimum wanted FPS.\n"
+#~ "The amount of rendered stuff is dynamically set according to this. and "
+#~ "viewing range min and max."
+#~ msgstr ""
+#~ "Minimum kívánt FPS.\n"
+#~ "A renderelt cuccok mennyisége dinamikusan ez alapján állítódik be (és a "
+#~ "látórerület min és max)."
+
+#~ msgid ""
+#~ "Maximum distance above water level for player spawn.\n"
+#~ "Larger values result in spawn points closer to (x = 0, z = 0).\n"
+#~ "Smaller values may result in a suitable spawn point not being found,\n"
+#~ "resulting in a spawn at (0, 0, 0) possibly buried underground."
+#~ msgstr ""
+#~ "Maximum távolság a vízszinttől, ahol a játékosok újraéledhetnek/"
+#~ "megjelenhetnek csatlakozáskor (spawn).\n"
+#~ "Magasabb értékek közelebb visznek az (x = 0, z = 0)-hoz.\n"
+#~ "Alacsonyabb értékek azt eredményezhetik, hogy nem lesz megfelelő pont a "
+#~ "feléledéshez,\n"
+#~ "(0,0,0) pozícióban történő feléledést, ami valószínűleg a föld alatt lesz."
+
+#~ msgid ""
+#~ "Key for increasing the viewing range. Modifies the minimum viewing "
+#~ "range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "A látóterület növelésének gombja. A minimum látótávolságot módosítja.\n"
+#~ "Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for decreasing the viewing range. Modifies the minimum viewing "
+#~ "range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "A látóterület csökkentésének gombja. A minimum látóterületet módosítja.\n"
+#~ "Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid "Enable selection highlighting for nodes (disables selectionbox)."
+#~ msgstr ""
+#~ "Kijelölés kiemelés (kivilágítás) engedélyezése a blokkoknál (letiltja a "
+#~ "kijelölődobozt)."
+
+#~ msgid ""
+#~ "Enable a bit lower water surface, so it doesn't \"fill\" the node "
+#~ "completely.\n"
+#~ "Note that this is not quite optimized and that smooth lighting on the\n"
+#~ "water surface doesn't work with this."
+#~ msgstr ""
+#~ "Kicsivel alacsonyabb víz felszín engedélyezése, hogy ne töltse meg "
+#~ "teljesen a blokkot.\n"
+#~ "Megjegyzés: ez nem teljesen optimalizált, és a simított megvilágítás\n"
+#~ "így nem működik a víz felszínén."
+
+#~ msgid "Item textures..."
+#~ msgstr "Elem textúrák..."

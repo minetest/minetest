@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-08 21:23+0100\n"
+"POT-Creation-Date: 2016-02-27 05:49+0100\n"
 "PO-Revision-Date: 2015-07-08 23:30+0200\n"
 "Last-Translator: Tae Lim Kook <tkook11@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -72,8 +72,9 @@ msgid "We support protocol versions between version $1 and $2."
 msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
-#: builtin/mainmenu/dlg_rename_modpack.lua builtin/mainmenu/tab_settings.lua
-#: src/guiKeyChangeMenu.cpp src/keycode.cpp
+#: builtin/mainmenu/dlg_rename_modpack.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
+#: src/keycode.cpp
 msgid "Cancel"
 msgstr "취소"
 
@@ -111,8 +112,8 @@ msgstr ""
 msgid "Mod:"
 msgstr ""
 
-#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_settings.lua
-#: src/guiKeyChangeMenu.cpp
+#: builtin/mainmenu/dlg_config_world.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
 msgid "Save"
 msgstr "저장"
 
@@ -185,6 +186,7 @@ msgid "No of course not!"
 msgstr ""
 
 #: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
+#: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
 msgstr ""
 
@@ -202,6 +204,92 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "\"$1\" is not a valid flag."
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "(No description of setting given)"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "< Back to Settings page"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Browse"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Disabled"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Edit"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Enabled"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Format is 3 numbers separated by commas and inside brackets."
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid ""
+"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+"<octaves>, <persistence>"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Games"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
+msgid "Mods"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Optionally the lacunarity can be appended with a leading comma."
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Please enter a comma seperated list of flags."
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Please enter a valid integer."
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Please enter a valid number."
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Possible values are: "
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Restore Default"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Select path"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "Show technical names"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "The value must be greater than $1."
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "The value must be lower than $1."
 msgstr ""
 
 #: builtin/mainmenu/modmgr.lua
@@ -292,10 +380,6 @@ msgstr ""
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Mod information:"
-msgstr ""
-
-#: builtin/mainmenu/tab_mods.lua builtin/mainmenu/tab_settings.lua
-msgid "Mods"
 msgstr ""
 
 #: builtin/mainmenu/tab_mods.lua
@@ -410,15 +494,39 @@ msgid "Start Game"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "\"$1\" is not a valid flag."
+msgid "2x"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "(No description of setting given)"
+msgid "3D Clouds"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Browse"
+msgid "4x"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "8x"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Advanced Settings"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Antialiasing:"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Are you sure to reset your singleplayer world?"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Bilinear Filter"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
+msgid "Bumpmapping"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
@@ -426,73 +534,103 @@ msgid "Change keys"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Disabled"
+msgid "Connected Glass"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Edit"
+msgid "Enable Particles"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Enabled"
+msgid "Fancy Leaves"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Format is 3 numbers separated by commas and inside brackets."
+msgid "Generate Normalmaps"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid ""
-"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
+msgid "Mipmap"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Games"
+msgid "Mipmap + Aniso. Filter"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Optionally the lacunarity can be appended with a leading comma."
+msgid "No Filter"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Please enter a comma seperated list of flags."
+msgid "No Mipmap"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Please enter a valid integer."
+msgid "No!!!"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Please enter a valid number."
+msgid "Node Highlighting"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
+msgid "None"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Possible values are: "
+msgid "Opaque Leaves"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Restore Default"
+msgid "Opaque Water"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua
-msgid "Select path"
+#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
+msgid "Parallax Occlusion"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua
-msgid "Show technical names"
+#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
+msgid "Shaders"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "The value must be greater than $1."
+msgid "Simple Leaves"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "The value must be lower than $1."
+msgid "Smooth Lighting"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Texturing:"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "To enable shaders the OpenGL driver needs to be used."
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Touchthreshold (px)"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Trilinear Filter"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Waving Leaves"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Waving Plants"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Waving Water"
 msgstr ""
 
 #: builtin/mainmenu/tab_simple_main.lua
@@ -520,10 +658,6 @@ msgid "No information available"
 msgstr ""
 
 #: builtin/mainmenu/tab_texturepacks.lua
-msgid "None"
-msgstr ""
-
-#: builtin/mainmenu/tab_texturepacks.lua
 msgid "Select texture pack:"
 msgstr ""
 
@@ -545,10 +679,6 @@ msgstr ""
 
 #: src/client.cpp
 msgid "Initializing nodes..."
-msgstr ""
-
-#: src/client.cpp
-msgid "Item textures..."
 msgstr ""
 
 #: src/client.cpp
@@ -1122,6 +1252,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
+"Used to move a suitable spawn area of low land close to (0, 0).\n"
+"The default is suitable for mandelbrot sets, it needs to be edited for julia "
+"sets.\n"
+"Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "0 = parallax occlusion with slope information (faster).\n"
 "1 = relief mapping (slower, more accurate)."
 msgstr ""
@@ -1142,7 +1281,8 @@ msgid ""
 "-    anaglyph: cyan/magenta color 3d.\n"
 "-    interlaced: odd/even line based polarisation screen support.\n"
 "-    topbottom: split screen top/bottom.\n"
-"-    sidebyside: split screen side by side."
+"-    sidebyside: split screen side by side.\n"
+"-    pageflip: quadbuffer based 3d."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1199,11 +1339,19 @@ msgid "Advanced"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Altitude Chill"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Always fly and fast"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Amplifies the valleys"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1222,6 +1370,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Approximate (X,Y,Z) scale of fractal in nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
 msgstr ""
 
@@ -1231,6 +1383,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Base terrain height"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1254,10 +1410,6 @@ msgid "Build inside player"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Bumpmapping"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Camera smoothing"
 msgstr ""
 
@@ -1270,11 +1422,46 @@ msgid "Camera update toggle key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Cave noise #1"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Cave noise #2"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Caves and tunnels form at the intersection of the two noises"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Chat key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Choice of 18 fractals from 9 formulas.\n"
+"1 = 4D \"Roundy\" mandelbrot set.\n"
+"2 = 4D \"Roundy\" julia set.\n"
+"3 = 4D \"Squarry\" mandelbrot set.\n"
+"4 = 4D \"Squarry\" julia set.\n"
+"5 = 4D \"Mandy Cousin\" mandelbrot set.\n"
+"6 = 4D \"Mandy Cousin\" julia set.\n"
+"7 = 4D \"Variation\" mandelbrot set.\n"
+"8 = 4D \"Variation\" julia set.\n"
+"9 = 3D \"Mandelbrot/Mandelbar\" mandelbrot set.\n"
+"10 = 3D \"Mandelbrot/Mandelbar\" julia set.\n"
+"11 = 3D \"Christmas Tree\" mandelbrot set.\n"
+"12 = 3D \"Christmas Tree\" julia set.\n"
+"13 = 3D \"Mandelbulb\" mandelbrot set.\n"
+"14 = 3D \"Mandelbulb\" julia set.\n"
+"15 = 3D \"Cosine Mandelbulb\" mandelbrot set.\n"
+"16 = 3D \"Cosine Mandelbulb\" julia set.\n"
+"17 = 4D \"Mandelbulb\" mandelbrot set.\n"
+"18 = 4D \"Mandelbulb\" julia set."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1332,6 +1519,12 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Comma-seperated list of mods that are allowed to access HTTP APIs, which\n"
+"allow them to upload and download data to/from the internet."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Command key"
 msgstr ""
 
@@ -1385,7 +1578,27 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Controls steepness/depth of lake depressions."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Controls steepness/height of hills."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Crash message"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Creates unpredictable lava features in caves.\n"
+"These can make mining difficult. Zero disables them. (0-10)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Creates unpredictable water features in caves.\n"
+"These can make mining difficult. Zero disables them. (0-10)"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1475,6 +1688,14 @@ msgid "Deprecated Lua API handling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Depth below which you'll find large caves."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Depth below which you'll find massive caves."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Descending speed"
 msgstr ""
 
@@ -1494,6 +1715,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Detailed mod profiling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Determines terrain shape.\n"
+"The 3 numbers in brackets control the scale of the\n"
+"terrain, the 3 numbers should be identical."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1525,11 +1753,7 @@ msgid "Dump the mapgen debug infos."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Enable a bit lower water surface, so it doesn't \"fill\" the node "
-"completely.\n"
-"Note that this is not quite optimized and that smooth lighting on the\n"
-"water surface doesn't work with this."
+msgid "Enable VBO"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1542,10 +1766,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enable selection highlighting for nodes (disables selectionbox)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1579,6 +1799,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Enables animation of inventory items."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Enables bumpmapping for textures. Normalmaps need to be supplied by the "
 "texture pack\n"
@@ -1588,6 +1812,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enables filmic tone mapping"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1675,6 +1903,14 @@ msgstr ""
 msgid ""
 "File in client/serverlist/ that contains your favorite servers displayed in "
 "the Multiplayer Tab."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Filler Depth"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Filmic tone mapping"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1786,16 +2022,21 @@ msgid "Gamma"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "General"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Generate normalmaps"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Global map generation attributes.\n"
+"In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
+"and junglegrass, in all other mapgens this flag controls all decorations.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them.\n"
-"'trees' and 'flat' flags only have effect in mgv6."
+"Flags starting with \"no\" are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1804,6 +2045,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "HTTP Mods"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1819,6 +2064,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Height component of the initial window size."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Height on which clouds are appearing."
 msgstr ""
 
@@ -1831,7 +2080,7 @@ msgid "Homepage of server, to be displayed in the serverlist."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Horizontal initial window size."
+msgid "How deep to make rivers"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1854,6 +2103,10 @@ msgstr ""
 msgid ""
 "How much the server will wait before unloading unused mapblocks.\n"
 "Higher value is smoother, but will use more RAM."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "How wide to make rivers"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1949,6 +2202,10 @@ msgid "Interval of sending time of day to clients."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Inventory items animations"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Inventory key"
 msgstr ""
 
@@ -1966,47 +2223,36 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Julia set: (X,Y,Z) offsets from world centre.\n"
-"Range roughly -2 to 2, multiply by j_scale for offsets in nodes."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Julia set: Approximate (X,Y,Z) scales in nodes."
+"Iterations of the recursive function.\n"
+"Controls the amount of fine detail."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Julia set: Iterations of the recursive function.\n"
-"Controls scale of finest detail."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Julia set: W co-ordinate of the generated 3D slice of the 4D shape.\n"
+"Julia set only: W component of hypercomplex constant determining julia "
+"shape.\n"
+"Has no effect on 3D fractals.\n"
 "Range roughly -2 to 2."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Julia set: W value determining the 4D shape.\n"
+"Julia set only: X component of hypercomplex constant determining julia "
+"shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Julia set: X value determining the 4D shape.\n"
+"Julia set only: Y component of hypercomplex constant determining julia "
+"shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Julia set: Y value determining the 4D shape.\n"
-"Range roughly -2 to 2."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Julia set: Z value determining the 4D shape.\n"
+"Julia set only: Z component of hypercomplex constant determining julia "
+"shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
 
@@ -2020,7 +2266,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Key for decreasing the viewing range. Modifies the minimum viewing range.\n"
+"Key for decreasing the viewing range.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -2034,7 +2280,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Key for increasing the viewing range. Modifies the minimum viewing range.\n"
+"Key for increasing the viewing range.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -2232,6 +2478,14 @@ msgid "Language"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Large cave depth"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Lava Features"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Leaves style"
 msgstr ""
 
@@ -2332,35 +2586,25 @@ msgid "Makes DirectX work with LuaJIT. Disable if it causes troubles."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Mandelbrot set: (X,Y,Z) offsets from world centre.\n"
-"Range roughly -2 to 2, multiply by m_scale for offsets in nodes."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mandelbrot set: Approximate (X,Y,Z) scales in nodes."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Mandelbrot set: Iterations of the recursive function.\n"
-"Controls scale of finest detail."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Mandelbrot set: W co-ordinate of the generated 3D slice of the 4D shape.\n"
-"Range roughly -2 to 2."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Map directory"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Map generation attributes specific to Mapgen fractal.\n"
-"'julia' selects a julia set to be generated instead of a mandelbrot set.\n"
+"Map generation attributes specific to Mapgen Valleys.\n"
+"Flags that are not specified in the flag string are not modified from the "
+"default.\n"
+"Flags starting with \"no\" are used to explicitly disable them.\n"
+"\"altitude_chill\" makes higher elevations colder, which may cause biome "
+"issues.\n"
+"\"humid_rivers\" modifies the humidity around rivers and in areas where "
+"water would tend to pool. It may interfere with delicately adjusted biomes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Map generation attributes specific to Mapgen flat.\n"
+"Occasional lakes and hills added to the flat world.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
 "Flags starting with \"no\" are used to explicitly disable them."
@@ -2402,6 +2646,10 @@ msgid "Mapblock unload timeout"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Mapgen Valleys"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Mapgen biome heat noise parameters"
 msgstr ""
 
@@ -2422,6 +2670,54 @@ msgid "Mapgen flags"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Mapgen flat"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen flat cave1 noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen flat cave2 noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen flat filler depth noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen flat flags"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen flat ground level"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen flat hill steepness"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen flat hill threshold"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen flat lake steepness"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen flat lake threshold"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen flat large cave depth"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen flat terrain noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Mapgen fractal"
 msgstr ""
 
@@ -2438,23 +2734,11 @@ msgid "Mapgen fractal filler depth noise parameters"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Mapgen fractal flags"
+msgid "Mapgen fractal fractal"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Mapgen fractal julia iterations"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal julia offset"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal julia scale"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal julia slice w"
+msgid "Mapgen fractal iterations"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2474,23 +2758,19 @@ msgid "Mapgen fractal julia z"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Mapgen fractal mandelbrot iterations"
+msgid "Mapgen fractal offset"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Mapgen fractal mandelbrot offset"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal mandelbrot scale"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal mandelbrot slice w"
+msgid "Mapgen fractal scale"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal seabed noise parameters"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal slice w"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2638,6 +2918,18 @@ msgid "Mapgen v7 terrain persistation noise parameters"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Massive cave depth"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Massive cave noise"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Massive caves form here."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Max block generate distance"
 msgstr ""
 
@@ -2663,14 +2955,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when game is paused."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Maximum distance above water level for player spawn.\n"
-"Larger values result in spawn points closer to (x = 0, z = 0).\n"
-"Smaller values may result in a suitable spawn point not being found,\n"
-"resulting in a spawn at (0, 0, 0) possibly buried underground."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2765,6 +3049,10 @@ msgid "Message of the day displayed to players connecting."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Method used to highlight selected object."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Minimap"
 msgstr ""
 
@@ -2778,13 +3066,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimum texture size for filters"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Minimum wanted FPS.\n"
-"The amount of rendered stuff is dynamically set according to this. and "
-"viewing range min and max."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2864,10 +3145,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "New style water"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "New users need to input this password."
 msgstr ""
 
@@ -2885,6 +3162,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Noise parameters for biome API temperature, humidity and biome blend."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Noises"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2925,10 +3206,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Overall scale of parallax occlusion effect."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Parallax Occlusion"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2996,18 +3273,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Pre-generate all item visuals used in the inventory.\n"
-"This increases startup time, but runs smoother in-game.\n"
-"The generated textures can easily exceed your VRAM, causing artifacts in the "
-"inventory."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Preload inventory textures"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr ""
 
@@ -3028,6 +3293,10 @@ msgid ""
 "Radius of cloud area stated in number of 64 node cloud squares.\n"
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
 "corners."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Raises terrain to make valleys around the rivers"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3056,6 +3325,22 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Rightclick repetition interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "River Depth"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "River Noise"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "River Size"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "River noise -- rivers occur close to zero"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3176,10 +3461,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Shaders"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Shaders allow advanced visul effects and may increase performance on some "
 "video cards.\n"
@@ -3202,6 +3483,10 @@ msgstr ""
 msgid ""
 "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
 "nodes)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Slope and fill work together to modify the heights"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3259,14 +3544,33 @@ msgid "Synchronous SQLite"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Texture path"
+msgid "Terrain Height"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"The allowed adjustment range for the automatic rendering range adjustment.\n"
-"Set this to be equal to viewing range minimum to disable the auto-adjustment "
-"algorithm."
+"Terrain noise threshold for hills.\n"
+"Controls proportion of world area covered by hills.\n"
+"Adjust towards 0.0 for a larger proportion."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Terrain noise threshold for lakes.\n"
+"Controls proportion of world area covered by lakes.\n"
+"Adjust towards 0.0 for a larger proportion."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Texture path"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "The altitude at which temperature drops by 20C"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "The depth of dirt or other filler"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3339,6 +3643,10 @@ msgid "Toggle camera mode key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Tone Mapping"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Tooltip delay"
 msgstr ""
 
@@ -3406,15 +3714,31 @@ msgid "V-Sync"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Vertical initial window size."
+msgid "VBO"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Valley Depth"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Valley Fill"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Valley Profile"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Valley Slope"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Valleys C Flags"
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Vertical spawn range"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3426,6 +3750,12 @@ msgid "View bobbing"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"View distance in nodes.\n"
+"Min = 20"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "View range decrease key"
 msgstr ""
 
@@ -3434,11 +3764,7 @@ msgid "View range increase key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Viewing range maximum"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Viewing range minimum"
+msgid "Viewing range"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3446,11 +3772,19 @@ msgid "Volume"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"W co-ordinate of the generated 3D slice of a 4D fractal.\n"
+"Determines which 3D slice of the 4D shape is generated.\n"
+"Has no effect on 3D fractals.\n"
+"Range roughly -2 to 2."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Walking speed"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Wanted FPS"
+msgid "Water Features"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3560,6 +3894,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Width component of the initial window size."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Width of the selectionbox's lines around nodes."
 msgstr ""
 
@@ -3567,6 +3905,14 @@ msgstr ""
 msgid ""
 "World directory (everything in the world is stored here).\n"
 "Not needed if starting from the main menu."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Y of flat ground."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Y of upper limit of large pseudorandom caves."
 msgstr ""
 
 #: src/settings_translation_file.cpp
