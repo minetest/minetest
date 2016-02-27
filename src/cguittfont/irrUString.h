@@ -45,8 +45,10 @@
 #define __BYTE_ORDER 0
 #define __LITTLE_ENDIAN 0
 #define __BIG_ENDIAN 1
-#elif __MACH__
+#elif defined(__MACH__) && defined(__APPLE__)
 #include <machine/endian.h>
+#elif defined(__FreeBSD__)
+#include <sys/endian.h>
 #else
 #include <endian.h>
 #endif

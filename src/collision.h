@@ -57,13 +57,15 @@ struct collisionMoveResult
 	bool collides;
 	bool collides_xz;
 	bool standing_on_unloaded;
+	bool standing_on_object;
 	std::vector<CollisionInfo> collisions;
 
 	collisionMoveResult():
 		touching_ground(false),
 		collides(false),
 		collides_xz(false),
-		standing_on_unloaded(false)
+		standing_on_unloaded(false),
+		standing_on_object(false)
 	{}
 };
 
@@ -71,18 +73,9 @@ struct collisionMoveResult
 collisionMoveResult collisionMoveSimple(Environment *env,IGameDef *gamedef,
 		f32 pos_max_d, const aabb3f &box_0,
 		f32 stepheight, f32 dtime,
-		v3f &pos_f, v3f &speed_f,
-		v3f &accel_f,ActiveObject* self=0,
+		v3f *pos_f, v3f *speed_f,
+		v3f accel_f, ActiveObject *self=NULL,
 		bool collideWithObjects=true);
-
-#if 0
-// This doesn't seem to work and isn't used
-// Moves using as many iterations as needed
-collisionMoveResult collisionMovePrecise(Map *map, IGameDef *gamedef,
-		f32 pos_max_d, const aabb3f &box_0,
-		f32 stepheight, f32 dtime,
-		v3f &pos_f, v3f &speed_f, v3f &accel_f);
-#endif
 
 // Helper function:
 // Checks for collision of a moving aabbox with a static aabbox
@@ -90,7 +83,7 @@ collisionMoveResult collisionMovePrecise(Map *map, IGameDef *gamedef,
 // dtime receives time until first collision, invalid if -1 is returned
 int axisAlignedCollision(
 		const aabb3f &staticbox, const aabb3f &movingbox,
-		const v3f &speed, f32 d, f32 &dtime);
+		const v3f &speed, f32 d, f32 *dtime);
 
 // Helper function:
 // Checks if moving the movingbox up by the given distance would hit a ceiling.

@@ -83,7 +83,7 @@ u32 ChatBuffer::getScrollback() const
 
 const ChatLine& ChatBuffer::getLine(u32 index) const
 {
-	assert(index < getLineCount());
+	assert(index < getLineCount());	// pre-condition
 	return m_unformatted[index];
 }
 
@@ -107,7 +107,8 @@ void ChatBuffer::deleteOldest(u32 count)
 		// keep m_formatted in sync
 		if (del_formatted < m_formatted.size())
 		{
-			assert(m_formatted[del_formatted].first);
+
+			sanity_check(m_formatted[del_formatted].first);
 			++del_formatted;
 			while (del_formatted < m_formatted.size() &&
 					!m_formatted[del_formatted].first)
@@ -407,6 +408,15 @@ void ChatPrompt::input(wchar_t ch)
 	m_nick_completion_end = 0;
 }
 
+void ChatPrompt::input(const std::wstring &str)
+{
+	m_line.insert(m_cursor, str);
+	m_cursor += str.size();
+	clampView();
+	m_nick_completion_start = 0;
+	m_nick_completion_end = 0;
+}
+
 std::wstring ChatPrompt::submit()
 {
 	std::wstring line = m_line;
@@ -501,7 +511,7 @@ void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwa
 		{
 			std::wstring completion = narrow_to_wide(*i);
 			if (prefix_start == 0)
-				completion += L":";
+				completion += L": ";
 			completions.push_back(completion);
 		}
 	}
@@ -531,7 +541,7 @@ void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwa
 			}
 		}
 	}
-	std::wstring replacement = completions[replacement_index] + L" ";
+	std::wstring replacement = completions[replacement_index];
 	if (word_end < m_line.size() && isspace(word_end))
 		++word_end;
 
@@ -765,5 +775,5 @@ void ChatBackend::scrollPageDown()
 
 void ChatBackend::scrollPageUp()
 {
-	m_console_buffer.scroll(-m_console_buffer.getRows());
+	m_console_buffer.scroll(-(s32)m_console_buffer.getRows());
 }

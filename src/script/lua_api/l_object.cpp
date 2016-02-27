@@ -26,11 +26,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "tool.h"
 #include "serverobject.h"
-#include "content_object.h"
 #include "content_sao.h"
 #include "server.h"
 #include "hud.h"
-
+#include "scripting_game.h"
 
 struct EnumString es_HudElementType[] =
 {
@@ -65,6 +64,7 @@ struct EnumString es_HudBuiltinElement[] =
 	{HUD_FLAG_CROSSHAIR_VISIBLE, "crosshair"},
 	{HUD_FLAG_WIELDITEM_VISIBLE, "wielditem"},
 	{HUD_FLAG_BREATHBAR_VISIBLE, "breathbar"},
+	{HUD_FLAG_MINIMAP_VISIBLE,   "minimap"},
 	{0, NULL},
 };
 
@@ -77,7 +77,7 @@ ObjectRef* ObjectRef::checkobject(lua_State *L, int narg)
 {
 	luaL_checktype(L, narg, LUA_TUSERDATA);
 	void *ud = luaL_checkudata(L, narg, className);
-	if(!ud) luaL_typerror(L, narg, className);
+	if (!ud) luaL_typerror(L, narg, className);
 	return *(ObjectRef**)ud;  // unbox pointer
 }
 
@@ -90,9 +90,9 @@ ServerActiveObject* ObjectRef::getobject(ObjectRef *ref)
 LuaEntitySAO* ObjectRef::getluaobject(ObjectRef *ref)
 {
 	ServerActiveObject *obj = getobject(ref);
-	if(obj == NULL)
+	if (obj == NULL)
 		return NULL;
-	if(obj->getType() != ACTIVEOBJECT_TYPE_LUAENTITY)
+	if (obj->getType() != ACTIVEOBJECT_TYPE_LUAENTITY)
 		return NULL;
 	return (LuaEntitySAO*)obj;
 }
@@ -100,9 +100,9 @@ LuaEntitySAO* ObjectRef::getluaobject(ObjectRef *ref)
 PlayerSAO* ObjectRef::getplayersao(ObjectRef *ref)
 {
 	ServerActiveObject *obj = getobject(ref);
-	if(obj == NULL)
+	if (obj == NULL)
 		return NULL;
-	if(obj->getType() != ACTIVEOBJECT_TYPE_PLAYER)
+	if (obj->getType() != ACTIVEOBJECT_TYPE_PLAYER)
 		return NULL;
 	return (PlayerSAO*)obj;
 }
@@ -110,7 +110,7 @@ PlayerSAO* ObjectRef::getplayersao(ObjectRef *ref)
 Player* ObjectRef::getplayer(ObjectRef *ref)
 {
 	PlayerSAO *playersao = getplayersao(ref);
-	if(playersao == NULL)
+	if (playersao == NULL)
 		return NULL;
 	return playersao->getPlayer();
 }
@@ -128,10 +128,22 @@ int ObjectRef::gc_object(lua_State *L) {
 // remove(self)
 int ObjectRef::l_remove(lua_State *L)
 {
-	NO_MAP_LOCK_REQUIRED;
+	GET_ENV_PTR;
+
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL)
+		return 0;
+	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
+		return 0;
+
+	std::set<int> child_ids = co->getAttachmentChildIds();
+	std::set<int>::iterator it;
+	for (it = child_ids.begin(); it != child_ids.end(); ++it) {
+		ServerActiveObject *child = env->getActiveObject(*it);
+		child->setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0));
+	}
+
 	verbosestream<<"ObjectRef::l_remove(): id="<<co->getId()<<std::endl;
 	co->m_removed = true;
 	return 0;
@@ -144,7 +156,7 @@ int ObjectRef::l_getpos(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	v3f pos = co->getBasePosition() / BS;
 	lua_newtable(L);
 	lua_pushnumber(L, pos.X);
@@ -163,7 +175,7 @@ int ObjectRef::l_setpos(lua_State *L)
 	ObjectRef *ref = checkobject(L, 1);
 	//LuaEntitySAO *co = getluaobject(ref);
 	ServerActiveObject *co = getobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	// pos
 	v3f pos = checkFloatPos(L, 2);
 	// Do it
@@ -178,7 +190,7 @@ int ObjectRef::l_moveto(lua_State *L)
 	ObjectRef *ref = checkobject(L, 1);
 	//LuaEntitySAO *co = getluaobject(ref);
 	ServerActiveObject *co = getobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	// pos
 	v3f pos = checkFloatPos(L, 2);
 	// continuous
@@ -196,20 +208,36 @@ int ObjectRef::l_punch(lua_State *L)
 	ObjectRef *puncher_ref = checkobject(L, 2);
 	ServerActiveObject *co = getobject(ref);
 	ServerActiveObject *puncher = getobject(puncher_ref);
-	if(co == NULL) return 0;
-	if(puncher == NULL) return 0;
+	if (co == NULL) return 0;
+	if (puncher == NULL) return 0;
 	v3f dir;
-	if(lua_type(L, 5) != LUA_TTABLE)
+	if (lua_type(L, 5) != LUA_TTABLE)
 		dir = co->getBasePosition() - puncher->getBasePosition();
 	else
 		dir = read_v3f(L, 5);
 	float time_from_last_punch = 1000000;
-	if(lua_isnumber(L, 3))
+	if (lua_isnumber(L, 3))
 		time_from_last_punch = lua_tonumber(L, 3);
 	ToolCapabilities toolcap = read_tool_capabilities(L, 4);
 	dir.normalize();
+
+	s16 src_original_hp = co->getHP();
+	s16 dst_origin_hp = puncher->getHP();
+
 	// Do it
 	co->punch(dir, &toolcap, puncher, time_from_last_punch);
+
+	// If the punched is a player, and its HP changed
+	if (src_original_hp != co->getHP() &&
+			co->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co);
+	}
+
+	// If the puncher is a player, and its HP changed
+	if (dst_origin_hp != puncher->getHP() &&
+			puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)puncher);
+	}
 	return 0;
 }
 
@@ -221,8 +249,8 @@ int ObjectRef::l_right_click(lua_State *L)
 	ObjectRef *ref2 = checkobject(L, 2);
 	ServerActiveObject *co = getobject(ref);
 	ServerActiveObject *co2 = getobject(ref2);
-	if(co == NULL) return 0;
-	if(co2 == NULL) return 0;
+	if (co == NULL) return 0;
+	if (co2 == NULL) return 0;
 	// Do it
 	co->rightClick(co2);
 	return 0;
@@ -237,12 +265,15 @@ int ObjectRef::l_set_hp(lua_State *L)
 	ObjectRef *ref = checkobject(L, 1);
 	luaL_checknumber(L, 2);
 	ServerActiveObject *co = getobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	int hp = lua_tonumber(L, 2);
 	/*infostream<<"ObjectRef::l_set_hp(): id="<<co->getId()
 			<<" hp="<<hp<<std::endl;*/
 	// Do it
 	co->setHP(hp);
+	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
+		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co);
+
 	// Return
 	return 0;
 }
@@ -255,7 +286,7 @@ int ObjectRef::l_get_hp(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if(co == NULL){
+	if (co == NULL) {
 		// Default hp is 1
 		lua_pushnumber(L, 1);
 		return 1;
@@ -274,10 +305,10 @@ int ObjectRef::l_get_inventory(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	// Do it
 	InventoryLocation loc = co->getInventoryLocation();
-	if(getServer(L)->getInventory(loc) != NULL)
+	if (getServer(L)->getInventory(loc) != NULL)
 		InvRef::create(L, loc);
 	else
 		lua_pushnil(L); // An object may have no inventory (nil)
@@ -290,7 +321,7 @@ int ObjectRef::l_get_wield_list(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	// Do it
 	lua_pushstring(L, co->getWieldList().c_str());
 	return 1;
@@ -302,7 +333,7 @@ int ObjectRef::l_get_wield_index(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	// Do it
 	lua_pushinteger(L, co->getWieldIndex() + 1);
 	return 1;
@@ -314,7 +345,7 @@ int ObjectRef::l_get_wielded_item(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if(co == NULL){
+	if (co == NULL) {
 		// Empty ItemStack
 		LuaItemStack::create(L, ItemStack());
 		return 1;
@@ -330,10 +361,13 @@ int ObjectRef::l_set_wielded_item(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	// Do it
 	ItemStack item = read_item(L, 2, getServer(L));
 	bool success = co->setWieldedItem(item);
+	if (success && co->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		getServer(L)->SendInventory(((PlayerSAO*)co));
+	}
 	lua_pushboolean(L, success);
 	return 1;
 }
@@ -344,7 +378,7 @@ int ObjectRef::l_set_armor_groups(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	// Do it
 	ItemGroupList groups;
 	read_groups(L, 2, groups);
@@ -352,13 +386,28 @@ int ObjectRef::l_set_armor_groups(lua_State *L)
 	return 0;
 }
 
+// get_armor_groups(self)
+int ObjectRef::l_get_armor_groups(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (co == NULL)
+		return 0;
+	// Do it
+	ItemGroupList groups = co->getArmorGroups();
+	push_groups(L, groups);
+	return 1;
+}
+
 // set_physics_override(self, physics_override_speed, physics_override_jump,
 //                      physics_override_gravity, sneak, sneak_glitch)
 int ObjectRef::l_set_physics_override(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO *co = (PlayerSAO *) getobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	// Do it
 	if (lua_istable(L, 2)) {
 		co->m_physics_override_speed = getfloatfield_default(L, 2, "speed", co->m_physics_override_speed);
@@ -369,15 +418,15 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 		co->m_physics_override_sent = false;
 	} else {
 		// old, non-table format
-		if(!lua_isnil(L, 2)){
+		if (!lua_isnil(L, 2)) {
 			co->m_physics_override_speed = lua_tonumber(L, 2);
 			co->m_physics_override_sent = false;
 		}
-		if(!lua_isnil(L, 3)){
+		if (!lua_isnil(L, 3)) {
 			co->m_physics_override_jump = lua_tonumber(L, 3);
 			co->m_physics_override_sent = false;
 		}
-		if(!lua_isnil(L, 4)){
+		if (!lua_isnil(L, 4)) {
 			co->m_physics_override_gravity = lua_tonumber(L, 4);
 			co->m_physics_override_sent = false;
 		}
@@ -385,31 +434,79 @@ int ObjectRef::l_set_physics_override(lua_State *L)
 	return 0;
 }
 
-// set_animation(self, frame_range, frame_speed, frame_blend)
+// get_physics_override(self)
+int ObjectRef::l_get_physics_override(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	PlayerSAO *co = (PlayerSAO *)getobject(ref);
+	if (co == NULL)
+		return 0;
+	// Do it
+	lua_newtable(L);
+	lua_pushnumber(L, co->m_physics_override_speed);
+	lua_setfield(L, -2, "speed");
+	lua_pushnumber(L, co->m_physics_override_jump);
+	lua_setfield(L, -2, "jump");
+	lua_pushnumber(L, co->m_physics_override_gravity);
+	lua_setfield(L, -2, "gravity");
+	lua_pushboolean(L, co->m_physics_override_sneak);
+	lua_setfield(L, -2, "sneak");
+	lua_pushboolean(L, co->m_physics_override_sneak_glitch);
+	lua_setfield(L, -2, "sneak_glitch");
+	return 1;
+}
+
+// set_animation(self, frame_range, frame_speed, frame_blend, frame_loop)
 int ObjectRef::l_set_animation(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	// Do it
 	v2f frames = v2f(1, 1);
-	if(!lua_isnil(L, 2))
+	if (!lua_isnil(L, 2))
 		frames = read_v2f(L, 2);
 	float frame_speed = 15;
-	if(!lua_isnil(L, 3))
+	if (!lua_isnil(L, 3))
 		frame_speed = lua_tonumber(L, 3);
 	float frame_blend = 0;
-	if(!lua_isnil(L, 4))
+	if (!lua_isnil(L, 4))
 		frame_blend = lua_tonumber(L, 4);
-	co->setAnimation(frames, frame_speed, frame_blend);
+	bool frame_loop = true;
+	if (lua_isboolean(L, 5))
+		frame_loop = lua_toboolean(L, 5);
+	co->setAnimation(frames, frame_speed, frame_blend, frame_loop);
 	return 0;
+}
+
+// get_animation(self)
+int ObjectRef::l_get_animation(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (co == NULL)
+		return 0;
+	// Do it
+	v2f frames = v2f(1,1);
+	float frame_speed = 15;
+	float frame_blend = 0;
+	bool frame_loop = true;
+	co->getAnimation(&frames, &frame_speed, &frame_blend, &frame_loop);
+
+	push_v2f(L, frames);
+	lua_pushnumber(L, frame_speed);
+	lua_pushnumber(L, frame_blend);
+	lua_pushboolean(L, frame_loop);
+	return 4;
 }
 
 // set_local_animation(self, {stand/idle}, {walk}, {dig}, {walk+dig}, frame_speed)
 int ObjectRef::l_set_local_animation(lua_State *L)
 {
-	//NO_MAP_LOCK_REQUIRED;
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if (player == NULL)
@@ -417,11 +514,11 @@ int ObjectRef::l_set_local_animation(lua_State *L)
 	// Do it
 	v2s32 frames[4];
 	for (int i=0;i<4;i++) {
-		if(!lua_isnil(L, 2+1))
+		if (!lua_isnil(L, 2+1))
 			frames[i] = read_v2s32(L, 2+i);
 	}
 	float frame_speed = 30;
-	if(!lua_isnil(L, 6))
+	if (!lua_isnil(L, 6))
 		frame_speed = lua_tonumber(L, 6);
 
 	if (!getServer(L)->setLocalPlayerAnimations(player, frames, frame_speed))
@@ -431,10 +528,31 @@ int ObjectRef::l_set_local_animation(lua_State *L)
 	return 0;
 }
 
+// get_local_animation(self)
+int ObjectRef::l_get_local_animation(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	v2s32 frames[4];
+	float frame_speed;
+	player->getLocalAnimations(frames, &frame_speed);
+
+	for (int i = 0; i < 4; i++) {
+		push_v2s32(L, frames[i]);
+	}
+
+	lua_pushnumber(L, frame_speed);
+	return 5;
+}
+
 // set_eye_offset(self, v3f first pv, v3f third pv)
 int ObjectRef::l_set_eye_offset(lua_State *L)
 {
-	//NO_MAP_LOCK_REQUIRED;
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if (player == NULL)
@@ -442,10 +560,10 @@ int ObjectRef::l_set_eye_offset(lua_State *L)
 	// Do it
 	v3f offset_first = v3f(0, 0, 0);
 	v3f offset_third = v3f(0, 0, 0);
-	
-	if(!lua_isnil(L, 2))
+
+	if (!lua_isnil(L, 2))
 		offset_first = read_v3f(L, 2);
-	if(!lua_isnil(L, 3))
+	if (!lua_isnil(L, 3))
 		offset_third = read_v3f(L, 3);
 
 	// Prevent abuse of offset values (keep player always visible)
@@ -461,60 +579,151 @@ int ObjectRef::l_set_eye_offset(lua_State *L)
 	return 0;
 }
 
+// get_eye_offset(self)
+int ObjectRef::l_get_eye_offset(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+	// Do it
+	push_v3f(L, player->eye_offset_first);
+	push_v3f(L, player->eye_offset_third);
+	return 2;
+}
+
 // set_bone_position(self, std::string bone, v3f position, v3f rotation)
 int ObjectRef::l_set_bone_position(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	// Do it
 	std::string bone = "";
-	if(!lua_isnil(L, 2))
+	if (!lua_isnil(L, 2))
 		bone = lua_tostring(L, 2);
 	v3f position = v3f(0, 0, 0);
-	if(!lua_isnil(L, 3))
+	if (!lua_isnil(L, 3))
 		position = read_v3f(L, 3);
 	v3f rotation = v3f(0, 0, 0);
-	if(!lua_isnil(L, 4))
+	if (!lua_isnil(L, 4))
 		rotation = read_v3f(L, 4);
 	co->setBonePosition(bone, position, rotation);
 	return 0;
 }
 
+// get_bone_position(self, bone)
+int ObjectRef::l_get_bone_position(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (co == NULL)
+		return 0;
+	// Do it
+	std::string bone = "";
+	if (!lua_isnil(L, 2))
+		bone = lua_tostring(L, 2);
+
+	v3f position = v3f(0, 0, 0);
+	v3f rotation = v3f(0, 0, 0);
+	co->getBonePosition(bone, &position, &rotation);
+
+	push_v3f(L, position);
+	push_v3f(L, rotation);
+	return 2;
+}
+
 // set_attach(self, parent, bone, position, rotation)
 int ObjectRef::l_set_attach(lua_State *L)
 {
-	NO_MAP_LOCK_REQUIRED;
+	GET_ENV_PTR;
+
 	ObjectRef *ref = checkobject(L, 1);
 	ObjectRef *parent_ref = checkobject(L, 2);
 	ServerActiveObject *co = getobject(ref);
 	ServerActiveObject *parent = getobject(parent_ref);
-	if(co == NULL) return 0;
-	if(parent == NULL) return 0;
+	if (co == NULL)
+		return 0;
+	if (parent == NULL)
+		return 0;
 	// Do it
+	int parent_id = 0;
 	std::string bone = "";
-	if(!lua_isnil(L, 3))
-		bone = lua_tostring(L, 3);
 	v3f position = v3f(0, 0, 0);
-	if(!lua_isnil(L, 4))
-		position = read_v3f(L, 4);
 	v3f rotation = v3f(0, 0, 0);
-	if(!lua_isnil(L, 5))
+	co->getAttachment(&parent_id, &bone, &position, &rotation);
+	if (parent_id) {
+		ServerActiveObject *old_parent = env->getActiveObject(parent_id);
+		old_parent->removeAttachmentChild(co->getId());
+	}
+
+	bone = "";
+	if (!lua_isnil(L, 3))
+		bone = lua_tostring(L, 3);
+	position = v3f(0, 0, 0);
+	if (!lua_isnil(L, 4))
+		position = read_v3f(L, 4);
+	rotation = v3f(0, 0, 0);
+	if (!lua_isnil(L, 5))
 		rotation = read_v3f(L, 5);
 	co->setAttachment(parent->getId(), bone, position, rotation);
+	parent->addAttachmentChild(co->getId());
 	return 0;
+}
+
+// get_attach(self)
+int ObjectRef::l_get_attach(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (co == NULL)
+		return 0;
+
+	// Do it
+	int parent_id = 0;
+	std::string bone = "";
+	v3f position = v3f(0, 0, 0);
+	v3f rotation = v3f(0, 0, 0);
+	co->getAttachment(&parent_id, &bone, &position, &rotation);
+	if (!parent_id)
+		return 0;
+	ServerActiveObject *parent = env->getActiveObject(parent_id);
+
+	getScriptApiBase(L)->objectrefGetOrCreate(L, parent);
+	lua_pushlstring(L, bone.c_str(), bone.size());
+	push_v3f(L, position);
+	push_v3f(L, rotation);
+	return 4;
 }
 
 // set_detach(self)
 int ObjectRef::l_set_detach(lua_State *L)
 {
-	NO_MAP_LOCK_REQUIRED;
+	GET_ENV_PTR;
+
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL)
+		return 0;
+
+	int parent_id = 0;
+	std::string bone = "";
+	v3f position;
+	v3f rotation;
+	co->getAttachment(&parent_id, &bone, &position, &rotation);
+	ServerActiveObject *parent = NULL;
+	if (parent_id)
+		parent = env->getActiveObject(parent_id);
+
 	// Do it
 	co->setAttachment(0, "", v3f(0,0,0), v3f(0,0,0));
+	if (parent != NULL)
+		parent->removeAttachmentChild(co->getId());
 	return 0;
 }
 
@@ -524,13 +733,91 @@ int ObjectRef::l_set_properties(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	ObjectProperties *prop = co->accessObjectProperties();
-	if(!prop)
+	if (!prop)
 		return 0;
 	read_object_properties(L, 2, prop);
 	co->notifyObjectPropertiesModified();
 	return 0;
+}
+
+// get_properties(self)
+int ObjectRef::l_get_properties(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (co == NULL)
+		return 0;
+	ObjectProperties *prop = co->accessObjectProperties();
+	if (!prop)
+		return 0;
+	push_object_properties(L, prop);
+	return 1;
+}
+
+// is_player(self)
+int ObjectRef::l_is_player(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	lua_pushboolean(L, (player != NULL));
+	return 1;
+}
+
+// set_nametag_attributes(self, attributes)
+int ObjectRef::l_set_nametag_attributes(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+
+	if (co == NULL)
+		return 0;
+	ObjectProperties *prop = co->accessObjectProperties();
+	if (!prop)
+		return 0;
+
+	lua_getfield(L, 2, "color");
+	if (!lua_isnil(L, -1)) {
+		video::SColor color = prop->nametag_color;
+		read_color(L, -1, &color);
+		prop->nametag_color = color;
+	}
+	lua_pop(L, 1);
+
+	std::string nametag = getstringfield_default(L, 2, "text", "");
+	if (nametag != "")
+		prop->nametag = nametag;
+
+	co->notifyObjectPropertiesModified();
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+// get_nametag_attributes(self)
+int ObjectRef::l_get_nametag_attributes(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+
+	if (co == NULL)
+		return 0;
+	ObjectProperties *prop = co->accessObjectProperties();
+	if (!prop)
+		return 0;
+
+	video::SColor color = prop->nametag_color;
+
+	lua_newtable(L);
+	push_ARGB8(L, color);
+	lua_setfield(L, -2, "color");
+	lua_pushstring(L, prop->nametag.c_str());
+	lua_setfield(L, -2, "text");
+	return 1;
 }
 
 /* LuaEntitySAO-only */
@@ -541,7 +828,7 @@ int ObjectRef::l_setvelocity(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	v3f pos = checkFloatPos(L, 2);
 	// Do it
 	co->setVelocity(pos);
@@ -554,7 +841,7 @@ int ObjectRef::l_getvelocity(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	// Do it
 	v3f v = co->getVelocity();
 	pushFloatPos(L, v);
@@ -567,7 +854,7 @@ int ObjectRef::l_setacceleration(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	// pos
 	v3f pos = checkFloatPos(L, 2);
 	// Do it
@@ -581,7 +868,7 @@ int ObjectRef::l_getacceleration(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	// Do it
 	v3f v = co->getAcceleration();
 	pushFloatPos(L, v);
@@ -594,7 +881,7 @@ int ObjectRef::l_setyaw(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	float yaw = luaL_checknumber(L, 2) * core::RADTODEG;
 	// Do it
 	co->setYaw(yaw);
@@ -607,7 +894,7 @@ int ObjectRef::l_getyaw(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	// Do it
 	float yaw = co->getYaw() * core::DEGTORAD;
 	lua_pushnumber(L, yaw);
@@ -620,7 +907,7 @@ int ObjectRef::l_settexturemod(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	// Do it
 	std::string mod = luaL_checkstring(L, 2);
 	co->setTextureMod(mod);
@@ -634,19 +921,19 @@ int ObjectRef::l_setsprite(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	// Do it
 	v2s16 p(0,0);
-	if(!lua_isnil(L, 2))
+	if (!lua_isnil(L, 2))
 		p = read_v2s16(L, 2);
 	int num_frames = 1;
-	if(!lua_isnil(L, 3))
+	if (!lua_isnil(L, 3))
 		num_frames = lua_tonumber(L, 3);
 	float framelength = 0.2;
-	if(!lua_isnil(L, 4))
+	if (!lua_isnil(L, 4))
 		framelength = lua_tonumber(L, 4);
 	bool select_horiz_by_yawpitch = false;
-	if(!lua_isnil(L, 5))
+	if (!lua_isnil(L, 5))
 		select_horiz_by_yawpitch = lua_toboolean(L, 5);
 	co->setSprite(p, num_frames, framelength, select_horiz_by_yawpitch);
 	return 0;
@@ -660,7 +947,7 @@ int ObjectRef::l_get_entity_name(lua_State *L)
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
 	log_deprecated(L,"Deprecated call to \"get_entity_name");
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	// Do it
 	std::string name = co->getName();
 	lua_pushstring(L, name.c_str());
@@ -673,23 +960,13 @@ int ObjectRef::l_get_luaentity(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	LuaEntitySAO *co = getluaobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	// Do it
 	luaentity_get(L, co->getId());
 	return 1;
 }
 
 /* Player-only */
-
-// is_player(self)
-int ObjectRef::l_is_player(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
-	lua_pushboolean(L, (player != NULL));
-	return 1;
-}
 
 // is_player_connected(self)
 int ObjectRef::l_is_player_connected(lua_State *L)
@@ -707,12 +984,27 @@ int ObjectRef::l_get_player_name(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
-	if(player == NULL){
+	if (player == NULL) {
 		lua_pushlstring(L, "", 0);
 		return 1;
 	}
 	// Do it
 	lua_pushstring(L, player->getName());
+	return 1;
+}
+
+// get_player_velocity(self)
+int ObjectRef::l_get_player_velocity(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL) {
+		lua_pushnil(L);
+		return 1;
+	}
+	// Do it
+	push_v3f(L, player->getSpeed() / BS);
 	return 1;
 }
 
@@ -722,7 +1014,7 @@ int ObjectRef::l_get_look_dir(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
-	if(player == NULL) return 0;
+	if (player == NULL) return 0;
 	// Do it
 	float pitch = player->getRadPitch();
 	float yaw = player->getRadYaw();
@@ -737,7 +1029,7 @@ int ObjectRef::l_get_look_pitch(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
-	if(player == NULL) return 0;
+	if (player == NULL) return 0;
 	// Do it
 	lua_pushnumber(L, player->getRadPitch());
 	return 1;
@@ -749,7 +1041,7 @@ int ObjectRef::l_get_look_yaw(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
-	if(player == NULL) return 0;
+	if (player == NULL) return 0;
 	// Do it
 	lua_pushnumber(L, player->getRadYaw());
 	return 1;
@@ -761,7 +1053,7 @@ int ObjectRef::l_set_look_pitch(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO* co = getplayersao(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	float pitch = luaL_checknumber(L, 2) * core::RADTODEG;
 	// Do it
 	co->setPitch(pitch);
@@ -774,7 +1066,7 @@ int ObjectRef::l_set_look_yaw(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO* co = getplayersao(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	float yaw = luaL_checknumber(L, 2) * core::RADTODEG;
 	// Do it
 	co->setYaw(yaw);
@@ -787,11 +1079,15 @@ int ObjectRef::l_set_breath(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO* co = getplayersao(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	u16 breath = luaL_checknumber(L, 2);
 	// Do it
 	co->setBreath(breath);
-	co->m_breath_not_sent = true;
+
+	// If the object is a player sent the breath to client
+	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
+			getServer(L)->SendPlayerBreath(((PlayerSAO*)co)->getPeerID());
+
 	return 0;
 }
 
@@ -801,7 +1097,7 @@ int ObjectRef::l_get_breath(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO* co = getplayersao(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 	// Do it
 	u16 breath = co->getBreath();
 	lua_pushinteger (L, breath);
@@ -814,7 +1110,7 @@ int ObjectRef::l_set_inventory_formspec(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
-	if(player == NULL) return 0;
+	if (player == NULL) return 0;
 	std::string formspec = luaL_checkstring(L, 2);
 
 	player->inventory_formspec = formspec;
@@ -829,7 +1125,7 @@ int ObjectRef::l_get_inventory_formspec(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
-	if(player == NULL) return 0;
+	if (player == NULL) return 0;
 
 	std::string formspec = player->inventory_formspec;
 	lua_pushlstring(L, formspec.c_str(), formspec.size());
@@ -842,7 +1138,7 @@ int ObjectRef::l_get_player_control(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
-	if(player == NULL){
+	if (player == NULL) {
 		lua_pushlstring(L, "", 0);
 		return 1;
 	}
@@ -876,7 +1172,7 @@ int ObjectRef::l_get_player_control_bits(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
-	if(player == NULL){
+	if (player == NULL) {
 		lua_pushlstring(L, "", 0);
 		return 1;
 	}
@@ -888,6 +1184,7 @@ int ObjectRef::l_get_player_control_bits(lua_State *L)
 // hud_add(self, form)
 int ObjectRef::l_hud_add(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if (player == NULL)
@@ -914,7 +1211,11 @@ int ObjectRef::l_hud_add(lua_State *L)
 	elem->text   = getstringfield_default(L, 2, "text", "");
 	elem->number = getintfield_default(L, 2, "number", 0);
 	elem->item   = getintfield_default(L, 2, "item", 0);
-	elem->dir    = getintfield_default(L, 2, "dir", 0);
+	elem->dir    = getintfield_default(L, 2, "direction", 0);
+
+	// Deprecated, only for compatibility's sake
+	if (elem->dir == 0)
+		elem->dir = getintfield_default(L, 2, "dir", 0);
 
 	lua_getfield(L, 2, "alignment");
 	elem->align = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
@@ -934,7 +1235,7 @@ int ObjectRef::l_hud_add(lua_State *L)
 	}
 
 	u32 id = getServer(L)->hudAdd(player, elem);
-	if (id == (u32)-1) {
+	if (id == U32_MAX) {
 		delete elem;
 		return 0;
 	}
@@ -946,6 +1247,7 @@ int ObjectRef::l_hud_add(lua_State *L)
 // hud_remove(self, id)
 int ObjectRef::l_hud_remove(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if (player == NULL)
@@ -965,19 +1267,20 @@ int ObjectRef::l_hud_remove(lua_State *L)
 // hud_change(self, id, stat, data)
 int ObjectRef::l_hud_change(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 
-	u32 id = !lua_isnil(L, 2) ? lua_tonumber(L, 2) : -1;
+	u32 id = lua_isnumber(L, 2) ? lua_tonumber(L, 2) : -1;
 
 	HudElement *e = player->getHud(id);
 	if (!e)
 		return 0;
 
 	HudElementStat stat = HUD_STAT_NUMBER;
-	if (!lua_isnil(L, 3)) {
+	if (lua_isstring(L, 3)) {
 		int statint;
 		std::string statstr = lua_tostring(L, 3);
 		stat = string_to_enum(es_HudElementStat, statint, statstr) ?
@@ -991,7 +1294,7 @@ int ObjectRef::l_hud_change(lua_State *L)
 			value = &e->pos;
 			break;
 		case HUD_STAT_NAME:
-			e->name = lua_tostring(L, 4);
+			e->name = luaL_checkstring(L, 4);
 			value = &e->name;
 			break;
 		case HUD_STAT_SCALE:
@@ -999,19 +1302,19 @@ int ObjectRef::l_hud_change(lua_State *L)
 			value = &e->scale;
 			break;
 		case HUD_STAT_TEXT:
-			e->text = lua_tostring(L, 4);
+			e->text = luaL_checkstring(L, 4);
 			value = &e->text;
 			break;
 		case HUD_STAT_NUMBER:
-			e->number = lua_tonumber(L, 4);
+			e->number = luaL_checknumber(L, 4);
 			value = &e->number;
 			break;
 		case HUD_STAT_ITEM:
-			e->item = lua_tonumber(L, 4);
+			e->item = luaL_checknumber(L, 4);
 			value = &e->item;
 			break;
 		case HUD_STAT_DIR:
-			e->dir = lua_tonumber(L, 4);
+			e->dir = luaL_checknumber(L, 4);
 			value = &e->dir;
 			break;
 		case HUD_STAT_ALIGN:
@@ -1041,6 +1344,7 @@ int ObjectRef::l_hud_change(lua_State *L)
 // hud_get(self, id)
 int ObjectRef::l_hud_get(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if (player == NULL)
@@ -1076,6 +1380,10 @@ int ObjectRef::l_hud_get(lua_State *L)
 	lua_setfield(L, -2, "item");
 
 	lua_pushnumber(L, e->dir);
+	lua_setfield(L, -2, "direction");
+
+	// Deprecated, only for compatibility's sake
+	lua_pushnumber(L, e->dir);
 	lua_setfield(L, -2, "dir");
 
 	push_v3f(L, e->world_pos);
@@ -1087,6 +1395,7 @@ int ObjectRef::l_hud_get(lua_State *L)
 // hud_set_flags(self, flags)
 int ObjectRef::l_hud_set_flags(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if (player == NULL)
@@ -1095,7 +1404,7 @@ int ObjectRef::l_hud_set_flags(lua_State *L)
 	u32 flags = 0;
 	u32 mask  = 0;
 	bool flag;
-	
+
 	const EnumString *esp = es_HudBuiltinElement;
 	for (int i = 0; esp[i].str; i++) {
 		if (getboolfield(L, 2, esp[i].str, flag)) {
@@ -1112,6 +1421,7 @@ int ObjectRef::l_hud_set_flags(lua_State *L)
 
 int ObjectRef::l_hud_get_flags(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if (player == NULL)
@@ -1128,6 +1438,8 @@ int ObjectRef::l_hud_get_flags(lua_State *L)
 	lua_setfield(L, -2, "wielditem");
 	lua_pushboolean(L, player->hud_flags & HUD_FLAG_BREATHBAR_VISIBLE);
 	lua_setfield(L, -2, "breathbar");
+	lua_pushboolean(L, player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE);
+	lua_setfield(L, -2, "minimap");
 
 	return 1;
 }
@@ -1135,6 +1447,7 @@ int ObjectRef::l_hud_get_flags(lua_State *L)
 // hud_set_hotbar_itemcount(self, hotbar_itemcount)
 int ObjectRef::l_hud_set_hotbar_itemcount(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if (player == NULL)
@@ -1149,9 +1462,25 @@ int ObjectRef::l_hud_set_hotbar_itemcount(lua_State *L)
 	return 1;
 }
 
+// hud_get_hotbar_itemcount(self)
+int ObjectRef::l_hud_get_hotbar_itemcount(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	s32 hotbar_itemcount = getServer(L)->hudGetHotbarItemcount(player);
+
+	lua_pushnumber(L, hotbar_itemcount);
+	return 1;
+}
+
 // hud_set_hotbar_image(self, name)
 int ObjectRef::l_hud_set_hotbar_image(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if (player == NULL)
@@ -1163,9 +1492,24 @@ int ObjectRef::l_hud_set_hotbar_image(lua_State *L)
 	return 1;
 }
 
+// hud_get_hotbar_image(self)
+int ObjectRef::l_hud_get_hotbar_image(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	std::string name = getServer(L)->hudGetHotbarImage(player);
+	lua_pushlstring(L, name.c_str(), name.size());
+	return 1;
+}
+
 // hud_set_hotbar_selected_image(self, name)
 int ObjectRef::l_hud_set_hotbar_selected_image(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if (player == NULL)
@@ -1177,17 +1521,31 @@ int ObjectRef::l_hud_set_hotbar_selected_image(lua_State *L)
 	return 1;
 }
 
+// hud_get_hotbar_selected_image(self)
+int ObjectRef::l_hud_get_hotbar_selected_image(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	std::string name = getServer(L)->hudGetHotbarSelectedImage(player);
+	lua_pushlstring(L, name.c_str(), name.size());
+	return 1;
+}
+
 // set_sky(self, bgcolor, type, list)
 int ObjectRef::l_set_sky(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 
 	video::SColor bgcolor(255,255,255,255);
-	if (!lua_isnil(L, 2))
-		bgcolor = readARGB8(L, 2);
+	read_color(L, 2, &bgcolor);
 
 	std::string type = luaL_checkstring(L, 3);
 
@@ -1216,9 +1574,38 @@ int ObjectRef::l_set_sky(lua_State *L)
 	return 1;
 }
 
+// get_sky(self)
+int ObjectRef::l_get_sky(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+	video::SColor bgcolor(255, 255, 255, 255);
+	std::string type;
+	std::vector<std::string> params;
+
+	player->getSky(&bgcolor, &type, &params);
+	type = type == "" ? "regular" : type;
+
+	push_ARGB8(L, bgcolor);
+	lua_pushlstring(L, type.c_str(), type.size());
+	lua_newtable(L);
+	s16 i = 1;
+	for (std::vector<std::string>::iterator it = params.begin();
+			it != params.end(); ++it) {
+		lua_pushlstring(L, it->c_str(), it->size());
+		lua_rawseti(L, -2, i);
+		i++;
+	}
+	return 3;
+}
+
 // override_day_night_ratio(self, brightness=0...1)
 int ObjectRef::l_override_day_night_ratio(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	Player *player = getplayer(ref);
 	if (player == NULL)
@@ -1226,7 +1613,7 @@ int ObjectRef::l_override_day_night_ratio(lua_State *L)
 
 	bool do_override = false;
 	float ratio = 0.0f;
-	if (!lua_isnil(L, 2)){
+	if (!lua_isnil(L, 2)) {
 		do_override = true;
 		ratio = luaL_checknumber(L, 2);
 	}
@@ -1238,6 +1625,27 @@ int ObjectRef::l_override_day_night_ratio(lua_State *L)
 	return 1;
 }
 
+// get_day_night_ratio(self)
+int ObjectRef::l_get_day_night_ratio(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	bool do_override;
+	float ratio;
+	player->getDayNightRatio(&do_override, &ratio);
+
+	if (do_override)
+		lua_pushnumber(L, ratio);
+	else
+		lua_pushnil(L);
+
+	return 1;
+}
+
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
 {
@@ -1246,7 +1654,7 @@ ObjectRef::ObjectRef(ServerActiveObject *object):
 
 ObjectRef::~ObjectRef()
 {
-	/*if(m_object)
+	/*if (m_object)
 		infostream<<"ObjectRef destructing for id="
 				<<m_object->getId()<<std::endl;
 	else
@@ -1315,12 +1723,18 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_wielded_item),
 	luamethod(ObjectRef, set_wielded_item),
 	luamethod(ObjectRef, set_armor_groups),
-	luamethod(ObjectRef, set_physics_override),
+	luamethod(ObjectRef, get_armor_groups),
 	luamethod(ObjectRef, set_animation),
+	luamethod(ObjectRef, get_animation),
 	luamethod(ObjectRef, set_bone_position),
+	luamethod(ObjectRef, get_bone_position),
 	luamethod(ObjectRef, set_attach),
+	luamethod(ObjectRef, get_attach),
 	luamethod(ObjectRef, set_detach),
 	luamethod(ObjectRef, set_properties),
+	luamethod(ObjectRef, get_properties),
+	luamethod(ObjectRef, set_nametag_attributes),
+	luamethod(ObjectRef, get_nametag_attributes),
 	// LuaEntitySAO-only
 	luamethod(ObjectRef, setvelocity),
 	luamethod(ObjectRef, getvelocity),
@@ -1336,6 +1750,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, is_player),
 	luamethod(ObjectRef, is_player_connected),
 	luamethod(ObjectRef, get_player_name),
+	luamethod(ObjectRef, get_player_velocity),
 	luamethod(ObjectRef, get_look_dir),
 	luamethod(ObjectRef, get_look_pitch),
 	luamethod(ObjectRef, get_look_yaw),
@@ -1347,6 +1762,8 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_inventory_formspec),
 	luamethod(ObjectRef, get_player_control),
 	luamethod(ObjectRef, get_player_control_bits),
+	luamethod(ObjectRef, set_physics_override),
+	luamethod(ObjectRef, get_physics_override),
 	luamethod(ObjectRef, hud_add),
 	luamethod(ObjectRef, hud_remove),
 	luamethod(ObjectRef, hud_change),
@@ -1354,11 +1771,18 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, hud_set_flags),
 	luamethod(ObjectRef, hud_get_flags),
 	luamethod(ObjectRef, hud_set_hotbar_itemcount),
+	luamethod(ObjectRef, hud_get_hotbar_itemcount),
 	luamethod(ObjectRef, hud_set_hotbar_image),
+	luamethod(ObjectRef, hud_get_hotbar_image),
 	luamethod(ObjectRef, hud_set_hotbar_selected_image),
+	luamethod(ObjectRef, hud_get_hotbar_selected_image),
 	luamethod(ObjectRef, set_sky),
+	luamethod(ObjectRef, get_sky),
 	luamethod(ObjectRef, override_day_night_ratio),
+	luamethod(ObjectRef, get_day_night_ratio),
 	luamethod(ObjectRef, set_local_animation),
+	luamethod(ObjectRef, get_local_animation),
 	luamethod(ObjectRef, set_eye_offset),
+	luamethod(ObjectRef, get_eye_offset),
 	{0,0}
 };

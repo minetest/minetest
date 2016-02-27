@@ -20,7 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "scripting_game.h"
 #include "server.h"
 #include "log.h"
+#include "settings.h"
 #include "cpp_api/s_internal.h"
+#include "lua_api/l_areastore.h"
 #include "lua_api/l_base.h"
 #include "lua_api/l_craft.h"
 #include "lua_api/l_env.h"
@@ -37,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_util.h"
 #include "lua_api/l_vmanip.h"
 #include "lua_api/l_settings.h"
+#include "lua_api/l_http.h"
 
 extern "C" {
 #include "lualib.h"
@@ -49,9 +52,11 @@ GameScripting::GameScripting(Server* server)
 	// setEnv(env) is called by ScriptApiEnv::initializeEnvironment()
 	// once the environment has been created
 
-	//TODO add security
-
 	SCRIPTAPI_PRECHECKHEADER
+
+	if (g_settings->getBool("secure.enable_security")) {
+		initializeSecurity();
+	}
 
 	lua_getglobal(L, "core");
 	int top = lua_gettop(L);
@@ -85,13 +90,17 @@ void GameScripting::InitializeModApi(lua_State *L, int top)
 	ModApiRollback::Initialize(L, top);
 	ModApiServer::Initialize(L, top);
 	ModApiUtil::Initialize(L, top);
+	ModApiHttp::Initialize(L, top);
 
 	// Register reference classes (userdata)
 	InvRef::Register(L);
+	LuaAreaStore::Register(L);
 	LuaItemStack::Register(L);
 	LuaPerlinNoise::Register(L);
 	LuaPerlinNoiseMap::Register(L);
 	LuaPseudoRandom::Register(L);
+	LuaPcgRandom::Register(L);
+	LuaSecureRandom::Register(L);
 	LuaVoxelManip::Register(L);
 	NodeMetaRef::Register(L);
 	NodeTimerRef::Register(L);
@@ -99,7 +108,7 @@ void GameScripting::InitializeModApi(lua_State *L, int top)
 	LuaSettings::Register(L);
 }
 
-void log_deprecated(std::string message)
+void log_deprecated(const std::string &message)
 {
-	log_deprecated(NULL,message);
+	log_deprecated(NULL, message);
 }

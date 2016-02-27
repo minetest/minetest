@@ -18,8 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "quicktune.h"
-#include "jthread/jmutex.h"
-#include "jthread/jmutexautolock.h"
+#include "threading/mutex.h"
+#include "threading/mutex_auto_lock.h"
 #include "util/string.h"
 
 std::string QuicktuneValue::getString()
@@ -49,12 +49,12 @@ void QuicktuneValue::relativeAdd(float amount)
 
 static std::map<std::string, QuicktuneValue> g_values;
 static std::vector<std::string> g_names;
-JMutex *g_mutex = NULL;
+Mutex *g_mutex = NULL;
 
 static void makeMutex()
 {
 	if(!g_mutex){
-		g_mutex = new JMutex();
+		g_mutex = new Mutex();
 	}
 }
 
@@ -66,7 +66,7 @@ std::vector<std::string> getQuicktuneNames()
 QuicktuneValue getQuicktuneValue(const std::string &name)
 {
 	makeMutex();
-	JMutexAutoLock lock(*g_mutex);
+	MutexAutoLock lock(*g_mutex);
 	std::map<std::string, QuicktuneValue>::iterator i = g_values.find(name);
 	if(i == g_values.end()){
 		QuicktuneValue val;
@@ -79,7 +79,7 @@ QuicktuneValue getQuicktuneValue(const std::string &name)
 void setQuicktuneValue(const std::string &name, const QuicktuneValue &val)
 {
 	makeMutex();
-	JMutexAutoLock lock(*g_mutex);
+	MutexAutoLock lock(*g_mutex);
 	g_values[name] = val;
 	g_values[name].modified = true;
 }
@@ -87,7 +87,7 @@ void setQuicktuneValue(const std::string &name, const QuicktuneValue &val)
 void updateQuicktuneValue(const std::string &name, QuicktuneValue &val)
 {
 	makeMutex();
-	JMutexAutoLock lock(*g_mutex);
+	MutexAutoLock lock(*g_mutex);
 	std::map<std::string, QuicktuneValue>::iterator i = g_values.find(name);
 	if(i == g_values.end()){
 		g_values[name] = val;

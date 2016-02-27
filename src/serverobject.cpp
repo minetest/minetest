@@ -38,17 +38,21 @@ ServerActiveObject::~ServerActiveObject()
 {
 }
 
-ServerActiveObject* ServerActiveObject::create(u8 type,
+ServerActiveObject* ServerActiveObject::create(ActiveObjectType type,
 		ServerEnvironment *env, u16 id, v3f pos,
 		const std::string &data)
 {
 	// Find factory function
 	std::map<u16, Factory>::iterator n;
 	n = m_types.find(type);
-	if(n == m_types.end())
-	{
+	if(n == m_types.end()) {
+		// These are 0.3 entity types, return without error.
+		if (ACTIVEOBJECT_TYPE_ITEM <= type && type <= ACTIVEOBJECT_TYPE_MOBV2) {
+			return NULL;
+		}
+
 		// If factory is not found, just return.
-		dstream<<"WARNING: ServerActiveObject: No factory for type="
+		warningstream<<"ServerActiveObject: No factory for type="
 				<<type<<std::endl;
 		return NULL;
 	}
@@ -86,14 +90,9 @@ ItemStack ServerActiveObject::getWieldedItem() const
 
 bool ServerActiveObject::setWieldedItem(const ItemStack &item)
 {
-	Inventory *inv = getInventory();
-	if(inv)
-	{
-		InventoryList *list = inv->getList(getWieldList());
-		if (list)
-		{
+	if(Inventory *inv = getInventory()) {
+		if (InventoryList *list = inv->getList(getWieldList())) {
 			list->changeItem(getWieldIndex(), item);
-			setInventoryModified();
 			return true;
 		}
 	}

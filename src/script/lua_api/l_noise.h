@@ -29,10 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 class LuaPerlinNoise : public ModApiBase {
 private:
-	int seed;
-	int octaves;
-	float persistence;
-	float scale;
+	NoiseParams np;
 	static const char className[];
 	static const luaL_reg methods[];
 
@@ -45,16 +42,14 @@ private:
 	static int l_get3d(lua_State *L);
 
 public:
-	LuaPerlinNoise(int a_seed, int a_octaves, float a_persistence,
-			float a_scale);
-
+	LuaPerlinNoise(NoiseParams *params);
 	~LuaPerlinNoise();
 
 	// LuaPerlinNoise(seed, octaves, persistence, scale)
 	// Creates an LuaPerlinNoise and leaves it on top of stack
 	static int create_object(lua_State *L);
 
-	static LuaPerlinNoise* checkobject(lua_State *L, int narg);
+	static LuaPerlinNoise *checkobject(lua_State *L, int narg);
 
 	static void Register(lua_State *L);
 };
@@ -63,17 +58,25 @@ public:
 	LuaPerlinNoiseMap
 */
 class LuaPerlinNoiseMap : public ModApiBase {
-private:
+	NoiseParams np;
 	Noise *noise;
+	bool m_is3d;
 	static const char className[];
 	static const luaL_reg methods[];
 
+	// Exported functions
+
+	// garbage collector
 	static int gc_object(lua_State *L);
 
 	static int l_get2dMap(lua_State *L);
 	static int l_get2dMap_flat(lua_State *L);
 	static int l_get3dMap(lua_State *L);
 	static int l_get3dMap_flat(lua_State *L);
+
+	static int l_calc2dMap(lua_State *L);
+	static int l_calc3dMap(lua_State *L);
+	static int l_getMapSlice(lua_State *L);
 
 public:
 	LuaPerlinNoiseMap(NoiseParams *np, int seed, v3s16 size);
@@ -108,18 +111,84 @@ private:
 	static int l_next(lua_State *L);
 
 public:
-	LuaPseudoRandom(int seed);
-
-	~LuaPseudoRandom();
-
-	const PseudoRandom& getItem() const;
-	PseudoRandom& getItem();
+	LuaPseudoRandom(int seed) :
+		m_pseudo(seed) {}
 
 	// LuaPseudoRandom(seed)
 	// Creates an LuaPseudoRandom and leaves it on top of stack
 	static int create_object(lua_State *L);
 
-	static LuaPseudoRandom* checkobject(lua_State *L, int narg);
+	static LuaPseudoRandom *checkobject(lua_State *L, int narg);
+
+	static void Register(lua_State *L);
+};
+
+/*
+	LuaPcgRandom
+*/
+class LuaPcgRandom : public ModApiBase {
+private:
+	PcgRandom m_rnd;
+
+	static const char className[];
+	static const luaL_reg methods[];
+
+	// Exported functions
+
+	// garbage collector
+	static int gc_object(lua_State *L);
+
+	// next(self, min=-2147483648, max=2147483647) -> get next value
+	static int l_next(lua_State *L);
+
+	// rand_normal_dist(self, min=-2147483648, max=2147483647, num_trials=6) ->
+	// get next normally distributed random value
+	static int l_rand_normal_dist(lua_State *L);
+
+public:
+	LuaPcgRandom(u64 seed) :
+		m_rnd(seed) {}
+	LuaPcgRandom(u64 seed, u64 seq) :
+		m_rnd(seed, seq) {}
+
+	// LuaPcgRandom(seed)
+	// Creates an LuaPcgRandom and leaves it on top of stack
+	static int create_object(lua_State *L);
+
+	static LuaPcgRandom *checkobject(lua_State *L, int narg);
+
+	static void Register(lua_State *L);
+};
+
+
+/*
+	LuaSecureRandom
+*/
+class LuaSecureRandom : public ModApiBase {
+private:
+	static const size_t RAND_BUF_SIZE = 2048;
+	static const char className[];
+	static const luaL_reg methods[];
+
+	u32 m_rand_idx;
+	char m_rand_buf[RAND_BUF_SIZE];
+
+	// Exported functions
+
+	// garbage collector
+	static int gc_object(lua_State *L);
+
+	// next_bytes(self, count) -> get count many bytes
+	static int l_next_bytes(lua_State *L);
+
+public:
+	bool fillRandBuf();
+
+	// LuaSecureRandom()
+	// Creates an LuaSecureRandom and leaves it on top of stack
+	static int create_object(lua_State *L);
+
+	static LuaSecureRandom *checkobject(lua_State *L, int narg);
 
 	static void Register(lua_State *L);
 };

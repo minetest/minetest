@@ -63,7 +63,21 @@ inline u8 undiminish_light(u8 light)
 	return light + 1;
 }
 
-extern u8 light_decode_table[LIGHT_MAX+1];
+#ifndef SERVER
+
+/**
+ * \internal
+ *
+ * \warning DO NOT USE this directly; it is here simply so that decode_light()
+ * can be inlined.
+ *
+ * Array size is #LIGHTMAX+1
+ *
+ * The array is a lookup table to convert the internal representation of light
+ * (brightness) to the display brightness.
+ *
+ */
+extern const u8 *light_decode_table;
 
 // 0 <= light <= LIGHT_SUN
 // 0 <= return value <= 255
@@ -93,6 +107,10 @@ inline float decode_light_f(float light_f)
 	return f * v2 + (1.0 - f) * v1;
 }
 
+void set_light_table(float gamma);
+
+#endif // ifndef SERVER
+
 // 0 <= daylight_factor <= 1000
 // 0 <= lightday, lightnight <= LIGHT_SUN
 // 0 <= return value <= LIGHT_SUN
@@ -102,16 +120,6 @@ inline u8 blend_light(u32 daylight_factor, u8 lightday, u8 lightnight)
 	u32 l = ((daylight_factor * lightday + (c-daylight_factor) * lightnight))/c;
 	if(l > LIGHT_SUN)
 		l = LIGHT_SUN;
-	return l;
-}
-
-// 0.0 <= daylight_factor <= 1.0
-// 0 <= lightday, lightnight <= LIGHT_SUN
-// 0 <= return value <= 255
-inline u8 blend_light_f1(float daylight_factor, u8 lightday, u8 lightnight)
-{
-	u8 l = ((daylight_factor * decode_light(lightday) +
-			(1.0-daylight_factor) * decode_light(lightnight)));
 	return l;
 }
 

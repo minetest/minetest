@@ -2,15 +2,28 @@ language: cpp
 compiler:
   - gcc
   - clang
-before_install:
-  - if [ $CC = "clang" ]; then export PATH="/usr/bin/:$PATH"; sudo sh -c 'echo "deb http://ppa.launchpad.net/eudoxos/llvm-3.1/ubuntu precise main" >> /etc/apt/sources.list'; sudo apt-key adv --keyserver pool.sks-keyservers.net --recv-keys 92DE8183; sudo apt-get update; sudo apt-get install llvm-3.1; sudo apt-get install clang; fi
-  - sudo apt-get install libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg8-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev
-script:
-  - mkdir -p travisbuild
-  - cd travisbuild
-  - cmake ..
-  - make -j2
+os:
+  - osx
+  - linux
+env:
+  - PLATFORM=Win32
+  - PLATFORM=Win64
+  - PLATFORM=Unix
+before_install: ./util/travis/before_install.sh
+script: ./util/travis/script.sh
+sudo: required
 notifications:
   email: false
 matrix:
   fast_finish: true
+  exclude:
+    - env: PLATFORM=Win32
+      compiler: clang
+    - env: PLATFORM=Win64
+      compiler: clang
+    - env: PLATFORM=Win32
+      os: osx
+    - env: PLATFORM=Win64
+      os: osx
+    - compiler: gcc
+      os: osx

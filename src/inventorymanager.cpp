@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "scripting_game.h"
 #include "serverobject.h"
-#include "main.h"  // for g_settings
 #include "settings.h"
 #include "craftdef.h"
 #include "rollback_interface.h"
@@ -62,7 +61,7 @@ void InventoryLocation::serialize(std::ostream &os) const
 		os<<"detached:"<<name;
 		break;
 	default:
-		assert(0);
+		FATAL_ERROR("Unhandled inventory location type");
 	}
 }
 
@@ -122,16 +121,13 @@ InventoryAction * InventoryAction::deSerialize(std::istream &is)
 
 	InventoryAction *a = NULL;
 
-	if(type == "Move")
-	{
-		a = new IMoveAction(is);
-	}
-	else if(type == "Drop")
-	{
+	if (type == "Move") {
+		a = new IMoveAction(is, false);
+	} else if (type == "MoveSomewhere") {
+		a = new IMoveAction(is, true);
+	} else if (type == "Drop") {
 		a = new IDropAction(is);
-	}
-	else if(type == "Craft")
-	{
+	} else if(type == "Craft") {
 		a = new ICraftAction(is);
 	}
 
@@ -142,9 +138,12 @@ InventoryAction * InventoryAction::deSerialize(std::istream &is)
 	IMoveAction
 */
 
-IMoveAction::IMoveAction(std::istream &is)
+IMoveAction::IMoveAction(std::istream &is, bool somewhere)
 {
 	std::string ts;
+	move_somewhere = somewhere;
+	caused_by_move_somewhere = false;
+	move_count = 0;
 
 	std::getline(is, ts, ' ');
 	count = stoi(ts);
@@ -162,25 +161,27 @@ IMoveAction::IMoveAction(std::istream &is)
 
 	std::getline(is, to_list, ' ');
 
-	std::getline(is, ts, ' ');
-	to_i = stoi(ts);
+	if (!somewhere) {
+		std::getline(is, ts, ' ');
+		to_i = stoi(ts);
+	}
 }
 
 void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef)
 {
 	Inventory *inv_from = mgr->getInventory(from_inv);
 	Inventory *inv_to = mgr->getInventory(to_inv);
-	
-	if(!inv_from){
-		infostream<<"IMoveAction::apply(): FAIL: source inventory not found: "
-				<<"from_inv=\""<<from_inv.dump()<<"\""
-				<<", to_inv=\""<<to_inv.dump()<<"\""<<std::endl;
+
+	if (!inv_from) {
+		infostream << "IMoveAction::apply(): FAIL: source inventory not found: "
+			<< "from_inv=\""<<from_inv.dump() << "\""
+			<< ", to_inv=\"" << to_inv.dump() << "\"" << std::endl;
 		return;
 	}
-	if(!inv_to){
-		infostream<<"IMoveAction::apply(): FAIL: destination inventory not found: "
-				<<"from_inv=\""<<from_inv.dump()<<"\""
-				<<", to_inv=\""<<to_inv.dump()<<"\""<<std::endl;
+	if (!inv_to) {
+		infostream << "IMoveAction::apply(): FAIL: destination inventory not found: "
+			<< "from_inv=\"" << from_inv.dump() << "\""
+			<< ", to_inv=\"" << to_inv.dump() << "\"" << std::endl;
 		return;
 	}
 
@@ -190,19 +191,68 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	/*
 		If a list doesn't exist or the source item doesn't exist
 	*/
-	if(!list_from){
-		infostream<<"IMoveAction::apply(): FAIL: source list not found: "
-				<<"from_inv=\""<<from_inv.dump()<<"\""
-				<<", from_list=\""<<from_list<<"\""<<std::endl;
+	if (!list_from) {
+		infostream << "IMoveAction::apply(): FAIL: source list not found: "
+			<< "from_inv=\"" << from_inv.dump() << "\""
+			<< ", from_list=\"" << from_list << "\"" << std::endl;
 		return;
 	}
-	if(!list_to){
-		infostream<<"IMoveAction::apply(): FAIL: destination list not found: "
-				<<"to_inv=\""<<to_inv.dump()<<"\""
-				<<", to_list=\""<<to_list<<"\""<<std::endl;
+	if (!list_to) {
+		infostream << "IMoveAction::apply(): FAIL: destination list not found: "
+			<< "to_inv=\""<<to_inv.dump() << "\""
+			<< ", to_list=\"" << to_list << "\"" << std::endl;
 		return;
 	}
 
+	if (move_somewhere) {
+		s16 old_to_i = to_i;
+		u16 old_count = count;
+		caused_by_move_somewhere = true;
+		move_somewhere = false;
+
+		infostream << "IMoveAction::apply(): moving item somewhere"
+			<< " msom=" << move_somewhere
+			<< " count=" << count
+			<< " from inv=\"" << from_inv.dump() << "\""
+			<< " list=\"" << from_list << "\""
+			<< " i=" << from_i
+			<< " to inv=\"" << to_inv.dump() << "\""
+			<< " list=\"" << to_list << "\""
+			<< std::endl;
+
+		// Try to add the item to destination list
+		s16 dest_size = list_to->getSize();
+		// First try all the non-empty slots
+		for (s16 dest_i = 0; dest_i < dest_size && count > 0; dest_i++) {
+			if (!list_to->getItem(dest_i).empty()) {
+				to_i = dest_i;
+				apply(mgr, player, gamedef);
+				count -= move_count;
+			}
+		}
+
+		// Then try all the empty ones
+		for (s16 dest_i = 0; dest_i < dest_size && count > 0; dest_i++) {
+			if (list_to->getItem(dest_i).empty()) {
+				to_i = dest_i;
+				apply(mgr, player, gamedef);
+				count -= move_count;
+			}
+		}
+
+		to_i = old_to_i;
+		count = old_count;
+		caused_by_move_somewhere = false;
+		move_somewhere = true;
+		return;
+	}
+
+	if ((u16)to_i > list_to->getSize()) {
+		infostream << "IMoveAction::apply(): FAIL: destination index out of bounds: "
+			<< "to_i=" << to_i
+			<< ", size=" << list_to->getSize() << std::endl;
+		return;
+	}
 	/*
 		Do not handle rollback if both inventories are that of the same player
 	*/
@@ -221,7 +271,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 	int src_can_take_count = 0xffff;
 	int dst_can_put_count = 0xffff;
-	
+
 	/* Query detached inventories */
 
 	// Move occurs in the same detached inventory
@@ -288,7 +338,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	}
 
 	int old_count = count;
-	
+
 	/* Modify count according to collected data */
 	count = try_take_count;
 	if(src_can_take_count != -1 && count > src_can_take_count)
@@ -298,7 +348,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	/* Limit according to source item count */
 	if(count > list_from->getItem(from_i).count)
 		count = list_from->getItem(from_i).count;
-	
+
 	/* If no items will be moved, don't go further */
 	if(count == 0)
 	{
@@ -325,24 +375,33 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		If something is wrong (source item is empty, destination is the
 		same as source), nothing happens
 	*/
-	list_from->moveItem(from_i, list_to, to_i, count);
+	bool did_swap = false;
+	move_count = list_from->moveItem(from_i,
+		list_to, to_i, count, !caused_by_move_somewhere, &did_swap);
 
 	// If source is infinite, reset it's stack
-	if(src_can_take_count == -1){
-		// If destination stack is of different type and there are leftover
-		// items, attempt to put the leftover items to a different place in the
-		// destination inventory.
-		// The client-side GUI will try to guess if this happens.
-		if(from_stack_was.name != to_stack_was.name){
-			for(u32 i=0; i<list_to->getSize(); i++){
-				if(list_to->getItem(i).empty()){
-					list_to->changeItem(i, to_stack_was);
-					break;
+	if (src_can_take_count == -1) {
+		// For the caused_by_move_somewhere == true case we didn't force-put the item,
+		// which guarantees there is no leftover, and code below would duplicate the
+		// (not replaced) to_stack_was item.
+		if (!caused_by_move_somewhere) {
+			// If destination stack is of different type and there are leftover
+			// items, attempt to put the leftover items to a different place in the
+			// destination inventory.
+			// The client-side GUI will try to guess if this happens.
+			if (from_stack_was.name != to_stack_was.name) {
+				for (u32 i = 0; i < list_to->getSize(); i++) {
+					if (list_to->getItem(i).empty()) {
+						list_to->changeItem(i, to_stack_was);
+						break;
+					}
 				}
 			}
 		}
-		list_from->deleteItem(from_i);
-		list_from->addItem(from_i, from_stack_was);
+		if (move_count > 0 || did_swap) {
+			list_from->deleteItem(from_i);
+			list_from->addItem(from_i, from_stack_was);
+		}
 	}
 	// If destination is infinite, reset it's stack and take count from source
 	if(dst_can_put_count == -1){
@@ -353,22 +412,31 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		list_from->takeItem(from_i, count);
 	}
 
-	infostream<<"IMoveAction::apply(): moved"
-			<<" count="<<count
-			<<" from inv=\""<<from_inv.dump()<<"\""
-			<<" list=\""<<from_list<<"\""
-			<<" i="<<from_i
-			<<" to inv=\""<<to_inv.dump()<<"\""
-			<<" list=\""<<to_list<<"\""
-			<<" i="<<to_i
-			<<std::endl;
+	infostream << "IMoveAction::apply(): moved"
+			<< " msom=" << move_somewhere
+			<< " caused=" << caused_by_move_somewhere
+			<< " count=" << count
+			<< " from inv=\"" << from_inv.dump() << "\""
+			<< " list=\"" << from_list << "\""
+			<< " i=" << from_i
+			<< " to inv=\"" << to_inv.dump() << "\""
+			<< " list=\"" << to_list << "\""
+			<< " i=" << to_i
+			<< std::endl;
+
+	// If we are inside the move somewhere loop, we don't need to report
+	// anything if nothing happened (perhaps we don't need to report
+	// anything for caused_by_move_somewhere == true, but this way its safer)
+	if (caused_by_move_somewhere && move_count == 0) {
+		return;
+	}
 
 	/*
 		Record rollback information
 	*/
 	if(!ignore_rollback && gamedef->rollback())
 	{
-		IRollbackReportSink *rollback = gamedef->rollback();
+		IRollbackManager *rollback = gamedef->rollback();
 
 		// If source is not infinite, record item take
 		if(src_can_take_count != -1){
@@ -380,7 +448,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 				loc = os.str();
 			}
 			action.setModifyInventoryStack(loc, from_list, from_i, false,
-					src_item.getItemString());
+					src_item);
 			rollback->reportAction(action);
 		}
 		// If destination is not infinite, record item put
@@ -393,7 +461,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 				loc = os.str();
 			}
 			action.setModifyInventoryStack(loc, to_list, to_i, true,
-					src_item.getItemString());
+					src_item);
 			rollback->reportAction(action);
 		}
 	}
@@ -401,7 +469,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	/*
 		Report move to endpoints
 	*/
-	
+
 	/* Detached inventories */
 
 	// Both endpoints are same detached
@@ -454,10 +522,10 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 					from_inv.p, from_list, from_i, src_item, player);
 		}
 	}
-	
-	mgr->setInventoryModified(from_inv);
+
+	mgr->setInventoryModified(from_inv, false);
 	if(inv_from != inv_to)
-		mgr->setInventoryModified(to_inv);
+		mgr->setInventoryModified(to_inv, false);
 }
 
 void IMoveAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
@@ -481,7 +549,10 @@ void IMoveAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
 	if(!list_from || !list_to)
 		return;
 
-	list_from->moveItem(from_i, list_to, to_i, count);
+	if (!move_somewhere)
+		list_from->moveItem(from_i, list_to, to_i, count);
+	else
+		list_from->moveItemSomewhere(from_i, list_to, count);
 
 	mgr->setInventoryModified(from_inv);
 	if(inv_from != inv_to)
@@ -511,7 +582,7 @@ IDropAction::IDropAction(std::istream &is)
 void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef)
 {
 	Inventory *inv_from = mgr->getInventory(from_inv);
-	
+
 	if(!inv_from){
 		infostream<<"IDropAction::apply(): FAIL: source inventory not found: "
 				<<"from_inv=\""<<from_inv.dump()<<"\""<<std::endl;
@@ -571,7 +642,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 
 	if(src_can_take_count != -1 && src_can_take_count < take_count)
 		take_count = src_can_take_count;
-	
+
 	int actually_dropped_count = 0;
 
 	ItemStack src_item = list_from->getItem(from_i);
@@ -588,7 +659,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			infostream<<"Actually dropped no items"<<std::endl;
 			return;
 		}
-		
+
 		// If source isn't infinite
 		if(src_can_take_count != -1){
 			// Take item from source list
@@ -597,7 +668,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			if(item2.count != actually_dropped_count)
 				errorstream<<"Could not take dropped count of items"<<std::endl;
 
-			mgr->setInventoryModified(from_inv);
+			mgr->setInventoryModified(from_inv, false);
 		}
 	}
 
@@ -606,13 +677,13 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			<<" list=\""<<from_list<<"\""
 			<<" i="<<from_i
 			<<std::endl;
-	
+
 	src_item.count = actually_dropped_count;
 
 	/*
 		Report drop to endpoints
 	*/
-	
+
 	// Source is detached
 	if(from_inv.type == InventoryLocation::DETACHED)
 	{
@@ -632,7 +703,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	*/
 	if(!ignore_src_rollback && gamedef->rollback())
 	{
-		IRollbackReportSink *rollback = gamedef->rollback();
+		IRollbackManager *rollback = gamedef->rollback();
 
 		// If source is not infinite, record item take
 		if(src_can_take_count != -1){
@@ -644,7 +715,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 				loc = os.str();
 			}
 			action.setModifyInventoryStack(loc, from_list, from_i,
-					false, src_item.getItemString());
+					false, src_item);
 			rollback->reportAction(action);
 		}
 	}
@@ -692,70 +763,110 @@ ICraftAction::ICraftAction(std::istream &is)
 	craft_inv.deSerialize(ts);
 }
 
-void ICraftAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGameDef *gamedef)
+void ICraftAction::apply(InventoryManager *mgr,
+	ServerActiveObject *player, IGameDef *gamedef)
 {
 	Inventory *inv_craft = mgr->getInventory(craft_inv);
-	
-	if(!inv_craft){
-		infostream<<"ICraftAction::apply(): FAIL: inventory not found: "
-				<<"craft_inv=\""<<craft_inv.dump()<<"\""<<std::endl;
+
+	if (!inv_craft) {
+		infostream << "ICraftAction::apply(): FAIL: inventory not found: "
+				<< "craft_inv=\"" << craft_inv.dump() << "\"" << std::endl;
 		return;
 	}
 
 	InventoryList *list_craft = inv_craft->getList("craft");
 	InventoryList *list_craftresult = inv_craft->getList("craftresult");
+	InventoryList *list_main = inv_craft->getList("main");
 
 	/*
 		If a list doesn't exist or the source item doesn't exist
 	*/
-	if(!list_craft){
-		infostream<<"ICraftAction::apply(): FAIL: craft list not found: "
-				<<"craft_inv=\""<<craft_inv.dump()<<"\""<<std::endl;
+	if (!list_craft) {
+		infostream << "ICraftAction::apply(): FAIL: craft list not found: "
+				<< "craft_inv=\"" << craft_inv.dump() << "\"" << std::endl;
 		return;
 	}
-	if(!list_craftresult){
-		infostream<<"ICraftAction::apply(): FAIL: craftresult list not found: "
-				<<"craft_inv=\""<<craft_inv.dump()<<"\""<<std::endl;
+	if (!list_craftresult) {
+		infostream << "ICraftAction::apply(): FAIL: craftresult list not found: "
+				<< "craft_inv=\"" << craft_inv.dump() << "\"" << std::endl;
 		return;
 	}
-	if(list_craftresult->getSize() < 1){
-		infostream<<"ICraftAction::apply(): FAIL: craftresult list too short: "
-				<<"craft_inv=\""<<craft_inv.dump()<<"\""<<std::endl;
+	if (list_craftresult->getSize() < 1) {
+		infostream << "ICraftAction::apply(): FAIL: craftresult list too short: "
+				<< "craft_inv=\"" << craft_inv.dump() << "\"" << std::endl;
 		return;
 	}
 
 	ItemStack crafted;
 	ItemStack craftresultitem;
 	int count_remaining = count;
-	bool found = getCraftingResult(inv_craft, crafted, false, gamedef);
+	std::vector<ItemStack> output_replacements;
+	getCraftingResult(inv_craft, crafted, output_replacements, false, gamedef);
 	PLAYER_TO_SA(player)->item_CraftPredict(crafted, player, list_craft, craft_inv);
-	found = !crafted.empty();
+	bool found = !crafted.empty();
 
-	while(found && list_craftresult->itemFits(0, crafted))
-	{
+	while (found && list_craftresult->itemFits(0, crafted)) {
 		InventoryList saved_craft_list = *list_craft;
-		
+
+		std::vector<ItemStack> temp;
 		// Decrement input and add crafting output
-		getCraftingResult(inv_craft, crafted, true, gamedef);
+		getCraftingResult(inv_craft, crafted, temp, true, gamedef);
 		PLAYER_TO_SA(player)->item_OnCraft(crafted, player, &saved_craft_list, craft_inv);
 		list_craftresult->addItem(0, crafted);
 		mgr->setInventoryModified(craft_inv);
 
-		actionstream<<player->getDescription()
-				<<" crafts "
-				<<crafted.getItemString()
-				<<std::endl;
+		// Add the new replacements to the list
+		IItemDefManager *itemdef = gamedef->getItemDefManager();
+		for (std::vector<ItemStack>::iterator it = temp.begin();
+				it != temp.end(); ++it) {
+			for (std::vector<ItemStack>::iterator jt = output_replacements.begin();
+					jt != output_replacements.end(); ++jt) {
+				if (it->name == jt->name) {
+					*it = jt->addItem(*it, itemdef);
+					if (it->empty())
+						continue;
+				}
+			}
+			output_replacements.push_back(*it);
+		}
+
+		actionstream << player->getDescription()
+				<< " crafts "
+				<< crafted.getItemString()
+				<< std::endl;
 
 		// Decrement counter
-		if(count_remaining == 1)
+		if (count_remaining == 1)
 			break;
-		else if(count_remaining > 1)
+		else if (count_remaining > 1)
 			count_remaining--;
 
 		// Get next crafting result
-		found = getCraftingResult(inv_craft, crafted, false, gamedef);
+		found = getCraftingResult(inv_craft, crafted, temp, false, gamedef);
 		PLAYER_TO_SA(player)->item_CraftPredict(crafted, player, list_craft, craft_inv);
 		found = !crafted.empty();
+	}
+
+	// Put the replacements in the inventory or drop them on the floor, if
+	// the invenotry is full
+	for (std::vector<ItemStack>::iterator it = output_replacements.begin();
+			it != output_replacements.end(); ++it) {
+		if (list_main)
+			*it = list_main->addItem(*it);
+		if (it->empty())
+			continue;
+		u16 count = it->count;
+		do {
+			PLAYER_TO_SA(player)->item_OnDrop(*it, player,
+				player->getBasePosition() + v3f(0,1,0));
+			if (count >= it->count) {
+				errorstream << "Couldn't drop replacement stack " <<
+					it->getItemString() << " because drop loop didn't "
+					"decrease count." << std::endl;
+
+				break;
+			}
+		} while (!it->empty());
 	}
 
 	infostream<<"ICraftAction::apply(): crafted "
@@ -772,10 +883,11 @@ void ICraftAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
 
 // Crafting helper
 bool getCraftingResult(Inventory *inv, ItemStack& result,
+		std::vector<ItemStack> &output_replacements,
 		bool decrementInput, IGameDef *gamedef)
 {
-	DSTACK(__FUNCTION_NAME);
-	
+	DSTACK(FUNCTION_NAME);
+
 	result.clear();
 
 	// Get the InventoryList in which we will operate
@@ -793,7 +905,7 @@ bool getCraftingResult(Inventory *inv, ItemStack& result,
 	// Find out what is crafted and add it to result item slot
 	CraftOutput co;
 	bool found = gamedef->getCraftDefManager()->getCraftResult(
-			ci, co, decrementInput, gamedef);
+			ci, co, output_replacements, decrementInput, gamedef);
 	if(found)
 		result.deSerialize(co.item, gamedef->getItemDefManager());
 

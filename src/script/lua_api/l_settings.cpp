@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_settings.h"
 #include "lua_api/l_internal.h"
+#include "cpp_api/s_security.h"
 #include "settings.h"
 #include "log.h"
 
@@ -73,9 +74,10 @@ int LuaSettings::l_set(lua_State* L)
 	std::string key = std::string(luaL_checkstring(L, 2));
 	const char* value = luaL_checkstring(L, 3);
 
-	o->m_settings->set(key, value);
+	if (!o->m_settings->set(key, value))
+		throw LuaError("Invalid sequence found in setting parameters");
 
-	return 1;
+	return 0;
 }
 
 // remove(self, key) -> success
@@ -187,6 +189,7 @@ int LuaSettings::create_object(lua_State* L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char* filename = luaL_checkstring(L, 1);
+	CHECK_SECURE_PATH_OPTIONAL(L, filename);
 	LuaSettings* o = new LuaSettings(filename);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);

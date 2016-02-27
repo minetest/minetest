@@ -3,17 +3,17 @@
 #include "ISceneManager.h"
 #include "ICameraSceneNode.h"
 #include "S3DVertex.h"
-#include "tile.h" // getTexturePath
-#include "noise.h" // easeCurve
-#include "main.h" // g_profiler
+#include "client/tile.h"
+#include "noise.h"            // easeCurve
 #include "profiler.h"
-#include "util/numeric.h" // MYMIN
+#include "util/numeric.h"
 #include <cmath>
 #include "settings.h"
-#include "camera.h" // CameraModes
+#include "camera.h"           // CameraModes
 
 //! constructor
-Sky::Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id):
+Sky::Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id,
+		ITextureSource *tsrc):
 		scene::ISceneNode(parent, mgr, id),
 		m_visible(true),
 		m_fallback_bg_color(255,255,255,255),
@@ -25,8 +25,8 @@ Sky::Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id):
 		m_cloudcolor_bright_f(1,1,1,1)
 {
 	setAutomaticCulling(scene::EAC_OFF);
-	Box.MaxEdge.set(0,0,0);
-	Box.MinEdge.set(0,0,0);
+	m_box.MaxEdge.set(0,0,0);
+	m_box.MinEdge.set(0,0,0);
 
 	// create material
 
@@ -46,19 +46,18 @@ Sky::Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id):
 	m_materials[1].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 
 	m_materials[2] = mat;
-	m_materials[2].setTexture(0, mgr->getVideoDriver()->getTexture(
-			getTexturePath("sunrisebg.png").c_str()));
+	m_materials[2].setTexture(0, tsrc->getTextureForMesh("sunrisebg.png"));
 	m_materials[2].MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 	//m_materials[2].MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
 
-	m_sun_texture = mgr->getVideoDriver()->getTexture(
-			getTexturePath("sun.png").c_str());
-	m_moon_texture = mgr->getVideoDriver()->getTexture(
-			getTexturePath("moon.png").c_str());
-	m_sun_tonemap = mgr->getVideoDriver()->getTexture(
-			getTexturePath("sun_tonemap.png").c_str());
-	m_moon_tonemap = mgr->getVideoDriver()->getTexture(
-			getTexturePath("moon_tonemap.png").c_str());
+	m_sun_texture = tsrc->isKnownSourceImage("sun.png") ?
+		tsrc->getTextureForMesh("sun.png") : NULL;
+	m_moon_texture = tsrc->isKnownSourceImage("moon.png") ?
+		tsrc->getTextureForMesh("moon.png") : NULL;
+	m_sun_tonemap = tsrc->isKnownSourceImage("sun_tonemap.png") ?
+		tsrc->getTexture("sun_tonemap.png") : NULL;
+	m_moon_tonemap = tsrc->isKnownSourceImage("moon_tonemap.png") ?
+		tsrc->getTexture("moon_tonemap.png") : NULL;
 
 	if (m_sun_texture){
 		m_materials[3] = mat;
@@ -93,11 +92,6 @@ void Sky::OnRegisterSceneNode()
 		SceneManager->registerNodeForRendering(this, scene::ESNRP_SKY_BOX);
 
 	scene::ISceneNode::OnRegisterSceneNode();
-}
-
-const core::aabbox3d<f32>& Sky::getBoundingBox() const
-{
-	return Box;
 }
 
 //! renders the node.
@@ -573,6 +567,20 @@ void Sky::update(float time_of_day, float time_brightness,
 		m_clouds_visible = false;
 	}
 
+	video::SColor bgcolor_bright = m_bgcolor_bright_f.toSColor();
+	m_bgcolor = video::SColor(
+		255,
+		bgcolor_bright.getRed() * m_brightness,
+		bgcolor_bright.getGreen() * m_brightness,
+		bgcolor_bright.getBlue() * m_brightness);
+
+	video::SColor skycolor_bright = m_skycolor_bright_f.toSColor();
+	m_skycolor = video::SColor(
+		255,
+		skycolor_bright.getRed() * m_brightness,
+		skycolor_bright.getGreen() * m_brightness,
+		skycolor_bright.getBlue() * m_brightness);
+
 	// Horizon coloring based on sun and moon direction during sunset and sunrise
 	video::SColor pointcolor = video::SColor(255, 255, 255, m_bgcolor.getAlpha());
 	if (m_directional_colored_fog) {
@@ -593,38 +601,37 @@ void Sky::update(float time_of_day, float time_brightness,
 			// invert direction to match where the sun and moon are rising
 			if (m_time_of_day > 0.5)
 				pointcolor_blend = 1 - pointcolor_blend;
-
 			// horizon colors of sun and moon
 			f32 pointcolor_light = rangelim(m_time_brightness * 3, 0.2, 1);
+
 			video::SColorf pointcolor_sun_f(1, 1, 1, 1);
-			pointcolor_sun_f.r = pointcolor_light * 1;
-			pointcolor_sun_f.b = pointcolor_light * (0.25 + (rangelim(m_time_brightness, 0.25, 0.75) - 0.25) * 2 * 0.75);
-			pointcolor_sun_f.g = pointcolor_light * (pointcolor_sun_f.b * 0.375 + (rangelim(m_time_brightness, 0.05, 0.15) - 0.05) * 10 * 0.625);
+			if (m_sun_tonemap)
+			{
+				pointcolor_sun_f.r = pointcolor_light * (float)m_materials[3].EmissiveColor.getRed() / 255;
+				pointcolor_sun_f.b = pointcolor_light * (float)m_materials[3].EmissiveColor.getBlue() / 255;
+				pointcolor_sun_f.g = pointcolor_light * (float)m_materials[3].EmissiveColor.getGreen() / 255;
+			}
+			else
+			{
+				pointcolor_sun_f.r = pointcolor_light * 1;
+				pointcolor_sun_f.b = pointcolor_light * (0.25 + (rangelim(m_time_brightness, 0.25, 0.75) - 0.25) * 2 * 0.75);
+				pointcolor_sun_f.g = pointcolor_light * (pointcolor_sun_f.b * 0.375 + (rangelim(m_time_brightness, 0.05, 0.15) - 0.05) * 10 * 0.625);
+			}
+
 			video::SColorf pointcolor_moon_f(0.5 * pointcolor_light, 0.6 * pointcolor_light, 0.8 * pointcolor_light, 1);
+			if (m_moon_tonemap)
+			{
+				pointcolor_moon_f.r = pointcolor_light * (float)m_materials[4].EmissiveColor.getRed() / 255;
+				pointcolor_moon_f.b = pointcolor_light * (float)m_materials[4].EmissiveColor.getBlue() / 255;
+				pointcolor_moon_f.g = pointcolor_light * (float)m_materials[4].EmissiveColor.getGreen() / 255;
+			}
+
 			video::SColor pointcolor_sun = pointcolor_sun_f.toSColor();
 			video::SColor pointcolor_moon = pointcolor_moon_f.toSColor();
 			// calculate the blend color
 			pointcolor = m_mix_scolor(pointcolor_moon, pointcolor_sun, pointcolor_blend);
 		}
-	}
-
-	video::SColor bgcolor_bright = m_bgcolor_bright_f.toSColor();
-	m_bgcolor = video::SColor(
-		255,
-		bgcolor_bright.getRed() * m_brightness,
-		bgcolor_bright.getGreen() * m_brightness,
-		bgcolor_bright.getBlue() * m_brightness);
-	if (m_directional_colored_fog) {
 		m_bgcolor = m_mix_scolor(m_bgcolor, pointcolor, m_horizon_blend() * 0.5);
-	}
-
-	video::SColor skycolor_bright = m_skycolor_bright_f.toSColor();
-	m_skycolor = video::SColor(
-		255,
-		skycolor_bright.getRed() * m_brightness,
-		skycolor_bright.getGreen() * m_brightness,
-		skycolor_bright.getBlue() * m_brightness);
-	if (m_directional_colored_fog) {
 		m_skycolor = m_mix_scolor(m_skycolor, pointcolor, m_horizon_blend() * 0.25);
 	}
 

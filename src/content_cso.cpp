@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "content_cso.h"
 #include <IBillboardSceneNode.h>
-#include "tile.h"
+#include "client/tile.h"
 #include "environment.h"
 #include "gamedef.h"
 #include "log.h"
@@ -50,7 +50,7 @@ public:
 		m_spritenode = smgr->addBillboardSceneNode(
 				NULL, v2f(1,1), pos, -1);
 		m_spritenode->setMaterialTexture(0,
-				env->getGameDef()->tsrc()->getTexture("smoke_puff.png"));
+				env->getGameDef()->tsrc()->getTextureForMesh("smoke_puff.png"));
 		m_spritenode->setMaterialFlag(video::EMF_LIGHTING, false);
 		m_spritenode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
 		//m_spritenode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
@@ -60,13 +60,12 @@ public:
 		m_spritenode->setVisible(true);
 		m_spritenode->setSize(size);
 		/* Update brightness */
-		u8 light = 64;
-		try{
-			MapNode n = env->getMap().getNode(floatToInt(pos, BS));
-			light = decode_light(n.getLightBlend(env->getDayNightRatio(),
-					env->getGameDef()->ndef()));
-		}
-		catch(InvalidPositionException &e){}
+		u8 light;
+		bool pos_ok;
+		MapNode n = env->getMap().getNodeNoEx(floatToInt(pos, BS), &pos_ok);
+		light = pos_ok ? decode_light(n.getLightBlend(env->getDayNightRatio(),
+							env->getGameDef()->ndef()))
+		               : 64;
 		video::SColor color(255,light,light,light);
 		m_spritenode->setColor(color);
 	}

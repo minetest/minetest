@@ -30,13 +30,13 @@
 #include <string>
 #include <vector>
 
-typedef struct {
+struct key_setting {
 	int id;
-	wchar_t *button_name;
+	const wchar_t *button_name;
 	KeyPress key;
 	std::string setting_name;
 	gui::IGUIButton *button;
-} key_setting;
+};
 
 
 class GUIKeyChangeMenu: public GUIModalMenu
@@ -64,7 +64,7 @@ private:
 
 	bool resetMenu();
 
-	void add_key(int id, wchar_t* button_name, std::string setting_name);
+	void add_key(int id, const wchar_t *button_name, const std::string &setting_name);
 
 	bool shift_down;
 	

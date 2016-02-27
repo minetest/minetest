@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "nodedef.h"
 #include "nameidmapping.h"
-#include <map>
+#include "util/string.h"
 
 /*
 	Legacy node content type IDs
@@ -165,85 +165,5 @@ void content_mapnode_get_name_id_mapping(NameIdMapping *nimap)
 	// Static types
 	nimap->set(CONTENT_IGNORE, "ignore");
 	nimap->set(CONTENT_AIR, "air");
-}
-
-class NewNameGetter
-{
-public:
-	NewNameGetter()
-	{
-		old_to_new["CONTENT_STONE"] = "default:stone";
-		old_to_new["CONTENT_WATER"] = "default:water_flowing";
-		old_to_new["CONTENT_TORCH"] = "default:torch";
-		old_to_new["CONTENT_WATERSOURCE"] = "default:water_source";
-		old_to_new["CONTENT_SIGN_WALL"] = "default:sign_wall";
-		old_to_new["CONTENT_CHEST"] = "default:chest";
-		old_to_new["CONTENT_FURNACE"] = "default:furnace";
-		old_to_new["CONTENT_LOCKABLE_CHEST"] = "default:locked_chest";
-		old_to_new["CONTENT_FENCE"] = "default:wooden_fence";
-		old_to_new["CONTENT_RAIL"] = "default:rail";
-		old_to_new["CONTENT_LADDER"] = "default:ladder";
-		old_to_new["CONTENT_LAVA"] = "default:lava_flowing";
-		old_to_new["CONTENT_LAVASOURCE"] = "default:lava_source";
-		old_to_new["CONTENT_GRASS"] = "default:dirt_with_grass";
-		old_to_new["CONTENT_TREE"] = "default:tree";
-		old_to_new["CONTENT_LEAVES"] = "default:leaves";
-		old_to_new["CONTENT_GRASS_FOOTSTEPS"] = "default:dirt_with_grass_footsteps";
-		old_to_new["CONTENT_MESE"] = "default:mese";
-		old_to_new["CONTENT_MUD"] = "default:dirt";
-		old_to_new["CONTENT_CLOUD"] = "default:cloud";
-		old_to_new["CONTENT_COALSTONE"] = "default:coalstone";
-		old_to_new["CONTENT_WOOD"] = "default:wood";
-		old_to_new["CONTENT_SAND"] = "default:sand";
-		old_to_new["CONTENT_COBBLE"] = "default:cobble";
-		old_to_new["CONTENT_STEEL"] = "default:steel";
-		old_to_new["CONTENT_GLASS"] = "default:glass";
-		old_to_new["CONTENT_MOSSYCOBBLE"] = "default:mossycobble";
-		old_to_new["CONTENT_GRAVEL"] = "default:gravel";
-		old_to_new["CONTENT_SANDSTONE"] = "default:sandstone";
-		old_to_new["CONTENT_CACTUS"] = "default:cactus";
-		old_to_new["CONTENT_BRICK"] = "default:brick";
-		old_to_new["CONTENT_CLAY"] = "default:clay";
-		old_to_new["CONTENT_PAPYRUS"] = "default:papyrus";
-		old_to_new["CONTENT_BOOKSHELF"] = "default:bookshelf";
-		old_to_new["CONTENT_JUNGLETREE"] = "default:jungletree";
-		old_to_new["CONTENT_JUNGLEGRASS"] = "default:junglegrass";
-		old_to_new["CONTENT_NC"] = "default:nyancat";
-		old_to_new["CONTENT_NC_RB"] = "default:nyancat_rainbow";
-		old_to_new["CONTENT_APPLE"] = "default:apple";
-		old_to_new["CONTENT_SAPLING"] = "default:sapling";
-		// Just in case
-		old_to_new["CONTENT_IGNORE"] = "ignore";
-		old_to_new["CONTENT_AIR"] = "air";
-	}
-	std::string get(const std::string &old)
-	{
-		std::map<std::string, std::string>::const_iterator i;
-		i = old_to_new.find(old);
-		if(i == old_to_new.end())
-			return "";
-		return i->second;
-	}
-private:
-	std::map<std::string, std::string> old_to_new;
-};
-
-NewNameGetter newnamegetter;
-
-std::string content_mapnode_get_new_name(const std::string &oldname)
-{
-	return newnamegetter.get(oldname);
-}
-
-content_t legacy_get_id(const std::string &oldname, INodeDefManager *ndef)
-{
-	std::string newname = content_mapnode_get_new_name(oldname);
-	if(newname == "")
-		return CONTENT_IGNORE;
-	content_t id;
-	bool found = ndef->getId(newname, id);
-	if(!found)
-		return CONTENT_IGNORE;
-	return id;
 }
 

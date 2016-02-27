@@ -17,16 +17,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <cctype>
+#include <fstream>
 #include "mods.h"
-#include "main.h"
 #include "filesys.h"
 #include "strfnd.h"
 #include "log.h"
 #include "subgame.h"
 #include "settings.h"
 #include "strfnd.h"
-#include <cctype>
 #include "convert_json.h"
+#include "exceptions.h"
 
 static bool parseDependsLine(std::istream &is,
 		std::string &dep, std::set<char> &symbols)
@@ -47,6 +48,11 @@ static bool parseDependsLine(std::istream &is,
 void parseModContents(ModSpec &spec)
 {
 	// NOTE: this function works in mutual recursion with getModsInPath
+	Settings info;
+	info.readConfigFile((spec.path+DIR_DELIM+"mod.conf").c_str());
+
+	if (info.exists("name"))
+		spec.name = info.get("name");
 
 	spec.depends.clear();
 	spec.optdepends.clear();
@@ -240,7 +246,7 @@ void ModConfiguration::addMods(std::vector<ModSpec> new_mods)
 		for(std::vector<ModSpec>::const_iterator it = new_mods.begin();
 				it != new_mods.end(); ++it){
 			const ModSpec &mod = *it;
-			if(mod.part_of_modpack != want_from_modpack)
+			if(mod.part_of_modpack != (bool)want_from_modpack)
 				continue;
 			if(existing_mods.count(mod.name) == 0){
 				// GOOD CASE: completely new mod.
@@ -251,7 +257,7 @@ void ModConfiguration::addMods(std::vector<ModSpec> new_mods)
 				// BAD CASE: name conflict in different levels.
 				u32 oldindex = existing_mods[mod.name];
 				const ModSpec &oldmod = m_unsatisfied_mods[oldindex];
-				actionstream<<"WARNING: Mod name conflict detected: \""
+				warningstream<<"Mod name conflict detected: \""
 					<<mod.name<<"\""<<std::endl
 					<<"Will not load: "<<oldmod.path<<std::endl
 					<<"Overridden by: "<<mod.path<<std::endl;
@@ -265,7 +271,7 @@ void ModConfiguration::addMods(std::vector<ModSpec> new_mods)
 				// VERY BAD CASE: name conflict in the same level.
 				u32 oldindex = existing_mods[mod.name];
 				const ModSpec &oldmod = m_unsatisfied_mods[oldindex];
-				errorstream<<"WARNING: Mod name conflict detected: \""
+				warningstream<<"Mod name conflict detected: \""
 					<<mod.name<<"\""<<std::endl
 					<<"Will not load: "<<oldmod.path<<std::endl
 					<<"Will not load: "<<mod.path<<std::endl;

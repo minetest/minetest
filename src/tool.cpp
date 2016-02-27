@@ -35,7 +35,7 @@ void ToolCapabilities::serialize(std::ostream &os, u16 protocol_version) const
 	writeS16(os, max_drop_level);
 	writeU32(os, groupcaps.size());
 	for(std::map<std::string, ToolGroupCap>::const_iterator
-			i = groupcaps.begin(); i != groupcaps.end(); i++){
+			i = groupcaps.begin(); i != groupcaps.end(); ++i){
 		const std::string *name = &i->first;
 		const ToolGroupCap *cap = &i->second;
 		os<<serializeString(*name);
@@ -43,7 +43,7 @@ void ToolCapabilities::serialize(std::ostream &os, u16 protocol_version) const
 		writeS16(os, cap->maxlevel);
 		writeU32(os, cap->times.size());
 		for(std::map<int, float>::const_iterator
-				i = cap->times.begin(); i != cap->times.end(); i++){
+				i = cap->times.begin(); i != cap->times.end(); ++i){
 			writeS16(os, i->first);
 			writeF1000(os, i->second);
 		}
@@ -51,7 +51,7 @@ void ToolCapabilities::serialize(std::ostream &os, u16 protocol_version) const
 	if(protocol_version > 17){
 		writeU32(os, damageGroups.size());
 		for(std::map<std::string, s16>::const_iterator
-				i = damageGroups.begin(); i != damageGroups.end(); i++){
+				i = damageGroups.begin(); i != damageGroups.end(); ++i){
 			os<<serializeString(i->first);
 			writeS16(os, i->second);
 		}
@@ -116,7 +116,7 @@ DigParams getDigParams(const ItemGroupList &groups,
 	int level = itemgroup_get(groups, "level");
 	//infostream<<"level="<<level<<std::endl;
 	for(std::map<std::string, ToolGroupCap>::const_iterator
-			i = tp->groupcaps.begin(); i != tp->groupcaps.end(); i++){
+			i = tp->groupcaps.begin(); i != tp->groupcaps.end(); ++i){
 		const std::string &name = i->first;
 		//infostream<<"group="<<name<<std::endl;
 		const ToolGroupCap &cap = i->second;
@@ -164,7 +164,7 @@ HitParams getHitParams(const ItemGroupList &armor_groups,
 	float full_punch_interval = tp->full_punch_interval;
 
 	for(std::map<std::string, s16>::const_iterator
-			i = tp->damageGroups.begin(); i != tp->damageGroups.end(); i++){
+			i = tp->damageGroups.begin(); i != tp->damageGroups.end(); ++i){
 		s16 armor = itemgroup_get(armor_groups, i->first);
 		damage += i->second * rangelim(time_from_last_punch / full_punch_interval, 0.0, 1.0)
 				* armor / 100.0;

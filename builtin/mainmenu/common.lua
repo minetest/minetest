@@ -16,12 +16,68 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 --------------------------------------------------------------------------------
 -- Global menu data
----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 menudata = {}
+
+--------------------------------------------------------------------------------
+-- Local cached values
+--------------------------------------------------------------------------------
+local min_supp_proto = core.get_min_supp_proto()
+local max_supp_proto = core.get_max_supp_proto()
 
 --------------------------------------------------------------------------------
 -- Menu helper functions
 --------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+local function render_client_count(n)
+	if n > 99 then
+		return '99+'
+	elseif n >= 0 then
+		return tostring(n)
+	else
+		return '?'
+	end
+end
+
+local function configure_selected_world_params(idx)
+	local worldconfig = modmgr.get_worldconfig(
+		menudata.worldlist:get_list()[idx].path)
+
+	if worldconfig.creative_mode ~= nil then
+		core.setting_set("creative_mode", worldconfig.creative_mode)
+	end
+	if worldconfig.enable_damage ~= nil then
+		core.setting_set("enable_damage", worldconfig.enable_damage)
+	end
+end
+
+--------------------------------------------------------------------------------
+function image_column(tooltip, flagname)
+	return "image," ..
+		"tooltip=" .. core.formspec_escape(tooltip) .. "," ..
+		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
+		"1=" .. core.formspec_escape(defaulttexturedir .. "server_flags_" .. flagname .. ".png")
+end
+
+--------------------------------------------------------------------------------
+function order_favorite_list(list)
+	local res = {}
+	--orders the favorite list after support
+	for i=1,#list,1 do
+		local fav = list[i]
+		if is_server_protocol_compat(fav.proto_min, fav.proto_max) then
+			table.insert(res, fav)
+		end
+	end
+	for i=1,#list,1 do
+		local fav = list[i]
+		if not is_server_protocol_compat(fav.proto_min, fav.proto_max) then
+			table.insert(res, fav)
+		end
+	end
+	return res
+end
 
 --------------------------------------------------------------------------------
 function render_favorite(spec,render_details)
@@ -49,40 +105,60 @@ function render_favorite(spec,render_details)
 	end
 
 	local details = ""
-	if spec.password == true then
-		details = details .. "*"
+	local grey_out = not is_server_protocol_compat(spec.proto_max, spec.proto_min)
+
+	if spec.clients ~= nil and spec.clients_max ~= nil then
+		local clients_color = ''
+		local clients_percent = 100 * spec.clients / spec.clients_max
+
+		-- Choose a color depending on how many clients are connected
+		-- (relatively to clients_max)
+		if spec.clients == 0 then
+			clients_color = ''        -- 0 players: default/white
+		elseif spec.clients == spec.clients_max then
+			clients_color = '#dd5b5b' -- full server: red (darker)
+		elseif clients_percent <= 60 then
+			clients_color = '#a1e587' -- 0-60%: green
+		elseif clients_percent <= 90 then
+			clients_color = '#ffdc97' -- 60-90%: yellow
+		else
+			clients_color = '#ffba97' -- 90-100%: orange
+		end
+
+		if grey_out then
+			clients_color = '#aaaaaa'
+		end
+
+		details = details ..
+				clients_color .. ',' ..
+				render_client_count(spec.clients) .. ',' ..
+				'/,' ..
+				render_client_count(spec.clients_max) .. ','
+	elseif grey_out then
+		details = details .. '#aaaaaa,?,/,?,'
 	else
-		details = details .. "_"
+		details = details .. ',?,/,?,'
 	end
 
 	if spec.creative then
-		details = details .. "C"
+		details = details .. "1,"
 	else
-		details = details .. "_"
+		details = details .. "0,"
 	end
 
 	if spec.damage then
-		details = details .. "D"
+		details = details .. "1,"
 	else
-		details = details .. "_"
+		details = details .. "0,"
 	end
 
 	if spec.pvp then
-		details = details .. "P"
+		details = details .. "1,"
 	else
-		details = details .. "_"
-	end
-	details = details .. " "
-
-	local playercount = ""
-
-	if spec.clients ~= nil and
-		spec.clients_max ~= nil then
-		playercount = string.format("%03d",spec.clients) .. "/" ..
-						string.format("%03d",spec.clients_max) .. " "
+		details = details .. "0,"
 	end
 
-	return playercount .. core.formspec_escape(details) ..  text
+	return details .. (grey_out and '#aaaaaa,' or ',') .. text
 end
 
 --------------------------------------------------------------------------------
@@ -125,7 +201,6 @@ end
 
 --------------------------------------------------------------------------------
 function menu_handle_key_up_down(fields,textlist,settingname)
-
 	if fields["key_up"] then
 		local oldidx = core.get_textlist_index(textlist)
 
@@ -133,6 +208,8 @@ function menu_handle_key_up_down(fields,textlist,settingname)
 			local newidx = oldidx -1
 			core.setting_set(settingname,
 				menudata.worldlist:get_raw_index(newidx))
+
+			configure_selected_world_params(newidx)
 		end
 		return true
 	end
@@ -144,50 +221,127 @@ function menu_handle_key_up_down(fields,textlist,settingname)
 			local newidx = oldidx + 1
 			core.setting_set(settingname,
 				menudata.worldlist:get_raw_index(newidx))
+
+			configure_selected_world_params(newidx)
 		end
-		
+
 		return true
 	end
-	
+
 	return false
 end
 
 --------------------------------------------------------------------------------
 function asyncOnlineFavourites()
 
-	menudata.favorites = {}
+	if not menudata.public_known then
+		menudata.public_known = {{
+			name = fgettext("Loading..."),
+			description = fgettext_ne("Try reenabling public serverlist and check your internet connection.")
+		}}
+	end
+	menudata.favorites = menudata.public_known
 	core.handle_async(
 		function(param)
 			return core.get_favorites("online")
 		end,
 		nil,
 		function(result)
-			menudata.favorites = result
-			core.event_handler("Refresh")
+			if core.setting_getbool("public_serverlist") then
+				local favs = order_favorite_list(result)
+				if favs[1] then
+					menudata.public_known = favs
+					menudata.favorites = menudata.public_known
+				end
+				core.event_handler("Refresh")
+			end
 		end
-		)
+	)
 end
 
 --------------------------------------------------------------------------------
 function text2textlist(xpos,ypos,width,height,tl_name,textlen,text,transparency)
 	local textlines = core.splittext(text,textlen)
-	
+
 	local retval = "textlist[" .. xpos .. "," .. ypos .. ";"
 								.. width .. "," .. height .. ";"
 								.. tl_name .. ";"
-	
+
 	for i=1, #textlines, 1 do
 		textlines[i] = textlines[i]:gsub("\r","")
 		retval = retval .. core.formspec_escape(textlines[i]) .. ","
 	end
-	
+
 	retval = retval .. ";0;"
-	
+
 	if transparency then
 		retval = retval .. "true"
 	end
-	
+
 	retval = retval .. "]"
 
 	return retval
+end
+
+--------------------------------------------------------------------------------
+function is_server_protocol_compat(server_proto_min, server_proto_max)
+	return not ((min_supp_proto > (server_proto_max or 24)) or (max_supp_proto < (server_proto_min or 13)))
+end
+--------------------------------------------------------------------------------
+function is_server_protocol_compat_or_error(server_proto_min, server_proto_max)
+	if not is_server_protocol_compat(server_proto_min, server_proto_max) then
+		local server_prot_ver_info
+		local client_prot_ver_info
+		if server_proto_min ~= server_proto_max then
+			server_prot_ver_info = fgettext_ne("Server supports protocol versions between $1 and $2. ",
+				server_proto_min or 13, server_proto_max or 24)
+		else
+			server_prot_ver_info = fgettext_ne("Server enforces protocol version $1. ",
+				server_proto_min or 13)
+		end
+		if min_supp_proto ~= max_supp_proto then
+			client_prot_ver_info= fgettext_ne("We support protocol versions between version $1 and $2.",
+				min_supp_proto, max_supp_proto)
+		else
+			client_prot_ver_info = fgettext_ne("We only support protocol version $1.", min_supp_proto)
+		end
+		gamedata.errormessage = fgettext_ne("Protocol version mismatch. ")
+			.. server_prot_ver_info
+			.. client_prot_ver_info
+		return false
+	end
+
+	return true
+end
+--------------------------------------------------------------------------------
+function menu_worldmt(selected, setting, value)
+	local world = menudata.worldlist:get_list()[selected]
+	if world then
+		local filename = world.path .. DIR_DELIM .. "world.mt"
+		local world_conf = Settings(filename)
+
+		if value ~= nil then
+			if not world_conf:write() then
+				core.log("error", "Failed to write world config file")
+			end
+			world_conf:set(setting, value)
+			world_conf:write()
+		else
+			return world_conf:get(setting)
+		end
+	else
+		return nil
+	end
+end
+
+function menu_worldmt_legacy(selected)
+	local modes_names = {"creative_mode", "enable_damage", "server_announce"}
+	for _, mode_name in pairs(modes_names) do
+		local mode_val = menu_worldmt(selected, mode_name)
+		if mode_val ~= nil then
+			core.setting_set(mode_name, mode_val)
+		else
+			menu_worldmt(selected, mode_name, core.setting_get(mode_name))
+		end
+	end
 end

@@ -70,6 +70,11 @@ public:
 	SerializationError(const std::string &s): BaseException(s) {}
 };
 
+class PacketError : public BaseException {
+public:
+	PacketError(const std::string &s): BaseException(s) {}
+};
+
 class LoadError : public BaseException {
 public:
 	LoadError(const std::string &s): BaseException(s) {}
@@ -110,20 +115,37 @@ public:
 	ServerError(const std::string &s): BaseException(s) {}
 };
 
-// Only used on Windows (SEH)
-class FatalSystemException : public BaseException {
-public:
-	FatalSystemException(const std::string &s): BaseException(s) {}
-};
-
 class ClientStateError : public BaseException {
 public:
 	ClientStateError(std::string s): BaseException(s) {}
 };
 
+class PrngException : public BaseException {
+public:
+	PrngException(std::string s): BaseException(s) {}
+};
+
+class ModError : public BaseException {
+public:
+	ModError(const std::string &s): BaseException(s) {}
+};
+
+
 /*
 	Some "old-style" interrupts:
 */
+
+class InvalidNoiseParamsException : public BaseException {
+public:
+	InvalidNoiseParamsException():
+		BaseException("One or more noise parameters were invalid or require "
+			"too much memory")
+	{}
+
+	InvalidNoiseParamsException(const std::string &s):
+		BaseException(s)
+	{}
+};
 
 class InvalidPositionException : public BaseException
 {

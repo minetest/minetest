@@ -96,6 +96,8 @@ public:
 
 		WARNING: THIS DEALLOCATES THE MENU FROM MEMORY. Return
 		immediately if you call this from the menu itself.
+
+		(More precisely, this decrements the reference count.)
 	*/
 	void quitMenu()
 	{
@@ -106,7 +108,7 @@ public:
 		this->remove();
 #ifdef HAVE_TOUCHSCREENGUI
 		if (g_touchscreengui)
-			g_touchscreengui->Show();
+			g_touchscreengui->show();
 #endif
 	}
 

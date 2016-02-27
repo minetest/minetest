@@ -32,11 +32,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HUD_CORNER_LOWER  1
 #define HUD_CORNER_CENTER 2
 
+// Note that these visibility flags do not determine if the hud items are
+// actually drawn, but rather, whether to draw the item should the rest
+// of the game state permit it.
 #define HUD_FLAG_HOTBAR_VISIBLE    (1 << 0)
 #define HUD_FLAG_HEALTHBAR_VISIBLE (1 << 1)
 #define HUD_FLAG_CROSSHAIR_VISIBLE (1 << 2)
 #define HUD_FLAG_WIELDITEM_VISIBLE (1 << 3)
 #define HUD_FLAG_BREATHBAR_VISIBLE (1 << 4)
+#define HUD_FLAG_MINIMAP_VISIBLE   (1 << 5)
 
 #define HUD_PARAM_HOTBAR_ITEMCOUNT 1
 #define HUD_PARAM_HOTBAR_IMAGE 2
@@ -103,8 +107,6 @@ public:
 	video::IVideoDriver *driver;
 	scene::ISceneManager* smgr;
 	gui::IGUIEnvironment *guienv;
-	gui::IGUIFont *font;
-	u32 text_height;
 	IGameDef *gamedef;
 	LocalPlayer *player;
 	Inventory *inventory;
@@ -117,32 +119,64 @@ public:
 	bool use_hotbar_image;
 	std::string hotbar_selected_image;
 	bool use_hotbar_selected_image;
-	v3s16 camera_offset;
-	
+
 	Hud(video::IVideoDriver *driver,scene::ISceneManager* smgr,
-		gui::IGUIEnvironment* guienv, gui::IGUIFont *font,
-		u32 text_height, IGameDef *gamedef,
-		LocalPlayer *player, Inventory *inventory);
-	
+		gui::IGUIEnvironment* guienv, IGameDef *gamedef, LocalPlayer *player,
+		Inventory *inventory);
+	~Hud();
+
 	void drawHotbar(u16 playeritem);
 	void resizeHotbar();
 	void drawCrosshair();
-	void drawSelectionBoxes(std::vector<aabb3f> &hilightboxes);
-	void drawLuaElements(v3s16 camera_offset);
+	void drawSelectionMesh();
+	void updateSelectionMesh(const v3s16 &camera_offset);
+	
+	std::vector<aabb3f> *getSelectionBoxes()
+	{ return &m_selection_boxes; }
+
+	void setSelectionPos(const v3f &pos, const v3s16 &camera_offset);
+
+	v3f getSelectionPos() const
+	{ return m_selection_pos; }
+
+	void setSelectionMeshColor(const video::SColor &c)
+	{ m_selection_mesh_color = c; }
+
+	void drawLuaElements(const v3s16 &camera_offset);
+
 private:
 	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
 			s32 count, v2s32 offset, v2s32 size=v2s32());
-	
+
 	void drawItems(v2s32 upperleftpos, s32 itemcount, s32 offset,
 		InventoryList *mainlist, u16 selectitem, u16 direction);
 
-	void drawItem(const ItemStack &item, const core::rect<s32>& rect, bool selected);
-	
+	void drawItem(const ItemStack &item, const core::rect<s32>& rect,
+		bool selected);
+
+	v3s16 m_camera_offset;
 	v2u32 m_screensize;
 	v2s32 m_displaycenter;
 	s32 m_hotbar_imagesize;
 	s32 m_padding;
 	video::SColor hbar_colors[4];
+
+	std::vector<aabb3f> m_selection_boxes;
+	std::vector<aabb3f> m_halo_boxes;
+	v3f m_selection_pos;
+	v3f m_selection_pos_with_offset;
+
+	scene::IMesh* m_selection_mesh;
+	video::SColor m_selection_mesh_color;
+	video::SMaterial m_selection_material;
+	bool m_use_selection_mesh;
+};
+
+enum ItemRotationKind {
+	IT_ROT_SELECTED,
+	IT_ROT_HOVERED,
+	IT_ROT_DRAGGED,
+	IT_ROT_NONE, // Must be last, also serves as number
 };
 
 void drawItemStack(video::IVideoDriver *driver,
@@ -150,8 +184,8 @@ void drawItemStack(video::IVideoDriver *driver,
 		const ItemStack &item,
 		const core::rect<s32> &rect,
 		const core::rect<s32> *clip,
-		IGameDef *gamedef);
-
+		IGameDef *gamedef,
+		ItemRotationKind rotation_kind);
 
 #endif
 

@@ -58,7 +58,7 @@ public:
 	ServerActiveObject(ServerEnvironment *env, v3f pos);
 	virtual ~ServerActiveObject();
 
-	virtual u8 getSendType() const
+	virtual ActiveObjectType getSendType() const
 	{ return getType(); }
 
 	// Called after id has been set and has been inserted in environment
@@ -69,12 +69,9 @@ public:
 	// environment
 	virtual bool environmentDeletes() const
 	{ return true; }
-
-	virtual bool unlimitedTransferDistance() const
-	{ return false; }
 	
 	// Create a certain type of ServerActiveObject
-	static ServerActiveObject* create(u8 type,
+	static ServerActiveObject* create(ActiveObjectType type,
 			ServerEnvironment *env, u16 id, v3f pos,
 			const std::string &data);
 	
@@ -97,8 +94,6 @@ public:
 	// If object has moved less than this and data has not changed,
 	// saving to disk may be omitted
 	virtual float getMinimumSavedMovement();
-	
-	virtual bool isPeaceful(){return true;}
 
 	virtual std::string getDescription(){return "SAO";}
 	
@@ -152,14 +147,28 @@ public:
 
 	virtual void setArmorGroups(const ItemGroupList &armor_groups)
 	{}
+	virtual ItemGroupList getArmorGroups()
+	{ return ItemGroupList(); }
 	virtual void setPhysicsOverride(float physics_override_speed, float physics_override_jump, float physics_override_gravity)
 	{}
-	virtual void setAnimation(v2f frames, float frame_speed, float frame_blend)
+	virtual void setAnimation(v2f frames, float frame_speed, float frame_blend, bool frame_loop)
 	{}
-	virtual void setBonePosition(std::string bone, v3f position, v3f rotation)
+	virtual void getAnimation(v2f *frames, float *frame_speed, float *frame_blend, bool *frame_loop)
 	{}
-	virtual void setAttachment(int parent_id, std::string bone, v3f position, v3f rotation)
+	virtual void setBonePosition(const std::string &bone, v3f position, v3f rotation)
 	{}
+	virtual void getBonePosition(const std::string &bone, v3f *position, v3f *lotation)
+	{}
+	virtual void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation)
+	{}
+	virtual void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation)
+	{}
+	virtual void addAttachmentChild(int child_id)
+	{}
+	virtual void removeAttachmentChild(int child_id)
+	{}
+	virtual std::set<int> getAttachmentChildIds()
+	{ return std::set<int>(); }
 	virtual ObjectProperties* accessObjectProperties()
 	{ return NULL; }
 	virtual void notifyObjectPropertiesModified()
@@ -223,7 +232,7 @@ public:
 	/*
 		Queue of messages to be sent to the client
 	*/
-	Queue<ActiveObjectMessage> m_messages_out;
+	std::queue<ActiveObjectMessage> m_messages_out;
 	
 protected:
 	// Used for creating objects based on type

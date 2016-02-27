@@ -24,80 +24,69 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_async.h"
 #include "serialization.h"
 #include "json/json.h"
-#include "debug.h"
+#include "cpp_api/s_security.h"
+#include "areastore.h"
 #include "porting.h"
+#include "debug.h"
 #include "log.h"
 #include "tool.h"
 #include "filesys.h"
 #include "settings.h"
-#include "main.h"  //required for g_settings, g_settings_path
-
-// debug(...)
-// Writes a line to dstream
-int ModApiUtil::l_debug(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	// Handle multiple parameters to behave like standard lua print()
-	int n = lua_gettop(L);
-	lua_getglobal(L, "tostring");
-	for (int i = 1; i <= n; i++) {
-		/*
-			Call tostring(i-th argument).
-			This is what print() does, and it behaves a bit
-			differently from directly calling lua_tostring.
-		*/
-		lua_pushvalue(L, -1);  /* function to be called */
-		lua_pushvalue(L, i);   /* value to print */
-		lua_call(L, 1, 1);
-		size_t len;
-		const char *s = lua_tolstring(L, -1, &len);
-		if (i > 1)
-			dstream << "\t";
-		if (s)
-			dstream << std::string(s, len);
-		lua_pop(L, 1);
-	}
-	dstream << std::endl;
-	return 0;
-}
+#include "util/auth.h"
+#include <algorithm>
 
 // log([level,] text)
 // Writes a line to the logger.
 // The one-argument version logs to infostream.
-// The two-argument version accept a log level: error, action, info, or verbose.
+// The two-argument version accepts a log level.
+// Either the special case "deprecated" for deprecation notices, or any specified in
+// Logger::stringToLevel(name).
 int ModApiUtil::l_log(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string text;
-	LogMessageLevel level = LMT_INFO;
+	LogLevel level = LL_NONE;
 	if (lua_isnone(L, 2)) {
-		text = lua_tostring(L, 1);
-	}
-	else {
-		std::string levelname = luaL_checkstring(L, 1);
+		text = luaL_checkstring(L, 1);
+	} else {
+		std::string name = luaL_checkstring(L, 1);
 		text = luaL_checkstring(L, 2);
-		if(levelname == "error")
-			level = LMT_ERROR;
-		else if(levelname == "action")
-			level = LMT_ACTION;
-		else if(levelname == "verbose")
-			level = LMT_VERBOSE;
-		else if (levelname == "deprecated") {
-			log_deprecated(L,text);
+		if (name == "deprecated") {
+			log_deprecated(L, text);
 			return 0;
 		}
-
+		level = Logger::stringToLevel(name);
+		if (level == LL_MAX) {
+			warningstream << "Tried to log at unknown level '" << name
+				<< "'.  Defaulting to \"none\"." << std::endl;
+			level = LL_NONE;
+		}
 	}
-	log_printline(level, text);
+	g_logger.log(level, text);
 	return 0;
 }
+
+// get_us_time()
+int ModApiUtil::l_get_us_time(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	lua_pushnumber(L, porting::getTimeUs());
+	return 1;
+}
+
+#define CHECK_SECURE_SETTING(L, name) \
+	if (name.compare(0, 7, "secure.") == 0) {\
+		lua_pushliteral(L, "Attempt to set secure setting.");\
+		lua_error(L);\
+	}
 
 // setting_set(name, value)
 int ModApiUtil::l_setting_set(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	const char *name = luaL_checkstring(L, 1);
-	const char *value = luaL_checkstring(L, 2);
+	std::string name = luaL_checkstring(L, 1);
+	std::string value = luaL_checkstring(L, 2);
+	CHECK_SECURE_SETTING(L, name);
 	g_settings->set(name, value);
 	return 0;
 }
@@ -120,8 +109,9 @@ int ModApiUtil::l_setting_get(lua_State *L)
 int ModApiUtil::l_setting_setbool(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	const char *name = luaL_checkstring(L, 1);
+	std::string name = luaL_checkstring(L, 1);
 	bool value = lua_toboolean(L, 2);
+	CHECK_SECURE_SETTING(L, name);
 	g_settings->setBool(name, value);
 	return 0;
 }
@@ -172,8 +162,14 @@ int ModApiUtil::l_parse_json(lua_State *L)
 		if (!reader.parse(stream, root)) {
 			errorstream << "Failed to parse json data "
 				<< reader.getFormattedErrorMessages();
-			errorstream << "data: \"" << jsonstr << "\""
-				<< std::endl;
+			size_t jlen = strlen(jsonstr);
+			if (jlen > 100) {
+				errorstream << "Data (" << jlen
+					<< " bytes) printed to warningstream." << std::endl;
+				warningstream << "data: \"" << jsonstr << "\"" << std::endl;
+			} else {
+				errorstream << "data: \"" << jsonstr << "\"" << std::endl;
+			}
 			lua_pushnil(L);
 			return 1;
 		}
@@ -256,8 +252,7 @@ int ModApiUtil::l_get_password_hash(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	std::string name = luaL_checkstring(L, 1);
 	std::string raw_password = luaL_checkstring(L, 2);
-	std::string hash = translatePassword(name,
-			narrow_to_wide(raw_password));
+	std::string hash = translatePassword(name, raw_password);
 	lua_pushstring(L, hash.c_str());
 	return 1;
 }
@@ -280,6 +275,8 @@ int ModApiUtil::l_is_yes(lua_State *L)
 
 int ModApiUtil::l_get_builtin_path(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
+
 	std::string path = porting::path_share + DIR_DELIM + "builtin";
 	lua_pushstring(L, path.c_str());
 	return 1;
@@ -288,6 +285,8 @@ int ModApiUtil::l_get_builtin_path(lua_State *L)
 // compress(data, method, level)
 int ModApiUtil::l_compress(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
+
 	size_t size;
 	const char *data = luaL_checklstring(L, 1, &size);
 
@@ -307,8 +306,10 @@ int ModApiUtil::l_compress(lua_State *L)
 // decompress(data, method)
 int ModApiUtil::l_decompress(lua_State *L)
 {
+	NO_MAP_LOCK_REQUIRED;
+
 	size_t size;
-	const char * data = luaL_checklstring(L, 1, &size);
+	const char *data = luaL_checklstring(L, 1, &size);
 
 	std::istringstream is(std::string(data, size));
 	std::ostringstream os;
@@ -320,10 +321,93 @@ int ModApiUtil::l_decompress(lua_State *L)
 	return 1;
 }
 
+// mkdir(path)
+int ModApiUtil::l_mkdir(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	const char *path = luaL_checkstring(L, 1);
+	CHECK_SECURE_PATH_OPTIONAL(L, path);
+	lua_pushboolean(L, fs::CreateAllDirs(path));
+	return 1;
+}
+
+// get_dir_list(path, is_dir)
+int ModApiUtil::l_get_dir_list(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	const char *path = luaL_checkstring(L, 1);
+	short is_dir = lua_isboolean(L, 2) ? lua_toboolean(L, 2) : -1;
+
+	CHECK_SECURE_PATH_OPTIONAL(L, path);
+
+	std::vector<fs::DirListNode> list = fs::GetDirListing(path);
+
+	int index = 0;
+	lua_newtable(L);
+
+	for (size_t i = 0; i < list.size(); i++) {
+		if (is_dir == -1 || is_dir == list[i].dir) {
+			lua_pushstring(L, list[i].name.c_str());
+			lua_rawseti(L, -2, ++index);
+		}
+	}
+
+	return 1;
+}
+
+int ModApiUtil::l_request_insecure_environment(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	// Just return _G if security is disabled
+	if (!ScriptApiSecurity::isSecure(L)) {
+		lua_getglobal(L, "_G");
+		return 1;
+	}
+
+	// We have to make sure that this function is being called directly by
+	// a mod, otherwise a malicious mod could override this function and
+	// steal its return value.
+	lua_Debug info;
+	// Make sure there's only one item below this function on the stack...
+	if (lua_getstack(L, 2, &info)) {
+		return 0;
+	}
+	FATAL_ERROR_IF(!lua_getstack(L, 1, &info), "lua_getstack() failed");
+	FATAL_ERROR_IF(!lua_getinfo(L, "S", &info), "lua_getinfo() failed");
+	// ...and that that item is the main file scope.
+	if (strcmp(info.what, "main") != 0) {
+		return 0;
+	}
+
+	// Get mod name
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
+	if (!lua_isstring(L, -1)) {
+		return 0;
+	}
+
+	// Check secure.trusted_mods
+	const char *mod_name = lua_tostring(L, -1);
+	std::string trusted_mods = g_settings->get("secure.trusted_mods");
+	trusted_mods.erase(std::remove(trusted_mods.begin(),
+			trusted_mods.end(), ' '), trusted_mods.end());
+	std::vector<std::string> mod_list = str_split(trusted_mods, ',');
+	if (std::find(mod_list.begin(), mod_list.end(), mod_name) ==
+			mod_list.end()) {
+		return 0;
+	}
+
+	// Push insecure environment
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
+	return 1;
+}
+
+
 void ModApiUtil::Initialize(lua_State *L, int top)
 {
-	API_FCT(debug);
 	API_FCT(log);
+
+	API_FCT(get_us_time);
 
 	API_FCT(setting_set);
 	API_FCT(setting_get);
@@ -345,12 +429,18 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 
 	API_FCT(compress);
 	API_FCT(decompress);
+
+	API_FCT(mkdir);
+	API_FCT(get_dir_list);
+
+	API_FCT(request_insecure_environment);
 }
 
 void ModApiUtil::InitializeAsync(AsyncEngine& engine)
 {
-	ASYNC_API_FCT(debug);
 	ASYNC_API_FCT(log);
+
+	ASYNC_API_FCT(get_us_time);
 
 	//ASYNC_API_FCT(setting_set);
 	ASYNC_API_FCT(setting_get);
@@ -367,5 +457,8 @@ void ModApiUtil::InitializeAsync(AsyncEngine& engine)
 
 	ASYNC_API_FCT(compress);
 	ASYNC_API_FCT(decompress);
+
+	ASYNC_API_FCT(mkdir);
+	ASYNC_API_FCT(get_dir_list);
 }
 

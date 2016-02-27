@@ -24,9 +24,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <deque>
 #include <map>
 
-#include "jthread/jthread.h"
-#include "jthread/jmutex.h"
-#include "jthread/jsemaphore.h"
+#include "threading/thread.h"
+#include "threading/mutex.h"
+#include "threading/semaphore.h"
 #include "debug.h"
 #include "lua.h"
 #include "cpp_api/s_base.h"
@@ -52,24 +52,15 @@ struct LuaJobInfo {
 };
 
 // Asynchronous working environment
-class AsyncWorkerThread : public JThread, public ScriptApiBase {
+class AsyncWorkerThread : public Thread, public ScriptApiBase {
 public:
-	/**
-	 * default constructor
-	 * @param pointer to job dispatcher
-	 */
-	AsyncWorkerThread(AsyncEngine* jobDispatcher, unsigned int threadNum);
-
+	AsyncWorkerThread(AsyncEngine* jobDispatcher, const std::string &name);
 	virtual ~AsyncWorkerThread();
 
-	void *Thread();
+	void *run();
 
 private:
 	AsyncEngine *jobDispatcher;
-
-	// Thread number. Used for debug output
-	unsigned int threadnum;
-
 };
 
 // Asynchornous thread and job management
@@ -104,9 +95,8 @@ public:
 	 * Engine step to process finished jobs
 	 *   the engine step is one way to pass events back, PushFinishedJobs another
 	 * @param L The Lua stack
-	 * @param errorhandler Stack index of the Lua error handler
 	 */
-	void step(lua_State *L, int errorhandler);
+	void step(lua_State *L);
 
 	/**
 	 * Push a list of finished jobs onto the stack
@@ -148,13 +138,13 @@ private:
 	unsigned int jobIdCounter;
 
 	// Mutex to protect job queue
-	JMutex jobQueueMutex;
+	Mutex jobQueueMutex;
 
 	// Job queue
 	std::deque<LuaJobInfo> jobQueue;
 
 	// Mutex to protect result queue
-	JMutex resultQueueMutex;
+	Mutex resultQueueMutex;
 	// Result queue
 	std::deque<LuaJobInfo> resultQueue;
 
@@ -162,7 +152,7 @@ private:
 	std::vector<AsyncWorkerThread*> workerThreads;
 
 	// Counter semaphore for job dispatching
-	JSemaphore jobQueueCounter;
+	Semaphore jobQueueCounter;
 };
 
 #endif // CPP_API_ASYNC_EVENTS_HEADER

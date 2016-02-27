@@ -21,11 +21,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAPBLOCK_MESH_HEADER
 
 #include "irrlichttypes_extrabloated.h"
-#include "tile.h"
+#include "client/tile.h"
 #include "voxel.h"
 #include <map>
 
 class IGameDef;
+class IShaderSource;
 
 /*
 	Mesh making stuff
@@ -33,20 +34,22 @@ class IGameDef;
 
 
 class MapBlock;
+struct MinimapMapblock;
 
 struct MeshMakeData
 {
 	VoxelManipulator m_vmanip;
 	v3s16 m_blockpos;
 	v3s16 m_crack_pos_relative;
-	v3s16 m_highlighted_pos_relative;
 	bool m_smooth_lighting;
 	bool m_show_hud;
-	video::SColor m_highlight_mesh_color;
 
 	IGameDef *m_gamedef;
+	bool m_use_shaders;
+	bool m_use_tangent_vertices;
 
-	MeshMakeData(IGameDef *gamedef);
+	MeshMakeData(IGameDef *gamedef, bool use_shaders,
+			bool use_tangent_vertices = false);
 
 	/*
 		Copy central data directly from block, and other data from
@@ -64,11 +67,6 @@ struct MeshMakeData
 	*/
 	void setCrack(int crack_level, v3s16 crack_pos);
 
-	/*
-		Set the highlighted node position
-	*/
-
-	void setHighlighted(v3s16 highlighted_pos, bool show_hud);
 	/*
 		Enable or disable smooth lighting
 	*/
@@ -101,9 +99,16 @@ public:
 	// Returns true if anything has been changed.
 	bool animate(bool faraway, float time, int crack, u32 daynight_ratio);
 
-	scene::SMesh* getMesh()
+	scene::IMesh *getMesh()
 	{
 		return m_mesh;
+	}
+
+	MinimapMapblock *moveMinimapMapblock()
+	{
+		MinimapMapblock *p = m_minimap_mapblock;
+		m_minimap_mapblock = NULL;
+		return p;
 	}
 
 	bool isAnimationForced() const
@@ -120,14 +125,17 @@ public:
 	void updateCameraOffset(v3s16 camera_offset);
 
 private:
-	scene::SMesh *m_mesh;
+	scene::IMesh *m_mesh;
+	MinimapMapblock *m_minimap_mapblock;
 	IGameDef *m_gamedef;
+	video::IVideoDriver *m_driver;
+	ITextureSource *m_tsrc;
+	IShaderSource *m_shdrsrc;
 
 	bool m_enable_shaders;
-	bool m_enable_highlighting;
+	bool m_use_tangent_vertices;
+	bool m_enable_vbo;
 
-	video::SColor m_highlight_mesh_color;
-	
 	// Must animate() be called before rendering?
 	bool m_has_animation;
 	int m_animation_force_timer;
@@ -137,7 +145,6 @@ private:
 	int m_last_crack;
 	// Maps mesh buffer (i.e. material) indices to base texture names
 	std::map<u32, std::string> m_crack_materials;
-	std::list<u32> m_highlighted_materials;
 
 	// Animation info: texture animationi
 	// Maps meshbuffers to TileSpecs
@@ -165,15 +172,26 @@ struct PreMeshBuffer
 	TileSpec tile;
 	std::vector<u16> indices;
 	std::vector<video::S3DVertex> vertices;
+	std::vector<video::S3DVertexTangents> tangent_vertices;
 };
 
 struct MeshCollector
 {
 	std::vector<PreMeshBuffer> prebuffers;
+	bool m_use_tangent_vertices;
+
+	MeshCollector(bool use_tangent_vertices):
+		m_use_tangent_vertices(use_tangent_vertices)
+	{
+	}
 
 	void append(const TileSpec &material,
 			const video::S3DVertex *vertices, u32 numVertices,
 			const u16 *indices, u32 numIndices);
+	void append(const TileSpec &material,
+			const video::S3DVertex *vertices, u32 numVertices,
+			const u16 *indices, u32 numIndices,
+			v3f pos, video::SColor c);
 };
 
 // This encodes
@@ -190,6 +208,11 @@ inline video::SColor MapBlock_LightColor(u8 alpha, u16 light, u8 light_source=0)
 u16 getInteriorLight(MapNode n, s32 increment, INodeDefManager *ndef);
 u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir, INodeDefManager *ndef);
 u16 getSmoothLight(v3s16 p, v3s16 corner, MeshMakeData *data);
+
+// Converts from day + night color values (0..255)
+// and a given daynight_ratio to the final SColor shown on screen.
+void finalColorBlend(video::SColor& result,
+		u8 day, u8 night, u32 daynight_ratio);
 
 // Retrieves the TileSpec of a face of a node
 // Adds MATERIAL_FLAG_CRACK if the node is cracked

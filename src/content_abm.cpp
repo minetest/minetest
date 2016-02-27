@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_sao.h"
 #include "settings.h"
 #include "mapblock.h" // For getNodeBlockPos
-#include "main.h" // for g_settings
 #include "map.h"
 #include "scripting_game.h"
 #include "log.h"

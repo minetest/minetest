@@ -42,7 +42,11 @@ ObjectProperties::ObjectProperties():
 	automatic_rotate(0),
 	stepheight(0),
 	automatic_face_movement_dir(false),
-	automatic_face_movement_dir_offset(0.0)
+	automatic_face_movement_dir_offset(0.0),
+	backface_culling(true),
+	nametag(""),
+	nametag_color(255, 255, 255, 255),
+	automatic_face_movement_max_rotation_per_sec(-1)
 {
 	textures.push_back("unknown_object.png");
 	colors.push_back(video::SColor(255,255,255,255));
@@ -74,6 +78,10 @@ std::string ObjectProperties::dump()
 	os<<", is_visible="<<is_visible;
 	os<<", makes_footstep_sound="<<makes_footstep_sound;
 	os<<", automatic_rotate="<<automatic_rotate;
+	os<<", backface_culling="<<backface_culling;
+	os << ", nametag=" << nametag;
+	os << ", nametag_color=" << "\"" << nametag_color.getAlpha() << "," << nametag_color.getRed()
+			<< "," << nametag_color.getGreen() << "," << nametag_color.getBlue() << "\" ";
 	return os.str();
 }
 
@@ -106,6 +114,12 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeF1000(os,stepheight);
 	writeU8(os, automatic_face_movement_dir);
 	writeF1000(os, automatic_face_movement_dir_offset);
+	writeU8(os, backface_culling);
+	os << serializeString(nametag);
+	writeARGB8(os, nametag_color);
+	writeF1000(os, automatic_face_movement_max_rotation_per_sec);
+	os << serializeString(infotext);
+
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
 }
@@ -142,6 +156,11 @@ void ObjectProperties::deSerialize(std::istream &is)
 			stepheight = readF1000(is);
 			automatic_face_movement_dir = readU8(is);
 			automatic_face_movement_dir_offset = readF1000(is);
+			backface_culling = readU8(is);
+			nametag = deSerializeString(is);
+			nametag_color = readARGB8(is);
+			automatic_face_movement_max_rotation_per_sec = readF1000(is);
+			infotext = deSerializeString(is);
 		}catch(SerializationError &e){}
 	}
 	else
@@ -149,4 +168,3 @@ void ObjectProperties::deSerialize(std::istream &is)
 		throw SerializationError("unsupported ObjectProperties version");
 	}
 }
-

@@ -21,13 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CONTENT_SAO_HEADER
 
 #include "serverobject.h"
-#include "content_object.h"
 #include "itemgroup.h"
 #include "player.h"
 #include "object_properties.h"
-
-ServerActiveObject* createItemSAO(ServerEnvironment *env, v3f pos,
-                                  const std::string &itemstring);
 
 /*
 	LuaEntitySAO needs some internals exposed.
@@ -39,9 +35,9 @@ public:
 	LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	             const std::string &name, const std::string &state);
 	~LuaEntitySAO();
-	u8 getType() const
+	ActiveObjectType getType() const
 	{ return ACTIVEOBJECT_TYPE_LUAENTITY; }
-	u8 getSendType() const
+	ActiveObjectType getSendType() const
 	{ return ACTIVEOBJECT_TYPE_GENERIC; }
 	virtual void addedToEnvironment(u32 dtime_s);
 	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
@@ -62,9 +58,16 @@ public:
 	void setHP(s16 hp);
 	s16 getHP() const;
 	void setArmorGroups(const ItemGroupList &armor_groups);
-	void setAnimation(v2f frame_range, float frame_speed, float frame_blend);
-	void setBonePosition(std::string bone, v3f position, v3f rotation);
-	void setAttachment(int parent_id, std::string bone, v3f position, v3f rotation);
+	ItemGroupList getArmorGroups();
+	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);
+	void getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop);
+	void setBonePosition(const std::string &bone, v3f position, v3f rotation);
+	void getBonePosition(const std::string &bone, v3f *position, v3f *rotation);
+	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
+	void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation);
+	void addAttachmentChild(int child_id);
+	void removeAttachmentChild(int child_id);
+	std::set<int> getAttachmentChildIds();
 	ObjectProperties* accessObjectProperties();
 	void notifyObjectPropertiesModified();
 	/* LuaEntitySAO-specific */
@@ -88,13 +91,13 @@ private:
 	std::string m_init_state;
 	bool m_registered;
 	struct ObjectProperties m_prop;
-	
+
 	s16 m_hp;
 	v3f m_velocity;
 	v3f m_acceleration;
 	float m_yaw;
 	ItemGroupList m_armor_groups;
-	
+
 	bool m_properties_sent;
 	float m_last_sent_yaw;
 	v3f m_last_sent_position;
@@ -106,12 +109,14 @@ private:
 	v2f m_animation_range;
 	float m_animation_speed;
 	float m_animation_blend;
+	bool m_animation_loop;
 	bool m_animation_sent;
 
 	std::map<std::string, core::vector2d<v3f> > m_bone_position;
 	bool m_bone_position_sent;
 
 	int m_attachment_parent_id;
+	std::set<int> m_attachment_child_ids;
 	std::string m_attachment_bone;
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
@@ -158,9 +163,9 @@ public:
 	PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
 			const std::set<std::string> &privs, bool is_singleplayer);
 	~PlayerSAO();
-	u8 getType() const
+	ActiveObjectType getType() const
 	{ return ACTIVEOBJECT_TYPE_PLAYER; }
-	u8 getSendType() const
+	ActiveObjectType getSendType() const
 	{ return ACTIVEOBJECT_TYPE_GENERIC; }
 	std::string getDescription();
 
@@ -171,7 +176,6 @@ public:
 	void addedToEnvironment(u32 dtime_s);
 	void removingFromEnvironment();
 	bool isStaticAllowed() const;
-	bool unlimitedTransferDistance() const;
 	std::string getClientInitializationData(u16 protocol_version);
 	std::string getStaticData();
 	bool isAttached();
@@ -197,9 +201,16 @@ public:
 	u16 getBreath() const;
 	void setBreath(u16 breath);
 	void setArmorGroups(const ItemGroupList &armor_groups);
-	void setAnimation(v2f frame_range, float frame_speed, float frame_blend);
-	void setBonePosition(std::string bone, v3f position, v3f rotation);
-	void setAttachment(int parent_id, std::string bone, v3f position, v3f rotation);
+	ItemGroupList getArmorGroups();
+	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);
+	void getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop);
+	void setBonePosition(const std::string &bone, v3f position, v3f rotation);
+	void getBonePosition(const std::string &bone, v3f *position, v3f *rotation);
+	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
+	void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation);
+	void addAttachmentChild(int child_id);
+	void removeAttachmentChild(int child_id);
+	std::set<int> getAttachmentChildIds();
 	ObjectProperties* accessObjectProperties();
 	void notifyObjectPropertiesModified();
 
@@ -210,7 +221,6 @@ public:
 	Inventory* getInventory();
 	const Inventory* getInventory() const;
 	InventoryLocation getInventoryLocation() const;
-	void setInventoryModified();
 	std::string getWieldList() const;
 	int getWieldIndex() const;
 	void setWieldIndex(int i);
@@ -280,7 +290,7 @@ public:
 
 private:
 	std::string getPropertyPacket();
-	
+
 	Player *m_player;
 	u16 m_peer_id;
 	Inventory *m_inventory;
@@ -308,25 +318,21 @@ private:
 	v2f m_animation_range;
 	float m_animation_speed;
 	float m_animation_blend;
+	bool m_animation_loop;
 	bool m_animation_sent;
 
 	std::map<std::string, core::vector2d<v3f> > m_bone_position; // Stores position and rotation for each bone name
 	bool m_bone_position_sent;
 
 	int m_attachment_parent_id;
+	std::set<int> m_attachment_child_ids;
 	std::string m_attachment_bone;
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
 	bool m_attachment_sent;
 
-public:
-	// Some flags used by Server
-	bool m_moved;
-	bool m_inventory_not_sent;
-	bool m_hp_not_sent;
-	bool m_breath_not_sent;
-	bool m_wielded_item_not_sent;
 
+public:
 	float m_physics_override_speed;
 	float m_physics_override_jump;
 	float m_physics_override_gravity;
@@ -336,4 +342,3 @@ public:
 };
 
 #endif
-

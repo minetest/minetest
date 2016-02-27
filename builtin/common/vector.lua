@@ -39,6 +39,14 @@ function vector.round(v)
 	}
 end
 
+function vector.apply(v, func)
+	return {
+		x = func(v.x),
+		y = func(v.y),
+		z = func(v.z)
+	}
+end
+
 function vector.distance(a, b)
 	local x = a.x - b.x
 	local y = a.y - b.y

@@ -21,9 +21,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "noise.h"
 #include "constants.h"
 #include "debug.h"
-#include "main.h" // For g_profiler and g_settings
 #include "profiler.h"
 #include "settings.h"
+
+
+// Menu clouds are created later
+class Clouds;
+Clouds *g_menuclouds = NULL;
+irr::scene::ISceneManager *g_menucloudsmgr = NULL;
+
+static void cloud_3d_setting_changed(const std::string &settingname, void *data)
+{
+	((Clouds *)data)->readSettings();
+}
 
 Clouds::Clouds(
 		scene::ISceneNode* parent,
@@ -47,16 +57,20 @@ Clouds::Clouds(
 	//m_material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 	m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 
-	m_cloud_y = BS * (cloudheight ? cloudheight :
-				g_settings->getS16("cloud_height"));
+	m_passed_cloud_y = cloudheight;
+	readSettings();
+	g_settings->registerChangedCallback("enable_3d_clouds",
+		&cloud_3d_setting_changed, this);
 
-	m_box = core::aabbox3d<f32>(-BS*1000000,m_cloud_y-BS,-BS*1000000,
+	m_box = aabb3f(-BS*1000000,m_cloud_y-BS,-BS*1000000,
 			BS*1000000,m_cloud_y+BS,BS*1000000);
 
 }
 
 Clouds::~Clouds()
 {
+	g_settings->deregisterChangedCallback("enable_3d_clouds",
+		&cloud_3d_setting_changed, this);
 }
 
 void Clouds::OnRegisterSceneNode()
@@ -82,26 +96,24 @@ void Clouds::render()
 
 	ScopeProfiler sp(g_profiler, "Rendering of clouds, avg", SPT_AVG);
 	
-	bool enable_3d = g_settings->getBool("enable_3d_clouds");
-	int num_faces_to_draw = enable_3d ? 6 : 1;
+	int num_faces_to_draw = m_enable_3d ? 6 : 1;
 	
-	m_material.setFlag(video::EMF_BACK_FACE_CULLING, enable_3d);
+	m_material.setFlag(video::EMF_BACK_FACE_CULLING, m_enable_3d);
 
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 	driver->setMaterial(m_material);
 	
 	/*
-		Clouds move from X+ towards X-
+		Clouds move from Z+ towards Z-
 	*/
 
-	const s16 cloud_radius_i = 12;
-	const float cloud_size = BS*64;
-	const v2f cloud_speed(0, -BS*2);
+	const float cloud_size = BS * 64;
+	const v2f cloud_speed(0, -BS * 2);
 	
-	const float cloud_full_radius = cloud_size * cloud_radius_i;
+	const float cloud_full_radius = cloud_size * m_cloud_radius_i;
 	
 	// Position of cloud noise origin in world coordinates
-	v2f world_cloud_origin_pos_f = m_time*cloud_speed;
+	v2f world_cloud_origin_pos_f = m_time * cloud_speed;
 	// Position of cloud noise origin from the camera
 	v2f cloud_origin_from_camera_f = world_cloud_origin_pos_f - m_camera_pos;
 	// The center point of drawing in the noise
@@ -160,55 +172,50 @@ void Clouds::render()
 
 	// Read noise
 
-	bool *grid = new bool[cloud_radius_i*2*cloud_radius_i*2];
+	bool *grid = new bool[m_cloud_radius_i * 2 * m_cloud_radius_i * 2];
 
-	for(s16 zi=-cloud_radius_i; zi<cloud_radius_i; zi++)
-	for(s16 xi=-cloud_radius_i; xi<cloud_radius_i; xi++)
-	{
-		u32 i = (zi+cloud_radius_i)*cloud_radius_i*2 + xi+cloud_radius_i;
+	float cloud_size_noise = cloud_size / BS / 200;
 
-		v2s16 p_in_noise_i(
-			xi+center_of_drawing_in_noise_i.X,
-			zi+center_of_drawing_in_noise_i.Y
-		);
+	for(s16 zi = -m_cloud_radius_i; zi < m_cloud_radius_i; zi++) {
+		u32 si = (zi + m_cloud_radius_i) * m_cloud_radius_i * 2 + m_cloud_radius_i;
 
-#if 0
-		double noise = noise2d_perlin_abs(
-				(float)p_in_noise_i.X*cloud_size/BS/200,
-				(float)p_in_noise_i.Y*cloud_size/BS/200,
-				m_seed, 3, 0.4);
-		grid[i] = (noise >= 0.80);
-#endif
-#if 1
-		double noise = noise2d_perlin(
-				(float)p_in_noise_i.X*cloud_size/BS/200,
-				(float)p_in_noise_i.Y*cloud_size/BS/200,
-				m_seed, 3, 0.5);
-		grid[i] = (noise >= 0.4);
-#endif
+		for (s16 xi = -m_cloud_radius_i; xi < m_cloud_radius_i; xi++) {
+			u32 i = si + xi;
+
+			v2s16 p_in_noise_i(
+				xi + center_of_drawing_in_noise_i.X,
+				zi + center_of_drawing_in_noise_i.Y
+			);
+
+			double noise = noise2d_perlin(
+					(float)p_in_noise_i.X * cloud_size_noise,
+					(float)p_in_noise_i.Y * cloud_size_noise,
+					m_seed, 3, 0.5);
+			grid[i] = (noise >= 0.4);
+		}
 	}
 
 #define GETINDEX(x, z, radius) (((z)+(radius))*(radius)*2 + (x)+(radius))
-#define CONTAINS(x, z, radius) \
+#define INAREA(x, z, radius) \
 	((x) >= -(radius) && (x) < (radius) && (z) >= -(radius) && (z) < (radius))
 
-	for(s16 zi0=-cloud_radius_i; zi0<cloud_radius_i; zi0++)
-	for(s16 xi0=-cloud_radius_i; xi0<cloud_radius_i; xi0++)
+	for (s16 zi0= -m_cloud_radius_i; zi0 < m_cloud_radius_i; zi0++)
+	for (s16 xi0= -m_cloud_radius_i; xi0 < m_cloud_radius_i; xi0++)
 	{
 		s16 zi = zi0;
 		s16 xi = xi0;
 		// Draw from front to back (needed for transparency)
 		/*if(zi <= 0)
-			zi = -cloud_radius_i - zi;
+			zi = -m_cloud_radius_i - zi;
 		if(xi <= 0)
-			xi = -cloud_radius_i - xi;*/
+			xi = -m_cloud_radius_i - xi;*/
 		// Draw from back to front
 		if(zi >= 0)
-			zi = cloud_radius_i - zi - 1;
+			zi = m_cloud_radius_i - zi - 1;
 		if(xi >= 0)
-			xi = cloud_radius_i - xi - 1;
+			xi = m_cloud_radius_i - xi - 1;
 
-		u32 i = GETINDEX(xi, zi, cloud_radius_i);
+		u32 i = GETINDEX(xi, zi, m_cloud_radius_i);
 
 		if(grid[i] == false)
 			continue;
@@ -230,8 +237,8 @@ void Clouds::render()
 		}*/
 
 		f32 rx = cloud_size/2;
-		f32 ry = 8*BS;
-		f32 rz = cloud_size/2;
+		f32 ry = 8 * BS;
+		f32 rz = cloud_size / 2;
 
 		for(int i=0; i<num_faces_to_draw; i++)
 		{
@@ -247,8 +254,8 @@ void Clouds::render()
 				v[3].Pos.set( rx, ry,-rz);
 				break;
 			case 1: // back
-				if(CONTAINS(xi, zi-1, cloud_radius_i)){
-					u32 j = GETINDEX(xi, zi-1, cloud_radius_i);
+				if (INAREA(xi, zi - 1, m_cloud_radius_i)) {
+					u32 j = GETINDEX(xi, zi - 1, m_cloud_radius_i);
 					if(grid[j])
 						continue;
 				}
@@ -262,8 +269,8 @@ void Clouds::render()
 				v[3].Pos.set(-rx,-ry,-rz);
 				break;
 			case 2: //right
-				if(CONTAINS(xi+1, zi, cloud_radius_i)){
-					u32 j = GETINDEX(xi+1, zi, cloud_radius_i);
+				if (INAREA(xi + 1, zi, m_cloud_radius_i)) {
+					u32 j = GETINDEX(xi+1, zi, m_cloud_radius_i);
 					if(grid[j])
 						continue;
 				}
@@ -277,8 +284,8 @@ void Clouds::render()
 				v[3].Pos.set( rx,-ry,-rz);
 				break;
 			case 3: // front
-				if(CONTAINS(xi, zi+1, cloud_radius_i)){
-					u32 j = GETINDEX(xi, zi+1, cloud_radius_i);
+				if (INAREA(xi, zi + 1, m_cloud_radius_i)) {
+					u32 j = GETINDEX(xi, zi + 1, m_cloud_radius_i);
 					if(grid[j])
 						continue;
 				}
@@ -292,8 +299,8 @@ void Clouds::render()
 				v[3].Pos.set( rx,-ry, rz);
 				break;
 			case 4: // left
-				if(CONTAINS(xi-1, zi, cloud_radius_i)){
-					u32 j = GETINDEX(xi-1, zi, cloud_radius_i);
+				if (INAREA(xi-1, zi, m_cloud_radius_i)) {
+					u32 j = GETINDEX(xi-1, zi, m_cloud_radius_i);
 					if(grid[j])
 						continue;
 				}
@@ -347,5 +354,13 @@ void Clouds::update(v2f camera_p, video::SColorf color)
 	m_color = color;
 	//m_brightness = brightness;
 	//dstream<<"m_brightness="<<m_brightness<<std::endl;
+}
+
+void Clouds::readSettings()
+{
+	m_cloud_y = BS * (m_passed_cloud_y ? m_passed_cloud_y :
+		g_settings->getS16("cloud_height"));
+	m_cloud_radius_i = g_settings->getU16("cloud_radius");
+	m_enable_3d = g_settings->getBool("enable_3d_clouds");
 }
 

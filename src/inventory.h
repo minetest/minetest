@@ -20,12 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef INVENTORY_HEADER
 #define INVENTORY_HEADER
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include "irrlichttypes.h"
 #include "debug.h"
 #include "itemdef.h"
+#include "irrlichttypes.h"
+#include <istream>
+#include <ostream>
+#include <string>
+#include <vector>
 
 struct ToolCapabilities;
 
@@ -39,8 +40,9 @@ struct ItemStack
 
 	// Serialization
 	void serialize(std::ostream &os) const;
-	void deSerialize(std::istream &is, IItemDefManager *itemdef);
-	void deSerialize(const std::string &s, IItemDefManager *itemdef);
+	// Deserialization.  Pass itemdef unless you don't want aliases resolved.
+	void deSerialize(std::istream &is, IItemDefManager *itemdef = NULL);
+	void deSerialize(const std::string &s, IItemDefManager *itemdef = NULL);
 
 	// Returns the string used for inventory
 	std::string getItemString() const;
@@ -69,7 +71,7 @@ struct ItemStack
 
 	void remove(u16 n)
 	{
-		assert(count >= n);
+		assert(count >= n); // Pre-condition
 		count -= n;
 		if(count == 0)
 			clear(); // reset name, wear and metadata too
@@ -242,7 +244,13 @@ public:
 
 	// Move an item to a different list (or a different stack in the same list)
 	// count is the maximum number of items to move (0 for everything)
-	void moveItem(u32 i, InventoryList *dest, u32 dest_i, u32 count = 0);
+	// returns number of moved items
+	u32 moveItem(u32 i, InventoryList *dest, u32 dest_i,
+		u32 count = 0, bool swap_if_needed = true, bool *did_swap = NULL);
+
+	// like moveItem, but without a fixed destination index
+	// also with optional rollback recording
+	void moveItemSomewhere(u32 i, InventoryList *dest, u32 count);
 
 private:
 	std::vector<ItemStack> m_items;

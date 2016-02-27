@@ -38,7 +38,7 @@ void ScriptApiEnv::environment_OnGenerated(v3s16 minp, v3s16 maxp,
 	push_v3s16(L, minp);
 	push_v3s16(L, maxp);
 	lua_pushnumber(L, blockseed);
-	script_run_callbacks(L, 3, RUN_CALLBACKS_MODE_FIRST);
+	runCallbacks(3, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiEnv::environment_Step(float dtime)
@@ -52,7 +52,7 @@ void ScriptApiEnv::environment_Step(float dtime)
 	// Call callbacks
 	lua_pushnumber(L, dtime);
 	try {
-		script_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
+		runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
 	} catch (LuaError &e) {
 		getServer()->setAsyncFatalError(e.what());
 	}
@@ -61,7 +61,7 @@ void ScriptApiEnv::environment_Step(float dtime)
 void ScriptApiEnv::player_event(ServerActiveObject* player, std::string type)
 {
 	SCRIPTAPI_PRECHECKHEADER
-	
+
 	if (player == NULL)
 		return;
 
@@ -73,38 +73,10 @@ void ScriptApiEnv::player_event(ServerActiveObject* player, std::string type)
 	objectrefGetOrCreate(L, player);   // player
 	lua_pushstring(L,type.c_str()); // event type
 	try {
-		script_run_callbacks(L, 2, RUN_CALLBACKS_MODE_FIRST);
+		runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
 	} catch (LuaError &e) {
 		getServer()->setAsyncFatalError(e.what());
 	}
-}
-
-void ScriptApiEnv::environment_OnMapgenInit(MapgenParams *mgparams)
-{
-	SCRIPTAPI_PRECHECKHEADER
-	
-	// Get core.registered_on_mapgen_inits
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "registered_on_mapgen_inits");
-
-	// Call callbacks
-	lua_newtable(L);
-	
-	lua_pushstring(L, mgparams->mg_name.c_str());
-	lua_setfield(L, -2, "mgname");
-	
-	lua_pushinteger(L, mgparams->seed);
-	lua_setfield(L, -2, "seed");
-	
-	lua_pushinteger(L, mgparams->water_level);
-	lua_setfield(L, -2, "water_level");
-	
-	std::string flagstr = writeFlagString(mgparams->flags,
-		flagdesc_mapgen, (u32)-1);
-	lua_pushstring(L, flagstr.c_str());
-	lua_setfield(L, -2, "flags");
-	
-	script_run_callbacks(L, 1, RUN_CALLBACKS_MODE_FIRST);
 }
 
 void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
@@ -171,8 +143,11 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 			int trigger_chance = 50;
 			getintfield(L, current_abm, "chance", trigger_chance);
 
-			LuaABM *abm = new LuaABM(L, id, trigger_contents,
-					required_neighbors, trigger_interval, trigger_chance);
+			bool simple_catch_up = true;
+			getboolfield(L, current_abm, "catch_up", simple_catch_up);
+
+			LuaABM *abm = new LuaABM(L, id, trigger_contents, required_neighbors,
+				trigger_interval, trigger_chance, simple_catch_up);
 
 			env->addActiveBlockModifier(abm);
 
@@ -181,4 +156,43 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 		}
 	}
 	lua_pop(L, 1);
+}
+
+void ScriptApiEnv::on_emerge_area_completion(
+	v3s16 blockpos, int action, ScriptCallbackState *state)
+{
+	Server *server = getServer();
+
+	// Note that the order of these locks is important!  Envlock must *ALWAYS*
+	// be acquired before attempting to acquire scriptlock, or else ServerThread
+	// will try to acquire scriptlock after it already owns envlock, thus
+	// deadlocking EmergeThread and ServerThread
+	MutexAutoLock envlock(server->m_env_mutex);
+
+	SCRIPTAPI_PRECHECKHEADER
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, state->callback_ref);
+	luaL_checktype(L, -1, LUA_TFUNCTION);
+
+	push_v3s16(L, blockpos);
+	lua_pushinteger(L, action);
+	lua_pushinteger(L, state->refcount);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, state->args_ref);
+
+	setOriginDirect(state->origin.c_str());
+
+	try {
+		PCALL_RES(lua_pcall(L, 4, 0, error_handler));
+	} catch (LuaError &e) {
+		server->setAsyncFatalError(e.what());
+	}
+
+	lua_pop(L, 1); // Pop error handler
+
+	if (state->refcount == 0) {
+		luaL_unref(L, LUA_REGISTRYINDEX, state->callback_ref);
+		luaL_unref(L, LUA_REGISTRYINDEX, state->args_ref);
+	}
 }

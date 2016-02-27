@@ -25,19 +25,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <map>
 #include <list>
+#include "util/numeric.h"
 #include "mapnode.h"
 #ifndef SERVER
-#include "tile.h"
+#include "client/tile.h"
 #include "shader.h"
 #endif
 #include "itemgroup.h"
 #include "sound.h" // SimpleSoundSpec
 #include "constants.h" // BS
 
+class INodeDefManager;
 class IItemDefManager;
 class ITextureSource;
 class IShaderSource;
 class IGameDef;
+class NodeResolver;
 
 typedef std::list<std::pair<content_t, int> > GroupItems;
 
@@ -60,6 +63,8 @@ enum ContentParamType2
 	CPT2_WALLMOUNTED,
 	// Block level like FLOWINGLIQUID
 	CPT2_LEVELED,
+	// 2D rotation for things like plants
+	CPT2_DEGROTATE,
 };
 
 enum LiquidType
@@ -99,38 +104,6 @@ struct NodeBox
 struct MapNode;
 class NodeMetadata;
 
-/*
-	Stand-alone definition of a TileSpec (basically a server-side TileSpec)
-*/
-enum TileAnimationType{
-	TAT_NONE=0,
-	TAT_VERTICAL_FRAMES=1,
-};
-struct TileDef
-{
-	std::string name;
-	bool backface_culling; // Takes effect only in special cases
-	struct{
-		enum TileAnimationType type;
-		int aspect_w; // width for aspect ratio
-		int aspect_h; // height for aspect ratio
-		float length; // seconds
-	} animation;
-
-	TileDef()
-	{
-		name = "";
-		backface_culling = true;
-		animation.type = TAT_NONE;
-		animation.aspect_w = 1;
-		animation.aspect_h = 1;
-		animation.length = 1.0;
-	}
-
-	void serialize(std::ostream &os, u16 protocol_version) const;
-	void deSerialize(std::istream &is);
-};
-
 enum NodeDrawType
 {
 	NDT_NORMAL, // A basic solid block
@@ -152,6 +125,43 @@ enum NodeDrawType
 	NDT_FIRELIKE, // Draw faces slightly rotated and only on connecting nodes,
 	NDT_GLASSLIKE_FRAMED_OPTIONAL,	// enabled -> connected, disabled -> Glass-like
 									// uses 2 textures, one for frames, second for faces
+	NDT_MESH, // Uses static meshes
+};
+
+/*
+	Stand-alone definition of a TileSpec (basically a server-side TileSpec)
+*/
+enum TileAnimationType{
+	TAT_NONE=0,
+	TAT_VERTICAL_FRAMES=1,
+};
+struct TileDef
+{
+	std::string name;
+	bool backface_culling; // Takes effect only in special cases
+	bool tileable_horizontal;
+	bool tileable_vertical;
+	struct{
+		enum TileAnimationType type;
+		int aspect_w; // width for aspect ratio
+		int aspect_h; // height for aspect ratio
+		float length; // seconds
+	} animation;
+
+	TileDef()
+	{
+		name = "";
+		backface_culling = true;
+		tileable_horizontal = true;
+		tileable_vertical = true;
+		animation.type = TAT_NONE;
+		animation.aspect_w = 1;
+		animation.aspect_h = 1;
+		animation.length = 1.0;
+	}
+
+	void serialize(std::ostream &os, u16 protocol_version) const;
+	void deSerialize(std::istream &is, const u8 contentfeatures_version, const NodeDrawType drawtype);
 };
 
 #define CF_SPECIAL_COUNT 6
@@ -163,7 +173,7 @@ struct ContentFeatures
 	*/
 #ifndef SERVER
 	// 0     1     2     3     4     5
-	// up    down  right left  back  front 
+	// up    down  right left  back  front
 	TileSpec tiles[6];
 	// Special tiles
 	// - Currently used for flowing liquids
@@ -187,6 +197,11 @@ struct ContentFeatures
 
 	// Visual definition
 	enum NodeDrawType drawtype;
+	std::string mesh;
+#ifndef SERVER
+	scene::IMesh *mesh_ptr[24];
+	video::SColor minimap_color;
+#endif
 	float visual_scale; // Misc. scale parameter
 	TileDef tiledef[6];
 	TileDef tiledef_special[CF_SPECIAL_COUNT]; // eg. flowing liquid
@@ -194,6 +209,7 @@ struct ContentFeatures
 
 	// Post effect color, drawn when the camera is inside the node.
 	video::SColor post_effect_color;
+
 	// Type of MapNode::param1
 	ContentParamType param_type;
 	// Type of MapNode::param2
@@ -213,6 +229,8 @@ struct ContentFeatures
 	bool climbable;
 	// Player can build on these
 	bool buildable_to;
+	// Liquids flow into and replace node
+	bool floodable;
 	// Player cannot build to these (placement prediction disabled)
 	bool rightclickable;
 	// Flowing liquid or snow, value = default level
@@ -229,8 +247,6 @@ struct ContentFeatures
 	u8 liquid_viscosity;
 	// Is liquid renewable (new liquid source will be created between 2 existing)
 	bool liquid_renewable;
-	// Ice for water, water for ice
-	std::string freezemelt;
 	// Number of flowing liquids surrounding source
 	u8 liquid_range;
 	u8 drowning;
@@ -239,6 +255,7 @@ struct ContentFeatures
 	u32 damage_per_second;
 	NodeBox node_box;
 	NodeBox selection_box;
+	NodeBox collision_box;
 	// Used for waving leaves/plants
 	u8 waving;
 	// Compatibility with old maps
@@ -255,13 +272,13 @@ struct ContentFeatures
 	/*
 		Methods
 	*/
-	
+
 	ContentFeatures();
 	~ContentFeatures();
 	void reset();
-	void serialize(std::ostream &os, u16 protocol_version);
+	void serialize(std::ostream &os, u16 protocol_version) const;
 	void deSerialize(std::istream &is);
-	void serializeOld(std::ostream &os, u16 protocol_version);
+	void serializeOld(std::ostream &os, u16 protocol_version) const;
 	void deSerializeOld(std::istream &is, int version);
 
 	/*
@@ -276,41 +293,44 @@ struct ContentFeatures
 	}
 };
 
-class INodeDefManager
-{
+class INodeDefManager {
 public:
 	INodeDefManager(){}
 	virtual ~INodeDefManager(){}
 	// Get node definition
-	virtual const ContentFeatures& get(content_t c) const=0;
-	virtual const ContentFeatures& get(const MapNode &n) const=0;
+	virtual const ContentFeatures &get(content_t c) const=0;
+	virtual const ContentFeatures &get(const MapNode &n) const=0;
 	virtual bool getId(const std::string &name, content_t &result) const=0;
 	virtual content_t getId(const std::string &name) const=0;
 	// Allows "group:name" in addition to regular node names
 	virtual void getIds(const std::string &name, std::set<content_t> &result)
 			const=0;
-	virtual const ContentFeatures& get(const std::string &name) const=0;
-	
-	virtual void serialize(std::ostream &os, u16 protocol_version)=0;
+	virtual const ContentFeatures &get(const std::string &name) const=0;
+
+	virtual void serialize(std::ostream &os, u16 protocol_version) const=0;
+
+	virtual bool getNodeRegistrationStatus() const=0;
+
+	virtual void pendNodeResolve(NodeResolver *nr)=0;
+	virtual bool cancelNodeResolveCallback(NodeResolver *nr)=0;
 };
 
-class IWritableNodeDefManager : public INodeDefManager
-{
+class IWritableNodeDefManager : public INodeDefManager {
 public:
 	IWritableNodeDefManager(){}
 	virtual ~IWritableNodeDefManager(){}
 	virtual IWritableNodeDefManager* clone()=0;
 	// Get node definition
-	virtual const ContentFeatures& get(content_t c) const=0;
-	virtual const ContentFeatures& get(const MapNode &n) const=0;
+	virtual const ContentFeatures &get(content_t c) const=0;
+	virtual const ContentFeatures &get(const MapNode &n) const=0;
 	virtual bool getId(const std::string &name, content_t &result) const=0;
 	// If not found, returns CONTENT_IGNORE
 	virtual content_t getId(const std::string &name) const=0;
 	// Allows "group:name" in addition to regular node names
 	virtual void getIds(const std::string &name, std::set<content_t> &result)
-			const=0;
+		const=0;
 	// If not found, returns the features of CONTENT_UNKNOWN
-	virtual const ContentFeatures& get(const std::string &name) const=0;
+	virtual const ContentFeatures &get(const std::string &name) const=0;
 
 	// Register node definition by name (allocate an id)
 	// If returns CONTENT_IGNORE, could not allocate id
@@ -326,16 +346,50 @@ public:
 	virtual void updateAliases(IItemDefManager *idef)=0;
 
 	/*
+		Override textures from servers with ones specified in texturepack/override.txt
+	*/
+	virtual void applyTextureOverrides(const std::string &override_filepath)=0;
+
+	/*
 		Update tile textures to latest return values of TextueSource.
 	*/
-	virtual void updateTextures(ITextureSource *tsrc,
-		IShaderSource *shdsrc)=0;
+	virtual void updateTextures(IGameDef *gamedef,
+		void (*progress_cbk)(void *progress_args, u32 progress, u32 max_progress),
+		void *progress_cbk_args)=0;
 
-	virtual void serialize(std::ostream &os, u16 protocol_version)=0;
+	virtual void serialize(std::ostream &os, u16 protocol_version) const=0;
 	virtual void deSerialize(std::istream &is)=0;
+
+	virtual bool getNodeRegistrationStatus() const=0;
+	virtual void setNodeRegistrationStatus(bool completed)=0;
+
+	virtual void pendNodeResolve(NodeResolver *nr)=0;
+	virtual bool cancelNodeResolveCallback(NodeResolver *nr)=0;
+	virtual void runNodeResolveCallbacks()=0;
+	virtual void resetNodeResolveState()=0;
 };
 
-IWritableNodeDefManager* createNodeDefManager();
+IWritableNodeDefManager *createNodeDefManager();
+
+class NodeResolver {
+public:
+	NodeResolver();
+	virtual ~NodeResolver();
+	virtual void resolveNodeNames() = 0;
+
+	bool getIdFromNrBacklog(content_t *result_out,
+		const std::string &node_alt, content_t c_fallback);
+	bool getIdsFromNrBacklog(std::vector<content_t> *result_out,
+		bool all_required=false, content_t c_fallback=CONTENT_IGNORE);
+
+	void nodeResolveInternal();
+
+	u32 m_nodenames_idx;
+	u32 m_nnlistsizes_idx;
+	std::vector<std::string> m_nodenames;
+	std::vector<size_t> m_nnlistsizes;
+	INodeDefManager *m_ndef;
+	bool m_resolve_done;
+};
 
 #endif
-

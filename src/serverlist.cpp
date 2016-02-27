@@ -17,17 +17,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <fstream>
 #include <iostream>
 #include <sstream>
 #include <algorithm>
 
 #include "version.h"
-#include "main.h" // for g_settings
 #include "settings.h"
 #include "serverlist.h"
 #include "filesys.h"
 #include "porting.h"
 #include "log.h"
+#include "network/networkprotocol.h"
 #include "json/json.h"
 #include "convert_json.h"
 #include "httpfetch.h"
@@ -67,8 +68,11 @@ std::vector<ServerListSpec> getLocal()
 
 std::vector<ServerListSpec> getOnline()
 {
-	Json::Value root = fetchJsonValue(
-			(g_settings->get("serverlist_url") + "/list").c_str(), NULL);
+	std::ostringstream geturl;
+	geturl << g_settings->get("serverlist_url") <<
+		"/list?proto_version_min=" << CLIENT_PROTOCOL_VERSION_MIN <<
+		"&proto_version_max=" << CLIENT_PROTOCOL_VERSION_MAX;
+	Json::Value root = fetchJsonValue(geturl.str(), NULL);
 
 	std::vector<ServerListSpec> server_list;
 
@@ -161,7 +165,7 @@ const std::string serialize(const std::vector<ServerListSpec> &serverlist)
 	std::string liststring;
 	for (std::vector<ServerListSpec>::const_iterator it = serverlist.begin();
 			it != serverlist.end();
-			it++) {
+			++it) {
 		liststring += "[server]\n";
 		liststring += (*it)["name"].asString() + '\n';
 		liststring += (*it)["address"].asString() + '\n';
@@ -178,7 +182,7 @@ const std::string serializeJson(const std::vector<ServerListSpec> &serverlist)
 	Json::Value list(Json::arrayValue);
 	for (std::vector<ServerListSpec>::const_iterator it = serverlist.begin();
 			it != serverlist.end();
-			it++) {
+			++it) {
 		list.append(*it);
 	}
 	root["list"] = list;
@@ -189,23 +193,28 @@ const std::string serializeJson(const std::vector<ServerListSpec> &serverlist)
 
 #if USE_CURL
 void sendAnnounce(const std::string &action,
+		const u16 port,
 		const std::vector<std::string> &clients_names,
 		const double uptime,
 		const u32 game_time,
 		const float lag,
 		const std::string &gameid,
+		const std::string &mg_name,
 		const std::vector<ModSpec> &mods)
 {
 	Json::Value server;
 	server["action"] = action;
-	server["port"]    = g_settings->getU16("port");
+	server["port"] = port;
 	if (g_settings->exists("server_address")) {
 		server["address"] = g_settings->get("server_address");
 	}
 	if (action != "delete") {
+		bool strict_checking = g_settings->getBool("strict_protocol_version_checking");
 		server["name"]         = g_settings->get("server_name");
 		server["description"]  = g_settings->get("server_description");
-		server["version"]      = minetest_version_simple;
+		server["version"]      = g_version_string;
+		server["proto_min"]    = strict_checking ? LATEST_PROTOCOL_VERSION : SERVER_PROTOCOL_VERSION_MIN;
+		server["proto_max"]    = strict_checking ? LATEST_PROTOCOL_VERSION : SERVER_PROTOCOL_VERSION_MAX;
 		server["url"]          = g_settings->get("server_url");
 		server["creative"]     = g_settings->getBool("creative_mode");
 		server["damage"]       = g_settings->getBool("enable_damage");
@@ -227,9 +236,9 @@ void sendAnnounce(const std::string &action,
 	if (action == "start") {
 		server["dedicated"]         = g_settings->getBool("server_dedicated");
 		server["rollback"]          = g_settings->getBool("enable_rollback_recording");
-		server["mapgen"]            = g_settings->get("mg_name");
+		server["mapgen"]            = mg_name;
 		server["privs"]             = g_settings->get("default_privs");
-		server["can_see_far_names"] = g_settings->getBool("unlimited_player_transfer_distance");
+		server["can_see_far_names"] = g_settings->getS16("player_transfer_distance") <= 0;
 		server["mods"]              = Json::Value(Json::arrayValue);
 		for (std::vector<ModSpec>::const_iterator it = mods.begin();
 				it != mods.end();

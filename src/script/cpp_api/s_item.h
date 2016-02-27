@@ -42,6 +42,8 @@ public:
 			ServerActiveObject *placer, const PointedThing &pointed);
 	bool item_OnUse(ItemStack &item,
 			ServerActiveObject *user, const PointedThing &pointed);
+	bool item_OnSecondaryUse(ItemStack &item,
+			ServerActiveObject *user);
 	bool item_OnCraft(ItemStack &item, ServerActiveObject *user,
 			const InventoryList *old_craft_grid, const InventoryLocation &craft_inv);
 	bool item_CraftPredict(ItemStack &item, ServerActiveObject *user,

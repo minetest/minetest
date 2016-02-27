@@ -24,13 +24,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettime.h"
 #include "keycode.h"
 #include "settings.h"
-#include "main.h"  // for g_settings
 #include "porting.h"
-#include "tile.h"
-#include "IGUIFont.h"
-#include <string>
-
+#include "client/tile.h"
+#include "fontengine.h"
+#include "log.h"
 #include "gettext.h"
+#include <string>
 
 #if USE_FREETYPE
 #include "xCGUITTFont.h"
@@ -72,49 +71,34 @@ GUIChatConsole::GUIChatConsole(
 	m_animate_time_old = getTimeMs();
 
 	// load background settings
-	bool console_color_set = !g_settings->get("console_color").empty();
 	s32 console_alpha = g_settings->getS32("console_alpha");
+	m_background_color.setAlpha(clamp_u8(console_alpha));
 
 	// load the background texture depending on settings
-	m_background_color.setAlpha(clamp_u8(console_alpha));
-	if (console_color_set)
-	{
+	ITextureSource *tsrc = client->getTextureSource();
+	if (tsrc->isKnownSourceImage("background_chat.jpg")) {
+		m_background = tsrc->getTexture("background_chat.jpg");
+		m_background_color.setRed(255);
+		m_background_color.setGreen(255);
+		m_background_color.setBlue(255);
+	} else {
 		v3f console_color = g_settings->getV3F("console_color");
 		m_background_color.setRed(clamp_u8(myround(console_color.X)));
 		m_background_color.setGreen(clamp_u8(myround(console_color.Y)));
 		m_background_color.setBlue(clamp_u8(myround(console_color.Z)));
 	}
-	else
-	{
-		m_background = env->getVideoDriver()->getTexture(getTexturePath("background_chat.jpg").c_str());
-		m_background_color.setRed(255);
-		m_background_color.setGreen(255);
-		m_background_color.setBlue(255);
-	}
 
-	// load the font
-	// FIXME should a custom texture_path be searched too?
-	std::string font_name = g_settings->get("mono_font_path");
-	#if USE_FREETYPE
-	m_use_freetype = g_settings->getBool("freetype");
-	if (m_use_freetype) {
-		u16 font_size = g_settings->getU16("mono_font_size");
-		m_font = gui::CGUITTFont::createTTFont(env, font_name.c_str(), font_size);
-	} else {
-		m_font = env->getFont(font_name.c_str());
-	}
-	#else
-	m_font = env->getFont(font_name.c_str());
-	#endif
+	m_font = g_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_Mono);
+
 	if (m_font == NULL)
 	{
-		dstream << "Unable to load font: " << font_name << std::endl;
+		errorstream << "GUIChatConsole: Unable to load mono font ";
 	}
 	else
 	{
 		core::dimension2d<u32> dim = m_font->getDimension(L"M");
 		m_fontsize = v2u32(dim.Width, dim.Height);
-		dstream << "Font size: " << m_fontsize.X << " " << m_fontsize.Y << std::endl;
+		m_font->grab();
 	}
 	m_fontsize.X = MYMAX(m_fontsize.X, 1);
 	m_fontsize.Y = MYMAX(m_fontsize.Y, 1);
@@ -125,10 +109,8 @@ GUIChatConsole::GUIChatConsole(
 
 GUIChatConsole::~GUIChatConsole()
 {
-#if USE_FREETYPE
-	if (m_use_freetype)
+	if (m_font)
 		m_font->drop();
-#endif
 }
 
 void GUIChatConsole::openConsole(f32 height)
@@ -522,6 +504,19 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				ChatPrompt::CURSOROP_DELETE,
 				ChatPrompt::CURSOROP_DIR_RIGHT,
 				scope);
+			return true;
+		}
+		else if(event.KeyInput.Key == KEY_KEY_V && event.KeyInput.Control)
+		{
+			// Ctrl-V pressed
+			// paste text from clipboard
+			IOSOperator *os_operator = Environment->getOSOperator();
+			const c8 *text = os_operator->getTextFromClipboard();
+			if (text)
+			{
+				std::wstring wtext = narrow_to_wide(text);
+				m_chat_backend->getPrompt().input(wtext);
+			}
 			return true;
 		}
 		else if(event.KeyInput.Key == KEY_KEY_U && event.KeyInput.Control)

@@ -129,7 +129,7 @@ function mm_texture.set_generic(identifier)
 end
 
 --------------------------------------------------------------------------------
-function mm_texture.set_game(identifier,gamedetails)
+function mm_texture.set_game(identifier, gamedetails)
 	
 	if gamedetails == nil then
 		return false
@@ -137,15 +137,34 @@ function mm_texture.set_game(identifier,gamedetails)
 
 	if mm_texture.texturepack ~= nil then
 		local path = mm_texture.texturepack .. DIR_DELIM ..
-						gamedetails.id .. "_menu_" .. identifier .. ".png"
-		if core.set_background(identifier,path) then
+			gamedetails.id .. "_menu_" .. identifier .. ".png"
+		if core.set_background(identifier, path) then
 			return true
 		end
 	end
 	
-	local path = gamedetails.path .. DIR_DELIM .."menu" ..
-									 DIR_DELIM .. identifier .. ".png"
-	if core.set_background(identifier,path) then
+	-- Find out how many randomized textures the subgame provides
+	local n = 0
+	local filename
+	local menu_files = core.get_dir_list(gamedetails.path .. DIR_DELIM .. "menu", false)
+	for i = 1, #menu_files do
+		filename = identifier .. "." .. i .. ".png"
+		if table.indexof(menu_files, filename) == -1 then
+			n = i - 1
+			break
+		end
+	end
+	-- Select random texture, 0 means standard texture
+	n = math.random(0, n)
+	if n == 0 then
+		filename = identifier .. ".png"
+	else
+		filename = identifier .. "." .. n .. ".png"
+	end
+
+	local path = gamedetails.path .. DIR_DELIM .. "menu" ..
+		DIR_DELIM .. filename
+	if core.set_background(identifier, path) then
 		return true
 	end
 	

@@ -23,19 +23,35 @@ local function get_formspec(tabview, name, tabdata)
 
 	retval = retval ..
 		"label[8,0.5;".. fgettext("Name/Password") .. "]" ..
-		"field[0.25,3.25;5.5,0.5;te_address;;" ..core.setting_get("address") .."]" ..
-		"field[5.75,3.25;2.25,0.5;te_port;;" ..core.setting_get("remote_port") .."]" ..
+		"field[0.25,3.25;5.5,0.5;te_address;;" ..
+		core.formspec_escape(core.setting_get("address")) .."]" ..
+		"field[5.75,3.25;2.25,0.5;te_port;;" ..
+		core.formspec_escape(core.setting_get("remote_port")) .."]" ..
 		"checkbox[8,-0.25;cb_public_serverlist;".. fgettext("Public Serverlist") .. ";" ..
 		render_details .. "]"
 
 	retval = retval ..
 		"button[8,2.5;4,1.5;btn_mp_connect;".. fgettext("Connect") .. "]" ..
-		"field[8.75,1.5;3.5,0.5;te_name;;" ..core.setting_get("name") .."]" ..
+		"field[8.75,1.5;3.5,0.5;te_name;;" ..
+		core.formspec_escape(core.setting_get("name")) .."]" ..
 		"pwdfield[8.75,2.3;3.5,0.5;te_pwd;]"
-
-	--favourites
+		
+	if render_details then
+		retval = retval .. "tablecolumns[" ..
+			"color,span=3;" ..
+			"text,align=right;" ..                -- clients
+			"text,align=center,padding=0.25;" ..  -- "/"
+			"text,align=right,padding=0.25;" ..   -- clients_max
+			image_column(fgettext("Creative mode"), "creative") .. ",padding=1;" ..
+			image_column(fgettext("Damage enabled"), "damage") .. ",padding=0.25;" ..
+			image_column(fgettext("PvP enabled"), "pvp") .. ",padding=0.25;" ..
+			"color,span=1;" ..
+			"text,padding=1]"                               -- name
+	else
+		retval = retval .. "tablecolumns[text]"
+	end
 	retval = retval ..
-		"textlist[-0.05,0.0;7.55,2.75;favourites;"
+		"table[-0.05,0;7.55,2.75;favourites;"
 
 	if #menudata.favorites > 0 then
 		retval = retval .. render_favorite(menudata.favorites[1],render_details)
@@ -53,26 +69,23 @@ local function get_formspec(tabview, name, tabdata)
 
 	-- separator
 	retval = retval ..
-		"box[-0.3,3.75;12.4,0.1;#FFFFFF]"
+		"box[-0.28,3.75;12.4,0.1;#FFFFFF]"
 
 	-- checkboxes
 	retval = retval ..
-		"checkbox[1.0,3.9;cb_creative;".. fgettext("Creative Mode") .. ";" ..
+		"checkbox[8.0,3.9;cb_creative;".. fgettext("Creative Mode") .. ";" ..
 		dump(core.setting_getbool("creative_mode")) .. "]"..
-		"checkbox[5.0,3.9;cb_damage;".. fgettext("Enable Damage") .. ";" ..
-		dump(core.setting_getbool("enable_damage")) .. "]" ..
-		"checkbox[8,3.9;cb_fly_mode;".. fgettext("Fly mode") .. ";" ..
-		dump(core.setting_getbool("free_move")) .. "]"
+		"checkbox[8.0,4.4;cb_damage;".. fgettext("Enable Damage") .. ";" ..
+		dump(core.setting_getbool("enable_damage")) .. "]"
 	-- buttons
 	retval = retval ..
-		"button[2.0,4.5;6,1.5;btn_start_singleplayer;" .. fgettext("Start Singleplayer") .. "]" ..
-		"button[8.25,4.5;2.5,1.5;btn_config_sp_world;" .. fgettext("Config mods") .. "]"
+		"button[0,3.7;8,1.5;btn_start_singleplayer;" .. fgettext("Start Singleplayer") .. "]" ..
+		"button[0,4.5;8,1.5;btn_config_sp_world;" .. fgettext("Config mods") .. "]"
 
 	return retval
 end
 
 --------------------------------------------------------------------------------
-
 local function main_button_handler(tabview, fields, name, tabdata)
 
 	if fields["btn_start_singleplayer"] then
@@ -83,12 +96,12 @@ local function main_button_handler(tabview, fields, name, tabdata)
 	end
 
 	if fields["favourites"] ~= nil then
-		local event = core.explode_textlist_event(fields["favourites"])
+		local event = core.explode_table_event(fields["favourites"])
 
 		if event.type == "CHG" then
-			if event.index <= #menudata.favorites then
-				local address = menudata.favorites[event.index].address
-				local port = menudata.favorites[event.index].port
+			if event.row <= #menudata.favorites then
+				local address = menudata.favorites[event.row].address
+				local port = menudata.favorites[event.row].port
 
 				if address ~= nil and
 					port ~= nil then
@@ -96,7 +109,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 					core.setting_set("remote_port",port)
 				end
 
-				tabdata.fav_selected = event.index
+				tabdata.fav_selected = event.row
 			end
 		end
 		return true
@@ -123,11 +136,6 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		return true
 	end
 
-	if fields["cb_fly_mode"] then
-		core.setting_set("free_move", fields["cb_fly_mode"])
-		return true
-	end
-
 	if fields["btn_mp_connect"] ~= nil or
 		fields["key_enter"] ~= nil then
 
@@ -144,6 +152,11 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 			gamedata.servername			= menudata.favorites[fav_idx].name
 			gamedata.serverdescription	= menudata.favorites[fav_idx].description
+
+			if not is_server_protocol_compat_or_error(menudata.favorites[fav_idx].proto_min,
+					menudata.favorites[fav_idx].proto_max) then
+				return true
+			end
 		else
 			gamedata.servername			= ""
 			gamedata.serverdescription	= ""

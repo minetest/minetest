@@ -20,32 +20,54 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_base.h"
 #include "lua_api/l_internal.h"
 #include "cpp_api/s_base.h"
+#include <mods.h>
+#include <server.h>
 
-ScriptApiBase* ModApiBase::getScriptApiBase(lua_State *L) {
+ScriptApiBase *ModApiBase::getScriptApiBase(lua_State *L)
+{
 	// Get server from registry
-	lua_getfield(L, LUA_REGISTRYINDEX, "scriptapi");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
 	ScriptApiBase *sapi_ptr = (ScriptApiBase*) lua_touserdata(L, -1);
 	lua_pop(L, 1);
 	return sapi_ptr;
 }
 
-Server* ModApiBase::getServer(lua_State *L) {
+Server *ModApiBase::getServer(lua_State *L)
+{
 	return getScriptApiBase(L)->getServer();
 }
 
-Environment* ModApiBase::getEnv(lua_State *L) {
+Environment *ModApiBase::getEnv(lua_State *L)
+{
 	return getScriptApiBase(L)->getEnv();
 }
 
-GUIEngine* ModApiBase::getGuiEngine(lua_State *L) {
+GUIEngine *ModApiBase::getGuiEngine(lua_State *L)
+{
 	return getScriptApiBase(L)->getGuiEngine();
 }
 
-bool ModApiBase::registerFunction(lua_State *L,
-		const char *name,
-		lua_CFunction fct,
-		int top
-		) {
+std::string ModApiBase::getCurrentModPath(lua_State *L)
+{
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
+	const char *current_mod_name = lua_tostring(L, -1);
+	if (!current_mod_name)
+		return ".";
+
+	const ModSpec *mod = getServer(L)->getModSpec(current_mod_name);
+	if (!mod)
+		return ".";
+
+	return mod->path;
+}
+
+
+bool ModApiBase::registerFunction(
+	lua_State *L,
+	const char *name,
+	lua_CFunction fct,
+	int top)
+{
 	//TODO check presence first!
 
 	lua_pushstring(L,name);

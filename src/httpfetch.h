@@ -20,9 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef HTTPFETCH_HEADER
 #define HTTPFETCH_HEADER
 
-#include <string>
 #include <vector>
-#include <map>
+#include "util/string.h"
 #include "config.h"
 
 // Can be used in place of "caller" in asynchronous transfers to discard result
@@ -54,7 +53,7 @@ struct HTTPFetchRequest
 
 	// POST fields.  Fields are escaped properly.
 	// If this is empty a GET request is done instead.
-	std::map<std::string, std::string> post_fields;
+	StringMap post_fields;
 
 	// Raw POST data, overrides post_fields.
 	std::string post_data;
@@ -116,6 +115,9 @@ bool httpfetch_async_get(unsigned long caller, HTTPFetchResult &fetch_result);
 // Allocates a caller ID for httpfetch_async
 // Not required if you want to set caller = HTTPFETCH_DISCARD
 unsigned long httpfetch_caller_alloc();
+
+// Allocates a non-predictable caller ID for httpfetch_async
+unsigned long httpfetch_caller_alloc_secure();
 
 // Frees a caller ID allocated with httpfetch_caller_alloc
 // Note: This can be expensive, because the httpfetch thread is told

@@ -20,6 +20,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef IRRLICHTTYPES_HEADER
 #define IRRLICHTTYPES_HEADER
 
+/* Ensure that <stdint.h> is included before <irrTypes.h>, unless building on
+ * MSVC, to address an irrlicht issue: https://sourceforge.net/p/irrlicht/bugs/433/
+ *
+ * TODO: Decide whether or not we support non-compliant C++ compilers like old
+ *       versions of MSCV.  If we do not then <stdint.h> can always be included
+ *       regardless of the compiler.
+ */
+#ifndef _MSC_VER
+#	include <stdint.h>
+#endif
+
 #include <irrTypes.h>
 
 using namespace irr;
@@ -32,11 +43,24 @@ using namespace irr;
 	typedef unsigned long long u64;
 #else
 	// Posix
-	#include <stdint.h>
 	typedef int64_t s64;
 	typedef uint64_t u64;
 #endif
 #endif
 
-#endif
+#define S8_MIN  (-0x7F - 1)
+#define S16_MIN (-0x7FFF - 1)
+#define S32_MIN (-0x7FFFFFFF - 1)
+#define S64_MIN (-0x7FFFFFFFFFFFFFFF - 1)
 
+#define S8_MAX  0x7F
+#define S16_MAX 0x7FFF
+#define S32_MAX 0x7FFFFFFF
+#define S64_MAX 0x7FFFFFFFFFFFFFFF
+
+#define U8_MAX  0xFF
+#define U16_MAX 0xFFFF
+#define U32_MAX 0xFFFFFFFF
+#define U64_MAX 0xFFFFFFFFFFFFFFFF
+
+#endif

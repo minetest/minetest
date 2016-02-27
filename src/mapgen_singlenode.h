@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2015 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -27,24 +27,26 @@ struct MapgenSinglenodeParams : public MapgenSpecificParams {
 	MapgenSinglenodeParams() {}
 	~MapgenSinglenodeParams() {}
 	
-	void readParams(Settings *settings);
-	void writeParams(Settings *settings);
+	void readParams(const Settings *settings) {}
+	void writeParams(Settings *settings) const {}
 };
 
 class MapgenSinglenode : public Mapgen {
 public:
 	u32 flags;
+	content_t c_node;
+	u8 set_light;
 
-	MapgenSinglenode(int mapgenid, MapgenParams *params);
+	MapgenSinglenode(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	~MapgenSinglenode();
 	
 	void makeChunk(BlockMakeData *data);
-	int getGroundLevelAtPoint(v2s16 p);
+	int getSpawnLevelAtPoint(v2s16 p);
 };
 
 struct MapgenFactorySinglenode : public MapgenFactory {
 	Mapgen *createMapgen(int mgid, MapgenParams *params, EmergeManager *emerge) {
-		return new MapgenSinglenode(mgid, params);
+		return new MapgenSinglenode(mgid, params, emerge);
 	};
 	
 	MapgenSpecificParams *createMapgenParams() {

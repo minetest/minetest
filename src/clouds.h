@@ -24,6 +24,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include "constants.h"
 
+// Menu clouds
+class Clouds;
+extern Clouds *g_menuclouds;
+
+// Scene manager used for menu clouds
+namespace irr{namespace scene{class ISceneManager;}}
+extern irr::scene::ISceneManager *g_menucloudsmgr;
+
 class Clouds : public scene::ISceneNode
 {
 public:
@@ -45,7 +53,7 @@ public:
 
 	virtual void render();
 	
-	virtual const core::aabbox3d<f32>& getBoundingBox() const
+	virtual const aabb3f &getBoundingBox() const
 	{
 		return m_box;
 	}
@@ -71,14 +79,19 @@ public:
 	void updateCameraOffset(v3s16 camera_offset)
 	{
 		m_camera_offset = camera_offset;
-		m_box = core::aabbox3d<f32>(-BS * 1000000, m_cloud_y - BS - BS * camera_offset.Y, -BS * 1000000,
+		m_box = aabb3f(-BS * 1000000, m_cloud_y - BS - BS * camera_offset.Y, -BS * 1000000,
 			BS * 1000000, m_cloud_y + BS - BS * camera_offset.Y, BS * 1000000);
 	}
 
+	void readSettings();
+
 private:
 	video::SMaterial m_material;
-	core::aabbox3d<f32> m_box;
+	aabb3f m_box;
+	s16 m_passed_cloud_y;
 	float m_cloud_y;
+	u16 m_cloud_radius_i;
+	bool m_enable_3d;
 	video::SColorf m_color;
 	u32 m_seed;
 	v2f m_camera_pos;

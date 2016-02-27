@@ -21,9 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define NODEMETADATA_HEADER
 
 #include "irr_v3d.h"
-#include <string>
 #include <iostream>
-#include <map>
+#include <vector>
+#include "util/string.h"
 
 /*
 	NodeMetadata stores arbitary amounts of data for special blocks.
@@ -35,17 +35,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 class Inventory;
-class IGameDef;
+class IItemDefManager;
 
 class NodeMetadata
 {
 public:
-	NodeMetadata(IGameDef *gamedef);
+	NodeMetadata(IItemDefManager *item_def_mgr);
 	~NodeMetadata();
-	
+
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
-	
+
 	void clear();
 
 	// Generic key/value store
@@ -53,19 +53,19 @@ public:
 	void setString(const std::string &name, const std::string &var);
 	// Support variable names in values
 	std::string resolveString(const std::string &str, unsigned short recursion = 0) const;
-	std::map<std::string, std::string> getStrings() const
+	StringMap getStrings() const
 	{
 		return m_stringvars;
 	}
 
 	// The inventory
-	Inventory* getInventory()
+	Inventory *getInventory()
 	{
 		return m_inventory;
 	}
 
 private:
-	std::map<std::string, std::string> m_stringvars;
+	StringMap m_stringvars;
 	Inventory *m_inventory;
 };
 
@@ -80,19 +80,21 @@ public:
 	~NodeMetadataList();
 
 	void serialize(std::ostream &os) const;
-	void deSerialize(std::istream &is, IGameDef *gamedef);
-	
+	void deSerialize(std::istream &is, IItemDefManager *item_def_mgr);
+
+	// Add all keys in this list to the vector keys
+	std::vector<v3s16> getAllKeys();
 	// Get pointer to data
-	NodeMetadata* get(v3s16 p);
+	NodeMetadata *get(v3s16 p);
 	// Deletes data
 	void remove(v3s16 p);
 	// Deletes old data and sets a new one
 	void set(v3s16 p, NodeMetadata *d);
 	// Deletes all
 	void clear();
-	
+
 private:
-	std::map<v3s16, NodeMetadata*> m_data;
+	std::map<v3s16, NodeMetadata *> m_data;
 };
 
 #endif

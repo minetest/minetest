@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mods.h"
 #include "config.h"
 #include "log.h"
-#include "main.h" // for g_settings
 #include "settings.h"
 #include "httpfetch.h"
 #include "porting.h"
@@ -53,7 +52,13 @@ Json::Value fetchJsonValue(const std::string &url,
 	if (!reader.parse(stream, root)) {
 		errorstream << "URL: " << url << std::endl;
 		errorstream << "Failed to parse json data " << reader.getFormattedErrorMessages();
-		errorstream << "data: \"" << fetch_result.data << "\"" << std::endl;
+		if (fetch_result.data.size() > 100) {
+			errorstream << "Data (" << fetch_result.data.size()
+				<< " bytes) printed to warningstream." << std::endl;
+			warningstream << "data: \"" << fetch_result.data << "\"" << std::endl;
+		} else {
+			errorstream << "data: \"" << fetch_result.data << "\"" << std::endl;
+		}
 		return Json::Value();
 	}
 
@@ -357,18 +362,10 @@ ModStoreModDetails          readModStoreModDetails(Json::Value& details) {
 	}
 
 	//value
-	if (details["rating"].asString().size()) {
-
-		std::string id_raw = details["rating"].asString();
-		char* endptr = 0;
-		float numbervalue = strtof(id_raw.c_str(),&endptr);
-
-		if ((id_raw != "") && (*endptr == 0)) {
-			retval.rating = numbervalue;
-		}
-	}
-	else {
-		retval.rating = 0.0;
+	if (details["value"].isInt()) {
+		retval.rating = details["value"].asInt();
+	} else {
+		retval.rating = 0;
 	}
 
 	//depends

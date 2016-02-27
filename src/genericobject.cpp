@@ -110,7 +110,7 @@ std::string gob_cmd_update_armor_groups(const ItemGroupList &armor_groups)
 	writeU8(os, GENERIC_CMD_UPDATE_ARMOR_GROUPS);
 	writeU16(os, armor_groups.size());
 	for(ItemGroupList::const_iterator i = armor_groups.begin();
-			i != armor_groups.end(); i++){
+			i != armor_groups.end(); ++i){
 		os<<serializeString(i->first);
 		writeS16(os, i->second);
 	}
@@ -133,7 +133,7 @@ std::string gob_cmd_update_physics_override(float physics_override_speed, float 
 	return os.str();
 }
 
-std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_blend)
+std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_blend, bool frame_loop)
 {
 	std::ostringstream os(std::ios::binary);
 	// command 
@@ -142,6 +142,8 @@ std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_
 	writeV2F1000(os, frames);
 	writeF1000(os, frame_speed);
 	writeF1000(os, frame_blend);
+	// these are sent inverted so we get true when the server sends nothing
+	writeU8(os, !frame_loop);
 	return os.str();
 }
 
@@ -161,7 +163,7 @@ std::string gob_cmd_update_attachment(int parent_id, std::string bone, v3f posit
 {
 	std::ostringstream os(std::ios::binary);
 	// command 
-	writeU8(os, GENERIC_CMD_SET_ATTACHMENT);
+	writeU8(os, GENERIC_CMD_ATTACH_TO);
 	// parameters
 	writeS16(os, parent_id);
 	os<<serializeString(bone);
@@ -170,3 +172,13 @@ std::string gob_cmd_update_attachment(int parent_id, std::string bone, v3f posit
 	return os.str();
 }
 
+std::string gob_cmd_update_nametag_attributes(video::SColor color)
+{
+	std::ostringstream os(std::ios::binary);
+	// command
+	writeU8(os, GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES);
+	// parameters
+	writeU8(os, 1); // version for forward compatibility
+	writeARGB8(os, color);
+	return os.str();
+}

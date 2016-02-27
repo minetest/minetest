@@ -32,13 +32,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <set>
 #include <list>
+#include <queue>
 #include <map>
 #include "irr_v3d.h"
 #include "activeobject.h"
 #include "util/numeric.h"
 #include "mapnode.h"
 #include "mapblock.h"
-#include "jthread/jmutex.h"
+#include "threading/mutex.h"
+#include "threading/atomic.h"
+#include "network/networkprotocol.h" // for AccessDeniedCode
 
 class ServerEnvironment;
 class ActiveBlockModifier;
@@ -50,6 +53,7 @@ class ServerMap;
 class ClientMap;
 class GameScripting;
 class Player;
+class RemotePlayer;
 
 class Environment
 {
@@ -69,62 +73,69 @@ public:
 	virtual Map & getMap() = 0;
 
 	virtual void addPlayer(Player *player);
-	void removePlayer(u16 peer_id);
-	void removePlayer(const char *name);
+	void removePlayer(Player *player);
 	Player * getPlayer(u16 peer_id);
 	Player * getPlayer(const char *name);
 	Player * getRandomConnectedPlayer();
 	Player * getNearestConnectedPlayer(v3f pos);
-	std::list<Player*> getPlayers();
-	std::list<Player*> getPlayers(bool ignore_disconnected);
-	
+	std::vector<Player*> getPlayers();
+	std::vector<Player*> getPlayers(bool ignore_disconnected);
+
 	u32 getDayNightRatio();
 
 	// 0-23999
-	virtual void setTimeOfDay(u32 time)
-	{
-		m_time_of_day = time;
-		m_time_of_day_f = (float)time / 24000.0;
-	}
-
-	u32 getTimeOfDay()
-	{ return m_time_of_day; }
-
-	float getTimeOfDayF()
-	{ return m_time_of_day_f; }
+	virtual void setTimeOfDay(u32 time);
+	u32 getTimeOfDay();
+	float getTimeOfDayF();
 
 	void stepTimeOfDay(float dtime);
 
 	void setTimeOfDaySpeed(float speed);
-	
 	float getTimeOfDaySpeed();
 
-	void setDayNightRatioOverride(bool enable, u32 value)
-	{
-		m_enable_day_night_ratio_override = enable;
-		m_day_night_ratio_override = value;
-	}
+	void setDayNightRatioOverride(bool enable, u32 value);
 
 	// counter used internally when triggering ABMs
 	u32 m_added_objects;
 
 protected:
 	// peer_ids in here should be unique, except that there may be many 0s
-	std::list<Player*> m_players;
+	std::vector<Player*> m_players;
+
+	GenericAtomic<float> m_time_of_day_speed;
+
+	/*
+	 * Below: values managed by m_time_lock
+	*/
 	// Time of day in milli-hours (0-23999); determines day and night
 	u32 m_time_of_day;
 	// Time of day in 0...1
 	float m_time_of_day_f;
-	float m_time_of_day_speed;
-	// Used to buffer dtime for adding to m_time_of_day
-	float m_time_counter;
+	// Stores the skew created by the float -> u32 conversion
+	// to be applied at next conversion, so that there is no real skew.
+	float m_time_conversion_skew;
 	// Overriding the day-night ratio is useful for custom sky visuals
 	bool m_enable_day_night_ratio_override;
 	u32 m_day_night_ratio_override;
-	
-private:
-	JMutex m_lock;
+	/*
+	 * Above: values managed by m_time_lock
+	*/
 
+	/* TODO: Add a callback function so these can be updated when a setting
+	 *       changes.  At this point in time it doesn't matter (e.g. /set
+	 *       is documented to change server settings only)
+	 *
+	 * TODO: Local caching of settings is not optimal and should at some stage
+	 *       be updated to use a global settings object for getting thse values
+	 *       (as opposed to the this local caching). This can be addressed in
+	 *       a later release.
+	 */
+	bool m_cache_enable_shaders;
+
+private:
+	Mutex m_time_lock;
+
+	DISABLE_CLASS_COPY(Environment);
 };
 
 /*
@@ -139,7 +150,7 @@ class ActiveBlockModifier
 public:
 	ActiveBlockModifier(){};
 	virtual ~ActiveBlockModifier(){};
-	
+
 	// Set of contents to trigger on
 	virtual std::set<std::string> getTriggerContents()=0;
 	// Set of required neighbors (trigger doesn't happen if none are found)
@@ -150,6 +161,8 @@ public:
 	virtual float getTriggerInterval() = 0;
 	// Random chance of (1 / return value), 0 is disallowed
 	virtual u32 getTriggerChance() = 0;
+	// Whether to modify chance to simulate time lost by an unnattended block
+	virtual bool getSimpleCatchUp() = 0;
 	// This is called usually at interval for 1/chance of the nodes
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n){};
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n,
@@ -171,7 +184,7 @@ struct ABMWithState
 class ActiveBlockList
 {
 public:
-	void update(std::list<v3s16> &active_positions,
+	void update(std::vector<v3s16> &active_positions,
 			s16 radius,
 			std::set<v3s16> &blocks_removed,
 			std::set<v3s16> &blocks_added);
@@ -188,6 +201,18 @@ public:
 	std::set<v3s16> m_forceloaded_list;
 
 private:
+};
+
+/*
+	Operation mode for ServerEnvironment::clearObjects()
+*/
+enum ClearObjectsMode {
+	// Load and go through every mapblock, clearing objects
+	CLEAR_OBJECTS_MODE_FULL,
+
+	// Clear objects immediately in loaded mapblocks;
+	// clear objects in unloaded mapblocks only when the mapblocks are next activated.
+	CLEAR_OBJECTS_MODE_QUICK,
 };
 
 /*
@@ -217,9 +242,11 @@ public:
 	float getSendRecommendedInterval()
 		{ return m_recommended_send_interval; }
 
+	void kickAllPlayers(AccessDeniedCode reason,
+		const std::string &str_reason, bool reconnect);
 	// Save players
 	void saveLoadedPlayers();
-	void savePlayer(const std::string &playername);
+	void savePlayer(RemotePlayer *player);
 	Player *loadPlayer(const std::string &playername);
 
 	/*
@@ -244,7 +271,7 @@ public:
 		Returns 0 if not added and thus deleted.
 	*/
 	u16 addActiveObject(ServerActiveObject *object);
-	
+
 	/*
 		Add an active object as a static object to the corresponding
 		MapBlock.
@@ -253,23 +280,25 @@ public:
 		(note:  not used, pending removal from engine)
 	*/
 	//bool addActiveObjectAsStatic(ServerActiveObject *object);
-	
+
 	/*
 		Find out what new objects have been added to
 		inside a radius around a position
 	*/
-	void getAddedActiveObjects(v3s16 pos, s16 radius,
+	void getAddedActiveObjects(Player *player, s16 radius,
+			s16 player_radius,
 			std::set<u16> &current_objects,
-			std::set<u16> &added_objects);
+			std::queue<u16> &added_objects);
 
 	/*
 		Find out what new objects have been removed from
 		inside a radius around a position
 	*/
-	void getRemovedActiveObjects(v3s16 pos, s16 radius,
+	void getRemovedActiveObjects(Player* player, s16 radius,
+			s16 player_radius,
 			std::set<u16> &current_objects,
-			std::set<u16> &removed_objects);
-	
+			std::queue<u16> &removed_objects);
+
 	/*
 		Get the next message emitted by some active object.
 		Returns a message with id=0 if no messages are available.
@@ -298,16 +327,16 @@ public:
 	bool setNode(v3s16 p, const MapNode &n);
 	bool removeNode(v3s16 p);
 	bool swapNode(v3s16 p, const MapNode &n);
-	
+
 	// Find all active objects inside a radius around a point
-	std::set<u16> getObjectsInsideRadius(v3f pos, float radius);
-	
-	// Clear all objects, loading and going through every MapBlock
-	void clearAllObjects();
-	
+	void getObjectsInsideRadius(std::vector<u16> &objects, v3f pos, float radius);
+
+	// Clear objects, loading and going through every MapBlock
+	void clearObjects(ClearObjectsMode mode);
+
 	// This makes stuff happen
 	void step(f32 dtime);
-	
+
 	//check if there's a line of sight between two positions
 	bool line_of_sight(v3f pos1, v3f pos2, float stepsize=1.0, v3s16 *p=NULL);
 
@@ -315,9 +344,14 @@ public:
 
 	void reportMaxLagEstimate(float f) { m_max_lag_estimate = f; }
 	float getMaxLagEstimate() { return m_max_lag_estimate; }
-	
+
 	std::set<v3s16>* getForceloadedBlocks() { return &m_active_blocks.m_forceloaded_list; };
-	
+
+	// Sets the static object status all the active objects in the specified block
+	// This is only really needed for deleting blocks from the map
+	void setStaticForActiveObjectsInBlock(v3s16 blockpos,
+		bool static_exists, v3s16 static_block=v3s16(0,0,0));
+
 private:
 
 	/*
@@ -336,17 +370,17 @@ private:
 		Returns 0 if not added and thus deleted.
 	*/
 	u16 addActiveObjectRaw(ServerActiveObject *object, bool set_changed, u32 dtime_s);
-	
+
 	/*
 		Remove all objects that satisfy (m_removed && m_known_by_count==0)
 	*/
 	void removeRemovedObjects();
-	
+
 	/*
 		Convert stored objects from block to active
 	*/
 	void activateObjects(MapBlock *block, u32 dtime_s);
-	
+
 	/*
 		Convert objects that are not in active blocks to static.
 
@@ -361,7 +395,7 @@ private:
 	/*
 		Member variables
 	*/
-	
+
 	// The map
 	ServerMap *m_map;
 	// Lua state
@@ -373,7 +407,7 @@ private:
 	// Active object list
 	std::map<u16, ServerActiveObject*> m_active_objects;
 	// Outgoing network message buffer for active objects
-	std::list<ActiveObjectMessage> m_active_object_messages;
+	std::queue<ActiveObjectMessage> m_active_object_messages;
 	// Some timers
 	float m_send_recommended_timer;
 	IntervalLimiter m_object_management_interval;
@@ -388,7 +422,11 @@ private:
 	u32 m_game_time;
 	// A helper variable for incrementing the latter
 	float m_game_time_fraction_counter;
-	std::list<ABMWithState> m_abms;
+	// Time of last clearObjects call (game time).
+	// When a mapblock older than this is loaded, its objects are cleared.
+	u32 m_last_clear_objects_time;
+	// Active block modifiers
+	std::vector<ABMWithState> m_abms;
 	// An interval for generally sending object positions and stuff
 	float m_recommended_send_interval;
 	// Estimate for general maximum lag as determined by server.
@@ -399,6 +437,8 @@ private:
 #ifndef SERVER
 
 #include "clientobject.h"
+#include "content_cao.h"
+
 class ClientSimpleObject;
 
 /*
@@ -420,8 +460,8 @@ struct ClientEnvEvent
 {
 	ClientEnvEventType type;
 	union {
-		struct{
-		} none;
+		//struct{
+		//} none;
 		struct{
 			u8 amount;
 			bool send_to_server;
@@ -450,7 +490,7 @@ public:
 
 	virtual void addPlayer(Player *player);
 	LocalPlayer * getLocalPlayer();
-	
+
 	/*
 		ClientSimpleObjects
 	*/
@@ -460,7 +500,8 @@ public:
 	/*
 		ActiveObjects
 	*/
-	
+
+	GenericCAO* getGenericCAO(u16 id);
 	ClientActiveObject* getActiveObject(u16 id);
 
 	/*
@@ -488,15 +529,15 @@ public:
 	/*
 		Client likes to call these
 	*/
-	
+
 	// Get all nearby objects
 	void getActiveObjects(v3f origin, f32 max_d,
 			std::vector<DistanceSortedActiveObject> &dest);
-	
+
 	// Get event from queue. CEE_NONE is returned if queue is empty.
 	ClientEnvEvent getClientEvent();
 
-	u16 m_attachements[USHRT_MAX];
+	u16 attachement_parent_ids[USHRT_MAX + 1];
 
 	std::list<std::string> getPlayerNames()
 	{ return m_player_names; }
@@ -508,7 +549,7 @@ public:
 	{ m_camera_offset = camera_offset; }
 	v3s16 getCameraOffset()
 	{ return m_camera_offset; }
-	
+
 private:
 	ClientMap *m_map;
 	scene::ISceneManager *m_smgr;
@@ -516,8 +557,8 @@ private:
 	IGameDef *m_gamedef;
 	IrrlichtDevice *m_irr;
 	std::map<u16, ClientActiveObject*> m_active_objects;
-	std::list<ClientSimpleObject*> m_simple_objects;
-	std::list<ClientEnvEvent> m_client_event_queue;
+	std::vector<ClientSimpleObject*> m_simple_objects;
+	std::queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;
 	IntervalLimiter m_lava_hurt_interval;
 	IntervalLimiter m_drowning_interval;

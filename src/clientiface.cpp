@@ -25,23 +25,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 #include "settings.h"
 #include "mapblock.h"
-#include "connection.h"
+#include "network/connection.h"
 #include "environment.h"
 #include "map.h"
 #include "emerge.h"
 #include "serverobject.h"              // TODO this is used for cleanup of only
-#include "main.h"                      // for g_settings
 #include "log.h"
+#include "util/srp.h"
 
 const char *ClientInterface::statenames[] = {
 	"Invalid",
 	"Disconnecting",
 	"Denied",
 	"Created",
-	"InitSent",
+	"AwaitingInit2",
+	"HelloSent",
 	"InitDone",
 	"DefinitionsSent",
-	"Active"
+	"Active",
+	"SudoMode",
 };
 
 
@@ -59,13 +61,13 @@ void RemoteClient::ResendBlockIfOnWire(v3s16 p)
 	}
 }
 
-void RemoteClient::GetNextBlocks(
+void RemoteClient::GetNextBlocks (
 		ServerEnvironment *env,
 		EmergeManager * emerge,
 		float dtime,
 		std::vector<PrioritySortedBlockTransfer> &dest)
 {
-	DSTACK(__FUNCTION_NAME);
+	DSTACK(FUNCTION_NAME);
 
 
 	// Increment timers
@@ -179,21 +181,18 @@ void RemoteClient::GetNextBlocks(
 	s32 nearest_emerged_d = -1;
 	s32 nearest_emergefull_d = -1;
 	s32 nearest_sent_d = -1;
-	bool queue_is_full = false;
+	//bool queue_is_full = false;
 
 	s16 d;
-	for(d = d_start; d <= d_max; d++)
-	{
+	for(d = d_start; d <= d_max; d++) {
 		/*
 			Get the border/face dot coordinates of a "d-radiused"
 			box
 		*/
-		std::list<v3s16> list;
-		getFacePositions(list, d);
+		std::vector<v3s16> list = FacePositionCache::getFacePositions(d);
 
-		std::list<v3s16>::iterator li;
-		for(li=list.begin(); li!=list.end(); ++li)
-		{
+		std::vector<v3s16>::iterator li;
+		for(li = list.begin(); li != list.end(); ++li) {
 			v3s16 p = *li + center;
 
 			/*
@@ -212,25 +211,19 @@ void RemoteClient::GetNextBlocks(
 				max_simul_dynamic = max_simul_sends_setting;
 
 			// Don't select too many blocks for sending
-			if(num_blocks_selected >= max_simul_dynamic)
-			{
-				queue_is_full = true;
+			if (num_blocks_selected >= max_simul_dynamic) {
+				//queue_is_full = true;
 				goto queue_full_break;
 			}
 
 			// Don't send blocks that are currently being transferred
-			if(m_blocks_sending.find(p) != m_blocks_sending.end())
+			if (m_blocks_sending.find(p) != m_blocks_sending.end())
 				continue;
 
 			/*
 				Do not go over-limit
 			*/
-			if(p.X < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-			|| p.X > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-			|| p.Y < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-			|| p.Y > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-			|| p.Z < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
-			|| p.Z > MAP_GENERATION_LIMIT / MAP_BLOCKSIZE)
+			if (blockpos_over_limit(p))
 				continue;
 
 			// If this is true, inexistent block will be made from scratch
@@ -242,7 +235,7 @@ void RemoteClient::GetNextBlocks(
 					generate = false;*/
 
 				// Limit the send area vertically to 1/2
-				if(abs(p.Y - center.Y) > full_d_max / 2)
+				if (abs(p.Y - center.Y) > full_d_max / 2)
 					continue;
 			}
 
@@ -398,6 +391,7 @@ void RemoteClient::SentBlock(v3s16 p)
 void RemoteClient::SetBlockNotSent(v3s16 p)
 {
 	m_nearest_unsent_d = 0;
+	m_nothing_to_send_pause_timer = 0;
 
 	if(m_blocks_sending.find(p) != m_blocks_sending.end())
 		m_blocks_sending.erase(p);
@@ -408,6 +402,7 @@ void RemoteClient::SetBlockNotSent(v3s16 p)
 void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks)
 {
 	m_nearest_unsent_d = 0;
+	m_nothing_to_send_pause_timer = 0;
 
 	for(std::map<v3s16, MapBlock*>::iterator
 			i = blocks.begin();
@@ -431,10 +426,12 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 		//intentionally do nothing
 		break;
 	case CS_Created:
-		switch(event)
-		{
-		case CSE_Init:
-			m_state = CS_InitSent;
+		switch (event) {
+		case CSE_Hello:
+			m_state = CS_HelloSent;
+			break;
+		case CSE_InitLegacy:
+			m_state = CS_AwaitingInit2;
 			break;
 		case CSE_Disconnect:
 			m_state = CS_Disconnecting;
@@ -451,7 +448,32 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 	case CS_Denied:
 		/* don't do anything if in denied state */
 		break;
-	case CS_InitSent:
+	case CS_HelloSent:
+		switch(event)
+		{
+		case CSE_AuthAccept:
+			m_state = CS_AwaitingInit2;
+			if ((chosen_mech == AUTH_MECHANISM_SRP)
+					|| (chosen_mech == AUTH_MECHANISM_LEGACY_PASSWORD))
+				srp_verifier_delete((SRPVerifier *) auth_data);
+			chosen_mech = AUTH_MECHANISM_NONE;
+			break;
+		case CSE_Disconnect:
+			m_state = CS_Disconnecting;
+			break;
+		case CSE_SetDenied:
+			m_state = CS_Denied;
+			if ((chosen_mech == AUTH_MECHANISM_SRP)
+					|| (chosen_mech == AUTH_MECHANISM_LEGACY_PASSWORD))
+				srp_verifier_delete((SRPVerifier *) auth_data);
+			chosen_mech = AUTH_MECHANISM_NONE;
+			break;
+		default:
+			myerror << "HelloSent: Invalid client state transition! " << event;
+			throw ClientStateError(myerror.str());
+		}
+		break;
+	case CS_AwaitingInit2:
 		switch(event)
 		{
 		case CSE_GotInit2:
@@ -518,7 +540,32 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 		case CSE_Disconnect:
 			m_state = CS_Disconnecting;
 			break;
+		case CSE_SudoSuccess:
+			m_state = CS_SudoMode;
+			if ((chosen_mech == AUTH_MECHANISM_SRP)
+					|| (chosen_mech == AUTH_MECHANISM_LEGACY_PASSWORD))
+				srp_verifier_delete((SRPVerifier *) auth_data);
+			chosen_mech = AUTH_MECHANISM_NONE;
+			break;
 		/* Init GotInit2 SetDefinitionsSent SetMediaSent SetDenied */
+		default:
+			myerror << "Active: Invalid client state transition! " << event;
+			throw ClientStateError(myerror.str());
+			break;
+		}
+		break;
+	case CS_SudoMode:
+		switch(event)
+		{
+		case CSE_SetDenied:
+			m_state = CS_Denied;
+			break;
+		case CSE_Disconnect:
+			m_state = CS_Disconnecting;
+			break;
+		case CSE_SudoLeave:
+			m_state = CS_Active;
+			break;
 		default:
 			myerror << "Active: Invalid client state transition! " << event;
 			throw ClientStateError(myerror.str());
@@ -550,7 +597,7 @@ ClientInterface::~ClientInterface()
 		Delete clients
 	*/
 	{
-		JMutexAutoLock clientslock(m_clients_mutex);
+		MutexAutoLock clientslock(m_clients_mutex);
 
 		for(std::map<u16, RemoteClient*>::iterator
 			i = m_clients.begin();
@@ -563,10 +610,10 @@ ClientInterface::~ClientInterface()
 	}
 }
 
-std::list<u16> ClientInterface::getClientIDs(ClientState min_state)
+std::vector<u16> ClientInterface::getClientIDs(ClientState min_state)
 {
-	std::list<u16> reply;
-	JMutexAutoLock clientslock(m_clients_mutex);
+	std::vector<u16> reply;
+	MutexAutoLock clientslock(m_clients_mutex);
 
 	for(std::map<u16, RemoteClient*>::iterator
 		i = m_clients.begin();
@@ -599,58 +646,59 @@ void ClientInterface::UpdatePlayerList()
 {
 	if (m_env != NULL)
 		{
-		std::list<u16> clients = getClientIDs();
+		std::vector<u16> clients = getClientIDs();
 		m_clients_names.clear();
 
 
-		if(clients.size() != 0)
+		if(!clients.empty())
 			infostream<<"Players:"<<std::endl;
-		for(std::list<u16>::iterator
+
+		for(std::vector<u16>::iterator
 			i = clients.begin();
-			i != clients.end(); ++i)
-		{
+			i != clients.end(); ++i) {
 			Player *player = m_env->getPlayer(*i);
-			if(player==NULL)
+
+			if (player == NULL)
 				continue;
-			infostream<<"* "<<player->getName()<<"\t";
+
+			infostream << "* " << player->getName() << "\t";
 
 			{
-				JMutexAutoLock clientslock(m_clients_mutex);
+				MutexAutoLock clientslock(m_clients_mutex);
 				RemoteClient* client = lockedGetClientNoEx(*i);
 				if(client != NULL)
 					client->PrintInfo(infostream);
 			}
+
 			m_clients_names.push_back(player->getName());
 		}
 	}
 }
 
-void ClientInterface::send(u16 peer_id,u8 channelnum,
-		SharedBuffer<u8> data, bool reliable)
+void ClientInterface::send(u16 peer_id, u8 channelnum,
+		NetworkPacket* pkt, bool reliable)
 {
-	m_con->Send(peer_id, channelnum, data, reliable);
+	m_con->Send(peer_id, channelnum, pkt, reliable);
 }
 
 void ClientInterface::sendToAll(u16 channelnum,
-		SharedBuffer<u8> data, bool reliable)
+		NetworkPacket* pkt, bool reliable)
 {
-	JMutexAutoLock clientslock(m_clients_mutex);
+	MutexAutoLock clientslock(m_clients_mutex);
 	for(std::map<u16, RemoteClient*>::iterator
 		i = m_clients.begin();
-		i != m_clients.end(); ++i)
-	{
+		i != m_clients.end(); ++i) {
 		RemoteClient *client = i->second;
 
-		if (client->net_proto_version != 0)
-		{
-			m_con->Send(client->peer_id, channelnum, data, reliable);
+		if (client->net_proto_version != 0) {
+			m_con->Send(client->peer_id, channelnum, pkt, reliable);
 		}
 	}
 }
 
 RemoteClient* ClientInterface::getClientNoEx(u16 peer_id, ClientState state_min)
 {
-	JMutexAutoLock clientslock(m_clients_mutex);
+	MutexAutoLock clientslock(m_clients_mutex);
 	std::map<u16, RemoteClient*>::iterator n;
 	n = m_clients.find(peer_id);
 	// The client may not exist; clients are immediately removed if their
@@ -681,7 +729,7 @@ RemoteClient* ClientInterface::lockedGetClientNoEx(u16 peer_id, ClientState stat
 
 ClientState ClientInterface::getClientState(u16 peer_id)
 {
-	JMutexAutoLock clientslock(m_clients_mutex);
+	MutexAutoLock clientslock(m_clients_mutex);
 	std::map<u16, RemoteClient*>::iterator n;
 	n = m_clients.find(peer_id);
 	// The client may not exist; clients are immediately removed if their
@@ -694,7 +742,7 @@ ClientState ClientInterface::getClientState(u16 peer_id)
 
 void ClientInterface::setPlayerName(u16 peer_id,std::string name)
 {
-	JMutexAutoLock clientslock(m_clients_mutex);
+	MutexAutoLock clientslock(m_clients_mutex);
 	std::map<u16, RemoteClient*>::iterator n;
 	n = m_clients.find(peer_id);
 	// The client may not exist; clients are immediately removed if their
@@ -705,7 +753,7 @@ void ClientInterface::setPlayerName(u16 peer_id,std::string name)
 
 void ClientInterface::DeleteClient(u16 peer_id)
 {
-	JMutexAutoLock conlock(m_clients_mutex);
+	MutexAutoLock conlock(m_clients_mutex);
 
 	// Error check
 	std::map<u16, RemoteClient*>::iterator n;
@@ -740,7 +788,7 @@ void ClientInterface::DeleteClient(u16 peer_id)
 
 void ClientInterface::CreateClient(u16 peer_id)
 {
-	JMutexAutoLock conlock(m_clients_mutex);
+	MutexAutoLock conlock(m_clients_mutex);
 
 	// Error check
 	std::map<u16, RemoteClient*>::iterator n;
@@ -757,7 +805,7 @@ void ClientInterface::CreateClient(u16 peer_id)
 void ClientInterface::event(u16 peer_id, ClientStateEvent event)
 {
 	{
-		JMutexAutoLock clientlock(m_clients_mutex);
+		MutexAutoLock clientlock(m_clients_mutex);
 
 		// Error check
 		std::map<u16, RemoteClient*>::iterator n;
@@ -779,7 +827,7 @@ void ClientInterface::event(u16 peer_id, ClientStateEvent event)
 
 u16 ClientInterface::getProtocolVersion(u16 peer_id)
 {
-	JMutexAutoLock conlock(m_clients_mutex);
+	MutexAutoLock conlock(m_clients_mutex);
 
 	// Error check
 	std::map<u16, RemoteClient*>::iterator n;
@@ -794,7 +842,7 @@ u16 ClientInterface::getProtocolVersion(u16 peer_id)
 
 void ClientInterface::setClientVersion(u16 peer_id, u8 major, u8 minor, u8 patch, std::string full)
 {
-	JMutexAutoLock conlock(m_clients_mutex);
+	MutexAutoLock conlock(m_clients_mutex);
 
 	// Error check
 	std::map<u16, RemoteClient*>::iterator n;

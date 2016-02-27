@@ -22,10 +22,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "settings.h"
 #include "log.h"
-#ifndef SERVER
-#include "tile.h" // getImagePath
-#endif
+#include "strfnd.h"
+#include "defaultsettings.h"  // for override_default_settings
+#include "mapgen.h"  // for MapgenParams
 #include "util/string.h"
+
+#ifndef SERVER
+	#include "client/tile.h" // getImagePath
+#endif
 
 bool getGameMinetestConfig(const std::string &game_path, Settings &conf)
 {
@@ -59,6 +63,12 @@ struct GameFindPath
 	{}
 };
 
+std::string getSubgamePathEnv()
+{
+	char *subgame_path = getenv("MINETEST_SUBGAME_PATH");
+	return subgame_path ? std::string(subgame_path) : "";
+}
+
 SubgameSpec findSubgame(const std::string &id)
 {
 	if(id == "")
@@ -66,6 +76,17 @@ SubgameSpec findSubgame(const std::string &id)
 	std::string share = porting::path_share;
 	std::string user = porting::path_user;
 	std::vector<GameFindPath> find_paths;
+
+	Strfnd search_paths(getSubgamePathEnv());
+
+	while (!search_paths.atend()) {
+		std::string path = search_paths.next(PATH_DELIM);
+		find_paths.push_back(GameFindPath(
+				path + DIR_DELIM + id, false));
+		find_paths.push_back(GameFindPath(
+				path + DIR_DELIM + id + "_game", false));
+	}
+
 	find_paths.push_back(GameFindPath(
 			user + DIR_DELIM + "games" + DIR_DELIM + id + "_game", true));
 	find_paths.push_back(GameFindPath(
@@ -129,8 +150,14 @@ std::set<std::string> getAvailableGameIds()
 	std::set<std::string> gamespaths;
 	gamespaths.insert(porting::path_share + DIR_DELIM + "games");
 	gamespaths.insert(porting::path_user + DIR_DELIM + "games");
-	for(std::set<std::string>::const_iterator i = gamespaths.begin();
-			i != gamespaths.end(); i++){
+
+	Strfnd search_paths(getSubgamePathEnv());
+
+	while (!search_paths.atend())
+		gamespaths.insert(search_paths.next(PATH_DELIM));
+
+	for (std::set<std::string>::const_iterator i = gamespaths.begin();
+			i != gamespaths.end(); ++i){
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(*i);
 		for(u32 j=0; j<dirlist.size(); j++){
 			if(!dirlist[j].dir)
@@ -156,7 +183,7 @@ std::vector<SubgameSpec> getAvailableGames()
 	std::vector<SubgameSpec> specs;
 	std::set<std::string> gameids = getAvailableGameIds();
 	for(std::set<std::string>::const_iterator i = gameids.begin();
-			i != gameids.end(); i++)
+			i != gameids.end(); ++i)
 		specs.push_back(findSubgame(*i));
 	return specs;
 }
@@ -190,15 +217,27 @@ std::string getWorldGameId(const std::string &world_path, bool can_be_legacy)
 	return conf.get("gameid");
 }
 
+std::string getWorldPathEnv()
+{
+	char *world_path = getenv("MINETEST_WORLD_PATH");
+	return world_path ? std::string(world_path) : "";
+}
+
 std::vector<WorldSpec> getAvailableWorlds()
 {
 	std::vector<WorldSpec> worlds;
 	std::set<std::string> worldspaths;
+
+	Strfnd search_paths(getWorldPathEnv());
+
+	while (!search_paths.atend())
+		worldspaths.insert(search_paths.next(PATH_DELIM));
+
 	worldspaths.insert(porting::path_user + DIR_DELIM + "worlds");
-	infostream<<"Searching worlds..."<<std::endl;
-	for(std::set<std::string>::const_iterator i = worldspaths.begin();
-			i != worldspaths.end(); i++){
-		infostream<<"  In "<<(*i)<<": "<<std::endl;
+	infostream << "Searching worlds..." << std::endl;
+	for (std::set<std::string>::const_iterator i = worldspaths.begin();
+			i != worldspaths.end(); ++i) {
+		infostream << "  In " << (*i) << ": " <<std::endl;
 		std::vector<fs::DirListNode> dirvector = fs::GetDirListing(*i);
 		for(u32 j=0; j<dirvector.size(); j++){
 			if(!dirvector[j].dir)
@@ -233,19 +272,54 @@ std::vector<WorldSpec> getAvailableWorlds()
 	return worlds;
 }
 
-bool initializeWorld(const std::string &path, const std::string &gameid)
+bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamespec)
 {
-	infostream<<"Initializing world at "<<path<<std::endl;
+	// Override defaults with those provided by the game.
+	// We clear and reload the defaults because the defaults
+	// might have been overridden by other subgame config
+	// files that were loaded before.
+	g_settings->clearDefaults();
+	set_default_settings(g_settings);
+	Settings game_defaults;
+	getGameMinetestConfig(gamespec.path, game_defaults);
+	override_default_settings(g_settings, &game_defaults);
+
+	infostream << "Initializing world at " << path << std::endl;
+
+	fs::CreateAllDirs(path);
+
 	// Create world.mt if does not already exist
-	std::string worldmt_path = path + DIR_DELIM + "world.mt";
-	if(!fs::PathExists(worldmt_path)){
-		infostream<<"Creating world.mt ("<<worldmt_path<<")"<<std::endl;
-		fs::CreateAllDirs(path);
+	std::string worldmt_path = path + DIR_DELIM "world.mt";
+	if (!fs::PathExists(worldmt_path)) {
 		std::ostringstream ss(std::ios_base::binary);
-		ss<<"gameid = "<<gameid<< "\nbackend = sqlite3\n";
-		fs::safeWriteToFile(worldmt_path, ss.str());
+		ss << "gameid = " << gamespec.id
+			<< "\nbackend = sqlite3"
+			<< "\ncreative_mode = " << g_settings->get("creative_mode")
+			<< "\nenable_damage = " << g_settings->get("enable_damage")
+			<< "\n";
+		if (!fs::safeWriteToFile(worldmt_path, ss.str()))
+			return false;
+
+		infostream << "Wrote world.mt (" << worldmt_path << ")" << std::endl;
+	}
+
+	// Create map_meta.txt if does not already exist
+	std::string map_meta_path = path + DIR_DELIM + "map_meta.txt";
+	if (!fs::PathExists(map_meta_path)){
+		verbosestream << "Creating map_meta.txt (" << map_meta_path << ")" << std::endl;
+		fs::CreateAllDirs(path);
+		std::ostringstream oss(std::ios_base::binary);
+
+		Settings conf;
+		MapgenParams params;
+
+		params.load(*g_settings);
+		params.save(conf);
+		conf.writeLines(oss);
+		oss << "[end_of_params]\n";
+
+		fs::safeWriteToFile(map_meta_path, oss.str());
 	}
 	return true;
 }
-
 

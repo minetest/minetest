@@ -28,8 +28,9 @@
 		</ul>
 	</description>
 	<screenshots>
-		<screenshot type="default" width="1440" height="851">http://minetest.net/_media/screen2.png</screenshot>
-		<screenshot width="1440" height="851">http://minetest.net/_media/screenshot_4032289578.png</screenshot>
+		<screenshot type="default" width="1920" height="1080">http://www.minetest.net/media/gallery/1.jpg</screenshot>
+		<screenshot width="1920" height="1080">http://www.minetest.net/media/gallery/3.jpg</screenshot>
+		<screenshot width="1920" height="1080">http://www.minetest.net/media/gallery/5.jpg</screenshot>
 	</screenshots>
 	<url type="homepage">http://minetest.net</url>
 	<updatecontact>sfan5@live.de</updatecontact>

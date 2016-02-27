@@ -16,6 +16,9 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 --------------------------------------------------------------------------------
+local function modname_valid(name)
+	return not name:find("[^a-z0-9_]")
+end
 
 local function get_formspec(data)
 
@@ -118,6 +121,7 @@ local function handle_buttons(this, fields)
 	if fields["world_config_modlist"] ~= nil then
 		local event = core.explode_textlist_event(fields["world_config_modlist"])
 		this.data.selected_mod = event.index
+		core.setting_set("world_config_selected_mod", event.index)
 
 		if event.type == "DCL" then
 			enable_mod(this)
@@ -151,21 +155,29 @@ local function handle_buttons(this, fields)
 		if current == nil then
 			current = {}
 		end
-
-		if core.is_yes(fields["cb_hide_gamemods"]) then
-			current.hide_game = true
-			this.data.hide_gamemods = true
-		else
-			current.hide_game = false
-			this.data.hide_gamemods = false
-		end
 		
-		if core.is_yes(fields["cb_hide_mpcontent"]) then
-			current.hide_modpackcontents = true
-			this.data.hide_modpackcontents = true
-		else
-			current.hide_modpackcontents = false
-			this.data.hide_modpackcontents = false
+		if fields["cb_hide_gamemods"] ~= nil then
+			if core.is_yes(fields["cb_hide_gamemods"]) then
+				current.hide_game = true
+				this.data.hide_gamemods = true
+				core.setting_set("world_config_hide_gamemods", "true")
+			else
+				current.hide_game = false
+				this.data.hide_gamemods = false
+				core.setting_set("world_config_hide_gamemods", "false")
+			end
+		end
+
+		if fields["cb_hide_mpcontent"] ~= nil then
+			if core.is_yes(fields["cb_hide_mpcontent"]) then
+				current.hide_modpackcontents = true
+				this.data.hide_modpackcontents = true
+				core.setting_set("world_config_hide_modpackcontents", "true")
+			else
+				current.hide_modpackcontents = false
+				this.data.hide_modpackcontents = false
+				core.setting_set("world_config_hide_modpackcontents", "false")
+			end
 		end
 
 		this.data.list:set_filtercriteria(current)
@@ -186,10 +198,12 @@ local function handle_buttons(this, fields)
 		for i,mod in ipairs(rawlist) do
 			if not mod.is_modpack and
 					mod.typ ~= "game_mod" then
-				if mod.enabled then
-					worldfile:set("load_mod_"..mod.name, "true")
+				if modname_valid(mod.name) then
+					worldfile:set("load_mod_"..mod.name, tostring(mod.enabled))
 				else
-					worldfile:set("load_mod_"..mod.name, "false")
+					if mod.enabled then
+						gamedata.errormessage = fgettext_ne("Failed to enable mod \"$1\" as it contains disallowed characters. Only chararacters [a-z0-9_] are allowed.", mod.name)
+					end
 				end
 				mods["load_mod_"..mod.name] = nil
 			end
@@ -237,10 +251,12 @@ function create_configure_world_dlg(worldidx)
 					handle_buttons,
 					nil)
 
-	--TODO read from settings
-	dlg.data.hide_gamemods = false
-	dlg.data.hide_modpackcontents = false
-	dlg.data.selected_mod = 0
+	dlg.data.hide_gamemods = core.setting_getbool("world_config_hide_gamemods")
+	dlg.data.hide_modpackcontents = core.setting_getbool("world_config_hide_modpackcontents")
+	dlg.data.selected_mod = tonumber(core.setting_get("world_config_selected_mod"))
+	if dlg.data.selected_mod == nil then
+		dlg.data.selected_mod = 0
+	end
 
 	dlg.data.worldspec = core.get_worlds()[worldidx]
 	if dlg.data.worldspec == nil then dlg:delete() return nil end
@@ -277,7 +293,12 @@ function create_configure_world_dlg(worldidx)
 				{ worldpath= dlg.data.worldspec.path,
 				  gameid = dlg.data.worldspec.gameid }
 			)
-			
+
+
+	if dlg.data.selected_mod > dlg.data.list:size() then
+		dlg.data.selected_mod = 0
+	end
+
 	dlg.data.list:set_filtercriteria(
 		{
 			hide_game=dlg.data.hide_gamemods,
@@ -285,6 +306,6 @@ function create_configure_world_dlg(worldidx)
 		})
 	dlg.data.list:add_sort_mechanism("alphabetic", sort_mod_list)
 	dlg.data.list:set_sortmode("alphabetic")
-	
+
 	return dlg
 end

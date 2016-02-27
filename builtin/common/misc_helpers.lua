@@ -1,6 +1,11 @@
 -- Minetest: builtin/misc_helpers.lua
 
 --------------------------------------------------------------------------------
+-- Localize functions to avoid table lookups (better performance).
+local table_insert = table.insert
+local string_sub, string_find = string.sub, string.find
+
+--------------------------------------------------------------------------------
 function basic_dump(o)
 	local tp = type(o)
 	if tp == "number" then
@@ -89,13 +94,13 @@ function dump2(o, name, dumped)
 				-- the form _G["table: 0xFFFFFFF"]
 				keyStr = string.format("_G[%q]", tostring(k))
 				-- Dump key table
-				table.insert(t, dump2(k, keyStr, dumped))
+				table_insert(t, dump2(k, keyStr, dumped))
 			end
 		else
 			keyStr = basic_dump(k)
 		end
 		local vname = string.format("%s[%s]", name, keyStr)
-		table.insert(t, dump2(v, vname, dumped))
+		table_insert(t, dump2(v, vname, dumped))
 	end
 	return string.format("%s = {}\n%s", name, table.concat(t))
 end
@@ -130,7 +135,7 @@ function dump(o, indent, nested, level)
 	local t = {}
 	local dumped_indexes = {}
 	for i, v in ipairs(o) do
-		table.insert(t, dump(v, indent, nested, level + 1))
+		table_insert(t, dump(v, indent, nested, level + 1))
 		dumped_indexes[i] = true
 	end
 	for k, v in pairs(o) do
@@ -139,13 +144,13 @@ function dump(o, indent, nested, level)
 				k = "["..dump(k, indent, nested, level + 1).."]"
 			end
 			v = dump(v, indent, nested, level + 1)
-			table.insert(t, k.." = "..v)
+			table_insert(t, k.." = "..v)
 		end
 	end
 	nested[o] = nil
 	if indent ~= "" then
 		local indent_str = "\n"..string.rep(indent, level)
-		local end_indent_str = "\n"..string.rep("\t", level - 1)
+		local end_indent_str = "\n"..string.rep(indent, level - 1)
 		return string.format("{%s%s%s}",
 				indent_str,
 				table.concat(t, ","..indent_str),
@@ -155,17 +160,47 @@ function dump(o, indent, nested, level)
 end
 
 --------------------------------------------------------------------------------
-function string:split(sep)
-	local sep, fields = sep or ",", {}
-	local pattern = string.format("([^%s]+)", sep)
-	self:gsub(pattern, function(c) fields[#fields+1] = c end)
-	return fields
+function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
+	delim = delim or ","
+	max_splits = max_splits or -1
+	local items = {}
+	local pos, len, seplen = 1, #str, #delim
+	local plain = not sep_is_pattern
+	max_splits = max_splits + 1
+	repeat
+		local np, npe = string_find(str, delim, pos, plain)
+		np, npe = (np or (len+1)), (npe or (len+1))
+		if (not np) or (max_splits == 1) then
+			np = len + 1
+			npe = np
+		end
+		local s = string_sub(str, pos, np - 1)
+		if include_empty or (s ~= "") then
+			max_splits = max_splits - 1
+			table_insert(items, s)
+		end
+		pos = npe + 1
+	until (max_splits == 0) or (pos > (len + 1))
+	return items
 end
+
+--------------------------------------------------------------------------------
+function table.indexof(list, val)
+	for i = 1, #list do
+		if list[i] == val then
+			return i
+		end
+	end
+	return -1
+end
+
+assert(table.indexof({"foo", "bar"}, "foo") == 1)
+assert(table.indexof({"foo", "bar"}, "baz") == -1)
 
 --------------------------------------------------------------------------------
 function file_exists(filename)
 	local f = io.open(filename, "r")
-	if f==nil then
+	if f == nil then
 		return false
 	else
 		f:close()
@@ -190,6 +225,17 @@ function math.hypot(x, y)
 	if x == 0 then return 0 end
 	t = t / x
 	return x * math.sqrt(1 + t * t)
+end
+
+--------------------------------------------------------------------------------
+function math.sign(x, tolerance)
+	tolerance = tolerance or 0
+	if x > tolerance then
+		return 1
+	elseif x < -tolerance then
+		return -1
+	end
+	return 0
 end
 
 --------------------------------------------------------------------------------
@@ -267,8 +313,8 @@ function core.splittext(text,charlimit)
 
 	local current_idx = 1
 
-	local start,stop = string.find(text," ",current_idx)
-	local nl_start,nl_stop = string.find(text,"\n",current_idx)
+	local start,stop = string_find(text, " ", current_idx)
+	local nl_start,nl_stop = string_find(text, "\n", current_idx)
 	local gotnewline = false
 	if nl_start ~= nil and (start == nil or nl_start < start) then
 		start = nl_start
@@ -278,7 +324,7 @@ function core.splittext(text,charlimit)
 	local last_line = ""
 	while start ~= nil do
 		if string.len(last_line) + (stop-start) > charlimit then
-			table.insert(retval,last_line)
+			table_insert(retval, last_line)
 			last_line = ""
 		end
 
@@ -286,17 +332,17 @@ function core.splittext(text,charlimit)
 			last_line = last_line .. " "
 		end
 
-		last_line = last_line .. string.sub(text,current_idx,stop -1)
+		last_line = last_line .. string_sub(text, current_idx, stop - 1)
 
 		if gotnewline then
-			table.insert(retval,last_line)
+			table_insert(retval, last_line)
 			last_line = ""
 			gotnewline = false
 		end
 		current_idx = stop+1
 
-		start,stop = string.find(text," ",current_idx)
-		nl_start,nl_stop = string.find(text,"\n",current_idx)
+		start,stop = string_find(text, " ", current_idx)
+		nl_start,nl_stop = string_find(text, "\n", current_idx)
 
 		if nl_start ~= nil and (start == nil or nl_start < start) then
 			start = nl_start
@@ -307,11 +353,11 @@ function core.splittext(text,charlimit)
 
 	--add last part of text
 	if string.len(last_line) + (string.len(text) - current_idx) > charlimit then
-			table.insert(retval,last_line)
-			table.insert(retval,string.sub(text,current_idx))
+			table_insert(retval, last_line)
+			table_insert(retval, string_sub(text, current_idx))
 	else
-		last_line = last_line .. " " .. string.sub(text,current_idx)
-		table.insert(retval,last_line)
+		last_line = last_line .. " " .. string_sub(text, current_idx)
+		table_insert(retval, last_line)
 	end
 
 	return retval
@@ -432,7 +478,8 @@ function core.explode_table_event(evt)
 			local t = parts[1]:trim()
 			local r = tonumber(parts[2]:trim())
 			local c = tonumber(parts[3]:trim())
-			if type(r) == "number" and type(c) == "number" and t ~= "INV" then
+			if type(r) == "number" and type(c) == "number"
+					and t ~= "INV" then
 				return {type=t, row=r, column=c}
 			end
 		end
@@ -466,10 +513,88 @@ function core.explode_scrollbar_event(evt)
 end
 
 --------------------------------------------------------------------------------
-function core.pos_to_string(pos)
-	return "(" .. pos.x .. "," .. pos.y .. "," .. pos.z .. ")"
+function core.pos_to_string(pos, decimal_places)
+	local x = pos.x
+	local y = pos.y
+	local z = pos.z
+	if decimal_places ~= nil then
+		x = string.format("%." .. decimal_places .. "f", x)
+		y = string.format("%." .. decimal_places .. "f", y)
+		z = string.format("%." .. decimal_places .. "f", z)
+	end
+	return "(" .. x .. "," .. y .. "," .. z .. ")"
 end
 
+--------------------------------------------------------------------------------
+function core.string_to_pos(value)
+	if value == nil then
+		return nil
+	end
+
+	local p = {}
+	p.x, p.y, p.z = string.match(value, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
+	if p.x and p.y and p.z then
+		p.x = tonumber(p.x)
+		p.y = tonumber(p.y)
+		p.z = tonumber(p.z)
+		return p
+	end
+	local p = {}
+	p.x, p.y, p.z = string.match(value, "^%( *([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+) *%)$")
+	if p.x and p.y and p.z then
+		p.x = tonumber(p.x)
+		p.y = tonumber(p.y)
+		p.z = tonumber(p.z)
+		return p
+	end
+	return nil
+end
+
+assert(core.string_to_pos("10.0, 5, -2").x == 10)
+assert(core.string_to_pos("( 10.0, 5, -2)").z == -2)
+assert(core.string_to_pos("asd, 5, -2)") == nil)
+
+--------------------------------------------------------------------------------
+function core.string_to_area(value)
+	local p1, p2 = unpack(value:split(") ("))
+	if p1 == nil or p2 == nil then
+		return nil
+	end
+
+	p1 = core.string_to_pos(p1 .. ")")
+	p2 = core.string_to_pos("(" .. p2)
+	if p1 == nil or p2 == nil then
+		return nil
+	end
+
+	return p1, p2
+end
+
+local function test_string_to_area()
+	local p1, p2 = core.string_to_area("(10.0, 5, -2) (  30.2,   4, -12.53)")
+	assert(p1.x == 10.0 and p1.y == 5 and p1.z == -2)
+	assert(p2.x == 30.2 and p2.y == 4 and p2.z == -12.53)
+
+	p1, p2 = core.string_to_area("(10.0, 5, -2  30.2,   4, -12.53")
+	assert(p1 == nil and p2 == nil)
+
+	p1, p2 = core.string_to_area("(10.0, 5,) -2  fgdf2,   4, -12.53")
+	assert(p1 == nil and p2 == nil)
+end
+
+test_string_to_area()
+
+--------------------------------------------------------------------------------
+function table.copy(t, seen)
+	local n = {}
+	seen = seen or {}
+	seen[t] = n
+	for k, v in pairs(t) do
+		n[(type(k) == "table" and (seen[k] or table.copy(k, seen))) or k] =
+			(type(v) == "table" and (seen[v] or table.copy(v, seen))) or v
+	end
+	return n
+end
 --------------------------------------------------------------------------------
 -- mainmenu only functions
 --------------------------------------------------------------------------------
@@ -484,27 +609,33 @@ if INIT == "mainmenu" then
 		return nil
 	end
 
-	function fgettext(text, ...)
+	function fgettext_ne(text, ...)
 		text = core.gettext(text)
 		local arg = {n=select('#', ...), ...}
 		if arg.n >= 1 then
 			-- Insert positional parameters ($1, $2, ...)
-			result = ''
-			pos = 1
+			local result = ''
+			local pos = 1
 			while pos <= text:len() do
-				newpos = text:find('[$]', pos)
+				local newpos = text:find('[$]', pos)
 				if newpos == nil then
 					result = result .. text:sub(pos)
 					pos = text:len() + 1
 				else
-					paramindex = tonumber(text:sub(newpos+1, newpos+1))
-					result = result .. text:sub(pos, newpos-1) .. tostring(arg[paramindex])
+					local paramindex =
+						tonumber(text:sub(newpos+1, newpos+1))
+					result = result .. text:sub(pos, newpos-1)
+						.. tostring(arg[paramindex])
 					pos = newpos + 2
 				end
 			end
 			text = result
 		end
-		return core.formspec_escape(text)
+		return text
+	end
+
+	function fgettext(text, ...)
+		return core.formspec_escape(fgettext_ne(text, ...))
 	end
 end
 

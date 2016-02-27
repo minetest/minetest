@@ -25,17 +25,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <list>
 
-enum
-{
-	TAB_SINGLEPLAYER=0,
-	TAB_MULTIPLAYER,
-	TAB_ADVANCED,
-	TAB_SETTINGS,
-	TAB_CREDITS
+struct MainMenuDataForScript {
+
+	MainMenuDataForScript() :
+		reconnect_requested(false)
+	{}
+
+	// Whether the server has requested a reconnect
+	bool reconnect_requested;
+
+	std::string errormessage;
 };
 
-struct MainMenuData
-{
+struct MainMenuData {
 	// Client options
 	std::string servername;
 	std::string serverdescription;
@@ -43,19 +45,22 @@ struct MainMenuData
 	std::string port;
 	std::string name;
 	std::string password;
+	// Whether to reconnect
+	bool do_reconnect;
 
 	// Server options
 	bool enable_public;
 	int selected_world;
 	bool simple_singleplayer_mode;
 
-	//error handling
-	std::string errormessage;
+	// Data to be passed to the script
+	MainMenuDataForScript script_data;
+
 	MainMenuData():
+		do_reconnect(false),
 		enable_public(false),
 		selected_world(0),
-		simple_singleplayer_mode(false),
-		errormessage("")
+		simple_singleplayer_mode(false)
 	{}
 };
 

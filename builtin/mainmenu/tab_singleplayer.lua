@@ -23,9 +23,9 @@ local function current_game()
 end
 
 local function singleplayer_refresh_gamebar()
-	
+
 	local old_bar = ui.find_by_name("game_button_bar")
-	
+
 	if old_bar ~= nil then
 		old_bar:delete()
 	end
@@ -38,6 +38,17 @@ local function singleplayer_refresh_gamebar()
 					core.set_topleft_text(gamemgr.games[j].name)
 					core.setting_set("menu_last_game",gamemgr.games[j].id)
 					menudata.worldlist:set_filtercriteria(gamemgr.games[j].id)
+					local index = filterlist.get_current_index(menudata.worldlist,
+						tonumber(core.setting_get("mainmenu_last_selected_world")))
+					if not index or index < 1 then
+						local selected = core.get_textlist_index("sp_worlds")
+						if selected ~= nil and selected < #menudata.worldlist:get_list() then
+							index = selected
+						else
+							index = #menudata.worldlist:get_list()
+						end
+					end
+					menu_worldmt_legacy(index)
 					return true
 				end
 			end
@@ -53,6 +64,7 @@ local function singleplayer_refresh_gamebar()
 		
 		local image = nil
 		local text = nil
+		local tooltip = core.formspec_escape(gamemgr.games[i].name)
 		
 		if gamemgr.games[i].menuicon_path ~= nil and
 			gamemgr.games[i].menuicon_path ~= "" then
@@ -69,13 +81,13 @@ local function singleplayer_refresh_gamebar()
 				text = text .. "\n" .. part3
 			end
 		end
-		btnbar:add_button(btn_name, text, image)
+		btnbar:add_button(btn_name, text, image, tooltip)
 	end
 end
 
 local function get_formspec(tabview, name, tabdata)
 	local retval = ""
-	
+
 	local index = filterlist.get_current_index(menudata.worldlist,
 				tonumber(core.setting_get("mainmenu_last_selected_world"))
 				)
@@ -86,10 +98,9 @@ local function get_formspec(tabview, name, tabdata)
 			"button[9.2,4.15;2.55,0.5;world_configure;".. fgettext("Configure") .. "]" ..
 			"button[8.5,4.95;3.25,0.5;play;".. fgettext("Play") .. "]" ..
 			"label[4,-0.25;".. fgettext("Select World:") .. "]"..
-			"vertlabel[0,-0.25;".. fgettext("SINGLE PLAYER") .. "]" ..
-			"checkbox[0.5,0.25;cb_creative_mode;".. fgettext("Creative Mode") .. ";" ..
+			"checkbox[0.25,0.25;cb_creative_mode;".. fgettext("Creative Mode") .. ";" ..
 			dump(core.setting_getbool("creative_mode")) .. "]"..
-			"checkbox[0.5,0.7;cb_enable_damage;".. fgettext("Enable Damage") .. ";" ..
+			"checkbox[0.25,0.7;cb_enable_damage;".. fgettext("Enable Damage") .. ";" ..
 			dump(core.setting_getbool("enable_damage")) .. "]"..
 			"textlist[4,0.25;7.5,3.7;sp_worlds;" ..
 			menu_render_worldlist() ..
@@ -105,14 +116,17 @@ local function main_button_handler(this, fields, name, tabdata)
 
 	if fields["sp_worlds"] ~= nil then
 		local event = core.explode_textlist_event(fields["sp_worlds"])
+		local selected = core.get_textlist_index("sp_worlds")
+
+		menu_worldmt_legacy(selected)
 
 		if event.type == "DCL" then
 			world_doubleclick = true
 		end
 
-		if event.type == "CHG" then
+		if event.type == "CHG" and selected ~= nil then
 			core.setting_set("mainmenu_last_selected_world",
-				menudata.worldlist:get_raw_index(core.get_textlist_index("sp_worlds")))
+				menudata.worldlist:get_raw_index(selected))
 			return true
 		end
 	end
@@ -123,11 +137,17 @@ local function main_button_handler(this, fields, name, tabdata)
 
 	if fields["cb_creative_mode"] then
 		core.setting_set("creative_mode", fields["cb_creative_mode"])
+		local selected = core.get_textlist_index("sp_worlds")
+		menu_worldmt(selected, "creative_mode", fields["cb_creative_mode"])
+
 		return true
 	end
 
 	if fields["cb_enable_damage"] then
 		core.setting_set("enable_damage", fields["cb_enable_damage"])
+		local selected = core.get_textlist_index("sp_worlds")
+		menu_worldmt(selected, "enable_damage", fields["cb_enable_damage"])
+
 		return true
 	end
 
@@ -135,12 +155,14 @@ local function main_button_handler(this, fields, name, tabdata)
 		world_doubleclick or
 		fields["key_enter"] then
 		local selected = core.get_textlist_index("sp_worlds")
+		gamedata.selected_world = menudata.worldlist:get_raw_index(selected)
 		
-		if selected ~= nil then
-			gamedata.selected_world = menudata.worldlist:get_raw_index(selected)
-			gamedata.singleplayer   = true
-			
+		if selected ~= nil and gamedata.selected_world ~= 0 then
+			gamedata.singleplayer = true
 			core.start()
+		else
+			gamedata.errormessage =
+				fgettext("No world created or selected!")
 		end
 		return true
 	end

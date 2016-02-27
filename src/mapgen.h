@@ -20,58 +20,36 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MAPGEN_HEADER
 #define MAPGEN_HEADER
 
-#include "irrlichttypes_bloated.h"
-#include "util/container.h" // UniqueQueue
-#include "gamedef.h"
+#include "noise.h"
 #include "nodedef.h"
 #include "mapnode.h"
-#include "noise.h"
-#include "settings.h"
+#include "util/string.h"
+#include "util/container.h"
 
 #define DEFAULT_MAPGEN "v6"
 
 /////////////////// Mapgen flags
-#define MG_TREES         0x01
-#define MG_CAVES         0x02
-#define MG_DUNGEONS      0x04
-#define MG_FLAT          0x08
-#define MG_LIGHT         0x10
+#define MG_TREES       0x01
+#define MG_CAVES       0x02
+#define MG_DUNGEONS    0x04
+#define MG_FLAT        0x08
+#define MG_LIGHT       0x10
+#define MG_DECORATIONS 0x20
 
-/////////////////// Ore generation flags
-// Use absolute value of height to determine ore placement
-#define OREFLAG_ABSHEIGHT 0x01
-// Use 3d noise to get density of ore placement, instead of just the position
-#define OREFLAG_DENSITY   0x02 // not yet implemented
-// For claylike ore types, place ore if the number of surrounding
-// nodes isn't the specified node
-#define OREFLAG_NODEISNT  0x04 // not yet implemented
-
-/////////////////// Decoration flags
-#define DECO_PLACE_CENTER_X 1
-#define DECO_PLACE_CENTER_Y 2
-#define DECO_PLACE_CENTER_Z 4
-
-#define ORE_RANGE_ACTUAL 1
-#define ORE_RANGE_MIRROR 2
-
-#define NUM_GEN_NOTIFY 6
-
+class Settings;
+class MMVManip;
+class INodeDefManager;
 
 extern FlagDesc flagdesc_mapgen[];
-extern FlagDesc flagdesc_ore[];
-extern FlagDesc flagdesc_deco_schematic[];
 extern FlagDesc flagdesc_gennotify[];
 
-class BiomeDefManager;
 class Biome;
 class EmergeManager;
 class MapBlock;
-class ManualMapVoxelManipulator;
 class VoxelManipulator;
 struct BlockMakeData;
 class VoxelArea;
 class Map;
-
 
 enum MapgenObject {
 	MGOBJ_VMANIP,
@@ -82,25 +60,51 @@ enum MapgenObject {
 	MGOBJ_GENNOTIFY
 };
 
-enum GenNotify {
+enum GenNotifyType {
 	GENNOTIFY_DUNGEON,
 	GENNOTIFY_TEMPLE,
 	GENNOTIFY_CAVE_BEGIN,
 	GENNOTIFY_CAVE_END,
 	GENNOTIFY_LARGECAVE_BEGIN,
-	GENNOTIFY_LARGECAVE_END
+	GENNOTIFY_LARGECAVE_END,
+	GENNOTIFY_DECORATION,
+	NUM_GENNOTIFY_TYPES
 };
 
-enum OreType {
-	ORE_SCATTER,
-	ORE_SHEET,
-	ORE_CLAYLIKE
+// TODO(hmmmm/paramat): make stone type selection dynamic
+enum MgStoneType {
+	STONE,
+	DESERT_STONE,
+	SANDSTONE,
 };
 
+struct GenNotifyEvent {
+	GenNotifyType type;
+	v3s16 pos;
+	u32 id;
+};
+
+class GenerateNotifier {
+public:
+	GenerateNotifier();
+	GenerateNotifier(u32 notify_on, std::set<u32> *notify_on_deco_ids);
+
+	void setNotifyOn(u32 notify_on);
+	void setNotifyOnDecoIds(std::set<u32> *notify_on_deco_ids);
+
+	bool addEvent(GenNotifyType type, v3s16 pos, u32 id=0);
+	void getEvents(std::map<std::string, std::vector<v3s16> > &event_map,
+		bool peek_events=false);
+
+private:
+	u32 m_notify_on;
+	std::set<u32> *m_notify_on_deco_ids;
+	std::list<GenNotifyEvent> m_notify_events;
+};
 
 struct MapgenSpecificParams {
-	virtual void readParams(Settings *settings) = 0;
-	virtual void writeParams(Settings *settings) = 0;
+	virtual void readParams(const Settings *settings) = 0;
+	virtual void writeParams(Settings *settings) const = 0;
 	virtual ~MapgenSpecificParams() {}
 };
 
@@ -111,225 +115,88 @@ struct MapgenParams {
 	s16 water_level;
 	u32 flags;
 
+	NoiseParams np_biome_heat;
+	NoiseParams np_biome_heat_blend;
+	NoiseParams np_biome_humidity;
+	NoiseParams np_biome_humidity_blend;
+
 	MapgenSpecificParams *sparams;
 
-	MapgenParams() {
-		mg_name     = DEFAULT_MAPGEN;
-		seed        = 0;
-		water_level = 1;
-		chunksize   = 5;
-		flags       = MG_TREES | MG_CAVES | MG_LIGHT;
-		sparams     = NULL;
-	}
+	MapgenParams() :
+		mg_name(DEFAULT_MAPGEN),
+		chunksize(5),
+		seed(0),
+		water_level(1),
+		flags(MG_CAVES | MG_LIGHT | MG_DECORATIONS),
+		np_biome_heat(NoiseParams(50, 50, v3f(750.0, 750.0, 750.0), 5349, 3, 0.5, 2.0)),
+		np_biome_heat_blend(NoiseParams(0, 1.5, v3f(8.0, 8.0, 8.0), 13, 2, 1.0, 2.0)),
+		np_biome_humidity(NoiseParams(50, 50, v3f(750.0, 750.0, 750.0), 842, 3, 0.5, 2.0)),
+		np_biome_humidity_blend(NoiseParams(0, 1.5, v3f(8.0, 8.0, 8.0), 90003, 2, 1.0, 2.0)),
+		sparams(NULL)
+	{}
+
+	void load(const Settings &settings);
+	void save(Settings &settings) const;
 };
 
 class Mapgen {
 public:
 	int seed;
 	int water_level;
+	u32 flags;
 	bool generating;
 	int id;
-	ManualMapVoxelManipulator *vm;
+
+	MMVManip *vm;
 	INodeDefManager *ndef;
 
+	u32 blockseed;
 	s16 *heightmap;
 	u8 *biomemap;
+	float *heatmap;
+	float *humidmap;
 	v3s16 csize;
 
-	u32 gennotify;
-	std::vector<v3s16> *gen_notifications[NUM_GEN_NOTIFY];
+	GenerateNotifier gennotify;
 
 	Mapgen();
+	Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	virtual ~Mapgen();
 
+	static u32 getBlockSeed(v3s16 p, int seed);
+	static u32 getBlockSeed2(v3s16 p, int seed);
 	s16 findGroundLevelFull(v2s16 p2d);
 	s16 findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax);
+	s16 findLiquidSurface(v2s16 p2d, s16 ymin, s16 ymax);
 	void updateHeightmap(v3s16 nmin, v3s16 nmax);
 	void updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax);
-	void setLighting(v3s16 nmin, v3s16 nmax, u8 light);
+
+	void setLighting(u8 light, v3s16 nmin, v3s16 nmax);
 	void lightSpread(VoxelArea &a, v3s16 p, u8 light);
-	void calcLighting(v3s16 nmin, v3s16 nmax);
-	void calcLightingOld(v3s16 nmin, v3s16 nmax);
+	void calcLighting(v3s16 nmin, v3s16 nmax, v3s16 full_nmin, v3s16 full_nmax,
+		bool propagate_shadow = true);
+	void propagateSunlight(v3s16 nmin, v3s16 nmax, bool propagate_shadow);
+	void spreadLight(v3s16 nmin, v3s16 nmax);
 
 	virtual void makeChunk(BlockMakeData *data) {}
 	virtual int getGroundLevelAtPoint(v2s16 p) { return 0; }
+
+	// getSpawnLevelAtPoint() is a function within each mapgen that returns a
+	// suitable y co-ordinate for player spawn ('suitable' usually meaning
+	// within 16 nodes of water_level). If a suitable spawn level cannot be
+	// found at the specified (X, Z) 'MAX_MAP_GENERATION_LIMIT' is returned to
+	// signify this and to cause Server::findSpawnPos() to try another (X, Z).
+	virtual int getSpawnLevelAtPoint(v2s16 p) { return 0; }
+
+private:
+	DISABLE_CLASS_COPY(Mapgen);
 };
 
 struct MapgenFactory {
 	virtual Mapgen *createMapgen(int mgid, MapgenParams *params,
-								 EmergeManager *emerge) = 0;
+		EmergeManager *emerge) = 0;
 	virtual MapgenSpecificParams *createMapgenParams() = 0;
 	virtual ~MapgenFactory() {}
 };
 
-class Ore {
-public:
-	std::string ore_name;
-	std::vector<std::string> wherein_names;
-	content_t ore;
-	std::vector<content_t> wherein;  // the node to be replaced
-	u32 clust_scarcity; // ore cluster has a 1-in-clust_scarcity chance of appearing at a node
-	s16 clust_num_ores; // how many ore nodes are in a chunk
-	s16 clust_size;     // how large (in nodes) a chunk of ore is
-	s16 height_min;
-	s16 height_max;
-	u8 ore_param2;		// to set node-specific attributes
-	u32 flags;          // attributes for this ore
-	float nthresh;      // threshhold for noise at which an ore is placed
-	NoiseParams *np;    // noise for distribution of clusters (NULL for uniform scattering)
-	Noise *noise;
-
-	Ore() {
-		ore     = CONTENT_IGNORE;
-		np      = NULL;
-		noise   = NULL;
-	}
-
-	virtual ~Ore();
-
-	void resolveNodeNames(INodeDefManager *ndef);
-	void placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
-	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
-						u32 blockseed, v3s16 nmin, v3s16 nmax) = 0;
-};
-
-class OreScatter : public Ore {
-	~OreScatter() {}
-	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
-						u32 blockseed, v3s16 nmin, v3s16 nmax);
-};
-
-class OreSheet : public Ore {
-	~OreSheet() {}
-	virtual void generate(ManualMapVoxelManipulator *vm, int seed,
-						u32 blockseed, v3s16 nmin, v3s16 nmax);
-};
-
-Ore *createOre(OreType type);
-
-
-enum DecorationType {
-	DECO_SIMPLE = 1,
-	DECO_SCHEMATIC,
-	DECO_LSYSTEM
-};
-
-#if 0
-struct CutoffData {
-	VoxelArea a;
-	Decoration *deco;
-	//v3s16 p;
-	//v3s16 size;
-	//s16 height;
-
-	CutoffData(s16 x, s16 y, s16 z, s16 h) {
-		p = v3s16(x, y, z);
-		height = h;
-	}
-};
 #endif
-
-class Decoration {
-public:
-	INodeDefManager *ndef;
-
-	int mapseed;
-	std::string place_on_name;
-	content_t c_place_on;
-	s16 sidelen;
-	float fill_ratio;
-	NoiseParams *np;
-
-	std::set<u8> biomes;
-	//std::list<CutoffData> cutoffs;
-	//JMutex cutoff_mutex;
-
-	Decoration();
-	virtual ~Decoration();
-
-	virtual void resolveNodeNames(INodeDefManager *ndef);
-	void placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
-	void placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
-
-	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p) = 0;
-	virtual int getHeight() = 0;
-	virtual std::string getName() = 0;
-};
-
-class DecoSimple : public Decoration {
-public:
-	std::string deco_name;
-	std::string spawnby_name;
-	content_t c_deco;
-	content_t c_spawnby;
-	s16 deco_height;
-	s16 deco_height_max;
-	s16 nspawnby;
-
-	std::vector<std::string> decolist_names;
-	std::vector<content_t> c_decolist;
-
-	~DecoSimple() {}
-
-	void resolveNodeNames(INodeDefManager *ndef);
-	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
-	virtual int getHeight();
-	virtual std::string getName();
-};
-
-#define MTSCHEM_FILE_SIGNATURE 0x4d54534d // 'MTSM'
-#define MTSCHEM_FILE_VER_HIGHEST_READ  3
-#define MTSCHEM_FILE_VER_HIGHEST_WRITE 3
-
-#define MTSCHEM_PROB_NEVER  0x00
-#define MTSCHEM_PROB_ALWAYS 0xFF
-
-class DecoSchematic : public Decoration {
-public:
-	std::string filename;
-
-	std::vector<std::string> *node_names;
-	std::vector<content_t> c_nodes;
-	std::map<std::string, std::string> replacements;
-
-	u32 flags;
-	Rotation rotation;
-	v3s16 size;
-	MapNode *schematic;
-	u8 *slice_probs;
-
-	DecoSchematic();
-	~DecoSchematic();
-
-	void resolveNodeNames(INodeDefManager *ndef);
-	virtual void generate(Mapgen *mg, PseudoRandom *pr, s16 max_y, v3s16 p);
-	virtual int getHeight();
-	virtual std::string getName();
-
-	void blitToVManip(v3s16 p, ManualMapVoxelManipulator *vm,
-					Rotation rot, bool force_placement);
-
-	bool loadSchematicFile();
-	void saveSchematicFile(INodeDefManager *ndef);
-
-	bool getSchematicFromMap(Map *map, v3s16 p1, v3s16 p2);
-	void placeStructure(Map *map, v3s16 p, bool force_placement);
-	void applyProbabilities(v3s16 p0,
-		std::vector<std::pair<v3s16, u8> > *plist,
-		std::vector<std::pair<s16, u8> > *splist);
-};
-
-void build_nnlist_and_update_ids(MapNode *nodes, u32 nodecount,
-					std::vector<content_t> *usednodes);
-
-/*
-class DecoLSystem : public Decoration {
-public:
-	virtual void generate(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
-};
-*/
-
-Decoration *createDecoration(DecorationType type);
-
-#endif
-

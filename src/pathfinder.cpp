@@ -310,27 +310,16 @@ std::vector<v3s16> pathfinder::get_Path(ServerEnvironment* env,
 		print_path(path);
 #endif
 
-		//optimize path
-		std::vector<v3s16> optimized_path;
-
-		std::vector<v3s16>::iterator startpos = path.begin();
-		optimized_path.push_back(source);
-
+		//finalize path
+		std::vector<v3s16> full_path;
 		for (std::vector<v3s16>::iterator i = path.begin();
-					i != path.end(); i++) {
-			if (!m_env->line_of_sight(
-				tov3f(getIndexElement(*startpos).pos),
-				tov3f(getIndexElement(*i).pos))) {
-				optimized_path.push_back(getIndexElement(*(i-1)).pos);
-				startpos = (i-1);
-			}
+					i != path.end(); ++i) {
+			full_path.push_back(getIndexElement(*i).pos);
 		}
 
-		optimized_path.push_back(destination);
-
 #ifdef PATHFINDER_DEBUG
-		std::cout << "Optimized path:" << std::endl;
-		print_path(optimized_path);
+		std::cout << "full path:" << std::endl;
+		print_path(full_path);
 #endif
 #ifdef PATHFINDER_CALC_TIME
 		timespec ts2;
@@ -344,7 +333,7 @@ std::vector<v3s16> pathfinder::get_Path(ServerEnvironment* env,
 		std::cout << "Calculating path took: " << (ts2.tv_sec - ts.tv_sec) <<
 				"s " << ms << "ms " << us << "us " << ns << "ns " << std::endl;
 #endif
-		return optimized_path;
+		return full_path;
 	}
 	else {
 #ifdef PATHFINDER_DEBUG
@@ -532,7 +521,7 @@ path_cost pathfinder::calc_cost(v3s16 pos,v3s16 dir) {
 			if ((testpos.Y >= m_limits.Y.min) &&
 					(node_at_pos.param0 != CONTENT_IGNORE) &&
 					(node_at_pos.param0 != CONTENT_AIR)) {
-				if (((pos2.Y - testpos.Y)*-1) <= m_maxdrop) {
+				if ((pos2.Y - testpos.Y - 1) <= m_maxdrop) {
 					retval.valid = true;
 					retval.value = 2;
 					//difference of y-pos +1 (target node is ABOVE solid node)
@@ -735,7 +724,7 @@ v3s16 pathfinder::get_dir_heuristic(std::vector<v3s16>& directions,path_gridnode
 
 	for (std::vector<v3s16>::iterator iter = directions.begin();
 			iter != directions.end();
-			iter ++) {
+			++iter) {
 
 		v3s16 pos1 =  v3s16(srcpos.X + iter->X,0,srcpos.Z+iter->Z);
 
@@ -760,7 +749,7 @@ v3s16 pathfinder::get_dir_heuristic(std::vector<v3s16>& directions,path_gridnode
 	if (retdir != v3s16(0,0,0)) {
 		for (std::vector<v3s16>::iterator iter = directions.begin();
 					iter != directions.end();
-					iter ++) {
+					++iter) {
 			if(*iter == retdir) {
 				DEBUG_OUT("Pathfinder: removing return direction" << std::endl);
 				directions.erase(iter);
@@ -1075,7 +1064,7 @@ void pathfinder::print_path(std::vector<v3s16> path) {
 
 	unsigned int current = 0;
 	for (std::vector<v3s16>::iterator i = path.begin();
-			i != path.end(); i++) {
+			i != path.end(); ++i) {
 		std::cout << std::setw(3) << current << ":" << PPOS((*i)) << std::endl;
 		current++;
 	}

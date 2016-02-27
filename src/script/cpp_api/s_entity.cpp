@@ -80,6 +80,8 @@ void ScriptApiEntity::luaentity_Activate(u16 id,
 
 	verbosestream << "scriptapi_luaentity_activate: id=" << id << std::endl;
 
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
 	// Get core.luaentities[id]
 	luaentity_get(L, id);
 	int object = lua_gettop(L);
@@ -91,13 +93,13 @@ void ScriptApiEntity::luaentity_Activate(u16 id,
 		lua_pushvalue(L, object); // self
 		lua_pushlstring(L, staticdata.c_str(), staticdata.size());
 		lua_pushinteger(L, dtime_s);
-		// Call with 3 arguments, 0 results
-		if (lua_pcall(L, 3, 0, m_errorhandler))
-			scriptError();
+
+		setOriginFromTable(object);
+		PCALL_RES(lua_pcall(L, 3, 0, error_handler));
 	} else {
 		lua_pop(L, 1);
 	}
-	lua_pop(L, 1); // Pop object
+	lua_pop(L, 2); // Pop object and error handler
 }
 
 void ScriptApiEntity::luaentity_Remove(u16 id)
@@ -126,6 +128,8 @@ std::string ScriptApiEntity::luaentity_GetStaticdata(u16 id)
 
 	//infostream<<"scriptapi_luaentity_get_staticdata: id="<<id<<std::endl;
 
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
 	// Get core.luaentities[id]
 	luaentity_get(L, id);
 	int object = lua_gettop(L);
@@ -136,13 +140,14 @@ std::string ScriptApiEntity::luaentity_GetStaticdata(u16 id)
 		lua_pop(L, 2); // Pop entity and  get_staticdata
 		return "";
 	}
-
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_pushvalue(L, object); // self
-	// Call with 1 arguments, 1 results
-	if (lua_pcall(L, 1, 1, m_errorhandler))
-		scriptError();
-	lua_remove(L, object); // Remove object
+
+	setOriginFromTable(object);
+	PCALL_RES(lua_pcall(L, 1, 1, error_handler));
+
+	lua_remove(L, object);
+	lua_remove(L, error_handler);
 
 	size_t len = 0;
 	const char *s = lua_tolstring(L, -1, &len);
@@ -196,6 +201,8 @@ void ScriptApiEntity::luaentity_Step(u16 id, float dtime)
 
 	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
 
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
 	// Get core.luaentities[id]
 	luaentity_get(L, id);
 	int object = lua_gettop(L);
@@ -209,10 +216,11 @@ void ScriptApiEntity::luaentity_Step(u16 id, float dtime)
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_pushvalue(L, object); // self
 	lua_pushnumber(L, dtime); // dtime
-	// Call with 2 arguments, 0 results
-	if (lua_pcall(L, 2, 0, m_errorhandler))
-		scriptError();
-	lua_pop(L, 1); // Pop object
+
+	setOriginFromTable(object);
+	PCALL_RES(lua_pcall(L, 2, 0, error_handler));
+
+	lua_pop(L, 2); // Pop object and error handler
 }
 
 // Calls entity:on_punch(ObjectRef puncher, time_from_last_punch,
@@ -224,6 +232,8 @@ void ScriptApiEntity::luaentity_Punch(u16 id,
 	SCRIPTAPI_PRECHECKHEADER
 
 	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	// Get core.luaentities[id]
 	luaentity_get(L,id);
@@ -241,10 +251,11 @@ void ScriptApiEntity::luaentity_Punch(u16 id,
 	lua_pushnumber(L, time_from_last_punch);
 	push_tool_capabilities(L, *toolcap);
 	push_v3f(L, dir);
-	// Call with 5 arguments, 0 results
-	if (lua_pcall(L, 5, 0, m_errorhandler))
-		scriptError();
-	lua_pop(L, 1); // Pop object
+
+	setOriginFromTable(object);
+	PCALL_RES(lua_pcall(L, 5, 0, error_handler));
+
+	lua_pop(L, 2); // Pop object and error handler
 }
 
 // Calls entity:on_rightclick(ObjectRef clicker)
@@ -254,6 +265,8 @@ void ScriptApiEntity::luaentity_Rightclick(u16 id,
 	SCRIPTAPI_PRECHECKHEADER
 
 	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	// Get core.luaentities[id]
 	luaentity_get(L, id);
@@ -268,9 +281,10 @@ void ScriptApiEntity::luaentity_Rightclick(u16 id,
 	luaL_checktype(L, -1, LUA_TFUNCTION);
 	lua_pushvalue(L, object); // self
 	objectrefGetOrCreate(L, clicker); // Clicker reference
-	// Call with 2 arguments, 0 results
-	if (lua_pcall(L, 2, 0, m_errorhandler))
-		scriptError();
-	lua_pop(L, 1); // Pop object
+
+	setOriginFromTable(object);
+	PCALL_RES(lua_pcall(L, 2, 0, error_handler));
+
+	lua_pop(L, 2); // Pop object and error handler
 }
 

@@ -37,10 +37,9 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 	#include <AL/alext.h>
 #endif
 #include <vorbis/vorbisfile.h>
+#include <assert.h>
 #include "log.h"
-#include "filesys.h"
 #include "util/numeric.h" // myrand()
-#include "debug.h" // assert()
 #include "porting.h"
 #include <map>
 #include <vector>
@@ -92,7 +91,7 @@ static ALenum warn_if_error(ALenum err, const char *desc)
 {
 	if(err == AL_NO_ERROR)
 		return err;
-	errorstream<<"WARNING: "<<desc<<": "<<alErrorString(err)<<std::endl;
+	warningstream<<desc<<": "<<alErrorString(err)<<std::endl;
 	return err;
 }
 
@@ -111,31 +110,19 @@ struct SoundBuffer
 	std::vector<char> buffer;
 };
 
-SoundBuffer* loadOggFile(const std::string &filepath)
+SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
+		const std::string &filename_for_logging)
 {
 	int endian = 0; // 0 for Little-Endian, 1 for Big-Endian
 	int bitStream;
 	long bytes;
 	char array[BUFFER_SIZE]; // Local fixed size array
 	vorbis_info *pInfo;
-	OggVorbis_File oggFile;
-	
-	// Do a dumb-ass static string copy for old versions of ov_fopen
-	// because they expect a non-const char*
-	char nonconst[10000];
-	snprintf(nonconst, 10000, "%s", filepath.c_str());
-	// Try opening the given file
-	//if(ov_fopen(filepath.c_str(), &oggFile) != 0)
-	if(ov_fopen(nonconst, &oggFile) != 0)
-	{
-		infostream<<"Audio: Error opening "<<filepath<<" for decoding"<<std::endl;
-		return NULL;
-	}
 
 	SoundBuffer *snd = new SoundBuffer;
 
 	// Get some information about the OGG file
-	pInfo = ov_info(&oggFile, -1);
+	pInfo = ov_info(oggFile, -1);
 
 	// Check the number of channels... always use 16-bit samples
 	if(pInfo->channels == 1)
@@ -150,12 +137,13 @@ SoundBuffer* loadOggFile(const std::string &filepath)
 	do
 	{
 		// Read up to a buffer's worth of decoded sound data
-		bytes = ov_read(&oggFile, array, BUFFER_SIZE, endian, 2, 1, &bitStream);
+		bytes = ov_read(oggFile, array, BUFFER_SIZE, endian, 2, 1, &bitStream);
 
 		if(bytes < 0)
 		{
-			ov_clear(&oggFile);
-			infostream<<"Audio: Error decoding "<<filepath<<std::endl;
+			ov_clear(oggFile);
+			infostream << "Audio: Error decoding "
+				<< filename_for_logging << std::endl;
 			return NULL;
 		}
 
@@ -175,12 +163,98 @@ SoundBuffer* loadOggFile(const std::string &filepath)
 				<<"preparing sound buffer"<<std::endl;
 	}
 
-	infostream<<"Audio file "<<filepath<<" loaded"<<std::endl;
+	infostream << "Audio file "
+		<< filename_for_logging << " loaded" << std::endl;
 
 	// Clean up!
-	ov_clear(&oggFile);
+	ov_clear(oggFile);
 
 	return snd;
+}
+
+SoundBuffer *load_ogg_from_file(const std::string &path)
+{
+	OggVorbis_File oggFile;
+
+	// Try opening the given file.
+	// This requires libvorbis >= 1.3.2, as
+	// previous versions expect a non-const char *
+	if (ov_fopen(path.c_str(), &oggFile) != 0) {
+		infostream << "Audio: Error opening " << path
+			<< " for decoding" << std::endl;
+		return NULL;
+	}
+
+	return load_opened_ogg_file(&oggFile, path);
+}
+
+struct BufferSource {
+	const char *buf;
+	size_t cur_offset;
+	size_t len;
+};
+
+size_t buffer_sound_read_func(void *ptr, size_t size, size_t nmemb, void *datasource)
+{
+	BufferSource *s = (BufferSource *)datasource;
+	size_t copied_size = MYMIN(s->len - s->cur_offset, size);
+	memcpy(ptr, s->buf + s->cur_offset, copied_size);
+	s->cur_offset += copied_size;
+	return copied_size;
+}
+
+int buffer_sound_seek_func(void *datasource, ogg_int64_t offset, int whence)
+{
+	BufferSource *s = (BufferSource *)datasource;
+	if (whence == SEEK_SET) {
+		if (offset < 0 || (size_t)MYMAX(offset, 0) >= s->len) {
+			// offset out of bounds
+			return -1;
+		}
+		s->cur_offset = offset;
+		return 0;
+	} else if (whence == SEEK_CUR) {
+		if ((size_t)MYMIN(-offset, 0) > s->cur_offset
+				|| s->cur_offset + offset > s->len) {
+			// offset out of bounds
+			return -1;
+		}
+		s->cur_offset += offset;
+		return 0;
+	}
+	// invalid whence param (SEEK_END doesn't have to be supported)
+	return -1;
+}
+
+long BufferSourceell_func(void *datasource)
+{
+	BufferSource *s = (BufferSource *)datasource;
+	return s->cur_offset;
+}
+
+static ov_callbacks g_buffer_ov_callbacks = {
+	&buffer_sound_read_func,
+	&buffer_sound_seek_func,
+	NULL,
+	&BufferSourceell_func
+};
+
+SoundBuffer *load_ogg_from_buffer(const std::string &buf, const std::string &id_for_log)
+{
+	OggVorbis_File oggFile;
+
+	BufferSource s;
+	s.buf = buf.c_str();
+	s.cur_offset = 0;
+	s.len = buf.size();
+
+	if (ov_open_callbacks(&s, &oggFile, NULL, 0, g_buffer_ov_callbacks) != 0) {
+		infostream << "Audio: Error opening " << id_for_log
+			<< " for decoding" << std::endl;
+		return NULL;
+	}
+
+	return load_opened_ogg_file(&oggFile, id_for_log);
 }
 
 struct PlayingSound
@@ -195,7 +269,6 @@ private:
 	OnDemandSoundFetcher *m_fetcher;
 	ALCdevice *m_device;
 	ALCcontext *m_context;
-	bool m_can_vorbis;
 	int m_next_id;
 	std::map<std::string, std::vector<SoundBuffer*> > m_buffers;
 	std::map<int, PlayingSound*> m_sounds_playing;
@@ -206,12 +279,11 @@ public:
 		m_fetcher(fetcher),
 		m_device(NULL),
 		m_context(NULL),
-		m_can_vorbis(false),
 		m_next_id(1),
 		m_is_initialized(false)
 	{
 		ALCenum error = ALC_NO_ERROR;
-		
+
 		infostream<<"Audio: Initializing..."<<std::endl;
 
 		m_device = alcOpenDevice(NULL);
@@ -219,14 +291,6 @@ public:
 			infostream<<"Audio: No audio device available, audio system "
 				<<"not initialized"<<std::endl;
 			return;
-		}
-
-		if(alcIsExtensionPresent(m_device, "EXT_vorbis")){
-			infostream<<"Audio: Vorbis extension present"<<std::endl;
-			m_can_vorbis = true;
-		} else{
-			infostream<<"Audio: Vorbis extension NOT present"<<std::endl;
-			m_can_vorbis = false;
 		}
 
 		m_context = alcCreateContext(m_device, NULL);
@@ -273,9 +337,9 @@ public:
 		m_device = NULL;
 
 		for (std::map<std::string, std::vector<SoundBuffer*> >::iterator i = m_buffers.begin();
-				i != m_buffers.end(); i++) {
+				i != m_buffers.end(); ++i) {
 			for (std::vector<SoundBuffer*>::iterator iter = (*i).second.begin();
-					iter != (*i).second.end(); iter++) {
+					iter != (*i).second.end(); ++iter) {
 				delete *iter;
 			}
 			(*i).second.clear();
@@ -283,7 +347,7 @@ public:
 		m_buffers.clear();
 		infostream<<"Audio: Deinitialized."<<std::endl;
 	}
-	
+
 	void addBuffer(const std::string &name, SoundBuffer *buf)
 	{
 		std::map<std::string, std::vector<SoundBuffer*> >::iterator i =
@@ -375,7 +439,7 @@ public:
 		m_sounds_playing[id] = sound;
 		return id;
 	}
-	
+
 	void deleteSound(int id)
 	{
 		std::map<int, PlayingSound*>::iterator i =
@@ -383,7 +447,7 @@ public:
 		if(i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
-		
+
 		alDeleteSources(1, &sound->source_id);
 
 		delete sound;
@@ -402,16 +466,16 @@ public:
 		std::set<std::string> datas;
 		m_fetcher->fetchSounds(name, paths, datas);
 		for(std::set<std::string>::iterator i = paths.begin();
-				i != paths.end(); i++){
+				i != paths.end(); ++i){
 			loadSoundFile(name, *i);
 		}
 		for(std::set<std::string>::iterator i = datas.begin();
-				i != datas.end(); i++){
+				i != datas.end(); ++i){
 			loadSoundData(name, *i);
 		}
 		return getBuffer(name);
 	}
-	
+
 	// Remove stopped sounds
 	void maintain()
 	{
@@ -421,7 +485,7 @@ public:
 		std::set<int> del_list;
 		for(std::map<int, PlayingSound*>::iterator
 				i = m_sounds_playing.begin();
-				i != m_sounds_playing.end(); i++)
+				i != m_sounds_playing.end(); ++i)
 		{
 			int id = i->first;
 			PlayingSound *sound = i->second;
@@ -434,11 +498,11 @@ public:
 				}
 			}
 		}
-		if(del_list.size() != 0)
+		if(!del_list.empty())
 			verbosestream<<"OpenALSoundManager::maintain(): deleting "
 					<<del_list.size()<<" playing sounds"<<std::endl;
 		for(std::set<int>::iterator i = del_list.begin();
-				i != del_list.end(); i++)
+				i != del_list.end(); ++i)
 		{
 			deleteSound(*i);
 		}
@@ -449,26 +513,18 @@ public:
 	bool loadSoundFile(const std::string &name,
 			const std::string &filepath)
 	{
-		SoundBuffer *buf = loadOggFile(filepath);
-		if(buf)
+		SoundBuffer *buf = load_ogg_from_file(filepath);
+		if (buf)
 			addBuffer(name, buf);
 		return false;
 	}
 	bool loadSoundData(const std::string &name,
 			const std::string &filedata)
 	{
-		// The vorbis API sucks; just write it to a file and use vorbisfile
-		// TODO: Actually load it directly from memory
-		std::string basepath = porting::path_user + DIR_DELIM + "cache" +
-				DIR_DELIM + "tmp";
-		std::string path = basepath + DIR_DELIM + "tmp.ogg";
-		verbosestream<<"OpenALSoundManager::loadSoundData(): Writing "
-				<<"temporary file to ["<<path<<"]"<<std::endl;
-		fs::CreateAllDirs(basepath);
-		std::ofstream of(path.c_str(), std::ios::binary);
-		of.write(filedata.c_str(), filedata.size());
-		of.close();
-		return loadSoundFile(name, path);
+		SoundBuffer *buf = load_ogg_from_buffer(filedata, name);
+		if (buf)
+			addBuffer(name, buf);
+		return false;
 	}
 
 	void updateListener(v3f pos, v3f vel, v3f at, v3f up)
@@ -482,7 +538,7 @@ public:
 		alListenerfv(AL_ORIENTATION, f);
 		warn_if_error(alGetError(), "updateListener");
 	}
-	
+
 	void setListenerGain(float gain)
 	{
 		alListenerf(AL_GAIN, gain);

@@ -24,16 +24,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include <iostream>
 
-#define GENERIC_CMD_SET_PROPERTIES 0
-#define GENERIC_CMD_UPDATE_POSITION 1
-#define GENERIC_CMD_SET_TEXTURE_MOD 2
-#define GENERIC_CMD_SET_SPRITE 3
-#define GENERIC_CMD_PUNCHED 4
-#define GENERIC_CMD_UPDATE_ARMOR_GROUPS 5
-#define GENERIC_CMD_SET_ANIMATION 6
-#define GENERIC_CMD_SET_BONE_POSITION 7
-#define GENERIC_CMD_SET_ATTACHMENT 8
-#define GENERIC_CMD_SET_PHYSICS_OVERRIDE 9
+enum GenericCMD {
+	GENERIC_CMD_SET_PROPERTIES,
+	GENERIC_CMD_UPDATE_POSITION,
+	GENERIC_CMD_SET_TEXTURE_MOD,
+	GENERIC_CMD_SET_SPRITE,
+	GENERIC_CMD_PUNCHED,
+	GENERIC_CMD_UPDATE_ARMOR_GROUPS,
+	GENERIC_CMD_SET_ANIMATION,
+	GENERIC_CMD_SET_BONE_POSITION,
+	GENERIC_CMD_ATTACH_TO,
+	GENERIC_CMD_SET_PHYSICS_OVERRIDE,
+	GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES
+};
 
 #include "object_properties.h"
 std::string gob_cmd_set_properties(const ObjectProperties &prop);
@@ -66,11 +69,13 @@ std::string gob_cmd_update_armor_groups(const ItemGroupList &armor_groups);
 std::string gob_cmd_update_physics_override(float physics_override_speed,
 		float physics_override_jump, float physics_override_gravity, bool sneak, bool sneak_glitch);
 
-std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_blend);
+std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_blend, bool frame_loop);
 
 std::string gob_cmd_update_bone_position(std::string bone, v3f position, v3f rotation);
 
 std::string gob_cmd_update_attachment(int parent_id, std::string bone, v3f position, v3f rotation);
+
+std::string gob_cmd_update_nametag_attributes(video::SColor color);
 
 #endif
 

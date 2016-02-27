@@ -22,40 +22,59 @@ tab_credits = {
 	caption = fgettext("Credits"),
 	cbf_formspec = function (tabview, name, tabdata)
 			local logofile = defaulttexturedir .. "logo.png"
-			return	"vertlabel[0,-0.25;CREDITS]" ..
-				"label[0.5,3;Minetest " .. core.get_version() .. "]" ..
-				"label[0.5,3.3;http://minetest.net]" ..
+			return "label[0.5,3.2;Minetest " .. core.get_version() .. "]" ..
+				"label[0.5,3.5;http://minetest.net]" ..
 				"image[0.5,1;" .. core.formspec_escape(logofile) .. "]" ..
-				"textlist[3.5,-0.25;8.5,5.8;list_credits;" ..
-				"#FFFF00" .. fgettext("Core Developers") .."," ..
-				"Perttu Ahola (celeron55) <celeron55@gmail.com>,"..
-				"Ryan Kwolek (kwolekr) <kwolekr@minetest.net>,"..
-				"PilzAdam <pilzadam@minetest.net>," ..
-				"Ilya Zhuravlev (xyz) <xyz@minetest.net>,"..
-				"Lisa Milne (darkrose) <lisa@ltmnet.com>,"..
-				"Maciej Kasatkin (RealBadAngel) <mk@realbadangel.pl>,"..
-				"sfan5 <sfan5@live.de>,"..
-				"kahrl <kahrl@gmx.net>,"..
-				"sapier,"..
-				"ShadowNinja <shadowninja@minetest.net>,"..
-				"Nathanael Courant (Nore/Novatux) <nore@mesecons.net>,"..
-				"BlockMen,"..
-				","..
-				"#FFFF00" .. fgettext("Active Contributors") .. "," ..
-				"Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>,"..
-				"Jurgen Doser (doserj) <jurgen.doser@gmail.com>,"..
-				"Jeija <jeija@mesecons.net>,"..
-				"MirceaKitsune <mirceakitsune@gmail.com>,"..
-				"dannydark <the_skeleton_of_a_child@yahoo.co.uk>,"..
-				"0gb.us <0gb.us@0gb.us>,"..
-				"," ..
-				"#FFFF00" .. fgettext("Previous Contributors") .. "," ..
-				"Guiseppe Bilotta (Oblomov) <guiseppe.bilotta@gmail.com>,"..
-				"Jonathan Neuschafer <j.neuschaefer@gmx.net>,"..
-				"Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net>,"..
-				"Constantin Wenger (SpeedProg) <constantin.wenger@googlemail.com>,"..
-				"matttpt <matttpt@gmail.com>,"..
-				"JacobF <queatz@gmail.com>,"..
-				";0;true]"
+				"tablecolumns[color;text]" ..
+				"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
+				"table[3.5,-0.25;8.5,5.8;list_credits;" ..
+				"#FFFF00," .. fgettext("Core Developers") .."," ..
+				",Perttu Ahola (celeron55) <celeron55@gmail.com>,"..
+				",Ryan Kwolek (kwolekr) <kwolekr@minetest.net>,"..
+				",PilzAdam <pilzadam@minetest.net>," ..
+				",sfan5 <sfan5@live.de>,"..
+				",kahrl <kahrl@gmx.net>,"..
+				",sapier,"..
+				",ShadowNinja <shadowninja@minetest.net>,"..
+				",Nathanael Courant (Nore/Ekdohibs) <nore@mesecons.net>,"..
+				",BlockMen,"..
+				",Craig Robbins (Zeno),"..
+				",Loic Blot (nerzhul/nrz) <loic.blot@unix-experience.fr>,"..
+				",Mat Gregory (paramat),"..
+				",est31 <MTest31@outlook.com>," ..
+				",,"..
+				"#FFFF00," .. fgettext("Active Contributors") .. "," ..
+				",SmallJoker <mk939@ymail.com>," ..
+				",Andrew Ward (rubenwardy) <rubenwardy@gmail.com>," ..
+				",Aaron Suen <warr1024@gmail.com>," ..
+				",Sokomine <wegwerf@anarres.dyndns.org>," ..
+				",Břetislav Štec (t0suj4/TBC_x)," ..
+				",TeTpaAka," ..
+				",Jean-Patrick G (kilbith) <jeanpatrick.guerrero@gmail.com>," ..
+				",Diego Martinez (kaeza) <kaeza@users.sf.net>," ..
+				",," ..
+				"#FFFF00," .. fgettext("Previous Core Developers") .."," ..
+				",Maciej Kasatkin (RealBadAngel) <maciej.kasatkin@o2.pl>,"..
+				",Lisa Milne (darkrose) <lisa@ltmnet.com>," ..
+				",proller," ..
+				",Ilya Zhuravlev (xyz) <xyz@minetest.net>," ..
+				",," ..
+				"#FFFF00," .. fgettext("Previous Contributors") .. "," ..
+				",Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>,"..
+				",Jurgen Doser (doserj) <jurgen.doser@gmail.com>,"..
+				",Gregory Currie (gregorycu)," ..
+				",Jeija <jeija@mesecons.net>,"..
+				",MirceaKitsune <mirceakitsune@gmail.com>,"..
+				",dannydark <the_skeleton_of_a_child@yahoo.co.uk>,"..
+				",0gb.us <0gb.us@0gb.us>,"..
+				",Guiseppe Bilotta (Oblomov) <guiseppe.bilotta@gmail.com>,"..
+				",Jonathan Neuschafer <j.neuschaefer@gmx.net>,"..
+				",Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net>,"..
+				",Constantin Wenger (SpeedProg) <constantin.wenger@googlemail.com>,"..
+				",matttpt <matttpt@gmail.com>,"..
+				",JacobF <queatz@gmail.com>,"..
+				",TriBlade9 <triblade9@mail.com>,"..
+				",Zefram <zefram@fysh.org>,"..
+				";1]"
 			end
 	}

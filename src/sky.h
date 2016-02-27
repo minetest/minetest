@@ -27,19 +27,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define SKY_MATERIAL_COUNT 5
 #define SKY_STAR_COUNT 200
 
+class ITextureSource;
+
 // Skybox, rendered with zbuffer turned off, before all other nodes.
 class Sky : public scene::ISceneNode
 {
 public:
 	//! constructor
-	Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id);
+	Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id,
+			ITextureSource *tsrc);
 
 	virtual void OnRegisterSceneNode();
 
 	//! renders the node.
 	virtual void render();
 
-	virtual const core::aabbox3d<f32>& getBoundingBox() const;
+	virtual const aabb3f &getBoundingBox() const
+	{ return m_box; }
 
 	// Used by Irrlicht for optimizing rendering
 	virtual video::SMaterial& getMaterial(u32 i)
@@ -71,7 +75,7 @@ public:
 	}
 
 private:
-	core::aabbox3d<f32> Box;
+	aabb3f m_box;
 	video::SMaterial m_materials[SKY_MATERIAL_COUNT];
 
 	// How much sun & moon transition should affect horizon color
@@ -79,7 +83,8 @@ private:
 	{
 		if (!m_sunlight_seen)
 			return 0;
-		float x; m_time_of_day >= 0.5 ? x = (1 - m_time_of_day) * 2 : x = m_time_of_day * 2;
+		float x = m_time_of_day >= 0.5 ? (1 - m_time_of_day) * 2 : m_time_of_day * 2;
+
 		if (x <= 0.3)
 			return 0;
 		if (x <= 0.4) // when the sun and moon are aligned

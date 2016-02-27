@@ -6,7 +6,20 @@
 --
 
 -- Initialize some very basic things
-print = core.debug
+function core.debug(...) core.log(table.concat({...}, "\t")) end
+if core.print then
+	local core_print = core.print
+	-- Override native print and use
+	-- terminal if that's turned on
+	function print(...)
+		local n, t = select("#", ...), { ... }
+		for i = 1, n do
+			t[i] = tostring(t[i])
+		end
+		core_print(table.concat(t, "\t"))
+	end
+	core.print = nil -- don't pollute our namespace
+end
 math.randomseed(os.time())
 os.setlocale("C", "numeric")
 minetest = core
@@ -17,6 +30,7 @@ local gamepath = scriptdir.."game"..DIR_DELIM
 local commonpath = scriptdir.."common"..DIR_DELIM
 local asyncpath = scriptdir.."async"..DIR_DELIM
 
+dofile(commonpath.."strict.lua")
 dofile(commonpath.."serialize.lua")
 dofile(commonpath.."misc_helpers.lua")
 

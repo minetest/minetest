@@ -35,15 +35,14 @@ private:
 		GUIEngine instance should be in here.
 	*/
 
-	// debug(text)
-	// Writes a line to dstream
-	static int l_debug(lua_State *L);
-
 	// log([level,] text)
 	// Writes a line to the logger.
 	// The one-argument version logs to infostream.
-	// The two-argument version accept a log level: error, action, info, or verbose.
+	// The two-argument version accepts a log level.
 	static int l_log(lua_State *L);
+
+	// get us precision time
+	static int l_get_us_time(lua_State *L);
 
 	// setting_set(name, value)
 	static int l_setting_set(lua_State *L);
@@ -78,7 +77,7 @@ private:
 	// is_yes(arg)
 	static int l_is_yes(lua_State *L);
 
-	// get_scriptdir()
+	// get_builtin_path()
 	static int l_get_builtin_path(lua_State *L);
 
 	// compress(data, method, ...)
@@ -86,6 +85,15 @@ private:
 
 	// decompress(data, method, ...)
 	static int l_decompress(lua_State *L);
+
+	// mkdir(path)
+	static int l_mkdir(lua_State *L);
+
+	// get_dir_list(path, is_dir)
+	static int l_get_dir_list(lua_State *L);
+
+	// request_insecure_environment()
+	static int l_request_insecure_environment(lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);
@@ -95,3 +103,4 @@ public:
 };
 
 #endif /* L_UTIL_H_ */
+

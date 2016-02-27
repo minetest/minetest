@@ -27,7 +27,7 @@ void NameIdMapping::serialize(std::ostream &os) const
 	writeU16(os, m_id_to_name.size());
 	for(std::map<u16, std::string>::const_iterator
 			i = m_id_to_name.begin();
-			i != m_id_to_name.end(); i++){
+			i != m_id_to_name.end(); ++i){
 		writeU16(os, i->first);
 		os<<serializeString(i->second);
 	}
