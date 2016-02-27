@@ -377,13 +377,15 @@ void GUIChatConsole::drawPrompt()
 		s32 cursor_pos = prompt.getVisibleCursorPosition();
 		if (cursor_pos >= 0)
 		{
+			s32 cursor_len = prompt.getCursorLength();
 			video::IVideoDriver* driver = Environment->getVideoDriver();
 			s32 x = (1 + cursor_pos) * m_fontsize.X;
 			core::rect<s32> destrect(
 				x,
-				y + (1.0-m_cursor_height) * m_fontsize.Y,
-				x + m_fontsize.X,
-				y + m_fontsize.Y);
+				y + m_fontsize.Y * (1.0 - m_cursor_height),
+				x + m_fontsize.X * MYMAX(cursor_len, 1),
+				y + m_fontsize.Y * (cursor_len ? m_cursor_height+1 : 1)
+			);
 			video::SColor cursor_color(255,255,255,255);
 			driver->draw2DRectangle(
 				cursor_color,
@@ -454,32 +456,20 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			prompt.historyNext();
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_LEFT)
+		else if(event.KeyInput.Key == KEY_LEFT || event.KeyInput.Key == KEY_RIGHT)
 		{
-			// Left or Ctrl-Left pressed
-			// move character / word to the left
-			ChatPrompt::CursorOpScope scope =
-				event.KeyInput.Control ?
+			// Left/right pressed
+			// Move/select character/word to the left depending on control and shift keys
+			ChatPrompt::CursorOp op = event.KeyInput.Shift ?
+				ChatPrompt::CURSOROP_SELECT :
+				ChatPrompt::CURSOROP_MOVE;
+			ChatPrompt::CursorOpDir dir = event.KeyInput.Key == KEY_LEFT ?
+				ChatPrompt::CURSOROP_DIR_LEFT :
+				ChatPrompt::CURSOROP_DIR_RIGHT;
+			ChatPrompt::CursorOpScope scope = event.KeyInput.Control ?
 				ChatPrompt::CURSOROP_SCOPE_WORD :
 				ChatPrompt::CURSOROP_SCOPE_CHARACTER;
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_MOVE,
-				ChatPrompt::CURSOROP_DIR_LEFT,
-				scope);
-			return true;
-		}
-		else if(event.KeyInput.Key == KEY_RIGHT)
-		{
-			// Right or Ctrl-Right pressed
-			// move character / word to the right
-			ChatPrompt::CursorOpScope scope =
-				event.KeyInput.Control ?
-				ChatPrompt::CURSOROP_SCOPE_WORD :
-				ChatPrompt::CURSOROP_SCOPE_CHARACTER;
-			prompt.cursorOperation(
-				ChatPrompt::CURSOROP_MOVE,
-				ChatPrompt::CURSOROP_DIR_RIGHT,
-				scope);
+			prompt.cursorOperation(op, dir, scope);
 			return true;
 		}
 		else if(event.KeyInput.Key == KEY_HOME)
@@ -530,14 +520,56 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				scope);
 			return true;
 		}
+		else if(event.KeyInput.Key == KEY_KEY_A && event.KeyInput.Control)
+		{
+			// Ctrl-A pressed
+			// Select all text
+			prompt.cursorOperation(
+				ChatPrompt::CURSOROP_SELECT,
+				ChatPrompt::CURSOROP_DIR_LEFT, // Ignored
+				ChatPrompt::CURSOROP_SCOPE_LINE);
+			return true;
+		}
+		else if(event.KeyInput.Key == KEY_KEY_C && event.KeyInput.Control)
+		{
+			// Ctrl-C pressed
+			// Copy text to clipboard
+			if (prompt.getCursorLength() <= 0)
+				return true;
+			std::string selected = wide_to_narrow(prompt.getSelection());
+			Environment->getOSOperator()->copyToClipboard(selected.c_str());
+			return true;
+		}
 		else if(event.KeyInput.Key == KEY_KEY_V && event.KeyInput.Control)
 		{
 			// Ctrl-V pressed
 			// paste text from clipboard
+			if (prompt.getCursorLength() > 0) {
+				// Delete selected section of text
+				prompt.cursorOperation(
+					ChatPrompt::CURSOROP_DELETE,
+					ChatPrompt::CURSOROP_DIR_LEFT, // Ignored
+					ChatPrompt::CURSOROP_SCOPE_SELECTION);
+			}
 			IOSOperator *os_operator = Environment->getOSOperator();
 			const c8 *text = os_operator->getTextFromClipboard();
 			if (text)
 				prompt.input(narrow_to_wide(text));
+			return true;
+		}
+		else if(event.KeyInput.Key == KEY_KEY_X && event.KeyInput.Control)
+		{
+			// Ctrl-X pressed
+			// Cut text to clipboard
+			if (prompt.getCursorLength() <= 0)
+				return true;
+			std::wstring wselected = prompt.getSelection();
+			std::string selected(wselected.begin(), wselected.end());
+			Environment->getOSOperator()->copyToClipboard(selected.c_str());
+			prompt.cursorOperation(
+				ChatPrompt::CURSOROP_DELETE,
+				ChatPrompt::CURSOROP_DIR_LEFT, // Ignored
+				ChatPrompt::CURSOROP_SCOPE_SELECTION);
 			return true;
 		}
 		else if(event.KeyInput.Key == KEY_KEY_U && event.KeyInput.Control)
