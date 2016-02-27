@@ -46,12 +46,14 @@ GUIChatConsole::GUIChatConsole(
 		gui::IGUIElement* parent,
 		s32 id,
 		ChatBackend* backend,
-		Client* client
+		Client* client,
+		IMenuManager* menumgr
 ):
 	IGUIElement(gui::EGUIET_ELEMENT, env, parent, id,
 			core::rect<s32>(0,0,100,100)),
 	m_chat_backend(backend),
 	m_client(client),
+	m_menumgr(menumgr),
 	m_screensize(v2u32(0,0)),
 	m_animate_time_old(0),
 	m_open(false),
@@ -120,6 +122,8 @@ void GUIChatConsole::openConsole(f32 height)
 	m_desired_height_fraction = height;
 	m_desired_height = height * m_screensize.Y;
 	reformatConsole();
+	Environment->setFocus(this);
+	m_menumgr->createdMenu(this);
 }
 
 bool GUIChatConsole::isOpen() const
@@ -135,11 +139,13 @@ bool GUIChatConsole::isOpenInhibited() const
 void GUIChatConsole::closeConsole()
 {
 	m_open = false;
+	Environment->removeFocus(this);
+	m_menumgr->deletingMenu(this);
 }
 
 void GUIChatConsole::closeConsoleAtOnce()
 {
-	m_open = false;
+	closeConsole();
 	m_height = 0;
 	recalculateConsolePosition();
 }
@@ -399,7 +405,6 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		if(KeyPress(event.KeyInput) == getKeySetting("keymap_console"))
 		{
 			closeConsole();
-			Environment->removeFocus(this);
 
 			// inhibit open so the_game doesn't reopen immediately
 			m_open_inhibited = 50;
@@ -409,7 +414,6 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		else if(event.KeyInput.Key == KEY_ESCAPE)
 		{
 			closeConsoleAtOnce();
-			Environment->removeFocus(this);
 			m_close_on_enter = false;
 			// inhibit open so the_game doesn't reopen immediately
 			m_open_inhibited = 1; // so the ESCAPE button doesn't open the "pause menu"
@@ -432,7 +436,6 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			m_client->typeChatMessage(text);
 			if (m_close_on_enter) {
 				closeConsoleAtOnce();
-				Environment->removeFocus(this);
 				m_close_on_enter = false;
 			}
 			return true;

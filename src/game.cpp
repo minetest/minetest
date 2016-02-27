@@ -2175,7 +2175,7 @@ bool Game::initGui()
 
 	// Chat backend and console
 	gui_chat_console = new GUIChatConsole(guienv, guienv->getRootGUIElement(),
-			-1, chat_backend, client);
+			-1, chat_backend, client, &g_menumgr);
 	if (!gui_chat_console) {
 		*error_message = "Could not allocate memory for chat console";
 		errorstream << *error_message << std::endl;
@@ -2809,7 +2809,6 @@ void Game::openConsole(float height, const wchar_t *line)
 			gui_chat_console->setCloseOnEnter(true);
 			gui_chat_console->replaceAndAddToHistory(line);
 		}
-		guienv->setFocus(gui_chat_console);
 	}
 }
 
