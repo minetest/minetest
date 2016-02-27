@@ -304,13 +304,16 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 	s16 height = (deco_height_max > 0) ?
 		pr->range(deco_height, deco_height_max) : deco_height;
 
+	bool force_placement = (flags & DECO_FORCE_PLACEMENT);
+
 	v3s16 em = vm->m_area.getExtent();
 	u32 vi = vm->m_area.index(p);
 	for (int i = 0; i < height; i++) {
 		vm->m_area.add_y(em, vi, 1);
 
 		content_t c = vm->m_data[vi].getContent();
-		if (c != CONTENT_AIR && c != CONTENT_IGNORE)
+		if (c != CONTENT_AIR && c != CONTENT_IGNORE &&
+				!force_placement)
 			break;
 
 		vm->m_data[vi] = MapNode(c_place);

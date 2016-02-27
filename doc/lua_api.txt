@@ -3698,11 +3698,12 @@ Definition tables
     -- ^ Minimum and maximum `y` positions these decorations can be generated at.
     -- ^ This parameter refers to the `y` position of the decoration base, so
     --   the actual maximum height would be `height_max + size.Y`.
-        flags = "liquid_surface",
+        flags = "liquid_surface, force_placement",
     --  ^ Flags for all decoration types.
     --  ^ "liquid_surface": Instead of placement on the highest solid surface
     --  ^ in a mapchunk column, placement is on the highest liquid surface.
     --  ^ Placement is disabled if solid nodes are found above the liquid surface.
+    --  ^ "force_placement": Nodes other than "air" and "ignore" are replaced by the decoration.
 
         ----- Simple-type parameters
         decoration = "default:grass",
@@ -3746,7 +3747,7 @@ Definition tables
         },
     --  ^ See 'Schematic specifier' for details.
         replacements = {["oldname"] = "convert_to", ...},
-        flags = "place_center_x, place_center_y, place_center_z, force_placement",
+        flags = "place_center_x, place_center_y, place_center_z",
     --  ^ Flags for schematic decorations.  See 'Schematic attributes'.
         rotation = "90" -- rotate schematic 90 degrees on placement
     --  ^ Rotation can be "0", "90", "180", "270", or "random".
