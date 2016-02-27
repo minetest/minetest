@@ -399,8 +399,21 @@ void MapgenValleys::calculateNoise()
 
 	//mapgen_profiler->avg("noisemaps", tcn.stop() / 1000.f);
 
+	float heat_offset = 0.f;
+	float humidity_scale = 1.f;
+
+	// Altitude chill tends to reduce the average heat.
+	if (use_altitude_chill)
+		heat_offset = 5.f;
+
+	// River humidity tends to increase the humidity range.
+	if (humid_rivers) {
+		humidity_scale = 0.8f;
+	}
+
 	for (s32 index = 0; index < csize.X * csize.Z; index++) {
-		noise_heat->result[index] += noise_heat_blend->result[index];
+		noise_heat->result[index] += noise_heat_blend->result[index] + heat_offset;
+		noise_humidity->result[index] *= humidity_scale;
 		noise_humidity->result[index] += noise_humidity_blend->result[index];
 	}
 
@@ -481,9 +494,10 @@ float MapgenValleys::terrainLevelFromNoise(TerrainNoise *tn)
 		}
 
 		// base - depth : height of the bottom of the river
-		// water_level - 6 : don't make rivers below 6 nodes under the surface
+		// water_level - 3 : don't make rivers below 3 nodes under the surface
+		// We use three because that's as low as the swamp biomes go.
 		// There is no logical equivalent to this using rangelim.
-		mount = MYMIN(MYMAX(base - depth, (float) (water_level - 6)), mount);
+		mount = MYMIN(MYMAX(base - depth, (float)(water_level - 3)), mount);
 
 		// Slope has no influence on rivers.
 		*tn->slope = 0.f;
@@ -503,7 +517,7 @@ float MapgenValleys::adjustedTerrainLevelFromNoise(TerrainNoise *tn)
 	for (s16 y = y_start; y <= y_start + 1000; y++) {
 		float fill = NoisePerlin3D(&noise_inter_valley_fill->np, tn->x, y, tn->z, seed);
 
-		if (fill * *tn->slope <= y - mount) {
+		if (fill * *tn->slope < y - mount) {
 			mount = MYMAX(y - 1, mount);
 			break;
 		}
@@ -552,6 +566,15 @@ float MapgenValleys::terrainLevelAtPoint(s16 x, s16 z)
 
 int MapgenValleys::generateTerrain()
 {
+	// Raising this reduces the rate of evaporation.
+	static const float evaporation = 300.f;
+	// from the lua
+	static const float humidity_dropoff = 4.f;
+	// constant to convert altitude chill (compatible with lua) to heat
+	static const float alt_to_heat = 20.f;
+	// humidity reduction by altitude
+	static const float alt_to_humid = 10.f;
+
 	MapNode n_air(CONTENT_AIR);
 	MapNode n_river_water(c_river_water_source);
 	MapNode n_sand(c_sand);
@@ -564,42 +587,56 @@ int MapgenValleys::generateTerrain()
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index_2d++) {
-		s16 river_y = floor(noise_rivers->result[index_2d]);
-		s16 surface_y = floor(noise_terrain_height->result[index_2d]);
+		float river_y = noise_rivers->result[index_2d];
+		float surface_y = noise_terrain_height->result[index_2d];
 		float slope = noise_inter_valley_slope->result[index_2d];
+		float t_heat = noise_heat->result[index_2d];
 
-		heightmap[index_2d] = surface_y;
+		heightmap[index_2d] = -MAX_MAP_GENERATION_LIMIT;
 
 		if (surface_y > surface_max_y)
-			surface_max_y = surface_y;
+			surface_max_y = ceil(surface_y);
+
+		if (humid_rivers) {
+			// Derive heat from (base) altitude. This will be most correct
+			// at rivers, since other surface heights may vary below.
+			if (use_altitude_chill && (surface_y > 0.f || river_y > 0.f))
+				t_heat -= alt_to_heat * MYMAX(surface_y, river_y) / altitude_chill;
+
+			// If humidity is low or heat is high, lower the water table.
+			float delta = noise_humidity->result[index_2d] - 50.f;
+			if (delta < 0.f) {
+				float t_evap = (t_heat - 32.f) / evaporation;
+				river_y += delta * MYMAX(t_evap, 0.08f);
+			}
+		}
 
 		u32 index_3d = (z - node_min.Z) * zstride + (x - node_min.X);
 		u32 index_data = vm->m_area.index(x, node_min.Y - 1, z);
 
 		// Mapgens concern themselves with stone and water.
 		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
-			float fill = 0.f;
-			fill = noise_inter_valley_fill->result[index_3d];
-
 			if (vm->m_data[index_data].getContent() == CONTENT_IGNORE) {
-				bool river = (river_y > surface_y);
+				float fill = noise_inter_valley_fill->result[index_3d];
+				float surface_delta = (float)y - surface_y;
+				bool river = y + 1 < river_y;
 
-				if (river && y == surface_y) {
+				if (fabs(surface_delta) <= 0.5f && y > water_level && river) {
 					// river bottom
 					vm->m_data[index_data] = n_sand;
-				} else if (river && y <= surface_y) {
+				} else if (slope * fill > surface_delta) {
 					// ground
 					vm->m_data[index_data] = n_stone;
-				} else if (river && y < river_y) {
-					// river
-					vm->m_data[index_data] = n_river_water;
-				} else if ((!river) && myround(fill * slope) >= y - surface_y) {
-					// ground
-					vm->m_data[index_data] = n_stone;
-					heightmap[index_2d] = surface_max_y = y;
+					if (y > heightmap[index_2d])
+						heightmap[index_2d] = y;
+					if (y > surface_max_y)
+						surface_max_y = y;
 				} else if (y <= water_level) {
 					// sea
 					vm->m_data[index_data] = n_water;
+				} else if (river) {
+					// river
+					vm->m_data[index_data] = n_river_water;
 				} else {
 					vm->m_data[index_data] = n_air;
 				}
@@ -609,18 +646,51 @@ int MapgenValleys::generateTerrain()
 			index_3d += ystride;
 		}
 
-		// Although the original valleys adjusts humidity by distance
-		// from seawater, this causes problems with the default biomes.
-		// Adjust only by freshwater proximity.
-		const float humidity_offset = 0.8f;  // derived by testing
-		if (humid_rivers)
-			noise_humidity->result[index_2d] *= (1 + pow(0.5f, MYMAX((surface_max_y
-					- noise_rivers->result[index_2d]) / 3.f, 0.f))) * humidity_offset;
+		// This happens if we're generating a chunk that doesn't
+		// contain the terrain surface, in which case, we need
+		// to set heightmap to a value outside of the chunk,
+		// to avoid confusing lua mods that use heightmap.
+		if (heightmap[index_2d] == -MAX_MAP_GENERATION_LIMIT) {
+			s16 surface_y_int = myround(surface_y);
+			if (surface_y_int > node_max.Y + 1 || surface_y_int < node_min.Y - 1) {
+				// If surface_y is outside the chunk, it's good enough.
+				heightmap[index_2d] = surface_y_int;
+			} else {
+				// If the ground is outside of this chunk, but surface_y
+				// is within the chunk, give a value outside.
+				heightmap[index_2d] = node_min.Y - 2;
+			}
+		}
 
-		// Assign the heat adjusted by altitude.
-		if (use_altitude_chill && surface_max_y > 0)
-			noise_heat->result[index_2d] *=
-				pow(0.5f, (surface_max_y - altitude_chill / 3.f) / altitude_chill);
+		if (humid_rivers) {
+			// Use base ground (water table) in a riverbed, to
+			// avoid an unnatural rise in humidity.
+			float t_alt = MYMAX(noise_rivers->result[index_2d], (float)heightmap[index_2d]);
+			float humid = noise_humidity->result[index_2d];
+			float water_depth = (t_alt - river_y) / humidity_dropoff;
+			humid *= 1.f + pow(0.5f, MYMAX(water_depth, 1.f));
+
+			// Reduce humidity with altitude (ignoring riverbeds).
+			// This is similar to the lua version's seawater adjustment,
+			// but doesn't increase the base humidity, which causes
+			// problems with the default biomes.
+			if (t_alt > 0.f)
+				humid -= alt_to_humid * t_alt / altitude_chill;
+
+			noise_humidity->result[index_2d] = humid;
+		}
+
+		// Assign the heat adjusted by any changed altitudes.
+		// The altitude will change about half the time.
+		if (use_altitude_chill) {
+			// ground height ignoring riverbeds
+			float t_alt = MYMAX(noise_rivers->result[index_2d], (float)heightmap[index_2d]);
+			if (humid_rivers && heightmap[index_2d] == (s16)myround(surface_y))
+				// The altitude hasn't changed. Use the first result.
+				noise_heat->result[index_2d] = t_heat;
+			else if (t_alt > 0.f)
+				noise_heat->result[index_2d] -= alt_to_heat * t_alt / altitude_chill;
+		}
 	}
 
 	return surface_max_y;
@@ -645,7 +715,7 @@ MgStoneType MapgenValleys::generateBiomes(float *heat_map, float *humidity_map)
 		// generated mapchunk or if not, a node of overgenerated base terrain.
 		content_t c_above = vm->m_data[vi + em.X].getContent();
 		bool air_above = c_above == CONTENT_AIR;
-		bool water_above = (c_above == c_water_source);
+		bool water_above = (c_above == c_water_source || c_above == c_river_water_source);
 
 		// If there is air or water above enable top/filler placement, otherwise force
 		// nplaced to stone level by setting a number exceeding any possible filler depth.
@@ -714,7 +784,7 @@ MgStoneType MapgenValleys::generateBiomes(float *heat_map, float *humidity_map)
 				water_above = true;
 			} else if (c == c_river_water_source) {
 				vm->m_data[vi] = MapNode(biome->c_river_water);
-				nplaced = U16_MAX;  // Sand was already placed under rivers.
+				nplaced = depth_top;  // Enable filler placement for next surface
 				air_above = false;
 				water_above = true;
 			} else if (c == CONTENT_AIR) {
