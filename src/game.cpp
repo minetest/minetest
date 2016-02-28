@@ -1574,6 +1574,10 @@ protected:
 	static void settingChangedCallback(const std::string &setting_name, void *data);
 	void readSettings();
 
+#ifdef __ANDROID__
+	void handleAndroidChatInput();
+#endif
+
 private:
 	InputHandler *input;
 
@@ -1660,8 +1664,8 @@ private:
 
 #ifdef __ANDROID__
 	bool m_cache_hold_aux1;
+	bool m_android_chat_open;
 #endif
-
 };
 
 Game::Game() :
@@ -2610,10 +2614,10 @@ void Game::processUserInput(VolatileRunFlags *flags,
 	input->step(dtime);
 
 #ifdef __ANDROID__
-
-	if (current_formspec != 0)
+	if (current_formspec != NULL)
 		current_formspec->getAndroidUIInput();
-
+	else
+		handleAndroidChatInput();
 #endif
 
 	// Increase timer for double tap of "keymap_jump"
@@ -2803,14 +2807,29 @@ void Game::openInventory()
 
 void Game::openConsole(float height, const wchar_t *line)
 {
-	if (!gui_chat_console->isOpenInhibited()) {
-		gui_chat_console->openConsole(height);
-		if (line) {
-			gui_chat_console->setCloseOnEnter(true);
-			gui_chat_console->replaceAndAddToHistory(line);
-		}
+#ifdef __ANDROID__
+	porting::showInputDialog(gettext("ok"), "", "", 2);
+	m_android_chat_open = true;
+#else
+	if (gui_chat_console->isOpenInhibited())
+		return;
+	gui_chat_console->openConsole(height);
+	if (line) {
+		gui_chat_console->setCloseOnEnter(true);
+		gui_chat_console->replaceAndAddToHistory(line);
+	}
+#endif
+}
+
+#ifdef __ANDROID__
+void Game::handleAndroidChatInput()
+{
+	if (m_android_chat_open && porting::getInputDialogState() == 0) {
+		std::string text = porting::getInputDialogValue();
+		client->typeChatMessage(utf8_to_wide(text));
 	}
 }
+#endif
 
 
 void Game::toggleFreeMove(float *statustext_time)
