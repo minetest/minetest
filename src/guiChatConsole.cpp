@@ -536,7 +536,8 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			// Copy text to clipboard
 			if (prompt.getCursorLength() <= 0)
 				return true;
-			std::string selected = wide_to_narrow(prompt.getSelection());
+			std::wstring wselected = prompt.getSelection();
+			std::string selected(wselected.begin(), wselected.end());
 			Environment->getOSOperator()->copyToClipboard(selected.c_str());
 			return true;
 		}
@@ -553,8 +554,10 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			}
 			IOSOperator *os_operator = Environment->getOSOperator();
 			const c8 *text = os_operator->getTextFromClipboard();
-			if (text)
-				prompt.input(narrow_to_wide(text));
+			if (!text)
+				return true;
+			std::basic_string<unsigned char> str((const unsigned char*)text);
+			prompt.input(std::wstring(str.begin(), str.end()));
 			return true;
 		}
 		else if(event.KeyInput.Key == KEY_KEY_X && event.KeyInput.Control)
