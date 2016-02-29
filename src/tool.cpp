@@ -220,8 +220,8 @@ DigParams getDigParams(const ItemGroupList &groups,
 	if(time_from_last_punch < tp->full_punch_interval){
 		float f = time_from_last_punch / tp->full_punch_interval;
 		//infostream<<"f="<<f<<std::endl;
-		result_time /= f;
-		result_wear /= f;
+		result_time *= f;
+		result_wear *= f;
 	}
 
 	u16 wear_i = 65535.*result_wear;
