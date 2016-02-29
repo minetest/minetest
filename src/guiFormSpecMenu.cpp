@@ -2930,12 +2930,13 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 			}
 		}
 	}
+
 	if (event.EventType == EET_MOUSE_INPUT_EVENT &&
 			event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
 		gui::IGUIElement *focused = Environment->getFocus();
 		if(focused && isMyChild(focused)) {
 			if(getTypeByID(focused->getID()) == f_KeyEventBox) {
-				setInitialFocus();
+				Environment->setFocus(NULL);
 				return true;
 			}
 		}
