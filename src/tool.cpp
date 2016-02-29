@@ -219,6 +219,17 @@ DigParams getDigParams(const ItemGroupList &groups,
 		}
 	}
 
+	//infostream<<"result_diggable="<<result_diggable<<std::endl;
+	//infostream<<"result_time="<<result_time<<std::endl;
+	//infostream<<"result_wear="<<result_wear<<std::endl;
+
+	if(time_from_last_punch < tp->full_punch_interval){
+		float f = time_from_last_punch / tp->full_punch_interval;
+		//infostream<<"f="<<f<<std::endl;
+		result_time *= f;
+		result_wear *= f;
+	}
+
 	u16 wear_i = U16_MAX * result_wear;
 	return DigParams(result_diggable, result_time, wear_i, result_main_group);
 }
