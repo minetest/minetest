@@ -248,9 +248,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 	bool any_position_valid = false;
 
-	// The order is important here, must be y first
-	for(s16 y = max_y; y >= min_y; y--)
 	for(s16 x = min_x; x <= max_x; x++)
+	for(s16 y = min_y; y <= max_y; y++)
 	for(s16 z = min_z; z <= max_z; z++)
 	{
 		v3s16 p(x,y,z);
@@ -404,16 +403,14 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			Go through every nodebox, find nearest collision
 		*/
 		for (u32 boxindex = 0; boxindex < cboxes.size(); boxindex++) {
+			// Ignore if already stepped up this nodebox.
+			if(is_step_up[boxindex])
+				continue;
+
 			// Find nearest collision of the two boxes (raytracing-like)
 			f32 dtime_tmp;
 			int collided = axisAlignedCollision(
 					cboxes[boxindex], movingbox, *speed_f, d, &dtime_tmp);
-
-			// Ignore if already stepped up this nodebox.
-			if (is_step_up[boxindex]) {
-				pos_f->Y += (cboxes[boxindex].MaxEdge.Y - movingbox.MinEdge.Y);
-				continue;
-			}
 
 			if (collided == -1 || dtime_tmp >= nearest_dtime)
 				continue;
@@ -464,12 +461,10 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				is_collision = false;
 
 			CollisionInfo info;
-			if (is_object[nearest_boxindex]) {
+			if (is_object[nearest_boxindex])
 				info.type = COLLISION_OBJECT;
-				result.standing_on_object = true;
-			} else {
+			else
 				info.type = COLLISION_NODE;
-			}
 
 			info.node_p = node_positions[nearest_boxindex];
 			info.bouncy = bouncy;
@@ -487,13 +482,12 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 					speed_f->X = 0;
 				result.collides = true;
 				result.collides_xz = true;
-			} else if(nearest_collided == 1) { // Y
-				if (fabs(speed_f->Y) > BS * 3) {
+			}
+			else if(nearest_collided == 1) { // Y
+				if (fabs(speed_f->Y) > BS * 3)
 					speed_f->Y *= bounce;
-				} else {
+				else
 					speed_f->Y = 0;
-					result.touching_ground = true;
-				}
 				result.collides = true;
 			} else if(nearest_collided == 2) { // Z
 				if (fabs(speed_f->Z) > BS * 3)
@@ -510,6 +504,44 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 			if (is_collision) {
 				result.collisions.push_back(info);
+			}
+		}
+	}
+
+	/*
+		Final touches: Check if standing on ground, step up stairs.
+	*/
+	aabb3f box = box_0;
+	box.MinEdge += *pos_f;
+	box.MaxEdge += *pos_f;
+	for (u32 boxindex = 0; boxindex < cboxes.size(); boxindex++) {
+		const aabb3f& cbox = cboxes[boxindex];
+
+		/*
+			See if the object is touching ground.
+
+			Object touches ground if object's minimum Y is near node's
+			maximum Y and object's X-Z-area overlaps with the node's
+			X-Z-area.
+
+			Use 0.15*BS so that it is easier to get on a node.
+		*/
+		if (cbox.MaxEdge.X - d > box.MinEdge.X && cbox.MinEdge.X + d < box.MaxEdge.X &&
+				cbox.MaxEdge.Z - d > box.MinEdge.Z &&
+				cbox.MinEdge.Z + d < box.MaxEdge.Z) {
+			if (is_step_up[boxindex]) {
+				pos_f->Y += (cbox.MaxEdge.Y - box.MinEdge.Y);
+				box = box_0;
+				box.MinEdge += *pos_f;
+				box.MaxEdge += *pos_f;
+			}
+			if (fabs(cbox.MaxEdge.Y - box.MinEdge.Y) < 0.15 * BS) {
+				result.touching_ground = true;
+
+				if (is_object[boxindex])
+					result.standing_on_object = true;
+				if (is_unloaded[boxindex])
+					result.standing_on_unloaded = true;
 			}
 		}
 	}
