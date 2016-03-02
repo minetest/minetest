@@ -118,11 +118,13 @@ function mm_texture.set_generic(identifier)
 	end
 	
 	if mm_texture.defaulttexturedir ~= nil then
-		local path = mm_texture.defaulttexturedir .. DIR_DELIM .."menu_" ..
-										identifier .. ".png"
-		if core.set_background(identifier,path) then
-			return true
-		end
+		-- Disabled; Don't use this but allow a texture pack still by the
+		-- previous conditional
+		--local path = mm_texture.defaulttexturedir .. DIR_DELIM .."menu_" ..
+		--								identifier .. ".png"
+		--if core.set_background(identifier,path) then
+		--	return true
+		--end
 	end
 	
 	return false
