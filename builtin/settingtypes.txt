@@ -795,6 +795,15 @@ sqlite_synchronous (Synchronous SQLite) enum 2 0,1,2
 #    Length of a server tick and the interval at which objects are generally updated over network.
 dedicated_server_step (Dedicated server step) float 0.1
 
+#    Time in between active block management cycles
+active_block_mgmt_interval (Active Block Management interval) float 2.0
+
+#    Length of time between ABM execution cycles
+abm_interval (Active Block Modifier interval) float 1.0
+
+#    Length of time between NodeTimer execution cycles
+nodetimer_interval (NodeTimer interval) float 1.0
+
 #    If enabled, invalid world data won't cause the server to shut down.
 #    Only enable this if you know what you are doing.
 ignore_world_load_errors (Ignore world errors) bool false

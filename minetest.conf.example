@@ -980,6 +980,18 @@
 #    type: float
 # dedicated_server_step = 0.1
 
+#    Length of time between Active Block Management execution cycles
+#    type: float
+# active_block_mgmt_interval = 2.0
+
+#    Length of time between ABM execution cycles
+#    type: float
+# abm_interval = 1.0
+
+#    Length of time between NodeTimer execution cycles
+#    type: float
+# nodetimer_interval = 1.0
+
 #    If enabled, invalid world data won't cause the server to shut down.
 #    Only enable this if you know what you are doing.
 #    type: bool
