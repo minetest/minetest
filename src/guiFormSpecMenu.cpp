@@ -2931,17 +2931,17 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		}
 	}
 /*
-	if (event.EventType == EET_MOUSE_INPUT_EVENT &&
-			event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
+	if (event.EventType == EET_MOUSE_INPUT_EVENT && event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
 		gui::IGUIElement *focused = Environment->getFocus();
 		if(focused && isMyChild(focused)) {
 			if(getTypeByID(focused->getID()) == f_KeyEventBox) {
-				Environment->setFocus(NULL);
-				return true;
+				std::string empty;
+				this->setFocus(empty);
+				//return true;
 			}
 		}
-	}
-*/	
+	}*/
+	
 	// The IGUITabControl renders visually using the skin's selected
 	// font, which we override for the duration of form drawing,
 	// but computes tab hotspots based on how it would have rendered
