@@ -409,6 +409,12 @@ fake_function() {
 	gettext("See http://www.sqlite.org/pragma.html#pragma_synchronous");
 	gettext("Dedicated server step");
 	gettext("Length of a server tick and the interval at which objects are generally updated over network.");
+	gettext("Active Block Management interval");
+	gettext("Time in between active block management cycles");
+	gettext("ABM modifier interval");
+	gettext("Length of time between ABM execution cycles");
+	gettext("NodeTimer interval");
+	gettext("Length of time between NodeTimer execution cycles");
 	gettext("Ignore world errors");
 	gettext("If enabled, invalid world data won't cause the server to shut down.\nOnly enable this if you know what you are doing.");
 	gettext("Liquid loop max");
