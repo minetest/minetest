@@ -51,9 +51,9 @@ local function create_home_formspec(tabview, name, tabdata)
 			image = core.formspec_escape(gamemgr.games[i].menuicon_path)
 		else
 		
-			local part1 = gamemgr.games[i].id:sub(1,5)
-			local part2 = gamemgr.games[i].id:sub(6,10)
-			local part3 = gamemgr.games[i].id:sub(11)
+			local part1 = gamemgr.games[i].id:sub(1,15)
+			local part2 = gamemgr.games[i].id:sub(16,30)
+			local part3 = gamemgr.games[i].id:sub(31)
 			
 			text = part1 .. "\n" .. part2
 			if part3 ~= nil and
@@ -71,6 +71,7 @@ local function create_home_formspec(tabview, name, tabdata)
 		local games_div_2 = math.floor((#gamemgr.games + 1) / 2)
 		local x0 = 10 - games_div_2 / 2 * dx + dx - w
 		local y0 = 6.0
+		if #gamemgr.games <= 1 then y0 = y0 - h / 2 end
 		local x = x0 + xi * dx
 		local y = y0 + yi * dy
 
