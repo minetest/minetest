@@ -99,7 +99,7 @@ local function get_formspec(tabview, name, tabdata)
 				)
 
 	retval = retval ..
-			"button[0,4.95;2.6,0.5;back;".. fgettext("Back") .. "]" ..
+			"button[0,4.95;2.6,0.5;back;< ".. fgettext("Back") .. "]" ..
 			"button[4,4.15;2.6,0.5;world_delete;".. fgettext("Delete") .. "]" ..
 			"button[6.5,4.15;2.8,0.5;world_create;".. fgettext("New") .. "]" ..
 			"button[9.2,4.15;2.55,0.5;world_configure;".. fgettext("Configure") .. "]" ..

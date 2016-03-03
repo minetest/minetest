@@ -82,7 +82,11 @@ local function handle_home_buttons(this, fields, tabname, tabdata)
 	end
 
 	if fields["settings_button"] then
-		-- TODO
+		local settings_dialog = create_settings()
+		settings_dialog:set_parent(this)
+		this:hide()
+		settings_dialog:show()
+		ui.update()
 		return true
 	end
 
@@ -96,6 +100,7 @@ local function handle_home_buttons(this, fields, tabname, tabdata)
 			ui.update()
 
 			singleplayer_set_game(i)
+			return true
 		end
 	end
 
