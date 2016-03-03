@@ -116,7 +116,6 @@ void ScriptApiSecurity::initializeSecurity()
 		"upvaluejoin",
 		"sethook",
 		"debug",
-		"getupvalue",
 		"setlocal",
 	};
 	static const char *package_whitelist[] = {
