@@ -22,7 +22,25 @@ local function current_game()
 	return game
 end
 
-local function singleplayer_refresh_gamebar()
+function singleplayer_set_game(j)
+	mm_texture.update("singleplayer", gamemgr.games[j])
+	core.set_topleft_text(gamemgr.games[j].name)
+	core.setting_set("menu_last_game",gamemgr.games[j].id)
+	menudata.worldlist:set_filtercriteria(gamemgr.games[j].id)
+	local index = filterlist.get_current_index(menudata.worldlist,
+		tonumber(core.setting_get("mainmenu_last_selected_world")))
+	if not index or index < 1 then
+		local selected = core.get_textlist_index("sp_worlds")
+		if selected ~= nil and selected < #menudata.worldlist:get_list() then
+			index = selected
+		else
+			index = #menudata.worldlist:get_list()
+		end
+	end
+	menu_worldmt_legacy(index)
+end
+
+--[[local function singleplayer_refresh_gamebar()
 
 	local old_bar = ui.find_by_name("game_button_bar")
 
@@ -34,21 +52,7 @@ local function singleplayer_refresh_gamebar()
 		for key,value in pairs(fields) do
 			for j=1,#gamemgr.games,1 do
 				if ("game_btnbar_" .. gamemgr.games[j].id == key) then
-					mm_texture.update("singleplayer", gamemgr.games[j])
-					core.set_topleft_text(gamemgr.games[j].name)
-					core.setting_set("menu_last_game",gamemgr.games[j].id)
-					menudata.worldlist:set_filtercriteria(gamemgr.games[j].id)
-					local index = filterlist.get_current_index(menudata.worldlist,
-						tonumber(core.setting_get("mainmenu_last_selected_world")))
-					if not index or index < 1 then
-						local selected = core.get_textlist_index("sp_worlds")
-						if selected ~= nil and selected < #menudata.worldlist:get_list() then
-							index = selected
-						else
-							index = #menudata.worldlist:get_list()
-						end
-					end
-					menu_worldmt_legacy(index)
+					singleplayer_set_game(j)
 					return true
 				end
 			end
@@ -83,7 +87,7 @@ local function singleplayer_refresh_gamebar()
 		end
 		btnbar:add_button(btn_name, text, image, tooltip)
 	end
-end
+end]]
 
 local function get_formspec(tabview, name, tabdata)
 	local retval = "size[12,5.2]"
@@ -112,12 +116,12 @@ local function get_formspec(tabview, name, tabdata)
 end
 
 local function on_change(type, old_tab, new_tab)
-	local buttonbar = ui.find_by_name("game_button_bar")
+	--[[local buttonbar = ui.find_by_name("game_button_bar")
 	
 	if ( buttonbar == nil ) then
 		singleplayer_refresh_gamebar()
 		buttonbar = ui.find_by_name("game_button_bar")
-	end
+	end]]
 	
 	if (type == "ENTER") then
 		local game = current_game()
@@ -127,10 +131,10 @@ local function on_change(type, old_tab, new_tab)
 			core.set_topleft_text(game.name)
 			mm_texture.update("singleplayer",game)
 		end
-		buttonbar:show()
+		--buttonbar:show()
 	else
 		menudata.worldlist:set_filtercriteria(nil)
-		buttonbar:hide()
+		--buttonbar:hide()
 		core.set_topleft_text("")
 		mm_texture.update(new_tab, nil)
 	end
