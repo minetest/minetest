@@ -151,8 +151,8 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 	if setting_type == "float" then
 		local default, min, max = remaining_line:match("^"
 				-- first float is required, the last 2 are optional
-				.. "(" .. CHAR_CLASSES.FLOAT .. "+)" .. CHAR_CLASSES.SPACE .. "?"
-				.. "(" .. CHAR_CLASSES.FLOAT .. "*)" .. CHAR_CLASSES.SPACE .. "?"
+				.. "(" .. CHAR_CLASSES.FLOAT .. "+)" .. CHAR_CLASSES.SPACE .. "*"
+				.. "(" .. CHAR_CLASSES.FLOAT .. "*)" .. CHAR_CLASSES.SPACE .. "*"
 				.. "(" .. CHAR_CLASSES.FLOAT .. "*)"
 				.."$")
 
