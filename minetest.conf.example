@@ -522,6 +522,11 @@
 #    type: int min: 0 max: 255
 # console_alpha = 200
 
+#    Format string describing format of the timestamp on console messages.
+#    This is in strftime format.  Set to empty to disable timestamp.
+#    type: string
+# console_timestamp_format = %H:%M:%S
+
 #    Selection box border color (R,G,B).
 #    type: string
 # selectionbox_color = (0,0,0)

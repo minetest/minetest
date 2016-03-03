@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CHAT_HEADER
 
 #include "irrlichttypes.h"
+#include <ctime>
 #include <string>
 #include <vector>
 #include <list>
@@ -35,11 +36,14 @@ struct ChatLine
 	std::wstring name;
 	// message text
 	std::wstring text;
+	// Message time
+	time_t timestamp;
 
 	ChatLine(std::wstring a_name, std::wstring a_text):
 		age(0.0),
 		name(a_name),
-		text(a_text)
+		text(a_text),
+		timestamp(time(NULL))
 	{
 	}
 };
@@ -65,7 +69,7 @@ struct ChatFormattedLine
 class ChatBuffer
 {
 public:
-	ChatBuffer(u32 scrollback);
+	ChatBuffer(u32 scrollback, bool add_ts=true);
 	~ChatBuffer();
 
 	// Append chat line
@@ -115,6 +119,8 @@ public:
 			std::vector<ChatFormattedLine>& destination) const;
 
 protected:
+	static std::string formatTimestamp(const time_t *time);
+
 	s32 getTopScrollPos() const;
 	s32 getBottomScrollPos() const;
 
@@ -134,6 +140,8 @@ private:
 	std::vector<ChatFormattedLine> m_formatted;
 	// Empty formatted line, for error returns
 	ChatFormattedLine m_empty_formatted_line;
+	// Whether to prefix a timestamp to messages
+	bool m_add_ts;
 };
 
 class ChatPrompt
@@ -247,7 +255,7 @@ private:
 class ChatBackend
 {
 public:
-	ChatBackend();
+	ChatBackend(bool add_ts=true);
 	~ChatBackend();
 
 	// Add chat message

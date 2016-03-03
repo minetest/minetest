@@ -24,15 +24,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include "util/string.h"
 #include "util/numeric.h"
+#include "settings.h"
 
-ChatBuffer::ChatBuffer(u32 scrollback):
+ChatBuffer::ChatBuffer(u32 scrollback, bool add_ts):
 	m_scrollback(scrollback),
 	m_unformatted(),
 	m_cols(0),
 	m_rows(0),
 	m_scroll(0),
 	m_formatted(),
-	m_empty_formatted_line()
+	m_empty_formatted_line(),
+	m_add_ts(add_ts)
 {
 	if (m_scrollback == 0)
 		m_scrollback = 1;
@@ -232,6 +234,35 @@ void ChatBuffer::scrollTop()
 	m_scroll = getTopScrollPos();
 }
 
+std::string ChatBuffer::formatTimestamp(const time_t *time)
+{
+	static std::string ts_format = g_settings->get(
+			"console_timestamp_format");
+	if (ts_format.empty())
+		return "";
+
+#if defined(__STDC_LIB_EXT1__)
+	// C11 localtime_s
+	tm tms;
+	const tm *tms_p = localtime_s(time, &tms);
+#elif _POSIX_C_SOURCE >= 1 || _XOPEN_SOURCE || _BSD_SOURCE || _SVID_SOURCE || _POSIX_SOURCE
+	// POSIX localtime_r
+	tm tms;
+	const tm *tms_p = localtime_r(time, &tms);
+#else
+	// Thread-unsafe C89 localtime (safe in MSVC)
+	const tm *tms_p = localtime(time);
+#endif
+	if (tms_p == NULL)
+		return "<localtime failed>";
+
+	char ts_frag[64];
+	size_t size = strftime(ts_frag, sizeof(ts_frag),
+			ts_format.c_str(), tms_p);
+
+	return std::string(ts_frag, size);
+}
+
 u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 		std::vector<ChatFormattedLine>& destination) const
 {
@@ -242,6 +273,16 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 	u32 out_column = 0;
 	u32 in_pos = 0;
 	u32 hanging_indentation = 0;
+
+	// Format the timestamp
+	if (m_add_ts) {
+		std::string ts = formatTimestamp(&line.timestamp);
+		if (!ts.empty()) {
+			temp_frag.text = narrow_to_wide(ts) + L' ';
+			temp_frag.column = 0;
+			next_frags.push_back(temp_frag);
+		}
+	}
 
 	// Format the sender name and produce fragments
 	if (!line.name.empty())
@@ -666,8 +707,8 @@ void ChatPrompt::clampView()
 
 
 
-ChatBackend::ChatBackend():
-	m_console_buffer(500),
+ChatBackend::ChatBackend(bool add_ts):
+	m_console_buffer(500, add_ts),
 	m_recent_buffer(6),
 	m_prompt(L"]", 500)
 {
