@@ -75,9 +75,10 @@ int ModApiUtil::l_get_us_time(lua_State *L)
 }
 
 #define CHECK_SECURE_SETTING(L, name) \
-	if (name.compare(0, 7, "secure.") == 0) {\
-		lua_pushliteral(L, "Attempt to set secure setting.");\
-		lua_error(L);\
+	if (ScriptApiSecurity::isSecure(L) && \
+			name.compare(0, 7, "secure.") == 0) { \
+		lua_pushliteral(L, "Attempt to set secure setting."); \
+		lua_error(L); \
 	}
 
 // setting_set(name, value)
