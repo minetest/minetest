@@ -87,6 +87,8 @@ local function handle_home_buttons(this, fields, tabname, tabdata)
 		this:hide()
 		settings_dialog:show()
 		ui.update()
+
+		core.setting_set("menu_last_state", "settings")
 		return true
 	end
 
@@ -100,6 +102,8 @@ local function handle_home_buttons(this, fields, tabname, tabdata)
 			ui.update()
 
 			singleplayer_set_game(i)
+
+			core.setting_set("menu_last_state", "singleplayer")
 			return true
 		end
 	end
@@ -108,16 +112,50 @@ local function handle_home_buttons(this, fields, tabname, tabdata)
 end
 
 function create_home()
-	local dlg = dialog_create("home",
+	local this = dialog_create("home",
 				create_home_formspec,
 				handle_home_buttons,
 				nil)
 
 	mm_texture.update(nil, nil)
 
-	dlg.delete = function(self)
+	this.delete = function(self)
 		core.close()
 	end
 
-	return dlg
+	local inherited_show = this.show
+	this.show = function(self)
+		core.setting_set("menu_last_state", "home")
+		inherited_show(self)
+	end
+
+	-- Automatically launch the dialog that was open previously
+	local last_state = core.setting_get("menu_last_state")
+	if last_state == "singleplayer" then
+		local last_game = core.setting_get("menu_last_game")
+		if last_game and last_game ~= "" then
+			local singleplayer_dialog = create_singleplayer()
+			singleplayer_dialog:set_parent(this)
+			singleplayer_dialog:show()
+			ui.update()
+			this:hide()
+			-- Skip showing this dialog which is now the parent
+			return this
+		end
+	end
+	if last_state == "settings" then
+		local settings_dialog = create_settings()
+		settings_dialog:set_parent(this)
+		this:hide()
+		settings_dialog:show()
+		ui.update()
+		-- Skip showing this dialog which is now the parent
+		return this
+	end
+
+	-- This dialog is shown automatically (so that it can hide itself and show
+	-- something else instead when needed)
+	this:show()
+
+	return this
 end

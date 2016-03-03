@@ -93,8 +93,6 @@ local function init_globals()
 
 	local home_dialog = create_home()
 
-	home_dialog:show()
-
 	ui.update()
 
 	core.sound_play("main_menu", true)

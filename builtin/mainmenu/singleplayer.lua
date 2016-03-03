@@ -25,7 +25,7 @@ end
 function singleplayer_set_game(j)
 	mm_texture.update("singleplayer", gamemgr.games[j])
 	core.set_topleft_text(gamemgr.games[j].name)
-	core.setting_set("menu_last_game",gamemgr.games[j].id)
+	core.setting_set("menu_last_game", gamemgr.games[j].id)
 	menudata.worldlist:set_filtercriteria(gamemgr.games[j].id)
 	local index = filterlist.get_current_index(menudata.worldlist,
 		tonumber(core.setting_get("mainmenu_last_selected_world")))
