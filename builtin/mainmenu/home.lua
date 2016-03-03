@@ -1,3 +1,20 @@
+--Minetest
+--Copyright (C) 2016 celeron55
+--
+--This program is free software; you can redistribute it and/or modify
+--it under the terms of the GNU Lesser General Public License as published by
+--the Free Software Foundation; either version 2.1 of the License, or
+--(at your option) any later version.
+--
+--This program is distributed in the hope that it will be useful,
+--but WITHOUT ANY WARRANTY; without even the implied warranty of
+--MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--GNU Lesser General Public License for more details.
+--
+--You should have received a copy of the GNU Lesser General Public License along
+--with this program; if not, write to the Free Software Foundation, Inc.,
+--51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 local function create_home_formspec(tabview, name, tabdata)
 	local formspec = "size[20,12;true]" ..
 			"bgcolor[#0000;true]" ..
@@ -72,7 +89,13 @@ end
 
 local function handle_home_buttons(this, fields, tabname, tabdata)
 	if fields["internet_button"] then
-		-- TODO
+		local internet_dialog = create_internet()
+		internet_dialog:set_parent(this)
+		this:hide()
+		internet_dialog:show()
+		ui.update()
+
+		core.setting_set("menu_last_state", "internet")
 		return true
 	end
 
@@ -148,6 +171,15 @@ function create_home()
 		settings_dialog:set_parent(this)
 		this:hide()
 		settings_dialog:show()
+		ui.update()
+		-- Skip showing this dialog which is now the parent
+		return this
+	end
+	if last_state == "internet" then
+		local internet_dialog = create_internet()
+		internet_dialog:set_parent(this)
+		this:hide()
+		internet_dialog:show()
 		ui.update()
 		-- Skip showing this dialog which is now the parent
 		return this

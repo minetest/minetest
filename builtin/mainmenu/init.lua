@@ -45,6 +45,7 @@ dofile(menupath .. DIR_DELIM .. "dlg_settings_advanced.lua")
 dofile(menupath .. DIR_DELIM .. "home.lua")
 dofile(menupath .. DIR_DELIM .. "singleplayer.lua")
 dofile(menupath .. DIR_DELIM .. "settings.lua")
+dofile(menupath .. DIR_DELIM .. "internet.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_create_world.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_delete_mod.lua")
 dofile(menupath .. DIR_DELIM .. "dlg_delete_world.lua")
@@ -92,6 +93,8 @@ local function init_globals()
 	mm_texture.init()
 
 	local home_dialog = create_home()
+
+	ui.set_default("home")
 
 	ui.update()
 

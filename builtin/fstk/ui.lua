@@ -102,9 +102,11 @@ function ui.update()
 				"]button[4.5,4.6;3,0.5;btn_error_confirm;" .. fgettext("Ok") .. "]"
 	else
 		local active_toplevel_ui_elements = 0
+		--print("ui.childlist: "..dump(ui.childlist))
 		for key,value in pairs(ui.childlist) do
 			if (value.type == "toplevel") then
 				local retval = value:get_formspec()
+				--print("get_formspec -> "..dump(retval))
 
 				if retval ~= nil and retval ~= "" then
 					active_toplevel_ui_elements = active_toplevel_ui_elements +1
