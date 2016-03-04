@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-02-27 05:49+0100\n"
-"PO-Revision-Date: 2015-12-10 15:36+0000\n"
+"PO-Revision-Date: 2016-03-04 04:45+0000\n"
 "Last-Translator: Jakub Vaněk <vanek.jakub4@seznam.cz>\n"
-"Language-Team: Czech <https://hosted.weblate.org/projects/minetest/minetest/"
-"cs/>\n"
+"Language-Team: Czech "
+"<https://hosted.weblate.org/projects/minetest/minetest/cs/>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -520,9 +520,8 @@ msgid "8x"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Advanced Settings"
-msgstr "Nastavení"
+msgstr "Pokročilá nastavení"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -553,14 +552,13 @@ msgstr "Propojené sklo"
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
 msgid "Enable Particles"
-msgstr "Povolit vše"
+msgstr "Povolit částice"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
 msgstr "Vícevrstevné listí"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Generate Normalmaps"
 msgstr "Generovat normálové mapy"
 
@@ -573,9 +571,8 @@ msgid "Mipmap + Aniso. Filter"
 msgstr "Mipmapa + Anizo. filtr"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "No Filter"
-msgstr "Filtrování"
+msgstr "Žádné filtr"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
@@ -586,9 +583,8 @@ msgid "No!!!"
 msgstr "Ne!!!"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Node Highlighting"
-msgstr "Zvýraznění označených bloků"
+msgstr "Zvýraznění bloků"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
@@ -1326,7 +1322,6 @@ msgid "3D mode"
 msgstr "Režim 3D zobrazení"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -1340,10 +1335,10 @@ msgstr ""
 "Podpora 3D zobrazení.\n"
 "V současné době podporovány:\n"
 "-    none: žádný 3D výstup.\n"
-"-    anaglyph: azurová/purpurová barva 3D.\n"
-"-    interlaced: pro polarizaci ve stylu lichý/sudý řádek.\n"
+"-    anaglyph: azurové/purpurové barevné 3D.\n"
+"-    interlaced: pro polarizaci lichý/sudý řádek.\n"
 "-    topbottom: rozdělení obrazovky na horní a dolní část.\n"
-"-    sidebyside: rozdělené obrazovky na levou a pravou část."
+"-    sidebyside: rozdělení obrazovky na levou a pravou část."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1454,9 +1449,8 @@ msgid "Backward key"
 msgstr "Vzad"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Base terrain height"
-msgstr "Výška vodních vln"
+msgstr "Základní výška terénu"
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
@@ -1833,9 +1827,8 @@ msgid "Dump the mapgen debug infos."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable VBO"
-msgstr "Povolit balíček"
+msgstr "Povolit VBO"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
@@ -1903,9 +1896,8 @@ msgid "Enables caching of facedir rotated meshes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enables filmic tone mapping"
-msgstr "Povolit minimapu."
+msgstr "Povolit filmový tone mapping"
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
@@ -2138,9 +2130,8 @@ msgid "Gravity"
 msgstr "Gravitace"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "HTTP Mods"
-msgstr "Mody"
+msgstr "HTTP mody"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
@@ -2737,9 +2728,8 @@ msgid "Mapblock unload timeout"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Valleys"
-msgstr "Jméno generátoru mapy"
+msgstr "Mapgen údolí"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome heat noise parameters"
@@ -2762,9 +2752,8 @@ msgid "Mapgen flags"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat"
-msgstr "Jméno generátoru mapy"
+msgstr "Mapgen plochy"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat cave1 noise parameters"
@@ -3737,9 +3726,8 @@ msgid "Toggle camera mode key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Tone Mapping"
-msgstr "Mip-mapování"
+msgstr "Tone mapping"
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
@@ -3879,9 +3867,8 @@ msgid "Walking speed"
 msgstr "Rychlost chůze"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Water Features"
-msgstr "Textury věcí..."
+msgstr "Vlastnosti vody"
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
