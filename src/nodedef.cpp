@@ -331,6 +331,7 @@ void ContentFeatures::reset()
 	sound_dug = SimpleSoundSpec();
 	connects_to.clear();
 	connects_to_ids.clear();
+	connect_sides = 0;
 }
 
 void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
@@ -402,6 +403,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	for (std::set<content_t>::const_iterator i = connects_to_ids.begin();
 			i != connects_to_ids.end(); ++i)
 		writeU16(os, *i);
+	writeU8(os, connect_sides);
 }
 
 void ContentFeatures::deSerialize(std::istream &is)
@@ -479,6 +481,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	u16 connects_to_size = readU16(is);
 	for (u16 i = 0; i < connects_to_size; i++)
 		connects_to_ids.insert(readU16(is));
+	connect_sides = readU8(is);
 	}catch(SerializationError &e) {};
 }
 
@@ -517,7 +520,7 @@ public:
 	virtual void runNodeResolveCallbacks();
 	virtual void resetNodeResolveState();
 	virtual void mapNodeboxConnections();
-	virtual bool nodeboxConnects(MapNode from, MapNode to);
+	virtual bool nodeboxConnects(MapNode from, MapNode to, u8 connect_face);
 
 private:
 	void addNameIdMapping(content_t i, std::string name);
@@ -1530,7 +1533,7 @@ void CNodeDefManager::mapNodeboxConnections()
 	}
 }
 
-bool CNodeDefManager::nodeboxConnects(MapNode from, MapNode to)
+bool CNodeDefManager::nodeboxConnects(MapNode from, MapNode to, u8 connect_face)
 {
 	const ContentFeatures &f1 = get(from);
 
@@ -1547,6 +1550,24 @@ bool CNodeDefManager::nodeboxConnects(MapNode from, MapNode to)
 		// ignores actually looking if back connection exists
 		return (f2.connects_to_ids.find(from.param0) != f2.connects_to_ids.end());
 
+	// does to node declare usable faces?
+	if (f2.connect_sides > 0) {
+		if ((f2.param_type_2 == CPT2_FACEDIR) && (connect_face >= 4)) {
+			static const u8 rot[33 * 4] = {
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				4, 32, 16, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 4 - back
+				8, 4, 32, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 8 - right
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				16, 8, 4, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 16 - front
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				32, 16, 8, 4 // 32 - left
+			};
+			return (f2.connect_sides & rot[(connect_face * 4) + to.param2]);
+		}
+		return (f2.connect_sides & connect_face);
+	}
 	// the target is just a regular node, so connect no matter back connection
 	return true;
 }

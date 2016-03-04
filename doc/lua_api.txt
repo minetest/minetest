@@ -3477,6 +3477,8 @@ Definition tables
         * Used for nodebox nodes with the type == "connected"
         * Specifies to what neighboring nodes connections will be drawn
         * e.g. `{"group:fence", "default:wood"}` or `"default:stone"` ]]
+        connect_sides = { "top", "bottom", "front", "left", "back", "right" }, --[[
+        ^ Tells connected nodebox nodes to connect only to these sides of this node. ]]
         mesh = "model",
         selection_box = {type="regular"}, -- See "Node boxes" --[[
         ^ If drawtype "nodebox" is used and selection_box is nil, then node_box is used. ]]

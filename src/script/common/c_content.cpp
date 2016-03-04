@@ -547,6 +547,34 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	}
 	lua_pop(L, 1);
 
+	lua_getfield(L, index, "connect_sides");
+	if (lua_istable(L, -1)) {
+		int table = lua_gettop(L);
+		lua_pushnil(L);
+		while (lua_next(L, table) != 0) {
+			// Value at -1
+			std::string side(lua_tostring(L, -1));
+			// Note faces are flipped to make checking easier
+			if (side == "top")
+				f.connect_sides |= 2;
+			else if (side == "bottom")
+				f.connect_sides |= 1;
+			else if (side == "front")
+				f.connect_sides |= 16;
+			else if (side == "left")
+				f.connect_sides |= 32;
+			else if (side == "back")
+				f.connect_sides |= 4;
+			else if (side == "right")
+				f.connect_sides |= 8;
+			else
+				warningstream << "Unknown value for \"connect_sides\": "
+					<< side << std::endl;
+			lua_pop(L, 1);
+		}
+	}
+	lua_pop(L, 1);
+
 	lua_getfield(L, index, "selection_box");
 	if(lua_istable(L, -1))
 		f.selection_box = read_nodebox(L, -1);

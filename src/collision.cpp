@@ -189,7 +189,7 @@ static inline void getNeighborConnectingFace(v3s16 p, INodeDefManager *nodedef,
 		Map *map, MapNode n, int v, int *neighbors)
 {
 	MapNode n2 = map->getNodeNoEx(p);
-	if (nodedef->nodeboxConnects(n, n2))
+	if (nodedef->nodeboxConnects(n, n2, v))
 		*neighbors |= v;
 }
 
