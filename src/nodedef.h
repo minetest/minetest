@@ -271,6 +271,8 @@ struct ContentFeatures
 	bool legacy_facedir_simple;
 	// Set to true if wall_mounted used to be set to true
 	bool legacy_wallmounted;
+	// for NDT_CONNECTED pairing
+	u8 connect_sides;
 
 	// Sound properties
 	SimpleSoundSpec sound_footstep;
@@ -325,7 +327,7 @@ public:
 
 	virtual void pendNodeResolve(NodeResolver *nr)=0;
 	virtual bool cancelNodeResolveCallback(NodeResolver *nr)=0;
-	virtual bool nodeboxConnects(const MapNode from, const MapNode to)=0;
+	virtual bool nodeboxConnects(const MapNode from, const MapNode to, u8 connect_face)=0;
 };
 
 class IWritableNodeDefManager : public INodeDefManager {
