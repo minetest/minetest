@@ -17,121 +17,105 @@
 
 --------------------------------------------------------------------------------
 
--- Dropdown labels : Leaves
-local leaves_style_labels = {
-	fgettext("Opaque Leaves"),
-	fgettext("Simple Leaves"),
-	fgettext("Fancy Leaves")
+local labels = {
+	leaves = {
+		fgettext("Opaque Leaves"),
+		fgettext("Simple Leaves"),
+		fgettext("Fancy Leaves")
+	},
+	node_highlighting = {
+		fgettext("Node Outlining"),
+		fgettext("Node Highlighting")
+	},
+	filters = {
+		fgettext("No Filter"),
+		fgettext("Bilinear Filter"),
+		fgettext("Trilinear Filter")
+	},
+	mipmap = {
+		fgettext("No Mipmap"),
+		fgettext("Mipmap"),
+		fgettext("Mipmap + Aniso. Filter")
+	},
+	antialiasing = {
+		fgettext("None"),
+		fgettext("2x"),
+		fgettext("4x"),
+		fgettext("8x")
+	}
 }
 
-local leaves_style = {
-	table.concat(leaves_style_labels, ","),
-	{"opaque", "simple", "fancy"},
+local dd_options = {
+	leaves = {
+		table.concat(labels.leaves, ","),
+		{"opaque", "simple", "fancy"}
+	},
+	node_highlighting = {
+		table.concat(labels.node_highlighting, ","),
+		{"box", "halo"}
+	},
+	filters = {
+		table.concat(labels.filters, ","),
+		{"", "bilinear_filter", "trilinear_filter"}
+	},
+	mipmap = {
+		table.concat(labels.mipmap, ","),
+		{"", "mip_map", "anisotropic_filter"}
+	},
+	antialiasing = {
+		table.concat(labels.antialiasing, ","),
+		{"0", "2", "4", "8"}
+	}
 }
 
--- Dropdown labels : Node highlighting
-local node_highlighting_style_labels = {
-	fgettext("Node Outlining"),
-	fgettext("Node Highlighting")
-}
-
-local node_highlighting_style = {
-	table.concat(node_highlighting_style_labels, ","),
-	{"box", "halo"},
-}
-
--- Dropdown labels : Textures filtering
-local dd_filter_labels = {
-	fgettext("No Filter"),
-	fgettext("Bilinear Filter"),
-	fgettext("Trilinear Filter")
-}
-
-local filters = {
-	table.concat(dd_filter_labels, ","),
-	{"", "bilinear_filter", "trilinear_filter"},
-}
-
--- Dropdown labels : Mip-mapping
-local dd_mipmap_labels = {
-	fgettext("No Mipmap"),
-	fgettext("Mipmap"),
-	fgettext("Mipmap + Aniso. Filter")
-}
-
-local mipmap = {
-	table.concat(dd_mipmap_labels, ","),
-	{"", "mip_map", "anisotropic_filter"},
-}
-
--- Dropdown labels : Anti-aliasing
-local dd_antialiasing_labels = {
-	fgettext("None"),
-	fgettext("2x"),
-	fgettext("4x"),
-	fgettext("8x"),
-}
-
-local antialiasing = {
-	table.concat(dd_antialiasing_labels, ","),
-	{"0", "2", "4", "8"}
-}
-
--- Dropdown index getter : Leaves
-local function getLeavesStyleSettingIndex()
-	local style = core.setting_get("leaves_style")
-	for idx, name in pairs(leaves_style[2]) do
-		if style == name then return idx end
-	end
-	return 1
-end
-
--- Dropdown index getter : Node highlighting
-local function getNodeHighlightingSettingIndex()
-	local style = core.setting_get("node_highlighting")
-	for idx, name in pairs(node_highlighting_style[2]) do
-		if style == name then return idx end
-	end
-	return 1
-end
-
--- Dropdown index getter : Textures filtering
-local function getFilterSettingIndex()
-	if core.setting_get(filters[2][3]) == "true" then
-		return 3
-	elseif core.setting_get(filters[2][3]) == "false" and
-			core.setting_get(filters[2][2]) == "true" then
-		return 2
-	end
-	return 1
-end
-
--- Dropdown index getter : Mip-mapping
-local function getMipmapSettingIndex()
-	if core.setting_get(mipmap[2][3]) == "true" then
-		return 3
-	elseif core.setting_get(mipmap[2][3]) == "false" and
-			core.setting_get(mipmap[2][2]) == "true" then
-		return 2
-	end
-	return 1
-end
-
--- Dropdown index getter : Anti-aliasing
-local function getAntialiasingSettingIndex()
-	local antialiasing_setting = core.setting_get("fsaa")
-	for i = 1, #antialiasing[2] do
-		if antialiasing_setting == antialiasing[2][i] then
-			return i
+local getSettingIndex = {
+	Leaves = function()
+		local style = core.setting_get("leaves_style")
+		for idx, name in pairs(dd_options.leaves[2]) do
+			if style == name then return idx end
 		end
+		return 1
+	end,
+	NodeHighlighting = function()
+		local style = core.setting_get("node_highlighting")
+		for idx, name in pairs(dd_options.node_highlighting[2]) do
+			if style == name then return idx end
+		end
+		return 1
+	end,
+	Filter = function()
+		if core.setting_get(dd_options.filters[2][3]) == "true" then
+			return 3
+		elseif core.setting_get(dd_options.filters[2][3]) == "false" and
+				core.setting_get(dd_options.filters[2][2]) == "true" then
+			return 2
+		end
+		return 1
+	end,
+	Mipmap = function()
+		if core.setting_get(dd_options.mipmap[2][3]) == "true" then
+			return 3
+		elseif core.setting_get(dd_options.mipmap[2][3]) == "false" and
+				core.setting_get(dd_options.mipmap[2][2]) == "true" then
+			return 2
+		end
+		return 1
+	end,
+	Antialiasing = function()
+		local antialiasing_setting = core.setting_get("fsaa")
+		for i = 1, #dd_options.antialiasing[2] do
+			if antialiasing_setting == dd_options.antialiasing[2][i] then
+				return i
+			end
+		end
+		return 1
 	end
-	return 1
-end
+}
 
 local function antialiasing_fname_to_name(fname)
-	for i = 1, #dd_antialiasing_labels do
-		if fname == dd_antialiasing_labels[i] then
-			return antialiasing[2][i]
+	for i = 1, #labels.antialiasing do
+		if fname == labels.antialiasing[i] then
+			return dd_options.antialiasing[2][i]
 		end
 	end
 	return 0
@@ -202,19 +186,19 @@ local function formspec(tabview, name, tabdata)
 				.. dump(core.setting_getbool("opaque_water")) .. "]" ..
 		"checkbox[0.25,2.0;cb_connected_glass;" .. fgettext("Connected Glass") .. ";"
 				.. dump(core.setting_getbool("connected_glass")) .. "]" ..
-		"dropdown[0.25,2.8;3.3;dd_node_highlighting;" .. node_highlighting_style[1] .. ";"
-				.. getNodeHighlightingSettingIndex() .. "]" ..
-		"dropdown[0.25,3.6;3.3;dd_leaves_style;" .. leaves_style[1] .. ";"
-				.. getLeavesStyleSettingIndex() .. "]" ..
+		"dropdown[0.25,2.8;3.3;dd_node_highlighting;" .. dd_options.node_highlighting[1] .. ";"
+				.. getSettingIndex.NodeHighlighting() .. "]" ..
+		"dropdown[0.25,3.6;3.3;dd_leaves_style;" .. dd_options.leaves[1] .. ";"
+				.. getSettingIndex.Leaves() .. "]" ..
 		"box[3.75,0;3.75,3.45;#999999]" ..
 		"label[3.85,0.1;" .. fgettext("Texturing:") .. "]" ..
-		"dropdown[3.85,0.55;3.85;dd_filters;" .. filters[1] .. ";"
-				.. getFilterSettingIndex() .. "]" ..
-		"dropdown[3.85,1.35;3.85;dd_mipmap;" .. mipmap[1] .. ";"
-				.. getMipmapSettingIndex() .. "]" ..
+		"dropdown[3.85,0.55;3.85;dd_filters;" .. dd_options.filters[1] .. ";"
+				.. getSettingIndex.Filter() .. "]" ..
+		"dropdown[3.85,1.35;3.85;dd_mipmap;" .. dd_options.mipmap[1] .. ";"
+				.. getSettingIndex.Mipmap() .. "]" ..
 		"label[3.85,2.15;" .. fgettext("Antialiasing:") .. "]" ..
-		"dropdown[3.85,2.6;3.85;dd_antialiasing;" .. antialiasing[1] .. ";"
-				.. getAntialiasingSettingIndex() .. "]" ..
+		"dropdown[3.85,2.6;3.85;dd_antialiasing;" .. dd_options.antialiasing[1] .. ";"
+				.. getSettingIndex.Antialiasing() .. "]" ..
 		"box[7.75,0;4,4.4;#999999]" ..
 		"checkbox[8,0;cb_shaders;" .. fgettext("Shaders") .. ";"
 				.. dump(core.setting_getbool("enable_shaders")) .. "]"
@@ -349,40 +333,40 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	--Note dropdowns have to be handled LAST!
 	local ddhandled = false
 
-	for i = 1, #leaves_style_labels do
-		if fields["dd_leaves_style"] == leaves_style_labels[i] then
-			core.setting_set("leaves_style", leaves_style[2][i])
+	for i = 1, #labels.leaves do
+		if fields["dd_leaves_style"] == labels.leaves[i] then
+			core.setting_set("leaves_style", dd_options.leaves[2][i])
 			ddhandled = true
 		end
 	end
-	for i = 1, #node_highlighting_style_labels do
-		if fields["dd_node_highlighting"] == node_highlighting_style_labels[i] then
-			core.setting_set("node_highlighting", node_highlighting_style[2][i])
+	for i = 1, #labels.node_highlighting do
+		if fields["dd_node_highlighting"] == labels.node_highlighting[i] then
+			core.setting_set("node_highlighting", dd_options.node_highlighting[2][i])
 			ddhandled = true
 		end
 	end
-	if fields["dd_filters"] == dd_filter_labels[1] then
+	if fields["dd_filters"] == labels.filters[1] then
 		core.setting_set("bilinear_filter", "false")
 		core.setting_set("trilinear_filter", "false")
 		ddhandled = true
-	elseif fields["dd_filters"] == dd_filter_labels[2] then
+	elseif fields["dd_filters"] == labels.filters[2] then
 		core.setting_set("bilinear_filter", "true")
 		core.setting_set("trilinear_filter", "false")
 		ddhandled = true
-	elseif fields["dd_filters"] == dd_filter_labels[3] then
+	elseif fields["dd_filters"] == labels.filters[3] then
 		core.setting_set("bilinear_filter", "false")
 		core.setting_set("trilinear_filter", "true")
 		ddhandled = true
 	end
-	if fields["dd_mipmap"] == dd_mipmap_labels[1] then
+	if fields["dd_mipmap"] == labels.mipmap[1] then
 		core.setting_set("mip_map", "false")
 		core.setting_set("anisotropic_filter", "false")
 		ddhandled = true
-	elseif fields["dd_mipmap"] == dd_mipmap_labels[2] then
+	elseif fields["dd_mipmap"] == labels.mipmap[2] then
 		core.setting_set("mip_map", "true")
 		core.setting_set("anisotropic_filter", "false")
 		ddhandled = true
-	elseif fields["dd_mipmap"] == dd_mipmap_labels[3] then
+	elseif fields["dd_mipmap"] == labels.mipmap[3] then
 		core.setting_set("mip_map", "true")
 		core.setting_set("anisotropic_filter", "true")
 		ddhandled = true
