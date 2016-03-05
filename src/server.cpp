@@ -441,14 +441,11 @@ void Server::start(Address bind_addr)
 	// Start thread
 	m_thread->start();
 
-	// ASCII art for the win!
+	// http://patorjk.com/software/taag/#p=display&h=1&f=Small%20Shadow&t=minetest
 	actionstream
-	<<"        .__               __                   __   "<<std::endl
-	<<"  _____ |__| ____   _____/  |_  ____   _______/  |_ "<<std::endl
-	<<" /     \\|  |/    \\_/ __ \\   __\\/ __ \\ /  ___/\\   __\\"<<std::endl
-	<<"|  Y Y  \\  |   |  \\  ___/|  | \\  ___/ \\___ \\  |  |  "<<std::endl
-	<<"|__|_|  /__|___|  /\\___  >__|  \\___  >____  > |__|  "<<std::endl
-	<<"      \\/        \\/     \\/          \\/     \\/        "<<std::endl;
+	<<"        _)              |               |"<<std::endl
+	<<"   ` \\   |    \\    -_)   _|   -_) (_-<   _|"<<std::endl
+	<<" _|_|_| _| _| _| \\___| \\__| \\___| ___/ \\__|"<<std::endl;
 	actionstream<<"World at ["<<m_path_world<<"]"<<std::endl;
 	actionstream<<"Server for gameid=\""<<m_gamespec.id
 			<<"\" listening on "<<bind_addr.serializeString()<<":"
