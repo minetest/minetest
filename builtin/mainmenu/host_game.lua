@@ -39,7 +39,6 @@ function create_host_game()
 	tv_main.custom_button_handler = button_handler
 	tv_main:set_fixed_size(false)
 
-	--tv_main:add(tab_multiplayer)
 	tv_main:add(tab_server)
 
 	-- TODO: Restore previously open tab

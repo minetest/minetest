@@ -40,7 +40,7 @@ function create_join_game()
 	tv_main:set_fixed_size(false)
 
 	tv_main:add(tab_multiplayer)
-	--tv_main:add(tab_server)
+	tv_main:add(tab_multiplayer_lan)
 
 	-- TODO: Restore previously open tab
 	tv_main:set_tab("multiplayer")

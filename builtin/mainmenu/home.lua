@@ -192,11 +192,11 @@ function create_home()
 		-- Skip showing this dialog which is now the parent
 		return this
 	end
-	if last_state == "internet" then
-		local internet_dialog = create_internet()
-		internet_dialog:set_parent(this)
+	if last_state == "join_game" then
+		local join_game_dialog = create_join_game()
+		join_game_dialog:set_parent(this)
 		this:hide()
-		internet_dialog:show()
+		join_game_dialog:show()
 		ui.update()
 		-- Skip showing this dialog which is now the parent
 		return this
