@@ -44,8 +44,10 @@ function create_settings()
 	tv_main:add(tab_texturepacks)
 	tv_main:add(tab_credits)
 
-	-- TODO: Restore previously open tab
-	tv_main:set_tab("settings")
+	if PLATFORM ~= "Android" then
+		tv_main:set_tab(core.setting_get(tv_main.name .. "_LAST"))
+		tv_main:set_autosave_tab(true)
+	end
 
 	return tv_main
 end

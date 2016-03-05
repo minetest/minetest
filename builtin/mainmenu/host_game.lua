@@ -41,8 +41,10 @@ function create_host_game()
 
 	tv_main:add(tab_server)
 
-	-- TODO: Restore previously open tab
-	tv_main:set_tab("multiplayer")
+	if PLATFORM ~= "Android" then
+		tv_main:set_tab(core.setting_get(tv_main.name .. "_LAST"))
+		tv_main:set_autosave_tab(true)
+	end
 
 	return tv_main
 end
