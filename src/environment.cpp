@@ -561,7 +561,8 @@ struct ActiveABM
 {
 	ActiveBlockModifier *abm;
 	int chance;
-	std::set<content_t> required_neighbors;
+	std::vector<content_t> required_neighbors;
+	bool check_required_neighbors;
 };
 
 class ABMHandler
@@ -578,63 +579,49 @@ public:
 		if(dtime_s < 0.001)
 			return;
 		INodeDefManager *ndef = env->getGameDef()->ndef();
-		for(std::vector<ABMWithState>::iterator
-				i = abms.begin(); i != abms.end(); ++i) {
-			ActiveBlockModifier *abm = i->abm;
+		for (u32 i = 0; i < abms.size(); ++i) {
+			ActiveBlockModifier *abm = abms[i].abm;
 			float trigger_interval = abm->getTriggerInterval();
-			if(trigger_interval < 0.001)
+			if (trigger_interval < 0.001)
 				trigger_interval = 0.001;
 			float actual_interval = dtime_s;
-			if(use_timers){
-				i->timer += dtime_s;
-				if(i->timer < trigger_interval)
+			if (use_timers) {
+				abms[i].timer += dtime_s;
+				if (abms[i].timer < trigger_interval)
 					continue;
-				i->timer -= trigger_interval;
+				abms[i].timer -= trigger_interval;
 				actual_interval = trigger_interval;
 			}
 			float chance = abm->getTriggerChance();
-			if(chance == 0)
+			if (chance == 0)
 				chance = 1;
 			ActiveABM aabm;
 			aabm.abm = abm;
-			if(abm->getSimpleCatchUp()) {
+			if (abm->getSimpleCatchUp()) {
 				float intervals = actual_interval / trigger_interval;
-				if(intervals == 0)
+				if (intervals == 0)
 					continue;
 				aabm.chance = chance / intervals;
-				if(aabm.chance == 0)
+				if (aabm.chance == 0)
 					aabm.chance = 1;
 			} else {
 				aabm.chance = chance;
 			}
 			// Trigger neighbors
-			std::set<std::string> required_neighbors_s
+			std::vector<std::string> required_neighbors_s
 					= abm->getRequiredNeighbors();
-			for(std::set<std::string>::iterator
-					i = required_neighbors_s.begin();
-					i != required_neighbors_s.end(); ++i)
-			{
-				ndef->getIds(*i, aabm.required_neighbors);
+			for (u32 j = 0; j < required_neighbors_s.size(); ++j) {
+				ndef->getIds(required_neighbors_s[j], aabm.required_neighbors);
 			}
+			aabm.check_required_neighbors = !required_neighbors_s.empty();
 			// Trigger contents
-			std::set<std::string> contents_s = abm->getTriggerContents();
-			for(std::set<std::string>::iterator
-					i = contents_s.begin(); i != contents_s.end(); ++i)
-			{
-				std::set<content_t> ids;
-				ndef->getIds(*i, ids);
-				for(std::set<content_t>::const_iterator k = ids.begin();
-						k != ids.end(); ++k)
-				{
-					content_t c = *k;
-					std::map<content_t, std::vector<ActiveABM> >::iterator j;
-					j = m_aabms.find(c);
-					if(j == m_aabms.end()){
-						std::vector<ActiveABM> aabmlist;
-						m_aabms[c] = aabmlist;
-						j = m_aabms.find(c);
-					}
-					j->second.push_back(aabm);
+			std::vector<std::string> contents_s = abm->getTriggerContents();
+			for (u32 j = 0; j < contents_s.size(); ++j) {
+				std::vector<content_t> ids;
+				ndef->getIds(contents_s[j], ids);
+				for (u32 k = 0; k < ids.size(); ++k) {
+					content_t c = ids[k];
+					m_aabms[c].push_back(aabm);
 				}
 			}
 		}
@@ -698,20 +685,17 @@ public:
 					continue;
 
 				// Check neighbors
-				if(!i->required_neighbors.empty())
-				{
+				if (i->check_required_neighbors) {
 					v3s16 p1;
-					for(p1.X = p.X-1; p1.X <= p.X+1; p1.X++)
-					for(p1.Y = p.Y-1; p1.Y <= p.Y+1; p1.Y++)
-					for(p1.Z = p.Z-1; p1.Z <= p.Z+1; p1.Z++)
+					for (p1.X = p.X-1; p1.X <= p.X+1; p1.X++)
+					for (p1.Y = p.Y-1; p1.Y <= p.Y+1; p1.Y++)
+					for (p1.Z = p.Z-1; p1.Z <= p.Z+1; p1.Z++)
 					{
 						if(p1 == p)
 							continue;
 						MapNode n = map->getNodeNoEx(p1);
 						content_t c = n.getContent();
-						std::set<content_t>::const_iterator k;
-						k = i->required_neighbors.find(c);
-						if(k != i->required_neighbors.end()){
+						if (CONTAINS(i->required_neighbors, c)) {
 							goto neighbor_found;
 						}
 					}

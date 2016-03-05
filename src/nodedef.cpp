@@ -419,7 +419,7 @@ public:
 	inline virtual const ContentFeatures& get(const MapNode &n) const;
 	virtual bool getId(const std::string &name, content_t &result) const;
 	virtual content_t getId(const std::string &name) const;
-	virtual void getIds(const std::string &name, std::set<content_t> &result) const;
+	virtual void getIds(const std::string &name, std::vector<content_t> &result) const;
 	virtual const ContentFeatures& get(const std::string &name) const;
 	content_t allocateId();
 	virtual content_t set(const std::string &name, const ContentFeatures &def);
@@ -460,10 +460,10 @@ private:
 
 	std::map<std::string, content_t> m_name_id_mapping_with_aliases;
 
-	// A mapping from groups to a list of content_ts (and their levels)
+	// A mapping from groups to a vector of content_ts
 	// that belong to it.  Necessary for a direct lookup in getIds().
 	// Note: Not serialized.
-	std::map<std::string, GroupItems> m_group_to_items;
+	std::map<std::string, std::vector<content_t> > m_group_to_items;
 
 	// Next possibly free id
 	content_t m_next_id;
@@ -604,28 +604,24 @@ content_t CNodeDefManager::getId(const std::string &name) const
 
 
 void CNodeDefManager::getIds(const std::string &name,
-		std::set<content_t> &result) const
+		std::vector<content_t> &result) const
 {
 	//TimeTaker t("getIds", NULL, PRECISION_MICRO);
 	if (name.substr(0,6) != "group:") {
 		content_t id = CONTENT_IGNORE;
-		if(getId(name, id))
-			result.insert(id);
+		if (getId(name, id))
+			result.push_back(id);
 		return;
 	}
 	std::string group = name.substr(6);
 
-	std::map<std::string, GroupItems>::const_iterator
+	std::map<std::string, std::vector<content_t> >::const_iterator
 		i = m_group_to_items.find(group);
 	if (i == m_group_to_items.end())
 		return;
 
-	const GroupItems &items = i->second;
-	for (GroupItems::const_iterator j = items.begin();
-		j != items.end(); ++j) {
-		if ((*j).second != 0)
-			result.insert((*j).first);
-	}
+	const std::vector<content_t> &items = i->second;
+	result.insert(result.end(), items.begin(), items.end());
 	//printf("getIds: %dus\n", t.stop());
 }
 
@@ -685,26 +681,25 @@ content_t CNodeDefManager::set(const std::string &name, const ContentFeatures &d
 		assert(id != CONTENT_IGNORE);
 		addNameIdMapping(id, name);
 	}
+
+	// Remove this content to the list of all groups it previously belonged to
+	for (ItemGroupList::const_iterator i = m_content_features[id].groups.begin();
+			i != m_content_features[id].groups.end(); ++i) {
+		const std::string &group_name = i->first;
+		std::vector<content_t> &ids = m_group_to_items[group_name];
+		ids.erase(std::remove(ids.begin(), ids.end(), id), ids.end());
+	}
+
+	// Update ContentFeatures
 	m_content_features[id] = def;
 	verbosestream << "NodeDefManager: registering content id \"" << id
 		<< "\": name=\"" << def.name << "\""<<std::endl;
 
 	// Add this content to the list of all groups it belongs to
-	// FIXME: This should remove a node from groups it no longer
-	// belongs to when a node is re-registered
 	for (ItemGroupList::const_iterator i = def.groups.begin();
-		i != def.groups.end(); ++i) {
-		std::string group_name = i->first;
-
-		std::map<std::string, GroupItems>::iterator
-			j = m_group_to_items.find(group_name);
-		if (j == m_group_to_items.end()) {
-			m_group_to_items[group_name].push_back(
-				std::make_pair(id, i->second));
-		} else {
-			GroupItems &items = j->second;
-			items.push_back(std::make_pair(id, i->second));
-		}
+			i != def.groups.end(); ++i) {
+		const std::string &group_name = i->first;
+		m_group_to_items[group_name].push_back(id);
 	}
 	return id;
 }
@@ -1533,11 +1528,7 @@ bool NodeResolver::getIdsFromNrBacklog(std::vector<content_t> *result_out,
 				success = false;
 			}
 		} else {
-			std::set<content_t> cids;
-			std::set<content_t>::iterator it;
-			m_ndef->getIds(name, cids);
-			for (it = cids.begin(); it != cids.end(); ++it)
-				result_out->push_back(*it);
+			m_ndef->getIds(name, *result_out);
 		}
 	}
 
