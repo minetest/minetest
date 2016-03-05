@@ -80,7 +80,7 @@ LOCAL_CFLAGS := -D_IRR_ANDROID_PLATFORM_      \
 ifndef NDEBUG
 LOCAL_CFLAGS += -g -D_DEBUG -O0 -fno-omit-frame-pointer
 else
-LOCAL_CFLAGS += -fexpensive-optimizations -O3
+LOCAL_CFLAGS += -O3
 endif
 
 ifdef GPROF
