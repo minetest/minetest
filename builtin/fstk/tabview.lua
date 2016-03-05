@@ -76,10 +76,10 @@ local function get_formspec(self)
 					self.tablist[self.last_tab_index].tabdata,
 					self.tablist[self.last_tab_index].tabsize
 					)
-	end
 
-	if self.append_to_formspec then
-		formspec = formspec .. self.append_to_formspec
+		if self.append_to_formspec then
+			formspec = formspec .. self.append_to_formspec
+		end
 	end
 
 	return formspec
@@ -101,6 +101,10 @@ local function handle_buttons(self,fields)
 		return true
 	end
 
+	if self.custom_button_handler and self:custom_button_handler(fields) then
+		return true
+	end
+
 	if self.tablist[self.last_tab_index].button_handler ~= nil and
 			self.tablist[self.last_tab_index].button_handler(
 					self,
@@ -108,10 +112,6 @@ local function handle_buttons(self,fields)
 					self.tablist[self.last_tab_index].name,
 					self.tablist[self.last_tab_index].tabdata
 					) then
-		return true
-	end
-
-	if self.custom_button_handler and self:custom_button_handler(fields) then
 		return true
 	end
 
