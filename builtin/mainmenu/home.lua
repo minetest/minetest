@@ -16,18 +16,19 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 local function create_home_formspec(tabview, name, tabdata)
+	-- TODO: Maybe this should be more like "Join game" and "Host game"
 	local formspec = "size[20,12;true]" ..
 			"bgcolor[#0000;true]" ..
 			"image_button[3,0.3;4,4;" ..
-				defaulttexturedir .. DIR_DELIM .. "mainmenu_internet_button.png;" ..
-				"internet_button;;false;false;" ..
-				defaulttexturedir .. DIR_DELIM .. "mainmenu_internet_button_pressed.png]" ..
-			"label[4.5,4.1;Internet]" ..
+				defaulttexturedir .. DIR_DELIM .. "mainmenu_host_game_button.png;" ..
+				"host_game_button;;false;false;" ..
+				defaulttexturedir .. DIR_DELIM .. "mainmenu_host_game_button_pressed.png]" ..
+			"label[4.3,4.1;Host game]" ..
 			"image_button[8,0.3;4,4;" ..
-				defaulttexturedir .. DIR_DELIM .. "mainmenu_lan_button.png;" ..
-				"lan_button;;false;false;" ..
-				defaulttexturedir .. DIR_DELIM .. "mainmenu_lan_button_pressed.png]" ..
-			"label[9.7,4.1;LAN]" ..
+				defaulttexturedir .. DIR_DELIM .. "mainmenu_join_game_button.png;" ..
+				"join_game_button;;false;false;" ..
+				defaulttexturedir .. DIR_DELIM .. "mainmenu_join_game_button_pressed.png]" ..
+			"label[9.3,4.1;Join game]" ..
 			"image_button[13,0.3;4,4;" ..
 				defaulttexturedir .. DIR_DELIM .. "mainmenu_settings_button.png;" ..
 				"settings_button;;false;false;" ..
@@ -89,19 +90,25 @@ local function create_home_formspec(tabview, name, tabdata)
 end
 
 local function handle_home_buttons(this, fields, tabname, tabdata)
-	if fields["internet_button"] then
-		local internet_dialog = create_internet()
-		internet_dialog:set_parent(this)
+	if fields["host_game_button"] then
+		local host_game_dialog = create_host_game()
+		host_game_dialog:set_parent(this)
 		this:hide()
-		internet_dialog:show()
+		host_game_dialog:show()
 		ui.update()
 
-		core.setting_set("menu_last_state", "internet")
+		core.setting_set("menu_last_state", "host_game")
 		return true
 	end
 
-	if fields["lan_button"] then
-		-- TODO
+	if fields["join_game_button"] then
+		local join_game_dialog = create_join_game()
+		join_game_dialog:set_parent(this)
+		this:hide()
+		join_game_dialog:show()
+		ui.update()
+
+		core.setting_set("menu_last_state", "join_game")
 		return true
 	end
 
@@ -172,6 +179,15 @@ function create_home()
 		settings_dialog:set_parent(this)
 		this:hide()
 		settings_dialog:show()
+		ui.update()
+		-- Skip showing this dialog which is now the parent
+		return this
+	end
+	if last_state == "host_game" then
+		local host_game_dialog = create_host_game()
+		host_game_dialog:set_parent(this)
+		this:hide()
+		host_game_dialog:show()
 		ui.update()
 		-- Skip showing this dialog which is now the parent
 		return this

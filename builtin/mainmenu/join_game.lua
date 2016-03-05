@@ -31,8 +31,8 @@ local function button_handler(tabview, fields)
 	end
 end
 
-function create_internet()
-	local tv_main = tabview_create("internet_tabview",{x=12,y=5.9},{x=0,y=0})
+function create_join_game()
+	local tv_main = tabview_create("join_game_tabview",{x=12,y=5.9},{x=0,y=0})
 	tv_main.append_to_formspec = "button[0,5.7;2.6,0.5;back;< ".. fgettext("Back") .. "]" ..
 			"bgcolor[#0000;true]"
 	tv_main:set_global_event_handler(event_handler)
@@ -40,10 +40,12 @@ function create_internet()
 	tv_main:set_fixed_size(false)
 
 	tv_main:add(tab_multiplayer)
-	tv_main:add(tab_server)
+	--tv_main:add(tab_server)
 
 	-- TODO: Restore previously open tab
 	tv_main:set_tab("multiplayer")
 
 	return tv_main
 end
+
+
