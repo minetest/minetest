@@ -23,73 +23,6 @@ local function current_game()
 	return game
 end
 
-function singleplayer_set_game(j)
-	mm_texture.update("singleplayer", gamemgr.games[j])
-	core.set_topleft_text(gamemgr.games[j].name)
-	core.setting_set("menu_last_game", gamemgr.games[j].id)
-	menudata.worldlist:set_filtercriteria(gamemgr.games[j].id)
-	local index = filterlist.get_current_index(menudata.worldlist,
-		tonumber(core.setting_get("mainmenu_last_selected_world")))
-	if not index or index < 1 then
-		local selected = core.get_textlist_index("sp_worlds")
-		if selected ~= nil and selected < #menudata.worldlist:get_list() then
-			index = selected
-		else
-			index = #menudata.worldlist:get_list()
-		end
-	end
-	menu_worldmt_legacy(index)
-end
-
---[[local function singleplayer_refresh_gamebar()
-
-	local old_bar = ui.find_by_name("game_button_bar")
-
-	if old_bar ~= nil then
-		old_bar:delete()
-	end
-
-	local function game_buttonbar_button_handler(fields)
-		for key,value in pairs(fields) do
-			for j=1,#gamemgr.games,1 do
-				if ("game_btnbar_" .. gamemgr.games[j].id == key) then
-					singleplayer_set_game(j)
-					return true
-				end
-			end
-		end
-	end
-
-	local btnbar = buttonbar_create("game_button_bar",
-		game_buttonbar_button_handler,
-		{x=-0.3,y=5.65}, "horizontal", {x=12.4,y=1.15})
-
-	for i=1,#gamemgr.games,1 do
-		local btn_name = "game_btnbar_" .. gamemgr.games[i].id
-		
-		local image = nil
-		local text = nil
-		local tooltip = core.formspec_escape(gamemgr.games[i].name)
-		
-		if gamemgr.games[i].menuicon_path ~= nil and
-			gamemgr.games[i].menuicon_path ~= "" then
-			image = core.formspec_escape(gamemgr.games[i].menuicon_path)
-		else
-		
-			local part1 = gamemgr.games[i].id:sub(1,5)
-			local part2 = gamemgr.games[i].id:sub(6,10)
-			local part3 = gamemgr.games[i].id:sub(11)
-			
-			text = part1 .. "\n" .. part2
-			if part3 ~= nil and
-				part3 ~= "" then
-				text = text .. "\n" .. part3
-			end
-		end
-		btnbar:add_button(btn_name, text, image, tooltip)
-	end
-end]]
-
 local function get_formspec(tabview, name, tabdata)
 	local retval = "size[12,5.2]"
 	
@@ -117,12 +50,6 @@ local function get_formspec(tabview, name, tabdata)
 end
 
 local function on_change(type, old_tab, new_tab)
-	--[[local buttonbar = ui.find_by_name("game_button_bar")
-	
-	if ( buttonbar == nil ) then
-		singleplayer_refresh_gamebar()
-		buttonbar = ui.find_by_name("game_button_bar")
-	end]]
 	
 	if (type == "ENTER") then
 		local game = current_game()
@@ -268,4 +195,3 @@ function create_singleplayer()
 
 	return dlg
 end
-

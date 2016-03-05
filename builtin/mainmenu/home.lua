@@ -89,6 +89,24 @@ local function create_home_formspec(tabview, name, tabdata)
 	return formspec
 end
 
+function set_game(j)
+	mm_texture.update("singleplayer", gamemgr.games[j])
+	core.set_topleft_text(gamemgr.games[j].name)
+	core.setting_set("menu_last_game", gamemgr.games[j].id)
+	menudata.worldlist:set_filtercriteria(gamemgr.games[j].id)
+	local index = filterlist.get_current_index(menudata.worldlist,
+		tonumber(core.setting_get("mainmenu_last_selected_world")))
+	if not index or index < 1 then
+		local selected = core.get_textlist_index("sp_worlds")
+		if selected ~= nil and selected < #menudata.worldlist:get_list() then
+			index = selected
+		else
+			index = #menudata.worldlist:get_list()
+		end
+	end
+	menu_worldmt_legacy(index)
+end
+
 local function handle_home_buttons(this, fields, tabname, tabdata)
 	if fields["host_game_button"] then
 		local host_game_dialog = create_host_game()
@@ -132,7 +150,7 @@ local function handle_home_buttons(this, fields, tabname, tabdata)
 			singleplayer_dialog:show()
 			ui.update()
 
-			singleplayer_set_game(i)
+			set_game(i)
 
 			core.setting_set("menu_last_state", "singleplayer")
 			return true
