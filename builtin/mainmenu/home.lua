@@ -89,7 +89,38 @@ local function create_home_formspec(tabview, name, tabdata)
 	return formspec
 end
 
-function set_game(j)
+local function create_singleplayer_menu(game)
+	local function file_exists(name)
+		local f=io.open(name,"r")
+		if f~=nil then io.close(f) return true else return false end
+	end
+	local function run(scriptfile)
+		local env = setmetatable({}, {__index=_G})
+		if not file_exists(scriptfile) then
+			return nil
+		end
+		assert(pcall(setfenv(assert(loadfile(scriptfile)), env)))
+		--setmetatable(env, nil)
+		return env
+	end
+	--print(dump(game))
+	local script_path = game.path .. DIR_DELIM .. "menu" ..
+			DIR_DELIM .. "init.lua"
+	local game_menu_env = run(script_path)
+	--print(dump(game_menu_env))
+
+	local singleplayer_dialog = nil
+	if game_menu_env and game_menu_env.create_menu then
+		core.log("info", "Using custom singleplayer menu for " .. game.id)
+		singleplayer_dialog = game_menu_env.create_menu()
+	else
+		core.log("info", "Using default singleplayer menu for " .. game.id)
+		singleplayer_dialog = create_singleplayer()
+	end
+	return singleplayer_dialog
+end
+
+local function set_game(j)
 	mm_texture.update("singleplayer", gamemgr.games[j])
 	core.set_topleft_text(gamemgr.games[j].name)
 	core.setting_set("menu_last_game", gamemgr.games[j].id)
@@ -144,7 +175,8 @@ local function handle_home_buttons(this, fields, tabname, tabdata)
 	for i=1,#gamemgr.games,1 do
 		local button_name = "singleplayer_button_" .. gamemgr.games[i].id
 		if fields[button_name] then
-			local singleplayer_dialog = create_singleplayer()
+			local game = gamemgr.games[i]
+			local singleplayer_dialog = create_singleplayer_menu(game)
 			singleplayer_dialog:set_parent(this)
 			this:hide()
 			singleplayer_dialog:show()
@@ -183,13 +215,16 @@ function create_home()
 	if last_state == "singleplayer" then
 		local last_game = core.setting_get("menu_last_game")
 		if last_game and last_game ~= "" then
-			local singleplayer_dialog = create_singleplayer()
-			singleplayer_dialog:set_parent(this)
-			singleplayer_dialog:show()
-			ui.update()
-			this:hide()
-			-- Skip showing this dialog which is now the parent
-			return this
+			local game = gamemgr.find_by_gameid(last_game)
+			if game then
+				local singleplayer_dialog = create_singleplayer_menu(game)
+				singleplayer_dialog:set_parent(this)
+				singleplayer_dialog:show()
+				ui.update()
+				this:hide()
+				-- Skip showing this dialog which is now the parent
+				return this
+			end
 		end
 	end
 	if last_state == "settings" then
