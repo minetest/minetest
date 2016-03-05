@@ -68,8 +68,7 @@ ifdef GPROF
 GPROF_DEF=-DGPROF
 endif
 
-LOCAL_CFLAGS := -D_IRR_ANDROID_PLATFORM_      \
-				-DHAVE_TOUCHSCREENGUI         \
+LOCAL_CFLAGS := -DHAVE_TOUCHSCREENGUI         \
 				-DUSE_CURL=1                  \
 				-DUSE_SOUND=1                 \
 				-DUSE_FREETYPE=1              \

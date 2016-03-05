@@ -936,7 +936,11 @@ video::ITexture* TextureSource::generateTextureFromMesh(
 	smgr->drop();
 
 	// Unset render target
+#if ((IRRLICHT_VERSION_MAJOR == 1) && (IRRLICHT_VERSION_MINOR < 9))
 	driver->setRenderTarget(0, false, true, 0);
+#else
+	driver->setRenderTarget(0, video::ECBF_COLOR, 0);
+#endif
 
 	if (params.delete_texture_on_shutdown)
 		m_texture_trash.push_back(rtt);

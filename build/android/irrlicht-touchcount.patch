@@ -1,18 +1,6 @@
---- irrlicht.orig/include/IEventReceiver.h	2014-06-03 19:43:50.433713133 +0200
-+++ irrlicht/include/IEventReceiver.h	2014-06-03 19:44:36.993711489 +0200
-@@ -375,6 +375,9 @@
-         // Y position of simple touch.
- 		s32 Y;
- 
-+		// number of current touches
-+		s32 touchedCount;
-+
- 		//! Type of touch event.
- 		ETOUCH_INPUT_EVENT Event;
- 	};
---- irrlicht.orig/source/Irrlicht/Android/CIrrDeviceAndroid.cpp	2014-06-03 19:43:50.505713130 +0200
-+++ irrlicht/source/Irrlicht/Android/CIrrDeviceAndroid.cpp	2014-06-03 19:45:37.265709359 +0200
-@@ -315,6 +315,7 @@
+--- irrlicht.orig/source/Irrlicht/Android/CIrrDeviceAndroid.cpp	2015-12-13 17:46:54.573872124 +0100
++++ irrlicht/source/Irrlicht/Android/CIrrDeviceAndroid.cpp	2015-12-13 17:58:05.981848417 +0100
+@@ -372,6 +372,7 @@
  						event.TouchInput.ID = AMotionEvent_getPointerId(androidEvent, i);
  						event.TouchInput.X = AMotionEvent_getX(androidEvent, i);
  						event.TouchInput.Y = AMotionEvent_getY(androidEvent, i);
@@ -20,7 +8,7 @@
  
  						device->postEventFromUser(event);
  					}
-@@ -326,6 +327,7 @@
+@@ -383,6 +384,7 @@
  					event.TouchInput.ID = AMotionEvent_getPointerId(androidEvent, pointerIndex);
  					event.TouchInput.X = AMotionEvent_getX(androidEvent, pointerIndex);
  					event.TouchInput.Y = AMotionEvent_getY(androidEvent, pointerIndex);
@@ -28,3 +16,15 @@
  
  					device->postEventFromUser(event);
  				}
+--- irrlicht.orig/include/IEventReceiver.h	2015-12-13 18:09:51.701823498 +0100
++++ irrlicht/include/IEventReceiver.h	2015-12-13 18:09:58.061823273 +0100
+@@ -389,6 +389,9 @@
+         // Y position of simple touch.
+ 		s32 Y;
+ 
++		//! number of current touches
++		s32 touchedCount;
++
+ 		//! Type of touch event.
+ 		ETOUCH_INPUT_EVENT Event;
+ 	};

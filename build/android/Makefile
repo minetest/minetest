@@ -41,7 +41,7 @@ ANDROID_VERSION_CODE = 13
 #TARGET_CFLAGS_ADDON = -mfloat-abi=softfp -mfpu=vfp
 #TARGET_ARCH = arm
 #CROSS_PREFIX = arm-linux-androideabi-
-#COMPILER_VERSION = 4.8
+#COMPILER_VERSION = 4.9
 #HAVE_LEVELDB = 1
 
 ################################################################################
@@ -55,7 +55,7 @@ TARGET_CFLAGS_ADDON = -mfloat-abi=softfp -mfpu=vfpv3
 TARGET_CXXFLAGS_ADDON = $(TARGET_CFLAGS_ADDON)
 TARGET_ARCH = armv7
 CROSS_PREFIX = arm-linux-androideabi-
-COMPILER_VERSION = 4.8
+COMPILER_VERSION = 4.9
 HAVE_LEVELDB = 1
 
 ################################################################################
@@ -67,7 +67,7 @@ HAVE_LEVELDB = 1
 #TARGET_TOOLCHAIN = mipsel-linux-android-
 #TARGET_ARCH = mips32
 #CROSS_PREFIX = mipsel-linux-android-
-#COMPILER_VERSION = 4.8
+#COMPILER_VERSION = 4.9
 #HAVE_LEVELDB = 0
 
 ################################################################################
@@ -79,7 +79,7 @@ HAVE_LEVELDB = 1
 #TARGET_TOOLCHAIN = x86-
 #CROSS_PREFIX = i686-linux-android-
 #TARGET_ARCH = x86
-#COMPILER_VERSION = 4.8
+#COMPILER_VERSION = 4.9
 #HAVE_LEVELDB = 1
 
 ################################################################################
@@ -105,14 +105,14 @@ OGG_TIMESTAMP = $(OGG_DIR)timestamp
 OGG_TIMESTAMP_INT = $(ROOT)/deps/ogg_timestamp
 OGG_URL_GIT = https://github.com/vincentjames501/libvorbis-libogg-android
 
-IRRLICHT_REVISION = 5122
+IRRLICHT_REVISION = 5224
 IRRLICHT_DIR = $(ROOT)/deps/irrlicht/
 IRRLICHT_LIB = $(IRRLICHT_DIR)lib/Android/libIrrlicht.a
 IRRLICHT_TIMESTAMP = $(IRRLICHT_DIR)timestamp
 IRRLICHT_TIMESTAMP_INT = $(ROOT)/deps/irrlicht_timestamp
 IRRLICHT_URL_SVN = http://svn.code.sf.net/p/irrlicht/code/branches/ogl-es@$(IRRLICHT_REVISION)
 
-OPENSSL_VERSION = 1.0.1p
+OPENSSL_VERSION = 1.0.2e
 OPENSSL_BASEDIR = openssl-$(OPENSSL_VERSION)
 OPENSSL_DIR = $(ROOT)/deps/$(OPENSSL_BASEDIR)/
 OPENSSL_LIB = $(OPENSSL_DIR)/libssl.so.1.0.0
@@ -120,7 +120,7 @@ OPENSSL_TIMESTAMP = $(OPENSSL_DIR)timestamp
 OPENSSL_TIMESTAMP_INT = $(ROOT)/deps/openssl_timestamp
 OPENSSL_URL = http://www.openssl.org/source/openssl-$(OPENSSL_VERSION).tar.gz
 
-CURL_VERSION = 7.45.0
+CURL_VERSION = 7.46.0
 CURL_DIR = $(ROOT)/deps/curl-$(CURL_VERSION)
 CURL_LIB = $(CURL_DIR)/lib/.libs/libcurl.a
 CURL_TIMESTAMP = $(CURL_DIR)/timestamp
@@ -320,7 +320,7 @@ openssl_download :
 
 openssl : $(OPENSSL_LIB)
 
-$(OPENSSL_LIB): $(OPENSSL_TIMESTAMP)
+$(OPENSSL_LIB): $(OPENSSL_TIMESTAMP) $(GMP_LIB)
 	@REFRESH=0;                                                                \
 	if [ ! -e ${OPENSSL_TIMESTAMP_INT} ] ; then                                \
 		echo "${OPENSSL_TIMESTAMP_INT} doesn't exist";                         \
@@ -338,7 +338,8 @@ $(OPENSSL_LIB): $(OPENSSL_TIMESTAMP)
 	--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                         \
 	--install-dir=$${TOOLCHAIN};                                               \
 	export PATH="$${TOOLCHAIN}/bin:$${PATH}";                                  \
-	CC=${CROSS_PREFIX}gcc ./Configure android-${TARGET_ARCH} no-idea no-seed -no-sha0 -DL_ENDIAN;\
+	CC=${CROSS_PREFIX}gcc ./Configure enable-gmp -DL_ENDIAN -I${GMP_DIR} -L${GMP_DIR}/usr/lib android-${TARGET_ARCH};\
+	CC=${CROSS_PREFIX}gcc ANDROID_DEV=/tmp/ndk-${TARGET_HOST} make depend;     \
 	CC=${CROSS_PREFIX}gcc ANDROID_DEV=/tmp/ndk-${TARGET_HOST} make build_libs; \
 	touch ${OPENSSL_TIMESTAMP};                                                \
 	touch ${OPENSSL_TIMESTAMP_INT};                                            \
@@ -512,11 +513,6 @@ $(ICONV_LIB) : $(ICONV_TIMESTAMP)
 clean_iconv :
 	$(RM) -rf ${ICONV_DIR}
 
-#Note: Texturehack patch is required for gpu's not supporting color format
-#      correctly. Known bad GPU:
-#      -geforce on emulator
-#      -Vivante Corporation GC1000 core (e.g. Galaxy Tab 3)
-
 irrlicht_download :
 	@if [ ! -d "deps/irrlicht" ] ; then                                        \
 		echo "irrlicht sources missing, downloading...";                       \
@@ -524,9 +520,9 @@ irrlicht_download :
 		cd deps;                                                               \
 		svn co ${IRRLICHT_URL_SVN} irrlicht || exit 1;                         \
 		cd irrlicht;                                                           \
+		patch -p1 < ../../irrlicht-friend_class_fix.patch || exit 1;           \
 		patch -p1 < ../../irrlicht-touchcount.patch || exit 1;                 \
 		patch -p1 < ../../irrlicht-back_button.patch || exit 1;                \
-		patch -p1 < ../../irrlicht-texturehack.patch || exit 1;                \
 	fi
 
 $(IRRLICHT_TIMESTAMP) : irrlicht_download
@@ -612,7 +608,7 @@ $(CURL_LIB): $(CURL_TIMESTAMP) $(OPENSSL_LIB)
 	export CXX=${CROSS_PREFIX}g++;                                             \
 	export TARGET_OS=OS_ANDROID_CROSSCOMPILE;                                  \
 	export CPPFLAGS="$${CPPFLAGS} -I${OPENSSL_DIR}/include                     \
-	-L${OPENSSL_DIR} ${TARGET_CFLAGS_ADDON}";                                  \
+	${TARGET_CFLAGS_ADDON}";                                                   \
 	export CFLAGS="$${CFLAGS} ${TARGET_CFLAGS_ADDON}";                         \
 	export LDFLAGS="$${LDFLAGS} -L${OPENSSL_DIR} ${TARGET_LDFLAGS_ADDON}";     \
 	./configure --host=${TARGET_HOST} --disable-shared --enable-static --with-ssl;  \
