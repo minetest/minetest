@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/clientopcodes.h"
 #include "filesys.h"
 #include "porting.h"
+#include "gettime.h"
 #include "mapblock_mesh.h"
 #include "mapblock.h"
 #include "minimap.h"
@@ -1695,7 +1696,7 @@ float Client::mediaReceiveProgress()
 typedef struct TextureUpdateArgs {
 	IrrlichtDevice *device;
 	gui::IGUIEnvironment *guienv;
-	u32 last_time_ms;
+	u64 last_time_ms;
 	u16 last_percent;
 	const wchar_t* text_base;
 } TextureUpdateArgs;

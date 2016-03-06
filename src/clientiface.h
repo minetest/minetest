@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"             // for SER_FMT_VER_INVALID
 #include "threading/mutex.h"
 #include "network/networkpacket.h"
+#include "porting.h"
 
 #include <list>
 #include <vector>

@@ -2490,7 +2490,7 @@ void GUIFormSpecMenu::drawMenu()
 		Draw static text elements
 	*/
 	for (u32 i = 0; i < m_static_texts.size(); i++) {
-		const StaticTextSpec &spec = m_static_texts[i];	
+		const StaticTextSpec &spec = m_static_texts[i];
 		core::rect<s32> rect = spec.rect;
 		if (spec.parent_button && spec.parent_button->isPressed()) {
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
@@ -3081,6 +3081,7 @@ bool GUIFormSpecMenu::DoubleClickDetection(const SEvent event)
 	}
 	else if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
 		u32 delta = getDeltaMs(m_doubleclickdetect[0].time, getTimeMs());
+
 		if (delta > 400) {
 			return false;
 		}

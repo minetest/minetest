@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 
 enum TimePrecision {
-	PRECISION_SECONDS = 0,
+	PRECISION_SECONDS,
 	PRECISION_MILLI,
 	PRECISION_MICRO,
 	PRECISION_NANO
