@@ -785,6 +785,13 @@ core.register_chatcommand("time", {
 	end,
 })
 
+core.register_chatcommand("days", {
+	description = "Display day count",
+	func = function(name, param)
+		return true, "Current day is " .. core.get_day_count()
+	end
+})
+
 core.register_chatcommand("shutdown", {
 	description = "shutdown server",
 	privs = {server=true},
