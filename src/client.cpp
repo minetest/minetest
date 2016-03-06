@@ -1618,7 +1618,7 @@ float Client::mediaReceiveProgress()
 typedef struct TextureUpdateArgs {
 	IrrlichtDevice *device;
 	gui::IGUIEnvironment *guienv;
-	u32 last_time_ms;
+	u64 last_time_ms;
 	u16 last_percent;
 	const wchar_t* text_base;
 	ITextureSource *tsrc;
@@ -1634,7 +1634,7 @@ void texture_update_progress(void *args, u32 progress, u32 max_progress)
 		u32 time_ms = targs->last_time_ms;
 		if (cur_percent != targs->last_percent) {
 			targs->last_percent = cur_percent;
-			time_ms = getTimeMs();
+			time_ms = porting::getTimeMs();
 			// only draw when the user will notice something:
 			do_draw = (time_ms - targs->last_time_ms > 100);
 		}
@@ -1692,7 +1692,7 @@ void Client::afterContentReceived(IrrlichtDevice *device)
 	TextureUpdateArgs tu_args;
 	tu_args.device = device;
 	tu_args.guienv = guienv;
-	tu_args.last_time_ms = getTimeMs();
+	tu_args.last_time_ms = porting::getTimeMs();
 	tu_args.last_percent = 0;
 	tu_args.text_base =  wgettext("Initializing nodes");
 	tu_args.tsrc = m_tsrc;

@@ -181,124 +181,99 @@ std::string get_sysinfo();
 
 void initIrrlicht(irr::IrrlichtDevice * );
 
-/*
-	Resolution is 10-20ms.
-	Remember to check for overflows.
-	Overflow can occur at any value higher than 10000000.
-*/
+
+// Monotonic counter getters.
+
 #ifdef _WIN32 // Windows
 
-	inline u32 getTimeS()
-	{
-		return GetTickCount() / 1000;
-	}
+extern double perf_freq;
 
-	inline u32 getTimeMs()
-	{
-		return GetTickCount();
-	}
+inline u64 os_get_time(double mult)
+{
+	LARGE_INTEGER t;
+	QueryPerformanceCounter(&t);
+	return static_cast<double>(t.QuadPart) / (perf_freq / mult);
+}
 
-	inline u32 getTimeUs()
-	{
-		LARGE_INTEGER freq, t;
-		QueryPerformanceFrequency(&freq);
-		QueryPerformanceCounter(&t);
-		return (double)(t.QuadPart) / ((double)(freq.QuadPart) / 1000000.0);
-	}
-
-	inline u32 getTimeNs()
-	{
-		LARGE_INTEGER freq, t;
-		QueryPerformanceFrequency(&freq);
-		QueryPerformanceCounter(&t);
-		return (double)(t.QuadPart) / ((double)(freq.QuadPart) / 1000000000.0);
-	}
+// Resolution is <1us.
+inline u64 getTimeS() { return os_get_time(1); }
+inline u64 getTimeMs() { return os_get_time(1000); }
+inline u64 getTimeUs() { return os_get_time(1000*1000); }
+inline u64 getTimeNs() { return os_get_time(1000*1000*1000); }
 
 #else // Posix
-	inline void _os_get_clock(struct timespec *ts)
-	{
+
+inline void os_get_clock(struct timespec *ts)
+{
 #if defined(__MACH__) && defined(__APPLE__)
-	// from http://stackoverflow.com/questions/5167269/clock-gettime-alternative-in-mac-os-x
-	// OS X does not have clock_gettime, use clock_get_time
-		clock_serv_t cclock;
-		mach_timespec_t mts;
-		host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
-		clock_get_time(cclock, &mts);
-		mach_port_deallocate(mach_task_self(), cclock);
-		ts->tv_sec = mts.tv_sec;
-		ts->tv_nsec = mts.tv_nsec;
+// From http://stackoverflow.com/questions/5167269/clock-gettime-alternative-in-mac-os-x
+// OS X does not have clock_gettime, use clock_get_time
+	clock_serv_t cclock;
+	mach_timespec_t mts;
+	host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+	clock_get_time(cclock, &mts);
+	mach_port_deallocate(mach_task_self(), cclock);
+	ts->tv_sec = mts.tv_sec;
+	ts->tv_nsec = mts.tv_nsec;
 #elif defined(CLOCK_MONOTONIC_RAW)
-		clock_gettime(CLOCK_MONOTONIC_RAW, ts);
+	clock_gettime(CLOCK_MONOTONIC_RAW, ts);
 #elif defined(_POSIX_MONOTONIC_CLOCK)
-		clock_gettime(CLOCK_MONOTONIC, ts);
+	clock_gettime(CLOCK_MONOTONIC, ts);
 #else
-		struct timeval tv;
-		gettimeofday(&tv, NULL);
-		TIMEVAL_TO_TIMESPEC(&tv, ts);
-#endif // defined(__MACH__) && defined(__APPLE__)
-	}
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	TIMEVAL_TO_TIMESPEC(&tv, ts);
+#endif
+}
 
-	// Note: these clock functions do not return wall time, but
-	// generally a clock that starts at 0 when the process starts.
-	inline u32 getTimeS()
-	{
-		struct timespec ts;
-		_os_get_clock(&ts);
-		return ts.tv_sec;
-	}
+inline u64 getTimeS()
+{
+	struct timespec ts;
+	os_get_clock(&ts);
+	return ts.tv_sec;
+}
 
-	inline u32 getTimeMs()
-	{
-		struct timespec ts;
-		_os_get_clock(&ts);
-		return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
-	}
+inline u64 getTimeMs()
+{
+	struct timespec ts;
+	os_get_clock(&ts);
+	return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+}
 
-	inline u32 getTimeUs()
-	{
-		struct timespec ts;
-		_os_get_clock(&ts);
-		return ts.tv_sec * 1000000 + ts.tv_nsec / 1000;
-	}
+inline u64 getTimeUs()
+{
+	struct timespec ts;
+	os_get_clock(&ts);
+	return ts.tv_sec * 1000000 + ts.tv_nsec / 1000;
+}
 
-	inline u32 getTimeNs()
-	{
-		struct timespec ts;
-		_os_get_clock(&ts);
-		return ts.tv_sec * 1000000000 + ts.tv_nsec;
-	}
+inline u64 getTimeNs()
+{
+	struct timespec ts;
+	os_get_clock(&ts);
+	return ts.tv_sec * 1000000000 + ts.tv_nsec;
+}
 
-	/*#include <sys/timeb.h>
-	inline u32 getTimeMs()
-	{
-		struct timeb tb;
-		ftime(&tb);
-		return tb.time * 1000 + tb.millitm;
-	}*/
 #endif
 
-inline u32 getTime(TimePrecision prec)
+inline u64 getTime(TimePrecision prec)
 {
 	switch (prec) {
-		case PRECISION_SECONDS:
-			return getTimeS();
-		case PRECISION_MILLI:
-			return getTimeMs();
-		case PRECISION_MICRO:
-			return getTimeUs();
-		case PRECISION_NANO:
-			return getTimeNs();
+	case PRECISION_SECONDS: return getTimeS();
+	case PRECISION_MILLI:   return getTimeMs();
+	case PRECISION_MICRO:   return getTimeUs();
+	case PRECISION_NANO:    return getTimeNs();
 	}
-	return 0;
+	FATAL_ERROR("Called getTime with invalid time precision");
 }
 
 /**
- * Delta calculation function taking two 32bit arguments.
- * @param old_time_ms old time for delta calculation (order is relevant!)
- * @param new_time_ms new time for delta calculation (order is relevant!)
- * @return positive 32bit delta value
+ * Delta calculation function arguments.
+ * @param old_time_ms old time for delta calculation
+ * @param new_time_ms new time for delta calculation
+ * @return positive delta value
  */
-inline u32 getDeltaMs(u32 old_time_ms, u32 new_time_ms)
+inline u64 getDeltaMs(u64 old_time_ms, u64 new_time_ms)
 {
 	if (new_time_ms >= old_time_ms) {
 		return (new_time_ms - old_time_ms);

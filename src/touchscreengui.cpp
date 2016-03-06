@@ -794,7 +794,7 @@ void TouchScreenGUI::translateEvent(const SEvent &event)
 			if (m_move_id == -1) {
 				m_move_id                  = event.TouchInput.ID;
 				m_move_has_really_moved    = false;
-				m_move_downtime            = getTimeMs();
+				m_move_downtime            = porting::getTimeMs();
 				m_move_downlocation        = v2s32(event.TouchInput.X, event.TouchInput.Y);
 				m_move_sent_as_mouse_event = false;
 			}

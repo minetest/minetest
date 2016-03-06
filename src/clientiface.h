@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threading/mutex.h"
 #include "network/networkpacket.h"
 #include "util/cpp11_container.h"
+#include "porting.h"
 
 #include <list>
 #include <vector>
@@ -265,7 +266,7 @@ public:
 		m_version_patch(0),
 		m_full_version("unknown"),
 		m_deployed_compression(0),
-		m_connection_time(getTime(PRECISION_SECONDS))
+		m_connection_time(porting::getTime(PRECISION_SECONDS))
 	{
 	}
 	~RemoteClient()

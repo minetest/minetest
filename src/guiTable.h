@@ -196,7 +196,7 @@ protected:
 	bool m_sel_doubleclick;
 
 	// Keyboard navigation stuff
-	s32 m_keynav_time;
+	u64 m_keynav_time;
 	core::stringw m_keynav_buffer;
 
 	// Drawing and geometry information

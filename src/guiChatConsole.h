@@ -98,7 +98,7 @@ private:
 	v2u32 m_screensize;
 
 	// used to compute how much time passed since last animate()
-	u32 m_animate_time_old;
+	u64 m_animate_time_old;
 
 	// should the console be opened or closed?
 	bool m_open;

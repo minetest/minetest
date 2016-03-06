@@ -107,24 +107,6 @@ static bool migrate_map_database(const GameParams &game_params, const Settings &
 
 /**********************************************************************/
 
-/*
-	gettime.h implementation
-*/
-
-#ifdef SERVER
-
-u32 getTimeMs()
-{
-	/* Use imprecise system calls directly (from porting.h) */
-	return porting::getTime(PRECISION_MILLI);
-}
-
-u32 getTime(TimePrecision prec)
-{
-	return porting::getTime(prec);
-}
-
-#endif
 
 FileLogOutput file_log_output;
 
