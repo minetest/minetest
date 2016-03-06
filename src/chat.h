@@ -21,141 +21,122 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CHAT_HEADER
 
 #include "irrlichttypes.h"
-#include <ctime>
 #include <string>
 #include <vector>
 #include <list>
 
-// Chat console related classes
 
-struct ChatLine
-{
-	// age in seconds
-	f32 age;
-	// name of sending player, or empty if sent by server
+/// Message in chat console, may be split into multiple lines.
+struct ChatMessage {
+	ChatMessage(const std::wstring &name, const std::wstring &text);
+
+	// Name of sending player, or empty if sent by server
 	std::wstring name;
-	// message text
-	std::wstring text;
-	// Message time
-	time_t timestamp;
 
-	ChatLine(std::wstring a_name, std::wstring a_text):
-		age(0.0),
-		name(a_name),
-		text(a_text),
-		timestamp(time(NULL))
-	{
-	}
+	std::wstring text;
+	time_t timestamp;  // Wall time
+	u64 time_raw;  // Monotonic time in milliseconds
 };
 
-struct ChatFormattedFragment
-{
-	// text string
-	std::wstring text;
-	// starting column
-	u32 column;
-	// formatting
-	//u8 bold:1;
-};
 
-struct ChatFormattedLine
-{
-	// Array of text fragments
-	std::vector<ChatFormattedFragment> fragments;
-	// true if first line of one formatted ChatLine
+/// Single line in chat console, wrapped to console width
+struct ChatLine {
+	ChatLine() {}
+	ChatLine(bool first, const std::wstring &text) :
+		first(first), text(text) {}
 	bool first;
+	std::wstring text;
 };
 
-class ChatBuffer
-{
+
+class ChatBuffer {
 public:
-	ChatBuffer(u32 scrollback, bool add_ts=true);
-	~ChatBuffer();
+	ChatBuffer(size_t scrollback, bool add_ts=true);
 
 	// Append chat line
 	// Removes oldest chat line if scrollback size is reached
-	void addLine(std::wstring name, std::wstring text);
+	void addLine(const std::wstring &name, const std::wstring &text);
 
 	// Remove all chat lines
 	void clear();
 
 	// Get number of lines currently in buffer.
-	u32 getLineCount() const;
+	size_t getLineCount() const { return m_unformatted.size(); }
 	// Get scrollback size, maximum number of lines in buffer.
-	u32 getScrollback() const;
+	size_t getScrollback() const { return m_scrollback; }
 	// Get reference to i-th chat line.
-	const ChatLine& getLine(u32 index) const;
+	const ChatMessage& getLine(size_t index) const;
 
-	// Increase each chat line's age by dtime.
-	void step(f32 dtime);
 	// Delete oldest N chat lines.
-	void deleteOldest(u32 count);
-	// Delete lines older than maxAge.
-	void deleteByAge(f32 maxAge);
+	void deleteOldest(size_t count);
+	// Delete lines older than maxAge seconds.
+	void deleteOlderThan(float age);
 
 	// Get number of columns, 0 if reformat has not been called yet.
-	u32 getColumns() const;
+	u32 getColumns() const { return m_cols; }
 	// Get number of rows, 0 if reformat has not been called yet.
-	u32 getRows() const;
+	u32 getRows() const { return m_rows; }
 	// Update console size and reformat all formatted lines.
 	void reformat(u32 cols, u32 rows);
 	// Get formatted line for a given row (0 is top of screen).
 	// Only valid after reformat has been called at least once
-	const ChatFormattedLine& getFormattedLine(u32 row) const;
+	bool getFormattedLine(size_t row, ChatLine *line) const;
 	// Scrolling in formatted buffer (relative)
 	// positive rows == scroll up, negative rows == scroll down
-	void scroll(s32 rows);
+	void scroll(ssize_t rows) { scrollAbsolute(m_scroll + rows); }
 	// Scrolling in formatted buffer (absolute)
-	void scrollAbsolute(s32 scroll);
+	void scrollAbsolute(ssize_t scroll);
 	// Scroll to bottom of buffer (newest)
-	void scrollBottom();
+	void scrollBottom() { m_scroll = getBottomScrollPos(); }
 	// Scroll to top of buffer (oldest)
-	void scrollTop();
+	void scrollTop() { m_scroll = getTopScrollPos(); }
 
-	// Format a chat line for the given number of columns.
-	// Appends the formatted lines to the destination array and
-	// returns the number of formatted lines.
-	u32 formatChatLine(const ChatLine& line, u32 cols,
-			std::vector<ChatFormattedLine>& destination) const;
+	/// Format a chat line for the current number of columns.
+	/// Appends the formatted lines to m_formatted.
+	/// @return the number of formatted lines added.
+	size_t formatChatLine(const ChatMessage &line);
 
 protected:
 	static std::string formatTimestamp(const time_t *time);
 
-	s32 getTopScrollPos() const;
-	s32 getBottomScrollPos() const;
+	ssize_t getTopScrollPos() const
+	{
+		return (m_rows != 0 && m_formatted.size() <= m_rows) ?
+				(ssize_t)m_formatted.size() - (ssize_t)m_rows : 0;
+	}
+	ssize_t getBottomScrollPos() const
+	{
+		return m_rows != 0 ? (ssize_t)m_formatted.size() - (ssize_t)m_rows : 0;
+	}
 
 private:
 	// Scrollback size
-	u32 m_scrollback;
-	// Array of unformatted chat lines
-	std::vector<ChatLine> m_unformatted;
+	size_t m_scrollback;
+	// Array of unformatted chat messages
+	std::vector<ChatMessage> m_unformatted;
 
 	// Number of character columns in console
 	u32 m_cols;
 	// Number of character rows in console
 	u32 m_rows;
 	// Scroll position (console's top line index into m_formatted)
-	s32 m_scroll;
+	ssize_t m_scroll;
 	// Array of formatted lines
-	std::vector<ChatFormattedLine> m_formatted;
-	// Empty formatted line, for error returns
-	ChatFormattedLine m_empty_formatted_line;
+	std::vector<ChatLine> m_formatted;
 	// Whether to prefix a timestamp to messages
 	bool m_add_ts;
 };
 
-class ChatPrompt
-{
+class ChatPrompt {
 public:
-	ChatPrompt(std::wstring prompt, u32 history_limit);
-	~ChatPrompt();
+	ChatPrompt(const std::wstring &prompt, u32 history_limit);
 
 	// Input character or string
 	void input(wchar_t ch);
 	void input(const std::wstring &str);
 
 	// Add a string to the history
-	void addToHistory(std::wstring line);
+	void addToHistory(const std::wstring &line);
 
 	// Get current line
 	std::wstring getLine() const { return m_line; }
@@ -168,7 +149,7 @@ public:
 	void clear();
 
 	// Replace the current line with the given text
-	std::wstring replace(std::wstring line);
+	std::wstring replace(const std::wstring &line);
 
 	// Select previous command from history
 	void historyPrev();
@@ -252,39 +233,35 @@ private:
 	s32 m_nick_completion_end;
 };
 
-class ChatBackend
-{
+
+class ChatBackend {
 public:
 	ChatBackend(bool add_ts=true);
-	~ChatBackend();
 
 	// Add chat message
-	void addMessage(std::wstring name, std::wstring text);
-	// Parse and add unparsed chat message
-	void addUnparsedMessage(std::wstring line);
+	void addMessage(const std::wstring &name, const std::wstring &text);
+	// Parse chat message in the form "<name> text" and add it
+	void addUnparsedMessage(const std::wstring &line);
 
-	// Get the console buffer
-	ChatBuffer& getConsoleBuffer();
-	// Get the recent messages buffer
-	ChatBuffer& getRecentBuffer();
-	// Concatenate all recent messages
+	ChatBuffer& getConsoleBuffer() { return m_console_buffer; }
+	ChatBuffer& getRecentBuffer() { return m_recent_buffer; }
+	ChatPrompt& getPrompt() { return m_prompt; }
+
+	/// Return concatenation of all recent messages
 	std::wstring getRecentChat();
-	// Get the console prompt
-	ChatPrompt& getPrompt();
 
 	// Reformat all buffers
 	void reformat(u32 cols, u32 rows);
 
 	// Clear all recent messages
-	void clearRecentChat();
-
-	// Age recent messages
-	void step(float dtime);
+	void clearRecentChat() { m_recent_buffer.clear(); }
 
 	// Scrolling
-	void scroll(s32 rows);
-	void scrollPageDown();
-	void scrollPageUp();
+	void scroll(s32 rows) { m_console_buffer.scroll(rows); }
+	void scrollPageUp() { scroll(-(s32)m_console_buffer.getRows()); }
+	void scrollPageDown() { scroll(m_console_buffer.getRows()); }
+
+	void step();
 
 private:
 	ChatBuffer m_console_buffer;

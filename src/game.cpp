@@ -1201,7 +1201,7 @@ static void updateChat(Client &client, f32 dtime, bool show_debug,
 	}
 
 	// Remove old messages
-	chat_backend.step(dtime);
+	chat_backend.step();
 
 	// Display all messages in a static text element
 	unsigned int recent_chat_count = chat_backend.getRecentBuffer().getLineCount();
