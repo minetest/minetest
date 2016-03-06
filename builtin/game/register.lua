@@ -75,7 +75,7 @@ end
 
 function core.register_abm(spec)
 	-- Add to core.registered_abms
-	core.registered_abms[#core.registered_abms+1] = spec
+	core.registered_abms[#core.registered_abms + 1] = spec
 	spec.mod_origin = core.get_current_modname() or "??"
 end
 
@@ -391,7 +391,7 @@ end
 local function make_registration()
 	local t = {}
 	local registerfunc = function(func)
-		table.insert(t, func)
+		t[#t + 1] = func
 		core.callback_origins[func] = {
 			mod = core.get_current_modname() or "??",
 			name = debug.getinfo(1, "n").name or "??"
@@ -467,9 +467,9 @@ end
 
 function core.register_on_player_hpchange(func, modifier)
 	if modifier then
-		table.insert(core.registered_on_player_hpchanges.modifiers, func)
+		core.registered_on_player_hpchanges.modifiers[#core.registered_on_player_hpchanges.modifiers + 1] = func
 	else
-		table.insert(core.registered_on_player_hpchanges.loggers, func)
+		core.registered_on_player_hpchanges.loggers[#core.registered_on_player_hpchanges.loggers + 1] = func
 	end
 	core.callback_origins[func] = {
 		mod = core.get_current_modname() or "??",
