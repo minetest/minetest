@@ -95,6 +95,8 @@ public:
 
 	void setDayNightRatioOverride(bool enable, u32 value);
 
+	u32 getDayCount();
+
 	// counter used internally when triggering ABMs
 	u32 m_added_objects;
 
@@ -117,6 +119,9 @@ protected:
 	// Overriding the day-night ratio is useful for custom sky visuals
 	bool m_enable_day_night_ratio_override;
 	u32 m_day_night_ratio_override;
+	// Days from the server start, accounts for time shift
+	// in game (e.g. /time or bed usage)
+	Atomic<u32> m_day_count;
 	/*
 	 * Above: values managed by m_time_lock
 	*/

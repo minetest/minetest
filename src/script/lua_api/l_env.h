@@ -113,6 +113,9 @@ private:
 	// get_gametime()
 	static int l_get_gametime(lua_State *L);
 
+	// get_day_count() -> int
+	static int l_get_day_count(lua_State *L);
+
 	// find_node_near(pos, radius, nodenames) -> pos or nil
 	// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 	static int l_find_node_near(lua_State *L);

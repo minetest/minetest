@@ -561,6 +561,15 @@ int ModApiEnvMod::l_get_timeofday(lua_State *L)
 	return 1;
 }
 
+// get_day_count() -> int
+int ModApiEnvMod::l_get_day_count(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	lua_pushnumber(L, env->getDayCount());
+	return 1;
+}
+
 // get_gametime()
 int ModApiEnvMod::l_get_gametime(lua_State *L)
 {
@@ -1055,6 +1064,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(set_timeofday);
 	API_FCT(get_timeofday);
 	API_FCT(get_gametime);
+	API_FCT(get_day_count);
 	API_FCT(find_node_near);
 	API_FCT(find_nodes_in_area);
 	API_FCT(find_nodes_in_area_under_air);
