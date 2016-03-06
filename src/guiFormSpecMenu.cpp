@@ -2507,9 +2507,9 @@ void GUIFormSpecMenu::drawMenu()
 			m_old_tooltip = "";
 		} else {
 			if (id == m_old_tooltip_id) {
-				delta = porting::getDeltaMs(m_hovered_time, getTimeMs());
+				delta = porting::getDeltaMs(m_hovered_time, porting::getTimeMs());
 			} else {
-				m_hovered_time = getTimeMs();
+				m_hovered_time = porting::getTimeMs();
 				m_old_tooltip_id = id;
 			}
 		}
@@ -3058,10 +3058,10 @@ bool GUIFormSpecMenu::DoubleClickDetection(const SEvent event)
 		m_doubleclickdetect[0].time = m_doubleclickdetect[1].time;
 
 		m_doubleclickdetect[1].pos  = m_pointer;
-		m_doubleclickdetect[1].time = getTimeMs();
+		m_doubleclickdetect[1].time = porting::getTimeMs();
 	}
 	else if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
-		u32 delta = porting::getDeltaMs(m_doubleclickdetect[0].time, getTimeMs());
+		u32 delta = porting::getDeltaMs(m_doubleclickdetect[0].time, porting::getTimeMs());
 		if (delta > 400) {
 			return false;
 		}

@@ -580,7 +580,7 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 
 u32 RemoteClient::uptime()
 {
-	return getTime(PRECISION_SECONDS) - m_connection_time;
+	return porting::getTime(PRECISION_SECONDS) - m_connection_time;
 }
 
 ClientInterface::ClientInterface(con::Connection* con)
