@@ -67,13 +67,13 @@ function order_favorite_list(list)
 	for i=1,#list,1 do
 		local fav = list[i]
 		if is_server_protocol_compat(fav.proto_min, fav.proto_max) then
-			table.insert(res, fav)
+			res[#res + 1] = fav
 		end
 	end
 	for i=1,#list,1 do
 		local fav = list[i]
 		if not is_server_protocol_compat(fav.proto_min, fav.proto_max) then
-			table.insert(res, fav)
+			res[#res + 1] = fav
 		end
 	end
 	return res

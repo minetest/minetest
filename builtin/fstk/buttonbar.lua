@@ -145,7 +145,12 @@ local buttonbar_metatable = {
 			if image == nil then image = "" end
 			if tooltip == nil then tooltip = "" end
 
-			table.insert(self.buttons,{ name=name, caption=caption, image=image, tooltip=tooltip})
+			self.buttons[#self.buttons + 1] = {
+				name = name,
+				caption = caption,
+				image = image,
+				tooltip = tooltip
+			}
 			if self.orientation == "horizontal" then
 				if ( (self.btn_size * #self.buttons) + (self.btn_size * 0.05 *2)
 					> self.size.x ) then

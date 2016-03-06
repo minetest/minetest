@@ -2,7 +2,6 @@
 
 --------------------------------------------------------------------------------
 -- Localize functions to avoid table lookups (better performance).
-local table_insert = table.insert
 local string_sub, string_find = string.sub, string.find
 
 --------------------------------------------------------------------------------
@@ -94,13 +93,13 @@ function dump2(o, name, dumped)
 				-- the form _G["table: 0xFFFFFFF"]
 				keyStr = string.format("_G[%q]", tostring(k))
 				-- Dump key table
-				table_insert(t, dump2(k, keyStr, dumped))
+				t[#t + 1] = dump2(k, keyStr, dumped)
 			end
 		else
 			keyStr = basic_dump(k)
 		end
 		local vname = string.format("%s[%s]", name, keyStr)
-		table_insert(t, dump2(v, vname, dumped))
+		t[#t + 1] = dump2(v, vname, dumped)
 	end
 	return string.format("%s = {}\n%s", name, table.concat(t))
 end
@@ -135,7 +134,7 @@ function dump(o, indent, nested, level)
 	local t = {}
 	local dumped_indexes = {}
 	for i, v in ipairs(o) do
-		table_insert(t, dump(v, indent, nested, level + 1))
+		t[#t + 1] = dump(v, indent, nested, level + 1)
 		dumped_indexes[i] = true
 	end
 	for k, v in pairs(o) do
@@ -144,7 +143,7 @@ function dump(o, indent, nested, level)
 				k = "["..dump(k, indent, nested, level + 1).."]"
 			end
 			v = dump(v, indent, nested, level + 1)
-			table_insert(t, k.." = "..v)
+			t[#t + 1] = k.." = "..v
 		end
 	end
 	nested[o] = nil
@@ -177,7 +176,7 @@ function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
 		local s = string_sub(str, pos, np - 1)
 		if include_empty or (s ~= "") then
 			max_splits = max_splits - 1
-			table_insert(items, s)
+			items[#items + 1] = s
 		end
 		pos = npe + 1
 	until (max_splits == 0) or (pos > (len + 1))
@@ -186,8 +185,8 @@ end
 
 --------------------------------------------------------------------------------
 function table.indexof(list, val)
-	for i = 1, #list do
-		if list[i] == val then
+	for i, v in ipairs(list) do
+		if v == val then
 			return i
 		end
 	end
@@ -324,7 +323,7 @@ function core.splittext(text,charlimit)
 	local last_line = ""
 	while start ~= nil do
 		if string.len(last_line) + (stop-start) > charlimit then
-			table_insert(retval, last_line)
+			retval[#retval + 1] = last_line
 			last_line = ""
 		end
 
@@ -335,7 +334,7 @@ function core.splittext(text,charlimit)
 		last_line = last_line .. string_sub(text, current_idx, stop - 1)
 
 		if gotnewline then
-			table_insert(retval, last_line)
+			retval[#retval + 1] = last_line
 			last_line = ""
 			gotnewline = false
 		end
@@ -353,11 +352,11 @@ function core.splittext(text,charlimit)
 
 	--add last part of text
 	if string.len(last_line) + (string.len(text) - current_idx) > charlimit then
-			table_insert(retval, last_line)
-			table_insert(retval, string_sub(text, current_idx))
+			retval[#retval + 1] = last_line
+			retval[#retval + 1] = string_sub(text, current_idx)
 	else
 		last_line = last_line .. " " .. string_sub(text, current_idx)
-		table_insert(retval, last_line)
+		retval[#retval + 1] = last_line
 	end
 
 	return retval
@@ -430,14 +429,14 @@ if INIT == "game" then
 
 		if iswall then
 			core.set_node(pos, {name = wield_name,
-					param2 = dirs1[fdir+1]})
+					param2 = dirs1[fdir + 1]})
 		elseif isceiling then
 			if orient_flags.force_facedir then
 				core.set_node(pos, {name = wield_name,
 						param2 = 20})
 			else
 				core.set_node(pos, {name = wield_name,
-						param2 = dirs2[fdir+1]})
+						param2 = dirs2[fdir + 1]})
 			end
 		else -- place right side up
 			if orient_flags.force_facedir then
