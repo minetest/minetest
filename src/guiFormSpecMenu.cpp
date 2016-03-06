@@ -3248,6 +3248,7 @@ bool GUIFormSpecMenu::DoubleClickDetection(const SEvent event)
 	}
 	else if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
 		u32 delta = getDeltaMs(m_doubleclickdetect[0].time, getTimeMs());
+
 		if (delta > 400) {
 			return false;
 		}

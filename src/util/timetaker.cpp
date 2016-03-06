@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "timetaker.h"
 
+#include "../porting.h"
 #include "../gettime.h"
 #include "../log.h"
 #include <ostream>
@@ -68,4 +69,3 @@ u32 TimeTaker::getTimerTime()
 	u32 dtime = time2 - m_time1;
 	return dtime;
 }
-

@@ -499,9 +499,9 @@ int ModApiServer::l_cause_error(lua_State *L)
 
 	} else if (type_of_error == "zerodivision") {
 
-		unsigned int some_number = getTimeS();
-		unsigned int zerovalue = 0;
-		unsigned int result = some_number / zerovalue;
+		u64 some_number = getTimeS();
+		u64 zerovalue = 0;
+		u64 result = some_number / zerovalue;
 		errorstream << "Well this shouldn't ever be shown: " << result << std::endl;
 
 	} else if (type_of_error == "exception") {
