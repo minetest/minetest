@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "settings.h"
 #include "cpp_api/s_internal.h"
-#include "lua_api/l_areastore.h"
+#include "lua_api/l_area_store.h"
 #include "lua_api/l_base.h"
 #include "lua_api/l_craft.h"
 #include "lua_api/l_env.h"
