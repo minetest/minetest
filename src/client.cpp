@@ -1813,8 +1813,11 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 			+ DIR_DELIM
 			+ std::string("screenshot_")
 			+ std::string(timetstamp_c);
-	std::string filename_ext = ".png";
+	std::string filename_ext = g_settings->get("screenshot_format");
 	std::string filename;
+
+	if (filename_ext[0] != '.')
+		filename_ext = "." + filename_ext;
 
 	// Try to find a unique filename
 	unsigned serial = 0;
