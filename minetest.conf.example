@@ -653,6 +653,16 @@
 #    type: path
 # screenshot_path =
 
+#    Format of screenshots.
+#    type: enum values: png, jpg, bmp, pcx, ppm, tga
+# screenshot_format = png
+
+#    Screenshot quality. Only used for JPEG format.
+#    1 means worst quality; 100 means best quality.
+#    Use 0 for default quality.
+#    type: int min: 0 max: 100
+# screenshot_quality = 0
+
 ### Advanced
 
 #    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.

@@ -272,6 +272,10 @@ fake_function() {
 	gettext("Fallback font shadow alpha");
 	gettext("Screenshot folder");
 	gettext("Path to save screenshots at.");
+	gettext("Screenshot format");
+	gettext("Format of screenshots.");
+	gettext("Screenshot quality");
+	gettext("Screenshot quality. Only used for JPEG format.\n1 means worst quality; 100 means best quality.\nUse 0 for default quality.");
 	gettext("Advanced");
 	gettext("DPI");
 	gettext("Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.");
