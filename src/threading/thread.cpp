@@ -116,9 +116,7 @@ bool Thread::start()
 #if USE_CPP11_THREADS
 
 	try {
-		m_thread_obj    = new std::thread(threadProc, this);
-		m_thread_id     = m_thread_obj->get_id();
-		m_thread_handle = m_thread_obj->native_handle();
+		m_thread_obj = new std::thread(threadProc, this);
 	} catch (const std::system_error &e) {
 		return false;
 	}
@@ -134,8 +132,6 @@ bool Thread::start()
 	int status = pthread_create(&m_thread_handle, NULL, threadProc, this);
 	if (status)
 		return false;
-
-	m_thread_id = m_thread_handle;
 
 #endif
 
@@ -231,12 +227,6 @@ bool Thread::getReturnValue(void **ret)
 
 	*ret = m_retval;
 	return true;
-}
-
-
-bool Thread::isCurrentThread()
-{
-	return thr_is_current_thread(m_thread_id);
 }
 
 
