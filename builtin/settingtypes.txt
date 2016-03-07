@@ -554,6 +554,14 @@ fallback_font_shadow_alpha (Fallback font shadow alpha) int 128 0 255
 #    Path to save screenshots at.
 screenshot_path (Screenshot folder) path
 
+#    Format of screenshots.
+screenshot_format (Screenshot format) enum png png,jpg,bmp,pcx,ppm,tga
+
+#    Screenshot quality. Only used for JPEG format.
+#    1 means worst quality; 100 means best quality.
+#    Use 0 for default quality.
+screenshot_quality (Screenshot quality) int 0 0 100
+
 [**Advanced]
 
 #    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.

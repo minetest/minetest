@@ -1813,8 +1813,11 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 			+ DIR_DELIM
 			+ std::string("screenshot_")
 			+ std::string(timetstamp_c);
-	std::string filename_ext = ".png";
+	std::string filename_ext = "." + g_settings->get("screenshot_format");
 	std::string filename;
+
+	u32 quality = (u32)g_settings->getS32("screenshot_quality");
+	quality = MYMIN(MYMAX(quality, 0), 100) / 100.0 * 255;
 
 	// Try to find a unique filename
 	unsigned serial = 0;
@@ -1837,7 +1840,7 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 			raw_image->copyTo(image);
 
 			std::ostringstream sstr;
-			if (driver->writeImageToFile(image, filename.c_str())) {
+			if (driver->writeImageToFile(image, filename.c_str(), quality)) {
 				sstr << "Saved screenshot to '" << filename << "'";
 			} else {
 				sstr << "Failed to save screenshot '" << filename << "'";
