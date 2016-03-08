@@ -776,19 +776,13 @@ void ServerEnvironment::loadMeta()
 		throw SerializationError("Couldn't load env meta game_time");
 	}
 
-	try {
-		setTimeOfDay(args.getU64("time_of_day"));
-	} catch (SettingNotFoundException &e) {
-		// This is not as important
-		setTimeOfDay(9000);
-	}
+	setTimeOfDay(args.exists("time_of_day") ?
+		// set day to morning by default
+		args.getU64("time_of_day") : 9000);
 
-	try {
-		m_last_clear_objects_time = args.getU64("last_clear_objects_time");
-	} catch (SettingNotFoundException &e) {
+	m_last_clear_objects_time = args.exists("last_clear_objects_time") ?
 		// If missing, do as if clearObjects was never called
-		m_last_clear_objects_time = 0;
-	}
+		args.getU64("last_clear_objects_time") : 0;
 
 	std::string lbm_introduction_times = "";
 	try {
@@ -804,12 +798,8 @@ void ServerEnvironment::loadMeta()
 	}
 	m_lbm_mgr.loadIntroductionTimes(lbm_introduction_times, m_gamedef, m_game_time);
 
-	try {
-		m_day_count = args.getU64("day_count");
-	} catch (SettingNotFoundException &e) {
-		// If missing, start the day counter
-		m_day_count = 0;
-	}
+	m_day_count = args.exists("day_count") ?
+		args.getU64("day_count") : 0;
 }
 
 void ServerEnvironment::loadDefaultMeta()
