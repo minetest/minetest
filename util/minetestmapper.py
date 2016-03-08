@@ -1,9 +1,10 @@
 #!/usr/bin/env python2
+# expertmm fork from 2016-02-01 git version
 # -*- coding: utf-8 -*-
 
 # This program is free software. It comes without any warranty, to
 # the extent permitted by applicable law. You can redistribute it
-# and/or modify it under the terms of the Do What The Fuck You Want
+# and/or modify it under the terms of the Do What ... You Want To
 # To Public License, Version 2, as published by Sam Hocevar. See
 # COPYING for more details.
 
@@ -131,6 +132,8 @@ usagetext = """minetestmapper.py [options]
   --drawscale
   --drawplayers
   --draworigin
+  --region <xmin>:<xmax>,<zmin>:<zmax>
+  --geometry <xmin>:<zmin>+<width>+<height>
   --drawunderground
 Color format: '#000000'"""
 
@@ -141,7 +144,7 @@ try:
     opts, args = getopt.getopt(sys.argv[1:], "hi:o:", ["help", "input=",
         "output=", "bgcolor=", "scalecolor=", "origincolor=",
         "playercolor=", "draworigin", "drawplayers", "drawscale",
-        "drawunderground"])
+        "drawunderground", "geometry=", "region="])
 except getopt.GetoptError as err:
     # print help information and exit:
     print(str(err))  # will print something like "option -a not recognized"
@@ -151,19 +154,16 @@ except getopt.GetoptError as err:
 path = None
 output = "map.png"
 border = 0
-scalecolor = "black"
-bgcolor = "white"
+scalecolor = "white"
+bgcolor = "black"
 origincolor = "red"
 playercolor = "red"
 drawscale = False
 drawplayers = False
 draworigin = False
 drawunderground = False
-
-sector_xmin = -1500 / 16
-sector_xmax = 1500 / 16
-sector_zmin = -1500 / 16
-sector_zmax = 1500 / 16
+geometry_string = None
+region_string = None
 
 for o, a in opts:
     if o in ("-h", "--help"):
@@ -190,8 +190,77 @@ for o, a in opts:
         draworigin = True
     elif o == "--drawunderground":
         drawunderground = True
+    elif o == "--geometry":
+        geometry_string = a
+    elif o == "--region":
+        region_string = a
     else:
         assert False, "unhandled option"
+nonchunky_xmin=-1500
+nonchunky_xmax=1500
+nonchunky_zmin=-1500
+nonchunky_zmax=1500
+
+if geometry_string is not None:
+    parts = geometry_string.split("+")
+    if len(parts) == 3:
+        coords_string, width_string, height_string = parts
+        coords = coords_string.split(":")
+        if len(coords)==2:
+            x_string, z_string = coords
+            x = int(x_string)
+            z = int(z_string)
+            this_width = int(width_string)
+            this_height = int(height_string)
+            nonchunky_xmin = x
+            nonchunky_xmax = nonchunky_xmin + this_width - 1  # -1 since max is inclusive rect
+            nonchunky_zmin = z
+            nonchunky_zmax = nonchunky_zmin + this_height - 1  # -1 since max is inclusive rect
+            print("#geometry:")
+            print("#  x:"+str(x))
+            print("#  z:"+str(z))
+            print("#  width:"+str(this_width))
+            print("#  height:"+str(this_height))
+            print("region:")
+            print("  xmin:"+str(nonchunky_xmin))
+            print("  xmax:"+str(nonchunky_xmax))
+            print("  zmin:"+str(nonchunky_zmin))
+            print("  zmax:"+str(nonchunky_zmax))
+        else:
+            print("ERROR: (Missing coordinates in '"+geometry_string+"' for geometry) Geometry should be in the form: x:z+width+height")
+            usage()
+            sys.exit()
+    else:
+        print("ERROR: (Incorrect value '"+geometry_string+"' for geometry) Geometry should be in the form: x:z+width+height")
+        usage()
+        sys.exit()
+elif region_string is not None:
+    #parts = region_string.split(" ")
+    axis_info = region_string.split(",")
+    if len(axis_info) == 2:
+        #xmin_string, xmax_string, zmin_string, zmax_string = parts
+        x_bounds, z_bounds = axis_info
+        xmin_string, xmax_string = x_bounds.split(":")
+        zmin_string, zmax_string = z_bounds.split(":")
+        nonchunky_xmin = int(xmin_string)
+        nonchunky_xmax = int(xmax_string)
+        nonchunky_zmin = int(zmin_string)
+        nonchunky_zmax = int(zmax_string)
+        print("region:")
+        print("  xmin:"+str(nonchunky_xmin))
+        print("  xmax:"+str(nonchunky_xmax))
+        print("  zmin:"+str(nonchunky_zmin))
+        print("  zmax:"+str(nonchunky_zmax))
+    else:
+        print("ERROR: (Incorrect value '"+region_string+"' for region) Region should be in the form: xmin:xmax,zmin:zmax")
+        usage()
+        sys.exit()
+#answer=raw_input("press enter to continue")
+sector_xmin = nonchunky_xmin / 16
+sector_xmax = nonchunky_xmax / 16
+sector_zmin = nonchunky_zmin / 16
+sector_zmax = nonchunky_zmax / 16
+
 
 if path is None:
     print("Please select world path (eg. -i ../worlds/yourworld) (or use --help)")
@@ -202,8 +271,30 @@ if path[-1:] != "/" and path[-1:] != "\\":
 
 # Load color information for the blocks.
 colors = {}
+colors_path = "colors.txt"
+
+os_name="linux"
+if (os.path.sep!="/"):
+    os_name="windows"
+
+profile_path = None
+if os_name=="windows":
+    profile_path = os.environ['USERPROFILE']
+else:
+    profile_path = os.environ['HOME']
+
+mt_path = os.path.join( profile_path, "minetest")
+mt_util_path = os.path.join( mt_path, "util")
+abs_colors_path = os.path.join( mt_util_path, "colors.txt" )
+
+if not os.path.isfile(colors_path):
+    colors_path = abs_colors_path
+
+if not os.path.isfile(colors_path):
+    print("WARNING: could not find colors.txt is current path or '"+colors_path+"'")
+
 try:
-    f = file("colors.txt")
+    f = file(colors_path)
 except IOError:
     f = file(os.path.join(os.path.dirname(__file__), "colors.txt"))
 for line in f:
@@ -243,20 +334,20 @@ if os.path.exists(path + "map.sqlite"):
     import sqlite3
     conn = sqlite3.connect(path + "map.sqlite")
     cur = conn.cursor()
-    
+
     cur.execute("SELECT `pos` FROM `blocks`")
     while True:
         r = cur.fetchone()
         if not r:
             break
-        
+
         x, y, z = getIntegerAsBlock(r[0])
-        
+
         if x < sector_xmin or x > sector_xmax:
             continue
         if z < sector_zmin or z > sector_zmax:
             continue
-        
+
         xlist.append(x)
         zlist.append(z)
 
@@ -284,7 +375,7 @@ if os.path.exists(path + "sectors"):
         zlist.append(z)
 
 if len(xlist) == 0 or len(zlist) == 0:
-    print("World does not exist.")
+    print("At this chunk, data does not exist.")
     sys.exit(1)
 
 # Get rid of doubles
@@ -498,7 +589,7 @@ for n in range(len(xlist)):
             # Let's just memorize these even though it's not really necessary.
             version = readU8(f)
             flags = f.read(1)
-            
+
             #print("version="+str(version))
             #print("flags="+str(version))
 
@@ -507,12 +598,12 @@ for n in range(len(xlist)):
             day_night_differs = ((ord(flags) & 2) != 0)
             lighting_expired = ((ord(flags) & 4) != 0)
             generated = ((ord(flags) & 8) != 0)
-            
+
             #print("is_underground="+str(is_underground))
             #print("day_night_differs="+str(day_night_differs))
             #print("lighting_expired="+str(lighting_expired))
             #print("generated="+str(generated))
-            
+
             if version >= 22:
                 content_width = readU8(f)
                 params_width = readU8(f)
@@ -523,7 +614,7 @@ for n in range(len(xlist)):
                 mapdata = array.array("B", dec_o.decompress(f.read()))
             except:
                 mapdata = []
-            
+
             # Reuse the unused tail of the file
             f.close();
             f = cStringIO.StringIO(dec_o.unused_data)
@@ -536,7 +627,7 @@ for n in range(len(xlist)):
                 # And do nothing with it
             except:
                 metaliststr = []
-            
+
             # Reuse the unused tail of the file
             f.close();
             f = cStringIO.StringIO(dec_o.unused_data)
@@ -573,10 +664,10 @@ for n in range(len(xlist)):
                 data_size = readU16(f)
                 # u8[data_size] data
                 data = f.read(data_size)
-            
+
             timestamp = readU32(f)
             #print("* timestamp="+str(timestamp))
-            
+
             id_to_name = {}
             if version >= 22:
                 name_id_mapping_version = readU8(f)
