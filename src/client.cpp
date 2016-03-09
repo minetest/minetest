@@ -399,7 +399,7 @@ void Client::step(float dtime)
 			memset(pName, 0, PLAYERNAME_SIZE * sizeof(char));
 			memset(pPassword, 0, PASSWORD_SIZE * sizeof(char));
 
-			std::string hashed_password = translatePassword(myplayer->getName(), m_password);
+			std::string hashed_password = translate_password(myplayer->getName(), m_password);
 			snprintf(pName, PLAYERNAME_SIZE, "%s", myplayer->getName());
 			snprintf(pPassword, PASSWORD_SIZE, "%s", hashed_password.c_str());
 
@@ -1031,18 +1031,14 @@ void Client::startAuth(AuthMechanism chosen_auth_mechanism)
 	switch (chosen_auth_mechanism) {
 		case AUTH_MECHANISM_FIRST_SRP: {
 			// send srp verifier to server
+			std::string verifier;
+			std::string salt;
+			generate_srp_verifier_and_salt(getPlayerName(), m_password,
+				&verifier, &salt);
+
 			NetworkPacket resp_pkt(TOSERVER_FIRST_SRP, 0);
-			char *salt, *bytes_v;
-			std::size_t len_salt, len_v;
-			salt = NULL;
-			getSRPVerifier(getPlayerName(), m_password,
-				&salt, &len_salt, &bytes_v, &len_v);
-			resp_pkt
-				<< std::string((char*)salt, len_salt)
-				<< std::string((char*)bytes_v, len_v)
-				<< (u8)((m_password == "") ? 1 : 0);
-			free(salt);
-			free(bytes_v);
+			resp_pkt << salt << verifier << (u8)((m_password == "") ? 1 : 0);
+
 			Send(&resp_pkt);
 			break;
 		}
@@ -1051,7 +1047,7 @@ void Client::startAuth(AuthMechanism chosen_auth_mechanism)
 			u8 based_on = 1;
 
 			if (chosen_auth_mechanism == AUTH_MECHANISM_LEGACY_PASSWORD) {
-				m_password = translatePassword(getPlayerName(), m_password);
+				m_password = translate_password(getPlayerName(), m_password);
 				based_on = 0;
 			}
 
@@ -1197,8 +1193,8 @@ void Client::sendChangePassword(const std::string &oldpassword,
 		m_new_password = newpassword;
 		startAuth(choseAuthMech(m_sudo_auth_methods));
 	} else {
-		std::string oldpwd = translatePassword(playername, oldpassword);
-		std::string newpwd = translatePassword(playername, newpassword);
+		std::string oldpwd = translate_password(playername, oldpassword);
+		std::string newpwd = translate_password(playername, newpassword);
 
 		NetworkPacket pkt(TOSERVER_PASSWORD_LEGACY, 2 * PASSWORD_SIZE);
 

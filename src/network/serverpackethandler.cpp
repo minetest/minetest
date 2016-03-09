@@ -261,9 +261,9 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 			auth_mechs |= AUTH_MECHANISM_FIRST_SRP;
 		} else {
 			// Take care of default passwords.
-			client->enc_pwd = getSRPVerifier(playerName, default_password);
+			client->enc_pwd = get_encoded_srp_verifier(playerName, default_password);
 			auth_mechs |= AUTH_MECHANISM_SRP;
-			// Create auth, but only on successful login
+			// Allocate player in db, but only on successful login.
 			client->create_player_on_auth_success = true;
 		}
 	}
@@ -549,7 +549,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 		std::string raw_default_password =
 			g_settings->get("default_password");
 		std::string initial_password =
-			translatePassword(playername, raw_default_password);
+			translate_password(playername, raw_default_password);
 
 		// If default_password is empty, allow any initial password
 		if (raw_default_password.length() == 0)
@@ -1831,7 +1831,7 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 
 		std::string initial_ver_key;
 
-		initial_ver_key = encodeSRPVerifier(verification_key, salt);
+		initial_ver_key = encode_srp_verifier(verification_key, salt);
 		m_script->createAuth(playername, initial_ver_key);
 
 		acceptAuth(pkt->getPeerId(), false);
@@ -1843,7 +1843,7 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 			return;
 		}
 		m_clients.event(pkt->getPeerId(), CSE_SudoLeave);
-		std::string pw_db_field = encodeSRPVerifier(verification_key, salt);
+		std::string pw_db_field = encode_srp_verifier(verification_key, salt);
 		bool success = m_script->setPassword(playername, pw_db_field);
 		if (success) {
 			actionstream << playername << " changes password" << std::endl;
@@ -1917,22 +1917,14 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 
 	client->chosen_mech = chosen;
 
-	std::string bytes_s;
-	std::string bytes_v;
+	std::string salt;
+	std::string verifier;
 
 	if (based_on == 0) {
-		char *p_bytes_s = 0;
-		size_t len_s = 0;
-		char *p_bytes_v = 0;
-		size_t len_v = 0;
-		getSRPVerifier(client->getName(), client->enc_pwd,
-			&p_bytes_s, &len_s,
-			&p_bytes_v, &len_v);
-		bytes_s = std::string(p_bytes_s, len_s);
-		bytes_v = std::string(p_bytes_v, len_v);
-		free(p_bytes_s);
-		free(p_bytes_v);
-	} else if (!decodeSRPVerifier(client->enc_pwd, &bytes_s, &bytes_v)) {
+
+		generate_srp_verifier_and_salt(client->getName(), client->enc_pwd,
+			&verifier, &salt);
+	} else if (!decode_srp_verifier_and_salt(client->enc_pwd, &verifier, &salt)) {
 		// Non-base64 errors should have been catched in the init handler
 		actionstream << "Server: User " << client->getName()
 			<< " tried to log in, but srp verifier field"
@@ -1946,8 +1938,8 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 
 	client->auth_data = srp_verifier_new(SRP_SHA256, SRP_NG_2048,
 		client->getName().c_str(),
-		(const unsigned char *) bytes_s.c_str(), bytes_s.size(),
-		(const unsigned char *) bytes_v.c_str(), bytes_v.size(),
+		(const unsigned char *) salt.c_str(), salt.size(),
+		(const unsigned char *) verifier.c_str(), verifier.size(),
 		(const unsigned char *) bytes_A.c_str(), bytes_A.size(),
 		NULL, 0,
 		(unsigned char **) &bytes_B, &len_B, NULL, NULL);
@@ -1966,7 +1958,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 	}
 
 	NetworkPacket resp_pkt(TOCLIENT_SRP_BYTES_S_B, 0, pkt->getPeerId());
-	resp_pkt << bytes_s << std::string(bytes_B, len_B);
+	resp_pkt << salt << std::string(bytes_B, len_B);
 	Send(&resp_pkt);
 }
 

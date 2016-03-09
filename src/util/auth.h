@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2015 est31 <MTest31@outlook.com>
+Copyright (C) 2015, 2016 est31 <MTest31@outlook.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -20,18 +20,31 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef AUTH_H
 #define AUTH_H
 
-std::string translatePassword(const std::string &name,
+/// Gets the base64 encoded legacy password db entry.
+std::string translate_password(const std::string &name,
 	const std::string &password);
-void getSRPVerifier(const std::string &name,
-	const std::string &password, char **salt, size_t *salt_len,
-	char **bytes_v, size_t *len_v);
-std::string getSRPVerifier(const std::string &name,
-	const std::string &password);
-std::string getSRPVerifier(const std::string &name,
+
+/// Creates a verification key with given salt and password.
+std::string generate_srp_verifier(const std::string &name,
 	const std::string &password, const std::string &salt);
-std::string encodeSRPVerifier(const std::string &verifier,
+
+/// Creates a verification key and salt with given password.
+void generate_srp_verifier_and_salt(const std::string &name,
+	const std::string &password, std::string *verifier,
+	std::string *salt);
+
+/// Gets an SRP verifier, generating a salt,
+/// and encodes it as DB-ready string.
+std::string get_encoded_srp_verifier(const std::string &name,
+	const std::string &password);
+
+/// Converts the passed SRP verifier into a DB-ready format.
+std::string encode_srp_verifier(const std::string &verifier,
 	const std::string &salt);
-bool decodeSRPVerifier(const std::string &enc_pwd,
+
+/// Reads the DB-formatted SRP verifier and gets the verifier
+/// and salt components.
+bool decode_srp_verifier_and_salt(const std::string &encoded,
 	std::string *salt, std::string *bytes_v);
 
 #endif
