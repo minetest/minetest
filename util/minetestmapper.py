@@ -1,5 +1,4 @@
 #!/usr/bin/env python2
-# expertmm fork from 2016-02-01 git version
 # -*- coding: utf-8 -*-
 
 # This program is free software. It comes without any warranty, to
@@ -230,11 +229,11 @@ if geometry_string is not None:
         else:
             print("ERROR: (Missing coordinates in '"+geometry_string+"' for geometry) Geometry should be in the form: x:z+width+height")
             usage()
-            sys.exit()
+            sys.exit(2)
     else:
         print("ERROR: (Incorrect value '"+geometry_string+"' for geometry) Geometry should be in the form: x:z+width+height")
         usage()
-        sys.exit()
+        sys.exit(2)
 elif region_string is not None:
     #parts = region_string.split(" ")
     axis_info = region_string.split(",")
@@ -255,7 +254,7 @@ elif region_string is not None:
     else:
         print("ERROR: (Incorrect value '"+region_string+"' for region) Region should be in the form: xmin:xmax,zmin:zmax")
         usage()
-        sys.exit()
+        sys.exit(2)
 #answer=raw_input("press enter to continue")
 sector_xmin = nonchunky_xmin / 16
 sector_xmax = nonchunky_xmax / 16
@@ -841,4 +840,3 @@ if unknown_node_ids:
     for node_id in unknown_node_ids:
         sys.stdout.write(" "+str(hex(node_id)))
     sys.stdout.write(os.linesep)
-
