@@ -154,8 +154,8 @@ except getopt.GetoptError as err:
 path = None
 output = "map.png"
 border = 0
-scalecolor = "white"
-bgcolor = "black"
+scalecolor = "black"
+bgcolor = "white"
 origincolor = "red"
 playercolor = "red"
 drawscale = False
@@ -840,3 +840,4 @@ if unknown_node_ids:
     for node_id in unknown_node_ids:
         sys.stdout.write(" "+str(hex(node_id)))
     sys.stdout.write(os.linesep)
+
