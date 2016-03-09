@@ -375,7 +375,7 @@ if os.path.exists(path + "sectors"):
         zlist.append(z)
 
 if len(xlist) == 0 or len(zlist) == 0:
-    print("At this chunk, data does not exist.")
+    print("At this location, data does not exist.")
     sys.exit(1)
 
 # Get rid of doubles
