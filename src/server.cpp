@@ -486,7 +486,7 @@ void Server::step(float dtime)
 		if (!m_simple_singleplayer_mode) {
 			m_env->kickAllPlayers(SERVER_ACCESSDENIED_CRASH,
 				g_settings->get("kick_msg_crash"),
-				g_settings->getBool("ask_reconnect_on_crash"));
+				true);//g_settings->getBool("ask_reconnect_on_crash"));
 		}
 		throw ServerError(async_err);
 	}
@@ -2565,7 +2565,7 @@ void Server::DenyAccessVerCompliant(u16 peer_id, u16 proto_ver, AccessDeniedCode
 		const std::string &str_reason, bool reconnect)
 {
 	if (proto_ver >= 25) {
-		SendAccessDenied(peer_id, reason, str_reason);
+		SendAccessDenied(peer_id, reason, str_reason, reconnect);
 	} else {
 		std::wstring wreason = utf8_to_wide(
 			reason == SERVER_ACCESSDENIED_CUSTOM_STRING ? str_reason :
