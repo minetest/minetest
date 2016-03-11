@@ -421,7 +421,7 @@ fake_function() {
 	gettext("Map generation limit");
 	gettext("Where the map generator stops.\nPlease note:\n-    Limited to 31000 (setting above has no effect)\n-    The map generator works in groups of 80x80x80 nodes (5x5x5 MapBlocks).\n-    Those groups have an offset of -32, -32 nodes from the origin.\n-    Only groups which are within the map_generation_limit are generated");
 	gettext("Mapgen flags");
-	gettext("Global map generation attributes.\nIn Mapgen v6 the 'decorations' flag controls all decorations except trees\nand junglegrass, in all other mapgens this flag controls all decorations.\nFlags that are not specified in the flag string are not modified from the default.\nFlags starting with \"no\" are used to explicitly disable them.");
+	gettext("Global map generation attributes.\nIn Mapgen v6 the 'decorations' flag controls all decorations except trees\nand junglegrass, in all other mapgens this flag controls all decorations.\nThe default flags set in the engine are: caves, light, decorations\nThe flags string modifies the engine defaults.\nFlags that are not specified in the flag string are not modified from the default.\nFlags starting with 'no' are used to explicitly disable them.");
 	gettext("Advanced");
 	gettext("Chunk size");
 	gettext("Size of chunks to be generated at once by mapgen, stated in mapblocks (16 nodes).");
@@ -448,7 +448,7 @@ fake_function() {
 	gettext("Mapgen v5 cave2 noise parameters");
 	gettext("Mapgen v6");
 	gettext("Mapgen v6 flags");
-	gettext("Map generation attributes specific to Mapgen v6.\nWhen snowbiomes are enabled jungles are enabled and the jungles flag is ignored.\nFlags that are not specified in the flag string are not modified from the default.\nFlags starting with \"no\" are used to explicitly disable them.");
+	gettext("Map generation attributes specific to Mapgen v6.\nWhen snowbiomes are enabled jungles are automatically enabled, the 'jungles' flag is ignored.\nThe default flags set in the engine are: biomeblend, mudflow\nThe flags string modifies the engine defaults.\nFlags that are not specified in the flag string are not modified from the default.\nFlags starting with 'no' are used to explicitly disable them.");
 	gettext("Mapgen v6 desert frequency");
 	gettext("Controls size of deserts and beaches in Mapgen v6.\nWhen snowbiomes are enabled 'mgv6_freq_desert' is ignored.");
 	gettext("Mapgen v6 beach frequency");
@@ -465,7 +465,7 @@ fake_function() {
 	gettext("Mapgen v6 apple trees noise parameters");
 	gettext("Mapgen v7");
 	gettext("Mapgen v7 flags");
-	gettext("Map generation attributes specific to Mapgen v7.\n'ridges' are the rivers.\nFlags that are not specified in the flag string are not modified from the default.\nFlags starting with \"no\" are used to explicitly disable them.");
+	gettext("Map generation attributes specific to Mapgen v7.\nThe 'ridges' flag controls the rivers.\nThe default flags set in the engine are: mountains, ridges\nThe flags string modifies the engine defaults.\nFlags that are not specified in the flag string are not modified from the default.\nFlags starting with 'no' are used to explicitly disable them.");
 	gettext("Mapgen v7 terrain base noise parameters");
 	gettext("Mapgen v7 terrain altitude noise parameters");
 	gettext("Mapgen v7 terrain persistation noise parameters");
@@ -479,7 +479,7 @@ fake_function() {
 	gettext("Mapgen v7 cave2 noise parameters");
 	gettext("Mapgen flat");
 	gettext("Mapgen flat flags");
-	gettext("Map generation attributes specific to Mapgen flat.\nOccasional lakes and hills added to the flat world.\nFlags that are not specified in the flag string are not modified from the default.\nFlags starting with \"no\" are used to explicitly disable them.");
+	gettext("Map generation attributes specific to Mapgen flat.\nOccasional lakes and hills can be added to the flat world.\nThe default flags set in the engine are: none\nThe flags string modifies the engine defaults.\nFlags that are not specified in the flag string are not modified from the default.\nFlags starting with 'no' are used to explicitly disable them.");
 	gettext("Mapgen flat ground level");
 	gettext("Y of flat ground.");
 	gettext("Mapgen flat large cave depth");
@@ -523,7 +523,7 @@ fake_function() {
 	gettext("Mapgen Valleys");
 	gettext("General");
 	gettext("Valleys C Flags");
-	gettext("Map generation attributes specific to Mapgen Valleys.\nFlags that are not specified in the flag string are not modified from the default.\nFlags starting with \"no\" are used to explicitly disable them.\n\"altitude_chill\" makes higher elevations colder, which may cause biome issues.\n\"humid_rivers\" modifies the humidity around rivers and in areas where water would tend to pool. It may interfere with delicately adjusted biomes.");
+	gettext("Map generation attributes specific to Mapgen Valleys.\n'altitude_chill' makes higher elevations colder, which may cause biome issues.\n'humid_rivers' modifies the humidity around rivers and in areas where water would tend to pool,\nit may interfere with delicately adjusted biomes.\nThe default flags set in the engine are: altitude_chill, humid_rivers\nThe flags string modifies the engine defaults.\nFlags that are not specified in the flag string are not modified from the default.\nFlags starting with 'no' are used to explicitly disable them.");
 	gettext("Altitude Chill");
 	gettext("The altitude at which temperature drops by 20C");
 	gettext("Large cave depth");
