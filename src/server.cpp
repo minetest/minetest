@@ -486,7 +486,7 @@ void Server::step(float dtime)
 		if (!m_simple_singleplayer_mode) {
 			m_env->kickAllPlayers(SERVER_ACCESSDENIED_CRASH,
 				g_settings->get("kick_msg_crash"),
-				true);//g_settings->getBool("ask_reconnect_on_crash"));
+				g_settings->getBool("ask_reconnect_on_crash"));
 		}
 		throw ServerError(async_err);
 	}
