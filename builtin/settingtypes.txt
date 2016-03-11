@@ -819,8 +819,10 @@ map_generation_limit (Map generation limit) int 31000 0 31000
 #    Global map generation attributes.
 #    In Mapgen v6 the 'decorations' flag controls all decorations except trees
 #    and junglegrass, in all other mapgens this flag controls all decorations.
+#    The default flags set in the engine are: caves, light, decorations
+#    The flags string modifies the engine defaults.
 #    Flags that are not specified in the flag string are not modified from the default.
-#    Flags starting with "no" are used to explicitly disable them.
+#    Flags starting with 'no' are used to explicitly disable them.
 mg_flags (Mapgen flags) flags caves,dungeons,light,decorations caves,dungeons,light,decorations,nocaves,nodungeons,nolight,nodecorations
 
 [**Advanced]
@@ -875,9 +877,11 @@ mgv5_np_cave2 (Mapgen v5 cave2 noise parameters) noise_params 0, 12, (50, 50, 50
 [***Mapgen v6]
 
 #    Map generation attributes specific to Mapgen v6.
-#    When snowbiomes are enabled jungles are enabled and the jungles flag is ignored.
+#    When snowbiomes are enabled jungles are automatically enabled, the 'jungles' flag is ignored.
+#    The default flags set in the engine are: biomeblend, mudflow
+#    The flags string modifies the engine defaults.
 #    Flags that are not specified in the flag string are not modified from the default.
-#    Flags starting with "no" are used to explicitly disable them.
+#    Flags starting with 'no' are used to explicitly disable them.
 mgv6_spflags (Mapgen v6 flags) flags jungles,biomeblend,mudflow,snowbiomes,trees jungles,biomeblend,mudflow,snowbiomes,flat,trees,nojungles,nobiomeblend,nomudflow,nosnowbiomes,noflat,notrees
 
 #    Controls size of deserts and beaches in Mapgen v6.
@@ -900,9 +904,11 @@ mgv6_np_apple_trees (Mapgen v6 apple trees noise parameters) noise_params 0, 1, 
 [***Mapgen v7]
 
 #    Map generation attributes specific to Mapgen v7.
-#    'ridges' are the rivers.
+#    The 'ridges' flag controls the rivers.
+#    The default flags set in the engine are: mountains, ridges
+#    The flags string modifies the engine defaults.
 #    Flags that are not specified in the flag string are not modified from the default.
-#    Flags starting with "no" are used to explicitly disable them.
+#    Flags starting with 'no' are used to explicitly disable them.
 mgv7_spflags (Mapgen v7 flags) flags mountains,ridges mountains,ridges,nomountains,noridges
 
 mgv7_np_terrain_base (Mapgen v7 terrain base noise parameters) noise_params 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0
@@ -920,9 +926,11 @@ mgv7_np_cave2 (Mapgen v7 cave2 noise parameters) noise_params 0, 12, (100, 100, 
 [***Mapgen flat]
 
 #    Map generation attributes specific to Mapgen flat.
-#    Occasional lakes and hills added to the flat world.
+#    Occasional lakes and hills can be added to the flat world.
+#    The default flags set in the engine are: none
+#    The flags string modifies the engine defaults.
 #    Flags that are not specified in the flag string are not modified from the default.
-#    Flags starting with "no" are used to explicitly disable them.
+#    Flags starting with 'no' are used to explicitly disable them.
 mgflat_spflags (Mapgen flat flags) flags  lakes,hills,,nolakes,nohills
 
 #    Y of flat ground.
@@ -1027,10 +1035,13 @@ mgfractal_np_cave2 (Mapgen fractal cave2 noise parameters) noise_params 0, 12, (
 [****General]
 
 #    Map generation attributes specific to Mapgen Valleys.
+#    'altitude_chill' makes higher elevations colder, which may cause biome issues.
+#    'humid_rivers' modifies the humidity around rivers and in areas where water would tend to pool,
+#    it may interfere with delicately adjusted biomes.
+#    The default flags set in the engine are: altitude_chill, humid_rivers
+#    The flags string modifies the engine defaults.
 #    Flags that are not specified in the flag string are not modified from the default.
-#    Flags starting with "no" are used to explicitly disable them.
-#    "altitude_chill" makes higher elevations colder, which may cause biome issues.
-#    "humid_rivers" modifies the humidity around rivers and in areas where water would tend to pool. It may interfere with delicately adjusted biomes.
+#    Flags starting with 'no' are used to explicitly disable them.
 mg_valleys_spflags (Valleys C Flags) flags altitude_chill,humid_rivers altitude_chill,noaltitude_chill,humid_rivers,nohumid_rivers
 
 # The altitude at which temperature drops by 20C
