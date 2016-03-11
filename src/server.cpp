@@ -2568,7 +2568,7 @@ void Server::DenyAccessVerCompliant(u16 peer_id, u16 proto_ver, AccessDeniedCode
 		const std::string &str_reason, bool reconnect)
 {
 	if (proto_ver >= 25) {
-		SendAccessDenied(peer_id, reason, str_reason);
+		SendAccessDenied(peer_id, reason, str_reason, reconnect);
 	} else {
 		std::wstring wreason = utf8_to_wide(
 			reason == SERVER_ACCESSDENIED_CUSTOM_STRING ? str_reason :
