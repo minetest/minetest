@@ -937,7 +937,7 @@ void Server::AsyncRunStep(bool initial_step)
 						MOD_REASON_REPORT_META_CHANGE);
 				} else {
 					errorstream << "Can't raise metadata modification for "
-						<< " block at position " << event->p << ": the block "
+						<< " block at blockpos " << PP(event->p) << ": the block "
 						<< " is not inside the loaded Map." << std::endl;
 				}
 				break;
