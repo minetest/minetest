@@ -925,16 +925,20 @@ void Server::AsyncRunStep(bool initial_step)
 						&far_players, disable_single_change_sending ? 5 : 30);
 				break;
 			case MEET_BLOCK_NODE_METADATA_CHANGED: {
-				infostream << "Server: MEET_BLOCK_NODE_METADATA_CHANGED" << std::endl;
+				verbosestream << "Server: MEET_BLOCK_NODE_METADATA_CHANGED" << std::endl;
 				prof.add("MEET_BLOCK_NODE_METADATA_CHANGED", 1);
 				// Don't send the change yet. Collect them to eliminate dupes.
 				node_meta_updates.remove(event->p);
 				node_meta_updates.push_back(event->p);
-				MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(
-					getNodeBlockPos(event->p));
-				if (block) {
+
+				if (MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(
+						getNodeBlockPos(event->p))) {
 					block->raiseModified(MOD_STATE_WRITE_NEEDED,
 						MOD_REASON_REPORT_META_CHANGE);
+				} else {
+					errorstream << "Can't raise metadata modification for "
+						<< " block at position " << event->p << ": the block "
+						<< " is not inside the loaded Map." << std::endl;
 				}
 				break;
 			}
