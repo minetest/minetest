@@ -935,10 +935,6 @@ void Server::AsyncRunStep(bool initial_step)
 						getNodeBlockPos(event->p))) {
 					block->raiseModified(MOD_STATE_WRITE_NEEDED,
 						MOD_REASON_REPORT_META_CHANGE);
-				} else {
-					errorstream << "Can't raise metadata modification for "
-						<< " block at blockpos " << PP(event->p) << ": the block "
-						<< " is not inside the loaded Map." << std::endl;
 				}
 				break;
 			}
