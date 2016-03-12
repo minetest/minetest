@@ -297,8 +297,7 @@ void Client::handleCommand_NodemetaChanged(NetworkPacket *pkt)
 		NodeMetadata *meta = meta_updates_list->get(pos);
 		try {
 			m_env.getMap().setNodeMetadata(pos, meta);
-		}
-		catch(InvalidPositionException &e) {
+		} catch (InvalidPositionException &e) {
 			delete meta;
 		}
 	}
