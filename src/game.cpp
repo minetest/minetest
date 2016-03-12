@@ -358,7 +358,9 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 				if (!isPointableNode(n, client, liquids_pointable)) {
 					continue;
 				}
-				std::vector<aabb3f> boxes = n.getSelectionBoxes(nodedef);
+
+				std::vector<aabb3f> boxes;
+				n.getSelectionBoxes(nodedef, &boxes);
 
 				v3s16 np(x, y, z);
 				v3f npf = intToFloat(np, BS);
@@ -389,7 +391,8 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 		f32 d = 0.001 * BS;
 		MapNode n = map.getNodeNoEx(pointed_pos);
 		v3f npf = intToFloat(pointed_pos, BS);
-		std::vector<aabb3f> boxes = n.getSelectionBoxes(nodedef);
+		std::vector<aabb3f> boxes;
+		n.getSelectionBoxes(nodedef, &boxes);
 		f32 face_min_distance = 1000 * BS;
 		for (std::vector<aabb3f>::const_iterator
 				i = boxes.begin();
