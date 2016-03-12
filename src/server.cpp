@@ -924,21 +924,20 @@ void Server::AsyncRunStep(bool initial_step)
 				sendRemoveNode(event->p, event->already_known_by_peer,
 						&far_players, disable_single_change_sending ? 5 : 30);
 				break;
-			case MEET_BLOCK_NODE_METADATA_CHANGED:
-				{
-					infostream << "Server: MEET_BLOCK_NODE_METADATA_CHANGED" << std::endl;
-						prof.add("MEET_BLOCK_NODE_METADATA_CHANGED", 1);
-					//Dont send the change yet. Collect them to eliminate dupes.
-					node_meta_updates.remove(event->p);
-					node_meta_updates.push_back(event->p);
-					MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(
-						getNodeBlockPos(event->p));
-					if (block) {
-						block->raiseModified(MOD_STATE_WRITE_NEEDED,
-							MOD_REASON_REPORT_META_CHANGE);
-					}
+			case MEET_BLOCK_NODE_METADATA_CHANGED: {
+				infostream << "Server: MEET_BLOCK_NODE_METADATA_CHANGED" << std::endl;
+				prof.add("MEET_BLOCK_NODE_METADATA_CHANGED", 1);
+				// Don't send the change yet. Collect them to eliminate dupes.
+				node_meta_updates.remove(event->p);
+				node_meta_updates.push_back(event->p);
+				MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(
+					getNodeBlockPos(event->p));
+				if (block) {
+					block->raiseModified(MOD_STATE_WRITE_NEEDED,
+						MOD_REASON_REPORT_META_CHANGE);
 				}
 				break;
+			}
 			case MEET_OTHER:
 				infostream << "Server: MEET_OTHER" << std::endl;
 				prof.add("MEET_OTHER", 1);
