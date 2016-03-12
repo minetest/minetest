@@ -2078,10 +2078,10 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 		i != clients.end(); ++i) {
 		if (far_players) {
 			// Get player
-			if(Player *player = m_env->getPlayer(*i)) {
+			if (Player *player = m_env->getPlayer(*i)) {
 				// If player is far away, only set modified blocks not sent
 				v3f player_pos = player->getPosition();
-				if(player_pos.getDistanceFrom(p_f) > maxd) {
+				if (player_pos.getDistanceFrom(p_f) > maxd) {
 					far_players->push_back(*i);
 					continue;
 				}
