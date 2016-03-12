@@ -223,14 +223,14 @@ void Logger::setLevelSilenced(LogLevel lev, bool silenced)
 
 void Logger::registerThread(const std::string &name)
 {
-	threadid_t id = thr_get_current_thread_id();
+	thread_id_t id = Thread::getCurrentThreadId();
 	MutexAutoLock lock(m_mutex);
 	m_thread_names[id] = name;
 }
 
 void Logger::deregisterThread()
 {
-	threadid_t id = thr_get_current_thread_id();
+	thread_id_t id = Thread::getCurrentThreadId();
 	MutexAutoLock lock(m_mutex);
 	m_thread_names.erase(id);
 }
@@ -253,9 +253,9 @@ const std::string Logger::getLevelLabel(LogLevel lev)
 
 const std::string Logger::getThreadName()
 {
-	std::map<threadid_t, std::string>::const_iterator it;
+	std::map<thread_id_t, std::string>::const_iterator it;
 
-	threadid_t id = thr_get_current_thread_id();
+	thread_id_t id = Thread::getCurrentThreadId();
 	it = m_thread_names.find(id);
 	if (it != m_thread_names.end())
 		return it->second;

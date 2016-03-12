@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 #include <ITexture.h>
 #include <IrrlichtDevice.h>
-#include "threads.h"
 #include <string>
 #include <vector>
 #include "util/numeric.h"
