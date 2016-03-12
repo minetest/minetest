@@ -122,6 +122,8 @@ void GUIChatConsole::openConsole(f32 height)
 	m_desired_height_fraction = height;
 	m_desired_height = height * m_screensize.Y;
 	reformatConsole();
+	m_animate_time_old = getTimeMs();
+	IGUIElement::setVisible(true);
 	Environment->setFocus(this);
 	m_menumgr->createdMenu(this);
 }
@@ -243,6 +245,11 @@ void GUIChatConsole::animate(u32 msec)
 {
 	// animate the console height
 	s32 goal = m_open ? m_desired_height : 0;
+
+	// Set invisible if close animation finished (reset by openConsole)
+	if (!m_open && m_height == 0)
+		IGUIElement::setVisible(false);
+
 	if (m_height != goal)
 	{
 		s32 max_change = msec * m_screensize.Y * (m_height_speed / 1000.0);
@@ -626,5 +633,15 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 	}
 
 	return Parent ? Parent->OnEvent(event) : false;
+}
+
+void GUIChatConsole::setVisible(bool visible)
+{
+	m_open = visible;
+	IGUIElement::setVisible(visible);
+	if (!visible) {
+		m_height = 0;
+		recalculateConsolePosition();
+	}
 }
 
