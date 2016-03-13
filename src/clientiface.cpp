@@ -17,8 +17,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include <sstream>
+// These two lines should surely get us INT32_MAX
+#define __STDC_LIMIT_MACROS
 #include <stdint.h>
+
+#include <sstream>
 
 #include "clientiface.h"
 #include "util/numeric.h"
