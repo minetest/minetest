@@ -110,7 +110,7 @@ MapgenDesc g_reg_mapgens[] = {
 	{"flat",       new MapgenFactoryFlat,       true},
 	{"fractal",    new MapgenFactoryFractal,    true},
 	{"valleys",    new MapgenFactoryValleys,    true},
-	{"singlenode", new MapgenFactorySinglenode, false},
+	{"singlenode", new MapgenFactorySinglenode, true},
 };
 
 ////
