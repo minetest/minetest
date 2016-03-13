@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <sstream>
+#include <stdint.h>
 
 #include "clientiface.h"
 #include "util/numeric.h"
