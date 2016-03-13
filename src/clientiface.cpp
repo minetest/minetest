@@ -884,17 +884,46 @@ WMSSuggestion AutosendAlgorithm::getNextBlock(
 	return m_cycle->getNextBlock(emerge, far_map);
 }
 
-void AutosendAlgorithm::resetMapblockSearchRadius()
+void AutosendAlgorithm::resetMapblockSearchRadius(const v3s16 &mb_p)
 {
-	m_cycle->mapblock.nearest_unsent_d = 0;
+	s16 reset_to_d = 0; // Radius value in MapBlocks to reset the search to
+
+	// Get distance to player and use it as the reset value in order to not scan
+	// unnecessarily close
+	Player *player = m_client->m_env->getPlayer(m_client->peer_id);
+	if (player) {
+		v3f camera_pf_nodes = player->getEyePosition() / BS;
+		v3s16 mb_nodes = mb_p * MAP_BLOCKSIZE;
+		v3f mb_pf_nodes(mb_nodes.X, mb_nodes.Y, mb_nodes.Z);
+		float distance_nodes = (mb_pf_nodes - camera_pf_nodes).getLength();
+		reset_to_d = distance_nodes / MAP_BLOCKSIZE;
+	}
+
+	/*dstream<<"AutosendAlgorithm::resetMapblockSearchRadius(): reset_to_d="
+			<<reset_to_d<<std::endl;*/
+
+	// Reset the index for looping through blocks at the given radius
 	m_cycle->mapblock.i = 0;
+
+	// Reset this, which maybe should already do the job
+	if (m_cycle->mapblock.nearest_unsent_d < reset_to_d){
+		m_cycle->mapblock.nearest_unsent_d = reset_to_d;
+	}
+
 	// Apparently all of these have to be reset in order to have the search
-	// start at 0 because of what finish() does.
-	m_cycle->mapblock.nearest_emergequeued_d = 0;
-	m_cycle->mapblock.nearest_emergefull_d = 0;
-	m_cycle->mapblock.nearest_sendqueued_d = 0;
-	// Immediately start searching for MapBlocks to be sent
-	m_cycle->mapblock.nothing_to_send_pause_timer = 0.0f;
+	// start at 0 because of what finish() does (it's maybe a bug, but as long
+	// as this works, we really don't need to care)
+	if (m_cycle->mapblock.nearest_emergequeued_d > reset_to_d)
+		m_cycle->mapblock.nearest_emergequeued_d = reset_to_d;
+	if (m_cycle->mapblock.nearest_emergefull_d > reset_to_d)
+		m_cycle->mapblock.nearest_emergefull_d = reset_to_d;
+	if (m_cycle->mapblock.nearest_sendqueued_d > reset_to_d)
+		m_cycle->mapblock.nearest_sendqueued_d = reset_to_d;
+
+	// Start searching for MapBlocks to be sent soon enough (don't set this to
+	// zero because it would cause unnecessary CPU usage)
+	if (m_cycle->mapblock.nothing_to_send_pause_timer > 0.1f)
+		m_cycle->mapblock.nothing_to_send_pause_timer = 0.1f;
 }
 
 std::string AutosendAlgorithm::describeStatus()
@@ -1130,9 +1159,9 @@ void RemoteClient::SetBlockUpdated(const WantedMapSend &wms)
 {
 	//dstream<<"SetBlockUpdated: "<<wms.describe()<<std::endl;
 
-	// Reset autosend's search radius but only if it's a MapBlock
+	// Reset autosend's search radius if it's a MapBlock
 	if (wms.type == WMST_MAPBLOCK) {
-		m_autosend.resetMapblockSearchRadius();
+		m_autosend.resetMapblockSearchRadius(wms.p);
 	}
 
 	m_blocks_updated_since_last_send.insert(wms);

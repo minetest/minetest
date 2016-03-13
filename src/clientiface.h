@@ -251,7 +251,7 @@ public:
 	// If something is modified near a player, this should probably be called so
 	// that it gets sent as quickly as possible while being prioritized
 	// correctly
-	void resetMapblockSearchRadius();
+	void resetMapblockSearchRadius(const v3s16 &mb_p);
 
 	std::string describeStatus();
 
