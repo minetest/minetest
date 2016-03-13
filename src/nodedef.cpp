@@ -479,6 +479,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	collision_box.deSerialize(is);
 	floodable = readU8(is);
 	u16 connects_to_size = readU16(is);
+	connects_to_ids.clear();
 	for (u16 i = 0; i < connects_to_size; i++)
 		connects_to_ids.insert(readU16(is));
 	connect_sides = readU8(is);
@@ -1546,7 +1547,7 @@ bool CNodeDefManager::nodeboxConnects(MapNode from, MapNode to, u8 connect_face)
 
 	const ContentFeatures &f2 = get(to);
 
-	if ((f2.drawtype == NDT_NODEBOX) && (f1.node_box.type == NODEBOX_CONNECTED))
+	if ((f2.drawtype == NDT_NODEBOX) && (f2.node_box.type == NODEBOX_CONNECTED))
 		// ignores actually looking if back connection exists
 		return (f2.connects_to_ids.find(from.param0) != f2.connects_to_ids.end());
 
