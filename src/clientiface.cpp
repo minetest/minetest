@@ -887,6 +887,13 @@ void AutosendAlgorithm::resetMapblockSearchRadius()
 {
 	m_cycle->mapblock.nearest_unsent_d = 0;
 	m_cycle->mapblock.i = 0;
+	// Apparently all of these have to be reset in order to have the search
+	// start at 0 because of what finish() does.
+	m_cycle->mapblock.nearest_emergequeued_d = 0;
+	m_cycle->mapblock.nearest_emergefull_d = 0;
+	m_cycle->mapblock.nearest_sendqueued_d = 0;
+	// Immediately start searching for MapBlocks to be sent
+	m_cycle->mapblock.nothing_to_send_pause_timer = 0.0f;
 }
 
 std::string AutosendAlgorithm::describeStatus()
@@ -1102,8 +1109,7 @@ void RemoteClient::GotBlock(const WantedMapSend &wms)
 		m_blocks_sent[wms] = m_blocks_sending[wms];
 		m_blocks_sending.erase(wms);
 	} else {
-			m_excess_gotblocks++;
-
+		m_excess_gotblocks++;
 	}
 }
 
