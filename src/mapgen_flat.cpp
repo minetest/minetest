@@ -573,6 +573,12 @@ void MapgenFlat::generateCaves(s16 max_stone_y)
 
 		for (s16 y = node_max.Y + 1; y >= node_min.Y - 1;
 				y--, index3d -= ystride, vm->m_area.add_y(em, vi, -1)) {
+			// Don't excavate the overgenerated stone at node_max.Y + 1,
+			// this creates a 'roof' over the tunnel, preventing light in
+			// tunnels at mapchunk borders when generating mapchunks upwards.
+			if (y > node_max.Y)
+				continue;
+
 			content_t c = vm->m_data[vi].getContent();
 			if (c == CONTENT_AIR || c == biome->c_water_top ||
 					c == biome->c_water) {

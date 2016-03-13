@@ -931,6 +931,12 @@ void MapgenValleys::generateCaves(s16 max_stone_y)
 		for (s16 y = node_max.Y + 1;
 				y >= node_min.Y - 1;
 				y--, index_3d -= ystride, vm->m_area.add_y(em, index_data, -1)) {
+			// Don't excavate the overgenerated stone at node_max.Y + 1,
+			// this creates a 'roof' over the tunnel, preventing light in
+			// tunnels at mapchunk borders when generating mapchunks upwards.
+			if (y > node_max.Y)
+				continue;
+
 			float terrain = noise_terrain_height->result[index_2d];
 
 			// Saves some time.

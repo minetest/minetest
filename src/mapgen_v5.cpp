@@ -519,6 +519,12 @@ void MapgenV5::generateCaves(int max_stone_y)
 	for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
 		u32 vi = vm->m_area.index(node_min.X, y, z);
 		for (s16 x = node_min.X; x <= node_max.X; x++, vi++, index++) {
+			// Don't excavate the overgenerated stone at node_max.Y + 1,
+			// this creates a 'roof' over the tunnel, preventing light in
+			// tunnels at mapchunk borders when generating mapchunks upwards.
+			if (y > node_max.Y)
+				continue;
+
 			float d1 = contour(noise_cave1->result[index]);
 			float d2 = contour(noise_cave2->result[index]);
 			if (d1 * d2 > 0.125f) {
