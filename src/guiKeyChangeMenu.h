@@ -27,34 +27,10 @@
 #include "client.h"
 #include "gettext.h"
 #include "keycode.h"
+#include "keysettings.h"
 #include <string>
 #include <vector>
 #include <set>
-
-struct KeySetting {
-	int index;
-	int id;
-	const wchar_t *button_name;
-	KeyPress key;
-	std::string setting_name;
-};
-
-struct KeySettings {
-	std::vector<KeySetting> settings;
-	std::vector<KeyCommand> aliases;
-
-	KeySettings();
-	~KeySettings();
-
-	void addKey(int id, const wchar_t *button_name, const std::string &setting_name);
-	void addAlias(const KeyCommand &key);
-	void refreshKeys();
-	void refreshAliases();
-	std::wstring keyUsedBy(int id, const KeyPress &key, bool modifier_shift,
-			bool modifier_control, s32 current_command_id=-1);
-	void setKeySettings();
-	void setAliasSettings();
-};
 
 class GUIKeyChangeMenu: public GUIModalMenu
 {

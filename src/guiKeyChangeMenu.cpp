@@ -42,26 +42,10 @@ enum
 {
 	GUI_ID_BACK_BUTTON = 101, GUI_ID_ABORT_BUTTON, GUI_ID_SCROLL_BAR,
 	// buttons
-	GUI_ID_KEY_FORWARD_BUTTON,
-	GUI_ID_KEY_BACKWARD_BUTTON,
-	GUI_ID_KEY_LEFT_BUTTON,
-	GUI_ID_KEY_RIGHT_BUTTON,
-	GUI_ID_KEY_USE_BUTTON,
-	GUI_ID_KEY_FLY_BUTTON,
-	GUI_ID_KEY_FAST_BUTTON,
-	GUI_ID_KEY_JUMP_BUTTON,
-	GUI_ID_KEY_NOCLIP_BUTTON,
-	GUI_ID_KEY_CINEMATIC_BUTTON,
-	GUI_ID_KEY_CHAT_BUTTON,
-	GUI_ID_KEY_CMD_BUTTON,
-	GUI_ID_KEY_CONSOLE_BUTTON,
-	GUI_ID_KEY_SNEAK_BUTTON,
-	GUI_ID_KEY_DROP_BUTTON,
-	GUI_ID_KEY_INVENTORY_BUTTON,
-	GUI_ID_KEY_DUMP_BUTTON,
-	GUI_ID_KEY_RANGE_BUTTON,
+	GUI_ID_KEY_START = 200,
+	GUI_ID_KEY_END = 299,
 	// other
-	GUI_ID_CB_AUX1_DESCENDS,
+	GUI_ID_CB_AUX1_DESCENDS = 300,
 	GUI_ID_CB_DOUBLETAP_JUMP,
 	// key alias GUI
 	GUI_ID_KEY_ALIAS_BUTTON, // opens the GUI for commands
@@ -173,7 +157,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 				key_buttons.resize(i + 1);
 			else
 				key_buttons[i]->remove();
-			key_buttons[i] = Environment->addButton(rect, this, k->id, text);
+			key_buttons[i] = Environment->addButton(rect, this, GUI_ID_KEY_START + k->id, text);
 			delete[] text;
 		}
 		if(i + 1 == KMaxButtonPerColumns)
@@ -419,7 +403,7 @@ bool GUIKeyChangeMenu::resetMenu()
 			for (size_t i = 0; i < keys.settings.size(); i++)
 			{
 				KeySetting *k = &keys.settings.at(i);
-				if(k->id == activeKey)
+				if(GUI_ID_KEY_START + k->id == activeKey)
 				{
 					const wchar_t *text = wgettext(k->key.name());
 					key_buttons[i]->setText(text);
@@ -467,7 +451,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		}
 		// Display Key already in use message
 		std::wstring ku = keys.keyUsedBy(activeKey, kp, shift_down, control_down,
-				m_command_active_id);
+				activeKey == GUI_ID_KEY_ALIAS_BUTTON ? m_command_active_id : -1);
 		if (ku != L"")
 		{
 			core::rect < s32 > rect(0, 0, 600, 40);
@@ -484,7 +468,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 			KeySetting *k = NULL;
 			for(size_t i = 0; i < keys.settings.size(); i++)
 			{
-				if(keys.settings.at(i).id == activeKey)
+				if(GUI_ID_KEY_START + keys.settings.at(i).id == activeKey)
 				{
 					k = &keys.settings.at(i);
 					break;
@@ -639,7 +623,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 					KeySetting *k = NULL;
 					for(size_t i = 0; i < keys.settings.size(); i++)
 					{
-						if(keys.settings.at(i).id == event.GUIEvent.Caller->getID())
+						if(GUI_ID_KEY_START + keys.settings.at(i).id == event.GUIEvent.Caller->getID())
 						{
 							k = &keys.settings.at(i);
 							break;
@@ -687,98 +671,5 @@ void GUIKeyChangeMenu::commandComboChanged()
 		m_command_remove->setEnabled(false);
 	}
 	m_command_active_id = active_id;
-}
-
-KeySettings::KeySettings()
-{
-	refreshKeys();
-	refreshAliases();
-}
-
-KeySettings::~KeySettings()
-{
-	for (std::vector<KeySetting>::iterator iter = settings.begin();
-			iter != settings.end(); ++iter) {
-		delete[] iter->button_name;
-	}
-}
-
-void KeySettings::addKey(int id, const wchar_t *button_name, const std::string &setting_name)
-{
-	settings.push_back(KeySetting());
-	KeySetting *k = &settings[settings.size()-1];
-	k->index = settings.size()-1;
-	k->id = id;
-
-	k->button_name = button_name;
-	k->setting_name = setting_name;
-	k->key = getKeySetting(k->setting_name.c_str());
-}
-
-void KeySettings::addAlias(const KeyCommand &key)
-{
-	aliases.push_back(key);
-}
-
-void KeySettings::refreshKeys()
-{
-	for (std::vector<KeySetting>::iterator iter = settings.begin();
-			iter != settings.end(); ++iter) {
-		delete[] iter->button_name;
-	}
-
-	addKey(GUI_ID_KEY_FORWARD_BUTTON,   wgettext("Forward"),          "keymap_forward");
-	addKey(GUI_ID_KEY_BACKWARD_BUTTON,  wgettext("Backward"),         "keymap_backward");
-	addKey(GUI_ID_KEY_LEFT_BUTTON,      wgettext("Left"),             "keymap_left");
-	addKey(GUI_ID_KEY_RIGHT_BUTTON,     wgettext("Right"),            "keymap_right");
-	addKey(GUI_ID_KEY_USE_BUTTON,       wgettext("Use"),              "keymap_special1");
-	addKey(GUI_ID_KEY_JUMP_BUTTON,      wgettext("Jump"),             "keymap_jump");
-	addKey(GUI_ID_KEY_SNEAK_BUTTON,     wgettext("Sneak"),            "keymap_sneak");
-	addKey(GUI_ID_KEY_DROP_BUTTON,      wgettext("Drop"),             "keymap_drop");
-	addKey(GUI_ID_KEY_INVENTORY_BUTTON, wgettext("Inventory"),        "keymap_inventory");
-	addKey(GUI_ID_KEY_CHAT_BUTTON,      wgettext("Chat"),             "keymap_chat");
-	addKey(GUI_ID_KEY_CMD_BUTTON,       wgettext("Command"),          "keymap_cmd");
-	addKey(GUI_ID_KEY_CONSOLE_BUTTON,   wgettext("Console"),          "keymap_console");
-	addKey(GUI_ID_KEY_FLY_BUTTON,       wgettext("Toggle fly"),       "keymap_freemove");
-	addKey(GUI_ID_KEY_FAST_BUTTON,      wgettext("Toggle fast"),      "keymap_fastmove");
-	addKey(GUI_ID_KEY_CINEMATIC_BUTTON, wgettext("Toggle Cinematic"), "keymap_cinematic");
-	addKey(GUI_ID_KEY_NOCLIP_BUTTON,    wgettext("Toggle noclip"),    "keymap_noclip");
-	addKey(GUI_ID_KEY_RANGE_BUTTON,     wgettext("Range select"),     "keymap_rangeselect");
-	addKey(GUI_ID_KEY_DUMP_BUTTON,      wgettext("Print stacks"),     "keymap_print_debug_stacks");
-}
-
-void KeySettings::refreshAliases()
-{
-	aliases.clear();
-
-	for (size_t i = 0; i<getCommandKeySettingCount(); ++i)
-		addAlias(getCommandKeySetting(i));
-}
-
-std::wstring KeySettings::keyUsedBy(int id, const KeyPress &key, bool modifier_shift,
-		bool modifier_control, s32 current_command_id)
-{
-	for (std::vector<KeySetting>::iterator it = settings.begin(); it != settings.end(); ++it)
-	{
-		if (it->id == id)
-			continue;
-		if (it->key == key)
-			return std::wstring(it->button_name);
-	}
-	for (std::vector<KeyCommand>::iterator it = aliases.begin(); it != aliases.end(); ++it)
-	{
-		if (id == GUI_ID_KEY_ALIAS_BUTTON && current_command_id == it - aliases.begin())
-			continue;
-		if (it->key == key)
-		{
-			if (id != GUI_ID_KEY_ALIAS_BUTTON)
-				return std::wstring(L"chat command \"" + narrow_to_wide(it->setting_name) + L"\"");
-			else
-				if (it->modifier_shift == modifier_shift
-					&& it->modifier_control == modifier_control)
-					return std::wstring(L"chat command \"" + narrow_to_wide(it->setting_name) + L"\"");
-		}
-	}
-	return L"";
 }
 

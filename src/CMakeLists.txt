@@ -489,6 +489,7 @@ set(client_SRCS
 	imagefilters.cpp
 	intlGUIEditBox.cpp
 	keycode.cpp
+	keysettings.cpp
 	localplayer.cpp
 	main.cpp
 	mapblock_mesh.cpp
