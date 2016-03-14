@@ -31,21 +31,24 @@
 #include <vector>
 #include <set>
 
-struct key_setting {
+struct KeySetting {
+	int index;
 	int id;
 	const wchar_t *button_name;
 	KeyPress key;
 	std::string setting_name;
-	gui::IGUIButton *button;
 };
 
-typedef struct {
-	int id;
-	KeyCommand key;
-	std::string setting_name;
-	std::string command_alias;
-} key_alias_setting;
+struct KeySettings {
+	std::vector<KeySetting> settings;
+	std::vector<KeyCommand> aliases;
 
+	KeySettings();
+	~KeySettings();
+
+	void addKey(int id, const wchar_t *button_name, const std::string &setting_name);
+	void addCommandAliasKey(const KeyCommand &key);
+};
 
 class GUIKeyChangeMenu: public GUIModalMenu
 {
@@ -84,8 +87,8 @@ private:
 	s32 activeKey;
 	
 	gui::IGUIStaticText *key_used_text;
-	std::vector<key_setting *> key_settings;
-	std::vector<KeyCommand> key_alias_settings;
+	KeySettings keys;
+	std::vector<gui::IGUIButton*> key_buttons;
 
 	s32 m_command_active_id;
 	gui::IGUIEditBox *m_command_name;

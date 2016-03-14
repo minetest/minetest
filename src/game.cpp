@@ -2763,8 +2763,7 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 
 				statustext = narrow_to_wide(
 						"Pressed key " + kc.setting_name + " with command " + kc.command);
-// TODO: This used to be needed, but the variable is no longer in scope					
-//					statustext_time = 0;
+				*statustext_time = 0;
 			}
 		}
 	}
