@@ -22,6 +22,7 @@
 #include "keysettings.h"
 #include "irrlichttypes_extrabloated.h"
 #include "gettext.h"
+#include "settings.h"
 #include "util/string.h"
 
 KeySettings::KeySettings()
@@ -112,5 +113,32 @@ std::wstring KeySettings::keyUsedBy(int id, const KeyPress &key, bool modifier_s
 		}
 	}
 	return L"";
+}
+
+void KeySettings::setKeySettings()
+{
+	for(size_t i = 0; i < settings.size(); i++)
+	{
+		KeySetting *k = &settings.at(i);
+		g_settings->set(k->setting_name, k->key.sym());
+	}
+}
+
+void KeySettings::setAliasSettings()
+{
+	for (std::vector<KeyCommand>::iterator it = aliases.begin(); it!=aliases.end(); ++it)
+	{
+		std::string aname = it->setting_name;
+		g_settings->set("keymap_alias_" + aname, it->key.sym());
+		g_settings->set("keymap_command_" + aname, it->command);
+		std::string modifiers;
+		if (it->modifier_control && it->modifier_shift)
+			modifiers = "KEY_CONTROL, KEY_SHIFT";
+		else if (it->modifier_control)
+			modifiers = "KEY_CONTROL";
+		else if (it->modifier_shift)
+			modifiers = "KEY_SHIFT";
+		g_settings->set("keymap_modifiers_" + aname, modifiers);
+	}
 }
 

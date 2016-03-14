@@ -20,6 +20,7 @@
  */
 
 #include "guiKeyChangeMenu.h"
+#include "guiCommandShortcutMenu.h"
 #include "debug.h"
 #include "serialization.h"
 #include <string>
@@ -36,8 +37,6 @@
 
 #define KMaxButtonPerColumns 12
 
-extern MainGameCallback *g_gamecallback;
-
 enum
 {
 	GUI_ID_BACK_BUTTON = 101, GUI_ID_ABORT_BUTTON, GUI_ID_SCROLL_BAR,
@@ -47,14 +46,8 @@ enum
 	// other
 	GUI_ID_CB_AUX1_DESCENDS = 300,
 	GUI_ID_CB_DOUBLETAP_JUMP,
-	// key alias GUI
-	GUI_ID_KEY_ALIAS_BUTTON, // opens the GUI for commands
-	GUI_ID_KEY_ALIAS_COMBOBOX, // List box showing the list of commands
-	GUI_ID_KEY_ALIAS_ADD, // Button to add new command
-	GUI_ID_KEY_ALIAS_REMOVE, // Button to remove command
-	GUI_ID_KEY_ALIAS_NAME_ENTRY, // Entry for the name of the command
-	GUI_ID_KEY_ALIAS_COMMAND_ENTRY, // Entry for the chat command
-	GUI_ID_KEY_ALIAS_KEY_BUTTON // Button used to set the keyboard shortcut
+	// buttons for launching other dialogs
+	GUI_ID_CHAT_COMMAND_SHORTCUTS_BUTTON,
 };
 
 static void set_text(gui::IGUIElement *el, const std::string &textval)
@@ -64,25 +57,10 @@ static void set_text(gui::IGUIElement *el, const std::string &textval)
     delete[] text;
 }
 
-static void set_key_text(gui::IGUIElement *el, const KeyCommand &kc)
-{
-    if (std::string(kc.key.name()) != "")
-    {
-        std::string keytext = std::string(kc.modifier_control?"[Ctrl]-":"")
-                            + std::string(kc.modifier_shift?"[Shft]-":"")
-                            + kc.key.name();
-        set_text(el,keytext);
-    }
-    else
-        set_text(el,"Not set");
-}
-
 GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
 				gui::IGUIElement* parent, s32 id, IMenuManager *menumgr) :
 GUIModalMenu(env, parent, id, menumgr)
 {
-	m_command_active_id = -1;
-	m_command_adding = false;
 	shift_down = false;
 	control_down = false;
 	activeKey = -1;
@@ -144,14 +122,14 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		KeySetting *k = &keys.settings.at(i);
 		{
-			core::rect < s32 > rect(0, 0, 110, 20);
+			core::rect < s32 > rect(0, 0, 140, 20);
 			rect += topleft + v2s32(offset.X, offset.Y);
 			Environment->addStaticText(k->button_name, rect, false, true, this, -1);
 		}
 
 		{
 			core::rect < s32 > rect(0, 0, 100, 30);
-			rect += topleft + v2s32(offset.X + 115, offset.Y - 5);
+			rect += topleft + v2s32(offset.X + 145, offset.Y - 5);
 			const wchar_t *text = wgettext(k->key.name());
 			if(key_buttons.size() < i + 1)
 				key_buttons.resize(i + 1);
@@ -161,7 +139,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 			delete[] text;
 		}
 		if(i + 1 == KMaxButtonPerColumns)
-			offset = v2s32(260, 60);
+			offset = v2s32(300, 60);
 		else
 			offset += v2s32(0, 25);
 	}
@@ -195,115 +173,15 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		}
 		offset += v2s32(0, 35);
 	}
+
 	{
-		s32 option_x = offset.X;
-		s32 option_y = offset.Y;
-		u32 option_w = 200;
-		{
-			core::rect<s32> rect(0, 0, option_w, 30);
-			rect += topleft + v2s32(option_x, option_y);
-			const wchar_t* text = wgettext("Chat Commands");
-			Environment->addStaticText(text, rect, false, true, this,-1);
-			delete[] text;
-		}
-		offset += v2s32(0, 25);
+		core::rect < s32 > rect(0, 0, 250, 30);
+		rect += topleft + v2s32(20, size.Y - 40);
+		const wchar_t *text =  wgettext("Chat command shortcuts");
+		Environment->addButton(rect, this, GUI_ID_CHAT_COMMAND_SHORTCUTS_BUTTON,
+				 text);
+		delete[] text;
 	}
-	{
-		s32 option_x = offset.X;
-		s32 option_y = offset.Y;
-		u32 option_w = 200;
-		{
-			core::rect<s32> rect(0, 0, option_w, 30);
-			rect += topleft + v2s32(option_x, option_y);
-			m_command_combo = Environment->addComboBox(rect, this, GUI_ID_KEY_ALIAS_COMBOBOX);
-			for (std::vector<KeyCommand>::iterator it = keys.aliases.begin();
-					it != keys.aliases.end(); ++it)
-			{
-				const wchar_t* text = wgettext(it->setting_name.c_str());
-				m_command_combo->addItem(text,it - keys.aliases.begin());
-				delete[] text;
-			}
-		}
-		option_x += 210;
-		option_w = 50;
-		{
-			core::rect<s32> rect(0, 0, option_w, 30);
-			rect += topleft + v2s32(option_x, option_y);
-			const wchar_t* text = wgettext("Add");
-			m_command_add = Environment->addButton(rect, this, GUI_ID_KEY_ALIAS_ADD, text );
-			delete[] text;
-		}
-		option_x += 50;
-		option_w = 50;
-		{
-			core::rect<s32> rect(0, 0, option_w, 30);
-			rect += topleft + v2s32(option_x, option_y);
-			const wchar_t* text = wgettext("Delete");
-			m_command_remove = Environment->addButton(rect, this, GUI_ID_KEY_ALIAS_REMOVE, text);
-			delete[] text;
-		}
-	}
-	{
-		s32 option_x = offset.X;
-		s32 option_y = offset.Y;
-		u32 option_w = 200;
-		{
-			core::rect<s32> rect(0, 0, option_w, 30);
-			rect += topleft + v2s32(option_x, option_y);
-			const wchar_t* text = wgettext("Command Name");
-			m_command_name = Environment->addEditBox(text, rect, false, this,
-						   GUI_ID_KEY_ALIAS_NAME_ENTRY);
-			m_command_name->setVisible(false);
-			delete[] text;
-		}
-		offset += v2s32(0, 35);
-	}
-	{
-		s32 option_x = offset.X;
-		s32 option_y = offset.Y;
-		u32 option_w = 100;
-		{
-			core::rect<s32> rect(0, 0, option_w, 30);
-			rect += topleft + v2s32(option_x, option_y + 5);
-			const wchar_t* text = wgettext("Command");
-			m_command_label = Environment->addStaticText(text, rect, false, true, this,-1);
-			delete[] text;
-		}
-		option_x += 110;
-		option_w = 200;
-		{
-			core::rect<s32> rect(0, 0, option_w, 30);
-			rect += topleft + v2s32(option_x, option_y);
-			const wchar_t* text = wgettext("");
-			m_command = Environment->addEditBox(text, rect, false, this,
-						   GUI_ID_KEY_ALIAS_COMMAND_ENTRY);
-			delete[] text;
-		}
-		offset += v2s32(0, 35);
-	}
-	{
-		s32 option_x = offset.X;
-		s32 option_y = offset.Y;
-		u32 option_w = 100;
-		{
-			core::rect<s32> rect(0, 0, option_w, 30);
-			rect += topleft + v2s32(option_x, option_y + 5);
-			const wchar_t* text = wgettext("Key combo");
-			m_command_key_label = Environment->addStaticText(text, rect, false, true, this,-1);
-			delete[] text;
-		}
-		option_x += 110;
-		option_w = 200;
-		{
-			core::rect<s32> rect(0, 0, option_w, 30);
-			rect += topleft + v2s32(option_x, option_y);
-			const wchar_t* text = wgettext("Key");
-			m_command_key = Environment->addButton(rect, this,
-						  GUI_ID_KEY_ALIAS_KEY_BUTTON, text);
-			delete[] text;
-		}
-	}
-	commandComboChanged();
 
 	{
 		core::rect < s32 > rect(0, 0, 100, 30);
@@ -354,8 +232,6 @@ bool GUIKeyChangeMenu::acceptInput()
 			g_settings->setBool("doubletap_jump", ((gui::IGUICheckBox*)e)->isChecked());
 	}
 
-	commandComboChanged();
-
 	// Set only key settings, not aliases
 	keys.setKeySettings();
 
@@ -367,55 +243,20 @@ bool GUIKeyChangeMenu::acceptInput()
 	return true;
 }
 
-void KeySettings::setKeySettings()
-{
-	for(size_t i = 0; i < settings.size(); i++)
-	{
-		KeySetting *k = &settings.at(i);
-		g_settings->set(k->setting_name, k->key.sym());
-	}
-}
-
-void KeySettings::setAliasSettings()
-{
-	for (std::vector<KeyCommand>::iterator it = aliases.begin(); it!=aliases.end(); ++it)
-	{
-		std::string aname = it->setting_name;
-		g_settings->set("keymap_alias_" + aname, it->key.sym());
-		g_settings->set("keymap_command_" + aname, it->command);
-		std::string modifiers;
-		if (it->modifier_control && it->modifier_shift)
-			modifiers = "KEY_CONTROL, KEY_SHIFT";
-		else if (it->modifier_control)
-			modifiers = "KEY_CONTROL";
-		else if (it->modifier_shift)
-			modifiers = "KEY_SHIFT";
-		g_settings->set("keymap_modifiers_" + aname, modifiers);
-	}
-}
-
 bool GUIKeyChangeMenu::resetMenu()
 {
 	if (activeKey >= 0)
 	{
-		if (activeKey != GUI_ID_KEY_ALIAS_BUTTON)
+		for (size_t i = 0; i < keys.settings.size(); i++)
 		{
-			for (size_t i = 0; i < keys.settings.size(); i++)
+			KeySetting *k = &keys.settings.at(i);
+			if(GUI_ID_KEY_START + k->id == activeKey)
 			{
-				KeySetting *k = &keys.settings.at(i);
-				if(GUI_ID_KEY_START + k->id == activeKey)
-				{
-					const wchar_t *text = wgettext(k->key.name());
-					key_buttons[i]->setText(text);
-					delete[] text;
-					break;
-				}
+				const wchar_t *text = wgettext(k->key.name());
+				key_buttons[i]->setText(text);
+				delete[] text;
+				break;
 			}
-		}
-		else
-		{
-			KeyCommand &kc = keys.aliases[m_command_active_id];
-			set_key_text(m_command_key,kc);
 		}
 		activeKey = -1;
 		return false;
@@ -426,7 +267,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 {
 	if (event.EventType == EET_KEY_INPUT_EVENT && activeKey >= 0
 			&& event.KeyInput.PressedDown) {
-		bool prefer_character = shift_down && (activeKey != GUI_ID_KEY_ALIAS_BUTTON);
+		bool prefer_character = shift_down;
 		KeyPress kp(event.KeyInput, prefer_character);
 		
 		bool shift_went_down = false;
@@ -450,8 +291,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 			this->key_used_text = NULL;
 		}
 		// Display Key already in use message
-		std::wstring ku = keys.keyUsedBy(activeKey, kp, shift_down, control_down,
-				activeKey == GUI_ID_KEY_ALIAS_BUTTON ? m_command_active_id : -1);
+		std::wstring ku = keys.keyUsedBy(activeKey, kp, shift_down, control_down, -1);
 		if (ku != L"")
 		{
 			core::rect < s32 > rect(0, 0, 600, 40);
@@ -463,7 +303,6 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		}
 
 		// But go on
-	    if (activeKey != GUI_ID_KEY_ALIAS_BUTTON)
 		{
 			KeySetting *k = NULL;
 			for(size_t i = 0; i < keys.settings.size(); i++)
@@ -480,14 +319,6 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 			key_buttons[k->index]->setText(text);
 			delete[] text;
 
-		}
-		else
-		{
-			KeyCommand &kc = keys.aliases[m_command_active_id];
-			kc.key = kp;
-			kc.modifier_shift = shift_down;
-			kc.modifier_control = control_down;
-			set_key_text(m_command_key,kc);
 		}
  
 		if (!shift_went_down && !control_went_down)
@@ -517,11 +348,6 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 				return true;
 			}
 		}
-		if (event.GUIEvent.EventType == gui::EGET_COMBO_BOX_CHANGED)
-		{
-			commandComboChanged();
-			return true;
-		}
 		if (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED)
 		{
 			switch (event.GUIEvent.Caller->getID())
@@ -533,97 +359,19 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 				case GUI_ID_ABORT_BUTTON: //abort
 					quitMenu();
 					return true;
-				case GUI_ID_KEY_ALIAS_ADD:
-					if(!m_command_adding)
+				case GUI_ID_CHAT_COMMAND_SHORTCUTS_BUTTON:
 					{
-						m_command_adding = true;
-						m_command_name->setVisible(true);
-						m_command_combo->setVisible(false);
-						m_command_label->setVisible(false);
-						m_command->setVisible(false);
-						m_command_key_label->setVisible(false);
-						m_command_key->setVisible(false);
-						set_text(m_command_name,"Command Name");
-						set_text(m_command_add,"Add");
-						set_text(m_command_remove,"Cancel");
-						Environment->setFocus(m_command_name);
+						GUICommandShortcutMenu *menu = new GUICommandShortcutMenu(
+								Environment, Parent, -1, &g_menumgr);
+						menu->drop();
 					}
-					else
-					{
-						KeyCommand kc;
-						kc.setting_name = wide_to_narrow(m_command_name->getText());
-						std::replace(kc.setting_name.begin(), kc.setting_name.end(), ' ', '_');
-						bool exists = false;
-						for (std::vector<KeyCommand>::iterator it = keys.aliases.begin();
-							 it != keys.aliases.end(); ++it)
-							if (it->setting_name == kc.setting_name)
-							{
-								exists = true;
-								m_command_combo->setSelected(it - keys.aliases.begin());
-								break;
-							}
-						if (!exists)
-						{
-							kc.modifier_control = false;
-							kc.modifier_shift = false;
-							kc.command = "";
-							keys.addAlias(kc);
-							const wchar_t* text = wgettext(kc.setting_name.c_str());
-							m_command_combo->addItem(text,keys.aliases.size()-1);
-							delete[] text;
-							m_command_combo->setSelected(keys.aliases.size()-1);
-						}
-						commandComboChanged();
-
-						m_command_adding = false;
-						m_command_name->setVisible(false);
-						m_command_combo->setVisible(true);
-						m_command->setVisible(true);
-						m_command_label->setVisible(true);
-						m_command_key->setVisible(true);
-						m_command_key_label->setVisible(true);
-						set_text(m_command_name,"Command Name");
-						set_text(m_command_add,"Add");
-						set_text(m_command_remove,"Delete");
-					}
-					return true;
-				case GUI_ID_KEY_ALIAS_REMOVE:
-					if(!m_command_adding)
-					{
-						s32 sel = m_command_combo->getSelected();
-						m_command_combo->removeItem(sel);
-						keys.aliases.erase(keys.aliases.begin()+sel);
-						m_command_combo->setSelected(keys.aliases.size()-1);
-						m_command_active_id = -1;
-						commandComboChanged();
-						return true;
-					}
-					else
-					{
-						m_command_adding = false;
-						m_command_name->setVisible(false);
-						m_command_combo->setVisible(true);
-						m_command->setVisible(true);
-						m_command_label->setVisible(true);
-						m_command_key->setVisible(true);
-						m_command_key_label->setVisible(true);
-						set_text(m_command_name,"Command Name");
-						set_text(m_command_add,"Add");
-						set_text(m_command_remove,"Delete");
-					}
-				case GUI_ID_KEY_ALIAS_KEY_BUTTON:
-					// Key Alias
-					resetMenu();
-					shift_down = false;
-					control_down = false;
-					activeKey = GUI_ID_KEY_ALIAS_BUTTON;
-					set_text(m_command_key, "press key");
 					return true;
 				default:
 					KeySetting *k = NULL;
 					for(size_t i = 0; i < keys.settings.size(); i++)
 					{
-						if(GUI_ID_KEY_START + keys.settings.at(i).id == event.GUIEvent.Caller->getID())
+						if(GUI_ID_KEY_START + keys.settings.at(i).id ==
+								event.GUIEvent.Caller->getID())
 						{
 							k = &keys.settings.at(i);
 							break;
@@ -644,32 +392,15 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 	return Parent ? Parent->OnEvent(event) : false;
 }
 
-void GUIKeyChangeMenu::commandComboChanged()
+void GUIKeyChangeMenu::setVisible(bool visible)
 {
-	s32 active_id = m_command_combo->getSelected();
-	if (activeKey == GUI_ID_KEY_ALIAS_BUTTON)
+	GUIModalMenu::setVisible(visible);
+
+	if (visible) {
+		// Refresh aliases from settings in case we came back from the command
+		// shortcut dialog so that we can check if keys are used by aliases
+		keys.refreshAliases();
 		resetMenu();
-	if (m_command_active_id>=0)
-	{
-		KeyCommand &k = keys.aliases[m_command_active_id];
-		k.command = wide_to_narrow(m_command->getText());
 	}
-	if (active_id>=0)
-	{
-		KeyCommand k = keys.aliases[active_id];
-		set_text(m_command_name,k.setting_name);
-		set_text(m_command,k.command);
-		set_key_text(m_command_key,k);
-		m_command->setEnabled(true);
-		m_command_key->setEnabled(true);
-		m_command_remove->setEnabled(true);
-	}
-	else
-	{
-		m_command->setEnabled(false);
-		m_command_key->setEnabled(false);
-		m_command_remove->setEnabled(false);
-	}
-	m_command_active_id = active_id;
 }
 

@@ -19,8 +19,8 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef GUIKEYCHANGEMENU_HEADER
-#define GUIKEYCHANGEMENU_HEADER
+#ifndef GUICOMMANDSHORTCUTMENU_HEADER
+#define GUICOMMANDSHORTCUTMENU_HEADER
 
 #include "irrlichttypes_extrabloated.h"
 #include "modalMenu.h"
@@ -32,12 +32,12 @@
 #include <vector>
 #include <set>
 
-class GUIKeyChangeMenu: public GUIModalMenu
+class GUICommandShortcutMenu: public GUIModalMenu
 {
 public:
-	GUIKeyChangeMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
+	GUICommandShortcutMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
 			s32 id, IMenuManager *menumgr);
-	~GUIKeyChangeMenu();
+	~GUICommandShortcutMenu();
 
 	void removeChildren();
 	/*
@@ -51,14 +51,14 @@ public:
 
 	bool OnEvent(const SEvent& event);
 
-	void setVisible(bool visible);
-
 private:
 
 	bool resetMenu();
 
 	void add_key(int id, const wchar_t *button_name, const std::string &setting_name);
 
+	void commandComboChanged();
+ 
 	bool control_down;
 	bool shift_down;
 	
@@ -66,8 +66,17 @@ private:
 	
 	gui::IGUIStaticText *key_used_text;
 	KeySettings keys;
-	std::vector<gui::IGUIButton*> key_buttons;
+
+	s32 m_command_active_id;
+	gui::IGUIEditBox *m_command_name;
+	gui::IGUIStaticText *m_command_label;
+	gui::IGUIEditBox *m_command;
+	gui::IGUIStaticText *m_command_key_label;
+	gui::IGUIButton *m_command_key;
+	gui::IGUIButton *m_command_add;
+	gui::IGUIButton *m_command_remove;
+	gui::IGUIComboBox *m_command_combo;
+	bool m_command_adding;
 };
 
 #endif
-

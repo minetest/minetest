@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiMainMenu.h"
 #include "guiKeyChangeMenu.h"
 #include "guiFileSelectMenu.h"
+#include "guiCommandShortcutMenu.h"
 #include "subgame.h"
 #include "version.h"
 #include "porting.h"
