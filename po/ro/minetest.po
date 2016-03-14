@@ -8,28 +8,28 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-02-27 05:49+0100\n"
-"PO-Revision-Date: 2015-10-27 16:46+0200\n"
-"Last-Translator: PilzAdam <PilzAdam@minetest.net>\n"
-"Language-Team: Romanian <https://hosted.weblate.org/projects/minetest/"
-"minetest/ro/>\n"
+"PO-Revision-Date: 2016-03-17 15:28+0000\n"
+"Last-Translator: Lordmusic Player <lordmusicplro1@gmail.com>\n"
+"Language-Team: Romanian "
+"<https://hosted.weblate.org/projects/minetest/minetest/ro/>\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 2.5-dev\n"
-
-#: builtin/fstk/ui.lua
-msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
-
-#: builtin/fstk/ui.lua
-msgid "An error occured:"
-msgstr ""
+"X-Generator: Weblate 2.5\n"
 
 #: builtin/fstk/ui.lua
 #, fuzzy
+msgid "An error occured in a Lua script, such as a mod:"
+msgstr "A apărut o eroare in un script Lua,ca la  un mod :"
+
+#: builtin/fstk/ui.lua
+msgid "An error occured:"
+msgstr "A apărut o eroare:"
+
+#: builtin/fstk/ui.lua
 msgid "Main menu"
 msgstr "Meniul Principal"
 
@@ -38,13 +38,12 @@ msgid "Ok"
 msgstr "Ok"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Reconnect"
-msgstr "Conectează"
+msgstr "Reconectează-te"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "Serverul cere o reconectare :"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
@@ -65,6 +64,8 @@ msgstr ""
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
+"Încercați să activați lista de servere publică și să vă verificați "
+"conexiunea la internet."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
