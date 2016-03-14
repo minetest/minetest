@@ -98,6 +98,8 @@ fake_function() {
 	gettext("Address to connect to.\nLeave this blank to start a local server.\nNote that the address field in the main menu overrides this setting.");
 	gettext("Remote port");
 	gettext("Port to connect to (UDP).\nNote that the port field in the main menu overrides this setting.");
+	gettext("Support older servers");
+	gettext("Whether to support older servers before protocol version 25.\nEnable if you want to connect to 0.4.12 servers and before.\nServers starting with 0.4.13 will work, 0.4.12-dev servers may work.\nDisabling this option will protect your password better.");
 	gettext("Saving map received from server");
 	gettext("Save the map received by the client on disk.");
 	gettext("Connect to external media server");

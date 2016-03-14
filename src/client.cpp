@@ -386,25 +386,30 @@ void Client::step(float dtime)
 			Player *myplayer = m_env.getLocalPlayer();
 			FATAL_ERROR_IF(myplayer == NULL, "Local player not found in environment.");
 
-			// Send TOSERVER_INIT_LEGACY
-			// [0] u16 TOSERVER_INIT_LEGACY
-			// [2] u8 SER_FMT_VER_HIGHEST_READ
-			// [3] u8[20] player_name
-			// [23] u8[28] password (new in some version)
-			// [51] u16 minimum supported network protocol version (added sometime)
-			// [53] u16 maximum supported network protocol version (added later than the previous one)
+			u16 proto_version_min = g_settings->getFlag("send_pre_v25_init") ?
+				CLIENT_PROTOCOL_VERSION_MIN_LEGACY : CLIENT_PROTOCOL_VERSION_MIN;
 
-			char pName[PLAYERNAME_SIZE];
-			char pPassword[PASSWORD_SIZE];
-			memset(pName, 0, PLAYERNAME_SIZE * sizeof(char));
-			memset(pPassword, 0, PASSWORD_SIZE * sizeof(char));
+			if (proto_version_min < 25) {
+				// Send TOSERVER_INIT_LEGACY
+				// [0] u16 TOSERVER_INIT_LEGACY
+				// [2] u8 SER_FMT_VER_HIGHEST_READ
+				// [3] u8[20] player_name
+				// [23] u8[28] password (new in some version)
+				// [51] u16 minimum supported network protocol version (added sometime)
+				// [53] u16 maximum supported network protocol version (added later than the previous one)
 
-			std::string hashed_password = translate_password(myplayer->getName(), m_password);
-			snprintf(pName, PLAYERNAME_SIZE, "%s", myplayer->getName());
-			snprintf(pPassword, PASSWORD_SIZE, "%s", hashed_password.c_str());
+				char pName[PLAYERNAME_SIZE];
+				char pPassword[PASSWORD_SIZE];
+				memset(pName, 0, PLAYERNAME_SIZE * sizeof(char));
+				memset(pPassword, 0, PASSWORD_SIZE * sizeof(char));
 
-			sendLegacyInit(pName, pPassword);
-			if (LATEST_PROTOCOL_VERSION >= 25)
+				std::string hashed_password = translate_password(myplayer->getName(), m_password);
+				snprintf(pName, PLAYERNAME_SIZE, "%s", myplayer->getName());
+				snprintf(pPassword, PASSWORD_SIZE, "%s", hashed_password.c_str());
+
+				sendLegacyInit(pName, pPassword);
+			}
+			if (CLIENT_PROTOCOL_VERSION_MAX >= 25)
 				sendInit(myplayer->getName());
 		}
 
@@ -1003,10 +1008,13 @@ void Client::sendLegacyInit(const char* playerName, const char* playerPassword)
 	NetworkPacket pkt(TOSERVER_INIT_LEGACY,
 			1 + PLAYERNAME_SIZE + PASSWORD_SIZE + 2 + 2);
 
+	u16 proto_version_min = g_settings->getFlag("send_pre_v25_init") ?
+		CLIENT_PROTOCOL_VERSION_MIN_LEGACY : CLIENT_PROTOCOL_VERSION_MIN;
+
 	pkt << (u8) SER_FMT_VER_HIGHEST_READ;
 	pkt.putRawString(playerName,PLAYERNAME_SIZE);
 	pkt.putRawString(playerPassword, PASSWORD_SIZE);
-	pkt << (u16) CLIENT_PROTOCOL_VERSION_MIN << (u16) CLIENT_PROTOCOL_VERSION_MAX;
+	pkt << (u16) proto_version_min << (u16) CLIENT_PROTOCOL_VERSION_MAX;
 
 	Send(&pkt);
 }
@@ -1017,8 +1025,12 @@ void Client::sendInit(const std::string &playerName)
 
 	// we don't support network compression yet
 	u16 supp_comp_modes = NETPROTO_COMPRESSION_NONE;
+
+	u16 proto_version_min = g_settings->getFlag("send_pre_v25_init") ?
+		CLIENT_PROTOCOL_VERSION_MIN_LEGACY : CLIENT_PROTOCOL_VERSION_MIN;
+
 	pkt << (u8) SER_FMT_VER_HIGHEST_READ << (u16) supp_comp_modes;
-	pkt << (u16) CLIENT_PROTOCOL_VERSION_MIN << (u16) CLIENT_PROTOCOL_VERSION_MAX;
+	pkt << (u16) proto_version_min << (u16) CLIENT_PROTOCOL_VERSION_MAX;
 	pkt << playerName;
 
 	Send(&pkt);

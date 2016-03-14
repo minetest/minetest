@@ -17,6 +17,10 @@
 
 --------------------------------------------------------------------------------
 local function get_formspec(tabview, name, tabdata)
+	-- Update the cached supported proto info,
+	-- it may have changed after a change by the settings menu.
+	common_update_cached_supp_proto()
+
 	local render_details = core.is_yes(core.setting_getbool("public_serverlist"))
 	
 	local retval =

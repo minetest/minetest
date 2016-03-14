@@ -22,9 +22,14 @@ menudata = {}
 --------------------------------------------------------------------------------
 -- Local cached values
 --------------------------------------------------------------------------------
-local min_supp_proto = core.get_min_supp_proto()
-local max_supp_proto = core.get_max_supp_proto()
+local min_supp_proto
+local max_supp_proto
 
+function common_update_cached_supp_proto()
+	min_supp_proto = core.get_min_supp_proto()
+	max_supp_proto = core.get_max_supp_proto()
+end
+common_update_cached_supp_proto()
 --------------------------------------------------------------------------------
 -- Menu helper functions
 --------------------------------------------------------------------------------
@@ -105,7 +110,7 @@ function render_favorite(spec,render_details)
 	end
 
 	local details = ""
-	local grey_out = not is_server_protocol_compat(spec.proto_max, spec.proto_min)
+	local grey_out = not is_server_protocol_compat(spec.proto_min, spec.proto_max)
 
 	if spec.clients ~= nil and spec.clients_max ~= nil then
 		local clients_color = ''
