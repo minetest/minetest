@@ -372,7 +372,8 @@ bool GUIKeyChangeMenu::acceptInput()
 
 	commandComboChanged();
 
-	keys.setSettings();
+	// Set only key settings, not aliases
+	keys.setKeySettings();
 
 	clearKeyCache();
 	clearCommandKeyCache();
@@ -382,14 +383,17 @@ bool GUIKeyChangeMenu::acceptInput()
 	return true;
 }
 
-void KeySettings::setSettings()
+void KeySettings::setKeySettings()
 {
 	for(size_t i = 0; i < settings.size(); i++)
 	{
 		KeySetting *k = &settings.at(i);
 		g_settings->set(k->setting_name, k->key.sym());
 	}
+}
 
+void KeySettings::setAliasSettings()
+{
 	for (std::vector<KeyCommand>::iterator it = aliases.begin(); it!=aliases.end(); ++it)
 	{
 		std::string aname = it->setting_name;
@@ -579,7 +583,7 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 							kc.modifier_control = false;
 							kc.modifier_shift = false;
 							kc.command = "";
-							keys.addCommandAliasKey(kc);
+							keys.addAlias(kc);
 							const wchar_t* text = wgettext(kc.setting_name.c_str());
 							m_command_combo->addItem(text,keys.aliases.size()-1);
 							delete[] text;
@@ -687,27 +691,8 @@ void GUIKeyChangeMenu::commandComboChanged()
 
 KeySettings::KeySettings()
 {
-	addKey(GUI_ID_KEY_FORWARD_BUTTON,   wgettext("Forward"),          "keymap_forward");
-	addKey(GUI_ID_KEY_BACKWARD_BUTTON,  wgettext("Backward"),         "keymap_backward");
-	addKey(GUI_ID_KEY_LEFT_BUTTON,      wgettext("Left"),             "keymap_left");
-	addKey(GUI_ID_KEY_RIGHT_BUTTON,     wgettext("Right"),            "keymap_right");
-	addKey(GUI_ID_KEY_USE_BUTTON,       wgettext("Use"),              "keymap_special1");
-	addKey(GUI_ID_KEY_JUMP_BUTTON,      wgettext("Jump"),             "keymap_jump");
-	addKey(GUI_ID_KEY_SNEAK_BUTTON,     wgettext("Sneak"),            "keymap_sneak");
-	addKey(GUI_ID_KEY_DROP_BUTTON,      wgettext("Drop"),             "keymap_drop");
-	addKey(GUI_ID_KEY_INVENTORY_BUTTON, wgettext("Inventory"),        "keymap_inventory");
-	addKey(GUI_ID_KEY_CHAT_BUTTON,      wgettext("Chat"),             "keymap_chat");
-	addKey(GUI_ID_KEY_CMD_BUTTON,       wgettext("Command"),          "keymap_cmd");
-	addKey(GUI_ID_KEY_CONSOLE_BUTTON,   wgettext("Console"),          "keymap_console");
-	addKey(GUI_ID_KEY_FLY_BUTTON,       wgettext("Toggle fly"),       "keymap_freemove");
-	addKey(GUI_ID_KEY_FAST_BUTTON,      wgettext("Toggle fast"),      "keymap_fastmove");
-	addKey(GUI_ID_KEY_CINEMATIC_BUTTON, wgettext("Toggle Cinematic"), "keymap_cinematic");
-	addKey(GUI_ID_KEY_NOCLIP_BUTTON,    wgettext("Toggle noclip"),    "keymap_noclip");
-	addKey(GUI_ID_KEY_RANGE_BUTTON,     wgettext("Range select"),     "keymap_rangeselect");
-	addKey(GUI_ID_KEY_DUMP_BUTTON,      wgettext("Print stacks"),     "keymap_print_debug_stacks");
-
-	for (size_t i = 0; i<getCommandKeySettingCount(); ++i)
-		addCommandAliasKey(getCommandKeySetting(i));
+	refreshKeys();
+	refreshAliases();
 }
 
 KeySettings::~KeySettings()
@@ -730,9 +715,44 @@ void KeySettings::addKey(int id, const wchar_t *button_name, const std::string &
 	k->key = getKeySetting(k->setting_name.c_str());
 }
 
-void KeySettings::addCommandAliasKey(const KeyCommand &key)
+void KeySettings::addAlias(const KeyCommand &key)
 {
 	aliases.push_back(key);
+}
+
+void KeySettings::refreshKeys()
+{
+	for (std::vector<KeySetting>::iterator iter = settings.begin();
+			iter != settings.end(); ++iter) {
+		delete[] iter->button_name;
+	}
+
+	addKey(GUI_ID_KEY_FORWARD_BUTTON,   wgettext("Forward"),          "keymap_forward");
+	addKey(GUI_ID_KEY_BACKWARD_BUTTON,  wgettext("Backward"),         "keymap_backward");
+	addKey(GUI_ID_KEY_LEFT_BUTTON,      wgettext("Left"),             "keymap_left");
+	addKey(GUI_ID_KEY_RIGHT_BUTTON,     wgettext("Right"),            "keymap_right");
+	addKey(GUI_ID_KEY_USE_BUTTON,       wgettext("Use"),              "keymap_special1");
+	addKey(GUI_ID_KEY_JUMP_BUTTON,      wgettext("Jump"),             "keymap_jump");
+	addKey(GUI_ID_KEY_SNEAK_BUTTON,     wgettext("Sneak"),            "keymap_sneak");
+	addKey(GUI_ID_KEY_DROP_BUTTON,      wgettext("Drop"),             "keymap_drop");
+	addKey(GUI_ID_KEY_INVENTORY_BUTTON, wgettext("Inventory"),        "keymap_inventory");
+	addKey(GUI_ID_KEY_CHAT_BUTTON,      wgettext("Chat"),             "keymap_chat");
+	addKey(GUI_ID_KEY_CMD_BUTTON,       wgettext("Command"),          "keymap_cmd");
+	addKey(GUI_ID_KEY_CONSOLE_BUTTON,   wgettext("Console"),          "keymap_console");
+	addKey(GUI_ID_KEY_FLY_BUTTON,       wgettext("Toggle fly"),       "keymap_freemove");
+	addKey(GUI_ID_KEY_FAST_BUTTON,      wgettext("Toggle fast"),      "keymap_fastmove");
+	addKey(GUI_ID_KEY_CINEMATIC_BUTTON, wgettext("Toggle Cinematic"), "keymap_cinematic");
+	addKey(GUI_ID_KEY_NOCLIP_BUTTON,    wgettext("Toggle noclip"),    "keymap_noclip");
+	addKey(GUI_ID_KEY_RANGE_BUTTON,     wgettext("Range select"),     "keymap_rangeselect");
+	addKey(GUI_ID_KEY_DUMP_BUTTON,      wgettext("Print stacks"),     "keymap_print_debug_stacks");
+}
+
+void KeySettings::refreshAliases()
+{
+	aliases.clear();
+
+	for (size_t i = 0; i<getCommandKeySettingCount(); ++i)
+		addAlias(getCommandKeySetting(i));
 }
 
 std::wstring KeySettings::keyUsedBy(int id, const KeyPress &key, bool modifier_shift,

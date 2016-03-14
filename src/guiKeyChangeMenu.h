@@ -47,10 +47,13 @@ struct KeySettings {
 	~KeySettings();
 
 	void addKey(int id, const wchar_t *button_name, const std::string &setting_name);
-	void addCommandAliasKey(const KeyCommand &key);
+	void addAlias(const KeyCommand &key);
+	void refreshKeys();
+	void refreshAliases();
 	std::wstring keyUsedBy(int id, const KeyPress &key, bool modifier_shift,
 			bool modifier_control, s32 current_command_id=-1);
-	void setSettings();
+	void setKeySettings();
+	void setAliasSettings();
 };
 
 class GUIKeyChangeMenu: public GUIModalMenu
