@@ -48,6 +48,9 @@ struct KeySettings {
 
 	void addKey(int id, const wchar_t *button_name, const std::string &setting_name);
 	void addCommandAliasKey(const KeyCommand &key);
+	std::wstring keyUsedBy(int id, const KeyPress &key, bool modifier_shift,
+			bool modifier_control, s32 current_command_id=-1);
+	void setSettings();
 };
 
 class GUIKeyChangeMenu: public GUIModalMenu
@@ -77,8 +80,6 @@ private:
 
 	void add_key(int id, const wchar_t *button_name, const std::string &setting_name);
 
-	std::wstring keyUsedBy(int id, const KeyPress &key, bool modifier_shift, bool modifier_control);
-	void addCommandAliasKey(const KeyCommand &key);
 	void commandComboChanged();
  
 	bool control_down;

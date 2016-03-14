@@ -359,11 +359,6 @@ void GUIKeyChangeMenu::drawMenu()
 
 bool GUIKeyChangeMenu::acceptInput()
 {
-	for(size_t i = 0; i < keys.settings.size(); i++)
-	{
-		KeySetting *k = &keys.settings.at(i);
-		g_settings->set(k->setting_name, k->key.sym());
-	}
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_AUX1_DESCENDS);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
@@ -376,7 +371,26 @@ bool GUIKeyChangeMenu::acceptInput()
 	}
 
 	commandComboChanged();
-	for (std::vector<KeyCommand>::iterator it = keys.aliases.begin(); it!=keys.aliases.end(); ++it)
+
+	keys.setSettings();
+
+	clearKeyCache();
+	clearCommandKeyCache();
+
+	g_gamecallback->signalKeyConfigChange();
+
+	return true;
+}
+
+void KeySettings::setSettings()
+{
+	for(size_t i = 0; i < settings.size(); i++)
+	{
+		KeySetting *k = &settings.at(i);
+		g_settings->set(k->setting_name, k->key.sym());
+	}
+
+	for (std::vector<KeyCommand>::iterator it = aliases.begin(); it!=aliases.end(); ++it)
 	{
 		std::string aname = it->setting_name;
 		g_settings->set("keymap_alias_" + aname, it->key.sym());
@@ -390,13 +404,6 @@ bool GUIKeyChangeMenu::acceptInput()
 			modifiers = "KEY_SHIFT";
 		g_settings->set("keymap_modifiers_" + aname, modifiers);
 	}
-
-	clearKeyCache();
-	clearCommandKeyCache();
-
-	g_gamecallback->signalKeyConfigChange();
-
-	return true;
 }
 
 bool GUIKeyChangeMenu::resetMenu()
@@ -455,7 +462,8 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 			this->key_used_text = NULL;
 		}
 		// Display Key already in use message
-		std::wstring ku = keyUsedBy(activeKey, kp, shift_down, control_down);
+		std::wstring ku = keys.keyUsedBy(activeKey, kp, shift_down, control_down,
+				m_command_active_id);
 		if (ku != L"")
 		{
 			core::rect < s32 > rect(0, 0, 600, 40);
@@ -677,32 +685,6 @@ void GUIKeyChangeMenu::commandComboChanged()
 	m_command_active_id = active_id;
 }
 
-std::wstring GUIKeyChangeMenu::keyUsedBy(int id, const KeyPress &key, bool modifier_shift, bool modifier_control)
-{
-	for (std::vector<KeySetting>::iterator it = keys.settings.begin(); it != keys.settings.end(); ++it)
-	{
-		if (it->id == id)
-			continue;
-		if (it->key == key)
-			return std::wstring(it->button_name);
-	}
-	for (std::vector<KeyCommand>::iterator it = keys.aliases.begin(); it != keys.aliases.end(); ++it)
-	{
-		if (id == GUI_ID_KEY_ALIAS_BUTTON && m_command_active_id == it - keys.aliases.begin())
-			continue;
-		if (it->key == key)
-		{
-			if (id != GUI_ID_KEY_ALIAS_BUTTON)
-				return std::wstring(L"chat command \"" + narrow_to_wide(it->setting_name) + L"\"");
-			else
-				if (it->modifier_shift == modifier_shift
-					&& it->modifier_control == modifier_control)
-					return std::wstring(L"chat command \"" + narrow_to_wide(it->setting_name) + L"\"");
-		}
-	}
-	return L"";
-}
-
 KeySettings::KeySettings()
 {
 	addKey(GUI_ID_KEY_FORWARD_BUTTON,   wgettext("Forward"),          "keymap_forward");
@@ -751,5 +733,32 @@ void KeySettings::addKey(int id, const wchar_t *button_name, const std::string &
 void KeySettings::addCommandAliasKey(const KeyCommand &key)
 {
 	aliases.push_back(key);
+}
+
+std::wstring KeySettings::keyUsedBy(int id, const KeyPress &key, bool modifier_shift,
+		bool modifier_control, s32 current_command_id)
+{
+	for (std::vector<KeySetting>::iterator it = settings.begin(); it != settings.end(); ++it)
+	{
+		if (it->id == id)
+			continue;
+		if (it->key == key)
+			return std::wstring(it->button_name);
+	}
+	for (std::vector<KeyCommand>::iterator it = aliases.begin(); it != aliases.end(); ++it)
+	{
+		if (id == GUI_ID_KEY_ALIAS_BUTTON && current_command_id == it - aliases.begin())
+			continue;
+		if (it->key == key)
+		{
+			if (id != GUI_ID_KEY_ALIAS_BUTTON)
+				return std::wstring(L"chat command \"" + narrow_to_wide(it->setting_name) + L"\"");
+			else
+				if (it->modifier_shift == modifier_shift
+					&& it->modifier_control == modifier_control)
+					return std::wstring(L"chat command \"" + narrow_to_wide(it->setting_name) + L"\"");
+		}
+	}
+	return L"";
 }
 
