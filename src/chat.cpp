@@ -679,6 +679,9 @@ ChatBackend::~ChatBackend()
 
 void ChatBackend::addMessage(std::wstring name, std::wstring text)
 {
+	name = removeChatEscapes(name);
+	text = removeChatEscapes(text);
+
 	// Note: A message may consist of multiple lines, for example the MOTD.
 	WStrfnd fnd(text);
 	while (!fnd.atend())

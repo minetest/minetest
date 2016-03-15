@@ -386,6 +386,13 @@ inline void str_replace(std::string &str, const std::string &pattern,
 	}
 }
 
+/**
+ * Remove all chat escape sequences in \p s.
+ *
+ * @param s The string in which to remove escape sequences.
+ * @return \p s, with escape sequences removed.
+ */
+std::wstring removeChatEscapes(const std::wstring &s);
 
 /**
  * Replace all occurrences of the character \p from in \p str with \p to.
