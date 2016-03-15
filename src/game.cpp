@@ -273,6 +273,49 @@ inline bool isPointableNode(const MapNode &n,
 	       (liquids_pointable && features.isLiquid());
 }
 
+static inline void getNeighborConnectingFace(v3s16 p, INodeDefManager *nodedef,
+		ClientMap *map, MapNode n, u8 bitmask, u8 *neighbors)
+{
+	MapNode n2 = map->getNodeNoEx(p);
+	if (nodedef->nodeboxConnects(n, n2, bitmask))
+		*neighbors |= bitmask;
+}
+
+static inline u8 getNeighbors(v3s16 p, INodeDefManager *nodedef, ClientMap *map, MapNode n)
+{
+	u8 neighbors = 0;
+	const ContentFeatures &f = nodedef->get(n);
+	// locate possible neighboring nodes to connect to
+	if (f.drawtype == NDT_NODEBOX && f.node_box.type == NODEBOX_CONNECTED) {
+		v3s16 p2 = p;
+
+		p2.Y++;
+		getNeighborConnectingFace(p2, nodedef, map, n, 1, &neighbors);
+
+		p2 = p;
+		p2.Y--;
+		getNeighborConnectingFace(p2, nodedef, map, n, 2, &neighbors);
+
+		p2 = p;
+		p2.Z--;
+		getNeighborConnectingFace(p2, nodedef, map, n, 4, &neighbors);
+
+		p2 = p;
+		p2.X--;
+		getNeighborConnectingFace(p2, nodedef, map, n, 8, &neighbors);
+
+		p2 = p;
+		p2.Z++;
+		getNeighborConnectingFace(p2, nodedef, map, n, 16, &neighbors);
+
+		p2 = p;
+		p2.X++;
+		getNeighborConnectingFace(p2, nodedef, map, n, 32, &neighbors);
+	}
+
+	return neighbors;
+}
+
 /*
 	Find what the player is pointing at
 */
@@ -350,8 +393,9 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 			for (s16 x = xstart; x <= xend; x++) {
 				MapNode n;
 				bool is_valid_position;
+				v3s16 p(x, y, z);
 
-				n = map.getNodeNoEx(v3s16(x, y, z), &is_valid_position);
+				n = map.getNodeNoEx(p, &is_valid_position);
 				if (!is_valid_position) {
 					continue;
 				}
@@ -360,7 +404,7 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 				}
 
 				std::vector<aabb3f> boxes;
-				n.getSelectionBoxes(nodedef, &boxes);
+				n.getSelectionBoxes(nodedef, &boxes, getNeighbors(p, nodedef, &map, n));
 
 				v3s16 np(x, y, z);
 				v3f npf = intToFloat(np, BS);
@@ -392,7 +436,7 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 		MapNode n = map.getNodeNoEx(pointed_pos);
 		v3f npf = intToFloat(pointed_pos, BS);
 		std::vector<aabb3f> boxes;
-		n.getSelectionBoxes(nodedef, &boxes);
+		n.getSelectionBoxes(nodedef, &boxes, getNeighbors(pointed_pos, nodedef, &map, n));
 		f32 face_min_distance = 1000 * BS;
 		for (std::vector<aabb3f>::const_iterator
 				i = boxes.begin();
