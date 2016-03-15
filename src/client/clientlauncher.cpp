@@ -340,6 +340,10 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	menudata.script_data.errormessage        = error_message;
 	menudata.script_data.reconnect_requested = reconnect_requested;
 
+	if (reconnect_requested) {
+		menudata.password = password;
+	}
+
 	error_message.clear();
 
 	if (cmd_args.exists("password"))
