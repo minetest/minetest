@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-02-27 05:49+0100\n"
-"PO-Revision-Date: 2016-02-06 01:25+0000\n"
-"Last-Translator: Joan Ciprià Moreno <joancipria@gmail.com>\n"
-"Language-Team: Catalan <https://hosted.weblate.org/projects/minetest/"
-"minetest/ca/>\n"
+"PO-Revision-Date: 2016-03-21 19:40+0000\n"
+"Last-Translator: Joan Ciprià Moreno Teodoro <joancipria@gmail.com>\n"
+"Language-Team: Catalan "
+"<https://hosted.weblate.org/projects/minetest/minetest/ca/>\n"
 "Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.5-dev\n"
+"X-Generator: Weblate 2.6-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -224,7 +224,7 @@ msgstr "(Cap descripció d'ajustament donada)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "< Torna a la pàgina de configuració"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
@@ -252,6 +252,8 @@ msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 msgstr ""
+"Format:  <offset> <escala> (<extensió X>, <extensió Y> , <extensión Z>), "
+"<llavor>, <octaves>, <persistència>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
@@ -508,19 +510,19 @@ msgstr "Començar Joc"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "3D Clouds"
-msgstr ""
+msgstr "Núvols 3D"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "4x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -529,19 +531,19 @@ msgstr "Configuració"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr ""
+msgstr "Suavitzat (Antialiasing):"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
-msgstr ""
+msgstr "Esteu segur que voleu reiniciar el seu món d'un sol jugador?"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
-msgstr ""
+msgstr "Filtre Bilineal"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Bumpmapping"
-msgstr ""
+msgstr "Mapat de relleu"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
@@ -559,15 +561,15 @@ msgstr "Activar tot"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
-msgstr ""
+msgstr "Fulles Boniques"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Generate Normalmaps"
-msgstr ""
+msgstr "Generar Mapes Normals"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
-msgstr ""
+msgstr "Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
@@ -575,15 +577,15 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
-msgstr ""
+msgstr "Sense Filtre"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
-msgstr ""
+msgstr "Sense MipMap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No!!!"
-msgstr ""
+msgstr "No!!!"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
@@ -595,15 +597,15 @@ msgstr "Ningun"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
-msgstr ""
+msgstr "Fulles opaques"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Water"
-msgstr ""
+msgstr "Aigua opaca"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Parallax Occlusion"
-msgstr ""
+msgstr "Oclusió de paral·laxi"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -611,23 +613,23 @@ msgstr "Configuració"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
-msgstr ""
+msgstr "Ombres"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Simple Leaves"
-msgstr ""
+msgstr "Fulles senzilles"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Smooth Lighting"
-msgstr ""
+msgstr "Il·luminació suau"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
-msgstr ""
+msgstr "Texturització:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr ""
+msgstr "Per habilitar les ombres el controlador OpenGL ha ser utilitzat."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold (px)"
