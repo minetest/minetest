@@ -912,6 +912,9 @@ void MapgenV7::generateCaves(s16 max_stone_y)
 		}
 	}
 
+	if (node_min.Y >= water_level)
+		return;
+
 	PseudoRandom ps(blockseed + 21343);
 	u32 bruises_count = ps.range(0, 2);
 	for (u32 i = 0; i < bruises_count; i++) {
