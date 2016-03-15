@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-02-27 05:49+0100\n"
-"PO-Revision-Date: 2015-11-08 22:26+0000\n"
-"Last-Translator: Jean-Patrick G. <jeanpatrick.guerrero@gmail.com>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/minetest/minetest/"
-"fr/>\n"
+"PO-Revision-Date: 2016-03-23 11:23+0000\n"
+"Last-Translator: Thibault Noel <wini_87@hotmail.fr>\n"
+"Language-Team: French "
+"<https://hosted.weblate.org/projects/minetest/minetest/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2.5-dev\n"
+"X-Generator: Weblate 2.5\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -85,7 +85,7 @@ msgstr "Dépend de :"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable MP"
-msgstr "Désactiver le pack de mods"
+msgstr "Désactiver les messages privés"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable MP"
@@ -510,7 +510,7 @@ msgstr "Démarrer"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -519,20 +519,19 @@ msgstr "Nuages 3D"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "4x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Advanced Settings"
-msgstr "Réglages"
+msgstr "Réglages avancés"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr ""
+msgstr "Antialiasing:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
@@ -566,9 +565,8 @@ msgid "Fancy Leaves"
 msgstr "Arbres détaillés"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Generate Normalmaps"
-msgstr "Normal mapping"
+msgstr "Générer un carte normal"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -581,7 +579,7 @@ msgstr "MIP map + anisotropie"
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
 msgid "No Filter"
-msgstr "Filtrage"
+msgstr "Pas de filtre"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
@@ -1326,7 +1324,6 @@ msgid "3D mode"
 msgstr "Mode écran 3D"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -1343,7 +1340,8 @@ msgstr ""
 "-  anaglyphe : couleur 3D bleu turquoise/violet.\n"
 "-  entrelacé : polarisation basée sur des lignes avec support de l'écran.\n"
 "-  horizontal : partage de l'écran horizontal.\n"
-"-  vertical : partage de l'écran vertical."
+"-  vertical : partage de l'écran vertical.\n"
+"-  pageflip: 3D basé sur quadbuffer."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1409,8 +1407,9 @@ msgid "Advanced"
 msgstr "Avancé"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Altitude Chill"
-msgstr ""
+msgstr "Altitude d'état de froid"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
