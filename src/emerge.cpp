@@ -411,10 +411,20 @@ bool EmergeManager::pushBlockEmergeData(
 			return false;
 
 		if (peer_requested != PEER_ID_INEXISTENT) {
-			u16 qlimit_peer = (flags & BLOCK_EMERGE_ALLOW_GEN) ?
-				m_qlimit_generate : m_qlimit_diskonly;
-			if (count_peer >= qlimit_peer)
+			// If we are over the limit for from-disk loading, we can't do
+			// anything in any case.
+			if (count_peer >= m_qlimit_diskonly)
 				return false;
+
+			// Otherwise we might do something.
+			if (count_peer < m_qlimit_generate) {
+				// We are under the queue limit for generation or we will not be
+				// gneerating anything; pass
+			} else {
+				// We want to generate something but we are over queue limit for
+				// that; don't generate but try just loading instead.
+				flags &= ~BLOCK_EMERGE_ALLOW_GEN;
+			}
 		}
 	}
 
@@ -447,7 +457,9 @@ bool EmergeManager::popBlockEmergeData(
 	std::map<v3s16, BlockEmergeData>::iterator it;
 	std::map<u16, u16>::iterator it2;
 
-	g_profiler->avg("Emerge: Queue size", m_blocks_enqueued.size());
+	g_profiler->avg("Emerge: Queue avg size", m_blocks_enqueued.size());
+
+	//dstream<<"emerge queue size: "<<m_blocks_enqueued.size()<<std::endl;
 
 	it = m_blocks_enqueued.find(pos);
 	if (it == m_blocks_enqueued.end())
@@ -757,6 +769,8 @@ void *EmergeThread::run()
 		MapBlock *block;
 
 		if (!popBlockEmerge(&pos, &bedata)) {
+			ScopeProfiler sp(g_profiler,
+					"Emerge: Queue empty time", SPT_ADD);
 			m_queue_event.wait();
 			continue;
 		}

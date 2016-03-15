@@ -1076,12 +1076,12 @@
 #    Maximum number of blocks to be queued that are to be loaded from file.
 #    Set to blank for an appropriate amount to be chosen automatically.
 #    type: int
-# emergequeue_limit_diskonly = 32
+# emergequeue_limit_diskonly = 64
 
 #    Maximum number of blocks to be queued that are to be generated.
 #    Set to blank for an appropriate amount to be chosen automatically.
 #    type: int
-# emergequeue_limit_generate = 32
+# emergequeue_limit_generate = 16
 
 #    Number of emerge threads to use. Make this field blank, or increase this number
 #    to use multiple threads. On multiprocessor systems, this will improve mapgen speed greatly

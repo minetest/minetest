@@ -290,8 +290,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("remote_media", "");
 	settings->setDefault("debug_log_level", "action");
 	settings->setDefault("emergequeue_limit_total", "256");
-	settings->setDefault("emergequeue_limit_diskonly", "32");
-	settings->setDefault("emergequeue_limit_generate", "32");
+	settings->setDefault("emergequeue_limit_diskonly", "64");
+	settings->setDefault("emergequeue_limit_generate", "16");
 	settings->setDefault("num_emerge_threads", "1");
 	settings->setDefault("secure.enable_security", "false");
 	settings->setDefault("secure.trusted_mods", "");
