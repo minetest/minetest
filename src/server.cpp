@@ -2181,7 +2181,7 @@ void Server::SendBlocks(float dtime)
 
 	ScopeProfiler sp(g_profiler, "Server: sel and send blocks to clients");
 
-	bool max_simultaneous_block_sends_server_total =
+	s32 max_simultaneous_block_sends_server_total =
 			g_settings->getS32("max_simultaneous_block_sends_server_total");
 
 	std::vector<u16> clients = m_clients.getClientIDs();
