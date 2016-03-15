@@ -456,10 +456,10 @@ void MapNode::getCollisionBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *b
 		transformNodeBox(*this, f.collision_box, nodemgr, boxes, neighbors);
 }
 
-void MapNode::getSelectionBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *boxes)
+void MapNode::getSelectionBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *boxes, u8 neighbors)
 {
 	const ContentFeatures &f = nodemgr->get(*this);
-	transformNodeBox(*this, f.selection_box, nodemgr, boxes);
+	transformNodeBox(*this, f.selection_box, nodemgr, boxes, neighbors);
 }
 
 u8 MapNode::getMaxLevel(INodeDefManager *nodemgr) const

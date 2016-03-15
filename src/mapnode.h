@@ -245,7 +245,7 @@ struct MapNode
 	/*
 		Gets list of selection boxes
 	*/
-	void getSelectionBoxes(INodeDefManager *nodemg, std::vector<aabb3f> *boxes);
+	void getSelectionBoxes(INodeDefManager *nodemg, std::vector<aabb3f> *boxes, u8 neighbors = 0);
 
 	/*
 		Gets list of collision boxes
