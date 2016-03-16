@@ -213,6 +213,13 @@ void AutosendCycle::start(AutosendAlgorithm *alg_,
 		alg->m_cycle->farblock.nearest_unsent_d = 0;
 		alg->m_last_focus_point = focus_point;
 	}
+	// If camera has turned considerably, reset radius value for iterating from
+	// zero again (has to be done because of FOV dependence of some things)
+	if (alg->m_last_camera_dir.dotProduct(camera_dir) < 0.8f) {
+		alg->m_cycle->mapblock.nearest_unsent_d = 0;
+		alg->m_cycle->farblock.nearest_unsent_d = 0;
+		alg->m_last_camera_dir = camera_dir;
+	}
 
 	// Get some settings
 	max_simul_sends_setting =
