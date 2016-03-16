@@ -1407,7 +1407,6 @@ struct GameRunData {
 
 	float jump_timer;
 	float damage_flash;
-	float update_draw_list_timer;
 	float statustext_time;
 
 	f32 fog_range;
@@ -4153,18 +4152,18 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
 	}
 
 	/*
-		Update block draw list every 200ms or when camera direction has
-		changed much
+		MapBlock drawlist
 	*/
-	runData->update_draw_list_timer += dtime;
-
 	v3f camera_direction = camera->getDirection();
-	if (runData->update_draw_list_timer >= 0.2
-			|| runData->update_draw_list_last_cam_dir.getDistanceFrom(camera_direction) > 0.2
-			|| flags.camera_offset_changed) {
-		runData->update_draw_list_timer = 0;
-		client->getEnv().getClientMap().updateDrawList(driver);
+	if (flags.camera_offset_changed ||
+			runData->update_draw_list_last_cam_dir.getDistanceFrom(camera_direction) > 0.2) {
+		// Do full drawlist update
+		client->getEnv().getClientMap().updateDrawListImmediately(driver);
 		runData->update_draw_list_last_cam_dir = camera_direction;
+	} else {
+		// This does limited processing per frame and finishes whenever it
+		// wants, so we don't want to record camera direction.
+		client->getEnv().getClientMap().updateDrawList(driver);
 	}
 
 	updateGui(&runData->statustext_time, *stats, *runData, dtime, flags, cam);

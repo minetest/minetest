@@ -54,6 +54,8 @@ struct MapDrawControl
 class Client;
 class ITextureSource;
 
+struct DrawListUpdate;
+
 /*
 	ClientMap
 	
@@ -120,6 +122,7 @@ public:
 	void getBlocksInViewRange(v3s16 cam_pos_nodes, 
 		v3s16 *p_blocks_min, v3s16 *p_blocks_max);
 	void updateDrawList(video::IVideoDriver* driver);
+	void updateDrawListImmediately(video::IVideoDriver* driver);
 	void renderMap(video::IVideoDriver* driver, s32 pass);
 
 	int getBackgroundBrightness(float max_d, u32 daylight_factor,
@@ -147,6 +150,8 @@ private:
 	f32 m_camera_fov;
 	v3s16 m_camera_offset;
 
+	DrawListUpdate *m_update;
+
 	std::map<v3s16, MapBlock*> m_drawlist;
 	
 	bool m_cache_trilinear_filter;
@@ -156,6 +161,8 @@ private:
 	// Fetch suggestion algorithm
 	s16 m_mapblocks_exist_up_to_d;
 	s16 m_mapblocks_exist_up_to_d_reset_counter;
+
+	friend struct DrawListUpdate;
 };
 
 #endif
