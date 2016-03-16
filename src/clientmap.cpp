@@ -53,10 +53,17 @@ struct DrawListUpdate
 	v3s16 cam_pos_nodes;
 	v3s16 p_blocks_min;
 	v3s16 p_blocks_max;
+	v3s16 p_blocks_crit_min;
+	v3s16 p_blocks_crit_max;
 
 	// BlockAreaBitmap<bool> for reporting to FarMap
 	VoxelArea nrb_area;
 	BlockAreaBitmap<bool> normally_rendered_blocks;
+
+	// BlockAreaBitmap<bool> for calculating
+	// num_blocks_dont_exist_but_probably_should_be_requested_from_server
+	VoxelArea missing_b_area;
+	BlockAreaBitmap<bool> missing_blocks;
 
 	// Number of blocks in rendering range
 	u32 blocks_in_range;
@@ -114,6 +121,14 @@ DrawListUpdate::DrawListUpdate(ClientMap *cmap, video::IVideoDriver* driver):
 	// Set up a BlockAreaBitmap<bool> for reporting to Map
 	nrb_area = VoxelArea(p_blocks_min, p_blocks_max);
 	normally_rendered_blocks.reset(nrb_area);
+
+	// BlockAreaBitmap<bool> for calculating
+	// num_blocks_dont_exist_but_probably_should_be_requested_from_server
+	// TODO: Probably slightly smaller area would work better; scraping the
+	//       absolute edges probably causes unnecessary processing
+	cmap->getBlocksInCriticalViewRange(cam_pos_nodes, &p_blocks_crit_min, &p_blocks_crit_max);
+	missing_b_area = VoxelArea(p_blocks_crit_min, p_blocks_crit_max);
+	missing_blocks.reset(missing_b_area, true);
 
 	// Sectors might be deleted and created while creating the new drawlist so
 	// collect the keys of the current ones into this vector
@@ -184,6 +199,17 @@ void DrawListUpdate::process(u32 max_us, u32 max_frames_per_update)
 		for (MapBlockVect::iterator i = sectorblocks.begin();
 				i != sectorblocks.end(); ++i) {
 			MapBlock *block = *i;
+
+			// Reset usage timer right here, because if we were more clever
+			// about it and deleted the block because it is behind something or
+			// whatever, the server would continuously re-send it because it is
+			// close enough. Increment the timer by 1 second just to keep it
+			// less prioritized than the ones that are rendered.
+			block->resetUsageTimer();
+			block->incrementUsageTimer(1.0f);
+
+			// This block is clearly not missing because we have it here now.
+			missing_blocks.set(block->getPos(), false);
 
 			/*
 				Compare block position to camera position, skip
@@ -271,7 +297,8 @@ void DrawListUpdate::process(u32 max_us, u32 max_frames_per_update)
 				continue;
 			}
 
-			// This block is in range. Reset usage timer.
+			// Fully reset usage timer; rendered blocks take priority over
+			// in-range ones that aren't rendered
 			block->resetUsageTimer();
 
 			// Limit block count in case of a sudden increase
@@ -315,9 +342,18 @@ void DrawListUpdate::process(u32 max_us, u32 max_frames_per_update)
 		fm->reportNormallyRenderedBlocks(normally_rendered_blocks);
 	}
 
+	// The maximum-number-of-blocks value told to the server is floated up by
+	// this value so that new areas can be received
+	u32 num_blocks_dont_exist_but_probably_should_be_requested_from_server =
+			missing_blocks.count(true);
+	g_profiler->avg("CM: blocks probably should be req.",
+			num_blocks_dont_exist_but_probably_should_be_requested_from_server);
+
 	cmap->m_control.blocks_would_have_drawn = blocks_would_have_drawn;
 	cmap->m_control.blocks_drawn = blocks_drawn;
 	cmap->m_control.farthest_drawn = farthest_drawn;
+	cmap->m_control.num_blocks_dont_exist_but_probably_should_be_requested_from_server =
+			num_blocks_dont_exist_but_probably_should_be_requested_from_server;
 
 	g_profiler->avg("CM: blocks in range", blocks_in_range);
 	g_profiler->avg("CM: blocks occlusion culled", blocks_occlusion_culled);
@@ -457,6 +493,7 @@ void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,
 		cam_pos_nodes.Z + box_nodes_d.Z);
 	// Take a fair amount as we will be dropping more out later
 	// Umm... these additions are a bit strange but they are needed.
+	// TODO: Maybe use getContainerPos32to16
 	*p_blocks_min = v3s16(
 			p_nodes_min.X / MAP_BLOCKSIZE - 3,
 			p_nodes_min.Y / MAP_BLOCKSIZE - 3,
@@ -465,6 +502,30 @@ void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,
 			p_nodes_max.X / MAP_BLOCKSIZE + 1,
 			p_nodes_max.Y / MAP_BLOCKSIZE + 1,
 			p_nodes_max.Z / MAP_BLOCKSIZE + 1);
+}
+
+void ClientMap::getBlocksInCriticalViewRange(v3s16 cam_pos_nodes, 
+		v3s16 *p_blocks_min, v3s16 *p_blocks_max)
+{
+	// This has to be very conservative in order to not cause the server to send
+	// blocks that the client will immediately unload again.
+	s16 d = m_control.wanted_range / 2;
+	if (d < 20)
+		d = 20;
+	v3s16 box_nodes_d = d * v3s16(1, 1, 1);
+	// Define p_nodes_min/max as v3s32 because 'cam_pos_nodes -/+ box_nodes_d'
+	// can exceed the range of v3s16 when a large view range is used near the
+	// world edges.
+	v3s32 p_nodes_min(
+		cam_pos_nodes.X - box_nodes_d.X,
+		cam_pos_nodes.Y - box_nodes_d.Y,
+		cam_pos_nodes.Z - box_nodes_d.Z);
+	v3s32 p_nodes_max(
+		cam_pos_nodes.X + box_nodes_d.X,
+		cam_pos_nodes.Y + box_nodes_d.Y,
+		cam_pos_nodes.Z + box_nodes_d.Z);
+	*p_blocks_min = getContainerPos32to16(p_nodes_min, MAP_BLOCKSIZE);
+	*p_blocks_max = getContainerPos32to16(p_nodes_max, MAP_BLOCKSIZE);
 }
 
 void ClientMap::updateDrawList(video::IVideoDriver* driver)

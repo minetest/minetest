@@ -888,6 +888,8 @@ enum ToServerCommand
 		s16 radius_far
 		f1000 far_weight
 		f1000 fov (radians)
+		u32 max_total_mapblocks
+		u32 max_total_farblocks
 		Manual requests:
 		u32 len
 		for len:

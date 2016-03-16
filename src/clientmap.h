@@ -34,7 +34,8 @@ struct MapDrawControl
 		wanted_max_blocks(0),
 		blocks_drawn(0),
 		blocks_would_have_drawn(0),
-		farthest_drawn(0)
+		farthest_drawn(0),
+		num_blocks_dont_exist_but_probably_should_be_requested_from_server(0)
 	{
 	}
 	// Overrides limits by drawing everything
@@ -49,6 +50,9 @@ struct MapDrawControl
 	u32 blocks_would_have_drawn;
 	// Distance to the farthest block drawn
 	float farthest_drawn;
+	// The maximum-number-of-blocks value told to the server is floated up by
+	// this value so that new areas can be received
+	u32 num_blocks_dont_exist_but_probably_should_be_requested_from_server;
 };
 
 class Client;
@@ -94,6 +98,11 @@ public:
 		m_camera_offset = offset;
 	}
 
+	const MapDrawControl& getMapDrawControl()
+	{
+		return m_control;
+	}
+
 	/*
 		Forcefully get a sector from somewhere
 	*/
@@ -121,8 +130,12 @@ public:
 	
 	void getBlocksInViewRange(v3s16 cam_pos_nodes, 
 		v3s16 *p_blocks_min, v3s16 *p_blocks_max);
+	void getBlocksInCriticalViewRange(v3s16 cam_pos_nodes, 
+		v3s16 *p_blocks_min, v3s16 *p_blocks_max);
+
 	void updateDrawList(video::IVideoDriver* driver);
 	void updateDrawListImmediately(video::IVideoDriver* driver);
+
 	void renderMap(video::IVideoDriver* driver, s32 pass);
 
 	int getBackgroundBrightness(float max_d, u32 daylight_factor,

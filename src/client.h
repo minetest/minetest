@@ -525,6 +525,7 @@ public:
 	bool getFarMapVisible();
 	void setFarMapVisible(bool b);
 	float getFarMapFogDistance();
+	s32 calculateReasonableMapblockLimit();
 
 	// IGameDef interface
 	virtual IItemDefManager* getItemDefManager();

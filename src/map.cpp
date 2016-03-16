@@ -1431,6 +1431,8 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 	u32 saved_blocks_count = 0;
 	u32 block_count_all = 0;
 
+	u32 for_profiler_unloaded_due_to_total_number = 0;
+
 	beginSave();
 
 	// If there is no practical limit, we spare creation of mapblock_queue
@@ -1522,6 +1524,8 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 			// Delete from memory
 			b.sect->deleteBlock(block);
 
+			for_profiler_unloaded_due_to_total_number++;
+
 			if (unloaded_blocks)
 				unloaded_blocks->push_back(p);
 
@@ -1537,6 +1541,8 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 		}
 	}
 	endSave();
+
+	g_profiler->add("Map: Unloaded due to limit", for_profiler_unloaded_due_to_total_number);
 
 	// Finally delete the empty sectors
 	deleteSectors(sector_deletion_queue);

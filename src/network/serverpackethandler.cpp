@@ -2068,6 +2068,8 @@ void Server::handleCommand_SetWantedMapSendQueue(NetworkPacket* pkt_in)
 		s16 radius_far
 		f1000 far_weight
 		f1000 fov
+		u32 max_total_mapblocks
+		u32 max_total_farblocks
 		Manual requests:
 		u32 len
 		for len:
@@ -2079,6 +2081,8 @@ void Server::handleCommand_SetWantedMapSendQueue(NetworkPacket* pkt_in)
 	s16 autosend_radius_far = pkt_in->read<s16>();
 	float autosend_far_weight = pkt_in->read<float>();
 	float autosend_fov = pkt_in->read<float>();
+	u32 autosend_max_total_mapblocks = pkt_in->read<u32>();
+	u32 autosend_max_total_farblocks = pkt_in->read<u32>();
 	u32 wanted_map_send_queue_len = pkt_in->read<u32>();
 
 	/*dstream << "Client " << pkt_in->getPeerId()
@@ -2086,6 +2090,8 @@ void Server::handleCommand_SetWantedMapSendQueue(NetworkPacket* pkt_in)
 			<< ", radius_far=" << autosend_radius_far
 			<< ", far_weight=" << autosend_far_weight
 			<< ", fov=" << autosend_fov
+			<< ", max_total_mapblocks=" << autosend_max_total_mapblocks
+			<< ", max_total_farblocks=" << autosend_max_total_farblocks
 			<< ", wanted_map_send_queue_len=" << wanted_map_send_queue_len
 			<< std::endl;*/
 
@@ -2103,7 +2109,8 @@ void Server::handleCommand_SetWantedMapSendQueue(NetworkPacket* pkt_in)
 	// Set the values in RemoteClient; data transfer is handled elsewhere.
 	RemoteClient* client = getClient(pkt_in->getPeerId(), CS_Created);
 	client->setAutosendParameters(autosend_radius_map, autosend_radius_far,
-			autosend_far_weight, autosend_fov);
+			autosend_far_weight, autosend_fov, autosend_max_total_mapblocks,
+			autosend_max_total_farblocks);
 	client->setMapSendQueue(wanted_map_send_queue);
 }
 

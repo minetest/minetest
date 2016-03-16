@@ -241,11 +241,13 @@ public:
 	WMSSuggestion getNextBlock(EmergeManager *emerge, ServerFarMap *far_map);
 
 	void setParameters(s16 radius_map, s16 radius_far, float far_weight,
-			float fov) {
+			float fov, u32 max_total_mapblocks, u32 max_total_farblocks) {
 		m_radius_map = radius_map;
 		m_radius_far = radius_far;
 		m_far_weight = far_weight;
 		m_fov = fov;
+		m_max_total_mapblocks = max_total_mapblocks;
+		m_max_total_farblocks = max_total_farblocks;
 	}
 
 	// If something is modified near a player, this should probably be called so
@@ -262,6 +264,8 @@ private:
 	s16 m_radius_far; // Updated by the client; 0 disables autosend.
 	float m_far_weight; // Updated by the client.
 	float m_fov; // Updated by the client; 0 disables FOV limit.
+	u32 m_max_total_mapblocks;
+	u32 m_max_total_farblocks;
 	v3s16 m_last_focus_point;
 	v3f m_last_camera_dir;
 	float m_nearest_unsent_reset_timer;
@@ -355,9 +359,10 @@ public:
 	}
 
 	void setAutosendParameters(s16 radius_map, s16 radius_far, float far_weight,
-			float fov)
+			float fov, u32 max_total_mapblocks, u32 max_total_farblocks)
 	{
-		m_autosend.setParameters(radius_map, radius_far, far_weight, fov);
+		m_autosend.setParameters(radius_map, radius_far, far_weight, fov,
+				max_total_mapblocks, max_total_farblocks);
 
 		// Disable fallback algorithm
 		m_fallback_autosend_active = false;
@@ -374,7 +379,8 @@ public:
 	void PrintInfo(std::ostream &o)
 	{
 		o<<"RemoteClient "<<peer_id<<": "
-				<<"m_blocks_sent.size()="<<m_blocks_sent.size()
+				<<"m_mapblocks_sent.size()="<<m_mapblocks_sent.size()
+				<<", m_farblocks_sent.size()="<<m_farblocks_sent.size()
 				<<", m_blocks_sending.size()="<<m_blocks_sending.size()
 				<<", m_excess_gotblocks="<<m_excess_gotblocks
 				<<", m_autosend.describeStatus()="<<m_autosend.describeStatus()
@@ -462,7 +468,9 @@ private:
 		- Value is timestamp when block was sent. It is used for rate-limiting
 		  updates.
 	*/
-	std::map<WantedMapSend, time_t> m_blocks_sent;
+	//std::map<WantedMapSend, time_t> m_blocks_sent;
+	std::map<v3s16, time_t> m_mapblocks_sent;
+	std::map<v3s16, time_t> m_farblocks_sent;
 
 	/*
 		Blocks that are currently on the line.

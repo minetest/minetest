@@ -433,12 +433,14 @@ void Client::step(float dtime)
 	*/
 	const float map_timer_and_unload_dtime = 5.25;
 	if(m_map_timer_and_unload_interval.step(dtime, map_timer_and_unload_dtime)) {
-		ScopeProfiler sp(g_profiler, "Client: map timer and unload");
+		ScopeProfiler sp(g_profiler, "Client: Unloading blocks (time)");
 		std::vector<v3s16> deleted_blocks;
 		m_env.getMap().timerUpdate(map_timer_and_unload_dtime,
 			g_settings->getFloat("client_unload_unused_data_timeout"),
-			g_settings->getS32("client_mapblock_limit"),
+			calculateReasonableMapblockLimit(),
 			&deleted_blocks);
+
+		g_profiler->add("Client: Unloaded blocks (#)", deleted_blocks.size());
 
 		/*
 			Send info to server
@@ -682,7 +684,7 @@ void Client::step(float dtime)
 	static const float fmr_interval_s = 2.0f; // TODO: Configurable
 	if(m_far_blocks_request_interval.step(dtime, fmr_interval_s))
 	{
-		infostream<<"Client: Requesting far blocks"<<std::endl;
+		//infostream<<"Client: Requesting blocks"<<std::endl;
 
 		ClientMap *map = &m_env.getClientMap();
 		static const float far_weight = g_settings->getFloat("far_map_far_weight");
@@ -732,23 +734,27 @@ void Client::step(float dtime)
 				WMSPriority(player_p, far_weight));
 #endif
 
-		// Autosend parameters
+		s32 client_mapblock_limit = calculateReasonableMapblockLimit();
+
+		// Parameters for autosend
 		s16 autosend_radius_map = map->suggestAutosendMapblocksRadius();
 		s16 autosend_radius_far = !m_far_map ? 0 :
 				m_far_map->suggestAutosendFarblocksRadius();
 		float autosend_far_weight = far_weight;
 		float autosend_fov = map->suggestAutosendFov();
+		u32 autosend_max_total_mapblocks =
+				client_mapblock_limit != -1 ? client_mapblock_limit : U32_MAX;
+		u32 autosend_max_total_farblocks = U32_MAX;
 
-#if 0
-		// Periodically disable autosending MapBlocks from far away in order to
-		// get some FarBlocks at all times for now as autosend doesn't send
-		// FarBlocks yet.
-		static size_t temporary_trick = 0;
-		if ((temporary_trick++) % 5 == 0) {
-			if (autosend_radius_map > 2)
-				autosend_radius_map = 2;
+		if (autosend_max_total_mapblocks != U32_MAX) {
+			// The maximum-number-of-blocks value told to the server is floated
+			// up by this value so that the server can send required blocks
+			// regardless of how filled up this client is. Once the server sends
+			// them, the client will hopefully delete less relevant blocks and
+			// not the ones the server just sent.
+			autosend_max_total_mapblocks += getEnv().getClientMap().getMapDrawControl().
+					num_blocks_dont_exist_but_probably_should_be_requested_from_server;
 		}
-#endif
 
 		NetworkPacket pkt(TOSERVER_SET_WANTED_MAP_SEND_QUEUE, 0);
 		/*
@@ -757,6 +763,8 @@ void Client::step(float dtime)
 			s16 radius_far
 			f1000 far_weight
 			f1000 fov
+			u32 max_total_mapblocks
+			u32 max_total_farblocks
 			Manual requests:
 			u32 len
 			for len:
@@ -767,6 +775,8 @@ void Client::step(float dtime)
 		pkt << (s16) autosend_radius_far;
 		pkt << (float) autosend_far_weight;
 		pkt << (float) autosend_fov;
+		pkt << (u32) autosend_max_total_mapblocks;
+		pkt << (u32) autosend_max_total_farblocks;
 		pkt << (u32) wanted_map_send_queue.size();
 		for (size_t i=0; i<wanted_map_send_queue.size(); i++) {
 			const WantedMapSend &wms = wanted_map_send_queue[i];
@@ -1953,6 +1963,22 @@ void Client::setFarMapVisible(bool b)
 float Client::getFarMapFogDistance()
 {
 	return !m_far_map ? 500.0 : m_far_map->suggestFogDistance();
+}
+
+s32 Client::calculateReasonableMapblockLimit()
+{
+	s32 mapblock_limit = g_settings->getS32("client_mapblock_limit");
+
+	// This is a reasonable approximation for limit_required_for_rendering
+	s32 render_range_nodes = getEnv().getClientMap().getMapDrawControl().wanted_range;
+	s32 render_range_mapblocks_1d = render_range_nodes / MAP_BLOCKSIZE + 1;
+	s32 render_range_mapblocks_3d = render_range_mapblocks_1d * render_range_mapblocks_1d * render_range_mapblocks_1d;
+	s32 limit_required_for_rendering = render_range_mapblocks_3d * 1;
+
+	if (mapblock_limit < limit_required_for_rendering)
+		mapblock_limit = limit_required_for_rendering;
+
+	return mapblock_limit;
 }
 
 void Client::makeScreenshot(IrrlichtDevice *device)

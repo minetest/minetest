@@ -340,9 +340,9 @@ WMSSuggestion AutosendCycle::suggestNextMapBlock(EmergeManager *emerge)
 			}
 
 			// Don't send blocks that have already been sent
-			std::map<WantedMapSend, time_t>::const_iterator
-					blocks_sent_i = client->m_blocks_sent.find(wms);
-			if (blocks_sent_i != client->m_blocks_sent.end()){
+			std::map<v3s16, time_t>::const_iterator
+					blocks_sent_i = client->m_mapblocks_sent.find(wms.p);
+			if (blocks_sent_i != client->m_mapblocks_sent.end()){
 				if (client->m_blocks_updated_since_last_send.count(wms) == 0) {
 					/*dstream<<"AutosendMap: "<<wms.describe()
 							<<": Already sent and not updated"<<std::endl;*/
@@ -620,9 +620,9 @@ farblock_mapblocks_iterate_break:
 			// Don't send blocks that have already been sent and have not been
 			// updated. Check this after the emerge queuing so that they have a
 			// chance of being loaded so that they can pass this check later.
-			std::map<WantedMapSend, time_t>::const_iterator
-					blocks_sent_i = client->m_blocks_sent.find(wms);
-			if (blocks_sent_i != client->m_blocks_sent.end()){
+			std::map<v3s16, time_t>::const_iterator
+					blocks_sent_i = client->m_farblocks_sent.find(wms.p);
+			if (blocks_sent_i != client->m_farblocks_sent.end()){
 				if (client->m_blocks_updated_since_last_send.count(wms) == 0) {
 					/*dstream<<"AutosendFar: "<<wms.describe()
 							<<": Already sent and not updated"<<std::endl;*/
@@ -664,17 +664,22 @@ WMSSuggestion AutosendCycle::getNextBlock(
 
 	// Get MapBlock and FarBlock suggestions
 
-	WMSSuggestion suggested_mb = suggestNextMapBlock(emerge);
+	WMSSuggestion suggested_mb;
+	if (alg->m_client->m_mapblocks_sent.size() < alg->m_max_total_mapblocks) {
+		suggested_mb = suggestNextMapBlock(emerge);
+	}
 
 	WMSSuggestion suggested_fb;
-	if (alg->m_far_weight < 1.0f) {
-		// The client wants to always prioritize MapBlocks over FarBlocks. Don't
-		// get a suggested FarBlock unless there is no MapBlock to suggest.
-		if (suggested_mb.wms.type == WMST_INVALID) {
+	if (alg->m_client->m_farblocks_sent.size() < alg->m_max_total_farblocks) {
+		if (alg->m_far_weight < 1.0f) {
+			// The client wants to always prioritize MapBlocks over FarBlocks. Don't
+			// get a suggested FarBlock unless there is no MapBlock to suggest.
+			if (suggested_mb.wms.type == WMST_INVALID) {
+				suggested_fb = suggestNextFarBlock(emerge, far_map);
+			}
+		} else {
 			suggested_fb = suggestNextFarBlock(emerge, far_map);
 		}
-	} else {
-		suggested_fb = suggestNextFarBlock(emerge, far_map);
 	}
 
 	//dstream<<"suggested_mb = "<<suggested_mb.describe()<<std::endl;
@@ -985,7 +990,10 @@ WMSSuggestion RemoteClient::getNextBlock(
 		s16 radius_far = 0; // Old client does not understand FarBlocks
 		float far_weight = 3.0f; // Whatever non-zero
 		float fov = 1.72f; // Assume something (radians)
-		m_autosend.setParameters(radius_map, radius_far, far_weight, fov);
+		u32 max_total_mapblocks = 100000;
+		u32 max_total_farblocks = 0;
+		m_autosend.setParameters(radius_map, radius_far, far_weight, fov,
+				max_total_mapblocks, max_total_farblocks);
 
 		// Continue normally.
 	}
@@ -1024,7 +1032,7 @@ WMSSuggestion RemoteClient::getNextBlock(
 
 			// Don't send blocks that have already been sent, unless it has been
 			// updated
-			if (m_blocks_sent.find(wms) != m_blocks_sent.end()) {
+			if (m_mapblocks_sent.find(wms.p) != m_mapblocks_sent.end()) {
 				if (m_blocks_updated_since_last_send.count(wms) == 0)
 					continue;
 			}
@@ -1112,9 +1120,9 @@ WMSSuggestion RemoteClient::getNextBlock(
 				continue;
 
 			// Don't send blocks that have already been sent
-			std::map<WantedMapSend, time_t>::const_iterator
-					blocks_sent_i = m_blocks_sent.find(wms);
-			if (blocks_sent_i != m_blocks_sent.end()){
+			std::map<v3s16, time_t>::const_iterator
+					blocks_sent_i = m_farblocks_sent.find(wms.p);
+			if (blocks_sent_i != m_farblocks_sent.end()){
 				if (m_blocks_updated_since_last_send.count(wms) == 0) {
 					/*dstream<<"RemoteClient: Already sent and not updated: "
 							<<"("<<wms.p.X<<","<<wms.p.Y<<","<<wms.p.Z<<")"
@@ -1156,7 +1164,10 @@ void RemoteClient::cycleAutosendAlgorithm(float dtime)
 void RemoteClient::GotBlock(const WantedMapSend &wms)
 {
 	if (m_blocks_sending.find(wms) != m_blocks_sending.end()) {
-		m_blocks_sent[wms] = m_blocks_sending[wms];
+		if (wms.type == WMST_MAPBLOCK)
+			m_mapblocks_sent[wms.p] = m_blocks_sending[wms];
+		else if (wms.type == WMST_MAPBLOCK)
+			m_farblocks_sent[wms.p] = m_blocks_sending[wms];
 		m_blocks_sending.erase(wms);
 	} else {
 		m_excess_gotblocks++;
@@ -1178,6 +1189,14 @@ void RemoteClient::SendingBlock(const WantedMapSend &wms)
 void RemoteClient::SetBlockUpdated(const WantedMapSend &wms)
 {
 	//dstream<<"SetBlockUpdated: "<<wms.describe()<<std::endl;
+
+	// The client does not have a recent version of this block so it has to be
+	// considered "not sent". This function is also called when the client
+	// deletes the block from memory.
+	if (wms.type == WMST_MAPBLOCK)
+		m_mapblocks_sent.erase(wms.p);
+	else if (wms.type == WMST_FARBLOCK)
+		m_farblocks_sent.erase(wms.p);
 
 	// Reset autosend's search radius if it's a MapBlock
 	if (wms.type == WMST_MAPBLOCK) {
