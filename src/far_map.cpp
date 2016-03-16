@@ -1185,6 +1185,8 @@ void FarMap::startGeneratingBlockMesh(FarBlock *b,
 			this, *b, level);
 
 	m_worker_thread.addTask(t);
+
+	g_profiler->graphAdd("num_processed_far_meshes", 1);
 }
 
 void FarMap::insertGeneratedBlockMesh(
@@ -1431,6 +1433,8 @@ done:
 
 s16 FarMap::suggestAutosendFarblocksRadius()
 {
+	if (!isVisible())
+		return 0;
 	s16 fetch_distance_farblocks =
 			ceilf((float)config_far_map_range / MAP_BLOCKSIZE / FMP_SCALE);
 	return fetch_distance_farblocks;
