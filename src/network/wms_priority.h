@@ -57,7 +57,12 @@ struct WMSPriority
 				// are always transferred first
 				priority += MAP_BLOCKSIZE * FMP_SCALE;
 
-				priority /= far_weight;
+				if (far_weight <= 0.0f)
+					priority /= 0.1f; // Just get some proportional large value
+					                  // so that FarBlocks are in correct order
+					                  // to each other
+				else
+					priority /= far_weight;
 			}
 			break;
 		default:

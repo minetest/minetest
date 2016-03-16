@@ -260,7 +260,7 @@ private:
 	AutosendCycle *m_cycle;
 	s16 m_radius_map; // Updated by the client; 0 disables autosend.
 	s16 m_radius_far; // Updated by the client; 0 disables autosend.
-	float m_far_weight; // Updated by the client; 0 is invalid.
+	float m_far_weight; // Updated by the client.
 	float m_fov; // Updated by the client; 0 disables FOV limit.
 	v3s16 m_last_focus_point;
 	v3f m_last_camera_dir;

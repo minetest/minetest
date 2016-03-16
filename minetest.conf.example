@@ -322,8 +322,10 @@
 #    Far map far/near priorization factor
 #    A priorization factor for far map transfers is created by dividing distance
 #    of FarBlocks by this and then comparing it to distance to regular
-#    MapBlocks. The one having the smaller value is sent first.
-# far_map_far_weight = 4.0
+#    MapBlocks. The one having the smaller value is sent first. If zero, then
+#    MapBlocks always take higher priority. If you like to have FarMap appear
+#    first, then something like 4.0 works well.
+# far_map_far_weight = 0.0
 
 #    Resolution of nodes in far map's texture atlas
 #    If you have a gigabyte of RAM to spare or play a game with less than a

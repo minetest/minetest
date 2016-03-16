@@ -127,7 +127,7 @@ struct AutosendCycle
 
 		void finish(bool enable_fov_toggle);
 	};
-	
+
 	Search mapblock;
 	Search farblock;
 
@@ -665,7 +665,17 @@ WMSSuggestion AutosendCycle::getNextBlock(
 	// Get MapBlock and FarBlock suggestions
 
 	WMSSuggestion suggested_mb = suggestNextMapBlock(emerge);
-	WMSSuggestion suggested_fb = suggestNextFarBlock(emerge, far_map);
+
+	WMSSuggestion suggested_fb;
+	if (alg->m_far_weight < 1.0f) {
+		// The client wants to always prioritize MapBlocks over FarBlocks. Don't
+		// get a suggested FarBlock unless there is no MapBlock to suggest.
+		if (suggested_mb.wms.type == WMST_INVALID) {
+			suggested_fb = suggestNextFarBlock(emerge, far_map);
+		}
+	} else {
+		suggested_fb = suggestNextFarBlock(emerge, far_map);
+	}
 
 	//dstream<<"suggested_mb = "<<suggested_mb.describe()<<std::endl;
 	//dstream<<"suggested_fb = "<<suggested_fb.describe()<<std::endl;
@@ -866,7 +876,7 @@ AutosendAlgorithm::AutosendAlgorithm(RemoteClient *client):
 	m_cycle(new AutosendCycle()),
 	m_radius_map(0),
 	m_radius_far(0),
-	m_far_weight(8.0f),
+	m_far_weight(3.0f),
 	m_fov(1.72f), // In radians
 	m_nearest_unsent_reset_timer(0.0)
 {}
@@ -973,7 +983,7 @@ WMSSuggestion RemoteClient::getNextBlock(
 	{
 		s16 radius_map = g_settings->getS16("max_block_send_distance");
 		s16 radius_far = 0; // Old client does not understand FarBlocks
-		float far_weight = 8.0f; // Whatever non-zero
+		float far_weight = 3.0f; // Whatever non-zero
 		float fov = 1.72f; // Assume something (radians)
 		m_autosend.setParameters(radius_map, radius_far, far_weight, fov);
 
