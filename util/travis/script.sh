@@ -16,7 +16,9 @@ if [[ $PLATFORM == "Unix" ]]; then
 	cmake $CMAKE_FLAGS ..
 	make -j2
 	echo "Running unit tests."
-	../bin/minetest --run-unittests && exit 0
+	../bin/minetest --run-unittests
+	echo "Checking commits."
+	../util/check_git_guidelines.sh
 elif [[ $PLATFORM == Win* ]]; then
 	[[ $CC == "clang" ]] && exit 1 # Not supposed to happen
 	# We need to have our build directory outside of the minetest directory because
@@ -34,12 +36,15 @@ elif [[ $PLATFORM == Win* ]]; then
 	export EXISTING_MINETEST_DIR=$OLDDIR
 	export NO_MINETEST_GAME=1
 	if [[ $PLATFORM == "Win32" ]]; then
-		$OLDDIR/util/buildbot/buildwin32.sh travisbuild && exit 0
+		$OLDDIR/util/buildbot/buildwin32.sh travisbuild
 	elif [[ $PLATFORM == "Win64" ]]; then
-		$OLDDIR/util/buildbot/buildwin64.sh travisbuild && exit 0
+		$OLDDIR/util/buildbot/buildwin64.sh travisbuild
 	fi
+	echo "Checking commits."
+	$OLDDIR/util/check_git_guidelines.sh
 else
 	echo "Unknown platform \"${PLATFORM}\"."
 	exit 1
 fi
+
 
