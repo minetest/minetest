@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "chat.h"
 #include "debug.h"
-#include "strfnd.h"
+#include "util/strfnd.h"
 #include <cctype>
 #include <sstream>
 #include "util/string.h"
@@ -684,7 +684,7 @@ void ChatBackend::addMessage(std::wstring name, std::wstring text)
 
 	// Note: A message may consist of multiple lines, for example the MOTD.
 	WStrfnd fnd(text);
-	while (!fnd.atend())
+	while (!fnd.at_end())
 	{
 		std::wstring line = fnd.next(L"\n");
 		m_console_buffer.addLine(name, line);

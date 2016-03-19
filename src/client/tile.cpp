@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mesh.h"
 #include "log.h"
 #include "gamedef.h"
-#include "strfnd.h"
+#include "util/strfnd.h"
 #include "util/string.h" // for parseColorString()
 #include "imagefilters.h"
 #include "guiscalingfilter.h"
@@ -1242,7 +1242,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
 				baseimg->fill(video::SColor(0,0,0,0));
 			}
-			while (sf.atend() == false) {
+			while (sf.at_end() == false) {
 				u32 x = stoi(sf.next(","));
 				u32 y = stoi(sf.next("="));
 				std::string filename = sf.next(":");

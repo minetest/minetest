@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include "exceptions.h"
 #include "threading/mutex_auto_lock.h"
-#include "strfnd.h"
+#include "util/strfnd.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>

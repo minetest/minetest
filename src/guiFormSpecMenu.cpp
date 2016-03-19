@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "gamedef.h"
 #include "keycode.h"
-#include "strfnd.h"
+#include "util/strfnd.h"
 #include <IGUICheckBox.h>
 #include <IGUIEditBox.h>
 #include <IGUIButton.h>
