@@ -56,6 +56,7 @@ public:
 		m_log_level(LL_ACTION),
 		m_utf8_bytes_to_wait(0),
 		m_kill_requested(NULL),
+		m_chat_backend(false),
 		m_esc_mode(false),
 		m_game_time(0),
 		m_time_of_day(0)

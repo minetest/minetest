@@ -219,6 +219,8 @@ fake_function() {
 	gettext("In-game chat console background color (R,G,B).");
 	gettext("Console alpha");
 	gettext("In-game chat console background alpha (opaqueness, between 0 and 255).");
+	gettext("Console timestamp format");
+	gettext("Format string describing format of the timestamp on console messages.\nThis is in strftime format.  Set to empty to disable timestamp.");
 	gettext("Selection box color");
 	gettext("Selection box border color (R,G,B).");
 	gettext("Selection box width");

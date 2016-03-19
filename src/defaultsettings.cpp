@@ -134,6 +134,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("opaque_water", "false");
 	settings->setDefault("console_color", "(0,0,0)");
 	settings->setDefault("console_alpha", "200");
+	settings->setDefault("console_timestamp_format", "%H:%M:%S");
 	settings->setDefault("selectionbox_color", "(0,0,0)");
 	settings->setDefault("selectionbox_width", "2");
 	settings->setDefault("inventory_items_animations", "false");

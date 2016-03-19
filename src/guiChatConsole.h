@@ -61,7 +61,7 @@ public:
 	f32 getDesiredHeight() const;
 
 	// Replace actual line when adding the actual to the history (if there is any)
-	void replaceAndAddToHistory(std::wstring line);
+	void replaceAndAddToHistory(const std::wstring &line);
 
 	// Change how the cursor looks
 	void setCursor(
@@ -98,7 +98,7 @@ private:
 	v2u32 m_screensize;
 
 	// used to compute how much time passed since last animate()
-	u32 m_animate_time_old;
+	u64 m_animate_time_old;
 
 	// should the console be opened or closed?
 	bool m_open;

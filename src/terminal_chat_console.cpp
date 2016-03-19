@@ -140,7 +140,7 @@ void TerminalChatConsole::typeChatMessage(const std::wstring &msg)
 
 	// Print if its a command (gets eaten by server otherwise)
 	if (msg[0] == L'/') {
-		m_chat_backend.addMessage(L"", (std::wstring)L"Issued command: " + msg);
+		m_chat_backend.addMessage(L"", L"Issued command: " + msg);
 	}
 }
 
@@ -430,16 +430,13 @@ void TerminalChatConsole::step(int ch)
 void TerminalChatConsole::draw_text()
 {
 	ChatBuffer& buf = m_chat_backend.getConsoleBuffer();
+	ChatLine line;
 	for (u32 row = 0; row < buf.getRows(); row++) {
 		move_for_backend(row, 0);
 		clrtoeol();
-		const ChatFormattedLine& line = buf.getFormattedLine(row);
-		if (line.fragments.empty())
+		if (!buf.getFormattedLine(row, &line))
 			continue;
-		for (u32 i = 0; i < line.fragments.size(); ++i) {
-			const ChatFormattedFragment& fragment = line.fragments[i];
-			addstr(wide_to_utf8(fragment.text).c_str());
-		}
+		addstr(wide_to_utf8(line.text).c_str());
 	}
 }
 

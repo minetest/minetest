@@ -242,10 +242,10 @@ inline std::string lowercase(const std::string &str)
 
 
 /**
- * @param str
  * @return A copy of \p str with leading and trailing whitespace removed.
  */
-inline std::string trim(const std::string &str)
+template <typename Tc>
+inline std::basic_string<Tc> trim(const std::basic_string<Tc> &str)
 {
 	size_t front = 0;
 
@@ -258,6 +258,10 @@ inline std::string trim(const std::string &str)
 
 	return str.substr(front, back - front);
 }
+
+template <typename Tc>
+inline std::basic_string<Tc> trim(const Tc *str)
+	{ return trim(std::basic_string<Tc>(str)); }
 
 
 /**

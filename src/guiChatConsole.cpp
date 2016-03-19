@@ -55,7 +55,7 @@ GUIChatConsole::GUIChatConsole(
 	m_client(client),
 	m_menumgr(menumgr),
 	m_screensize(v2u32(0,0)),
-	m_animate_time_old(0),
+	m_animate_time_old(porting::getTimeMs()),
 	m_open(false),
 	m_close_on_enter(false),
 	m_height(0),
@@ -71,8 +71,6 @@ GUIChatConsole::GUIChatConsole(
 	m_font(NULL),
 	m_fontsize(0, 0)
 {
-	m_animate_time_old = getTimeMs();
-
 	// load background settings
 	s32 console_alpha = g_settings->getS32("console_alpha");
 	m_background_color.setAlpha(clamp_u8(console_alpha));
@@ -157,7 +155,7 @@ f32 GUIChatConsole::getDesiredHeight() const
 	return m_desired_height_fraction;
 }
 
-void GUIChatConsole::replaceAndAddToHistory(std::wstring line)
+void GUIChatConsole::replaceAndAddToHistory(const std::wstring &line)
 {
 	ChatPrompt& prompt = m_chat_backend->getPrompt();
 	prompt.addToHistory(prompt.getLine());
@@ -210,7 +208,7 @@ void GUIChatConsole::draw()
 	}
 
 	// Animation
-	u32 now = getTimeMs();
+	u64 now = porting::getTimeMs();
 	animate(now - m_animate_time_old);
 	m_animate_time_old = now;
 
@@ -323,8 +321,8 @@ void GUIChatConsole::drawText()
 	ChatBuffer& buf = m_chat_backend->getConsoleBuffer();
 	for (u32 row = 0; row < buf.getRows(); ++row)
 	{
-		const ChatFormattedLine& line = buf.getFormattedLine(row);
-		if (line.fragments.empty())
+		ChatLine line;
+		if (!buf.getFormattedLine(row, &line))
 			continue;
 
 		s32 line_height = m_fontsize.Y;
@@ -332,20 +330,18 @@ void GUIChatConsole::drawText()
 		if (y + line_height < 0)
 			continue;
 
-		for (u32 i = 0; i < line.fragments.size(); ++i)
-		{
-			const ChatFormattedFragment& fragment = line.fragments[i];
-			s32 x = (fragment.column + 1) * m_fontsize.X;
-			core::rect<s32> destrect(
-				x, y, x + m_fontsize.X * fragment.text.size(), y + m_fontsize.Y);
-			m_font->draw(
-				fragment.text.c_str(),
-				destrect,
-				video::SColor(255, 255, 255, 255),
-				false,
-				false,
-				&AbsoluteClippingRect);
-		}
+		core::rect<s32> destrect(
+			m_fontsize.X,
+			y,
+			m_fontsize.X * (1 + line.text.size()),
+			y + m_fontsize.Y);
+		m_font->draw(
+			line.text.c_str(),
+			destrect,
+			video::SColor(255, 255, 255, 255),
+			false,
+			false,
+			&AbsoluteClippingRect);
 	}
 }
 
@@ -361,22 +357,15 @@ void GUIChatConsole::drawPrompt()
 	ChatPrompt& prompt = m_chat_backend->getPrompt();
 	std::wstring prompt_text = prompt.getVisiblePortion();
 
-	// FIXME Draw string at once, not character by character
-	// That will only work with the cursor once we have a monospace font
-	for (u32 i = 0; i < prompt_text.size(); ++i)
-	{
-		wchar_t ws[2] = {prompt_text[i], 0};
-		s32 x = (1 + i) * m_fontsize.X;
-		core::rect<s32> destrect(
-			x, y, x + m_fontsize.X, y + m_fontsize.Y);
-		m_font->draw(
-			ws,
-			destrect,
-			video::SColor(255, 255, 255, 255),
-			false,
-			false,
-			&AbsoluteClippingRect);
-	}
+	m_font->draw(
+		prompt_text.c_str(),
+		core::rect<s32>(m_fontsize.X, y,
+			m_fontsize.X * (1 + prompt_text.size()),
+			y + m_fontsize.Y),
+		video::SColor(255, 255, 255, 255),
+		false,
+		false,
+		&AbsoluteClippingRect);
 
 	// Draw the cursor during on periods
 	if ((m_cursor_blink & 0x8000) != 0)
