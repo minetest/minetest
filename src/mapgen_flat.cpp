@@ -565,6 +565,7 @@ void MapgenFlat::generateCaves(s16 max_stone_y)
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index2d++) {
 		bool column_is_open = false;  // Is column open to overground
+		bool is_tunnel = false;  // Is tunnel or tunnel floor
 		u32 vi = vm->m_area.index(x, node_max.Y + 1, z);
 		u32 index3d = (z - node_min.Z) * zstride + (csize.Y + 1) * ystride +
 			(x - node_min.X);
@@ -591,13 +592,16 @@ void MapgenFlat::generateCaves(s16 max_stone_y)
 			if (d1 * d2 > 0.3f && ndef->get(c).is_ground_content) {
 				// In tunnel and ground content, excavate
 				vm->m_data[vi] = MapNode(CONTENT_AIR);
-			} else if (column_is_open &&
+				is_tunnel = true;
+			} else if (is_tunnel && column_is_open &&
 					(c == biome->c_filler || c == biome->c_stone)) {
 				// Tunnel entrance floor
 				vm->m_data[vi] = MapNode(biome->c_top);
 				column_is_open = false;
+				is_tunnel = false;
 			} else {
 				column_is_open = false;
+				is_tunnel = false;
 			}
 		}
 	}
