@@ -57,7 +57,9 @@ private:
 	bool migrate(bool started);
 
 	bool saveBlock(const v3s16 &pos, const char *data, size_t data_len,
-		bool overwrite = true);
+			s64 id = -1);
+
+	bool deleteBlock(s64 id);
 
 	void bindPos(sqlite3_stmt *stmt, const v3s16 &pos, int start = 1);
 
@@ -65,9 +67,13 @@ private:
 
 	sqlite3 *m_database;
 	sqlite3_stmt *m_stmt_read;
-	sqlite3_stmt *m_stmt_write;
+	sqlite3_stmt *m_stmt_insert;
+	sqlite3_stmt *m_stmt_insert_pos;
+	sqlite3_stmt *m_stmt_update;
 	sqlite3_stmt *m_stmt_list;
+	sqlite3_stmt *m_stmt_get_id;
 	sqlite3_stmt *m_stmt_delete;
+	sqlite3_stmt *m_stmt_delete_pos;
 	sqlite3_stmt *m_stmt_begin;
 	sqlite3_stmt *m_stmt_end;
 

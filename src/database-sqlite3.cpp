@@ -76,9 +76,13 @@ Database_SQLite3::Database_SQLite3(const std::string &savedir) :
 	m_savedir(savedir),
 	m_database(NULL),
 	m_stmt_read(NULL),
-	m_stmt_write(NULL),
+	m_stmt_insert(NULL),
+	m_stmt_insert_pos(NULL),
+	m_stmt_update(NULL),
 	m_stmt_list(NULL),
+	m_stmt_get_id(NULL),
 	m_stmt_delete(NULL),
+	m_stmt_delete_pos(NULL),
 	m_stmt_begin(NULL),
 	m_stmt_end(NULL)
 {
@@ -198,7 +202,7 @@ bool Database_SQLite3::migrate(bool started)
 		const char *data = static_cast<const char *>(sqlite3_column_blob(stmt_get, 1));
 		size_t data_len = sqlite3_column_bytes(stmt_get, 1);
 
-		saveBlock(pos, data, data_len, false);
+		saveBlock(pos, data, data_len, 0);
 
 		// Delete block from old table now to allow migration resumption
 		SQLOK(sqlite3_bind_int64(stmt_delete, 1, posHash),
@@ -300,18 +304,26 @@ void Database_SQLite3::prepareStatements()
 	if (m_stmt_read != NULL)
 		return;
 
-	PREPARE_STATEMENT(m_stmt_read, "SELECT `data` FROM `blocks` WHERE "
-			"`x` = ? AND `y` = ? AND `z` = ?");
-#ifdef __ANDROID__
-	PREPARE_STATEMENT(m_stmt_write,  "INSERT INTO `blocks` "
-			"(`x`, `y`, `z`, `data`) VALUES (?, ?, ?, ?)");
-#else
-	PREPARE_STATEMENT(m_stmt_write, "REPLACE INTO `blocks` "
-			"(`x`, `y`, `z`, `data`) VALUES (?, ?, ?, ?)");
-#endif
-	PREPARE_STATEMENT(m_stmt_delete, "DELETE FROM `blocks` WHERE "
-			"`x` = ? AND `y` = ? AND `z` = ?");
-	PREPARE_STATEMENT(m_stmt_list, "SELECT `x`, `y`, `z` FROM `blocks`");
+	PREPARE_STATEMENT(m_stmt_read, "SELECT `data` FROM "
+			"`blocks` JOIN `block_pos` USING (`id`) "
+			"WHERE `x1` = ? AND `y1` = ? AND `z1` = ?");
+
+	PREPARE_STATEMENT(m_stmt_insert, "INSERT INTO `blocks` (`data`) VALUES (?)");
+
+	PREPARE_STATEMENT(m_stmt_update, "UPDATE `blocks` "
+			"SET `data` = ? WHERE `id` = ?");
+
+	PREPARE_STATEMENT(m_stmt_insert_pos, "INSERT INTO `block_pos` "
+			"(`id`, `x1`, `x2`, `y1`, `y2`, `z1`, `z2`) "
+			"VALUES (?1, ?2, ?2, ?3, ?3, ?4, ?4)");
+
+	PREPARE_STATEMENT(m_stmt_get_id, "SELECT `id` FROM `block_pos` "
+			"WHERE `x1` = ? AND `y1` = ? AND `z1` = ?");
+
+	PREPARE_STATEMENT(m_stmt_delete, "DELETE FROM `blocks` WHERE `id` = ?");
+	PREPARE_STATEMENT(m_stmt_delete_pos, "DELETE FROM `block_pos` WHERE `id` = ?");
+
+	PREPARE_STATEMENT(m_stmt_list, "SELECT `x1`, `y1`, `z1` FROM `block_pos`");
 }
 
 inline void Database_SQLite3::bindPos(sqlite3_stmt *stmt, const v3s16 &pos, int start)
@@ -323,43 +335,80 @@ inline void Database_SQLite3::bindPos(sqlite3_stmt *stmt, const v3s16 &pos, int 
 
 bool Database_SQLite3::deleteBlock(const v3s16 &pos)
 {
+	bindPos(m_stmt_get_id, pos);
 
-	bindPos(m_stmt_delete, pos);
+	if (sqlite3_step(m_stmt_get_id) != SQLITE_ROW) {
+		sqlite3_reset(m_stmt_get_id);
+		warningstream << "deleteBlock: Block failed to get ID for "
+			<< PP(pos) << ": " << sqlite3_errmsg(m_database) << std::endl;
+		return false;
+	}
+	s64 id = sqlite3_column_int64(m_stmt_get_id, 0);
+	sqlite3_reset(m_stmt_get_id);
 
-	bool good = sqlite3_step(m_stmt_delete) == SQLITE_DONE;
+	return deleteBlock(id);
+}
+
+bool Database_SQLite3::deleteBlock(s64 id)
+{
+	bool good;
+	SQLOK(sqlite3_bind_int64(m_stmt_delete, 1, id),
+			"Failed to bind block ID for delete");
+	good = sqlite3_step(m_stmt_delete) == SQLITE_DONE;
 	sqlite3_reset(m_stmt_delete);
-
 	if (!good) {
 		warningstream << "deleteBlock: Block failed to delete "
-			<< PP(pos) << ": " << sqlite3_errmsg(m_database) << std::endl;
+			<< id << ": " << sqlite3_errmsg(m_database) << std::endl;
+		return false;
 	}
-	return good;
+
+	SQLOK(sqlite3_bind_int64(m_stmt_delete_pos, 1, id),
+			"Failed to bind block ID for delete");
+	good = sqlite3_step(m_stmt_delete_pos) == SQLITE_DONE;
+	sqlite3_reset(m_stmt_delete_pos);
+	if (!good) {
+		warningstream << "deleteBlock: Block failed to delete position "
+			<< id << ": " << sqlite3_errmsg(m_database) << std::endl;
+		return false;
+	}
+
+	return true;
 }
 
 bool Database_SQLite3::saveBlock(const v3s16 &pos, const char *data,
-		size_t data_len, bool overwrite)
+		size_t data_len, s64 id)
 {
-#ifdef __ANDROID__
-	/**
-	 * Note: For some unknown reason SQLite3 fails to REPLACE blocks on Android,
-	 * deleting them and then inserting works.
-	 */
-	if (overwrite) {
-		bindPos(m_stmt_read, pos);
+	if (id == -1) {
+		bindPos(m_stmt_get_id, pos);
 
-		if (sqlite3_step(m_stmt_read) == SQLITE_ROW) {
-			deleteBlock(pos);
+		if (sqlite3_step(m_stmt_get_id) == SQLITE_ROW) {
+			id = sqlite3_column_int64(m_stmt_get_id, 0);
+		} else {
+			id = 0;
 		}
-		sqlite3_reset(m_stmt_read);
+		sqlite3_reset(m_stmt_get_id);
 	}
-#endif
 
-	bindPos(m_stmt_write, pos);
-	SQLOK(sqlite3_bind_blob(m_stmt_write, 4, data, data_len, NULL),
+	sqlite3_stmt *stmt_do = id == 0 ? m_stmt_insert : m_stmt_update;
+
+	if (id != 0) {
+		SQLOK(sqlite3_bind_int64(stmt_do, 2, id),
+			"Failed to bind block ID for save");
+	}
+	SQLOK(sqlite3_bind_blob(stmt_do, 1, data, data_len, NULL),
 		"Failed to bind block data");
+	SQLRES(sqlite3_step(stmt_do), SQLITE_DONE, "Failed to save block")
+	sqlite3_reset(stmt_do);
 
-	SQLRES(sqlite3_step(m_stmt_write), SQLITE_DONE, "Failed to save block")
-	sqlite3_reset(m_stmt_write);
+
+	if (id == 0) {
+		s64 id = sqlite3_last_insert_rowid(m_database);
+		SQLOK(sqlite3_bind_int64(m_stmt_insert_pos, 1, id),
+				"Failed to bind block ID for pos save");
+		bindPos(m_stmt_insert_pos, pos, 2);
+		SQLRES(sqlite3_step(m_stmt_insert_pos), SQLITE_DONE, "Failed to save block")
+		sqlite3_reset(m_stmt_insert_pos);
+	}
 
 	return true;
 }
@@ -393,12 +442,11 @@ void Database_SQLite3::createDatabase(bool set_ver)
 			"Failed to initialize database version");
 	}
 	SQLOK(sqlite3_exec(m_database,
+		"CREATE VIRTUAL TABLE `block_pos` USING `rtree_i32`\n"
+		"	(`id`, `x1`, `x2`, `y1`, `y2`, `z1`, `z2`);\n"
 		"CREATE TABLE IF NOT EXISTS `blocks` (\n"
-		"	`x` INTEGER NOT NULL,\n"
-		"	`y` INTEGER NOT NULL,\n"
-		"	`z` INTEGER NOT NULL,\n"
-		"	`data` BLOB,\n"
-		"	PRIMARY KEY (`x`, `y`, `z`)\n"
+		"	`id` INTEGER PRIMARY KEY,\n"
+		"	`data` BLOB\n"
 		");\n",
 		NULL, NULL, NULL),
 		"Failed to create database table");
@@ -419,11 +467,15 @@ void Database_SQLite3::listAllLoadableBlocks(std::vector<v3s16> &dst)
 Database_SQLite3::~Database_SQLite3()
 {
 	FINALIZE_STATEMENT(m_stmt_read)
-	FINALIZE_STATEMENT(m_stmt_write)
+	FINALIZE_STATEMENT(m_stmt_insert)
+	FINALIZE_STATEMENT(m_stmt_update)
+	FINALIZE_STATEMENT(m_stmt_insert_pos)
 	FINALIZE_STATEMENT(m_stmt_list)
+	FINALIZE_STATEMENT(m_stmt_get_id)
+	FINALIZE_STATEMENT(m_stmt_delete)
+	FINALIZE_STATEMENT(m_stmt_delete_pos)
 	FINALIZE_STATEMENT(m_stmt_begin)
 	FINALIZE_STATEMENT(m_stmt_end)
-	FINALIZE_STATEMENT(m_stmt_delete)
 
 	SQLOK_ERRSTREAM(sqlite3_close(m_database), "Failed to close database");
 }
