@@ -183,9 +183,7 @@ function core.get_node_drops(nodename, toolname)
         	end
 		if good_rarity and good_tool then
 			got_count = got_count + 1
-			for _, add_item in ipairs(item.items) do
-				got_items[#got_items+1] = add_item
-			end
+			got_items = table.copy(item.items)
 			if drop.max_items ~= nil and got_count == drop.max_items then
 				break
 			end

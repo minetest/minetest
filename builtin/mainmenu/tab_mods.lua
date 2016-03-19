@@ -78,7 +78,7 @@ local function get_formspec(tabview, name, tabdata)
 			descriptionfile:close()
 		else
 			descriptionlines = {}
-			descriptionlines[#descriptionlines + 1] = fgettext("No mod description available")
+			table.insert(descriptionlines, fgettext("No mod description available"))
 		end
 
 		retval = retval ..
