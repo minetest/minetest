@@ -22,155 +22,61 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <string>
 
-class Strfnd{
-    std::string tek;
-    unsigned int p;
+template <typename T>
+class BasicStrfnd {
+	typedef std::basic_string<T> String;
+	String str;
+	size_t pos;
 public:
-    void start(std::string niinq){
-        tek = niinq;
-        p=0;
-    }
-    unsigned int where(){
-        return p;
-    }
-    void to(unsigned int i){
-        p = i;
-    }
-    std::string what(){
-        return tek;
-    }
-    std::string next(std::string plop){
-        //std::cout<<"tek=\""<<tek<<"\" plop=\""<<plop<<"\""<<std::endl;
-        size_t n;
-        std::string palautus;
-        if (p < tek.size())
-        {  
-            //std::cout<<"\tp<tek.size()"<<std::endl;
-            if ((n = tek.find(plop, p)) == std::string::npos || plop == "")
-            {  
-                //std::cout<<"\t\tn == string::npos || plop == \"\""<<std::endl;
-                n = tek.size();
-            }
-            else
-            {  
-                //std::cout<<"\t\tn != string::npos"<<std::endl;
-            }
-            palautus = tek.substr(p, n-p);
-            p = n + plop.length();
-        }
-        //else
-            //std::cout<<"\tp>=tek.size()"<<std::endl;
-		//std::cout<<"palautus=\""<<palautus<<"\""<<std::endl;
-        return palautus;
-    }
-    
-    // Returns substr of tek up to the next occurence of plop that isn't escaped with '\'
-    std::string next_esc(std::string plop) {
-		size_t n, realp;
-		
-    	if (p >= tek.size())
-    		return "";
-		
-		realp = p;
-		do {
-			n = tek.find(plop, p);
-			if (n == std::string::npos || plop == "")
-				n = tek.length();
-			p = n + plop.length();
-		} while (n > 0 && tek[n - 1] == '\\');
-		
-		return tek.substr(realp, n - realp);
-    }
-    
-	void skip_over(std::string chars){
-		while(p < tek.size()){
-			bool is = false;
-			for(unsigned int i=0; i<chars.size(); i++){
-				if(chars[i] == tek[p]){
-					is = true;
-					break;
-				}
-			}
-			if(!is) break;
-			p++;
+	BasicStrfnd(const String &s) : str(s), pos(0) {}
+	void start(const String &s) { str = s; pos = 0; }
+	size_t where() { return pos; }
+	void to(size_t i) { pos = i; }
+	bool atend() { return pos >= str.size(); }
+	String what() { return str; }
+
+	String next(const String &sep)
+	{
+		if (pos >= str.size())
+			return String();
+
+		size_t n;
+		if (sep.empty() || (n = str.find(sep, pos)) == String::npos) {
+			n = str.size();
 		}
+		String ret = str.substr(pos, n - pos);
+		pos = n + sep.size();
+		return ret;
 	}
-    bool atend(){
-        if(p>=tek.size()) return true;
-        return false;
-    }
-    Strfnd(std::string s){
-        start(s);
-    }
+
+	// Returns substr up to the next occurence of sep that isn't escaped with esc ('\\')
+	String next_esc(const String &sep, T esc=static_cast<T>('\\'))
+	{
+		if (pos >= str.size())
+			return String();
+
+		size_t n, old_p = pos;
+		do {
+			if (sep.empty() || (n = str.find(sep, pos)) == String::npos) {
+				pos = n = str.size();
+				break;
+			}
+			pos = n + sep.length();
+		} while (n > 0 && str[n - 1] == esc);
+
+		return str.substr(old_p, n - old_p);
+	}
+
+	void skip_over(const String &chars)
+	{
+		size_t p = str.find_first_not_of(chars, pos);
+		if (p != String::npos)
+			pos = p;
+	}
 };
 
-class WStrfnd{
-    std::wstring tek;
-    unsigned int p;
-public:
-    void start(std::wstring niinq){
-        tek = niinq;
-        p=0;
-    }
-    unsigned int where(){
-        return p;
-    }
-    void to(unsigned int i){
-        p = i;
-    }
-    std::wstring what(){
-        return tek;
-    }
-    std::wstring next(std::wstring plop){
-        //std::cout<<"tek=\""<<tek<<"\" plop=\""<<plop<<"\""<<std::endl;
-        size_t n;
-        std::wstring palautus;
-        if (p < tek.size())
-        {  
-            //std::cout<<"\tp<tek.size()"<<std::endl;
-            if ((n = tek.find(plop, p)) == std::wstring::npos || plop == L"")
-            {  
-                //std::cout<<"\t\tn == string::npos || plop == \"\""<<std::endl;
-                n = tek.size();
-            }
-            else
-            {  
-                //std::cout<<"\t\tn != string::npos"<<std::endl;
-            }
-            palautus = tek.substr(p, n-p);
-            p = n + plop.length();
-        }
-        //else
-            //std::cout<<"\tp>=tek.size()"<<std::endl;
-		//std::cout<<"palautus=\""<<palautus<<"\""<<std::endl;
-        return palautus;
-    }
-    
-    std::wstring next_esc(std::wstring plop) {
-		size_t n, realp;
-		
-    	if (p >= tek.size())
-    		return L"";
-		
-		realp = p;
-		do {
-			n = tek.find(plop, p);
-			if (n == std::wstring::npos || plop == L"")
-				n = tek.length();
-			p = n + plop.length();
-		} while (n > 0 && tek[n - 1] == '\\');
-		
-		return tek.substr(realp, n - realp);
-    }
-    
-    bool atend(){
-        if(p>=tek.size()) return true;
-        return false;
-    }
-    WStrfnd(std::wstring s){
-        start(s);
-    }
-};
+typedef BasicStrfnd<char> Strfnd;
+typedef BasicStrfnd<wchar_t> WStrfnd;
 
 #endif
 
