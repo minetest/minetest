@@ -1688,16 +1688,15 @@ or string form, a ColorString (defined above):
     `colorspec = "green"`
 
 Spatial Vectors
---------------
-
-* `vector.new([x[, y, z]])`: returns a vector.
-    * `x` is a table or the `x` position.
-
+---------------
+* `vector.new(a[, b, c])`: returns a vector:
+    * A copy of `a` if `a` is a vector.
+    * `{x = a, y = b, z = c}`, if all `a, b, c` are defined
 * `vector.direction(p1, p2)`: returns a vector
 * `vector.distance(p1, p2)`: returns a number
 * `vector.length(v)`: returns a number
 * `vector.normalize(v)`: returns a vector
-* `vector.round(v)`: returns a vector
+* `vector.round(v)`: returns a vector, each dimension rounded to floor
 * `vector.apply(v, func)`: returns a vector
 * `vector.equals(v1, v2)`: returns a boolean
 
@@ -1709,7 +1708,7 @@ For the following functions `x` can be either a vector or a number:
 * `vector.divide(v, x)`: returns a scaled vector or Schur quotient
 
 Helper functions
------------------
+----------------
 * `dump2(obj, name="_", dumped={})`
      * Return object serialized as a string, handles reference loops
 * `dump(obj, dumped={})`
