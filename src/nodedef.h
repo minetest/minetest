@@ -292,6 +292,8 @@ struct ContentFeatures
 	// Player cannot build to these (placement prediction disabled)
 	bool rightclickable;
 	u32 damage_per_second;
+	// client dig prediction
+	std::string node_dig_prediction;
 
 	// --- LIQUID PROPERTIES ---
 

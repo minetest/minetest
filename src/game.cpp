@@ -3928,6 +3928,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		runData.dig_time = 0;
 		runData.digging = false;
 
+
 		runData.nodig_delay_timer =
 				runData.dig_time_complete / (float)crack_animation_length;
 
@@ -3945,13 +3946,25 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 
 		bool is_valid_position;
 		MapNode wasnode = map.getNodeNoEx(nodepos, &is_valid_position);
+
 		if (is_valid_position) {
+			const ContentFeatures &features = client->getNodeDefManager()->get(wasnode);
+			if (features.node_dig_prediction == "air") {
+				client->removeNode(nodepos);
+			} else if (!features.node_dig_prediction.empty()) {
+				INodeDefManager *nodedef = client->ndef();
+				content_t id;
+				bool found = nodedef->getId(features.node_dig_prediction, id);
+				if (found)
+					client->addNode(nodepos, id, true);
+				// implicit disable prediction if no match found
+			}
+			// implicit else - disable dig prediction
 			if (client->moddingEnabled()) {
 				if (client->getScript()->on_dignode(nodepos, wasnode)) {
 					return;
 				}
 			}
-			client->removeNode(nodepos);
 		}
 
 		client->interact(2, pointed);
