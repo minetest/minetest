@@ -655,6 +655,12 @@ void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,
 	for (std::vector<Player*>::iterator it = m_players.begin();
 			it != m_players.end();
 			++it) {
+		
+		// Invoke the on_leaveplayer callbacks but make sure that
+		// we hand them a valid player object.
+		if ((*it)->peer_id > 0)
+			m_script->on_leaveplayer((*it)->getPlayerSAO());
+		
 		((Server*)m_gamedef)->DenyAccessVerCompliant((*it)->peer_id,
 			(*it)->protocol_version, (AccessDeniedCode)reason,
 			str_reason, reconnect);
