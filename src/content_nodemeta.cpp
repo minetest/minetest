@@ -186,7 +186,7 @@ void content_nodemeta_deserialize_legacy(std::istream &is,
 		meta->set(p, data);
 
 		if(need_timer)
-			timers->set(p, NodeTimer(1., 0.));
+			timers->set(NodeTimer(1., 0., p));
 	}
 }
 
