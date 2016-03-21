@@ -286,10 +286,9 @@ void Client::handleCommand_NodemetaChanged(NetworkPacket *pkt)
 	NodeMetadataList *meta_updates_list = new NodeMetadataList();
 	std::string datastring = pkt->readLongString();
 	std::istringstream is(datastring, std::ios::binary);
-	std::ostringstream oss(std::ios::binary);
-	decompressZlib(is, oss);
-	std::istringstream iss(oss.str(), std::ios::binary);
-	meta_updates_list->deSerialize(iss, m_itemdef, true);
+	std::stringstream sstr;
+	decompressZlib(is, sstr);
+	meta_updates_list->deSerialize(sstr, m_itemdef, true);
 	std::vector<v3s16> meta_updates = meta_updates_list->getAllKeys();
 	for (std::vector<v3s16>::const_iterator i = meta_updates.begin();
 			i != meta_updates.end(); ++i) {
