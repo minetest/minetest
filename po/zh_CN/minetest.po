@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-02-27 05:49+0100\n"
-"PO-Revision-Date: 2015-12-30 16:01+0000\n"
-"Last-Translator: Jun Zhang <zhangjunphy@gmail.com>\n"
-"Language-Team: Chinese (China) <https://hosted.weblate.org/projects/minetest/"
-"minetest/zh_CN/>\n"
+"PO-Revision-Date: 2016-03-22 07:59+0000\n"
+"Last-Translator: akiyama akira <utawarerumono@yeah.net>\n"
+"Language-Team: Chinese (China) "
+"<https://hosted.weblate.org/projects/minetest/minetest/zh_CN/>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.5-dev\n"
+"X-Generator: Weblate 2.6-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -25,7 +25,7 @@ msgstr "Lua 脚本错误:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
-msgstr "错误:"
+msgstr "发生了一个错误："
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -216,7 +216,7 @@ msgstr "(没有关于此设置的信息)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "< 返回到设置页面"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
@@ -499,7 +499,7 @@ msgstr "启动游戏"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "两倍"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -508,20 +508,19 @@ msgstr "3D 云彩"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "四倍"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "八倍"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Advanced Settings"
-msgstr "设置"
+msgstr "高级设置"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr ""
+msgstr "反锯齿:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
@@ -554,7 +553,7 @@ msgstr "全部启用"
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
 msgid "Fancy Leaves"
-msgstr "花式树"
+msgstr "华丽的树叶"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -594,9 +593,8 @@ msgid "None"
 msgstr "无"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Opaque Leaves"
-msgstr "不透明的水"
+msgstr "不透明的树叶"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Water"
@@ -615,9 +613,8 @@ msgid "Shaders"
 msgstr "着色器"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Simple Leaves"
-msgstr "摇动的叶子"
+msgstr "简单的树叶"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -626,7 +623,7 @@ msgstr "平滑光照"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
-msgstr ""
+msgstr "纹理:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "To enable shaders the OpenGL driver needs to be used."
@@ -642,19 +639,16 @@ msgid "Trilinear Filter"
 msgstr "三线性过滤"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Leaves"
-msgstr "摇动的叶子"
+msgstr "飘动的树叶"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Plants"
-msgstr "摇动的植物"
+msgstr "摇摆的植物"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Water"
-msgstr "摇动的水"
+msgstr "鳞波的水面"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
@@ -1337,18 +1331,21 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
+"输入新地图的随机种子值，不填则随机生成。\n"
+"创建新地图的时候，将会覆盖原来的值。"
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
-msgstr ""
+msgstr "当服务器挂掉的时候，发送给所有客户端的信息。"
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server shuts down."
-msgstr ""
+msgstr "当关闭服务器时，发送给所有客户端的信息。"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
@@ -1356,7 +1353,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
-msgstr ""
+msgstr "空中加速"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
@@ -1372,12 +1369,15 @@ msgid ""
 "Leave this blank to start a local server.\n"
 "Note that the address field in the main menu overrides this setting."
 msgstr ""
+"服务器连接地址。\n"
+"留空则启动一个本地服务器。\n"
+"注意，主菜单的地址栏将会覆盖这里的设置。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
-msgstr ""
+msgstr "为支持4K等屏幕，调节像素点密度（非 X11/Android 环境才有效）。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1395,7 +1395,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
-msgstr ""
+msgstr "保持高速飞行"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
@@ -1411,7 +1411,7 @@ msgstr "各向异性过滤"
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
-msgstr ""
+msgstr "发布服务器"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1419,6 +1419,8 @@ msgid ""
 "If you want to announce your ipv6 address, use  serverlist_url = v6.servers."
 "minetest.net."
 msgstr ""
+"发布到此服务器列表。\n"
+"如果你想发布你的 IPv6 地址，使用 serverlist_url = v6.servers.minetest.net 。"
 
 #: src/settings_translation_file.cpp
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
