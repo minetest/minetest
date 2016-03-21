@@ -1030,17 +1030,17 @@ void ServerEnvironment::activateBlock(MapBlock *block, u32 additional_dtime)
 	m_lbm_mgr.applyLBMs(this, block, stamp);
 
 	// Run node timers
-	std::map<v3s16, NodeTimer> elapsed_timers =
+	std::vector<NodeTimer> elapsed_timers =
 		block->m_node_timers.step((float)dtime_s);
-	if(!elapsed_timers.empty()){
+	if (!elapsed_timers.empty()) {
 		MapNode n;
-		for(std::map<v3s16, NodeTimer>::iterator
+		for (std::vector<NodeTimer>::iterator
 				i = elapsed_timers.begin();
 				i != elapsed_timers.end(); ++i){
-			n = block->getNodeNoEx(i->first);
-			v3s16 p = i->first + block->getPosRelative();
-			if(m_script->node_on_timer(p,n,i->second.elapsed))
-				block->setNodeTimer(i->first,NodeTimer(i->second.timeout,0));
+			n = block->getNodeNoEx(i->position);
+			v3s16 p = i->position + block->getPosRelative();
+			if (m_script->node_on_timer(p, n, i->elapsed))
+				block->setNodeTimer(NodeTimer(i->timeout, 0, i->position));
 		}
 	}
 
@@ -1434,17 +1434,19 @@ void ServerEnvironment::step(float dtime)
 					MOD_REASON_BLOCK_EXPIRED);
 
 			// Run node timers
-			std::map<v3s16, NodeTimer> elapsed_timers =
+			std::vector<NodeTimer> elapsed_timers =
 				block->m_node_timers.step((float)dtime);
-			if(!elapsed_timers.empty()){
+			if (!elapsed_timers.empty()) {
 				MapNode n;
-				for(std::map<v3s16, NodeTimer>::iterator
+				for (std::vector<NodeTimer>::iterator
 						i = elapsed_timers.begin();
-						i != elapsed_timers.end(); ++i){
-					n = block->getNodeNoEx(i->first);
-					p = i->first + block->getPosRelative();
-					if(m_script->node_on_timer(p,n,i->second.elapsed))
-						block->setNodeTimer(i->first,NodeTimer(i->second.timeout,0));
+						i != elapsed_timers.end(); ++i) {
+					n = block->getNodeNoEx(i->position);
+					p = i->position + block->getPosRelative();
+					if (m_script->node_on_timer(p, n, i->elapsed)) {
+						block->setNodeTimer(NodeTimer(
+							i->timeout, 0, i->position));
+					}
 				}
 			}
 		}

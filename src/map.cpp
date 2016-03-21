@@ -2087,11 +2087,13 @@ NodeTimer Map::getNodeTimer(v3s16 p)
 		return NodeTimer();
 	}
 	NodeTimer t = block->m_node_timers.get(p_rel);
-	return t;
+	NodeTimer nt(t.timeout, t.elapsed, p);
+	return nt;
 }
 
-void Map::setNodeTimer(v3s16 p, NodeTimer t)
+void Map::setNodeTimer(const NodeTimer &t)
 {
+	v3s16 p = t.position;
 	v3s16 blockpos = getNodeBlockPos(p);
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
@@ -2105,7 +2107,8 @@ void Map::setNodeTimer(v3s16 p, NodeTimer t)
 				<<std::endl;
 		return;
 	}
-	block->m_node_timers.set(p_rel, t);
+	NodeTimer nt(t.timeout, t.elapsed, p_rel);
+	block->m_node_timers.set(nt);
 }
 
 void Map::removeNodeTimer(v3s16 p)

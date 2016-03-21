@@ -488,9 +488,9 @@ public:
 		m_node_timers.remove(p);
 	}
 
-	inline void setNodeTimer(v3s16 p, NodeTimer t)
+	inline void setNodeTimer(const NodeTimer &t)
 	{
-		m_node_timers.set(p,t);
+		m_node_timers.set(t);
 	}
 
 	inline void clearNodeTimers()
