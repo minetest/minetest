@@ -22,10 +22,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/mathconstants.h"
 #include "collision.h"
 #include "environment.h"
+#include "nodedef.h"
 #include "settings.h"
 #include "serialization.h" // For compressZlib
 #include "tool.h" // For ToolCapabilities
 #include "gamedef.h"
+#include "pathfinder.h"
 #include "player.h"
 #include "server.h"
 #include "scripting_game.h"
@@ -1321,17 +1323,117 @@ std::string PlayerSAO::getPropertyPacket()
 	m_prop.is_visible = (true);
 	return gob_cmd_set_properties(m_prop);
 }
+bool PlayerSAO::checkSpeedCheat()
+{
+	float player_max_speed = 0;
+	if (m_privs.count("fast") != 0) {
+		// Fast speed
+		player_max_speed = m_player->movement_speed_fast;
+	} else {
+		// Normal speed
+		player_max_speed = m_player->movement_speed_walk;
+	}
+	// Tolerance. With the lag pool we shouldn't need it.
+	//player_max_speed *= 2.5;
+	//player_max_speed_up *= 2.5;
+
+	v3f pos_diff = m_player->getPosition() - m_last_good_position;
+	float d_vert = pos_diff.Y;
+	pos_diff.Y = 0;
+	float d_horiz = pos_diff.getLength();
+	float required_time = d_horiz/player_max_speed;
+	if (d_vert > 0 && d_vert / player_max_speed > required_time)
+		required_time = d_vert/player_max_speed;
+
+	return !m_move_pool.grab(required_time);
+}
+
+static inline v3s16 v3f_round(v3f p)
+{
+	return v3s16(myround(p.X), myround(p.Y + .1), myround(p.Z));
+}
+
+bool PlayerSAO::checkNoclipCheat(std::string *err_str)
+{
+	if (m_privs.count("noclip") != 0) {
+		//return false;
+	}
+	float player_max_jump = 2;
+	if (m_privs.count("fly") != 0) {
+		player_max_jump = 200;
+	} else {
+		// TODO calculate some realistic max jump value
+	}
+	float player_max_drop = 100;
+	v3s16 from_p = v3f_round(m_player->getPosition() / BS);
+	v3s16 to_p = v3f_round(m_last_good_position / BS);
+	v3f pos_diff = m_player->getPosition() - m_last_good_position;
+
+	// Check for collisions
+	// Note: this check might be too strict
+	// as the player may go around a corner but
+	// the server only gets the points before and
+	// after the corner: then the straight line
+	// between the points crosses the solid material.
+	// That's why the players get a last chance
+	v3f p_pos = m_last_good_position;
+	v3f p_pos_diff = pos_diff; // should remain the same, but we never know...
+	f32 pos_max_d = p_pos_diff.getLength() * 1.1;
+	aabb3f box = m_player->getCollisionbox();
+	// Setting this to true would also enable player <-> player
+	// collisions, which are allowed.
+	bool collide_with_objects = false;
+
+	collisionMoveResult res = collisionMoveSimple(m_env, m_env->getGameDef(),
+		pos_max_d, box, m_prop.stepheight, 1,
+		&p_pos, &p_pos_diff, v3f(0, 0, 0),
+		this, collide_with_objects);
+
+	if (!res.collides) {
+		return false;
+	}
+	std::ostringstream os(std::ios::binary);
+	INodeDefManager *nodedef = m_env->getGameDef()->getNodeDefManager();
+	Map *map = &m_env->getMap();
+	for (size_t i = 0; i < res.collisions.size(); i++) {
+		CollisionInfo n = res.collisions[i];
+		assert(n.type == COLLISION_NODE);
+		bool is_position_valid;
+		MapNode node = map->getNodeNoEx(n.node_p, &is_position_valid);
+		if (is_position_valid) {
+			const ContentFeatures &f = nodedef->get(node);
+			os << "'" << f.name << "'";
+		} else {
+			os << "unloaded";
+		}
+		os << " at " << PP(n.node_p) <<
+			/*", o_s=" << PP(n.old_speed) << ", n_s=" << PP(n.new_speed) << */
+			( i + 1 == res.collisions.size() ? "" : ",");
+	}
+	*err_str = os.str();
+	/*for (size_t i = 0; i < res.collisions.size(); i++) {
+		CollisionInfo n = res.collisions[i];
+		actionstream << " COLLIDES WITH t=" << n.type << ", pos=" << PP(n.node_p)
+			<< ", o_s=" << PP(n.old_speed) << ", n_s=" << PP(n.new_speed) <<  std::endl;
+	}*/ /*
+	actionstream << "c_s=" << res.collisions.size() <<
+		", p_pos is " << PP(p_pos / BS) << " distance " << pos_diff.getLength() << std::endl;
+	//*/
+
+	// Last chance, we are nice, but if
+	// there is no path between the
+	// start and end positions, the
+	// player has done a noclip cheat
+	return get_path(m_env,
+		from_p, to_p,
+		ceil(p_pos_diff.getLength() * 1.1) + 2,
+		player_max_jump, player_max_drop, PA_PLAIN_NP).size() == 0;
+}
 
 bool PlayerSAO::checkMovementCheat()
 {
-	bool cheated = false;
-	if(isAttached() || m_is_singleplayer ||
-			g_settings->getBool("disable_anticheat"))
-	{
-		m_last_good_position = m_player->getPosition();
-	}
-	else
-	{
+	if (!(isAttached() || m_is_singleplayer ||
+			g_settings->getBool("disable_anticheat"))) {
 		/*
 			Check player movements
 
@@ -1342,36 +1444,27 @@ bool PlayerSAO::checkMovementCheat()
 			too, and much more lightweight.
 		*/
 
-		float player_max_speed = 0;
-		if(m_privs.count("fast") != 0){
-			// Fast speed
-			player_max_speed = m_player->movement_speed_fast;
-		} else {
-			// Normal speed
-			player_max_speed = m_player->movement_speed_walk;
-		}
-		// Tolerance. With the lag pool we shouldn't need it.
-		//player_max_speed *= 2.5;
-		//player_max_speed_up *= 2.5;
-
-		v3f diff = (m_player->getPosition() - m_last_good_position);
-		float d_vert = diff.Y;
-		diff.Y = 0;
-		float d_horiz = diff.getLength();
-		float required_time = d_horiz/player_max_speed;
-		if(d_vert > 0 && d_vert/player_max_speed > required_time)
-			required_time = d_vert/player_max_speed;
-		if(m_move_pool.grab(required_time)){
-			m_last_good_position = m_player->getPosition();
-		} else {
-			actionstream<<"Player "<<m_player->getName()
-					<<" moved too fast; resetting position"
-					<<std::endl;
+		if (checkSpeedCheat()) {
+			actionstream << "Player " << m_player->getName()
+				<< " moved too fast; resetting position"
+				<< std::endl;
 			m_player->setPosition(m_last_good_position);
-			cheated = true;
+			return true;
+		}
+		std::string err_str;
+		if (checkNoclipCheat(&err_str)) {
+			actionstream << "Player " << m_player->getName() <<
+				" didn't clip from " << PP(m_last_good_position / BS) << " to " <<
+				PP(m_player->getPosition() / BS) << (err_str.empty() ? "" : ", colliding " ) <<
+				err_str << std::endl;
+			m_player->setPosition(m_last_good_position);
+			return true;
 		}
 	}
-	return cheated;
+	// Check successful or disabled
+	m_last_good_position = m_player->getPosition();
+	return false;
+
 }
 
 bool PlayerSAO::getCollisionBox(aabb3f *toset) {

@@ -289,6 +289,10 @@ public:
 	bool collideWithObjects();
 
 private:
+	// Cheat checking, returns true if cheated
+	bool checkSpeedCheat();
+	bool checkNoclipCheat(std::string *err_str);
+
 	std::string getPropertyPacket();
 
 	Player *m_player;
