@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SHADER_HEADER
 #define SHADER_HEADER
 
+#include <IMaterialRendererServices.h>
 #include "irrlichttypes_extrabloated.h"
 #include "threads.h"
 #include <string>
@@ -66,6 +67,7 @@ namespace irr { namespace video {
 	class IMaterialRendererServices;
 } }
 
+
 class IShaderConstantSetter
 {
 public:
@@ -73,6 +75,35 @@ public:
 	virtual void onSetConstants(video::IMaterialRendererServices *services,
 			bool is_highlevel) = 0;
 };
+
+
+class IShaderConstantSetterFactory
+{
+public:
+	virtual ~IShaderConstantSetterFactory() {};
+	virtual IShaderConstantSetter* create() = 0;
+};
+
+
+template <typename T, bool is_pixel, std::size_t size=1>
+class CachedShaderSetting {
+	const char *m_name;
+	T m_sent[size];
+
+public:
+	CachedShaderSetting(const char *name) : m_name(name) {}
+	void set(const T value[size], video::IMaterialRendererServices *services)
+	{
+		if (std::equal(m_sent, m_sent + size, value))
+			return;
+		if (is_pixel)
+			services->setPixelShaderConstant(m_name, value, size);
+		else
+			services->setVertexShaderConstant(m_name, value, size);
+		std::copy(value, value + size, m_sent);
+	}
+};
+
 
 /*
 	ShaderSource creates and caches shaders.
@@ -105,7 +136,7 @@ public:
 	virtual void insertSourceShader(const std::string &name_of_shader,
 		const std::string &filename, const std::string &program)=0;
 	virtual void rebuildShaders()=0;
-	virtual void addGlobalConstantSetter(IShaderConstantSetter *setter)=0;
+	virtual void addShaderConstantSetterFactory(IShaderConstantSetterFactory *setter) = 0;
 };
 
 IWritableShaderSource* createShaderSource(IrrlichtDevice *device);
