@@ -16,6 +16,9 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 --------------------------------------------------------------------------------
+
+local enabled_all = false 
+
 local function modname_valid(name)
 	return not name:find("[^a-z0-9_]")
 end
@@ -80,11 +83,15 @@ local function get_formspec(data)
 			end
 		end
 	end
-
-	retval = retval ..
-		"button[8.75,0.125;2.5,0.5;btn_all_mods;" .. fgettext("Enable all") .. "]" ..
-		"textlist[5.5,0.75;5.75,5.25;world_config_modlist;"
-
+	if enabled_all then 
+		retval = retval ..
+			"button[8.75,0.125;2.5,0.5;btn_disable_all_mods;" .. fgettext("Disable all") .. "]" ..
+			"textlist[5.5,0.75;5.75,5.25;world_config_modlist;"
+	else
+		retval = retval ..
+			"button[8.75,0.125;2.5,0.5;btn_enable_all_mods;" .. fgettext("Enable all") .. "]" ..
+			"textlist[5.5,0.75;5.75,5.25;world_config_modlist;"
+	end
 	retval = retval .. modmgr.render_modlist(data.list)
 	retval = retval .. ";" .. data.selected_mod .."]"
 
@@ -229,15 +236,27 @@ local function handle_buttons(this, fields)
 		return true
 	end
 
-	if fields["btn_all_mods"] then
+	if fields.btn_enable_all_mods then
 		local list = this.data.list:get_raw_list()
 
-		for i=1,#list,1 do
-			if list[i].typ ~= "game_mod" and
-				not list[i].is_modpack then
+		for i = 1, #list do
+			if list[i].typ ~= "game_mod" and not list[i].is_modpack then
 				list[i].enabled = true
 			end
 		end
+		enabled_all = true
+		return true
+	end
+	
+	if fields.btn_disable_all_mods then
+		local list = this.data.list:get_raw_list()
+
+		for i = 1, #list do
+			if list[i].typ ~= "game_mod" and not list[i].is_modpack then
+				list[i].enabled = false
+			end
+		end
+		enabled_all = false
 		return true
 	end
 
