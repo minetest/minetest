@@ -219,7 +219,7 @@ int ModApiUtil::l_write_json(lua_State *L)
 int ModApiUtil::l_get_dig_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	std::map<std::string, int> groups;
+	std::map<std::string, float> groups;
 	read_groups(L, 1, groups);
 	ToolCapabilities tp = read_tool_capabilities(L, 2);
 	if(lua_isnoneornil(L, 3))
@@ -234,7 +234,7 @@ int ModApiUtil::l_get_dig_params(lua_State *L)
 int ModApiUtil::l_get_hit_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	std::map<std::string, int> groups;
+	std::map<std::string, float> groups;
 	read_groups(L, 1, groups);
 	ToolCapabilities tp = read_tool_capabilities(L, 2);
 	if(lua_isnoneornil(L, 3))
