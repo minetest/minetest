@@ -3886,6 +3886,8 @@ msgid ""
 "View distance in nodes.\n"
 "Min = 20"
 msgstr ""
+"Visualizza distanza in nodi.\n"
+"Min = 20"
 
 #: src/settings_translation_file.cpp
 msgid "View range decrease key"
