@@ -859,7 +859,7 @@ core.register_chatcommand("clearobjects", {
 	description = "clear all objects in world",
 	privs = {server=true},
 	func = function(name, param)
-		options = {}
+		local options = {}
 		if param == "" or param == "full" then
 			options.mode = "full"
 		elseif param == "quick" then
