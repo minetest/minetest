@@ -1811,6 +1811,15 @@ void Server::SendOverrideDayNightRatio(u16 peer_id, bool do_override,
 	Send(&pkt);
 }
 
+void Server::SendChangeServer(u16 peer_id, std::string server,u16 port,	
+		bool disconnect)
+{
+	NetworkPacket pkt(TOCLIENT_CHANGE_SERVER, 0, peer_id);
+	pkt << disconnect << port << server;
+
+	Send(&pkt);
+}
+
 void Server::SendTimeOfDay(u16 peer_id, u16 time, f32 time_speed)
 {
 	DSTACK(FUNCTION_NAME);
@@ -3120,6 +3129,15 @@ bool Server::overrideDayNightRatio(Player *player, bool do_override,
 
 	player->overrideDayNightRatio(do_override, ratio);
 	SendOverrideDayNightRatio(player->peer_id, do_override, ratio);
+	return true;
+}
+
+bool Server::changeServer(Player *player, std::string server, u16 port, bool disconnect)
+{
+	if (!player)
+		return false;
+
+	SendChangeServer(player->peer_id, server, port, disconnect);
 	return true;
 }
 

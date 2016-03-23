@@ -138,9 +138,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add nodedef v3 - connected nodeboxes
 	PROTOCOL_VERSION 28:
 		CPT2_MESHOPTIONS
+	PROTOCOL_VERSION 29:
+		Add TOCLIENT_CHANGE_SERVER to tell the client to connect to a diffrent server
 */
 
-#define LATEST_PROTOCOL_VERSION 28
+#define LATEST_PROTOCOL_VERSION 29
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13
@@ -591,6 +593,11 @@ enum ToClientCommand
 	*/
 
 	TOCLIENT_DELETE_PARTICLESPAWNER = 0x53,
+	/*
+		u32 id
+	*/
+
+	TOCLIENT_CHANGE_SERVER = 0x54,
 	/*
 		u32 id
 	*/

@@ -75,6 +75,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 extern Settings *g_settings;
 extern Profiler *g_profiler;
 
+bool disconnect;
+std::string newaddress;
+u16 newport;
+
+bool change_server;
+
 /*
 	Text input system
 */
@@ -189,6 +195,22 @@ struct LocalFormspecHandler : public TextDest {
 
 			if (fields.find("quit") != fields.end()) {
 				m_client->sendRespawn();
+				return;
+			}
+		}
+		if (m_formname == "MT_CHANGE_SERVER") {
+			assert(m_client != 0);
+
+			if ((fields.find("btn_continue") != fields.end())) {
+				errorstream << "server change accepted" << std::endl;
+				g_gamecallback->changeserver();
+				return;
+			}
+
+			if (fields.find("btn_exit") != fields.end()) {
+				errorstream << "server change regected" << std::endl;
+				if (disconnect)
+					g_gamecallback->disconnect();
 				return;
 			}
 		}
@@ -1155,8 +1177,34 @@ static void show_deathscreen(GUIFormSpecMenu **cur_formspec,
 	/* Create menu */
 	/* Note: FormspecFormSource and LocalFormspecHandler
 	 * are deleted by guiFormSpecMenu                     */
+	errorstream << formspec << std::endl;
 	FormspecFormSource *fs_src = new FormspecFormSource(formspec);
 	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_DEATH_SCREEN", client);
+
+	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device,
+		joystick, fs_src, txt_dst, NULL);
+}
+
+static void show_changeserver_screen(GUIFormSpecMenu **cur_formspec,
+	InventoryManager *invmgr, IGameDef *gamedef,
+	IWritableTextureSource *tsrc, IrrlichtDevice *device,
+	JoystickController *joystick, Client *client)
+{
+	std::string formspec =
+		std::string(FORMSPEC_VERSION_STRING) +
+		SIZE_TAG
+		"button_exit[4,0.5;3,0.5;btn_continue; Continue]"
+		"button_exit[4,1.5;3,0.5;btn_exit; Cancel]"
+		"bgcolor[#320000b4;true]"
+		"label[2,0.3;" + gettext("Do you wish to change server?.") + "]"
+		;
+
+	/* Create menu */
+	/* Note: FormspecFormSource and LocalFormspecHandler
+	* are deleted by guiFormSpecMenu                     */
+
+	FormspecFormSource *fs_src = new FormspecFormSource(formspec);
+	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_CHANGE_SERVER", client);
 
 	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device,
 		joystick, fs_src, txt_dst, NULL);
@@ -1227,7 +1275,8 @@ static void show_pause_menu(GUIFormSpecMenu **cur_formspec,
 
 	/* Create menu */
 	/* Note: FormspecFormSource and LocalFormspecHandler  *
-	 * are deleted by guiFormSpecMenu                     */
+	 * are deleted by guiFormSpecMenu       */
+	errorstream << os.str() << std::endl;
 	FormspecFormSource *fs_src = new FormspecFormSource(os.str());
 	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_PAUSE_MENU");
 
@@ -1507,7 +1556,7 @@ public:
 			const SubgameSpec &gamespec,    // Used for local game
 			bool simple_singleplayer_mode);
 
-	void run();
+	bool run();
 	void shutdown();
 
 protected:
@@ -1537,6 +1586,7 @@ protected:
 
 	void updateInteractTimers(GameRunData *runData, f32 dtime);
 	bool checkConnection();
+	bool handelChangeServer();
 	bool handleCallbacks();
 	void processQueues();
 	void updateProfilers(const GameRunData &runData, const RunStats &stats,
@@ -1883,7 +1933,7 @@ bool Game::startup(bool *kill,
 }
 
 
-void Game::run()
+bool Game::run()
 {
 	ProfilerGraph graph;
 	RunStats stats              = { 0 };
@@ -1940,7 +1990,8 @@ void Game::run()
 			break;
 		if (!handleCallbacks())
 			break;
-
+		if (!handelChangeServer())
+			return true;
 		processQueues();
 
 		infotext = L"";
@@ -1974,6 +2025,7 @@ void Game::run()
 		// Update if minimap has been disabled by the server
 		flags.show_minimap &= !client->isMinimapDisabledByServer();
 	}
+	return false;
 }
 
 
@@ -2539,13 +2591,25 @@ inline void Game::updateInteractTimers(GameRunData *runData, f32 dtime)
 }
 
 
-/* returns false if game should exit, otherwise true
+/* returns false if the client should connect to a diffrent server, otherwise true
  */
 inline bool Game::checkConnection()
 {
+
+	if (g_gamecallback->change_server) {
+		g_gamecallback->change_server = false;
+		return false;
+	}
+	return true;
+}
+
+/* returns false if game should exit, otherwise true
+*/
+inline bool Game::handelChangeServer()
+{
 	if (client->accessDenied()) {
 		*error_message = "Access denied. Reason: "
-				+ client->accessDeniedReason();
+			+ client->accessDeniedReason();
 		*reconnect_requested = client->reconnectRequested();
 		errorstream << *error_message << std::endl;
 		return false;
@@ -2553,7 +2617,6 @@ inline bool Game::checkConnection()
 
 	return true;
 }
-
 
 /* returns false if game should exit, otherwise true
  */
@@ -3552,6 +3615,14 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 			bool enable = event.override_day_night_ratio.do_override;
 			u32 value = event.override_day_night_ratio.ratio_f * 1000;
 			client->getEnv().setDayNightRatioOverride(enable, value);
+		} else if (event.type == CE_CHANGE_SERVER) {
+			disconnect = event.change_server.disconnect;
+			newaddress = *event.change_server.ipaddress;
+			newport = event.change_server.port;
+
+			chat_backend->addMessage(L"", L"Server change init.");
+			show_changeserver_screen(&current_formspec, client, gamedef, texture_src,
+				device, &input->joystick, client);
 		}
 	}
 }
@@ -4593,15 +4664,23 @@ void the_game(bool *kill,
 	 * is created then this is updated and we don't want to change the value
 	 * passed to us by the calling function
 	 */
+	errorstream << random_input << std::endl;
+	errorstream << map_dir << std::endl;
+	errorstream << playername << std::endl;
+	errorstream << password << std::endl;
+	errorstream << address << std::endl;
+	errorstream << port << std::endl;
+	errorstream << error_message << std::endl;
+	errorstream << simple_singleplayer_mode << std::endl;
 	std::string server_address = address;
-
+	bool change_server = false;
 	try {
 
 		if (game.startup(kill, random_input, input, device, map_dir,
 				playername, password, &server_address, port, error_message,
 				reconnect_requested, &chat_backend, gamespec,
 				simple_singleplayer_mode)) {
-			game.run();
+			change_server = game.run();
 			game.shutdown();
 		}
 
@@ -4616,5 +4695,24 @@ void the_game(bool *kill,
 	} catch (ModError &e) {
 		error_message = e.what() + strgettext("\nCheck debug.txt for details.");
 		errorstream << "ModError: " << error_message << std::endl;
+	}
+
+	if (change_server) {
+		the_game(kill,
+			random_input,
+			input,
+			device,
+
+			map_dir,
+			playername,
+			password,
+			newaddress,         // If empty local server is created
+			newport,
+
+			error_message,
+			chat_backend,
+			false,
+			gamespec,        // Used for local game
+			false);
 	}
 }

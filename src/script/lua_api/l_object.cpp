@@ -1716,6 +1716,29 @@ int ObjectRef::l_get_day_night_ratio(lua_State *L)
 	return 1;
 }
 
+int ObjectRef::l_change_server(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	std::string server = luaL_checkstring(L, 2);
+	u16 port = luaL_checkint(L, 3);
+	bool disconnect = false;
+
+	if (lua_isboolean(L, 4))
+		disconnect = lua_toboolean(L, 4);
+	
+	if (!getServer(L)->changeServer(player, server, port, disconnect))
+		return 0;
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
 {
@@ -1858,5 +1881,6 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_local_animation),
 	luamethod(ObjectRef, set_eye_offset),
 	luamethod(ObjectRef, get_eye_offset),
+	luamethod(ObjectRef, change_server),
 	{0,0}
 };

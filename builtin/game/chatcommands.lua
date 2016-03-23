@@ -202,8 +202,6 @@ core.register_chatcommand("grant", {
 	description = "Give privilege to player",
 	func = function(name, param)
 		local grantname, grantprivstr = string.match(param, "([^ ]+) (.+)")
-		print(grantname)
-		print(grantprivstr)
 		if not grantname or not grantprivstr then
 			return false, "Invalid parameters (see /help grant)"
 		end	

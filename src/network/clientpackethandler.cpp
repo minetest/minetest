@@ -1229,3 +1229,25 @@ void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 	resp_pkt << std::string(bytes_M, len_M);
 	Send(&resp_pkt);
 }
+
+void Client::handleCommand_ChangeServer(NetworkPacket* pkt)
+{
+	std::string server;
+	u16 port;
+	bool disconnect;
+
+	*pkt >> disconnect >> port >> server;
+
+	errorstream << "Client: Server requested server change" << std::endl;
+	errorstream << "disconnect:" << disconnect << std::endl;
+	errorstream << "port:" << port << std::endl;
+	errorstream << "ip address:" << server << std::endl;
+
+	ClientEvent event;
+	event.type = CE_CHANGE_SERVER;
+	event.change_server.disconnect = disconnect;
+	event.change_server.port = port;
+	event.change_server.ipaddress = new std::string(server);
+
+	m_client_event_queue.push(event);
+}

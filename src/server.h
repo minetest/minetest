@@ -358,6 +358,7 @@ public:
 
 	bool overrideDayNightRatio(Player *player, bool do_override,
 			float brightness);
+	bool Server::changeServer(Player *player, std::string server, u16 port, bool disconnect);
 
 	/* con::PeerHandler implementation. */
 	void peerAdded(con::Peer *peer);
@@ -423,7 +424,7 @@ private:
 	void SendSetSky(u16 peer_id, const video::SColor &bgcolor,
 			const std::string &type, const std::vector<std::string> &params);
 	void SendOverrideDayNightRatio(u16 peer_id, bool do_override, float ratio);
-
+	void SendChangeServer(u16 peer_id, std::string server, u16 port, bool disconnect);
 	/*
 		Send a node removal/addition event to all clients except ignore_id.
 		Additionally, if far_players!=NULL, players further away than

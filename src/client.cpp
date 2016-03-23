@@ -333,6 +333,35 @@ void Client::connect(Address address,
 	m_con.Connect(address);
 }
 
+/*
+void Client::changeServer(Address address,
+	const std::string &address_name)
+{
+	DSTACK(FUNCTION_NAME);
+
+	if (m_localdb) {
+		infostream << "Local map saving ended." << std::endl;
+		m_localdb->endSave();
+	}
+
+	m_con.Disconnect(); 
+
+	delete m_inventory_from_server;
+
+	// Delete detached inventories
+	for (std::map<std::string, Inventory*>::iterator
+		i = m_detached_inventories.begin();
+		i != m_detached_inventories.end(); ++i) {
+		delete i->second;
+	}
+
+	initLocalMapSaving(address, address_name, false);
+
+	m_con.SetTimeoutMs(0);
+	m_con.Connect(address);
+}
+
+*/
 void Client::step(float dtime)
 {
 	DSTACK(FUNCTION_NAME);

@@ -570,14 +570,35 @@ minetest.register_chatcommand("test1", {
 			return
 		end
 		player:set_inventory_formspec(
-				"size[13,7.5]"..
-				"image[6,0.6;1,2;player.png]"..
-				"list[current_player;main;5,3.5;8,4;]"..
-				"list[current_player;craft;8,0;3,3;]"..
-				"list[current_player;craftpreview;12,1;1,1;]"..
-				"list[detached:test_inventory;main;0,0;4,6;0]"..
-				"button[0.5,7;2,1;button1;Button 1]"..
-				"button_exit[2.5,7;2,1;button2;Exit Button]"
+--'formspec_version[1]'..
+'size[11,5.5,true]'..
+'button_exit[4,0.5;3,0.5;btn_continue;Continue]'..
+'button_exit[4,1.5;3,0.5;btn_sound;Sound Volume]'..
+'button_exit[4,2.5;3,0.5;btn_key_config;Change Keys]'..
+'button_exit[4,3.5;3,0.5;btn_exit_menu;Exit to Menu]'..
+'button_exit[4,4.5;3,0.5;tn_exit_os;Exit to OS]'..
+[[textarea[7.5,0.25;3.9,6.25;;Default Controls: - WASD: move
+ - Space: jump/climb
+ - Shift: sneak/go down
+ - Q: drop item
+ - I: inventory
+ - Mouse: turn/look
+ - Mouse left: dig/punch
+ - Mouse right: place/use
+ - Mouse wheel: select item
+ - T: chat
+ ;]
+]]..
+'textarea[0.4,0.25;3.5,6;;'..
+[[MinetestVER=0.4.14-dev-b68a292-dirty BUILD_TYPE=Release RUN_IN_PLACE=1
+ USE_GETTEXT=0
+ USE_SOUND=1
+ USE_CURL=1
+ USE_FREETYPE=0
+ USE_LUAJIT=1
+ STATIC_SHAREDIR="." 
+path_user = D:\Games and game dev\Minetest_dev\minetest\minetest\bin\..;]
+]]
 		)
 		minetest.chat_send_player(name, "Done.");
 	end,

@@ -304,6 +304,9 @@ private:
 	// get_nametag_attributes(self)
 	static int l_get_nametag_attributes(lua_State *L);
 
+	// change_server(self, ip, port)
+	static int l_change_server(lua_State *L);
+
 public:
 	ObjectRef(ServerActiveObject *object);
 

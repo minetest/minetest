@@ -148,6 +148,11 @@ public:
 		disconnect_requested = true;
 	}
 
+	virtual void changeserver()
+	{
+		change_server = true;
+	}
+
 	virtual void changePassword()
 	{
 		changepassword_requested = true;
@@ -174,6 +179,7 @@ public:
 	bool changevolume_requested;
 	bool keyconfig_requested;
 	bool shutdown_requested;
+	bool change_server;
 
 	bool keyconfig_changed;
 

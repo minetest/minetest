@@ -148,6 +148,7 @@ enum ClientEventType
 	CE_HUDCHANGE,
 	CE_SET_SKY,
 	CE_OVERRIDE_DAY_NIGHT_RATIO,
+	CE_CHANGE_SERVER,
 };
 
 struct ClientEvent
@@ -244,6 +245,12 @@ struct ClientEvent
 			bool do_override;
 			float ratio_f;
 		} override_day_night_ratio;
+		
+		struct{
+			bool disconnect;
+			std::string *ipaddress;
+			u16 port;
+		} change_server;
 	};
 };
 
@@ -336,7 +343,8 @@ public:
 	void connect(Address address,
 			const std::string &address_name,
 			bool is_local_server);
-
+	void changeServer(Address address,
+		const std::string &address_name);
 	/*
 		Stuff that references the environment is valid only as
 		long as this is not called. (eg. Players)
@@ -398,6 +406,7 @@ public:
 	void handleCommand_LocalPlayerAnimations(NetworkPacket* pkt);
 	void handleCommand_EyeOffset(NetworkPacket* pkt);
 	void handleCommand_SrpBytesSandB(NetworkPacket* pkt);
+	void handleCommand_ChangeServer(NetworkPacket* pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
