@@ -2,6 +2,7 @@
 # Copyright (C) 2011 Perttu Ahola "celeron55"
 # This file is distributed under the same license as the Minetest package.
 # Giuseppe Bilotta <giuseppe.bilotta@gmail.com>, 2011.
+# Minor Fixes by Bassa31, 2016
 #
 msgid ""
 msgstr ""
@@ -569,7 +570,7 @@ msgstr "Foglie opache"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Generate Normalmaps"
-msgstr ""
+msgstr "Generare Mappe Normali"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -892,7 +893,7 @@ msgstr "Volume del suono"
 
 #: src/game.cpp
 msgid "You died."
-msgstr "Siete morti."
+msgstr "Sei morto."
 
 #: src/guiFormSpecMenu.cpp
 msgid "Enter "
@@ -1435,7 +1436,7 @@ msgstr "Ambient occlusion gamma"
 
 #: src/settings_translation_file.cpp
 msgid "Amplifies the valleys"
-msgstr ""
+msgstr "Amplifica le valli"
 
 #: src/settings_translation_file.cpp
 msgid "Anisotropic filtering"
@@ -1450,11 +1451,12 @@ msgid ""
 "Announce to this serverlist.\n"
 "If you want to announce your ipv6 address, use  serverlist_url = v6.servers."
 "minetest.net."
-msgstr ""
+msgstr "Annuncio per questo server. \n"
+"Se vuoi annunciare il tuo indirizzo ipv6, usa servelist_url = v6.servers."
 
 #: src/settings_translation_file.cpp
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-msgstr ""
+msgstr "Apporissimare (X,Y,Z) nei nodi"
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
@@ -1492,7 +1494,7 @@ msgstr "Bit per pixel (profondita del colore) in schermo intero."
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
-msgstr ""
+msgstr "Crea giocatore all'interno"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -1508,15 +1510,15 @@ msgstr "Tasto Attiva/Disattiva aggiornamento della camera"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #1"
-msgstr ""
+msgstr "Rumore cava #1"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
-msgstr ""
+msgstr "Rumore cava #2"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
-msgstr ""
+msgstr "Cave e tunnel formano l'intersezione dei due rumori"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
@@ -1608,6 +1610,8 @@ msgid ""
 "Comma-seperated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
+"Elenco di mods che sono autorizzate ad accedere HTTP Apis,(separate da una virgola)\n"
+"permette loro di caricare e scaricare dati /a internet."
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
