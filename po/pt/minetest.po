@@ -8,29 +8,28 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-02-27 05:49+0100\n"
-"PO-Revision-Date: 2016-01-14 18:20+0000\n"
-"Last-Translator: Ian giestas pauli <iangiestaspauli@gmail.com>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/minetest/"
-"minetest/pt/>\n"
+"PO-Revision-Date: 2016-03-25 10:43+0000\n"
+"Last-Translator: Fernando Reis <fernando.reis@pt.lu>\n"
+"Language-Team: Portuguese "
+"<https://hosted.weblate.org/projects/minetest/minetest/pt/>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.5-dev\n"
+"X-Generator: Weblate 2.6-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
+msgstr "Ocorreu um erro num script Lua, como por exemplo num extra:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
-msgstr ""
+msgstr "Ocorreu um erro:"
 
 #: builtin/fstk/ui.lua
-#, fuzzy
 msgid "Main menu"
-msgstr "Menu Principal"
+msgstr "Menu principal"
 
 #: builtin/fstk/ui.lua builtin/mainmenu/store.lua
 msgid "Ok"
@@ -42,7 +41,7 @@ msgstr "Reconectar"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "O servidor requisitou uma reconexão:"
+msgstr "O servidor solicitou uma reconexão:"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
@@ -50,27 +49,29 @@ msgstr "A carregar..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "Versão do protocolo não coincide. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "O servidor requere o protocolo versão $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "Servidor suporta versões de protocolo entre $1 e $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
+"Tente recarregar a lista de servidores públicos e verificar a sua ligação à "
+"internet."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "Nós suportamos apenas o protocolo versão $1."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "Nós suportamos as versões de protocolo entre $1 e $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
@@ -84,25 +85,24 @@ msgid "Depends:"
 msgstr "Depende de:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable MP"
-msgstr "Desativar Tudo"
+msgstr "Desativar MP (mod pack)"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable MP"
-msgstr "Ativar Tudo"
+msgstr "Ativar MP (mod pack)"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable all"
-msgstr "Ativar Tudo"
+msgstr "Ativar tudo"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
+"Falha ao ativar mod \"$1\" porque contém caracteres inválidos. Apenas "
+"caracteres de \"a\" até \"z\" e algarismos de 0 até 9 são permitidos."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -110,7 +110,7 @@ msgstr "Esconder Jogo"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide mp content"
-msgstr ""
+msgstr "Ocultar conteúdo MP (mod pack)"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -139,11 +139,11 @@ msgstr "Criar"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr ""
+msgstr "Descarregue um jogo, como o minetest_game, do sítio minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "Descarregue um do sítio minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -159,11 +159,13 @@ msgstr "Mundo sem nome ou nenhum jogo selecionado"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
-msgstr ""
+msgstr "Semente aleatória"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
 msgstr ""
+"Aviso: O jogo \"minimal development test\" destina-se apenas a "
+"desenvolvedores."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -171,7 +173,7 @@ msgstr "Nome do Mundo"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no subgames installed."
-msgstr ""
+msgstr "Você não tem nenhum jogo instalado."
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Are you sure you want to delete \"$1\"?"
@@ -212,43 +214,43 @@ msgstr "Renomear Pacote de Extras:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "\"$1\" is not a valid flag."
-msgstr ""
+msgstr "\"$1\" não é uma flag válida."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
-msgstr ""
+msgstr "(Descrição de configuração não fornecida)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "< Voltar para as configurações"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
-msgstr ""
+msgstr "Navegar"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Disabled"
-msgstr "Desativar Tudo"
+msgstr "Desativado"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr ""
+msgstr "Editar"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Enabled"
-msgstr "ativo"
+msgstr "Ativado"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr ""
+msgstr "O formato é de 3 números separados por vírgulas dentro de paréntesis."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 msgstr ""
+"Formato: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+"<octaves>, <persistence>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
@@ -261,52 +263,52 @@ msgstr "Extras"
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
 msgstr ""
+"Opcionalmente a lacunaridade pode ser adicionada com uma vírgula na frente."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
-msgstr ""
+msgstr "Por favor, introduza uma lista de flags separadas por vírgulas."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "Por favor insira um inteiro válido."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "Por favor, insira um número válido."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Possible values are: "
-msgstr ""
+msgstr "Os valores possíveis são: "
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "Restaurar valores por defeito"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Select path"
-msgstr "Seleccionar"
+msgstr "Selecionar diretório"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "Mostrar nomes técnicos"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be greater than $1."
-msgstr ""
+msgstr "O valor deve ser maior do que $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be lower than $1."
-msgstr ""
+msgstr "O valor deve ser menor do que $1."
 
 #: builtin/mainmenu/modmgr.lua
-#, fuzzy
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"Instalar Extra: tipo de ficheiro desconhecido \"$1\""
+"Instalação de extra: o tipo de arquivo \"$1\" não é suportado ou o arquivo "
+"está corrompido"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Failed to install $1 to $2"
@@ -318,19 +320,21 @@ msgstr "Instalar Extra: ficheiro: \"$1\""
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr ""
+msgstr "Instalação de extra: nome real de extra não encontrado para: $1"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
 msgstr ""
+"Instalação de extra: não foi possível encontrar o nome adequado da pasta "
+"para o pacote de extras $1"
 
 #: builtin/mainmenu/store.lua
 msgid "Close store"
-msgstr ""
+msgstr "Fechar repositório de extras"
 
 #: builtin/mainmenu/store.lua
 msgid "Downloading $1, please wait..."
-msgstr ""
+msgstr "Descarregando $1, por favor aguarde..."
 
 #: builtin/mainmenu/store.lua
 msgid "Install"
@@ -346,16 +350,15 @@ msgstr "Classificação"
 
 #: builtin/mainmenu/store.lua
 msgid "Search"
-msgstr ""
+msgstr "Procurar"
 
 #: builtin/mainmenu/store.lua
-#, fuzzy
 msgid "Shortname:"
-msgstr "Nome do Mundo"
+msgstr "Nome curto:"
 
 #: builtin/mainmenu/store.lua
 msgid "Successfully installed:"
-msgstr ""
+msgstr "Instalado com sucesso:"
 
 #: builtin/mainmenu/store.lua
 msgid "Unsorted"
@@ -379,26 +382,23 @@ msgstr "Créditos"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
-msgstr "Antigos Contribuintes"
+msgstr "Antigos Contribuidores"
 
 #: builtin/mainmenu/tab_credits.lua
-#, fuzzy
 msgid "Previous Core Developers"
-msgstr "Desenvolvedores Chave"
+msgstr "Desenvolvedores Chave Antigos"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Installed Mods:"
 msgstr "Extras Instalados:"
 
 #: builtin/mainmenu/tab_mods.lua
-#, fuzzy
 msgid "Mod information:"
-msgstr "Sem informação"
+msgstr "Informação do extra:"
 
 #: builtin/mainmenu/tab_mods.lua
-#, fuzzy
 msgid "No mod description available"
-msgstr "Sem informação"
+msgstr "Nenhuma descrição disponível do extra"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Rename"
@@ -409,18 +409,16 @@ msgid "Select Mod File:"
 msgstr "Seleccionar ficheiro de Extra:"
 
 #: builtin/mainmenu/tab_mods.lua
-#, fuzzy
 msgid "Uninstall selected mod"
-msgstr "Remover extra selecionado"
+msgstr "Desinstalar extra selecionado"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected modpack"
-msgstr "Desinstalar mode selecionado"
+msgstr "Desinstalar pacote de extras selecionado"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Address / Port :"
-msgstr "Endereço/Porta"
+msgstr "Endereço / Porta :"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
@@ -431,14 +429,12 @@ msgid "Connect"
 msgstr "Ligar"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Creative mode"
 msgstr "Modo Criativo"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Damage enabled"
-msgstr "ativo"
+msgstr "Dano ativado"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_server.lua
 #: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
@@ -446,18 +442,16 @@ msgid "Delete"
 msgstr "Eliminar"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Name / Password :"
-msgstr "Nome/Senha"
+msgstr "Nome / Senha :"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Public Serverlist"
 msgstr "Lista de Servidores Públicos"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "PvP enabled"
-msgstr "ativo"
+msgstr "PvP activado"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Bind Address"
@@ -486,13 +480,12 @@ msgid "New"
 msgstr "Novo"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
-#, fuzzy
 msgid "No world created or selected!"
-msgstr "Mundo sem nome ou nenhum jogo selecionado"
+msgstr "Nenhum mundo criado ou selecionado!"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Port"
-msgstr ""
+msgstr "Porta"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Public"
@@ -516,90 +509,79 @@ msgstr "Jogar"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "3D Clouds"
 msgstr "Nuvens 3D"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "4x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Advanced Settings"
-msgstr "Definições"
+msgstr "Configurações Avançadas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Are you sure to reset your singleplayer world?"
-msgstr "Um Jogador"
+msgstr "Tem a certeza que deseja reiniciar o seu mundo?"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Bilinear Filter"
-msgstr "Filtro Bi-Linear"
+msgstr "Filtro bi-linear"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bumpmapping"
-msgstr "Mip-Mapping"
+msgstr "Bump mapping"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
 msgstr "Mudar teclas"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Connected Glass"
-msgstr "Ligar"
+msgstr "Vidro conectado"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Enable Particles"
-msgstr "Ativar Tudo"
+msgstr "Ativar Partículas"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Fancy Leaves"
-msgstr "Água Opaca"
+msgstr "Folheamento detalhado"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Generate Normalmaps"
-msgstr ""
+msgstr "Gerar Normalmaps"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Mipmap"
-msgstr "Mip-Mapping"
+msgstr "Mapa MIP"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "No Filter"
-msgstr "Filtro Anisotrópico"
+msgstr "Sem Filtro"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "No Mipmap"
-msgstr "Mip-Mapping"
+msgstr "Sem mapa MIP"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No!!!"
-msgstr ""
+msgstr "Não!!!"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -608,12 +590,11 @@ msgstr "Iluminação Suave"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
-msgstr ""
+msgstr "Nenhum"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Opaque Leaves"
-msgstr "Água Opaca"
+msgstr "Folhas Opacas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Water"
@@ -632,9 +613,8 @@ msgid "Shaders"
 msgstr "Sombras"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Simple Leaves"
-msgstr "Água Opaca"
+msgstr "Folheamento simples"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -643,50 +623,43 @@ msgstr "Iluminação Suave"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
-msgstr ""
+msgstr "Texturização:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr ""
+msgstr "Para ativar os sombreadores é necessário usar o driver OpenGL."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold (px)"
-msgstr ""
+msgstr "Nível de sensibilidade ao toque (px)"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Trilinear Filter"
-msgstr "Filtro Tri-Linear"
+msgstr "Filtro tri-linear"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Leaves"
-msgstr "Árvores Melhoradas"
+msgstr "Folheamento ondulante"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Plants"
-msgstr "Árvores Melhoradas"
+msgstr "Plantas ondulantes"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Water"
-msgstr "Árvores Melhoradas"
+msgstr "Água ondulante"
 
 #: builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Config mods"
-msgstr "Configurar"
+msgstr "Configurar extras"
 
 #: builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Main"
-msgstr "Menu Principal"
+msgstr "Principal"
 
 #: builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Start Singleplayer"
-msgstr "Um Jogador"
+msgstr "Iniciar jogo solo"
 
 #: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
 msgid "Play"
@@ -705,36 +678,32 @@ msgid "Select texture pack:"
 msgstr "Selecione um pacote de texturas:"
 
 #: builtin/mainmenu/tab_texturepacks.lua
-#, fuzzy
 msgid "Texturepacks"
-msgstr "Pacotes de Texturas"
+msgstr "Pacotes de texturas"
 
 #: src/client.cpp
-#, fuzzy
 msgid "Connection timed out."
-msgstr "Erro de conexão (excedeu tempo?)"
+msgstr "Erro de ligação (tempo excedido)."
 
 #: src/client.cpp
 msgid "Done!"
-msgstr ""
+msgstr "Terminado!"
 
 #: src/client.cpp
 msgid "Initializing nodes"
-msgstr ""
+msgstr "Inicializando cubos"
 
 #: src/client.cpp
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "Inicializando cubos..."
 
 #: src/client.cpp
-#, fuzzy
 msgid "Loading textures..."
-msgstr "A carregar..."
+msgstr "A carregar texturas..."
 
 #: src/client.cpp
-#, fuzzy
 msgid "Rebuilding shaders..."
-msgstr "A resolver endereço..."
+msgstr "Reconstruindo sombreadores..."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
@@ -778,7 +747,6 @@ msgstr ""
 "Consulte debug.txt para mais detalhes."
 
 #: src/game.cpp
-#, fuzzy
 msgid "Change Keys"
 msgstr "Mudar teclas"
 
@@ -799,7 +767,6 @@ msgid "Creating client..."
 msgstr "A criar cliente..."
 
 #: src/game.cpp
-#, fuzzy
 msgid "Creating server..."
 msgstr "A criar servidor..."
 
@@ -871,7 +838,7 @@ msgstr ""
 
 #: src/game.cpp
 msgid "Node definitions..."
-msgstr ""
+msgstr "Definindo cubos..."
 
 #: src/game.cpp src/guiFormSpecMenu.cpp
 msgid "Proceed"
@@ -886,7 +853,6 @@ msgid "Respawn"
 msgstr "Reaparecer"
 
 #: src/game.cpp
-#, fuzzy
 msgid "Shutting down..."
 msgstr "A desligar..."
 
@@ -975,9 +941,8 @@ msgid "Sneak"
 msgstr "Agachar"
 
 #: src/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle Cinematic"
-msgstr "Ativar/Desativar correr"
+msgstr "Ativar/Desativar câmera cinemática"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1041,7 +1006,7 @@ msgstr "Voltar"
 
 #: src/keycode.cpp
 msgid "Capital"
-msgstr "Capital"
+msgstr "Caps Lock"
 
 #: src/keycode.cpp
 msgid "Clear"
@@ -1133,7 +1098,7 @@ msgstr "Shift Esquerdo"
 
 #: src/keycode.cpp
 msgid "Left Windows"
-msgstr "WINDOWS Esq."
+msgstr "Tecla WINDOWS esquerda"
 
 #: src/keycode.cpp
 msgid "Menu"
@@ -1269,7 +1234,7 @@ msgstr "Shift Direito"
 
 #: src/keycode.cpp
 msgid "Right Windows"
-msgstr "WINDOWS Dir."
+msgstr "Tecla WINDOWS direita"
 
 #: src/keycode.cpp
 msgid "Scroll Lock"
@@ -1331,7 +1296,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D clouds"
 msgstr "Nuvens 3D"
 
@@ -1421,9 +1385,8 @@ msgid "Amplifies the valleys"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Anisotropic filtering"
-msgstr "Filtro Anisotrópico"
+msgstr "Filtro anisotrópico"
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
@@ -1438,7 +1401,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-msgstr ""
+msgstr "Aproxima escala (X,Y,Z) do fractal em cubos."
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
@@ -1449,9 +1412,8 @@ msgid "Automaticaly report to the serverlist."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Backward key"
-msgstr "Recuar"
+msgstr "Tecla para andar para trás"
 
 #: src/settings_translation_file.cpp
 msgid "Base terrain height"
@@ -1462,9 +1424,8 @@ msgid "Basic"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bilinear filtering"
-msgstr "Filtro Bi-Linear"
+msgstr "Filtro bi-linear"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1618,7 +1579,7 @@ msgstr "A conectar ao servidor..."
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
-msgstr ""
+msgstr "Conecta o vidro se suportado pelo cubo."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2077,16 +2038,21 @@ msgid ""
 "From how far blocks are generated for clients, stated in mapblocks (16 "
 "nodes)."
 msgstr ""
+"Distância máxima de geração de blocos para clientes, em mapblocks (16^3 "
+"cubos)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
 msgstr ""
+"Distância máxima de envio de blocos para clientes, em mapblocks (16^3 cubos)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far clients know about objects, stated in mapblocks (16 nodes)."
 msgstr ""
+"Distância máxima de envio de dados sobre objectos para clientes, em "
+"mapblocks (16^3 cubos)."
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
@@ -2185,6 +2151,8 @@ msgid ""
 "mapblocks (16 nodes).\n"
 "In active blocks objects are loaded and ABMs run."
 msgstr ""
+"Dimensão da área de blocos mantida ativa, em mapblocks (16^3 cubos).\n"
+"Em blocos ativos objetos são carregados e ABMs são executados."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2235,6 +2203,9 @@ msgid ""
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
+"Se ativado com o modo de vôo, o jogador é capaz de voar através de cubos "
+"sólidos.\n"
+"Isto requer o privilégio \"noclip\" no servidor."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2268,6 +2239,9 @@ msgid ""
 "you stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
+"Se ativado, você pode colocar blocos na posição (pés + nível dos olhos) onde "
+"você está.\n"
+"Isto é útil quando se trabalha com nodeboxes em pequenas áreas."
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
@@ -3280,7 +3254,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Node highlighting"
-msgstr ""
+msgstr "Destacando cubos"
 
 #: src/settings_translation_file.cpp
 msgid "Noise parameters for biome API temperature, humidity and biome blend."
@@ -3416,6 +3390,8 @@ msgid ""
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
 "corners."
 msgstr ""
+"Raio da área de nuvens indicado em número de 64 cubos de nuvem.\n"
+"Valores superiores a 26 produzem arestas acentuadas nos cantos das nuvens."
 
 #: src/settings_translation_file.cpp
 msgid "Raises terrain to make valleys around the rivers"
@@ -3616,7 +3592,7 @@ msgstr ""
 msgid ""
 "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
 "nodes)."
-msgstr ""
+msgstr "Dimensão da parcela a ser gerada por mapgen, em mapblocks (16^3 cubos)."
 
 #: src/settings_translation_file.cpp
 msgid "Slope and fill work together to modify the heights"
