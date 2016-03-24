@@ -30,8 +30,6 @@ core.register_entity(":__builtin:falling_node", {
 	end,
 
 	on_activate = function(self, staticdata)
-		-- Set gravity
-		self.object:setacceleration({x = 0, y = -10, z = 0})
 		self.object:set_armor_groups({immortal = 1})
 		
 		local node = core.deserialize(staticdata)
@@ -43,6 +41,11 @@ core.register_entity(":__builtin:falling_node", {
 	end,
 
 	on_step = function(self, dtime)
+		 -- Set gravity
+		local acceleration = self.object:getacceleration()
+		if not vector.equals(acceleration, {x = 0, y = -10, z = 0}) then
+			self.object:setacceleration({x = 0, y = -10, z = 0})
+		end
 		-- Turn to actual sand when collides to ground or just move
 		local pos = self.object:getpos()
 		local bcp = {x = pos.x, y = pos.y - 0.7, z = pos.z} -- Position of bottom center point
