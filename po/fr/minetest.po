@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-02-27 05:49+0100\n"
-"PO-Revision-Date: 2016-03-24 13:23+0000\n"
-"Last-Translator: Jean-Baptiste <jean-baptiste@holcroft.fr>\n"
+"PO-Revision-Date: 2016-03-24 13:27+0000\n"
+"Last-Translator: Jean-Patrick G. <jeanpatrick.guerrero@gmail.com>\n"
 "Language-Team: French "
 "<https://hosted.weblate.org/projects/minetest/minetest/fr/>\n"
 "Language: fr\n"
@@ -1496,7 +1496,7 @@ msgstr "Bruit de cave #2"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
-msgstr ""
+msgstr "Les caves et tunnels se forment à l'intersection de deux bruits"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
@@ -1811,6 +1811,9 @@ msgid ""
 "The 3 numbers in brackets control the scale of the\n"
 "terrain, the 3 numbers should be identical."
 msgstr ""
+"Détermine la forme du terrain.\n"
+"Les 3 nombres entre parenthèses contrôlent l'échelle du terrain,\n"
+"ces nombres doivent être identiques."
 
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
@@ -1905,7 +1908,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables animation of inventory items."
-msgstr ""
+msgstr "Active la rotation des items d'inventaire."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2031,7 +2034,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Filmic tone mapping"
-msgstr ""
+msgstr "Tone Mapping"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2156,7 +2159,7 @@ msgstr "Gamma"
 
 #: src/settings_translation_file.cpp
 msgid "General"
-msgstr ""
+msgstr "Général"
 
 #: src/settings_translation_file.cpp
 msgid "Generate normalmaps"
@@ -2228,7 +2231,7 @@ msgstr "Adresse web du serveur affichée sur la liste des serveurs."
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers"
-msgstr ""
+msgstr "Profondeur des rivières"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2261,7 +2264,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "How wide to make rivers"
-msgstr ""
+msgstr "Largeur des rivières"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6"
@@ -2378,7 +2381,7 @@ msgstr "Intervalle d'envoi de l'heure de jeu aux clients."
 
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
-msgstr ""
+msgstr "Animation des items d'inventaire"
 
 #: src/settings_translation_file.cpp
 msgid "Inventory key"
@@ -2758,11 +2761,11 @@ msgstr "Langue"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave depth"
-msgstr ""
+msgstr "Profondeur des grandes caves"
 
 #: src/settings_translation_file.cpp
 msgid "Lava Features"
-msgstr ""
+msgstr "Fonctionnalités de la lave"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -3256,11 +3259,11 @@ msgstr "Mapgen V7 : paramètres du bruit de la persistance du terrain"
 
 #: src/settings_translation_file.cpp
 msgid "Massive cave depth"
-msgstr ""
+msgstr "Profondeur des caves massives"
 
 #: src/settings_translation_file.cpp
 msgid "Massive cave noise"
-msgstr ""
+msgstr "Bruit des caves massives"
 
 #: src/settings_translation_file.cpp
 msgid "Massive caves form here."
@@ -3403,7 +3406,7 @@ msgstr "Message du jour affiché aux joueurs lors de la connexion."
 
 #: src/settings_translation_file.cpp
 msgid "Method used to highlight selected object."
-msgstr ""
+msgstr "Méthodes utilisées pour l'éclairage des objets."
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
@@ -3534,7 +3537,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Noises"
-msgstr ""
+msgstr "Bruits"
 
 #: src/settings_translation_file.cpp
 msgid "Normalmaps sampling"
@@ -3690,7 +3693,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Raises terrain to make valleys around the rivers"
-msgstr ""
+msgstr "Élève le terrain pour former des vallées autour des rivières"
 
 #: src/settings_translation_file.cpp
 msgid "Random input"
@@ -3722,15 +3725,15 @@ msgstr "Intervalle de répétition du clic droit"
 
 #: src/settings_translation_file.cpp
 msgid "River Depth"
-msgstr ""
+msgstr "Profondeur des rivières"
 
 #: src/settings_translation_file.cpp
 msgid "River Noise"
-msgstr ""
+msgstr "Bruit des rivières"
 
 #: src/settings_translation_file.cpp
 msgid "River Size"
-msgstr ""
+msgstr "Taille des rivières"
 
 #: src/settings_translation_file.cpp
 msgid "River noise -- rivers occur close to zero"
@@ -3963,7 +3966,7 @@ msgstr "SQLite synchronisé"
 
 #: src/settings_translation_file.cpp
 msgid "Terrain Height"
-msgstr ""
+msgstr "Hauteur du terrain"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3985,7 +3988,7 @@ msgstr "Chemin des textures"
 
 #: src/settings_translation_file.cpp
 msgid "The altitude at which temperature drops by 20C"
-msgstr ""
+msgstr "L'altitude à laquelle la température descend de 20°C"
 
 #: src/settings_translation_file.cpp
 msgid "The depth of dirt or other filler"
@@ -4162,11 +4165,11 @@ msgstr "Synchronisation verticale"
 
 #: src/settings_translation_file.cpp
 msgid "VBO"
-msgstr ""
+msgstr "VBO"
 
 #: src/settings_translation_file.cpp
 msgid "Valley Depth"
-msgstr ""
+msgstr "Profondeur des vallées"
 
 #: src/settings_translation_file.cpp
 msgid "Valley Fill"
@@ -4174,11 +4177,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Valley Profile"
-msgstr ""
+msgstr "Profil des vallées"
 
 #: src/settings_translation_file.cpp
 msgid "Valley Slope"
-msgstr ""
+msgstr "Inclinaison des vallées"
 
 #: src/settings_translation_file.cpp
 msgid "Valleys C Flags"
@@ -4201,6 +4204,8 @@ msgid ""
 "View distance in nodes.\n"
 "Min = 20"
 msgstr ""
+"Distance d'affichage en blocs.\n"
+"Minimum à 20"
 
 #: src/settings_translation_file.cpp
 msgid "View range decrease key"
