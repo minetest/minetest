@@ -8,21 +8,21 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-02-27 05:49+0100\n"
-"PO-Revision-Date: 2016-01-31 17:19+0000\n"
-"Last-Translator: Amadeo <amadeoras+weblate@gmail.com>\n"
-"Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
-"pl/>\n"
+"PO-Revision-Date: 2016-03-24 19:38+0000\n"
+"Last-Translator: red-001 <red-001@openmailbox.org>\n"
+"Language-Team: Polish "
+"<https://hosted.weblate.org/projects/minetest/minetest/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 2.5-dev\n"
+"X-Generator: Weblate 2.6-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
+msgstr "Wystąpił błąd w skrypcie modyfikacji:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
@@ -50,7 +50,7 @@ msgstr "Ładowanie..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr "Wesje protokołu niezgodne. "
+msgstr "Niezgodne wersje protokołów. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
@@ -204,7 +204,7 @@ msgstr "Nie"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua src/keycode.cpp
 msgid "Accept"
-msgstr "Accept"
+msgstr "Zaakceptuj"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
@@ -220,7 +220,7 @@ msgstr "(Brak opisu ustawienia)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "< Wróć do ekranu ustawień"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
@@ -404,9 +404,8 @@ msgid "Select Mod File:"
 msgstr "Wybierz plik moda:"
 
 #: builtin/mainmenu/tab_mods.lua
-#, fuzzy
 msgid "Uninstall selected mod"
-msgstr "Usuń zaznaczony mod"
+msgstr "Usuń zaznaczony modyfikację"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected modpack"
@@ -505,29 +504,27 @@ msgstr "Rozpocznij grę/Połącz"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "3D Clouds"
 msgstr "Chmury 3D"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "4x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Advanced Settings"
-msgstr "Ustawienia"
+msgstr "Ustawienia zaawansowane"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr ""
+msgstr "Antyaliasing:"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -535,60 +532,52 @@ msgid "Are you sure to reset your singleplayer world?"
 msgstr "Pojedynczy gracz"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Bilinear Filter"
 msgstr "Filtrowanie dwuliniowe"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bumpmapping"
-msgstr "Mip-Mappowanie"
+msgstr "Mapowanie wypukłości"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
 msgstr "Zmień klawisze"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Connected Glass"
-msgstr "Połącz"
+msgstr "Szkło połączone"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Enable Particles"
-msgstr "Włącz wszystkie"
+msgstr "Włącz Efekty Cząsteczkowe"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Fancy Leaves"
-msgstr "Nieprzeźroczysta woda"
+msgstr "Ozdobne liście"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Generate Normalmaps"
-msgstr ""
+msgstr "Generuj mapy normalnych"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Mipmap"
-msgstr "Mip-Mappowanie"
+msgstr "Mipmapy"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
-msgstr ""
+msgstr "Mipmapy i Filtr anizotropowe"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "No Filter"
-msgstr "Filtrowanie anizotropowe"
+msgstr "Filtrowanie wyłączone"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "No Mipmap"
-msgstr "Mip-Mappowanie"
+msgstr "Mip-Mappowanie wyłączone"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No!!!"
-msgstr ""
+msgstr "Nie!!"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -600,17 +589,16 @@ msgid "None"
 msgstr "Brak"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Opaque Leaves"
-msgstr "Nieprzeźroczysta woda"
+msgstr "Nieprzejrzyste liście"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Water"
-msgstr "Nieprzeźroczysta woda"
+msgstr "Nieprzejrzysta Woda"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Parallax Occlusion"
-msgstr ""
+msgstr "Mapowanie paralaksy"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -621,18 +609,16 @@ msgid "Shaders"
 msgstr "Shadery"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Simple Leaves"
-msgstr "Nieprzeźroczysta woda"
+msgstr "Proste Liście"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Smooth Lighting"
 msgstr "Płynne oświetlenie"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
-msgstr ""
+msgstr "Teksturowanie:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "To enable shaders the OpenGL driver needs to be used."
@@ -643,7 +629,6 @@ msgid "Touchthreshold (px)"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Trilinear Filter"
 msgstr "Filtrowanie trójliniowe"
 
@@ -1020,7 +1005,7 @@ msgstr "Głośność: "
 
 #: src/keycode.cpp
 msgid "Apps"
-msgstr "Apps"
+msgstr "Menu"
 
 #: src/keycode.cpp
 msgid "Attn"
@@ -1059,6 +1044,7 @@ msgid "Down"
 msgstr "Dół"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "End"
 msgstr "End"
 
