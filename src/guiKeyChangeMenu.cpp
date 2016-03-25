@@ -366,6 +366,20 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		{
 			switch (event.GUIEvent.Caller->getID())
 			{
+				case GUI_ID_RESET_KEYS_BUTTON: //Reset keybindings to default
+					for (size_t i = 0; i < key_settings.size(); i++)
+					{
+						key_setting *Key = key_settings.at(i);
+						g_settings->remove(Key->setting_name);
+					}
+					g_settings->remove("aux1_descends");
+					g_settings->remove("doubletap_jump");
+					clearKeyCache();
+					key_settings.clear();
+					init_keys();
+					regenerateGui(Environment->getVideoDriver()->getScreenSize());
+					g_gamecallback->signalKeyConfigChange();
+					return true;
 				case GUI_ID_BACK_BUTTON: //back
 					acceptInput();
 					quitMenu();
@@ -458,4 +472,3 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_INCREASE_RANGE, wgettext("Increase view range"), "keymap_increase_viewing_range_min");
 	this->add_key(GUI_ID_KEY_DECREASE_RANGE, wgettext("Decrease view range"), "keymap_decrease_viewing_range_min");
 }
-
