@@ -937,7 +937,7 @@ mgv7_spflags (Mapgen v7 flags) flags mountains,ridges mountains,ridges,nomountai
 mgv7_np_terrain_base (Mapgen v7 terrain base noise parameters) noise_params 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0
 mgv7_np_terrain_alt (Mapgen v7 terrain altitude noise parameters) noise_params 4, 25, (600, 600, 600), 5934, 5, 0.6, 2.0
 mgv7_np_terrain_persist (Mapgen v7 terrain persistation noise parameters) noise_params 0.6, 0.1, (2000, 2000, 2000), 539, 3, 0.6, 2.0
-mgv7_np_height_select (Mapgen v7 height select noise parameters) noise_params -12, 24, (500, 500, 500), 4213, 6, 0.7, 2.0
+mgv7_np_height_select (Mapgen v7 height select noise parameters) noise_params -8, 16, (500, 500, 500), 4213, 6, 0.7, 2.0
 mgv7_np_filler_depth (Mapgen v7 filler depth noise parameters) noise_params 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
 mgv7_np_mount_height (Mapgen v7 mount height noise parameters) noise_params 256, 112, (1000, 1000, 1000), 72449, 3, 0.6, 2.0
 mgv7_np_ridge_uwater (Mapgen v7 ridge water noise parameters) noise_params 0, 1, (1000, 1000, 1000), 85039, 5, 0.6, 2.0

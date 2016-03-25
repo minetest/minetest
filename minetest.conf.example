@@ -1178,7 +1178,7 @@
 # mgv7_np_terrain_persist = 0.6, 0.1, (2000, 2000, 2000), 539, 3, 0.6, 2.0
 
 #    type: noise_params
-# mgv7_np_height_select = -12, 24, (500, 500, 500), 4213, 6, 0.7, 2.0
+# mgv7_np_height_select = -8, 16, (500, 500, 500), 4213, 6, 0.7, 2.0
 
 #    type: noise_params
 # mgv7_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
