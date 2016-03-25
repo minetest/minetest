@@ -336,31 +336,6 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 
 	f32 min_distance = BS * 1001;
 
-	// First try to find a pointed at active object
-	if (look_for_object) {
-		selected_object = client->getSelectedActiveObject(d * BS,
-				  camera_position, shootline);
-
-		if (selected_object != NULL) {
-			if (selected_object->doShowSelectionBox()) {
-				aabb3f *selection_box = selected_object->getSelectionBox();
-				// Box should exist because object was
-				// returned in the first place
-				assert(selection_box);
-
-				v3f pos = selected_object->getPosition();
-				selectionboxes->push_back(aabb3f(
-					selection_box->MinEdge, selection_box->MaxEdge));
-				hud->setSelectionPos(pos, camera_offset);
-			}
-
-			min_distance = (selected_object->getPosition() - camera_position).getLength();
-
-			result.type = POINTEDTHING_OBJECT;
-			result.object_id = selected_object->getId();
-		}
-	}
-
 	// That didn't work, try to find a pointed at node
 
 	v3s16 pos_i = floatToInt(player_position, BS);
@@ -481,6 +456,31 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 		}
 		hud->setSelectionPos(intToFloat(pointed_pos, BS), camera_offset);
 		result.node_undersurface = pointed_pos;
+	} else {
+		if (look_for_object) {
+			selected_object = client->getSelectedActiveObject(d * BS,
+					  camera_position, shootline);
+	
+			if (selected_object != NULL) {
+				if (selected_object->doShowSelectionBox()) {
+					aabb3f *selection_box = selected_object->getSelectionBox();
+					// Box should exist because object was
+					// returned in the first place
+					assert(selection_box);
+	
+					v3f pos = selected_object->getPosition();
+					selectionboxes->push_back(aabb3f(
+						selection_box->MinEdge, selection_box->MaxEdge));
+					hud->setSelectionPos(pos, camera_offset);
+				}
+	
+				min_distance = (selected_object->getPosition() - camera_position).getLength();
+	
+				result.type = POINTEDTHING_OBJECT;
+				result.object_id = selected_object->getId();
+			}
+		}
+		
 	}
 
 	// Update selection mesh light level and vertex colors
