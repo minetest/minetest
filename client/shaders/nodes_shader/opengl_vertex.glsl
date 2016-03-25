@@ -15,7 +15,6 @@ varying vec3 lightVec;
 varying vec3 tsEyeVec;
 varying vec3 tsLightVec;
 varying float area_enable_parallax;
-varying float disp;
 
 const float e = 2.718281828459;
 const float BS = 10.0;
@@ -55,12 +54,16 @@ void main(void)
 #endif
 
 
+float disp_x;
+float disp_z;
 #if (MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES) || (MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS)
 	vec4 pos2 = mWorld * gl_Vertex;
 	float tOffset = (pos2.x + pos2.y) * 0.001 + pos2.z * 0.002;
-	disp = (smoothTriangleWave(animationTimer * 31.0 + tOffset) +
+	disp_x = (smoothTriangleWave(animationTimer * 23.0 + tOffset) +
+		smoothTriangleWave(animationTimer * 11.0 + tOffset)) * 0.4;
+	disp_z = (smoothTriangleWave(animationTimer * 31.0 + tOffset) +
 		smoothTriangleWave(animationTimer * 29.0 + tOffset) +
-		smoothTriangleWave(animationTimer * 13.0 + tOffset)) - 0.9;
+		smoothTriangleWave(animationTimer * 13.0 + tOffset)) * 0.5;
 #endif
 
 
@@ -72,14 +75,15 @@ void main(void)
 	gl_Position = mWorldViewProj * pos;
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_LEAVES && ENABLE_WAVING_LEAVES
 	vec4 pos = gl_Vertex;
-	pos.x += disp * 0.1;
-	pos.y += disp * 0.1;
-	pos.z += disp;
+	pos.x += disp_x;
+	pos.y += disp_z * 0.1;
+	pos.z += disp_z;
 	gl_Position = mWorldViewProj * pos;
 #elif MATERIAL_TYPE == TILE_MATERIAL_WAVING_PLANTS && ENABLE_WAVING_PLANTS
 	vec4 pos = gl_Vertex;
 	if (gl_TexCoord[0].y < 0.05) {
-		pos.z += disp;
+		pos.x += disp_x;
+		pos.z += disp_z;
 	}
 	gl_Position = mWorldViewProj * pos;
 #else
@@ -91,7 +95,7 @@ void main(void)
 	worldPosition = (mWorld * gl_Vertex).xyz;
 
 	// Don't generate heightmaps when too far from the eye
-	float dist = distance (vec3(0.0, 0.0 ,0.0), vPosition);
+	float dist = distance (vec3(0.0, 0.0, 0.0), vPosition);
 	if (dist > 150.0) {
 		area_enable_parallax = 0.0;
 	}
@@ -132,16 +136,16 @@ void main(void)
 
 	// Emphase blue a bit in darker places
 	// See C++ implementation in mapblock_mesh.cpp finalColorBlend()
-	b += max(0.0, (1.0 - abs(b - 0.13)/0.17) * 0.025);
+	b += max(0.0, (1.0 - abs(b - 0.13) / 0.17) * 0.025);
 
 	// Artificial light is yellow-ish
 	// See C++ implementation in mapblock_mesh.cpp finalColorBlend()
-	rg += max(0.0, (1.0 - abs(rg - 0.85)/0.15) * 0.065);
+	rg += max(0.0, (1.0 - abs(rg - 0.85) / 0.15) * 0.065);
 
 	color.r = rg;
 	color.g = rg;
 	color.b = b;
 
 	color.a = gl_Color.a;
-	gl_FrontColor = gl_BackColor = clamp(color,0.0,1.0);
+	gl_FrontColor = gl_BackColor = clamp(color, 0.0, 1.0);
 }
