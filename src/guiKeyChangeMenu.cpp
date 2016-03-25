@@ -39,7 +39,7 @@ extern MainGameCallback *g_gamecallback;
 
 enum
 {
-	GUI_ID_BACK_BUTTON = 101, GUI_ID_ABORT_BUTTON, GUI_ID_SCROLL_BAR,
+	GUI_ID_BACK_BUTTON = 101, GUI_ID_ABORT_BUTTON, GUI_ID_SCROLL_BAR, GUI_ID_RESET_KEYS_BUTTON,
 	// buttons
 	GUI_ID_KEY_FORWARD_BUTTON,
 	GUI_ID_KEY_BACKWARD_BUTTON,
@@ -210,6 +210,14 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 				text);
 		delete[] text;
 	}	
+	{
+		core::rect < s32 > rect(0, 0, 100, 30);
+		rect += topleft + v2s32(size.X - 360, size.Y - 40);
+		const wchar_t *text = wgettext("Reset");
+		Environment->addButton(rect, this, GUI_ID_RESET_KEYS_BUTTON,
+			text);
+		delete[] text;
+	}
 }
 
 void GUIKeyChangeMenu::drawMenu()
@@ -358,6 +366,17 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		{
 			switch (event.GUIEvent.Caller->getID())
 			{
+				case GUI_ID_RESET_KEYS_BUTTON: //Reset keybindings to default
+					for (size_t i = 0; i < key_settings.size(); i++)
+					{
+						key_setting *Key = key_settings.at(i);
+						g_settings->remove(Key->setting_name);
+					}
+					clearKeyCache();
+					key_settings.clear();
+					init_keys();
+					regenerateGui(Environment->getVideoDriver()->getScreenSize());
+					return true;
 				case GUI_ID_BACK_BUTTON: //back
 					acceptInput();
 					quitMenu();
@@ -432,4 +451,3 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_INCREASE_RANGE, wgettext("Increase view range"), "keymap_increase_viewing_range_min");
 	this->add_key(GUI_ID_KEY_DECREASE_RANGE, wgettext("Decrease view range"), "keymap_decrease_viewing_range_min");
 }
-
