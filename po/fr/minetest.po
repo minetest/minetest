@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-02-27 05:49+0100\n"
-"PO-Revision-Date: 2016-03-24 13:27+0000\n"
+"PO-Revision-Date: 2016-03-25 17:42+0000\n"
 "Last-Translator: Jean-Patrick G. <jeanpatrick.guerrero@gmail.com>\n"
 "Language-Team: French "
 "<https://hosted.weblate.org/projects/minetest/minetest/fr/>\n"
@@ -563,7 +563,7 @@ msgstr "Arbres détaillés"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Generate Normalmaps"
-msgstr "Générer un carte normal"
+msgstr "Normal Mapping"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -632,7 +632,7 @@ msgstr "Pour activer les shaders, le pilote OpenGL doit être utilisé."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold (px)"
-msgstr "Sensibilité (px)"
+msgstr "Sensibilité du toucher (px)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
@@ -1658,11 +1658,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
-msgstr ""
+msgstr "Contrôle l'élévation/profondeur des dépressions lacustres."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
-msgstr ""
+msgstr "Contrôle l'élévation/hauteur des collines."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -1673,12 +1673,16 @@ msgid ""
 "Creates unpredictable lava features in caves.\n"
 "These can make mining difficult. Zero disables them. (0-10)"
 msgstr ""
+"Crée des zones imprévisibles de lave dans les caves.\n"
+"Elles rendent le minage plus difficile. 0 les désactivent. (0-10)"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Creates unpredictable water features in caves.\n"
 "These can make mining difficult. Zero disables them. (0-10)"
 msgstr ""
+"Crée des zones aquatiques imprévisibles dans les caves.\n"
+"Elles rendent le minage plus difficile. 0 les désactivent. (0-10)"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
@@ -1776,11 +1780,11 @@ msgstr "Traitement d'API Lua obsolète(s)"
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find large caves."
-msgstr ""
+msgstr "Profondeur en-dessous duquel se trouvent de grandes caves."
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find massive caves."
-msgstr ""
+msgstr "Profondeur en-dessous duquel se trouvent des caves massives."
 
 #: src/settings_translation_file.cpp
 msgid "Descending speed"
@@ -3026,7 +3030,7 @@ msgstr "Drapeaux de génération de terrain"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat hill steepness"
-msgstr ""
+msgstr "Élévation des collines plates"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat hill threshold"
@@ -3267,7 +3271,7 @@ msgstr "Bruit des caves massives"
 
 #: src/settings_translation_file.cpp
 msgid "Massive caves form here."
-msgstr ""
+msgstr "Forme des caves massives."
 
 #: src/settings_translation_file.cpp
 msgid "Max block generate distance"
@@ -3737,7 +3741,7 @@ msgstr "Taille des rivières"
 
 #: src/settings_translation_file.cpp
 msgid "River noise -- rivers occur close to zero"
-msgstr ""
+msgstr "Bruit des rivières"
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
