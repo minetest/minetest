@@ -453,6 +453,8 @@ MgStoneType MapgenFlat::generateBiomes(float *heat_map, float *humidity_map)
 					stone_type = DESERT_STONE;
 				else if (biome->c_stone == c_sandstone)
 					stone_type = SANDSTONE;
+			} else {
+				continue;
 			}
 
 			if (c == c_stone) {

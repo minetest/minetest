@@ -1017,10 +1017,10 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 		spec.send = true;
 		gui::IGUIElement *e;
 #if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
-		if (g_settings->getBool("freetype")) {
+		bool use_freetype = g_settings->getBool("freetype");
+		if (use_freetype) {
 			e = (gui::IGUIElement *) new gui::intlGUIEditBox(spec.fdefault.c_str(),
 				true, Environment, this, spec.fid, rect);
-			e->drop();
 		} else {
 #else
 		{
@@ -1039,6 +1039,11 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 		evt.KeyInput.Shift       = 0;
 		evt.KeyInput.PressedDown = true;
 		e->OnEvent(evt);
+
+#if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
+		if (use_freetype)
+			e->drop();
+#endif
 
 		if (label.length() >= 1)
 		{
@@ -2728,13 +2733,14 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 					// without rtti support in irrlicht
 					IGUIElement * element = getElementFromId(s.fid);
 					gui::IGUIComboBox *e = NULL;
+					s32 selected = -1;
 					if ((element) && (element->getType() == gui::EGUIET_COMBO_BOX)) {
 						e = static_cast<gui::IGUIComboBox*>(element);
+						selected = e->getSelected();
 					}
-					s32 selected = e->getSelected();
 					if (selected >= 0) {
-						fields[name] =
-							wide_to_utf8(e->getItem(selected));
+						fields[name] = wide_to_utf8(
+							e->getItem(selected));
 					}
 				}
 				else if (s.ftype == f_TabHeader) {
@@ -2746,7 +2752,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 						e = static_cast<gui::IGUITabControl*>(element);
 					}
 
-					if (e != 0) {
+					if (e != NULL) {
 						std::stringstream ss;
 						ss << (e->getActiveTab() +1);
 						fields[name] = ss.str();
@@ -2761,7 +2767,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 						e = static_cast<gui::IGUICheckBox*>(element);
 					}
 
-					if (e != 0) {
+					if (e != NULL) {
 						if (e->isChecked())
 							fields[name] = "true";
 						else
@@ -2777,7 +2783,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 						e = static_cast<gui::IGUIScrollBar*>(element);
 					}
 
-					if (e != 0) {
+					if (e != NULL) {
 						std::stringstream os;
 						os << e->getPos();
 						if (s.fdefault == L"Changed")
@@ -2789,7 +2795,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 				else
 				{
 					IGUIElement* e = getElementFromId(s.fid);
-					if(e != NULL) {
+					if (e != NULL) {
 						fields[name] = wide_to_utf8(e->getText());
 					}
 				}

@@ -4010,10 +4010,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
 				    / 255.0;
 	}
 
-	float time_of_day = runData->time_of_day;
+	float time_of_day = client->getEnv().getTimeOfDayF();
 	float time_of_day_smooth = runData->time_of_day_smooth;
-
-	time_of_day = client->getEnv().getTimeOfDayF();
 
 	const float maxsm = 0.05;
 	const float todsm = 0.05;

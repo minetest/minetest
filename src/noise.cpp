@@ -640,7 +640,6 @@ void Noise::gradientMap3D(
 
 	//calculate interpolations
 	index  = 0;
-	noisey = 0;
 	noisez = 0;
 	for (k = 0; k != sz; k++) {
 		v = orig_v;

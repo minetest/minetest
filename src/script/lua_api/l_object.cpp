@@ -75,10 +75,7 @@ struct EnumString es_HudBuiltinElement[] =
 
 ObjectRef* ObjectRef::checkobject(lua_State *L, int narg)
 {
-	luaL_checktype(L, narg, LUA_TUSERDATA);
-	void *ud = luaL_checkudata(L, narg, className);
-	if (!ud) luaL_typerror(L, narg, className);
-	return *(ObjectRef**)ud;  // unbox pointer
+	return *(ObjectRef**)luaL_checkudata(L, narg, className);
 }
 
 ServerActiveObject* ObjectRef::getobject(ObjectRef *ref)

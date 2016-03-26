@@ -546,7 +546,6 @@ GenericCAO::GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
 		//
 		m_smgr(NULL),
 		m_irr(NULL),
-		m_camera(NULL),
 		m_gamedef(NULL),
 		m_selection_box(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.),
 		m_meshnode(NULL),

@@ -1233,10 +1233,10 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 			buf->Material = material;
 			// Add to mesh
 			mesh->addMeshBuffer(buf);
-			// Mesh grabbed it
-			buf->drop();
 			buf->append(&p.vertices[0], p.vertices.size(),
 				&p.indices[0], p.indices.size());
+			// Mesh grabbed it
+			buf->drop();
 		}
 	}
 
@@ -1285,8 +1285,10 @@ MapBlockMesh::~MapBlockMesh()
 			m_driver->removeHardwareBuffer(buf);
 		}
 	}
-	m_mesh->drop();
-	m_mesh = NULL;
+	if (m_mesh) {
+		m_mesh->drop();
+		m_mesh = NULL;
+	}
 	delete m_minimap_mapblock;
 }
 

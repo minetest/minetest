@@ -30,10 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 InvRef* InvRef::checkobject(lua_State *L, int narg)
 {
-	luaL_checktype(L, narg, LUA_TUSERDATA);
-	void *ud = luaL_checkudata(L, narg, className);
-	if(!ud) luaL_typerror(L, narg, className);
-	return *(InvRef**)ud;  // unbox pointer
+	return *(InvRef**)luaL_checkudata(L, narg, className);
 }
 
 Inventory* InvRef::getinv(lua_State *L, InvRef *ref)
@@ -273,18 +270,17 @@ int InvRef::l_set_lists(lua_State *L)
 	}
 
 	// Make a temporary inventory in case reading fails
-	Inventory *tempInv(inv);
-	tempInv->clear();
+	Inventory tempInv(inv->getItemDef());
 
 	Server *server = getServer(L);
 
 	lua_pushnil(L);
 	while (lua_next(L, 2)) {
 		const char *listname = lua_tostring(L, -2);
-		read_inventory_list(L, -1, tempInv, listname, server);
+		read_inventory_list(L, -1, &tempInv, listname, server);
 		lua_pop(L, 1);
 	}
-	inv = tempInv;
+	*inv = tempInv;
 	return 0;
 }
 

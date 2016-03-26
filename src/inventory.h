@@ -283,6 +283,7 @@ public:
 	InventoryList * getList(const std::string &name);
 	const InventoryList * getList(const std::string &name) const;
 	std::vector<const InventoryList*> getLists();
+	IItemDefManager *getItemDef() const { return m_itemdef; }
 	bool deleteList(const std::string &name);
 	// A shorthand for adding items. Returns leftover item (possibly empty).
 	ItemStack addItem(const std::string &listname, const ItemStack &newitem)

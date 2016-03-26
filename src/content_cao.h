@@ -68,7 +68,6 @@ private:
 	//
 	scene::ISceneManager *m_smgr;
 	IrrlichtDevice *m_irr;
-	Camera* m_camera;
 	IGameDef *m_gamedef;
 	aabb3f m_selection_box;
 	scene::IMeshSceneNode *m_meshnode;

@@ -158,6 +158,7 @@ public:
 	}
 	T & operator[](unsigned int i) const
 	{
+		assert(data != NULL && i < m_size);
 		return data[i];
 	}
 	T * operator*() const

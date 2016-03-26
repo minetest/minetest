@@ -1091,7 +1091,7 @@ int PlayerSAO::punch(v3f dir,
 
 	std::string punchername = "nil";
 
-	if (puncher != 0)
+	if (puncher)
 		punchername = puncher->getDescription();
 
 	PlayerSAO *playersao = m_player->getPlayerSAO();
@@ -1102,13 +1102,12 @@ int PlayerSAO::punch(v3f dir,
 
 	if (!damage_handled) {
 		setHP(getHP() - hitparams.hp);
-	} else { // override client prediction
-		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-			std::string str = gob_cmd_punched(0, getHP());
-			// create message and add to list
-			ActiveObjectMessage aom(getId(), true, str);
-			m_messages_out.push(aom);
-		}
+	} else if (puncher && puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		// override client prediction
+		std::string str = gob_cmd_punched(0, getHP());
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push(aom);
 	}
 
 

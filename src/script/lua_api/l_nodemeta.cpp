@@ -34,10 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 NodeMetaRef* NodeMetaRef::checkobject(lua_State *L, int narg)
 {
-	luaL_checktype(L, narg, LUA_TUSERDATA);
-	void *ud = luaL_checkudata(L, narg, className);
-	if(!ud) luaL_typerror(L, narg, className);
-	return *(NodeMetaRef**)ud;  // unbox pointer
+	return *(NodeMetaRef**)luaL_checkudata(L, narg, className);
 }
 
 NodeMetadata* NodeMetaRef::getmeta(NodeMetaRef *ref, bool auto_create)
