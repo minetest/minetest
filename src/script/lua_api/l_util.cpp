@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "settings.h"
 #include "util/auth.h"
+#include "util/base64.h"
 #include <algorithm>
 
 // log([level,] text)
@@ -320,6 +321,34 @@ int ModApiUtil::l_decompress(lua_State *L)
 	return 1;
 }
 
+// encode_base64(string)
+int ModApiUtil::l_encode_base64(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	size_t size;
+	const char *data = luaL_checklstring(L, 1, &size);
+
+	std::string out = base64_encode((const unsigned char *)(data), size);
+
+	lua_pushlstring(L, out.data(), out.size());
+	return 1;
+}
+
+// decode_base64(string)
+int ModApiUtil::l_decode_base64(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	size_t size;
+	const char *data = luaL_checklstring(L, 1, &size);
+
+	std::string out = base64_decode(std::string(data, size));
+
+	lua_pushlstring(L, out.data(), out.size());
+	return 1;
+}
+
 // mkdir(path)
 int ModApiUtil::l_mkdir(lua_State *L)
 {
@@ -433,6 +462,9 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(get_dir_list);
 
 	API_FCT(request_insecure_environment);
+
+	API_FCT(encode_base64);
+	API_FCT(decode_base64);
 }
 
 void ModApiUtil::InitializeAsync(AsyncEngine& engine)
@@ -459,5 +491,8 @@ void ModApiUtil::InitializeAsync(AsyncEngine& engine)
 
 	ASYNC_API_FCT(mkdir);
 	ASYNC_API_FCT(get_dir_list);
+
+	ASYNC_API_FCT(encode_base64);
+	ASYNC_API_FCT(decode_base64);
 }
 
