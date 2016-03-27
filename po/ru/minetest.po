@@ -8,21 +8,21 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-02-27 05:49+0100\n"
-"PO-Revision-Date: 2016-02-21 12:34+0000\n"
-"Last-Translator: Dmitry Smirnov <sda97y@ya.ru>\n"
-"Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
-"minetest/ru/>\n"
+"PO-Revision-Date: 2016-03-28 01:47+0000\n"
+"Last-Translator: Stas Kies <stask85@gmail.com>\n"
+"Language-Team: Russian "
+"<https://hosted.weblate.org/projects/minetest/minetest/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 2.5-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 2.6-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr "Ошибка в скрипте Lua в моде:"
+msgstr "Ошибка в скрипте Lua, как например в моде:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
@@ -42,7 +42,7 @@ msgstr "Переподключиться"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "Сервер запросил повторное соединение:"
+msgstr "Сервер запросил переподключение:"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
@@ -163,7 +163,9 @@ msgstr "Сид"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
-msgstr "Внимание: \"Minimal development test\" для разработчиков."
+msgstr ""
+"Внимание: \"Minimal development test\" в основном предназначен для "
+"разработчиков."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -171,7 +173,7 @@ msgstr "Название мира"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no subgames installed."
-msgstr "У вас не установлено мини-игр."
+msgstr "У вас не установлены мини-игры."
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Are you sure you want to delete \"$1\"?"
@@ -212,7 +214,7 @@ msgstr "Переименовать модпак:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "\"$1\" is not a valid flag."
-msgstr ""
+msgstr "\"$1\" не является допустимым знаком."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
@@ -220,7 +222,7 @@ msgstr "(Отсутствует описание настройки)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "< Назад к странице Настройки"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
@@ -228,7 +230,7 @@ msgstr "Выбрать"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Disabled"
-msgstr "Отключить"
+msgstr "Отключено"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
@@ -504,36 +506,33 @@ msgstr "Начать игру"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "3D Clouds"
 msgstr "3D облака"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "4x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Advanced Settings"
-msgstr "Настройки"
+msgstr "расширенные настройки"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr ""
+msgstr "Сглаживание:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
 msgstr "Уверены, что хотите сбросить мир одиночной игры?"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Bilinear Filter"
 msgstr "Билинейная фильтрация"
 
@@ -546,14 +545,12 @@ msgid "Change keys"
 msgstr "Смена управления"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Connected Glass"
 msgstr "Стёкла без швов"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Enable Particles"
-msgstr "Включить всё"
+msgstr "Включить частицы"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -573,9 +570,8 @@ msgid "Mipmap + Aniso. Filter"
 msgstr "Мипмаппинг с анизотр. фильтром"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "No Filter"
-msgstr "Фильтрация"
+msgstr "Без Фильтров"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
@@ -619,7 +615,6 @@ msgid "Simple Leaves"
 msgstr "Упрощённая листва"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Smooth Lighting"
 msgstr "Мягкое освещение"
 
@@ -636,22 +631,18 @@ msgid "Touchthreshold (px)"
 msgstr "Чувствительность (пк)"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Trilinear Filter"
 msgstr "Трилинейная фильтрация"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Leaves"
 msgstr "Покачивание листвы"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Plants"
 msgstr "Покачивание растений"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Water"
 msgstr "Волны на воде"
 
@@ -740,6 +731,7 @@ msgid "Provided world path doesn't exist: "
 msgstr "По этому пути мира нет: "
 
 #: src/fontengine.cpp
+#, fuzzy
 msgid "needs_fallback_font"
 msgstr "no"
 
@@ -1442,8 +1434,9 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-msgstr ""
+msgstr "Приблизительный (X, Y, Z) масштаб рекурсивных в узлах."
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
@@ -1456,12 +1449,11 @@ msgstr "Автоматически добавлять в список серве
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Backward key"
-msgstr "Назад"
+msgstr "клавиша обратно"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Base terrain height"
-msgstr "Высота волн на воде"
+msgstr "Высота основной местности"
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
@@ -1498,15 +1490,15 @@ msgstr "Клавиша переключения обновления камер�
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #1"
-msgstr ""
+msgstr "Шум пещеры #1"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
-msgstr ""
+msgstr "Шум пещеры #2"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
-msgstr ""
+msgstr "Пещеры и тоннели формируются на перекрестке этих двух шумов"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
@@ -1553,7 +1545,7 @@ msgstr "Кнопка переключения в кинематографиче�
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
-msgstr ""
+msgstr "очистить прозрачные структуры"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -1609,7 +1601,7 @@ msgstr "Стёкла без швов"
 
 #: src/settings_translation_file.cpp
 msgid "Connect to external media server"
-msgstr "Подключение к внешнему серверу..."
+msgstr "Подключение к внешнему медиасерверу"
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
@@ -1787,7 +1779,9 @@ msgstr "Скорость снижения"
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
-msgstr "Описание сервера, показываемое при входе игрока и в списке серверов"
+msgstr ""
+"Описание сервера, которое будет показано при входе игрока и в списке "
+"серверов."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
