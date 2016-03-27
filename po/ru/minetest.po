@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-02-27 05:49+0100\n"
-"PO-Revision-Date: 2016-03-28 01:50+0000\n"
-"Last-Translator: Pavel Sokolov <pavel.sokolov28@gmail.com>\n"
+"PO-Revision-Date: 2016-04-18 23:08+0000\n"
+"Last-Translator: Stas Kies <stask85@gmail.com>\n"
 "Language-Team: Russian "
 "<https://hosted.weblate.org/projects/minetest/minetest/ru/>\n"
 "Language: ru\n"
@@ -242,7 +242,7 @@ msgstr "Включено"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr "Формат  -- это 3 числа в скобках, разделенные точками."
+msgstr "Формат 3 цифры через запятую в скобках."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid ""
@@ -274,7 +274,7 @@ msgstr "Введите допустимое целое число."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr "Пожалуйста, введите правильное числовое значение."
+msgstr "Пожалуйста, введите правильное число."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Possible values are: "
@@ -306,7 +306,7 @@ msgid ""
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"Установка мода: неподдерживаемый тип файла \"$1\" или битый архив"
+"Установка мода: неподдерживаемый тип файла \"$1\" или повреждённый архив"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Failed to install $1 to $2"
@@ -557,7 +557,6 @@ msgid "Fancy Leaves"
 msgstr "Красивая листва"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Generate Normalmaps"
 msgstr "Генерировать карты нормалей"
 
@@ -1432,6 +1431,9 @@ msgid ""
 "If you want to announce your ipv6 address, use  serverlist_url = v6.servers."
 "minetest.net."
 msgstr ""
+"Объявите списку сервера.\n"
+"Если Вы хотите объявить о своем адресе IPv6, используйте serverlist_url = "
+"v6.servers.minetest.net."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1712,7 +1714,7 @@ msgstr "Отладочный уровень"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
-msgstr ""
+msgstr "Шаг выделенного сервера"
 
 #: src/settings_translation_file.cpp
 msgid "Default acceleration"
