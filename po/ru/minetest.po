@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-02-27 05:49+0100\n"
-"PO-Revision-Date: 2016-03-28 01:47+0000\n"
-"Last-Translator: Stas Kies <stask85@gmail.com>\n"
+"PO-Revision-Date: 2016-03-28 01:51+0000\n"
+"Last-Translator: Alex “XShell” Schekoldin <sa1904sa@gmail.com>\n"
 "Language-Team: Russian "
 "<https://hosted.weblate.org/projects/minetest/minetest/ru/>\n"
 "Language: ru\n"
@@ -189,7 +189,7 @@ msgstr "Modmgr: неправильный путь \"$1\""
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "No of course not!"
-msgstr "Никак нет!"
+msgstr "Нет, конечно нет!"
 
 #: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/tab_settings.lua
@@ -331,7 +331,7 @@ msgstr "Закрыть хранилище"
 
 #: builtin/mainmenu/store.lua
 msgid "Downloading $1, please wait..."
-msgstr "Загрузка $1..."
+msgstr "Загрузка $1, ждите..."
 
 #: builtin/mainmenu/store.lua
 msgid "Install"
@@ -395,7 +395,7 @@ msgstr "Описание мода:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "No mod description available"
-msgstr "Описание к моду отсутствует"
+msgstr "Описание мода недоступно"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Rename"
@@ -403,7 +403,7 @@ msgstr "Переименовать"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Select Mod File:"
-msgstr "Выберите файл с модом:"
+msgstr "Выберите файл мода:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected mod"
