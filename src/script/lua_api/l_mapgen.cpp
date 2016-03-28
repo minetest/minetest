@@ -870,6 +870,7 @@ bool read_deco_simple(lua_State *L, DecoSimple *deco)
 	deco->deco_height     = getintfield_default(L, index, "height", 1);
 	deco->deco_height_max = getintfield_default(L, index, "height_max", 0);
 	deco->nspawnby        = getintfield_default(L, index, "num_spawn_by", -1);
+	deco->rotation        = getintfield_default(L, index, "rotation", 0);
 
 	if (deco->deco_height <= 0) {
 		errorstream << "register_decoration: simple decoration height"

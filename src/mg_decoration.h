@@ -101,6 +101,7 @@ public:
 	s16 deco_height;
 	s16 deco_height_max;
 	s16 nspawnby;
+	s16 rotation;
 };
 
 class DecoSchematic : public Decoration {

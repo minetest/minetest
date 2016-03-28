@@ -26,12 +26,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 
 FlagDesc flagdesc_deco[] = {
-	{"place_center_x", DECO_PLACE_CENTER_X},
-	{"place_center_y", DECO_PLACE_CENTER_Y},
-	{"place_center_z", DECO_PLACE_CENTER_Z},
+	{"place_center_x",  DECO_PLACE_CENTER_X},
+	{"place_center_y",  DECO_PLACE_CENTER_Y},
+	{"place_center_z",  DECO_PLACE_CENTER_Z},
 	{"force_placement", DECO_FORCE_PLACEMENT},
-	{"liquid_surface", DECO_LIQUID_SURFACE},
-	{NULL,             0}
+	{"liquid_surface",  DECO_LIQUID_SURFACE},
+	{NULL,              0}
 };
 
 
@@ -306,6 +306,8 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 
 	bool force_placement = (flags & DECO_FORCE_PLACEMENT);
 
+	u8 rot = (rotation == 24) ? pr->range(0, 23) : rotation;
+
 	v3s16 em = vm->m_area.getExtent();
 	u32 vi = vm->m_area.index(p);
 	for (int i = 0; i < height; i++) {
@@ -317,6 +319,7 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 			break;
 
 		vm->m_data[vi] = MapNode(c_place);
+		vm->m_data[vi].param2 = rot;
 	}
 
 	return 1;
