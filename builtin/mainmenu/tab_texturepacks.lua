@@ -18,6 +18,7 @@
 --------------------------------------------------------------------------------
 local function filter_texture_pack_list(list)
 	local retval = {}
+
 	for _, item in ipairs(list) do
 		if item ~= "base" then
 			retval[#retval + 1] = item
@@ -35,9 +36,9 @@ local function render_texture_pack_list(list)
 	local retval = ""
 
 	for i, v in ipairs(list) do
-		if v:sub(1,1) ~= "." then
+		if v:sub(1, 1) ~= "." then
 			if retval ~= "" then
-				retval = retval ..","
+				retval = retval .. ","
 			end
 
 			retval = retval .. core.formspec_escape(v)
@@ -50,14 +51,14 @@ end
 --------------------------------------------------------------------------------
 local function get_formspec(tabview, name, tabdata)
 
-	local retval = "label[4,-0.25;".. fgettext("Select texture pack:") .. "]"..
+	local retval = "label[4,-0.25;" .. fgettext("Select texture pack:") .. "]" ..
 			"textlist[4,0.25;7.5,5.0;TPs;"
 
 	local current_texture_path = core.setting_get("texture_path")
 	local list = filter_texture_pack_list(core.get_dir_list(core.get_texturepath(), true))
 	local index = tonumber(core.setting_get("mainmenu_last_selected_TP"))
 
-	if index == nil then index = 1 end
+	if not index then index = 1 end
 
 	if current_texture_path == "" then
 		retval = retval ..
@@ -66,15 +67,16 @@ local function get_formspec(tabview, name, tabdata)
 		return retval
 	end
 
-	local infofile = current_texture_path ..DIR_DELIM.."description.txt"
+	local infofile = current_texture_path .. DIR_DELIM .. "description.txt"
 	-- This adds backwards compatibility for old texture pack description files named
 	-- "info.txt", and should be removed once all such texture packs have been updated
 	if not file_exists(infofile) then
-		infofile = current_texture_path ..DIR_DELIM.."info.txt"
+		infofile = current_texture_path .. DIR_DELIM .. "info.txt"
 		if file_exists(infofile) then
-			core.log("info.txt is depreciated. description.txt should be used instead.");
+			core.log("info.txt is depreciated. description.txt should be used instead.")
 		end
 	end
+
 	local infotext = ""
 	local f = io.open(infofile, "r")
 	if not f then
@@ -84,8 +86,8 @@ local function get_formspec(tabview, name, tabdata)
 		f:close()
 	end
 
-	local screenfile = current_texture_path..DIR_DELIM.."screenshot.png"
-	local no_screenshot = nil
+	local screenfile = current_texture_path .. DIR_DELIM .. "screenshot.png"
+	local no_screenshot
 	if not file_exists(screenfile) then
 		screenfile = nil
 		no_screenshot = defaulttexturedir .. "no_screenshot.png"
@@ -94,24 +96,24 @@ local function get_formspec(tabview, name, tabdata)
 	return	retval ..
 			render_texture_pack_list(list) ..
 			";" .. index .. "]" ..
-			"image[0.25,0.25;4.0,3.7;"..core.formspec_escape(screenfile or no_screenshot).."]"..
-			"textarea[0.6,3.25;3.7,1.5;;"..core.formspec_escape(infotext or "")..";]"
+			"image[0.25,0.25;4.0,3.7;" .. core.formspec_escape(screenfile or no_screenshot) .. "]" ..
+			"textarea[0.6,3.5;3.7,1.5;;" .. core.formspec_escape(infotext or "") .. ";]"
 end
 
 --------------------------------------------------------------------------------
 local function main_button_handler(tabview, fields, name, tabdata)
-	if fields["TPs"] ~= nil then
+	if fields["TPs"] then
 		local event = core.explode_textlist_event(fields["TPs"])
 		if event.type == "CHG" or event.type == "DCL" then
 			local index = core.get_textlist_index("TPs")
-			core.setting_set("mainmenu_last_selected_TP",
-				index)
+			core.setting_set("mainmenu_last_selected_TP", index)
 			local list = filter_texture_pack_list(core.get_dir_list(core.get_texturepath(), true))
 			local current_index = core.get_textlist_index("TPs")
-			if current_index ~= nil and #list >= current_index then
-				local new_path = core.get_texturepath()..DIR_DELIM..list[current_index]
-				if list[current_index] == fgettext("None") then new_path = "" end
-
+			if current_index and #list >= current_index then
+				local new_path = core.get_texturepath() .. DIR_DELIM .. list[current_index]
+				if list[current_index] == fgettext("None") then
+					new_path = ""
+				end
 				core.setting_set("texture_path", new_path)
 			end
 		end
