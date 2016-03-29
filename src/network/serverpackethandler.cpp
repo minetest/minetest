@@ -1808,7 +1808,7 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 	*pkt >> salt >> verification_key >> is_empty;
 
 	verbosestream << "Server: Got TOSERVER_FIRST_SRP from " << addr_s
-		<< ", with is_empty= " << is_empty << std::endl;
+		<< ", with is_empty=" << (is_empty == 1) << std::endl;
 
 	// Either this packet is sent because the user is new or to change the password
 	if (cstate == CS_HelloSent) {
