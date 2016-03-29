@@ -92,6 +92,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fps_max", "60");
 	settings->setDefault("pause_fps_max", "20");
 	settings->setDefault("viewing_range", "100");
+	settings->setDefault("vrange_adjustment_factor", "0.0");
 	settings->setDefault("map_generation_limit", "31000");
 	settings->setDefault("screenW", "800");
 	settings->setDefault("screenH", "600");
@@ -179,7 +180,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_particles", "true");
 	settings->setDefault("enable_mesh_cache", "false");
 	settings->setDefault("enable_vbo", "true");
-	
+
 	settings->setDefault("enable_minimap", "true");
 	settings->setDefault("minimap_shape_round", "true");
 	settings->setDefault("minimap_double_scan_height", "true");

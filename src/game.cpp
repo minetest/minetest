@@ -3091,8 +3091,21 @@ void Game::toggleProfiler(float *statustext_time, u32 *profiler_current_page,
 
 void Game::increaseViewRange(float *statustext_time)
 {
-	s16 range = g_settings->getS16("viewing_range");
-	s16 range_new = range + 10;
+	static const float factor = g_settings->getFloat("vrange_adjustment_factor");
+	static const bool multiply_range = factor > 1.0f;
+
+	const s16 range = g_settings->getS16("viewing_range");
+
+	s16 range_new;
+
+	if (multiply_range) {
+		range_new = ceil(range * factor);
+		if (range_new < 20)
+			range_new = 20;
+	}
+	else
+		range_new = range + 10;
+
 	g_settings->set("viewing_range", itos(range_new));
 	statustext = utf8_to_wide("Viewing range changed to "
 			+ itos(range_new));
@@ -3102,8 +3115,17 @@ void Game::increaseViewRange(float *statustext_time)
 
 void Game::decreaseViewRange(float *statustext_time)
 {
-	s16 range = g_settings->getS16("viewing_range");
-	s16 range_new = range - 10;
+	static const float factor = g_settings->getFloat("vrange_adjustment_factor");
+	static const bool multiply_range = factor > 1.0f;
+
+	const s16 range = g_settings->getS16("viewing_range");
+
+	s16 range_new;
+
+	if (multiply_range)
+		range_new = range / factor;
+	else
+		range_new = range - 10;
 
 	if (range_new < 20)
 		range_new = 20;
