@@ -147,7 +147,7 @@ end
 -- Some common functions
 --
 
-function nodeupdate_single(p, delay)
+function nodeupdate_single(p)
 	local n = core.get_node(p)
 	if core.get_item_group(n.name, "falling_node") ~= 0 then
 		local p_bottom = {x = p.x, y = p.y - 1, z = p.z}
@@ -160,36 +160,84 @@ function nodeupdate_single(p, delay)
 					core.get_node_level(p_bottom) < core.get_node_max_level(p_bottom))) and
 				(not core.registered_nodes[n_bottom.name].walkable or
 					core.registered_nodes[n_bottom.name].buildable_to) then
-			if delay then
-				core.after(0.1, nodeupdate_single, p, false)
-			else
-				n.level = core.get_node_level(p)
-				core.remove_node(p)
-				spawn_falling_node(p, n)
-				nodeupdate(p)
-			end
+			n.level = core.get_node_level(p)
+			core.remove_node(p)
+			spawn_falling_node(p, n)
+			return true
 		end
 	end
 
 	if core.get_item_group(n.name, "attached_node") ~= 0 then
 		if not check_attached_node(p, n) then
 			drop_attached_node(p)
-			nodeupdate(p)
+			return true
 		end
 	end
+
+	return false
 end
 
-function nodeupdate(p, delay)
-	-- Round p to prevent falling entities to get stuck
+-- This table is specifically ordered.
+-- We don't walk diagonals, only our direct neighbors, and self.
+-- Down first as likely case, but always before self. The same with sides.
+-- Up must come last, so that things above self will also fall all at once.
+local nodeupdate_neighbors = {
+	{x = 0, y = -1, z = 0},
+	{x = -1, y = 0, z = 0},
+	{x = 1, y = 0, z = 0},
+	{x = 0, y = 0, z = 1},
+	{x = 0, y = 0, z = -1},
+	{x = 0, y = 0, z = 0},
+	{x = 0, y = 1, z = 0},
+}
+
+function nodeupdate(p)
+	-- Round p to prevent falling entities to get stuck.
 	p = vector.round(p)
 
-	for x = -1, 1 do
-	for y = -1, 1 do
-	for z = -1, 1 do
-		local d = vector.new(x, y, z)
-		nodeupdate_single(vector.add(p, d), delay or not (x == 0 and y == 0 and z == 0))
-	end
-	end
+	-- We make a stack, and manually maintain size for performance.
+	-- Stored in the stack, we will maintain tables with pos, and
+	-- last neighbor visited. This way, when we get back to each
+	-- node, we know which directions we have already walked, and
+	-- which direction is the next to walk.
+	local s = {}
+	local n = 0
+	-- The neighbor order we will visit from our table.
+	local v = 1
+
+	while true do
+		-- Push current pos onto the stack.
+		n = n + 1
+		s[n] = {p = p, v = v}
+		-- Select next node from neighbor list.
+		p = vector.add(p, nodeupdate_neighbors[v])
+		-- Now we check out the node. If it is in need of an update,
+		-- it will let us know in the return value (true = updated).
+		if not nodeupdate_single(p) then
+			-- If we don't need to "recurse" (walk) to it then pop
+			-- our previous pos off the stack and continue from there,
+			-- with the v value we were at when we last were at that
+			-- node
+			repeat
+				local pop = s[n]
+				p = pop.p
+				v = pop.v
+				s[n] = nil
+				n = n - 1
+				-- If there's nothing left on the stack, and no
+				-- more sides to walk to, we're done and can exit
+				if n == 0 and v == 7 then
+					return
+				end
+			until v < 7
+			-- The next round walk the next neighbor in list.
+			v = v + 1
+		else
+			-- If we did need to walk the neighbor, then
+			-- start walking it from the walk order start (1),
+			-- and not the order we just pushed up the stack.
+			v = 1
+		end
 	end
 end
 
