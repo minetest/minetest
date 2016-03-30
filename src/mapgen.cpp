@@ -242,13 +242,10 @@ void Mapgen::setLighting(u8 light, v3s16 nmin, v3s16 nmax)
 
 void Mapgen::lightSpread(VoxelArea &a, v3s16 p, u8 light)
 {
-	if (light <= 1)
+	if (light <= 1 || !a.contains(p))
 		return;
 
 	u32 vi = vm->m_area.index(p);
-	if (!a.contains(vi))
-		return;
-
 	MapNode &n = vm->m_data[vi];
 
 	// Decay light in each of the banks separately
