@@ -1675,7 +1675,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 		s8 liquid_level = -1;
 		content_t liquid_kind = CONTENT_IGNORE;
 		content_t floodable_node = CONTENT_AIR;
-		ContentFeatures cf = nodemgr->get(n0);
+		const ContentFeatures & cf = nodemgr->get(n0);
 		LiquidType liquid_type = cf.liquid_type;
 		switch (liquid_type) {
 			case LIQUID_SOURCE:
@@ -1721,7 +1721,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 			}
 			v3s16 npos = p0 + dirs[i];
 			NodeNeighbor nb(getNodeNoEx(npos), nt, npos);
-			ContentFeatures cfnb = nodemgr->get(nb.n);
+			const ContentFeatures & cfnb = nodemgr->get(nb.n);
 			switch (nodemgr->get(nb.n.getContent()).liquid_type) {
 				case LIQUID_NONE:
 					if (cfnb.floodable) {
