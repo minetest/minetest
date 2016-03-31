@@ -163,7 +163,7 @@ local function handle_buttons(tabview, fields, tabname, tabdata)
 end
 
 --------------------------------------------------------------------------------
-tab_mods = {
+return {
 	name = "mods",
 	caption = fgettext("Mods"),
 	cbf_formspec = get_formspec,

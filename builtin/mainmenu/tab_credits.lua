@@ -69,7 +69,7 @@ local previous_contributors = {
 	"Zefram <zefram@fysh.org>",
 }
 
-tab_credits = {
+return {
 	name = "credits",
 	caption = fgettext("Credits"),
 	cbf_formspec = function(tabview, name, tabdata)

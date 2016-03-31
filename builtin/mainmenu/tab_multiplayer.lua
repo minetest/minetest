@@ -256,10 +256,10 @@ local function on_change(type,old_tab,new_tab)
 end
 
 --------------------------------------------------------------------------------
-tab_multiplayer = {
+return {
 	name = "multiplayer",
 	caption = fgettext("Client"),
 	cbf_formspec = get_formspec,
 	cbf_button_handler = main_button_handler,
 	on_change = on_change
-	}
+}

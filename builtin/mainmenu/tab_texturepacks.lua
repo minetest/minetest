@@ -123,10 +123,10 @@ local function main_button_handler(tabview, fields, name, tabdata)
 end
 
 --------------------------------------------------------------------------------
-tab_texturepacks = {
+return {
 	name = "texturepacks",
 	caption = fgettext("Texturepacks"),
 	cbf_formspec = get_formspec,
 	cbf_button_handler = main_button_handler,
 	on_change = nil
-	}
+}
