@@ -41,26 +41,26 @@ typedef enum {
 	DIR_XM,
 	DIR_ZP,
 	DIR_ZM
-} path_directions;
+} PathDirections;
 
 /** List of supported algorithms */
 typedef enum {
-	DIJKSTRA,           /**< Dijkstra shortest path algorithm             */
-	A_PLAIN,            /**< A* algorithm using heuristics to find a path */
-	A_PLAIN_NP          /**< A* algorithm without prefetching of map data */
-} algorithm;
+	PA_DIJKSTRA,           /**< Dijkstra shortest path algorithm             */
+	PA_PLAIN,            /**< A* algorithm using heuristics to find a path */
+	PA_PLAIN_NP          /**< A* algorithm without prefetching of map data */
+} PathAlgorithm;
 
 /******************************************************************************/
 /* declarations                                                               */
 /******************************************************************************/
 
 /** c wrapper function to use from scriptapi */
-std::vector<v3s16> get_Path(ServerEnvironment* env,
+std::vector<v3s16> get_path(ServerEnvironment *env,
 							v3s16 source,
 							v3s16 destination,
 							unsigned int searchdistance,
 							unsigned int max_jump,
 							unsigned int max_drop,
-							algorithm algo);
+							PathAlgorithm algo);
 
 #endif /* PATHFINDER_H_ */

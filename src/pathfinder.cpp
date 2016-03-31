@@ -55,9 +55,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define ERROR_TARGET     std::cout
 #else
 #define DEBUG_OUT(a)     while(0)
-#define INFO_TARGET      infostream << "pathfinder: "
-#define VERBOSE_TARGET   verbosestream << "pathfinder: "
-#define ERROR_TARGET     errorstream << "pathfinder: "
+#define INFO_TARGET      infostream << "Pathfinder: "
+#define VERBOSE_TARGET   verbosestream << "Pathfinder: "
+#define ERROR_TARGET     errorstream << "Pathfinder: "
 #endif
 
 /******************************************************************************/
@@ -66,17 +66,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 /** representation of cost in specific direction */
-class path_cost {
+class PathCost {
 public:
 
 	/** default constructor */
-	path_cost();
+	PathCost();
 
 	/** copy constructor */
-	path_cost(const path_cost& b);
+	PathCost(const PathCost &b);
 
 	/** assignment operator */
-	path_cost& operator= (const path_cost& b);
+	PathCost &operator= (const PathCost &b);
 
 	bool valid;              /**< movement is possible         */
 	int  value;              /**< cost of movement             */
@@ -87,33 +87,33 @@ public:
 
 
 /** representation of a mapnode to be used for pathfinding */
-class path_gridnode {
+class PathGridnode {
 
 public:
 	/** default constructor */
-	path_gridnode();
+	PathGridnode();
 
 	/** copy constructor */
-	path_gridnode(const path_gridnode& b);
+	PathGridnode(const PathGridnode &b);
 
 	/**
 	 * assignment operator
 	 * @param b node to copy
 	 */
-	path_gridnode& operator= (const path_gridnode& b);
+	PathGridnode &operator= (const PathGridnode &b);
 
 	/**
 	 * read cost in a specific direction
 	 * @param dir direction of cost to fetch
 	 */
-	path_cost get_cost(v3s16 dir);
+	PathCost getCost(v3s16 dir);
 
 	/**
 	 * set cost value for movement
 	 * @param dir direction to set cost for
 	 * @cost cost to set
 	 */
-	void      set_cost(v3s16 dir,path_cost cost);
+	void      setCost(v3s16 dir, PathCost cost);
 
 	bool      valid;               /**< node is on surface                    */
 	bool      target;              /**< node is target position               */
@@ -122,7 +122,7 @@ public:
 	v3s16     sourcedir;           /**< origin of movement for current cost   */
 	int       surfaces;            /**< number of surfaces with same x,z value*/
 	v3s16     pos;                 /**< real position of node                 */
-	path_cost directions[4];       /**< cost in different directions          */
+	PathCost directions[4];        /**< cost in different directions          */
 
 	/* debug values */
 	bool      is_element;          /**< node is element of path detected      */
@@ -130,13 +130,13 @@ public:
 };
 
 /** class doing pathfinding */
-class pathfinder {
+class Pathfinder {
 
 public:
 	/**
 	 * default constructor
 	 */
-	pathfinder();
+	Pathfinder();
 
 	/**
 	 * path evaluation function
@@ -146,15 +146,15 @@ public:
 	 * @param searchdistance maximum number of nodes to look in each direction
 	 * @param max_jump maximum number of blocks a path may jump up
 	 * @param max_drop maximum number of blocks a path may drop
-	 * @param algo algorithm to use for finding a path
+	 * @param algo Algorithm to use for finding a path
 	 */
-	std::vector<v3s16> get_Path(ServerEnvironment* env,
+	std::vector<v3s16> getPath(ServerEnvironment *env,
 			v3s16 source,
 			v3s16 destination,
 			unsigned int searchdistance,
 			unsigned int max_jump,
 			unsigned int max_drop,
-			algorithm algo);
+			PathAlgorithm algo);
 
 private:
 	/** data struct for storing internal information */
@@ -190,7 +190,7 @@ private:
 	 * @param ipos index position
 	 * @return gridnode for index
 	 */
-	path_gridnode& getIndexElement(v3s16 ipos);
+	PathGridnode &getIndexElement(v3s16 ipos);
 
 	/**
 	 * invert a 3d position
@@ -204,7 +204,7 @@ private:
 	 * @param index position to validate
 	 * @return true/false
 	 */
-	bool           valid_index(v3s16 index);
+	bool           isValidIndex(v3s16 index);
 
 	/**
 	 * translate position to float position
@@ -217,11 +217,11 @@ private:
 	/* algorithm functions */
 
 	/**
-	 * calculate 2d manahttan distance to target
+	 * calculate 2d manahttan distance to target on the xz plane
 	 * @param pos position to calc distance
 	 * @return integer distance
 	 */
-	int           get_manhattandistance(v3s16 pos);
+	int           getXZManhattanDist(v3s16 pos);
 
 	/**
 	 * get best direction based uppon heuristics
@@ -229,13 +229,13 @@ private:
 	 * @param g_pos mapnode to start from
 	 * @return direction to check
 	 */
-	v3s16         get_dir_heuristic(std::vector<v3s16>& directions,path_gridnode& g_pos);
+	v3s16         getDirHeuristic(std::vector<v3s16> &directions, PathGridnode &g_pos);
 
 	/**
 	 * build internal data representation of search area
 	 * @return true/false if costmap creation was successfull
 	 */
-	bool          build_costmap();
+	bool          buildCostmap();
 
 	/**
 	 * calculate cost of movement
@@ -243,7 +243,7 @@ private:
 	 * @param dir direction to move to
 	 * @return cost information
 	 */
-	path_cost     calc_cost(v3s16 pos,v3s16 dir);
+	PathCost     calcCost(v3s16 pos, v3s16 dir);
 
 	/**
 	 * recursive update whole search areas total cost information
@@ -253,7 +253,7 @@ private:
 	 * @param level current recursion depth
 	 * @return true/false path to destination has been found
 	 */
-	bool          update_all_costs(v3s16 ipos,v3s16 srcdir,int total_cost,int level);
+	bool          updateAllCosts(v3s16 ipos, v3s16 srcdir, int total_cost, int level);
 
 	/**
 	 * recursive try to find a patrh to destionation
@@ -263,7 +263,7 @@ private:
 	 * @param level current recursion depth
 	 * @return true/false path to destination has been found
 	 */
-	bool          update_cost_heuristic(v3s16 ipos,v3s16 srcdir,int current_cost,int level);
+	bool          updateCostHeuristic(v3s16 ipos, v3s16 srcdir, int current_cost, int level);
 
 	/**
 	 * recursive build a vector containing all nodes from source to destination
@@ -271,7 +271,7 @@ private:
 	 * @param pos pos to check next
 	 * @param level recursion depth
 	 */
-	void          build_path(std::vector<v3s16>& path,v3s16 pos, int level);
+	void          buildPath(std::vector<v3s16> &path, v3s16 pos, int level);
 
 	/* variables */
 	int m_max_index_x;          /**< max index of search area in x direction  */
@@ -292,56 +292,56 @@ private:
 	limits m_limits;            /**< position limits in real map coordinates  */
 
 	/** 3d grid containing all map data already collected and analyzed */
-	std::vector<std::vector<std::vector<path_gridnode> > > m_data;
+	std::vector<std::vector<std::vector<PathGridnode> > > m_data;
 
-	ServerEnvironment* m_env;   /**< minetest environment pointer             */
+	ServerEnvironment *m_env;   /**< minetest environment pointer             */
 
 #ifdef PATHFINDER_DEBUG
 
 	/**
 	 * print collected cost information
 	 */
-	void print_cost();
+	void printCost();
 
 	/**
 	 * print collected cost information in a specific direction
 	 * @param dir direction to print
 	 */
-	void print_cost(path_directions dir);
+	void printCost(PathDirections dir);
 
 	/**
 	 * print type of node as evaluated
 	 */
-	void print_type();
+	void printType();
 
 	/**
 	 * print pathlenght for all nodes in search area
 	 */
-	void print_pathlen();
+	void printPathLen();
 
 	/**
 	 * print a path
 	 * @param path path to show
 	 */
-	void print_path(std::vector<v3s16> path);
+	void printPath(std::vector<v3s16> path);
 
 	/**
 	 * print y direction for all movements
 	 */
-	void print_ydir();
+	void printYdir();
 
 	/**
 	 * print y direction for moving in a specific direction
 	 * @param dir direction to show data
 	 */
-	void print_ydir(path_directions dir);
+	void printYdir(PathDirections dir);
 
 	/**
 	 * helper function to translate a direction to speaking text
 	 * @param dir direction to translate
 	 * @return textual name of direction
 	 */
-	std::string dir_to_name(path_directions dir);
+	std::string dirToName(PathDirections dir);
 #endif
 };
 
@@ -349,23 +349,23 @@ private:
 /* implementation                                                             */
 /******************************************************************************/
 
-std::vector<v3s16> get_Path(ServerEnvironment* env,
+std::vector<v3s16> get_path(ServerEnvironment* env,
 							v3s16 source,
 							v3s16 destination,
 							unsigned int searchdistance,
 							unsigned int max_jump,
 							unsigned int max_drop,
-							algorithm algo) {
+							PathAlgorithm algo)
+{
+	Pathfinder searchclass;
 
-	pathfinder searchclass;
-
-	return searchclass.get_Path(env,
-				source,destination,
-				searchdistance,max_jump,max_drop,algo);
+	return searchclass.getPath(env,
+				source, destination,
+				searchdistance, max_jump, max_drop, algo);
 }
 
 /******************************************************************************/
-path_cost::path_cost()
+PathCost::PathCost()
 :	valid(false),
 	value(0),
 	direction(0),
@@ -375,7 +375,8 @@ path_cost::path_cost()
 }
 
 /******************************************************************************/
-path_cost::path_cost(const path_cost& b) {
+PathCost::PathCost(const PathCost &b)
+{
 	valid     = b.valid;
 	direction = b.direction;
 	value     = b.value;
@@ -383,7 +384,8 @@ path_cost::path_cost(const path_cost& b) {
 }
 
 /******************************************************************************/
-path_cost& path_cost::operator= (const path_cost& b) {
+PathCost &PathCost::operator= (const PathCost &b)
+{
 	valid     = b.valid;
 	direction = b.direction;
 	value     = b.value;
@@ -393,14 +395,14 @@ path_cost& path_cost::operator= (const path_cost& b) {
 }
 
 /******************************************************************************/
-path_gridnode::path_gridnode()
+PathGridnode::PathGridnode()
 :	valid(false),
 	target(false),
 	source(false),
 	totalcost(-1),
-	sourcedir(v3s16(0,0,0)),
+	sourcedir(v3s16(0, 0, 0)),
 	surfaces(0),
-	pos(v3s16(0,0,0)),
+	pos(v3s16(0, 0, 0)),
 	is_element(false),
 	type('u')
 {
@@ -408,7 +410,7 @@ path_gridnode::path_gridnode()
 }
 
 /******************************************************************************/
-path_gridnode::path_gridnode(const path_gridnode& b)
+PathGridnode::PathGridnode(const PathGridnode &b)
 :	valid(b.valid),
 	target(b.target),
 	source(b.source),
@@ -418,7 +420,7 @@ path_gridnode::path_gridnode(const path_gridnode& b)
 	pos(b.pos),
 	is_element(b.is_element),
 	type(b.type)
-	{
+{
 
 	directions[DIR_XP] = b.directions[DIR_XP];
 	directions[DIR_XM] = b.directions[DIR_XM];
@@ -427,7 +429,8 @@ path_gridnode::path_gridnode(const path_gridnode& b)
 }
 
 /******************************************************************************/
-path_gridnode& path_gridnode::operator= (const path_gridnode& b) {
+PathGridnode &PathGridnode::operator= (const PathGridnode &b)
+{
 	valid      = b.valid;
 	target     = b.target;
 	source     = b.source;
@@ -447,7 +450,8 @@ path_gridnode& path_gridnode::operator= (const path_gridnode& b) {
 }
 
 /******************************************************************************/
-path_cost path_gridnode::get_cost(v3s16 dir) {
+PathCost PathGridnode::getCost(v3s16 dir)
+{
 	if (dir.X > 0) {
 		return directions[DIR_XP];
 	}
@@ -460,12 +464,13 @@ path_cost path_gridnode::get_cost(v3s16 dir) {
 	if (dir.Z < 0) {
 		return directions[DIR_ZM];
 	}
-	path_cost retval;
+	PathCost retval;
 	return retval;
 }
 
 /******************************************************************************/
-void path_gridnode::set_cost(v3s16 dir,path_cost cost) {
+void PathGridnode::setCost(v3s16 dir, PathCost cost)
+{
 	if (dir.X > 0) {
 		directions[DIR_XP] = cost;
 	}
@@ -481,13 +486,14 @@ void path_gridnode::set_cost(v3s16 dir,path_cost cost) {
 }
 
 /******************************************************************************/
-std::vector<v3s16> pathfinder::get_Path(ServerEnvironment* env,
+std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 							v3s16 source,
 							v3s16 destination,
 							unsigned int searchdistance,
 							unsigned int max_jump,
 							unsigned int max_drop,
-							algorithm algo) {
+							PathAlgorithm algo)
+{
 #ifdef PATHFINDER_CALC_TIME
 	timespec ts;
 	clock_gettime(CLOCK_REALTIME, &ts);
@@ -509,18 +515,18 @@ std::vector<v3s16> pathfinder::get_Path(ServerEnvironment* env,
 	m_min_target_distance = -1;
 	m_prefetch = true;
 
-	if (algo == A_PLAIN_NP) {
+	if (algo == PA_PLAIN_NP) {
 		m_prefetch = false;
 	}
 
-	int min_x = MYMIN(source.X,destination.X);
-	int max_x = MYMAX(source.X,destination.X);
+	int min_x = MYMIN(source.X, destination.X);
+	int max_x = MYMAX(source.X, destination.X);
 
-	int min_y = MYMIN(source.Y,destination.Y);
-	int max_y = MYMAX(source.Y,destination.Y);
+	int min_y = MYMIN(source.Y, destination.Y);
+	int max_y = MYMAX(source.Y, destination.Y);
 
-	int min_z = MYMIN(source.Z,destination.Z);
-	int max_z = MYMAX(source.Z,destination.Z);
+	int min_z = MYMIN(source.Z, destination.Z);
+	int max_z = MYMAX(source.Z, destination.Z);
 
 	m_limits.X.min = min_x - searchdistance;
 	m_limits.X.max = max_x + searchdistance;
@@ -534,22 +540,22 @@ std::vector<v3s16> pathfinder::get_Path(ServerEnvironment* env,
 	m_max_index_z = m_limits.Z.max - m_limits.Z.min;
 
 	//build data map
-	if (!build_costmap()) {
+	if (!buildCostmap()) {
 		ERROR_TARGET << "failed to build costmap" << std::endl;
 		return retval;
 	}
 #ifdef PATHFINDER_DEBUG
-	print_type();
-	print_cost();
-	print_ydir();
+	printType();
+	printCost();
+	printYdir();
 #endif
 
 	//validate and mark start and end pos
 	v3s16 StartIndex  = getIndexPos(source);
 	v3s16 EndIndex    = getIndexPos(destination);
 
-	path_gridnode& startpos = getIndexElement(StartIndex);
-	path_gridnode& endpos   = getIndexElement(EndIndex);
+	PathGridnode &startpos = getIndexElement(StartIndex);
+	PathGridnode &endpos   = getIndexElement(EndIndex);
 
 	if (!startpos.valid) {
 		VERBOSE_TARGET << "invalid startpos" <<
@@ -571,15 +577,15 @@ std::vector<v3s16> pathfinder::get_Path(ServerEnvironment* env,
 	bool update_cost_retval = false;
 
 	switch (algo) {
-		case DIJKSTRA:
-			update_cost_retval = update_all_costs(StartIndex,v3s16(0,0,0),0,0);
+		case PA_DIJKSTRA:
+			update_cost_retval = updateAllCosts(StartIndex, v3s16(0, 0, 0), 0, 0);
 			break;
-		case A_PLAIN_NP:
-		case A_PLAIN:
-			update_cost_retval = update_cost_heuristic(StartIndex,v3s16(0,0,0),0,0);
+		case PA_PLAIN_NP:
+		case PA_PLAIN:
+			update_cost_retval = updateCostHeuristic(StartIndex, v3s16(0, 0, 0), 0, 0);
 			break;
 		default:
-			ERROR_TARGET << "missing algorithm"<< std::endl;
+			ERROR_TARGET << "missing PathAlgorithm"<< std::endl;
 			break;
 	}
 
@@ -587,16 +593,16 @@ std::vector<v3s16> pathfinder::get_Path(ServerEnvironment* env,
 
 #ifdef PATHFINDER_DEBUG
 		std::cout << "Path to target found!" << std::endl;
-		print_pathlen();
+		printPathLen();
 #endif
 
 		//find path
 		std::vector<v3s16> path;
-		build_path(path,EndIndex,0);
+		buildPath(path, EndIndex, 0);
 
 #ifdef PATHFINDER_DEBUG
 		std::cout << "Full index path:" << std::endl;
-		print_path(path);
+		printPath(path);
 #endif
 
 		//finalize path
@@ -608,7 +614,7 @@ std::vector<v3s16> pathfinder::get_Path(ServerEnvironment* env,
 
 #ifdef PATHFINDER_DEBUG
 		std::cout << "full path:" << std::endl;
-		print_path(full_path);
+		printPath(full_path);
 #endif
 #ifdef PATHFINDER_CALC_TIME
 		timespec ts2;
@@ -626,7 +632,7 @@ std::vector<v3s16> pathfinder::get_Path(ServerEnvironment* env,
 	}
 	else {
 #ifdef PATHFINDER_DEBUG
-		print_pathlen();
+		printPathLen();
 #endif
 		ERROR_TARGET << "failed to update cost map"<< std::endl;
 	}
@@ -637,7 +643,7 @@ std::vector<v3s16> pathfinder::get_Path(ServerEnvironment* env,
 }
 
 /******************************************************************************/
-pathfinder::pathfinder() :
+Pathfinder::Pathfinder() :
 	m_max_index_x(0),
 	m_max_index_y(0),
 	m_max_index_z(0),
@@ -646,8 +652,8 @@ pathfinder::pathfinder() :
 	m_maxjump(0),
 	m_min_target_distance(0),
 	m_prefetch(true),
-	m_start(0,0,0),
-	m_destination(0,0,0),
+	m_start(0, 0, 0),
+	m_destination(0, 0, 0),
 	m_limits(),
 	m_data(),
 	m_env(0)
@@ -656,8 +662,8 @@ pathfinder::pathfinder() :
 }
 
 /******************************************************************************/
-v3s16 pathfinder::getRealPos(v3s16 ipos) {
-
+v3s16 Pathfinder::getRealPos(v3s16 ipos)
+{
 	v3s16 retval = ipos;
 
 	retval.X += m_limits.X.min;
@@ -668,7 +674,7 @@ v3s16 pathfinder::getRealPos(v3s16 ipos) {
 }
 
 /******************************************************************************/
-bool pathfinder::build_costmap()
+bool Pathfinder::buildCostmap()
 {
 	INFO_TARGET << "Pathfinder build costmap: (" << m_limits.X.min << ","
 												<< m_limits.Z.min << ") ("
@@ -683,12 +689,12 @@ bool pathfinder::build_costmap()
 
 			int surfaces = 0;
 			for (int y = 0; y < m_max_index_y; y++) {
-				v3s16 ipos(x,y,z);
+				v3s16 ipos(x, y, z);
 
 				v3s16 realpos = getRealPos(ipos);
 
 				MapNode current = m_env->getMap().getNodeNoEx(realpos);
-				MapNode below   = m_env->getMap().getNodeNoEx(realpos + v3s16(0,-1,0));
+				MapNode below   = m_env->getMap().getNodeNoEx(realpos + v3s16(0, -1, 0));
 
 
 				if ((current.param0 == CONTENT_IGNORE) ||
@@ -727,13 +733,13 @@ bool pathfinder::build_costmap()
 
 				if (m_prefetch) {
 				m_data[x][z][y].directions[DIR_XP] =
-											calc_cost(realpos,v3s16( 1,0, 0));
+											calcCost(realpos,v3s16( 1, 0, 0));
 				m_data[x][z][y].directions[DIR_XM] =
-											calc_cost(realpos,v3s16(-1,0, 0));
+											calcCost(realpos,v3s16(-1, 0, 0));
 				m_data[x][z][y].directions[DIR_ZP] =
-											calc_cost(realpos,v3s16( 0,0, 1));
+											calcCost(realpos,v3s16( 0, 0, 1));
 				m_data[x][z][y].directions[DIR_ZM] =
-											calc_cost(realpos,v3s16( 0,0,-1));
+											calcCost(realpos,v3s16( 0, 0,-1));
 				}
 
 			}
@@ -751,8 +757,9 @@ bool pathfinder::build_costmap()
 }
 
 /******************************************************************************/
-path_cost pathfinder::calc_cost(v3s16 pos,v3s16 dir) {
-	path_cost retval;
+PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
+{
+	PathCost retval;
 
 	retval.updated = true;
 
@@ -779,12 +786,12 @@ path_cost pathfinder::calc_cost(v3s16 pos,v3s16 dir) {
 
 	if (node_at_pos2.param0 == CONTENT_AIR) {
 		MapNode node_below_pos2 =
-							m_env->getMap().getNodeNoEx(pos2 + v3s16(0,-1,0));
+							m_env->getMap().getNodeNoEx(pos2 + v3s16(0, -1, 0));
 
 		//did we get information about node?
 		if (node_below_pos2.param0 == CONTENT_IGNORE ) {
 				VERBOSE_TARGET << "Pathfinder: (2) area at pos: "
-					<< PPOS((pos2 + v3s16(0,-1,0))) << " not loaded";
+					<< PPOS((pos2 + v3s16(0, -1, 0))) << " not loaded";
 				return retval;
 		}
 
@@ -796,13 +803,13 @@ path_cost pathfinder::calc_cost(v3s16 pos,v3s16 dir) {
 					<< " cost same height found" << std::endl);
 		}
 		else {
-			v3s16 testpos = pos2 - v3s16(0,-1,0);
+			v3s16 testpos = pos2 - v3s16(0, -1, 0);
 			MapNode node_at_pos = m_env->getMap().getNodeNoEx(testpos);
 
 			while ((node_at_pos.param0 != CONTENT_IGNORE) &&
 					(node_at_pos.param0 == CONTENT_AIR) &&
 					(testpos.Y > m_limits.Y.min)) {
-				testpos += v3s16(0,-1,0);
+				testpos += v3s16(0, -1, 0);
 				node_at_pos = m_env->getMap().getNodeNoEx(testpos);
 			}
 
@@ -836,7 +843,7 @@ path_cost pathfinder::calc_cost(v3s16 pos,v3s16 dir) {
 		while ((node_at_pos.param0 != CONTENT_IGNORE) &&
 				(node_at_pos.param0 != CONTENT_AIR) &&
 				(testpos.Y < m_limits.Y.max)) {
-			testpos += v3s16(0,1,0);
+			testpos += v3s16(0, 1, 0);
 			node_at_pos = m_env->getMap().getNodeNoEx(testpos);
 		}
 
@@ -864,8 +871,8 @@ path_cost pathfinder::calc_cost(v3s16 pos,v3s16 dir) {
 }
 
 /******************************************************************************/
-v3s16 pathfinder::getIndexPos(v3s16 pos) {
-
+v3s16 Pathfinder::getIndexPos(v3s16 pos)
+{
 	v3s16 retval = pos;
 	retval.X -= m_limits.X.min;
 	retval.Y -= m_limits.Y.min;
@@ -875,12 +882,14 @@ v3s16 pathfinder::getIndexPos(v3s16 pos) {
 }
 
 /******************************************************************************/
-path_gridnode& pathfinder::getIndexElement(v3s16 ipos) {
+PathGridnode &Pathfinder::getIndexElement(v3s16 ipos)
+{
 	return m_data[ipos.X][ipos.Z][ipos.Y];
 }
 
 /******************************************************************************/
-bool pathfinder::valid_index(v3s16 index) {
+bool Pathfinder::isValidIndex(v3s16 index)
+{
 	if (	(index.X < m_max_index_x) &&
 			(index.Y < m_max_index_y) &&
 			(index.Z < m_max_index_z) &&
@@ -893,7 +902,8 @@ bool pathfinder::valid_index(v3s16 index) {
 }
 
 /******************************************************************************/
-v3s16 pathfinder::invert(v3s16 pos) {
+v3s16 Pathfinder::invert(v3s16 pos)
+{
 	v3s16 retval = pos;
 
 	retval.X *=-1;
@@ -904,12 +914,12 @@ v3s16 pathfinder::invert(v3s16 pos) {
 }
 
 /******************************************************************************/
-bool pathfinder::update_all_costs(	v3s16 ipos,
-									v3s16 srcdir,
-									int current_cost,
-									int level) {
-
-	path_gridnode& g_pos = getIndexElement(ipos);
+bool Pathfinder::updateAllCosts(v3s16 ipos,
+								v3s16 srcdir,
+								int current_cost,
+								int level)
+{
+	PathGridnode &g_pos = getIndexElement(ipos);
 	g_pos.totalcost = current_cost;
 	g_pos.sourcedir = srcdir;
 
@@ -933,14 +943,14 @@ bool pathfinder::update_all_costs(	v3s16 ipos,
 
 	for (unsigned int i=0; i < directions.size(); i++) {
 		if (directions[i] != srcdir) {
-			path_cost cost = g_pos.get_cost(directions[i]);
+			PathCost cost = g_pos.getCost(directions[i]);
 
 			if (cost.valid) {
 				directions[i].Y = cost.direction;
 
 				v3s16 ipos2 = ipos + directions[i];
 
-				if (!valid_index(ipos2)) {
+				if (!isValidIndex(ipos2)) {
 					DEBUG_OUT(LVL " Pathfinder: " << PPOS(ipos2) <<
 							" out of range (" << m_limits.X.max << "," <<
 							m_limits.Y.max << "," << m_limits.Z.max
@@ -948,7 +958,7 @@ bool pathfinder::update_all_costs(	v3s16 ipos,
 					continue;
 				}
 
-				path_gridnode& g_pos2 = getIndexElement(ipos2);
+				PathGridnode &g_pos2 = getIndexElement(ipos2);
 
 				if (!g_pos2.valid) {
 					VERBOSE_TARGET << LVL "Pathfinder: no data for new position: "
@@ -971,8 +981,8 @@ bool pathfinder::update_all_costs(	v3s16 ipos,
 					DEBUG_OUT(LVL "Pathfinder: updating path at: "<<
 							PPOS(ipos2) << " from: " << g_pos2.totalcost << " to "<<
 							new_cost << std::endl);
-					if (update_all_costs(ipos2,invert(directions[i]),
-											new_cost,level)) {
+					if (updateAllCosts(ipos2, invert(directions[i]),
+											new_cost, level)) {
 						retval = true;
 						}
 					}
@@ -993,20 +1003,21 @@ bool pathfinder::update_all_costs(	v3s16 ipos,
 }
 
 /******************************************************************************/
-int pathfinder::get_manhattandistance(v3s16 pos) {
-
-	int min_x = MYMIN(pos.X,m_destination.X);
-	int max_x = MYMAX(pos.X,m_destination.X);
-	int min_z = MYMIN(pos.Z,m_destination.Z);
-	int max_z = MYMAX(pos.Z,m_destination.Z);
+int Pathfinder::getXZManhattanDist(v3s16 pos)
+{
+	int min_x = MYMIN(pos.X, m_destination.X);
+	int max_x = MYMAX(pos.X, m_destination.X);
+	int min_z = MYMIN(pos.Z, m_destination.Z);
+	int max_z = MYMAX(pos.Z, m_destination.Z);
 
 	return (max_x - min_x) + (max_z - min_z);
 }
 
 /******************************************************************************/
-v3s16 pathfinder::get_dir_heuristic(std::vector<v3s16>& directions,path_gridnode& g_pos) {
+v3s16 Pathfinder::getDirHeuristic(std::vector<v3s16> &directions, PathGridnode &g_pos)
+{
 	int   minscore = -1;
-	v3s16 retdir   = v3s16(0,0,0);
+	v3s16 retdir   = v3s16(0, 0, 0);
 	v3s16 srcpos = g_pos.pos;
 	DEBUG_OUT("Pathfinder: remaining dirs at beginning:"
 				<< directions.size() << std::endl);
@@ -1015,14 +1026,14 @@ v3s16 pathfinder::get_dir_heuristic(std::vector<v3s16>& directions,path_gridnode
 			iter != directions.end();
 			++iter) {
 
-		v3s16 pos1 =  v3s16(srcpos.X + iter->X,0,srcpos.Z+iter->Z);
+		v3s16 pos1 = v3s16(srcpos.X + iter->X, 0, srcpos.Z+iter->Z);
 
-		int cur_manhattan = get_manhattandistance(pos1);
-		path_cost cost    = g_pos.get_cost(*iter);
+		int cur_manhattan = getXZManhattanDist(pos1);
+		PathCost cost    = g_pos.getCost(*iter);
 
 		if (!cost.updated) {
-			cost = calc_cost(g_pos.pos,*iter);
-			g_pos.set_cost(*iter,cost);
+			cost = calcCost(g_pos.pos, *iter);
+			g_pos.setCost(*iter, cost);
 		}
 
 		if (cost.valid) {
@@ -1035,7 +1046,7 @@ v3s16 pathfinder::get_dir_heuristic(std::vector<v3s16>& directions,path_gridnode
 		}
 	}
 
-	if (retdir != v3s16(0,0,0)) {
+	if (retdir != v3s16(0, 0, 0)) {
 		for (std::vector<v3s16>::iterator iter = directions.begin();
 					iter != directions.end();
 					++iter) {
@@ -1057,12 +1068,13 @@ v3s16 pathfinder::get_dir_heuristic(std::vector<v3s16>& directions,path_gridnode
 }
 
 /******************************************************************************/
-bool pathfinder::update_cost_heuristic(	v3s16 ipos,
-									v3s16 srcdir,
-									int current_cost,
-									int level) {
+bool Pathfinder::updateCostHeuristic(	v3s16 ipos,
+										v3s16 srcdir,
+										int current_cost,
+										int level)
+{
 
-	path_gridnode& g_pos = getIndexElement(ipos);
+	PathGridnode &g_pos = getIndexElement(ipos);
 	g_pos.totalcost = current_cost;
 	g_pos.sourcedir = srcdir;
 
@@ -1079,38 +1091,38 @@ bool pathfinder::update_cost_heuristic(	v3s16 ipos,
 
 	std::vector<v3s16> directions;
 
-	directions.push_back(v3s16( 1,0, 0));
-	directions.push_back(v3s16(-1,0, 0));
-	directions.push_back(v3s16( 0,0, 1));
-	directions.push_back(v3s16( 0,0,-1));
+	directions.push_back(v3s16( 1, 0,  0));
+	directions.push_back(v3s16(-1, 0,  0));
+	directions.push_back(v3s16( 0, 0,  1));
+	directions.push_back(v3s16( 0, 0, -1));
 
-	v3s16 direction = get_dir_heuristic(directions,g_pos);
+	v3s16 direction = getDirHeuristic(directions, g_pos);
 
-	while (direction != v3s16(0,0,0) && (!retval)) {
+	while (direction != v3s16(0, 0, 0) && (!retval)) {
 
 		if (direction != srcdir) {
-			path_cost cost = g_pos.get_cost(direction);
+			PathCost cost = g_pos.getCost(direction);
 
 			if (cost.valid) {
 				direction.Y = cost.direction;
 
 				v3s16 ipos2 = ipos + direction;
 
-				if (!valid_index(ipos2)) {
+				if (!isValidIndex(ipos2)) {
 					DEBUG_OUT(LVL " Pathfinder: " << PPOS(ipos2) <<
 							" out of range (" << m_limits.X.max << "," <<
 							m_limits.Y.max << "," << m_limits.Z.max
 							<<")" << std::endl);
-					direction = get_dir_heuristic(directions,g_pos);
+					direction = getDirHeuristic(directions, g_pos);
 					continue;
 				}
 
-				path_gridnode& g_pos2 = getIndexElement(ipos2);
+				PathGridnode &g_pos2 = getIndexElement(ipos2);
 
 				if (!g_pos2.valid) {
 					VERBOSE_TARGET << LVL "Pathfinder: no data for new position: "
 												<< PPOS(ipos2) << std::endl;
-					direction = get_dir_heuristic(directions,g_pos);
+					direction = getDirHeuristic(directions, g_pos);
 					continue;
 				}
 
@@ -1133,8 +1145,8 @@ bool pathfinder::update_cost_heuristic(	v3s16 ipos,
 							PPOS(ipos2) << " from: " << g_pos2.totalcost << " to "<<
 							new_cost << " srcdir=" <<
 							PPOS(invert(direction))<< std::endl);
-					if (update_cost_heuristic(ipos2,invert(direction),
-											new_cost,level)) {
+					if (updateCostHeuristic(ipos2, invert(direction),
+											new_cost, level)) {
 						retval = true;
 						}
 					}
@@ -1155,24 +1167,25 @@ bool pathfinder::update_cost_heuristic(	v3s16 ipos,
 							" skipping srcdir: "
 							<< PPOS(direction) << std::endl);
 		}
-		direction = get_dir_heuristic(directions,g_pos);
+		direction = getDirHeuristic(directions, g_pos);
 	}
 	return retval;
 }
 
 /******************************************************************************/
-void pathfinder::build_path(std::vector<v3s16>& path,v3s16 pos, int level) {
+void Pathfinder::buildPath(std::vector<v3s16> &path, v3s16 pos, int level)
+{
 	level ++;
 	if (level > 700) {
 		ERROR_TARGET
-		<< LVL "Pathfinder: path is too long aborting" << std::endl;
+			<< LVL "Pathfinder: path is too long aborting" << std::endl;
 		return;
 	}
 
-	path_gridnode& g_pos = getIndexElement(pos);
+	PathGridnode &g_pos = getIndexElement(pos);
 	if (!g_pos.valid) {
 		ERROR_TARGET
-		<< LVL "Pathfinder: invalid next pos detected aborting" << std::endl;
+			<< LVL "Pathfinder: invalid next pos detected aborting" << std::endl;
 		return;
 	}
 
@@ -1184,37 +1197,40 @@ void pathfinder::build_path(std::vector<v3s16>& path,v3s16 pos, int level) {
 		return;
 	}
 
-	build_path(path,pos + g_pos.sourcedir,level);
+	buildPath(path, pos + g_pos.sourcedir, level);
 	path.push_back(pos);
 }
 
 /******************************************************************************/
-v3f pathfinder::tov3f(v3s16 pos) {
-	return v3f(BS*pos.X,BS*pos.Y,BS*pos.Z);
+v3f Pathfinder::tov3f(v3s16 pos)
+{
+	return v3f(BS * pos.X, BS * pos.Y, BS * pos.Z);
 }
 
 #ifdef PATHFINDER_DEBUG
 
 /******************************************************************************/
-void pathfinder::print_cost() {
-	print_cost(DIR_XP);
-	print_cost(DIR_XM);
-	print_cost(DIR_ZP);
-	print_cost(DIR_ZM);
+void Pathfinder::printCost()
+{
+	printCost(DIR_XP);
+	printCost(DIR_XM);
+	printCost(DIR_ZP);
+	printCost(DIR_ZM);
 }
 
 /******************************************************************************/
-void pathfinder::print_ydir() {
-	print_ydir(DIR_XP);
-	print_ydir(DIR_XM);
-	print_ydir(DIR_ZP);
-	print_ydir(DIR_ZM);
+void Pathfinder::printYdir()
+{
+	printYdir(DIR_XP);
+	printYdir(DIR_XM);
+	printYdir(DIR_ZP);
+	printYdir(DIR_ZM);
 }
 
 /******************************************************************************/
-void pathfinder::print_cost(path_directions dir) {
-
-	std::cout << "Cost in direction: " << dir_to_name(dir) << std::endl;
+void Pathfinder::printCost(PathDirections dir)
+{
+	std::cout << "Cost in direction: " << dirToName(dir) << std::endl;
 	std::cout << std::setfill('-') << std::setw(80) << "-" << std::endl;
 	std::cout << std::setfill(' ');
 	for (int y = 0; y < m_max_index_y; y++) {
@@ -1243,9 +1259,9 @@ void pathfinder::print_cost(path_directions dir) {
 }
 
 /******************************************************************************/
-void pathfinder::print_ydir(path_directions dir) {
-
-	std::cout << "Height difference in direction: " << dir_to_name(dir) << std::endl;
+void Pathfinder::printYdir(PathDirections dir)
+{
+	std::cout << "Height difference in direction: " << dirToName(dir) << std::endl;
 	std::cout << std::setfill('-') << std::setw(80) << "-" << std::endl;
 	std::cout << std::setfill(' ');
 	for (int y = 0; y < m_max_index_y; y++) {
@@ -1274,7 +1290,8 @@ void pathfinder::print_ydir(path_directions dir) {
 }
 
 /******************************************************************************/
-void pathfinder::print_type() {
+void Pathfinder::printType()
+{
 	std::cout << "Type of node:" << std::endl;
 	std::cout << std::setfill('-') << std::setw(80) << "-" << std::endl;
 	std::cout << std::setfill(' ');
@@ -1302,7 +1319,8 @@ void pathfinder::print_type() {
 }
 
 /******************************************************************************/
-void pathfinder::print_pathlen() {
+void Pathfinder::printPathLen()
+{
 	std::cout << "Pathlen:" << std::endl;
 		std::cout << std::setfill('-') << std::setw(80) << "-" << std::endl;
 		std::cout << std::setfill(' ');
@@ -1329,7 +1347,8 @@ void pathfinder::print_pathlen() {
 }
 
 /******************************************************************************/
-std::string pathfinder::dir_to_name(path_directions dir) {
+std::string Pathfinder::dirToName(PathDirections dir)
+{
 	switch (dir) {
 	case DIR_XP:
 		return "XP";
@@ -1349,8 +1368,8 @@ std::string pathfinder::dir_to_name(path_directions dir) {
 }
 
 /******************************************************************************/
-void pathfinder::print_path(std::vector<v3s16> path) {
-
+void Pathfinder::printPath(std::vector<v3s16> path)
+{
 	unsigned int current = 0;
 	for (std::vector<v3s16>::iterator i = path.begin();
 			i != path.end(); ++i) {
