@@ -2381,11 +2381,6 @@ void GUIFormSpecMenu::drawMenu()
 	}
 
 	/*
-		Call base class
-	*/
-	gui::IGUIElement::draw();
-
-	/*
 		Draw images
 	*/
 	for(u32 i=0; i<m_images.size(); i++)
@@ -2417,6 +2412,11 @@ void GUIFormSpecMenu::drawMenu()
 			errorstream << "\t" << spec.name << std::endl;
 		}
 	}
+
+	/*
+		Call base class
+	*/
+	gui::IGUIElement::draw();
 
 	/*
 		Draw item images
@@ -2474,7 +2474,7 @@ void GUIFormSpecMenu::drawMenu()
 		Draw static text elements
 	*/
 	for (u32 i = 0; i < m_static_texts.size(); i++) {
-		const StaticTextSpec &spec = m_static_texts[i];	
+		const StaticTextSpec &spec = m_static_texts[i];
 		core::rect<s32> rect = spec.rect;
 		if (spec.parent_button && spec.parent_button->isPressed()) {
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
