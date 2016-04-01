@@ -1,6 +1,7 @@
 /*
 Minetest
 Copyright (C) 2013 sapier, sapier at gmx dot net
+Copyright (C) 2016 est31, <MTest31@outlook.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -121,13 +122,47 @@ public:
 	bool      source;              /**< node is stating position              */
 	int       totalcost;           /**< cost to move here from starting point */
 	v3s16     sourcedir;           /**< origin of movement for current cost   */
-	int       surfaces;            /**< number of surfaces with same x,z value*/
 	v3s16     pos;                 /**< real position of node                 */
 	PathCost directions[4];        /**< cost in different directions          */
 
 	/* debug values */
 	bool      is_element;          /**< node is element of path detected      */
 	char      type;                /**< type of node                          */
+};
+
+class Pathfinder;
+
+/** Abstract class to manage the map data */
+class GridNodeContainer {
+public:
+	virtual PathGridnode &access(v3s16 p)=0;
+	virtual ~GridNodeContainer() {}
+protected:
+	Pathfinder *m_pathf;
+
+	void initNode(v3s16 ipos, PathGridnode *p_node);
+};
+
+class ArrayGridNodeContainer : public GridNodeContainer {
+public:
+	virtual ~ArrayGridNodeContainer() {}
+	ArrayGridNodeContainer(Pathfinder *pathf, v3s16 dimensions);
+	virtual PathGridnode &access(v3s16 p);
+private:
+	v3s16 m_dimensions;
+
+	int m_x_stride;
+	int m_y_stride;
+	std::vector<PathGridnode> m_nodes_array;
+};
+
+class MapGridNodeContainer : public GridNodeContainer {
+public:
+	virtual ~MapGridNodeContainer() {}
+	MapGridNodeContainer(Pathfinder *pathf);
+	virtual PathGridnode &access(v3s16 p);
+private:
+	std::map<v3s16, PathGridnode> m_nodes;
 };
 
 /** class doing pathfinding */
@@ -138,6 +173,8 @@ public:
 	 * default constructor
 	 */
 	Pathfinder();
+
+	~Pathfinder();
 
 	/**
 	 * path evaluation function
@@ -180,6 +217,12 @@ private:
 	 * @return gridnode for index
 	 */
 	PathGridnode &getIndexElement(v3s16 ipos);
+
+	/**
+	 * Get gridnode at a specific index position
+	 * @return gridnode for index
+	 */
+	PathGridnode &getIdxElem(s16 x, s16 y, s16 z);
 
 	/**
 	 * invert a 3d position
@@ -280,8 +323,10 @@ private:
 
 	core::aabbox3d<s16> m_limits; /**< position limits in real map coordinates  */
 
-	/** 3d grid containing all map data already collected and analyzed */
-	std::vector<std::vector<std::vector<PathGridnode> > > m_data;
+	/** contains all map data already collected and analyzed.
+		Access it via the getIndexElement/getIdxElem methods. */
+	friend class GridNodeContainer;
+	GridNodeContainer *m_nodes_container;
 
 	ServerEnvironment *m_env;     /**< minetest environment pointer             */
 
@@ -390,7 +435,6 @@ PathGridnode::PathGridnode()
 	source(false),
 	totalcost(-1),
 	sourcedir(v3s16(0, 0, 0)),
-	surfaces(0),
 	pos(v3s16(0, 0, 0)),
 	is_element(false),
 	type('u')
@@ -405,7 +449,6 @@ PathGridnode::PathGridnode(const PathGridnode &b)
 	source(b.source),
 	totalcost(b.totalcost),
 	sourcedir(b.sourcedir),
-	surfaces(b.surfaces),
 	pos(b.pos),
 	is_element(b.is_element),
 	type(b.type)
@@ -426,7 +469,6 @@ PathGridnode &PathGridnode::operator= (const PathGridnode &b)
 	is_element = b.is_element;
 	totalcost  = b.totalcost;
 	sourcedir  = b.sourcedir;
-	surfaces   = b.surfaces;
 	pos        = b.pos;
 	type       = b.type;
 
@@ -473,6 +515,96 @@ void PathGridnode::setCost(v3s16 dir, PathCost cost)
 		directions[DIR_ZM] = cost;
 	}
 }
+
+void GridNodeContainer::initNode(v3s16 ipos, PathGridnode *p_node)
+{
+	PathGridnode &elem = *p_node;
+
+	v3s16 realpos = m_pathf->getRealPos(ipos);
+
+	MapNode current = m_pathf->m_env->getMap().getNodeNoEx(realpos);
+	MapNode below   = m_pathf->m_env->getMap().getNodeNoEx(realpos + v3s16(0, -1, 0));
+
+
+	if ((current.param0 == CONTENT_IGNORE) ||
+			(below.param0 == CONTENT_IGNORE)) {
+		DEBUG_OUT("Pathfinder: " << PPOS(realpos) <<
+			" current or below is invalid element" << std::endl);
+		if (current.param0 == CONTENT_IGNORE) {
+			elem.type = 'i';
+			DEBUG_OUT(PPOS(ipos) << ": " << 'i' << std::endl);
+		}
+		return;
+	}
+
+	//don't add anything if it isn't an air node
+	if ((current.param0 != CONTENT_AIR) ||
+				(below.param0 == CONTENT_AIR )) {
+			DEBUG_OUT("Pathfinder: " << PPOS(realpos)
+				<< " not on surface" << std::endl);
+			if (current.param0 != CONTENT_AIR) {
+				elem.type = 's';
+				DEBUG_OUT(PPOS(ipos) << ": " << 's' << std::endl);
+			} else {
+				elem.type = '-';
+				DEBUG_OUT(PPOS(ipos) << ": " << '-' << std::endl);
+			}
+			return;
+	}
+
+	elem.valid = true;
+	elem.pos   = realpos;
+	elem.type  = 'g';
+	DEBUG_OUT(PPOS(ipos) << ": " << 'a' << std::endl);
+
+	if (m_pathf->m_prefetch) {
+		elem.directions[DIR_XP] = m_pathf->calcCost(realpos, v3s16( 1, 0, 0));
+		elem.directions[DIR_XM] = m_pathf->calcCost(realpos, v3s16(-1, 0, 0));
+		elem.directions[DIR_ZP] = m_pathf->calcCost(realpos, v3s16( 0, 0, 1));
+		elem.directions[DIR_ZM] = m_pathf->calcCost(realpos, v3s16( 0, 0,-1));
+	}
+}
+
+ArrayGridNodeContainer::ArrayGridNodeContainer(Pathfinder *pathf, v3s16 dimensions) :
+	m_x_stride(dimensions.Y * dimensions.Z),
+	m_y_stride(dimensions.Z)
+{
+	m_pathf = pathf;
+
+	m_nodes_array.resize(dimensions.X * dimensions.Y * dimensions.Z);
+	INFO_TARGET << "Pathfinder ArrayGridNodeContainer constructor." << std::endl;
+	for (int x = 0; x < dimensions.X; x++) {
+		for (int y = 0; y < dimensions.Y; y++) {
+			for (int z= 0; z < dimensions.Z; z++) {
+				v3s16 ipos(x, y, z);
+				initNode(ipos, &access(ipos));
+			}
+		}
+	}
+}
+
+PathGridnode &ArrayGridNodeContainer::access(v3s16 p)
+{
+	return m_nodes_array[p.X * m_x_stride + p.Y * m_y_stride + p.Z];
+}
+
+MapGridNodeContainer::MapGridNodeContainer(Pathfinder *pathf)
+{
+	m_pathf = pathf;
+}
+
+PathGridnode &MapGridNodeContainer::access(v3s16 p)
+{
+	std::map<v3s16, PathGridnode>::iterator it = m_nodes.find(p);
+	if (it != m_nodes.end()) {
+		return it->second;
+	}
+	PathGridnode &n = m_nodes[p];
+	initNode(p, &n);
+	return n;
+}
+
+
 
 /******************************************************************************/
 std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
@@ -531,10 +663,11 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 	m_max_index_y = diff.Y;
 	m_max_index_z = diff.Z;
 
-	//build data map
-	if (!buildCostmap()) {
-		ERROR_TARGET << "failed to build costmap" << std::endl;
-		return retval;
+	delete m_nodes_container;
+	if (diff.getLength() > 5) {
+		m_nodes_container = new MapGridNodeContainer(this);
+	} else {
+		m_nodes_container = new ArrayGridNodeContainer(this, diff);
 	}
 #ifdef PATHFINDER_DEBUG
 	printType();
@@ -646,96 +779,20 @@ Pathfinder::Pathfinder() :
 	m_prefetch(true),
 	m_start(0, 0, 0),
 	m_destination(0, 0, 0),
-	m_data(),
+	m_nodes_container(NULL),
 	m_env(0)
 {
 	//intentionaly empty
 }
 
+Pathfinder::~Pathfinder()
+{
+	delete m_nodes_container;
+}
 /******************************************************************************/
 v3s16 Pathfinder::getRealPos(v3s16 ipos)
 {
 	return m_limits.MinEdge + ipos;
-}
-
-/******************************************************************************/
-bool Pathfinder::buildCostmap()
-{
-	INFO_TARGET << "Pathfinder build costmap: min="
-		<< PPOS(m_limits.MinEdge) << ", max=" << PPOS(m_limits.MaxEdge) << std::endl;
-	m_data.resize(m_max_index_x);
-	for (int x = 0; x < m_max_index_x; x++) {
-		m_data[x].resize(m_max_index_z);
-		for (int z = 0; z < m_max_index_z; z++) {
-			m_data[x][z].resize(m_max_index_y);
-
-			int surfaces = 0;
-			for (int y = 0; y < m_max_index_y; y++) {
-				v3s16 ipos(x, y, z);
-
-				v3s16 realpos = getRealPos(ipos);
-
-				MapNode current = m_env->getMap().getNodeNoEx(realpos);
-				MapNode below   = m_env->getMap().getNodeNoEx(realpos + v3s16(0, -1, 0));
-
-
-				if ((current.param0 == CONTENT_IGNORE) ||
-						(below.param0 == CONTENT_IGNORE)) {
-					DEBUG_OUT("Pathfinder: " << PPOS(realpos) <<
-							" current or below is invalid element" << std::endl);
-					if (current.param0 == CONTENT_IGNORE) {
-						m_data[x][z][y].type = 'i';
-						DEBUG_OUT(x << "," << y << "," << z << ": " << 'i' << std::endl);
-					}
-					continue;
-				}
-
-				//don't add anything if it isn't an air node
-				if ((current.param0 != CONTENT_AIR) ||
-						(below.param0 == CONTENT_AIR )) {
-						DEBUG_OUT("Pathfinder: " << PPOS(realpos)
-								<< " not on surface" << std::endl);
-						if (current.param0 != CONTENT_AIR) {
-							m_data[x][z][y].type = 's';
-							DEBUG_OUT(x << "," << y << "," << z << ": " << 's' << std::endl);
-						}
-						else {
-							m_data[x][z][y].type   = '-';
-							DEBUG_OUT(x << "," << y << "," << z << ": " << '-' << std::endl);
-						}
-						continue;
-				}
-
-				surfaces++;
-
-				m_data[x][z][y].valid  = true;
-				m_data[x][z][y].pos    = realpos;
-				m_data[x][z][y].type   = 'g';
-				DEBUG_OUT(x << "," << y << "," << z << ": " << 'a' << std::endl);
-
-				if (m_prefetch) {
-				m_data[x][z][y].directions[DIR_XP] =
-											calcCost(realpos,v3s16( 1, 0, 0));
-				m_data[x][z][y].directions[DIR_XM] =
-											calcCost(realpos,v3s16(-1, 0, 0));
-				m_data[x][z][y].directions[DIR_ZP] =
-											calcCost(realpos,v3s16( 0, 0, 1));
-				m_data[x][z][y].directions[DIR_ZM] =
-											calcCost(realpos,v3s16( 0, 0,-1));
-				}
-
-			}
-
-			if (surfaces >= 1 ) {
-				for (int y = 0; y < m_max_index_y; y++) {
-					if (m_data[x][z][y].valid) {
-						m_data[x][z][y].surfaces = surfaces;
-					}
-				}
-			}
-		}
-	}
-	return true;
 }
 
 /******************************************************************************/
@@ -858,7 +915,13 @@ v3s16 Pathfinder::getIndexPos(v3s16 pos)
 /******************************************************************************/
 PathGridnode &Pathfinder::getIndexElement(v3s16 ipos)
 {
-	return m_data[ipos.X][ipos.Z][ipos.Y];
+	return m_nodes_container->access(ipos);
+}
+
+/******************************************************************************/
+inline PathGridnode &Pathfinder::getIdxElem(s16 x, s16 y, s16 z)
+{
+	return m_nodes_container->access(v3s16(x,y,z));
 }
 
 /******************************************************************************/
@@ -1216,9 +1279,9 @@ void Pathfinder::printCost(PathDirections dir)
 		for (int z = 0; z < m_max_index_z; z++) {
 			std::cout << std::setw(4) << z <<": ";
 			for (int x = 0; x < m_max_index_x; x++) {
-				if (m_data[x][z][y].directions[dir].valid)
+				if (getIdxElem(x, y, z).directions[dir].valid)
 					std::cout << std::setw(4)
-						<< m_data[x][z][y].directions[dir].value;
+						<< getIdxElem(x, y, z).directions[dir].value;
 				else
 					std::cout << std::setw(4) << "-";
 				}
@@ -1247,9 +1310,9 @@ void Pathfinder::printYdir(PathDirections dir)
 		for (int z = 0; z < m_max_index_z; z++) {
 			std::cout << std::setw(4) << z <<": ";
 			for (int x = 0; x < m_max_index_x; x++) {
-				if (m_data[x][z][y].directions[dir].valid)
+				if (getIdxElem(x, y, z).directions[dir].valid)
 					std::cout << std::setw(4)
-						<< m_data[x][z][y].directions[dir].direction;
+						<< getIdxElem(x, y, z).directions[dir].direction;
 				else
 					std::cout << std::setw(4) << "-";
 				}
@@ -1278,7 +1341,7 @@ void Pathfinder::printType()
 		for (int z = 0; z < m_max_index_z; z++) {
 			std::cout << std::setw(3) << z <<": ";
 			for (int x = 0; x < m_max_index_x; x++) {
-				char toshow = m_data[x][z][y].type;
+				char toshow = getIdxElem(x, y, z).type;
 				std::cout << std::setw(3) << toshow;
 			}
 			std::cout << std::endl;
@@ -1307,7 +1370,7 @@ void Pathfinder::printPathLen()
 			for (int z = 0; z < m_max_index_z; z++) {
 				std::cout << std::setw(3) << z <<": ";
 				for (int x = 0; x < m_max_index_x; x++) {
-					std::cout << std::setw(3) << m_data[x][z][y].totalcost;
+					std::cout << std::setw(3) << getIdxElem(x, y, z).totalcost;
 				}
 				std::cout << std::endl;
 			}
