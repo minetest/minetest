@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "map.h"
 #include "log.h"
+#include "irr_aabb3d.h"
 
 //#define PATHFINDER_DEBUG
 //#define PATHFINDER_CALC_TIME
@@ -157,18 +158,6 @@ public:
 			PathAlgorithm algo);
 
 private:
-	/** data struct for storing internal information */
-	struct limits {
-		struct limit {
-			int min;
-			int max;
-		};
-
-		limit X;
-		limit Y;
-		limit Z;
-	};
-
 	/* helper functions */
 
 	/**
@@ -274,27 +263,27 @@ private:
 	void          buildPath(std::vector<v3s16> &path, v3s16 pos, int level);
 
 	/* variables */
-	int m_max_index_x;          /**< max index of search area in x direction  */
-	int m_max_index_y;          /**< max index of search area in y direction  */
-	int m_max_index_z;          /**< max index of search area in z direction  */
+	int m_max_index_x;            /**< max index of search area in x direction  */
+	int m_max_index_y;            /**< max index of search area in y direction  */
+	int m_max_index_z;            /**< max index of search area in z direction  */
 
 
-	int m_searchdistance;       /**< max distance to search in each direction */
-	int m_maxdrop;              /**< maximum number of blocks a path may drop */
-	int m_maxjump;              /**< maximum number of blocks a path may jump */
-	int m_min_target_distance;  /**< current smalest path to target           */
+	int m_searchdistance;         /**< max distance to search in each direction */
+	int m_maxdrop;                /**< maximum number of blocks a path may drop */
+	int m_maxjump;                /**< maximum number of blocks a path may jump */
+	int m_min_target_distance;    /**< current smalest path to target           */
 
-	bool m_prefetch;            /**< prefetch cost data                       */
+	bool m_prefetch;              /**< prefetch cost data                       */
 
-	v3s16 m_start;              /**< source position                          */
-	v3s16 m_destination;        /**< destination position                     */
+	v3s16 m_start;                /**< source position                          */
+	v3s16 m_destination;          /**< destination position                     */
 
-	limits m_limits;            /**< position limits in real map coordinates  */
+	core::aabbox3d<s16> m_limits; /**< position limits in real map coordinates  */
 
 	/** 3d grid containing all map data already collected and analyzed */
 	std::vector<std::vector<std::vector<PathGridnode> > > m_data;
 
-	ServerEnvironment *m_env;   /**< minetest environment pointer             */
+	ServerEnvironment *m_env;     /**< minetest environment pointer             */
 
 #ifdef PATHFINDER_DEBUG
 
@@ -528,16 +517,19 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 	int min_z = MYMIN(source.Z, destination.Z);
 	int max_z = MYMAX(source.Z, destination.Z);
 
-	m_limits.X.min = min_x - searchdistance;
-	m_limits.X.max = max_x + searchdistance;
-	m_limits.Y.min = min_y - searchdistance;
-	m_limits.Y.max = max_y + searchdistance;
-	m_limits.Z.min = min_z - searchdistance;
-	m_limits.Z.max = max_z + searchdistance;
+	m_limits.MinEdge.X = min_x - searchdistance;
+	m_limits.MinEdge.Y = min_y - searchdistance;
+	m_limits.MinEdge.Z = min_z - searchdistance;
 
-	m_max_index_x = m_limits.X.max - m_limits.X.min;
-	m_max_index_y = m_limits.Y.max - m_limits.Y.min;
-	m_max_index_z = m_limits.Z.max - m_limits.Z.min;
+	m_limits.MaxEdge.X = max_x + searchdistance;
+	m_limits.MaxEdge.Y = max_y + searchdistance;
+	m_limits.MaxEdge.Z = max_z + searchdistance;
+
+	v3s16 diff = m_limits.MaxEdge - m_limits.MinEdge;
+
+	m_max_index_x = diff.X;
+	m_max_index_y = diff.Y;
+	m_max_index_z = diff.Z;
 
 	//build data map
 	if (!buildCostmap()) {
@@ -654,7 +646,6 @@ Pathfinder::Pathfinder() :
 	m_prefetch(true),
 	m_start(0, 0, 0),
 	m_destination(0, 0, 0),
-	m_limits(),
 	m_data(),
 	m_env(0)
 {
@@ -664,23 +655,14 @@ Pathfinder::Pathfinder() :
 /******************************************************************************/
 v3s16 Pathfinder::getRealPos(v3s16 ipos)
 {
-	v3s16 retval = ipos;
-
-	retval.X += m_limits.X.min;
-	retval.Y += m_limits.Y.min;
-	retval.Z += m_limits.Z.min;
-
-	return retval;
+	return m_limits.MinEdge + ipos;
 }
 
 /******************************************************************************/
 bool Pathfinder::buildCostmap()
 {
-	INFO_TARGET << "Pathfinder build costmap: (" << m_limits.X.min << ","
-												<< m_limits.Z.min << ") ("
-												<< m_limits.X.max << ","
-												<< m_limits.Z.max << ")"
-												<< std::endl;
+	INFO_TARGET << "Pathfinder build costmap: min="
+		<< PPOS(m_limits.MinEdge) << ", max=" << PPOS(m_limits.MaxEdge) << std::endl;
 	m_data.resize(m_max_index_x);
 	for (int x = 0; x < m_max_index_x; x++) {
 		m_data[x].resize(m_max_index_z);
@@ -766,10 +748,7 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 	v3s16 pos2 = pos + dir;
 
 	//check limits
-	if (    (pos2.X < m_limits.X.min) ||
-			(pos2.X >= m_limits.X.max) ||
-			(pos2.Z < m_limits.Z.min) ||
-			(pos2.Z >= m_limits.Z.max)) {
+	if (!m_limits.isPointInside(pos2)) {
 		DEBUG_OUT("Pathfinder: " << PPOS(pos2) <<
 				" no cost -> out of limits" << std::endl);
 		return retval;
@@ -808,13 +787,13 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 
 			while ((node_at_pos.param0 != CONTENT_IGNORE) &&
 					(node_at_pos.param0 == CONTENT_AIR) &&
-					(testpos.Y > m_limits.Y.min)) {
+					(testpos.Y > m_limits.MinEdge.Y)) {
 				testpos += v3s16(0, -1, 0);
 				node_at_pos = m_env->getMap().getNodeNoEx(testpos);
 			}
 
 			//did we find surface?
-			if ((testpos.Y >= m_limits.Y.min) &&
+			if ((testpos.Y >= m_limits.MinEdge.Y) &&
 					(node_at_pos.param0 != CONTENT_IGNORE) &&
 					(node_at_pos.param0 != CONTENT_AIR)) {
 				if ((pos2.Y - testpos.Y - 1) <= m_maxdrop) {
@@ -842,13 +821,13 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 
 		while ((node_at_pos.param0 != CONTENT_IGNORE) &&
 				(node_at_pos.param0 != CONTENT_AIR) &&
-				(testpos.Y < m_limits.Y.max)) {
+				(testpos.Y < m_limits.MaxEdge.Y)) {
 			testpos += v3s16(0, 1, 0);
 			node_at_pos = m_env->getMap().getNodeNoEx(testpos);
 		}
 
 		//did we find surface?
-		if ((testpos.Y <= m_limits.Y.max) &&
+		if ((testpos.Y <= m_limits.MaxEdge.Y) &&
 				(node_at_pos.param0 == CONTENT_AIR)) {
 
 			if (testpos.Y - pos2.Y <= m_maxjump) {
@@ -873,12 +852,7 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 /******************************************************************************/
 v3s16 Pathfinder::getIndexPos(v3s16 pos)
 {
-	v3s16 retval = pos;
-	retval.X -= m_limits.X.min;
-	retval.Y -= m_limits.Y.min;
-	retval.Z -= m_limits.Z.min;
-
-	return retval;
+	return pos - m_limits.MinEdge;
 }
 
 /******************************************************************************/
@@ -952,9 +926,7 @@ bool Pathfinder::updateAllCosts(v3s16 ipos,
 
 				if (!isValidIndex(ipos2)) {
 					DEBUG_OUT(LVL " Pathfinder: " << PPOS(ipos2) <<
-							" out of range (" << m_limits.X.max << "," <<
-							m_limits.Y.max << "," << m_limits.Z.max
-							<<")" << std::endl);
+						" out of range, max=" << PPOS(m_limits.MaxEdge) << std::endl);
 					continue;
 				}
 
@@ -1110,9 +1082,7 @@ bool Pathfinder::updateCostHeuristic(	v3s16 ipos,
 
 				if (!isValidIndex(ipos2)) {
 					DEBUG_OUT(LVL " Pathfinder: " << PPOS(ipos2) <<
-							" out of range (" << m_limits.X.max << "," <<
-							m_limits.Y.max << "," << m_limits.Z.max
-							<<")" << std::endl);
+						" out of range, max=" << PPOS(m_limits.MaxEdge) << std::endl);
 					direction = getDirHeuristic(directions, g_pos);
 					continue;
 				}
