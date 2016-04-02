@@ -465,6 +465,7 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 
 	init_gettext(porting::path_locale.c_str(),
 		g_settings->get("language"), argc, argv);
+	init_language(gettext("LANG_CODE"));
 
 	return true;
 }

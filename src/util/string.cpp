@@ -729,25 +729,54 @@ static bool parseNamedColorString(const std::string &value, video::SColor &color
 	return true;
 }
 
+std::wstring language;
+void init_language(std::string lang) {
+	language = utf8_to_wide(lang);
+}
+
+void processEscape(const std::wstring &escape_sequence, std::wstring &output) {
+	std::vector<std::wstring> parts = split(escape_sequence, L';');
+	if (parts[0] == L"translate") {
+		if (parts.size() < 2) return;
+		size_t nchars = stoi(parts[1]);
+		for (unsigned int j = 2; j < parts.size(); ++j) {
+			std::vector<std::wstring> data = split(parts[j], L':');
+			if (data.size() < 2) continue;
+			if (data[0] == language) {
+				output.erase(MYMAX(0, output.length() - nchars), nchars);
+				output += data[1];
+				break;
+			}
+		}
+	}
+}
+
 std::wstring removeEscapes(const std::wstring &s) {
 	std::wstring output;
 	size_t i = 0;
 	while (i < s.length()) {
 		if (s[i] == L'\v') {
 			++i;
+			size_t start_index = i;
+			size_t length;
 			if (i == s.length()) continue;
 			if (s[i] == L'(') {
 				++i;
+				++start_index;
 				while (i < s.length() && s[i] != L')') {
 					if (s[i] == L'\\') {
 						++i;
 					}
 					++i;
 				}
+				length = i - start_index;
 				++i;
 			} else {
 				++i;
+				length = 1;
 			}
+			std::wstring escape_sequence(s, start_index, length);
+			processEscape(escape_sequence, output);
 			continue;
 		}
 		output += s[i];
@@ -760,3 +789,4 @@ void str_replace(std::string &str, char from, char to)
 {
 	std::replace(str.begin(), str.end(), from, to);
 }
+

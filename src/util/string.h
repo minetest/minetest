@@ -492,6 +492,40 @@ inline std::basic_string<T> unescape_string(const std::basic_string<T> &s)
 	return res;
 }
 
+template <typename T>
+std::vector<std::basic_string<T> >
+  split(const std::basic_string<T> &s, T delim)
+{
+	std::vector<std::basic_string<T> > tokens;
+
+	std::basic_string<T> current;
+	bool last_was_escape = false;
+	for (unsigned int i = 0; i < s.length(); i++) {
+		T si = s[i];
+		if (last_was_escape) {
+			current += '\\';
+			current += si;
+			last_was_escape = false;
+		} else {
+			if (si == delim) {
+				tokens.push_back(current);
+				current = std::basic_string<T>();
+				last_was_escape = false;
+			} else if (si == '\\') {
+				last_was_escape = true;
+			} else {
+				current += si;
+				last_was_escape = false;
+			}
+		}
+	}
+	//push last element
+	tokens.push_back(current);
+
+	return tokens;
+}
+
+void init_language(std::string language);
 
 /**
  * Checks that all characters in \p to_check are a decimal digits.

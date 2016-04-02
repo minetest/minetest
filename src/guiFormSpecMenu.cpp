@@ -240,37 +240,6 @@ GUITable* GUIFormSpecMenu::getTable(const std::string &tablename)
 	return 0;
 }
 
-static std::vector<std::string> split(const std::string &s, char delim)
-{
-	std::vector<std::string> tokens;
-
-	std::string current = "";
-	bool last_was_escape = false;
-	for (unsigned int i = 0; i < s.size(); i++) {
-		char si = s.c_str()[i];
-		if (last_was_escape) {
-			current += '\\';
-			current += si;
-			last_was_escape = false;
-		} else {
-			if (si == delim) {
-				tokens.push_back(current);
-				current = "";
-				last_was_escape = false;
-			} else if (si == '\\') {
-				last_was_escape = true;
-			} else {
-				current += si;
-				last_was_escape = false;
-			}
-		}
-	}
-	//push last element
-	tokens.push_back(current);
-
-	return tokens;
-}
-
 void GUIFormSpecMenu::parseSize(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,',');
