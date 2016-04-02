@@ -58,7 +58,8 @@ MapgenFlat::MapgenFlat(int mapgenid, MapgenParams *params, EmergeManager *emerge
 	//// amount of elements to skip for the next index
 	//// for noise/height/biome maps (not vmanip)
 	this->ystride = csize.X;
-	this->zstride = csize.X * (csize.Y + 2);
+	// 1-down overgeneration
+	this->zstride_1d = csize.X * (csize.Y + 1);
 
 	this->biomemap        = new u8[csize.X * csize.Z];
 	this->heightmap       = new s16[csize.X * csize.Z];
@@ -80,8 +81,9 @@ MapgenFlat::MapgenFlat(int mapgenid, MapgenParams *params, EmergeManager *emerge
 	noise_filler_depth = new Noise(&sp->np_filler_depth, seed, csize.X, csize.Z);
 
 	//// 3D noise
-	noise_cave1 = new Noise(&sp->np_cave1, seed, csize.X, csize.Y + 2, csize.Z);
-	noise_cave2 = new Noise(&sp->np_cave2, seed, csize.X, csize.Y + 2, csize.Z);
+	// 1-down overgeneraion
+	noise_cave1 = new Noise(&sp->np_cave1, seed, csize.X, csize.Y + 1, csize.Z);
+	noise_cave2 = new Noise(&sp->np_cave2, seed, csize.X, csize.Y + 1, csize.Z);
 
 	//// Biome noise
 	noise_heat           = new Noise(&params->np_biome_heat,           seed, csize.X, csize.Z);
@@ -566,19 +568,19 @@ void MapgenFlat::generateCaves(s16 max_stone_y)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index2d++) {
 		bool column_is_open = false;  // Is column open to overground
 		bool is_tunnel = false;  // Is tunnel or tunnel floor
-		u32 vi = vm->m_area.index(x, node_max.Y + 1, z);
-		u32 index3d = (z - node_min.Z) * zstride + (csize.Y + 1) * ystride +
+		u32 vi = vm->m_area.index(x, node_max.Y, z);
+		u32 index3d = (z - node_min.Z) * zstride_1d + csize.Y * ystride +
 			(x - node_min.X);
 		// Biome of column
 		Biome *biome = (Biome *)bmgr->getRaw(biomemap[index2d]);
 
-		for (s16 y = node_max.Y + 1; y >= node_min.Y - 1;
-				y--, index3d -= ystride, vm->m_area.add_y(em, vi, -1)) {
-			// Don't excavate the overgenerated stone at node_max.Y + 1,
-			// this creates a 'roof' over the tunnel, preventing light in
-			// tunnels at mapchunk borders when generating mapchunks upwards.
-			if (y > node_max.Y)
-				continue;
+		// Don't excavate the overgenerated stone at node_max.Y + 1,
+		// this creates a 'roof' over the tunnel, preventing light in
+		// tunnels at mapchunk borders when generating mapchunks upwards.
+		// This 'roof' is removed when the mapchunk above is generated.
+		for (s16 y = node_max.Y; y >= node_min.Y - 1; y--,
+				index3d -= ystride,
+				vm->m_area.add_y(em, vi, -1)) {
 
 			content_t c = vm->m_data[vi].getContent();
 			if (c == CONTENT_AIR || c == biome->c_water_top ||

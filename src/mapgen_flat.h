@@ -60,7 +60,7 @@ public:
 	BiomeManager *bmgr;
 
 	int ystride;
-	int zstride;
+	int zstride_1d;
 	u32 spflags;
 
 	v3s16 node_min;

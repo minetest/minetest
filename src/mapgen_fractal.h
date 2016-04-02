@@ -65,7 +65,7 @@ public:
 	BiomeManager *bmgr;
 
 	int ystride;
-	int zstride;
+	int zstride_1d;
 	u16 formula;
 	bool julia;
 
