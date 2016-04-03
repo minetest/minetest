@@ -387,12 +387,12 @@ inline void str_replace(std::string &str, const std::string &pattern,
 }
 
 /**
- * Remove all chat escape sequences in \p s.
+ * Remove all escape sequences in \p s.
  *
  * @param s The string in which to remove escape sequences.
  * @return \p s, with escape sequences removed.
  */
-std::wstring removeChatEscapes(const std::wstring &s);
+std::wstring removeEscapes(const std::wstring &s);
 
 /**
  * Replace all occurrences of the character \p from in \p str with \p to.
@@ -476,7 +476,7 @@ inline std::string wrap_rows(const std::string &from,
  * Removes backslashes from an escaped string (FormSpec strings)
  */
 template <typename T>
-inline std::basic_string<T> unescape_string(std::basic_string<T> &s)
+inline std::basic_string<T> unescape_string(const std::basic_string<T> &s)
 {
 	std::basic_string<T> res;
 
