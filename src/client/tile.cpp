@@ -558,6 +558,13 @@ static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
 static void blit_with_interpolate_overlay(video::IImage *src, video::IImage *dst,
 		v2s32 src_pos, v2s32 dst_pos, v2u32 size, int ratio);
 
+// Apply a color to an image.  Uses an int (0-255) to calculate the ratio.
+// If the ratio is 255 or -1 and keep_alpha is true, then it multiples the
+// color alpha with the destination alpha.
+// Otherwise, any pixels that are not fully transparent get the color alpha.
+static void apply_colorize(video::IImage *dst, v2s32 dst_pos, v2u32 size,
+		video::SColor color, int ratio, bool keep_alpha);
+
 // Apply a mask to an image
 static void apply_mask(video::IImage *mask, video::IImage *dst,
 		v2s32 mask_pos, v2s32 dst_pos, v2u32 size);
@@ -1639,27 +1646,17 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 
 			video::SColor color;
 			int ratio = -1;
+			bool keep_alpha = false;
 
 			if (!parseColorString(color_str, color, false))
 				return false;
 
 			if (is_number(ratio_str))
 				ratio = mystoi(ratio_str, 0, 255);
+			else if (ratio_str == "alpha")
+				keep_alpha = true;
 
-			core::dimension2d<u32> dim = baseimg->getDimension();
-			video::IImage *img = driver->createImage(video::ECF_A8R8G8B8, dim);
-
-			if (!img) {
-				errorstream << "generateImagePart(): Could not create image "
-						<< "for part_of_name=\"" << part_of_name
-						<< "\", cancelling." << std::endl;
-				return false;
-			}
-
-			img->fill(video::SColor(color));
-			// Overlay the colored image
-			blit_with_interpolate_overlay(img, baseimg, v2s32(0,0), v2s32(0,0), dim, ratio);
-			img->drop();
+			apply_colorize(baseimg, v2s32(0, 0), baseimg->getDimension(), color, ratio, keep_alpha);
 		}
 		else if (str_starts_with(part_of_name, "[applyfiltersformesh"))
 		{
@@ -1779,6 +1776,44 @@ static void blit_with_interpolate_overlay(video::IImage *src, video::IImage *dst
 			else
 				dst_c = src_c.getInterpolated(dst_c, (float)ratio/255.0f);
 			dst->setPixel(dst_x, dst_y, dst_c);
+		}
+	}
+}
+
+/*
+	Apply color to destination
+*/
+static void apply_colorize(video::IImage *dst, v2s32 dst_pos, v2u32 size,
+		video::SColor color, int ratio, bool keep_alpha)
+{
+	u32 alpha = color.getAlpha();
+	video::SColor dst_c;
+	if ((ratio == -1 && alpha == 255) || ratio == 255) { // full replacement of color
+		if (keep_alpha) { // replace the color with alpha = dest alpha * color alpha
+			dst_c = color;
+			for (s32 y = dst_pos.Y; y < dst_pos.Y + size.Y; y++)
+			for (s32 x = dst_pos.X; x < dst_pos.X + size.X; x++) {
+				u32 dst_alpha = dst->getPixel(x, y).getAlpha();
+				if (dst_alpha > 0) {
+					dst_c.setAlpha(dst_alpha * alpha / 255);
+					dst->setPixel(x, y, dst_c);
+				}
+			}
+		} else { // replace the color including the alpha
+			for (s32 y = dst_pos.Y; y < dst_pos.Y + size.Y; y++)
+			for (s32 x = dst_pos.X; x < dst_pos.X + size.X; x++)
+				if (dst->getPixel(x, y).getAlpha() > 0)
+					dst->setPixel(x, y, color);
+		}
+	} else {  // interpolate between the color and destination
+		float interp = (ratio == -1 ? color.getAlpha() / 255.0f : ratio / 255.0f);
+		for (s32 y = dst_pos.Y; y < dst_pos.Y + size.Y; y++)
+		for (s32 x = dst_pos.X; x < dst_pos.X + size.X; x++) {
+			dst_c = dst->getPixel(x, y);
+			if (dst_c.getAlpha() > 0) {
+				dst_c = color.getInterpolated(dst_c, interp);
+				dst->setPixel(x, y, dst_c);
+			}
 		}
 	}
 }
