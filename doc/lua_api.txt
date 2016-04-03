@@ -357,8 +357,13 @@ The mask is applied using binary AND.
 #### `[colorize:<color>:<ratio>`
 Colorize the textures with the given color.
 `<color>` is specified as a `ColorString`.
-`<ratio>` is an int ranging from 0 to 255, and specifies how much of the
-color to apply. If ommitted, the alpha will be used.
+`<ratio>` is an int ranging from 0 to 255 or the word "`alpha`".  If
+it is an int, then it specifies how far to interpolate between the
+colors where 0 is only the texture color and 255 is only `<color>`. If
+omitted, the alpha of `<color>` will be used as the ratio.  If it is
+the word "`alpha`", then the alpha of the color will be multiplied with
+the alpha of the texture with the RGB of the color replacing the RGB of
+the texture.
 
 Sounds
 ------
