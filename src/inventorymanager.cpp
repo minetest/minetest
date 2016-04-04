@@ -171,7 +171,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 {
 	Inventory *inv_from = mgr->getInventory(from_inv);
 	Inventory *inv_to = mgr->getInventory(to_inv);
-
+	
 	if (!inv_from) {
 		infostream << "IMoveAction::apply(): FAIL: source inventory not found: "
 			<< "from_inv=\""<<from_inv.dump() << "\""
@@ -523,6 +523,43 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		}
 	}
 
+	InventoryLocation from_loc;
+	if(from_inv.type == InventoryLocation::NODEMETA)
+	{
+		from_loc.setNodeMeta(from_inv.p);
+	}
+	else if(from_inv.type == InventoryLocation::DETACHED)
+	{
+		from_loc.setDetached(from_inv.name);
+	}
+	else if(from_inv.type == InventoryLocation::PLAYER)
+	{
+		from_loc.setPlayer(from_inv.name);
+	}
+	else if(from_inv.type == InventoryLocation::UNDEFINED)
+	{
+		from_loc.setUndefined();
+	}
+
+	InventoryLocation to_loc;
+	if(to_inv.type == InventoryLocation::NODEMETA)
+	{
+		to_loc.setNodeMeta(to_inv.p);
+	}
+	else if(to_inv.type == InventoryLocation::DETACHED)
+	{
+		to_loc.setDetached(to_inv.name);
+	}
+	else if(to_inv.type == InventoryLocation::PLAYER)
+	{
+		to_loc.setPlayer(to_inv.name);
+	}
+	else if(to_inv.type == InventoryLocation::UNDEFINED)
+	{
+		to_loc.setUndefined();
+	}
+	PLAYER_TO_SA(player)->on_inventory_move_item(from_loc, from_list, from_i, to_loc, to_list, to_i, src_item, count, player);
+
 	mgr->setInventoryModified(from_inv, false);
 	if(inv_from != inv_to)
 		mgr->setInventoryModified(to_inv, false);
@@ -697,6 +734,9 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		PLAYER_TO_SA(player)->nodemeta_inventory_OnTake(
 				from_inv.p, from_list, from_i, src_item, player);
 	}
+	
+	// Report drop to registered listeners
+	PLAYER_TO_SA(player)->on_inventory_drop_item(from_inv, from_list, from_i, src_item, player,player->getBasePosition() + v3f(0,1,0));
 
 	/*
 		Record rollback information
