@@ -1828,7 +1828,6 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_local_animation),
 	luamethod(ObjectRef, set_eye_offset),
 	luamethod(ObjectRef, get_eye_offset),
-	luamethod(ObjectRef, get_eye_offset),
 	luamethod(ObjectRef, add_item),
 	{0,0}
 };
