@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hud.h"
 #include "settings.h"
 #include "util/numeric.h"
+#include "util/string.h"
 #include "log.h"
 #include "gamedef.h"
 #include "itemdef.h"
@@ -319,7 +320,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 										 (e->number >> 8)  & 0xFF,
 										 (e->number >> 0)  & 0xFF);
 				core::rect<s32> size(0, 0, e->scale.X, text_height * e->scale.Y);
-				std::wstring text = utf8_to_wide(e->text);
+				std::wstring text = unescape_enriched(utf8_to_wide(e->text));
 				core::dimension2d<u32> textsize = font->getDimension(text.c_str());
 				v2s32 offset((e->align.X - 1.0) * (textsize.Width / 2),
 				             (e->align.Y - 1.0) * (textsize.Height / 2));
@@ -355,11 +356,11 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 										 (e->number >> 8)  & 0xFF,
 										 (e->number >> 0)  & 0xFF);
 				core::rect<s32> size(0, 0, 200, 2 * text_height);
-				std::wstring text = utf8_to_wide(e->name);
+				std::wstring text = unescape_enriched(utf8_to_wide(e->name));
 				font->draw(text.c_str(), size + pos, color);
 				std::ostringstream os;
 				os << distance << e->text;
-				text = utf8_to_wide(os.str());
+				text = unescape_enriched(utf8_to_wide(os.str()));
 				pos.Y += text_height;
 				font->draw(text.c_str(), size + pos, color);
 				break; }

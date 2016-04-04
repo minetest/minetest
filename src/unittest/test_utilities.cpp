@@ -45,6 +45,7 @@ public:
 	void testStringAllowed();
 	void testAsciiPrintableHelper();
 	void testUTF8();
+	void testRemoveEscapes();
 	void testWrapRows();
 	void testIsNumber();
 	void testIsPowerOfTwo();
@@ -71,6 +72,7 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testStringAllowed);
 	TEST(testAsciiPrintableHelper);
 	TEST(testUTF8);
+	TEST(testRemoveEscapes);
 	TEST(testWrapRows);
 	TEST(testIsNumber);
 	TEST(testIsPowerOfTwo);
@@ -251,6 +253,23 @@ void TestUtilities::testUTF8()
 	UASSERT(wide_to_utf8(utf8_to_wide("")) == "");
 	UASSERT(wide_to_utf8(utf8_to_wide("the shovel dug a crumbly node!"))
 		== "the shovel dug a crumbly node!");
+}
+
+void TestUtilities::testRemoveEscapes()
+{
+	UASSERT(unescape_enriched<wchar_t>(
+		L"abc\x1bXdef") == L"abcdef");
+	UASSERT(unescape_enriched<wchar_t>(
+		L"abc\x1b(escaped)def") == L"abcdef");
+	UASSERT(unescape_enriched<wchar_t>(
+		L"abc\x1b((escaped with parenthesis\\))def") == L"abcdef");
+	UASSERT(unescape_enriched<wchar_t>(
+		L"abc\x1b(incomplete") == L"abc");
+	UASSERT(unescape_enriched<wchar_t>(
+		L"escape at the end\x1b") == L"escape at the end");
+	// Nested escapes not supported
+	UASSERT(unescape_enriched<wchar_t>(
+		L"abc\x1b(outer \x1b(inner escape)escape)def") == L"abcescape)def");
 }
 
 void TestUtilities::testWrapRows()
