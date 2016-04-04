@@ -208,7 +208,7 @@ core.register_entity(":__builtin:item", {
 	on_punch = function(self, hitter)
 		local inv = hitter:get_inventory()
 		if inv and self.itemstring ~= '' then
-			local left = inv:add_item("main", self.itemstring)
+			local left = hitter:add_item("main", self.itemstring)
 			if left and not left:is_empty() then
 				self.itemstring = left:to_string()
 				return

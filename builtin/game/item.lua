@@ -389,7 +389,7 @@ function core.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed
 			else
 				local inv = user:get_inventory()
 				if inv:room_for_item("main", {name=replace_with_item}) then
-					inv:add_item("main", replace_with_item)
+					user:add_item("main", replace_with_item)
 				else
 					local pos = user:getpos()
 					pos.y = math.floor(pos.y + 0.5)
@@ -423,7 +423,7 @@ function core.handle_node_drops(pos, drops, digger)
 	if digger:get_inventory() then
 		local _, dropped_item
 		for _, dropped_item in ipairs(drops) do
-			local left = digger:get_inventory():add_item("main", dropped_item)
+			local left = digger:add_item("main", dropped_item)
 			if not left:is_empty() then
 				local p = {
 					x = pos.x + math.random()/2-0.25,
