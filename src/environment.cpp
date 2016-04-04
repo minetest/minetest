@@ -2507,17 +2507,26 @@ void ClientEnvironment::step(float dtime)
 	if(m_lava_hurt_interval.step(dtime, 1.0))
 	{
 		v3f pf = lplayer->getPosition();
-		v3f p1;
-		MapNode n1;
+		u32 damage_per_second = 0;
 
 #define DMG_IN_BLOCK(d, p) \
 	(d) = MYMAX((d), m_gamedef->ndef()->get(m_map->getNodeNoEx(floatToInt((p), BS))).damage_per_second)
 
-		u32 damage_per_second = 0;
-
-		DMG_IN_BLOCK(damage_per_second, pf + v3f(0, BS*0.1, 0));
-		DMG_IN_BLOCK(damage_per_second, pf + v3f(0, BS*0.8, 0));
-		DMG_IN_BLOCK(damage_per_second, pf + v3f(0, BS*1.6, 0));
+		// feet
+		DMG_IN_BLOCK(damage_per_second, pf + v3f(BS*-0.2, BS*0.1, BS*-0.2));
+		DMG_IN_BLOCK(damage_per_second, pf + v3f(BS*-0.2, BS*0.1, BS*0.2));
+		DMG_IN_BLOCK(damage_per_second, pf + v3f(BS*0.2, BS*0.1, BS*-0.2));
+		DMG_IN_BLOCK(damage_per_second, pf + v3f(BS*0.2, BS*0.1, BS*0.2));
+		// body
+		DMG_IN_BLOCK(damage_per_second, pf + v3f(BS*-0.3, BS*0.8, BS*-0.3));
+		DMG_IN_BLOCK(damage_per_second, pf + v3f(BS*-0.3, BS*0.8, BS*0.3));
+		DMG_IN_BLOCK(damage_per_second, pf + v3f(BS*0.3, BS*0.8, BS*-0.3));
+		DMG_IN_BLOCK(damage_per_second, pf + v3f(BS*0.3, BS*0.8, BS*0.3));
+		// head
+		DMG_IN_BLOCK(damage_per_second, pf + v3f(BS*-0.2, BS*1.6, BS*-0.2));
+		DMG_IN_BLOCK(damage_per_second, pf + v3f(BS*-0.2, BS*1.6, BS*0.2));
+		DMG_IN_BLOCK(damage_per_second, pf + v3f(BS*0.2, BS*1.6, BS*-0.2));
+		DMG_IN_BLOCK(damage_per_second, pf + v3f(BS*0.2, BS*1.6, BS*0.2));
 
 		if (damage_per_second != 0)
 			damageLocalPlayer(damage_per_second, true);
