@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_base.h"
 #include "irr_v3d.h"
 #include "util/string.h"
+#include "inventory.h" // For inventry and itemstack declarations
+#include "inventorymanager.h"
 
 struct ToolCapabilities;
 
@@ -35,6 +37,24 @@ public:
 	void on_newplayer(ServerActiveObject *player);
 	void on_dieplayer(ServerActiveObject *player);
 	bool on_respawnplayer(ServerActiveObject *player);
+	void on_inventory_move_item(
+		InventoryLocation from_loc,
+		const std::string &from_list, int from_index,
+		InventoryLocation to_loc,
+		const std::string &to_list, int to_index,
+		ItemStack &stack,
+		int count, ServerActiveObject *player);
+	void on_inventory_add_item(
+		InventoryLocation to_loc,
+		const std::string &to_list,
+		ItemStack &added_stack,
+		ItemStack &leftover_stack,
+		ServerActiveObject *player);
+	void on_inventory_drop_item(
+		InventoryLocation from_loc,
+		const std::string &from_list, int from_index,
+		ItemStack &stack,
+		ServerActiveObject *player, v3f pos);
 	bool on_prejoinplayer(const std::string &name, const std::string &ip,
 		std::string *reason);
 	void on_joinplayer(ServerActiveObject *player);

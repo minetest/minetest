@@ -22,6 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "util/string.h"
+#include "inventory.h" // For inventry and itemstack declarations
+#include "lua_api/l_inventory.h"
+#include "lua_api/l_item.h"
+#include "server.h"
 
 void ScriptApiPlayer::on_newplayer(ServerActiveObject *player)
 {
@@ -101,6 +105,75 @@ bool ScriptApiPlayer::on_respawnplayer(ServerActiveObject *player)
 	runCallbacks(1, RUN_CALLBACKS_MODE_OR);
 	bool positioning_handled_by_some = lua_toboolean(L, -1);
 	return positioning_handled_by_some;
+}
+
+// This event launched when: player move itemstack from any inventory to any inventory
+void ScriptApiPlayer::on_inventory_move_item(
+		InventoryLocation from_loc,
+		const std::string &from_list, int from_index,
+		InventoryLocation to_loc,
+		const std::string &to_list, int to_index,
+		ItemStack &stack,
+		int count, ServerActiveObject *player)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_inventory_move_item
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_inventory_move_item");
+	// Call callbacks
+	InvRef::create(L, from_loc);		// InvRef from	1
+	lua_pushstring(L, from_list.c_str());	// listname	2
+	lua_pushinteger(L, from_index + 1);	// index	3
+	InvRef::create(L, to_loc);		// InvRef to	4
+	lua_pushstring(L, to_list.c_str());	// listname	5
+	lua_pushinteger(L, to_index + 1);	// index	6
+	LuaItemStack::create(L, stack);		// stack	7
+	lua_pushinteger(L, count);		// amount	8
+	objectrefGetOrCreate(L, player);	// player	9
+	runCallbacks(9, RUN_CALLBACKS_MODE_LAST);
+}
+
+void ScriptApiPlayer::on_inventory_add_item(
+		InventoryLocation to_loc,
+		const std::string &to_list,
+		ItemStack &added_stack,
+		ItemStack &leftover_stack,
+		ServerActiveObject *player)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_inventory_add_item
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_inventory_add_item");
+	// Call callbacks
+	InvRef::create(L, to_loc);		// InvRef to	1
+	lua_pushstring(L, to_list.c_str());	// listname	2
+	LuaItemStack::create(L, added_stack);	// added stack	3
+	LuaItemStack::create(L, leftover_stack);// leftover stack 4
+	objectrefGetOrCreate(L, player);	// player	5
+	runCallbacks(5, RUN_CALLBACKS_MODE_LAST);
+}
+
+void ScriptApiPlayer::on_inventory_drop_item(
+		InventoryLocation from_loc,
+		const std::string &from_list, int from_index,
+		ItemStack &stack,
+		ServerActiveObject *player, v3f pos)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_inventory_add_item
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_inventory_drop_item");
+	// Call callbacks
+	InvRef::create(L, from_loc);		// InvRef from	1
+	lua_pushstring(L, from_list.c_str());	// listname	2
+	lua_pushinteger(L, from_index + 1);	// index	3
+	LuaItemStack::create(L, stack);		// dropped stack 4
+	objectrefGetOrCreate(L, player);	// player	5
+	pushFloatPos(L, pos);			// drop pos	6
+	runCallbacks(6, RUN_CALLBACKS_MODE_LAST);
 }
 
 bool ScriptApiPlayer::on_prejoinplayer(
