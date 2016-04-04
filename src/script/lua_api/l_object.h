@@ -86,6 +86,9 @@ private:
 	// get_inventory(self)
 	static int l_get_inventory(lua_State *L);
 
+	// add_item_inventory(self)
+	static int l_add_item(lua_State *L);
+
 	// get_wield_list(self)
 	static int l_get_wield_list(lua_State *L);
 

@@ -315,6 +315,50 @@ int ObjectRef::l_get_inventory(lua_State *L)
 	return 1;
 }
 
+// add_item(self, listname, itemstack or itemstring or table or nil) -> itemstack
+int ObjectRef::l_add_item(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (co == NULL) return 0;
+	// Do it
+	InventoryLocation loc = co->getInventoryLocation();
+	Inventory *inv = getServer(L)->getInventory(loc);
+	ItemStack item = read_item(L, 3, getServer(L));
+	if (inv != NULL)
+	{
+		const char *listname = luaL_checkstring(L, 2);
+		InventoryList *list = inv->getList(listname);
+		if(list)
+		{
+			ItemStack leftover = list->addItem(item);
+			if(leftover.count != item.count)
+			{
+				getServer(L)->setInventoryModified(loc);
+				LuaItemStack::create(L, leftover);
+				// Report inventory change to subscribed listeners
+				getServer(L)->getScriptIface()->on_inventory_add_item(loc, listname, item, leftover, co);
+				// Get core.registered_on_inventory_update
+				//lua_getglobal(L, "core");
+				//lua_getfield(L, -1, "registered_on_inventory_add_item");
+				// Call callbacks
+				//InvRef::create(L, loc);			// InvRef to	2
+				//lua_pushstring(L, listname.c_str());	// listname	3
+				//objectrefGetOrCreate(L, ref);		// player	4
+				//runCallbacks(9, RUN_CALLBACKS_MODE_LAST);
+			}
+		 	else 
+			{
+				LuaItemStack::create(L, item);
+			}
+		}
+	}
+	else
+		LuaItemStack::create(L, item);
+	return 1;
+}
+
 // get_wield_list(self)
 int ObjectRef::l_get_wield_list(lua_State *L)
 {
@@ -1784,5 +1828,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_local_animation),
 	luamethod(ObjectRef, set_eye_offset),
 	luamethod(ObjectRef, get_eye_offset),
+	luamethod(ObjectRef, get_eye_offset),
+	luamethod(ObjectRef, add_item),
 	{0,0}
 };
