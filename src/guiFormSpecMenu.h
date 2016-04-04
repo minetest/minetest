@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modalMenu.h"
 #include "guiTable.h"
 #include "network/networkprotocol.h"
+#include "util/string.h"
 
 class IGameDef;
 class InventoryManager;
@@ -199,10 +200,10 @@ class GUIFormSpecMenu : public GUIModalMenu
 		FieldSpec(const std::string &name, const std::wstring &label,
 				const std::wstring &fdeflt, int id) :
 			fname(name),
-			flabel(label),
-			fdefault(fdeflt),
 			fid(id)
 		{
+			flabel = unescape_string(removeEscapes(label));
+			fdefault = unescape_string(removeEscapes(fdeflt));
 			send = false;
 			ftype = f_Unknown;
 			is_exit = false;
@@ -235,10 +236,11 @@ class GUIFormSpecMenu : public GUIModalMenu
 		}
 		TooltipSpec(std::string a_tooltip, irr::video::SColor a_bgcolor,
 				irr::video::SColor a_color):
-			tooltip(a_tooltip),
 			bgcolor(a_bgcolor),
 			color(a_color)
 		{
+			tooltip = unescape_string(wide_to_utf8(
+				removeEscapes(utf8_to_wide(a_tooltip))));
 		}
 		std::string tooltip;
 		irr::video::SColor bgcolor;
@@ -252,18 +254,18 @@ class GUIFormSpecMenu : public GUIModalMenu
 		}
 		StaticTextSpec(const std::wstring &a_text,
 				const core::rect<s32> &a_rect):
-			text(a_text),
 			rect(a_rect),
 			parent_button(NULL)
 		{
+			text = unescape_string(removeEscapes(a_text));
 		}
 		StaticTextSpec(const std::wstring &a_text,
 				const core::rect<s32> &a_rect,
 				gui::IGUIButton *a_parent_button):
-			text(a_text),
 			rect(a_rect),
 			parent_button(a_parent_button)
 		{
+			text = unescape_string(removeEscapes(a_text));
 		}
 		std::wstring text;
 		core::rect<s32> rect;
