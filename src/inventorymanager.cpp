@@ -171,7 +171,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 {
 	Inventory *inv_from = mgr->getInventory(from_inv);
 	Inventory *inv_to = mgr->getInventory(to_inv);
-	
+
 	if (!inv_from) {
 		infostream << "IMoveAction::apply(): FAIL: source inventory not found: "
 			<< "from_inv=\""<<from_inv.dump() << "\""
