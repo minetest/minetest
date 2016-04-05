@@ -524,38 +524,30 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 	}
 
 	InventoryLocation from_loc;
-	if(from_inv.type == InventoryLocation::NODEMETA)
-	{
+	if(from_inv.type == InventoryLocation::NODEMETA){
 		from_loc.setNodeMeta(from_inv.p);
 	}
-	else if(from_inv.type == InventoryLocation::DETACHED)
-	{
+	else if(from_inv.type == InventoryLocation::DETACHED){
 		from_loc.setDetached(from_inv.name);
 	}
-	else if(from_inv.type == InventoryLocation::PLAYER)
-	{
+	else if(from_inv.type == InventoryLocation::PLAYER){
 		from_loc.setPlayer(from_inv.name);
 	}
-	else if(from_inv.type == InventoryLocation::UNDEFINED)
-	{
+	else if(from_inv.type == InventoryLocation::UNDEFINED){
 		from_loc.setUndefined();
 	}
 
 	InventoryLocation to_loc;
-	if(to_inv.type == InventoryLocation::NODEMETA)
-	{
+	if(to_inv.type == InventoryLocation::NODEMETA){
 		to_loc.setNodeMeta(to_inv.p);
 	}
-	else if(to_inv.type == InventoryLocation::DETACHED)
-	{
+	else if(to_inv.type == InventoryLocation::DETACHED){
 		to_loc.setDetached(to_inv.name);
 	}
-	else if(to_inv.type == InventoryLocation::PLAYER)
-	{
+	else if(to_inv.type == InventoryLocation::PLAYER){
 		to_loc.setPlayer(to_inv.name);
 	}
-	else if(to_inv.type == InventoryLocation::UNDEFINED)
-	{
+	else if(to_inv.type == InventoryLocation::UNDEFINED){
 		to_loc.setUndefined();
 	}
 	PLAYER_TO_SA(player)->on_inventory_move_item(from_loc, from_list, from_i, to_loc, to_list, to_i, src_item, count, player);
