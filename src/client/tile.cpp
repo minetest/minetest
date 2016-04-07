@@ -1748,6 +1748,37 @@ static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
 	}
 }
 
+// This function has been disabled because it is currently unused.
+// Feel free to re-enable if you find it handy.
+#if 0
+/*
+	Draw an image on top of an another one, using the specified ratio
+	modify all partially-opaque pixels in the destination.
+*/
+static void blit_with_interpolate_overlay(video::IImage *src, video::IImage *dst,
+		v2s32 src_pos, v2s32 dst_pos, v2u32 size, int ratio)
+{
+	for (u32 y0 = 0; y0 < size.Y; y0++)
+	for (u32 x0 = 0; x0 < size.X; x0++)
+	{
+		s32 src_x = src_pos.X + x0;
+		s32 src_y = src_pos.Y + y0;
+		s32 dst_x = dst_pos.X + x0;
+		s32 dst_y = dst_pos.Y + y0;
+		video::SColor src_c = src->getPixel(src_x, src_y);
+		video::SColor dst_c = dst->getPixel(dst_x, dst_y);
+		if (dst_c.getAlpha() > 0 && src_c.getAlpha() != 0)
+		{
+			if (ratio == -1)
+				dst_c = src_c.getInterpolated(dst_c, (float)src_c.getAlpha()/255.0f);
+			else
+				dst_c = src_c.getInterpolated(dst_c, (float)ratio/255.0f);
+			dst->setPixel(dst_x, dst_y, dst_c);
+		}
+	}
+}
+#endif
+
 /*
 	Apply color to destination
 */
