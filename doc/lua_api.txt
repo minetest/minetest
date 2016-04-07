@@ -75,6 +75,11 @@ The images are named `$identifier.png`, where `$identifier` is one of `overlay,b
 If you want to specify multiple images for one identifier, add additional images named like `$identifier.$n.png`, with an ascending number $n starting with 1,
 and a random image will be chosen from the provided ones.
 
+# Custom singleplayer menu
+
+Games can provide a custom singleplayer menu by including the file "init.lua" inside the "menu" directory.
+
+This script has to contain the global function create_menu(), which shall return an fstk dialog similarly to create_singleplayer() in builtin/mainmenu/singleplayer.lua.
 
 Mod load path
 -------------

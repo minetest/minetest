@@ -60,15 +60,14 @@ end
 local function get_formspec(self)
 	local formspec = ""
 
-	if not self.hidden and (self.parent == nil or not self.parent.hidden) then
+	if not self.hidden then
 
-		if self.parent == nil then
-			local tsize = self.tablist[self.last_tab_index].tabsize or
-					{width=self.width, height=self.height}
-			formspec = formspec ..
-					string.format("size[%f,%f,%s]",tsize.width,tsize.height,
-						dump(self.fixed_size))
-		end
+		local tsize = self.tablist[self.last_tab_index].tabsize or
+				{width=self.width, height=self.height}
+		formspec = formspec ..
+				string.format("size[%f,%f,%s]",tsize.width,tsize.height,
+					dump(self.fixed_size))
+
 		formspec = formspec .. self:tab_header()
 		formspec = formspec ..
 				self.tablist[self.last_tab_index].get_formspec(
@@ -77,7 +76,12 @@ local function get_formspec(self)
 					self.tablist[self.last_tab_index].tabdata,
 					self.tablist[self.last_tab_index].tabsize
 					)
+
+		if self.append_to_formspec then
+			formspec = formspec .. self.append_to_formspec
+		end
 	end
+
 	return formspec
 end
 
@@ -93,18 +97,22 @@ local function handle_buttons(self,fields)
 	end
 
 	if self.glb_btn_handler ~= nil and
-		self.glb_btn_handler(self,fields) then
+			self.glb_btn_handler(self,fields) then
 		return true
 	end
 
-	if self.tablist[self.last_tab_index].button_handler ~= nil then
-		return
+	if self.custom_button_handler and self:custom_button_handler(fields) then
+		return true
+	end
+
+	if self.tablist[self.last_tab_index].button_handler ~= nil and
 			self.tablist[self.last_tab_index].button_handler(
 					self,
 					fields,
 					self.tablist[self.last_tab_index].name,
 					self.tablist[self.last_tab_index].tabdata
-					)
+					) then
+		return true
 	end
 
 	return false
