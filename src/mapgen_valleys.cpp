@@ -74,6 +74,8 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 	//// for noise/height/biome maps (not vmanip)
 	this->ystride = csize.X;
 	this->zstride = csize.X * (csize.Y + 2);
+	// 1-down overgeneration
+	this->zstride_1d = csize.X * (csize.Y + 1);
 
 	this->biomemap  = new u8[csize.X * csize.Z];
 	this->heightmap = new s16[csize.X * csize.Z];
@@ -113,10 +115,12 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 	noise_valley_profile     = new Noise(&sp->np_valley_profile,     seed, csize.X, csize.Z);
 
 	//// 3D Terrain noise
-	noise_cave1             = new Noise(&sp->np_cave1,             seed, csize.X, csize.Y + 2, csize.Z);
-	noise_cave2             = new Noise(&sp->np_cave2,             seed, csize.X, csize.Y + 2, csize.Z);
+	// 1-up 1-down overgeneration
 	noise_inter_valley_fill = new Noise(&sp->np_inter_valley_fill, seed, csize.X, csize.Y + 2, csize.Z);
-	noise_massive_caves     = new Noise(&sp->np_massive_caves,     seed, csize.X, csize.Y + 2, csize.Z);
+	// 1-down overgeneraion
+	noise_cave1             = new Noise(&sp->np_cave1,             seed, csize.X, csize.Y + 1, csize.Z);
+	noise_cave2             = new Noise(&sp->np_cave2,             seed, csize.X, csize.Y + 1, csize.Z);
+	noise_massive_caves     = new Noise(&sp->np_massive_caves,     seed, csize.X, csize.Y + 1, csize.Z);
 
 	//// Biome noise
 	noise_heat_blend     = new Noise(&params->np_biome_heat_blend,     seed, csize.X, csize.Z);
@@ -885,7 +889,7 @@ void MapgenValleys::generateCaves(s16 max_stone_y)
 	if (node_max.Y <= massive_cave_depth) {
 		noise_massive_caves->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
 
-		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
+		for (s16 y = node_min.Y - 1; y <= node_max.Y; y++) {
 			float tcave = massive_cave_threshold;
 
 			if (y < yblmin) {
@@ -923,19 +927,17 @@ void MapgenValleys::generateCaves(s16 max_stone_y)
 		Biome *biome = (Biome *)bmgr->getRaw(biomemap[index_2d]);
 		bool air_above = false;
 		bool underground = false;
-		u32 index_data = vm->m_area.index(x, node_max.Y + 1, z);
-
-		index_3d = (z - node_min.Z) * zstride + (csize.Y + 1) * ystride + (x - node_min.X);
+		u32 index_data = vm->m_area.index(x, node_max.Y, z);
+		index_3d = (z - node_min.Z) * zstride_1d + csize.Y * ystride + (x - node_min.X);
 
 		// Dig caves on down loop to check for air above.
-		for (s16 y = node_max.Y + 1;
-				y >= node_min.Y - 1;
-				y--, index_3d -= ystride, vm->m_area.add_y(em, index_data, -1)) {
-			// Don't excavate the overgenerated stone at node_max.Y + 1,
-			// this creates a 'roof' over the tunnel, preventing light in
-			// tunnels at mapchunk borders when generating mapchunks upwards.
-			if (y > node_max.Y)
-				continue;
+		// Don't excavate the overgenerated stone at node_max.Y + 1,
+		// this creates a 'roof' over the tunnel, preventing light in
+		// tunnels at mapchunk borders when generating mapchunks upwards.
+		// This 'roof' is removed when the mapchunk above is generated.
+		for (s16 y = node_max.Y; y >= node_min.Y - 1; y--,
+				index_3d -= ystride,
+				vm->m_area.add_y(em, index_data, -1)) {
 
 			float terrain = noise_terrain_height->result[index_2d];
 

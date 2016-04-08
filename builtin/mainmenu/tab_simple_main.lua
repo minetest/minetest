@@ -196,10 +196,10 @@ local function on_activate(type,old_tab,new_tab)
 end
 
 --------------------------------------------------------------------------------
-tab_simple_main = {
+return {
 	name = "main",
 	caption = fgettext("Main"),
 	cbf_formspec = get_formspec,
 	cbf_button_handler = main_button_handler,
 	on_change = on_activate
-	}
+}

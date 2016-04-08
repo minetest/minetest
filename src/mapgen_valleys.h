@@ -106,6 +106,7 @@ private:
 
 	int ystride;
 	int zstride;
+	int zstride_1d;
 
 	float map_gen_limit;
 

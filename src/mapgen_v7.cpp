@@ -59,7 +59,8 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	//// amount of elements to skip for the next index
 	//// for noise/height/biome maps (not vmanip)
 	this->ystride = csize.X;
-	this->zstride = csize.X * (csize.Y + 2);
+	// 1-down overgeneration
+	this->zstride_1d = csize.X * (csize.Y + 1);
 
 	this->biomemap        = new u8[csize.X * csize.Z];
 	this->heightmap       = new s16[csize.X * csize.Z];
@@ -80,10 +81,12 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	noise_ridge_uwater    = new Noise(&sp->np_ridge_uwater,    seed, csize.X, csize.Z);
 
 	//// 3d terrain noise
+	// 1-up 1-down overgeneration
 	noise_mountain = new Noise(&sp->np_mountain, seed, csize.X, csize.Y + 2, csize.Z);
 	noise_ridge    = new Noise(&sp->np_ridge,    seed, csize.X, csize.Y + 2, csize.Z);
-	noise_cave1    = new Noise(&sp->np_cave1,    seed, csize.X, csize.Y + 2, csize.Z);
-	noise_cave2    = new Noise(&sp->np_cave2,    seed, csize.X, csize.Y + 2, csize.Z);
+	// 1-down overgeneraion
+	noise_cave1    = new Noise(&sp->np_cave1,    seed, csize.X, csize.Y + 1, csize.Z);
+	noise_cave2    = new Noise(&sp->np_cave2,    seed, csize.X, csize.Y + 1, csize.Z);
 
 	//// Biome noise
 	noise_heat           = new Noise(&params->np_biome_heat,           seed, csize.X, csize.Z);
@@ -199,7 +202,7 @@ void MapgenV7Params::writeParams(Settings *settings) const
 }
 
 
-///////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 
 int MapgenV7::getSpawnLevelAtPoint(v2s16 p)
@@ -449,41 +452,6 @@ bool MapgenV7::getMountainTerrainFromMap(int idx_xyz, int idx_xz, s16 y)
 
 	return mountn + density_gradient >= 0.0;
 }
-
-
-#if 0
-void MapgenV7::carveRivers() {
-	MapNode n_air(CONTENT_AIR), n_water_source(c_water_source);
-	MapNode n_stone(c_stone);
-	u32 index = 0;
-
-	int river_depth = 4;
-
-	for (s16 z = node_min.Z; z <= node_max.Z; z++)
-	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
-		float terrain_mod  = noise_terrain_mod->result[index];
-		NoiseParams *np = noise_terrain_river->np;
-		np.persist = noise_terrain_persist->result[index];
-		float terrain_river = NoisePerlin2DNoTxfm(np, x, z, seed);
-		float height = terrain_river * (1 - abs(terrain_mod)) *
-						noise_terrain_river->np.scale;
-		height = log(height * height); //log(h^3) is pretty interesting for terrain
-
-		s16 y = heightmap[index];
-		if (height < 1.0 && y > river_depth &&
-			y - river_depth >= node_min.Y && y <= node_max.Y) {
-
-			for (s16 ry = y; ry != y - river_depth; ry--) {
-				u32 vi = vm->m_area.index(x, ry, z);
-				vm->m_data[vi] = n_air;
-			}
-
-			u32 vi = vm->m_area.index(x, y - river_depth, z);
-			vm->m_data[vi] = n_water_source;
-		}
-	}
-}
-#endif
 
 
 int MapgenV7::generateTerrain()
@@ -765,6 +733,112 @@ void MapgenV7::dustTopNodes()
 }
 
 
+void MapgenV7::generateCaves(s16 max_stone_y)
+{
+	if (max_stone_y < node_min.Y)
+		return;
+
+	noise_cave1->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
+	noise_cave2->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
+
+	v3s16 em = vm->m_area.getExtent();
+	u32 index2d = 0;
+
+	for (s16 z = node_min.Z; z <= node_max.Z; z++)
+	for (s16 x = node_min.X; x <= node_max.X; x++, index2d++) {
+		bool column_is_open = false;  // Is column open to overground
+		bool is_tunnel = false;  // Is tunnel or tunnel floor
+		// Indexes at column top (node_max.Y)
+		u32 vi = vm->m_area.index(x, node_max.Y, z);
+		u32 index3d = (z - node_min.Z) * zstride_1d + csize.Y * ystride +
+			(x - node_min.X);
+		// Biome of column
+		Biome *biome = (Biome *)bmgr->getRaw(biomemap[index2d]);
+
+		// Don't excavate the overgenerated stone at node_max.Y + 1,
+		// this creates a 'roof' over the tunnel, preventing light in
+		// tunnels at mapchunk borders when generating mapchunks upwards.
+		// This 'roof' is removed when the mapchunk above is generated.
+		for (s16 y = node_max.Y; y >= node_min.Y - 1; y--,
+				index3d -= ystride,
+				vm->m_area.add_y(em, vi, -1)) {
+
+			content_t c = vm->m_data[vi].getContent();
+			if (c == CONTENT_AIR || c == biome->c_water_top ||
+					c == biome->c_water) {
+				column_is_open = true;
+				continue;
+			}
+			// Ground
+			float d1 = contour(noise_cave1->result[index3d]);
+			float d2 = contour(noise_cave2->result[index3d]);
+			if (d1 * d2 > 0.3f && ndef->get(c).is_ground_content) {
+				// In tunnel and ground content, excavate
+				vm->m_data[vi] = MapNode(CONTENT_AIR);
+				is_tunnel = true;
+			} else if (is_tunnel && column_is_open &&
+					(c == biome->c_filler || c == biome->c_stone)) {
+				// Tunnel entrance floor
+				vm->m_data[vi] = MapNode(biome->c_top);
+				column_is_open = false;
+				is_tunnel = false;
+			} else {
+				column_is_open = false;
+				is_tunnel = false;
+			}
+		}
+	}
+
+	if (node_min.Y >= water_level)
+		return;
+
+	PseudoRandom ps(blockseed + 21343);
+	u32 bruises_count = ps.range(0, 2);
+	for (u32 i = 0; i < bruises_count; i++) {
+		CaveV7 cave(this, &ps);
+		cave.makeCave(node_min, node_max, max_stone_y);
+	}
+}
+
+
+///////////////////////////////////////////////////////////////
+
+
+#if 0
+void MapgenV7::carveRivers() {
+	MapNode n_air(CONTENT_AIR), n_water_source(c_water_source);
+	MapNode n_stone(c_stone);
+	u32 index = 0;
+
+	int river_depth = 4;
+
+	for (s16 z = node_min.Z; z <= node_max.Z; z++)
+	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
+		float terrain_mod  = noise_terrain_mod->result[index];
+		NoiseParams *np = noise_terrain_river->np;
+		np.persist = noise_terrain_persist->result[index];
+		float terrain_river = NoisePerlin2DNoTxfm(np, x, z, seed);
+		float height = terrain_river * (1 - abs(terrain_mod)) *
+						noise_terrain_river->np.scale;
+		height = log(height * height); //log(h^3) is pretty interesting for terrain
+
+		s16 y = heightmap[index];
+		if (height < 1.0 && y > river_depth &&
+			y - river_depth >= node_min.Y && y <= node_max.Y) {
+
+			for (s16 ry = y; ry != y - river_depth; ry--) {
+				u32 vi = vm->m_area.index(x, ry, z);
+				vm->m_data[vi] = n_air;
+			}
+
+			u32 vi = vm->m_area.index(x, y - river_depth, z);
+			vm->m_data[vi] = n_water_source;
+		}
+	}
+}
+#endif
+
+
 #if 0
 void MapgenV7::addTopNodes()
 {
@@ -859,70 +933,3 @@ void MapgenV7::addTopNodes()
 	}
 }
 #endif
-
-
-void MapgenV7::generateCaves(s16 max_stone_y)
-{
-	if (max_stone_y < node_min.Y)
-		return;
-
-	noise_cave1->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
-	noise_cave2->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
-
-	v3s16 em = vm->m_area.getExtent();
-	u32 index2d = 0;
-
-	for (s16 z = node_min.Z; z <= node_max.Z; z++)
-	for (s16 x = node_min.X; x <= node_max.X; x++, index2d++) {
-		bool column_is_open = false;  // Is column open to overground
-		bool is_tunnel = false;  // Is tunnel or tunnel floor
-		u32 vi = vm->m_area.index(x, node_max.Y + 1, z);
-		u32 index3d = (z - node_min.Z) * zstride + (csize.Y + 1) * ystride +
-			(x - node_min.X);
-		// Biome of column
-		Biome *biome = (Biome *)bmgr->getRaw(biomemap[index2d]);
-
-		for (s16 y = node_max.Y + 1; y >= node_min.Y - 1;
-				y--, index3d -= ystride, vm->m_area.add_y(em, vi, -1)) {
-			// Don't excavate the overgenerated stone at node_max.Y + 1,
-			// this creates a 'roof' over the tunnel, preventing light in
-			// tunnels at mapchunk borders when generating mapchunks upwards.
-			if (y > node_max.Y)
-				continue;
-
-			content_t c = vm->m_data[vi].getContent();
-			if (c == CONTENT_AIR || c == biome->c_water_top ||
-					c == biome->c_water) {
-				column_is_open = true;
-				continue;
-			}
-			// Ground
-			float d1 = contour(noise_cave1->result[index3d]);
-			float d2 = contour(noise_cave2->result[index3d]);
-			if (d1 * d2 > 0.3f && ndef->get(c).is_ground_content) {
-				// In tunnel and ground content, excavate
-				vm->m_data[vi] = MapNode(CONTENT_AIR);
-				is_tunnel = true;
-			} else if (is_tunnel && column_is_open &&
-					(c == biome->c_filler || c == biome->c_stone)) {
-				// Tunnel entrance floor
-				vm->m_data[vi] = MapNode(biome->c_top);
-				column_is_open = false;
-				is_tunnel = false;
-			} else {
-				column_is_open = false;
-				is_tunnel = false;
-			}
-		}
-	}
-
-	if (node_min.Y >= water_level)
-		return;
-
-	PseudoRandom ps(blockseed + 21343);
-	u32 bruises_count = ps.range(0, 2);
-	for (u32 i = 0; i < bruises_count; i++) {
-		CaveV7 cave(this, &ps);
-		cave.makeCave(node_min, node_max, max_stone_y);
-	}
-}

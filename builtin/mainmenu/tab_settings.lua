@@ -384,7 +384,7 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	return ddhandled
 end
 
-tab_settings = {
+return {
 	name = "settings",
 	caption = fgettext("Settings"),
 	cbf_formspec = formspec,
