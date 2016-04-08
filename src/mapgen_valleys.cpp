@@ -921,14 +921,13 @@ void MapgenValleys::generateCaves(s16 max_stone_y)
 	}
 
 	u32 index_2d = 0;
-	u32 index_3d = 0;
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index_2d++) {
 		Biome *biome = (Biome *)bmgr->getRaw(biomemap[index_2d]);
-		bool air_above = false;
+		bool tunnel_air_above = false;
 		bool underground = false;
 		u32 index_data = vm->m_area.index(x, node_max.Y, z);
-		index_3d = (z - node_min.Z) * zstride_1d + csize.Y * ystride + (x - node_min.X);
+		u32 index_3d = (z - node_min.Z) * zstride_1d + csize.Y * ystride + (x - node_min.X);
 
 		// Dig caves on down loop to check for air above.
 		// Don't excavate the overgenerated stone at node_max.Y + 1,
@@ -942,12 +941,10 @@ void MapgenValleys::generateCaves(s16 max_stone_y)
 			float terrain = noise_terrain_height->result[index_2d];
 
 			// Saves some time.
-			if (y > terrain + 10) {
-				air_above = true;
+			if (y > terrain + 10)
 				continue;
-			} else if (y < terrain - 40) {
+			else if (y < terrain - 40)
 				underground = true;
-			}
 
 			// Dig massive caves.
 			if (node_max.Y <= massive_cave_depth
@@ -955,6 +952,7 @@ void MapgenValleys::generateCaves(s16 max_stone_y)
 					> tcave_cache[y - node_min.Y + 1]) {
 				vm->m_data[index_data] = n_air;
 				made_a_big_one = true;
+				continue;
 			}
 
 			content_t c = vm->m_data[index_data].getContent();
@@ -963,54 +961,51 @@ void MapgenValleys::generateCaves(s16 max_stone_y)
 
 			// River water is not set as ground content
 			// in the default game. This can produce strange results
-			// when a cave undercuts a river. However, that's not for
+			// when a tunnel undercuts a river. However, that's not for
 			// the mapgen to correct. Fix it in lua.
 
-			if (c == CONTENT_AIR) {
-				air_above = true;
-			} else if (d1 * d2 > 0.3f && ndef->get(c).is_ground_content) {
-				// in a cave
+			if (d1 * d2 > 0.3f && ndef->get(c).is_ground_content) {
+				// in a tunnel
 				vm->m_data[index_data] = n_air;
-				air_above = true;
-			} else if (air_above && (c == biome->c_filler || c == biome->c_stone)) {
-				// at the cave floor
-				s16 sr = ps.range(0,39);
-				u32 j = index_data;
-				vm->m_area.add_y(em, j, 1);
+				tunnel_air_above = true;
+			} else if (c == biome->c_filler || c == biome->c_stone) {
+				if (tunnel_air_above) {
+					// at the tunnel floor
+					s16 sr = ps.range(0, 39);
+					u32 j = index_data;
+					vm->m_area.add_y(em, j, 1);
 
-				if (sr > terrain - y) {
-					// Put dirt in caves near the surface.
-					if (underground)
-						vm->m_data[index_data] = MapNode(biome->c_filler);
-					else
-						vm->m_data[index_data] = MapNode(biome->c_top);
-				} else if (sr < 3 && underground) {
-					sr = abs(ps.next());
-					if (lava_features_lim > 0 && y <= lava_max_height
-							&& c == biome->c_stone && sr < lava_chance)
-						vm->m_data[j] = n_lava;
+					if (sr > terrain - y) {
+						// Put dirt in tunnels near the surface.
+						if (underground)
+							vm->m_data[index_data] = MapNode(biome->c_filler);
+						else
+							vm->m_data[index_data] = MapNode(biome->c_top);
+					} else if (sr < 3 && underground) {
+						sr = abs(ps.next());
+						if (lava_features_lim > 0 && y <= lava_max_height
+								&& c == biome->c_stone && sr < lava_chance)
+							vm->m_data[j] = n_lava;
 
-					sr -= lava_chance;
+						sr -= lava_chance;
 
-					// If sr < 0 then we should have already placed lava --
-					// don't immediately dump water on it.
-					if (water_features_lim > 0 && y <= cave_water_max_height
-							&& sr >= 0 && sr < water_chance)
-						vm->m_data[j] = n_water;
+						// If sr < 0 then we should have already placed lava --
+						// don't immediately dump water on it.
+						if (water_features_lim > 0 && y <= cave_water_max_height
+								&& sr >= 0 && sr < water_chance)
+							vm->m_data[j] = n_water;
+					}
 				}
 
-				air_above = false;
-				underground = true;
-			} else if (c == biome->c_filler || c == biome->c_stone) {
-				air_above = false;
+				tunnel_air_above = false;
 				underground = true;
 			} else {
-				air_above = false;
+				tunnel_air_above = false;
 			}
 		}
 	}
 
-	if (node_max.Y <= large_cave_depth && (!made_a_big_one)) {
+	if (node_max.Y <= large_cave_depth && !made_a_big_one) {
 		u32 bruises_count = ps.range(0, 2);
 		for (u32 i = 0; i < bruises_count; i++) {
 			CaveV5 cave(this, &ps);
