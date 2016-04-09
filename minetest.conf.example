@@ -826,6 +826,10 @@
 #    type: string
 # default_privs = interact, shout
 
+#    Privileges that players with basic_privs can grant
+#    type: string
+# basic_privs = interact, shout
+
 #    Whether players are shown to clients without any range limit.
 #    Deprecated, use the setting player_transfer_distance instead.
 #    type: bool
@@ -1513,4 +1517,3 @@
 
 #    type: string
 # modstore_details_url = https://forum.minetest.net/mmdb/mod/*/
-

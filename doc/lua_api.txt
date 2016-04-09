@@ -1924,6 +1924,7 @@ Call these functions only at load time!
 * `minetest.register_privilege(name, definition)`
     * `definition`: `"description text"`
     * `definition`: `{ description = "description text", give_to_singleplayer = boolean, -- default: true }`
+    * To allow players with basic_privs to grant, see basic_privs minetest.conf setting.
 * `minetest.register_authentication_handler(handler)`
     * See `minetest.builtin_auth_handler` in `builtin.lua` for reference
 

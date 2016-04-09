@@ -691,6 +691,9 @@ default_password (Default password) string
 #    See /privs in game for a full list on your server and mod configuration.
 default_privs (Default privileges) string interact, shout
 
+#    Privileges that players with basic_privs can grant
+basic_privs (Basic Privileges) string interact, shout
+
 #    Whether players are shown to clients without any range limit.
 #    Deprecated, use the setting player_transfer_distance instead.
 unlimited_player_transfer_distance (Unlimited player transfer distance) bool true
