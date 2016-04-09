@@ -54,7 +54,8 @@ MapgenV5::MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	// amount of elements to skip for the next index
 	// for noise/height/biome maps (not vmanip)
 	this->ystride = csize.X;
-	this->zstride = csize.X * (csize.Y + 2);
+	// 1-down overgeneration
+	this->zstride_1d = csize.X * (csize.Y + 1);
 
 	this->biomemap  = new u8[csize.X * csize.Z];
 	this->heightmap = new s16[csize.X * csize.Z];
@@ -70,9 +71,11 @@ MapgenV5::MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	noise_height       = new Noise(&sp->np_height,       seed, csize.X, csize.Z);
 
 	// 3D terrain noise
-	noise_cave1  = new Noise(&sp->np_cave1,  seed, csize.X, csize.Y + 2, csize.Z);
-	noise_cave2  = new Noise(&sp->np_cave2,  seed, csize.X, csize.Y + 2, csize.Z);
+	// 1-up 1-down overgeneration
 	noise_ground = new Noise(&sp->np_ground, seed, csize.X, csize.Y + 2, csize.Z);
+	// 1-down overgeneraion
+	noise_cave1  = new Noise(&sp->np_cave1,  seed, csize.X, csize.Y + 1, csize.Z);
+	noise_cave2  = new Noise(&sp->np_cave2,  seed, csize.X, csize.Y + 1, csize.Z);
 
 	// Biome noise
 	noise_heat           = new Noise(&params->np_biome_heat,           seed, csize.X, csize.Z);
@@ -505,50 +508,6 @@ MgStoneType MapgenV5::generateBiomes(float *heat_map, float *humidity_map)
 }
 
 
-void MapgenV5::generateCaves(int max_stone_y)
-{
-	if (max_stone_y < node_min.Y)
-		return;
-
-	noise_cave1->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
-	noise_cave2->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
-
-	u32 index = 0;
-
-	for (s16 z = node_min.Z; z <= node_max.Z; z++)
-	for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
-		u32 vi = vm->m_area.index(node_min.X, y, z);
-		for (s16 x = node_min.X; x <= node_max.X; x++, vi++, index++) {
-			// Don't excavate the overgenerated stone at node_max.Y + 1,
-			// this creates a 'roof' over the tunnel, preventing light in
-			// tunnels at mapchunk borders when generating mapchunks upwards.
-			if (y > node_max.Y)
-				continue;
-
-			float d1 = contour(noise_cave1->result[index]);
-			float d2 = contour(noise_cave2->result[index]);
-			if (d1 * d2 > 0.125f) {
-				content_t c = vm->m_data[vi].getContent();
-				if (!ndef->get(c).is_ground_content || c == CONTENT_AIR)
-					continue;
-
-				vm->m_data[vi] = MapNode(CONTENT_AIR);
-			}
-		}
-	}
-
-	if (node_max.Y > MGV5_LARGE_CAVE_DEPTH)
-		return;
-
-	PseudoRandom ps(blockseed + 21343);
-	u32 bruises_count = ps.range(0, 2);
-	for (u32 i = 0; i < bruises_count; i++) {
-		CaveV5 cave(this, &ps);
-		cave.makeCave(node_min, node_max, max_stone_y);
-	}
-}
-
-
 void MapgenV5::dustTopNodes()
 {
 	if (node_max.Y < water_level)
@@ -595,5 +554,74 @@ void MapgenV5::dustTopNodes()
 			vm->m_area.add_y(em, vi, 1);
 			vm->m_data[vi] = MapNode(biome->c_dust);
 		}
+	}
+}
+
+
+void MapgenV5::generateCaves(int max_stone_y)
+{
+	if (max_stone_y < node_min.Y)
+		return;
+
+	noise_cave1->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
+	noise_cave2->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
+
+	v3s16 em = vm->m_area.getExtent();
+	u32 index2d = 0;
+
+	for (s16 z = node_min.Z; z <= node_max.Z; z++)
+	for (s16 x = node_min.X; x <= node_max.X; x++, index2d++) {
+		bool column_is_open = false;  // Is column open to overground
+		bool is_tunnel = false;  // Is tunnel or tunnel floor
+		// Indexes at column top (node_max.Y)
+		u32 vi = vm->m_area.index(x, node_max.Y, z);
+		u32 index3d = (z - node_min.Z) * zstride_1d + csize.Y * ystride +
+			(x - node_min.X);
+		// Biome of column
+		Biome *biome = (Biome *)bmgr->getRaw(biomemap[index2d]);
+
+		// Don't excavate the overgenerated stone at node_max.Y + 1,
+		// this creates a 'roof' over the tunnel, preventing light in
+		// tunnels at mapchunk borders when generating mapchunks upwards.
+		// This 'roof' is removed when the mapchunk above is generated.
+		for (s16 y = node_max.Y; y >= node_min.Y - 1; y--,
+				index3d -= ystride,
+				vm->m_area.add_y(em, vi, -1)) {
+
+			content_t c = vm->m_data[vi].getContent();
+			if (c == CONTENT_AIR || c == biome->c_water_top ||
+					c == biome->c_water) {
+				column_is_open = true;
+				continue;
+			}
+			// Ground
+			float d1 = contour(noise_cave1->result[index3d]);
+			float d2 = contour(noise_cave2->result[index3d]);
+
+			if (d1 * d2 > 0.125f && ndef->get(c).is_ground_content) {
+				// In tunnel and ground content, excavate
+				vm->m_data[vi] = MapNode(CONTENT_AIR);
+				is_tunnel = true;
+			} else {
+				// Not in tunnel or not ground content
+				if (is_tunnel && column_is_open &&
+						(c == biome->c_filler || c == biome->c_stone))
+					// Tunnel entrance floor
+					vm->m_data[vi] = MapNode(biome->c_top);
+
+				column_is_open = false;
+				is_tunnel = false;
+			}
+		}
+	}
+
+	if (node_max.Y > MGV5_LARGE_CAVE_DEPTH)
+		return;
+
+	PseudoRandom ps(blockseed + 21343);
+	u32 bruises_count = ps.range(0, 2);
+	for (u32 i = 0; i < bruises_count; i++) {
+		CaveV5 cave(this, &ps);
+		cave.makeCave(node_min, node_max, max_stone_y);
 	}
 }
