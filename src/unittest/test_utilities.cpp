@@ -45,6 +45,7 @@ public:
 	void testStringAllowed();
 	void testAsciiPrintableHelper();
 	void testUTF8();
+	void testRemoveEscapes();
 	void testWrapRows();
 	void testIsNumber();
 	void testIsPowerOfTwo();
@@ -71,6 +72,7 @@ void TestUtilities::runTests(IGameDef *gamedef)
 	TEST(testStringAllowed);
 	TEST(testAsciiPrintableHelper);
 	TEST(testUTF8);
+	TEST(testRemoveEscapes);
 	TEST(testWrapRows);
 	TEST(testIsNumber);
 	TEST(testIsPowerOfTwo);
@@ -251,6 +253,13 @@ void TestUtilities::testUTF8()
 	UASSERT(wide_to_utf8(utf8_to_wide("")) == "");
 	UASSERT(wide_to_utf8(utf8_to_wide("the shovel dug a crumbly node!"))
 		== "the shovel dug a crumbly node!");
+}
+
+void TestUtilities::testRemoveEscapes()
+{
+	UASSERT(remove_escapes(L"abc\x1bXdef") == L"abcdef");
+	UASSERT(remove_escapes(L"abc\x1b(escaped)def") == L"abcdef");
+	UASSERT(remove_escapes(L"abc\x1b((escaped with parenthesis\\))def") == L"abcdef");
 }
 
 void TestUtilities::testWrapRows()

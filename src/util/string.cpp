@@ -729,7 +729,7 @@ static bool parseNamedColorString(const std::string &value, video::SColor &color
 	return true;
 }
 
-std::wstring removeEscapes(const std::wstring &s) {
+std::wstring remove_escapes(const std::wstring &s) {
 	std::wstring output;
 	size_t i = 0;
 	while (i < s.length()) {

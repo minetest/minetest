@@ -392,7 +392,7 @@ inline void str_replace(std::string &str, const std::string &pattern,
  * @param s The string in which to remove escape sequences.
  * @return \p s, with escape sequences removed.
  */
-std::wstring removeEscapes(const std::wstring &s);
+std::wstring remove_escapes(const std::wstring &s);
 
 /**
  * Replace all occurrences of the character \p from in \p str with \p to.

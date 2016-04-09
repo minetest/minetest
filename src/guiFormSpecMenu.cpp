@@ -744,7 +744,7 @@ void GUIFormSpecMenu::parseTable(parserData* data,std::string element)
 
 		for (unsigned int i = 0; i < items.size(); ++i) {
 			items[i] = unescape_string(wide_to_utf8(
-				removeEscapes(utf8_to_wide(items[i]))));
+				remove_escapes(utf8_to_wide(items[i]))));
 		}
 
 		//now really show table
@@ -817,7 +817,7 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element)
 
 		for (unsigned int i = 0; i < items.size(); ++i) {
 			items[i] = unescape_string(wide_to_utf8(
-				removeEscapes(utf8_to_wide(items[i]))));
+				remove_escapes(utf8_to_wide(items[i]))));
 		}
 
 		//now really show list
@@ -888,7 +888,7 @@ void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element)
 		}
 
 		for (unsigned int i=0; i < items.size(); i++) {
-			e->addItem(unescape_string(removeEscapes(utf8_to_wide(items[i]))).c_str());
+			e->addItem(unescape_string(remove_escapes(utf8_to_wide(items[i]))).c_str());
 		}
 
 		if (str_initial_selection != "")
@@ -1234,7 +1234,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element)
 		((parts.size() > 2) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
 		std::vector<std::string> v_pos = split(parts[0],',');
-		std::wstring text = unescape_string(removeEscapes(utf8_to_wide(parts[1])));
+		std::wstring text = unescape_string(remove_escapes(utf8_to_wide(parts[1])));
 
 		MY_CHECKPOS("vertlabel",1);
 
@@ -1420,7 +1420,7 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element)
 		e->setNotClipped(true);
 
 		for (unsigned int i = 0; i < buttons.size(); i++) {
-			e->addTab(unescape_string(removeEscapes(utf8_to_wide(buttons[i]))).c_str(), -1);
+			e->addTab(unescape_string(remove_escapes(utf8_to_wide(buttons[i]))).c_str(), -1);
 		}
 
 		if ((tab_index >= 0) &&
@@ -2234,7 +2234,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 			std::wstring tooltip_text = L"";
 			if (hovering && !m_selected_item) {
 				tooltip_text = utf8_to_wide(item.getDefinition(m_gamedef->idef()).description);
-				tooltip_text = removeEscapes(tooltip_text);
+				tooltip_text = remove_escapes(tooltip_text);
 			}
 			if (tooltip_text != L"") {
 				std::vector<std::wstring> tt_rows = str_split(tooltip_text, L'\n');

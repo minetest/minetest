@@ -202,8 +202,8 @@ class GUIFormSpecMenu : public GUIModalMenu
 			fname(name),
 			fid(id)
 		{
-			flabel = unescape_string(removeEscapes(label));
-			fdefault = unescape_string(removeEscapes(fdeflt));
+			flabel = unescape_string(remove_escapes(label));
+			fdefault = unescape_string(remove_escapes(fdeflt));
 			send = false;
 			ftype = f_Unknown;
 			is_exit = false;
@@ -239,7 +239,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 			bgcolor(a_bgcolor),
 			color(a_color)
 		{
-			tooltip = unescape_string(removeEscapes(utf8_to_wide(a_tooltip)));
+			tooltip = unescape_string(remove_escapes(utf8_to_wide(a_tooltip)));
 		}
 		std::wstring tooltip;
 		irr::video::SColor bgcolor;
@@ -256,7 +256,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 			rect(a_rect),
 			parent_button(NULL)
 		{
-			text = unescape_string(removeEscapes(a_text));
+			text = unescape_string(remove_escapes(a_text));
 		}
 		StaticTextSpec(const std::wstring &a_text,
 				const core::rect<s32> &a_rect,
@@ -264,7 +264,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 			rect(a_rect),
 			parent_button(a_parent_button)
 		{
-			text = unescape_string(removeEscapes(a_text));
+			text = unescape_string(remove_escapes(a_text));
 		}
 		std::wstring text;
 		core::rect<s32> rect;
