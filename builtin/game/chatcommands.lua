@@ -182,14 +182,16 @@ core.register_chatcommand("grant", {
 		local privs = core.get_player_privs(grantname)
 		local privs_unknown = ""
 		for priv, _ in pairs(grantprivs) do
-			if priv ~= "interact" and priv ~= "shout" and
-					not core.check_player_privs(name, {privs=true}) then
-				return false, "Your privileges are insufficient."
-			end
-			if not core.registered_privileges[priv] then
+			local def = core.registered_privileges[priv]
+			if def then
+				if not def.basic_priv and
+						not core.check_player_privs(name, {privs=true}) then
+					return false, "Your privileges are insufficient."
+				end
+				privs[priv] = true
+			else
 				privs_unknown = privs_unknown .. "Unknown privilege: " .. priv .. "\n"
 			end
-			privs[priv] = true
 		end
 		if privs_unknown ~= "" then
 			return false, privs_unknown
@@ -224,9 +226,12 @@ core.register_chatcommand("revoke", {
 		local revoke_privs = core.string_to_privs(revoke_priv_str)
 		local privs = core.get_player_privs(revoke_name)
 		for priv, _ in pairs(revoke_privs) do
-			if priv ~= "interact" and priv ~= "shout" and
-					not core.check_player_privs(name, {privs=true}) then
-				return false, "Your privileges are insufficient."
+			local def = core.registered_privileges[priv]
+			if def then
+				if not def.basic_priv and
+						not core.check_player_privs(name, {privs=true}) then
+					return false, "Your privileges are insufficient."
+				end
 			end
 		end
 		if revoke_priv_str == "all" then
