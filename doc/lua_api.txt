@@ -1920,7 +1920,14 @@ Call these functions only at load time!
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
 * `minetest.register_privilege(name, definition)`
     * `definition`: `"description text"`
-    * `definition`: `{ description = "description text", give_to_singleplayer = boolean, -- default: true }`
+    * `definition`:
+
+            {
+                description = "description text",
+                basic_priv = true, -- players with the basic priv can grant/revoke this.
+                give_to_singleplayer = boolean, -- default: true
+            }
+
 * `minetest.register_authentication_handler(handler)`
     * See `minetest.builtin_auth_handler` in `builtin.lua` for reference
 

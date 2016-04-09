@@ -25,7 +25,14 @@ function core.register_privilege(name, param)
 	core.registered_privileges[name] = def
 end
 
-core.register_privilege("interact", "Can interact with things and modify the world")
+core.register_privilege("interact", {
+	description = "Can interact with things and modify the world",
+	basic_priv = true
+})
+core.register_privilege("shout", {
+	description = "Can speak in chat",
+	basic_priv = true
+})
 core.register_privilege("teleport", "Can use /teleport command")
 core.register_privilege("bring", "Can teleport other players")
 core.register_privilege("settime", "Can use /time")
@@ -33,7 +40,6 @@ core.register_privilege("privs", "Can modify privileges")
 core.register_privilege("basic_privs", "Can modify 'shout' and 'interact' privileges")
 core.register_privilege("server", "Can do server maintenance stuff")
 core.register_privilege("protection_bypass", "Can bypass node protection in the world")
-core.register_privilege("shout", "Can speak in chat")
 core.register_privilege("ban", "Can ban and unban players")
 core.register_privilege("kick", "Can kick players")
 core.register_privilege("give", "Can use /give and /giveme")
@@ -51,4 +57,3 @@ core.register_privilege("noclip", {
 	give_to_singleplayer = false,
 })
 core.register_privilege("rollback", "Can use the rollback functionality")
-
