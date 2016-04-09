@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-02-27 05:49+0100\n"
-"PO-Revision-Date: 2015-11-19 16:52+0000\n"
-"Last-Translator: Kristjan Räts <kristjanrats@gmail.com>\n"
-"Language-Team: Estonian <https://hosted.weblate.org/projects/minetest/"
-"minetest/et/>\n"
+"PO-Revision-Date: 2016-04-09 13:53+0000\n"
+"Last-Translator: Jan Harald <kuus29@gmail.com>\n"
+"Language-Team: Estonian "
+"<https://hosted.weblate.org/projects/minetest/minetest/et/>\n"
 "Language: et\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.5-dev\n"
+"X-Generator: Weblate 2.6-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -33,7 +33,7 @@ msgstr "Peamenüü"
 
 #: builtin/fstk/ui.lua builtin/mainmenu/store.lua
 msgid "Ok"
-msgstr "kinnitama"
+msgstr "Olgu."
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
@@ -62,7 +62,7 @@ msgstr "Server toetab protokolli versioone $1 kuni $2. "
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
-"Proovi lubada uuesti avalik serverite loend ja kontrollo oma Interneti "
+"Proovi lubada uuesti avalike serverite loend ja kontrolli oma Interneti "
 "ühendust."
 
 #: builtin/mainmenu/common.lua
@@ -101,8 +101,8 @@ msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
-"Mod \"$1\" kasutamine nurjus, sest ka sisaldab keelatud sümboleid. Lubatud "
-"märgid on ainult [a-z0-9_]."
+"Mod \"$1\" kasutamine nurjus, sest ta sisaldab keelatud sümboleid. Lubatud "
+"on ainult märgid [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -4025,7 +4025,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
-msgstr ""
+msgstr "cURL faili allalaadimine aegus"
 
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
