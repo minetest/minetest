@@ -262,6 +262,8 @@ void TestUtilities::testRemoveEscapes()
 	UASSERT(remove_escapes(L"abc\x1b((escaped with parenthesis\\))def") == L"abcdef");
 	UASSERT(remove_escapes(L"abc\x1b(incomplete") == L"abc");
 	UASSERT(remove_escapes(L"escape at the end\x1b") == L"escape at the end");
+	// Nested escapes not supported
+	UASSERT(remove_escapes(L"abc\x1b(outer \x1b(inner escape)escape)def") == L"abcescape)def");
 }
 
 void TestUtilities::testWrapRows()
