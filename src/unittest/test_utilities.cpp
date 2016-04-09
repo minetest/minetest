@@ -260,6 +260,8 @@ void TestUtilities::testRemoveEscapes()
 	UASSERT(remove_escapes(L"abc\x1bXdef") == L"abcdef");
 	UASSERT(remove_escapes(L"abc\x1b(escaped)def") == L"abcdef");
 	UASSERT(remove_escapes(L"abc\x1b((escaped with parenthesis\\))def") == L"abcdef");
+	UASSERT(remove_escapes(L"abc\x1b(incomplete") == L"abc");
+	UASSERT(remove_escapes(L"escape at the end\x1b") == L"escape at the end");
 }
 
 void TestUtilities::testWrapRows()
