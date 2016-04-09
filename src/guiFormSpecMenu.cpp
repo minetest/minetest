@@ -2231,18 +2231,18 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 			}
 
 			// Draw tooltip
-			std::string tooltip_text = "";
+			std::wstring tooltip_text = L"";
 			if (hovering && !m_selected_item) {
-				tooltip_text = item.getDefinition(m_gamedef->idef()).description;
-				tooltip_text = wide_to_utf8(removeEscapes(utf8_to_wide(tooltip_text)));
+				tooltip_text = utf8_to_wide(item.getDefinition(m_gamedef->idef()).description);
+				tooltip_text = removeEscapes(tooltip_text);
 			}
-			if (tooltip_text != "") {
-				std::vector<std::string> tt_rows = str_split(tooltip_text, '\n');
+			if (tooltip_text != L"") {
+				std::vector<std::wstring> tt_rows = str_split(tooltip_text, L'\n');
 				m_tooltip_element->setBackgroundColor(m_default_tooltip_bgcolor);
 				m_tooltip_element->setOverrideColor(m_default_tooltip_color);
 				m_tooltip_element->setVisible(true);
 				this->bringToFront(m_tooltip_element);
-				m_tooltip_element->setText(utf8_to_wide(tooltip_text).c_str());
+				m_tooltip_element->setText(tooltip_text.c_str());
 				s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
 				s32 tooltip_height = m_tooltip_element->getTextHeight() * tt_rows.size() + 5;
 				v2u32 screenSize = driver->getScreenSize();
@@ -2495,7 +2495,7 @@ void GUIFormSpecMenu::drawMenu()
 		u32 delta = 0;
 		if (id == -1) {
 			m_old_tooltip_id = id;
-			m_old_tooltip = "";
+			m_old_tooltip = L"";
 		} else {
 			if (id == m_old_tooltip_id) {
 				delta = porting::getDeltaMs(m_hovered_time, getTimeMs());
@@ -2508,11 +2508,11 @@ void GUIFormSpecMenu::drawMenu()
 		if (id != -1 && delta >= m_tooltip_show_delay) {
 			for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
 					iter != m_fields.end(); ++iter) {
-				if ( (iter->fid == id) && (m_tooltips[iter->fname].tooltip != "") ){
+				if ( (iter->fid == id) && (m_tooltips[iter->fname].tooltip != L"") ){
 					if (m_old_tooltip != m_tooltips[iter->fname].tooltip) {
 						m_old_tooltip = m_tooltips[iter->fname].tooltip;
-						m_tooltip_element->setText(utf8_to_wide(m_tooltips[iter->fname].tooltip).c_str());
-						std::vector<std::string> tt_rows = str_split(m_tooltips[iter->fname].tooltip, '\n');
+						m_tooltip_element->setText(m_tooltips[iter->fname].tooltip.c_str());
+						std::vector<std::wstring> tt_rows = str_split(m_tooltips[iter->fname].tooltip, L'\n');
 						s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
 						s32 tooltip_height = m_tooltip_element->getTextHeight() * tt_rows.size() + 5;
 						int tooltip_offset_x = m_btn_height;
@@ -2866,7 +2866,7 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 				core::position2d<s32>(x, y));
 		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
 			m_old_tooltip_id = -1;
-			m_old_tooltip = "";
+			m_old_tooltip = L"";
 		}
 		if (!isChild(hovered,this)) {
 			if (DoubleClickDetection(event)) {

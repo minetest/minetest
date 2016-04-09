@@ -239,10 +239,9 @@ class GUIFormSpecMenu : public GUIModalMenu
 			bgcolor(a_bgcolor),
 			color(a_color)
 		{
-			tooltip = unescape_string(wide_to_utf8(
-				removeEscapes(utf8_to_wide(a_tooltip))));
+			tooltip = unescape_string(removeEscapes(utf8_to_wide(a_tooltip)));
 		}
-		std::string tooltip;
+		std::wstring tooltip;
 		irr::video::SColor bgcolor;
 		irr::video::SColor color;
 	};
@@ -408,7 +407,7 @@ protected:
 	u32 m_tooltip_show_delay;
 	s32 m_hovered_time;
 	s32 m_old_tooltip_id;
-	std::string m_old_tooltip;
+	std::wstring m_old_tooltip;
 
 	bool m_rmouse_auto_place;
 
