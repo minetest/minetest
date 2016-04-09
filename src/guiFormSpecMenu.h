@@ -192,6 +192,14 @@ class GUIFormSpecMenu : public GUIModalMenu
 		bool scale;
 	};
 
+	/* The responsibility of unescaping the strings has been shifted
+	 * from the formspec parsing methods to the draw methods.
+	 * There still are a few exceptions:
+	 *  - Vertical label, because it modifies the string by inserting
+	 *    '\n' between each character,
+	 *  - Tab header, because it gives the string immediately to
+	 *    Irrlicht and we can't unescape it later.
+	 */
 	struct FieldSpec
 	{
 		FieldSpec()
