@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_sao.h"
 #include "inventory.h"
 #include "log.h"
+#include "lua_api/l_itemstackmeta.h"
 
 
 // garbage collector
@@ -137,13 +138,24 @@ int LuaItemStack::l_set_wear(lua_State *L)
 	return 1;
 }
 
+// get_meta(self) -> userdata //note get_metadata and set_metadata mimic old behavior
+int LuaItemStack::l_get_meta(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaItemStack *o = checkobject(L, 1);
+	ItemStack &item = o->m_stack;
+	ItemStackMetaRef::create(L, &item);
+	return 1;
+}
+//LEGACY metadata access
 // get_metadata(self) -> string
 int LuaItemStack::l_get_metadata(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkobject(L, 1);
 	ItemStack &item = o->m_stack;
-	lua_pushlstring(L, item.metadata.c_str(), item.metadata.size());
+	std::string metastr=item.metadata.getString("");
+	lua_pushlstring(L, metastr.c_str(), metastr.size());
 	return 1;
 }
 
@@ -156,7 +168,9 @@ int LuaItemStack::l_set_metadata(lua_State *L)
 
 	size_t len = 0;
 	const char *ptr = luaL_checklstring(L, 2, &len);
-	item.metadata.assign(ptr, len);
+	std::string metastr;
+	metastr.assign(ptr, len);
+	item.metadata.setString("", metastr);
 
 	lua_pushboolean(L, true);
 	return 1;
@@ -211,8 +225,6 @@ int LuaItemStack::l_to_table(lua_State *L)
 		lua_setfield(L, -2, "count");
 		lua_pushinteger(L, item.wear);
 		lua_setfield(L, -2, "wear");
-		lua_pushlstring(L, item.metadata.c_str(), item.metadata.size());
-		lua_setfield(L, -2, "metadata");
 	}
 	return 1;
 }
@@ -443,8 +455,9 @@ const luaL_reg LuaItemStack::methods[] = {
 	luamethod(LuaItemStack, set_count),
 	luamethod(LuaItemStack, get_wear),
 	luamethod(LuaItemStack, set_wear),
-	luamethod(LuaItemStack, get_metadata),
-	luamethod(LuaItemStack, set_metadata),
+	luamethod(LuaItemStack, get_meta),
+	luamethod(LuaItemStack, get_metadata),//legacy
+	luamethod(LuaItemStack, set_metadata),//legacy
 	luamethod(LuaItemStack, clear),
 	luamethod(LuaItemStack, replace),
 	luamethod(LuaItemStack, to_string),

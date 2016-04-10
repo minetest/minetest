@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_base.h"
 #include "inventory.h"  // ItemStack
+#include "lua_api/l_itemstackmeta.h"
+#include "itemstackmetadata.h"
 
 class LuaItemStack : public ModApiBase {
 private:
@@ -56,10 +58,13 @@ private:
 	// set_wear(self, number)
 	static int l_set_wear(lua_State *L);
 
-	// get_metadata(self) -> string
+	// get_meta(self) -> userdata(ItemStackMetaRef)
+	static int l_get_meta(lua_State *L);
+
+	// get_metadata(self) -> string (legacy)
 	static int l_get_metadata(lua_State *L);
 
-	// set_metadata(self, string)
+	// set_metadata(self, string) (legacy)
 	static int l_set_metadata(lua_State *L);
 
 	// clear(self) -> true

@@ -811,8 +811,7 @@ ItemStack read_item(lua_State* L, int index,Server* srv)
 		std::string name = getstringfield_default(L, index, "name", "");
 		int count = getintfield_default(L, index, "count", 1);
 		int wear = getintfield_default(L, index, "wear", 0);
-		std::string metadata = getstringfield_default(L, index, "metadata", "");
-		return ItemStack(name, count, wear, metadata, idef);
+		return ItemStack(name, count, wear, idef);
 	}
 	else
 	{
