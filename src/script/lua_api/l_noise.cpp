@@ -98,11 +98,7 @@ int LuaPerlinNoise::gc_object(lua_State *L)
 LuaPerlinNoise *LuaPerlinNoise::checkobject(lua_State *L, int narg)
 {
 	NO_MAP_LOCK_REQUIRED;
-	luaL_checktype(L, narg, LUA_TUSERDATA);
-	void *ud = luaL_checkudata(L, narg, className);
-	if (!ud)
-		luaL_typerror(L, narg, className);
-	return *(LuaPerlinNoise **)ud;
+	return *(LuaPerlinNoise **)luaL_checkudata(L, narg, className);
 }
 
 
@@ -354,13 +350,7 @@ int LuaPerlinNoiseMap::gc_object(lua_State *L)
 
 LuaPerlinNoiseMap *LuaPerlinNoiseMap::checkobject(lua_State *L, int narg)
 {
-	luaL_checktype(L, narg, LUA_TUSERDATA);
-
-	void *ud = luaL_checkudata(L, narg, className);
-	if (!ud)
-		luaL_typerror(L, narg, className);
-
-	return *(LuaPerlinNoiseMap **)ud;
+	return *(LuaPerlinNoiseMap **)luaL_checkudata(L, narg, className);
 }
 
 
@@ -461,11 +451,7 @@ int LuaPseudoRandom::gc_object(lua_State *L)
 
 LuaPseudoRandom *LuaPseudoRandom::checkobject(lua_State *L, int narg)
 {
-	luaL_checktype(L, narg, LUA_TUSERDATA);
-	void *ud = luaL_checkudata(L, narg, className);
-	if (!ud)
-		luaL_typerror(L, narg, className);
-	return *(LuaPseudoRandom **)ud;
+	return *(LuaPseudoRandom **)luaL_checkudata(L, narg, className);
 }
 
 
@@ -560,11 +546,7 @@ int LuaPcgRandom::gc_object(lua_State *L)
 
 LuaPcgRandom *LuaPcgRandom::checkobject(lua_State *L, int narg)
 {
-	luaL_checktype(L, narg, LUA_TUSERDATA);
-	void *ud = luaL_checkudata(L, narg, className);
-	if (!ud)
-		luaL_typerror(L, narg, className);
-	return *(LuaPcgRandom **)ud;
+	return *(LuaPcgRandom **)luaL_checkudata(L, narg, className);
 }
 
 
@@ -675,11 +657,7 @@ int LuaSecureRandom::gc_object(lua_State *L)
 
 LuaSecureRandom *LuaSecureRandom::checkobject(lua_State *L, int narg)
 {
-	luaL_checktype(L, narg, LUA_TUSERDATA);
-	void *ud = luaL_checkudata(L, narg, className);
-	if (!ud)
-		luaL_typerror(L, narg, className);
-	return *(LuaSecureRandom **)ud;
+	return *(LuaSecureRandom **)luaL_checkudata(L, narg, className);
 }
 
 

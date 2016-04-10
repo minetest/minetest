@@ -31,10 +31,7 @@ int NodeTimerRef::gc_object(lua_State *L) {
 
 NodeTimerRef* NodeTimerRef::checkobject(lua_State *L, int narg)
 {
-	luaL_checktype(L, narg, LUA_TUSERDATA);
-	void *ud = luaL_checkudata(L, narg, className);
-	if(!ud) luaL_typerror(L, narg, className);
-	return *(NodeTimerRef**)ud;  // unbox pointer
+	return *(NodeTimerRef**)luaL_checkudata(L, narg, className);
 }
 
 int NodeTimerRef::l_set(lua_State *L)

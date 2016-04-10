@@ -36,8 +36,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <new>
 
-#include <config.h>
+#include "config.h"
 
 #if USE_SYSTEM_GMP || defined (__ANDROID__) || defined (ANDROID)
 	#include <gmp.h>
@@ -444,7 +445,7 @@ static void hash_num( SRP_HashAlgorithm alg, const mpz_t n, unsigned char *dest 
 	int nbytes = mpz_num_bytes(n);
 	unsigned char *bin = (unsigned char *) srp_alloc(nbytes);
 	if(!bin)
-		return;
+		throw std::bad_alloc();
 	mpz_to_bin(n, bin);
 	hash(alg, bin, nbytes, dest);
 	srp_free(bin);

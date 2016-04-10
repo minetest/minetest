@@ -338,14 +338,7 @@ int LuaAreaStore::create_object(lua_State *L)
 LuaAreaStore *LuaAreaStore::checkobject(lua_State *L, int narg)
 {
 	NO_MAP_LOCK_REQUIRED;
-
-	luaL_checktype(L, narg, LUA_TUSERDATA);
-
-	void *ud = luaL_checkudata(L, narg, className);
-	if (!ud)
-		luaL_typerror(L, narg, className);
-
-	return *(LuaAreaStore **)ud;  // unbox pointer
+	return *(LuaAreaStore **)luaL_checkudata(L, narg, className);
 }
 
 void LuaAreaStore::Register(lua_State *L)

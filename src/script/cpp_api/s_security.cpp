@@ -258,20 +258,18 @@ bool ScriptApiSecurity::isSecure(lua_State *L)
 bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path)
 {
 	FILE *fp;
-	char *chunk_name;
+	std::string chunk_name;
 	if (path == NULL) {
 		fp = stdin;
-		chunk_name = const_cast<char *>("=stdin");
+		chunk_name = "=stdin";
 	} else {
 		fp = fopen(path, "rb");
 		if (!fp) {
 			lua_pushfstring(L, "%s: %s", path, strerror(errno));
 			return false;
 		}
-		chunk_name = new char[strlen(path) + 2];
-		chunk_name[0] = '@';
-		chunk_name[1] = '\0';
-		strcat(chunk_name, path);
+		chunk_name = "@";
+		chunk_name += path;
 	}
 
 	size_t start = 0;
@@ -297,7 +295,6 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path)
 		return false;
 	}
 	size_t size = std::ftell(fp) - start;
-	char *code = new char[size];
 	ret = std::fseek(fp, start, SEEK_SET);
 	CHECK_FILE_ERR(ret, fp);
 	if (ret) {
@@ -305,7 +302,8 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path)
 		lua_pushfstring(L, "%s: %s", path, strerror(errno));
 		return false;
 	}
-	size_t num_read = std::fread(code, 1, size, fp);
+	std::string code(size, '\0');
+	size_t num_read = std::fread(&code[0], 1, size, fp);
 	if (path) {
 		std::fclose(fp);
 	}
@@ -314,13 +312,10 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path)
 		return false;
 	}
 
-	if (luaL_loadbuffer(L, code, size, chunk_name)) {
+	if (luaL_loadbuffer(L, code.c_str(), size, chunk_name.c_str())) {
 		return false;
 	}
 
-	if (path) {
-		delete [] chunk_name;
-	}
 	return true;
 }
 

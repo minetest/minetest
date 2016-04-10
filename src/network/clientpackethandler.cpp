@@ -971,22 +971,21 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 
 void Client::handleCommand_DeleteParticleSpawner(NetworkPacket* pkt)
 {
-	u16 legacy_id;
-	u32 id;
+	u16 legacy_id = 0;
+	u32 id = 0;
 
 	// Modification set 13/03/15, 1 year of compat for protocol v24
-	if (pkt->getCommand() == TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY) {
+	bool is_legacy = pkt->getCommand() == TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY;
+	if (is_legacy) {
 		*pkt >> legacy_id;
-	}
-	else {
+	} else {
 		*pkt >> id;
 	}
 
 
 	ClientEvent event;
 	event.type                      = CE_DELETE_PARTICLESPAWNER;
-	event.delete_particlespawner.id =
-			(pkt->getCommand() == TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY ? (u32) legacy_id : id);
+	event.delete_particlespawner.id = (is_legacy ? (u32) legacy_id : id);
 
 	m_client_event_queue.push(event);
 }

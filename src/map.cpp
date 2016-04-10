@@ -1774,7 +1774,6 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks)
 		 */
 		content_t new_node_content;
 		s8 new_node_level = -1;
-		s8 max_node_level = -1;
 
 		u8 range = nodemgr->get(liquid_kind).liquid_range;
 		if (range > LIQUID_LEVEL_MAX + 1)
@@ -1787,12 +1786,13 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks)
 			new_node_content = nodemgr->getId(nodemgr->get(liquid_kind).liquid_alternative_source);
 		} else if (num_sources >= 1 && sources[0].t != NEIGHBOR_LOWER) {
 			// liquid_kind is set properly, see above
-			max_node_level = new_node_level = LIQUID_LEVEL_MAX;
+			new_node_level = LIQUID_LEVEL_MAX;
 			if (new_node_level >= (LIQUID_LEVEL_MAX + 1 - range))
 				new_node_content = liquid_kind;
 			else
 				new_node_content = floodable_node;
 		} else {
+			s8 max_node_level = -1;
 			// no surrounding sources, so get the maximum level that can flow into this node
 			for (u16 i = 0; i < num_flows; i++) {
 				u8 nb_liquid_level = (flows[i].n.param2 & LIQUID_LEVEL_MASK);

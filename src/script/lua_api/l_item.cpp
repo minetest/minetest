@@ -400,10 +400,7 @@ int LuaItemStack::create(lua_State *L, const ItemStack &item)
 
 LuaItemStack* LuaItemStack::checkobject(lua_State *L, int narg)
 {
-	luaL_checktype(L, narg, LUA_TUSERDATA);
-	void *ud = luaL_checkudata(L, narg, className);
-	if(!ud) luaL_typerror(L, narg, className);
-	return *(LuaItemStack**)ud;  // unbox pointer
+	return *(LuaItemStack**)luaL_checkudata(L, narg, className);
 }
 
 void LuaItemStack::Register(lua_State *L)

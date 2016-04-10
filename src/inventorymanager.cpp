@@ -842,7 +842,8 @@ void ICraftAction::apply(InventoryManager *mgr,
 			count_remaining--;
 
 		// Get next crafting result
-		found = getCraftingResult(inv_craft, crafted, temp, false, gamedef);
+		if (!getCraftingResult(inv_craft, crafted, temp, false, gamedef))
+			break;
 		PLAYER_TO_SA(player)->item_CraftPredict(crafted, player, list_craft, craft_inv);
 		found = !crafted.empty();
 	}

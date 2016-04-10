@@ -1275,7 +1275,7 @@ void * ConnectionSendThread::run()
 			<<"ConnectionSend thread started"<<std::endl);
 
 	u32 curtime = porting::getTimeMs();
-	u32 lasttime = curtime;
+	u32 lasttime;
 
 	PROFILE(std::stringstream ThreadIdentifier);
 	PROFILE(ThreadIdentifier << "ConnectionSend: [" << m_connection->getDesc() << "]");
