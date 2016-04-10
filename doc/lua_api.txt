@@ -945,6 +945,7 @@ Displays a horizontal bar made up of half-images.
 * `number`: Number of items in the inventory to be displayed.
 * `item`: Position of item that is selected.
 * `direction`
+* `offset`: offset in pixels from position.
 
 ### `waypoint`
 Displays distance to selected world position.

@@ -130,7 +130,7 @@ public:
 	void drawCrosshair();
 	void drawSelectionMesh();
 	void updateSelectionMesh(const v3s16 &camera_offset);
-	
+
 	std::vector<aabb3f> *getSelectionBoxes()
 	{ return &m_selection_boxes; }
 
@@ -148,8 +148,9 @@ private:
 	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
 			s32 count, v2s32 offset, v2s32 size=v2s32());
 
-	void drawItems(v2s32 upperleftpos, s32 itemcount, s32 offset,
-		InventoryList *mainlist, u16 selectitem, u16 direction);
+	void drawItems(v2s32 upperleftpos, s32 itemcount, s32 inv_offset,
+		InventoryList *mainlist, u16 selectitem, u16 direction,
+		const v2s32 &offset = v2s32(0, 0));
 
 	void drawItem(const ItemStack &item, const core::rect<s32>& rect,
 		bool selected);
