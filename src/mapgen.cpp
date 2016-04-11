@@ -58,6 +58,7 @@ FlagDesc flagdesc_gennotify[] = {
 	{"large_cave_begin", 1 << GENNOTIFY_LARGECAVE_BEGIN},
 	{"large_cave_end",   1 << GENNOTIFY_LARGECAVE_END},
 	{"decoration",       1 << GENNOTIFY_DECORATION},
+	{"alternative_cave", 1 << GENNOTIFY_ALTERNATIVE_CAVE},
 	{NULL,               0}
 };
 
