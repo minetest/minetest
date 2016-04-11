@@ -41,7 +41,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 		gui::IGUIEnvironment* guienv, IGameDef *gamedef, LocalPlayer *player,
-		Inventory *inventory) {
+		Inventory *inventory)
+{
 	this->driver      = driver;
 	this->smgr        = smgr;
 	this->guienv      = guienv;
@@ -49,16 +50,15 @@ Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 	this->player      = player;
 	this->inventory   = inventory;
 
+	m_hud_scaling      = g_settings->getFloat("hud_scaling");
 	m_screensize       = v2u32(0, 0);
 	m_displaycenter    = v2s32(0, 0);
 	m_hotbar_imagesize = floor(HOTBAR_IMAGE_SIZE * porting::getDisplayDensity() + 0.5);
-	m_hotbar_imagesize *= g_settings->getFloat("hud_scaling");
+	m_hotbar_imagesize *= m_hud_scaling;
 	m_padding = m_hotbar_imagesize / 12;
 
-	const video::SColor hbar_color(255, 255, 255, 255);
-	for (unsigned int i=0; i < 4; i++ ){
-		hbar_colors[i] = hbar_color;
-	}
+	for (unsigned int i = 0; i < 4; i++)
+		hbar_colors[i] = video::SColor(255, 255, 255, 255);
 
 	tsrc = gamedef->getTextureSource();
 
@@ -196,8 +196,8 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
 	}
 
 //NOTE: selectitem = 0 -> no selected; selectitem 1-based
-void Hud::drawItems(v2s32 upperleftpos, s32 itemcount, s32 inv_offset,
-		InventoryList *mainlist, u16 selectitem, u16 direction, const v2s32 &offset)
+void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
+		s32 inv_offset, InventoryList *mainlist, u16 selectitem, u16 direction)
 {
 #ifdef HAVE_TOUCHSCREENGUI
 	if (g_touchscreengui && inv_offset == 0)
@@ -213,8 +213,8 @@ void Hud::drawItems(v2s32 upperleftpos, s32 itemcount, s32 inv_offset,
 	}
 
 	// Position of upper left corner of bar
-	v2s32 pos = upperleftpos + offset;
-	pos *= g_settings->getFloat("hud_scaling") * porting::getDisplayDensity();
+	v2s32 pos = upperleftpos + screen_offset;
+	pos *= m_hud_scaling * porting::getDisplayDensity();
 
 	if (hotbar_image != player->hotbar_image) {
 		hotbar_image = player->hotbar_image;
@@ -235,7 +235,7 @@ void Hud::drawItems(v2s32 upperleftpos, s32 itemcount, s32 inv_offset,
 	/* draw customized item background */
 	if (use_hotbar_image) {
 		core::rect<s32> imgrect2(-m_padding/2, -m_padding/2,
-				width+m_padding/2, height+m_padding/2);
+			width+m_padding/2, height+m_padding/2);
 		core::rect<s32> rect2 = imgrect2 + pos;
 		video::ITexture *texture = tsrc->getTexture(hotbar_image);
 		core::dimension2di imgsize(texture->getOriginalSize());
@@ -265,7 +265,7 @@ void Hud::drawItems(v2s32 upperleftpos, s32 itemcount, s32 inv_offset,
 			break;
 		}
 
-		drawItem(mainlist->getItem(i), (imgrect + pos + steppos), (i +1) == selectitem );
+		drawItem(mainlist->getItem(i), (imgrect + pos + steppos), (i + 1) == selectitem);
 
 #ifdef HAVE_TOUCHSCREENGUI
 		if (g_touchscreengui)
@@ -327,8 +327,8 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				break; }
 			case HUD_ELEM_INVENTORY: {
 				InventoryList *inv = inventory->getList(e->text);
-				v2s32 offs(e->offset.X, e->offset.Y);
-				drawItems(pos, e->number, 0, inv, e->item, e->dir, offs);
+				drawItems(pos, v2s32(e->offset.X, e->offset.Y), e->number, 0,
+					inv, e->item, e->dir);
 				break; }
 			case HUD_ELEM_WAYPOINT: {
 				v3f p_pos = player->getPosition() / BS;
@@ -381,8 +381,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
 	if (size == v2s32()) {
 		dstd = srcd;
 	} else {
-		double size_factor = g_settings->getFloat("hud_scaling") *
-				porting::getDisplayDensity();
+		float size_factor = m_hud_scaling * porting::getDisplayDensity();
 		dstd.Height = size.Y * size_factor;
 		dstd.Width  = size.X * size_factor;
 		offset.X *= size_factor;
@@ -450,18 +449,19 @@ void Hud::drawHotbar(u16 playeritem) {
 	if ( (float) width / (float) porting::getWindowSize().X <=
 			g_settings->getFloat("hud_hotbar_max_width")) {
 		if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
-			drawItems(pos, hotbar_itemcount, 0, mainlist, playeritem + 1, 0);
+			drawItems(pos, v2s32(0, 0), hotbar_itemcount, 0, mainlist, playeritem + 1, 0);
 		}
-	}
-	else {
+	} else {
 		pos.X += width/4;
 
 		v2s32 secondpos = pos;
 		pos = pos - v2s32(0, m_hotbar_imagesize + m_padding);
 
 		if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
-			drawItems(pos, hotbar_itemcount/2, 0, mainlist, playeritem + 1, 0);
-			drawItems(secondpos, hotbar_itemcount, hotbar_itemcount/2, mainlist, playeritem + 1, 0);
+			drawItems(pos, v2s32(0, 0), hotbar_itemcount / 2, 0,
+				mainlist, playeritem + 1, 0);
+			drawItems(secondpos, v2s32(0, 0), hotbar_itemcount,
+				hotbar_itemcount / 2, mainlist, playeritem + 1, 0);
 		}
 	}
 
@@ -486,8 +486,8 @@ void Hud::drawHotbar(u16 playeritem) {
 }
 
 
-void Hud::drawCrosshair() {
-
+void Hud::drawCrosshair()
+{
 	if (use_crosshair_image) {
 		video::ITexture *crosshair = tsrc->getTexture("crosshair.png");
 		v2u32 size  = crosshair->getOriginalSize();
@@ -600,7 +600,7 @@ void Hud::updateSelectionMesh(const v3s16 &camera_offset)
 void Hud::resizeHotbar() {
 	if (m_screensize != porting::getWindowSize()) {
 		m_hotbar_imagesize = floor(HOTBAR_IMAGE_SIZE * porting::getDisplayDensity() + 0.5);
-		m_hotbar_imagesize *= g_settings->getFloat("hud_scaling");
+		m_hotbar_imagesize *= m_hud_scaling;
 		m_padding = m_hotbar_imagesize / 12;
 		m_screensize = porting::getWindowSize();
 		m_displaycenter = v2s32(m_screensize.X/2,m_screensize.Y/2);

@@ -265,7 +265,7 @@ Client::Client(
 	m_cache_smooth_lighting = g_settings->getBool("smooth_lighting");
 	m_cache_enable_shaders  = g_settings->getBool("enable_shaders");
 	m_cache_use_tangent_vertices = m_cache_enable_shaders && (
-		g_settings->getBool("enable_bumpmapping") || 
+		g_settings->getBool("enable_bumpmapping") ||
 		g_settings->getBool("enable_parallax_occlusion"));
 }
 
