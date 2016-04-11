@@ -206,12 +206,12 @@ class GUIFormSpecMenu : public GUIModalMenu
 		{
 		}
 		FieldSpec(const std::string &name, const std::wstring &label,
-				const std::wstring &fdeflt, int id) :
+				const std::wstring &default_text, int id) :
 			fname(name),
 			fid(id)
 		{
 			flabel = unescape_string(remove_escapes(label));
-			fdefault = unescape_string(remove_escapes(fdeflt));
+			fdefault = unescape_string(remove_escapes(default_text));
 			send = false;
 			ftype = f_Unknown;
 			is_exit = false;
