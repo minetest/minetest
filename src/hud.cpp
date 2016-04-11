@@ -214,7 +214,8 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 
 	// Position of upper left corner of bar
 	v2s32 pos = upperleftpos + screen_offset;
-	pos *= m_hud_scaling * porting::getDisplayDensity();
+	pos.X *= m_hud_scaling * porting::getDisplayDensity();
+	pos.Y *= m_hud_scaling * porting::getDisplayDensity();
 
 	if (hotbar_image != player->hotbar_image) {
 		hotbar_image = player->hotbar_image;
