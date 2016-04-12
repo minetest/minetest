@@ -591,17 +591,18 @@ void MapgenFlat::generateCaves(s16 max_stone_y)
 			// Ground
 			float d1 = contour(noise_cave1->result[index3d]);
 			float d2 = contour(noise_cave2->result[index3d]);
+
 			if (d1 * d2 > 0.3f && ndef->get(c).is_ground_content) {
 				// In tunnel and ground content, excavate
 				vm->m_data[vi] = MapNode(CONTENT_AIR);
 				is_tunnel = true;
-			} else if (is_tunnel && column_is_open &&
-					(c == biome->c_filler || c == biome->c_stone)) {
-				// Tunnel entrance floor
-				vm->m_data[vi] = MapNode(biome->c_top);
-				column_is_open = false;
-				is_tunnel = false;
 			} else {
+				// Not in tunnel or not ground content
+				if (is_tunnel && column_is_open &&
+						(c == biome->c_filler || c == biome->c_stone))
+					// Tunnel entrance floor
+					vm->m_data[vi] = MapNode(biome->c_top);
+
 				column_is_open = false;
 				is_tunnel = false;
 			}
