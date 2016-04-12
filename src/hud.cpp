@@ -208,15 +208,18 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 	s32 width   = (itemcount - inv_offset) * (m_hotbar_imagesize + m_padding * 2);
 
 	if (direction == HUD_DIR_TOP_BOTTOM || direction == HUD_DIR_BOTTOM_TOP) {
-		width  = m_hotbar_imagesize + m_padding * 2;
-		height = (itemcount - inv_offset) * (m_hotbar_imagesize + m_padding * 2);
+		s32 tmp = height;
+		height = width;
+		width = tmp;
 	}
 
 	// Position of upper left corner of bar
-	v2s32 pos = upperleftpos + screen_offset;
+	v2s32 pos = screen_offset;
 	pos.X *= m_hud_scaling * porting::getDisplayDensity();
 	pos.Y *= m_hud_scaling * porting::getDisplayDensity();
+	pos += upperleftpos;
 
+	// Store hotbar_image in member variable, used by drawItem()
 	if (hotbar_image != player->hotbar_image) {
 		hotbar_image = player->hotbar_image;
 		if (hotbar_image != "")
@@ -225,6 +228,7 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 			use_hotbar_image = false;
 	}
 
+	// Store hotbar_selected_image in member variable, used by drawItem()
 	if (hotbar_selected_image != player->hotbar_selected_image) {
 		hotbar_selected_image = player->hotbar_selected_image;
 		if (hotbar_selected_image != "")
@@ -233,7 +237,7 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 			use_hotbar_selected_image = false;
 	}
 
-	/* draw customized item background */
+	// draw customized item background
 	if (use_hotbar_image) {
 		core::rect<s32> imgrect2(-m_padding/2, -m_padding/2,
 			width+m_padding/2, height+m_padding/2);
@@ -245,12 +249,12 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 			NULL, hbar_colors, true);
 	}
 
+	// Draw items
+	core::rect<s32> imgrect(0, 0, m_hotbar_imagesize, m_hotbar_imagesize);
 	for (s32 i = inv_offset; i < itemcount && (size_t)i < mainlist->getSize(); i++) {
-		v2s32 steppos;
 		s32 fullimglen = m_hotbar_imagesize + m_padding * 2;
 
-		core::rect<s32> imgrect(0, 0, m_hotbar_imagesize, m_hotbar_imagesize);
-
+		v2s32 steppos;
 		switch (direction) {
 		case HUD_DIR_RIGHT_LEFT:
 			steppos = v2s32(-(m_padding + (i - inv_offset) * fullimglen), m_padding);
