@@ -27,6 +27,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h" // MAP_BLOCKSIZE
 #include <sstream>
 
+//delimiter constants
+#define DESERIALIZE_START '\x01'
+#define DESERIALIZE_KV_DELIM '\x02'
+#define DESERIALIZE_PAIR_DELIM '\x03'
+#define DESERIALIZE_START_STR "\x01"
+#define DESERIALIZE_KV_DELIM_STR "\x02"
+#define DESERIALIZE_PAIR_DELIM_STR "\x03"
+
 /*
 	ItemStackMetadata
 */
@@ -34,12 +42,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 std::string ItemStackMetadata::serialize() const
 {
 	std::ostringstream os;
-	os << "$";
+	os << DESERIALIZE_START;
 	for (StringMap::const_iterator
 			it = m_stringvars.begin();
 			it != m_stringvars.end(); ++it) {
-		os << it->first << "=";
-		os << serializeJsonString(it->second) << "\n";
+		os << it->first << DESERIALIZE_KV_DELIM;
+		os << serializeJsonString(it->second) << DESERIALIZE_PAIR_DELIM;
 	}
 	return os.str();
 }
@@ -47,13 +55,13 @@ std::string ItemStackMetadata::serialize() const
 void ItemStackMetadata::deSerialize(std::string &in)
 {
 	m_stringvars.clear();
-	//to indicate new serialisation version, a dollar sign has to be the first char in the serialized string. if not, apply legacy deserialization
-	if (in[0] == '$') {
+	//to indicate new serialisation version, a DESERIALIZE_START character has to be the first char in the serialized string. if not, apply legacy deserialization
+	if (in[0] == DESERIALIZE_START) {
 		Strfnd fnd(in);
 		fnd.to(1);
 		while ( !fnd.at_end() ) {
-			std::string name = fnd.next("=");
-			std::string var_json=fnd.next("\n");
+			std::string name = fnd.next(DESERIALIZE_KV_DELIM_STR);
+			std::string var_json=fnd.next(DESERIALIZE_PAIR_DELIM_STR);
 			std::istringstream var_stream(var_json);
 			std::string var = deSerializeJsonString(var_stream);
 			m_stringvars[name] = var;
