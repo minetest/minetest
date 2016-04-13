@@ -594,9 +594,16 @@ bool InventoryList::operator == (const InventoryList &other) const
 	{
 		ItemStack s1 = m_items[i];
 		ItemStack s2 = other.m_items[i];
-		//TODO possible error source: stack metadata are not compared!
 		if(s1.name != s2.name || s1.wear!= s2.wear || s1.count != s2.count)
 			return false;
+		if(s1.name == s2.name && s1.wear== s2.wear && s1.count == s2.count && !s1.metadata.isEmpty() && !s2.metadata.isEmpty()){
+			StringMap smap1=s1.metadata.getStrings();
+			StringMap smap2=s2.metadata.getStrings();
+			if(smap1.size()!=smap2.size())
+				return false;
+			if(!std::equal(smap1.begin(), smap1.end(), smap2.begin()))
+				return false;
+		}
 	}
 
 	return true;
