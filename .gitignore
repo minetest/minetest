@@ -73,15 +73,14 @@ locale/
 *.a
 
 ## Android build files
-build/android/assets
-build/android/bin
-build/android/Debug
+build/android/src/main/assets
+build/android/build
 build/android/deps
-build/android/gen
-build/android/jni/src
 build/android/libs
+build/android/jni/src
+build/android/src/main/jniLibs
 build/android/obj
-build/android/path.cfg
-build/android/and_env
-build/android/AndroidManifest.xml
+build/android/local.properties
+build/android/.gradle
 timestamp
+
