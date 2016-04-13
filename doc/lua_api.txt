@@ -2777,7 +2777,7 @@ an itemstring, a table or `nil`.
 * `set_wear(wear)`: Returns boolean success.
   Clears item on failure.
 * `get_meta()`: Returns Item Metadata as an ItemStackMetaRef.
-* `get_metadata()`: (DEPRECATED) Returns the empty string ("") field of the mtem metadata.
+* `get_metadata()`: (DEPRECATED) Returns the empty string ("") field of the item metadata.
 * `set_metadata(metadata)`: (DEPRECATED) Sets the empty string ("") field of the item metadata to 'metadata'. Returns true.
 * `clear()`: removes all items from the stack, making it empty.
 * `replace(item)`: replace the contents of this stack.
