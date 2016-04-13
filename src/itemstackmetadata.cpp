@@ -47,7 +47,7 @@ std::string ItemStackMetadata::serialize() const
 			it = m_stringvars.begin();
 			it != m_stringvars.end(); ++it) {
 		os << it->first << DESERIALIZE_KV_DELIM;
-		os << serializeJsonString(it->second) << DESERIALIZE_PAIR_DELIM;
+		os << it->second << DESERIALIZE_PAIR_DELIM;
 	}
 	return os.str();
 }
@@ -61,9 +61,7 @@ void ItemStackMetadata::deSerialize(std::string &in)
 		fnd.to(1);
 		while ( !fnd.at_end() ) {
 			std::string name = fnd.next(DESERIALIZE_KV_DELIM_STR);
-			std::string var_json=fnd.next(DESERIALIZE_PAIR_DELIM_STR);
-			std::istringstream var_stream(var_json);
-			std::string var = deSerializeJsonString(var_stream);
+			std::string var=fnd.next(DESERIALIZE_PAIR_DELIM_STR);
 			m_stringvars[name] = var;
 		}
 	}else{
