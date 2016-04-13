@@ -18,7 +18,7 @@
         android:ellipsize="middle" 
         android:singleLine="true"
         android:layout_gravity="center_horizontal"
-        android:text="preparing media ..."
+        android:text="@string/preparing_media"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </LinearLayout>
