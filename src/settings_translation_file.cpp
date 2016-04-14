@@ -102,6 +102,7 @@ fake_function() {
 	gettext("Whether to support older servers before protocol version 25.\nEnable if you want to connect to 0.4.12 servers and before.\nServers starting with 0.4.13 will work, 0.4.12-dev servers may work.\nDisabling this option will protect your password better.");
 	gettext("Saving map received from server");
 	gettext("Save the map received by the client on disk.");
+	gettext("Show entity selection boxes");
 	gettext("Connect to external media server");
 	gettext("Enable usage of remote media server (if provided by server).\nRemote servers offer a significantly faster way to download media (e.g. textures)\nwhen connecting to the server.");
 	gettext("Serverlist URL");

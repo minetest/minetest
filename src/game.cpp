@@ -329,6 +329,8 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 
 	std::vector<aabb3f> *selectionboxes = hud->getSelectionBoxes();
 	selectionboxes->clear();
+	static const bool show_entity_selectionbox = g_settings->getBool("show_entity_selectionbox");
+
 	selected_object = NULL;
 
 	INodeDefManager *nodedef = client->getNodeDefManager();
@@ -342,7 +344,8 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 				  camera_position, shootline);
 
 		if (selected_object != NULL) {
-			if (selected_object->doShowSelectionBox()) {
+			if (show_entity_selectionbox &&
+					selected_object->doShowSelectionBox()) {
 				aabb3f *selection_box = selected_object->getSelectionBox();
 				// Box should exist because object was
 				// returned in the first place
