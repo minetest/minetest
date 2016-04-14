@@ -182,6 +182,10 @@ end
 -- Down first as likely case, but always before self. The same with sides.
 -- Up must come last, so that things above self will also fall all at once.
 local nodeupdate_neighbors = {
+	{x = -1, y = -1, z = 0},
+	{x = 1, y = -1, z = 0},
+	{x = 0, y = -1, z = -1},
+	{x = 0, y = -1, z = 1},
 	{x = 0, y = -1, z = 0},
 	{x = -1, y = 0, z = 0},
 	{x = 1, y = 0, z = 0},
@@ -226,10 +230,10 @@ function nodeupdate(p)
 				n = n - 1
 				-- If there's nothing left on the stack, and no
 				-- more sides to walk to, we're done and can exit
-				if n == 0 and v == 7 then
+				if n == 0 and v == 11 then
 					return
 				end
-			until v < 7
+			until v < 11
 			-- The next round walk the next neighbor in list.
 			v = v + 1
 		else
