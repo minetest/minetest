@@ -211,7 +211,7 @@ int LuaItemStack::l_to_table(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkobject(L, 1);
-	const ItemStack &item = o->m_stack;
+	ItemStack &item = o->m_stack;
 	if(item.empty())
 	{
 		lua_pushnil(L);
@@ -225,6 +225,27 @@ int LuaItemStack::l_to_table(lua_State *L)
 		lua_setfield(L, -2, "count");
 		lua_pushinteger(L, item.wear);
 		lua_setfield(L, -2, "wear");
+
+		StringMap fields = item.metadata.getStrings();
+		if(fields.size()==1 && fields.find("")!=fields.end()){
+			//only "" is present, outputting a string to keep legacy behavior
+			lua_pushlstring(L, fields[""].c_str(), fields[""].size());
+			lua_setfield(L, -2, "metadata");
+		}else{
+			lua_newtable(L);
+			{
+				for (StringMap::const_iterator
+					it = fields.begin(); it != fields.end(); ++it) {
+					const std::string &name = it->first;
+					const std::string &value = it->second;
+					lua_pushlstring(L, name.c_str(), name.size());
+					lua_pushlstring(L, value.c_str(), value.size());
+					lua_settable(L, -3);
+				}
+				lua_setfield(L, -2, "metadata");
+			}
+		}
+
 	}
 	return 1;
 }
