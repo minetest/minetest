@@ -122,6 +122,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 			asyncOnlineFavourites()
 		else
 			menudata.favorites = core.get_favorites("local")
+			menudata.favorites_is_public = false
 		end
 		return true
 	end
@@ -149,12 +150,14 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		if fav_idx ~= nil and fav_idx <= #menudata.favorites and
 			menudata.favorites[fav_idx].address == fields["te_address"] and
 			menudata.favorites[fav_idx].port    == fields["te_port"] then
+			local fav = menudata.favorites[fav_idx]
 
-			gamedata.servername			= menudata.favorites[fav_idx].name
-			gamedata.serverdescription	= menudata.favorites[fav_idx].description
+			gamedata.servername        = fav.name
+			gamedata.serverdescription = fav.description
 
-			if not is_server_protocol_compat_or_error(menudata.favorites[fav_idx].proto_min,
-					menudata.favorites[fav_idx].proto_max) then
+			if menudata.favorites_is_public and
+						not is_server_protocol_compat_or_error(
+							fav.proto_min, fav.proto_max) then
 				return true
 			end
 		else
@@ -192,6 +195,7 @@ local function on_activate(type,old_tab,new_tab)
 		asyncOnlineFavourites()
 	else
 		menudata.favorites = core.get_favorites("local")
+		menudata.favorites_is_public = false
 	end
 end
 
