@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-02-27 05:49+0100\n"
-"PO-Revision-Date: 2016-03-21 19:40+0000\n"
+"PO-Revision-Date: 2016-04-20 13:21+0000\n"
 "Last-Translator: Joan Ciprià Moreno Teodoro <joancipria@gmail.com>\n"
 "Language-Team: Catalan "
 "<https://hosted.weblate.org/projects/minetest/minetest/ca/>\n"
@@ -573,7 +573,7 @@ msgstr "Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
-msgstr ""
+msgstr "Mipmap + Aniso. Filtre"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
@@ -589,7 +589,7 @@ msgstr "No!!!"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
-msgstr ""
+msgstr "Node ressaltat"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
@@ -633,23 +633,23 @@ msgstr "Per habilitar les ombres el controlador OpenGL ha ser utilitzat."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold (px)"
-msgstr ""
+msgstr "Llindar tàctil (px)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
-msgstr ""
+msgstr "Filtratge Trilineal"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
-msgstr ""
+msgstr "Moviment de les Fulles"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
-msgstr ""
+msgstr "Moviment de Plantes"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Water"
-msgstr ""
+msgstr "Onatge"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
@@ -717,7 +717,7 @@ msgstr "No es pot trobar o carregar el joc \""
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
-msgstr ""
+msgstr "El Joc especificat no és vàlid."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -1141,7 +1141,7 @@ msgstr "Següent"
 
 #: src/keycode.cpp
 msgid "Nonconvert"
-msgstr ""
+msgstr "No convertir"
 
 #: src/keycode.cpp
 msgid "Num Lock"
@@ -1302,6 +1302,7 @@ msgid "Zoom"
 msgstr "Zoom"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
 "Used to move a suitable spawn area of low land close to (0, 0).\n"
@@ -1309,20 +1310,28 @@ msgid ""
 "sets.\n"
 "Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
 msgstr ""
+"(X, Y, Z) compensar de fractal del món centre en unitats d \"escala\".\n"
+"Solia passar un adequat respawn de terra baixa a prop de (0, 0).\n"
+"L'omissió és adequat per als conjunts de mandelbrot, que necessita ser "
+"editats per julia estableix.\n"
+"Gamma aproximadament -2 a 2. Multiplicar per el \"escala\" per a òfset de "
+"nodes."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "0 = parallax occlusion with slope information (faster).\n"
 "1 = relief mapping (slower, more accurate)."
 msgstr ""
+"0 = oclusió de la paral.laxi amb informació d'inclinació (més ràpid).\n"
+"1 = mapa de relleu (més lent, més precís)."
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
-msgstr ""
+msgstr "Núvols 3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
-msgstr ""
+msgstr "Mode 3D"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1335,36 +1344,48 @@ msgid ""
 "-    sidebyside: split screen side by side.\n"
 "-    pageflip: quadbuffer based 3d."
 msgstr ""
+"Suport 3D.\n"
+"Currently supported:\n"
+"-    none: no 3d output.\n"
+"-    anaglyph: cyan/magenta color 3d.\n"
+"-    interlaced: odd/even line based polarisation screen support.\n"
+"-    topbottom: split screen top/bottom.\n"
+"-    sidebyside: split screen side by side.\n"
+"-    pageflip: quadbuffer based 3d."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
+"Elegeix una llavor per al nou mapa, deixa buit per a una llavor a l'atzar.\n"
+"Serà anul·lat si es crea un nou món al menú principal."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
 msgstr ""
+"Un missatge que es mostrarà a tots els clients quan el servidor s'estavella."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server shuts down."
 msgstr ""
+"Un missatge que es mostrarà a tots els clients quan el servidor s'apaga."
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
-msgstr ""
+msgstr "Límit absolut de cues emergents"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
-msgstr ""
+msgstr "Acceleració en l'aire"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
-msgstr ""
+msgstr "Rang del bloc actiu"
 
 #: src/settings_translation_file.cpp
 msgid "Active object send range"
-msgstr ""
+msgstr "Rang d'enviament de l'objecte actiu"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1372,12 +1393,18 @@ msgid ""
 "Leave this blank to start a local server.\n"
 "Note that the address field in the main menu overrides this setting."
 msgstr ""
+"Adreça a connectar-se.\n"
+"Deixar aquest espai en buit per començar un servidor local.\n"
+"Tingueu en compte que el camp d'adreça en el menú principal invalida aquest "
+"paràmetre."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr ""
+"Ajustar la configuració de punts per polsada (dpi) a la teva pantalla (no "
+"X11/Sols Android) Ex. per a pantalles amb 4K."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1387,11 +1414,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
-msgstr ""
+msgstr "Avançat"
 
 #: src/settings_translation_file.cpp
 msgid "Altitude Chill"
-msgstr ""
+msgstr "Fred d'altitud"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
@@ -1399,19 +1426,19 @@ msgstr "Sempre volar y ràpid"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
-msgstr ""
+msgstr "Gamma d'oclusió d'ambient"
 
 #: src/settings_translation_file.cpp
 msgid "Amplifies the valleys"
-msgstr ""
+msgstr "Amplifica les valls"
 
 #: src/settings_translation_file.cpp
 msgid "Anisotropic filtering"
-msgstr ""
+msgstr "Filtrat anisotròpic"
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
-msgstr ""
+msgstr "Anunciar servidor"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1419,18 +1446,21 @@ msgid ""
 "If you want to announce your ipv6 address, use  serverlist_url = v6.servers."
 "minetest.net."
 msgstr ""
+"Anunciar a aquesta llista de servidors.\n"
+"Si vols anunciar el teu direcció ipv6, fes servir serverlist_url = "
+"v6.servers.minetest.net."
 
 #: src/settings_translation_file.cpp
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-msgstr ""
+msgstr "Aproximar (X, Y, Z) escala del fractal en els nodes."
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
-msgstr ""
+msgstr "Preguntar per tornar a connectar després d'una caiguda"
 
 #: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
-msgstr ""
+msgstr "Automàticament informar a la llista del servidor."
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -1438,27 +1468,27 @@ msgstr "Tecla de retrocés"
 
 #: src/settings_translation_file.cpp
 msgid "Base terrain height"
-msgstr ""
+msgstr "Alçada del terreny base"
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
-msgstr ""
+msgstr "Bàsic"
 
 #: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
-msgstr ""
+msgstr "Filtre bilineal"
 
 #: src/settings_translation_file.cpp
 msgid "Bind address"
-msgstr ""
+msgstr "Adreça BIND"
 
 #: src/settings_translation_file.cpp
 msgid "Bits per pixel (aka color depth) in fullscreen mode."
-msgstr ""
+msgstr "Bits per píxel (profunditat de color) en el mode de pantalla completa."
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
-msgstr ""
+msgstr "Construir dins el jugador"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -1470,27 +1500,27 @@ msgstr "Suavitzat de la càmera en mode cinematogràfic"
 
 #: src/settings_translation_file.cpp
 msgid "Camera update toggle key"
-msgstr ""
+msgstr "Tecla alternativa per a l'actualització de la càmera"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #1"
-msgstr ""
+msgstr "Soroll de cova #1"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
-msgstr ""
+msgstr "Soroll de cova #2"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
-msgstr ""
+msgstr "Coves i túnels es formen en la intersecció dels dos sorolls"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
-msgstr ""
+msgstr "Tecla del xat"
 
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
-msgstr ""
+msgstr "Tecla alternativa per al xat"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1514,10 +1544,29 @@ msgid ""
 "17 = 4D \"Mandelbulb\" mandelbrot set.\n"
 "18 = 4D \"Mandelbulb\" julia set."
 msgstr ""
+"Selecció de 18 fractals de 9 fórmules.\n"
+"1 = 4D \"Roundy\" mandelbrot set.\n"
+"2 = 4D \"Roundy\" julia set.\n"
+"3 = 4D \"Squarry\" mandelbrot set.\n"
+"4 = 4D \"Squarry\" julia set.\n"
+"5 = 4D \"Mandy Cousin\" mandelbrot set.\n"
+"6 = 4D \"Mandy Cousin\" julia set.\n"
+"7 = 4D \"Variation\" mandelbrot set.\n"
+"8 = 4D \"Variation\" julia set.\n"
+"9 = 3D \"Mandelbrot/Mandelbar\" mandelbrot set.\n"
+"10 = 3D \"Mandelbrot/Mandelbar\" julia set.\n"
+"11 = 3D \"Christmas Tree\" mandelbrot set.\n"
+"12 = 3D \"Christmas Tree\" julia set.\n"
+"13 = 3D \"Mandelbulb\" mandelbrot set.\n"
+"14 = 3D \"Mandelbulb\" julia set.\n"
+"15 = 3D \"Cosine Mandelbulb\" mandelbrot set.\n"
+"16 = 3D \"Cosine Mandelbulb\" julia set.\n"
+"17 = 4D \"Mandelbulb\" mandelbrot set.\n"
+"18 = 4D \"Mandelbulb\" julia set."
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
-msgstr ""
+msgstr "Mida del chunk"
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
@@ -1525,83 +1574,91 @@ msgstr "Mode cinematogràfic"
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode key"
-msgstr ""
+msgstr "Tecla mode cinematogràfic"
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
-msgstr ""
+msgstr "Netejar textures transparents"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
-msgstr ""
+msgstr "Client i Servidor"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
-msgstr ""
+msgstr "Velocitat d'escalada"
 
 #: src/settings_translation_file.cpp
 msgid "Cloud height"
-msgstr ""
+msgstr "Alçada del núvol"
 
 #: src/settings_translation_file.cpp
 msgid "Cloud radius"
-msgstr ""
+msgstr "Radi del núvol"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds"
-msgstr ""
+msgstr "Núvols"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
-msgstr ""
+msgstr "Els núvols són un efecte de costat del client."
 
 #: src/settings_translation_file.cpp
 msgid "Clouds in menu"
-msgstr ""
+msgstr "Núvols en el menú"
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
-msgstr ""
+msgstr "Boira de color"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
+"Llista de mods de fiar separada per comes que tenen permís per accedir a "
+"funcions\n"
+"insegures fins i tot quan \"mod security\" està activat (via "
+"request_insecure_environment ())."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Comma-seperated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
+"Llista de mods separada per comes que tenen permís per accedir a les APIs "
+"HTTP,\n"
+"les quals els permeten pujar/descarregar informació de/cap a internet."
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
-msgstr ""
+msgstr "Tecla comandament"
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
-msgstr ""
+msgstr "Connectar vidre"
 
 #: src/settings_translation_file.cpp
 msgid "Connect to external media server"
-msgstr ""
+msgstr "Connectar a servidor de mitjans externs"
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
-msgstr ""
+msgstr "Connecta vidre si el node ho admet."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Console alpha"
-msgstr ""
+msgstr "Consola Alpha"
 
 #: src/settings_translation_file.cpp
 msgid "Console color"
-msgstr ""
+msgstr "Color de la consola"
 
 #: src/settings_translation_file.cpp
 msgid "Console key"
-msgstr ""
+msgstr "Tecla de la consola"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
@@ -1621,40 +1678,49 @@ msgid ""
 "Examples: 72 = 20min, 360 = 4min, 1 = 24hour, 0 = day/night/whatever stays "
 "unchanged."
 msgstr ""
+"Controla la duració del cicle dia/nit.\n"
+"Exemples: 72 = 20min, 360 = 4min, 1 = 24hora, 0 = dia/nit/el que sigui es "
+"queda inalterat."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Controls size of deserts and beaches in Mapgen v6.\n"
 "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
 msgstr ""
+"Controla la mida dels deserts i platges a Mapgen v6.\n"
+"Quan \"snowbiomes\" estan activats 'mgv6_freq_desert' és ignorat."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
-msgstr ""
+msgstr "Controla el pendent o la profunditat de les depressions de llac."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
-msgstr ""
+msgstr "Controla la pendent i alçada dels turons."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
-msgstr ""
+msgstr "Missatge d'error"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Creates unpredictable lava features in caves.\n"
 "These can make mining difficult. Zero disables them. (0-10)"
 msgstr ""
+"Crea característiques imprevisibles de la lava en coves.\n"
+"Aquestes poden fer difícil minar. Zero els inhabilita (0-10)"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Creates unpredictable water features in caves.\n"
 "These can make mining difficult. Zero disables them. (0-10)"
 msgstr ""
+"Crea característiques imprevisibles de l'aigua en coves.\n"
+"Aquestes poden fer difícil minar. Zero els inhabilita (0-10)"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
-msgstr ""
+msgstr "Punt de mira Alpha"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha (opaqueness, between 0 and 255)."
@@ -1662,63 +1728,67 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
-msgstr ""
+msgstr "Color del punt de mira"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color (R,G,B)."
-msgstr ""
+msgstr "Color del punt de mira (R, G, B)."
 
 #: src/settings_translation_file.cpp
 msgid "Crouch speed"
-msgstr ""
+msgstr "Velocitat al ajupir-se"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
-msgstr ""
+msgstr "DPI (punts per polsada)"
 
 #: src/settings_translation_file.cpp
 msgid "Damage"
-msgstr ""
+msgstr "Dany"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
-msgstr ""
+msgstr "Tecla alternativa per a la informació de la depuració"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
-msgstr ""
+msgstr "Nivell de registre de depuració"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
-msgstr ""
+msgstr "Pas de servidor dedicat"
 
 #: src/settings_translation_file.cpp
 msgid "Default acceleration"
-msgstr ""
+msgstr "Acceleració per defecte"
 
 #: src/settings_translation_file.cpp
 msgid "Default game"
-msgstr ""
+msgstr "Joc per defecte"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Default game when creating a new world.\n"
 "This will be overridden when creating a world from the main menu."
 msgstr ""
+"Joc per defecte en crear un nou món.\n"
+"Aço será invalid quan es cree un món des del menú principal."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
-msgstr ""
+msgstr "Contrasenya per defecte"
 
 #: src/settings_translation_file.cpp
 msgid "Default privileges"
-msgstr ""
+msgstr "Privilegis per defecte"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Default timeout for cURL, stated in milliseconds.\n"
 "Only has an effect if compiled with cURL."
 msgstr ""
+"Temporització per defecte per a cURL, manifestat en mil·lisegons.\n"
+"Només té un efecte si és compilat amb cURL."
 
 #: src/settings_translation_file.cpp
 msgid ""
