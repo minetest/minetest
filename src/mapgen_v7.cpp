@@ -59,6 +59,8 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	//// amount of elements to skip for the next index
 	//// for noise/height/biome maps (not vmanip)
 	this->ystride = csize.X;
+	// 1-up 1-down overgeneration
+	this->zstride_1u1d = csize.X * (csize.Y + 2);
 	// 1-down overgeneration
 	this->zstride_1d = csize.X * (csize.Y + 1);
 
@@ -263,10 +265,13 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 	// Make some noise
 	calculateNoise();
 
-	// Generate base terrain, mountains, and ridges with initial heightmaps
+	// Generate terrain and ridges with initial heightmaps
 	s16 stone_surface_max_y = generateTerrain();
 
-	// Create heightmap
+	if (spflags & MGV7_RIDGES)
+		generateRidgeTerrain();
+
+	// Update heightmap to include mountain terrain
 	updateHeightmap(node_min, node_max);
 
 	// Create biomemap at heightmap surface
@@ -361,6 +366,11 @@ void MapgenV7::calculateNoise()
 	noise_terrain_alt->perlinMap2D(x, z, persistmap);
 	noise_height_select->perlinMap2D(x, z);
 
+	if (spflags & MGV7_MOUNTAINS) {
+		noise_mountain->perlinMap3D(x, y, z);
+		noise_mount_height->perlinMap2D(x, z);
+	}
+
 	if ((spflags & MGV7_RIDGES) && node_max.Y >= water_level) {
 		noise_ridge->perlinMap3D(x, y, z);
 		noise_ridge_uwater->perlinMap2D(x, z);
@@ -368,9 +378,6 @@ void MapgenV7::calculateNoise()
 
 	// Cave noises are calculated in generateCaves()
 	// only if solid terrain is present in mapchunk
-
-	// Mountain noises are calculated in generateMountainTerrain()
-	// only if solid terrain surface dips into mapchunk
 
 	noise_filler_depth->perlinMap2D(x, z);
 	noise_heat->perlinMap2D(x, z);
@@ -400,7 +407,7 @@ Biome *MapgenV7::getBiomeAtPoint(v3s16 p)
 	return bmgr->getBiome(heat, humidity, groundlevel);
 }
 
-//needs to be updated
+
 float MapgenV7::baseTerrainLevelAtPoint(s16 x, s16 z)
 {
 	float hselect = NoisePerlin2D(&noise_height_select->np, x, z, seed);
@@ -456,99 +463,54 @@ bool MapgenV7::getMountainTerrainFromMap(int idx_xyz, int idx_xz, s16 y)
 
 int MapgenV7::generateTerrain()
 {
-	s16 stone_surface_min_y;
-	s16 stone_surface_max_y;
-
-	generateBaseTerrain(&stone_surface_min_y, &stone_surface_max_y);
-
-	if ((spflags & MGV7_MOUNTAINS) && stone_surface_min_y < node_max.Y)
-		stone_surface_max_y = generateMountainTerrain(stone_surface_max_y);
-
-	if (spflags & MGV7_RIDGES)
-		generateRidgeTerrain();
-
-	return stone_surface_max_y;
-}
-
-
-void MapgenV7::generateBaseTerrain(s16 *stone_surface_min_y, s16 *stone_surface_max_y)
-{
 	MapNode n_air(CONTENT_AIR);
 	MapNode n_stone(c_stone);
 	MapNode n_water(c_water_source);
 
 	v3s16 em = vm->m_area.getExtent();
-	s16 surface_min_y = MAX_MAP_GENERATION_LIMIT;
-	s16 surface_max_y = -MAX_MAP_GENERATION_LIMIT;
-	u32 index = 0;
+	s16 stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
+	u32 index2d = 0;
+	bool mountain_flag = spflags & MGV7_MOUNTAINS;
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
-	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
-		float surface_height = baseTerrainLevelFromMap(index);
-		s16 surface_y = (s16)surface_height;
+	for (s16 x = node_min.X; x <= node_max.X; x++, index2d++) {
+		s16 surface_y = baseTerrainLevelFromMap(index2d);
+		heightmap[index2d]       = surface_y;  // Create base terrain heightmap
+		ridge_heightmap[index2d] = surface_y;
 
-		heightmap[index]       = surface_y;
-		ridge_heightmap[index] = surface_y;
-
-		if (surface_y < surface_min_y)
-			surface_min_y = surface_y;
-
-		if (surface_y > surface_max_y)
-			surface_max_y = surface_y;
+		if (surface_y > stone_surface_max_y)
+			stone_surface_max_y = surface_y;
 
 		u32 vi = vm->m_area.index(x, node_min.Y - 1, z);
+		u32 index3d = (z - node_min.Z) * zstride_1u1d + (x - node_min.X);
+
 		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
 			if (vm->m_data[vi].getContent() == CONTENT_IGNORE) {
-				if (y <= surface_y)
-					vm->m_data[vi] = n_stone;
-				else if (y <= water_level)
+				if (y <= surface_y) {
+					vm->m_data[vi] = n_stone;  // Base terrain
+				} else if (mountain_flag &&
+						getMountainTerrainFromMap(index3d, index2d, y)) {
+					vm->m_data[vi] = n_stone;  // Mountain terrain
+					if (y > stone_surface_max_y)
+						stone_surface_max_y = y;
+				} else if (y <= water_level) {
 					vm->m_data[vi] = n_water;
-				else
+				} else {
 					vm->m_data[vi] = n_air;
+				}
 			}
 			vm->m_area.add_y(em, vi, 1);
+			index3d += ystride;
 		}
 	}
 
-	*stone_surface_min_y = surface_min_y;
-	*stone_surface_max_y = surface_max_y;
-}
-
-
-int MapgenV7::generateMountainTerrain(s16 ymax)
-{
-	noise_mountain->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
-	noise_mount_height->perlinMap2D(node_min.X, node_min.Z);
-
-	MapNode n_stone(c_stone);
-	u32 j = 0;
-
-	for (s16 z = node_min.Z; z <= node_max.Z; z++)
-	for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
-		u32 vi = vm->m_area.index(node_min.X, y, z);
-		for (s16 x = node_min.X; x <= node_max.X; x++) {
-			int index = (z - node_min.Z) * csize.X + (x - node_min.X);
-			content_t c = vm->m_data[vi].getContent();
-
-			if (getMountainTerrainFromMap(j, index, y)
-					&& (c == CONTENT_AIR || c == c_water_source)) {
-				vm->m_data[vi] = n_stone;
-				if (y > ymax)
-					ymax = y;
-			}
-
-			vi++;
-			j++;
-		}
-	}
-
-	return ymax;
+	return stone_surface_max_y;
 }
 
 
 void MapgenV7::generateRidgeTerrain()
 {
-	if (node_max.Y < water_level)
+	if (node_max.Y < water_level - 16)
 		return;
 
 	MapNode n_water(c_water_source);
@@ -562,7 +524,7 @@ void MapgenV7::generateRidgeTerrain()
 		for (s16 x = node_min.X; x <= node_max.X; x++, index++, vi++) {
 			int j = (z - node_min.Z) * csize.X + (x - node_min.X);
 
-			if (heightmap[j] < water_level - 16)
+			if (heightmap[j] < water_level - 16)  // Use base terrain heightmap
 				continue;
 
 			float uwatern = noise_ridge_uwater->result[j] * 2;
@@ -803,6 +765,36 @@ void MapgenV7::generateCaves(s16 max_stone_y)
 
 
 ///////////////////////////////////////////////////////////////
+
+
+#if 0
+int MapgenV7::generateMountainTerrain(s16 ymax)
+{
+	MapNode n_stone(c_stone);
+	u32 j = 0;
+
+	for (s16 z = node_min.Z; z <= node_max.Z; z++)
+	for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
+		u32 vi = vm->m_area.index(node_min.X, y, z);
+		for (s16 x = node_min.X; x <= node_max.X; x++) {
+			int index = (z - node_min.Z) * csize.X + (x - node_min.X);
+			content_t c = vm->m_data[vi].getContent();
+
+			if (getMountainTerrainFromMap(j, index, y)
+					&& (c == CONTENT_AIR || c == c_water_source)) {
+				vm->m_data[vi] = n_stone;
+				if (y > ymax)
+					ymax = y;
+			}
+
+			vi++;
+			j++;
+		}
+	}
+
+	return ymax;
+}
+#endif
 
 
 #if 0
