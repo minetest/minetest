@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-02-27 05:49+0100\n"
-"PO-Revision-Date: 2016-01-13 09:23+0000\n"
-"Last-Translator: Peter Mikkelsen <petermikkelsen10@gmail.com>\n"
-"Language-Team: Danish <https://hosted.weblate.org/projects/minetest/minetest/"
-"da/>\n"
+"PO-Revision-Date: 2016-04-17 08:53+0000\n"
+"Last-Translator: Thomas Wagner Nielsen <thomas@viawords.com>\n"
+"Language-Team: Danish "
+"<https://hosted.weblate.org/projects/minetest/minetest/da/>\n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.5-dev\n"
+"X-Generator: Weblate 2.6-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -505,9 +505,8 @@ msgid "2x"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "3D Clouds"
-msgstr "3D skyer"
+msgstr "3D-skyer"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
@@ -518,21 +517,18 @@ msgid "8x"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Advanced Settings"
-msgstr "Indstillinger"
+msgstr "Avancerede indstillinger"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Are you sure to reset your singleplayer world?"
-msgstr "Enligspiller"
+msgstr "Er du sikker på, at du vil nulstille din enkelt spiller-verden?"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Bilinear Filter"
 msgstr "Bi-lineær filtréring"
 
@@ -546,14 +542,12 @@ msgid "Change keys"
 msgstr "Skift bindinger"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Connected Glass"
-msgstr "Forbind"
+msgstr "Forbundet glas"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Enable Particles"
-msgstr "Aktivér alle"
+msgstr "Aktivér partikler"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -574,9 +568,8 @@ msgid "Mipmap + Aniso. Filter"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "No Filter"
-msgstr "Anisotropisk filtréring"
+msgstr "Intet filter"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -593,7 +586,6 @@ msgid "Node Highlighting"
 msgstr "Glat belysning"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
-#, fuzzy
 msgid "None"
 msgstr "Ingen"
 
@@ -620,12 +612,10 @@ msgid "Shaders"
 msgstr "Shadere"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Simple Leaves"
-msgstr "Opakt (uigennemsigtigt) vand"
+msgstr "Enkle blade"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Smooth Lighting"
 msgstr "Glat belysning"
 
@@ -642,7 +632,6 @@ msgid "Touchthreshold (px)"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Trilinear Filter"
 msgstr "Tri-lineær filtréring"
 
@@ -999,9 +988,8 @@ msgid "Sound Volume: "
 msgstr ""
 
 #: src/keycode.cpp
-#, fuzzy
 msgid "Apps"
-msgstr "Applikationer"
+msgstr "Apps"
 
 #: src/keycode.cpp
 msgid "Attn"
