@@ -6,13 +6,13 @@
 
 local jobs = {}
 local time = 0.0
-local last = 0.0
+local last = core.get_us_time() / 1000000
 
 core.register_globalstep(function(dtime)
 	local new = core.get_us_time() / 1000000
 	if new > last then
 		time = time + (new - last)
-	else
+	elseif new < last then
 		-- Overflow, we may lose a little bit of time here but
 		-- only 1 tick max, potentially running timers slightly
 		-- too early.
