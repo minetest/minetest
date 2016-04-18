@@ -2254,9 +2254,15 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 					std::string::size_type n1 = item_meta.find(meta_key);
 					if (n1 != std::string::npos && n1+key_size < item_meta.size()) {
 						std::string s = item_meta.substr(n1+key_size);
-						std::string::size_type n2 = s.find("\"");
-						if (n2 != std::string::npos && n2 > 0)
-							title_tip = s.substr(0, n2);
+						std::string::size_type n2 = 0;
+						while (n2 >= 0 and n2 < s.size()) {
+							n2 = s.find("\"", n2);
+							if (n2 > 0 && s[n2-1] != '\\') {
+								title_tip = s.substr(0, n2);
+								n2 = -1;
+							} else
+								n2++;
+						}
 					}
 				}
 				// Replace description with the title string in tooltip
