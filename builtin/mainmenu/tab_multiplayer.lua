@@ -81,7 +81,7 @@ local function get_formspec(tabview, name, tabdata)
 		end
 	end
 
-	if tabdata.fav_selected ~= nil then
+	if tabdata.fav_selected then
 		retval = retval .. ";" .. tabdata.fav_selected .. "]"
 	else
 		retval = retval .. ";0]"
@@ -92,13 +92,13 @@ end
 
 --------------------------------------------------------------------------------
 local function main_button_handler(tabview, fields, name, tabdata)
-	if fields["te_name"] ~= nil then
-		gamedata.playername = fields["te_name"]
-		core.setting_set("name", fields["te_name"])
+	if fields.te_name then
+		gamedata.playername = fields.te_name
+		core.setting_set("name", fields.te_name)
 	end
 
-	if fields["favourites"] ~= nil then
-		local event = core.explode_table_event(fields["favourites"])
+	if fields.favourites then
+		local event = core.explode_table_event(fields.favourites)
 		local fav = menudata.favorites[event.row]
 
 		if event.type == "DCL" then
@@ -108,21 +108,22 @@ local function main_button_handler(tabview, fields, name, tabdata)
 							fav.proto_min, fav.proto_max) then
 					return true
 				end
+
 				gamedata.address    = fav.address
 				gamedata.port       = fav.port
-				gamedata.playername = fields["te_name"]
-				if fields["te_pwd"] ~= nil then
-					gamedata.password		= fields["te_pwd"]
-				end
+				gamedata.playername = fields.te_name
 				gamedata.selected_world = 0
+
+				if fields.te_pwd then
+					gamedata.password = fields.te_pwd
+				end
 
 				gamedata.servername        = fav.name
 				gamedata.serverdescription = fav.description
 
-				if gamedata.address ~= nil and
-					gamedata.port ~= nil then
-					core.setting_set("address",gamedata.address)
-					core.setting_set("remote_port",gamedata.port)
+				if gamedata.address and gamedata.port then
+					core.setting_set("address", gamedata.address)
+					core.setting_set("remote_port", gamedata.port)
 					core.start()
 				end
 			end
@@ -144,47 +145,41 @@ local function main_button_handler(tabview, fields, name, tabdata)
 					end
 				end
 
-				if address ~= nil and
-					port ~= nil then
-					core.setting_set("address",address)
-					core.setting_set("remote_port",port)
+				if address and port then
+					core.setting_set("address", address)
+					core.setting_set("remote_port", port)
 				end
-
 				tabdata.fav_selected = event.row
 			end
-			
 			return true
 		end
 	end
 
-	if fields["key_up"] ~= nil or
-		fields["key_down"] ~= nil then
-
+	if fields.key_up or fields.key_down then
 		local fav_idx = core.get_table_index("favourites")
+		local fav = menudata.favorites[fav_idx]
 
-		if fav_idx ~= nil then
-			if fields["key_up"] ~= nil and fav_idx > 1 then
-				fav_idx = fav_idx -1
-			else if fields["key_down"] and fav_idx < #menudata.favorites then
-				fav_idx = fav_idx +1
-			end end
+		if fav_idx then
+			if fields.key_up and fav_idx > 1 then
+				fav_idx = fav_idx - 1
+			elseif fields.key_down and fav_idx < #menudata.favorites then
+				fav_idx = fav_idx + 1
+			end
 		else
 			fav_idx = 1
 		end
-		
-		if menudata.favorites == nil or
-			menudata.favorites[fav_idx] == nil then
+
+		if not menudata.favorites or not fav then
 			tabdata.fav_selected = 0
 			return true
 		end
-	
-		local address = menudata.favorites[fav_idx].address
-		local port    = menudata.favorites[fav_idx].port
 
-		if address ~= nil and
-			port ~= nil then
-			core.setting_set("address",address)
-			core.setting_set("remote_port",port)
+		local address = fav.address
+		local port    = fav.port
+
+		if address and port then
+			core.setting_set("address", address)
+			core.setting_set("remote_port", port)
 		end
 
 		tabdata.fav_selected = fav_idx
@@ -204,22 +199,19 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		return true
 	end
 
-	if (fields["btn_mp_connect"] ~= nil or
-		fields["key_enter"] ~= nil) and fields["te_address"] ~= nil and
-		fields["te_port"] ~= nil then
-
-		gamedata.playername     = fields["te_name"]
-		gamedata.password       = fields["te_pwd"]
-		gamedata.address        = fields["te_address"]
-		gamedata.port           = fields["te_port"]
-
+	if (fields.btn_mp_connect or fields.key_enter) and fields.te_address and fields.te_port then
+		gamedata.playername = fields.te_name
+		gamedata.password   = fields.te_pwd
+		gamedata.address    = fields.te_address
+		gamedata.port       = fields.te_port
+		gamedata.selected_world = 0
 		local fav_idx = core.get_table_index("favourites")
+		local fav = menudata.favorites[fav_idx]
 
-		if fav_idx ~= nil and fav_idx <= #menudata.favorites and
-			menudata.favorites[fav_idx].address == fields["te_address"] and
-			menudata.favorites[fav_idx].port    == fields["te_port"] then
+		if fav_idx and fav_idx <= #menudata.favorites and
+				fav.address == fields.te_address and
+				fav.port    == fields.te_port then
 
-			local fav = menudata.favorites[fav_idx]
 			gamedata.servername        = fav.name
 			gamedata.serverdescription = fav.description
 
@@ -233,10 +225,8 @@ local function main_button_handler(tabview, fields, name, tabdata)
 			gamedata.serverdescription = ""
 		end
 
-		gamedata.selected_world = 0
-
-		core.setting_set("address",    fields["te_address"])
-		core.setting_set("remote_port",fields["te_port"])
+		core.setting_set("address",     fields.te_address)
+		core.setting_set("remote_port", fields.te_port)
 
 		core.start()
 		return true
