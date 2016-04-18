@@ -85,7 +85,7 @@ function order_favorite_list(list)
 end
 
 --------------------------------------------------------------------------------
-function render_favorite(spec,render_details)
+function render_favorite(spec, is_favorite)
 	local text = ""
 
 	if spec.name ~= nil then
@@ -105,12 +105,14 @@ function render_favorite(spec,render_details)
 		end
 	end
 
-	if not render_details then
-		return text
-	end
-
 	local details = ""
 	local grey_out = not is_server_protocol_compat(spec.proto_min, spec.proto_max)
+
+	if is_favorite then
+		details = "1,"
+	else
+		details = "0,"
+	end
 
 	if spec.clients ~= nil and spec.clients_max ~= nil then
 		local clients_color = ''
@@ -253,15 +255,13 @@ function asyncOnlineFavourites()
 		end,
 		nil,
 		function(result)
-			if core.setting_getbool("public_serverlist") then
-				local favs = order_favorite_list(result)
-				if favs[1] then
-					menudata.public_known = favs
-					menudata.favorites = menudata.public_known
-					menudata.favorites_is_public = true
-				end
-				core.event_handler("Refresh")
+			local favs = order_favorite_list(result)
+			if favs[1] then
+				menudata.public_known = favs
+				menudata.favorites = menudata.public_known
+				menudata.favorites_is_public = true
 			end
+			core.event_handler("Refresh")
 		end
 	)
 end
