@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "constants.h" // BS
 #include "threading/mutex.h"
+//#include "script/scripting_game.h" // For GameScripting in callbacks
 #include <list>
 
 #define PLAYERNAME_SIZE 20
@@ -92,15 +93,22 @@ struct CollisionInfo;
 class PlayerSAO;
 struct HudElement;
 class Environment;
+class GameScripting;
+class Inventory;
 
 // IMPORTANT:
 // Do *not* perform an assignment or copy operation on a Player or
 // RemotePlayer object!  This will copy the lock held for HUD synchronization
-class Player
+class Player: public InventoryChangeReceiver
 {
 public:
 
 	Player(IGameDef *gamedef, const char *name);
+
+	void on_remove_item(GameScripting *script_interface, const InventoryList *inventory_list, const ItemStack &deleted_item);
+	void on_change_item(GameScripting *script_interface, const InventoryList *inventory_list, u32 query_slot, const ItemStack &old_item,const ItemStack &new_item);
+	void on_add_item(GameScripting *script_interface, const InventoryList *inventory_list, u32 query_slot, const ItemStack &added_item);
+
 	virtual ~Player() = 0;
 
 	virtual void move(f32 dtime, Environment *env, f32 pos_max_d)

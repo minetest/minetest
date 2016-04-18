@@ -30,6 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "log.h"
 #include "porting.h"  // strlcpy
+#include "environment.h"  // For calling 'getScriptIface()', because ServerEnvironment forward declared in 'serverobject.h'.
+#include "script/scripting_game.h" // For calling API functions.
 
 
 Player::Player(IGameDef *gamedef, const char *name):
@@ -41,7 +43,7 @@ Player::Player(IGameDef *gamedef, const char *name):
 	is_climbing(false),
 	swimming_vertical(false),
 	camera_barely_in_ceiling(false),
-	inventory(gamedef->idef()),
+	inventory(gamedef->idef(), this),
 	hp(PLAYER_MAX_HP),
 	hurt_tilt_timer(0),
 	hurt_tilt_strength(0),
@@ -59,7 +61,6 @@ Player::Player(IGameDef *gamedef, const char *name):
 	m_dirty(false)
 {
 	strlcpy(m_name, name, PLAYERNAME_SIZE);
-
 	inventory.clear();
 	inventory.addList("main", PLAYER_INVENTORY_SIZE);
 	InventoryList *craft = inventory.addList("craft", 9);
@@ -110,6 +111,30 @@ Player::Player(IGameDef *gamedef, const char *name):
 Player::~Player()
 {
 	clearHud();
+}
+
+void Player::on_remove_item(GameScripting *script_interface, const InventoryList *inventory_list, const ItemStack &deleted_item)
+{
+	PlayerSAO *player_sao = this->getPlayerSAO();
+	if(script_interface){
+		script_interface->on_player_inventory_remove_item(player_sao, this, inventory_list->getName(), deleted_item);
+	}
+}
+
+void Player::on_change_item(GameScripting *script_interface, const InventoryList *inventory_list, u32 query_slot, const ItemStack &old_item,const ItemStack &new_item)
+{
+	PlayerSAO *player_sao = this->getPlayerSAO();
+	if(script_interface){
+		script_interface->on_player_inventory_change_item(player_sao, this, inventory_list->getName(), query_slot, old_item, new_item);
+	}
+}
+
+void Player::on_add_item(GameScripting *script_interface, const InventoryList *inventory_list, u32 query_slot, const ItemStack &added_item)
+{
+	PlayerSAO *player_sao = this->getPlayerSAO();
+	if(script_interface){
+		script_interface->on_player_inventory_add_item(player_sao, this, inventory_list->getName(), query_slot, added_item);
+	}
 }
 
 v3s16 Player::getLightPosition() const
@@ -176,7 +201,7 @@ void Player::deSerialize(std::istream &is, std::string playername)
 		if(craftresult_is_preview)
 		{
 			// Clear craftresult
-			inventory.getList("craftresult")->changeItem(0, ItemStack());
+			inventory.getList("craftresult")->changeItem(NULL, 0, ItemStack());
 		}
 	}
 }

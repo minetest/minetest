@@ -863,7 +863,8 @@ void Client::handleCommand_DetachedInventory(NetworkPacket* pkt)
 	if (m_detached_inventories.count(name) > 0)
 		inv = m_detached_inventories[name];
 	else {
-		inv = new Inventory(m_itemdef);
+		DetachedInventoryChangeReceiver * detached_inventory_change_receiver = new DetachedInventoryChangeReceiver(name);
+		inv = new Inventory(m_itemdef, detached_inventory_change_receiver);
 		m_detached_inventories[name] = inv;
 	}
 	inv->deSerialize(is);

@@ -61,7 +61,6 @@ static const char *modified_reason_strings[] = {
 	"unknown",
 };
 
-
 /*
 	MapBlock
 */
@@ -701,11 +700,11 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 		decompressZlib(is, oss);
 		std::istringstream iss(oss.str(), std::ios_base::binary);
 		if (version >= 23)
-			m_node_metadata.deSerialize(iss, m_gamedef->idef());
+			m_node_metadata.deSerialize(iss, m_gamedef->idef(), getPosRelative());
 		else
 			content_nodemeta_deserialize_legacy(iss,
 				&m_node_metadata, &m_node_timers,
-				m_gamedef->idef());
+				m_gamedef->idef(), getPosRelative());
 	} catch(SerializationError &e) {
 		warningstream<<"MapBlock::deSerialize(): Ignoring an error"
 				<<" while deserializing node metadata at ("
@@ -880,7 +879,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 					std::istringstream iss(data, std::ios_base::binary);
 					content_nodemeta_deserialize_legacy(iss,
 						&m_node_metadata, &m_node_timers,
-						m_gamedef->idef());
+						m_gamedef->idef(), getPosRelative());
 				} else {
 					//std::string data = deSerializeLongString(is);
 					std::ostringstream oss(std::ios_base::binary);
@@ -888,7 +887,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 					std::istringstream iss(oss.str(), std::ios_base::binary);
 					content_nodemeta_deserialize_legacy(iss,
 						&m_node_metadata, &m_node_timers,
-						m_gamedef->idef());
+						m_gamedef->idef(), getPosRelative());
 				}
 			} catch(SerializationError &e) {
 				warningstream<<"MapBlock::deSerialize(): Ignoring an error"
