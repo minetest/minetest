@@ -290,11 +290,7 @@ end
 
 --------------------------------------------------------------------------------
 function is_server_protocol_compat(server_proto_min, server_proto_max)
-<<<<<<< HEAD
-	return min_supp_proto <= (server_proto_max or 24) and max_supp_proto >= (server_proto_min or 13)
-=======
 	return not ((min_supp_proto > (server_proto_max or 24)) or (max_supp_proto < (server_proto_min or 13)))
->>>>>>> bca616493783b18b2f280d4773cb4be41d01c434
 end
 --------------------------------------------------------------------------------
 function is_server_protocol_compat_or_error(server_proto_min, server_proto_max)
