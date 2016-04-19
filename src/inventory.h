@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ostream>
 #include <string>
 #include <vector>
-#include "cpp_api/s_base.h"  // For ScriptApiBase
 
 class InventoryChangeReceiver;
 class GameScripting;
