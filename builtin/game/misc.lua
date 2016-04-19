@@ -6,7 +6,7 @@
 
 local jobs = {}
 local time = 0.0
-local last = 0.0
+local last = core.get_us_time() / 1000000
 
 core.register_globalstep(function(dtime)
 	local new = core.get_us_time() / 1000000
