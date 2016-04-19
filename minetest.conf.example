@@ -253,13 +253,10 @@
 #    type: bool
 # enable_local_map_saving = false
 
-<<<<<<< HEAD
 #    Show entity selection boxes.
 #    type: bool
 # show_entity_selectionbox true
 
-=======
->>>>>>> bca616493783b18b2f280d4773cb4be41d01c434
 #    Enable usage of remote media server (if provided by server).
 #    Remote servers offer a significantly faster way to download media (e.g. textures)
 #    when connecting to the server.
