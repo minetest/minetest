@@ -731,10 +731,10 @@ assets : $(ASSETS_TIMESTAMP)
 	cp ${ROOT}/../../README.txt ${ROOT}/assets/Minetest;                       \
 	cp -r ${ROOT}/../../builtin ${ROOT}/assets/Minetest;                       \
 	mkdir ${ROOT}/assets/Minetest/client;                                      \
-	cp -r ${ROOT}/../../client/shaders ${ROOT}/assets/Minetest/client;         \
+#   cp -r ${ROOT}/../../client/shaders ${ROOT}/assets/Minetest/client;         \
 	cp ${ROOT}/../../doc/lgpl-2.1.txt ${ROOT}/assets/Minetest/LICENSE.txt;     \
 	mkdir ${ROOT}/assets/Minetest/fonts;                                       \
-	cp -r ${ROOT}/../../fonts/*.ttf ${ROOT}/assets/Minetest/fonts/;            \
+	cp -r ${ROOT}/../../fonts/liberationsans ${ROOT}/assets/Minetest/fonts/;   \
 	mkdir ${ROOT}/assets/Minetest/games;                                       \
 	for game in ${GAMES_TO_COPY}; do                                           \
 	    cp -r ${ROOT}/../../games/$$game ${ROOT}/assets/Minetest/games/;       \

@@ -363,6 +363,10 @@ void set_default_settings(Settings *settings)
 		settings->setDefault("hud_scaling", "0.7");
 	}
 	settings->setDefault("curl_verify_cert","false");
+	
+	settings->setDefault("mono_font_path", "/system/fonts/DroidSansMono.ttf");
+	settings->setDefault("fallback_font_path", "/system/fonts/DroidSans.ttf");
+	
 #else
 	settings->setDefault("screen_dpi", "72");
 #endif
