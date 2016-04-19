@@ -2574,10 +2574,6 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_hp()`: returns number of hitpoints (2 * number of hearts)
 * `set_hp(hp)`: set number of hitpoints (2 * number of hearts)
 * `get_inventory()`: returns an `InvRef`
-<<<<<<< HEAD
-=======
-* `add_item(listname, stack)`: add item somewhere in list, returns leftover `ItemStack`. If object has no inventory, return `ItemStack`. Same as for `InvRef`, `player:add_item(listname, stack)` can be used instead of `player:get_inventory():add_item(listname, stack)`, but will launch callbacks registered by `minetest.register_on_inventory_add_item`.
->>>>>>> bca616493783b18b2f280d4773cb4be41d01c434
 * `get_wield_list()`: returns the name of the inventory list the wielded item is in
 * `get_wield_index()`: returns the index of the wielded item
 * `get_wielded_item()`: returns an `ItemStack`
