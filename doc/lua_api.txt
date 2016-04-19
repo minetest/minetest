@@ -945,7 +945,10 @@ Displays a horizontal bar made up of half-images.
 * `number`: Number of items in the inventory to be displayed.
 * `item`: Position of item that is selected.
 * `direction`
+<<<<<<< HEAD
 * `offset`: offset in pixels from position.
+=======
+>>>>>>> bca616493783b18b2f280d4773cb4be41d01c434
 
 ### `waypoint`
 Displays distance to selected world position.
@@ -1871,7 +1874,10 @@ Call these functions only at load time!
     * `modifier`: when true, the function should return the actual hp_change.
       Note: modifiers only get a temporary hp_change that can be modified by later modifiers.
       modifiers can return true as a second argument to stop the execution of further functions.
+<<<<<<< HEAD
       Non-modifiers receive the final hp change calculated by the modifiers.
+=======
+>>>>>>> bca616493783b18b2f280d4773cb4be41d01c434
 * `minetest.register_on_respawnplayer(func(ObjectRef))`
      * Called when player is to be respawned
      * Called _before_ repositioning of player occurs
@@ -1883,6 +1889,36 @@ Call these functions only at load time!
     * Called when a player joins the game
 * `minetest.register_on_leaveplayer(func(ObjectRef))`
     * Called when a player leaves the game
+<<<<<<< HEAD
+=======
+* `minetest.register_on_inventory_move_item(func(inv_from,list_from,slot_from,inv_to,list_to,slot_to,stack,amount,player)`
+    * Called when a player move items between inventories using GUI (including crafting grid).
+    * `inv_from`: InvRef of inventory from which item was extracted.
+    * `list_from`: name of a list, where from stack extracted.
+    * `slot_from`: integer, speak by itself
+    * `inv_to`: InvRef of inventory to which item was dropped.
+    * `list_to`: name of a list, where to stack dropped.
+    * `slot_to`: integer, speak by itself
+    * `stack`: ItemStack of a stack moved
+    * `amount`: integer, amount of items, which was sucessfully transported
+    * `player`: ObjectRef of the player
+* `minetest.register_on_inventory_add_item(func(inv_to,list_to,stack,stack_left,player)`
+    * Called when a player recive item via digging or from item entity or when `player:add_item(list, item)` called.
+    * `inv_to`: InvRef of inventory to which item was added.
+    * `list_to`: name of a list, where stack was added.
+    * `slot_to`: integer, speak by itself
+    * `stack`: ItemStack of a stack added
+    * `stack_left`: ItemStack of a stack which was left on ground
+    * `player`: ObjectRef of the player
+* `minetest.register_on_inventory_drop_item(func(inv_from,list_from,slot_from,stack,player, dropped_pos)`
+    * Called when a player drop item on ground
+    * `inv_from`: InvRef of inventory from which item was dropped.
+    * `list_from`: name of a list, where from stack dropped. Usually 'main'.
+    * `slot_from`: integer, speak by itself
+    * `stack`: ItemStack of a stack dropped
+    * `player`: ObjectRef of the player
+    * `dropped_pos`: a table `{x=x_pos, y=y_pos, z=z_pos}`, where values contain absolute position of new item object.
+>>>>>>> bca616493783b18b2f280d4773cb4be41d01c434
 * `minetest.register_on_cheat(func(ObjectRef, cheat))`
     * Called when a player cheats
     * `cheat`: `{type=<cheat_type>}`, where `<cheat_type>` is one of:
@@ -2574,6 +2610,10 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_hp()`: returns number of hitpoints (2 * number of hearts)
 * `set_hp(hp)`: set number of hitpoints (2 * number of hearts)
 * `get_inventory()`: returns an `InvRef`
+<<<<<<< HEAD
+=======
+* `add_item(listname, stack)`: add item somewhere in list, returns leftover `ItemStack`. If object has no inventory, return `ItemStack`. Same as for `InvRef`, `player:add_item(listname, stack)` can be used instead of `player:get_inventory():add_item(listname, stack)`, but will launch callbacks registered by `minetest.register_on_inventory_add_item`.
+>>>>>>> bca616493783b18b2f280d4773cb4be41d01c434
 * `get_wield_list()`: returns the name of the inventory list the wielded item is in
 * `get_wield_index()`: returns the index of the wielded item
 * `get_wielded_item()`: returns an `ItemStack`

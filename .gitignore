@@ -85,6 +85,9 @@ build/android/path.cfg
 build/android/and_env
 build/android/AndroidManifest.xml
 timestamp
+<<<<<<< HEAD
 
 ## Backup files
 *backup.tar.gz
+=======
+>>>>>>> bca616493783b18b2f280d4773cb4be41d01c434
