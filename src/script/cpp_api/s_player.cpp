@@ -194,7 +194,6 @@ void ScriptApiPlayer::on_playerReceiveFields(ServerActiveObject *player,
 
 void ScriptApiPlayer::on_player_inventory_remove_item(
 		ServerActiveObject *player_sao, 
-		Player *player,
 		const std::string &inventory_list_name,
 		const ItemStack &deleted_item)
 {
@@ -204,15 +203,13 @@ void ScriptApiPlayer::on_player_inventory_remove_item(
 	lua_getfield(L, -1, "registered_on_player_inventory_remove_item");
 	// Call callbacks
 	objectrefGetOrCreate(L, player_sao);	// player			1
-	InvRef::createPlayer(L, player);// InvRef from				2
-	lua_pushstring(L, inventory_list_name.c_str());// listname	3
-	LuaItemStack::create(L, deleted_item);		// stack		4
-	runCallbacks(4, RUN_CALLBACKS_MODE_LAST);
+	lua_pushstring(L, inventory_list_name.c_str());// listname		2
+	LuaItemStack::create(L, deleted_item);		// stack		3
+	runCallbacks(3, RUN_CALLBACKS_MODE_LAST);
 }
 
 void ScriptApiPlayer::on_player_inventory_change_item(
 		ServerActiveObject *player_sao, 
-		Player *player,
 		const std::string &inventory_list_name,
 		u32 query_slot, 
 		const ItemStack &old_item,
@@ -225,17 +222,15 @@ void ScriptApiPlayer::on_player_inventory_change_item(
 	lua_getfield(L, -1, "registered_on_player_inventory_change_item");
 	// Call callbacks
 	objectrefGetOrCreate(L, player_sao);	// player			1
-	InvRef::createPlayer(L, player);// InvRef from				2
-	lua_pushstring(L, inventory_list_name.c_str());// listname	3
-	lua_pushnumber(L, query_slot);// slot					4
-	LuaItemStack::create(L, old_item);		// stack		5
-	LuaItemStack::create(L, new_item);		// stack		6
-	runCallbacks(6, RUN_CALLBACKS_MODE_LAST);
+	lua_pushstring(L, inventory_list_name.c_str());// listname		2
+	lua_pushnumber(L, query_slot);// slot					3
+	LuaItemStack::create(L, old_item);		// stack		4
+	LuaItemStack::create(L, new_item);		// stack		5
+	runCallbacks(5, RUN_CALLBACKS_MODE_LAST);
 }
 
 void ScriptApiPlayer::on_player_inventory_add_item(
 		ServerActiveObject *player_sao, 
-		Player *player,
 		const std::string &inventory_list_name,
 		u32 query_slot, 
 		const ItemStack &added_item)
@@ -247,11 +242,10 @@ void ScriptApiPlayer::on_player_inventory_add_item(
 	lua_getfield(L, -1, "registered_on_player_inventory_add_item");
 	// Call callbacks
 	objectrefGetOrCreate(L, player_sao);	// player			1
-	InvRef::createPlayer(L, player);// InvRef from				2
-	lua_pushstring(L, inventory_list_name.c_str());// listname	3
+	lua_pushstring(L, inventory_list_name.c_str());// listname		2
 	lua_pushnumber(L, query_slot);
-	LuaItemStack::create(L, added_item);		// stack		5
-	runCallbacks(5, RUN_CALLBACKS_MODE_LAST);
+	LuaItemStack::create(L, added_item);		// stack		4
+	runCallbacks(4, RUN_CALLBACKS_MODE_LAST);
 }
 
 

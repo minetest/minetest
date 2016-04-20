@@ -117,7 +117,7 @@ void Player::on_remove_item(GameScripting *script_interface, const InventoryList
 {
 	PlayerSAO *player_sao = this->getPlayerSAO();
 	if(script_interface){
-		script_interface->on_player_inventory_remove_item(player_sao, this, inventory_list->getName(), deleted_item);
+		script_interface->on_player_inventory_remove_item(player_sao, inventory_list->getName(), deleted_item);
 	}
 }
 
@@ -125,7 +125,7 @@ void Player::on_change_item(GameScripting *script_interface, const InventoryList
 {
 	PlayerSAO *player_sao = this->getPlayerSAO();
 	if(script_interface){
-		script_interface->on_player_inventory_change_item(player_sao, this, inventory_list->getName(), query_slot, old_item, new_item);
+		script_interface->on_player_inventory_change_item(player_sao, inventory_list->getName(), query_slot, old_item, new_item);
 	}
 }
 
@@ -133,7 +133,7 @@ void Player::on_add_item(GameScripting *script_interface, const InventoryList *i
 {
 	PlayerSAO *player_sao = this->getPlayerSAO();
 	if(script_interface){
-		script_interface->on_player_inventory_add_item(player_sao, this, inventory_list->getName(), query_slot, added_item);
+		script_interface->on_player_inventory_add_item(player_sao, inventory_list->getName(), query_slot, added_item);
 	}
 }
 

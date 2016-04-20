@@ -51,19 +51,16 @@ public:
 		const std::string &formname, const StringMap &fields);
 	void on_player_inventory_remove_item(
 		ServerActiveObject *player_sao, 
-		Player *player,
 		const std::string &inventory_list_name,
 		const ItemStack &deleted_item);
 	void on_player_inventory_change_item(
 		ServerActiveObject *player_sao, 
-		Player *player,
 		const std::string &inventory_list_name,
 		u32 query_slot, 
 		const ItemStack &old_item,
 		const ItemStack &new_item);
 	void on_player_inventory_add_item(
 		ServerActiveObject *player_sao, 
-		Player *player,
 		const std::string &inventory_list_name,
 		u32 query_slot, 
 		const ItemStack &added_item);
