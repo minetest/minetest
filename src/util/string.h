@@ -387,14 +387,6 @@ inline void str_replace(std::string &str, const std::string &pattern,
 }
 
 /**
- * Remove all escape sequences in \p s.
- *
- * @param s The string in which to remove escape sequences.
- * @return \p s, with escape sequences removed.
- */
-std::wstring remove_escapes(const std::wstring &s);
-
-/**
  * Replace all occurrences of the character \p from in \p str with \p to.
  *
  * @param str The string to (potentially) modify.
@@ -492,6 +484,39 @@ inline std::basic_string<T> unescape_string(const std::basic_string<T> &s)
 	return res;
 }
 
+/**
+ * Remove all escape sequences in \p s.
+ *
+ * @param s The string in which to remove escape sequences.
+ * @return \p s, with escape sequences removed.
+ */
+template <typename T>
+std::basic_string<T> remove_enriched_text_escapes(const std::basic_string<T> &s) {
+	std::basic_string<T> output;
+	size_t i = 0;
+	while (i < s.length()) {
+		if (s[i] == '\x1b') {
+			++i;
+			if (i == s.length()) continue;
+			if (s[i] == '(') {
+				++i;
+				while (i < s.length() && s[i] != ')') {
+					if (s[i] == '\\') {
+						++i;
+					}
+					++i;
+				}
+				++i;
+			} else {
+				++i;
+			}
+			continue;
+		}
+		output += s[i];
+		++i;
+	}
+	return output;
+}
 
 /**
  * Checks that all characters in \p to_check are a decimal digits.

@@ -257,13 +257,19 @@ void TestUtilities::testUTF8()
 
 void TestUtilities::testRemoveEscapes()
 {
-	UASSERT(remove_escapes(L"abc\x1bXdef") == L"abcdef");
-	UASSERT(remove_escapes(L"abc\x1b(escaped)def") == L"abcdef");
-	UASSERT(remove_escapes(L"abc\x1b((escaped with parenthesis\\))def") == L"abcdef");
-	UASSERT(remove_escapes(L"abc\x1b(incomplete") == L"abc");
-	UASSERT(remove_escapes(L"escape at the end\x1b") == L"escape at the end");
+	UASSERT(remove_enriched_text_escapes<wchar_t>(
+		L"abc\x1bXdef") == L"abcdef");
+	UASSERT(remove_enriched_text_escapes<wchar_t>(
+		L"abc\x1b(escaped)def") == L"abcdef");
+	UASSERT(remove_enriched_text_escapes<wchar_t>(
+		L"abc\x1b((escaped with parenthesis\\))def") == L"abcdef");
+	UASSERT(remove_enriched_text_escapes<wchar_t>(
+		L"abc\x1b(incomplete") == L"abc");
+	UASSERT(remove_enriched_text_escapes<wchar_t>(
+		L"escape at the end\x1b") == L"escape at the end");
 	// Nested escapes not supported
-	UASSERT(remove_escapes(L"abc\x1b(outer \x1b(inner escape)escape)def") == L"abcescape)def");
+	UASSERT(remove_enriched_text_escapes<wchar_t>(
+		L"abc\x1b(outer \x1b(inner escape)escape)def") == L"abcescape)def");
 }
 
 void TestUtilities::testWrapRows()

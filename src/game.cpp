@@ -3728,7 +3728,7 @@ void Game::handlePointingAtNode(GameRunData *runData,
 	NodeMetadata *meta = map.getNodeMetadata(nodepos);
 
 	if (meta) {
-		infotext = remove_escapes(utf8_to_wide(meta->getString("infotext")));
+		infotext = remove_enriched_text_escapes(utf8_to_wide(meta->getString("infotext")));
 	} else {
 		MapNode n = map.getNodeNoEx(nodepos);
 
@@ -3804,13 +3804,15 @@ void Game::handlePointingAtObject(GameRunData *runData,
 		const v3f &player_position,
 		bool show_debug)
 {
-	infotext = remove_escapes(utf8_to_wide(runData->selected_object->infoText()));
+	infotext = remove_enriched_text_escapes(
+		utf8_to_wide(runData->selected_object->infoText()));
 
 	if (show_debug) {
 		if (infotext != L"") {
 			infotext += L"\n";
 		}
-		infotext += remove_escapes(utf8_to_wide(runData->selected_object->debugInfoText()));
+		infotext += remove_enriched_text_escapes(utf8_to_wide(
+			runData->selected_object->debugInfoText()));
 	}
 
 	if (input->getLeftState()) {
