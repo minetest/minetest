@@ -30,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "log.h"
 #include "porting.h"  // strlcpy
-#include "environment.h"  // For calling 'getScriptIface()', because ServerEnvironment forward declared in 'serverobject.h'.
 #include "script/scripting_game.h" // For calling API functions.
 
 

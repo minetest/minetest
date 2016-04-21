@@ -694,8 +694,7 @@ ItemStack InventoryList::addItem(GameScripting *script_interface, u32 i, const I
 {
 	if(i >= m_items.size())
 		return new_item;
-	u16 count_before = 0;
-	count_before = new_item.count;
+	u16 count_before = new_item.count;
 	std::string item_name = new_item.name;
 	ItemStack leftover = m_items[i].addItem(new_item, m_itemdef);
 	if(leftover.count != count_before){

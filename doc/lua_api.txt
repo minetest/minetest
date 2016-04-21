@@ -1916,7 +1916,7 @@ Call these functions only at load time!
         multiple protection mods.
 * `minetest.register_on_item_eat(func(hp_change, replace_with_item, itemstack, user, pointed_thing))`
     * Called when an item is eaten, by `minetest.item_eat`
-    * Return `true` or `itemstack` to cancel the default item eat response (i.e.: hp increase)`
+    * Return `true` or `itemstack` to cancel the default item eat response (i.e.: hp increase)
 * `minetest.register_on_nodemeta_inventory_add_item(func(pos, list_name, slot, stack))`
     * Called when any node metadata inventory receive item.
     * 'pos' - {'x','y','z'} - absolute position of affected node with metadata.

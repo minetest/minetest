@@ -25,8 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "inventory.h" // For InventoryList and ItemStack
 
-class Player;
-
 struct ToolCapabilities;
 
 class ScriptApiPlayer

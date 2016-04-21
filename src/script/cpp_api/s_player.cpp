@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "util/string.h"
-#include "script/lua_api/l_inventory.h"// For InvRef.
 #include "script/lua_api/l_item.h" // For LuaItemStack.
 
 void ScriptApiPlayer::on_newplayer(ServerActiveObject *player)
@@ -247,8 +246,6 @@ void ScriptApiPlayer::on_player_inventory_add_item(
 	LuaItemStack::create(L, added_item);		// stack		4
 	runCallbacks(4, RUN_CALLBACKS_MODE_LAST);
 }
-
-
 
 ScriptApiPlayer::~ScriptApiPlayer()
 {

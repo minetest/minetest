@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/numeric.h"
 #include "map.h"
-#include "mapblock.h" //For getNodeBlockPos
 #include "gamedef.h"
 #include "nodedef.h"
 #include "nodemetadata.h"
@@ -156,9 +155,7 @@ bool RollbackAction::applyRevert(Map *map, InventoryManager *imgr, IGameDef *gam
 				} else {
 					NodeMetadata *meta = map->getNodeMetadata(p);
 					if (!meta) {
-						v3s16 blockpos = getNodeBlockPos(p);
-						v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
-						meta = new NodeMetadata(gamedef->idef(),p_rel);
+						meta = new NodeMetadata(gamedef->idef(),p);
 						if (!map->setNodeMetadata(p, meta)) {
 							delete meta;
 							infostream << "RollbackAction::applyRevert(): "

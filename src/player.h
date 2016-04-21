@@ -24,8 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "constants.h" // BS
 #include "threading/mutex.h"
-//#include "script/scripting_game.h" // For GameScripting in callbacks
-#include <list>
+	#include <list>
 
 #define PLAYERNAME_SIZE 20
 
@@ -94,7 +93,6 @@ class PlayerSAO;
 struct HudElement;
 class Environment;
 class GameScripting;
-class Inventory;
 
 // IMPORTANT:
 // Do *not* perform an assignment or copy operation on a Player or

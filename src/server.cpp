@@ -3244,7 +3244,7 @@ Inventory* Server::createDetachedInventory(const std::string &name)
 	} else {
 		infostream<<"Server creating detached inventory \""<<name<<"\""<<std::endl;
 	}
-	DetachedInventoryChangeReceiver * detached_inventory_change_reciever = new DetachedInventoryChangeReceiver(name);
+	DetachedInventoryChangeReceiver *detached_inventory_change_reciever = new DetachedInventoryChangeReceiver(name);
 	Inventory *inv = new Inventory(m_itemdef, detached_inventory_change_reciever);
 	sanity_check(inv);
 	m_detached_inventories[name] = inv;
