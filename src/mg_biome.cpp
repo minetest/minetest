@@ -56,7 +56,7 @@ BiomeManager::BiomeManager(IGameDef *gamedef) :
 	b->m_nodenames.push_back("mapgen_water_source");
 	b->m_nodenames.push_back("mapgen_water_source");
 	b->m_nodenames.push_back("mapgen_river_water_source");
-	b->m_nodenames.push_back("air");
+	b->m_nodenames.push_back("ignore");
 	m_ndef->pendNodeResolve(b);
 
 	add(b);
@@ -138,5 +138,5 @@ void Biome::resolveNodeNames()
 	getIdFromNrBacklog(&c_water_top,   "mapgen_water_source",       CONTENT_AIR);
 	getIdFromNrBacklog(&c_water,       "mapgen_water_source",       CONTENT_AIR);
 	getIdFromNrBacklog(&c_river_water, "mapgen_river_water_source", CONTENT_AIR);
-	getIdFromNrBacklog(&c_dust,        "air",                       CONTENT_IGNORE);
+	getIdFromNrBacklog(&c_dust,        "ignore",                    CONTENT_IGNORE);
 }
