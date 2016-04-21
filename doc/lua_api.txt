@@ -243,6 +243,7 @@ Example:
     default_dirt.png^default_grass_side.png
 
 `default_grass_side.png` is overlayed over `default_dirt.png`.
+The texture with the lower resolution will be automatically upscaled to the higher resolution texture.
 
 ### Texture grouping
 Textures can be grouped together by enclosing them in `(` and `)`.

@@ -1175,7 +1175,28 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 					core::rect<s32>(pos_from, dim),
 					video::SColor(255,255,255,255),
 					NULL);*/
-			blit_with_alpha(image, baseimg, pos_from, pos_to, dim);
+
+			core::dimension2d<u32> dim_dst = baseimg->getDimension();
+			if (dim == dim_dst) {
+				blit_with_alpha(image, baseimg, pos_from, pos_to, dim);
+			} else if (dim.Width * dim.Height < dim_dst.Width * dim_dst.Height) {
+				// Upscale overlying image
+				video::IImage* scaled_image = m_device->getVideoDriver()->
+					createImage(video::ECF_A8R8G8B8, dim_dst);
+				image->copyToScaling(scaled_image);
+
+				blit_with_alpha(scaled_image, baseimg, pos_from, pos_to, dim_dst);
+				scaled_image->drop();
+			} else {
+				// Upscale base image
+				video::IImage* scaled_base = m_device->getVideoDriver()->
+					createImage(video::ECF_A8R8G8B8, dim);
+				baseimg->copyToScaling(scaled_base);
+				baseimg->drop();
+				baseimg = scaled_base;
+
+				blit_with_alpha(image, baseimg, pos_from, pos_to, dim);
+			}
 		}
 		//cleanup
 		image->drop();
