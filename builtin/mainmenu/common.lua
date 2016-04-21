@@ -302,5 +302,3 @@ function menu_worldmt_legacy(selected)
 		end
 	end
 end
-
-
