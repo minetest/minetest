@@ -50,7 +50,7 @@ local function get_formspec(data)
 		"label[0.75,0.45;" .. mod.name .. "]" ..
 		"label[0,1;" .. fgettext("Depends:") .. "]" ..
 		"textlist[0,1.5;5,4.25;world_config_depends;" ..
-		modmgr.get_dependencies(mod.path) .. ";0]" ..
+		modmgr.get_dependencies(mod.path, true, data.list) .. ";0]" ..
 		"button[9.25,6.35;2,0.5;btn_config_world_save;" .. fgettext("Save") .. "]" ..
 		"button[7.4,6.35;2,0.5;btn_config_world_cancel;" .. fgettext("Cancel") .. "]"
 
