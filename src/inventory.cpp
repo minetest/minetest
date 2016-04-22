@@ -335,8 +335,9 @@ ItemStack ItemStack::addItem(const ItemStack &newitem_,
 		*this = newitem;
 		newitem.clear();
 	}
-	// If item name differs, bail out
-	else if(name != newitem.name)
+	// If item name or metadata differs, bail out 
+	else if (name != newitem.name
+		|| metadata != newitem.metadata)
 	{
 		// cannot be added
 	}
@@ -374,8 +375,9 @@ bool ItemStack::itemFits(const ItemStack &newitem_,
 	{
 		newitem.clear();
 	}
-	// If item name differs, bail out
-	else if(name != newitem.name)
+	// If item name or metadata differs, bail out 
+	else if (name != newitem.name
+		|| metadata != newitem.metadata)
 	{
 		// cannot be added
 	}
