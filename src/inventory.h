@@ -44,6 +44,9 @@ struct ItemStack
 	void deSerialize(std::istream &is, IItemDefManager *itemdef = NULL);
 	void deSerialize(const std::string &s, IItemDefManager *itemdef = NULL);
 
+	// Parse metadata to retrieve a custom description
+	std::string getMetadataDescription();
+
 	// Returns the string used for inventory
 	std::string getItemString() const;
 

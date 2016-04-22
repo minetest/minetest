@@ -311,6 +311,26 @@ void ItemStack::deSerialize(const std::string &str, IItemDefManager *itemdef)
 	deSerialize(is, itemdef);
 }
 
+std::string ItemStack::getMetadataDescription()
+{
+	std::string d("");
+	std::string m(metadata);
+	size_t p1;
+
+	if (m.empty())
+		return d;
+
+	if (m.substr(0,8).compare("return {") == 0) {
+		m = m.substr(8, m.length() - 9);
+		p1 = m.find("[\"description\"] = \"");
+		if (p1 != std::string::npos) {
+			size_t p2 = m.find("\"", p1 + 20);
+			return m.substr(p1 + 21, p2 - p1 - 21);
+		}
+	}
+	return d;
+}
+
 std::string ItemStack::getItemString() const
 {
 	std::ostringstream os(std::ios::binary);
