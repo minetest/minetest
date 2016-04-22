@@ -178,7 +178,7 @@ end
 
 --------------------------------------------------------------------------------
 function menu_handle_key_up_down(fields, textlist, settingname)
-	local oldidx, newidx = core.get_textlist_index(textlist)
+	local oldidx, newidx = core.get_textlist_index(textlist), 1
 	if fields.key_up or fields.key_down then
 		if fields.key_up and oldidx and oldidx > 1 then
 			newidx = oldidx - 1
@@ -203,12 +203,20 @@ function asyncOnlineFavourites()
 	end
 	menudata.favorites = menudata.public_known
 	menudata.favorites_is_public = true
+
+	if not menudata.public_downloading then
+		menudata.public_downloading = true
+	else
+		return
+	end
+
 	core.handle_async(
 		function(param)
 			return core.get_favorites("online")
 		end,
 		nil,
 		function(result)
+			menudata.public_downloading = nil
 			local favs = order_favorite_list(result)
 			if favs[1] then
 				menudata.public_known = favs
