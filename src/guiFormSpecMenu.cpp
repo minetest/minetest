@@ -743,7 +743,7 @@ void GUIFormSpecMenu::parseTable(parserData* data,std::string element)
 		spec.ftype = f_Table;
 
 		for (unsigned int i = 0; i < items.size(); ++i) {
-			items[i] = unescape_string(remove_enriched_text_escapes(items[i]));
+			items[i] = unescape_string(unescape_enriched(items[i]));
 		}
 
 		//now really show table
@@ -815,7 +815,7 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element)
 		spec.ftype = f_Table;
 
 		for (unsigned int i = 0; i < items.size(); ++i) {
-			items[i] = unescape_string(remove_enriched_text_escapes(items[i]));
+			items[i] = unescape_string(unescape_enriched(items[i]));
 		}
 
 		//now really show list
@@ -886,7 +886,7 @@ void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element)
 		}
 
 		for (unsigned int i=0; i < items.size(); i++) {
-			e->addItem(unescape_string(remove_enriched_text_escapes(
+			e->addItem(unescape_string(unescape_enriched(
 				utf8_to_wide(items[i]))).c_str());
 		}
 
@@ -1234,7 +1234,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element)
 	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::wstring text = unescape_string(
-			remove_enriched_text_escapes(utf8_to_wide(parts[1])));
+			unescape_enriched(utf8_to_wide(parts[1])));
 
 		MY_CHECKPOS("vertlabel",1);
 
@@ -1420,7 +1420,7 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element)
 		e->setNotClipped(true);
 
 		for (unsigned int i = 0; i < buttons.size(); i++) {
-			e->addTab(unescape_string(remove_enriched_text_escapes(
+			e->addTab(unescape_string(unescape_enriched(
 				utf8_to_wide(buttons[i]))).c_str(), -1);
 		}
 
@@ -2235,7 +2235,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 			std::wstring tooltip_text = L"";
 			if (hovering && !m_selected_item) {
 				tooltip_text = utf8_to_wide(item.getDefinition(m_gamedef->idef()).description);
-				tooltip_text = remove_enriched_text_escapes(tooltip_text);
+				tooltip_text = unescape_enriched(tooltip_text);
 			}
 			if (tooltip_text != L"") {
 				std::vector<std::wstring> tt_rows = str_split(tooltip_text, L'\n');

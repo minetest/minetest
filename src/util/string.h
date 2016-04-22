@@ -491,7 +491,8 @@ inline std::basic_string<T> unescape_string(const std::basic_string<T> &s)
  * @return \p s, with escape sequences removed.
  */
 template <typename T>
-std::basic_string<T> remove_enriched_text_escapes(const std::basic_string<T> &s) {
+std::basic_string<T> unescape_enriched(const std::basic_string<T> &s)
+{
 	std::basic_string<T> output;
 	size_t i = 0;
 	while (i < s.length()) {
