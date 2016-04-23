@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nameidmapping.h" // For loading legacy MaterialItems
 #include "util/serialize.h"
 #include "util/string.h"
+#include "itemstackmetadata.h"
 
 /*
 	ItemStack
@@ -110,7 +111,7 @@ static std::string deSerializeJsonStringIfNeeded(std::istream &is)
 
 
 ItemStack::ItemStack(std::string name_, u16 count_,
-		u16 wear_, std::string metadata_,
+		u16 wear_, ItemStackMetadata metadata_,
 		IItemDefManager *itemdef)
 {
 	name = itemdef->getAlias(name_);
@@ -118,6 +119,19 @@ ItemStack::ItemStack(std::string name_, u16 count_,
 	wear = wear_;
 	metadata = metadata_;
 
+	if(name.empty() || count == 0)
+		clear();
+	else if(itemdef->get(name).type == ITEM_TOOL)
+		count = 1;
+}
+ItemStack::ItemStack(std::string name_, u16 count_,
+					 u16 wear_,
+					 IItemDefManager *itemdef)
+{
+	name = itemdef->getAlias(name_);
+	count = count_;
+	wear = wear_;
+	
 	if(name.empty() || count == 0)
 		clear();
 	else if(itemdef->get(name).type == ITEM_TOOL)
@@ -137,7 +151,7 @@ void ItemStack::serialize(std::ostream &os) const
 		parts = 2;
 	if(wear != 0)
 		parts = 3;
-	if(metadata != "")
+	if(!metadata.isEmpty())
 		parts = 4;
 
 	os<<serializeJsonStringIfNeeded(name);
@@ -145,8 +159,9 @@ void ItemStack::serialize(std::ostream &os) const
 		os<<" "<<count;
 	if(parts >= 3)
 		os<<" "<<wear;
-	if(parts >= 4)
-		os<<" "<<serializeJsonStringIfNeeded(metadata);
+	if(parts >= 4) {
+		os<<" "<<serializeJsonStringIfNeeded(metadata.serialize());
+	}
 }
 
 void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
@@ -289,8 +304,8 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 				wear = stoi(wear_str);
 
 			// Read metadata
-			metadata = deSerializeJsonStringIfNeeded(is);
-
+			std::string readMeta=deSerializeJsonStringIfNeeded(is);
+			metadata.deSerialize(readMeta);
 			// In case fields are added after metadata, skip space here:
 			//std::getline(is, tmp, ' ');
 			//if(!tmp.empty())
@@ -579,9 +594,16 @@ bool InventoryList::operator == (const InventoryList &other) const
 	{
 		ItemStack s1 = m_items[i];
 		ItemStack s2 = other.m_items[i];
-		if(s1.name != s2.name || s1.wear!= s2.wear || s1.count != s2.count ||
-				s1.metadata != s2.metadata)
+		if(s1.name != s2.name || s1.wear!= s2.wear || s1.count != s2.count)
 			return false;
+		if(s1.name == s2.name && s1.wear== s2.wear && s1.count == s2.count && !s1.metadata.isEmpty() && !s2.metadata.isEmpty()){
+			StringMap smap1=s1.metadata.getStrings();
+			StringMap smap2=s2.metadata.getStrings();
+			if(smap1.size()!=smap2.size())
+				return false;
+			if(!std::equal(smap1.begin(), smap1.end(), smap2.begin()))
+				return false;
+		}
 	}
 
 	return true;

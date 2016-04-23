@@ -2778,8 +2778,9 @@ an itemstring, a table or `nil`.
 * `get_wear()`: Returns tool wear (`0`-`65535`), `0` for non-tools.
 * `set_wear(wear)`: Returns boolean success.
   Clears item on failure.
-* `get_metadata()`: Returns metadata (a string attached to an item stack).
-* `set_metadata(metadata)`: Returns true.
+* `get_meta()`: Returns Item Metadata as an ItemStackMetaRef.
+* `get_metadata()`: (DEPRECATED) Returns the empty string ("") field of the item metadata.
+* `set_metadata(metadata)`: (DEPRECATED) Sets the empty string ("") field of the item metadata to 'metadata'. Returns true.
 * `clear()`: removes all items from the stack, making it empty.
 * `replace(item)`: replace the contents of this stack.
     * `item` can also be an itemstring or table.
@@ -2800,6 +2801,21 @@ an itemstring, a table or `nil`.
   Returns taken `ItemStack`.
 * `peek_item(n=1)`: copy (don't remove) up to `n` items from this stack.
   Returns taken `ItemStack`.
+
+### `ItemStackMetaRef`
+Reference to the key-value metadata store of an ItemStack. Works almost the same way as a NodeMetaRef.
+
+#### Methods
+* `set_string(name, value)`
+* `get_string(name)`
+* `set_int(name, value)`
+* `get_int(name)`
+* `set_float(name, value)`
+* `get_float(name)`
+* `to_table()`: returns `nil` or `{...}`
+    * Notice that keys and values are accessible directly and that there is no 'fields' key like in NodeMetaRef:to_table()
+* `from_table(nil or {})`
+    * Clears metadata and replaces it with keys and values in this table. It has to be the same format as the one returned by to_table().
 
 ### `PseudoRandom`
 A 16-bit pseudorandom number generator.

@@ -139,7 +139,7 @@ static std::vector<ItemStack> craftGetItems(
 	for (std::vector<std::string>::size_type i = 0;
 			i < items.size(); i++) {
 		result.push_back(ItemStack(std::string(items[i]), (u16)1,
-			(u16)0, "", gamedef->getItemDefManager()));
+			(u16)0, gamedef->getItemDefManager()));
 	}
 	return result;
 }
