@@ -240,37 +240,6 @@ GUITable* GUIFormSpecMenu::getTable(const std::string &tablename)
 	return 0;
 }
 
-static std::vector<std::string> split(const std::string &s, char delim)
-{
-	std::vector<std::string> tokens;
-
-	std::string current = "";
-	bool last_was_escape = false;
-	for (unsigned int i = 0; i < s.size(); i++) {
-		char si = s.c_str()[i];
-		if (last_was_escape) {
-			current += '\\';
-			current += si;
-			last_was_escape = false;
-		} else {
-			if (si == delim) {
-				tokens.push_back(current);
-				current = "";
-				last_was_escape = false;
-			} else if (si == '\\') {
-				last_was_escape = true;
-			} else {
-				current += si;
-				last_was_escape = false;
-			}
-		}
-	}
-	//push last element
-	tokens.push_back(current);
-
-	return tokens;
-}
-
 void GUIFormSpecMenu::parseSize(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,',');
@@ -609,8 +578,6 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
 		if(!data->explicit_size)
 			warningstream<<"invalid use of button without a size[] element"<<std::endl;
 
-		label = unescape_string(label);
-
 		std::wstring wlabel = utf8_to_wide(label);
 
 		FieldSpec spec(
@@ -733,7 +700,6 @@ void GUIFormSpecMenu::parseTable(parserData* data,std::string element)
 		geom.X = stof(v_geom[0]) * (float)spacing.X;
 		geom.Y = stof(v_geom[1]) * (float)spacing.Y;
 
-
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
 		FieldSpec spec(
@@ -746,7 +712,8 @@ void GUIFormSpecMenu::parseTable(parserData* data,std::string element)
 		spec.ftype = f_Table;
 
 		for (unsigned int i = 0; i < items.size(); ++i) {
-			items[i] = unescape_string(items[i]);
+			items[i] = unescape_string(wide_to_utf8(
+				removeEscapes(utf8_to_wide(items[i]))));
 		}
 
 		//now really show table
@@ -818,7 +785,8 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element)
 		spec.ftype = f_Table;
 
 		for (unsigned int i = 0; i < items.size(); ++i) {
-			items[i] = unescape_string(items[i]);
+			items[i] = unescape_string(wide_to_utf8(
+				removeEscapes(utf8_to_wide(items[i]))));
 		}
 
 		//now really show list
@@ -889,7 +857,7 @@ void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element)
 		}
 
 		for (unsigned int i=0; i < items.size(); i++) {
-			e->addItem(utf8_to_wide(items[i]).c_str());
+			e->addItem(unescape_string(removeEscapes(utf8_to_wide(items[i]))).c_str());
 		}
 
 		if (str_initial_selection != "")
@@ -929,8 +897,6 @@ void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element)
 		geom.Y = m_btn_height*2;
 
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
-
-		label = unescape_string(label);
 
 		std::wstring wlabel = utf8_to_wide(label);
 
@@ -995,8 +961,6 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 	if(m_form_src)
 		default_val = m_form_src->resolveText(default_val);
 
-	default_val = unescape_string(default_val);
-	label = unescape_string(label);
 
 	std::wstring wlabel = utf8_to_wide(label);
 
@@ -1093,9 +1057,6 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 	if(m_form_src)
 		default_val = m_form_src->resolveText(default_val);
 
-
-	default_val = unescape_string(default_val);
-	label = unescape_string(label);
 
 	std::wstring wlabel = utf8_to_wide(label);
 
@@ -1197,7 +1158,6 @@ void GUIFormSpecMenu::parseLabel(parserData* data,std::string element)
 		if(!data->explicit_size)
 			warningstream<<"invalid use of label without a size[] element"<<std::endl;
 
-		text = unescape_string(text);
 		std::vector<std::string> lines = split(text, '\n');
 
 		for (unsigned int i = 0; i != lines.size(); i++) {
@@ -1243,7 +1203,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element)
 		((parts.size() > 2) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
 		std::vector<std::string> v_pos = split(parts[0],',');
-		std::wstring text = utf8_to_wide(unescape_string(parts[1]));
+		std::wstring text = unescape_string(removeEscapes(utf8_to_wide(parts[1])));
 
 		MY_CHECKPOS("vertlabel",1);
 
@@ -1330,7 +1290,6 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 
 		image_name = unescape_string(image_name);
 		pressed_image_name = unescape_string(pressed_image_name);
-		label = unescape_string(label);
 
 		std::wstring wlabel = utf8_to_wide(label);
 
@@ -1430,7 +1389,7 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element)
 		e->setNotClipped(true);
 
 		for (unsigned int i = 0; i < buttons.size(); i++) {
-			e->addTab(utf8_to_wide(buttons[i]).c_str(), -1);
+			e->addTab(unescape_string(removeEscapes(utf8_to_wide(buttons[i]))).c_str(), -1);
 		}
 
 		if ((tab_index >= 0) &&
@@ -1489,7 +1448,6 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 						m_default_tooltip_bgcolor,
 						m_default_tooltip_color);
 
-		label = unescape_string(label);
 		FieldSpec spec(
 			name,
 			utf8_to_wide(label),
@@ -1604,14 +1562,14 @@ void GUIFormSpecMenu::parseTooltip(parserData* data, std::string element)
 	std::vector<std::string> parts = split(element,';');
 	if (parts.size() == 2) {
 		std::string name = parts[0];
-		m_tooltips[name] = TooltipSpec(unescape_string(parts[1]),
+		m_tooltips[name] = TooltipSpec(parts[1],
 			m_default_tooltip_bgcolor, m_default_tooltip_color);
 		return;
 	} else if (parts.size() == 4) {
 		std::string name = parts[0];
 		video::SColor tmp_color1, tmp_color2;
 		if ( parseColorString(parts[2], tmp_color1, false) && parseColorString(parts[3], tmp_color2, false) ) {
-			m_tooltips[name] = TooltipSpec(unescape_string(parts[1]),
+			m_tooltips[name] = TooltipSpec(parts[1],
 				tmp_color1, tmp_color2);
 			return;
 		}
@@ -2243,8 +2201,10 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 
 			// Draw tooltip
 			std::string tooltip_text = "";
-			if (hovering && !m_selected_item)
+			if (hovering && !m_selected_item) {
 				tooltip_text = item.getDefinition(m_gamedef->idef()).description;
+				tooltip_text = wide_to_utf8(removeEscapes(utf8_to_wide(tooltip_text)));
+			}
 			if (tooltip_text != "") {
 				std::vector<std::string> tt_rows = str_split(tooltip_text, '\n');
 				m_tooltip_element->setBackgroundColor(m_default_tooltip_bgcolor);
