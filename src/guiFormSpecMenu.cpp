@@ -2509,7 +2509,7 @@ void GUIFormSpecMenu::drawMenu()
 		if (id != -1 && delta >= m_tooltip_show_delay) {
 			for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
 					iter != m_fields.end(); ++iter) {
-				if ( (iter->fid == id) && (m_tooltips[iter->fname].tooltip != L"") ){
+				if (iter->fid == id && m_tooltips[iter->fname].tooltip != L"") {
 					if (m_old_tooltip != m_tooltips[iter->fname].tooltip) {
 						m_old_tooltip = m_tooltips[iter->fname].tooltip;
 						m_tooltip_element->setText(m_tooltips[iter->fname].tooltip.c_str());
