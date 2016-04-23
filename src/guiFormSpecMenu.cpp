@@ -2243,8 +2243,31 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 
 			// Draw tooltip
 			std::string tooltip_text = "";
-			if (hovering && !m_selected_item)
+			if (hovering && !m_selected_item) {
 				tooltip_text = item.getDefinition(m_gamedef->idef()).description;
+				// Look for first ["title"] in the metadata
+				std::string item_meta = item.metadata;
+				std::string const meta_key = "[\"title\"] = \"";
+				std::string::size_type const key_size = meta_key.size();
+				std::string title_tip = "";
+				if (!item_meta.empty()) {
+					std::string::size_type n1 = item_meta.find(meta_key);
+					if (n1 != std::string::npos && n1+key_size < item_meta.size()) {
+						std::string s = item_meta.substr(n1+key_size);
+						std::string::size_type n2 = 0;
+						while (n2 >= 0 and n2 < s.size()) {
+							n2 = s.find("\"", n2);
+							if (n2 > 0 && s[n2-1] != '\\') {
+								title_tip = s.substr(0, n2);
+								n2 = -1;
+							} else
+								n2++;
+						}
+					}
+				}
+				// Replace description with the title string in tooltip
+				if (!title_tip.empty()) tooltip_text = title_tip;
+			}
 			if (tooltip_text != "") {
 				std::vector<std::string> tt_rows = str_split(tooltip_text, '\n');
 				m_tooltip_element->setBackgroundColor(m_default_tooltip_bgcolor);
