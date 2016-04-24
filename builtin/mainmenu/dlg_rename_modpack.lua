@@ -22,14 +22,12 @@ local function rename_modpack_formspec(dialogdata)
 	dialogdata.mod = modmgr.global_mods:get_list()[dialogdata.selected]
 
 	local retval =
-		"size[12.4,5,true]" ..
-		"label[1.75,1;".. fgettext("Rename Modpack:") .. "]"..
-		"field[4.5,1.4;6,0.5;te_modpack_name;;" ..
-		dialogdata.mod.name ..
-		"]" ..
-		"button[5,4.2;2.6,0.5;dlg_rename_modpack_confirm;"..
+		"size[11.5,4.5,true]" ..
+		"field[2.5,2;7,0.5;te_modpack_name;".. fgettext("Rename Modpack:") .. ";" ..
+		dialogdata.mod.name .. "]" ..
+		"button[3.25,3.5;2.5,0.5;dlg_rename_modpack_confirm;"..
 				fgettext("Accept") .. "]" ..
-		"button[7.5,4.2;2.8,0.5;dlg_rename_modpack_cancel;"..
+		"button[5.75,3.5;2.5,0.5;dlg_rename_modpack_cancel;"..
 				fgettext("Cancel") .. "]"
 	
 	return retval
