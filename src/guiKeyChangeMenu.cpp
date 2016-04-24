@@ -187,7 +187,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 
 	{
 		core::rect < s32 > rect(0, 0, 100, 30);
-		rect += topleft + v2s32(size.X - 100 - 20, size.Y - 40);
+		rect += topleft + v2s32(size.X / 2 - 105, size.Y - 40);
 		const wchar_t *text =  wgettext("Save");
 		Environment->addButton(rect, this, GUI_ID_BACK_BUTTON,
 				 text);
@@ -195,7 +195,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	}
 	{
 		core::rect < s32 > rect(0, 0, 100, 30);
-		rect += topleft + v2s32(size.X - 100 - 20 - 100 - 20, size.Y - 40);
+		rect += topleft + v2s32(size.X / 2 + 5, size.Y - 40);
 		const wchar_t *text = wgettext("Cancel");
 		Environment->addButton(rect, this, GUI_ID_ABORT_BUTTON,
 				text);
