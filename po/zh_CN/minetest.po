@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-02-27 05:49+0100\n"
-"PO-Revision-Date: 2016-03-30 01:31+0000\n"
-"Last-Translator: YFdyh000 <yfdyh000@gmail.com>\n"
+"PO-Revision-Date: 2016-04-24 15:15+0000\n"
+"Last-Translator: Claybiokiller <clay0305@hotmail.com>\n"
 "Language-Team: Chinese (China) "
 "<https://hosted.weblate.org/projects/minetest/minetest/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -255,7 +255,7 @@ msgstr "Mod"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr ""
+msgstr "可选附加一逗号起始的孔隙度参数。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
