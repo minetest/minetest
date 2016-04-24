@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "pathfinder.h"
 #include "environment.h"
+#include "gamedef.h"
+#include "nodedef.h"
 #include "map.h"
 #include "log.h"
 
@@ -381,6 +383,8 @@ v3s16 pathfinder::getRealPos(v3s16 ipos) {
 /******************************************************************************/
 bool pathfinder::build_costmap()
 {
+	INodeDefManager *ndef = m_env->getGameDef()->ndef();
+
 	INFO_TARGET << "Pathfinder build costmap: (" << m_limits.X.min << ","
 												<< m_limits.Z.min << ") ("
 												<< m_limits.X.max << ","
@@ -414,11 +418,10 @@ bool pathfinder::build_costmap()
 				}
 
 				//don't add anything if it isn't an air node
-				if ((current.param0 != CONTENT_AIR) ||
-						(below.param0 == CONTENT_AIR )) {
+				if (ndef->get(current).walkable || !ndef->get(below).walkable) {
 						DEBUG_OUT("Pathfinder: " << PPOS(realpos)
 								<< " not on surface" << std::endl);
-						if (current.param0 != CONTENT_AIR) {
+						if (ndef->get(current).walkable) {
 							m_data[x][z][y].type = 's';
 							DEBUG_OUT(x << "," << y << "," << z << ": " << 's' << std::endl);
 						}
@@ -464,6 +467,7 @@ bool pathfinder::build_costmap()
 /******************************************************************************/
 path_cost pathfinder::calc_cost(v3s16 pos,v3s16 dir) {
 	path_cost retval;
+	INodeDefManager *ndef = m_env->getGameDef()->ndef();
 
 	retval.updated = true;
 
@@ -488,7 +492,7 @@ path_cost pathfinder::calc_cost(v3s16 pos,v3s16 dir) {
 			return retval;
 	}
 
-	if (node_at_pos2.param0 == CONTENT_AIR) {
+	if (!ndef->get(node_at_pos2).walkable) {
 		MapNode node_below_pos2 =
 							m_env->getMap().getNodeNoEx(pos2 + v3s16(0,-1,0));
 
@@ -499,7 +503,7 @@ path_cost pathfinder::calc_cost(v3s16 pos,v3s16 dir) {
 				return retval;
 		}
 
-		if (node_below_pos2.param0 != CONTENT_AIR) {
+		if (ndef->get(node_below_pos2).walkable) {
 			retval.valid = true;
 			retval.value = 1;
 			retval.direction = 0;
@@ -511,7 +515,7 @@ path_cost pathfinder::calc_cost(v3s16 pos,v3s16 dir) {
 			MapNode node_at_pos = m_env->getMap().getNodeNoEx(testpos);
 
 			while ((node_at_pos.param0 != CONTENT_IGNORE) &&
-					(node_at_pos.param0 == CONTENT_AIR) &&
+					(!ndef->get(node_at_pos).walkable) &&
 					(testpos.Y > m_limits.Y.min)) {
 				testpos += v3s16(0,-1,0);
 				node_at_pos = m_env->getMap().getNodeNoEx(testpos);
@@ -520,7 +524,7 @@ path_cost pathfinder::calc_cost(v3s16 pos,v3s16 dir) {
 			//did we find surface?
 			if ((testpos.Y >= m_limits.Y.min) &&
 					(node_at_pos.param0 != CONTENT_IGNORE) &&
-					(node_at_pos.param0 != CONTENT_AIR)) {
+					(ndef->get(node_at_pos).walkable)) {
 				if ((pos2.Y - testpos.Y - 1) <= m_maxdrop) {
 					retval.valid = true;
 					retval.value = 2;
@@ -545,7 +549,7 @@ path_cost pathfinder::calc_cost(v3s16 pos,v3s16 dir) {
 		MapNode node_at_pos = m_env->getMap().getNodeNoEx(testpos);
 
 		while ((node_at_pos.param0 != CONTENT_IGNORE) &&
-				(node_at_pos.param0 != CONTENT_AIR) &&
+				(ndef->get(node_at_pos).walkable) &&
 				(testpos.Y < m_limits.Y.max)) {
 			testpos += v3s16(0,1,0);
 			node_at_pos = m_env->getMap().getNodeNoEx(testpos);
@@ -553,7 +557,7 @@ path_cost pathfinder::calc_cost(v3s16 pos,v3s16 dir) {
 
 		//did we find surface?
 		if ((testpos.Y <= m_limits.Y.max) &&
-				(node_at_pos.param0 == CONTENT_AIR)) {
+				(!ndef->get(node_at_pos).walkable)) {
 
 			if (testpos.Y - pos2.Y <= m_maxjump) {
 				retval.valid = true;
