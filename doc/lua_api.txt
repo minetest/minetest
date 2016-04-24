@@ -1816,6 +1816,14 @@ Call these functions only at load time!
 * `minetest.register_craftitem(name, item definition)`
 * `minetest.register_alias(name, convert_to)`
 * `minetest.register_craft(recipe)`
+    * Check recipe table syntax for different types below.
+* `minetest.clear_craft(recipe)`
+    * Will erase existing craft based either on output item or on input recipe.
+    * Use a same recipe table syntax as for `minetest.register_craft(recipe)`, 
+      but specify either output or input only. If you specify both, input will be ignored.
+    * If there is no erase candidate founded, Lua exception will be thrown.
+    * Warning! Type field ("shaped","cooking" or any other) will be ignored if recipe 
+      contain output. Will be erased all possible crafting recipe independent from crafting method.
 * `minetest.register_ore(ore definition)`
 * `minetest.register_decoration(decoration definition)`
 * `minetest.override_item(name, redefinition)`
@@ -1921,7 +1929,8 @@ Call these functions only at load time!
     * Called when any node metadata inventory receive item.
     * 'pos' - {'x','y','z'} - absolute position of affected node with metadata.
 * `minetest.register_on_nodemeta_inventory_change_item(func(pos, list_name, slot, old_item, new_item))`
-    * Called when any node metadata inventory change it content in slot number 'slot' from 'old_item' ItemStack to 'new_item' ItemStack.
+    * Called when any node metadata inventory change it content in slot number 'slot' from 'old_item' 
+      ItemStack to 'new_item' ItemStack.
     * 'pos' - {'x','y','z'} - absolute position of affected node with metadata.
 * `minetest.register_on_nodemeta_inventory_remove_item(func(pos, list_name, stack))`
     * Called when any node metadata inventory loose item.
@@ -1930,7 +1939,8 @@ Call these functions only at load time!
     * Called when any detached inventory receive item.
     * 'name' - String, name of detached inventory.
 * `minetest.register_on_detached_inventory_change_item(func(name, list_name, slot, old_item, new_item))`
-    * Called when any detached inventory change it content in slot number 'slot' from 'old_item' ItemStack to 'new_item' ItemStack.
+    * Called when any detached inventory change it content in slot number 'slot' from 'old_item' 
+      ItemStack to 'new_item' ItemStack.
     * 'name' - String, name of detached inventory.
 * `minetest.register_on_detached_inventory_remove_item(func(name, list_name, stack))`
     * Called when any detached inventory loose item.
@@ -1938,7 +1948,8 @@ Call these functions only at load time!
 * `minetest.register_on_player_inventory_add_item(func(player, list_name, slot, stack))`
     * Called when any player receive item.
 * `minetest.register_on_player_inventory_change_item(func(player, list_name, slot, old_item, new_item))`
-    * Called when any players' inventory change it content in slot number 'slot' from 'old_item' ItemStack to 'new_item' ItemStack.
+    * Called when any players' inventory change it content in slot number 'slot' from 'old_item' 
+      ItemStack to 'new_item' ItemStack.
 * `minetest.register_on_player_inventory_remove_item(func(player, list_name, stack))`
     * Called when any player loose item.
 
