@@ -107,7 +107,7 @@ OPENSSL_TIMESTAMP = $(OPENSSL_DIR)timestamp
 OPENSSL_TIMESTAMP_INT = $(ROOT)/deps/openssl_timestamp
 OPENSSL_URL = http://www.openssl.org/source/openssl-$(OPENSSL_VERSION).tar.gz
 
-CURL_VERSION = 7.47.0
+CURL_VERSION = 7.48.0
 CURL_DIR = $(ROOT)/deps/curl-$(CURL_VERSION)
 CURL_LIB = $(CURL_DIR)/lib/.libs/libcurl.a
 CURL_TIMESTAMP = $(CURL_DIR)/timestamp
@@ -134,7 +134,7 @@ ICONV_TIMESTAMP = $(ICONV_DIR)timestamp
 ICONV_TIMESTAMP_INT = $(ROOT)/deps/iconv_timestamp
 ICONV_URL_HTTP = http://ftp.gnu.org/pub/gnu/libiconv/libiconv-$(ICONV_VERSION).tar.gz
 
-SQLITE3_FOLDER = sqlite-amalgamation-3100200
+SQLITE3_FOLDER = sqlite-amalgamation-3120200
 SQLITE3_URL = http://www.sqlite.org/2016/$(SQLITE3_FOLDER).zip
 
 -include $(PATHCFGFILE)
@@ -307,7 +307,7 @@ openssl_download :
 
 openssl : $(OPENSSL_LIB)
 
-$(OPENSSL_LIB): $(OPENSSL_TIMESTAMP)
+$(OPENSSL_LIB): $(OPENSSL_TIMESTAMP) $(GMP_LIB)
 	@REFRESH=0;                                                                \
 	if [ ! -e ${OPENSSL_TIMESTAMP_INT} ] ; then                                \
 		echo "${OPENSSL_TIMESTAMP_INT} doesn't exist";                         \
