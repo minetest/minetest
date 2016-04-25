@@ -351,11 +351,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("max_block_generate_distance", "2");
 	settings->setDefault("enable_3d_clouds", "false");
 	settings->setDefault("fps_max", "30");
+	settings->setDefault("pause_fps_max", "10");
 	settings->setDefault("max_objects_per_block", "20");
 	settings->setDefault("sqlite_synchronous", "1");
 	settings->setDefault("gui_scaling", "1.1");
-	settings->setDefault("server_map_save_interval", "20");
-	settings->setDefault("client_unload_unused_data_timeout", "60");
+	settings->setDefault("server_map_save_interval", "15");
 	settings->setDefault("client_mapblock_limit", "500");
 	settings->setDefault("active_block_range", "1");
 	settings->setDefault("chunksize", "3");
