@@ -32,12 +32,12 @@ cd ${0%/*}/..
 grep -q -E '^set\(VERSION_MAJOR [0-9]+\)$' CMakeLists.txt || die "error: Could not find CMakeLists.txt"
 grep -q -E '^set\(VERSION_MINOR [0-9]+\)$' CMakeLists.txt || die "error: Could not find CMakeLists.txt"
 grep -q -E '^set\(VERSION_PATCH [0-9]+\)$' CMakeLists.txt || die "error: Could not find CMakeLists.txt"
-grep -q -E '^ANDROID_VERSION_CODE = [0-9]+$' build/android/Makefile || die "error: Could not find build/android/Makefile"
+grep -q -E 'versionCode [0-9]+$' build/android/build.gradle || die "error: Could not find Android version code"
 
 VERSION_MAJOR=$(grep -E '^set\(VERSION_MAJOR [0-9]+\)$' CMakeLists.txt | tr -dC 0-9)
 VERSION_MINOR=$(grep -E '^set\(VERSION_MINOR [0-9]+\)$' CMakeLists.txt | tr -dC 0-9)
 VERSION_PATCH=$(grep -E '^set\(VERSION_PATCH [0-9]+\)$' CMakeLists.txt | tr -dC 0-9)
-ANDROID_VERSION_CODE=$(grep -E '^ANDROID_VERSION_CODE = [0-9]+$' build/android/Makefile | tr -dC 0-9)
+ANDROID_VERSION_CODE=$(grep -E 'versionCode [0-9]+$' build/android/build.gradle | tr -dC 0-9)
 
 echo "Current Minetest version: $VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH"
 echo "Current Android version code: $ANDROID_VERSION_CODE"
@@ -89,13 +89,13 @@ sed -i -re "s/^set\(VERSION_PATCH [0-9]+\)$/set(VERSION_PATCH $NEW_VERSION_PATCH
 
 sed -i -re "s/^set\(DEVELOPMENT_BUILD TRUE\)$/set(DEVELOPMENT_BUILD FALSE)/" CMakeLists.txt || die "Failed to unset DEVELOPMENT_BUILD"
 
-sed -i -re "s/^ANDROID_VERSION_CODE = [0-9]+$/ANDROID_VERSION_CODE = $NEW_ANDROID_VERSION_CODE/" build/android/Makefile || die "Failed to update ANDROID_VERSION_CODE"
+sed -i -re "s/versionCode [0-9]+$/versionCode $NEW_ANDROID_VERSION_CODE/" build/android/build.gradle || die "Failed to update Android version code"
 
 sed -i -re "1s/[0-9]+\.[0-9]+\.[0-9]+/$NEW_VERSION/g" doc/lua_api.txt || die "Failed to update doc/lua_api.txt"
 
 sed -i -re "1s/[0-9]+\.[0-9]+\.[0-9]+/$NEW_VERSION/g" doc/menu_lua_api.txt || die "Failed to update doc/menu_lua_api.txt"
 
-git add -f CMakeLists.txt build/android/Makefile doc/lua_api.txt doc/menu_lua_api.txt || die "git add failed"
+git add -f CMakeLists.txt build/android/build.gradle doc/lua_api.txt doc/menu_lua_api.txt || die "git add failed"
 
 git commit -m "Bump version to $NEW_VERSION" || die "git commit failed"
 

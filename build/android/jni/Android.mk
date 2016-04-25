@@ -69,13 +69,13 @@ GPROF_DEF=-DGPROF
 endif
 
 LOCAL_CFLAGS := -D_IRR_ANDROID_PLATFORM_      \
-				-DHAVE_TOUCHSCREENGUI         \
-				-DUSE_CURL=1                  \
-				-DUSE_SOUND=1                 \
-				-DUSE_FREETYPE=1              \
-				-DUSE_LEVELDB=$(HAVE_LEVELDB) \
-				$(GPROF_DEF)                  \
-				-pipe -fstrict-aliasing
+		-DHAVE_TOUCHSCREENGUI         \
+		-DUSE_CURL=1                  \
+		-DUSE_SOUND=1                 \
+		-DUSE_FREETYPE=1              \
+		-DUSE_LEVELDB=$(HAVE_LEVELDB) \
+		$(GPROF_DEF)                  \
+		-pipe -fstrict-aliasing
 
 ifndef NDEBUG
 LOCAL_CFLAGS += -g -D_DEBUG -O0 -fno-omit-frame-pointer
@@ -95,8 +95,8 @@ ifeq ($(TARGET_ARCH_ABI),x86)
 LOCAL_CFLAGS += -fno-stack-protector
 endif
 
-LOCAL_C_INCLUDES :=                               \
-		jni/src jni/src/sqlite                    \
+LOCAL_C_INCLUDES := \
+		jni/src                                   \
 		jni/src/script                            \
 		jni/src/lua/src                           \
 		jni/src/json                              \
@@ -111,7 +111,7 @@ LOCAL_C_INCLUDES :=                               \
 		deps/leveldb/include                      \
 		deps/sqlite/
 
-LOCAL_SRC_FILES :=                                \
+LOCAL_SRC_FILES := \
 		jni/src/ban.cpp                           \
 		jni/src/camera.cpp                        \
 		jni/src/cavegen.cpp                       \
@@ -261,7 +261,7 @@ LOCAL_SRC_FILES :=                                \
 # intentionally kept out (we already build openssl itself): jni/src/util/sha256.c
 
 # Network
-LOCAL_SRC_FILES +=                                \
+LOCAL_SRC_FILES += \
 		jni/src/network/connection.cpp            \
 		jni/src/network/networkpacket.cpp         \
 		jni/src/network/clientopcodes.cpp         \
@@ -270,7 +270,7 @@ LOCAL_SRC_FILES +=                                \
 		jni/src/network/serverpackethandler.cpp   \
 
 # lua api
-LOCAL_SRC_FILES +=                                \
+LOCAL_SRC_FILES += \
 		jni/src/script/common/c_content.cpp       \
 		jni/src/script/common/c_converter.cpp     \
 		jni/src/script/common/c_internal.cpp      \
@@ -310,11 +310,10 @@ LOCAL_SRC_FILES +=                                \
 		jni/src/script/scripting_mainmenu.cpp
 
 #freetype2 support
-LOCAL_SRC_FILES +=                                \
-		jni/src/cguittfont/xCGUITTFont.cpp
+LOCAL_SRC_FILES += jni/src/cguittfont/xCGUITTFont.cpp
 
-# lua
-LOCAL_SRC_FILES +=                                \
+# Lua
+LOCAL_SRC_FILES += \
 		jni/src/lua/src/lapi.c                    \
 		jni/src/lua/src/lauxlib.c                 \
 		jni/src/lua/src/lbaselib.c                \
@@ -374,3 +373,4 @@ ifdef GPROF
 $(call import-module,android-ndk-profiler)
 endif
 $(call import-module,android/native_app_glue)
+
