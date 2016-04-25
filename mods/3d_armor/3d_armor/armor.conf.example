@@ -1,0 +1,57 @@
+-- Armor Configuration (defaults)
+
+-- You can remove any unwanted armor materials from this table.
+-- Note that existing armor that is removed will show up as an unknown item.
+ARMOR_MATERIALS = {
+	wood = "group:wood",
+	cactus = "default:cactus",
+	steel = "default:steel_ingot",
+	bronze = "default:bronze_ingot",
+	diamond = "default:diamond",
+	gold = "default:gold_ingot",
+	mithril = "moreores:mithril_ingot",
+	crystal = "ethereal:crystal_ingot",
+}
+
+-- Enable fire protection (defaults true if using ethereal mod)
+ARMOR_FIRE_PROTECT = false
+
+-- Fire protection nodes, (name, protection level, damage)
+ARMOR_FIRE_NODES = {
+	{"default:lava_source",     5, 4},
+	{"default:lava_flowing",    5, 4},
+	{"fire:basic_flame",        3, 4},
+	{"fire:permanent_flame",    3, 4},
+	{"ethereal:crystal_spike",  2, 1},
+	{"ethereal:fire_flower",    2, 1},
+	{"default:torch",           1, 1},
+}
+
+-- Increase this if you get initialization glitches when a player first joins.
+ARMOR_INIT_DELAY = 1
+
+-- Number of initialization attempts.
+-- Use in conjunction with ARMOR_INIT_DELAY if initialization problems persist.
+ARMOR_INIT_TIMES = 1
+
+-- Increase this if armor is not getting into bones due to server lag.
+ARMOR_BONES_DELAY = 1
+
+-- How often player armor/wield items are updated.
+ARMOR_UPDATE_TIME = 1
+
+-- Drop armor when a player dies.
+-- Uses bones mod if present, otherwise items are dropped around the player.
+ARMOR_DROP = true
+
+-- Pulverise armor when a player dies, overrides ARMOR_DROP.
+ARMOR_DESTROY = false
+
+-- You can use this to increase or decrease overall armor effectiveness,
+-- eg: ARMOR_LEVEL_MULTIPLIER = 0.5 will reduce armor level by half.
+ARMOR_LEVEL_MULTIPLIER = 1
+
+-- You can use this to increase or decrease overall armor healing,
+-- eg: ARMOR_HEAL_MULTIPLIER = 0 will disable healing altogether.
+ARMOR_HEAL_MULTIPLIER = 1
+

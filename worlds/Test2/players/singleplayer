@@ -1,0 +1,73 @@
+breath = 11
+hp = 20
+name = singleplayer
+pitch = 3.5
+position = (-8345.55,115,1388.94)
+version = 1
+yaw = 250.04
+PlayerArgsEnd
+List main 32
+Width 0
+Item xdecor:crafting_guide
+Item default:furnace
+Item default:sand 94
+Item default:steel_ingot 3
+Item default:obsidian_shard
+Item default:cobble 2
+Item default:stone 3
+Item default:gold_ingot 3
+Item default:axe_steel
+Item stone_age:ax
+Empty
+Item default:stone 2
+Item default:diamond 99
+Item default:stick 2
+Item default:bronze_ingot 99
+Item default:glass 5
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+EndInventoryList
+List craft 9
+Width 3
+Empty
+Empty
+Empty
+Empty
+Item default:tree 91
+Empty
+Empty
+Empty
+Empty
+EndInventoryList
+List craftpreview 1
+Width 0
+Item default:wood 4
+EndInventoryList
+List craftresult 1
+Width 0
+Empty
+EndInventoryList
+List armor 6
+Width 0
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+EndInventoryList
+EndInventory

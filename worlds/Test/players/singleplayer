@@ -1,0 +1,64 @@
+breath = 11
+hp = 20
+name = singleplayer
+pitch = 11.2
+position = (-82.5,85,137.75)
+version = 1
+yaw = 327.6
+PlayerArgsEnd
+List main 32
+Width 0
+Item default:pick_stone
+Item default:torch 99
+Item default:cobble 99
+Item default:wood 99
+Item default:axe_steel
+Item default:shovel_steel
+Item default:pick_wood
+Item default:pick_steel
+Item default:pick_mese
+Item default:mese 99
+Item default:water_source 99
+Item experimental:tester_tool_1
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+EndInventoryList
+List craft 9
+Width 3
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+Empty
+EndInventoryList
+List craftpreview 1
+Width 0
+Empty
+EndInventoryList
+List craftresult 1
+Width 0
+Empty
+EndInventoryList
+EndInventory

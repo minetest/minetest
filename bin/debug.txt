@@ -1,0 +1,186 @@
+
+
+-------------
+  Separator
+-------------
+
+2016-04-24 22:05:26: WARNING[Main]: NodeDefManager: Ignoring CONTENT_IGNORE redefinition
+2016-04-24 22:05:27: ERROR[Main]: ModError: Failed to load and run script from /home/foghrye4/minetest/bin/../mods/stone_age/init.lua:
+2016-04-24 22:05:27: ERROR[Main]: No crafting specified for output (output="default:axe_bronze")
+2016-04-24 22:05:27: ERROR[Main]: stack traceback:
+2016-04-24 22:05:27: ERROR[Main]: 	[C]: in function 'clear_craft'
+2016-04-24 22:05:27: ERROR[Main]: 	...oghrye4/minetest/bin/../mods/stone_age/craft_recipes.lua:48: in main chunk
+2016-04-24 22:05:27: ERROR[Main]: 	[C]: in function 'dofile'
+2016-04-24 22:05:27: ERROR[Main]: 	/home/foghrye4/minetest/bin/../mods/stone_age/init.lua:11: in main chunk
+2016-04-24 22:05:27: ERROR[Main]: Check debug.txt for details.
+
+
+-------------
+  Separator
+-------------
+
+2016-04-24 22:06:19: WARNING[Main]: NodeDefManager: Ignoring CONTENT_IGNORE redefinition
+2016-04-24 22:06:19: ERROR[Main]: ModError: Failed to load and run script from /home/foghrye4/minetest/bin/../mods/stone_age/init.lua:
+2016-04-24 22:06:19: ERROR[Main]: No crafting specified for output (output="default:axe_bronze")
+2016-04-24 22:06:19: ERROR[Main]: stack traceback:
+2016-04-24 22:06:19: ERROR[Main]: 	[C]: in function 'clear_craft'
+2016-04-24 22:06:19: ERROR[Main]: 	...oghrye4/minetest/bin/../mods/stone_age/craft_recipes.lua:48: in main chunk
+2016-04-24 22:06:19: ERROR[Main]: 	[C]: in function 'dofile'
+2016-04-24 22:06:19: ERROR[Main]: 	/home/foghrye4/minetest/bin/../mods/stone_age/init.lua:11: in main chunk
+2016-04-24 22:06:19: ERROR[Main]: Check debug.txt for details.
+
+
+-------------
+  Separator
+-------------
+
+2016-04-24 22:09:20: WARNING[Main]: NodeDefManager: Ignoring CONTENT_IGNORE redefinition
+2016-04-24 22:09:20: ERROR[Main]: ModError: Failed to load and run script from /home/foghrye4/minetest/bin/../mods/stone_age/init.lua:
+2016-04-24 22:09:20: ERROR[Main]: No crafting specified for output (output="default:axe_bronze")
+2016-04-24 22:09:20: ERROR[Main]: stack traceback:
+2016-04-24 22:09:20: ERROR[Main]: 	[C]: in function 'clear_craft'
+2016-04-24 22:09:20: ERROR[Main]: 	...oghrye4/minetest/bin/../mods/stone_age/craft_recipes.lua:48: in main chunk
+2016-04-24 22:09:20: ERROR[Main]: 	[C]: in function 'dofile'
+2016-04-24 22:09:20: ERROR[Main]: 	/home/foghrye4/minetest/bin/../mods/stone_age/init.lua:11: in main chunk
+2016-04-24 22:09:20: ERROR[Main]: Check debug.txt for details.
+
+
+-------------
+  Separator
+-------------
+
+2016-04-24 22:32:30: WARNING[Main]: NodeDefManager: Ignoring CONTENT_IGNORE redefinition
+2016-04-24 22:32:30: ERROR[Main]: ModError: Failed to load and run script from /home/foghrye4/minetest/bin/../mods/stone_age/init.lua:
+2016-04-24 22:32:30: ERROR[Main]: No crafting specified for output (output="default:axe_bronze")
+2016-04-24 22:32:30: ERROR[Main]: stack traceback:
+2016-04-24 22:32:30: ERROR[Main]: 	[C]: in function 'clear_craft'
+2016-04-24 22:32:30: ERROR[Main]: 	...oghrye4/minetest/bin/../mods/stone_age/craft_recipes.lua:48: in main chunk
+2016-04-24 22:32:30: ERROR[Main]: 	[C]: in function 'dofile'
+2016-04-24 22:32:30: ERROR[Main]: 	/home/foghrye4/minetest/bin/../mods/stone_age/init.lua:11: in main chunk
+2016-04-24 22:32:30: ERROR[Main]: Check debug.txt for details.
+2016-04-24 22:33:37: WARNING[Main]: BanManager: creating /home/foghrye4/minetest/bin/../worlds/2/ipban.txt
+2016-04-24 22:33:37: WARNING[Main]: NodeDefManager: Ignoring CONTENT_IGNORE redefinition
+2016-04-24 22:33:38: ACTION[Main]:         .__               __                   __   
+2016-04-24 22:33:38: ACTION[Main]:   _____ |__| ____   _____/  |_  ____   _______/  |_ 
+2016-04-24 22:33:38: ACTION[Main]:  /     \|  |/    \_/ __ \   __\/ __ \ /  ___/\   __\
+2016-04-24 22:33:38: ACTION[Main]: |  Y Y  \  |   |  \  ___/|  | \  ___/ \___ \  |  |  
+2016-04-24 22:33:38: ACTION[Main]: |__|_|  /__|___|  /\___  >__|  \___  >____  > |__|  
+2016-04-24 22:33:38: ACTION[Main]:       \/        \/     \/          \/     \/        
+2016-04-24 22:33:38: ACTION[Main]: World at [/home/foghrye4/minetest/bin/../worlds/2]
+2016-04-24 22:33:38: ACTION[Main]: Server for gameid="minetest" listening on 0.0.0.0:52350.
+2016-04-24 22:33:38: ACTION[Server]: singleplayer [127.0.0.1] joins game. 
+2016-04-24 22:33:38: ACTION[Server]: singleplayer joins game. List of players: singleplayer
+
+
+-------------
+  Separator
+-------------
+
+2016-04-24 22:53:43: WARNING[Main]: NodeDefManager: Ignoring CONTENT_IGNORE redefinition
+2016-04-24 22:53:43: ERROR[Main]: ModError: Failed to load and run script from /home/foghrye4/minetest/bin/../mods/stone_age/init.lua:
+2016-04-24 22:53:43: ERROR[Main]: No crafting specified for input
+2016-04-24 22:53:43: ERROR[Main]: stack traceback:
+2016-04-24 22:53:43: ERROR[Main]: 	[C]: in function 'clear_craft'
+2016-04-24 22:53:43: ERROR[Main]: 	...oghrye4/minetest/bin/../mods/stone_age/craft_recipes.lua:62: in main chunk
+2016-04-24 22:53:43: ERROR[Main]: 	[C]: in function 'dofile'
+2016-04-24 22:53:43: ERROR[Main]: 	/home/foghrye4/minetest/bin/../mods/stone_age/init.lua:11: in main chunk
+2016-04-24 22:53:43: ERROR[Main]: Check debug.txt for details.
+2016-04-24 22:54:49: WARNING[Main]: NodeDefManager: Ignoring CONTENT_IGNORE redefinition
+2016-04-24 22:54:49: ACTION[Main]:         .__               __                   __   
+2016-04-24 22:54:49: ACTION[Main]:   _____ |__| ____   _____/  |_  ____   _______/  |_ 
+2016-04-24 22:54:49: ACTION[Main]:  /     \|  |/    \_/ __ \   __\/ __ \ /  ___/\   __\
+2016-04-24 22:54:49: ACTION[Main]: |  Y Y  \  |   |  \  ___/|  | \  ___/ \___ \  |  |  
+2016-04-24 22:54:49: ACTION[Main]: |__|_|  /__|___|  /\___  >__|  \___  >____  > |__|  
+2016-04-24 22:54:49: ACTION[Main]:       \/        \/     \/          \/     \/        
+2016-04-24 22:54:49: ACTION[Main]: World at [/home/foghrye4/minetest/bin/../worlds/Test2]
+2016-04-24 22:54:49: ACTION[Main]: Server for gameid="minetest" listening on 0.0.0.0:56439.
+2016-04-24 22:54:50: ACTION[Server]: singleplayer [127.0.0.1] joins game. 
+2016-04-24 22:54:50: ACTION[Server]: singleplayer joins game. List of players: singleplayer
+2016-04-24 22:54:52: ACTION[Server]: singleplayer uses xdecor:crafting_guide, pointing at [nothing]
+2016-04-24 22:55:53: ACTION[Server]: singleplayer uses xdecor:crafting_guide, pointing at [nothing]
+2016-04-24 22:57:08: WARNING[Main]: NodeDefManager: Ignoring CONTENT_IGNORE redefinition
+2016-04-24 22:57:08: ACTION[Main]:         .__               __                   __   
+2016-04-24 22:57:08: ACTION[Main]:   _____ |__| ____   _____/  |_  ____   _______/  |_ 
+2016-04-24 22:57:08: ACTION[Main]:  /     \|  |/    \_/ __ \   __\/ __ \ /  ___/\   __\
+2016-04-24 22:57:08: ACTION[Main]: |  Y Y  \  |   |  \  ___/|  | \  ___/ \___ \  |  |  
+2016-04-24 22:57:08: ACTION[Main]: |__|_|  /__|___|  /\___  >__|  \___  >____  > |__|  
+2016-04-24 22:57:08: ACTION[Main]:       \/        \/     \/          \/     \/        
+2016-04-24 22:57:08: ACTION[Main]: World at [/home/foghrye4/minetest/bin/../worlds/Test2]
+2016-04-24 22:57:08: ACTION[Main]: Server for gameid="minetest" listening on 0.0.0.0:60198.
+2016-04-24 22:57:09: ACTION[Server]: singleplayer [127.0.0.1] joins game. 
+2016-04-24 22:57:09: ACTION[Server]: singleplayer joins game. List of players: singleplayer
+2016-04-24 22:57:14: ACTION[Server]: singleplayer takes default:obsidian_shard from creative inventory
+2016-04-24 22:57:23: ACTION[Server]: lifetimer expired, removed mobs_animal:kitten
+2016-04-24 22:57:27: ACTION[Server]: lifetimer expired, removed mobs_animal:chicken
+2016-04-24 22:57:45: ACTION[Server]: lifetimer expired, removed mobs_animal:sheep_white
+2016-04-24 22:57:55: ACTION[Server]: lifetimer expired, removed mobs_animal:bunny
+2016-04-24 22:57:55: ACTION[Server]: lifetimer expired, removed mobs_animal:bunny
+2016-04-24 22:58:14: ACTION[Server]: lifetimer expired, removed mobs_animal:cow
+2016-04-24 22:58:32: ACTION[Server]: lifetimer expired, removed mobs_animal:cow
+2016-04-24 22:59:00: WARNING[Main]: NodeDefManager: Ignoring CONTENT_IGNORE redefinition
+2016-04-24 22:59:00: ACTION[Main]:         .__               __                   __   
+2016-04-24 22:59:00: ACTION[Main]:   _____ |__| ____   _____/  |_  ____   _______/  |_ 
+2016-04-24 22:59:00: ACTION[Main]:  /     \|  |/    \_/ __ \   __\/ __ \ /  ___/\   __\
+2016-04-24 22:59:00: ACTION[Main]: |  Y Y  \  |   |  \  ___/|  | \  ___/ \___ \  |  |  
+2016-04-24 22:59:00: ACTION[Main]: |__|_|  /__|___|  /\___  >__|  \___  >____  > |__|  
+2016-04-24 22:59:00: ACTION[Main]:       \/        \/     \/          \/     \/        
+2016-04-24 22:59:00: ACTION[Main]: World at [/home/foghrye4/minetest/bin/../worlds/Test2]
+2016-04-24 22:59:00: ACTION[Main]: Server for gameid="minetest" listening on 0.0.0.0:65365.
+2016-04-24 22:59:01: ACTION[Server]: singleplayer [127.0.0.1] joins game. 
+2016-04-24 22:59:01: ACTION[Server]: singleplayer joins game. List of players: singleplayer
+2016-04-24 22:59:28: WARNING[Main]: NodeDefManager: Ignoring CONTENT_IGNORE redefinition
+2016-04-24 22:59:28: ACTION[Main]:         .__               __                   __   
+2016-04-24 22:59:28: ACTION[Main]:   _____ |__| ____   _____/  |_  ____   _______/  |_ 
+2016-04-24 22:59:28: ACTION[Main]:  /     \|  |/    \_/ __ \   __\/ __ \ /  ___/\   __\
+2016-04-24 22:59:28: ACTION[Main]: |  Y Y  \  |   |  \  ___/|  | \  ___/ \___ \  |  |  
+2016-04-24 22:59:28: ACTION[Main]: |__|_|  /__|___|  /\___  >__|  \___  >____  > |__|  
+2016-04-24 22:59:28: ACTION[Main]:       \/        \/     \/          \/     \/        
+2016-04-24 22:59:28: ACTION[Main]: World at [/home/foghrye4/minetest/bin/../worlds/Test2]
+2016-04-24 22:59:28: ACTION[Main]: Server for gameid="minetest" listening on 0.0.0.0:49320.
+2016-04-24 22:59:29: ACTION[Server]: singleplayer [127.0.0.1] joins game. 
+2016-04-24 22:59:29: ACTION[Server]: singleplayer joins game. List of players: singleplayer
+2016-04-24 22:59:51: WARNING[Main]: NodeDefManager: Ignoring CONTENT_IGNORE redefinition
+2016-04-24 22:59:51: ACTION[Main]:         .__               __                   __   
+2016-04-24 22:59:51: ACTION[Main]:   _____ |__| ____   _____/  |_  ____   _______/  |_ 
+2016-04-24 22:59:51: ACTION[Main]:  /     \|  |/    \_/ __ \   __\/ __ \ /  ___/\   __\
+2016-04-24 22:59:51: ACTION[Main]: |  Y Y  \  |   |  \  ___/|  | \  ___/ \___ \  |  |  
+2016-04-24 22:59:51: ACTION[Main]: |__|_|  /__|___|  /\___  >__|  \___  >____  > |__|  
+2016-04-24 22:59:51: ACTION[Main]:       \/        \/     \/          \/     \/        
+2016-04-24 22:59:51: ACTION[Main]: World at [/home/foghrye4/minetest/bin/../worlds/Test2]
+2016-04-24 22:59:51: ACTION[Main]: Server for gameid="minetest" listening on 0.0.0.0:59282.
+2016-04-24 22:59:52: ACTION[Server]: singleplayer [127.0.0.1] joins game. 
+2016-04-24 22:59:52: ACTION[Server]: singleplayer joins game. List of players: singleplayer
+2016-04-24 23:00:10: ACTION[Server]: singleplayer uses xdecor:crafting_guide, pointing at [nothing]
+2016-04-24 23:00:20: ACTION[Server]: lifetimer expired, removed mobs_animal:sheep_white
+2016-04-24 23:00:54: WARNING[Main]: NodeDefManager: Ignoring CONTENT_IGNORE redefinition
+2016-04-24 23:00:54: ACTION[Main]:         .__               __                   __   
+2016-04-24 23:00:54: ACTION[Main]:   _____ |__| ____   _____/  |_  ____   _______/  |_ 
+2016-04-24 23:00:54: ACTION[Main]:  /     \|  |/    \_/ __ \   __\/ __ \ /  ___/\   __\
+2016-04-24 23:00:54: ACTION[Main]: |  Y Y  \  |   |  \  ___/|  | \  ___/ \___ \  |  |  
+2016-04-24 23:00:54: ACTION[Main]: |__|_|  /__|___|  /\___  >__|  \___  >____  > |__|  
+2016-04-24 23:00:54: ACTION[Main]:       \/        \/     \/          \/     \/        
+2016-04-24 23:00:54: ACTION[Main]: World at [/home/foghrye4/minetest/bin/../worlds/Test2]
+2016-04-24 23:00:54: ACTION[Main]: Server for gameid="minetest" listening on 0.0.0.0:58949.
+2016-04-24 23:00:55: ACTION[Server]: singleplayer [127.0.0.1] joins game. 
+2016-04-24 23:00:55: ACTION[Server]: singleplayer joins game. List of players: singleplayer
+2016-04-24 23:01:31: WARNING[Main]: NodeDefManager: Ignoring CONTENT_IGNORE redefinition
+2016-04-24 23:01:31: ACTION[Main]:         .__               __                   __   
+2016-04-24 23:01:31: ACTION[Main]:   _____ |__| ____   _____/  |_  ____   _______/  |_ 
+2016-04-24 23:01:31: ACTION[Main]:  /     \|  |/    \_/ __ \   __\/ __ \ /  ___/\   __\
+2016-04-24 23:01:31: ACTION[Main]: |  Y Y  \  |   |  \  ___/|  | \  ___/ \___ \  |  |  
+2016-04-24 23:01:31: ACTION[Main]: |__|_|  /__|___|  /\___  >__|  \___  >____  > |__|  
+2016-04-24 23:01:31: ACTION[Main]:       \/        \/     \/          \/     \/        
+2016-04-24 23:01:31: ACTION[Main]: World at [/home/foghrye4/minetest/bin/../worlds/Test2]
+2016-04-24 23:01:31: ACTION[Main]: Server for gameid="minetest" listening on 0.0.0.0:63294.
+2016-04-24 23:01:32: ACTION[Server]: singleplayer [127.0.0.1] joins game. 
+2016-04-24 23:01:32: ACTION[Server]: singleplayer joins game. List of players: singleplayer
+2016-04-24 23:01:34: ACTION[Server]: singleplayer uses xdecor:crafting_guide, pointing at [nothing]
+2016-04-24 23:02:30: ACTION[Server]: player singleplayer crafts default:wood 4
+2016-04-24 23:02:30: ACTION[Server]: player singleplayer crafts default:wood 4
+2016-04-24 23:02:30: ACTION[Server]: player singleplayer crafts default:wood 4
+2016-04-24 23:02:30: ACTION[Server]: player singleplayer crafts default:wood 4
+2016-04-24 23:02:30: ACTION[Server]: player singleplayer crafts default:wood 4
+2016-04-24 23:02:31: ACTION[Server]: player singleplayer crafts default:wood 4
+2016-04-24 23:02:31: ACTION[Server]: player singleplayer crafts default:wood 4
+2016-04-24 23:02:44: ACTION[Server]: singleplayer punches object 28: LuaEntitySAO at (-833.858,11.8,137.878)
+2016-04-24 23:02:50: ACTION[Server]: singleplayer uses xdecor:crafting_guide, pointing at [nothing]

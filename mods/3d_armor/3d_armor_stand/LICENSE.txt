@@ -1,0 +1,7 @@
+[mod] 3d Armor Stand [3d_armor_stand]
+=====================================
+
+License Source Code: LGPL v2.1
+
+Lecense Media: CC BY-SA 3.0
+

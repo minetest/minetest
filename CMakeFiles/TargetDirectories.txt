@@ -1,0 +1,5 @@
+/home/foghrye4/minetest/src/CMakeFiles/minetest.dir
+/home/foghrye4/minetest/src/CMakeFiles/GenerateVersion.dir
+/home/foghrye4/minetest/CMakeFiles/doc.dir
+/home/foghrye4/minetest/src/cguittfont/CMakeFiles/cguittfont.dir
+/home/foghrye4/minetest/src/json/CMakeFiles/jsoncpp.dir

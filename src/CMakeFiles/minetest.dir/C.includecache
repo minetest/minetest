@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/foghrye4/minetest/src/util/md32_common.h
+
+/home/foghrye4/minetest/src/util/sha256.c
+stdlib.h
+-
+string.h
+-
+util/sha2.h
+-
+md32_common.h
+/home/foghrye4/minetest/src/util/md32_common.h
+
+src/util/sha2.h
+stddef.h
+-
+

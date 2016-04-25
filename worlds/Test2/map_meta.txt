@@ -1,0 +1,157 @@
+chunksize = 5
+mg_biome_np_heat = {
+	flags = defaults
+	lacunarity = 2
+	octaves = 3
+	offset = 50
+	persistence = 0.5
+	scale = 50
+	seed = 5349
+	spread = (750,750,750)
+}
+mg_biome_np_heat_blend = {
+	flags = defaults
+	lacunarity = 2
+	octaves = 2
+	offset = 0
+	persistence = 1
+	scale = 1.5
+	seed = 13
+	spread = (8,8,8)
+}
+mg_biome_np_humidity = {
+	flags = defaults
+	lacunarity = 2
+	octaves = 3
+	offset = 50
+	persistence = 0.5
+	scale = 50
+	seed = 842
+	spread = (750,750,750)
+}
+mg_biome_np_humidity_blend = {
+	flags = defaults
+	lacunarity = 2
+	octaves = 2
+	offset = 0
+	persistence = 1
+	scale = 1.5
+	seed = 90003
+	spread = (8,8,8)
+}
+mg_flags = notrees, caves, dungeons, noflat, light, decorations
+mg_name = v7
+mgv7_np_cave1 = {
+	flags = defaults
+	lacunarity = 2
+	octaves = 4
+	offset = 0
+	persistence = 0.5
+	scale = 12
+	seed = 52534
+	spread = (96,96,96)
+}
+mgv7_np_cave2 = {
+	flags = defaults
+	lacunarity = 2
+	octaves = 4
+	offset = 0
+	persistence = 0.5
+	scale = 12
+	seed = 10325
+	spread = (96,96,96)
+}
+mgv7_np_filler_depth = {
+	flags = defaults
+	lacunarity = 2
+	octaves = 3
+	offset = 0
+	persistence = 0.7
+	scale = 1.2
+	seed = 261
+	spread = (150,150,150)
+}
+mgv7_np_height_select = {
+	flags = defaults
+	lacunarity = 2
+	octaves = 6
+	offset = -8
+	persistence = 0.7
+	scale = 16
+	seed = 4213
+	spread = (500,500,500)
+}
+mgv7_np_mount_height = {
+	flags = defaults
+	lacunarity = 2
+	octaves = 3
+	offset = 256
+	persistence = 0.6
+	scale = 112
+	seed = 72449
+	spread = (1000,1000,1000)
+}
+mgv7_np_mountain = {
+	flags = defaults
+	lacunarity = 2
+	octaves = 5
+	offset = -0.6
+	persistence = 0.63
+	scale = 1
+	seed = 5333
+	spread = (250,350,250)
+}
+mgv7_np_ridge = {
+	flags = defaults
+	lacunarity = 2
+	octaves = 4
+	offset = 0
+	persistence = 0.75
+	scale = 1
+	seed = 6467
+	spread = (100,100,100)
+}
+mgv7_np_ridge_uwater = {
+	flags = defaults
+	lacunarity = 2
+	octaves = 5
+	offset = 0
+	persistence = 0.6
+	scale = 1
+	seed = 85039
+	spread = (1000,1000,1000)
+}
+mgv7_np_terrain_alt = {
+	flags = defaults
+	lacunarity = 2
+	octaves = 5
+	offset = 4
+	persistence = 0.6
+	scale = 25
+	seed = 5934
+	spread = (600,600,600)
+}
+mgv7_np_terrain_base = {
+	flags = defaults
+	lacunarity = 2
+	octaves = 5
+	offset = 4
+	persistence = 0.6
+	scale = 70
+	seed = 82341
+	spread = (600,600,600)
+}
+mgv7_np_terrain_persist = {
+	flags = defaults
+	lacunarity = 2
+	octaves = 3
+	offset = 0.6
+	persistence = 0.6
+	scale = 0.1
+	seed = 539
+	spread = (2000,2000,2000)
+}
+mgv7_spflags = mountains, ridges
+seed = 273267166427842601
+water_level = 1
+[end_of_params]

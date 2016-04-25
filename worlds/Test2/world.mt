@@ -1,0 +1,14 @@
+gameid = minetest
+backend = sqlite3
+creative_mode = true
+enable_damage = false
+load_mod_stone_age = true
+load_mod_3d_armor = true
+load_mod_3d_armor_stand = true
+load_mod_shields = true
+load_mod_technic_armor = true
+load_mod_wieldview = true
+load_mod_mobs = true
+load_mod_mobs_animal = true
+server_announce = false
+load_mod_craftguide = true

@@ -1,0 +1,2 @@
+/usr/bin/ar cq libcguittfont.a  CMakeFiles/cguittfont.dir/xCGUITTFont.cpp.o
+/usr/bin/ranlib libcguittfont.a

@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "constants.h" // BS
 #include "threading/mutex.h"
-	#include <list>
+#include <list>
 
 #define PLAYERNAME_SIZE 20
 

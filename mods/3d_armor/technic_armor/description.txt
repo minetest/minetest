@@ -1,0 +1,1 @@
+Adds tin, silver and technic materials to 3d_armor.

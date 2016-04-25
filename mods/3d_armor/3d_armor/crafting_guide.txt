@@ -1,0 +1,79 @@
+3d_armor -- Crafting Guide
+--------------------------
+
+Helmets:
+
++---+---+---+
+| X | X | X |
++---+---+---+
+| X |   | X |
++---+---+---+
+|   |   |   |
++---+---+---+
+
+[3d_armor:helmet_wood] X = [default:wood]
+[3d_armor:helmet_cactus] X = [default:cactus]
+[3d_armor:helmet_steel] X = [default:steel_ingot]
+[3d_armor:helmet_bronze] X = [default:bronze_ingot]
+[3d_armor:helmet_diamond] X = [default:diamond]
+[3d_armor:helmet_gold] X = [default:gold_ingot]
+[3d_armor:helmet_mithril] X = [moreores:mithril_ingot] *
+[3d_armor:helmet_crystal] X = [ethereal:crystal_ingot] **
+
+Chestplates:
+
++---+---+---+
+| X |   | X |
++---+---+---+
+| X | X | X |
++---+---+---+
+| X | X | X |
++---+---+---+
+
+[3d_armor:chestplate_wood] X = [default:wood]
+[3d_armor:chestplate_cactus] X = [default:cactus]
+[3d_armor:chestplate_steel] X = [default:steel_ingot]
+[3d_armor:chestplate_bronze] X = [default:bronze_ingot]
+[3d_armor:chestplate_diamond] X = [default:diamond]
+[3d_armor:chestplate_gold] X = [default:gold_ingot]
+[3d_armor:chestplate_mithril] X = [moreores:mithril_ingot] *
+[3d_armor:chestplate_crystal] X = [ethereal:crystal_ingot] **
+
+Leggings:
+
++---+---+---+
+| X | X | X |
++---+---+---+
+| X |   | X |
++---+---+---+
+| X |   | X |
++---+---+---+
+
+[3d_armor:leggings_wood] X = [default:wood]
+[3d_armor:leggings_cactus] X = [default:cactus]
+[3d_armor:leggings_steel] X = [default:steel_ingot]
+[3d_armor:leggings_bronze] X = [default:bronze_ingot]
+[3d_armor:leggings_diamond] X = [default:diamond]
+[3d_armor:leggings_gold] X = [default:gold_ingot]
+[3d_armor:leggings_mithril] X = [moreores:mithril_ingot] *
+[3d_armor:leggings_crystal] X = [ethereal:crystal_ingot] **
+
+Boots:
+
++---+---+---+
+| X |   | X |
++---+---+---+
+| X |   | X |
++---+---+---+
+
+[3d_armor:boots_wood] X = [default:wood]
+[3d_armor:boots_cactus] X = [default:cactus]
+[3d_armor:boots_steel] X = [default:steel_ingot]
+[3d_armor:boots_bronze] X = [default:bronze_ingot
+[3d_armor:boots_diamond] X = [default:diamond]
+[3d_armor:boots_gold] X = [default:gold_ingot]
+[3d_armor:boots_mithril] X = [moreores:mithril_ingot] *
+[3d_armor:boots_crystal] X = [ethereal:crystal_ingot] **
+
+ * Requires moreores mod by Calinou - https://forum.minetest.net/viewtopic.php?id=549
+** Requires ethereal mod by Chinchow & TenPlus1 - https://github.com/tenplus1/ethereal

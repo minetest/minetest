@@ -1,0 +1,216 @@
+
+MOB API
+
+The mob api is a function that can be called on by other mods to add new animals or monsters into minetest.
+
+    minetest.conf settings*
+
+    'enable_damage' if true monsters will attack players (default is true)
+    'only_peaceful_mobs' if true only animals will spawn in game (default is false)
+    'mobs_disable_blood' if false blood effects appear when mob is hit (default is false)
+    'mobs_spawn_protected' if set to 1 then mobs will not spawn in protected areas (default is 0)
+    'remove_far_mobs' if true then mobs that are outside players visual range will be removed (default is false)
+    'mobname_chance' can change specific mob chance rates or set to 0 to disable e.g. mobs_animal:cow_chance = 1000
+
+
+mobs:register_mob(name, definition)
+
+This functions registers a new mob as a Minetest entity.
+
+    'name' is the name of the mob (e.g. "mobs:dirt_monster")
+    definition is a table with the following fields
+        'type' the type of the mob ("monster", "animal" or "npc")
+        'passive' will mob defend itself, set to false to attack
+        'docile_by_day' when true, mob will not attack during daylight hours unless provoked
+        'attacks_monsters' usually for npc's to attack monsters in area
+        'group_attack' true to defend same kind of mobs from attack in area
+        'hp_min' minimum health
+        'hp_max' maximum health (mob health is randomly selected between both)
+        'physical' same is in minetest.register_entity()
+        'collisionbox' same is in minetest.register_entity()
+        'visual' same is in minetest.register_entity()
+        'visual_size' same is in minetest.register_entity()
+        'textures' same is in minetest.register_entity()
+            although you can add multiple lines for random textures {{"texture1.png"},{"texture2.png"}}, 
+        'gotten_texture' alt. texture for when self.gotten value is set to true (used for shearing sheep)
+        'child_texture' texture of mod for when self.child is set to true
+        'mesh' same is in minetest.register_entity()
+        'gotten_mesh' alternative mesh for when self.gotten is true (used for sheep)
+        'makes_footstep_sound' same is in minetest.register_entity()
+        'follow' item when held will cause mob to follow player, can be single string "default:apple" or table {"default:apple", "default:diamond"}
+        'view_range' the range in that the monster will see the playerand follow him
+        'walk_chance' chance of mob walking around
+        'jump_chance' chance of mob jumping around, set above to 0 for jumping mob only
+        'walk_velocity' the velocity when the monster is walking around
+        'run_velocity' the velocity when the monster is attacking a player
+        'runaway' when true mob will turn and run away when punched
+        'stepheight' minimum node height mob can walk onto without jumping (default: 0.6)
+        'jump' can mob jump, true or false
+        'jump_height' height mob can jump, default is 6
+        'fly' can mob fly, true or false (used for swimming mobs also)
+        'fly_in' node name that mob flys inside, e.g "air", "default:water_source" for fish
+        'damage' the damage per second
+        'recovery_time' how much time from when mob is hit to recovery (default: 0.5)
+        'knock_back' strength of knock-back when mob hit (default: 3)
+        'immune_to' table holding special tool/item names and damage the incur e.g.
+            {"default:sword_wood", 0}, {"default:gold_lump", -10} immune to sword, gold lump heals
+        'blood_amount' number of droplets that appear when hit
+        'blood_texture' texture of blood droplets (default: "mobs_blood.png")
+        'drops' is list of tables with the following fields:
+            'name' itemname e.g. default:stone
+            'chance' the inverted chance (same as in abm) to get the item
+            'min' the minimum number of items
+            'max' the maximum number of items
+        'armor' the armor (integer)(3=lowest; 1=highest)(fleshy group is used)
+        'drawtype' "front" or "side" (DEPRECATED, replaced with below)
+        'rotate' set mob rotation, 0=front, 90=side, 180=back, 270=other side
+        'water_damage' the damage per second if the mob is in water
+        'lava_damage' the damage per second if the mob is in lava
+        'light_damage' the damage per second if the mob is in light
+        'fall_damage' will mob be hurt when falling from height
+        'fall_speed' speed mob falls (default: -10 and has to be lower than -2)
+        'fear_height' when mob walks near a drop then anything over this value makes it stop and turn back (default is 0 to disable)
+        'on_die' a function that is called when the mob is killed the parameters are (self, pos)
+        'floats' 1 to float in water, 0 to sink
+        'on_rightclick' its same as in minetest.register_entity()
+        'pathfinding' when true mobs will use pathfinder feature to locate player (only works with dogfight attack)
+        'attack_type' the attack type of a monster
+            'dogfight' follows player in range and attacks when in reach
+            'shoot' shoots defined arrows when player is within range
+            'explode' follows player in range and will flash and explode when in reach
+            'dogshoot' shoots arrows when in range and one on one attack when in reach
+        'explosion_radius' radius of explosion attack (defaults to 1)
+        'arrow' if the attack_type is "shoot" or "dogshoot" then the entity name of the arrow is required
+        'shoot_interval' the minimum shoot interval
+        'shoot_offset' +/- value to position arrow/fireball when fired
+        'reach' how far a reach this mob has, default is 3
+        'sounds' this is a table with sounds of the mob
+            'random' random sounds during gameplay
+            'war_cry' sound when starting to attack player
+            'attack' sound when attacking player
+            'shoot_attack' sound when attacking player by shooting arrow/entity
+            'damage' sound when being hit
+            'death' sound when killed
+            'jump' sound when jumping
+            'explode' sound when exploding
+            'distance' maximum distance sounds are heard from (default is 10)
+        'animation' a table with the animation ranges and speed of the model
+            'stand_start'
+            'stand_end'
+            'walk_start'
+            'walk_end'
+            'run_start'
+            'run_end'
+            'punch_start'
+            'punch_end'
+            'speed_normal'
+            'speed_run' used when mob runs behind player to make animation faster
+            'speed_punch' used when mob punches player to make animation faster
+        'replace_what' group if items to replace e.g. {"farming:wheat_8", "farming:carrot_8"}
+        'replace_with' replace with what e.g. "air" or in chickens case "mobs:egg"
+        'replace_rate' how random should the replace rate be (typically 10)
+        'replace_offset' +/- value to check specific node to replace
+
+
+The mob api also has some preset variables and functions that it will remember for each mob
+
+    'self.gotten' this is used for obtaining milk from cow and wool from sheep
+    'self.horny' when animal fed enough it is set to true and animal can breed with same animal
+    'self.child' used for when breeding animals have child, will use child_texture and be half size
+    'self.owner' string used to set owner of npc mobs, typically used for dogs
+    'self.order' set to "follow" or "stand" so that npc will follow owner or stand it's ground
+    'on_die' a function that is called when mob is killed
+    'do_custom' a custom function that is called every second while mob is active and which has access to all of the self.* variables e.g. (self.health for health or self.standing_in for node status)
+
+
+mobs:register_spawn(name, nodes, max_light, min_light, chance, active_object_count, max_height, day_toggle)
+
+mobs:spawn_specfic(name, nodes, neighbors, min_light, max_light, interval, chance, active_object_count, min_height, max_height, day_toggle)
+
+These functions register a spawn algorithm for the mob. Without this function the call the mobs won't spawn.
+
+    'name' is the name of the animal/monster
+    'nodes' is a list of nodenames on that the animal/monster can spawn on top of
+    'neighbors' is a list of nodenames on that the animal/monster will spawn beside (default is {"air"} for mobs:register_spawn)
+    'max_light' is the maximum of light
+    'min_light' is the minimum of light
+    'interval' is same as in register_abm() (default is 30 for mobs:register_spawn)
+    'chance' is same as in register_abm()
+    'active_object_count' mob is only spawned if active_object_count_wider of ABM is <= this
+    'min_height' is the maximum height the mob can spawn
+    'max_height' is the maximum height the mob can spawn
+    'day_toggle' true for day spawning, false for night or nil for anytime
+
+
+Players can override the spawn chance for each mob registered by adding a line to their minetest.conf file with a new value, the lower the value the more each mob will spawn e.g.
+
+mobs_animal:sheep_chance 11000 or mobs_monster:sand_monster_chance 100
+
+For each mob that spawns with this function is a field in mobs.spawning_mobs. It tells if the mob should spawn or not. Default is true. So other mods can only use the API of this mod by disabling the spawning of the default mobs in this mod.
+
+
+mobs:register_arrow(name, definition)
+
+This function registers a arrow for mobs with the attack type shoot.
+
+    'name' is the name of the arrow
+    -definition' is a table with the following values:
+        'visual' same is in minetest.register_entity()
+        'visual_size' same is in minetest.register_entity()
+        'textures' same is in minetest.register_entity()
+        'velocity' the velocity of the arrow
+        'drop' if set to true any arrows hitting a node will drop as item
+        'hit_player' a function that is called when the arrow hits a player; this function should hurt the player
+            the parameters are (self, player)
+        'hit_mob' a function that is called when the arrow hits a mob; this function should hurt the mob
+            the parameters are (self, player)
+        'hit_node' a function that is called when the arrow hits a node
+            the parameters are (self, pos, node)
+        'tail' when set to 1 adds a trail or tail to mob arrows
+        'tail_texture' texture string used for above effect
+
+
+mobs:register_egg(name, description, background, addegg)
+
+This function registers a spawn egg which can be used by admin to properly spawn in a mob.
+
+    'name' this is the name of your new mob to spawn e.g. "mob:sheep"
+    'description' the name of the new egg you are creating e.g. "Spawn Sheep"
+    'background' the texture displayed for the egg in inventory
+    'addegg' would you like an egg image in front of your texture (1=yes, 0=no)
+    'no_creative' when set to true this stops spawn egg appearing in creative mode for destructive mobs like Dungeon Masters
+
+
+mobs:explosion(pos, radius, fire, smoke)
+
+This function generates an explosion which removes nodes in a specific radius and replace them with fire or air. Protection nodes, obsidian and locked chests will not be destroyed although a normal chest will drop it's contents.
+
+    'pos' centre position of explosion
+    'radius' radius of explosion (typically set to 3)
+    'fire' should fire appear in explosion (1=yes, 0=no)
+    'smoke' should smoke appear in explosion (1=yes, 0=no)
+    'sound' sound played when mob explodes
+
+
+mobs:capture_mob(self, clicker, chance_hand, chance_net, chance_lasso, force_take, replacewith)
+
+This function is generally called inside the on_rightclick section of the mob api code, it provides a chance of capturing the mob by hand, using the net or magic lasso items, and can also have the player take the mob by force if tamed and replace with another item entirely.
+
+    'self' mob information
+    'clicker' player information
+    'chance_hand' chance of capturing mob by hand (1 to 100) 0 to disable
+    'chance_net' chance of capturing mob using net (1 to 100) 0 to disable
+    'chance_lasso' chance of capturing mob using magic lasso (1 to 100) 0 to disable
+    'force_take' take mob by force, even if tamed (true or false)
+    'replacewith' once captured replace mob with this item instead
+
+
+mobs:feed_tame(self, clicker, feed_count, breed)
+
+This function allows the mob to be fed the item inside self.follow be it apple, wheat or whatever a set number of times and be tamed or bred as a result.
+
+    'self' mob information
+    'clicker' player information
+    'feed_count' number of times mob must be fed to tame or breed
+    'breed' true or false stating if mob can be bred and a child created afterwards
+    'tame' true or false stating if mob can be tamed so player can pick them up

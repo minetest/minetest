@@ -1,0 +1,1 @@
+Adds visible shields to 3d armor.
