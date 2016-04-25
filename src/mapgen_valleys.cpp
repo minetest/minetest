@@ -86,25 +86,16 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 			g_settings->getU16("map_generation_limit"));
 
 	MapgenValleysParams *sp = (MapgenValleysParams *)params->sparams;
-	this->spflags = sp->spflags;
 
-	this->humid_rivers       = (spflags & MGVALLEYS_HUMID_RIVERS);
-	this->use_altitude_chill = (spflags & MGVALLEYS_ALT_CHILL);
-
+	this->spflags            = sp->spflags;
 	this->altitude_chill     = sp->altitude_chill;
-	this->humidity_adjust    = params->np_biome_humidity.offset - 50.f;
 	this->large_cave_depth   = sp->large_cave_depth;
 	this->lava_features_lim  = rangelim(sp->lava_features, 0, 10);
 	this->massive_cave_depth = sp->massive_cave_depth;
 	this->river_depth_bed    = sp->river_depth + 1.f;
 	this->river_size_factor  = sp->river_size / 100.f;
 	this->water_features_lim = rangelim(sp->water_features, 0, 10);
-
-	// a small chance of overflows if the settings are very high
-	this->cave_water_max_height = water_level + MYMAX(0, water_features_lim - 4) * 50;
-	this->lava_max_height       = water_level + MYMAX(0, lava_features_lim - 4) * 50;
-
-	tcave_cache = new float[csize.Y + 2];
+	this->cave_width         = sp->cave_width;
 
 	//// 2D Terrain noise
 	noise_filler_depth       = new Noise(&sp->np_filler_depth,       seed, csize.X, csize.Z);
@@ -127,6 +118,16 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 	noise_heat           = new Noise(&params->np_biome_heat,           seed, csize.X, csize.Z);
 	noise_humidity_blend = new Noise(&params->np_biome_humidity_blend, seed, csize.X, csize.Z);
 	noise_humidity       = new Noise(&params->np_biome_humidity,       seed, csize.X, csize.Z);
+
+	this->humid_rivers       = (spflags & MGVALLEYS_HUMID_RIVERS);
+	this->use_altitude_chill = (spflags & MGVALLEYS_ALT_CHILL);
+	this->humidity_adjust    = params->np_biome_humidity.offset - 50.f;
+
+	// a small chance of overflows if the settings are very high
+	this->cave_water_max_height = water_level + MYMAX(0, water_features_lim - 4) * 50;
+	this->lava_max_height       = water_level + MYMAX(0, lava_features_lim - 4) * 50;
+
+	tcave_cache = new float[csize.Y + 2];
 
 	//// Resolve nodes to be used
 	INodeDefManager *ndef = emerge->ndef;
@@ -165,10 +166,6 @@ MapgenValleys::~MapgenValleys()
 	delete noise_cave1;
 	delete noise_cave2;
 	delete noise_filler_depth;
-	delete noise_heat;
-	delete noise_heat_blend;
-	delete noise_humidity;
-	delete noise_humidity_blend;
 	delete noise_inter_valley_fill;
 	delete noise_inter_valley_slope;
 	delete noise_rivers;
@@ -176,6 +173,11 @@ MapgenValleys::~MapgenValleys()
 	delete noise_terrain_height;
 	delete noise_valley_depth;
 	delete noise_valley_profile;
+
+	delete noise_heat;
+	delete noise_heat_blend;
+	delete noise_humidity;
+	delete noise_humidity_blend;
 
 	delete[] biomemap;
 	delete[] heightmap;
@@ -185,8 +187,7 @@ MapgenValleys::~MapgenValleys()
 
 MapgenValleysParams::MapgenValleysParams()
 {
-	spflags = MGVALLEYS_HUMID_RIVERS | MGVALLEYS_ALT_CHILL;
-
+	spflags            = MGVALLEYS_HUMID_RIVERS | MGVALLEYS_ALT_CHILL;
 	altitude_chill     = 90; // The altitude at which temperature drops by 20C.
 	large_cave_depth   = -33;
 	lava_features      = 0;  // How often water will occur in caves.
@@ -194,6 +195,7 @@ MapgenValleysParams::MapgenValleysParams()
 	river_depth        = 4;  // How deep to carve river channels.
 	river_size         = 5;  // How wide to make rivers.
 	water_features     = 0;  // How often water will occur in caves.
+	cave_width         = 0.3;
 
 	np_cave1              = NoiseParams(0,     12,   v3f(96,   96,   96),   52534, 4, 0.5,   2.0);
 	np_cave2              = NoiseParams(0,     12,   v3f(96,   96,   96),   10325, 4, 0.5,   2.0);
@@ -205,56 +207,56 @@ MapgenValleysParams::MapgenValleysParams()
 	np_terrain_height     = NoiseParams(-10.f, 50.f, v3f(1024, 1024, 1024), 5202,  6, 0.4f,  2.f);
 	np_valley_depth       = NoiseParams(5.f,   4.f,  v3f(512,  512,  512),  -1914, 1, 1.f,   2.f);
 	np_valley_profile     = NoiseParams(0.6f,  0.5f, v3f(512,  512,  512),  777,   1, 1.f,   2.f);
-	}
+}
 
 
 void MapgenValleysParams::readParams(const Settings *settings)
 {
-	settings->getFlagStrNoEx("mg_valleys_spflags", spflags, flagdesc_mapgen_valleys);
+	settings->getFlagStrNoEx("mgvalleys_spflags",        spflags, flagdesc_mapgen_valleys);
+	settings->getU16NoEx("mgvalleys_altitude_chill",     altitude_chill);
+	settings->getS16NoEx("mgvalleys_large_cave_depth",   large_cave_depth);
+	settings->getU16NoEx("mgvalleys_lava_features",      lava_features);
+	settings->getS16NoEx("mgvalleys_massive_cave_depth", massive_cave_depth);
+	settings->getU16NoEx("mgvalleys_river_depth",        river_depth);
+	settings->getU16NoEx("mgvalleys_river_size",         river_size);
+	settings->getU16NoEx("mgvalleys_water_features",     water_features);
+	settings->getFloatNoEx("mgvalleys_cave_width",       cave_width);
 
-	settings->getU16NoEx("mg_valleys_altitude_chill",     altitude_chill);
-	settings->getS16NoEx("mg_valleys_large_cave_depth",   large_cave_depth);
-	settings->getU16NoEx("mg_valleys_lava_features",      lava_features);
-	settings->getS16NoEx("mg_valleys_massive_cave_depth", massive_cave_depth);
-	settings->getU16NoEx("mg_valleys_river_depth",        river_depth);
-	settings->getU16NoEx("mg_valleys_river_size",         river_size);
-	settings->getU16NoEx("mg_valleys_water_features",     water_features);
-
-	settings->getNoiseParams("mg_valleys_np_cave1",              np_cave1);
-	settings->getNoiseParams("mg_valleys_np_cave2",              np_cave2);
-	settings->getNoiseParams("mg_valleys_np_filler_depth",       np_filler_depth);
-	settings->getNoiseParams("mg_valleys_np_inter_valley_fill",  np_inter_valley_fill);
-	settings->getNoiseParams("mg_valleys_np_inter_valley_slope", np_inter_valley_slope);
-	settings->getNoiseParams("mg_valleys_np_rivers",             np_rivers);
-	settings->getNoiseParams("mg_valleys_np_massive_caves",      np_massive_caves);
-	settings->getNoiseParams("mg_valleys_np_terrain_height",     np_terrain_height);
-	settings->getNoiseParams("mg_valleys_np_valley_depth",       np_valley_depth);
-	settings->getNoiseParams("mg_valleys_np_valley_profile",     np_valley_profile);
+	settings->getNoiseParams("mgvalleys_np_cave1",              np_cave1);
+	settings->getNoiseParams("mgvalleys_np_cave2",              np_cave2);
+	settings->getNoiseParams("mgvalleys_np_filler_depth",       np_filler_depth);
+	settings->getNoiseParams("mgvalleys_np_inter_valley_fill",  np_inter_valley_fill);
+	settings->getNoiseParams("mgvalleys_np_inter_valley_slope", np_inter_valley_slope);
+	settings->getNoiseParams("mgvalleys_np_rivers",             np_rivers);
+	settings->getNoiseParams("mgvalleys_np_massive_caves",      np_massive_caves);
+	settings->getNoiseParams("mgvalleys_np_terrain_height",     np_terrain_height);
+	settings->getNoiseParams("mgvalleys_np_valley_depth",       np_valley_depth);
+	settings->getNoiseParams("mgvalleys_np_valley_profile",     np_valley_profile);
 }
 
 
 void MapgenValleysParams::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mg_valleys_spflags", spflags, flagdesc_mapgen_valleys, U32_MAX);
+	settings->setFlagStr("mgvalleys_spflags",        spflags, flagdesc_mapgen_valleys, U32_MAX);
+	settings->setU16("mgvalleys_altitude_chill",     altitude_chill);
+	settings->setS16("mgvalleys_large_cave_depth",   large_cave_depth);
+	settings->setU16("mgvalleys_lava_features",      lava_features);
+	settings->setS16("mgvalleys_massive_cave_depth", massive_cave_depth);
+	settings->setU16("mgvalleys_river_depth",        river_depth);
+	settings->setU16("mgvalleys_river_size",         river_size);
+	settings->setU16("mgvalleys_water_features",     water_features);
+	settings->setFloat("mgvalleys_cave_width",       cave_width);
 
-	settings->setU16("mg_valleys_altitude_chill",     altitude_chill);
-	settings->setS16("mg_valleys_large_cave_depth",   large_cave_depth);
-	settings->setU16("mg_valleys_lava_features",      lava_features);
-	settings->setS16("mg_valleys_massive_cave_depth", massive_cave_depth);
-	settings->setU16("mg_valleys_river_depth",        river_depth);
-	settings->setU16("mg_valleys_river_size",         river_size);
-	settings->setU16("mg_valleys_water_features",     water_features);
-
-	settings->setNoiseParams("mg_valleys_np_cave1",              np_cave1);
-	settings->setNoiseParams("mg_valleys_np_cave2",              np_cave2);
-	settings->setNoiseParams("mg_valleys_np_filler_depth",       np_filler_depth);
-	settings->setNoiseParams("mg_valleys_np_inter_valley_fill",  np_inter_valley_fill);
-	settings->setNoiseParams("mg_valleys_np_inter_valley_slope", np_inter_valley_slope);
-	settings->setNoiseParams("mg_valleys_np_rivers",             np_rivers);
-	settings->setNoiseParams("mg_valleys_np_massive_caves",      np_massive_caves);
-	settings->setNoiseParams("mg_valleys_np_terrain_height",     np_terrain_height);
-	settings->setNoiseParams("mg_valleys_np_valley_depth",       np_valley_depth);
-	settings->setNoiseParams("mg_valleys_np_valley_profile",     np_valley_profile);
+	settings->setNoiseParams("mgvalleys_np_cave1",              np_cave1);
+	settings->setNoiseParams("mgvalleys_np_cave2",              np_cave2);
+	settings->setNoiseParams("mgvalleys_np_filler_depth",       np_filler_depth);
+	settings->setNoiseParams("mgvalleys_np_inter_valley_fill",  np_inter_valley_fill);
+	settings->setNoiseParams("mgvalleys_np_inter_valley_slope", np_inter_valley_slope);
+	settings->setNoiseParams("mgvalleys_np_rivers",             np_rivers);
+	settings->setNoiseParams("mgvalleys_np_massive_caves",      np_massive_caves);
+	settings->setNoiseParams("mgvalleys_np_terrain_height",     np_terrain_height);
+	settings->setNoiseParams("mgvalleys_np_valley_depth",       np_valley_depth);
+	settings->setNoiseParams("mgvalleys_np_valley_profile",     np_valley_profile);
 }
 
 
@@ -964,7 +966,7 @@ void MapgenValleys::generateCaves(s16 max_stone_y)
 			// when a tunnel undercuts a river. However, that's not for
 			// the mapgen to correct. Fix it in lua.
 
-			if (d1 * d2 > 0.3f && ndef->get(c).is_ground_content) {
+			if (d1 * d2 > cave_width && ndef->get(c).is_ground_content) {
 				// in a tunnel
 				vm->m_data[index_data] = n_air;
 				tunnel_air_above = true;

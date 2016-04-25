@@ -47,7 +47,6 @@ class BiomeManager;
 
 struct MapgenValleysParams : public MapgenSpecificParams {
 	u32 spflags;
-
 	s16 large_cave_depth;
 	s16 massive_cave_depth;
 	u16 altitude_chill;
@@ -55,11 +54,7 @@ struct MapgenValleysParams : public MapgenSpecificParams {
 	u16 river_depth;
 	u16 river_size;
 	u16 water_features;
-
-	NoiseParams np_biome_heat;
-	NoiseParams np_biome_heat_blend;
-	NoiseParams np_biome_humidity;
-	NoiseParams np_biome_humidity_blend;
+	float cave_width;
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
 	NoiseParams np_filler_depth;
@@ -110,23 +105,29 @@ private:
 
 	float map_gen_limit;
 
-	u32 spflags;
 	bool humid_rivers;
 	bool use_altitude_chill;
+	float humidity_adjust;
+	s16 cave_water_max_height;
+	s16 lava_max_height;
 
 	v3s16 node_min;
 	v3s16 node_max;
 	v3s16 full_node_min;
 	v3s16 full_node_max;
 
+	u32 spflags;
+	float altitude_chill;
+	s16 lava_features_lim;
+	s16 massive_cave_depth;
+	float river_depth_bed;
+	float river_size_factor;
+	float *tcave_cache;
+	s16 water_features_lim;
+	float cave_width;
 	Noise *noise_filler_depth;
-
 	Noise *noise_cave1;
 	Noise *noise_cave2;
-	Noise *noise_heat;
-	Noise *noise_heat_blend;
-	Noise *noise_humidity;
-	Noise *noise_humidity_blend;
 	Noise *noise_inter_valley_fill;
 	Noise *noise_inter_valley_slope;
 	Noise *noise_rivers;
@@ -135,16 +136,10 @@ private:
 	Noise *noise_valley_depth;
 	Noise *noise_valley_profile;
 
-	float altitude_chill;
-	s16 cave_water_max_height;
-	float humidity_adjust;
-	s16 lava_features_lim;
-	s16 lava_max_height;
-	s16 massive_cave_depth;
-	float river_depth_bed;
-	float river_size_factor;
-	float *tcave_cache;
-	s16 water_features_lim;
+	Noise *noise_heat;
+	Noise *noise_heat_blend;
+	Noise *noise_humidity;
+	Noise *noise_humidity_blend;
 
 	content_t c_cobble;
 	content_t c_desert_stone;

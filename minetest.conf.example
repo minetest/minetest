@@ -1098,6 +1098,10 @@
 
 #### Mapgen v5
 
+#    Controls width of tunnels, a smaller value creates wider tunnels.
+#    type: float
+# mgv5_cave_width = 0.125
+
 #    type: noise_params
 # mgv5_np_filler_depth = 0, 1, (150, 150, 150), 261, 4, 0.7, 2.0
 
@@ -1176,6 +1180,10 @@
 #    type: flags possible values: mountains, ridges, nomountains, noridges
 # mgv7_spflags = mountains,ridges
 
+#    Controls width of tunnels, a smaller value creates wider tunnels.
+#    type: float
+# mgv7_cave_width = 0.3
+
 #    type: noise_params
 # mgv7_np_terrain_base = 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0
 
@@ -1228,6 +1236,10 @@
 #    type: int
 # mgflat_large_cave_depth = -33
 
+#    Controls width of tunnels, a smaller value creates wider tunnels.
+#    type: float
+# mgflat_cave_width = 0.3
+
 #    Terrain noise threshold for lakes.
 #    Controls proportion of world area covered by lakes.
 #    Adjust towards 0.0 for a larger proportion.
@@ -1264,6 +1276,10 @@
 # mgflat_np_cave2 = 0, 12, (128, 128, 128), 10325, 4, 0.5, 2.0
 
 #### Mapgen fractal
+
+#    Controls width of tunnels, a smaller value creates wider tunnels.
+#    type: float
+# mgfractal_cave_width = 0.3
 
 #    Choice of 18 fractals from 9 formulas.
 #    1 = 4D "Roundy" mandelbrot set.
@@ -1356,79 +1372,83 @@
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: altitude_chill, noaltitude_chill, humid_rivers, nohumid_rivers
-# mg_valleys_spflags = altitude_chill,humid_rivers
+# mgvalleys_spflags = altitude_chill,humid_rivers
 
 #    The altitude at which temperature drops by 20C
 #    type: int
-# mg_valleys_altitude_chill = 90
+# mgvalleys_altitude_chill = 90
 
 #    Depth below which you'll find large caves.
 #    type: int
-# mg_valleys_large_cave_depth = -33
+# mgvalleys_large_cave_depth = -33
 
 #    Creates unpredictable lava features in caves.
 #    These can make mining difficult. Zero disables them. (0-10)
 #    type: int
-# mg_valleys_lava_features = 0
+# mgvalleys_lava_features = 0
 
 #    Depth below which you'll find massive caves.
 #    type: int
-# mg_valleys_massive_cave_depth = -256
+# mgvalleys_massive_cave_depth = -256
 
 #    How deep to make rivers
 #    type: int
-# mg_valleys_river_depth = 4
+# mgvalleys_river_depth = 4
 
 #    How wide to make rivers
 #    type: int
-# mg_valleys_river_size = 5
+# mgvalleys_river_size = 5
 
 #    Creates unpredictable water features in caves.
 #    These can make mining difficult. Zero disables them. (0-10)
 #    type: int
-# mg_valleys_water_features = 0
+# mgvalleys_water_features = 0
+
+#    Controls width of tunnels, a smaller value creates wider tunnels.
+#    type: float
+# mgvalleys_cave_width = 0.3
 
 ##### Noises
 
 #    Caves and tunnels form at the intersection of the two noises
 #    type: noise_params
-# mg_valleys_np_cave1 = 0, 12, (100, 100, 100), 52534, 4, 0.5, 2.0
+# mgvalleys_np_cave1 = 0, 12, (100, 100, 100), 52534, 4, 0.5, 2.0
 
 #    Caves and tunnels form at the intersection of the two noises
 #    type: noise_params
-# mg_valleys_np_cave2 = 0, 12, (100, 100, 100), 10325, 4, 0.5, 2.0
+# mgvalleys_np_cave2 = 0, 12, (100, 100, 100), 10325, 4, 0.5, 2.0
 
 #    The depth of dirt or other filler
 #    type: noise_params
-# mg_valleys_np_filler_depth = 0, 1.2, (256, 256, 256), 1605, 3, 0.5, 2.0
+# mgvalleys_np_filler_depth = 0, 1.2, (256, 256, 256), 1605, 3, 0.5, 2.0
 
 #    Massive caves form here.
 #    type: noise_params
-# mg_valleys_np_massive_caves = 0, 1, (768, 256, 768), 59033, 6, 0.63, 2.0
+# mgvalleys_np_massive_caves = 0, 1, (768, 256, 768), 59033, 6, 0.63, 2.0
 
 #    River noise -- rivers occur close to zero
 #    type: noise_params
-# mg_valleys_np_rivers = 0, 1, (256, 256, 256), -6050, 5, 0.6, 2.0
+# mgvalleys_np_rivers = 0, 1, (256, 256, 256), -6050, 5, 0.6, 2.0
 
 #    Base terrain height
 #    type: noise_params
-# mg_valleys_np_terrain_height = -10, 50, (1024, 1024, 1024), 5202, 6, 0.4, 2.0
+# mgvalleys_np_terrain_height = -10, 50, (1024, 1024, 1024), 5202, 6, 0.4, 2.0
 
 #    Raises terrain to make valleys around the rivers
 #    type: noise_params
-# mg_valleys_np_valley_depth = 5, 4, (512, 512, 512), -1914, 1, 1.0, 2.0
+# mgvalleys_np_valley_depth = 5, 4, (512, 512, 512), -1914, 1, 1.0, 2.0
 
 #    Slope and fill work together to modify the heights
 #    type: noise_params
-# mg_valleys_np_inter_valley_fill = 0, 1, (256, 512, 256), 1993, 6, 0.8, 2.0
+# mgvalleys_np_inter_valley_fill = 0, 1, (256, 512, 256), 1993, 6, 0.8, 2.0
 
 #    Amplifies the valleys
 #    type: noise_params
-# mg_valleys_np_valley_profile = 0.6, 0.5, (512, 512, 512), 777, 1, 1.0, 2.0
+# mgvalleys_np_valley_profile = 0.6, 0.5, (512, 512, 512), 777, 1, 1.0, 2.0
 
 #    Slope and fill work together to modify the heights
 #    type: noise_params
-# mg_valleys_np_inter_valley_slope = 0.5, 0.5, (128, 128, 128), 746, 1, 1.0, 2.0
+# mgvalleys_np_inter_valley_slope = 0.5, 0.5, (128, 128, 128), 746, 1, 1.0, 2.0
 
 ## Security
 

@@ -67,14 +67,15 @@ MapgenFlat::MapgenFlat(int mapgenid, MapgenParams *params, EmergeManager *emerge
 	this->humidmap        = NULL;
 
 	MapgenFlatParams *sp = (MapgenFlatParams *)params->sparams;
-	this->spflags = sp->spflags;
 
-	this->ground_level = sp->ground_level;
+	this->spflags          = sp->spflags;
+	this->ground_level     = sp->ground_level;
 	this->large_cave_depth = sp->large_cave_depth;
-	this->lake_threshold = sp->lake_threshold;
-	this->lake_steepness = sp->lake_steepness;
-	this->hill_threshold = sp->hill_threshold;
-	this->hill_steepness = sp->hill_steepness;
+	this->cave_width       = sp->cave_width;
+	this->lake_threshold   = sp->lake_threshold;
+	this->lake_steepness   = sp->lake_steepness;
+	this->hill_threshold   = sp->hill_threshold;
+	this->hill_steepness   = sp->hill_steepness;
 
 	//// 2D noise
 	noise_terrain      = new Noise(&sp->np_terrain,      seed, csize.X, csize.Z);
@@ -139,14 +140,14 @@ MapgenFlat::~MapgenFlat()
 
 MapgenFlatParams::MapgenFlatParams()
 {
-	spflags = 0;
-
-	ground_level = 8;
+	spflags          = 0;
+	ground_level     = 8;
 	large_cave_depth = -33;
-	lake_threshold = -0.45;
-	lake_steepness = 48.0;
-	hill_threshold = 0.45;
-	hill_steepness = 64.0;
+	cave_width       = 0.3;
+	lake_threshold   = -0.45;
+	lake_steepness   = 48.0;
+	hill_threshold   = 0.45;
+	hill_steepness   = 64.0;
 
 	np_terrain      = NoiseParams(0, 1,   v3f(600, 600, 600), 7244,  5, 0.6, 2.0);
 	np_filler_depth = NoiseParams(0, 1.2, v3f(150, 150, 150), 261,   3, 0.7, 2.0);
@@ -157,10 +158,10 @@ MapgenFlatParams::MapgenFlatParams()
 
 void MapgenFlatParams::readParams(const Settings *settings)
 {
-	settings->getFlagStrNoEx("mgflat_spflags", spflags, flagdesc_mapgen_flat);
-
+	settings->getFlagStrNoEx("mgflat_spflags",      spflags, flagdesc_mapgen_flat);
 	settings->getS16NoEx("mgflat_ground_level",     ground_level);
 	settings->getS16NoEx("mgflat_large_cave_depth", large_cave_depth);
+	settings->getFloatNoEx("mgflat_cave_width",     cave_width);
 	settings->getFloatNoEx("mgflat_lake_threshold", lake_threshold);
 	settings->getFloatNoEx("mgflat_lake_steepness", lake_steepness);
 	settings->getFloatNoEx("mgflat_hill_threshold", hill_threshold);
@@ -175,10 +176,10 @@ void MapgenFlatParams::readParams(const Settings *settings)
 
 void MapgenFlatParams::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgflat_spflags", spflags, flagdesc_mapgen_flat, U32_MAX);
-
+	settings->setFlagStr("mgflat_spflags",      spflags, flagdesc_mapgen_flat, U32_MAX);
 	settings->setS16("mgflat_ground_level",     ground_level);
 	settings->setS16("mgflat_large_cave_depth", large_cave_depth);
+	settings->setFloat("mgflat_cave_width",     cave_width);
 	settings->setFloat("mgflat_lake_threshold", lake_threshold);
 	settings->setFloat("mgflat_lake_steepness", lake_steepness);
 	settings->setFloat("mgflat_hill_threshold", hill_threshold);
@@ -592,7 +593,7 @@ void MapgenFlat::generateCaves(s16 max_stone_y)
 			float d1 = contour(noise_cave1->result[index3d]);
 			float d2 = contour(noise_cave2->result[index3d]);
 
-			if (d1 * d2 > 0.3f && ndef->get(c).is_ground_content) {
+			if (d1 * d2 > cave_width && ndef->get(c).is_ground_content) {
 				// In tunnel and ground content, excavate
 				vm->m_data[vi] = MapNode(CONTENT_AIR);
 				is_tunnel = true;

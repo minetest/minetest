@@ -34,6 +34,7 @@ extern FlagDesc flagdesc_mapgen_v7[];
 
 struct MapgenV7Params : public MapgenSpecificParams {
 	u32 spflags;
+	float cave_width;
 	NoiseParams np_terrain_base;
 	NoiseParams np_terrain_alt;
 	NoiseParams np_terrain_persist;
@@ -61,7 +62,6 @@ public:
 	int ystride;
 	int zstride_1u1d;
 	int zstride_1d;
-	u32 spflags;
 
 	v3s16 node_min;
 	v3s16 node_max;
@@ -70,6 +70,8 @@ public:
 
 	s16 *ridge_heightmap;
 
+	u32 spflags;
+	float cave_width;
 	Noise *noise_terrain_base;
 	Noise *noise_terrain_alt;
 	Noise *noise_terrain_persist;

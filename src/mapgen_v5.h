@@ -32,6 +32,7 @@ extern FlagDesc flagdesc_mapgen_v5[];
 
 struct MapgenV5Params : public MapgenSpecificParams {
 	u32 spflags;
+	float cave_width;
 	NoiseParams np_filler_depth;
 	NoiseParams np_factor;
 	NoiseParams np_height;
@@ -54,13 +55,14 @@ public:
 
 	int ystride;
 	int zstride_1d;
-	u32 spflags;
 
 	v3s16 node_min;
 	v3s16 node_max;
 	v3s16 full_node_min;
 	v3s16 full_node_max;
 
+	u32 spflags;
+	float cave_width;
 	Noise *noise_filler_depth;
 	Noise *noise_factor;
 	Noise *noise_height;
