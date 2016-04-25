@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modalMenu.h"
 #include "guiTable.h"
 #include "network/networkprotocol.h"
+#include "util/string.h"
 
 class IGameDef;
 class InventoryManager;
@@ -191,18 +192,26 @@ class GUIFormSpecMenu : public GUIModalMenu
 		bool scale;
 	};
 
+	/* The responsibility of unescaping the strings has been shifted
+	 * from the formspec parsing methods to the draw methods.
+	 * There still are a few exceptions:
+	 *  - Vertical label, because it modifies the string by inserting
+	 *    '\n' between each character,
+	 *  - Tab header, because it gives the string immediately to
+	 *    Irrlicht and we can't unescape it later.
+	 */
 	struct FieldSpec
 	{
 		FieldSpec()
 		{
 		}
 		FieldSpec(const std::string &name, const std::wstring &label,
-				const std::wstring &fdeflt, int id) :
+				const std::wstring &default_text, int id) :
 			fname(name),
-			flabel(label),
-			fdefault(fdeflt),
 			fid(id)
 		{
+			flabel = unescape_string(unescape_enriched(label));
+			fdefault = unescape_string(unescape_enriched(default_text));
 			send = false;
 			ftype = f_Unknown;
 			is_exit = false;
@@ -235,12 +244,12 @@ class GUIFormSpecMenu : public GUIModalMenu
 		}
 		TooltipSpec(std::string a_tooltip, irr::video::SColor a_bgcolor,
 				irr::video::SColor a_color):
-			tooltip(a_tooltip),
 			bgcolor(a_bgcolor),
 			color(a_color)
 		{
+			tooltip = unescape_string(unescape_enriched(utf8_to_wide(a_tooltip)));
 		}
-		std::string tooltip;
+		std::wstring tooltip;
 		irr::video::SColor bgcolor;
 		irr::video::SColor color;
 	};
@@ -252,18 +261,18 @@ class GUIFormSpecMenu : public GUIModalMenu
 		}
 		StaticTextSpec(const std::wstring &a_text,
 				const core::rect<s32> &a_rect):
-			text(a_text),
 			rect(a_rect),
 			parent_button(NULL)
 		{
+			text = unescape_string(unescape_enriched(a_text));
 		}
 		StaticTextSpec(const std::wstring &a_text,
 				const core::rect<s32> &a_rect,
 				gui::IGUIButton *a_parent_button):
-			text(a_text),
 			rect(a_rect),
 			parent_button(a_parent_button)
 		{
+			text = unescape_string(unescape_enriched(a_text));
 		}
 		std::wstring text;
 		core::rect<s32> rect;
@@ -406,7 +415,7 @@ protected:
 	u32 m_tooltip_show_delay;
 	s32 m_hovered_time;
 	s32 m_old_tooltip_id;
-	std::string m_old_tooltip;
+	std::wstring m_old_tooltip;
 
 	bool m_rmouse_auto_place;
 
