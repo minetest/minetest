@@ -63,7 +63,9 @@ MapgenV5::MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	this->humidmap  = NULL;
 
 	MapgenV5Params *sp = (MapgenV5Params *)params->sparams;
-	this->spflags      = sp->spflags;
+
+	this->spflags    = sp->spflags;
+	this->cave_width = sp->cave_width;
 
 	// Terrain noise
 	noise_filler_depth = new Noise(&sp->np_filler_depth, seed, csize.X, csize.Z);
@@ -133,7 +135,8 @@ MapgenV5::~MapgenV5()
 
 MapgenV5Params::MapgenV5Params()
 {
-	spflags = 0;
+	spflags    = 0;
+	cave_width = 0.125;
 
 	np_filler_depth = NoiseParams(0, 1,  v3f(150, 150, 150), 261,    4, 0.7,  2.0);
 	np_factor       = NoiseParams(0, 1,  v3f(250, 250, 250), 920381, 3, 0.45, 2.0);
@@ -150,7 +153,8 @@ MapgenV5Params::MapgenV5Params()
 
 void MapgenV5Params::readParams(const Settings *settings)
 {
-	settings->getFlagStrNoEx("mgv5_spflags", spflags, flagdesc_mapgen_v5);
+	settings->getFlagStrNoEx("mgv5_spflags",  spflags, flagdesc_mapgen_v5);
+	settings->getFloatNoEx("mgv5_cave_width", cave_width);
 
 	settings->getNoiseParams("mgv5_np_filler_depth", np_filler_depth);
 	settings->getNoiseParams("mgv5_np_factor",       np_factor);
@@ -163,7 +167,8 @@ void MapgenV5Params::readParams(const Settings *settings)
 
 void MapgenV5Params::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgv5_spflags", spflags, flagdesc_mapgen_v5, U32_MAX);
+	settings->setFlagStr("mgv5_spflags",  spflags, flagdesc_mapgen_v5, U32_MAX);
+	settings->setFloat("mgv5_cave_width", cave_width);
 
 	settings->setNoiseParams("mgv5_np_filler_depth", np_filler_depth);
 	settings->setNoiseParams("mgv5_np_factor",       np_factor);
@@ -598,7 +603,7 @@ void MapgenV5::generateCaves(int max_stone_y)
 			float d1 = contour(noise_cave1->result[index3d]);
 			float d2 = contour(noise_cave2->result[index3d]);
 
-			if (d1 * d2 > 0.125f && ndef->get(c).is_ground_content) {
+			if (d1 * d2 > cave_width && ndef->get(c).is_ground_content) {
 				// In tunnel and ground content, excavate
 				vm->m_data[vi] = MapNode(CONTENT_AIR);
 				is_tunnel = true;

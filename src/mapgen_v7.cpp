@@ -71,7 +71,9 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	this->ridge_heightmap = new s16[csize.X * csize.Z];
 
 	MapgenV7Params *sp = (MapgenV7Params *)params->sparams;
-	this->spflags = sp->spflags;
+
+	this->spflags    = sp->spflags;
+	this->cave_width = sp->cave_width;
 
 	//// Terrain noise
 	noise_terrain_base    = new Noise(&sp->np_terrain_base,    seed, csize.X, csize.Z);
@@ -152,7 +154,8 @@ MapgenV7::~MapgenV7()
 
 MapgenV7Params::MapgenV7Params()
 {
-	spflags = MGV7_MOUNTAINS | MGV7_RIDGES;
+	spflags    = MGV7_MOUNTAINS | MGV7_RIDGES;
+	cave_width = 0.3;
 
 	np_terrain_base    = NoiseParams(4,    70,  v3f(600,  600,  600),  82341, 5, 0.6,  2.0);
 	np_terrain_alt     = NoiseParams(4,    25,  v3f(600,  600,  600),  5934,  5, 0.6,  2.0);
@@ -170,7 +173,8 @@ MapgenV7Params::MapgenV7Params()
 
 void MapgenV7Params::readParams(const Settings *settings)
 {
-	settings->getFlagStrNoEx("mgv7_spflags", spflags, flagdesc_mapgen_v7);
+	settings->getFlagStrNoEx("mgv7_spflags",  spflags, flagdesc_mapgen_v7);
+	settings->getFloatNoEx("mgv7_cave_width", cave_width);
 
 	settings->getNoiseParams("mgv7_np_terrain_base",    np_terrain_base);
 	settings->getNoiseParams("mgv7_np_terrain_alt",     np_terrain_alt);
@@ -188,7 +192,8 @@ void MapgenV7Params::readParams(const Settings *settings)
 
 void MapgenV7Params::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgv7_spflags", spflags, flagdesc_mapgen_v7, U32_MAX);
+	settings->setFlagStr("mgv7_spflags",  spflags, flagdesc_mapgen_v7, U32_MAX);
+	settings->setFloat("mgv7_cave_width", cave_width);
 
 	settings->setNoiseParams("mgv7_np_terrain_base",    np_terrain_base);
 	settings->setNoiseParams("mgv7_np_terrain_alt",     np_terrain_alt);
@@ -735,7 +740,7 @@ void MapgenV7::generateCaves(s16 max_stone_y)
 			float d1 = contour(noise_cave1->result[index3d]);
 			float d2 = contour(noise_cave2->result[index3d]);
 
-			if (d1 * d2 > 0.3f && ndef->get(c).is_ground_content) {
+			if (d1 * d2 > cave_width && ndef->get(c).is_ground_content) {
 				// In tunnel and ground content, excavate
 				vm->m_data[vi] = MapNode(CONTENT_AIR);
 				is_tunnel = true;

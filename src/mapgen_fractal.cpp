@@ -65,21 +65,18 @@ MapgenFractal::MapgenFractal(int mapgenid, MapgenParams *params, EmergeManager *
 	this->humidmap  = NULL;
 
 	MapgenFractalParams *sp = (MapgenFractalParams *)params->sparams;
-	this->spflags = sp->spflags;
 
+	this->spflags    = sp->spflags;
+	this->cave_width = sp->cave_width;
 	this->fractal    = sp->fractal;
 	this->iterations = sp->iterations;
 	this->scale      = sp->scale;
 	this->offset     = sp->offset;
 	this->slice_w    = sp->slice_w;
-
-	this->julia_x = sp->julia_x;
-	this->julia_y = sp->julia_y;
-	this->julia_z = sp->julia_z;
-	this->julia_w = sp->julia_w;
-
-	this->formula = fractal / 2 + fractal % 2;
-	this->julia   = fractal % 2 == 0;
+	this->julia_x    = sp->julia_x;
+	this->julia_y    = sp->julia_y;
+	this->julia_z    = sp->julia_z;
+	this->julia_w    = sp->julia_w;
 
 	//// 2D terrain noise
 	noise_seabed       = new Noise(&sp->np_seabed, seed, csize.X, csize.Z);
@@ -95,6 +92,9 @@ MapgenFractal::MapgenFractal(int mapgenid, MapgenParams *params, EmergeManager *
 	noise_humidity       = new Noise(&params->np_biome_humidity,       seed, csize.X, csize.Z);
 	noise_heat_blend     = new Noise(&params->np_biome_heat_blend,     seed, csize.X, csize.Z);
 	noise_humidity_blend = new Noise(&params->np_biome_humidity_blend, seed, csize.X, csize.Z);
+
+	this->formula = fractal / 2 + fractal % 2;
+	this->julia   = fractal % 2 == 0;
 
 	//// Resolve nodes to be used
 	INodeDefManager *ndef = emerge->ndef;
@@ -144,18 +144,17 @@ MapgenFractal::~MapgenFractal()
 
 MapgenFractalParams::MapgenFractalParams()
 {
-	spflags = 0;
-
-	fractal = 1;
+	spflags    = 0;
+	cave_width = 0.3;
+	fractal    = 1;
 	iterations = 11;
-	scale = v3f(4096.0, 1024.0, 4096.0);
-	offset = v3f(1.79, 0.0, 0.0);
-	slice_w = 0.0;
-
-	julia_x = 0.33;
-	julia_y = 0.33;
-	julia_z = 0.33;
-	julia_w = 0.33;
+	scale      = v3f(4096.0, 1024.0, 4096.0);
+	offset     = v3f(1.79, 0.0, 0.0);
+	slice_w    = 0.0;
+	julia_x    = 0.33;
+	julia_y    = 0.33;
+	julia_z    = 0.33;
+	julia_w    = 0.33;
 
 	np_seabed       = NoiseParams(-14, 9,   v3f(600, 600, 600), 41900, 5, 0.6, 2.0);
 	np_filler_depth = NoiseParams(0,   1.2, v3f(150, 150, 150), 261,   3, 0.7, 2.0);
@@ -166,45 +165,43 @@ MapgenFractalParams::MapgenFractalParams()
 
 void MapgenFractalParams::readParams(const Settings *settings)
 {
-	settings->getFlagStrNoEx("mgfractal_spflags", spflags, flagdesc_mapgen_fractal);
+	settings->getFlagStrNoEx("mgfractal_spflags",  spflags, flagdesc_mapgen_fractal);
+	settings->getFloatNoEx("mgfractal_cave_width", cave_width);
+	settings->getU16NoEx("mgfractal_fractal",      fractal);
+	settings->getU16NoEx("mgfractal_iterations",   iterations);
+	settings->getV3FNoEx("mgfractal_scale",        scale);
+	settings->getV3FNoEx("mgfractal_offset",       offset);
+	settings->getFloatNoEx("mgfractal_slice_w",    slice_w);
+	settings->getFloatNoEx("mgfractal_julia_x",    julia_x);
+	settings->getFloatNoEx("mgfractal_julia_y",    julia_y);
+	settings->getFloatNoEx("mgfractal_julia_z",    julia_z);
+	settings->getFloatNoEx("mgfractal_julia_w",    julia_w);
 
-	settings->getU16NoEx("mgfractal_fractal", fractal);
-	settings->getU16NoEx("mgfractal_iterations", iterations);
-	settings->getV3FNoEx("mgfractal_scale", scale);
-	settings->getV3FNoEx("mgfractal_offset", offset);
-	settings->getFloatNoEx("mgfractal_slice_w", slice_w);
-
-	settings->getFloatNoEx("mgfractal_julia_x", julia_x);
-	settings->getFloatNoEx("mgfractal_julia_y", julia_y);
-	settings->getFloatNoEx("mgfractal_julia_z", julia_z);
-	settings->getFloatNoEx("mgfractal_julia_w", julia_w);
-
-	settings->getNoiseParams("mgfractal_np_seabed", np_seabed);
+	settings->getNoiseParams("mgfractal_np_seabed",       np_seabed);
 	settings->getNoiseParams("mgfractal_np_filler_depth", np_filler_depth);
-	settings->getNoiseParams("mgfractal_np_cave1", np_cave1);
-	settings->getNoiseParams("mgfractal_np_cave2", np_cave2);
+	settings->getNoiseParams("mgfractal_np_cave1",        np_cave1);
+	settings->getNoiseParams("mgfractal_np_cave2",        np_cave2);
 }
 
 
 void MapgenFractalParams::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgfractal_spflags", spflags, flagdesc_mapgen_fractal, U32_MAX);
+	settings->setFlagStr("mgfractal_spflags",  spflags, flagdesc_mapgen_fractal, U32_MAX);
+	settings->setFloat("mgfractal_cave_width", cave_width);
+	settings->setU16("mgfractal_fractal",      fractal);
+	settings->setU16("mgfractal_iterations",   iterations);
+	settings->setV3F("mgfractal_scale",        scale);
+	settings->setV3F("mgfractal_offset",       offset);
+	settings->setFloat("mgfractal_slice_w",    slice_w);
+	settings->setFloat("mgfractal_julia_x",    julia_x);
+	settings->setFloat("mgfractal_julia_y",    julia_y);
+	settings->setFloat("mgfractal_julia_z",    julia_z);
+	settings->setFloat("mgfractal_julia_w",    julia_w);
 
-	settings->setU16("mgfractal_fractal", fractal);
-	settings->setU16("mgfractal_iterations", iterations);
-	settings->setV3F("mgfractal_scale", scale);
-	settings->setV3F("mgfractal_offset", offset);
-	settings->setFloat("mgfractal_slice_w", slice_w);
-
-	settings->setFloat("mgfractal_julia_x", julia_x);
-	settings->setFloat("mgfractal_julia_y", julia_y);
-	settings->setFloat("mgfractal_julia_z", julia_z);
-	settings->setFloat("mgfractal_julia_w", julia_w);
-
-	settings->setNoiseParams("mgfractal_np_seabed", np_seabed);
+	settings->setNoiseParams("mgfractal_np_seabed",       np_seabed);
 	settings->setNoiseParams("mgfractal_np_filler_depth", np_filler_depth);
-	settings->setNoiseParams("mgfractal_np_cave1", np_cave1);
-	settings->setNoiseParams("mgfractal_np_cave2", np_cave2);
+	settings->setNoiseParams("mgfractal_np_cave1",        np_cave1);
+	settings->setNoiseParams("mgfractal_np_cave2",        np_cave2);
 }
 
 
@@ -720,7 +717,7 @@ void MapgenFractal::generateCaves(s16 max_stone_y)
 			float d1 = contour(noise_cave1->result[index3d]);
 			float d2 = contour(noise_cave2->result[index3d]);
 
-			if (d1 * d2 > 0.3f && ndef->get(c).is_ground_content) {
+			if (d1 * d2 > cave_width && ndef->get(c).is_ground_content) {
 				// In tunnel and ground content, excavate
 				vm->m_data[vi] = MapNode(CONTENT_AIR);
 				is_tunnel = true;
