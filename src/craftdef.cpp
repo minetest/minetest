@@ -961,7 +961,7 @@ public:
 		return recipes;
 	}
 
-	virtual bool clearCraftRecipesByOutput(CraftOutput &output, IGameDef *gamedef)
+	virtual bool clearCraftRecipesByOutput(const CraftOutput &output, IGameDef *gamedef)
 	{
 		std::map<std::string, std::vector<CraftDefinition*> >::iterator vec_iter = m_output_craft_definitions.find(output.item);
 
@@ -974,10 +974,10 @@ public:
 			CraftDefinition *def = *i;
 			std::vector<CraftDefinition*> &unhashed_inputs_vec = m_craft_defs[(int) CRAFT_HASH_TYPE_UNHASHED][0]; // Recipes are not yet hashed at this point
 			std::vector<CraftDefinition*> new_vec_by_input;
+			new_vec_by_input.reserve(unhashed_inputs_vec.size());
 			for (std::vector<CraftDefinition*>::iterator i2 = unhashed_inputs_vec.begin();
 				i2 != unhashed_inputs_vec.end(); ++i2) {
-				if(def != *i2)
-				{
+				if (def != *i2) {
 					new_vec_by_input.push_back(*i2);
 				}
 			}
@@ -991,7 +991,7 @@ public:
 	{
 		bool all_empty = true;
 		for (std::vector<std::string>::size_type i = 0;
-			i < recipe.size(); i++) {
+				i < recipe.size(); i++) {
 			if (!recipe[i].empty()) {
 				all_empty = false;
 				break;
@@ -1008,12 +1008,12 @@ public:
 		for (std::vector<CraftDefinition*>::size_type
 			i = unhashed_inputs_vec.size(); i > 0; i--) {
 			CraftDefinition *def = unhashed_inputs_vec[i - 1];
-			CraftOutput output = def->getOutput(input, gamedef); // What first argument for?
-			//If check are not passed, skip 'CraftDefinition' and add element to a new vector.
+			// If the input doesn't match the recipe definition, this recipe definition later will be added back in source map.
 			if (!def->check(input, gamedef)){
 				new_vec_by_input.push_back(def);
 				continue;
 			}
+			CraftOutput output = def->getOutput(input, gamedef);
 			got_hit = true;
 			std::map<std::string, std::vector<CraftDefinition*> >::iterator 
 				vec_iter = m_output_craft_definitions.find(output.item);
@@ -1021,15 +1021,16 @@ public:
 				continue;
 			std::vector<CraftDefinition*> &vec = vec_iter->second;
 			std::vector<CraftDefinition*> new_vec_by_output;
+			new_vec_by_output.reserve(vec.size());
 			for (std::vector<CraftDefinition*>::iterator i = vec.begin();
 				i != vec.end(); ++i) {
-				if(def != *i){ // If pointers from map by input and output are not same, we will add 'CraftDefinition*' to a new vector.
+				if(def != *i) { // If pointers from map by input and output are not same, we will add 'CraftDefinition*' to a new vector.
 					new_vec_by_output.push_back(*i); // Adding dereferenced iterator value (which are 'CraftDefinition' reference) to a new vector.
 				}
 			}
 			m_output_craft_definitions[output.item].swap(new_vec_by_output); // Swaps assigned to current key value with new vector for output map.
 		}
-		if(got_hit)
+		if (got_hit)
 			m_craft_defs[(int) CRAFT_HASH_TYPE_UNHASHED][0].swap(new_vec_by_input); // Swaps value with new vector for input map.
 
 		return got_hit;
