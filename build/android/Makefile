@@ -16,6 +16,7 @@ ROOT = $(shell pwd)
 GAMES_TO_COPY = minetest_game
 MODS_TO_COPY =
 
+ENABLE_SHADERS = 0
 
 VERSION_MAJOR := $(shell cat $(ROOT)/../../CMakeLists.txt | \
 	grep ^set\(VERSION_MAJOR\ | sed 's/)/ /' | cut -f2 -d' ')
@@ -731,10 +732,12 @@ assets : $(ASSETS_TIMESTAMP)
 	cp ${ROOT}/../../README.txt ${ROOT}/assets/Minetest;                       \
 	cp -r ${ROOT}/../../builtin ${ROOT}/assets/Minetest;                       \
 	mkdir ${ROOT}/assets/Minetest/client;                                      \
+ifeq ($(ENABLE_SHADERS),1)                                                     \
 	cp -r ${ROOT}/../../client/shaders ${ROOT}/assets/Minetest/client;         \
+endif                                                                          \
 	cp ${ROOT}/../../doc/lgpl-2.1.txt ${ROOT}/assets/Minetest/LICENSE.txt;     \
 	mkdir ${ROOT}/assets/Minetest/fonts;                                       \
-	cp -r ${ROOT}/../../fonts/*.ttf ${ROOT}/assets/Minetest/fonts/;            \
+	cp -r ${ROOT}/../../fonts/liberationsans ${ROOT}/assets/Minetest/fonts/;   \
 	mkdir ${ROOT}/assets/Minetest/games;                                       \
 	for game in ${GAMES_TO_COPY}; do                                           \
 	    cp -r ${ROOT}/../../games/$$game ${ROOT}/assets/Minetest/games/;       \
