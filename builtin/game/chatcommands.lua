@@ -348,6 +348,9 @@ core.register_chatcommand("teleport", {
 		p.x = tonumber(p.x)
 		p.y = tonumber(p.y)
 		p.z = tonumber(p.z)
+		if p.x < -31000 or p.x > 31000 or p.y < -31000 or p.y > 31000 or p.z < -31000 or p.z > 31000 then
+			return false, "Cannot teleport out of map bounds!"
+		end
 		teleportee = core.get_player_by_name(name)
 		if teleportee and p.x and p.y and p.z then
 			teleportee:setpos(p)
