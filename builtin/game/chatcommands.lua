@@ -348,7 +348,8 @@ core.register_chatcommand("teleport", {
 		p.x = tonumber(p.x)
 		p.y = tonumber(p.y)
 		p.z = tonumber(p.z)
-		if p.x < -31000 or p.x > 31000 or p.y < -31000 or p.y > 31000 or p.z < -31000 or p.z > 31000 then
+		local limit = minetest.setting_get("map_generation_limit") or 31000
+		if p.x < -limit or p.x > limit or p.y < -limit or p.y > limit or p.z < -limit or p.z > limit then
 			return false, "Cannot teleport out of map bounds!"
 		end
 		teleportee = core.get_player_by_name(name)
