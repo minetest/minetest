@@ -337,6 +337,9 @@ public:
 	// env_meta.txt doesn't exist (e.g. new world)
 	void loadDefaultMeta();
 
+	u32 addParticleSpawner(float exptime);
+	void deleteParticleSpawner(u32 id);
+
 	/*
 		External ActiveObject interface
 		-------------------------------------------
@@ -516,6 +519,10 @@ private:
 	// Estimate for general maximum lag as determined by server.
 	// Can raise to high values like 15s with eg. map generation mods.
 	float m_max_lag_estimate;
+
+	// Particles
+	IntervalLimiter m_particle_management_interval;
+	std::map<u32, float> m_particle_spawners;
 };
 
 #ifndef SERVER
