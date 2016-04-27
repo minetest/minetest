@@ -50,6 +50,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define LBM_NAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_:"
 
+// A number that is much smaller than the timeout for particle spawners should/could ever be
+#define PARTICLE_SPAWNER_NO_EXPIRY -1024.f
+
 Environment::Environment():
 	m_time_of_day_speed(0),
 	m_time_of_day(9000),
@@ -1544,6 +1547,49 @@ void ServerEnvironment::step(float dtime)
 		*/
 		removeRemovedObjects();
 	}
+
+	/*
+		Manage particle spawner expiration
+	*/
+	if (m_particle_management_interval.step(dtime, 1.0)) {
+		for (std::map<u32, float>::iterator i = m_particle_spawners.begin();
+				i != m_particle_spawners.end(); ) {
+			//non expiring spawners
+			if (i->second == PARTICLE_SPAWNER_NO_EXPIRY) {
+				++i;
+				continue;
+			}
+
+			i->second -= 1.0f;
+			if (i->second <= 0.f)
+				m_particle_spawners.erase(i++);
+			else
+				++i;
+		}
+	}
+}
+
+u32 ServerEnvironment::addParticleSpawner(float exptime)
+{
+	// Timers with lifetime 0 do not expire
+	float time = exptime > 0.f ? exptime : PARTICLE_SPAWNER_NO_EXPIRY;
+
+	u32 id = 0;
+	for (;;) { // look for unused particlespawner id
+		id++;
+		std::map<u32, float>::iterator f;
+		f = m_particle_spawners.find(id);
+		if (f == m_particle_spawners.end()) {
+			m_particle_spawners[id] = time;
+			break;
+		}
+	}
+	return id;
+}
+
+void ServerEnvironment::deleteParticleSpawner(u32 id)
+{
+	m_particle_spawners.erase(id);
 }
 
 ServerActiveObject* ServerEnvironment::getActiveObject(u16 id)

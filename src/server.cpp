@@ -3194,19 +3194,7 @@ u32 Server::addParticleSpawner(u16 amount, float spawntime,
 		peer_id = player->peer_id;
 	}
 
-	u32 id = 0;
-	for(;;) // look for unused particlespawner id
-	{
-		id++;
-		if (std::find(m_particlespawner_ids.begin(),
-				m_particlespawner_ids.end(), id)
-				== m_particlespawner_ids.end())
-		{
-			m_particlespawner_ids.push_back(id);
-			break;
-		}
-	}
-
+	u32 id = m_env->addParticleSpawner(spawntime);
 	SendAddParticleSpawner(peer_id, amount, spawntime,
 		minpos, maxpos, minvel, maxvel, minacc, maxacc,
 		minexptime, maxexptime, minsize, maxsize,
@@ -3229,11 +3217,14 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 		peer_id = player->peer_id;
 	}
 
-	m_particlespawner_ids.erase(
-			std::remove(m_particlespawner_ids.begin(),
-			m_particlespawner_ids.end(), id),
-			m_particlespawner_ids.end());
+	m_env->deleteParticleSpawner(id);
 	SendDeleteParticleSpawner(peer_id, id);
+}
+
+void Server::deleteParticleSpawnerAll(u32 id)
+{
+	m_env->deleteParticleSpawner(id);
+	SendDeleteParticleSpawner(PEER_ID_INEXISTENT, id);
 }
 
 Inventory* Server::createDetachedInventory(const std::string &name)
