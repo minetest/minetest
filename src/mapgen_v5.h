@@ -70,11 +70,6 @@ public:
 	Noise *noise_cave2;
 	Noise *noise_ground;
 
-	Noise *noise_heat;
-	Noise *noise_humidity;
-	Noise *noise_heat_blend;
-	Noise *noise_humidity_blend;
-
 	content_t c_stone;
 	content_t c_water_source;
 	content_t c_lava_source;
@@ -95,7 +90,7 @@ public:
 	int getSpawnLevelAtPoint(v2s16 p);
 	void calculateNoise();
 	int generateBaseTerrain();
-	MgStoneType generateBiomes(float *heat_map, float *humidity_map);
+	MgStoneType generateBiomes();
 	void generateCaves(int max_stone_y);
 	void dustTopNodes();
 };

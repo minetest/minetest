@@ -528,24 +528,26 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 		return 1;
 	}
 	case MGOBJ_BIOMEMAP: {
-		if (!mg->biomemap)
+		if (!mg->biomegen)
 			return 0;
 
 		lua_newtable(L);
 		for (size_t i = 0; i != maplen; i++) {
-			lua_pushinteger(L, mg->biomemap[i]);
+			lua_pushinteger(L, mg->biomegen->biomemap[i]);
 			lua_rawseti(L, -2, i + 1);
 		}
 
 		return 1;
 	}
 	case MGOBJ_HEATMAP: {
-		if (!mg->heatmap)
+		if (!mg->biomegen || mg->biomegen->getType() != BIOMEGEN_ORIGINAL)
 			return 0;
+
+		BiomeGenOriginal *bg = (BiomeGenOriginal *)mg->biomegen;
 
 		lua_newtable(L);
 		for (size_t i = 0; i != maplen; i++) {
-			lua_pushnumber(L, mg->heatmap[i]);
+			lua_pushnumber(L, bg->heatmap[i]);
 			lua_rawseti(L, -2, i + 1);
 		}
 
@@ -553,12 +555,14 @@ int ModApiMapgen::l_get_mapgen_object(lua_State *L)
 	}
 
 	case MGOBJ_HUMIDMAP: {
-		if (!mg->humidmap)
+		if (!mg->biomegen || mg->biomegen->getType() != BIOMEGEN_ORIGINAL)
 			return 0;
+
+		BiomeGenOriginal *bg = (BiomeGenOriginal *)mg->biomegen;
 
 		lua_newtable(L);
 		for (size_t i = 0; i != maplen; i++) {
-			lua_pushnumber(L, mg->humidmap[i]);
+			lua_pushnumber(L, bg->humidmap[i]);
 			lua_rawseti(L, -2, i + 1);
 		}
 

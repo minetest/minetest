@@ -76,10 +76,9 @@ Mapgen::Mapgen()
 
 	vm        = NULL;
 	ndef      = NULL;
-	heightmap = NULL;
+	biomegen  = NULL;
 	biomemap  = NULL;
-	heatmap   = NULL;
-	humidmap  = NULL;
+	heightmap = NULL;
 }
 
 
@@ -94,11 +93,10 @@ Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge) :
 	csize       = v3s16(1, 1, 1) * (params->chunksize * MAP_BLOCKSIZE);
 
 	vm        = NULL;
-	ndef      = NULL;
-	heightmap = NULL;
+	ndef      = emerge->ndef;
+	biomegen  = NULL;
 	biomemap  = NULL;
-	heatmap   = NULL;
-	humidmap  = NULL;
+	heightmap = NULL;
 }
 
 
@@ -444,6 +442,14 @@ void GenerateNotifier::getEvents(
 //// MapgenParams
 ////
 
+
+MapgenParams::~MapgenParams()
+{
+	delete bparams;
+	delete sparams;
+}
+
+
 void MapgenParams::load(const Settings &settings)
 {
 	std::string seed_str;
@@ -458,10 +464,13 @@ void MapgenParams::load(const Settings &settings)
 	settings.getS16NoEx("water_level", water_level);
 	settings.getS16NoEx("chunksize", chunksize);
 	settings.getFlagStrNoEx("mg_flags", flags, flagdesc_mapgen);
-	settings.getNoiseParams("mg_biome_np_heat", np_biome_heat);
-	settings.getNoiseParams("mg_biome_np_heat_blend", np_biome_heat_blend);
-	settings.getNoiseParams("mg_biome_np_humidity", np_biome_humidity);
-	settings.getNoiseParams("mg_biome_np_humidity_blend", np_biome_humidity_blend);
+
+	delete bparams;
+	bparams = BiomeManager::createBiomeParams(BIOMEGEN_ORIGINAL);
+	if (bparams) {
+		bparams->readParams(&settings);
+		bparams->seed = seed;
+	}
 
 	delete sparams;
 	MapgenFactory *mgfactory = EmergeManager::getMapgenFactory(mg_name);
@@ -479,10 +488,9 @@ void MapgenParams::save(Settings &settings) const
 	settings.setS16("water_level", water_level);
 	settings.setS16("chunksize", chunksize);
 	settings.setFlagStr("mg_flags", flags, flagdesc_mapgen, U32_MAX);
-	settings.setNoiseParams("mg_biome_np_heat", np_biome_heat);
-	settings.setNoiseParams("mg_biome_np_heat_blend", np_biome_heat_blend);
-	settings.setNoiseParams("mg_biome_np_humidity", np_biome_humidity);
-	settings.setNoiseParams("mg_biome_np_humidity_blend", np_biome_humidity_blend);
+
+	if (bparams)
+		bparams->writeParams(&settings);
 
 	if (sparams)
 		sparams->writeParams(&settings);
