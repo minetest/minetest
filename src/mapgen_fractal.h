@@ -88,11 +88,6 @@ public:
 	Noise *noise_cave1;
 	Noise *noise_cave2;
 
-	Noise *noise_heat;
-	Noise *noise_humidity;
-	Noise *noise_heat_blend;
-	Noise *noise_humidity_blend;
-
 	content_t c_stone;
 	content_t c_water_source;
 	content_t c_lava_source;
@@ -114,7 +109,7 @@ public:
 	void calculateNoise();
 	bool getFractalAtPoint(s16 x, s16 y, s16 z);
 	s16 generateTerrain();
-	MgStoneType generateBiomes(float *heat_map, float *humidity_map);
+	MgStoneType generateBiomes();
 	void dustTopNodes();
 	void generateCaves(s16 max_stone_y);
 };

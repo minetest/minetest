@@ -64,10 +64,7 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	// 1-down overgeneration
 	this->zstride_1d = csize.X * (csize.Y + 1);
 
-	this->biomemap        = new u8[csize.X * csize.Z];
 	this->heightmap       = new s16[csize.X * csize.Z];
-	this->heatmap         = NULL;
-	this->humidmap        = NULL;
 	this->ridge_heightmap = new s16[csize.X * csize.Z];
 
 	MapgenV7Params *sp = (MapgenV7Params *)params->sparams;
@@ -92,15 +89,13 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	noise_cave1    = new Noise(&sp->np_cave1,    seed, csize.X, csize.Y + 1, csize.Z);
 	noise_cave2    = new Noise(&sp->np_cave2,    seed, csize.X, csize.Y + 1, csize.Z);
 
-	//// Biome noise
-	noise_heat           = new Noise(&params->np_biome_heat,           seed, csize.X, csize.Z);
-	noise_humidity       = new Noise(&params->np_biome_humidity,       seed, csize.X, csize.Z);
-	noise_heat_blend     = new Noise(&params->np_biome_heat_blend,     seed, csize.X, csize.Z);
-	noise_humidity_blend = new Noise(&params->np_biome_humidity_blend, seed, csize.X, csize.Z);
+	// TODO(hmmmm): should we have a way to disable biomemanager biomes?
+	//// Initialize biome generator
+	biomegen = emerge->biomemgr->createBiomeGen(
+		BIOMEGEN_ORIGINAL, params->bparams, csize);
+	biomemap = biomegen->biomemap;
 
 	//// Resolve nodes to be used
-	INodeDefManager *ndef = emerge->ndef;
-
 	c_stone                = ndef->getId("mapgen_stone");
 	c_water_source         = ndef->getId("mapgen_water_source");
 	c_lava_source          = ndef->getId("mapgen_lava_source");
@@ -141,14 +136,10 @@ MapgenV7::~MapgenV7()
 	delete noise_cave1;
 	delete noise_cave2;
 
-	delete noise_heat;
-	delete noise_humidity;
-	delete noise_heat_blend;
-	delete noise_humidity_blend;
+	delete biomegen;
 
 	delete[] ridge_heightmap;
 	delete[] heightmap;
-	delete[] biomemap;
 }
 
 
@@ -279,12 +270,10 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 	// Update heightmap to include mountain terrain
 	updateHeightmap(node_min, node_max);
 
-	// Create biomemap at heightmap surface
-	bmgr->calcBiomes(csize.X, csize.Z, noise_heat->result,
-		noise_humidity->result, heightmap, biomemap);
-
-	// Actually place the biome-specific nodes
-	MgStoneType stone_type = generateBiomes(noise_heat->result, noise_humidity->result);
+	// Init biome generator, place biome-specific nodes, and build biomemap
+	biomegen->calcBiomeNoise(node_min);
+	biomegen->getBiomes(heightmap);
+	MgStoneType stone_type = generateBiomes();
 
 	if (flags & MG_CAVES)
 		generateCaves(stone_surface_max_y);
@@ -384,32 +373,7 @@ void MapgenV7::calculateNoise()
 	// Cave noises are calculated in generateCaves()
 	// only if solid terrain is present in mapchunk
 
-	noise_filler_depth->perlinMap2D(x, z);
-	noise_heat->perlinMap2D(x, z);
-	noise_humidity->perlinMap2D(x, z);
-	noise_heat_blend->perlinMap2D(x, z);
-	noise_humidity_blend->perlinMap2D(x, z);
-
-	for (s32 i = 0; i < csize.X * csize.Z; i++) {
-		noise_heat->result[i] += noise_heat_blend->result[i];
-		noise_humidity->result[i] += noise_humidity_blend->result[i];
-	}
-
-	heatmap = noise_heat->result;
-	humidmap = noise_humidity->result;
 	//printf("calculateNoise: %dus\n", t.stop());
-}
-
-
-Biome *MapgenV7::getBiomeAtPoint(v3s16 p)
-{
-	float heat = NoisePerlin2D(&noise_heat->np, p.X, p.Z, seed) +
-		NoisePerlin2D(&noise_heat_blend->np, p.X, p.Z, seed);
-	float humidity = NoisePerlin2D(&noise_humidity->np, p.X, p.Z, seed) +
-		NoisePerlin2D(&noise_humidity_blend->np, p.X, p.Z, seed);
-	s16 groundlevel = baseTerrainLevelAtPoint(p.X, p.Z);
-
-	return bmgr->getBiome(heat, humidity, groundlevel);
 }
 
 
@@ -553,7 +517,7 @@ void MapgenV7::generateRidgeTerrain()
 }
 
 
-MgStoneType MapgenV7::generateBiomes(float *heat_map, float *humidity_map)
+MgStoneType MapgenV7::generateBiomes()
 {
 	v3s16 em = vm->m_area.getExtent();
 	u32 index = 0;
@@ -589,7 +553,8 @@ MgStoneType MapgenV7::generateBiomes(float *heat_map, float *humidity_map)
 			// 3. When stone or water is detected but biome has not yet been calculated.
 			if ((c == c_stone && (air_above || water_above || !biome)) ||
 					(c == c_water_source && (air_above || !biome))) {
-				biome = bmgr->getBiome(heat_map[index], humidity_map[index], y);
+				biome = biomegen->getBiomeAtIndex(index, y);
+
 				depth_top = biome->depth_top;
 				base_filler = MYMAX(depth_top + biome->depth_filler
 						+ noise_filler_depth->result[index], 0);

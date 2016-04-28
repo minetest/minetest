@@ -104,7 +104,7 @@ public:
 	int getSpawnLevelAtPoint(v2s16 p);
 	void calculateNoise();
 	s16 generateTerrain();
-	MgStoneType generateBiomes(float *heat_map, float *humidity_map);
+	MgStoneType generateBiomes();
 	void dustTopNodes();
 	void generateCaves(s16 max_stone_y);
 };

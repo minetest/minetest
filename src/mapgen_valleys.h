@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MYCUBE(x) (x) * (x) * (x)
 
 class BiomeManager;
+class BiomeGenOriginal;
 
 // Global profiler
 //class Profiler;
@@ -98,6 +99,7 @@ public:
 private:
 	EmergeManager *m_emerge;
 	BiomeManager *bmgr;
+	BiomeGenOriginal *m_bgen;
 
 	int ystride;
 	int zstride;
@@ -136,11 +138,6 @@ private:
 	Noise *noise_valley_depth;
 	Noise *noise_valley_profile;
 
-	Noise *noise_heat;
-	Noise *noise_heat_blend;
-	Noise *noise_humidity;
-	Noise *noise_humidity_blend;
-
 	content_t c_cobble;
 	content_t c_desert_stone;
 	content_t c_dirt;
@@ -164,9 +161,7 @@ private:
 	float terrainLevelFromNoise(TerrainNoise *tn);
 	float adjustedTerrainLevelFromNoise(TerrainNoise *tn);
 
-	float humidityByTerrain(float humidity_base, float mount, float rivers, float valley);
-
-	MgStoneType generateBiomes(float *heat_map, float *humidity_map);
+	MgStoneType generateBiomes();
 	void dustTopNodes();
 
 	void generateCaves(s16 max_stone_y);

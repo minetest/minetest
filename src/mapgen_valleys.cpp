@@ -68,7 +68,7 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 	: Mapgen(mapgenid, params, emerge)
 {
 	this->m_emerge = emerge;
-	this->bmgr = emerge->biomemgr;
+	this->bmgr     = emerge->biomemgr;
 
 	//// amount of elements to skip for the next index
 	//// for noise/height/biome maps (not vmanip)
@@ -77,15 +77,13 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 	// 1-down overgeneration
 	this->zstride_1d = csize.X * (csize.Y + 1);
 
-	this->biomemap  = new u8[csize.X * csize.Z];
 	this->heightmap = new s16[csize.X * csize.Z];
-	this->heatmap   = NULL;
-	this->humidmap  = NULL;
 
 	this->map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
 			g_settings->getU16("map_generation_limit"));
 
 	MapgenValleysParams *sp = (MapgenValleysParams *)params->sparams;
+	BiomeParamsOriginal *bp = (BiomeParamsOriginal *)params->bparams;
 
 	this->spflags            = sp->spflags;
 	this->altitude_chill     = sp->altitude_chill;
@@ -113,15 +111,16 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 	noise_cave2             = new Noise(&sp->np_cave2,             seed, csize.X, csize.Y + 1, csize.Z);
 	noise_massive_caves     = new Noise(&sp->np_massive_caves,     seed, csize.X, csize.Y + 1, csize.Z);
 
-	//// Biome noise
-	noise_heat_blend     = new Noise(&params->np_biome_heat_blend,     seed, csize.X, csize.Z);
-	noise_heat           = new Noise(&params->np_biome_heat,           seed, csize.X, csize.Z);
-	noise_humidity_blend = new Noise(&params->np_biome_humidity_blend, seed, csize.X, csize.Z);
-	noise_humidity       = new Noise(&params->np_biome_humidity,       seed, csize.X, csize.Z);
+	//// Initialize biome generator
+	// NOTE: valleys mapgen can only use BiomeGenOriginal
+	biomegen = emerge->biomemgr->createBiomeGen(
+		BIOMEGEN_ORIGINAL, params->bparams, csize);
+	biomemap = biomegen->biomemap;
+	m_bgen = (BiomeGenOriginal *)biomegen;
 
 	this->humid_rivers       = (spflags & MGVALLEYS_HUMID_RIVERS);
 	this->use_altitude_chill = (spflags & MGVALLEYS_ALT_CHILL);
-	this->humidity_adjust    = params->np_biome_humidity.offset - 50.f;
+	this->humidity_adjust    = bp->np_humidity.offset - 50.f;
 
 	// a small chance of overflows if the settings are very high
 	this->cave_water_max_height = water_level + MYMAX(0, water_features_lim - 4) * 50;
@@ -130,8 +129,6 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 	tcave_cache = new float[csize.Y + 2];
 
 	//// Resolve nodes to be used
-	INodeDefManager *ndef = emerge->ndef;
-
 	c_cobble               = ndef->getId("mapgen_cobble");
 	c_desert_stone         = ndef->getId("mapgen_desert_stone");
 	c_dirt                 = ndef->getId("mapgen_dirt");
@@ -174,12 +171,8 @@ MapgenValleys::~MapgenValleys()
 	delete noise_valley_depth;
 	delete noise_valley_profile;
 
-	delete noise_heat;
-	delete noise_heat_blend;
-	delete noise_humidity;
-	delete noise_humidity_blend;
+	delete biomegen;
 
-	delete[] biomemap;
 	delete[] heightmap;
 	delete[] tcave_cache;
 }
@@ -293,14 +286,19 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	// Generate noise maps and base terrain height.
 	calculateNoise();
 
+	// Generate biome noises.  Note this must be executed strictly before
+	// generateTerrain, because generateTerrain depends on intermediate
+	// biome-related noises.
+	biomegen->calcBiomeNoise(node_min);
+
 	// Generate base terrain with initial heightmaps
 	s16 stone_surface_max_y = generateTerrain();
 
-	// Create biomemap at heightmap surface
-	bmgr->calcBiomes(csize.X, csize.Z, heatmap, humidmap, heightmap, biomemap);
+	// Build biomemap
+	biomegen->getBiomes(heightmap);
 
-	// Actually place the biome-specific nodes
-	MgStoneType stone_type = generateBiomes(heatmap, humidmap);
+	// Place biome-specific nodes
+	MgStoneType stone_type = generateBiomes();
 
 	// Cave creation.
 	if (flags & MG_CAVES)
@@ -391,10 +389,6 @@ void MapgenValleys::calculateNoise()
 	//TimeTaker tcn("actualNoise");
 
 	noise_filler_depth->perlinMap2D(x, z);
-	noise_heat_blend->perlinMap2D(x, z);
-	noise_heat->perlinMap2D(x, z);
-	noise_humidity_blend->perlinMap2D(x, z);
-	noise_humidity->perlinMap2D(x, z);
 	noise_inter_valley_slope->perlinMap2D(x, z);
 	noise_rivers->perlinMap2D(x, z);
 	noise_terrain_height->perlinMap2D(x, z);
@@ -418,9 +412,8 @@ void MapgenValleys::calculateNoise()
 	}
 
 	for (s32 index = 0; index < csize.X * csize.Z; index++) {
-		noise_heat->result[index] += noise_heat_blend->result[index] + heat_offset;
-		noise_humidity->result[index] *= humidity_scale;
-		noise_humidity->result[index] += noise_humidity_blend->result[index];
+		m_bgen->heatmap[index] += heat_offset;
+		m_bgen->humidmap[index] *= humidity_scale;
 	}
 
 	TerrainNoise tn;
@@ -450,9 +443,6 @@ void MapgenValleys::calculateNoise()
 		float mount = terrainLevelFromNoise(&tn);
 		noise_terrain_height->result[index] = mount;
 	}
-
-	heatmap  = noise_heat->result;
-	humidmap = noise_humidity->result;
 }
 
 
@@ -596,7 +586,7 @@ int MapgenValleys::generateTerrain()
 		float river_y = noise_rivers->result[index_2d];
 		float surface_y = noise_terrain_height->result[index_2d];
 		float slope = noise_inter_valley_slope->result[index_2d];
-		float t_heat = noise_heat->result[index_2d];
+		float t_heat = m_bgen->heatmap[index_2d];
 
 		heightmap[index_2d] = -MAX_MAP_GENERATION_LIMIT;
 
@@ -610,7 +600,7 @@ int MapgenValleys::generateTerrain()
 				t_heat -= alt_to_heat * MYMAX(surface_y, river_y) / altitude_chill;
 
 			// If humidity is low or heat is high, lower the water table.
-			float delta = noise_humidity->result[index_2d] - 50.f;
+			float delta = m_bgen->humidmap[index_2d] - 50.f;
 			if (delta < 0.f) {
 				float t_evap = (t_heat - 32.f) / evaporation;
 				river_y += delta * MYMAX(t_evap, 0.08f);
@@ -672,7 +662,7 @@ int MapgenValleys::generateTerrain()
 			// Use base ground (water table) in a riverbed, to
 			// avoid an unnatural rise in humidity.
 			float t_alt = MYMAX(noise_rivers->result[index_2d], (float)heightmap[index_2d]);
-			float humid = noise_humidity->result[index_2d];
+			float humid = m_bgen->humidmap[index_2d];
 			float water_depth = (t_alt - river_y) / humidity_dropoff;
 			humid *= 1.f + pow(0.5f, MYMAX(water_depth, 1.f));
 
@@ -683,7 +673,7 @@ int MapgenValleys::generateTerrain()
 			if (t_alt > 0.f)
 				humid -= alt_to_humid * t_alt / altitude_chill;
 
-			noise_humidity->result[index_2d] = humid;
+			m_bgen->humidmap[index_2d] = humid;
 		}
 
 		// Assign the heat adjusted by any changed altitudes.
@@ -693,9 +683,9 @@ int MapgenValleys::generateTerrain()
 			float t_alt = MYMAX(noise_rivers->result[index_2d], (float)heightmap[index_2d]);
 			if (humid_rivers && heightmap[index_2d] == (s16)myround(surface_y))
 				// The altitude hasn't changed. Use the first result.
-				noise_heat->result[index_2d] = t_heat;
+				m_bgen->heatmap[index_2d] = t_heat;
 			else if (t_alt > 0.f)
-				noise_heat->result[index_2d] -= alt_to_heat * t_alt / altitude_chill;
+				m_bgen->heatmap[index_2d] -= alt_to_heat * t_alt / altitude_chill;
 		}
 	}
 
@@ -703,7 +693,7 @@ int MapgenValleys::generateTerrain()
 }
 
 
-MgStoneType MapgenValleys::generateBiomes(float *heat_map, float *humidity_map)
+MgStoneType MapgenValleys::generateBiomes()
 {
 	v3s16 em = vm->m_area.getExtent();
 	u32 index = 0;
@@ -739,9 +729,9 @@ MgStoneType MapgenValleys::generateBiomes(float *heat_map, float *humidity_map)
 			// 3. When stone or water is detected but biome has not yet been calculated.
 			if ((c == c_stone && (air_above || water_above || !biome))
 					|| ((c == c_water_source || c == c_river_water_source)
-							&& (air_above || !biome))) {
+						&& (air_above || !biome))) {
 				// Both heat and humidity have already been adjusted for altitude.
-				biome = bmgr->getBiome(heat_map[index], humidity_map[index], y);
+				biome = biomegen->getBiomeAtIndex(index, y);
 
 				depth_top = biome->depth_top;
 				base_filler = MYMAX(depth_top
