@@ -2065,48 +2065,30 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 }
 
 #ifdef __ANDROID__
-bool GUIFormSpecMenu::getAndroidUIInput()
+void GUIFormSpecMenu::handleAndroidInput(void *data, const std::string &text)
 {
-	/* no dialog shown */
-	if (m_JavaDialogFieldName == "") {
-		return false;
-	}
+	GUIFormSpecMenu *menu = static_cast<GUIFormSpecMenu *>(data);
+	// No dialog shown
+	if (menu->m_JavaDialogFieldName.empty())
+		return;
 
-	/* still waiting */
-	if (porting::getInputDialogState() == -1) {
-		return true;
-	}
+	std::string fieldname = menu->m_JavaDialogFieldName;
+	menu->m_JavaDialogFieldName.clear();
 
-	std::string fieldname = m_JavaDialogFieldName;
-	m_JavaDialogFieldName = "";
-
-	/* no value abort dialog processing */
-	if (porting::getInputDialogState() != 0) {
-		return false;
-	}
-
-	for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
-			iter != m_fields.end(); ++iter) {
-
-		if (iter->fname != fieldname) {
+	for (std::vector<FieldSpec>::iterator iter = menu->m_fields.begin();
+			iter != menu->m_fields.end(); ++iter) {
+		if (iter->fname != fieldname)
 			continue;
-		}
-		IGUIElement* tochange = getElementFromId(iter->fid);
 
-		if (tochange == 0) {
-			return false;
-		}
+		IGUIElement *tochange = menu->getElementFromId(iter->fid);
 
-		if (tochange->getType() != irr::gui::EGUIET_EDIT_BOX) {
-			return false;
-		}
+		if (!tochange || tochange->getType() != irr::gui::EGUIET_EDIT_BOX)
+			break;
 
-		std::string text = porting::getInputDialogValue();
-
-		((gui::IGUIEditBox*) tochange)->
-			setText(utf8_to_wide(text).c_str());
+		((gui::IGUIEditBox*)tochange)->setText(
+				utf8_to_wide(text).c_str());
+		break;
 	}
-	return false;
 }
 #endif
 
@@ -2883,41 +2865,29 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		gui::IGUIElement *hovered =
 			Environment->getRootGUIElement()->getElementFromPoint(
 				core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y));
-		if ((hovered) && (hovered->getType() == irr::gui::EGUIET_EDIT_BOX)) {
+		if (hovered && hovered->getType() == irr::gui::EGUIET_EDIT_BOX) {
 			bool retval = hovered->OnEvent(event);
-			if (retval) {
+			if (retval)
 				Environment->setFocus(hovered);
-			}
 			m_JavaDialogFieldName = getNameByID(hovered->getID());
-			std::string message   = gettext("Enter ");
-			std::string label     = wide_to_utf8(getLabelByID(hovered->getID()));
-			if (label == "") {
-				label = "text";
-			}
-			message += gettext(label) + ":";
+			gui::IGUIEditBox *eb = (gui::IGUIEditBox*) hovered;
 
-			/* single line text input */
-			int type = 2;
+			porting::AndroidEditType type = porting::AET_SINGLELINE;
 
-			/* multi line text input */
-			if (((gui::IGUIEditBox*) hovered)->isMultiLineEnabled()) {
-				type = 1;
+			if (eb->isPasswordBox()) {
+				type = porting::AET_PASSWORD;
+			} else if (eb->isMultiLineEnabled()) {
+				type = porting::AET_MULTILINE;
 			}
 
-			/* passwords are always single line */
-			if (((gui::IGUIEditBox*) hovered)->isPasswordBox()) {
-				type = 3;
-			}
-
-			porting::showInputDialog(gettext("ok"), "",
-					wide_to_utf8(((gui::IGUIEditBox*) hovered)->getText()),
-					type);
+			porting::showInputDialog(gettext("OK"), "",
+					wide_to_utf8(eb->getText()), type,
+					handleAndroidInput, this);
 			return retval;
 		}
 	}
 
-	if (event.EventType == EET_TOUCH_INPUT_EVENT)
-	{
+	if (event.EventType == EET_TOUCH_INPUT_EVENT) {
 		SEvent translated;
 		memset(&translated, 0, sizeof(SEvent));
 		translated.EventType   = EET_MOUSE_INPUT_EVENT;
@@ -2972,8 +2942,8 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 					<< "GUIFormSpecMenu::preprocessEvent unexpected usecase Event="
 					<< event.TouchInput.Event << std::endl;
 			}
-		} else if ( (event.TouchInput.touchedCount == 2) &&
-				(event.TouchInput.Event == ETIE_PRESSED_DOWN) ) {
+		} else if (event.TouchInput.touchedCount == 2 &&
+				event.TouchInput.Event == ETIE_PRESSED_DOWN) {
 			hovered = root->getElementFromPoint(m_down_pos);
 
 			translated.MouseInput.Event = EMIE_RMOUSE_PRESSED_DOWN;

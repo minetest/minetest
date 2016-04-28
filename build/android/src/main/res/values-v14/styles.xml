@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<style name="LatestTheme" parent="@android:style/Theme.DeviceDefault.NoActionBar" />
+	<style name="LatestHorizontalProgressBar"
+		parent="@android:style/Widget.DeviceDefault.ProgressBar.Horizontal" />
+</resources>

@@ -15,6 +15,7 @@ APP_ROOT = $(ANDR_ROOT)/src/main
 GAMES_TO_COPY = minetest_game
 MODS_TO_COPY =
 
+PROJECT_NAME = Minetest
 
 VERSION_MAJOR := $(shell cat $(PROJ_ROOT)/CMakeLists.txt | \
 	grep ^set\(VERSION_MAJOR\ | sed 's/)/ /' | cut -f2 -d' ')
@@ -315,7 +316,8 @@ $(OPENSSL_LIB): $(OPENSSL_TIMESTAMP) $(GMP_LIB)
 		--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                     \
 		--install-dir=$${TOOLCHAIN};                                           \
 	export PATH="$${TOOLCHAIN}/bin:$${PATH}";                                  \
-	CC=${CROSS_PREFIX}gcc ./Configure enable-gmp -DL_ENDIAN -I${GMP_DIR} -L${GMP_DIR}/usr/lib android-${TARGET_ARCH};\
+	CC=${CROSS_PREFIX}gcc ./Configure enable-gmp -fPIC -DL_ENDIAN -I${GMP_DIR} \
+		-L${GMP_DIR}/usr/lib android-${TARGET_ARCH};                           \
 	CC=${CROSS_PREFIX}gcc ANDROID_DEV=/tmp/ndk-${TARGET_HOST} make depend;     \
 	CC=${CROSS_PREFIX}gcc ANDROID_DEV=/tmp/ndk-${TARGET_HOST} make build_libs; \
 	touch ${OPENSSL_TIMESTAMP};                                                \
@@ -711,27 +713,27 @@ assets : $(ASSETS_TIMESTAMP)
 	if [ $$REFRESH -ne 0 ] ; then                                              \
 	echo "assets changed, refreshing...";                                      \
 	$(MAKE) clean_assets;                                                      \
-	mkdir -p ${APP_ROOT}/assets/Minetest;                                      \
-	cp ${PROJ_ROOT}/minetest.conf.example ${APP_ROOT}/assets/Minetest;         \
-	cp ${PROJ_ROOT}/README.txt ${APP_ROOT}/assets/Minetest;                    \
-	cp -r ${PROJ_ROOT}/builtin ${APP_ROOT}/assets/Minetest;                    \
-	mkdir -p ${APP_ROOT}/assets/Minetest/client;                                  \
-	cp -r ${PROJ_ROOT}/client/shaders ${APP_ROOT}/assets/Minetest/client;      \
-	cp ${PROJ_ROOT}/doc/lgpl-2.1.txt ${APP_ROOT}/assets/Minetest/LICENSE.txt;  \
-	mkdir -p ${APP_ROOT}/assets/Minetest/fonts;                                   \
-	cp -r ${PROJ_ROOT}/fonts/*.ttf ${APP_ROOT}/assets/Minetest/fonts/;         \
-	mkdir -p ${APP_ROOT}/assets/Minetest/games;                                   \
+	mkdir -p ${APP_ROOT}/assets/files;                                         \
+	cp ${PROJ_ROOT}/minetest.conf.example ${APP_ROOT}/assets/files;            \
+	cp ${PROJ_ROOT}/README.txt ${APP_ROOT}/assets/files;                       \
+	cp -r ${PROJ_ROOT}/builtin ${APP_ROOT}/assets/files;                       \
+	mkdir -p ${APP_ROOT}/assets/files/client;                                  \
+	cp -r ${PROJ_ROOT}/client/shaders ${APP_ROOT}/assets/files/client;         \
+	cp ${PROJ_ROOT}/doc/lgpl-2.1.txt ${APP_ROOT}/assets/files/LICENSE.txt;     \
+	mkdir -p ${APP_ROOT}/assets/files/fonts;                                   \
+	cp -r ${PROJ_ROOT}/fonts/*.ttf ${APP_ROOT}/assets/files/fonts/;                \
+	mkdir -p ${APP_ROOT}/assets/files/games;                                   \
 	for game in ${GAMES_TO_COPY}; do                                           \
-	    cp -r ${PROJ_ROOT}/games/$$game ${APP_ROOT}/assets/Minetest/games/;    \
+	    cp -rL ${PROJ_ROOT}/games/$$game ${APP_ROOT}/assets/files/games/;          \
 	done;                                                                      \
-	mkdir -p ${APP_ROOT}/assets/Minetest/mods;                                    \
+	mkdir -p ${APP_ROOT}/assets/files/mods;                                    \
 	for mod in ${MODS_TO_COPY}; do                                             \
-	    cp -r ${PROJ_ROOT}/mods/$$mod ${APP_ROOT}/assets/Minetest/mods/;       \
+	    cp -rL ${PROJ_ROOT}/mods/$$mod ${APP_ROOT}/assets/files/mods/;             \
 	done;                                                                      \
-	cp -r ${PROJ_ROOT}/po ${APP_ROOT}/assets/Minetest;                         \
-	cp -r ${PROJ_ROOT}/textures ${APP_ROOT}/assets/Minetest;                   \
-	mkdir -p ${APP_ROOT}/assets/Minetest/media;                                \
-	cp -r ${IRRLICHT_DIR}/media/Shaders ${APP_ROOT}/assets/Minetest/media;     \
+	cp -r ${PROJ_ROOT}/po ${APP_ROOT}/assets/files;                            \
+	cp -r ${PROJ_ROOT}/textures ${APP_ROOT}/assets/files;                      \
+	mkdir -p ${APP_ROOT}/assets/files/media;                                   \
+	cp -r ${IRRLICHT_DIR}/media/Shaders ${APP_ROOT}/assets/files/media;        \
 	cd ${APP_ROOT}/assets ||  exit 1;                                          \
 	find . -name "timestamp" -exec rm {} \; ;                                  \
 	find . -name "*.blend" -exec rm {} \; ;                                    \
@@ -739,8 +741,9 @@ assets : $(ASSETS_TIMESTAMP)
 	find . -type d -path "*.git" -exec rm -rf {} \; ;                          \
 	find . -type d -path "*.svn" -exec rm -rf {} \; ;                          \
 	find . -type f -path "*.gitignore" -exec rm -rf {} \; ;                    \
-	ls -R | grep ":$$" | sed -e 's/:$$//' -e 's/\.//' -e 's/^\///' > "index.txt"; \
-	find -L Minetest > filelist.txt;                                             \
+	find -L files -mindepth 1 -type d > index.txt;                             \
+	find -L files -mindepth 1 > filelist.txt;                                  \
+	sed -i 's/^files\///' index.txt filelist.txt;                              \
 	cp ${ANDR_ROOT}/${ASSETS_TIMESTAMP} ${ANDR_ROOT}/${ASSETS_TIMESTAMP}.old;  \
 	else                                                                       \
 		echo "nothing to be done for assets";                                  \
@@ -765,16 +768,16 @@ apk: local.properties assets $(ICONV_LIB) $(IRRLICHT_LIB) $(CURL_LIB) $(GMP_LIB)
 	export VERSION_STR="${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" && \
 	export BUILD_TYPE_C=$$(echo "$${BUILD_TYPE}" | sed 's/./\U&/') &&          \
 	gradle assemble$$BUILD_TYPE_C &&                                           \
-	echo "APK stored at: build/outputs/apk/Minetest-$$BUILD_TYPE.apk" &&       \
+	echo "APK stored at: build/outputs/apk/${PROJECT_NAME}-$$BUILD_TYPE.apk" && \
 	echo "You can install it with \`make install_$$BUILD_TYPE\`"
 
 # These Intentionally doesn't depend on their respective build steps,
 # because it takes a while to verify that everything's up-to-date.
 install_debug:
-	${ANDROID_SDK}/platform-tools/adb install -r build/outputs/apk/Minetest-debug.apk
+	${ANDROID_SDK}/platform-tools/adb install -r build/outputs/apk/${PROJECT_NAME}-debug.apk
 
 install_release:
-	${ANDROID_SDK}/platform-tools/adb install -r build/outputs/apk/Minetest-release.apk
+	${ANDROID_SDK}/platform-tools/adb install -r build/outputs/apk/${PROJECT_NAME}-release.apk
 
 prep_srcdir :
 	@if [ ! -e ${ANDR_ROOT}/jni/src ]; then                                    \

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="copying">Copiando %s…</string>
+	<string name="preparing_media">Preparando media…</string>
+	<string name="scanning">Escaneando %s…</string>
+	<string name="unpacking_assets">Desembalaje activos, espere por favor…</string>
+	<string name="checking">Comprobando %s…</string>
+</resources>

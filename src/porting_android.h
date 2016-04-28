@@ -30,52 +30,39 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 
 namespace porting {
-/** java app **/
+
+enum AndroidEditType {
+	AET_MULTILINE,
+	AET_SINGLELINE,
+	AET_PASSWORD,
+};
+
+typedef void (*AndroidEditCallback)(void*, const std::string &);
+
+// Java app
 extern android_app *app_global;
 
-/** java <-> c++ interaction interface **/
+// Java <-> C++ interaction interface
 extern JNIEnv *jnienv;
 
-/**
- * do initialization required on android only
- */
+/// Does Android-specific initialization
 void initAndroid();
 void cleanupAndroid();
 
-/**
- * Initializes path_* variables for Android
+/** Initializes path_* variables for Android.
  * @param env Android JNI environment
  */
 void initializePathsAndroid();
 
-/**
- * use java function to copy media from assets to external storage
- */
-void copyAssets();
-
-/**
- * show text input dialog in java
+/** Show Android text input dialog
  * @param acceptButton text to display on accept button
  * @param hint hint to show
  * @param current initial value to display
- * @param editType type of texfield
- * (1==multiline text input; 2==single line text input; 3=password field)
+ * @param editType type of text field
  */
-void showInputDialog(const std::string& acceptButton,
-		const  std::string& hint, const std::string& current, int editType);
-
-/**
- * WORKAROUND for not working callbacks from java -> c++
- * get current state of input dialog
- */
-int getInputDialogState();
-
-/**
- * WORKAROUND for not working callbacks from java -> c++
- * get text in current input dialog
- */
-std::string getInputDialogValue();
-
+void showInputDialog(const std::string& acceptButton, const std::string& hint,
+		const std::string& current, AndroidEditType editType,
+		AndroidEditCallback cb, void *cb_data);
 }
 
 #endif
