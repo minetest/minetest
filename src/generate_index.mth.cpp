@@ -1,4 +1,5 @@
 #include "clientmedia.h"
+#include "util/hex.h"
 
 #include <iostream>
 #include <string>
@@ -10,16 +11,17 @@ int main(int argc, char *argv[])
   ClientMediaDownloader store;
   while(!cin.eof()) {
 	getline(cin,hhash);
-	cout << "ummm " << hhash << endl;
-	if(hhash.size()<=41) {
-	  cerr << " error " << hhash << endl;
-	  return 23;
+	if(hhash.size()==0) continue;
+	if(hhash.size()<40) {
+	  cerr << " ummm " << hhash.size() << endl;
+	  continue;
 	}
-	char hash[20];
+	unsigned char hash[20];
 	for(int i=0;i<20;++i) {
-	  hex_digit_decode(hhash[2*i],hash+i);
+	  hex_digit_decode(hhash[2*i],hash[i]);
 	}
-	store.addFile(hash,hash);
+	string bhash((const char*)hash,20);
+	store.addFile(hhash,bhash);
   }
   cout << store.serializeRequiredHashSet();
   return 0;
