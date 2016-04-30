@@ -1585,7 +1585,7 @@ protected:
 
 	void increaseViewRange(float *statustext_time);
 	void decreaseViewRange(float *statustext_time);
-	void toggleFullViewRange(float *statustext_time, bool second);
+	void toggleViewRange(float *statustext_time, bool second);
 
 	void updateCameraDirection(CameraOrientation *cam, VolatileRunFlags *flags);
 	void updateCameraOrientation(CameraOrientation *cam,
@@ -2746,7 +2746,7 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_DECREASE_VIEWING_RANGE])) {
 		decreaseViewRange(statustext_time);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_RANGESELECT])) {
-		toggleFullViewRange(statustext_time, input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_SPECIAL1]));
+		toggleViewRange(statustext_time, input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_SPECIAL1]));
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_NEXT])) {
 		quicktune->next();
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_PREV])) {
@@ -3118,7 +3118,7 @@ void Game::decreaseViewRange(float *statustext_time)
 }
 
 
-void Game::toggleFullViewRange(float *statustext_time, bool second)
+void Game::toggleViewRange(float *statustext_time, bool second)
 {
 	static const wchar_t *msg[] = {
 		L"Disabled full viewing range",
