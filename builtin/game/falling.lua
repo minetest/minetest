@@ -258,3 +258,8 @@ function on_dignode(p, node)
 	nodeupdate(p)
 end
 core.register_on_dignode(on_dignode)
+
+function on_punchnode(p, node)
+	nodeupdate(p)
+end
+core.register_on_punchnode(on_punchnode)
