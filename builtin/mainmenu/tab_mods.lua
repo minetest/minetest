@@ -28,7 +28,7 @@ local function get_formspec(tabview, name, tabdata)
 
 	local retval =
 		"label[0.05,-0.25;".. fgettext("Installed Mods:") .. "]" ..
-		"textlist[0,0.25;5.1,4.35;modlist;" ..
+		"textlist[0,0.25;5.1,5;modlist;" ..
 		modmgr.render_modlist(modmgr.global_mods) ..
 		";" .. tabdata.selected_mod .. "]"
 
