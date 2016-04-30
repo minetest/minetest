@@ -538,6 +538,23 @@ endif()
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 
 
+add_executable(generate_index_mth generate_index.mth.cpp clientmedia.cpp
+								  httpfetch.cpp log.cpp debug.cpp noise.cpp
+								  util/string.cpp
+								  util/numeric.cpp
+								  util/serialize.cpp
+								  filesys.cpp
+								  porting.cpp
+								  settings.cpp
+								  version.cpp
+								  filecache.cpp
+								  	${JTHREAD_SRCS})
+target_link_libraries(generate_index_mth 
+										 ${PLATFORM_LIBS}
+			${CURL_LIBRARY})
+set_target_properties(generate_index_mth PROPERTIES
+			COMPILE_DEFINITIONS "SERVER")
+
 if(BUILD_CLIENT)
 	add_executable(${PROJECT_NAME} ${client_SRCS})
 	add_dependencies(${PROJECT_NAME} GenerateVersion)
