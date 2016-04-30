@@ -205,9 +205,9 @@ bool Thread::kill()
 	// We need to pthread_kill instead on Android since NDKv5's pthread
 	// implementation is incomplete.
 # ifdef __ANDROID__
-	pthread_kill(m_thread_handle, SIGKILL);
+	pthread_kill(getThreadHandle(), SIGKILL);
 # else
-	pthread_cancel(m_thread_handle);
+	pthread_cancel(getThreadHandle());
 # endif
 	wait();
 #endif
@@ -361,7 +361,7 @@ bool Thread::bindToProcessor(unsigned int proc_number)
 
 #elif defined(_WIN32)
 
-	return SetThreadAffinityMask(m_thread_handle, 1 << proc_number);
+	return SetThreadAffinityMask(getThreadHandle(), 1 << proc_number);
 
 #elif __FreeBSD_version >= 702106 || defined(__linux) || defined(linux)
 
@@ -370,7 +370,7 @@ bool Thread::bindToProcessor(unsigned int proc_number)
 	CPU_ZERO(&cpuset);
 	CPU_SET(proc_number, &cpuset);
 
-	return pthread_setaffinity_np(m_thread_handle, sizeof(cpuset), &cpuset) == 0;
+	return pthread_setaffinity_np(getThreadHandle(), sizeof(cpuset), &cpuset) == 0;
 
 #elif defined(__sun) || defined(sun)
 
@@ -385,13 +385,13 @@ bool Thread::bindToProcessor(unsigned int proc_number)
 	pthread_spu_t answer;
 
 	return pthread_processor_bind_np(PTHREAD_BIND_ADVISORY_NP,
-			&answer, proc_number, m_thread_handle) == 0;
+			&answer, proc_number, getThreadHandle()) == 0;
 
 #elif defined(__APPLE__)
 
 	struct thread_affinity_policy tapol;
 
-	thread_port_t threadport = pthread_mach_thread_np(m_thread_handle);
+	thread_port_t threadport = pthread_mach_thread_np(getThreadHandle());
 	tapol.affinity_tag = proc_number + 1;
 	return thread_policy_set(threadport, THREAD_AFFINITY_POLICY,
 			(thread_policy_t)&tapol,
@@ -409,21 +409,21 @@ bool Thread::setPriority(int prio)
 {
 #if defined(_WIN32)
 
-	return SetThreadPriority(m_thread_handle, prio);
+	return SetThreadPriority(getThreadHandle(), prio);
 
 #else
 
 	struct sched_param sparam;
 	int policy;
 
-	if (pthread_getschedparam(m_thread_handle, &policy, &sparam) != 0)
+	if (pthread_getschedparam(getThreadHandle(), &policy, &sparam) != 0)
 		return false;
 
 	int min = sched_get_priority_min(policy);
 	int max = sched_get_priority_max(policy);
 
 	sparam.sched_priority = min + prio * (max - min) / THREAD_PRIORITY_HIGHEST;
-	return pthread_setschedparam(m_thread_handle, policy, &sparam) == 0;
+	return pthread_setschedparam(getThreadHandle(), policy, &sparam) == 0;
 
 #endif
 }
