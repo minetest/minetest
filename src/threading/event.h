@@ -48,8 +48,8 @@ DEALINGS IN THE SOFTWARE.
  */
 class Event {
 public:
-#if __cplusplus < 201103L
 	Event();
+#if __cplusplus < 201103L
 	~Event();
 #endif
 	void wait();
