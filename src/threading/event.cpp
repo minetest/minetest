@@ -25,17 +25,20 @@ DEALINGS IN THE SOFTWARE.
 
 #include "threading/event.h"
 
-#if __cplusplus < 201103L
 Event::Event()
+    : notified(false)
 {
-#ifdef _WIN32
+#if __cplusplus < 201103L
+#	ifdef _WIN32
 	event = CreateEvent(NULL, false, false, NULL);
-#else
+#	else
 	pthread_cond_init(&cv, NULL);
 	pthread_mutex_init(&mutex, NULL);
+#	endif
 #endif
 }
 
+#if __cplusplus < 201103L
 Event::~Event()
 {
 #ifdef _WIN32
