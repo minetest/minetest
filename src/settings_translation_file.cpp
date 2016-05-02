@@ -454,6 +454,8 @@ fake_function() {
 	gettext("Mapgen biome humidity noise parameters");
 	gettext("Mapgen biome humidity blend noise parameters");
 	gettext("Mapgen v5");
+	gettext("Mapgen v5 cave width");
+	gettext("Controls width of tunnels, a smaller value creates wider tunnels.");
 	gettext("Mapgen v5 filler depth noise parameters");
 	gettext("Mapgen v5 factor noise parameters");
 	gettext("Mapgen v5 height noise parameters");
@@ -479,6 +481,8 @@ fake_function() {
 	gettext("Mapgen v7");
 	gettext("Mapgen v7 flags");
 	gettext("Map generation attributes specific to Mapgen v7.\nThe 'ridges' flag controls the rivers.\nThe default flags set in the engine are: mountains, ridges\nThe flags string modifies the engine defaults.\nFlags that are not specified in the flag string are not modified from the default.\nFlags starting with 'no' are used to explicitly disable them.");
+	gettext("Mapgen v7 cave width");
+	gettext("Controls width of tunnels, a smaller value creates wider tunnels.");
 	gettext("Mapgen v7 terrain base noise parameters");
 	gettext("Mapgen v7 terrain altitude noise parameters");
 	gettext("Mapgen v7 terrain persistation noise parameters");
@@ -497,6 +501,8 @@ fake_function() {
 	gettext("Y of flat ground.");
 	gettext("Mapgen flat large cave depth");
 	gettext("Y of upper limit of large pseudorandom caves.");
+	gettext("Mapgen flat cave width");
+	gettext("Controls width of tunnels, a smaller value creates wider tunnels.");
 	gettext("Mapgen flat lake threshold");
 	gettext("Terrain noise threshold for lakes.\nControls proportion of world area covered by lakes.\nAdjust towards 0.0 for a larger proportion.");
 	gettext("Mapgen flat lake steepness");
@@ -511,6 +517,8 @@ fake_function() {
 	gettext("Mapgen flat cave1 noise parameters");
 	gettext("Mapgen flat cave2 noise parameters");
 	gettext("Mapgen fractal");
+	gettext("Mapgen fractal cave width");
+	gettext("Controls width of tunnels, a smaller value creates wider tunnels.");
 	gettext("Mapgen fractal fractal");
 	gettext("Choice of 18 fractals from 9 formulas.\n1 = 4D \"Roundy\" mandelbrot set.\n2 = 4D \"Roundy\" julia set.\n3 = 4D \"Squarry\" mandelbrot set.\n4 = 4D \"Squarry\" julia set.\n5 = 4D \"Mandy Cousin\" mandelbrot set.\n6 = 4D \"Mandy Cousin\" julia set.\n7 = 4D \"Variation\" mandelbrot set.\n8 = 4D \"Variation\" julia set.\n9 = 3D \"Mandelbrot/Mandelbar\" mandelbrot set.\n10 = 3D \"Mandelbrot/Mandelbar\" julia set.\n11 = 3D \"Christmas Tree\" mandelbrot set.\n12 = 3D \"Christmas Tree\" julia set.\n13 = 3D \"Mandelbulb\" mandelbrot set.\n14 = 3D \"Mandelbulb\" julia set.\n15 = 3D \"Cosine Mandelbulb\" mandelbrot set.\n16 = 3D \"Cosine Mandelbulb\" julia set.\n17 = 4D \"Mandelbulb\" mandelbrot set.\n18 = 4D \"Mandelbulb\" julia set.");
 	gettext("Mapgen fractal iterations");
@@ -551,6 +559,8 @@ fake_function() {
 	gettext("How wide to make rivers");
 	gettext("Water Features");
 	gettext("Creates unpredictable water features in caves.\nThese can make mining difficult. Zero disables them. (0-10)");
+	gettext("Cave width");
+	gettext("Controls width of tunnels, a smaller value creates wider tunnels.");
 	gettext("Noises");
 	gettext("Cave noise #1");
 	gettext("Caves and tunnels form at the intersection of the two noises");
