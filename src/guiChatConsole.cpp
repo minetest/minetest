@@ -611,7 +611,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			prompt.nickCompletion(names, backwards);
 			return true;
 		}
-		else if(event.KeyInput.Char != 0 && !event.KeyInput.Control)
+		else if(isprint(event.KeyInput.Char) && !event.KeyInput.Control)
 		{
 			#if (defined(linux) || defined(__linux))
 				wchar_t wc = L'_';
