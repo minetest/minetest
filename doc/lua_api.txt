@@ -2107,7 +2107,9 @@ and `minetest.auth_reload` call the authetification handler.
     * `max_drop`: maximum height difference to consider droppable
     * `algorithm`: One of `"A*_noprefetch"` (default), `"A*"`, `"Dijkstra"`
 * `minetest.spawn_tree (pos, {treedef})`
-    * spawns L-System tree at given `pos` with definition in `treedef` table
+    * spawns L-system tree at given `pos` with definition in `treedef` table
+    * Warning: L-system generation currently creates lighting bugs in the form of mapblock-sized shadows.
+      Often these bugs appear as subtle shadows in water.
 * `minetest.transforming_liquid_add(pos)`
     * add node to liquid update queue
 * `minetest.get_node_max_level(pos)`
@@ -3196,6 +3198,9 @@ Registered entities
 
 L-system trees
 --------------
+**Warning**
+L-system generation currently creates lighting bugs in the form of mapblock-sized shadows.
+Often these bugs appear as subtle shadows in water.
 
 ### Tree definition
 
