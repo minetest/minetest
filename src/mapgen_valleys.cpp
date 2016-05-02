@@ -312,7 +312,7 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 		dp.np_density = nparams_dungeon_density;
 		dp.np_wetness = nparams_dungeon_wetness;
 		dp.c_water    = c_water_source;
-		if (stone_type == STONE) {
+		if (stone_type == MGSTONE_STONE) {
 			dp.c_cobble = c_cobble;
 			dp.c_moss   = c_mossycobble;
 			dp.c_stair  = c_stair_cobble;
@@ -322,7 +322,7 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 			dp.holesize      = v3s16(1, 2, 1);
 			dp.roomsize      = v3s16(0, 0, 0);
 			dp.notifytype    = GENNOTIFY_DUNGEON;
-		} else if (stone_type == DESERT_STONE) {
+		} else if (stone_type == MGSTONE_DESERT_STONE) {
 			dp.c_cobble = c_desert_stone;
 			dp.c_moss   = c_desert_stone;
 			dp.c_stair  = c_desert_stone;
@@ -332,7 +332,7 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 			dp.holesize      = v3s16(2, 3, 2);
 			dp.roomsize      = v3s16(2, 5, 2);
 			dp.notifytype    = GENNOTIFY_TEMPLE;
-		} else if (stone_type == SANDSTONE) {
+		} else if (stone_type == MGSTONE_SANDSTONE) {
 			dp.c_cobble = c_sandstonebrick;
 			dp.c_moss   = c_sandstonebrick;
 			dp.c_stair  = c_sandstonebrick;
