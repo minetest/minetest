@@ -3,8 +3,8 @@
 
 # This program is free software. It comes without any warranty, to
 # the extent permitted by applicable law. You can redistribute it
-# and/or modify it under the terms of the Do What ... You Want
-# To Public License, Version 2, as published by Sam Hocevar. See
+# and/or modify it under the terms of the WTFPL
+# Public License, Version 2, as published by Sam Hocevar. See
 # COPYING for more details.
 
 # Made by Jogge, modified by celeron55
@@ -136,20 +136,24 @@ usagetext = """minetestmapper.py [options]
   --geometry <xmin>:<zmin>+<width>+<height>
   --drawunderground
 Color format: '#000000'
-
 NOTE: colors.txt must be in same directory as
 this script or in the current working
 directory (or util directory if installed).
 """
 
+
 def usage():
     print(usagetext)
 
+
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "hi:o:", ["help", "input=",
-        "output=", "bgcolor=", "scalecolor=", "origincolor=",
-        "playercolor=", "draworigin", "drawplayers", "drawscale",
-        "drawunderground", "geometry=", "region="])
+    opts, args = getopt.getopt(sys.argv[1:],
+                               "hi:o:",
+                               ["help", "input=", "output=",
+                                "bgcolor=", "scalecolor=", "origincolor=",
+                                "playercolor=", "draworigin", "drawplayers",
+                                "drawscale", "drawunderground", "geometry=",
+                                "region="])
 except getopt.GetoptError as err:
     # print help information and exit:
     print(str(err))  # will print something like "option -a not recognized"
@@ -201,49 +205,52 @@ for o, a in opts:
         region_string = a
     else:
         assert False, "unhandled option"
-nonchunky_xmin=-1500
-nonchunky_xmax=1500
-nonchunky_zmin=-1500
-nonchunky_zmax=1500
+
+nonchunky_xmin = -1500
+nonchunky_xmax = 1500
+nonchunky_zmin = -1500
+nonchunky_zmax = 1500
 
 if geometry_string is not None:
     parts = geometry_string.split("+")
     if len(parts) == 3:
         coords_string, width_string, height_string = parts
         coords = coords_string.split(":")
-        if len(coords)==2:
+        if len(coords) == 2:
             x_string, z_string = coords
             x = int(x_string)
             z = int(z_string)
             this_width = int(width_string)
             this_height = int(height_string)
             nonchunky_xmin = x
-            nonchunky_xmax = nonchunky_xmin + this_width - 1  # -1 since max is inclusive rect
+            nonchunky_xmax = nonchunky_xmin + this_width - 1  # inclusive rect
             nonchunky_zmin = z
-            nonchunky_zmax = nonchunky_zmin + this_height - 1  # -1 since max is inclusive rect
+            nonchunky_zmax = nonchunky_zmin + this_height - 1  # inclusive rect
             print("#geometry:")
-            print("#  x:"+str(x))
-            print("#  z:"+str(z))
-            print("#  width:"+str(this_width))
-            print("#  height:"+str(this_height))
+            print("#  x:" + str(x))
+            print("#  z:" + str(z))
+            print("#  width:" + str(this_width))
+            print("#  height:" + str(this_height))
             print("region:")
-            print("  xmin:"+str(nonchunky_xmin))
-            print("  xmax:"+str(nonchunky_xmax))
-            print("  zmin:"+str(nonchunky_zmin))
-            print("  zmax:"+str(nonchunky_zmax))
+            print("  xmin:" + str(nonchunky_xmin))
+            print("  xmax:" + str(nonchunky_xmax))
+            print("  zmin:" + str(nonchunky_zmin))
+            print("  zmax:" + str(nonchunky_zmax))
         else:
-            print("ERROR: (Missing coordinates in '"+geometry_string+"' for geometry) Geometry should be in the form: x:z+width+height")
+            print("ERROR: Missing coordinates in '" + geometry_string +
+                  "' for geometry (must be in the form: x:z+width+height)")
             usage()
             sys.exit(2)
     else:
-        print("ERROR: (Incorrect value '"+geometry_string+"' for geometry) Geometry should be in the form: x:z+width+height")
+        print("ERROR: Incorrect value '" + geometry_string +
+              "' for geometry (must be in the form: x:z+width+height)")
         usage()
         sys.exit(2)
 elif region_string is not None:
-    #parts = region_string.split(" ")
+    # parts = region_string.split(" ")
     axis_info = region_string.split(",")
     if len(axis_info) == 2:
-        #xmin_string, xmax_string, zmin_string, zmax_string = parts
+        # xmin_string, xmax_string, zmin_string, zmax_string = parts
         x_bounds, z_bounds = axis_info
         xmin_string, xmax_string = x_bounds.split(":")
         zmin_string, zmax_string = z_bounds.split(":")
@@ -252,23 +259,23 @@ elif region_string is not None:
         nonchunky_zmin = int(zmin_string)
         nonchunky_zmax = int(zmax_string)
         print("region:")
-        print("  xmin:"+str(nonchunky_xmin))
-        print("  xmax:"+str(nonchunky_xmax))
-        print("  zmin:"+str(nonchunky_zmin))
-        print("  zmax:"+str(nonchunky_zmax))
+        print("  xmin:" + str(nonchunky_xmin))
+        print("  xmax:" + str(nonchunky_xmax))
+        print("  zmin:" + str(nonchunky_zmin))
+        print("  zmax:" + str(nonchunky_zmax))
     else:
-        print("ERROR: (Incorrect value '"+region_string+"' for region) Region should be in the form: xmin:xmax,zmin:zmax")
+        print("ERROR: Incorrect value '" + region_string +
+              "' for region (must be in the form: xmin:xmax,zmin:zmax)")
         usage()
         sys.exit(2)
-#answer=raw_input("press enter to continue")
+
 sector_xmin = nonchunky_xmin / 16
 sector_xmax = nonchunky_xmax / 16
 sector_zmin = nonchunky_zmin / 16
 sector_zmax = nonchunky_zmax / 16
 
-
 if path is None:
-    print("Please select world path (eg. -i ../worlds/yourworld) (or use --help)")
+    print("Please select world path (-i ../worlds/yourworld) (or use --help)")
     sys.exit(1)
 
 if path[-1:] != "/" and path[-1:] != "\\":
@@ -289,15 +296,16 @@ mt_util_path = None
 abs_colors_path = None
 
 if not os.path.isfile(colors_path):
-    colors_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "colors.txt")
+    colors_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               "colors.txt")
 
 if not os.path.isfile(colors_path):
     if profile_path is not None:
         try_path = os.path.join(profile_path, "minetest")
         if os.path.isdir(try_path):
             mt_path = try_path
-            mt_util_path = os.path.join( mt_path, "util")
-            abs_colors_path = os.path.join( mt_util_path, "colors.txt")
+            mt_util_path = os.path.join(mt_path, "util")
+            abs_colors_path = os.path.join(mt_util_path, "colors.txt")
             if os.path.isfile(abs_colors_path):
                 colors_path = abs_colors_path
 
@@ -309,7 +317,8 @@ if not os.path.isfile(colors_path):
 try:
     f = file(colors_path)
 except IOError:
-    f = file(os.path.join(os.path.dirname(os.path.abspath(__file__)), "colors.txt"))
+    f = file(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                          "colors.txt"))
 for line in f:
     values = string.split(line)
     if len(values) < 4:
