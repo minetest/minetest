@@ -135,7 +135,12 @@ usagetext = """minetestmapper.py [options]
   --region <xmin>:<xmax>,<zmin>:<zmax>
   --geometry <xmin>:<zmin>+<width>+<height>
   --drawunderground
-Color format: '#000000'"""
+Color format: '#000000'
+
+NOTE: colors.txt must be in same directory as
+this script or in the current working
+directory (or util directory if installed).
+"""
 
 def usage():
     print(usagetext)
@@ -282,28 +287,29 @@ elif 'HOME' in os.environ:
 mt_path = None
 mt_util_path = None
 abs_colors_path = None
-if profile_path is not None:
-    try_path = os.path.join(profile_path, "minetest")
-    if os.path.isdir(try_path):
-        mt_path = try_path
-        mt_util_path = os.path.join( mt_path, "util")
-        abs_colors_path = os.path.join( mt_util_path, "colors.txt" )
 
 if not os.path.isfile(colors_path):
-    colors_path = abs_colors_path
+    colors_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "colors.txt")
 
-if colors_path is None or not os.path.isfile(colors_path):
-    print("ERROR: could not find colors.txt is current path")
-    if colors_path is not None:
-        print("  nor '"+colors_path+"'.")
-    else:
-        print("  and minetest util path could not be detected.")
+if not os.path.isfile(colors_path):
+    if profile_path is not None:
+        try_path = os.path.join(profile_path, "minetest")
+        if os.path.isdir(try_path):
+            mt_path = try_path
+            mt_util_path = os.path.join( mt_path, "util")
+            abs_colors_path = os.path.join( mt_util_path, "colors.txt")
+            if os.path.isfile(abs_colors_path):
+                colors_path = abs_colors_path
+
+if not os.path.isfile(colors_path):
+    print("ERROR: could not find colors.txt")
+    usage()
     sys.exit(1)
 
 try:
     f = file(colors_path)
 except IOError:
-    f = file(os.path.join(os.path.dirname(__file__), "colors.txt"))
+    f = file(os.path.join(os.path.dirname(os.path.abspath(__file__)), "colors.txt"))
 for line in f:
     values = string.split(line)
     if len(values) < 4:
