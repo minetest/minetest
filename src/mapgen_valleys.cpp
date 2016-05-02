@@ -65,7 +65,7 @@ static FlagDesc flagdesc_mapgen_valleys[] = {
 
 
 MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *emerge)
-	: Mapgen(mapgenid, params, emerge)
+	: MapgenBasic(mapgenid, params, emerge)
 {
 	this->m_emerge = emerge;
 	this->bmgr     = emerge->biomemgr;
@@ -302,7 +302,7 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 
 	// Cave creation.
 	if (flags & MG_CAVES)
-		generateCaves(stone_surface_max_y);
+		generateCaves(stone_surface_max_y, large_cave_depth);
 
 	// Dungeon creation
 	if ((flags & MG_DUNGEONS) && node_max.Y < 50 && (stone_surface_max_y >= node_min.Y)) {
@@ -692,166 +692,7 @@ int MapgenValleys::generateTerrain()
 	return surface_max_y;
 }
 
-
-MgStoneType MapgenValleys::generateBiomes()
-{
-	v3s16 em = vm->m_area.getExtent();
-	u32 index = 0;
-	MgStoneType stone_type = STONE;
-
-	for (s16 z = node_min.Z; z <= node_max.Z; z++)
-	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
-		Biome *biome = NULL;
-		u16 depth_top = 0;
-		u16 base_filler = 0;
-		u16 depth_water_top = 0;
-		u32 vi = vm->m_area.index(x, node_max.Y, z);
-
-		// Check node at base of mapchunk above, either a node of a previously
-		// generated mapchunk or if not, a node of overgenerated base terrain.
-		content_t c_above = vm->m_data[vi + em.X].getContent();
-		bool air_above = c_above == CONTENT_AIR;
-		bool water_above = (c_above == c_water_source || c_above == c_river_water_source);
-
-		// If there is air or water above enable top/filler placement, otherwise force
-		// nplaced to stone level by setting a number exceeding any possible filler depth.
-		u16 nplaced = (air_above || water_above) ? 0 : U16_MAX;
-
-		for (s16 y = node_max.Y; y >= node_min.Y; y--) {
-			content_t c = vm->m_data[vi].getContent();
-
-			// Biome is recalculated each time an upper surface is detected while
-			// working down a column. The selected biome then remains in effect for
-			// all nodes below until the next surface and biome recalculation.
-			// Biome is recalculated:
-			// 1. At the surface of stone below air or water.
-			// 2. At the surface of water below air.
-			// 3. When stone or water is detected but biome has not yet been calculated.
-			if ((c == c_stone && (air_above || water_above || !biome))
-					|| ((c == c_water_source || c == c_river_water_source)
-						&& (air_above || !biome))) {
-				// Both heat and humidity have already been adjusted for altitude.
-				biome = biomegen->getBiomeAtIndex(index, y);
-
-				depth_top = biome->depth_top;
-				base_filler = MYMAX(depth_top
-						+ biome->depth_filler
-						+ noise_filler_depth->result[index], 0.f);
-				depth_water_top = biome->depth_water_top;
-
-				// Detect stone type for dungeons during every biome calculation.
-				// This is more efficient than detecting per-node and will not
-				// miss any desert stone or sandstone biomes.
-				if (biome->c_stone == c_desert_stone)
-					stone_type = DESERT_STONE;
-				else if (biome->c_stone == c_sandstone)
-					stone_type = SANDSTONE;
-			}
-
-			if (c == c_stone) {
-				content_t c_below = vm->m_data[vi - em.X].getContent();
-
-				// If the node below isn't solid, make this node stone, so that
-				// any top/filler nodes above are structurally supported.
-				// This is done by aborting the cycle of top/filler placement
-				// immediately by forcing nplaced to stone level.
-				if (c_below == CONTENT_AIR
-						|| c_below == c_water_source
-						|| c_below == c_river_water_source)
-					nplaced = U16_MAX;
-
-				if (nplaced < depth_top) {
-					vm->m_data[vi] = MapNode(biome->c_top);
-					nplaced++;
-				} else if (nplaced < base_filler) {
-					vm->m_data[vi] = MapNode(biome->c_filler);
-					nplaced++;
-				} else {
-					vm->m_data[vi] = MapNode(biome->c_stone);
-				}
-
-				air_above = false;
-				water_above = false;
-			} else if (c == c_water_source) {
-				vm->m_data[vi] = MapNode((y > (s32)(water_level - depth_water_top))
-						? biome->c_water_top : biome->c_water);
-				nplaced = 0;  // Enable top/filler placement for next surface
-				air_above = false;
-				water_above = true;
-			} else if (c == c_river_water_source) {
-				vm->m_data[vi] = MapNode(biome->c_river_water);
-				nplaced = depth_top;  // Enable filler placement for next surface
-				air_above = false;
-				water_above = true;
-			} else if (c == CONTENT_AIR) {
-				nplaced = 0;  // Enable top/filler placement for next surface
-				air_above = true;
-				water_above = false;
-			} else {  // Possible various nodes overgenerated from neighbouring mapchunks
-				nplaced = U16_MAX;  // Disable top/filler placement
-				air_above = false;
-				water_above = false;
-			}
-
-			vm->m_area.add_y(em, vi, -1);
-		}
-	}
-
-	return stone_type;
-}
-
-
-void MapgenValleys::dustTopNodes()
-{
-	if (node_max.Y < water_level)
-		return;
-
-	v3s16 em = vm->m_area.getExtent();
-	u32 index = 0;
-
-	for (s16 z = node_min.Z; z <= node_max.Z; z++)
-	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
-		Biome *biome = (Biome *)bmgr->getRaw(biomemap[index]);
-
-		if (biome->c_dust == CONTENT_IGNORE)
-			continue;
-
-		u32 vi = vm->m_area.index(x, full_node_max.Y, z);
-		content_t c_full_max = vm->m_data[vi].getContent();
-		s16 y_start;
-
-		if (c_full_max == CONTENT_AIR) {
-			y_start = full_node_max.Y - 1;
-		} else if (c_full_max == CONTENT_IGNORE) {
-			vi = vm->m_area.index(x, node_max.Y + 1, z);
-			content_t c_max = vm->m_data[vi].getContent();
-
-			if (c_max == CONTENT_AIR)
-				y_start = node_max.Y;
-			else
-				continue;
-		} else {
-			continue;
-		}
-
-		vi = vm->m_area.index(x, y_start, z);
-		for (s16 y = y_start; y >= node_min.Y - 1; y--) {
-			if (vm->m_data[vi].getContent() != CONTENT_AIR)
-				break;
-
-			vm->m_area.add_y(em, vi, -1);
-		}
-
-		content_t c = vm->m_data[vi].getContent();
-		if (!ndef->get(c).buildable_to && c != CONTENT_IGNORE && c != biome->c_dust) {
-			vm->m_area.add_y(em, vi, 1);
-			vm->m_data[vi] = MapNode(biome->c_dust);
-		}
-	}
-}
-
-
-void MapgenValleys::generateCaves(s16 max_stone_y)
+void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 {
 	if (max_stone_y < node_min.Y)
 		return;

@@ -53,43 +53,19 @@ struct MapgenFlatParams : public MapgenSpecificParams {
 	void writeParams(Settings *settings) const;
 };
 
-class MapgenFlat : public Mapgen {
+class MapgenFlat : public MapgenBasic {
 public:
-	EmergeManager *m_emerge;
-	BiomeManager *bmgr;
-
-	int ystride;
-	int zstride_1d;
-
-	v3s16 node_min;
-	v3s16 node_max;
-	v3s16 full_node_min;
-	v3s16 full_node_max;
-
 	u32 spflags;
 	s16 ground_level;
 	s16 large_cave_depth;
-	float cave_width;
 	float lake_threshold;
 	float lake_steepness;
 	float hill_threshold;
 	float hill_steepness;
 	Noise *noise_terrain;
-	Noise *noise_filler_depth;
-	Noise *noise_cave1;
-	Noise *noise_cave2;
 
-	Noise *noise_heat;
-	Noise *noise_humidity;
-	Noise *noise_heat_blend;
-	Noise *noise_humidity_blend;
-
-	content_t c_stone;
-	content_t c_water_source;
 	content_t c_lava_source;
-	content_t c_desert_stone;
 	content_t c_ice;
-	content_t c_sandstone;
 
 	content_t c_cobble;
 	content_t c_stair_cobble;
@@ -104,9 +80,6 @@ public:
 	int getSpawnLevelAtPoint(v2s16 p);
 	void calculateNoise();
 	s16 generateTerrain();
-	MgStoneType generateBiomes();
-	void dustTopNodes();
-	void generateCaves(s16 max_stone_y);
 };
 
 struct MapgenFactoryFlat : public MapgenFactory {

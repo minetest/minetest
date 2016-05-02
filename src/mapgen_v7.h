@@ -54,42 +54,24 @@ struct MapgenV7Params : public MapgenSpecificParams {
 	void writeParams(Settings *settings) const;
 };
 
-class MapgenV7 : public Mapgen {
+class MapgenV7 : public MapgenBasic {
 public:
-	EmergeManager *m_emerge;
-	BiomeManager *bmgr;
-
-	int ystride;
 	int zstride_1u1d;
-	int zstride_1d;
-
-	v3s16 node_min;
-	v3s16 node_max;
-	v3s16 full_node_min;
-	v3s16 full_node_max;
 
 	s16 *ridge_heightmap;
 
 	u32 spflags;
-	float cave_width;
 	Noise *noise_terrain_base;
 	Noise *noise_terrain_alt;
 	Noise *noise_terrain_persist;
 	Noise *noise_height_select;
-	Noise *noise_filler_depth;
 	Noise *noise_mount_height;
 	Noise *noise_ridge_uwater;
 	Noise *noise_mountain;
 	Noise *noise_ridge;
-	Noise *noise_cave1;
-	Noise *noise_cave2;
 
-	content_t c_stone;
-	content_t c_water_source;
 	content_t c_lava_source;
-	content_t c_desert_stone;
 	content_t c_ice;
-	content_t c_sandstone;
 
 	content_t c_cobble;
 	content_t c_stair_cobble;
@@ -112,11 +94,6 @@ public:
 
 	int generateTerrain();
 	void generateRidgeTerrain();
-
-	MgStoneType generateBiomes();
-	void dustTopNodes();
-
-	void generateCaves(s16 max_stone_y);
 };
 
 struct MapgenFactoryV7 : public MapgenFactory {

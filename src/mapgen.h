@@ -46,6 +46,7 @@ extern FlagDesc flagdesc_gennotify[];
 class Biome;
 class BiomeGen;
 struct BiomeParams;
+class BiomeManager;
 class EmergeManager;
 class MapBlock;
 class VoxelManipulator;
@@ -137,6 +138,16 @@ struct MapgenParams {
 	void save(Settings &settings) const;
 };
 
+
+/*
+	Generic interface for map generators.  All mapgens must inherit this class.
+	If a feature exposed by a public member pointer is not supported by a
+	certain mapgen, it must be set to NULL.
+
+	Apart from makeChunk, getGroundLevelAtPoint, and getSpawnLevelAtPoint, all
+	methods can be used by constructing a Mapgen base class and setting the
+	appropriate public members (e.g. vm, ndef, and so on).
+*/
 class Mapgen {
 public:
 	int seed;
@@ -187,6 +198,51 @@ public:
 
 private:
 	DISABLE_CLASS_COPY(Mapgen);
+};
+
+/*
+	MapgenBasic is a Mapgen implementation that handles basic functionality
+	the majority of conventional mapgens will probably want to use, but isn't
+	generic enough to be included as part of the base Mapgen class (such as
+	generating biome terrain over terrain node skeletons, generating caves,
+	dungeons, etc.)
+
+	Inherit MapgenBasic instead of Mapgen to add this basic functionality to
+	your mapgen without having to reimplement it.  Feel free to override any of
+	these methods if you desire different or more advanced behavior.
+
+	Note that you must still create your own generateTerrain implementation when
+	inheriting MapgenBasic.
+*/
+class MapgenBasic : public Mapgen {
+public:
+	EmergeManager *m_emerge;
+	BiomeManager *bmgr;
+
+	Noise *noise_filler_depth;
+	Noise *noise_cave1;
+	Noise *noise_cave2;
+
+	v3s16 node_min;
+	v3s16 node_max;
+	v3s16 full_node_min;
+	v3s16 full_node_max;
+
+	content_t c_stone;
+	content_t c_water_source;
+	content_t c_river_water_source;
+	content_t c_desert_stone;
+	content_t c_sandstone;
+
+	int ystride;
+	int zstride_1d;
+	float cave_width;
+
+	MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emerge);
+
+	virtual MgStoneType generateBiomes();
+	virtual void dustTopNodes();
+	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
 };
 
 struct MapgenFactory {
