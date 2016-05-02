@@ -85,7 +85,7 @@ struct TerrainNoise {
 	float inter_valley_fill;
 };
 
-class MapgenValleys : public Mapgen {
+class MapgenValleys : public MapgenBasic {
 public:
 
 	MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *emerge);
@@ -97,13 +97,9 @@ public:
 	s16 large_cave_depth;
 
 private:
-	EmergeManager *m_emerge;
-	BiomeManager *bmgr;
 	BiomeGenOriginal *m_bgen;
 
-	int ystride;
 	int zstride;
-	int zstride_1d;
 
 	float map_gen_limit;
 
@@ -113,11 +109,6 @@ private:
 	s16 cave_water_max_height;
 	s16 lava_max_height;
 
-	v3s16 node_min;
-	v3s16 node_max;
-	v3s16 full_node_min;
-	v3s16 full_node_max;
-
 	u32 spflags;
 	float altitude_chill;
 	s16 lava_features_lim;
@@ -126,10 +117,6 @@ private:
 	float river_size_factor;
 	float *tcave_cache;
 	s16 water_features_lim;
-	float cave_width;
-	Noise *noise_filler_depth;
-	Noise *noise_cave1;
-	Noise *noise_cave2;
 	Noise *noise_inter_valley_fill;
 	Noise *noise_inter_valley_slope;
 	Noise *noise_rivers;
@@ -139,19 +126,13 @@ private:
 	Noise *noise_valley_profile;
 
 	content_t c_cobble;
-	content_t c_desert_stone;
 	content_t c_dirt;
-	content_t c_ice;
 	content_t c_lava_source;
 	content_t c_mossycobble;
-	content_t c_river_water_source;
 	content_t c_sand;
-	content_t c_sandstone;
 	content_t c_sandstonebrick;
 	content_t c_stair_cobble;
 	content_t c_stair_sandstonebrick;
-	content_t c_stone;
-	content_t c_water_source;
 
 	float terrainLevelAtPoint(s16 x, s16 z);
 
@@ -161,10 +142,7 @@ private:
 	float terrainLevelFromNoise(TerrainNoise *tn);
 	float adjustedTerrainLevelFromNoise(TerrainNoise *tn);
 
-	MgStoneType generateBiomes();
-	void dustTopNodes();
-
-	void generateCaves(s16 max_stone_y);
+	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
 };
 
 struct MapgenFactoryValleys : public MapgenFactory {
