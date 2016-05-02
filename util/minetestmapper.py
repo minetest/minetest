@@ -273,25 +273,32 @@ if path[-1:] != "/" and path[-1:] != "\\":
 colors = {}
 colors_path = "colors.txt"
 
-os_name="linux"
-if (os.path.sep!="/"):
-    os_name="windows"
-
 profile_path = None
-if os_name=="windows":
+if 'USERPROFILE' in os.environ:
     profile_path = os.environ['USERPROFILE']
-else:
+elif 'HOME' in os.environ:
     profile_path = os.environ['HOME']
 
-mt_path = os.path.join( profile_path, "minetest")
-mt_util_path = os.path.join( mt_path, "util")
-abs_colors_path = os.path.join( mt_util_path, "colors.txt" )
+mt_path = None
+mt_util_path = None
+abs_colors_path = None
+if profile_path is not None:
+    try_path = os.path.join(profile_path, "minetest")
+    if os.path.isdir(try_path):
+        mt_path = try_path
+        mt_util_path = os.path.join( mt_path, "util")
+        abs_colors_path = os.path.join( mt_util_path, "colors.txt" )
 
 if not os.path.isfile(colors_path):
     colors_path = abs_colors_path
 
-if not os.path.isfile(colors_path):
-    print("WARNING: could not find colors.txt is current path or '"+colors_path+"'")
+if colors_path is None or not os.path.isfile(colors_path):
+    print("ERROR: could not find colors.txt is current path")
+    if colors_path is not None:
+        print("  nor '"+colors_path+"'.")
+    else:
+        print("  and minetest util path could not be detected.")
+    sys.exit(1)
 
 try:
     f = file(colors_path)
@@ -375,7 +382,7 @@ if os.path.exists(path + "sectors"):
         zlist.append(z)
 
 if len(xlist) == 0 or len(zlist) == 0:
-    print("At this location, data does not exist.")
+    print("Data does not exist at this location.")
     sys.exit(1)
 
 # Get rid of doubles
@@ -840,4 +847,3 @@ if unknown_node_ids:
     for node_id in unknown_node_ids:
         sys.stdout.write(" "+str(hex(node_id)))
     sys.stdout.write(os.linesep)
-
