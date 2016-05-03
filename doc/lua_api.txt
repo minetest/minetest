@@ -279,6 +279,13 @@ Example:
 
     [combine:16x32:0,0=default_cobble.png:0,16=default_wood.png
 
+#### `[resize:<w>x<h>`
+Resizes the texture to the given dimensions.
+
+Example:
+
+    default_sandstone.png^[resize:16x16
+
 #### `[brighten`
 Brightens the texture.
 
