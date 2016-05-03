@@ -1352,7 +1352,6 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			u32 r1 = stoi(sf.next(","));
 			u32 g1 = stoi(sf.next(","));
 			u32 b1 = stoi(sf.next(""));
-			std::string filename = sf.next("");
 
 			core::dimension2d<u32> dim = baseimg->getDimension();
 
@@ -1710,6 +1709,31 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 					baseimg = newimg;
 				}
 			}
+		}
+		/*
+			[resize:WxH
+			Resizes the base image to the given dimensions
+		*/
+		else if (str_starts_with(part_of_name, "[resize"))
+		{
+			if (baseimg == NULL) {
+				errorstream << "generateImagePart(): baseimg == NULL "
+						<< "for part_of_name=\""<< part_of_name
+						<< "\", cancelling." << std::endl;
+				return false;
+			}
+
+			Strfnd sf(part_of_name);
+			sf.next(":");
+			u32 width = stoi(sf.next("x"));
+			u32 height = stoi(sf.next(""));
+			core::dimension2d<u32> dim(width, height);
+
+			video::IImage* image = m_device->getVideoDriver()->
+				createImage(video::ECF_A8R8G8B8, dim);
+			baseimg->copyToScaling(image);
+			baseimg->drop();
+			baseimg = image;
 		}
 		else
 		{
