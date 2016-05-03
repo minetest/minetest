@@ -19,6 +19,10 @@ public class MtNativeActivity extends NativeActivity {
 	public void onDestroy() {
 		super.onDestroy();
 	}
+	
+	@Override
+	public void onBackPressed() {
+	}
 
 
 	public void copyAssets() {
