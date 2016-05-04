@@ -247,7 +247,9 @@ void GUIChatConsole::animate(u32 msec)
 	s32 goal = m_open ? m_desired_height : 0;
 
 	// Set invisible if close animation finished (reset by openConsole)
-	if (!m_open && m_height == 0)
+	// This function (animate()) is never called once its visibility becomes false so do not
+	//		actually set visible to false before the inhibited period is over
+	if (!m_open && m_height == 0 && m_open_inhibited == 0)
 		IGUIElement::setVisible(false);
 
 	if (m_height != goal)
