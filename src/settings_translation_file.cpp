@@ -103,6 +103,7 @@ fake_function() {
 	gettext("Saving map received from server");
 	gettext("Save the map received by the client on disk.");
 	gettext("Show entity selection boxes");
+	gettext("Show entity selection boxes");
 	gettext("Connect to external media server");
 	gettext("Enable usage of remote media server (if provided by server).\nRemote servers offer a significantly faster way to download media (e.g. textures)\nwhen connecting to the server.");
 	gettext("Serverlist URL");
@@ -343,6 +344,8 @@ fake_function() {
 	gettext("New users need to input this password.");
 	gettext("Default privileges");
 	gettext("The privileges that new users automatically get.\nSee /privs in game for a full list on your server and mod configuration.");
+	gettext("Basic Privileges");
+	gettext("Privileges that players with basic_privs can grant");
 	gettext("Unlimited player transfer distance");
 	gettext("Whether players are shown to clients without any range limit.\nDeprecated, use the setting player_transfer_distance instead.");
 	gettext("Player transfer distance");
@@ -412,7 +415,7 @@ fake_function() {
 	gettext("Length of a server tick and the interval at which objects are generally updated over network.");
 	gettext("Active Block Management interval");
 	gettext("Time in between active block management cycles");
-	gettext("ABM modifier interval");
+	gettext("Active Block Modifier interval");
 	gettext("Length of time between ABM execution cycles");
 	gettext("NodeTimer interval");
 	gettext("Length of time between NodeTimer execution cycles");

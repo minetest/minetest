@@ -253,9 +253,9 @@
 #    type: bool
 # enable_local_map_saving = false
 
-#    Show entity selection boxes.
+#    Show entity selection boxes
 #    type: bool
-# show_entity_selectionbox true
+# show_entity_selectionbox = true
 
 #    Enable usage of remote media server (if provided by server).
 #    Remote servers offer a significantly faster way to download media (e.g. textures)
@@ -988,7 +988,7 @@
 #    type: float
 # dedicated_server_step = 0.1
 
-#    Length of time between Active Block Management execution cycles
+#    Time in between active block management cycles
 #    type: float
 # active_block_mgmt_interval = 2.0
 
@@ -1372,7 +1372,7 @@
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: altitude_chill, noaltitude_chill, humid_rivers, nohumid_rivers
-# mgvalleys_spflags = altitude_chill,humid_rivers
+# mg_valleys_spflags = altitude_chill,humid_rivers
 
 #    The altitude at which temperature drops by 20C
 #    type: int
@@ -1537,3 +1537,4 @@
 
 #    type: string
 # modstore_details_url = https://forum.minetest.net/mmdb/mod/*/
+
