@@ -240,6 +240,15 @@ GUITable* GUIFormSpecMenu::getTable(const std::string &tablename)
 	return 0;
 }
 
+std::vector<std::string>* GUIFormSpecMenu::getDropDownValues(const std::string &name)
+{
+	for (u32 i = 0; i < m_dropdowns.size(); ++i) {
+		if (name == m_dropdowns[i].first.fname)
+			return &m_dropdowns[i].second;
+	}
+	return NULL;
+}
+
 static std::vector<std::string> split(const std::string &s, char delim)
 {
 	std::vector<std::string> tokens;
@@ -894,6 +903,14 @@ void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element)
 			e->setSelected(stoi(str_initial_selection.c_str())-1);
 
 		m_fields.push_back(spec);
+
+		m_dropdowns.push_back(std::pair<FieldSpec,
+			std::vector<std::string> >(spec, std::vector<std::string>()));
+		std::vector<std::string> &values = m_dropdowns.back().second;
+		for (unsigned int i = 0; i < items.size(); i++) {
+			values.push_back(unescape_string(items[i]));
+		}
+
 		return;
 	}
 	errorstream << "Invalid dropdown element(" << parts.size() << "): '"
@@ -2725,8 +2742,11 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 					}
 					s32 selected = e->getSelected();
 					if (selected >= 0) {
-						fields[name] =
-							wide_to_utf8(e->getItem(selected));
+						std::vector<std::string> *dropdown_values =
+							getDropDownValues(s.fname);
+						if (dropdown_values && selected < (s32)dropdown_values->size()) {
+							fields[name] = (*dropdown_values)[selected];
+						}
 					}
 				}
 				else if (s.ftype == f_TabHeader) {
