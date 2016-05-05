@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-27 05:49+0100\n"
+"POT-Creation-Date: 2016-05-05 16:13+0200\n"
 "PO-Revision-Date: 2016-01-23 04:35+0000\n"
 "Last-Translator: Tobyplowy <toby123@live.nl>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -74,6 +74,7 @@ msgid "We support protocol versions between version $1 and $2."
 msgstr "Wij ondersteunen protocol versies $1 tot en met $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
 #: src/keycode.cpp
@@ -179,6 +180,12 @@ msgstr "Er zijn geen spellen geïnstalleerd."
 msgid "Are you sure you want to delete \"$1\"?"
 msgstr "Weet je zeker dat je mod \"$1\" wilt verwijderen?"
 
+#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
+#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
+#: src/keycode.cpp
+msgid "Delete"
+msgstr "Verwijderen"
+
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: failed to delete \"$1\""
 msgstr "Modmgr: kan mod \"$1\" niet verwijderen"
@@ -187,22 +194,9 @@ msgstr "Modmgr: kan mod \"$1\" niet verwijderen"
 msgid "Modmgr: invalid modpath \"$1\""
 msgstr "Modbeheer: onjuist pad \"$1\""
 
-#: builtin/mainmenu/dlg_delete_mod.lua
-msgid "No of course not!"
-msgstr "Nee, natuurlijk niet!"
-
-#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
-#: builtin/mainmenu/tab_settings.lua
-msgid "Yes"
-msgstr "Ja"
-
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
 msgstr "Verwijder wereld \"$1\"?"
-
-#: builtin/mainmenu/dlg_delete_world.lua
-msgid "No"
-msgstr "Nee"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua src/keycode.cpp
 msgid "Accept"
@@ -419,7 +413,8 @@ msgid "Uninstall selected modpack"
 msgstr "Geselecteerde modverzameling deïnstalleren"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-msgid "Address / Port :"
+#, fuzzy
+msgid "Address / Port"
 msgstr "Servernaam of -adres / Poort :"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
@@ -438,18 +433,20 @@ msgstr "Creatieve modus"
 msgid "Damage enabled"
 msgstr "Verwondingen aangeschakeld"
 
-#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_server.lua
-#: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
-msgid "Delete"
-msgstr "Verwijderen"
-
-#: builtin/mainmenu/tab_multiplayer.lua
-msgid "Name / Password :"
-msgstr "Naam / Wachtwoord :"
+#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+#, fuzzy
+msgid "Del. Favorite"
+msgstr "Favorieten:"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-msgid "Public Serverlist"
-msgstr "Publieke Serverlijst"
+#, fuzzy
+msgid "Favorite"
+msgstr "Favorieten:"
+
+#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+#, fuzzy
+msgid "Name / Password"
+msgstr "Naam / Wachtwoord :"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -473,7 +470,7 @@ msgstr "Creatieve modus"
 msgid "Enable Damage"
 msgstr "Verwondingen inschakelen"
 
-#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_server.lua
 msgid "Name/Password"
 msgstr "Naam / Wachtwoord"
 
@@ -544,8 +541,9 @@ msgstr "Weet je zeker dat je je wereld wilt resetten?"
 msgid "Bilinear Filter"
 msgstr "Bi-Lineaire filtering"
 
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Bumpmapping"
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Bump Mapping"
 msgstr "Bumpmapping"
 
 #: builtin/mainmenu/tab_settings.lua
@@ -558,17 +556,8 @@ msgid "Connected Glass"
 msgstr "Verbind glas"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
-msgid "Enable Particles"
-msgstr "Alles aanzetten"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
 msgstr "Mooie bladeren"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Generate Normalmaps"
-msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -577,6 +566,10 @@ msgstr "Mipmap"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
 msgstr "Mipmap + Anisotropisch filteren"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "No"
+msgstr "Nee"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -588,17 +581,23 @@ msgid "No Mipmap"
 msgstr "Geen Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "No!!!"
-msgstr "Nee!!!"
+#, fuzzy
+msgid "Node Highlighting"
+msgstr "Oplichtende node"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
-msgid "Node Highlighting"
+msgid "Node Outlining"
 msgstr "Oplichtende node"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
 msgstr "Geen"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Normal Mapping"
+msgstr "Mip-Mapping"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -611,6 +610,11 @@ msgstr "Ondoorzichtig water"
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Parallax Occlusion"
 msgstr "Parallax occlusie"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Particles"
+msgstr "Alles aanzetten"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -637,6 +641,11 @@ msgstr "Textuur:"
 msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr "Om schaduwen mogelijk te maken moet OpenGL worden gebruikt."
 
+#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
+#, fuzzy
+msgid "Tone Mapping"
+msgstr "Mip-Mapping"
+
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold (px)"
 msgstr ""
@@ -660,6 +669,10 @@ msgstr "Bewegende planten"
 #, fuzzy
 msgid "Waving Water"
 msgstr "Golvend water"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Yes"
+msgstr "Ja"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
@@ -864,10 +877,6 @@ msgstr "MiB/s"
 msgid "Node definitions..."
 msgstr "Node definities..."
 
-#: src/game.cpp src/guiFormSpecMenu.cpp
-msgid "Proceed"
-msgstr "Doorgaan"
-
 #: src/game.cpp
 msgid "Resolving address..."
 msgstr "Server-adres opzoeken..."
@@ -888,13 +897,17 @@ msgstr "Geluidsvolume"
 msgid "You died."
 msgstr "Je bent dood."
 
+#: src/game.cpp src/guiFormSpecMenu.cpp
+msgid "ok"
+msgstr "oké"
+
 #: src/guiFormSpecMenu.cpp
 msgid "Enter "
 msgstr "Enter "
 
 #: src/guiFormSpecMenu.cpp
-msgid "ok"
-msgstr "oké"
+msgid "Proceed"
+msgstr "Doorgaan"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "\"Use\" = climb down"
@@ -1382,6 +1395,16 @@ msgid "Acceleration in air"
 msgstr "Versnelling in lucht"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Active Block Management interval"
+msgstr "Bereik waarbinnen blokken actief zijn"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Active Block Modifier interval"
+msgstr "Bereik waarbinnen blokken actief zijn"
+
+#: src/settings_translation_file.cpp
 msgid "Active block range"
 msgstr "Bereik waarbinnen blokken actief zijn"
 
@@ -1481,6 +1504,11 @@ msgid "Basic"
 msgstr "Basis"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Basic Privileges"
+msgstr "Standaardvoorrechten"
+
+#: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
 msgstr "Bi-Lineaire filtering"
 
@@ -1495,6 +1523,10 @@ msgstr "Aantal bits per pixel (oftewel: kleurdiepte) in full-screen modus."
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
 msgstr "Bouwen op de plaats van de speler"
+
+#: src/settings_translation_file.cpp
+msgid "Bumpmapping"
+msgstr "Bumpmapping"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -1515,6 +1547,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Cave width"
+msgstr "Schermbreedte"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
@@ -1680,6 +1717,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2100,6 +2141,11 @@ msgid "Font size"
 msgstr "Fontgrootte"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Format of screenshots."
+msgstr "Pad waar screenshots bewaard worden."
+
+#: src/settings_translation_file.cpp
 msgid "Forward key"
 msgstr "Vooruit toets"
 
@@ -2169,9 +2215,11 @@ msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
 "and junglegrass, in all other mapgens this flag controls all decorations.\n"
+"The default flags set in the engine are: caves, light, decorations\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 "Wereldgenerator instellingen specified voor generator v6.\n"
 "Indien sneeuwgebieden aanstaan, dan worden oerwouden ook aangezet, en wordt "
@@ -2801,6 +2849,14 @@ msgstr ""
 "worden."
 
 #: src/settings_translation_file.cpp
+msgid "Length of time between ABM execution cycles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Length of time between NodeTimer execution cycles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Level of logging to be written to debug.txt:\n"
 "-    <nothing> (no logging)\n"
@@ -2900,43 +2956,16 @@ msgstr "Wereld map"
 #, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen Valleys.\n"
-"Flags that are not specified in the flag string are not modified from the "
-"default.\n"
-"Flags starting with \"no\" are used to explicitly disable them.\n"
-"\"altitude_chill\" makes higher elevations colder, which may cause biome "
+"'altitude_chill' makes higher elevations colder, which may cause biome "
 "issues.\n"
-"\"humid_rivers\" modifies the humidity around rivers and in areas where "
-"water would tend to pool. It may interfere with delicately adjusted biomes."
-msgstr ""
-"Algemene wereldgenerator instellingen.\n"
-"Vlaggen die niet in de lijst van vlaggen staan, behouden hun standaard-"
-"waarde.\n"
-"Zet \"no\" voor een vlag om hem expliciet uit te zetten.\n"
-"'trees' en 'flat' zijn enkel van toepassing in mgv6."
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Map generation attributes specific to Mapgen flat.\n"
-"Occasional lakes and hills added to the flat world.\n"
+"'humid_rivers' modifies the humidity around rivers and in areas where water "
+"would tend to pool,\n"
+"it may interfere with delicately adjusted biomes.\n"
+"The default flags set in the engine are: altitude_chill, humid_rivers\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
-msgstr ""
-"Wereldgenerator instellingen specified voor generator v7.\n"
-"\"ridges\" zijn rivieren.\n"
-"Vlaggen die niet in de lijst van vlaggen staan, behouden hun standaard-"
-"waarde.\n"
-"Zet \"no\" voor een vlag om hem expliciet uit te zetten."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Map generation attributes specific to Mapgen v6.\n"
-"When snowbiomes are enabled jungles are enabled and the jungles flag is "
-"ignored.\n"
-"Flags that are not specified in the flag string are not modified from the "
-"default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 "Wereldgenerator instellingen specified voor generator v6.\n"
 "Indien sneeuwgebieden aanstaan, dan worden oerwouden ook aangezet, en wordt "
@@ -2946,15 +2975,55 @@ msgstr ""
 "Zet \"no\" voor een vlag om hem expliciet uit te zetten."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Map generation attributes specific to Mapgen v7.\n"
-"'ridges' are the rivers.\n"
+"Map generation attributes specific to Mapgen flat.\n"
+"Occasional lakes and hills can be added to the flat world.\n"
+"The default flags set in the engine are: none\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 "Wereldgenerator instellingen specified voor generator v7.\n"
 "\"ridges\" zijn rivieren.\n"
+"Vlaggen die niet in de lijst van vlaggen staan, behouden hun standaard-"
+"waarde.\n"
+"Zet \"no\" voor een vlag om hem expliciet uit te zetten."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Map generation attributes specific to Mapgen v6.\n"
+"When snowbiomes are enabled jungles are automatically enabled, the 'jungles' "
+"flag is ignored.\n"
+"The default flags set in the engine are: biomeblend, mudflow\n"
+"The flags string modifies the engine defaults.\n"
+"Flags that are not specified in the flag string are not modified from the "
+"default.\n"
+"Flags starting with 'no' are used to explicitly disable them."
+msgstr ""
+"Wereldgenerator instellingen specified voor generator v6.\n"
+"Indien sneeuwgebieden aanstaan, dan worden oerwouden ook aangezet, en wordt "
+"de \"jungles\" vlag genegeerd.\n"
+"Vlaggen die niet in de lijst van vlaggen staan, behouden hun standaard-"
+"waarde.\n"
+"Zet \"no\" voor een vlag om hem expliciet uit te zetten."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Map generation attributes specific to Mapgen v7.\n"
+"The 'ridges' flag controls the rivers.\n"
+"The default flags set in the engine are: mountains, ridges\n"
+"The flags string modifies the engine defaults.\n"
+"Flags that are not specified in the flag string are not modified from the "
+"default.\n"
+"Flags starting with 'no' are used to explicitly disable them."
+msgstr ""
+"Wereldgenerator instellingen specified voor generator v6.\n"
+"Indien sneeuwgebieden aanstaan, dan worden oerwouden ook aangezet, en wordt "
+"de \"jungles\" vlag genegeerd.\n"
 "Vlaggen die niet in de lijst van vlaggen staan, behouden hun standaard-"
 "waarde.\n"
 "Zet \"no\" voor een vlag om hem expliciet uit te zetten."
@@ -3004,6 +3073,11 @@ msgstr "Wereldgenerator vlaggen"
 #, fuzzy
 msgid "Mapgen flat"
 msgstr "Wereldgenerator vlaggen"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen flat cave width"
+msgstr "Fractal wereldgenerator julia schaal"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3061,6 +3135,11 @@ msgstr "Wereldgenerator v6 basisterrein ruisparameters"
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal"
 msgstr "Fractal wereldgenerator"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal cave width"
+msgstr "Fractal wereldgenerator julia w-doorsnede"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal cave1 noise parameters"
@@ -3131,6 +3210,11 @@ msgstr "Wereldgenerator"
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5"
 msgstr "Wereldgenerator v5"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen v5 cave width"
+msgstr "Fractal wereldgenerator julia schaal"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 cave1 noise parameters"
@@ -3216,6 +3300,11 @@ msgstr "Wereldgenerator v6 bomen ruisparameters"
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7"
 msgstr "Wereldgenerator v7"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen v7 cave width"
+msgstr "Fractal wereldgenerator julia schaal"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 cave1 noise parameters"
@@ -3551,6 +3640,11 @@ msgid "Node highlighting"
 msgstr "Oplichtende node"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "NodeTimer interval"
+msgstr "Kloktijd verstuur-interval"
+
+#: src/settings_translation_file.cpp
 msgid "Noise parameters for biome API temperature, humidity and biome blend."
 msgstr ""
 "Ruisparameters voor landschapstemperaturen, -vochtigheid en -overgangen."
@@ -3687,6 +3781,10 @@ msgstr ""
 "Voorkom dat mods onveilige commando's uitvoeren, zoals shell commando's."
 
 #: src/settings_translation_file.cpp
+msgid "Privileges that players with basic_privs can grant"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Profiler data print interval. 0 = disable. Useful for developers."
 msgstr ""
 "Interval waarmee profiler-gegevens geprint worden. 0 = uitzetten. Dit is "
@@ -3804,6 +3902,23 @@ msgid "Screenshot folder"
 msgstr "Map voor screenshots"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Screenshot format"
+msgstr "Map voor screenshots"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Screenshot quality"
+msgstr "Screenshot"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Screenshot quality. Only used for JPEG format.\n"
+"1 means worst quality; 100 means best quality.\n"
+"Use 0 for default quality."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Security"
 msgstr "Veiligheid"
 
@@ -3905,6 +4020,10 @@ msgid "Show debug info"
 msgstr "Toon debug informatie"
 
 #: src/settings_translation_file.cpp
+msgid "Show entity selection boxes"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "Afsluitbericht van server"
 
@@ -3977,6 +4096,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
 msgstr "Stricte protocolcontrole"
+
+#: src/settings_translation_file.cpp
+msgid "Support older servers"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -4061,6 +4184,10 @@ msgid "This font will be used for certain languages."
 msgstr "Dit font wordt gebruikt voor bepaalde talen."
 
 #: src/settings_translation_file.cpp
+msgid "Time in between active block management cycles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
@@ -4097,11 +4224,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
 msgstr "Camera-modus veranderen toets"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Tone Mapping"
-msgstr "Mip-Mapping"
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
@@ -4388,6 +4510,14 @@ msgstr ""
 "toets)."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Whether to support older servers before protocol version 25.\n"
+"Enable if you want to connect to 0.4.12 servers and before.\n"
+"Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
+"Disabling this option will protect your password better."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Width component of the initial window size."
 msgstr "Horizontale aanvangsgroote van het window."
@@ -4425,97 +4555,209 @@ msgstr "Maximaal parallellisme in cURL"
 msgid "cURL timeout"
 msgstr "cURL timeout"
 
-#, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "MP uitschakelen"
-
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "ingeschakeld"
-
-#~ msgid "Rendering:"
-#~ msgstr "Rendering:"
-
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "Herstart minetest om de driver te activeren"
-
-#~ msgid "Game Name"
-#~ msgstr "Spel"
-
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "Gamemgr: Kan mod \"$1\" niet naar spel \"$2\" kopiëren"
-
-#~ msgid "GAMES"
-#~ msgstr "SPELLEN"
-
-#~ msgid "Mods:"
-#~ msgstr "Mods:"
-
-#~ msgid "new game"
-#~ msgstr "nieuw spel"
-
-#~ msgid "EDIT GAME"
-#~ msgstr "SPEL AANPASSEN"
-
-#~ msgid "Remove selected mod"
-#~ msgstr "Geselecteerde mod verwijderen"
-
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Mod toevoegen"
-
-#~ msgid "CLIENT"
-#~ msgstr "CLIENT"
-
-#~ msgid "Favorites:"
-#~ msgstr "Favorieten:"
-
-#~ msgid "START SERVER"
-#~ msgstr "START SERVER"
-
-#~ msgid "Name"
-#~ msgstr "Naam"
-
-#~ msgid "Password"
-#~ msgstr "Wachtwoord"
-
-#~ msgid "SETTINGS"
-#~ msgstr "INSTELLINGEN"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Voorwerpen vooraf laden"
-
-#~ msgid "Finite Liquid"
-#~ msgstr "Eindige vloeistoffen"
-
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "SINGLEPLAYER"
-
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "TEXTUREN"
-
-#~ msgid "MODS"
-#~ msgstr "MODS"
-
-#~ msgid "Add mod:"
-#~ msgstr "Mod toevoegen:"
-
-#~ msgid "Local install"
-#~ msgstr "Plaatselijk installeren"
+#~ msgid "Item textures..."
+#~ msgstr "Voorwerp-texturen..."
 
 #~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
+#~ "Enable a bit lower water surface, so it doesn't \"fill\" the node "
+#~ "completely.\n"
+#~ "Note that this is not quite optimized and that smooth lighting on the\n"
+#~ "water surface doesn't work with this."
 #~ msgstr ""
-#~ "Let op: Nog niet alle mods zijn geconfigueerd. \n"
-#~ "De mods zullen automatisch worden ingeschakeld als je de configuratie "
-#~ "bewaard. "
+#~ "Maak de wateroppervlakte iets lager, zodat het niet de hele node vult.\n"
+#~ "Dit is niet echt geoptimaliseerd, en vloeiende belichting van de\n"
+#~ "wateroppervlakte werkt niet als dit is aangeschakeld."
+
+#~ msgid "Enable selection highlighting for nodes (disables selectionbox)."
+#~ msgstr "Laat geselecteerde nodes oplichten (schakelt selectie-randen uit)."
 
 #~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
+#~ "Julia set: (X,Y,Z) offsets from world centre.\n"
+#~ "Range roughly -2 to 2, multiply by j_scale for offsets in nodes."
 #~ msgstr ""
-#~ "LEt op: Sommige ingestelde mods zijn vermist.\n"
-#~ "Hun instellingen worden verwijderd als je de configuratie opslaat. "
+#~ "Juliaverzameling: (X,Y,X) afstanden van wereld-centrum.\n"
+#~ "Bereik is ongeveer -2 tot 2. Vermenigvuldig met j_scale voor de afstand "
+#~ "in nodes."
+
+#~ msgid ""
+#~ "Julia set: W value determining the 4D shape.\n"
+#~ "Range roughly -2 to 2."
+#~ msgstr ""
+#~ "Juliaverzameling: W-waarde van de 4D vorm.\n"
+#~ "Bereik is ongeveer -2 tot 2."
+
+#~ msgid ""
+#~ "Key for decreasing the viewing range. Modifies the minimum viewing "
+#~ "range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Toets voor het verkleinen van de zichtafstand. Dit verandert de minimale "
+#~ "zichtafstand.\n"
+#~ "Zie http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for increasing the viewing range. Modifies the minimum viewing "
+#~ "range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "Toets voor het vergroten van de zichtafstand. Dit verandert de minimale "
+#~ "zichtafstand.\n"
+#~ "Zie http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Mandelbrot set: (X,Y,Z) offsets from world centre.\n"
+#~ "Range roughly -2 to 2, multiply by m_scale for offsets in nodes."
+#~ msgstr ""
+#~ "Mandelbrot verzameling: (X,Y,Z) afstanden vanaf wereld-centrum.\n"
+#~ " Bereik is ongeveer -2 tot 2. Vermenigvuldig met m_scale voor de afstand "
+#~ "in nodes."
+
+#~ msgid "Mandelbrot set: Approximate (X,Y,Z) scales in nodes."
+#~ msgstr "Mandelbrot verzameling: (X,Y,Z) schaal, in nodes (bij benadering)."
+
+#~ msgid ""
+#~ "Mandelbrot set: Iterations of the recursive function.\n"
+#~ "Controls scale of finest detail."
+#~ msgstr ""
+#~ "Mandelbrot verzameling: Aantal iteraties van de recursieve functie.\n"
+#~ "Bepaalt de schaal van de kleinste details."
+
+#~ msgid ""
+#~ "Map generation attributes specific to Mapgen fractal.\n"
+#~ "'julia' selects a julia set to be generated instead of a mandelbrot set.\n"
+#~ "Flags that are not specified in the flag string are not modified from the "
+#~ "default.\n"
+#~ "Flags starting with \"no\" are used to explicitly disable them."
+#~ msgstr ""
+#~ "Wereldgeneratie instellingen voor de fractal generator.\n"
+#~ "'julia' selecterd een julia-verzameling in plaats van een mandebrot-"
+#~ "verzameling.\n"
+#~ "Vlaggen die niet in de lijst van vlaggen staan, behouden hun standaard-"
+#~ "waarde.\n"
+#~ "Zet \"no\" voor een vlag om hem expliciet uit te zetten."
+
+#~ msgid "Mapgen fractal mandelbrot iterations"
+#~ msgstr "Fractal wereldgenerator mandelbrot iteraties"
+
+#~ msgid "Mapgen fractal mandelbrot offset"
+#~ msgstr "Fractal wereldgenerator mandelbrot centrum-afstand"
+
+#~ msgid "Mapgen fractal mandelbrot scale"
+#~ msgstr "Fractal wereldgenerator mandelbrot schaal"
+
+#~ msgid "Mapgen fractal mandelbrot slice w"
+#~ msgstr "Fractal wereldgenerator mandelbrot w-doorsnede"
+
+#~ msgid ""
+#~ "Maximum distance above water level for player spawn.\n"
+#~ "Larger values result in spawn points closer to (x = 0, z = 0).\n"
+#~ "Smaller values may result in a suitable spawn point not being found,\n"
+#~ "resulting in a spawn at (0, 0, 0) possibly buried underground."
+#~ msgstr ""
+#~ "Maximum hoogte boven waterniveau waar een speler geboren wordt.\n"
+#~ "Bij hogere waarden zullen de plaatsen dichter bij (x = 0, z = 0) liggen.\n"
+#~ "Bij lagere waarden kan het zijn dat een geschikte plek niet gevonden "
+#~ "wordt,\n"
+#~ "in dat geval wordt de speler geboren op (0, 0, 0), mogelijk onder de "
+#~ "grond."
+
+#~ msgid ""
+#~ "Minimum wanted FPS.\n"
+#~ "The amount of rendered stuff is dynamically set according to this. and "
+#~ "viewing range min and max."
+#~ msgstr ""
+#~ "Minimaal gewenste FPS.\n"
+#~ "De hoeveelheid gerenderd materiaal wordt aangepast afhankelijk van deze "
+#~ "waarde, en van de min en max zichtafstanden."
+
+#~ msgid "New style water"
+#~ msgstr "Nieuw water"
+
+#~ msgid ""
+#~ "Pre-generate all item visuals used in the inventory.\n"
+#~ "This increases startup time, but runs smoother in-game.\n"
+#~ "The generated textures can easily exceed your VRAM, causing artifacts in "
+#~ "the inventory."
+#~ msgstr ""
+#~ "Genereer beelden van objecten in de rugzak vooraf.\n"
+#~ "De start-tijd wordt hierdoor langer, maar het spel wordt vloeiender.\n"
+#~ "Dit kost veel geheugen op de videokaart. Als die onvoldoende geheugen "
+#~ "heeft kan dit resulteren in vreemde effecten."
+
+#~ msgid "Preload inventory textures"
+#~ msgstr "Laad rugzak-texturen vooraf"
+
+#~ msgid "Vertical initial window size."
+#~ msgstr "Aanvangshoogte van het window."
+
+#~ msgid "Vertical spawn range"
+#~ msgstr "Vertikaal geboortegebied"
+
+#~ msgid "Viewing range minimum"
+#~ msgstr "Minimale zichtafstand"
+
+#~ msgid "Wanted FPS"
+#~ msgstr "Gewenste FPS"
+
+#~ msgid "Reset singleplayer world"
+#~ msgstr "Reset Singleplayer wereld"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Schaal-factor toegepast op menu elementen: "
+
+#, fuzzy
+#~ msgid "Downloading"
+#~ msgstr "Downloaden"
+
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr ""
+#~ "Linkermuisknop: Verplaats alle items. Rechtermuisknop: Verplaats één item"
+
+#~ msgid "is required by:"
+#~ msgstr "is benodigd voor:"
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "Instellingen bewaard. "
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Waarschuwing: Instellingen niet consistent. "
+
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Kan geen nieuwe wereld aanmaken: de naam bevat onjuiste tekens"
+
+#~ msgid "Show Public"
+#~ msgstr "Publieke server"
+
+#~ msgid "Show Favorites"
+#~ msgstr "Favourieten"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Laat het adres leeg om een lokale server te starten."
+
+#~ msgid "Create world"
+#~ msgstr "Maak wereld aan"
+
+#~ msgid "Address required."
+#~ msgstr "IP-adres nodig."
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Kan niets verwijderen: Geen wereld geselecteerd"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "Deze bestanden worden verwijderd"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Kan geen wereld aanmaken: Geen games gevonden"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Kan instellingen niet aanpassen: Niets geselecteerd"
+
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Niet alle bestanden zijn verwijderd"
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -4542,206 +4784,131 @@ msgstr "cURL timeout"
 #~ "- ESC: Menu\n"
 #~ "- T: Chat\n"
 
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Niet alle bestanden zijn verwijderd"
-
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Kan instellingen niet aanpassen: Niets geselecteerd"
-
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Kan geen wereld aanmaken: Geen games gevonden"
-
-#~ msgid "Files to be deleted"
-#~ msgstr "Deze bestanden worden verwijderd"
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Kan niets verwijderen: Geen wereld geselecteerd"
-
-#~ msgid "Address required."
-#~ msgstr "IP-adres nodig."
-
-#~ msgid "Create world"
-#~ msgstr "Maak wereld aan"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Laat het adres leeg om een lokale server te starten."
-
-#~ msgid "Show Favorites"
-#~ msgstr "Favourieten"
-
-#~ msgid "Show Public"
-#~ msgstr "Publieke server"
-
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Kan geen nieuwe wereld aanmaken: de naam bevat onjuiste tekens"
-
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Waarschuwing: Instellingen niet consistent. "
-
-#~ msgid "Configuration saved.  "
-#~ msgstr "Instellingen bewaard. "
-
-#~ msgid "is required by:"
-#~ msgstr "is benodigd voor:"
-
-#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
 #~ msgstr ""
-#~ "Linkermuisknop: Verplaats alle items. Rechtermuisknop: Verplaats één item"
+#~ "LEt op: Sommige ingestelde mods zijn vermist.\n"
+#~ "Hun instellingen worden verwijderd als je de configuratie opslaat. "
+
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "Let op: Nog niet alle mods zijn geconfigueerd. \n"
+#~ "De mods zullen automatisch worden ingeschakeld als je de configuratie "
+#~ "bewaard. "
+
+#~ msgid "Local install"
+#~ msgstr "Plaatselijk installeren"
+
+#~ msgid "Add mod:"
+#~ msgstr "Mod toevoegen:"
+
+#~ msgid "MODS"
+#~ msgstr "MODS"
+
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "TEXTUREN"
+
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "SINGLEPLAYER"
+
+#~ msgid "Finite Liquid"
+#~ msgstr "Eindige vloeistoffen"
+
+#~ msgid "Preload item visuals"
+#~ msgstr "Voorwerpen vooraf laden"
+
+#~ msgid "SETTINGS"
+#~ msgstr "INSTELLINGEN"
+
+#~ msgid "Password"
+#~ msgstr "Wachtwoord"
+
+#~ msgid "Name"
+#~ msgstr "Naam"
+
+#~ msgid "START SERVER"
+#~ msgstr "START SERVER"
+
+#~ msgid "CLIENT"
+#~ msgstr "CLIENT"
+
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Mod toevoegen"
+
+#~ msgid "Remove selected mod"
+#~ msgstr "Geselecteerde mod verwijderen"
+
+#~ msgid "EDIT GAME"
+#~ msgstr "SPEL AANPASSEN"
+
+#~ msgid "new game"
+#~ msgstr "nieuw spel"
+
+#~ msgid "Mods:"
+#~ msgstr "Mods:"
+
+#~ msgid "GAMES"
+#~ msgstr "SPELLEN"
+
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "Gamemgr: Kan mod \"$1\" niet naar spel \"$2\" kopiëren"
+
+#~ msgid "Game Name"
+#~ msgstr "Spel"
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "Herstart minetest om de driver te activeren"
+
+#~ msgid "Rendering:"
+#~ msgstr "Rendering:"
 
 #, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Downloaden"
+#~ msgid "If enabled, "
+#~ msgstr "ingeschakeld"
 
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Schaal-factor toegepast op menu elementen: "
-
-#~ msgid "Reset singleplayer world"
-#~ msgstr "Reset Singleplayer wereld"
-
-#~ msgid "Wanted FPS"
-#~ msgstr "Gewenste FPS"
-
-#~ msgid "Viewing range minimum"
-#~ msgstr "Minimale zichtafstand"
-
-#~ msgid "Vertical spawn range"
-#~ msgstr "Vertikaal geboortegebied"
-
-#~ msgid "Vertical initial window size."
-#~ msgstr "Aanvangshoogte van het window."
-
-#~ msgid "Preload inventory textures"
-#~ msgstr "Laad rugzak-texturen vooraf"
+#, fuzzy
+#~ msgid "If disabled "
+#~ msgstr "MP uitschakelen"
 
 #~ msgid ""
-#~ "Pre-generate all item visuals used in the inventory.\n"
-#~ "This increases startup time, but runs smoother in-game.\n"
-#~ "The generated textures can easily exceed your VRAM, causing artifacts in "
-#~ "the inventory."
-#~ msgstr ""
-#~ "Genereer beelden van objecten in de rugzak vooraf.\n"
-#~ "De start-tijd wordt hierdoor langer, maar het spel wordt vloeiender.\n"
-#~ "Dit kost veel geheugen op de videokaart. Als die onvoldoende geheugen "
-#~ "heeft kan dit resulteren in vreemde effecten."
-
-#~ msgid "New style water"
-#~ msgstr "Nieuw water"
-
-#~ msgid ""
-#~ "Minimum wanted FPS.\n"
-#~ "The amount of rendered stuff is dynamically set according to this. and "
-#~ "viewing range min and max."
-#~ msgstr ""
-#~ "Minimaal gewenste FPS.\n"
-#~ "De hoeveelheid gerenderd materiaal wordt aangepast afhankelijk van deze "
-#~ "waarde, en van de min en max zichtafstanden."
-
-#~ msgid ""
-#~ "Maximum distance above water level for player spawn.\n"
-#~ "Larger values result in spawn points closer to (x = 0, z = 0).\n"
-#~ "Smaller values may result in a suitable spawn point not being found,\n"
-#~ "resulting in a spawn at (0, 0, 0) possibly buried underground."
-#~ msgstr ""
-#~ "Maximum hoogte boven waterniveau waar een speler geboren wordt.\n"
-#~ "Bij hogere waarden zullen de plaatsen dichter bij (x = 0, z = 0) liggen.\n"
-#~ "Bij lagere waarden kan het zijn dat een geschikte plek niet gevonden "
-#~ "wordt,\n"
-#~ "in dat geval wordt de speler geboren op (0, 0, 0), mogelijk onder de "
-#~ "grond."
-
-#~ msgid "Mapgen fractal mandelbrot slice w"
-#~ msgstr "Fractal wereldgenerator mandelbrot w-doorsnede"
-
-#~ msgid "Mapgen fractal mandelbrot scale"
-#~ msgstr "Fractal wereldgenerator mandelbrot schaal"
-
-#~ msgid "Mapgen fractal mandelbrot offset"
-#~ msgstr "Fractal wereldgenerator mandelbrot centrum-afstand"
-
-#~ msgid "Mapgen fractal mandelbrot iterations"
-#~ msgstr "Fractal wereldgenerator mandelbrot iteraties"
-
-#~ msgid ""
-#~ "Map generation attributes specific to Mapgen fractal.\n"
-#~ "'julia' selects a julia set to be generated instead of a mandelbrot set.\n"
+#~ "Map generation attributes specific to Mapgen v7.\n"
+#~ "'ridges' are the rivers.\n"
 #~ "Flags that are not specified in the flag string are not modified from the "
 #~ "default.\n"
 #~ "Flags starting with \"no\" are used to explicitly disable them."
 #~ msgstr ""
-#~ "Wereldgeneratie instellingen voor de fractal generator.\n"
-#~ "'julia' selecterd een julia-verzameling in plaats van een mandebrot-"
-#~ "verzameling.\n"
+#~ "Wereldgenerator instellingen specified voor generator v7.\n"
+#~ "\"ridges\" zijn rivieren.\n"
 #~ "Vlaggen die niet in de lijst van vlaggen staan, behouden hun standaard-"
 #~ "waarde.\n"
 #~ "Zet \"no\" voor een vlag om hem expliciet uit te zetten."
 
+#, fuzzy
 #~ msgid ""
-#~ "Mandelbrot set: Iterations of the recursive function.\n"
-#~ "Controls scale of finest detail."
+#~ "Map generation attributes specific to Mapgen Valleys.\n"
+#~ "Flags that are not specified in the flag string are not modified from the "
+#~ "default.\n"
+#~ "Flags starting with \"no\" are used to explicitly disable them.\n"
+#~ "\"altitude_chill\" makes higher elevations colder, which may cause biome "
+#~ "issues.\n"
+#~ "\"humid_rivers\" modifies the humidity around rivers and in areas where "
+#~ "water would tend to pool. It may interfere with delicately adjusted "
+#~ "biomes."
 #~ msgstr ""
-#~ "Mandelbrot verzameling: Aantal iteraties van de recursieve functie.\n"
-#~ "Bepaalt de schaal van de kleinste details."
+#~ "Algemene wereldgenerator instellingen.\n"
+#~ "Vlaggen die niet in de lijst van vlaggen staan, behouden hun standaard-"
+#~ "waarde.\n"
+#~ "Zet \"no\" voor een vlag om hem expliciet uit te zetten.\n"
+#~ "'trees' en 'flat' zijn enkel van toepassing in mgv6."
 
-#~ msgid "Mandelbrot set: Approximate (X,Y,Z) scales in nodes."
-#~ msgstr "Mandelbrot verzameling: (X,Y,Z) schaal, in nodes (bij benadering)."
+#~ msgid "No!!!"
+#~ msgstr "Nee!!!"
 
-#~ msgid ""
-#~ "Mandelbrot set: (X,Y,Z) offsets from world centre.\n"
-#~ "Range roughly -2 to 2, multiply by m_scale for offsets in nodes."
-#~ msgstr ""
-#~ "Mandelbrot verzameling: (X,Y,Z) afstanden vanaf wereld-centrum.\n"
-#~ " Bereik is ongeveer -2 tot 2. Vermenigvuldig met m_scale voor de afstand "
-#~ "in nodes."
+#~ msgid "Public Serverlist"
+#~ msgstr "Publieke Serverlijst"
 
-#~ msgid ""
-#~ "Key for increasing the viewing range. Modifies the minimum viewing "
-#~ "range.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Toets voor het vergroten van de zichtafstand. Dit verandert de minimale "
-#~ "zichtafstand.\n"
-#~ "Zie http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Key for decreasing the viewing range. Modifies the minimum viewing "
-#~ "range.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Toets voor het verkleinen van de zichtafstand. Dit verandert de minimale "
-#~ "zichtafstand.\n"
-#~ "Zie http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Julia set: W value determining the 4D shape.\n"
-#~ "Range roughly -2 to 2."
-#~ msgstr ""
-#~ "Juliaverzameling: W-waarde van de 4D vorm.\n"
-#~ "Bereik is ongeveer -2 tot 2."
-
-#~ msgid ""
-#~ "Julia set: (X,Y,Z) offsets from world centre.\n"
-#~ "Range roughly -2 to 2, multiply by j_scale for offsets in nodes."
-#~ msgstr ""
-#~ "Juliaverzameling: (X,Y,X) afstanden van wereld-centrum.\n"
-#~ "Bereik is ongeveer -2 tot 2. Vermenigvuldig met j_scale voor de afstand "
-#~ "in nodes."
-
-#~ msgid "Enable selection highlighting for nodes (disables selectionbox)."
-#~ msgstr "Laat geselecteerde nodes oplichten (schakelt selectie-randen uit)."
-
-#~ msgid ""
-#~ "Enable a bit lower water surface, so it doesn't \"fill\" the node "
-#~ "completely.\n"
-#~ "Note that this is not quite optimized and that smooth lighting on the\n"
-#~ "water surface doesn't work with this."
-#~ msgstr ""
-#~ "Maak de wateroppervlakte iets lager, zodat het niet de hele node vult.\n"
-#~ "Dit is niet echt geoptimaliseerd, en vloeiende belichting van de\n"
-#~ "wateroppervlakte werkt niet als dit is aangeschakeld."
-
-#~ msgid "Item textures..."
-#~ msgstr "Voorwerp-texturen..."
+#~ msgid "No of course not!"
+#~ msgstr "Nee, natuurlijk niet!"

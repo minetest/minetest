@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-27 05:49+0100\n"
+"POT-Creation-Date: 2016-05-05 16:13+0200\n"
 "PO-Revision-Date: 2016-04-20 13:21+0000\n"
 "Last-Translator: Joan Ciprià Moreno Teodoro <joancipria@gmail.com>\n"
-"Language-Team: Catalan "
-"<https://hosted.weblate.org/projects/minetest/minetest/ca/>\n"
+"Language-Team: Catalan <https://hosted.weblate.org/projects/minetest/"
+"minetest/ca/>\n"
 "Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -75,6 +75,7 @@ msgid "We support protocol versions between version $1 and $2."
 msgstr "Nosaltres suportem versions del protocol entre la versió $1 i la $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
 #: src/keycode.cpp
@@ -181,6 +182,12 @@ msgstr "No tens subjocs instal·lats."
 msgid "Are you sure you want to delete \"$1\"?"
 msgstr "Realment desitja esborrar \"$1\"?"
 
+#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
+#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
+#: src/keycode.cpp
+msgid "Delete"
+msgstr "Esborrar"
+
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: failed to delete \"$1\""
 msgstr "Modmgr: Error al esborrar \"$1\""
@@ -189,22 +196,9 @@ msgstr "Modmgr: Error al esborrar \"$1\""
 msgid "Modmgr: invalid modpath \"$1\""
 msgstr "Modmgr: Ruta del mod \"$1\" invàlida"
 
-#: builtin/mainmenu/dlg_delete_mod.lua
-msgid "No of course not!"
-msgstr "No, per descomptat que no!"
-
-#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
-#: builtin/mainmenu/tab_settings.lua
-msgid "Yes"
-msgstr "Sí"
-
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
 msgstr "Eliminar el món \"$1\"?"
-
-#: builtin/mainmenu/dlg_delete_world.lua
-msgid "No"
-msgstr "No"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua src/keycode.cpp
 msgid "Accept"
@@ -418,7 +412,8 @@ msgid "Uninstall selected modpack"
 msgstr "Desinstal·lar el paquet de mods seleccionat"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-msgid "Address / Port :"
+#, fuzzy
+msgid "Address / Port"
 msgstr "Adreça / Port:"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
@@ -437,18 +432,18 @@ msgstr "Mode creatiu"
 msgid "Damage enabled"
 msgstr "Dany activat"
 
-#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_server.lua
-#: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
-msgid "Delete"
-msgstr "Esborrar"
-
-#: builtin/mainmenu/tab_multiplayer.lua
-msgid "Name / Password :"
-msgstr "Nom / Contrasenya:"
+#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+msgid "Del. Favorite"
+msgstr ""
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-msgid "Public Serverlist"
-msgstr "Llista de servidors públics"
+msgid "Favorite"
+msgstr ""
+
+#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+#, fuzzy
+msgid "Name / Password"
+msgstr "Nom / Contrasenya:"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -472,7 +467,7 @@ msgstr "Mode Creatiu"
 msgid "Enable Damage"
 msgstr "Permetre Danys"
 
-#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_server.lua
 msgid "Name/Password"
 msgstr "Nom/Contrasenya"
 
@@ -541,8 +536,9 @@ msgstr "Esteu segur que voleu reiniciar el seu món d'un sol jugador?"
 msgid "Bilinear Filter"
 msgstr "Filtre Bilineal"
 
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Bumpmapping"
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Bump Mapping"
 msgstr "Mapat de relleu"
 
 #: builtin/mainmenu/tab_settings.lua
@@ -555,17 +551,8 @@ msgid "Connected Glass"
 msgstr "Connectar"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
-msgid "Enable Particles"
-msgstr "Activar tot"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
 msgstr "Fulles Boniques"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Generate Normalmaps"
-msgstr "Generar Mapes Normals"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -576,6 +563,10 @@ msgid "Mipmap + Aniso. Filter"
 msgstr "Mipmap + Aniso. Filtre"
 
 #: builtin/mainmenu/tab_settings.lua
+msgid "No"
+msgstr "No"
+
+#: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
 msgstr "Sense Filtre"
 
@@ -584,16 +575,21 @@ msgid "No Mipmap"
 msgstr "Sense MipMap"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "No!!!"
-msgstr "No!!!"
+msgid "Node Highlighting"
+msgstr "Node ressaltat"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Node Highlighting"
+#, fuzzy
+msgid "Node Outlining"
 msgstr "Node ressaltat"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
 msgstr "Ningun"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Normal Mapping"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -606,6 +602,11 @@ msgstr "Aigua opaca"
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Parallax Occlusion"
 msgstr "Oclusió de paral·laxi"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Particles"
+msgstr "Activar tot"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -631,6 +632,10 @@ msgstr "Texturització:"
 msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr "Per habilitar les ombres el controlador OpenGL ha ser utilitzat."
 
+#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
+msgid "Tone Mapping"
+msgstr ""
+
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold (px)"
 msgstr "Llindar tàctil (px)"
@@ -650,6 +655,10 @@ msgstr "Moviment de Plantes"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Water"
 msgstr "Onatge"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Yes"
+msgstr "Sí"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
@@ -853,10 +862,6 @@ msgstr "MiB/s"
 msgid "Node definitions..."
 msgstr "Definicions dels nodes ..."
 
-#: src/game.cpp src/guiFormSpecMenu.cpp
-msgid "Proceed"
-msgstr "Continuar"
-
 #: src/game.cpp
 msgid "Resolving address..."
 msgstr "Resolent adreça ..."
@@ -877,13 +882,17 @@ msgstr "Volum del so"
 msgid "You died."
 msgstr "Has mort."
 
+#: src/game.cpp src/guiFormSpecMenu.cpp
+msgid "ok"
+msgstr "Acceptar"
+
 #: src/guiFormSpecMenu.cpp
 msgid "Enter "
 msgstr "Introdueix "
 
 #: src/guiFormSpecMenu.cpp
-msgid "ok"
-msgstr "Acceptar"
+msgid "Proceed"
+msgstr "Continuar"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "\"Use\" = climb down"
@@ -1380,6 +1389,16 @@ msgid "Acceleration in air"
 msgstr "Acceleració en l'aire"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Active Block Management interval"
+msgstr "Rang del bloc actiu"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Active Block Modifier interval"
+msgstr "Rang del bloc actiu"
+
+#: src/settings_translation_file.cpp
 msgid "Active block range"
 msgstr "Rang del bloc actiu"
 
@@ -1447,8 +1466,8 @@ msgid ""
 "minetest.net."
 msgstr ""
 "Anunciar a aquesta llista de servidors.\n"
-"Si vols anunciar el teu direcció ipv6, fes servir serverlist_url = "
-"v6.servers.minetest.net."
+"Si vols anunciar el teu direcció ipv6, fes servir serverlist_url = v6."
+"servers.minetest.net."
 
 #: src/settings_translation_file.cpp
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
@@ -1475,6 +1494,11 @@ msgid "Basic"
 msgstr "Bàsic"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Basic Privileges"
+msgstr "Privilegis per defecte"
+
+#: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
 msgstr "Filtre bilineal"
 
@@ -1489,6 +1513,10 @@ msgstr "Bits per píxel (profunditat de color) en el mode de pantalla completa."
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
 msgstr "Construir dins el jugador"
+
+#: src/settings_translation_file.cpp
+msgid "Bumpmapping"
+msgstr "Mapat de relleu"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -1509,6 +1537,10 @@ msgstr "Soroll de cova #1"
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
 msgstr "Soroll de cova #2"
+
+#: src/settings_translation_file.cpp
+msgid "Cave width"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
@@ -1697,6 +1729,10 @@ msgstr "Controla el pendent o la profunditat de les depressions de llac."
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
 msgstr "Controla la pendent i alçada dels turons."
+
+#: src/settings_translation_file.cpp
+msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -2093,6 +2129,10 @@ msgid "Font size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Format of screenshots."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Forward key"
 msgstr "Tecla Avançar"
 
@@ -2157,9 +2197,11 @@ msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
 "and junglegrass, in all other mapgens this flag controls all decorations.\n"
+"The default flags set in the engine are: caves, light, decorations\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2658,6 +2700,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Length of time between ABM execution cycles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Length of time between NodeTimer execution cycles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Level of logging to be written to debug.txt:\n"
 "-    <nothing> (no logging)\n"
@@ -2742,41 +2792,50 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen Valleys.\n"
+"'altitude_chill' makes higher elevations colder, which may cause biome "
+"issues.\n"
+"'humid_rivers' modifies the humidity around rivers and in areas where water "
+"would tend to pool,\n"
+"it may interfere with delicately adjusted biomes.\n"
+"The default flags set in the engine are: altitude_chill, humid_rivers\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them.\n"
-"\"altitude_chill\" makes higher elevations colder, which may cause biome "
-"issues.\n"
-"\"humid_rivers\" modifies the humidity around rivers and in areas where "
-"water would tend to pool. It may interfere with delicately adjusted biomes."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
-"Occasional lakes and hills added to the flat world.\n"
+"Occasional lakes and hills can be added to the flat world.\n"
+"The default flags set in the engine are: none\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
-"When snowbiomes are enabled jungles are enabled and the jungles flag is "
-"ignored.\n"
+"When snowbiomes are enabled jungles are automatically enabled, the 'jungles' "
+"flag is ignored.\n"
+"The default flags set in the engine are: biomeblend, mudflow\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' are the rivers.\n"
+"The 'ridges' flag controls the rivers.\n"
+"The default flags set in the engine are: mountains, ridges\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2826,6 +2885,11 @@ msgid "Mapgen flat"
 msgstr "Generador de mapes"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen flat cave width"
+msgstr "Generador de mapes"
+
+#: src/settings_translation_file.cpp
 msgid "Mapgen flat cave1 noise parameters"
 msgstr ""
 
@@ -2872,6 +2936,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal cave width"
+msgstr "Generador de mapes"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal cave1 noise parameters"
@@ -2935,6 +3004,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen v5 cave width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3019,6 +3092,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen v7 cave width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3313,6 +3390,10 @@ msgid "Node highlighting"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "NodeTimer interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Noise parameters for biome API temperature, humidity and biome blend."
 msgstr ""
 
@@ -3429,6 +3510,10 @@ msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Privileges that players with basic_privs can grant"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Profiler data print interval. 0 = disable. Useful for developers."
 msgstr ""
 
@@ -3537,6 +3622,21 @@ msgid "Screenshot folder"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Screenshot format"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Screenshot quality"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Screenshot quality. Only used for JPEG format.\n"
+"1 means worst quality; 100 means best quality.\n"
+"Use 0 for default quality."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Security"
 msgstr ""
 
@@ -3628,6 +3728,10 @@ msgid "Show debug info"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Show entity selection boxes"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr ""
 
@@ -3692,6 +3796,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Support older servers"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3770,6 +3878,10 @@ msgid "This font will be used for certain languages."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Time in between active block management cycles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
@@ -3797,10 +3909,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Tone Mapping"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4052,6 +4160,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Whether to support older servers before protocol version 25.\n"
+"Enable if you want to connect to 0.4.12 servers and before.\n"
+"Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
+"Disabling this option will protect your password better."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Width component of the initial window size."
 msgstr ""
 
@@ -4084,3 +4200,15 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "cURL timeout"
 msgstr ""
+
+#~ msgid "No!!!"
+#~ msgstr "No!!!"
+
+#~ msgid "Generate Normalmaps"
+#~ msgstr "Generar Mapes Normals"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Llista de servidors públics"
+
+#~ msgid "No of course not!"
+#~ msgstr "No, per descomptat que no!"

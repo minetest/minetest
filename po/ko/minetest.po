@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-27 05:49+0100\n"
+"POT-Creation-Date: 2016-05-05 16:13+0200\n"
 "PO-Revision-Date: 2015-07-08 23:30+0200\n"
 "Last-Translator: Tae Lim Kook <tkook11@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -72,6 +72,7 @@ msgid "We support protocol versions between version $1 and $2."
 msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
 #: src/keycode.cpp
@@ -173,6 +174,12 @@ msgstr ""
 msgid "Are you sure you want to delete \"$1\"?"
 msgstr ""
 
+#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
+#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
+#: src/keycode.cpp
+msgid "Delete"
+msgstr ""
+
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: failed to delete \"$1\""
 msgstr ""
@@ -181,21 +188,8 @@ msgstr ""
 msgid "Modmgr: invalid modpath \"$1\""
 msgstr ""
 
-#: builtin/mainmenu/dlg_delete_mod.lua
-msgid "No of course not!"
-msgstr ""
-
-#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
-#: builtin/mainmenu/tab_settings.lua
-msgid "Yes"
-msgstr ""
-
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr ""
-
-#: builtin/mainmenu/dlg_delete_world.lua
-msgid "No"
 msgstr ""
 
 #: builtin/mainmenu/dlg_rename_modpack.lua src/keycode.cpp
@@ -403,7 +397,7 @@ msgid "Uninstall selected modpack"
 msgstr ""
 
 #: builtin/mainmenu/tab_multiplayer.lua
-msgid "Address / Port :"
+msgid "Address / Port"
 msgstr ""
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
@@ -422,17 +416,16 @@ msgstr ""
 msgid "Damage enabled"
 msgstr ""
 
-#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_server.lua
-#: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
-msgid "Delete"
-msgstr ""
-
-#: builtin/mainmenu/tab_multiplayer.lua
-msgid "Name / Password :"
+#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+msgid "Del. Favorite"
 msgstr ""
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-msgid "Public Serverlist"
+msgid "Favorite"
+msgstr ""
+
+#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+msgid "Name / Password"
 msgstr ""
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
@@ -457,7 +450,7 @@ msgstr ""
 msgid "Enable Damage"
 msgstr ""
 
-#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_server.lua
 msgid "Name/Password"
 msgstr ""
 
@@ -525,8 +518,8 @@ msgstr ""
 msgid "Bilinear Filter"
 msgstr ""
 
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Bumpmapping"
+#: builtin/mainmenu/tab_settings.lua
+msgid "Bump Mapping"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
@@ -538,15 +531,7 @@ msgid "Connected Glass"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Enable Particles"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
-msgstr ""
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Generate Normalmaps"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
@@ -558,6 +543,10 @@ msgid "Mipmap + Aniso. Filter"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
+msgid "No"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
 msgstr ""
 
@@ -566,15 +555,19 @@ msgid "No Mipmap"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "No!!!"
+msgid "Node Highlighting"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Node Highlighting"
+msgid "Node Outlining"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Normal Mapping"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
@@ -587,6 +580,10 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Parallax Occlusion"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Particles"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
@@ -613,6 +610,10 @@ msgstr ""
 msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr ""
 
+#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
+msgid "Tone Mapping"
+msgstr ""
+
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold (px)"
 msgstr ""
@@ -631,6 +632,10 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Water"
+msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Yes"
 msgstr ""
 
 #: builtin/mainmenu/tab_simple_main.lua
@@ -810,10 +815,6 @@ msgstr ""
 msgid "Node definitions..."
 msgstr ""
 
-#: src/game.cpp src/guiFormSpecMenu.cpp
-msgid "Proceed"
-msgstr ""
-
 #: src/game.cpp
 msgid "Resolving address..."
 msgstr ""
@@ -834,12 +835,16 @@ msgstr ""
 msgid "You died."
 msgstr ""
 
+#: src/game.cpp src/guiFormSpecMenu.cpp
+msgid "ok"
+msgstr ""
+
 #: src/guiFormSpecMenu.cpp
 msgid "Enter "
 msgstr ""
 
 #: src/guiFormSpecMenu.cpp
-msgid "ok"
+msgid "Proceed"
 msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
@@ -1308,6 +1313,14 @@ msgid "Acceleration in air"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Active Block Management interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Active Block Modifier interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Active block range"
 msgstr ""
 
@@ -1394,6 +1407,10 @@ msgid "Basic"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Basic Privileges"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
 msgstr ""
 
@@ -1407,6 +1424,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Bumpmapping"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1427,6 +1448,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Cave width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1583,6 +1608,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1970,6 +1999,10 @@ msgid "Font size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Format of screenshots."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Forward key"
 msgstr ""
 
@@ -2034,9 +2067,11 @@ msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
 "and junglegrass, in all other mapgens this flag controls all decorations.\n"
+"The default flags set in the engine are: caves, light, decorations\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2508,6 +2543,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Length of time between ABM execution cycles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Length of time between NodeTimer execution cycles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Level of logging to be written to debug.txt:\n"
 "-    <nothing> (no logging)\n"
@@ -2592,41 +2635,50 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen Valleys.\n"
+"'altitude_chill' makes higher elevations colder, which may cause biome "
+"issues.\n"
+"'humid_rivers' modifies the humidity around rivers and in areas where water "
+"would tend to pool,\n"
+"it may interfere with delicately adjusted biomes.\n"
+"The default flags set in the engine are: altitude_chill, humid_rivers\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them.\n"
-"\"altitude_chill\" makes higher elevations colder, which may cause biome "
-"issues.\n"
-"\"humid_rivers\" modifies the humidity around rivers and in areas where "
-"water would tend to pool. It may interfere with delicately adjusted biomes."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
-"Occasional lakes and hills added to the flat world.\n"
+"Occasional lakes and hills can be added to the flat world.\n"
+"The default flags set in the engine are: none\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
-"When snowbiomes are enabled jungles are enabled and the jungles flag is "
-"ignored.\n"
+"When snowbiomes are enabled jungles are automatically enabled, the 'jungles' "
+"flag is ignored.\n"
+"The default flags set in the engine are: biomeblend, mudflow\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' are the rivers.\n"
+"The 'ridges' flag controls the rivers.\n"
+"The default flags set in the engine are: mountains, ridges\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2671,6 +2723,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen flat cave width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2719,6 +2775,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen fractal cave width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2783,6 +2843,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen v5 cave width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2867,6 +2931,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Mapgen v7 cave width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3161,6 +3229,10 @@ msgid "Node highlighting"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "NodeTimer interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Noise parameters for biome API temperature, humidity and biome blend."
 msgstr ""
 
@@ -3277,6 +3349,10 @@ msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Privileges that players with basic_privs can grant"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Profiler data print interval. 0 = disable. Useful for developers."
 msgstr ""
 
@@ -3385,6 +3461,21 @@ msgid "Screenshot folder"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Screenshot format"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Screenshot quality"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Screenshot quality. Only used for JPEG format.\n"
+"1 means worst quality; 100 means best quality.\n"
+"Use 0 for default quality."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Security"
 msgstr ""
 
@@ -3476,6 +3567,10 @@ msgid "Show debug info"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Show entity selection boxes"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr ""
 
@@ -3537,6 +3632,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Support older servers"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3613,6 +3712,10 @@ msgid "This font will be used for certain languages."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Time in between active block management cycles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
@@ -3640,10 +3743,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Tone Mapping"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3891,6 +3990,14 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether to show the client debug info (has the same effect as hitting F5)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Whether to support older servers before protocol version 25.\n"
+"Enable if you want to connect to 0.4.12 servers and before.\n"
+"Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
+"Disabling this option will protect your password better."
 msgstr ""
 
 #: src/settings_translation_file.cpp

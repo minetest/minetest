@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-27 05:49+0100\n"
+"POT-Creation-Date: 2016-05-05 16:13+0200\n"
 "PO-Revision-Date: 2016-01-25 23:23+0000\n"
 "Last-Translator: Fixer <artem.brz@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
@@ -75,6 +75,7 @@ msgid "We support protocol versions between version $1 and $2."
 msgstr "Ми підтримуємо протокол між версіями $1 і $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
 #: src/keycode.cpp
@@ -178,6 +179,12 @@ msgstr "Ви не маєте встановлених ігор."
 msgid "Are you sure you want to delete \"$1\"?"
 msgstr "Ви впевнені, що бажаєте видалити \"$1\"?"
 
+#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
+#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
+#: src/keycode.cpp
+msgid "Delete"
+msgstr "Видалити"
+
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: failed to delete \"$1\""
 msgstr "Modmgr: не вдалося видалити \"$1\""
@@ -186,22 +193,9 @@ msgstr "Modmgr: не вдалося видалити \"$1\""
 msgid "Modmgr: invalid modpath \"$1\""
 msgstr "Modmgr: недійсний шлях модифікації \"$1\""
 
-#: builtin/mainmenu/dlg_delete_mod.lua
-msgid "No of course not!"
-msgstr "Ні, звісно ні!"
-
-#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
-#: builtin/mainmenu/tab_settings.lua
-msgid "Yes"
-msgstr "Так"
-
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
 msgstr "Видалити світ \"$1\"?"
-
-#: builtin/mainmenu/dlg_delete_world.lua
-msgid "No"
-msgstr "Ні"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua src/keycode.cpp
 msgid "Accept"
@@ -418,7 +412,8 @@ msgid "Uninstall selected modpack"
 msgstr "Видалити обрану збірку модифікацій"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-msgid "Address / Port :"
+#, fuzzy
+msgid "Address / Port"
 msgstr "Адреса / Порт :"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
@@ -437,18 +432,20 @@ msgstr "Творчий режим"
 msgid "Damage enabled"
 msgstr "Ушкодження увімкнено"
 
-#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_server.lua
-#: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
-msgid "Delete"
-msgstr "Видалити"
-
-#: builtin/mainmenu/tab_multiplayer.lua
-msgid "Name / Password :"
-msgstr "Ім'я / Пароль :"
+#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+#, fuzzy
+msgid "Del. Favorite"
+msgstr "Улюблені:"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-msgid "Public Serverlist"
-msgstr "Список публічних серверів"
+#, fuzzy
+msgid "Favorite"
+msgstr "Улюблені:"
+
+#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+#, fuzzy
+msgid "Name / Password"
+msgstr "Ім'я / Пароль :"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -473,7 +470,7 @@ msgstr "Режим Створення"
 msgid "Enable Damage"
 msgstr "Увімкнути травмування"
 
-#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_server.lua
 msgid "Name/Password"
 msgstr "Ім'я/Пароль"
 
@@ -544,9 +541,9 @@ msgstr "Ви впевнені, що бажаєте скинути свій св�
 msgid "Bilinear Filter"
 msgstr "Білінійна фільтрація"
 
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
+#: builtin/mainmenu/tab_settings.lua
 #, fuzzy
-msgid "Bumpmapping"
+msgid "Bump Mapping"
 msgstr "MIP-текстурування"
 
 #: builtin/mainmenu/tab_settings.lua
@@ -560,18 +557,8 @@ msgstr "Підключитися"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
-msgid "Enable Particles"
-msgstr "Увімкнути все"
-
-#: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Fancy Leaves"
 msgstr "Непрозоре листя"
-
-#: builtin/mainmenu/tab_settings.lua
-#, fuzzy
-msgid "Generate Normalmaps"
-msgstr "Генерувати карти нормалей"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -581,6 +568,10 @@ msgstr "MIP-текстурування"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
 msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "No"
+msgstr "Ні"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -593,17 +584,23 @@ msgid "No Mipmap"
 msgstr "MIP-текстурування"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "No!!!"
-msgstr "Ні!!!"
+#, fuzzy
+msgid "Node Highlighting"
+msgstr "Рівне освітлення"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
-msgid "Node Highlighting"
+msgid "Node Outlining"
 msgstr "Рівне освітлення"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
 msgstr "Нічого"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Normal Mapping"
+msgstr "MIP-текстурування"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -617,6 +614,11 @@ msgstr "Непрозора вода"
 #, fuzzy
 msgid "Parallax Occlusion"
 msgstr "Parallax Occlusion"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Particles"
+msgstr "Увімкнути все"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -644,6 +646,11 @@ msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr ""
 "Для того, щоб увімкнути шейдери, потрібно використовувати двайвер OpenGL."
 
+#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
+#, fuzzy
+msgid "Tone Mapping"
+msgstr "MIP-текстурування"
+
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold (px)"
 msgstr ""
@@ -667,6 +674,10 @@ msgstr "Гарне листя"
 #, fuzzy
 msgid "Waving Water"
 msgstr "Гарне листя"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Yes"
+msgstr "Так"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
@@ -872,10 +883,6 @@ msgstr "МіБ/сек"
 msgid "Node definitions..."
 msgstr "Визначення блоків..."
 
-#: src/game.cpp src/guiFormSpecMenu.cpp
-msgid "Proceed"
-msgstr "Далі"
-
 #: src/game.cpp
 msgid "Resolving address..."
 msgstr "Отримання адреси..."
@@ -896,13 +903,17 @@ msgstr "Гучність звуку"
 msgid "You died."
 msgstr "Ви загинули."
 
+#: src/game.cpp src/guiFormSpecMenu.cpp
+msgid "ok"
+msgstr "гаразд"
+
 #: src/guiFormSpecMenu.cpp
 msgid "Enter "
 msgstr "Ввід "
 
 #: src/guiFormSpecMenu.cpp
-msgid "ok"
-msgstr "гаразд"
+msgid "Proceed"
+msgstr "Далі"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "\"Use\" = climb down"
@@ -1394,6 +1405,14 @@ msgid "Acceleration in air"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Active Block Management interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Active Block Modifier interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Active block range"
 msgstr ""
 
@@ -1482,6 +1501,10 @@ msgid "Basic"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Basic Privileges"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Bilinear filtering"
 msgstr "Білінійна фільтрація"
@@ -1501,6 +1524,11 @@ msgid "Build inside player"
 msgstr "Мережева гра"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Bumpmapping"
+msgstr "MIP-текстурування"
+
+#: src/settings_translation_file.cpp
 msgid "Camera smoothing"
 msgstr ""
 
@@ -1518,6 +1546,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Cave width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1687,6 +1719,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2082,6 +2118,10 @@ msgid "Font size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Format of screenshots."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Forward key"
 msgstr "Уперед"
@@ -2149,9 +2189,11 @@ msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
 "and junglegrass, in all other mapgens this flag controls all decorations.\n"
+"The default flags set in the engine are: caves, light, decorations\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2628,6 +2670,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Length of time between ABM execution cycles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Length of time between NodeTimer execution cycles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Level of logging to be written to debug.txt:\n"
 "-    <nothing> (no logging)\n"
@@ -2714,41 +2764,50 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen Valleys.\n"
+"'altitude_chill' makes higher elevations colder, which may cause biome "
+"issues.\n"
+"'humid_rivers' modifies the humidity around rivers and in areas where water "
+"would tend to pool,\n"
+"it may interfere with delicately adjusted biomes.\n"
+"The default flags set in the engine are: altitude_chill, humid_rivers\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them.\n"
-"\"altitude_chill\" makes higher elevations colder, which may cause biome "
-"issues.\n"
-"\"humid_rivers\" modifies the humidity around rivers and in areas where "
-"water would tend to pool. It may interfere with delicately adjusted biomes."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
-"Occasional lakes and hills added to the flat world.\n"
+"Occasional lakes and hills can be added to the flat world.\n"
+"The default flags set in the engine are: none\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
-"When snowbiomes are enabled jungles are enabled and the jungles flag is "
-"ignored.\n"
+"When snowbiomes are enabled jungles are automatically enabled, the 'jungles' "
+"flag is ignored.\n"
+"The default flags set in the engine are: biomeblend, mudflow\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' are the rivers.\n"
+"The 'ridges' flag controls the rivers.\n"
+"The default flags set in the engine are: mountains, ridges\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2797,6 +2856,11 @@ msgstr "Генератор карти"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Mapgen flat"
+msgstr "Генератор карти"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen flat cave width"
 msgstr "Генератор карти"
 
 #: src/settings_translation_file.cpp
@@ -2850,6 +2914,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Mapgen fractal"
+msgstr "Генератор карти"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal cave width"
 msgstr "Генератор карти"
 
 #: src/settings_translation_file.cpp
@@ -2921,6 +2990,11 @@ msgstr "Генератор карти"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Mapgen v5"
+msgstr "Генератор карти"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen v5 cave width"
 msgstr "Генератор карти"
 
 #: src/settings_translation_file.cpp
@@ -3007,6 +3081,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Mapgen v7"
+msgstr "Генератор карти"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen v7 cave width"
 msgstr "Генератор карти"
 
 #: src/settings_translation_file.cpp
@@ -3303,6 +3382,10 @@ msgid "Node highlighting"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "NodeTimer interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Noise parameters for biome API temperature, humidity and biome blend."
 msgstr ""
 
@@ -3426,6 +3509,10 @@ msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Privileges that players with basic_privs can grant"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Profiler data print interval. 0 = disable. Useful for developers."
 msgstr ""
 
@@ -3537,6 +3624,23 @@ msgid "Screenshot folder"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Screenshot format"
+msgstr "Знімок"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Screenshot quality"
+msgstr "Знімок"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Screenshot quality. Only used for JPEG format.\n"
+"1 means worst quality; 100 means best quality.\n"
+"Use 0 for default quality."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Security"
 msgstr ""
 
@@ -3635,6 +3739,10 @@ msgid "Show debug info"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Show entity selection boxes"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr ""
 
@@ -3699,6 +3807,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Support older servers"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3776,6 +3888,10 @@ msgid "This font will be used for certain languages."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Time in between active block management cycles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
@@ -3804,11 +3920,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Tone Mapping"
-msgstr "MIP-текстурування"
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
@@ -4064,6 +4175,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Whether to support older servers before protocol version 25.\n"
+"Enable if you want to connect to 0.4.12 servers and before.\n"
+"Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
+"Disabling this option will protect your password better."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Width component of the initial window size."
 msgstr ""
 
@@ -4098,88 +4217,98 @@ msgid "cURL timeout"
 msgstr ""
 
 #, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "Вимкнути багатокористувацьку гру"
+#~ msgid "Preload inventory textures"
+#~ msgstr "Завантаження текстур..."
+
+#~ msgid "Reset singleplayer world"
+#~ msgstr "Скинути світ однокористувацької гри"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Масштабування елементів меню: "
 
 #, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "Увімкнено"
-
-#, fuzzy
-#~ msgid "Game Name"
-#~ msgstr "Гра"
-
-#~ msgid "Favorites:"
-#~ msgstr "Улюблені:"
-
-#, fuzzy
-#~ msgid "Password"
-#~ msgstr "Старий Пароль"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Попереднє завантаження зображень"
-
-#, fuzzy
-#~ msgid "Finite Liquid"
-#~ msgstr "Кінцеві рідини"
-
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Помилка при видаленні файлів світу"
-
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Неможливо налаштувати світ: Нічого не вибрано"
-
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Неможливо створити світ: Не знайдено жодної гри"
-
-#~ msgid "Files to be deleted"
-#~ msgstr "Файлів, що підлягають видаленню"
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Неможливо видалити світ: Нічого не вибрано"
-
-#~ msgid "Address required."
-#~ msgstr "Адреса необхідна."
-
-#~ msgid "Create world"
-#~ msgstr "Створити світ"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Залишіть адресу незаповненою для створення локального серверу."
-
-#~ msgid "Show Favorites"
-#~ msgstr "Показати Улюблені"
-
-#~ msgid "Show Public"
-#~ msgstr "Показати Публічні"
-
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Неможливо створити світ: Ім'я містить недопустимі символи"
-
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Попередження: Помилкова конфігурація.  "
-
-#~ msgid "Configuration saved.  "
-#~ msgstr "Налаштування Збережено.  "
-
-#~ msgid "is required by:"
-#~ msgstr "необхідний для:"
+#~ msgid "Downloading"
+#~ msgstr "Вниз"
 
 #~ msgid "Left click: Move all items, Right click: Move single item"
 #~ msgstr ""
 #~ "Ліва кнопка миші: Перемістити усі предмети, Права кнопка миші: "
 #~ "Перемістити один предмет"
 
+#~ msgid "is required by:"
+#~ msgstr "необхідний для:"
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "Налаштування Збережено.  "
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Попередження: Помилкова конфігурація.  "
+
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Неможливо створити світ: Ім'я містить недопустимі символи"
+
+#~ msgid "Show Public"
+#~ msgstr "Показати Публічні"
+
+#~ msgid "Show Favorites"
+#~ msgstr "Показати Улюблені"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Залишіть адресу незаповненою для створення локального серверу."
+
+#~ msgid "Create world"
+#~ msgstr "Створити світ"
+
+#~ msgid "Address required."
+#~ msgstr "Адреса необхідна."
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Неможливо видалити світ: Нічого не вибрано"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "Файлів, що підлягають видаленню"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Неможливо створити світ: Не знайдено жодної гри"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Неможливо налаштувати світ: Нічого не вибрано"
+
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Помилка при видаленні файлів світу"
+
 #, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Вниз"
+#~ msgid "Finite Liquid"
+#~ msgstr "Кінцеві рідини"
 
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Масштабування елементів меню: "
-
-#~ msgid "Reset singleplayer world"
-#~ msgstr "Скинути світ однокористувацької гри"
+#~ msgid "Preload item visuals"
+#~ msgstr "Попереднє завантаження зображень"
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Завантаження текстур..."
+#~ msgid "Password"
+#~ msgstr "Старий Пароль"
+
+#, fuzzy
+#~ msgid "Game Name"
+#~ msgstr "Гра"
+
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "Увімкнено"
+
+#, fuzzy
+#~ msgid "If disabled "
+#~ msgstr "Вимкнути багатокористувацьку гру"
+
+#~ msgid "No!!!"
+#~ msgstr "Ні!!!"
+
+#, fuzzy
+#~ msgid "Generate Normalmaps"
+#~ msgstr "Генерувати карти нормалей"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Список публічних серверів"
+
+#~ msgid "No of course not!"
+#~ msgstr "Ні, звісно ні!"

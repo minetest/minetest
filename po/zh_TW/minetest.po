@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-27 05:49+0100\n"
+"POT-Creation-Date: 2016-05-05 16:13+0200\n"
 "PO-Revision-Date: 2016-03-05 14:43+0000\n"
 "Last-Translator: Jeff Huang <s8321414@chakraos.org>\n"
-"Language-Team: Chinese (Taiwan) "
-"<https://hosted.weblate.org/projects/minetest/minetest/zh_TW/>\n"
+"Language-Team: Chinese (Taiwan) <https://hosted.weblate.org/projects/"
+"minetest/minetest/zh_TW/>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -72,6 +72,7 @@ msgid "We support protocol versions between version $1 and $2."
 msgstr "我們支援協定版本 $1 到 $2。"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
 #: src/keycode.cpp
@@ -98,7 +99,9 @@ msgstr "啟用全部"
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
-msgstr "啟用 mod 「$1」 失敗，因為其包含了不合法的字元。只有 字元 [a-z0-9_] 才是可用的。"
+msgstr ""
+"啟用 mod 「$1」 失敗，因為其包含了不合法的字元。只有 字元 [a-z0-9_] 才是可用"
+"的。"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -173,6 +176,12 @@ msgstr "您沒有安裝子遊戲。"
 msgid "Are you sure you want to delete \"$1\"?"
 msgstr "您確定您要刪除「$1」嗎？"
 
+#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
+#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
+#: src/keycode.cpp
+msgid "Delete"
+msgstr "刪除"
+
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: failed to delete \"$1\""
 msgstr "Mod 管理員：刪除「$1」失敗"
@@ -181,22 +190,9 @@ msgstr "Mod 管理員：刪除「$1」失敗"
 msgid "Modmgr: invalid modpath \"$1\""
 msgstr "Mod 管理員：無效的 mod 路徑「$1」"
 
-#: builtin/mainmenu/dlg_delete_mod.lua
-msgid "No of course not!"
-msgstr "不，絕對不是！"
-
-#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
-#: builtin/mainmenu/tab_settings.lua
-msgid "Yes"
-msgstr "是"
-
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
 msgstr "刪除世界「$1」？"
-
-#: builtin/mainmenu/dlg_delete_world.lua
-msgid "No"
-msgstr "否"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua src/keycode.cpp
 msgid "Accept"
@@ -242,7 +238,9 @@ msgstr "格式為 3 個在括號內的以逗號分離的數字。"
 msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
-msgstr "格式：<偏移>, <尺寸>, (<寬度 X>, <寬度 Y>, <寬度 Z>), <種子>, <八進位>, <持續性>"
+msgstr ""
+"格式：<偏移>, <尺寸>, (<寬度 X>, <寬度 Y>, <寬度 Z>), <種子>, <八進位>, <持續"
+"性>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
@@ -405,7 +403,8 @@ msgid "Uninstall selected modpack"
 msgstr "解除安裝已選取的 mod 包"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-msgid "Address / Port :"
+#, fuzzy
+msgid "Address / Port"
 msgstr "地址／埠："
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
@@ -424,18 +423,18 @@ msgstr "創造模式"
 msgid "Damage enabled"
 msgstr "已啟用傷害"
 
-#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_server.lua
-#: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
-msgid "Delete"
-msgstr "刪除"
-
-#: builtin/mainmenu/tab_multiplayer.lua
-msgid "Name / Password :"
-msgstr "名稱／密碼："
+#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+msgid "Del. Favorite"
+msgstr ""
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-msgid "Public Serverlist"
-msgstr "公共伺服器清單"
+msgid "Favorite"
+msgstr ""
+
+#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+#, fuzzy
+msgid "Name / Password"
+msgstr "名稱／密碼："
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -459,7 +458,7 @@ msgstr "創造模式"
 msgid "Enable Damage"
 msgstr "啟用傷害"
 
-#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_server.lua
 msgid "Name/Password"
 msgstr "名稱／密碼"
 
@@ -527,8 +526,9 @@ msgstr "您確定要要重置您的單人遊戲世界嗎？"
 msgid "Bilinear Filter"
 msgstr "雙線性過濾器"
 
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Bumpmapping"
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Bump Mapping"
 msgstr "映射貼圖"
 
 #: builtin/mainmenu/tab_settings.lua
@@ -540,16 +540,8 @@ msgid "Connected Glass"
 msgstr "連接玻璃"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Enable Particles"
-msgstr "啟用粒子"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
 msgstr "華麗葉子"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Generate Normalmaps"
-msgstr "生成一般地圖"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -560,6 +552,10 @@ msgid "Mipmap + Aniso. Filter"
 msgstr "Mip 貼圖 + Aniso. 過濾器"
 
 #: builtin/mainmenu/tab_settings.lua
+msgid "No"
+msgstr "否"
+
+#: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
 msgstr "無過濾器"
 
@@ -568,16 +564,22 @@ msgid "No Mipmap"
 msgstr "無 Mip 貼圖"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "No!!!"
-msgstr "否！！！"
+msgid "Node Highlighting"
+msgstr "突顯節點"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Node Highlighting"
+#, fuzzy
+msgid "Node Outlining"
 msgstr "突顯節點"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
 msgstr "無"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Normal Mapping"
+msgstr "法線貼圖採樣"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -590,6 +592,11 @@ msgstr "不透明水"
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Parallax Occlusion"
 msgstr "視差遮蔽"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Particles"
+msgstr "啟用粒子"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -615,6 +622,10 @@ msgstr "紋理："
 msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr "要啟用著色器，必須使用 OpenGL 驅動程式。"
 
+#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
+msgid "Tone Mapping"
+msgstr "色調映射"
+
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold (px)"
 msgstr "碰觸限值（像素）"
@@ -634,6 +645,10 @@ msgstr "植物擺動"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Water"
 msgstr "波動的水"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Yes"
+msgstr "是"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
@@ -837,10 +852,6 @@ msgstr "MiB/s"
 msgid "Node definitions..."
 msgstr "節點定義..."
 
-#: src/game.cpp src/guiFormSpecMenu.cpp
-msgid "Proceed"
-msgstr "開始"
-
 #: src/game.cpp
 msgid "Resolving address..."
 msgstr "正在解析地址……"
@@ -861,13 +872,17 @@ msgstr "音量"
 msgid "You died."
 msgstr "您已經死亡。"
 
+#: src/game.cpp src/guiFormSpecMenu.cpp
+msgid "ok"
+msgstr "確定"
+
 #: src/guiFormSpecMenu.cpp
 msgid "Enter "
 msgstr "輸入 "
 
 #: src/guiFormSpecMenu.cpp
-msgid "ok"
-msgstr "確定"
+msgid "Proceed"
+msgstr "開始"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "\"Use\" = climb down"
@@ -1351,6 +1366,16 @@ msgid "Acceleration in air"
 msgstr "在空氣中的加速"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Active Block Management interval"
+msgstr "活動區塊範圍"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Active Block Modifier interval"
+msgstr "活動區塊範圍"
+
+#: src/settings_translation_file.cpp
 msgid "Active block range"
 msgstr "活動區塊範圍"
 
@@ -1444,6 +1469,11 @@ msgid "Basic"
 msgstr "基礎"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Basic Privileges"
+msgstr "預設特權"
+
+#: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
 msgstr "雙線性過濾器"
 
@@ -1458,6 +1488,10 @@ msgstr "全螢幕模式中的位元／像素（又稱色彩深度）。"
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
 msgstr "在玩家內構建"
+
+#: src/settings_translation_file.cpp
+msgid "Bumpmapping"
+msgstr "映射貼圖"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -1478,6 +1512,11 @@ msgstr "洞穴噪音 #1"
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
 msgstr "洞穴噪音 #2"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Cave width"
+msgstr "螢幕寬度"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
@@ -1661,6 +1700,10 @@ msgstr "控制湖泊窪地的陡度／深度。"
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
 msgstr "控制山丘的陡度／深度。"
+
+#: src/settings_translation_file.cpp
+msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -2014,7 +2057,8 @@ msgstr "以度計算的視野。"
 msgid ""
 "File in client/serverlist/ that contains your favorite servers displayed in "
 "the Multiplayer Tab."
-msgstr "在 客戶端/伺服器清單/ 中的檔案包含了顯示在多人遊戲分頁中您最愛的伺服器。"
+msgstr ""
+"在 客戶端/伺服器清單/ 中的檔案包含了顯示在多人遊戲分頁中您最愛的伺服器。"
 
 #: src/settings_translation_file.cpp
 msgid "Filler Depth"
@@ -2085,6 +2129,11 @@ msgid "Font size"
 msgstr "字型大小"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Format of screenshots."
+msgstr "儲存螢幕截圖的路徑。"
+
+#: src/settings_translation_file.cpp
 msgid "Forward key"
 msgstr "前進鍵"
 
@@ -2145,13 +2194,16 @@ msgid "Generate normalmaps"
 msgstr "生成一般地圖"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
 "and junglegrass, in all other mapgens this flag controls all decorations.\n"
+"The default flags set in the engine are: caves, light, decorations\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 "全域地圖產生屬性。\n"
 "在 Mapgen v6 中，「decorations」旗標控制所有除了樹木\n"
@@ -2307,7 +2359,9 @@ msgid ""
 "If enabled, you can place blocks at the position (feet + eye level) where "
 "you stand.\n"
 "This is helpful when working with nodeboxes in small areas."
-msgstr "若啟用，您可以在您站立的位置（腳與眼睛的高度）放置方塊。當在小區域裡與節點盒一同工作時非常有用。"
+msgstr ""
+"若啟用，您可以在您站立的位置（腳與眼睛的高度）放置方塊。當在小區域裡與節點盒"
+"一同工作時非常有用。"
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
@@ -2421,8 +2475,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "降低視野範圍的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2431,8 +2485,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "丟棄目前選定物品的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2441,8 +2495,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "增加視野範圍的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2451,8 +2505,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "跳躍的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2461,8 +2515,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "在快速模式中快速移動的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2471,8 +2525,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "將玩家往後方移動的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2481,8 +2535,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "將玩家往前方移動的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2491,8 +2545,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "將玩家往左方移動的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2501,8 +2555,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "將玩家往右方移動的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2511,8 +2565,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "開啟聊天視窗的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2521,8 +2575,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "開啟對話視窗以供輸入指令的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2531,8 +2585,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "開啟對話視窗的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2541,8 +2595,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "開啟物品欄的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2551,8 +2605,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "印出除錯堆疊的按鍵。對開發來說很有用。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2564,8 +2618,8 @@ msgid ""
 msgstr ""
 "潛行的按鍵。\n"
 "若 aux1_ 降低停用時，也會用於向下攀爬與在水中下潛。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2574,8 +2628,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "用來切換第一與第三人稱視角的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2584,8 +2638,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "拍攝螢幕截圖的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2594,8 +2648,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "切換電影模式的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2604,8 +2658,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "切換顯示迷你地圖的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2614,8 +2668,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "切換快速模式的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2624,8 +2678,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "切換飛行的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2634,8 +2688,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "切換 noclip 模式的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2644,8 +2698,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "切換視角更新的按鍵。僅對開發有用。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2654,8 +2708,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "切換顯示除錯資訊的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2664,8 +2718,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "切換顯示 HUD 的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2674,8 +2728,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "切換顯示聊天的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2684,8 +2738,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "切換顯示霧的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2694,8 +2748,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "切換顯示輪廓的按鍵。對開發有用。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2704,8 +2758,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "切換無限視野的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
@@ -2748,6 +2802,14 @@ msgid ""
 "Length of a server tick and the interval at which objects are generally "
 "updated over network."
 msgstr "伺服器 tick 的長度與相關物件的間隔通常透過網路更新。"
+
+#: src/settings_translation_file.cpp
+msgid "Length of time between ABM execution cycles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Length of time between NodeTimer execution cycles"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2845,43 +2907,19 @@ msgid "Map directory"
 msgstr "地圖目錄"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen Valleys.\n"
-"Flags that are not specified in the flag string are not modified from the "
-"default.\n"
-"Flags starting with \"no\" are used to explicitly disable them.\n"
-"\"altitude_chill\" makes higher elevations colder, which may cause biome "
+"'altitude_chill' makes higher elevations colder, which may cause biome "
 "issues.\n"
-"\"humid_rivers\" modifies the humidity around rivers and in areas where "
-"water would tend to pool. It may interfere with delicately adjusted biomes."
-msgstr ""
-"專用於 Mapgen 山谷的地圖生成屬性。\n"
-"未在旗標字串中指定的旗標將不會自預設值修改。\n"
-"以「no」開頭的旗標字串將會用於明確的停用它們。\n"
-"「altitude_chill」會讓較高的地方更寒冷，可能會造成生物群落的問題。\n"
-"「humid_rivers」會修改在河流附近的濕度，在那些區域附近水將會傾向變為一池。這可能會對微妙調整過的生物群落造成干擾。"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Map generation attributes specific to Mapgen flat.\n"
-"Occasional lakes and hills added to the flat world.\n"
+"'humid_rivers' modifies the humidity around rivers and in areas where water "
+"would tend to pool,\n"
+"it may interfere with delicately adjusted biomes.\n"
+"The default flags set in the engine are: altitude_chill, humid_rivers\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
-msgstr ""
-"專用於 Mapgen flat 的地圖生成屬性。\n"
-"偶而會在平坦的世界中加入湖泊與山丘。\n"
-"未在旗標字串中指定的旗標將不會自預設值修改。\n"
-"以「no」開頭的旗標字串將會用於明確的停用它們。"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Map generation attributes specific to Mapgen v6.\n"
-"When snowbiomes are enabled jungles are enabled and the jungles flag is "
-"ignored.\n"
-"Flags that are not specified in the flag string are not modified from the "
-"default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 "專用於 Mapgen v6 的地圖生成屬性。\n"
 "當 snowbiomes 與叢林都啟用時，叢林旗標會被忽略。\n"
@@ -2889,15 +2927,51 @@ msgstr ""
 "以「no」開頭的旗標字串將會用於明確的停用它們。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Map generation attributes specific to Mapgen v7.\n"
-"'ridges' are the rivers.\n"
+"Map generation attributes specific to Mapgen flat.\n"
+"Occasional lakes and hills can be added to the flat world.\n"
+"The default flags set in the engine are: none\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
-"專用於 Mapgen v7 的地圖生成屬性。\n"
-"「ridges」為河流。\n"
+"專用於 Mapgen flat 的地圖生成屬性。\n"
+"偶而會在平坦的世界中加入湖泊與山丘。\n"
+"未在旗標字串中指定的旗標將不會自預設值修改。\n"
+"以「no」開頭的旗標字串將會用於明確的停用它們。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Map generation attributes specific to Mapgen v6.\n"
+"When snowbiomes are enabled jungles are automatically enabled, the 'jungles' "
+"flag is ignored.\n"
+"The default flags set in the engine are: biomeblend, mudflow\n"
+"The flags string modifies the engine defaults.\n"
+"Flags that are not specified in the flag string are not modified from the "
+"default.\n"
+"Flags starting with 'no' are used to explicitly disable them."
+msgstr ""
+"專用於 Mapgen v6 的地圖生成屬性。\n"
+"當 snowbiomes 與叢林都啟用時，叢林旗標會被忽略。\n"
+"未在旗標字串中指定的旗標將不會自預設值修改。\n"
+"以「no」開頭的旗標字串將會用於明確的停用它們。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Map generation attributes specific to Mapgen v7.\n"
+"The 'ridges' flag controls the rivers.\n"
+"The default flags set in the engine are: mountains, ridges\n"
+"The flags string modifies the engine defaults.\n"
+"Flags that are not specified in the flag string are not modified from the "
+"default.\n"
+"Flags starting with 'no' are used to explicitly disable them."
+msgstr ""
+"專用於 Mapgen v6 的地圖生成屬性。\n"
+"當 snowbiomes 與叢林都啟用時，叢林旗標會被忽略。\n"
 "未在旗標字串中指定的旗標將不會自預設值修改。\n"
 "以「no」開頭的旗標字串將會用於明確的停用它們。"
 
@@ -2946,6 +3020,11 @@ msgid "Mapgen flat"
 msgstr "Mapgen flat"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen flat cave width"
+msgstr "Mapgen flat 大型洞穴深度"
+
+#: src/settings_translation_file.cpp
 msgid "Mapgen flat cave1 noise parameters"
 msgstr "Mapgen flat 洞穴1 噪音 參數"
 
@@ -2992,6 +3071,11 @@ msgstr "Mapgen flat 地形 噪音 參數"
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal"
 msgstr "地圖產生器分形"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal cave width"
+msgstr "Mapgen fractal slice w"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal cave1 noise parameters"
@@ -3056,6 +3140,11 @@ msgstr "Mapgen 名稱"
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5"
 msgstr "Mapgen v5"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen v5 cave width"
+msgstr "Mapgen flat 大型洞穴深度"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 cave1 noise parameters"
@@ -3140,6 +3229,11 @@ msgstr "Mapgen v6 樹 噪音 參數"
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7"
 msgstr "地圖產生器 v7"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen v7 cave width"
+msgstr "Mapgen flat 大型洞穴深度"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 cave1 noise parameters"
@@ -3455,6 +3549,11 @@ msgid "Node highlighting"
 msgstr "突顯節點"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "NodeTimer interval"
+msgstr "時間傳送間隔"
+
+#: src/settings_translation_file.cpp
 msgid "Noise parameters for biome API temperature, humidity and biome blend."
 msgstr "噪音參數供生物群落 API 溫度、濕度與生物混合使用。"
 
@@ -3581,6 +3680,10 @@ msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr "避免 mod 做出不安全的舉動，像是執行 shell 指令等。"
 
 #: src/settings_translation_file.cpp
+msgid "Privileges that players with basic_privs can grant"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Profiler data print interval. 0 = disable. Useful for developers."
 msgstr "分析器資料印出間隔。0 = 停用。對開發者有用。"
 
@@ -3696,6 +3799,23 @@ msgid "Screenshot folder"
 msgstr "螢幕截圖資料夾"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Screenshot format"
+msgstr "螢幕截圖資料夾"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Screenshot quality"
+msgstr "螢幕截圖"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Screenshot quality. Only used for JPEG format.\n"
+"1 means worst quality; 100 means best quality.\n"
+"Use 0 for default quality."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Security"
 msgstr "安全"
 
@@ -3797,6 +3917,10 @@ msgid "Show debug info"
 msgstr "顯示除錯資訊"
 
 #: src/settings_translation_file.cpp
+msgid "Show entity selection boxes"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "關閉訊息"
 
@@ -3865,6 +3989,10 @@ msgstr "視差強度。"
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
 msgstr "嚴格協議檢查"
+
+#: src/settings_translation_file.cpp
+msgid "Support older servers"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -3955,6 +4083,10 @@ msgid "This font will be used for certain languages."
 msgstr "這個字型將會被用於特定的語言。"
 
 #: src/settings_translation_file.cpp
+msgid "Time in between active block management cycles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
@@ -3987,10 +4119,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
 msgstr "切換攝影機模式按鍵"
-
-#: src/settings_translation_file.cpp
-msgid "Tone Mapping"
-msgstr "色調映射"
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
@@ -4273,6 +4401,14 @@ msgid ""
 msgstr "是否顯示客戶端除錯資訊（與按下 F5 有同樣的效果）。"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Whether to support older servers before protocol version 25.\n"
+"Enable if you want to connect to 0.4.12 servers and before.\n"
+"Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
+"Disabling this option will protect your password better."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Width component of the initial window size."
 msgstr "初始視窗大小的寬度元素。"
 
@@ -4308,33 +4444,6 @@ msgstr "cURL 並行限制"
 msgid "cURL timeout"
 msgstr "cURL 逾時"
 
-#~ msgid "\""
-#~ msgstr "\""
-
-#~ msgid "Enable a bit lower water surface, so it doesn't "
-#~ msgstr "啟用較低的水面，所以它不會 "
-
-#~ msgid "If disabled "
-#~ msgstr "若停用 "
-
-#~ msgid "If enabled, "
-#~ msgstr "若啟用， "
-
-#~ msgid "Touch free target"
-#~ msgstr "碰觸自由目標"
-
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "套用在選單元素的縮放係數： "
-
-#~ msgid "Reset singleplayer world"
-#~ msgstr "重置單人遊戲世界"
-
-#~ msgid "Preload inventory textures"
-#~ msgstr "預先載入物品欄材質"
-
-#~ msgid "Enable selection highlighting for nodes (disables selectionbox)."
-#~ msgstr "啟用節點選擇突顯（停用選取框）。"
-
 #~ msgid ""
 #~ "Enable a bit lower water surface, so it doesn't \"fill\" the node "
 #~ "completely.\n"
@@ -4344,3 +4453,72 @@ msgstr "cURL 逾時"
 #~ "啟用略低的的水面，所以它就不會完全「填滿」節點。\n"
 #~ "注意，這個功能並未最佳化完成，水面的\n"
 #~ "柔和光功能無法與此功能一同運作。"
+
+#~ msgid "Enable selection highlighting for nodes (disables selectionbox)."
+#~ msgstr "啟用節點選擇突顯（停用選取框）。"
+
+#~ msgid "Preload inventory textures"
+#~ msgstr "預先載入物品欄材質"
+
+#~ msgid "Reset singleplayer world"
+#~ msgstr "重置單人遊戲世界"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "套用在選單元素的縮放係數： "
+
+#~ msgid "Touch free target"
+#~ msgstr "碰觸自由目標"
+
+#~ msgid "If enabled, "
+#~ msgstr "若啟用， "
+
+#~ msgid "If disabled "
+#~ msgstr "若停用 "
+
+#~ msgid "Enable a bit lower water surface, so it doesn't "
+#~ msgstr "啟用較低的水面，所以它不會 "
+
+#~ msgid "\""
+#~ msgstr "\""
+
+#~ msgid ""
+#~ "Map generation attributes specific to Mapgen v7.\n"
+#~ "'ridges' are the rivers.\n"
+#~ "Flags that are not specified in the flag string are not modified from the "
+#~ "default.\n"
+#~ "Flags starting with \"no\" are used to explicitly disable them."
+#~ msgstr ""
+#~ "專用於 Mapgen v7 的地圖生成屬性。\n"
+#~ "「ridges」為河流。\n"
+#~ "未在旗標字串中指定的旗標將不會自預設值修改。\n"
+#~ "以「no」開頭的旗標字串將會用於明確的停用它們。"
+
+#~ msgid ""
+#~ "Map generation attributes specific to Mapgen Valleys.\n"
+#~ "Flags that are not specified in the flag string are not modified from the "
+#~ "default.\n"
+#~ "Flags starting with \"no\" are used to explicitly disable them.\n"
+#~ "\"altitude_chill\" makes higher elevations colder, which may cause biome "
+#~ "issues.\n"
+#~ "\"humid_rivers\" modifies the humidity around rivers and in areas where "
+#~ "water would tend to pool. It may interfere with delicately adjusted "
+#~ "biomes."
+#~ msgstr ""
+#~ "專用於 Mapgen 山谷的地圖生成屬性。\n"
+#~ "未在旗標字串中指定的旗標將不會自預設值修改。\n"
+#~ "以「no」開頭的旗標字串將會用於明確的停用它們。\n"
+#~ "「altitude_chill」會讓較高的地方更寒冷，可能會造成生物群落的問題。\n"
+#~ "「humid_rivers」會修改在河流附近的濕度，在那些區域附近水將會傾向變為一池。"
+#~ "這可能會對微妙調整過的生物群落造成干擾。"
+
+#~ msgid "No!!!"
+#~ msgstr "否！！！"
+
+#~ msgid "Generate Normalmaps"
+#~ msgstr "生成一般地圖"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "公共伺服器清單"
+
+#~ msgid "No of course not!"
+#~ msgstr "不，絕對不是！"

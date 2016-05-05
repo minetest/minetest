@@ -6,11 +6,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Minetest 0.4.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-27 05:49+0100\n"
+"POT-Creation-Date: 2016-05-05 16:13+0200\n"
 "PO-Revision-Date: 2016-04-29 22:02+0000\n"
 "Last-Translator: Emon Omen <emon@openmailbox.org>\n"
-"Language-Team: Italian "
-"<https://hosted.weblate.org/projects/minetest/minetest/it/>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
+"minetest/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -73,6 +73,7 @@ msgid "We support protocol versions between version $1 and $2."
 msgstr "Supportiamo versioni di protocollo comprese tra $1 e $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
 #: src/keycode.cpp
@@ -154,7 +155,8 @@ msgstr "Generatore mappa"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No worldname given or no game selected"
-msgstr "Non è stato dato nessun nome di mondo o non è stato scelto nessun gioco"
+msgstr ""
+"Non è stato dato nessun nome di mondo o non è stato scelto nessun gioco"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
@@ -176,6 +178,12 @@ msgstr "Non avete sottogiochi installati."
 msgid "Are you sure you want to delete \"$1\"?"
 msgstr "Siete certi di volere cancellare \"$1\"?"
 
+#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
+#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
+#: src/keycode.cpp
+msgid "Delete"
+msgstr "Cancellare"
+
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: failed to delete \"$1\""
 msgstr "Modmgr: cancellazione di \"$1\" fallita"
@@ -184,22 +192,9 @@ msgstr "Modmgr: cancellazione di \"$1\" fallita"
 msgid "Modmgr: invalid modpath \"$1\""
 msgstr "Modmgr: percorso mod. non valido \"$1\""
 
-#: builtin/mainmenu/dlg_delete_mod.lua
-msgid "No of course not!"
-msgstr "No, certo che no!"
-
-#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
-#: builtin/mainmenu/tab_settings.lua
-msgid "Yes"
-msgstr "Sì"
-
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
 msgstr "Cancellare il mondo \"$1\"?"
-
-#: builtin/mainmenu/dlg_delete_world.lua
-msgid "No"
-msgstr "No"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua src/keycode.cpp
 msgid "Accept"
@@ -413,7 +408,8 @@ msgid "Uninstall selected modpack"
 msgstr "Disinstallare il pacchetto mod. scelto"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-msgid "Address / Port :"
+#, fuzzy
+msgid "Address / Port"
 msgstr "Indirizzo / Porta :"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
@@ -432,18 +428,20 @@ msgstr "Modalità creativa"
 msgid "Damage enabled"
 msgstr "Danno abilitato"
 
-#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_server.lua
-#: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
-msgid "Delete"
-msgstr "Cancellare"
-
-#: builtin/mainmenu/tab_multiplayer.lua
-msgid "Name / Password :"
-msgstr "Nome / Password :"
+#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+#, fuzzy
+msgid "Del. Favorite"
+msgstr "Preferiti:"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-msgid "Public Serverlist"
-msgstr "Elenco dei server pubblici"
+#, fuzzy
+msgid "Favorite"
+msgstr "Preferiti:"
+
+#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+#, fuzzy
+msgid "Name / Password"
+msgstr "Nome / Password :"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -467,7 +465,7 @@ msgstr "Modalità creativa"
 msgid "Enable Damage"
 msgstr "Abilitare il danno"
 
-#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_server.lua
 msgid "Name/Password"
 msgstr "Nome/Password"
 
@@ -535,8 +533,9 @@ msgstr "Siete certi di volere azzerare il vostro mondo di giocatore singolo?"
 msgid "Bilinear Filter"
 msgstr "Filtro bilineare"
 
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Bumpmapping"
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Bump Mapping"
 msgstr "Bumpmapping"
 
 #: builtin/mainmenu/tab_settings.lua
@@ -548,16 +547,8 @@ msgid "Connected Glass"
 msgstr "Vetri uniti"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Enable Particles"
-msgstr "Abilitare particelle"
-
-#: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
 msgstr "Foglie decorative"
-
-#: builtin/mainmenu/tab_settings.lua
-msgid "Generate Normalmaps"
-msgstr "Generare normalmap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -568,6 +559,10 @@ msgid "Mipmap + Aniso. Filter"
 msgstr "Mipmap + Filtro aniso."
 
 #: builtin/mainmenu/tab_settings.lua
+msgid "No"
+msgstr "No"
+
+#: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
 msgstr "Nessun filtro"
 
@@ -576,16 +571,22 @@ msgid "No Mipmap"
 msgstr "Niente mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "No!!!"
-msgstr "No!!!"
+msgid "Node Highlighting"
+msgstr "Evidenz. nodo"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "Node Highlighting"
+#, fuzzy
+msgid "Node Outlining"
 msgstr "Evidenz. nodo"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
 msgstr "Nessuno"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Normal Mapping"
+msgstr "Campionamento normalmap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -598,6 +599,11 @@ msgstr "Acqua opaca"
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Parallax Occlusion"
 msgstr "Occlusione di parallasse"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Particles"
+msgstr "Abilitare particelle"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -623,6 +629,10 @@ msgstr "Immagini:"
 msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr "Per abilitare gli shader è necessario usare i driver OpenGL."
 
+#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
+msgid "Tone Mapping"
+msgstr "Mappatura toni"
+
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold (px)"
 msgstr "Soglia di tocco (px)"
@@ -642,6 +652,10 @@ msgstr "Piante ondeggianti"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Water"
 msgstr "Acqua ondeggiante"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Yes"
+msgstr "Sì"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
@@ -845,10 +859,6 @@ msgstr "MiB/s"
 msgid "Node definitions..."
 msgstr "Definizioni del nodo..."
 
-#: src/game.cpp src/guiFormSpecMenu.cpp
-msgid "Proceed"
-msgstr "Procedere"
-
 #: src/game.cpp
 msgid "Resolving address..."
 msgstr "Risoluzione dell'indirizzo..."
@@ -869,13 +879,17 @@ msgstr "Volume dell'audio"
 msgid "You died."
 msgstr "Siete morti."
 
+#: src/game.cpp src/guiFormSpecMenu.cpp
+msgid "ok"
+msgstr "va bene"
+
 #: src/guiFormSpecMenu.cpp
 msgid "Enter "
 msgstr "Invio "
 
 #: src/guiFormSpecMenu.cpp
-msgid "ok"
-msgstr "va bene"
+msgid "Proceed"
+msgstr "Procedere"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "\"Use\" = climb down"
@@ -1335,8 +1349,8 @@ msgstr ""
 "Attualmente supportati:\n"
 "-   nessuno: nessun output 3D.\n"
 "-   anaglifo: 3D in colori ciano/magenta.\n"
-"-   intrecciato: supporto per polarizzazione schermo basata su linea "
-"pari/dispari.\n"
+"-   intrecciato: supporto per polarizzazione schermo basata su linea pari/"
+"dispari.\n"
 "-   superiore-inferiore: divisione dello schermo in superiore/inferiore.\n"
 "-   fianco-a-fianco: divisione dello schermo fianco a fianco.\n"
 "-   sfoglia-pagina: 3D basato su buffer quadruplo."
@@ -1364,6 +1378,16 @@ msgstr "Limite assoluto di code 'emerge'"
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
 msgstr "Accelerazione in aria"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Active Block Management interval"
+msgstr "Portata del blocco attivo"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Active Block Modifier interval"
+msgstr "Portata del blocco attivo"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
@@ -1436,8 +1460,8 @@ msgid ""
 "minetest.net."
 msgstr ""
 "Rendere noto a questo elenco di server.\n"
-"Se volete rendere noto il vostro indirizzo ipv6, usate serverlist_url = "
-"v6.servers.minetest.net."
+"Se volete rendere noto il vostro indirizzo ipv6, usate serverlist_url = v6."
+"servers.minetest.net."
 
 #: src/settings_translation_file.cpp
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
@@ -1464,6 +1488,11 @@ msgid "Basic"
 msgstr "Base"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Basic Privileges"
+msgstr "Privilegi predefiniti"
+
+#: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
 msgstr "Filtro bilineare"
 
@@ -1478,6 +1507,10 @@ msgstr "Bit per pixel (cioè profondità di colore) in modalità schermo intero.
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
 msgstr "Costruisci nel giocatore"
+
+#: src/settings_translation_file.cpp
+msgid "Bumpmapping"
+msgstr "Bumpmapping"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -1498,6 +1531,11 @@ msgstr "'Rumore' n°1 della caverna"
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
 msgstr "'Rumore' n°2 della caverna"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Cave width"
+msgstr "Larghezza dello schermo"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
@@ -1616,8 +1654,8 @@ msgid ""
 "Comma-seperated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
-"Elenco separato da virgole di mod. a cui è permesso l'accesso alle API HTTP,"
-"\n"
+"Elenco separato da virgole di mod. a cui è permesso l'accesso alle API "
+"HTTP,\n"
 "che gli permettono di caricare e scaricare dati su/da internet."
 
 #: src/settings_translation_file.cpp
@@ -1685,6 +1723,10 @@ msgstr "Controlla la ripidità/profondità delle depressioni lacustri."
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
 msgstr "Controlla la ripidità/altezza delle colline."
+
+#: src/settings_translation_file.cpp
+msgid "Controls width of tunnels, a smaller value creates wider tunnels."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -1789,8 +1831,8 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
-"Stabilisce la massima distanza di trasferimento del giocatore in blocchi (0 ="
-" illimitata)."
+"Stabilisce la massima distanza di trasferimento del giocatore in blocchi (0 "
+"= illimitata)."
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
@@ -2127,6 +2169,11 @@ msgid "Font size"
 msgstr "Dimensione del font"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Format of screenshots."
+msgstr "Percorso dove salvare le istantanee."
+
+#: src/settings_translation_file.cpp
 msgid "Forward key"
 msgstr "Tasto avanti"
 
@@ -2146,8 +2193,8 @@ msgstr ""
 msgid ""
 "From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
 msgstr ""
-"Da che distanza i blocchi sono inviati ai client, espressa in blocchi mappa ("
-"16 nodi)."
+"Da che distanza i blocchi sono inviati ai client, espressa in blocchi mappa "
+"(16 nodi)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2193,13 +2240,16 @@ msgid "Generate normalmaps"
 msgstr "Generare le normalmap"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
 "and junglegrass, in all other mapgens this flag controls all decorations.\n"
+"The default flags set in the engine are: caves, light, decorations\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 "Attributi globali di generazione della mappa.\n"
 "In Generatore mappa v. 6 l'impostazione 'decorazioni' controlla tutte le "
@@ -2239,8 +2289,8 @@ msgstr ""
 "Gestione delle chiamate deplorate alle API Lua:\n"
 "-   eredita: (prova a) mimare il vecchio comportamento (predefinita per i "
 "rilasci).\n"
-"-   registra: mima e registra la traccia della chiamata deplorata ("
-"predefinita per il debug).\n"
+"-   registra: mima e registra la traccia della chiamata deplorata "
+"(predefinita per il debug).\n"
 "-   errore: abortire all'uso della chiamata deplorata (suggerita per gli "
 "sviluppatori di mod.)."
 
@@ -2380,7 +2430,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
-msgstr "Se si imposta, i giocatori (ri)compariranno sempre alla posizione data."
+msgstr ""
+"Se si imposta, i giocatori (ri)compariranno sempre alla posizione data."
 
 #: src/settings_translation_file.cpp
 msgid "Ignore world errors"
@@ -2495,8 +2546,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per ridurre il raggio visivo.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2505,8 +2556,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per lasciare a terra l'oggetto attualmente selezionato.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2515,8 +2566,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per aumentare il raggio visivo.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2525,8 +2576,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per saltare.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2535,8 +2586,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per muoversi rapidamente nella modalità veloce.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2545,8 +2596,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per muovere indietro il giocatore.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2555,8 +2606,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per muovere avanti il giocatore.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2565,8 +2616,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per muovere a sinistra il giocatore.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2575,8 +2626,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per muovere a destra il giocatore.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2585,8 +2636,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per aprire la console dei messaggi.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2595,8 +2646,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per aprire la finestra dei messaggi per scrivere comandi.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2605,8 +2656,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per aprire la finestra dei messaggi.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2615,8 +2666,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per aprire l'inventario.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2625,8 +2676,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per stampare le stack di debug. Usato per lo sviluppo.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2639,8 +2690,8 @@ msgstr ""
 "Tasto per strisciare.\n"
 "Usato anche per scendere dalle scale e scendere in acqua se aux1_descends è "
 "disabilitata.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2648,10 +2699,10 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tasto per passare tra la camera in prima persona a quella in terza persona.."
-"\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Tasto per passare tra la camera in prima persona a quella in terza "
+"persona..\n"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2660,8 +2711,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per scattare istantanee.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2670,8 +2721,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per attivare la modalità cinematic.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2680,8 +2731,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per attivare la visualizzatore della minimappa.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2690,8 +2741,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per attivare la modalità veloce.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2700,8 +2751,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per attivare il volo.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2710,8 +2761,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per attivare la modalità noclip.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2719,10 +2770,10 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tasto per attivare l'aggiornamento della camera. Usato solo per lo sviluppo."
-"\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Tasto per attivare l'aggiornamento della camera. Usato solo per lo "
+"sviluppo.\n"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2731,8 +2782,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per attivare la visualizzazione delle info. di debug.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2741,8 +2792,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per attivare la visualizzazione dello HUD.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2751,8 +2802,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per attivare la visualizzazione della messaggistica.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2761,8 +2812,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per attivare la visualizzazione della nebbia.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2770,10 +2821,10 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tasto per attivare la visualizzazione del profilatore. Usato per lo sviluppo."
-"\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Tasto per attivare la visualizzazione del profilatore. Usato per lo "
+"sviluppo.\n"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2782,8 +2833,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tasto per attivare il raggio visivo illimitato.\n"
-"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190"
-"1735e3da1b0edf72eb3"
+"Si veda http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
@@ -2828,6 +2879,14 @@ msgid ""
 msgstr ""
 "Lunghezza di uno scatto del server e intervallo per cui gli oggetti sono "
 "aggiornati in generale sulla rete."
+
+#: src/settings_translation_file.cpp
+msgid "Length of time between ABM execution cycles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Length of time between NodeTimer execution cycles"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2915,8 +2974,8 @@ msgstr "Script del menu principale"
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr ""
-"Far sì che i colori di cielo e nebbia dipendano dall'ora del giorno "
-"(alba/tramonto) e direzione visiva."
+"Far sì che i colori di cielo e nebbia dipendano dall'ora del giorno (alba/"
+"tramonto) e direzione visiva."
 
 #: src/settings_translation_file.cpp
 msgid "Makes DirectX work with LuaJIT. Disable if it causes troubles."
@@ -2927,49 +2986,19 @@ msgid "Map directory"
 msgstr "Cartella della mappa"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen Valleys.\n"
-"Flags that are not specified in the flag string are not modified from the "
-"default.\n"
-"Flags starting with \"no\" are used to explicitly disable them.\n"
-"\"altitude_chill\" makes higher elevations colder, which may cause biome "
+"'altitude_chill' makes higher elevations colder, which may cause biome "
 "issues.\n"
-"\"humid_rivers\" modifies the humidity around rivers and in areas where "
-"water would tend to pool. It may interfere with delicately adjusted biomes."
-msgstr ""
-"Attributi di generazione della mappa specifici per Generatore mappa valli.\n"
-"Le impostazioni che non sono specificate nella stringa mantengono i valori "
-"predefiniti.\n"
-"Le impostazioni che iniziano con \"no\" sono usate per disabilitarle "
-"esplicitamente.\n"
-"\"altitude_chill\" rende più fredde le elevazioni maggiori, il che potrebbe "
-"causare problemi ai biomi.\n"
-"\"humid_rivers\" modifica l'umidità attorno ai fiumi e nelle aree in cui "
-"l'acqua tenderebbe a stagnare. Potrebbe interferire con biomi"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Map generation attributes specific to Mapgen flat.\n"
-"Occasional lakes and hills added to the flat world.\n"
+"'humid_rivers' modifies the humidity around rivers and in areas where water "
+"would tend to pool,\n"
+"it may interfere with delicately adjusted biomes.\n"
+"The default flags set in the engine are: altitude_chill, humid_rivers\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
-msgstr ""
-"Attributi di generazione della mappa specifici per Generatore mappa piatto.\n"
-"Al mondo piatto sono aggiunte colline e laghi occasionali.\n"
-"Le impostazioni che non sono specificate nella stringa mantengono i valori "
-"predefiniti.\n"
-"Le impostazioni che iniziano con \"no\" sono usate per disabilitarle "
-"esplicitamente."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Map generation attributes specific to Mapgen v6.\n"
-"When snowbiomes are enabled jungles are enabled and the jungles flag is "
-"ignored.\n"
-"Flags that are not specified in the flag string are not modified from the "
-"default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 "Attributi di generazione della mappa specifici per Generatore mappa v. 6.\n"
 "Quando i biomi di neve sono abilitati l'impostazione jungles è ignorata e le "
@@ -2980,15 +3009,57 @@ msgstr ""
 "esplicitamente."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Map generation attributes specific to Mapgen v7.\n"
-"'ridges' are the rivers.\n"
+"Map generation attributes specific to Mapgen flat.\n"
+"Occasional lakes and hills can be added to the flat world.\n"
+"The default flags set in the engine are: none\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
-"Attributi di generazione della mappa specifici per Generatore mappa v. 7.\n"
-"'ridges' sono i fiumi.\n"
+"Attributi di generazione della mappa specifici per Generatore mappa piatto.\n"
+"Al mondo piatto sono aggiunte colline e laghi occasionali.\n"
+"Le impostazioni che non sono specificate nella stringa mantengono i valori "
+"predefiniti.\n"
+"Le impostazioni che iniziano con \"no\" sono usate per disabilitarle "
+"esplicitamente."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Map generation attributes specific to Mapgen v6.\n"
+"When snowbiomes are enabled jungles are automatically enabled, the 'jungles' "
+"flag is ignored.\n"
+"The default flags set in the engine are: biomeblend, mudflow\n"
+"The flags string modifies the engine defaults.\n"
+"Flags that are not specified in the flag string are not modified from the "
+"default.\n"
+"Flags starting with 'no' are used to explicitly disable them."
+msgstr ""
+"Attributi di generazione della mappa specifici per Generatore mappa v. 6.\n"
+"Quando i biomi di neve sono abilitati l'impostazione jungles è ignorata e le "
+"giungle sono abilitate.\n"
+"Le impostazioni che non sono specificate nella stringa mantengono i valori "
+"predefiniti.\n"
+"Le impostazioni che iniziano con \"no\" sono usate per disabilitarle "
+"esplicitamente."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Map generation attributes specific to Mapgen v7.\n"
+"The 'ridges' flag controls the rivers.\n"
+"The default flags set in the engine are: mountains, ridges\n"
+"The flags string modifies the engine defaults.\n"
+"Flags that are not specified in the flag string are not modified from the "
+"default.\n"
+"Flags starting with 'no' are used to explicitly disable them."
+msgstr ""
+"Attributi di generazione della mappa specifici per Generatore mappa v. 6.\n"
+"Quando i biomi di neve sono abilitati l'impostazione jungles è ignorata e le "
+"giungle sono abilitate.\n"
 "Le impostazioni che non sono specificate nella stringa mantengono i valori "
 "predefiniti.\n"
 "Le impostazioni che iniziano con \"no\" sono usate per disabilitarle "
@@ -3039,6 +3110,11 @@ msgid "Mapgen flat"
 msgstr "Generatore mappa piatto"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen flat cave width"
+msgstr "Profondità delle caverne grandi del Generatore mappa piatto"
+
+#: src/settings_translation_file.cpp
 msgid "Mapgen flat cave1 noise parameters"
 msgstr "Gen. mappa piatto, parametri del 1° 'rumore' delle caverne"
 
@@ -3086,6 +3162,11 @@ msgstr "Parametri del 'rumore' del terreno del Generatore mappa piatto"
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal"
 msgstr "Generatore mappa frattale"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal cave width"
+msgstr "Gen. mappa frattale, fetta w"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal cave1 noise parameters"
@@ -3151,6 +3232,11 @@ msgstr "Nome del gen. mappa"
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5"
 msgstr "Generatore mappa v. 5."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen v5 cave width"
+msgstr "Profondità delle caverne grandi del Generatore mappa piatto"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 cave1 noise parameters"
@@ -3235,6 +3321,11 @@ msgstr "Gen. mappa v. 6, parametri del 'rumore' degli alberi"
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7"
 msgstr "Gen. mappa v. 7, parametri del 'rumore'"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen v7 cave width"
+msgstr "Profondità delle caverne grandi del Generatore mappa piatto"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 cave1 noise parameters"
@@ -3379,7 +3470,8 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of players that can connect simultaneously."
-msgstr "Numero massimo di giocatori che possono connettersi contemporaneamente."
+msgstr ""
+"Numero massimo di giocatori che possono connettersi contemporaneamente."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of statically stored objects in a block."
@@ -3558,6 +3650,11 @@ msgid "Node highlighting"
 msgstr "Evidenziamento nodo"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "NodeTimer interval"
+msgstr "Intervallo del tempo di invio"
+
+#: src/settings_translation_file.cpp
 msgid "Noise parameters for biome API temperature, humidity and biome blend."
 msgstr ""
 "Parametri di 'rumore' per l'API di temperatura del bioma, umidità e fusione "
@@ -3695,6 +3792,10 @@ msgstr ""
 "shell."
 
 #: src/settings_translation_file.cpp
+msgid "Privileges that players with basic_privs can grant"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Profiler data print interval. 0 = disable. Useful for developers."
 msgstr ""
 "Intervallo di stampa del profilatore. 0 = disabilitato. Utile per gli "
@@ -3714,8 +3815,8 @@ msgid ""
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
 "corners."
 msgstr ""
-"Raggio dell'area delle nuvole espresso in numero di 64 nodi nuvola quadrati."
-"\n"
+"Raggio dell'area delle nuvole espresso in numero di 64 nodi nuvola "
+"quadrati.\n"
 "Valori maggiori di 26 cominceranno a produrre interruzioni appuntite agli "
 "angoli delle aree nuvola."
 
@@ -3813,6 +3914,23 @@ msgstr "Istantanea"
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
 msgstr "Cartella delle istantanee"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Screenshot format"
+msgstr "Cartella delle istantanee"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Screenshot quality"
+msgstr "Istantanea"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Screenshot quality. Only used for JPEG format.\n"
+"1 means worst quality; 100 means best quality.\n"
+"Use 0 for default quality."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Security"
@@ -3917,6 +4035,10 @@ msgid "Show debug info"
 msgstr "Mostrare le info. di debug"
 
 #: src/settings_translation_file.cpp
+msgid "Show entity selection boxes"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr "Messaggio di spegnimento"
 
@@ -3992,6 +4114,10 @@ msgid "Strict protocol checking"
 msgstr "Controllo stretto del protocollo"
 
 #: src/settings_translation_file.cpp
+msgid "Support older servers"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
 msgstr "SQLite simultaneo"
 
@@ -4055,8 +4181,8 @@ msgid ""
 "setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
 "set to the nearest valid value."
 msgstr ""
-"L'intensità (oscurità) dell'ombreggiatura di occlusione ambientale dei nodi."
-"\n"
+"L'intensità (oscurità) dell'ombreggiatura di occlusione ambientale dei "
+"nodi.\n"
 "Minore è più scuro, maggiore è più chiaro. L'intervallo di valori validi "
 "per\n"
 "questa impostazione è tra 0.25 e 4.0 inclusi. Se il valore è fuori "
@@ -4086,6 +4212,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "This font will be used for certain languages."
 msgstr "Questo font sarà usato per certe lingue."
+
+#: src/settings_translation_file.cpp
+msgid "Time in between active block management cycles"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4125,10 +4255,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
 msgstr "Chiave di impostazione della modalità camera"
-
-#: src/settings_translation_file.cpp
-msgid "Tone Mapping"
-msgstr "Mappatura toni"
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
@@ -4174,7 +4300,8 @@ msgstr "Usare un'animazione con le nuvole per lo sfondo del menu principale."
 
 #: src/settings_translation_file.cpp
 msgid "Use anisotropic filtering when viewing at textures from an angle."
-msgstr "Usare il filtro anisotropico quando si vedono le immagini da un angolo."
+msgstr ""
+"Usare il filtro anisotropico quando si vedono le immagini da un angolo."
 
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
@@ -4374,8 +4501,8 @@ msgstr ""
 "Dove si ferma il generatore mappa.\n"
 "Si noti prego:\n"
 "-   Limitato a 31.000 (impostazioni superiori non hanno effetto)\n"
-"-   Il generatore mappa lavora in gruppi di 80x80x80 nodi (5x5x5 nodi mappa)."
-"\n"
+"-   Il generatore mappa lavora in gruppi di 80x80x80 nodi (5x5x5 nodi "
+"mappa).\n"
 "-   Quei gruppi hanno una compensazione di -32, -32 nodi dall'origine.\n"
 "-   Solo i gruppi che rientrano nel map_generation_limit vengono generati."
 
@@ -4424,6 +4551,14 @@ msgstr ""
 "F5)."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Whether to support older servers before protocol version 25.\n"
+"Enable if you want to connect to 0.4.12 servers and before.\n"
+"Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
+"Disabling this option will protect your password better."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Width component of the initial window size."
 msgstr "Componente larghezza della dimensione iniziale della finestra."
 
@@ -4459,86 +4594,132 @@ msgstr "Limite cURL parallelo"
 msgid "cURL timeout"
 msgstr "Tempo di scadenza cURL"
 
-#~ msgid "If disabled "
-#~ msgstr "Disatt. pacch."
-
-#~ msgid "If enabled, "
-#~ msgstr "attivata"
-
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "Riavviare minetest per rendere effettive le modifiche"
-
-#~ msgid "Game Name"
-#~ msgstr "Nome del gioco"
-
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "Gestore del gioco: impossibile il modulo \"$1\" nel gioco \"$2\""
-
-#~ msgid "GAMES"
-#~ msgstr "GIOCHI"
-
-#~ msgid "Mods:"
-#~ msgstr "Moduli:"
-
-#~ msgid "new game"
-#~ msgstr "nuovo gioco"
-
-#~ msgid "EDIT GAME"
-#~ msgstr "MODIFICARE IL GIOCO"
-
-#~ msgid "Remove selected mod"
-#~ msgstr "Rimuovere il modulo selezionato"
-
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Aggiungere il modulo"
-
-#~ msgid "CLIENT"
-#~ msgstr "CLIENT"
-
-#~ msgid "Favorites:"
-#~ msgstr "Preferiti:"
-
-#~ msgid "START SERVER"
-#~ msgstr "AVVIO SERVER"
-
-#~ msgid "Name"
-#~ msgstr "Nome"
-
-#~ msgid "Password"
-#~ msgstr "Password"
-
-#~ msgid "SETTINGS"
-#~ msgstr "IMPOSTAZIONI"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Precaricare le immagini"
-
-#~ msgid "Finite Liquid"
-#~ msgstr "Liquido limitato"
-
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "GIOC. SING."
-
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "PACCH. DI IMM."
-
-#~ msgid "MODS"
-#~ msgstr "MODULI"
-
-#~ msgid "Add mod:"
-#~ msgstr "Aggiungere un modulo:"
-
-#~ msgid "Local install"
-#~ msgstr "Installazione locale"
-
-#~ msgid "Wanted FPS"
-#~ msgstr "FPS desiderati"
-
-#~ msgid "Viewing range minimum"
-#~ msgstr "Distanza minima di visibilità"
+#~ msgid "Item textures..."
+#~ msgstr "Immagini degli oggetti..."
 
 #~ msgid "Preload inventory textures"
 #~ msgstr "Precaricamento delle textures dell'inventario"
 
-#~ msgid "Item textures..."
-#~ msgstr "Immagini degli oggetti..."
+#~ msgid "Viewing range minimum"
+#~ msgstr "Distanza minima di visibilità"
+
+#~ msgid "Wanted FPS"
+#~ msgstr "FPS desiderati"
+
+#~ msgid "Local install"
+#~ msgstr "Installazione locale"
+
+#~ msgid "Add mod:"
+#~ msgstr "Aggiungere un modulo:"
+
+#~ msgid "MODS"
+#~ msgstr "MODULI"
+
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "PACCH. DI IMM."
+
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "GIOC. SING."
+
+#~ msgid "Finite Liquid"
+#~ msgstr "Liquido limitato"
+
+#~ msgid "Preload item visuals"
+#~ msgstr "Precaricare le immagini"
+
+#~ msgid "SETTINGS"
+#~ msgstr "IMPOSTAZIONI"
+
+#~ msgid "Password"
+#~ msgstr "Password"
+
+#~ msgid "Name"
+#~ msgstr "Nome"
+
+#~ msgid "START SERVER"
+#~ msgstr "AVVIO SERVER"
+
+#~ msgid "CLIENT"
+#~ msgstr "CLIENT"
+
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Aggiungere il modulo"
+
+#~ msgid "Remove selected mod"
+#~ msgstr "Rimuovere il modulo selezionato"
+
+#~ msgid "EDIT GAME"
+#~ msgstr "MODIFICARE IL GIOCO"
+
+#~ msgid "new game"
+#~ msgstr "nuovo gioco"
+
+#~ msgid "Mods:"
+#~ msgstr "Moduli:"
+
+#~ msgid "GAMES"
+#~ msgstr "GIOCHI"
+
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "Gestore del gioco: impossibile il modulo \"$1\" nel gioco \"$2\""
+
+#~ msgid "Game Name"
+#~ msgstr "Nome del gioco"
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "Riavviare minetest per rendere effettive le modifiche"
+
+#~ msgid "If enabled, "
+#~ msgstr "attivata"
+
+#~ msgid "If disabled "
+#~ msgstr "Disatt. pacch."
+
+#~ msgid ""
+#~ "Map generation attributes specific to Mapgen v7.\n"
+#~ "'ridges' are the rivers.\n"
+#~ "Flags that are not specified in the flag string are not modified from the "
+#~ "default.\n"
+#~ "Flags starting with \"no\" are used to explicitly disable them."
+#~ msgstr ""
+#~ "Attributi di generazione della mappa specifici per Generatore mappa v. "
+#~ "7.\n"
+#~ "'ridges' sono i fiumi.\n"
+#~ "Le impostazioni che non sono specificate nella stringa mantengono i "
+#~ "valori predefiniti.\n"
+#~ "Le impostazioni che iniziano con \"no\" sono usate per disabilitarle "
+#~ "esplicitamente."
+
+#~ msgid ""
+#~ "Map generation attributes specific to Mapgen Valleys.\n"
+#~ "Flags that are not specified in the flag string are not modified from the "
+#~ "default.\n"
+#~ "Flags starting with \"no\" are used to explicitly disable them.\n"
+#~ "\"altitude_chill\" makes higher elevations colder, which may cause biome "
+#~ "issues.\n"
+#~ "\"humid_rivers\" modifies the humidity around rivers and in areas where "
+#~ "water would tend to pool. It may interfere with delicately adjusted "
+#~ "biomes."
+#~ msgstr ""
+#~ "Attributi di generazione della mappa specifici per Generatore mappa "
+#~ "valli.\n"
+#~ "Le impostazioni che non sono specificate nella stringa mantengono i "
+#~ "valori predefiniti.\n"
+#~ "Le impostazioni che iniziano con \"no\" sono usate per disabilitarle "
+#~ "esplicitamente.\n"
+#~ "\"altitude_chill\" rende più fredde le elevazioni maggiori, il che "
+#~ "potrebbe causare problemi ai biomi.\n"
+#~ "\"humid_rivers\" modifica l'umidità attorno ai fiumi e nelle aree in cui "
+#~ "l'acqua tenderebbe a stagnare. Potrebbe interferire con biomi"
+
+#~ msgid "No!!!"
+#~ msgstr "No!!!"
+
+#~ msgid "Generate Normalmaps"
+#~ msgstr "Generare normalmap"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Elenco dei server pubblici"
+
+#~ msgid "No of course not!"
+#~ msgstr "No, certo che no!"

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-27 05:49+0100\n"
+"POT-Creation-Date: 2016-05-05 16:13+0200\n"
 "PO-Revision-Date: 2015-10-27 16:46+0200\n"
 "Last-Translator: PilzAdam <PilzAdam@minetest.net>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/minetest/"
@@ -76,6 +76,7 @@ msgid "We support protocol versions between version $1 and $2."
 msgstr "Yalnızca $1 ve $2 arası protokol sürümleri desteklenmektedir."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
+#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
 #: src/keycode.cpp
@@ -179,6 +180,12 @@ msgstr "Ek bir oyun modu yüklü değil."
 msgid "Are you sure you want to delete \"$1\"?"
 msgstr " \"$1\" 'i silmek istediğinizden emin misiniz ?"
 
+#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
+#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
+#: src/keycode.cpp
+msgid "Delete"
+msgstr "Sil"
+
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: failed to delete \"$1\""
 msgstr "Modmgr:\"$1\" dosyası silerken hata"
@@ -187,22 +194,9 @@ msgstr "Modmgr:\"$1\" dosyası silerken hata"
 msgid "Modmgr: invalid modpath \"$1\""
 msgstr "Modmgr: \"$1\" eklenti konumu yanlış"
 
-#: builtin/mainmenu/dlg_delete_mod.lua
-msgid "No of course not!"
-msgstr "Elbette hayır!"
-
-#: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
-#: builtin/mainmenu/tab_settings.lua
-msgid "Yes"
-msgstr "Evet"
-
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
 msgstr " \"$1\" dünyasını sil ?"
-
-#: builtin/mainmenu/dlg_delete_world.lua
-msgid "No"
-msgstr "Hayır"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua src/keycode.cpp
 msgid "Accept"
@@ -412,7 +406,8 @@ msgid "Uninstall selected modpack"
 msgstr "Seçilen eklenti paketini sil"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-msgid "Address / Port :"
+#, fuzzy
+msgid "Address / Port"
 msgstr "Adres / Port :"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
@@ -431,18 +426,18 @@ msgstr "Yaratıcı mod"
 msgid "Damage enabled"
 msgstr "Hasar alma etkin"
 
-#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_server.lua
-#: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
-msgid "Delete"
-msgstr "Sil"
-
-#: builtin/mainmenu/tab_multiplayer.lua
-msgid "Name / Password :"
-msgstr "Kullanıcı Adı / Şifre :"
+#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+msgid "Del. Favorite"
+msgstr ""
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-msgid "Public Serverlist"
-msgstr "Çevirimiçi Oyun Listesi"
+msgid "Favorite"
+msgstr ""
+
+#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+#, fuzzy
+msgid "Name / Password"
+msgstr "Kullanıcı Adı / Şifre :"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -466,7 +461,7 @@ msgstr "Yaratıcı Mod"
 msgid "Enable Damage"
 msgstr "Hasarı etkinleştir"
 
-#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_server.lua
 msgid "Name/Password"
 msgstr "Kullanıcı adı/Şifre"
 
@@ -537,8 +532,9 @@ msgstr "Tek kişilik dünyayı sıfırlamak istediğinizden emin misiniz ?"
 msgid "Bilinear Filter"
 msgstr "İki yönlü süzme"
 
-#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-msgid "Bumpmapping"
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Bump Mapping"
 msgstr "Engebeler"
 
 #: builtin/mainmenu/tab_settings.lua
@@ -552,18 +548,8 @@ msgstr "İçiçe geçmiş cam"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
-msgid "Enable Particles"
-msgstr "Hepsini etkinleştir"
-
-#: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Fancy Leaves"
 msgstr "Şık ağaçlar"
-
-#: builtin/mainmenu/tab_settings.lua
-#, fuzzy
-msgid "Generate Normalmaps"
-msgstr "Normal haritalar oluştur"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -575,6 +561,10 @@ msgid "Mipmap + Aniso. Filter"
 msgstr "Mipmap  Aniso. Süzgeci"
 
 #: builtin/mainmenu/tab_settings.lua
+msgid "No"
+msgstr "Hayır"
+
+#: builtin/mainmenu/tab_settings.lua
 #, fuzzy
 msgid "No Filter"
 msgstr "Süzme yok"
@@ -584,17 +574,23 @@ msgid "No Mipmap"
 msgstr "Mipmap kapalı"
 
 #: builtin/mainmenu/tab_settings.lua
-msgid "No!!!"
-msgstr "Hayır!!!"
+#, fuzzy
+msgid "Node Highlighting"
+msgstr "Nesne seçme göstergesi"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
-msgid "Node Highlighting"
+msgid "Node Outlining"
 msgstr "Nesne seçme göstergesi"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
 msgstr ""
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Normal Mapping"
+msgstr "Mip-Mapping"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -608,6 +604,11 @@ msgstr "Şeffaf su"
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Parallax Occlusion"
 msgstr "Parallax Occlusion"
+
+#: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Particles"
+msgstr "Hepsini etkinleştir"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -635,6 +636,11 @@ msgstr "Doku:"
 msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr "OpenGL sürücüleri seçilmeden Shader etkinleştirilemez."
 
+#: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
+#, fuzzy
+msgid "Tone Mapping"
+msgstr "Mip-Mapping"
+
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold (px)"
 msgstr "Touchthreshold (px)"
@@ -657,6 +663,10 @@ msgstr "Dalgalanan Bitkiler"
 #, fuzzy
 msgid "Waving Water"
 msgstr "Dalgalanan Su"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Yes"
+msgstr "Evet"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
@@ -862,10 +872,6 @@ msgstr ""
 msgid "Node definitions..."
 msgstr "Blok tanımlamaları..."
 
-#: src/game.cpp src/guiFormSpecMenu.cpp
-msgid "Proceed"
-msgstr "Uygula"
-
 #: src/game.cpp
 msgid "Resolving address..."
 msgstr "Adres çözümleniyor..."
@@ -886,13 +892,17 @@ msgstr "Ses yüksekliği :"
 msgid "You died."
 msgstr "Geberdin."
 
+#: src/game.cpp src/guiFormSpecMenu.cpp
+msgid "ok"
+msgstr "tamam"
+
 #: src/guiFormSpecMenu.cpp
 msgid "Enter "
 msgstr "Entrer "
 
 #: src/guiFormSpecMenu.cpp
-msgid "ok"
-msgstr "tamam"
+msgid "Proceed"
+msgstr "Uygula"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "\"Use\" = climb down"
@@ -1363,6 +1373,14 @@ msgid "Acceleration in air"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Active Block Management interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Active Block Modifier interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Active block range"
 msgstr ""
 
@@ -1452,6 +1470,10 @@ msgid "Basic"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Basic Privileges"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Bilinear filtering"
 msgstr "Çift yönlü süzme"
@@ -1468,6 +1490,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Bumpmapping"
+msgstr "Engebeler"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
@@ -1487,6 +1513,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Cave width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1656,6 +1686,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2054,6 +2088,10 @@ msgid "Font size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Format of screenshots."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Forward key"
 msgstr "İleri"
@@ -2121,9 +2159,11 @@ msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
 "and junglegrass, in all other mapgens this flag controls all decorations.\n"
+"The default flags set in the engine are: caves, light, decorations\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2600,6 +2640,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Length of time between ABM execution cycles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Length of time between NodeTimer execution cycles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Level of logging to be written to debug.txt:\n"
 "-    <nothing> (no logging)\n"
@@ -2686,41 +2734,50 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen Valleys.\n"
+"'altitude_chill' makes higher elevations colder, which may cause biome "
+"issues.\n"
+"'humid_rivers' modifies the humidity around rivers and in areas where water "
+"would tend to pool,\n"
+"it may interfere with delicately adjusted biomes.\n"
+"The default flags set in the engine are: altitude_chill, humid_rivers\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them.\n"
-"\"altitude_chill\" makes higher elevations colder, which may cause biome "
-"issues.\n"
-"\"humid_rivers\" modifies the humidity around rivers and in areas where "
-"water would tend to pool. It may interfere with delicately adjusted biomes."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
-"Occasional lakes and hills added to the flat world.\n"
+"Occasional lakes and hills can be added to the flat world.\n"
+"The default flags set in the engine are: none\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
-"When snowbiomes are enabled jungles are enabled and the jungles flag is "
-"ignored.\n"
+"When snowbiomes are enabled jungles are automatically enabled, the 'jungles' "
+"flag is ignored.\n"
+"The default flags set in the engine are: biomeblend, mudflow\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"'ridges' are the rivers.\n"
+"The 'ridges' flag controls the rivers.\n"
+"The default flags set in the engine are: mountains, ridges\n"
+"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
-"Flags starting with \"no\" are used to explicitly disable them."
+"Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2769,6 +2826,11 @@ msgstr "Mapgen"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Mapgen flat"
+msgstr "Mapgen"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen flat cave width"
 msgstr "Mapgen"
 
 #: src/settings_translation_file.cpp
@@ -2822,6 +2884,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Mapgen fractal"
+msgstr "Mapgen"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen fractal cave width"
 msgstr "Mapgen"
 
 #: src/settings_translation_file.cpp
@@ -2893,6 +2960,11 @@ msgstr "Mapgen"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Mapgen v5"
+msgstr "Mapgen"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen v5 cave width"
 msgstr "Mapgen"
 
 #: src/settings_translation_file.cpp
@@ -2979,6 +3051,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Mapgen v7"
+msgstr "Mapgen"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapgen v7 cave width"
 msgstr "Mapgen"
 
 #: src/settings_translation_file.cpp
@@ -3276,6 +3353,10 @@ msgid "Node highlighting"
 msgstr "Nesne seçme göstergesi"
 
 #: src/settings_translation_file.cpp
+msgid "NodeTimer interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Noise parameters for biome API temperature, humidity and biome blend."
 msgstr ""
 
@@ -3399,6 +3480,10 @@ msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Privileges that players with basic_privs can grant"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Profiler data print interval. 0 = disable. Useful for developers."
 msgstr ""
 
@@ -3510,6 +3595,23 @@ msgid "Screenshot folder"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Screenshot format"
+msgstr "Ekran Resmi"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Screenshot quality"
+msgstr "Ekran Resmi"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Screenshot quality. Only used for JPEG format.\n"
+"1 means worst quality; 100 means best quality.\n"
+"Use 0 for default quality."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Security"
 msgstr ""
 
@@ -3609,6 +3711,10 @@ msgid "Show debug info"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Show entity selection boxes"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Shutdown message"
 msgstr ""
 
@@ -3673,6 +3779,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Support older servers"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3750,6 +3860,10 @@ msgid "This font will be used for certain languages."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Time in between active block management cycles"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
@@ -3778,11 +3892,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Tone Mapping"
-msgstr "Mip-Mapping"
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
@@ -4045,6 +4154,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Whether to support older servers before protocol version 25.\n"
+"Enable if you want to connect to 0.4.12 servers and before.\n"
+"Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
+"Disabling this option will protect your password better."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Width component of the initial window size."
 msgstr ""
 
@@ -4078,47 +4195,60 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "\""
-#~ msgstr "\""
-
 #, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "Paketi Kapat"
+#~ msgid "Preload inventory textures"
+#~ msgstr "Dokular yükleniyor..."
+
+#~ msgid "Reset singleplayer world"
+#~ msgstr "Tek kişilik oyunu sıfırlayın"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Ölçeklendirme menülere işlendi:"
+
+#~ msgid "Touch free target"
+#~ msgstr "Touch free target"
+
+#~ msgid "Downloading"
+#~ msgstr "İndiriliyor"
+
+#~ msgid "please wait..."
+#~ msgstr "lütfen bekleyin..."
+
+#~ msgid " KB/s"
+#~ msgstr " KB/s"
+
+#~ msgid " MB/s"
+#~ msgstr " MB/s"
+
+#~ msgid "Numpad "
+#~ msgstr "Numpad "
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "Değişikliklerin etkin olabilmesi için minetesti yeniden başlatın"
+
+#~ msgid "Rendering:"
+#~ msgstr "Kaplama:"
 
 #, fuzzy
 #~ msgid "If enabled, "
 #~ msgstr "Etkinleştirildi"
 
-#~ msgid "Rendering:"
-#~ msgstr "Kaplama:"
+#, fuzzy
+#~ msgid "If disabled "
+#~ msgstr "Paketi Kapat"
 
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "Değişikliklerin etkin olabilmesi için minetesti yeniden başlatın"
+#~ msgid "\""
+#~ msgstr "\""
 
-#~ msgid "Numpad "
-#~ msgstr "Numpad "
-
-#~ msgid " MB/s"
-#~ msgstr " MB/s"
-
-#~ msgid " KB/s"
-#~ msgstr " KB/s"
-
-#~ msgid "please wait..."
-#~ msgstr "lütfen bekleyin..."
-
-#~ msgid "Downloading"
-#~ msgstr "İndiriliyor"
-
-#~ msgid "Touch free target"
-#~ msgstr "Touch free target"
-
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Ölçeklendirme menülere işlendi:"
-
-#~ msgid "Reset singleplayer world"
-#~ msgstr "Tek kişilik oyunu sıfırlayın"
+#~ msgid "No!!!"
+#~ msgstr "Hayır!!!"
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Dokular yükleniyor..."
+#~ msgid "Generate Normalmaps"
+#~ msgstr "Normal haritalar oluştur"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Çevirimiçi Oyun Listesi"
+
+#~ msgid "No of course not!"
+#~ msgstr "Elbette hayır!"
