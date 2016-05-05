@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-05 16:13+0200\n"
-"PO-Revision-Date: 2016-05-05 22:33+0000\n"
-"Last-Translator: Tobyplowy <toby123@live.nl>\n"
+"PO-Revision-Date: 2016-05-07 00:58+0000\n"
+"Last-Translator: Auke Kok <sofar+github@foo-projects.org>\n"
 "Language-Team: Dutch "
 "<https://hosted.weblate.org/projects/minetest/minetest/nl/>\n"
 "Language: nl\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.5-dev\n"
+"X-Generator: Weblate 2.7-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -29,7 +29,7 @@ msgstr "Er is een fout opgetreden:"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr "Naar hoofdmenu"
+msgstr "Hoofdmenu"
 
 #: builtin/fstk/ui.lua builtin/mainmenu/store.lua
 msgid "Ok"
@@ -216,7 +216,7 @@ msgstr "(Er is geen beschrijving van deze instelling beschikbaar)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "< Terug naar instellingen"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
@@ -232,21 +232,20 @@ msgstr "Aanpassen"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
-msgstr "Aangeschakeld"
+msgstr "Ingeschakeld"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
 msgstr ""
-"Formaat moet zijn: 3 getallen, gescheiden door komma's en tussen vierkante "
-"haken (bijvoorbeeld: [4,-34,138])."
+"Formaat is 3 getallen, gescheiden door komma's en tussen vierkante haken."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 msgstr ""
-"Formaat: <basiswaarde>, <schaal>, (<X-spreiding>, <Y-spreiding>, <Z-"
-"spreiding>), <kiemgetal>"
+"Formaat: <basiswaarde>, <schaal>, (<X-spreiding>, <Y-spreiding>, "
+"<Z-spreiding>), <kiemgetal>, <octaven>, <persistentie>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
@@ -413,9 +412,8 @@ msgid "Uninstall selected modpack"
 msgstr "Geselecteerde modverzameling deïnstalleren"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Address / Port"
-msgstr "Servernaam of -adres / Poort :"
+msgstr "Server adres / Poort"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
@@ -434,19 +432,16 @@ msgid "Damage enabled"
 msgstr "Verwondingen aangeschakeld"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Del. Favorite"
-msgstr "Favorieten:"
+msgstr "Verwijder Favoriete"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Favorite"
-msgstr "Favorieten:"
+msgstr "Favorieten"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Name / Password"
-msgstr "Naam / Wachtwoord :"
+msgstr "Naam / Wachtwoord"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -508,41 +503,37 @@ msgstr "Start spel"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "3D Clouds"
 msgstr "3D wolken"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "4x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Advanced Settings"
-msgstr "Instellingen"
+msgstr "Geavanceerde Instellingen"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr ""
+msgstr "Antialiasing:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
 msgstr "Weet je zeker dat je je wereld wilt resetten?"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Bilinear Filter"
-msgstr "Bi-Lineaire filtering"
+msgstr "Bilineaire Filtering"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Bump Mapping"
 msgstr "Bumpmapping"
 
@@ -551,9 +542,8 @@ msgid "Change keys"
 msgstr "Toetsen aanpassen"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Connected Glass"
-msgstr "Verbind glas"
+msgstr "Verbonden Glas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -572,32 +562,28 @@ msgid "No"
 msgstr "Nee"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "No Filter"
-msgstr "Filters"
+msgstr "Geen Filter"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
 msgstr "Geen Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Node Highlighting"
-msgstr "Oplichtende node"
+msgstr "Node Oplichten"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Node Outlining"
-msgstr "Oplichtende node"
+msgstr "Node omstrepen"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
 msgstr "Geen"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Normal Mapping"
-msgstr "Mip-Mapping"
+msgstr "Normaal Mappen"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -612,9 +598,8 @@ msgid "Parallax Occlusion"
 msgstr "Parallax occlusie"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Particles"
-msgstr "Alles aanzetten"
+msgstr "Effectdeeltjes"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -629,7 +614,6 @@ msgid "Simple Leaves"
 msgstr "Eenvoudige bladeren"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Smooth Lighting"
 msgstr "Vloeiende verlichting"
 
@@ -642,31 +626,26 @@ msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr "Om schaduwen mogelijk te maken moet OpenGL worden gebruikt."
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Tone Mapping"
-msgstr "Mip-Mapping"
+msgstr "Toon Mapping"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold (px)"
-msgstr ""
+msgstr "Toetsgrenswaarde (px)"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Trilinear Filter"
 msgstr "Tri-Lineare Filtering"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Leaves"
 msgstr "Bewegende bladeren"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Plants"
 msgstr "Bewegende planten"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Water"
 msgstr "Golvend water"
 
@@ -724,12 +703,11 @@ msgstr "Nodes initialiseren..."
 
 #: src/client.cpp
 msgid "Loading textures..."
-msgstr "Bezig met texturen te laaden..."
+msgstr "Bezig met texturen te laden..."
 
 #: src/client.cpp
-#, fuzzy
 msgid "Rebuilding shaders..."
-msgstr "schaduwen herbouwen..."
+msgstr "Texturen herbouwen..."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
@@ -761,7 +739,7 @@ msgstr "Het gespecificeerde wereld-pad bestaat niet: "
 
 #: src/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr "no"
+msgstr "needs_fallback_font"
 
 #: src/game.cpp
 msgid ""
@@ -1395,14 +1373,12 @@ msgid "Acceleration in air"
 msgstr "Versnelling in lucht"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Active Block Management interval"
 msgstr "Bereik waarbinnen blokken actief zijn"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Active Block Modifier interval"
-msgstr "Bereik waarbinnen blokken actief zijn"
+msgstr "Bereik waarbinnen blok wijzigers actief zijn"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
@@ -1445,7 +1421,7 @@ msgstr "Geavanceerd"
 
 #: src/settings_translation_file.cpp
 msgid "Altitude Chill"
-msgstr ""
+msgstr "Hoogte Koudheid"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
@@ -1453,11 +1429,11 @@ msgstr "Zet 'snel' altijd aan bij 'vliegen'"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
-msgstr ""
+msgstr "Ambient occlusion gamma"
 
 #: src/settings_translation_file.cpp
 msgid "Amplifies the valleys"
-msgstr ""
+msgstr "Vergroot de valleien"
 
 #: src/settings_translation_file.cpp
 msgid "Anisotropic filtering"
@@ -1478,9 +1454,8 @@ msgstr ""
 "'v6.servers.minetest.net'."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-msgstr "Juliaverzameling: (X,Y,Z) schaal, in nodes (bij benadering)."
+msgstr "Ingeschatte (X,Y,Z) schaal van fractal in nodes."
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
@@ -1495,16 +1470,14 @@ msgid "Backward key"
 msgstr "Achteruit"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Base terrain height"
-msgstr "Golfhoogte van water"
+msgstr "Basishoogte van terrein"
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
 msgstr "Basis"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Basic Privileges"
 msgstr "Standaardvoorrechten"
 
@@ -1542,20 +1515,19 @@ msgstr "Toets voor cameraverversing aan/uit"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #1"
-msgstr ""
+msgstr "Grot noise patroon #1"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
-msgstr ""
+msgstr "Grot noise patroon #2"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cave width"
-msgstr "Schermbreedte"
+msgstr "Grot breedte"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
-msgstr ""
+msgstr "Grotten en tunnels vormen bij het kruispunt van twee noise patronen"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
@@ -1601,9 +1573,8 @@ msgid "Cinematic mode key"
 msgstr "Cinematic modus aan/uit toets"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clean transparent textures"
-msgstr "Transparante texturen"
+msgstr "Schoonmaken Transparante texturen"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -1713,15 +1684,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
-msgstr ""
+msgstr "Controleert steilheid/diepte van meer depressies."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
-msgstr ""
+msgstr "Controleert steilheid/hoogte van heuvels."
 
 #: src/settings_translation_file.cpp
 msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 msgstr ""
+"Controleert breedte van tunnels, een kleinere waarde maakt bredere tunnels."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -1833,11 +1805,11 @@ msgstr "Gedrag bij gebruik van verouderde Lua API functies"
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find large caves."
-msgstr ""
+msgstr "Diepte waaronder je grote grotten vind."
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find massive caves."
-msgstr ""
+msgstr "Diepte waaronder je hele grote grotten vind."
 
 #: src/settings_translation_file.cpp
 msgid "Descending speed"
@@ -1900,9 +1872,8 @@ msgid "Dump the mapgen debug infos."
 msgstr "Print wereldgenerator debug informatie."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable VBO"
-msgstr "MV aanzetten"
+msgstr "VBO aanzetten"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
@@ -1961,7 +1932,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables animation of inventory items."
-msgstr ""
+msgstr "Schakelt animatie van inventaris items aan."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1977,12 +1948,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
-msgstr ""
+msgstr "Schakelt caching van facedir geroteerde meshes."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enables filmic tone mapping"
-msgstr "Schakelt de mini-kaart in."
+msgstr "Schakelt Filmisch Toon Mapping in"
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
@@ -2078,7 +2048,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Filler Depth"
-msgstr ""
+msgstr "Filler Diepte"
 
 #: src/settings_translation_file.cpp
 msgid "Filmic tone mapping"
@@ -2141,9 +2111,8 @@ msgid "Font size"
 msgstr "Lettergrootte"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Format of screenshots."
-msgstr "Pad waar screenshots bewaard worden."
+msgstr "Formaat van screenshots."
 
 #: src/settings_translation_file.cpp
 msgid "Forward key"
@@ -2203,11 +2172,11 @@ msgstr "Gamma"
 
 #: src/settings_translation_file.cpp
 msgid "General"
-msgstr ""
+msgstr "Generiek"
 
 #: src/settings_translation_file.cpp
 msgid "Generate normalmaps"
-msgstr ""
+msgstr "Genereer normaalmappen"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2237,9 +2206,8 @@ msgid "Gravity"
 msgstr "Zwaartekracht"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "HTTP Mods"
-msgstr "Mods"
+msgstr "HTTP Modules"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
@@ -2261,9 +2229,8 @@ msgstr ""
 "(aanbevolen voor mod ontwikkelaars)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Height component of the initial window size."
-msgstr "Horizontale aanvangsgroote van het window."
+msgstr "Vertikale aanvangsgroote van het openingsvenster."
 
 #: src/settings_translation_file.cpp
 msgid "Height on which clouds are appearing."
@@ -2279,7 +2246,7 @@ msgstr "Home-pagina van de server. Wordt getoond in de serverlijst."
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers"
-msgstr ""
+msgstr "Hoe diep rivieren te maken"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2314,7 +2281,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "How wide to make rivers"
-msgstr ""
+msgstr "Hoe breed rivieren te maken"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6"
@@ -2432,7 +2399,7 @@ msgstr "Interval voor het sturen van de kloktijd naar cliënten."
 
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
-msgstr ""
+msgstr "inventaris items animaties"
 
 #: src/settings_translation_file.cpp
 msgid "Inventory key"
@@ -2813,11 +2780,11 @@ msgstr "Taal"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave depth"
-msgstr ""
+msgstr "Grote grotten diepte"
 
 #: src/settings_translation_file.cpp
 msgid "Lava Features"
-msgstr ""
+msgstr "Lava Kenmerken"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -2850,11 +2817,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between ABM execution cycles"
-msgstr ""
+msgstr "Tijd tussen ABM executie cycli"
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between NodeTimer execution cycles"
-msgstr ""
+msgstr "Tijd tussen NodeTimer executie cycli"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2902,7 +2869,7 @@ msgstr "Vloeibaarheid van vloeistoffen"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid fluidity smoothing"
-msgstr ""
+msgstr "Vloeistof viscositeit gladmaakfactor"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid loop max"
@@ -3045,9 +3012,8 @@ msgid "Mapblock unload timeout"
 msgstr "Wereldblok vergeet-tijd"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Valleys"
-msgstr "Wereldgenerator"
+msgstr "Valleien Wereldgenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome heat noise parameters"
@@ -3070,76 +3036,64 @@ msgid "Mapgen flags"
 msgstr "Wereldgenerator vlaggen"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat"
-msgstr "Wereldgenerator vlaggen"
+msgstr "Vlakke Wereldgenerator"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat cave width"
-msgstr "Fractal wereldgenerator julia schaal"
+msgstr "Vlakke wereldgenerator grot breedte"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat cave1 noise parameters"
-msgstr "Fractal wereldgenerator grotten (1) ruisparameters"
+msgstr "Vlakke wereldgenerator grotten (1) ruisparameters"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat cave2 noise parameters"
-msgstr "Fractal wereldgenerator grotten (2) ruisparameters"
+msgstr "Vlakke wereldgenerator grotten (2) ruisparameters"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat filler depth noise parameters"
 msgstr "Fractal wereldgenerator vuldiepte ruisparameters"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat flags"
-msgstr "Fractal wereldgenerator vlaggen"
+msgstr "Vlakke wereldgenerator vlaggen"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat ground level"
-msgstr "Wereldgenerator vlaggen"
+msgstr "Vlakke wereldgenerator grondniveau"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat hill steepness"
-msgstr ""
+msgstr "Vlakke wereldgenerator heuvel steilheid"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat hill threshold"
-msgstr ""
+msgstr "Vlakke wereldgenerator heuvel grenswaarde"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat lake steepness"
-msgstr "Fractal wereldgenerator julia iteraties"
+msgstr "Vlakke wereldgenerator meer steilheid"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat lake threshold"
-msgstr "Fractal wereldgenerator julia schaal"
+msgstr "Vlakke wereldgenerator meer grenswaarde"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat large cave depth"
-msgstr "Fractal wereldgenerator julia schaal"
+msgstr "Vlakke wereldgenerator grote grotten diepte"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat terrain noise parameters"
-msgstr "Wereldgenerator v6 basisterrein ruisparameters"
+msgstr "Vlakke Wereldgenerator basisterrein ruisparameters"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal"
 msgstr "Fractal wereldgenerator"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen fractal cave width"
-msgstr "Fractal wereldgenerator julia w-doorsnede"
+msgstr "Fractal wereldgenerator grot breedte"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal cave1 noise parameters"
