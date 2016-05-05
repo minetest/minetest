@@ -357,6 +357,7 @@ public:
 	bool pausesGame() { return doPause; }
 
 	GUITable* getTable(const std::string &tablename);
+	std::vector<std::string>* getDropDownValues(const std::string &name);
 
 #ifdef __ANDROID__
 	bool getAndroidUIInput();
@@ -395,6 +396,7 @@ protected:
 	std::vector<std::pair<FieldSpec,gui::IGUICheckBox*> > m_checkboxes;
 	std::map<std::string, TooltipSpec> m_tooltips;
 	std::vector<std::pair<FieldSpec,gui::IGUIScrollBar*> > m_scrollbars;
+	std::vector<std::pair<FieldSpec, std::vector<std::string> > > m_dropdowns;
 
 	ItemSpec *m_selected_item;
 	f32 m_timer1;
