@@ -7,10 +7,10 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-05 16:13+0200\n"
-"PO-Revision-Date: 2016-01-23 04:35+0000\n"
+"PO-Revision-Date: 2016-05-05 22:33+0000\n"
 "Last-Translator: Tobyplowy <toby123@live.nl>\n"
-"Language-Team: Dutch <https://hosted.weblate.org/projects/minetest/minetest/"
-"nl/>\n"
+"Language-Team: Dutch "
+"<https://hosted.weblate.org/projects/minetest/minetest/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2138,7 +2138,7 @@ msgstr "Fontschaduw afstand. Indien 0, dan wordt geen schaduw getekend."
 
 #: src/settings_translation_file.cpp
 msgid "Font size"
-msgstr "Fontgrootte"
+msgstr "Lettergrootte"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
