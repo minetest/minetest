@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-05 16:13+0200\n"
-"PO-Revision-Date: 2016-03-30 21:31+0000\n"
+"PO-Revision-Date: 2016-05-06 02:25+0000\n"
 "Last-Translator: Wuzzy <almikes@aol.com>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/minetest/minetest/"
-"de/>\n"
+"Language-Team: German "
+"<https://hosted.weblate.org/projects/minetest/minetest/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.6-dev\n"
+"X-Generator: Weblate 2.7-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -216,7 +216,7 @@ msgstr "(Keine Beschreibung vorhanden)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr "< Zurück zur Einstellungsseite"
+msgstr "< Einstellungsseite"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
@@ -416,9 +416,8 @@ msgid "Uninstall selected modpack"
 msgstr "Ausgewähltes Modpack deinstallieren"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Address / Port"
-msgstr "Adresse / Port:"
+msgstr "Adresse / Port"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
@@ -437,19 +436,16 @@ msgid "Damage enabled"
 msgstr "Schaden aktiviert"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Del. Favorite"
-msgstr "Favoriten:"
+msgstr "Favorit löschen"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Favorite"
-msgstr "Favoriten:"
+msgstr "Favorit"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Name / Password"
-msgstr "Name / Passwort:"
+msgstr "Name / Passwort"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -542,7 +538,6 @@ msgid "Bilinear Filter"
 msgstr "Bilinearer Filter"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Bump Mapping"
 msgstr "Bumpmapping"
 
@@ -583,18 +578,16 @@ msgid "Node Highlighting"
 msgstr "Blöcke hervorheben"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Node Outlining"
-msgstr "Blöcke hervorheben"
+msgstr "Blöcke umranden"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
 msgstr "Keines"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Normal Mapping"
-msgstr "Normalmaps-Sampling"
+msgstr "Normalmapping"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -609,9 +602,8 @@ msgid "Parallax Occlusion"
 msgstr "Parallax-Occlusion"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Particles"
-msgstr "Partikel aktivieren"
+msgstr "Partikel"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -1392,14 +1384,12 @@ msgid "Acceleration in air"
 msgstr "Beschleunigung in der Luft"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Active Block Management interval"
-msgstr "Reichweite aktiver Kartenblöcke"
+msgstr "Active-Block-Management-Intervall"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Active Block Modifier interval"
-msgstr "Reichweite aktiver Kartenblöcke"
+msgstr "Active-Block-Modifier-Intervall"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
@@ -1496,9 +1486,8 @@ msgid "Basic"
 msgstr "Grundlegend"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Basic Privileges"
-msgstr "Standardprivilegien"
+msgstr "Grundprivilegien"
 
 #: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
@@ -1541,9 +1530,8 @@ msgid "Cave noise #2"
 msgstr "Höhlenrauschen Nr. 2"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cave width"
-msgstr "Bildschirmbreite"
+msgstr "Höhlenbreite"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
@@ -1736,6 +1724,7 @@ msgstr "Steuert die Steilheit/Höhe von Hügeln."
 #: src/settings_translation_file.cpp
 msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 msgstr ""
+"Legt die Breite von Tunneln fest; ein kleinerer Wert erzeugt breitere Tunnel."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -1869,7 +1858,7 @@ msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
 msgstr ""
-"Die Beschreibung des Servers. Wird neuen Klienten und in der Serverliste "
+"Die Beschreibung des Servers. Wird neuen Clients und in der Serverliste "
 "angezeigt."
 
 #: src/settings_translation_file.cpp
@@ -2180,9 +2169,8 @@ msgid "Font size"
 msgstr "Schriftgröße"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Format of screenshots."
-msgstr "Pfad, in dem Bildschirmfotos abgespeichert werden."
+msgstr "Format von Bildschirmfotos."
 
 #: src/settings_translation_file.cpp
 msgid "Forward key"
@@ -2251,7 +2239,6 @@ msgid "Generate normalmaps"
 msgstr "Normalmaps generieren"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
@@ -2266,6 +2253,9 @@ msgstr ""
 "Im Kartengenerator v6 wird das „decorations“-Flag alle Dekorationen außer\n"
 "Bäume und Dschungelgras aktivieren, in allen anderen Kartengeneratoren\n"
 "wird dieses Flag alle Dekorationen aktivieren.\n"
+"Die von der Engine standardmäßig gesetzten Flags lauten:\n"
+"„caves, light, decorations“.\n"
+"Die Flags-Zeichenkette modifiert den Standardwert der Engine.\n"
 "Flags, welche in der Flags-Zeichenkette nicht angegeben sind,\n"
 "werden von der Standardeinstellung unverändert gelassen.\n"
 "Flags, welche mit „no“ beginnen, werden benutzt, um sie explizit\n"
@@ -2295,12 +2285,13 @@ msgid ""
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
 "Handhabung für veraltete Lua-API-Aufrufe:\n"
-"-    legacy: Versuchen, altes Verhalten zu imitieren (Standard für "
-"Release).\n"
-"-    log: Imitieren, und den Backtrace des veralteten Funktionsaufrufs "
-"protokollieren (Standard für Debug).\n"
-"-    error: Bei Verwendung eines veralteten Funktionsaufrufs abbrechen "
-"(empfohlen für Mod-Entwickler)."
+"- legacy: Versuchen, altes Verhalten zu imitieren (Standard für Release).\n"
+"- log: Imitieren, und den Backtrace des veralteten Funktionsaufrufs "
+"protokollieren (Standard für\n"
+"  Debug).\n"
+"- error: Bei Verwendung eines veralteten Funktionsaufrufs abbrechen ("
+"empfohlen für Mod-\n"
+"  Entwickler)."
 
 #: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
@@ -2901,11 +2892,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between ABM execution cycles"
-msgstr ""
+msgstr "Dauer der Zeit zwischen ABM-Ausführungszyklen"
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between NodeTimer execution cycles"
-msgstr ""
+msgstr "Dauer der Zeit zwischen NodeTimer-Ausführungszyklen"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3009,7 +3000,6 @@ msgid "Map directory"
 msgstr "Kartenordner"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen Valleys.\n"
 "'altitude_chill' makes higher elevations colder, which may cause biome "
@@ -3023,17 +3013,21 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
-"Kartengenerierungsattribute speziell für den Kartengenerator v6.\n"
-"Falls Schneebiome aktiviert, werden Dschungel aktiviert und das „jungles“-"
-"Flag\n"
-"wird ignoriert. Flags, welche in der Flags-Zeichenkette nicht angegeben "
-"sind,\n"
+"Kartengenerierungsattribute speziell für den Kartengenerator „Täler“.\n"
+"„altitude_chill“ macht höhere Höhen kälter, was ein paar Biomprobleme "
+"hervorrufen könnte.\n"
+"„humid_rivers“ modifiert die Luftfeuchtigkeit um Flüssen und in Gebieten, wo "
+"sich Wasser\n"
+"ansammeln würde; es könnte fein abgestimmte Biomen beeinträchtigen.\n"
+"Die von der Engine standardmäßig gesetzten Flags lauten:\n"
+"„altitude_chill, humid_rivers“.\n"
+"Die Flags-Zeichenkette modifiert den Standardwert der Engine.\n"
+"Flags, welche in der Flags-Zeichenkette nicht angegeben sind,\n"
 "werden von der Standardeinstellung unverändert gelassen.\n"
 "Flags, welche mit „no“ beginnen, werden benutzt, um sie explizit\n"
 "zu deaktivieren."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
 "Occasional lakes and hills can be added to the flat world.\n"
@@ -3045,13 +3039,14 @@ msgid ""
 msgstr ""
 "Kartengenerierungsattribute speziell für den flachen Kartengenerator.\n"
 "Gelegentlich werden Seen und Hügel zur flachen Welt hinzugefügt.\n"
+"Die von der Engine standardmäßig gesetzten Flags sind: keine.\n"
+"Die Flags-Zeichenkette modifiert den Standardwert der Engine.\n"
 "Flags, welche in der Flags-Zeichenkette nicht angegeben sind,\n"
 "werden von der Standardeinstellung unverändert gelassen.\n"
 "Flags, welche mit „no“ beginnen, werden benutzt, um sie explizit\n"
 "zu deaktivieren."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "When snowbiomes are enabled jungles are automatically enabled, the 'jungles' "
@@ -3065,14 +3060,16 @@ msgstr ""
 "Kartengenerierungsattribute speziell für den Kartengenerator v6.\n"
 "Falls Schneebiome aktiviert, werden Dschungel aktiviert und das „jungles“-"
 "Flag\n"
-"wird ignoriert. Flags, welche in der Flags-Zeichenkette nicht angegeben "
-"sind,\n"
+"wird ignoriert.\n"
+"Die von der Engine standardmäßig gesetzten Flags lauten:\n"
+"„biomeblend, mudflow“.\n"
+"Die Flags-Zeichenkette modifiert den Standardwert der Engine.\n"
+"Flags, welche in der Flags-Zeichenkette nicht angegeben sind,\n"
 "werden von der Standardeinstellung unverändert gelassen.\n"
 "Flags, welche mit „no“ beginnen, werden benutzt, um sie explizit\n"
 "zu deaktivieren."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
 "The 'ridges' flag controls the rivers.\n"
@@ -3082,11 +3079,12 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
-"Kartengenerierungsattribute speziell für den Kartengenerator v6.\n"
-"Falls Schneebiome aktiviert, werden Dschungel aktiviert und das „jungles“-"
-"Flag\n"
-"wird ignoriert. Flags, welche in der Flags-Zeichenkette nicht angegeben "
-"sind,\n"
+"Kartengenerierungsattribute speziell für den Kartengenerator v7.\n"
+"Das „ridges“-Flag steuert die Flüsse.\n"
+"Die von der Engine standardmäßig gesetzten Flags lauten:\n"
+"„mountains, ridges“.\n"
+"Die Flags-Zeichenkette modifiert den Standardwert der Engine.\n"
+"Flags, welche in der Flags-Zeichenkette nicht angegeben sind,\n"
 "werden von der Standardeinstellung unverändert gelassen.\n"
 "Flags, welche mit „no“ beginnen, werden benutzt, um sie explizit\n"
 "zu deaktivieren."
@@ -3136,9 +3134,8 @@ msgid "Mapgen flat"
 msgstr "Flacher Kartengenerator"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat cave width"
-msgstr "Tiefe für große Höhlen für den flachen Kartengenerator"
+msgstr "Höhlenbreite für den flachen Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat cave1 noise parameters"
@@ -3189,9 +3186,8 @@ msgid "Mapgen fractal"
 msgstr "Fraktale-Kartengenerator"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen fractal cave width"
-msgstr "w-Ausschnitt für Fraktale-Kartengenerator"
+msgstr "Höhlenbreite für den Fraktale-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal cave1 noise parameters"
@@ -3258,9 +3254,8 @@ msgid "Mapgen v5"
 msgstr "v5-Kartengenerator"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen v5 cave width"
-msgstr "Tiefe für große Höhlen für den flachen Kartengenerator"
+msgstr "Höhlenbreite für v5-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 cave1 noise parameters"
@@ -3347,9 +3342,8 @@ msgid "Mapgen v7"
 msgstr "v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen v7 cave width"
-msgstr "Tiefe für große Höhlen für den flachen Kartengenerator"
+msgstr "Höhlenbreite für v7-Kartengenerator"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 cave1 noise parameters"
@@ -3686,9 +3680,8 @@ msgid "Node highlighting"
 msgstr "Blöcke hervorheben"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "NodeTimer interval"
-msgstr "Zeit-Sendeintervall"
+msgstr "NodeTimer-Intervall"
 
 #: src/settings_translation_file.cpp
 msgid "Noise parameters for biome API temperature, humidity and biome blend."
@@ -3828,7 +3821,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Privileges that players with basic_privs can grant"
-msgstr ""
+msgstr "Privilegien, die Spieler mit basic_privs gewähren können"
 
 #: src/settings_translation_file.cpp
 msgid "Profiler data print interval. 0 = disable. Useful for developers."
@@ -3949,14 +3942,12 @@ msgid "Screenshot folder"
 msgstr "Bildschirmfotoverzeichnis"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot format"
-msgstr "Bildschirmfotoverzeichnis"
+msgstr "Bildschirmfotoformat"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot quality"
-msgstr "Bildschirmfoto"
+msgstr "Bildschirmfotoqualität"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3964,6 +3955,9 @@ msgid ""
 "1 means worst quality; 100 means best quality.\n"
 "Use 0 for default quality."
 msgstr ""
+"Bildschirmfotoqualität. Wird nur für das JPEG-Format benutzt.\n"
+"1 steht für die schlechteste Qualität, 100 für die beste Qualität.\n"
+"Benutzen Sie 0 für die Standardqualität."
 
 #: src/settings_translation_file.cpp
 msgid "Security"
@@ -4070,7 +4064,7 @@ msgstr "Debug-Info zeigen"
 
 #: src/settings_translation_file.cpp
 msgid "Show entity selection boxes"
-msgstr ""
+msgstr "Entitiy-Auswahlboxen zeigen"
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
@@ -4149,7 +4143,7 @@ msgstr "Strikte Protokollversionsprüfung"
 
 #: src/settings_translation_file.cpp
 msgid "Support older servers"
-msgstr ""
+msgstr "Ältere Server unterstützen"
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -4250,7 +4244,7 @@ msgstr "Diese Schrift wird von bestimmten Sprachen benutzt."
 
 #: src/settings_translation_file.cpp
 msgid "Time in between active block management cycles"
-msgstr ""
+msgstr "Zeit zwischen Active-Block-Management-Zyklen"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4544,7 +4538,8 @@ msgstr ""
 "Kartenblöcke).\n"
 "-    Diese Gruppen haben einen Abstand von [-32, -32] Blöcken vom Ursprung.\n"
 "-    Nur Gruppen, welche innerhalb der von map_generation_limit definierten "
-"Grenze liegen, werden erzeugt."
+"Grenze liegen,\n"
+"     werden erzeugt."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4563,7 +4558,7 @@ msgid ""
 "Whether players are shown to clients without any range limit.\n"
 "Deprecated, use the setting player_transfer_distance instead."
 msgstr ""
-"Ob Spieler an Clients ohne Distanzbegrenzung angezeit werden.\n"
+"Ob Spieler an Clients ohne Distanzbegrenzung angezeigt werden.\n"
 "Veraltet, benutzen Sie stattdessen die Einstellung "
 "„player_transfer_distance“."
 
@@ -4598,6 +4593,11 @@ msgid ""
 "Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
 "Disabling this option will protect your password better."
 msgstr ""
+"Ob ältere Server vor Protokollversion 25 unterstützt werden sollen.\n"
+"Aktivieren Sie dies, falls Sie sich mit Servern der Version 0.4.12 und\n"
+"davor verbinden möchten. Server ab 0.4.13 werden funktionieren,\n"
+"Server der Version 0.4.12-dev könnten funktionieren.\n"
+"Die Deaktivierung dieser Einstellung wird Ihr Passwort besser schützen."
 
 #: src/settings_translation_file.cpp
 msgid "Width component of the initial window size."
