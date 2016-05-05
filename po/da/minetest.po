@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-05 16:13+0200\n"
-"PO-Revision-Date: 2016-04-17 08:53+0000\n"
+"PO-Revision-Date: 2016-05-06 13:58+0000\n"
 "Last-Translator: Thomas Wagner Nielsen <thomas@viawords.com>\n"
-"Language-Team: Danish <https://hosted.weblate.org/projects/minetest/minetest/"
-"da/>\n"
+"Language-Team: Danish "
+"<https://hosted.weblate.org/projects/minetest/minetest/da/>\n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.6-dev\n"
+"X-Generator: Weblate 2.7-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -155,12 +155,14 @@ msgid "Mapgen"
 msgstr "Mapgen"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "No worldname given or no game selected"
-msgstr ""
+msgstr "Intet navn på verden angivet eller intet spil valgt"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Seed"
-msgstr ""
+msgstr "Kim"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
@@ -213,12 +215,14 @@ msgid "(No description of setting given)"
 msgstr "(Der er ikke nogen beskrivelse af denne indstilling)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "< Tilbage til siden Indstillinger"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Browse"
-msgstr ""
+msgstr "Gennemse"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Disabled"
@@ -237,10 +241,13 @@ msgid "Format is 3 numbers separated by commas and inside brackets."
 msgstr "Formatet er 3 tal, adskilt af kommaer, og omgivet af parenteser."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 msgstr ""
+"Format: <forskydning>, <skalering>, (<udbredelseX>, <udbredelseY>, "
+"<udbredelseZ>), <kim>, <oktaver>, <vedholdenhed>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
@@ -404,9 +411,8 @@ msgid "Uninstall selected modpack"
 msgstr "Afinstaller den valgte modpack"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Address / Port"
-msgstr "Adresse/port:"
+msgstr "Adresse/port"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
@@ -470,12 +476,14 @@ msgid "New"
 msgstr "Ny"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
+#, fuzzy
 msgid "No world created or selected!"
-msgstr ""
+msgstr "Ingen verden skabt eller valgt!"
 
 #: builtin/mainmenu/tab_server.lua
+#, fuzzy
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Public"
@@ -498,20 +506,23 @@ msgid "Start Game"
 msgstr "Start spil / Forbind"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "2x"
-msgstr ""
+msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "3D Clouds"
 msgstr "3D-skyer"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "4x"
-msgstr ""
+msgstr "4x"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "8x"
-msgstr ""
+msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Advanced Settings"
@@ -745,8 +756,9 @@ msgid "Player name too long."
 msgstr "Spillerens navn er for langt."
 
 #: src/client/clientlauncher.cpp
+#, fuzzy
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "Den angivne sti til verdenen findes ikke: "
 
 #: src/fontengine.cpp
 msgid "needs_fallback_font"
@@ -777,14 +789,17 @@ msgid "Continue"
 msgstr "Fortsæt"
 
 #: src/game.cpp
+#, fuzzy
 msgid "Creating client..."
-msgstr ""
+msgstr "Opretter klient..."
 
 #: src/game.cpp
+#, fuzzy
 msgid "Creating server..."
-msgstr ""
+msgstr "Opretter server..."
 
 #: src/game.cpp
+#, fuzzy
 msgid ""
 "Default Controls:\n"
 "- WASD: move\n"
@@ -798,8 +813,20 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
+"Standard-styring:\n"
+"- WASD: Bevæge sig rundt\n"
+"- Mellemrumstast: Hoppe/klatre\n"
+"- Skift: Snige/gå nedad\n"
+"- Q: Smide genstand\n"
+"- I: Medbragt\n"
+"- Mus: Vende rundt/kigge\n"
+"- Mus venstre: Grave/slå\n"
+"- Mus højre: Placere/bruge\n"
+"- Musehjul: Vælge genstand\n"
+"- T: Chat\n"
 
 #: src/game.cpp
+#, fuzzy
 msgid ""
 "Default Controls:\n"
 "No menu visible:\n"
@@ -814,6 +841,18 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
+"Standard-styring:\n"
+"Ingen menu synlig:\n"
+"- Enkelt tryk: Aktivér knap\n"
+"- Dobbelt tryk: Placér/brug\n"
+"- Stryg finger: Kig rundt\n"
+"Menu/Medbragt synlig:\n"
+"- Dobbelt tryk (uden for):\n"
+" --> Luk\n"
+"- Rør ved stakken, rør ved felt:\n"
+" --> Flyt stakken\n"
+"- Rør ved og træk, tryk med 2. finger\n"
+" --> Placér enkelt genstand på feltet\n"
 
 #: src/game.cpp
 msgid "Exit to Menu"
@@ -828,20 +867,23 @@ msgid "Item definitions..."
 msgstr ""
 
 #: src/game.cpp
+#, fuzzy
 msgid "KiB/s"
-msgstr ""
+msgstr "KiB/s"
 
 #: src/game.cpp
 msgid "Media..."
 msgstr "Medier..."
 
 #: src/game.cpp
+#, fuzzy
 msgid "MiB/s"
-msgstr ""
+msgstr "MiB/s"
 
 #: src/game.cpp
+#, fuzzy
 msgid "Node definitions..."
-msgstr ""
+msgstr "Blokdefinitioner..."
 
 #: src/game.cpp
 msgid "Resolving address..."
@@ -993,12 +1035,14 @@ msgid "Passwords do not match!"
 msgstr "Kodeordene er ikke ens!"
 
 #: src/guiVolumeChange.cpp
+#, fuzzy
 msgid "Exit"
-msgstr ""
+msgstr "Afslut"
 
 #: src/guiVolumeChange.cpp
+#, fuzzy
 msgid "Sound Volume: "
-msgstr ""
+msgstr "Lydstyrke: "
 
 #: src/keycode.cpp
 msgid "Apps"
@@ -1311,8 +1355,9 @@ msgid "3D clouds"
 msgstr "3D skyer"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "3D mode"
-msgstr ""
+msgstr "3D-tilstand"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1333,20 +1378,23 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "A message to be displayed to all clients when the server crashes."
-msgstr ""
+msgstr "Besked, som skal vises til alle klienter, når serveren går ned."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "A message to be displayed to all clients when the server shuts down."
-msgstr ""
+msgstr "Besked, som skal vises til alle klienter, når serveren lukker ned."
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Acceleration in air"
-msgstr ""
+msgstr "Acceleration i luft"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Management interval"
@@ -1372,10 +1420,13 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr ""
+"Justér DPI-konfigurationen til din skærm (ikke-X11 / kun Andorid) f.eks. til "
+"4k-skærme."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1392,16 +1443,18 @@ msgid "Altitude Chill"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Always fly and fast"
-msgstr ""
+msgstr "Flyv altid og hurtigt"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Amplifies the valleys"
-msgstr ""
+msgstr "Forstærker dalene"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1424,12 +1477,14 @@ msgid "Approximate (X,Y,Z) scale of fractal in nodes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Ask to reconnect after crash"
-msgstr ""
+msgstr "Spørg om at forbinde igen, efter den er gået ned."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Automaticaly report to the serverlist."
-msgstr ""
+msgstr "Rapportér automatisk til serverlisten."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
