@@ -7,16 +7,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-05 16:13+0200\n"
-"PO-Revision-Date: 2016-04-24 15:15+0000\n"
+"PO-Revision-Date: 2016-05-05 19:09+0000\n"
 "Last-Translator: Claybiokiller <clay0305@hotmail.com>\n"
-"Language-Team: Chinese (China) <https://hosted.weblate.org/projects/minetest/"
-"minetest/zh_CN/>\n"
+"Language-Team: Chinese (China) "
+"<https://hosted.weblate.org/projects/minetest/minetest/zh_CN/>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.6-dev\n"
+"X-Generator: Weblate 2.7-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -1299,6 +1299,10 @@ msgid ""
 "sets.\n"
 "Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
 msgstr ""
+"在「比例尺」中分形的 (X,Y,Z) 偏移。\n"
+"用于移动适合的低地生成区域靠近 (0, 0)。\n"
+"预设值适合曼德尔布罗特集合，若要用于朱利亚集合则必须修改。\n"
+"范围大约在 -2 至 2 间。乘以节点的偏移值。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1399,6 +1403,8 @@ msgid ""
 "Adjust the gamma encoding for the light tables. Lower numbers are brighter.\n"
 "This setting is for the client only and is ignored by the server."
 msgstr ""
+"调整亮度表的伽玛编码。较低的数值会较亮。\n"
+"这个设定是给客户端使用的，会被服务器忽略。"
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -1439,7 +1445,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-msgstr ""
+msgstr "大约 (X,Y,Z) 的节点分形规模。"
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
@@ -1476,7 +1482,7 @@ msgstr "绑定地址"
 
 #: src/settings_translation_file.cpp
 msgid "Bits per pixel (aka color depth) in fullscreen mode."
-msgstr ""
+msgstr "全屏模式中的位／像素（又称色彩深度）。"
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
@@ -1513,7 +1519,7 @@ msgstr "屏幕宽度"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
-msgstr ""
+msgstr "洞穴与隧道由两种噪音的交集形成"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
@@ -1545,6 +1551,25 @@ msgid ""
 "17 = 4D \"Mandelbulb\" mandelbrot set.\n"
 "18 = 4D \"Mandelbulb\" julia set."
 msgstr ""
+"从 9 种公式里选取 18 种分形。\n"
+"1 = 4D \"Roundy\" 曼德尔布罗特集.\n"
+"2 = 4D \"Roundy\" 朱利亚集.\n"
+"3 = 4D \"Squarry\" 曼德尔布罗特集.\n"
+"4 = 4D \"Squarry\" 朱利亚集.\n"
+"5 = 4D \"Mandy Cousin\" 曼德尔布罗特集.\n"
+"6 = 4D \"Mandy Cousin\" 朱利亚集.\n"
+"7 = 4D \"Variation\" 曼德尔布罗特集.\n"
+"8 = 4D \"Variation\" 朱利亚集.\n"
+"9 = 3D \"Mandelbrot/Mandelbar\" 曼德尔布罗特集.\n"
+"10 = 3D \"Mandelbrot/Mandelbar\" 朱利亚集.\n"
+"11 = 3D \"Christmas Tree\" 曼德尔布罗特集.\n"
+"12 = 3D \"Christmas Tree\" 朱利亚集.\n"
+"13 = 3D \"Mandelbulb\" 曼德尔布罗特集.\n"
+"14 = 3D \"Mandelbulb\" 朱利亚集.\n"
+"15 = 3D \"Cosine Mandelbulb\" 曼德尔布罗特集.\n"
+"16 = 3D \"Cosine Mandelbulb\" 朱利亚集.\n"
+"17 = 4D \"Mandelbulb\" 曼德尔布罗特集.\n"
+"18 = 4D \"Mandelbulb\" 朱利亚集."
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
@@ -1599,12 +1624,16 @@ msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
+"受信任的 Mod 列表，以逗号分隔，其可存取不安全的\n"
+"功能，即便 mod 安全性已启用（经由 request_insecure_environment()）。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Comma-seperated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
+"以逗号分隔的 mod 清单，让您可以存取 HTTP API，\n"
+"其可从互联网上传及下载资料。"
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
@@ -1652,12 +1681,16 @@ msgid ""
 "Examples: 72 = 20min, 360 = 4min, 1 = 24hour, 0 = day/night/whatever stays "
 "unchanged."
 msgstr ""
+"控制日／夜循环的长度。\n"
+"示例：72 = 20分钟，360 = 4分钟，1 = 24小时，0 = 日／夜／一切保持不变。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Controls size of deserts and beaches in Mapgen v6.\n"
 "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
 msgstr ""
+"控制在 Mapgen v6 中的沙漠与沙滩大小。\n"
+"当 snowbiomes 启用时「mgv6_freq_desert」会被忽略。"
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
