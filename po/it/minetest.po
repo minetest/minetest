@@ -7,10 +7,10 @@ msgstr ""
 "Project-Id-Version: Minetest 0.4.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-05 16:13+0200\n"
-"PO-Revision-Date: 2016-04-29 22:02+0000\n"
+"PO-Revision-Date: 2016-05-08 17:01+0000\n"
 "Last-Translator: Emon Omen <emon@openmailbox.org>\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
-"minetest/it/>\n"
+"Language-Team: Italian "
+"<https://hosted.weblate.org/projects/minetest/minetest/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -408,9 +408,8 @@ msgid "Uninstall selected modpack"
 msgstr "Disinstallare il pacchetto mod. scelto"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Address / Port"
-msgstr "Indirizzo / Porta :"
+msgstr "Indirizzo / Porta"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
@@ -429,19 +428,16 @@ msgid "Damage enabled"
 msgstr "Danno abilitato"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Del. Favorite"
-msgstr "Preferiti:"
+msgstr "Canc. prefer."
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Favorite"
 msgstr "Preferiti:"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Name / Password"
-msgstr "Nome / Password :"
+msgstr "Nome / Password"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -534,9 +530,8 @@ msgid "Bilinear Filter"
 msgstr "Filtro bilineare"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Bump Mapping"
-msgstr "Bumpmapping"
+msgstr "Bump Mapping"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
@@ -575,18 +570,16 @@ msgid "Node Highlighting"
 msgstr "Evidenz. nodo"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Node Outlining"
-msgstr "Evidenz. nodo"
+msgstr "Bordatura nodo"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
 msgstr "Nessuno"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Normal Mapping"
-msgstr "Campionamento normalmap"
+msgstr "Normal Mapping"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -601,9 +594,8 @@ msgid "Parallax Occlusion"
 msgstr "Occlusione di parallasse"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Particles"
-msgstr "Abilitare particelle"
+msgstr "Particelle"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -1380,14 +1372,12 @@ msgid "Acceleration in air"
 msgstr "Accelerazione in aria"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Active Block Management interval"
-msgstr "Portata del blocco attivo"
+msgstr "Intervallo del gestore di blocco attivo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Active Block Modifier interval"
-msgstr "Portata del blocco attivo"
+msgstr "Intervallo del modificatore di blocco attivo"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
@@ -1488,9 +1478,8 @@ msgid "Basic"
 msgstr "Base"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Basic Privileges"
-msgstr "Privilegi predefiniti"
+msgstr "Privilegi di base"
 
 #: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
@@ -1533,9 +1522,8 @@ msgid "Cave noise #2"
 msgstr "'Rumore' n°2 della caverna"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cave width"
-msgstr "Larghezza dello schermo"
+msgstr "Larghezza delle caverne"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
@@ -1593,7 +1581,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
-msgstr "Dimensione del pezzo"
+msgstr "Dimensione del \"pezzo\""
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
@@ -1644,10 +1632,9 @@ msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
-"Elenco separato da virgole di mod. fidati a cui è permesso l'accesso a "
-"funzioni\n"
-"non sicure anche quando la sicurezza dei mod è attivata  (tramite "
-"request_insecure_environment())."
+"Lista separata da virgole dei mod affidabili ai quali è permesso accedere a "
+"funzioni non sicure anche quando il valore \"mod security\" è impostato su \""
+"on\" (utilizzando request_insecure_environment())."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1727,6 +1714,8 @@ msgstr "Controlla la ripidità/altezza delle colline."
 #: src/settings_translation_file.cpp
 msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 msgstr ""
+"Controlla la larghezza delle gallerie, un valore più piccolo crea gallerie "
+"più larghe."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -1770,7 +1759,7 @@ msgstr "Velocità di accovacciamento"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
-msgstr "DPI"
+msgstr "Punti per pollice"
 
 #: src/settings_translation_file.cpp
 msgid "Damage"
@@ -1802,7 +1791,7 @@ msgid ""
 "This will be overridden when creating a world from the main menu."
 msgstr ""
 "Gioco predefinito quando si crea un nuovo mondo.\n"
-"Questo sarà ignorato quando si crea un mondo dal menu principale."
+"Questo verrà ignorato quando si crea un mondo dal menu principale."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -1817,26 +1806,26 @@ msgid ""
 "Default timeout for cURL, stated in milliseconds.\n"
 "Only has an effect if compiled with cURL."
 msgstr ""
-"Tempo di scadenza predefinito per cURL, espresso in millisecondi.\n"
-"Ha effetto solo se si è compilato con cURL."
+"Scadenza predefinita per cURL, espressa in millisecondi.\n"
+"Ha effetto solo se Minetest è stato compilato con cURL."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Defines sampling step of texture.\n"
 "A higher value results in smoother normal maps."
 msgstr ""
-"Stabilisce il passo di campionamento dell'immagine.\n"
-"Un valore elevato fornisce normal map più uniformi."
+"Definisce il passo di campionatura dell'immagine.\n"
+"Un valore più alto ha come effetto normal map più uniformi."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
-"Stabilisce la massima distanza di trasferimento del giocatore in blocchi (0 "
-"= illimitata)."
+"Definisce la massima distanza di trasferimento del giocatore espressa in "
+"blocchi (0 = illimitata)."
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
-msgstr "Ritarda la comparsa dei suggerimenti, espressa in millisecondi."
+msgstr "Ritardo nella comparsa dei suggerimenti, espresso in millisecondi."
 
 #: src/settings_translation_file.cpp
 msgid "Deprecated Lua API handling"
@@ -1859,8 +1848,8 @@ msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
 msgstr ""
-"Descrizione del server, da mostrare quando si unisce un giocatore e "
-"nell'elenco dei server."
+"Descrizione del server, da mostrarsi nell'elenco dei server e quando i "
+"giocatori accedono."
 
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
@@ -1891,7 +1880,7 @@ msgstr "Disabilita anti-trucchi"
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
-msgstr "Non permettere password vuote"
+msgstr "Rifiutare le password vuote"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
@@ -1908,11 +1897,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Drop item key"
-msgstr "Tasto per lasciare a terra l'oggetto"
+msgstr "Tasto per il rilascio di un oggetto"
 
 #: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug infos."
-msgstr "Scarico delle info. di debug del gen. mappa."
+msgstr "Pubblica le informazioni di debug del generatore della mappa."
 
 #: src/settings_translation_file.cpp
 msgid "Enable VBO"
@@ -1920,16 +1909,17 @@ msgstr "Abilitare VBO"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
-msgstr "Abilitare la sicurezza dei mod."
+msgstr "Abilita la protezione mod."
 
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
-msgstr "Permette il danneggiamento e la morte dei giocatori."
+msgstr "Abilitare il ferimento e la morte dei giocatori."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
 msgstr ""
-"Permette l'input casuale da parte dell'utente (usato solo per le prove)."
+"Abilita input casuale da parte del giocatore (utilizzato solo per "
+"esperimenti)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1947,11 +1937,11 @@ msgid ""
 "to new servers, but they may not support all new features that you are "
 "expecting."
 msgstr ""
-"Permette di impedire la connessione dei client vecchi.\n"
-"I client vecchi sono compatibili nel senso che non crolleranno alla "
-"connessione\n"
-"ai nuovi server, ma potrebbero non supportare tutte le nuove caratteristiche "
-"che vi aspettate."
+"Abilitare per impedire ai client obsoleti di connettersi.\n"
+"I client datati sono compatibili nella misura in cui non vanno in crash "
+"quando si connettono\n"
+"ai server più recenti, ma non supportano tutte le funzioni che ci si "
+"aspetterebbe."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1960,10 +1950,11 @@ msgid ""
 "textures)\n"
 "when connecting to the server."
 msgstr ""
-"Abilitare l'uso di un server di media remoti (se fornito dal server).\n"
-"I server remoti offrono un modo significativamente più veloce per scaricare "
-"i media\n"
-"(ad es. le immagini) quando ci si connette al server."
+"Abilita l'utilizzo di un server di materiale remoto (se fornito dal server)."
+"\n"
+"I server remoti offrono un modo significativamente più veloce di "
+"scaricamento\n"
+"del materiale (ad es. le immagini) quando ci si collega al server."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1971,10 +1962,10 @@ msgid ""
 "to IPv6 clients, depending on system configuration.\n"
 "Ignored if bind_address is set."
 msgstr ""
-"Abilita/disabilita l'esecuzione di un server IPv6. Un server IPv6 potrebbe "
-"essere ristretto\n"
-"a client IPv6, dipendentemente dalla configurazione del sistema.\n"
-"Viene ignorata se si imposta bind_address."
+"Abilita/disabilita l'esecuzione di un server IPv6. Un server IPv6 può "
+"essere\n"
+"limitato ai client IPv6, dipendentemente dalla configurazione del sistema.\n"
+"Ignorata se bind_address è impostato."
 
 #: src/settings_translation_file.cpp
 msgid "Enables animation of inventory items."
@@ -2025,8 +2016,8 @@ msgid ""
 "Experimental option, might cause visible spaces between blocks\n"
 "when set to higher number than 0."
 msgstr ""
-"Opzione sperimentale, potrebbe causare spazi visibili tra i blocchi\n"
-"quando impostata su valori maggiori di 0."
+"Opzione sperimentale, può determinare la visibilità di spazi tra i blocchi\n"
+"quando impostato ad un numero maggiore di 0."
 
 #: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
@@ -2169,9 +2160,8 @@ msgid "Font size"
 msgstr "Dimensione del font"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Format of screenshots."
-msgstr "Percorso dove salvare le istantanee."
+msgstr "Formato delle istantanee."
 
 #: src/settings_translation_file.cpp
 msgid "Forward key"
@@ -2240,7 +2230,6 @@ msgid "Generate normalmaps"
 msgstr "Generare le normalmap"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
@@ -2327,7 +2316,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "How many blocks are flying in the wire simultaneously for the whole server."
-msgstr "Quanti blocchi volano nel cavo simultaneamente per l'intero server."
+msgstr "Quanti blocchi vengono inviati simultaneamente per l'intero server."
 
 #: src/settings_translation_file.cpp
 msgid "How many blocks are flying in the wire simultaneously per client."
@@ -2838,7 +2827,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
-msgstr "Tasto 'usare' per arrampicarsi/scendere"
+msgstr "Tasto \"Usare\" per arrampicarsi/scendere"
 
 #: src/settings_translation_file.cpp
 msgid "Language"
@@ -2882,11 +2871,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between ABM execution cycles"
-msgstr ""
+msgstr "Intervallo di tempo tra l'esecuzione dei cicli ABM"
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between NodeTimer execution cycles"
-msgstr ""
+msgstr "Intervallo di tempo tra l'esecuzione dei cicli del Temporizzatore Nodo"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2940,7 +2929,7 @@ msgstr "Uniformazione della fluidità del liquido"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid loop max"
-msgstr "Max. giri del liquido"
+msgstr "Iterazioni massime nel giro di trasformazione del liquido"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid queue purge time"
@@ -2948,7 +2937,7 @@ msgstr "Tempo di svuotamento della coda del liquido"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid sink"
-msgstr "Discesa del liquido"
+msgstr "Velocità di caduta del liquido"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update interval in seconds."
@@ -2986,7 +2975,6 @@ msgid "Map directory"
 msgstr "Cartella della mappa"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen Valleys.\n"
 "'altitude_chill' makes higher elevations colder, which may cause biome "
@@ -3000,16 +2988,22 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
-"Attributi di generazione della mappa specifici per Generatore mappa v. 6.\n"
-"Quando i biomi di neve sono abilitati l'impostazione jungles è ignorata e le "
-"giungle sono abilitate.\n"
+"Attributi di generazione della mappa specifici per il Generatore mappa valli."
+"\n"
+"'altitude_chill' rende più fredde le altitudini più elevate, il che potrebbe "
+"causare problemi di bioma.\n"
+"'humid_rivers' modifica l'umidità attorno ai fiumi e in aree dove l'acqua "
+"tenderebbe a stagnare,\n"
+"potrebbe interferire con i biomi finemente regolati.\n"
+"Le impostazioni predefinite impostate nel motore sono: altitude_chill, "
+"humid_rivers\n"
+"La stringa delle impostazioni modifica i valori predefiniti del motore.\n"
 "Le impostazioni che non sono specificate nella stringa mantengono i valori "
 "predefiniti.\n"
 "Le impostazioni che iniziano con \"no\" sono usate per disabilitarle "
 "esplicitamente."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
 "Occasional lakes and hills can be added to the flat world.\n"
@@ -3020,14 +3014,16 @@ msgid ""
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 "Attributi di generazione della mappa specifici per Generatore mappa piatto.\n"
-"Al mondo piatto sono aggiunte colline e laghi occasionali.\n"
+"Laghi e colline occasionali possono essere aggiunti al mondo piatto.\n"
+"Le impostazioni predefinite impostate nel motore sono: nessuna\n"
+"La stringa delle impostazioni modifica le impostazioni predefinite del "
+"motore.\n"
 "Le impostazioni che non sono specificate nella stringa mantengono i valori "
 "predefiniti.\n"
 "Le impostazioni che iniziano con \"no\" sono usate per disabilitarle "
 "esplicitamente."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "When snowbiomes are enabled jungles are automatically enabled, the 'jungles' "
@@ -3039,15 +3035,17 @@ msgid ""
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 "Attributi di generazione della mappa specifici per Generatore mappa v. 6.\n"
-"Quando i biomi di neve sono abilitati l'impostazione jungles è ignorata e le "
-"giungle sono abilitate.\n"
+"Quando i biomi di neve sono abilitati le giungle sono abilitate "
+"automaticamente, l'impostazione 'jungles' è ignorata.\n"
+"Le impostazioni predefinite impostate nel motore sono: biomeblend, mudflow\n"
+"La stringa delle impostazioni modifica le impostazioni predefinite del "
+"motore.\n"
 "Le impostazioni che non sono specificate nella stringa mantengono i valori "
 "predefiniti.\n"
 "Le impostazioni che iniziano con \"no\" sono usate per disabilitarle "
 "esplicitamente."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
 "The 'ridges' flag controls the rivers.\n"
@@ -3058,8 +3056,10 @@ msgid ""
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 "Attributi di generazione della mappa specifici per Generatore mappa v. 6.\n"
-"Quando i biomi di neve sono abilitati l'impostazione jungles è ignorata e le "
-"giungle sono abilitate.\n"
+"L'impostazione 'ridges' controlla i fiumi.\n"
+"Le impostazioni predefinite impostate nel motore sono: mountains, ridges\n"
+"La stringa delle impostazioni modifica le impostazioni predefinite del "
+"motore.\n"
 "Le impostazioni che non sono specificate nella stringa mantengono i valori "
 "predefiniti.\n"
 "Le impostazioni che iniziano con \"no\" sono usate per disabilitarle "
@@ -3110,9 +3110,8 @@ msgid "Mapgen flat"
 msgstr "Generatore mappa piatto"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat cave width"
-msgstr "Profondità delle caverne grandi del Generatore mappa piatto"
+msgstr "Larghezza delle caverne del Generatore mappa piatto"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat cave1 noise parameters"
@@ -3164,9 +3163,8 @@ msgid "Mapgen fractal"
 msgstr "Generatore mappa frattale"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen fractal cave width"
-msgstr "Gen. mappa frattale, fetta w"
+msgstr "Gen. mappa frattale, larghezza caverne"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal cave1 noise parameters"
@@ -3234,9 +3232,8 @@ msgid "Mapgen v5"
 msgstr "Generatore mappa v. 5."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen v5 cave width"
-msgstr "Profondità delle caverne grandi del Generatore mappa piatto"
+msgstr "Gen. mappa v. 5, larghezza caverne"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 cave1 noise parameters"
@@ -3323,9 +3320,8 @@ msgid "Mapgen v7"
 msgstr "Gen. mappa v. 7, parametri del 'rumore'"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen v7 cave width"
-msgstr "Profondità delle caverne grandi del Generatore mappa piatto"
+msgstr "Gen. mappa v. 7, larghezza delle caverne"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 cave1 noise parameters"
@@ -3373,7 +3369,7 @@ msgstr "Gen. mappa v. 7, param. del 'rumore' di base del terreno"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 terrain persistation noise parameters"
-msgstr "Gen. mappa v. 7, param. del 'rumore' di continuità del terreno"
+msgstr "Gen. mappa v. 7, param. del \"rumore\" di continuità del terreno"
 
 #: src/settings_translation_file.cpp
 msgid "Massive cave depth"
@@ -3650,9 +3646,8 @@ msgid "Node highlighting"
 msgstr "Evidenziamento nodo"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "NodeTimer interval"
-msgstr "Intervallo del tempo di invio"
+msgstr "Intervallo del Temporizzatore nodo"
 
 #: src/settings_translation_file.cpp
 msgid "Noise parameters for biome API temperature, humidity and biome blend."
@@ -3699,7 +3694,7 @@ msgstr ""
 "Numero di blocchi extra che possono essere caricati da /clearobjects in una "
 "volta.\n"
 "Questo è un controbilanciare tra spesa di transazione sqlite e\n"
-"consumo di memoria (4096=100MB, come regola generale)."
+"consumo di memoria (4096 = 100MB, come regola generale)."
 
 #: src/settings_translation_file.cpp
 msgid "Number of parallax occlusion iterations."
@@ -3709,7 +3704,7 @@ msgstr "Numero di iterazioni di occlusione di parallasse."
 msgid "Overall bias of parallax occlusion effect, usually scale/2."
 msgstr ""
 "Deviazione complessiva dell'effetto di occlusione di parallasse, solitamente "
-"scala/2."
+"scala fratto 2."
 
 #: src/settings_translation_file.cpp
 msgid "Overall scale of parallax occlusion effect."
@@ -3793,7 +3788,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Privileges that players with basic_privs can grant"
-msgstr ""
+msgstr "Privilegi che possono essere assegnati dai giocatori con basic_privs"
 
 #: src/settings_translation_file.cpp
 msgid "Profiler data print interval. 0 = disable. Useful for developers."
@@ -3916,14 +3911,12 @@ msgid "Screenshot folder"
 msgstr "Cartella delle istantanee"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot format"
-msgstr "Cartella delle istantanee"
+msgstr "Formato delle istantanee"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot quality"
-msgstr "Istantanea"
+msgstr "Qualità dell'istantanea"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3931,6 +3924,9 @@ msgid ""
 "1 means worst quality; 100 means best quality.\n"
 "Use 0 for default quality."
 msgstr ""
+"Qialità dell'istantanea. Usata solo per il formato JPEG.\n"
+"1 significa qualità peggiore; 100 significa qualità migliore.\n"
+"Usate 0 per la qualità predefinita."
 
 #: src/settings_translation_file.cpp
 msgid "Security"
@@ -4036,7 +4032,7 @@ msgstr "Mostrare le info. di debug"
 
 #: src/settings_translation_file.cpp
 msgid "Show entity selection boxes"
-msgstr ""
+msgstr "Mostrare i riquadri di selezione delle entità"
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
@@ -4047,7 +4043,7 @@ msgid ""
 "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
 "nodes)."
 msgstr ""
-"Dimensione dei pezzi da generare immediatamente dal generatore mappa, "
+"Dimensione dei \"pezzi\" da generare immediatamente dal generatore mappa, "
 "espressa in blocchi mappa (16 nodi)."
 
 #: src/settings_translation_file.cpp
@@ -4115,7 +4111,7 @@ msgstr "Controllo stretto del protocollo"
 
 #: src/settings_translation_file.cpp
 msgid "Support older servers"
-msgstr ""
+msgstr "Supporto dei server più vecchi"
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -4215,7 +4211,7 @@ msgstr "Questo font sarà usato per certe lingue."
 
 #: src/settings_translation_file.cpp
 msgid "Time in between active block management cycles"
-msgstr ""
+msgstr "Tempo tra i cicli di gestione del 'blocco'"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4557,6 +4553,12 @@ msgid ""
 "Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
 "Disabling this option will protect your password better."
 msgstr ""
+"Se supportare o meno i server più vecchi precedenti al protocollo versione "
+"25.\n"
+"Abilitatela se volete connettervi a server 0.4.12 e precedenti.\n"
+"I server a partire da 0.4.13 funzioneranno, i server 0.4.12-dev potrebbero "
+"funzionare.\n"
+"Disabilitare questa opzione proteggerà meglio la vostra password."
 
 #: src/settings_translation_file.cpp
 msgid "Width component of the initial window size."
