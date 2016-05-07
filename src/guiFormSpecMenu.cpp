@@ -240,6 +240,15 @@ GUITable* GUIFormSpecMenu::getTable(const std::string &tablename)
 	return 0;
 }
 
+std::vector<std::string>* GUIFormSpecMenu::getDropDownValues(const std::string &name)
+{
+	for (u32 i = 0; i < m_dropdowns.size(); ++i) {
+		if (name == m_dropdowns[i].first.fname)
+			return &m_dropdowns[i].second;
+	}
+	return NULL;
+}
+
 static std::vector<std::string> split(const std::string &s, char delim)
 {
 	std::vector<std::string> tokens;
@@ -413,7 +422,7 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 		if (selected == "true")
 			fselected = true;
 
-		std::wstring wlabel = utf8_to_wide(label);
+		std::wstring wlabel = utf8_to_wide(unescape_string(label));
 
 		core::rect<s32> rect = core::rect<s32>(
 				pos.X, pos.Y + ((imgsize.Y/2) - m_btn_height),
@@ -609,7 +618,7 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
 		if(!data->explicit_size)
 			warningstream<<"invalid use of button without a size[] element"<<std::endl;
 
-		std::wstring wlabel = utf8_to_wide(label);
+		std::wstring wlabel = utf8_to_wide(unescape_string(label));
 
 		FieldSpec spec(
 			name,
@@ -743,7 +752,7 @@ void GUIFormSpecMenu::parseTable(parserData* data,std::string element)
 		spec.ftype = f_Table;
 
 		for (unsigned int i = 0; i < items.size(); ++i) {
-			items[i] = unescape_string(unescape_enriched(items[i]));
+			items[i] = unescape_enriched(unescape_string(items[i]));
 		}
 
 		//now really show table
@@ -815,7 +824,7 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element)
 		spec.ftype = f_Table;
 
 		for (unsigned int i = 0; i < items.size(); ++i) {
-			items[i] = unescape_string(unescape_enriched(items[i]));
+			items[i] = unescape_enriched(unescape_string(items[i]));
 		}
 
 		//now really show list
@@ -886,7 +895,7 @@ void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element)
 		}
 
 		for (unsigned int i=0; i < items.size(); i++) {
-			e->addItem(unescape_string(unescape_enriched(
+			e->addItem(unescape_enriched(unescape_string(
 				utf8_to_wide(items[i]))).c_str());
 		}
 
@@ -894,6 +903,14 @@ void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element)
 			e->setSelected(stoi(str_initial_selection.c_str())-1);
 
 		m_fields.push_back(spec);
+
+		m_dropdowns.push_back(std::pair<FieldSpec,
+			std::vector<std::string> >(spec, std::vector<std::string>()));
+		std::vector<std::string> &values = m_dropdowns.back().second;
+		for (unsigned int i = 0; i < items.size(); i++) {
+			values.push_back(unescape_string(items[i]));
+		}
+
 		return;
 	}
 	errorstream << "Invalid dropdown element(" << parts.size() << "): '"
@@ -928,7 +945,7 @@ void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element)
 
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
-		std::wstring wlabel = utf8_to_wide(label);
+		std::wstring wlabel = utf8_to_wide(unescape_string(label));
 
 		FieldSpec spec(
 			name,
@@ -992,12 +1009,12 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 		default_val = m_form_src->resolveText(default_val);
 
 
-	std::wstring wlabel = utf8_to_wide(label);
+	std::wstring wlabel = utf8_to_wide(unescape_string(label));
 
 	FieldSpec spec(
 		name,
 		wlabel,
-		utf8_to_wide(default_val),
+		utf8_to_wide(unescape_string(default_val)),
 		258+m_fields.size()
 	);
 
@@ -1088,12 +1105,12 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 		default_val = m_form_src->resolveText(default_val);
 
 
-	std::wstring wlabel = utf8_to_wide(label);
+	std::wstring wlabel = utf8_to_wide(unescape_string(label));
 
 	FieldSpec spec(
 		name,
 		wlabel,
-		utf8_to_wide(default_val),
+		utf8_to_wide(unescape_string(default_val)),
 		258+m_fields.size()
 	);
 
@@ -1201,7 +1218,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data,std::string element)
 			// in the integer cases: 0.4 is not exactly
 			// representable in binary floating point.
 			s32 posy = pos.Y + ((float)i) * spacing.Y * 2.0 / 5.0;
-			std::wstring wlabel = utf8_to_wide(lines[i]);
+			std::wstring wlabel = utf8_to_wide(unescape_string(lines[i]));
 			core::rect<s32> rect = core::rect<s32>(
 				pos.X, posy - m_btn_height,
 				pos.X + m_font->getDimension(wlabel.c_str()).Width,
@@ -1233,8 +1250,8 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element)
 		((parts.size() > 2) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
 		std::vector<std::string> v_pos = split(parts[0],',');
-		std::wstring text = unescape_string(
-			unescape_enriched(utf8_to_wide(parts[1])));
+		std::wstring text = unescape_enriched(
+			unescape_string(utf8_to_wide(parts[1])));
 
 		MY_CHECKPOS("vertlabel",1);
 
@@ -1322,7 +1339,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 		image_name = unescape_string(image_name);
 		pressed_image_name = unescape_string(pressed_image_name);
 
-		std::wstring wlabel = utf8_to_wide(label);
+		std::wstring wlabel = utf8_to_wide(unescape_string(label));
 
 		FieldSpec spec(
 			name,
@@ -1420,7 +1437,7 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element)
 		e->setNotClipped(true);
 
 		for (unsigned int i = 0; i < buttons.size(); i++) {
-			e->addTab(unescape_string(unescape_enriched(
+			e->addTab(unescape_enriched(unescape_string(
 				utf8_to_wide(buttons[i]))).c_str(), -1);
 		}
 
@@ -1455,6 +1472,9 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 		std::string item_name = parts[2];
 		std::string name = parts[3];
 		std::string label = parts[4];
+
+		label = unescape_string(label);
+		item_name = unescape_string(item_name);
 
 		MY_CHECKPOS("itemimagebutton",0);
 		MY_CHECKGEOM("itemimagebutton",1);
@@ -1594,14 +1614,14 @@ void GUIFormSpecMenu::parseTooltip(parserData* data, std::string element)
 	std::vector<std::string> parts = split(element,';');
 	if (parts.size() == 2) {
 		std::string name = parts[0];
-		m_tooltips[name] = TooltipSpec(parts[1],
+		m_tooltips[name] = TooltipSpec(unescape_string(parts[1]),
 			m_default_tooltip_bgcolor, m_default_tooltip_color);
 		return;
 	} else if (parts.size() == 4) {
 		std::string name = parts[0];
 		video::SColor tmp_color1, tmp_color2;
 		if ( parseColorString(parts[2], tmp_color1, false) && parseColorString(parts[3], tmp_color2, false) ) {
-			m_tooltips[name] = TooltipSpec(parts[1],
+			m_tooltips[name] = TooltipSpec(unescape_string(parts[1]),
 				tmp_color1, tmp_color2);
 			return;
 		}
@@ -2725,8 +2745,12 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 					}
 					s32 selected = e->getSelected();
 					if (selected >= 0) {
-						fields[name] =
-							wide_to_utf8(e->getItem(selected));
+						std::vector<std::string> *dropdown_values =
+							getDropDownValues(s.fname);
+						if (dropdown_values && 0 <= selected
+								&& selected < (s32)dropdown_values->size()) {
+							fields[name] = (*dropdown_values)[selected];
+						}
 					}
 				}
 				else if (s.ftype == f_TabHeader) {

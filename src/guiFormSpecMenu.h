@@ -192,14 +192,6 @@ class GUIFormSpecMenu : public GUIModalMenu
 		bool scale;
 	};
 
-	/* The responsibility of unescaping the strings has been shifted
-	 * from the formspec parsing methods to the draw methods.
-	 * There still are a few exceptions:
-	 *  - Vertical label, because it modifies the string by inserting
-	 *    '\n' between each character,
-	 *  - Tab header, because it gives the string immediately to
-	 *    Irrlicht and we can't unescape it later.
-	 */
 	struct FieldSpec
 	{
 		FieldSpec()
@@ -210,8 +202,8 @@ class GUIFormSpecMenu : public GUIModalMenu
 			fname(name),
 			fid(id)
 		{
-			flabel = unescape_string(unescape_enriched(label));
-			fdefault = unescape_string(unescape_enriched(default_text));
+			flabel = unescape_enriched(label);
+			fdefault = unescape_enriched(default_text);
 			send = false;
 			ftype = f_Unknown;
 			is_exit = false;
@@ -247,7 +239,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 			bgcolor(a_bgcolor),
 			color(a_color)
 		{
-			tooltip = unescape_string(unescape_enriched(utf8_to_wide(a_tooltip)));
+			tooltip = unescape_enriched(utf8_to_wide(a_tooltip));
 		}
 		std::wstring tooltip;
 		irr::video::SColor bgcolor;
@@ -264,7 +256,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 			rect(a_rect),
 			parent_button(NULL)
 		{
-			text = unescape_string(unescape_enriched(a_text));
+			text = unescape_enriched(a_text);
 		}
 		StaticTextSpec(const std::wstring &a_text,
 				const core::rect<s32> &a_rect,
@@ -272,7 +264,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 			rect(a_rect),
 			parent_button(a_parent_button)
 		{
-			text = unescape_string(unescape_enriched(a_text));
+			text = unescape_enriched(a_text);
 		}
 		std::wstring text;
 		core::rect<s32> rect;
@@ -357,6 +349,7 @@ public:
 	bool pausesGame() { return doPause; }
 
 	GUITable* getTable(const std::string &tablename);
+	std::vector<std::string>* getDropDownValues(const std::string &name);
 
 #ifdef __ANDROID__
 	bool getAndroidUIInput();
@@ -395,6 +388,7 @@ protected:
 	std::vector<std::pair<FieldSpec,gui::IGUICheckBox*> > m_checkboxes;
 	std::map<std::string, TooltipSpec> m_tooltips;
 	std::vector<std::pair<FieldSpec,gui::IGUIScrollBar*> > m_scrollbars;
+	std::vector<std::pair<FieldSpec, std::vector<std::string> > > m_dropdowns;
 
 	ItemSpec *m_selected_item;
 	f32 m_timer1;
