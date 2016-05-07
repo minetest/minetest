@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-05 16:13+0200\n"
-"PO-Revision-Date: 2016-05-07 00:18+0000\n"
+"PO-Revision-Date: 2016-05-07 16:10+0000\n"
 "Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese "
 "<https://hosted.weblate.org/projects/minetest/minetest/ja/>\n"
@@ -2251,7 +2251,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
-msgstr ""
+msgstr "全画面表示"
 
 #: src/settings_translation_file.cpp
 msgid "Full screen BPP"
@@ -3674,11 +3674,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
-msgstr ""
+msgstr "画面高"
 
 #: src/settings_translation_file.cpp
 msgid "Screen width"
-msgstr ""
+msgstr "画面幅"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot"
@@ -3719,11 +3719,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Selection box color"
-msgstr ""
+msgstr "ノード選択線の色"
 
 #: src/settings_translation_file.cpp
 msgid "Selection box width"
-msgstr ""
+msgstr "ノード選択線の幅"
 
 #: src/settings_translation_file.cpp
 msgid "Server / Singleplayer"
@@ -4072,7 +4072,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
-msgstr ""
+msgstr "ビデオドライバ"
 
 #: src/settings_translation_file.cpp
 msgid "View bobbing"
@@ -4118,11 +4118,11 @@ msgstr "テクスチャを設定中..."
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
-msgstr ""
+msgstr "水位"
 
 #: src/settings_translation_file.cpp
 msgid "Water surface level of the world."
-msgstr ""
+msgstr "ワールドの水面の高さです。"
 
 #: src/settings_translation_file.cpp
 msgid "Waving Nodes"
