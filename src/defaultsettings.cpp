@@ -349,7 +349,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("max_simultaneous_block_sends_per_client", "3");
 	settings->setDefault("emergequeue_limit_diskonly", "8");
 	settings->setDefault("emergequeue_limit_generate", "8");
-	settings->setDefault("max_block_generate_distance", "2");
+	settings->setDefault("max_block_generate_distance", "3");
 	settings->setDefault("enable_3d_clouds", "false");
 	settings->setDefault("fps_max", "30");
 	settings->setDefault("pause_fps_max", "10");
