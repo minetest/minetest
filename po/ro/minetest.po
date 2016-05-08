@@ -783,7 +783,7 @@ msgid ""
 "Check debug.txt for details."
 msgstr ""
 "\n"
-"Verifică deug.txt pentru detalii."
+"Verifică debug.txt pentru detalii."
 
 #: src/game.cpp
 #, fuzzy
@@ -809,7 +809,7 @@ msgstr "Se creează clientul..."
 #: src/game.cpp
 #, fuzzy
 msgid "Creating server..."
-msgstr "Se crează serverul..."
+msgstr "Se creează serverul..."
 
 #: src/game.cpp
 msgid ""
