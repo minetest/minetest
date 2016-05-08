@@ -2515,9 +2515,11 @@ void Server::sendDetachedInventories(u16 peer_id)
 void Server::DiePlayer(u16 peer_id)
 {
 	DSTACK(FUNCTION_NAME);
-
 	PlayerSAO *playersao = getPlayerSAO(peer_id);
-	assert(playersao);
+	// In some rare case, if the player is disconnected
+	// while Lua call l_punch, for example, this can be NULL
+	if (!playersao)
+		return;
 
 	infostream << "Server::DiePlayer(): Player "
 			<< playersao->getPlayer()->getName()
