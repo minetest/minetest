@@ -554,9 +554,9 @@ node definition:
     ^ The rotation of the node is stored in param2. Furnaces and chests are
       rotated this way. Can be made by using minetest.dir_to_facedir().
       Values range 0 - 23
-      facedir modulo 4 = axisdir
+      facedir / 4 = axis direction:
       0 = y+    1 = z+    2 = z-    3 = x+    4 = x-    5 = y-
-      facedir's two less significant bits are rotation around the axis
+      facedir modulo 4 = rotation around that axis
     paramtype2 == "leveled"
     paramtype2 == "degrotate"
     ^ The rotation of this node is stored in param2. Plants are rotated this way.
