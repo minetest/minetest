@@ -72,7 +72,20 @@ public:
 	void carveRoute(v3f vec, float f, bool randomize_xz);
 };
 
-class CaveV6 {
+/*
+	CavesV6 is the original version of caves used with Mapgen V6.
+
+	Though it uses the same fundamental algorithm as CavesRandomWalk, it is made
+	separate to preserve the exact sequence of PseudoRandom calls - any change
+	to this ordering results in the output being radically different.
+	Because caves in Mapgen V6 are responsible for a large portion of the basic
+	terrain shape, modifying this will break our contract of reverse
+	compatibility for a 'stable' mapgen such as V6.
+
+	tl;dr,
+	*** DO NOT TOUCH THIS CLASS UNLESS YOU KNOW WHAT YOU ARE DOING ***
+*/
+class CavesV6 {
 public:
 	MapgenV6 *mg;
 	MMVManip *vm;
@@ -86,7 +99,6 @@ public:
 
 	bool large_cave;
 	bool large_cave_is_flat;
-	bool flooded;
 
 	s16 max_stone_y;
 	v3s16 node_min;
@@ -109,8 +121,7 @@ public:
 
 	int water_level;
 
-	CaveV6() {}
-	CaveV6(MapgenV6 *mg, PseudoRandom *ps, PseudoRandom *ps2, bool large_cave);
+	CavesV6(MapgenV6 *mg, PseudoRandom *ps, PseudoRandom *ps2, bool large_cave);
 	void makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height);
 	void makeTunnel(bool dirswitch);
 	void carveRoute(v3f vec, float f, bool randomize_xz, bool tunnel_above_ground);
