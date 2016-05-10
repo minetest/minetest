@@ -71,6 +71,9 @@ public:
 	void makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height);
 	void makeTunnel(bool dirswitch);
 	void carveRoute(v3f vec, float f, bool randomize_xz);
+
+private:
+	inline bool isPosAboveSurface(v3s16 p);
 };
 
 /*
@@ -140,6 +143,8 @@ public:
 private:
 	void makeTunnel(bool dirswitch);
 	void carveRoute(v3f vec, float f, bool randomize_xz, bool tunnel_above_ground);
+
+	inline s16 getSurfaceFromHeightmap(v3s16 p);
 };
 
 #endif

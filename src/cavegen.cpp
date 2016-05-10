@@ -147,31 +147,10 @@ void CavesRandomWalk::makeTunnel(bool dirswitch)
 
 	// Do not make caves that are above ground.
 	// It is only necessary to check the startpoint and endpoint.
-	v3s16 orpi(orp.X, orp.Y, orp.Z);
-	v3s16 veci(vec.X, vec.Y, vec.Z);
-	v3s16 p;
-
-	p = orpi + veci + of + rs / 2;
-	if (p.Z >= node_min.Z && p.Z <= node_max.Z &&
-			p.X >= node_min.X && p.X <= node_max.X) {
-		u32 index = (p.Z - node_min.Z) * ystride + (p.X - node_min.X);
-		s16 h = mg->heightmap[index];
-		if (h < p.Y)
-			return;
-	} else if (p.Y > water_level) {
-		return; // If it's not in our heightmap, use a simple heuristic
-	}
-
-	p = orpi + of + rs / 2;
-	if (p.Z >= node_min.Z && p.Z <= node_max.Z &&
-			p.X >= node_min.X && p.X <= node_max.X) {
-		u32 index = (p.Z - node_min.Z) * ystride + (p.X - node_min.X);
-		s16 h = mg->heightmap[index];
-		if (h < p.Y)
-			return;
-	} else if (p.Y > water_level) {
+	v3s16 p1 = v3s16(orp.X, orp.Y, orp.Z) + of + rs / 2;
+	v3s16 p2 = v3s16(vec.X, vec.Y, vec.Z) + p1;
+	if (isPosAboveSurface(p1) || isPosAboveSurface(p2))
 		return;
-	}
 
 	vec += main_direction;
 
@@ -271,6 +250,22 @@ void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
 			}
 		}
 	}
+}
+
+
+inline bool CavesRandomWalk::isPosAboveSurface(v3s16 p)
+{
+	if (heightmap != NULL &&
+			p.Z >= node_min.Z && p.Z <= node_max.Z &&
+			p.X >= node_min.X && p.X <= node_max.X) {
+		u32 index = (p.Z - node_min.Z) * ystride + (p.X - node_min.X);
+		if (heightmap[index] < p.Y)
+			return true;
+	} else if (p.Y > water_level) {
+		return true;
+	}
+
+	return false;
 }
 
 
@@ -448,39 +443,18 @@ void CavesV6::makeTunnel(bool dirswitch)
 		);
 	}
 
-	// Do not make caves that are entirely above ground, to fix
-	// shadow bugs caused by overgenerated large caves.
+	// Do not make caves that are entirely above ground, to fix shadow bugs
+	// caused by overgenerated large caves.
 	// It is only necessary to check the startpoint and endpoint.
-	v3s16 orpi(orp.X, orp.Y, orp.Z);
-	v3s16 veci(vec.X, vec.Y, vec.Z);
-	s16 h1;
-	s16 h2;
+	v3s16 p1 = v3s16(orp.X, orp.Y, orp.Z) + of + rs / 2;
+	v3s16 p2 = v3s16(vec.X, vec.Y, vec.Z) + p1;
 
-	v3s16 p1 = orpi + veci + of + rs / 2;
-	if (p1.Z >= node_min.Z && p1.Z <= node_max.Z &&
-			p1.X >= node_min.X && p1.X <= node_max.X) {
-		u32 index1 = (p1.Z - node_min.Z) * ystride +
-			(p1.X - node_min.X);
-		h1 = heightmap[index1];
-	} else {
-		h1 = water_level; // If not in heightmap
-	}
-
-	v3s16 p2 = orpi + of + rs / 2;
-	if (p2.Z >= node_min.Z && p2.Z <= node_max.Z &&
-			p2.X >= node_min.X && p2.X <= node_max.X) {
-		u32 index2 = (p2.Z - node_min.Z) * ystride +
-			(p2.X - node_min.X);
-		h2 = heightmap[index2];
-	} else {
-		h2 = water_level;
-	}
-
-	// If startpoint and endpoint are above ground,
-	// disable placing of nodes in carveRoute while
-	// still running all pseudorandom calls to ensure
-	// caves consistent with existing worlds.
-	bool tunnel_above_ground = p1.Y > h1 && p2.Y > h2;
+	// If startpoint and endpoint are above ground, disable placement of nodes
+	// in carveRoute while still running all PseudoRandom calls to ensure caves
+	// are consistent with existing worlds.
+	bool tunnel_above_ground =
+		p1.Y > getSurfaceFromHeightmap(p1) &&
+		p2.Y > getSurfaceFromHeightmap(p2);
 
 	vec += main_direction;
 
@@ -586,5 +560,18 @@ void CavesV6::carveRoute(v3f vec, float f, bool randomize_xz,
 				}
 			}
 		}
+	}
+}
+
+
+inline s16 CavesV6::getSurfaceFromHeightmap(v3s16 p)
+{
+	if (heightmap != NULL &&
+			p.Z >= node_min.Z && p.Z <= node_max.Z &&
+			p.X >= node_min.X && p.X <= node_max.X) {
+		u32 index = (p.Z - node_min.Z) * ystride + (p.X - node_min.X);
+		return heightmap[index];
+	} else {
+		return water_level;
 	}
 }
