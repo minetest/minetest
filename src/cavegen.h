@@ -21,19 +21,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CAVEGEN_HEADER
 
 #define VMANIP_FLAG_CAVE VOXELFLAG_CHECKED1
-#define MGV5_LAVA_DEPTH -256
-#define MGV7_LAVA_DEPTH -256
+#define DEFAULT_LAVA_DEPTH (-256)
 
-class MapgenV5;
 class MapgenV6;
-class MapgenV7;
 
-class CaveV5 {
+class CavesRandomWalk {
 public:
 	Mapgen *mg;
 	MMVManip *vm;
 	INodeDefManager *ndef;
 
+	// variables
+	int lava_depth;
 	NoiseParams *np_caveliquids;
 
 	s16 min_tunnel_diameter;
@@ -67,8 +66,7 @@ public:
 	int water_level;
 	int ystride;
 
-	CaveV5() {}
-	CaveV5(Mapgen *mg, PseudoRandom *ps);
+	CavesRandomWalk(Mapgen *mg, PseudoRandom *ps);
 	void makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height);
 	void makeTunnel(bool dirswitch);
 	void carveRoute(v3f vec, float f, bool randomize_xz);
@@ -116,51 +114,6 @@ public:
 	void makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height);
 	void makeTunnel(bool dirswitch);
 	void carveRoute(v3f vec, float f, bool randomize_xz, bool tunnel_above_ground);
-};
-
-class CaveV7 {
-public:
-	MapgenV7 *mg;
-	MMVManip *vm;
-	INodeDefManager *ndef;
-
-	NoiseParams *np_caveliquids;
-
-	s16 min_tunnel_diameter;
-	s16 max_tunnel_diameter;
-	u16 tunnel_routepoints;
-	int dswitchint;
-	int part_max_length_rs;
-
-	bool large_cave_is_flat;
-	bool flooded;
-
-	s16 max_stone_y;
-	v3s16 node_min;
-	v3s16 node_max;
-
-	v3f orp;  // starting point, relative to caved space
-	v3s16 of; // absolute coordinates of caved space
-	v3s16 ar; // allowed route area
-	s16 rs;   // tunnel radius size
-	v3f main_direction;
-
-	s16 route_y_min;
-	s16 route_y_max;
-
-	PseudoRandom *ps;
-
-	content_t c_water_source;
-	content_t c_lava_source;
-	content_t c_ice;
-
-	int water_level;
-
-	CaveV7() {}
-	CaveV7(MapgenV7 *mg, PseudoRandom *ps);
-	void makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height);
-	void makeTunnel(bool dirswitch);
-	void carveRoute(v3f vec, float f, bool randomize_xz);
 };
 
 #endif

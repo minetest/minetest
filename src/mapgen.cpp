@@ -599,7 +599,7 @@ void MapgenBasic::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 	PseudoRandom ps(blockseed + 21343);
 	u32 bruises_count = ps.range(0, 2);
 	for (u32 i = 0; i < bruises_count; i++) {
-		CaveV5 cave(this, &ps);       ////caves version varies  ---- todo- fix this!
+		CavesRandomWalk cave(this, &ps);
 		cave.makeCave(node_min, node_max, max_stone_y);
 	}
 }
