@@ -277,10 +277,12 @@ void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
 }
 
 
-///////////////////////////////////////// Caves V6
+////
+//// CavesV6
+////
 
-
-CaveV6::CaveV6(MapgenV6 *mg, PseudoRandom *ps, PseudoRandom *ps2, bool is_large_cave)
+CavesV6::CavesV6(MapgenV6 *mg, PseudoRandom *ps, PseudoRandom *ps2,
+	bool is_large_cave)
 {
 	this->mg             = mg;
 	this->vm             = mg->vm;
@@ -295,23 +297,22 @@ CaveV6::CaveV6(MapgenV6 *mg, PseudoRandom *ps, PseudoRandom *ps2, bool is_large_
 	min_tunnel_diameter = 2;
 	max_tunnel_diameter = ps->range(2, 6);
 	dswitchint          = ps->range(1, 14);
-	flooded             = true;
 
 	if (large_cave) {
-		part_max_length_rs  = ps->range(2,4);
-		tunnel_routepoints  = ps->range(5, ps->range(15,30));
+		part_max_length_rs  = ps->range(2, 4);
+		tunnel_routepoints  = ps->range(5, ps->range(15, 30));
 		min_tunnel_diameter = 5;
-		max_tunnel_diameter = ps->range(7, ps->range(8,24));
+		max_tunnel_diameter = ps->range(7, ps->range(8, 24));
 	} else {
-		part_max_length_rs = ps->range(2,9);
-		tunnel_routepoints = ps->range(10, ps->range(15,30));
+		part_max_length_rs = ps->range(2, 9);
+		tunnel_routepoints = ps->range(10, ps->range(15, 30));
 	}
 
-	large_cave_is_flat = (ps->range(0,1) == 0);
+	large_cave_is_flat = (ps->range(0, 1) == 0);
 }
 
 
-void CaveV6::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height)
+void CavesV6::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height)
 {
 	node_min = nmin;
 	node_max = nmax;
@@ -328,8 +329,8 @@ void CaveV6::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height)
 	const s16 max_spread_amount = MAP_BLOCKSIZE;
 	s16 insure = 10;
 	s16 more = MYMAX(max_spread_amount - max_tunnel_diameter / 2 - insure, 1);
-	ar += v3s16(1,0,1) * more * 2;
-	of -= v3s16(1,0,1) * more;
+	ar += v3s16(1, 0, 1) * more * 2;
+	of -= v3s16(1, 0, 1) * more;
 
 	route_y_min = 0;
 	// Allow half a diameter + 7 over stone surface
@@ -339,20 +340,20 @@ void CaveV6::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height)
 	route_y_max = rangelim(route_y_max, 0, ar.Y - 1);
 
 	if (large_cave) {
-		s16 min = 0;
+		s16 minpos = 0;
 		if (node_min.Y < water_level && node_max.Y > water_level) {
-			min = water_level - max_tunnel_diameter/3 - of.Y;
-			route_y_max = water_level + max_tunnel_diameter/3 - of.Y;
+			minpos = water_level - max_tunnel_diameter / 3 - of.Y;
+			route_y_max = water_level + max_tunnel_diameter / 3 - of.Y;
 		}
-		route_y_min = ps->range(min, min + max_tunnel_diameter);
+		route_y_min = ps->range(minpos, minpos + max_tunnel_diameter);
 		route_y_min = rangelim(route_y_min, 0, route_y_max);
 	}
 
 	s16 route_start_y_min = route_y_min;
 	s16 route_start_y_max = route_y_max;
 
-	route_start_y_min = rangelim(route_start_y_min, 0, ar.Y-1);
-	route_start_y_max = rangelim(route_start_y_max, route_start_y_min, ar.Y-1);
+	route_start_y_min = rangelim(route_start_y_min, 0, ar.Y - 1);
+	route_start_y_max = rangelim(route_start_y_max, route_start_y_min, ar.Y - 1);
 
 	// Randomize starting position
 	orp = v3f(
@@ -379,7 +380,7 @@ void CaveV6::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height)
 }
 
 
-void CaveV6::makeTunnel(bool dirswitch)
+void CavesV6::makeTunnel(bool dirswitch)
 {
 	if (dirswitch && !large_cave) {
 		main_direction = v3f(
@@ -496,7 +497,8 @@ void CaveV6::makeTunnel(bool dirswitch)
 }
 
 
-void CaveV6::carveRoute(v3f vec, float f, bool randomize_xz, bool tunnel_above_ground)
+void CavesV6::carveRoute(v3f vec, float f, bool randomize_xz,
+	bool tunnel_above_ground)
 {
 	MapNode airnode(CONTENT_AIR);
 	MapNode waternode(c_water_source);
@@ -547,11 +549,10 @@ void CaveV6::carveRoute(v3f vec, float f, bool randomize_xz, bool tunnel_above_g
 					int full_ymin = node_min.Y - MAP_BLOCKSIZE;
 					int full_ymax = node_max.Y + MAP_BLOCKSIZE;
 
-					if (flooded && full_ymin < water_level &&
-							full_ymax > water_level) {
+					if (full_ymin < water_level && full_ymax > water_level) {
 						vm->m_data[i] = (p.Y <= water_level) ?
 							waternode : airnode;
-					} else if (flooded && full_ymax < water_level) {
+					} else if (full_ymax < water_level) {
 						vm->m_data[i] = (p.Y < startp.Y - 2) ?
 							lavanode : airnode;
 					} else {
