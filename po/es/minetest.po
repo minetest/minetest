@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-05 16:13+0200\n"
 "PO-Revision-Date: 2016-05-10 17:34+0000\n"
-"Last-Translator: ShadowNinja <shadowninja@minetest.net>\n"
+"Last-Translator: Lucas Montenegro <lucasm52@rocketmail.com>\n"
 "Language-Team: Spanish "
 "<https://hosted.weblate.org/projects/minetest/minetest/es/>\n"
 "Language: es\n"
@@ -49,7 +49,7 @@ msgstr "Cargando..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr "Desajuste con la versión de protocolo. "
+msgstr "Desajuste con la versión del protocolo. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
@@ -513,7 +513,7 @@ msgstr "2x"
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
 msgid "3D Clouds"
-msgstr "Nubes en 3D"
+msgstr "Nubes 3D"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
