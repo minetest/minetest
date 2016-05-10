@@ -27,9 +27,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 NoiseParams nparams_caveliquids(0, 1, v3f(150.0, 150.0, 150.0), 776, 3, 0.6, 2.0);
 
-
-///////////////////////////////////////// Caves V5
-
+////
+//// CavesRandomWalk
+////
 
 CavesRandomWalk::CavesRandomWalk(Mapgen *mg, PseudoRandom *ps)
 {
@@ -262,13 +262,10 @@ void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
 				int full_ymin = node_min.Y - MAP_BLOCKSIZE;
 				int full_ymax = node_max.Y + MAP_BLOCKSIZE;
 
-				if (flooded && full_ymin < water_level &&
-						full_ymax > water_level)
-					vm->m_data[i] = (p.Y <= water_level) ?
-						waternode : airnode;
+				if (flooded && full_ymin < water_level && full_ymax > water_level)
+					vm->m_data[i] = (p.Y <= water_level) ? waternode : airnode;
 				else if (flooded && full_ymax < water_level)
-					vm->m_data[i] = (p.Y < startp.Y - 4) ?
-						liquidnode : airnode;
+					vm->m_data[i] = (p.Y < startp.Y - 4) ? liquidnode : airnode;
 				else
 					vm->m_data[i] = airnode;
 			}
@@ -281,23 +278,51 @@ void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
 //// CavesV6
 ////
 
-CavesV6::CavesV6(MapgenV6 *mg, PseudoRandom *ps, PseudoRandom *ps2,
-	bool is_large_cave)
+CavesV6::CavesV6(INodeDefManager *ndef, GenerateNotifier *gennotify,
+	int water_level, content_t water_source, content_t lava_source)
 {
-	this->mg             = mg;
-	this->vm             = mg->vm;
-	this->ndef           = mg->ndef;
-	this->water_level    = mg->water_level;
-	this->large_cave     = is_large_cave;
-	this->ps             = ps;
-	this->ps2            = ps2;
-	this->c_water_source = mg->c_water_source;
-	this->c_lava_source  = mg->c_lava_source;
+	assert(ndef);
 
+	this->ndef        = ndef;
+	this->gennotify   = gennotify;
+	this->water_level = water_level;
+
+	c_water_source = water_source;
+	if (c_water_source == CONTENT_IGNORE)
+		c_water_source = ndef->getId("mapgen_water_source");
+	if (c_water_source == CONTENT_IGNORE)
+		c_water_source = CONTENT_AIR;
+
+	c_lava_source = lava_source;
+	if (c_lava_source == CONTENT_IGNORE)
+		c_lava_source = ndef->getId("mapgen_lava_source");
+	if (c_lava_source == CONTENT_IGNORE)
+		c_lava_source = CONTENT_AIR;
+}
+
+
+void CavesV6::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
+	PseudoRandom *ps, PseudoRandom *ps2,
+	bool is_large_cave, int max_stone_height, s16 *heightmap)
+{
+	assert(vm);
+	assert(ps);
+	assert(ps2);
+
+	this->vm         = vm;
+	this->ps         = ps;
+	this->ps2        = ps2;
+	this->node_min   = nmin;
+	this->node_max   = nmax;
+	this->heightmap  = heightmap;
+	this->large_cave = is_large_cave;
+
+	this->ystride = nmax.X - nmin.X + 1;
+
+	// Set initial parameters from randomness
 	min_tunnel_diameter = 2;
 	max_tunnel_diameter = ps->range(2, 6);
 	dswitchint          = ps->range(1, 14);
-
 	if (large_cave) {
 		part_max_length_rs  = ps->range(2, 4);
 		tunnel_routepoints  = ps->range(5, ps->range(15, 30));
@@ -307,16 +332,8 @@ CavesV6::CavesV6(MapgenV6 *mg, PseudoRandom *ps, PseudoRandom *ps2,
 		part_max_length_rs = ps->range(2, 9);
 		tunnel_routepoints = ps->range(10, ps->range(15, 30));
 	}
-
 	large_cave_is_flat = (ps->range(0, 1) == 0);
-}
 
-
-void CavesV6::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height)
-{
-	node_min = nmin;
-	node_max = nmax;
-	max_stone_y = max_stone_height;
 	main_direction = v3f(0, 0, 0);
 
 	// Allowed route area size in nodes
@@ -334,7 +351,7 @@ void CavesV6::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height)
 
 	route_y_min = 0;
 	// Allow half a diameter + 7 over stone surface
-	route_y_max = -of.Y + max_stone_y + max_tunnel_diameter / 2 + 7;
+	route_y_max = -of.Y + max_stone_height + max_tunnel_diameter / 2 + 7;
 
 	// Limit maximum to area
 	route_y_max = rangelim(route_y_max, 0, ar.Y - 1);
@@ -363,20 +380,24 @@ void CavesV6::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height)
 	);
 
 	// Add generation notify begin event
-	v3s16 abs_pos(of.X + orp.X, of.Y + orp.Y, of.Z + orp.Z);
-	GenNotifyType notifytype = large_cave ?
-		GENNOTIFY_LARGECAVE_BEGIN : GENNOTIFY_CAVE_BEGIN;
-	mg->gennotify.addEvent(notifytype, abs_pos);
+	if (gennotify != NULL) {
+		v3s16 abs_pos(of.X + orp.X, of.Y + orp.Y, of.Z + orp.Z);
+		GenNotifyType notifytype = large_cave ?
+			GENNOTIFY_LARGECAVE_BEGIN : GENNOTIFY_CAVE_BEGIN;
+		gennotify->addEvent(notifytype, abs_pos);
+	}
 
 	// Generate some tunnel starting from orp
 	for (u16 j = 0; j < tunnel_routepoints; j++)
 		makeTunnel(j % dswitchint == 0);
 
 	// Add generation notify end event
-	abs_pos = v3s16(of.X + orp.X, of.Y + orp.Y, of.Z + orp.Z);
-	notifytype = large_cave ?
-		GENNOTIFY_LARGECAVE_END : GENNOTIFY_CAVE_END;
-	mg->gennotify.addEvent(notifytype, abs_pos);
+	if (gennotify != NULL) {
+		v3s16 abs_pos = v3s16(of.X + orp.X, of.Y + orp.Y, of.Z + orp.Z);
+		GenNotifyType notifytype = large_cave ?
+			GENNOTIFY_LARGECAVE_END : GENNOTIFY_CAVE_END;
+		gennotify->addEvent(notifytype, abs_pos);
+	}
 }
 
 
@@ -438,9 +459,9 @@ void CavesV6::makeTunnel(bool dirswitch)
 	v3s16 p1 = orpi + veci + of + rs / 2;
 	if (p1.Z >= node_min.Z && p1.Z <= node_max.Z &&
 			p1.X >= node_min.X && p1.X <= node_max.X) {
-		u32 index1 = (p1.Z - node_min.Z) * mg->ystride +
+		u32 index1 = (p1.Z - node_min.Z) * ystride +
 			(p1.X - node_min.X);
-		h1 = mg->heightmap[index1];
+		h1 = heightmap[index1];
 	} else {
 		h1 = water_level; // If not in heightmap
 	}
@@ -448,9 +469,9 @@ void CavesV6::makeTunnel(bool dirswitch)
 	v3s16 p2 = orpi + of + rs / 2;
 	if (p2.Z >= node_min.Z && p2.Z <= node_max.Z &&
 			p2.X >= node_min.X && p2.X <= node_max.X) {
-		u32 index2 = (p2.Z - node_min.Z) * mg->ystride +
+		u32 index2 = (p2.Z - node_min.Z) * ystride +
 			(p2.X - node_min.X);
-		h2 = mg->heightmap[index2];
+		h2 = heightmap[index2];
 	} else {
 		h2 = water_level;
 	}
@@ -512,7 +533,7 @@ void CavesV6::carveRoute(v3f vec, float f, bool randomize_xz,
 	fp.Z += 0.1 * ps->range(-10, 10);
 	v3s16 cp(fp.X, fp.Y, fp.Z);
 
-	s16 d0 = -rs/2;
+	s16 d0 = -rs / 2;
 	s16 d1 = d0 + rs;
 	if (randomize_xz) {
 		d0 += ps->range(-1, 1);
@@ -550,11 +571,9 @@ void CavesV6::carveRoute(v3f vec, float f, bool randomize_xz,
 					int full_ymax = node_max.Y + MAP_BLOCKSIZE;
 
 					if (full_ymin < water_level && full_ymax > water_level) {
-						vm->m_data[i] = (p.Y <= water_level) ?
-							waternode : airnode;
+						vm->m_data[i] = (p.Y <= water_level) ? waternode : airnode;
 					} else if (full_ymax < water_level) {
-						vm->m_data[i] = (p.Y < startp.Y - 2) ?
-							lavanode : airnode;
+						vm->m_data[i] = (p.Y < startp.Y - 2) ? lavanode : airnode;
 					} else {
 						vm->m_data[i] = airnode;
 					}
