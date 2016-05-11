@@ -60,6 +60,7 @@ public:
 	int dswitchint;
 	int part_max_length_rs;
 
+	bool large_cave;
 	bool large_cave_is_flat;
 	bool flooded;
 
@@ -93,8 +94,8 @@ public:
 	// vm and ps are mandatory parameters.
 	// If heightmap is NULL, the surface level at all points is assumed to
 	// be water_level.
-	void makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
-		PseudoRandom *ps, int max_stone_height, s16 *heightmap);
+	void makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax, PseudoRandom *ps,
+			bool is_large_cave, int max_stone_height, s16 *heightmap);
 
 private:
 	void makeTunnel(bool dirswitch);
