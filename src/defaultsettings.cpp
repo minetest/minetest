@@ -180,7 +180,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_particles", "true");
 	settings->setDefault("enable_mesh_cache", "false");
 	settings->setDefault("enable_vbo", "true");
-	
+
 	settings->setDefault("enable_minimap", "true");
 	settings->setDefault("minimap_shape_round", "true");
 	settings->setDefault("minimap_double_scan_height", "true");
@@ -319,7 +319,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("water_level", "1");
 	settings->setDefault("chunksize", "5");
 	settings->setDefault("mg_flags", "dungeons");
-	settings->setDefault("mgv6_spflags", "jungles, snowbiomes, trees");
 
 	// IPv6
 	settings->setDefault("enable_ipv6", "true");
