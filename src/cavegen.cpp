@@ -31,23 +31,52 @@ NoiseParams nparams_caveliquids(0, 1, v3f(150.0, 150.0, 150.0), 776, 3, 0.6, 2.0
 //// CavesRandomWalk
 ////
 
-CavesRandomWalk::CavesRandomWalk(Mapgen *mg, PseudoRandom *ps)
+CavesRandomWalk::CavesRandomWalk(
+	INodeDefManager *ndef,
+	GenerateNotifier *gennotify,
+	int seed,
+	int water_level,
+	content_t water_source,
+	content_t lava_source)
 {
-	this->mg             = mg;
-	this->vm             = mg->vm;
-	this->ndef           = mg->ndef;
-	this->water_level    = mg->water_level;
-	this->ps             = ps;
-	c_water_source       = ndef->getId("mapgen_water_source");
-	c_lava_source        = ndef->getId("mapgen_lava_source");
-	c_ice                = ndef->getId("mapgen_ice");
+	assert(ndef);
+
+	this->ndef           = ndef;
+	this->gennotify      = gennotify;
+	this->seed           = seed;
+	this->water_level    = water_level;
 	this->np_caveliquids = &nparams_caveliquids;
-	this->ystride        = mg->csize.X;
 	this->lava_depth     = DEFAULT_LAVA_DEPTH;
 
-	if (c_ice == CONTENT_IGNORE)
-		c_ice = CONTENT_AIR;
+	c_water_source = water_source;
+	if (c_water_source == CONTENT_IGNORE)
+		c_water_source = ndef->getId("mapgen_water_source");
+	if (c_water_source == CONTENT_IGNORE)
+		c_water_source = CONTENT_AIR;
 
+	c_lava_source = lava_source;
+	if (c_lava_source == CONTENT_IGNORE)
+		c_lava_source = ndef->getId("mapgen_lava_source");
+	if (c_lava_source == CONTENT_IGNORE)
+		c_lava_source = CONTENT_AIR;
+}
+
+
+void CavesRandomWalk::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
+	PseudoRandom *ps, int max_stone_height, s16 *heightmap)
+{
+	assert(vm);
+	assert(ps);
+
+	this->vm        = vm;
+	this->ps        = ps;
+	this->node_min  = nmin;
+	this->node_max  = nmax;
+	this->heightmap = heightmap;
+
+	this->ystride = nmax.X - nmin.X + 1;
+
+	// Set initial parameters from randomness
 	dswitchint = ps->range(1, 14);
 	flooded    = ps->range(1, 2) == 2;
 
@@ -57,13 +86,7 @@ CavesRandomWalk::CavesRandomWalk(Mapgen *mg, PseudoRandom *ps)
 	max_tunnel_diameter = ps->range(7, ps->range(8, 24));
 
 	large_cave_is_flat = (ps->range(0, 1) == 0);
-}
 
-
-void CavesRandomWalk::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height)
-{
-	node_min = nmin;
-	node_max = nmax;
 	main_direction = v3f(0, 0, 0);
 
 	// Allowed route area size in nodes
@@ -107,18 +130,22 @@ void CavesRandomWalk::makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height)
 	);
 
 	// Add generation notify begin event
-	v3s16 abs_pos(of.X + orp.X, of.Y + orp.Y, of.Z + orp.Z);
-	GenNotifyType notifytype = GENNOTIFY_LARGECAVE_BEGIN;
-	mg->gennotify.addEvent(notifytype, abs_pos);
+	if (gennotify) {
+		v3s16 abs_pos(of.X + orp.X, of.Y + orp.Y, of.Z + orp.Z);
+		GenNotifyType notifytype = GENNOTIFY_LARGECAVE_BEGIN;
+		gennotify->addEvent(notifytype, abs_pos);
+	}
 
 	// Generate some tunnel starting from orp
 	for (u16 j = 0; j < tunnel_routepoints; j++)
 		makeTunnel(j % dswitchint == 0);
 
 	// Add generation notify end event
-	abs_pos = v3s16(of.X + orp.X, of.Y + orp.Y, of.Z + orp.Z);
-	notifytype = GENNOTIFY_LARGECAVE_END;
-	mg->gennotify.addEvent(notifytype, abs_pos);
+	if (gennotify) {
+		v3s16 abs_pos(of.X + orp.X, of.Y + orp.Y, of.Z + orp.Z);
+		GenNotifyType notifytype = GENNOTIFY_LARGECAVE_END;
+		gennotify->addEvent(notifytype, abs_pos);
+	}
 }
 
 
@@ -197,7 +224,7 @@ void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
 	startp += of;
 
 	float nval = NoisePerlin3D(np_caveliquids, startp.X,
-		startp.Y, startp.Z, mg->seed);
+		startp.Y, startp.Z, seed);
 	MapNode liquidnode = (nval < 0.40 && node_max.Y < lava_depth) ?
 		lavanode : waternode;
 
@@ -388,7 +415,7 @@ void CavesV6::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
 
 	// Add generation notify end event
 	if (gennotify != NULL) {
-		v3s16 abs_pos = v3s16(of.X + orp.X, of.Y + orp.Y, of.Z + orp.Z);
+		v3s16 abs_pos(of.X + orp.X, of.Y + orp.Y, of.Z + orp.Z);
 		GenNotifyType notifytype = large_cave ?
 			GENNOTIFY_LARGECAVE_END : GENNOTIFY_CAVE_END;
 		gennotify->addEvent(notifytype, abs_pos);
