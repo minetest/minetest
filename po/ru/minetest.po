@@ -8,17 +8,17 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-05 16:13+0200\n"
-"PO-Revision-Date: 2016-05-11 22:36+0000\n"
-"Last-Translator: Vasily Pavlov <halmet94@gmail.com>\n"
+"PO-Revision-Date: 2016-05-13 13:42+0000\n"
+"Last-Translator: Sergey <mae_mbllo@mail.ru>\n"
 "Language-Team: Russian "
 "<https://hosted.weblate.org/projects/minetest/minetest/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 2.6-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 2.7-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -98,6 +98,7 @@ msgid "Enable all"
 msgstr "Включить всё"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
@@ -425,6 +426,7 @@ msgid "Creative mode"
 msgstr "Режим творчества"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+#, fuzzy
 msgid "Damage enabled"
 msgstr "Разрешить увечья"
 
@@ -1620,16 +1622,23 @@ msgid "Colored fog"
 msgstr "Цветной туман"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
+"Список доверенных модов, через запятую, которым разрешён доступ к "
+"небезопасным функциям, даже в безопасном режиме (с помощью "
+"request_insecure_environment())."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Comma-seperated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
+"Список доверенных модов, через запятую, которым разрешён доступ к HTTP API,  "
+"что позволяет им отправлять и принимать данные в/из сети Интернет."
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
@@ -1800,7 +1809,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
-msgstr ""
+msgstr "Задержка показа подсказок, указанная в миллисекундах."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1923,8 +1932,9 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Enables animation of inventory items."
-msgstr ""
+msgstr "Включить анимацию предметов в инвентаре."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1979,18 +1989,22 @@ msgid "Fall bobbing"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Fallback font"
 msgstr "Fallback шрифт"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Fallback font shadow"
-msgstr ""
+msgstr "Fallback тень шрифта"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Fallback font shadow alpha"
-msgstr ""
+msgstr "Fallback прозрачность тени шрифта"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Fallback font size"
 msgstr "Fallback размер шрифта"
 
@@ -2016,7 +2030,7 @@ msgid ""
 "Fast movement (via use key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
-"Быстрое перемещение (с использование клавиши).\n"
+"Быстрое перемещение (с использованием клавиши).\n"
 "Это требует привилегию \"fast\" на сервере."
 
 #: src/settings_translation_file.cpp
@@ -2056,8 +2070,9 @@ msgid "Filtering"
 msgstr "Фильтрация"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Fixed map seed"
-msgstr "Конкретное семя мира"
+msgstr "Фиксированное зерно мира"
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
@@ -2101,13 +2116,12 @@ msgid "Font size"
 msgstr "Размер шрифта"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Format of screenshots."
-msgstr "Путь для сохранения скриншотов."
+msgstr "Формат скриншотов."
 
 #: src/settings_translation_file.cpp
 msgid "Forward key"
-msgstr "Вперед"
+msgstr "Клавиша  вперёд"
 
 #: src/settings_translation_file.cpp
 msgid "Freetype fonts"
@@ -2166,6 +2180,7 @@ msgid "Generate normalmaps"
 msgstr "Генерировать карты нормалей"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
@@ -2176,6 +2191,16 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
+"Параметры глобального генератора карты.\n"
+"В генераторе карт v6 флаг 'decorations' управляет всем оформлением за "
+"исключением деревьев\n"
+" и junglegras(травы джунглей?), в остальных генераторах этот флаг управляет "
+"всем оформлением.\n"
+"Стандартные флаги, установленные в engine(инструменте?) следующие: caves, "
+"light, decorations\n"
+"Строка флагов изменяет стандартные настройки engine(инструмента?).\n"
+"Флаги, не указанные в строке флагов, по умолчанию не изменяются.\n"
+"Флаги, начинающиеся с 'no' используются для их явного отключения."
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
@@ -2201,18 +2226,26 @@ msgid ""
 "-    log: mimic and log backtrace of deprecated call (default for debug).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
+"Обработка для устаревших вызовов lua api:\n"
+"-    legacy: (иногда успешно) имитирует прежнее поведение  (по умолчанию для "
+"релиза).\n"
+"-    log: имитирует и журналирует backtrace(трассировку?след?) устаревших "
+"вызовов (по умолчанию для отладки).\n"
+"-    error: прерывание при использовании устаревших вызовов (рекомендовано "
+"для разработчиков модов)."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Height component of the initial window size."
-msgstr ""
+msgstr "Высота содержимого (относительно?) исходного размера окна"
 
 #: src/settings_translation_file.cpp
 msgid "Height on which clouds are appearing."
-msgstr ""
+msgstr "Высота, на которой появляются облака."
 
 #: src/settings_translation_file.cpp
 msgid "High-precision FPU"
-msgstr ""
+msgstr "Высокоточный FPU"
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
@@ -2220,33 +2253,43 @@ msgstr "Домашняя страница сервера, отображаема
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers"
-msgstr ""
+msgstr "Глубина рек"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "How large area of blocks are subject to the active block stuff, stated in "
 "mapblocks (16 nodes).\n"
 "In active blocks objects are loaded and ABMs run."
 msgstr ""
+"Размер площади из блоков, составляющей активный блок, расположенный в "
+"mapblocks (16 nodes).↵\n"
+"В активных блоках объекты загружаются и ABMs запускается."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "How many blocks are flying in the wire simultaneously for the whole server."
-msgstr ""
+msgstr "Количество блоков, передаваемых одновременно для всего сервера."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "How many blocks are flying in the wire simultaneously per client."
-msgstr ""
+msgstr "Количество блоков, передаваемых одновременно для каждого клиента."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "How much the server will wait before unloading unused mapblocks.\n"
 "Higher value is smoother, but will use more RAM."
 msgstr ""
+"Время ожидания сервера до выгрузки неиспользуемых mapblocks.\n"
+"Высокие значения более плавные, но используют больше RAM."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "How wide to make rivers"
-msgstr ""
+msgstr "Установка ширины рек"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2262,39 +2305,57 @@ msgid "IPv6 support."
 msgstr "IPv6 поддержка."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "If FPS would go higher than this, limit it by sleeping\n"
 "to not waste CPU power for no benefit."
 msgstr ""
+"Если FPS превысит это значение, ограничить его простоем,\n"
+"чтобы не тратить мощность процессора впустую."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "If disabled \"use\" key is used to fly fast if both fly and fast mode are "
 "enabled."
 msgstr ""
+"Если выключено, кнопка \"use\"(\"использовать\"?) используется для быстрого "
+"полёта, если одновременно включены быстрый режим и режим полёта."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "If enabled together with fly mode, player is able to fly through solid "
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
+"Если включено одновременно с режимом полёта, игрок может летать через "
+"твердые nodes(узлы?вершины?). Это требует привилегий \"noclip\" на сервере."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "If enabled, \"use\" key instead of \"sneak\" key is used for climbing down "
 "and descending."
 msgstr ""
+"Если включено, клавиша \"use\"(\"использовать\"?) вместо \"sneak\"(\""
+"подкрасться\"?) будет использоваться для climbing down and descending."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "If enabled, actions are recorded for rollback.\n"
 "This option is only read when server starts."
 msgstr ""
+"Если включено, действия записываются для отката.\n"
+"Этот параметр считывается только при запуске сервера."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "If enabled, disable cheat prevention in multiplayer."
 msgstr ""
+"Если включено, отключается prevention(предупреждение?предотвращение?) "
+"читерства в мультиплеере."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3700,19 +3761,23 @@ msgstr "Каталог со скриншотами"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Screenshot format"
-msgstr "Каталог со скриншотами"
+msgstr "Формат скриншота"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Screenshot quality"
-msgstr "Cкриншот"
+msgstr "Качество скриншота"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Screenshot quality. Only used for JPEG format.\n"
 "1 means worst quality; 100 means best quality.\n"
 "Use 0 for default quality."
 msgstr ""
+"Качество скриншота. Используется только для изображений в формате JPEG.\n"
+"1 означает плохое качество; 100 означает хорошее качество.\n"
+"Используйте 0 для настроек по умолчанию."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
