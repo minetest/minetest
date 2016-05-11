@@ -135,17 +135,23 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 	bool fits = false;
 	for (u32 i = 0; i < 100 && !fits; i++) {
 		bool is_large_room = ((random.next() & 3) == 1);
-		roomsize = is_large_room ?
-			v3s16(random.range(8, 16), random.range(8, 16), random.range(8, 16)) :
-			v3s16(random.range(4, 8), random.range(4, 6), random.range(4, 8));
+		if (is_large_room) {
+			roomsize.Z = random.range(8, 16);
+			roomsize.Y = random.range(8, 16);
+			roomsize.X = random.range(8, 16);
+		} else {
+			roomsize.Z = random.range(4, 8);
+			roomsize.Y = random.range(4, 6);
+			roomsize.X = random.range(4, 8);
+		}
 		roomsize += dp.roomsize;
 
 		// start_padding is used to disallow starting the generation of
 		// a dungeon in a neighboring generation chunk
-		roomplace = vm->m_area.MinEdge + start_padding + v3s16(
-			random.range(0, areasize.X - roomsize.X - start_padding.X),
-			random.range(0, areasize.Y - roomsize.Y - start_padding.Y),
-			random.range(0, areasize.Z - roomsize.Z - start_padding.Z));
+		roomplace = vm->m_area.MinEdge + start_padding;
+		roomplace.Z += random.range(0, areasize.Z - roomsize.Z - start_padding.Z);
+		roomplace.Y += random.range(0, areasize.Y - roomsize.Y - start_padding.Y);
+		roomplace.X += random.range(0, areasize.X - roomsize.X - start_padding.X);
 
 		/*
 			Check that we're not putting the room to an unknown place,
@@ -227,7 +233,9 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 		makeCorridor(doorplace, doordir, corridor_end, corridor_end_dir);
 
 		// Find a place for a random sized room
-		roomsize = v3s16(random.range(4, 8), random.range(4, 6), random.range(4, 8));
+		roomsize.Z = random.range(4, 8);
+		roomsize.Y = random.range(4, 6);
+		roomsize.X = random.range(4, 8);
 		roomsize += dp.roomsize;
 
 		m_pos = corridor_end;
@@ -587,7 +595,10 @@ v3s16 rand_ortho_dir(PseudoRandom &random, bool diagonal_dirs)
 
 		do {
 			trycount++;
-			dir = v3s16(random.next() % 3 - 1, 0, random.next() % 3 - 1);
+
+			dir.Z = random.next() % 3 - 1;
+			dir.Y = 0;
+			dir.X = random.next() % 3 - 1;
 		} while ((dir.X == 0 && dir.Z == 0) && trycount < 10);
 
 		return dir;
