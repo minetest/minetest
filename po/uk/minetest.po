@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-05 16:13+0200\n"
-"PO-Revision-Date: 2016-05-10 00:06+0000\n"
+"PO-Revision-Date: 2016-05-12 01:10+0000\n"
 "Last-Translator: Fixer <artem.brz@gmail.com>\n"
 "Language-Team: Ukrainian "
 "<https://hosted.weblate.org/projects/minetest/minetest/uk/>\n"
@@ -87,14 +87,12 @@ msgid "Depends:"
 msgstr "Залежить від:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable MP"
-msgstr "Вимкнути МП"
+msgstr "Вимкнути модпак"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Enable MP"
-msgstr "Увімкнути МП"
+msgstr "Увімкнути модпак"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -113,13 +111,12 @@ msgid "Hide Game"
 msgstr "Приховати гру"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Hide mp content"
-msgstr "Приховати мп контент"
+msgstr "Сховати вміст модпаку"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr "Модифікація:"
+msgstr "Мод:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
@@ -466,7 +463,7 @@ msgstr "Творчість"
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Enable Damage"
-msgstr "Увімкнути поранення"
+msgstr "Поранення"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Name/Password"
@@ -538,9 +535,8 @@ msgid "Bilinear Filter"
 msgstr "Білінійна фільтрація"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Bump Mapping"
-msgstr "Бамп-маппінг"
+msgstr "Бамп маппінг"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
@@ -548,11 +544,11 @@ msgstr "Змінити клавіші"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Connected Glass"
-msgstr "З'єднане скло"
+msgstr "З'єднувати скло"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
-msgstr "Гарні листя"
+msgstr "Гарне листя"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
@@ -568,7 +564,7 @@ msgstr "Ні"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
-msgstr "Без фільтрування"
+msgstr "Без фільтрації"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
@@ -896,7 +892,7 @@ msgstr "Далі"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "\"Use\" = climb down"
-msgstr "\"Використовувати\" = підніматися в гору"
+msgstr "\"Використовувати\" = підніматися вгору"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Backward"
@@ -1564,7 +1560,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
-msgstr ""
+msgstr "Клієнт і сервер"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -3261,7 +3257,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Network"
-msgstr ""
+msgstr "Мережа"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3534,7 +3530,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Security"
-msgstr ""
+msgstr "Безпека"
 
 #: src/settings_translation_file.cpp
 msgid "See http://www.sqlite.org/pragma.html#pragma_synchronous"
@@ -3665,7 +3661,7 @@ msgstr "Крастися"
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
-msgstr ""
+msgstr "Звук"
 
 #: src/settings_translation_file.cpp
 msgid ""
