@@ -344,7 +344,8 @@ static void print_allowed_options(const OptionList &allowed_options)
 
 static void print_version()
 {
-	std::cout << PROJECT_NAME_C " " << g_version_hash << std::endl;
+	std::cout << PROJECT_NAME_C " " << g_version_hash
+	          << "(" << porting::getPlatformName() << ") " << std::endl;
 #ifndef SERVER
 	std::cout << "Using Irrlicht " << IRRLICHT_SDK_VERSION << std::endl;
 #endif
