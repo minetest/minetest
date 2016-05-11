@@ -25,16 +25,34 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class GenerateNotifier;
 
+/*
+	CavesRandomWalk is an implementation of a cave-digging algorithm that
+	operates on the principle of a "random walk" to approximate the stochiastic
+	activity of cavern development.
+
+	In summary, this algorithm works by carving a randomly sized tunnel in a
+	random direction a random amount of times, randomly varying in width.
+	All randomness here is uniformly distributed; alternative distributions have
+	not yet been implemented.
+
+	This algorithm is very fast, executing in less than 1ms on average for an
+	80x80x80 chunk of map on a modern processor.
+*/
 class CavesRandomWalk {
 public:
-	Mapgen *mg;
 	MMVManip *vm;
 	INodeDefManager *ndef;
+	GenerateNotifier *gennotify;
 	s16 *heightmap;
 
-	// variables
+	// configurable parameters
+	int seed;
+	int water_level;
 	int lava_depth;
 	NoiseParams *np_caveliquids;
+
+	// intermediate state variables
+	u16 ystride;
 
 	s16 min_tunnel_diameter;
 	s16 max_tunnel_diameter;
@@ -62,17 +80,26 @@ public:
 
 	content_t c_water_source;
 	content_t c_lava_source;
-	content_t c_ice;
 
-	int water_level;
-	u16 ystride;
+	// ndef is a mandatory parameter.
+	// If gennotify is NULL, generation events are not logged.
+	CavesRandomWalk(INodeDefManager *ndef,
+		GenerateNotifier *gennotify = NULL,
+		int seed = 0,
+		int water_level = 1,
+		content_t water_source = CONTENT_IGNORE,
+		content_t lava_source = CONTENT_IGNORE);
 
-	CavesRandomWalk(Mapgen *mg, PseudoRandom *ps);
-	void makeCave(v3s16 nmin, v3s16 nmax, int max_stone_height);
+	// vm and ps are mandatory parameters.
+	// If heightmap is NULL, the surface level at all points is assumed to
+	// be water_level.
+	void makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
+		PseudoRandom *ps, int max_stone_height, s16 *heightmap);
+
+private:
 	void makeTunnel(bool dirswitch);
 	void carveRoute(v3f vec, float f, bool randomize_xz);
 
-private:
 	inline bool isPosAboveSurface(v3s16 p);
 };
 
@@ -97,11 +124,13 @@ public:
 	PseudoRandom *ps;
 	PseudoRandom *ps2;
 
+	// configurable parameters
 	s16 *heightmap;
 	content_t c_water_source;
 	content_t c_lava_source;
 	int water_level;
 
+	// intermediate state variables
 	u16 ystride;
 
 	s16 min_tunnel_diameter;
