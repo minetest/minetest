@@ -133,11 +133,9 @@ void CavesRandomWalk::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
 	route_start_y_max = rangelim(route_start_y_max, route_start_y_min, ar.Y - 1);
 
 	// Randomize starting position
-	orp = v3f(
-		(float)(ps->next() % ar.X) + 0.5,
-		(float)(ps->range(route_start_y_min, route_start_y_max)) + 0.5,
-		(float)(ps->next() % ar.Z) + 0.5
-	);
+	orp.Z = (float)(ps->next() % ar.Z) + 0.5;
+	orp.Y = (float)(ps->range(route_start_y_min, route_start_y_max)) + 0.5;
+	orp.X = (float)(ps->next() % ar.X) + 0.5;
 
 	// Add generation notify begin event
 	if (gennotify) {
@@ -164,11 +162,10 @@ void CavesRandomWalk::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
 void CavesRandomWalk::makeTunnel(bool dirswitch)
 {
 	if (dirswitch && !large_cave) {
-		main_direction = v3f(
-			((float)(ps->next() % 20) - (float)10) / 10,
-			((float)(ps->next() % 20) - (float)10) / 30,
-			((float)(ps->next() % 20) - (float)10) / 10
-		);
+		main_direction.Z = ((float)(ps->next() % 20) - (float)10) / 10;
+		main_direction.Y = ((float)(ps->next() % 20) - (float)10) / 30;
+		main_direction.X = ((float)(ps->next() % 20) - (float)10) / 10;
+
 		main_direction *= (float)ps->range(0, 10) / 10;
 	}
 
@@ -196,17 +193,13 @@ void CavesRandomWalk::makeTunnel(bool dirswitch)
 	v3f vec;
 	// Jump downward sometimes
 	if (!large_cave && ps->range(0, 12) == 0) {
-		vec = v3f(
-			(float)(ps->next() % (maxlen.X * 1)) - (float)maxlen.X / 2,
-			(float)(ps->next() % (maxlen.Y * 2)) - (float)maxlen.Y,
-			(float)(ps->next() % (maxlen.Z * 1)) - (float)maxlen.Z / 2
-		);
+		vec.Z = (float)(ps->next() % (maxlen.Z * 1)) - (float)maxlen.Z / 2;
+		vec.Y = (float)(ps->next() % (maxlen.Y * 2)) - (float)maxlen.Y;
+		vec.X = (float)(ps->next() % (maxlen.X * 1)) - (float)maxlen.X / 2;
 	} else {
-		vec = v3f(
-			(float)(ps->next() % (maxlen.X * 1)) - (float)maxlen.X / 2,
-			(float)(ps->next() % (maxlen.Y * 1)) - (float)maxlen.Y / 2,
-			(float)(ps->next() % (maxlen.Z * 1)) - (float)maxlen.Z / 2
-		);
+		vec.Z = (float)(ps->next() % (maxlen.Z * 1)) - (float)maxlen.Z / 2;
+		vec.Y = (float)(ps->next() % (maxlen.Y * 1)) - (float)maxlen.Y / 2;
+		vec.X = (float)(ps->next() % (maxlen.X * 1)) - (float)maxlen.X / 2;
 	}
 
 	// Do not make caves that are above ground.
@@ -446,11 +439,9 @@ void CavesV6::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
 	route_start_y_max = rangelim(route_start_y_max, route_start_y_min, ar.Y - 1);
 
 	// Randomize starting position
-	orp = v3f(
-		(float)(ps->next() % ar.X) + 0.5,
-		(float)(ps->range(route_start_y_min, route_start_y_max)) + 0.5,
-		(float)(ps->next() % ar.Z) + 0.5
-	);
+	orp.Z = (float)(ps->next() % ar.Z) + 0.5;
+	orp.Y = (float)(ps->range(route_start_y_min, route_start_y_max)) + 0.5;
+	orp.X = (float)(ps->next() % ar.X) + 0.5;
 
 	// Add generation notify begin event
 	if (gennotify != NULL) {
@@ -477,11 +468,10 @@ void CavesV6::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
 void CavesV6::makeTunnel(bool dirswitch)
 {
 	if (dirswitch && !large_cave) {
-		main_direction = v3f(
-			((float)(ps->next() % 20) - (float)10) / 10,
-			((float)(ps->next() % 20) - (float)10) / 30,
-			((float)(ps->next() % 20) - (float)10) / 10
-		);
+		main_direction.Z = ((float)(ps->next() % 20) - (float)10) / 10;
+		main_direction.Y = ((float)(ps->next() % 20) - (float)10) / 30;
+		main_direction.X = ((float)(ps->next() % 20) - (float)10) / 10;
+
 		main_direction *= (float)ps->range(0, 10) / 10;
 	}
 
@@ -506,19 +496,16 @@ void CavesV6::makeTunnel(bool dirswitch)
 		);
 	}
 
-	v3f vec(
-		(float)(ps->next() % maxlen.X) - (float)maxlen.X / 2,
-		(float)(ps->next() % maxlen.Y) - (float)maxlen.Y / 2,
-		(float)(ps->next() % maxlen.Z) - (float)maxlen.Z / 2
-	);
+	v3f vec;
+	vec.Z = (float)(ps->next() % maxlen.Z) - (float)maxlen.Z / 2;
+	vec.Y = (float)(ps->next() % maxlen.Y) - (float)maxlen.Y / 2;
+	vec.X = (float)(ps->next() % maxlen.X) - (float)maxlen.X / 2;
 
 	// Jump downward sometimes
 	if (!large_cave && ps->range(0, 12) == 0) {
-		vec = v3f(
-			(float)(ps->next() % maxlen.X) - (float)maxlen.X / 2,
-			(float)(ps->next() % (maxlen.Y * 2)) - (float)maxlen.Y,
-			(float)(ps->next() % maxlen.Z) - (float)maxlen.Z / 2
-		);
+		vec.Z = (float)(ps->next() % maxlen.Z) - (float)maxlen.Z / 2;
+		vec.Y = (float)(ps->next() % (maxlen.Y * 2)) - (float)maxlen.Y;
+		vec.X = (float)(ps->next() % maxlen.X) - (float)maxlen.X / 2;
 	}
 
 	// Do not make caves that are entirely above ground, to fix shadow bugs
