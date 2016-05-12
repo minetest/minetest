@@ -848,8 +848,6 @@ map_generation_limit (Map generation limit) int 31000 0 31000
 #    Global map generation attributes.
 #    In Mapgen v6 the 'decorations' flag controls all decorations except trees
 #    and junglegrass, in all other mapgens this flag controls all decorations.
-#    The default flags set in the engine are: caves, light, decorations
-#    The flags string modifies the engine defaults.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 mg_flags (Mapgen flags) flags caves,dungeons,light,decorations caves,dungeons,light,decorations,nocaves,nodungeons,nolight,nodecorations
@@ -910,8 +908,6 @@ mgv5_np_cave2 (Mapgen v5 cave2 noise parameters) noise_params 0, 12, (50, 50, 50
 
 #    Map generation attributes specific to Mapgen v6.
 #    When snowbiomes are enabled jungles are automatically enabled, the 'jungles' flag is ignored.
-#    The default flags set in the engine are: biomeblend, mudflow
-#    The flags string modifies the engine defaults.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 mgv6_spflags (Mapgen v6 flags) flags jungles,biomeblend,mudflow,snowbiomes,trees jungles,biomeblend,mudflow,snowbiomes,flat,trees,nojungles,nobiomeblend,nomudflow,nosnowbiomes,noflat,notrees
@@ -937,8 +933,6 @@ mgv6_np_apple_trees (Mapgen v6 apple trees noise parameters) noise_params 0, 1, 
 
 #    Map generation attributes specific to Mapgen v7.
 #    The 'ridges' flag controls the rivers.
-#    The default flags set in the engine are: mountains, ridges
-#    The flags string modifies the engine defaults.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 mgv7_spflags (Mapgen v7 flags) flags mountains,ridges mountains,ridges,nomountains,noridges
@@ -962,8 +956,6 @@ mgv7_np_cave2 (Mapgen v7 cave2 noise parameters) noise_params 0, 12, (100, 100, 
 
 #    Map generation attributes specific to Mapgen flat.
 #    Occasional lakes and hills can be added to the flat world.
-#    The default flags set in the engine are: none
-#    The flags string modifies the engine defaults.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 mgflat_spflags (Mapgen flat flags) flags  lakes,hills,,nolakes,nohills
@@ -1079,8 +1071,6 @@ mgfractal_np_cave2 (Mapgen fractal cave2 noise parameters) noise_params 0, 12, (
 #    'altitude_chill' makes higher elevations colder, which may cause biome issues.
 #    'humid_rivers' modifies the humidity around rivers and in areas where water would tend to pool,
 #    it may interfere with delicately adjusted biomes.
-#    The default flags set in the engine are: altitude_chill, humid_rivers
-#    The flags string modifies the engine defaults.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 mg_valleys_spflags (Valleys C Flags) flags altitude_chill,humid_rivers altitude_chill,noaltitude_chill,humid_rivers,nohumid_rivers
