@@ -1046,8 +1046,6 @@
 #    Global map generation attributes.
 #    In Mapgen v6 the 'decorations' flag controls all decorations except trees
 #    and junglegrass, in all other mapgens this flag controls all decorations.
-#    The default flags set in the engine are: caves, light, decorations
-#    The flags string modifies the engine defaults.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: caves, dungeons, light, decorations, nocaves, nodungeons, nolight, nodecorations
@@ -1121,8 +1119,6 @@
 
 #    Map generation attributes specific to Mapgen v6.
 #    When snowbiomes are enabled jungles are automatically enabled, the 'jungles' flag is ignored.
-#    The default flags set in the engine are: biomeblend, mudflow
-#    The flags string modifies the engine defaults.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: jungles, biomeblend, mudflow, snowbiomes, flat, trees, nojungles, nobiomeblend, nomudflow, nosnowbiomes, noflat, notrees
@@ -1173,8 +1169,6 @@
 
 #    Map generation attributes specific to Mapgen v7.
 #    The 'ridges' flag controls the rivers.
-#    The default flags set in the engine are: mountains, ridges
-#    The flags string modifies the engine defaults.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: mountains, ridges, nomountains, noridges
@@ -1221,8 +1215,6 @@
 
 #    Map generation attributes specific to Mapgen flat.
 #    Occasional lakes and hills can be added to the flat world.
-#    The default flags set in the engine are: none
-#    The flags string modifies the engine defaults.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: lakes, hills, , nolakes, nohills
@@ -1367,8 +1359,6 @@
 #    'altitude_chill' makes higher elevations colder, which may cause biome issues.
 #    'humid_rivers' modifies the humidity around rivers and in areas where water would tend to pool,
 #    it may interfere with delicately adjusted biomes.
-#    The default flags set in the engine are: altitude_chill, humid_rivers
-#    The flags string modifies the engine defaults.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: altitude_chill, noaltitude_chill, humid_rivers, nohumid_rivers
