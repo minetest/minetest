@@ -77,13 +77,28 @@ local function init_globals()
 
 	if PLATFORM == "Android" then
 		local world_list = core.get_worlds()
-		local world_index = table.indexof(world_list, "singleplayerworld")
+		local world_index
 
-		if world_index == -1 then
+		local found_singleplayerworld = false
+		for i, world in ipairs(world_list) do
+			if world.name == "singleplayerworld" then
+				found_singleplayerworld = true
+				world_index = i
+				break
+			end
+		end
+
+		if not found_singleplayerworld then
 			core.create_world("singleplayerworld", 1)
 
 			world_list = core.get_worlds()
-			world_index = table.indexof(world_list, "singleplayerworld")
+
+			for i, world in ipairs(world_list) do
+				if world.name == "singleplayerworld" then
+					world_index = i
+					break
+				end
+			end
 		end
 
 		gamedata.worldindex = world_index
