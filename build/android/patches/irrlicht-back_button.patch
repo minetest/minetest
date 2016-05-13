@@ -1,5 +1,14 @@
---- irrlicht/source/Irrlicht/Android/CIrrDeviceAndroid.cpp.orig	2016-05-02 04:32:21.281252634 +0300
-+++ irrlicht/source/Irrlicht/Android/CIrrDeviceAndroid.cpp	2016-05-02 04:37:58.295589904 +0300
+--- irrlicht/source/Irrlicht/Android/CIrrDeviceAndroid.cpp.orig	2015-08-29 15:43:09.000000000 +0300
++++ irrlicht/source/Irrlicht/Android/CIrrDeviceAndroid.cpp	2016-05-13 21:36:22.880388505 +0300
+@@ -486,7 +486,7 @@
+ 				event.KeyInput.Char = 0;
+ 			}
+ 
+-			device->postEventFromUser(event);
++			status = device->postEventFromUser(event) ? 1 : 0;
+ 		}
+ 		break;
+ 		default:
 @@ -543,7 +543,7 @@
      KeyMap[1] = KEY_LBUTTON; // AKEYCODE_SOFT_LEFT
      KeyMap[2] = KEY_RBUTTON; // AKEYCODE_SOFT_RIGHT
