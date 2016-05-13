@@ -1,10 +1,11 @@
 --- irrlicht/source/Irrlicht/Android/CIrrDeviceAndroid.cpp	2014-06-03 20:56:21.289559503 +0200
 +++ irrlicht/source/Irrlicht/Android/CIrrDeviceAndroid.cpp.orig	2014-06-03 20:57:39.281556749 +0200
-@@ -423,6 +423,7 @@
+@@ -486,7 +488,7 @@
+ 				event.KeyInput.Char = 0;
  			}
- 			
- 			device->postEventFromUser(event);
-+			status = 1;
+ 
+-			device->postEventFromUser(event);
++			status = device->postEventFromUser(event) ? 1 : 0;
  		}
  		break;
  		default:
