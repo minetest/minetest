@@ -1,0 +1,35 @@
+Texture Overrides
+=================
+
+You can override the textures of a node from a texture pack using
+texture overrides. To do this, create a file in a texture pack
+called override.txt
+
+Basic Format
+------------
+
+Each line in an override.txt file is a rule. It consists of
+
+	nodename face-selector texture
+
+For example,
+
+	default:dirt_with_grass sides default_stone.png
+
+You can use ^ operators as usual:
+
+	default:dirt_with_grass sides default_stone.png^[brighten
+
+Face Selectors
+--------------
+
+| face-selector | behavior                                          |
+|---------------|---------------------------------------------------|
+| left          | x-                                                |
+| right         | x+                                                |
+| front         | z-                                                |
+| back          | z+                                                |
+| top           | y+                                                |
+| bottom        | y-                                                |
+| sides         | x-, x+, z-, z+                                    |
+| all           | All faces. You can also use '*' instead of 'all'. |

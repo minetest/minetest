@@ -1,0 +1,147 @@
+Minetest changelog
+----------------------
+This should contain all the major changes.
+For minor stuff, refer to the commit log of the repository.
+
+0.3.1: (released on 2011-11-09)
+- Fix frustum culling (previous versions have rendered too much stuff that is not actually visible (about 180 degrees, while should have been more like 100.))
+- Add occlusion culling (improves performance a lot)
+- Add “3d clouds” on/off checkbox in main menu
+- Add “opaque water” on/off checkbox
+- Fix some random minor stuff
+- Turn mipmapping off (This makes far-away textures a bit noisier but better looking)
+- Add Command-line signal handler for Windows (contributed by SpeedProg)
+- Fix network layer segmentation fault introduced in 0.3.dev-20111021
+- Fix water-glass and water-lava and lava-glass surfaces
+
+0.3.0: (released on 2011-11-01)
+- Some small fixes
+0.3.dev-20111021:
+- Modify dungeon masters to only try to shoot players
+- Fix object duplication bug at block load/unload bug
+- Improve network layer
+0.3.dev-20111016:
+- Locked chest (contributed)
+- Server user limit setting (max_users)
+- Wielded tool is shown in HUD (contributed)
+- View bobbing (contributed)
+- Saplings that drop from leaf blocks and when placed on ground will grow to trees (contributed)
+- Optimized map saving (does not re-save everything all the time)
+- New mob system and new mob: dungeon master
+- Death/respawn screen
+
+0.2.20110922_3:
+- Fix the build for MSVC2010; also released for windows using MSVC2010.
+
+0.2.20110922_1:
+- Make client report a newer version number to the server than 2011-07-31 does and make server disallow old clients
+
+0.2.20110922:
+- Map is saved in an SQLite database file (by Queatz)
+- Ladders (MarkTraceur)
+- Lava
+- Apple trees (sfan5)
+- Slightly better looking inventory with transparency
+- /me chat command (Oblomov)
+- Using chosen map seed possible through fixed_map_seed configuration option (kahrl)
+- Fix the long-existed PeerNotFound loop bug
+- Some translations and localization-related fixes
+- Lots of small fixes
+
+2011-07-31_3:
+- Fixes a bug that made the server to deny non-empty passwords from players connecting the first time
+
+2011-07-31_2:
+- Fixes a bug that caused the server to always read an empty password from the client when a client connected.
+
+2011-07-31:
+- A number of small fixes, build system stuff and such (refer to version control log)
+- Map generator no longer crashes at generation limit
+- Fixed mapgen producing lots of cut-down trees
+- Some minor tweaks in map generator (some contributed)
+- Volumetric clouds (contributed)
+- Icon added (graphic contributed)
+- Key configuration menu (contributed)
+- Decorative blocks and items: bookshelf, sandstone, cactus, clay, brick, papyrus, rail, paper, book (contributed)
+- Jungles!
+- Hotbar is a bit smaller
+- Health is now enabled by default; You can now eat cooked rats to heal yourself.
+- Finally added sword textures, altough sword is still of no use
+- Creative mode now preserves normal mode inventory
+
+2011-07-04:
+- Many small fixes
+- Code reorganizing to aid further development
+- Renewed map generator
+
+2011-06-02:
+- Password crash on windows fixed
+- Optimized server CPU usage a lot
+- Furnaces now work also while players are not near to them
+
+2011-05-29:
+- Optimized smooth lighting
+- A number of small fixes
+- Added clouds and simple skyboxes
+- The glass block added
+- Added key configuration to config file
+- Player privileges on server
+- Slightly updated map format
+- Player passwords
+- All textures first searched from texture_path
+- Map directory ("map") has been renamed to "world" (just rename it to load an old world)
+- Mouse inversion (invert_mouse)
+- Grass doesn't grow immediately anymore
+- Fence added
+
+2011-04-24:
+- Smooth lighting with simple ambient occlusion
+- Updated main menu
+
+2011-04-23_0_test:
+- Small bug fixes
+- Item drop multiplication fixed
+- HP added
+- Added A simple monster which spawns to dark places at map generation time
+- Some code refactoring and cleaning (possibly new bugs)
+
+2011-04-11:
+- Fixed crafting a bit
+
+2011-04-10_0:
+- Asynchronous map generation
+- New object system
+
+2011-04-06:
+- Mesh update of node addition/removal is now done asynchronously on client, removing frametime spike
+- Node addition/removal is sent directly only to clients that are closer than 100 nodes to the modification. For the others, the modified blocks are set unsent. (and are re-sent when applicable)
+
+2011-04-05:
+- Made furnace usable
+- Added cobblestone
+- Added wood, stone and steel tools: pickaxes, shovels and axes
+- Incremented to version 0.0.2
+
+2011-04-04:
+- Cleaned client to be completely synchronous, except for the mesh calculation, which is now done with queues in a separate thread.
+- Added node metadata support
+- Added chests
+
+2011-02-17:
+- Added better handling of textures. Now many file extensions are searched. Also too large textures are not put on the texture atlas, and the construction of the texture atlas is stopped when it is full.
+
+2011-02-16:
+- Better handling of Ctrl-C on POSIX systems
+
+2011-02-15:
+- Fixed a problem of not saving and loading the "lighting expired" value of MapBlocks properly. This caused high server CPU usage.
+- Ctrl-C handling on POSIX systems
+- Added simple command support to server
+- Added settings enable_texture_atlas and texture_path
+
+2011-02-14:
+- Created changelog.txt
+- Added sneaking/crouching
+- Modified the looks of the hotbar and cleaned code
+- Added code to allow generating 3D cube images for inventory
+

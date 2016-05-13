@@ -1,0 +1,19 @@
+--- irrlicht/source/Irrlicht/Android/CIrrDeviceAndroid.cpp	2014-06-03 20:56:21.289559503 +0200
++++ irrlicht/source/Irrlicht/Android/CIrrDeviceAndroid.cpp.orig	2014-06-03 20:57:39.281556749 +0200
+@@ -423,6 +423,7 @@
+ 			}
+ 			
+ 			device->postEventFromUser(event);
++			status = 1;
+ 		}
+ 		break;
+ 		default:
+@@ -479,7 +480,7 @@
+     KeyMap[1] = KEY_LBUTTON; // AKEYCODE_SOFT_LEFT
+     KeyMap[2] = KEY_RBUTTON; // AKEYCODE_SOFT_RIGHT
+     KeyMap[3] = KEY_HOME; // AKEYCODE_HOME
+-    KeyMap[4] = KEY_BACK; // AKEYCODE_BACK
++    KeyMap[4] = KEY_CANCEL; // AKEYCODE_BACK
+     KeyMap[5] = KEY_UNKNOWN; // AKEYCODE_CALL
+     KeyMap[6] = KEY_UNKNOWN; // AKEYCODE_ENDCALL
+     KeyMap[7] = KEY_KEY_0; // AKEYCODE_0

@@ -1,0 +1,87 @@
+## Editors and Development environments
+*~
+*.swp
+*.bak*
+*.orig
+# Vim
+*.vim
+# Kate
+.*.kate-swp
+.swp.*
+# KDevelop4
+.kdev4/
+*.kdev4
+# Eclipse (CDT and LDT)
+.project
+.cproject
+.settings/
+.buildpath
+.metadata
+# GNU Global
+tags
+!tags/
+gtags.files
+
+## Files related to minetest development cycle
+/*.patch
+# GNU Patch reject file
+*.rej
+
+## Non-static Minetest directories or symlinks to these
+/bin/
+/games/*
+!/games/minimal/
+/cache
+/textures/*
+!/textures/base/
+/screenshots
+/sounds
+/mods/*
+!/mods/minetest/
+/mods/minetest/*
+!/mods/minetest/mods_here.txt
+/worlds
+/world/
+
+## Configuration/log files
+minetest.conf
+debug.txt
+
+## Doxygen files
+doc/Doxyfile
+doc/html/
+doc/doxygen_*
+
+## Build files
+CMakeFiles
+Makefile
+!build/android/Makefile
+cmake_install.cmake
+CMakeCache.txt
+CPackConfig.cmake
+CPackSourceConfig.cmake
+src/android_version.h
+src/android_version_githash.h
+src/cmake_config.h
+src/cmake_config_githash.h
+src/lua/build/
+locale/
+.directory
+*.cbp
+*.layout
+*.o
+*.a
+
+## Android build files
+build/android/assets
+build/android/bin
+build/android/Debug
+build/android/deps
+build/android/gen
+build/android/jni/src
+build/android/libs
+build/android/obj
+build/android/path.cfg
+build/android/and_env
+build/android/AndroidManifest.xml
+timestamp

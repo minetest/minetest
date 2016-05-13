@@ -1,0 +1,16 @@
+#!/bin/sh
+cd ..
+svn co https://jsoncpp.svn.sourceforge.net/svnroot/jsoncpp/trunk/jsoncpp jsoncpp
+svn up jsoncpp
+cd jsoncpp
+python amalgamate.py
+cp -R dist/json ..
+cp dist/jsoncpp.cpp ../json
+
+# maybe you need to patch:
+# src/json/jsoncpp.cpp:
+# -#include <json/json.h>
+# +#include "json/json.h"
+
+#svn export --force https://jsoncpp.svn.sourceforge.net/svnroot/jsoncpp/trunk/jsoncpp/src/lib_json json
+#svn export --force https://jsoncpp.svn.sourceforge.net/svnroot/jsoncpp/trunk/jsoncpp/include/json json

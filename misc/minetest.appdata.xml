@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application>
+	<id type="desktop">minetest.desktop</id>
+	<metadata_license>CC0-1.0</metadata_license>
+	<project_license>LGPL-2.1+ and CC-BY-SA-3.0 and MIT and Apache-2.0</project_license>
+	<name>Minetest</name>
+	<summary>Multiplayer infinite-world block sandbox game</summary>
+	<description>
+		<p>
+			Minetest is an infinite-world block sandbox game and game engine.
+		</p><p>
+			Players can create and destroy various types of blocks in a
+			three-dimensional open world. This allows forming structures in
+			every possible creation, on multiplayer servers or in singleplayer.
+		</p><p>
+			Minetest is designed to be simple, stable, and portable.
+			It is lightweight enough to run on fairly old hardware.
+		</p><p>
+			Minetest has many features, including:
+		</p>
+		<ul>
+			<li>Ability to walk around, dig, and build in a near-infinite voxel world</li>
+			<li>Crafting of items from raw materials</li>
+			<li>Fast and able to run on old and slow hardware</li>
+			<li>A simple modding API that supports many additions and modifications to the game</li>
+			<li>Multiplayer support via servers hosted by users</li>
+			<li>Beautiful lightning-fast map generator</li>
+		</ul>
+	</description>
+	<screenshots>
+		<screenshot type="default" width="1440" height="851">http://minetest.net/_media/screen2.png</screenshot>
+		<screenshot width="1440" height="851">http://minetest.net/_media/screenshot_4032289578.png</screenshot>
+	</screenshots>
+	<url type="homepage">http://minetest.net</url>
+	<updatecontact>sfan5@live.de</updatecontact>
+</application>

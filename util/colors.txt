@@ -1,0 +1,78 @@
+0 128 128 128   # CONTENT_STONE
+2 39 66 106     # CONTENT_WATER
+3 255 255 0     # CONTENT_TORCH
+9 39 66 106     # CONTENT_WATERSOURCE
+e 117 86 41     # CONTENT_SIGN_WALL
+f 128 79 0      # CONTENT_CHEST
+10 118 118 118  # CONTENT_FURNACE
+15 103 78 42    # CONTENT_FENCE
+1e 162 119 53   # CONTENT_RAIL
+1f 154 110 40   # CONTENT_LADDER
+20 255 100 0    # CONTENT_LAVA
+21 255 100 0    # CONTENT_LAVASOURCE
+800 107 134 51  # CONTENT_GRASS
+801 86 58 31    # CONTENT_TREE
+802 48 95 8     # CONTENT_LEAVES
+803 102 129 38  # CONTENT_GRASS_FOOTSTEPS
+804 178 178 0   # CONTENT_MESE
+805 101 84 36   # CONTENT_MUD
+808 104 78 42   # CONTENT_WOOD
+809 210 194 156 # CONTENT_SAND
+80a 123 123 123 # CONTENT_COBBLE
+80b 199 199 199 # CONTENT_STEEL
+80c 183 183 222 # CONTENT_GLASS
+80d 219 202 178 # CONTENT_MOSSYCOBBLE
+80e 70 70 70    # CONTENT_GRAVEL
+80f 204 0 0     # CONTENT_SANDSTONE
+810 0 215 0     # CONTENT_CACTUS
+811 170 50 25   # CONTENT_BRICK
+812 104 78 42   # CONTENT_CLAY
+813 58 105 18   # CONTENT_PAPYRUS
+814 196 160 0   # CONTENT_BOOKSHELF
+815 205 190 121 # CONTENT_JUNGLETREE
+816 62 101 25   # CONTENT_JUNGLEGRASS
+817 255 153 255 # CONTENT_NC
+818 102 50 255  # CONTENT_NC_RB
+819 200 0 0     # CONTENT_APPLE
+
+default:stone 128 128 128
+default:stone_with_coal 50 50 50
+default:water_flowing 39 66 106
+default:torch 255 255 0
+default:water_source 39 66 106
+default:sign_wall 117 86 41
+default:chest 128 79 0
+default:furnace 118 118 118
+default:fence_wood 103 78 42
+default:rail 162 119 53
+default:ladder 154 110 40
+default:lava_flowing 255 100 0
+default:lava_source 255 100 0
+default:dirt_with_grass 107 134 51
+default:tree 86 58 31
+default:leaves 48 95 8
+default:dirt_with_grass_and_footsteps 102 129 38
+default:mese 178 178 0
+default:dirt 101 84 36
+default:wood 104 78 42
+default:sand 210 194 156
+default:cobble 123 123 123
+default:steelblock 199 199 199
+default:glass 183 183 222
+default:mossycobble 219 202 178
+default:gravel 70 70 70
+default:sandstone 204 0 0
+default:cactus 0 215 0
+default:brick 170 50 25
+default:clay 104 78 42
+default:papyrus 58 105 18
+default:bookshelf 196 160 0
+default:jungletree 205 190 121
+default:junglegrass 62 101 25
+default:nyancat 255 153 255
+default:nyancat_rainbow 102 50 255
+default:apple 200 0 0
+default:desert_sand 210 180 50
+default:desert_stone 150 100 30
+default:dry_shrub 100 80 40
+

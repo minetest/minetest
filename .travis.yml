@@ -1,0 +1,20 @@
+language: cpp
+compiler:
+  - gcc
+  - clang
+env:
+  - PLATFORM=Win32
+  - PLATFORM=Win64
+  - PLATFORM=Linux
+before_install: ./util/travis/before_install.sh
+script: ./util/travis/script.sh
+sudo: required
+notifications:
+  email: false
+matrix:
+  fast_finish: true
+  exclude:
+    - env: PLATFORM=Win32
+      compiler: clang
+    - env: PLATFORM=Win64
+      compiler: clang
