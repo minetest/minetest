@@ -203,9 +203,15 @@ local function formspec(tabview, name, tabdata)
 		"checkbox[8,0;cb_shaders;" .. fgettext("Shaders") .. ";"
 				.. dump(core.setting_getbool("enable_shaders")) .. "]"
 
+	if PLATFORM ~= "Android" then
+		tab_string = tab_string ..
+			"button[8,4.75;3.75,0.5;btn_change_keys;"
+			.. fgettext("Change keys") .. "]"
+	end
+
 	tab_string = tab_string ..
-		"button[8,4.75;3.75,0.5;btn_change_keys;" .. fgettext("Change keys") .. "]" ..
-		"button[0,4.75;3.75,0.5;btn_advanced_settings;" .. fgettext("Advanced Settings") .. "]"
+		"button[0,4.75;3.75,0.5;btn_advanced_settings;"
+		.. fgettext("Advanced Settings") .. "]"
 
 
 	if core.setting_get("touchscreen_threshold") ~= nil then
