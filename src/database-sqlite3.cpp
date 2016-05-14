@@ -237,7 +237,7 @@ bool Database_SQLite3::saveBlock(const v3s16 &pos, const std::string &data)
 	return true;
 }
 
-std::string Database_SQLite3::loadBlock(const v3s16 &pos)
+void Database_SQLite3::loadBlock(const v3s16 &pos, std::string *block)
 {
 	verifyDatabase();
 
@@ -245,20 +245,17 @@ std::string Database_SQLite3::loadBlock(const v3s16 &pos)
 
 	if (sqlite3_step(m_stmt_read) != SQLITE_ROW) {
 		sqlite3_reset(m_stmt_read);
-		return "";
+		return;
 	}
+
 	const char *data = (const char *) sqlite3_column_blob(m_stmt_read, 0);
 	size_t len = sqlite3_column_bytes(m_stmt_read, 0);
 
-	std::string s;
-	if (data)
-		s = std::string(data, len);
+	*block = (data) ? std::string(data, len) : "";
 
 	sqlite3_step(m_stmt_read);
 	// We should never get more than 1 row, so ok to reset
 	sqlite3_reset(m_stmt_read);
-
-	return s;
 }
 
 void Database_SQLite3::createDatabase()

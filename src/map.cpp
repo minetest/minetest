@@ -3442,8 +3442,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 	v2s16 p2d(blockpos.X, blockpos.Z);
 
 	std::string ret;
-
-	ret = dbase->loadBlock(blockpos);
+	dbase->loadBlock(blockpos, &ret);
 	if (ret != "") {
 		loadBlock(&ret, blockpos, createSector(p2d), false);
 		return getBlockNoCreateNoEx(blockpos);

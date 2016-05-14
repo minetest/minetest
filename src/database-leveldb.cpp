@@ -65,16 +65,13 @@ bool Database_LevelDB::saveBlock(const v3s16 &pos, const std::string &data)
 	return true;
 }
 
-std::string Database_LevelDB::loadBlock(const v3s16 &pos)
+void Database_LevelDB::loadBlock(const v3s16 &pos, std::string *block)
 {
 	std::string datastr;
 	leveldb::Status status = m_database->Get(leveldb::ReadOptions(),
 		i64tos(getBlockAsInteger(pos)), &datastr);
 
-	if(status.ok())
-		return datastr;
-	else
-		return "";
+	*block = (status.ok()) ? datastr : "";
 }
 
 bool Database_LevelDB::deleteBlock(const v3s16 &pos)

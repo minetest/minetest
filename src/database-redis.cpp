@@ -101,7 +101,7 @@ bool Database_Redis::saveBlock(const v3s16 &pos, const std::string &data)
 	return true;
 }
 
-std::string Database_Redis::loadBlock(const v3s16 &pos)
+void Database_Redis::loadBlock(const v3s16 &pos, std::string *block)
 {
 	std::string tmp = i64tos(getBlockAsInteger(pos));
 	redisReply *reply = static_cast<redisReply *>(redisCommand(ctx,
@@ -111,12 +111,13 @@ std::string Database_Redis::loadBlock(const v3s16 &pos)
 		throw FileNotGoodException(std::string(
 			"Redis command 'HGET %s %s' failed: ") + ctx->errstr);
 	}
+
 	switch (reply->type) {
 	case REDIS_REPLY_STRING: {
-		std::string str(reply->str, reply->len);
+		*block = std::string(reply->str, reply->len);
 		// std::string copies the memory so this won't cause any problems
 		freeReplyObject(reply);
-		return str;
+		return;
 	}
 	case REDIS_REPLY_ERROR: {
 		std::string errstr(reply->str, reply->len);
@@ -127,11 +128,13 @@ std::string Database_Redis::loadBlock(const v3s16 &pos)
 			"Redis command 'HGET %s %s' errored: ") + errstr);
 	}
 	case REDIS_REPLY_NIL: {
+		*block = "";
 		// block not found in database
 		freeReplyObject(reply);
-		return "";
+		return;
 	}
 	}
+
 	errorstream << "loadBlock: loading block " << PP(pos)
 		<< " returned invalid reply type " << reply->type
 		<< ": " << std::string(reply->str, reply->len) << std::endl;

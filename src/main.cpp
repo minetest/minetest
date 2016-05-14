@@ -948,7 +948,8 @@ static bool migrate_database(const GameParams &game_params, const Settings &cmd_
 	for (std::vector<v3s16>::const_iterator it = blocks.begin(); it != blocks.end(); ++it) {
 		if (kill) return false;
 
-		const std::string &data = old_db->loadBlock(*it);
+		std::string data;
+		old_db->loadBlock(*it, &data);
 		if (!data.empty()) {
 			new_db->saveBlock(*it, data);
 		} else {
