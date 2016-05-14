@@ -203,7 +203,11 @@ local function formspec(tabview, name, tabdata)
 		"checkbox[8,0;cb_shaders;" .. fgettext("Shaders") .. ";"
 				.. dump(core.setting_getbool("enable_shaders")) .. "]"
 
-	if PLATFORM ~= "Android" then
+	if PLATFORM == "Android" then
+		tab_string = tab_string ..
+			"button[8,4.75;3.75,0.5;btn_reset_singleplayer;"
+			.. fgettext("Reset singleplayer world") .. "]"
+	else
 		tab_string = tab_string ..
 			"button[8,4.75;3.75,0.5;btn_change_keys;"
 			.. fgettext("Change keys") .. "]"
