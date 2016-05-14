@@ -169,7 +169,8 @@ ENABLE_CURSES       - Build with (n)curses; Enables a server side terminal (comm
 ENABLE_FREETYPE     - Build with FreeType2; Allows using TTF fonts
 ENABLE_GETTEXT      - Build with Gettext; Allows using translations
 ENABLE_GLES         - Search for Open GLES headers & libraries and use them
-ENABLE_LEVELDB      - Build with LevelDB; Enables use of LevelDB map backend (faster than SQLite3)
+ENABLE_LEVELDB      - Build with LevelDB; Enables use of LevelDB map backend
+ENABLE_POSTGRESQL   - Build with libpq; Enables use of PostgreSQL map backend (PostgreSQL 9.5 or greater required)
 ENABLE_REDIS        - Build with libhiredis; Enables use of Redis map backend
 ENABLE_SPATIAL      - Build with LibSpatial; Speeds up AreaStores
 ENABLE_SOUND        - Build with OpenAL, libogg & libvorbis; in-game Sounds
@@ -203,6 +204,8 @@ IRRLICHT_LIBRARY                - Path to libIrrlicht.a/libIrrlicht.so/libIrrlic
 LEVELDB_INCLUDE_DIR             - Only when building with LevelDB; directory that contains db.h
 LEVELDB_LIBRARY                 - Only when building with LevelDB; path to libleveldb.a/libleveldb.so/libleveldb.dll.a
 LEVELDB_DLL                     - Only when building with LevelDB on Windows; path to libleveldb.dll
+POSTGRESQL_INCLUDE_DIR          - Only when building with PostgreSQL; directory that contains libpq-fe.h
+POSTGRESQL_LIBRARY              - Only when building with PostgreSQL; path to libpq.a/libpq.so
 REDIS_INCLUDE_DIR               - Only when building with Redis; directory that contains hiredis.h
 REDIS_LIBRARY                   - Only when building with Redis; path to libhiredis.a/libhiredis.so
 SPATIAL_INCLUDE_DIR             - Only when building with LibSpatial; directory that contains spatialindex/SpatialIndex.h

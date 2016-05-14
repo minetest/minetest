@@ -17,13 +17,15 @@ if [[ $PLATFORM == "Unix" ]]; then
 	if [[ $TRAVIS_OS_NAME == "linux" ]]; then
 		sudo apt-get install libirrlicht-dev cmake libbz2-dev libpng12-dev \
 			libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev \
-			libhiredis-dev libogg-dev libgmp-dev libvorbis-dev libopenal-dev gettext
+			libhiredis-dev libogg-dev libgmp-dev libvorbis-dev libopenal-dev \
+			gettext libpq-dev postgresql-server-dev-all
 		# Linking to LevelDB is broken, use a custom build
 		wget http://minetest.kitsunemimi.pw/libleveldb-1.18-ubuntu12.04.7z
 		sudo 7z x -o/usr libleveldb-1.18-ubuntu12.04.7z
 	else
 		brew update
 		brew install freetype gettext hiredis irrlicht jpeg leveldb libogg libvorbis luajit
+		brew upgrade postgresql
 	fi
 elif [[ $PLATFORM == "Win32" ]]; then
 	wget http://minetest.kitsunemimi.pw/mingw_w64_i686_ubuntu12.04_4.9.1.7z -O mingw.7z
