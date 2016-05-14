@@ -42,11 +42,15 @@ public:
 
 		// Remember whether each key is down or up
 		if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
-			if (event.KeyInput.PressedDown) {
-				keyIsDown.set(event.KeyInput);
-				keyWasDown.set(event.KeyInput);
-			} else {
-				keyIsDown.unset(event.KeyInput);
+			const KeyPress &keyCode = event.KeyInput;
+			if (keysListenedFor[keyCode]) {
+				if (event.KeyInput.PressedDown) {
+					keyIsDown.set(keyCode);
+					keyWasDown.set(keyCode);
+				} else {
+					keyIsDown.unset(keyCode);
+				}
+				return true;
 			}
 		}
 
@@ -116,6 +120,15 @@ public:
 		return b;
 	}
 
+	void listenForKey(const KeyPress &keyCode)
+	{
+		keysListenedFor.set(keyCode);
+	}
+	void dontListenForKeys()
+	{
+		keysListenedFor.clear();
+	}
+
 	s32 getMouseWheel()
 	{
 		s32 a = mouse_wheel;
@@ -168,6 +181,12 @@ private:
 	KeyList keyIsDown;
 	// Whether a key has been pressed or not
 	KeyList keyWasDown;
+	// List of keys we listen for
+	// TODO perhaps the type of this is not really
+	// performant as KeyList is designed for few but
+	// often changing keys, and keysListenedFor is expected
+	// to change seldomly but contain lots of keys.
+	KeyList keysListenedFor;
 };
 
 
@@ -191,6 +210,14 @@ public:
 	virtual bool wasKeyDown(const KeyPress &keyCode)
 	{
 		return m_receiver->WasKeyDown(keyCode);
+	}
+	virtual void listenForKey(const KeyPress &keyCode)
+	{
+		m_receiver->listenForKey(keyCode);
+	}
+	virtual void dontListenForKeys()
+	{
+		m_receiver->dontListenForKeys();
 	}
 	virtual v2s32 getMousePos()
 	{

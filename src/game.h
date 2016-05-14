@@ -110,6 +110,9 @@ public:
 	virtual bool isKeyDown(const KeyPress &keyCode) = 0;
 	virtual bool wasKeyDown(const KeyPress &keyCode) = 0;
 
+	virtual void listenForKey(const KeyPress &keyCode) {}
+	virtual void dontListenForKeys() {}
+
 	virtual v2s32 getMousePos() = 0;
 	virtual void setMousePos(s32 x, s32 y) = 0;
 
