@@ -189,6 +189,30 @@ if(ENABLE_CURSES)
 	endif()
 endif(ENABLE_CURSES)
 
+option(ENABLE_POSTGRESQL "Enable PostgreSQL backend" TRUE)
+set(USE_POSTGRESQL FALSE)
+
+if(ENABLE_POSTGRESQL)
+	find_program(PG_CONFIG_EXECUTABLE pg_config DOC "pg_config")
+	find_library(PG_LIBRARY pq)
+	if(PG_CONFIG_EXECUTABLE)
+		execute_process(COMMAND ${PG_CONFIG_EXECUTABLE} --includedir-server
+			OUTPUT_VARIABLE PostgreSQL_SERVER_INCLUDE_DIRS
+			OUTPUT_STRIP_TRAILING_WHITESPACE)
+		set(PostgreSQL_ADDITIONAL_SEARCH_PATHS ${PostgreSQL_SERVER_INCLUDE_DIRS})
+	endif()
+
+	find_package("PostgreSQL")
+
+	if(PG_LIBRARY AND PG_CONFIG_EXECUTABLE)
+		set(USE_POSTGRESQL TRUE)
+		message(STATUS "PostgreSQL backend enabled")
+		include_directories(${PostgreSQL_INCLUDE_DIR})
+	else()
+		message(STATUS "PostgreSQL not found!")
+	endif()
+endif(ENABLE_POSTGRESQL)
+
 option(ENABLE_LEVELDB "Enable LevelDB backend" TRUE)
 set(USE_LEVELDB FALSE)
 
@@ -361,6 +385,7 @@ set(common_SRCS
 	craftdef.cpp
 	database-dummy.cpp
 	database-leveldb.cpp
+	database-postgresql.cpp
 	database-redis.cpp
 	database-sqlite3.cpp
 	database.cpp
@@ -592,6 +617,9 @@ if(BUILD_CLIENT)
 	if (USE_CURSES)
 		target_link_libraries(${PROJECT_NAME} ${CURSES_LIBRARIES})
 	endif()
+	if (USE_POSTGRESQL)
+		target_link_libraries(${PROJECT_NAME} ${PG_LIBRARY})
+	endif()
 	if (USE_LEVELDB)
 		target_link_libraries(${PROJECT_NAME} ${LEVELDB_LIBRARY})
 	endif()
@@ -621,6 +649,9 @@ if(BUILD_SERVER)
 			COMPILE_DEFINITIONS "SERVER")
 	if (USE_CURSES)
 		target_link_libraries(${PROJECT_NAME}server ${CURSES_LIBRARIES})
+	endif()
+	if (USE_POSTGRESQL)
+		target_link_libraries(${PROJECT_NAME}server ${PG_LIBRARY})
 	endif()
 	if (USE_LEVELDB)
 		target_link_libraries(${PROJECT_NAME}server ${LEVELDB_LIBRARY})
