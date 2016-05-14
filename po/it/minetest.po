@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Minetest 0.4.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-05 16:13+0200\n"
-"PO-Revision-Date: 2016-05-08 17:01+0000\n"
+"PO-Revision-Date: 2016-05-14 13:34+0000\n"
 "Last-Translator: Emon Omen <emon@openmailbox.org>\n"
 "Language-Team: Italian "
 "<https://hosted.weblate.org/projects/minetest/minetest/it/>\n"
@@ -2831,7 +2831,7 @@ msgstr "Tasto \"Usare\" per arrampicarsi/scendere"
 
 #: src/settings_translation_file.cpp
 msgid "Language"
-msgstr "Linua"
+msgstr "Lingua"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave depth"
