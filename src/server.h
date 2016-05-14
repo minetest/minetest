@@ -376,7 +376,7 @@ public:
 
 	void printToConsoleOnly(const std::string &text);
 
-	void SendPlayerHPOrDie(PlayerSAO *player);
+	void SendPlayerHPOrDie(PlayerSAO *player, s16 oldhp);
 	void SendPlayerBreath(u16 peer_id);
 	void SendInventory(PlayerSAO* playerSAO);
 	void SendMovePlayer(u16 peer_id);

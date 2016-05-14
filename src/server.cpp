@@ -1105,7 +1105,7 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 	SendInventory(playersao);
 
 	// Send HP
-	SendPlayerHPOrDie(playersao);
+	SendPlayerHPOrDie(playersao, playersao->getHP());
 
 	// Send Breath
 	SendPlayerBreath(peer_id);
@@ -1497,7 +1497,7 @@ void Server::SendMovement(u16 peer_id)
 	Send(&pkt);
 }
 
-void Server::SendPlayerHPOrDie(PlayerSAO *playersao)
+void Server::SendPlayerHPOrDie(PlayerSAO *playersao, s16 oldhp)
 {
 	if (!g_settings->getBool("enable_damage"))
 		return;
@@ -1505,10 +1505,12 @@ void Server::SendPlayerHPOrDie(PlayerSAO *playersao)
 	u16 peer_id   = playersao->getPeerID();
 	bool is_alive = playersao->getHP() > 0;
 
-	if (is_alive)
-		SendPlayerHP(peer_id);
-	else
+	// Make sure that the player only dies once.
+	if (playersao->getHP() < oldhp && !is_alive) {
 		DiePlayer(peer_id);
+	} else {
+		SendPlayerHP(peer_id);
+	}
 }
 
 void Server::SendHP(u16 peer_id, u8 hp)
