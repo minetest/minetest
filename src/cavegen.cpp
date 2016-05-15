@@ -78,8 +78,8 @@ void CavesRandomWalk::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
 	this->ystride = nmax.X - nmin.X + 1;
 
 	// Set initial parameters from randomness
-	dswitchint = ps->range(1, 14);
-	flooded    = ps->range(1, 2) == 2;
+	int dswitchint = ps->range(1, 14);
+	flooded = ps->range(1, 2) == 2;
 
 	if (large_cave) {
 		part_max_length_rs = ps->range(2, 4);
@@ -104,10 +104,10 @@ void CavesRandomWalk::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
 
 	// Allow a bit more
 	//(this should be more than the maximum radius of the tunnel)
-	s16 insure = 10;
+	const s16 insure = 10;
 	s16 more = MYMAX(MAP_BLOCKSIZE - max_tunnel_diameter / 2 - insure, 1);
-	ar += v3s16(1,0,1) * more * 2;
-	of -= v3s16(1,0,1) * more;
+	ar += v3s16(1, 0, 1) * more * 2;
+	of -= v3s16(1, 0, 1) * more;
 
 	route_y_min = 0;
 	// Allow half a diameter + 7 over stone surface
@@ -133,9 +133,9 @@ void CavesRandomWalk::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
 	route_start_y_max = rangelim(route_start_y_max, route_start_y_min, ar.Y - 1);
 
 	// Randomize starting position
-	orp.Z = (float)(ps->next() % ar.Z) + 0.5;
-	orp.Y = (float)(ps->range(route_start_y_min, route_start_y_max)) + 0.5;
-	orp.X = (float)(ps->next() % ar.X) + 0.5;
+	orp.Z = (float)(ps->next() % ar.Z) + 0.5f;
+	orp.Y = (float)(ps->range(route_start_y_min, route_start_y_max)) + 0.5f;
+	orp.X = (float)(ps->next() % ar.X) + 0.5f;
 
 	// Add generation notify begin event
 	if (gennotify) {
@@ -230,14 +230,14 @@ void CavesRandomWalk::makeTunnel(bool dirswitch)
 	vec = rp - orp;
 
 	float veclen = vec.getLength();
-	if (veclen < 0.05)
-		veclen = 1.0;
+	if (veclen < 0.05f)
+		veclen = 1.0f;
 
 	// Every second section is rough
 	bool randomize_xz = (ps->range(1, 2) == 1);
 
 	// Carve routes
-	for (float f = 0; f < 1.0; f += 1.0 / veclen)
+	for (float f = 0.f; f < 1.0f; f += 1.0f / veclen)
 		carveRoute(vec, f, randomize_xz);
 
 	orp = rp;
@@ -255,15 +255,15 @@ void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
 
 	float nval = NoisePerlin3D(np_caveliquids, startp.X,
 		startp.Y, startp.Z, seed);
-	MapNode liquidnode = (nval < 0.40 && node_max.Y < lava_depth) ?
+	MapNode liquidnode = (nval < 0.40f && node_max.Y < lava_depth) ?
 		lavanode : waternode;
 
 	v3f fp = orp + vec * f;
-	fp.X += 0.1 * ps->range(-10, 10);
-	fp.Z += 0.1 * ps->range(-10, 10);
+	fp.X += 0.1f * ps->range(-10, 10);
+	fp.Z += 0.1f * ps->range(-10, 10);
 	v3s16 cp(fp.X, fp.Y, fp.Z);
 
-	s16 d0 = -rs/2;
+	s16 d0 = -rs / 2;
 	s16 d1 = d0 + rs;
 	if (randomize_xz) {
 		d0 += ps->range(-1, 1);
@@ -388,7 +388,7 @@ void CavesV6::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
 	// Set initial parameters from randomness
 	min_tunnel_diameter = 2;
 	max_tunnel_diameter = ps->range(2, 6);
-	dswitchint          = ps->range(1, 14);
+	int dswitchint      = ps->range(1, 14);
 	if (large_cave) {
 		part_max_length_rs  = ps->range(2, 4);
 		tunnel_routepoints  = ps->range(5, ps->range(15, 30));
@@ -410,7 +410,7 @@ void CavesV6::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
 	// Allow a bit more
 	//(this should be more than the maximum radius of the tunnel)
 	const s16 max_spread_amount = MAP_BLOCKSIZE;
-	s16 insure = 10;
+	const s16 insure = 10;
 	s16 more = MYMAX(max_spread_amount - max_tunnel_diameter / 2 - insure, 1);
 	ar += v3s16(1, 0, 1) * more * 2;
 	of -= v3s16(1, 0, 1) * more;
@@ -439,9 +439,9 @@ void CavesV6::makeCave(MMVManip *vm, v3s16 nmin, v3s16 nmax,
 	route_start_y_max = rangelim(route_start_y_max, route_start_y_min, ar.Y - 1);
 
 	// Randomize starting position
-	orp.Z = (float)(ps->next() % ar.Z) + 0.5;
-	orp.Y = (float)(ps->range(route_start_y_min, route_start_y_max)) + 0.5;
-	orp.X = (float)(ps->next() % ar.X) + 0.5;
+	orp.Z = (float)(ps->next() % ar.Z) + 0.5f;
+	orp.Y = (float)(ps->range(route_start_y_min, route_start_y_max)) + 0.5f;
+	orp.X = (float)(ps->next() % ar.X) + 0.5f;
 
 	// Add generation notify begin event
 	if (gennotify != NULL) {
@@ -543,14 +543,14 @@ void CavesV6::makeTunnel(bool dirswitch)
 
 	float veclen = vec.getLength();
 	// As odd as it sounds, veclen is *exactly* 0.0 sometimes, causing a FPE
-	if (veclen < 0.05)
-		veclen = 1.0;
+	if (veclen < 0.05f)
+		veclen = 1.0f;
 
 	// Every second section is rough
 	bool randomize_xz = (ps2->range(1, 2) == 1);
 
 	// Carve routes
-	for (float f = 0; f < 1.0; f += 1.0 / veclen)
+	for (float f = 0.f; f < 1.0f; f += 1.0f / veclen)
 		carveRoute(vec, f, randomize_xz, tunnel_above_ground);
 
 	orp = rp;
@@ -568,8 +568,8 @@ void CavesV6::carveRoute(v3f vec, float f, bool randomize_xz,
 	startp += of;
 
 	v3f fp = orp + vec * f;
-	fp.X += 0.1 * ps->range(-10, 10);
-	fp.Z += 0.1 * ps->range(-10, 10);
+	fp.X += 0.1f * ps->range(-10, 10);
+	fp.Z += 0.1f * ps->range(-10, 10);
 	v3s16 cp(fp.X, fp.Y, fp.Z);
 
 	s16 d0 = -rs / 2;
