@@ -53,6 +53,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
+#include "script/scripting_game.h" // getScriptIface()
 
 /*
 	Map
@@ -1614,7 +1615,8 @@ s32 Map::transforming_liquid_size() {
         return m_transforming_liquid.size();
 }
 
-void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks)
+void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
+						   ServerEnvironment& env)
 {
 
 	INodeDefManager *nodemgr = m_gamedef->ndef();
@@ -1692,6 +1694,16 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks)
 				if (!cf.floodable)
 					continue;
 				floodable_node = n0.getContent();
+				/* if the current node isn't air, drop its items */
+				if(floodable_node != CONTENT_AIR) {
+				  ItemStack item;
+				  item.name = cf.name;
+				  item.count = 1;
+				  /* don't use constructor since we already know this
+					 isn't a tool. */
+				  env.getScriptIface()->item_OnDrop(item,NULL,
+													intToFloat(p0,BS));
+				}
 				liquid_kind = CONTENT_AIR;
 				break;
 		}
@@ -1726,6 +1738,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks)
 				case LIQUID_NONE:
 					if (cfnb.floodable) {
 						airs[num_airs++] = nb;
+
 						// if the current node is a water source the neighbor
 						// should be enqueded for transformation regardless of whether the
 						// current node changes or not.
