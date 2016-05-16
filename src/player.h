@@ -332,6 +332,9 @@ public:
 	v3f eye_offset_first;
 	v3f eye_offset_third;
 
+	v3f vel_change;
+	bool vel_change_relative;
+
 	Inventory inventory;
 
 	f32 movement_acceleration_default;
@@ -432,6 +435,7 @@ public:
 	void setPlayerSAO(PlayerSAO *sao)
 	{ m_sao = sao; }
 	void setPosition(const v3f &position);
+	void setVelocity(const v3f &vel, const bool relative);
 
 private:
 	PlayerSAO *m_sao;

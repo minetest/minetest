@@ -201,6 +201,9 @@ private:
 	// set_look_yaw(self, radians)
 	static int l_set_look_yaw(lua_State *L);
 
+	// set_player_velocity(self, velocity, relative)
+	static int l_set_player_velocity(lua_State *L);
+
 	// set_breath(self, breath)
 	static int l_set_breath(lua_State *L);
 

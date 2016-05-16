@@ -1063,6 +1063,15 @@ void PlayerSAO::setPitch(float pitch)
 	((Server*)m_env->getGameDef())->SendMovePlayer(m_peer_id);
 }
 
+void PlayerSAO::setVelocity(v3f vel, bool relative)
+{
+	if(isAttached())
+		return;
+	m_player->vel_change = vel;
+	m_player->vel_change_relative = relative;
+	((Server*)m_env->getGameDef())->SendVelocityPlayer(m_peer_id);
+}
+
 int PlayerSAO::punch(v3f dir,
 	const ToolCapabilities *toolcap,
 	ServerActiveObject *puncher,

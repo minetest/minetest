@@ -185,6 +185,7 @@ public:
 	void moveTo(v3f pos, bool continuous);
 	void setYaw(float);
 	void setPitch(float);
+	void setVelocity(v3f vel, bool relative);
 
 	/*
 		Interaction interface

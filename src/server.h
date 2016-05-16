@@ -378,6 +378,7 @@ public:
 	void SendPlayerBreath(u16 peer_id);
 	void SendInventory(PlayerSAO* playerSAO);
 	void SendMovePlayer(u16 peer_id);
+	void SendVelocityPlayer(u16 peer_id);
 
 	// Bind address
 	Address m_bind_addr;
