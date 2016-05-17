@@ -46,11 +46,11 @@ Database_Redis::Database_Redis(Settings &conf)
 	int port = conf.exists("redis_port") ? conf.getU16("redis_port") : 6379;
 	ctx = redisConnect(addr, port);
 	if (!ctx) {
-		throw FileNotGoodException("Cannot allocate redis context");
+		throw DatabaseException("Cannot allocate redis context");
 	} else if (ctx->err) {
 		std::string err = std::string("Connection error: ") + ctx->errstr;
 		redisFree(ctx);
-		throw FileNotGoodException(err);
+		throw DatabaseException(err);
 	}
 }
 
@@ -62,7 +62,7 @@ Database_Redis::~Database_Redis()
 void Database_Redis::beginSave() {
 	redisReply *reply = static_cast<redisReply *>(redisCommand(ctx, "MULTI"));
 	if (!reply) {
-		throw FileNotGoodException(std::string(
+		throw DatabaseException(std::string(
 			"Redis command 'MULTI' failed: ") + ctx->errstr);
 	}
 	freeReplyObject(reply);
@@ -71,7 +71,7 @@ void Database_Redis::beginSave() {
 void Database_Redis::endSave() {
 	redisReply *reply = static_cast<redisReply *>(redisCommand(ctx, "EXEC"));
 	if (!reply) {
-		throw FileNotGoodException(std::string(
+		throw DatabaseException(std::string(
 			"Redis command 'EXEC' failed: ") + ctx->errstr);
 	}
 	freeReplyObject(reply);
@@ -108,7 +108,7 @@ void Database_Redis::loadBlock(const v3s16 &pos, std::string *block)
 			"HGET %s %s", hash.c_str(), tmp.c_str()));
 
 	if (!reply) {
-		throw FileNotGoodException(std::string(
+		throw DatabaseException(std::string(
 			"Redis command 'HGET %s %s' failed: ") + ctx->errstr);
 	}
 
@@ -124,7 +124,7 @@ void Database_Redis::loadBlock(const v3s16 &pos, std::string *block)
 		freeReplyObject(reply);
 		errorstream << "loadBlock: loading block " << PP(pos)
 			<< " failed: " << errstr << std::endl;
-		throw FileNotGoodException(std::string(
+		throw DatabaseException(std::string(
 			"Redis command 'HGET %s %s' errored: ") + errstr);
 	}
 	case REDIS_REPLY_NIL: {
@@ -139,7 +139,7 @@ void Database_Redis::loadBlock(const v3s16 &pos, std::string *block)
 		<< " returned invalid reply type " << reply->type
 		<< ": " << std::string(reply->str, reply->len) << std::endl;
 	freeReplyObject(reply);
-	throw FileNotGoodException(std::string(
+	throw DatabaseException(std::string(
 		"Redis command 'HGET %s %s' gave invalid reply."));
 }
 
@@ -150,7 +150,7 @@ bool Database_Redis::deleteBlock(const v3s16 &pos)
 	redisReply *reply = static_cast<redisReply *>(redisCommand(ctx,
 		"HDEL %s %s", hash.c_str(), tmp.c_str()));
 	if (!reply) {
-		throw FileNotGoodException(std::string(
+		throw DatabaseException(std::string(
 			"Redis command 'HDEL %s %s' failed: ") + ctx->errstr);
 	} else if (reply->type == REDIS_REPLY_ERROR) {
 		warningstream << "deleteBlock: deleting block " << PP(pos)
@@ -167,7 +167,7 @@ void Database_Redis::listAllLoadableBlocks(std::vector<v3s16> &dst)
 {
 	redisReply *reply = static_cast<redisReply *>(redisCommand(ctx, "HKEYS %s", hash.c_str()));
 	if (!reply) {
-		throw FileNotGoodException(std::string(
+		throw DatabaseException(std::string(
 			"Redis command 'HKEYS %s' failed: ") + ctx->errstr);
 	}
 	switch (reply->type) {
@@ -179,7 +179,7 @@ void Database_Redis::listAllLoadableBlocks(std::vector<v3s16> &dst)
 		}
 		break;
 	case REDIS_REPLY_ERROR:
-		throw FileNotGoodException(std::string(
+		throw DatabaseException(std::string(
 			"Failed to get keys from database: ") +
 			std::string(reply->str, reply->len));
 	}

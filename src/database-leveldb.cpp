@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define ENSURE_STATUS_OK(s) \
 	if (!(s).ok()) { \
-		throw FileNotGoodException(std::string("LevelDB error: ") + \
+		throw DatabaseException(std::string("LevelDB error: ") + \
 				(s).ToString()); \
 	}
 

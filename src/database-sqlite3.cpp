@@ -47,7 +47,7 @@ SQLite format specification:
 
 #define SQLRES(s, r, m) \
 	if ((s) != (r)) { \
-		throw FileNotGoodException(std::string(m) + ": " +\
+		throw DatabaseException(std::string(m) + ": " +\
 				sqlite3_errmsg(m_database)); \
 	}
 #define SQLOK(s, m) SQLRES(s, SQLITE_OK, m)
