@@ -2167,12 +2167,12 @@ void ConnectionReceiveThread::receive()
 				throw InvalidIncomingDataException("Channel doesn't exist");
 			}
 
-			/* preserve original peer_id for later usage */
-			u16 packet_peer_id   = peer_id;
-
 			/* Try to identify peer by sender address (may happen on join) */
 			if (peer_id == PEER_ID_INEXISTENT) {
 				peer_id = m_connection->lookupPeer(sender);
+				// We do not have to remind the peer of its
+				// peer id as the CONTROLTYPE_SET_PEER_ID
+				// command was sent reliably.
 			}
 
 			/* The peer was not found in our lists. Add it. */
@@ -2213,11 +2213,6 @@ void ConnectionReceiveThread::receive()
 					continue;
 				}
 			}
-
-
-			/* mark peer as seen with id */
-			if (!(packet_peer_id == PEER_ID_INEXISTENT))
-				peer->setSentWithID();
 
 			peer->ResetTimeout();
 
@@ -2756,7 +2751,7 @@ u16 Connection::lookupPeer(Address& sender)
 	for(; j != m_peers.end(); ++j)
 	{
 		Peer *peer = j->second;
-		if (peer->isActive())
+		if (peer->isPendingDeletion())
 			continue;
 
 		Address tocheck;
