@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include "threading/mutex_auto_lock.h"
 #include "util/numeric.h"
+#include "util/base64.h"
 #include "hud.h"
 #include "constants.h"
 #include "gamedef.h"
@@ -59,6 +60,8 @@ Player::Player(IGameDef *gamedef, const char *name):
 	m_dirty(false)
 {
 	strlcpy(m_name, name, PLAYERNAME_SIZE);
+
+	m_metadata.clear();
 
 	inventory.clear();
 	inventory.addList("main", PLAYER_INVENTORY_SIZE);
@@ -129,6 +132,8 @@ void Player::serialize(std::ostream &os)
 	args.setV3F("position", m_position);
 	args.setS32("hp", hp);
 	args.setS32("breath", m_breath);
+	args.set("metadata", base64_encode(reinterpret_cast<const unsigned char*>
+		(m_metadata.c_str()), m_metadata.length()));
 
 	args.writeLines(os);
 
@@ -162,6 +167,11 @@ void Player::deSerialize(std::istream &is, std::string playername)
 		m_breath = args.getS32("breath");
 	}catch(SettingNotFoundException &e) {
 		m_breath = PLAYER_MAX_BREATH;
+	}
+	try {
+		m_metadata = base64_decode(args.get("metadata"));
+	} catch (SettingNotFoundException &e) {
+		m_metadata.clear();
 	}
 
 	inventory.deSerialize(is);

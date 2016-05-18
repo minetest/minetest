@@ -1179,6 +1179,16 @@ void PlayerSAO::setBreath(u16 breath)
 	m_player->setBreath(breath);
 }
 
+std::string PlayerSAO::getMetadata() const
+{
+	return m_player->getMetadata();
+}
+
+void PlayerSAO::setMetadata(const std::string &metadata)
+{
+	m_player->setMetadata(metadata);
+}
+
 void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)
 {
 	m_armor_groups = armor_groups;

@@ -1104,6 +1104,33 @@ int ObjectRef::l_get_breath(lua_State *L)
 	return 1;
 }
 
+// set_metadata(self)
+int ObjectRef::l_set_metadata(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	PlayerSAO *co = getplayersao(ref);
+	if (!co)
+		return 0;
+	// Do it
+	std::string metadata = luaL_checkstring(L, 2);
+	co->setMetadata(metadata);
+	return 1;
+}
+
+// get_metadata(self)
+int ObjectRef::l_get_metadata(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	PlayerSAO *co = getplayersao(ref);
+	if (!co)
+		return 0;
+	// Do it
+	lua_pushstring(L, co->getMetadata().c_str());
+	return 1;
+}
+
 // set_inventory_formspec(self, formspec)
 int ObjectRef::l_set_inventory_formspec(lua_State *L)
 {
@@ -1758,6 +1785,8 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_look_pitch),
 	luamethod(ObjectRef, get_breath),
 	luamethod(ObjectRef, set_breath),
+	luamethod(ObjectRef, set_metadata),
+	luamethod(ObjectRef, get_metadata),
 	luamethod(ObjectRef, set_inventory_formspec),
 	luamethod(ObjectRef, get_inventory_formspec),
 	luamethod(ObjectRef, get_player_control),

@@ -180,6 +180,18 @@ public:
 		m_breath = breath;
 	}
 
+	std::string getMetadata()
+	{
+		return m_metadata;
+	}
+
+	virtual void setMetadata(const std::string &metadata)
+	{
+		if (metadata != m_metadata)
+			m_dirty = true;
+		m_metadata = metadata;
+	}
+
 	f32 getRadPitch()
 	{
 		return -1.0 * m_pitch * core::DEGTORAD;
@@ -397,6 +409,8 @@ protected:
 	v3f m_speed;
 	v3f m_position;
 	aabb3f m_collisionbox;
+
+	std::string m_metadata;
 
 	bool m_dirty;
 
