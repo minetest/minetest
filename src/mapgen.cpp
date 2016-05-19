@@ -542,56 +542,10 @@ void MapgenBasic::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 	if (max_stone_y < node_min.Y)
 		return;
 
-	noise_cave1->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
-	noise_cave2->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
+	CavesNoiseIntersection caves_noise(ndef, bmgr, csize,
+		&np_cave1, &np_cave2, seed, cave_width);
 
-	v3s16 em = vm->m_area.getExtent();
-	u32 index2d = 0;
-
-	for (s16 z = node_min.Z; z <= node_max.Z; z++)
-	for (s16 x = node_min.X; x <= node_max.X; x++, index2d++) {
-		bool column_is_open = false;  // Is column open to overground
-		bool is_tunnel = false;  // Is tunnel or tunnel floor
-		u32 vi = vm->m_area.index(x, node_max.Y, z);
-		u32 index3d = (z - node_min.Z) * zstride_1d + csize.Y * ystride +
-			(x - node_min.X);
-		// Biome of column
-		Biome *biome = (Biome *)bmgr->getRaw(biomemap[index2d]);
-
-		// Don't excavate the overgenerated stone at node_max.Y + 1,
-		// this creates a 'roof' over the tunnel, preventing light in
-		// tunnels at mapchunk borders when generating mapchunks upwards.
-		// This 'roof' is removed when the mapchunk above is generated.
-		for (s16 y = node_max.Y; y >= node_min.Y - 1; y--,
-				index3d -= ystride,
-				vm->m_area.add_y(em, vi, -1)) {
-
-			content_t c = vm->m_data[vi].getContent();
-			if (c == CONTENT_AIR || c == biome->c_water_top ||
-					c == biome->c_water) {
-				column_is_open = true;
-				continue;
-			}
-			// Ground
-			float d1 = contour(noise_cave1->result[index3d]);
-			float d2 = contour(noise_cave2->result[index3d]);
-
-			if (d1 * d2 > cave_width && ndef->get(c).is_ground_content) {
-				// In tunnel and ground content, excavate
-				vm->m_data[vi] = MapNode(CONTENT_AIR);
-				is_tunnel = true;
-			} else {
-				// Not in tunnel or not ground content
-				if (is_tunnel && column_is_open &&
-						(c == biome->c_filler || c == biome->c_stone))
-					// Tunnel entrance floor
-					vm->m_data[vi] = MapNode(biome->c_top);
-
-				column_is_open = false;
-				is_tunnel = false;
-			}
-		}
-	}
+	caves_noise.generateCaves(vm, node_min, node_max, biomemap);
 
 	if (node_max.Y > large_cave_depth)
 		return;

@@ -26,6 +26,43 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class GenerateNotifier;
 
 /*
+	CavesNoiseIntersection is a cave digging algorithm that carves smooth,
+	web-like, continuous tunnels at points where the density of the intersection
+	between two separate 3d noises is above a certain value.  This value,
+	cave_width, can be modified to set the effective width of these tunnels.
+
+	This algorithm is relatively heavyweight, taking ~80ms to generate an
+	80x80x80 chunk of map on a modern processor.  Use sparingly!
+
+	TODO(hmmmm): Remove dependency on biomes
+	TODO(hmmmm): Find alternative to overgeneration as solution for sunlight issue
+*/
+class CavesNoiseIntersection {
+public:
+	CavesNoiseIntersection(INodeDefManager *nodedef, BiomeManager *biomemgr,
+		v3s16 chunksize, NoiseParams *np_cave1, NoiseParams *np_cave2,
+		int seed, float cave_width);
+	~CavesNoiseIntersection();
+
+	void generateCaves(MMVManip *vm, v3s16 nmin, v3s16 nmax, u8 *biomemap);
+
+private:
+	INodeDefManager *m_ndef;
+	BiomeManager *m_bmgr;
+
+	// configurable parameters
+	v3s16 m_csize;
+	float m_cave_width;
+
+	// intermediate state variables
+	u16 m_ystride;
+	u16 m_zstride_1d;
+
+	Noise *noise_cave1;
+	Noise *noise_cave2;
+};
+
+/*
 	CavesRandomWalk is an implementation of a cave-digging algorithm that
 	operates on the principle of a "random walk" to approximate the stochiastic
 	activity of cavern development.

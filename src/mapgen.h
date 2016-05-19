@@ -220,8 +220,6 @@ public:
 	BiomeManager *bmgr;
 
 	Noise *noise_filler_depth;
-	Noise *noise_cave1;
-	Noise *noise_cave2;
 
 	v3s16 node_min;
 	v3s16 node_max;
@@ -235,7 +233,8 @@ public:
 	content_t c_sandstone;
 
 	int ystride;
-	int zstride_1d;
+	NoiseParams np_cave1;
+	NoiseParams np_cave2;
 	float cave_width;
 
 	MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emerge);
