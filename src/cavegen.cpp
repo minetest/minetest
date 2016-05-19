@@ -23,9 +23,105 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen_v5.h"
 #include "mapgen_v6.h"
 #include "mapgen_v7.h"
+#include "mg_biome.h"
 #include "cavegen.h"
 
 NoiseParams nparams_caveliquids(0, 1, v3f(150.0, 150.0, 150.0), 776, 3, 0.6, 2.0);
+
+
+////
+//// CavesNoiseIntersection
+////
+
+CavesNoiseIntersection::CavesNoiseIntersection(
+	INodeDefManager *nodedef, BiomeManager *biomemgr, v3s16 chunksize,
+	NoiseParams *np_cave1, NoiseParams *np_cave2, int seed, float cave_width)
+{
+	assert(nodedef);
+	assert(biomemgr);
+
+	m_ndef = nodedef;
+	m_bmgr = biomemgr;
+
+	m_csize = chunksize;
+	m_cave_width = cave_width;
+
+	m_ystride    = m_csize.X;
+	m_zstride_1d = m_csize.X * (m_csize.Y + 1);
+
+	// Noises are created using 1-down overgeneration
+	// A Nx-by-1-by-Nz-sized plane is at the bottom of the desired for
+	// re-carving the solid overtop placed for blocking sunlight
+	noise_cave1 = new Noise(np_cave1, seed, m_csize.X, m_csize.Y + 1, m_csize.Z);
+	noise_cave2 = new Noise(np_cave2, seed, m_csize.X, m_csize.Y + 1, m_csize.Z);
+}
+
+
+CavesNoiseIntersection::~CavesNoiseIntersection()
+{
+	delete noise_cave1;
+	delete noise_cave2;
+}
+
+
+void CavesNoiseIntersection::generateCaves(MMVManip *vm,
+	v3s16 nmin, v3s16 nmax, u8 *biomemap)
+{
+	assert(vm);
+	assert(biomemap);
+
+	noise_cave1->perlinMap3D(nmin.X, nmin.Y - 1, nmin.Z);
+	noise_cave2->perlinMap3D(nmin.X, nmin.Y - 1, nmin.Z);
+
+	v3s16 em = vm->m_area.getExtent();
+	u32 index2d = 0;
+
+	for (s16 z = nmin.Z; z <= nmax.Z; z++)
+	for (s16 x = nmin.X; x <= nmax.X; x++, index2d++) {
+		bool column_is_open = false;  // Is column open to overground
+		bool is_tunnel = false;  // Is tunnel or tunnel floor
+		u32 vi = vm->m_area.index(x, nmax.Y, z);
+		u32 index3d = (z - nmin.Z) * m_zstride_1d + m_csize.Y * m_ystride +
+			(x - nmin.X);
+		// Biome of column
+		Biome *biome = (Biome *)m_bmgr->getRaw(biomemap[index2d]);
+
+		// Don't excavate the overgenerated stone at nmax.Y + 1,
+		// this creates a 'roof' over the tunnel, preventing light in
+		// tunnels at mapchunk borders when generating mapchunks upwards.
+		// This 'roof' is removed when the mapchunk above is generated.
+		for (s16 y = nmax.Y; y >= nmin.Y - 1; y--,
+				index3d -= m_ystride,
+				vm->m_area.add_y(em, vi, -1)) {
+
+			content_t c = vm->m_data[vi].getContent();
+			if (c == CONTENT_AIR || c == biome->c_water_top ||
+					c == biome->c_water) {
+				column_is_open = true;
+				continue;
+			}
+			// Ground
+			float d1 = contour(noise_cave1->result[index3d]);
+			float d2 = contour(noise_cave2->result[index3d]);
+
+			if (d1 * d2 > m_cave_width && m_ndef->get(c).is_ground_content) {
+				// In tunnel and ground content, excavate
+				vm->m_data[vi] = MapNode(CONTENT_AIR);
+				is_tunnel = true;
+			} else {
+				// Not in tunnel or not ground content
+				if (is_tunnel && column_is_open &&
+						(c == biome->c_filler || c == biome->c_stone))
+					// Tunnel entrance floor
+					vm->m_data[vi] = MapNode(biome->c_top);
+
+				column_is_open = false;
+				is_tunnel = false;
+			}
+		}
+	}
+}
+
 
 ////
 //// CavesRandomWalk

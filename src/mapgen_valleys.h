@@ -100,6 +100,7 @@ private:
 	BiomeGenOriginal *m_bgen;
 
 	int zstride;
+	int zstride_1d;
 
 	float map_gen_limit;
 
@@ -120,6 +121,8 @@ private:
 	Noise *noise_inter_valley_fill;
 	Noise *noise_inter_valley_slope;
 	Noise *noise_rivers;
+	Noise *noise_cave1;
+	Noise *noise_cave2;
 	Noise *noise_massive_caves;
 	Noise *noise_terrain_height;
 	Noise *noise_valley_depth;

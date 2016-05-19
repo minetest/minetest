@@ -54,8 +54,6 @@ MapgenV5::MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	// amount of elements to skip for the next index
 	// for noise/height/biome maps (not vmanip)
 	this->ystride = csize.X;
-	// 1-down overgeneration
-	this->zstride_1d = csize.X * (csize.Y + 1);
 
 	this->heightmap = new s16[csize.X * csize.Z];
 
@@ -72,9 +70,9 @@ MapgenV5::MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	// 3D terrain noise
 	// 1-up 1-down overgeneration
 	noise_ground = new Noise(&sp->np_ground, seed, csize.X, csize.Y + 2, csize.Z);
-	// 1-down overgeneraion
-	noise_cave1  = new Noise(&sp->np_cave1,  seed, csize.X, csize.Y + 1, csize.Z);
-	noise_cave2  = new Noise(&sp->np_cave2,  seed, csize.X, csize.Y + 1, csize.Z);
+
+	MapgenBasic::np_cave1 = sp->np_cave1;
+	MapgenBasic::np_cave2 = sp->np_cave2;
 
 	//// Initialize biome generator
 	biomegen = emerge->biomemgr->createBiomeGen(
@@ -113,8 +111,6 @@ MapgenV5::~MapgenV5()
 	delete noise_filler_depth;
 	delete noise_factor;
 	delete noise_height;
-	delete noise_cave1;
-	delete noise_cave2;
 	delete noise_ground;
 
 	delete biomegen;

@@ -61,8 +61,6 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	this->ystride = csize.X;
 	// 1-up 1-down overgeneration
 	this->zstride_1u1d = csize.X * (csize.Y + 2);
-	// 1-down overgeneration
-	this->zstride_1d = csize.X * (csize.Y + 1);
 
 	this->heightmap       = new s16[csize.X * csize.Z];
 	this->ridge_heightmap = new s16[csize.X * csize.Z];
@@ -85,9 +83,9 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	// 1-up 1-down overgeneration
 	noise_mountain = new Noise(&sp->np_mountain, seed, csize.X, csize.Y + 2, csize.Z);
 	noise_ridge    = new Noise(&sp->np_ridge,    seed, csize.X, csize.Y + 2, csize.Z);
-	// 1-down overgeneraion
-	noise_cave1    = new Noise(&sp->np_cave1,    seed, csize.X, csize.Y + 1, csize.Z);
-	noise_cave2    = new Noise(&sp->np_cave2,    seed, csize.X, csize.Y + 1, csize.Z);
+
+	MapgenBasic::np_cave1 = sp->np_cave1;
+	MapgenBasic::np_cave2 = sp->np_cave2;
 
 	// TODO(hmmmm): should we have a way to disable biomemanager biomes?
 	//// Initialize biome generator
@@ -133,8 +131,6 @@ MapgenV7::~MapgenV7()
 	delete noise_ridge_uwater;
 	delete noise_mountain;
 	delete noise_ridge;
-	delete noise_cave1;
-	delete noise_cave2;
 
 	delete biomegen;
 
