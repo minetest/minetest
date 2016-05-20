@@ -225,9 +225,6 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 	// Create a block-specific seed
 	blockseed = getBlockSeed2(full_node_min, seed);
 
-	// Make some noise
-	calculateNoise();
-
 	// Generate base terrain
 	s16 stone_surface_max_y = generateBaseTerrain();
 
@@ -312,26 +309,6 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 }
 
 
-void MapgenV5::calculateNoise()
-{
-	//TimeTaker t("calculateNoise", NULL, PRECISION_MICRO);
-	s16 x = node_min.X;
-	s16 y = node_min.Y - 1;
-	s16 z = node_min.Z;
-
-	noise_factor->perlinMap2D(x, z);
-	noise_height->perlinMap2D(x, z);
-	noise_ground->perlinMap3D(x, y, z);
-
-	// Cave noises are calculated in generateCaves()
-	// only if solid terrain is present in mapchunk
-
-	noise_filler_depth->perlinMap2D(x, z);
-
-	//printf("calculateNoise: %dus\n", t.stop());
-}
-
-
 //bool is_cave(u32 index) {
 //	double d1 = contour(noise_cave1->result[index]);
 //	double d2 = contour(noise_cave2->result[index]);
@@ -354,6 +331,10 @@ int MapgenV5::generateBaseTerrain()
 	u32 index = 0;
 	u32 index2d = 0;
 	int stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
+
+	noise_factor->perlinMap2D(node_min.X, node_min.Z);
+	noise_height->perlinMap2D(node_min.X, node_min.Z);
+	noise_ground->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
 
 	for (s16 z=node_min.Z; z<=node_max.Z; z++) {
 		for (s16 y=node_min.Y - 1; y<=node_max.Y + 1; y++) {

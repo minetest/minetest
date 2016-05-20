@@ -88,7 +88,6 @@ public:
 
 	virtual void makeChunk(BlockMakeData *data);
 	int getSpawnLevelAtPoint(v2s16 p);
-	void calculateNoise();
 	bool getFractalAtPoint(s16 x, s16 y, s16 z);
 	s16 generateTerrain();
 };

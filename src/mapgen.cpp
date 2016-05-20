@@ -386,6 +386,8 @@ MgStoneType MapgenBasic::generateBiomes()
 	u32 index = 0;
 	MgStoneType stone_type = MGSTONE_STONE;
 
+	noise_filler_depth->perlinMap2D(node_min.X, node_min.Z);
+
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
 		Biome *biome = NULL;

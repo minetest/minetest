@@ -243,9 +243,6 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 
 	blockseed = getBlockSeed2(full_node_min, seed);
 
-	// Make some noise
-	calculateNoise();
-
 	// Generate base terrain, mountains, and ridges with initial heightmaps
 	s16 stone_surface_max_y = generateTerrain();
 
@@ -325,23 +322,6 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 	//			node_max + v3s16(1, 0, 1) * MAP_BLOCKSIZE, 0xFF);
 
 	this->generating = false;
-}
-
-
-void MapgenFractal::calculateNoise()
-{
-	//TimeTaker t("calculateNoise", NULL, PRECISION_MICRO);
-	s16 x = node_min.X;
-	s16 z = node_min.Z;
-
-	noise_seabed->perlinMap2D(x, z);
-
-	// Cave noises are calculated in generateCaves()
-	// only if solid terrain is present in mapchunk
-
-	noise_filler_depth->perlinMap2D(x, z);
-
-	//printf("calculateNoise: %dus\n", t.stop());
 }
 
 
@@ -473,6 +453,8 @@ s16 MapgenFractal::generateTerrain()
 
 	s16 stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 	u32 index2d = 0;
+
+	noise_seabed->perlinMap2D(node_min.X, node_min.Z);
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++) {
 		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
