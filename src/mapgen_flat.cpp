@@ -227,9 +227,6 @@ void MapgenFlat::makeChunk(BlockMakeData *data)
 
 	blockseed = getBlockSeed2(full_node_min, seed);
 
-	// Make some noise
-	calculateNoise();
-
 	// Generate base terrain, mountains, and ridges with initial heightmaps
 	s16 stone_surface_max_y = generateTerrain();
 
@@ -312,24 +309,6 @@ void MapgenFlat::makeChunk(BlockMakeData *data)
 }
 
 
-void MapgenFlat::calculateNoise()
-{
-	//TimeTaker t("calculateNoise", NULL, PRECISION_MICRO);
-	s16 x = node_min.X;
-	s16 z = node_min.Z;
-
-	if ((spflags & MGFLAT_LAKES) || (spflags & MGFLAT_HILLS))
-		noise_terrain->perlinMap2D(x, z);
-
-	// Cave noises are calculated in generateCaves()
-	// only if solid terrain is present in mapchunk
-
-	noise_filler_depth->perlinMap2D(x, z);
-
-	//printf("calculateNoise: %dus\n", t.stop());
-}
-
-
 s16 MapgenFlat::generateTerrain()
 {
 	MapNode n_air(CONTENT_AIR);
@@ -340,13 +319,14 @@ s16 MapgenFlat::generateTerrain()
 	s16 stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 	u32 ni2d = 0;
 
+	bool use_noise = (spflags & MGFLAT_LAKES) || (spflags & MGFLAT_HILLS);
+	if (use_noise)
+		noise_terrain->perlinMap2D(node_min.X, node_min.Z);
+
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, ni2d++) {
 		s16 stone_level = ground_level;
-		float n_terrain = 0.0f;
-
-		if ((spflags & MGFLAT_LAKES) || (spflags & MGFLAT_HILLS))
-			n_terrain = noise_terrain->result[ni2d];
+		float n_terrain = use_noise ? noise_terrain->result[ni2d] : 0.0f;
 
 		if ((spflags & MGFLAT_LAKES) && n_terrain < lake_threshold) {
 			s16 depress = (lake_threshold - n_terrain) * lake_steepness;

@@ -87,9 +87,6 @@ public:
 	float baseTerrainLevelFromMap(int index);
 	bool getMountainTerrainAtPoint(s16 x, s16 y, s16 z);
 	bool getMountainTerrainFromMap(int idx_xyz, int idx_xz, s16 y);
-
-	void calculateNoise();
-
 	int generateTerrain();
 	void generateRidgeTerrain();
 };

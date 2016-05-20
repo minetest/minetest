@@ -388,7 +388,6 @@ void MapgenValleys::calculateNoise()
 
 	//TimeTaker tcn("actualNoise");
 
-	noise_filler_depth->perlinMap2D(x, z);
 	noise_inter_valley_slope->perlinMap2D(x, z);
 	noise_rivers->perlinMap2D(x, z);
 	noise_terrain_height->perlinMap2D(x, z);
