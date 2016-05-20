@@ -595,6 +595,15 @@ function table.copy(t, seen)
 	return n
 end
 --------------------------------------------------------------------------------
+-- make table.insert work faster
+local tinsert = table.insert
+function table.insert(t, v, n)
+	if n then
+		return tinsert(t, v, n)
+	end
+	t[#t+1] = v
+end
+--------------------------------------------------------------------------------
 -- mainmenu only functions
 --------------------------------------------------------------------------------
 if INIT == "mainmenu" then
