@@ -2265,7 +2265,11 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 				this->bringToFront(m_tooltip_element);
 				m_tooltip_element->setText(tooltip_text.c_str());
 				s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
+#if IRRLICHT_VERSION_MAJOR >= 1 && IRRLICHT_VERSION_MINOR >= 8 && IRRLICHT_VERSION_REVISION >= 2
 				s32 tooltip_height = m_tooltip_element->getTextHeight() + 5;
+#else
+				s32 tooltip_height = m_tooltip_element->getTextHeight() * tt_rows.size() + 5;
+#endif
 				v2u32 screenSize = driver->getScreenSize();
 				int tooltip_offset_x = m_btn_height;
 				int tooltip_offset_y = m_btn_height;
