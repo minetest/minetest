@@ -247,7 +247,7 @@ static void deSerializeSimpleSoundSpec(SimpleSoundSpec &ss, std::istream &is)
 	ss.gain = readF1000(is);
 }
 
-void TextureSettings::reset()
+void TextureSettings::readSettings()
 {
 	connected_glass                = g_settings->getBool("connected_glass");
 	opaque_water                   = g_settings->getBool("opaque_water");
@@ -1155,7 +1155,8 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 	IShaderSource *shdsrc = gamedef->getShaderSource();
 	scene::ISceneManager* smgr = gamedef->getSceneManager();
 	scene::IMeshManipulator* meshmanip = smgr->getMeshManipulator();
-	TextureSettings tsettings = TextureSettings();
+	TextureSettings tsettings;
+	tsettings.readSettings();
 
 	u32 size = m_content_features.size();
 

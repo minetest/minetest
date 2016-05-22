@@ -112,15 +112,14 @@ struct NodeBox
 struct MapNode;
 class NodeMetadata;
 
-enum LeavesStyle
-{
+enum LeavesStyle {
 	LEAVES_FANCY,
 	LEAVES_SIMPLE,
 	LEAVES_OPAQUE,
 };
 
-struct TextureSettings
-{
+class TextureSettings {
+public:
 	LeavesStyle leaves_style;
 	bool opaque_water;
 	bool connected_glass;
@@ -128,10 +127,9 @@ struct TextureSettings
 	bool enable_mesh_cache;
 	bool enable_minimap;
 
-	TextureSettings()
-	{ reset(); }
+	TextureSettings() {}
 
-	void reset();
+	void readSettings();
 };
 
 enum NodeDrawType
