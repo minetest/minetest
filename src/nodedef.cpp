@@ -247,6 +247,28 @@ static void deSerializeSimpleSoundSpec(SimpleSoundSpec &ss, std::istream &is)
 	ss.gain = readF1000(is);
 }
 
+void TextureSettings::readSettings()
+{
+	connected_glass                = g_settings->getBool("connected_glass");
+	opaque_water                   = g_settings->getBool("opaque_water");
+	bool enable_shaders            = g_settings->getBool("enable_shaders");
+	bool enable_bumpmapping        = g_settings->getBool("enable_bumpmapping");
+	bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
+	enable_mesh_cache              = g_settings->getBool("enable_mesh_cache");
+	enable_minimap                 = g_settings->getBool("enable_minimap");
+	std::string leaves_style_str   = g_settings->get("leaves_style");
+
+	use_normal_texture = enable_shaders &&
+		(enable_bumpmapping || enable_parallax_occlusion);
+	if (leaves_style_str == "fancy") {
+		leaves_style = LEAVES_FANCY;
+	} else if (leaves_style_str == "simple") {
+		leaves_style = LEAVES_SIMPLE;
+	} else {
+		leaves_style = LEAVES_OPAQUE;
+	}
+}
+
 /*
 	ContentFeatures
 */
@@ -486,6 +508,254 @@ void ContentFeatures::deSerialize(std::istream &is)
 	}catch(SerializationError &e) {};
 }
 
+#ifndef SERVER
+void ContentFeatures::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
+		TileDef *tiledef, u32 shader_id, bool use_normal_texture,
+		bool backface_culling, u8 alpha, u8 material_type)
+{
+	tile->shader_id     = shader_id;
+	tile->texture       = tsrc->getTextureForMesh(tiledef->name, &tile->texture_id);
+	tile->alpha         = alpha;
+	tile->material_type = material_type;
+
+	// Normal texture and shader flags texture
+	if (use_normal_texture) {
+		tile->normal_texture = tsrc->getNormalTexture(tiledef->name);
+	}
+	tile->flags_texture = tsrc->getShaderFlagsTexture(tile->normal_texture ? true : false);
+
+	// Material flags
+	tile->material_flags = 0;
+	if (backface_culling)
+		tile->material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
+	if (tiledef->animation.type == TAT_VERTICAL_FRAMES)
+		tile->material_flags |= MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
+	if (tiledef->tileable_horizontal)
+		tile->material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
+	if (tiledef->tileable_vertical)
+		tile->material_flags |= MATERIAL_FLAG_TILEABLE_VERTICAL;
+
+	// Animation parameters
+	int frame_count = 1;
+	if (tile->material_flags & MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES) {
+		// Get texture size to determine frame count by aspect ratio
+		v2u32 size = tile->texture->getOriginalSize();
+		int frame_height = (float)size.X /
+				(float)tiledef->animation.aspect_w *
+				(float)tiledef->animation.aspect_h;
+		frame_count = size.Y / frame_height;
+		int frame_length_ms = 1000.0 * tiledef->animation.length / frame_count;
+		tile->animation_frame_count = frame_count;
+		tile->animation_frame_length_ms = frame_length_ms;
+	}
+
+	if (frame_count == 1) {
+		tile->material_flags &= ~MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
+	} else {
+		std::ostringstream os(std::ios::binary);
+		tile->frames.resize(frame_count);
+
+		for (int i = 0; i < frame_count; i++) {
+
+			FrameSpec frame;
+
+			os.str("");
+			os << tiledef->name << "^[verticalframe:"
+				<< frame_count << ":" << i;
+
+			frame.texture = tsrc->getTextureForMesh(os.str(), &frame.texture_id);
+			if (tile->normal_texture)
+				frame.normal_texture = tsrc->getNormalTexture(os.str());
+			frame.flags_texture = tile->flags_texture;
+			tile->frames[i] = frame;
+		}
+	}
+}
+#endif
+
+#ifndef SERVER
+void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
+	scene::ISceneManager *smgr, scene::IMeshManipulator *meshmanip,
+	IGameDef *gamedef, const TextureSettings &tsettings)
+{
+	// minimap pixel color - the average color of a texture
+	if (tsettings.enable_minimap && tiledef[0].name != "")
+		minimap_color = tsrc->getTextureAverageColor(tiledef[0].name);
+
+	// Figure out the actual tiles to use
+	TileDef tdef[6];
+	for (u32 j = 0; j < 6; j++) {
+		tdef[j] = tiledef[j];
+		if (tdef[j].name == "")
+			tdef[j].name = "unknown_node.png";
+	}
+
+	bool is_liquid = false;
+	bool is_water_surface = false;
+
+	u8 material_type = (alpha == 255) ?
+		TILE_MATERIAL_BASIC : TILE_MATERIAL_ALPHA;
+
+	switch (drawtype) {
+	default:
+	case NDT_NORMAL:
+		solidness = 2;
+		break;
+	case NDT_AIRLIKE:
+		solidness = 0;
+		break;
+	case NDT_LIQUID:
+		assert(liquid_type == LIQUID_SOURCE);
+		if (tsettings.opaque_water)
+			alpha = 255;
+		solidness = 1;
+		is_liquid = true;
+		break;
+	case NDT_FLOWINGLIQUID:
+		assert(liquid_type == LIQUID_FLOWING);
+		solidness = 0;
+		if (tsettings.opaque_water)
+			alpha = 255;
+		is_liquid = true;
+		break;
+	case NDT_GLASSLIKE:
+		solidness = 0;
+		visual_solidness = 1;
+		break;
+	case NDT_GLASSLIKE_FRAMED:
+		solidness = 0;
+		visual_solidness = 1;
+		break;
+	case NDT_GLASSLIKE_FRAMED_OPTIONAL:
+		solidness = 0;
+		visual_solidness = 1;
+		drawtype = tsettings.connected_glass ? NDT_GLASSLIKE_FRAMED : NDT_GLASSLIKE;
+		break;
+	case NDT_ALLFACES:
+		solidness = 0;
+		visual_solidness = 1;
+		break;
+	case NDT_ALLFACES_OPTIONAL:
+		if (tsettings.leaves_style == LEAVES_FANCY) {
+			drawtype = NDT_ALLFACES;
+			solidness = 0;
+			visual_solidness = 1;
+		} else if (tsettings.leaves_style == LEAVES_SIMPLE) {
+			for (u32 j = 0; j < 6; j++) {
+				if (tiledef_special[j].name != "")
+					tdef[j].name = tiledef_special[j].name;
+			}
+			drawtype = NDT_GLASSLIKE;
+			solidness = 0;
+			visual_solidness = 1;
+		} else {
+			drawtype = NDT_NORMAL;
+			solidness = 2;
+			for (u32 i = 0; i < 6; i++)
+				tdef[i].name += std::string("^[noalpha");
+		}
+		if (waving == 1)
+			material_type = TILE_MATERIAL_WAVING_LEAVES;
+		break;
+	case NDT_PLANTLIKE:
+		solidness = 0;
+		if (waving == 1)
+			material_type = TILE_MATERIAL_WAVING_PLANTS;
+		break;
+	case NDT_FIRELIKE:
+		solidness = 0;
+		break;
+	case NDT_MESH:
+		solidness = 0;
+		break;
+	case NDT_TORCHLIKE:
+	case NDT_SIGNLIKE:
+	case NDT_FENCELIKE:
+	case NDT_RAILLIKE:
+	case NDT_NODEBOX:
+		solidness = 0;
+		break;
+	}
+
+	if (is_liquid) {
+		material_type = (alpha == 255) ?
+			TILE_MATERIAL_LIQUID_OPAQUE : TILE_MATERIAL_LIQUID_TRANSPARENT;
+		if (name == "default:water_source")
+			is_water_surface = true;
+	}
+
+	u32 tile_shader[6];
+	for (u16 j = 0; j < 6; j++) {
+		tile_shader[j] = shdsrc->getShader("nodes_shader",
+			material_type, drawtype);
+	}
+
+	if (is_water_surface) {
+		tile_shader[0] = shdsrc->getShader("water_surface_shader",
+			material_type, drawtype);
+	}
+
+	// Tiles (fill in f->tiles[])
+	for (u16 j = 0; j < 6; j++) {
+		fillTileAttribs(tsrc, &tiles[j], &tdef[j], tile_shader[j],
+			tsettings.use_normal_texture,
+			tiledef[j].backface_culling, alpha, material_type);
+	}
+
+	// Special tiles (fill in f->special_tiles[])
+	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++) {
+		fillTileAttribs(tsrc, &special_tiles[j], &tiledef_special[j],
+			tile_shader[j], tsettings.use_normal_texture,
+			tiledef_special[j].backface_culling, alpha, material_type);
+	}
+
+	if ((drawtype == NDT_MESH) && (mesh != "")) {
+		// Meshnode drawtype
+		// Read the mesh and apply scale
+		mesh_ptr[0] = gamedef->getMesh(mesh);
+		if (mesh_ptr[0]){
+			v3f scale = v3f(1.0, 1.0, 1.0) * BS * visual_scale;
+			scaleMesh(mesh_ptr[0], scale);
+			recalculateBoundingBox(mesh_ptr[0]);
+			meshmanip->recalculateNormals(mesh_ptr[0], true, false);
+		}
+	} else if ((drawtype == NDT_NODEBOX) &&
+			((node_box.type == NODEBOX_REGULAR) ||
+			(node_box.type == NODEBOX_FIXED)) &&
+			(!node_box.fixed.empty())) {
+		//Convert regular nodebox nodes to meshnodes
+		//Change the drawtype and apply scale
+		drawtype = NDT_MESH;
+		mesh_ptr[0] = convertNodeboxesToMesh(node_box.fixed);
+		v3f scale = v3f(1.0, 1.0, 1.0) * visual_scale;
+		scaleMesh(mesh_ptr[0], scale);
+		recalculateBoundingBox(mesh_ptr[0]);
+		meshmanip->recalculateNormals(mesh_ptr[0], true, false);
+	}
+
+	//Cache 6dfacedir and wallmounted rotated clones of meshes
+	if (tsettings.enable_mesh_cache && mesh_ptr[0] && (param_type_2 == CPT2_FACEDIR)) {
+		for (u16 j = 1; j < 24; j++) {
+			mesh_ptr[j] = cloneMesh(mesh_ptr[0]);
+			rotateMeshBy6dFacedir(mesh_ptr[j], j);
+			recalculateBoundingBox(mesh_ptr[j]);
+			meshmanip->recalculateNormals(mesh_ptr[j], true, false);
+		}
+	} else if (tsettings.enable_mesh_cache && mesh_ptr[0] && (param_type_2 == CPT2_WALLMOUNTED)) {
+		static const u8 wm_to_6d[6] = {20, 0, 16+1, 12+3, 8, 4+2};
+		for (u16 j = 1; j < 6; j++) {
+			mesh_ptr[j] = cloneMesh(mesh_ptr[0]);
+			rotateMeshBy6dFacedir(mesh_ptr[j], wm_to_6d[j]);
+			recalculateBoundingBox(mesh_ptr[j]);
+			meshmanip->recalculateNormals(mesh_ptr[j], true, false);
+		}
+		rotateMeshBy6dFacedir(mesh_ptr[0], wm_to_6d[0]);
+		recalculateBoundingBox(mesh_ptr[0]);
+		meshmanip->recalculateNormals(mesh_ptr[0], true, false);
+	}
+}
+#endif
+
 /*
 	CNodeDefManager
 */
@@ -525,11 +795,6 @@ public:
 
 private:
 	void addNameIdMapping(content_t i, std::string name);
-#ifndef SERVER
-	void fillTileAttribs(ITextureSource *tsrc, TileSpec *tile, TileDef *tiledef,
-		u32 shader_id, bool use_normal_texture, bool backface_culling,
-		u8 alpha, u8 material_type);
-#endif
 
 	// Features indexed by id
 	std::vector<ContentFeatures> m_content_features;
@@ -890,270 +1155,17 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 	IShaderSource *shdsrc = gamedef->getShaderSource();
 	scene::ISceneManager* smgr = gamedef->getSceneManager();
 	scene::IMeshManipulator* meshmanip = smgr->getMeshManipulator();
-
-	bool connected_glass           = g_settings->getBool("connected_glass");
-	bool opaque_water              = g_settings->getBool("opaque_water");
-	bool enable_shaders            = g_settings->getBool("enable_shaders");
-	bool enable_bumpmapping        = g_settings->getBool("enable_bumpmapping");
-	bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
-	bool enable_mesh_cache         = g_settings->getBool("enable_mesh_cache");
-	bool enable_minimap            = g_settings->getBool("enable_minimap");
-	std::string leaves_style       = g_settings->get("leaves_style");
-
-	bool use_normal_texture = enable_shaders &&
-		(enable_bumpmapping || enable_parallax_occlusion);
+	TextureSettings tsettings;
+	tsettings.readSettings();
 
 	u32 size = m_content_features.size();
 
 	for (u32 i = 0; i < size; i++) {
-		ContentFeatures *f = &m_content_features[i];
-
-		// minimap pixel color - the average color of a texture
-		if (enable_minimap && f->tiledef[0].name != "")
-			f->minimap_color = tsrc->getTextureAverageColor(f->tiledef[0].name);
-
-		// Figure out the actual tiles to use
-		TileDef tiledef[6];
-		for (u32 j = 0; j < 6; j++) {
-			tiledef[j] = f->tiledef[j];
-			if (tiledef[j].name == "")
-				tiledef[j].name = "unknown_node.png";
-		}
-
-		bool is_liquid = false;
-		bool is_water_surface = false;
-
-		u8 material_type = (f->alpha == 255) ?
-			TILE_MATERIAL_BASIC : TILE_MATERIAL_ALPHA;
-
-		switch (f->drawtype) {
-		default:
-		case NDT_NORMAL:
-			f->solidness = 2;
-			break;
-		case NDT_AIRLIKE:
-			f->solidness = 0;
-			break;
-		case NDT_LIQUID:
-			assert(f->liquid_type == LIQUID_SOURCE);
-			if (opaque_water)
-				f->alpha = 255;
-			f->solidness = 1;
-			is_liquid = true;
-			break;
-		case NDT_FLOWINGLIQUID:
-			assert(f->liquid_type == LIQUID_FLOWING);
-			f->solidness = 0;
-			if (opaque_water)
-				f->alpha = 255;
-			is_liquid = true;
-			break;
-		case NDT_GLASSLIKE:
-			f->solidness = 0;
-			f->visual_solidness = 1;
-			break;
-		case NDT_GLASSLIKE_FRAMED:
-			f->solidness = 0;
-			f->visual_solidness = 1;
-			break;
-		case NDT_GLASSLIKE_FRAMED_OPTIONAL:
-			f->solidness = 0;
-			f->visual_solidness = 1;
-			f->drawtype = connected_glass ? NDT_GLASSLIKE_FRAMED : NDT_GLASSLIKE;
-			break;
-		case NDT_ALLFACES:
-			f->solidness = 0;
-			f->visual_solidness = 1;
-			break;
-		case NDT_ALLFACES_OPTIONAL:
-			if (leaves_style == "fancy") {
-				f->drawtype = NDT_ALLFACES;
-				f->solidness = 0;
-				f->visual_solidness = 1;
-			} else if (leaves_style == "simple") {
-				for (u32 j = 0; j < 6; j++) {
-					if (f->tiledef_special[j].name != "")
-						tiledef[j].name = f->tiledef_special[j].name;
-				}
-				f->drawtype = NDT_GLASSLIKE;
-				f->solidness = 0;
-				f->visual_solidness = 1;
-			} else {
-				f->drawtype = NDT_NORMAL;
-				f->solidness = 2;
-				for (u32 i = 0; i < 6; i++)
-					tiledef[i].name += std::string("^[noalpha");
-			}
-			if (f->waving == 1)
-				material_type = TILE_MATERIAL_WAVING_LEAVES;
-			break;
-		case NDT_PLANTLIKE:
-			f->solidness = 0;
-			if (f->waving == 1)
-				material_type = TILE_MATERIAL_WAVING_PLANTS;
-			break;
-		case NDT_FIRELIKE:
-			f->solidness = 0;
-			break;
-		case NDT_MESH:
-			f->solidness = 0;
-			break;
-		case NDT_TORCHLIKE:
-		case NDT_SIGNLIKE:
-		case NDT_FENCELIKE:
-		case NDT_RAILLIKE:
-		case NDT_NODEBOX:
-			f->solidness = 0;
-			break;
-		}
-
-		if (is_liquid) {
-			material_type = (f->alpha == 255) ?
-				TILE_MATERIAL_LIQUID_OPAQUE : TILE_MATERIAL_LIQUID_TRANSPARENT;
-			if (f->name == "default:water_source")
-				is_water_surface = true;
-		}
-
-		u32 tile_shader[6];
-		for (u16 j = 0; j < 6; j++) {
-			tile_shader[j] = shdsrc->getShader("nodes_shader",
-				material_type, f->drawtype);
-		}
-
-		if (is_water_surface) {
-			tile_shader[0] = shdsrc->getShader("water_surface_shader",
-				material_type, f->drawtype);
-		}
-
-		// Tiles (fill in f->tiles[])
-		for (u16 j = 0; j < 6; j++) {
-			fillTileAttribs(tsrc, &f->tiles[j], &tiledef[j], tile_shader[j],
-				use_normal_texture, f->tiledef[j].backface_culling, f->alpha, material_type);
-		}
-
-		// Special tiles (fill in f->special_tiles[])
-		for (u16 j = 0; j < CF_SPECIAL_COUNT; j++) {
-			fillTileAttribs(tsrc, &f->special_tiles[j], &f->tiledef_special[j],
-				tile_shader[j], use_normal_texture,
-				f->tiledef_special[j].backface_culling, f->alpha, material_type);
-		}
-
-		if ((f->drawtype == NDT_MESH) && (f->mesh != "")) {
-			// Meshnode drawtype
-			// Read the mesh and apply scale
-			f->mesh_ptr[0] = gamedef->getMesh(f->mesh);
-			if (f->mesh_ptr[0]){
-				v3f scale = v3f(1.0, 1.0, 1.0) * BS * f->visual_scale;
-				scaleMesh(f->mesh_ptr[0], scale);
-				recalculateBoundingBox(f->mesh_ptr[0]);
-				meshmanip->recalculateNormals(f->mesh_ptr[0], true, false);
-			}
-		} else if ((f->drawtype == NDT_NODEBOX) &&
-				((f->node_box.type == NODEBOX_REGULAR) ||
-				(f->node_box.type == NODEBOX_FIXED)) &&
-				(!f->node_box.fixed.empty())) {
-			//Convert regular nodebox nodes to meshnodes
-			//Change the drawtype and apply scale
-			f->drawtype = NDT_MESH;
-			f->mesh_ptr[0] = convertNodeboxesToMesh(f->node_box.fixed);
-			v3f scale = v3f(1.0, 1.0, 1.0) * f->visual_scale;
-			scaleMesh(f->mesh_ptr[0], scale);
-			recalculateBoundingBox(f->mesh_ptr[0]);
-			meshmanip->recalculateNormals(f->mesh_ptr[0], true, false);
-		}
-
-		//Cache 6dfacedir and wallmounted rotated clones of meshes
-		if (enable_mesh_cache && f->mesh_ptr[0] && (f->param_type_2 == CPT2_FACEDIR)) {
-			for (u16 j = 1; j < 24; j++) {
-				f->mesh_ptr[j] = cloneMesh(f->mesh_ptr[0]);
-				rotateMeshBy6dFacedir(f->mesh_ptr[j], j);
-				recalculateBoundingBox(f->mesh_ptr[j]);
-				meshmanip->recalculateNormals(f->mesh_ptr[j], true, false);
-			}
-		} else if (enable_mesh_cache && f->mesh_ptr[0] && (f->param_type_2 == CPT2_WALLMOUNTED)) {
-			static const u8 wm_to_6d[6] = {20, 0, 16+1, 12+3, 8, 4+2};
-			for (u16 j = 1; j < 6; j++) {
-				f->mesh_ptr[j] = cloneMesh(f->mesh_ptr[0]);
-				rotateMeshBy6dFacedir(f->mesh_ptr[j], wm_to_6d[j]);
-				recalculateBoundingBox(f->mesh_ptr[j]);
-				meshmanip->recalculateNormals(f->mesh_ptr[j], true, false);
-			}
-			rotateMeshBy6dFacedir(f->mesh_ptr[0], wm_to_6d[0]);
-			recalculateBoundingBox(f->mesh_ptr[0]);
-			meshmanip->recalculateNormals(f->mesh_ptr[0], true, false);
-		}
-
+		m_content_features[i].updateTextures(tsrc, shdsrc, smgr, meshmanip, gamedef, tsettings);
 		progress_callback(progress_callback_args, i, size);
 	}
 #endif
 }
-
-
-#ifndef SERVER
-void CNodeDefManager::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
-		TileDef *tiledef, u32 shader_id, bool use_normal_texture,
-		bool backface_culling, u8 alpha, u8 material_type)
-{
-	tile->shader_id     = shader_id;
-	tile->texture       = tsrc->getTextureForMesh(tiledef->name, &tile->texture_id);
-	tile->alpha         = alpha;
-	tile->material_type = material_type;
-
-	// Normal texture and shader flags texture
-	if (use_normal_texture) {
-		tile->normal_texture = tsrc->getNormalTexture(tiledef->name);
-	}
-	tile->flags_texture = tsrc->getShaderFlagsTexture(tile->normal_texture ? true : false);
-
-	// Material flags
-	tile->material_flags = 0;
-	if (backface_culling)
-		tile->material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
-	if (tiledef->animation.type == TAT_VERTICAL_FRAMES)
-		tile->material_flags |= MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
-	if (tiledef->tileable_horizontal)
-		tile->material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
-	if (tiledef->tileable_vertical)
-		tile->material_flags |= MATERIAL_FLAG_TILEABLE_VERTICAL;
-
-	// Animation parameters
-	int frame_count = 1;
-	if (tile->material_flags & MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES) {
-		// Get texture size to determine frame count by aspect ratio
-		v2u32 size = tile->texture->getOriginalSize();
-		int frame_height = (float)size.X /
-				(float)tiledef->animation.aspect_w *
-				(float)tiledef->animation.aspect_h;
-		frame_count = size.Y / frame_height;
-		int frame_length_ms = 1000.0 * tiledef->animation.length / frame_count;
-		tile->animation_frame_count = frame_count;
-		tile->animation_frame_length_ms = frame_length_ms;
-	}
-
-	if (frame_count == 1) {
-		tile->material_flags &= ~MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
-	} else {
-		std::ostringstream os(std::ios::binary);
-		tile->frames.resize(frame_count);
-
-		for (int i = 0; i < frame_count; i++) {
-
-			FrameSpec frame;
-
-			os.str("");
-			os << tiledef->name << "^[verticalframe:"
-				<< frame_count << ":" << i;
-
-			frame.texture = tsrc->getTextureForMesh(os.str(), &frame.texture_id);
-			if (tile->normal_texture)
-				frame.normal_texture = tsrc->getNormalTexture(os.str());
-			frame.flags_texture = tile->flags_texture;
-			tile->frames[i] = frame;
-		}
-	}
-}
-#endif
-
 
 void CNodeDefManager::serialize(std::ostream &os, u16 protocol_version) const
 {
