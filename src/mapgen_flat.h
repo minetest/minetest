@@ -70,12 +70,6 @@ private:
 	float hill_threshold;
 	float hill_steepness;
 	Noise *noise_terrain;
-
-	content_t c_cobble;
-	content_t c_stair_cobble;
-	content_t c_mossycobble;
-	content_t c_sandstonebrick;
-	content_t c_stair_sandstonebrick;
 };
 
 struct MapgenFactoryFlat : public MapgenFactory {

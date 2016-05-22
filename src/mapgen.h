@@ -219,9 +219,10 @@ public:
 	MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	virtual ~MapgenBasic();
 
+	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
+	virtual void generateDungeons(s16 max_stone_y, MgStoneType stone_type);
 	virtual MgStoneType generateBiomes();
 	virtual void dustTopNodes();
-	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
 
 protected:
 	EmergeManager *m_emerge;
@@ -234,11 +235,19 @@ protected:
 	v3s16 full_node_min;
 	v3s16 full_node_max;
 
+	// Content required for generateBiomes
 	content_t c_stone;
 	content_t c_water_source;
 	content_t c_river_water_source;
 	content_t c_desert_stone;
 	content_t c_sandstone;
+
+	// Content required for generateDungeons
+	content_t c_cobble;
+	content_t c_stair_cobble;
+	content_t c_mossycobble;
+	content_t c_sandstonebrick;
+	content_t c_stair_sandstonebrick;
 
 	int ystride;
 	int zstride;

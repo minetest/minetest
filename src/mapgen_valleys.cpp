@@ -113,25 +113,12 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 	tcave_cache = new float[csize.Y + 2];
 
 	// Resolve content to be used
-	c_cobble               = ndef->getId("mapgen_cobble");
-	c_lava_source          = ndef->getId("mapgen_lava_source");
-	c_mossycobble          = ndef->getId("mapgen_mossycobble");
-	c_sand                 = ndef->getId("mapgen_sand");
-	c_sandstonebrick       = ndef->getId("mapgen_sandstonebrick");
-	c_stair_cobble         = ndef->getId("mapgen_stair_cobble");
-	c_stair_sandstonebrick = ndef->getId("mapgen_stair_sandstonebrick");
+	c_lava_source = ndef->getId("mapgen_lava_source");
+	c_sand        = ndef->getId("mapgen_sand");
 
 	// Fall back to more basic content if not defined
-	if (c_mossycobble == CONTENT_IGNORE)
-		c_mossycobble = c_cobble;
 	if (c_sand == CONTENT_IGNORE)
 		c_sand = c_stone;
-	if (c_sandstonebrick == CONTENT_IGNORE)
-		c_sandstonebrick = c_sandstone;
-	if (c_stair_cobble == CONTENT_IGNORE)
-		c_stair_cobble = c_cobble;
-	if (c_stair_sandstonebrick == CONTENT_IGNORE)
-		c_stair_sandstonebrick = c_sandstone;
 }
 
 
@@ -279,48 +266,8 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 		generateCaves(stone_surface_max_y, large_cave_depth);
 
 	// Dungeon creation
-	if ((flags & MG_DUNGEONS) && node_max.Y < 50 && (stone_surface_max_y >= node_min.Y)) {
-		DungeonParams dp;
-
-		dp.np_rarity  = nparams_dungeon_rarity;
-		dp.np_density = nparams_dungeon_density;
-		dp.np_wetness = nparams_dungeon_wetness;
-		dp.c_water    = c_water_source;
-		if (stone_type == MGSTONE_STONE) {
-			dp.c_cobble = c_cobble;
-			dp.c_moss   = c_mossycobble;
-			dp.c_stair  = c_stair_cobble;
-
-			dp.diagonal_dirs = false;
-			dp.mossratio     = 3.f;
-			dp.holesize      = v3s16(1, 2, 1);
-			dp.roomsize      = v3s16(0, 0, 0);
-			dp.notifytype    = GENNOTIFY_DUNGEON;
-		} else if (stone_type == MGSTONE_DESERT_STONE) {
-			dp.c_cobble = c_desert_stone;
-			dp.c_moss   = c_desert_stone;
-			dp.c_stair  = c_desert_stone;
-
-			dp.diagonal_dirs = true;
-			dp.mossratio     = 0.f;
-			dp.holesize      = v3s16(2, 3, 2);
-			dp.roomsize      = v3s16(2, 5, 2);
-			dp.notifytype    = GENNOTIFY_TEMPLE;
-		} else if (stone_type == MGSTONE_SANDSTONE) {
-			dp.c_cobble = c_sandstonebrick;
-			dp.c_moss   = c_sandstonebrick;
-			dp.c_stair  = c_sandstonebrick;
-
-			dp.diagonal_dirs = false;
-			dp.mossratio     = 0.f;
-			dp.holesize      = v3s16(2, 2, 2);
-			dp.roomsize      = v3s16(2, 0, 2);
-			dp.notifytype    = GENNOTIFY_DUNGEON;
-		}
-
-		DungeonGen dgen(this, &dp);
-		dgen.generate(blockseed, full_node_min, full_node_max);
-	}
+	if ((flags & MG_DUNGEONS) && node_max.Y < 50)
+		generateDungeons(stone_surface_max_y, stone_type);
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)

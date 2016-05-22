@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "log.h"
 #include "cavegen.h"
+#include "dungeongen.h"
 
 FlagDesc flagdesc_mapgen[] = {
 	{"trees",       MG_TREES},
@@ -414,13 +415,30 @@ MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emer
 	c_sandstone          = ndef->getId("mapgen_sandstone");
 	c_river_water_source = ndef->getId("mapgen_river_water_source");
 
-	//// Fall back to more basic content if not defined
+	// Fall back to more basic content if not defined
 	if (c_desert_stone == CONTENT_IGNORE)
 		c_desert_stone = c_stone;
 	if (c_sandstone == CONTENT_IGNORE)
 		c_sandstone = c_stone;
 	if (c_river_water_source == CONTENT_IGNORE)
 		c_river_water_source = c_water_source;
+
+	//// Content used for dungeon generation
+	c_cobble               = ndef->getId("mapgen_cobble");
+	c_stair_cobble         = ndef->getId("mapgen_stair_cobble");
+	c_mossycobble          = ndef->getId("mapgen_mossycobble");
+	c_sandstonebrick       = ndef->getId("mapgen_sandstonebrick");
+	c_stair_sandstonebrick = ndef->getId("mapgen_stair_sandstonebrick");
+
+	// Fall back to more basic content if not defined
+	if (c_mossycobble == CONTENT_IGNORE)
+		c_mossycobble = c_cobble;
+	if (c_stair_cobble == CONTENT_IGNORE)
+		c_stair_cobble = c_cobble;
+	if (c_sandstonebrick == CONTENT_IGNORE)
+		c_sandstonebrick = c_sandstone;
+	if (c_stair_sandstonebrick == CONTENT_IGNORE)
+		c_stair_sandstonebrick = c_sandstone;
 }
 
 
@@ -611,6 +629,59 @@ void MapgenBasic::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 
 		cave.makeCave(vm, node_min, node_max, &ps, true, max_stone_y, heightmap);
 	}
+}
+
+
+void MapgenBasic::generateDungeons(s16 max_stone_y, MgStoneType stone_type)
+{
+	if (max_stone_y < node_min.Y)
+		return;
+
+	DungeonParams dp;
+
+	dp.np_rarity  = nparams_dungeon_rarity;
+	dp.np_density = nparams_dungeon_density;
+	dp.np_wetness = nparams_dungeon_wetness;
+	dp.c_water    = c_water_source;
+	switch (stone_type) {
+	default:
+	case MGSTONE_STONE:
+		dp.c_cobble = c_cobble;
+		dp.c_moss   = c_mossycobble;
+		dp.c_stair  = c_stair_cobble;
+
+		dp.diagonal_dirs = false;
+		dp.mossratio     = 3.0;
+		dp.holesize      = v3s16(1, 2, 1);
+		dp.roomsize      = v3s16(0, 0, 0);
+		dp.notifytype    = GENNOTIFY_DUNGEON;
+		break;
+	case MGSTONE_DESERT_STONE:
+		dp.c_cobble = c_desert_stone;
+		dp.c_moss   = c_desert_stone;
+		dp.c_stair  = c_desert_stone;
+
+		dp.diagonal_dirs = true;
+		dp.mossratio     = 0.0;
+		dp.holesize      = v3s16(2, 3, 2);
+		dp.roomsize      = v3s16(2, 5, 2);
+		dp.notifytype    = GENNOTIFY_TEMPLE;
+		break;
+	case MGSTONE_SANDSTONE:
+		dp.c_cobble = c_sandstonebrick;
+		dp.c_moss   = c_sandstonebrick;
+		dp.c_stair  = c_sandstonebrick;
+
+		dp.diagonal_dirs = false;
+		dp.mossratio     = 0.0;
+		dp.holesize      = v3s16(2, 2, 2);
+		dp.roomsize      = v3s16(2, 0, 2);
+		dp.notifytype    = GENNOTIFY_DUNGEON;
+		break;
+	}
+
+	DungeonGen dgen(this, &dp);
+	dgen.generate(blockseed, full_node_min, full_node_max);
 }
 
 
