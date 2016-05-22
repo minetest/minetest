@@ -500,7 +500,8 @@ void ServerEnvironment::saveLoadedPlayers()
 	for (std::vector<RemotePlayer *>::iterator it = m_players.begin();
 		it != m_players.end();
 		++it) {
-		if ((*it)->checkModified()) {
+		if ((*it)->checkModified() ||
+			((*it)->getPlayerSAO() && (*it)->getPlayerSAO()->extendedAttributesModified())) {
 			(*it)->save(players_path, m_server);
 		}
 	}

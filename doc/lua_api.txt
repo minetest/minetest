@@ -2899,6 +2899,8 @@ This is basically a reference to a C++ `ServerActiveObject`
         * `0`: player is drowning,
         * `1`-`10`: remaining number of bubbles
         * `11`: bubbles bar is not shown
+* `set_attribute(attribute, value)`: sets an extra attribute with value on player
+* `get_attribute(attribute)`: returns value for extra attribute. Returns nil if no attribute found.
 * `set_inventory_formspec(formspec)`
     * Redefine player's inventory form
     * Should usually be called in on_joinplayer

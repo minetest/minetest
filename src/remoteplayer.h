@@ -25,11 +25,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class PlayerSAO;
 
-enum RemotePlayerChatResult {
+enum RemotePlayerChatResult
+{
 	RPLAYER_CHATRESULT_OK,
 	RPLAYER_CHATRESULT_FLOODING,
 	RPLAYER_CHATRESULT_KICK,
 };
+
 /*
 	Player on the server
 */
@@ -135,6 +137,7 @@ private:
 		deSerialize stops reading exactly at the right point.
 	*/
 	void serialize(std::ostream &os);
+	void serializeExtraAttributes(std::string &output);
 
 	PlayerSAO *m_sao;
 	bool m_dirty;

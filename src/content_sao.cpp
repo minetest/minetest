@@ -791,6 +791,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, u16 peer_id_, bool is_singleplayer
 	m_pitch(0),
 	m_fov(0),
 	m_wanted_range(0),
+	m_extended_attributes_modified(false),
 	// public
 	m_physics_override_speed(1),
 	m_physics_override_jump(1),
