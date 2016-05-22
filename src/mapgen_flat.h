@@ -55,7 +55,14 @@ struct MapgenFlatParams : public MapgenSpecificParams {
 
 class MapgenFlat : public MapgenBasic {
 public:
-	u32 spflags;
+	MapgenFlat(int mapgenid, MapgenParams *params, EmergeManager *emerge);
+	~MapgenFlat();
+
+	virtual void makeChunk(BlockMakeData *data);
+	int getSpawnLevelAtPoint(v2s16 p);
+	s16 generateTerrain();
+
+private:
 	s16 ground_level;
 	s16 large_cave_depth;
 	float lake_threshold;
@@ -64,21 +71,11 @@ public:
 	float hill_steepness;
 	Noise *noise_terrain;
 
-	content_t c_lava_source;
-	content_t c_ice;
-
 	content_t c_cobble;
 	content_t c_stair_cobble;
 	content_t c_mossycobble;
 	content_t c_sandstonebrick;
 	content_t c_stair_sandstonebrick;
-
-	MapgenFlat(int mapgenid, MapgenParams *params, EmergeManager *emerge);
-	~MapgenFlat();
-
-	virtual void makeChunk(BlockMakeData *data);
-	int getSpawnLevelAtPoint(v2s16 p);
-	s16 generateTerrain();
 };
 
 struct MapgenFactoryFlat : public MapgenFactory {

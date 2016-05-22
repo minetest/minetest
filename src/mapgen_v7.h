@@ -56,27 +56,6 @@ struct MapgenV7Params : public MapgenSpecificParams {
 
 class MapgenV7 : public MapgenBasic {
 public:
-	int zstride_1u1d;
-
-	u32 spflags;
-	Noise *noise_terrain_base;
-	Noise *noise_terrain_alt;
-	Noise *noise_terrain_persist;
-	Noise *noise_height_select;
-	Noise *noise_mount_height;
-	Noise *noise_ridge_uwater;
-	Noise *noise_mountain;
-	Noise *noise_ridge;
-
-	content_t c_lava_source;
-	content_t c_ice;
-
-	content_t c_cobble;
-	content_t c_stair_cobble;
-	content_t c_mossycobble;
-	content_t c_sandstonebrick;
-	content_t c_stair_sandstonebrick;
-
 	MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	~MapgenV7();
 
@@ -89,6 +68,22 @@ public:
 	bool getMountainTerrainFromMap(int idx_xyz, int idx_xz, s16 y);
 	int generateTerrain();
 	void generateRidgeTerrain();
+
+private:
+	Noise *noise_terrain_base;
+	Noise *noise_terrain_alt;
+	Noise *noise_terrain_persist;
+	Noise *noise_height_select;
+	Noise *noise_mount_height;
+	Noise *noise_ridge_uwater;
+	Noise *noise_mountain;
+	Noise *noise_ridge;
+
+	content_t c_cobble;
+	content_t c_stair_cobble;
+	content_t c_mossycobble;
+	content_t c_sandstonebrick;
+	content_t c_stair_sandstonebrick;
 };
 
 struct MapgenFactoryV7 : public MapgenFactory {

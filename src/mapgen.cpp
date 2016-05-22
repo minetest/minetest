@@ -377,8 +377,59 @@ void Mapgen::spreadLight(v3s16 nmin, v3s16 nmax)
 MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	: Mapgen(mapgenid, params, emerge)
 {
+	this->m_emerge = emerge;
+	this->m_bmgr   = emerge->biomemgr;
 
+	//// Here, 'stride' refers to the number of elements needed to skip to index
+	//// an adjacent element for that coordinate in noise/height/biome maps
+	//// (*not* vmanip content map!)
+
+	// Note there is no X stride explicitly defined.  Items adjacent in the X
+	// coordinate are assumed to be adjacent in memory as well (i.e. stride of 1).
+
+	// Number of elements to skip to get to the next Y coordinate
+	this->ystride = csize.X;
+
+	// Number of elements to skip to get to the next Z coordinate
+	this->zstride = csize.X * csize.Y;
+
+	// Z-stride value for maps oversized for 1-down overgeneration
+	this->zstride_1d = csize.X * (csize.Y + 1);
+
+	// Z-stride value for maps oversized for 1-up 1-down overgeneration
+	this->zstride_1u1d = csize.X * (csize.Y + 2);
+
+	//// Allocate heightmap
+	this->heightmap = new s16[csize.X * csize.Z];
+
+	//// Initialize biome generator
+	// TODO(hmmmm): should we have a way to disable biomemanager biomes?
+	biomegen = m_bmgr->createBiomeGen(BIOMEGEN_ORIGINAL, params->bparams, csize);
+	biomemap = biomegen->biomemap;
+
+	//// Look up some commonly used content
+	c_stone              = ndef->getId("mapgen_stone");
+	c_water_source       = ndef->getId("mapgen_water_source");
+	c_desert_stone       = ndef->getId("mapgen_desert_stone");
+	c_sandstone          = ndef->getId("mapgen_sandstone");
+	c_river_water_source = ndef->getId("mapgen_river_water_source");
+
+	//// Fall back to more basic content if not defined
+	if (c_desert_stone == CONTENT_IGNORE)
+		c_desert_stone = c_stone;
+	if (c_sandstone == CONTENT_IGNORE)
+		c_sandstone = c_stone;
+	if (c_river_water_source == CONTENT_IGNORE)
+		c_river_water_source = c_water_source;
 }
+
+
+MapgenBasic::~MapgenBasic()
+{
+	delete biomegen;
+	delete []heightmap;
+}
+
 
 MgStoneType MapgenBasic::generateBiomes()
 {
@@ -499,7 +550,7 @@ void MapgenBasic::dustTopNodes()
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
-		Biome *biome = (Biome *)bmgr->getRaw(biomemap[index]);
+		Biome *biome = (Biome *)m_bmgr->getRaw(biomemap[index]);
 
 		if (biome->c_dust == CONTENT_IGNORE)
 			continue;
@@ -544,7 +595,7 @@ void MapgenBasic::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 	if (max_stone_y < node_min.Y)
 		return;
 
-	CavesNoiseIntersection caves_noise(ndef, bmgr, csize,
+	CavesNoiseIntersection caves_noise(ndef, m_bmgr, csize,
 		&np_cave1, &np_cave2, seed, cave_width);
 
 	caves_noise.generateCaves(vm, node_min, node_max, biomemap);

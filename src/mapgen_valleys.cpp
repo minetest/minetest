@@ -67,17 +67,8 @@ static FlagDesc flagdesc_mapgen_valleys[] = {
 MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	: MapgenBasic(mapgenid, params, emerge)
 {
-	this->m_emerge = emerge;
-	this->bmgr     = emerge->biomemgr;
-
-	//// amount of elements to skip for the next index
-	//// for noise/height/biome maps (not vmanip)
-	this->ystride = csize.X;
-	this->zstride = csize.X * (csize.Y + 2);
-	// 1-down overgeneration
-	this->zstride_1d = csize.X * (csize.Y + 1);
-
-	this->heightmap = new s16[csize.X * csize.Z];
+	// NOTE: MapgenValleys has a hard dependency on BiomeGenOriginal
+	this->m_bgen = (BiomeGenOriginal *)biomegen;
 
 	this->map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
 			g_settings->getU16("map_generation_limit"));
@@ -111,13 +102,6 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 	noise_cave2             = new Noise(&sp->np_cave2,             seed, csize.X, csize.Y + 1, csize.Z);
 	noise_massive_caves     = new Noise(&sp->np_massive_caves,     seed, csize.X, csize.Y + 1, csize.Z);
 
-	//// Initialize biome generator
-	// NOTE: valleys mapgen can only use BiomeGenOriginal
-	biomegen = emerge->biomemgr->createBiomeGen(
-		BIOMEGEN_ORIGINAL, params->bparams, csize);
-	biomemap = biomegen->biomemap;
-	m_bgen = (BiomeGenOriginal *)biomegen;
-
 	this->humid_rivers       = (spflags & MGVALLEYS_HUMID_RIVERS);
 	this->use_altitude_chill = (spflags & MGVALLEYS_ALT_CHILL);
 	this->humidity_adjust    = bp->np_humidity.offset - 50.f;
@@ -128,25 +112,18 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 
 	tcave_cache = new float[csize.Y + 2];
 
-	//// Resolve nodes to be used
+	// Resolve content to be used
 	c_cobble               = ndef->getId("mapgen_cobble");
-	c_desert_stone         = ndef->getId("mapgen_desert_stone");
-	c_dirt                 = ndef->getId("mapgen_dirt");
 	c_lava_source          = ndef->getId("mapgen_lava_source");
 	c_mossycobble          = ndef->getId("mapgen_mossycobble");
-	c_river_water_source   = ndef->getId("mapgen_river_water_source");
 	c_sand                 = ndef->getId("mapgen_sand");
 	c_sandstonebrick       = ndef->getId("mapgen_sandstonebrick");
-	c_sandstone            = ndef->getId("mapgen_sandstone");
 	c_stair_cobble         = ndef->getId("mapgen_stair_cobble");
 	c_stair_sandstonebrick = ndef->getId("mapgen_stair_sandstonebrick");
-	c_stone                = ndef->getId("mapgen_stone");
-	c_water_source         = ndef->getId("mapgen_water_source");
 
+	// Fall back to more basic content if not defined
 	if (c_mossycobble == CONTENT_IGNORE)
 		c_mossycobble = c_cobble;
-	if (c_river_water_source == CONTENT_IGNORE)
-		c_river_water_source = c_water_source;
 	if (c_sand == CONTENT_IGNORE)
 		c_sand = c_stone;
 	if (c_sandstonebrick == CONTENT_IGNORE)
@@ -171,9 +148,6 @@ MapgenValleys::~MapgenValleys()
 	delete noise_valley_depth;
 	delete noise_valley_profile;
 
-	delete biomegen;
-
-	delete[] heightmap;
 	delete[] tcave_cache;
 }
 
@@ -289,13 +263,13 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	// Generate biome noises.  Note this must be executed strictly before
 	// generateTerrain, because generateTerrain depends on intermediate
 	// biome-related noises.
-	biomegen->calcBiomeNoise(node_min);
+	m_bgen->calcBiomeNoise(node_min);
 
 	// Generate base terrain with initial heightmaps
 	s16 stone_surface_max_y = generateTerrain();
 
 	// Build biomemap
-	biomegen->getBiomes(heightmap);
+	m_bgen->getBiomes(heightmap);
 
 	// Place biome-specific nodes
 	MgStoneType stone_type = generateBiomes();
@@ -606,7 +580,7 @@ int MapgenValleys::generateTerrain()
 			}
 		}
 
-		u32 index_3d = (z - node_min.Z) * zstride + (x - node_min.X);
+		u32 index_3d = (z - node_min.Z) * zstride_1u1d + (x - node_min.X);
 		u32 index_data = vm->m_area.index(x, node_min.Y - 1, z);
 
 		// Mapgens concern themselves with stone and water.
@@ -755,7 +729,7 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 	u32 index_2d = 0;
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index_2d++) {
-		Biome *biome = (Biome *)bmgr->getRaw(biomemap[index_2d]);
+		Biome *biome = (Biome *)m_bmgr->getRaw(biomemap[index_2d]);
 		bool tunnel_air_above = false;
 		bool underground = false;
 		u32 index_data = vm->m_area.index(x, node_max.Y, z);

@@ -99,9 +99,6 @@ public:
 private:
 	BiomeGenOriginal *m_bgen;
 
-	int zstride;
-	int zstride_1d;
-
 	float map_gen_limit;
 
 	bool humid_rivers;
@@ -110,7 +107,6 @@ private:
 	s16 cave_water_max_height;
 	s16 lava_max_height;
 
-	u32 spflags;
 	float altitude_chill;
 	s16 lava_features_lim;
 	s16 massive_cave_depth;
@@ -129,7 +125,6 @@ private:
 	Noise *noise_valley_profile;
 
 	content_t c_cobble;
-	content_t c_dirt;
 	content_t c_lava_source;
 	content_t c_mossycobble;
 	content_t c_sand;

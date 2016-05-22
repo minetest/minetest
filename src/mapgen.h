@@ -216,8 +216,16 @@ private:
 */
 class MapgenBasic : public Mapgen {
 public:
+	MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emerge);
+	virtual ~MapgenBasic();
+
+	virtual MgStoneType generateBiomes();
+	virtual void dustTopNodes();
+	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
+
+protected:
 	EmergeManager *m_emerge;
-	BiomeManager *bmgr;
+	BiomeManager *m_bmgr;
 
 	Noise *noise_filler_depth;
 
@@ -233,15 +241,15 @@ public:
 	content_t c_sandstone;
 
 	int ystride;
+	int zstride;
+	int zstride_1d;
+	int zstride_1u1d;
+
+	u32 spflags;
+
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
 	float cave_width;
-
-	MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emerge);
-
-	virtual MgStoneType generateBiomes();
-	virtual void dustTopNodes();
-	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
 };
 
 struct MapgenFactory {
