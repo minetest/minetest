@@ -124,13 +124,8 @@ private:
 	Noise *noise_valley_depth;
 	Noise *noise_valley_profile;
 
-	content_t c_cobble;
 	content_t c_lava_source;
-	content_t c_mossycobble;
 	content_t c_sand;
-	content_t c_sandstonebrick;
-	content_t c_stair_cobble;
-	content_t c_stair_sandstonebrick;
 
 	float terrainLevelAtPoint(s16 x, s16 z);
 
