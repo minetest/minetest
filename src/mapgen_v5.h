@@ -50,26 +50,23 @@ struct MapgenV5Params : public MapgenSpecificParams {
 
 class MapgenV5 : public MapgenBasic {
 public:
-	u32 spflags;
-	Noise *noise_factor;
-	Noise *noise_height;
-	Noise *noise_ground;
-
-	content_t c_lava_source;
-	content_t c_ice;
-
-	content_t c_cobble;
-	content_t c_stair_cobble;
-	content_t c_mossycobble;
-	content_t c_sandstonebrick;
-	content_t c_stair_sandstonebrick;
-
 	MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	~MapgenV5();
 
 	virtual void makeChunk(BlockMakeData *data);
 	int getSpawnLevelAtPoint(v2s16 p);
 	int generateBaseTerrain();
+
+private:
+	Noise *noise_factor;
+	Noise *noise_height;
+	Noise *noise_ground;
+
+	content_t c_cobble;
+	content_t c_stair_cobble;
+	content_t c_mossycobble;
+	content_t c_sandstonebrick;
+	content_t c_stair_sandstonebrick;
 };
 
 

@@ -53,17 +53,6 @@ FlagDesc flagdesc_mapgen_v7[] = {
 MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	: MapgenBasic(mapgenid, params, emerge)
 {
-	this->m_emerge = emerge;
-	this->bmgr     = emerge->biomemgr;
-
-	//// amount of elements to skip for the next index
-	//// for noise/height/biome maps (not vmanip)
-	this->ystride = csize.X;
-	// 1-up 1-down overgeneration
-	this->zstride_1u1d = csize.X * (csize.Y + 2);
-
-	this->heightmap = new s16[csize.X * csize.Z];
-
 	MapgenV7Params *sp = (MapgenV7Params *)params->sparams;
 
 	this->spflags    = sp->spflags;
@@ -86,28 +75,14 @@ MapgenV7::MapgenV7(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 	MapgenBasic::np_cave1 = sp->np_cave1;
 	MapgenBasic::np_cave2 = sp->np_cave2;
 
-	// TODO(hmmmm): should we have a way to disable biomemanager biomes?
-	//// Initialize biome generator
-	biomegen = emerge->biomemgr->createBiomeGen(
-		BIOMEGEN_ORIGINAL, params->bparams, csize);
-	biomemap = biomegen->biomemap;
-
-	//// Resolve nodes to be used
-	c_stone                = ndef->getId("mapgen_stone");
-	c_water_source         = ndef->getId("mapgen_water_source");
-	c_lava_source          = ndef->getId("mapgen_lava_source");
-	c_desert_stone         = ndef->getId("mapgen_desert_stone");
-	c_ice                  = ndef->getId("mapgen_ice");
-	c_sandstone            = ndef->getId("mapgen_sandstone");
-
+	// Content used for dungeon generation
 	c_cobble               = ndef->getId("mapgen_cobble");
 	c_stair_cobble         = ndef->getId("mapgen_stair_cobble");
 	c_mossycobble          = ndef->getId("mapgen_mossycobble");
 	c_sandstonebrick       = ndef->getId("mapgen_sandstonebrick");
 	c_stair_sandstonebrick = ndef->getId("mapgen_stair_sandstonebrick");
 
-	if (c_ice == CONTENT_IGNORE)
-		c_ice = CONTENT_AIR;
+	// Fall back to more basic content if not defined
 	if (c_mossycobble == CONTENT_IGNORE)
 		c_mossycobble = c_cobble;
 	if (c_stair_cobble == CONTENT_IGNORE)
@@ -130,10 +105,6 @@ MapgenV7::~MapgenV7()
 	delete noise_ridge_uwater;
 	delete noise_mountain;
 	delete noise_ridge;
-
-	delete biomegen;
-
-	delete[] heightmap;
 }
 
 

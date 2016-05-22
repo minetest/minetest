@@ -59,10 +59,18 @@ struct MapgenFractalParams : public MapgenSpecificParams {
 
 class MapgenFractal : public MapgenBasic {
 public:
+	MapgenFractal(int mapgenid, MapgenParams *params, EmergeManager *emerge);
+	~MapgenFractal();
+
+	virtual void makeChunk(BlockMakeData *data);
+	int getSpawnLevelAtPoint(v2s16 p);
+	bool getFractalAtPoint(s16 x, s16 y, s16 z);
+	s16 generateTerrain();
+
+private:
 	u16 formula;
 	bool julia;
 
-	u32 spflags;
 	u16 fractal;
 	u16 iterations;
 	v3f scale;
@@ -74,22 +82,11 @@ public:
 	float julia_w;
 	Noise *noise_seabed;
 
-	content_t c_lava_source;
-	content_t c_ice;
-
 	content_t c_cobble;
 	content_t c_stair_cobble;
 	content_t c_mossycobble;
 	content_t c_sandstonebrick;
 	content_t c_stair_sandstonebrick;
-
-	MapgenFractal(int mapgenid, MapgenParams *params, EmergeManager *emerge);
-	~MapgenFractal();
-
-	virtual void makeChunk(BlockMakeData *data);
-	int getSpawnLevelAtPoint(v2s16 p);
-	bool getFractalAtPoint(s16 x, s16 y, s16 z);
-	s16 generateTerrain();
 };
 
 struct MapgenFactoryFractal : public MapgenFactory {
