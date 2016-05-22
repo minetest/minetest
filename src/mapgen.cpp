@@ -639,10 +639,13 @@ void MapgenBasic::generateDungeons(s16 max_stone_y, MgStoneType stone_type)
 
 	DungeonParams dp;
 
+	dp.seed = seed;
+
 	dp.np_rarity  = nparams_dungeon_rarity;
 	dp.np_density = nparams_dungeon_density;
 	dp.np_wetness = nparams_dungeon_wetness;
 	dp.c_water    = c_water_source;
+
 	switch (stone_type) {
 	default:
 	case MGSTONE_STONE:
@@ -680,8 +683,8 @@ void MapgenBasic::generateDungeons(s16 max_stone_y, MgStoneType stone_type)
 		break;
 	}
 
-	DungeonGen dgen(this, &dp);
-	dgen.generate(blockseed, full_node_min, full_node_max);
+	DungeonGen dgen(ndef, &gennotify, &dp);
+	dgen.generate(vm, blockseed, full_node_min, full_node_max);
 }
 
 

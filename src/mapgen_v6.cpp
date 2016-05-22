@@ -559,6 +559,8 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 	if ((flags & MG_DUNGEONS) && (stone_surface_max_y >= node_min.Y)) {
 		DungeonParams dp;
 
+		dp.seed = seed;
+
 		dp.np_rarity  = nparams_dungeon_rarity;
 		dp.np_density = nparams_dungeon_density;
 		dp.np_wetness = nparams_dungeon_wetness;
@@ -585,8 +587,8 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 			dp.notifytype    = GENNOTIFY_DUNGEON;
 		}
 
-		DungeonGen dgen(this, &dp);
-		dgen.generate(blockseed, full_node_min, full_node_max);
+		DungeonGen dgen(ndef, &gennotify, &dp);
+		dgen.generate(vm, blockseed, full_node_min, full_node_max);
 	}
 
 	// Add top and bottom side of water to transforming_liquid queue
