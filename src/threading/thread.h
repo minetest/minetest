@@ -90,12 +90,22 @@ public:
 	/*
 	 * Returns true if the calling thread is this Thread object.
 	 */
-	bool isCurrentThread();
+	bool isCurrentThread() { return thr_is_current_thread(getThreadId()); }
 
 	inline bool isRunning() { return m_running; }
 	inline bool stopRequested() { return m_request_stop; }
+
+#if USE_CPP11_THREADS
+	inline threadid_t getThreadId() { return m_thread_obj->get_id(); }
+	inline threadhandle_t getThreadHandle() { return m_thread_obj->native_handle(); }
+#else
+#  if USE_WIN_THREADS
 	inline threadid_t getThreadId() { return m_thread_id; }
+#  else
+	inline threadid_t getThreadId() { return m_thread_handle; }
+#  endif
 	inline threadhandle_t getThreadHandle() { return m_thread_handle; }
+#endif
 
 	/*
 	 * Gets the thread return value.
@@ -147,8 +157,12 @@ private:
 	Atomic<bool> m_running;
 	Mutex m_mutex;
 
-	threadid_t m_thread_id;
+#ifndef USE_CPP11_THREADS
 	threadhandle_t m_thread_handle;
+#   if _WIN32
+        threadid_t m_thread_id;
+#   endif
+#endif
 
 	static ThreadStartFunc threadProc;
 

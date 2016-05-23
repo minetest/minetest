@@ -115,7 +115,7 @@ if(CURSES_USE_NCURSESW)
   get_filename_component(_cursesParentDir "${_cursesLibDir}" PATH)
 
   find_path(CURSES_INCLUDE_PATH
-    NAMES ncursesw/ncurses.h ncursesw/curses.h
+    NAMES ncursesw/ncurses.h ncursesw/curses.h ncurses.h curses.h
     HINTS "${_cursesParentDir}/include"
     )
 
@@ -147,6 +147,21 @@ if(CURSES_USE_NCURSESW)
       set(CURSES_HAVE_NCURSESW_CURSES_H "CURSES_HAVE_NCURSESW_CURSES_H-NOTFOUND")
     endif()
   endif()
+  if(NOT DEFINED CURSES_HAVE_NCURSES_H)
+    if(EXISTS "${CURSES_INCLUDE_PATH}/ncurses.h")
+      set(CURSES_HAVE_NCURSES_H "${CURSES_INCLUDE_PATH}/ncurses.h")
+    else()
+      set(CURSES_HAVE_NCURSES_H "CURSES_HAVE_NCURSES_H-NOTFOUND")
+    endif()
+  endif()
+  if(NOT DEFINED CURSES_HAVE_CURSES_H)
+    if(EXISTS "${CURSES_INCLUDE_PATH}/curses.h")
+      set(CURSES_HAVE_CURSES_H "${CURSES_INCLUDE_PATH}/curses.h")
+    else()
+      set(CURSES_HAVE_CURSES_H "CURSES_HAVE_CURSES_H-NOTFOUND")
+    endif()
+  endif()
+
 
   find_library(CURSES_FORM_LIBRARY form HINTS "${_cursesLibDir}"
     DOC "Path to libform.so or .lib or .a")

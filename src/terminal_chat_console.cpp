@@ -146,6 +146,7 @@ void TerminalChatConsole::typeChatMessage(const std::wstring &msg)
 
 void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 {
+	ChatPrompt &prompt = m_chat_backend.getPrompt();
 	// Helpful if you want to collect key codes that aren't documented
 	/*if (ch != ERR) {
 		m_chat_backend.addMessage(L"",
@@ -177,20 +178,20 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 		case KEY_ENTER:
 		case '\r':
 		case '\n': {
-			std::wstring text = m_chat_backend.getPrompt().submit();
-			typeChatMessage(text);
+			prompt.addToHistory(prompt.getLine());
+			typeChatMessage(prompt.replace(L""));
 			break;
 		}
 		case KEY_UP:
-			m_chat_backend.getPrompt().historyPrev();
+			prompt.historyPrev();
 			break;
 		case KEY_DOWN:
-			m_chat_backend.getPrompt().historyNext();
+			prompt.historyNext();
 			break;
 		case KEY_LEFT:
 			// Left pressed
 			// move character to the left
-			m_chat_backend.getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_MOVE,
 				ChatPrompt::CURSOROP_DIR_LEFT,
 				ChatPrompt::CURSOROP_SCOPE_CHARACTER);
@@ -198,7 +199,7 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 		case 545:
 			// Ctrl-Left pressed
 			// move word to the left
-			m_chat_backend.getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_MOVE,
 				ChatPrompt::CURSOROP_DIR_LEFT,
 				ChatPrompt::CURSOROP_SCOPE_WORD);
@@ -206,7 +207,7 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 		case KEY_RIGHT:
 			// Right pressed
 			// move character to the right
-			m_chat_backend.getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_MOVE,
 				ChatPrompt::CURSOROP_DIR_RIGHT,
 				ChatPrompt::CURSOROP_SCOPE_CHARACTER);
@@ -214,7 +215,7 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 		case 560:
 			// Ctrl-Right pressed
 			// move word to the right
-			m_chat_backend.getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_MOVE,
 				ChatPrompt::CURSOROP_DIR_RIGHT,
 				ChatPrompt::CURSOROP_SCOPE_WORD);
@@ -222,7 +223,7 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 		case KEY_HOME:
 			// Home pressed
 			// move to beginning of line
-			m_chat_backend.getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_MOVE,
 				ChatPrompt::CURSOROP_DIR_LEFT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
@@ -230,7 +231,7 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 		case KEY_END:
 			// End pressed
 			// move to end of line
-			m_chat_backend.getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_MOVE,
 				ChatPrompt::CURSOROP_DIR_RIGHT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
@@ -240,7 +241,7 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 		case 127:
 			// Backspace pressed
 			// delete character to the left
-			m_chat_backend.getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_DELETE,
 				ChatPrompt::CURSOROP_DIR_LEFT,
 				ChatPrompt::CURSOROP_SCOPE_CHARACTER);
@@ -248,7 +249,7 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 		case KEY_DC:
 			// Delete pressed
 			// delete character to the right
-			m_chat_backend.getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_DELETE,
 				ChatPrompt::CURSOROP_DIR_RIGHT,
 				ChatPrompt::CURSOROP_SCOPE_CHARACTER);
@@ -256,7 +257,7 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 		case 519:
 			// Ctrl-Delete pressed
 			// delete word to the right
-			m_chat_backend.getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_DELETE,
 				ChatPrompt::CURSOROP_DIR_RIGHT,
 				ChatPrompt::CURSOROP_SCOPE_WORD);
@@ -264,7 +265,7 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 		case 21:
 			// Ctrl-U pressed
 			// kill line to left end
-			m_chat_backend.getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_DELETE,
 				ChatPrompt::CURSOROP_DIR_LEFT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
@@ -272,7 +273,7 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 		case 11:
 			// Ctrl-K pressed
 			// kill line to right end
-			m_chat_backend.getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_DELETE,
 				ChatPrompt::CURSOROP_DIR_RIGHT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
@@ -280,7 +281,7 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 		case KEY_TAB:
 			// Tab pressed
 			// Nick completion
-			m_chat_backend.getPrompt().nickCompletion(m_nicks, false);
+			prompt.nickCompletion(m_nicks, false);
 			break;
 		default:
 			// Add character to the prompt,
@@ -296,11 +297,11 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 					m_pending_utf8_bytes = "";
 					// hopefully only one char in the wstring...
 					for (size_t i = 0; i < w.size(); i++) {
-						m_chat_backend.getPrompt().input(w.c_str()[i]);
+						prompt.input(w.c_str()[i]);
 					}
 				}
 			} else if (IS_ASCII_PRINTABLE_CHAR(ch)) {
-				m_chat_backend.getPrompt().input(ch);
+				prompt.input(ch);
 			} else {
 				// Silently ignore characters we don't handle
 

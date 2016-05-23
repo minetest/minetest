@@ -140,7 +140,9 @@ MapgenV6::~MapgenV6()
 
 MapgenV6Params::MapgenV6Params()
 {
-	spflags     = MGV6_BIOMEBLEND | MGV6_MUDFLOW;
+	spflags = MGV6_JUNGLES | MGV6_SNOWBIOMES | MGV6_TREES |
+		MGV6_BIOMEBLEND | MGV6_MUDFLOW;
+
 	freq_desert = 0.45;
 	freq_beach  = 0.15;
 

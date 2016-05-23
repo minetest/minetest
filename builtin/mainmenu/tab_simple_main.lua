@@ -17,66 +17,80 @@
 
 --------------------------------------------------------------------------------
 local function get_formspec(tabview, name, tabdata)
-	local retval = ""
+	-- Update the cached supported proto info,
+	-- it may have changed after a change by the settings menu.
+	common_update_cached_supp_proto()
+	local fav_selected = menudata.favorites[tabdata.fav_selected]
 
-	local render_details = dump(core.setting_getbool("public_serverlist"))
+	local retval =
+		"label[9.5,0;".. fgettext("Name / Password") .. "]" ..
+		"field[0.25,3.35;5.5,0.5;te_address;;" ..
+			core.formspec_escape(core.setting_get("address")) .."]" ..
+		"field[5.75,3.35;2.25,0.5;te_port;;" ..
+			core.formspec_escape(core.setting_get("remote_port")) .."]" ..
+		"button[10,2.6;2,1.5;btn_mp_connect;".. fgettext("Connect") .. "]" ..
+		"field[9.8,1;2.6,0.5;te_name;;" ..
+			core.formspec_escape(core.setting_get("name")) .."]" ..
+		"pwdfield[9.8,2;2.6,0.5;te_pwd;]"
 
-	retval = retval ..
-		"label[8,0.5;".. fgettext("Name/Password") .. "]" ..
-		"field[0.25,3.25;5.5,0.5;te_address;;" ..
-		core.formspec_escape(core.setting_get("address")) .."]" ..
-		"field[5.75,3.25;2.25,0.5;te_port;;" ..
-		core.formspec_escape(core.setting_get("remote_port")) .."]" ..
-		"checkbox[8,-0.25;cb_public_serverlist;".. fgettext("Public Serverlist") .. ";" ..
-		render_details .. "]"
 
-	retval = retval ..
-		"button[8,2.5;4,1.5;btn_mp_connect;".. fgettext("Connect") .. "]" ..
-		"field[8.75,1.5;3.5,0.5;te_name;;" ..
-		core.formspec_escape(core.setting_get("name")) .."]" ..
-		"pwdfield[8.75,2.3;3.5,0.5;te_pwd;]"
-		
-	if render_details then
-		retval = retval .. "tablecolumns[" ..
-			"color,span=3;" ..
-			"text,align=right;" ..                -- clients
-			"text,align=center,padding=0.25;" ..  -- "/"
-			"text,align=right,padding=0.25;" ..   -- clients_max
-			image_column(fgettext("Creative mode"), "creative") .. ",padding=1;" ..
-			image_column(fgettext("Damage enabled"), "damage") .. ",padding=0.25;" ..
-			image_column(fgettext("PvP enabled"), "pvp") .. ",padding=0.25;" ..
-			"color,span=1;" ..
-			"text,padding=1]"                               -- name
-	else
-		retval = retval .. "tablecolumns[text]"
-	end
-	retval = retval ..
-		"table[-0.05,0;7.55,2.75;favourites;"
-
-	if #menudata.favorites > 0 then
-		retval = retval .. render_favorite(menudata.favorites[1],render_details)
-
-		for i=2,#menudata.favorites,1 do
-			retval = retval .. "," .. render_favorite(menudata.favorites[i],render_details)
+	if tabdata.fav_selected and fav_selected then
+		if gamedata.fav then
+			retval = retval .. "button[7.7,2.6;2.3,1.5;btn_delete_favorite;" ..
+				fgettext("Del. Favorite") .. "]"
 		end
 	end
 
-	if tabdata.fav_selected ~= nil then
+	retval = retval .. "tablecolumns[" ..
+		image_column(fgettext("Favorite"), "favorite") .. ";" ..
+		"color,span=3;" ..
+		"text,align=right;" ..                -- clients
+		"text,align=center,padding=0.25;" ..  -- "/"
+		"text,align=right,padding=0.25;" ..   -- clients_max
+		image_column(fgettext("Creative mode"), "creative") .. ",padding=1;" ..
+		image_column(fgettext("Damage enabled"), "damage") .. ",padding=0.25;" ..
+		image_column(fgettext("PvP enabled"), "pvp") .. ",padding=0.25;" ..
+		"color,span=1;" ..
+		"text,padding=1]" ..                  -- name
+		"table[-0.05,0;9.2,2.75;favourites;"
+
+	if #menudata.favorites > 0 then
+		local favs = core.get_favorites("local")
+		if #favs > 0 then
+			for i = 1, #favs do
+				for j = 1, #menudata.favorites do
+					if menudata.favorites[j].address == favs[i].address and
+							menudata.favorites[j].port == favs[i].port then
+						table.insert(menudata.favorites, i,
+							table.remove(menudata.favorites, j))
+					end
+				end
+				if favs[i].address ~= menudata.favorites[i].address then
+					table.insert(menudata.favorites, i, favs[i])
+				end
+			end
+		end
+		retval = retval .. render_favorite(menudata.favorites[1], (#favs > 0))
+		for i = 2, #menudata.favorites do
+			retval = retval .. "," .. render_favorite(menudata.favorites[i], (i <= #favs))
+		end
+	end
+
+	if tabdata.fav_selected then
 		retval = retval .. ";" .. tabdata.fav_selected .. "]"
 	else
 		retval = retval .. ";0]"
 	end
 
 	-- separator
-	retval = retval ..
-		"box[-0.28,3.75;12.4,0.1;#FFFFFF]"
+	retval = retval .. "box[-0.28,3.75;12.4,0.1;#FFFFFF]"
 
 	-- checkboxes
 	retval = retval ..
 		"checkbox[8.0,3.9;cb_creative;".. fgettext("Creative Mode") .. ";" ..
-		dump(core.setting_getbool("creative_mode")) .. "]"..
+			dump(core.setting_getbool("creative_mode")) .. "]"..
 		"checkbox[8.0,4.4;cb_damage;".. fgettext("Enable Damage") .. ";" ..
-		dump(core.setting_getbool("enable_damage")) .. "]"
+			dump(core.setting_getbool("enable_damage")) .. "]"
 	-- buttons
 	retval = retval ..
 		"button[0,3.7;8,1.5;btn_start_singleplayer;" .. fgettext("Start Singleplayer") .. "]" ..
@@ -87,94 +101,100 @@ end
 
 --------------------------------------------------------------------------------
 local function main_button_handler(tabview, fields, name, tabdata)
-
-	if fields["btn_start_singleplayer"] then
+	if fields.btn_start_singleplayer then
 		gamedata.selected_world	= gamedata.worldindex
 		gamedata.singleplayer	= true
 		core.start()
 		return true
 	end
 
-	if fields["favourites"] ~= nil then
-		local event = core.explode_table_event(fields["favourites"])
-
+	if fields.favourites then
+		local event = core.explode_table_event(fields.favourites)
 		if event.type == "CHG" then
 			if event.row <= #menudata.favorites then
-				local address = menudata.favorites[event.row].address
-				local port = menudata.favorites[event.row].port
+				gamedata.fav = false
+				local favs = core.get_favorites("local")
+				local fav = menudata.favorites[event.row]
+				local address = fav.address
+				local port    = fav.port
+				gamedata.serverdescription = fav.description
 
-				if address ~= nil and
-					port ~= nil then
-					core.setting_set("address",address)
-					core.setting_set("remote_port",port)
+				for i = 1, #favs do
+					if fav.address == favs[i].address and
+							fav.port == favs[i].port then
+						gamedata.fav = true
+					end
 				end
 
+				if address and port then
+					core.setting_set("address", address)
+					core.setting_set("remote_port", port)
+				end
 				tabdata.fav_selected = event.row
 			end
+			return true
 		end
+	end
+
+	if fields.btn_delete_favorite then
+		local current_favourite = core.get_table_index("favourites")
+		if not current_favourite then return end
+
+		core.delete_favorite(current_favourite)
+		asyncOnlineFavourites()
+		tabdata.fav_selected = nil
+
+		core.setting_set("address", "")
+		core.setting_set("remote_port", "30000")
 		return true
 	end
 
-	if fields["cb_public_serverlist"] ~= nil then
-		core.setting_set("public_serverlist", fields["cb_public_serverlist"])
-
-		if core.setting_getbool("public_serverlist") then
-			asyncOnlineFavourites()
-		else
-			menudata.favorites = core.get_favorites("local")
-		end
+	if fields.cb_creative then
+		core.setting_set("creative_mode", fields.cb_creative)
 		return true
 	end
 
-	if fields["cb_creative"] then
-		core.setting_set("creative_mode", fields["cb_creative"])
+	if fields.cb_damage then
+		core.setting_set("enable_damage", fields.cb_damage)
 		return true
 	end
 
-	if fields["cb_damage"] then
-		core.setting_set("enable_damage", fields["cb_damage"])
-		return true
-	end
-
-	if fields["btn_mp_connect"] ~= nil or
-		fields["key_enter"] ~= nil then
-
-		gamedata.playername		= fields["te_name"]
-		gamedata.password		= fields["te_pwd"]
-		gamedata.address		= fields["te_address"]
-		gamedata.port			= fields["te_port"]
-
+	if fields.btn_mp_connect or fields.key_enter then
+		gamedata.playername = fields.te_name
+		gamedata.password   = fields.te_pwd
+		gamedata.address    = fields.te_address
+		gamedata.port	    = fields.te_port
 		local fav_idx = core.get_textlist_index("favourites")
 
-		if fav_idx ~= nil and fav_idx <= #menudata.favorites and
-			menudata.favorites[fav_idx].address == fields["te_address"] and
-			menudata.favorites[fav_idx].port    == fields["te_port"] then
+		if fav_idx and fav_idx <= #menudata.favorites and
+				menudata.favorites[fav_idx].address == fields.te_address and
+				menudata.favorites[fav_idx].port    == fields.te_port then
+			local fav = menudata.favorites[fav_idx]
+			gamedata.servername        = fav.name
+			gamedata.serverdescription = fav.description
 
-			gamedata.servername			= menudata.favorites[fav_idx].name
-			gamedata.serverdescription	= menudata.favorites[fav_idx].description
-
-			if not is_server_protocol_compat_or_error(menudata.favorites[fav_idx].proto_min,
-					menudata.favorites[fav_idx].proto_max) then
+			if menudata.favorites_is_public and
+					not is_server_protocol_compat_or_error(
+						fav.proto_min, fav.proto_max) then
 				return true
 			end
 		else
-			gamedata.servername			= ""
-			gamedata.serverdescription	= ""
+			gamedata.servername	   = ""
+			gamedata.serverdescription = ""
 		end
 
 		gamedata.selected_world = 0
 
-		core.setting_set("address",fields["te_address"])
-		core.setting_set("remote_port",fields["te_port"])
+		core.setting_set("address", fields.te_address)
+		core.setting_set("remote_port", fields.te_port)
 
 		core.start()
 		return true
 	end
 
-	if fields["btn_config_sp_world"] ~= nil then
+	if fields.btn_config_sp_world then
 		local configdialog = create_configure_world_dlg(1)
-
-		if (configdialog ~= nil) then
+		if configdialog then
 			configdialog:set_parent(tabview)
 			tabview:hide()
 			configdialog:show()
@@ -185,21 +205,15 @@ end
 
 --------------------------------------------------------------------------------
 local function on_activate(type,old_tab,new_tab)
-	if type == "LEAVE" then
-		return
-	end
-	if core.setting_getbool("public_serverlist") then
-		asyncOnlineFavourites()
-	else
-		menudata.favorites = core.get_favorites("local")
-	end
+	if type == "LEAVE" then return end
+	asyncOnlineFavourites()
 end
 
 --------------------------------------------------------------------------------
-tab_simple_main = {
+return {
 	name = "main",
 	caption = fgettext("Main"),
 	cbf_formspec = get_formspec,
 	cbf_button_handler = main_button_handler,
 	on_change = on_activate
-	}
+}

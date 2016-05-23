@@ -299,15 +299,6 @@ inline s32 mystoi(const std::string &str, s32 min, s32 max)
 }
 
 
-/// Returns a 64-bit value represented by the string \p str (decimal).
-inline s64 stoi64(const std::string &str)
-{
-	std::stringstream tmp(str);
-	s64 t;
-	tmp >> t;
-	return t;
-}
-
 // MSVC2010 includes it's own versions of these
 //#if !defined(_MSC_VER) || _MSC_VER < 1600
 
@@ -346,9 +337,22 @@ inline float mystof(const std::string &str)
 #define stoi mystoi
 #define stof mystof
 
+/// Returns a value represented by the string \p val.
+template <typename T>
+inline T from_string(const std::string &str)
+{
+	std::stringstream tmp(str);
+	T t;
+	tmp >> t;
+	return t;
+}
+
+/// Returns a 64-bit signed value represented by the string \p str (decimal).
+inline s64 stoi64(const std::string &str) { return from_string<s64>(str); }
+
 // TODO: Replace with C++11 std::to_string.
 
-/// Returns A string representing the value \p val.
+/// Returns a string representing the value \p val.
 template <typename T>
 inline std::string to_string(T val)
 {
@@ -381,7 +385,6 @@ inline void str_replace(std::string &str, const std::string &pattern,
 		start = str.find(pattern, start + replacement.size());
 	}
 }
-
 
 /**
  * Replace all occurrences of the character \p from in \p str with \p to.
@@ -465,7 +468,7 @@ inline std::string wrap_rows(const std::string &from,
  * Removes backslashes from an escaped string (FormSpec strings)
  */
 template <typename T>
-inline std::basic_string<T> unescape_string(std::basic_string<T> &s)
+inline std::basic_string<T> unescape_string(const std::basic_string<T> &s)
 {
 	std::basic_string<T> res;
 
@@ -481,6 +484,40 @@ inline std::basic_string<T> unescape_string(std::basic_string<T> &s)
 	return res;
 }
 
+/**
+ * Remove all escape sequences in \p s.
+ *
+ * @param s The string in which to remove escape sequences.
+ * @return \p s, with escape sequences removed.
+ */
+template <typename T>
+std::basic_string<T> unescape_enriched(const std::basic_string<T> &s)
+{
+	std::basic_string<T> output;
+	size_t i = 0;
+	while (i < s.length()) {
+		if (s[i] == '\x1b') {
+			++i;
+			if (i == s.length()) continue;
+			if (s[i] == '(') {
+				++i;
+				while (i < s.length() && s[i] != ')') {
+					if (s[i] == '\\') {
+						++i;
+					}
+					++i;
+				}
+				++i;
+			} else {
+				++i;
+			}
+			continue;
+		}
+		output += s[i];
+		++i;
+	}
+	return output;
+}
 
 /**
  * Checks that all characters in \p to_check are a decimal digits.

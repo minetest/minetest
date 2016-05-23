@@ -123,6 +123,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("invert_mouse", "false");
 	settings->setDefault("enable_clouds", "true");
 	settings->setDefault("screenshot_path", ".");
+	settings->setDefault("screenshot_format", "png");
+	settings->setDefault("screenshot_quality", "0");
 	settings->setDefault("view_bobbing_amount", "1.0");
 	settings->setDefault("fall_bobbing_amount", "0.0");
 	settings->setDefault("enable_3d_clouds", "true");
@@ -148,6 +150,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("desynchronize_mapblock_texture_animation", "true");
 	settings->setDefault("hud_hotbar_max_width", "1.0");
 	settings->setDefault("enable_local_map_saving", "false");
+	settings->setDefault("show_entity_selectionbox", "true");
 
 	settings->setDefault("mip_map", "false");
 	settings->setDefault("anisotropic_filter", "false");
@@ -177,10 +180,12 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_particles", "true");
 	settings->setDefault("enable_mesh_cache", "false");
 	settings->setDefault("enable_vbo", "true");
-	
+
 	settings->setDefault("enable_minimap", "true");
 	settings->setDefault("minimap_shape_round", "true");
 	settings->setDefault("minimap_double_scan_height", "true");
+
+	settings->setDefault("send_pre_v25_init", "true");
 
 	settings->setDefault("curl_timeout", "5000");
 	settings->setDefault("curl_parallel_limit", "8");
@@ -276,6 +281,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("sqlite_synchronous", "2");
 	settings->setDefault("full_block_send_enable_min_time_from_building", "2.0");
 	settings->setDefault("dedicated_server_step", "0.1");
+	settings->setDefault("active_block_mgmt_interval", "2.0");
+	settings->setDefault("abm_interval", "1.0");
+	settings->setDefault("nodetimer_interval", "1.0");
 	settings->setDefault("ignore_world_load_errors", "false");
 	settings->setDefault("remote_media", "");
 	settings->setDefault("debug_log_level", "action");
@@ -311,7 +319,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("water_level", "1");
 	settings->setDefault("chunksize", "5");
 	settings->setDefault("mg_flags", "dungeons");
-	settings->setDefault("mgv6_spflags", "jungles, snowbiomes, trees");
 
 	// IPv6
 	settings->setDefault("enable_ipv6", "true");
@@ -333,7 +340,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("screenH", "0");
 	settings->setDefault("enable_shaders", "false");
 	settings->setDefault("fullscreen", "true");
-	settings->setDefault("enable_particles", "false");
 	settings->setDefault("video_driver", "ogles1");
 	settings->setDefault("touchtarget", "true");
 	settings->setDefault("TMPFolder","/sdcard/" PROJECT_NAME_C "/tmp/");
@@ -342,8 +348,19 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("max_simultaneous_block_sends_per_client", "3");
 	settings->setDefault("emergequeue_limit_diskonly", "8");
 	settings->setDefault("emergequeue_limit_generate", "8");
+	settings->setDefault("max_block_generate_distance", "3");
+	settings->setDefault("enable_3d_clouds", "false");
+	settings->setDefault("fps_max", "30");
+	settings->setDefault("pause_fps_max", "10");
+	settings->setDefault("max_objects_per_block", "20");
+	settings->setDefault("sqlite_synchronous", "1");
+	settings->setDefault("gui_scaling", "1.1");
+	settings->setDefault("server_map_save_interval", "15");
+	settings->setDefault("client_mapblock_limit", "500");
+	settings->setDefault("active_block_range", "1");
+	settings->setDefault("chunksize", "3");
 
-	settings->setDefault("viewing_range", "50");
+	settings->setDefault("viewing_range", "25");
 	settings->setDefault("inventory_image_hack", "false");
 
 	//check for device with small screen

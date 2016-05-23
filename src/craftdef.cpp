@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/string.h"
 #include "util/numeric.h"
-#include "strfnd.h"
+#include "util/strfnd.h"
 #include "exceptions.h"
 
 inline bool isGroupRecipeStr(const std::string &rec_name)
@@ -90,7 +90,7 @@ static bool inputItemMatchesRecipe(const std::string &inp_name,
 				all_groups_match = false;
 				break;
 			}
-		} while (!f.atend());
+		} while (!f.at_end());
 		if (all_groups_match)
 			return true;
 	}

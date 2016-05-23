@@ -287,6 +287,7 @@ public:
 		const std::string &playername);
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
+	void deleteParticleSpawnerAll(u32 id);
 
 	// Creates or resets inventory
 	Inventory* createDetachedInventory(const std::string &name);
@@ -661,11 +662,6 @@ private:
 	*/
 	// key = name
 	std::map<std::string, Inventory*> m_detached_inventories;
-
-	/*
-		Particles
-	*/
-	std::vector<u32> m_particlespawner_ids;
 
 	DISABLE_CLASS_COPY(Server);
 };

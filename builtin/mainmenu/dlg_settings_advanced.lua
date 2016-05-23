@@ -151,8 +151,8 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 	if setting_type == "float" then
 		local default, min, max = remaining_line:match("^"
 				-- first float is required, the last 2 are optional
-				.. "(" .. CHAR_CLASSES.FLOAT .. "+)" .. CHAR_CLASSES.SPACE .. "?"
-				.. "(" .. CHAR_CLASSES.FLOAT .. "*)" .. CHAR_CLASSES.SPACE .. "?"
+				.. "(" .. CHAR_CLASSES.FLOAT .. "+)" .. CHAR_CLASSES.SPACE .. "*"
+				.. "(" .. CHAR_CLASSES.FLOAT .. "*)" .. CHAR_CLASSES.SPACE .. "*"
 				.. "(" .. CHAR_CLASSES.FLOAT .. "*)"
 				.."$")
 
@@ -706,7 +706,11 @@ local function create_minetest_conf_example()
 				result = result .. " possible values: " .. entry.possible:gsub(",", ", ")
 			end
 			result = result .. "\n"
-			result = result .. "# " .. entry.name .. " = ".. entry.default .. "\n\n"
+			local append = ""
+			if entry.default ~= "" then
+				append = " " .. entry.default
+			end
+			result = result .. "# " .. entry.name .. " =" .. append .. "\n\n"
 		end
 	end
 	return result

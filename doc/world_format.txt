@@ -316,7 +316,7 @@ if map format version >= 23:
       u8[key_len] key
       u32 val_len
       u8[val_len] value
-      serialized inventory
+    serialized inventory
 
 - Node timers
 if map format version == 23:

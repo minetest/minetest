@@ -25,20 +25,20 @@ local function get_formspec(data)
 	local mod = data.list:get_list()[data.selected_mod]
 
 	local retval =
-		"size[11,6.5,true]" ..
-		"label[0.5,-0.25;" .. fgettext("World:") .. "]" ..
-		"label[1.75,-0.25;" .. data.worldspec.name .. "]"
+		"size[11.5,7.5,true]" ..
+		"label[0.5,0;" .. fgettext("World:") .. "]" ..
+		"label[1.75,0;" .. data.worldspec.name .. "]"
 
 	if data.hide_gamemods then
-		retval = retval .. "checkbox[0,5.75;cb_hide_gamemods;" .. fgettext("Hide Game") .. ";true]"
+		retval = retval .. "checkbox[1,6;cb_hide_gamemods;" .. fgettext("Hide Game") .. ";true]"
 	else
-		retval = retval .. "checkbox[0,5.75;cb_hide_gamemods;" .. fgettext("Hide Game") .. ";false]"
+		retval = retval .. "checkbox[1,6;cb_hide_gamemods;" .. fgettext("Hide Game") .. ";false]"
 	end
 
 	if data.hide_modpackcontents then
-		retval = retval .. "checkbox[2,5.75;cb_hide_mpcontent;" .. fgettext("Hide mp content") .. ";true]"
+		retval = retval .. "checkbox[6,6;cb_hide_mpcontent;" .. fgettext("Hide mp content") .. ";true]"
 	else
-		retval = retval .. "checkbox[2,5.75;cb_hide_mpcontent;" .. fgettext("Hide mp content") .. ";false]"
+		retval = retval .. "checkbox[6,6;cb_hide_mpcontent;" .. fgettext("Hide mp content") .. ";false]"
 	end
 
 	if mod == nil then
@@ -46,13 +46,13 @@ local function get_formspec(data)
 	end
 	
 	retval = retval ..
-		"label[0,0.45;" .. fgettext("Mod:") .. "]" ..
-		"label[0.75,0.45;" .. mod.name .. "]" ..
-		"label[0,1;" .. fgettext("Depends:") .. "]" ..
-		"textlist[0,1.5;5,4.25;world_config_depends;" ..
+		"label[0,0.7;" .. fgettext("Mod:") .. "]" ..
+		"label[0.75,0.7;" .. mod.name .. "]" ..
+		"label[0,1.25;" .. fgettext("Depends:") .. "]" ..
+		"textlist[0,1.75;5,4.25;world_config_depends;" ..
 		modmgr.get_dependencies(mod.path) .. ";0]" ..
-		"button[9.25,6.35;2,0.5;btn_config_world_save;" .. fgettext("Save") .. "]" ..
-		"button[7.4,6.35;2,0.5;btn_config_world_cancel;" .. fgettext("Cancel") .. "]"
+		"button[3.25,7;2.5,0.5;btn_config_world_save;" .. fgettext("Save") .. "]" ..
+		"button[5.75,7;2.5,0.5;btn_config_world_cancel;" .. fgettext("Cancel") .. "]"
 
 	if mod ~= nil and mod.name ~= "" and mod.typ ~= "game_mod" then
 		if mod.is_modpack then
@@ -68,22 +68,22 @@ local function get_formspec(data)
 			end
 
 			if all_enabled == false then
-				retval = retval .. "button[5.5,-0.125;2,0.5;btn_mp_enable;" .. fgettext("Enable MP") .. "]"
+				retval = retval .. "button[5.5,0.125;2.5,0.5;btn_mp_enable;" .. fgettext("Enable MP") .. "]"
 			else
-				retval = retval .. "button[5.5,-0.125;2,0.5;btn_mp_disable;" .. fgettext("Disable MP") .. "]"
+				retval = retval .. "button[5.5,0.125;2.5,0.5;btn_mp_disable;" .. fgettext("Disable MP") .. "]"
 			end
 		else
 			if mod.enabled then
-				retval = retval .. "checkbox[5.5,-0.375;cb_mod_enable;" .. fgettext("enabled") .. ";true]"
+				retval = retval .. "checkbox[5.5,-0.125;cb_mod_enable;" .. fgettext("enabled") .. ";true]"
 			else
-				retval = retval .. "checkbox[5.5,-0.375;cb_mod_enable;" .. fgettext("enabled") .. ";false]"
+				retval = retval .. "checkbox[5.5,-0.125;cb_mod_enable;" .. fgettext("enabled") .. ";false]"
 			end
 		end
 	end
 
 	retval = retval ..
-		"button[8.5,-0.125;2.5,0.5;btn_all_mods;" .. fgettext("Enable all") .. "]" ..
-		"textlist[5.5,0.5;5.5,5.75;world_config_modlist;"
+		"button[8.75,0.125;2.5,0.5;btn_all_mods;" .. fgettext("Enable all") .. "]" ..
+		"textlist[5.5,0.75;5.75,5.25;world_config_modlist;"
 
 	retval = retval .. modmgr.render_modlist(data.list)
 	retval = retval .. ";" .. data.selected_mod .."]"

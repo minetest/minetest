@@ -265,7 +265,7 @@ Client::Client(
 	m_cache_smooth_lighting = g_settings->getBool("smooth_lighting");
 	m_cache_enable_shaders  = g_settings->getBool("enable_shaders");
 	m_cache_use_tangent_vertices = m_cache_enable_shaders && (
-		g_settings->getBool("enable_bumpmapping") || 
+		g_settings->getBool("enable_bumpmapping") ||
 		g_settings->getBool("enable_parallax_occlusion"));
 }
 
@@ -386,25 +386,30 @@ void Client::step(float dtime)
 			Player *myplayer = m_env.getLocalPlayer();
 			FATAL_ERROR_IF(myplayer == NULL, "Local player not found in environment.");
 
-			// Send TOSERVER_INIT_LEGACY
-			// [0] u16 TOSERVER_INIT_LEGACY
-			// [2] u8 SER_FMT_VER_HIGHEST_READ
-			// [3] u8[20] player_name
-			// [23] u8[28] password (new in some version)
-			// [51] u16 minimum supported network protocol version (added sometime)
-			// [53] u16 maximum supported network protocol version (added later than the previous one)
+			u16 proto_version_min = g_settings->getFlag("send_pre_v25_init") ?
+				CLIENT_PROTOCOL_VERSION_MIN_LEGACY : CLIENT_PROTOCOL_VERSION_MIN;
 
-			char pName[PLAYERNAME_SIZE];
-			char pPassword[PASSWORD_SIZE];
-			memset(pName, 0, PLAYERNAME_SIZE * sizeof(char));
-			memset(pPassword, 0, PASSWORD_SIZE * sizeof(char));
+			if (proto_version_min < 25) {
+				// Send TOSERVER_INIT_LEGACY
+				// [0] u16 TOSERVER_INIT_LEGACY
+				// [2] u8 SER_FMT_VER_HIGHEST_READ
+				// [3] u8[20] player_name
+				// [23] u8[28] password (new in some version)
+				// [51] u16 minimum supported network protocol version (added sometime)
+				// [53] u16 maximum supported network protocol version (added later than the previous one)
 
-			std::string hashed_password = translatePassword(myplayer->getName(), m_password);
-			snprintf(pName, PLAYERNAME_SIZE, "%s", myplayer->getName());
-			snprintf(pPassword, PASSWORD_SIZE, "%s", hashed_password.c_str());
+				char pName[PLAYERNAME_SIZE];
+				char pPassword[PASSWORD_SIZE];
+				memset(pName, 0, PLAYERNAME_SIZE * sizeof(char));
+				memset(pPassword, 0, PASSWORD_SIZE * sizeof(char));
 
-			sendLegacyInit(pName, pPassword);
-			if (LATEST_PROTOCOL_VERSION >= 25)
+				std::string hashed_password = translate_password(myplayer->getName(), m_password);
+				snprintf(pName, PLAYERNAME_SIZE, "%s", myplayer->getName());
+				snprintf(pPassword, PASSWORD_SIZE, "%s", hashed_password.c_str());
+
+				sendLegacyInit(pName, pPassword);
+			}
+			if (CLIENT_PROTOCOL_VERSION_MAX >= 25)
 				sendInit(myplayer->getName());
 		}
 
@@ -1003,10 +1008,13 @@ void Client::sendLegacyInit(const char* playerName, const char* playerPassword)
 	NetworkPacket pkt(TOSERVER_INIT_LEGACY,
 			1 + PLAYERNAME_SIZE + PASSWORD_SIZE + 2 + 2);
 
+	u16 proto_version_min = g_settings->getFlag("send_pre_v25_init") ?
+		CLIENT_PROTOCOL_VERSION_MIN_LEGACY : CLIENT_PROTOCOL_VERSION_MIN;
+
 	pkt << (u8) SER_FMT_VER_HIGHEST_READ;
 	pkt.putRawString(playerName,PLAYERNAME_SIZE);
 	pkt.putRawString(playerPassword, PASSWORD_SIZE);
-	pkt << (u16) CLIENT_PROTOCOL_VERSION_MIN << (u16) CLIENT_PROTOCOL_VERSION_MAX;
+	pkt << (u16) proto_version_min << (u16) CLIENT_PROTOCOL_VERSION_MAX;
 
 	Send(&pkt);
 }
@@ -1017,8 +1025,12 @@ void Client::sendInit(const std::string &playerName)
 
 	// we don't support network compression yet
 	u16 supp_comp_modes = NETPROTO_COMPRESSION_NONE;
+
+	u16 proto_version_min = g_settings->getFlag("send_pre_v25_init") ?
+		CLIENT_PROTOCOL_VERSION_MIN_LEGACY : CLIENT_PROTOCOL_VERSION_MIN;
+
 	pkt << (u8) SER_FMT_VER_HIGHEST_READ << (u16) supp_comp_modes;
-	pkt << (u16) CLIENT_PROTOCOL_VERSION_MIN << (u16) CLIENT_PROTOCOL_VERSION_MAX;
+	pkt << (u16) proto_version_min << (u16) CLIENT_PROTOCOL_VERSION_MAX;
 	pkt << playerName;
 
 	Send(&pkt);
@@ -1031,18 +1043,14 @@ void Client::startAuth(AuthMechanism chosen_auth_mechanism)
 	switch (chosen_auth_mechanism) {
 		case AUTH_MECHANISM_FIRST_SRP: {
 			// send srp verifier to server
+			std::string verifier;
+			std::string salt;
+			generate_srp_verifier_and_salt(getPlayerName(), m_password,
+				&verifier, &salt);
+
 			NetworkPacket resp_pkt(TOSERVER_FIRST_SRP, 0);
-			char *salt, *bytes_v;
-			std::size_t len_salt, len_v;
-			salt = NULL;
-			getSRPVerifier(getPlayerName(), m_password,
-				&salt, &len_salt, &bytes_v, &len_v);
-			resp_pkt
-				<< std::string((char*)salt, len_salt)
-				<< std::string((char*)bytes_v, len_v)
-				<< (u8)((m_password == "") ? 1 : 0);
-			free(salt);
-			free(bytes_v);
+			resp_pkt << salt << verifier << (u8)((m_password == "") ? 1 : 0);
+
 			Send(&resp_pkt);
 			break;
 		}
@@ -1051,7 +1059,7 @@ void Client::startAuth(AuthMechanism chosen_auth_mechanism)
 			u8 based_on = 1;
 
 			if (chosen_auth_mechanism == AUTH_MECHANISM_LEGACY_PASSWORD) {
-				m_password = translatePassword(getPlayerName(), m_password);
+				m_password = translate_password(getPlayerName(), m_password);
 				based_on = 0;
 			}
 
@@ -1197,8 +1205,8 @@ void Client::sendChangePassword(const std::string &oldpassword,
 		m_new_password = newpassword;
 		startAuth(choseAuthMech(m_sudo_auth_methods));
 	} else {
-		std::string oldpwd = translatePassword(playername, oldpassword);
-		std::string newpwd = translatePassword(playername, newpassword);
+		std::string oldpwd = translate_password(playername, oldpassword);
+		std::string newpwd = translate_password(playername, newpassword);
 
 		NetworkPacket pkt(TOSERVER_PASSWORD_LEGACY, 2 * PASSWORD_SIZE);
 
@@ -1813,8 +1821,11 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 			+ DIR_DELIM
 			+ std::string("screenshot_")
 			+ std::string(timetstamp_c);
-	std::string filename_ext = ".png";
+	std::string filename_ext = "." + g_settings->get("screenshot_format");
 	std::string filename;
+
+	u32 quality = (u32)g_settings->getS32("screenshot_quality");
+	quality = MYMIN(MYMAX(quality, 0), 100) / 100.0 * 255;
 
 	// Try to find a unique filename
 	unsigned serial = 0;
@@ -1837,7 +1848,7 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 			raw_image->copyTo(image);
 
 			std::ostringstream sstr;
-			if (driver->writeImageToFile(image, filename.c_str())) {
+			if (driver->writeImageToFile(image, filename.c_str(), quality)) {
 				sstr << "Saved screenshot to '" << filename << "'";
 			} else {
 				sstr << "Failed to save screenshot '" << filename << "'";

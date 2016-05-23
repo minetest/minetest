@@ -1095,7 +1095,9 @@ int ModApiMainMenu::l_get_screen_info(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_min_supp_proto(lua_State *L)
 {
-	lua_pushinteger(L, CLIENT_PROTOCOL_VERSION_MIN);
+	u16 proto_version_min = g_settings->getFlag("send_pre_v25_init") ?
+		CLIENT_PROTOCOL_VERSION_MIN_LEGACY : CLIENT_PROTOCOL_VERSION_MIN;
+	lua_pushinteger(L, proto_version_min);
 	return 1;
 }
 

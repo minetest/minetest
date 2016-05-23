@@ -83,6 +83,7 @@ public:
 
 protected:
 	friend class LuaABM;
+	friend class LuaLBM;
 	friend class InvRef;
 	friend class ObjectRef;
 	friend class NodeMetaRef;

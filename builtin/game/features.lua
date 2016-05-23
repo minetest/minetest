@@ -8,6 +8,7 @@ core.features = {
 	use_texture_alpha = true,
 	no_legacy_abms = true,
 	texture_names_parens = true,
+	area_store_custom_ids = true,
 }
 
 function core.has_feature(arg)

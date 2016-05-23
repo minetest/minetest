@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 
 void ScriptApiEnv::environment_OnGenerated(v3s16 minp, v3s16 maxp,
-		u32 blockseed)
+	u32 blockseed)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -44,7 +44,7 @@ void ScriptApiEnv::environment_OnGenerated(v3s16 minp, v3s16 maxp,
 void ScriptApiEnv::environment_Step(float dtime)
 {
 	SCRIPTAPI_PRECHECKHEADER
-	//infostream<<"scriptapi_environment_step"<<std::endl;
+	//infostream << "scriptapi_environment_step" << std::endl;
 
 	// Get core.registered_globalsteps
 	lua_getglobal(L, "core");
@@ -58,7 +58,7 @@ void ScriptApiEnv::environment_Step(float dtime)
 	}
 }
 
-void ScriptApiEnv::player_event(ServerActiveObject* player, std::string type)
+void ScriptApiEnv::player_event(ServerActiveObject *player, const std::string &type)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -82,78 +82,127 @@ void ScriptApiEnv::player_event(ServerActiveObject* player, std::string type)
 void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 {
 	SCRIPTAPI_PRECHECKHEADER
-	verbosestream<<"scriptapi_add_environment"<<std::endl;
+	verbosestream << "scriptapi_add_environment" << std::endl;
 	setEnv(env);
 
 	/*
-		Add ActiveBlockModifiers to environment
+		Add {Loading,Active}BlockModifiers to environment
 	*/
 
 	// Get core.registered_abms
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_abms");
-	luaL_checktype(L, -1, LUA_TTABLE);
 	int registered_abms = lua_gettop(L);
 
-	if(lua_istable(L, registered_abms)){
-		int table = lua_gettop(L);
-		lua_pushnil(L);
-		while(lua_next(L, table) != 0){
-			// key at index -2 and value at index -1
-			int id = lua_tonumber(L, -2);
-			int current_abm = lua_gettop(L);
+	if (!lua_istable(L, registered_abms)) {
+		lua_pop(L, 1);
+		throw LuaError("core.registered_abms was not a lua table, as expected.");
+	}
+	lua_pushnil(L);
+	while (lua_next(L, registered_abms)) {
+		// key at index -2 and value at index -1
+		int id = lua_tonumber(L, -2);
+		int current_abm = lua_gettop(L);
 
-			std::set<std::string> trigger_contents;
-			lua_getfield(L, current_abm, "nodenames");
-			if(lua_istable(L, -1)){
-				int table = lua_gettop(L);
-				lua_pushnil(L);
-				while(lua_next(L, table) != 0){
-					// key at index -2 and value at index -1
-					luaL_checktype(L, -1, LUA_TSTRING);
-					trigger_contents.insert(lua_tostring(L, -1));
-					// removes value, keeps key for next iteration
-					lua_pop(L, 1);
-				}
-			} else if(lua_isstring(L, -1)){
+		std::set<std::string> trigger_contents;
+		lua_getfield(L, current_abm, "nodenames");
+		if (lua_istable(L, -1)) {
+			int table = lua_gettop(L);
+			lua_pushnil(L);
+			while (lua_next(L, table)) {
+				// key at index -2 and value at index -1
+				luaL_checktype(L, -1, LUA_TSTRING);
 				trigger_contents.insert(lua_tostring(L, -1));
+				// removes value, keeps key for next iteration
+				lua_pop(L, 1);
 			}
-			lua_pop(L, 1);
-
-			std::set<std::string> required_neighbors;
-			lua_getfield(L, current_abm, "neighbors");
-			if(lua_istable(L, -1)){
-				int table = lua_gettop(L);
-				lua_pushnil(L);
-				while(lua_next(L, table) != 0){
-					// key at index -2 and value at index -1
-					luaL_checktype(L, -1, LUA_TSTRING);
-					required_neighbors.insert(lua_tostring(L, -1));
-					// removes value, keeps key for next iteration
-					lua_pop(L, 1);
-				}
-			} else if(lua_isstring(L, -1)){
-				required_neighbors.insert(lua_tostring(L, -1));
-			}
-			lua_pop(L, 1);
-
-			float trigger_interval = 10.0;
-			getfloatfield(L, current_abm, "interval", trigger_interval);
-
-			int trigger_chance = 50;
-			getintfield(L, current_abm, "chance", trigger_chance);
-
-			bool simple_catch_up = true;
-			getboolfield(L, current_abm, "catch_up", simple_catch_up);
-
-			LuaABM *abm = new LuaABM(L, id, trigger_contents, required_neighbors,
-				trigger_interval, trigger_chance, simple_catch_up);
-
-			env->addActiveBlockModifier(abm);
-
-			// removes value, keeps key for next iteration
-			lua_pop(L, 1);
+		} else if (lua_isstring(L, -1)) {
+			trigger_contents.insert(lua_tostring(L, -1));
 		}
+		lua_pop(L, 1);
+
+		std::set<std::string> required_neighbors;
+		lua_getfield(L, current_abm, "neighbors");
+		if (lua_istable(L, -1)) {
+			int table = lua_gettop(L);
+			lua_pushnil(L);
+			while (lua_next(L, table)) {
+				// key at index -2 and value at index -1
+				luaL_checktype(L, -1, LUA_TSTRING);
+				required_neighbors.insert(lua_tostring(L, -1));
+				// removes value, keeps key for next iteration
+				lua_pop(L, 1);
+			}
+		} else if (lua_isstring(L, -1)) {
+			required_neighbors.insert(lua_tostring(L, -1));
+		}
+		lua_pop(L, 1);
+
+		float trigger_interval = 10.0;
+		getfloatfield(L, current_abm, "interval", trigger_interval);
+
+		int trigger_chance = 50;
+		getintfield(L, current_abm, "chance", trigger_chance);
+
+		bool simple_catch_up = true;
+		getboolfield(L, current_abm, "catch_up", simple_catch_up);
+
+		LuaABM *abm = new LuaABM(L, id, trigger_contents, required_neighbors,
+			trigger_interval, trigger_chance, simple_catch_up);
+
+		env->addActiveBlockModifier(abm);
+
+		// removes value, keeps key for next iteration
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 1);
+
+	// Get core.registered_lbms
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_lbms");
+	int registered_lbms = lua_gettop(L);
+
+	if (!lua_istable(L, registered_lbms)) {
+		lua_pop(L, 1);
+		throw LuaError("core.registered_lbms was not a lua table, as expected.");
+	}
+
+	lua_pushnil(L);
+	while (lua_next(L, registered_lbms)) {
+		// key at index -2 and value at index -1
+		int id = lua_tonumber(L, -2);
+		int current_lbm = lua_gettop(L);
+
+		std::set<std::string> trigger_contents;
+		lua_getfield(L, current_lbm, "nodenames");
+		if (lua_istable(L, -1)) {
+			int table = lua_gettop(L);
+			lua_pushnil(L);
+			while (lua_next(L, table)) {
+				// key at index -2 and value at index -1
+				luaL_checktype(L, -1, LUA_TSTRING);
+				trigger_contents.insert(lua_tostring(L, -1));
+				// removes value, keeps key for next iteration
+				lua_pop(L, 1);
+			}
+		} else if (lua_isstring(L, -1)) {
+			trigger_contents.insert(lua_tostring(L, -1));
+		}
+		lua_pop(L, 1);
+
+		std::string name;
+		getstringfield(L, current_lbm, "name", name);
+
+		bool run_at_every_load = getboolfield_default(L, current_lbm,
+			"run_at_every_load", false);
+
+		LuaLBM *lbm = new LuaLBM(L, id, trigger_contents, name,
+			run_at_every_load);
+
+		env->addLoadingBlockModifierDef(lbm);
+
+		// removes value, keeps key for next iteration
+		lua_pop(L, 1);
 	}
 	lua_pop(L, 1);
 }

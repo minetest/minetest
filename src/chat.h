@@ -146,14 +146,21 @@ public:
 	void input(wchar_t ch);
 	void input(const std::wstring &str);
 
-	// Submit, clear and return current line
-	std::wstring submit();
+	// Add a string to the history
+	void addToHistory(std::wstring line);
+
+	// Get current line
+	std::wstring getLine() const { return m_line; }
+
+	// Get section of line that is currently selected
+	std::wstring getSelection() const
+		{ return m_line.substr(m_cursor, m_cursor_len); }
 
 	// Clear the current line
 	void clear();
 
 	// Replace the current line with the given text
-	void replace(std::wstring line);
+	std::wstring replace(std::wstring line);
 
 	// Select previous command from history
 	void historyPrev();
@@ -169,10 +176,13 @@ public:
 	std::wstring getVisiblePortion() const;
 	// Get cursor position (relative to visible portion). -1 if invalid
 	s32 getVisibleCursorPosition() const;
+	// Get length of cursor selection
+	s32 getCursorLength() const { return m_cursor_len; }
 
 	// Cursor operations
 	enum CursorOp {
 		CURSOROP_MOVE,
+		CURSOROP_SELECT,
 		CURSOROP_DELETE
 	};
 
@@ -186,7 +196,8 @@ public:
 	enum CursorOpScope {
 		CURSOROP_SCOPE_CHARACTER,
 		CURSOROP_SCOPE_WORD,
-		CURSOROP_SCOPE_LINE
+		CURSOROP_SCOPE_LINE,
+		CURSOROP_SCOPE_SELECTION
 	};
 
 	// Cursor operation
@@ -224,6 +235,8 @@ private:
 	s32 m_view;
 	// Cursor (index into m_line)
 	s32 m_cursor;
+	// Cursor length (length of selected portion of line)
+	s32 m_cursor_len;
 
 	// Last nick completion start (index into m_line)
 	s32 m_nick_completion_start;

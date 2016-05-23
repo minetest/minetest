@@ -395,6 +395,16 @@ private:
 	std::map<v3s16, float> m_blocks_sending;
 
 	/*
+		Blocks that have been modified since last sending them.
+		These blocks will not be marked as sent, even if the
+		client reports it has received them to account for blocks
+		that are being modified while on the line.
+
+		List of block positions.
+	*/
+	std::set<v3s16> m_blocks_modified;
+
+	/*
 		Count of excess GotBlocks().
 		There is an excess amount because the client sometimes
 		gets a block so late that the server sends it again,

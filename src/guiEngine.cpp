@@ -361,7 +361,7 @@ void GUIEngine::cloudPreProcess()
 /******************************************************************************/
 void GUIEngine::cloudPostProcess()
 {
-	float fps_max = g_settings->getFloat("fps_max");
+	float fps_max = g_settings->getFloat("pause_fps_max");
 	// Time of frame without fps limit
 	u32 busytime_u32;
 

@@ -540,6 +540,12 @@ void Camera::drawNametags()
 			i = m_nametags.begin();
 			i != m_nametags.end(); ++i) {
 		Nametag *nametag = *i;
+		if (nametag->nametag_color.getAlpha() == 0) {
+			// Enforce hiding nametag,
+			// because if freetype is enabled, a grey
+			// shadow can remain.
+			continue;
+		}
 		v3f pos = nametag->parent_node->getPosition() + v3f(0.0, 1.1 * BS, 0.0);
 		f32 transformed_pos[4] = { pos.X, pos.Y, pos.Z, 1.0f };
 		trans.multiplyWith1x4Matrix(transformed_pos);

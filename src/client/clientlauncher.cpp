@@ -201,6 +201,9 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 			bool game_has_run = launch_game(error_message, reconnect_requested,
 				game_params, cmd_args);
 
+			// Reset the reconnect_requested flag
+			reconnect_requested = false;
+
 			// If skip_main_menu, we only want to startup once
 			if (skip_main_menu && !first_loop)
 				break;
@@ -336,6 +339,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	MainMenuData menudata;
 	menudata.address                         = address;
 	menudata.name                            = playername;
+	menudata.password                        = password;
 	menudata.port                            = itos(game_params.socket_port);
 	menudata.script_data.errormessage        = error_message;
 	menudata.script_data.reconnect_requested = reconnect_requested;

@@ -23,7 +23,7 @@ function get_mods(path,retval,modpack)
 		if name:sub(1, 1) ~= "." then
 			local prefix = path .. DIR_DELIM .. name .. DIR_DELIM
 			local toadd = {}
-			table.insert(retval, toadd)
+			retval[#retval + 1] = toadd
 
 			local mod_conf = Settings(prefix .. "mod.conf"):to_table()
 			if mod_conf.name then
@@ -412,7 +412,7 @@ function modmgr.preparemodlist(data)
 
 	for i=1,#global_mods,1 do
 		global_mods[i].typ = "global_mod"
-		table.insert(retval,global_mods[i])
+		retval[#retval + 1] = global_mods[i]
 	end
 
 	--read game mods
@@ -421,7 +421,7 @@ function modmgr.preparemodlist(data)
 
 	for i=1,#game_mods,1 do
 		game_mods[i].typ = "game_mod"
-		table.insert(retval,game_mods[i])
+		retval[#retval + 1] = game_mods[i]
 	end
 
 	if data.worldpath == nil then

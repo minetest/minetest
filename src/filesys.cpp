@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include "log.h"
 #include "config.h"
+#include "porting.h"
 
 namespace fs
 {
@@ -698,22 +699,37 @@ bool safeWriteToFile(const std::string &path, const std::string &content)
 		return false;
 	}
 
+	bool rename_success = false;
+
 	// Move the finished temporary file over the real file
 #ifdef _WIN32
+	// When creating the file, it can cause Windows Search indexer, virus scanners and other apps
+	// to query the file. This can make the move file call below fail.
+	// We retry up to 5 times, with a 1ms sleep between, before we consider the whole operation failed
+	int number_attempts = 0;
+	while (number_attempts < 5) {
+		rename_success = MoveFileEx(tmp_file.c_str(), path.c_str(),
+				MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH);
+		if (rename_success)
+			break;
+		sleep_ms(1);
+		++number_attempts;
+	}
+#else
 	// On POSIX compliant systems rename() is specified to be able to swap the
 	// file in place of the destination file, making this a truly error-proof
 	// transaction.
-	// However, on Windows, the target file has to be removed first.
-	remove(path.c_str());
+	rename_success = rename(tmp_file.c_str(), path.c_str()) == 0;
 #endif
-	if(rename(tmp_file.c_str(), path.c_str())) {
+	if (!rename_success) {
+		warningstream << "Failed to write to file: " << path.c_str() << std::endl;
 		// Remove the temporary file because moving it over the target file
 		// failed.
 		remove(tmp_file.c_str());
 		return false;
-	} else {
-		return true;
 	}
+
+	return true;
 }
 
 bool Rename(const std::string &from, const std::string &to)

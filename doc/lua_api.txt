@@ -1,4 +1,4 @@
-Minetest Lua Modding API Reference 0.4.13
+Minetest Lua Modding API Reference 0.4.14
 =========================================
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
@@ -243,6 +243,7 @@ Example:
     default_dirt.png^default_grass_side.png
 
 `default_grass_side.png` is overlayed over `default_dirt.png`.
+The texture with the lower resolution will be automatically upscaled to the higher resolution texture.
 
 ### Texture grouping
 Textures can be grouped together by enclosing them in `(` and `)`.
@@ -277,6 +278,13 @@ specified coordinates.
 Example:
 
     [combine:16x32:0,0=default_cobble.png:0,16=default_wood.png
+
+#### `[resize:<w>x<h>`
+Resizes the texture to the given dimensions.
+
+Example:
+
+    default_sandstone.png^[resize:16x16
 
 #### `[brighten`
 Brightens the texture.
@@ -357,8 +365,13 @@ The mask is applied using binary AND.
 #### `[colorize:<color>:<ratio>`
 Colorize the textures with the given color.
 `<color>` is specified as a `ColorString`.
-`<ratio>` is an int ranging from 0 to 255, and specifies how much of the
-color to apply. If ommitted, the alpha will be used.
+`<ratio>` is an int ranging from 0 to 255 or the word "`alpha`".  If
+it is an int, then it specifies how far to interpolate between the
+colors where 0 is only the texture color and 255 is only `<color>`. If
+omitted, the alpha of `<color>` will be used as the ratio.  If it is
+the word "`alpha`", then each texture pixel will contain the RGB of
+`<color>` and the alpha of `<color>` multiplied by the alpha of the
+texture pixel.
 
 Sounds
 ------
@@ -541,9 +554,9 @@ node definition:
     ^ The rotation of the node is stored in param2. Furnaces and chests are
       rotated this way. Can be made by using minetest.dir_to_facedir().
       Values range 0 - 23
-      facedir modulo 4 = axisdir
+      facedir / 4 = axis direction:
       0 = y+    1 = z+    2 = z-    3 = x+    4 = x-    5 = y-
-      facedir's two less significant bits are rotation around the axis
+      facedir modulo 4 = rotation around that axis
     paramtype2 == "leveled"
     paramtype2 == "degrotate"
     ^ The rotation of this node is stored in param2. Plants are rotated this way.
@@ -616,6 +629,18 @@ A nodebox is defined as any of:
         wall_top = box,
         wall_bottom = box,
         wall_side = box
+    }
+    {
+        -- A node that has optional boxes depending on neighbouring nodes'
+        -- presence and type. See also `connects_to`.
+        type = "connected",
+        fixed = box OR {box1, box2, ...}
+        connect_top = box OR {box1, box2, ...}
+        connect_bottom = box OR {box1, box2, ...}
+        connect_front = box OR {box1, box2, ...}
+        connect_left = box OR {box1, box2, ...}
+        connect_back = box OR {box1, box2, ...}
+        connect_right = box OR {box1, box2, ...}
     }
 
 A `box` is defined as:
@@ -928,6 +953,7 @@ Displays a horizontal bar made up of half-images.
 * `number`: Number of items in the inventory to be displayed.
 * `item`: Position of item that is selected.
 * `direction`
+* `offset`: offset in pixels from position.
 
 ### `waypoint`
 Displays distance to selected world position.
@@ -1676,16 +1702,15 @@ or string form, a ColorString (defined above):
     `colorspec = "green"`
 
 Spatial Vectors
---------------
-
-* `vector.new([x[, y, z]])`: returns a vector.
-    * `x` is a table or the `x` position.
-
+---------------
+* `vector.new(a[, b, c])`: returns a vector:
+    * A copy of `a` if `a` is a vector.
+    * `{x = a, y = b, z = c}`, if all `a, b, c` are defined
 * `vector.direction(p1, p2)`: returns a vector
 * `vector.distance(p1, p2)`: returns a number
 * `vector.length(v)`: returns a number
 * `vector.normalize(v)`: returns a vector
-* `vector.round(v)`: returns a vector
+* `vector.round(v)`: returns a vector, each dimension rounded to floor
 * `vector.apply(v, func)`: returns a vector
 * `vector.equals(v1, v2)`: returns a boolean
 
@@ -1697,7 +1722,7 @@ For the following functions `x` can be either a vector or a number:
 * `vector.divide(v, x)`: returns a scaled vector or Schur quotient
 
 Helper functions
------------------
+----------------
 * `dump2(obj, name="_", dumped={})`
      * Return object serialized as a string, handles reference loops
 * `dump(obj, dumped={})`
@@ -1793,6 +1818,7 @@ Call these functions only at load time!
 
 * `minetest.register_entity(name, prototype table)`
 * `minetest.register_abm(abm definition)`
+* `minetest.register_lbm(lbm definition)`
 * `minetest.register_node(name, node definition)`
 * `minetest.register_tool(name, item definition)`
 * `minetest.register_craftitem(name, item definition)`
@@ -1853,6 +1879,7 @@ Call these functions only at load time!
     * `modifier`: when true, the function should return the actual hp_change.
       Note: modifiers only get a temporary hp_change that can be modified by later modifiers.
       modifiers can return true as a second argument to stop the execution of further functions.
+      Non-modifiers receive the final hp change calculated by the modifiers.
 * `minetest.register_on_respawnplayer(func(ObjectRef))`
      * Called when player is to be respawned
      * Called _before_ repositioning of player occurs
@@ -1904,6 +1931,7 @@ Call these functions only at load time!
 * `minetest.register_privilege(name, definition)`
     * `definition`: `"description text"`
     * `definition`: `{ description = "description text", give_to_singleplayer = boolean, -- default: true }`
+    * To allow players with basic_privs to grant, see basic_privs minetest.conf setting.
 * `minetest.register_authentication_handler(handler)`
     * See `minetest.builtin_auth_handler` in `builtin.lua` for reference
 
@@ -1997,6 +2025,8 @@ and `minetest.auth_reload` call the authetification handler.
     * `val` is between `0` and `1`; `0` for midnight, `0.5` for midday
 * `minetest.get_timeofday()`
 * `minetest.get_gametime()`: returns the time, in seconds, since the world was created
+* `minetest.get_day_count()`: returns number days elapsed since world was created,
+    * accounting for time changes.
 * `minetest.find_node_near(pos, radius, nodenames)`: returns pos or `nil`
     * `radius`: using a maximum metric
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
@@ -2084,7 +2114,9 @@ and `minetest.auth_reload` call the authetification handler.
     * `max_drop`: maximum height difference to consider droppable
     * `algorithm`: One of `"A*_noprefetch"` (default), `"A*"`, `"Dijkstra"`
 * `minetest.spawn_tree (pos, {treedef})`
-    * spawns L-System tree at given `pos` with definition in `treedef` table
+    * spawns L-system tree at given `pos` with definition in `treedef` table
+    * Warning: L-system generation currently creates lighting bugs in the form of mapblock-sized shadows.
+      Often these bugs appear as subtle shadows in water.
 * `minetest.transforming_liquid_add(pos)`
     * add node to liquid update queue
 * `minetest.get_node_max_level(pos)`
@@ -2337,7 +2369,7 @@ These functions return the leftover itemstack.
       otherwise returns `nil`.
     * The returned table contains the functions `fetch`, `fetch_async` and `fetch_async_get`
       described below.
-    * Only works at init time.
+    * Only works at init time and must be called from the mod's main scope (not from a function).
     * Function only exists if minetest server was built with cURL support.
     * **DO NOT ALLOW ANY OTHER MODS TO ACCESS THE RETURNED TABLE, STORE IT IN
       A LOCAL VARIABLE!**
@@ -2726,8 +2758,7 @@ If you chose the parameter-less constructor, a fast implementation will be autom
 * `get_area(id, include_borders, include_data)`: returns the area with the id `id`. (optional) Boolean values `include_borders` and `include_data` control what's copied.
 * `get_areas_for_pos(pos, include_borders, include_data)`: returns all areas that contain the position `pos`. (optional) Boolean values `include_borders` and `include_data` control what's copied.
 * `get_areas_in_area(edge1, edge2, accept_overlap, include_borders, include_data)`: returns all areas that contain all nodes inside the area specified by `edge1` and `edge2` (inclusive). If `accept_overlap` is true, also areas are returned that have nodes in common with the specified area. (optional) Boolean values `include_borders` and `include_data` control what's copied.
-* `insert_area(edge1, edge2, data)`: inserts an area into the store. Returns the id if successful, nil otherwise. The (inclusive) positions `edge1` and `edge2` describe the area, `data`
-is a string stored with the area.
+* `insert_area(edge1, edge2, data, [id])`: inserts an area into the store. Returns the new area's ID, or nil if the insertion failed. The (inclusive) positions `edge1` and `edge2` describe the area. `data` is a string stored with the area.  If passed, `id` will be used as the internal area ID, it must be a unique number between 0 and 2^32-2. If you use the `id` parameter you must always use it, or insertions are likely to fail due to conflicts.
 * `reserve(count)`: reserves resources for at most `count` many contained areas. Only needed for efficiency, and only some implementations profit.
 * `remove_area(id)`: removes the area with the given id from the store, returns success.
 * `set_cache_params(params)`: sets params for the included prefiltering cache. Calling invalidates the cache, so that its elements have to be newly generated.
@@ -2737,6 +2768,10 @@ is a string stored with the area.
         block_radius = number, -- the radius (in nodes) of the areas the cache generates prefiltered lists for, minimum 16, default 64
         limit = number, -- the cache's size, minimum 20, default 1000
       }
+* `to_string()`: Experimental. Returns area store serialized as a (binary) string.
+* `to_file(filename)`: Experimental. Like `to_string()`, but writes the data to a file.
+* `from_string(str)`: Experimental. Deserializes string and loads it into the AreaStore.  Returns success and, optionally, an error message.
+* `from_file(filename)`: Experimental. Like `from_string()`, but reads the data from a file.
 
 ### `ItemStack`
 An `ItemStack` is a stack of items.
@@ -3170,6 +3205,9 @@ Registered entities
 
 L-system trees
 --------------
+**Warning**
+L-system generation currently creates lighting bugs in the form of mapblock-sized shadows.
+Often these bugs appear as subtle shadows in water.
 
 ### Tree definition
 
@@ -3303,6 +3341,21 @@ Definition tables
           an area to simulate time lost by the area being unattended.
         ^ Note chance value can often be reduced to 1 ]]
         action = func(pos, node, active_object_count, active_object_count_wider),
+    }
+
+### LBM (LoadingBlockModifier) definition (`register_lbm`)
+
+    {
+        name = "modname:replace_legacy_door",
+        nodenames = {"default:lava_source"},
+    --  ^ List of node names to trigger the LBM on.
+    --    Also non-registered nodes will work.
+    --    Groups (as of group:groupname) will work as well.
+        run_at_every_load = false,
+    --  ^ Whether to run the LBM's action every time a block gets loaded,
+    --    and not just for blocks that were saved last time before LBMs were
+    --    introduced to the world.
+        action = func(pos, node),
     }
 
 ### Item definition (`register_node`, `register_craftitem`, `register_tool`)
@@ -3440,6 +3493,12 @@ Definition tables
         light_source = 0, -- Amount of light emitted by node
         damage_per_second = 0, -- If player is inside node, this damage is caused
         node_box = {type="regular"}, -- See "Node boxes"
+        connects_to = nodenames, --[[
+        * Used for nodebox nodes with the type == "connected"
+        * Specifies to what neighboring nodes connections will be drawn
+        * e.g. `{"group:fence", "default:wood"}` or `"default:stone"` ]]
+        connect_sides = { "top", "bottom", "front", "left", "back", "right" }, --[[
+        ^ Tells connected nodebox nodes to connect only to these sides of this node. ]]
         mesh = "model",
         selection_box = {type="regular"}, -- See "Node boxes" --[[
         ^ If drawtype "nodebox" is used and selection_box is nil, then node_box is used. ]]
@@ -3698,11 +3757,12 @@ Definition tables
     -- ^ Minimum and maximum `y` positions these decorations can be generated at.
     -- ^ This parameter refers to the `y` position of the decoration base, so
     --   the actual maximum height would be `height_max + size.Y`.
-        flags = "liquid_surface",
+        flags = "liquid_surface, force_placement",
     --  ^ Flags for all decoration types.
     --  ^ "liquid_surface": Instead of placement on the highest solid surface
     --  ^ in a mapchunk column, placement is on the highest liquid surface.
     --  ^ Placement is disabled if solid nodes are found above the liquid surface.
+    --  ^ "force_placement": Nodes other than "air" and "ignore" are replaced by the decoration.
 
         ----- Simple-type parameters
         decoration = "default:grass",
@@ -3746,7 +3806,7 @@ Definition tables
         },
     --  ^ See 'Schematic specifier' for details.
         replacements = {["oldname"] = "convert_to", ...},
-        flags = "place_center_x, place_center_y, place_center_z, force_placement",
+        flags = "place_center_x, place_center_y, place_center_z",
     --  ^ Flags for schematic decorations.  See 'Schematic attributes'.
         rotation = "90" -- rotate schematic 90 degrees on placement
     --  ^ Rotation can be "0", "90", "180", "270", or "random".

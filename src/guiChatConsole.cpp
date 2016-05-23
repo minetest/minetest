@@ -46,15 +46,18 @@ GUIChatConsole::GUIChatConsole(
 		gui::IGUIElement* parent,
 		s32 id,
 		ChatBackend* backend,
-		Client* client
+		Client* client,
+		IMenuManager* menumgr
 ):
 	IGUIElement(gui::EGUIET_ELEMENT, env, parent, id,
 			core::rect<s32>(0,0,100,100)),
 	m_chat_backend(backend),
 	m_client(client),
+	m_menumgr(menumgr),
 	m_screensize(v2u32(0,0)),
 	m_animate_time_old(0),
 	m_open(false),
+	m_close_on_enter(false),
 	m_height(0),
 	m_desired_height(0),
 	m_desired_height_fraction(0.0),
@@ -119,6 +122,10 @@ void GUIChatConsole::openConsole(f32 height)
 	m_desired_height_fraction = height;
 	m_desired_height = height * m_screensize.Y;
 	reformatConsole();
+	m_animate_time_old = getTimeMs();
+	IGUIElement::setVisible(true);
+	Environment->setFocus(this);
+	m_menumgr->createdMenu(this);
 }
 
 bool GUIChatConsole::isOpen() const
@@ -134,11 +141,13 @@ bool GUIChatConsole::isOpenInhibited() const
 void GUIChatConsole::closeConsole()
 {
 	m_open = false;
+	Environment->removeFocus(this);
+	m_menumgr->deletingMenu(this);
 }
 
 void GUIChatConsole::closeConsoleAtOnce()
 {
-	m_open = false;
+	closeConsole();
 	m_height = 0;
 	recalculateConsolePosition();
 }
@@ -147,6 +156,14 @@ f32 GUIChatConsole::getDesiredHeight() const
 {
 	return m_desired_height_fraction;
 }
+
+void GUIChatConsole::replaceAndAddToHistory(std::wstring line)
+{
+	ChatPrompt& prompt = m_chat_backend->getPrompt();
+	prompt.addToHistory(prompt.getLine());
+	prompt.replace(line);
+}
+
 
 void GUIChatConsole::setCursor(
 	bool visible, bool blinking, f32 blink_speed, f32 relative_height)
@@ -228,6 +245,13 @@ void GUIChatConsole::animate(u32 msec)
 {
 	// animate the console height
 	s32 goal = m_open ? m_desired_height : 0;
+
+	// Set invisible if close animation finished (reset by openConsole)
+	// This function (animate()) is never called once its visibility becomes false so do not
+	//		actually set visible to false before the inhibited period is over
+	if (!m_open && m_height == 0 && m_open_inhibited == 0)
+		IGUIElement::setVisible(false);
+
 	if (m_height != goal)
 	{
 		s32 max_change = msec * m_screensize.Y * (m_height_speed / 1000.0);
@@ -362,13 +386,15 @@ void GUIChatConsole::drawPrompt()
 		s32 cursor_pos = prompt.getVisibleCursorPosition();
 		if (cursor_pos >= 0)
 		{
+			s32 cursor_len = prompt.getCursorLength();
 			video::IVideoDriver* driver = Environment->getVideoDriver();
 			s32 x = (1 + cursor_pos) * m_fontsize.X;
 			core::rect<s32> destrect(
 				x,
-				y + (1.0-m_cursor_height) * m_fontsize.Y,
-				x + m_fontsize.X,
-				y + m_fontsize.Y);
+				y + m_fontsize.Y * (1.0 - m_cursor_height),
+				x + m_fontsize.X * MYMAX(cursor_len, 1),
+				y + m_fontsize.Y * (cursor_len ? m_cursor_height+1 : 1)
+			);
 			video::SColor cursor_color(255,255,255,255);
 			driver->draw2DRectangle(
 				cursor_color,
@@ -381,23 +407,27 @@ void GUIChatConsole::drawPrompt()
 
 bool GUIChatConsole::OnEvent(const SEvent& event)
 {
+
+	ChatPrompt &prompt = m_chat_backend->getPrompt();
+
 	if(event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
 	{
 		// Key input
 		if(KeyPress(event.KeyInput) == getKeySetting("keymap_console"))
 		{
 			closeConsole();
-			Environment->removeFocus(this);
 
 			// inhibit open so the_game doesn't reopen immediately
 			m_open_inhibited = 50;
+			m_close_on_enter = false;
 			return true;
 		}
 		else if(event.KeyInput.Key == KEY_ESCAPE)
 		{
 			closeConsoleAtOnce();
-			Environment->removeFocus(this);
-			// the_game will open the pause menu
+			m_close_on_enter = false;
+			// inhibit open so the_game doesn't reopen immediately
+			m_open_inhibited = 1; // so the ESCAPE button doesn't open the "pause menu"
 			return true;
 		}
 		else if(event.KeyInput.Key == KEY_PRIOR)
@@ -412,57 +442,50 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		}
 		else if(event.KeyInput.Key == KEY_RETURN)
 		{
-			std::wstring text = m_chat_backend->getPrompt().submit();
+			prompt.addToHistory(prompt.getLine());
+			std::wstring text = prompt.replace(L"");
 			m_client->typeChatMessage(text);
+			if (m_close_on_enter) {
+				closeConsoleAtOnce();
+				m_close_on_enter = false;
+			}
 			return true;
 		}
 		else if(event.KeyInput.Key == KEY_UP)
 		{
 			// Up pressed
 			// Move back in history
-			m_chat_backend->getPrompt().historyPrev();
+			prompt.historyPrev();
 			return true;
 		}
 		else if(event.KeyInput.Key == KEY_DOWN)
 		{
 			// Down pressed
 			// Move forward in history
-			m_chat_backend->getPrompt().historyNext();
+			prompt.historyNext();
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_LEFT)
+		else if(event.KeyInput.Key == KEY_LEFT || event.KeyInput.Key == KEY_RIGHT)
 		{
-			// Left or Ctrl-Left pressed
-			// move character / word to the left
-			ChatPrompt::CursorOpScope scope =
-				event.KeyInput.Control ?
+			// Left/right pressed
+			// Move/select character/word to the left depending on control and shift keys
+			ChatPrompt::CursorOp op = event.KeyInput.Shift ?
+				ChatPrompt::CURSOROP_SELECT :
+				ChatPrompt::CURSOROP_MOVE;
+			ChatPrompt::CursorOpDir dir = event.KeyInput.Key == KEY_LEFT ?
+				ChatPrompt::CURSOROP_DIR_LEFT :
+				ChatPrompt::CURSOROP_DIR_RIGHT;
+			ChatPrompt::CursorOpScope scope = event.KeyInput.Control ?
 				ChatPrompt::CURSOROP_SCOPE_WORD :
 				ChatPrompt::CURSOROP_SCOPE_CHARACTER;
-			m_chat_backend->getPrompt().cursorOperation(
-				ChatPrompt::CURSOROP_MOVE,
-				ChatPrompt::CURSOROP_DIR_LEFT,
-				scope);
-			return true;
-		}
-		else if(event.KeyInput.Key == KEY_RIGHT)
-		{
-			// Right or Ctrl-Right pressed
-			// move character / word to the right
-			ChatPrompt::CursorOpScope scope =
-				event.KeyInput.Control ?
-				ChatPrompt::CURSOROP_SCOPE_WORD :
-				ChatPrompt::CURSOROP_SCOPE_CHARACTER;
-			m_chat_backend->getPrompt().cursorOperation(
-				ChatPrompt::CURSOROP_MOVE,
-				ChatPrompt::CURSOROP_DIR_RIGHT,
-				scope);
+			prompt.cursorOperation(op, dir, scope);
 			return true;
 		}
 		else if(event.KeyInput.Key == KEY_HOME)
 		{
 			// Home pressed
 			// move to beginning of line
-			m_chat_backend->getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_MOVE,
 				ChatPrompt::CURSOROP_DIR_LEFT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
@@ -472,7 +495,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		{
 			// End pressed
 			// move to end of line
-			m_chat_backend->getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_MOVE,
 				ChatPrompt::CURSOROP_DIR_RIGHT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
@@ -486,7 +509,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				event.KeyInput.Control ?
 				ChatPrompt::CURSOROP_SCOPE_WORD :
 				ChatPrompt::CURSOROP_SCOPE_CHARACTER;
-			m_chat_backend->getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_DELETE,
 				ChatPrompt::CURSOROP_DIR_LEFT,
 				scope);
@@ -500,30 +523,72 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				event.KeyInput.Control ?
 				ChatPrompt::CURSOROP_SCOPE_WORD :
 				ChatPrompt::CURSOROP_SCOPE_CHARACTER;
-			m_chat_backend->getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_DELETE,
 				ChatPrompt::CURSOROP_DIR_RIGHT,
 				scope);
+			return true;
+		}
+		else if(event.KeyInput.Key == KEY_KEY_A && event.KeyInput.Control)
+		{
+			// Ctrl-A pressed
+			// Select all text
+			prompt.cursorOperation(
+				ChatPrompt::CURSOROP_SELECT,
+				ChatPrompt::CURSOROP_DIR_LEFT, // Ignored
+				ChatPrompt::CURSOROP_SCOPE_LINE);
+			return true;
+		}
+		else if(event.KeyInput.Key == KEY_KEY_C && event.KeyInput.Control)
+		{
+			// Ctrl-C pressed
+			// Copy text to clipboard
+			if (prompt.getCursorLength() <= 0)
+				return true;
+			std::wstring wselected = prompt.getSelection();
+			std::string selected(wselected.begin(), wselected.end());
+			Environment->getOSOperator()->copyToClipboard(selected.c_str());
 			return true;
 		}
 		else if(event.KeyInput.Key == KEY_KEY_V && event.KeyInput.Control)
 		{
 			// Ctrl-V pressed
 			// paste text from clipboard
+			if (prompt.getCursorLength() > 0) {
+				// Delete selected section of text
+				prompt.cursorOperation(
+					ChatPrompt::CURSOROP_DELETE,
+					ChatPrompt::CURSOROP_DIR_LEFT, // Ignored
+					ChatPrompt::CURSOROP_SCOPE_SELECTION);
+			}
 			IOSOperator *os_operator = Environment->getOSOperator();
 			const c8 *text = os_operator->getTextFromClipboard();
-			if (text)
-			{
-				std::wstring wtext = narrow_to_wide(text);
-				m_chat_backend->getPrompt().input(wtext);
-			}
+			if (!text)
+				return true;
+			std::basic_string<unsigned char> str((const unsigned char*)text);
+			prompt.input(std::wstring(str.begin(), str.end()));
+			return true;
+		}
+		else if(event.KeyInput.Key == KEY_KEY_X && event.KeyInput.Control)
+		{
+			// Ctrl-X pressed
+			// Cut text to clipboard
+			if (prompt.getCursorLength() <= 0)
+				return true;
+			std::wstring wselected = prompt.getSelection();
+			std::string selected(wselected.begin(), wselected.end());
+			Environment->getOSOperator()->copyToClipboard(selected.c_str());
+			prompt.cursorOperation(
+				ChatPrompt::CURSOROP_DELETE,
+				ChatPrompt::CURSOROP_DIR_LEFT, // Ignored
+				ChatPrompt::CURSOROP_SCOPE_SELECTION);
 			return true;
 		}
 		else if(event.KeyInput.Key == KEY_KEY_U && event.KeyInput.Control)
 		{
 			// Ctrl-U pressed
 			// kill line to left end
-			m_chat_backend->getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_DELETE,
 				ChatPrompt::CURSOROP_DIR_LEFT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
@@ -533,7 +598,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		{
 			// Ctrl-K pressed
 			// kill line to right end
-			m_chat_backend->getPrompt().cursorOperation(
+			prompt.cursorOperation(
 				ChatPrompt::CURSOROP_DELETE,
 				ChatPrompt::CURSOROP_DIR_RIGHT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
@@ -545,7 +610,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			// Nick completion
 			std::list<std::string> names = m_client->getConnectedPlayerNames();
 			bool backwards = event.KeyInput.Shift;
-			m_chat_backend->getPrompt().nickCompletion(names, backwards);
+			prompt.nickCompletion(names, backwards);
 			return true;
 		}
 		else if(event.KeyInput.Char != 0 && !event.KeyInput.Control)
@@ -553,9 +618,9 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			#if (defined(linux) || defined(__linux))
 				wchar_t wc = L'_';
 				mbtowc( &wc, (char *) &event.KeyInput.Char, sizeof(event.KeyInput.Char) );
-				m_chat_backend->getPrompt().input(wc);
+				prompt.input(wc);
 			#else
-				m_chat_backend->getPrompt().input(event.KeyInput.Char);
+				prompt.input(event.KeyInput.Char);
 			#endif
 			return true;
 		}
@@ -570,5 +635,15 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 	}
 
 	return Parent ? Parent->OnEvent(event) : false;
+}
+
+void GUIChatConsole::setVisible(bool visible)
+{
+	m_open = visible;
+	IGUIElement::setVisible(visible);
+	if (!visible) {
+		m_height = 0;
+		recalculateConsolePosition();
+	}
 }
 

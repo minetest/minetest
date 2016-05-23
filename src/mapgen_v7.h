@@ -34,6 +34,7 @@ extern FlagDesc flagdesc_mapgen_v7[];
 
 struct MapgenV7Params : public MapgenSpecificParams {
 	u32 spflags;
+	float cave_width;
 	NoiseParams np_terrain_base;
 	NoiseParams np_terrain_alt;
 	NoiseParams np_terrain_persist;
@@ -59,8 +60,8 @@ public:
 	BiomeManager *bmgr;
 
 	int ystride;
-	int zstride;
-	u32 spflags;
+	int zstride_1u1d;
+	int zstride_1d;
 
 	v3s16 node_min;
 	v3s16 node_max;
@@ -69,6 +70,8 @@ public:
 
 	s16 *ridge_heightmap;
 
+	u32 spflags;
+	float cave_width;
 	Noise *noise_terrain_base;
 	Noise *noise_terrain_alt;
 	Noise *noise_terrain_persist;
@@ -113,15 +116,11 @@ public:
 
 	void calculateNoise();
 
-	virtual int generateTerrain();
-	void generateBaseTerrain(s16 *stone_surface_min_y, s16 *stone_surface_max_y);
-	int generateMountainTerrain(s16 ymax);
+	int generateTerrain();
 	void generateRidgeTerrain();
 
 	MgStoneType generateBiomes(float *heat_map, float *humidity_map);
 	void dustTopNodes();
-
-	//void addTopNodes();
 
 	void generateCaves(s16 max_stone_y);
 };

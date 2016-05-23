@@ -163,6 +163,14 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box,
 	}
 }
 
+static inline void getNeighborConnectingFace(v3s16 p, INodeDefManager *nodedef,
+		MeshMakeData *data, MapNode n, int v, int *neighbors)
+{
+	MapNode n2 = data->m_vmanip.getNodeNoEx(p);
+	if (nodedef->nodeboxConnects(n, n2, v))
+		*neighbors |= v;
+}
+
 /*
 	TODO: Fix alpha blending for special nodes
 	Currently only the last element rendered is blended correct
@@ -1501,7 +1509,38 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			v3f pos = intToFloat(p, BS);
 
-			std::vector<aabb3f> boxes = n.getNodeBoxes(nodedef);
+			int neighbors = 0;
+
+			// locate possible neighboring nodes to connect to
+			if (f.node_box.type == NODEBOX_CONNECTED) {
+				v3s16 p2 = p;
+
+				p2.Y++;
+				getNeighborConnectingFace(blockpos_nodes + p2, nodedef, data, n, 1, &neighbors);
+
+				p2 = p;
+				p2.Y--;
+				getNeighborConnectingFace(blockpos_nodes + p2, nodedef, data, n, 2, &neighbors);
+
+				p2 = p;
+				p2.Z--;
+				getNeighborConnectingFace(blockpos_nodes + p2, nodedef, data, n, 4, &neighbors);
+
+				p2 = p;
+				p2.X--;
+				getNeighborConnectingFace(blockpos_nodes + p2, nodedef, data, n, 8, &neighbors);
+
+				p2 = p;
+				p2.Z++;
+				getNeighborConnectingFace(blockpos_nodes + p2, nodedef, data, n, 16, &neighbors);
+
+				p2 = p;
+				p2.X++;
+				getNeighborConnectingFace(blockpos_nodes + p2, nodedef, data, n, 32, &neighbors);
+			}
+
+			std::vector<aabb3f> boxes;
+			n.getNodeBoxes(nodedef, &boxes, neighbors);
 			for(std::vector<aabb3f>::iterator
 					i = boxes.begin();
 					i != boxes.end(); ++i)

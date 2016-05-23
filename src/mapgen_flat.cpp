@@ -58,7 +58,8 @@ MapgenFlat::MapgenFlat(int mapgenid, MapgenParams *params, EmergeManager *emerge
 	//// amount of elements to skip for the next index
 	//// for noise/height/biome maps (not vmanip)
 	this->ystride = csize.X;
-	this->zstride = csize.X * (csize.Y + 2);
+	// 1-down overgeneration
+	this->zstride_1d = csize.X * (csize.Y + 1);
 
 	this->biomemap        = new u8[csize.X * csize.Z];
 	this->heightmap       = new s16[csize.X * csize.Z];
@@ -66,22 +67,24 @@ MapgenFlat::MapgenFlat(int mapgenid, MapgenParams *params, EmergeManager *emerge
 	this->humidmap        = NULL;
 
 	MapgenFlatParams *sp = (MapgenFlatParams *)params->sparams;
-	this->spflags = sp->spflags;
 
-	this->ground_level = sp->ground_level;
+	this->spflags          = sp->spflags;
+	this->ground_level     = sp->ground_level;
 	this->large_cave_depth = sp->large_cave_depth;
-	this->lake_threshold = sp->lake_threshold;
-	this->lake_steepness = sp->lake_steepness;
-	this->hill_threshold = sp->hill_threshold;
-	this->hill_steepness = sp->hill_steepness;
+	this->cave_width       = sp->cave_width;
+	this->lake_threshold   = sp->lake_threshold;
+	this->lake_steepness   = sp->lake_steepness;
+	this->hill_threshold   = sp->hill_threshold;
+	this->hill_steepness   = sp->hill_steepness;
 
 	//// 2D noise
 	noise_terrain      = new Noise(&sp->np_terrain,      seed, csize.X, csize.Z);
 	noise_filler_depth = new Noise(&sp->np_filler_depth, seed, csize.X, csize.Z);
 
 	//// 3D noise
-	noise_cave1 = new Noise(&sp->np_cave1, seed, csize.X, csize.Y + 2, csize.Z);
-	noise_cave2 = new Noise(&sp->np_cave2, seed, csize.X, csize.Y + 2, csize.Z);
+	// 1-down overgeneraion
+	noise_cave1 = new Noise(&sp->np_cave1, seed, csize.X, csize.Y + 1, csize.Z);
+	noise_cave2 = new Noise(&sp->np_cave2, seed, csize.X, csize.Y + 1, csize.Z);
 
 	//// Biome noise
 	noise_heat           = new Noise(&params->np_biome_heat,           seed, csize.X, csize.Z);
@@ -137,14 +140,14 @@ MapgenFlat::~MapgenFlat()
 
 MapgenFlatParams::MapgenFlatParams()
 {
-	spflags = 0;
-
-	ground_level = 8;
+	spflags          = 0;
+	ground_level     = 8;
 	large_cave_depth = -33;
-	lake_threshold = -0.45;
-	lake_steepness = 48.0;
-	hill_threshold = 0.45;
-	hill_steepness = 64.0;
+	cave_width       = 0.3;
+	lake_threshold   = -0.45;
+	lake_steepness   = 48.0;
+	hill_threshold   = 0.45;
+	hill_steepness   = 64.0;
 
 	np_terrain      = NoiseParams(0, 1,   v3f(600, 600, 600), 7244,  5, 0.6, 2.0);
 	np_filler_depth = NoiseParams(0, 1.2, v3f(150, 150, 150), 261,   3, 0.7, 2.0);
@@ -155,10 +158,10 @@ MapgenFlatParams::MapgenFlatParams()
 
 void MapgenFlatParams::readParams(const Settings *settings)
 {
-	settings->getFlagStrNoEx("mgflat_spflags", spflags, flagdesc_mapgen_flat);
-
+	settings->getFlagStrNoEx("mgflat_spflags",      spflags, flagdesc_mapgen_flat);
 	settings->getS16NoEx("mgflat_ground_level",     ground_level);
 	settings->getS16NoEx("mgflat_large_cave_depth", large_cave_depth);
+	settings->getFloatNoEx("mgflat_cave_width",     cave_width);
 	settings->getFloatNoEx("mgflat_lake_threshold", lake_threshold);
 	settings->getFloatNoEx("mgflat_lake_steepness", lake_steepness);
 	settings->getFloatNoEx("mgflat_hill_threshold", hill_threshold);
@@ -173,10 +176,10 @@ void MapgenFlatParams::readParams(const Settings *settings)
 
 void MapgenFlatParams::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgflat_spflags", spflags, flagdesc_mapgen_flat, U32_MAX);
-
+	settings->setFlagStr("mgflat_spflags",      spflags, flagdesc_mapgen_flat, U32_MAX);
 	settings->setS16("mgflat_ground_level",     ground_level);
 	settings->setS16("mgflat_large_cave_depth", large_cave_depth);
+	settings->setFloat("mgflat_cave_width",     cave_width);
 	settings->setFloat("mgflat_lake_threshold", lake_threshold);
 	settings->setFloat("mgflat_lake_steepness", lake_steepness);
 	settings->setFloat("mgflat_hill_threshold", hill_threshold);
@@ -565,14 +568,21 @@ void MapgenFlat::generateCaves(s16 max_stone_y)
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index2d++) {
 		bool column_is_open = false;  // Is column open to overground
-		u32 vi = vm->m_area.index(x, node_max.Y + 1, z);
-		u32 index3d = (z - node_min.Z) * zstride + (csize.Y + 1) * ystride +
+		bool is_tunnel = false;  // Is tunnel or tunnel floor
+		u32 vi = vm->m_area.index(x, node_max.Y, z);
+		u32 index3d = (z - node_min.Z) * zstride_1d + csize.Y * ystride +
 			(x - node_min.X);
 		// Biome of column
 		Biome *biome = (Biome *)bmgr->getRaw(biomemap[index2d]);
 
-		for (s16 y = node_max.Y + 1; y >= node_min.Y - 1;
-				y--, index3d -= ystride, vm->m_area.add_y(em, vi, -1)) {
+		// Don't excavate the overgenerated stone at node_max.Y + 1,
+		// this creates a 'roof' over the tunnel, preventing light in
+		// tunnels at mapchunk borders when generating mapchunks upwards.
+		// This 'roof' is removed when the mapchunk above is generated.
+		for (s16 y = node_max.Y; y >= node_min.Y - 1; y--,
+				index3d -= ystride,
+				vm->m_area.add_y(em, vi, -1)) {
+
 			content_t c = vm->m_data[vi].getContent();
 			if (c == CONTENT_AIR || c == biome->c_water_top ||
 					c == biome->c_water) {
@@ -582,16 +592,20 @@ void MapgenFlat::generateCaves(s16 max_stone_y)
 			// Ground
 			float d1 = contour(noise_cave1->result[index3d]);
 			float d2 = contour(noise_cave2->result[index3d]);
-			if (d1 * d2 > 0.3f && ndef->get(c).is_ground_content) {
+
+			if (d1 * d2 > cave_width && ndef->get(c).is_ground_content) {
 				// In tunnel and ground content, excavate
 				vm->m_data[vi] = MapNode(CONTENT_AIR);
-			} else if (column_is_open &&
-					(c == biome->c_filler || c == biome->c_stone)) {
-				// Tunnel entrance floor
-				vm->m_data[vi] = MapNode(biome->c_top);
-				column_is_open = false;
+				is_tunnel = true;
 			} else {
+				// Not in tunnel or not ground content
+				if (is_tunnel && column_is_open &&
+						(c == biome->c_filler || c == biome->c_stone))
+					// Tunnel entrance floor
+					vm->m_data[vi] = MapNode(biome->c_top);
+
 				column_is_open = false;
+				is_tunnel = false;
 			}
 		}
 	}

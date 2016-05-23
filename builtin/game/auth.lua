@@ -20,7 +20,7 @@ function core.privs_to_string(privs, delim)
 	local list = {}
 	for priv, bool in pairs(privs) do
 		if bool then
-			table.insert(list, priv)
+			list[#list + 1] = priv
 		end
 	end
 	return table.concat(list, delim)

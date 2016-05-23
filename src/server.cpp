@@ -320,6 +320,9 @@ Server::Server(
 	// Perform pending node name resolutions
 	m_nodedef->runNodeResolveCallbacks();
 
+	// unmap node names for connected nodeboxes
+	m_nodedef->mapNodeboxConnections();
+
 	// init the recipe hashes to speed up crafting
 	m_craftdef->initHashes(this);
 
@@ -344,10 +347,11 @@ Server::Server(
 	servermap->addEventReceiver(this);
 
 	// If file exists, load environment metadata
-	if(fs::PathExists(m_path_world + DIR_DELIM "env_meta.txt"))
-	{
-		infostream<<"Server: Loading environment metadata"<<std::endl;
+	if (fs::PathExists(m_path_world + DIR_DELIM "env_meta.txt")) {
+		infostream << "Server: Loading environment metadata" << std::endl;
 		m_env->loadMeta();
+	} else {
+		m_env->loadDefaultMeta();
 	}
 
 	// Add some test ActiveBlockModifiers to environment
@@ -1842,7 +1846,7 @@ void Server::SendPlayerHP(u16 peer_id)
 {
 	DSTACK(FUNCTION_NAME);
 	PlayerSAO *playersao = getPlayerSAO(peer_id);
-	// In some rare case, if the player is disconnected
+	// In some rare case if the player is disconnected
 	// while Lua call l_punch, for example, this can be NULL
 	if (!playersao)
 		return;
@@ -2511,9 +2515,11 @@ void Server::sendDetachedInventories(u16 peer_id)
 void Server::DiePlayer(u16 peer_id)
 {
 	DSTACK(FUNCTION_NAME);
-
 	PlayerSAO *playersao = getPlayerSAO(peer_id);
-	assert(playersao);
+	// In some rare cases this can be NULL -- if the player is disconnected
+	// when a Lua function modifies l_punch, for example
+	if (!playersao)
+		return;
 
 	infostream << "Server::DiePlayer(): Player "
 			<< playersao->getPlayer()->getName()
@@ -2567,7 +2573,7 @@ void Server::DenyAccessVerCompliant(u16 peer_id, u16 proto_ver, AccessDeniedCode
 		const std::string &str_reason, bool reconnect)
 {
 	if (proto_ver >= 25) {
-		SendAccessDenied(peer_id, reason, str_reason);
+		SendAccessDenied(peer_id, reason, str_reason, reconnect);
 	} else {
 		std::wstring wreason = utf8_to_wide(
 			reason == SERVER_ACCESSDENIED_CUSTOM_STRING ? str_reason :
@@ -3190,19 +3196,7 @@ u32 Server::addParticleSpawner(u16 amount, float spawntime,
 		peer_id = player->peer_id;
 	}
 
-	u32 id = 0;
-	for(;;) // look for unused particlespawner id
-	{
-		id++;
-		if (std::find(m_particlespawner_ids.begin(),
-				m_particlespawner_ids.end(), id)
-				== m_particlespawner_ids.end())
-		{
-			m_particlespawner_ids.push_back(id);
-			break;
-		}
-	}
-
+	u32 id = m_env->addParticleSpawner(spawntime);
 	SendAddParticleSpawner(peer_id, amount, spawntime,
 		minpos, maxpos, minvel, maxvel, minacc, maxacc,
 		minexptime, maxexptime, minsize, maxsize,
@@ -3225,11 +3219,14 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 		peer_id = player->peer_id;
 	}
 
-	m_particlespawner_ids.erase(
-			std::remove(m_particlespawner_ids.begin(),
-			m_particlespawner_ids.end(), id),
-			m_particlespawner_ids.end());
+	m_env->deleteParticleSpawner(id);
 	SendDeleteParticleSpawner(peer_id, id);
+}
+
+void Server::deleteParticleSpawnerAll(u32 id)
+{
+	m_env->deleteParticleSpawner(id);
+	SendDeleteParticleSpawner(PEER_ID_INEXISTENT, id);
 }
 
 Inventory* Server::createDetachedInventory(const std::string &name)

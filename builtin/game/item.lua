@@ -233,7 +233,8 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 		place_to = {x = under.x, y = under.y, z = under.z}
 	end
 
-	if core.is_protected(place_to, placer:get_player_name()) then
+	if core.is_protected(place_to, placer:get_player_name()) and
+			not minetest.check_player_privs(placer, "protection_bypass") then
 		core.log("action", placer:get_player_name()
 				.. " tried to place " .. def.name
 				.. " at protected position "
@@ -444,7 +445,8 @@ function core.node_dig(pos, node, digger)
 		return
 	end
 
-	if core.is_protected(pos, digger:get_player_name()) then
+	if core.is_protected(pos, digger:get_player_name()) and
+			not minetest.check_player_privs(digger, "protection_bypass") then
 		core.log("action", digger:get_player_name()
 				.. " tried to dig " .. node.name
 				.. " at protected position "

@@ -1,0 +1,49 @@
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath "com.android.tools.build:gradle:1.5.0"
+	}
+}
+
+apply plugin: "com.android.application"
+
+android {
+	compileSdkVersion 23
+	buildToolsVersion "23.0.3"
+
+	defaultConfig {
+		versionCode 14
+		versionName "${System.env.VERSION_STR}.${versionCode}"
+		minSdkVersion 9
+		targetSdkVersion 9
+		applicationId "net.minetest.minetest"
+		manifestPlaceholders = [ package: "net.minetest.minetest", project: project.name ]
+	}
+
+	lintOptions {
+		disable "OldTargetApi", "GoogleAppIndexingWarning"
+	}
+
+	Properties props = new Properties()
+	props.load(new FileInputStream(file("local.properties")))
+
+	if (props.getProperty("keystore") != null) {
+		signingConfigs {
+			release {
+				storeFile file(props["keystore"])
+				storePassword props["keystore.password"]
+				keyAlias props["key"]
+				keyPassword props["key.password"]
+			}
+		}
+
+		buildTypes {
+			release {
+				signingConfig signingConfigs.release
+			}
+		}
+	}
+}
+

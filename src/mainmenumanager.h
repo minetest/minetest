@@ -47,9 +47,9 @@ extern gui::IGUIStaticText *guiroot;
 class MainMenuManager : public IMenuManager
 {
 public:
-	virtual void createdMenu(GUIModalMenu *menu)
+	virtual void createdMenu(gui::IGUIElement *menu)
 	{
-		for(std::list<GUIModalMenu*>::iterator
+		for(std::list<gui::IGUIElement*>::iterator
 				i = m_stack.begin();
 				i != m_stack.end(); ++i)
 		{
@@ -61,13 +61,13 @@ public:
 		m_stack.push_back(menu);
 	}
 
-	virtual void deletingMenu(GUIModalMenu *menu)
+	virtual void deletingMenu(gui::IGUIElement *menu)
 	{
 		// Remove all entries if there are duplicates
 		bool removed_entry;
 		do{
 			removed_entry = false;
-			for(std::list<GUIModalMenu*>::iterator
+			for(std::list<gui::IGUIElement*>::iterator
 					i = m_stack.begin();
 					i != m_stack.end(); ++i)
 			{
@@ -91,10 +91,10 @@ public:
 	// Returns true to prevent further processing
 	virtual bool preprocessEvent(const SEvent& event)
 	{
-		if(!m_stack.empty())
-			return m_stack.back()->preprocessEvent(event);
-		else
+		if (m_stack.empty())
 			return false;
+		GUIModalMenu *mm = dynamic_cast<GUIModalMenu*>(m_stack.back());
+		return mm && mm->preprocessEvent(event);
 	}
 
 	u32 menuCount()
@@ -104,16 +104,17 @@ public:
 
 	bool pausesGame()
 	{
-		for(std::list<GUIModalMenu*>::iterator
+		for(std::list<gui::IGUIElement*>::iterator
 				i = m_stack.begin(); i != m_stack.end(); ++i)
 		{
-			if((*i)->pausesGame())
+			GUIModalMenu *mm = dynamic_cast<GUIModalMenu*>(*i);
+			if (mm && mm->pausesGame())
 				return true;
 		}
 		return false;
 	}
 
-	std::list<GUIModalMenu*> m_stack;
+	std::list<gui::IGUIElement*> m_stack;
 };
 
 extern MainMenuManager g_menumgr;

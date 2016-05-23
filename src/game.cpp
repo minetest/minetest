@@ -176,19 +176,6 @@ struct LocalFormspecHandler : public TextDest {
 			}
 		}
 
-		if (m_formname == "MT_CHAT_MENU") {
-			assert(m_client != 0);
-
-			if ((fields.find("btn_send") != fields.end()) ||
-					(fields.find("quit") != fields.end())) {
-				StringMap::const_iterator it = fields.find("f_text");
-				if (it != fields.end())
-					m_client->typeChatMessage(utf8_to_wide(it->second));
-
-				return;
-			}
-		}
-
 		if (m_formname == "MT_DEATH_SCREEN") {
 			assert(m_client != 0);
 
@@ -286,6 +273,49 @@ inline bool isPointableNode(const MapNode &n,
 	       (liquids_pointable && features.isLiquid());
 }
 
+static inline void getNeighborConnectingFace(v3s16 p, INodeDefManager *nodedef,
+		ClientMap *map, MapNode n, u8 bitmask, u8 *neighbors)
+{
+	MapNode n2 = map->getNodeNoEx(p);
+	if (nodedef->nodeboxConnects(n, n2, bitmask))
+		*neighbors |= bitmask;
+}
+
+static inline u8 getNeighbors(v3s16 p, INodeDefManager *nodedef, ClientMap *map, MapNode n)
+{
+	u8 neighbors = 0;
+	const ContentFeatures &f = nodedef->get(n);
+	// locate possible neighboring nodes to connect to
+	if (f.drawtype == NDT_NODEBOX && f.node_box.type == NODEBOX_CONNECTED) {
+		v3s16 p2 = p;
+
+		p2.Y++;
+		getNeighborConnectingFace(p2, nodedef, map, n, 1, &neighbors);
+
+		p2 = p;
+		p2.Y--;
+		getNeighborConnectingFace(p2, nodedef, map, n, 2, &neighbors);
+
+		p2 = p;
+		p2.Z--;
+		getNeighborConnectingFace(p2, nodedef, map, n, 4, &neighbors);
+
+		p2 = p;
+		p2.X--;
+		getNeighborConnectingFace(p2, nodedef, map, n, 8, &neighbors);
+
+		p2 = p;
+		p2.Z++;
+		getNeighborConnectingFace(p2, nodedef, map, n, 16, &neighbors);
+
+		p2 = p;
+		p2.X++;
+		getNeighborConnectingFace(p2, nodedef, map, n, 32, &neighbors);
+	}
+
+	return neighbors;
+}
+
 /*
 	Find what the player is pointing at
 */
@@ -299,6 +329,8 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 
 	std::vector<aabb3f> *selectionboxes = hud->getSelectionBoxes();
 	selectionboxes->clear();
+	static const bool show_entity_selectionbox = g_settings->getBool("show_entity_selectionbox");
+
 	selected_object = NULL;
 
 	INodeDefManager *nodedef = client->getNodeDefManager();
@@ -312,7 +344,8 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 				  camera_position, shootline);
 
 		if (selected_object != NULL) {
-			if (selected_object->doShowSelectionBox()) {
+			if (show_entity_selectionbox &&
+					selected_object->doShowSelectionBox()) {
 				aabb3f *selection_box = selected_object->getSelectionBox();
 				// Box should exist because object was
 				// returned in the first place
@@ -363,15 +396,18 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 			for (s16 x = xstart; x <= xend; x++) {
 				MapNode n;
 				bool is_valid_position;
+				v3s16 p(x, y, z);
 
-				n = map.getNodeNoEx(v3s16(x, y, z), &is_valid_position);
+				n = map.getNodeNoEx(p, &is_valid_position);
 				if (!is_valid_position) {
 					continue;
 				}
 				if (!isPointableNode(n, client, liquids_pointable)) {
 					continue;
 				}
-				std::vector<aabb3f> boxes = n.getSelectionBoxes(nodedef);
+
+				std::vector<aabb3f> boxes;
+				n.getSelectionBoxes(nodedef, &boxes, getNeighbors(p, nodedef, &map, n));
 
 				v3s16 np(x, y, z);
 				v3f npf = intToFloat(np, BS);
@@ -402,7 +438,8 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 		f32 d = 0.001 * BS;
 		MapNode n = map.getNodeNoEx(pointed_pos);
 		v3f npf = intToFloat(pointed_pos, BS);
-		std::vector<aabb3f> boxes = n.getSelectionBoxes(nodedef);
+		std::vector<aabb3f> boxes;
+		n.getSelectionBoxes(nodedef, &boxes, getNeighbors(pointed_pos, nodedef, &map, n));
 		f32 face_min_distance = 1000 * BS;
 		for (std::vector<aabb3f>::const_iterator
 				i = boxes.begin();
@@ -1097,27 +1134,6 @@ static inline void create_formspec_menu(GUIFormSpecMenu **cur_formspec,
 #define SIZE_TAG "size[11,5.5,true]" // Fixed size on desktop
 #endif
 
-static void show_chat_menu(GUIFormSpecMenu **cur_formspec,
-		InventoryManager *invmgr, IGameDef *gamedef,
-		IWritableTextureSource *tsrc, IrrlichtDevice *device,
-		Client *client, std::string text)
-{
-	std::string formspec =
-		FORMSPEC_VERSION_STRING
-		SIZE_TAG
-		"field[3,2.35;6,0.5;f_text;;" + text + "]"
-		"button_exit[4,3;3,0.5;btn_send;" + strgettext("Proceed") + "]"
-		;
-
-	/* Create menu */
-	/* Note: FormspecFormSource and LocalFormspecHandler
-	 * are deleted by guiFormSpecMenu                     */
-	FormspecFormSource *fs_src = new FormspecFormSource(formspec);
-	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_CHAT_MENU", client);
-
-	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device, fs_src, txt_dst, NULL);
-}
-
 static void show_deathscreen(GUIFormSpecMenu **cur_formspec,
 		InventoryManager *invmgr, IGameDef *gamedef,
 		IWritableTextureSource *tsrc, IrrlichtDevice *device, Client *client)
@@ -1548,7 +1564,7 @@ protected:
 
 	void dropSelectedItem();
 	void openInventory();
-	void openConsole();
+	void openConsole(float height, const wchar_t *line=NULL);
 	void toggleFreeMove(float *statustext_time);
 	void toggleFreeMoveAlt(float *statustext_time, float *jump_timer);
 	void toggleFast(float *statustext_time);
@@ -1607,6 +1623,10 @@ protected:
 
 	static void settingChangedCallback(const std::string &setting_name, void *data);
 	void readSettings();
+
+#ifdef __ANDROID__
+	void handleAndroidChatInput();
+#endif
 
 private:
 	InputHandler *input;
@@ -1694,8 +1714,8 @@ private:
 
 #ifdef __ANDROID__
 	bool m_cache_hold_aux1;
+	bool m_android_chat_open;
 #endif
-
 };
 
 Game::Game() :
@@ -2209,7 +2229,7 @@ bool Game::initGui()
 
 	// Chat backend and console
 	gui_chat_console = new GUIChatConsole(guienv, guienv->getRootGUIElement(),
-			-1, chat_backend, client);
+			-1, chat_backend, client, &g_menumgr);
 	if (!gui_chat_console) {
 		*error_message = "Could not allocate memory for chat console";
 		errorstream << *error_message << std::endl;
@@ -2644,10 +2664,10 @@ void Game::processUserInput(VolatileRunFlags *flags,
 	input->step(dtime);
 
 #ifdef __ANDROID__
-
-	if (current_formspec != 0)
+	if (current_formspec != NULL)
 		current_formspec->getAndroidUIInput();
-
+	else
+		handleAndroidChatInput();
 #endif
 
 	// Increase timer for double tap of "keymap_jump"
@@ -2683,16 +2703,16 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_INVENTORY])) {
 		openInventory();
 	} else if (input->wasKeyDown(EscapeKey) || input->wasKeyDown(CancelKey)) {
-		show_pause_menu(&current_formspec, client, gamedef, texture_src, device,
-				simple_singleplayer_mode);
+		if (!gui_chat_console->isOpenInhibited()) {
+			show_pause_menu(&current_formspec, client, gamedef,
+					texture_src, device, simple_singleplayer_mode);
+		}
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_CHAT])) {
-		show_chat_menu(&current_formspec, client, gamedef, texture_src, device,
-				client, "");
+		openConsole(0.2, L"");
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_CMD])) {
-		show_chat_menu(&current_formspec, client, gamedef, texture_src, device,
-				client, "/");
+		openConsole(0.2, L"/");
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_CONSOLE])) {
-		openConsole();
+		openConsole(1);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_FREEMOVE])) {
 		toggleFreeMove(statustext_time);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_JUMP])) {
@@ -2727,15 +2747,15 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 		decreaseViewRange(statustext_time);
 	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_RANGESELECT])) {
 		toggleFullViewRange(statustext_time);
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_NEXT]))
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_NEXT])) {
 		quicktune->next();
-	else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_PREV]))
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_PREV])) {
 		quicktune->prev();
-	else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_INC]))
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_INC])) {
 		quicktune->inc();
-	else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_DEC]))
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_DEC])) {
 		quicktune->dec();
-	else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_DEBUG_STACKS])) {
+	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_DEBUG_STACKS])) {
 		// Print debug stacks
 		dstream << "-----------------------------------------"
 		        << std::endl;
@@ -2835,14 +2855,31 @@ void Game::openInventory()
 }
 
 
-void Game::openConsole()
+void Game::openConsole(float height, const wchar_t *line)
 {
-	if (!gui_chat_console->isOpenInhibited()) {
-		// Open up to over half of the screen
-		gui_chat_console->openConsole(0.6);
-		guienv->setFocus(gui_chat_console);
+#ifdef __ANDROID__
+	porting::showInputDialog(gettext("ok"), "", "", 2);
+	m_android_chat_open = true;
+#else
+	if (gui_chat_console->isOpenInhibited())
+		return;
+	gui_chat_console->openConsole(height);
+	if (line) {
+		gui_chat_console->setCloseOnEnter(true);
+		gui_chat_console->replaceAndAddToHistory(line);
+	}
+#endif
+}
+
+#ifdef __ANDROID__
+void Game::handleAndroidChatInput()
+{
+	if (m_android_chat_open && porting::getInputDialogState() == 0) {
+		std::string text = porting::getInputDialogValue();
+		client->typeChatMessage(utf8_to_wide(text));
 	}
 }
+#endif
 
 
 void Game::toggleFreeMove(float *statustext_time)
@@ -3694,7 +3731,7 @@ void Game::handlePointingAtNode(GameRunData *runData,
 	NodeMetadata *meta = map.getNodeMetadata(nodepos);
 
 	if (meta) {
-		infotext = utf8_to_wide(meta->getString("infotext"));
+		infotext = unescape_enriched(utf8_to_wide(meta->getString("infotext")));
 	} else {
 		MapNode n = map.getNodeNoEx(nodepos);
 
@@ -3770,13 +3807,15 @@ void Game::handlePointingAtObject(GameRunData *runData,
 		const v3f &player_position,
 		bool show_debug)
 {
-	infotext = utf8_to_wide(runData->selected_object->infoText());
+	infotext = unescape_enriched(
+		utf8_to_wide(runData->selected_object->infoText()));
 
 	if (show_debug) {
 		if (infotext != L"") {
 			infotext += L"\n";
 		}
-		infotext += utf8_to_wide(runData->selected_object->debugInfoText());
+		infotext += unescape_enriched(utf8_to_wide(
+			runData->selected_object->debugInfoText()));
 	}
 
 	if (input->getLeftState()) {
