@@ -207,6 +207,12 @@ private:
 	// get_breath(self, breath)
 	static int l_get_breath(lua_State *L);
 
+	// set_metadata(self, metadata)
+	static int l_set_metadata(lua_State *L);
+
+	// get_metadata(self)
+	static int l_get_metadata(lua_State *L);
+
 	// set_inventory_formspec(self, formspec)
 	static int l_set_inventory_formspec(lua_State *L);
 
