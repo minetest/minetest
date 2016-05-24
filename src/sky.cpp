@@ -510,11 +510,15 @@ void Sky::update(float time_of_day, float time_brightness,
 	//video::SColorf bgcolor_bright_dawn_f(0.666*1.2,0.549*1.0,0.220*1.2,1.0);
 	video::SColorf bgcolor_bright_dawn_f
 			(155./255*1.2,193./255,240./255, 1.0);
+	video::SColorf bgcolor_bright_night_f
+			(64./255, 144./255, 255./255, 1.0);
 
 	video::SColorf skycolor_bright_normal_f =
 			video::SColor(255, 140, 186, 250);
 	video::SColorf skycolor_bright_dawn_f =
 			video::SColor(255, 180, 186, 250);
+	video::SColorf skycolor_bright_night_f =
+			video::SColor(255, 0, 107, 255);
 	
 	video::SColorf cloudcolor_bright_normal_f =
 			video::SColor(255, 240,240,255);
@@ -550,10 +554,18 @@ void Sky::update(float time_of_day, float time_brightness,
 			m_cloudcolor_bright_f = m_cloudcolor_bright_f.getInterpolated(
 					cloudcolor_bright_dawn_f, color_change_fraction);
 		} else {
-			m_bgcolor_bright_f = m_bgcolor_bright_f.getInterpolated(
-					bgcolor_bright_normal_f, color_change_fraction);
-			m_skycolor_bright_f = m_skycolor_bright_f.getInterpolated(
-					skycolor_bright_normal_f, color_change_fraction);
+			if (time_brightness < 0.07) {  // Night sky
+				m_bgcolor_bright_f = m_bgcolor_bright_f.getInterpolated(
+						bgcolor_bright_night_f, color_change_fraction);
+				m_skycolor_bright_f = m_skycolor_bright_f.getInterpolated(
+						skycolor_bright_night_f, color_change_fraction);
+			} else {  // Daytime sky
+				m_bgcolor_bright_f = m_bgcolor_bright_f.getInterpolated(
+						bgcolor_bright_normal_f, color_change_fraction);
+				m_skycolor_bright_f = m_skycolor_bright_f.getInterpolated(
+						skycolor_bright_normal_f, color_change_fraction);
+			}
+
 			m_cloudcolor_bright_f = m_cloudcolor_bright_f.getInterpolated(
 					cloudcolor_bright_normal_f, color_change_fraction);
 		}
