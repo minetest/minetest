@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "camera.h"
 #include "client.h"
 #include "client/tile.h"     // For TextureSource
+#include "client/keys.h"
 #include "clientmap.h"
 #include "clouds.h"
 #include "config.h"
@@ -1306,114 +1307,76 @@ struct KeyCache {
 	{
 		handler = NULL;
 		populate();
+		populate_nonchanging();
 	}
-
-	enum {
-		// Player movement
-		KEYMAP_ID_FORWARD,
-		KEYMAP_ID_BACKWARD,
-		KEYMAP_ID_LEFT,
-		KEYMAP_ID_RIGHT,
-		KEYMAP_ID_JUMP,
-		KEYMAP_ID_SPECIAL1,
-		KEYMAP_ID_SNEAK,
-		KEYMAP_ID_AUTORUN,
-
-		// Other
-		KEYMAP_ID_DROP,
-		KEYMAP_ID_INVENTORY,
-		KEYMAP_ID_CHAT,
-		KEYMAP_ID_CMD,
-		KEYMAP_ID_CONSOLE,
-		KEYMAP_ID_MINIMAP,
-		KEYMAP_ID_FREEMOVE,
-		KEYMAP_ID_FASTMOVE,
-		KEYMAP_ID_NOCLIP,
-		KEYMAP_ID_CINEMATIC,
-		KEYMAP_ID_SCREENSHOT,
-		KEYMAP_ID_TOGGLE_HUD,
-		KEYMAP_ID_TOGGLE_CHAT,
-		KEYMAP_ID_TOGGLE_FORCE_FOG_OFF,
-		KEYMAP_ID_TOGGLE_UPDATE_CAMERA,
-		KEYMAP_ID_TOGGLE_DEBUG,
-		KEYMAP_ID_TOGGLE_PROFILER,
-		KEYMAP_ID_CAMERA_MODE,
-		KEYMAP_ID_INCREASE_VIEWING_RANGE,
-		KEYMAP_ID_DECREASE_VIEWING_RANGE,
-		KEYMAP_ID_RANGESELECT,
-
-		KEYMAP_ID_QUICKTUNE_NEXT,
-		KEYMAP_ID_QUICKTUNE_PREV,
-		KEYMAP_ID_QUICKTUNE_INC,
-		KEYMAP_ID_QUICKTUNE_DEC,
-
-		KEYMAP_ID_DEBUG_STACKS,
-
-		// Fake keycode for array size and internal checks
-		KEYMAP_INTERNAL_ENUM_COUNT
-
-
-	};
 
 	void populate();
 
-	KeyPress key[KEYMAP_INTERNAL_ENUM_COUNT];
+	// Keys that are not settings dependent
+	void populate_nonchanging();
+
+	KeyPress key[KeyType::INTERNAL_ENUM_COUNT];
 	InputHandler *handler;
 };
 
+void KeyCache::populate_nonchanging()
+{
+	key[KeyType::ESC] = EscapeKey;
+}
+
 void KeyCache::populate()
 {
-	key[KEYMAP_ID_FORWARD]      = getKeySetting("keymap_forward");
-	key[KEYMAP_ID_BACKWARD]     = getKeySetting("keymap_backward");
-	key[KEYMAP_ID_LEFT]         = getKeySetting("keymap_left");
-	key[KEYMAP_ID_RIGHT]        = getKeySetting("keymap_right");
-	key[KEYMAP_ID_JUMP]         = getKeySetting("keymap_jump");
-	key[KEYMAP_ID_SPECIAL1]     = getKeySetting("keymap_special1");
-	key[KEYMAP_ID_SNEAK]        = getKeySetting("keymap_sneak");
+	key[KeyType::FORWARD]      = getKeySetting("keymap_forward");
+	key[KeyType::BACKWARD]     = getKeySetting("keymap_backward");
+	key[KeyType::LEFT]         = getKeySetting("keymap_left");
+	key[KeyType::RIGHT]        = getKeySetting("keymap_right");
+	key[KeyType::JUMP]         = getKeySetting("keymap_jump");
+	key[KeyType::SPECIAL1]     = getKeySetting("keymap_special1");
+	key[KeyType::SNEAK]        = getKeySetting("keymap_sneak");
 
-	key[KEYMAP_ID_AUTORUN]      = getKeySetting("keymap_autorun");
+	key[KeyType::AUTORUN]      = getKeySetting("keymap_autorun");
 
-	key[KEYMAP_ID_DROP]         = getKeySetting("keymap_drop");
-	key[KEYMAP_ID_INVENTORY]    = getKeySetting("keymap_inventory");
-	key[KEYMAP_ID_CHAT]         = getKeySetting("keymap_chat");
-	key[KEYMAP_ID_CMD]          = getKeySetting("keymap_cmd");
-	key[KEYMAP_ID_CONSOLE]      = getKeySetting("keymap_console");
-	key[KEYMAP_ID_MINIMAP]      = getKeySetting("keymap_minimap");
-	key[KEYMAP_ID_FREEMOVE]     = getKeySetting("keymap_freemove");
-	key[KEYMAP_ID_FASTMOVE]     = getKeySetting("keymap_fastmove");
-	key[KEYMAP_ID_NOCLIP]       = getKeySetting("keymap_noclip");
-	key[KEYMAP_ID_CINEMATIC]    = getKeySetting("keymap_cinematic");
-	key[KEYMAP_ID_SCREENSHOT]   = getKeySetting("keymap_screenshot");
-	key[KEYMAP_ID_TOGGLE_HUD]   = getKeySetting("keymap_toggle_hud");
-	key[KEYMAP_ID_TOGGLE_CHAT]  = getKeySetting("keymap_toggle_chat");
-	key[KEYMAP_ID_TOGGLE_FORCE_FOG_OFF]
+	key[KeyType::DROP]         = getKeySetting("keymap_drop");
+	key[KeyType::INVENTORY]    = getKeySetting("keymap_inventory");
+	key[KeyType::CHAT]         = getKeySetting("keymap_chat");
+	key[KeyType::CMD]          = getKeySetting("keymap_cmd");
+	key[KeyType::CONSOLE]      = getKeySetting("keymap_console");
+	key[KeyType::MINIMAP]      = getKeySetting("keymap_minimap");
+	key[KeyType::FREEMOVE]     = getKeySetting("keymap_freemove");
+	key[KeyType::FASTMOVE]     = getKeySetting("keymap_fastmove");
+	key[KeyType::NOCLIP]       = getKeySetting("keymap_noclip");
+	key[KeyType::CINEMATIC]    = getKeySetting("keymap_cinematic");
+	key[KeyType::SCREENSHOT]   = getKeySetting("keymap_screenshot");
+	key[KeyType::TOGGLE_HUD]   = getKeySetting("keymap_toggle_hud");
+	key[KeyType::TOGGLE_CHAT]  = getKeySetting("keymap_toggle_chat");
+	key[KeyType::TOGGLE_FORCE_FOG_OFF]
 			= getKeySetting("keymap_toggle_force_fog_off");
-	key[KEYMAP_ID_TOGGLE_UPDATE_CAMERA]
+	key[KeyType::TOGGLE_UPDATE_CAMERA]
 			= getKeySetting("keymap_toggle_update_camera");
-	key[KEYMAP_ID_TOGGLE_DEBUG]
+	key[KeyType::TOGGLE_DEBUG]
 			= getKeySetting("keymap_toggle_debug");
-	key[KEYMAP_ID_TOGGLE_PROFILER]
+	key[KeyType::TOGGLE_PROFILER]
 			= getKeySetting("keymap_toggle_profiler");
-	key[KEYMAP_ID_CAMERA_MODE]
+	key[KeyType::CAMERA_MODE]
 			= getKeySetting("keymap_camera_mode");
-	key[KEYMAP_ID_INCREASE_VIEWING_RANGE]
+	key[KeyType::INCREASE_VIEWING_RANGE]
 			= getKeySetting("keymap_increase_viewing_range_min");
-	key[KEYMAP_ID_DECREASE_VIEWING_RANGE]
+	key[KeyType::DECREASE_VIEWING_RANGE]
 			= getKeySetting("keymap_decrease_viewing_range_min");
-	key[KEYMAP_ID_RANGESELECT]
+	key[KeyType::RANGESELECT]
 			= getKeySetting("keymap_rangeselect");
 
-	key[KEYMAP_ID_QUICKTUNE_NEXT] = getKeySetting("keymap_quicktune_next");
-	key[KEYMAP_ID_QUICKTUNE_PREV] = getKeySetting("keymap_quicktune_prev");
-	key[KEYMAP_ID_QUICKTUNE_INC]  = getKeySetting("keymap_quicktune_inc");
-	key[KEYMAP_ID_QUICKTUNE_DEC]  = getKeySetting("keymap_quicktune_dec");
+	key[KeyType::QUICKTUNE_NEXT] = getKeySetting("keymap_quicktune_next");
+	key[KeyType::QUICKTUNE_PREV] = getKeySetting("keymap_quicktune_prev");
+	key[KeyType::QUICKTUNE_INC]  = getKeySetting("keymap_quicktune_inc");
+	key[KeyType::QUICKTUNE_DEC]  = getKeySetting("keymap_quicktune_dec");
 
-	key[KEYMAP_ID_DEBUG_STACKS]   = getKeySetting("keymap_print_debug_stacks");
+	key[KeyType::DEBUG_STACKS]   = getKeySetting("keymap_print_debug_stacks");
 
 	if (handler) {
 		// First clear all keys, then re-add the ones we listen for
 		handler->dontListenForKeys();
-		for (size_t i = 0; i < KEYMAP_INTERNAL_ENUM_COUNT; i++) {
+		for (size_t i = 0; i < KeyType::INTERNAL_ENUM_COUNT; i++) {
 			handler->listenForKey(key[i]);
 		}
 		handler->listenForKey(EscapeKey);
@@ -1575,9 +1538,10 @@ protected:
 			f32 dtime);
 	void updateStats(RunStats *stats, const FpsControl &draw_times, f32 dtime);
 
+	// Input related
 	void processUserInput(VolatileRunFlags *flags, GameRunData *runData,
 			f32 dtime);
-	void processKeyboardInput(VolatileRunFlags *flags,
+	void processKeyInput(VolatileRunFlags *flags,
 			float *statustext_time,
 			float *jump_timer,
 			bool *reset_jump_timer,
@@ -1646,6 +1610,36 @@ protected:
 
 	static void settingChangedCallback(const std::string &setting_name, void *data);
 	void readSettings();
+
+	bool getLeftClicked()
+	{
+		return input->getLeftClicked();
+	}
+	bool getRightClicked()
+	{
+		return input->getRightClicked();
+	}
+	bool isLeftPressed()
+	{
+		return input->getLeftState();
+	}
+	bool isRightPressed()
+	{
+		return input->getRightState();
+	}
+	bool getLeftReleased()
+	{
+		return input->getLeftReleased();
+	}
+
+	bool isKeyDown(GameKeyType k)
+	{
+		return input->isKeyDown(keycache.key[k]);
+	}
+	bool wasKeyDown(GameKeyType k)
+	{
+		return input->wasKeyDown(keycache.key[k]);
+	}
 
 #ifdef __ANDROID__
 	void handleAndroidChatInput();
@@ -2379,7 +2373,7 @@ bool Game::connectToServer(const std::string &playername,
 				break;
 			}
 
-			if (input->wasKeyDown(EscapeKey) || input->wasKeyDown(CancelKey)) {
+			if (wasKeyDown(KeyType::ESC) || input->wasKeyDown(CancelKey)) {
 				*aborted = true;
 				infostream << "Connect aborted [Escape]" << std::endl;
 				break;
@@ -2440,7 +2434,7 @@ bool Game::getServerContent(bool *aborted)
 			return false;
 		}
 
-		if (input->wasKeyDown(EscapeKey) || input->wasKeyDown(CancelKey)) {
+		if (wasKeyDown(KeyType::ESC) || input->wasKeyDown(CancelKey)) {
 			*aborted = true;
 			infostream << "Connect aborted [Escape]" << std::endl;
 			return false;
@@ -2702,7 +2696,7 @@ void Game::processUserInput(VolatileRunFlags *flags,
 	if (m_cache_doubletap_jump && runData->jump_timer <= 0.2)
 		runData->jump_timer += dtime;
 
-	processKeyboardInput(
+	processKeyInput(
 			flags,
 			&runData->statustext_time,
 			&runData->jump_timer,
@@ -2714,7 +2708,7 @@ void Game::processUserInput(VolatileRunFlags *flags,
 }
 
 
-void Game::processKeyboardInput(VolatileRunFlags *flags,
+void Game::processKeyInput(VolatileRunFlags *flags,
 		float *statustext_time,
 		float *jump_timer,
 		bool *reset_jump_timer,
@@ -2724,66 +2718,66 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 
 	//TimeTaker tt("process kybd input", NULL, PRECISION_NANO);
 
-	if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_DROP])) {
+	if (wasKeyDown(KeyType::DROP)) {
 		dropSelectedItem();
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_AUTORUN])) {
+	} else if (wasKeyDown(KeyType::AUTORUN)) {
 		toggleAutorun(statustext_time);
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_INVENTORY])) {
+	} else if (wasKeyDown(KeyType::INVENTORY)) {
 		openInventory();
-	} else if (input->wasKeyDown(EscapeKey) || input->wasKeyDown(CancelKey)) {
+	} else if (wasKeyDown(KeyType::ESC) || input->wasKeyDown(CancelKey)) {
 		if (!gui_chat_console->isOpenInhibited()) {
 			show_pause_menu(&current_formspec, client, gamedef,
 					texture_src, device, simple_singleplayer_mode);
 		}
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_CHAT])) {
+	} else if (wasKeyDown(KeyType::CHAT)) {
 		openConsole(0.2, L"");
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_CMD])) {
+	} else if (wasKeyDown(KeyType::CMD)) {
 		openConsole(0.2, L"/");
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_CONSOLE])) {
+	} else if (wasKeyDown(KeyType::CONSOLE)) {
 		openConsole(1);
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_FREEMOVE])) {
+	} else if (wasKeyDown(KeyType::FREEMOVE)) {
 		toggleFreeMove(statustext_time);
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_JUMP])) {
+	} else if (wasKeyDown(KeyType::JUMP)) {
 		toggleFreeMoveAlt(statustext_time, jump_timer);
 		*reset_jump_timer = true;
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_FASTMOVE])) {
+	} else if (wasKeyDown(KeyType::FASTMOVE)) {
 		toggleFast(statustext_time);
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_NOCLIP])) {
+	} else if (wasKeyDown(KeyType::NOCLIP)) {
 		toggleNoClip(statustext_time);
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_CINEMATIC])) {
+	} else if (wasKeyDown(KeyType::CINEMATIC)) {
 		toggleCinematic(statustext_time);
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_SCREENSHOT])) {
+	} else if (wasKeyDown(KeyType::SCREENSHOT)) {
 		client->makeScreenshot(device);
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_HUD])) {
+	} else if (wasKeyDown(KeyType::TOGGLE_HUD)) {
 		toggleHud(statustext_time, &flags->show_hud);
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_MINIMAP])) {
+	} else if (wasKeyDown(KeyType::MINIMAP)) {
 		toggleMinimap(statustext_time, &flags->show_minimap, flags->show_hud,
-			input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SNEAK]));
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_CHAT])) {
+			isKeyDown(KeyType::SNEAK));
+	} else if (wasKeyDown(KeyType::TOGGLE_CHAT)) {
 		toggleChat(statustext_time, &flags->show_chat);
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_FORCE_FOG_OFF])) {
+	} else if (wasKeyDown(KeyType::TOGGLE_FORCE_FOG_OFF)) {
 		toggleFog(statustext_time, &flags->force_fog_off);
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_UPDATE_CAMERA])) {
+	} else if (wasKeyDown(KeyType::TOGGLE_UPDATE_CAMERA)) {
 		toggleUpdateCamera(statustext_time, &flags->disable_camera_update);
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_DEBUG])) {
+	} else if (wasKeyDown(KeyType::TOGGLE_DEBUG)) {
 		toggleDebug(statustext_time, &flags->show_debug, &flags->show_profiler_graph);
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_TOGGLE_PROFILER])) {
+	} else if (wasKeyDown(KeyType::TOGGLE_PROFILER)) {
 		toggleProfiler(statustext_time, profiler_current_page, profiler_max_page);
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_INCREASE_VIEWING_RANGE])) {
+	} else if (wasKeyDown(KeyType::INCREASE_VIEWING_RANGE)) {
 		increaseViewRange(statustext_time);
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_DECREASE_VIEWING_RANGE])) {
+	} else if (wasKeyDown(KeyType::DECREASE_VIEWING_RANGE)) {
 		decreaseViewRange(statustext_time);
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_RANGESELECT])) {
+	} else if (wasKeyDown(KeyType::RANGESELECT)) {
 		toggleFullViewRange(statustext_time);
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_NEXT])) {
+	} else if (wasKeyDown(KeyType::QUICKTUNE_NEXT)) {
 		quicktune->next();
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_PREV])) {
+	} else if (wasKeyDown(KeyType::QUICKTUNE_PREV)) {
 		quicktune->prev();
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_INC])) {
+	} else if (wasKeyDown(KeyType::QUICKTUNE_INC)) {
 		quicktune->inc();
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_QUICKTUNE_DEC])) {
+	} else if (wasKeyDown(KeyType::QUICKTUNE_DEC)) {
 		quicktune->dec();
-	} else if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_DEBUG_STACKS])) {
+	} else if (wasKeyDown(KeyType::DEBUG_STACKS)) {
 		// Print debug stacks
 		dstream << "-----------------------------------------"
 		        << std::endl;
@@ -2793,7 +2787,7 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 		debug_stacks_print();
 	}
 
-	if (!input->isKeyDown(getKeySetting("keymap_jump")) && *reset_jump_timer) {
+	if (!isKeyDown(KeyType::JUMP) && *reset_jump_timer) {
 		*reset_jump_timer = false;
 		*jump_timer = 0.0;
 	}
@@ -2806,7 +2800,6 @@ void Game::processKeyboardInput(VolatileRunFlags *flags,
 		*statustext_time = 0;
 	}
 }
-
 
 void Game::processItemSelection(u16 *new_playeritem)
 {
@@ -3228,13 +3221,13 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	//TimeTaker tt("update player control", NULL, PRECISION_NANO);
 
 	PlayerControl control(
-		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_FORWARD]),
-		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_BACKWARD]),
-		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_LEFT]),
-		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_RIGHT]),
-		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_JUMP]),
-		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SPECIAL1]),
-		input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SNEAK]),
+		input->isKeyDown(keycache.key[KeyType::FORWARD]),
+		input->isKeyDown(keycache.key[KeyType::BACKWARD]),
+		input->isKeyDown(keycache.key[KeyType::LEFT]),
+		input->isKeyDown(keycache.key[KeyType::RIGHT]),
+		input->isKeyDown(keycache.key[KeyType::JUMP]),
+		input->isKeyDown(keycache.key[KeyType::SPECIAL1]),
+		input->isKeyDown(keycache.key[KeyType::SNEAK]),
 		input->getLeftState(),
 		input->getRightState(),
 		cam.camera_pitch,
@@ -3242,13 +3235,13 @@ void Game::updatePlayerControl(const CameraOrientation &cam)
 	);
 
 	u32 keypress_bits =
-			( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_FORWARD])  & 0x1) << 0) |
-			( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_BACKWARD]) & 0x1) << 1) |
-			( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_LEFT])     & 0x1) << 2) |
-			( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_RIGHT])    & 0x1) << 3) |
-			( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_JUMP])     & 0x1) << 4) |
-			( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SPECIAL1]) & 0x1) << 5) |
-			( (u32)(input->isKeyDown(keycache.key[KeyCache::KEYMAP_ID_SNEAK])    & 0x1) << 6) |
+			( (u32)(input->isKeyDown(keycache.key[KeyType::FORWARD])  & 0x1) << 0) |
+			( (u32)(input->isKeyDown(keycache.key[KeyType::BACKWARD]) & 0x1) << 1) |
+			( (u32)(input->isKeyDown(keycache.key[KeyType::LEFT])     & 0x1) << 2) |
+			( (u32)(input->isKeyDown(keycache.key[KeyType::RIGHT])    & 0x1) << 3) |
+			( (u32)(input->isKeyDown(keycache.key[KeyType::JUMP])     & 0x1) << 4) |
+			( (u32)(input->isKeyDown(keycache.key[KeyType::SPECIAL1]) & 0x1) << 5) |
+			( (u32)(input->isKeyDown(keycache.key[KeyType::SNEAK])    & 0x1) << 6) |
 			( (u32)(input->getLeftState()                                        & 0x1) << 7) |
 			( (u32)(input->getRightState()                                       & 0x1) << 8
 		);
@@ -3522,7 +3515,7 @@ void Game::updateCamera(VolatileRunFlags *flags, u32 busy_time,
 
 	v3s16 old_camera_offset = camera->getOffset();
 
-	if (input->wasKeyDown(keycache.key[KeyCache::KEYMAP_ID_CAMERA_MODE])) {
+	if (wasKeyDown(KeyType::CAMERA_MODE)) {
 		GenericCAO *playercao = player->getCAO();
 
 		// If playercao not loaded, don't change camera
@@ -3665,7 +3658,7 @@ void Game::processPlayerInteraction(GameRunData *runData,
 		- pointing away from node
 	*/
 	if (runData->digging) {
-		if (input->getLeftReleased()) {
+		if (getLeftReleased()) {
 			infostream << "Left button released"
 			           << " (stopped digging)" << std::endl;
 			runData->digging = false;
@@ -3691,7 +3684,7 @@ void Game::processPlayerInteraction(GameRunData *runData,
 		}
 	}
 
-	if (!runData->digging && runData->ldown_for_dig && !input->getLeftState()) {
+	if (!runData->digging && runData->ldown_for_dig && !isLeftPressed()) {
 		runData->ldown_for_dig = false;
 	}
 
@@ -3699,13 +3692,13 @@ void Game::processPlayerInteraction(GameRunData *runData,
 
 	soundmaker->m_player_leftpunch_sound.name = "";
 
-	if (input->getRightState())
+	if (isRightPressed())
 		runData->repeat_rightclick_timer += dtime;
 	else
 		runData->repeat_rightclick_timer = 0;
 
-	if (playeritem_def.usable && input->getLeftState()) {
-		if (input->getLeftClicked())
+	if (playeritem_def.usable && isLeftPressed()) {
+		if (getLeftClicked())
 			client->interact(4, pointed);
 	} else if (pointed.type == POINTEDTHING_NODE) {
 		ToolCapabilities playeritem_toolcap =
@@ -3715,16 +3708,16 @@ void Game::processPlayerInteraction(GameRunData *runData,
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
 		handlePointingAtObject(runData, pointed, playeritem,
 				player_position, show_debug);
-	} else if (input->getLeftState()) {
+	} else if (isLeftPressed()) {
 		// When button is held down in air, show continuous animation
 		runData->left_punch = true;
-	} else if (input->getRightClicked()) {
+	} else if (getRightClicked()) {
 		handlePointingAtNothing(runData, playeritem);
 	}
 
 	runData->pointed_old = pointed;
 
-	if (runData->left_punch || input->getLeftClicked())
+	if (runData->left_punch || getLeftClicked())
 		camera->setDigging(0); // left click animation
 
 	input->resetLeftClicked();
@@ -3769,19 +3762,19 @@ void Game::handlePointingAtNode(GameRunData *runData,
 		}
 	}
 
-	if (runData->nodig_delay_timer <= 0.0 && input->getLeftState()
+	if (runData->nodig_delay_timer <= 0.0 && isLeftPressed()
 			&& client->checkPrivilege("interact")) {
 		handleDigging(runData, pointed, nodepos, playeritem_toolcap, dtime);
 	}
 
-	if ((input->getRightClicked() ||
+	if ((getRightClicked() ||
 			runData->repeat_rightclick_timer >= m_repeat_right_click_time) &&
 			client->checkPrivilege("interact")) {
 		runData->repeat_rightclick_timer = 0;
 		infostream << "Ground right-clicked" << std::endl;
 
 		if (meta && meta->getString("formspec") != "" && !random_input
-				&& !input->isKeyDown(getKeySetting("keymap_sneak"))) {
+				&& !isKeyDown(KeyType::SNEAK)) {
 			infostream << "Launching custom inventory view" << std::endl;
 
 			InventoryLocation inventoryloc;
@@ -3846,7 +3839,7 @@ void Game::handlePointingAtObject(GameRunData *runData,
 			runData->selected_object->debugInfoText()));
 	}
 
-	if (input->getLeftState()) {
+	if (isLeftPressed()) {
 		bool do_punch = false;
 		bool do_punch_damage = false;
 
@@ -3856,7 +3849,7 @@ void Game::handlePointingAtObject(GameRunData *runData,
 			runData->object_hit_delay_timer = object_hit_delay;
 		}
 
-		if (input->getLeftClicked())
+		if (getLeftClicked())
 			do_punch = true;
 
 		if (do_punch) {
@@ -3876,7 +3869,7 @@ void Game::handlePointingAtObject(GameRunData *runData,
 			if (!disable_send)
 				client->interact(0, pointed);
 		}
-	} else if (input->getRightClicked()) {
+	} else if (getRightClicked()) {
 		infostream << "Right-clicked object" << std::endl;
 		client->interact(3, pointed);  // place
 	}
