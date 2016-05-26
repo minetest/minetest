@@ -8,20 +8,20 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-05 16:13+0200\n"
-"PO-Revision-Date: 2015-10-26 16:22+0200\n"
-"Last-Translator: ChaosWormz <chaoswormz@openmailbox.org>\n"
-"Language-Team: Hebrew <https://hosted.weblate.org/projects/minetest/minetest/"
-"he/>\n"
+"PO-Revision-Date: 2016-05-26 21:01+0000\n"
+"Last-Translator: yuval hreman <huckvrni@gmail.com>\n"
+"Language-Team: Hebrew "
+"<https://hosted.weblate.org/projects/minetest/minetest/he/>\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.5-dev\n"
+"X-Generator: Weblate 2.7-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
+msgstr "אירעה שגיאה בקוד לואה (Lua), כנראה באחד המודים:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
@@ -41,7 +41,7 @@ msgstr "התחבר מחדש"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "השרת מבקש שתתחבר מחדש:"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
@@ -49,27 +49,27 @@ msgstr "טוען..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "שגיאה בגרסאות הפרוטוקול. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "השרת יפעיל את פרוטוקול גרסה $1. בכוח "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "השרת תומך בפרוטוקולים בין גרסה $1 וגרסה $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
-msgstr ""
+msgstr "נסה לצאת והכנס מחדש לרשימת השרתים ובדוק את חיבור האינטרנט שלך."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "אנו תומכים רק בגירסה 1$ של הפרוטוקול."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "אנו תומכים בגרסאות בין 1$ ל-2$ של הפרוטוקול."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
@@ -93,13 +93,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr "אפשר בכל"
+msgstr "אפשר הכל"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
+"טעינת המוד \"1$\" נכשלה מכיוון שהוא מכיל תווים לא חוקיים. רק התווים [a-z0-9_]"
+" מותרים."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -128,7 +130,7 @@ msgstr "מופעל"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr ""
+msgstr "עולם בשם \"1$\" כבר קיים"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
@@ -136,11 +138,11 @@ msgstr "ליצור"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr ""
+msgstr "הורד מפעיל משחק, למשל \"minetest_game\", מהאתר: minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "הורד אחד מ-\"minetest.net\""
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -148,11 +150,11 @@ msgstr "משחק"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr ""
+msgstr "מנוע מפות"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No worldname given or no game selected"
-msgstr ""
+msgstr "לא נבחר שם לעולם או שאף מפעיל משחק לא נבחר"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
@@ -160,7 +162,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
-msgstr ""
+msgstr "אזהרה: מצב המפתחים נועד למפתחים!."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -168,7 +170,7 @@ msgstr "שם העולם"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no subgames installed."
-msgstr ""
+msgstr "אין לך אף מפעיל משחק מותקן."
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Are you sure you want to delete \"$1\"?"
@@ -397,9 +399,8 @@ msgid "Uninstall selected modpack"
 msgstr ""
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Address / Port"
-msgstr "כתובת / פורט :"
+msgstr "כתובת / פורט"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
@@ -426,9 +427,8 @@ msgid "Favorite"
 msgstr ""
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Name / Password"
-msgstr "שם/סיסמה :"
+msgstr "שם/סיסמה"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -505,9 +505,8 @@ msgid "8x"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Advanced Settings"
-msgstr "הגדרות"
+msgstr "הגדרות מתקדמות"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -587,9 +586,8 @@ msgid "Parallax Occlusion"
 msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Particles"
-msgstr "אפשר בכל"
+msgstr "חלקיקים"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
