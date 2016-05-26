@@ -1674,7 +1674,7 @@ void Server::SendShowFormspecMessage(u16 peer_id, const std::string &formspec,
 void Server::SendSpawnParticle(u16 peer_id, v3f pos, v3f velocity, v3f acceleration,
 				float expirationtime, float size, bool collisiondetection,
 				bool collision_removal,
-				bool vertical, std::string texture)
+				bool vertical, const std::string &texture)
 {
 	DSTACK(FUNCTION_NAME);
 
@@ -1698,7 +1698,7 @@ void Server::SendSpawnParticle(u16 peer_id, v3f pos, v3f velocity, v3f accelerat
 void Server::SendAddParticleSpawner(u16 peer_id, u16 amount, float spawntime, v3f minpos, v3f maxpos,
 	v3f minvel, v3f maxvel, v3f minacc, v3f maxacc, float minexptime, float maxexptime,
 	float minsize, float maxsize, bool collisiondetection, bool collision_removal,
-	bool vertical, std::string texture, u32 id)
+	bool vertical, const std::string &texture, u32 id)
 {
 	DSTACK(FUNCTION_NAME);
 

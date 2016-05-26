@@ -459,7 +459,7 @@ private:
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
 		bool collisiondetection, bool collision_removal,
-		bool vertical, std::string texture, u32 id);
+		bool vertical, const std::string &texture, u32 id);
 
 	void SendDeleteParticleSpawner(u16 peer_id, u32 id);
 
@@ -468,7 +468,7 @@ private:
 		v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
 		bool collisiondetection, bool collision_removal,
-		bool vertical, std::string texture);
+		bool vertical, const std::string &texture);
 
 	u32 SendActiveObjectRemoveAdd(u16 peer_id, const std::string &datas);
 	void SendActiveObjectMessages(u16 peer_id, const std::string &datas, bool reliable = true);
