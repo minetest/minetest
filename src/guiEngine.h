@@ -149,7 +149,8 @@ public:
 	 * @param smgr scene manager to add scene elements to
 	 * @param data struct to transfer data to main game handling
 	 */
-	GUIEngine(	irr::IrrlichtDevice* dev,
+	GUIEngine(irr::IrrlichtDevice* dev,
+			JoystickController *joystick,
 			gui::IGUIElement* parent,
 			IMenuManager *menumgr,
 			scene::ISceneManager* smgr,

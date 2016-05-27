@@ -1056,7 +1056,9 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			PlayerControl controls = player->getPlayerControl();
 
 			bool walking = false;
-			if(controls.up || controls.down || controls.left || controls.right)
+			if (controls.up || controls.down || controls.left || controls.right ||
+					controls.forw_move_joystick_axis != 0.f ||
+					controls.sidew_move_joystick_axis != 0.f)
 				walking = true;
 
 			f32 new_speed = player->local_animation_speed;

@@ -131,6 +131,7 @@ void MenuMusicFetcher::fetchSounds(const std::string &name,
 /** GUIEngine                                                                 */
 /******************************************************************************/
 GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
+						JoystickController *joystick,
 						gui::IGUIElement* parent,
 						IMenuManager *menumgr,
 						scene::ISceneManager* smgr,
@@ -189,6 +190,7 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 
 	/* Create menu */
 	m_menu = new GUIFormSpecMenu(m_device,
+			joystick,
 			m_parent,
 			-1,
 			m_menumanager,
