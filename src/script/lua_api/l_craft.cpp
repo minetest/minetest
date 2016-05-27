@@ -294,43 +294,43 @@ int ModApiCraft::l_clear_craft(lua_State *L)
 	std::string output = getstringfield_default(L, table, "output", "");
 	std::string type = getstringfield_default(L, table, "type", "shaped");
 	CraftOutput c_output(output, 0);
-	if(output != ""){
-		if(craftdef->clearCraftRecipesByOutput(c_output, getServer(L)))
+	if (output != "") {
+		if (craftdef->clearCraftRecipesByOutput(c_output, getServer(L)))
 			return 0;
 		else
 			throw LuaError("No crafting specified for output"
 					" (output=\"" + output + "\")");	
 	}
 	std::vector<std::string> recipe;
-	int width =0;
+	int width = 0;
 	CraftMethod method = CRAFT_METHOD_NORMAL;
 	/*
 		CraftDefinitionShaped
 	*/
-	if(type == "shaped"){
+	if (type == "shaped") {
 		lua_getfield(L, table, "recipe");
-		if(lua_isnil(L, -1))
+		if (lua_isnil(L, -1))
 			throw LuaError("Either output or recipe should be defined");
-		if(!readCraftRecipeShaped(L, -1, width, recipe))
+		if (!readCraftRecipeShaped(L, -1, width, recipe))
 			throw LuaError("Invalid crafting recipe");
 	}
 	/*
 		CraftDefinitionShapeless
 	*/
-	else if(type == "shapeless"){
+	else if (type == "shapeless") {
 		lua_getfield(L, table, "recipe");
-		if(lua_isnil(L, -1))
+		if (lua_isnil(L, -1))
 			throw LuaError("Either output or recipe should be defined");
-		if(!readCraftRecipeShapeless(L, -1, recipe))
+		if (!readCraftRecipeShapeless(L, -1, recipe))
 			throw LuaError("Invalid crafting recipe");
 	}
 	/*
 		CraftDefinitionCooking
 	*/
-	else if(type == "cooking"){
+	else if (type == "cooking") {
 		method = CRAFT_METHOD_COOKING;
 		std::string rec = getstringfield_default(L, table, "recipe", "");
-		if(rec == "")
+		if (rec == "")
 			throw LuaError("Crafting definition (cooking)"
 					" is missing a recipe");
 		recipe.push_back(rec);
@@ -338,7 +338,7 @@ int ModApiCraft::l_clear_craft(lua_State *L)
 	/*
 		CraftDefinitionFuel
 	*/
-	else if(type == "fuel"){
+	else if(type == "fuel") {
 		method = CRAFT_METHOD_FUEL;
 		std::string rec = getstringfield_default(L, table, "recipe", "");
 		if(rec == "")
@@ -350,7 +350,7 @@ int ModApiCraft::l_clear_craft(lua_State *L)
 	{
 		throw LuaError("Unknown crafting definition type: \"" + type + "\"");
 	}
-	if(!craftdef->clearCraftRecipesByInput(method, width, recipe, getServer(L)))
+	if (!craftdef->clearCraftRecipesByInput(method, width, recipe, getServer(L)))
 		throw LuaError("No crafting specified for input");	
 	lua_pop(L, 1);
 	return 0;
