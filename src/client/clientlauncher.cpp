@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiEngine.h"
 #include "player.h"
 #include "fontengine.h"
+#include "joystick_controller.h"
 #include "clientlauncher.h"
 
 /* mainmenumanager.h
@@ -499,7 +500,8 @@ void ClientLauncher::main_menu(MainMenuData *menudata)
 #endif
 
 	/* show main menu */
-	GUIEngine mymenu(device, guiroot, &g_menumgr, smgr, menudata, *kill);
+	GUIEngine mymenu(device, &input->joystick, guiroot,
+		&g_menumgr, smgr, menudata, *kill);
 
 	smgr->clear();	/* leave scene manager in a clean state */
 }
@@ -558,6 +560,22 @@ bool ClientLauncher::create_engine_device()
 	device = createDeviceEx(params);
 
 	if (device) {
+		if (g_settings->getBool("enable_joysticks")) {
+			irr::core::array<irr::SJoystickInfo> infos;
+			std::vector<irr::SJoystickInfo> joystick_infos;
+			// Make sure this is called maximum once per
+			// irrlicht device, otherwise it will give you
+			// multiple events for the same joystick.
+			if (device->activateJoysticks(infos)) {
+				infostream << "Joystick support enabled" << std::endl;
+				joystick_infos.reserve(infos.size());
+				for (u32 i = 0; i < infos.size(); i++) {
+					joystick_infos.push_back(infos[i]);
+				}
+			} else {
+				errorstream << "Could not activate joystick support." << std::endl;
+			}
+		}
 		porting::initIrrlicht(device);
 	}
 

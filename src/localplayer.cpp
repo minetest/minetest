@@ -528,17 +528,22 @@ void LocalPlayer::applyControl(float dtime)
 			speedH += move_direction;
 		}
 	}
-	if(control.down)
-	{
+	if (control.down) {
 		speedH -= move_direction;
 	}
-	if(control.left)
-	{
+	if (!control.up && !control.down) {
+		speedH -= move_direction *
+			(control.forw_move_joystick_axis / 32767.f);
+	}
+	if (control.left) {
 		speedH += move_direction.crossProduct(v3f(0,1,0));
 	}
-	if(control.right)
-	{
+	if (control.right) {
 		speedH += move_direction.crossProduct(v3f(0,-1,0));
+	}
+	if (!control.left && !control.right) {
+		speedH -= move_direction.crossProduct(v3f(0,1,0)) *
+			(control.sidew_move_joystick_axis / 32767.f);
 	}
 	if(control.jump)
 	{

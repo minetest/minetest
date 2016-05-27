@@ -116,6 +116,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("free_move", "false");
 	settings->setDefault("noclip", "false");
 	settings->setDefault("continuous_forward", "false");
+	settings->setDefault("enable_joysticks", "true");
+	settings->setDefault("repeat_joystick_button_time", "0.17");
+	settings->setDefault("joystick_frustum_sensitivity", "170");
 	settings->setDefault("cinematic", "false");
 	settings->setDefault("camera_smoothing", "0");
 	settings->setDefault("cinematic_camera_smoothing", "0.7");
