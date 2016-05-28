@@ -3885,6 +3885,9 @@ Definition tables
         size = 1,
         collisiondetection = false,
     --  ^ collisiondetection: if true collides with physical objects
+        collision_removal = false,
+    --  ^ collision_removal: if true then particle is removed when it collides,
+    --  ^ requires collisiondetection = true to have any effect
         vertical = false,
     --  ^ vertical: if true faces player using y axis only
         texture = "image.png",
@@ -3914,6 +3917,9 @@ Definition tables
     --  ^ minsize/maxsize, minexptime/maxexptime (expirationtime)
         collisiondetection = false,
     --  ^ collisiondetection: if true uses collision detection
+        collision_removal = false,
+    --  ^ collision_removal: if true then particle is removed when it collides,
+    --  ^ requires collisiondetection = true to have any effect
         vertical = false,
     --  ^ vertical: if true faces player using y axis only
         texture = "image.png",

@@ -275,7 +275,8 @@ public:
 	void spawnParticle(const std::string &playername,
 		v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
-		bool collisiondetection, bool vertical, const std::string &texture);
+		bool collisiondetection, bool collision_removal,
+		bool vertical, const std::string &texture);
 
 	u32 addParticleSpawner(u16 amount, float spawntime,
 		v3f minpos, v3f maxpos,
@@ -283,7 +284,8 @@ public:
 		v3f minacc, v3f maxacc,
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
-		bool collisiondetection, bool vertical, const std::string &texture,
+		bool collisiondetection, bool collision_removal,
+		bool vertical, const std::string &texture,
 		const std::string &playername);
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
@@ -456,7 +458,8 @@ private:
 		v3f minacc, v3f maxacc,
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
-		bool collisiondetection, bool vertical, std::string texture, u32 id);
+		bool collisiondetection, bool collision_removal,
+		bool vertical, const std::string &texture, u32 id);
 
 	void SendDeleteParticleSpawner(u16 peer_id, u32 id);
 
@@ -464,7 +467,8 @@ private:
 	void SendSpawnParticle(u16 peer_id,
 		v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
-		bool collisiondetection, bool vertical, std::string texture);
+		bool collisiondetection, bool collision_removal,
+		bool vertical, const std::string &texture);
 
 	u32 SendActiveObjectRemoveAdd(u16 peer_id, const std::string &datas);
 	void SendActiveObjectMessages(u16 peer_id, const std::string &datas, bool reliable = true);

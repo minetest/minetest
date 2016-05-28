@@ -474,6 +474,7 @@ enum ToClientCommand
 		u8 bool vertical
 		u32 len
 		u8[len] texture
+		u8 collision_removal
 	*/
 
 	TOCLIENT_ADD_PARTICLESPAWNER = 0x47,
@@ -495,6 +496,7 @@ enum ToClientCommand
 		u32 len
 		u8[len] texture
 		u32 id
+		u8 collision_removal
 	*/
 
 	TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY = 0x48,

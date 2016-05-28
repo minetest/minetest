@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct ClientEvent;
 class ParticleManager;
+class ClientEnvironment;
 
 class Particle : public scene::ISceneNode
 {
@@ -45,6 +46,7 @@ class Particle : public scene::ISceneNode
 		float expirationtime,
 		float size,
 		bool collisiondetection,
+		bool collision_removal,
 		bool vertical,
 		video::ITexture *texture,
 		v2f texpos,
@@ -97,6 +99,7 @@ private:
 	float m_size;
 	u8 m_light;
 	bool m_collisiondetection;
+	bool m_collision_removal;
 	bool m_vertical;
 	v3s16 m_camera_offset;
 };
@@ -115,6 +118,7 @@ class ParticleSpawner
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
 		bool collisiondetection,
+		bool collision_removal,
 		bool vertical,
 		video::ITexture *texture,
 		u32 id,
@@ -148,6 +152,7 @@ class ParticleSpawner
 	video::ITexture *m_texture;
 	std::vector<float> m_spawntimes;
 	bool m_collisiondetection;
+	bool m_collision_removal;
 	bool m_vertical;
 
 };
