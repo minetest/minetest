@@ -2438,6 +2438,10 @@ These functions return the leftover itemstack.
     * See documentation on `minetest.compress()` for supported compression methods.
     * currently supported.
     * `...` indicates method-specific arguments. Currently, no methods use this.
+* `minetest.encode_base64(string)`: returns string encoded in base64
+    * Encodes a string in base64.
+* `minetest.decode_base64(string)`: returns string
+    * Decodes a string encoded in base64.
 * `minetest.is_protected(pos, name)`: returns boolean
     * Returns true, if player `name` shouldn't be abled to dig at `pos` or do other
       actions, defineable by mods, due to some mod-defined ownership-like concept.

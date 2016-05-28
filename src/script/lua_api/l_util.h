@@ -95,6 +95,12 @@ private:
 	// request_insecure_environment()
 	static int l_request_insecure_environment(lua_State *L);
 
+	// encode_base64(string)
+	static int l_encode_base64(lua_State *L);
+
+	// decode_base64(string)
+	static int l_decode_base64(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 
