@@ -338,10 +338,10 @@ int ModApiCraft::l_clear_craft(lua_State *L)
 	/*
 		CraftDefinitionFuel
 	*/
-	else if(type == "fuel") {
+	else if (type == "fuel") {
 		method = CRAFT_METHOD_FUEL;
 		std::string rec = getstringfield_default(L, table, "recipe", "");
-		if(rec == "")
+		if (rec == "")
 			throw LuaError("Crafting definition (fuel)"
 					" is missing a recipe");
 		recipe.push_back(rec);
