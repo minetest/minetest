@@ -974,7 +974,7 @@ public:
 			CraftDefinition *def = *i;
 			std::vector<CraftDefinition*> &unhashed_inputs_vec = m_craft_defs[(int) CRAFT_HASH_TYPE_UNHASHED][0]; // Recipes are not yet hashed at this point
 			std::vector<CraftDefinition*> new_vec_by_input;
-			new_vec_by_input.reserve(unhashed_inputs_vec.size());
+			new_vec_by_input.reserve(unhashed_inputs_vec.size()); // We will preallocate necessary memory addresses, so we don't need to reallocate them later. This would save us some performance.
 			for (std::vector<CraftDefinition*>::iterator i2 = unhashed_inputs_vec.begin();
 				i2 != unhashed_inputs_vec.end(); ++i2) {
 				if (def != *i2) {
@@ -1009,7 +1009,7 @@ public:
 			i = unhashed_inputs_vec.size(); i > 0; i--) {
 			CraftDefinition *def = unhashed_inputs_vec[i - 1];
 			// If the input doesn't match the recipe definition, this recipe definition later will be added back in source map.
-			if (!def->check(input, gamedef)){
+			if (!def->check(input, gamedef)) {
 				new_vec_by_input.push_back(def);
 				continue;
 			}
@@ -1021,10 +1021,10 @@ public:
 				continue;
 			std::vector<CraftDefinition*> &vec = vec_iter->second;
 			std::vector<CraftDefinition*> new_vec_by_output;
-			new_vec_by_output.reserve(vec.size());
+			new_vec_by_output.reserve(vec.size()); // We will preallocate necessary memory addresses, so we don't need to reallocate them later. This would save us some performance.
 			for (std::vector<CraftDefinition*>::iterator i = vec.begin();
 				i != vec.end(); ++i) {
-				if(def != *i) { // If pointers from map by input and output are not same, we will add 'CraftDefinition*' to a new vector.
+				if (def != *i) { // If pointers from map by input and output are not same, we will add 'CraftDefinition*' to a new vector.
 					new_vec_by_output.push_back(*i); // Adding dereferenced iterator value (which are 'CraftDefinition' reference) to a new vector.
 				}
 			}
