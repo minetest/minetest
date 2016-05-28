@@ -1073,6 +1073,20 @@ int ObjectRef::l_set_look_yaw(lua_State *L)
 	return 1;
 }
 
+// set_player_velocity(self, velocity, relative)
+int ObjectRef::l_set_player_velocity(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	PlayerSAO* co = getplayersao(ref);
+	if (co == NULL) return 0;
+	v3f vel = checkFloatPos(L, 2);
+	bool relative = lua_toboolean(L, 3);
+	// Do it
+	co->setVelocity(vel, relative);
+	return 0;
+}
+
 // set_breath(self, breath)
 int ObjectRef::l_set_breath(lua_State *L)
 {
@@ -1756,6 +1770,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_look_yaw),
 	luamethod(ObjectRef, set_look_yaw),
 	luamethod(ObjectRef, set_look_pitch),
+	luamethod(ObjectRef, set_player_velocity),
 	luamethod(ObjectRef, get_breath),
 	luamethod(ObjectRef, set_breath),
 	luamethod(ObjectRef, set_inventory_formspec),

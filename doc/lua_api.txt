@@ -2648,6 +2648,7 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_look_yaw()`: yaw in radians (wraps around pretty randomly as of now)
 * `set_look_pitch(radians)`: sets look pitch
 * `set_look_yaw(radians)`: sets look yaw
+* `set_player_velocity({x=num, y=num, z=num}, relative=false)`: changes the velocity of the player
 * `get_breath()`: returns players breath
 * `set_breath(value)`: sets players breath
      * values:

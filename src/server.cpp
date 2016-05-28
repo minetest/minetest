@@ -1098,6 +1098,8 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 	*/
 	SendMovePlayer(peer_id);
 
+	SendVelocityPlayer(peer_id);
+
 	// Send privileges
 	SendPlayerPrivileges(peer_id);
 
@@ -1891,6 +1893,27 @@ void Server::SendMovePlayer(u16 peer_id)
 				<< " pos=(" << pos.X << "," << pos.Y << "," << pos.Z << ")"
 				<< " pitch=" << pitch
 				<< " yaw=" << yaw
+				<< std::endl;
+	}
+
+	Send(&pkt);
+}
+
+void Server::SendVelocityPlayer(u16 peer_id)
+{
+	DSTACK(FUNCTION_NAME);
+	Player *player = m_env->getPlayer(peer_id);
+	assert(player);
+
+	NetworkPacket pkt(TOCLIENT_VELOCITY_PLAYER, sizeof(v3f) + sizeof(bool), peer_id);
+	pkt << player->vel_change << player->vel_change_relative;
+
+	{
+		v3f vel = player->vel_change;
+		bool relative = player->vel_change_relative;
+		verbosestream << "Server: Sending TOCLIENT_VELOCITY_PLAYER"
+				<< " pos=(" << vel.X << "," << vel.Y << "," << vel.Z << ")"
+				<< " relative=" << relative
 				<< std::endl;
 	}
 

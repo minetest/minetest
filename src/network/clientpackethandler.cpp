@@ -578,6 +578,27 @@ void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 	m_ignore_damage_timer = 3.0;
 }
 
+void Client::handleCommand_VelocityPlayer(NetworkPacket* pkt)
+{
+	Player *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+
+	v3f vel;
+	bool relative;
+
+	*pkt >> vel >> relative;
+
+	if (relative)
+		vel += player->getSpeed();
+
+	player->setSpeed(vel);
+
+	infostream << "Client got TOCLIENT_VELOCITY_PLAYER"
+			<< " pos=(" << vel.X << "," << vel.Y << "," << vel.Z << ")"
+			<< " relative=" << relative
+			<< std::endl;
+}
+
 void Client::handleCommand_PlayerItem(NetworkPacket* pkt)
 {
 	warningstream << "Client: Ignoring TOCLIENT_PLAYERITEM" << std::endl;

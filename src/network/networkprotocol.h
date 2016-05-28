@@ -283,6 +283,12 @@ enum ToClientCommand
 
 	// (oops, there is some gap here)
 
+	TOCLIENT_VELOCITY_PLAYER = 0x2f,
+	/*
+		v3f1000 player velocity
+		u8 bool relative
+	*/
+
 	TOCLIENT_CHAT_MESSAGE = 0x30,
 	/*
 		u16 length
