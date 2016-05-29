@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "filesys.h"
 #include "util/string.h"
+#include "porting.h"
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
@@ -350,13 +351,13 @@ bool DeleteSingleFileOrEmptyDirectory(const std::string &path)
 	if(IsDir(path)){
 		bool did = (rmdir(path.c_str()) == 0);
 		if(!did)
-			errorstream<<"rmdir errno: "<<errno<<": "<<strerror(errno)
+			errorstream<<"rmdir errno: "<<errno<<": "<<porting::strerrno(errno)
 					<<std::endl;
 		return did;
 	} else {
 		bool did = (unlink(path.c_str()) == 0);
 		if(!did)
-			errorstream<<"unlink errno: "<<errno<<": "<<strerror(errno)
+			errorstream<<"unlink errno: "<<errno<<": "<<porting::strerrno(errno)
 					<<std::endl;
 		return did;
 	}
@@ -452,14 +453,14 @@ bool CopyFileContents(const std::string &source, const std::string &target)
 	FILE *sourcefile = fopen(source.c_str(), "rb");
 	if(sourcefile == NULL){
 		errorstream<<source<<": can't open for reading: "
-			<<strerror(errno)<<std::endl;
+			<<porting::strerrno(errno)<<std::endl;
 		return false;
 	}
 
 	FILE *targetfile = fopen(target.c_str(), "wb");
 	if(targetfile == NULL){
 		errorstream<<target<<": can't open for writing: "
-			<<strerror(errno)<<std::endl;
+			<<porting::strerrno(errno)<<std::endl;
 		fclose(sourcefile);
 		return false;
 	}
@@ -474,7 +475,7 @@ bool CopyFileContents(const std::string &source, const std::string &target)
 		total += readbytes;
 		if(ferror(sourcefile)){
 			errorstream<<source<<": IO error: "
-				<<strerror(errno)<<std::endl;
+				<<porting::strerrno(errno)<<std::endl;
 			retval = false;
 			done = true;
 		}
@@ -489,7 +490,7 @@ bool CopyFileContents(const std::string &source, const std::string &target)
 		}
 		if(ferror(targetfile)){
 			errorstream<<target<<": IO error: "
-					<<strerror(errno)<<std::endl;
+					<<porting::strerrno(errno)<<std::endl;
 			retval = false;
 			done = true;
 		}

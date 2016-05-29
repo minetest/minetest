@@ -252,7 +252,7 @@ bool getCurrentExecPath(char *buf, size_t len)
 
 
 //// Linux
-#elif defined(linux) || defined(__linux) || defined(__linux__)
+#elif defined(PLATFORM_LINUX)
 
 bool getCurrentExecPath(char *buf, size_t len)
 {
@@ -276,8 +276,8 @@ bool getCurrentExecPath(char *buf, size_t len)
 }
 
 
-//// FreeBSD, NetBSD, DragonFlyBSD
-#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
+//// FreeBSD, NetBSD, DragonFlyBSD, and OpenBSD (OSX already handled)
+#elif defined(PLATFORM_BSD)
 
 bool getCurrentExecPath(char *buf, size_t len)
 {
@@ -368,7 +368,7 @@ bool setSystemPaths()
 
 
 //// Linux
-#elif defined(linux) || defined(__linux)
+#elif defined(PLATFORM_LINUX)
 
 bool setSystemPaths()
 {
@@ -784,4 +784,70 @@ bool secure_rand_fill_buf(void *buf, size_t len)
 
 #endif
 
+
+std::string strerrno(int err)
+{
+#if defined(_WIN32) || defined(__hpux) || defined(__sun) || \
+		(defined(PLATFORM_LINUX) && !defined(__USE_XOPEN2K)) || \
+		(defined(__osf__) && !defined(_REENTRANT)) || \
+		defined(__INTEGRITY) || defined(__vms) || \
+		defined(__QNXNTO__) || defined (__sgi)
+	return strerror(err);
+#else
+	char buf[128];
+	char *ptr = buf;
+	size_t sz = sizeof(buf);
+#  if defined(__CYGWIN__) || defined(__USE_GNU)
+	// GNU version of strerror_r
+	return strerror_r(err, ptr, sz);
+#  else
+	bool valid_err = true;
+	// POSIX version of strerror_r
+	while (true) {
+		// strerror_r returns 0 on success, otherwise ERANGE if buffer too small,
+		// invalid_argument if ev not a valid error number
+		int result = strerror_r(err, ptr, sz);
+		if (result == 0) {
+			break;
+		} else {
+#    if defined(PLATFORM_LINUX)
+			if (result == -1)
+				result = errno;
+#    endif
+			if (result != ERANGE) {
+				valid_err = false;
+				break;
+			}
+			if (sz > sizeof(buf))
+				delete [] ptr;
+			sz *= 2;
+			if ((ptr = new char[sz]) == NULL)
+				return "ENOMEM";
+		}
+	}
+	std::string msg(valid_err ? ptr : "Invalid error code " + to_string(err));
+
+	if (sz > sizeof(buf))
+		delete [] ptr;
+	return msg;
+#  endif
+#endif
+}
+
+#ifdef _WIN32
+std::string strwinerr(DWORD err)
+{
+	wchar_t *buf = NULL;
+	size_t size = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+			FORMAT_MESSAGE_FROM_SYSTEM |
+			FORMAT_MESSAGE_IGNORE_INSERTS,
+			NULL, err, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+			(LPWSTR)&buf, 0, NULL);
+	std::wstring message(buf, size);
+	LocalFree(buf);
+	return wide_to_narrow(message);
+}
+#endif
+
 } //namespace porting
+

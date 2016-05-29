@@ -60,7 +60,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <unistd.h>
 	#include <stdint.h> //for uintptr_t
 
-	#if (defined(linux) || defined(__linux) || defined(__GNU__)) && !defined(_GNU_SOURCE)
+	// Define some platform flags that require a lot of checks
+	#if defined(linux) || defined(__linux) || defined(__linux__)
+		#define PLATFORM_LINUX
+	#elif defined(__FreeBSD__) || defined(__NetBSD__) || \
+			defined(__Dragonfly__) || defined(__OpenBSD__) || \
+			(defined(__APPLE__) && defined(__MACH__))
+		#define PLATFORM_BSD
+	#endif
+
+	#if (defined(PLATFORM_LINUX) || defined(__GNU__)) && !defined(_GNU_SOURCE)
 		#define _GNU_SOURCE
 	#endif
 
@@ -321,13 +330,10 @@ inline const char *getPlatformName()
 	return
 #if defined(ANDROID)
 	"Android"
-#elif defined(linux) || defined(__linux) || defined(__linux__)
+#elif defined(PLATFORM_LINUX)
 	"Linux"
 #elif defined(_WIN32) || defined(_WIN64)
 	"Windows"
-#elif defined(__DragonFly__) || defined(__FreeBSD__) || \
-		defined(__NetBSD__) || defined(__OpenBSD__)
-	"BSD"
 #elif defined(__APPLE__) && defined(__MACH__)
 	#if TARGET_OS_MAC
 		"OSX"
@@ -336,6 +342,8 @@ inline const char *getPlatformName()
 	#else
 		"Apple"
 	#endif
+#elif defined(PLATFORM_BSD)
+	"BSD"
 #elif defined(_AIX)
 	"AIX"
 #elif defined(__hpux)
@@ -368,6 +376,16 @@ void setXorgClassHint(const video::SExposedVideoData &video_data,
 void setWin32ExceptionHandler();
 
 bool secure_rand_fill_buf(void *buf, size_t len);
+
+/// Returns error message coresponding to the provided
+/// errno in whatever encoding strerror uses.
+std::string strerrno(int err);
+
+#ifdef _WIN32
+/// Returns error message coresponding to the provided Windows
+/// error code in the implementation's default encoding.
+std::string strwinerr(DWORD err=GetLastError());
+#endif
 } // namespace porting
 
 #ifdef __ANDROID__

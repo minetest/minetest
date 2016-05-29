@@ -183,9 +183,8 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 	while (device->run() && !*kill && !g_gamecallback->shutdown_requested)
 	{
 		// Set the window caption
-		const wchar_t *text = wgettext("Main Menu");
-		device->setWindowCaption((utf8_to_wide(PROJECT_NAME_C) + L" [" + text + L"]").c_str());
-		delete[] text;
+		device->setWindowCaption((PROJECT_NAME_CW L" [" +
+				wstrgettext("Main Menu") + L"]").c_str());
 
 		try {	// This is used for catching disconnects
 
