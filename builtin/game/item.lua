@@ -250,7 +250,9 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 	local newnode = {name = def.name, param1 = 0, param2 = param2}
 
 	-- Calculate direction for wall mounted stuff like torches and signs
-	if def.paramtype2 == 'wallmounted' and not param2 then
+	if def.place_param2 ~= nil then
+		newnode.param2 = def.place_param2
+	elseif def.paramtype2 == 'wallmounted' and not param2 then
 		local dir = {
 			x = under.x - above.x,
 			y = under.y - above.y,
