@@ -206,13 +206,15 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 
 	blockseed = getBlockSeed2(full_node_min, seed);
 
-	// Generate terrain and ridges with initial heightmaps
+	// Generate base and mountain terrain
+	// An initial heightmap is no longer created here for use in generateRidgeTerrain()
 	s16 stone_surface_max_y = generateTerrain();
 
+	// Generate rivers
 	if (spflags & MGV7_RIDGES)
 		generateRidgeTerrain();
 
-	// Update heightmap to include mountain terrain
+	// Create heightmap
 	updateHeightmap(node_min, node_max);
 
 	// Init biome generator, place biome-specific nodes, and build biomemap
@@ -331,7 +333,6 @@ int MapgenV7::generateTerrain()
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index2d++) {
 		s16 surface_y = baseTerrainLevelFromMap(index2d);
-		heightmap[index2d] = surface_y;  // Create base terrain heightmap
 
 		if (surface_y > stone_surface_max_y)
 			stone_surface_max_y = surface_y;
@@ -381,9 +382,6 @@ void MapgenV7::generateRidgeTerrain()
 		u32 vi = vm->m_area.index(node_min.X, y, z);
 		for (s16 x = node_min.X; x <= node_max.X; x++, index++, vi++) {
 			int j = (z - node_min.Z) * csize.X + (x - node_min.X);
-
-			if (heightmap[j] < water_level - 16)  // Use base terrain heightmap
-				continue;
 
 			float uwatern = noise_ridge_uwater->result[j] * 2;
 			if (fabs(uwatern) > width)
