@@ -3528,6 +3528,7 @@ Definition tables
         ^ paramtype = "light" allows light to propagate from or through the node with light value
         ^ falling by 1 per node. This line is essential for a light source node to spread its light. ]]
         paramtype2 = "none", -- See "Nodes"
+        place_param2 = nil, -- Force value for param2 when player places node
         is_ground_content = true, -- If false, the cave generator will not carve through this
         sunlight_propagates = false, -- If true, sunlight will go infinitely through this
         walkable = true, -- If true, objects collide with node
