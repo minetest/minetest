@@ -1208,17 +1208,17 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 #endif
 		if (image == NULL) {
 			if (part_of_name != "") {
-				if (part_of_name.find("_normal.png") == std::string::npos){
-					errorstream<<"generateImage(): Could not load image \""
-						<<part_of_name<<"\""<<" while building texture"<<std::endl;
-					errorstream<<"generateImage(): Creating a dummy"
-						<<" image for \""<<part_of_name<<"\""<<std::endl;
-				} else {
-					infostream<<"generateImage(): Could not load normal map \""
-						<<part_of_name<<"\""<<std::endl;
-					infostream<<"generateImage(): Creating a dummy"
-						<<" normal map for \""<<part_of_name<<"\""<<std::endl;
+
+				// Do not create normalmap dummies
+				if (part_of_name.find("_normal.png") != std::string::npos) {
+					warningstream << "generateImage(): Could not load normal map \""
+						<< part_of_name << "\"" << std::endl;
+					return true;
 				}
+
+				errorstream << "generateImage(): Could not load image \""
+					<< part_of_name << "\" while building texture; "
+					"Creating a dummy image" << std::endl;
 			}
 
 			// Just create a dummy image
