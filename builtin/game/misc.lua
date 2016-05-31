@@ -198,19 +198,34 @@ function core.http_add_fetch(httpenv)
 	return httpenv
 end
 
-function core.get_color_escape_sequence(color)
-	--if string.len(color) == 3 then
-	--	local r = string.sub(color, 1, 1)
-	--	local g = string.sub(color, 2, 2)
-	--	local b = string.sub(color, 3, 3)
-	--	color = r ..  r .. g .. g .. b .. b
-	--end
+if minetest.setting_getbool("disable_escape_sequences") then
 
-	--assert(#color == 6, "Color must be six characters in length.")
-	--return "\v" .. color
-	return "\v(color;" .. color .. ")"
+	function core.get_color_escape_sequence(color)
+		return ""
+	end
+
+	function core.get_background_escape_sequence(color)
+		return ""
+	end
+
+	function core.colorize(color, message)
+		return message
+	end
+
+else
+
+	local ESCAPE_CHAR = string.char(0x1b)
+	function core.get_color_escape_sequence(color)
+		return ESCAPE_CHAR .. "(c@" .. color .. ")"
+	end
+
+	function core.get_background_escape_sequence(color)
+		return ESCAPE_CHAR .. "(b@" .. color .. ")"
+	end
+
+	function core.colorize(color, message)
+		return core.get_color_escape_sequence(color) .. message .. core.get_color_escape_sequence("#ffffff")
+	end
+
 end
 
-function core.colorize(color, message)
-	return core.get_color_escape_sequence(color) .. message .. core.get_color_escape_sequence("ffffff")
-end

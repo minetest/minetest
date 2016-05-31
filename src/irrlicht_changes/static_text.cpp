@@ -1,11 +1,11 @@
 // Copyright (C) 2002-2012 Nikolaus Gebhardt
+// Copyright (C) 2016 Nathanaël Courant:
+//   Modified the functions to use EnrichedText instead of string.
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#include "statictext.h"
+#include "static_text.h"
 #ifdef _IRR_COMPILE_WITH_GUI_
-
-//Only compile this if freetype is enabled.
 
 #include <vector>
 #include <string>
@@ -17,15 +17,21 @@
 #include <rect.h>
 #include <SColor.h>
 
-#include "cguittfont/xCGUITTFont.h"
+#if USE_FREETYPE
+	#include "cguittfont/xCGUITTFont.h"
+#endif
+
 #include "util/string.h"
 
 namespace irr
 {
+
+#if USE_FREETYPE
+
 namespace gui
 {
 //! constructor
-StaticText::StaticText(const wchar_t* text, bool border,
+StaticText::StaticText(const EnrichedString &text, bool border,
 			IGUIEnvironment* environment, IGUIElement* parent,
 			s32 id, const core::rect<s32>& rectangle,
 			bool background)
@@ -40,7 +46,8 @@ StaticText::StaticText(const wchar_t* text, bool border,
 	setDebugName("StaticText");
 	#endif
 
-	Text = text;
+	Text = text.c_str();
+	cText = text;
 	if (environment && environment->getSkin())
 	{
 		BGColor = environment->getSkin()->getColor(gui::EGDC_3D_FACE);
@@ -54,7 +61,6 @@ StaticText::~StaticText()
 	if (OverrideFont)
 		OverrideFont->drop();
 }
-
 
 //! draws the element and its children
 void StaticText::draw()
@@ -88,7 +94,7 @@ void StaticText::draw()
 	}
 
 	// draw the text
-	if (Text.size())
+	if (cText.size())
 	{
 		IGUIFont* font = getActiveFont();
 
@@ -105,10 +111,11 @@ void StaticText::draw()
 				if (HAlign == EGUIA_LOWERRIGHT)
 				{
 					frameRect.UpperLeftCorner.X = frameRect.LowerRightCorner.X -
-						font->getDimension(Text.c_str()).Width;
+						font->getDimension(cText.c_str()).Width;
 				}
 
-				font->draw(Text.c_str(), frameRect,
+				irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(font);
+				tmp->draw(cText, frameRect,
 					OverrideColorEnabled ? OverrideColor : skin->getColor(isEnabled() ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
 					HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER, (RestrainTextInside ? &AbsoluteClippingRect : NULL));
 			}
@@ -138,16 +145,17 @@ void StaticText::draw()
 							font->getDimension(BrokenText[i].c_str()).Width;
 					}
 
-					std::vector<irr::video::SColor> colors;
-					std::wstring str;
+					//std::vector<irr::video::SColor> colors;
+					//std::wstring str;
+					EnrichedString str = BrokenText[i];
 
-					str = colorizeText(BrokenText[i].c_str(), colors, previous_color);
-					if (!colors.empty())
-						previous_color = colors[colors.size() - 1];
+					//str = colorizeText(BrokenText[i].c_str(), colors, previous_color);
+					//if (!colors.empty())
+					//	previous_color = colors[colors.size() - 1];
 
 					irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(font);
-					tmp->draw(str.c_str(), r,
-						colors,
+					tmp->draw(str, r,
+						previous_color, // FIXME
 						HAlign == EGUIA_CENTER, false, (RestrainTextInside ? &AbsoluteClippingRect : NULL));
 
 					r.LowerRightCorner.Y += height;
@@ -340,17 +348,17 @@ void StaticText::breakText()
 
 	LastBreakFont = font;
 
-	core::stringw line;
-	core::stringw word;
-	core::stringw whitespace;
-	s32 size = Text.size();
+	EnrichedString line;
+	EnrichedString word;
+	EnrichedString whitespace;
+	s32 size = cText.size();
 	s32 length = 0;
 	s32 elWidth = RelativeRect.getWidth();
 	if (Border)
 		elWidth -= 2*skin->getSize(EGDS_TEXT_DISTANCE_X);
 	wchar_t c;
 
-	std::vector<irr::video::SColor> colors;
+	//std::vector<irr::video::SColor> colors;
 
 	// We have to deal with right-to-left and left-to-right differently
 	// However, most parts of the following code is the same, it's just
@@ -360,17 +368,17 @@ void StaticText::breakText()
 		// regular (left-to-right)
 		for (s32 i=0; i<size; ++i)
 		{
-			c = Text[i];
+			c = cText.getString()[i];
 			bool lineBreak = false;
 
 			if (c == L'\r') // Mac or Windows breaks
 			{
 				lineBreak = true;
-				if (Text[i+1] == L'\n') // Windows breaks
-				{
-					Text.erase(i+1);
-					--size;
-				}
+				//if (Text[i+1] == L'\n') // Windows breaks
+				//{
+				//	Text.erase(i+1);
+				//	--size;
+				//}
 				c = '\0';
 			}
 			else if (c == L'\n') // Unix breaks
@@ -383,7 +391,8 @@ void StaticText::breakText()
 			if ( !isWhitespace )
 			{
 				// part of a word
-				word += c;
+				//word += c;
+				word.addChar(cText, i);
 			}
 
 			if ( isWhitespace || i == (size-1))
@@ -393,20 +402,21 @@ void StaticText::breakText()
 					// here comes the next whitespace, look if
 					// we must break the last word to the next line.
 					const s32 whitelgth = font->getDimension(whitespace.c_str()).Width;
-					const std::wstring sanitized = removeEscapes(word.c_str());
-					const s32 wordlgth = font->getDimension(sanitized.c_str()).Width;
+					//const std::wstring sanitized = removeEscapes(word.c_str());
+					const s32 wordlgth = font->getDimension(word.c_str()).Width;
 
 					if (wordlgth > elWidth)
 					{
 						// This word is too long to fit in the available space, look for
 						// the Unicode Soft HYphen (SHY / 00AD) character for a place to
 						// break the word at
-						int where = word.findFirst( wchar_t(0x00AD) );
+						int where = core::stringw(word.c_str()).findFirst( wchar_t(0x00AD) );
 						if (where != -1)
 						{
-							core::stringw first  = word.subString(0, where);
-							core::stringw second = word.subString(where, word.size() - where);
-							BrokenText.push_back(line + first + L"-");
+							EnrichedString first = word.substr(0, where);
+							EnrichedString second = word.substr(where, word.size() - where);
+							first.addCharNoColor(L'-');
+							BrokenText.push_back(line + first);
 							const s32 secondLength = font->getDimension(second.c_str()).Width;
 
 							length = secondLength;
@@ -437,13 +447,13 @@ void StaticText::breakText()
 						length += whitelgth + wordlgth;
 					}
 
-					word = L"";
-					whitespace = L"";
+					word.clear();
+					whitespace.clear();
 				}
 
-				if ( isWhitespace )
+				if ( isWhitespace && c != 0)
 				{
-					whitespace += c;
+					whitespace.addChar(cText, i);
 				}
 
 				// compute line break
@@ -452,9 +462,9 @@ void StaticText::breakText()
 					line += whitespace;
 					line += word;
 					BrokenText.push_back(line);
-					line = L"";
-					word = L"";
-					whitespace = L"";
+					line.clear();
+					word.clear();
+					whitespace.clear();
 					length = 0;
 				}
 			}
@@ -469,17 +479,17 @@ void StaticText::breakText()
 		// right-to-left
 		for (s32 i=size; i>=0; --i)
 		{
-			c = Text[i];
+			c = cText.getString()[i];
 			bool lineBreak = false;
 
 			if (c == L'\r') // Mac or Windows breaks
 			{
 				lineBreak = true;
-				if ((i>0) && Text[i-1] == L'\n') // Windows breaks
-				{
-					Text.erase(i-1);
-					--size;
-				}
+				//if ((i>0) && Text[i-1] == L'\n') // Windows breaks
+				//{
+				//	Text.erase(i-1);
+				//	--size;
+				//}
 				c = '\0';
 			}
 			else if (c == L'\n') // Unix breaks
@@ -512,12 +522,13 @@ void StaticText::breakText()
 						length += whitelgth + wordlgth;
 					}
 
-					word = L"";
-					whitespace = L"";
+					word.clear();
+					whitespace.clear();
 				}
 
 				if (c != 0)
-					whitespace = core::stringw(&c, 1) + whitespace;
+				//	whitespace = core::stringw(&c, 1) + whitespace;
+				whitespace = cText.substr(i, 1) + whitespace;
 
 				// compute line break
 				if (lineBreak)
@@ -525,16 +536,17 @@ void StaticText::breakText()
 					line = whitespace + line;
 					line = word + line;
 					BrokenText.push_back(line);
-					line = L"";
-					word = L"";
-					whitespace = L"";
+					line.clear();
+					word.clear();
+					whitespace.clear();
 					length = 0;
 				}
 			}
 			else
 			{
 				// yippee this is a word..
-				word = core::stringw(&c, 1) + word;
+				//word = core::stringw(&c, 1) + word;
+				word = cText.substr(i, 1) + word;
 			}
 		}
 
@@ -548,7 +560,17 @@ void StaticText::breakText()
 //! Sets the new caption of this element.
 void StaticText::setText(const wchar_t* text)
 {
-	IGUIElement::setText(text);
+	setText(EnrichedString(text));
+}
+
+//! Sets the new caption of this element.
+void StaticText::setText(const EnrichedString &text)
+{
+	IGUIElement::setText(text.c_str());
+	cText = text;
+	if (text.hasBackground()) {
+		setBackgroundColor(text.getBackground());
+	}
 	breakText();
 }
 
@@ -598,7 +620,7 @@ s32 StaticText::getTextWidth() const
 	}
 	else
 	{
-		return font->getDimension(Text.c_str()).Width;
+		return font->getDimension(cText.c_str()).Width;
 	}
 }
 
@@ -648,6 +670,9 @@ void StaticText::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWr
 }
 
 } // end namespace gui
+
+#endif // USE_FREETYPE
+
 } // end namespace irr
 
 

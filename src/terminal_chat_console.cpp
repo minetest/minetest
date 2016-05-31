@@ -345,9 +345,11 @@ void TerminalChatConsole::step(int ch)
 		if (p.first > m_log_level)
 			continue;
 
-		m_chat_backend.addMessage(
-			utf8_to_wide(Logger::getLevelLabel(p.first)),
-			utf8_to_wide(p.second));
+		std::wstring error_message = utf8_to_wide(Logger::getLevelLabel(p.first));
+		if (!g_settings->getBool("disable_escape_sequences")) {
+			error_message = L"\x1b(c@red)" + error_message + L"\x1b(c@white)";
+		}
+		m_chat_backend.addMessage(error_message, utf8_to_wide(p.second));
 	}
 
 	// handle input
@@ -438,7 +440,7 @@ void TerminalChatConsole::draw_text()
 			continue;
 		for (u32 i = 0; i < line.fragments.size(); ++i) {
 			const ChatFormattedFragment& fragment = line.fragments[i];
-			addstr(wide_to_utf8(fragment.text).c_str());
+			addstr(wide_to_utf8(fragment.text.getString()).c_str());
 		}
 	}
 }

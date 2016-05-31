@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "filesys.h"
 #include "gettext.h"
-#include "client/guiChatConsole.h"
+#include "guiChatConsole.h"
 #include "guiFormSpecMenu.h"
 #include "guiKeyChangeMenu.h"
 #include "guiPasswordChange.h"
@@ -55,13 +55,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tool.h"
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
+#include "irrlicht_changes/static_text.h"
 #include "version.h"
 #include "minimap.h"
 #include "mapblock_mesh.h"
-
-#if USE_FREETYPE
-	#include "util/statictext.h"
-#endif
 
 #include "sound.h"
 
@@ -541,7 +538,7 @@ void update_profiler_gui(gui::IGUIStaticText *guitext_profiler, FontEngine *fe,
 		std::ostringstream os(std::ios_base::binary);
 		g_profiler->printPage(os, show_profiler, show_profiler_max);
 		std::wstring text = utf8_to_wide(os.str());
-		guitext_profiler->setText(text.c_str());
+		setStaticText(guitext_profiler, text.c_str());
 		guitext_profiler->setVisible(true);
 
 		s32 w = fe->getTextWidth(text.c_str());
@@ -1244,7 +1241,11 @@ static void updateChat(Client &client, f32 dtime, bool show_debug,
 
 	// Get new messages from error log buffer
 	while (!chat_log_error_buf.empty()) {
-		chat_backend.addMessage(L"", utf8_to_wide(chat_log_error_buf.get()));
+		std::wstring error_message = utf8_to_wide(chat_log_error_buf.get());
+		if (!g_settings->getBool("disable_escape_sequences")) {
+			error_message = L"\x1b(c@red)" + error_message + L"\x1b(c@white)";
+		}
+		chat_backend.addMessage(L"", error_message);
 	}
 
 	// Get new messages from client
@@ -1259,10 +1260,10 @@ static void updateChat(Client &client, f32 dtime, bool show_debug,
 
 	// Display all messages in a static text element
 	unsigned int recent_chat_count = chat_backend.getRecentBuffer().getLineCount();
-	std::wstring recent_chat       = chat_backend.getRecentChat();
+	EnrichedString recent_chat     = chat_backend.getRecentChat();
 	unsigned int line_height       = g_fontengine->getLineHeight();
 
-	guitext_chat->setText(recent_chat.c_str());
+	setStaticText(guitext_chat, recent_chat);
 
 	// Update gui element size and position
 	s32 chat_y = 5 + line_height;
@@ -1271,7 +1272,7 @@ static void updateChat(Client &client, f32 dtime, bool show_debug,
 		chat_y += line_height;
 
 	// first pass to calculate height of text to be set
-	s32 width = std::min(g_fontengine->getTextWidth(recent_chat) + 10,
+	s32 width = std::min(g_fontengine->getTextWidth(recent_chat.c_str()) + 10,
 			     porting::getWindowSize().X - 20);
 	core::rect<s32> rect(10, chat_y, width, chat_y + porting::getWindowSize().Y);
 	guitext_chat->setRelativePosition(rect);
@@ -2218,45 +2219,39 @@ bool Game::createClient(const std::string &playername,
 bool Game::initGui()
 {
 	// First line of debug text
-	guitext = guienv->addStaticText(
+	guitext = addStaticText(guienv,
 			utf8_to_wide(PROJECT_NAME_C).c_str(),
 			core::rect<s32>(0, 0, 0, 0),
 			false, false, guiroot);
 
 	// Second line of debug text
-	guitext2 = guienv->addStaticText(
+	guitext2 = addStaticText(guienv,
 			L"",
 			core::rect<s32>(0, 0, 0, 0),
 			false, false, guiroot);
 
 	// At the middle of the screen
 	// Object infos are shown in this
-	guitext_info = guienv->addStaticText(
+	guitext_info = addStaticText(guienv,
 			L"",
 			core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 5 + 5) + v2s32(100, 200),
 			false, true, guiroot);
 
 	// Status text (displays info when showing and hiding GUI stuff, etc.)
-	guitext_status = guienv->addStaticText(
+	guitext_status = addStaticText(guienv,
 			L"<Status>",
 			core::rect<s32>(0, 0, 0, 0),
 			false, false, guiroot);
 	guitext_status->setVisible(false);
 
-#if USE_FREETYPE
-	// Colored chat support when using FreeType
-	guitext_chat = new gui::StaticText(L"", false, guienv, guiroot, -1, core::rect<s32>(0, 0, 0, 0), false);
-	guitext_chat->setWordWrap(true);
-	guitext_chat->drop();
-#else
-	// Standard chat when FreeType is disabled
 	// Chat text
-	guitext_chat = guienv->addStaticText(
+	guitext_chat = addStaticText(
+			guienv,
 			L"",
 			core::rect<s32>(0, 0, 0, 0),
 			//false, false); // Disable word wrap as of now
 			false, true, guiroot);
-#endif
+
 	// Remove stale "recent" chat messages from previous connections
 	chat_backend->clearRecentChat();
 
@@ -2270,7 +2265,7 @@ bool Game::initGui()
 	}
 
 	// Profiler text (size is updated when text is updated)
-	guitext_profiler = guienv->addStaticText(
+	guitext_profiler = addStaticText(guienv,
 			L"<Profiler>",
 			core::rect<s32>(0, 0, 0, 0),
 			false, false, guiroot);
@@ -4308,12 +4303,12 @@ void Game::updateGui(float *statustext_time, const RunStats &stats,
 		   << ", v_range = " << draw_control->wanted_range
 		   << std::setprecision(3)
 		   << ", RTT = " << client->getRTT();
-		guitext->setText(utf8_to_wide(os.str()).c_str());
+		setStaticText(guitext, utf8_to_wide(os.str()).c_str());
 		guitext->setVisible(true);
 	} else if (flags.show_hud || flags.show_chat) {
 		std::ostringstream os(std::ios_base::binary);
 		os << PROJECT_NAME_C " " << g_version_hash;
-		guitext->setText(utf8_to_wide(os.str()).c_str());
+		setStaticText(guitext, utf8_to_wide(os.str()).c_str());
 		guitext->setVisible(true);
 	} else {
 		guitext->setVisible(false);
@@ -4350,7 +4345,7 @@ void Game::updateGui(float *statustext_time, const RunStats &stats,
 			}
 		}
 
-		guitext2->setText(utf8_to_wide(os.str()).c_str());
+		setStaticText(guitext2, utf8_to_wide(os.str()).c_str());
 		guitext2->setVisible(true);
 
 		core::rect<s32> rect(
@@ -4362,7 +4357,7 @@ void Game::updateGui(float *statustext_time, const RunStats &stats,
 		guitext2->setVisible(false);
 	}
 
-	guitext_info->setText(infotext.c_str());
+	setStaticText(guitext_info, infotext.c_str());
 	guitext_info->setVisible(flags.show_hud && g_menumgr.menuCount() == 0);
 
 	float statustext_time_max = 1.5;
@@ -4376,7 +4371,7 @@ void Game::updateGui(float *statustext_time, const RunStats &stats,
 		}
 	}
 
-	guitext_status->setText(statustext.c_str());
+	setStaticText(guitext_status, statustext.c_str());
 	guitext_status->setVisible(!statustext.empty());
 
 	if (!statustext.empty()) {
