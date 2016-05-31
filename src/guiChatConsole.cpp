@@ -346,9 +346,9 @@ void GUIChatConsole::drawText()
 			// Draw colored text if FreeType is enabled
 				irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(m_font);
 				tmp->draw(
-					fragment.text.c_str(),
+					fragment.text,
 					destrect,
-					fragment.text.getColors(),
+					video::SColor(255, 255, 255, 255),
 					false,
 					false,
 					&AbsoluteClippingRect);

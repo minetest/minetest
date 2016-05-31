@@ -1701,6 +1701,24 @@ numerical form, the raw integer value of an ARGB8 quad:
 or string form, a ColorString (defined above):
     `colorspec = "green"`
 
+Escape sequences
+----------------
+Most text can contain escape sequences, that can for example color the text.
+There are a few exceptions: tab headers, dropdowns and vertical labels can't.
+The following functions provide escape sequences:
+* `core.get_color_escape_sequence(color)`:
+    * `color` is a ColorString
+    * The escape sequence sets the text color to `color`
+* `core.colorize(color, message)`:
+    * Equivalent to:
+      `core.get_color_escape_sequence(color) ..
+       message ..
+       core.get_color_escape_sequence("#ffffff")`
+* `color.get_background_escape_sequence(color)`
+    * `color` is a ColorString
+    * The escape sequence sets the background of the whole text element to
+      `color`. Only defined for item descriptions and tooltips.
+
 Spatial Vectors
 ---------------
 * `vector.new(a[, b, c])`: returns a vector:

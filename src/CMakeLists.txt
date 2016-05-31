@@ -376,6 +376,7 @@ add_subdirectory(network)
 add_subdirectory(script)
 add_subdirectory(unittest)
 add_subdirectory(util)
+add_subdirectory(irrlicht_changes)
 
 set(common_SRCS
 	ban.cpp
@@ -493,6 +494,7 @@ set(client_SRCS
 	${common_SRCS}
 	${sound_SRCS}
 	${client_network_SRCS}
+	${client_irrlicht_changes_SRCS}
 	camera.cpp
 	client.cpp
 	clientmap.cpp
