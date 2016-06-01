@@ -199,11 +199,8 @@ void Mapgen::updateHeightmap(v3s16 nmin, v3s16 nmax)
 	//printf("updateHeightmap: %dus\n", t.stop());
 }
 
-inline static bool updateLiquidHelper(Mapgen *mg, int i, const v3s16 &em)
+inline bool Mapgen::updateLiquidHelper(int i, const v3s16 &em)
 {
-	MMVManip *vm = mg->vm;
-	INodeDefManager *ndef = mg->ndef;
-	
 	u32 i_nx = i;
 	vm->m_area.add_x(em, i_nx, -1);
 	if (vm->m_data[i_nx].getContent() != CONTENT_IGNORE) {
@@ -259,7 +256,7 @@ void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nm
 			} else if (isliquid) {
 				// This is the topmost node in the column
 				bool ispushed = false;
-				if (updateLiquidHelper(this, i, em)) {
+				if (updateLiquidHelper(i, em)) {
 					trans_liquid->push_back(v3s16(x, y, z));
 					ispushed = true;
 				}
@@ -272,7 +269,7 @@ void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nm
 				u32 j = i;
 				vm->m_area.add_y(em, j, 1);
 				if (!waspushed && (ndef->get(vm->m_data[i]).floodable ||
-						(!waschecked && updateLiquidHelper(this, j, em)))) {
+						(!waschecked && updateLiquidHelper(j, em)))) {
 					// Push back the lowest node in the column which is one
 					// node above this one
 					trans_liquid->push_back(v3s16(x, y + 1, z));
