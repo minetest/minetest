@@ -536,13 +536,15 @@ MgStoneType MapgenBasic::generateBiomes()
 		u16 depth_top = 0;
 		u16 base_filler = 0;
 		u16 depth_water_top = 0;
+		u16 depth_riverbed = 0;
 		u32 vi = vm->m_area.index(x, node_max.Y, z);
 
 		// Check node at base of mapchunk above, either a node of a previously
 		// generated mapchunk or if not, a node of overgenerated base terrain.
 		content_t c_above = vm->m_data[vi + em.X].getContent();
 		bool air_above = c_above == CONTENT_AIR;
-		bool water_above = (c_above == c_water_source || c_above == c_river_water_source);
+		bool river_water_above = c_above == c_river_water_source;
+		bool water_above = c_above == c_water_source || river_water_above;
 
 		// If there is air or water above enable top/filler placement, otherwise force
 		// nplaced to stone level by setting a number exceeding any possible filler depth.
@@ -564,10 +566,11 @@ MgStoneType MapgenBasic::generateBiomes()
 				biome = biomegen->getBiomeAtIndex(index, y);
 
 				depth_top = biome->depth_top;
-				base_filler = MYMAX(depth_top
-						+ biome->depth_filler
-						+ noise_filler_depth->result[index], 0.f);
+				base_filler = MYMAX(depth_top +
+					biome->depth_filler +
+					noise_filler_depth->result[index], 0.f);
 				depth_water_top = biome->depth_water_top;
+				depth_riverbed = biome->depth_riverbed;
 
 				// Detect stone type for dungeons during every biome calculation.
 				// This is more efficient than detecting per-node and will not
@@ -590,7 +593,15 @@ MgStoneType MapgenBasic::generateBiomes()
 						|| c_below == c_river_water_source)
 					nplaced = U16_MAX;
 
-				if (nplaced < depth_top) {
+				if (river_water_above) {
+					if (nplaced < depth_riverbed) {
+						vm->m_data[vi] = MapNode(biome->c_riverbed);
+						nplaced++;
+					} else {
+						nplaced = U16_MAX;  // Disable top/filler placement
+						river_water_above = false;
+					}
+				} else if (nplaced < depth_top) {
 					vm->m_data[vi] = MapNode(biome->c_top);
 					nplaced++;
 				} else if (nplaced < base_filler) {
@@ -610,9 +621,10 @@ MgStoneType MapgenBasic::generateBiomes()
 				water_above = true;
 			} else if (c == c_river_water_source) {
 				vm->m_data[vi] = MapNode(biome->c_river_water);
-				nplaced = depth_top;  // Enable filler placement for next surface
+				nplaced = 0;  // Enable riverbed placement for next surface
 				air_above = false;
 				water_above = true;
+				river_water_above = true;
 			} else if (c == CONTENT_AIR) {
 				nplaced = 0;  // Enable top/filler placement for next surface
 				air_above = true;

@@ -3723,6 +3723,9 @@ Definition tables
 
 ### Biome definition (`register_biome`)
 
+**Note**
+The biome API is still in an experimental phase and subject to change.
+
     {
         name = "tundra",
         node_dust = "default:snow",
@@ -3742,6 +3745,9 @@ Definition tables
     --  ^ Node that replaces all seawater nodes not in the defined surface layer.
         node_river_water = "default:ice",
     --  ^ Node that replaces river water in mapgens that use default:river_water.
+        node_riverbed = "default:gravel",
+        depth_riverbed = 2,
+    --  ^ Node placed under river water and thickness of this layer.
         y_min = 1,
         y_max = 31000,
     --  ^ Lower and upper limits for biome.
