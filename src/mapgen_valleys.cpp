@@ -114,11 +114,6 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 
 	// Resolve content to be used
 	c_lava_source = ndef->getId("mapgen_lava_source");
-	c_sand        = ndef->getId("mapgen_sand");
-
-	// Fall back to more basic content if not defined
-	if (c_sand == CONTENT_IGNORE)
-		c_sand = c_stone;
 }
 
 
@@ -493,7 +488,6 @@ int MapgenValleys::generateTerrain()
 
 	MapNode n_air(CONTENT_AIR);
 	MapNode n_river_water(c_river_water_source);
-	MapNode n_sand(c_sand);
 	MapNode n_stone(c_stone);
 	MapNode n_water(c_water_source);
 
@@ -537,10 +531,7 @@ int MapgenValleys::generateTerrain()
 				float surface_delta = (float)y - surface_y;
 				bool river = y + 1 < river_y;
 
-				if (fabs(surface_delta) <= 0.5f && y > water_level && river) {
-					// river bottom
-					vm->m_data[index_data] = n_sand;
-				} else if (slope * fill > surface_delta) {
+				if (slope * fill > surface_delta) {
 					// ground
 					vm->m_data[index_data] = n_stone;
 					if (y > heightmap[index_2d])
@@ -553,7 +544,7 @@ int MapgenValleys::generateTerrain()
 				} else if (river) {
 					// river
 					vm->m_data[index_data] = n_river_water;
-				} else {
+				} else {  // air
 					vm->m_data[index_data] = n_air;
 				}
 			}
