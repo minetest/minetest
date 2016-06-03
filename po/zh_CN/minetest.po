@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-05 16:13+0200\n"
-"PO-Revision-Date: 2016-05-05 19:09+0000\n"
-"Last-Translator: Claybiokiller <clay0305@hotmail.com>\n"
+"PO-Revision-Date: 2016-06-03 12:31+0000\n"
+"Last-Translator: susan <2033905535@qq.com>\n"
 "Language-Team: Chinese (China) "
 "<https://hosted.weblate.org/projects/minetest/minetest/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -4134,6 +4134,8 @@ msgid ""
 "World directory (everything in the world is stored here).\n"
 "Not needed if starting from the main menu."
 msgstr ""
+"世界目录（世界里的所有东西都存在这里）。\n"
+"如果从主菜单开始游戏就不需要。"
 
 #: src/settings_translation_file.cpp
 msgid "Y of flat ground."
@@ -4141,7 +4143,7 @@ msgstr "平地的 Y。"
 
 #: src/settings_translation_file.cpp
 msgid "Y of upper limit of large pseudorandom caves."
-msgstr ""
+msgstr "大型随机洞穴的Y轴最大值。"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
