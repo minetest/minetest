@@ -177,7 +177,6 @@ public:
 	s16 findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax);
 	s16 findLiquidSurface(v2s16 p2d, s16 ymin, s16 ymax);
 	void updateHeightmap(v3s16 nmin, v3s16 nmax);
-	bool updateLiquidHelper(int i, const v3s16 &em);
 	void updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax);
 
 	void setLighting(u8 light, v3s16 nmin, v3s16 nmax);
@@ -198,6 +197,10 @@ public:
 	virtual int getSpawnLevelAtPoint(v2s16 p) { return 0; }
 
 private:
+	// isLiquidHorizontallyFlowable() is a helper function for updateLiquid()
+	// that checks whether there are floodable nodes without liquid beneath
+	// the node at index vi.
+	inline bool isLiquidHorizontallyFlowable(u32 vi, v3s16 em);
 	DISABLE_CLASS_COPY(Mapgen);
 };
 
