@@ -93,22 +93,31 @@ u32 PcgRandom::range(u32 bound)
 	// If the bound is 0, we cover the whole RNG's range
 	if (bound == 0)
 		return next();
-	/*
-	If the bound is not a multiple of the RNG's range, it may cause bias,
-	e.g. a RNG has a range from 0 to 3 and we take want a number 0 to 2.
-	Using rand() % 3, the number 0 would be twice as likely to appear.
-	With a very large RNG range, the effect becomes less prevalent but
-	still present.  This can be solved by modifying the range of the RNG
-	to become a multiple of bound by dropping values above the a threshold.
-	In our example, threshold == 4 - 3 = 1 % 3 == 1, so reject 0, thus
-	making the range 3 with no bias.
 
-	This loop looks dangerous, but will always terminate due to the
-	RNG's property of uniformity.
+	/*
+		This is an optimization of the expression:
+		  0x100000000ull % bound
+		since 64-bit modulo operations typically much slower than 32.
 	*/
 	u32 threshold = -bound % bound;
 	u32 r;
 
+	/*
+		If the bound is not a multiple of the RNG's range, it may cause bias,
+		e.g. a RNG has a range from 0 to 3 and we take want a number 0 to 2.
+		Using rand() % 3, the number 0 would be twice as likely to appear.
+		With a very large RNG range, the effect becomes less prevalent but
+		still present.
+
+		This can be solved by modifying the range of the RNG to become a
+		multiple of bound by dropping values above the a threshold.
+
+		In our example, threshold == 4 % 3 == 1, so reject values < 1
+		(that is, 0), thus making the range == 3 with no bias.
+
+		This loop may look dangerous, but will always terminate due to the
+		RNG's property of uniformity.
+	*/
 	while ((r = next()) < threshold)
 		;
 

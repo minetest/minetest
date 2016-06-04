@@ -2865,7 +2865,9 @@ It can be created via `PcgRandom(seed)` or `PcgRandom(seed, sequence)`.
 * `next()`: return next integer random number [`-2147483648`...`2147483647`]
 * `next(min, max)`: return next integer random number [`min`...`max`]
 * `rand_normal_dist(min, max, num_trials=6)`: return normally distributed random number [`min`...`max`]
-    * This is only a rough approximation of a normal distribution with mean=(max-min)/2 and variance=1
+    * This is only a rough approximation of a normal distribution with:
+    *   mean = (max - min) / 2, and
+    *   variance = (((max - min + 1) ^ 2) - 1) / (12 * num_trials)
     * Increasing num_trials improves accuracy of the approximation
 
 ### `SecureRandom`
