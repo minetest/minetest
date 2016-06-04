@@ -89,10 +89,24 @@ Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge) :
 {
 	generating  = false;
 	id          = mapgenid;
-	seed        = (int)params->seed;
 	water_level = params->water_level;
 	flags       = params->flags;
 	csize       = v3s16(1, 1, 1) * (params->chunksize * MAP_BLOCKSIZE);
+
+	/*
+		We are losing half our entropy by doing this, but it is necessary to
+		preserve reverse compatibility.  If the top half of our current 64 bit
+		seeds ever starts getting used, existing worlds will break due to a
+		different hash outcome and no way to differentiate between versions.
+
+		A solution could be to add a new bit to designate that the top half of
+		the seed value should be used, essentially a 1-bit version code, but
+		this would require increasing the total size of a seed to 9 bytes (yuck)
+
+		It's probably okay if this never gets fixed.  4.2 billion possibilities
+		ought to be enough for anyone.
+	*/
+	seed = (s32)params->seed;
 
 	vm        = NULL;
 	ndef      = emerge->ndef;
@@ -107,7 +121,7 @@ Mapgen::~Mapgen()
 }
 
 
-u32 Mapgen::getBlockSeed(v3s16 p, int seed)
+u32 Mapgen::getBlockSeed(v3s16 p, s32 seed)
 {
 	return (u32)seed   +
 		p.Z * 38134234 +
@@ -116,7 +130,7 @@ u32 Mapgen::getBlockSeed(v3s16 p, int seed)
 }
 
 
-u32 Mapgen::getBlockSeed2(v3s16 p, int seed)
+u32 Mapgen::getBlockSeed2(v3s16 p, s32 seed)
 {
 	u32 n = 1619 * p.X + 31337 * p.Y + 52591 * p.Z + 1013 * seed;
 	n = (n >> 13) ^ n;

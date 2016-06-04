@@ -41,7 +41,7 @@ class CavesNoiseIntersection {
 public:
 	CavesNoiseIntersection(INodeDefManager *nodedef, BiomeManager *biomemgr,
 		v3s16 chunksize, NoiseParams *np_cave1, NoiseParams *np_cave2,
-		int seed, float cave_width);
+		s32 seed, float cave_width);
 	~CavesNoiseIntersection();
 
 	void generateCaves(MMVManip *vm, v3s16 nmin, v3s16 nmax, u8 *biomemap);
@@ -83,7 +83,7 @@ public:
 	s16 *heightmap;
 
 	// configurable parameters
-	int seed;
+	s32 seed;
 	int water_level;
 	int lava_depth;
 	NoiseParams *np_caveliquids;
@@ -122,7 +122,7 @@ public:
 	// If gennotify is NULL, generation events are not logged.
 	CavesRandomWalk(INodeDefManager *ndef,
 		GenerateNotifier *gennotify = NULL,
-		int seed = 0,
+		s32 seed = 0,
 		int water_level = 1,
 		content_t water_source = CONTENT_IGNORE,
 		content_t lava_source = CONTENT_IGNORE);

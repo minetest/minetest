@@ -39,7 +39,7 @@ int dir_to_facedir(v3s16 d);
 
 
 struct DungeonParams {
-	int seed;
+	s32 seed;
 
 	content_t c_water;
 	content_t c_river_water;

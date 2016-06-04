@@ -150,7 +150,7 @@ struct MapgenParams {
 */
 class Mapgen {
 public:
-	int seed;
+	s32 seed;
 	int water_level;
 	u32 flags;
 	bool generating;
@@ -171,8 +171,8 @@ public:
 	Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	virtual ~Mapgen();
 
-	static u32 getBlockSeed(v3s16 p, int seed);
-	static u32 getBlockSeed2(v3s16 p, int seed);
+	static u32 getBlockSeed(v3s16 p, s32 seed);
+	static u32 getBlockSeed2(v3s16 p, s32 seed);
 	s16 findGroundLevelFull(v2s16 p2d);
 	s16 findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax);
 	s16 findLiquidSurface(v2s16 p2d, s16 ymin, s16 ymax);

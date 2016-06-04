@@ -156,7 +156,7 @@ s32 PcgRandom::randNormalDist(s32 min, s32 max, int num_trials)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-float noise2d(int x, int y, int seed)
+float noise2d(int x, int y, s32 seed)
 {
 	unsigned int n = (NOISE_MAGIC_X * x + NOISE_MAGIC_Y * y
 			+ NOISE_MAGIC_SEED * seed) & 0x7fffffff;
@@ -166,7 +166,7 @@ float noise2d(int x, int y, int seed)
 }
 
 
-float noise3d(int x, int y, int z, int seed)
+float noise3d(int x, int y, int z, s32 seed)
 {
 	unsigned int n = (NOISE_MAGIC_X * x + NOISE_MAGIC_Y * y + NOISE_MAGIC_Z * z
 			+ NOISE_MAGIC_SEED * seed) & 0x7fffffff;
@@ -235,7 +235,7 @@ float triLinearInterpolationNoEase(
 	return linearInterpolation(u, v, z);
 }
 
-float noise2d_gradient(float x, float y, int seed, bool eased)
+float noise2d_gradient(float x, float y, s32 seed, bool eased)
 {
 	// Calculate the integer coordinates
 	int x0 = myfloor(x);
@@ -256,7 +256,7 @@ float noise2d_gradient(float x, float y, int seed, bool eased)
 }
 
 
-float noise3d_gradient(float x, float y, float z, int seed, bool eased)
+float noise3d_gradient(float x, float y, float z, s32 seed, bool eased)
 {
 	// Calculate the integer coordinates
 	int x0 = myfloor(x);
@@ -290,7 +290,7 @@ float noise3d_gradient(float x, float y, float z, int seed, bool eased)
 }
 
 
-float noise2d_perlin(float x, float y, int seed,
+float noise2d_perlin(float x, float y, s32 seed,
 	int octaves, float persistence, bool eased)
 {
 	float a = 0;
@@ -306,7 +306,7 @@ float noise2d_perlin(float x, float y, int seed,
 }
 
 
-float noise2d_perlin_abs(float x, float y, int seed,
+float noise2d_perlin_abs(float x, float y, s32 seed,
 	int octaves, float persistence, bool eased)
 {
 	float a = 0;
@@ -321,7 +321,7 @@ float noise2d_perlin_abs(float x, float y, int seed,
 }
 
 
-float noise3d_perlin(float x, float y, float z, int seed,
+float noise3d_perlin(float x, float y, float z, s32 seed,
 	int octaves, float persistence, bool eased)
 {
 	float a = 0;
@@ -336,7 +336,7 @@ float noise3d_perlin(float x, float y, float z, int seed,
 }
 
 
-float noise3d_perlin_abs(float x, float y, float z, int seed,
+float noise3d_perlin_abs(float x, float y, float z, s32 seed,
 	int octaves, float persistence, bool eased)
 {
 	float a = 0;
@@ -363,7 +363,7 @@ float contour(float v)
 ///////////////////////// [ New noise ] ////////////////////////////
 
 
-float NoisePerlin2D(NoiseParams *np, float x, float y, int seed)
+float NoisePerlin2D(NoiseParams *np, float x, float y, s32 seed)
 {
 	float a = 0;
 	float f = 1.0;
@@ -389,7 +389,7 @@ float NoisePerlin2D(NoiseParams *np, float x, float y, int seed)
 }
 
 
-float NoisePerlin3D(NoiseParams *np, float x, float y, float z, int seed)
+float NoisePerlin3D(NoiseParams *np, float x, float y, float z, s32 seed)
 {
 	float a = 0;
 	float f = 1.0;
@@ -416,7 +416,7 @@ float NoisePerlin3D(NoiseParams *np, float x, float y, float z, int seed)
 }
 
 
-Noise::Noise(NoiseParams *np_, int seed, u32 sx, u32 sy, u32 sz)
+Noise::Noise(NoiseParams *np_, s32 seed, u32 sx, u32 sy, u32 sz)
 {
 	memcpy(&np, np_, sizeof(np));
 	this->seed = seed;
@@ -543,7 +543,7 @@ void Noise::resizeNoiseBuf(bool is3d)
 void Noise::gradientMap2D(
 		float x, float y,
 		float step_x, float step_y,
-		int seed)
+		s32 seed)
 {
 	float v00, v01, v10, v11, u, v, orig_u;
 	u32 index, i, j, noisex, noisey;
@@ -607,7 +607,7 @@ void Noise::gradientMap2D(
 void Noise::gradientMap3D(
 		float x, float y, float z,
 		float step_x, float step_y, float step_z,
-		int seed)
+		s32 seed)
 {
 	float v000, v010, v100, v110;
 	float v001, v011, v101, v111;
