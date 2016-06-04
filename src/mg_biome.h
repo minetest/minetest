@@ -31,7 +31,9 @@ class BiomeManager;
 //// Biome
 ////
 
-#define BIOME_NONE ((u8)0)
+typedef u8 biome_t;
+
+#define BIOME_NONE ((biome_t)0)
 
 // TODO(hmmmm): Decide whether this is obsolete or will be used in the future
 enum BiomeType {
@@ -101,7 +103,7 @@ public:
 	// Gets all biomes in current chunk using each corresponding element of
 	// heightmap as the y position, then stores the results by biome index in
 	// biomemap (also returned)
-	virtual u8 *getBiomes(s16 *heightmap) = 0;
+	virtual biome_t *getBiomes(s16 *heightmap) = 0;
 
 	// Gets a single biome at the specified position, which must be contained
 	// in the region formed by m_pmin and (m_pmin + m_csize - 1).
@@ -111,7 +113,7 @@ public:
 	virtual Biome *getBiomeAtIndex(size_t index, s16 y) const = 0;
 
 	// Result of calcBiomes bulk computation.
-	u8 *biomemap;
+	biome_t *biomemap;
 
 protected:
 	BiomeManager *m_bmgr;
@@ -157,7 +159,7 @@ public:
 	Biome *calcBiomeAtPoint(v3s16 pos) const;
 	void calcBiomeNoise(v3s16 pmin);
 
-	u8 *getBiomes(s16 *heightmap);
+	biome_t *getBiomes(s16 *heightmap);
 	Biome *getBiomeAtPoint(v3s16 pos) const;
 	Biome *getBiomeAtIndex(size_t index, s16 y) const;
 
@@ -217,9 +219,6 @@ public:
 	}
 
 	virtual void clear();
-
-	// Looks for pos in the biome cache, and if non-existent, looks up by noise
-	u8 getBiomeAtPoint(v3s16 pos);
 
 private:
 	IGameDef *m_gamedef;

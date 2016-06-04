@@ -36,6 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MG_LIGHT       0x10
 #define MG_DECORATIONS 0x20
 
+typedef u8 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
+
 class Settings;
 class MMVManip;
 class INodeDefManager;
@@ -161,7 +163,7 @@ public:
 
 	u32 blockseed;
 	s16 *heightmap;
-	u8 *biomemap;
+	biome_t *biomemap;
 	v3s16 csize;
 
 	BiomeGen *biomegen;

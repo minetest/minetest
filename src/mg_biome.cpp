@@ -128,7 +128,7 @@ BiomeGenOriginal::BiomeGenOriginal(BiomeManager *biomemgr,
 
 	heatmap  = noise_heat->result;
 	humidmap = noise_humidity->result;
-	biomemap = new u8[m_csize.X * m_csize.Z];
+	biomemap = new biome_t[m_csize.X * m_csize.Z];
 }
 
 BiomeGenOriginal::~BiomeGenOriginal()
@@ -171,7 +171,7 @@ void BiomeGenOriginal::calcBiomeNoise(v3s16 pmin)
 }
 
 
-u8 *BiomeGenOriginal::getBiomes(s16 *heightmap)
+biome_t *BiomeGenOriginal::getBiomes(s16 *heightmap)
 {
 	for (s32 i = 0; i != m_csize.X * m_csize.Z; i++) {
 		Biome *biome = calcBiomeFromNoise(
