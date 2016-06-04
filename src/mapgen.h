@@ -199,6 +199,10 @@ public:
 	virtual int getSpawnLevelAtPoint(v2s16 p) { return 0; }
 
 private:
+	// isLiquidHorizontallyFlowable() is a helper function for updateLiquid()
+	// that checks whether there are floodable nodes without liquid beneath
+	// the node at index vi.
+	inline bool isLiquidHorizontallyFlowable(u32 vi, v3s16 em);
 	DISABLE_CLASS_COPY(Mapgen);
 };
 
