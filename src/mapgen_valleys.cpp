@@ -250,10 +250,7 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	// Generate base terrain with initial heightmaps
 	s16 stone_surface_max_y = generateTerrain();
 
-	// Build biomemap
-	m_bgen->getBiomes(heightmap);
-
-	// Place biome-specific nodes
+	// Place biome-specific nodes and build biomemap
 	MgStoneType stone_type = generateBiomes();
 
 	// Cave creation.

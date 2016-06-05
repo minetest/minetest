@@ -524,6 +524,10 @@ MapgenBasic::~MapgenBasic()
 
 MgStoneType MapgenBasic::generateBiomes()
 {
+	// can't generate biomes without a biome generator!
+	assert(biomegen);
+	assert(biomemap);
+
 	v3s16 em = vm->m_area.getExtent();
 	u32 index = 0;
 	MgStoneType stone_type = MGSTONE_STONE;
@@ -546,6 +550,8 @@ MgStoneType MapgenBasic::generateBiomes()
 		bool river_water_above = c_above == c_river_water_source;
 		bool water_above = c_above == c_water_source || river_water_above;
 
+		biomemap[index] = BIOME_NONE;
+
 		// If there is air or water above enable top/filler placement, otherwise force
 		// nplaced to stone level by setting a number exceeding any possible filler depth.
 		u16 nplaced = (air_above || water_above) ? 0 : U16_MAX;
@@ -560,10 +566,18 @@ MgStoneType MapgenBasic::generateBiomes()
 			// 1. At the surface of stone below air or water.
 			// 2. At the surface of water below air.
 			// 3. When stone or water is detected but biome has not yet been calculated.
-			if ((c == c_stone && (air_above || water_above || !biome))
-					|| ((c == c_water_source || c == c_river_water_source)
-						&& (air_above || !biome))) {
+			bool is_stone_surface = (c == c_stone) &&
+				(air_above || water_above || !biome);
+
+			bool is_water_surface =
+				(c == c_water_source || c == c_river_water_source) &&
+				(air_above || !biome);
+
+			if (is_stone_surface || is_water_surface) {
 				biome = biomegen->getBiomeAtIndex(index, y);
+
+				if (biomemap[index] == BIOME_NONE && is_stone_surface)
+					biomemap[index] = biome->index;
 
 				depth_top = biome->depth_top;
 				base_filler = MYMAX(depth_top +
