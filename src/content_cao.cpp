@@ -1489,7 +1489,7 @@ void GenericCAO::updateAnimation()
 {
 	if(m_animated_meshnode == NULL)
 		return;
-        
+
 	if (m_animated_meshnode->getStartFrame() != m_animation_range.X ||
 		m_animated_meshnode->getEndFrame() != m_animation_range.Y)
                 {
