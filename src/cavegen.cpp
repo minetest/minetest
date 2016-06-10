@@ -35,7 +35,7 @@ static NoiseParams nparams_caveliquids(0, 1, v3f(150.0, 150.0, 150.0), 776, 3, 0
 
 CavesNoiseIntersection::CavesNoiseIntersection(
 	INodeDefManager *nodedef, BiomeManager *biomemgr, v3s16 chunksize,
-	NoiseParams *np_cave1, NoiseParams *np_cave2, int seed, float cave_width)
+	NoiseParams *np_cave1, NoiseParams *np_cave2, s32 seed, float cave_width)
 {
 	assert(nodedef);
 	assert(biomemgr);
@@ -130,7 +130,7 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 CavesRandomWalk::CavesRandomWalk(
 	INodeDefManager *ndef,
 	GenerateNotifier *gennotify,
-	int seed,
+	s32 seed,
 	int water_level,
 	content_t water_source,
 	content_t lava_source)

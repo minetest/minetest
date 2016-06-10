@@ -46,6 +46,8 @@ struct PlayerControl
 		RMB = false;
 		pitch = 0;
 		yaw = 0;
+		sidew_move_joystick_axis = .0f;
+		forw_move_joystick_axis = .0f;
 	}
 	PlayerControl(
 		bool a_up,
@@ -58,7 +60,9 @@ struct PlayerControl
 		bool a_LMB,
 		bool a_RMB,
 		float a_pitch,
-		float a_yaw
+		float a_yaw,
+		float a_sidew_move_joystick_axis,
+		float a_forw_move_joystick_axis
 	)
 	{
 		up = a_up;
@@ -72,6 +76,8 @@ struct PlayerControl
 		RMB = a_RMB;
 		pitch = a_pitch;
 		yaw = a_yaw;
+		sidew_move_joystick_axis = a_sidew_move_joystick_axis;
+		forw_move_joystick_axis = a_forw_move_joystick_axis;
 	}
 	bool up;
 	bool down;
@@ -84,6 +90,8 @@ struct PlayerControl
 	bool RMB;
 	float pitch;
 	float yaw;
+	float sidew_move_joystick_axis;
+	float forw_move_joystick_axis;
 };
 
 class Map;

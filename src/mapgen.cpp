@@ -89,10 +89,24 @@ Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge) :
 {
 	generating  = false;
 	id          = mapgenid;
-	seed        = (int)params->seed;
 	water_level = params->water_level;
 	flags       = params->flags;
 	csize       = v3s16(1, 1, 1) * (params->chunksize * MAP_BLOCKSIZE);
+
+	/*
+		We are losing half our entropy by doing this, but it is necessary to
+		preserve reverse compatibility.  If the top half of our current 64 bit
+		seeds ever starts getting used, existing worlds will break due to a
+		different hash outcome and no way to differentiate between versions.
+
+		A solution could be to add a new bit to designate that the top half of
+		the seed value should be used, essentially a 1-bit version code, but
+		this would require increasing the total size of a seed to 9 bytes (yuck)
+
+		It's probably okay if this never gets fixed.  4.2 billion possibilities
+		ought to be enough for anyone.
+	*/
+	seed = (s32)params->seed;
 
 	vm        = NULL;
 	ndef      = emerge->ndef;
@@ -107,7 +121,7 @@ Mapgen::~Mapgen()
 }
 
 
-u32 Mapgen::getBlockSeed(v3s16 p, int seed)
+u32 Mapgen::getBlockSeed(v3s16 p, s32 seed)
 {
 	return (u32)seed   +
 		p.Z * 38134234 +
@@ -116,7 +130,7 @@ u32 Mapgen::getBlockSeed(v3s16 p, int seed)
 }
 
 
-u32 Mapgen::getBlockSeed2(v3s16 p, int seed)
+u32 Mapgen::getBlockSeed2(v3s16 p, s32 seed)
 {
 	u32 n = 1619 * p.X + 31337 * p.Y + 52591 * p.Z + 1013 * seed;
 	n = (n >> 13) ^ n;
@@ -199,27 +213,86 @@ void Mapgen::updateHeightmap(v3s16 nmin, v3s16 nmax)
 	//printf("updateHeightmap: %dus\n", t.stop());
 }
 
+inline bool Mapgen::isLiquidHorizontallyFlowable(u32 vi, v3s16 em)
+{
+	u32 vi_neg_x = vi;
+	vm->m_area.add_x(em, vi_neg_x, -1);
+	if (vm->m_data[vi_neg_x].getContent() != CONTENT_IGNORE) {
+		const ContentFeatures &c_nx = ndef->get(vm->m_data[vi_neg_x]);
+		if (c_nx.floodable && !c_nx.isLiquid())
+			return true;
+	}
+	u32 vi_pos_x = vi;
+	vm->m_area.add_x(em, vi_pos_x, +1);
+	if (vm->m_data[vi_pos_x].getContent() != CONTENT_IGNORE) {
+		const ContentFeatures &c_px = ndef->get(vm->m_data[vi_pos_x]);
+		if (c_px.floodable && !c_px.isLiquid())
+			return true;
+	}
+	u32 vi_neg_z = vi;
+	vm->m_area.add_z(em, vi_neg_z, -1);
+	if (vm->m_data[vi_neg_z].getContent() != CONTENT_IGNORE) {
+		const ContentFeatures &c_nz = ndef->get(vm->m_data[vi_neg_z]);
+		if (c_nz.floodable && !c_nz.isLiquid())
+			return true;
+	}
+	u32 vi_pos_z = vi;
+	vm->m_area.add_z(em, vi_pos_z, +1);
+	if (vm->m_data[vi_pos_z].getContent() != CONTENT_IGNORE) {
+		const ContentFeatures &c_pz = ndef->get(vm->m_data[vi_pos_z]);
+		if (c_pz.floodable && !c_pz.isLiquid())
+			return true;
+	}
+	return false;
+}
 
 void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax)
 {
-	bool isliquid, wasliquid;
+	bool isignored, isliquid, wasignored, wasliquid, waschecked, waspushed;
 	v3s16 em  = vm->m_area.getExtent();
 
-	for (s16 z = nmin.Z; z <= nmax.Z; z++) {
-		for (s16 x = nmin.X; x <= nmax.X; x++) {
-			wasliquid = true;
+	for (s16 z = nmin.Z + 1; z <= nmax.Z - 1; z++)
+	for (s16 x = nmin.X + 1; x <= nmax.X - 1; x++) {
+		wasignored = true;
+		wasliquid = false;
+		waschecked = false;
+		waspushed = false;
 
-			u32 i = vm->m_area.index(x, nmax.Y, z);
-			for (s16 y = nmax.Y; y >= nmin.Y; y--) {
-				isliquid = ndef->get(vm->m_data[i]).isLiquid();
+		u32 vi = vm->m_area.index(x, nmax.Y, z);
+		for (s16 y = nmax.Y; y >= nmin.Y; y--) {
+			isignored = vm->m_data[vi].getContent() == CONTENT_IGNORE;
+			isliquid = ndef->get(vm->m_data[vi]).isLiquid();
 
-				// there was a change between liquid and nonliquid, add to queue.
-				if (isliquid != wasliquid)
+			if (isignored || wasignored || isliquid == wasliquid) {
+				// Neither topmost node of liquid column nor topmost node below column
+				waschecked = false;
+				waspushed = false;
+			} else if (isliquid) {
+				// This is the topmost node in the column
+				bool ispushed = false;
+				if (isLiquidHorizontallyFlowable(vi, em)) {
 					trans_liquid->push_back(v3s16(x, y, z));
-
-				wasliquid = isliquid;
-				vm->m_area.add_y(em, i, -1);
+					ispushed = true;
+				}
+				// Remember waschecked and waspushed to avoid repeated
+				// checks/pushes in case the column consists of only this node
+				waschecked = true;
+				waspushed = ispushed;
+			} else {
+				// This is the topmost node below a liquid column
+				u32 vi_above = vi;
+				vm->m_area.add_y(em, vi_above, 1);
+				if (!waspushed && (ndef->get(vm->m_data[vi]).floodable ||
+						(!waschecked && isLiquidHorizontallyFlowable(vi_above, em)))) {
+					// Push back the lowest node in the column which is one
+					// node above this one
+					trans_liquid->push_back(v3s16(x, y + 1, z));
+				}
 			}
+
+			wasliquid = isliquid;
+			wasignored = isignored;
+			vm->m_area.add_y(em, vi, -1);
 		}
 	}
 }
@@ -451,6 +524,10 @@ MapgenBasic::~MapgenBasic()
 
 MgStoneType MapgenBasic::generateBiomes()
 {
+	// can't generate biomes without a biome generator!
+	assert(biomegen);
+	assert(biomemap);
+
 	v3s16 em = vm->m_area.getExtent();
 	u32 index = 0;
 	MgStoneType stone_type = MGSTONE_STONE;
@@ -463,13 +540,17 @@ MgStoneType MapgenBasic::generateBiomes()
 		u16 depth_top = 0;
 		u16 base_filler = 0;
 		u16 depth_water_top = 0;
+		u16 depth_riverbed = 0;
 		u32 vi = vm->m_area.index(x, node_max.Y, z);
 
 		// Check node at base of mapchunk above, either a node of a previously
 		// generated mapchunk or if not, a node of overgenerated base terrain.
 		content_t c_above = vm->m_data[vi + em.X].getContent();
 		bool air_above = c_above == CONTENT_AIR;
-		bool water_above = (c_above == c_water_source || c_above == c_river_water_source);
+		bool river_water_above = c_above == c_river_water_source;
+		bool water_above = c_above == c_water_source || river_water_above;
+
+		biomemap[index] = BIOME_NONE;
 
 		// If there is air or water above enable top/filler placement, otherwise force
 		// nplaced to stone level by setting a number exceeding any possible filler depth.
@@ -485,16 +566,25 @@ MgStoneType MapgenBasic::generateBiomes()
 			// 1. At the surface of stone below air or water.
 			// 2. At the surface of water below air.
 			// 3. When stone or water is detected but biome has not yet been calculated.
-			if ((c == c_stone && (air_above || water_above || !biome))
-					|| ((c == c_water_source || c == c_river_water_source)
-						&& (air_above || !biome))) {
+			bool is_stone_surface = (c == c_stone) &&
+				(air_above || water_above || !biome);
+
+			bool is_water_surface =
+				(c == c_water_source || c == c_river_water_source) &&
+				(air_above || !biome);
+
+			if (is_stone_surface || is_water_surface) {
 				biome = biomegen->getBiomeAtIndex(index, y);
 
+				if (biomemap[index] == BIOME_NONE && is_stone_surface)
+					biomemap[index] = biome->index;
+
 				depth_top = biome->depth_top;
-				base_filler = MYMAX(depth_top
-						+ biome->depth_filler
-						+ noise_filler_depth->result[index], 0.f);
+				base_filler = MYMAX(depth_top +
+					biome->depth_filler +
+					noise_filler_depth->result[index], 0.f);
 				depth_water_top = biome->depth_water_top;
+				depth_riverbed = biome->depth_riverbed;
 
 				// Detect stone type for dungeons during every biome calculation.
 				// This is more efficient than detecting per-node and will not
@@ -517,7 +607,15 @@ MgStoneType MapgenBasic::generateBiomes()
 						|| c_below == c_river_water_source)
 					nplaced = U16_MAX;
 
-				if (nplaced < depth_top) {
+				if (river_water_above) {
+					if (nplaced < depth_riverbed) {
+						vm->m_data[vi] = MapNode(biome->c_riverbed);
+						nplaced++;
+					} else {
+						nplaced = U16_MAX;  // Disable top/filler placement
+						river_water_above = false;
+					}
+				} else if (nplaced < depth_top) {
 					vm->m_data[vi] = MapNode(biome->c_top);
 					nplaced++;
 				} else if (nplaced < base_filler) {
@@ -537,9 +635,10 @@ MgStoneType MapgenBasic::generateBiomes()
 				water_above = true;
 			} else if (c == c_river_water_source) {
 				vm->m_data[vi] = MapNode(biome->c_river_water);
-				nplaced = depth_top;  // Enable filler placement for next surface
+				nplaced = 0;  // Enable riverbed placement for next surface
 				air_above = false;
 				water_above = true;
+				river_water_above = true;
 			} else if (c == CONTENT_AIR) {
 				nplaced = 0;  // Enable top/filler placement for next surface
 				air_above = true;

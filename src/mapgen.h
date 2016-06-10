@@ -36,6 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MG_LIGHT       0x10
 #define MG_DECORATIONS 0x20
 
+typedef u8 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
+
 class Settings;
 class MMVManip;
 class INodeDefManager;
@@ -150,7 +152,7 @@ struct MapgenParams {
 */
 class Mapgen {
 public:
-	int seed;
+	s32 seed;
 	int water_level;
 	u32 flags;
 	bool generating;
@@ -161,7 +163,7 @@ public:
 
 	u32 blockseed;
 	s16 *heightmap;
-	u8 *biomemap;
+	biome_t *biomemap;
 	v3s16 csize;
 
 	BiomeGen *biomegen;
@@ -171,8 +173,8 @@ public:
 	Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	virtual ~Mapgen();
 
-	static u32 getBlockSeed(v3s16 p, int seed);
-	static u32 getBlockSeed2(v3s16 p, int seed);
+	static u32 getBlockSeed(v3s16 p, s32 seed);
+	static u32 getBlockSeed2(v3s16 p, s32 seed);
 	s16 findGroundLevelFull(v2s16 p2d);
 	s16 findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax);
 	s16 findLiquidSurface(v2s16 p2d, s16 ymin, s16 ymax);
@@ -197,6 +199,10 @@ public:
 	virtual int getSpawnLevelAtPoint(v2s16 p) { return 0; }
 
 private:
+	// isLiquidHorizontallyFlowable() is a helper function for updateLiquid()
+	// that checks whether there are floodable nodes without liquid beneath
+	// the node at index vi.
+	inline bool isLiquidHorizontallyFlowable(u32 vi, v3s16 em);
 	DISABLE_CLASS_COPY(Mapgen);
 };
 

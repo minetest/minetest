@@ -146,7 +146,7 @@ const luaL_reg LuaPerlinNoise::methods[] = {
   LuaPerlinNoiseMap
 */
 
-LuaPerlinNoiseMap::LuaPerlinNoiseMap(NoiseParams *params, int seed, v3s16 size)
+LuaPerlinNoiseMap::LuaPerlinNoiseMap(NoiseParams *params, s32 seed, v3s16 size)
 {
 	m_is3d = size.Z > 1;
 	np = *params;

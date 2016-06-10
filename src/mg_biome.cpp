@@ -46,6 +46,7 @@ BiomeManager::BiomeManager(IGameDef *gamedef) :
 	b->depth_top       = 0;
 	b->depth_filler    = -MAX_MAP_GENERATION_LIMIT;
 	b->depth_water_top = 0;
+	b->depth_riverbed  = 0;
 	b->y_min           = -MAX_MAP_GENERATION_LIMIT;
 	b->y_max           = MAX_MAP_GENERATION_LIMIT;
 	b->heat_point      = 0.0;
@@ -57,6 +58,7 @@ BiomeManager::BiomeManager(IGameDef *gamedef) :
 	b->m_nodenames.push_back("mapgen_water_source");
 	b->m_nodenames.push_back("mapgen_water_source");
 	b->m_nodenames.push_back("mapgen_river_water_source");
+	b->m_nodenames.push_back("mapgen_stone");
 	b->m_nodenames.push_back("ignore");
 	m_ndef->pendNodeResolve(b);
 
@@ -128,7 +130,7 @@ BiomeGenOriginal::BiomeGenOriginal(BiomeManager *biomemgr,
 
 	heatmap  = noise_heat->result;
 	humidmap = noise_humidity->result;
-	biomemap = new u8[m_csize.X * m_csize.Z];
+	biomemap = new biome_t[m_csize.X * m_csize.Z];
 }
 
 BiomeGenOriginal::~BiomeGenOriginal()
@@ -171,7 +173,7 @@ void BiomeGenOriginal::calcBiomeNoise(v3s16 pmin)
 }
 
 
-u8 *BiomeGenOriginal::getBiomes(s16 *heightmap)
+biome_t *BiomeGenOriginal::getBiomes(s16 *heightmap)
 {
 	for (s32 i = 0; i != m_csize.X * m_csize.Z; i++) {
 		Biome *biome = calcBiomeFromNoise(
@@ -237,5 +239,6 @@ void Biome::resolveNodeNames()
 	getIdFromNrBacklog(&c_water_top,   "mapgen_water_source",       CONTENT_AIR);
 	getIdFromNrBacklog(&c_water,       "mapgen_water_source",       CONTENT_AIR);
 	getIdFromNrBacklog(&c_river_water, "mapgen_river_water_source", CONTENT_AIR);
+	getIdFromNrBacklog(&c_riverbed,    "mapgen_stone",              CONTENT_AIR);
 	getIdFromNrBacklog(&c_dust,        "ignore",                    CONTENT_IGNORE);
 }

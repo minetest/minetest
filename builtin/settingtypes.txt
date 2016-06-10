@@ -104,6 +104,17 @@ random_input (Random input) bool false
 #    Continuous forward movement (only used for testing).
 continuous_forward (Continuous forward) bool false
 
+#    Enable Joysticks
+enable_joysticks (Enable Joysticks) bool true
+
+#    The time in seconds it takes between repeated events
+#    when holding down a joystick button combination.
+repeat_joystick_button_time (Joystick button repetition invterval) float 0.17
+
+#    The sensitivity of the joystick axes for moving the
+#    ingame view frustum around.
+joystick_frustum_sensitivity (Joystick frustum sensitivity) float 170
+
 #    Key for moving the player forward.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_forward (Forward key) key KEY_KEY_W
