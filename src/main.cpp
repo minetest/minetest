@@ -925,7 +925,7 @@ static bool migrate_database(const GameParams &game_params, const Settings &cmd_
 	if (!world_mt.exists("backend")) {
 		errorstream << "Please specify your current backend in world.mt:"
 			<< std::endl
-			<< "	backend = {sqlite3|leveldb|redis|dummy}"
+			<< "	backend = {sqlite3|leveldb|redis|dummy|lmdb}"
 			<< std::endl;
 		return false;
 	}
