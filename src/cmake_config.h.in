@@ -24,7 +24,6 @@
 #cmakedefine01 USE_LMDB
 #cmakedefine01 USE_LUAJIT
 #cmakedefine01 USE_POSTGRESQL
-#cmakedefine01 USE_LMDB
 #cmakedefine01 USE_SPATIAL
 #cmakedefine01 USE_SYSTEM_GMP
 #cmakedefine01 USE_REDIS
