@@ -64,7 +64,7 @@ private:
 	void makeTransaction(unsigned int flags);
 };
 
-#endif
+#endif // DATABASE_LMDB_HEADER
 
 
 /* Local Variables: */
