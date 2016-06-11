@@ -125,7 +125,6 @@ private:
 	Noise *noise_valley_profile;
 
 	content_t c_lava_source;
-	content_t c_sand;
 
 	float terrainLevelAtPoint(s16 x, s16 z);
 
