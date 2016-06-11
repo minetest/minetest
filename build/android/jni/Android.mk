@@ -224,6 +224,7 @@ LOCAL_SRC_FILES := \
 		jni/src/util/auth.cpp                     \
 		jni/src/util/base64.cpp                   \
 		jni/src/util/directiontables.cpp          \
+		jni/src/util/enriched_string.cpp          \
 		jni/src/util/numeric.cpp                  \
 		jni/src/util/pointedthing.cpp             \
 		jni/src/util/serialize.cpp                \
@@ -256,7 +257,9 @@ LOCAL_SRC_FILES := \
 		jni/src/settings.cpp                      \
 		jni/src/wieldmesh.cpp                     \
 		jni/src/client/clientlauncher.cpp         \
-		jni/src/client/tile.cpp
+		jni/src/client/tile.cpp                   \
+		jni/src/client/joystick_controller.cpp    \
+		jni/src/irrlicht_changes/static_text.cpp
 
 # intentionally kept out (we already build openssl itself): jni/src/util/sha256.c
 
