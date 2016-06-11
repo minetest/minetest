@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-05 16:13+0200\n"
-"PO-Revision-Date: 2016-06-03 12:31+0000\n"
-"Last-Translator: susan <2033905535@qq.com>\n"
+"PO-Revision-Date: 2016-06-11 10:56+0000\n"
+"Last-Translator: arsdragonfly <arsdragonfly@gmail.com>\n"
 "Language-Team: Chinese (China) "
 "<https://hosted.weblate.org/projects/minetest/minetest/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -400,9 +400,8 @@ msgid "Uninstall selected modpack"
 msgstr "删除选中的MOD包"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Address / Port"
-msgstr "地址/端口:"
+msgstr "地址/端口"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
@@ -423,17 +422,16 @@ msgstr "启用伤害"
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 #, fuzzy
 msgid "Del. Favorite"
-msgstr "最爱的服务器："
+msgstr "删除收藏的服务器"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 #, fuzzy
 msgid "Favorite"
-msgstr "最爱的服务器："
+msgstr "收藏的服务器"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Name / Password"
-msgstr "用户名/密码:"
+msgstr "用户名/密码"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -569,16 +567,15 @@ msgstr "节点高亮"
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
 msgid "Node Outlining"
-msgstr "节点高亮"
+msgstr "方块高亮"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
 msgstr "无"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Normal Mapping"
-msgstr "一般地图采样"
+msgstr "法线贴图"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -593,9 +590,8 @@ msgid "Parallax Occlusion"
 msgstr "视差贴图"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Particles"
-msgstr "启用粒子"
+msgstr "粒子效果"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -1367,12 +1363,12 @@ msgstr "空中加速"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Active Block Management interval"
-msgstr "活动块范围"
+msgstr "活动区块管理间隔"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Active Block Modifier interval"
-msgstr "活动块范围"
+msgstr "活动区块修改间隔"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
@@ -1468,9 +1464,8 @@ msgid "Basic"
 msgstr "基础"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Basic Privileges"
-msgstr "默认权限"
+msgstr "基本权限"
 
 #: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
@@ -1702,7 +1697,7 @@ msgstr "控制山丘的坡度/高度。"
 
 #: src/settings_translation_file.cpp
 msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-msgstr ""
+msgstr "控制隧道宽度，较小的值创建更宽的隧道。"
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -1717,10 +1712,13 @@ msgstr ""
 "这可以使挖掘更加困难。0 表示禁用。 (0-10)"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Creates unpredictable water features in caves.\n"
 "These can make mining difficult. Zero disables them. (0-10)"
 msgstr ""
+"在洞穴中创建随机的水域。\n"
+"会使挖矿变得困难。值为0则禁用。（0-10）"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
@@ -1808,7 +1806,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
-msgstr ""
+msgstr "工具提示显示延迟，按毫秒计算。"
 
 #: src/settings_translation_file.cpp
 msgid "Deprecated Lua API handling"
@@ -1816,11 +1814,11 @@ msgstr "已弃用 Lua API 处理"
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find large caves."
-msgstr ""
+msgstr "大型洞穴的最浅深度。"
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find massive caves."
-msgstr ""
+msgstr "巨型洞穴的最浅深度。"
 
 #: src/settings_translation_file.cpp
 msgid "Descending speed"
