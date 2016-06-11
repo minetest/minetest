@@ -985,39 +985,38 @@ void Settings::clearDefaultsNoLock()
 }
 
 
-void Settings::registerChangedCallback(std::string name,
-	setting_changed_callback cbf, void *userdata)
+void Settings::registerChangedCallback(const std::string &name,
+	SettingsChangedCallback cbf, void *userdata)
 {
-	MutexAutoLock lock(m_callbackMutex);
+	MutexAutoLock lock(m_callback_mutex);
 	m_callbacks[name].push_back(std::make_pair(cbf, userdata));
 }
 
-void Settings::deregisterChangedCallback(std::string name, setting_changed_callback cbf, void *userdata)
+void Settings::deregisterChangedCallback(const std::string &name,
+	SettingsChangedCallback cbf, void *userdata)
 {
-	MutexAutoLock lock(m_callbackMutex);
-	std::map<std::string, std::vector<std::pair<setting_changed_callback, void*> > >::iterator iterToVector = m_callbacks.find(name);
-	if (iterToVector != m_callbacks.end())
-	{
-		std::vector<std::pair<setting_changed_callback, void*> > &vector = iterToVector->second;
+	MutexAutoLock lock(m_callback_mutex);
+	SettingsCallbackMap::iterator it_cbks = m_callbacks.find(name);
 
-		std::vector<std::pair<setting_changed_callback, void*> >::iterator position =
-			std::find(vector.begin(), vector.end(), std::make_pair(cbf, userdata));
+	if (it_cbks != m_callbacks.end()) {
+		SettingsCallbackList &cbks = it_cbks->second;
 
-		if (position != vector.end())
-			vector.erase(position);
+		SettingsCallbackList::iterator position =
+			std::find(cbks.begin(), cbks.end(), std::make_pair(cbf, userdata));
+
+		if (position != cbks.end())
+			cbks.erase(position);
 	}
 }
 
-void Settings::doCallbacks(const std::string name)
+void Settings::doCallbacks(const std::string &name) const
 {
-	MutexAutoLock lock(m_callbackMutex);
-	std::map<std::string, std::vector<std::pair<setting_changed_callback, void*> > >::iterator iterToVector = m_callbacks.find(name);
-	if (iterToVector != m_callbacks.end())
-	{
-		std::vector<std::pair<setting_changed_callback, void*> >::iterator iter;
-		for (iter = iterToVector->second.begin(); iter != iterToVector->second.end(); ++iter)
-		{
-			(iter->first)(name, iter->second);
-		}
+	MutexAutoLock lock(m_callback_mutex);
+
+	SettingsCallbackMap::const_iterator it_cbks = m_callbacks.find(name);
+	if (it_cbks != m_callbacks.end()) {
+		SettingsCallbackList::const_iterator it;
+		for (it = it_cbks->second.begin(); it != it_cbks->second.end(); ++it)
+			(it->first)(name, it->second);
 	}
 }
