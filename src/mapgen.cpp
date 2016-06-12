@@ -738,44 +738,44 @@ void MapgenBasic::generateDungeons(s16 max_stone_y, MgStoneType stone_type)
 
 	DungeonParams dp;
 
-	dp.seed = seed;
-
-	dp.np_rarity  = nparams_dungeon_rarity;
-	dp.np_density = nparams_dungeon_density;
-	dp.np_wetness = nparams_dungeon_wetness;
-	dp.c_water    = c_water_source;
+	dp.seed          = seed;
+	dp.c_water       = c_water_source;
+	dp.c_river_water = c_river_water_source;
+	dp.rooms_min     = 2;
+	dp.rooms_max     = 16;
+	dp.y_min         = -MAX_MAP_GENERATION_LIMIT;
+	dp.y_max         = MAX_MAP_GENERATION_LIMIT;
+	dp.np_density    = nparams_dungeon_density;
+	dp.np_alt_wall   = nparams_dungeon_alt_wall;
 
 	switch (stone_type) {
 	default:
 	case MGSTONE_STONE:
-		dp.c_cobble = c_cobble;
-		dp.c_moss   = c_mossycobble;
-		dp.c_stair  = c_stair_cobble;
+		dp.c_wall     = c_cobble;
+		dp.c_alt_wall = c_mossycobble;
+		dp.c_stair    = c_stair_cobble;
 
 		dp.diagonal_dirs = false;
-		dp.mossratio     = 3.0;
 		dp.holesize      = v3s16(1, 2, 1);
 		dp.roomsize      = v3s16(0, 0, 0);
 		dp.notifytype    = GENNOTIFY_DUNGEON;
 		break;
 	case MGSTONE_DESERT_STONE:
-		dp.c_cobble = c_desert_stone;
-		dp.c_moss   = c_desert_stone;
-		dp.c_stair  = c_desert_stone;
+		dp.c_wall     = c_desert_stone;
+		dp.c_alt_wall = CONTENT_IGNORE;
+		dp.c_stair    = c_desert_stone;
 
 		dp.diagonal_dirs = true;
-		dp.mossratio     = 0.0;
 		dp.holesize      = v3s16(2, 3, 2);
 		dp.roomsize      = v3s16(2, 5, 2);
 		dp.notifytype    = GENNOTIFY_TEMPLE;
 		break;
 	case MGSTONE_SANDSTONE:
-		dp.c_cobble = c_sandstonebrick;
-		dp.c_moss   = c_sandstonebrick;
-		dp.c_stair  = c_sandstonebrick;
+		dp.c_wall     = c_sandstonebrick;
+		dp.c_alt_wall = CONTENT_IGNORE;
+		dp.c_stair    = c_sandstonebrick;
 
 		dp.diagonal_dirs = false;
-		dp.mossratio     = 0.0;
 		dp.holesize      = v3s16(2, 2, 2);
 		dp.roomsize      = v3s16(2, 0, 2);
 		dp.notifytype    = GENNOTIFY_DUNGEON;
