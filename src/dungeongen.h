@@ -43,19 +43,21 @@ struct DungeonParams {
 
 	content_t c_water;
 	content_t c_river_water;
-	content_t c_cobble;
-	content_t c_moss;
+	content_t c_wall;
+	content_t c_alt_wall;
 	content_t c_stair;
 
-	GenNotifyType notifytype;
 	bool diagonal_dirs;
-	float mossratio;
 	v3s16 holesize;
 	v3s16 roomsize;
+	u16 rooms_min;
+	u16 rooms_max;
+	s16 y_min;
+	s16 y_max;
+	GenNotifyType notifytype;
 
-	NoiseParams np_rarity;
-	NoiseParams np_wetness;
 	NoiseParams np_density;
+	NoiseParams np_alt_wall;
 };
 
 class DungeonGen {
@@ -99,8 +101,7 @@ public:
 	}
 };
 
-extern NoiseParams nparams_dungeon_rarity;
-extern NoiseParams nparams_dungeon_wetness;
 extern NoiseParams nparams_dungeon_density;
+extern NoiseParams nparams_dungeon_alt_wall;
 
 #endif
