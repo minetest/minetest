@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-05 16:13+0200\n"
-"PO-Revision-Date: 2016-05-07 11:19+0000\n"
-"Last-Translator: Yvan YR <yvan_yr@yahoo.fr>\n"
+"PO-Revision-Date: 2016-06-13 18:39+0000\n"
+"Last-Translator: Guillaume Robert <guillaume63200@hotmail.fr>\n"
 "Language-Team: French "
 "<https://hosted.weblate.org/projects/minetest/minetest/fr/>\n"
 "Language: fr\n"
@@ -40,6 +40,7 @@ msgid "Reconnect"
 msgstr "Se reconnecter"
 
 #: builtin/fstk/ui.lua
+#, fuzzy
 msgid "The server has requested a reconnect:"
 msgstr "Le serveur souhaite rétablir une connexion :"
 
@@ -53,7 +54,7 @@ msgstr "La version du protocole ne correspond pas. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr "Le serveur impose une version du protocole $1. "
+msgstr "Le serveur impose la version $1 du protocole. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
@@ -110,8 +111,9 @@ msgid "Hide Game"
 msgstr "Cacher le jeu"
 
 #: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
 msgid "Hide mp content"
-msgstr "Cacher le pack de mods"
+msgstr "Cacher le contenu du mod"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -412,7 +414,6 @@ msgid "Uninstall selected modpack"
 msgstr "Désinstaller le pack de mods"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Address / Port"
 msgstr "Adresse / Port :"
 
@@ -433,17 +434,14 @@ msgid "Damage enabled"
 msgstr "Dégâts activés"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Del. Favorite"
 msgstr "Supprimer favoris :"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Favorite"
 msgstr "Favoris :"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Name / Password"
 msgstr "Nom / Mot de passe :"
 
@@ -1705,6 +1703,8 @@ msgstr "Contrôle l'élévation/hauteur des collines."
 #: src/settings_translation_file.cpp
 msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 msgstr ""
+"Contrôle la largeur des tunnels, une valeur plus petite crée des tunnels "
+"plus larges."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -2847,12 +2847,13 @@ msgid ""
 msgstr "Temps d'intervalle entre la mise à jour des objets sur le réseau."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Length of time between ABM execution cycles"
-msgstr ""
+msgstr "Durée entre les cycles d’exécution ABM"
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between NodeTimer execution cycles"
-msgstr ""
+msgstr "Durée entre les cycles d’exécution NodeTimer"
 
 #: src/settings_translation_file.cpp
 msgid ""
