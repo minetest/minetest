@@ -127,6 +127,8 @@ public:
 	MapgenV6(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	~MapgenV6();
 
+	virtual MapgenType getType() const { return MAPGEN_V6; }
+
 	void makeChunk(BlockMakeData *data);
 	int getGroundLevelAtPoint(v2s16 p);
 	int getSpawnLevelAtPoint(v2s16 p);
@@ -161,19 +163,5 @@ public:
 	void placeTreesAndJungleGrass();
 	virtual void generateCaves(int max_stone_y);
 };
-
-
-struct MapgenFactoryV6 : public MapgenFactory {
-	Mapgen *createMapgen(int mgid, MapgenParams *params, EmergeManager *emerge)
-	{
-		return new MapgenV6(mgid, params, emerge);
-	};
-
-	MapgenSpecificParams *createMapgenParams()
-	{
-		return new MapgenV6Params();
-	};
-};
-
 
 #endif

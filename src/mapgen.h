@@ -26,7 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/container.h"
 
-#define DEFAULT_MAPGEN "v6"
+#define MAPGEN_DEFAULT MAPGEN_V6
+#define MAPGEN_DEFAULT_NAME "v6"
 
 /////////////////// Mapgen flags
 #define MG_TREES       0x01
@@ -107,6 +108,17 @@ private:
 	std::list<GenNotifyEvent> m_notify_events;
 };
 
+enum MapgenType {
+	MAPGEN_V5,
+	MAPGEN_V6,
+	MAPGEN_V7,
+	MAPGEN_FLAT,
+	MAPGEN_FRACTAL,
+	MAPGEN_VALLEYS,
+	MAPGEN_SINGLENODE,
+	MAPGEN_INVALID,
+};
+
 struct MapgenSpecificParams {
 	virtual void readParams(const Settings *settings) = 0;
 	virtual void writeParams(Settings *settings) const = 0;
@@ -124,7 +136,7 @@ struct MapgenParams {
 	MapgenSpecificParams *sparams;
 
 	MapgenParams() :
-		mg_name(DEFAULT_MAPGEN),
+		mg_name(MAPGEN_DEFAULT_NAME),
 		chunksize(5),
 		seed(0),
 		water_level(1),
@@ -173,6 +185,8 @@ public:
 	Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	virtual ~Mapgen();
 
+	virtual MapgenType getType() const { return MAPGEN_INVALID; }
+
 	static u32 getBlockSeed(v3s16 p, s32 seed);
 	static u32 getBlockSeed2(v3s16 p, s32 seed);
 	s16 findGroundLevelFull(v2s16 p2d);
@@ -197,6 +211,14 @@ public:
 	// found at the specified (X, Z) 'MAX_MAP_GENERATION_LIMIT' is returned to
 	// signify this and to cause Server::findSpawnPos() to try another (X, Z).
 	virtual int getSpawnLevelAtPoint(v2s16 p) { return 0; }
+
+	// Mapgen management functions
+	static MapgenType getMapgenType(const std::string &mgname);
+	static const char *getMapgenName(MapgenType mgtype);
+	static Mapgen *createMapgen(MapgenType mgtype, int mgid,
+		MapgenParams *params, EmergeManager *emerge);
+	static MapgenSpecificParams *createMapgenParams(MapgenType mgtype);
+	static void getMapgenNames(std::vector<const char *> *mgnames, bool include_hidden);
 
 private:
 	// isLiquidHorizontallyFlowable() is a helper function for updateLiquid()
@@ -265,13 +287,6 @@ protected:
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
 	float cave_width;
-};
-
-struct MapgenFactory {
-	virtual Mapgen *createMapgen(int mgid, MapgenParams *params,
-		EmergeManager *emerge) = 0;
-	virtual MapgenSpecificParams *createMapgenParams() = 0;
-	virtual ~MapgenFactory() {}
 };
 
 #endif

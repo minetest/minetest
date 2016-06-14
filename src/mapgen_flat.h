@@ -58,6 +58,8 @@ public:
 	MapgenFlat(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	~MapgenFlat();
 
+	virtual MapgenType getType() const { return MAPGEN_FLAT; }
+
 	virtual void makeChunk(BlockMakeData *data);
 	int getSpawnLevelAtPoint(v2s16 p);
 	s16 generateTerrain();
@@ -70,18 +72,6 @@ private:
 	float hill_threshold;
 	float hill_steepness;
 	Noise *noise_terrain;
-};
-
-struct MapgenFactoryFlat : public MapgenFactory {
-	Mapgen *createMapgen(int mgid, MapgenParams *params, EmergeManager *emerge)
-	{
-		return new MapgenFlat(mgid, params, emerge);
-	};
-
-	MapgenSpecificParams *createMapgenParams()
-	{
-		return new MapgenFlatParams();
-	};
 };
 
 #endif

@@ -91,6 +91,8 @@ public:
 	MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	~MapgenValleys();
 
+	virtual MapgenType getType() const { return MAPGEN_VALLEYS; }
+
 	virtual void makeChunk(BlockMakeData *data);
 	int getSpawnLevelAtPoint(v2s16 p);
 
@@ -135,18 +137,6 @@ private:
 	float adjustedTerrainLevelFromNoise(TerrainNoise *tn);
 
 	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
-};
-
-struct MapgenFactoryValleys : public MapgenFactory {
-	Mapgen *createMapgen(int mgid, MapgenParams *params, EmergeManager *emerge)
-	{
-		return new MapgenValleys(mgid, params, emerge);
-	};
-
-	MapgenSpecificParams *createMapgenParams()
-	{
-		return new MapgenValleysParams();
-	};
 };
 
 #endif

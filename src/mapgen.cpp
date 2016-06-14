@@ -39,6 +39,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "filesys.h"
 #include "log.h"
+#include "mapgen_flat.h"
+#include "mapgen_fractal.h"
+#include "mapgen_v5.h"
+#include "mapgen_v6.h"
+#include "mapgen_v7.h"
+#include "mapgen_valleys.h"
+#include "mapgen_singlenode.h"
 #include "cavegen.h"
 #include "dungeongen.h"
 
@@ -63,6 +70,28 @@ FlagDesc flagdesc_gennotify[] = {
 	{NULL,               0}
 };
 
+struct MapgenDesc {
+	const char *name;
+	bool is_user_visible;
+};
+
+////
+//// Built-in mapgens
+////
+
+static MapgenDesc g_reg_mapgens[] = {
+	{"v5",         true},
+	{"v6",         true},
+	{"v7",         true},
+	{"flat",       true},
+	{"fractal",    true},
+	{"valleys",    true},
+	{"singlenode", false},
+};
+
+STATIC_ASSERT(
+	ARRLEN(g_reg_mapgens) == MAPGEN_INVALID,
+	registered_mapgens_is_wrong_size);
 
 ////
 //// Mapgen
@@ -118,6 +147,83 @@ Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge) :
 
 Mapgen::~Mapgen()
 {
+}
+
+
+MapgenType Mapgen::getMapgenType(const std::string &mgname)
+{
+	for (size_t i = 0; i != ARRLEN(g_reg_mapgens); i++) {
+		if (mgname == g_reg_mapgens[i].name)
+			return (MapgenType)i;
+	}
+
+	return MAPGEN_INVALID;
+}
+
+
+const char *Mapgen::getMapgenName(MapgenType mgtype)
+{
+	size_t index = (size_t)mgtype;
+	if (index == MAPGEN_INVALID || index >= ARRLEN(g_reg_mapgens))
+		return "invalid";
+
+	return g_reg_mapgens[index].name;
+}
+
+
+Mapgen *Mapgen::createMapgen(MapgenType mgtype, int mgid,
+	MapgenParams *params, EmergeManager *emerge)
+{
+	switch (mgtype) {
+	case MAPGEN_FLAT:
+		return new MapgenFlat(mgid, params, emerge);
+	case MAPGEN_FRACTAL:
+		return new MapgenFractal(mgid, params, emerge);
+	case MAPGEN_SINGLENODE:
+		return new MapgenSinglenode(mgid, params, emerge);
+	case MAPGEN_V5:
+		return new MapgenV5(mgid, params, emerge);
+	case MAPGEN_V6:
+		return new MapgenV6(mgid, params, emerge);
+	case MAPGEN_V7:
+		return new MapgenV7(mgid, params, emerge);
+	case MAPGEN_VALLEYS:
+		return new MapgenValleys(mgid, params, emerge);
+	default:
+		return NULL;
+	}
+}
+
+
+MapgenSpecificParams *Mapgen::createMapgenParams(MapgenType mgtype)
+{
+	switch (mgtype) {
+	case MAPGEN_FLAT:
+		return new MapgenFlatParams;
+	case MAPGEN_FRACTAL:
+		return new MapgenFractalParams;
+	case MAPGEN_SINGLENODE:
+		return new MapgenSinglenodeParams;
+	case MAPGEN_V5:
+		return new MapgenV5Params;
+	case MAPGEN_V6:
+		return new MapgenV6Params;
+	case MAPGEN_V7:
+		return new MapgenV7Params;
+	case MAPGEN_VALLEYS:
+		return new MapgenValleysParams;
+	default:
+		return NULL;
+	}
+}
+
+
+void Mapgen::getMapgenNames(std::vector<const char *> *mgnames, bool include_hidden)
+{
+	for (u32 i = 0; i != ARRLEN(g_reg_mapgens); i++) {
+		if (include_hidden || g_reg_mapgens[i].is_user_visible)
+			mgnames->push_back(g_reg_mapgens[i].name);
+	}
 }
 
 
@@ -891,9 +997,9 @@ void MapgenParams::load(const Settings &settings)
 	}
 
 	delete sparams;
-	MapgenFactory *mgfactory = EmergeManager::getMapgenFactory(mg_name);
-	if (mgfactory) {
-		sparams = mgfactory->createMapgenParams();
+	MapgenType mgtype = Mapgen::getMapgenType(mg_name);
+	if (mgtype != MAPGEN_INVALID) {
+		sparams = Mapgen::createMapgenParams(mgtype);
 		sparams->readParams(&settings);
 	}
 }

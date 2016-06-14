@@ -62,6 +62,8 @@ public:
 	MapgenFractal(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	~MapgenFractal();
 
+	virtual MapgenType getType() const { return MAPGEN_FRACTAL; }
+
 	virtual void makeChunk(BlockMakeData *data);
 	int getSpawnLevelAtPoint(v2s16 p);
 	bool getFractalAtPoint(s16 x, s16 y, s16 z);
@@ -81,18 +83,6 @@ private:
 	float julia_z;
 	float julia_w;
 	Noise *noise_seabed;
-};
-
-struct MapgenFactoryFractal : public MapgenFactory {
-	Mapgen *createMapgen(int mgid, MapgenParams *params, EmergeManager *emerge)
-	{
-		return new MapgenFractal(mgid, params, emerge);
-	};
-
-	MapgenSpecificParams *createMapgenParams()
-	{
-		return new MapgenFractalParams();
-	};
 };
 
 #endif
