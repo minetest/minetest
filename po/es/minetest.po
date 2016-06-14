@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-05 16:13+0200\n"
-"PO-Revision-Date: 2016-05-10 18:21+0000\n"
-"Last-Translator: Diego Martínez <lkaezadl3@gmail.com>\n"
+"PO-Revision-Date: 2016-06-14 21:57+0000\n"
+"Last-Translator: Roberto Mengíbar Fernández <rroobbeerr@gmail.com>\n"
 "Language-Team: Spanish "
 "<https://hosted.weblate.org/projects/minetest/minetest/es/>\n"
 "Language: es\n"
@@ -49,11 +49,11 @@ msgstr "Cargando..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr "Desajuste con la versión del protocolo. "
+msgstr "La versión del protocolo no coincide. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr "El servidor hace respetar la versión $1 del protocolo "
+msgstr "El servidor utiliza el protocolo versión $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
@@ -103,7 +103,7 @@ msgid ""
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
 "Error al activar el mod \"$1\" por contener caracteres no permitidos. Solo "
-"los caracteres [a-z0-9_] estan permitidos."
+"los caracteres [a-z0-9_] están permitidos."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -257,7 +257,9 @@ msgstr "Mods"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr "Opcionalmente, el lacunaridad puede ser anexado con una coma líder."
+msgstr ""
+"Opcionalmente, el parámetro \"lacunarity\" puede ser anexado separándolo "
+"mediante una coma."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
@@ -1394,7 +1396,7 @@ msgstr "Rango de bloque activo"
 
 #: src/settings_translation_file.cpp
 msgid "Active object send range"
-msgstr "Alcance de objetos activos a enviar"
+msgstr "Rango de envío en objetos activos"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1437,7 +1439,7 @@ msgstr "Siempre volar y rápido"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
-msgstr "Gamma de oclusión de ambiente"
+msgstr "Oclusión ambiental gamma"
 
 #: src/settings_translation_file.cpp
 msgid "Amplifies the valleys"
@@ -1463,7 +1465,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-msgstr "Escala aproximada (X,Y,Z) en nodos, de los fractales"
+msgstr "Escala aproximada (X,Y,Z) del fractal en nodos."
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
@@ -2030,7 +2032,7 @@ msgstr "FPS (cuadros/s) en el menú de pausa"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
-msgstr ""
+msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
 msgid "Fall bobbing"
@@ -2221,11 +2223,11 @@ msgstr "Filtro de escala de IGU \"txr2img\""
 
 #: src/settings_translation_file.cpp
 msgid "Gamma"
-msgstr ""
+msgstr "Gamma"
 
 #: src/settings_translation_file.cpp
 msgid "General"
-msgstr ""
+msgstr "General"
 
 #: src/settings_translation_file.cpp
 msgid "Generate normalmaps"
@@ -2245,16 +2247,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
-msgstr ""
+msgstr "Gráficos"
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
-msgstr ""
+msgstr "Gravedad"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "HTTP Mods"
-msgstr "Mods"
+msgstr "HTTP Mods"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
@@ -2267,26 +2268,34 @@ msgid ""
 "-    log: mimic and log backtrace of deprecated call (default for debug).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
+"Manejo de las llamadas de la API LUA obsoletas:\n"
+"- legacy: (intenta)imita el antiguo comportamiento (por defecto para "
+"lanzamientos).\n"
+"- log: imita y guarda el seguimiento de las llamadas obsoletas (por defecto "
+"para depuración).\n"
+"- error: Cancela en el uso de llamadas obsoletas (sugerido para los "
+"desarrolladores de Mods)."
 
 #: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
-msgstr ""
+msgstr "Componente de altura del tamaño inicial de la ventana."
 
 #: src/settings_translation_file.cpp
 msgid "Height on which clouds are appearing."
-msgstr ""
+msgstr "Altura sobre la cual están apareciendo las nubes."
 
 #: src/settings_translation_file.cpp
 msgid "High-precision FPU"
-msgstr ""
+msgstr "Alta-precisión FPU"
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
 msgstr ""
+"Página de inicio del servidor, que se mostrará en la lista de servidores."
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers"
-msgstr ""
+msgstr "Profundidad para los ríos"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2298,33 +2307,36 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "How many blocks are flying in the wire simultaneously for the whole server."
-msgstr ""
+msgstr "Cantidad de bloques que flotan simultáneamente en todo el servidor."
 
 #: src/settings_translation_file.cpp
 msgid "How many blocks are flying in the wire simultaneously per client."
-msgstr ""
+msgstr "Cantidad de bloques que flotan simultáneamente por cliente."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "How much the server will wait before unloading unused mapblocks.\n"
 "Higher value is smoother, but will use more RAM."
 msgstr ""
+"Cuanto espera el servidor antes de descargar los bloques de mapa no "
+"utilizados.\n"
+"Con valores mayores es mas fluido, pero se utiliza mas RAM."
 
 #: src/settings_translation_file.cpp
 msgid "How wide to make rivers"
-msgstr ""
+msgstr "Ancho de los ríos"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6"
-msgstr ""
+msgstr "IPv6"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 server"
-msgstr ""
+msgstr "servidor IPv6"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 support."
-msgstr ""
+msgstr "soporte IPv6."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4116,9 +4128,8 @@ msgid "Waving water"
 msgstr "Oleaje en el agua"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving water height"
-msgstr "Oleaje en el agua"
+msgstr "Altura de las ondulaciones del agua"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
