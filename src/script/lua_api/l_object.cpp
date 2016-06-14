@@ -477,7 +477,7 @@ int ObjectRef::l_set_animation(lua_State *L)
 	bool frame_loop = true;
 	if (lua_isboolean(L, 5))
 		frame_loop = lua_toboolean(L, 5);
-	bool save_playback_pos = false;
+	bool save_playback_pos = true;
 	if (lua_isboolean(L, 6))
 		save_playback_pos = lua_toboolean(L, 6);
 	co->setAnimation(frames, frame_speed, frame_blend, frame_loop, save_playback_pos);

@@ -566,7 +566,7 @@ GenericCAO::GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
 		m_animation_speed(15),
 		m_animation_blend(0),
 		m_animation_loop(true),
-		m_animation_save_playback_pos(false),
+		m_animation_save_playback_pos(true),
 		m_bone_position(std::map<std::string, core::vector2d<v3f> >()),
 		m_attachment_bone(""),
 		m_attachment_position(v3f(0,0,0)),
