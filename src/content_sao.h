@@ -59,7 +59,7 @@ public:
 	s16 getHP() const;
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	ItemGroupList getArmorGroups();
-	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);
+	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop, bool save_playback_pos);
 	void getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop);
 	void setBonePosition(const std::string &bone, v3f position, v3f rotation);
 	void getBonePosition(const std::string &bone, v3f *position, v3f *rotation);
@@ -110,6 +110,7 @@ private:
 	float m_animation_speed;
 	float m_animation_blend;
 	bool m_animation_loop;
+	bool m_animation_save_playback_pos;
 	bool m_animation_sent;
 
 	std::map<std::string, core::vector2d<v3f> > m_bone_position;
@@ -202,7 +203,7 @@ public:
 	void setBreath(u16 breath);
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	ItemGroupList getArmorGroups();
-	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);
+	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop, bool save_playback_pos);
 	void getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop);
 	void setBonePosition(const std::string &bone, v3f position, v3f rotation);
 	void getBonePosition(const std::string &bone, v3f *position, v3f *rotation);
@@ -319,6 +320,7 @@ private:
 	float m_animation_speed;
 	float m_animation_blend;
 	bool m_animation_loop;
+	bool m_animation_save_playback_pos;
 	bool m_animation_sent;
 
 	std::map<std::string, core::vector2d<v3f> > m_bone_position; // Stores position and rotation for each bone name
