@@ -188,14 +188,26 @@ public:
 		m_breath = breath;
 	}
 
-	f32 getRadPitch()
+	// Deprecated
+	f32 getRadPitchDep()
 	{
 		return -1.0 * m_pitch * core::DEGTORAD;
 	}
 
-	f32 getRadYaw()
+	// Deprecated
+	f32 getRadYawDep()
 	{
 		return (m_yaw + 90.) * core::DEGTORAD;
+	}
+
+	f32 getRadPitch()
+	{
+		return m_pitch * core::DEGTORAD;
+	}
+
+	f32 getRadYaw()
+	{
+		return m_yaw * core::DEGTORAD;
 	}
 
 	const char *getName() const
