@@ -1016,15 +1016,49 @@ int ObjectRef::l_get_look_dir(lua_State *L)
 	Player *player = getplayer(ref);
 	if (player == NULL) return 0;
 	// Do it
-	float pitch = player->getRadPitch();
-	float yaw = player->getRadYaw();
+	float pitch = player->getRadPitchDep();
+	float yaw = player->getRadYawDep();
 	v3f v(cos(pitch)*cos(yaw), sin(pitch), cos(pitch)*sin(yaw));
 	push_v3f(L, v);
 	return 1;
 }
 
+// DEPRECATED
 // get_look_pitch(self)
 int ObjectRef::l_get_look_pitch(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	log_deprecated(L,
+		"Deprecated call to get_look_pitch, use get_look_vertical instead");
+
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL) return 0;
+	// Do it
+	lua_pushnumber(L, player->getRadPitchDep());
+	return 1;
+}
+
+// DEPRECATED
+// get_look_yaw(self)
+int ObjectRef::l_get_look_yaw(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	log_deprecated(L,
+		"Deprecated call to get_look_yaw, use get_look_horizontal instead");
+
+	ObjectRef *ref = checkobject(L, 1);
+	Player *player = getplayer(ref);
+	if (player == NULL) return 0;
+	// Do it
+	lua_pushnumber(L, player->getRadYawDep());
+	return 1;
+}
+
+// get_look_pitch2(self)
+int ObjectRef::l_get_look_vertical(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1035,8 +1069,8 @@ int ObjectRef::l_get_look_pitch(lua_State *L)
 	return 1;
 }
 
-// get_look_yaw(self)
-int ObjectRef::l_get_look_yaw(lua_State *L)
+// get_look_yaw2(self)
+int ObjectRef::l_get_look_horizontal(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1047,8 +1081,8 @@ int ObjectRef::l_get_look_yaw(lua_State *L)
 	return 1;
 }
 
-// set_look_pitch(self, radians)
-int ObjectRef::l_set_look_pitch(lua_State *L)
+// set_look_vertical(self, radians)
+int ObjectRef::l_set_look_vertical(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
@@ -1060,10 +1094,46 @@ int ObjectRef::l_set_look_pitch(lua_State *L)
 	return 1;
 }
 
+// set_look_horizontal(self, radians)
+int ObjectRef::l_set_look_horizontal(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	PlayerSAO* co = getplayersao(ref);
+	if (co == NULL) return 0;
+	float yaw = luaL_checknumber(L, 2) * core::RADTODEG;
+	// Do it
+	co->setYaw(yaw);
+	return 1;
+}
+
+// DEPRECATED
+// set_look_pitch(self, radians)
+int ObjectRef::l_set_look_pitch(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	log_deprecated(L,
+		"Deprecated call to set_look_pitch, use set_look_vertical instead.");
+
+	ObjectRef *ref = checkobject(L, 1);
+	PlayerSAO* co = getplayersao(ref);
+	if (co == NULL) return 0;
+	float pitch = luaL_checknumber(L, 2) * core::RADTODEG;
+	// Do it
+	co->setPitch(pitch);
+	return 1;
+}
+
+// DEPRECATED
 // set_look_yaw(self, radians)
 int ObjectRef::l_set_look_yaw(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
+
+	log_deprecated(L,
+		"Deprecated call to set_look_yaw, use set_look_horizontal instead.");
+
 	ObjectRef *ref = checkobject(L, 1);
 	PlayerSAO* co = getplayersao(ref);
 	if (co == NULL) return 0;
@@ -1754,6 +1824,10 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_look_dir),
 	luamethod(ObjectRef, get_look_pitch),
 	luamethod(ObjectRef, get_look_yaw),
+	luamethod(ObjectRef, get_look_vertical),
+	luamethod(ObjectRef, get_look_horizontal),
+	luamethod(ObjectRef, set_look_horizontal),
+	luamethod(ObjectRef, set_look_vertical),
 	luamethod(ObjectRef, set_look_yaw),
 	luamethod(ObjectRef, set_look_pitch),
 	luamethod(ObjectRef, get_breath),
