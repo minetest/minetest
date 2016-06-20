@@ -4298,23 +4298,12 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
 
 inline static const char *yawToDirectionString(int yaw)
 {
-	// NOTE: TODO: This can be done mathematically without the else/else-if
-	// cascade.
-
-	const char *player_direction;
+	static const char *direction[4] = {"North [+Z]", "West [-X]", "South [-Z]", "East [+X]"};
 
 	yaw = wrapDegrees_0_360(yaw);
+	yaw = (yaw + 45) % 360 / 90;
 
-	if (yaw >= 45 && yaw < 135)
-		player_direction = "West [-X]";
-	else if (yaw >= 135 && yaw < 225)
-		player_direction = "South [-Z]";
-	else if (yaw >= 225 && yaw < 315)
-		player_direction = "East [+X]";
-	else
-		player_direction = "North [+Z]";
-
-	return player_direction;
+	return direction[yaw];
 }
 
 
