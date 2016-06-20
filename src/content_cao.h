@@ -90,7 +90,7 @@ private:
 	int m_animation_speed;
 	int m_animation_blend;
 	bool m_animation_loop;
-	bool m_animation_save_playback_pos;
+	bool m_animation_restart;
 	std::map<std::string, core::vector2d<v3f> > m_bone_position; // stores position and rotation for each bone name
 	std::string m_attachment_bone;
 	v3f m_attachment_position;

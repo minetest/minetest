@@ -136,7 +136,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_animation_speed(0),
 	m_animation_blend(0),
 	m_animation_loop(true),
-	m_animation_save_playback_pos(true),
+	m_animation_restart(true),
 	m_animation_sent(false),
 	m_bone_position_sent(false),
 	m_attachment_parent_id(0),
@@ -338,7 +338,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	if(m_animation_sent == false){
 		m_animation_sent = true;
 		std::string str = gob_cmd_update_animation(
-			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop, m_animation_save_playback_pos);
+			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop, m_animation_restart);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push(aom);
@@ -381,7 +381,7 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 		os<<serializeLongString(getPropertyPacket()); // message 1
 		os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
 		os<<serializeLongString(gob_cmd_update_animation(
-			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop, m_animation_save_playback_pos)); // 3
+			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop, m_animation_restart)); // 3
 		for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii){
 			os<<serializeLongString(gob_cmd_update_bone_position((*ii).first, (*ii).second.X, (*ii).second.Y)); // m_bone_position.size
 		}
@@ -549,13 +549,13 @@ ItemGroupList LuaEntitySAO::getArmorGroups()
 }
 
 void LuaEntitySAO::setAnimation(v2f frame_range, float frame_speed, float frame_blend,
-	bool frame_loop, bool save_playback_pos)
+	bool frame_loop, bool restart)
 {
 	m_animation_range = frame_range;
 	m_animation_speed = frame_speed;
 	m_animation_blend = frame_blend;
 	m_animation_loop = frame_loop;
-	m_animation_save_playback_pos = save_playback_pos;
+	m_animation_restart = restart;
 	m_animation_sent = false;
 }
 
@@ -862,7 +862,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 		os<<serializeLongString(getPropertyPacket()); // message 1
 		os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
 		os<<serializeLongString(gob_cmd_update_animation(
-			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop, m_animation_save_playback_pos)); // 3
+			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop, m_animation_restart)); // 3
 		for(std::map<std::string, core::vector2d<v3f> >::const_iterator ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii){
 			os<<serializeLongString(gob_cmd_update_bone_position((*ii).first, (*ii).second.X, (*ii).second.Y)); // m_bone_position.size
 		}
@@ -1002,7 +1002,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	if(m_animation_sent == false){
 		m_animation_sent = true;
 		std::string str = gob_cmd_update_animation(
-			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop, m_animation_save_playback_pos);
+			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop, m_animation_restart);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push(aom);
@@ -1194,14 +1194,14 @@ ItemGroupList PlayerSAO::getArmorGroups()
 }
 
 void PlayerSAO::setAnimation(v2f frame_range, float frame_speed, float frame_blend,
-	bool frame_loop, bool save_playback_pos)
+	bool frame_loop, bool restart)
 {
 	// store these so they can be updated to clients
 	m_animation_range = frame_range;
 	m_animation_speed = frame_speed;
 	m_animation_blend = frame_blend;
 	m_animation_loop = frame_loop;
-	m_animation_save_playback_pos = save_playback_pos;
+	m_animation_restart = restart;
 	m_animation_sent = false;
 }
 

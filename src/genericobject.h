@@ -70,7 +70,7 @@ std::string gob_cmd_update_physics_override(float physics_override_speed,
 		float physics_override_jump, float physics_override_gravity, bool sneak, bool sneak_glitch);
 
 std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_blend,
-	bool frame_loop, bool save_playback_pos);
+	bool frame_loop, bool restart);
 
 std::string gob_cmd_update_bone_position(std::string bone, v3f position, v3f rotation);
 
