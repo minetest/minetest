@@ -84,7 +84,7 @@ MapgenFlatParams::MapgenFlatParams()
 	spflags          = 0;
 	ground_level     = 8;
 	large_cave_depth = -33;
-	cave_width       = 0.3;
+	cave_width       = 0.2;
 	lake_threshold   = -0.45;
 	lake_steepness   = 48.0;
 	hill_threshold   = 0.45;
@@ -92,8 +92,8 @@ MapgenFlatParams::MapgenFlatParams()
 
 	np_terrain      = NoiseParams(0, 1,   v3f(600, 600, 600), 7244,  5, 0.6, 2.0);
 	np_filler_depth = NoiseParams(0, 1.2, v3f(150, 150, 150), 261,   3, 0.7, 2.0);
-	np_cave1        = NoiseParams(0, 12,  v3f(96,  96,  96),  52534, 4, 0.5, 2.0);
-	np_cave2        = NoiseParams(0, 12,  v3f(96,  96,  96),  10325, 4, 0.5, 2.0);
+	np_cave1        = NoiseParams(0, 12,  v3f(61,  61,  61),  52534, 3, 0.5, 2.0);
+	np_cave2        = NoiseParams(0, 12,  v3f(67,  67,  67),  10325, 3, 0.5, 2.0);
 }
 
 
