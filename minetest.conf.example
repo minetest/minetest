@@ -1176,7 +1176,7 @@
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    type: float
-# mgv7_cave_width = 0.3
+# mgv7_cave_width = 0.2
 
 #    type: noise_params
 # mgv7_np_terrain_base = 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0
@@ -1206,10 +1206,10 @@
 # mgv7_np_ridge = 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
 
 #    type: noise_params
-# mgv7_np_cave1 = 0, 12, (100, 100, 100), 52534, 4, 0.5, 2.0
+# mgv7_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
 #    type: noise_params
-# mgv7_np_cave2 = 0, 12, (100, 100, 100), 10325, 4, 0.5, 2.0
+# mgv7_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 #### Mapgen flat
 
@@ -1230,7 +1230,7 @@
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    type: float
-# mgflat_cave_width = 0.3
+# mgflat_cave_width = 0.2
 
 #    Terrain noise threshold for lakes.
 #    Controls proportion of world area covered by lakes.
@@ -1262,16 +1262,16 @@
 # mgflat_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
 
 #    type: noise_params
-# mgflat_np_cave1 = 0, 12, (128, 128, 128), 52534, 4, 0.5, 2.0
+# mgflat_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
 #    type: noise_params
-# mgflat_np_cave2 = 0, 12, (128, 128, 128), 10325, 4, 0.5, 2.0
+# mgflat_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 #### Mapgen fractal
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    type: float
-# mgfractal_cave_width = 0.3
+# mgfractal_cave_width = 0.2
 
 #    Choice of 18 fractals from 9 formulas.
 #    1 = 4D "Roundy" mandelbrot set.
@@ -1346,10 +1346,10 @@
 # mgfractal_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
 
 #    type: noise_params
-# mgfractal_np_cave1 = 0, 12, (128, 128, 128), 52534, 4, 0.5, 2.0
+# mgfractal_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
 #    type: noise_params
-# mgfractal_np_cave2 = 0, 12, (128, 128, 128), 10325, 4, 0.5, 2.0
+# mgfractal_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 #### Mapgen Valleys
 
@@ -1396,17 +1396,17 @@
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    type: float
-# mgvalleys_cave_width = 0.3
+# mgvalleys_cave_width = 0.2
 
 ##### Noises
 
 #    Caves and tunnels form at the intersection of the two noises
 #    type: noise_params
-# mgvalleys_np_cave1 = 0, 12, (100, 100, 100), 52534, 4, 0.5, 2.0
+# mgvalleys_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
 #    Caves and tunnels form at the intersection of the two noises
 #    type: noise_params
-# mgvalleys_np_cave2 = 0, 12, (100, 100, 100), 10325, 4, 0.5, 2.0
+# mgvalleys_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 #    The depth of dirt or other filler
 #    type: noise_params
