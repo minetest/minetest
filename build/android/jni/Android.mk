@@ -169,6 +169,7 @@ LOCAL_SRC_FILES := \
 		jni/src/log.cpp                           \
 		jni/src/main.cpp                          \
 		jni/src/map.cpp                           \
+		jni/src/map_settings_manager.cpp          \
 		jni/src/mapblock.cpp                      \
 		jni/src/mapblock_mesh.cpp                 \
 		jni/src/mapgen.cpp                        \
@@ -238,6 +239,7 @@ LOCAL_SRC_FILES := \
 		jni/src/unittest/test_connection.cpp      \
 		jni/src/unittest/test_filepath.cpp        \
 		jni/src/unittest/test_inventory.cpp       \
+		jni/src/unittest/test_map_settings_manager.cpp \
 		jni/src/unittest/test_mapnode.cpp         \
 		jni/src/unittest/test_nodedef.cpp         \
 		jni/src/unittest/test_noderesolver.cpp    \

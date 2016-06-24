@@ -97,8 +97,16 @@ public:
 	u32 gen_notify_on;
 	std::set<u32> gen_notify_on_deco_ids;
 
-	// Map generation parameters
-	MapgenParams params;
+	// Parameters passed to mapgens owned by ServerMap
+	// TODO(hmmmm): Remove this after mapgen helper methods using them
+	// are moved to ServerMap
+	MapgenParams *mgparams;
+
+	// Hackish workaround:
+	// For now, EmergeManager must hold onto a ptr to the Map's setting manager
+	// since the Map can only be accessed through the Environment, and the
+	// Environment is not created until after script initialization.
+	MapSettingsManager *map_settings_mgr;
 
 	// Managers of various map generation-related components
 	BiomeManager *biomemgr;
@@ -110,8 +118,7 @@ public:
 	EmergeManager(IGameDef *gamedef);
 	~EmergeManager();
 
-	void loadMapgenParams();
-	void initMapgens();
+	bool initMapgens(MapgenParams *mgparams);
 
 	void startThreads();
 	void stopThreads();

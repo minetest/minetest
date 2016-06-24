@@ -600,24 +600,37 @@ int ModApiMapgen::l_get_mapgen_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	MapgenParams *params = &getServer(L)->getEmergeManager()->params;
+	log_deprecated(L, "get_mapgen_params is deprecated; "
+		"use get_mapgen_setting instead");
+
+	std::string value;
+
+	MapSettingsManager *settingsmgr =
+		getServer(L)->getEmergeManager()->map_settings_mgr;
 
 	lua_newtable(L);
 
-	lua_pushstring(L, params->mg_name.c_str());
+	settingsmgr->getMapSetting("mg_name", &value);
+	lua_pushstring(L, value.c_str());
 	lua_setfield(L, -2, "mgname");
 
-	lua_pushinteger(L, params->seed);
+	settingsmgr->getMapSetting("seed", &value);
+	std::istringstream ss(value);
+	u64 seed;
+	ss >> seed;
+	lua_pushinteger(L, seed);
 	lua_setfield(L, -2, "seed");
 
-	lua_pushinteger(L, params->water_level);
+	settingsmgr->getMapSetting("water_level", &value);
+	lua_pushinteger(L, stoi(value, -32768, 32767));
 	lua_setfield(L, -2, "water_level");
 
-	lua_pushinteger(L, params->chunksize);
+	settingsmgr->getMapSetting("chunksize", &value);
+	lua_pushinteger(L, stoi(value, -32768, 32767));
 	lua_setfield(L, -2, "chunksize");
 
-	std::string flagstr = writeFlagString(params->flags, flagdesc_mapgen, U32_MAX);
-	lua_pushstring(L, flagstr.c_str());
+	settingsmgr->getMapSetting("mg_flags", &value);
+	lua_pushstring(L, value.c_str());
 	lua_setfield(L, -2, "flags");
 
 	return 1;
@@ -630,44 +643,120 @@ int ModApiMapgen::l_set_mapgen_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
+	log_deprecated(L, "set_mapgen_params is deprecated; "
+		"use set_mapgen_setting instead");
+
 	if (!lua_istable(L, 1))
 		return 0;
 
-	EmergeManager *emerge = getServer(L)->getEmergeManager();
-	if (emerge->isRunning())
-		throw LuaError("Cannot set parameters while mapgen is running");
-
-	MapgenParams *params = &emerge->params;
-	u32 flags = 0, flagmask = 0;
+	MapSettingsManager *settingsmgr =
+		getServer(L)->getEmergeManager()->map_settings_mgr;
 
 	lua_getfield(L, 1, "mgname");
-	if (lua_isstring(L, -1)) {
-		params->mg_name = lua_tostring(L, -1);
-		delete params->sparams;
-		params->sparams = NULL;
-	}
+	if (lua_isstring(L, -1))
+		settingsmgr->setMapSetting("mg_name", lua_tostring(L, -1), true);
 
 	lua_getfield(L, 1, "seed");
 	if (lua_isnumber(L, -1))
-		params->seed = lua_tointeger(L, -1);
+		settingsmgr->setMapSetting("seed", lua_tostring(L, -1), true);
 
 	lua_getfield(L, 1, "water_level");
 	if (lua_isnumber(L, -1))
-		params->water_level = lua_tointeger(L, -1);
+		settingsmgr->setMapSetting("water_level", lua_tostring(L, -1), true);
 
 	lua_getfield(L, 1, "chunksize");
 	if (lua_isnumber(L, -1))
-		params->chunksize = lua_tointeger(L, -1);
+		settingsmgr->setMapSetting("chunksize", lua_tostring(L, -1), true);
 
 	warn_if_field_exists(L, 1, "flagmask",
 		"Deprecated: flags field now includes unset flags.");
-	lua_getfield(L, 1, "flagmask");
-	if (lua_isstring(L, -1))
-		params->flags &= ~readFlagString(lua_tostring(L, -1), flagdesc_mapgen, NULL);
 
-	if (getflagsfield(L, 1, "flags", flagdesc_mapgen, &flags, &flagmask)) {
-		params->flags &= ~flagmask;
-		params->flags |= flags;
+	lua_getfield(L, 1, "flags");
+	if (lua_isstring(L, -1))
+		settingsmgr->setMapSetting("mg_flags", lua_tostring(L, -1), true);
+
+	return 0;
+}
+
+// get_mapgen_setting(name)
+int ModApiMapgen::l_get_mapgen_setting(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	std::string value;
+	MapSettingsManager *settingsmgr =
+		getServer(L)->getEmergeManager()->map_settings_mgr;
+
+	const char *name = luaL_checkstring(L, 1);
+	if (!settingsmgr->getMapSetting(name, &value))
+		return 0;
+
+	lua_pushstring(L, value.c_str());
+	return 1;
+}
+
+// get_mapgen_setting_noiseparams(name)
+int ModApiMapgen::l_get_mapgen_setting_noiseparams(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	NoiseParams np;
+	MapSettingsManager *settingsmgr =
+		getServer(L)->getEmergeManager()->map_settings_mgr;
+
+	const char *name = luaL_checkstring(L, 1);
+	if (!settingsmgr->getMapSettingNoiseParams(name, &np))
+		return 0;
+
+	push_noiseparams(L, &np);
+	return 1;
+}
+
+// set_mapgen_setting(name, value, override_meta)
+// set mapgen config values
+int ModApiMapgen::l_set_mapgen_setting(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	MapSettingsManager *settingsmgr =
+		getServer(L)->getEmergeManager()->map_settings_mgr;
+
+	const char *name   = luaL_checkstring(L, 1);
+	const char *value  = luaL_checkstring(L, 2);
+	bool override_meta = lua_isboolean(L, 3) ? lua_toboolean(L, 3) : false;
+
+	if (!settingsmgr->setMapSetting(name, value, override_meta)) {
+		errorstream << "set_mapgen_setting: cannot set '"
+			<< name << "' after initialization" << std::endl;
+	}
+
+	return 0;
+}
+
+
+// set_mapgen_setting_noiseparams(name, noiseparams, set_default)
+// set mapgen config values for noise parameters
+int ModApiMapgen::l_set_mapgen_setting_noiseparams(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	MapSettingsManager *settingsmgr =
+		getServer(L)->getEmergeManager()->map_settings_mgr;
+
+	const char *name = luaL_checkstring(L, 1);
+
+	NoiseParams np;
+	if (!read_noiseparams(L, 2, &np)) {
+		errorstream << "set_mapgen_setting_noiseparams: cannot set '" << name
+			<< "'; invalid noiseparams table" << std::endl;
+		return 0;
+	}
+
+	bool override_meta = lua_isboolean(L, 3) ? lua_toboolean(L, 3) : false;
+
+	if (!settingsmgr->setMapSettingNoiseParams(name, &np, override_meta)) {
+		errorstream << "set_mapgen_setting_noiseparams: cannot set '"
+			<< name << "' after initialization" << std::endl;
 	}
 
 	return 0;
@@ -683,8 +772,11 @@ int ModApiMapgen::l_set_noiseparams(lua_State *L)
 	const char *name = luaL_checkstring(L, 1);
 
 	NoiseParams np;
-	if (!read_noiseparams(L, 2, &np))
+	if (!read_noiseparams(L, 2, &np)) {
+		errorstream << "set_noiseparams: cannot set '" << name
+			<< "'; invalid noiseparams table" << std::endl;
 		return 0;
+	}
 
 	bool set_default = lua_isboolean(L, 3) ? lua_toboolean(L, 3) : true;
 
@@ -1143,7 +1235,7 @@ int ModApiMapgen::l_generate_ores(lua_State *L)
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
 
 	Mapgen mg;
-	mg.seed = emerge->params.seed;
+	mg.seed = emerge->mgparams->seed;
 	mg.vm   = LuaVoxelManip::checkobject(L, 1)->vm;
 	mg.ndef = getServer(L)->getNodeDefManager();
 
@@ -1169,7 +1261,7 @@ int ModApiMapgen::l_generate_decorations(lua_State *L)
 	EmergeManager *emerge = getServer(L)->getEmergeManager();
 
 	Mapgen mg;
-	mg.seed = emerge->params.seed;
+	mg.seed = emerge->mgparams->seed;
 	mg.vm   = LuaVoxelManip::checkobject(L, 1)->vm;
 	mg.ndef = getServer(L)->getNodeDefManager();
 
@@ -1393,6 +1485,10 @@ void ModApiMapgen::Initialize(lua_State *L, int top)
 
 	API_FCT(get_mapgen_params);
 	API_FCT(set_mapgen_params);
+	API_FCT(get_mapgen_setting);
+	API_FCT(set_mapgen_setting);
+	API_FCT(get_mapgen_setting_noiseparams);
+	API_FCT(set_mapgen_setting_noiseparams);
 	API_FCT(set_noiseparams);
 	API_FCT(get_noiseparams);
 	API_FCT(set_gen_notify);

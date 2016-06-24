@@ -32,7 +32,7 @@ class BiomeManager;
 extern FlagDesc flagdesc_mapgen_flat[];
 
 
-struct MapgenFlatParams : public MapgenSpecificParams {
+struct MapgenFlatParams : public MapgenParams {
 	u32 spflags;
 	s16 ground_level;
 	s16 large_cave_depth;
@@ -55,7 +55,7 @@ struct MapgenFlatParams : public MapgenSpecificParams {
 
 class MapgenFlat : public MapgenBasic {
 public:
-	MapgenFlat(int mapgenid, MapgenParams *params, EmergeManager *emerge);
+	MapgenFlat(int mapgenid, MapgenFlatParams *params, EmergeManager *emerge);
 	~MapgenFlat();
 
 	virtual MapgenType getType() const { return MAPGEN_FLAT; }

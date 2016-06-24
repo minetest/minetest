@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapgen.h"
 
-struct MapgenSinglenodeParams : public MapgenSpecificParams {
+struct MapgenSinglenodeParams : public MapgenParams {
 	MapgenSinglenodeParams() {}
 	~MapgenSinglenodeParams() {}
 

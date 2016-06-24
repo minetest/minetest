@@ -2130,10 +2130,14 @@ void Map::removeNodeTimer(v3s16 p)
 */
 ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emerge):
 	Map(dout_server, gamedef),
+	settings_mgr(g_settings, savedir + DIR_DELIM + "map_meta.txt"),
 	m_emerge(emerge),
 	m_map_metadata_changed(true)
 {
 	verbosestream<<FUNCTION_NAME<<std::endl;
+
+	// Tell the EmergeManager about our MapSettingsManager
+	emerge->map_settings_mgr = &settings_mgr;
 
 	/*
 		Try to load map; if not found, create a new one.
@@ -2170,26 +2174,15 @@ ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emer
 			}
 			else
 			{
-				try{
-					// Load map metadata (seed, chunksize)
-					loadMapMeta();
-				}
-				catch(SettingNotFoundException &e){
-					infostream<<"ServerMap:  Some metadata not found."
-							  <<" Using default settings."<<std::endl;
-				}
-				catch(FileNotGoodException &e){
-					warningstream<<"Could not load map metadata"
-							//<<" Disabling chunk-based generator."
-							<<std::endl;
-					//m_chunksize = 0;
-				}
 
-				infostream<<"ServerMap: Successfully loaded map "
-						<<"metadata from "<<savedir
-						<<", assuming valid save directory."
-						<<" seed="<< m_emerge->params.seed <<"."
-						<<std::endl;
+				if (settings_mgr.loadMapMeta()) {
+					infostream << "ServerMap: Metadata loaded from "
+						<< savedir << std::endl;
+				} else {
+					infostream << "ServerMap: Metadata could not be loaded "
+						"from " << savedir << ", assuming valid save "
+						"directory." << std::endl;
+				}
 
 				m_map_saving_enabled = true;
 				// Map loaded, not creating new one
@@ -2259,19 +2252,26 @@ ServerMap::~ServerMap()
 #endif
 }
 
+MapgenParams *ServerMap::getMapgenParams()
+{
+	// getMapgenParams() should only ever be called after Server is initialized
+	assert(settings_mgr.mapgen_params != NULL);
+	return settings_mgr.mapgen_params;
+}
+
 u64 ServerMap::getSeed()
 {
-	return m_emerge->params.seed;
+	return getMapgenParams()->seed;
 }
 
 s16 ServerMap::getWaterLevel()
 {
-	return m_emerge->params.water_level;
+	return getMapgenParams()->water_level;
 }
 
 bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
 {
-	s16 csize = m_emerge->params.chunksize;
+	s16 csize = getMapgenParams()->chunksize;
 	v3s16 bpmin = EmergeManager::getContainingChunk(blockpos, csize);
 	v3s16 bpmax = bpmin + v3s16(1, 1, 1) * (csize - 1);
 
@@ -2287,7 +2287,7 @@ bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
 		blockpos_over_limit(full_bpmax))
 		return false;
 
-	data->seed = m_emerge->params.seed;
+	data->seed = getSeed();
 	data->blockpos_min = bpmin;
 	data->blockpos_max = bpmax;
 	data->blockpos_requested = blockpos;
@@ -2905,8 +2905,9 @@ void ServerMap::save(ModifiedState save_level)
 		infostream<<"ServerMap: Saving whole map, this can take time."
 				<<std::endl;
 
-	if(m_map_metadata_changed || save_level == MOD_STATE_CLEAN) {
-		saveMapMeta();
+	if (m_map_metadata_changed || save_level == MOD_STATE_CLEAN) {
+		if (settings_mgr.saveMapMeta())
+			m_map_metadata_changed = false;
 	}
 
 	// Profile modified reasons
@@ -3003,55 +3004,6 @@ void ServerMap::listAllLoadedBlocks(std::vector<v3s16> &dst)
 			dst.push_back(p);
 		}
 	}
-}
-
-void ServerMap::saveMapMeta()
-{
-	DSTACK(FUNCTION_NAME);
-
-	createDirs(m_savedir);
-
-	std::string fullpath = m_savedir + DIR_DELIM + "map_meta.txt";
-	std::ostringstream oss(std::ios_base::binary);
-	Settings conf;
-
-	m_emerge->params.save(conf);
-	conf.writeLines(oss);
-
-	oss << "[end_of_params]\n";
-
-	if(!fs::safeWriteToFile(fullpath, oss.str())) {
-		errorstream << "ServerMap::saveMapMeta(): "
-				<< "could not write " << fullpath << std::endl;
-		throw FileNotGoodException("Cannot save chunk metadata");
-	}
-
-	m_map_metadata_changed = false;
-}
-
-void ServerMap::loadMapMeta()
-{
-	DSTACK(FUNCTION_NAME);
-
-	Settings conf;
-	std::string fullpath = m_savedir + DIR_DELIM + "map_meta.txt";
-
-	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
-	if (!is.good()) {
-		errorstream << "ServerMap::loadMapMeta(): "
-			"could not open " << fullpath << std::endl;
-		throw FileNotGoodException("Cannot open map metadata");
-	}
-
-	if (!conf.parseConfigLines(is, "[end_of_params]")) {
-		throw SerializationError("ServerMap::loadMapMeta(): "
-				"[end_of_params] not found!");
-	}
-
-	m_emerge->params.load(conf);
-
-	verbosestream << "ServerMap::loadMapMeta(): seed="
-		<< m_emerge->params.seed << std::endl;
 }
 
 void ServerMap::saveSectorMeta(ServerMapSector *sector)

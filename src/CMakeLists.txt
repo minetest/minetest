@@ -414,6 +414,7 @@ set(common_SRCS
 	light.cpp
 	log.cpp
 	map.cpp
+	map_settings_manager.cpp
 	mapblock.cpp
 	mapgen.cpp
 	mapgen_flat.cpp

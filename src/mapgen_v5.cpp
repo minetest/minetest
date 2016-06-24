@@ -45,25 +45,23 @@ FlagDesc flagdesc_mapgen_v5[] = {
 };
 
 
-MapgenV5::MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge)
+MapgenV5::MapgenV5(int mapgenid, MapgenV5Params *params, EmergeManager *emerge)
 	: MapgenBasic(mapgenid, params, emerge)
 {
-	MapgenV5Params *sp = (MapgenV5Params *)params->sparams;
-
-	this->spflags    = sp->spflags;
-	this->cave_width = sp->cave_width;
+	this->spflags    = params->spflags;
+	this->cave_width = params->cave_width;
 
 	// Terrain noise
-	noise_filler_depth = new Noise(&sp->np_filler_depth, seed, csize.X, csize.Z);
-	noise_factor       = new Noise(&sp->np_factor,       seed, csize.X, csize.Z);
-	noise_height       = new Noise(&sp->np_height,       seed, csize.X, csize.Z);
+	noise_filler_depth = new Noise(&params->np_filler_depth, seed, csize.X, csize.Z);
+	noise_factor       = new Noise(&params->np_factor,       seed, csize.X, csize.Z);
+	noise_height       = new Noise(&params->np_height,       seed, csize.X, csize.Z);
 
 	// 3D terrain noise
 	// 1-up 1-down overgeneration
-	noise_ground = new Noise(&sp->np_ground, seed, csize.X, csize.Y + 2, csize.Z);
+	noise_ground = new Noise(&params->np_ground, seed, csize.X, csize.Y + 2, csize.Z);
 
-	MapgenBasic::np_cave1 = sp->np_cave1;
-	MapgenBasic::np_cave2 = sp->np_cave2;
+	MapgenBasic::np_cave1 = params->np_cave1;
+	MapgenBasic::np_cave2 = params->np_cave2;
 }
 
 

@@ -176,26 +176,26 @@ Mapgen *Mapgen::createMapgen(MapgenType mgtype, int mgid,
 {
 	switch (mgtype) {
 	case MAPGEN_FLAT:
-		return new MapgenFlat(mgid, params, emerge);
+		return new MapgenFlat(mgid, (MapgenFlatParams *)params, emerge);
 	case MAPGEN_FRACTAL:
-		return new MapgenFractal(mgid, params, emerge);
+		return new MapgenFractal(mgid, (MapgenFractalParams *)params, emerge);
 	case MAPGEN_SINGLENODE:
-		return new MapgenSinglenode(mgid, params, emerge);
+		return new MapgenSinglenode(mgid, (MapgenSinglenodeParams *)params, emerge);
 	case MAPGEN_V5:
-		return new MapgenV5(mgid, params, emerge);
+		return new MapgenV5(mgid, (MapgenV5Params *)params, emerge);
 	case MAPGEN_V6:
-		return new MapgenV6(mgid, params, emerge);
+		return new MapgenV6(mgid, (MapgenV6Params *)params, emerge);
 	case MAPGEN_V7:
-		return new MapgenV7(mgid, params, emerge);
+		return new MapgenV7(mgid, (MapgenV7Params *)params, emerge);
 	case MAPGEN_VALLEYS:
-		return new MapgenValleys(mgid, params, emerge);
+		return new MapgenValleys(mgid, (MapgenValleysParams *)params, emerge);
 	default:
 		return NULL;
 	}
 }
 
 
-MapgenSpecificParams *Mapgen::createMapgenParams(MapgenType mgtype)
+MapgenParams *Mapgen::createMapgenParams(MapgenType mgtype)
 {
 	switch (mgtype) {
 	case MAPGEN_FLAT:
@@ -970,52 +970,46 @@ void GenerateNotifier::getEvents(
 MapgenParams::~MapgenParams()
 {
 	delete bparams;
-	delete sparams;
 }
 
 
-void MapgenParams::load(const Settings &settings)
+void MapgenParams::readParams(const Settings *settings)
 {
 	std::string seed_str;
-	const char *seed_name = (&settings == g_settings) ? "fixed_map_seed" : "seed";
+	const char *seed_name = (settings == g_settings) ? "fixed_map_seed" : "seed";
 
-	if (settings.getNoEx(seed_name, seed_str) && !seed_str.empty())
-		seed = read_seed(seed_str.c_str());
-	else
-		myrand_bytes(&seed, sizeof(seed));
+	if (settings->getNoEx(seed_name, seed_str)) {
+		if (!seed_str.empty())
+			seed = read_seed(seed_str.c_str());
+		else
+			myrand_bytes(&seed, sizeof(seed));
+	}
 
-	settings.getNoEx("mg_name", mg_name);
-	settings.getS16NoEx("water_level", water_level);
-	settings.getS16NoEx("chunksize", chunksize);
-	settings.getFlagStrNoEx("mg_flags", flags, flagdesc_mapgen);
+	std::string mg_name;
+	if (settings->getNoEx("mg_name", mg_name))
+		this->mgtype = Mapgen::getMapgenType(mg_name);
+
+	settings->getS16NoEx("water_level", water_level);
+	settings->getS16NoEx("chunksize", chunksize);
+	settings->getFlagStrNoEx("mg_flags", flags, flagdesc_mapgen);
 
 	delete bparams;
 	bparams = BiomeManager::createBiomeParams(BIOMEGEN_ORIGINAL);
 	if (bparams) {
-		bparams->readParams(&settings);
+		bparams->readParams(settings);
 		bparams->seed = seed;
-	}
-
-	delete sparams;
-	MapgenType mgtype = Mapgen::getMapgenType(mg_name);
-	if (mgtype != MAPGEN_INVALID) {
-		sparams = Mapgen::createMapgenParams(mgtype);
-		sparams->readParams(&settings);
 	}
 }
 
 
-void MapgenParams::save(Settings &settings) const
+void MapgenParams::writeParams(Settings *settings) const
 {
-	settings.set("mg_name", mg_name);
-	settings.setU64("seed", seed);
-	settings.setS16("water_level", water_level);
-	settings.setS16("chunksize", chunksize);
-	settings.setFlagStr("mg_flags", flags, flagdesc_mapgen, U32_MAX);
+	settings->set("mg_name", Mapgen::getMapgenName(mgtype));
+	settings->setU64("seed", seed);
+	settings->setS16("water_level", water_level);
+	settings->setS16("chunksize", chunksize);
+	settings->setFlagStr("mg_flags", flags, flagdesc_mapgen, U32_MAX);
 
 	if (bparams)
-		bparams->writeParams(&settings);
-
-	if (sparams)
-		sparams->writeParams(&settings);
+		bparams->writeParams(settings);
 }

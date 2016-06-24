@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modifiedstate.h"
 #include "util/container.h"
 #include "nodetimer.h"
+#include "map_settings_manager.h"
 
 class Settings;
 class Database;
@@ -46,8 +47,6 @@ class IRollbackManager;
 class EmergeManager;
 class ServerEnvironment;
 struct BlockMakeData;
-struct MapgenParams;
-
 
 /*
 	MapEditEvent
@@ -463,9 +462,8 @@ public:
 	void save(ModifiedState save_level);
 	void listAllLoadableBlocks(std::vector<v3s16> &dst);
 	void listAllLoadedBlocks(std::vector<v3s16> &dst);
-	// Saves map seed and possibly other stuff
-	void saveMapMeta();
-	void loadMapMeta();
+
+	MapgenParams *getMapgenParams();
 
 	/*void saveChunkMeta();
 	void loadChunkMeta();*/
@@ -505,6 +503,8 @@ public:
 
 	u64 getSeed();
 	s16 getWaterLevel();
+
+	MapSettingsManager settings_mgr;
 
 private:
 	// Emerge manager

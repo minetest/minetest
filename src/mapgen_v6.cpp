@@ -53,7 +53,7 @@ FlagDesc flagdesc_mapgen_v6[] = {
 /////////////////////////////////////////////////////////////////////////////
 
 
-MapgenV6::MapgenV6(int mapgenid, MapgenParams *params, EmergeManager *emerge)
+MapgenV6::MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge)
 	: Mapgen(mapgenid, params, emerge)
 {
 	this->m_emerge = emerge;
@@ -61,26 +61,25 @@ MapgenV6::MapgenV6(int mapgenid, MapgenParams *params, EmergeManager *emerge)
 
 	this->heightmap = new s16[csize.X * csize.Z];
 
-	MapgenV6Params *sp = (MapgenV6Params *)params->sparams;
-	this->spflags     = sp->spflags;
-	this->freq_desert = sp->freq_desert;
-	this->freq_beach  = sp->freq_beach;
+	this->spflags     = params->spflags;
+	this->freq_desert = params->freq_desert;
+	this->freq_beach  = params->freq_beach;
 
-	np_cave        = &sp->np_cave;
-	np_humidity    = &sp->np_humidity;
-	np_trees       = &sp->np_trees;
-	np_apple_trees = &sp->np_apple_trees;
+	np_cave        = &params->np_cave;
+	np_humidity    = &params->np_humidity;
+	np_trees       = &params->np_trees;
+	np_apple_trees = &params->np_apple_trees;
 
 	//// Create noise objects
-	noise_terrain_base   = new Noise(&sp->np_terrain_base,   seed, csize.X, csize.Y);
-	noise_terrain_higher = new Noise(&sp->np_terrain_higher, seed, csize.X, csize.Y);
-	noise_steepness      = new Noise(&sp->np_steepness,      seed, csize.X, csize.Y);
-	noise_height_select  = new Noise(&sp->np_height_select,  seed, csize.X, csize.Y);
-	noise_mud            = new Noise(&sp->np_mud,            seed, csize.X, csize.Y);
-	noise_beach          = new Noise(&sp->np_beach,          seed, csize.X, csize.Y);
-	noise_biome          = new Noise(&sp->np_biome,          seed,
+	noise_terrain_base   = new Noise(&params->np_terrain_base,   seed, csize.X, csize.Y);
+	noise_terrain_higher = new Noise(&params->np_terrain_higher, seed, csize.X, csize.Y);
+	noise_steepness      = new Noise(&params->np_steepness,      seed, csize.X, csize.Y);
+	noise_height_select  = new Noise(&params->np_height_select,  seed, csize.X, csize.Y);
+	noise_mud            = new Noise(&params->np_mud,            seed, csize.X, csize.Y);
+	noise_beach          = new Noise(&params->np_beach,          seed, csize.X, csize.Y);
+	noise_biome          = new Noise(&params->np_biome,          seed,
 			csize.X + 2 * MAP_BLOCKSIZE, csize.Y + 2 * MAP_BLOCKSIZE);
-	noise_humidity       = new Noise(&sp->np_humidity,       seed,
+	noise_humidity       = new Noise(&params->np_humidity,       seed,
 			csize.X + 2 * MAP_BLOCKSIZE, csize.Y + 2 * MAP_BLOCKSIZE);
 
 	//// Resolve nodes to be used

@@ -49,26 +49,24 @@ FlagDesc flagdesc_mapgen_flat[] = {
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-MapgenFlat::MapgenFlat(int mapgenid, MapgenParams *params, EmergeManager *emerge)
+MapgenFlat::MapgenFlat(int mapgenid, MapgenFlatParams *params, EmergeManager *emerge)
 	: MapgenBasic(mapgenid, params, emerge)
 {
-	MapgenFlatParams *sp = (MapgenFlatParams *)params->sparams;
-
-	this->spflags          = sp->spflags;
-	this->ground_level     = sp->ground_level;
-	this->large_cave_depth = sp->large_cave_depth;
-	this->cave_width       = sp->cave_width;
-	this->lake_threshold   = sp->lake_threshold;
-	this->lake_steepness   = sp->lake_steepness;
-	this->hill_threshold   = sp->hill_threshold;
-	this->hill_steepness   = sp->hill_steepness;
+	this->spflags          = params->spflags;
+	this->ground_level     = params->ground_level;
+	this->large_cave_depth = params->large_cave_depth;
+	this->cave_width       = params->cave_width;
+	this->lake_threshold   = params->lake_threshold;
+	this->lake_steepness   = params->lake_steepness;
+	this->hill_threshold   = params->hill_threshold;
+	this->hill_steepness   = params->hill_steepness;
 
 	//// 2D noise
-	noise_terrain      = new Noise(&sp->np_terrain,      seed, csize.X, csize.Z);
-	noise_filler_depth = new Noise(&sp->np_filler_depth, seed, csize.X, csize.Z);
+	noise_terrain      = new Noise(&params->np_terrain,      seed, csize.X, csize.Z);
+	noise_filler_depth = new Noise(&params->np_filler_depth, seed, csize.X, csize.Z);
 
-	MapgenBasic::np_cave1 = sp->np_cave1;
-	MapgenBasic::np_cave2 = sp->np_cave2;
+	MapgenBasic::np_cave1 = params->np_cave1;
+	MapgenBasic::np_cave2 = params->np_cave2;
 }
 
 

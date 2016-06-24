@@ -119,37 +119,29 @@ enum MapgenType {
 	MAPGEN_INVALID,
 };
 
-struct MapgenSpecificParams {
-	virtual void readParams(const Settings *settings) = 0;
-	virtual void writeParams(Settings *settings) const = 0;
-	virtual ~MapgenSpecificParams() {}
-};
-
 struct MapgenParams {
-	std::string mg_name;
+	MapgenType mgtype;
 	s16 chunksize;
 	u64 seed;
 	s16 water_level;
 	u32 flags;
 
 	BiomeParams *bparams;
-	MapgenSpecificParams *sparams;
 
 	MapgenParams() :
-		mg_name(MAPGEN_DEFAULT_NAME),
+		mgtype(MAPGEN_DEFAULT),
 		chunksize(5),
 		seed(0),
 		water_level(1),
 		flags(MG_CAVES | MG_LIGHT | MG_DECORATIONS),
-		bparams(NULL),
-		sparams(NULL)
+		bparams(NULL)
 	{
 	}
 
 	virtual ~MapgenParams();
 
-	void load(const Settings &settings);
-	void save(Settings &settings) const;
+	virtual void readParams(const Settings *settings);
+	virtual void writeParams(Settings *settings) const;
 };
 
 
@@ -217,7 +209,7 @@ public:
 	static const char *getMapgenName(MapgenType mgtype);
 	static Mapgen *createMapgen(MapgenType mgtype, int mgid,
 		MapgenParams *params, EmergeManager *emerge);
-	static MapgenSpecificParams *createMapgenParams(MapgenType mgtype);
+	static MapgenParams *createMapgenParams(MapgenType mgtype);
 	static void getMapgenNames(std::vector<const char *> *mgnames, bool include_hidden);
 
 private:

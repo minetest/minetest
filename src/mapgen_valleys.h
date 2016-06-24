@@ -46,7 +46,7 @@ class BiomeGenOriginal;
 //extern Profiler *mapgen_profiler;
 
 
-struct MapgenValleysParams : public MapgenSpecificParams {
+struct MapgenValleysParams : public MapgenParams {
 	u32 spflags;
 	s16 large_cave_depth;
 	s16 massive_cave_depth;
@@ -88,7 +88,7 @@ struct TerrainNoise {
 class MapgenValleys : public MapgenBasic {
 public:
 
-	MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *emerge);
+	MapgenValleys(int mapgenid, MapgenValleysParams *params, EmergeManager *emerge);
 	~MapgenValleys();
 
 	virtual MapgenType getType() const { return MAPGEN_VALLEYS; }

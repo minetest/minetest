@@ -156,37 +156,19 @@ EmergeManager::~EmergeManager()
 }
 
 
-void EmergeManager::loadMapgenParams()
-{
-	params.load(*g_settings);
-}
-
-
-void EmergeManager::initMapgens()
+bool EmergeManager::initMapgens(MapgenParams *params)
 {
 	if (m_mapgens.size())
-		return;
+		return false;
 
-	MapgenType mgtype = Mapgen::getMapgenType(params.mg_name);
-	if (mgtype == MAPGEN_INVALID) {
-		const char *default_mapgen_name = Mapgen::getMapgenName(MAPGEN_DEFAULT);
-		errorstream << "EmergeManager: mapgen " << params.mg_name <<
-			" not registered; falling back to " <<
-			default_mapgen_name << std::endl;
-
-		params.mg_name = default_mapgen_name;
-		mgtype = MAPGEN_DEFAULT;
-	}
-
-	if (!params.sparams) {
-		params.sparams = Mapgen::createMapgenParams(mgtype);
-		params.sparams->readParams(g_settings);
-	}
+	this->mgparams = params;
 
 	for (u32 i = 0; i != m_threads.size(); i++) {
-		Mapgen *mg = Mapgen::createMapgen(mgtype, i, &params, this);
+		Mapgen *mg = Mapgen::createMapgen(params->mgtype, i, params, this);
 		m_mapgens.push_back(mg);
 	}
+
+	return true;
 }
 
 
@@ -288,12 +270,14 @@ bool EmergeManager::enqueueBlockEmergeEx(
 // Mapgen-related helper functions
 //
 
+
+// TODO(hmmmm): Move this to ServerMap
 v3s16 EmergeManager::getContainingChunk(v3s16 blockpos)
 {
-	return getContainingChunk(blockpos, params.chunksize);
+	return getContainingChunk(blockpos, mgparams->chunksize);
 }
 
-
+// TODO(hmmmm): Move this to ServerMap
 v3s16 EmergeManager::getContainingChunk(v3s16 blockpos, s16 chunksize)
 {
 	s16 coff = -chunksize / 2;
@@ -327,7 +311,7 @@ int EmergeManager::getGroundLevelAtPoint(v2s16 p)
 	return m_mapgens[0]->getGroundLevelAtPoint(p);
 }
 
-
+// TODO(hmmmm): Move this to ServerMap
 bool EmergeManager::isBlockUnderground(v3s16 blockpos)
 {
 #if 0
@@ -338,7 +322,7 @@ bool EmergeManager::isBlockUnderground(v3s16 blockpos)
 #endif
 
 	// Use a simple heuristic; the above method is wildly inaccurate anyway.
-	return blockpos.Y * (MAP_BLOCKSIZE + 1) <= params.water_level;
+	return blockpos.Y * (MAP_BLOCKSIZE + 1) <= mgparams->water_level;
 }
 
 bool EmergeManager::pushBlockEmergeData(
