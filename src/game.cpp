@@ -4296,7 +4296,6 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
 
 inline static const char *yawToDirectionString(int yaw)
 {
-	const char *player_direction;
 	const char *direction[4] = {"North [+Z]", "West [-X]", "South [-Z]", "East [+X]"};
 
 	yaw = wrapDegrees_0_360(yaw);
