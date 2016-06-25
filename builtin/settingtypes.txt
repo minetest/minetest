@@ -954,7 +954,7 @@ mgv6_np_apple_trees (Mapgen v6 apple trees noise parameters) noise_params 0, 1, 
 mgv7_spflags (Mapgen v7 flags) flags mountains,ridges mountains,ridges,nomountains,noridges
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
-mgv7_cave_width (Mapgen v7 cave width) float 0.3
+mgv7_cave_width (Mapgen v7 cave width) float 0.2
 
 mgv7_np_terrain_base (Mapgen v7 terrain base noise parameters) noise_params 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0
 mgv7_np_terrain_alt (Mapgen v7 terrain altitude noise parameters) noise_params 4, 25, (600, 600, 600), 5934, 5, 0.6, 2.0
@@ -965,8 +965,8 @@ mgv7_np_mount_height (Mapgen v7 mount height noise parameters) noise_params 256,
 mgv7_np_ridge_uwater (Mapgen v7 ridge water noise parameters) noise_params 0, 1, (1000, 1000, 1000), 85039, 5, 0.6, 2.0
 mgv7_np_mountain (Mapgen v7 mountain noise parameters) noise_params -0.6, 1, (250, 350, 250), 5333, 5, 0.63, 2.0
 mgv7_np_ridge (Mapgen v7 ridge noise parameters) noise_params 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
-mgv7_np_cave1 (Mapgen v7 cave1 noise parameters) noise_params 0, 12, (100, 100, 100), 52534, 4, 0.5, 2.0
-mgv7_np_cave2 (Mapgen v7 cave2 noise parameters) noise_params 0, 12, (100, 100, 100), 10325, 4, 0.5, 2.0
+mgv7_np_cave1 (Mapgen v7 cave1 noise parameters) noise_params 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+mgv7_np_cave2 (Mapgen v7 cave2 noise parameters) noise_params 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 [***Mapgen flat]
 
@@ -983,7 +983,7 @@ mgflat_ground_level (Mapgen flat ground level) int 8
 mgflat_large_cave_depth (Mapgen flat large cave depth) int -33
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
-mgflat_cave_width (Mapgen flat cave width) float 0.3
+mgflat_cave_width (Mapgen flat cave width) float 0.2
 
 #    Terrain noise threshold for lakes.
 #    Controls proportion of world area covered by lakes.
@@ -1007,13 +1007,13 @@ mgflat_hill_steepness (Mapgen flat hill steepness) float 64.0
 mgflat_np_terrain (Mapgen flat terrain noise parameters) noise_params 0, 1, (600, 600, 600), 7244, 5, 0.6, 2.0
 
 mgflat_np_filler_depth (Mapgen flat filler depth noise parameters) noise_params 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
-mgflat_np_cave1 (Mapgen flat cave1 noise parameters) noise_params 0, 12, (128, 128, 128), 52534, 4, 0.5, 2.0
-mgflat_np_cave2 (Mapgen flat cave2 noise parameters) noise_params 0, 12, (128, 128, 128), 10325, 4, 0.5, 2.0
+mgflat_np_cave1 (Mapgen flat cave1 noise parameters) noise_params 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+mgflat_np_cave2 (Mapgen flat cave2 noise parameters) noise_params 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 [***Mapgen fractal]
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
-mgfractal_cave_width (Mapgen fractal cave width) float 0.3
+mgfractal_cave_width (Mapgen fractal cave width) float 0.2
 
 #    Choice of 18 fractals from 9 formulas.
 #    1 = 4D "Roundy" mandelbrot set.
@@ -1074,8 +1074,8 @@ mgfractal_julia_w (Mapgen fractal julia w) float 0.33
 
 mgfractal_np_seabed (Mapgen fractal seabed noise parameters) noise_params -14, 9, (600, 600, 600), 41900, 5, 0.6, 2.0
 mgfractal_np_filler_depth (Mapgen fractal filler depth noise parameters) noise_params 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
-mgfractal_np_cave1 (Mapgen fractal cave1 noise parameters) noise_params 0, 12, (128, 128, 128), 52534, 4, 0.5, 2.0
-mgfractal_np_cave2 (Mapgen fractal cave2 noise parameters) noise_params 0, 12, (128, 128, 128), 10325, 4, 0.5, 2.0
+mgfractal_np_cave1 (Mapgen fractal cave1 noise parameters) noise_params 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+mgfractal_np_cave2 (Mapgen fractal cave2 noise parameters) noise_params 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 # Mapgen Valleys parameters
 [***Mapgen Valleys]
@@ -1115,16 +1115,16 @@ mgvalleys_river_size (River Size) int 5
 mgvalleys_water_features (Water Features) int 0
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
-mgvalleys_cave_width (Cave width) float 0.3
+mgvalleys_cave_width (Cave width) float 0.2
 
 # Noise parameters
 [****Noises]
 
 # Caves and tunnels form at the intersection of the two noises
-mgvalleys_np_cave1 (Cave noise #1) noise_params 0, 12, (100, 100, 100), 52534, 4, 0.5, 2.0
+mgvalleys_np_cave1 (Cave noise #1) noise_params 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
 # Caves and tunnels form at the intersection of the two noises
-mgvalleys_np_cave2 (Cave noise #2) noise_params 0, 12, (100, 100, 100), 10325, 4, 0.5, 2.0
+mgvalleys_np_cave2 (Cave noise #2) noise_params 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 # The depth of dirt or other filler
 mgvalleys_np_filler_depth (Filler Depth) noise_params 0, 1.2, (256, 256, 256), 1605, 3, 0.5, 2.0
