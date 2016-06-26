@@ -963,20 +963,24 @@ public:
 
 	virtual bool clearCraftRecipesByOutput(const CraftOutput &output, IGameDef *gamedef)
 	{
-		std::map<std::string, std::vector<CraftDefinition*> >::iterator vec_iter = m_output_craft_definitions.find(output.item);
+		std::map<std::string, std::vector<CraftDefinition*> >::iterator vec_iter = 
+			m_output_craft_definitions.find(output.item);
 
 		if (vec_iter == m_output_craft_definitions.end())
 			return false;
 
 		std::vector<CraftDefinition*> &vec = vec_iter->second;
 		for (std::vector<CraftDefinition*>::iterator i = vec.begin();
-			i != vec.end(); ++i) {
+				i != vec.end(); ++i) {
 			CraftDefinition *def = *i;
-			std::vector<CraftDefinition*> &unhashed_inputs_vec = m_craft_defs[(int) CRAFT_HASH_TYPE_UNHASHED][0]; // Recipes are not yet hashed at this point
+			// Recipes are not yet hashed at this point
+			std::vector<CraftDefinition*> &unhashed_inputs_vec = m_craft_defs[(int) CRAFT_HASH_TYPE_UNHASHED][0]; 
 			std::vector<CraftDefinition*> new_vec_by_input;
-			new_vec_by_input.reserve(unhashed_inputs_vec.size()); // We will preallocate necessary memory addresses, so we don't need to reallocate them later. This would save us some performance.
+			/* We will preallocate necessary memory addresses, so we don't need to reallocate them later. 
+				This would save us some performance. */
+			new_vec_by_input.reserve(unhashed_inputs_vec.size()); 
 			for (std::vector<CraftDefinition*>::iterator i2 = unhashed_inputs_vec.begin();
-				i2 != unhashed_inputs_vec.end(); ++i2) {
+					i2 != unhashed_inputs_vec.end(); ++i2) {
 				if (def != *i2) {
 					new_vec_by_input.push_back(*i2);
 				}
@@ -987,7 +991,8 @@ public:
 		return true;
 	}
 
-	virtual bool clearCraftRecipesByInput(CraftMethod craft_method, unsigned int craft_grid_width, const std::vector<std::string> &recipe, IGameDef *gamedef)
+	virtual bool clearCraftRecipesByInput(CraftMethod craft_method, unsigned int craft_grid_width, 
+		const std::vector<std::string> &recipe, IGameDef *gamedef)
 	{
 		bool all_empty = true;
 		for (std::vector<std::string>::size_type i = 0;
@@ -1001,14 +1006,15 @@ public:
 			return false;
 
 		CraftInput input(craft_method, craft_grid_width, craftGetItems(recipe, gamedef));
-
-		std::vector<CraftDefinition*> &unhashed_inputs_vec = m_craft_defs[(int) CRAFT_HASH_TYPE_UNHASHED][0]; // Recipes are not yet hashed at this point
+		// Recipes are not yet hashed at this point
+		std::vector<CraftDefinition*> &unhashed_inputs_vec = m_craft_defs[(int) CRAFT_HASH_TYPE_UNHASHED][0];
 		std::vector<CraftDefinition*> new_vec_by_input;
 		bool got_hit = false;
 		for (std::vector<CraftDefinition*>::size_type
-			i = unhashed_inputs_vec.size(); i > 0; i--) {
+				i = unhashed_inputs_vec.size(); i > 0; i--) {
 			CraftDefinition *def = unhashed_inputs_vec[i - 1];
-			// If the input doesn't match the recipe definition, this recipe definition later will be added back in source map.
+			/* If the input doesn't match the recipe definition, this recipe definition later 
+				will be added back in source map. */
 			if (!def->check(input, gamedef)) {
 				new_vec_by_input.push_back(def);
 				continue;
@@ -1021,17 +1027,25 @@ public:
 				continue;
 			std::vector<CraftDefinition*> &vec = vec_iter->second;
 			std::vector<CraftDefinition*> new_vec_by_output;
-			new_vec_by_output.reserve(vec.size()); // We will preallocate necessary memory addresses, so we don't need to reallocate them later. This would save us some performance.
+			/* We will preallocate necessary memory addresses, so we don't need 
+				to reallocate them later. This would save us some performance. */
+			new_vec_by_output.reserve(vec.size()); 
 			for (std::vector<CraftDefinition*>::iterator i = vec.begin();
-				i != vec.end(); ++i) {
-				if (def != *i) { // If pointers from map by input and output are not same, we will add 'CraftDefinition*' to a new vector.
-					new_vec_by_output.push_back(*i); // Adding dereferenced iterator value (which are 'CraftDefinition' reference) to a new vector.
+					i != vec.end(); ++i) {
+				/* If pointers from map by input and output are not same, 
+					we will add 'CraftDefinition*' to a new vector. */
+				if (def != *i) { 
+					/* Adding dereferenced iterator value (which are 
+						'CraftDefinition' reference) to a new vector. */
+					new_vec_by_output.push_back(*i);
 				}
 			}
-			m_output_craft_definitions[output.item].swap(new_vec_by_output); // Swaps assigned to current key value with new vector for output map.
+			// Swaps assigned to current key value with new vector for output map.
+			m_output_craft_definitions[output.item].swap(new_vec_by_output);
 		}
 		if (got_hit)
-			m_craft_defs[(int) CRAFT_HASH_TYPE_UNHASHED][0].swap(new_vec_by_input); // Swaps value with new vector for input map.
+			// Swaps value with new vector for input map.
+			m_craft_defs[(int) CRAFT_HASH_TYPE_UNHASHED][0].swap(new_vec_by_input); 
 
 		return got_hit;
 	}
