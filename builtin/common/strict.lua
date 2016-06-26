@@ -5,6 +5,9 @@ local WARN_INIT = false
 
 
 function core.global_exists(name)
+	if type(name) ~= "string" then
+		error("core.global_exists: " .. tostring(name) .. " is not a string")
+	end
 	return rawget(_G, name) ~= nil
 end
 
