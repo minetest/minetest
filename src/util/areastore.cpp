@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "areastore.h"
+#include "util/areastore.h"
 #include "util/serialize.h"
 #include "util/container.h"
 
@@ -44,97 +44,70 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	AST_OVERLAPS_IN_DIMENSION((amine), (amaxe), (b), Y) &&  \
 	AST_OVERLAPS_IN_DIMENSION((amine), (amaxe), (b), Z))
 
-u16 AreaStore::size() const
-{
-	return areas_map.size();
-}
 
-u32 AreaStore::getFreeId(v3s16 minedge, v3s16 maxedge)
+AreaStore *AreaStore::getOptimalImplementation()
 {
-	int keep_on = 100;
-	while (keep_on--) {
-		m_highest_id++;
-		// Handle overflows, we dont want to return 0
-		if (m_highest_id == AREA_ID_INVALID)
-			m_highest_id++;
-		if (areas_map.find(m_highest_id) == areas_map.end())
-			return m_highest_id;
-	}
-	// search failed
-	return AREA_ID_INVALID;
+#if USE_SPATIAL
+	return new SpatialAreaStore();
+#else
+	return new VectorAreaStore();
+#endif
 }
 
 const Area *AreaStore::getArea(u32 id) const
 {
-	const Area *res = NULL;
-	std::map<u32, Area>::const_iterator itr = areas_map.find(id);
-	if (itr != areas_map.end()) {
-		res = &itr->second;
-	}
-	return res;
+	AreaMap::const_iterator it = areas_map.find(id);
+	if (it == areas_map.end())
+		return NULL;
+	return &it->second;
 }
-
-#if 0
-Currently, serialisation is commented out. This is because of multiple reasons:
-1. Why do we store the areastore into a file, why not into the database?
-2. We don't use libspatial's serialisation, but we should, or perhaps not, because
-	it would remove the ability to switch. Perhaps write migration routines?
-3. Various things need fixing, e.g. the size is serialized as
-	c++ implementation defined size_t
-bool AreaStore::deserialize(std::istream &is)
-{
-	u8 ver = readU8(is);
-	if (ver != 1)
-		return false;
-	u16 count_areas = readU16(is);
-	for (u16 i = 0; i < count_areas; i++) {
-		// deserialize an area
-		Area a;
-		a.id = readU32(is);
-		a.minedge = readV3S16(is);
-		a.maxedge = readV3S16(is);
-		a.datalen = readU16(is);
-		a.data = new char[a.datalen];
-		is.read((char *) a.data, a.datalen);
-		insertArea(a);
-	}
-	return true;
-}
-
-
-static bool serialize_area(void *ostr, Area *a)
-{
-	std::ostream &os = *((std::ostream *) ostr);
-	writeU32(os, a->id);
-	writeV3S16(os, a->minedge);
-	writeV3S16(os, a->maxedge);
-	writeU16(os, a->datalen);
-	os.write(a->data, a->datalen);
-
-	return false;
-}
-
 
 void AreaStore::serialize(std::ostream &os) const
 {
-	// write initial data
-	writeU8(os, 1); // serialisation version
-	writeU16(os, areas_map.size()); //DANGER: not platform independent
-	forEach(&serialize_area, &os);
+	writeU8(os, 0); // Serialisation version
+
+	// TODO: Compression?
+	writeU16(os, areas_map.size());
+	for (AreaMap::const_iterator it = areas_map.begin();
+			it != areas_map.end(); ++it) {
+		const Area &a = it->second;
+		writeV3S16(os, a.minedge);
+		writeV3S16(os, a.maxedge);
+		writeU16(os, a.data.size());
+		os.write(a.data.data(), a.data.size());
+	}
 }
 
-#endif
+void AreaStore::deserialize(std::istream &is)
+{
+	u8 ver = readU8(is);
+	if (ver != 0)
+		throw SerializationError("Unknown AreaStore "
+				"serialization version!");
+
+	u16 num_areas = readU16(is);
+	for (u32 i = 0; i < num_areas; ++i) {
+		Area a;
+		a.minedge = readV3S16(is);
+		a.maxedge = readV3S16(is);
+		u16 data_len = readU16(is);
+		char *data = new char[data_len];
+		is.read(data, data_len);
+		a.data = std::string(data, data_len);
+		insertArea(&a);
+	}
+}
 
 void AreaStore::invalidateCache()
 {
-	if (cache_enabled) {
+	if (m_cache_enabled) {
 		m_res_cache.invalidate();
 	}
 }
 
 void AreaStore::setCacheParams(bool enabled, u8 block_radius, size_t limit)
 {
-	cache_enabled = enabled;
+	m_cache_enabled = enabled;
 	m_cacheblock_radius = MYMAX(block_radius, 16);
 	m_res_cache.setLimit(MYMAX(limit, 20));
 	invalidateCache();
@@ -163,7 +136,7 @@ void AreaStore::cacheMiss(void *data, const v3s16 &mpos, std::vector<Area *> *de
 
 void AreaStore::getAreasForPos(std::vector<Area *> *result, v3s16 pos)
 {
-	if (cache_enabled) {
+	if (m_cache_enabled) {
 		v3s16 mblock = getContainerPos(pos, m_cacheblock_radius);
 		const std::vector<Area *> *pre_list = m_res_cache.lookupCache(mblock);
 
@@ -185,42 +158,41 @@ void AreaStore::getAreasForPos(std::vector<Area *> *result, v3s16 pos)
 ////
 
 
-void VectorAreaStore::insertArea(const Area &a)
+bool VectorAreaStore::insertArea(Area *a)
 {
-	areas_map[a.id] = a;
-	m_areas.push_back(&(areas_map[a.id]));
+	if (a->id == U32_MAX)
+		a->id = getNextId();
+	std::pair<AreaMap::iterator, bool> res =
+			areas_map.insert(std::make_pair(a->id, *a));
+	if (!res.second)
+		// ID is not unique
+		return false;
+	m_areas.push_back(&res.first->second);
 	invalidateCache();
-}
-
-void VectorAreaStore::reserve(size_t count)
-{
-	m_areas.reserve(count);
+	return true;
 }
 
 bool VectorAreaStore::removeArea(u32 id)
 {
-	std::map<u32, Area>::iterator itr = areas_map.find(id);
-	if (itr != areas_map.end()) {
-		size_t msiz = m_areas.size();
-		for (size_t i = 0; i < msiz; i++) {
-			Area * b = m_areas[i];
-			if (b->id == id) {
-				areas_map.erase(itr);
-				m_areas.erase(m_areas.begin() + i);
-				invalidateCache();
-				return true;
-			}
+	AreaMap::iterator it = areas_map.find(id);
+	if (it == areas_map.end())
+		return false;
+	Area *a = &it->second;
+	for (std::vector<Area *>::iterator v_it = m_areas.begin();
+			v_it != m_areas.end(); ++v_it) {
+		if (*v_it == a) {
+			m_areas.erase(v_it);
+			break;
 		}
-		// we should never get here, it means we did find it in map,
-		// but not in the vector
 	}
-	return false;
+	areas_map.erase(it);
+	invalidateCache();
+	return true;
 }
 
 void VectorAreaStore::getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos)
 {
-	size_t msiz = m_areas.size();
-	for (size_t i = 0; i < msiz; i++) {
+	for (size_t i = 0; i < m_areas.size(); ++i) {
 		Area *b = m_areas[i];
 		if (AST_CONTAINS_PT(b, pos)) {
 			result->push_back(b);
@@ -231,28 +203,14 @@ void VectorAreaStore::getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos)
 void VectorAreaStore::getAreasInArea(std::vector<Area *> *result,
 		v3s16 minedge, v3s16 maxedge, bool accept_overlap)
 {
-	size_t msiz = m_areas.size();
-	for (size_t i = 0; i < msiz; i++) {
-		Area * b = m_areas[i];
+	for (size_t i = 0; i < m_areas.size(); ++i) {
+		Area *b = m_areas[i];
 		if (accept_overlap ? AST_AREAS_OVERLAP(minedge, maxedge, b) :
 				AST_CONTAINS_AREA(minedge, maxedge, b)) {
 			result->push_back(b);
 		}
 	}
 }
-
-#if 0
-bool VectorAreaStore::forEach(bool (*callback)(void *args, Area *a), void *args) const
-{
-	size_t msiz = m_areas.size();
-	for (size_t i = 0; i < msiz; i++) {
-		if (callback(args, m_areas[i])) {
-			return true;
-		}
-	}
-	return false;
-}
-#endif
 
 #if USE_SPATIAL
 
@@ -273,11 +231,16 @@ static inline SpatialIndex::Point get_spatial_point(const v3s16 pos)
 }
 
 
-void SpatialAreaStore::insertArea(const Area &a)
+bool SpatialAreaStore::insertArea(Area *a)
 {
-	areas_map[a.id] = a;
-	m_tree->insertData(0, NULL, get_spatial_region(a.minedge, a.maxedge), a.id);
+	if (a->id == U32_MAX)
+		a->id = getNextId();
+	if (!areas_map.insert(std::make_pair(a->id, *a)).second)
+		// ID is not unique
+		return false;
+	m_tree->insertData(0, NULL, get_spatial_region(a->minedge, a->maxedge), a->id);
 	invalidateCache();
+	return true;
 }
 
 bool SpatialAreaStore::removeArea(u32 id)
@@ -287,6 +250,7 @@ bool SpatialAreaStore::removeArea(u32 id)
 		Area *a = &itr->second;
 		bool result = m_tree->deleteData(get_spatial_region(a->minedge,
 			a->maxedge), id);
+		areas_map.erase(itr);
 		invalidateCache();
 		return result;
 	} else {
@@ -311,14 +275,6 @@ void SpatialAreaStore::getAreasInArea(std::vector<Area *> *result,
 		m_tree->containsWhatQuery(get_spatial_region(minedge, maxedge), visitor);
 	}
 }
-
-#if 0
-bool SpatialAreaStore::forEach(bool (*callback)(void *args, Area *a), void *args) const
-{
-	// TODO ?? (this is only needed for serialisation, but libspatial has its own serialisation)
-	return false;
-}
-#endif
 
 SpatialAreaStore::~SpatialAreaStore()
 {

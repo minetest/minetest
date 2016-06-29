@@ -35,8 +35,17 @@ struct NoiseParams;
 extern Settings *g_settings;
 extern std::string g_settings_path;
 
-/** function type to register a changed callback */
-typedef void (*setting_changed_callback)(const std::string &name, void *data);
+// Type for a settings changed callback function
+typedef void (*SettingsChangedCallback)(const std::string &name, void *data);
+
+typedef std::vector<
+	std::pair<
+		SettingsChangedCallback,
+		void *
+	>
+> SettingsCallbackList;
+
+typedef std::map<std::string, SettingsCallbackList> SettingsCallbackMap;
 
 enum ValueType {
 	VALUETYPE_STRING,
@@ -209,24 +218,28 @@ public:
 	void clearDefaults();
 	void updateValue(const Settings &other, const std::string &name);
 	void update(const Settings &other);
-	void registerChangedCallback(std::string name, setting_changed_callback cbf, void *userdata = NULL);
-	void deregisterChangedCallback(std::string name, setting_changed_callback cbf, void *userdata = NULL);
+
+	void registerChangedCallback(const std::string &name,
+		SettingsChangedCallback cbf, void *userdata = NULL);
+	void deregisterChangedCallback(const std::string &name,
+		SettingsChangedCallback cbf, void *userdata = NULL);
 
 private:
-
 	void updateNoLock(const Settings &other);
 	void clearNoLock();
 	void clearDefaultsNoLock();
 
-	void doCallbacks(std::string name);
+	void doCallbacks(const std::string &name) const;
 
 	std::map<std::string, SettingsEntry> m_settings;
 	std::map<std::string, SettingsEntry> m_defaults;
 
-	std::map<std::string, std::vector<std::pair<setting_changed_callback,void*> > > m_callbacks;
+	SettingsCallbackMap m_callbacks;
 
-	mutable Mutex m_callbackMutex;
-	mutable Mutex m_mutex; // All methods that access m_settings/m_defaults directly should lock this.
+	mutable Mutex m_callback_mutex;
+
+	// All methods that access m_settings/m_defaults directly should lock this.
+	mutable Mutex m_mutex;
 
 };
 

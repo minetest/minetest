@@ -102,7 +102,7 @@ core.register_chatcommand("help", {
 	description = "Get help for commands or list privileges",
 	func = function(name, param)
 		local function format_help_line(cmd, def)
-			local msg = "/"..cmd
+			local msg = core.colorize("#00ffff", "/"..cmd)
 			if def.params and def.params ~= "" then
 				msg = msg .. " " .. def.params
 			end
@@ -116,7 +116,7 @@ core.register_chatcommand("help", {
 			local cmds = {}
 			for cmd, def in pairs(core.chatcommands) do
 				if core.check_player_privs(name, def.privs) then
-					table.insert(cmds, cmd)
+					cmds[#cmds + 1] = cmd
 				end
 			end
 			table.sort(cmds)
@@ -127,7 +127,7 @@ core.register_chatcommand("help", {
 			local cmds = {}
 			for cmd, def in pairs(core.chatcommands) do
 				if core.check_player_privs(name, def.privs) then
-					table.insert(cmds, format_help_line(cmd, def))
+					cmds[#cmds + 1] = format_help_line(cmd, def)
 				end
 			end
 			table.sort(cmds)
@@ -135,7 +135,7 @@ core.register_chatcommand("help", {
 		elseif param == "privs" then
 			local privs = {}
 			for priv, def in pairs(core.registered_privileges) do
-				table.insert(privs, priv .. ": " .. def.description)
+				privs[#privs + 1] = priv .. ": " .. def.description
 			end
 			table.sort(privs)
 			return true, "Available privileges:\n"..table.concat(privs, "\n")
@@ -181,8 +181,10 @@ core.register_chatcommand("grant", {
 		end
 		local privs = core.get_player_privs(grantname)
 		local privs_unknown = ""
+		local basic_privs =
+			core.string_to_privs(core.setting_get("basic_privs") or "interact,shout")
 		for priv, _ in pairs(grantprivs) do
-			if priv ~= "interact" and priv ~= "shout" and
+			if not basic_privs[priv] and
 					not core.check_player_privs(name, {privs=true}) then
 				return false, "Your privileges are insufficient."
 			end
@@ -223,8 +225,10 @@ core.register_chatcommand("revoke", {
 		end
 		local revoke_privs = core.string_to_privs(revoke_priv_str)
 		local privs = core.get_player_privs(revoke_name)
+		local basic_privs =
+			core.string_to_privs(core.setting_get("basic_privs") or "interact,shout")
 		for priv, _ in pairs(revoke_privs) do
-			if priv ~= "interact" and priv ~= "shout" and
+			if not basic_privs[priv] and
 					not core.check_player_privs(name, {privs=true}) then
 				return false, "Your privileges are insufficient."
 			end
@@ -348,10 +352,16 @@ core.register_chatcommand("teleport", {
 		p.x = tonumber(p.x)
 		p.y = tonumber(p.y)
 		p.z = tonumber(p.z)
-		teleportee = core.get_player_by_name(name)
-		if teleportee and p.x and p.y and p.z then
-			teleportee:setpos(p)
-			return true, "Teleporting to "..core.pos_to_string(p)
+		if p.x and p.y and p.z then
+			local lm = tonumber(minetest.setting_get("map_generation_limit") or 31000)
+			if p.x < -lm or p.x > lm or p.y < -lm or p.y > lm or p.z < -lm or p.z > lm then
+				return false, "Cannot teleport out of map bounds!"
+			end
+			teleportee = core.get_player_by_name(name)
+			if teleportee then
+				teleportee:setpos(p)
+				return true, "Teleporting to "..core.pos_to_string(p)
+			end
 		end
 
 		local teleportee = nil
@@ -785,6 +795,13 @@ core.register_chatcommand("time", {
 	end,
 })
 
+core.register_chatcommand("days", {
+	description = "Display day count",
+	func = function(name, param)
+		return true, "Current day is " .. core.get_day_count()
+	end
+})
+
 core.register_chatcommand("shutdown", {
 	description = "shutdown server",
 	privs = {server=true},
@@ -852,7 +869,7 @@ core.register_chatcommand("clearobjects", {
 	description = "clear all objects in world",
 	privs = {server=true},
 	func = function(name, param)
-		options = {}
+		local options = {}
 		if param == "" or param == "full" then
 			options.mode = "full"
 		elseif param == "quick" then

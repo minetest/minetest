@@ -214,12 +214,12 @@ void MapNode::rotateAlongYAxis(INodeDefManager *nodemgr, Rotation rot)
 	}
 }
 
-static std::vector<aabb3f> transformNodeBox(const MapNode &n,
-		const NodeBox &nodebox, INodeDefManager *nodemgr)
+void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
+		INodeDefManager *nodemgr, std::vector<aabb3f> *p_boxes, u8 neighbors = 0)
 {
-	std::vector<aabb3f> boxes;
-	if(nodebox.type == NODEBOX_FIXED || nodebox.type == NODEBOX_LEVELED)
-	{
+	std::vector<aabb3f> &boxes = *p_boxes;
+
+	if (nodebox.type == NODEBOX_FIXED || nodebox.type == NODEBOX_LEVELED) {
 		const std::vector<aabb3f> &fixed = nodebox.fixed;
 		int facedir = n.getFaceDir(nodemgr);
 		u8 axisdir = facedir>>2;
@@ -395,32 +395,71 @@ static std::vector<aabb3f> transformNodeBox(const MapNode &n,
 			boxes.push_back(box);
 		}
 	}
+	else if (nodebox.type == NODEBOX_CONNECTED)
+	{
+		size_t boxes_size = boxes.size();
+		boxes_size += nodebox.fixed.size();
+		if (neighbors & 1)
+			boxes_size += nodebox.connect_top.size();
+		if (neighbors & 2)
+			boxes_size += nodebox.connect_bottom.size();
+		if (neighbors & 4)
+			boxes_size += nodebox.connect_front.size();
+		if (neighbors & 8)
+			boxes_size += nodebox.connect_left.size();
+		if (neighbors & 16)
+			boxes_size += nodebox.connect_back.size();
+		if (neighbors & 32)
+			boxes_size += nodebox.connect_right.size();
+		boxes.reserve(boxes_size);
+
+#define BOXESPUSHBACK(c) do { \
+		for (std::vector<aabb3f>::const_iterator \
+				it = (c).begin(); \
+				it != (c).end(); ++it) \
+			(boxes).push_back(*it); \
+		} while (0)
+
+		BOXESPUSHBACK(nodebox.fixed);
+
+		if (neighbors & 1)
+			BOXESPUSHBACK(nodebox.connect_top);
+		if (neighbors & 2)
+			BOXESPUSHBACK(nodebox.connect_bottom);
+		if (neighbors & 4)
+			BOXESPUSHBACK(nodebox.connect_front);
+		if (neighbors & 8)
+			BOXESPUSHBACK(nodebox.connect_left);
+		if (neighbors & 16)
+			BOXESPUSHBACK(nodebox.connect_back);
+		if (neighbors & 32)
+			BOXESPUSHBACK(nodebox.connect_right);
+	}
 	else // NODEBOX_REGULAR
 	{
 		boxes.push_back(aabb3f(-BS/2,-BS/2,-BS/2,BS/2,BS/2,BS/2));
 	}
-	return boxes;
 }
 
-std::vector<aabb3f> MapNode::getNodeBoxes(INodeDefManager *nodemgr) const
+void MapNode::getNodeBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *boxes, u8 neighbors)
 {
 	const ContentFeatures &f = nodemgr->get(*this);
-	return transformNodeBox(*this, f.node_box, nodemgr);
+	transformNodeBox(*this, f.node_box, nodemgr, boxes, neighbors);
 }
 
-std::vector<aabb3f> MapNode::getCollisionBoxes(INodeDefManager *nodemgr) const
+void MapNode::getCollisionBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *boxes, u8 neighbors)
 {
 	const ContentFeatures &f = nodemgr->get(*this);
 	if (f.collision_box.fixed.empty())
-		return transformNodeBox(*this, f.node_box, nodemgr);
+		transformNodeBox(*this, f.node_box, nodemgr, boxes, neighbors);
 	else
-		return transformNodeBox(*this, f.collision_box, nodemgr);
+		transformNodeBox(*this, f.collision_box, nodemgr, boxes, neighbors);
 }
 
-std::vector<aabb3f> MapNode::getSelectionBoxes(INodeDefManager *nodemgr) const
+void MapNode::getSelectionBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *boxes, u8 neighbors)
 {
 	const ContentFeatures &f = nodemgr->get(*this);
-	return transformNodeBox(*this, f.selection_box, nodemgr);
+	transformNodeBox(*this, f.selection_box, nodemgr, boxes, neighbors);
 }
 
 u8 MapNode::getMaxLevel(INodeDefManager *nodemgr) const

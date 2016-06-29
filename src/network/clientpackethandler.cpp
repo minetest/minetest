@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "serialization.h"
 #include "server.h"
-#include "strfnd.h"
+#include "util/strfnd.h"
 #include "network/clientopcodes.h"
 #include "util/serialize.h"
 #include "util/srp.h"
@@ -552,6 +552,7 @@ void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 
 	*pkt >> pos >> pitch >> yaw;
 
+	player->got_teleported = true;
 	player->setPosition(pos);
 
 	infostream << "Client got TOCLIENT_MOVE_PLAYER"
@@ -640,7 +641,7 @@ void Client::handleCommand_AnnounceMedia(NetworkPacket* pkt)
 		*pkt >> str;
 
 		Strfnd sf(str);
-		while(!sf.atend()) {
+		while(!sf.at_end()) {
 			std::string baseurl = trim(sf.next(","));
 			if (baseurl != "")
 				m_media_downloader->addRemoteServer(baseurl);
@@ -897,8 +898,10 @@ void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
 	bool collisiondetection = readU8(is);
 	std::string texture     = deSerializeLongString(is);
 	bool vertical           = false;
+	bool collision_removal  = false;
 	try {
 		vertical = readU8(is);
+		collision_removal = readU8(is);
 	} catch (...) {}
 
 	ClientEvent event;
@@ -909,6 +912,7 @@ void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
 	event.spawn_particle.expirationtime     = expirationtime;
 	event.spawn_particle.size               = size;
 	event.spawn_particle.collisiondetection = collisiondetection;
+	event.spawn_particle.collision_removal  = collision_removal;
 	event.spawn_particle.vertical           = vertical;
 	event.spawn_particle.texture            = new std::string(texture);
 
@@ -941,8 +945,11 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	*pkt >> id;
 
 	bool vertical = false;
+	bool collision_removal = false;
 	try {
 		*pkt >> vertical;
+		*pkt >> collision_removal;
+
 	} catch (...) {}
 
 	ClientEvent event;
@@ -960,6 +967,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	event.add_particlespawner.minsize            = minsize;
 	event.add_particlespawner.maxsize            = maxsize;
 	event.add_particlespawner.collisiondetection = collisiondetection;
+	event.add_particlespawner.collision_removal  = collision_removal;
 	event.add_particlespawner.vertical           = vertical;
 	event.add_particlespawner.texture            = new std::string(texture);
 	event.add_particlespawner.id                 = id;

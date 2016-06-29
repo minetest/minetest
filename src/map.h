@@ -327,7 +327,7 @@ public:
 	*/
 
 	NodeTimer getNodeTimer(v3s16 p);
-	void setNodeTimer(v3s16 p, NodeTimer t);
+	void setNodeTimer(const NodeTimer &t);
 	void removeNodeTimer(v3s16 p);
 
 	/*

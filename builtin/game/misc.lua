@@ -6,7 +6,7 @@
 
 local jobs = {}
 local time = 0.0
-local last = 0.0
+local last = core.get_us_time() / 1000000
 
 core.register_globalstep(function(dtime)
 	local new = core.get_us_time() / 1000000
@@ -40,12 +40,12 @@ end)
 function core.after(after, func, ...)
 	assert(tonumber(time) and type(func) == "function",
 			"Invalid core.after invocation")
-	table.insert(jobs, {
+	jobs[#jobs + 1] = {
 		func = func,
 		expire = time + after,
 		arg = {...},
 		mod_origin = core.get_last_run_mod()
-	})
+	}
 end
 
 function core.check_player_privs(player_or_name, ...)
@@ -63,14 +63,14 @@ function core.check_player_privs(player_or_name, ...)
 		-- We were provided with a table like { privA = true, privB = true }.
 		for priv, value in pairs(requested_privs[1]) do
 			if value and not player_privs[priv] then
-				table.insert(missing_privileges, priv)
+				missing_privileges[#missing_privileges + 1] = priv
 			end
 		end
 	else
 		-- Only a list, we can process it directly.
 		for key, priv in pairs(requested_privs) do
 			if not player_privs[priv] then
-				table.insert(missing_privileges, priv)
+				missing_privileges[#missing_privileges + 1] = priv
 			end
 		end
 	end
@@ -96,7 +96,7 @@ function core.get_connected_players()
 	local temp_table = {}
 	for index, value in pairs(player_list) do
 		if value:is_player_connected() then
-			table.insert(temp_table, value)
+			temp_table[#temp_table + 1] = value
 		end
 	end
 	return temp_table
@@ -197,3 +197,35 @@ function core.http_add_fetch(httpenv)
 
 	return httpenv
 end
+
+if minetest.setting_getbool("disable_escape_sequences") then
+
+	function core.get_color_escape_sequence(color)
+		return ""
+	end
+
+	function core.get_background_escape_sequence(color)
+		return ""
+	end
+
+	function core.colorize(color, message)
+		return message
+	end
+
+else
+
+	local ESCAPE_CHAR = string.char(0x1b)
+	function core.get_color_escape_sequence(color)
+		return ESCAPE_CHAR .. "(c@" .. color .. ")"
+	end
+
+	function core.get_background_escape_sequence(color)
+		return ESCAPE_CHAR .. "(b@" .. color .. ")"
+	end
+
+	function core.colorize(color, message)
+		return core.get_color_escape_sequence(color) .. message .. core.get_color_escape_sequence("#ffffff")
+	end
+
+end
+

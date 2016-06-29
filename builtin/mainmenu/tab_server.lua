@@ -186,10 +186,10 @@ local function main_button_handler(this, fields, name, tabdata)
 end
 
 --------------------------------------------------------------------------------
-tab_server = {
+return {
 	name = "server",
 	caption = fgettext("Server"),
 	cbf_formspec = get_formspec,
 	cbf_button_handler = main_button_handler,
 	on_change = nil
-	}
+}

@@ -32,6 +32,7 @@ extern FlagDesc flagdesc_mapgen_v5[];
 
 struct MapgenV5Params : public MapgenSpecificParams {
 	u32 spflags;
+	float cave_width;
 	NoiseParams np_filler_depth;
 	NoiseParams np_factor;
 	NoiseParams np_height;
@@ -47,55 +48,19 @@ struct MapgenV5Params : public MapgenSpecificParams {
 };
 
 
-class MapgenV5 : public Mapgen {
+class MapgenV5 : public MapgenBasic {
 public:
-	EmergeManager *m_emerge;
-	BiomeManager *bmgr;
-
-	int ystride;
-	int zstride;
-	u32 spflags;
-
-	v3s16 node_min;
-	v3s16 node_max;
-	v3s16 full_node_min;
-	v3s16 full_node_max;
-
-	Noise *noise_filler_depth;
-	Noise *noise_factor;
-	Noise *noise_height;
-	Noise *noise_cave1;
-	Noise *noise_cave2;
-	Noise *noise_ground;
-
-	Noise *noise_heat;
-	Noise *noise_humidity;
-	Noise *noise_heat_blend;
-	Noise *noise_humidity_blend;
-
-	content_t c_stone;
-	content_t c_water_source;
-	content_t c_lava_source;
-	content_t c_desert_stone;
-	content_t c_ice;
-	content_t c_sandstone;
-
-	content_t c_cobble;
-	content_t c_stair_cobble;
-	content_t c_mossycobble;
-	content_t c_sandstonebrick;
-	content_t c_stair_sandstonebrick;
-
 	MapgenV5(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	~MapgenV5();
 
 	virtual void makeChunk(BlockMakeData *data);
 	int getSpawnLevelAtPoint(v2s16 p);
-	void calculateNoise();
 	int generateBaseTerrain();
-	MgStoneType generateBiomes(float *heat_map, float *humidity_map);
-	void generateCaves(int max_stone_y);
-	void dustTopNodes();
+
+private:
+	Noise *noise_factor;
+	Noise *noise_height;
+	Noise *noise_ground;
 };
 
 

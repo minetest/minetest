@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiFormSpecMenu.h"
 #include "sound.h"
 #include "client/tile.h"
+#include "util/enriched_string.h"
 
 /******************************************************************************/
 /* Typedefs and macros                                                        */
@@ -148,7 +149,8 @@ public:
 	 * @param smgr scene manager to add scene elements to
 	 * @param data struct to transfer data to main game handling
 	 */
-	GUIEngine(	irr::IrrlichtDevice* dev,
+	GUIEngine(irr::IrrlichtDevice* dev,
+			JoystickController *joystick,
 			gui::IGUIElement* parent,
 			IMenuManager *menumgr,
 			scene::ISceneManager* smgr,
@@ -275,6 +277,8 @@ private:
 
 	/** pointer to gui element shown at topleft corner */
 	irr::gui::IGUIStaticText*	m_irr_toplefttext;
+	/** and text that is in it */
+	EnrichedString m_toplefttext;
 
 	/** initialize cloud subsystem */
 	void cloudInit();

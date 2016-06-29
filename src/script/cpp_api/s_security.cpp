@@ -116,7 +116,6 @@ void ScriptApiSecurity::initializeSecurity()
 		"upvaluejoin",
 		"sethook",
 		"debug",
-		"getupvalue",
 		"setlocal",
 	};
 	static const char *package_whitelist[] = {
@@ -250,8 +249,8 @@ bool ScriptApiSecurity::isSecure(lua_State *L)
 
 #define CHECK_FILE_ERR(ret, fp) \
 	if (ret) { \
-		if (fp) std::fclose(fp); \
 		lua_pushfstring(L, "%s: %s", path, strerror(errno)); \
+		if (fp) std::fclose(fp); \
 		return false; \
 	}
 
@@ -292,20 +291,12 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path)
 	// Read the file
 	int ret = std::fseek(fp, 0, SEEK_END);
 	CHECK_FILE_ERR(ret, fp);
-	if (ret) {
-		std::fclose(fp);
-		lua_pushfstring(L, "%s: %s", path, strerror(errno));
-		return false;
-	}
+
 	size_t size = std::ftell(fp) - start;
 	char *code = new char[size];
 	ret = std::fseek(fp, start, SEEK_SET);
 	CHECK_FILE_ERR(ret, fp);
-	if (ret) {
-		std::fclose(fp);
-		lua_pushfstring(L, "%s: %s", path, strerror(errno));
-		return false;
-	}
+
 	size_t num_read = std::fread(code, 1, size, fp);
 	if (path) {
 		std::fclose(fp);

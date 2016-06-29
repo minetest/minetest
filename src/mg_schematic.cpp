@@ -267,7 +267,7 @@ bool Schematic::deserializeFromMts(std::istream *is,
 	//// Read signature
 	u32 signature = readU32(ss);
 	if (signature != MTSCHEM_FILE_SIGNATURE) {
-		errorstream << "Schematic::deserializeFromMts: invalid schematic "
+		errorstream << __FUNCTION__ << ": invalid schematic "
 			"file" << std::endl;
 		return false;
 	}
@@ -275,7 +275,7 @@ bool Schematic::deserializeFromMts(std::istream *is,
 	//// Read version
 	u16 version = readU16(ss);
 	if (version > MTSCHEM_FILE_VER_HIGHEST_READ) {
-		errorstream << "Schematic::deserializeFromMts: unsupported schematic "
+		errorstream << __FUNCTION__ << ": unsupported schematic "
 			"file version" << std::endl;
 		return false;
 	}
@@ -439,7 +439,7 @@ bool Schematic::loadSchematicFromFile(const std::string &filename,
 {
 	std::ifstream is(filename.c_str(), std::ios_base::binary);
 	if (!is.good()) {
-		errorstream << "Schematic::loadSchematicFile: unable to open file '"
+		errorstream << __FUNCTION__ << ": unable to open file '"
 			<< filename << "'" << std::endl;
 		return false;
 	}
@@ -448,16 +448,18 @@ bool Schematic::loadSchematicFromFile(const std::string &filename,
 	if (!deserializeFromMts(&is, &m_nodenames))
 		return false;
 
+	m_nnlistsizes.push_back(m_nodenames.size() - origsize);
+
+	name = filename;
+
 	if (replace_names) {
-		for (size_t i = origsize; i != m_nodenames.size(); i++) {
-			std::string &name = m_nodenames[i];
-			StringMap::iterator it = replace_names->find(name);
+		for (size_t i = origsize; i < m_nodenames.size(); i++) {
+			std::string &node_name = m_nodenames[i];
+			StringMap::iterator it = replace_names->find(node_name);
 			if (it != replace_names->end())
-				name = it->second;
+				node_name = it->second;
 		}
 	}
-
-	m_nnlistsizes.push_back(m_nodenames.size() - origsize);
 
 	if (ndef)
 		ndef->pendNodeResolve(this);

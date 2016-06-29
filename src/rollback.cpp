@@ -93,10 +93,10 @@ RollbackManager::RollbackManager(const std::string & world_path,
 	std::string migrating_flag = txt_filename + ".migrating";
 	database_path = world_path + DIR_DELIM "rollback.sqlite";
 
-	initDatabase();
+	bool created = initDatabase();
 
-	if (fs::PathExists(txt_filename) && (fs::PathExists(migrating_flag) ||
-			!fs::PathExists(database_path))) {
+	if (fs::PathExists(txt_filename) && (created ||
+			fs::PathExists(migrating_flag))) {
 		std::ofstream of(migrating_flag.c_str());
 		of.close();
 		migrate(txt_filename);
@@ -250,15 +250,15 @@ bool RollbackManager::createTables()
 }
 
 
-void RollbackManager::initDatabase()
+bool RollbackManager::initDatabase()
 {
 	verbosestream << "RollbackManager: Database connection setup" << std::endl;
 
-	bool needsCreate = !fs::PathExists(database_path);
+	bool needs_create = !fs::PathExists(database_path);
 	SQLOK(sqlite3_open_v2(database_path.c_str(), &db,
 			SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL));
 
-	if (needsCreate) {
+	if (needs_create) {
 		createTables();
 	}
 
@@ -374,6 +374,8 @@ void RollbackManager::initDatabase()
 		);
 	}
 	SQLOK(sqlite3_reset(stmt_knownNode_select));
+
+	return needs_create;
 }
 
 
@@ -672,23 +674,27 @@ void RollbackManager::migrate(const std::string & file_path)
 
 	std::streampos file_size = fh.tellg();
 
-	if (file_size > 10) {
+	if (file_size < 10) {
 		errorstream << "Empty rollback log." << std::endl;
 		return;
 	}
 
 	fh.seekg(0);
 
+	sqlite3_stmt *stmt_begin;
+	sqlite3_stmt *stmt_commit;
+	SQLOK(sqlite3_prepare_v2(db, "BEGIN", -1, &stmt_begin, NULL));
+	SQLOK(sqlite3_prepare_v2(db, "COMMIT", -1, &stmt_commit, NULL));
+
 	std::string bit;
 	int i = 0;
-	int id = 1;
 	time_t start = time(0);
 	time_t t = start;
-	sqlite3_exec(db, "BEGIN", NULL, NULL, NULL);
+	SQLRES(sqlite3_step(stmt_begin), SQLITE_DONE);
+	sqlite3_reset(stmt_begin);
 	do {
 		ActionRow row;
-
-		row.id = id;
+		row.id = 0;
 
 		// Get the timestamp
 		std::getline(fh, bit, ' ');
@@ -758,17 +764,24 @@ void RollbackManager::migrate(const std::string & file_path)
 		++i;
 
 		if (time(0) - t >= 1) {
-			sqlite3_exec(db, "COMMIT", NULL, NULL, NULL);
+			SQLRES(sqlite3_step(stmt_commit), SQLITE_DONE);
+			sqlite3_reset(stmt_commit);
 			t = time(0);
 			std::cout
 				<< " Done: " << static_cast<int>((static_cast<float>(fh.tellg()) / static_cast<float>(file_size)) * 100) << "%"
 				<< " Speed: " << i / (t - start) << "/second     \r" << std::flush;
-			sqlite3_exec(db, "BEGIN", NULL, NULL, NULL);
+			SQLRES(sqlite3_step(stmt_begin), SQLITE_DONE);
+			sqlite3_reset(stmt_begin);
 		}
 	} while (fh.good());
+	SQLRES(sqlite3_step(stmt_commit), SQLITE_DONE);
+	sqlite3_reset(stmt_commit);
+
+	SQLOK(sqlite3_finalize(stmt_begin));
+	SQLOK(sqlite3_finalize(stmt_commit));
 
 	std::cout
-		<< " Done: 100%                                   " << std::endl
+		<< " Done: 100%                                  " << std::endl
 		<< "Now you can delete the old rollback.txt file." << std::endl;
 }
 

@@ -36,6 +36,7 @@ GUIModalMenu(env, parent, id, menumgr)
 GUIFileSelectMenu::~GUIFileSelectMenu()
 {
 	removeChildren();
+	setlocale(LC_NUMERIC, "C");
 }
 
 void GUIFileSelectMenu::removeChildren()

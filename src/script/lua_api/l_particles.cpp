@@ -21,13 +21,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "server.h"
+#include "particles.h"
 
 // add_particle({pos=, velocity=, acceleration=, expirationtime=,
-// 		size=, collisiondetection=, vertical=, texture=, player=})
+// 		size=, collisiondetection=, collision_removal=, vertical=,
+//		texture=, player=})
 // pos/velocity/acceleration = {x=num, y=num, z=num}
 // expirationtime = num (seconds)
 // size = num
 // collisiondetection = bool
+// collision_removal = bool
 // vertical = bool
 // texture = e.g."default_wood.png"
 int ModApiParticles::l_add_particle(lua_State *L)
@@ -41,8 +44,8 @@ int ModApiParticles::l_add_particle(lua_State *L)
 	float expirationtime, size;
 	expirationtime = size = 1;
 
-	bool collisiondetection, vertical;
-	collisiondetection = vertical = false;
+	bool collisiondetection, vertical, collision_removal;
+	collisiondetection = vertical = collision_removal = false;
 
 	std::string texture = "";
 	std::string playername = "";
@@ -94,12 +97,14 @@ int ModApiParticles::l_add_particle(lua_State *L)
 		size = getfloatfield_default(L, 1, "size", 1);
 		collisiondetection = getboolfield_default(L, 1,
 			"collisiondetection", collisiondetection);
+		collision_removal = getboolfield_default(L, 1,
+			"collision_removal", collision_removal);
 		vertical = getboolfield_default(L, 1, "vertical", vertical);
 		texture = getstringfield_default(L, 1, "texture", "");
 		playername = getstringfield_default(L, 1, "playername", "");
 	}
-	getServer(L)->spawnParticle(playername, pos, vel, acc,
-			expirationtime, size, collisiondetection, vertical, texture);
+	getServer(L)->spawnParticle(playername, pos, vel, acc, expirationtime, size,
+			collisiondetection, collision_removal, vertical, texture);
 	return 1;
 }
 
@@ -110,6 +115,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 //				minexptime=, maxexptime=,
 //				minsize=, maxsize=,
 //				collisiondetection=,
+//				collision_removal=,
 //				vertical=,
 //				texture=,
 //				player=})
@@ -117,6 +123,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 // minexptime/maxexptime = num (seconds)
 // minsize/maxsize = num
 // collisiondetection = bool
+// collision_removal = bool
 // vertical = bool
 // texture = e.g."default_wood.png"
 int ModApiParticles::l_add_particlespawner(lua_State *L)
@@ -129,8 +136,8 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 	    minpos= maxpos= minvel= maxvel= minacc= maxacc= v3f(0, 0, 0);
 	float time, minexptime, maxexptime, minsize, maxsize;
 	      time= minexptime= maxexptime= minsize= maxsize= 1;
-	bool collisiondetection, vertical;
-	     collisiondetection= vertical= false;
+	bool collisiondetection, vertical, collision_removal;
+	     collisiondetection = vertical = collision_removal = false;
 	std::string texture = "";
 	std::string playername = "";
 
@@ -189,6 +196,8 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 		maxsize = getfloatfield_default(L, 1, "maxsize", maxsize);
 		collisiondetection = getboolfield_default(L, 1,
 			"collisiondetection", collisiondetection);
+		collision_removal = getboolfield_default(L, 1,
+			"collision_removal", collision_removal);
 		vertical = getboolfield_default(L, 1, "vertical", vertical);
 		texture = getstringfield_default(L, 1, "texture", "");
 		playername = getstringfield_default(L, 1, "playername", "");
@@ -201,6 +210,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 			minexptime, maxexptime,
 			minsize, maxsize,
 			collisiondetection,
+			collision_removal,
 			vertical,
 			texture, playername);
 	lua_pushnumber(L, id);

@@ -183,7 +183,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	*/
 	if (control.sneak && m_sneak_node_exists &&
 			!(fly_allowed && g_settings->getBool("free_move")) && !in_liquid &&
-			physics_override_sneak) {
+			physics_override_sneak && !got_teleported) {
 		f32 maxd = 0.5 * BS + sneak_max;
 		v3f lwn_f = intToFloat(m_sneak_node, BS);
 		position.X = rangelim(position.X, lwn_f.X-maxd, lwn_f.X+maxd);
@@ -204,11 +204,14 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		}
 	}
 
+	if (got_teleported)
+		got_teleported = false;
+
 	// this shouldn't be hardcoded but transmitted from server
 	float player_stepheight = touching_ground ? (BS*0.6) : (BS*0.2);
 
 #ifdef __ANDROID__
-	player_stepheight += (0.5 * BS);
+	player_stepheight += (0.6 * BS);
 #endif
 
 	v3f accel_f = v3f(0,0,0);
@@ -310,7 +313,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		if (sneak_node_found) {
 			f32 cb_max = 0;
 			MapNode n = map->getNodeNoEx(m_sneak_node);
-			std::vector<aabb3f> nodeboxes = n.getCollisionBoxes(nodemgr);
+			std::vector<aabb3f> nodeboxes;
+			n.getCollisionBoxes(nodemgr, &nodeboxes);
 			for (std::vector<aabb3f>::iterator it = nodeboxes.begin();
 					it != nodeboxes.end(); ++it) {
 				aabb3f box = *it;
@@ -524,17 +528,22 @@ void LocalPlayer::applyControl(float dtime)
 			speedH += move_direction;
 		}
 	}
-	if(control.down)
-	{
+	if (control.down) {
 		speedH -= move_direction;
 	}
-	if(control.left)
-	{
+	if (!control.up && !control.down) {
+		speedH -= move_direction *
+			(control.forw_move_joystick_axis / 32767.f);
+	}
+	if (control.left) {
 		speedH += move_direction.crossProduct(v3f(0,1,0));
 	}
-	if(control.right)
-	{
+	if (control.right) {
 		speedH += move_direction.crossProduct(v3f(0,-1,0));
+	}
+	if (!control.left && !control.right) {
+		speedH -= move_direction.crossProduct(v3f(0,1,0)) *
+			(control.sidew_move_joystick_axis / 32767.f);
 	}
 	if(control.jump)
 	{

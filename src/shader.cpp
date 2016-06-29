@@ -35,7 +35,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "EShaderTypes.h"
 #include "log.h"
 #include "gamedef.h"
-#include "strfnd.h" // trim()
 #include "client/tile.h"
 
 /*

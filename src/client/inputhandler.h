@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define INPUT_HANDLER_H
 
 #include "irrlichttypes_extrabloated.h"
+#include "joystick_controller.h"
 
 class MyEventReceiver : public IEventReceiver
 {
@@ -42,11 +43,15 @@ public:
 
 		// Remember whether each key is down or up
 		if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
-			if (event.KeyInput.PressedDown) {
-				keyIsDown.set(event.KeyInput);
-				keyWasDown.set(event.KeyInput);
-			} else {
-				keyIsDown.unset(event.KeyInput);
+			const KeyPress &keyCode = event.KeyInput;
+			if (keysListenedFor[keyCode]) {
+				if (event.KeyInput.PressedDown) {
+					keyIsDown.set(keyCode);
+					keyWasDown.set(keyCode);
+				} else {
+					keyIsDown.unset(keyCode);
+				}
+				return true;
 			}
 		}
 
@@ -58,6 +63,14 @@ public:
 			return true;
 		}
 #endif
+
+		if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
+			/* TODO add a check like:
+			if (event.JoystickEvent != joystick_we_listen_for)
+				return false;
+			*/
+			return joystick->handleEvent(event.JoystickEvent);
+		}
 		// handle mouse events
 		if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
 			if (noMenuActive() == false) {
@@ -116,6 +129,15 @@ public:
 		return b;
 	}
 
+	void listenForKey(const KeyPress &keyCode)
+	{
+		keysListenedFor.set(keyCode);
+	}
+	void dontListenForKeys()
+	{
+		keysListenedFor.clear();
+	}
+
 	s32 getMouseWheel()
 	{
 		s32 a = mouse_wheel;
@@ -159,6 +181,8 @@ public:
 
 	s32 mouse_wheel;
 
+	JoystickController *joystick;
+
 #ifdef HAVE_TOUCHSCREENGUI
 	TouchScreenGUI* m_touchscreengui;
 #endif
@@ -168,6 +192,12 @@ private:
 	KeyList keyIsDown;
 	// Whether a key has been pressed or not
 	KeyList keyWasDown;
+	// List of keys we listen for
+	// TODO perhaps the type of this is not really
+	// performant as KeyList is designed for few but
+	// often changing keys, and keysListenedFor is expected
+	// to change seldomly but contain lots of keys.
+	KeyList keysListenedFor;
 };
 
 
@@ -183,6 +213,7 @@ public:
 		m_receiver(receiver),
 		m_mousepos(0,0)
 	{
+		m_receiver->joystick = &joystick;
 	}
 	virtual bool isKeyDown(const KeyPress &keyCode)
 	{
@@ -191,6 +222,14 @@ public:
 	virtual bool wasKeyDown(const KeyPress &keyCode)
 	{
 		return m_receiver->WasKeyDown(keyCode);
+	}
+	virtual void listenForKey(const KeyPress &keyCode)
+	{
+		m_receiver->listenForKey(keyCode);
+	}
+	virtual void dontListenForKeys()
+	{
+		m_receiver->dontListenForKeys();
 	}
 	virtual v2s32 getMousePos()
 	{
@@ -261,6 +300,7 @@ public:
 
 	void clear()
 	{
+		joystick.clear();
 		m_receiver->clearInput();
 	}
 private:

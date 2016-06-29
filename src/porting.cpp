@@ -75,11 +75,16 @@ bool * signal_handler_killstatus(void)
 #if !defined(_WIN32) // POSIX
 	#include <signal.h>
 
-void sigint_handler(int sig)
+void signal_handler(int sig)
 {
 	if (!g_killed) {
-		dstream << "INFO: sigint_handler(): "
-			<< "Ctrl-C pressed, shutting down." << std::endl;
+		if (sig == SIGINT) {
+			dstream << "INFO: signal_handler(): "
+				<< "Ctrl-C pressed, shutting down." << std::endl;
+		} else if (sig == SIGTERM) {
+			dstream << "INFO: signal_handler(): "
+				<< "got SIGTERM, shutting down." << std::endl;
+		}
 
 		// Comment out for less clutter when testing scripts
 		/*dstream << "INFO: sigint_handler(): "
@@ -88,13 +93,14 @@ void sigint_handler(int sig)
 
 		g_killed = true;
 	} else {
-		(void)signal(SIGINT, SIG_DFL);
+		(void)signal(sig, SIG_DFL);
 	}
 }
 
 void signal_handler_init(void)
 {
-	(void)signal(SIGINT, sigint_handler);
+	(void)signal(SIGINT, signal_handler);
+	(void)signal(SIGTERM, signal_handler);
 }
 
 #else // _WIN32

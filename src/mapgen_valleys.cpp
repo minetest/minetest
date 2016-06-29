@@ -65,44 +65,26 @@ static FlagDesc flagdesc_mapgen_valleys[] = {
 
 
 MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *emerge)
-	: Mapgen(mapgenid, params, emerge)
+	: MapgenBasic(mapgenid, params, emerge)
 {
-	this->m_emerge = emerge;
-	this->bmgr = emerge->biomemgr;
-
-	//// amount of elements to skip for the next index
-	//// for noise/height/biome maps (not vmanip)
-	this->ystride = csize.X;
-	this->zstride = csize.X * (csize.Y + 2);
-
-	this->biomemap  = new u8[csize.X * csize.Z];
-	this->heightmap = new s16[csize.X * csize.Z];
-	this->heatmap   = NULL;
-	this->humidmap  = NULL;
+	// NOTE: MapgenValleys has a hard dependency on BiomeGenOriginal
+	this->m_bgen = (BiomeGenOriginal *)biomegen;
 
 	this->map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
 			g_settings->getU16("map_generation_limit"));
 
 	MapgenValleysParams *sp = (MapgenValleysParams *)params->sparams;
-	this->spflags = sp->spflags;
+	BiomeParamsOriginal *bp = (BiomeParamsOriginal *)params->bparams;
 
-	this->humid_rivers       = (spflags & MGVALLEYS_HUMID_RIVERS);
-	this->use_altitude_chill = (spflags & MGVALLEYS_ALT_CHILL);
-
+	this->spflags            = sp->spflags;
 	this->altitude_chill     = sp->altitude_chill;
-	this->humidity_adjust    = params->np_biome_humidity.offset - 50.f;
 	this->large_cave_depth   = sp->large_cave_depth;
 	this->lava_features_lim  = rangelim(sp->lava_features, 0, 10);
 	this->massive_cave_depth = sp->massive_cave_depth;
 	this->river_depth_bed    = sp->river_depth + 1.f;
 	this->river_size_factor  = sp->river_size / 100.f;
 	this->water_features_lim = rangelim(sp->water_features, 0, 10);
-
-	// a small chance of overflows if the settings are very high
-	this->cave_water_max_height = water_level + MYMAX(0, water_features_lim - 4) * 50;
-	this->lava_max_height       = water_level + MYMAX(0, lava_features_lim - 4) * 50;
-
-	tcave_cache = new float[csize.Y + 2];
+	this->cave_width         = sp->cave_width;
 
 	//// 2D Terrain noise
 	noise_filler_depth       = new Noise(&sp->np_filler_depth,       seed, csize.X, csize.Z);
@@ -113,46 +95,25 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *
 	noise_valley_profile     = new Noise(&sp->np_valley_profile,     seed, csize.X, csize.Z);
 
 	//// 3D Terrain noise
-	noise_cave1             = new Noise(&sp->np_cave1,             seed, csize.X, csize.Y + 2, csize.Z);
-	noise_cave2             = new Noise(&sp->np_cave2,             seed, csize.X, csize.Y + 2, csize.Z);
+	// 1-up 1-down overgeneration
 	noise_inter_valley_fill = new Noise(&sp->np_inter_valley_fill, seed, csize.X, csize.Y + 2, csize.Z);
-	noise_massive_caves     = new Noise(&sp->np_massive_caves,     seed, csize.X, csize.Y + 2, csize.Z);
+	// 1-down overgeneraion
+	noise_cave1             = new Noise(&sp->np_cave1,             seed, csize.X, csize.Y + 1, csize.Z);
+	noise_cave2             = new Noise(&sp->np_cave2,             seed, csize.X, csize.Y + 1, csize.Z);
+	noise_massive_caves     = new Noise(&sp->np_massive_caves,     seed, csize.X, csize.Y + 1, csize.Z);
 
-	//// Biome noise
-	noise_heat_blend     = new Noise(&params->np_biome_heat_blend,     seed, csize.X, csize.Z);
-	noise_heat           = new Noise(&params->np_biome_heat,           seed, csize.X, csize.Z);
-	noise_humidity_blend = new Noise(&params->np_biome_humidity_blend, seed, csize.X, csize.Z);
-	noise_humidity       = new Noise(&params->np_biome_humidity,       seed, csize.X, csize.Z);
+	this->humid_rivers       = (spflags & MGVALLEYS_HUMID_RIVERS);
+	this->use_altitude_chill = (spflags & MGVALLEYS_ALT_CHILL);
+	this->humidity_adjust    = bp->np_humidity.offset - 50.f;
 
-	//// Resolve nodes to be used
-	INodeDefManager *ndef = emerge->ndef;
+	// a small chance of overflows if the settings are very high
+	this->cave_water_max_height = water_level + MYMAX(0, water_features_lim - 4) * 50;
+	this->lava_max_height       = water_level + MYMAX(0, lava_features_lim - 4) * 50;
 
-	c_cobble               = ndef->getId("mapgen_cobble");
-	c_desert_stone         = ndef->getId("mapgen_desert_stone");
-	c_dirt                 = ndef->getId("mapgen_dirt");
-	c_lava_source          = ndef->getId("mapgen_lava_source");
-	c_mossycobble          = ndef->getId("mapgen_mossycobble");
-	c_river_water_source   = ndef->getId("mapgen_river_water_source");
-	c_sand                 = ndef->getId("mapgen_sand");
-	c_sandstonebrick       = ndef->getId("mapgen_sandstonebrick");
-	c_sandstone            = ndef->getId("mapgen_sandstone");
-	c_stair_cobble         = ndef->getId("mapgen_stair_cobble");
-	c_stair_sandstonebrick = ndef->getId("mapgen_stair_sandstonebrick");
-	c_stone                = ndef->getId("mapgen_stone");
-	c_water_source         = ndef->getId("mapgen_water_source");
+	tcave_cache = new float[csize.Y + 2];
 
-	if (c_mossycobble == CONTENT_IGNORE)
-		c_mossycobble = c_cobble;
-	if (c_river_water_source == CONTENT_IGNORE)
-		c_river_water_source = c_water_source;
-	if (c_sand == CONTENT_IGNORE)
-		c_sand = c_stone;
-	if (c_sandstonebrick == CONTENT_IGNORE)
-		c_sandstonebrick = c_sandstone;
-	if (c_stair_cobble == CONTENT_IGNORE)
-		c_stair_cobble = c_cobble;
-	if (c_stair_sandstonebrick == CONTENT_IGNORE)
-		c_stair_sandstonebrick = c_sandstone;
+	// Resolve content to be used
+	c_lava_source = ndef->getId("mapgen_lava_source");
 }
 
 
@@ -161,10 +122,6 @@ MapgenValleys::~MapgenValleys()
 	delete noise_cave1;
 	delete noise_cave2;
 	delete noise_filler_depth;
-	delete noise_heat;
-	delete noise_heat_blend;
-	delete noise_humidity;
-	delete noise_humidity_blend;
 	delete noise_inter_valley_fill;
 	delete noise_inter_valley_slope;
 	delete noise_rivers;
@@ -173,16 +130,13 @@ MapgenValleys::~MapgenValleys()
 	delete noise_valley_depth;
 	delete noise_valley_profile;
 
-	delete[] biomemap;
-	delete[] heightmap;
 	delete[] tcave_cache;
 }
 
 
 MapgenValleysParams::MapgenValleysParams()
 {
-	spflags = MGVALLEYS_HUMID_RIVERS | MGVALLEYS_ALT_CHILL;
-
+	spflags            = MGVALLEYS_HUMID_RIVERS | MGVALLEYS_ALT_CHILL;
 	altitude_chill     = 90; // The altitude at which temperature drops by 20C.
 	large_cave_depth   = -33;
 	lava_features      = 0;  // How often water will occur in caves.
@@ -190,9 +144,10 @@ MapgenValleysParams::MapgenValleysParams()
 	river_depth        = 4;  // How deep to carve river channels.
 	river_size         = 5;  // How wide to make rivers.
 	water_features     = 0;  // How often water will occur in caves.
+	cave_width         = 0.2;
 
-	np_cave1              = NoiseParams(0,     12,   v3f(96,   96,   96),   52534, 4, 0.5,   2.0);
-	np_cave2              = NoiseParams(0,     12,   v3f(96,   96,   96),   10325, 4, 0.5,   2.0);
+	np_cave1              = NoiseParams(0,     12,   v3f(61,   61,   61),   52534, 3, 0.5,   2.0);
+	np_cave2              = NoiseParams(0,     12,   v3f(67,   67,   67),   10325, 3, 0.5,   2.0);
 	np_filler_depth       = NoiseParams(0.f,   1.2f, v3f(256,  256,  256),  1605,  3, 0.5f,  2.f);
 	np_inter_valley_fill  = NoiseParams(0.f,   1.f,  v3f(256,  512,  256),  1993,  6, 0.8f,  2.f);
 	np_inter_valley_slope = NoiseParams(0.5f,  0.5f, v3f(128,  128,  128),  746,   1, 1.f,   2.f);
@@ -201,56 +156,56 @@ MapgenValleysParams::MapgenValleysParams()
 	np_terrain_height     = NoiseParams(-10.f, 50.f, v3f(1024, 1024, 1024), 5202,  6, 0.4f,  2.f);
 	np_valley_depth       = NoiseParams(5.f,   4.f,  v3f(512,  512,  512),  -1914, 1, 1.f,   2.f);
 	np_valley_profile     = NoiseParams(0.6f,  0.5f, v3f(512,  512,  512),  777,   1, 1.f,   2.f);
-	}
+}
 
 
 void MapgenValleysParams::readParams(const Settings *settings)
 {
-	settings->getFlagStrNoEx("mg_valleys_spflags", spflags, flagdesc_mapgen_valleys);
+	settings->getFlagStrNoEx("mgvalleys_spflags",        spflags, flagdesc_mapgen_valleys);
+	settings->getU16NoEx("mgvalleys_altitude_chill",     altitude_chill);
+	settings->getS16NoEx("mgvalleys_large_cave_depth",   large_cave_depth);
+	settings->getU16NoEx("mgvalleys_lava_features",      lava_features);
+	settings->getS16NoEx("mgvalleys_massive_cave_depth", massive_cave_depth);
+	settings->getU16NoEx("mgvalleys_river_depth",        river_depth);
+	settings->getU16NoEx("mgvalleys_river_size",         river_size);
+	settings->getU16NoEx("mgvalleys_water_features",     water_features);
+	settings->getFloatNoEx("mgvalleys_cave_width",       cave_width);
 
-	settings->getU16NoEx("mg_valleys_altitude_chill",     altitude_chill);
-	settings->getS16NoEx("mg_valleys_large_cave_depth",   large_cave_depth);
-	settings->getU16NoEx("mg_valleys_lava_features",      lava_features);
-	settings->getS16NoEx("mg_valleys_massive_cave_depth", massive_cave_depth);
-	settings->getU16NoEx("mg_valleys_river_depth",        river_depth);
-	settings->getU16NoEx("mg_valleys_river_size",         river_size);
-	settings->getU16NoEx("mg_valleys_water_features",     water_features);
-
-	settings->getNoiseParams("mg_valleys_np_cave1",              np_cave1);
-	settings->getNoiseParams("mg_valleys_np_cave2",              np_cave2);
-	settings->getNoiseParams("mg_valleys_np_filler_depth",       np_filler_depth);
-	settings->getNoiseParams("mg_valleys_np_inter_valley_fill",  np_inter_valley_fill);
-	settings->getNoiseParams("mg_valleys_np_inter_valley_slope", np_inter_valley_slope);
-	settings->getNoiseParams("mg_valleys_np_rivers",             np_rivers);
-	settings->getNoiseParams("mg_valleys_np_massive_caves",      np_massive_caves);
-	settings->getNoiseParams("mg_valleys_np_terrain_height",     np_terrain_height);
-	settings->getNoiseParams("mg_valleys_np_valley_depth",       np_valley_depth);
-	settings->getNoiseParams("mg_valleys_np_valley_profile",     np_valley_profile);
+	settings->getNoiseParams("mgvalleys_np_cave1",              np_cave1);
+	settings->getNoiseParams("mgvalleys_np_cave2",              np_cave2);
+	settings->getNoiseParams("mgvalleys_np_filler_depth",       np_filler_depth);
+	settings->getNoiseParams("mgvalleys_np_inter_valley_fill",  np_inter_valley_fill);
+	settings->getNoiseParams("mgvalleys_np_inter_valley_slope", np_inter_valley_slope);
+	settings->getNoiseParams("mgvalleys_np_rivers",             np_rivers);
+	settings->getNoiseParams("mgvalleys_np_massive_caves",      np_massive_caves);
+	settings->getNoiseParams("mgvalleys_np_terrain_height",     np_terrain_height);
+	settings->getNoiseParams("mgvalleys_np_valley_depth",       np_valley_depth);
+	settings->getNoiseParams("mgvalleys_np_valley_profile",     np_valley_profile);
 }
 
 
 void MapgenValleysParams::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mg_valleys_spflags", spflags, flagdesc_mapgen_valleys, U32_MAX);
+	settings->setFlagStr("mgvalleys_spflags",        spflags, flagdesc_mapgen_valleys, U32_MAX);
+	settings->setU16("mgvalleys_altitude_chill",     altitude_chill);
+	settings->setS16("mgvalleys_large_cave_depth",   large_cave_depth);
+	settings->setU16("mgvalleys_lava_features",      lava_features);
+	settings->setS16("mgvalleys_massive_cave_depth", massive_cave_depth);
+	settings->setU16("mgvalleys_river_depth",        river_depth);
+	settings->setU16("mgvalleys_river_size",         river_size);
+	settings->setU16("mgvalleys_water_features",     water_features);
+	settings->setFloat("mgvalleys_cave_width",       cave_width);
 
-	settings->setU16("mg_valleys_altitude_chill",     altitude_chill);
-	settings->setS16("mg_valleys_large_cave_depth",   large_cave_depth);
-	settings->setU16("mg_valleys_lava_features",      lava_features);
-	settings->setS16("mg_valleys_massive_cave_depth", massive_cave_depth);
-	settings->setU16("mg_valleys_river_depth",        river_depth);
-	settings->setU16("mg_valleys_river_size",         river_size);
-	settings->setU16("mg_valleys_water_features",     water_features);
-
-	settings->setNoiseParams("mg_valleys_np_cave1",              np_cave1);
-	settings->setNoiseParams("mg_valleys_np_cave2",              np_cave2);
-	settings->setNoiseParams("mg_valleys_np_filler_depth",       np_filler_depth);
-	settings->setNoiseParams("mg_valleys_np_inter_valley_fill",  np_inter_valley_fill);
-	settings->setNoiseParams("mg_valleys_np_inter_valley_slope", np_inter_valley_slope);
-	settings->setNoiseParams("mg_valleys_np_rivers",             np_rivers);
-	settings->setNoiseParams("mg_valleys_np_massive_caves",      np_massive_caves);
-	settings->setNoiseParams("mg_valleys_np_terrain_height",     np_terrain_height);
-	settings->setNoiseParams("mg_valleys_np_valley_depth",       np_valley_depth);
-	settings->setNoiseParams("mg_valleys_np_valley_profile",     np_valley_profile);
+	settings->setNoiseParams("mgvalleys_np_cave1",              np_cave1);
+	settings->setNoiseParams("mgvalleys_np_cave2",              np_cave2);
+	settings->setNoiseParams("mgvalleys_np_filler_depth",       np_filler_depth);
+	settings->setNoiseParams("mgvalleys_np_inter_valley_fill",  np_inter_valley_fill);
+	settings->setNoiseParams("mgvalleys_np_inter_valley_slope", np_inter_valley_slope);
+	settings->setNoiseParams("mgvalleys_np_rivers",             np_rivers);
+	settings->setNoiseParams("mgvalleys_np_massive_caves",      np_massive_caves);
+	settings->setNoiseParams("mgvalleys_np_terrain_height",     np_terrain_height);
+	settings->setNoiseParams("mgvalleys_np_valley_depth",       np_valley_depth);
+	settings->setNoiseParams("mgvalleys_np_valley_profile",     np_valley_profile);
 }
 
 
@@ -287,62 +242,24 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	// Generate noise maps and base terrain height.
 	calculateNoise();
 
+	// Generate biome noises.  Note this must be executed strictly before
+	// generateTerrain, because generateTerrain depends on intermediate
+	// biome-related noises.
+	m_bgen->calcBiomeNoise(node_min);
+
 	// Generate base terrain with initial heightmaps
 	s16 stone_surface_max_y = generateTerrain();
 
-	// Create biomemap at heightmap surface
-	bmgr->calcBiomes(csize.X, csize.Z, heatmap, humidmap, heightmap, biomemap);
-
-	// Actually place the biome-specific nodes
-	MgStoneType stone_type = generateBiomes(heatmap, humidmap);
+	// Place biome-specific nodes and build biomemap
+	MgStoneType stone_type = generateBiomes();
 
 	// Cave creation.
 	if (flags & MG_CAVES)
-		generateCaves(stone_surface_max_y);
+		generateCaves(stone_surface_max_y, large_cave_depth);
 
 	// Dungeon creation
-	if ((flags & MG_DUNGEONS) && node_max.Y < 50 && (stone_surface_max_y >= node_min.Y)) {
-		DungeonParams dp;
-
-		dp.np_rarity  = nparams_dungeon_rarity;
-		dp.np_density = nparams_dungeon_density;
-		dp.np_wetness = nparams_dungeon_wetness;
-		dp.c_water    = c_water_source;
-		if (stone_type == STONE) {
-			dp.c_cobble = c_cobble;
-			dp.c_moss   = c_mossycobble;
-			dp.c_stair  = c_stair_cobble;
-
-			dp.diagonal_dirs = false;
-			dp.mossratio     = 3.f;
-			dp.holesize      = v3s16(1, 2, 1);
-			dp.roomsize      = v3s16(0, 0, 0);
-			dp.notifytype    = GENNOTIFY_DUNGEON;
-		} else if (stone_type == DESERT_STONE) {
-			dp.c_cobble = c_desert_stone;
-			dp.c_moss   = c_desert_stone;
-			dp.c_stair  = c_desert_stone;
-
-			dp.diagonal_dirs = true;
-			dp.mossratio     = 0.f;
-			dp.holesize      = v3s16(2, 3, 2);
-			dp.roomsize      = v3s16(2, 5, 2);
-			dp.notifytype    = GENNOTIFY_TEMPLE;
-		} else if (stone_type == SANDSTONE) {
-			dp.c_cobble = c_sandstonebrick;
-			dp.c_moss   = c_sandstonebrick;
-			dp.c_stair  = c_sandstonebrick;
-
-			dp.diagonal_dirs = false;
-			dp.mossratio     = 0.f;
-			dp.holesize      = v3s16(2, 2, 2);
-			dp.roomsize      = v3s16(2, 0, 2);
-			dp.notifytype    = GENNOTIFY_DUNGEON;
-		}
-
-		DungeonGen dgen(this, &dp);
-		dgen.generate(blockseed, full_node_min, full_node_max);
-	}
+	if ((flags & MG_DUNGEONS) && node_max.Y < 50)
+		generateDungeons(stone_surface_max_y, stone_type);
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)
@@ -384,11 +301,6 @@ void MapgenValleys::calculateNoise()
 
 	//TimeTaker tcn("actualNoise");
 
-	noise_filler_depth->perlinMap2D(x, z);
-	noise_heat_blend->perlinMap2D(x, z);
-	noise_heat->perlinMap2D(x, z);
-	noise_humidity_blend->perlinMap2D(x, z);
-	noise_humidity->perlinMap2D(x, z);
 	noise_inter_valley_slope->perlinMap2D(x, z);
 	noise_rivers->perlinMap2D(x, z);
 	noise_terrain_height->perlinMap2D(x, z);
@@ -399,9 +311,21 @@ void MapgenValleys::calculateNoise()
 
 	//mapgen_profiler->avg("noisemaps", tcn.stop() / 1000.f);
 
+	float heat_offset = 0.f;
+	float humidity_scale = 1.f;
+
+	// Altitude chill tends to reduce the average heat.
+	if (use_altitude_chill)
+		heat_offset = 5.f;
+
+	// River humidity tends to increase the humidity range.
+	if (humid_rivers) {
+		humidity_scale = 0.8f;
+	}
+
 	for (s32 index = 0; index < csize.X * csize.Z; index++) {
-		noise_heat->result[index] += noise_heat_blend->result[index];
-		noise_humidity->result[index] += noise_humidity_blend->result[index];
+		m_bgen->heatmap[index] += heat_offset;
+		m_bgen->humidmap[index] *= humidity_scale;
 	}
 
 	TerrainNoise tn;
@@ -431,9 +355,6 @@ void MapgenValleys::calculateNoise()
 		float mount = terrainLevelFromNoise(&tn);
 		noise_terrain_height->result[index] = mount;
 	}
-
-	heatmap  = noise_heat->result;
-	humidmap = noise_humidity->result;
 }
 
 
@@ -481,9 +402,10 @@ float MapgenValleys::terrainLevelFromNoise(TerrainNoise *tn)
 		}
 
 		// base - depth : height of the bottom of the river
-		// water_level - 6 : don't make rivers below 6 nodes under the surface
+		// water_level - 3 : don't make rivers below 3 nodes under the surface
+		// We use three because that's as low as the swamp biomes go.
 		// There is no logical equivalent to this using rangelim.
-		mount = MYMIN(MYMAX(base - depth, (float) (water_level - 6)), mount);
+		mount = MYMIN(MYMAX(base - depth, (float)(water_level - 3)), mount);
 
 		// Slope has no influence on rivers.
 		*tn->slope = 0.f;
@@ -503,7 +425,7 @@ float MapgenValleys::adjustedTerrainLevelFromNoise(TerrainNoise *tn)
 	for (s16 y = y_start; y <= y_start + 1000; y++) {
 		float fill = NoisePerlin3D(&noise_inter_valley_fill->np, tn->x, y, tn->z, seed);
 
-		if (fill * *tn->slope <= y - mount) {
+		if (fill * *tn->slope < y - mount) {
 			mount = MYMAX(y - 1, mount);
 			break;
 		}
@@ -522,7 +444,7 @@ int MapgenValleys::getSpawnLevelAtPoint(v2s16 p)
 
 	s16 level_at_point = terrainLevelAtPoint(p.X, p.Y);
 	if (level_at_point <= water_level ||
-			level_at_point > water_level + 16)
+			level_at_point > water_level + 32)
 		return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
 	else
 		return level_at_point;
@@ -552,9 +474,17 @@ float MapgenValleys::terrainLevelAtPoint(s16 x, s16 z)
 
 int MapgenValleys::generateTerrain()
 {
+	// Raising this reduces the rate of evaporation.
+	static const float evaporation = 300.f;
+	// from the lua
+	static const float humidity_dropoff = 4.f;
+	// constant to convert altitude chill (compatible with lua) to heat
+	static const float alt_to_heat = 20.f;
+	// humidity reduction by altitude
+	static const float alt_to_humid = 10.f;
+
 	MapNode n_air(CONTENT_AIR);
 	MapNode n_river_water(c_river_water_source);
-	MapNode n_sand(c_sand);
 	MapNode n_stone(c_stone);
 	MapNode n_water(c_water_source);
 
@@ -564,43 +494,54 @@ int MapgenValleys::generateTerrain()
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index_2d++) {
-		s16 river_y = floor(noise_rivers->result[index_2d]);
-		s16 surface_y = floor(noise_terrain_height->result[index_2d]);
+		float river_y = noise_rivers->result[index_2d];
+		float surface_y = noise_terrain_height->result[index_2d];
 		float slope = noise_inter_valley_slope->result[index_2d];
+		float t_heat = m_bgen->heatmap[index_2d];
 
-		heightmap[index_2d] = surface_y;
+		heightmap[index_2d] = -MAX_MAP_GENERATION_LIMIT;
 
 		if (surface_y > surface_max_y)
-			surface_max_y = surface_y;
+			surface_max_y = ceil(surface_y);
 
-		u32 index_3d = (z - node_min.Z) * zstride + (x - node_min.X);
+		if (humid_rivers) {
+			// Derive heat from (base) altitude. This will be most correct
+			// at rivers, since other surface heights may vary below.
+			if (use_altitude_chill && (surface_y > 0.f || river_y > 0.f))
+				t_heat -= alt_to_heat * MYMAX(surface_y, river_y) / altitude_chill;
+
+			// If humidity is low or heat is high, lower the water table.
+			float delta = m_bgen->humidmap[index_2d] - 50.f;
+			if (delta < 0.f) {
+				float t_evap = (t_heat - 32.f) / evaporation;
+				river_y += delta * MYMAX(t_evap, 0.08f);
+			}
+		}
+
+		u32 index_3d = (z - node_min.Z) * zstride_1u1d + (x - node_min.X);
 		u32 index_data = vm->m_area.index(x, node_min.Y - 1, z);
 
 		// Mapgens concern themselves with stone and water.
 		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
-			float fill = 0.f;
-			fill = noise_inter_valley_fill->result[index_3d];
-
 			if (vm->m_data[index_data].getContent() == CONTENT_IGNORE) {
-				bool river = (river_y > surface_y);
+				float fill = noise_inter_valley_fill->result[index_3d];
+				float surface_delta = (float)y - surface_y;
+				bool river = y + 1 < river_y;
 
-				if (river && y == surface_y) {
-					// river bottom
-					vm->m_data[index_data] = n_sand;
-				} else if (river && y <= surface_y) {
+				if (slope * fill > surface_delta) {
 					// ground
 					vm->m_data[index_data] = n_stone;
-				} else if (river && y < river_y) {
-					// river
-					vm->m_data[index_data] = n_river_water;
-				} else if ((!river) && myround(fill * slope) >= y - surface_y) {
-					// ground
-					vm->m_data[index_data] = n_stone;
-					heightmap[index_2d] = surface_max_y = y;
+					if (y > heightmap[index_2d])
+						heightmap[index_2d] = y;
+					if (y > surface_max_y)
+						surface_max_y = y;
 				} else if (y <= water_level) {
 					// sea
 					vm->m_data[index_data] = n_water;
-				} else {
+				} else if (river) {
+					// river
+					vm->m_data[index_data] = n_river_water;
+				} else {  // air
 					vm->m_data[index_data] = n_air;
 				}
 			}
@@ -609,183 +550,57 @@ int MapgenValleys::generateTerrain()
 			index_3d += ystride;
 		}
 
-		// Although the original valleys adjusts humidity by distance
-		// from seawater, this causes problems with the default biomes.
-		// Adjust only by freshwater proximity.
-		const float humidity_offset = 0.8f;  // derived by testing
-		if (humid_rivers)
-			noise_humidity->result[index_2d] *= (1 + pow(0.5f, MYMAX((surface_max_y
-					- noise_rivers->result[index_2d]) / 3.f, 0.f))) * humidity_offset;
+		// This happens if we're generating a chunk that doesn't
+		// contain the terrain surface, in which case, we need
+		// to set heightmap to a value outside of the chunk,
+		// to avoid confusing lua mods that use heightmap.
+		if (heightmap[index_2d] == -MAX_MAP_GENERATION_LIMIT) {
+			s16 surface_y_int = myround(surface_y);
+			if (surface_y_int > node_max.Y + 1 || surface_y_int < node_min.Y - 1) {
+				// If surface_y is outside the chunk, it's good enough.
+				heightmap[index_2d] = surface_y_int;
+			} else {
+				// If the ground is outside of this chunk, but surface_y
+				// is within the chunk, give a value outside.
+				heightmap[index_2d] = node_min.Y - 2;
+			}
+		}
 
-		// Assign the heat adjusted by altitude.
-		if (use_altitude_chill && surface_max_y > 0)
-			noise_heat->result[index_2d] *=
-				pow(0.5f, (surface_max_y - altitude_chill / 3.f) / altitude_chill);
+		if (humid_rivers) {
+			// Use base ground (water table) in a riverbed, to
+			// avoid an unnatural rise in humidity.
+			float t_alt = MYMAX(noise_rivers->result[index_2d], (float)heightmap[index_2d]);
+			float humid = m_bgen->humidmap[index_2d];
+			float water_depth = (t_alt - river_y) / humidity_dropoff;
+			humid *= 1.f + pow(0.5f, MYMAX(water_depth, 1.f));
+
+			// Reduce humidity with altitude (ignoring riverbeds).
+			// This is similar to the lua version's seawater adjustment,
+			// but doesn't increase the base humidity, which causes
+			// problems with the default biomes.
+			if (t_alt > 0.f)
+				humid -= alt_to_humid * t_alt / altitude_chill;
+
+			m_bgen->humidmap[index_2d] = humid;
+		}
+
+		// Assign the heat adjusted by any changed altitudes.
+		// The altitude will change about half the time.
+		if (use_altitude_chill) {
+			// ground height ignoring riverbeds
+			float t_alt = MYMAX(noise_rivers->result[index_2d], (float)heightmap[index_2d]);
+			if (humid_rivers && heightmap[index_2d] == (s16)myround(surface_y))
+				// The altitude hasn't changed. Use the first result.
+				m_bgen->heatmap[index_2d] = t_heat;
+			else if (t_alt > 0.f)
+				m_bgen->heatmap[index_2d] -= alt_to_heat * t_alt / altitude_chill;
+		}
 	}
 
 	return surface_max_y;
 }
 
-
-MgStoneType MapgenValleys::generateBiomes(float *heat_map, float *humidity_map)
-{
-	v3s16 em = vm->m_area.getExtent();
-	u32 index = 0;
-	MgStoneType stone_type = STONE;
-
-	for (s16 z = node_min.Z; z <= node_max.Z; z++)
-	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
-		Biome *biome = NULL;
-		u16 depth_top = 0;
-		u16 base_filler = 0;
-		u16 depth_water_top = 0;
-		u32 vi = vm->m_area.index(x, node_max.Y, z);
-
-		// Check node at base of mapchunk above, either a node of a previously
-		// generated mapchunk or if not, a node of overgenerated base terrain.
-		content_t c_above = vm->m_data[vi + em.X].getContent();
-		bool air_above = c_above == CONTENT_AIR;
-		bool water_above = (c_above == c_water_source);
-
-		// If there is air or water above enable top/filler placement, otherwise force
-		// nplaced to stone level by setting a number exceeding any possible filler depth.
-		u16 nplaced = (air_above || water_above) ? 0 : U16_MAX;
-
-		for (s16 y = node_max.Y; y >= node_min.Y; y--) {
-			content_t c = vm->m_data[vi].getContent();
-
-			// Biome is recalculated each time an upper surface is detected while
-			// working down a column. The selected biome then remains in effect for
-			// all nodes below until the next surface and biome recalculation.
-			// Biome is recalculated:
-			// 1. At the surface of stone below air or water.
-			// 2. At the surface of water below air.
-			// 3. When stone or water is detected but biome has not yet been calculated.
-			if ((c == c_stone && (air_above || water_above || !biome))
-					|| ((c == c_water_source || c == c_river_water_source)
-							&& (air_above || !biome))) {
-				// Both heat and humidity have already been adjusted for altitude.
-				biome = bmgr->getBiome(heat_map[index], humidity_map[index], y);
-
-				depth_top = biome->depth_top;
-				base_filler = MYMAX(depth_top
-						+ biome->depth_filler
-						+ noise_filler_depth->result[index], 0.f);
-				depth_water_top = biome->depth_water_top;
-
-				// Detect stone type for dungeons during every biome calculation.
-				// This is more efficient than detecting per-node and will not
-				// miss any desert stone or sandstone biomes.
-				if (biome->c_stone == c_desert_stone)
-					stone_type = DESERT_STONE;
-				else if (biome->c_stone == c_sandstone)
-					stone_type = SANDSTONE;
-			}
-
-			if (c == c_stone) {
-				content_t c_below = vm->m_data[vi - em.X].getContent();
-
-				// If the node below isn't solid, make this node stone, so that
-				// any top/filler nodes above are structurally supported.
-				// This is done by aborting the cycle of top/filler placement
-				// immediately by forcing nplaced to stone level.
-				if (c_below == CONTENT_AIR
-						|| c_below == c_water_source
-						|| c_below == c_river_water_source)
-					nplaced = U16_MAX;
-
-				if (nplaced < depth_top) {
-					vm->m_data[vi] = MapNode(biome->c_top);
-					nplaced++;
-				} else if (nplaced < base_filler) {
-					vm->m_data[vi] = MapNode(biome->c_filler);
-					nplaced++;
-				} else {
-					vm->m_data[vi] = MapNode(biome->c_stone);
-				}
-
-				air_above = false;
-				water_above = false;
-			} else if (c == c_water_source) {
-				vm->m_data[vi] = MapNode((y > (s32)(water_level - depth_water_top))
-						? biome->c_water_top : biome->c_water);
-				nplaced = 0;  // Enable top/filler placement for next surface
-				air_above = false;
-				water_above = true;
-			} else if (c == c_river_water_source) {
-				vm->m_data[vi] = MapNode(biome->c_river_water);
-				nplaced = U16_MAX;  // Sand was already placed under rivers.
-				air_above = false;
-				water_above = true;
-			} else if (c == CONTENT_AIR) {
-				nplaced = 0;  // Enable top/filler placement for next surface
-				air_above = true;
-				water_above = false;
-			} else {  // Possible various nodes overgenerated from neighbouring mapchunks
-				nplaced = U16_MAX;  // Disable top/filler placement
-				air_above = false;
-				water_above = false;
-			}
-
-			vm->m_area.add_y(em, vi, -1);
-		}
-	}
-
-	return stone_type;
-}
-
-
-void MapgenValleys::dustTopNodes()
-{
-	if (node_max.Y < water_level)
-		return;
-
-	v3s16 em = vm->m_area.getExtent();
-	u32 index = 0;
-
-	for (s16 z = node_min.Z; z <= node_max.Z; z++)
-	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
-		Biome *biome = (Biome *)bmgr->getRaw(biomemap[index]);
-
-		if (biome->c_dust == CONTENT_IGNORE)
-			continue;
-
-		u32 vi = vm->m_area.index(x, full_node_max.Y, z);
-		content_t c_full_max = vm->m_data[vi].getContent();
-		s16 y_start;
-
-		if (c_full_max == CONTENT_AIR) {
-			y_start = full_node_max.Y - 1;
-		} else if (c_full_max == CONTENT_IGNORE) {
-			vi = vm->m_area.index(x, node_max.Y + 1, z);
-			content_t c_max = vm->m_data[vi].getContent();
-
-			if (c_max == CONTENT_AIR)
-				y_start = node_max.Y;
-			else
-				continue;
-		} else {
-			continue;
-		}
-
-		vi = vm->m_area.index(x, y_start, z);
-		for (s16 y = y_start; y >= node_min.Y - 1; y--) {
-			if (vm->m_data[vi].getContent() != CONTENT_AIR)
-				break;
-
-			vm->m_area.add_y(em, vi, -1);
-		}
-
-		content_t c = vm->m_data[vi].getContent();
-		if (!ndef->get(c).buildable_to && c != CONTENT_IGNORE && c != biome->c_dust) {
-			vm->m_area.add_y(em, vi, 1);
-			vm->m_data[vi] = MapNode(biome->c_dust);
-		}
-	}
-}
-
-
-void MapgenValleys::generateCaves(s16 max_stone_y)
+void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 {
 	if (max_stone_y < node_min.Y)
 		return;
@@ -815,7 +630,7 @@ void MapgenValleys::generateCaves(s16 max_stone_y)
 	if (node_max.Y <= massive_cave_depth) {
 		noise_massive_caves->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
 
-		for (s16 y = node_min.Y - 1; y <= node_max.Y + 1; y++) {
+		for (s16 y = node_min.Y - 1; y <= node_max.Y; y++) {
 			float tcave = massive_cave_threshold;
 
 			if (y < yblmin) {
@@ -847,29 +662,30 @@ void MapgenValleys::generateCaves(s16 max_stone_y)
 	}
 
 	u32 index_2d = 0;
-	u32 index_3d = 0;
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index_2d++) {
-		Biome *biome = (Biome *)bmgr->getRaw(biomemap[index_2d]);
-		bool air_above = false;
+		Biome *biome = (Biome *)m_bmgr->getRaw(biomemap[index_2d]);
+		bool tunnel_air_above = false;
 		bool underground = false;
-		u32 index_data = vm->m_area.index(x, node_max.Y + 1, z);
-
-		index_3d = (z - node_min.Z) * zstride + (csize.Y + 1) * ystride + (x - node_min.X);
+		u32 index_data = vm->m_area.index(x, node_max.Y, z);
+		u32 index_3d = (z - node_min.Z) * zstride_1d + csize.Y * ystride + (x - node_min.X);
 
 		// Dig caves on down loop to check for air above.
-		for (s16 y = node_max.Y + 1;
-				y >= node_min.Y - 1;
-				y--, index_3d -= ystride, vm->m_area.add_y(em, index_data, -1)) {
+		// Don't excavate the overgenerated stone at node_max.Y + 1,
+		// this creates a 'roof' over the tunnel, preventing light in
+		// tunnels at mapchunk borders when generating mapchunks upwards.
+		// This 'roof' is removed when the mapchunk above is generated.
+		for (s16 y = node_max.Y; y >= node_min.Y - 1; y--,
+				index_3d -= ystride,
+				vm->m_area.add_y(em, index_data, -1)) {
+
 			float terrain = noise_terrain_height->result[index_2d];
 
 			// Saves some time.
-			if (y > terrain + 10) {
-				air_above = true;
+			if (y > terrain + 10)
 				continue;
-			} else if (y < terrain - 40) {
+			else if (y < terrain - 40)
 				underground = true;
-			}
 
 			// Dig massive caves.
 			if (node_max.Y <= massive_cave_depth
@@ -877,6 +693,7 @@ void MapgenValleys::generateCaves(s16 max_stone_y)
 					> tcave_cache[y - node_min.Y + 1]) {
 				vm->m_data[index_data] = n_air;
 				made_a_big_one = true;
+				continue;
 			}
 
 			content_t c = vm->m_data[index_data].getContent();
@@ -885,58 +702,57 @@ void MapgenValleys::generateCaves(s16 max_stone_y)
 
 			// River water is not set as ground content
 			// in the default game. This can produce strange results
-			// when a cave undercuts a river. However, that's not for
+			// when a tunnel undercuts a river. However, that's not for
 			// the mapgen to correct. Fix it in lua.
 
-			if (c == CONTENT_AIR) {
-				air_above = true;
-			} else if (d1 * d2 > 0.3f && ndef->get(c).is_ground_content) {
-				// in a cave
+			if (d1 * d2 > cave_width && ndef->get(c).is_ground_content) {
+				// in a tunnel
 				vm->m_data[index_data] = n_air;
-				air_above = true;
-			} else if (air_above && (c == biome->c_filler || c == biome->c_stone)) {
-				// at the cave floor
-				s16 sr = ps.range(0,39);
-				u32 j = index_data;
-				vm->m_area.add_y(em, j, 1);
+				tunnel_air_above = true;
+			} else if (c == biome->c_filler || c == biome->c_stone) {
+				if (tunnel_air_above) {
+					// at the tunnel floor
+					s16 sr = ps.range(0, 39);
+					u32 j = index_data;
+					vm->m_area.add_y(em, j, 1);
 
-				if (sr > terrain - y) {
-					// Put dirt in caves near the surface.
-					if (underground)
-						vm->m_data[index_data] = MapNode(biome->c_filler);
-					else
-						vm->m_data[index_data] = MapNode(biome->c_top);
-				} else if (sr < 3 && underground) {
-					sr = abs(ps.next());
-					if (lava_features_lim > 0 && y <= lava_max_height
-							&& c == biome->c_stone && sr < lava_chance)
-						vm->m_data[j] = n_lava;
+					if (sr > terrain - y) {
+						// Put dirt in tunnels near the surface.
+						if (underground)
+							vm->m_data[index_data] = MapNode(biome->c_filler);
+						else
+							vm->m_data[index_data] = MapNode(biome->c_top);
+					} else if (sr < 3 && underground) {
+						sr = abs(ps.next());
+						if (lava_features_lim > 0 && y <= lava_max_height
+								&& c == biome->c_stone && sr < lava_chance)
+							vm->m_data[j] = n_lava;
 
-					sr -= lava_chance;
+						sr -= lava_chance;
 
-					// If sr < 0 then we should have already placed lava --
-					// don't immediately dump water on it.
-					if (water_features_lim > 0 && y <= cave_water_max_height
-							&& sr >= 0 && sr < water_chance)
-						vm->m_data[j] = n_water;
+						// If sr < 0 then we should have already placed lava --
+						// don't immediately dump water on it.
+						if (water_features_lim > 0 && y <= cave_water_max_height
+								&& sr >= 0 && sr < water_chance)
+							vm->m_data[j] = n_water;
+					}
 				}
 
-				air_above = false;
-				underground = true;
-			} else if (c == biome->c_filler || c == biome->c_stone) {
-				air_above = false;
+				tunnel_air_above = false;
 				underground = true;
 			} else {
-				air_above = false;
+				tunnel_air_above = false;
 			}
 		}
 	}
 
-	if (node_max.Y <= large_cave_depth && (!made_a_big_one)) {
+	if (node_max.Y <= large_cave_depth && !made_a_big_one) {
 		u32 bruises_count = ps.range(0, 2);
 		for (u32 i = 0; i < bruises_count; i++) {
-			CaveV5 cave(this, &ps);
-			cave.makeCave(node_min, node_max, max_stone_y);
+			CavesRandomWalk cave(ndef, &gennotify, seed, water_level,
+				c_water_source, c_lava_source);
+
+			cave.makeCave(vm, node_min, node_max, &ps, true, max_stone_y, heightmap);
 		}
 	}
 }

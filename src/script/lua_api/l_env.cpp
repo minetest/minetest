@@ -90,6 +90,46 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 	lua_pop(L, 1); // Pop error handler
 }
 
+void LuaLBM::trigger(ServerEnvironment *env, v3s16 p, MapNode n)
+{
+	GameScripting *scriptIface = env->getScriptIface();
+	scriptIface->realityCheck();
+
+	lua_State *L = scriptIface->getStack();
+	sanity_check(lua_checkstack(L, 20));
+	StackUnroller stack_unroller(L);
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
+	// Get registered_lbms
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_lbms");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	lua_remove(L, -2); // Remove core
+
+	// Get registered_lbms[m_id]
+	lua_pushnumber(L, m_id);
+	lua_gettable(L, -2);
+	FATAL_ERROR_IF(lua_isnil(L, -1), "Entry with given id not found in registered_lbms table");
+	lua_remove(L, -2); // Remove registered_lbms
+
+	scriptIface->setOriginFromTable(-1);
+
+	// Call action
+	luaL_checktype(L, -1, LUA_TTABLE);
+	lua_getfield(L, -1, "action");
+	luaL_checktype(L, -1, LUA_TFUNCTION);
+	lua_remove(L, -2); // Remove registered_lbms[m_id]
+	push_v3s16(L, p);
+	pushnode(L, n, env->getGameDef()->ndef());
+
+	int result = lua_pcall(L, 2, 0, error_handler);
+	if (result)
+		scriptIface->scriptError(result, "LuaLBM::trigger");
+
+	lua_pop(L, 1); // Pop error handler
+}
+
 void LuaEmergeAreaCallback(v3s16 blockpos, EmergeAction action, void *param)
 {
 	ScriptCallbackState *state = (ScriptCallbackState *)param;
@@ -521,6 +561,15 @@ int ModApiEnvMod::l_get_timeofday(lua_State *L)
 	return 1;
 }
 
+// get_day_count() -> int
+int ModApiEnvMod::l_get_day_count(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	lua_pushnumber(L, env->getDayCount());
+	return 1;
+}
+
 // get_gametime()
 int ModApiEnvMod::l_get_gametime(lua_State *L)
 {
@@ -709,7 +758,7 @@ int ModApiEnvMod::l_get_perlin_map(lua_State *L)
 		return 0;
 	v3s16 size = read_v3s16(L, 2);
 
-	int seed = (int)(env->getServerMap().getSeed());
+	s32 seed = (s32)(env->getServerMap().getSeed());
 	LuaPerlinNoiseMap *n = new LuaPerlinNoiseMap(&np, seed, size);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = n;
 	luaL_getmetatable(L, "PerlinNoiseMap");
@@ -866,19 +915,19 @@ int ModApiEnvMod::l_find_path(lua_State *L)
 	unsigned int searchdistance = luaL_checkint(L, 3);
 	unsigned int max_jump       = luaL_checkint(L, 4);
 	unsigned int max_drop       = luaL_checkint(L, 5);
-	algorithm algo              = A_PLAIN_NP;
+	PathAlgorithm algo          = PA_PLAIN_NP;
 	if (!lua_isnil(L, 6)) {
 		std::string algorithm = luaL_checkstring(L,6);
 
 		if (algorithm == "A*")
-			algo = A_PLAIN;
+			algo = PA_PLAIN;
 
 		if (algorithm == "Dijkstra")
-			algo = DIJKSTRA;
+			algo = PA_DIJKSTRA;
 	}
 
-	std::vector<v3s16> path =
-			get_Path(env,pos1,pos2,searchdistance,max_jump,max_drop,algo);
+	std::vector<v3s16> path = get_path(env, pos1, pos2,
+		searchdistance, max_jump, max_drop, algo);
 
 	if (path.size() > 0)
 	{
@@ -1015,6 +1064,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(set_timeofday);
 	API_FCT(get_timeofday);
 	API_FCT(get_gametime);
+	API_FCT(get_day_count);
 	API_FCT(find_node_near);
 	API_FCT(find_nodes_in_area);
 	API_FCT(find_nodes_in_area_under_air);

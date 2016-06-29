@@ -31,7 +31,7 @@ namespace treegen
 {
 
 void make_tree(MMVManip &vmanip, v3s16 p0,
-		bool is_apple_tree, INodeDefManager *ndef, int seed)
+		bool is_apple_tree, INodeDefManager *ndef, s32 seed)
 {
 	/*
 		NOTE: Tree-placing code is currently duplicated in the engine
@@ -149,7 +149,7 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
 		INodeDefManager *ndef, TreeDef tree_definition)
 {
 	MapNode dirtnode(ndef->getId("mapgen_dirt"));
-	int seed;
+	s32 seed;
 	if (tree_definition.explicit_seed)
 		seed = tree_definition.seed + 14002;
 	else
@@ -649,7 +649,7 @@ v3f transposeMatrix(irr::core::matrix4 M, v3f v)
 }
 
 
-void make_jungletree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, int seed)
+void make_jungletree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, s32 seed)
 {
 	/*
 		NOTE: Tree-placing code is currently duplicated in the engine
@@ -748,7 +748,7 @@ void make_jungletree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, int seed
 }
 
 
-void make_pine_tree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, int seed)
+void make_pine_tree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, s32 seed)
 {
 	/*
 		NOTE: Tree-placing code is currently duplicated in the engine

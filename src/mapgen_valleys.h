@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MYCUBE(x) (x) * (x) * (x)
 
 class BiomeManager;
+class BiomeGenOriginal;
 
 // Global profiler
 //class Profiler;
@@ -47,7 +48,6 @@ class BiomeManager;
 
 struct MapgenValleysParams : public MapgenSpecificParams {
 	u32 spflags;
-
 	s16 large_cave_depth;
 	s16 massive_cave_depth;
 	u16 altitude_chill;
@@ -55,11 +55,7 @@ struct MapgenValleysParams : public MapgenSpecificParams {
 	u16 river_depth;
 	u16 river_size;
 	u16 water_features;
-
-	NoiseParams np_biome_heat;
-	NoiseParams np_biome_heat_blend;
-	NoiseParams np_biome_humidity;
-	NoiseParams np_biome_humidity_blend;
+	float cave_width;
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
 	NoiseParams np_filler_depth;
@@ -89,7 +85,7 @@ struct TerrainNoise {
 	float inter_valley_fill;
 };
 
-class MapgenValleys : public Mapgen {
+class MapgenValleys : public MapgenBasic {
 public:
 
 	MapgenValleys(int mapgenid, MapgenParams *params, EmergeManager *emerge);
@@ -101,64 +97,34 @@ public:
 	s16 large_cave_depth;
 
 private:
-	EmergeManager *m_emerge;
-	BiomeManager *bmgr;
-
-	int ystride;
-	int zstride;
+	BiomeGenOriginal *m_bgen;
 
 	float map_gen_limit;
 
-	u32 spflags;
 	bool humid_rivers;
 	bool use_altitude_chill;
-
-	v3s16 node_min;
-	v3s16 node_max;
-	v3s16 full_node_min;
-	v3s16 full_node_max;
-
-	Noise *noise_filler_depth;
-
-	Noise *noise_cave1;
-	Noise *noise_cave2;
-	Noise *noise_heat;
-	Noise *noise_heat_blend;
-	Noise *noise_humidity;
-	Noise *noise_humidity_blend;
-	Noise *noise_inter_valley_fill;
-	Noise *noise_inter_valley_slope;
-	Noise *noise_rivers;
-	Noise *noise_massive_caves;
-	Noise *noise_terrain_height;
-	Noise *noise_valley_depth;
-	Noise *noise_valley_profile;
+	float humidity_adjust;
+	s16 cave_water_max_height;
+	s16 lava_max_height;
 
 	float altitude_chill;
-	s16 cave_water_max_height;
-	float humidity_adjust;
 	s16 lava_features_lim;
-	s16 lava_max_height;
 	s16 massive_cave_depth;
 	float river_depth_bed;
 	float river_size_factor;
 	float *tcave_cache;
 	s16 water_features_lim;
+	Noise *noise_inter_valley_fill;
+	Noise *noise_inter_valley_slope;
+	Noise *noise_rivers;
+	Noise *noise_cave1;
+	Noise *noise_cave2;
+	Noise *noise_massive_caves;
+	Noise *noise_terrain_height;
+	Noise *noise_valley_depth;
+	Noise *noise_valley_profile;
 
-	content_t c_cobble;
-	content_t c_desert_stone;
-	content_t c_dirt;
-	content_t c_ice;
 	content_t c_lava_source;
-	content_t c_mossycobble;
-	content_t c_river_water_source;
-	content_t c_sand;
-	content_t c_sandstone;
-	content_t c_sandstonebrick;
-	content_t c_stair_cobble;
-	content_t c_stair_sandstonebrick;
-	content_t c_stone;
-	content_t c_water_source;
 
 	float terrainLevelAtPoint(s16 x, s16 z);
 
@@ -168,12 +134,7 @@ private:
 	float terrainLevelFromNoise(TerrainNoise *tn);
 	float adjustedTerrainLevelFromNoise(TerrainNoise *tn);
 
-	float humidityByTerrain(float humidity_base, float mount, float rivers, float valley);
-
-	MgStoneType generateBiomes(float *heat_map, float *humidity_map);
-	void dustTopNodes();
-
-	void generateCaves(s16 max_stone_y);
+	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
 };
 
 struct MapgenFactoryValleys : public MapgenFactory {

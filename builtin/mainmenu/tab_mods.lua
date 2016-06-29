@@ -28,7 +28,7 @@ local function get_formspec(tabview, name, tabdata)
 
 	local retval =
 		"label[0.05,-0.25;".. fgettext("Installed Mods:") .. "]" ..
-		"textlist[0,0.25;5.1,4.35;modlist;" ..
+		"textlist[0,0.25;5.1,5;modlist;" ..
 		modmgr.render_modlist(modmgr.global_mods) ..
 		";" .. tabdata.selected_mod .. "]"
 
@@ -78,7 +78,7 @@ local function get_formspec(tabview, name, tabdata)
 			descriptionfile:close()
 		else
 			descriptionlines = {}
-			table.insert(descriptionlines,fgettext("No mod description available"))
+			descriptionlines[#descriptionlines + 1] = fgettext("No mod description available")
 		end
 
 		retval = retval ..
@@ -163,7 +163,7 @@ local function handle_buttons(tabview, fields, tabname, tabdata)
 end
 
 --------------------------------------------------------------------------------
-tab_mods = {
+return {
 	name = "mods",
 	caption = fgettext("Mods"),
 	cbf_formspec = get_formspec,

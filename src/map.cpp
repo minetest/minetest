@@ -50,6 +50,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if USE_REDIS
 #include "database-redis.h"
 #endif
+#if USE_POSTGRESQL
+#include "database-postgresql.h"
+#endif
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
@@ -1614,7 +1617,7 @@ s32 Map::transforming_liquid_size() {
         return m_transforming_liquid.size();
 }
 
-void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
+void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks)
 {
 
 	INodeDefManager *nodemgr = m_gamedef->ndef();
@@ -1632,7 +1635,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 	std::deque<v3s16> must_reflow;
 
 	// List of MapBlocks that will require a lighting update (due to lava)
-	std::map<v3s16, MapBlock*> lighting_modified_blocks;
+	std::map<v3s16, MapBlock *> lighting_modified_blocks;
 
 	u32 liquid_loop_max = g_settings->getS32("liquid_loop_max");
 	u32 loop_max = liquid_loop_max;
@@ -1675,7 +1678,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 		s8 liquid_level = -1;
 		content_t liquid_kind = CONTENT_IGNORE;
 		content_t floodable_node = CONTENT_AIR;
-		ContentFeatures cf = nodemgr->get(n0);
+		const ContentFeatures &cf = nodemgr->get(n0);
 		LiquidType liquid_type = cf.liquid_type;
 		switch (liquid_type) {
 			case LIQUID_SOURCE:
@@ -1721,7 +1724,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks)
 			}
 			v3s16 npos = p0 + dirs[i];
 			NodeNeighbor nb(getNodeNoEx(npos), nt, npos);
-			ContentFeatures cfnb = nodemgr->get(nb.n);
+			const ContentFeatures &cfnb = nodemgr->get(nb.n);
 			switch (nodemgr->get(nb.n.getContent()).liquid_type) {
 				case LIQUID_NONE:
 					if (cfnb.floodable) {
@@ -2084,11 +2087,13 @@ NodeTimer Map::getNodeTimer(v3s16 p)
 		return NodeTimer();
 	}
 	NodeTimer t = block->m_node_timers.get(p_rel);
-	return t;
+	NodeTimer nt(t.timeout, t.elapsed, p);
+	return nt;
 }
 
-void Map::setNodeTimer(v3s16 p, NodeTimer t)
+void Map::setNodeTimer(const NodeTimer &t)
 {
+	v3s16 p = t.position;
 	v3s16 blockpos = getNodeBlockPos(p);
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
@@ -2102,7 +2107,8 @@ void Map::setNodeTimer(v3s16 p, NodeTimer t)
 				<<std::endl;
 		return;
 	}
-	block->m_node_timers.set(p_rel, t);
+	NodeTimer nt(t.timeout, t.elapsed, p_rel);
+	block->m_node_timers.set(nt);
 }
 
 void Map::removeNodeTimer(v3s16 p)
@@ -3240,6 +3246,10 @@ Database *ServerMap::createDatabase(
 	else if (name == "redis")
 		return new Database_Redis(conf);
 	#endif
+	#if USE_POSTGRESQL
+	else if (name == "postgresql")
+		return new Database_PostgreSQL(conf);
+	#endif
 	else
 		throw BaseException(std::string("Database backend ") + name + " not supported.");
 }
@@ -3442,8 +3452,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 	v2s16 p2d(blockpos.X, blockpos.Z);
 
 	std::string ret;
-
-	ret = dbase->loadBlock(blockpos);
+	dbase->loadBlock(blockpos, &ret);
 	if (ret != "") {
 		loadBlock(&ret, blockpos, createSector(p2d), false);
 		return getBlockNoCreateNoEx(blockpos);

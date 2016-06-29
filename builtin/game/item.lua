@@ -233,7 +233,8 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 		place_to = {x = under.x, y = under.y, z = under.z}
 	end
 
-	if core.is_protected(place_to, placer:get_player_name()) then
+	if core.is_protected(place_to, placer:get_player_name()) and
+			not minetest.check_player_privs(placer, "protection_bypass") then
 		core.log("action", placer:get_player_name()
 				.. " tried to place " .. def.name
 				.. " at protected position "
@@ -249,7 +250,9 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 	local newnode = {name = def.name, param1 = 0, param2 = param2}
 
 	-- Calculate direction for wall mounted stuff like torches and signs
-	if def.paramtype2 == 'wallmounted' and not param2 then
+	if def.place_param2 ~= nil then
+		newnode.param2 = def.place_param2
+	elseif def.paramtype2 == 'wallmounted' and not param2 then
 		local dir = {
 			x = under.x - above.x,
 			y = under.y - above.y,
@@ -444,7 +447,8 @@ function core.node_dig(pos, node, digger)
 		return
 	end
 
-	if core.is_protected(pos, digger:get_player_name()) then
+	if core.is_protected(pos, digger:get_player_name()) and
+			not minetest.check_player_privs(digger, "protection_bypass") then
 		core.log("action", digger:get_player_name()
 				.. " tried to dig " .. node.name
 				.. " at protected position "

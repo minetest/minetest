@@ -179,7 +179,12 @@ void OreSheet::generate(MMVManip *vm, int mapseed, u32 blockseed,
 	MapNode n_ore(c_ore, 0, ore_param2);
 
 	u16 max_height = column_height_max;
-	int y_start = pr.range(nmin.Y + max_height, nmax.Y - max_height);
+	int y_start_min = nmin.Y + max_height;
+	int y_start_max = nmax.Y - max_height;
+
+	int y_start = y_start_min < y_start_max ?
+		pr.range(y_start_min, y_start_max) :
+		(y_start_min + y_start_max) / 2;
 
 	if (!noise) {
 		int sx = nmax.X - nmin.X + 1;
@@ -204,10 +209,10 @@ void OreSheet::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 		u16 height = pr.range(column_height_min, column_height_max);
 		int ymidpoint = y_start + noiseval;
-		int y0 = ymidpoint - height * (1 - column_midpoint_factor);
-		int y1 = y0 + height;
+		int y0 = MYMAX(nmin.Y, ymidpoint - height * (1 - column_midpoint_factor));
+		int y1 = MYMIN(nmax.Y, y0 + height - 1);
 
-		for (int y = y0; y < y1; y++) {
+		for (int y = y0; y <= y1; y++) {
 			u32 i = vm->m_area.index(x, y, z);
 			if (!vm->m_area.contains(i))
 				continue;

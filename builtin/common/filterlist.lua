@@ -189,7 +189,7 @@ function filterlist.process(self)
 	for k,v in pairs(self.m_raw_list) do
 		if self.m_filtercriteria == nil or
 			self.m_filter_fct(v,self.m_filtercriteria) then
-			table.insert(self.m_processed_list,v)
+			self.m_processed_list[#self.m_processed_list + 1] = v
 		end
 	end
 	

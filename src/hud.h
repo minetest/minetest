@@ -130,7 +130,7 @@ public:
 	void drawCrosshair();
 	void drawSelectionMesh();
 	void updateSelectionMesh(const v3s16 &camera_offset);
-	
+
 	std::vector<aabb3f> *getSelectionBoxes()
 	{ return &m_selection_boxes; }
 
@@ -148,17 +148,18 @@ private:
 	void drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
 			s32 count, v2s32 offset, v2s32 size=v2s32());
 
-	void drawItems(v2s32 upperleftpos, s32 itemcount, s32 offset,
-		InventoryList *mainlist, u16 selectitem, u16 direction);
+	void drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
+		s32 inv_offset, InventoryList *mainlist, u16 selectitem, u16 direction);
 
 	void drawItem(const ItemStack &item, const core::rect<s32>& rect,
 		bool selected);
 
+	float m_hud_scaling; // cached minetest setting
 	v3s16 m_camera_offset;
 	v2u32 m_screensize;
 	v2s32 m_displaycenter;
-	s32 m_hotbar_imagesize;
-	s32 m_padding;
+	s32 m_hotbar_imagesize; // Takes hud_scaling into account, updated by resizeHotbar()
+	s32 m_padding;  // Takes hud_scaling into account, updated by resizeHotbar()
 	video::SColor hbar_colors[4];
 
 	std::vector<aabb3f> m_selection_boxes;

@@ -314,7 +314,7 @@ std::string wide_to_narrow(const std::wstring &wcs)
 
 #endif
 
-std::string urlencode(std::string str)
+std::string urlencode(const std::string &str)
 {
 	// Encodes non-unreserved URI characters by a percent sign
 	// followed by two hex digits. See RFC 3986, section 2.3.
@@ -322,17 +322,18 @@ std::string urlencode(std::string str)
 	std::ostringstream oss(std::ios::binary);
 	for (u32 i = 0; i < str.size(); i++) {
 		unsigned char c = str[i];
-		if (isalnum(c) || c == '-' || c == '.' || c == '_' || c == '~')
+		if (isalnum(c) || c == '-' || c == '.' || c == '_' || c == '~') {
 			oss << c;
-		else
+		} else {
 			oss << "%"
 				<< url_hex_chars[(c & 0xf0) >> 4]
 				<< url_hex_chars[c & 0x0f];
+		}
 	}
 	return oss.str();
 }
 
-std::string urldecode(std::string str)
+std::string urldecode(const std::string &str)
 {
 	// Inverse of urlencode
 	std::ostringstream oss(std::ios::binary);
@@ -343,18 +344,20 @@ std::string urldecode(std::string str)
 				hex_digit_decode(str[i+2], lowvalue)) {
 			oss << (char) ((highvalue << 4) | lowvalue);
 			i += 2;
-		}
-		else
+		} else {
 			oss << str[i];
+		}
 	}
 	return oss.str();
 }
 
 u32 readFlagString(std::string str, const FlagDesc *flagdesc, u32 *flagmask)
 {
-	u32 result = 0, mask = 0;
+	u32 result = 0;
+	u32 mask = 0;
 	char *s = &str[0];
-	char *flagstr, *strpos = NULL;
+	char *flagstr;
+	char *strpos = NULL;
 
 	while ((flagstr = strtok_r(s, ",", &strpos))) {
 		s = NULL;

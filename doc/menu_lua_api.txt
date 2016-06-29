@@ -1,4 +1,4 @@
-Minetest Lua Mainmenu API Reference 0.4.13
+Minetest Lua Mainmenu API Reference 0.4.14
 ========================================
 
 Introduction
@@ -210,6 +210,10 @@ string:trim()
 ^ eg. string.trim("\n \t\tfoo bar\t ") == "foo bar"
 core.is_yes(arg) (possible in async calls)
 ^ returns whether arg can be interpreted as yes
+minetest.encode_base64(string) (possible in async calls)
+^ Encodes a string in base64.
+minetest.decode_base64(string) (possible in async calls)
+^ Decodes a string encoded in base64.
 
 Version compat:
 core.get_min_supp_proto()

@@ -23,11 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "cpp_api/s_security.h"
 #include "irr_v3d.h"
-#include "areastore.h"
+#include "util/areastore.h"
 #include "filesys.h"
-#ifndef ANDROID
-	#include "cmake_config.h"
-#endif
 #include <fstream>
 
 static inline void get_data_and_border_flags(lua_State *L, u8 start_i,
@@ -71,6 +68,22 @@ static inline void push_areas(lua_State *L, const std::vector<Area *> &areas,
 		push_area(L, areas[i], borders, data);
 		lua_settable(L, -3);
 	}
+}
+
+// Deserializes value and handles errors
+static int deserialization_helper(lua_State *L, AreaStore *as,
+		std::istream &is)
+{
+	try {	
+		as->deserialize(is);
+	} catch (const SerializationError &e) {
+		lua_pushboolean(L, false);
+		lua_pushstring(L, e.what());
+		return 2;
+	}
+
+	lua_pushboolean(L, true);
+	return 1;
 }
 
 // garbage collector
@@ -151,7 +164,7 @@ int LuaAreaStore::l_get_areas_in_area(lua_State *L)
 	return 1;
 }
 
-// insert_area(edge1, edge2, data)
+// insert_area(edge1, edge2, data, id)
 int LuaAreaStore::l_insert_area(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -159,26 +172,18 @@ int LuaAreaStore::l_insert_area(lua_State *L)
 	LuaAreaStore *o = checkobject(L, 1);
 	AreaStore *ast = o->as;
 
-	Area a;
-
-	a.minedge = check_v3s16(L, 2);
-	a.maxedge = check_v3s16(L, 3);
-
-	a.extremifyEdges();
-	a.id = ast->getFreeId(a.minedge, a.maxedge);
-
-	if (a.id == AREA_ID_INVALID) {
-		// couldn't get free id
-		lua_pushnil(L);
-		return 1;
-	}
+	Area a(check_v3s16(L, 2), check_v3s16(L, 3));
 
 	size_t d_len;
 	const char *data = luaL_checklstring(L, 4, &d_len);
 
 	a.data = std::string(data, d_len);
 
-	ast->insertArea(a);
+	if (lua_isnumber(L, 5))
+		a.id = lua_tonumber(L, 5);
+
+	if (!ast->insertArea(&a))
+		return 0;
 
 	lua_pushnumber(L, a.id);
 	return 1;
@@ -231,17 +236,15 @@ int LuaAreaStore::l_set_cache_params(lua_State *L)
 	return 0;
 }
 
-#if 0
 // to_string()
 int LuaAreaStore::l_to_string(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaAreaStore *o = checkobject(L, 1);
-	AreaStore *ast = o->as;
 
 	std::ostringstream os(std::ios_base::binary);
-	ast->serialize(os);
+	o->as->serialize(os);
 	std::string str = os.str();
 
 	lua_pushlstring(L, str.c_str(), str.length());
@@ -272,16 +275,12 @@ int LuaAreaStore::l_from_string(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaAreaStore *o = checkobject(L, 1);
-	AreaStore *ast = o->as;
 
 	size_t len;
 	const char *str = luaL_checklstring(L, 2, &len);
 
 	std::istringstream is(std::string(str, len), std::ios::binary);
-	bool success = ast->deserialize(is);
-
-	lua_pushboolean(L, success);
-	return 1;
+	return deserialization_helper(L, o->as, is);
 }
 
 // from_file(filename)
@@ -290,26 +289,17 @@ int LuaAreaStore::l_from_file(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaAreaStore *o = checkobject(L, 1);
-	AreaStore *ast = o->as;
 
 	const char *filename = luaL_checkstring(L, 2);
 	CHECK_SECURE_PATH_OPTIONAL(L, filename);
 
 	std::ifstream is(filename, std::ios::binary);
-	bool success = ast->deserialize(is);
-
-	lua_pushboolean(L, success);
-	return 1;
+	return deserialization_helper(L, o->as, is);
 }
-#endif
 
 LuaAreaStore::LuaAreaStore()
 {
-#if USE_SPATIAL
-	this->as = new SpatialAreaStore();
-#else
-	this->as = new VectorAreaStore();
-#endif
+	this->as = AreaStore::getOptimalImplementation();
 }
 
 LuaAreaStore::LuaAreaStore(const std::string &type)
@@ -395,9 +385,9 @@ const luaL_reg LuaAreaStore::methods[] = {
 	luamethod(LuaAreaStore, reserve),
 	luamethod(LuaAreaStore, remove_area),
 	luamethod(LuaAreaStore, set_cache_params),
-	/* luamethod(LuaAreaStore, to_string),
+	luamethod(LuaAreaStore, to_string),
 	luamethod(LuaAreaStore, to_file),
 	luamethod(LuaAreaStore, from_string),
-	luamethod(LuaAreaStore, from_file),*/
+	luamethod(LuaAreaStore, from_file),
 	{0,0}
 };

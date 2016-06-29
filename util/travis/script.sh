@@ -2,10 +2,8 @@
 
 if [[ $PLATFORM == "Unix" ]]; then
 	mkdir -p travisbuild
-	cd travisbuild
-	CMAKE_FLAGS='-DCMAKE_BUILD_TYPE=Debug \
-		-DRUN_IN_PLACE=TRUE \
-		-DENABLE_GETTEXT=TRUE'
+	cd travisbuild || exit 1
+	CMAKE_FLAGS=''
 	# Clang builds with FreeType fail on Travis
 	if [[ $CC == "clang" ]]; then
 		CMAKE_FLAGS+=' -DENABLE_FREETYPE=FALSE'
@@ -13,7 +11,10 @@ if [[ $PLATFORM == "Unix" ]]; then
 	if [[ $TRAVIS_OS_NAME == "osx" ]]; then
 		CMAKE_FLAGS+=' -DCUSTOM_GETTEXT_PATH=/usr/local/opt/gettext'
 	fi
-	cmake $CMAKE_FLAGS ..
+	cmake -DCMAKE_BUILD_TYPE=Debug \
+		-DRUN_IN_PLACE=TRUE \
+		-DENABLE_GETTEXT=TRUE \
+		$CMAKE_FLAGS ..
 	make -j2
 	echo "Running unit tests."
 	../bin/minetest --run-unittests && exit 0
@@ -34,9 +35,9 @@ elif [[ $PLATFORM == Win* ]]; then
 	export EXISTING_MINETEST_DIR=$OLDDIR
 	export NO_MINETEST_GAME=1
 	if [[ $PLATFORM == "Win32" ]]; then
-		$OLDDIR/util/buildbot/buildwin32.sh travisbuild && exit 0
+		"$OLDDIR/util/buildbot/buildwin32.sh" travisbuild && exit 0
 	elif [[ $PLATFORM == "Win64" ]]; then
-		$OLDDIR/util/buildbot/buildwin64.sh travisbuild && exit 0
+		"$OLDDIR/util/buildbot/buildwin64.sh" travisbuild && exit 0
 	fi
 else
 	echo "Unknown platform \"${PLATFORM}\"."

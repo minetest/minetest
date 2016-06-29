@@ -28,10 +28,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Database_Dummy : public Database
 {
 public:
-	virtual bool saveBlock(const v3s16 &pos, const std::string &data);
-	virtual std::string loadBlock(const v3s16 &pos);
-	virtual bool deleteBlock(const v3s16 &pos);
-	virtual void listAllLoadableBlocks(std::vector<v3s16> &dst);
+	bool saveBlock(const v3s16 &pos, const std::string &data);
+	void loadBlock(const v3s16 &pos, std::string *block);
+	bool deleteBlock(const v3s16 &pos);
+	void listAllLoadableBlocks(std::vector<v3s16> &dst);
 
 private:
 	std::map<s64, std::string> m_database;

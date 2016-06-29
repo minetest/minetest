@@ -140,7 +140,9 @@ MapgenV6::~MapgenV6()
 
 MapgenV6Params::MapgenV6Params()
 {
-	spflags     = MGV6_BIOMEBLEND | MGV6_MUDFLOW;
+	spflags = MGV6_JUNGLES | MGV6_SNOWBIOMES | MGV6_TREES |
+		MGV6_BIOMEBLEND | MGV6_MUDFLOW;
+
 	freq_desert = 0.45;
 	freq_beach  = 0.15;
 
@@ -557,34 +559,38 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 	if ((flags & MG_DUNGEONS) && (stone_surface_max_y >= node_min.Y)) {
 		DungeonParams dp;
 
-		dp.np_rarity  = nparams_dungeon_rarity;
-		dp.np_density = nparams_dungeon_density;
-		dp.np_wetness = nparams_dungeon_wetness;
-		dp.c_water    = c_water_source;
+		dp.seed = seed;
+		dp.c_water       = c_water_source;
+		dp.c_river_water = c_water_source;
+		dp.rooms_min     = 2;
+		dp.rooms_max     = 16;
+		dp.y_min         = -MAX_MAP_GENERATION_LIMIT;
+		dp.y_max         = MAX_MAP_GENERATION_LIMIT;
+		dp.np_density    = NoiseParams(0.9, 0.5, v3f(500.0, 500.0, 500.0), 0, 2, 0.8, 2.0);
+		dp.np_alt_wall   = NoiseParams(-0.4, 1.0, v3f(40.0, 40.0, 40.0), 32474, 6, 1.1, 2.0);
+
 		if (getBiome(0, v2s16(node_min.X, node_min.Z)) == BT_DESERT) {
-			dp.c_cobble = c_desert_stone;
-			dp.c_moss   = c_desert_stone;
-			dp.c_stair  = c_desert_stone;
+			dp.c_wall     = c_desert_stone;
+			dp.c_alt_wall = CONTENT_IGNORE;
+			dp.c_stair    = c_desert_stone;
 
 			dp.diagonal_dirs = true;
-			dp.mossratio     = 0.0;
 			dp.holesize      = v3s16(2, 3, 2);
 			dp.roomsize      = v3s16(2, 5, 2);
 			dp.notifytype    = GENNOTIFY_TEMPLE;
 		} else {
-			dp.c_cobble = c_cobble;
-			dp.c_moss   = c_mossycobble;
-			dp.c_stair  = c_stair_cobble;
+			dp.c_wall     = c_cobble;
+			dp.c_alt_wall = c_mossycobble;
+			dp.c_stair    = c_stair_cobble;
 
 			dp.diagonal_dirs = false;
-			dp.mossratio     = 3.0;
 			dp.holesize      = v3s16(1, 2, 1);
 			dp.roomsize      = v3s16(0, 0, 0);
 			dp.notifytype    = GENNOTIFY_DUNGEON;
 		}
 
-		DungeonGen dgen(this, &dp);
-		dgen.generate(blockseed, full_node_min, full_node_max);
+		DungeonGen dgen(ndef, &gennotify, &dp);
+		dgen.generate(vm, blockseed, full_node_min, full_node_max);
 	}
 
 	// Add top and bottom side of water to transforming_liquid queue
@@ -1064,9 +1070,10 @@ void MapgenV6::generateCaves(int max_stone_y)
 	}
 
 	for (u32 i = 0; i < caves_count + bruises_count; i++) {
-		bool large_cave = (i >= caves_count);
-		CaveV6 cave(this, &ps, &ps2, large_cave);
+		CavesV6 cave(ndef, &gennotify, water_level, c_water_source, c_lava_source);
 
-		cave.makeCave(node_min, node_max, max_stone_y);
+		bool large_cave = (i >= caves_count);
+		cave.makeCave(vm, node_min, node_max, &ps, &ps2,
+			large_cave, max_stone_y, heightmap);
 	}
 }

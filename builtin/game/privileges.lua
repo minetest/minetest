@@ -32,6 +32,10 @@ core.register_privilege("settime", "Can use /time")
 core.register_privilege("privs", "Can modify privileges")
 core.register_privilege("basic_privs", "Can modify 'shout' and 'interact' privileges")
 core.register_privilege("server", "Can do server maintenance stuff")
+core.register_privilege("protection_bypass", {
+	description = "Can bypass node protection in the world",
+	give_to_singleplayer = false,
+})
 core.register_privilege("shout", "Can speak in chat")
 core.register_privilege("ban", "Can ban and unban players")
 core.register_privilege("kick", "Can kick players")

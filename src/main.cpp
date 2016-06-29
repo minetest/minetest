@@ -344,7 +344,8 @@ static void print_allowed_options(const OptionList &allowed_options)
 
 static void print_version()
 {
-	std::cout << PROJECT_NAME_C " " << g_version_hash << std::endl;
+	std::cout << PROJECT_NAME_C " " << g_version_hash
+	          << " (" << porting::getPlatformName() << ")" << std::endl;
 #ifndef SERVER
 	std::cout << "Using Irrlicht " << IRRLICHT_SDK_VERSION << std::endl;
 #endif
@@ -947,7 +948,8 @@ static bool migrate_database(const GameParams &game_params, const Settings &cmd_
 	for (std::vector<v3s16>::const_iterator it = blocks.begin(); it != blocks.end(); ++it) {
 		if (kill) return false;
 
-		const std::string &data = old_db->loadBlock(*it);
+		std::string data;
+		old_db->loadBlock(*it, &data);
 		if (!data.empty()) {
 			new_db->saveBlock(*it, data);
 		} else {

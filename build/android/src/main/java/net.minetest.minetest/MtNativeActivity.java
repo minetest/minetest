@@ -20,7 +20,6 @@ public class MtNativeActivity extends NativeActivity {
 		super.onDestroy();
 	}
 
-
 	public void copyAssets() {
 		Intent intent = new Intent(this, MinetestAssetCopy.class);
 		startActivity(intent);

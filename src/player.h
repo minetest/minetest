@@ -46,6 +46,8 @@ struct PlayerControl
 		RMB = false;
 		pitch = 0;
 		yaw = 0;
+		sidew_move_joystick_axis = .0f;
+		forw_move_joystick_axis = .0f;
 	}
 	PlayerControl(
 		bool a_up,
@@ -58,7 +60,9 @@ struct PlayerControl
 		bool a_LMB,
 		bool a_RMB,
 		float a_pitch,
-		float a_yaw
+		float a_yaw,
+		float a_sidew_move_joystick_axis,
+		float a_forw_move_joystick_axis
 	)
 	{
 		up = a_up;
@@ -72,6 +76,8 @@ struct PlayerControl
 		RMB = a_RMB;
 		pitch = a_pitch;
 		yaw = a_yaw;
+		sidew_move_joystick_axis = a_sidew_move_joystick_axis;
+		forw_move_joystick_axis = a_forw_move_joystick_axis;
 	}
 	bool up;
 	bool down;
@@ -84,6 +90,8 @@ struct PlayerControl
 	bool RMB;
 	float pitch;
 	float yaw;
+	float sidew_move_joystick_axis;
+	float forw_move_joystick_axis;
 };
 
 class Map;
@@ -180,14 +188,26 @@ public:
 		m_breath = breath;
 	}
 
-	f32 getRadPitch()
+	// Deprecated
+	f32 getRadPitchDep()
 	{
 		return -1.0 * m_pitch * core::DEGTORAD;
 	}
 
-	f32 getRadYaw()
+	// Deprecated
+	f32 getRadYawDep()
 	{
 		return (m_yaw + 90.) * core::DEGTORAD;
+	}
+
+	f32 getRadPitch()
+	{
+		return m_pitch * core::DEGTORAD;
+	}
+
+	f32 getRadYaw()
+	{
+		return m_yaw * core::DEGTORAD;
 	}
 
 	const char *getName() const
@@ -318,6 +338,7 @@ public:
 	// Use a function, if isDead can be defined by other conditions
 	bool isDead() { return hp == 0; }
 
+	bool got_teleported;
 	bool touching_ground;
 	// This oscillates so that the player jumps a bit above the surface
 	bool in_liquid;

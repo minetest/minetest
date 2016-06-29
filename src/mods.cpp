@@ -21,11 +21,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include "mods.h"
 #include "filesys.h"
-#include "strfnd.h"
+#include "util/strfnd.h"
 #include "log.h"
 #include "subgame.h"
 #include "settings.h"
-#include "strfnd.h"
+#include "util/strfnd.h"
 #include "convert_json.h"
 #include "exceptions.h"
 

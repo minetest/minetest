@@ -71,6 +71,9 @@ static inline float CALC_DTIME(unsigned int lasttime, unsigned int curtime) {
 
 #define PING_TIMEOUT 5.0
 
+/* maximum number of retries for reliable packets */
+#define MAX_RELIABLE_RETRY 5
+
 static u16 readPeerId(u8 *packetdata)
 {
 	return readU16(&packetdata[4]);
@@ -1399,6 +1402,7 @@ void ConnectionSendThread::runTimeouts(float dtime)
 		}
 
 		float resend_timeout = dynamic_cast<UDPPeer*>(&peer)->getResendTimeout();
+		bool retry_count_exceeded = false;
 		for(u16 i=0; i<CHANNEL_COUNT; i++)
 		{
 			std::list<BufferedPacket> timed_outs;
@@ -1438,6 +1442,13 @@ void ConnectionSendThread::runTimeouts(float dtime)
 				channel->UpdateBytesLost(k->data.getSize());
 				k->resend_count++;
 
+				if (k-> resend_count > MAX_RELIABLE_RETRY) {
+					retry_count_exceeded = true;
+					timeouted_peers.push_back(peer->id);
+					/* no need to check additional packets if a single one did timeout*/
+					break;
+				}
+
 				LOG(derr_con<<m_connection->getDesc()
 						<<"RE-SENDING timed-out RELIABLE to "
 						<< k->address.serializeString()
@@ -1452,8 +1463,17 @@ void ConnectionSendThread::runTimeouts(float dtime)
 				// do not handle rtt here as we can't decide if this packet was
 				// lost or really takes more time to transmit
 			}
+
+			if (retry_count_exceeded) {
+				break; /* no need to check other channels if we already did timeout */
+			}
+
 			channel->UpdateTimers(dtime,dynamic_cast<UDPPeer*>(&peer)->getLegacyPeer());
 		}
+
+		/* skip to next peer if we did timeout */
+		if (retry_count_exceeded)
+			continue;
 
 		/* send ping if necessary */
 		if (dynamic_cast<UDPPeer*>(&peer)->Ping(dtime,data)) {
@@ -2167,12 +2187,12 @@ void ConnectionReceiveThread::receive()
 				throw InvalidIncomingDataException("Channel doesn't exist");
 			}
 
-			/* preserve original peer_id for later usage */
-			u16 packet_peer_id   = peer_id;
-
 			/* Try to identify peer by sender address (may happen on join) */
 			if (peer_id == PEER_ID_INEXISTENT) {
 				peer_id = m_connection->lookupPeer(sender);
+				// We do not have to remind the peer of its
+				// peer id as the CONTROLTYPE_SET_PEER_ID
+				// command was sent reliably.
 			}
 
 			/* The peer was not found in our lists. Add it. */
@@ -2213,11 +2233,6 @@ void ConnectionReceiveThread::receive()
 					continue;
 				}
 			}
-
-
-			/* mark peer as seen with id */
-			if (!(packet_peer_id == PEER_ID_INEXISTENT))
-				peer->setSentWithID();
 
 			peer->ResetTimeout();
 
@@ -2756,7 +2771,7 @@ u16 Connection::lookupPeer(Address& sender)
 	for(; j != m_peers.end(); ++j)
 	{
 		Peer *peer = j->second;
-		if (peer->isActive())
+		if (peer->isPendingDeletion())
 			continue;
 
 		Address tocheck;

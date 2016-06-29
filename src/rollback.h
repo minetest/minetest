@@ -61,7 +61,7 @@ private:
 	const char * getActorName(const int id);
 	const char * getNodeName(const int id);
 	bool createTables();
-	void initDatabase();
+	bool initDatabase();
 	bool registerRow(const ActionRow & row);
 	const std::list<ActionRow> actionRowsFromSelect(sqlite3_stmt * stmt);
 	ActionRow actionRowFromRollbackAction(const RollbackAction & action);

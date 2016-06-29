@@ -69,18 +69,18 @@ GPROF_DEF=-DGPROF
 endif
 
 LOCAL_CFLAGS := -D_IRR_ANDROID_PLATFORM_      \
-				-DHAVE_TOUCHSCREENGUI         \
-				-DUSE_CURL=1                  \
-				-DUSE_SOUND=1                 \
-				-DUSE_FREETYPE=1              \
-				-DUSE_LEVELDB=$(HAVE_LEVELDB) \
-				$(GPROF_DEF)                  \
-				-pipe -fstrict-aliasing
+		-DHAVE_TOUCHSCREENGUI         \
+		-DUSE_CURL=1                  \
+		-DUSE_SOUND=1                 \
+		-DUSE_FREETYPE=1              \
+		-DUSE_LEVELDB=$(HAVE_LEVELDB) \
+		$(GPROF_DEF)                  \
+		-pipe -fstrict-aliasing
 
 ifndef NDEBUG
 LOCAL_CFLAGS += -g -D_DEBUG -O0 -fno-omit-frame-pointer
 else
-LOCAL_CFLAGS += -fexpensive-optimizations -O3
+LOCAL_CFLAGS += -O3
 endif
 
 ifdef GPROF
@@ -95,8 +95,8 @@ ifeq ($(TARGET_ARCH_ABI),x86)
 LOCAL_CFLAGS += -fno-stack-protector
 endif
 
-LOCAL_C_INCLUDES :=                               \
-		jni/src jni/src/sqlite                    \
+LOCAL_C_INCLUDES := \
+		jni/src                                   \
 		jni/src/script                            \
 		jni/src/lua/src                           \
 		jni/src/json                              \
@@ -111,8 +111,7 @@ LOCAL_C_INCLUDES :=                               \
 		deps/leveldb/include                      \
 		deps/sqlite/
 
-LOCAL_SRC_FILES :=                                \
-		jni/src/areastore.cpp                     \
+LOCAL_SRC_FILES := \
 		jni/src/ban.cpp                           \
 		jni/src/camera.cpp                        \
 		jni/src/cavegen.cpp                       \
@@ -221,9 +220,11 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/version.cpp                       \
 		jni/src/voxel.cpp                         \
 		jni/src/voxelalgorithms.cpp               \
+		jni/src/util/areastore.cpp                \
 		jni/src/util/auth.cpp                     \
 		jni/src/util/base64.cpp                   \
 		jni/src/util/directiontables.cpp          \
+		jni/src/util/enriched_string.cpp          \
 		jni/src/util/numeric.cpp                  \
 		jni/src/util/pointedthing.cpp             \
 		jni/src/util/serialize.cpp                \
@@ -256,12 +257,14 @@ LOCAL_SRC_FILES :=                                \
 		jni/src/settings.cpp                      \
 		jni/src/wieldmesh.cpp                     \
 		jni/src/client/clientlauncher.cpp         \
-		jni/src/client/tile.cpp
+		jni/src/client/tile.cpp                   \
+		jni/src/client/joystick_controller.cpp    \
+		jni/src/irrlicht_changes/static_text.cpp
 
 # intentionally kept out (we already build openssl itself): jni/src/util/sha256.c
 
 # Network
-LOCAL_SRC_FILES +=                                \
+LOCAL_SRC_FILES += \
 		jni/src/network/connection.cpp            \
 		jni/src/network/networkpacket.cpp         \
 		jni/src/network/clientopcodes.cpp         \
@@ -270,7 +273,7 @@ LOCAL_SRC_FILES +=                                \
 		jni/src/network/serverpackethandler.cpp   \
 
 # lua api
-LOCAL_SRC_FILES +=                                \
+LOCAL_SRC_FILES += \
 		jni/src/script/common/c_content.cpp       \
 		jni/src/script/common/c_converter.cpp     \
 		jni/src/script/common/c_internal.cpp      \
@@ -303,17 +306,17 @@ LOCAL_SRC_FILES +=                                \
 		jni/src/script/lua_api/l_rollback.cpp     \
 		jni/src/script/lua_api/l_server.cpp       \
 		jni/src/script/lua_api/l_settings.cpp     \
+		jni/src/script/lua_api/l_http.cpp         \
 		jni/src/script/lua_api/l_util.cpp         \
 		jni/src/script/lua_api/l_vmanip.cpp       \
 		jni/src/script/scripting_game.cpp         \
 		jni/src/script/scripting_mainmenu.cpp
 
 #freetype2 support
-LOCAL_SRC_FILES +=                                \
-		jni/src/cguittfont/xCGUITTFont.cpp
+LOCAL_SRC_FILES += jni/src/cguittfont/xCGUITTFont.cpp
 
-# lua
-LOCAL_SRC_FILES +=                                \
+# Lua
+LOCAL_SRC_FILES += \
 		jni/src/lua/src/lapi.c                    \
 		jni/src/lua/src/lauxlib.c                 \
 		jni/src/lua/src/lbaselib.c                \
@@ -373,3 +376,4 @@ ifdef GPROF
 $(call import-module,android-ndk-profiler)
 endif
 $(call import-module,android/native_app_glue)
+
