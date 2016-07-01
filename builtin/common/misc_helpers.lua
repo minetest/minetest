@@ -159,6 +159,18 @@ function dump(o, indent, nested, level)
 end
 
 --------------------------------------------------------------------------------
+-- Allow indexing strings
+
+local strmtt = getmetatable("")
+local oldindex = strmtt.__index
+strmtt.__index = function(str, index)
+	if type(index) == "number" then
+		return index >= 1 and index <= #str and string.sub(str, index, index)
+	end
+	return oldindex(str, index)
+end
+
+--------------------------------------------------------------------------------
 function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
 	delim = delim or ","
 	max_splits = max_splits or -1
