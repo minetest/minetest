@@ -509,6 +509,7 @@ set(client_SRCS
 	particles.cpp
 	shader.cpp
 	sky.cpp
+	splinesequence.cpp
 	wieldmesh.cpp
 	${client_SCRIPT_SRCS}
 	${UNITTEST_CLIENT_SRCS}
