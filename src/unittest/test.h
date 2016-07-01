@@ -88,6 +88,23 @@ class TestFailedException : public std::exception {
 
 #define UASSERTEQ(T, actual, expected) UASSERTCMP(T, ==, actual, expected)
 
+// Asserts the value is near to the expected value (up to a specified distance),
+// or fails the current unit test
+#define UASSERTNEAR(T, actual, expected, epsilon) {                       \
+	T a = (actual);                                                       \
+	T e = (expected);                                                     \
+	if (!(fabs( a - e ) < epsilon)) {                                     \
+		rawstream                                                         \
+			<< "Test assertion failed: " << #actual << " near "           \
+			<< #expected << std::endl                                     \
+			<< "    at " << fs::GetFilenameFromPath(__FILE__) << ":"      \
+			<< __LINE__ << std::endl                                      \
+			<< "    actual:   " << a << std::endl << "    expected: "     \
+			<< e << std::endl;                                            \
+		throw TestFailedException();                                      \
+	}                                                                     \
+}
+
 // UASSERTs that the specified exception occurs
 #define EXCEPTION_CHECK(EType, code) {    \
 	bool exception_thrown = false;        \
