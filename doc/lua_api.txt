@@ -292,6 +292,16 @@ Example:
 
     default_sandstone.png^[resize:16x16
 
+#### `[opacity:<r>`
+    Makes the base image transparent according to the given ratio.
+    r must be between 0 and 255.
+    0 means totally transparent.
+    255 means totally opaque.
+
+Example:
+
+    default_sandstone.png^[opacity:127
+
 #### `[brighten`
 Brightens the texture.
 
