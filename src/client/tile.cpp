@@ -1735,6 +1735,36 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			baseimg->drop();
 			baseimg = image;
 		}
+		/*
+			[opacity:R
+			Makes the base image transparent according to the given ratio.
+			R must be between 0 and 255.
+			0 means totally transparent.
+			255 means totally opaque.
+		*/
+		else if (str_starts_with(part_of_name, "[opacity:")) {
+			if (baseimg == NULL) {
+				errorstream << "generateImagePart(): baseimg == NULL "
+						<< "for part_of_name=\"" << part_of_name
+						<< "\", cancelling." << std::endl;
+				return false;
+			}
+
+			Strfnd sf(part_of_name);
+			sf.next(":");
+
+			u32 ratio = mystoi(sf.next(""), 0, 255);
+
+			core::dimension2d<u32> dim = baseimg->getDimension();
+
+			for (u32 y = 0; y < dim.Height; y++)
+			for (u32 x = 0; x < dim.Width; x++)
+			{
+				video::SColor c = baseimg->getPixel(x,y);
+				c.setAlpha(floor((c.getAlpha() * ratio) / 255 + 0.5));
+				baseimg->setPixel(x,y,c);
+			}
+		}
 		else
 		{
 			errorstream << "generateImagePart(): Invalid "
