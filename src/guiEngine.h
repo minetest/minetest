@@ -270,10 +270,10 @@ private:
 	void drawVersion();
 
 	/**
-	 * specify text to be appended to version string
+	 * specify text to appear as top left string
 	 * @param text to set
 	 */
-	void setTopleftText(std::string append);
+	void setTopleftText(const std::string &text);
 
 	/** pointer to gui element shown at topleft corner */
 	irr::gui::IGUIStaticText*	m_irr_toplefttext;
