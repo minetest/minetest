@@ -566,6 +566,7 @@ GenericCAO::GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
 		m_animation_speed(15),
 		m_animation_blend(0),
 		m_animation_loop(true),
+		m_animation_restart(true),
 		m_bone_position(std::map<std::string, core::vector2d<v3f> >()),
 		m_attachment_bone(""),
 		m_attachment_position(v3f(0,0,0)),
@@ -1490,9 +1491,26 @@ void GenericCAO::updateAnimation()
 	if(m_animated_meshnode == NULL)
 		return;
 
-	if (m_animated_meshnode->getStartFrame() != m_animation_range.X ||
-		m_animated_meshnode->getEndFrame() != m_animation_range.Y)
+	if (m_animated_meshnode->getStartFrame() == m_animation_range.X &&
+			m_animated_meshnode->getEndFrame() == m_animation_range.Y) {
+		if (m_animation_restart) {
+			m_animated_meshnode->setCurrentFrame(m_animation_range.X);
+		} else {
+			f32 current_frame = m_animated_meshnode->getFrameNr();
 			m_animated_meshnode->setFrameLoop(m_animation_range.X, m_animation_range.Y);
+			m_animated_meshnode->setCurrentFrame(current_frame);
+		}
+	} else {
+		if (m_animation_restart) {
+			m_animated_meshnode->setFrameLoop(m_animation_range.X, m_animation_range.Y);
+			m_animated_meshnode->setCurrentFrame(m_animation_range.X);
+		} else {
+			f32 new_animation_pos = m_animated_meshnode->getFrameNr() - m_animated_meshnode->getStartFrame();
+			f32 new_animation_length = m_animation_range.Y - m_animation_range.X;
+			m_animated_meshnode->setFrameLoop(m_animation_range.X, m_animation_range.Y);
+			m_animated_meshnode->setCurrentFrame(m_animation_range.X + fmod(new_animation_pos, new_animation_length));
+		}
+	}
 	if (m_animated_meshnode->getAnimationSpeed() != m_animation_speed)
 		m_animated_meshnode->setAnimationSpeed(m_animation_speed);
 	m_animated_meshnode->setTransitionTime(m_animation_blend);
@@ -1671,6 +1689,7 @@ void GenericCAO::processMessage(const std::string &data)
 			m_animation_blend = readF1000(is);
 			// these are sent inverted so we get true when the server sends nothing
 			m_animation_loop = !readU8(is);
+			m_animation_restart = !readU8(is);
 			updateAnimation();
 		} else {
 			LocalPlayer *player = m_env->getLocalPlayer();
@@ -1681,6 +1700,7 @@ void GenericCAO::processMessage(const std::string &data)
 				m_animation_blend = readF1000(is);
 				// these are sent inverted so we get true when the server sends nothing
 				m_animation_loop = !readU8(is);
+				m_animation_restart = !readU8(is);
 			}
 			// update animation only if local animations present
 			// and received animation is unknown (except idle animation)

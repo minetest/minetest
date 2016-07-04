@@ -457,7 +457,7 @@ int ObjectRef::l_get_physics_override(lua_State *L)
 	return 1;
 }
 
-// set_animation(self, frame_range, frame_speed, frame_blend, frame_loop)
+// set_animation(self, frame_range, frame_speed, frame_blend, frame_loop, restart)
 int ObjectRef::l_set_animation(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -477,7 +477,10 @@ int ObjectRef::l_set_animation(lua_State *L)
 	bool frame_loop = true;
 	if (lua_isboolean(L, 5))
 		frame_loop = lua_toboolean(L, 5);
-	co->setAnimation(frames, frame_speed, frame_blend, frame_loop);
+	bool restart = false;
+	if (lua_isboolean(L, 6))
+		restart = lua_toboolean(L, 6);
+	co->setAnimation(frames, frame_speed, frame_blend, frame_loop, restart);
 	return 0;
 }
 
