@@ -38,7 +38,7 @@
 #    type: bool
 # noclip = false
 
-#    Smooths camera when moving and looking around.
+#    Smooths camera when looking around. Also called look or mouse smoothing.
 #    Useful for recording videos.
 #    type: bool
 # cinematic = false
@@ -162,7 +162,7 @@
 #    Key for toggling cinematic mode.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
-# keymap_cinematic = KEY_F8
+# keymap_cinematic =
 
 #    Key for toggling display of minimap.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -1527,4 +1527,3 @@
 
 #    type: string
 # modstore_details_url = https://forum.minetest.net/mmdb/mod/*/
-
