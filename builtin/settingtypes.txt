@@ -70,7 +70,7 @@ fast_move (Fast movement) bool false
 #    This requires the "noclip" privilege on the server.
 noclip (Noclip) bool false
 
-#    Smooths camera when moving and looking around.
+#    Smooths camera when looking around. Also called look or mouse smoothing.
 #    Useful for recording videos.
 cinematic (Cinematic mode) bool false
 
@@ -178,7 +178,7 @@ keymap_noclip (Noclip key) key KEY_KEY_H
 
 #    Key for toggling cinematic mode.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_cinematic (Cinematic mode key) key KEY_F8
+keymap_cinematic (Cinematic mode key) key
 
 #    Key for toggling display of minimap.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
