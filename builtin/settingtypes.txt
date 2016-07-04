@@ -105,7 +105,7 @@ random_input (Random input) bool false
 continuous_forward (Continuous forward) bool false
 
 #    Enable Joysticks
-enable_joysticks (Enable Joysticks) bool true
+enable_joysticks (Enable Joysticks) bool false
 
 #    The time in seconds it takes between repeated events
 #    when holding down a joystick button combination.
