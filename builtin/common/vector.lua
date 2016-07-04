@@ -147,7 +147,7 @@ function vector.set_length(v, l)
 	return vector.multiply(v, l)
 end
 
--- limets the length of a vector
+-- limits the length of a vector
 function vector.limit(v, l)
 	if vector.length(v) > l then
 		v = vector.normalize(v)
@@ -157,31 +157,31 @@ function vector.limit(v, l)
 end
 
 -- returns the dot product of two vectors
-function vector.dot( a, b )
-    return a.x*b.x + a.y*b.y + a.z*b.z
+function vector.dot(a, b)
+	return a.x * b.x + a.y * b.y + a.z * b.z
 end
  
 -- returns the cross product of two vectors
-function vector.cross( a, b)
-    return { x = a.y*b.z - a.z*b.y,
-             y = a.z*b.x - a.x*b.z,
-             z = a.x*b.y - a.y*b.x }
+function vector.cross(a, b)
+	return {x = a.y * b.z - a.z * b.y,
+		y = a.z * b.x - a.x * b.z,
+		z = a.x * b.y - a.y * b.x}
 end
 
 -- returns the scalar triple product of three vectors
-function vector.scalar_triple( a, b, c )
-    return vector.dot( a, vector.cross( b, c ) )
+function vector.scalar_triple(a, b, c)
+	return vector.dot(a, vector.cross(b, c))
 end
  
 -- returns the vector triple product of three vectors
-function vector.vector_triple( a, b, c )
-    return vector.cross( a, vector.cross( b, c ) )
+function vector.vector_triple(a, b, c)
+	return vector.cross(a, vector.cross(b, c))
 end
 
 -- returns the angle between two 2d vectors (x,z) in radians
 -- y from a 3d vector is ignored
 function vector.angle_between(a, b)
-	return math.atan2(a.x*b.z-a.z*b.x,a.x*b.x+a.z*b.z)
+	return math.atan2(a.x * b.z - a.z * b.x, a.x * b.x + a.z * b.z)
 end
 
 
@@ -190,7 +190,7 @@ end
 function vector.yaw(v)
 	yaw = math.atan2(-v.x, v.z)
 	if yaw >= -math.pi and yaw < 0 then
-		yaw = math.pi*2 + yaw
+		yaw = math.pi * 2 + yaw
 	end
-	return (yaw)
+	return yaw
 end
