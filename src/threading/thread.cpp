@@ -54,7 +54,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 // for setName
-#if defined(linux) || defined(__linux)
+#if defined(__linux__)
 	#include <sys/prctl.h>
 #elif defined(__FreeBSD__) || defined(__OpenBSD__)
 	#include <pthread_np.h>
@@ -70,7 +70,7 @@ DEALINGS IN THE SOFTWARE.
 // for bindToProcessor
 #if __FreeBSD_version >= 702106
 	typedef cpuset_t cpu_set_t;
-#elif defined(__linux) || defined(linux)
+#elif defined(__linux__)
 	#include <sched.h>
 #elif defined(__sun) || defined(sun)
 	#include <sys/types.h>
@@ -261,7 +261,7 @@ DWORD WINAPI Thread::threadProc(LPVOID param)
 
 void Thread::setName(const std::string &name)
 {
-#if defined(linux) || defined(__linux)
+#if defined(__linux__)
 
 	// It would be cleaner to do this with pthread_setname_np,
 	// which was added to glibc in version 2.12, but some major
@@ -363,7 +363,7 @@ bool Thread::bindToProcessor(unsigned int proc_number)
 
 	return SetThreadAffinityMask(getThreadHandle(), 1 << proc_number);
 
-#elif __FreeBSD_version >= 702106 || defined(__linux) || defined(linux)
+#elif __FreeBSD_version >= 702106 || defined(__linux__)
 
 	cpu_set_t cpuset;
 

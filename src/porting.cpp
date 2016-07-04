@@ -258,7 +258,7 @@ bool getCurrentExecPath(char *buf, size_t len)
 
 
 //// Linux
-#elif defined(linux) || defined(__linux) || defined(__linux__)
+#elif defined(__linux__)
 
 bool getCurrentExecPath(char *buf, size_t len)
 {
@@ -374,7 +374,7 @@ bool setSystemPaths()
 
 
 //// Linux
-#elif defined(linux) || defined(__linux)
+#elif defined(__linux__)
 
 bool setSystemPaths()
 {
