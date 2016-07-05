@@ -133,12 +133,18 @@ end
 
 -- returns a new normalized 2d vector with random values
 function vector.random2d()
-	return vector.normalize({x=math.random()*2-1, y=0, z=math.random()*2-1})
+	repeat
+		vect = {x=math.random()*2-1, y=0, z=math.random()*2-1}
+	until vector.length(vect) <= 1
+	return vector.normalize(vect)
 end
 
 -- returns a new normalized 3d vector with random values
 function vector.random3d()
-	return vector.normalize({x=math.random()*2-1, y=math.random()*2-1, z=math.random()*2-1})
+	repeat
+		vect = {x=math.random()*2-1, y=math.random()*2-1, z=math.random()*2-1}
+	until vector.length(vect) <= 1
+	return vector.normalize(vect)
 end
 
 -- returns a vector with a specific length
