@@ -1847,6 +1847,14 @@ Call these functions only at load time!
 * `minetest.register_craftitem(name, item definition)`
 * `minetest.register_alias(name, convert_to)`
 * `minetest.register_craft(recipe)`
+    * Check recipe table syntax for different types below.
+* `minetest.clear_craft(recipe)`
+    * Will erase existing craft based either on output item or on input recipe.
+    * Specify either output or input only. If you specify both, input will be ignored. For input use a same recipe table
+      syntax as for `minetest.register_craft(recipe)`. For output specify only item, but not a quantity.
+    * If there is no erase candidate founded, Lua exception will be thrown.
+    * Warning! Type field ("shaped","cooking" or any other) will be ignored if recipe 
+      contain output. Will be erased all possible crafting recipe independent from crafting method.
 * `minetest.register_ore(ore definition)`
 * `minetest.register_decoration(decoration definition)`
 * `minetest.override_item(name, redefinition)`
