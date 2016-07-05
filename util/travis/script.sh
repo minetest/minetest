@@ -1,4 +1,7 @@
 #!/bin/bash -e
+. util/travis/common.sh
+
+needs_compile || exit 0
 
 if [[ $PLATFORM == "Unix" ]]; then
 	mkdir -p travisbuild
