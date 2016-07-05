@@ -137,7 +137,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		key_setting *k = key_settings.at(i);
 		{
-			core::rect < s32 > rect(0, 0, 110, 20);
+			core::rect < s32 > rect(0, 0, 150, 20);
 			rect += topleft + v2s32(offset.X, offset.Y);
 			Environment->addStaticText(k->button_name, rect, false, true, this, -1);
 		}
