@@ -3230,6 +3230,10 @@ void Game::updateCameraOrientation(CameraOrientation *cam,
 		s32 dx = input->getMousePos().X - (driver->getScreenSize().Width / 2);
 		s32 dy = input->getMousePos().Y - (driver->getScreenSize().Height / 2);
 
+		// prevents rounding issues when using the screen size
+		dx = (abs(dx) == 1) ? 0 : dx;
+		dy = (abs(dy) == 1) ? 0 : dy;
+
 		if (flags.invert_mouse
 				|| camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT) {
 			dy = -dy;
