@@ -352,6 +352,7 @@ public:
 	void acceptInput(FormspecQuitMode quitmode);
 	bool preprocessEvent(const SEvent& event);
 	bool OnEvent(const SEvent& event);
+	void handleEnterPress();
 	bool doPause;
 	bool pausesGame() { return doPause; }
 
@@ -396,6 +397,8 @@ protected:
 	std::map<std::string, TooltipSpec> m_tooltips;
 	std::vector<std::pair<FieldSpec,gui::IGUIScrollBar*> > m_scrollbars;
 	std::vector<std::pair<FieldSpec, std::vector<std::string> > > m_dropdowns;
+
+	std::string m_enter_button;
 
 	ItemSpec *m_selected_item;
 	f32 m_timer1;
@@ -473,6 +476,7 @@ private:
 	void parseImage(parserData* data,std::string element);
 	void parseItemImage(parserData* data,std::string element);
 	void parseButton(parserData* data,std::string element,std::string typ);
+	void parseEnterButton(parserData* data,std::string element);
 	void parseBackground(parserData* data,std::string element);
 	void parseTableOptions(parserData* data,std::string element);
 	void parseTableColumns(parserData* data,std::string element);
@@ -557,4 +561,3 @@ public:
 };
 
 #endif
-

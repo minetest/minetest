@@ -90,6 +90,7 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_gamedef(gamedef),
 	m_tsrc(tsrc),
 	m_client(client),
+	m_enter_button(""),
 	m_selected_item(NULL),
 	m_selected_amount(0),
 	m_selected_dragging(false),
@@ -612,6 +613,11 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
 		return;
 	}
 	errorstream<< "Invalid button element(" << parts.size() << "): '" << element << "'"  << std::endl;
+}
+
+void GUIFormSpecMenu::parseEnterButton(parserData* data, std::string element)
+{
+	m_enter_button = element;
 }
 
 void GUIFormSpecMenu::parseBackground(parserData* data,std::string element)
@@ -1704,6 +1710,11 @@ void GUIFormSpecMenu::parseElement(parserData* data, std::string element)
 		return;
 	}
 
+	if (type == "enter_button") {
+		parseEnterButton(data, description);
+		return;
+	}
+
 	if (type == "background") {
 		parseBackground(data,description);
 		return;
@@ -1863,6 +1874,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_tooltips.clear();
 	m_inventory_rings.clear();
 	m_static_texts.clear();
+
+	m_enter_button = "";
 
 	// Set default values (fits old formspec values)
 	m_bgcolor = video::SColor(140,0,0,0);
@@ -3150,10 +3163,10 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					FATAL_ERROR("Reached a source line that can't ever been reached");
 					break;
 			}
-			if (current_keys_pending.key_enter && m_allowclose) {
-				acceptInput(quit_mode_accept);
-				quitMenu();
+			if (current_keys_pending.key_enter) {
+				handleEnterPress();
 			} else {
+				errorstream << "something else" << std::endl;
 				acceptInput();
 			}
 			return true;
@@ -3625,15 +3638,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 		if (event.GUIEvent.EventType == gui::EGET_EDITBOX_ENTER) {
 			if (event.GUIEvent.Caller->getID() > 257) {
-
-				if (m_allowclose) {
-					acceptInput(quit_mode_accept);
-					quitMenu();
-				} else {
-					current_keys_pending.key_enter = true;
-					acceptInput();
-				}
-				// quitMenu deallocates menu
+				handleEnterPress();
 				return true;
 			}
 		}
@@ -3658,6 +3663,39 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 	}
 
 	return Parent ? Parent->OnEvent(event) : false;
+}
+void GUIFormSpecMenu::handleEnterPress()
+{
+	if (!m_enter_button.empty()) {
+		for (u32 i = 0; i < m_fields.size(); i++) {
+			FieldSpec &s = m_fields[i];
+			// if its a button, set the send field so
+			// lua knows which button was pressed
+			if (s.ftype == f_Button && s.fname == m_enter_button) {
+				s.send = true;
+				if (s.is_exit) {
+					if (m_allowclose) {
+						acceptInput(quit_mode_accept);
+						quitMenu();
+					} else {
+						m_text_dst->gotText(L"ExitButton");
+					}
+					return;
+				} else {
+					acceptInput(quit_mode_no);
+					s.send = false;
+					return;
+				}
+			}
+		}
+	} else if (m_allowclose) {
+		acceptInput(quit_mode_accept);
+		quitMenu();
+		// quitMenu deallocates menu
+	} else {
+		acceptInput();
+		current_keys_pending.key_enter = true;
+	}
 }
 
 /**
