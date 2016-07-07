@@ -279,6 +279,32 @@ void GUIFormSpecMenu::parseSize(parserData* data,std::string element)
 	errorstream<< "Invalid size element (" << parts.size() << "): '" << element << "'"  << std::endl;
 }
 
+void GUIFormSpecMenu::parseContainer(parserData* data, std::string element)
+{
+	std::vector<std::string> parts = split(element, ',');
+
+	if (parts.size() >= 2) {
+		if (parts[1].find(';') != std::string::npos)
+			parts[1] = parts[1].substr(0, parts[1].find(';'));
+
+		container_stack.push(pos_offset);
+		pos_offset.X += MYMAX(0, stof(parts[0]));
+		pos_offset.Y += MYMAX(0, stof(parts[1]));
+		return;
+	}
+	errorstream<< "Invalid container start element (" << parts.size() << "): '" << element << "'"  << std::endl;
+}
+
+void GUIFormSpecMenu::parseContainerEnd(parserData* data)
+{
+	if (container_stack.empty()) {
+		errorstream<< "Invalid container end element, no matching container start element"  << std::endl;
+	} else {
+		pos_offset = container_stack.top();
+		container_stack.pop();
+	}
+}
+
 void GUIFormSpecMenu::parseList(parserData* data,std::string element)
 {
 	if (m_gamedef == 0) {
@@ -309,7 +335,7 @@ void GUIFormSpecMenu::parseList(parserData* data,std::string element)
 		else
 			loc.deSerialize(location);
 
-		v2s32 pos = padding + AbsoluteRect.UpperLeftCorner;
+		v2s32 pos = padding + AbsoluteRect.UpperLeftCorner + pos_offset * spacing;
 		pos.X += stof(v_pos[0]) * (float)spacing.X;
 		pos.Y += stof(v_pos[1]) * (float)spacing.Y;
 
@@ -386,7 +412,7 @@ void GUIFormSpecMenu::parseCheckbox(parserData* data,std::string element)
 
 		MY_CHECKPOS("checkbox",0);
 
-		v2s32 pos = padding;
+		v2s32 pos = padding + pos_offset * spacing;
 		pos.X += stof(v_pos[0]) * (float) spacing.X;
 		pos.Y += stof(v_pos[1]) * (float) spacing.Y;
 
@@ -437,7 +463,7 @@ void GUIFormSpecMenu::parseScrollBar(parserData* data, std::string element)
 
 		MY_CHECKPOS("scrollbar",0);
 
-		v2s32 pos = padding;
+		v2s32 pos = padding + pos_offset * spacing;
 		pos.X += stof(v_pos[0]) * (float) spacing.X;
 		pos.Y += stof(v_pos[1]) * (float) spacing.Y;
 
@@ -495,10 +521,10 @@ void GUIFormSpecMenu::parseImage(parserData* data,std::string element)
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string name = unescape_string(parts[2]);
 
-		MY_CHECKPOS("image",0);
-		MY_CHECKGEOM("image",1);
+		MY_CHECKPOS("image", 0);
+		MY_CHECKGEOM("image", 1);
 
-		v2s32 pos = padding + AbsoluteRect.UpperLeftCorner;
+		v2s32 pos = padding + AbsoluteRect.UpperLeftCorner + pos_offset * spacing;
 		pos.X += stof(v_pos[0]) * (float) spacing.X;
 		pos.Y += stof(v_pos[1]) * (float) spacing.Y;
 
@@ -506,23 +532,21 @@ void GUIFormSpecMenu::parseImage(parserData* data,std::string element)
 		geom.X = stof(v_geom[0]) * (float)imgsize.X;
 		geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
 
-		if(!data->explicit_size)
+		if (!data->explicit_size)
 			warningstream<<"invalid use of image without a size[] element"<<std::endl;
 		m_images.push_back(ImageDrawSpec(name, pos, geom));
 		return;
-	}
-
-	if (parts.size() == 2) {
+	} else if (parts.size() == 2) {
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::string name = unescape_string(parts[1]);
 
-		MY_CHECKPOS("image",0);
+		MY_CHECKPOS("image", 0);
 
-		v2s32 pos = padding + AbsoluteRect.UpperLeftCorner;
+		v2s32 pos = padding + AbsoluteRect.UpperLeftCorner + pos_offset * spacing;
 		pos.X += stof(v_pos[0]) * (float) spacing.X;
 		pos.Y += stof(v_pos[1]) * (float) spacing.Y;
 
-		if(!data->explicit_size)
+		if (!data->explicit_size)
 			warningstream<<"invalid use of image without a size[] element"<<std::endl;
 		m_images.push_back(ImageDrawSpec(name, pos));
 		return;
@@ -544,7 +568,7 @@ void GUIFormSpecMenu::parseItemImage(parserData* data,std::string element)
 		MY_CHECKPOS("itemimage",0);
 		MY_CHECKGEOM("itemimage",1);
 
-		v2s32 pos = padding + AbsoluteRect.UpperLeftCorner;
+		v2s32 pos = padding + AbsoluteRect.UpperLeftCorner + pos_offset * spacing;
 		pos.X += stof(v_pos[0]) * (float) spacing.X;
 		pos.Y += stof(v_pos[1]) * (float) spacing.Y;
 
@@ -576,7 +600,7 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
 		MY_CHECKPOS("button",0);
 		MY_CHECKGEOM("button",1);
 
-		v2s32 pos = padding;
+		v2s32 pos = padding + pos_offset * spacing;
 		pos.X += stof(v_pos[0]) * (float)spacing.X;
 		pos.Y += stof(v_pos[1]) * (float)spacing.Y;
 
@@ -629,9 +653,9 @@ void GUIFormSpecMenu::parseBackground(parserData* data,std::string element)
 		MY_CHECKPOS("background",0);
 		MY_CHECKGEOM("background",1);
 
-		v2s32 pos = padding + AbsoluteRect.UpperLeftCorner;
-		pos.X += stof(v_pos[0]) * (float)spacing.X - ((float)spacing.X-(float)imgsize.X)/2;
-		pos.Y += stof(v_pos[1]) * (float)spacing.Y - ((float)spacing.Y-(float)imgsize.Y)/2;
+		v2s32 pos = padding + AbsoluteRect.UpperLeftCorner + pos_offset * spacing;
+		pos.X += stof(v_pos[0]) * (float)spacing.X - ((float)spacing.X - (float)imgsize.X)/2;
+		pos.Y += stof(v_pos[1]) * (float)spacing.Y - ((float)spacing.Y - (float)imgsize.Y)/2;
 
 		v2s32 geom;
 		geom.X = stof(v_geom[0]) * (float)spacing.X;
@@ -705,7 +729,7 @@ void GUIFormSpecMenu::parseTable(parserData* data,std::string element)
 		MY_CHECKPOS("table",0);
 		MY_CHECKGEOM("table",1);
 
-		v2s32 pos = padding;
+		v2s32 pos = padding + pos_offset * spacing;
 		pos.X += stof(v_pos[0]) * (float)spacing.X;
 		pos.Y += stof(v_pos[1]) * (float)spacing.Y;
 
@@ -776,7 +800,7 @@ void GUIFormSpecMenu::parseTextList(parserData* data,std::string element)
 		MY_CHECKPOS("textlist",0);
 		MY_CHECKGEOM("textlist",1);
 
-		v2s32 pos = padding;
+		v2s32 pos = padding + pos_offset * spacing;
 		pos.X += stof(v_pos[0]) * (float)spacing.X;
 		pos.Y += stof(v_pos[1]) * (float)spacing.Y;
 
@@ -841,7 +865,7 @@ void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element)
 
 		MY_CHECKPOS("dropdown",0);
 
-		v2s32 pos = padding;
+		v2s32 pos = padding + pos_offset * spacing;
 		pos.X += stof(v_pos[0]) * (float)spacing.X;
 		pos.Y += stof(v_pos[1]) * (float)spacing.Y;
 
@@ -905,7 +929,7 @@ void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element)
 		MY_CHECKPOS("pwdfield",0);
 		MY_CHECKGEOM("pwdfield",1);
 
-		v2s32 pos;
+		v2s32 pos = pos_offset * spacing;
 		pos.X += stof(v_pos[0]) * (float)spacing.X;
 		pos.Y += stof(v_pos[1]) * (float)spacing.Y;
 
@@ -975,7 +999,7 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 	if(data->explicit_size)
 		warningstream<<"invalid use of unpositioned \"field\" in inventory"<<std::endl;
 
-	v2s32 pos = padding + AbsoluteRect.UpperLeftCorner;
+	v2s32 pos = padding + AbsoluteRect.UpperLeftCorner + pos_offset * spacing;
 	pos.Y = ((m_fields.size()+2)*60);
 	v2s32 size = DesiredRect.getSize();
 
@@ -1058,9 +1082,9 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 	MY_CHECKPOS(type,0);
 	MY_CHECKGEOM(type,1);
 
-	v2s32 pos;
-	pos.X = stof(v_pos[0]) * (float) spacing.X;
-	pos.Y = stof(v_pos[1]) * (float) spacing.Y;
+	v2s32 pos = pos_offset * spacing;
+	pos.X += stof(v_pos[0]) * (float) spacing.X;
+	pos.Y += stof(v_pos[1]) * (float) spacing.Y;
 
 	v2s32 geom;
 
@@ -1185,7 +1209,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data,std::string element)
 
 		MY_CHECKPOS("label",0);
 
-		v2s32 pos = padding;
+		v2s32 pos = padding + pos_offset * spacing;
 		pos.X += stof(v_pos[0]) * (float)spacing.X;
 		pos.Y += (stof(v_pos[1]) + 7.0/30.0) * (float)spacing.Y;
 
@@ -1242,7 +1266,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element)
 
 		MY_CHECKPOS("vertlabel",1);
 
-		v2s32 pos = padding;
+		v2s32 pos = padding + pos_offset * spacing;
 		pos.X += stof(v_pos[0]) * (float)spacing.X;
 		pos.Y += stof(v_pos[1]) * (float)spacing.Y;
 
@@ -1296,7 +1320,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 		MY_CHECKPOS("imagebutton",0);
 		MY_CHECKGEOM("imagebutton",1);
 
-		v2s32 pos = padding;
+		v2s32 pos = padding + pos_offset * spacing;
 		pos.X += stof(v_pos[0]) * (float)spacing.X;
 		pos.Y += stof(v_pos[1]) * (float)spacing.Y;
 		v2s32 geom;
@@ -1401,7 +1425,7 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element)
 
 		spec.ftype = f_TabHeader;
 
-		v2s32 pos(0,0);
+		v2s32 pos = pos_offset * spacing;
 		pos.X += stof(v_pos[0]) * (float)spacing.X;
 		pos.Y += stof(v_pos[1]) * (float)spacing.Y - m_btn_height * 2;
 		v2s32 geom;
@@ -1466,7 +1490,7 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 		MY_CHECKPOS("itemimagebutton",0);
 		MY_CHECKGEOM("itemimagebutton",1);
 
-		v2s32 pos = padding;
+		v2s32 pos = padding + pos_offset * spacing;
 		pos.X += stof(v_pos[0]) * (float)spacing.X;
 		pos.Y += stof(v_pos[1]) * (float)spacing.Y;
 		v2s32 geom;
@@ -1504,7 +1528,7 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 		rect+=data->basepos-padding;
 		spec.rect=rect;
 		m_fields.push_back(spec);
-		pos = padding + AbsoluteRect.UpperLeftCorner;
+		pos = padding + AbsoluteRect.UpperLeftCorner + pos_offset * spacing;
 		pos.X += stof(v_pos[0]) * (float) spacing.X;
 		pos.Y += stof(v_pos[1]) * (float) spacing.Y;
 		m_itemimages.push_back(ImageDrawSpec("", item_name, e, pos, geom));
@@ -1527,7 +1551,7 @@ void GUIFormSpecMenu::parseBox(parserData* data,std::string element)
 		MY_CHECKPOS("box",0);
 		MY_CHECKGEOM("box",1);
 
-		v2s32 pos = padding + AbsoluteRect.UpperLeftCorner;
+		v2s32 pos = padding + AbsoluteRect.UpperLeftCorner + pos_offset * spacing;
 		pos.X += stof(v_pos[0]) * (float) spacing.X;
 		pos.Y += stof(v_pos[1]) * (float) spacing.Y;
 
@@ -1689,8 +1713,18 @@ void GUIFormSpecMenu::parseElement(parserData* data, std::string element)
 	std::string type = trim(parts[0]);
 	std::string description = trim(parts[1]);
 
+	if (type == "container") {
+		parseContainer(data, description);
+		return;
+	}
+
+	if (type == "container_end") {
+		parseContainerEnd(data);
+		return;
+	}
+
 	if (type == "list") {
-		parseList(data,description);
+		parseList(data, description);
 		return;
 	}
 
@@ -1700,22 +1734,22 @@ void GUIFormSpecMenu::parseElement(parserData* data, std::string element)
 	}
 
 	if (type == "checkbox") {
-		parseCheckbox(data,description);
+		parseCheckbox(data, description);
 		return;
 	}
 
 	if (type == "image") {
-		parseImage(data,description);
+		parseImage(data, description);
 		return;
 	}
 
 	if (type == "item_image") {
-		parseItemImage(data,description);
+		parseItemImage(data, description);
 		return;
 	}
 
-	if ((type == "button") || (type == "button_exit")) {
-		parseButton(data,description,type);
+	if (type == "button" || type == "button_exit") {
+		parseButton(data, description, type);
 		return;
 	}
 
@@ -2036,8 +2070,14 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	gui::IGUIFont *old_font = skin->getFont();
 	skin->setFont(m_font);
 
+	pos_offset = v2s32();
 	for (; i< elements.size(); i++) {
 		parseElement(&mydata, elements[i]);
+	}
+
+	if (!container_stack.empty()) {
+		errorstream << "Invalid formspec string: container was never closed!"
+			<< std::endl;
 	}
 
 	// If there are fields without explicit size[], add a "Proceed"
