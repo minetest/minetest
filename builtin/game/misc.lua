@@ -48,11 +48,13 @@ function core.after(after, func, ...)
 	}
 end
 
-function core.check_player_privs(player_or_name, ...)
-	local name = player_or_name
-	-- Check if we have been provided with a Player object.
-	if type(name) ~= "string" then
+function core.check_player_privs(name, ...)
+	local arg_type = type(name)
+	if (arg_type == "userdata" or arg_type == "table") and
+			name.get_player_name then -- If it quacks like a Player...
 		name = name:get_player_name()
+	elseif arg_type ~= "string" then
+		error("Invalid core.check_player_privs argument type: " .. arg_type, 2)
 	end
 	
 	local requested_privs = {...}
