@@ -60,8 +60,14 @@ ItemDefinition read_item_definition(lua_State* L,int index,
 	getstringfield(L, index, "wield_image", def.wield_image);
 
 	lua_getfield(L, index, "wield_scale");
-	if(lua_istable(L, -1)){
+	if (lua_istable(L, -1)) {
 		def.wield_scale = check_v3f(L, -1);
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "wield_keyframes");
+	if (lua_istable(L, -1)) {
+		read_wield_keyframes(L, -1, def.keyframes);
 	}
 	lua_pop(L, 1);
 
@@ -115,6 +121,31 @@ ItemDefinition read_item_definition(lua_State* L,int index,
 			def.node_placement_prediction);
 
 	return def;
+}
+
+/******************************************************************************/
+void read_wield_keyframes(lua_State *L, int table, std::vector<WieldKeyframe> &keyframes)
+{
+	errorstream << "Reading keyframes..." << std::endl;
+	int table2 = lua_gettop(L);
+	lua_pushnil(L);
+	while (lua_next(L, table2) != 0){
+		// key at index -2 and value at index -1
+		if (lua_istable(L, -1)) {
+			errorstream << "is table" << std::endl;
+			float x, y, z, duration=1;
+			getfloatfield(L, -1, "x", x);
+			getfloatfield(L, -1, "y", y);
+			getfloatfield(L, -1, "z", z);
+			getfloatfield(L, -1, "duration", duration);
+			keyframes.push_back(WieldKeyframe(v3f(x, y, z), duration));
+			errorstream << "Key: " << x << ", " << y << ", " << z << " for " << duration << std::endl;
+		} else {
+			errorstream << "Found non table!" << std::endl;
+		}
+		// removes value, keeps key for next iteration
+		lua_pop(L, 1);
+	}
 }
 
 /******************************************************************************/
