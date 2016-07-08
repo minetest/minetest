@@ -433,7 +433,7 @@ void GUIEngine::drawOverlay(video::IVideoDriver* driver)
 
 	video::ITexture* texture = m_textures[TEX_LAYER_OVERLAY].texture;
 
-	/* If no texture, draw background of solid color */
+	/* If no texture, draw nothing */
 	if(!texture)
 		return;
 
@@ -462,7 +462,7 @@ void GUIEngine::drawHeader(video::IVideoDriver* driver)
 	v2s32 splashsize(((f32)texture->getOriginalSize().Width) * mult,
 			((f32)texture->getOriginalSize().Height) * mult);
 
-	// Don't draw the header is there isn't enough room
+	// Don't draw the header if there isn't enough room
 	s32 free_space = (((s32)screensize.Height)-320)/2;
 
 	if (free_space > splashsize.Y) {
