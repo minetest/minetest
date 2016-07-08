@@ -111,7 +111,7 @@ $ sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl* openal*
 You can install git for easily keeping your copy up to date.
 If you dont want git, read below on how to get the source without git.
 This is an example for installing git on Debian/Ubuntu:
-$ sudo apt-get install git-core
+$ sudo apt-get install git
 
 For Fedora users:
 $ sudo dnf install git-core
