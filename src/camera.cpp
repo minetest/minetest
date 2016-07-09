@@ -35,6 +35,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "fontengine.h"
 #include "script/scripting_client.h"
+#include "splinesequence.h"
+//#include <unordered_map>
+#include <map>
 
 #define CAMERA_OFFSET_STEP 200
 #define WIELDMESH_OFFSET_X 55.0f
@@ -471,14 +474,64 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	if (m_arm_inertia)
 		addArmInertia(player->getYaw());
 
+	// New: via SplineSequences
+	std::map<std::string, SplineSequence<v3f> > positionsplines;
+	positionsplines["mine"]
+		.addNode(v3f(0, 0, 12.5))
+		.addNode(v3f(-70,  50, 12.5))
+		.addNode(v3f(-70,  -50, 12.5))
+		.addNode(v3f(0, 0, 12.5))
+		;
+	positionsplines["mine"]
+		.addIndex(1.0, 0, 3)
+		.normalizeDurations()
+		;
+
+	positionsplines["dig"]
+		.addNode(v3f(0, 0, 12.5))
+		.addNode(v3f(-70,  -50, 12.5))
+		.addNode(v3f(-70,  50, 12.5))
+		.addNode(v3f(0, 0, 12.5))
+		;
+	positionsplines["dig"]
+		.addIndex(1.0, 0, 3)
+		.normalizeDurations()
+		;
+
+	std::map<std::string, SplineSequence<core::quaternion> > rotationsplines;
+	rotationsplines["mine"]
+		.addNode(core::quaternion())
+		.addNode(core::quaternion().fromAngleAxis(90.0 * core::DEGTORAD, v3f(0.0, 0.0, 1.0).normalize()))
+		.addNode(core::quaternion())
+		;
+	rotationsplines["mine"]
+		.addIndex(1.0, 0, 2)
+		.normalizeDurations()
+		;
+
+	rotationsplines["dig"]
+		.addNode(core::quaternion())
+		.addNode(core::quaternion().fromAngleAxis(80.0 * core::DEGTORAD, v3f(0.0, 0.0, 1.0).normalize()))
+		.addNode(core::quaternion().fromAngleAxis(-80.0 * core::DEGTORAD, v3f(0.0, 0.0, 1.0).normalize()))
+		.addNode(core::quaternion())
+		;
+	rotationsplines["dig"]
+		.addIndex(1.0, 0, 3)
+		.normalizeDurations()
+		;
+
+	std::string which_anim = "mine";
+
 	// Position the wielded item
 	//v3f wield_position = v3f(45, -35, 65);
 	v3f wield_position = v3f(m_wieldmesh_offset.X, m_wieldmesh_offset.Y, 65);
 	//v3f wield_rotation = v3f(-100, 120, -100);
 	v3f wield_rotation = v3f(-100, 120, -100);
+	core::quaternion wield_rotation_q = core::quaternion(wield_rotation * core::DEGTORAD);
 	wield_position.Y += fabs(m_wield_change_timer)*320 - 40;
 	if(m_digging_anim < 0.05 || m_digging_anim > 0.5)
 	{
+		// Why is this block here?
 		f32 frac = 1.0;
 		if(m_digging_anim > 0.5)
 			frac = 2.0 * (m_digging_anim - 0.5);
@@ -496,21 +549,28 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 	if (m_digging_button != -1)
 	{
 		f32 digfrac = m_digging_anim;
-		wield_position.X -= 50 * sin(pow(digfrac, 0.8f) * M_PI);
-		wield_position.Y += 24 * sin(digfrac * 1.8 * M_PI);
-		wield_position.Z += 25 * 0.5;
+		v3f anim_position(0, 0, 0);
+		positionsplines[which_anim].interpolate(anim_position, digfrac);
+		wield_position.X += anim_position.X;
+		wield_position.Y += anim_position.Y;
+		wield_position.Z += anim_position.Z;
 
 		// Euler angles are PURE EVIL, so why not use quaternions?
-		core::quaternion quat_begin(wield_rotation * core::DEGTORAD);
-		core::quaternion quat_end(v3f(80, 30, 100) * core::DEGTORAD);
-		core::quaternion quat_slerp;
-		quat_slerp.slerp(quat_begin, quat_end, sin(digfrac * M_PI));
-		quat_slerp.toEuler(wield_rotation);
+		core::quaternion quat_rot;
+		rotationsplines[which_anim].interpolate(quat_rot, digfrac);
+		// apply rotation to starting rotation
+		wield_rotation_q *= quat_rot;
+		// convert back to euler angles
+		wield_rotation_q.toEuler(wield_rotation);
 		wield_rotation *= core::RADTODEG;
 	} else {
 		f32 bobfrac = my_modf(m_view_bobbing_anim);
+		//std::cout << "Third block, frac = " << bobfrac << std::endl;
 		wield_position.X -= sin(bobfrac*M_PI*2.0) * 3.0;
 		wield_position.Y += sin(my_modf(bobfrac*2.0)*M_PI) * 3.0;
+	}
+	if (!wield_position.equals(v3f(55, -35, 65))) {
+		//std::cout << m_digging_anim << ": " << wield_position.X-55 << ", " << wield_position.Y+35 << ", " << wield_position.Z-65 << std::endl;
 	}
 	m_wieldnode->setPosition(wield_position);
 	m_wieldnode->setRotation(wield_rotation);
