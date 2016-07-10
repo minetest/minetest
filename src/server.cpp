@@ -2022,7 +2022,7 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 
 	NetworkPacket pkt(TOCLIENT_PLAY_SOUND, 0);
 	pkt << id << spec.name << (float) (spec.gain * params.gain)
-			<< (u8) params.type << pos << params.object << params.loop;
+			<< (u8) params.type << pos << params.object << params.loop << params.fade;
 
 	for(std::vector<u16>::iterator i = dst_clients.begin();
 			i != dst_clients.end(); ++i) {
@@ -2042,6 +2042,27 @@ void Server::stopSound(s32 handle)
 
 	NetworkPacket pkt(TOCLIENT_STOP_SOUND, 4);
 	pkt << handle;
+
+	for(std::set<u16>::iterator i = psound.clients.begin();
+			i != psound.clients.end(); ++i) {
+		// Send as reliable
+		m_clients.send(*i, 0, &pkt, true);
+	}
+	// Remove sound reference
+	m_playing_sounds.erase(i);
+}
+
+void Server::fadeSound(s32 handle, float step, float gain)
+{
+	// Get sound reference
+	std::map<s32, ServerPlayingSound>::iterator i =
+			m_playing_sounds.find(handle);
+	if(i == m_playing_sounds.end())
+		return;
+	ServerPlayingSound &psound = i->second;
+
+	NetworkPacket pkt(TOCLIENT_FADE_SOUND, 4);
+	pkt << handle << step << gain;
 
 	for(std::set<u16>::iterator i = psound.clients.begin();
 			i != psound.clients.end(); ++i) {

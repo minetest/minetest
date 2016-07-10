@@ -21,7 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define L_UTIL_H_
 
 #include "lua_api/l_base.h"
+#include "config.h"
 
+struct HTTPFetchRequest;
+struct HTTPFetchResult;
 class AsyncEngine;
 
 class ModApiUtil : public ModApiBase {
@@ -88,6 +91,7 @@ private:
 
 	// decompress(data, method, ...)
 	static int l_decompress(lua_State *L);
+
 
 	// mkdir(path)
 	static int l_mkdir(lua_State *L);
