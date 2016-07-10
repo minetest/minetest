@@ -384,6 +384,8 @@ public:
 			const ContentFeatures &def)=0;
 	// If returns CONTENT_IGNORE, could not allocate id
 	virtual content_t allocateDummy(const std::string &name)=0;
+	// Remove a node
+	virtual void removeNode(const std::string &name)=0;
 
 	/*
 		Update item alias mapping.

@@ -778,6 +778,7 @@ public:
 	content_t allocateId();
 	virtual content_t set(const std::string &name, const ContentFeatures &def);
 	virtual content_t allocateDummy(const std::string &name);
+	virtual void removeNode(const std::string &name);
 	virtual void updateAliases(IItemDefManager *idef);
 	virtual void applyTextureOverrides(const std::string &override_filepath);
 	virtual void updateTextures(IGameDef *gamedef,
@@ -1069,6 +1070,40 @@ content_t CNodeDefManager::allocateDummy(const std::string &name)
 	ContentFeatures f;
 	f.name = name;
 	return set(name, f);
+}
+
+
+void CNodeDefManager::removeNode(const std::string &name)
+{
+	// Pre-condition
+	assert(name != "");
+
+	// Erase name from name ID mapping
+	content_t id = CONTENT_IGNORE;
+	if (m_name_id_mapping.getId(name, id)) {
+		m_name_id_mapping.eraseName(name);
+		m_name_id_mapping_with_aliases.erase(name);
+	}
+
+	// Erase node content from all groups it belongs to
+	for (std::map<std::string, GroupItems>::iterator iter_groups =
+			m_group_to_items.begin();
+			iter_groups != m_group_to_items.end();) {
+		GroupItems &items = iter_groups->second;
+		for (GroupItems::iterator iter_groupitems = items.begin();
+				iter_groupitems != items.end();) {
+			if (iter_groupitems->first == id)
+				items.erase(iter_groupitems++);
+			else
+				iter_groupitems++;
+		}
+
+		// Check if group is empty
+		if (items.size() == 0)
+			m_group_to_items.erase(iter_groups++);
+		else
+			iter_groups++;
+	}
 }
 
 

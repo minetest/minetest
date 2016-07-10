@@ -208,10 +208,16 @@ when registering it.
 The `:` prefix can also be used for maintaining backwards compatibility.
 
 ### Aliases
-Aliases can be added by using `minetest.register_alias(name, convert_to)`.
+Aliases can be added by using `minetest.register_alias(name, convert_to)` or
+`minetest.register_alias_force(name, convert_to).
 
 This will make Minetest to convert things called name to things called
 `convert_to`.
+
+The only difference between `minetest.register_alias` and
+`minetest.register_alias_force` is that if an item called `name` exists,
+`minetest.register_alias` will do nothing while
+`minetest.register_alias_force` will unregister it.
 
 This can be used for maintaining backwards compatibility.
 
@@ -463,6 +469,11 @@ the global `minetest.registered_*` tables.
 
 * `minetest.register_craftitem(name, item definition)`
     * added to `minetest.registered_items[name]`
+
+* `minetest.unregister_item(name)`
+    * Unregisters the item name from engine, and deletes the entry with key
+    * `name` from `minetest.registered_items` and from the associated item
+    * table according to its nature: minetest.registered_nodes[] etc
 
 * `minetest.register_biome(biome definition)`
     * returns an integer uniquely identifying the registered biome
@@ -1883,7 +1894,9 @@ Call these functions only at load time!
 * `minetest.register_node(name, node definition)`
 * `minetest.register_tool(name, item definition)`
 * `minetest.register_craftitem(name, item definition)`
+* `minetest.unregister_item(name)`
 * `minetest.register_alias(name, convert_to)`
+* `minetest.register_alias_force(name, convert_to)`
 * `minetest.register_craft(recipe)`
     * Check recipe table syntax for different types below.
 * `minetest.clear_craft(recipe)`
