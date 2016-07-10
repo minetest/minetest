@@ -680,6 +680,7 @@ void read_server_sound_params(lua_State *L, int index,
 	if(lua_istable(L, index)){
 		getfloatfield(L, index, "gain", params.gain);
 		getstringfield(L, index, "to_player", params.to_player);
+		getfloatfield(L, index, "fade", params.fade);
 		lua_getfield(L, index, "pos");
 		if(!lua_isnil(L, -1)){
 			v3f p = read_v3f(L, -1)*BS;
@@ -712,6 +713,7 @@ void read_soundspec(lua_State *L, int index, SimpleSoundSpec &spec)
 	} else if(lua_istable(L, index)){
 		getstringfield(L, index, "name", spec.name);
 		getfloatfield(L, index, "gain", spec.gain);
+		getfloatfield(L, index, "fade", spec.fade);
 	} else if(lua_isstring(L, index)){
 		spec.name = lua_tostring(L, index);
 	}

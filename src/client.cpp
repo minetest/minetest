@@ -407,6 +407,7 @@ void Client::step(float dtime)
 
 	// Step environment
 	m_env.step(dtime);
+	m_sound->step(dtime);
 
 	/*
 		Get events

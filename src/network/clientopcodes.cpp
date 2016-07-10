@@ -109,7 +109,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_EYE_OFFSET",               TOCLIENT_STATE_CONNECTED, &Client::handleCommand_EyeOffset }, // 0x52
 	{ "TOCLIENT_DELETE_PARTICLESPAWNER",   TOCLIENT_STATE_CONNECTED, &Client::handleCommand_DeleteParticleSpawner }, // 0x53
 	{ "TOCLIENT_CLOUD_PARAMS",             TOCLIENT_STATE_CONNECTED, &Client::handleCommand_CloudParams }, // 0x54
-	null_command_handler,
+	{ "TOCLIENT_FADE_SOUND",               TOCLIENT_STATE_CONNECTED, &Client::handleCommand_FadeSound }, // 0x55
 	null_command_handler,
 	null_command_handler,
 	null_command_handler,

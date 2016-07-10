@@ -620,6 +620,13 @@ enum ToClientCommand
 		v2f1000 speed
 	*/
 
+	TOCLIENT_FADE_SOUND = 0x55,
+	/*
+		s32 sound_id
+		float step
+		float gain
+	*/
+
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
 	/*
 		Belonging to AUTH_MECHANISM_LEGACY_PASSWORD and AUTH_MECHANISM_SRP.
