@@ -525,6 +525,27 @@ int ModApiItemMod::l_register_item_raw(lua_State *L)
 	return 0; /* number of results */
 }
 
+// unregister_item(name)
+int ModApiItemMod::l_unregister_item_raw(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	std::string name = luaL_checkstring(L, 1);
+
+	IWritableItemDefManager *idef =
+			getServer(L)->getWritableItemDefManager();
+
+	// Unregister the node
+	if (idef->get(name).type == ITEM_NODE) {
+		IWritableNodeDefManager *ndef =
+			getServer(L)->getWritableNodeDefManager();
+		ndef->removeNode(name);
+	}
+
+	idef->unregisterItem(name);
+
+	return 0; /* number of results */
+}
+
 // register_alias_raw(name, convert_to_name)
 int ModApiItemMod::l_register_alias_raw(lua_State *L)
 {
@@ -570,6 +591,7 @@ int ModApiItemMod::l_get_name_from_content_id(lua_State *L)
 void ModApiItemMod::Initialize(lua_State *L, int top)
 {
 	API_FCT(register_item_raw);
+	API_FCT(unregister_item_raw);
 	API_FCT(register_alias_raw);
 	API_FCT(get_content_id);
 	API_FCT(get_name_from_content_id);

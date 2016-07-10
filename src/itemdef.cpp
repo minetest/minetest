@@ -466,11 +466,17 @@ public:
 			infostream<<"ItemDefManager: erased alias "<<def.name
 					<<" because item was defined"<<std::endl;
 	}
+	virtual void unregisterItem(const std::string &name)
+	{
+		verbosestream<<"ItemDefManager: unregistering \""<<name<<"\""<<std::endl;
+
+		delete m_item_definitions[name];
+		m_item_definitions.erase(name);
+	}
 	virtual void registerAlias(const std::string &name,
 			const std::string &convert_to)
 	{
-		if(m_item_definitions.find(name) == m_item_definitions.end())
-		{
+		if (m_item_definitions.find(name) == m_item_definitions.end()) {
 			verbosestream<<"ItemDefManager: setting alias "<<name
 				<<" -> "<<convert_to<<std::endl;
 			m_aliases[name] = convert_to;

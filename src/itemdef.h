@@ -144,6 +144,7 @@ public:
 	virtual void clear()=0;
 	// Register item definition
 	virtual void registerItem(const ItemDefinition &def)=0;
+	virtual void unregisterItem(const std::string &name)=0;
 	// Set an alias so that items named <name> will load as <convert_to>.
 	// Alias is not set if <name> has already been defined.
 	// Alias will be removed if <name> is defined at a later point of time.
