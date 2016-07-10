@@ -456,11 +456,13 @@ Examples of sound parameter tables:
     -- Play locationless on all clients
     {
         gain = 1.0, -- default
+        fade = 0.0, -- default, change to a value > 0 to fade the sound in
     }
     -- Play locationless to one player
     {
         to_player = name,
         gain = 1.0, -- default
+        fade = 0.0, -- default, change to a value > 0 to fade the sound in
     }
     -- Play locationless to one player, looped
     {
@@ -2587,6 +2589,11 @@ These functions return the leftover itemstack.
     * `spec` is a `SimpleSoundSpec`
     * `parameters` is a sound parameter table
 * `minetest.sound_stop(handle)`
+* `minetest.sound_fade(handle, step, gain)`
+    * `handle` is a handle returned by minetest.sound_play
+    * `step` determines how fast a sound will fade.
+      Negative step will lower the sound volume, positive step will increase the sound volume
+    * `gain` the target gain for the fade.
 
 ### Timing
 * `minetest.after(time, func, ...)`

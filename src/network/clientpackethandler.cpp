@@ -755,21 +755,39 @@ void Client::handleCommand_ItemDef(NetworkPacket* pkt)
 
 void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 {
+	/*
+		[0] u32 server_id
+		[4] u16 name length
+		[6] char name[len]
+		[ 6 + len] f32 gain
+		[10 + len] u8 type
+		[11 + len] (f32 * 3) pos
+		[23 + len] u16 object_id
+		[25 + len] bool loop
+		[26 + len] f32 fade
+	*/
+
 	s32 server_id;
 	std::string name;
+
 	float gain;
 	u8 type; // 0=local, 1=positional, 2=object
 	v3f pos;
 	u16 object_id;
 	bool loop;
+	float fade = 0;
 
 	*pkt >> server_id >> name >> gain >> type >> pos >> object_id >> loop;
+
+	try {
+		*pkt >> fade;
+	} catch (SerializationError &e) {};
 
 	// Start playing
 	int client_id = -1;
 	switch(type) {
 		case 0: // local
-			client_id = m_sound->playSound(name, loop, gain);
+			client_id = m_sound->playSound(name, loop, gain, fade);
 			break;
 		case 1: // positional
 			client_id = m_sound->playSoundAt(name, loop, gain, pos);
@@ -806,6 +824,21 @@ void Client::handleCommand_StopSound(NetworkPacket* pkt)
 		int client_id = i->second;
 		m_sound->stopSound(client_id);
 	}
+}
+
+void Client::handleCommand_FadeSound(NetworkPacket *pkt)
+{
+	s32 sound_id;
+	float step;
+	float gain;
+
+	*pkt >> sound_id >> step >> gain;
+
+	UNORDERED_MAP<s32, int>::iterator i =
+			m_sounds_server_to_client.find(sound_id);
+
+	if (i != m_sounds_server_to_client.end())
+		m_sound->fadeSound(i->second, step, gain);
 }
 
 void Client::handleCommand_Privileges(NetworkPacket* pkt)

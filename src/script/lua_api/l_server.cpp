@@ -455,6 +455,16 @@ int ModApiServer::l_sound_stop(lua_State *L)
 	return 0;
 }
 
+int ModApiServer::l_sound_fade(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	s32 handle = luaL_checkinteger(L, 1);
+	float step = luaL_checknumber(L, 2);
+	float gain = luaL_checknumber(L, 3);
+	getServer(L)->fadeSound(handle, step, gain);
+	return 0;
+}
+
 // is_singleplayer()
 int ModApiServer::l_is_singleplayer(lua_State *L)
 {
@@ -518,6 +528,7 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(show_formspec);
 	API_FCT(sound_play);
 	API_FCT(sound_stop);
+	API_FCT(sound_fade);
 
 	API_FCT(get_player_information);
 	API_FCT(get_player_privs);

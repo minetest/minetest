@@ -115,6 +115,7 @@ struct ServerSoundParams
 	u16 object;
 	float max_hear_distance;
 	bool loop;
+	float fade;
 
 	ServerSoundParams():
 		gain(1.0),
@@ -123,7 +124,8 @@ struct ServerSoundParams
 		pos(0,0,0),
 		object(0),
 		max_hear_distance(32*BS),
-		loop(false)
+		loop(false),
+		fade(0)
 	{}
 
 	v3f getPos(ServerEnvironment *env, bool *pos_exists) const;
@@ -132,6 +134,7 @@ struct ServerSoundParams
 struct ServerPlayingSound
 {
 	ServerSoundParams params;
+	SimpleSoundSpec spec;
 	UNORDERED_SET<u16> clients; // peer ids
 };
 
@@ -231,6 +234,7 @@ public:
 	// Envlock
 	s32 playSound(const SimpleSoundSpec &spec, const ServerSoundParams &params);
 	void stopSound(s32 handle);
+	void fadeSound(s32 handle, float step, float gain);
 
 	// Envlock
 	std::set<std::string> getPlayerEffectivePrivs(const std::string &name);
