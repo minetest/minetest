@@ -17,7 +17,8 @@
 
 local DIR_DELIM, LINE_DELIM = DIR_DELIM, "\n"
 local table, unpack, string, pairs, io, os = table, unpack, string, pairs, io, os
-local rep, sprintf, tonumber = string.rep, string.format, tonumber
+local rep, sprintf = string.rep, string.format
+local tonumber, min = tonumber, math.min
 local core, settings = core, core.settings
 local reporter = {}
 
@@ -43,6 +44,16 @@ local function format_number(number, fmt)
 	return sprintf(fmt or "%d", number)
 end
 
+local function tolabel(instrument)
+	local class, label = instrument.class, instrument.label
+	if class == "abm" or class == "lbm" then
+		return sprintf("%s: %s", class:upper(), label)
+	elseif class == "chatcommand" then
+		return "/" .. label
+	end
+	return label
+end
+
 local Formatter = {
 	new = function(self, object)
 		object = object or {}
@@ -50,9 +61,11 @@ local Formatter = {
 		self.__index = self
 		return setmetatable(object, self)
 	end,
-	__tostring = function (self)
+
+	__tostring = function(self)
 		return table.concat(self.out, LINE_DELIM)
 	end,
+
 	print = function(self, text, ...)
 		if (...) then
 			text = sprintf(text, ...)
@@ -65,6 +78,7 @@ local Formatter = {
 
 		table.insert(self.out, text or LINE_DELIM)
 	end,
+
 	flush = function(self)
 		table.insert(self.out, LINE_DELIM)
 		local text = table.concat(self.out, LINE_DELIM)
@@ -73,39 +87,68 @@ local Formatter = {
 	end
 }
 
-local widths = { 55, 9, 9, 9, 5, 5, 5 }
-local txt_row_format = sprintf(" %%-%ds | %%%ds | %%%ds | %%%ds | %%%ds | %%%ds | %%%ds", unpack(widths))
-
-local HR = {}
-for i=1, #widths do
-	HR[i]= rep("-", widths[i])
-end
--- ' | ' should break less with github than '-+-', when people are pasting there
-HR = sprintf("-%s-", table.concat(HR, " | "))
+---
+-- the maximal width the first column is going to expand to
+local max_col1_width = 60
 
 local TxtFormatter = Formatter:new {
-	format_row = function(self, modname, instrument_name, statistics)
-		local label
-		if instrument_name then
-			label = shorten(instrument_name, widths[1] - 5)
-			label = sprintf(" - %s %s", label, rep(".", widths[1] - 5 - label:len()))
-		else -- Print mod_stats
-			label = shorten(modname, widths[1] - 2) .. ":"
+	update = function(self)
+		-- initial widths of the columns in characters
+		-- the first column will expand as needed up to max_fcol_width
+		self.widths = self.widths or { 30, 9, 9, 9, 5, 5, 5 }
+		local widths = self.widths
+
+		local col1_width = widths[1]
+		if col1_width < max_col1_width then
+			-- look through already collected stats
+			-- and update column widths to meet the requirements
+			for instrument in pairs(self.profile.ins_stats) do
+				local label_len = tolabel(instrument):len() + 5
+				if label_len > col1_width then
+					widths[1] = min(label_len, max_col1_width)
+				end
+			end
 		end
 
-		self:print(txt_row_format, label,
-			format_number(statistics.time_min),
-			format_number(statistics.time_max),
-			format_number(statistics:get_time_avg()),
-			format_number(statistics.part_min, "%.1f"),
-			format_number(statistics.part_max, "%.1f"),
-			format_number(statistics:get_part_avg(), "%.1f")
+		self.txt_row_format = sprintf(" %%-%ds" .. rep(" | %%%ds", #widths - 1), unpack(widths))
+
+		local HR = {}
+		for i=1, #widths do
+			HR[i]= rep("-", widths[i])
+		end
+		-- ' | ' should break less with github than '-+-', when people are pasting there
+		self.HR = sprintf("-%s-", table.concat(HR, " | "))
+	end,
+
+	format_row = function(self, modname, stats, instrument)
+		instrument = instrument or stats.instrument
+		local label
+		local fcol_width = self.widths[1]
+		if instrument and instrument.mod then
+			fcol_width = fcol_width - 3
+			label = shorten(tolabel(instrument), fcol_width)
+			local dot_length = fcol_width - label:len()
+			local dots = rep(dot_length > 4 and "." or "", dot_length - 1)
+			label = sprintf(sprintf(" - %%s%%%ds", dot_length), label, dots)
+		else -- Print mod_stats
+			label = shorten(modname, fcol_width - 2) .. ":"
+		end
+
+		self:print(self.txt_row_format, label,
+			format_number(stats.time_min),
+			format_number(stats.time_max),
+			format_number(stats:get_mean("time_all")),
+			format_number(stats.part_min, "%.1f"),
+			format_number(stats.part_max, "%.1f"),
+			format_number(stats:get_mean("part_all") or 100, "%.1f")
 		)
 	end,
+
 	format = function(self, filter)
+		self:update()
 		local profile = self.profile
 		self:print("Values below show absolute/relative times spend per server step by the instrumented function.")
-		self:print("A total of %d samples were taken", profile.stats_total.samples)
+		self:print("A total of %d samples were taken", profile.ins_total.samples)
 
 		if filter then
 			self:print("The output is limited to '%s'", filter)
@@ -113,47 +156,55 @@ local TxtFormatter = Formatter:new {
 
 		self:print()
 		self:print(
-			txt_row_format,
+			self.txt_row_format,
 			"instrumentation", "min Ms", "max Ms", "avg Ms", "min %", "max %", "avg %"
 		)
-		self:print(HR)
-		for modname,mod_stats in pairs(profile.stats) do
-			if filter_matches(filter, modname) then
-				self:format_row(modname, nil, mod_stats)
+		self:print(self.HR)
 
-				if mod_stats.instruments ~= nil then
-					for instrument_name, instrument_stats in pairs(mod_stats.instruments) do
-						self:format_row(nil, instrument_name, instrument_stats)
-					end
+		for instrument, stat in pairs(profile.ins_stats) do
+			local modname = instrument:get_modname()
+
+			-- first print rows with children, then their children
+			-- filter and skip any top level statistics without children,
+			-- like non-mod instruments
+			if filter_matches(filter, modname) and #stat > 0 then
+				self:format_row(modname, stat, instrument)
+
+				for i=1, #stat do
+					self:format_row(modname, stat[i])
 				end
 			end
 		end
-		self:print(HR)
+
+		self:print(self.HR)
 		if not filter then
-			self:format_row("total", nil, profile.stats_total)
+			self:format_row("total", profile.ins_total)
 		end
 	end
 }
 
 local CsvFormatter = Formatter:new {
-	format_row = function(self, modname, instrument_name, statistics)
+	format_row = function(self, modname, stats, instrument)
 		self:print(
 			"%q,%q,%d,%d,%d,%d,%d,%f,%f,%f",
-			modname, instrument_name,
-			statistics.samples,
-			statistics.time_min,
-			statistics.time_max,
-			statistics:get_time_avg(),
-			statistics.time_all,
-			statistics.part_min,
-			statistics.part_max,
-			statistics:get_part_avg()
+			modname,
+			instrument.mod and tolabel(instrument) or "*",
+			stats.samples,
+			stats.time_min,
+			stats.time_max,
+			stats:get_mean("time_all"),
+			stats.time_all,
+			stats.part_min,
+			stats.part_max,
+			stats:get_mean("part_all")
 		)
 	end,
+
 	format = function(self, filter)
 		self:print(
 			"%q,%q,%q,%q,%q,%q,%q,%q,%q,%q",
-			"modname", "instrumentation",
+			"modname",
+			"instrumentation",
 			"samples",
 			"time min µs",
 			"time max µs",
@@ -163,15 +214,11 @@ local CsvFormatter = Formatter:new {
 			"part max %",
 			"part avg %"
 		)
-		for modname, mod_stats in pairs(self.profile.stats) do
-			if filter_matches(filter, modname) then
-				self:format_row(modname, "*", mod_stats)
+		for instrument, stats in pairs(self.profile.ins_stats) do
+			local modname = instrument:get_modname()
 
-				if mod_stats.instruments ~= nil then
-					for instrument_name, instrument_stats in pairs(mod_stats.instruments) do
-						self:format_row(modname, instrument_name, instrument_stats)
-					end
-				end
+			if filter_matches(filter, modname) then
+				self:format_row(modname, stats, instrument)
 			end
 		end
 	end
@@ -206,22 +253,12 @@ end
 -- @return serialized data to be saved to a file
 --
 local function serialize_profile(profile, format, filter)
-	if format == "lua" or format == "json" or format == "json_pretty" then
-		local stats = filter and {} or profile.stats
-		if filter then
-			for modname, mod_stats in pairs(profile.stats) do
-				if filter_matches(filter, modname) then
-					stats[modname] = mod_stats
-				end
-			end
-		end
-		if format == "lua" then
-			return core.serialize(stats)
-		elseif format == "json" then
-			return core.write_json(stats)
-		elseif format == "json_pretty" then
-			return core.write_json(stats, true)
-		end
+	if format == "lua" then
+		return core.serialize(profile:export(filter))
+	elseif format == "json" then
+		return core.write_json(profile:export(filter))
+	elseif format == "json_pretty" then
+		return core.write_json(profile:export(filter), true)
 	end
 	-- Fall back to textual formats.
 	return format_statistics(profile, format, filter)

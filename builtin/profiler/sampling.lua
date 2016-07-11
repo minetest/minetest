@@ -14,169 +14,124 @@
 --You should have received a copy of the GNU Lesser General Public License along
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-local setmetatable = setmetatable
-local pairs, format = pairs, string.format
-local min, max, huge = math.min, math.max, math.huge
+local pairs = pairs
 local core = core
 
 local profiler = ...
--- Split sampler and profile up, to possibly allow for rotation later.
-local sampler = {}
-local profile
-local stats_total
-local logged_time, logged_data
 
-local _stat_mt = {
-	get_time_avg = function(self)
-		return self.time_all/self.samples
-	end,
-	get_part_avg = function(self)
-		if not self.part_all then
-			return 100 -- Extra handling for "total"
-		end
-		return self.part_all/self.samples
-	end,
+---
+--localized refs to the dataset and stats of the current running profile state
+local ins_stats, ins_total
+
+---
+-- the time that was logged in this sample
+-- will be reseted and then updated during a sample
+local sample_logged_time = 0
+
+---
+-- a set of all mod instruments that we found during sampling that had something logged to them
+-- we store it as upvalue to the sample function
+-- because we recycle the table instead of reinitializing it each time for performance
+local logged_mods = {}
+
+---
+-- a set of all instruments that had something logged to them
+-- and thus need to be sampled
+-- filled via instrumentation
+local logged_instruments = {}
+
+local sampler = {
+	logged_instruments = logged_instruments
 }
-_stat_mt.__index = _stat_mt
 
+---
+-- reset sampler state
+-- called on profiler.reset and during sampler init
 function sampler.reset()
-	-- Accumulated logged time since last sample.
-	-- This helps determining, the relative time a mod used up.
-	logged_time = 0
-	-- The measurements taken through instrumentation since last sample.
-	logged_data = {}
+	sample_logged_time = 0
 
-	profile = {
-		-- Current mod statistics (max/min over the entire mod lifespan)
-		-- Mod specific instrumentation statistics are nested within.
-		stats = {},
-		-- Current stats over all mods.
-		stats_total = setmetatable({
-			samples = 0,
-			time_min = huge,
-			time_max = 0,
-			time_all = 0,
-			part_min = 100,
-			part_max = 100
-		}, _stat_mt)
-	}
-	stats_total = profile.stats_total
-
-	-- Provide access to the most recent profile.
-	sampler.profile = profile
+	-- use the most current profile state
+	local data = profiler.data
+	ins_stats = data.ins_stats
+	ins_total = data.ins_total
 end
 
 ---
--- Log a measurement for the sampler to pick up later.
--- Keep `log` and its often called functions lean.
--- It will directly add to the instrumentation overhead.
---
-function sampler.log(modname, instrument_name, time_diff)
-	if time_diff <= 0 then
-		if time_diff < 0 then
-			-- This **might** have happened on a semi-regular basis with huge mods,
-			-- resulting in negative statistics (perhaps midnight time jumps or ntp corrections?).
-			core.log("warning", format(
-					"Time travel of %s::%s by %dµs.",
-					modname, instrument_name, time_diff
-			))
-		end
-		-- Throwing these away is better, than having them mess with the overall result.
-		return
-	end
-
-	local mod_data = logged_data[modname]
-	if mod_data == nil then
-		mod_data = {}
-		logged_data[modname] = mod_data
-	end
-
-	mod_data[instrument_name] = (mod_data[instrument_name] or 0) + time_diff
-	-- Update logged time since last sample.
-	logged_time = logged_time + time_diff
-end
-
----
--- Return a requested statistic.
--- Initialize if necessary.
---
-local function get_statistic(stats_table, name)
-	local statistic = stats_table[name]
-	if statistic == nil then
-		statistic = setmetatable({
-			samples = 0,
-			time_min = huge,
-			time_max = 0,
-			time_all = 0,
-			part_min = 100,
-			part_max = 0,
-			part_all = 0,
-		}, _stat_mt)
-		stats_table[name] = statistic
-	end
-	return statistic
-end
-
----
--- Update a statistic table
+-- Update a Stats table
+-- @see data.lua/Stats
 --
 local function update_statistic(stats_table, time)
 	stats_table.samples = stats_table.samples + 1
 
 	-- Update absolute time (µs) spend by the subject
-	stats_table.time_min = min(stats_table.time_min, time)
-	stats_table.time_max = max(stats_table.time_max, time)
+	if stats_table.time_max < time then
+		stats_table.time_max = time
+	end
+	if stats_table.time_min > time then
+		stats_table.time_min = time
+	end
 	stats_table.time_all = stats_table.time_all + time
 
 	-- Update relative time (%) of this sample spend by the subject
-	local current_part = (time/logged_time) * 100
-	stats_table.part_min = min(stats_table.part_min, current_part)
-	stats_table.part_max = max(stats_table.part_max, current_part)
+	local current_part = (time / sample_logged_time) * 100
+	if stats_table.part_max < current_part then
+		stats_table.part_max = current_part
+	end
+	if stats_table.part_min > current_part then
+		stats_table.part_min = current_part
+	end
 	stats_table.part_all = stats_table.part_all + current_part
 end
 
 ---
 -- Sample all logged measurements each server step.
 -- Like any globalstep function, this should not be too heavy,
--- but does not add to the instrumentation overhead.
+-- but it does not cause any instrumentation overhead.
 --
 local function sample(dtime)
-	-- Rare, but happens and is currently of no informational value.
-	if logged_time == 0 then
+	sample_logged_time = 0
+	for instrument in pairs(logged_instruments) do
+		local mod = instrument.mod
+		logged_mods[mod] = true
+
+		local time = instrument.logged_time
+		mod.logged_time = mod.logged_time + time
+		-- Accumulate total logged time of this sample for total stats calculations
+		sample_logged_time = sample_logged_time + time
+
+		-- Update time of this sample spend by the instrumented function.
+		update_statistic(ins_stats[instrument], time)
+
+		-- Reset logged data for the next sample.
+		instrument.logged_time = 0
+		logged_instruments[instrument] = nil
+	end
+
+	for mod in pairs(logged_mods) do
+		-- Update time of this sample spend by this mod.
+		update_statistic(ins_stats[mod], mod.logged_time)
+
+		-- Reset logged data for the next sample.
+		mod.logged_time = 0
+		logged_mods[mod] = nil
+	end
+
+	-- Rare, but happens (for example when loading) and is of no value.
+	-- so skip updating total stats when nothing was logged; particularly time_min and sample count
+	if sample_logged_time == 0 then
 		return
 	end
 
-	for modname, instruments in pairs(logged_data) do
-		local mod_stats = get_statistic(profile.stats, modname)
-		if mod_stats.instruments == nil then
-			-- Current statistics for each instrumentation component
-			mod_stats.instruments = {}
-		end
-
-		local mod_time = 0
-		for instrument_name, time in pairs(instruments) do
-			if time > 0 then
-				mod_time = mod_time + time
-				local instrument_stats = get_statistic(mod_stats.instruments, instrument_name)
-
-				-- Update time of this sample spend by the instrumented function.
-				update_statistic(instrument_stats, time)
-				-- Reset logged data for the next sample.
-				instruments[instrument_name] = 0
-			end
-		end
-
-		-- Update time of this sample spend by this mod.
-		update_statistic(mod_stats, mod_time)
-	end
-
 	-- Update the total time spend over all mods.
-	stats_total.time_min = min(stats_total.time_min, logged_time)
-	stats_total.time_max = max(stats_total.time_max, logged_time)
-	stats_total.time_all = stats_total.time_all + logged_time
+	if ins_total.time_max < sample_logged_time then
+		ins_total.time_max = sample_logged_time
+	end
+	if ins_total.time_min > sample_logged_time then
+		ins_total.time_min = sample_logged_time
+	end
+	ins_total.time_all = ins_total.time_all + sample_logged_time
 
-	stats_total.samples = stats_total.samples + 1
-	logged_time = 0
+	ins_total.samples = ins_total.samples + 1
 end
 
 ---
@@ -187,7 +142,7 @@ function sampler.init()
 
 	if core.settings:get_bool("instrument.profiler") then
 		core.register_globalstep(function()
-			if logged_time == 0 then
+			if sample_logged_time == 0 then
 				return
 			end
 			return profiler.empty_instrument()
@@ -195,8 +150,7 @@ function sampler.init()
 		core.register_globalstep(profiler.instrument {
 			func = sample,
 			mod = "*profiler*",
-			class = "Sampler (update stats)",
-			label = false,
+			label = "Sampler (update stats)",
 		})
 	else
 		core.register_globalstep(sample)

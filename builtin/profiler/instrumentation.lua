@@ -15,11 +15,13 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-local format, pairs, type = string.format, pairs, type
-local core, get_current_modname = core, core.get_current_modname
-local profiler, sampler, get_bool_default = ...
+local format = string.format
+local pairs, type = pairs, type
+local getmetatable, setmetatable = getmetatable, setmetatable
+local core, settings, get_current_modname = core, core.settings, core.get_current_modname
+local profiler, sampler = ...
 
-local instrument_builtin = get_bool_default("instrument.builtin", false)
+local instrument_builtin = settings:get_bool("instrument.builtin", false)
 
 local register_functions = {
 	register_globalstep = 0,
@@ -45,57 +47,105 @@ local register_functions = {
 	register_on_player_hpchange = 0,
 }
 
----
--- Create an unique instrument name.
--- Generate a missing label with a running index number.
---
-local counts = {}
-local function generate_name(def)
-	local class, label, func_name = def.class, def.label, def.func_name
-	if label then
-		if class or func_name then
-			return format("%s '%s' %s", class or "", label, func_name or ""):trim()
-		end
-		return format("%s", label):trim()
-	elseif label == false then
-		return format("%s", class or func_name):trim()
-	end
+local registered_instruments = {}
 
-	local index_id = def.mod .. (class or func_name)
-	local index = counts[index_id] or 1
-	counts[index_id] = index + 1
-	return format("%s[%d] %s", class or func_name, index, class and func_name or ""):trim()
-end
+---
+-- Represents and identifies the instrumenting component.
+-- It associates metadata (originating mod, label, class) with it and holds
+-- logged quantities gained from instrumentation to be picked up by the sampler.
+--
+-- An Instrument may cover a function or a collection of other instruments.
+-- This effectively creates a flat hierachy of instruments, where the top often
+-- represents the entirety of instruments deployed for a mod.
+--
+-- References are passed around the profiler to avoid deep table lookups in a
+-- central tree structure when looking for the instruments to log to them.
+-- It moves the search and sort away from instrumentation-time
+-- to sampling time for reduced overhead.
+local Instrument = {
+	---
+	-- @param parent the parent instrument (usually of the mod this belongs to)
+	-- 			or nil for a top-level instrument
+	-- @param class classify the instrument to change how the instrument is
+	-- 			dealed with in other places (for example during reporting)
+	-- 			e.g. mod, entity, abm, lbm, chatcommand
+	-- @param label text to display and to differentiate between instruments
+	new = function(self, parent, class, label)
+		local modname = parent and parent.label or label or ""
+		local name = format("%s:%s:%s", modname, class or "", label)
+		if registered_instruments[name] then
+			return registered_instruments[name]
+		end
+		local obj = self.reset({
+			mod = parent,
+			class = class,
+			label = label,
+		})
+		registered_instruments[name] = obj
+		return setmetatable(obj, self)
+	end,
+
+	---
+	-- set all measured quantities to 0 that were logged for this instrument
+	reset = function(self)
+		self.logged_time = 0
+		return self
+	end,
+
+	---
+	-- @return the name of the mod that provided the instrumented function
+	get_modname = function(self)
+		return self.mod and self.mod.label or self.label
+	end,
+
+	__tostring = function(self)
+		return format(
+			"%s:%s:%s",
+			self.mod and self.mod.label or "",
+			self.class or "",
+			self.label or ""
+		)
+	end,
+}
+Instrument.__index = Instrument
 
 ---
 -- Keep `measure` and the closure in `instrument` lean, as these, and their
 -- directly called functions are the overhead that is caused by instrumentation.
 --
-local time, log = core.get_us_time, sampler.log
-local function measure(modname, instrument_name, start, ...)
-	log(modname, instrument_name, time() - start)
+local get_time = core.get_us_time
+local logged_instruments = sampler.logged_instruments
+local function measure(ins, time_diff, ...)
+	time_diff = get_time() - time_diff
+	if time_diff > 0 then
+		ins.logged_time = ins.logged_time + time_diff
+		logged_instruments[ins] = true
+	end
 	return ...
 end
+
 --- Automatically instrument a function to measure and log to the sampler.
 -- def = {
--- 		mod = "",
--- 		class = "",
--- 		func_name = "",
--- 		-- if nil, will create a label based on registration order
--- 		label = "" | false,
+-- 		func = function(...) ... end,
+-- 		[mod = "",]
+-- 		[class = "",]
+-- 		label = "",
 -- }
 local function instrument(def)
 	if not def or not def.func then
 		return
 	end
-	def.mod = def.mod or get_current_modname()
-	local modname = def.mod
-	local instrument_name = generate_name(def)
-	local func = def.func
 
-	if not instrument_builtin and modname == "*builtin*" then
+	local func = def.func
+	local mod = def.mod or get_current_modname() or "*unknown*"
+
+	if not instrument_builtin and mod == "*builtin*" then
 		return func
 	end
+
+	mod = Instrument:new(nil, "mod", mod)
+	def = Instrument:new(mod, def.class, def.label)
+	def.func = func
 
 	return function(...)
 		-- This tail-call allows passing all return values of `func`
@@ -103,8 +153,36 @@ local function instrument(def)
 		-- Compared to table creation and unpacking it won't lose `nil` returns
 		-- and is expected to be faster
 		-- `measure` will be executed after time() and func(...)
-		return measure(modname, instrument_name, time(), func(...))
+		return measure(def, get_time(), func(...))
 	end
+end
+
+---
+-- Create a label, either by parsing a name
+-- or generating with a running index number.
+--
+local counts = {}
+local function generate_label(class, name, func_name)
+	local modname = get_current_modname() or "*unknown*"
+
+	-- remove the register_ prefix for shorter and more descriptive names
+	-- since we instrument the otherwise func_name-less callbacks
+	-- and not their registration functions
+	func_name = func_name and func_name:gsub("^register_", "", 1) or ""
+
+	-- with an instance name available, we only need to clean and format it
+	if name then
+		-- remove mod: and :mod: prefixes and replace underscores with spaces
+		name = name:gsub("^:?[_%w]*:", "", 1):gsub("_", " ")
+		return format("'%s' %s", name, func_name):trim()
+	end
+
+	-- generate a running index number to differentiate between individual
+	-- nameless callbacks/functions
+	local index_id = format("%s:%s:%s:%s", modname, class or "", name or "", func_name)
+	local index = counts[index_id] or 1
+	counts[index_id] = index + 1
+	return format("%s[%d]", func_name, index)
 end
 
 local function can_be_called(func)
@@ -126,26 +204,26 @@ end
 -- that it will automatically instrument any callback function passed as first argument.
 --
 local function instrument_register(func, func_name)
-	local register_name = func_name:gsub("^register_", "", 1)
 	return function(callback, ...)
 		assert_can_be_called(callback, func_name, 2)
 		register_functions[func_name] = register_functions[func_name] + 1
 		return func(instrument {
 			func = callback,
-			func_name = register_name
+			label = generate_label("callback", nil, func_name),
 		}, ...)
 	end
 end
 
 local function init_chatcommand()
-	if get_bool_default("instrument.chatcommand", true) then
+	if settings:get_bool("instrument.chatcommand", true) then
 		local orig_register_chatcommand = core.register_chatcommand
 		core.register_chatcommand = function(cmd, def)
 			def.func = instrument {
+				class = "chatcommand",
 				func = def.func,
-				label = "/" .. cmd,
+				label = cmd,
 			}
-			orig_register_chatcommand(cmd, def)
+			return orig_register_chatcommand(cmd, def)
 		end
 	end
 end
@@ -154,7 +232,7 @@ end
 -- Start instrumenting selected functions
 --
 local function init()
-	if get_bool_default("instrument.entity", true) then
+	if settings:get_bool("instrument.entity", true) then
 		-- Explicitly declare entity api-methods.
 		-- Simple iteration would ignore lookup via __index.
 		local entity_instrumentation = {
@@ -167,64 +245,65 @@ local function init()
 		-- Wrap register_entity() to instrument them on registration.
 		local orig_register_entity = core.register_entity
 		core.register_entity = function(name, prototype)
-			local modname = get_current_modname()
+			local modname = get_current_modname() or "*unknown*"
 			for _, func_name in pairs(entity_instrumentation) do
 				prototype[func_name] = instrument {
-					func = prototype[func_name],
 					mod = modname,
-					func_name = func_name,
-					label = prototype.label,
+					class = "entity",
+					func = prototype[func_name],
+					label = generate_label("entity", name, func_name),
 				}
 			end
-			orig_register_entity(name,prototype)
+			return orig_register_entity(name,prototype)
 		end
 	end
 
-	if get_bool_default("instrument.abm", true) then
+	if settings:get_bool("instrument.abm", true) then
 		-- Wrap register_abm() to automatically instrument abms.
 		local orig_register_abm = core.register_abm
 		core.register_abm = function(spec)
 			spec.action = instrument {
 				func = spec.action,
-				class = "ABM",
-				label = spec.label,
+				class = "abm",
+				label = spec.label or generate_label("abm"),
 			}
-			orig_register_abm(spec)
+			return orig_register_abm(spec)
 		end
 	end
 
-	if get_bool_default("instrument.lbm", true) then
+	if settings:get_bool("instrument.lbm", true) then
 		-- Wrap register_lbm() to automatically instrument lbms.
 		local orig_register_lbm = core.register_lbm
 		core.register_lbm = function(spec)
 			spec.action = instrument {
 				func = spec.action,
-				class = "LBM",
-				label = spec.label or spec.name,
+				class = "lbm",
+				label = spec.label or generate_label("lbm", spec.name),
 			}
-			orig_register_lbm(spec)
+			return orig_register_lbm(spec)
 		end
 	end
 
-	if get_bool_default("instrument.global_callback", true) then
+	if settings:get_bool("instrument.global_callback", true) then
 		for func_name, _ in pairs(register_functions) do
 			core[func_name] = instrument_register(core[func_name], func_name)
 		end
 	end
 
-	if get_bool_default("instrument.profiler", false) then
-		-- Measure overhead of instrumentation, but keep it down for functions
-		-- So keep the `return` for better optimization.
+	if settings:get_bool("instrument.profiler", false) then
+		-- Measure overhead of instrumentation
+		-- but also measures an additional function call to an empty function
+		-- that technically is not part of the overhead anymore
 		profiler.empty_instrument = instrument {
 			func = function() return end,
 			mod = "*profiler*",
-			class = "Instrumentation overhead",
-			label = false,
+			label = "Instrumentation overhead",
 		}
 	end
 end
 
 return {
+	registered_instruments = registered_instruments,
 	register_functions = register_functions,
 	instrument = instrument,
 	init = init,
