@@ -3612,8 +3612,8 @@ Definition tables
             max_items = 1,  -- Maximum number of items to drop.
             items = { -- Choose max_items randomly from this list.
                 {
-                    items = {"foo:bar", "baz:frob"},  -- Choose one item randomly from this list.
-                    rarity = 1,  -- Probability of getting is 1 / rarity.
+                    items = {"foo:bar", "baz:frob"},  -- Items to drop.
+                    rarity = 1,  -- Probability of dropping is 1 / rarity.
                 },
             },
         },
