@@ -790,15 +790,6 @@ movement_gravity (Gravity) float 9.81
 #    -    error: abort on usage of deprecated call (suggested for mod developers).
 deprecated_lua_api_handling (Deprecated Lua API handling) enum legacy legacy,log,error
 
-#    Useful for mod developers.
-mod_profiling (Mod profiling) bool false
-
-#    Detailed mod profile data. Useful for mod developers.
-detailed_profiling (Detailed mod profiling) bool false
-
-#    Profiler data print interval. 0 = disable. Useful for developers.
-profiler_print_interval (Profiling print interval) int 0
-
 #    Number of extra blocks that can be loaded by /clearobjects at once.
 #    This is a trade-off between sqlite transaction overhead and
 #    memory consumption (4096=100MB, as a rule of thumb).
@@ -1163,6 +1154,51 @@ secure.trusted_mods (Trusted mods) string
 #	allow them to upload and download data to/from the internet.
 secure.http_mods (HTTP Mods) string
 
+[*Advanced]
+
+[**Profiling]
+#    Load the game profiler to collect game profiling data.
+#    Provides a /profiler command to access the compiled profile.
+#    Useful for mod developers and server operators.
+profiler.load (Load the game profiler) bool false
+
+#    The default format in which profiles are being saved,
+#    when calling `/profiler save [format]` without format.
+profiler.default_report_format (Default report format) enum txt txt,csv,lua,json,json_pretty
+
+#    The file path relative to your worldpath in which profiles will be saved to.
+#
+profiler.report_path (Report path) string ""
+
+[***Instrumentation]
+
+#    Instrument the methods of entities on registration.
+instrument.entity (Entity methods) bool true
+
+#    Instrument the action function of Active Block Modifiers on registration.
+instrument.abm (Active Block Modifiers) bool true
+
+#    Instrument the action function of Loading Block Modifiers on registration.
+instrument.lbm (Loading Block Modifiers) bool true
+
+#    Instrument chatcommands on registration.
+instrument.chatcommand (Chatcommands) bool true
+
+#    Instrument global callback functions on registration.
+#    (anything you pass to a minetest.register_*() function)
+instrument.global_callback (Global callbacks) bool true
+
+[****Advanced]
+#    Instrument builtin.
+#    This is usually only needed by core/builtin contributors
+instrument.builtin (Builtin) bool false
+
+#    Have the profiler instrument itself:
+#     * Instrument an empty function.
+#       This estimates the overhead, that instrumentation is adding (+1 function call).
+#     * Instrument the sampler being used to update the statistics.
+instrument.profiler (Profiler) bool false
+
 [Client and Server]
 
 #    Name of the player.
@@ -1218,3 +1254,6 @@ modstore_download_url (Modstore download URL) string https://forum.minetest.net/
 modstore_listmods_url (Modstore mods list URL) string https://forum.minetest.net/mmdb/mods/
 
 modstore_details_url (Modstore details URL) string https://forum.minetest.net/mmdb/mod/*/
+
+#    Print the engine's profiling data in regular intervals (in seconds). 0 = disable. Useful for developers.
+profiler_print_interval (Engine profiling data print interval) int 0

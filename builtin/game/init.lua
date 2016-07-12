@@ -9,8 +9,8 @@ dofile(gamepath.."constants.lua")
 dofile(gamepath.."item.lua")
 dofile(gamepath.."register.lua")
 
-if core.setting_getbool("mod_profiling") then
-	dofile(gamepath.."mod_profiling.lua")
+if core.setting_getbool("profiler.load") then
+	profiler = dofile(scriptpath.."profiler"..DIR_DELIM.."init.lua")
 end
 
 dofile(gamepath.."item_entity.lua")
@@ -26,3 +26,5 @@ dofile(gamepath.."features.lua")
 dofile(gamepath.."voxelarea.lua")
 dofile(gamepath.."forceloading.lua")
 dofile(gamepath.."statbars.lua")
+
+profiler = nil

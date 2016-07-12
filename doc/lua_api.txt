@@ -3423,6 +3423,9 @@ Definition tables
 ### ABM (ActiveBlockModifier) definition (`register_abm`)
 
     {
+        label = "Lava cooling",
+    --  ^ Descriptive label for profiling purposes (optional).
+    --    Definitions with identical labels will be listed as one.
     --  In the following two fields, also group:groupname will work.
         nodenames = {"default:lava_source"},
         neighbors = {"default:water_source", "default:water_flowing"}, -- Any of these --[[
@@ -3439,6 +3442,9 @@ Definition tables
 ### LBM (LoadingBlockModifier) definition (`register_lbm`)
 
     {
+        label = "Upgrade legacy doors",
+    --  ^ Descriptive label for profiling purposes (optional).
+    --    Definitions with identical labels will be listed as one.
         name = "modname:replace_legacy_door",
         nodenames = {"default:lava_source"},
     --  ^ List of node names to trigger the LBM on.

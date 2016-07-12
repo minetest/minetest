@@ -14,19 +14,6 @@ function core.register_chatcommand(cmd, def)
 	core.chatcommands[cmd] = def
 end
 
-if core.setting_getbool("mod_profiling") then
-	local tracefct = profiling_print_log
-	profiling_print_log = nil
-	core.register_chatcommand("save_mod_profile",
-			{
-				params      = "",
-				description = "save mod profiling data to logfile " ..
-						"(depends on default loglevel)",
-				func        = tracefct,
-				privs       = { server=true }
-			})
-end
-
 core.register_on_chat_message(function(name, message)
 	local cmd, param = string.match(message, "^/([^ ]+) *(.*)")
 	if not param then
@@ -50,6 +37,12 @@ core.register_on_chat_message(function(name, message)
 	end
 	return true  -- Handled chat message
 end)
+
+if core.setting_getbool("profiler.load") then
+	-- Run after register_chatcommand and its register_on_chat_message
+	-- Before any chattcommands that should be profiled
+	profiler.init_chatcommand()
+end
 
 -- Parses a "range" string in the format of "here (number)" or
 -- "(x1, y1, z1) (x2, y2, z2)", returning two position vectors
