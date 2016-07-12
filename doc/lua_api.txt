@@ -2439,7 +2439,7 @@ These functions return the leftover itemstack.
     * callback: `function(HTTPRequestResult res)`
     * Use this HTTP function if you are unsure, the others are for advanced use.
 * `HTTPApiTable.fetch_async(HTTPRequest req)`: returns handle
-    * Performs given request asynchronously and returns handle for `minetest.http_fetch_async_get`
+    * Performs given request asynchronously and returns handle for `HTTPApiTable.fetch_async_get`
 * `HTTPApiTable.fetch_async_get(handle)`: returns HTTPRequestResult
     * Return response data for given asynchronous HTTP request
 
@@ -4031,7 +4031,7 @@ The Biome API is still in an experimental phase and subject to change.
     --  ^ Playername is optional, if specified spawns particle only on the player's client
     }
 
-### `HTTPRequest` definition (`http_fetch`, `http_fetch_async`)
+### `HTTPRequest` definition (`HTTPApiTable.fetch_async`, `HTTPApiTable.fetch_async`)
 
     {
         url = "http://example.org",
@@ -4051,7 +4051,7 @@ The Biome API is still in an experimental phase and subject to change.
      -- ^ Optional, if true performs a multipart HTTP request. Default is false.
     }
 
-### `HTTPRequestResult` definition (`http_fetch` callback, `http_fetch_async_get`)
+### `HTTPRequestResult` definition (`HTTPApiTable.fetch` callback, `HTTPApiTable.fetch_async_get`)
 
     {
         completed = true,
