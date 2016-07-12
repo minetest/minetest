@@ -133,6 +133,7 @@ end
 
 -- returns a new normalized 2d vector with random values
 function vector.random2d()
+	local vect
 	repeat
 		vect = {x=math.random()*2-1, y=0, z=math.random()*2-1}
 	until vector.length(vect) <= 1
@@ -141,6 +142,7 @@ end
 
 -- returns a new normalized 3d vector with random values
 function vector.random3d()
+	local vect
 	repeat
 		vect = {x=math.random()*2-1, y=math.random()*2-1, z=math.random()*2-1}
 	until vector.length(vect) <= 1
@@ -194,7 +196,7 @@ end
 -- returns yaw from a 2d vector (x, z) in radians
 -- y from a 3d vector is ignored
 function vector.yaw(v)
-	yaw = math.atan2(-v.x, v.z)
+	local yaw = math.atan2(-v.x, v.z)
 	if yaw >= -math.pi and yaw < 0 then
 		yaw = math.pi * 2 + yaw
 	end
