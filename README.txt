@@ -252,6 +252,8 @@ Compiling on Windows:
 		http://www.winimage.com/zLibDll/index.html
 	* Zlib library (zlibwapi.lib and zlibwapi.dll from zlib125dll.zip):
 		http://www.winimage.com/zLibDll/index.html
+	* SQLite3 headers and library
+		https://www.sqlite.org/download.html
 	* Optional: gettext library and tools:
 		http://gnuwin32.sourceforge.net/downlinks/gettext.php
 		- This is used for other UI languages. Feel free to leave it out.
@@ -263,6 +265,10 @@ Compiling on Windows:
 	- Download all the other stuff to DIR and extract them into there.
 	  ("extract here", not "extract to packagename/")
 	  NOTE: zlib125dll.zip needs to be extracted into zlib125dll
+	  NOTE: You need to extract sqlite3.h & sqlite3ext.h from sqlite3 source
+	      and sqlite3.dll & sqlite3.def from sqlite3 precompiled binaries
+	      into "sqlite3" directory, and generate sqlite3.lib using command
+	      "LIB /DEF:sqlite3.def /OUT:sqlite3.lib"
 	- All those packages contain a nice base directory in them, which
 	  should end up being the direct subdirectories of DIR.
 	- You will end up with a directory structure like this (+=dir, -=file):
@@ -271,6 +277,8 @@ Compiling on Windows:
 		- zlib-1.2.5.tar.gz
 		- zlib125dll.zip
 		- irrlicht-1.8.3.zip
+        - sqlite-amalgamation-3130000.zip (SQLite3 headers)
+        - sqlite-dll-win32-x86-3130000.zip (SQLite3 library for 32bit system)
 		- 110214175330.zip (or whatever, this is the minetest source)
 		+ zlib-1.2.5
 			- zlib.h
@@ -284,6 +292,11 @@ Compiling on Windows:
 			+ lib
 			+ include
 			...
+		+ sqlite3
+			sqlite3.h
+			sqlite3ext.h
+			sqlite3.lib
+			sqlite3.dll
 		+ gettext (optional)
 			+bin
 			+include
@@ -321,6 +334,9 @@ Compiling on Windows:
 	GETTEXT_LIBRARIES        DIR/gettext/lib/intl.lib
 	GETTEXT_MSGFMT           DIR/gettext/bin/msgfmt
 	-----------------
+	- If CMake complains it couldn't find SQLITE3, choose "Advanced" box on the
+	  right top corner, then specify the location of SQLITE3_INCLUDE_DIR and
+	  SQLITE3_LIBRARY manually.
 	- Hit "Configure"
 	- Hit "Configure" once again 8)
 	- If something is still coloured red, you have a problem.
