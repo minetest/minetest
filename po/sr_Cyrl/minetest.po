@@ -8,17 +8,17 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-07-12 20:49+0200\n"
-"PO-Revision-Date: 2016-06-09 11:11+0000\n"
-"Last-Translator: Лазар Вукановић <gavranvukhome@gmail.com>\n"
-"Language-Team: Serbian (cyrillic) <https://hosted.weblate.org/projects/"
-"minetest/minetest/sr_Cyrl/>\n"
+"PO-Revision-Date: 2016-07-13 09:50+0000\n"
+"Last-Translator: lisacvuk <lisacvukhome@gmail.com>\n"
+"Language-Team: Serbian (cyrillic) "
+"<https://hosted.weblate.org/projects/minetest/minetest/sr_Cyrl/>\n"
 "Language: sr_Cyrl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 2.7-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 2.8-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -499,7 +499,7 @@ msgstr "Почни игру"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "3D Clouds"
@@ -507,11 +507,11 @@ msgstr "3Д Облаци"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "4x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Advanced Settings"
@@ -547,7 +547,7 @@ msgstr "Елегантно лишће"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
-msgstr "Mipmap"
+msgstr "Мипмап"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
@@ -598,9 +598,8 @@ msgid "Particles"
 msgstr "Честице"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Reset singleplayer world"
-msgstr "Да ли сте сигурни да желите да ресетујете ваш свет?"
+msgstr "Ресетуј свет"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -816,6 +815,18 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
+"Подразумеване контроле:\n"
+"Ни један приказан мени:\n"
+"- један тап: копај\n"
+"- дупли тап: постави блок/користи\n"
+"- превуци прстом: гледај около\n"
+"Мени/Инвертар приказан:\n"
+"- дупли тап (изван):\n"
+" -->Искључи\n"
+"- додирни ствари, додирни празно место:\n"
+" --> помери ствари\n"
+"- држи и превлачи, тапни другим прстом:\n"
+" --> пребаци само једну ствар из групе\n"
 
 #: src/game.cpp
 msgid "Exit to Menu"
@@ -831,7 +842,7 @@ msgstr "Дефиниције предмета..."
 
 #: src/game.cpp
 msgid "KiB/s"
-msgstr ""
+msgstr "КиБ/с"
 
 #: src/game.cpp
 msgid "Media..."
@@ -839,7 +850,7 @@ msgstr "Медија..."
 
 #: src/game.cpp
 msgid "MiB/s"
-msgstr ""
+msgstr "МиБ/с"
 
 #: src/game.cpp
 msgid "Node definitions..."
@@ -1005,7 +1016,7 @@ msgstr "Апликације"
 
 #: src/keycode.cpp
 msgid "Attn"
-msgstr ""
+msgstr "Аттн"
 
 #: src/keycode.cpp
 msgid "Back"
@@ -1033,7 +1044,7 @@ msgstr "Конвертуј"
 
 #: src/keycode.cpp
 msgid "CrSel"
-msgstr ""
+msgstr "ЦрСел"
 
 #: src/keycode.cpp
 msgid "Down"
@@ -1041,7 +1052,7 @@ msgstr "Доле"
 
 #: src/keycode.cpp
 msgid "End"
-msgstr ""
+msgstr "Крај"
 
 #: src/keycode.cpp
 msgid "Erase OEF"
@@ -1069,7 +1080,7 @@ msgstr "Помоћ"
 
 #: src/keycode.cpp
 msgid "Home"
-msgstr ""
+msgstr "Кућа"
 
 #: src/keycode.cpp
 msgid "Insert"
@@ -1133,7 +1144,7 @@ msgstr "Не конвертуј"
 
 #: src/keycode.cpp
 msgid "Num Lock"
-msgstr ""
+msgstr "Закључавање нумеричке тастатуре"
 
 #: src/keycode.cpp
 msgid "Numpad *"
@@ -1193,7 +1204,7 @@ msgstr "Нумеричка тастатура 9"
 
 #: src/keycode.cpp
 msgid "OEM Clear"
-msgstr ""
+msgstr "ОЕМ очисти"
 
 #: src/keycode.cpp
 msgid "PA1"
@@ -1217,7 +1228,7 @@ msgstr "Прикажи"
 
 #: src/keycode.cpp
 msgid "Prior"
-msgstr ""
+msgstr "Пре"
 
 #: src/keycode.cpp
 msgid "Return"
@@ -1245,7 +1256,7 @@ msgstr "Десни Windows"
 
 #: src/keycode.cpp
 msgid "Scroll Lock"
-msgstr ""
+msgstr "Закључавање скроловања"
 
 #: src/keycode.cpp
 msgid "Select"
@@ -1257,7 +1268,7 @@ msgstr "Шифт"
 
 #: src/keycode.cpp
 msgid "Sleep"
-msgstr ""
+msgstr "Спавај"
 
 #: src/keycode.cpp
 msgid "Snapshot"
@@ -1265,7 +1276,7 @@ msgstr ""
 
 #: src/keycode.cpp
 msgid "Space"
-msgstr ""
+msgstr "Простор"
 
 #: src/keycode.cpp
 msgid "Tab"
@@ -1295,6 +1306,12 @@ msgid ""
 "sets.\n"
 "Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
 msgstr ""
+"(X,Y,Z) офсет фрактала од центра света у мерној јединици 'скала'.\n"
+"Користи се за пребацивање стартне позиције што ближе (0, 0).\n"
+"Подразумевани је добар за манделброт сетове, али мора се наместити за јулија "
+"сетове.\n"
+"Даљина је око -2 до 2. Помножити са 'скалом' да би се добио офсет у "
+"блоковима."
 
 #: src/settings_translation_file.cpp
 msgid ""
