@@ -270,7 +270,7 @@ Compiling on Windows:
 	+ DIR
 		- zlib-1.2.5.tar.gz
 		- zlib125dll.zip
-		- irrlicht-1.7.1.zip
+		- irrlicht-1.8.3.zip
 		- 110214175330.zip (or whatever, this is the minetest source)
 		+ zlib-1.2.5
 			- zlib.h
@@ -280,7 +280,7 @@ Compiling on Windows:
 			- readme.txt
 			+ dll32
 			...
-		+ irrlicht-1.7.1
+		+ irrlicht-1.8.3
 			+ lib
 			+ include
 			...
@@ -310,7 +310,7 @@ Compiling on Windows:
 	BUILD_SERVER             [ ]
 	CMAKE_BUILD_TYPE         Release
 	CMAKE_INSTALL_PREFIX     DIR/minetest-install
-	IRRLICHT_SOURCE_DIR      DIR/irrlicht-1.7.1
+	IRRLICHT_SOURCE_DIR      DIR/irrlicht-1.8.3
 	RUN_IN_PLACE             [X]
 	WARN_ALL                 [ ]
 	ZLIB_DLL                 DIR/zlib125dll/dll32/zlibwapi.dll
