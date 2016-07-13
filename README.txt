@@ -277,8 +277,8 @@ Compiling on Windows:
 		- zlib-1.2.5.tar.gz
 		- zlib125dll.zip
 		- irrlicht-1.8.3.zip
-        - sqlite-amalgamation-3130000.zip (SQLite3 headers)
-        - sqlite-dll-win32-x86-3130000.zip (SQLite3 library for 32bit system)
+		- sqlite-amalgamation-3130000.zip (SQLite3 headers)
+		- sqlite-dll-win32-x86-3130000.zip (SQLite3 library for 32bit system)
 		- 110214175330.zip (or whatever, this is the minetest source)
 		+ zlib-1.2.5
 			- zlib.h
