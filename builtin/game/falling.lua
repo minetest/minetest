@@ -105,6 +105,12 @@ core.register_entity(":__builtin:falling_node", {
 			local npos = self.object:getpos()
 			self.object:setpos(vector.round(npos))
 		end
+		-- Timer to stop falling nodes getting stuck
+		self.timer = (self.timer or 0) + dtime
+		if self.timer > 10 then
+			core.add_item(pos, ItemStack(self.node.name))
+			self.object:remove()
+		end
 	end
 })
 
