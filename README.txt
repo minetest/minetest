@@ -337,6 +337,8 @@ Compiling on Windows:
 	- If CMake complains it couldn't find SQLITE3, choose "Advanced" box on the
 	  right top corner, then specify the location of SQLITE3_INCLUDE_DIR and
 	  SQLITE3_LIBRARY manually.
+	- If you want to build 64-bit minetest, you will need to build 64-bit version
+	  of irrlicht engine manually, as only 32-bit pre-built library is provided.
 	- Hit "Configure"
 	- Hit "Configure" once again 8)
 	- If something is still coloured red, you have a problem.
