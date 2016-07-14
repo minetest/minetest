@@ -1596,13 +1596,12 @@ examples.
 * Items to be shown in dropdown
 * Index of currently selected dropdown item
 
-#### `checkbox[<X>,<Y>;<name>;<label>;<selected>;<tooltip>]`
+#### `checkbox[<X>,<Y>;<name>;<label>;<selected>]`
 * Show a checkbox
 * `x` and `y`: position of checkbox
 * `name` fieldname data is transferred to Lua
 * `label` to be shown left of checkbox
 * `selected` (optional): `true`/`false`
-* `tooltip` (optional)
 
 #### `scrollbar[<X>,<Y>;<W>,<H>;<orientation>;<name>;<value>]`
 * Show a scrollbar
