@@ -76,11 +76,19 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("tooltip_show_delay", "400");
 
 	// Some (temporary) keys for debugging
+	#ifdef NDEBUG
+	settings->setDefault("keymap_print_debug_stacks", "");
+	settings->setDefault("keymap_quicktune_prev", "");
+	settings->setDefault("keymap_quicktune_next", "");
+	settings->setDefault("keymap_quicktune_dec", "");
+	settings->setDefault("keymap_quicktune_inc", "");
+	#else
 	settings->setDefault("keymap_print_debug_stacks", "KEY_KEY_P");
 	settings->setDefault("keymap_quicktune_prev", "KEY_HOME");
 	settings->setDefault("keymap_quicktune_next", "KEY_END");
 	settings->setDefault("keymap_quicktune_dec", "KEY_NEXT");
 	settings->setDefault("keymap_quicktune_inc", "KEY_PRIOR");
+	#endif
 
 	// Show debug info by default?
 	#ifdef NDEBUG
