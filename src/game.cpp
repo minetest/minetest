@@ -600,6 +600,7 @@ struct GameRunData {
 	float repeat_rightclick_timer;
 	float object_hit_delay_timer;
 	float time_from_last_punch;
+	float item_use_timer;
 	ClientActiveObject *selected_object;
 
 	float jump_timer;
@@ -3024,9 +3025,25 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		runData.repeat_rightclick_timer = 0;
 
 	if (playeritem_def.usable && input->getLeftState()) {
-		if (input->getLeftClicked() && (!client->moddingEnabled()
-				|| !client->getScript()->on_item_use(playeritem, pointed)))
-			client->interact(4, pointed);
+		if (input->getLeftClicked())
+			runData.item_use_timer = 0.0;
+		else
+			runData.item_use_timer += dtime;
+		// item_use_timer is well-defined while using an object.
+		// Any residual value after using something has no effect,
+		// since we always reinitialize at the start of using.
+
+		// Items in group "delayed_use" have a delay before triggering
+		// the "use" effect, default 0 (from itemgroup_get).
+		float use_delay =
+				itemgroup_get(playeritem_def.groups, "delayed_use") * 0.1;
+		// See if we reached the delay *this frame*.
+		if (runData.item_use_timer >= use_delay &&
+				runData.item_use_timer - dtime < use_delay)
+			if (!client->moddingEnabled() ||
+					!client->getScript()->on_item_use(
+							playeritem, pointed))
+				client->interact(4, pointed);
 	} else if (pointed.type == POINTEDTHING_NODE) {
 		ToolCapabilities playeritem_toolcap =
 				playeritem.getToolCapabilities(itemdef_manager);

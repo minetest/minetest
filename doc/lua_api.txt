@@ -1427,7 +1427,8 @@ Another example: Make red wool from white wool and red dye:
   connect to each other
 * `slippery`: Players and items will slide on the node.
   Slipperiness rises steadily with `slippery` value, starting at 1.
-
+* `delayed_use`: usable items with this group will only be used after a delay of
+  `value * 0.1` seconds. Releasing the button earlier will abort the use.
 
 ### Known damage and digging time defining groups
 * `crumbly`: dirt, sand
