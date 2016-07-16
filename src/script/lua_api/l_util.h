@@ -23,8 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_base.h"
 #include "config.h"
 
-struct HTTPFetchRequest;
-struct HTTPFetchResult;
 class AsyncEngine;
 
 class ModApiUtil : public ModApiBase {
