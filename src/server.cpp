@@ -2057,7 +2057,7 @@ void Server::fadeSound(s32 handle, float step, float gain)
 	// Get sound reference
 	std::map<s32, ServerPlayingSound>::iterator i =
 			m_playing_sounds.find(handle);
-	if(i == m_playing_sounds.end())
+	if (i == m_playing_sounds.end())
 		return;
 	ServerPlayingSound &psound = i->second;
 
