@@ -773,9 +773,13 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 	v3f pos;
 	u16 object_id;
 	bool loop;
-	float fade;
+	float fade = 0;
 
-	*pkt >> server_id >> name >> gain >> type >> pos >> object_id >> loop >> fade;
+	try	{
+		*pkt >> server_id >> name >> gain >> type >> pos >> object_id >> loop >> fade;
+	} catch (...) {
+		*pkt >> server_id >> name >> gain >> type >> pos >> object_id >> loop;
+	}
 
 	// Start playing
 	int client_id = -1;
