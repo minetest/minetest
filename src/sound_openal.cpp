@@ -273,9 +273,9 @@ private:
 	std::map<std::string, std::vector<SoundBuffer*> > m_buffers;
 	std::map<int, PlayingSound*> m_sounds_playing;
 	v3f m_listener_pos;
-	struct fade_status {
-		fade_status() {}
-		fade_status(float step, float current_gain, float target_gain):
+	struct FadeState {
+		FadeState() {}
+		FadeState(float step, float current_gain, float target_gain):
 			step(step),
 			current_gain(current_gain),
 			target_gain(target_gain){}
@@ -284,8 +284,8 @@ private:
 		float target_gain;
 	};
 
-	std::map<int, fade_status> m_sounds_fading;		// 0 = step, 1 = current gain, 2 = goal gain
-	typedef std::map<int, fade_status>::iterator m_fading_it;
+	std::map<int, FadeState> m_sounds_fading;		// 0 = step, 1 = current gain, 2 = goal gain
+	typedef std::map<int, FadeState>::iterator m_fading_it;
 public:
 	bool m_is_initialized;
 	OpenALSoundManager(OnDemandSoundFetcher *fetcher):
@@ -602,7 +602,7 @@ public:
 
 	void fadeSound(int soundid, float step, float gain){
 		float cGain = getSoundGain(soundid);
-		fade_status f = fade_status(step,cGain,gain);
+		FadeState f = FadeState(step,cGain,gain);
 		m_sounds_fading[soundid] = f;
 	}
 
@@ -671,11 +671,9 @@ public:
 		std::map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
 			if(i == m_sounds_playing.end())
 				return 0;
-		actionstream << "getSoundGain(" << id << ") = ";
 		PlayingSound *sound = i->second;
 		ALfloat gain;
 		alGetSourcef(sound->source_id,AL_GAIN, &gain);
-		actionstream << gain << std::endl;
 		return gain;
 	}
 };
