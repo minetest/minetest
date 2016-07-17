@@ -1144,13 +1144,8 @@ void CNodeDefManager::applyTextureOverrides(const std::string &override_filepath
 		}
 
 		content_t id;
-		if (!getId(splitted[0], id)) {
-			infostream << override_filepath
-				<< ":" << line_c << " Could not apply texture override \""
-				<< line << "\": Unknown node \""
-				<< splitted[0] << "\"" << std::endl;
-			continue;
-		}
+		if (!getId(splitted[0], id))
+			continue; // Ignore unknown node
 
 		ContentFeatures &nodedef = m_content_features[id];
 
