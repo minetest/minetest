@@ -665,6 +665,7 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 	for (s16 x = node_min.X; x <= node_max.X; x++, index_2d++) {
 		Biome *biome = (Biome *)m_bmgr->getRaw(biomemap[index_2d]);
 		bool tunnel_air_above = false;
+		bool is_under_river = false;
 		bool underground = false;
 		u32 index_data = vm->m_area.index(x, node_max.Y, z);
 		u32 index_3d = (z - node_min.Z) * zstride_1d + csize.Y * ystride + (x - node_min.X);
@@ -696,13 +697,12 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 			}
 
 			content_t c = vm->m_data[index_data].getContent();
+			// Detect river water to place riverbed nodes in tunnels
+			if (c == biome->c_river_water)
+				is_under_river = true;
+
 			float d1 = contour(noise_cave1->result[index_3d]);
 			float d2 = contour(noise_cave2->result[index_3d]);
-
-			// River water is not set as ground content
-			// in the default game. This can produce strange results
-			// when a tunnel undercuts a river. However, that's not for
-			// the mapgen to correct. Fix it in lua.
 
 			if (d1 * d2 > cave_width && ndef->get(c).is_ground_content) {
 				// in a tunnel
@@ -716,8 +716,10 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 					vm->m_area.add_y(em, j, 1);
 
 					if (sr > terrain - y) {
-						// Put dirt in tunnels near the surface.
-						if (underground)
+						// Put biome nodes in tunnels near the surface
+						if (is_under_river)
+							vm->m_data[index_data] = MapNode(biome->c_riverbed);
+						else if (underground)
 							vm->m_data[index_data] = MapNode(biome->c_filler);
 						else
 							vm->m_data[index_data] = MapNode(biome->c_top);

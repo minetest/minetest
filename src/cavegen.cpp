@@ -79,6 +79,7 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 	for (s16 z = nmin.Z; z <= nmax.Z; z++)
 	for (s16 x = nmin.X; x <= nmax.X; x++, index2d++) {
 		bool column_is_open = false;  // Is column open to overground
+		bool is_under_river = false;  // Is column under river water
 		bool is_tunnel = false;  // Is tunnel or tunnel floor
 		u32 vi = vm->m_area.index(x, nmax.Y, z);
 		u32 index3d = (z - nmin.Z) * m_zstride_1d + m_csize.Y * m_ystride +
@@ -99,6 +100,10 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 					c == biome->c_water) {
 				column_is_open = true;
 				continue;
+			} else if (c == biome->c_river_water) {
+				column_is_open = true;
+				is_under_river = true;
+				continue;
 			}
 			// Ground
 			float d1 = contour(noise_cave1->result[index3d]);
@@ -111,9 +116,13 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 			} else {
 				// Not in tunnel or not ground content
 				if (is_tunnel && column_is_open &&
-						(c == biome->c_filler || c == biome->c_stone))
+						(c == biome->c_filler || c == biome->c_stone)) {
 					// Tunnel entrance floor
-					vm->m_data[vi] = MapNode(biome->c_top);
+					if (is_under_river)
+						vm->m_data[vi] = MapNode(biome->c_riverbed);
+					else
+						vm->m_data[vi] = MapNode(biome->c_top);
+				}
 
 				column_is_open = false;
 				is_tunnel = false;
