@@ -335,9 +335,9 @@ fsaa (FSAA) enum 0 0,1,2,4,8,16
 
 [***Shaders]
 
-#    Shaders allow advanced visul effects and may increase performance on some video cards.
-#    Thy only work with the OpenGL video backend.
-enable_shaders (Shaders) bool true
+#    Shaders allow advanced visual effects.
+#    They only work with the OpenGL video backend.
+enable_shaders (Shaders) bool false
 
 [****Tone Mapping]
 

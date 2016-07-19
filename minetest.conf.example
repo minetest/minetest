@@ -369,10 +369,10 @@
 
 #### Shaders
 
-#    Shaders allow advanced visul effects and may increase performance on some video cards.
-#    Thy only work with the OpenGL video backend.
+#    Shaders allow advanced visual effects.
+#    They only work with the OpenGL video backend.
 #    type: bool
-# enable_shaders = true
+# enable_shaders = false
 
 ##### Tone Mapping
 
