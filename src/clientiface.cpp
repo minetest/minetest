@@ -183,6 +183,8 @@ void RemoteClient::GetNextBlocks (
 	s32 nearest_sent_d = -1;
 	//bool queue_is_full = false;
 
+	MapgenParams *mapgen_params = env->getServerMap().getMapgenParams();
+
 	s16 d;
 	for(d = d_start; d <= d_max; d++) {
 		/*
@@ -223,7 +225,7 @@ void RemoteClient::GetNextBlocks (
 			/*
 				Do not go over-limit
 			*/
-			if (blockpos_over_limit(p))
+			if (blockpos_over_limit(p, mapgen_params))
 				continue;
 
 			// If this is true, inexistent block will be made from scratch

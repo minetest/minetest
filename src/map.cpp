@@ -2283,8 +2283,8 @@ bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
 	v3s16 full_bpmax = bpmax + extra_borders;
 
 	// Do nothing if not inside limits (+-1 because of neighbors)
-	if (blockpos_over_limit(full_bpmin) ||
-		blockpos_over_limit(full_bpmax))
+	if (blockpos_over_limit(full_bpmin, settings_mgr.mapgen_params) ||
+			blockpos_over_limit(full_bpmax, settings_mgr.mapgen_params))
 		return false;
 
 	data->seed = getSeed();
@@ -2470,7 +2470,7 @@ ServerMapSector *ServerMap::createSector(v2s16 p2d)
 		Do not create over-limit
 	*/
 	const static u16 map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
-		g_settings->getU16("map_generation_limit"));
+		settings_mgr.mapgen_params->map_generation_limit);
 	if(p2d.X < -map_gen_limit / MAP_BLOCKSIZE
 			|| p2d.X >  map_gen_limit / MAP_BLOCKSIZE
 			|| p2d.Y < -map_gen_limit / MAP_BLOCKSIZE
@@ -2618,7 +2618,7 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 	/*
 		Do not create over-limit
 	*/
-	if (blockpos_over_limit(p))
+	if (blockpos_over_limit(p, settings_mgr.mapgen_params))
 		throw InvalidPositionException("createBlock(): pos. over limit");
 
 	v2s16 p2d(p.X, p.Z);

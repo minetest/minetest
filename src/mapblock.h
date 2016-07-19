@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modifiedstate.h"
 #include "util/numeric.h" // getContainerPos
 #include "settings.h"
+#include "mapgen.h"
 
 class Map;
 class NodeMetadataList;
@@ -637,10 +638,10 @@ private:
 
 typedef std::vector<MapBlock*> MapBlockVect;
 
-inline bool objectpos_over_limit(v3f p)
+inline bool objectpos_over_limit(v3f p, MapgenParams *mapgen_params)
 {
 	const static float map_gen_limit_bs = MYMIN(MAX_MAP_GENERATION_LIMIT,
-		g_settings->getU16("map_generation_limit")) * BS;
+		mapgen_params->map_generation_limit) * BS;
 	return (p.X < -map_gen_limit_bs
 		|| p.X >  map_gen_limit_bs
 		|| p.Y < -map_gen_limit_bs
@@ -649,10 +650,10 @@ inline bool objectpos_over_limit(v3f p)
 		|| p.Z >  map_gen_limit_bs);
 }
 
-inline bool blockpos_over_limit(v3s16 p)
+inline bool blockpos_over_limit(v3s16 p, MapgenParams *mapgen_params)
 {
 	const static u16 map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
-		g_settings->getU16("map_generation_limit"));
+		mapgen_params->map_generation_limit);
 	return (p.X < -map_gen_limit / MAP_BLOCKSIZE
 			|| p.X >  map_gen_limit / MAP_BLOCKSIZE
 			|| p.Y < -map_gen_limit / MAP_BLOCKSIZE

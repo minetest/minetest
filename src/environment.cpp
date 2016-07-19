@@ -1815,11 +1815,11 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 		return 0;
 	}
 
-	if (objectpos_over_limit(object->getBasePosition())) {
-		v3f p = object->getBasePosition();
+	v3f objectpos = object->getBasePosition();
+	if (objectpos_over_limit(objectpos, m_map->settings_mgr.mapgen_params)) {
 		errorstream << "ServerEnvironment::addActiveObjectRaw(): "
-			<< "object position (" << p.X << "," << p.Y << "," << p.Z
-			<< ") outside maximum range" << std::endl;
+			<< "object position (" << objectpos.X << "," << objectpos.Y
+			<< "," << objectpos.Z << ") outside maximum range" << std::endl;
 		if (object->environmentDeletes())
 			delete object;
 		return 0;
@@ -1841,10 +1841,8 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 	object->addedToEnvironment(dtime_s);
 
 	// Add static data to block
-	if(object->isStaticAllowed())
-	{
+	if (object->isStaticAllowed()) {
 		// Add static object to active static list of the block
-		v3f objectpos = object->getBasePosition();
 		std::string staticdata = object->getStaticData();
 		StaticObject s_obj(object->getType(), objectpos, staticdata);
 		// Add to the block where the object is located in
