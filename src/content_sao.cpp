@@ -91,6 +91,9 @@ public:
 	}
 
 	bool getCollisionBox(aabb3f *toset) const { return false; }
+
+	virtual bool getSelectionBox(aabb3f *toset) const { return false; }
+
 	bool collideWithObjects() const { return false; }
 
 private:
@@ -744,6 +747,18 @@ bool LuaEntitySAO::getCollisionBox(aabb3f *toset) const
 	}
 
 	return false;
+}
+
+bool LuaEntitySAO::getSelectionBox(aabb3f *toset) const
+{
+	if (!m_prop.is_visible) {
+		return false;
+	}
+
+	toset->MinEdge = m_prop.collisionbox.MinEdge * BS;
+	toset->MaxEdge = m_prop.collisionbox.MaxEdge * BS;
+
+	return true;
 }
 
 bool LuaEntitySAO::collideWithObjects() const
@@ -1403,5 +1418,16 @@ bool PlayerSAO::getCollisionBox(aabb3f *toset) const
 
 	toset->MinEdge += m_base_position;
 	toset->MaxEdge += m_base_position;
+	return true;
+}
+
+bool PlayerSAO::getSelectionBox(aabb3f *toset) const
+{
+	if (!m_prop.is_visible) {
+		return false;
+	}
+
+	getCollisionBox(toset);
+
 	return true;
 }

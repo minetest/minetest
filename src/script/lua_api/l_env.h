@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_base.h"
 #include "serverenvironment.h"
+#include "raycast.h"
 
 class ModApiEnvMod : public ModApiBase {
 private:
@@ -159,6 +160,9 @@ private:
 	// line_of_sight(pos1, pos2, stepsize) -> true/false
 	static int l_line_of_sight(lua_State *L);
 
+	// raycast(pos1, pos2, objects, liquids) -> Raycast
+	static int l_raycast(lua_State *L);
+
 	// find_path(pos1, pos2, searchdistance,
 	//     max_jump, max_drop, algorithm) -> table containing path
 	static int l_find_path(lua_State *L);
@@ -243,6 +247,47 @@ public:
 		this->name = name;
 	}
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n);
+};
+
+//! Lua wrapper for RaycastState objects
+class LuaRaycast : public ModApiBase
+{
+private:
+	static const char className[];
+	static const luaL_Reg methods[];
+	//! Inner state
+	RaycastState state;
+
+	// Exported functions
+
+	// garbage collector
+	static int gc_object(lua_State *L);
+
+	/*!
+	 * Raycast:next() -> pointed_thing
+	 * Returns the next pointed thing on the ray.
+	 */
+	static int l_next(lua_State *L);
+public:
+	//! Constructor with the same arguments as RaycastState.
+	LuaRaycast(
+		const core::line3d<f32> &shootline,
+		bool objects_pointable,
+		bool liquids_pointable) :
+		state(shootline, objects_pointable, liquids_pointable)
+	{}
+
+	//! Creates a LuaRaycast and leaves it on top of the stack.
+	static int create_object(lua_State *L);
+
+	/*!
+	 * Returns the Raycast from the stack or throws an error.
+	 * @param narg location of the RaycastState in the stack
+	 */
+	static LuaRaycast *checkobject(lua_State *L, int narg);
+
+	//! Registers Raycast as a Lua userdata type.
+	static void Register(lua_State *L);
 };
 
 struct ScriptCallbackState {

@@ -131,6 +131,105 @@ void LuaLBM::trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 	lua_pop(L, 1); // Pop error handler
 }
 
+int LuaRaycast::l_next(lua_State *L)
+{
+	MAP_LOCK_REQUIRED;
+
+	ScriptApiItem *script = getScriptApi<ScriptApiItem>(L);
+	GET_ENV_PTR;
+
+	LuaRaycast *o = checkobject(L, 1);
+	PointedThing pointed;
+	env->continueRaycast(&o->state, &pointed);
+	if (pointed.type == POINTEDTHING_NOTHING)
+		lua_pushnil(L);
+	else
+		script->pushPointedThing(pointed);
+
+	return 1;
+}
+
+int LuaRaycast::create_object(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	bool objects = true;
+	bool liquids = false;
+
+	v3f pos1 = checkFloatPos(L, 1);
+	v3f pos2 = checkFloatPos(L, 2);
+	if (lua_isboolean(L, 3)) {
+		objects = lua_toboolean(L, 3);
+	}
+	if (lua_isboolean(L, 4)) {
+		liquids = lua_toboolean(L, 4);
+	}
+
+	LuaRaycast *o = new LuaRaycast(core::line3d<f32>(pos1, pos2),
+		objects, liquids);
+
+	*(void **) (lua_newuserdata(L, sizeof(void *))) = o;
+	luaL_getmetatable(L, className);
+	lua_setmetatable(L, -2);
+	return 1;
+}
+
+LuaRaycast *LuaRaycast::checkobject(lua_State *L, int narg)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	luaL_checktype(L, narg, LUA_TUSERDATA);
+	void *ud = luaL_checkudata(L, narg, className);
+	if (!ud)
+		luaL_typerror(L, narg, className);
+	return *(LuaRaycast **) ud;
+}
+
+int LuaRaycast::gc_object(lua_State *L)
+{
+	LuaRaycast *o = *(LuaRaycast **) (lua_touserdata(L, 1));
+	delete o;
+	return 0;
+}
+
+void LuaRaycast::Register(lua_State *L)
+{
+	lua_newtable(L);
+	int methodtable = lua_gettop(L);
+	luaL_newmetatable(L, className);
+	int metatable = lua_gettop(L);
+
+	lua_pushliteral(L, "__metatable");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);
+
+	lua_pushliteral(L, "__index");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);
+
+	lua_pushliteral(L, "__gc");
+	lua_pushcfunction(L, gc_object);
+	lua_settable(L, metatable);
+
+	lua_pushliteral(L, "__call");
+	lua_pushcfunction(L, l_next);
+	lua_settable(L, metatable);
+
+	lua_pop(L, 1);
+
+	luaL_openlib(L, 0, methods, 0);
+	lua_pop(L, 1);
+
+	lua_register(L, className, create_object);
+}
+
+const char LuaRaycast::className[] = "Raycast";
+const luaL_Reg LuaRaycast::methods[] =
+{
+	luamethod(LuaRaycast, next),
+	{ 0, 0 }
+};
+
 void LuaEmergeAreaCallback(v3s16 blockpos, EmergeAction action, void *param)
 {
 	ScriptCallbackState *state = (ScriptCallbackState *)param;
@@ -904,6 +1003,11 @@ int ModApiEnvMod::l_fix_light(lua_State *L)
 	return 1;
 }
 
+int ModApiEnvMod::l_raycast(lua_State *L)
+{
+	return LuaRaycast::create_object(L);
+}
+
 // emerge_area(p1, p2, [callback, context])
 // emerge mapblocks in area p1..p2, calls callback with context upon completion
 int ModApiEnvMod::l_emerge_area(lua_State *L)
@@ -1155,6 +1259,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(spawn_tree);
 	API_FCT(find_path);
 	API_FCT(line_of_sight);
+	API_FCT(raycast);
 	API_FCT(transforming_liquid_add);
 	API_FCT(forceload_block);
 	API_FCT(forceload_free_block);
