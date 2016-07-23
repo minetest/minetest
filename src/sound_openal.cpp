@@ -600,13 +600,15 @@ public:
 		deleteSound(sound);
 	}
 
-	void fadeSound(int soundid, float step, float gain){
+	void fadeSound(int soundid, float step, float gain)
+	{
 		float cGain = getSoundGain(soundid);
 		FadeState f = FadeState(step,cGain,gain);
 		m_sounds_fading[soundid] = f;
 	}
 
-	void doFades(float dtime){
+	void doFades(float dtime)
+	{
 		static float fadeDelay = 0;
 		fadeDelay += dtime;
 		if ( fadeDelay > 0.2 ){
@@ -657,7 +659,8 @@ public:
 		alSourcef(sound->source_id, AL_REFERENCE_DISTANCE, 30.0);
 	}
 
-	bool updateSoundGain(int id, float gain){
+	bool updateSoundGain(int id, float gain)
+	{
 		std::map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
 		if(i == m_sounds_playing.end())
 			return false;
@@ -667,10 +670,11 @@ public:
 		return true;
 	}
 
-	float getSoundGain(int id){
+	float getSoundGain(int id)
+	{
 		std::map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
-			if(i == m_sounds_playing.end())
-				return 0;
+		if(i == m_sounds_playing.end())
+			return 0;
 		PlayingSound *sound = i->second;
 		ALfloat gain;
 		alGetSourcef(sound->source_id,AL_GAIN, &gain);
