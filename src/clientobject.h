@@ -44,8 +44,8 @@ public:
 	virtual void updateLight(u8 light_at_pos){}
 	virtual void updateLightNoCheck(u8 light_at_pos){}
 	virtual v3s16 getLightPosition(){return v3s16(0,0,0);}
-	virtual aabb3f *getSelectionBox() { return NULL; }
 	virtual bool getCollisionBox(aabb3f *toset) const { return false; }
+	virtual bool getSelectionBox(aabb3f *toset) const { return false; }
 	virtual bool collideWithObjects() const { return false; }
 	virtual v3f getPosition(){ return v3f(0,0,0); }
 	virtual float getYaw() const { return 0; }

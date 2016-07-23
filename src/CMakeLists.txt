@@ -428,9 +428,9 @@ set(common_SRCS
 	porting.cpp
 	profiler.cpp
 	quicktune.cpp
+	raycast.cpp
 	reflowscan.cpp
 	remoteplayer.cpp
-	raycast.cpp
 	rollback.cpp
 	rollback_interface.cpp
 	serialization.cpp

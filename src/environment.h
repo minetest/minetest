@@ -42,6 +42,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class IGameDef;
 class Map;
+struct PointedThing;
+class RaycastState;
 
 class Environment
 {
@@ -75,6 +77,26 @@ public:
 	void setDayNightRatioOverride(bool enable, u32 value);
 
 	u32 getDayCount();
+
+	/*!
+	 * Gets the objects pointed by the shootline as
+	 * pointed things.
+	 * If this is a client environment, the local player
+	 * won't be returned.
+	 * @param[in]  shootline_on_map the shootline for
+	 * the test in world coordinates
+	 *
+	 * @param[out] objects          found objects
+	 */
+	virtual void getSelectedActiveObjects(const core::line3d<f32> &shootline_on_map,
+			std::vector<PointedThing> &objects) = 0;
+
+	/*!
+	 * Returns the next node or object the shootline meets.
+	 * @param state current state of the raycast
+	 * @result output, will contain the next pointed thing
+	 */
+	void continueRaycast(RaycastState *state, PointedThing *result);
 
 	// counter used internally when triggering ABMs
 	u32 m_added_objects;

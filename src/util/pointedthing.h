@@ -59,6 +59,11 @@ struct PointedThing
 	 */
 	v3s16 node_real_undersurface;
 	/*!
+	 * Only valid if type is POINTEDTHING_OBJECT.
+	 * The ID of the object the ray hit.
+	 */
+	s16 object_id = -1;
+	/*!
 	 * Only valid if type isn't POINTEDTHING_NONE.
 	 * First intersection point of the ray and the nodebox.
 	 */
@@ -71,12 +76,19 @@ struct PointedThing
 	 */
 	v3s16 intersection_normal;
 	/*!
-	 * Only valid if type is POINTEDTHING_OBJECT.
-	 * The ID of the object the ray hit.
+	 * Square of the distance between the pointing
+	 * ray's start point and the intersection point.
 	 */
-	s16 object_id = -1;
+	f32 distanceSq = 0;
 
+	//! Constructor for POINTEDTHING_NOTHING
 	PointedThing() {};
+	//! Constructor for POINTEDTHING_NODE
+	PointedThing(const v3s16 &under, const v3s16 &above,
+		const v3s16 &real_under, const v3f &point, const v3s16 &normal,
+		f32 distSq);
+	//! Constructor for POINTEDTHING_OBJECT
+	PointedThing(s16 id, const v3f &point, const v3s16 &normal, f32 distSq);
 	std::string dump() const;
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);

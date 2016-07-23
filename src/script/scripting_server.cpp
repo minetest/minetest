@@ -92,6 +92,7 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	LuaPerlinNoiseMap::Register(L);
 	LuaPseudoRandom::Register(L);
 	LuaPcgRandom::Register(L);
+	LuaRaycast::Register(L);
 	LuaSecureRandom::Register(L);
 	LuaVoxelManip::Register(L);
 	NodeMetaRef::Register(L);

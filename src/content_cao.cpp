@@ -283,8 +283,14 @@ public:
 
 	void initialize(const std::string &data);
 
-	aabb3f *getSelectionBox()
-		{return &m_selection_box;}
+
+	virtual bool getSelectionBox(aabb3f *toset) const
+	{
+		*toset = m_selection_box;
+		return true;
+	}
+
+
 	v3f getPosition()
 		{return m_position;}
 	inline float getYaw() const
@@ -605,11 +611,14 @@ GenericCAO::~GenericCAO()
 	removeFromScene(true);
 }
 
-aabb3f *GenericCAO::getSelectionBox()
+bool GenericCAO::getSelectionBox(aabb3f *toset) const
 {
-	if(!m_prop.is_visible || !m_is_visible || m_is_local_player || getParent() != NULL)
-		return NULL;
-	return &m_selection_box;
+	if (!m_prop.is_visible || !m_is_visible || m_is_local_player
+			|| getParent() != NULL){
+		return false;
+	}
+	*toset = m_selection_box;
+	return true;
 }
 
 v3f GenericCAO::getPosition()
@@ -658,7 +667,7 @@ void GenericCAO::setAttachments()
 	updateAttachments();
 }
 
-ClientActiveObject* GenericCAO::getParent()
+ClientActiveObject* GenericCAO::getParent() const
 {
 	ClientActiveObject *obj = NULL;
 

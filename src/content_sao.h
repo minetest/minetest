@@ -127,6 +127,7 @@ public:
 			bool select_horiz_by_yawpitch);
 	std::string getName();
 	bool getCollisionBox(aabb3f *toset) const;
+	bool getSelectionBox(aabb3f *toset) const;
 	bool collideWithObjects() const;
 private:
 	std::string getPropertyPacket();
@@ -357,6 +358,7 @@ public:
 	}
 
 	bool getCollisionBox(aabb3f *toset) const;
+	bool getSelectionBox(aabb3f *toset) const;
 	bool collideWithObjects() const { return true; }
 
 	void finalize(RemotePlayer *player, const std::set<std::string> &privs);

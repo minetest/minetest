@@ -52,6 +52,7 @@ public:
 protected:
 	friend class LuaItemStack;
 	friend class ModApiItemMod;
+	friend class LuaRaycast;
 
 	bool getItemCallback(const char *name, const char *callbackname);
 	void pushPointedThing(const PointedThing& pointed);

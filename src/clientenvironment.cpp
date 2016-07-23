@@ -604,240 +604,31 @@ ClientEnvEvent ClientEnvironment::getClientEnvEvent()
 	return event;
 }
 
-ClientActiveObject * ClientEnvironment::getSelectedActiveObject(
-	const core::line3d<f32> &shootline_on_map, v3f *intersection_point,
-	v3s16 *intersection_normal)
+void ClientEnvironment::getSelectedActiveObjects(
+	const core::line3d<f32> &shootline_on_map,
+	std::vector<PointedThing> &objects)
 {
-	std::vector<DistanceSortedActiveObject> objects;
+	std::vector<DistanceSortedActiveObject> allObjects;
 	getActiveObjects(shootline_on_map.start,
-		shootline_on_map.getLength() + 3, objects);
+		shootline_on_map.getLength() + 10.0f, allObjects);
 	const v3f line_vector = shootline_on_map.getVector();
 
-	// Sort them.
-	// After this, the closest object is the first in the array.
-	std::sort(objects.begin(), objects.end());
-
-	/* Because objects can have different nodebox sizes,
-	 * the object whose center is the nearest isn't necessarily
-	 * the closest one. If an object is found, don't stop
-	 * immediately. */
-
-	f32 d_min = shootline_on_map.getLength();
-	ClientActiveObject *nearest_obj = NULL;
-	for (u32 i = 0; i < objects.size(); i++) {
-		ClientActiveObject *obj = objects[i].obj;
-
-		aabb3f *selection_box = obj->getSelectionBox();
-		if (selection_box == NULL)
+	for (u32 i = 0; i < allObjects.size(); i++) {
+		ClientActiveObject *obj = allObjects[i].obj;
+		aabb3f selection_box;
+		if (!obj->getSelectionBox(&selection_box))
 			continue;
-
 		v3f pos = obj->getPosition();
-
-		aabb3f offsetted_box(selection_box->MinEdge + pos,
-			selection_box->MaxEdge + pos);
-
-		if (offsetted_box.getCenter().getDistanceFrom(
-			shootline_on_map.start) > d_min + 9.6f*BS) {
-			// Probably there is no active object that has bigger nodebox than
-			// (-5.5,-5.5,-5.5,5.5,5.5,5.5)
-			// 9.6 > 5.5*sqrt(3)
-			break;
-		}
+		aabb3f offsetted_box(selection_box.MinEdge + pos,
+			selection_box.MaxEdge + pos);
 
 		v3f current_intersection;
 		v3s16 current_normal;
 		if (boxLineCollision(offsetted_box, shootline_on_map.start, line_vector,
-			&current_intersection, &current_normal)) {
-			f32 d_current = current_intersection.getDistanceFrom(
-				shootline_on_map.start);
-			if (d_current <= d_min) {
-				d_min = d_current;
-				nearest_obj = obj;
-				*intersection_point = current_intersection;
-				*intersection_normal = current_normal;
-			}
+				&current_intersection, &current_normal)) {
+			objects.push_back(PointedThing(
+				(s16) obj->getId(), current_intersection, current_normal,
+				(current_intersection - shootline_on_map.start).getLengthSQ()));
 		}
 	}
-
-	return nearest_obj;
-}
-
-/*
-	Check if a node is pointable
-*/
-static inline bool isPointableNode(const MapNode &n,
-	INodeDefManager *ndef, bool liquids_pointable)
-{
-	const ContentFeatures &features = ndef->get(n);
-	return features.pointable ||
-		(liquids_pointable && features.isLiquid());
-}
-
-PointedThing ClientEnvironment::getPointedThing(
-	core::line3d<f32> shootline,
-	bool liquids_pointable,
-	bool look_for_object)
-{
-	PointedThing result;
-
-	INodeDefManager *nodedef = m_map->getNodeDefManager();
-
-	core::aabbox3d<s16> maximal_exceed = nodedef->getSelectionBoxIntUnion();
-	// The code needs to search these nodes
-	core::aabbox3d<s16> search_range(-maximal_exceed.MaxEdge,
-		-maximal_exceed.MinEdge);
-	// If a node is found, there might be a larger node behind.
-	// To find it, we have to go further.
-	s16 maximal_overcheck =
-		std::max(abs(search_range.MinEdge.X), abs(search_range.MaxEdge.X))
-			+ std::max(abs(search_range.MinEdge.Y), abs(search_range.MaxEdge.Y))
-			+ std::max(abs(search_range.MinEdge.Z), abs(search_range.MaxEdge.Z));
-
-	const v3f original_vector = shootline.getVector();
-	const f32 original_length = original_vector.getLength();
-
-	f32 min_distance = original_length;
-
-	// First try to find an active object
-	if (look_for_object) {
-		ClientActiveObject *selected_object = getSelectedActiveObject(
-			shootline, &result.intersection_point,
-			&result.intersection_normal);
-
-		if (selected_object != NULL) {
-			min_distance =
-				(result.intersection_point - shootline.start).getLength();
-
-			result.type = POINTEDTHING_OBJECT;
-			result.object_id = selected_object->getId();
-		}
-	}
-
-	// Reduce shootline
-	if (original_length > 0) {
-		shootline.end = shootline.start
-			+ shootline.getVector() / original_length * min_distance;
-	}
-
-	// Try to find a node that is closer than the selected active
-	// object (if it exists).
-
-	voxalgo::VoxelLineIterator iterator(shootline.start / BS,
-		shootline.getVector() / BS);
-	v3s16 oldnode = iterator.m_current_node_pos;
-	// Indicates that a node was found.
-	bool is_node_found = false;
-	// If a node is found, it is possible that there's a node
-	// behind it with a large nodebox, so continue the search.
-	u16 node_foundcounter = 0;
-	// If a node is found, this is the center of the
-	// first nodebox the shootline meets.
-	v3f found_boxcenter(0, 0, 0);
-	// The untested nodes are in this range.
-	core::aabbox3d<s16> new_nodes;
-	while (true) {
-		// Test the nodes around the current node in search_range.
-		new_nodes = search_range;
-		new_nodes.MinEdge += iterator.m_current_node_pos;
-		new_nodes.MaxEdge += iterator.m_current_node_pos;
-
-		// Only check new nodes
-		v3s16 delta = iterator.m_current_node_pos - oldnode;
-		if (delta.X > 0)
-			new_nodes.MinEdge.X = new_nodes.MaxEdge.X;
-		else if (delta.X < 0)
-			new_nodes.MaxEdge.X = new_nodes.MinEdge.X;
-		else if (delta.Y > 0)
-			new_nodes.MinEdge.Y = new_nodes.MaxEdge.Y;
-		else if (delta.Y < 0)
-			new_nodes.MaxEdge.Y = new_nodes.MinEdge.Y;
-		else if (delta.Z > 0)
-			new_nodes.MinEdge.Z = new_nodes.MaxEdge.Z;
-		else if (delta.Z < 0)
-			new_nodes.MaxEdge.Z = new_nodes.MinEdge.Z;
-
-		// For each untested node
-		for (s16 x = new_nodes.MinEdge.X; x <= new_nodes.MaxEdge.X; x++) {
-			for (s16 y = new_nodes.MinEdge.Y; y <= new_nodes.MaxEdge.Y; y++) {
-				for (s16 z = new_nodes.MinEdge.Z; z <= new_nodes.MaxEdge.Z; z++) {
-					MapNode n;
-					v3s16 np(x, y, z);
-					bool is_valid_position;
-
-					n = m_map->getNodeNoEx(np, &is_valid_position);
-					if (!(is_valid_position &&
-						isPointableNode(n, nodedef, liquids_pointable))) {
-						continue;
-					}
-					std::vector<aabb3f> boxes;
-					n.getSelectionBoxes(nodedef, &boxes,
-						n.getNeighbors(np, m_map));
-
-					v3f npf = intToFloat(np, BS);
-					for (std::vector<aabb3f>::const_iterator i = boxes.begin();
-						i != boxes.end(); ++i) {
-						aabb3f box = *i;
-						box.MinEdge += npf;
-						box.MaxEdge += npf;
-						v3f intersection_point;
-						v3s16 intersection_normal;
-						if (!boxLineCollision(box, shootline.start, shootline.getVector(),
-							&intersection_point, &intersection_normal)) {
-							continue;
-						}
-						f32 distance = (intersection_point - shootline.start).getLength();
-						if (distance >= min_distance) {
-							continue;
-						}
-						result.type = POINTEDTHING_NODE;
-						result.node_undersurface = np;
-						result.intersection_point = intersection_point;
-						result.intersection_normal = intersection_normal;
-						found_boxcenter = box.getCenter();
-						min_distance = distance;
-						is_node_found = true;
-					}
-				}
-			}
-		}
-		if (is_node_found) {
-			node_foundcounter++;
-			if (node_foundcounter > maximal_overcheck) {
-				break;
-			}
-		}
-		// Next node
-		if (iterator.hasNext()) {
-			oldnode = iterator.m_current_node_pos;
-			iterator.next();
-		} else {
-			break;
-		}
-	}
-
-	if (is_node_found) {
-		// Set undersurface and abovesurface nodes
-		f32 d = 0.002 * BS;
-		v3f fake_intersection = result.intersection_point;
-		// Move intersection towards its source block.
-		if (fake_intersection.X < found_boxcenter.X)
-			fake_intersection.X += d;
-		else
-			fake_intersection.X -= d;
-
-		if (fake_intersection.Y < found_boxcenter.Y)
-			fake_intersection.Y += d;
-		else
-			fake_intersection.Y -= d;
-
-		if (fake_intersection.Z < found_boxcenter.Z)
-			fake_intersection.Z += d;
-		else
-			fake_intersection.Z -= d;
-
-		result.node_real_undersurface = floatToInt(fake_intersection, BS);
-		result.node_abovesurface = result.node_real_undersurface
-			+ result.intersection_normal;
-	}
-	return result;
 }

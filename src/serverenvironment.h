@@ -284,6 +284,11 @@ public:
 	*/
 	ActiveObjectMessage getActiveObjectMessage();
 
+	virtual void getSelectedActiveObjects(
+		const core::line3d<f32> &shootline_on_map,
+		std::vector<PointedThing> &objects
+	);
+
 	/*
 		Activate objects and dynamically modify for the dtime determined
 		from timestamp and additional_dtime

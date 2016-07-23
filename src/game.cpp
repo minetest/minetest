@@ -50,6 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "particles.h"
 #include "profiler.h"
 #include "quicktune_shortcutter.h"
+#include "raycast.h"
 #include "server.h"
 #include "settings.h"
 #include "sky.h"
@@ -3667,28 +3668,22 @@ PointedThing Game::updatePointedThing(
 	static thread_local const bool show_entity_selectionbox = g_settings->getBool(
 		"show_entity_selectionbox");
 
-	ClientMap &map = client->getEnv().getClientMap();
-	INodeDefManager *nodedef=client->getNodeDefManager();
+	ClientEnvironment &env = client->getEnv();
+	ClientMap &map = env.getClientMap();
+	INodeDefManager *nodedef = map.getNodeDefManager();
 
 	runData.selected_object = NULL;
 
-	PointedThing result=client->getEnv().getPointedThing(
-		shootline, liquids_pointable, look_for_object);
+	RaycastState s(shootline, look_for_object, liquids_pointable);
+	PointedThing result;
+	env.continueRaycast(&s, &result);
 	if (result.type == POINTEDTHING_OBJECT) {
 		runData.selected_object = client->getEnv().getActiveObject(result.object_id);
-		if (show_entity_selectionbox && runData.selected_object->doShowSelectionBox()) {
-			aabb3f *selection_box = runData.selected_object->getSelectionBox();
-
-			// Box should exist because object was
-			// returned in the first place
-
-			assert(selection_box);
-
+		aabb3f selection_box;
+		if (show_entity_selectionbox && runData.selected_object->doShowSelectionBox() &&
+				runData.selected_object->getSelectionBox(&selection_box)) {
 			v3f pos = runData.selected_object->getPosition();
-			selectionboxes->push_back(aabb3f(
-				selection_box->MinEdge, selection_box->MaxEdge));
-			selectionboxes->push_back(
-				aabb3f(selection_box->MinEdge, selection_box->MaxEdge));
+			selectionboxes->push_back(aabb3f(selection_box));
 			hud->setSelectionPos(pos, camera_offset);
 		}
 	} else if (result.type == POINTEDTHING_NODE) {

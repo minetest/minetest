@@ -30,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "remoteplayer.h"
 #include "scripting_server.h"
 #include "server.h"
-#include "voxelalgorithms.h"
 #include "util/serialize.h"
 #include "util/basic_macros.h"
 #include "util/pointedthing.h"
@@ -1660,6 +1659,38 @@ ActiveObjectMessage ServerEnvironment::getActiveObjectMessage()
 	ActiveObjectMessage message = m_active_object_messages.front();
 	m_active_object_messages.pop();
 	return message;
+}
+
+void ServerEnvironment::getSelectedActiveObjects(
+	const core::line3d<f32> &shootline_on_map,
+	std::vector<PointedThing> &objects)
+{
+	std::vector<u16> objectIds;
+	getObjectsInsideRadius(objectIds, shootline_on_map.start,
+		shootline_on_map.getLength() + 10.0f);
+	const v3f line_vector = shootline_on_map.getVector();
+
+	for (u32 i = 0; i < objectIds.size(); i++) {
+		ServerActiveObject* obj = getActiveObject(objectIds[i]);
+
+		aabb3f selection_box;
+		if (!obj->getSelectionBox(&selection_box))
+			continue;
+
+		v3f pos = obj->getBasePosition();
+
+		aabb3f offsetted_box(selection_box.MinEdge + pos,
+			selection_box.MaxEdge + pos);
+
+		v3f current_intersection;
+		v3s16 current_normal;
+		if (boxLineCollision(offsetted_box, shootline_on_map.start, line_vector,
+				&current_intersection, &current_normal)) {
+			objects.push_back(PointedThing(
+				(s16) objectIds[i], current_intersection, current_normal,
+				(current_intersection - shootline_on_map.start).getLengthSQ()));
+		}
+	}
 }
 
 /*
