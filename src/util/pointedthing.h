@@ -32,17 +32,57 @@ enum PointedThingType
 	POINTEDTHING_OBJECT
 };
 
+//! An active object or node which is selected by a ray on the map.
 struct PointedThing
 {
+	//! The type of the pointed object.
 	PointedThingType type;
+	/*!
+	 * Only valid if type is POINTEDTHING_NODE.
+	 * The coordinates of the node which owns the
+	 * nodebox that the ray hits first.
+	 * This may differ from node_real_undersurface if
+	 * a nodebox exceeds the limits of its node.
+	 */
 	v3s16 node_undersurface;
+	/*!
+	 * Only valid if type is POINTEDTHING_NODE.
+	 * The coordinates of the last node the ray intersects
+	 * before node_undersurface. Same as node_undersurface
+	 * if the ray starts in a nodebox.
+	 */
 	v3s16 node_abovesurface;
+	/*!
+	 * Only valid if type is POINTEDTHING_NODE.
+	 * The coordinates of the node which contains the
+	 * point of the collision and the nodebox of the node.
+	 */
+	v3s16 node_real_undersurface;
+	/*!
+	 * Only valid if type isn't POINTEDTHING_NONE.
+	 * First intersection point of the ray and the nodebox.
+	 */
+	v3f intersection_point;
+	/*!
+	 * Only valid if type isn't POINTEDTHING_NONE.
+	 * Normal vector of the intersection.
+	 * This is perpendicular to the face the ray hits,
+	 * points outside of the box and it's length is 1.
+	 */
+	v3s16 intersection_normal;
+	/*!
+	 * Only valid if type is POINTEDTHING_OBJECT.
+	 * The ID of the object the ray hit.
+	 */
 	s16 object_id;
 
 	PointedThing();
 	std::string dump() const;
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
+	/*!
+	 * This function ignores the intersection point and normal.
+	 */
 	bool operator==(const PointedThing &pt2) const;
 	bool operator!=(const PointedThing &pt2) const;
 };

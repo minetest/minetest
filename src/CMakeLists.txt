@@ -447,6 +447,7 @@ set(common_SRCS
 	quicktune.cpp
 	reflowscan.cpp
 	remoteplayer.cpp
+	raycast.cpp
 	rollback.cpp
 	rollback_interface.cpp
 	serialization.cpp

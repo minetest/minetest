@@ -49,12 +49,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "particles.h"
 #include "profiler.h"
 #include "quicktune_shortcutter.h"
+#include "raycast.h"
 #include "server.h"
 #include "settings.h"
 #include "shader.h"          // For ShaderSource
 #include "sky.h"
 #include "subgame.h"
 #include "tool.h"
+#include "voxelalgorithms.h"
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
 #include "irrlicht_changes/static_text.h"
@@ -319,12 +321,22 @@ static inline u8 getNeighbors(v3s16 p, INodeDefManager *nodedef, ClientMap *map,
 	return neighbors;
 }
 
-/*
-	Find what the player is pointing at
-*/
-PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_position,
-		const v3f &camera_direction, const v3f &camera_position,
-		core::line3d<f32> shootline, f32 d, bool liquids_pointable,
+/*!
+ * Returns the object or node the player is pointing at.
+ * Also handles the rendering of the selection.
+ * @param[in]  client            the client object
+ * @param[in]  hud               the game's hud
+ * @param[in]  shootline         the shootline, starting from
+ * the camera position. This also gives the maximal distance
+ * of the search.
+ * @param[in]  liquids_pointable if false, liquids are ignored
+ * @param[in]  look_for_object   if false, objects are ignored
+ * @param[in]  camera_offset     offset of the camera
+ * @param[out] selected_object   the selected object or
+ * NULL if not found
+ */
+PointedThing getPointedThing(Client *client, Hud *hud,
+		core::line3d<f32> shootline, bool liquids_pointable,
 		bool look_for_object, const v3s16 &camera_offset,
 		ClientActiveObject *&selected_object)
 {
@@ -332,19 +344,35 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 
 	std::vector<aabb3f> *selectionboxes = hud->getSelectionBoxes();
 	selectionboxes->clear();
-	static const bool show_entity_selectionbox = g_settings->getBool("show_entity_selectionbox");
+	static const bool show_entity_selectionbox = g_settings->getBool(
+		"show_entity_selectionbox");
 
 	selected_object = NULL;
 
 	INodeDefManager *nodedef = client->getNodeDefManager();
+
+	core::aabbox3d<s16> maximal_exceed = nodedef->getSelectionBoxIntUnion();
+	// The code needs to search these nodes
+	core::aabbox3d<s16> search_range(-maximal_exceed.MaxEdge,
+		-maximal_exceed.MinEdge);
+	// If a node is found, there might be a larger node behind.
+	// To find it, we have to go further.
+	s16 maximal_overcheck =
+		  std::max(abs(search_range.MinEdge.X), abs(search_range.MaxEdge.X))
+		+ std::max(abs(search_range.MinEdge.Y), abs(search_range.MaxEdge.Y))
+		+ std::max(abs(search_range.MinEdge.Z), abs(search_range.MaxEdge.Z));
+
 	ClientMap &map = client->getEnv().getClientMap();
 
-	f32 min_distance = BS * 1001;
+	const v3f original_vector = shootline.getVector();
+	const f32 original_length = original_vector.getLength();
+
+	f32 min_distance = original_length;
 
 	// First try to find a pointed at active object
 	if (look_for_object) {
-		selected_object = client->getSelectedActiveObject(d * BS,
-				  camera_position, shootline);
+		selected_object = client->getSelectedActiveObject(shootline,
+			&result.intersection_point, &result.intersection_normal);
 
 		if (selected_object != NULL) {
 			if (show_entity_selectionbox &&
@@ -355,12 +383,13 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 				assert(selection_box);
 
 				v3f pos = selected_object->getPosition();
-				selectionboxes->push_back(aabb3f(
-					selection_box->MinEdge, selection_box->MaxEdge));
+				selectionboxes->push_back(
+					aabb3f(selection_box->MinEdge, selection_box->MaxEdge));
 				hud->setSelectionPos(pos, camera_offset);
 			}
 
-			min_distance = (selected_object->getPosition() - camera_position).getLength();
+			min_distance =
+				(result.intersection_point - shootline.start).getLength();
 
 			hud->setSelectedFaceNormal(v3f(0.0, 0.0, 0.0));
 			result.type = POINTEDTHING_OBJECT;
@@ -368,127 +397,147 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 		}
 	}
 
-	// That didn't work, try to find a pointed at node
-
-	v3s16 pos_i = floatToInt(player_position, BS);
-
-	/*infostream<<"pos_i=("<<pos_i.X<<","<<pos_i.Y<<","<<pos_i.Z<<")"
-			<<std::endl;*/
-
-	s16 a = d;
-	s16 ystart = pos_i.Y - (camera_direction.Y < 0 ? a : 1);
-	s16 zstart = pos_i.Z - (camera_direction.Z < 0 ? a : 1);
-	s16 xstart = pos_i.X - (camera_direction.X < 0 ? a : 1);
-	s16 yend = pos_i.Y + 1 + (camera_direction.Y > 0 ? a : 1);
-	s16 zend = pos_i.Z + (camera_direction.Z > 0 ? a : 1);
-	s16 xend = pos_i.X + (camera_direction.X > 0 ? a : 1);
-
-	// Prevent signed number overflow
-	if (yend == 32767)
-		yend = 32766;
-
-	if (zend == 32767)
-		zend = 32766;
-
-	if (xend == 32767)
-		xend = 32766;
-
-	v3s16 pointed_pos(0, 0, 0);
-
-	for (s16 y = ystart; y <= yend; y++) {
-		for (s16 z = zstart; z <= zend; z++) {
-			for (s16 x = xstart; x <= xend; x++) {
-				MapNode n;
-				bool is_valid_position;
-				v3s16 p(x, y, z);
-
-				n = map.getNodeNoEx(p, &is_valid_position);
-				if (!is_valid_position) {
-					continue;
-				}
-				if (!isPointableNode(n, client, liquids_pointable)) {
-					continue;
-				}
-
-				std::vector<aabb3f> boxes;
-				n.getSelectionBoxes(nodedef, &boxes, getNeighbors(p, nodedef, &map, n));
-
-				v3s16 np(x, y, z);
-				v3f npf = intToFloat(np, BS);
-				for (std::vector<aabb3f>::const_iterator
-						i = boxes.begin();
-						i != boxes.end(); ++i) {
-					aabb3f box = *i;
-					box.MinEdge += npf;
-					box.MaxEdge += npf;
-
-					v3f centerpoint = box.getCenter();
-					f32 distance = (centerpoint - camera_position).getLength();
-					if (distance >= min_distance) {
-						continue;
-					}
-					if (!box.intersectsWithLine(shootline)) {
-						continue;
-					}
-					result.type = POINTEDTHING_NODE;
-					min_distance = distance;
-					pointed_pos = np;
-				}
-			}
-		}
+	// Reduce shootline
+	if (original_length > 0) {
+		shootline.end = shootline.start
+			+ shootline.getVector() / original_length * min_distance;
 	}
 
-	if (result.type == POINTEDTHING_NODE) {
-		f32 d = 0.001 * BS;
-		MapNode n = map.getNodeNoEx(pointed_pos);
-		v3f npf = intToFloat(pointed_pos, BS);
+	// Try to find a node that is closer than the selected active
+	// object (if it exists).
+
+	voxalgo::VoxelLineIterator iterator(shootline.start / BS,
+		shootline.getVector() / BS);
+	v3s16 oldnode = iterator.m_current_node_pos;
+	// Indicates that a node was found.
+	bool is_node_found = false;
+	// If a node is found, it is possible that there's a node
+	// behind it with a large nodebox, so continue the search.
+	u16 node_foundcounter = 0;
+	// If a node is found, this is the center of the
+	// first nodebox the shootline meets.
+	v3f found_boxcenter(0, 0, 0);
+	// The untested nodes are in this range.
+	core::aabbox3d<s16> new_nodes;
+	while (true) {
+		// Test the nodes around the current node in search_range.
+		new_nodes = search_range;
+		new_nodes.MinEdge += iterator.m_current_node_pos;
+		new_nodes.MaxEdge += iterator.m_current_node_pos;
+
+		// Only check new nodes
+		v3s16 delta = iterator.m_current_node_pos - oldnode;
+		if (delta.X > 0) {
+			new_nodes.MinEdge.X = new_nodes.MaxEdge.X;
+		} else if (delta.X < 0) {
+			new_nodes.MaxEdge.X = new_nodes.MinEdge.X;
+		} else if (delta.Y > 0) {
+			new_nodes.MinEdge.Y = new_nodes.MaxEdge.Y;
+		} else if (delta.Y < 0) {
+			new_nodes.MaxEdge.Y = new_nodes.MinEdge.Y;
+		} else if (delta.Z > 0) {
+			new_nodes.MinEdge.Z = new_nodes.MaxEdge.Z;
+		} else if (delta.Z < 0) {
+			new_nodes.MaxEdge.Z = new_nodes.MinEdge.Z;
+		}
+
+		// For each untested node
+		for (s16 x = new_nodes.MinEdge.X; x <= new_nodes.MaxEdge.X; x++) {
+		for (s16 y = new_nodes.MinEdge.Y; y <= new_nodes.MaxEdge.Y; y++) {
+		for (s16 z = new_nodes.MinEdge.Z; z <= new_nodes.MaxEdge.Z; z++) {
+		MapNode n;
+		v3s16 np(x, y, z);
+		bool is_valid_position;
+
+		n = map.getNodeNoEx(np, &is_valid_position);
+		if (!(is_valid_position &&
+				isPointableNode(n, client, liquids_pointable))) {
+			continue;
+		}
 		std::vector<aabb3f> boxes;
-		n.getSelectionBoxes(nodedef, &boxes, getNeighbors(pointed_pos, nodedef, &map, n));
-		f32 face_min_distance = 1000 * BS;
-		for (std::vector<aabb3f>::const_iterator
-				i = boxes.begin();
-				i != boxes.end(); ++i) {
+		n.getSelectionBoxes(nodedef, &boxes,
+			getNeighbors(np, nodedef, &map, n));
+
+		v3f npf = intToFloat(np, BS);
+		for (std::vector<aabb3f>::const_iterator i = boxes.begin();
+			i != boxes.end(); ++i) {
 			aabb3f box = *i;
 			box.MinEdge += npf;
 			box.MaxEdge += npf;
-			for (u16 j = 0; j < 6; j++) {
-				v3s16 facedir = g_6dirs[j];
-				aabb3f facebox = box;
-				if (facedir.X > 0) {
-					facebox.MinEdge.X = facebox.MaxEdge.X - d;
-				} else if (facedir.X < 0) {
-					facebox.MaxEdge.X = facebox.MinEdge.X + d;
-				} else if (facedir.Y > 0) {
-					facebox.MinEdge.Y = facebox.MaxEdge.Y - d;
-				} else if (facedir.Y < 0) {
-					facebox.MaxEdge.Y = facebox.MinEdge.Y + d;
-				} else if (facedir.Z > 0) {
-					facebox.MinEdge.Z = facebox.MaxEdge.Z - d;
-				} else if (facedir.Z < 0) {
-					facebox.MaxEdge.Z = facebox.MinEdge.Z + d;
-				}
-				v3f centerpoint = facebox.getCenter();
-				f32 distance = (centerpoint - camera_position).getLength();
-				if (distance >= face_min_distance)
-					continue;
-				if (!facebox.intersectsWithLine(shootline))
-					continue;
-				result.node_abovesurface = pointed_pos + facedir;
-				hud->setSelectedFaceNormal(v3f(facedir.X, facedir.Y, facedir.Z));
-				face_min_distance = distance;
+			v3f intersection_point;
+			v3s16 intersection_normal;
+			if (!boxLineCollision(box, shootline.start, shootline.getVector(),
+					&intersection_point, &intersection_normal)) {
+				continue;
+			}
+			f32 distance = (intersection_point - shootline.start).getLength();
+			if (distance >= min_distance) {
+				continue;
+			}
+			result.type = POINTEDTHING_NODE;
+			result.node_undersurface = np;
+			result.intersection_point = intersection_point;
+			result.intersection_normal = intersection_normal;
+			found_boxcenter = box.getCenter();
+			min_distance = distance;
+			is_node_found = true;
+		}
+		}
+		}
+		}
+		if (is_node_found) {
+			node_foundcounter++;
+			if (node_foundcounter > maximal_overcheck) {
+				break;
 			}
 		}
+		// Next node
+		if (iterator.hasNext()) {
+			oldnode = iterator.m_current_node_pos;
+			iterator.next();
+		} else {
+			break;
+		}
+	}
+
+	if (is_node_found) {
+		// Set undersurface and abovesurface nodes
+		f32 d = 0.002 * BS;
+		v3f fake_intersection = result.intersection_point;
+		// Move intersection towards its source block.
+		if (fake_intersection.X < found_boxcenter.X) {
+			fake_intersection.X += d;
+		} else {
+			fake_intersection.X -= d;
+		}
+		if (fake_intersection.Y < found_boxcenter.Y) {
+			fake_intersection.Y += d;
+		} else {
+			fake_intersection.Y -= d;
+		}
+		if (fake_intersection.Z < found_boxcenter.Z) {
+			fake_intersection.Z += d;
+		} else {
+			fake_intersection.Z -= d;
+		}
+		result.node_real_undersurface = floatToInt(fake_intersection, BS);
+		result.node_abovesurface = result.node_real_undersurface
+			+ result.intersection_normal;
+		// Update selection boxes
+		MapNode n = map.getNodeNoEx(result.node_undersurface);
+		std::vector<aabb3f> boxes;
+		n.getSelectionBoxes(nodedef, &boxes,
+			getNeighbors(result.node_undersurface, nodedef, &map, n));
 		selectionboxes->clear();
-		for (std::vector<aabb3f>::const_iterator
-				i = boxes.begin();
+		for (std::vector<aabb3f>::const_iterator i = boxes.begin();
 				i != boxes.end(); ++i) {
 			aabb3f box = *i;
 			box.MinEdge += v3f(-d, -d, -d);
 			box.MaxEdge += v3f(d, d, d);
 			selectionboxes->push_back(box);
 		}
-		hud->setSelectionPos(intToFloat(pointed_pos, BS), camera_offset);
-		result.node_undersurface = pointed_pos;
+		hud->setSelectionPos(intToFloat(result.node_undersurface, BS),
+			camera_offset);
 	}
 
 	// Update selection mesh light level and vertex colors
@@ -3823,14 +3872,11 @@ void Game::processPlayerInteraction(GameRunData *runData,
 	core::line3d<f32> shootline;
 
 	if (camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT) {
-
 		shootline = core::line3d<f32>(camera_position,
-						camera_position + camera_direction * BS * (d + 1));
-
+			camera_position + camera_direction * BS * d);
 	} else {
 	    // prevent player pointing anything in front-view
-		if (camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT)
-			shootline = core::line3d<f32>(0, 0, 0, 0, 0, 0);
+		shootline = core::line3d<f32>(camera_position,camera_position);
 	}
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -3845,8 +3891,7 @@ void Game::processPlayerInteraction(GameRunData *runData,
 
 	PointedThing pointed = getPointedThing(
 			// input
-			client, hud, player_position, camera_direction,
-			camera_position, shootline, d,
+			client, hud,shootline,
 			playeritem_def.liquids_pointable,
 			!runData->ldown_for_dig,
 			camera_offset,

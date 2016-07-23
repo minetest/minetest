@@ -53,6 +53,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database-sqlite3.h"
 #include "serialization.h"
 #include "guiscalingfilter.h"
+#include "raycast.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -1501,41 +1502,61 @@ void Client::inventoryAction(InventoryAction *a)
 }
 
 ClientActiveObject * Client::getSelectedActiveObject(
-		f32 max_d,
-		v3f from_pos_f_on_map,
-		core::line3d<f32> shootline_on_map
-	)
+	const core::line3d<f32> &shootline_on_map, v3f *intersection_point,
+	v3s16 *intersection_normal)
 {
 	std::vector<DistanceSortedActiveObject> objects;
-
-	m_env.getActiveObjects(from_pos_f_on_map, max_d, objects);
+	m_env.getActiveObjects(shootline_on_map.start,
+		shootline_on_map.getLength() + 3, objects);
+	const v3f line_vector = shootline_on_map.getVector();
 
 	// Sort them.
 	// After this, the closest object is the first in the array.
 	std::sort(objects.begin(), objects.end());
 
-	for(unsigned int i=0; i<objects.size(); i++)
-	{
+	/* Because objects can have different nodebox sizes,
+	 * the object whose center is the nearest isn't necessarily
+	 * the closest one. If an object is found, don't stop
+	 * immediately. */
+
+	f32 d_min = shootline_on_map.getLength();
+	ClientActiveObject *nearest_obj = NULL;
+	for (u32 i = 0; i < objects.size(); i++) {
 		ClientActiveObject *obj = objects[i].obj;
 
 		aabb3f *selection_box = obj->getSelectionBox();
-		if(selection_box == NULL)
+		if (selection_box == NULL)
 			continue;
 
 		v3f pos = obj->getPosition();
 
-		aabb3f offsetted_box(
-				selection_box->MinEdge + pos,
-				selection_box->MaxEdge + pos
-		);
+		aabb3f offsetted_box(selection_box->MinEdge + pos,
+			selection_box->MaxEdge + pos);
 
-		if(offsetted_box.intersectsWithLine(shootline_on_map))
-		{
-			return obj;
+		if (offsetted_box.getCenter().getDistanceFrom(
+				shootline_on_map.start) > d_min + 9.6f*BS) {
+			// Probably there is no active object that has bigger nodebox than
+			// (-5.5,-5.5,-5.5,5.5,5.5,5.5)
+			// 9.6 > 5.5*sqrt(3)
+			break;
+		}
+
+		v3f current_intersection;
+		v3s16 current_normal;
+		if (boxLineCollision(offsetted_box, shootline_on_map.start, line_vector,
+				&current_intersection, &current_normal)) {
+			f32 d_current = current_intersection.getDistanceFrom(
+				shootline_on_map.start);
+			if (d_current <= d_min) {
+				d_min = d_current;
+				nearest_obj = obj;
+				*intersection_point = current_intersection;
+				*intersection_normal = current_normal;
+			}
 		}
 	}
 
-	return NULL;
+	return nearest_obj;
 }
 
 float Client::getAnimationTime()
