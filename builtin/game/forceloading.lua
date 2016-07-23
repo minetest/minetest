@@ -7,7 +7,7 @@ core.forceload_free_block = nil
 local blocks_forceloaded
 local total_forceloaded = 0
 
-local BLOCKSIZE = 16
+local BLOCKSIZE = core.MAP_BLOCKSIZE
 local function get_blockpos(pos)
 	return {
 		x = math.floor(pos.x/BLOCKSIZE),
