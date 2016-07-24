@@ -973,18 +973,6 @@
 #    type: enum values: legacy, log, error
 # deprecated_lua_api_handling = legacy
 
-#    Useful for mod developers.
-#    type: bool
-# mod_profiling = false
-
-#    Detailed mod profile data. Useful for mod developers.
-#    type: bool
-# detailed_profiling = false
-
-#    Profiler data print interval. 0 = disable. Useful for developers.
-#    type: int
-# profiler_print_interval = 0
-
 #    Number of extra blocks that can be loaded by /clearobjects at once.
 #    This is a trade-off between sqlite transaction overhead and
 #    memory consumption (4096=100MB, as a rule of thumb).
@@ -1476,6 +1464,63 @@
 #    type: string
 # secure.http_mods =
 
+## Advanced
+
+### Profiling
+
+#    Load the game profiler to collect game profiling data.
+#    Provides a /profiler command to access the compiled profile.
+#    Useful for mod developers and server operators.
+#    type: bool
+# profiler.load = false
+
+#    The default format in which profiles are being saved,
+#    when calling `/profiler save [format]` without format.
+#    type: enum values: txt, csv, lua, json, json_pretty
+# profiler.default_report_format = txt
+
+#    The file path relative to your worldpath in which profiles will be saved to.
+#    
+#    type: string
+# profiler.report_path = ""
+
+#### Instrumentation
+
+#    Instrument the methods of entities on registration.
+#    type: bool
+# instrument.entity = true
+
+#    Instrument the action function of Active Block Modifiers on registration.
+#    type: bool
+# instrument.abm = true
+
+#    Instrument the action function of Loading Block Modifiers on registration.
+#    type: bool
+# instrument.lbm = true
+
+#    Instrument chatcommands on registration.
+#    type: bool
+# instrument.chatcommand = true
+
+#    Instrument global callback functions on registration.
+#    (anything you pass to a minetest.register_*() function)
+#    type: bool
+# instrument.global_callback = true
+
+##### Advanced
+
+#    Instrument builtin.
+#    This is usually only needed by core/builtin contributors
+#    type: bool
+# instrument.builtin = false
+
+#    Have the profiler instrument itself:
+#    * Instrument an empty function.
+#    This estimates the overhead, that instrumentation is adding (+1 function call).
+#    * Instrument the sampler being used to update the statistics.
+#    type: bool
+# instrument.profiler = false
+
 #
 # Client and Server
 #
@@ -1547,4 +1592,8 @@
 
 #    type: string
 # modstore_details_url = https://forum.minetest.net/mmdb/mod/*/
+
+#    Print the engine's profiling data in regular intervals (in seconds). 0 = disable. Useful for developers.
+#    type: int
+# profiler_print_interval = 0
 
