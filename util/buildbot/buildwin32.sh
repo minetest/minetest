@@ -81,7 +81,7 @@ else
 	[ -d minetest ] && (cd minetest && git pull) || (git clone https://github.com/minetest/minetest)
 fi
 cd minetest
-git_hash=`git show | head -c14 | tail -c7`
+git_hash=$(git rev-parse --short HEAD)
 
 # Get minetest_game
 cd games
