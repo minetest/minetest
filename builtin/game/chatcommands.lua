@@ -495,7 +495,7 @@ local function emerge_progress_update(ctx)
 			(ctx.current_count / ctx.total_count) * 100,
 			ctx.current_count / ((ctx.cur_time - ctx.start_time) / 1000000)))
 
-		core.after(2, emerge_progress_update, ctx)
+		core.after(10, emerge_progress_update, ctx)
 	end
 end
 
@@ -541,7 +541,7 @@ core.register_chatcommand("emergeblocks", {
 
 
 		core.emerge_area(p1, p2, emerge_callback, context)
-		core.after(2, emerge_progress_update, context)
+		core.after(10, emerge_progress_update, context)
 
 		return true, string.format("Started emerge of area ranging from %s to %s (%d x %d x %d = %d blocks)",
 			core.pos_to_string(p1, 0), core.pos_to_string(p2, 0),
