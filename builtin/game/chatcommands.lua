@@ -473,8 +473,9 @@ local function emerge_callback(pos, action, num_calls_remaining, ctx)
 	ctx.cur_time = core.get_us_time()
 	if ctx.current_count == ctx.total_count then
 		core.chat_send_player(ctx.requestor_name,
-			string.format("Finished emerging %d blocks in %.2fms.",
-			ctx.total_count, (ctx.cur_time - ctx.start_time) / 1000))
+			string.format("Finished emerging %d blocks in %.3fs - %.2f blocks/s)",
+			ctx.total_count, (ctx.cur_time - ctx.start_time) / 1000000,
+			ctx.total_count / ((ctx.cur_time - ctx.start_time) / 1000000)))
 	end
 end
 
@@ -489,9 +490,10 @@ local function emerge_progress_update(ctx)
 		end
 		ctx.cur_time = core.get_us_time()
 		core.chat_send_player(ctx.requestor_name,
-			string.format("emergeblocks update: %d/%d blocks emerged (%.1f%%)",
+			string.format("emergeblocks update: %d/%d blocks emerged (%.1f%%; %.2f blocks/s)",
 			ctx.current_count, ctx.total_count,
-			(ctx.current_count / ctx.total_count) * 100))
+			(ctx.current_count / ctx.total_count) * 100,
+			ctx.current_count / ((ctx.cur_time - ctx.start_time) / 1000000)))
 
 		core.after(2, emerge_progress_update, ctx)
 	end
@@ -517,11 +519,36 @@ core.register_chatcommand("emergeblocks", {
 			requestor_name = name
 		}
 
+		-- Sanitize and adjust boundaries
+		-- This is *not* needed for core.emerge_area; it just improves the
+		-- user feedback by reporting the exact area that will be emerged.
+		local min = {}
+		local max = {}
+		local total_count = 1					-- total_count is not saved, in case we got it wrong...
+		local blocksize = core.MAP_BLOCKSIZE
+		for _,c in pairs({"x", "y", "z"}) do
+			if p1[c] > p2[c] then
+				local tmp = p1[c]
+				p1[c] = p2[c]
+				p2[c] = tmp
+			end
+			min[c] = math.floor(p1[c] / blocksize)
+			max[c] = math.floor(p2[c] / blocksize)
+			p1[c] = min[c] * blocksize
+			p2[c] = (max[c] + 1) * blocksize - 1
+			total_count = total_count * (max[c] - min[c] + 1)
+		end
+
+
 		core.emerge_area(p1, p2, emerge_callback, context)
 		core.after(2, emerge_progress_update, context)
 
-		return true, "Started emerge of area ranging from " ..
-			core.pos_to_string(p1, 1) .. " to " .. core.pos_to_string(p2, 1)
+		return true, string.format("Started emerge of area ranging from %s to %s (%d x %d x %d = %d blocks)",
+			core.pos_to_string(p1, 0), core.pos_to_string(p2, 0),
+			max.x - min.x + 1,
+			max.y - min.y + 1,
+			max.z - min.z + 1,
+			total_count)
 	end,
 })
 
