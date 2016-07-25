@@ -58,7 +58,13 @@ local function parse_range_str(player_name, str)
 	else
 		p1, p2 = core.string_to_area(str)
 		if p1 == nil then
-			return false, "Incorrect area format. Expected: (x1,y1,z1) (x2,y2,z2)"
+			p1 = core.string_to_pos(str)
+			if p1 ~= nil then
+				p2 = {x=p1.x, y=p1.y, z=p1.z}
+			end
+		end
+		if p1 == nil then
+			return false, "Incorrect area format. Expected: (x1,y1,z1) [(x2,y2,z2)]"
 		end
 	end
 
@@ -477,7 +483,7 @@ local function emergeblocks_progress_update(ctx)
 end
 
 core.register_chatcommand("emergeblocks", {
-	params = "(here [radius]) | (<pos1> <pos2>)",
+	params = "(here [radius]) | (<pos1> [<pos2>])",
 	description = "starts loading (or generating, if inexistent) map blocks "
 		.. "contained in area pos1 to pos2",
 	privs = {server=true},
@@ -503,7 +509,7 @@ core.register_chatcommand("emergeblocks", {
 })
 
 core.register_chatcommand("deleteblocks", {
-	params = "(here [radius]) | (<pos1> <pos2>)",
+	params = "(here [radius]) | (<pos1> [<pos2>])",
 	description = "delete map blocks contained in area pos1 to pos2",
 	privs = {server=true},
 	func = function(name, param)
