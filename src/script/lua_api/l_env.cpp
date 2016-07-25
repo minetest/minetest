@@ -137,6 +137,10 @@ void LuaEmergeAreaCallback(v3s16 blockpos, EmergeAction action, void *param)
 	assert(state->script != NULL);
 	assert(state->refcount > 0);
 
+	// state must be protected by envlock
+	Server *server = state->script->getServer();
+	MutexAutoLock envlock(server->m_env_mutex);
+
 	state->refcount--;
 
 	state->script->on_emerge_area_completion(blockpos, action, state);
