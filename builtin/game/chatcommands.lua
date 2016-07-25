@@ -463,16 +463,31 @@ local function emerge_callback(pos, action, num_calls_remaining, ctx)
 		ctx.current_count = 0
 	end
 	ctx.current_count = ctx.current_count + 1
-
+	if core.get_us_time() < ctx.cur_time then
+		-- core.get_us_time() loops after 2^32 microseconds.
+		-- The possibility of two loops having occurred (at least
+		-- 72 minutes have elapsed) is ignored deliberately as
+		-- it's unlikely, and non-critical anyway.
+		ctx.start_time = ctx.start_time - 2^32
+	end
+	ctx.cur_time = core.get_us_time()
 	if ctx.current_count == ctx.total_count then
 		core.chat_send_player(ctx.requestor_name,
 			string.format("Finished emerging %d blocks in %.2fms.",
-			ctx.total_count, (os.clock() - ctx.start_time) * 1000))
+			ctx.total_count, (ctx.cur_time - ctx.start_time) / 1000))
 	end
 end
 
 local function emerge_progress_update(ctx)
 	if ctx.current_count ~= ctx.total_count then
+		if core.get_us_time() < ctx.cur_time then
+			-- core.get_us_time() loops after 2^32 microseconds.
+			-- The possibility of two loops having occurred (at least
+			-- 72 minutes have elapsed) is ignored deliberately as
+			-- it's unlikely, and non-critical anyway.
+			ctx.start_time = ctx.start_time - 2^32
+		end
+		ctx.cur_time = core.get_us_time()
 		core.chat_send_player(ctx.requestor_name,
 			string.format("emergeblocks update: %d/%d blocks emerged (%.1f%%)",
 			ctx.current_count, ctx.total_count,
@@ -493,10 +508,12 @@ core.register_chatcommand("emergeblocks", {
 			return false, p2
 		end
 
+		local us_time = core.get_us_time()
 		local context = {
 			current_count  = 0,
 			total_count    = 0,
-			start_time     = os.clock(),
+			start_time     = us_time - 1,			-- Avoid (unlikely) division by zero
+			cur_time       = us_time,
 			requestor_name = name
 		}
 
