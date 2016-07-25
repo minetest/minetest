@@ -40,6 +40,7 @@ extern "C" {
 
 #include <stdio.h>
 #include <cstdarg>
+#include <sstream>
 
 
 class ModNameStorer
@@ -76,6 +77,8 @@ ScriptApiBase::ScriptApiBase() :
 
 	m_luastack = luaL_newstate();
 	FATAL_ERROR_IF(!m_luastack, "luaL_newstate() failed");
+
+	lua_atpanic(m_luastack, &luaPanic);
 
 	luaL_openlibs(m_luastack);
 
@@ -118,6 +121,16 @@ ScriptApiBase::ScriptApiBase() :
 ScriptApiBase::~ScriptApiBase()
 {
 	lua_close(m_luastack);
+}
+
+int ScriptApiBase::luaPanic(lua_State *L)
+{
+	std::ostringstream oss;
+	oss << "LUA PANIC: unprotected error in call to Lua API ("
+		<< lua_tostring(L, -1) << ")";
+	FATAL_ERROR(oss.str().c_str());
+	// NOTREACHED
+	return 0;
 }
 
 void ScriptApiBase::loadMod(const std::string &script_path,
