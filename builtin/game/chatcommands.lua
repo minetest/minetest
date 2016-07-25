@@ -473,9 +473,11 @@ local function emerge_callback(pos, action, num_calls_remaining, ctx)
 	ctx.cur_time = core.get_us_time()
 	if ctx.current_count == ctx.total_count then
 		core.chat_send_player(ctx.requestor_name,
-			string.format("Finished emerging %d blocks in %.3fs - %.2f blocks/s)",
-			ctx.total_count, (ctx.cur_time - ctx.start_time) / 1000000,
-			ctx.total_count / ((ctx.cur_time - ctx.start_time) / 1000000)))
+			string.format("Finished emerging %d %ss in %.3fs - %.2f %ss/s)",
+			ctx.total_count, ctx.unit,
+			(ctx.cur_time - ctx.start_time) / 1000000,
+			ctx.total_count / ((ctx.cur_time - ctx.start_time) / 1000000),
+			ctx.unit))
 	end
 end
 
@@ -490,23 +492,25 @@ local function emerge_progress_update(ctx)
 		end
 		ctx.cur_time = core.get_us_time()
 		core.chat_send_player(ctx.requestor_name,
-			string.format("emergeblocks update: %d/%d blocks emerged (%.1f%%; %.2f blocks/s)",
-			ctx.current_count, ctx.total_count,
+			string.format("emerge%ss update: %d/%d %ss emerged (%.1f%%; %.2f %ss/s)",
+			ctx.unit, ctx.current_count, ctx.total_count, ctx.unit,
 			(ctx.current_count / ctx.total_count) * 100,
-			ctx.current_count / ((ctx.cur_time - ctx.start_time) / 1000000)))
+			ctx.current_count / ((ctx.cur_time - ctx.start_time) / 1000000),
+			ctx.unit))
 
 		core.after(10, emerge_progress_update, ctx)
 	end
 end
 
-local function emerge(name, p1, p2)
+local function emerge(name, p1, p2, unit)
 	local us_time = core.get_us_time()
 	local context = {
 		current_count  = 0,
 		total_count    = 0,
 		start_time     = us_time - 1,			-- Avoid (unlikely) division by zero
 		cur_time       = us_time,
-		requestor_name = name
+		requestor_name = name,
+		unit           = unit,
 	}
 
 	-- Sanitize and adjust boundaries
@@ -516,29 +520,38 @@ local function emerge(name, p1, p2)
 	local max = {}
 	local total_count = 1
 	local blocksize = core.MAP_BLOCKSIZE
+	local chunksize = core.get_mapgen_setting("chunksize")
+	local chunk_offset = -math.floor(chunksize / 2)
 	for _,c in pairs({"x", "y", "z"}) do
 		if p1[c] > p2[c] then
 			local tmp = p1[c]
 			p1[c] = p2[c]
 			p2[c] = tmp
 		end
-		min[c] = math.floor(p1[c] / blocksize)
-		max[c] = math.floor(p2[c] / blocksize)
-		p1[c] = min[c] * blocksize
-		p2[c] = (max[c] + 1) * blocksize - 1
+		if unit == "chunk" then
+			min[c] = math.floor((p1[c] / blocksize - chunk_offset) / chunksize)
+			max[c] = math.floor((p2[c] / blocksize - chunk_offset) / chunksize)
+			p1[c] = (min[c] * chunksize + chunk_offset) * blocksize
+			p2[c] = ((max[c] + 1) * chunksize + chunk_offset) * blocksize - 1
+		else
+			min[c] = math.floor(p1[c] / blocksize)
+			max[c] = math.floor(p2[c] / blocksize)
+			p1[c] = min[c] * blocksize
+			p2[c] = (max[c] + 1) * blocksize - 1
+		end
 		total_count = total_count * (max[c] - min[c] + 1)
 	end
 
 
-	core.emerge_area(p1, p2, emerge_callback, context)
+	core.emerge_area(p1, p2, emerge_callback, context, context.unit)
 	core.after(10, emerge_progress_update, context)
 
-	return true, string.format("Started emerge of area ranging from %s to %s (%d x %d x %d = %d blocks)",
+	return true, string.format("Started emerge of area ranging from %s to %s (%d x %d x %d = %d %ss)",
 		core.pos_to_string(p1, 0), core.pos_to_string(p2, 0),
 		max.x - min.x + 1,
 		max.y - min.y + 1,
 		max.z - min.z + 1,
-		total_count)
+		total_count, context.unit)
 end
 
 core.register_chatcommand("emergeblocks", {
@@ -550,7 +563,7 @@ core.register_chatcommand("emergeblocks", {
 		if p1 == false then
 			return false, p2
 		end
-		return emerge(name, p1, p2)
+		return emerge(name, p1, p2, "block")
 	end,
 })
 
