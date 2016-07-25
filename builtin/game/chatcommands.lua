@@ -457,7 +457,7 @@ core.register_chatcommand("set", {
 	end,
 })
 
-local function emergeblocks_callback(pos, action, num_calls_remaining, ctx)
+local function emerge_callback(pos, action, num_calls_remaining, ctx)
 	if ctx.total_blocks == 0 then
 		ctx.total_blocks   = num_calls_remaining + 1
 		ctx.current_blocks = 0
@@ -471,14 +471,14 @@ local function emergeblocks_callback(pos, action, num_calls_remaining, ctx)
 	end
 end
 
-local function emergeblocks_progress_update(ctx)
+local function emerge_progress_update(ctx)
 	if ctx.current_blocks ~= ctx.total_blocks then
 		core.chat_send_player(ctx.requestor_name,
 			string.format("emergeblocks update: %d/%d blocks emerged (%.1f%%)",
 			ctx.current_blocks, ctx.total_blocks,
 			(ctx.current_blocks / ctx.total_blocks) * 100))
 
-		core.after(2, emergeblocks_progress_update, ctx)
+		core.after(2, emerge_progress_update, ctx)
 	end
 end
 
@@ -500,8 +500,8 @@ core.register_chatcommand("emergeblocks", {
 			requestor_name = name
 		}
 
-		core.emerge_area(p1, p2, emergeblocks_callback, context)
-		core.after(2, emergeblocks_progress_update, context)
+		core.emerge_area(p1, p2, emerge_callback, context)
+		core.after(2, emerge_progress_update, context)
 
 		return true, "Started emerge of area ranging from " ..
 			core.pos_to_string(p1, 1) .. " to " .. core.pos_to_string(p2, 1)
