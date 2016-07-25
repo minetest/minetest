@@ -888,8 +888,8 @@ int ModApiEnvMod::l_emerge_area(lua_State *L)
 	// Adding emerge_unit/2 causes the center block of a chunk to be requested
 	// (this should not make a difference in practise)
 	for (s16 z = bpmin.Z + emerge_unit / 2; z <= bpmax.Z; z += emerge_unit)
-	for (s16 y = bpmin.Y + emerge_unit / 2; y <= bpmax.Y; y += emerge_unit)
-	for (s16 x = bpmin.X + emerge_unit / 2; x <= bpmax.X; x += emerge_unit) {
+	for (s16 x = bpmin.X + emerge_unit / 2; x <= bpmax.X; x += emerge_unit)
+	for (s16 y = bpmin.Y + emerge_unit / 2; y <= bpmax.Y; y += emerge_unit) {
 		num_blocks--;
 		emerge->enqueueBlockEmergeEx(v3s16(x, y, z), PEER_ID_INEXISTENT,
 			BLOCK_EMERGE_ALLOW_GEN | BLOCK_EMERGE_FORCE_QUEUE, callback, state);
