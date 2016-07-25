@@ -157,7 +157,8 @@ to a single modname. Their meaning is that if the specified mod
 is missing, that does not prevent this mod from being loaded.
 
 ### `screenshot.png`
-A screenshot shown in modmanager within mainmenu.
+A screenshot shown in the mod manager within the main menu. It should
+have an aspect ratio of 3:2 and a minimum size of 300×200 pixels.
 
 ### `description.txt`
 A File containing description to be shown within mainmenu.
