@@ -458,25 +458,25 @@ core.register_chatcommand("set", {
 })
 
 local function emerge_callback(pos, action, num_calls_remaining, ctx)
-	if ctx.total_blocks == 0 then
-		ctx.total_blocks   = num_calls_remaining + 1
-		ctx.current_blocks = 0
+	if ctx.total_count == 0 then
+		ctx.total_count   = num_calls_remaining + 1
+		ctx.current_count = 0
 	end
-	ctx.current_blocks = ctx.current_blocks + 1
+	ctx.current_count = ctx.current_count + 1
 
-	if ctx.current_blocks == ctx.total_blocks then
+	if ctx.current_count == ctx.total_count then
 		core.chat_send_player(ctx.requestor_name,
 			string.format("Finished emerging %d blocks in %.2fms.",
-			ctx.total_blocks, (os.clock() - ctx.start_time) * 1000))
+			ctx.total_count, (os.clock() - ctx.start_time) * 1000))
 	end
 end
 
 local function emerge_progress_update(ctx)
-	if ctx.current_blocks ~= ctx.total_blocks then
+	if ctx.current_count ~= ctx.total_count then
 		core.chat_send_player(ctx.requestor_name,
 			string.format("emergeblocks update: %d/%d blocks emerged (%.1f%%)",
-			ctx.current_blocks, ctx.total_blocks,
-			(ctx.current_blocks / ctx.total_blocks) * 100))
+			ctx.current_count, ctx.total_count,
+			(ctx.current_count / ctx.total_count) * 100))
 
 		core.after(2, emerge_progress_update, ctx)
 	end
@@ -494,8 +494,8 @@ core.register_chatcommand("emergeblocks", {
 		end
 
 		local context = {
-			current_blocks = 0,
-			total_blocks   = 0,
+			current_count  = 0,
+			total_count    = 0,
 			start_time     = os.clock(),
 			requestor_name = name
 		}
