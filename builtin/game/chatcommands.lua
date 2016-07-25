@@ -567,6 +567,19 @@ core.register_chatcommand("emergeblocks", {
 	end,
 })
 
+core.register_chatcommand("emergechunks", {
+	params = "(here [radius]) | (<pos1> [<pos2>])",
+	description = "start loading/generating map chunks contained in area pos1 to pos2",
+	privs = {server=true},
+	func = function(name, param)
+		local p1, p2 = parse_range_str(name, param)
+		if p1 == false then
+			return false, p2
+		end
+		return emerge(name, p1, p2, "chunk")
+	end,
+})
+
 core.register_chatcommand("deleteblocks", {
 	params = "(here [radius]) | (<pos1> [<pos2>])",
 	description = "delete map blocks contained in area pos1 to pos2",
