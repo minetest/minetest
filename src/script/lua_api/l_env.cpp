@@ -826,8 +826,9 @@ int ModApiEnvMod::l_line_of_sight(lua_State *L)
 	return 1;
 }
 
-// emerge_area(p1, p2, [callback, context])
+// emerge_area(p1, p2, [callback, context], [unit])
 // emerge mapblocks in area p1..p2, calls callback with context upon completion
+// unit is "chunk" or "block"
 int ModApiEnvMod::l_emerge_area(lua_State *L)
 {
 	GET_ENV_PTR;
@@ -841,32 +842,60 @@ int ModApiEnvMod::l_emerge_area(lua_State *L)
 	v3s16 bpmax = getNodeBlockPos(read_v3s16(L, 2));
 	sortBoxVerticies(bpmin, bpmax);
 
-	size_t num_blocks = VoxelArea(bpmin, bpmax).getVolume();
-	assert(num_blocks != 0);
-
-	if (lua_isfunction(L, 3)) {
+	int param = 3;
+	if (lua_isfunction(L, param)) {
 		callback = LuaEmergeAreaCallback;
 
-		lua_pushvalue(L, 3);
+		lua_pushvalue(L, param);
 		int callback_ref = luaL_ref(L, LUA_REGISTRYINDEX);
 
-		lua_pushvalue(L, 4);
+		lua_pushvalue(L, param + 1);
 		int args_ref = luaL_ref(L, LUA_REGISTRYINDEX);
 
 		state = new ScriptCallbackState;
 		state->script       = getServer(L)->getScriptIface();
 		state->callback_ref = callback_ref;
 		state->args_ref     = args_ref;
-		state->refcount     = num_blocks;
+		state->refcount     = -1;
 		state->origin       = getScriptApiBase(L)->getOrigin();
+		param += 2;
 	}
 
-	for (s16 z = bpmin.Z; z <= bpmax.Z; z++)
-	for (s16 y = bpmin.Y; y <= bpmax.Y; y++)
-	for (s16 x = bpmin.X; x <= bpmax.X; x++) {
+	std::string emerge_unit_name = "block";
+	s16 emerge_unit = 1;
+	if (!lua_isnoneornil(L, param)) {
+		emerge_unit_name = "--INVALID--";
+		if (lua_isstring(L, param))
+			emerge_unit_name = lua_tostring(L, param);
+		if (emerge_unit_name != "chunk" && emerge_unit_name != "block") {
+			luaL_error(L, "emerge_area(): invalid unit. Expected 'block' or 'chunk'");
+			return 1;
+		}
+	}
+	if (emerge_unit_name == "chunk") {
+		emerge_unit = emerge->mgparams->chunksize;
+		bpmin = emerge->getContainingChunk(bpmin);
+		bpmax = emerge->getContainingChunk(bpmax);
+		bpmax += emerge_unit - 1;
+	}
+
+	size_t num_blocks = VoxelArea(bpmin, bpmax).getVolume();
+	num_blocks = num_blocks / emerge_unit / emerge_unit / emerge_unit;
+	assert(num_blocks != 0);
+	if (state)
+		state->refcount = num_blocks;
+
+	// Adding emerge_unit/2 causes the center block of a chunk to be requested
+	// (this should not make a difference in practise)
+	for (s16 z = bpmin.Z + emerge_unit / 2; z <= bpmax.Z; z += emerge_unit)
+	for (s16 y = bpmin.Y + emerge_unit / 2; y <= bpmax.Y; y += emerge_unit)
+	for (s16 x = bpmin.X + emerge_unit / 2; x <= bpmax.X; x += emerge_unit) {
+		num_blocks--;
 		emerge->enqueueBlockEmergeEx(v3s16(x, y, z), PEER_ID_INEXISTENT,
 			BLOCK_EMERGE_ALLOW_GEN | BLOCK_EMERGE_FORCE_QUEUE, callback, state);
 	}
+	// Catch error here, instead of having a crash later
+	assert(num_blocks == 0);
 
 	return 0;
 }
