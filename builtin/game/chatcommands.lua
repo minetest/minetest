@@ -533,22 +533,15 @@ local function emerge_progress_update(ctx)
 	end
 end
 
-local function emerge(name, p1, p2, unit)
-	local us_time = core.get_us_time()
-	local context = {
-		current_count  = 0,
-		total_count    = 0,
-		start_time     = us_time - 1,			-- Avoid (unlikely) division by zero
-		cur_time       = us_time,
-		requestor_name = name,
-		unit           = unit,
-	}
-
-	-- Sanitize and adjust boundaries
-	-- This is *not* needed for core.emerge_area; it just improves the
-	-- user feedback by reporting the exact area that will be emerged.
+-- Sanitize and adjust boundaries p1 and p2 to an entire multiple of unit.
+-- Returns adjusted p1 and p2, min and max position in 'unit's, and
+-- total number of 'unit's.
+-- unit is "block" or "chunk"
+local function sanitize_area(p1, p2, unit)
 	local min = {}
 	local max = {}
+	p1 = {x=p1.x, y=p1.y, z=p1.z}
+	p2 = {x=p2.x, y=p2.y, z=p2.z}
 	local total_count = 1
 	local blocksize = core.MAP_BLOCKSIZE
 	local chunksize = core.get_mapgen_setting("chunksize")
@@ -572,7 +565,26 @@ local function emerge(name, p1, p2, unit)
 		end
 		total_count = total_count * (max[c] - min[c] + 1)
 	end
+	return p1, p2, min, max, total_count
+end
 
+local function emerge(name, p1, p2, unit)
+	local us_time = core.get_us_time()
+	local context = {
+		current_count  = 0,
+		total_count    = 0,
+		start_time     = us_time - 1,			-- Avoid (unlikely) division by zero
+		cur_time       = us_time,
+		requestor_name = name,
+		unit           = unit,
+	}
+
+	-- Sanitize and adjust boundaries
+	-- This is *not* needed for core.emerge_area; it just improves the
+	-- user feedback by reporting the exact area that will be emerged.
+	local min, max
+	local total_count					-- total_count is not saved, in case we got it wrong...
+	p1, p2, min, max, total_count = sanitize_area(p1, p2, unit)
 
 	core.emerge_area(p1, p2, emerge_callback, context, context.unit)
 	core.after(10, emerge_progress_update, context)
