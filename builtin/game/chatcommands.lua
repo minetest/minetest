@@ -44,17 +44,48 @@ if core.setting_getbool("profiler.load") then
 	profiler.init_chatcommand()
 end
 
--- Parses a "range" string in the format of "here (number)" or
+-- Parses a "range" string in the format of "here (number [nodes|blocks|chunks])" or
 -- "(x1, y1, z1) (x2, y2, z2)", returning two position vectors
 local function parse_range_str(player_name, str)
 	local p1, p2
 	local args = str:split(" ")
+	local blocksize = core.MAP_BLOCKSIZE
+	local chunksize = core.get_mapgen_setting("chunksize")
 
 	if args[1] == "here" then
-		p1, p2 = core.get_player_radius_area(player_name, tonumber(args[2]))
+		local distance = tonumber(args[2])
+		if args[2] == nil or args[2] == "" then
+			distance = 0
+		elseif distance == nil then
+			return false, "Invalid distance. Must be a number."
+		elseif args[3] == "node" or args[3] == "nodes" then
+			-- use distance as is
+		elseif args[3] == "block" or args[3] == "blocks" then
+			distance = distance * blocksize
+		elseif args[3] == "chunk" or args[3] == "chunks" then
+			-- distance will be approx. 8 (blocksize/2) nodes from the block edge
+			distance = (distance * chunksize + (chunksize - 1) / 2) * blocksize
+		elseif args[3] ~= nil then
+			return false, "Invalid unit. Expected nothing, 'nodes', 'blocks' or 'chunks'"
+		end
+
+		local player = minetest.get_player_by_name(player_name)
+		p1 = player and player:getpos()
 		if p1 == nil then
 			return false, "Unable to get player " .. player_name .. " position"
 		end
+
+		if args[3] == "chunk" or args[3] == "chunks" then
+			-- Compute approximate central point in the chunk.
+			for _,c in pairs({"x", "y", "z"}) do
+				local block = math.floor(p1[c] / blocksize)
+				local chunk = math.floor((block + math.floor(chunksize / 2)) / chunksize)
+				p1[c] = chunk * chunksize * blocksize + (chunksize % 2) * blocksize / 2
+			end
+		end
+
+		p2 = vector.add(p1, distance)
+		p1 = vector.add(p1, -distance)
 	else
 		p1, p2 = core.string_to_area(str)
 		if p1 == nil then
@@ -555,7 +586,7 @@ local function emerge(name, p1, p2, unit)
 end
 
 core.register_chatcommand("emergeblocks", {
-	params = "(here [radius]) | (<pos1> [<pos2>])",
+	params = "(here [distance [nodes|blocks|chunks]]) | (<pos1> [<pos2>])",
 	description = "start loading/generating map blocks contained in area pos1 to pos2",
 	privs = {server=true},
 	func = function(name, param)
@@ -568,7 +599,7 @@ core.register_chatcommand("emergeblocks", {
 })
 
 core.register_chatcommand("emergechunks", {
-	params = "(here [radius]) | (<pos1> [<pos2>])",
+	params = "(here [distance [nodes|blocks|chunks]]) | (<pos1> [<pos2>])",
 	description = "start loading/generating map chunks contained in area pos1 to pos2",
 	privs = {server=true},
 	func = function(name, param)
@@ -581,7 +612,7 @@ core.register_chatcommand("emergechunks", {
 })
 
 core.register_chatcommand("deleteblocks", {
-	params = "(here [radius]) | (<pos1> [<pos2>])",
+	params = "(here [distance [nodes|blocks|chunks]]) | (<pos1> [<pos2>])",
 	description = "delete map blocks contained in area pos1 to pos2",
 	privs = {server=true},
 	func = function(name, param)
