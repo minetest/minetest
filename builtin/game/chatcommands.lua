@@ -623,6 +623,29 @@ core.register_chatcommand("emergechunks", {
 	end,
 })
 
+local function delete_area(name, p1, p2, unit)
+	-- Sanitize and adjust boundaries
+	-- This is not required when unit is 'block'. It *is* required
+	-- when unit is 'chunk', as core.delete_area() is block-oriented.
+	-- In any case, thus improves user feedback by reporting the exact
+	-- area that has been deleted.
+	local min, max
+	local total_count
+	p1, p2, min, max, total_count = sanitize_area(p1, p2, unit)
+
+	local msg_detail = string.format("area ranging from %s to %s (%d x %d x %d = %d %ss)",
+		core.pos_to_string(p1, 0), core.pos_to_string(p2, 0),
+		max.x - min.x + 1,
+		max.y - min.y + 1,
+		max.z - min.z + 1,
+		total_count, unit)
+	if core.delete_area(p1, p2) then
+		return true, "Successfully cleared " .. msg_detail
+	else
+		return false, "Failed to clear one or more blocks in " .. msg_detail
+	end
+end
+
 core.register_chatcommand("deleteblocks", {
 	params = "(here [distance [nodes|blocks|chunks]]) | (<pos1> [<pos2>])",
 	description = "delete map blocks contained in area pos1 to pos2",
@@ -632,13 +655,7 @@ core.register_chatcommand("deleteblocks", {
 		if p1 == false then
 			return false, p2
 		end
-
-		if core.delete_area(p1, p2) then
-			return true, "Successfully cleared area ranging from " ..
-				core.pos_to_string(p1, 1) .. " to " .. core.pos_to_string(p2, 1)
-		else
-			return false, "Failed to clear one or more blocks in area"
-		end
+		return delete_area(name, p1, p2, "block")
 	end,
 })
 
