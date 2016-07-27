@@ -902,6 +902,7 @@ int ModApiEnvMod::l_emerge_area(lua_State *L)
 
 // delete_area(p1, p2)
 // delete mapblocks in area p1..p2
+// returns: success, total blocks, failed blocks
 int ModApiEnvMod::l_delete_area(lua_State *L)
 {
 	GET_ENV_PTR;
@@ -909,6 +910,7 @@ int ModApiEnvMod::l_delete_area(lua_State *L)
 	v3s16 bpmin = getNodeBlockPos(read_v3s16(L, 1));
 	v3s16 bpmax = getNodeBlockPos(read_v3s16(L, 2));
 	sortBoxVerticies(bpmin, bpmax);
+	size_t num_blocks = VoxelArea(bpmin, bpmax).getVolume();
 
 	ServerMap &map = env->getServerMap();
 
@@ -916,6 +918,7 @@ int ModApiEnvMod::l_delete_area(lua_State *L)
 	event.type = MEET_OTHER;
 
 	bool success = true;
+	size_t num_failed = 0;
 	for (s16 z = bpmin.Z; z <= bpmax.Z; z++)
 	for (s16 y = bpmin.Y; y <= bpmax.Y; y++)
 	for (s16 x = bpmin.X; x <= bpmax.X; x++) {
@@ -925,12 +928,15 @@ int ModApiEnvMod::l_delete_area(lua_State *L)
 			event.modified_blocks.insert(bp);
 		} else {
 			success = false;
+			num_failed++;
 		}
 	}
 
 	map.dispatchEvent(&event);
 	lua_pushboolean(L, success);
-	return 1;
+	lua_pushinteger(L, num_blocks);
+	lua_pushinteger(L, num_failed);
+	return 3;
 }
 
 // find_path(pos1, pos2, searchdistance,

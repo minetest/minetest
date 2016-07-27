@@ -639,10 +639,13 @@ local function delete_area(name, p1, p2, unit)
 		max.y - min.y + 1,
 		max.z - min.z + 1,
 		total_count, unit)
-	if core.delete_area(p1, p2) then
-		return true, "Successfully cleared " .. msg_detail
+	local success, total_count, failed_count = core.delete_area(p1, p2)
+	if success then
+		return true, string.format("Successfully cleared %d/%d blocks in %s",
+			total_count - failed_count, total_count, msg_detail)
 	else
-		return false, "Failed to clear one or more blocks in " .. msg_detail
+		return false, string.format("Failed to clear %d/%d blocks in %s",
+			failed_count, total_count, msg_detail)
 	end
 end
 
