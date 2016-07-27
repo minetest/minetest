@@ -659,6 +659,19 @@ core.register_chatcommand("deleteblocks", {
 	end,
 })
 
+core.register_chatcommand("deletechunks", {
+	params = "(here [distance [nodes|blocks|chunks]]) | (<pos1> [<pos2>])",
+	description = "delete map chunks contained in area pos1 to pos2",
+	privs = {server=true},
+	func = function(name, param)
+		local p1, p2 = parse_range_str(name, param)
+		if p1 == false then
+			return false, p2
+		end
+		return delete_area(name, p1, p2, "chunk")
+	end,
+})
+
 core.register_chatcommand("mods", {
 	params = "",
 	description = "List mods installed on the server",
