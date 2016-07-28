@@ -199,3 +199,19 @@ core.register_on_joinplayer(function(player)
 	record_login(player:get_player_name())
 end)
 
+core.register_on_prejoinplayer(function(name, ip)
+	local auth = core.auth_table
+	if auth[name] ~= nil then
+		return
+	end
+
+	local name_lower = name:lower()
+	for k in pairs(auth) do
+		if k:lower() == name_lower then
+			return string.format("\nCannot create new player called '%s'. "..
+					"Another account called '%s' is already registered. "..
+					"Please check the spelling if it's your account "..
+					"or use a different nickname.", name, k)
+		end
+	end
+end)
