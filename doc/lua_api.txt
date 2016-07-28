@@ -2641,6 +2641,7 @@ Can be gotten via `minetest.get_meta(pos)`.
 * `get_inventory()`: returns `InvRef`
 * `to_table()`: returns `nil` or `{fields = {...}, inventory = {list1 = {}, ...}}`
 * `from_table(nil or {})`
+    * to clear metadata, use from_table(nil)
     * See "Node Metadata"
 
 ### `NodeTimerRef`
