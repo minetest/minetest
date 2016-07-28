@@ -95,6 +95,7 @@ void AreaStore::deserialize(std::istream &is)
 		is.read(data, data_len);
 		a.data = std::string(data, data_len);
 		insertArea(&a);
+		delete [] data;
 	}
 }
 
