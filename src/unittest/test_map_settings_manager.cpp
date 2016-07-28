@@ -75,8 +75,10 @@ std::string read_file_to_string(const std::string &filepath)
 	fseek(f, 0, SEEK_END);
 
 	long filesize = ftell(f);
-	if (filesize == -1)
+	if (filesize == -1) {
+		fclose(f);
 		return "";
+	}
 	rewind(f);
 
 	buf.resize(filesize);

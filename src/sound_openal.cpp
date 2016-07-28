@@ -144,6 +144,7 @@ SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
 			ov_clear(oggFile);
 			infostream << "Audio: Error decoding "
 				<< filename_for_logging << std::endl;
+			delete snd;
 			return NULL;
 		}
 
