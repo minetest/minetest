@@ -268,7 +268,7 @@ float MapgenV6::baseTerrainLevel(float terrain_base, float terrain_higher,
 
 float MapgenV6::baseTerrainLevelFromNoise(v2s16 p)
 {
-	if ((spflags & MGV6_FLAT) || (flags & MG_FLAT))
+	if (spflags & MGV6_FLAT)
 		return water_level;
 
 	float terrain_base   = NoisePerlin2D_PO(&noise_terrain_base->np,
@@ -294,7 +294,7 @@ float MapgenV6::baseTerrainLevelFromMap(v2s16 p)
 
 float MapgenV6::baseTerrainLevelFromMap(int index)
 {
-	if ((spflags & MGV6_FLAT) || (flags & MG_FLAT))
+	if (spflags & MGV6_FLAT)
 		return water_level;
 
 	float terrain_base   = noise_terrain_base->result[index];
@@ -402,7 +402,7 @@ bool MapgenV6::getHaveAppleTree(v2s16 p)
 
 float MapgenV6::getMudAmount(int index)
 {
-	if ((spflags & MGV6_FLAT) || (flags & MG_FLAT))
+	if (spflags & MGV6_FLAT)
 		return MGV6_AVERAGE_MUD_AMOUNT;
 
 	/*return ((float)AVERAGE_MUD_AMOUNT + 2.0 * noise2d_perlin(
@@ -599,7 +599,7 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 	growGrass();
 
 	// Generate some trees, and add grass, if a jungle
-	if ((spflags & MGV6_TREES) || (flags & MG_TREES))
+	if (spflags & MGV6_TREES)
 		placeTreesAndJungleGrass();
 
 	// Generate the registered decorations
@@ -626,7 +626,7 @@ void MapgenV6::calculateNoise()
 	int fx = full_node_min.X;
 	int fz = full_node_min.Z;
 
-	if (!((spflags & MGV6_FLAT) || (flags & MG_FLAT))) {
+	if (!(spflags & MGV6_FLAT)) {
 		noise_terrain_base->perlinMap2D_PO(x, 0.5, z, 0.5);
 		noise_terrain_higher->perlinMap2D_PO(x, 0.5, z, 0.5);
 		noise_steepness->perlinMap2D_PO(x, 0.5, z, 0.5);
