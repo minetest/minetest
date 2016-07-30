@@ -422,20 +422,28 @@ static void push_craft_recipe(lua_State *L, IGameDef *gdef,
 	}
 	lua_setfield(L, -2, "items");
 	setintfield(L, -1, "width", input.width);
+
+	std::string method_s;
 	switch (input.method) {
 	case CRAFT_METHOD_NORMAL:
-		lua_pushstring(L, "normal");
+		method_s = "normal";
 		break;
 	case CRAFT_METHOD_COOKING:
-		lua_pushstring(L, "cooking");
+		method_s = "cooking";
 		break;
 	case CRAFT_METHOD_FUEL:
-		lua_pushstring(L, "fuel");
+		method_s = "fuel";
 		break;
 	default:
-		lua_pushstring(L, "unknown");
+		method_s = "unknown";
 	}
+	lua_pushstring(L, method_s.c_str());
+	lua_setfield(L, -2, "method");
+
+	// Deprecated, only for compatibility's sake
+	lua_pushstring(L, method_s.c_str());
 	lua_setfield(L, -2, "type");
+
 	lua_pushstring(L, output.item.c_str());
 	lua_setfield(L, -2, "output");
 }
