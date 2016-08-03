@@ -7,11 +7,53 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.DisplayMetrics;
+import android.view.View;
 
 import java.io.File;
 
 public class GameActivity extends NativeActivity {
 	private static final int TEXT_DIALOG_REQUEST = 1;
+
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		// System UI flags have to be set in onCreate, because
+		// onWindowFocusChanged apparently runs after the native
+		// code has retreived the window dimensions, and therefore
+		// everything on the screen is offset when
+		// LAYOUT_HIDE_NAVIGATION is set.
+		setImmersive();
+	}
+
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+		if (hasFocus)
+			setImmersive();
+	}
+
+	private void setImmersive() {
+		if (Build.VERSION.SDK_INT < 16)
+			return;
+
+		// Hide status bar and other inessential UI items
+		int visibility = View.SYSTEM_UI_FLAG_FULLSCREEN |
+			View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+			View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+		if (Build.VERSION.SDK_INT >= 19) {
+			// HIDE_NAVIGATION is available since API 14, but the
+			// navigation re-appears on any touch events when not
+			// paired with IMMERSIVE (API 19), making it essentially
+			// useless alone.
+			visibility |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+				View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+				View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+		}
+		getWindow().getDecorView().setSystemUiVisibility(visibility);
+	}
+
 
 	public void showDialog(String acceptButton, String hint, String current,
 			int editType) {
