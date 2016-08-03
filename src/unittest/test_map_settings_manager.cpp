@@ -81,7 +81,7 @@ std::string read_file_to_string(const std::string &filepath)
 
 	buf.resize(filesize);
 
-	fread(&buf[0], 1, filesize, f);
+	UASSERTEQ(size_t, fread(&buf[0], 1, filesize, f), 1);
 
 	fclose(f);
 	return buf;
