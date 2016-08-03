@@ -619,7 +619,8 @@ bool setXorgWindowIcon(IrrlichtDevice *device,
 	video::IVideoDriver *v_driver = device->getVideoDriver();
 
 	video::IImageLoader *image_loader = NULL;
-	for (u32 i = v_driver->getImageLoaderCount() - 1; i >= 0; i--) {
+	u32 cnt = v_driver->getImageLoaderCount();
+	for (u32 i = 0; i < cnt; i++) {
 		if (v_driver->getImageLoader(i)->isALoadableFileExtension(icon_file.c_str())) {
 			image_loader = v_driver->getImageLoader(i);
 			break;
