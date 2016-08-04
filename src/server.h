@@ -285,6 +285,7 @@ public:
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
 		bool collisiondetection, bool collision_removal,
+		ServerActiveObject *attached,
 		bool vertical, const std::string &texture,
 		const std::string &playername);
 
@@ -459,6 +460,7 @@ private:
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
 		bool collisiondetection, bool collision_removal,
+		u16 attached_id,
 		bool vertical, const std::string &texture, u32 id);
 
 	void SendDeleteParticleSpawner(u16 peer_id, u32 id);

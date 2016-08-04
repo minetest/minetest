@@ -946,9 +946,11 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 
 	bool vertical = false;
 	bool collision_removal = false;
+	u16 attached_id = 0;
 	try {
 		*pkt >> vertical;
 		*pkt >> collision_removal;
+		*pkt >> attached_id;
 
 	} catch (...) {}
 
@@ -968,6 +970,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	event.add_particlespawner.maxsize            = maxsize;
 	event.add_particlespawner.collisiondetection = collisiondetection;
 	event.add_particlespawner.collision_removal  = collision_removal;
+	event.add_particlespawner.attached_id        = attached_id;
 	event.add_particlespawner.vertical           = vertical;
 	event.add_particlespawner.texture            = new std::string(texture);
 	event.add_particlespawner.id                 = id;
