@@ -4120,6 +4120,8 @@ The Biome API is still in an experimental phase and subject to change.
         collision_removal = false,
     --  ^ collision_removal: if true then particle is removed when it collides,
     --  ^ requires collisiondetection = true to have any effect
+        attached = ObjectRef,
+    --  ^ attached: if defined, makes particle positions relative to this object.
         vertical = false,
     --  ^ vertical: if true faces player using y axis only
         texture = "image.png",

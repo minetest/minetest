@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "lua_api/l_particles.h"
+#include "lua_api/l_object.h"
 #include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "server.h"
@@ -138,6 +139,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 	      time= minexptime= maxexptime= minsize= maxsize= 1;
 	bool collisiondetection, vertical, collision_removal;
 	     collisiondetection = vertical = collision_removal = false;
+	ServerActiveObject *attached = NULL;
 	std::string texture = "";
 	std::string playername = "";
 
@@ -198,6 +200,14 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 			"collisiondetection", collisiondetection);
 		collision_removal = getboolfield_default(L, 1,
 			"collision_removal", collision_removal);
+
+		lua_getfield(L, 1, "attached");
+		if (!lua_isnil(L, -1)) {
+			ObjectRef *ref = ObjectRef::checkobject(L, -1);
+			lua_pop(L, 1);
+			attached = ObjectRef::getobject(ref);
+		}
+
 		vertical = getboolfield_default(L, 1, "vertical", vertical);
 		texture = getstringfield_default(L, 1, "texture", "");
 		playername = getstringfield_default(L, 1, "playername", "");
@@ -211,6 +221,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 			minsize, maxsize,
 			collisiondetection,
 			collision_removal,
+			attached,
 			vertical,
 			texture, playername);
 	lua_pushnumber(L, id);

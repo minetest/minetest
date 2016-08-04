@@ -213,7 +213,7 @@ ParticleSpawner::ParticleSpawner(IGameDef* gamedef, scene::ISceneManager *smgr, 
 	u16 amount, float time,
 	v3f minpos, v3f maxpos, v3f minvel, v3f maxvel, v3f minacc, v3f maxacc,
 	float minexptime, float maxexptime, float minsize, float maxsize,
-	bool collisiondetection, bool collision_removal, bool vertical,
+	bool collisiondetection, bool collision_removal, u16 attached_id, bool vertical,
 	video::ITexture *texture, u32 id, ParticleManager *p_manager) :
 	m_particlemanager(p_manager)
 {
@@ -234,6 +234,7 @@ ParticleSpawner::ParticleSpawner(IGameDef* gamedef, scene::ISceneManager *smgr, 
 	m_maxsize = maxsize;
 	m_collisiondetection = collisiondetection;
 	m_collision_removal = collision_removal;
+	m_attached_id = attached_id;
 	m_vertical = vertical;
 	m_texture = texture;
 	m_time = 0;
@@ -251,6 +252,15 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 {
 	m_time += dtime;
 
+	bool unloaded = false;
+	v3f attached_offset = v3f(0,0,0);
+	if (m_attached_id != 0) {
+		if (ClientActiveObject *attached = env->getActiveObject(m_attached_id))
+			attached_offset = attached->getPosition() / BS;
+		else
+			unloaded = true;
+	}
+
 	if (m_spawntime != 0) // Spawner exists for a predefined timespan
 	{
 		for(std::vector<float>::iterator i = m_spawntimes.begin();
@@ -260,33 +270,41 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 			{
 				m_amount--;
 
-				v3f pos = random_v3f(m_minpos, m_maxpos);
-				v3f vel = random_v3f(m_minvel, m_maxvel);
-				v3f acc = random_v3f(m_minacc, m_maxacc);
-				float exptime = rand()/(float)RAND_MAX
-						*(m_maxexptime-m_minexptime)
-						+m_minexptime;
-				float size = rand()/(float)RAND_MAX
-						*(m_maxsize-m_minsize)
-						+m_minsize;
+				// Pretend to, but don't actually spawn a
+				// particle if it is attached to an unloaded
+				// object.
+				if (!unloaded) {
+					v3f pos = random_v3f(m_minpos, m_maxpos)
+							+ attached_offset;
+					v3f vel = random_v3f(m_minvel, m_maxvel);
+					v3f acc = random_v3f(m_minacc, m_maxacc);
+					// Make relative to offest
+					pos += attached_offset;
+					float exptime = rand()/(float)RAND_MAX
+							*(m_maxexptime-m_minexptime)
+							+m_minexptime;
+					float size = rand()/(float)RAND_MAX
+							*(m_maxsize-m_minsize)
+							+m_minsize;
 
-				Particle* toadd = new Particle(
-					m_gamedef,
-					m_smgr,
-					m_player,
-					env,
-					pos,
-					vel,
-					acc,
-					exptime,
-					size,
-					m_collisiondetection,
-					m_collision_removal,
-					m_vertical,
-					m_texture,
-					v2f(0.0, 0.0),
-					v2f(1.0, 1.0));
-				m_particlemanager->addParticle(toadd);
+					Particle* toadd = new Particle(
+						m_gamedef,
+						m_smgr,
+						m_player,
+						env,
+						pos,
+						vel,
+						acc,
+						exptime,
+						size,
+						m_collisiondetection,
+						m_collision_removal,
+						m_vertical,
+						m_texture,
+						v2f(0.0, 0.0),
+						v2f(1.0, 1.0));
+					m_particlemanager->addParticle(toadd);
+				}
 				i = m_spawntimes.erase(i);
 			}
 			else
@@ -297,11 +315,15 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 	}
 	else // Spawner exists for an infinity timespan, spawn on a per-second base
 	{
+		// Skip this step if attached to an unloaded object
+		if (unloaded)
+			return;
 		for (int i = 0; i <= m_amount; i++)
 		{
 			if (rand()/(float)RAND_MAX < dtime)
 			{
-				v3f pos = random_v3f(m_minpos, m_maxpos);
+				v3f pos = random_v3f(m_minpos, m_maxpos)
+						+ attached_offset;
 				v3f vel = random_v3f(m_minvel, m_maxvel);
 				v3f acc = random_v3f(m_minacc, m_maxacc);
 				float exptime = rand()/(float)RAND_MAX
@@ -453,6 +475,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 					event->add_particlespawner.maxsize,
 					event->add_particlespawner.collisiondetection,
 					event->add_particlespawner.collision_removal,
+					event->add_particlespawner.attached_id,
 					event->add_particlespawner.vertical,
 					texture,
 					event->add_particlespawner.id,

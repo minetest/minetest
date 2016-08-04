@@ -119,6 +119,7 @@ class ParticleSpawner
 		float minsize, float maxsize,
 		bool collisiondetection,
 		bool collision_removal,
+		u16 attached_id,
 		bool vertical,
 		video::ITexture *texture,
 		u32 id,
@@ -154,7 +155,7 @@ class ParticleSpawner
 	bool m_collisiondetection;
 	bool m_collision_removal;
 	bool m_vertical;
-
+	u16 m_attached_id;
 };
 
 /**
