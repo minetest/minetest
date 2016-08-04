@@ -1518,6 +1518,30 @@ u32 ServerEnvironment::addParticleSpawner(float exptime)
 	return id;
 }
 
+u32 ServerEnvironment::addParticleSpawner(float exptime, u16 attached_id)
+{
+	u32 id = addParticleSpawner(exptime);
+	m_particle_spawner_attachments[id] = attached_id;
+	if (ServerActiveObject *obj = getActiveObject(attached_id)) {
+		obj->attachParticleSpawner(id);
+	}
+	return id;
+}
+
+void ServerEnvironment::deleteParticleSpawner(u32 id, bool remove_from_object)
+{
+	m_particle_spawners.erase(id);
+	UNORDERED_MAP<u32, u16>::iterator it = m_particle_spawner_attachments.find(id);
+	if (it != m_particle_spawner_attachments.end()) {
+		u16 obj_id = (*it).second;
+		ServerActiveObject *sao = getActiveObject(obj_id);
+		if (sao != NULL && remove_from_object) {
+			sao->detachParticleSpawner(id);
+		}
+		m_particle_spawner_attachments.erase(id);
+	}
+}
+
 ServerActiveObject* ServerEnvironment::getActiveObject(u16 id)
 {
 	ActiveObjectMap::iterator n = m_active_objects.find(id);
