@@ -1552,6 +1552,9 @@ examples.
 #### `image_button_exit[<X>,<Y>;<W>,<H>;<texture name>;<name>;<label>]`
 * When clicked, fields will be sent and the form will quit.
 
+#### `enter_button[<name>]`
+* The button to press when the enter key is pressed.
+
 #### `textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>]`
 * Scrollable item list showing arbitrary text elements
 * `x` and `y` position the itemlist relative to the top left of the menu
