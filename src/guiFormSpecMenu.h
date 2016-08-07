@@ -463,6 +463,7 @@ private:
 	} fs_key_pendig;
 
 	fs_key_pendig current_keys_pending;
+	std::string current_field_enter_pending;
 
 	void parseElement(parserData* data,std::string element);
 
@@ -557,4 +558,3 @@ public:
 };
 
 #endif
-

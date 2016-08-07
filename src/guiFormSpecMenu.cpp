@@ -104,6 +104,7 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_formspec_version(0),
 	m_focused_element(""),
 	m_joystick(joystick),
+	current_field_enter_pending(""),
 	m_font(NULL),
 	m_remap_dbl_click(remap_dbl_click)
 #ifdef __ANDROID__
@@ -2695,6 +2696,10 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 			current_keys_pending.key_enter = false;
 		}
 
+		if (!current_field_enter_pending.empty()) {
+			fields["key_enter_field"] = current_field_enter_pending;
+		}
+
 		if (current_keys_pending.key_escape) {
 			fields["key_escape"] = "true";
 			current_keys_pending.key_escape = false;
@@ -3625,8 +3630,16 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 		if (event.GUIEvent.EventType == gui::EGET_EDITBOX_ENTER) {
 			if (event.GUIEvent.Caller->getID() > 257) {
+				for (u32 i = 0; i < m_fields.size(); i++) {
+					FieldSpec &s = m_fields[i];
+					if (s.ftype == f_Unknown &&
+							s.fid == event.GUIEvent.Caller->getID()) {
+						current_field_enter_pending = s.fname;
+					}
+				}
 
 				if (m_allowclose) {
+					current_keys_pending.key_enter = true;
 					acceptInput(quit_mode_accept);
 					quitMenu();
 				} else {
