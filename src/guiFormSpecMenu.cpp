@@ -637,17 +637,17 @@ void GUIFormSpecMenu::parseBackground(parserData* data,std::string element)
 		geom.X = stof(v_geom[0]) * (float)spacing.X;
 		geom.Y = stof(v_geom[1]) * (float)spacing.Y;
 
-		if (parts.size() == 4) {
-			m_clipbackground = is_yes(parts[3]);
-			if (m_clipbackground) {
-				pos.X = stoi(v_pos[0]); //acts as offset
-				pos.Y = stoi(v_pos[1]); //acts as offset
-			}
-		}
-
-		if(!data->explicit_size)
+		if (!data->explicit_size)
 			warningstream<<"invalid use of background without a size[] element"<<std::endl;
-		m_backgrounds.push_back(ImageDrawSpec(name, pos, geom));
+
+		bool clip = false;
+		if (parts.size() == 4 && is_yes(parts[3])) {
+			pos.X = stoi(v_pos[0]); //acts as offset
+			pos.Y = stoi(v_pos[1]); //acts as offset
+			clip = true;
+		}
+		m_backgrounds.push_back(ImageDrawSpec(name, pos, geom, clip));
+
 		return;
 	}
 	errorstream<< "Invalid background element(" << parts.size() << "): '" << element << "'"  << std::endl;
@@ -1892,7 +1892,6 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_slotbordercolor = video::SColor(200,0,0,0);
 	m_slotborder = false;
 
-	m_clipbackground = false;
 	// Add tooltip
 	{
 		assert(m_tooltip_element == NULL);
@@ -2344,7 +2343,7 @@ void GUIFormSpecMenu::drawMenu()
 			// Image rectangle on screen
 			core::rect<s32> rect = imgrect + spec.pos;
 
-			if (m_clipbackground) {
+			if (spec.clip) {
 				core::dimension2d<s32> absrec_size = AbsoluteRect.getSize();
 				rect = core::rect<s32>(AbsoluteRect.UpperLeftCorner.X - spec.pos.X,
 									AbsoluteRect.UpperLeftCorner.Y - spec.pos.Y,
@@ -2358,8 +2357,7 @@ void GUIFormSpecMenu::drawMenu()
 				core::rect<s32>(core::position2d<s32>(0,0),
 						core::dimension2di(texture->getOriginalSize())),
 				NULL/*&AbsoluteClippingRect*/, colors, true);
-		}
-		else {
+		} else {
 			errorstream << "GUIFormSpecMenu::drawMenu() Draw backgrounds unable to load texture:" << std::endl;
 			errorstream << "\t" << spec.name << std::endl;
 		}
