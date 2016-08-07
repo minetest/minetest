@@ -202,20 +202,22 @@ class GUIFormSpecMenu : public GUIModalMenu
 		FieldSpec(const std::string &name, const std::wstring &label,
 				const std::wstring &default_text, int id) :
 			fname(name),
-			fid(id)
+			flabel(label),
+			fid(id),
+			send(false),
+			close_on_enter(false),
+			ftype(f_Unknown),
+			is_exit(false)
 		{
 			//flabel = unescape_enriched(label);
-			flabel = label;
 			fdefault = unescape_enriched(default_text);
-			send = false;
-			ftype = f_Unknown;
-			is_exit = false;
 		}
 		std::string fname;
 		std::wstring flabel;
 		std::wstring fdefault;
 		int fid;
 		bool send;
+		bool close_on_enter; // used by text fields
 		FormspecFieldType ftype;
 		bool is_exit;
 		core::rect<s32> rect;
