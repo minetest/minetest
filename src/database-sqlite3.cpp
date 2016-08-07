@@ -96,7 +96,7 @@ SQLite3::SQLite3(const std::string &db_path, Settings &conf) :
 	m_database(NULL),
 	m_database_path(db_path),
 	m_synchronous(2),
-	m_journal_mode("delete"),
+	m_journal_mode("wal"),
 	m_last_wal_backlog(0),
 	m_stmt_begin(NULL),
 	m_stmt_commit(NULL),

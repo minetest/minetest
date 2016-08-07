@@ -290,7 +290,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("chat_message_limit_per_10sec", "8.0");
 	settings->setDefault("chat_message_limit_trigger_kick", "50");
 	settings->setDefault("sqlite_synchronous", "-1");
-	settings->setDefault("sqlite_journal_mode", "delete");
+	settings->setDefault("sqlite_journal_mode", "wal");
 	settings->setDefault("sqlite_wal_checkpoint_interval", "10");
 	settings->setDefault("full_block_send_enable_min_time_from_building", "2.0");
 	settings->setDefault("dedicated_server_step", "0.1");

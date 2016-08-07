@@ -1569,7 +1569,7 @@
 
 #    Set the journal mode for sqlite3.
 #    See https://www.sqlite.org/pragma.html#pragma_journal_mode
-#    The default journal mode that sqlite3 uses is DELETE.
+#    The default journal mode that sqlite3 uses is DELETE. Minetest uses WAL by default
 #    See https://www.sqlite.org/wal.html
 #
 #    Some advantages of WAL mode over DELETE mode:
@@ -1600,7 +1600,7 @@
 #
 #    Sqlite3 journal modes 'memory' and 'off' are not supported.
 #    type: enum values: delete, truncate, persist, wal
-# sqlite_journal_mode = delete
+# sqlite_journal_mode = wal
 
 #    Set the checkpoint interval for the sqlite WAL journal.
 #    See https://www.sqlite.org/wal.html
