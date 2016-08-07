@@ -143,9 +143,10 @@ class GUIFormSpecMenu : public GUIModalMenu
 	struct ImageDrawSpec
 	{
 		ImageDrawSpec():
-			parent_button(NULL)
-		{
-		}
+			parent_button(NULL),
+			clip(false)
+		{}
+
 		ImageDrawSpec(const std::string &a_name,
 				const std::string &a_item_name,
 				gui::IGUIButton *a_parent_button,
@@ -155,9 +156,10 @@ class GUIFormSpecMenu : public GUIModalMenu
 			parent_button(a_parent_button),
 			pos(a_pos),
 			geom(a_geom),
-			scale(true)
-		{
-		}
+			scale(true),
+			clip(false)
+		{}
+
 		ImageDrawSpec(const std::string &a_name,
 				const std::string &a_item_name,
 				const v2s32 &a_pos, const v2s32 &a_geom):
@@ -166,32 +168,36 @@ class GUIFormSpecMenu : public GUIModalMenu
 			parent_button(NULL),
 			pos(a_pos),
 			geom(a_geom),
-			scale(true)
-		{
-		}
+			scale(true),
+			clip(false)
+		{}
+
 		ImageDrawSpec(const std::string &a_name,
-				const v2s32 &a_pos, const v2s32 &a_geom):
+				const v2s32 &a_pos, const v2s32 &a_geom, bool clip=false):
 			name(a_name),
 			parent_button(NULL),
 			pos(a_pos),
 			geom(a_geom),
-			scale(true)
-		{
-		}
+			scale(true),
+			clip(clip)
+		{}
+
 		ImageDrawSpec(const std::string &a_name,
 				const v2s32 &a_pos):
 			name(a_name),
 			parent_button(NULL),
 			pos(a_pos),
-			scale(false)
-		{
-		}
+			scale(false),
+			clip(false)
+		{}
+
 		std::string name;
 		std::string item_name;
 		gui::IGUIButton *parent_button;
 		v2s32 pos;
 		v2s32 geom;
 		bool scale;
+		bool clip;
 	};
 
 	struct FieldSpec
@@ -426,7 +432,6 @@ protected:
 
 	bool m_bgfullscreen;
 	bool m_slotborder;
-	bool m_clipbackground;
 	video::SColor m_bgcolor;
 	video::SColor m_slotbg_n;
 	video::SColor m_slotbg_h;
@@ -557,4 +562,3 @@ public:
 };
 
 #endif
-
