@@ -61,6 +61,8 @@ public:
 	virtual bool getCollisionBox(aabb3f *toset){return false;}
 	virtual bool collideWithObjects(){return false;}
 	virtual v3f getPosition(){return v3f(0,0,0);}
+	virtual v3f getVelocity(){return v3f(0,0,0);}
+	virtual v3f getAcceleration(){return v3f(0,0,0);}
 	virtual scene::ISceneNode *getSceneNode(){return NULL;}
 	virtual scene::IMeshSceneNode *getMeshSceneNode(){return NULL;}
 	virtual scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode(){return NULL;}

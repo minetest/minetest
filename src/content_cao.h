@@ -135,6 +135,10 @@ public:
 
 	v3f getPosition();
 
+	v3f getVelocity();
+
+	v3f getAcceleration();
+
 	scene::ISceneNode *getSceneNode();
 
 	scene::IMeshSceneNode *getMeshSceneNode();

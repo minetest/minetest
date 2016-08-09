@@ -695,6 +695,18 @@ v3f GenericCAO::getPosition()
 	return pos_translator.vect_show;
 }
 
+v3f GenericCAO::getVelocity()
+{
+	ClientActiveObject *parent = getParent();
+	return parent ? parent->getVelocity() : m_velocity;
+}
+
+v3f GenericCAO::getAcceleration()
+{
+	ClientActiveObject *parent = getParent();
+	return parent ? parent->getAcceleration() : m_acceleration;
+}
+
 scene::ISceneNode* GenericCAO::getSceneNode()
 {
 	if (m_meshnode) {
