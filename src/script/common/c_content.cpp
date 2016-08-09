@@ -219,6 +219,8 @@ void read_object_properties(lua_State *L, int index,
 
 	// Ignore object_type. It is set by the server for the benefit of the client.
 	// It is not intended to be used or modified by mods.
+
+	prop->collectible = getintfield_default(L, -1, "collectible", -1);
 }
 
 /******************************************************************************/
@@ -289,6 +291,7 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "infotext");
 	// Ignore object_type. The same information is available elsewhere
 	// It is not intended to be used or modified by mods.
+	lua_pushnumber(L, prop->collectible);
 }
 
 /******************************************************************************/

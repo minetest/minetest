@@ -164,6 +164,17 @@ public:
 		return m_prop.object_type;
 	}
 
+	inline bool collectibleIsSet() const
+	{
+		return m_prop.collectible >= 0;
+	}
+
+	inline int collectible() const
+	{
+		// Negative values are for internal use only ATM
+		return m_prop.collectible >= 0 ? m_prop.collectible : 0;
+	}
+
 	inline bool isVisible() const
 	{
 		return m_is_visible;

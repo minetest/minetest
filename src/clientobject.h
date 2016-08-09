@@ -72,6 +72,8 @@ public:
 	virtual bool isLocalPlayer() const {return false;}
 	virtual bool isVisible() const {return false;}
 	virtual std::string objectTypeName() const {return "";}
+	virtual bool collectibleIsSet() const {return false;}
+	virtual int collectible() const {return 0;}
 	virtual void setAttachments(){}
 	virtual bool doShowSelectionBox(){return true;}
 	virtual void updateCameraOffset(v3s16 camera_offset){};
