@@ -613,6 +613,17 @@ Helper functions
     * returns true true when the passed number represents NaN.
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
+* `core.autocomplete_word(start, t, [iter])`
+    * `start` is the beginning of the word
+    * `t` is a table containing words which are used for autocompletion
+    * `iter` is an iteration function for the for loop
+      if omitted, either pairs or a list iteration is used depending on `t`
+    * It returns one of following:
+      nil, nil: `t` does not contain a string beginning with `start`
+      found_word, nil: a string, one fitting word was found
+      longer_start, possible_words: a string and a table
+        more fitting word were found and their equal beginning is longer than start
+      nil, possible_words: a table, their equal beginning is as long as start
 
 Minetest namespace reference
 ------------------------------
@@ -661,6 +672,12 @@ Call these functions only at load time!
 * `minetest.register_on_sending_chat_message(func(message))`
     * Called always when a client send a message from chat
     * Return `true` to mark the message as handled, which means that it will not be sent to server
+* `minetest.register_chat_autocompletion(func(message, cursorpos, first_inquiry))`
+    * Called when pressing tab in chat
+    * message is the current text in the chat prompt
+    * cursorpos is an integer between inclusively 0 and #message
+    * first_inquiry is true if the previous message and cursorpos are not the current ones
+    * return [new_message], [new_cursorpos], [abort]
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
     * Adds definition to minetest.registered_chatcommands
 * `minetest.unregister_chatcommand(name)`
@@ -1160,6 +1177,10 @@ Can be obtained via `minetest.get_meta(pos)`.
         description = "Remove privilege from player", -- Full description
         func = function(param),        -- Called when command is run.
                                        -- Returns boolean success and text output.
+        autocompletion = func(params, cursorpos, first_invocation),
+    --  ^ Called after pressing tab in the chat.
+    --  ^ For the return values see register_chat_autocompletion.
+    --  ^ Note that the command is not in params and the cursorpos begins at the first argument, same for these two return values.
     }
 ### Server info
 ```lua

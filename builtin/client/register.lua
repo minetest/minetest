@@ -1,3 +1,44 @@
+core.registered_chat_autocompletions = {}
+function core.register_chat_autocompletion(func)
+	core.registered_chat_autocompletions[#core.registered_chat_autocompletions+1] = {
+		func = func,
+		mod_origin = core.get_current_modname() or "??"
+	}
+end
+
+local autoc_prev
+function core.on_chat_autocomplete(cursorpos, message)
+	local msghash = message .. cursorpos
+	local first_inquiry = autoc_prev ~= msghash
+	if first_inquiry then
+		autoc_prev = msghash
+	end
+	local cp,msg = cursorpos,message
+	for i = 1,#core.registered_chat_autocompletions do
+		local data = core.registered_chat_autocompletions[i]
+		core.set_last_run_mod(data.mod_origin)
+		local newmsg, newcp, abort = data.func(msg, cp, first_inquiry)
+		if type(newmsg) == "string" then
+			msg = newmsg
+		end
+		if type(newcp) == "number" then
+			cp = newcp
+		end
+		if abort then
+			break
+		end
+	end
+	if msg ~= message then
+		if cp ~= cursorpos then
+			return 3, msg, cp
+		end
+		return 2, msg
+	end
+	if cp ~= cursorpos then
+		return 1, nil, cp
+	end
+	return 0
+end
 
 core.callback_origins = {}
 

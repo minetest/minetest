@@ -63,3 +63,56 @@ core.register_chatcommand("clear_chat_queue", {
 function core.run_server_chatcommand(cmd, param)
 	core.send_chat_message("/" .. cmd .. " " .. param)
 end
+
+core.register_chat_autocompletion(function(message, cursorpos, first_invocation)
+	if message:sub(1, 1) ~= "." then
+		return
+	end
+	local firstspace = message:find(" ")
+	if firstspace then
+		local cmd = message:sub(2, firstspace-1)
+		local def = core.registered_chatcommands[cmd]
+		if not def then
+			core.display_chat_message(core.gettext("-!- Invalid command: ") ..
+					cmd)
+			return
+		end
+		if not def.autocompletion then
+			return
+		end
+		local params = message:sub(firstspace + 1)
+		local cursorpos_rel = cursorpos - firstspace
+		local newmsg, newcp, abort = def.autocompletion(params,	cursorpos_rel,
+				first_invocation)
+		if type(newmsg) == "string" then
+			newmsg = "/" .. cmd .. " " .. newmsg
+		end
+		if type(newcp) == "number" then
+			newcp = newcp + firstspace
+		end
+		return newmsg, newcp, abort
+	end
+
+	local cmdstart = message:sub(2)
+	local replacement, possible_cmds = core.autocomplete_word(cmdstart,
+			core.registered_chatcommands)
+
+	if not replacement and not possible_cmds then
+		core.display_chat_message(core.gettext("-!- " ..
+				"No chatcommand found beginning with \"$1\".", cmdstart))
+		return
+	end
+
+	if replacement then
+		if not possible_cmds then
+			return "/" .. replacement .. " ", #replacement + 2, true
+		end
+		local newmsg = "/" .. replacement
+		return newmsg, #newmsg, true
+	end
+
+	if not first_invocation then
+		core.display_chat_message(core.gettext("Available commands: ") ..
+				table.concat(possible_cmds, ", "))
+	end
+end)

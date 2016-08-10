@@ -172,8 +172,9 @@ public:
 	// Select next command from history
 	void historyNext();
 
-	// Nick completion
-	void nickCompletion(const std::list<std::string>& names, bool backwards);
+	// Tab autocompletion
+	void prepareAutocomplete(u16 &cursorpos, std::string &line);
+	void performAutocomplete(u16 cursorpos, const std::string &message);
 
 	// Update console size and reformat the visible portion of the prompt
 	void reformat(u32 cols);
@@ -243,10 +244,9 @@ private:
 	// Cursor length (length of selected portion of line)
 	s32 m_cursor_len = 0;
 
-	// Last nick completion start (index into m_line)
-	s32 m_nick_completion_start = 0;
-	// Last nick completion start (index into m_line)
-	s32 m_nick_completion_end = 0;
+	// Line and cursor before performing autocompletion
+	std::wstring m_completion_sent_line;
+	s32 m_completion_sent_cursor;
 };
 
 class ChatBackend

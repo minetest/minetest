@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "gettext.h"
 #include <string>
+#include "script/scripting_client.h"
 
 #if USE_FREETYPE
 	#include "irrlicht_changes/CGUITTFont.h"
@@ -598,14 +599,16 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 				ChatPrompt::CURSOROP_DIR_RIGHT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
 			return true;
-		}
-		else if(event.KeyInput.Key == KEY_TAB)
-		{
-			// Tab or Shift-Tab pressed
-			// Nick completion
-			std::list<std::string> names = m_client->getConnectedPlayerNames();
-			bool backwards = event.KeyInput.Shift;
-			prompt.nickCompletion(names, backwards);
+		} else if(event.KeyInput.Key == KEY_TAB) {
+			// Autocompletion, get the message and cursor position
+			std::string message;
+			u16 cursorpos;
+			prompt.prepareAutocomplete(cursorpos, message);
+
+			// Run script hook and send back to prompt if requisite
+			if (m_client->getScript()->on_chat_autocomplete(cursorpos, message))
+				prompt.performAutocomplete(cursorpos, message);
+
 			return true;
 		} else if (!iswcntrl(event.KeyInput.Char) && !event.KeyInput.Control) {
 			#if defined(__linux__) && (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9)

@@ -279,11 +279,6 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 				ChatPrompt::CURSOROP_DIR_RIGHT,
 				ChatPrompt::CURSOROP_SCOPE_LINE);
 			break;
-		case KEY_TAB:
-			// Tab pressed
-			// Nick completion
-			prompt.nickCompletion(m_nicks, false);
-			break;
 		default:
 			// Add character to the prompt,
 			// assuming UTF-8.
