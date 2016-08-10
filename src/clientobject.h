@@ -68,6 +68,7 @@ public:
 	virtual scene::IBillboardSceneNode *getSpriteSceneNode(){return NULL;}
 	virtual bool isPlayer() const {return false;}
 	virtual bool isLocalPlayer() const {return false;}
+	virtual std::string objectTypeName() const {return "";}
 	virtual void setAttachments(){}
 	virtual bool doShowSelectionBox(){return true;}
 	virtual void updateCameraOffset(v3s16 camera_offset){};

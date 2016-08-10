@@ -155,6 +155,11 @@ public:
 		return m_is_local_player;
 	}
 
+	inline std::string objectTypeName() const
+	{
+		return m_prop.object_type;
+	}
+
 	inline bool isVisible() const
 	{
 		return m_is_visible;
