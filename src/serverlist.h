@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include "config.h"
 #include "mods.h"
-#include "json/json.h"
+#include <json/json.h>
 
 #ifndef SERVERLIST_HEADER
 #define SERVERLIST_HEADER
