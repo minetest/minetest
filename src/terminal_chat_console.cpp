@@ -280,8 +280,7 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 			break;
 		case KEY_TAB:
 			// Tab pressed
-			// Nick completion
-			prompt.nickCompletion(m_nicks, false);
+			// How to get here ingame? ~HybridDog
 			break;
 		default:
 			// Add character to the prompt,

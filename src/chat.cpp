@@ -395,9 +395,7 @@ ChatPrompt::ChatPrompt(std::wstring prompt, u32 history_limit):
 	m_cols(0),
 	m_view(0),
 	m_cursor(0),
-	m_cursor_len(0),
-	m_nick_completion_start(0),
-	m_nick_completion_end(0)
+	m_cursor_len(0)
 {
 }
 
@@ -410,8 +408,6 @@ void ChatPrompt::input(wchar_t ch)
 	m_line.insert(m_cursor, 1, ch);
 	m_cursor++;
 	clampView();
-	m_nick_completion_start = 0;
-	m_nick_completion_end = 0;
 }
 
 void ChatPrompt::input(const std::wstring &str)
@@ -419,8 +415,6 @@ void ChatPrompt::input(const std::wstring &str)
 	m_line.insert(m_cursor, str);
 	m_cursor += str.size();
 	clampView();
-	m_nick_completion_start = 0;
-	m_nick_completion_end = 0;
 }
 
 void ChatPrompt::addToHistory(std::wstring line)
@@ -437,8 +431,6 @@ void ChatPrompt::clear()
 	m_line.clear();
 	m_view = 0;
 	m_cursor = 0;
-	m_nick_completion_start = 0;
-	m_nick_completion_end = 0;
 }
 
 std::wstring ChatPrompt::replace(std::wstring line)
@@ -447,8 +439,6 @@ std::wstring ChatPrompt::replace(std::wstring line)
 	m_line =  line;
 	m_view = m_cursor = line.size();
 	clampView();
-	m_nick_completion_start = 0;
-	m_nick_completion_end = 0;
 	return old_line;
 }
 
@@ -492,86 +482,6 @@ void ChatPrompt::CompletionReceive(u16 cursorpos, const std::wstring &message)
 	if ((cursorpos & 1) && (m_cursor == m_completion_sent_cursor)) {
 		m_cursor = MYMIN((u16) m_line.size(), cursorpos >> 2);
 	}
-}
-
-void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwards)
-{
-	// Two cases:
-	// (a) m_nick_completion_start == m_nick_completion_end == 0
-	//     Then no previous nick completion is active.
-	//     Get the word around the cursor and replace with any nick
-	//     that has that word as a prefix.
-	// (b) else, continue a previous nick completion.
-	//     m_nick_completion_start..m_nick_completion_end are the
-	//     interval where the originally used prefix was. Cycle
-	//     through the list of completions of that prefix.
-	u32 prefix_start = m_nick_completion_start;
-	u32 prefix_end = m_nick_completion_end;
-	bool initial = (prefix_end == 0);
-	if (initial)
-	{
-		// no previous nick completion is active
-		prefix_start = prefix_end = m_cursor;
-		while (prefix_start > 0 && !isspace(m_line[prefix_start-1]))
-			--prefix_start;
-		while (prefix_end < m_line.size() && !isspace(m_line[prefix_end]))
-			++prefix_end;
-		if (prefix_start == prefix_end)
-			return;
-	}
-	std::wstring prefix = m_line.substr(prefix_start, prefix_end - prefix_start);
-
-	// find all names that start with the selected prefix
-	std::vector<std::wstring> completions;
-	for (std::list<std::string>::const_iterator
-			i = names.begin();
-			i != names.end(); ++i)
-	{
-		if (str_starts_with(narrow_to_wide(*i), prefix, true))
-		{
-			std::wstring completion = narrow_to_wide(*i);
-			if (prefix_start == 0)
-				completion += L": ";
-			completions.push_back(completion);
-		}
-	}
-	if (completions.empty())
-		return;
-
-	// find a replacement string and the word that will be replaced
-	u32 word_end = prefix_end;
-	u32 replacement_index = 0;
-	if (!initial)
-	{
-		while (word_end < m_line.size() && !isspace(m_line[word_end]))
-			++word_end;
-		std::wstring word = m_line.substr(prefix_start, word_end - prefix_start);
-
-		// cycle through completions
-		for (u32 i = 0; i < completions.size(); ++i)
-		{
-			if (str_equal(word, completions[i], true))
-			{
-				if (backwards)
-					replacement_index = i + completions.size() - 1;
-				else
-					replacement_index = i + 1;
-				replacement_index %= completions.size();
-				break;
-			}
-		}
-	}
-	std::wstring replacement = completions[replacement_index];
-	if (word_end < m_line.size() && isspace(word_end))
-		++word_end;
-
-	// replace existing word with replacement word,
-	// place the cursor at the end and record the completion prefix
-	m_line.replace(prefix_start, word_end - prefix_start, replacement);
-	m_cursor = prefix_start + replacement.size();
-	clampView();
-	m_nick_completion_start = prefix_start;
-	m_nick_completion_end = prefix_end;
 }
 
 void ChatPrompt::reformat(u32 cols)
@@ -667,9 +577,6 @@ void ChatPrompt::cursorOperation(CursorOp op, CursorOpDir dir, CursorOpScope sco
 	}
 
 	clampView();
-
-	m_nick_completion_start = 0;
-	m_nick_completion_end = 0;
 }
 
 void ChatPrompt::clampView()
