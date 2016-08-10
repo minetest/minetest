@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MG_DECORATION_HEADER
 #define MG_DECORATION_HEADER
 
-#include <set>
+#include "util/cpp11_container.h"
 #include "objdef.h"
 #include "noise.h"
 #include "nodedef.h"
@@ -83,7 +83,7 @@ public:
 	float fill_ratio;
 	NoiseParams np;
 
-	std::set<u8> biomes;
+	UNORDERED_SET<u8> biomes;
 	//std::list<CutoffData> cutoffs;
 	//Mutex cutoff_mutex;
 };

@@ -156,7 +156,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 			}
 
 			if (mg->biomemap) {
-				std::set<u8>::iterator iter;
+				UNORDERED_SET<u8>::iterator iter;
 
 				if (!biomes.empty()) {
 					iter = biomes.find(mg->biomemap[mapindex]);
