@@ -100,7 +100,7 @@ Biome *get_or_load_biome(lua_State *L, int index,
 	BiomeManager *biomemgr);
 Biome *read_biome_def(lua_State *L, int index, INodeDefManager *ndef);
 size_t get_biome_list(lua_State *L, int index,
-	BiomeManager *biomemgr, std::set<u8> *biome_id_list);
+	BiomeManager *biomemgr, UNORDERED_SET<u8> *biome_id_list);
 
 Schematic *get_or_load_schematic(lua_State *L, int index,
 	SchematicManager *schemmgr, StringMap *replace_names);
@@ -401,7 +401,7 @@ Biome *read_biome_def(lua_State *L, int index, INodeDefManager *ndef)
 
 
 size_t get_biome_list(lua_State *L, int index,
-	BiomeManager *biomemgr, std::set<u8> *biome_id_list)
+	BiomeManager *biomemgr, UNORDERED_SET<u8> *biome_id_list)
 {
 	if (index < 0)
 		index = lua_gettop(L) + 1 + index;
