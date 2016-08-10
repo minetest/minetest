@@ -283,7 +283,7 @@ function core.autocomplete_word(start, t, iter)
 	end
 
 	if l ~= start_len then
-		return first_cmd:sub(1, l), possible_words
+		return first_word:sub(1, l), possible_words
 	end
 
 	return possible_words

@@ -4041,6 +4041,10 @@ The Biome API is still in an experimental phase and subject to change.
         privs = {privs=true}, -- Require the "privs" privilege to run
         func = function(name, param), -- Called when command is run.
                                       -- Returns boolean success and text output.
+        autocompletion = func(params, cursorpos, name, first_invocation),
+    --  ^ Called after after someone presses tab in the chat terminal.
+    --  ^ For the return values see register_chat_autocompletion.
+    --  ^ Note that params and cursorpos are relative, same for these two return values.
     }
 
 ### Detached inventory callbacks
