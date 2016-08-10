@@ -175,6 +175,8 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 		// Activate entity, supplying serialized state
 		m_env->getScriptIface()->
 			luaentity_Activate(m_id, m_init_state.c_str(), dtime_s);
+	} else {
+		m_prop.infotext = m_init_name;
 	}
 }
 
