@@ -475,6 +475,25 @@ void ChatPrompt::historyNext()
 	}
 }
 
+void ChatPrompt::CompletionSend(u16 &cursorpos, std::wstring &line)
+{
+	cursorpos = m_cursor;
+	line = m_line;
+
+	m_completion_sent_cursor = m_cursor;
+	m_completion_sent_line = line;
+}
+
+void ChatPrompt::CompletionReceive(u16 cursorpos, const std::wstring &message)
+{
+	if ((cursorpos & 2) && (m_line == m_completion_sent_line))
+		m_line = message;
+
+	if ((cursorpos & 1) && (m_cursor == m_completion_sent_cursor)) {
+		m_cursor = MYMIN((u16) m_line.size(), cursorpos >> 2);
+	}
+}
+
 void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwards)
 {
 	// Two cases:

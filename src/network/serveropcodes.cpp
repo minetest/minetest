@@ -71,7 +71,7 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_handler, // 0x2c
 	null_command_handler, // 0x2d
 	null_command_handler, // 0x2e
-	null_command_handler, // 0x2f
+	{ "TOSERVER_CHAT_AUTOCOMPLETE",        TOSERVER_STATE_INGAME, &Server::handleCommand_ChatAutocomplete }, // 0x2f
 	{ "TOSERVER_SIGNTEXT",                 TOSERVER_STATE_INGAME, &Server::handleCommand_Deprecated }, // 0x30
 	{ "TOSERVER_INVENTORY_ACTION",         TOSERVER_STATE_INGAME, &Server::handleCommand_InventoryAction }, // 0x31
 	{ "TOSERVER_CHAT_MESSAGE",             TOSERVER_STATE_INGAME, &Server::handleCommand_ChatMessage }, // 0x32
@@ -160,7 +160,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	null_command_factory,
 	null_command_factory,
 	null_command_factory,
-	null_command_factory,
+	{ "TOCLIENT_CHAT_AUTOCOMPLETE",        0, true }, // 0x2f
 	{ "TOCLIENT_CHAT_MESSAGE",             0, true }, // 0x30
 	{ "TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD", 0, true }, // 0x31
 	{ "TOCLIENT_ACTIVE_OBJECT_MESSAGES",   0, true }, // 0x32 Special packet, sent by 0 (rel) and 1 (unrel) channel

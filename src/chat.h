@@ -176,6 +176,10 @@ public:
 	// Select next command from history
 	void historyNext();
 
+	// Tab autocompletion
+	void CompletionSend(u16 &cursorpos, std::wstring &line);
+	void CompletionReceive(u16 cursorpos, const std::wstring &message);
+
 	// Nick completion
 	void nickCompletion(const std::list<std::string>& names, bool backwards);
 
@@ -246,6 +250,10 @@ private:
 	s32 m_cursor;
 	// Cursor length (length of selected portion of line)
 	s32 m_cursor_len;
+
+	// Line and cursor sent by autocomplete
+	std::wstring m_completion_sent_line;
+	s32 m_completion_sent_cursor;
 
 	// Last nick completion start (index into m_line)
 	s32 m_nick_completion_start;

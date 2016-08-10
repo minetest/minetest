@@ -180,6 +180,7 @@ public:
 	void handleCommand_DeletedBlocks(NetworkPacket* pkt);
 	void handleCommand_InventoryAction(NetworkPacket* pkt);
 	void handleCommand_ChatMessage(NetworkPacket* pkt);
+	void handleCommand_ChatAutocomplete(NetworkPacket* pkt);
 	void handleCommand_Damage(NetworkPacket* pkt);
 	void handleCommand_Breath(NetworkPacket* pkt);
 	void handleCommand_Password(NetworkPacket* pkt);
@@ -382,6 +383,7 @@ private:
 
 
 	void SendChatMessage(u16 peer_id, const std::wstring &message);
+	void SendChatAutocompletion(u16 peer_id, u16 cursorpos, const std::string &message);
 	void SendTimeOfDay(u16 peer_id, u16 time, f32 time_speed);
 	void SendPlayerHP(u16 peer_id);
 

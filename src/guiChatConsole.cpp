@@ -621,11 +621,14 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		}
 		else if(event.KeyInput.Key == KEY_TAB)
 		{
-			// Tab or Shift-Tab pressed
-			// Nick completion
-			std::list<std::string> names = m_client->getConnectedPlayerNames();
-			bool backwards = event.KeyInput.Shift;
-			prompt.nickCompletion(names, backwards);
+			// Chat Autocompletion
+			std::wstring line;
+			u16 cursorpos;
+
+			prompt.CompletionSend(cursorpos, line);
+			m_client->autocompletion_chatprompt = &prompt;
+			m_client->sendChatAutocomplete(cursorpos, line);
+
 			return true;
 		}
 		else if(event.KeyInput.Char != 0 && !event.KeyInput.Control)

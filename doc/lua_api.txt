@@ -2013,6 +2013,12 @@ Call these functions only at load time!
         * `"finished_unknown_dig"`
         * `dug_unbreakable`
         * `dug_too_fast`
+* `minetest.register_chat_autocompletion(func(message, cursorpos, name, first_inquiry))`
+    * Called when a player tips the tab key in chat
+    * message is the current text in the client's chat prompt
+    * cursorpos is a integer between inclusively 0 and #message
+    * first_inquiry is true if the previous message and cursorpos are not the current ones
+    * return [new_message], [new_cursorpos], [abort]
 * `minetest.register_on_chat_message(func(name, message))`
     * Called always when a player says something
     * Return `true` to mark the message as handled, which means that it will not be sent to other players
