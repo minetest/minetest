@@ -1857,6 +1857,17 @@ Helper functions
     * returns time with microsecond precision. May not return wall time.
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
+* `core.autocomplete_word(start, t, [iter])`
+    * `start` is the beginning of the word
+    * `t` is a table containing words which are used for autocompletion
+    * `iter` is an iteration function for the for loop
+      if omitted, either pairs or a list iteration is used depending on `t`
+    * It returns one of following:
+      nil: `t` does not contain a string beginning with `start`
+      found_word: a string, one fitting word was found
+      longer_start, possible_words: a string and a table
+        more fitting word were found and their equal beginning is longer than start
+      possible_words: a table, their equal beginning is as long as start
 
 `minetest` namespace reference
 ------------------------------
