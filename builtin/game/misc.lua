@@ -288,3 +288,41 @@ function core.autocomplete_word(start, t, iter)
 
 	return possible_words
 end
+
+-- Add playernames autocompletion
+minetest.after(0, core.register_chat_autocompletion,
+	function(message, cursorpos, name, first_invocation)
+		local len = #message
+		local last_space = len - (message:reverse():find(" ") or len + 1)
+
+		local start
+		if last_space + 1 == len then
+			start = ""
+		else
+			start = message:sub(last_space - len + 1)
+		end
+
+		local pnames = core.get_connected_players()
+		for i = 1,#pnames do
+			pnames[i] = pnames[i]:get_player_name()
+		end
+		local replacement, possible_players = core.autocomplete_word(start, pnames)
+
+		if not replacement then
+			return
+		end
+
+		if type(replacement) == "string" then
+			message = message:sub(1, last_space - len) .. replacement
+			if not possible_players then
+				message = message .. " "
+			end
+			return message, #message, true
+		end
+
+		if not first_invocation then
+			core.chat_send_player(name, "Players found: " ..
+					table.concat(replacement, ", "))
+		end
+	end
+)
