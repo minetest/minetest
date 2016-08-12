@@ -131,6 +131,13 @@ inline bool isInArea(v3s16 p, v3s16 d)
 }
 
 #define rangelim(d, min, max) ((d) < (min) ? (min) : ((d)>(max)?(max):(d)))
+#define rangelim_v2f(d, min, max)                     \
+	v2f(rangelim((d).X, (min).X, (max).X),        \
+		rangelim((d).Y, (min).Y, (max).Y))
+#define rangelim_v3f(d, min, max)                     \
+	v3f(rangelim((d).X, (min).X, (max).X),        \
+		rangelim((d).Y, (min).Y, (max).Y),    \
+		rangelim((d).Z, (min).Z, (max).Z))
 #define myfloor(x) ((x) > 0.0 ? (int)(x) : (int)(x) - 1)
 
 // The naive swap performs better than the xor version

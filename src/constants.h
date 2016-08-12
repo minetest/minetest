@@ -104,6 +104,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // the file attempting to ensure a unique filename
 #define SCREENSHOT_MAX_SERIAL_TRIES 1000
 
+// Currently, the max speed is limited. Setting it 'too high' will cause
+// excessive CPU and memory consumption in the collision detection code.
+#define OBJECT_MAX_SPEED 500
+
 /*
     GUI related things
 */

@@ -246,9 +246,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		return result;
 
 	// Limit speed for avoiding hangs
-	speed_f->Y = rangelim(speed_f->Y, -5000, 5000);
-	speed_f->X = rangelim(speed_f->X, -5000, 5000);
-	speed_f->Z = rangelim(speed_f->Z, -5000, 5000);
+	*speed_f = rangelim_v3f(*speed_f, v3f(-1,-1,-1) * OBJECT_MAX_SPEED * BS,
+		v3f(1,1,1) * OBJECT_MAX_SPEED * BS);
 
 	/*
 		Collect node boxes in movement range
