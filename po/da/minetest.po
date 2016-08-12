@@ -2,16 +2,16 @@
 # Copyright (C) 2011 celeron
 # This file is distributed under the same license as the minetest-c55 package.
 # Frederik Helth <Guides@live.dk>, 2011.
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-07-12 20:49+0200\n"
-"PO-Revision-Date: 2016-05-06 13:58+0000\n"
+"PO-Revision-Date: 2016-08-12 20:43+0200\n"
 "Last-Translator: Thomas Wagner Nielsen <thomas@viawords.com>\n"
-"Language-Team: Danish <https://hosted.weblate.org/projects/minetest/minetest/"
-"da/>\n"
+"Language-Team: Danish "
+"<https://hosted.weblate.org/projects/minetest/minetest/da/>\n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -916,7 +916,7 @@ msgstr "ok"
 
 #: src/guiFormSpecMenu.cpp
 msgid "Enter "
-msgstr ""
+msgstr " "
 
 #: src/guiFormSpecMenu.cpp
 msgid "Proceed"
@@ -1423,6 +1423,9 @@ msgid ""
 "Leave this blank to start a local server.\n"
 "Note that the address field in the main menu overrides this setting."
 msgstr ""
+"Adressen, der skal forbindes til.\n"
+"Lad dette være tomt for at starte en lokal server.\n"
+"Bemærk, at adressefeltet i hovedmenuen tilsidesætter denne indstilling."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1438,6 +1441,8 @@ msgid ""
 "Adjust the gamma encoding for the light tables. Lower numbers are brighter.\n"
 "This setting is for the client only and is ignored by the server."
 msgstr ""
+" Et mindre tal betyder lysere.\n"
+"Denne indstilling gælder kun for klienten og ignoreres af serveren."
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -1502,11 +1507,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
-msgstr ""
+msgstr "Grundlæggende"
 
 #: src/settings_translation_file.cpp
 msgid "Basic Privileges"
-msgstr ""
+msgstr "Grundlæggende privilegier"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1533,7 +1538,7 @@ msgstr "Mip-mapping"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
-msgstr ""
+msgstr "Kameraudjævning"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
@@ -1612,19 +1617,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
-msgstr ""
+msgstr "Klient og server"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
-msgstr ""
+msgstr "Klatringshastighed"
 
 #: src/settings_translation_file.cpp
 msgid "Cloud height"
-msgstr ""
+msgstr "Skyhøjde"
 
 #: src/settings_translation_file.cpp
 msgid "Cloud radius"
-msgstr ""
+msgstr "Skyradius"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds"
@@ -1641,7 +1646,7 @@ msgstr "Hovedmenu"
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
-msgstr ""
+msgstr "Farvet tåge"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1667,7 +1672,7 @@ msgstr "Forbind"
 
 #: src/settings_translation_file.cpp
 msgid "Connect to external media server"
-msgstr ""
+msgstr "Opret forbindelse til ekstern medieserver"
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
@@ -1690,11 +1695,11 @@ msgstr "Konsol"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
-msgstr ""
+msgstr "Kontinuerlig fremad"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward movement (only used for testing)."
-msgstr ""
+msgstr "Kontinuerlig bevægelse fremad (bruges kun til test)."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1707,6 +1712,9 @@ msgid ""
 "Examples: 72 = 20min, 360 = 4min, 1 = 24hour, 0 = day/night/whatever stays "
 "unchanged."
 msgstr ""
+"Styrer længden af dag-/natcyklussen.\n"
+"Eksempler: 72 = 20 min, 360 = 4 min, 1 = 24 timer, 0 = dag/nat/hvad som "
+"helst forbliver uændret."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1720,21 +1728,21 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
-msgstr ""
+msgstr "Styrer stejlheden/højden af bakkerne."
 
 #: src/settings_translation_file.cpp
 msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-msgstr ""
+msgstr "Styrer bredden af tunneller. En lavere værdi giver bredere tunneller."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
-msgstr ""
+msgstr "Nedbrudsbesked"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Creates unpredictable lava features in caves.\n"
 "These can make mining difficult. Zero disables them. (0-10)"
-msgstr ""
+msgstr " "
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1764,7 +1772,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
-msgstr ""
+msgstr "DPI"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1785,17 +1793,17 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Default acceleration"
-msgstr ""
+msgstr "Standardacceleration"
 
 #: src/settings_translation_file.cpp
 msgid "Default game"
-msgstr ""
+msgstr "Standard spil"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Default game when creating a new world.\n"
 "This will be overridden when creating a world from the main menu."
-msgstr ""
+msgstr "Standard spil, når du skaber en ny verden.\n"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1804,7 +1812,7 @@ msgstr "Nyt kodeord"
 
 #: src/settings_translation_file.cpp
 msgid "Default privileges"
-msgstr ""
+msgstr "Standardprivilegier"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1886,7 +1894,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
-msgstr ""
+msgstr "Tillad ikke tomme adgangskoder"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
@@ -1916,7 +1924,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable Joysticks"
-msgstr ""
+msgstr "Aktivér joysticks"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
