@@ -318,6 +318,15 @@ Example:
 
     default_sandstone.png^[opacity:127
 
+#### `[invert:<mode>`
+Inverts the given channels of the base image.
+Mode may contain the characters "r", "g", "b", "a".
+Only the channels that are mentioned in the mode string will be inverted.
+
+Example:
+
+	default_apple.png^[invert:rgb
+
 #### `[brighten`
 Brightens the texture.
 

@@ -1783,9 +1783,48 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			for (u32 y = 0; y < dim.Height; y++)
 			for (u32 x = 0; x < dim.Width; x++)
 			{
-				video::SColor c = baseimg->getPixel(x,y);
+				video::SColor c = baseimg->getPixel(x, y);
 				c.setAlpha(floor((c.getAlpha() * ratio) / 255 + 0.5));
-				baseimg->setPixel(x,y,c);
+				baseimg->setPixel(x, y, c);
+			}
+		}
+		/*
+			[invert:mode
+			Inverts the given channels of the base image.
+			Mode may contain the characters "r", "g", "b", "a".
+			Only the channels that are mentioned in the mode string
+			will be inverted.
+		*/
+		else if (str_starts_with(part_of_name, "[invert:")) {
+			if (baseimg == NULL) {
+				errorstream << "generateImagePart(): baseimg == NULL "
+						<< "for part_of_name=\"" << part_of_name
+						<< "\", cancelling." << std::endl;
+				return false;
+			}
+
+			Strfnd sf(part_of_name);
+			sf.next(":");
+
+			std::string mode = sf.next("");
+			u32 mask = 0;
+			if (mode.find("a") != std::string::npos)
+				mask |= 0xff000000UL;
+			if (mode.find("r") != std::string::npos)
+				mask |= 0x00ff0000UL;
+			if (mode.find("g") != std::string::npos)
+				mask |= 0x0000ff00UL;
+			if (mode.find("b") != std::string::npos)
+				mask |= 0x000000ffUL;
+
+			core::dimension2d<u32> dim = baseimg->getDimension();
+
+			for (u32 y = 0; y < dim.Height; y++)
+			for (u32 x = 0; x < dim.Width; x++)
+			{
+				video::SColor c = baseimg->getPixel(x, y);
+				c.color ^= mask;	
+				baseimg->setPixel(x, y, c);
 			}
 		}
 		else
