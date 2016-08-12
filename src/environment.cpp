@@ -2537,7 +2537,14 @@ void ClientEnvironment::step(float dtime)
 
 
 	if (m_pickup_enabled) {
-		pickupAnyObjects(lplayer, m_pickup_range, false);
+		bool has_priv = m_gamedef->checkLocalPrivilege("autopickup");
+		bool is_privileged = g_settings->getFlag("autopickup_is_privileged")
+			|| m_gamedef->getItemDefManager()->isKnown("clientconfig:autopickup_is_privileged");
+
+		if (!is_privileged || has_priv)
+			pickupAnyObjects(lplayer, m_pickup_range, false);
+		else
+			m_pickup_enabled = 0;
 	}
 
 	// Update lighting on local player (used for wield item)

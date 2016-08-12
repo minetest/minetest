@@ -3115,6 +3115,16 @@ void Game::toggleFog(float *statustext_time, bool *flag)
 
 void Game::autoPickupKey(float *statustext_time)
 {
+	bool has_priv = client->checkPrivilege("autopickup");
+	bool is_privileged = g_settings->getFlag("autopickup_is_privileged")
+		|| client->getItemDefManager()->isKnown("clientconfig:autopickup_is_privileged");
+
+	if (is_privileged && !has_priv) {
+		statustext = L"Auto pick-up remains disabled: autopickup privilege is required";
+		*statustext_time = 0;
+		return;
+	}
+
 	float toggle_time = g_settings->getFloat("autopickup_key_toggle_time");
 	f32 pickup_range;
 	if (!client->getEnv().autoPickupEnabled()) {

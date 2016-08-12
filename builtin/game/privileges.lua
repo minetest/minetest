@@ -41,6 +41,7 @@ core.register_privilege("ban", "Can ban and unban players")
 core.register_privilege("kick", "Can kick players")
 core.register_privilege("give", "Can use /give and /giveme")
 core.register_privilege("password", "Can use /setpassword and /clearpassword")
+core.register_privilege("autopickup", "Can use auto-pickup for dropped item stacks")
 core.register_privilege("fly", {
 	description = "Can fly using the free_move mode",
 	give_to_singleplayer = false,

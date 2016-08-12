@@ -908,6 +908,10 @@
 #    type: string
 # basic_privs = interact, shout
 
+#    Client-side auto-pickup is privileged.
+#    type: bool
+# autopickup_is_privileged = false
+
 #    Whether players are shown to clients without any range limit.
 #    Deprecated, use the setting player_transfer_distance instead.
 #    type: bool
