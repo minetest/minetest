@@ -1185,8 +1185,15 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			pos_translator.translate(dtime);
 			updateNodePos();
 		} else {
-			m_position += dtime * m_velocity + 0.5 * dtime * dtime * m_acceleration;
-			m_velocity += dtime * m_acceleration;
+			v3f new_velocity = m_velocity + dtime * m_acceleration;
+			// Limit speed. A value higher than F1000_MAX will cause a crash.
+			// (due to serialization error)
+			new_velocity = rangelim_v3f(new_velocity, v3f(-1,-1,-1) * OBJECT_MAX_SPEED * BS,
+				v3f(1,1,1) * OBJECT_MAX_SPEED * BS);
+			v3f real_acceleration = (new_velocity - m_velocity) / dtime;
+
+			m_position += dtime * m_velocity + 0.5 * dtime * dtime * real_acceleration;
+			m_velocity = new_velocity;
 			pos_translator.update(m_position, pos_translator.aim_is_end,
 					pos_translator.anim_time);
 			pos_translator.translate(dtime);
