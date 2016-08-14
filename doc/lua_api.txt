@@ -3487,7 +3487,7 @@ Definition tables
         tool_capabilities = {
             full_punch_interval = 1.0,
             max_drop_level = 0,
-            groupcaps={
+            groupcaps = {
                 -- For example:
                 choppy = {times = {[1] = 2.50, [2] = 1.40, [3] = 1.00}, uses = 20, maxlevel = 2},
             },
