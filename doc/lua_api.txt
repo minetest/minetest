@@ -3489,8 +3489,7 @@ Definition tables
             max_drop_level=0,
             groupcaps={
                 -- For example:
-                snappy={times={[2]=0.80, [3]=0.40}, maxwear=0.05, maxlevel=1},
-                choppy={times={[3]=0.90}, maxwear=0.05, maxlevel=0}
+				choppy={times={[1]=2.50, [2]=1.40, [3]=1.00}, uses=20, maxlevel=2},
             },
             damage_groups = {groupname=damage},
         },
