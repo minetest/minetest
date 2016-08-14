@@ -3480,7 +3480,7 @@ Definition tables
                             {hard = 1, metal = 1, spikes = 1}
         inventory_image = "default_tool_steelaxe.png",
         wield_image = "",
-        wield_scale = {x = 1,y = 1,z = 1},
+        wield_scale = {x = 1, paray = 1, z = 1},
         stack_max = 99,
         range = 4.0,
         liquids_pointable = false,
