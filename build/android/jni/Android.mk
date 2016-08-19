@@ -99,7 +99,7 @@ LOCAL_C_INCLUDES := \
 		jni/src                                   \
 		jni/src/script                            \
 		jni/src/lua/src                           \
-		jni/src/json                              \
+		jni/src/jsoncpp                           \
 		jni/src/cguittfont                        \
 		deps/irrlicht/include                     \
 		deps/libiconv/include                     \
@@ -361,7 +361,7 @@ LOCAL_SRC_FILES += \
 		jni/src/threading/thread.cpp
 
 # JSONCPP
-LOCAL_SRC_FILES += jni/src/json/jsoncpp.cpp
+LOCAL_SRC_FILES += jni/src/jsoncpp/json/jsoncpp.cpp
 
 LOCAL_SHARED_LIBRARIES := iconv openal ogg vorbis gmp
 LOCAL_STATIC_LIBRARIES := Irrlicht freetype curl ssl crypto android_native_app_glue $(PROFILER_LIBS)
