@@ -175,6 +175,9 @@ if(UNIX AND NOT APPLE)
 	install(FILES "misc/minetest.desktop" DESTINATION "${XDG_APPS_DIR}")
 	install(FILES "misc/minetest.appdata.xml" DESTINATION "${APPDATADIR}")
 	install(FILES "misc/minetest.svg" DESTINATION "${ICONDIR}/hicolor/scalable/apps")
+	install(FILES "misc/minetest-xorg-icon-128.png"
+		DESTINATION "${ICONDIR}/hicolor/128x128/apps"
+		RENAME "minetest.png")
 endif()
 
 if(APPLE)

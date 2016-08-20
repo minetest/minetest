@@ -14,6 +14,7 @@
 #define STATIC_SHAREDIR "@SHAREDIR@"
 #define STATIC_LOCALEDIR "@LOCALEDIR@"
 #define BUILD_TYPE "@CMAKE_BUILD_TYPE@"
+#define ICON_DIR "@ICONDIR@"
 #cmakedefine01 RUN_IN_PLACE
 #cmakedefine01 USE_GETTEXT
 #cmakedefine01 USE_CURL
