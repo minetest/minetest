@@ -87,11 +87,19 @@ end
 local player_list = {}
 
 core.register_on_joinplayer(function(player)
-	player_list[player:get_player_name()] = player
+	local player_name = player:get_player_name()
+	player_list[player_name] = player
+	core.chat_send_all("*** " .. player_name .. " joined the game.")
 end)
 
-core.register_on_leaveplayer(function(player)
-	player_list[player:get_player_name()] = nil
+core.register_on_leaveplayer(function(player, timed_out)
+	local player_name = player:get_player_name()
+	player_list[player_name] = nil
+	local announcement = "*** " ..  player_name .. " left the game."
+	if timed_out then
+		announcement = announcement .. " (timed out)"
+	end
+	core.chat_send_all(announcement)
 end)
 
 function core.get_connected_players()
