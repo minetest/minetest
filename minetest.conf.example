@@ -261,7 +261,7 @@
 #    Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.
 #    Disabling this option will protect your password better.
 #    type: bool
-# send_pre_v25_init = true
+# send_pre_v25_init = false
 
 #    Save the map received by the client on disk.
 #    type: bool
@@ -1485,7 +1485,7 @@
 # profiler.default_report_format = txt
 
 #    The file path relative to your worldpath in which profiles will be saved to.
-#    
+#
 #    type: string
 # profiler.report_path = ""
 

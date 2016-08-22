@@ -190,7 +190,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("minimap_shape_round", "true");
 	settings->setDefault("minimap_double_scan_height", "true");
 
-	settings->setDefault("send_pre_v25_init", "true");
+	settings->setDefault("send_pre_v25_init", "false");
 
 	settings->setDefault("curl_timeout", "5000");
 	settings->setDefault("curl_parallel_limit", "8");
