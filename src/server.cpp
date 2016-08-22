@@ -1118,23 +1118,6 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 	if(!m_simple_singleplayer_mode) {
 		// Send information about server to player in chat
 		SendChatMessage(peer_id, getStatusString());
-
-		// Send information about joining in chat
-		{
-			std::string name = "unknown";
-			Player *player = m_env->getPlayer(peer_id);
-			if(player != NULL)
-				name = player->getName();
-
-			std::wstring message;
-			message += L"*** ";
-			message += narrow_to_wide(name);
-			message += L" joined the game.";
-			SendChatMessage(PEER_ID_INEXISTENT,message);
-			if (m_admin_chat)
-				m_admin_chat->outgoing_queue.push_back(
-					new ChatEventNick(CET_NICK_ADD, name));
-		}
 	}
 	Address addr = getPeerAddress(player->peer_id);
 	std::string ip_str = addr.serializeString();
@@ -2659,19 +2642,6 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 		}
 
 		Player *player = m_env->getPlayer(peer_id);
-
-		// Collect information about leaving in chat
-		{
-			if(player != NULL && reason != CDR_DENY)
-			{
-				std::wstring name = narrow_to_wide(player->getName());
-				message += L"*** ";
-				message += name;
-				message += L" left the game.";
-				if(reason == CDR_TIMEOUT)
-					message += L" (timed out)";
-			}
-		}
 
 		/* Run scripts and remove from environment */
 		{
