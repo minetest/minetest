@@ -136,9 +136,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		backface_culling: backwards compatibility for playing with
 		newer client on pre-27 servers.
 		Add nodedef v3 - connected nodeboxes
+	PROTOCOL_VERSION 28:
+		Add TOCLIENT_NODEMETA_CHANGED
 */
 
-#define LATEST_PROTOCOL_VERSION 27
+#define LATEST_PROTOCOL_VERSION 28
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13
@@ -591,6 +593,11 @@ enum ToClientCommand
 	TOCLIENT_DELETE_PARTICLESPAWNER = 0x53,
 	/*
 		u32 id
+	*/
+
+	TOCLIENT_NODEMETA_CHANGED = 0x54,
+	/*
+		serialized and compressed node metadata
 	*/
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,

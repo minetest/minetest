@@ -896,6 +896,8 @@ void Server::AsyncRunStep(bool initial_step)
 		// We'll log the amount of each
 		Profiler prof;
 
+		std::list<v3s16> node_meta_updates;
+
 		while(m_unsent_map_edit_queue.size() != 0)
 		{
 			MapEditEvent* event = m_unsent_map_edit_queue.front();
@@ -919,11 +921,20 @@ void Server::AsyncRunStep(bool initial_step)
 				sendRemoveNode(event->p, event->already_known_by_peer,
 						&far_players, disable_single_change_sending ? 5 : 30);
 				break;
-			case MEET_BLOCK_NODE_METADATA_CHANGED:
-				infostream << "Server: MEET_BLOCK_NODE_METADATA_CHANGED" << std::endl;
-						prof.add("MEET_BLOCK_NODE_METADATA_CHANGED", 1);
-						setBlockNotSent(event->p);
+			case MEET_BLOCK_NODE_METADATA_CHANGED: {
+				verbosestream << "Server: MEET_BLOCK_NODE_METADATA_CHANGED" << std::endl;
+				prof.add("MEET_BLOCK_NODE_METADATA_CHANGED", 1);
+				// Don't send the change yet. Collect them to eliminate dupes.
+				node_meta_updates.remove(event->p);
+				node_meta_updates.push_back(event->p);
+
+				if (MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(
+						getNodeBlockPos(event->p))) {
+					block->raiseModified(MOD_STATE_WRITE_NEEDED,
+						MOD_REASON_REPORT_META_CHANGE);
+				}
 				break;
+			}
 			case MEET_OTHER:
 				infostream << "Server: MEET_OTHER" << std::endl;
 				prof.add("MEET_OTHER", 1);
@@ -978,6 +989,10 @@ void Server::AsyncRunStep(bool initial_step)
 			prof.print(verbosestream);
 		}
 
+		// Send all metadata updates
+		if (node_meta_updates.size()) {
+			sendMetadataChanged(node_meta_updates);
+		}
 	}
 
 	/*
@@ -1287,6 +1302,7 @@ Inventory* Server::getInventory(const InventoryLocation &loc)
 	}
 	return NULL;
 }
+
 void Server::setInventoryModified(const InventoryLocation &loc, bool playerSend)
 {
 	switch(loc.type){
@@ -1309,13 +1325,10 @@ void Server::setInventoryModified(const InventoryLocation &loc, bool playerSend)
 		break;
 	case InventoryLocation::NODEMETA:
 	{
-		v3s16 blockpos = getNodeBlockPos(loc.p);
-
-		MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(blockpos);
-		if(block)
-			block->raiseModified(MOD_STATE_WRITE_NEEDED);
-
-		setBlockNotSent(blockpos);
+		MapEditEvent event;
+		event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
+		event.p = loc.p;
+		m_env->getMap().dispatchEvent(&event);
 	}
 		break;
 	case InventoryLocation::DETACHED:
@@ -2049,10 +2062,10 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 		i != clients.end(); ++i) {
 		if (far_players) {
 			// Get player
-			if(Player *player = m_env->getPlayer(*i)) {
+			if (Player *player = m_env->getPlayer(*i)) {
 				// If player is far away, only set modified blocks not sent
 				v3f player_pos = player->getPosition();
-				if(player_pos.getDistanceFrom(p_f) > maxd) {
+				if (player_pos.getDistanceFrom(p_f) > maxd) {
 					far_players->push_back(*i);
 					continue;
 				}
@@ -2108,6 +2121,61 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 		if (pkt.getSize() > 0)
 			m_clients.send(*i, 0, &pkt, true);
 	}
+}
+
+void Server::sendMetadataChanged(const std::list<v3s16> &meta_updates, float far_d_nodes)
+{
+	float maxd = far_d_nodes * BS;
+	NodeMetadataList *meta_updates_list = new NodeMetadataList();
+
+	std::vector<u16> clients = m_clients.getClientIDs();
+	m_clients.lock();
+
+	for (std::vector<u16>::iterator i = clients.begin();
+			i != clients.end(); ++i) {
+		meta_updates_list->clear();
+		Player *player = m_env->getPlayer(*i);
+		RemoteClient* client = m_clients.lockedGetClientNoEx(*i);
+		if (client == NULL)
+			continue;
+		if (client->net_proto_version >= 28) {
+			for (std::list<v3s16>::const_iterator i2 = meta_updates.begin();
+					i2 != meta_updates.end(); ++i2) {
+				v3s16 pos = *i2;
+				NodeMetadata *meta = m_env->getMap().getNodeMetadata(pos);
+				if (!meta) {
+					continue;
+				}
+				if (player) {
+					// If player is far away, only set modified blocks not sent
+					v3f player_pos = player->getPosition();
+					if (player_pos.getDistanceFrom(intToFloat(pos, BS)) > maxd) {
+						client->SetBlockNotSent(getNodeBlockPos(pos));
+						continue;
+					}
+				}
+				// Add the change to send list
+				meta_updates_list->set(pos, meta);
+			}
+			// Send the meta changes
+			NetworkPacket pkt(TOCLIENT_NODEMETA_CHANGED, 0);
+			std::ostringstream os(std::ios::binary);
+			meta_updates_list->serialize(os, true);
+			std::ostringstream oss(std::ios::binary);
+			compressZlib(os.str(), oss);
+			pkt.putLongString(oss.str());
+			m_clients.send(*i, 0, &pkt, true);
+		} else {
+			// Older clients expect whole blocks, set them not sent
+			for (std::list<v3s16>::const_iterator i2 = meta_updates.begin();
+					i2 != meta_updates.end(); ++i2) {
+				v3s16 pos = *i2;
+				client->SetBlockNotSent(getNodeBlockPos(pos));
+			}
+		}
+	}
+
+	m_clients.unlock();
 }
 
 void Server::setBlockNotSent(v3s16 p)
