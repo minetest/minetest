@@ -1503,17 +1503,23 @@ examples.
 * If `true` the background is clipped to formspec size
   (`x` and `y` are used as offset values, `w` and `h` are ignored)
 
-#### `pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>]`
+#### `pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>;<close_on_enter>]`
 * Textual password style field; will be sent to server when a button is clicked
+* When enter is pressed in field, fields.key_enter_field will be sent with the name
+  of this field.
 * `x` and `y` position the field relative to the top left of the menu
 * `w` and `h` are the size of the field
 * Fields are a set height, but will be vertically centred on `h`
 * Position and size units are inventory slots
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
+* `close_on_enter` (optional) is whether the form should accept and close when enter is
+  pressed in this field. Defaults to true.
 
-#### `field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
+#### `field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>;<close_on_enter>]`
 * Textual field; will be sent to server when a button is clicked
+* When enter is pressed in field, fields.key_enter_field will be sent with the name
+  of this field.
 * `x` and `y` position the field relative to the top left of the menu
 * `w` and `h` are the size of the field
 * Fields are a set height, but will be vertically centred on `h`
@@ -1524,12 +1530,18 @@ examples.
     * `default` may contain variable references such as `${text}'` which
       will fill the value from the metadata value `text`
     * **Note**: no extra text or more than a single variable is supported ATM.
+* `close_on_enter` (optional) is whether the form should accept and close when enter is
+  pressed in this field. Defaults to true.
 
-#### `field[<name>;<label>;<default>]`
+#### `field[<name>;<label>;<default>;<close_on_enter>]`
 * As above, but without position/size units
+* When enter is pressed in field, fields.key_enter_field will be sent with the name
+  of this field.
 * Special field for creating simple forms, such as sign text input
 * Must be used without a `size[]` element
 * A "Proceed" button will be added automatically
+* `close_on_enter` (optional) is whether the form should accept and close when enter is
+  pressed in this field. Defaults to true.
 
 #### `textarea[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
 * Same as fields above, but with multi-line input
