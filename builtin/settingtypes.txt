@@ -3,7 +3,7 @@
 # General format:
 #    name (Readable name) type type_args
 #
-# Note that the parts are seperated by exactly one space
+# Note that the parts are separated by exactly one space
 #
 # `type` can be:
 #    - int
@@ -109,7 +109,7 @@ enable_joysticks (Enable Joysticks) bool false
 
 #    The time in seconds it takes between repeated events
 #    when holding down a joystick button combination.
-repeat_joystick_button_time (Joystick button repetition invterval) float 0.17
+repeat_joystick_button_time (Joystick button repetition interval) float 0.17
 
 #    The sensitivity of the joystick axes for moving the
 #    ingame view frustum around.
@@ -204,7 +204,7 @@ keymap_toggle_chat (Chat toggle key) key KEY_F2
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_toggle_force_fog_off (Fog toggle key) key KEY_F3
 
-#    Key for toggling the camrea update. Only used for development
+#    Key for toggling the camera update. Only used for development
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_toggle_update_camera (Camera update toggle key) key
 
@@ -335,7 +335,7 @@ fsaa (FSAA) enum 0 0,1,2,4,8,16
 
 [***Shaders]
 
-#    Shaders allow advanced visul effects and may increase performance on some video cards.
+#    Shaders allow advanced visual effects and may increase performance on some video cards.
 #    Thy only work with the OpenGL video backend.
 enable_shaders (Shaders) bool true
 
@@ -545,7 +545,7 @@ gui_scaling_filter (GUI scaling filter) bool false
 #    When gui_scaling_filter_txr2img is true, copy those images
 #    from hardware to software for scaling.  When false, fall back
 #    to the old scaling method, for video drivers that don't
-#    propery support downloading textures back from hardware.
+#    properly support downloading textures back from hardware.
 gui_scaling_filter_txr2img (GUI scaling filter txr2img) bool true
 
 #    Delay showing tooltips, stated in milliseconds.
@@ -662,15 +662,15 @@ ipv6_server (IPv6 server) bool false
 
 [**Advanced]
 
-#    How many blocks are flying in the wire simultaneously per client.
-max_simultaneous_block_sends_per_client (Maximum simultaneously blocks send per client) int 10
+#    Maximum number of blocks that are simultaneously sent per client.
+max_simultaneous_block_sends_per_client (Maximum simultaneous block sends per client) int 10
 
-#    How many blocks are flying in the wire simultaneously for the whole server.
-max_simultaneous_block_sends_server_total (Maximum simultaneously bocks send total) int 40
+#   Maximum number of blocks that are simultaneously sent in total.
+max_simultaneous_block_sends_server_total (Maximum simultaneous block sends total) int 40
 
 #    To reduce lag, block transfers are slowed down when a player is building something.
 #    This determines how long they are slowed down after placing or removing a node.
-full_block_send_enable_min_time_from_building () float 2.0
+full_block_send_enable_min_time_from_building (Delay in sending blocks after building) float 2.0
 
 #    Maximum number of packets sent per send step, if you have a slow connection
 #    try reducing it, but don't reduce it to a number below double of targeted
@@ -804,7 +804,7 @@ max_clearobjects_extra_loaded_blocks (Max. clearobjects extra blocks) int 4096
 server_unload_unused_data_timeout (Unload unused server data) int 29
 
 #    Maximum number of statically stored objects in a block.
-max_objects_per_block (Maxmimum objects per block) int 49
+max_objects_per_block (Maximum objects per block) int 49
 
 #    See http://www.sqlite.org/pragma.html#pragma_synchronous
 sqlite_synchronous (Synchronous SQLite) enum 2 0,1,2
@@ -1154,7 +1154,7 @@ secure.enable_security (Enable mod security) bool false
 #    functions even when mod security is on (via request_insecure_environment()).
 secure.trusted_mods (Trusted mods) string
 
-#	Comma-seperated list of mods that are allowed to access HTTP APIs, which
+#	Comma-separated list of mods that are allowed to access HTTP APIs, which
 #	allow them to upload and download data to/from the internet.
 secure.http_mods (HTTP Mods) string
 
