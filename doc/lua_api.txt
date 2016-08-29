@@ -3240,9 +3240,12 @@ The coordinates are *inclusive*, like most other things in Minetest.
 * `contains(x, y, z)`: check if (`x`,`y`,`z`) is inside area formed by `MinEdge` and `MaxEdge`
 * `containsp(p)`: same as above, except takes a vector
 * `containsi(i)`: same as above, except takes an index `i`
-* `iter(minx, miny, minz, maxx, maxy, maxz)`: returns an iterator that returns indices
+* `iter(minx, miny, minz, maxx, maxy, maxz)`: returns an iterator that returns indices representing a cuboid
     * from (`minx`,`miny`,`minz`) to (`maxx`,`maxy`,`maxz`) in the order of `[z [y [x]]]`
 * `iterp(minp, maxp)`: same as above, except takes a vector
+* `iter_hollowcubiod(minx, miny, minz, maxx, maxy, maxz)`: returns an iterator that returns indices representing a hollow cuboid
+    * from (`minx`,`miny`,`minz`) to (`maxx`,`maxy`,`maxz`) in the order of `[z [y [x]]]`
+* `iterp_hollowcubiod(minp, maxp)`: same as above, except takes a vector
 
 ### `Settings`
 An interface to read config files in the format of `minetest.conf`.
