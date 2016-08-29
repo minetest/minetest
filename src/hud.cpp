@@ -536,7 +536,7 @@ void Hud::drawSelectionMesh()
 					m_selection_mesh_color.getGreen() / 255);
 			u32 b = (selectionbox_argb.getBlue() *
 					m_selection_mesh_color.getBlue() / 255);
-			driver->draw3DBox(box, video::SColor(255, r, g, b));
+			driver->draw3DBox(box, video::SColor(100, r, g, b));
 		}
 		driver->setMaterial(oldmaterial);
 	} else if (m_selection_mesh) {
