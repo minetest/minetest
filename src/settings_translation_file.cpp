@@ -71,6 +71,8 @@ fake_function() {
 	gettext("Key for toggling fast mode.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("Noclip key");
 	gettext("Key for toggling noclip mode.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
+	gettext("Autorun key");
+	gettext("Key for toggling autorun.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("Cinematic mode key");
 	gettext("Key for toggling cinematic mode.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("Minimap key");
