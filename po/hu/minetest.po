@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-12 20:49+0200\n"
+"POT-Creation-Date: 2016-08-30 06:18+0200\n"
 "PO-Revision-Date: 2016-05-07 03:17+0000\n"
 "Last-Translator: Kisbenedek Márton <martonkisbenedek@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/minetest/"
@@ -980,6 +980,10 @@ msgstr "Váltás noclip-re"
 msgid "Use"
 msgstr "Használat"
 
+#: src/guiKeyChangeMenu.cpp src/keycode.cpp
+msgid "Zoom"
+msgstr "Nagyítás"
+
 #: src/guiKeyChangeMenu.cpp
 msgid "press key"
 msgstr "Nyomj meg egy gombot"
@@ -1307,10 +1311,6 @@ msgstr "X gomb 1"
 msgid "X Button 2"
 msgstr "X Gomb 2"
 
-#: src/keycode.cpp
-msgid "Zoom"
-msgstr "Nagyítás"
-
 #: src/settings_translation_file.cpp
 msgid ""
 "(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
@@ -1387,6 +1387,11 @@ msgstr "Aktív blokk kezelés időköze"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifier interval"
+msgstr "Aktív blokk módosító időköze"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Active Block Modifiers"
 msgstr "Aktív blokk módosító időköze"
 
 #: src/settings_translation_file.cpp
@@ -1474,6 +1479,10 @@ msgid "Automaticaly report to the serverlist."
 msgstr "Automatikus bejelentés a szerverlistára."
 
 #: src/settings_translation_file.cpp
+msgid "Autorun key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Backward key"
 msgstr "Vissza gomb"
 
@@ -1505,6 +1514,10 @@ msgstr "Bit/pixel (vagyis színmélység) teljes képernyős módban."
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
 msgstr "Építés játékos helyére"
+
+#: src/settings_translation_file.cpp
+msgid "Builtin"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1546,6 +1559,11 @@ msgstr "Csevegés gomb"
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
 msgstr "Csevegés váltás gomb"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chatcommands"
+msgstr "Parancs"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1619,6 +1637,16 @@ msgid "Colored fog"
 msgstr "Színezett köd"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
+"allow them to upload and download data to/from the internet."
+msgstr ""
+"Modok vesszővel elválasztott listája, melyeknek engedélyezett HTTP API-k "
+"elérése, amik\n"
+"lehetővé teszik, hogy feltöltsenek és letöltsenek adatokat a netről/netre."
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
@@ -1627,15 +1655,6 @@ msgstr ""
 "biztonságos\n"
 "funkcióik még a mod biztonság bekapcsolása esetén is "
 "(request_insecure_environment())."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Comma-seperated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
-msgstr ""
-"Modok vesszővel elválasztott listája, melyeknek engedélyezett HTTP API-k "
-"elérése, amik\n"
-"lehetővé teszik, hogy feltöltsenek és letöltsenek adatokat a netről/netre."
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
@@ -1795,6 +1814,10 @@ msgid "Default privileges"
 msgstr "Alap jogosultságok"
 
 #: src/settings_translation_file.cpp
+msgid "Default report format"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Default timeout for cURL, stated in milliseconds.\n"
 "Only has an effect if compiled with cURL."
@@ -1808,6 +1831,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Delay in sending blocks after building"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1840,14 +1867,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Detailed mod profile data. Useful for mod developers."
-msgstr "Részletes mod profil adat. Mod fejlesztőknek hasznos."
-
-#: src/settings_translation_file.cpp
-msgid "Detailed mod profiling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2001,6 +2020,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Engine profiling data print interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Entity methods"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Experimental option, might cause visible spaces between blocks\n"
 "when set to higher number than 0."
@@ -2065,8 +2092,22 @@ msgid "Field of view"
 msgstr "Látótávolság"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Field of view for zoom"
+msgstr "Látótávolság"
+
+#: src/settings_translation_file.cpp
 msgid "Field of view in degrees."
 msgstr "Látóterület fokokban."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Field of view while zooming in degrees.\n"
+"This requires the \"zoom\" privilege on the server."
+msgstr ""
+"Gyors mozgás (a használat gombbal).\n"
+"Szükséges hozzá a \"fast\" (gyorsaság) jogosultság a szerveren."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2211,6 +2252,10 @@ msgid "Generate normalmaps"
 msgstr "Normálfelületek generálása"
 
 #: src/settings_translation_file.cpp
+msgid "Global callbacks"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "Global map generation attributes.\n"
@@ -2253,6 +2298,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Have the profiler instrument itself:\n"
+"* Instrument an empty function.\n"
+"This estimates the overhead, that instrumentation is adding (+1 function "
+"call).\n"
+"* Instrument the sampler being used to update the statistics."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
 msgstr "A kezdeti ablak méret magasság összetevője."
 
@@ -2277,15 +2331,6 @@ msgid ""
 "How large area of blocks are subject to the active block stuff, stated in "
 "mapblocks (16 nodes).\n"
 "In active blocks objects are loaded and ABMs run."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"How many blocks are flying in the wire simultaneously for the whole server."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "How many blocks are flying in the wire simultaneously per client."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2406,6 +2451,40 @@ msgid "In-game chat console background color (R,G,B)."
 msgstr "Játékon belüli csevegő konzol hátterének színe (R,G,B)."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Instrument builtin.\n"
+"This is usually only needed by core/builtin contributors"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrument chatcommands on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument global callback functions on registration.\n"
+"(anything you pass to a minetest.register_*() function)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument the action function of Active Block Modifiers on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument the action function of Loading Block Modifiers on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrument the methods of entities on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrumentation"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Interval of saving important changes in the world, stated in seconds."
 msgstr ""
 "Fontos változások mentésének időköze a világban, másodpercekben megadva."
@@ -2442,7 +2521,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Joystick button repetition invterval"
+msgid "Joystick button repetition interval"
 msgstr "Jobb kattintás ismétlés időköz"
 
 #: src/settings_translation_file.cpp
@@ -2659,6 +2738,17 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Key for toggling autorun.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+"Gomb a gyors (fast) módra váltáshoz.\n"
+"Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Key for toggling cinematic mode.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
@@ -2709,8 +2799,9 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Key for toggling the camrea update. Only used for development\n"
+"Key for toggling the camera update. Only used for development\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -2882,6 +2973,22 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Liquid update tick"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Load the game profiler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Load the game profiler to collect game profiling data.\n"
+"Provides a /profiler command to access the compiled profile.\n"
+"Useful for mod developers and server operators."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Loading Block Modifiers"
+msgstr "Aktív blokk módosító időköze"
 
 #: src/settings_translation_file.cpp
 msgid "Main menu game manager"
@@ -3342,6 +3449,16 @@ msgid "Maximum hotbar width"
 msgstr "Maximum hotbar szélesség"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Maximum number of blocks that are simultaneously sent in total."
+msgstr "Az egy időben csatlakozó játékosok maximális száma."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Maximum number of blocks that are simultaneously sent per client."
+msgstr "Maximum blokkok száma, amik sorban állhatnak betöltésre."
+
+#: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that can be queued for loading."
 msgstr "Maximum blokkok száma, amik sorban állhatnak betöltésre."
 
@@ -3389,6 +3506,11 @@ msgid "Maximum number of statically stored objects in a block."
 msgstr "Statikusan tárolt objektumok maximális száma egy térképblokkban."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Maximum objects per block"
+msgstr "Maximum objektum térképblokkonként"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Maximum proportion of current window to be used for hotbar.\n"
 "Useful if there's something to be displayed right or left of hotbar."
@@ -3397,11 +3519,13 @@ msgstr ""
 "Hasznos, ha valamit el kell helyezni a hotbar jobb, vagy bal oldalán."
 
 #: src/settings_translation_file.cpp
-msgid "Maximum simultaneously blocks send per client"
+#, fuzzy
+msgid "Maximum simultaneous block sends per client"
 msgstr "Az egyidejűleg a kliensenként küldött térképblokkok maximális száma"
 
 #: src/settings_translation_file.cpp
-msgid "Maximum simultaneously bocks send total"
+#, fuzzy
+msgid "Maximum simultaneous block sends total"
 msgstr "Egyidejűleg küldött térképblokkok maximális száma összesen"
 
 #: src/settings_translation_file.cpp
@@ -3413,10 +3537,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
 msgstr "Maximum felhasználók"
-
-#: src/settings_translation_file.cpp
-msgid "Maxmimum objects per block"
-msgstr "Maximum objektum térképblokkonként"
 
 #: src/settings_translation_file.cpp
 msgid "Menus"
@@ -3458,10 +3578,6 @@ msgstr "Minimum textúra méret a szűrőknek"
 #, fuzzy
 msgid "Mipmapping"
 msgstr "Mip-mapping"
-
-#: src/settings_translation_file.cpp
-msgid "Mod profiling"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Modstore details URL"
@@ -3685,11 +3801,17 @@ msgstr ""
 "shell parancsok."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Print the engine's profiling data in regular intervals (in seconds). 0 = "
+"disable. Useful for developers."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Privileges that players with basic_privs can grant"
 msgstr "Jogosultságok, amiket a basic_privs adhat a játékosoknak"
 
 #: src/settings_translation_file.cpp
-msgid "Profiler data print interval. 0 = disable. Useful for developers."
+msgid "Profiler"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3697,7 +3819,7 @@ msgid "Profiler toggle key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Profiling print interval"
+msgid "Profiling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3730,6 +3852,11 @@ msgstr "Távoli port"
 #: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
 msgstr "Az alapértelmezett főmenüt lecseréli egy másikkal."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Report path"
+msgstr "Betűtípus helye"
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
@@ -3905,8 +4032,9 @@ msgstr ""
 "A shaderek engedélyezése szükséges hozzá."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Shaders allow advanced visul effects and may increase performance on some "
+"Shaders allow advanced visual effects and may increase performance on some "
 "video cards.\n"
 "Thy only work with the OpenGL video backend."
 msgstr ""
@@ -4033,7 +4161,19 @@ msgid "The altitude at which temperature drops by 20C"
 msgstr "A magasság, ahol a hőmérséklet 20 fokkal csökken"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"The default format in which profiles are being saved,\n"
+"when calling `/profiler save [format]` without format."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "The depth of dirt or other filler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The file path relative to your worldpath in which profiles will be saved "
+"to.\n"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4200,10 +4340,6 @@ msgid "Use trilinear filtering when scaling textures."
 msgstr "Trilineáris szűrés a textúrák méretezéséhez."
 
 #: src/settings_translation_file.cpp
-msgid "Useful for mod developers."
-msgstr "Mod fejlesztőknek hasznos."
-
-#: src/settings_translation_file.cpp
 msgid "V-Sync"
 msgstr ""
 
@@ -4331,7 +4467,7 @@ msgid ""
 "When gui_scaling_filter_txr2img is true, copy those images\n"
 "from hardware to software for scaling.  When false, fall back\n"
 "to the old scaling method, for video drivers that don't\n"
-"propery support downloading textures back from hardware."
+"properly support downloading textures back from hardware."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4444,17 +4580,170 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "No of course not!"
-#~ msgstr "Persze, hogy nem!"
+#~ msgid "Item textures..."
+#~ msgstr "Elem textúrák..."
 
-#~ msgid "Public Serverlist"
-#~ msgstr "Nyilvános szerverlista"
+#~ msgid ""
+#~ "Enable a bit lower water surface, so it doesn't \"fill\" the node "
+#~ "completely.\n"
+#~ "Note that this is not quite optimized and that smooth lighting on the\n"
+#~ "water surface doesn't work with this."
+#~ msgstr ""
+#~ "Kicsivel alacsonyabb víz felszín engedélyezése, hogy ne töltse meg "
+#~ "teljesen a blokkot.\n"
+#~ "Megjegyzés: ez nem teljesen optimalizált, és a simított megvilágítás\n"
+#~ "így nem működik a víz felszínén."
 
-#~ msgid "Generate Normalmaps"
-#~ msgstr "Normálfelületek generálása"
+#~ msgid "Enable selection highlighting for nodes (disables selectionbox)."
+#~ msgstr ""
+#~ "Kijelölés kiemelés (kivilágítás) engedélyezése a blokkoknál (letiltja a "
+#~ "kijelölődobozt)."
 
-#~ msgid "No!!!"
-#~ msgstr "Nem!!!"
+#~ msgid ""
+#~ "Key for decreasing the viewing range. Modifies the minimum viewing "
+#~ "range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "A látóterület csökkentésének gombja. A minimum látóterületet módosítja.\n"
+#~ "Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Key for increasing the viewing range. Modifies the minimum viewing "
+#~ "range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgstr ""
+#~ "A látóterület növelésének gombja. A minimum látótávolságot módosítja.\n"
+#~ "Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#~ msgid ""
+#~ "Maximum distance above water level for player spawn.\n"
+#~ "Larger values result in spawn points closer to (x = 0, z = 0).\n"
+#~ "Smaller values may result in a suitable spawn point not being found,\n"
+#~ "resulting in a spawn at (0, 0, 0) possibly buried underground."
+#~ msgstr ""
+#~ "Maximum távolság a vízszinttől, ahol a játékosok újraéledhetnek/"
+#~ "megjelenhetnek csatlakozáskor (spawn).\n"
+#~ "Magasabb értékek közelebb visznek az (x = 0, z = 0)-hoz.\n"
+#~ "Alacsonyabb értékek azt eredményezhetik, hogy nem lesz megfelelő pont a "
+#~ "feléledéshez,\n"
+#~ "(0,0,0) pozícióban történő feléledést, ami valószínűleg a föld alatt lesz."
+
+#, fuzzy
+#~ msgid ""
+#~ "Minimum wanted FPS.\n"
+#~ "The amount of rendered stuff is dynamically set according to this. and "
+#~ "viewing range min and max."
+#~ msgstr ""
+#~ "Minimum kívánt FPS.\n"
+#~ "A renderelt cuccok mennyisége dinamikusan ez alapján állítódik be (és a "
+#~ "látórerület min és max)."
+
+#~ msgid "New style water"
+#~ msgstr "Új stílusú víz"
+
+#~ msgid "Preload inventory textures"
+#~ msgstr "Eszköztár textúráinak előtöltése"
+
+#~ msgid "Vertical initial window size."
+#~ msgstr "Függőleges kezdeti ablak méret."
+
+#~ msgid "Vertical spawn range"
+#~ msgstr "Az (újra)éledés függőleges irányú területe"
+
+#~ msgid "Viewing range minimum"
+#~ msgstr "Minimum látóterület"
+
+#~ msgid "Wanted FPS"
+#~ msgstr "Kívánt FPS"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "A méretarány alkalmazva a menü elemekre: "
+
+#, fuzzy
+#~ msgid "Touch free target"
+#~ msgstr "Touch free target"
+
+#, fuzzy
+#~ msgid "Downloading"
+#~ msgstr "Le"
+
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr "Ball gomb: Tárgyak mozgatása, Jobb gomb: egy tárgyat mozgat"
+
+#~ msgid "is required by:"
+#~ msgstr "kell neki:"
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "Beállítások mentve.  "
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Figyelem: A beállítások nem egyformák.  "
+
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Nem sikerült a világ létrehozása: A névben nem jó karakterek vannak"
+
+#~ msgid "Show Public"
+#~ msgstr "Publikus mutatása"
+
+#~ msgid "Show Favorites"
+#~ msgstr "Kedvencek mutatása"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Hagyd el a nevét, hogy helyi szervert indíts."
+
+#~ msgid "Create world"
+#~ msgstr "Világ létrehozása"
+
+#~ msgid "Address required."
+#~ msgstr "Cím szükséges."
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Nem törölhető a világ: Nincs kiválasztva"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "A fájl törölve lett"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Nem sikerült a világot létrehozni: Nem található a játék"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Nem sikerült a világ beállítása: Nincs kiválasztva"
+
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Hiba az összes világ törlése közben"
+
+#, fuzzy
+#~ msgid "Finite Liquid"
+#~ msgstr "Végtelen folyadék"
+
+#~ msgid "Preload item visuals"
+#~ msgstr "Előretöltött tárgy láthatóság"
+
+#, fuzzy
+#~ msgid "Password"
+#~ msgstr "Régi jelszó"
+
+#, fuzzy
+#~ msgid "Game Name"
+#~ msgstr "Játék"
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "A driver változások életbe lépéséhez indítsd újra a Minetestet"
+
+#~ msgid "Rendering:"
+#~ msgstr "Renderelés:"
+
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "Engedélyez"
+
+#, fuzzy
+#~ msgid "If disabled "
+#~ msgstr "Csomag letiltás"
 
 #, fuzzy
 #~ msgid ""
@@ -4478,167 +4767,20 @@ msgstr ""
 #~ "water would tend to pool. It may interfere with delicately adjusted "
 #~ "biomes."
 
-#, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "Csomag letiltás"
+#~ msgid "No!!!"
+#~ msgstr "Nem!!!"
 
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "Engedélyez"
+#~ msgid "Generate Normalmaps"
+#~ msgstr "Normálfelületek generálása"
 
-#~ msgid "Rendering:"
-#~ msgstr "Renderelés:"
+#~ msgid "Public Serverlist"
+#~ msgstr "Nyilvános szerverlista"
 
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "A driver változások életbe lépéséhez indítsd újra a Minetestet"
+#~ msgid "No of course not!"
+#~ msgstr "Persze, hogy nem!"
 
-#, fuzzy
-#~ msgid "Game Name"
-#~ msgstr "Játék"
+#~ msgid "Useful for mod developers."
+#~ msgstr "Mod fejlesztőknek hasznos."
 
-#, fuzzy
-#~ msgid "Password"
-#~ msgstr "Régi jelszó"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Előretöltött tárgy láthatóság"
-
-#, fuzzy
-#~ msgid "Finite Liquid"
-#~ msgstr "Végtelen folyadék"
-
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Hiba az összes világ törlése közben"
-
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Nem sikerült a világ beállítása: Nincs kiválasztva"
-
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Nem sikerült a világot létrehozni: Nem található a játék"
-
-#~ msgid "Files to be deleted"
-#~ msgstr "A fájl törölve lett"
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Nem törölhető a világ: Nincs kiválasztva"
-
-#~ msgid "Address required."
-#~ msgstr "Cím szükséges."
-
-#~ msgid "Create world"
-#~ msgstr "Világ létrehozása"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Hagyd el a nevét, hogy helyi szervert indíts."
-
-#~ msgid "Show Favorites"
-#~ msgstr "Kedvencek mutatása"
-
-#~ msgid "Show Public"
-#~ msgstr "Publikus mutatása"
-
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Nem sikerült a világ létrehozása: A névben nem jó karakterek vannak"
-
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Figyelem: A beállítások nem egyformák.  "
-
-#~ msgid "Configuration saved.  "
-#~ msgstr "Beállítások mentve.  "
-
-#~ msgid "is required by:"
-#~ msgstr "kell neki:"
-
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr "Ball gomb: Tárgyak mozgatása, Jobb gomb: egy tárgyat mozgat"
-
-#, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Le"
-
-#, fuzzy
-#~ msgid "Touch free target"
-#~ msgstr "Touch free target"
-
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "A méretarány alkalmazva a menü elemekre: "
-
-#~ msgid "Wanted FPS"
-#~ msgstr "Kívánt FPS"
-
-#~ msgid "Viewing range minimum"
-#~ msgstr "Minimum látóterület"
-
-#~ msgid "Vertical spawn range"
-#~ msgstr "Az (újra)éledés függőleges irányú területe"
-
-#~ msgid "Vertical initial window size."
-#~ msgstr "Függőleges kezdeti ablak méret."
-
-#~ msgid "Preload inventory textures"
-#~ msgstr "Eszköztár textúráinak előtöltése"
-
-#~ msgid "New style water"
-#~ msgstr "Új stílusú víz"
-
-#, fuzzy
-#~ msgid ""
-#~ "Minimum wanted FPS.\n"
-#~ "The amount of rendered stuff is dynamically set according to this. and "
-#~ "viewing range min and max."
-#~ msgstr ""
-#~ "Minimum kívánt FPS.\n"
-#~ "A renderelt cuccok mennyisége dinamikusan ez alapján állítódik be (és a "
-#~ "látórerület min és max)."
-
-#~ msgid ""
-#~ "Maximum distance above water level for player spawn.\n"
-#~ "Larger values result in spawn points closer to (x = 0, z = 0).\n"
-#~ "Smaller values may result in a suitable spawn point not being found,\n"
-#~ "resulting in a spawn at (0, 0, 0) possibly buried underground."
-#~ msgstr ""
-#~ "Maximum távolság a vízszinttől, ahol a játékosok újraéledhetnek/"
-#~ "megjelenhetnek csatlakozáskor (spawn).\n"
-#~ "Magasabb értékek közelebb visznek az (x = 0, z = 0)-hoz.\n"
-#~ "Alacsonyabb értékek azt eredményezhetik, hogy nem lesz megfelelő pont a "
-#~ "feléledéshez,\n"
-#~ "(0,0,0) pozícióban történő feléledést, ami valószínűleg a föld alatt lesz."
-
-#~ msgid ""
-#~ "Key for increasing the viewing range. Modifies the minimum viewing "
-#~ "range.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "A látóterület növelésének gombja. A minimum látótávolságot módosítja.\n"
-#~ "Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid ""
-#~ "Key for decreasing the viewing range. Modifies the minimum viewing "
-#~ "range.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "A látóterület csökkentésének gombja. A minimum látóterületet módosítja.\n"
-#~ "Lásd: http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-
-#~ msgid "Enable selection highlighting for nodes (disables selectionbox)."
-#~ msgstr ""
-#~ "Kijelölés kiemelés (kivilágítás) engedélyezése a blokkoknál (letiltja a "
-#~ "kijelölődobozt)."
-
-#~ msgid ""
-#~ "Enable a bit lower water surface, so it doesn't \"fill\" the node "
-#~ "completely.\n"
-#~ "Note that this is not quite optimized and that smooth lighting on the\n"
-#~ "water surface doesn't work with this."
-#~ msgstr ""
-#~ "Kicsivel alacsonyabb víz felszín engedélyezése, hogy ne töltse meg "
-#~ "teljesen a blokkot.\n"
-#~ "Megjegyzés: ez nem teljesen optimalizált, és a simított megvilágítás\n"
-#~ "így nem működik a víz felszínén."
-
-#~ msgid "Item textures..."
-#~ msgstr "Elem textúrák..."
+#~ msgid "Detailed mod profile data. Useful for mod developers."
+#~ msgstr "Részletes mod profil adat. Mod fejlesztőknek hasznos."

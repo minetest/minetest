@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-12 20:49+0200\n"
+"POT-Creation-Date: 2016-08-30 06:18+0200\n"
 "PO-Revision-Date: 2016-06-11 10:56+0000\n"
 "Last-Translator: arsdragonfly <arsdragonfly@gmail.com>\n"
 "Language-Team: Chinese (China) <https://hosted.weblate.org/projects/minetest/"
@@ -972,6 +972,10 @@ msgstr "切换穿墙模式"
 msgid "Use"
 msgstr "使用"
 
+#: src/guiKeyChangeMenu.cpp src/keycode.cpp
+msgid "Zoom"
+msgstr "缩放"
+
 #: src/guiKeyChangeMenu.cpp
 msgid "press key"
 msgstr "按键"
@@ -1288,10 +1292,6 @@ msgstr "X键1"
 msgid "X Button 2"
 msgstr "X键2"
 
-#: src/keycode.cpp
-msgid "Zoom"
-msgstr "缩放"
-
 #: src/settings_translation_file.cpp
 msgid ""
 "(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
@@ -1376,6 +1376,11 @@ msgid "Active Block Modifier interval"
 msgstr "活动区块修改间隔"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Active Block Modifiers"
+msgstr "活动区块修改间隔"
+
+#: src/settings_translation_file.cpp
 msgid "Active block range"
 msgstr "活动块范围"
 
@@ -1457,6 +1462,10 @@ msgid "Automaticaly report to the serverlist."
 msgstr "自动报告到服务器列表。"
 
 #: src/settings_translation_file.cpp
+msgid "Autorun key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Backward key"
 msgstr "后退键"
 
@@ -1487,6 +1496,10 @@ msgstr "全屏模式中的位／像素（又称色彩深度）。"
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
 msgstr "建立内部玩家"
+
+#: src/settings_translation_file.cpp
+msgid "Builtin"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bumpmapping"
@@ -1528,6 +1541,11 @@ msgstr "聊天键"
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
 msgstr "聊天切换键"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chatcommands"
+msgstr "命令"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1620,20 +1638,21 @@ msgid "Colored fog"
 msgstr "彩色雾"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
+"allow them to upload and download data to/from the internet."
+msgstr ""
+"以逗号分隔的 mod 清单，让您可以存取 HTTP API，\n"
+"其可从互联网上传及下载资料。"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
 "受信任的 Mod 列表，以逗号分隔，其可存取不安全的\n"
 "功能，即便 mod 安全性已启用（经由 request_insecure_environment()）。"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Comma-seperated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
-msgstr ""
-"以逗号分隔的 mod 清单，让您可以存取 HTTP API，\n"
-"其可从互联网上传及下载资料。"
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
@@ -1790,6 +1809,10 @@ msgid "Default privileges"
 msgstr "默认权限"
 
 #: src/settings_translation_file.cpp
+msgid "Default report format"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Default timeout for cURL, stated in milliseconds.\n"
 "Only has an effect if compiled with cURL."
@@ -1807,6 +1830,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Delay in sending blocks after building"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1838,14 +1865,6 @@ msgstr "服务器描述，将显示在提供给玩家的服务器列表。"
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
 msgstr "去同步块动画"
-
-#: src/settings_translation_file.cpp
-msgid "Detailed mod profile data. Useful for mod developers."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Detailed mod profiling"
-msgstr "详细 mod 剖析"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1985,6 +2004,15 @@ msgstr ""
 "需要着色器已启用。"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Engine profiling data print interval"
+msgstr "剖析印出间隔"
+
+#: src/settings_translation_file.cpp
+msgid "Entity methods"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Experimental option, might cause visible spaces between blocks\n"
 "when set to higher number than 0."
@@ -2047,8 +2075,22 @@ msgid "Field of view"
 msgstr "视界"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Field of view for zoom"
+msgstr "视界"
+
+#: src/settings_translation_file.cpp
 msgid "Field of view in degrees."
 msgstr "视界程度。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Field of view while zooming in degrees.\n"
+"This requires the \"zoom\" privilege on the server."
+msgstr ""
+"快速移动（通过“使用”键）。\n"
+"这需要服务器允许“快速移动”权限。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2187,6 +2229,10 @@ msgid "Generate normalmaps"
 msgstr "生成常规地图"
 
 #: src/settings_translation_file.cpp
+msgid "Global callbacks"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
@@ -2221,6 +2267,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Have the profiler instrument itself:\n"
+"* Instrument an empty function.\n"
+"This estimates the overhead, that instrumentation is adding (+1 function "
+"call).\n"
+"* Instrument the sampler being used to update the statistics."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
 msgstr ""
 
@@ -2245,15 +2300,6 @@ msgid ""
 "How large area of blocks are subject to the active block stuff, stated in "
 "mapblocks (16 nodes).\n"
 "In active blocks objects are loaded and ABMs run."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"How many blocks are flying in the wire simultaneously for the whole server."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "How many blocks are flying in the wire simultaneously per client."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2351,6 +2397,40 @@ msgid "In-game chat console background color (R,G,B)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Instrument builtin.\n"
+"This is usually only needed by core/builtin contributors"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrument chatcommands on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument global callback functions on registration.\n"
+"(anything you pass to a minetest.register_*() function)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument the action function of Active Block Modifiers on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument the action function of Loading Block Modifiers on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrument the methods of entities on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrumentation"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Interval of saving important changes in the world, stated in seconds."
 msgstr ""
 
@@ -2386,7 +2466,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Joystick button repetition invterval"
+msgid "Joystick button repetition interval"
 msgstr "右击重复间隔"
 
 #: src/settings_translation_file.cpp
@@ -2554,6 +2634,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Key for toggling autorun.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Key for toggling cinematic mode.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
@@ -2589,7 +2676,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Key for toggling the camrea update. Only used for development\n"
+"Key for toggling the camera update. Only used for development\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -2738,6 +2825,22 @@ msgstr "液体更新间隔，单位秒。"
 #: src/settings_translation_file.cpp
 msgid "Liquid update tick"
 msgstr "液体更新单次"
+
+#: src/settings_translation_file.cpp
+msgid "Load the game profiler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Load the game profiler to collect game profiling data.\n"
+"Provides a /profiler command to access the compiled profile.\n"
+"Useful for mod developers and server operators."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Loading Block Modifiers"
+msgstr "活动区块修改间隔"
 
 #: src/settings_translation_file.cpp
 msgid "Main menu game manager"
@@ -3162,6 +3265,14 @@ msgid "Maximum hotbar width"
 msgstr "最大快捷栏宽度"
 
 #: src/settings_translation_file.cpp
+msgid "Maximum number of blocks that are simultaneously sent in total."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Maximum number of blocks that are simultaneously sent per client."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that can be queued for loading."
 msgstr ""
 
@@ -3203,17 +3314,22 @@ msgid "Maximum number of statically stored objects in a block."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Maximum objects per block"
+msgstr "最大强制载入块"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Maximum proportion of current window to be used for hotbar.\n"
 "Useful if there's something to be displayed right or left of hotbar."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum simultaneously blocks send per client"
+msgid "Maximum simultaneous block sends per client"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum simultaneously bocks send total"
+msgid "Maximum simultaneous block sends total"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3223,10 +3339,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
 msgstr "最大用户"
-
-#: src/settings_translation_file.cpp
-msgid "Maxmimum objects per block"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Menus"
@@ -3267,10 +3379,6 @@ msgstr "纹理过滤器最小大小"
 #: src/settings_translation_file.cpp
 msgid "Mipmapping"
 msgstr "Mip 贴图处理"
-
-#: src/settings_translation_file.cpp
-msgid "Mod profiling"
-msgstr "Mod 剖析"
 
 #: src/settings_translation_file.cpp
 msgid "Modstore details URL"
@@ -3483,20 +3591,28 @@ msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Print the engine's profiling data in regular intervals (in seconds). 0 = "
+"disable. Useful for developers."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Privileges that players with basic_privs can grant"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Profiler data print interval. 0 = disable. Useful for developers."
-msgstr ""
+#, fuzzy
+msgid "Profiler"
+msgstr "山谷轮廓"
 
 #: src/settings_translation_file.cpp
 msgid "Profiler toggle key"
 msgstr "剖析器切换键"
 
 #: src/settings_translation_file.cpp
-msgid "Profiling print interval"
-msgstr "剖析印出间隔"
+#, fuzzy
+msgid "Profiling"
+msgstr "Mod 剖析"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3528,6 +3644,11 @@ msgstr "远程端口"
 #: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Report path"
+msgstr "字体路径"
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
@@ -3689,7 +3810,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Shaders allow advanced visul effects and may increase performance on some "
+"Shaders allow advanced visual effects and may increase performance on some "
 "video cards.\n"
 "Thy only work with the OpenGL video backend."
 msgstr ""
@@ -3805,8 +3926,20 @@ msgid "The altitude at which temperature drops by 20C"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"The default format in which profiles are being saved,\n"
+"when calling `/profiler save [format]` without format."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "The depth of dirt or other filler"
 msgstr "泥土深度或其他过滤器"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The file path relative to your worldpath in which profiles will be saved "
+"to.\n"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
@@ -3953,10 +4086,6 @@ msgid "Use trilinear filtering when scaling textures."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Useful for mod developers."
-msgstr "适用 MOD 开发者。"
-
-#: src/settings_translation_file.cpp
 msgid "V-Sync"
 msgstr "垂直同步"
 
@@ -4084,7 +4213,7 @@ msgid ""
 "When gui_scaling_filter_txr2img is true, copy those images\n"
 "from hardware to software for scaling.  When false, fall back\n"
 "to the old scaling method, for video drivers that don't\n"
-"propery support downloading textures back from hardware."
+"properly support downloading textures back from hardware."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4188,102 +4317,70 @@ msgstr "cURL 并发限制"
 msgid "cURL timeout"
 msgstr "cURL 超时"
 
-#~ msgid "No of course not!"
-#~ msgstr "当然不！"
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr "载入中..."
 
-#~ msgid "Public Serverlist"
-#~ msgstr "公共服务器列表"
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "菜单元素应用缩放因子"
 
-#~ msgid "Generate Normalmaps"
-#~ msgstr "生成一般地图"
-
-#~ msgid "No!!!"
-#~ msgstr "不!!!"
+#~ msgid "Touch free target"
+#~ msgstr "自由触摸目标"
 
 #, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "禁用MOD包"
+#~ msgid "Downloading"
+#~ msgstr "下载中"
 
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "启用"
+#~ msgid " KB/s"
+#~ msgstr "千字节/秒"
 
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "重启minetest让驱动变化生效"
+#~ msgid " MB/s"
+#~ msgstr "兆字节/秒"
 
-#~ msgid "Game Name"
-#~ msgstr "游戏名"
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr "左键：移动所有物品，右键：移动单个物品"
 
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "游戏管理: 无法复制MOD“$1”到游戏“$2”"
+#~ msgid "is required by:"
+#~ msgstr "被需要："
 
-#~ msgid "GAMES"
-#~ msgstr "游戏"
+#~ msgid "Configuration saved.  "
+#~ msgstr "配置已保存。  "
 
-#~ msgid "Mods:"
-#~ msgstr "MODS："
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "警告：配置不一致。  "
 
-#~ msgid "new game"
-#~ msgstr "新建游戏"
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "无法创建世界：名字包含非法字符"
 
-#~ msgid "EDIT GAME"
-#~ msgstr "编辑游戏"
+#~ msgid "Show Public"
+#~ msgstr "显示公共"
 
-#~ msgid "Remove selected mod"
-#~ msgstr "删除选中MOD"
+#~ msgid "Show Favorites"
+#~ msgstr "显示最爱"
 
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- 添加MOD"
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "地址栏留空可启动本地服务器。"
 
-#~ msgid "CLIENT"
-#~ msgstr "客户端"
+#~ msgid "Create world"
+#~ msgstr "创造世界"
 
-#~ msgid "START SERVER"
-#~ msgstr "启动服务器"
+#~ msgid "Address required."
+#~ msgstr "需要地址。"
 
-#~ msgid "Name"
-#~ msgstr "名字"
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "无法删除世界：没有选择世界"
 
-#~ msgid "Password"
-#~ msgstr "密码"
+#~ msgid "Files to be deleted"
+#~ msgstr "将被删除的文件"
 
-#~ msgid "SETTINGS"
-#~ msgstr "设置"
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "无法创造世界：未找到游戏模式"
 
-#~ msgid "Preload item visuals"
-#~ msgstr "预先加载物品图像"
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "无法配置世界：没有选择世界"
 
-#~ msgid "Finite Liquid"
-#~ msgstr "液体有限延伸"
-
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "单人游戏"
-
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "材质包"
-
-#~ msgid "MODS"
-#~ msgstr "MODS"
-
-#~ msgid "Add mod:"
-#~ msgstr "添加MOD："
-
-#~ msgid "Local install"
-#~ msgstr "本地安装"
-
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
-#~ msgstr ""
-#~ "警告：一些MOD仍未设定。\n"
-#~ "它们会在你保存配置的时候自动启用。  "
-
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
-#~ msgstr ""
-#~ "警告：缺少一些设定了的MOD。\n"
-#~ "它们的设置会在你保存配置的时候被移除。  "
+#~ msgid "Failed to delete all world files"
+#~ msgstr "无法删除所有该世界的文件"
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -4311,67 +4408,105 @@ msgstr "cURL 超时"
 #~ "ESC：菜单\n"
 #~ "T：聊天\n"
 
-#~ msgid "Failed to delete all world files"
-#~ msgstr "无法删除所有该世界的文件"
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
+#~ msgstr ""
+#~ "警告：缺少一些设定了的MOD。\n"
+#~ "它们的设置会在你保存配置的时候被移除。  "
 
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "无法配置世界：没有选择世界"
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "警告：一些MOD仍未设定。\n"
+#~ "它们会在你保存配置的时候自动启用。  "
 
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "无法创造世界：未找到游戏模式"
+#~ msgid "Local install"
+#~ msgstr "本地安装"
 
-#~ msgid "Files to be deleted"
-#~ msgstr "将被删除的文件"
+#~ msgid "Add mod:"
+#~ msgstr "添加MOD："
 
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "无法删除世界：没有选择世界"
+#~ msgid "MODS"
+#~ msgstr "MODS"
 
-#~ msgid "Address required."
-#~ msgstr "需要地址。"
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "材质包"
 
-#~ msgid "Create world"
-#~ msgstr "创造世界"
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "单人游戏"
 
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "地址栏留空可启动本地服务器。"
+#~ msgid "Finite Liquid"
+#~ msgstr "液体有限延伸"
 
-#~ msgid "Show Favorites"
-#~ msgstr "显示最爱"
+#~ msgid "Preload item visuals"
+#~ msgstr "预先加载物品图像"
 
-#~ msgid "Show Public"
-#~ msgstr "显示公共"
+#~ msgid "SETTINGS"
+#~ msgstr "设置"
 
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "无法创建世界：名字包含非法字符"
+#~ msgid "Password"
+#~ msgstr "密码"
 
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "警告：配置不一致。  "
+#~ msgid "Name"
+#~ msgstr "名字"
 
-#~ msgid "Configuration saved.  "
-#~ msgstr "配置已保存。  "
+#~ msgid "START SERVER"
+#~ msgstr "启动服务器"
 
-#~ msgid "is required by:"
-#~ msgstr "被需要："
+#~ msgid "CLIENT"
+#~ msgstr "客户端"
 
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr "左键：移动所有物品，右键：移动单个物品"
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- 添加MOD"
 
-#~ msgid " MB/s"
-#~ msgstr "兆字节/秒"
+#~ msgid "Remove selected mod"
+#~ msgstr "删除选中MOD"
 
-#~ msgid " KB/s"
-#~ msgstr "千字节/秒"
+#~ msgid "EDIT GAME"
+#~ msgstr "编辑游戏"
+
+#~ msgid "new game"
+#~ msgstr "新建游戏"
+
+#~ msgid "Mods:"
+#~ msgstr "MODS："
+
+#~ msgid "GAMES"
+#~ msgstr "游戏"
+
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "游戏管理: 无法复制MOD“$1”到游戏“$2”"
+
+#~ msgid "Game Name"
+#~ msgstr "游戏名"
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "重启minetest让驱动变化生效"
 
 #, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "下载中"
-
-#~ msgid "Touch free target"
-#~ msgstr "自由触摸目标"
-
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "菜单元素应用缩放因子"
+#~ msgid "If enabled, "
+#~ msgstr "启用"
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "载入中..."
+#~ msgid "If disabled "
+#~ msgstr "禁用MOD包"
+
+#~ msgid "No!!!"
+#~ msgstr "不!!!"
+
+#~ msgid "Generate Normalmaps"
+#~ msgstr "生成一般地图"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "公共服务器列表"
+
+#~ msgid "No of course not!"
+#~ msgstr "当然不！"
+
+#~ msgid "Useful for mod developers."
+#~ msgstr "适用 MOD 开发者。"
+
+#~ msgid "Detailed mod profiling"
+#~ msgstr "详细 mod 剖析"

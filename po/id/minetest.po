@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-12 20:49+0200\n"
+"POT-Creation-Date: 2016-08-30 06:18+0200\n"
 "PO-Revision-Date: 2016-06-23 16:06+0000\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
@@ -987,6 +987,10 @@ msgstr "Tembus blok"
 msgid "Use"
 msgstr "Pakai"
 
+#: src/guiKeyChangeMenu.cpp src/keycode.cpp
+msgid "Zoom"
+msgstr "Zoom"
+
 #: src/guiKeyChangeMenu.cpp
 msgid "press key"
 msgstr "tekan tombol"
@@ -1303,10 +1307,6 @@ msgstr "Tombol X 1"
 msgid "X Button 2"
 msgstr "Tombol X 2"
 
-#: src/keycode.cpp
-msgid "Zoom"
-msgstr "Zoom"
-
 #: src/settings_translation_file.cpp
 msgid ""
 "(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
@@ -1385,6 +1385,11 @@ msgstr "Batas blok aktif"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Active Block Modifier interval"
+msgstr "Batas blok aktif"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Active Block Modifiers"
 msgstr "Batas blok aktif"
 
 #: src/settings_translation_file.cpp
@@ -1475,6 +1480,10 @@ msgid "Automaticaly report to the serverlist."
 msgstr "Secara otomatis melaporkan ke daftar server."
 
 #: src/settings_translation_file.cpp
+msgid "Autorun key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Backward key"
 msgstr "Tombol mundur"
 
@@ -1505,6 +1514,10 @@ msgstr "Bit per piksel (alias kedalaman warna) dalam mode layar penuh."
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
 msgstr "Bangun di dalam pemain"
+
+#: src/settings_translation_file.cpp
+msgid "Builtin"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bumpmapping"
@@ -1545,6 +1558,11 @@ msgstr "Tombol obrolan"
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
 msgstr "Tombol beralih obrolan"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chatcommands"
+msgstr "Perintah"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1637,6 +1655,16 @@ msgid "Colored fog"
 msgstr "Kabut berwarna"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
+"allow them to upload and download data to/from the internet."
+msgstr ""
+"Daftar yang dipisahkan koma dari mod yang dibolehkan untuk mengakses\n"
+"HTTP API, membolehkan mereka untuk mengunggah dan mengunduh data\n"
+"ke/dari internet."
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
@@ -1644,15 +1672,6 @@ msgstr ""
 "Daftar yang dengan dipisahkan koma dari mod terpercaya yang diperbolehkan\n"
 "untuk mengakses fungsi yang tidak aman bahkan ketika mod security aktif\n"
 "(melalui request_insecure_environment())."
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Comma-seperated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
-msgstr ""
-"Daftar yang dipisahkan koma dari mod yang dibolehkan untuk mengakses\n"
-"HTTP API, membolehkan mereka untuk mengunggah dan mengunduh data\n"
-"ke/dari internet."
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
@@ -1809,6 +1828,10 @@ msgid "Default privileges"
 msgstr "Izin bawaan"
 
 #: src/settings_translation_file.cpp
+msgid "Default report format"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Default timeout for cURL, stated in milliseconds.\n"
 "Only has an effect if compiled with cURL."
@@ -1824,6 +1847,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Delay in sending blocks after building"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1856,14 +1883,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Detailed mod profile data. Useful for mod developers."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Detailed mod profiling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2022,6 +2041,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Engine profiling data print interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Entity methods"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Experimental option, might cause visible spaces between blocks\n"
 "when set to higher number than 0."
@@ -2085,8 +2112,22 @@ msgid "Field of view"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Field of view for zoom"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Field of view in degrees."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Field of view while zooming in degrees.\n"
+"This requires the \"zoom\" privilege on the server."
+msgstr ""
+"Jika diaktifkan dengan mode terbang, pemain mampu terbang melalui node "
+"padat.\n"
+"Hal ini memerlukan hak istimewa \"noclip\" pada server."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2225,6 +2266,10 @@ msgid "Generate normalmaps"
 msgstr "Hasilkan normalmaps"
 
 #: src/settings_translation_file.cpp
+msgid "Global callbacks"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
@@ -2259,6 +2304,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Have the profiler instrument itself:\n"
+"* Instrument an empty function.\n"
+"This estimates the overhead, that instrumentation is adding (+1 function "
+"call).\n"
+"* Instrument the sampler being used to update the statistics."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
 msgstr ""
 
@@ -2283,15 +2337,6 @@ msgid ""
 "How large area of blocks are subject to the active block stuff, stated in "
 "mapblocks (16 nodes).\n"
 "In active blocks objects are loaded and ABMs run."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"How many blocks are flying in the wire simultaneously for the whole server."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "How many blocks are flying in the wire simultaneously per client."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2399,6 +2444,40 @@ msgid "In-game chat console background color (R,G,B)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Instrument builtin.\n"
+"This is usually only needed by core/builtin contributors"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrument chatcommands on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument global callback functions on registration.\n"
+"(anything you pass to a minetest.register_*() function)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument the action function of Active Block Modifiers on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument the action function of Loading Block Modifiers on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrument the methods of entities on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrumentation"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Interval of saving important changes in the world, stated in seconds."
 msgstr ""
 
@@ -2433,7 +2512,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Joystick button repetition invterval"
+msgid "Joystick button repetition interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2647,6 +2726,17 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Key for toggling autorun.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+"Tombol untuk beralih mode cepat.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Key for toggling cinematic mode.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
@@ -2697,11 +2787,15 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Key for toggling the camrea update. Only used for development\n"
+"Key for toggling the camera update. Only used for development\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tombol untuk bergerak ke kiri.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2862,6 +2956,22 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Liquid update tick"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Load the game profiler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Load the game profiler to collect game profiling data.\n"
+"Provides a /profiler command to access the compiled profile.\n"
+"Useful for mod developers and server operators."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Loading Block Modifiers"
+msgstr "Batas blok aktif"
 
 #: src/settings_translation_file.cpp
 msgid "Main menu game manager"
@@ -3297,6 +3407,16 @@ msgid "Maximum hotbar width"
 msgstr "Lebar maksimal hotbar"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Maximum number of blocks that are simultaneously sent in total."
+msgstr "Jumlah maksimal pemain yang dapat terhubung serentak."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Maximum number of blocks that are simultaneously sent per client."
+msgstr "Jumlah maksimal blok yang dapat diantrikan untuk dimuat."
+
+#: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that can be queued for loading."
 msgstr "Jumlah maksimal blok yang dapat diantrikan untuk dimuat."
 
@@ -3348,6 +3468,11 @@ msgid "Maximum number of statically stored objects in a block."
 msgstr "Jumlah maksimal objek yang disimpan secara statis dalam satu blok."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Maximum objects per block"
+msgstr "Jumlah objek maksimal tiap blok"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Maximum proportion of current window to be used for hotbar.\n"
 "Useful if there's something to be displayed right or left of hotbar."
@@ -3356,11 +3481,13 @@ msgstr ""
 "Berguna jika ada sesuatu yang akan ditampilkan di kanan atau kiri hotbar."
 
 #: src/settings_translation_file.cpp
-msgid "Maximum simultaneously blocks send per client"
+#, fuzzy
+msgid "Maximum simultaneous block sends per client"
 msgstr "Jumlah maksimal blok yang dikirim serentak tiap klien"
 
 #: src/settings_translation_file.cpp
-msgid "Maximum simultaneously bocks send total"
+#, fuzzy
+msgid "Maximum simultaneous block sends total"
 msgstr "Jumlah maksimal total blok yang dikirim"
 
 #: src/settings_translation_file.cpp
@@ -3371,10 +3498,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
 msgstr "Jumlah pengguna maksimal"
-
-#: src/settings_translation_file.cpp
-msgid "Maxmimum objects per block"
-msgstr "Jumlah objek maksimal tiap blok"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3416,10 +3539,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Mipmapping"
 msgstr "Mipmapping"
-
-#: src/settings_translation_file.cpp
-msgid "Mod profiling"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Modstore details URL"
@@ -3629,11 +3748,17 @@ msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Print the engine's profiling data in regular intervals (in seconds). 0 = "
+"disable. Useful for developers."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Privileges that players with basic_privs can grant"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Profiler data print interval. 0 = disable. Useful for developers."
+msgid "Profiler"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3641,7 +3766,7 @@ msgid "Profiler toggle key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Profiling print interval"
+msgid "Profiling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3674,6 +3799,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Report path"
+msgstr "Pilih jalur"
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
@@ -3833,7 +3963,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Shaders allow advanced visul effects and may increase performance on some "
+"Shaders allow advanced visual effects and may increase performance on some "
 "video cards.\n"
 "Thy only work with the OpenGL video backend."
 msgstr ""
@@ -3952,7 +4082,19 @@ msgid "The altitude at which temperature drops by 20C"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"The default format in which profiles are being saved,\n"
+"when calling `/profiler save [format]` without format."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "The depth of dirt or other filler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The file path relative to your worldpath in which profiles will be saved "
+"to.\n"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4100,10 +4242,6 @@ msgid "Use trilinear filtering when scaling textures."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Useful for mod developers."
-msgstr "Berguna untuk pengembang mod."
-
-#: src/settings_translation_file.cpp
 msgid "V-Sync"
 msgstr ""
 
@@ -4229,7 +4367,7 @@ msgid ""
 "When gui_scaling_filter_txr2img is true, copy those images\n"
 "from hardware to software for scaling.  When false, fall back\n"
 "to the old scaling method, for video drivers that don't\n"
-"propery support downloading textures back from hardware."
+"properly support downloading textures back from hardware."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4329,50 +4467,53 @@ msgstr "Batas cURL paralel"
 msgid "cURL timeout"
 msgstr "Batas waktu cURL"
 
-#~ msgid "No of course not!"
-#~ msgstr "Tentu tidak!"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Daftar Server Publik"
-
-#~ msgid "Generate Normalmaps"
-#~ msgstr "Hasilkan Normalmaps"
-
-#~ msgid "No!!!"
-#~ msgstr "Tidak!!!"
-
-#~ msgid "\""
-#~ msgstr "\""
-
 #, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "Nonaktifkan PM"
+#~ msgid "Preload inventory textures"
+#~ msgstr "Memuat tekstur..."
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Faktor skala yang diatur untuk elemen menu: "
+
+#~ msgid "Touch free target"
+#~ msgstr "Bebas sentuhan"
+
+#~ msgid "Downloading"
+#~ msgstr "Mengunduh"
+
+#~ msgid " KB/s"
+#~ msgstr " KB/detik"
+
+#~ msgid " MB/s"
+#~ msgstr " MB/detik"
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "Mulai ulang minetest untuk beralih ke driver yang dipilih"
+
+#~ msgid "Rendering:"
+#~ msgstr "Rendering:"
 
 #, fuzzy
 #~ msgid "If enabled, "
 #~ msgstr "diaktifkan"
 
-#~ msgid "Rendering:"
-#~ msgstr "Rendering:"
-
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "Mulai ulang minetest untuk beralih ke driver yang dipilih"
-
-#~ msgid " MB/s"
-#~ msgstr " MB/detik"
-
-#~ msgid " KB/s"
-#~ msgstr " KB/detik"
-
-#~ msgid "Downloading"
-#~ msgstr "Mengunduh"
-
-#~ msgid "Touch free target"
-#~ msgstr "Bebas sentuhan"
-
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Faktor skala yang diatur untuk elemen menu: "
-
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Memuat tekstur..."
+#~ msgid "If disabled "
+#~ msgstr "Nonaktifkan PM"
+
+#~ msgid "\""
+#~ msgstr "\""
+
+#~ msgid "No!!!"
+#~ msgstr "Tidak!!!"
+
+#~ msgid "Generate Normalmaps"
+#~ msgstr "Hasilkan Normalmaps"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Daftar Server Publik"
+
+#~ msgid "No of course not!"
+#~ msgstr "Tentu tidak!"
+
+#~ msgid "Useful for mod developers."
+#~ msgstr "Berguna untuk pengembang mod."

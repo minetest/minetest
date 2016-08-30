@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-12 20:49+0200\n"
+"POT-Creation-Date: 2016-08-30 06:18+0200\n"
 "PO-Revision-Date: 2016-04-09 13:53+0000\n"
 "Last-Translator: Jan Harald <kuus29@gmail.com>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/minetest/"
@@ -987,6 +987,10 @@ msgstr "Lülita läbi seinte minek sisse"
 msgid "Use"
 msgstr "Tegevus"
 
+#: src/guiKeyChangeMenu.cpp src/keycode.cpp
+msgid "Zoom"
+msgstr "Suumi"
+
 #: src/guiKeyChangeMenu.cpp
 msgid "press key"
 msgstr "Vajuta nuppu"
@@ -1303,10 +1307,6 @@ msgstr "X Nuppp 1"
 msgid "X Button 2"
 msgstr "X Nupp 2"
 
-#: src/keycode.cpp
-msgid "Zoom"
-msgstr "Suumi"
-
 #: src/settings_translation_file.cpp
 msgid ""
 "(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
@@ -1371,6 +1371,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifier interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Active Block Modifiers"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1449,6 +1453,10 @@ msgid "Automaticaly report to the serverlist."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Autorun key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Backward key"
 msgstr "Tagasi"
@@ -1482,6 +1490,10 @@ msgstr ""
 #, fuzzy
 msgid "Build inside player"
 msgstr "Mitmikmäng"
+
+#: src/settings_translation_file.cpp
+msgid "Builtin"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1525,6 +1537,11 @@ msgstr "Vaheta nuppe"
 #, fuzzy
 msgid "Chat toggle key"
 msgstr "Vaheta nuppe"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chatcommands"
+msgstr "Käsklus"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1603,14 +1620,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Comma-separated list of trusted mods that are allowed to access insecure\n"
-"functions even when mod security is on (via request_insecure_environment())."
+"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
+"allow them to upload and download data to/from the internet."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Comma-seperated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
+"Comma-separated list of trusted mods that are allowed to access insecure\n"
+"functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1766,6 +1783,10 @@ msgid "Default privileges"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Default report format"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Default timeout for cURL, stated in milliseconds.\n"
 "Only has an effect if compiled with cURL."
@@ -1779,6 +1800,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Delay in sending blocks after building"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1809,14 +1834,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Detailed mod profile data. Useful for mod developers."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Detailed mod profiling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1959,6 +1976,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Engine profiling data print interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Entity methods"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Experimental option, might cause visible spaces between blocks\n"
 "when set to higher number than 0."
@@ -2019,7 +2044,17 @@ msgid "Field of view"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Field of view for zoom"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Field of view in degrees."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Field of view while zooming in degrees.\n"
+"This requires the \"zoom\" privilege on the server."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2159,6 +2194,10 @@ msgid "Generate normalmaps"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Global callbacks"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
@@ -2193,6 +2232,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Have the profiler instrument itself:\n"
+"* Instrument an empty function.\n"
+"This estimates the overhead, that instrumentation is adding (+1 function "
+"call).\n"
+"* Instrument the sampler being used to update the statistics."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
 msgstr ""
 
@@ -2217,15 +2265,6 @@ msgid ""
 "How large area of blocks are subject to the active block stuff, stated in "
 "mapblocks (16 nodes).\n"
 "In active blocks objects are loaded and ABMs run."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"How many blocks are flying in the wire simultaneously for the whole server."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "How many blocks are flying in the wire simultaneously per client."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2324,6 +2363,40 @@ msgid "In-game chat console background color (R,G,B)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Instrument builtin.\n"
+"This is usually only needed by core/builtin contributors"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrument chatcommands on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument global callback functions on registration.\n"
+"(anything you pass to a minetest.register_*() function)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument the action function of Active Block Modifiers on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument the action function of Loading Block Modifiers on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrument the methods of entities on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrumentation"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Interval of saving important changes in the world, stated in seconds."
 msgstr ""
 
@@ -2359,7 +2432,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Joystick button repetition invterval"
+msgid "Joystick button repetition interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2527,6 +2600,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Key for toggling autorun.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Key for toggling cinematic mode.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
@@ -2562,7 +2642,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Key for toggling the camrea update. Only used for development\n"
+"Key for toggling the camera update. Only used for development\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -2711,6 +2791,21 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update tick"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Load the game profiler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Load the game profiler to collect game profiling data.\n"
+"Provides a /profiler command to access the compiled profile.\n"
+"Useful for mod developers and server operators."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Loading Block Modifiers"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3156,6 +3251,14 @@ msgid "Maximum hotbar width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Maximum number of blocks that are simultaneously sent in total."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Maximum number of blocks that are simultaneously sent per client."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that can be queued for loading."
 msgstr ""
 
@@ -3197,17 +3300,21 @@ msgid "Maximum number of statically stored objects in a block."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Maximum objects per block"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Maximum proportion of current window to be used for hotbar.\n"
 "Useful if there's something to be displayed right or left of hotbar."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum simultaneously blocks send per client"
+msgid "Maximum simultaneous block sends per client"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum simultaneously bocks send total"
+msgid "Maximum simultaneous block sends total"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3216,10 +3323,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Maxmimum objects per block"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3263,10 +3366,6 @@ msgstr ""
 #, fuzzy
 msgid "Mipmapping"
 msgstr "Väga hea kvaliteet"
-
-#: src/settings_translation_file.cpp
-msgid "Mod profiling"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Modstore details URL"
@@ -3473,11 +3572,17 @@ msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Print the engine's profiling data in regular intervals (in seconds). 0 = "
+"disable. Useful for developers."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Privileges that players with basic_privs can grant"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Profiler data print interval. 0 = disable. Useful for developers."
+msgid "Profiler"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3485,7 +3590,7 @@ msgid "Profiler toggle key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Profiling print interval"
+msgid "Profiling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3519,6 +3624,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Report path"
+msgstr "Vali"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3685,7 +3795,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Shaders allow advanced visul effects and may increase performance on some "
+"Shaders allow advanced visual effects and may increase performance on some "
 "video cards.\n"
 "Thy only work with the OpenGL video backend."
 msgstr ""
@@ -3804,7 +3914,19 @@ msgid "The altitude at which temperature drops by 20C"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"The default format in which profiles are being saved,\n"
+"when calling `/profiler save [format]` without format."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "The depth of dirt or other filler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The file path relative to your worldpath in which profiles will be saved "
+"to.\n"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3954,11 +4076,6 @@ msgid "Use trilinear filtering when scaling textures."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Useful for mod developers."
-msgstr "Põhiline arendaja"
-
-#: src/settings_translation_file.cpp
 msgid "V-Sync"
 msgstr ""
 
@@ -4086,7 +4203,7 @@ msgid ""
 "When gui_scaling_filter_txr2img is true, copy those images\n"
 "from hardware to software for scaling.  When false, fall back\n"
 "to the old scaling method, for video drivers that don't\n"
-"propery support downloading textures back from hardware."
+"properly support downloading textures back from hardware."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4186,67 +4303,56 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Public Serverlist"
-#~ msgstr "Avalikud serverid"
-
 #, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "Lülita kõik välja"
+#~ msgid "Downloading"
+#~ msgstr "Alla"
 
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "Sisse lülitatud"
-
-#, fuzzy
-#~ msgid "Game Name"
-#~ msgstr "Mäng"
-
-#~ msgid "GAMES"
-#~ msgstr "MÄNGUD"
-
-#~ msgid "new game"
-#~ msgstr "uus mängu"
-
-#~ msgid "EDIT GAME"
-#~ msgstr "MUUDA MÄNGU"
-
-#, fuzzy
-#~ msgid "Remove selected mod"
-#~ msgstr "Eemalda valitud muutus"
-
-#, fuzzy
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Lisama muutus"
-
-#~ msgid "Name"
-#~ msgstr "Nimi"
-
-#~ msgid "Password"
-#~ msgstr "Parool"
-
-#~ msgid "SETTINGS"
-#~ msgstr "Seaded"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Lae asjade visuaale"
-
-#, fuzzy
-#~ msgid "Finite Liquid"
-#~ msgstr "Löppev vedelik"
-
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
+#~ msgid "Left click: Move all items, Right click: Move single item"
 #~ msgstr ""
-#~ "Hoiatus: Mõned modifikatsioonid pole sätitud veel.\n"
-#~ "Need lülitatakse sisse kohe pärast sätete salvestamist."
+#~ "Vasak hiireklõps: Liiguta kõiki asju, Parem hiireklõps: Liiguta üksikut "
+#~ "asja"
 
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
-#~ msgstr ""
-#~ "Hoiatus: Mõned konfigureeritud modifikatsioonid on kaotsi läinud.\n"
-#~ "Nende sätted kustutatakse kui salvestada konfiguratsioon."
+#~ msgid "is required by:"
+#~ msgstr "Seda vajavad:"
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "Konfiguratsioon salvestatud. "
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Hoiatus: Konfiguratsioon pole kindel."
+
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Maailma loomine ebaõnnestus: Nimes esineb keelatud tähti"
+
+#~ msgid "Show Public"
+#~ msgstr "Näita avalikke"
+
+#~ msgid "Show Favorites"
+#~ msgstr "Näita lemmikuid"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Jäta IP lahter tühjaks et alustada LAN serverit."
+
+#~ msgid "Create world"
+#~ msgstr "Loo maailm"
+
+#~ msgid "Address required."
+#~ msgstr "IP on vajalkik."
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Maailma kustutamine ebaõnnestus: Maailma pole valitud"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "Failid mida kustutada"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Maailma loomine ebaõnnestus: Mängu ei leitud"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Maailma konfigureerimine ebaõnnestus: Pole midagi valitud"
+
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Kõigi maailma failide kustutamine ebaõnnestus"
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -4273,53 +4379,68 @@ msgstr ""
 #~ "- ESC: Menüü\n"
 #~ "- T: Jututupa\n"
 
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Kõigi maailma failide kustutamine ebaõnnestus"
-
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Maailma konfigureerimine ebaõnnestus: Pole midagi valitud"
-
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Maailma loomine ebaõnnestus: Mängu ei leitud"
-
-#~ msgid "Files to be deleted"
-#~ msgstr "Failid mida kustutada"
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Maailma kustutamine ebaõnnestus: Maailma pole valitud"
-
-#~ msgid "Address required."
-#~ msgstr "IP on vajalkik."
-
-#~ msgid "Create world"
-#~ msgstr "Loo maailm"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Jäta IP lahter tühjaks et alustada LAN serverit."
-
-#~ msgid "Show Favorites"
-#~ msgstr "Näita lemmikuid"
-
-#~ msgid "Show Public"
-#~ msgstr "Näita avalikke"
-
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Maailma loomine ebaõnnestus: Nimes esineb keelatud tähti"
-
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Hoiatus: Konfiguratsioon pole kindel."
-
-#~ msgid "Configuration saved.  "
-#~ msgstr "Konfiguratsioon salvestatud. "
-
-#~ msgid "is required by:"
-#~ msgstr "Seda vajavad:"
-
-#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
 #~ msgstr ""
-#~ "Vasak hiireklõps: Liiguta kõiki asju, Parem hiireklõps: Liiguta üksikut "
-#~ "asja"
+#~ "Hoiatus: Mõned konfigureeritud modifikatsioonid on kaotsi läinud.\n"
+#~ "Nende sätted kustutatakse kui salvestada konfiguratsioon."
+
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "Hoiatus: Mõned modifikatsioonid pole sätitud veel.\n"
+#~ "Need lülitatakse sisse kohe pärast sätete salvestamist."
 
 #, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Alla"
+#~ msgid "Finite Liquid"
+#~ msgstr "Löppev vedelik"
+
+#~ msgid "Preload item visuals"
+#~ msgstr "Lae asjade visuaale"
+
+#~ msgid "SETTINGS"
+#~ msgstr "Seaded"
+
+#~ msgid "Password"
+#~ msgstr "Parool"
+
+#~ msgid "Name"
+#~ msgstr "Nimi"
+
+#, fuzzy
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Lisama muutus"
+
+#, fuzzy
+#~ msgid "Remove selected mod"
+#~ msgstr "Eemalda valitud muutus"
+
+#~ msgid "EDIT GAME"
+#~ msgstr "MUUDA MÄNGU"
+
+#~ msgid "new game"
+#~ msgstr "uus mängu"
+
+#~ msgid "GAMES"
+#~ msgstr "MÄNGUD"
+
+#, fuzzy
+#~ msgid "Game Name"
+#~ msgstr "Mäng"
+
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "Sisse lülitatud"
+
+#, fuzzy
+#~ msgid "If disabled "
+#~ msgstr "Lülita kõik välja"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Avalikud serverid"
+
+#, fuzzy
+#~ msgid "Useful for mod developers."
+#~ msgstr "Põhiline arendaja"

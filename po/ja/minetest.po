@@ -2,11 +2,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-12 20:49+0200\n"
+"POT-Creation-Date: 2016-08-30 06:18+0200\n"
 "PO-Revision-Date: 2016-08-17 07:33+0000\n"
 "Last-Translator: Rui <rui.minetest@gmail.com>\n"
-"Language-Team: Japanese "
-"<https://hosted.weblate.org/projects/minetest/minetest/ja/>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
+"minetest/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -95,7 +95,9 @@ msgstr "全て有効化"
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
-msgstr "許可されていない文字が使用されているため、Mod「$1」を有効化できませんでした。文字は[a-z0-9_]のみ使用できます。"
+msgstr ""
+"許可されていない文字が使用されているため、Mod「$1」を有効化できませんでした。"
+"文字は[a-z0-9_]のみ使用できます。"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -236,8 +238,8 @@ msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 msgstr ""
-"書式: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, "
-"<persistence>"
+"書式: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+"<octaves>, <persistence>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
@@ -927,7 +929,9 @@ msgstr "キーが重複しています"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr "キー設定です。 (このメニューで失敗する場合は、minetest.confから該当する設定を削除してください)"
+msgstr ""
+"キー設定です。 (このメニューで失敗する場合は、minetest.confから該当する設定を"
+"削除してください)"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Left"
@@ -972,6 +976,10 @@ msgstr "すり抜けモード"
 #: src/guiKeyChangeMenu.cpp
 msgid "Use"
 msgstr "使用"
+
+#: src/guiKeyChangeMenu.cpp src/keycode.cpp
+msgid "Zoom"
+msgstr "ズーム"
 
 #: src/guiKeyChangeMenu.cpp
 #, fuzzy
@@ -1290,10 +1298,6 @@ msgstr "Xボタン1"
 msgid "X Button 2"
 msgstr "Xボタン2"
 
-#: src/keycode.cpp
-msgid "Zoom"
-msgstr "ズーム"
-
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
@@ -1379,6 +1383,11 @@ msgstr "アクティブなブロックの範囲"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Active Block Modifier interval"
+msgstr "アクティブなブロックの範囲"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Active Block Modifiers"
 msgstr "アクティブなブロックの範囲"
 
 #: src/settings_translation_file.cpp
@@ -1472,6 +1481,10 @@ msgid "Automaticaly report to the serverlist."
 msgstr "自動的にサーバ一覧に報告します。"
 
 #: src/settings_translation_file.cpp
+msgid "Autorun key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Backward key"
 msgstr "後キー"
 
@@ -1505,6 +1518,10 @@ msgstr "フルスクリーンモードでの1ピクセル(色深度)あたりの
 #, fuzzy
 msgid "Build inside player"
 msgstr "プレイヤーの位置に設置"
+
+#: src/settings_translation_file.cpp
+msgid "Builtin"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bumpmapping"
@@ -1551,6 +1568,11 @@ msgstr "チャットキー"
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
 msgstr "チャットトグルキー"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chatcommands"
+msgstr "コマンド"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1646,22 +1668,22 @@ msgstr "色つきの霧"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
+"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
+"allow them to upload and download data to/from the internet."
+msgstr ""
+"HTTP API（彼らがインターネットに出入りするデータをアップロードして、ダウン"
+"ロードするのを許します）にアクセスしてもよいモッズのコンマseperatedされたリス"
+"ト。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
 "流行の最先端の安全対策がオンの（request_insecure_environment（）を通して）と"
 "きでも、不安定な機能にアクセスしてもよい信用されたモッズのコンマで区切られた"
 "リスト。"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Comma-seperated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
-msgstr ""
-"HTTP API（彼らがインターネットに出入りするデータをアップロードして、ダウン"
-"ロードするのを許します）にアクセスしてもよいモッズのコンマseperatedされたリス"
-"ト。"
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
@@ -1832,6 +1854,10 @@ msgid "Default privileges"
 msgstr "標準権限"
 
 #: src/settings_translation_file.cpp
+msgid "Default report format"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "Default timeout for cURL, stated in milliseconds.\n"
@@ -1853,6 +1879,10 @@ msgstr ""
 #, fuzzy
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr "ブロック（0無制限の=）で、最大限のプレーヤー移転距離を定めます。"
+
+#: src/settings_translation_file.cpp
+msgid "Delay in sending blocks after building"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1890,16 +1920,6 @@ msgstr "サーバの説明です。プレイヤーがサーバ一覧から接続
 #, fuzzy
 msgid "Desynchronize block animation"
 msgstr "ブロックのアニメーションの非同期化"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Detailed mod profile data. Useful for mod developers."
-msgstr "詳細なModのプロファイルデータです。Mod開発者に便利です。"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Detailed mod profiling"
-msgstr "詳細なModのプロファイル化"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2077,6 +2097,14 @@ msgstr ""
 "シェーダーが有効である必要があります。"
 
 #: src/settings_translation_file.cpp
+msgid "Engine profiling data print interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Entity methods"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "Experimental option, might cause visible spaces between blocks\n"
@@ -2155,8 +2183,22 @@ msgstr "視野"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
+msgid "Field of view for zoom"
+msgstr "視野"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Field of view in degrees."
 msgstr "視野角。"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Field of view while zooming in degrees.\n"
+"This requires the \"zoom\" privilege on the server."
+msgstr ""
+"高速移動 (使用キー)。\n"
+"サーバによる「fast」権限が必要です。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2310,6 +2352,10 @@ msgid "Generate normalmaps"
 msgstr "ノーマルマップの生成"
 
 #: src/settings_translation_file.cpp
+msgid "Global callbacks"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
@@ -2344,6 +2390,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Have the profiler instrument itself:\n"
+"* Instrument an empty function.\n"
+"This estimates the overhead, that instrumentation is adding (+1 function "
+"call).\n"
+"* Instrument the sampler being used to update the statistics."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
 msgstr ""
 
@@ -2370,15 +2425,6 @@ msgid ""
 "In active blocks objects are loaded and ABMs run."
 msgstr ""
 "Mapblock (16ノード) 数でオブジェクトのロードやABMの実効等の有効エリアを指定。"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"How many blocks are flying in the wire simultaneously for the whole server."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "How many blocks are flying in the wire simultaneously per client."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2475,6 +2521,40 @@ msgid "In-game chat console background color (R,G,B)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Instrument builtin.\n"
+"This is usually only needed by core/builtin contributors"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrument chatcommands on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument global callback functions on registration.\n"
+"(anything you pass to a minetest.register_*() function)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument the action function of Active Block Modifiers on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument the action function of Loading Block Modifiers on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrument the methods of entities on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrumentation"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Interval of saving important changes in the world, stated in seconds."
 msgstr ""
 
@@ -2509,7 +2589,7 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Joystick button repetition invterval"
+msgid "Joystick button repetition interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2676,6 +2756,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Key for toggling autorun.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Key for toggling cinematic mode.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
@@ -2711,7 +2798,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Key for toggling the camrea update. Only used for development\n"
+"Key for toggling the camera update. Only used for development\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -2860,6 +2947,22 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Liquid update tick"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Load the game profiler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Load the game profiler to collect game profiling data.\n"
+"Provides a /profiler command to access the compiled profile.\n"
+"Useful for mod developers and server operators."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Loading Block Modifiers"
+msgstr "アクティブなブロックの範囲"
 
 #: src/settings_translation_file.cpp
 msgid "Main menu game manager"
@@ -3284,6 +3387,14 @@ msgid "Maximum hotbar width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Maximum number of blocks that are simultaneously sent in total."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Maximum number of blocks that are simultaneously sent per client."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that can be queued for loading."
 msgstr ""
 
@@ -3325,17 +3436,21 @@ msgid "Maximum number of statically stored objects in a block."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Maximum objects per block"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Maximum proportion of current window to be used for hotbar.\n"
 "Useful if there's something to be displayed right or left of hotbar."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum simultaneously blocks send per client"
+msgid "Maximum simultaneous block sends per client"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum simultaneously bocks send total"
+msgid "Maximum simultaneous block sends total"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3344,10 +3459,6 @@ msgstr "ファイルダウンロード (例: Modのダウンロード)の最大�
 
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Maxmimum objects per block"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3389,10 +3500,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Mipmapping"
 msgstr "ミップマッピング"
-
-#: src/settings_translation_file.cpp
-msgid "Mod profiling"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Modstore details URL"
@@ -3599,11 +3706,17 @@ msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Print the engine's profiling data in regular intervals (in seconds). 0 = "
+"disable. Useful for developers."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Privileges that players with basic_privs can grant"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Profiler data print interval. 0 = disable. Useful for developers."
+msgid "Profiler"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3611,7 +3724,7 @@ msgid "Profiler toggle key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Profiling print interval"
+msgid "Profiling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3644,6 +3757,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Report path"
+msgstr "フォントパス"
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
@@ -3805,7 +3923,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Shaders allow advanced visul effects and may increase performance on some "
+"Shaders allow advanced visual effects and may increase performance on some "
 "video cards.\n"
 "Thy only work with the OpenGL video backend."
 msgstr ""
@@ -3921,7 +4039,19 @@ msgid "The altitude at which temperature drops by 20C"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"The default format in which profiles are being saved,\n"
+"when calling `/profiler save [format]` without format."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "The depth of dirt or other filler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The file path relative to your worldpath in which profiles will be saved "
+"to.\n"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4069,10 +4199,6 @@ msgid "Use trilinear filtering when scaling textures."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Useful for mod developers."
-msgstr "Mod開発に便利。"
-
-#: src/settings_translation_file.cpp
 msgid "V-Sync"
 msgstr ""
 
@@ -4198,7 +4324,7 @@ msgid ""
 "When gui_scaling_filter_txr2img is true, copy those images\n"
 "from hardware to software for scaling.  When false, fall back\n"
 "to the old scaling method, for video drivers that don't\n"
-"propery support downloading textures back from hardware."
+"properly support downloading textures back from hardware."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4319,42 +4445,53 @@ msgstr "cURLパラレル制限"
 msgid "cURL timeout"
 msgstr "cURLタイムアウト"
 
-#~ msgid "No of course not!"
-#~ msgstr "いいえ！"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "公開サーバ一覧"
-
-#~ msgid "Generate Normalmaps"
-#~ msgstr "ノーマルマップの生成"
-
-#~ msgid "No!!!"
-#~ msgstr "いいえ！！！"
-
-#~ msgid "If disabled "
-#~ msgstr "無効化の場合 "
-
-#~ msgid "If enabled, "
-#~ msgstr "有効化の場合 "
-
-#~ msgid "Rendering:"
-#~ msgstr "レンダリング:"
-
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "ドライバーを変更するためMinetestを再起動します"
-
-#~ msgid " MB/s"
-#~ msgstr " MB/秒"
-
-#~ msgid " KB/s"
-#~ msgstr " KB/秒"
-
-#~ msgid "Touch free target"
-#~ msgstr "タッチ位置を自由にする"
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr "テクスチャ読み込み中..."
 
 #~ msgid "Scaling factor applied to menu elements: "
 #~ msgstr "メニューの大きさとして設定されている数値: "
 
+#~ msgid "Touch free target"
+#~ msgstr "タッチ位置を自由にする"
+
+#~ msgid " KB/s"
+#~ msgstr " KB/秒"
+
+#~ msgid " MB/s"
+#~ msgstr " MB/秒"
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "ドライバーを変更するためMinetestを再起動します"
+
+#~ msgid "Rendering:"
+#~ msgstr "レンダリング:"
+
+#~ msgid "If enabled, "
+#~ msgstr "有効化の場合 "
+
+#~ msgid "If disabled "
+#~ msgstr "無効化の場合 "
+
+#~ msgid "No!!!"
+#~ msgstr "いいえ！！！"
+
+#~ msgid "Generate Normalmaps"
+#~ msgstr "ノーマルマップの生成"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "公開サーバ一覧"
+
+#~ msgid "No of course not!"
+#~ msgstr "いいえ！"
+
+#~ msgid "Useful for mod developers."
+#~ msgstr "Mod開発に便利。"
+
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "テクスチャ読み込み中..."
+#~ msgid "Detailed mod profiling"
+#~ msgstr "詳細なModのプロファイル化"
+
+#, fuzzy
+#~ msgid "Detailed mod profile data. Useful for mod developers."
+#~ msgstr "詳細なModのプロファイルデータです。Mod開発者に便利です。"

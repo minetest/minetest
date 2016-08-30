@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-12 20:49+0200\n"
+"POT-Creation-Date: 2016-08-30 06:18+0200\n"
 "PO-Revision-Date: 2016-05-20 15:18+0000\n"
 "Last-Translator: Andrey K. <contact@libnaru.so>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
@@ -992,6 +992,10 @@ msgstr "Включить noclip"
 msgid "Use"
 msgstr "Использовать"
 
+#: src/guiKeyChangeMenu.cpp src/keycode.cpp
+msgid "Zoom"
+msgstr "Масштаб"
+
 #: src/guiKeyChangeMenu.cpp
 msgid "press key"
 msgstr "нажмите клавишу"
@@ -1308,10 +1312,6 @@ msgstr "Доп. кнопка 1"
 msgid "X Button 2"
 msgstr "Доп. кнопка 2"
 
-#: src/keycode.cpp
-msgid "Zoom"
-msgstr "Масштаб"
-
 #: src/settings_translation_file.cpp
 msgid ""
 "(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
@@ -1391,6 +1391,11 @@ msgstr "Дальность взаимодействия с блоками"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Active Block Modifier interval"
+msgstr "Дальность взаимодействия с блоками"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Active Block Modifiers"
 msgstr "Дальность взаимодействия с блоками"
 
 #: src/settings_translation_file.cpp
@@ -1480,6 +1485,10 @@ msgid "Automaticaly report to the serverlist."
 msgstr "Автоматически добавлять в список серверов."
 
 #: src/settings_translation_file.cpp
+msgid "Autorun key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Backward key"
 msgstr "клавиша обратно"
@@ -1512,6 +1521,10 @@ msgstr "Биты на пиксель (глубина цвета) в полноэ
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
 msgstr "Разрешить ставить блоки на месте игрока"
+
+#: src/settings_translation_file.cpp
+msgid "Builtin"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Bumpmapping"
@@ -1554,6 +1567,11 @@ msgstr "Кнопка чата"
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
 msgstr "Кнопка переключения чата"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Chatcommands"
+msgstr "Команда"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1629,21 +1647,21 @@ msgstr "Цветной туман"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
+"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
+"allow them to upload and download data to/from the internet."
+msgstr ""
+"Список доверенных модов, через запятую, которым разрешён доступ к HTTP API,  "
+"что позволяет им отправлять и принимать данные в/из сети Интернет."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
 "Список доверенных модов, через запятую, которым разрешён доступ к "
 "небезопасным функциям, даже в безопасном режиме (с помощью "
 "request_insecure_environment())."
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"Comma-seperated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
-msgstr ""
-"Список доверенных модов, через запятую, которым разрешён доступ к HTTP API,  "
-"что позволяет им отправлять и принимать данные в/из сети Интернет."
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
@@ -1795,6 +1813,10 @@ msgid "Default privileges"
 msgstr "Стандартные права"
 
 #: src/settings_translation_file.cpp
+msgid "Default report format"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Default timeout for cURL, stated in milliseconds.\n"
 "Only has an effect if compiled with cURL."
@@ -1810,6 +1832,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Delay in sending blocks after building"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1845,14 +1871,6 @@ msgstr ""
 #, fuzzy
 msgid "Desynchronize block animation"
 msgstr "Рассинхронизировать анимацию блоков"
-
-#: src/settings_translation_file.cpp
-msgid "Detailed mod profile data. Useful for mod developers."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Detailed mod profiling"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1991,6 +2009,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Engine profiling data print interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Entity methods"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Experimental option, might cause visible spaces between blocks\n"
 "when set to higher number than 0."
@@ -2059,8 +2085,22 @@ msgid "Field of view"
 msgstr "Поле зрения"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Field of view for zoom"
+msgstr "Поле зрения"
+
+#: src/settings_translation_file.cpp
 msgid "Field of view in degrees."
 msgstr "Поле зрения в градусах."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Field of view while zooming in degrees.\n"
+"This requires the \"zoom\" privilege on the server."
+msgstr ""
+"Быстрое перемещение (с использованием клавиши).\n"
+"Это требует привилегию \"fast\" на сервере."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2201,6 +2241,10 @@ msgid "Generate normalmaps"
 msgstr "Генерировать карты нормалей"
 
 #: src/settings_translation_file.cpp
+msgid "Global callbacks"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
 "Global map generation attributes.\n"
@@ -2254,6 +2298,15 @@ msgstr ""
 "для разработчиков модов)."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Have the profiler instrument itself:\n"
+"* Instrument an empty function.\n"
+"This estimates the overhead, that instrumentation is adding (+1 function "
+"call).\n"
+"* Instrument the sampler being used to update the statistics."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Height component of the initial window size."
 msgstr "Высота содержимого (относительно?) исходного размера окна"
@@ -2284,17 +2337,6 @@ msgstr ""
 "Размер площади из блоков, составляющей активный блок, расположенный в "
 "mapblocks (16 nodes).↵\n"
 "В активных блоках объекты загружаются и ABMs запускается."
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid ""
-"How many blocks are flying in the wire simultaneously for the whole server."
-msgstr "Количество блоков, передаваемых одновременно для всего сервера."
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "How many blocks are flying in the wire simultaneously per client."
-msgstr "Количество блоков, передаваемых одновременно для каждого клиента."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2418,6 +2460,40 @@ msgid "In-game chat console background color (R,G,B)."
 msgstr "Цвет фона внутриигровой консоли (R, G, B)."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Instrument builtin.\n"
+"This is usually only needed by core/builtin contributors"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrument chatcommands on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument global callback functions on registration.\n"
+"(anything you pass to a minetest.register_*() function)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument the action function of Active Block Modifiers on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument the action function of Loading Block Modifiers on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrument the methods of entities on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrumentation"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Interval of saving important changes in the world, stated in seconds."
 msgstr "Интервал сохранения важных изменений в мире, установленный в секундах."
 
@@ -2453,7 +2529,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Joystick button repetition invterval"
+msgid "Joystick button repetition interval"
 msgstr "Интервал повторного клика правой кнопкой."
 
 #: src/settings_translation_file.cpp
@@ -2673,6 +2749,17 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Key for toggling autorun.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+"Клавиша переключения режима быстрого перемещения.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Key for toggling cinematic mode.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
@@ -2723,11 +2810,15 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Key for toggling the camrea update. Only used for development\n"
+"Key for toggling the camera update. Only used for development\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Клавиша движения влево.\n"
+"Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2893,6 +2984,22 @@ msgstr "Интервал обновления жидкостей в секунд
 #: src/settings_translation_file.cpp
 msgid "Liquid update tick"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Load the game profiler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Load the game profiler to collect game profiling data.\n"
+"Provides a /profiler command to access the compiled profile.\n"
+"Useful for mod developers and server operators."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Loading Block Modifiers"
+msgstr "Дальность взаимодействия с блоками"
 
 #: src/settings_translation_file.cpp
 msgid "Main menu game manager"
@@ -3374,6 +3481,15 @@ msgid "Maximum hotbar width"
 msgstr "Максимальная ширина хотбара"
 
 #: src/settings_translation_file.cpp
+msgid "Maximum number of blocks that are simultaneously sent in total."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Maximum number of blocks that are simultaneously sent per client."
+msgstr "Количество блоков, передаваемых одновременно для каждого клиента."
+
+#: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that can be queued for loading."
 msgstr ""
 
@@ -3415,17 +3531,21 @@ msgid "Maximum number of statically stored objects in a block."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Maximum objects per block"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Maximum proportion of current window to be used for hotbar.\n"
 "Useful if there's something to be displayed right or left of hotbar."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum simultaneously blocks send per client"
+msgid "Maximum simultaneous block sends per client"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum simultaneously bocks send total"
+msgid "Maximum simultaneous block sends total"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3435,10 +3555,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
 msgstr "Максимальное количество пользователей"
-
-#: src/settings_translation_file.cpp
-msgid "Maxmimum objects per block"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Menus"
@@ -3482,10 +3598,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Mipmapping"
 msgstr "Mip-текстурирование (Мип-маппинг)"
-
-#: src/settings_translation_file.cpp
-msgid "Mod profiling"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Modstore details URL"
@@ -3709,11 +3821,17 @@ msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Print the engine's profiling data in regular intervals (in seconds). 0 = "
+"disable. Useful for developers."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Privileges that players with basic_privs can grant"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Profiler data print interval. 0 = disable. Useful for developers."
+msgid "Profiler"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3721,7 +3839,7 @@ msgid "Profiler toggle key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Profiling print interval"
+msgid "Profiling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3756,6 +3874,11 @@ msgstr "Удаленный порт"
 #, fuzzy
 msgid "Replaces the default main menu with a custom one."
 msgstr "Заменять главное меню на пользовательское."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Report path"
+msgstr "Путь к шрифту"
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
@@ -3939,7 +4062,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Shaders allow advanced visul effects and may increase performance on some "
+"Shaders allow advanced visual effects and may increase performance on some "
 "video cards.\n"
 "Thy only work with the OpenGL video backend."
 msgstr ""
@@ -4075,7 +4198,19 @@ msgid "The altitude at which temperature drops by 20C"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"The default format in which profiles are being saved,\n"
+"when calling `/profiler save [format]` without format."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "The depth of dirt or other filler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The file path relative to your worldpath in which profiles will be saved "
+"to.\n"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4255,11 +4390,6 @@ msgstr "Использовать трилинейную фильтрацию д�
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Useful for mod developers."
-msgstr "Разработчики в отставке"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid "V-Sync"
 msgstr "V-Sync"
 
@@ -4395,7 +4525,7 @@ msgid ""
 "When gui_scaling_filter_txr2img is true, copy those images\n"
 "from hardware to software for scaling.  When false, fall back\n"
 "to the old scaling method, for video drivers that don't\n"
-"propery support downloading textures back from hardware."
+"properly support downloading textures back from hardware."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4503,107 +4633,107 @@ msgstr ""
 msgid "cURL timeout"
 msgstr "cURL тайм-аут"
 
-#~ msgid "No of course not!"
-#~ msgstr "Нет, конечно нет!"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Список публичных серверов"
-
-#~ msgid "Generate Normalmaps"
-#~ msgstr "Генерировать карты нормалей"
-
-#~ msgid "No!!!"
-#~ msgstr "Нет!"
-
-#~ msgid "\""
-#~ msgstr "\""
-
-#~ msgid "If disabled "
-#~ msgstr "Если выключено "
-
-#~ msgid "If enabled, "
-#~ msgstr "Если включено "
-
-#~ msgid "Rendering:"
-#~ msgstr "Рендеринг:"
-
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "Перезапустите Minetest для принятия изменений"
-
-#~ msgid "Game Name"
-#~ msgstr "Название"
-
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "Gamemgr: Не могу скопировать мод \"$1\" в игру \"$2\""
-
-#~ msgid "GAMES"
-#~ msgstr "ИГРЫ"
-
-#~ msgid "Mods:"
-#~ msgstr "Моды:"
-
-#~ msgid "new game"
-#~ msgstr "Создать игру"
-
-#~ msgid "EDIT GAME"
-#~ msgstr "РЕДАКТИРОВАНИЕ"
-
-#~ msgid "Remove selected mod"
-#~ msgstr "Удалить мод"
-
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Добавить мод"
-
-#~ msgid "CLIENT"
-#~ msgstr "КЛИЕНТ"
-
-#~ msgid "START SERVER"
-#~ msgstr "СЕРВЕР"
-
-#~ msgid "Name"
-#~ msgstr "Имя"
-
-#~ msgid "Password"
-#~ msgstr "Пароль"
-
-#~ msgid "SETTINGS"
-#~ msgstr "НАСТРОЙКИ"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Предзагрузка изображений"
-
-#~ msgid "Finite Liquid"
-#~ msgstr "Конечные жидкости"
-
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "ОДИНОЧНАЯ ИГРА"
-
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "ПАКЕТЫ ТЕКСТУР"
-
-#~ msgid "MODS"
-#~ msgstr "МОДЫ"
-
-#~ msgid "Add mod:"
-#~ msgstr "Добавить мод:"
-
-#~ msgid "Local install"
-#~ msgstr "Локальная установка"
+#~ msgid ""
+#~ "Enable a bit lower water surface, so it doesn't \"fill\" the node "
+#~ "completely.\n"
+#~ "Note that this is not quite optimized and that smooth lighting on the\n"
+#~ "water surface doesn't work with this."
+#~ msgstr ""
+#~ "Включите немного более низкую поверхность воды, чтобы она\n"
+#~ "не заполняла блок полностью. Учтите, что это не совсем оптимизировано,\n"
+#~ "и мягкое освещение на поверхности воды не работает с этим."
 
 #~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
+#~ "Key for decreasing the viewing range. Modifies the minimum viewing "
+#~ "range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 #~ msgstr ""
-#~ "Предупреждение: Некоторые моды еще не настроены.\n"
-#~ "Их стандартные настройки будут установлены, когда вы сохраните "
-#~ "конфигурацию.  "
+#~ "Клавиша уменьшения видимого диапазона. Изменяет минимальную дальность "
+#~ "отображения.\n"
+#~ "Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
+#~ "Key for increasing the viewing range. Modifies the minimum viewing "
+#~ "range.\n"
+#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
 #~ msgstr ""
-#~ "Предупреждение: Некоторые моды не найдены.\n"
-#~ "Их настройки будут удалены, когда вы сохраните конфигурацию.  "
+#~ "Клавиша Увеличения видимого диапазона. Изменяет минимальную дальность "
+#~ "отображения.\n"
+#~ "Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
+#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#, fuzzy
+#~ msgid "New style water"
+#~ msgstr "Новый стиль воды"
+
+#~ msgid "Preload inventory textures"
+#~ msgstr "Предзагрузка текстур..."
+
+#, fuzzy
+#~ msgid "Viewing range minimum"
+#~ msgstr "Минимальная граница дальности отрисовки."
+
+#, fuzzy
+#~ msgid "Wanted FPS"
+#~ msgstr "Ожидаемый FPS"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Коэффициент масштаба интерфейса: "
+
+#~ msgid "Touch free target"
+#~ msgstr "Свободный выбор цели"
+
+#, fuzzy
+#~ msgid "Downloading"
+#~ msgstr "Загрузить"
+
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr "ЛКМ: Переместить все предметы, ПКМ: Переместить один предмет"
+
+#~ msgid "is required by:"
+#~ msgstr "требуется для:"
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "Настройки сохранены.  "
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Предупреждение: Неверная конфигурация.  "
+
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Невозможно создать мир: Имя содержит недопустимые символы"
+
+#~ msgid "Show Public"
+#~ msgstr "Публичные"
+
+#~ msgid "Show Favorites"
+#~ msgstr "Избранные"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Оставьте адрес пустым для запуска локального сервера."
+
+#~ msgid "Create world"
+#~ msgstr "Создать мир"
+
+#~ msgid "Address required."
+#~ msgstr "Нужно ввести адрес."
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Невозможно удалить мир: Ничего не выбрано"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "Следующие файлы будут удалены"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Невозможно создать мир: Ни одной игры не найдено"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Невозможно настроить мир: ничего не выбрано"
+
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Ошибка при удалении файлов мира"
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -4630,104 +4760,114 @@ msgstr "cURL тайм-аут"
 #~ "- ESC: это меню\n"
 #~ "- T: чат\n"
 
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Ошибка при удалении файлов мира"
-
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Невозможно настроить мир: ничего не выбрано"
-
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Невозможно создать мир: Ни одной игры не найдено"
-
-#~ msgid "Files to be deleted"
-#~ msgstr "Следующие файлы будут удалены"
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Невозможно удалить мир: Ничего не выбрано"
-
-#~ msgid "Address required."
-#~ msgstr "Нужно ввести адрес."
-
-#~ msgid "Create world"
-#~ msgstr "Создать мир"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Оставьте адрес пустым для запуска локального сервера."
-
-#~ msgid "Show Favorites"
-#~ msgstr "Избранные"
-
-#~ msgid "Show Public"
-#~ msgstr "Публичные"
-
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Невозможно создать мир: Имя содержит недопустимые символы"
-
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Предупреждение: Неверная конфигурация.  "
-
-#~ msgid "Configuration saved.  "
-#~ msgstr "Настройки сохранены.  "
-
-#~ msgid "is required by:"
-#~ msgstr "требуется для:"
-
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr "ЛКМ: Переместить все предметы, ПКМ: Переместить один предмет"
-
-#, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Загрузить"
-
-#~ msgid "Touch free target"
-#~ msgstr "Свободный выбор цели"
-
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Коэффициент масштаба интерфейса: "
-
-#, fuzzy
-#~ msgid "Wanted FPS"
-#~ msgstr "Ожидаемый FPS"
-
-#, fuzzy
-#~ msgid "Viewing range minimum"
-#~ msgstr "Минимальная граница дальности отрисовки."
-
-#~ msgid "Preload inventory textures"
-#~ msgstr "Предзагрузка текстур..."
-
-#, fuzzy
-#~ msgid "New style water"
-#~ msgstr "Новый стиль воды"
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
+#~ msgstr ""
+#~ "Предупреждение: Некоторые моды не найдены.\n"
+#~ "Их настройки будут удалены, когда вы сохраните конфигурацию.  "
 
 #~ msgid ""
-#~ "Key for increasing the viewing range. Modifies the minimum viewing "
-#~ "range.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
 #~ msgstr ""
-#~ "Клавиша Увеличения видимого диапазона. Изменяет минимальную дальность "
-#~ "отображения.\n"
-#~ "Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ "Предупреждение: Некоторые моды еще не настроены.\n"
+#~ "Их стандартные настройки будут установлены, когда вы сохраните "
+#~ "конфигурацию.  "
 
-#~ msgid ""
-#~ "Key for decreasing the viewing range. Modifies the minimum viewing "
-#~ "range.\n"
-#~ "See http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
-#~ msgstr ""
-#~ "Клавиша уменьшения видимого диапазона. Изменяет минимальную дальность "
-#~ "отображения.\n"
-#~ "Смотрите http://irrlicht.sourceforge.net/docu/namespaceirr."
-#~ "html#a54da2a0e231901735e3da1b0edf72eb3"
+#~ msgid "Local install"
+#~ msgstr "Локальная установка"
 
+#~ msgid "Add mod:"
+#~ msgstr "Добавить мод:"
+
+#~ msgid "MODS"
+#~ msgstr "МОДЫ"
+
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "ПАКЕТЫ ТЕКСТУР"
+
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "ОДИНОЧНАЯ ИГРА"
+
+#~ msgid "Finite Liquid"
+#~ msgstr "Конечные жидкости"
+
+#~ msgid "Preload item visuals"
+#~ msgstr "Предзагрузка изображений"
+
+#~ msgid "SETTINGS"
+#~ msgstr "НАСТРОЙКИ"
+
+#~ msgid "Password"
+#~ msgstr "Пароль"
+
+#~ msgid "Name"
+#~ msgstr "Имя"
+
+#~ msgid "START SERVER"
+#~ msgstr "СЕРВЕР"
+
+#~ msgid "CLIENT"
+#~ msgstr "КЛИЕНТ"
+
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Добавить мод"
+
+#~ msgid "Remove selected mod"
+#~ msgstr "Удалить мод"
+
+#~ msgid "EDIT GAME"
+#~ msgstr "РЕДАКТИРОВАНИЕ"
+
+#~ msgid "new game"
+#~ msgstr "Создать игру"
+
+#~ msgid "Mods:"
+#~ msgstr "Моды:"
+
+#~ msgid "GAMES"
+#~ msgstr "ИГРЫ"
+
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "Gamemgr: Не могу скопировать мод \"$1\" в игру \"$2\""
+
+#~ msgid "Game Name"
+#~ msgstr "Название"
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "Перезапустите Minetest для принятия изменений"
+
+#~ msgid "Rendering:"
+#~ msgstr "Рендеринг:"
+
+#~ msgid "If enabled, "
+#~ msgstr "Если включено "
+
+#~ msgid "If disabled "
+#~ msgstr "Если выключено "
+
+#~ msgid "\""
+#~ msgstr "\""
+
+#~ msgid "No!!!"
+#~ msgstr "Нет!"
+
+#~ msgid "Generate Normalmaps"
+#~ msgstr "Генерировать карты нормалей"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Список публичных серверов"
+
+#~ msgid "No of course not!"
+#~ msgstr "Нет, конечно нет!"
+
+#, fuzzy
+#~ msgid "Useful for mod developers."
+#~ msgstr "Разработчики в отставке"
+
+#, fuzzy
 #~ msgid ""
-#~ "Enable a bit lower water surface, so it doesn't \"fill\" the node "
-#~ "completely.\n"
-#~ "Note that this is not quite optimized and that smooth lighting on the\n"
-#~ "water surface doesn't work with this."
-#~ msgstr ""
-#~ "Включите немного более низкую поверхность воды, чтобы она\n"
-#~ "не заполняла блок полностью. Учтите, что это не совсем оптимизировано,\n"
-#~ "и мягкое освещение на поверхности воды не работает с этим."
+#~ "How many blocks are flying in the wire simultaneously for the whole "
+#~ "server."
+#~ msgstr "Количество блоков, передаваемых одновременно для всего сервера."
