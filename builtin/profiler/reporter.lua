@@ -15,7 +15,7 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-local DIR_DELIM, LINE_DELIM = DIR_DELIM, "\n"
+local DIR_DELIM, LINE_DELIM = "/", "\n"
 local table, unpack, string, pairs, io, os = table, unpack, string, pairs, io, os
 local rep, sprintf, tonumber = string.rep, string.format, tonumber
 local core, setting_get = core, core.setting_get

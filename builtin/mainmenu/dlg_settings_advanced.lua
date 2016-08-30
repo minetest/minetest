@@ -264,7 +264,7 @@ end
 -- read_all: whether to ignore certain setting types for GUI or not
 -- parse_mods: whether to parse settingtypes.txt in mods and games
 local function parse_config_file(read_all, parse_mods)
-	local builtin_path = core.get_builtin_path() .. DIR_DELIM .. FILENAME
+	local builtin_path = core.get_builtin_path() .. "/" .. FILENAME
 	local file = io.open(builtin_path, "r")
 	local settings = {}
 	if not file then
@@ -282,7 +282,7 @@ local function parse_config_file(read_all, parse_mods)
 		local index = 1
 		local game = gamemgr.get_game(index)
 		while game do
-			local path = game.path .. DIR_DELIM .. FILENAME
+			local path = game.path .. "/" .. FILENAME
 			local file = io.open(path, "r")
 			if file then
 				if not games_category_initialized then
@@ -315,7 +315,7 @@ local function parse_config_file(read_all, parse_mods)
 		local mods = {}
 		get_mods(core.get_modpath(), mods)
 		for _, mod in ipairs(mods) do
-			local path = mod.path .. DIR_DELIM .. FILENAME
+			local path = mod.path .. "/" .. FILENAME
 			local file = io.open(path, "r")
 			if file then
 				if not mods_category_initialized then
@@ -660,4 +660,4 @@ function create_adv_settings_dlg()
 end
 
 -- generate minetest.conf.example and settings_translation_file.cpp:
---assert(loadfile(core.get_mainmenu_path()..DIR_DELIM.."generate_from_settingtypes.lua"))(parse_config_file(true, false))
+--assert(loadfile(core.get_mainmenu_path() .. "/generate_from_settingtypes.lua"))(parse_config_file(true, false))

@@ -20,9 +20,7 @@ mm_texture = {}
 
 --------------------------------------------------------------------------------
 function mm_texture.init()
-	mm_texture.defaulttexturedir = core.get_texturepath() .. DIR_DELIM .. "base" ..
-						DIR_DELIM .. "pack" .. DIR_DELIM
-	mm_texture.basetexturedir = mm_texture.defaulttexturedir
+	mm_texture.defaulttexturedir = core.get_texturepath() .. "/base/pack"
 	
 	mm_texture.texturepack = core.setting_get("texture_path")
 	
@@ -110,7 +108,7 @@ end
 function mm_texture.set_generic(identifier)
 	--try texture pack first
 	if mm_texture.texturepack ~= nil then
-		local path = mm_texture.texturepack .. DIR_DELIM .."menu_" ..
+		local path = mm_texture.texturepack .. "/menu_" ..
 										identifier .. ".png"
 		if core.set_background(identifier,path) then
 			return true
@@ -118,7 +116,7 @@ function mm_texture.set_generic(identifier)
 	end
 	
 	if mm_texture.defaulttexturedir ~= nil then
-		local path = mm_texture.defaulttexturedir .. DIR_DELIM .."menu_" ..
+		local path = mm_texture.defaulttexturedir .. "/menu_" ..
 										identifier .. ".png"
 		if core.set_background(identifier,path) then
 			return true
@@ -136,7 +134,7 @@ function mm_texture.set_game(identifier, gamedetails)
 	end
 
 	if mm_texture.texturepack ~= nil then
-		local path = mm_texture.texturepack .. DIR_DELIM ..
+		local path = mm_texture.texturepack .. "/" ..
 			gamedetails.id .. "_menu_" .. identifier .. ".png"
 		if core.set_background(identifier, path) then
 			return true
@@ -146,7 +144,7 @@ function mm_texture.set_game(identifier, gamedetails)
 	-- Find out how many randomized textures the subgame provides
 	local n = 0
 	local filename
-	local menu_files = core.get_dir_list(gamedetails.path .. DIR_DELIM .. "menu", false)
+	local menu_files = core.get_dir_list(gamedetails.path .. "/menu", false)
 	for i = 1, #menu_files do
 		filename = identifier .. "." .. i .. ".png"
 		if table.indexof(menu_files, filename) == -1 then
@@ -162,8 +160,8 @@ function mm_texture.set_game(identifier, gamedetails)
 		filename = identifier .. "." .. n .. ".png"
 	end
 
-	local path = gamedetails.path .. DIR_DELIM .. "menu" ..
-		DIR_DELIM .. filename
+	local path = gamedetails.path .. "/menu" ..
+		"/" .. filename
 	if core.set_background(identifier, path) then
 		return true
 	end
@@ -173,13 +171,13 @@ end
 
 function mm_texture.set_dirt_bg()
 	if mm_texture.texturepack ~= nil then
-		local path = mm_texture.texturepack .. DIR_DELIM .."default_dirt.png"
+		local path = mm_texture.texturepack .. "/default_dirt.png"
 		if core.set_background("background", path, true, 128) then
 			return true
 		end
 	end
 	
 	-- Use universal fallback texture in textures/base/pack
-	local minimalpath = defaulttexturedir .. "menu_bg.png"
+	local minimalpath = defaulttexturedir .. "/menu_bg.png"
 	core.set_background("background", minimalpath, true, 128)
 end

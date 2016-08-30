@@ -25,26 +25,26 @@ os.setlocale("C", "numeric")
 minetest = core
 
 -- Load other files
-local scriptdir = core.get_builtin_path() .. DIR_DELIM
-local gamepath = scriptdir .. "game" .. DIR_DELIM
-local commonpath = scriptdir .. "common" .. DIR_DELIM
-local asyncpath = scriptdir .. "async" .. DIR_DELIM
+local script_dir = core.get_builtin_path()
+local game_path = script_dir .. "/game"
+local common_path = script_dir .. "/common"
+local async_path = script_dir .. "/async"
 
-dofile(commonpath .. "strict.lua")
-dofile(commonpath .. "serialize.lua")
-dofile(commonpath .. "misc_helpers.lua")
+dofile(common_path .. "/strict.lua")
+dofile(common_path .. "/serialize.lua")
+dofile(common_path .. "/misc_helpers.lua")
 
 if INIT == "game" then
-	dofile(gamepath .. "init.lua")
+	dofile(game_path .. "/init.lua")
 elseif INIT == "mainmenu" then
-	local mainmenuscript = core.setting_get("main_menu_script")
-	if mainmenuscript ~= nil and mainmenuscript ~= "" then
-		dofile(mainmenuscript)
+	local main_menu_script = core.setting_get("main_menu_script")
+	if main_menu_script ~= nil and main_menu_script ~= "" then
+		dofile(main_menu_script)
 	else
-		dofile(core.get_mainmenu_path() .. DIR_DELIM .. "init.lua")
+		dofile(core.get_mainmenu_path() .. "/init.lua")
 	end
 elseif INIT == "async" then
-	dofile(asyncpath .. "init.lua")
+	dofile(async_path .. "/init.lua")
 else
 	error(("Unrecognized builtin initialization type %s!"):format(tostring(INIT)))
 end

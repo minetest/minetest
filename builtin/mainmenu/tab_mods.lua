@@ -51,7 +51,7 @@ local function get_formspec(tabview, name, tabdata)
 		local modscreenshot = nil
 
 		--check for screenshot beeing available
-		local screenshotfilename = selected_mod.path .. DIR_DELIM .. "screenshot.png"
+		local screenshotfilename = selected_mod.path .. "/screenshot.png"
 		local error = nil
 		local screenshotfile,error = io.open(screenshotfilename,"r")
 		if error == nil then
@@ -60,7 +60,7 @@ local function get_formspec(tabview, name, tabdata)
 		end
 
 		if modscreenshot == nil then
-				modscreenshot = defaulttexturedir .. "no_screenshot.png"
+				modscreenshot = default_texture_dir .. "/no_screenshot.png"
 		end
 
 		retval = retval
