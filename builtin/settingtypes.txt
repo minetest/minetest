@@ -176,6 +176,10 @@ keymap_fastmove (Fast key) key KEY_KEY_J
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_noclip (Noclip key) key KEY_KEY_H
 
+#    Key for toggling autorun.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_autorun (Autorun key) key
+
 #    Key for toggling cinematic mode.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_cinematic (Cinematic mode key) key
