@@ -37,7 +37,7 @@ fake_function() {
 	gettext("Continuous forward movement (only used for testing).");
 	gettext("Enable Joysticks");
 	gettext("Enable Joysticks");
-	gettext("Joystick button repetition invterval");
+	gettext("Joystick button repetition interval");
 	gettext("The time in seconds it takes between repeated events\nwhen holding down a joystick button combination.");
 	gettext("Joystick frustum sensitivity");
 	gettext("The sensitivity of the joystick axes for moving the\ningame view frustum around.");
@@ -86,7 +86,7 @@ fake_function() {
 	gettext("Fog toggle key");
 	gettext("Key for toggling the display of the fog.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("Camera update toggle key");
-	gettext("Key for toggling the camrea update. Only used for development\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
+	gettext("Key for toggling the camera update. Only used for development\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("Debug info toggle key");
 	gettext("Key for toggling the display of debug info.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("Profiler toggle key");
@@ -152,7 +152,7 @@ fake_function() {
 	gettext("Experimental option, might cause visible spaces between blocks\nwhen set to higher number than 0.");
 	gettext("Shaders");
 	gettext("Shaders");
-	gettext("Shaders allow advanced visul effects and may increase performance on some video cards.\nThy only work with the OpenGL video backend.");
+	gettext("Shaders allow advanced visual effects and may increase performance on some video cards.\nThy only work with the OpenGL video backend.");
 	gettext("Tone Mapping");
 	gettext("Filmic tone mapping");
 	gettext("Enables filmic tone mapping");
@@ -207,6 +207,8 @@ fake_function() {
 	gettext("Vertical screen synchronization.");
 	gettext("Field of view");
 	gettext("Field of view in degrees.");
+	gettext("Field of view for zoom");
+	gettext("Field of view while zooming in degrees.\nThis requires the \"zoom\" privilege on the server.");
 	gettext("Gamma");
 	gettext("Adjust the gamma encoding for the light tables. Lower numbers are brighter.\nThis setting is for the client only and is ignored by the server.");
 	gettext("Texture path");
@@ -261,7 +263,7 @@ fake_function() {
 	gettext("GUI scaling filter");
 	gettext("When gui_scaling_filter is true, all GUI images need to be\nfiltered in software, but some images are generated directly\nto hardware (e.g. render-to-texture for nodes in inventory).");
 	gettext("GUI scaling filter txr2img");
-	gettext("When gui_scaling_filter_txr2img is true, copy those images\nfrom hardware to software for scaling.  When false, fall back\nto the old scaling method, for video drivers that don't\npropery support downloading textures back from hardware.");
+	gettext("When gui_scaling_filter_txr2img is true, copy those images\nfrom hardware to software for scaling.  When false, fall back\nto the old scaling method, for video drivers that don't\nproperly support downloading textures back from hardware.");
 	gettext("Tooltip delay");
 	gettext("Delay showing tooltips, stated in milliseconds.");
 	gettext("Freetype fonts");
@@ -326,10 +328,11 @@ fake_function() {
 	gettext("IPv6 server");
 	gettext("Enable/disable running an IPv6 server.  An IPv6 server may be restricted\nto IPv6 clients, depending on system configuration.\nIgnored if bind_address is set.");
 	gettext("Advanced");
-	gettext("Maximum simultaneously blocks send per client");
-	gettext("How many blocks are flying in the wire simultaneously per client.");
-	gettext("Maximum simultaneously bocks send total");
-	gettext("How many blocks are flying in the wire simultaneously for the whole server.");
+	gettext("Maximum simultaneous block sends per client");
+	gettext("Maximum number of blocks that are simultaneously sent per client.");
+	gettext("Maximum simultaneous block sends total");
+	gettext("Maximum number of blocks that are simultaneously sent in total.");
+	gettext("Delay in sending blocks after building");
 	gettext("To reduce lag, block transfers are slowed down when a player is building something.\nThis determines how long they are slowed down after placing or removing a node.");
 	gettext("Max. packets per iteration");
 	gettext("Maximum number of packets sent per send step, if you have a slow connection\ntry reducing it, but don't reduce it to a number below double of targeted\nclient number.");
@@ -409,7 +412,7 @@ fake_function() {
 	gettext("Number of extra blocks that can be loaded by /clearobjects at once.\nThis is a trade-off between sqlite transaction overhead and\nmemory consumption (4096=100MB, as a rule of thumb).");
 	gettext("Unload unused server data");
 	gettext("How much the server will wait before unloading unused mapblocks.\nHigher value is smoother, but will use more RAM.");
-	gettext("Maxmimum objects per block");
+	gettext("Maximum objects per block");
 	gettext("Maximum number of statically stored objects in a block.");
 	gettext("Synchronous SQLite");
 	gettext("See http://www.sqlite.org/pragma.html#pragma_synchronous");
@@ -593,7 +596,7 @@ fake_function() {
 	gettext("Trusted mods");
 	gettext("Comma-separated list of trusted mods that are allowed to access insecure\nfunctions even when mod security is on (via request_insecure_environment()).");
 	gettext("HTTP Mods");
-	gettext("Comma-seperated list of mods that are allowed to access HTTP APIs, which\nallow them to upload and download data to/from the internet.");
+	gettext("Comma-separated list of mods that are allowed to access HTTP APIs, which\nallow them to upload and download data to/from the internet.");
 	gettext("Advanced");
 	gettext("Profiling");
 	gettext("Load the game profiler");

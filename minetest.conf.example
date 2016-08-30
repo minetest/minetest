@@ -208,7 +208,7 @@
 #    type: key
 # keymap_toggle_force_fog_off = KEY_F3
 
-#    Key for toggling the camrea update. Only used for development
+#    Key for toggling the camera update. Only used for development
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
 # keymap_toggle_update_camera =
@@ -369,7 +369,7 @@
 
 #### Shaders
 
-#    Shaders allow advanced visul effects and may increase performance on some video cards.
+#    Shaders allow advanced visual effects and may increase performance on some video cards.
 #    Thy only work with the OpenGL video backend.
 #    type: bool
 # enable_shaders = true
@@ -633,7 +633,7 @@
 #    When gui_scaling_filter_txr2img is true, copy those images
 #    from hardware to software for scaling.  When false, fall back
 #    to the old scaling method, for video drivers that don't
-#    propery support downloading textures back from hardware.
+#    properly support downloading textures back from hardware.
 #    type: bool
 # gui_scaling_filter_txr2img = true
 
@@ -789,11 +789,11 @@
 
 ### Advanced
 
-#    How many blocks are flying in the wire simultaneously per client.
+#    Maximum number of blocks that are simultaneously sent per client.
 #    type: int
 # max_simultaneous_block_sends_per_client = 10
 
-#    How many blocks are flying in the wire simultaneously for the whole server.
+#    Maximum number of blocks that are simultaneously sent in total.
 #    type: int
 # max_simultaneous_block_sends_server_total = 40
 
@@ -1464,7 +1464,7 @@
 #    type: string
 # secure.trusted_mods =
 
-#    Comma-seperated list of mods that are allowed to access HTTP APIs, which
+#    Comma-separated list of mods that are allowed to access HTTP APIs, which
 #    allow them to upload and download data to/from the internet.
 #    type: string
 # secure.http_mods =
@@ -1485,7 +1485,7 @@
 # profiler.default_report_format = txt
 
 #    The file path relative to your worldpath in which profiles will be saved to.
-#
+#    
 #    type: string
 # profiler.report_path = ""
 
