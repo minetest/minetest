@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-07-12 20:49+0200\n"
-"PO-Revision-Date: 2016-08-12 20:43+0200\n"
-"Last-Translator: Thomas Wagner Nielsen <thomas@viawords.com>\n"
+"PO-Revision-Date: 2016-08-30 04:09+0000\n"
+"Last-Translator: Rui <rui.minetest@gmail.com>\n"
 "Language-Team: Danish "
 "<https://hosted.weblate.org/projects/minetest/minetest/da/>\n"
 "Language: da\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.7-dev\n"
+"X-Generator: Weblate 2.8-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -1803,7 +1803,7 @@ msgstr "Standard spil"
 msgid ""
 "Default game when creating a new world.\n"
 "This will be overridden when creating a world from the main menu."
-msgstr "Standard spil, når du skaber en ny verden.\n"
+msgstr "Standard spil, når du skaber en ny verden."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
