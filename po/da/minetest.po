@@ -2,22 +2,22 @@
 # Copyright (C) 2011 celeron
 # This file is distributed under the same license as the minetest-c55 package.
 # Frederik Helth <Guides@live.dk>, 2011.
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-08-30 04:09+0000\n"
-"Last-Translator: Rui <rui.minetest@gmail.com>\n"
-"Language-Team: Danish <https://hosted.weblate.org/projects/minetest/minetest/"
-"da/>\n"
+"POT-Creation-Date: 2016-07-12 20:49+0200\n"
+"PO-Revision-Date: 2016-08-30 08:57+0200\n"
+"Last-Translator: Thomas Wagner Nielsen <thomas@viawords.com>\n"
+"Language-Team: Danish "
+"<https://hosted.weblate.org/projects/minetest/minetest/da/>\n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.8-dev\n"
+"X-Generator: Weblate 2.7-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -530,7 +530,7 @@ msgstr "Avancerede indstillinger"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr ""
+msgstr "Udjævning:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
@@ -641,7 +641,7 @@ msgstr "Glat belysning"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
-msgstr ""
+msgstr "Teksturering:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "To enable shaders the OpenGL driver needs to be used."
@@ -705,11 +705,11 @@ msgstr "Der er ikke nogen information tilgængelig"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Select texture pack:"
-msgstr ""
+msgstr "Vælg teksturpakke:"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Texturepacks"
-msgstr ""
+msgstr "Teksturpakker"
 
 #: src/client.cpp
 msgid "Connection timed out."
@@ -729,7 +729,7 @@ msgstr "Initialiserer noder..."
 
 #: src/client.cpp
 msgid "Loading textures..."
-msgstr ""
+msgstr "Indlæser teksturer..."
 
 #: src/client.cpp
 msgid "Rebuilding shaders..."
@@ -1346,7 +1346,7 @@ msgid ""
 "The default is suitable for mandelbrot sets, it needs to be edited for julia "
 "sets.\n"
 "Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
-msgstr ""
+msgstr " "
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1375,6 +1375,8 @@ msgid ""
 "-    sidebyside: split screen side by side.\n"
 "-    pageflip: quadbuffer based 3d."
 msgstr ""
+"Understøttelse af 3D.\n"
+"Understøttet på nuværende tidspunkt:\n"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1570,7 +1572,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cave width"
-msgstr ""
+msgstr "Grottebredde"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
@@ -1785,7 +1787,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Crouch speed"
-msgstr ""
+msgstr "Krybehastighed"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -2048,7 +2050,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
-msgstr ""
+msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
 msgid "Fall bobbing"
@@ -2072,7 +2074,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fast key"
-msgstr ""
+msgstr "Hurtigtast"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode acceleration"
@@ -2143,15 +2145,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
-msgstr ""
+msgstr "Flyvetast"
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
-msgstr ""
+msgstr "Flyver"
 
 #: src/settings_translation_file.cpp
 msgid "Fog"
-msgstr ""
+msgstr "Tåge"
 
 #: src/settings_translation_file.cpp
 msgid "Fog toggle key"
@@ -2159,11 +2161,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Font path"
-msgstr ""
+msgstr "Sti til font"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow"
-msgstr ""
+msgstr "Fontskygge"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow alpha"
@@ -2179,7 +2181,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Font size"
-msgstr ""
+msgstr "Skriftstørrelse"
 
 #: src/settings_translation_file.cpp
 msgid "Format of screenshots."
@@ -2212,7 +2214,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
-msgstr ""
+msgstr "Fuld skærm"
 
 #: src/settings_translation_file.cpp
 msgid "Full screen BPP"
@@ -2220,11 +2222,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fullscreen mode."
-msgstr ""
+msgstr "Fuldskærmstilstand."
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
-msgstr ""
+msgstr "Skalering af grafisk brugerflade"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter"
@@ -2236,11 +2238,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Gamma"
-msgstr ""
+msgstr "Gamma"
 
 #: src/settings_translation_file.cpp
 msgid "General"
-msgstr ""
+msgstr "Generelt"
 
 #: src/settings_translation_file.cpp
 msgid "Generate normalmaps"
@@ -2262,11 +2264,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
-msgstr ""
+msgstr "Grafik"
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
-msgstr ""
+msgstr "Tyngdekraft"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2333,15 +2335,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "IPv6"
-msgstr ""
+msgstr "IPv6"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 server"
-msgstr ""
+msgstr "IPv6-server"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 support."
-msgstr ""
+msgstr "Understøttelse af IPv6."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2469,7 +2471,7 @@ msgstr "Beholdning"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
-msgstr ""
+msgstr "Invertér mus"
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
@@ -2529,7 +2531,7 @@ msgstr "Hop"
 
 #: src/settings_translation_file.cpp
 msgid "Jumping speed"
-msgstr ""
+msgstr "Hoppehastighed"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2749,7 +2751,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Language"
-msgstr ""
+msgstr "Sprog"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave depth"
@@ -2761,7 +2763,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
-msgstr ""
+msgstr "Bladstil"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3272,7 +3274,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS"
-msgstr ""
+msgstr "Maksimal FPS"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when game is paused."
@@ -3384,11 +3386,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
-msgstr ""
+msgstr "Minikort"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap key"
-msgstr ""
+msgstr "Minikorttast"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap scan height"
@@ -3463,7 +3465,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Network"
-msgstr ""
+msgstr "Netværk"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3497,7 +3499,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Noises"
-msgstr ""
+msgstr "Lyde"
 
 #: src/settings_translation_file.cpp
 msgid "Normalmaps sampling"
@@ -3577,7 +3579,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
-msgstr ""
+msgstr "Fysik"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3587,7 +3589,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Player name"
-msgstr ""
+msgstr "Spillerens navn"
 
 #: src/settings_translation_file.cpp
 msgid "Player transfer distance"
@@ -3655,7 +3657,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Remote port"
-msgstr ""
+msgstr "Fjernport"
 
 #: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
@@ -3677,7 +3679,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "River Depth"
-msgstr ""
+msgstr "Floddybde"
 
 #: src/settings_translation_file.cpp
 msgid "River Noise"
@@ -3685,7 +3687,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "River Size"
-msgstr ""
+msgstr "Flodstørrelse"
 
 #: src/settings_translation_file.cpp
 msgid "River noise -- rivers occur close to zero"
@@ -3718,11 +3720,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
-msgstr ""
+msgstr "Skærmhøjde"
 
 #: src/settings_translation_file.cpp
 msgid "Screen width"
-msgstr ""
+msgstr "Skærmbredde"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3752,7 +3754,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Security"
-msgstr ""
+msgstr "Sikkerhed"
 
 #: src/settings_translation_file.cpp
 msgid "See http://www.sqlite.org/pragma.html#pragma_synchronous"
@@ -3777,23 +3779,23 @@ msgstr "Enligspiller"
 
 #: src/settings_translation_file.cpp
 msgid "Server URL"
-msgstr ""
+msgstr "Server-URL"
 
 #: src/settings_translation_file.cpp
 msgid "Server address"
-msgstr ""
+msgstr "Serveradresse"
 
 #: src/settings_translation_file.cpp
 msgid "Server description"
-msgstr ""
+msgstr "Serverbeskrivelse"
 
 #: src/settings_translation_file.cpp
 msgid "Server name"
-msgstr ""
+msgstr "Servernavn"
 
 #: src/settings_translation_file.cpp
 msgid "Server port"
-msgstr ""
+msgstr "Serverport"
 
 #: src/settings_translation_file.cpp
 msgid "Serverlist URL"
@@ -3886,7 +3888,7 @@ msgstr "Snige"
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
-msgstr ""
+msgstr "Lyd"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3914,7 +3916,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Support older servers"
-msgstr ""
+msgstr "Understøt ældre servere"
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -4029,7 +4031,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Time speed"
-msgstr ""
+msgstr "Tidshastighed"
 
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory."
@@ -4110,11 +4112,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "V-Sync"
-msgstr ""
+msgstr "V-Sync"
 
 #: src/settings_translation_file.cpp
 msgid "VBO"
-msgstr ""
+msgstr "VBO"
 
 #: src/settings_translation_file.cpp
 msgid "Valley Depth"
@@ -4168,7 +4170,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Volume"
-msgstr ""
+msgstr "Lydstyrke"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4180,7 +4182,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Walking speed"
-msgstr ""
+msgstr "Ganghastighed"
 
 #: src/settings_translation_file.cpp
 msgid "Water Features"
@@ -4188,7 +4190,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
-msgstr ""
+msgstr "Vandstand"
 
 #: src/settings_translation_file.cpp
 msgid "Water surface level of the world."
@@ -4333,7 +4335,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "cURL timeout"
-msgstr ""
+msgstr "cURL-tidsudløb"
 
 #, fuzzy
 #~ msgid "Downloading"
