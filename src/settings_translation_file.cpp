@@ -207,6 +207,8 @@ fake_function() {
 	gettext("Vertical screen synchronization.");
 	gettext("Field of view");
 	gettext("Field of view in degrees.");
+	gettext("Field of view for zoom");
+	gettext("Field of view while zooming in degrees.\nThis requires the \"zoom\" privilege on the server.");
 	gettext("Gamma");
 	gettext("Adjust the gamma encoding for the light tables. Lower numbers are brighter.\nThis setting is for the client only and is ignored by the server.");
 	gettext("Texture path");
