@@ -8,17 +8,17 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-05-20 15:18+0000\n"
-"Last-Translator: Andrey K. <contact@libnaru.so>\n"
-"Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
-"minetest/ru/>\n"
+"PO-Revision-Date: 2016-08-31 21:36+0000\n"
+"Last-Translator: Stas Kies <stask85@gmail.com>\n"
+"Language-Team: Russian "
+"<https://hosted.weblate.org/projects/minetest/minetest/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 2.7-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 2.8\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -410,9 +410,8 @@ msgid "Uninstall selected modpack"
 msgstr "Удалить выбранный мод-пак"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Address / Port"
-msgstr "Адрес / Порт:"
+msgstr "Адрес / Порт"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
@@ -427,24 +426,20 @@ msgid "Creative mode"
 msgstr "Режим творчества"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Damage enabled"
-msgstr "Разрешить увечья"
+msgstr "Ущерб включен"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Del. Favorite"
-msgstr "Избранное:"
+msgstr "Удалить  фаворит"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Favorite"
-msgstr "Избранное:"
+msgstr "фаворит"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Name / Password"
-msgstr "Имя / Пароль:"
+msgstr "Имя / Пароль"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -605,9 +600,8 @@ msgid "Parallax Occlusion"
 msgstr "Parallax Occlusion"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Particles"
-msgstr "Включить частицы"
+msgstr "частицы"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Reset singleplayer world"
