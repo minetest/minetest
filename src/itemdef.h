@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <iostream>
 #include <set>
+#include <vector>
 #include "itemgroup.h"
 #include "sound.h"
 class IGameDef;
@@ -42,6 +43,17 @@ enum ItemType
 	ITEM_TOOL,
 };
 
+struct WieldKeyframe
+{
+	WieldKeyframe(v3f position, f32 duration):
+		position(position),
+		duration(duration)
+	{}
+
+	v3f position;
+	f32 duration;
+};
+
 struct ItemDefinition
 {
 	/*
@@ -57,6 +69,9 @@ struct ItemDefinition
 	std::string inventory_image; // Optional for nodes, mandatory for tools/craftitems
 	std::string wield_image; // If empty, inventory_image or mesh (only nodes) is used
 	v3f wield_scale;
+
+
+	std::vector<WieldKeyframe> keyframes;
 
 	/*
 		Item stack and interaction properties

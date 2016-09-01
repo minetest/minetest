@@ -44,6 +44,8 @@ public:
 			v3f wield_scale, ITextureSource *tsrc, u8 num_frames);
 	void setItem(const ItemStack &item, IGameDef *gamedef);
 
+	ItemStack getItem();
+
 	// Sets the vertex color of the wield mesh.
 	// Must only be used if the constructor was called with lighting = false
 	void setColor(video::SColor color);

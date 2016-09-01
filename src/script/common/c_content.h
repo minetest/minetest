@@ -46,6 +46,7 @@ class INodeDefManager;
 struct PointedThing;
 struct ItemStack;
 struct ItemDefinition;
+struct WieldKeyframe;
 struct ToolCapabilities;
 struct ObjectProperties;
 struct SimpleSoundSpec;
@@ -86,6 +87,8 @@ void               push_tool_capabilities    (lua_State *L,
 
 ItemDefinition     read_item_definition      (lua_State *L, int index,
                                               ItemDefinition default_def);
+void               read_wield_keyframes     (lua_State *L, int table,
+                                            std::vector<WieldKeyframe> &keyframes);
 void               read_object_properties    (lua_State *L, int index,
                                               ObjectProperties *prop);
 void               push_object_properties    (lua_State *L,

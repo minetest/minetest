@@ -185,6 +185,9 @@ private:
 
 	scene::ISceneManager* m_wieldmgr;
 	WieldMeshSceneNode* m_wieldnode;
+	std::vector<WieldKeyframe> m_wieldnode_keyframes;
+	int m_wieldnode_keyframe;
+	f32 m_wieldnode_keyframe_duration;
 
 	// draw control
 	MapDrawControl& m_draw_control;

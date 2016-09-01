@@ -82,6 +82,10 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	sound_place = def.sound_place;
 	sound_place_failed = def.sound_place_failed;
 	range = def.range;
+	for (size_t i = 0; i < def.keyframes.size(); i++) {
+		WieldKeyframe frame = def.keyframes[i];
+		keyframes.push_back(WieldKeyframe(frame.position, frame.duration));
+	}
 	return *this;
 }
 
@@ -117,6 +121,7 @@ void ItemDefinition::reset()
 	sound_place = SimpleSoundSpec();
 	sound_place_failed = SimpleSoundSpec();
 	range = -1;
+	keyframes.clear();
 
 	node_placement_prediction = "";
 }
@@ -152,7 +157,7 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 		writeS16(os, i->second);
 	}
 	os<<serializeString(node_placement_prediction);
-	if(protocol_version > 17){
+	if(protocol_version > 17) {
 		//serializeSimpleSoundSpec(sound_place, os);
 		os<<serializeString(sound_place.name);
 		writeF1000(os, sound_place.gain);
@@ -161,6 +166,13 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 		writeF1000(os, range);
 		os << serializeString(sound_place_failed.name);
 		writeF1000(os, sound_place_failed.gain);
+
+		writeU16(os, (u16)keyframes.size());
+		for (int i = 0; i < keyframes.size(); i++) {
+			WieldKeyframe frame = keyframes[i];
+			writeV3F1000(os, frame.position);
+			writeF1000(os, frame.duration);
+		}
 	}
 }
 
@@ -218,6 +230,13 @@ void ItemDefinition::deSerialize(std::istream &is)
 	try {
 		sound_place_failed.name = deSerializeString(is);
 		sound_place_failed.gain = readF1000(is);
+
+		u16 frames = readU16(is);
+		for (int i = 0; i < frames; i++) {
+			v3f pos = readV3F1000(is);
+			f32 duration = readF1000(is);
+			keyframes.push_back(WieldKeyframe(pos, duration));
+		}
 	} catch(SerializationError &e) {};
 }
 

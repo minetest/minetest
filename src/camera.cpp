@@ -70,6 +70,8 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 
 	m_wield_change_timer(0.125),
 	m_wield_item_next(),
+	m_wieldnode_keyframe(0),
+	m_wieldnode_keyframe_duration(0),
 
 	m_camera_mode(CAMERA_MODE_FIRST)
 {
@@ -150,8 +152,13 @@ void Camera::step(f32 dtime)
 	bool was_under_zero = m_wield_change_timer < 0;
 	m_wield_change_timer = MYMIN(m_wield_change_timer + dtime, 0.125);
 
-	if (m_wield_change_timer >= 0 && was_under_zero)
+	if (m_wield_change_timer >= 0 && was_under_zero) {
+		const ItemDefinition &def = m_gamedef->idef()->get(m_wield_item_next.name);
+		m_wieldnode_keyframes = def.keyframes;
+		m_wieldnode_keyframe = 0;
+		m_wieldnode_keyframe_duration = 0;
 		m_wieldnode->setItem(m_wield_item_next, m_gamedef);
+	}
 
 	if (m_view_bobbing_state != 0)
 	{
@@ -196,13 +203,23 @@ void Camera::step(f32 dtime)
 
 	if (m_digging_button != -1)
 	{
-		f32 offset = dtime * 3.5;
+		f32 offset = dtime;
+		if (m_wieldnode_keyframe_duration > 0) {
+			offset /= m_wieldnode_keyframe_duration;
+		} else {
+			offset *= 3.5;
+		}
 		float m_digging_anim_was = m_digging_anim;
 		m_digging_anim += offset;
 		if (m_digging_anim >= 1)
 		{
 			m_digging_anim = 0;
-			m_digging_button = -1;
+			m_wieldnode_keyframe++;
+			if (m_wieldnode_keyframe < m_wieldnode_keyframes.size()) {
+				m_wieldnode_keyframe_duration = m_wieldnode_keyframes[m_wieldnode_keyframe].duration;
+			} else {
+				m_digging_button = -1;
+			}
 		}
 		float lim = 0.15;
 		if(m_digging_anim_was < lim && m_digging_anim >= lim)
@@ -413,8 +430,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	//v3f wield_rotation = v3f(-100, 120, -100);
 	v3f wield_rotation = v3f(-100, 120, -100);
 	wield_position.Y += fabs(m_wield_change_timer)*320 - 40;
-	if(m_digging_anim < 0.05 || m_digging_anim > 0.5)
-	{
+	if(m_digging_anim < 0.05 || m_digging_anim > 0.5) {
 		f32 frac = 1.0;
 		if(m_digging_anim > 0.5)
 			frac = 2.0 * (m_digging_anim - 0.5);
@@ -429,20 +445,33 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 		//wield_rotation.X -= frac * 15.0 * pow(ratiothing2, 1.4f);
 		//wield_rotation.Z += frac * 15.0 * pow(ratiothing2, 1.0f);
 	}
-	if (m_digging_button != -1)
-	{
-		f32 digfrac = m_digging_anim;
-		wield_position.X -= 50 * sin(pow(digfrac, 0.8f) * M_PI);
-		wield_position.Y += 24 * sin(digfrac * 1.8 * M_PI);
-		wield_position.Z += 25 * 0.5;
 
-		// Euler angles are PURE EVIL, so why not use quaternions?
-		core::quaternion quat_begin(wield_rotation * core::DEGTORAD);
-		core::quaternion quat_end(v3f(80, 30, 100) * core::DEGTORAD);
-		core::quaternion quat_slerp;
-		quat_slerp.slerp(quat_begin, quat_end, sin(digfrac * M_PI));
-		quat_slerp.toEuler(wield_rotation);
-		wield_rotation *= core::RADTODEG;
+	if (m_digging_button != -1)	{
+		errorstream << "Digging anim! " << m_digging_anim << " ft " << frametime << std::endl;
+		f32 digfrac = m_digging_anim;
+
+		if (m_wieldnode_keyframes.empty()) {
+			wield_position.X -= 50 * sin(pow(digfrac, 0.8f) * M_PI);
+			wield_position.Y += 24 * sin(digfrac * 1.8 * M_PI);
+			wield_position.Z += 25 * 0.5;
+
+			// Euler angles are PURE EVIL, so why not use quaternions?
+			core::quaternion quat_begin(wield_rotation * core::DEGTORAD);
+			core::quaternion quat_end(v3f(80, 30, 100) * core::DEGTORAD);
+			core::quaternion quat_slerp;
+			quat_slerp.slerp(quat_begin, quat_end, sin(digfrac * M_PI));
+			quat_slerp.toEuler(wield_rotation);
+			wield_rotation *= core::RADTODEG;
+		} else {
+			v3f last = wield_position;
+			if (m_wieldnode_keyframe > 0) {
+				last = m_wieldnode_keyframes[m_wieldnode_keyframe - 1].position;
+			}
+
+			v3f delta = m_wieldnode_keyframes[m_wieldnode_keyframe].position;
+			delta -= last;
+			wield_position = last + delta * m_digging_anim;
+		}
 	} else {
 		f32 bobfrac = my_modf(m_view_bobbing_anim);
 		wield_position.X -= sin(bobfrac*M_PI*2.0) * 3.0;
@@ -496,8 +525,16 @@ void Camera::updateViewingRange()
 
 void Camera::setDigging(s32 button)
 {
-	if (m_digging_button == -1)
+	if (m_digging_button == -1) {
 		m_digging_button = button;
+
+		if (!m_wieldnode_keyframes.empty()) {
+			m_wieldnode_keyframe = 0;
+			m_wieldnode_keyframe_duration = m_wieldnode_keyframes[0].duration;
+		}
+
+		errorstream << "Set digging" << std::endl;
+	}
 }
 
 void Camera::wield(const ItemStack &item)
