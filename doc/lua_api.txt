@@ -2622,13 +2622,17 @@ These functions return the leftover itemstack.
        the creative mode setting, and checks for "sneak" to set the `invert_wall`
        parameter.
 
-* `minetest.forceload_block(pos)`
+* `minetest.forceload_block(pos[, transient])`
     * forceloads the position `pos`.
     * returns `true` if area could be forceloaded
-    * Please note that forceloaded areas are saved when the server restarts.
+    * If `transient` is `false` or absent, the forceload will be persistent
+      (saved between server runs). If `true`, the forceload will be transient
+      (not saved between server runs).
 
-* `minetest.forceload_free_block(pos)`
+* `minetest.forceload_free_block(pos[, transient])`
     * stops forceloading the position `pos`
+    * If `transient` is `false` or absent, frees a persistent forceload.
+      If `true`, frees a transient forceload.
 
 * `minetest.request_insecure_environment()`: returns an environment containing
   insecure functions if the calling mod has been listed as trusted in the
