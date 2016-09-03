@@ -5,6 +5,7 @@ core.forceload_block = nil
 core.forceload_free_block = nil
 
 local blocks_forceloaded
+local blocks_temploaded = {}
 local total_forceloaded = 0
 
 local BLOCKSIZE = core.MAP_BLOCKSIZE
@@ -15,32 +16,52 @@ local function get_blockpos(pos)
 		z = math.floor(pos.z/BLOCKSIZE)}
 end
 
-function core.forceload_block(pos)
+-- When we create/free a forceload, it's either transient or persistent. We want
+-- to add to/remove from the table that corresponds to the type of forceload, but
+-- we also need the other table because whether we forceload a block depends on
+-- both tables.
+-- This function returns the "primary" table we are adding to/removing from, and
+-- the other table.
+local function get_relevant_tables(transient)
+	if transient then
+		return blocks_temploaded, blocks_forceloaded
+	else
+		return blocks_forceloaded, blocks_temploaded
+	end
+end
+
+function core.forceload_block(pos, transient)
 	local blockpos = get_blockpos(pos)
 	local hash = core.hash_node_position(blockpos)
-	if blocks_forceloaded[hash] ~= nil then
-		blocks_forceloaded[hash] = blocks_forceloaded[hash] + 1
+	local relevant_table, other_table = get_relevant_tables(transient)
+	if relevant_table[hash] ~= nil then
+		relevant_table[hash] = relevant_table[hash] + 1
 		return true
+	elseif other_table[hash] ~= nil then
+		relevant_table[hash] = 1
 	else
 		if total_forceloaded >= (tonumber(core.setting_get("max_forceloaded_blocks")) or 16) then
 			return false
 		end
 		total_forceloaded = total_forceloaded+1
-		blocks_forceloaded[hash] = 1
+		relevant_table[hash] = 1
 		forceload_block(blockpos)
 		return true
 	end
 end
 
-function core.forceload_free_block(pos)
+function core.forceload_free_block(pos, transient)
 	local blockpos = get_blockpos(pos)
 	local hash = core.hash_node_position(blockpos)
-	if blocks_forceloaded[hash] == nil then return end
-	if blocks_forceloaded[hash] > 1 then
-		blocks_forceloaded[hash] = blocks_forceloaded[hash] - 1
+	local relevant_table, other_table = get_relevant_tables(transient)
+	if relevant_table[hash] == nil then return end
+	if relevant_table[hash] > 1 then
+		relevant_table[hash] = relevant_table[hash] - 1
+	elseif other_table[hash] ~= nil then
+		relevant_table[hash] = nil
 	else
 		total_forceloaded = total_forceloaded-1
-		blocks_forceloaded[hash] = nil
+		relevant_table[hash] = nil
 		forceload_free_block(blockpos)
 	end
 end
