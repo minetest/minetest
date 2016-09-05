@@ -180,6 +180,8 @@ public:
 	void CompletionSend(u16 &cursorpos, std::wstring &line);
 	void CompletionReceive(u16 cursorpos, const std::wstring &message);
 
+	void lnickCompletion(const std::list<std::string> &names);
+
 	// Update console size and reformat the visible portion of the prompt
 	void reformat(u32 cols);
 	// Get visible portion of the prompt.

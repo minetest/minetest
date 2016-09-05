@@ -484,6 +484,80 @@ void ChatPrompt::CompletionReceive(u16 cursorpos, const std::wstring &message)
 	}
 }
 
+// Client side completion
+void ChatPrompt::lnickCompletion(const std::list<std::string> &names)
+{
+	// Get the word at the end
+	u32 prefix_end = m_line.size();
+	if (prefix_end < 1)
+		return; // No text
+
+	u32 prefix_start = prefix_end;
+	while (!isspace(m_line[prefix_start]) && prefix_start--);
+	++prefix_start;
+
+	// If there's no prefix or the cursor is not in it, abort
+	if (prefix_start == prefix_end || (u32) m_cursor < prefix_start)
+		return; // No prefix
+
+	std::wstring prefix = m_line.substr(prefix_start, prefix_end - prefix_start);
+
+	// Find all names that start with the selected prefix
+	u32 lmin = -1;
+	std::vector<std::wstring> completions;
+	for (std::list<std::string>::const_iterator
+			i = names.begin();
+			i != names.end(); ++i) {
+		if (!str_starts_with(narrow_to_wide(*i), prefix, true))
+			continue;
+		std::wstring completion = narrow_to_wide(*i);
+		lmin = MYMIN(lmin, completion.size());
+		completions.push_back(completion);
+	}
+
+	// Abort if no completion was found
+	if (completions.empty())
+		return;
+
+	// If one completion was found, set the text to it
+	if (completions.size() == 1) {
+		std::wstring &replacement = completions[0];
+		if (!prefix_start)
+			replacement += L":";
+		replacement += L" ";
+		// replace existing word with replacement word,
+		// place the cursor at the end and record the completion prefix
+		m_line.replace(prefix_start, prefix_end - prefix_start, replacement);
+		m_cursor = prefix_start + replacement.size();
+		clampView();
+		//m_lcompletion_second_invocation = false;
+		return;
+	}
+
+	// Find out up to which letter each completion is the same
+	u32 prefixlength = prefix.size();
+	u32 l = prefixlength;
+	while (++l <= lmin)
+		for (u32 i = 0; i < completions.size(); ++i)
+			if (completions[i][l] != prefix[l])
+				goto after_inequal;
+	after_inequal: --l;
+
+	// Tell the available completions if no letters can be added
+	if (l == prefixlength) {
+		std::wstring message = L"Available completions: ";
+		for (u32 i = 0; i < completions.size(); ++i)
+			message += completions[i] + L", ";
+		addToHistory(message);
+		return;
+	}
+
+	// Extend the prefix
+	m_line += completions[0].substr(lmin + 1, l);
+	m_cursor = prefix_end + l - lmin;
+	clampView();
+}
+
 void ChatPrompt::reformat(u32 cols)
 {
 	if (cols <= m_prompt.size())

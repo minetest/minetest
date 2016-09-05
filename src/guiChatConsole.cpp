@@ -621,13 +621,9 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		}
 		else if(event.KeyInput.Key == KEY_TAB)
 		{
-			// Chat Autocompletion
-			std::wstring line;
-			u16 cursorpos;
-
-			prompt.CompletionSend(cursorpos, line);
-			m_client->autocompletion_chatprompt = &prompt;
-			m_client->sendChatAutocomplete(cursorpos, line);
+			// Client side chat autocompletion
+			std::list<std::string> names = m_client->getConnectedPlayerNames();
+			prompt.lnickCompletion(names);
 
 			return true;
 		}

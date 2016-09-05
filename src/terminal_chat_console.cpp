@@ -279,8 +279,16 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 				ChatPrompt::CURSOROP_SCOPE_LINE);
 			break;
 		case KEY_TAB:
-			// Tab pressed
-			// How to get here ingame? ~HybridDog
+			// Chat autocompletion
+			{
+				std::wstring line;
+				u16 cursorpos;
+
+				prompt.CompletionSend(cursorpos, line);
+				//m_client->autocompletion_chatprompt = &prompt;
+				//m_client->sendChatAutocomplete(cursorpos, line);
+			}
+
 			break;
 		default:
 			// Add character to the prompt,
