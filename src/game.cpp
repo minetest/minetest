@@ -273,7 +273,7 @@ inline bool isPointableNode(const MapNode &n,
 {
 	const ContentFeatures &features = client->getNodeDefManager()->get(n);
 	return features.pointable ||
-	       (liquids_pointable && features.isLiquid());
+	       (liquids_pointable && features.liquid_type == LIQUID_SOURCE);
 }
 
 static inline void getNeighborConnectingFace(v3s16 p, INodeDefManager *nodedef,
