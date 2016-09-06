@@ -1109,7 +1109,7 @@ static std::string unescape_string(const std::string &str, const char esc = '\\'
 	out.reserve(str.size());
 	while (1) {
 		cpos = str.find_first_of(esc, pos);
-		if(cpos == std::string::npos) {
+		if (cpos == std::string::npos) {
 			out += str.substr(pos);
 			break;
 		}
