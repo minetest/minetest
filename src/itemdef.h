@@ -61,7 +61,7 @@ struct ItemDefinition
 	/*
 		Item stack and interaction properties
 	*/
-	s16 stack_max;
+	u16 stack_max;
 	bool usable;
 	bool liquids_pointable;
 	// May be NULL. If non-NULL, deleted by destructor

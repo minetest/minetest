@@ -80,15 +80,14 @@ struct ItemStack
 	// Maximum size of a stack
 	u16 getStackMax(IItemDefManager *itemdef) const
 	{
-		s16 max = itemdef->get(name).stack_max;
-		return (max >= 0) ? max : 0;
+		return itemdef->get(name).stack_max;
 	}
 
 	// Number of items that can be added to this stack
 	u16 freeSpace(IItemDefManager *itemdef) const
 	{
 		u16 max = getStackMax(itemdef);
-		if(count > max)
+		if (count >= max)
 			return 0;
 		return max - count;
 	}
