@@ -3329,13 +3329,15 @@ Registered entities
     * It has the member `.object`, which is an `ObjectRef` pointing to the object
     * The original prototype stuff is visible directly via a metatable
 * Callbacks:
-    * `on_activate(self, staticdata)`
+    * `on_activate(self, staticdata, dtime_s)`
         * Called when the object is instantiated.
+        * `dtime_s` is the time passed since the object was unloaded, which can
+          be used for updating the entity state.
     * `on_step(self, dtime)`
         * Called on every server tick, after movement and collision processing.
           `dtime` is usually 0.1 seconds, as per the `dedicated_server_step` setting
           `in minetest.conf`.
-    * `on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir`
+    * `on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir)`
         * Called when somebody punches the object.
         * Note that you probably want to handle most punches using the
           automatic armor group system.
@@ -3463,7 +3465,7 @@ Definition tables
 
         on_activate = function(self, staticdata, dtime_s),
         on_step = function(self, dtime),
-        on_punch = function(self, hitter),
+        on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir),
         on_rightclick = function(self, clicker),
         get_staticdata = function(self),
     --  ^ Called sometimes; the string returned is passed to on_activate when
