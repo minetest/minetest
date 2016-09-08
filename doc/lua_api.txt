@@ -2886,6 +2886,7 @@ chosen for you.
 #### Methods
 * `get_area(id, include_borders, include_data)`: returns the area with the id `id`.
   (optional) Boolean values `include_borders` and `include_data` control what's copied.
+  Returns nil if specified area id does not exist.
 * `get_areas_for_pos(pos, include_borders, include_data)`: returns all areas that contain
   the position `pos`. (optional) Boolean values `include_borders` and `include_data` control
   what's copied.

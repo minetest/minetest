@@ -111,6 +111,9 @@ int LuaAreaStore::l_get_area(lua_State *L)
 	const Area *res;
 
 	res = ast->getArea(id);
+	if (!res)
+		return 0;
+
 	push_area(L, res, include_borders, include_data);
 
 	return 1;
