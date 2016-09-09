@@ -1138,7 +1138,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				u8 p2mesh = 0;
 				if (f.param_type_2 == CPT2_DEGROTATE)
 					rotate_degree = n.param2 * 2;
-				else if (f.param_type_2 != CPT2_MESHOPTIONS) {
+				if (f.param_type_2 != CPT2_MESHOPTIONS) {
 					if (j == 0) {
 						for (u16 i = 0; i < 4; i++)
 							vertices[i].Pos.rotateXZBy(46 + rotate_degree);
