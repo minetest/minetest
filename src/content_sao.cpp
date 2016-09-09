@@ -1326,52 +1326,52 @@ std::string PlayerSAO::getPropertyPacket()
 
 bool PlayerSAO::checkMovementCheat()
 {
-	bool cheated = false;
-	if(isAttached() || m_is_singleplayer ||
-			g_settings->getBool("disable_anticheat"))
-	{
+	if (isAttached() || m_is_singleplayer ||
+			g_settings->getBool("disable_anticheat")) {
 		m_last_good_position = m_player->getPosition();
+		return false;
 	}
-	else
-	{
-		/*
-			Check player movements
 
-			NOTE: Actually the server should handle player physics like the
-			client does and compare player's position to what is calculated
-			on our side. This is required when eg. players fly due to an
-			explosion. Altough a node-based alternative might be possible
-			too, and much more lightweight.
-		*/
+	bool cheated = false;
+	/*
+		Check player movements
 
-		float player_max_speed = 0;
-		if(m_privs.count("fast") != 0){
-			// Fast speed
-			player_max_speed = m_player->movement_speed_fast;
-		} else {
-			// Normal speed
-			player_max_speed = m_player->movement_speed_walk;
-		}
-		// Tolerance. With the lag pool we shouldn't need it.
-		//player_max_speed *= 2.5;
-		//player_max_speed_up *= 2.5;
+		NOTE: Actually the server should handle player physics like the
+		client does and compare player's position to what is calculated
+		on our side. This is required when eg. players fly due to an
+		explosion. Altough a node-based alternative might be possible
+		too, and much more lightweight.
+	*/
 
-		v3f diff = (m_player->getPosition() - m_last_good_position);
-		float d_vert = diff.Y;
-		diff.Y = 0;
-		float d_horiz = diff.getLength();
-		float required_time = d_horiz/player_max_speed;
-		if(d_vert > 0 && d_vert/player_max_speed > required_time)
-			required_time = d_vert/player_max_speed;
-		if(m_move_pool.grab(required_time)){
-			m_last_good_position = m_player->getPosition();
-		} else {
-			actionstream<<"Player "<<m_player->getName()
-					<<" moved too fast; resetting position"
-					<<std::endl;
-			m_player->setPosition(m_last_good_position);
-			cheated = true;
-		}
+	float player_max_speed = 0;
+
+	if (m_privs.count("fast") != 0) {
+		// Fast speed
+		player_max_speed = m_player->movement_speed_fast * m_physics_override_speed;
+	} else {
+		// Normal speed
+		player_max_speed = m_player->movement_speed_walk * m_physics_override_speed;
+	}
+	// Tolerance. The lag pool does this a bit.
+	//player_max_speed *= 2.5;
+
+	v3f diff = (m_player->getPosition() - m_last_good_position);
+	float d_vert = diff.Y;
+	diff.Y = 0;
+	float d_horiz = diff.getLength();
+	float required_time = d_horiz / player_max_speed;
+
+	if (d_vert > 0 && d_vert / player_max_speed > required_time)
+		required_time = d_vert / player_max_speed; // Moving upwards
+
+	if (m_move_pool.grab(required_time)) {
+		m_last_good_position = m_player->getPosition();
+	} else {
+		actionstream << "Player " << m_player->getName()
+				<< " moved too fast; resetting position"
+				<< std::endl;
+		m_player->setPosition(m_last_good_position);
+		cheated = true;
 	}
 	return cheated;
 }
