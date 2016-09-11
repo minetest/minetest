@@ -3909,7 +3909,7 @@ The Biome API is still in an experimental phase and subject to change.
     {
         deco_type = "simple", -- See "Decoration types"
         place_on = "default:dirt_with_grass",
-    --  ^ Node that decoration can be placed on
+    --  ^ Node (or list of nodes) that the decoration can be placed on
         sidelen = 8,
     --  ^ Size of divisions made in the chunk being generated.
     --  ^ If the chunk size is not evenly divisible by sidelen, sidelen is made equal to the chunk size.
@@ -3928,6 +3928,13 @@ The Biome API is still in an experimental phase and subject to change.
     -- ^ Minimum and maximum `y` positions these decorations can be generated at.
     -- ^ This parameter refers to the `y` position of the decoration base, so
     --   the actual maximum height would be `height_max + size.Y`.
+        spawn_by = "default:water",
+    --  ^ Node (or list of nodes) that the decoration only spawns next to.
+    --  ^ Checks two horizontal planes of neighbouring nodes (including diagonal neighbours),
+    --  ^ one plane at Y = surface and one plane at Y = surface = + 1.
+        num_spawn_by = 1,
+    --  ^ Number of spawn_by nodes that must be surrounding the decoration position to occur.
+    --  ^ If absent or -1, decorations occur next to any nodes.
         flags = "liquid_surface, force_placement",
     --  ^ Flags for all decoration types.
     --  ^ "liquid_surface": Instead of placement on the highest solid surface
@@ -3945,13 +3952,6 @@ The Biome API is still in an experimental phase and subject to change.
         height_max = 0,
     --      ^ Number of nodes the decoration can be at maximum.
     --  ^ If absent, the parameter 'height' is used as a constant.
-        spawn_by = "default:water",
-    --  ^ Node that the decoration only spawns next to.
-    --  ^ The neighbours checked are the 8 nodes horizontally surrounding the lowest node of the
-    --  ^ decoration, and the 8 nodes horizontally surrounding the ground node below the decoration.
-        num_spawn_by = 1,
-    --  ^ Number of spawn_by nodes that must be surrounding the decoration position to occur.
-    --  ^ If absent or -1, decorations occur next to any nodes.
 
         ----- Schematic-type parameters
         schematic = "foobar.mts",

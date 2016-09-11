@@ -26,12 +26,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 
 FlagDesc flagdesc_deco[] = {
-	{"place_center_x", DECO_PLACE_CENTER_X},
-	{"place_center_y", DECO_PLACE_CENTER_Y},
-	{"place_center_z", DECO_PLACE_CENTER_Z},
+	{"place_center_x",  DECO_PLACE_CENTER_X},
+	{"place_center_y",  DECO_PLACE_CENTER_Y},
+	{"place_center_z",  DECO_PLACE_CENTER_Z},
 	{"force_placement", DECO_FORCE_PLACEMENT},
-	{"liquid_surface", DECO_LIQUID_SURFACE},
-	{NULL,             0}
+	{"liquid_surface",  DECO_LIQUID_SURFACE},
+	{NULL,              0}
 };
 
 
@@ -82,6 +82,56 @@ Decoration::~Decoration()
 void Decoration::resolveNodeNames()
 {
 	getIdsFromNrBacklog(&c_place_on);
+	getIdsFromNrBacklog(&c_spawnby);
+}
+
+
+bool Decoration::canPlaceDecoration(MMVManip *vm, v3s16 p)
+{
+	// Check if the decoration can be placed on this node
+	u32 vi = vm->m_area.index(p);
+	if (!CONTAINS(c_place_on, vm->m_data[vi].getContent()))
+		return false;
+
+	// Don't continue if there are no spawnby constraints
+	if (nspawnby == -1)
+		return true;
+
+	int nneighs = 0;
+	static const v3s16 dirs[16] = {
+		v3s16( 0, 0,  1),
+		v3s16( 0, 0, -1),
+		v3s16( 1, 0,  0),
+		v3s16(-1, 0,  0),
+		v3s16( 1, 0,  1),
+		v3s16(-1, 0,  1),
+		v3s16(-1, 0, -1),
+		v3s16( 1, 0, -1),
+
+		v3s16( 0, 1,  1),
+		v3s16( 0, 1, -1),
+		v3s16( 1, 1,  0),
+		v3s16(-1, 1,  0),
+		v3s16( 1, 1,  1),
+		v3s16(-1, 1,  1),
+		v3s16(-1, 1, -1),
+		v3s16( 1, 1, -1)
+	};
+
+	// Check these 16 neighbouring nodes for enough spawnby nodes
+	for (size_t i = 0; i != ARRLEN(dirs); i++) {
+		u32 index = vm->m_area.index(p + dirs[i]);
+		if (!vm->m_area.contains(index))
+			continue;
+
+		if (CONTAINS(c_spawnby, vm->m_data[index].getContent()))
+			nneighs++;
+	}
+
+	if (nneighs < nspawnby)
+		return false;
+
+	return true;
 }
 
 
@@ -236,66 +286,15 @@ void DecoSimple::resolveNodeNames()
 {
 	Decoration::resolveNodeNames();
 	getIdsFromNrBacklog(&c_decos);
-	getIdsFromNrBacklog(&c_spawnby);
-}
-
-
-bool DecoSimple::canPlaceDecoration(MMVManip *vm, v3s16 p)
-{
-	// Don't bother if there aren't any decorations to place
-	if (c_decos.size() == 0)
-		return false;
-
-	u32 vi = vm->m_area.index(p);
-
-	// Check if the decoration can be placed on this node
-	if (!CONTAINS(c_place_on, vm->m_data[vi].getContent()))
-		return false;
-
-	// Don't continue if there are no spawnby constraints
-	if (nspawnby == -1)
-		return true;
-
-	int nneighs = 0;
-	v3s16 dirs[16] = {
-		v3s16( 0, 0,  1),
-		v3s16( 0, 0, -1),
-		v3s16( 1, 0,  0),
-		v3s16(-1, 0,  0),
-		v3s16( 1, 0,  1),
-		v3s16(-1, 0,  1),
-		v3s16(-1, 0, -1),
-		v3s16( 1, 0, -1),
-
-		v3s16( 0, 1,  1),
-		v3s16( 0, 1, -1),
-		v3s16( 1, 1,  0),
-		v3s16(-1, 1,  0),
-		v3s16( 1, 1,  1),
-		v3s16(-1, 1,  1),
-		v3s16(-1, 1, -1),
-		v3s16( 1, 1, -1)
-	};
-
-	// Check a Moore neighborhood if there are enough spawnby nodes
-	for (size_t i = 0; i != ARRLEN(dirs); i++) {
-		u32 index = vm->m_area.index(p + dirs[i]);
-		if (!vm->m_area.contains(index))
-			continue;
-
-		if (CONTAINS(c_spawnby, vm->m_data[index].getContent()))
-			nneighs++;
-	}
-
-	if (nneighs < nspawnby)
-		return false;
-
-	return true;
 }
 
 
 size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 {
+	// Don't bother if there aren't any decorations to place
+	if (c_decos.size() == 0)
+		return 0;
+
 	if (!canPlaceDecoration(vm, p))
 		return 0;
 
@@ -345,9 +344,7 @@ size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 	if (schematic == NULL)
 		return 0;
 
-	u32 vi = vm->m_area.index(p);
-	content_t c = vm->m_data[vi].getContent();
-	if (!CONTAINS(c_place_on, c))
+	if (!canPlaceDecoration(vm, p))
 		return 0;
 
 	if (flags & DECO_PLACE_CENTER_X)
