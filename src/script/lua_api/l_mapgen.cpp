@@ -902,6 +902,7 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	deco->fill_ratio = getfloatfield_default(L, index, "fill_ratio", 0.02);
 	deco->y_min      = getintfield_default(L, index, "y_min", -31000);
 	deco->y_max      = getintfield_default(L, index, "y_max", 31000);
+	deco->nspawnby   = getintfield_default(L, index, "num_spawn_by", -1);
 	deco->sidelen    = getintfield_default(L, index, "sidelen", 8);
 	if (deco->sidelen <= 0) {
 		errorstream << "register_decoration: sidelen must be "
@@ -928,6 +929,14 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	if (get_biome_list(L, -1, biomemgr, &deco->biomes))
 		errorstream << "register_decoration: couldn't get all biomes " << std::endl;
 	lua_pop(L, 1);
+
+	//// Get node name(s) to 'spawn by'
+	size_t nnames = getstringlistfield(L, index, "spawn_by", &deco->m_nodenames);
+	deco->m_nnlistsizes.push_back(nnames);
+	if (nnames == 0 && deco->nspawnby != -1) {
+		errorstream << "register_decoration: no spawn_by nodes defined,"
+			" but num_spawn_by specified" << std::endl;
+	}
 
 	//// Handle decoration type-specific parameters
 	bool success = false;
@@ -962,12 +971,10 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 
 bool read_deco_simple(lua_State *L, DecoSimple *deco)
 {
-	size_t nnames;
 	int index = 1;
 
 	deco->deco_height     = getintfield_default(L, index, "height", 1);
 	deco->deco_height_max = getintfield_default(L, index, "height_max", 0);
-	deco->nspawnby        = getintfield_default(L, index, "num_spawn_by", -1);
 
 	if (deco->deco_height <= 0) {
 		errorstream << "register_decoration: simple decoration height"
@@ -975,19 +982,11 @@ bool read_deco_simple(lua_State *L, DecoSimple *deco)
 		return false;
 	}
 
-	nnames = getstringlistfield(L, index, "decoration", &deco->m_nodenames);
+	size_t nnames = getstringlistfield(L, index, "decoration", &deco->m_nodenames);
 	deco->m_nnlistsizes.push_back(nnames);
 	if (nnames == 0) {
 		errorstream << "register_decoration: no decoration nodes "
 			"defined" << std::endl;
-		return false;
-	}
-
-	nnames = getstringlistfield(L, index, "spawn_by", &deco->m_nodenames);
-	deco->m_nnlistsizes.push_back(nnames);
-	if (nnames == 0 && deco->nspawnby != -1) {
-		errorstream << "register_decoration: no spawn_by nodes defined,"
-			" but num_spawn_by specified" << std::endl;
 		return false;
 	}
 

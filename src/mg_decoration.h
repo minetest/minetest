@@ -68,6 +68,7 @@ public:
 
 	virtual void resolveNodeNames();
 
+	bool canPlaceDecoration(MMVManip *vm, v3s16 p);
 	size_t placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	//size_t placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 
@@ -82,6 +83,8 @@ public:
 	s16 y_max;
 	float fill_ratio;
 	NoiseParams np;
+	std::vector<content_t> c_spawnby;
+	s16 nspawnby;
 
 	UNORDERED_SET<u8> biomes;
 	//std::list<CutoffData> cutoffs;
@@ -90,17 +93,13 @@ public:
 
 class DecoSimple : public Decoration {
 public:
+	virtual void resolveNodeNames();
 	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p);
-	bool canPlaceDecoration(MMVManip *vm, v3s16 p);
 	virtual int getHeight();
 
-	virtual void resolveNodeNames();
-
 	std::vector<content_t> c_decos;
-	std::vector<content_t> c_spawnby;
 	s16 deco_height;
 	s16 deco_height_max;
-	s16 nspawnby;
 };
 
 class DecoSchematic : public Decoration {
