@@ -21,7 +21,7 @@ function get_mods(path,retval,modpack)
 	
 	for _, name in ipairs(mods) do
 		if name:sub(1, 1) ~= "." then
-			local prefix = path .. DIR_DELIM .. name .. DIR_DELIM
+			local prefix = path .. "/" .. name .. "/"
 			local toadd = {}
 			retval[#retval + 1] = toadd
 
@@ -76,7 +76,7 @@ function modmgr.getbasefolder(temppath)
 		}
 	end
 
-	local testfile = io.open(temppath .. DIR_DELIM .. "init.lua","r")
+	local testfile = io.open(temppath .. "/init.lua","r")
 	if testfile ~= nil then
 		testfile:close()
 		return {
@@ -85,7 +85,7 @@ function modmgr.getbasefolder(temppath)
 				}
 	end
 
-	testfile = io.open(temppath .. DIR_DELIM .. "modpack.txt","r")
+	testfile = io.open(temppath .. "/modpack.txt","r")
 	if testfile ~= nil then
 		testfile:close()
 		return {
@@ -105,22 +105,22 @@ function modmgr.getbasefolder(temppath)
 	end
 
 	testfile =
-	io.open(temppath .. DIR_DELIM .. subdirs[1] ..DIR_DELIM .."init.lua","r")
+	io.open(temppath .. "/" .. subdirs[1] .. "/" .. "init.lua", "r")
 	if testfile ~= nil then
 		testfile:close()
 		return {
 			type="mod",
-			path= temppath .. DIR_DELIM .. subdirs[1]
+			path= temppath .. "/" .. subdirs[1]
 			}
 	end
 
 	testfile =
-	io.open(temppath .. DIR_DELIM .. subdirs[1] ..DIR_DELIM .."modpack.txt","r")
+	io.open(temppath .. "/" .. subdirs[1] .. "/modpack.txt","r")
 	if testfile ~= nil then
 		testfile:close()
 		return {
 			type="modpack",
-			path=temppath ..  DIR_DELIM .. subdirs[1]
+			path=temppath .. "/" .. subdirs[1]
 			}
 	end
 
@@ -188,7 +188,7 @@ end
 
 --------------------------------------------------------------------------------
 function modmgr.identify_modname(modpath,filename)
-	local testfile = io.open(modpath .. DIR_DELIM .. filename,"r")
+	local testfile = io.open(modpath .. "/" .. filename, "r")
 	if testfile ~= nil then
 		local line = testfile:read()
 
@@ -286,8 +286,7 @@ end
 function modmgr.get_dependencies(modfolder)
 	local toadd = ""
 	if modfolder ~= nil then
-		local filename = modfolder ..
-					DIR_DELIM .. "depends.txt"
+		local filename = modfolder .. "/depends.txt"
 
 		local dependencyfile = io.open(filename,"r")
 
@@ -309,8 +308,7 @@ end
 
 --------------------------------------------------------------------------------
 function modmgr.get_worldconfig(worldpath)
-	local filename = worldpath ..
-				DIR_DELIM .. "world.mt"
+	local filename = worldpath .. "/world.mt"
 
 	local worldfile = Settings(filename)
 
@@ -360,7 +358,7 @@ function modmgr.installmod(modfilename,basename)
 		end
 
 		if clean_path ~= nil then
-			local targetpath = core.get_modpath() .. DIR_DELIM .. clean_path
+			local targetpath = core.get_modpath() .. "/" .. clean_path
 			if not core.copy_dir(basefolder.path,targetpath) then
 				gamedata.errormessage = fgettext("Failed to install $1 to $2", basename, targetpath)
 			end
@@ -382,7 +380,7 @@ function modmgr.installmod(modfilename,basename)
 		end
 
 		if targetfolder ~= nil and modmgr.isValidModname(targetfolder) then
-			local targetpath = core.get_modpath() .. DIR_DELIM .. targetfolder
+			local targetpath = core.get_modpath() .. "/" .. targetfolder
 			core.copy_dir(basefolder.path,targetpath)
 		else
 			gamedata.errormessage = fgettext("Install Mod: unable to find real modname for: $1", modfilename)
@@ -429,8 +427,7 @@ function modmgr.preparemodlist(data)
 	end
 
 	--read world mod configuration
-	local filename = data.worldpath ..
-				DIR_DELIM .. "world.mt"
+	local filename = data.worldpath .. "/world.mt"
 
 	local worldfile = Settings(filename)
 

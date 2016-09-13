@@ -239,7 +239,7 @@ end
 
 --------------------------------------------------------------------------------
 function get_last_folder(text,count)
-	local parts = text:split(DIR_DELIM)
+	local parts = text:split("/")
 
 	if count == nil then
 		return parts[#parts]
@@ -247,7 +247,7 @@ function get_last_folder(text,count)
 
 	local retval = ""
 	for i=1,count,1 do
-		retval = retval .. parts[#parts - (count-i)] .. DIR_DELIM
+		retval = retval .. parts[#parts - (count-i)] .. "/"
 	end
 
 	return retval

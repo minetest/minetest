@@ -15,11 +15,11 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-local profiler_path = core.get_builtin_path()..DIR_DELIM.."profiler"..DIR_DELIM
+local profiler_path = core.get_builtin_path() .. "/profiler"
 local profiler = {}
-local sampler = assert(loadfile(profiler_path .. "sampling.lua"))(profiler)
-local instrumentation  = assert(loadfile(profiler_path .. "instrumentation.lua"))(profiler, sampler)
-local reporter = dofile(profiler_path .. "reporter.lua")
+local sampler = assert(loadfile(profiler_path .. "/sampling.lua"))(profiler)
+local instrumentation  = assert(loadfile(profiler_path .. "/instrumentation.lua"))(profiler, sampler)
+local reporter = dofile(profiler_path .. "/reporter.lua")
 profiler.instrument = instrumentation.instrument
 
 ---

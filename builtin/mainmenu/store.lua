@@ -28,9 +28,6 @@ function modstore.init(size, unsortedmods, searchmods)
 	modstore.mods_on_search_page = searchmods
 	modstore.modsperpage = modstore.mods_on_unsorted_page
 
-	modstore.basetexturedir = core.get_texturepath() .. DIR_DELIM .. "base" ..
-						DIR_DELIM .. "pack" .. DIR_DELIM
-
 	modstore.lastmodtitle = ""
 	modstore.last_search = ""
 
@@ -387,7 +384,7 @@ function modstore.getscreenshot(ypos,listentry)
 		listentry.details.screenshot_url == "") then
 
 		if listentry.texturename == nil then
-			listentry.texturename = defaulttexturedir .. "no_screenshot.png"
+			listentry.texturename = default_texture_dir .. "/no_screenshot.png"
 		end
 
 		return "image[0,".. ypos .. ";3,2;" ..

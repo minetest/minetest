@@ -1,30 +1,30 @@
 
-local scriptpath = core.get_builtin_path()..DIR_DELIM
-local commonpath = scriptpath.."common"..DIR_DELIM
-local gamepath = scriptpath.."game"..DIR_DELIM
+local script_path = core.get_builtin_path()
+local common_path = script_path .. "/common"
+local game_path = script_path .. "/game"
 
-dofile(commonpath.."vector.lua")
+dofile(common_path .. "/vector.lua")
 
-dofile(gamepath.."constants.lua")
-dofile(gamepath.."item.lua")
-dofile(gamepath.."register.lua")
+dofile(game_path .. "/constants.lua")
+dofile(game_path .. "/item.lua")
+dofile(game_path .. "/register.lua")
 
 if core.setting_getbool("profiler.load") then
-	profiler = dofile(scriptpath.."profiler"..DIR_DELIM.."init.lua")
+	profiler = dofile(script_path .. "/profiler/init.lua")
 end
 
-dofile(gamepath.."item_entity.lua")
-dofile(gamepath.."deprecated.lua")
-dofile(gamepath.."misc.lua")
-dofile(gamepath.."privileges.lua")
-dofile(gamepath.."auth.lua")
-dofile(gamepath.."chatcommands.lua")
-dofile(gamepath.."static_spawn.lua")
-dofile(gamepath.."detached_inventory.lua")
-dofile(gamepath.."falling.lua")
-dofile(gamepath.."features.lua")
-dofile(gamepath.."voxelarea.lua")
-dofile(gamepath.."forceloading.lua")
-dofile(gamepath.."statbars.lua")
+dofile(game_path .. "/item_entity.lua")
+dofile(game_path .. "/deprecated.lua")
+dofile(game_path .. "/misc.lua")
+dofile(game_path .. "/privileges.lua")
+dofile(game_path .. "/auth.lua")
+dofile(game_path .. "/chatcommands.lua")
+dofile(game_path .. "/static_spawn.lua")
+dofile(game_path .. "/detached_inventory.lua")
+dofile(game_path .. "/falling.lua")
+dofile(game_path .. "/features.lua")
+dofile(game_path .. "/voxelarea.lua")
+dofile(game_path .. "/forceloading.lua")
+dofile(game_path .. "/statbars.lua")
 
 profiler = nil

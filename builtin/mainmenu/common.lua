@@ -53,8 +53,8 @@ end
 --------------------------------------------------------------------------------
 function image_column(tooltip, flagname)
 	return "image,tooltip=" .. core.formspec_escape(tooltip) .. "," ..
-		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
-		"1=" .. core.formspec_escape(defaulttexturedir .. "server_flags_" .. flagname .. ".png")
+		"0=" .. core.formspec_escape(default_texture_dir .. "/blank.png") .. "," ..
+		"1=" .. core.formspec_escape(default_texture_dir .. "/server_flags_" .. flagname .. ".png")
 end
 
 --------------------------------------------------------------------------------
@@ -145,19 +145,19 @@ end
 --------------------------------------------------------------------------------
 os.tempfolder = function()
 	if core.setting_get("TMPFolder") then
-		return core.setting_get("TMPFolder") .. DIR_DELIM .. "MT_" .. math.random(0,10000)
+		return core.setting_get("TMPFolder") .. "/MT_" .. math.random(0,10000)
 	end
 
 	local filetocheck = os.tmpname()
 	os.remove(filetocheck)
 
 	local randname = "MTTempModFolder_" .. math.random(0,10000)
-	if DIR_DELIM == "\\" then
+	if PLATFORM == "Windows" then
 		local tempfolder = os.getenv("TEMP")
 		return tempfolder .. filetocheck
 	else
 		local backstring = filetocheck:reverse()
-		return filetocheck:sub(0,filetocheck:len()-backstring:find(DIR_DELIM)+1) ..randname
+		return filetocheck:sub(0,filetocheck:len()-backstring:find("/")+1) ..randname
 	end
 
 end
@@ -286,7 +286,7 @@ end
 function menu_worldmt(selected, setting, value)
 	local world = menudata.worldlist:get_list()[selected]
 	if world then
-		local filename = world.path .. DIR_DELIM .. "world.mt"
+		local filename = world.path .. "/world.mt"
 		local world_conf = Settings(filename)
 
 		if value then

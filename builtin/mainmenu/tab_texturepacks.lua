@@ -67,11 +67,11 @@ local function get_formspec(tabview, name, tabdata)
 		return retval
 	end
 
-	local infofile = current_texture_path .. DIR_DELIM .. "description.txt"
+	local infofile = current_texture_path .. "/description.txt"
 	-- This adds backwards compatibility for old texture pack description files named
 	-- "info.txt", and should be removed once all such texture packs have been updated
 	if not file_exists(infofile) then
-		infofile = current_texture_path .. DIR_DELIM .. "info.txt"
+		infofile = current_texture_path .. "/info.txt"
 		if file_exists(infofile) then
 			core.log("info.txt is depreciated. description.txt should be used instead.")
 		end
@@ -86,11 +86,11 @@ local function get_formspec(tabview, name, tabdata)
 		f:close()
 	end
 
-	local screenfile = current_texture_path .. DIR_DELIM .. "screenshot.png"
+	local screenfile = current_texture_path .. "/screenshot.png"
 	local no_screenshot
 	if not file_exists(screenfile) then
 		screenfile = nil
-		no_screenshot = defaulttexturedir .. "no_screenshot.png"
+		no_screenshot = default_texture_dir .. "/no_screenshot.png"
 	end
 
 	return	retval ..
@@ -110,7 +110,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 			local list = filter_texture_pack_list(core.get_dir_list(core.get_texturepath(), true))
 			local current_index = core.get_textlist_index("TPs")
 			if current_index and #list >= current_index then
-				local new_path = core.get_texturepath() .. DIR_DELIM .. list[current_index]
+				local new_path = core.get_texturepath() .. "/" .. list[current_index]
 				if list[current_index] == fgettext("None") then
 					new_path = ""
 				end
