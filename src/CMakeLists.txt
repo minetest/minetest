@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 project(minetest)
 
 INCLUDE(CheckIncludeFiles)
+INCLUDE(CheckLibraryExists)
 
 # Add custom SemiDebug build mode
 set(CMAKE_CXX_FLAGS_SEMIDEBUG "-O1 -g -Wall -Wabi" CACHE STRING
