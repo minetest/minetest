@@ -561,13 +561,13 @@ freetype (Freetype fonts) bool true
 #    Path to TrueTypeFont or bitmap.
 font_path (Font path) path fonts/liberationsans.ttf
 
-font_size (Font size) int 15
+font_size (Font size) int 16
 
 #    Font shadow offset, if 0 then shadow will not be drawn.
 font_shadow (Font shadow) int 1
 
 #    Font shadow alpha (opaqueness, between 0 and 255).
-font_shadow_alpha (Font shadow alpha) int 128 0 255
+font_shadow_alpha (Font shadow alpha) int 127 0 255
 
 mono_font_path (Monospace font path) path fonts/liberationmono.ttf
 

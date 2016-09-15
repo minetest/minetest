@@ -655,7 +655,7 @@
 # font_path = fonts/liberationsans.ttf
 
 #    type: int
-# font_size = 15
+# font_size = 16
 
 #    Font shadow offset, if 0 then shadow will not be drawn.
 #    type: int
@@ -663,7 +663,7 @@
 
 #    Font shadow alpha (opaqueness, between 0 and 255).
 #    type: int min: 0 max: 255
-# font_shadow_alpha = 128
+# font_shadow_alpha = 127
 
 #    type: path
 # mono_font_path = fonts/liberationmono.ttf
