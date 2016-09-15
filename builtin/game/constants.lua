@@ -19,4 +19,9 @@ core.EMERGE_FROM_DISK   = 3
 core.EMERGE_GENERATED   = 4
 
 -- constants.h
+-- Size of mapblocks in nodes
 core.MAP_BLOCKSIZE = 16
+
+-- light.h
+-- Maximum value for node 'light_source' parameter
+core.LIGHT_MAX = 14
