@@ -27,8 +27,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 // This directly sets the range of light.
-// Actually this is not the real maximum, and this is not the
-// brightest. The brightest is LIGHT_SUN.
+// Actually this is not the real maximum, and this is not the brightest, the
+// brightest is LIGHT_SUN.
+// If changed, this constant as defined in builtin/game/constants.lua must
+// also be changed.
 #define LIGHT_MAX 14
 // Light is stored as 4 bits, thus 15 is the maximum.
 // This brightness is reserved for sunlight
