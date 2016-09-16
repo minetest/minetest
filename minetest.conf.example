@@ -1239,15 +1239,34 @@
 #### Mapgen v7
 
 #    Map generation attributes specific to Mapgen v7.
-#    The 'ridges' flag controls the rivers.
+#    The 'ridges' flag enables the rivers.
+#    Floatlands are currently experimental and subject to change.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
-#    type: flags possible values: mountains, ridges, nomountains, noridges
+#    type: flags possible values: mountains, ridges, floatlands,
+#    nomountains, noridges, nofloatlands
 # mgv7_spflags = mountains,ridges
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    type: float
 # mgv7_cave_width = 0.2
+
+#    Controls the density of floatland mountain terrain.
+#    Is an offset added to the 'np_mountain' noise value.
+#    type: float
+# mgv7_float_mount_density = 0.6
+
+#    Typical maximum height, above and below midpoint, of floatland mountain terrain.
+#    type: float
+# mgv7_float_mount_height = 128.0
+
+#    Y-level of floatland midpoint and lake surface.
+#    type: int
+# mgv7_floatland_level = 1280
+
+#    Y-level to which floatland shadows extend.
+#    type: int
+# mgv7_shadow_limit = 1024
 
 #    type: noise_params
 # mgv7_np_terrain_base = 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0
@@ -1269,6 +1288,12 @@
 
 #    type: noise_params
 # mgv7_np_ridge_uwater = 0, 1, (1000, 1000, 1000), 85039, 5, 0.6, 2.0
+
+#    type: noise_params
+# mgv7_np_floatland_base = -0.6, 1.5, (600, 600, 600), 114, 5, 0.6, 2.0
+
+#    type: noise_params
+# mgv7_np_float_base_height = 48, 24, (300, 300, 300), 907, 4, 0.7, 2.0
 
 #    type: noise_params
 # mgv7_np_mountain = -0.6, 1, (250, 350, 250), 5333, 5, 0.63, 2.0

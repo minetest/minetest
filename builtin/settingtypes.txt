@@ -963,13 +963,27 @@ mgv6_np_apple_trees (Mapgen v6 apple trees noise parameters) noise_params 0, 1, 
 [***Mapgen v7]
 
 #    Map generation attributes specific to Mapgen v7.
-#    The 'ridges' flag controls the rivers.
+#    The 'ridges' flag enables the rivers.
+#    Floatlands are currently experimental and subject to change.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
-mgv7_spflags (Mapgen v7 flags) flags mountains,ridges mountains,ridges,nomountains,noridges
+mgv7_spflags (Mapgen v7 flags) flags mountains,ridges mountains,ridges,floatlands,nomountains,noridges,nofloatlands
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 mgv7_cave_width (Mapgen v7 cave width) float 0.2
+
+#    Controls the density of floatland mountain terrain.
+#    Is an offset added to the 'np_mountain' noise value.
+mgv7_float_mount_density (Mapgen v7 floatland mountain density) float 0.6
+
+#    Typical maximum height, above and below midpoint, of floatland mountain terrain.
+mgv7_float_mount_height (Mapgen v7 floatland mountain height) float 128.0
+
+#    Y-level of floatland midpoint and lake surface.
+mgv7_floatland_level (Mapgen v7 floatland level) int 1280
+
+#    Y-level to which floatland shadows extend.
+mgv7_shadow_limit (Mapgen v7 shadow limit) int 1024
 
 mgv7_np_terrain_base (Mapgen v7 terrain base noise parameters) noise_params 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0
 mgv7_np_terrain_alt (Mapgen v7 terrain altitude noise parameters) noise_params 4, 25, (600, 600, 600), 5934, 5, 0.6, 2.0
@@ -977,9 +991,11 @@ mgv7_np_terrain_persist (Mapgen v7 terrain persistation noise parameters) noise_
 mgv7_np_height_select (Mapgen v7 height select noise parameters) noise_params -8, 16, (500, 500, 500), 4213, 6, 0.7, 2.0
 mgv7_np_filler_depth (Mapgen v7 filler depth noise parameters) noise_params 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
 mgv7_np_mount_height (Mapgen v7 mount height noise parameters) noise_params 256, 112, (1000, 1000, 1000), 72449, 3, 0.6, 2.0
-mgv7_np_ridge_uwater (Mapgen v7 ridge water noise parameters) noise_params 0, 1, (1000, 1000, 1000), 85039, 5, 0.6, 2.0
+mgv7_np_ridge_uwater (Mapgen v7 river course noise parameters) noise_params 0, 1, (1000, 1000, 1000), 85039, 5, 0.6, 2.0
+mgv7_np_floatland_base (Mapgen v7 floatland base terrain noise parameters) noise_params -0.6, 1.5, (600, 600, 600), 114, 5, 0.6, 2.0
+mgv7_np_float_base_height (Mapgen v7 floatland base terrain height noise parameters) noise_params 48, 24, (300, 300, 300), 907, 4, 0.7, 2.0
 mgv7_np_mountain (Mapgen v7 mountain noise parameters) noise_params -0.6, 1, (250, 350, 250), 5333, 5, 0.63, 2.0
-mgv7_np_ridge (Mapgen v7 ridge noise parameters) noise_params 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
+mgv7_np_ridge (Mapgen v7 river channel wall noise parameters) noise_params 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
 mgv7_np_cave1 (Mapgen v7 cave1 noise parameters) noise_params 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 mgv7_np_cave2 (Mapgen v7 cave2 noise parameters) noise_params 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
