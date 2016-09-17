@@ -309,6 +309,48 @@ function pkgmgr.get_dependencies(path)
 	return table.concat(info.depends or {}, ","), table.concat(info.optional_depends or {}, ",")
 end
 
+----------- tests whether all of the mods in the modpack are enabled -----------
+function pkgmgr.is_modpack_entirely_enabled(data, name)
+	local rawlist = data.list:get_raw_list()
+	for j = 1, #rawlist do
+		if rawlist[j].modpack == name and not rawlist[j].enabled then
+			return false
+		end
+	end
+	return true
+end
+
+---------- toggles or en/disables a mod or modpack -----------------------------
+function pkgmgr.enable_mod(this, toset)
+	local mod = this.data.list:get_list()[this.data.selected_mod]
+
+	-- game mods can't be enabled or disabled
+	if mod.is_game_content then
+		return
+	end
+
+	-- toggle or en/disable the mod
+	if not mod.is_modpack then
+		if toset == nil then
+			mod.enabled = not mod.enabled
+		else
+			mod.enabled = toset
+		end
+		return
+	end
+
+	-- toggle or en/disable every mod in the modpack, interleaved unsupported
+	local list = this.data.list:get_raw_list()
+	for i = 1, #list do
+		if list[i].modpack == mod.name then
+			if toset == nil then
+				toset = not list[i].enabled
+			end
+			list[i].enabled = toset
+		end
+	end
+end
+
 --------------------------------------------------------------------------------
 function pkgmgr.get_worldconfig(worldpath)
 	local filename = worldpath ..
