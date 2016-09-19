@@ -74,6 +74,11 @@ void NodeMetadata::clear()
 	m_inventory->clear();
 }
 
+bool NodeMetadata::empty() const
+{
+	return m_stringvars.size() == 0 && m_inventory->getLists().size() == 0;
+}
+
 /*
 	NodeMetadataList
 */
@@ -84,14 +89,13 @@ void NodeMetadataList::serialize(std::ostream &os) const
 		Version 0 is a placeholder for "nothing to see here; go away."
 	*/
 
-	if(m_data.empty()){
+	u16 count = countNonEmpty();
+	if (count == 0) {
 		writeU8(os, 0); // version
 		return;
 	}
 
 	writeU8(os, 1); // version
-
-	u16 count = m_data.size();
 	writeU16(os, count);
 
 	for(std::map<v3s16, NodeMetadata*>::const_iterator
@@ -100,6 +104,8 @@ void NodeMetadataList::serialize(std::ostream &os) const
 	{
 		v3s16 p = i->first;
 		NodeMetadata *data = i->second;
+		if (data->empty())
+			continue;
 
 		u16 p16 = p.Z * MAP_BLOCKSIZE * MAP_BLOCKSIZE + p.Y * MAP_BLOCKSIZE + p.X;
 		writeU16(os, p16);
@@ -198,6 +204,17 @@ void NodeMetadataList::clear()
 		delete it->second;
 	}
 	m_data.clear();
+}
+
+int NodeMetadataList::countNonEmpty() const
+{
+	int n = 0;
+	std::map<v3s16, NodeMetadata*>::const_iterator it;
+	for (it = m_data.begin(); it != m_data.end(); ++it) {
+		if (!it->second->empty())
+			n++;
+	}
+	return n;
 }
 
 std::string NodeMetadata::getString(const std::string &name,
