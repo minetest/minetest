@@ -73,7 +73,7 @@ local function get_formspec(tabview, name, tabdata)
 	if not file_exists(infofile) then
 		infofile = current_texture_path .. DIR_DELIM .. "info.txt"
 		if file_exists(infofile) then
-			core.log("info.txt is depreciated. description.txt should be used instead.")
+			core.log("deprecated", "info.txt is deprecated. description.txt should be used instead.")
 		end
 	end
 
