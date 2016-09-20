@@ -293,9 +293,10 @@ if(WIN32)
 	set(ZLIB_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/../../zlib/zlib-1.2.5"
 			CACHE PATH "Zlib include directory")
 	set(ZLIB_LIBRARIES "${PROJECT_SOURCE_DIR}/../../zlib125dll/dll32/zlibwapi.lib"
-			CACHE FILEPATH "Path to zlibwapi.lib")
+			CACHE FILEPATH "Path to zlib library (usually zlibwapi.lib)")
 	set(ZLIB_DLL "${PROJECT_SOURCE_DIR}/../../zlib125dll/dll32/zlibwapi.dll"
-			CACHE FILEPATH "Path to zlibwapi.dll (for installation)")
+			CACHE FILEPATH "Path to zlib DLL (for installation)")
+	set(ZLIBWAPI_DLL "" CACHE FILEPATH "Path to zlibwapi DLL")
 	set(IRRLICHT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../irrlicht-1.7.2"
 			CACHE PATH "irrlicht dir")
 	if(USE_FREETYPE)
@@ -723,8 +724,14 @@ else()
 		set(OTHER_FLAGS "${OTHER_FLAGS} -Wsign-compare")
 	endif()
 
+	if(NOT ZLIBWAPI_DLL AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+		set(OTHER_FLAGS "${OTHER_FLAGS} -DWIN32_NO_ZLIB_WINAPI")
+		message(WARNING "Defaulting to cdecl for zlib on win32 because ZLIBWAPI_DLL"
+			" isn't set, ensure that ZLIBWAPI_DLL is set if you want stdcall.")
+	endif()
+
 	if(MINGW)
-		set(OTHER_FLAGS "-mthreads -fexceptions")
+		set(OTHER_FLAGS "${OTHER_FLAGS} -mthreads -fexceptions")
 	endif()
 
 	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} ${OTHER_FLAGS} -ffast-math -Wall -pipe -funroll-loops")
