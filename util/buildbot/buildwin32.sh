@@ -13,15 +13,15 @@ packagedir=$builddir/packages
 libdir=$builddir/libs
 
 toolchain_file=$dir/toolchain_mingw.cmake
-irrlicht_version=1.8.1
-ogg_version=1.2.1
-vorbis_version=1.3.3
-curl_version=7.38.0
+irrlicht_version=1.8.4
+ogg_version=1.3.2
+vorbis_version=1.3.5
+curl_version=7.50.3
 gettext_version=0.14.4
-freetype_version=2.3.5
-sqlite3_version=3.8.7.4
+freetype_version=2.7
+sqlite3_version=3.14.2
 luajit_version=2.0.1
-leveldb_version=1.15
+leveldb_version=1.18
 zlib_version=1.2.8
 
 mkdir -p $packagedir
@@ -34,44 +34,38 @@ cd $builddir
 	-c -O $packagedir/irrlicht-$irrlicht_version.zip
 [ -e $packagedir/zlib-$zlib_version.zip ] || wget http://minetest.kitsunemimi.pw/zlib-$zlib_version-win32.zip \
 	-c -O $packagedir/zlib-$zlib_version.zip
-[ -e $packagedir/libogg-$ogg_version-dev.7z ] || wget http://minetest.kitsunemimi.pw/libogg-$ogg_version-dev.7z \
-	-c -O $packagedir/libogg-$ogg_version-dev.7z
-[ -e $packagedir/libogg-$ogg_version-dll.7z ] || wget http://minetest.kitsunemimi.pw/libogg-$ogg_version-dll.7z \
-	-c -O $packagedir/libogg-$ogg_version-dll.7z
-[ -e $packagedir/libvorbis-$vorbis_version-dev.7z ] || wget http://minetest.kitsunemimi.pw/libvorbis-$vorbis_version-dev.7z \
-	-c -O $packagedir/libvorbis-$vorbis_version-dev.7z
-[ -e $packagedir/libvorbis-$vorbis_version-dll.7z ] || wget http://minetest.kitsunemimi.pw/libvorbis-$vorbis_version-dll.7z \
-	-c -O $packagedir/libvorbis-$vorbis_version-dll.7z
-[ -e $packagedir/libcurl-$curl_version.zip ] || wget http://minetest.kitsunemimi.pw/libcurl-$curl_version-win32.zip \
-	-c -O $packagedir/libcurl-$curl_version.zip
+[ -e $packagedir/libogg-$ogg_version.zip ] || wget http://minetest.kitsunemimi.pw/libogg-$ogg_version-win32.zip \
+	-c -O $packagedir/libogg-$ogg_version.zip
+[ -e $packagedir/libvorbis-$vorbis_version.zip ] || wget http://minetest.kitsunemimi.pw/libvorbis-$vorbis_version-win32.zip \
+	-c -O $packagedir/libvorbis-$vorbis_version.zip
+[ -e $packagedir/curl-$curl_version.zip ] || wget http://minetest.kitsunemimi.pw/curl-$curl_version-win32.zip \
+	-c -O $packagedir/curl-$curl_version.zip
 [ -e $packagedir/gettext-$gettext_version.zip ] || wget http://minetest.kitsunemimi.pw/gettext-$gettext_version.zip \
 	-c -O $packagedir/gettext-$gettext_version.zip
-[ -e $packagedir/libfreetype-$freetype_version.zip ] || wget http://minetest.kitsunemimi.pw/libfreetype-$freetype_version-win32.zip \
-	-c -O $packagedir/libfreetype-$freetype_version.zip
+[ -e $packagedir/freetype2-$freetype_version.zip ] || wget http://minetest.kitsunemimi.pw/freetype2-$freetype_version-win32.zip \
+	-c -O $packagedir/freetype2-$freetype_version.zip
 [ -e $packagedir/sqlite3-$sqlite3_version.zip ] || wget http://minetest.kitsunemimi.pw/sqlite3-$sqlite3_version-win32.zip \
 	-c -O $packagedir/sqlite3-$sqlite3_version.zip
 [ -e $packagedir/luajit-$luajit_version-static-win32.zip ] || wget http://minetest.kitsunemimi.pw/luajit-$luajit_version-static-win32.zip \
 	-c -O $packagedir/luajit-$luajit_version-static-win32.zip
-[ -e $packagedir/libleveldb-$leveldb_version-win32.zip ] || wget http://minetest.kitsunemimi.pw/libleveldb-$leveldb_version-win32.zip \
-	-c -O $packagedir/libleveldb-$leveldb_version-win32.zip
+[ -e $packagedir/libleveldb-$leveldb_version.zip ] || wget http://minetest.kitsunemimi.pw/libleveldb-$leveldb_version-win32.zip \
+	-c -O $packagedir/libleveldb-$leveldb_version.zip
 [ -e $packagedir/openal_stripped.zip ] || wget http://minetest.kitsunemimi.pw/openal_stripped.zip \
 	-c -O $packagedir/openal_stripped.zip
 
 # Extract stuff
 cd $libdir
-[ -d irrlicht-$irrlicht_version ] || unzip -o $packagedir/irrlicht-$irrlicht_version.zip
+[ -d irrlicht ] || unzip -o $packagedir/irrlicht-$irrlicht_version.zip -d irrlicht
 [ -d zlib ] || unzip -o $packagedir/zlib-$zlib_version.zip -d zlib
-[ -d libogg/include ] || 7z x -y -olibogg $packagedir/libogg-$ogg_version-dev.7z
-[ -d libogg/bin ] || 7z x -y -olibogg $packagedir/libogg-$ogg_version-dll.7z
-[ -d libvorbis/include ] || 7z x -y -olibvorbis $packagedir/libvorbis-$vorbis_version-dev.7z
-[ -d libvorbis/bin ] || 7z x -y -olibvorbis $packagedir/libvorbis-$vorbis_version-dll.7z
-[ -d libcurl ] || unzip -o $packagedir/libcurl-$curl_version.zip -d libcurl
+[ -d libogg ] || unzip -o $packagedir/libogg-$ogg_version.zip -d libogg
+[ -d libvorbis ] || unzip -o $packagedir/libvorbis-$vorbis_version.zip -d libvorbis
+[ -d libcurl ] || unzip -o $packagedir/curl-$curl_version.zip -d libcurl
 [ -d gettext ] || unzip -o $packagedir/gettext-$gettext_version.zip -d gettext
-[ -d freetype ] || unzip -o $packagedir/libfreetype-$freetype_version.zip -d freetype
+[ -d freetype ] || unzip -o $packagedir/freetype2-$freetype_version.zip -d freetype
 [ -d sqlite3 ] || unzip -o $packagedir/sqlite3-$sqlite3_version.zip -d sqlite3
 [ -d openal_stripped ] || unzip -o $packagedir/openal_stripped.zip
 [ -d luajit ] || unzip -o $packagedir/luajit-$luajit_version-static-win32.zip -d luajit
-[ -d leveldb ] || unzip -o $packagedir/libleveldb-$leveldb_version-win32.zip -d leveldb
+[ -d leveldb ] || unzip -o $packagedir/libleveldb-$leveldb_version.zip -d leveldb
 
 # Get minetest
 cd $builddir
@@ -107,14 +101,13 @@ cmake .. \
 	-DENABLE_FREETYPE=1 \
 	-DENABLE_LEVELDB=1 \
 	\
-	-DIRRLICHT_INCLUDE_DIR=$libdir/irrlicht-$irrlicht_version/include \
-	-DIRRLICHT_LIBRARY=$libdir/irrlicht-$irrlicht_version/lib/Win32-gcc/libIrrlicht.dll.a \
-	-DIRRLICHT_DLL=$libdir/irrlicht-$irrlicht_version/bin/Win32-gcc/Irrlicht.dll \
+	-DIRRLICHT_INCLUDE_DIR=$libdir/irrlicht/include \
+	-DIRRLICHT_LIBRARY=$libdir/irrlicht/lib/Win32-gcc/libIrrlicht.dll.a \
+	-DIRRLICHT_DLL=$libdir/irrlicht/bin/Win32-gcc/Irrlicht.dll \
 	\
 	-DZLIB_INCLUDE_DIR=$libdir/zlib/include \
-	-DZLIB_LIBRARIES=$libdir/zlib/lib/zlibwapi.dll.a \
+	-DZLIB_LIBRARIES=$libdir/zlib/lib/libz.dll.a \
 	-DZLIB_DLL=$libdir/zlib/bin/zlib1.dll \
-	-DZLIBWAPI_DLL=$libdir/zlib/bin/zlibwapi.dll \
 	\
 	-DLUA_INCLUDE_DIR=$libdir/luajit/include \
 	-DLUA_LIBRARY=$libdir/luajit/libluajit.a \
@@ -145,9 +138,9 @@ cmake .. \
 	-DGETTEXT_LIBRARY=$libdir/gettext/lib/libintl.dll.a \
 	\
 	-DFREETYPE_INCLUDE_DIR_freetype2=$libdir/freetype/include/freetype2 \
-	-DFREETYPE_INCLUDE_DIR_ft2build=$libdir/freetype/include \
+	-DFREETYPE_INCLUDE_DIR_ft2build=$libdir/freetype/include/freetype2 \
 	-DFREETYPE_LIBRARY=$libdir/freetype/lib/libfreetype.dll.a \
-	-DFREETYPE_DLL=$libdir/freetype/bin/freetype6.dll \
+	-DFREETYPE_DLL=$libdir/freetype/bin/libfreetype-6.dll \
 	\
 	-DSQLITE3_INCLUDE_DIR=$libdir/sqlite3/include \
 	-DSQLITE3_LIBRARY=$libdir/sqlite3/lib/libsqlite3.dll.a \

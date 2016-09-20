@@ -13,15 +13,15 @@ packagedir=$builddir/packages
 libdir=$builddir/libs
 
 toolchain_file=$dir/toolchain_mingw64.cmake
-irrlicht_version=1.8.1
-ogg_version=1.3.1
-vorbis_version=1.3.4
-curl_version=7.38.0
+irrlicht_version=1.8.4
+ogg_version=1.3.2
+vorbis_version=1.3.5
+curl_version=7.50.3
 gettext_version=0.18.2
-freetype_version=2.5.3
-sqlite3_version=3.8.7.4
+freetype_version=2.7
+sqlite3_version=3.14.2
 luajit_version=2.0.3
-leveldb_version=1.15
+leveldb_version=1.18
 zlib_version=1.2.8
 
 mkdir -p $packagedir
@@ -38,12 +38,12 @@ cd $builddir
 	-c -O $packagedir/libogg-$ogg_version.zip
 [ -e $packagedir/libvorbis-$vorbis_version.zip ] || wget http://minetest.kitsunemimi.pw/libvorbis-$vorbis_version-win64.zip \
 	-c -O $packagedir/libvorbis-$vorbis_version.zip
-[ -e $packagedir/libcurl-$curl_version.zip ] || wget http://minetest.kitsunemimi.pw/libcurl-$curl_version-win64.zip \
-	-c -O $packagedir/libcurl-$curl_version.zip
+[ -e $packagedir/curl-$curl_version.zip ] || wget http://minetest.kitsunemimi.pw/curl-$curl_version-win64.zip \
+	-c -O $packagedir/curl-$curl_version.zip
 [ -e $packagedir/gettext-$gettext_version.zip ] || wget http://minetest.kitsunemimi.pw/gettext-$gettext_version-win64.zip \
 	-c -O $packagedir/gettext-$gettext_version.zip
-[ -e $packagedir/freetype-$freetype_version.zip ] || wget http://minetest.kitsunemimi.pw/libfreetype-$freetype_version-win64.zip \
-	-c -O $packagedir/freetype-$freetype_version.zip
+[ -e $packagedir/freetype2-$freetype_version.zip ] || wget http://minetest.kitsunemimi.pw/freetype2-$freetype_version-win64.zip \
+	-c -O $packagedir/freetype2-$freetype_version.zip
 [ -e $packagedir/sqlite3-$sqlite3_version.zip ] || wget http://minetest.kitsunemimi.pw/sqlite3-$sqlite3_version-win64.zip \
 	-c -O $packagedir/sqlite3-$sqlite3_version.zip
 [ -e $packagedir/luajit-$luajit_version.zip ] || wget http://minetest.kitsunemimi.pw/luajit-$luajit_version-static-win64.zip \
@@ -56,13 +56,13 @@ cd $builddir
 
 # Extract stuff
 cd $libdir
-[ -d irrlicht-$irrlicht_version ] || unzip -o $packagedir/irrlicht-$irrlicht_version.zip
+[ -d irrlicht ] || unzip -o $packagedir/irrlicht-$irrlicht_version.zip -d irrlicht
 [ -d zlib ] || unzip -o $packagedir/zlib-$zlib_version.zip -d zlib
 [ -d libogg ] || unzip -o $packagedir/libogg-$ogg_version.zip -d libogg
 [ -d libvorbis ] || unzip -o $packagedir/libvorbis-$vorbis_version.zip -d libvorbis
-[ -d libcurl ] || unzip -o $packagedir/libcurl-$curl_version.zip -d libcurl
+[ -d libcurl ] || unzip -o $packagedir/curl-$curl_version.zip -d libcurl
 [ -d gettext ] || unzip -o $packagedir/gettext-$gettext_version.zip -d gettext
-[ -d freetype ] || unzip -o $packagedir/freetype-$freetype_version.zip -d freetype
+[ -d freetype ] || unzip -o $packagedir/freetype2-$freetype_version.zip -d freetype
 [ -d sqlite3 ] || unzip -o $packagedir/sqlite3-$sqlite3_version.zip -d sqlite3
 [ -d openal_stripped ] || unzip -o $packagedir/openal_stripped.zip
 [ -d luajit ] || unzip -o $packagedir/luajit-$luajit_version.zip -d luajit
@@ -102,9 +102,9 @@ cmake .. \
 	-DENABLE_FREETYPE=1 \
 	-DENABLE_LEVELDB=1 \
 	\
-	-DIRRLICHT_INCLUDE_DIR=$libdir/irrlicht-$irrlicht_version/include \
-	-DIRRLICHT_LIBRARY=$libdir/irrlicht-$irrlicht_version/lib/Win64-gcc/libIrrlicht.dll.a \
-	-DIRRLICHT_DLL=$libdir/irrlicht-$irrlicht_version/bin/Win64-gcc/Irrlicht.dll \
+	-DIRRLICHT_INCLUDE_DIR=$libdir/irrlicht/include \
+	-DIRRLICHT_LIBRARY=$libdir/irrlicht/lib/Win64-gcc/libIrrlicht.dll.a \
+	-DIRRLICHT_DLL=$libdir/irrlicht/bin/Win64-gcc/Irrlicht.dll \
 	\
 	-DZLIB_INCLUDE_DIR=$libdir/zlib/include \
 	-DZLIB_LIBRARIES=$libdir/zlib/lib/libz.dll.a \
@@ -131,6 +131,13 @@ cmake .. \
 	-DCURL_INCLUDE_DIR=$libdir/libcurl/include \
 	-DCURL_LIBRARY=$libdir/libcurl/lib/libcurl.dll.a \
 	\
+	-DCUSTOM_GETTEXT_PATH=$libdir/gettext \
+	-DGETTEXT_MSGFMT=`which msgfmt` \
+	-DGETTEXT_DLL=$libdir/gettext/bin/libintl-8.dll \
+	-DGETTEXT_ICONV_DLL=$libdir/gettext/bin/libiconv-2.dll \
+	-DGETTEXT_INCLUDE_DIR=$libdir/gettext/include \
+	-DGETTEXT_LIBRARY=$libdir/gettext/lib/libintl.dll.a \
+	\
 	-DFREETYPE_INCLUDE_DIR_freetype2=$libdir/freetype/include/freetype2 \
 	-DFREETYPE_INCLUDE_DIR_ft2build=$libdir/freetype/include/freetype2 \
 	-DFREETYPE_LIBRARY=$libdir/freetype/lib/libfreetype.dll.a \
@@ -142,14 +149,7 @@ cmake .. \
 	\
 	-DLEVELDB_INCLUDE_DIR=$libdir/leveldb/include \
 	-DLEVELDB_LIBRARY=$libdir/leveldb/lib/libleveldb.dll.a \
-	-DLEVELDB_DLL=$libdir/leveldb/bin/libleveldb.dll \
-	\
-	-DCUSTOM_GETTEXT_PATH=$libdir/gettext \
-	-DGETTEXT_MSGFMT=`which msgfmt` \
-	-DGETTEXT_DLL=$libdir/gettext/bin/libintl-8.dll \
-	-DGETTEXT_ICONV_DLL=$libdir/gettext/bin/libiconv-2.dll \
-	-DGETTEXT_INCLUDE_DIR=$libdir/gettext/include \
-	-DGETTEXT_LIBRARY=$libdir/gettext/lib/libintl.dll.a
+	-DLEVELDB_DLL=$libdir/leveldb/bin/libleveldb.dll
 
 make package -j2
 
