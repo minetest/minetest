@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "debug.h"
 #include "util/hex.h"
+#include "util/string.h"
 
 class UnknownKeycode : public BaseException
 {
@@ -31,321 +32,335 @@ public:
 		BaseException(s) {};
 };
 
-#define CHECKKEY(x){if(strcmp(name, #x)==0) return irr::x;}
+struct table_key {
+	const char *Name;
+	irr::EKEY_CODE Key;
+	wchar_t Char; // L'\0' means no character assigned
+	const char *LangName; // NULL means it doesn't have a human description
+};
 
-irr::EKEY_CODE keyname_to_keycode(const char *name)
+#define DEFINEKEY1(x, lang) /* Irrlicht key without character */ \
+	{ #x, irr::x, L'\0', lang },
+#define DEFINEKEY2(x, ch, lang) /* Irrlicht key with character */ \
+	{ #x, irr::x, ch, lang },
+#define DEFINEKEY3(ch) /* single Irrlicht key (e.g. KEY_KEY_X) */ \
+	{ "KEY_KEY_" TOSTRING(ch), irr::KEY_KEY_ ## ch, (wchar_t) *TOSTRING(ch), TOSTRING(ch) },
+#define DEFINEKEY4(ch) /* single Irrlicht function key (e.g. KEY_F3) */ \
+	{ "KEY_F" TOSTRING(ch), irr::KEY_F ## ch, L'\0', "F" TOSTRING(ch) },
+#define DEFINEKEY5(ch) /* key without Irrlicht keycode */ \
+	{ ch, irr::KEY_KEY_CODES_COUNT, (wchar_t) *ch, ch },
+
+#define N_(text) text
+
+static const struct table_key table[] = {
+	// Keys that can be reliably mapped between Char and Key
+	DEFINEKEY3(0)
+	DEFINEKEY3(1)
+	DEFINEKEY3(2)
+	DEFINEKEY3(3)
+	DEFINEKEY3(4)
+	DEFINEKEY3(5)
+	DEFINEKEY3(6)
+	DEFINEKEY3(7)
+	DEFINEKEY3(8)
+	DEFINEKEY3(9)
+	DEFINEKEY3(A)
+	DEFINEKEY3(B)
+	DEFINEKEY3(C)
+	DEFINEKEY3(D)
+	DEFINEKEY3(E)
+	DEFINEKEY3(F)
+	DEFINEKEY3(G)
+	DEFINEKEY3(H)
+	DEFINEKEY3(I)
+	DEFINEKEY3(J)
+	DEFINEKEY3(K)
+	DEFINEKEY3(L)
+	DEFINEKEY3(M)
+	DEFINEKEY3(N)
+	DEFINEKEY3(O)
+	DEFINEKEY3(P)
+	DEFINEKEY3(Q)
+	DEFINEKEY3(R)
+	DEFINEKEY3(S)
+	DEFINEKEY3(T)
+	DEFINEKEY3(U)
+	DEFINEKEY3(V)
+	DEFINEKEY3(W)
+	DEFINEKEY3(X)
+	DEFINEKEY3(Y)
+	DEFINEKEY3(Z)
+	DEFINEKEY2(KEY_PLUS, L'+', "+")
+	DEFINEKEY2(KEY_COMMA, L',', ",")
+	DEFINEKEY2(KEY_MINUS, L'-', "-")
+	DEFINEKEY2(KEY_PERIOD, L'.', ".")
+
+	// Keys without a Char
+	DEFINEKEY1(KEY_LBUTTON, N_("Left Button"))
+	DEFINEKEY1(KEY_RBUTTON, N_("Right Button"))
+	DEFINEKEY1(KEY_CANCEL, N_("Cancel"))
+	DEFINEKEY1(KEY_MBUTTON, N_("Middle Button"))
+	DEFINEKEY1(KEY_XBUTTON1, N_("X Button 1"))
+	DEFINEKEY1(KEY_XBUTTON2, N_("X Button 2"))
+	DEFINEKEY1(KEY_BACK, N_("Back"))
+	DEFINEKEY1(KEY_TAB, N_("Tab"))
+	DEFINEKEY1(KEY_CLEAR, N_("Clear"))
+	DEFINEKEY1(KEY_RETURN, N_("Return"))
+	DEFINEKEY1(KEY_SHIFT, N_("Shift"))
+	DEFINEKEY1(KEY_CONTROL, N_("Control"))
+	DEFINEKEY1(KEY_MENU, N_("Menu"))
+	DEFINEKEY1(KEY_PAUSE, N_("Pause"))
+	DEFINEKEY1(KEY_CAPITAL, N_("Caps Lock"))
+	DEFINEKEY1(KEY_SPACE, N_("Space"))
+	DEFINEKEY1(KEY_PRIOR, N_("Prior"))
+	DEFINEKEY1(KEY_NEXT, N_("Next"))
+	DEFINEKEY1(KEY_END, N_("End"))
+	DEFINEKEY1(KEY_HOME, N_("Home"))
+	DEFINEKEY1(KEY_LEFT, N_("Left"))
+	DEFINEKEY1(KEY_UP, N_("Up"))
+	DEFINEKEY1(KEY_RIGHT, N_("Right"))
+	DEFINEKEY1(KEY_DOWN, N_("Down"))
+	DEFINEKEY1(KEY_SELECT, N_("Select"))
+	DEFINEKEY1(KEY_PRINT, N_("Print"))
+	DEFINEKEY1(KEY_EXECUT, N_("Execute"))
+	DEFINEKEY1(KEY_SNAPSHOT, N_("Snapshot"))
+	DEFINEKEY1(KEY_INSERT, N_("Insert"))
+	DEFINEKEY1(KEY_DELETE, N_("Delete"))
+	DEFINEKEY1(KEY_HELP, N_("Help"))
+	DEFINEKEY1(KEY_LWIN, N_("Left Windows"))
+	DEFINEKEY1(KEY_RWIN, N_("Right Windows"))
+	DEFINEKEY1(KEY_NUMPAD0, N_("Numpad 0")) // These are not assigned to a char
+	DEFINEKEY1(KEY_NUMPAD1, N_("Numpad 1")) // to prevent interference with KEY_KEY_[0-9].
+	DEFINEKEY1(KEY_NUMPAD2, N_("Numpad 2"))
+	DEFINEKEY1(KEY_NUMPAD3, N_("Numpad 3"))
+	DEFINEKEY1(KEY_NUMPAD4, N_("Numpad 4"))
+	DEFINEKEY1(KEY_NUMPAD5, N_("Numpad 5"))
+	DEFINEKEY1(KEY_NUMPAD6, N_("Numpad 6"))
+	DEFINEKEY1(KEY_NUMPAD7, N_("Numpad 7"))
+	DEFINEKEY1(KEY_NUMPAD8, N_("Numpad 8"))
+	DEFINEKEY1(KEY_NUMPAD9, N_("Numpad 9"))
+	DEFINEKEY1(KEY_MULTIPLY, N_("Numpad *"))
+	DEFINEKEY1(KEY_ADD, N_("Numpad +"))
+	DEFINEKEY1(KEY_SEPARATOR, N_("Numpad ."))
+	DEFINEKEY1(KEY_SUBTRACT, N_("Numpad -"))
+	DEFINEKEY1(KEY_DECIMAL, NULL)
+	DEFINEKEY1(KEY_DIVIDE, N_("Numpad /"))
+	DEFINEKEY4(1)
+	DEFINEKEY4(2)
+	DEFINEKEY4(3)
+	DEFINEKEY4(4)
+	DEFINEKEY4(5)
+	DEFINEKEY4(6)
+	DEFINEKEY4(7)
+	DEFINEKEY4(8)
+	DEFINEKEY4(9)
+	DEFINEKEY4(10)
+	DEFINEKEY4(11)
+	DEFINEKEY4(12)
+	DEFINEKEY4(13)
+	DEFINEKEY4(14)
+	DEFINEKEY4(15)
+	DEFINEKEY4(16)
+	DEFINEKEY4(17)
+	DEFINEKEY4(18)
+	DEFINEKEY4(19)
+	DEFINEKEY4(20)
+	DEFINEKEY4(21)
+	DEFINEKEY4(22)
+	DEFINEKEY4(23)
+	DEFINEKEY4(24)
+	DEFINEKEY1(KEY_NUMLOCK, N_("Num Lock"))
+	DEFINEKEY1(KEY_SCROLL, N_("Scroll Lock"))
+	DEFINEKEY1(KEY_LSHIFT, N_("Left Shift"))
+	DEFINEKEY1(KEY_RSHIFT, N_("Right Shift"))
+	DEFINEKEY1(KEY_LCONTROL, N_("Left Control"))
+	DEFINEKEY1(KEY_RCONTROL, N_("Right Control"))
+	DEFINEKEY1(KEY_LMENU, N_("Left Menu"))
+	DEFINEKEY1(KEY_RMENU, N_("Right Menu"))
+
+	// Rare/weird keys
+	DEFINEKEY1(KEY_KANA, "Kana")
+	DEFINEKEY1(KEY_HANGUEL, "Hangul")
+	DEFINEKEY1(KEY_HANGUL, "Hangul")
+	DEFINEKEY1(KEY_JUNJA, "Junja")
+	DEFINEKEY1(KEY_FINAL, "Final")
+	DEFINEKEY1(KEY_KANJI, "Kanji")
+	DEFINEKEY1(KEY_HANJA, "Hanja")
+	DEFINEKEY1(KEY_ESCAPE, N_("IME Escape"))
+	DEFINEKEY1(KEY_CONVERT, N_("IME Convert"))
+	DEFINEKEY1(KEY_NONCONVERT, N_("IME Nonconvert"))
+	DEFINEKEY1(KEY_ACCEPT, N_("IME Accept"))
+	DEFINEKEY1(KEY_MODECHANGE, N_("IME Mode Change"))
+	DEFINEKEY1(KEY_APPS, N_("Apps"))
+	DEFINEKEY1(KEY_SLEEP, N_("Sleep"))
+#if !(IRRLICHT_VERSION_MAJOR <= 1 && IRRLICHT_VERSION_MINOR <= 7 && IRRLICHT_VERSION_REVISION < 3)
+	DEFINEKEY1(KEY_OEM_1, "OEM 1") // KEY_OEM_[0-9] and KEY_OEM_102 are assigned to multiple
+	DEFINEKEY1(KEY_OEM_2, "OEM 2") // different chars (on different platforms too) and thus w/o char
+	DEFINEKEY1(KEY_OEM_3, "OEM 3")
+	DEFINEKEY1(KEY_OEM_4, "OEM 4")
+	DEFINEKEY1(KEY_OEM_5, "OEM 5")
+	DEFINEKEY1(KEY_OEM_6, "OEM 6")
+	DEFINEKEY1(KEY_OEM_7, "OEM 7")
+	DEFINEKEY1(KEY_OEM_8, "OEM 8")
+	DEFINEKEY1(KEY_OEM_AX, "OEM AX")
+	DEFINEKEY1(KEY_OEM_102, "OEM 102")
+#endif
+	DEFINEKEY1(KEY_ATTN, "Attn")
+	DEFINEKEY1(KEY_CRSEL, "CrSel")
+	DEFINEKEY1(KEY_EXSEL, "ExSel")
+	DEFINEKEY1(KEY_EREOF, N_("Erase EOF"))
+	DEFINEKEY1(KEY_PLAY, N_("Play"))
+	DEFINEKEY1(KEY_ZOOM, N_("Zoom"))
+	DEFINEKEY1(KEY_PA1, "PA1")
+	DEFINEKEY1(KEY_OEM_CLEAR, N_("OEM Clear"))
+
+	// Keys without Irrlicht keycode
+	DEFINEKEY5("!")
+	DEFINEKEY5("\"")
+	DEFINEKEY5("#")
+	DEFINEKEY5("$")
+	DEFINEKEY5("%")
+	DEFINEKEY5("&")
+	DEFINEKEY5("'")
+	DEFINEKEY5("(")
+	DEFINEKEY5(")")
+	DEFINEKEY5("*")
+	DEFINEKEY5("/")
+	DEFINEKEY5(":")
+	DEFINEKEY5(";")
+	DEFINEKEY5("<")
+	DEFINEKEY5("=")
+	DEFINEKEY5(">")
+	DEFINEKEY5("?")
+	DEFINEKEY5("@")
+	DEFINEKEY5("[")
+	DEFINEKEY5("\\")
+	DEFINEKEY5("]")
+	DEFINEKEY5("^")
+	DEFINEKEY5("_")
+};
+
+#undef N_
+
+#define ARRAYSIZE(a) (sizeof(a) / sizeof((a)[0]))
+
+struct table_key lookup_keyname(const char *name)
 {
-	CHECKKEY(KEY_LBUTTON)
-	CHECKKEY(KEY_RBUTTON)
-	CHECKKEY(KEY_CANCEL)
-	CHECKKEY(KEY_MBUTTON)
-	CHECKKEY(KEY_XBUTTON1)
-	CHECKKEY(KEY_XBUTTON2)
-	CHECKKEY(KEY_BACK)
-	CHECKKEY(KEY_TAB)
-	CHECKKEY(KEY_CLEAR)
-	CHECKKEY(KEY_RETURN)
-	CHECKKEY(KEY_SHIFT)
-	CHECKKEY(KEY_CONTROL)
-	CHECKKEY(KEY_MENU)
-	CHECKKEY(KEY_PAUSE)
-	CHECKKEY(KEY_CAPITAL)
-	CHECKKEY(KEY_KANA)
-	CHECKKEY(KEY_HANGUEL)
-	CHECKKEY(KEY_HANGUL)
-	CHECKKEY(KEY_JUNJA)
-	CHECKKEY(KEY_FINAL)
-	CHECKKEY(KEY_HANJA)
-	CHECKKEY(KEY_KANJI)
-	CHECKKEY(KEY_ESCAPE)
-	CHECKKEY(KEY_CONVERT)
-	CHECKKEY(KEY_NONCONVERT)
-	CHECKKEY(KEY_ACCEPT)
-	CHECKKEY(KEY_MODECHANGE)
-	CHECKKEY(KEY_SPACE)
-	CHECKKEY(KEY_PRIOR)
-	CHECKKEY(KEY_NEXT)
-	CHECKKEY(KEY_END)
-	CHECKKEY(KEY_HOME)
-	CHECKKEY(KEY_LEFT)
-	CHECKKEY(KEY_UP)
-	CHECKKEY(KEY_RIGHT)
-	CHECKKEY(KEY_DOWN)
-	CHECKKEY(KEY_SELECT)
-	CHECKKEY(KEY_PRINT)
-	CHECKKEY(KEY_EXECUT)
-	CHECKKEY(KEY_SNAPSHOT)
-	CHECKKEY(KEY_INSERT)
-	CHECKKEY(KEY_DELETE)
-	CHECKKEY(KEY_HELP)
-	CHECKKEY(KEY_KEY_0)
-	CHECKKEY(KEY_KEY_1)
-	CHECKKEY(KEY_KEY_2)
-	CHECKKEY(KEY_KEY_3)
-	CHECKKEY(KEY_KEY_4)
-	CHECKKEY(KEY_KEY_5)
-	CHECKKEY(KEY_KEY_6)
-	CHECKKEY(KEY_KEY_7)
-	CHECKKEY(KEY_KEY_8)
-	CHECKKEY(KEY_KEY_9)
-	CHECKKEY(KEY_KEY_A)
-	CHECKKEY(KEY_KEY_B)
-	CHECKKEY(KEY_KEY_C)
-	CHECKKEY(KEY_KEY_D)
-	CHECKKEY(KEY_KEY_E)
-	CHECKKEY(KEY_KEY_F)
-	CHECKKEY(KEY_KEY_G)
-	CHECKKEY(KEY_KEY_H)
-	CHECKKEY(KEY_KEY_I)
-	CHECKKEY(KEY_KEY_J)
-	CHECKKEY(KEY_KEY_K)
-	CHECKKEY(KEY_KEY_L)
-	CHECKKEY(KEY_KEY_M)
-	CHECKKEY(KEY_KEY_N)
-	CHECKKEY(KEY_KEY_O)
-	CHECKKEY(KEY_KEY_P)
-	CHECKKEY(KEY_KEY_Q)
-	CHECKKEY(KEY_KEY_R)
-	CHECKKEY(KEY_KEY_S)
-	CHECKKEY(KEY_KEY_T)
-	CHECKKEY(KEY_KEY_U)
-	CHECKKEY(KEY_KEY_V)
-	CHECKKEY(KEY_KEY_W)
-	CHECKKEY(KEY_KEY_X)
-	CHECKKEY(KEY_KEY_Y)
-	CHECKKEY(KEY_KEY_Z)
-	CHECKKEY(KEY_LWIN)
-	CHECKKEY(KEY_RWIN)
-	CHECKKEY(KEY_APPS)
-	CHECKKEY(KEY_SLEEP)
-	CHECKKEY(KEY_NUMPAD0)
-	CHECKKEY(KEY_NUMPAD1)
-	CHECKKEY(KEY_NUMPAD2)
-	CHECKKEY(KEY_NUMPAD3)
-	CHECKKEY(KEY_NUMPAD4)
-	CHECKKEY(KEY_NUMPAD5)
-	CHECKKEY(KEY_NUMPAD6)
-	CHECKKEY(KEY_NUMPAD7)
-	CHECKKEY(KEY_NUMPAD8)
-	CHECKKEY(KEY_NUMPAD9)
-	CHECKKEY(KEY_MULTIPLY)
-	CHECKKEY(KEY_ADD)
-	CHECKKEY(KEY_SEPARATOR)
-	CHECKKEY(KEY_SUBTRACT)
-	CHECKKEY(KEY_DECIMAL)
-	CHECKKEY(KEY_DIVIDE)
-	CHECKKEY(KEY_F1)
-	CHECKKEY(KEY_F2)
-	CHECKKEY(KEY_F3)
-	CHECKKEY(KEY_F4)
-	CHECKKEY(KEY_F5)
-	CHECKKEY(KEY_F6)
-	CHECKKEY(KEY_F7)
-	CHECKKEY(KEY_F8)
-	CHECKKEY(KEY_F9)
-	CHECKKEY(KEY_F10)
-	CHECKKEY(KEY_F11)
-	CHECKKEY(KEY_F12)
-	CHECKKEY(KEY_F13)
-	CHECKKEY(KEY_F14)
-	CHECKKEY(KEY_F15)
-	CHECKKEY(KEY_F16)
-	CHECKKEY(KEY_F17)
-	CHECKKEY(KEY_F18)
-	CHECKKEY(KEY_F19)
-	CHECKKEY(KEY_F20)
-	CHECKKEY(KEY_F21)
-	CHECKKEY(KEY_F22)
-	CHECKKEY(KEY_F23)
-	CHECKKEY(KEY_F24)
-	CHECKKEY(KEY_NUMLOCK)
-	CHECKKEY(KEY_SCROLL)
-	CHECKKEY(KEY_LSHIFT)
-	CHECKKEY(KEY_RSHIFT)
-	CHECKKEY(KEY_LCONTROL)
-	CHECKKEY(KEY_RCONTROL)
-	CHECKKEY(KEY_LMENU)
-	CHECKKEY(KEY_RMENU)
-	CHECKKEY(KEY_PLUS)
-	CHECKKEY(KEY_COMMA)
-	CHECKKEY(KEY_MINUS)
-	CHECKKEY(KEY_PERIOD)
-	CHECKKEY(KEY_ATTN)
-	CHECKKEY(KEY_CRSEL)
-	CHECKKEY(KEY_EXSEL)
-	CHECKKEY(KEY_EREOF)
-	CHECKKEY(KEY_PLAY)
-	CHECKKEY(KEY_ZOOM)
-	CHECKKEY(KEY_PA1)
-	CHECKKEY(KEY_OEM_CLEAR)
+	for (u16 i = 0; i < ARRAYSIZE(table); i++) {
+		if (strcmp(table[i].Name, name) == 0)
+			return table[i];
+	}
 
 	throw UnknownKeycode(name);
 }
 
-static const char *KeyNames[] =
-{ "-", "KEY_LBUTTON", "KEY_RBUTTON", "KEY_CANCEL", "KEY_MBUTTON", "KEY_XBUTTON1",
-		"KEY_XBUTTON2", "-", "KEY_BACK", "KEY_TAB", "-", "-", "KEY_CLEAR", "KEY_RETURN", "-",
-		"-", "KEY_SHIFT", "KEY_CONTROL", "KEY_MENU", "KEY_PAUSE", "KEY_CAPITAL", "KEY_KANA", "-",
-		"KEY_JUNJA", "KEY_FINAL", "KEY_KANJI", "-", "KEY_ESCAPE", "KEY_CONVERT", "KEY_NONCONVERT",
-		"KEY_ACCEPT", "KEY_MODECHANGE", "KEY_SPACE", "KEY_PRIOR", "KEY_NEXT", "KEY_END",
-		"KEY_HOME", "KEY_LEFT", "KEY_UP", "KEY_RIGHT", "KEY_DOWN", "KEY_SELECT", "KEY_PRINT",
-		"KEY_EXECUTE", "KEY_SNAPSHOT", "KEY_INSERT", "KEY_DELETE", "KEY_HELP", "KEY_KEY_0",
-		"KEY_KEY_1", "KEY_KEY_2", "KEY_KEY_3", "KEY_KEY_4", "KEY_KEY_5",
-		"KEY_KEY_6", "KEY_KEY_7", "KEY_KEY_8", "KEY_KEY_9", "-", "-", "-", "-",
-		"-", "-", "-", "KEY_KEY_A", "KEY_KEY_B", "KEY_KEY_C", "KEY_KEY_D",
-		"KEY_KEY_E", "KEY_KEY_F", "KEY_KEY_G", "KEY_KEY_H", "KEY_KEY_I",
-		"KEY_KEY_J", "KEY_KEY_K", "KEY_KEY_L", "KEY_KEY_M", "KEY_KEY_N",
-		"KEY_KEY_O", "KEY_KEY_P", "KEY_KEY_Q", "KEY_KEY_R", "KEY_KEY_S",
-		"KEY_KEY_T", "KEY_KEY_U", "KEY_KEY_V", "KEY_KEY_W", "KEY_KEY_X",
-		"KEY_KEY_Y", "KEY_KEY_Z", "KEY_LWIN", "KEY_RWIN", "KEY_APPS", "-",
-		"KEY_SLEEP", "KEY_NUMPAD0", "KEY_NUMPAD1", "KEY_NUMPAD2", "KEY_NUMPAD3",
-		"KEY_NUMPAD4", "KEY_NUMPAD5", "KEY_NUMPAD6", "KEY_NUMPAD7",
-		"KEY_NUMPAD8", "KEY_NUMPAD9", "KEY_MULTIPLY", "KEY_ADD", "KEY_SEPERATOR",
-		"KEY_SUBTRACT", "KEY_DECIMAL", "KEY_DIVIDE", "KEY_F1", "KEY_F2", "KEY_F3",
-		"KEY_F4", "KEY_F5", "KEY_F6", "KEY_F7", "KEY_F8", "KEY_F9", "KEY_F10",
-		"KEY_F11", "KEY_F12", "KEY_F13", "KEY_F14", "KEY_F15", "KEY_F16",
-		"KEY_F17", "KEY_F18", "KEY_F19", "KEY_F20", "KEY_F21", "KEY_F22",
-		"KEY_F23", "KEY_F24", "-", "-", "-", "-", "-", "-", "-", "-",
-		"KEY_NUMLOCK", "KEY_SCROLL", "-", "-", "-", "-", "-", "-", "-", "-", "-",
-		"-", "-", "-", "-", "-", "KEY_LSHIFT", "KEY_RSHIFT", "KEY_LCONTROL",
-		"KEY_RCONTROL", "KEY_LMENU", "KEY_RMENU", "-", "-", "-", "-", "-",
-		"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
-		"-", "-", "KEY_PLUS", "KEY_COMMA", "KEY_MINUS", "KEY_PERIOD", "-", "-", "-", "-", "-",
-		"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
-		"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
-		"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
-		"-", "-", "-", "-", "-", "-", "-", "-", "KEY_ATTN", "KEY_CRSEL", "KEY_EXSEL",
-		"KEY_EREOF", "KEY_PLAY", "KEY_ZOOM", "KEY_PA1", "KEY_OEM_CLEAR", "-" };
+struct table_key lookup_keykey(irr::EKEY_CODE key)
+{
+	for (u16 i = 0; i < ARRAYSIZE(table); i++) {
+		if (table[i].Key == key)
+			return table[i];
+	}
 
-#define N_(text) text
+	std::ostringstream os;
+	os << "<Keycode " << (int) key << ">";
+	throw UnknownKeycode(os.str().c_str());
+}
 
-static const char *KeyNamesLang[] =
-	{ "-", N_("Left Button"), N_("Right Button"), N_("Cancel"), N_("Middle Button"), N_("X Button 1"),
-			N_("X Button 2"), "-", N_("Back"), N_("Tab"), "-", "-", N_("Clear"), N_("Return"), "-",
-			"-", N_("Shift"), N_("Control"), N_("Menu"), N_("Pause"), N_("Capital"), N_("Kana"), "-",
-			N_("Junja"), N_("Final"), N_("Kanji"), "-", N_("Escape"), N_("Convert"), N_("Nonconvert"),
-			N_("Accept"), N_("Mode Change"), N_("Space"), N_("Prior"), N_("Next"), N_("End"), N_("Home"),
-			N_("Left"), N_("Up"), N_("Right"), N_("Down"), N_("Select"), N_("Print"), N_("Execute"),
-			N_("Snapshot"), N_("Insert"), N_("Delete"), N_("Help"), "0", "1", "2", "3", "4", "5",
-			"6", "7", "8", "9", "-", "-", "-", "-", "-", "-", "-", "A", "B", "C",
-			"D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
-			"R", "S", "T", "U", "V", "W", "X", "Y", "Z", N_("Left Windows"),
-			N_("Right Windows"), N_("Apps"), "-", N_("Sleep"), N_("Numpad 0"), N_("Numpad 1"),
-			N_("Numpad 2"), N_("Numpad 3"), N_("Numpad 4"), N_("Numpad 5"), N_("Numpad 6"), N_("Numpad 7"),
-			N_("Numpad 8"), N_("Numpad 9"), N_("Numpad *"), N_("Numpad +"), N_("Numpad /"), N_("Numpad -"),
-			"Numpad .", "Numpad /", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8",
-			"F9", "F10", "F11", "F12", "F13", "F14", "F15", "F16", "F17", "F18",
-			"F19", "F20", "F21", "F22", "F23", "F24", "-", "-", "-", "-", "-", "-",
-			"-", "-", N_("Num Lock"), N_("Scroll Lock"), "-", "-", "-", "-", "-", "-", "-",
-			"-", "-", "-", "-", "-", "-", "-", N_("Left Shift"), N_("Right Shift"),
-			N_("Left Control"), N_("Right Control"), N_("Left Menu"), N_("Right Menu"), "-", "-",
-			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
-			"-", "-", "-", "-", "-", N_("Plus"), N_("Comma"), N_("Minus"), N_("Period"), "-", "-",
-			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
-			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
-			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",
-			"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", N_("Attn"), N_("CrSel"),
-			N_("ExSel"), N_("Erase OEF"), N_("Play"), N_("Zoom"), N_("PA1"), N_("OEM Clear"), "-" };
+struct table_key lookup_keychar(wchar_t Char)
+{
+	for (u16 i = 0; i < ARRAYSIZE(table); i++) {
+		if (table[i].Char == Char)
+			return table[i];
+	}
 
-#undef N_
+	std::ostringstream os;
+	os << "<Char " << hex_encode((char*) &Char, sizeof(wchar_t)) << ">";
+	throw UnknownKeycode(os.str().c_str());
+}
 
 KeyPress::KeyPress() :
 	Key(irr::KEY_KEY_CODES_COUNT),
-	Char(L'\0')
+	Char(L'\0'),
+	m_name("")
 {}
 
 KeyPress::KeyPress(const char *name)
 {
-	if (name[0] == 0) {
+	if (strlen(name) == 0) {
 		Key = irr::KEY_KEY_CODES_COUNT;
 		Char = L'\0';
+		m_name = "";
 		return;
-	} else if (strlen(name) > 4) {
+	} else if (strlen(name) <= 4) {
+		// Lookup by resulting character
+		int chars_read = mbtowc(&Char, name, 1);
+		FATAL_ERROR_IF(chars_read != 1, "Unexpected multibyte character");
 		try {
-			Key = keyname_to_keycode(name);
-			m_name = name;
-			if (strlen(name) > 8 && strncmp(name, "KEY_KEY_", 8) == 0) {
-				int chars_read = mbtowc(&Char, name + 8, 1);
-
-				FATAL_ERROR_IF(chars_read != 1, "Unexpected multibyte character");
-			} else
-				Char = L'\0';
+			struct table_key k = lookup_keychar(Char);
+			m_name = k.Name;
+			Key = k.Key;
 			return;
 		} catch (UnknownKeycode &e) {};
 	} else {
-		// see if we can set it up as a KEY_KEY_something
-		m_name = "KEY_KEY_";
-		m_name += name;
+		// Lookup by name
+		m_name = name;
 		try {
-			Key = keyname_to_keycode(m_name.c_str());
-			int chars_read = mbtowc(&Char, name, 1);
-
-			FATAL_ERROR_IF(chars_read != 1, "Unexpected multibyte character");
+			struct table_key k = lookup_keyname(name);
+			Key = k.Key;
+			Char = k.Char;
 			return;
 		} catch (UnknownKeycode &e) {};
 	}
 
-	// it's not a (known) key, just take the first char and use that
-
+	// It's not a known key, complain and try to do something
 	Key = irr::KEY_KEY_CODES_COUNT;
-
-	int mbtowc_ret = mbtowc(&Char, name, 1);
-	FATAL_ERROR_IF(mbtowc_ret != 1, "Unexpected multibyte character");
-	m_name = name[0];
+	int chars_read = mbtowc(&Char, name, 1);
+	FATAL_ERROR_IF(chars_read != 1, "Unexpected multibyte character");
+	m_name = "";
+	warningstream << "KeyPress: Unknown key '" << name << "', falling back to first char.";
 }
 
 KeyPress::KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character)
 {
-	Key = in.Key;
+	if (prefer_character)
+		Key = irr::KEY_KEY_CODES_COUNT;
+	else
+		Key = in.Key;
 	Char = in.Char;
 
-	if(prefer_character){
-		m_name.resize(MB_CUR_MAX+1, '\0');
-		int written = wctomb(&m_name[0], Char);
-		if(written > 0){
-			infostream<<"KeyPress: Preferring character for "<<m_name<<std::endl;
-			Key = irr::KEY_KEY_CODES_COUNT;
-			return;
-		}
-	}
-
-	if (valid_kcode(Key)) {
-		m_name = KeyNames[Key];
-	} else {
-		m_name.resize(MB_CUR_MAX+1, '\0');
-		int written = wctomb(&m_name[0], Char);
-		if(written < 0){
-			std::string hexstr = hex_encode((const char*)&Char, sizeof(Char));
-			errorstream<<"KeyPress: Unexpected multibyte character "<<hexstr<<std::endl;
-		}
-	}
+	try {
+		if (valid_kcode(Key))
+			m_name = lookup_keykey(Key).Name;
+		else
+			m_name = lookup_keychar(Char).Name;
+	} catch (UnknownKeycode &e) {
+		m_name = "";
+	};
 }
 
 const char *KeyPress::sym() const
 {
-	if (Key && Key < irr::KEY_KEY_CODES_COUNT)
-		return KeyNames[Key];
-	else {
-		return m_name.c_str();
-	}
+	return m_name.c_str();
 }
 
 const char *KeyPress::name() const
 {
-	if (Key && Key < irr::KEY_KEY_CODES_COUNT)
-		return KeyNamesLang[Key];
-	else {
-		return m_name.c_str();
-	}
+	if (m_name == "")
+		return "";
+	const char *ret;
+	if (valid_kcode(Key))
+		ret = lookup_keykey(Key).LangName;
+	else
+		ret = lookup_keychar(Char).LangName;
+	return ret ? ret : "<Unnamed key>";
 }
 
 const KeyPress EscapeKey("KEY_ESCAPE");
 const KeyPress CancelKey("KEY_CANCEL");
 const KeyPress NumberKey[] = {
-	KeyPress("KEY_KEY_0"), KeyPress("KEY_KEY_1"), KeyPress("KEY_KEY_2"),
-	KeyPress("KEY_KEY_3"), KeyPress("KEY_KEY_4"), KeyPress("KEY_KEY_5"),
-	KeyPress("KEY_KEY_6"), KeyPress("KEY_KEY_7"), KeyPress("KEY_KEY_8"),
-	KeyPress("KEY_KEY_9")};
+	KeyPress("0"), KeyPress("1"), KeyPress("2"), KeyPress("3"), KeyPress("4"),
+	KeyPress("5"), KeyPress("6"), KeyPress("7"), KeyPress("8"), KeyPress("9")
+};
 
 /*
 	Key config
@@ -360,8 +375,10 @@ KeyPress getKeySetting(const char *settingname)
 	n = g_key_setting_cache.find(settingname);
 	if(n != g_key_setting_cache.end())
 		return n->second;
-	g_key_setting_cache[settingname] = g_settings->get(settingname).c_str();
-	return g_key_setting_cache.find(settingname)->second;
+
+	KeyPress k(g_settings->get(settingname).c_str());
+	g_key_setting_cache[settingname] = k;
+	return k;
 }
 
 void clearKeyCache()
