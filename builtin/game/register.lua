@@ -128,7 +128,9 @@ function core.register_item(name, itemdef)
 			}
 		end
 		if itemdef.light_source and itemdef.light_source > core.LIGHT_MAX then
-			error("Unable to register node: 'light_source' exceeds maximum: " .. name)
+			itemdef.light_source = core.LIGHT_MAX
+			core.log("warning", "Node 'light_source' value exceeds maximum," ..
+				" limiting to maximum: " ..name)
 		end
 		setmetatable(itemdef, {__index = core.nodedef_default})
 		core.registered_nodes[itemdef.name] = itemdef
