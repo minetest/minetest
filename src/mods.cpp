@@ -29,14 +29,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "convert_json.h"
 #include "exceptions.h"
 
-static bool parseDependsLine(std::istream &is,
-		std::string &dep, std::set<char> &symbols)
+static bool parseDependsString(std::string &dep,
+		std::set<char> &symbols)
 {
-	std::getline(is, dep);
 	dep = trim(dep);
 	symbols.clear();
 	size_t pos = dep.size();
-	while(pos > 0 && !string_allowed(dep.substr(pos-1, 1), MODNAME_ALLOWED_CHARS)){
+	while (pos > 0 && !string_allowed(dep.substr(pos-1, 1), MODNAME_ALLOWED_CHARS)) {
 		// last character is a symbol, not part of the modname
 		symbols.insert(dep[pos-1]);
 		--pos;
@@ -61,25 +60,34 @@ void parseModContents(ModSpec &spec)
 
 	// Handle modpacks (defined by containing modpack.txt)
 	std::ifstream modpack_is((spec.path+DIR_DELIM+"modpack.txt").c_str());
-	if(modpack_is.good()){ //a modpack, recursively get the mods in it
+	if (modpack_is.good()) { // a modpack, recursively get the mods in it
 		modpack_is.close(); // We don't actually need the file
 		spec.is_modpack = true;
 		spec.modpack_content = getModsInPath(spec.path, true);
 
 		// modpacks have no dependencies; they are defined and
 		// tracked separately for each mod in the modpack
-	}
-	else{ // not a modpack, parse the dependencies
-		std::ifstream is((spec.path+DIR_DELIM+"depends.txt").c_str());
-		while(is.good()){
-			std::string dep;
+	} else { // not a modpack, parse the dependencies
+		std::vector<std::string> dependencies;
+		if (info.exists("depends")) {
+			std::string dep = info.get("depends");
+			dependencies = str_split(dep, ',');
+		} else {
+			std::ifstream is((spec.path+DIR_DELIM+"depends.txt").c_str());
+			while (is.good()) {
+				std::string dep;
+				std::getline(is, dep);
+				dependencies.push_back(dep);
+			}
+		}
+		for (std::vector<std::string>::iterator it = dependencies.begin();
+				it != dependencies.end(); ++it) {
 			std::set<char> symbols;
-			if(parseDependsLine(is, dep, symbols)){
-				if(symbols.count('?') != 0){
-					spec.optdepends.insert(dep);
-				}
-				else{
-					spec.depends.insert(dep);
+			if (parseDependsString(*it, symbols)) {
+				if (symbols.count('?') != 0) {
+					spec.optdepends.insert(*it);
+				} else {
+					spec.depends.insert(*it);
 				}
 			}
 		}
