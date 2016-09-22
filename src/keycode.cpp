@@ -42,53 +42,13 @@ struct table_key {
 #define DEFINEKEY1(x, lang) { #x, irr::x, L'\0', lang }, // Irrlicht key without char
 #define DEFINEKEY2(x, ch, lang) { #x, irr::x, ch, lang }, // Irrlicht key with char
 #define DEFINEKEY3(ch) { "KEY_KEY_" TOSTRING(ch), irr::KEY_KEY_ ## ch, (wchar_t) *TOSTRING(ch), TOSTRING(ch) }, // single Irrlicht key (e.g. KEY_KEY_X)
+#define DEFINEKEY4(ch) { "KEY_F" TOSTRING(ch), irr::KEY_F ## ch, L'\0', "F" TOSTRING(ch) }, // single Irrlicht function key (e.g. KEY_F3)
+#define DEFINEKEY5(ch) { ch, irr::KEY_KEY_CODES_COUNT, (wchar_t) *ch, ch }, // key without Irrlicht equivalent
 
 #define N_(text) text
 
 static const struct table_key table[] = {
-	DEFINEKEY1(KEY_LBUTTON, N_("Left Button"))
-	DEFINEKEY1(KEY_RBUTTON, N_("Right Button"))
-	DEFINEKEY1(KEY_CANCEL, N_("Cancel"))
-	DEFINEKEY1(KEY_MBUTTON, N_("Middle Button"))
-	DEFINEKEY1(KEY_XBUTTON1, N_("X Button 1"))
-	DEFINEKEY1(KEY_XBUTTON2, N_("X Button 2"))
-	DEFINEKEY1(KEY_BACK, N_("Back"))
-	DEFINEKEY1(KEY_TAB, N_("Tab"))
-	DEFINEKEY1(KEY_CLEAR, N_("Clear"))
-	DEFINEKEY1(KEY_RETURN, N_("Return"))
-	DEFINEKEY1(KEY_SHIFT, N_("Shift"))
-	DEFINEKEY1(KEY_CONTROL, N_("Control"))
-	DEFINEKEY1(KEY_MENU, N_("Menu"))
-	DEFINEKEY1(KEY_PAUSE, N_("Pause"))
-	DEFINEKEY1(KEY_CAPITAL, N_("Capital"))
-	DEFINEKEY1(KEY_KANA, "Kana") // the next few are not worth translating
-	DEFINEKEY1(KEY_HANGUEL, "Hangul")
-	DEFINEKEY1(KEY_HANGUL, "Hangul")
-	DEFINEKEY1(KEY_JUNJA, "Junja")
-	DEFINEKEY1(KEY_FINAL, "Final")
-	DEFINEKEY1(KEY_KANJI, "Kanji")
-	DEFINEKEY1(KEY_HANJA, "Hanja")
-	DEFINEKEY1(KEY_ESCAPE, N_("Escape"))
-	DEFINEKEY1(KEY_CONVERT, N_("Convert"))
-	DEFINEKEY1(KEY_NONCONVERT, N_("Nonconvert"))
-	DEFINEKEY1(KEY_ACCEPT, N_("Accept"))
-	DEFINEKEY1(KEY_MODECHANGE, N_("Mode Change"))
-	DEFINEKEY1(KEY_SPACE, N_("Space"))
-	DEFINEKEY1(KEY_PRIOR, N_("Prior"))
-	DEFINEKEY1(KEY_NEXT, N_("Next"))
-	DEFINEKEY1(KEY_END, N_("End"))
-	DEFINEKEY1(KEY_HOME, N_("Home"))
-	DEFINEKEY1(KEY_LEFT, N_("Left"))
-	DEFINEKEY1(KEY_UP, N_("Up"))
-	DEFINEKEY1(KEY_RIGHT, N_("Right"))
-	DEFINEKEY1(KEY_DOWN, N_("Down"))
-	DEFINEKEY1(KEY_SELECT, N_("Select"))
-	DEFINEKEY1(KEY_PRINT, N_("Print"))
-	DEFINEKEY1(KEY_EXECUT, N_("Execute"))
-	DEFINEKEY1(KEY_SNAPSHOT, N_("Snapshot"))
-	DEFINEKEY1(KEY_INSERT, N_("Insert"))
-	DEFINEKEY1(KEY_DELETE, N_("Delete"))
-	DEFINEKEY1(KEY_HELP, N_("Help"))
+	// Keys that can be reliably mapped between Char and Key
 	DEFINEKEY3(0)
 	DEFINEKEY3(1)
 	DEFINEKEY3(2)
@@ -125,50 +85,85 @@ static const struct table_key table[] = {
 	DEFINEKEY3(X)
 	DEFINEKEY3(Y)
 	DEFINEKEY3(Z)
+	DEFINEKEY2(KEY_PLUS, L'+', "+")
+	DEFINEKEY2(KEY_COMMA, L',', ",")
+	DEFINEKEY2(KEY_MINUS, L'-', "-")
+	DEFINEKEY2(KEY_PERIOD, L'.', ".")
+
+	// Keys without a Char
+	DEFINEKEY1(KEY_LBUTTON, N_("Left Button"))
+	DEFINEKEY1(KEY_RBUTTON, N_("Right Button"))
+	DEFINEKEY1(KEY_CANCEL, N_("Cancel"))
+	DEFINEKEY1(KEY_MBUTTON, N_("Middle Button"))
+	DEFINEKEY1(KEY_XBUTTON1, N_("X Button 1"))
+	DEFINEKEY1(KEY_XBUTTON2, N_("X Button 2"))
+	DEFINEKEY1(KEY_BACK, N_("Back"))
+	DEFINEKEY1(KEY_TAB, N_("Tab"))
+	DEFINEKEY1(KEY_CLEAR, N_("Clear"))
+	DEFINEKEY1(KEY_RETURN, N_("Return"))
+	DEFINEKEY1(KEY_SHIFT, N_("Shift"))
+	DEFINEKEY1(KEY_CONTROL, N_("Control"))
+	DEFINEKEY1(KEY_MENU, N_("Menu"))
+	DEFINEKEY1(KEY_PAUSE, N_("Pause"))
+	DEFINEKEY1(KEY_CAPITAL, N_("Caps Lock"))
+	DEFINEKEY1(KEY_SPACE, N_("Space"))
+	DEFINEKEY1(KEY_PRIOR, N_("Prior"))
+	DEFINEKEY1(KEY_NEXT, N_("Next"))
+	DEFINEKEY1(KEY_END, N_("End"))
+	DEFINEKEY1(KEY_HOME, N_("Home"))
+	DEFINEKEY1(KEY_LEFT, N_("Left"))
+	DEFINEKEY1(KEY_UP, N_("Up"))
+	DEFINEKEY1(KEY_RIGHT, N_("Right"))
+	DEFINEKEY1(KEY_DOWN, N_("Down"))
+	DEFINEKEY1(KEY_SELECT, N_("Select"))
+	DEFINEKEY1(KEY_PRINT, N_("Print"))
+	DEFINEKEY1(KEY_EXECUT, N_("Execute"))
+	DEFINEKEY1(KEY_SNAPSHOT, N_("Snapshot"))
+	DEFINEKEY1(KEY_INSERT, N_("Insert"))
+	DEFINEKEY1(KEY_DELETE, N_("Delete"))
+	DEFINEKEY1(KEY_HELP, N_("Help"))
 	DEFINEKEY1(KEY_LWIN, N_("Left Windows"))
 	DEFINEKEY1(KEY_RWIN, N_("Right Windows"))
-	DEFINEKEY1(KEY_APPS, N_("Apps"))
-	DEFINEKEY1(KEY_SLEEP, N_("Sleep"))
-	DEFINEKEY2(KEY_NUMPAD0, L'0', N_("Numpad 0"))
-	DEFINEKEY2(KEY_NUMPAD1, L'1', N_("Numpad 1"))
-	DEFINEKEY2(KEY_NUMPAD2, L'2', N_("Numpad 2"))
-	DEFINEKEY2(KEY_NUMPAD3, L'3', N_("Numpad 3"))
-	DEFINEKEY2(KEY_NUMPAD4, L'4', N_("Numpad 4"))
-	DEFINEKEY2(KEY_NUMPAD5, L'5', N_("Numpad 5"))
-	DEFINEKEY2(KEY_NUMPAD6, L'6', N_("Numpad 6"))
-	DEFINEKEY2(KEY_NUMPAD7, L'7', N_("Numpad 7"))
-	DEFINEKEY2(KEY_NUMPAD8, L'8', N_("Numpad 8"))
-	DEFINEKEY2(KEY_NUMPAD9, L'9', N_("Numpad 9"))
+	DEFINEKEY1(KEY_NUMPAD0, N_("Numpad 0")) // These are not assigned to a char
+	DEFINEKEY1(KEY_NUMPAD1, N_("Numpad 1")) // to prevent interference with KEY_KEY_[0-9].
+	DEFINEKEY1(KEY_NUMPAD2, N_("Numpad 2"))
+	DEFINEKEY1(KEY_NUMPAD3, N_("Numpad 3"))
+	DEFINEKEY1(KEY_NUMPAD4, N_("Numpad 4"))
+	DEFINEKEY1(KEY_NUMPAD5, N_("Numpad 5"))
+	DEFINEKEY1(KEY_NUMPAD6, N_("Numpad 6"))
+	DEFINEKEY1(KEY_NUMPAD7, N_("Numpad 7"))
+	DEFINEKEY1(KEY_NUMPAD8, N_("Numpad 8"))
+	DEFINEKEY1(KEY_NUMPAD9, N_("Numpad 9"))
 	DEFINEKEY1(KEY_MULTIPLY, N_("Numpad *"))
 	DEFINEKEY1(KEY_ADD, N_("Numpad +"))
 	DEFINEKEY1(KEY_SEPARATOR, N_("Numpad ."))
 	DEFINEKEY1(KEY_SUBTRACT, N_("Numpad -"))
 	DEFINEKEY1(KEY_DECIMAL, NULL)
 	DEFINEKEY1(KEY_DIVIDE, N_("Numpad /"))
-	DEFINEKEY1(KEY_F1, "F1")
-	DEFINEKEY1(KEY_F2, "F2")
-	DEFINEKEY1(KEY_F3, "F3")
-	DEFINEKEY1(KEY_F4, "F4")
-	DEFINEKEY1(KEY_F5, "F5")
-	DEFINEKEY1(KEY_F6, "F6")
-	DEFINEKEY1(KEY_F7, "F7")
-	DEFINEKEY1(KEY_F8, "F8")
-	DEFINEKEY1(KEY_F9, "F9")
-	DEFINEKEY1(KEY_F10, "F10")
-	DEFINEKEY1(KEY_F11, "F11")
-	DEFINEKEY1(KEY_F12, "F12")
-	DEFINEKEY1(KEY_F13, "F13")
-	DEFINEKEY1(KEY_F14, "F14")
-	DEFINEKEY1(KEY_F15, "F15")
-	DEFINEKEY1(KEY_F16, "F16")
-	DEFINEKEY1(KEY_F17, "F17")
-	DEFINEKEY1(KEY_F18, "F18")
-	DEFINEKEY1(KEY_F19, "F19")
-	DEFINEKEY1(KEY_F20, "F19")
-	DEFINEKEY1(KEY_F21, "F20")
-	DEFINEKEY1(KEY_F22, "F21")
-	DEFINEKEY1(KEY_F23, "F23")
-	DEFINEKEY1(KEY_F24, "F24")
+	DEFINEKEY4(1)
+	DEFINEKEY4(2)
+	DEFINEKEY4(3)
+	DEFINEKEY4(4)
+	DEFINEKEY4(5)
+	DEFINEKEY4(6)
+	DEFINEKEY4(7)
+	DEFINEKEY4(8)
+	DEFINEKEY4(9)
+	DEFINEKEY4(10)
+	DEFINEKEY4(11)
+	DEFINEKEY4(12)
+	DEFINEKEY4(13)
+	DEFINEKEY4(14)
+	DEFINEKEY4(15)
+	DEFINEKEY4(16)
+	DEFINEKEY4(17)
+	DEFINEKEY4(18)
+	DEFINEKEY4(19)
+	DEFINEKEY4(20)
+	DEFINEKEY4(21)
+	DEFINEKEY4(22)
+	DEFINEKEY4(23)
+	DEFINEKEY4(24)
 	DEFINEKEY1(KEY_NUMLOCK, N_("Num Lock"))
 	DEFINEKEY1(KEY_SCROLL, N_("Scroll Lock"))
 	DEFINEKEY1(KEY_LSHIFT, N_("Left Shift"))
@@ -177,26 +172,65 @@ static const struct table_key table[] = {
 	DEFINEKEY1(KEY_RCONTROL, N_("Right Control"))
 	DEFINEKEY1(KEY_LMENU, N_("Left Menu"))
 	DEFINEKEY1(KEY_RMENU, N_("Right Menu"))
-	DEFINEKEY2(KEY_OEM_1, L';', N_("Semicolon"))
-	DEFINEKEY2(KEY_PLUS, L'+', N_("Plus"))
-	DEFINEKEY2(KEY_COMMA, L',', N_("Comma"))
-	DEFINEKEY2(KEY_MINUS, L'-', N_("Minus"))
-	DEFINEKEY2(KEY_PERIOD, L'.', N_("Period"))
-	DEFINEKEY2(KEY_OEM_2, L'/', N_("Slash"))
-	DEFINEKEY2(KEY_OEM_3, L'`', N_("Grave accent"))
-	DEFINEKEY2(KEY_OEM_4, L'[', "[")
-	DEFINEKEY2(KEY_OEM_5, L'\\', N_("Backslash"))
-	DEFINEKEY2(KEY_OEM_6, L']', "]")
-	DEFINEKEY2(KEY_OEM_7, L'\'', N_("Apostrophe"))
-	DEFINEKEY2(KEY_OEM_102, L'<', N_("Less"))
-	DEFINEKEY1(KEY_ATTN, N_("Attn"))
-	DEFINEKEY1(KEY_CRSEL, "CrSel") // both not worth translating
+
+	// Rare/weird keys
+	DEFINEKEY1(KEY_KANA, "Kana")
+	DEFINEKEY1(KEY_HANGUEL, "Hangul")
+	DEFINEKEY1(KEY_HANGUL, "Hangul")
+	DEFINEKEY1(KEY_JUNJA, "Junja")
+	DEFINEKEY1(KEY_FINAL, "Final")
+	DEFINEKEY1(KEY_KANJI, "Kanji")
+	DEFINEKEY1(KEY_HANJA, "Hanja")
+	DEFINEKEY1(KEY_ESCAPE, N_("IME Escape"))
+	DEFINEKEY1(KEY_CONVERT, N_("IME Convert"))
+	DEFINEKEY1(KEY_NONCONVERT, N_("IME Nonconvert"))
+	DEFINEKEY1(KEY_ACCEPT, N_("IME Accept"))
+	DEFINEKEY1(KEY_MODECHANGE, N_("IME Mode Change"))
+	DEFINEKEY1(KEY_APPS, N_("Apps"))
+	DEFINEKEY1(KEY_SLEEP, N_("Sleep"))
+	DEFINEKEY1(KEY_OEM_1, "OEM 1") // KEY_OEM_[0-9] and KEY_OEM_102 are assigned to multiple
+	DEFINEKEY1(KEY_OEM_2, "OEM 2") // different chars, they are just here for completeness.
+	DEFINEKEY1(KEY_OEM_3, "OEM 3")
+	DEFINEKEY1(KEY_OEM_4, "OEM 4")
+	DEFINEKEY1(KEY_OEM_5, "OEM 5")
+	DEFINEKEY1(KEY_OEM_6, "OEM 6")
+	DEFINEKEY1(KEY_OEM_7, "OEM 7")
+	DEFINEKEY1(KEY_OEM_8, "OEM 8")
+	DEFINEKEY1(KEY_OEM_AX, "OEM AX")
+	DEFINEKEY1(KEY_OEM_102, "OEM 102")
+	DEFINEKEY1(KEY_ATTN, "Attn")
+	DEFINEKEY1(KEY_CRSEL, "CrSel")
 	DEFINEKEY1(KEY_EXSEL, "ExSel")
-	DEFINEKEY1(KEY_EREOF, N_("Erase OEF"))
+	DEFINEKEY1(KEY_EREOF, N_("Erase EOF"))
 	DEFINEKEY1(KEY_PLAY, N_("Play"))
 	DEFINEKEY1(KEY_ZOOM, N_("Zoom"))
-	DEFINEKEY1(KEY_PA1, "PA1") // not worth translating
+	DEFINEKEY1(KEY_PA1, "PA1")
 	DEFINEKEY1(KEY_OEM_CLEAR, N_("OEM Clear"))
+
+	// Keys without Irrlicht keycode
+	DEFINEKEY5("!")
+	DEFINEKEY5("\"")
+	DEFINEKEY5("#")
+	DEFINEKEY5("$")
+	DEFINEKEY5("%")
+	DEFINEKEY5("&")
+	DEFINEKEY5("'")
+	DEFINEKEY5("(")
+	DEFINEKEY5(")")
+	DEFINEKEY5("*")
+	DEFINEKEY5("/")
+	DEFINEKEY5(":")
+	DEFINEKEY5(";")
+	DEFINEKEY5("<")
+	DEFINEKEY5("=")
+	DEFINEKEY5(">")
+	DEFINEKEY5("?")
+	DEFINEKEY5("@")
+	DEFINEKEY5("[")
+	DEFINEKEY5("\\")
+	DEFINEKEY5("]")
+	DEFINEKEY5("^")
+	DEFINEKEY5("_")
 };
 
 #undef N_
@@ -239,7 +273,8 @@ struct table_key lookup_keychar(wchar_t Char)
 
 KeyPress::KeyPress() :
 	Key(irr::KEY_KEY_CODES_COUNT),
-	Char(L'\0')
+	Char(L'\0'),
+	m_name("")
 {}
 
 KeyPress::KeyPress(const char *name)
@@ -247,6 +282,7 @@ KeyPress::KeyPress(const char *name)
 	if (strlen(name) == 0) {
 		Key = irr::KEY_KEY_CODES_COUNT;
 		Char = L'\0';
+		m_name = "";
 		return;
 	} else if (strlen(name) <= 4) {
 		// Lookup by resulting character
@@ -269,12 +305,12 @@ KeyPress::KeyPress(const char *name)
 		} catch (UnknownKeycode &e) {};
 	}
 
-	// It's not a (known) key, just take the first char and use that
+	// It's not a known key, complain and try to do something
 	Key = irr::KEY_KEY_CODES_COUNT;
 	int chars_read = mbtowc(&Char, name, 1);
 	FATAL_ERROR_IF(chars_read != 1, "Unexpected multibyte character");
-	m_name = "UNKNOWN_" + hex_encode((char*) &Char, sizeof(wchar_t));
-	infostream << "KeyPress: Unknown key '" << name << "', falling back to first char";
+	m_name = "";
+	warningstream << "KeyPress: Unknown key '" << name << "', falling back to first char.";
 }
 
 KeyPress::KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character)
@@ -285,10 +321,14 @@ KeyPress::KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character)
 		Key = in.Key;
 	Char = in.Char;
 
-	if (valid_kcode(Key))
-		m_name = lookup_keykey(Key).Name;
-	else
-		m_name = "UNKNOWN_" + hex_encode((char*) &Char, sizeof(wchar_t));
+	try {
+		if (valid_kcode(Key))
+			m_name = lookup_keykey(Key).Name;
+		else
+			m_name = lookup_keychar(Char).Name;
+	} catch (UnknownKeycode &e) {
+		m_name = "";
+	};
 }
 
 const char *KeyPress::sym() const
@@ -298,9 +338,13 @@ const char *KeyPress::sym() const
 
 const char *KeyPress::name() const
 {
-	if (!valid_kcode(Key))
+	if (m_name == "")
 		return "";
-	const char *ret = lookup_keykey(Key).LangName;
+	const char *ret;
+	if (valid_kcode(Key))
+		ret = lookup_keykey(Key).LangName;
+	else
+		ret = lookup_keychar(Char).LangName;
 	return ret ? ret : "<Unnamed key>";
 }
 
