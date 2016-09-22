@@ -113,17 +113,17 @@ void TestKeycode::testCompare()
 	UASSERT(KeyPress("5") == KeyPress("KEY_KEY_5"));
 	UASSERT(!(KeyPress("5") == KeyPress("KEY_NUMPAD_5")));
 
-	// Preferring char over keycode
+	// Matching char suffices
 	// note: This is a real-world example, Irrlicht maps XK_equal to irr::KEY_PLUS on Linux
 	irr::SEvent::SKeyInput in;
 	in.Key = irr::KEY_PLUS;
 	in.Char = L'=';
 	UASSERT(KeyPress("=") == KeyPress(in));
 
-	// Preferring char over keycode (2)
+	// Matching keycode suffices
 	irr::SEvent::SKeyInput in2;
-	in.Key = irr::KEY_OEM_CLEAR;
-	in2.Key = irr::KEY_KEY_CODES_COUNT;
-	in.Char = in2.Char = L';';
+	in.Key = in2.Key = irr::KEY_OEM_CLEAR;
+	in.Char = L'\0';
+	in2.Char = L';';
 	UASSERT(KeyPress(in) == KeyPress(in2));
 }
