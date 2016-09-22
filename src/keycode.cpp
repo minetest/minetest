@@ -35,7 +35,7 @@ public:
 struct table_key {
 	const char *Name;
 	irr::EKEY_CODE Key;
-	wchar_t Char; // may be L'\0' which means no char assigned
+	wchar_t Char; // L'\0' means no character assigned
 	const char *LangName; // NULL means it doesn't have a human description
 };
 
@@ -195,7 +195,7 @@ static const struct table_key table[] = {
 	DEFINEKEY1(KEY_SLEEP, N_("Sleep"))
 #if !(IRRLICHT_VERSION_MAJOR <= 1 && IRRLICHT_VERSION_MINOR <= 7 && IRRLICHT_VERSION_REVISION < 3)
 	DEFINEKEY1(KEY_OEM_1, "OEM 1") // KEY_OEM_[0-9] and KEY_OEM_102 are assigned to multiple
-	DEFINEKEY1(KEY_OEM_2, "OEM 2") // different chars, they are just here for completeness.
+	DEFINEKEY1(KEY_OEM_2, "OEM 2") // different chars (on different platforms too) and thus w/o char
 	DEFINEKEY1(KEY_OEM_3, "OEM 3")
 	DEFINEKEY1(KEY_OEM_4, "OEM 4")
 	DEFINEKEY1(KEY_OEM_5, "OEM 5")
