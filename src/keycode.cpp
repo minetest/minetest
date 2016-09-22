@@ -39,11 +39,16 @@ struct table_key {
 	const char *LangName; // NULL means it doesn't have a human description
 };
 
-#define DEFINEKEY1(x, lang) { #x, irr::x, L'\0', lang }, // Irrlicht key without char
-#define DEFINEKEY2(x, ch, lang) { #x, irr::x, ch, lang }, // Irrlicht key with char
-#define DEFINEKEY3(ch) { "KEY_KEY_" TOSTRING(ch), irr::KEY_KEY_ ## ch, (wchar_t) *TOSTRING(ch), TOSTRING(ch) }, // single Irrlicht key (e.g. KEY_KEY_X)
-#define DEFINEKEY4(ch) { "KEY_F" TOSTRING(ch), irr::KEY_F ## ch, L'\0', "F" TOSTRING(ch) }, // single Irrlicht function key (e.g. KEY_F3)
-#define DEFINEKEY5(ch) { ch, irr::KEY_KEY_CODES_COUNT, (wchar_t) *ch, ch }, // key without Irrlicht equivalent
+#define DEFINEKEY1(x, lang) /* Irrlicht key without character */ \
+	{ #x, irr::x, L'\0', lang },
+#define DEFINEKEY2(x, ch, lang) /* Irrlicht key with character */ \
+	{ #x, irr::x, ch, lang },
+#define DEFINEKEY3(ch) /* single Irrlicht key (e.g. KEY_KEY_X) */ \
+	{ "KEY_KEY_" TOSTRING(ch), irr::KEY_KEY_ ## ch, (wchar_t) *TOSTRING(ch), TOSTRING(ch) },
+#define DEFINEKEY4(ch) /* single Irrlicht function key (e.g. KEY_F3) */ \
+	{ "KEY_F" TOSTRING(ch), irr::KEY_F ## ch, L'\0', "F" TOSTRING(ch) },
+#define DEFINEKEY5(ch) /* key without Irrlicht keycode */ \
+	{ ch, irr::KEY_KEY_CODES_COUNT, (wchar_t) *ch, ch },
 
 #define N_(text) text
 
