@@ -351,10 +351,9 @@ const char *KeyPress::name() const
 const KeyPress EscapeKey("KEY_ESCAPE");
 const KeyPress CancelKey("KEY_CANCEL");
 const KeyPress NumberKey[] = {
-	KeyPress("KEY_KEY_0"), KeyPress("KEY_KEY_1"), KeyPress("KEY_KEY_2"),
-	KeyPress("KEY_KEY_3"), KeyPress("KEY_KEY_4"), KeyPress("KEY_KEY_5"),
-	KeyPress("KEY_KEY_6"), KeyPress("KEY_KEY_7"), KeyPress("KEY_KEY_8"),
-	KeyPress("KEY_KEY_9")
+	KeyPress("1"), KeyPress("2"), KeyPress("3"), KeyPress("4"),
+	KeyPress("5"), KeyPress("6"), KeyPress("7"), KeyPress("8"),
+	KeyPress("9"), KeyPress("0")
 };
 
 /*
@@ -370,8 +369,10 @@ KeyPress getKeySetting(const char *settingname)
 	n = g_key_setting_cache.find(settingname);
 	if(n != g_key_setting_cache.end())
 		return n->second;
-	g_key_setting_cache[settingname] = g_settings->get(settingname).c_str();
-	return g_key_setting_cache.find(settingname)->second;
+
+	KeyPress k(g_settings->get(settingname).c_str());
+	g_key_setting_cache[settingname] = k;
+	return k;
 }
 
 void clearKeyCache()
