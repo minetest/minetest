@@ -122,7 +122,7 @@ void TestKeycode::testCompare()
 
 	// Preferring char over keycode (2)
 	irr::SEvent::SKeyInput in2;
-	in.Key = irr::KEY_OEM_1;
+	in.Key = irr::KEY_OEM_CLEAR;
 	in2.Key = irr::KEY_KEY_CODES_COUNT;
 	in.Char = in2.Char = L';';
 	UASSERT(KeyPress(in) == KeyPress(in2));
