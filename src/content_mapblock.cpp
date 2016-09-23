@@ -172,6 +172,14 @@ static inline void getNeighborConnectingFace(v3s16 p, INodeDefManager *nodedef,
 		*neighbors |= v;
 }
 
+// For use in mapblock_mesh_generate_special
+// X,Y,Z of position must be -1,0,1
+// (If you don't know what this function does, you shouldn't be using it).
+static int NeighbourToIndex(const v3s16 &pos)
+{
+	return (9 * pos.X + 3 * pos.Y + pos.Z) + 13;
+}
+
 /*
 	TODO: Fix alpha blending for special nodes
 	Currently only the last element rendered is blended correct
@@ -401,9 +409,15 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			// Neighbor liquid levels (key = relative position)
 			// Includes current node
-			std::map<v3s16, f32> neighbor_levels;
-			std::map<v3s16, content_t> neighbor_contents;
-			std::map<v3s16, u8> neighbor_flags;
+
+			struct NeighbourData
+			{
+				f32 level;
+				content_t content;
+				u8 flags;
+			};
+			NeighbourData neighbour_datas[27];
+
 			const u8 neighborflag_top_is_same_liquid = 0x01;
 			v3s16 neighbor_dirs[9] = {
 				v3s16(0,0,0),
@@ -449,9 +463,11 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						flags |= neighborflag_top_is_same_liquid;
 				}
 
-				neighbor_levels[neighbor_dirs[i]] = level;
-				neighbor_contents[neighbor_dirs[i]] = content;
-				neighbor_flags[neighbor_dirs[i]] = flags;
+				NeighbourData &neighbour_data = neighbour_datas[NeighbourToIndex(neighbor_dirs[i])];
+
+				neighbour_data.level = level;
+				neighbour_data.content = content;
+				neighbour_data.flags = flags;
 			}
 
 			// Corner heights (average between four liquids)
@@ -472,10 +488,11 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				for(u32 j=0; j<4; j++)
 				{
 					v3s16 neighbordir = cornerdir - halfdirs[j];
-					content_t content = neighbor_contents[neighbordir];
+
+					NeighbourData &neighbour_data = neighbour_datas[NeighbourToIndex(neighbordir)];
+					content_t& content = neighbour_data.content;
 					// If top is liquid, draw starting from top of node
-					if(neighbor_flags[neighbordir] &
-							neighborflag_top_is_same_liquid)
+					if (neighbour_data.flags & neighborflag_top_is_same_liquid)
 					{
 						cornerlevel = 0.5*BS;
 						valid_count = 1;
@@ -491,7 +508,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					// Flowing liquid has level information
 					else if(content == c_flowing)
 					{
-						cornerlevel += neighbor_levels[neighbordir];
+						cornerlevel += neighbour_data.level;
 						valid_count++;
 					}
 					else if(content == CONTENT_AIR)
@@ -526,15 +543,16 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			{
 				v3s16 dir = side_dirs[i];
 
+				NeighbourData& neighbour_data = neighbour_datas[NeighbourToIndex(dir)];
 				/*
 					If our topside is liquid and neighbor's topside
 					is liquid, don't draw side face
 				*/
 				if(top_is_same_liquid &&
-						neighbor_flags[dir] & neighborflag_top_is_same_liquid)
+					neighbour_data.flags & neighborflag_top_is_same_liquid)
 					continue;
 
-				content_t neighbor_content = neighbor_contents[dir];
+				content_t neighbor_content = neighbour_data.content;
 				const ContentFeatures &n_feat = nodedef->get(neighbor_content);
 
 				// Don't draw face if neighbor is blocking the view
@@ -1506,8 +1524,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						continue;
 					MapNode n_xy = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x + xz, y + y0, z));
 					MapNode n_zy = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x, y + y0, z + xz));
-					ContentFeatures def_xy = nodedef->get(n_xy);
-					ContentFeatures def_zy = nodedef->get(n_zy);
+					const ContentFeatures &def_xy = nodedef->get(n_xy);
+					const ContentFeatures &def_zy = nodedef->get(n_zy);
 
 					// Check if current node would connect with the rail
 					is_rail_x[index] = ((def_xy.drawtype == NDT_RAILLIKE
