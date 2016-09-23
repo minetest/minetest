@@ -25,6 +25,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include <thread>
 #include <mutex>
+#if !defined(_WIN32)  // POSIX
+	#include <unistd.h>
+#endif
+#include "settings.h"
 #include "irrlichttypes.h"
 
 class ILogOutput;
@@ -106,15 +110,51 @@ public:
 	StreamLogOutput(std::ostream &stream) :
 		m_stream(stream)
 	{
+#if !defined(_WIN32)
+		is_tty = isatty(fileno(stdout));
+#else
+		is_tty = false;
+#endif
 	}
 
 	void logRaw(LogLevel lev, const std::string &line)
 	{
+		static const std::string use_logcolor = g_settings->get("log_color");
+
+		bool colored = use_logcolor == "detect" ? is_tty : use_logcolor == "yes";
+		if (colored)
+			switch (lev) {
+			case LL_ERROR:
+				// error is red
+				m_stream << "\033[91m";
+				break;
+			case LL_WARNING:
+				// warning is yellow
+				m_stream << "\033[93m";
+				break;
+			case LL_INFO:
+				// info is a bit dark
+				m_stream << "\033[37m";
+				break;
+			case LL_VERBOSE:
+				// verbose is darker than info
+				m_stream << "\033[2m";
+				break;
+			default:
+				// action is white
+				colored = false;
+			}
+
 		m_stream << line << std::endl;
+
+		if (colored)
+			// reset to white color
+			m_stream << "\033[0m";
 	}
 
 private:
 	std::ostream &m_stream;
+	bool is_tty;
 };
 
 class FileLogOutput : public ICombinedLogOutput {
