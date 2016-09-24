@@ -165,7 +165,8 @@ local strmtt = getmetatable("")
 local oldindex = strmtt.__index
 strmtt.__index = function(str, index)
 	if type(index) == "number" then
-		return index >= 1 and index <= #str and string.sub(str, index, index)
+		return index >= 1 and index <= #str and string.sub(str, index, index) or
+				nil
 	end
 	return oldindex(str, index)
 end
