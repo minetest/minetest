@@ -411,6 +411,9 @@ Authors of media files
 Everything not listed in here:
 Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
 
+ShadowNinja:
+  textures/base/pack/smoke_puff.png
+
 Paramat:
   textures/base/pack/menu_header.png
 
