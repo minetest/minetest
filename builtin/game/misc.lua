@@ -234,8 +234,14 @@ else
 	end
 
 	function core.colorize(color, message)
-		return core.get_color_escape_sequence(color) .. message .. core.get_color_escape_sequence("#ffffff")
+		local output = ""
+		for line in message:gmatch("([^\n]+)") do
+			if output then
+				output = output .. "\n"
+			end
+			output = output .. core.get_color_escape_sequence(color) .. line .. core.get_color_escape_sequence("#ffffff")
+		end
+		return output
 	end
-
 end
 
