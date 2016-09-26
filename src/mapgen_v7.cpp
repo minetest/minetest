@@ -154,17 +154,27 @@ int MapgenV7::getSpawnLevelAtPoint(v2s16 p)
 	// Base terrain calculation
 	s16 y = baseTerrainLevelAtPoint(p.X, p.Y);
 
-	// Ridge/river terrain calculation
-	float width = 0.2;
-	float uwatern = NoisePerlin2D(&noise_ridge_uwater->np, p.X, p.Y, seed) * 2;
-	// if inside a river this is an unsuitable spawn point
-	if (fabs(uwatern) <= width)
-		return MAX_MAP_GENERATION_LIMIT;
+	// If enabled, check if inside a river
+	if (spflags & MGV7_RIDGES) {
+		float width = 0.2;
+		float uwatern = NoisePerlin2D(&noise_ridge_uwater->np, p.X, p.Y, seed) * 2;
+		if (fabs(uwatern) <= width)
+			return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
+	}
+
+	// If mountains are disabled, terrain level is base terrain level
+	// Avoids spawn on non-existant mountain terrain
+	if (!(spflags & MGV7_MOUNTAINS)) {
+		if (y <= water_level || y > water_level + 16)
+			return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
+		else
+			return y;
+	}
 
 	// Mountain terrain calculation
 	int iters = 128;
 	while (iters--) {
-		if (!getMountainTerrainAtPoint(p.X, y + 1, p.Y)) {  // Air, y is ground level
+		if (!getMountainTerrainAtPoint(p.X, y + 1, p.Y)) {  // If air above
 			if (y <= water_level || y > water_level + 16)
 				return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
 			else
@@ -173,7 +183,7 @@ int MapgenV7::getSpawnLevelAtPoint(v2s16 p)
 		y++;
 	}
 
-	// Unsuitable spawn point, no ground surface found
+	// Unsuitable spawn point, no mountain surface found
 	return MAX_MAP_GENERATION_LIMIT;
 }
 
