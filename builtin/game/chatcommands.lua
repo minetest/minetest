@@ -147,11 +147,12 @@ core.register_chatcommand("help", {
 core.register_chatcommand("privs", {
 	params = "<name>",
 	description = "print out privileges of player",
-	func = function(name, param)
-		param = (param ~= "" and param or name)
-		return true, "Privileges of " .. param .. ": "
+	func = function(caller, param)
+		param = param:trim()
+		local name = (param ~= "" and param or caller)
+		return true, "Privileges of " .. name .. ": "
 			.. core.privs_to_string(
-				core.get_player_privs(param), ' ')
+				core.get_player_privs(name), ' ')
 	end,
 })
 
