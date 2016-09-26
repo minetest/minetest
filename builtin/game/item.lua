@@ -363,13 +363,12 @@ function core.item_drop(itemstack, dropper, pos)
 			v.z = v.z*2
 			obj:setvelocity(v)
 			obj:get_luaentity().dropped_by = dropper:get_player_name()
-			return itemstack
 		end
+		return itemstack 
 
 	else
-		if core.add_item(pos, itemstack) then
-			return itemstack
-		end
+		core.add_item(pos, itemstack)
+		return itemstack
 	end
 	-- If we reach this, adding the object to the
 	-- environment failed

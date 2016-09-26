@@ -774,6 +774,9 @@ time_speed (Time speed) int 72
 #    Interval of saving important changes in the world, stated in seconds.
 server_map_save_interval (Map save interval) float 5.3
 
+#	Should unknown items be removed when a player drops them.
+remove_unknown_items_on_drop (Remove unknown items when dropped) bool false
+
 [**Physics]
 
 movement_acceleration_default (Default acceleration) float 3

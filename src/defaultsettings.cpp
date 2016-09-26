@@ -259,6 +259,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("disallow_empty_password", "false");
 	settings->setDefault("disable_anticheat", "false");
 	settings->setDefault("enable_rollback_recording", "false");
+	settings->setDefault("remove_unknown_items_on_drop", "false");
 #ifdef NDEBUG
 	settings->setDefault("deprecated_lua_api_handling", "legacy");
 #else
