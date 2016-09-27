@@ -8,20 +8,20 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-07-21 17:30+0000\n"
-"Last-Translator: Bruno Borges <borgesdossantosbruno@gmail.com>\n"
-"Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
-"minetest/minetest/pt_BR/>\n"
+"PO-Revision-Date: 2016-09-27 17:51+0000\n"
+"Last-Translator: José Henrique Luckmann <joseh.luckmann@gmail.com>\n"
+"Language-Team: Portuguese (Brazil) "
+"<https://hosted.weblate.org/projects/minetest/minetest/pt_BR/>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2.8-dev\n"
+"X-Generator: Weblate 2.9-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr "Ocorreu um erro no script Lua, assim como em um modificador:"
+msgstr "Ocorreu um erro no script Lua em um mod :"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
@@ -213,7 +213,7 @@ msgstr "\"$1\" não é uma flag válida."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
-msgstr "(Descrição de configuração não fornecida)"
+msgstr "(Não há uma descrição para esta configuração)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -253,7 +253,7 @@ msgstr "Jogos"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
-msgstr "Módulos"
+msgstr "Mods"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
