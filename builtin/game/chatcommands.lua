@@ -154,53 +154,71 @@ core.register_chatcommand("privs", {
 				core.get_player_privs(param), ' ')
 	end,
 })
+
+local function handle_grant_command(caller, grantname, grantprivstr)
+	local caller_privs = minetest.get_player_privs(caller)
+	if not (caller_privs.privs or caller_privs.basic_privs) then
+		return false, "Your privileges are insufficient."
+	end
+	
+	if not core.auth_table[grantname] then
+		return false, "Player " .. grantname .. " does not exist."
+	end
+	local grantprivs = core.string_to_privs(grantprivstr)
+	if grantprivstr == "all" then
+		grantprivs = core.registered_privileges
+	end
+	local privs = core.get_player_privs(grantname)
+	local privs_unknown = ""
+	local basic_privs =
+		core.string_to_privs(core.setting_get("basic_privs") or "interact,shout")
+	for priv, _ in pairs(grantprivs) do
+		if not basic_privs[priv] and not caller_privs.privs then
+			return false, "Your privileges are insufficient."
+		end
+		if not core.registered_privileges[priv] then
+			privs_unknown = privs_unknown .. "Unknown privilege: " .. priv .. "\n"
+		end
+		privs[priv] = true
+	end
+	if privs_unknown ~= "" then
+		return false, privs_unknown
+	end
+	core.set_player_privs(grantname, privs)
+	core.log("action", caller..' granted ('..core.privs_to_string(grantprivs, ', ')..') privileges to '..grantname)
+	if grantname ~= caller then
+		core.chat_send_player(grantname, caller
+				.. " granted you privileges: "
+				.. core.privs_to_string(grantprivs, ' '))
+	end
+	return true, "Privileges of " .. grantname .. ": "
+		.. core.privs_to_string(
+			core.get_player_privs(grantname), ' ')
+end
+
 core.register_chatcommand("grant", {
 	params = "<name> <privilege>|all",
 	description = "Give privilege to player",
 	func = function(name, param)
-		if not core.check_player_privs(name, {privs=true}) and
-				not core.check_player_privs(name, {basic_privs=true}) then
-			return false, "Your privileges are insufficient."
-		end
 		local grantname, grantprivstr = string.match(param, "([^ ]+) (.+)")
 		if not grantname or not grantprivstr then
 			return false, "Invalid parameters (see /help grant)"
-		elseif not core.auth_table[grantname] then
-			return false, "Player " .. grantname .. " does not exist."
-		end
-		local grantprivs = core.string_to_privs(grantprivstr)
-		if grantprivstr == "all" then
-			grantprivs = core.registered_privileges
-		end
-		local privs = core.get_player_privs(grantname)
-		local privs_unknown = ""
-		local basic_privs =
-			core.string_to_privs(core.setting_get("basic_privs") or "interact,shout")
-		for priv, _ in pairs(grantprivs) do
-			if not basic_privs[priv] and
-					not core.check_player_privs(name, {privs=true}) then
-				return false, "Your privileges are insufficient."
-			end
-			if not core.registered_privileges[priv] then
-				privs_unknown = privs_unknown .. "Unknown privilege: " .. priv .. "\n"
-			end
-			privs[priv] = true
-		end
-		if privs_unknown ~= "" then
-			return false, privs_unknown
-		end
-		core.set_player_privs(grantname, privs)
-		core.log("action", name..' granted ('..core.privs_to_string(grantprivs, ', ')..') privileges to '..grantname)
-		if grantname ~= name then
-			core.chat_send_player(grantname, name
-					.. " granted you privileges: "
-					.. core.privs_to_string(grantprivs, ' '))
-		end
-		return true, "Privileges of " .. grantname .. ": "
-			.. core.privs_to_string(
-				core.get_player_privs(grantname), ' ')
+		end	
+		return handle_grant_command(name, grantname, grantprivstr)
 	end,
 })
+
+core.register_chatcommand("grantme", {
+	params = "<privilege>|all",
+	description = "Grant privileges to yourself",
+	func = function(name, param)
+		if param == "" then
+			return false, "Invalid parameters (see /help grantme)"
+		end	
+		return handle_grant_command(name, name, param)
+	end,
+})
+
 core.register_chatcommand("revoke", {
 	params = "<name> <privilege>|all",
 	description = "Remove privilege from player",
