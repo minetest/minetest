@@ -27,39 +27,47 @@ This game is not finished
 - Don't expect it to work as well as a finished game will.
 - Please report any bugs. When doing that, debug.txt is useful.
 
-Default Controls
+Default controls
 -----------------
-- WASD: move
-- Space: jump/climb
-- Shift: sneak/go down
-- Q: drop itemstack (+ SHIFT for single item)
-- I: inventory
-- Mouse: turn/look
-- Mouse left: dig/punch
-- Mouse right: place/use
-- Mouse wheel: select item
-- T: chat
-- 1-8: select item
+- Move mouse: Look around
+- W, A, S, D: Move
+- Space: Jump/move up
+- Shift: Sneak/move down
+- Q: Drop itemstack
+- Shift + Q: Drop single item
+- Left mouse button: Dig/punch/take item
+- Right mouse button: Place/use
+- Shift + right mouse button: Build (without using)
+- I: Inventory menu
+- Mouse wheel: Select item
+- 0-9: Select item
+- Z: Zoom (needs zoom privilege)
+- T: Chat
+- /: Commad
 
-- Esc: pause menu (pauses only singleplayer game)
-- R: Enable/Disable full range view
+- Esc: Pause menu/abort/exit (pauses only singleplayer game)
+- R: Enable/disable full range view
 - +: Increase view range
 - -: Decrease view range
-- K: Enable/Disable fly (needs fly privilege)
-- J: Enable/Disable fast (needs fast privilege)
-- H: Enable/Disable noclip (needs noclip privilege)
+- K: Enable/disable fly mode (needs fly privilege)
+- J: Enable/disable fast mode (needs fast privilege)
+- H: Enable/disable noclip mode (needs noclip privilege)
 
-- F1:  Hide/Show HUD
-- F2:  Hide/Show Chat
-- F3:  Disable/Enable Fog
-- F4:  Disable/Enable Camera update (Mapblocks are not updated anymore when disabled)
-- F5:  Toogle through debug info screens
-- F6:  Toogle through output data
-- F7:  Toggle through camera modes
-- F10: Show/Hide console
+- F1:  Hide/show HUD
+- F2:  Hide/show chat
+- F3:  Disable/enable fog
+- F4:  Disable/enable camera update (Mapblocks are not updated anymore when disabled, disabled in release builds)
+- F5:  Cycle through debug info screens
+- F6:  Cycle through profiler info screens
+- F7:  Cycle through camera modes
+- F8:  Toggle cinematic mode
+- F9:  Cycle through minimap modes
+- Shift + F9: Change minimap orientation
+- F10: Show/hide console
 - F12: Take screenshot
+- P: Write stack traces into debug.txt
 
-- Settable in the configuration file, see the section below.
+Most controls are settable in the configuration file, see the section below.
 
 Paths
 ------
