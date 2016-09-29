@@ -6,7 +6,6 @@ set (UNITTEST_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_connection.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_filepath.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_inventory.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/test_keycode.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_map_settings_manager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_mapnode.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_nodedef.cpp
@@ -23,4 +22,8 @@ set (UNITTEST_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/test_utilities.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_voxelalgorithms.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/test_voxelmanipulator.cpp
+	PARENT_SCOPE)
+
+set (UNITTEST_CLIENT_SRCS
+	${CMAKE_CURRENT_SOURCE_DIR}/test_keycode.cpp
 	PARENT_SCOPE)

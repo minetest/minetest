@@ -538,6 +538,7 @@ set(client_SRCS
 	sky.cpp
 	wieldmesh.cpp
 	${client_SCRIPT_SRCS}
+	${UNITTEST_CLIENT_SRCS}
 )
 list(SORT client_SRCS)
 
