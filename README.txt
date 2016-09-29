@@ -35,8 +35,8 @@ Default controls
 - Shift: Sneak/move down
 - Q: Drop itemstack
 - Shift + Q: Drop single item
-- Left mouse button: Mine/punch/take item
-- Right mouse button: Build/use
+- Left mouse button: Dig/punch/take item
+- Right mouse button: Place/use
 - Shift + right mouse button: Build (without using)
 - I: Inventory menu
 - Mouse wheel: Select item
