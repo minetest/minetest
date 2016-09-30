@@ -613,10 +613,11 @@ void setXorgClassHint(const video::SExposedVideoData &video_data,
 
 bool setXorgWindowIcon(IrrlichtDevice *device)
 {
-#if RUN_IN_PLACE
+#ifdef XORG_USED
+#	if RUN_IN_PLACE
 	return setXorgWindowIconFromPath(device,
 			path_share + "/misc/" PROJECT_NAME "-xorg-icon-128.png");
-#else
+#	else
 	// We have semi-support for reading in-place data if we are
 	// compiled with RUN_IN_PLACE. Don't break with this and
 	// also try the path_share location.
@@ -625,6 +626,8 @@ bool setXorgWindowIcon(IrrlichtDevice *device)
 			ICON_DIR "/hicolor/128x128/apps/" PROJECT_NAME ".png") ||
 		setXorgWindowIconFromPath(device,
 			path_share + "/misc/" PROJECT_NAME "-xorg-icon-128.png");
+#	endif
+	return false;
 #endif
 }
 
