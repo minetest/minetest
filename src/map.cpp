@@ -1939,7 +1939,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks)
 
 	time_until_purge *= 1000;	// seconds -> milliseconds
 
-	u32 curr_time = getTime(PRECISION_MILLI);
+	u32 curr_time = getTimeMs();
 	u32 prev_unprocessed = m_unprocessed_count;
 	m_unprocessed_count = m_transforming_liquid.size();
 

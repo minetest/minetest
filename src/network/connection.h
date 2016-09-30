@@ -663,7 +663,7 @@ class Peer {
 			m_last_rtt(-1.0),
 			m_usage(0),
 			m_timeout_counter(0.0),
-			m_last_timeout_check(porting::getTimeMs())
+			m_last_timeout_check(getTimeMs())
 		{
 			m_rtt.avg_rtt = -1.0;
 			m_rtt.jitter_avg = -1.0;

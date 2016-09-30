@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "config.h"
 #if USE_CURSES
+#include "debug.h"
 #include "version.h"
 #include "terminal_chat_console.h"
 #include "porting.h"

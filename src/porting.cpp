@@ -898,4 +898,18 @@ bool secure_rand_fill_buf(void *buf, size_t len)
 
 #endif
 
+// Load performance counter frequency only once at startup
+#ifdef _WIN32
+
+inline double get_perf_freq()
+{
+	LARGE_INTEGER freq;
+	QueryPerformanceFrequency(&freq);
+	return freq.QuadPart;
+}
+
+double perf_freq = get_perf_freq();
+
+#endif
+
 } //namespace porting

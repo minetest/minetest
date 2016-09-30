@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "objdef.h"
+#include "debug.h"
 #include "util/numeric.h"
 #include "log.h"
 #include "gamedef.h"

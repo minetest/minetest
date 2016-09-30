@@ -305,9 +305,9 @@ void TestConnection::testConnectSendReceive()
 		u16 peer_id = 132;
 		u16 size = 0;
 		bool received = false;
-		u32 timems0 = porting::getTimeMs();
+		u32 timems0 = getTimeMs();
 		for (;;) {
-			if (porting::getTimeMs() - timems0 > 5000 || received)
+			if (getTimeMs() - timems0 > 5000 || received)
 				break;
 			try {
 				NetworkPacket pkt;

@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "filesys.h"
 #include "gettext.h"
+#include "gettime.h"
 #include "guiChatConsole.h"
 #include "guiFormSpecMenu.h"
 #include "guiKeyChangeMenu.h"
@@ -513,7 +514,7 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 		finalColorBlend(c, day, night, daynight_ratio);
 
 		// Modify final color a bit with time
-		u32 timer = porting::getTimeMs() % 5000;
+		u32 timer = getTimeMs() % 5000;
 		float timerf = (float)(irr::core::PI * ((timer / 2500.0) - 0.5));
 		float sin_r = 0.08 * sin(timerf);
 		float sin_g = 0.08 * sin(timerf + irr::core::PI * 0.5);
@@ -951,7 +952,7 @@ public:
 		float daynight_ratio_f = (float)daynight_ratio / 1000.0;
 		services->setPixelShaderConstant("dayNightRatio", &daynight_ratio_f, 1);
 
-		u32 animation_timer = porting::getTimeMs() % 100000;
+		u32 animation_timer = getTimeMs() % 100000;
 		float animation_timer_f = (float)animation_timer / 100000.0;
 		services->setPixelShaderConstant("animationTimer", &animation_timer_f, 1);
 		services->setVertexShaderConstant("animationTimer", &animation_timer_f, 1);

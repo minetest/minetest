@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"             // for SER_FMT_VER_INVALID
 #include "threading/mutex.h"
 #include "network/networkpacket.h"
+#include "porting.h"
 
 #include <list>
 #include <vector>
@@ -266,7 +267,7 @@ public:
 		m_version_patch(0),
 		m_full_version("unknown"),
 		m_deployed_compression(0),
-		m_connection_time(getTime(PRECISION_SECONDS))
+		m_connection_time(getTimeS())
 	{
 	}
 	~RemoteClient()

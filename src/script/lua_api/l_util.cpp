@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "cpp_api/s_async.h"
+#include "gettime.h"
 #include "serialization.h"
 #include <json/json.h>
 #include "cpp_api/s_security.h"
@@ -70,7 +71,7 @@ int ModApiUtil::l_log(lua_State *L)
 int ModApiUtil::l_get_us_time(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	lua_pushnumber(L, porting::getTimeUs());
+	lua_pushnumber(L, getTimeUs());
 	return 1;
 }
 
@@ -526,4 +527,3 @@ void ModApiUtil::InitializeAsync(AsyncEngine& engine)
 	ASYNC_API_FCT(encode_base64);
 	ASYNC_API_FCT(decode_base64);
 }
-

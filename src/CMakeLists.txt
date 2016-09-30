@@ -862,4 +862,3 @@ endif()
 if (BUILD_CLIENT AND USE_FREETYPE)
 	add_subdirectory(cguittfont)
 endif()
-
