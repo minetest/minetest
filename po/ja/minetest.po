@@ -3,20 +3,20 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-08-17 07:33+0000\n"
+"PO-Revision-Date: 2016-11-16 13:08+0000\n"
 "Last-Translator: Rui <rui.minetest@gmail.com>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
-"minetest/ja/>\n"
+"Language-Team: Japanese "
+"<https://hosted.weblate.org/projects/minetest/minetest/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.8-dev\n"
+"X-Generator: Weblate 2.10-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr "以下のModの、Luaスクリプトでエラーが発生しました:"
+msgstr "以下のModのLuaスクリプトでエラーが発生しました:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
@@ -44,16 +44,15 @@ msgstr "読み込み中..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr "プロトコルバージョンが一致しません。 "
+msgstr "プロトコルのバージョンが一致していません。 "
 
 #: builtin/mainmenu/common.lua
-#, fuzzy
 msgid "Server enforces protocol version $1. "
-msgstr "サーバはプロトコルバージョン$1を要求します。 "
+msgstr "サーバはバージョン$1のプロトコルを強制しています。 "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr "サーバは$1から$2までのプロトコルバージョンをサポートしています。 "
+msgstr "サーバは$1から$2までのプロトコルのバージョンをサポートしています。 "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -61,11 +60,11 @@ msgstr "インターネット接続を確認し、公開サーバ一覧を再有
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr "プロトコルバージョンは$1のみをサポートします。"
+msgstr "プロトコルはバージョン$1のみをサポートしています。"
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr "プロトコルバージョンは$1から$2までをサポートします。"
+msgstr "バージョン$1から$2までのプロトコルをサポートしています。"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
@@ -121,7 +120,6 @@ msgid "World:"
 msgstr "ワールド:"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "enabled"
 msgstr "有効化"
 
@@ -135,8 +133,7 @@ msgstr "作成"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr ""
-"minetest.netから、minetest_gameなどのサブゲームをダウンロードしてください"
+msgstr "minetest.netからminetest_gameなどのサブゲームをダウンロードしてください"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
@@ -168,7 +165,7 @@ msgstr "ワールド名"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no subgames installed."
-msgstr "サブゲームをインストールしていません。"
+msgstr "サブゲームがインストールされていません。"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Are you sure you want to delete \"$1\"?"
@@ -186,7 +183,7 @@ msgstr "Modマネージャ: 「$1」の削除に失敗しました"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr "Modマネージャ: Mod「$1」の場所が不明です"
+msgstr "Modマネージャ: Mod「$1」の場所が無効です"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
@@ -841,7 +838,7 @@ msgstr "KiB/秒"
 
 #: src/game.cpp
 msgid "Media..."
-msgstr "通信中..."
+msgstr "メディアを受信中..."
 
 #: src/game.cpp
 msgid "MiB/s"
@@ -1482,7 +1479,7 @@ msgstr "自動的にサーバ一覧に報告します。"
 
 #: src/settings_translation_file.cpp
 msgid "Autorun key"
-msgstr ""
+msgstr "オートランキー"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -1521,7 +1518,7 @@ msgstr "プレイヤーの位置に設置"
 
 #: src/settings_translation_file.cpp
 msgid "Builtin"
-msgstr ""
+msgstr "ビルトイン"
 
 #: src/settings_translation_file.cpp
 msgid "Bumpmapping"
@@ -1554,7 +1551,7 @@ msgstr "洞窟ノイズ#2"
 
 #: src/settings_translation_file.cpp
 msgid "Cave width"
-msgstr ""
+msgstr "洞窟の幅"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4429,9 +4426,8 @@ msgid "Y of flat ground."
 msgstr "フラットマップの地面の高さ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Y of upper limit of large pseudorandom caves."
-msgstr "大きい擬似ランダム洞窟の高さ(Y)の上限。"
+msgstr "擬似乱数による大きい洞窟の高さ(Y)の上限。"
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
@@ -4439,7 +4435,7 @@ msgstr "cURLファイルダウンロードタイムアウト"
 
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
-msgstr "cURLパラレル制限"
+msgstr "cURL並行処理制限"
 
 #: src/settings_translation_file.cpp
 msgid "cURL timeout"
