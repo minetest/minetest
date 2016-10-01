@@ -38,7 +38,7 @@ core.register_globalstep(function(dtime)
 end)
 
 function core.after(after, func, ...)
-	assert(tonumber(time) and type(func) == "function",
+	assert(tonumber(after) and type(func) == "function",
 			"Invalid core.after invocation")
 	jobs[#jobs + 1] = {
 		func = func,
