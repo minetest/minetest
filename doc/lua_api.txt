@@ -1542,7 +1542,7 @@ examples.
 * If `true` the background is clipped to formspec size
   (`x` and `y` are used as offset values, `w` and `h` are ignored)
 
-#### `pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>;<close_on_enter>]`
+#### `pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>]`
 * Textual password style field; will be sent to server when a button is clicked
 * When enter is pressed in field, fields.key_enter_field will be sent with the name
   of this field.
@@ -1552,10 +1552,9 @@ examples.
 * Position and size units are inventory slots
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
-* `close_on_enter` (optional) is whether the form should accept and close when enter is
-  pressed in this field. Defaults to true.
+* See field_close_on_enter to stop enter closing the formspec
 
-#### `field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>;<close_on_enter>]`
+#### `field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
 * Textual field; will be sent to server when a button is clicked
 * When enter is pressed in field, fields.key_enter_field will be sent with the name
   of this field.
@@ -1569,18 +1568,21 @@ examples.
     * `default` may contain variable references such as `${text}'` which
       will fill the value from the metadata value `text`
     * **Note**: no extra text or more than a single variable is supported ATM.
-* `close_on_enter` (optional) is whether the form should accept and close when enter is
-  pressed in this field. Defaults to true.
+* See field_close_on_enter to stop enter closing the formspec
 
-#### `field[<name>;<label>;<default>;<close_on_enter>]`
+#### `field[<name>;<label>;<default>]`
 * As above, but without position/size units
 * When enter is pressed in field, fields.key_enter_field will be sent with the name
   of this field.
 * Special field for creating simple forms, such as sign text input
 * Must be used without a `size[]` element
 * A "Proceed" button will be added automatically
-* `close_on_enter` (optional) is whether the form should accept and close when enter is
-  pressed in this field. Defaults to true.
+* See field_close_on_enter to stop enter closing the formspec
+
+#### `field_close_on_enter[<name>;<close_on_enter>]`
+* <name> is the name of the field
+* if <close_on_enter> is false, pressing enter in the field will submit the form but not close it
+* defaults to true when not specified (ie: no tag for a field)
 
 #### `textarea[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
 * Same as fields above, but with multi-line input
