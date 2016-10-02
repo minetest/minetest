@@ -130,7 +130,11 @@ function check_attached_node(p, n)
 	local def = core.registered_nodes[n.name]
 	local d = {x = 0, y = 0, z = 0}
 	if def.paramtype2 == "wallmounted" then
-		d = core.wallmounted_to_dir(n.param2)
+		-- The fallback vector here is in case 'wallmounted to dir' is nil due
+		-- to voxelmanip placing a wallmounted node without resetting a
+		-- pre-existing param2 value that is out-of-range for wallmounted.
+		-- The fallback vector corresponds to param2 = 0.
+		d = core.wallmounted_to_dir(n.param2) or {x = 0, y = 1, z = 0}
 	else
 		d.y = -1
 	end
