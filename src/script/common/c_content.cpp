@@ -1066,7 +1066,7 @@ void push_flags_string(lua_State *L, FlagDesc *flagdesc, u32 flags, u32 flagmask
 
 /******************************************************************************/
 void read_groups(lua_State *L, int index,
-		std::map<std::string, int> &result)
+		std::map<std::string, float> &result)
 {
 	if (!lua_istable(L,index))
 		return;
@@ -1077,7 +1077,7 @@ void read_groups(lua_State *L, int index,
 	while(lua_next(L, index) != 0){
 		// key at index -2 and value at index -1
 		std::string name = luaL_checkstring(L, -2);
-		int rating = luaL_checkinteger(L, -1);
+		float rating = luaL_checknumber(L, -1);
 		result[name] = rating;
 		// removes value, keeps key for next iteration
 		lua_pop(L, 1);
@@ -1085,10 +1085,10 @@ void read_groups(lua_State *L, int index,
 }
 
 /******************************************************************************/
-void push_groups(lua_State *L, const std::map<std::string, int> &groups)
+void push_groups(lua_State *L, const std::map<std::string, float> &groups)
 {
 	lua_newtable(L);
-	std::map<std::string, int>::const_iterator it;
+	std::map<std::string, float>::const_iterator it;
 	for (it = groups.begin(); it != groups.end(); ++it) {
 		lua_pushnumber(L, it->second);
 		lua_setfield(L, -2, it->first.c_str());

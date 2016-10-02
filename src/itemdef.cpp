@@ -146,10 +146,10 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	}
 	os<<serializeString(tool_capabilities_s);
 	writeU16(os, groups.size());
-	for(std::map<std::string, int>::const_iterator
-			i = groups.begin(); i != groups.end(); ++i){
-		os<<serializeString(i->first);
-		writeS16(os, i->second);
+	for (ItemGroupList::const_iterator it = groups.begin();
+			it != groups.end(); ++it) {
+		os << serializeString(it->first);
+		writeS16(os, it->second);
 	}
 	os<<serializeString(node_placement_prediction);
 	if(protocol_version > 17){
@@ -190,8 +190,8 @@ void ItemDefinition::deSerialize(std::istream &is)
 		tool_capabilities->deSerialize(tmp_is);
 	}
 	groups.clear();
-	u32 groups_size = readU16(is);
-	for(u32 i=0; i<groups_size; i++){
+	u16 groups_size = readU16(is);
+	for (u16 i = 0; i < groups_size; i++) {
 		std::string name = deSerializeString(is);
 		int value = readS16(is);
 		groups[name] = value;

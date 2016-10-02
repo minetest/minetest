@@ -106,10 +106,10 @@ void               pushnode                  (lua_State *L, const MapNode &n,
 NodeBox            read_nodebox              (lua_State *L, int index);
 
 void               read_groups               (lua_State *L, int index,
-                                              std::map<std::string, int> &result);
+                                              std::map<std::string, float> &result);
 
 void               push_groups               (lua_State *L,
-                                              const std::map<std::string, int> &groups);
+                                              const std::map<std::string, float> &groups);
 
 //TODO rename to "read_enum_field"
 int                getenumfield              (lua_State *L, int table,

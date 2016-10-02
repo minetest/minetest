@@ -42,7 +42,7 @@ class IShaderSource;
 class IGameDef;
 class NodeResolver;
 
-typedef std::list<std::pair<content_t, int> > GroupItems;
+typedef std::list<std::pair<content_t, float> > GroupItems;
 
 enum ContentParamType
 {

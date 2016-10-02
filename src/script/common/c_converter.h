@@ -60,7 +60,7 @@ bool               getintfield(lua_State *L, int table,
 bool               getintfield(lua_State *L, int table,
                              const char *fieldname, u32 &result);
 void               read_groups(lua_State *L, int index,
-                             std::map<std::string, int> &result);
+                             std::map<std::string, float> &result);
 bool               getboolfield(lua_State *L, int table,
                              const char *fieldname, bool &result);
 bool               getfloatfield(lua_State *L, int table,

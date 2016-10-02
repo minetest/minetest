@@ -23,15 +23,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <map>
 
-typedef std::map<std::string, int> ItemGroupList;
+typedef std::map<std::string, float> ItemGroupList;
 
-static inline int itemgroup_get(const ItemGroupList &groups,
+static inline float itemgroup_get(const ItemGroupList &groups,
 		const std::string &name)
 {
-	std::map<std::string, int>::const_iterator i = groups.find(name);
-	if(i == groups.end())
+	ItemGroupList::const_iterator it = groups.find(name);
+	if (it == groups.end())
 		return 0;
-	return i->second;
+	return it->second;
 }
 
 #endif
