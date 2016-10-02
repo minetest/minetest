@@ -914,6 +914,16 @@ void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element)
 				<< element << "'"  << std::endl;
 }
 
+void GUIFormSpecMenu::parseFieldCloseOnEnter(parserData *data,
+		const std::string &element)
+{
+	std::vector<std::string> parts = split(element,';');
+	if (parts.size() == 2 ||
+			(parts.size() > 2 && m_formspec_version > FORMSPEC_API_VERSION)) {
+		field_close_on_enter[parts[0]] = is_yes(parts[1]);
+	}
+}
+
 void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
@@ -977,8 +987,11 @@ void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element)
 		evt.KeyInput.PressedDown = true;
 		e->OnEvent(evt);
 
-		if (parts.size() >= 5 && !is_yes(parts[4])) {
-			spec.close_on_enter = false;
+		if (parts.size() >= 5) {
+			// TODO: remove after 2016-11-03
+			warningstream << "pwdfield: use field_close_on_enter[name, enabled]" <<
+					" instead of the 5th param" << std::endl;
+			field_close_on_enter[name] = is_yes(parts[4]);
 		}
 
 		m_fields.push_back(spec);
@@ -1062,8 +1075,11 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 		}
 	}
 
-	if (parts.size() >= 4 && !is_yes(parts[3])) {
-		spec.close_on_enter = false;
+	if (parts.size() >= 4) {
+		// TODO: remove after 2016-11-03
+		warningstream << "field/simple: use field_close_on_enter[name, enabled]" <<
+				" instead of the 4th param" << std::endl;
+		field_close_on_enter[name] = is_yes(parts[3]);
 	}
 
 	m_fields.push_back(spec);
@@ -1171,8 +1187,11 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 		}
 	}
 
-	if (parts.size() >= 6 && !is_yes(parts[5])) {
-		spec.close_on_enter = false;
+	if (parts.size() >= 6) {
+		// TODO: remove after 2016-11-03
+		warningstream << "field/textarea: use field_close_on_enter[name, enabled]" <<
+				" instead of the 6th param" << std::endl;
+		field_close_on_enter[name] = is_yes(parts[5]);
 	}
 
 	m_fields.push_back(spec);
@@ -1780,6 +1799,11 @@ void GUIFormSpecMenu::parseElement(parserData* data, std::string element)
 
 	if (type == "dropdown"){
 		parseDropDown(data,description);
+		return;
+	}
+
+	if (type == "field_close_on_enter") {
+		parseFieldCloseOnEnter(data, description);
 		return;
 	}
 
@@ -3689,7 +3713,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					if (s.ftype == f_Unknown &&
 							s.fid == event.GUIEvent.Caller->getID()) {
 						current_field_enter_pending = s.fname;
-						close_on_enter = s.close_on_enter;
+						UNORDERED_MAP<std::string, bool>::const_iterator it =
+							field_close_on_enter.find(s.fname);
+						if (it != field_close_on_enter.end())
+							close_on_enter = (*it).second;
+
 						break;
 					}
 				}

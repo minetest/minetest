@@ -212,7 +212,6 @@ class GUIFormSpecMenu : public GUIModalMenu
 			flabel(label),
 			fid(id),
 			send(false),
-			close_on_enter(false),
 			ftype(f_Unknown),
 			is_exit(false)
 		{
@@ -224,7 +223,6 @@ class GUIFormSpecMenu : public GUIModalMenu
 		std::wstring fdefault;
 		int fid;
 		bool send;
-		bool close_on_enter; // used by text fields
 		FormspecFieldType ftype;
 		bool is_exit;
 		core::rect<s32> rect;
@@ -400,6 +398,7 @@ protected:
 	std::vector<ImageDrawSpec> m_images;
 	std::vector<ImageDrawSpec> m_itemimages;
 	std::vector<BoxDrawSpec> m_boxes;
+	UNORDERED_MAP<std::string, bool> field_close_on_enter;
 	std::vector<FieldSpec> m_fields;
 	std::vector<StaticTextSpec> m_static_texts;
 	std::vector<std::pair<FieldSpec,GUITable*> > m_tables;
@@ -490,6 +489,7 @@ private:
 	void parseTable(parserData* data,std::string element);
 	void parseTextList(parserData* data,std::string element);
 	void parseDropDown(parserData* data,std::string element);
+	void parseFieldCloseOnEnter(parserData *data, const std::string &element);
 	void parsePwdField(parserData* data,std::string element);
 	void parseField(parserData* data,std::string element,std::string type);
 	void parseSimpleField(parserData* data,std::vector<std::string> &parts);
