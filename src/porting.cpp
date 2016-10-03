@@ -627,6 +627,7 @@ bool setXorgWindowIcon(IrrlichtDevice *device)
 		setXorgWindowIconFromPath(device,
 			path_share + "/misc/" PROJECT_NAME "-xorg-icon-128.png");
 #	endif
+#else
 	return false;
 #endif
 }
