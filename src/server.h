@@ -487,7 +487,7 @@ private:
 	std::wstring handleChat(const std::string &name, const std::wstring &wname,
 		const std::wstring &wmessage,
 		bool check_shout_priv = false,
-		u16 peer_id_to_avoid_sending = PEER_ID_INEXISTENT);
+		RemotePlayer *player = NULL);
 	void handleAdminChat(const ChatEventChat *evt);
 
 	v3f findSpawnPos();
@@ -522,6 +522,7 @@ private:
 	// If true, do not allow multiple players and hide some multiplayer
 	// functionality
 	bool m_simple_singleplayer_mode;
+	u16 m_max_chatmessage_length;
 
 	// Thread can set; step() will throw as ServerError
 	MutexedVariable<std::string> m_async_fatal_error;

@@ -933,6 +933,18 @@
 #    type: float
 # server_map_save_interval = 5.3
 
+#    Set the maximum character length of a chat message sent by clients. (0 to disable)
+#    type: integer
+# chat_message_max_size = 500
+
+#    Limit a single player to send X messages per 10 seconds. (0 to disable)
+#    type: float
+# chat_message_limit_per_10sec = 8.0
+
+#    Kick player if send more than X messages per 10 seconds. (0 to disable)
+#    type: integer
+# chat_message_limit_trigger_kick = 50
+
 ### Physics
 
 #    type: float
@@ -1523,7 +1535,7 @@
 # profiler.default_report_format = txt
 
 #    The file path relative to your worldpath in which profiles will be saved to.
-#    
+#
 #    type: string
 # profiler.report_path = ""
 

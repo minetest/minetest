@@ -774,6 +774,15 @@ time_speed (Time speed) int 72
 #    Interval of saving important changes in the world, stated in seconds.
 server_map_save_interval (Map save interval) float 5.3
 
+#    Set the maximum character length of a chat message sent by clients.
+# chat_message_max_size int 500
+
+#    Limit a single player to send X messages per 10 seconds.
+# chat_message_limit_per_10sec float 10.0
+
+#    Kick player if send more than X messages per 10 seconds.
+# chat_message_limit_trigger_kick int 50
+
 [**Physics]
 
 movement_acceleration_default (Default acceleration) float 3

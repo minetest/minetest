@@ -227,10 +227,25 @@ void Player::clearHud()
 	}
 }
 
+// static config cache for remoteplayer
+bool RemotePlayer::m_setting_cache_loaded = false;
+float RemotePlayer::m_setting_chat_message_limit_per_10sec = 0.0f;
+u16 RemotePlayer::m_setting_chat_message_limit_trigger_kick = 0;
+
 RemotePlayer::RemotePlayer(IGameDef *gamedef, const char *name):
 	Player(gamedef, name),
-	m_sao(NULL)
+	m_sao(NULL),
+	m_last_chat_message_sent(time(NULL)),
+	m_chat_message_allowance(5.0f),
+	m_message_rate_overhead(0)
 {
+	if (!RemotePlayer::m_setting_cache_loaded) {
+		RemotePlayer::m_setting_chat_message_limit_per_10sec =
+				g_settings->getFloat("chat_message_limit_per_10sec");
+		RemotePlayer::m_setting_chat_message_limit_trigger_kick =
+				g_settings->getU16("chat_message_limit_trigger_kick");
+		RemotePlayer::m_setting_cache_loaded = true;
+	}
 	movement_acceleration_default   = g_settings->getFloat("movement_acceleration_default")   * BS;
 	movement_acceleration_air       = g_settings->getFloat("movement_acceleration_air")       * BS;
 	movement_acceleration_fast      = g_settings->getFloat("movement_acceleration_fast")      * BS;
@@ -302,5 +317,44 @@ void RemotePlayer::setPosition(const v3f &position)
 	Player::setPosition(position);
 	if(m_sao)
 		m_sao->setBasePosition(position);
+}
+
+const RemotePlayerChatResult RemotePlayer::canSendChatMessage()
+{
+	// Rate limit messages
+	u32 now = time(NULL);
+	float time_passed = now - m_last_chat_message_sent;
+	m_last_chat_message_sent = now;
+
+	// If this feature is disabled
+	if (m_setting_chat_message_limit_per_10sec <= 0.0) {
+		return RPLAYER_CHATRESULT_OK;
+	}
+
+	m_chat_message_allowance += time_passed * (m_setting_chat_message_limit_per_10sec / 8.0f);
+	if (m_chat_message_allowance > m_setting_chat_message_limit_per_10sec) {
+		m_chat_message_allowance = m_setting_chat_message_limit_per_10sec;
+	}
+
+	if (m_chat_message_allowance < 1.0f) {
+		infostream << "Player " << m_name
+				<< " chat limited due to excessive message amount." << std::endl;
+
+		// Kick player if flooding is too intensive
+		m_message_rate_overhead++;
+		if (m_message_rate_overhead > RemotePlayer::m_setting_chat_message_limit_trigger_kick) {
+			return RPLAYER_CHATRESULT_KICK;
+		}
+
+		return RPLAYER_CHATRESULT_FLOODING;
+	}
+
+	// Reinit message overhead
+	if (m_message_rate_overhead > 0) {
+		m_message_rate_overhead = 0;
+	}
+
+	m_chat_message_allowance -= 1.0f;
+	return RPLAYER_CHATRESULT_OK;
 }
 

@@ -439,7 +439,11 @@ private:
 	Mutex m_mutex;
 };
 
-
+enum RemotePlayerChatResult {
+	RPLAYER_CHATRESULT_OK,
+	RPLAYER_CHATRESULT_FLOODING,
+	RPLAYER_CHATRESULT_KICK,
+};
 /*
 	Player on the server
 */
@@ -457,8 +461,18 @@ public:
 	{ m_sao = sao; }
 	void setPosition(const v3f &position);
 
+	const RemotePlayerChatResult canSendChatMessage();
+
 private:
 	PlayerSAO *m_sao;
+
+	static bool m_setting_cache_loaded;
+	static float m_setting_chat_message_limit_per_10sec;
+	static u16 m_setting_chat_message_limit_trigger_kick;
+
+	u32 m_last_chat_message_sent;
+	float m_chat_message_allowance;
+	u16 m_message_rate_overhead;
 };
 
 #endif

@@ -1065,7 +1065,7 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 	std::wstring wname = narrow_to_wide(name);
 
 	std::wstring answer_to_sender = handleChat(name, wname, message,
-		true, pkt->getPeerId());
+		true, dynamic_cast<RemotePlayer *>(player));
 	if (!answer_to_sender.empty()) {
 		// Send the answer to sender
 		SendChatMessage(pkt->getPeerId(), answer_to_sender);
@@ -1656,16 +1656,16 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		}
 
 	} // action == 4
-	
+
 	/*
 		5: rightclick air
 	*/
 	else if (action == 5) {
 		ItemStack item = playersao->getWieldedItem();
-		
-		actionstream << player->getName() << " activates " 
+
+		actionstream << player->getName() << " activates "
 				<< item.name << std::endl;
-		
+
 		if (m_script->item_OnSecondaryUse(
 				item, playersao)) {
 			if( playersao->setWieldedItem(item)) {
