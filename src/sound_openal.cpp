@@ -41,9 +41,9 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/numeric.h" // myrand()
 #include "porting.h"
-#include <map>
 #include <vector>
 #include <fstream>
+#include "util/cpp11_container.h"
 
 #define BUFFER_SIZE 30000
 
@@ -271,8 +271,8 @@ private:
 	ALCdevice *m_device;
 	ALCcontext *m_context;
 	int m_next_id;
-	std::map<std::string, std::vector<SoundBuffer*> > m_buffers;
-	std::map<int, PlayingSound*> m_sounds_playing;
+	UNORDERED_MAP<std::string, std::vector<SoundBuffer*> > m_buffers;
+	UNORDERED_MAP<int, PlayingSound*> m_sounds_playing;
 	v3f m_listener_pos;
 public:
 	bool m_is_initialized;
@@ -337,7 +337,7 @@ public:
 		alcCloseDevice(m_device);
 		m_device = NULL;
 
-		for (std::map<std::string, std::vector<SoundBuffer*> >::iterator i = m_buffers.begin();
+		for (UNORDERED_MAP<std::string, std::vector<SoundBuffer*> >::iterator i = m_buffers.begin();
 				i != m_buffers.end(); ++i) {
 			for (std::vector<SoundBuffer*>::iterator iter = (*i).second.begin();
 					iter != (*i).second.end(); ++iter) {
@@ -351,7 +351,7 @@ public:
 
 	void addBuffer(const std::string &name, SoundBuffer *buf)
 	{
-		std::map<std::string, std::vector<SoundBuffer*> >::iterator i =
+		UNORDERED_MAP<std::string, std::vector<SoundBuffer*> >::iterator i =
 				m_buffers.find(name);
 		if(i != m_buffers.end()){
 			i->second.push_back(buf);
@@ -365,7 +365,7 @@ public:
 
 	SoundBuffer* getBuffer(const std::string &name)
 	{
-		std::map<std::string, std::vector<SoundBuffer*> >::iterator i =
+		UNORDERED_MAP<std::string, std::vector<SoundBuffer*> >::iterator i =
 				m_buffers.find(name);
 		if(i == m_buffers.end())
 			return NULL;
@@ -443,8 +443,7 @@ public:
 
 	void deleteSound(int id)
 	{
-		std::map<int, PlayingSound*>::iterator i =
-				m_sounds_playing.find(id);
+		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
 		if(i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
@@ -484,10 +483,8 @@ public:
 				<<m_sounds_playing.size()<<" playing sounds, "
 				<<m_buffers.size()<<" sound names loaded"<<std::endl;
 		std::set<int> del_list;
-		for(std::map<int, PlayingSound*>::iterator
-				i = m_sounds_playing.begin();
-				i != m_sounds_playing.end(); ++i)
-		{
+		for(UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.begin();
+				i != m_sounds_playing.end(); ++i) {
 			int id = i->first;
 			PlayingSound *sound = i->second;
 			// If not playing, remove it
@@ -583,9 +580,8 @@ public:
 	}
 	void updateSoundPosition(int id, v3f pos)
 	{
-		std::map<int, PlayingSound*>::iterator i =
-				m_sounds_playing.find(id);
-		if(i == m_sounds_playing.end())
+		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
+		if (i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
 
