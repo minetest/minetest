@@ -2290,10 +2290,14 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 				this->bringToFront(m_tooltip_element);
 				setStaticText(m_tooltip_element, tooltip_text.c_str());
 				s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
-#if IRRLICHT_VERSION_MAJOR <= 1 && IRRLICHT_VERSION_MINOR <= 8 && IRRLICHT_VERSION_REVISION < 2
-				s32 tooltip_height = m_tooltip_element->getTextHeight() * tt_rows.size() + 5;
-#else
+
+				/* Irrlicht version 1.8.2 added counting newlines in the
+				 * calculation for getTextHeight()
+				 */
+#if IRRLICHT_VERSION_MAJOR * 10000 + IRRLICHT_VERSION_MINOR * 100 + IRRLICHT_VERSION_MINOR >= 10802
 				s32 tooltip_height = m_tooltip_element->getTextHeight() + 5;
+#else
+				s32 tooltip_height = m_tooltip_element->getTextHeight() * tt_rows.size() + 5;
 #endif
 				v2u32 screenSize = driver->getScreenSize();
 				int tooltip_offset_x = m_btn_height;
