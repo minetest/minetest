@@ -829,20 +829,18 @@ void push_tool_capabilities(lua_State *L,
 		// Create groupcaps table
 		lua_newtable(L);
 		// For each groupcap
-		for(std::map<std::string, ToolGroupCap>::const_iterator
-				i = toolcap.groupcaps.begin(); i != toolcap.groupcaps.end(); i++){
+		for (ToolGCMap::const_iterator i = toolcap.groupcaps.begin();
+			i != toolcap.groupcaps.end(); i++) {
 			// Create groupcap table
 			lua_newtable(L);
 			const std::string &name = i->first;
 			const ToolGroupCap &groupcap = i->second;
 			// Create subtable "times"
 			lua_newtable(L);
-			for(std::map<int, float>::const_iterator
-					i = groupcap.times.begin(); i != groupcap.times.end(); i++){
-				int rating = i->first;
-				float time = i->second;
-				lua_pushinteger(L, rating);
-				lua_pushnumber(L, time);
+			for (UNORDERED_MAP<int, float>::const_iterator
+					i = groupcap.times.begin(); i != groupcap.times.end(); i++) {
+				lua_pushinteger(L, i->first);
+				lua_pushnumber(L, i->second);
 				lua_settable(L, -3);
 			}
 			// Set subtable "times"
@@ -858,8 +856,8 @@ void push_tool_capabilities(lua_State *L,
 		//Create damage_groups table
 		lua_newtable(L);
 		// For each damage group
-		for(std::map<std::string, s16>::const_iterator
-				i = toolcap.damageGroups.begin(); i != toolcap.damageGroups.end(); i++){
+		for (DamageGroup::const_iterator i = toolcap.damageGroups.begin();
+			i != toolcap.damageGroups.end(); i++) {
 			// Create damage group table
 			lua_pushinteger(L, i->second);
 			lua_setfield(L, -2, i->first.c_str());
