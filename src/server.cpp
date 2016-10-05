@@ -669,7 +669,7 @@ void Server::AsyncRunStep(bool initial_step)
 		MutexAutoLock envlock(m_env_mutex);
 
 		m_clients.lock();
-		std::map<u16, RemoteClient*> clients = m_clients.getClientList();
+		UNORDERED_MAP<u16, RemoteClient*> clients = m_clients.getClientList();
 		ScopeProfiler sp(g_profiler, "Server: checking added and deleted objs");
 
 		// Radius inside which objects are active
@@ -685,8 +685,7 @@ void Server::AsyncRunStep(bool initial_step)
 		if (player_radius == 0 && is_transfer_limited)
 			player_radius = radius;
 
-		for (std::map<u16, RemoteClient*>::iterator
-			i = clients.begin();
+		for (UNORDERED_MAP<u16, RemoteClient*>::iterator i = clients.begin();
 			i != clients.end(); ++i) {
 			RemoteClient *client = i->second;
 
@@ -696,7 +695,7 @@ void Server::AsyncRunStep(bool initial_step)
 				continue;
 
 			Player *player = m_env->getPlayer(client->peer_id);
-			if(player == NULL) {
+			if (player == NULL) {
 				// This can happen if the client timeouts somehow
 				/*warningstream<<FUNCTION_NAME<<": Client "
 						<<client->peer_id
@@ -817,10 +816,9 @@ void Server::AsyncRunStep(bool initial_step)
 		}
 
 		m_clients.lock();
-		std::map<u16, RemoteClient*> clients = m_clients.getClientList();
+		UNORDERED_MAP<u16, RemoteClient*> clients = m_clients.getClientList();
 		// Route data to every client
-		for (std::map<u16, RemoteClient*>::iterator
-			i = clients.begin();
+		for (UNORDERED_MAP<u16, RemoteClient*>::iterator i = clients.begin();
 			i != clients.end(); ++i) {
 			RemoteClient *client = i->second;
 			std::string reliable_data;

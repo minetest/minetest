@@ -98,6 +98,8 @@ struct SettingsEntry {
 	bool is_group;
 };
 
+typedef UNORDERED_MAP<std::string, SettingsEntry> SettingEntries;
+
 class Settings {
 public:
 	Settings() {}
@@ -231,8 +233,8 @@ private:
 
 	void doCallbacks(const std::string &name) const;
 
-	std::map<std::string, SettingsEntry> m_settings;
-	std::map<std::string, SettingsEntry> m_defaults;
+	SettingEntries m_settings;
+	SettingEntries m_defaults;
 
 	SettingsCallbackMap m_callbacks;
 

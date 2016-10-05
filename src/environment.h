@@ -300,6 +300,8 @@ enum ClearObjectsMode {
 	This is not thread-safe. Server uses an environment mutex.
 */
 
+typedef UNORDERED_MAP<u16, ServerActiveObject *> ActiveObjectMap;
+
 class ServerEnvironment : public Environment
 {
 public:
@@ -338,7 +340,7 @@ public:
 	void loadDefaultMeta();
 
 	u32 addParticleSpawner(float exptime);
-	void deleteParticleSpawner(u32 id);
+	void deleteParticleSpawner(u32 id) { m_particle_spawners.erase(id); }
 
 	/*
 		External ActiveObject interface
@@ -491,7 +493,7 @@ private:
 	// World path
 	const std::string m_path_world;
 	// Active object list
-	std::map<u16, ServerActiveObject*> m_active_objects;
+	ActiveObjectMap m_active_objects;
 	// Outgoing network message buffer for active objects
 	std::queue<ActiveObjectMessage> m_active_object_messages;
 	// Some timers
@@ -522,7 +524,7 @@ private:
 
 	// Particles
 	IntervalLimiter m_particle_management_interval;
-	std::map<u32, float> m_particle_spawners;
+	UNORDERED_MAP<u32, float> m_particle_spawners;
 };
 
 #ifndef SERVER

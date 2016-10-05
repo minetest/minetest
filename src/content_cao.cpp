@@ -1505,10 +1505,8 @@ void GenericCAO::updateBonePosition()
 		return;
 
 	m_animated_meshnode->setJointMode(irr::scene::EJUOR_CONTROL); // To write positions to the mesh on render
-	for(std::map<std::string,
-			core::vector2d<v3f> >::const_iterator ii = m_bone_position.begin();
-			ii != m_bone_position.end(); ++ii)
-	{
+	for(UNORDERED_MAP<std::string, core::vector2d<v3f> >::const_iterator
+			ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
 		std::string bone_name = (*ii).first;
 		v3f bone_pos = (*ii).second.X;
 		v3f bone_rot = (*ii).second.Y;
