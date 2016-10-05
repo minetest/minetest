@@ -163,6 +163,7 @@ private:
 void TestThreading::testAtomicSemaphoreThread()
 {
 	Atomic<u32> val;
+	val = 0;
 	Semaphore trigger;
 	static const u8 num_threads = 4;
 

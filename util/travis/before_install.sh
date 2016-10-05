@@ -1,16 +1,8 @@
 #!/bin/bash -e
 
 if [[ $TRAVIS_OS_NAME == "linux" ]]; then
-	if [[ $CC == "clang" ]]; then
-		export PATH="/usr/bin/:$PATH"
-		sudo sh -c 'echo "deb http://ppa.launchpad.net/eudoxos/llvm-3.1/ubuntu precise main" >> /etc/apt/sources.list'
-		sudo apt-key adv --keyserver pool.sks-keyservers.net --recv-keys 92DE8183
-		sudo apt-get update
-		sudo apt-get install llvm-3.1
-		sudo apt-get install clang
-	fi
 	sudo apt-get update
-	sudo apt-get install p7zip-full
+	sudo apt-get install p7zip-full $COMPILER
 fi
 
 if [[ $PLATFORM == "Unix" ]]; then
