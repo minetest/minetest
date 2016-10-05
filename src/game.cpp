@@ -3374,12 +3374,12 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 			//u16 damage = event.player_damage.amount;
 			//infostream<<"Player damage: "<<damage<<std::endl;
 
-			*damage_flash += 100.0;
-			*damage_flash += 8.0 * event.player_damage.amount;
+			*damage_flash += 95.0 + 3.2 * event.player_damage.amount;
+			*damage_flash = MYMIN(*damage_flash, 127.0);
 
 			player->hurt_tilt_timer = 1.5;
-			player->hurt_tilt_strength = event.player_damage.amount / 4;
-			player->hurt_tilt_strength = rangelim(player->hurt_tilt_strength, 1.0, 4.0);
+			player->hurt_tilt_strength =
+				rangelim(event.player_damage.amount / 4, 1.0, 4.0);
 
 			MtEvent *e = new SimpleTriggerEvent("PlayerDamage");
 			gamedef->event()->put(e);
@@ -4285,10 +4285,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
 		Damage flash
 	*/
 	if (runData->damage_flash > 0.0) {
-		video::SColor color(std::min(runData->damage_flash, 180.0f),
-				180,
-				0,
-				0);
+		video::SColor color(runData->damage_flash, 180, 0, 0);
 		driver->draw2DRectangle(color,
 					core::rect<s32>(0, 0, screensize.X, screensize.Y),
 					NULL);
