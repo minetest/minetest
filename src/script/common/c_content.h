@@ -33,11 +33,11 @@ extern "C" {
 }
 
 #include <iostream>
-#include <map>
 #include <vector>
 
 #include "irrlichttypes_bloated.h"
 #include "util/string.h"
+#include "itemgroup.h"
 
 namespace Json { class Value; }
 
@@ -106,10 +106,10 @@ void               pushnode                  (lua_State *L, const MapNode &n,
 NodeBox            read_nodebox              (lua_State *L, int index);
 
 void               read_groups               (lua_State *L, int index,
-                                              std::map<std::string, int> &result);
+                                              ItemGroupList &result);
 
 void               push_groups               (lua_State *L,
-                                              const std::map<std::string, int> &groups);
+                                              const ItemGroupList &groups);
 
 //TODO rename to "read_enum_field"
 int                getenumfield              (lua_State *L, int table,

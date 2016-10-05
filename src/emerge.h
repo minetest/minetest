@@ -156,7 +156,7 @@ private:
 
 	Mutex m_queue_mutex;
 	std::map<v3s16, BlockEmergeData> m_blocks_enqueued;
-	std::map<u16, u16> m_peer_queue_count;
+	UNORDERED_MAP<u16, u16> m_peer_queue_count;
 
 	u16 m_qlimit_total;
 	u16 m_qlimit_diskonly;

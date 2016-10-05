@@ -369,12 +369,10 @@ bool EmergeManager::pushBlockEmergeData(
 }
 
 
-bool EmergeManager::popBlockEmergeData(
-	v3s16 pos,
-	BlockEmergeData *bedata)
+bool EmergeManager::popBlockEmergeData(v3s16 pos, BlockEmergeData *bedata)
 {
 	std::map<v3s16, BlockEmergeData>::iterator it;
-	std::map<u16, u16>::iterator it2;
+	UNORDERED_MAP<u16, u16>::iterator it2;
 
 	it = m_blocks_enqueued.find(pos);
 	if (it == m_blocks_enqueued.end())

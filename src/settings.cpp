@@ -196,9 +196,8 @@ void Settings::writeLines(std::ostream &os, u32 tab_depth) const
 {
 	MutexAutoLock lock(m_mutex);
 
-	for (std::map<std::string, SettingsEntry>::const_iterator
-			it = m_settings.begin();
-			it != m_settings.end(); ++it)
+	for (SettingEntries::const_iterator it = m_settings.begin();
+		 	it != m_settings.end(); ++it)
 		printEntry(os, it->first, it->second, tab_depth);
 }
 
@@ -231,7 +230,7 @@ void Settings::printEntry(std::ostream &os, const std::string &name,
 bool Settings::updateConfigObject(std::istream &is, std::ostream &os,
 	const std::string &end, u32 tab_depth)
 {
-	std::map<std::string, SettingsEntry>::const_iterator it;
+	SettingEntries::const_iterator it;
 	std::set<std::string> present_entries;
 	std::string line, name, value;
 	bool was_modified = false;
@@ -381,7 +380,7 @@ const SettingsEntry &Settings::getEntry(const std::string &name) const
 {
 	MutexAutoLock lock(m_mutex);
 
-	std::map<std::string, SettingsEntry>::const_iterator n;
+	SettingEntries::const_iterator n;
 	if ((n = m_settings.find(name)) == m_settings.end()) {
 		if ((n = m_defaults.find(name)) == m_defaults.end())
 			throw SettingNotFoundException("Setting [" + name + "] not found.");
@@ -572,9 +571,8 @@ bool Settings::exists(const std::string &name) const
 std::vector<std::string> Settings::getNames() const
 {
 	std::vector<std::string> names;
-	for (std::map<std::string, SettingsEntry>::const_iterator
-			i = m_settings.begin();
-			i != m_settings.end(); ++i) {
+	for (SettingEntries::const_iterator i = m_settings.begin();
+		 	i != m_settings.end(); ++i) {
 		names.push_back(i->first);
 	}
 	return names;
@@ -880,7 +878,7 @@ bool Settings::remove(const std::string &name)
 {
 	MutexAutoLock lock(m_mutex);
 
-	std::map<std::string, SettingsEntry>::iterator it = m_settings.find(name);
+	SettingEntries::iterator it = m_settings.find(name);
 	if (it != m_settings.end()) {
 		delete it->second.group;
 		m_settings.erase(it);
@@ -912,7 +910,6 @@ void Settings::updateValue(const Settings &other, const std::string &name)
 
 	try {
 		std::string val = other.get(name);
-
 		m_settings[name] = val;
 	} catch (SettingNotFoundException &e) {
 	}
@@ -968,8 +965,9 @@ void Settings::updateNoLock(const Settings &other)
 
 void Settings::clearNoLock()
 {
-	std::map<std::string, SettingsEntry>::const_iterator it;
-	for (it = m_settings.begin(); it != m_settings.end(); ++it)
+
+	for (SettingEntries::const_iterator it = m_settings.begin();
+			it != m_settings.end(); ++it)
 		delete it->second.group;
 	m_settings.clear();
 
@@ -978,8 +976,8 @@ void Settings::clearNoLock()
 
 void Settings::clearDefaultsNoLock()
 {
-	std::map<std::string, SettingsEntry>::const_iterator it;
-	for (it = m_defaults.begin(); it != m_defaults.end(); ++it)
+	for (SettingEntries::const_iterator it = m_defaults.begin();
+			it != m_defaults.end(); ++it)
 		delete it->second.group;
 	m_defaults.clear();
 }
