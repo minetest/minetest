@@ -1693,9 +1693,7 @@ void Server::handleCommand_RemovedSounds(NetworkPacket* pkt)
 
 		*pkt >> id;
 
-		std::map<s32, ServerPlayingSound>::iterator i =
-			m_playing_sounds.find(id);
-
+		UNORDERED_MAP<s32, ServerPlayingSound>::iterator i = m_playing_sounds.find(id);
 		if (i == m_playing_sounds.end())
 			continue;
 

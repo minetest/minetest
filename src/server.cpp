@@ -868,7 +868,7 @@ void Server::AsyncRunStep(bool initial_step)
 		m_clients.unlock();
 
 		// Clear buffered_messages
-		for(UNORDERED_MAP<u16, std::vector<ActiveObjectMessage>* >::iterator
+		for (UNORDERED_MAP<u16, std::vector<ActiveObjectMessage>* >::iterator
 				i = buffered_messages.begin();
 				i != buffered_messages.end(); ++i) {
 			delete i->second;
@@ -2016,16 +2016,15 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 void Server::stopSound(s32 handle)
 {
 	// Get sound reference
-	std::map<s32, ServerPlayingSound>::iterator i =
-			m_playing_sounds.find(handle);
-	if(i == m_playing_sounds.end())
+	UNORDERED_MAP<s32, ServerPlayingSound>::iterator i = m_playing_sounds.find(handle);
+	if (i == m_playing_sounds.end())
 		return;
 	ServerPlayingSound &psound = i->second;
 
 	NetworkPacket pkt(TOCLIENT_STOP_SOUND, 4);
 	pkt << handle;
 
-	for(std::set<u16>::iterator i = psound.clients.begin();
+	for (UNORDERED_SET<u16>::iterator i = psound.clients.begin();
 			i != psound.clients.end(); ++i) {
 		// Send as reliable
 		m_clients.send(*i, 0, &pkt, true);
@@ -2322,7 +2321,7 @@ void Server::sendMediaAnnouncement(u16 peer_id)
 	NetworkPacket pkt(TOCLIENT_ANNOUNCE_MEDIA, 0, peer_id);
 	pkt << (u16) m_media.size();
 
-	for (std::map<std::string, MediaInfo>::iterator i = m_media.begin();
+	for (UNORDERED_MAP<std::string, MediaInfo>::iterator i = m_media.begin();
 			i != m_media.end(); ++i) {
 		pkt << i->first << i->second.sha1_digest;
 	}
@@ -2367,7 +2366,7 @@ void Server::sendRequestedMedia(u16 peer_id,
 			i != tosend.end(); ++i) {
 		const std::string &name = *i;
 
-		if(m_media.find(name) == m_media.end()) {
+		if (m_media.find(name) == m_media.end()) {
 			errorstream<<"Server::sendRequestedMedia(): Client asked for "
 					<<"unknown file \""<<(name)<<"\""<<std::endl;
 			continue;
@@ -2628,13 +2627,11 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 		/*
 			Clear references to playing sounds
 		*/
-		for(std::map<s32, ServerPlayingSound>::iterator
-				i = m_playing_sounds.begin();
-				i != m_playing_sounds.end();)
-		{
+		for (UNORDERED_MAP<s32, ServerPlayingSound>::iterator
+				 i = m_playing_sounds.begin(); i != m_playing_sounds.end();) {
 			ServerPlayingSound &psound = i->second;
 			psound.clients.erase(peer_id);
-			if(psound.clients.empty())
+			if (psound.clients.empty())
 				m_playing_sounds.erase(i++);
 			else
 				++i;
