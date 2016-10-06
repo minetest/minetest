@@ -1935,13 +1935,14 @@ Call these functions only at load time!
     * Warning! The type field ("shaped","cooking" or any other) will be ignored if the recipe
       contains output. Erasing is then done independently from the crafting method.
 * `minetest.register_ore(ore definition)`
+* `minetest.register_biome(biome definition)`
 * `minetest.register_decoration(decoration definition)`
 * `minetest.override_item(name, redefinition)`
     * Overrides fields of an item registered with register_node/tool/craftitem.
     * Note: Item must already be defined, (opt)depend on the mod defining it.
     * Example: `minetest.override_item("default:mese", {light_source=LIGHT_MAX})`
-
 * `minetest.clear_registered_ores()`
+* `minetest.clear_registered_biomes()`
 * `minetest.clear_registered_decorations()`
 
 ### Global callback registration functions
@@ -2270,6 +2271,11 @@ and `minetest.auth_reload` call the authetification handler.
     * increase level of leveled node by level, default `level` equals `1`
     * if `totallevel > maxlevel`, returns rest (`total-max`)
     * can be negative for decreasing
+* `nodeupdate_single(pos)`
+    * causes an unsupported `group:falling_node` node to fall and causes an
+      unattached `group:attached_node` node to fall.
+    * does not spread these updates to neighbours
+    * a helper function, not officially part of the API, but useful
 
 ### Inventory
 `minetest.get_inventory(location)`: returns an `InvRef`
