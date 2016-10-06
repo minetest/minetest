@@ -1457,6 +1457,17 @@ void Server::Send(NetworkPacket* pkt)
 		clientCommandFactoryTable[pkt->getCommand()].reliable);
 }
 
+
+void Server::Broadcast(NetworkPacket* pkt, int min_protocol_version, int max_protocol_version)
+{
+	m_clients.sendToAll(
+		clientCommandFactoryTable[pkt->getCommand()].channel,
+		pkt,
+		clientCommandFactoryTable[pkt->getCommand()].reliable,
+		min_protocol_version, max_protocol_version);
+}
+
+
 void Server::SendMovement(u16 peer_id)
 {
 	DSTACK(FUNCTION_NAME);

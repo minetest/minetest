@@ -674,14 +674,17 @@ void ClientInterface::send(u16 peer_id, u8 channelnum,
 }
 
 void ClientInterface::sendToAll(u16 channelnum,
-		NetworkPacket* pkt, bool reliable)
+		NetworkPacket* pkt, bool reliable,
+		int min_protocol_version, int max_protocol_version)
 {
 	MutexAutoLock clientslock(m_clients_mutex);
 	for(UNORDERED_MAP<u16, RemoteClient*>::iterator i = m_clients.begin();
 		i != m_clients.end(); ++i) {
 		RemoteClient *client = i->second;
 
-		if (client->net_proto_version != 0) {
+		if (client->net_proto_version != 0
+				&& client->net_proto_version >= min_protocol_version
+				&& client->net_proto_version <= max_protocol_version) {
 			m_con->Send(client->peer_id, channelnum, pkt, reliable);
 		}
 	}

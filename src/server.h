@@ -196,6 +196,8 @@ public:
 	void ProcessData(NetworkPacket *pkt);
 
 	void Send(NetworkPacket* pkt);
+	void Broadcast(NetworkPacket* pkt,
+		int min_protocol_version = 0, int max_protocol_version = INT_MAX);
 
 	// Both setter and getter need no envlock,
 	// can be called freely from threads
